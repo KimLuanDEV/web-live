@@ -126,9 +126,10 @@
   setStatus("⏳ Đang chờ broadcaster gửi LIVE...");
   log("Đã join room, đợi offer từ broadcaster...");
 
+  /*
     const rtcConfig = await getRtcConfig();
 pc = new RTCPeerConnection(rtcConfig);
-
+*/
 
       pc.onicecandidate = (e) => {
         if (e.candidate) {
