@@ -19,7 +19,7 @@
             <div class="badge">Phòng Livestream</div>
             <code id="roomCode">-</code>
 
-            <div class="badge" id="statusBadge">⏳ Đang chờ broadcaster...</div>
+            <div class="badge" id="statusBadge">⏳ Đang chờ...</div>
 
             <button id="btnJoin">Tham gia xem Livestream</button>
           </div>
@@ -137,10 +137,10 @@
       if (liveStatusText) liveStatusText.textContent = text.replace(/^[^ ]+\s*/, "");
     }
 
-    socket.on("broadcaster-online", () => setStatus("✅ Broadcaster online"));
-    socket.on("broadcaster-offline", () => setStatus("⛔ Broadcaster offline"));
+    socket.on("broadcaster-online", () => setStatus("✅ Host online"));
+    socket.on("broadcaster-offline", () => setStatus("⛔ Host offline"));
     socket.on("broadcaster-changed", () => {
-      setStatus("🔄 Broadcaster changed – hãy bấm Join lại");
+      setStatus("🔄 Host changed – hãy bấm Join lại");
       cleanupAll();
     });
 
@@ -165,8 +165,8 @@
       if (joined) return;
       joined = true;
       socket.emit("join-room", { roomId, role: "viewer" });
-      setStatus("⏳ Đang chờ broadcaster gửi LIVE...");
-      log("Đã join room, đợi offer từ broadcaster/guest...");
+      setStatus("⏳ Đang chờ Host gửi LIVE...");
+      log("Đã join room, đợi offer từ host/guest...");
     }
 
     function cleanupPeer(peerKey) {
@@ -236,7 +236,7 @@
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         socket.emit("answer", { to: from, description: pc.localDescription });
-        setStatus("🟡 Đang bắt tay kết nối...");
+        setStatus("🟢 Đang xem live trực tiếp.");
         log("Đã gửi answer cho: " + from);
       } catch (err) {
         log("Lỗi xử lý offer: " + err.message);
