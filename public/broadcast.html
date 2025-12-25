@@ -68,10 +68,6 @@
     // One RTCPeerConnection per viewer
     const pcs = new Map();
 
-    // Viewers vào trước khi bạn bấm Start sẽ được giữ ở đây
-    const pendingViewers = new Set();
-
-
     // STUN server (demo). TURN sẽ cần nếu mạng khó (4G/Carrier NAT)
 async function getRtcConfig() {
   const fallback = {
@@ -121,38 +117,7 @@ async function getRtcConfig() {
 
 
 
-    
-async function ensurePeerFor(viewerId) {
-  if (!localStream) return;
-  if (pcs.has(viewerId)) return;
-
-  const rtcConfig = await getRtcConfig();
-  const pc = new RTCPeerConnection(rtcConfig);
-  pcs.set(viewerId, pc);
-
-  // Add tracks
-  localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-  pc.onicecandidate = (e) => {
-    if (e.candidate) {
-      socket.emit("candidate", { to: viewerId, candidate: e.candidate });
-    }
-  };
-
-  pc.oniceconnectionstatechange = () => {
-    log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
-  };
-
-  try {
-    const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
-    await pc.setLocalDescription(offer);
-    socket.emit("offer", { to: viewerId, description: pc.localDescription });
-  } catch (err) {
-    log("Lỗi tạo offer: " + err.message);
-  }
-}
-
-function log(msg) {
+    function log(msg) {
       logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
       console.log(msg);
     }
@@ -160,17 +125,40 @@ function log(msg) {
     socket.emit("join-room", { roomId, role: "broadcaster" });
 
     socket.on("watcher", async ({ viewerId }) => {
-  // Viewer có thể vào trước khi broadcaster bấm Start
-  pendingViewers.add(viewerId);
+      if (!localStream) {
+        log("Có viewer nhưng bạn chưa Start camera.");
+        return;
+      }
+      log(`Viewer join: ${viewerId}`);
 
-  if (!localStream) {
-    log(`Viewer ${viewerId} đang chờ (bạn chưa Start camera).`);
-    return;
-  }
+      const rtcConfig = await getRtcConfig();
+const pc = new RTCPeerConnection(rtcConfig);
 
-  log(`Viewer join: ${viewerId}`);
-  await ensurePeerFor(viewerId);
-});
+
+
+      pcs.set(viewerId, pc);
+
+      // Add tracks
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          socket.emit("candidate", { to: viewerId, candidate: e.candidate });
+        }
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
+      };
+
+      try {
+        const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
+        await pc.setLocalDescription(offer);
+        socket.emit("offer", { to: viewerId, description: pc.localDescription });
+      } catch (err) {
+        log("Lỗi tạo offer: " + err.message);
+      }
+    });
 
     socket.on("answer", async ({ from, description }) => {
       const pc = pcs.get(from);
@@ -223,12 +211,6 @@ function log(msg) {
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
 
         socket.emit("broadcaster-ready", { roomId });
-
-        // Tạo peer cho những viewer đã vào trước
-        for (const vid of pendingViewers) {
-          await ensurePeerFor(vid);
-        }
-
 
         // Nếu viewers đã vào trước, server sẽ gửi danh sách
         // Mình sẽ yêu cầu họ reload bằng broadcaster-online đã đủ.
