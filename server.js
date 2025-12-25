@@ -29,6 +29,11 @@ function getRoom(roomId) {
   return rooms.get(roomId);
 }
 
+function emitViewerCount(roomId) {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  io.to(roomId).emit("viewer-count", { count: room.viewers.size });
+}
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
   try {
