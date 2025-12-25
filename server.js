@@ -57,6 +57,23 @@ app.get("/ice", async (req, res) => {
 
 
 io.on("connection", (socket) => {
+
+
+    socket.on("broadcaster-ready", ({ roomId }) => {
+  if (!roomId) return;
+
+  const room = rooms.get(roomId);
+  if (!room || room.broadcasterId !== socket.id) return;
+
+  // gọi lại tất cả viewers đang có trong phòng
+  for (const vid of room.viewers) {
+    io.to(room.broadcasterId).emit("watcher", { viewerId: vid, roomId });
+  }
+
+  io.to(roomId).emit("broadcaster-online");
+});
+
+
   // user joins a room with a role
   socket.on("join-room", ({ roomId, role }) => {
     if (!roomId || !role) return;

@@ -210,6 +210,8 @@ const pc = new RTCPeerConnection(rtcConfig);
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
 
+        socket.emit("broadcaster-ready", { roomId });
+
         // Nếu viewers đã vào trước, server sẽ gửi danh sách
         // Mình sẽ yêu cầu họ reload bằng broadcaster-online đã đủ.
       } catch (err) {

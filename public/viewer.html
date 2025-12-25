@@ -120,10 +120,11 @@
 
     async function join() {
       if (joined) return;
-      joined = true;
+  joined = true;
 
-      socket.emit("join-room", { roomId, role: "viewer" });
-      setStatus("⏳ Đang kết nối...");
+  socket.emit("join-room", { roomId, role: "viewer" });
+  setStatus("⏳ Đang chờ broadcaster gửi LIVE...");
+  log("Đã join room, đợi offer từ broadcaster...");
 
     const rtcConfig = await getRtcConfig();
 pc = new RTCPeerConnection(rtcConfig);
@@ -156,37 +157,47 @@ pc = new RTCPeerConnection(rtcConfig);
     // we keep offerFrom
     let offerFrom = null;
 
-    socket.on("offer", async ({ from, description }) => {
-      offerFrom = from;
+  socket.on("offer", async ({ from, description }) => {
+  offerFrom = from;
 
-      if (!pc) {
-        const rtcConfig = await getRtcConfig();
-pc = new RTCPeerConnection(rtcConfig);
+  // luôn reset pc cũ nếu có (tránh lỗi cũ treo)
+  if (pc) {
+    try { pc.close(); } catch {}
+    pc = null;
+  }
 
-        pc.ontrack = (event) => {
-          player.srcObject = event.streams[0];
-          setStatus("🟢 Đang xem LIVE");
-          log("Đã nhận stream.");
-          player.play().catch(() => log("Autoplay bị chặn, hãy bấm Play."));
-        };
-        pc.onicecandidate = (e) => {
-          if (e.candidate && offerFrom) {
-            socket.emit("candidate", { to: offerFrom, candidate: e.candidate });
-          }
-        };
-      }
+  const rtcConfig = await getRtcConfig();
+  pc = new RTCPeerConnection(rtcConfig);
 
-      try {
-        await pc.setRemoteDescription(description);
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        socket.emit("answer", { to: from, description: pc.localDescription });
-        setStatus("🟡 Đang bắt tay kết nối...");
-        log("Đã gửi answer.");
-      } catch (err) {
-        log("Lỗi xử lý offer: " + err.message);
-      }
-    });
+  pc.ontrack = (event) => {
+    player.srcObject = event.streams[0];
+    setStatus("🟢 Đang xem LIVE");
+    log("Đã nhận stream.");
+    player.play().catch(() => log("Autoplay bị chặn, hãy bấm Play trên video."));
+  };
+
+  pc.onicecandidate = (e) => {
+    if (e.candidate && offerFrom) {
+      socket.emit("candidate", { to: offerFrom, candidate: e.candidate });
+    }
+  };
+
+  pc.oniceconnectionstatechange = () => {
+    log("ICE state: " + pc.iceConnectionState);
+  };
+
+  try {
+    await pc.setRemoteDescription(description);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
+    socket.emit("answer", { to: from, description: pc.localDescription });
+    setStatus("🟡 Đang bắt tay kết nối...");
+    log("Đã gửi answer.");
+  } catch (err) {
+    log("Lỗi xử lý offer: " + err.message);
+  }
+});
+
 
     socket.on("candidate", async ({ from, candidate }) => {
       if (!pc) return;
