@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Guest</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>🎤 Guest (Xin lên live)</h1>
+      <small>Mở link này để bật camera/mic và xin host cho lên live.</small>
+      <hr />
+
+      <div class="badge">Room: <code id="roomCode">-</code></div>
+      <div class="badge" id="st" style="margin-top:10px">⏳ Chưa bật cam</div>
+
+      <hr />
+      <button id="btnStart">Bật camera + mic & Xin lên live</button>
+
+      <div class="row" style="margin-top:14px">
+        <div class="card">
+          <div class="badge">Bạn</div>
+          <div class="video-wrap" style="margin-top:10px">
+            <video id="me" autoplay playsinline muted></video>
+          </div>
+        </div>
+        <div class="card">
+          <div class="badge">Host (xem để trò chuyện)</div>
+          <div class="video-wrap" style="margin-top:10px">
+            <video id="hostVideo" autoplay playsinline controls></video>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  const socket = io();
+  const params = new URLSearchParams(location.search);
+  const roomId = params.get("room") || "abc123";
+  document.getElementById("roomCode").textContent = roomId;
+
+  const st = document.getElementById("st");
+  const me = document.getElementById("me");
+  const hostVideo = document.getElementById("hostVideo");
+  const btnStart = document.getElementById("btnStart");
+
+  let localStream = null;
+  const pcs = new Map(); // peer per viewer/host
+
+  async function getRtcConfig() {
+    const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+    try {
+      const r = await fetch("/ice", { cache: "no-store" });
+      if (!r.ok) return fallback;
+      const data = await r.json();
+      if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
+
+      // lọc stun twilio lỗi '?transport=' (phòng hờ)
+      const cleaned = data.iceServers.map(s => {
+        let urls = s.urls;
+        if (!Array.isArray(urls)) urls = [urls];
+        urls = urls.filter(u => !(typeof u === "string" && u.startsWith("stun:") && u.includes("?transport=")));
+        return { ...s, urls };
+      }).filter(s => s.urls && (Array.isArray(s.urls) ? s.urls.length : true));
+
+      return { iceServers: cleaned.length ? cleaned : fallback.iceServers };
+    } catch { return fallback; }
+  }
+
+  btnStart.onclick = async () => {
+    if (localStream) return;
+    try {
+      localStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
+      me.srcObject = localStream;
+      st.textContent = "⏳ Đã bật cam. Đang chờ host duyệt...";
+
+      socket.emit("join-room", { roomId, role: "guest" });
+    } catch (e) {
+      alert("Không mở được camera/mic: " + e.message);
+    }
+  };
+
+  socket.on("guest-pending", () => st.textContent = "⏳ Đang chờ host duyệt...");
+  socket.on("guest-rejected", () => st.textContent = "⛔ Host từ chối.");
+  socket.on("guest-approved", () => st.textContent = "✅ Được duyệt! Người xem sẽ thấy bạn.");
+
+  // Khi có viewer/host muốn xem guest => guest tạo offer cho họ
+  socket.on("guest-watcher", async ({ viewerId }) => {
+    if (!localStream) return;
+    if (pcs.has(viewerId)) return;
+
+    const rtc = await getRtcConfig();
+    const pc = new RTCPeerConnection(rtc);
+    pcs.set(viewerId, pc);
+
+    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+    pc.onicecandidate = (e) => {
+      if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
+    };
+
+    // guest nhận lại audio/video từ host (nếu host gửi)
+    pc.ontrack = (e) => {
+      // track từ host sẽ vào đây (khi host addTrack)
+      hostVideo.srcObject = e.streams[0];
+    };
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+    socket.emit("offer", { to: viewerId, description: pc.localDescription });
+  });
+
+  socket.on("answer", async ({ from, description }) => {
+    const pc = pcs.get(from);
+    if (!pc) return;
+    await pc.setRemoteDescription(description);
+  });
+
+  socket.on("candidate", async ({ from, candidate }) => {
+    const pc = pcs.get(from);
+    if (!pc) return;
+    try { await pc.addIceCandidate(candidate); } catch {}
+  });
+
+  window.addEventListener("beforeunload", () => {
+    for (const pc of pcs.values()) try { pc.close(); } catch {}
+    if (localStream) localStream.getTracks().forEach(t => t.stop());
+  });
+</script>
+</body>
+</html>

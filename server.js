@@ -7,6 +7,8 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
+
+
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (_, res) => {
@@ -26,7 +28,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set() });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId:null });
   }
   return rooms.get(roomId);
 }
@@ -85,6 +87,28 @@ io.on("connection", (socket) => {
 
     const room = getRoom(roomId);
 
+
+if (role === "viewer") {
+  room.viewers.add(socket.id);
+
+  if (room.broadcasterId) {
+    io.to(room.broadcasterId).emit("watcher", { viewerId: socket.id, roomId });
+    socket.emit("broadcaster-online");
+  } else socket.emit("broadcaster-offline");
+
+  // NEW: nếu đã có guest, báo viewer để viewer tự kết nối tới guest
+  if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
+}
+
+if (role === "guest") {
+  // guest chỉ “xin lên live”, chưa bật online cho cả phòng
+  if (room.broadcasterId) {
+    io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });
+  }
+  socket.emit("guest-pending");
+}
+
+
     if (role === "broadcaster") {
       // replace old broadcaster if exists
       const old = room.broadcasterId;
@@ -112,6 +136,28 @@ io.on("connection", (socket) => {
       }
     }
   });
+
+socket.on("guest-approve", ({ roomId, guestId }) => {
+  const room = getRoom(roomId);
+  if (room.broadcasterId !== socket.id) return;
+
+  room.guestId = guestId;
+
+  io.to(guestId).emit("guest-approved", { roomId });
+  io.to(roomId).emit("guest-online", { guestId }); // báo toàn phòng
+});
+
+socket.on("guest-reject", ({ guestId }) => {
+  io.to(guestId).emit("guest-rejected");
+});
+
+socket.on("watch-guest", ({ roomId }) => {
+  const room = getRoom(roomId);
+  if (!room.guestId) return;
+
+  // bảo guest tạo offer tới viewer
+  io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
+});
 
 
 // ===== CHAT REALTIME =====
@@ -148,6 +194,17 @@ socket.on("chat", ({ roomId, name, text }) => {
 
     const room = rooms.get(roomId);
     if (!room) return;
+
+
+if (role === "guest") {
+  const room = rooms.get(roomId);
+  if (room && room.guestId === socket.id) {
+    room.guestId = null;
+    io.to(roomId).emit("guest-offline");
+  }
+}
+
+
 
     if (role === "viewer") {
       room.viewers.delete(socket.id);

@@ -41,6 +41,20 @@
     <span style="opacity:.85"></span>
   </div>
 
+  <hr />
+<div class="card">
+  <div class="badge">👤 Guest xin lên live</div>
+  <div id="guestReq" class="log" style="margin-top:10px">Chưa có yêu cầu.</div>
+  <button id="btnApproveGuest" disabled>✅ Chấp nhận Guest</button>
+  <button id="btnRejectGuest" disabled>❌ Từ chối</button>
+
+  <hr />
+  <div class="badge">🎥 Video Guest</div>
+  <div class="video-wrap" style="margin-top:10px">
+    <video id="guestVideo" autoplay playsinline controls></video>
+  </div>
+</div>
+
   <div class="video-card__inner">
     <video id="preview" autoplay playsinline muted></video>
   </div>
@@ -67,6 +81,17 @@
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+const guestReq = document.getElementById("guestReq");
+const btnApproveGuest = document.getElementById("btnApproveGuest");
+const btnRejectGuest  = document.getElementById("btnRejectGuest");
+const guestVideo = document.getElementById("guestVideo");
+
+let pendingGuestId = null;
+let pcGuestIn = null; // PC để nhận video từ guest
+
+
+
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
     const btnStart = document.getElementById("btnStart");
@@ -142,6 +167,63 @@ async function getRtcConfig() {
 
 
 
+socket.on("guest-request", ({ guestId }) => {
+  pendingGuestId = guestId;
+  guestReq.textContent = "GuestID: " + guestId + " (bấm Chấp nhận để guest lên live)";
+  btnApproveGuest.disabled = false;
+  btnRejectGuest.disabled = false;
+});
+
+btnApproveGuest.onclick = () => {
+  if (!pendingGuestId) return;
+  socket.emit("guest-approve", { roomId, guestId: pendingGuestId });
+  guestReq.textContent = "Đã chấp nhận guest: " + pendingGuestId;
+};
+
+btnRejectGuest.onclick = () => {
+  if (!pendingGuestId) return;
+  socket.emit("guest-reject", { guestId: pendingGuestId });
+  guestReq.textContent = "Đã từ chối guest.";
+  pendingGuestId = null;
+  btnApproveGuest.disabled = true;
+  btnRejectGuest.disabled = true;
+};
+
+socket.on("guest-online", ({ guestId }) => {
+  // host cũng xem guest để nói chuyện
+  socket.emit("watch-guest", { roomId });
+});
+socket.on("guest-offline", () => {
+  if (pcGuestIn) { try{ pcGuestIn.close(); }catch{} pcGuestIn = null; }
+  guestVideo.srcObject = null;
+  guestReq.textContent = "Guest đã rời.";
+});
+
+socket.on("offer", async ({ from, description }) => {
+  // offer này có thể đến từ guest (vì viewer không gửi offer tới host)
+  // reset pcGuestIn
+  if (pcGuestIn) { try{ pcGuestIn.close(); }catch{} }
+  const rtcConfig = await getRtcConfig();
+  pcGuestIn = new RTCPeerConnection(rtcConfig);
+
+  // host gửi lại audio/video của host cho guest để nói chuyện 2 chiều
+  if (localStream) {
+    localStream.getTracks().forEach(t => pcGuestIn.addTrack(t, localStream));
+  }
+
+  pcGuestIn.ontrack = (e) => {
+    guestVideo.srcObject = e.streams[0];
+  };
+
+  pcGuestIn.onicecandidate = (e) => {
+    if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
+  };
+
+  await pcGuestIn.setRemoteDescription(description);
+  const answer = await pcGuestIn.createAnswer();
+  await pcGuestIn.setLocalDescription(answer);
+  socket.emit("answer", { to: from, description: pcGuestIn.localDescription });
+});
 
     function log(msg) {
       logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
@@ -158,7 +240,7 @@ async function getRtcConfig() {
       log(`Viewer join: ${viewerId}`);
 
       const rtcConfig = await getRtcConfig();
-const pc = new RTCPeerConnection(rtcConfig);
+      const pc = new RTCPeerConnection(rtcConfig);
 
 
 
