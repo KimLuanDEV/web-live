@@ -44,6 +44,8 @@
     <span style="opacity:.85"></span>
   </div>
 
+<div class="viewer-count" id="viewerCountHost">👀: 0</div>
+
   <div class="video-card__inner">
     <video id="preview" autoplay playsinline muted></video>
   </div>
@@ -520,6 +522,15 @@ socket.on("guest-offline", () => {
 btnMuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: true });
 btnUnmuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: false });
 btnKickGuest.onclick = () => socket.emit("host-kick-guest", { roomId });
+
+
+const viewerCountHost = document.getElementById("viewerCountHost");
+
+socket.on("viewer-count", ({ count }) => {
+  if (viewerCountHost) {
+    viewerCountHost.textContent = `👀 Đang xem: ${count}`;
+  }
+});
 
   </script>
 </body>

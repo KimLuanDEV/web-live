@@ -41,6 +41,8 @@
     <span id="liveStatusText" style="opacity:.85"></span>
   </div>
 
+<div class="viewer-count" id="viewerCountViewer">👀: 0</div>
+
   <div class="video-card__inner">
     <video id="player" autoplay playsinline controls></video>
   </div>
@@ -304,6 +306,14 @@ socket.on("broadcaster-offline", () => {
       socket.emit("chat", { roomId, name, text });
       chatText.value = "";
     };
+
+    const viewerCountViewer = document.getElementById("viewerCountViewer");
+
+socket.on("viewer-count", ({ count }) => {
+  if (viewerCountViewer) {
+    viewerCountViewer.textContent = `👀 Đang xem: ${count}`;
+  }
+});
 
   </script>
 </body>

@@ -245,3 +245,18 @@ code{
   background:rgba(255,59,107,.85);
 }
 .av-btn:hover{ transform:scale(1.08); }
+
+.viewer-count {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.25);
+  backdrop-filter: blur(6px);
+  z-index: 5;
+}
