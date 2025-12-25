@@ -118,7 +118,7 @@ socket.on("host-kick-guest", ({ roomId }) => {
       // Tell broadcaster current viewers list
       socket.emit("room-viewers", Array.from(room.viewers));
       socket.to(roomId).emit("broadcaster-online");
-
+      emitViewerCount(roomId);
       // If already has guest, tell host
       if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
     }
