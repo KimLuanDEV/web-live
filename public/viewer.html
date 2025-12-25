@@ -40,6 +40,21 @@
     </div>
   </div>
 
+<hr />
+<div class="card">
+  <div class="badge">💬 Chat</div>
+
+  <div style="margin-top:10px">
+    <input id="chatName" placeholder="Tên của bạn" />
+    <input id="chatText" placeholder="Nhập tin nhắn..." />
+    <button id="chatSend">Gửi</button>
+  </div>
+
+  <pre id="chatBox" class="log"
+       style="margin-top:10px; max-height:200px; overflow:auto"></pre>
+</div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -225,6 +240,31 @@ pc = new RTCPeerConnection(rtcConfig);
         log("Join lỗi: " + err.message);
       });
     };
+
+
+    // ===== CHAT (VIEWER) =====
+const chatBox = document.getElementById("chatBox");
+const chatName = document.getElementById("chatName");
+const chatText = document.getElementById("chatText");
+const chatSend = document.getElementById("chatSend");
+
+function addChat(msg) {
+  const time = new Date(msg.ts).toLocaleTimeString();
+  chatBox.textContent += `[${time}] ${msg.name}: ${msg.text}\n`;
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+socket.on("chat", addChat);
+
+chatSend.onclick = () => {
+  const name = (chatName.value || "Viewer").trim();
+  const text = chatText.value.trim();
+  if (!text) return;
+
+  socket.emit("chat", { roomId, name, text });
+  chatText.value = "";
+};
+
   </script>
 </body>
 </html>

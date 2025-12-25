@@ -56,6 +56,7 @@ app.get("/ice", async (req, res) => {
 
 
 
+
 io.on("connection", (socket) => {
 
 
@@ -112,6 +113,21 @@ io.on("connection", (socket) => {
     }
   });
 
+
+// ===== CHAT REALTIME =====
+socket.on("chat", ({ roomId, name, text }) => {
+  if (!roomId || !text) return;
+
+  const msg = {
+    name: (name || "Ẩn danh").slice(0, 20),
+    text: String(text).slice(0, 300),
+    ts: Date.now()
+  };
+
+  io.to(roomId).emit("chat", msg);
+});
+
+
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
     io.to(to).emit("offer", { from: socket.id, description });
@@ -157,3 +173,4 @@ io.on("connection", (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+
