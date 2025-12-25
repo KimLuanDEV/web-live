@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Viewer</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>👀 Viewer (Người xem)</h1>
+      <small>Mở link này để xem live.</small>
+      <hr />
+
+      <div class="row">
+        <div class="card">
+          <div class="kv">
+            <div class="badge">Phòng</div>
+            <code id="roomCode">-</code>
+
+            <div class="badge" id="statusBadge">⏳ Đang chờ broadcaster...</div>
+
+            <button id="btnJoin">Join / Start Watching</button>
+          </div>
+
+          <hr />
+          <div class="log" id="log"></div>
+        </div>
+
+        <div class="card">
+          <div class="badge">Live</div>
+          <div class="video-wrap" style="margin-top:10px">
+            <!-- controls để người xem dễ bật tiếng -->
+            <video id="player" autoplay playsinline controls></video>
+          </div>
+          <small>Nếu bị im tiếng: bấm Play/Unmute trên video.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const logEl = document.getElementById("log");
+    const badge = document.getElementById("statusBadge");
+    const player = document.getElementById("player");
+    const btnJoin = document.getElementById("btnJoin");
+
+    const params = new URLSearchParams(location.search);
+    const roomId = params.get("room") || "abc123";
+    document.getElementById("roomCode").textContent = roomId;
+
+    const socket = io();
+    let pc = null;
+    let joined = false;
+
+    const RTC_CONFIG = {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:global.stun.twilio.com:3478?transport=udp" }
+      ]
+    };
+
+    function log(msg) {
+      logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
+      console.log(msg);
+    }
+
+    function setStatus(text) {
+      badge.textContent = text;
+    }
+
+    socket.on("broadcaster-online", () => setStatus("✅ Broadcaster online"));
+    socket.on("broadcaster-offline", () => setStatus("⛔ Broadcaster offline"));
+    socket.on("broadcaster-changed", () => {
+      setStatus("🔄 Broadcaster changed – refresh if needed");
+      // reset connection
+      cleanup();
+    });
+
+    async function join() {
+      if (joined) return;
+      joined = true;
+
+      socket.emit("join-room", { roomId, role: "viewer" });
+      setStatus("⏳ Đang kết nối...");
+
+      pc = new RTCPeerConnection(RTC_CONFIG);
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          // send to broadcaster (server will route by socket id in offer/answer messages)
+          // but we don't know broadcaster id; so we send "to" later after offer arrives.
+          // We'll store candidates until we know "offer.from"
+        }
+      };
+
+      // Receive stream
+      pc.ontrack = (event) => {
+        player.srcObject = event.streams[0];
+        setStatus("🟢 Đang xem LIVE");
+        log("Đã nhận stream.");
+
+        // autoplay can be blocked; try play, otherwise user clicks play
+        player.play().catch(() => log("Autoplay bị chặn, hãy bấm Play trên video."));
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        log("ICE state: " + pc.iceConnectionState);
+      };
+    }
+
+    // Because we need to send ICE candidates to the broadcaster that sent the offer,
+    // we keep offerFrom
+    let offerFrom = null;
+
+    socket.on("offer", async ({ from, description }) => {
+      offerFrom = from;
+
+      if (!pc) {
+        pc = new RTCPeerConnection(RTC_CONFIG);
+        pc.ontrack = (event) => {
+          player.srcObject = event.streams[0];
+          setStatus("🟢 Đang xem LIVE");
+          log("Đã nhận stream.");
+          player.play().catch(() => log("Autoplay bị chặn, hãy bấm Play."));
+        };
+        pc.onicecandidate = (e) => {
+          if (e.candidate && offerFrom) {
+            socket.emit("candidate", { to: offerFrom, candidate: e.candidate });
+          }
+        };
+      }
+
+      try {
+        await pc.setRemoteDescription(description);
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit("answer", { to: from, description: pc.localDescription });
+        setStatus("🟡 Đang bắt tay kết nối...");
+        log("Đã gửi answer.");
+      } catch (err) {
+        log("Lỗi xử lý offer: " + err.message);
+      }
+    });
+
+    socket.on("candidate", async ({ from, candidate }) => {
+      if (!pc) return;
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (err) {
+        log("Lỗi addIceCandidate: " + err.message);
+      }
+    });
+
+    function cleanup() {
+      if (pc) {
+        pc.close();
+        pc = null;
+      }
+      offerFrom = null;
+      player.srcObject = null;
+      joined = false;
+      log("Reset viewer connection.");
+    }
+
+    btnJoin.onclick = () => {
+      join().catch(err => {
+        log("Join lỗi: " + err.message);
+      });
+    };
+  </script>
+</body>
+</html>

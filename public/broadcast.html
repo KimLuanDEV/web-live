@@ -1,0 +1,202 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Broadcast</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <div class="container">
+    <div class="card">
+      <h1>📱 Broadcast (Người phát)</h1>
+      <small>Mở trên điện thoại và bấm Start để phát live.</small>
+      <hr />
+
+      <div class="row">
+        <div class="card">
+          <div class="kv">
+            <div class="badge">Phòng</div>
+            <code id="roomCode">-</code>
+
+            <div class="badge">Link xem</div>
+            <code id="viewerLink">-</code>
+            <button id="copyViewer">Copy link xem</button>
+
+            <hr />
+            <button id="btnStart">Start Camera + Mic</button>
+            <button id="btnStop" disabled>Stop</button>
+          </div>
+          <hr />
+          <div class="log" id="log"></div>
+        </div>
+
+        <div class="card">
+          <div class="badge">Preview</div>
+          <div class="video-wrap" style="margin-top:10px">
+            <!-- muted để preview tự chạy trên mobile -->
+            <video id="preview" autoplay playsinline muted></video>
+          </div>
+          <small>Preview luôn muted để tránh bị chặn autoplay.</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const logEl = document.getElementById("log");
+    const preview = document.getElementById("preview");
+    const btnStart = document.getElementById("btnStart");
+    const btnStop = document.getElementById("btnStop");
+
+    const params = new URLSearchParams(location.search);
+    const roomId = params.get("room") || "abc123";
+
+    document.getElementById("roomCode").textContent = roomId;
+
+    const viewerUrl = `${location.origin}/viewer.html?room=${encodeURIComponent(roomId)}`;
+    document.getElementById("viewerLink").textContent = viewerUrl;
+    document.getElementById("copyViewer").onclick = async () => {
+      try { await navigator.clipboard.writeText(viewerUrl); alert("Đã copy link xem!"); }
+      catch { prompt("Copy thủ công:", viewerUrl); }
+    };
+
+    const socket = io();
+    let localStream = null;
+
+    // One RTCPeerConnection per viewer
+    const pcs = new Map();
+
+    // STUN server (demo). TURN sẽ cần nếu mạng khó (4G/Carrier NAT)
+    const RTC_CONFIG = {
+      iceServers: [
+        { urls: "stun:stun.l.google.com:19302" },
+        { urls: "stun:global.stun.twilio.com:3478?transport=udp" }
+      ]
+    };
+
+    function log(msg) {
+      logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
+      console.log(msg);
+    }
+
+    socket.emit("join-room", { roomId, role: "broadcaster" });
+
+    socket.on("watcher", async ({ viewerId }) => {
+      if (!localStream) {
+        log("Có viewer nhưng bạn chưa Start camera.");
+        return;
+      }
+      log(`Viewer join: ${viewerId}`);
+
+      const pc = new RTCPeerConnection(RTC_CONFIG);
+      pcs.set(viewerId, pc);
+
+      // Add tracks
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          socket.emit("candidate", { to: viewerId, candidate: e.candidate });
+        }
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
+      };
+
+      try {
+        const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
+        await pc.setLocalDescription(offer);
+        socket.emit("offer", { to: viewerId, description: pc.localDescription });
+      } catch (err) {
+        log("Lỗi tạo offer: " + err.message);
+      }
+    });
+
+    socket.on("answer", async ({ from, description }) => {
+      const pc = pcs.get(from);
+      if (!pc) return;
+      try {
+        await pc.setRemoteDescription(description);
+        log(`Nhận answer từ viewer: ${from}`);
+      } catch (err) {
+        log("Lỗi setRemoteDescription(answer): " + err.message);
+      }
+    });
+
+    socket.on("candidate", async ({ from, candidate }) => {
+      const pc = pcs.get(from);
+      if (!pc) return;
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (err) {
+        log("Lỗi addIceCandidate: " + err.message);
+      }
+    });
+
+    socket.on("disconnectPeer", ({ peerId }) => {
+      const pc = pcs.get(peerId);
+      if (pc) {
+        pc.close();
+        pcs.delete(peerId);
+        log(`Viewer rời: ${peerId} -> close peer`);
+      }
+    });
+
+    socket.on("broadcaster-changed", () => {
+      log("Có broadcaster mới trong phòng (đang là bạn).");
+    });
+
+    async function start() {
+      if (localStream) return;
+
+      // Mobile best practice: request via user gesture (button click)
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" },
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        });
+
+        preview.srcObject = localStream;
+        btnStart.disabled = true;
+        btnStop.disabled = false;
+
+        log("Đã Start camera + mic. Gửi link xem cho người khác.");
+
+        // Nếu viewers đã vào trước, server sẽ gửi danh sách
+        // Mình sẽ yêu cầu họ reload bằng broadcaster-online đã đủ.
+      } catch (err) {
+        log("Không mở được camera/mic: " + err.message);
+        alert("Không mở được camera/mic. Nếu trên điện thoại: cần HTTPS.");
+      }
+    }
+
+    function stop() {
+      if (!localStream) return;
+
+      // close all peers
+      for (const [id, pc] of pcs.entries()) {
+        pc.close();
+        pcs.delete(id);
+      }
+
+      localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+      preview.srcObject = null;
+
+      btnStart.disabled = false;
+      btnStop.disabled = true;
+
+      log("Đã Stop.");
+    }
+
+    btnStart.onclick = start;
+    btnStop.onclick = stop;
+
+    // cleanup on close
+    window.addEventListener("beforeunload", stop);
+  </script>
+</body>
+</html>
