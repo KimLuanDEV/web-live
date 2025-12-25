@@ -119,23 +119,13 @@
     });
 
     async function join() {
-      if (joined) return;
+  if (joined) return;
   joined = true;
 
   socket.emit("join-room", { roomId, role: "viewer" });
   setStatus("⏳ Đang chờ broadcaster gửi LIVE...");
-  log("Đã join room, đợi offer từ broadcaster...");
-
-    const rtcConfig = await getRtcConfig();
-pc = new RTCPeerConnection(rtcConfig);
-
-
-      pc.onicecandidate = (e) => {
-        if (e.candidate) {
-          // send to broadcaster (server will route by socket id in offer/answer messages)
-          // but we don't know broadcaster id; so we send "to" later after offer arrives.
-          // We'll store candidates until we know "offer.from"
-        }
+  log("Đã join room, chờ offer từ broadcaster...");
+}
       };
 
       // Receive stream
