@@ -44,7 +44,7 @@
     <span style="opacity:.85"></span>
   </div>
 
-<div class="viewer-count" id="viewerCountHost">👀: 0</div>
+<div class="viewer-count" id="viewerCountHost">👁: 0</div>
 
   <div class="video-card__inner">
     <video id="preview" autoplay playsinline muted></video>
@@ -528,7 +528,7 @@ const viewerCountHost = document.getElementById("viewerCountHost");
 
 socket.on("viewer-count", ({ count }) => {
   if (viewerCountHost) {
-    viewerCountHost.textContent = `👀 Đang xem: ${count}`;
+    viewerCountHost.textContent = `👁: ${count}`;
   }
 });
 
