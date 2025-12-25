@@ -9,19 +9,19 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>👀 Viewer (Người xem)</h1>
-      <small>Mở link này để xem live.</small>
+      <h1>👀 Viewer</h1>
+      
       <hr />
 
       <div class="row">
         <div class="card">
           <div class="kv">
-            <div class="badge">Phòng</div>
+            <div class="badge">Phòng Livestream</div>
             <code id="roomCode">-</code>
 
             <div class="badge" id="statusBadge">⏳ Đang chờ broadcaster...</div>
 
-            <button id="btnJoin">Join / Start Watching</button>
+            <button id="btnJoin">Tham gia xem Livestream</button>
           </div>
 
           <hr />
@@ -41,7 +41,7 @@
   </div>
 </div>
 <hr />
-<div class="badge badge--info">👤 Guest cùng live</div>
+<div class="badge badge--info">👤 Khách mời</div>
 <div class="video-card" style="margin-top:10px">
   <div class="video-card__inner">
     <video id="guestPlayer" autoplay playsinline controls></video>
@@ -55,7 +55,7 @@
 
 <hr />
 <div class="card chat">
-  <div class="badge badge--info">💬 Chat</div>
+  <div class="badge badge--info">💬 Chat (Live)</div>
 
   <div class="chatform">
     <input id="chatName" placeholder="Tên của bạn" />

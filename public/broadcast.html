@@ -9,23 +9,23 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>📱 Broadcast (Người phát)</h1>
-      <small>Mở trên điện thoại và bấm Start để phát live.</small>
+      <h1>📱 Host</h1>
       <hr />
 
       <div class="row">
         <div class="card">
           <div class="kv">
-            <div class="badge">Phòng</div>
+            <div class="badge">Phòng Livestream</div>
             <code id="roomCode">-</code>
 
             <div class="badge">Link xem</div>
             <code id="viewerLink">-</code>
-            <button id="copyViewer">Copy link xem</button>
+            <button id="copyViewer">Copy link</button>
+            <small>Gửi link xem cho khách.</small>
 
             <hr />
-            <button id="btnStart">Start Camera + Mic</button>
-            <button id="btnStop" disabled>Stop</button>
+            <button id="btnStart">Bắt đầu phát sóng</button>
+            <button id="btnStop" disabled>Dừng phát sóng</button>
             <button id="btnFlip" disabled>🔄 Đảo Camera</button>
 
           </div>
@@ -52,23 +52,23 @@
 
 <hr />
 <div class="card">
-  <div class="badge badge--info">👤 Guest xin lên live</div>
+  <div class="badge badge--info">👤 Khách xin lên live</div>
 
   <div style="margin-top:10px">
-    <div class="badge">Link guest (mở để xin lên live)</div>
+    <div class="badge">Link khách mời</div>
     <code id="guestLink">-</code>
-    <button id="copyGuest">Copy link guest</button>
+    <button id="copyGuest">Copy link</button>
   </div>
 
   <hr />
   <div id="guestReq" class="log">Chưa có yêu cầu.</div>
   <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
-    <button id="btnApproveGuest" disabled style="flex:1">✅ Chấp nhận Guest</button>
+    <button id="btnApproveGuest" disabled style="flex:1">✅ Chấp nhận</button>
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
   <hr />
-  <div class="badge">🎥 Video Guest (sẽ hiện ở đây)</div>
+  <div class="badge">🎥 Video khách mời</div>
   <div class="video-card" style="margin-top:10px">
     <div class="video-card__inner">
       <video id="guestVideo" autoplay playsinline controls></video>

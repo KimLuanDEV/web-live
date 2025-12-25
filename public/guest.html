@@ -10,17 +10,16 @@
   <div class="container">
     <div class="card">
       <h1>🎤 Khách mời</h1>
-      <small>Mở link này để bật camera/mic và xin Host cho lên live.</small>
       <hr />
 
       <div class="row">
         <div class="card">
           <div class="kv">
-            <div class="badge">Phòng</div>
+            <div class="badge">Phòng Livestream</div>
             <code id="roomCode">-</code>
 
             <div class="badge" id="statusBadge">⏳ Chưa bật cam/mic</div>
-            <button id="btnStart">Bật camera + mic & Xin lên live</button>
+            <button id="btnStart">Xin lên live</button>
           </div>
 
           <hr />
@@ -32,7 +31,7 @@
             <div class="live-overlay">
               <span class="dot"></span>
               <b>Khách mời</b>
-              <span style="opacity:.85">cam/mic</span>
+              <span style="opacity:.85"></span>
             </div>
 
             <div class="video-card__inner">
@@ -54,10 +53,10 @@
 
 <hr />
 <div class="card chat">
-  <div class="badge badge--info">💬 Chat</div>
+  <div class="badge badge--info">💬 Chat (Live)</div>
 
   <div class="chatform">
-    <input id="chatName" value="Guest" />
+    <input id="chatName" value="Khách" />
     <input id="chatText" placeholder="Nhập tin nhắn..." />
     <button id="chatSend" class="full">Gửi</button>
   </div>
