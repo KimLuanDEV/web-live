@@ -13,6 +13,10 @@ app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
 /**
  * Room state:
  * - broadcasterId: socket.id của người phát
@@ -26,6 +30,31 @@ function getRoom(roomId) {
   }
   return rooms.get(roomId);
 }
+
+
+const twilio = require("twilio");
+
+app.get("/ice", async (req, res) => {
+  try {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+    if (!accountSid || !authToken) {
+      return res.status(500).json({ error: "Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN" });
+    }
+
+    const client = twilio(accountSid, authToken);
+
+    // Twilio Tokens API returns iceServers array (STUN + TURN with credentials)
+    const token = await client.tokens.create();
+
+    return res.json({ iceServers: token.iceServers });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
+
+
 
 io.on("connection", (socket) => {
   // user joins a room with a role

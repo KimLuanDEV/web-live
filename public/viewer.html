@@ -55,12 +55,51 @@
     let pc = null;
     let joined = false;
 
-    const RTC_CONFIG = {
-      iceServers: [
-        { urls: "stun:stun.l.google.com:19302" },
-        { urls: "stun:global.stun.twilio.com:3478?transport=udp" }
-      ]
-    };
+  async function getRtcConfig() {
+  const fallback = {
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+  };
+
+  try {
+    const r = await fetch("/ice", { cache: "no-store" });
+    if (!r.ok) return fallback;
+
+    const data = await r.json();
+    if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
+
+    // 🔥 FIX CHÍNH Ở ĐÂY
+    const cleanedIceServers = data.iceServers
+      .map(server => {
+        let urls = server.urls;
+        if (!urls) return null;
+
+        if (!Array.isArray(urls)) urls = [urls];
+
+        // ❌ LOẠI BỎ STUN TWILIO CÓ ?transport=
+        const safeUrls = urls.filter(u =>
+          typeof u === "string" &&
+          !(u.startsWith("stun:") && u.includes("?transport="))
+        );
+
+        if (safeUrls.length === 0) return null;
+
+        return {
+          ...server,
+          urls: safeUrls
+        };
+      })
+      .filter(Boolean);
+
+    if (cleanedIceServers.length === 0) return fallback;
+
+    return { iceServers: cleanedIceServers };
+
+  } catch (e) {
+    console.error("ICE fetch error:", e);
+    return fallback;
+  }
+}
+
 
     function log(msg) {
       logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
@@ -86,7 +125,9 @@
       socket.emit("join-room", { roomId, role: "viewer" });
       setStatus("⏳ Đang kết nối...");
 
-      pc = new RTCPeerConnection(RTC_CONFIG);
+    const rtcConfig = await getRtcConfig();
+pc = new RTCPeerConnection(rtcConfig);
+
 
       pc.onicecandidate = (e) => {
         if (e.candidate) {
@@ -119,7 +160,9 @@
       offerFrom = from;
 
       if (!pc) {
-        pc = new RTCPeerConnection(RTC_CONFIG);
+        const rtcConfig = await getRtcConfig();
+pc = new RTCPeerConnection(rtcConfig);
+
         pc.ontrack = (event) => {
           player.srcObject = event.streams[0];
           setStatus("🟢 Đang xem LIVE");
