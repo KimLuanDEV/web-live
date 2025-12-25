@@ -39,17 +39,15 @@
   <div class="video-card__inner">
     <video id="player" autoplay playsinline controls></video>
   </div>
-
+</div>
 <hr />
-<div class="badge">👤 Guest</div>
-<div class="video-wrap" style="margin-top:10px">
-  <video id="guestPlayer" autoplay playsinline controls></video>
+<div class="badge badge--info">👤 Guest cùng live</div>
+<div class="video-card" style="margin-top:10px">
+  <div class="video-card__inner">
+    <video id="guestPlayer" autoplay playsinline controls></video>
+  </div>
 </div>
 
-
-</div>
-
-         
         </div>
       </div>
     </div>
@@ -75,6 +73,7 @@
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
+    const guestPlayer = document.getElementById("guestPlayer");
     const btnJoin = document.getElementById("btnJoin");
 
     const params = new URLSearchParams(location.search);
@@ -82,235 +81,201 @@
     document.getElementById("roomCode").textContent = roomId;
 
     const socket = io();
-
-    const pcs = new Map(); // fromId -> RTCPeerConnection
-let guestId = null;
-let hostId = null;
-const guestPlayer = document.getElementById("guestPlayer");
-
-
     let joined = false;
 
-  async function getRtcConfig() {
-  const fallback = {
-    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-  };
+    // multiple peer connections: broadcaster + guest
+    const pcs = new Map(); // peerId -> RTCPeerConnection
+    let guestId = null;
 
-  try {
-    const r = await fetch("/ice", { cache: "no-store" });
-    if (!r.ok) return fallback;
+    async function getRtcConfig() {
+      const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 
-    const data = await r.json();
-    if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
+      try {
+        const r = await fetch("/ice", { cache: "no-store" });
+        if (!r.ok) return fallback;
 
-    // 🔥 FIX CHÍNH Ở ĐÂY
-    const cleanedIceServers = data.iceServers
-      .map(server => {
-        let urls = server.urls;
-        if (!urls) return null;
+        const data = await r.json();
+        if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
 
-        if (!Array.isArray(urls)) urls = [urls];
+        // Remove invalid STUN urls that contain ?transport=
+        const cleanedIceServers = data.iceServers
+          .map(server => {
+            let urls = server.urls;
+            if (!urls) return null;
+            if (!Array.isArray(urls)) urls = [urls];
 
-        // ❌ LOẠI BỎ STUN TWILIO CÓ ?transport=
-        const safeUrls = urls.filter(u =>
-          typeof u === "string" &&
-          !(u.startsWith("stun:") && u.includes("?transport="))
-        );
+            const safeUrls = urls.filter(u =>
+              typeof u === "string" &&
+              !(u.startsWith("stun:") && u.includes("?transport="))
+            );
+            if (safeUrls.length === 0) return null;
+            return { ...server, urls: safeUrls };
+          })
+          .filter(Boolean);
 
-        if (safeUrls.length === 0) return null;
-
-        return {
-          ...server,
-          urls: safeUrls
-        };
-      })
-      .filter(Boolean);
-
-    if (cleanedIceServers.length === 0) return fallback;
-
-    return { iceServers: cleanedIceServers };
-
-  } catch (e) {
-    console.error("ICE fetch error:", e);
-    return fallback;
-  }
-}
-
+        if (cleanedIceServers.length === 0) return fallback;
+        return { iceServers: cleanedIceServers };
+      } catch (e) {
+        console.error("ICE fetch error:", e);
+        return fallback;
+      }
+    }
 
     function log(msg) {
       logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
       console.log(msg);
     }
 
-   const liveStatusText = document.getElementById("liveStatusText");
-function setStatus(text) {
-  badge.textContent = text;
-  if (liveStatusText) liveStatusText.textContent = text.replace(/^[^ ]+\s*/, "");
-}
-
-
-
-
+    const liveStatusText = document.getElementById("liveStatusText");
+    function setStatus(text) {
+      badge.textContent = text;
+      if (liveStatusText) liveStatusText.textContent = text.replace(/^[^ ]+\s*/, "");
+    }
 
     socket.on("broadcaster-online", () => setStatus("✅ Broadcaster online"));
     socket.on("broadcaster-offline", () => setStatus("⛔ Broadcaster offline"));
     socket.on("broadcaster-changed", () => {
-      setStatus("🔄 Broadcaster changed – refresh if needed");
-      // reset connection
-      cleanup();
+      setStatus("🔄 Broadcaster changed – hãy bấm Join lại");
+      cleanupAll();
+    });
+
+    // guest events
+    socket.on("guest-online", ({ guestId: gid }) => {
+      guestId = gid;
+      log("Guest online: " + gid);
+      setStatus("🟢 Có Guest cùng live");
+      // request guest to stream to this viewer
+      socket.emit("watch-guest", { roomId });
+    });
+
+    socket.on("guest-offline", () => {
+      log("Guest offline");
+      guestId = null;
+      guestPlayer.srcObject = null;
+      // close guest pc if exists
+      cleanupPeer("guest");
     });
 
     async function join() {
       if (joined) return;
-  joined = true;
+      joined = true;
+      socket.emit("join-room", { roomId, role: "viewer" });
+      setStatus("⏳ Đang chờ broadcaster gửi LIVE...");
+      log("Đã join room, đợi offer từ broadcaster/guest...");
+    }
 
-  socket.emit("join-room", { roomId, role: "viewer" });
-  setStatus("⏳ Đang chờ broadcaster gửi LIVE...");
-  log("Đã join room, đợi offer từ broadcaster...");
+    function cleanupPeer(peerKey) {
+      // peerKey can be actual peerId or "guest"
+      if (peerKey === "guest") {
+        // find by guestId if present
+        if (guestId && pcs.has(guestId)) {
+          try { pcs.get(guestId).close(); } catch {}
+          pcs.delete(guestId);
+        }
+        return;
+      }
+      const pc = pcs.get(peerKey);
+      if (pc) {
+        try { pc.close(); } catch {}
+        pcs.delete(peerKey);
+      }
+    }
 
-  /*
-    const rtcConfig = await getRtcConfig();
-pc = new RTCPeerConnection(rtcConfig);
-*/
+    function cleanupAll() {
+      for (const pc of pcs.values()) {
+        try { pc.close(); } catch {}
+      }
+      pcs.clear();
+      player.srcObject = null;
+      guestPlayer.srcObject = null;
+      joined = false;
+    }
+
+    // Receive offer from broadcaster OR guest
+    socket.on("offer", async ({ from, description }) => {
+      // reset pc for this peer only
+      cleanupPeer(from);
+
+      const rtcConfig = await getRtcConfig();
+      const pc = new RTCPeerConnection(rtcConfig);
+      pcs.set(from, pc);
+
+      pc.ontrack = (event) => {
+        const stream = event.streams[0];
+
+        if (guestId && from === guestId) {
+          guestPlayer.srcObject = stream;
+          log("Đã nhận stream GUEST.");
+          guestPlayer.play().catch(() => log("Autoplay bị chặn, bấm Play ở video Guest."));
+        } else {
+          player.srcObject = stream;
+          log("Đã nhận stream HOST.");
+          player.play().catch(() => log("Autoplay bị chặn, bấm Play ở video Host."));
+        }
+
+        setStatus("🟢 Đang xem LIVE");
+      };
 
       pc.onicecandidate = (e) => {
         if (e.candidate) {
-          // send to broadcaster (server will route by socket id in offer/answer messages)
-          // but we don't know broadcaster id; so we send "to" later after offer arrives.
-          // We'll store candidates until we know "offer.from"
+          socket.emit("candidate", { to: from, candidate: e.candidate });
         }
       };
 
-      // Receive stream
-      pc.ontrack = (event) => {
-        player.srcObject = event.streams[0];
-        setStatus("🟢 Đang xem LIVE");
-        log("Đã nhận stream.");
-
-        // autoplay can be blocked; try play, otherwise user clicks play
-        player.play().catch(() => log("Autoplay bị chặn, hãy bấm Play trên video."));
-      };
-
       pc.oniceconnectionstatechange = () => {
-        log("ICE state: " + pc.iceConnectionState);
+        log(`ICE(${from}): ${pc.iceConnectionState}`);
       };
-    }
 
-socket.on("guest-online", ({ guestId: gid }) => {
-  guestId = gid;
-  socket.emit("watch-guest", { roomId });
-});
-
-socket.on("guest-offline", () => {
-  guestId = null;
-  guestPlayer.srcObject = null;
-});
-
-
-    // Because we need to send ICE candidates to the broadcaster that sent the offer,
-    // we keep offerFrom
-    let offerFrom = null;
-
-  socket.on("offer", async ({ from, description }) => {
-  // nếu chưa biết hostId, lấy offer đầu tiên không phải guest làm host
-  if (!hostId && from !== guestId) hostId = from;
-
-  // close pc cũ của peer này nếu có
-  const old = pcs.get(from);
-  if (old) { try{ old.close(); }catch{} pcs.delete(from); }
-
-  const rtcConfig = await getRtcConfig();
-  const pc = new RTCPeerConnection(rtcConfig);
-  pcs.set(from, pc);
-
-  pc.ontrack = (event) => {
-    const stream = event.streams[0];
-    if (from === guestId) {
-      guestPlayer.srcObject = stream;
-      log("Đã nhận stream GUEST.");
-    } else {
-      player.srcObject = stream;
-      log("Đã nhận stream HOST.");
-    }
-    setStatus("🟢 Đang xem LIVE");
-    (from === guestId ? guestPlayer : player).play().catch(() => {});
-  };
-
-  pc.onicecandidate = (e) => {
-    if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
-  };
-
-  try {
-    await pc.setRemoteDescription(description);
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    socket.emit("answer", { to: from, description: pc.localDescription });
-    setStatus("🟡 Đang bắt tay kết nối...");
-    log("Đã gửi answer cho: " + from);
-  } catch (err) {
-    log("Lỗi xử lý offer: " + err.message);
-  }
-});
-
-
+      try {
+        await pc.setRemoteDescription(description);
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit("answer", { to: from, description: pc.localDescription });
+        setStatus("🟡 Đang bắt tay kết nối...");
+        log("Đã gửi answer cho: " + from);
+      } catch (err) {
+        log("Lỗi xử lý offer: " + err.message);
+      }
+    });
 
     socket.on("candidate", async ({ from, candidate }) => {
-  const pc = pcs.get(from);
-  if (!pc) return;
-  try { await pc.addIceCandidate(candidate); }
-  catch (err) { log("Lỗi addIceCandidate: " + err.message); }
-});
-
-
-    function cleanup() {
-      if (pc) {
-        pc.close();
-        pc = null;
+      const pc = pcs.get(from);
+      if (!pc) return;
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (err) {
+        log("Lỗi addIceCandidate: " + err.message);
       }
-      offerFrom = null;
-      player.srcObject = null;
-      joined = false;
-      log("Reset viewer connection.");
-    }
+    });
 
     btnJoin.onclick = () => {
-      join().catch(err => {
-        log("Join lỗi: " + err.message);
-      });
+      join().catch(err => log("Join lỗi: " + err.message));
     };
 
-
     // ===== CHAT (VIEWER) =====
-const chatBox = document.getElementById("chatBox");
-const chatName = document.getElementById("chatName");
-const chatText = document.getElementById("chatText");
-const chatSend = document.getElementById("chatSend");
+    const chatBox = document.getElementById("chatBox");
+    const chatName = document.getElementById("chatName");
+    const chatText = document.getElementById("chatText");
+    const chatSend = document.getElementById("chatSend");
 
-function addChat(msg) {
-  const time = new Date(msg.ts).toLocaleTimeString();
-  chatBox.textContent += `[${time}] ${msg.name}: ${msg.text}\n`;
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+    function addChat(msg) {
+      const time = new Date(msg.ts).toLocaleTimeString();
+      const line = document.createElement("div");
+      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
+      chatBox.appendChild(line);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-socket.on("chat", addChat);
+    socket.on("chat", addChat);
 
-chatSend.onclick = () => {
-  const name = (chatName.value || "Viewer").trim();
-  const text = chatText.value.trim();
-  if (!text) return;
+    chatSend.onclick = () => {
+      const name = (chatName.value || "Viewer").trim();
+      const text = chatText.value.trim();
+      if (!text) return;
 
-  socket.emit("chat", { roomId, name, text });
-  chatText.value = "";
-};
-
-
-function addChat(msg) {
-  const time = new Date(msg.ts).toLocaleTimeString();
-  const line = document.createElement("div");
-  line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
-  chatBox.appendChild(line);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
+      socket.emit("chat", { roomId, name, text });
+      chatText.value = "";
+    };
 
   </script>
 </body>

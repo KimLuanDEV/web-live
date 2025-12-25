@@ -2,12 +2,11 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
+const twilio = require("twilio");
 
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-
-
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -15,28 +14,23 @@ app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "index.html"));
 });
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
-});
-
 /**
  * Room state:
- * - broadcasterId: socket.id của người phát
+ * - broadcasterId: socket.id người phát
  * - viewers: Set socket.id người xem
+ * - guestId: socket.id guest đang "lên live" (co-host)
  */
 const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId:null });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null });
   }
   return rooms.get(roomId);
 }
 
-
-const twilio = require("twilio");
-
-app.get("/ice", async (req, res) => {
+// ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
+app.get("/ice", async (_req, res) => {
   try {
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
@@ -46,8 +40,6 @@ app.get("/ice", async (req, res) => {
     }
 
     const client = twilio(accountSid, authToken);
-
-    // Twilio Tokens API returns iceServers array (STUN + TURN with credentials)
     const token = await client.tokens.create();
 
     return res.json({ iceServers: token.iceServers });
@@ -56,28 +48,21 @@ app.get("/ice", async (req, res) => {
   }
 });
 
-
-
-
 io.on("connection", (socket) => {
+  // Host calls this after starting camera so server re-pings existing viewers
+  socket.on("broadcaster-ready", ({ roomId }) => {
+    if (!roomId) return;
 
+    const room = rooms.get(roomId);
+    if (!room || room.broadcasterId !== socket.id) return;
 
-    socket.on("broadcaster-ready", ({ roomId }) => {
-  if (!roomId) return;
+    for (const vid of room.viewers) {
+      io.to(room.broadcasterId).emit("watcher", { viewerId: vid, roomId });
+    }
+    io.to(roomId).emit("broadcaster-online");
+  });
 
-  const room = rooms.get(roomId);
-  if (!room || room.broadcasterId !== socket.id) return;
-
-  // gọi lại tất cả viewers đang có trong phòng
-  for (const vid of room.viewers) {
-    io.to(room.broadcasterId).emit("watcher", { viewerId: vid, roomId });
-  }
-
-  io.to(roomId).emit("broadcaster-online");
-});
-
-
-  // user joins a room with a role
+  // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role }) => {
     if (!roomId || !role) return;
 
@@ -87,92 +72,82 @@ io.on("connection", (socket) => {
 
     const room = getRoom(roomId);
 
-
-if (role === "viewer") {
-  room.viewers.add(socket.id);
-
-  if (room.broadcasterId) {
-    io.to(room.broadcasterId).emit("watcher", { viewerId: socket.id, roomId });
-    socket.emit("broadcaster-online");
-  } else socket.emit("broadcaster-offline");
-
-  // NEW: nếu đã có guest, báo viewer để viewer tự kết nối tới guest
-  if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
-}
-
-if (role === "guest") {
-  // guest chỉ “xin lên live”, chưa bật online cho cả phòng
-  if (room.broadcasterId) {
-    io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });
-  }
-  socket.emit("guest-pending");
-}
-
-
     if (role === "broadcaster") {
-      // replace old broadcaster if exists
       const old = room.broadcasterId;
       room.broadcasterId = socket.id;
 
-      // tell viewers to reload/reattach if a broadcaster changed
       if (old && old !== socket.id) {
         io.to(roomId).emit("broadcaster-changed");
       }
 
-      // tell broadcaster current viewers list
+      // Tell broadcaster current viewers list
       socket.emit("room-viewers", Array.from(room.viewers));
       socket.to(roomId).emit("broadcaster-online");
+
+      // If already has guest, tell host
+      if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
     }
 
     if (role === "viewer") {
       room.viewers.add(socket.id);
 
-      // notify broadcaster to create peer connection for this viewer
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("watcher", { viewerId: socket.id, roomId });
         socket.emit("broadcaster-online");
       } else {
         socket.emit("broadcaster-offline");
       }
+
+      // If guest already online, inform this viewer so they can request to watch guest
+      if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
+    }
+
+    if (role === "guest") {
+      // Guest requests to go live; host must approve
+      if (room.broadcasterId) {
+        io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });
+      }
+      socket.emit("guest-pending");
     }
   });
 
-socket.on("guest-approve", ({ roomId, guestId }) => {
-  const room = getRoom(roomId);
-  if (room.broadcasterId !== socket.id) return;
+  // ===== CHAT REALTIME =====
+  socket.on("chat", ({ roomId, name, text }) => {
+    if (!roomId || !text) return;
 
-  room.guestId = guestId;
+    const msg = {
+      name: (name || "Ẩn danh").slice(0, 20),
+      text: String(text).slice(0, 300),
+      ts: Date.now(),
+    };
 
-  io.to(guestId).emit("guest-approved", { roomId });
-  io.to(roomId).emit("guest-online", { guestId }); // báo toàn phòng
-});
+    io.to(roomId).emit("chat", msg);
+  });
 
-socket.on("guest-reject", ({ guestId }) => {
-  io.to(guestId).emit("guest-rejected");
-});
+  // ===== GUEST CO-HOST FLOW =====
+  // Host approves guest: guest becomes room.guestId; all clients get guest-online
+  socket.on("guest-approve", ({ roomId, guestId }) => {
+    if (!roomId || !guestId) return;
+    const room = getRoom(roomId);
+    if (room.broadcasterId !== socket.id) return;
 
-socket.on("watch-guest", ({ roomId }) => {
-  const room = getRoom(roomId);
-  if (!room.guestId) return;
+    room.guestId = guestId;
+    io.to(guestId).emit("guest-approved", { roomId });
+    io.to(roomId).emit("guest-online", { guestId });
+  });
 
-  // bảo guest tạo offer tới viewer
-  io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
-});
+  socket.on("guest-reject", ({ guestId }) => {
+    if (!guestId) return;
+    io.to(guestId).emit("guest-rejected");
+  });
 
-
-// ===== CHAT REALTIME =====
-socket.on("chat", ({ roomId, name, text }) => {
-  if (!roomId || !text) return;
-
-  const msg = {
-    name: (name || "Ẩn danh").slice(0, 20),
-    text: String(text).slice(0, 300),
-    ts: Date.now()
-  };
-
-  io.to(roomId).emit("chat", msg);
-});
-
+  // Any viewer (or host) asks to watch guest -> server tells guest to create offer to that viewer
+  socket.on("watch-guest", ({ roomId }) => {
+    if (!roomId) return;
+    const room = getRoom(roomId);
+    if (!room.guestId) return;
+    io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
+  });
 
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
@@ -195,20 +170,8 @@ socket.on("chat", ({ roomId, name, text }) => {
     const room = rooms.get(roomId);
     if (!room) return;
 
-
-if (role === "guest") {
-  const room = rooms.get(roomId);
-  if (room && room.guestId === socket.id) {
-    room.guestId = null;
-    io.to(roomId).emit("guest-offline");
-  }
-}
-
-
-
     if (role === "viewer") {
       room.viewers.delete(socket.id);
-      // tell broadcaster to close peer for this viewer
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
       }
@@ -221,8 +184,14 @@ if (role === "guest") {
       }
     }
 
-    // cleanup empty rooms
-    if (!room.broadcasterId && room.viewers.size === 0) {
+    if (role === "guest") {
+      if (room.guestId === socket.id) {
+        room.guestId = null;
+        io.to(roomId).emit("guest-offline");
+      }
+    }
+
+    if (!room.broadcasterId && room.viewers.size === 0 && !room.guestId) {
       rooms.delete(roomId);
     }
   });
@@ -230,4 +199,3 @@ if (role === "guest") {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
-
