@@ -29,11 +29,20 @@
         </div>
 
         <div class="card">
-          <div class="badge">Live</div>
-          <div class="video-wrap" style="margin-top:10px">
-            <!-- controls để người xem dễ bật tiếng -->
-            <video id="player" autoplay playsinline controls></video>
-          </div>
+          
+
+         <div class="video-card" style="margin-top:10px">
+  <div class="live-overlay">
+    <span class="dot"></span>
+    <b>LIVE</b>
+    <span id="liveStatusText" style="opacity:.85">đang kết nối...</span>
+  </div>
+
+  <div class="video-card__inner">
+    <video id="player" autoplay playsinline controls></video>
+  </div>
+</div>
+
           <small>Nếu bị im tiếng: bấm Play/Unmute trên video.</small>
         </div>
       </div>
@@ -41,18 +50,18 @@
   </div>
 
 <hr />
-<div class="card">
-  <div class="badge">💬 Chat</div>
+<div class="card chat">
+  <div class="badge badge--info">💬 Chat</div>
 
-  <div style="margin-top:10px">
+  <div class="chatform">
     <input id="chatName" placeholder="Tên của bạn" />
     <input id="chatText" placeholder="Nhập tin nhắn..." />
-    <button id="chatSend">Gửi</button>
+    <button id="chatSend" class="full">Gửi</button>
   </div>
 
-  <pre id="chatBox" class="log"
-       style="margin-top:10px; max-height:200px; overflow:auto"></pre>
+  <div id="chatBox" class="chatbox"></div>
 </div>
+
 
 
   <script src="/socket.io/socket.io.js"></script>
@@ -121,9 +130,12 @@
       console.log(msg);
     }
 
-    function setStatus(text) {
-      badge.textContent = text;
-    }
+   const liveStatusText = document.getElementById("liveStatusText");
+function setStatus(text) {
+  badge.textContent = text;
+  if (liveStatusText) liveStatusText.textContent = text.replace(/^[^ ]+\s*/, "");
+}
+
 
     socket.on("broadcaster-online", () => setStatus("✅ Broadcaster online"));
     socket.on("broadcaster-offline", () => setStatus("⛔ Broadcaster offline"));
@@ -264,6 +276,15 @@ chatSend.onclick = () => {
   socket.emit("chat", { roomId, name, text });
   chatText.value = "";
 };
+
+
+function addChat(msg) {
+  const time = new Date(msg.ts).toLocaleTimeString();
+  const line = document.createElement("div");
+  line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
+  chatBox.appendChild(line);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
   </script>
 </body>

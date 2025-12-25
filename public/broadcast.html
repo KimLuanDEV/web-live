@@ -32,30 +32,35 @@
         </div>
 
         <div class="card">
-          <div class="badge">Preview</div>
-          <div class="video-wrap" style="margin-top:10px">
-            <!-- muted để preview tự chạy trên mobile -->
-            <video id="preview" autoplay playsinline muted></video>
-          </div>
-          <small>Preview luôn muted để tránh bị chặn autoplay.</small>
-        </div>
+         <div class="video-card" style="margin-top:10px">
+  <div class="live-overlay">
+    <span class="dot"></span>
+    <b>HOST</b>
+    <span style="opacity:.85">preview</span>
+  </div>
+
+  <div class="video-card__inner">
+    <video id="preview" autoplay playsinline muted></video>
+  </div>
+</div>
+
       </div>
     </div>
   </div>
 
 <hr />
-<div class="card">
-  <div class="badge">💬 Chat (Live)</div>
+<div class="card chat">
+  <div class="badge badge--info">💬 Chat (Live)</div>
 
-  <div style="margin-top:10px">
+  <div class="chatform">
     <input id="chatName" value="Host" />
     <input id="chatText" placeholder="Nhập tin nhắn..." />
-    <button id="chatSend">Gửi</button>
+    <button id="chatSend" class="full">Gửi</button>
   </div>
 
-  <pre id="chatBox" class="log"
-       style="margin-top:10px; max-height:200px; overflow:auto"></pre>
+  <div id="chatBox" class="chatbox"></div>
 </div>
+
 
   
   <script src="/socket.io/socket.io.js"></script>
@@ -282,6 +287,15 @@ chatSend.onclick = () => {
   socket.emit("chat", { roomId, name, text });
   chatText.value = "";
 };
+
+function addChat(msg) {
+  const time = new Date(msg.ts).toLocaleTimeString();
+  const line = document.createElement("div");
+  line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
+  chatBox.appendChild(line);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
+
 
   </script>
 </body>
