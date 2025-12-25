@@ -29,6 +29,12 @@ function getRoom(roomId) {
   return rooms.get(roomId);
 }
 
+function emitViewerCount(roomId) {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  io.to(roomId).emit("viewer-count", { count: room.viewers.size });
+}
+
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
   try {
@@ -49,36 +55,6 @@ app.get("/ice", async (_req, res) => {
 });
 
 io.on("connection", (socket) => {
-
-// Host yêu cầu tắt/bật mic của guest
-socket.on("host-mute-guest", ({ roomId, mute }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  if (room.broadcasterId !== socket.id) return;   // chỉ host mới được điều khiển
-
-  if (!room.guestId) return;
-  io.to(room.guestId).emit("guest-set-mic", { mute: !!mute });
-});
-
-// Host kick guest khỏi live
-socket.on("host-kick-guest", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  if (room.broadcasterId !== socket.id) return;
-
-  if (!room.guestId) return;
-  const gid = room.guestId;
-
-  // báo guest tự thoát
-  io.to(gid).emit("guest-kicked");
-
-  // clear guest trong room + báo cho tất cả viewers
-  room.guestId = null;
-  io.to(roomId).emit("guest-offline");
-});
-
-
-
   // Host calls this after starting camera so server re-pings existing viewers
   socket.on("broadcaster-ready", ({ roomId }) => {
     if (!roomId) return;
@@ -113,6 +89,7 @@ socket.on("host-kick-guest", ({ roomId }) => {
       // Tell broadcaster current viewers list
       socket.emit("room-viewers", Array.from(room.viewers));
       socket.to(roomId).emit("broadcaster-online");
+      emitViewerCount(roomId);
 
       // If already has guest, tell host
       if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
@@ -120,6 +97,8 @@ socket.on("host-kick-guest", ({ roomId }) => {
 
     if (role === "viewer") {
       room.viewers.add(socket.id);
+      emitViewerCount(roomId);
+
 
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("watcher", { viewerId: socket.id, roomId });
@@ -202,6 +181,7 @@ socket.on("host-kick-guest", ({ roomId }) => {
 
     if (role === "viewer") {
       room.viewers.delete(socket.id);
+      emitViewerCount(roomId);
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
       }
