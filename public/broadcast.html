@@ -26,6 +26,8 @@
             <hr />
             <button id="btnStart">Start Camera + Mic</button>
             <button id="btnStop" disabled>Stop</button>
+            <button id="btnFlip" disabled>🔄 Đảo Camera</button>
+
           </div>
           <hr />
           <div class="log" id="log"></div>
@@ -36,7 +38,7 @@
   <div class="live-overlay">
     <span class="dot"></span>
     <b>HOST</b>
-    <span style="opacity:.85">preview</span>
+    <span style="opacity:.85"></span>
   </div>
 
   <div class="video-card__inner">
@@ -69,6 +71,10 @@
     const preview = document.getElementById("preview");
     const btnStart = document.getElementById("btnStart");
     const btnStop = document.getElementById("btnStop");
+
+
+    const btnFlip = document.getElementById("btnFlip");
+    let currentFacing = "user"; // "user" (cam trước) | "environment" (cam sau)
 
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
@@ -220,13 +226,14 @@ const pc = new RTCPeerConnection(rtcConfig);
       // Mobile best practice: request via user gesture (button click)
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" },
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing }},
           audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
         });
 
         preview.srcObject = localStream;
         btnStart.disabled = true;
         btnStop.disabled = false;
+        btnFlip.disabled = false;
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
 
@@ -261,6 +268,7 @@ const pc = new RTCPeerConnection(rtcConfig);
 
     btnStart.onclick = start;
     btnStop.onclick = stop;
+    btnFlip.disabled = true;
 
     // cleanup on close
     window.addEventListener("beforeunload", stop);
@@ -295,6 +303,58 @@ function addChat(msg) {
   chatBox.appendChild(line);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
+
+async function flipCamera() {
+  if (!localStream) return;
+
+  // đổi hướng camera
+  currentFacing = (currentFacing === "user") ? "environment" : "user";
+  log("Đang đổi camera sang: " + (currentFacing === "user" ? "CAM TRƯỚC" : "CAM SAU"));
+
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
+      audio: false // audio giữ nguyên để không giật tiếng
+    });
+
+    const newVideoTrack = newStream.getVideoTracks()[0];
+    if (!newVideoTrack) throw new Error("Không lấy được video track mới");
+
+    // 1) thay track trong localStream hiện tại
+    const oldVideoTrack = localStream.getVideoTracks()[0];
+    if (oldVideoTrack) {
+      localStream.removeTrack(oldVideoTrack);
+      oldVideoTrack.stop();
+    }
+    localStream.addTrack(newVideoTrack);
+
+    // 2) cập nhật preview
+    preview.srcObject = localStream;
+
+    // 3) quan trọng: thay track cho TẤT CẢ peer connections đang stream tới viewers
+    for (const [viewerId, pc] of pcs.entries()) {
+      const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
+      if (sender) {
+        await sender.replaceTrack(newVideoTrack);
+      } else {
+        // fallback: nếu không tìm thấy sender (hiếm), addTrack lại
+        pc.addTrack(newVideoTrack, localStream);
+      }
+      log(`Đã đổi camera cho viewer: ${viewerId}`);
+    }
+
+    log("✅ Đổi camera thành công.");
+  } catch (err) {
+    log("❌ Đổi camera thất bại: " + err.message);
+    // nếu lỗi, revert trạng thái để lần sau thử lại đúng
+    currentFacing = (currentFacing === "user") ? "environment" : "user";
+    alert("Không đổi được camera. Hãy kiểm tra quyền camera hoặc thử trình duyệt khác.");
+  }
+}
+
+btnFlip.onclick = () => {
+  flipCamera();
+};
 
 
   </script>
