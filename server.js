@@ -125,6 +125,7 @@ socket.on("host-kick-guest", ({ roomId }) => {
 
     if (role === "viewer") {
       room.viewers.add(socket.id);
+      emitViewerCount(roomId);
 
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("watcher", { viewerId: socket.id, roomId });
@@ -207,6 +208,7 @@ socket.on("host-kick-guest", ({ roomId }) => {
 
     if (role === "viewer") {
       room.viewers.delete(socket.id);
+      emitViewerCount(roomId);
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
       }
