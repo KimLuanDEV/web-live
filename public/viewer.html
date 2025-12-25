@@ -24,6 +24,11 @@
             <button id="btnJoin">Tham gia xem Livestream</button>
           </div>
 
+<button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
+<small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
+  Bấm để mở trang Guest và gửi yêu cầu lên Host.
+</small>
+
           <hr />
           <div class="log" id="log"></div>
         </div>
@@ -251,6 +256,29 @@
     btnJoin.onclick = () => {
       join().catch(err => log("Join lỗi: " + err.message));
     };
+
+// ===== REQUEST TO GO LIVE (VIEWER -> GUEST) =====
+const btnRequestLive = document.getElementById("btnRequestLive");
+
+// mặc định disable khi host chưa online
+btnRequestLive.disabled = true;
+
+btnRequestLive.onclick = () => {
+  const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
+  // mở tab mới để vẫn xem được live
+  window.open(url, "_blank");
+};
+
+// chỉ cho xin lên live khi broadcaster online
+socket.on("broadcaster-online", () => {
+  btnRequestLive.disabled = false;
+});
+
+socket.on("broadcaster-offline", () => {
+  btnRequestLive.disabled = true;
+});
+
+
 
     // ===== CHAT (VIEWER) =====
     const chatBox = document.getElementById("chatBox");
