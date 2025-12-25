@@ -259,6 +259,43 @@ function toggleGuestCam(){
 guestMicBtn.onclick = toggleGuestMic;
 guestCamBtn.onclick = toggleGuestCam;
 
+// Host yêu cầu guest tắt/bật mic
+socket.on("guest-set-mic", ({ mute }) => {
+  if (!localStream) return;
+  const at = localStream.getAudioTracks()[0];
+  if (!at) return;
+
+  at.enabled = !mute;
+
+  // nếu bạn có icon mic của guest thì cập nhật luôn:
+  if (typeof guestMicBtn !== "undefined" && guestMicBtn) {
+    guestMicBtn.classList.toggle("off", !!mute);
+    guestMicBtn.textContent = mute ? "🔇" : "🎙️";
+  }
+});
+
+// Host kick guest
+socket.on("guest-kicked", () => {
+  // tắt stream + đóng peer
+  try {
+    if (localStream) localStream.getTracks().forEach(t => t.stop());
+  } catch {}
+  try {
+    if (pc) pc.close();
+  } catch {}
+
+  // nếu bạn dùng Map pcs thì close hết:
+  try {
+    if (typeof pcs !== "undefined" && pcs && pcs.forEach) {
+      pcs.forEach(p => { try{ p.close(); }catch{} });
+    }
+  } catch {}
+
+  alert("Bạn đã bị Host kích khỏi live.");
+  location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
+});
+
+
   </script>
 </body>
 </html>

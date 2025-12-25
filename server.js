@@ -49,6 +49,36 @@ app.get("/ice", async (_req, res) => {
 });
 
 io.on("connection", (socket) => {
+
+// Host yêu cầu tắt/bật mic của guest
+socket.on("host-mute-guest", ({ roomId, mute }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;   // chỉ host mới được điều khiển
+
+  if (!room.guestId) return;
+  io.to(room.guestId).emit("guest-set-mic", { mute: !!mute });
+});
+
+// Host kick guest khỏi live
+socket.on("host-kick-guest", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  if (!room.guestId) return;
+  const gid = room.guestId;
+
+  // báo guest tự thoát
+  io.to(gid).emit("guest-kicked");
+
+  // clear guest trong room + báo cho tất cả viewers
+  room.guestId = null;
+  io.to(roomId).emit("guest-offline");
+});
+
+
+
   // Host calls this after starting camera so server re-pings existing viewers
   socket.on("broadcaster-ready", ({ roomId }) => {
     if (!roomId) return;

@@ -47,7 +47,7 @@
   <div class="video-card__inner">
     <video id="preview" autoplay playsinline muted></video>
   </div>
-  
+
  <div class="av-controls">
   <button id="hostMicBtn" class="av-btn">🎙️</button>
   <button id="hostCamBtn" class="av-btn">📷</button>
@@ -62,6 +62,10 @@
 <hr />
 <div class="card">
   <div class="badge badge--info">👤 Khách xin lên live</div>
+
+<button id="btnMuteGuest" disabled>🔇 Tắt mic Guest</button>
+<button id="btnUnmuteGuest" disabled>🎙️ Bật mic Guest</button>
+<button id="btnKickGuest" disabled>⛔ Kích Guest</button>
 
   <div style="margin-top:10px">
     <div class="badge">Link khách mời</div>
@@ -492,6 +496,31 @@ hostMicBtn.onclick = toggleHostMic;
 hostCamBtn.onclick = toggleHostCam;
 
     
+const btnMuteGuest = document.getElementById("btnMuteGuest");
+const btnUnmuteGuest = document.getElementById("btnUnmuteGuest");
+const btnKickGuest = document.getElementById("btnKickGuest");
+
+function setGuestControls(on) {
+  btnMuteGuest.disabled = !on;
+  btnUnmuteGuest.disabled = !on;
+  btnKickGuest.disabled = !on;
+}
+
+// khi host chấp nhận guest xong (hoặc khi guest-online), bật controls
+socket.on("guest-online", ({ guestId }) => {
+  setGuestControls(true);
+});
+
+// khi guest-offline thì tắt controls
+socket.on("guest-offline", () => {
+  setGuestControls(false);
+});
+
+// nút điều khiển
+btnMuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: true });
+btnUnmuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: false });
+btnKickGuest.onclick = () => socket.emit("host-kick-guest", { roomId });
+
   </script>
 </body>
 </html>
