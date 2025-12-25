@@ -5,80 +5,118 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Guest</title>
   <link rel="stylesheet" href="/style.css" />
+<style>
+/* AV icon controls overlay */
+.video-stage{ position:relative; }
+.av-controls{
+  position:absolute;
+  right:10px;
+  bottom:10px;
+  display:flex;
+  gap:10px;
+  z-index:5;
+}
+.av-btn{
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.55);
+  color:#fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  backdrop-filter: blur(8px);
+}
+.av-btn:disabled{ opacity:.45; cursor:not-allowed; }
+.av-btn.on{ box-shadow: 0 0 22px rgba(37,240,154,.18); }
+.av-btn.off{ box-shadow: 0 0 22px rgba(255,59,107,.18); }
+</style>
 </head>
 <body>
   <div class="container">
     <div class="card">
-      <h1>🎤 Khách mời</h1>
-      <hr />
+      <h1>🎤 GUEST (Xin lên live)</h1>
+      <small>Room: <b id="roomLbl"></b></small>
+      <hr/>
 
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <button id="btnStart">Bật camera + mic & Xin lên live</button>
+        <button id="btnMic" disabled>🔇 Tắt mic</button>
+        <button id="btnCam" disabled>📷 Tắt camera</button>
+        <button id="btnStop" disabled>Stop</button>
+      </div>
+
+      <div style="margin-top:10px" class="badge" id="status">⏳ Chưa bật cam</div>
+
+      <hr/>
       <div class="row">
         <div class="card">
-          <div class="kv">
-            <div class="badge">Phòng Livestream</div>
-            <code id="roomCode">-</code>
-
-            <div class="badge" id="statusBadge">⏳ Chưa bật cam/mic</div>
-            <button id="btnStart">Xin lên live</button>
+          <div class="badge">🎥 Bạn (Guest)</div>
+          <div class="video-wrap video-stage" style="margin-top:10px">
+            <video id="me" autoplay playsinline muted></video>
+            <div class="av-controls">
+              <button id="btnMicIcon" class="av-btn on" title="Mic" disabled>🎙️</button>
+              <button id="btnCamIcon" class="av-btn on" title="Camera" disabled>📷</button>
+            </div>
           </div>
-
-          <hr />
-          <div class="log" id="log"></div>
         </div>
-
         <div class="card">
-          <div class="video-card" style="margin-top:10px">
-            <div class="live-overlay">
-              <span class="dot"></span>
-              <b>Khách mời</b>
-              <span style="opacity:.85"></span>
-            </div>
-
-            <div class="video-card__inner">
-              <video id="me" autoplay playsinline muted></video>
-            </div>
-          </div>
-
-          <hr />
-          <div class="badge badge--info">🔊/🎥 Host</div>
-          <div class="video-card" style="margin-top:10px">
-            <div class="video-card__inner">
-              <video id="hostVideo" autoplay playsinline controls></video>
-            </div>
+          <div class="badge">🎧 Host (để trò chuyện)</div>
+          <div class="video-wrap" style="margin-top:10px">
+            <video id="hostVideo" autoplay playsinline controls></video>
           </div>
         </div>
       </div>
+
+      <hr/>
+      <div class="badge">💬 Chat</div>
+      <div style="margin-top:10px">
+        <input id="chatName" value="Guest" />
+        <input id="chatText" placeholder="Nhập tin nhắn..." style="margin-top:8px" />
+        <button id="chatSend" style="margin-top:8px">Gửi</button>
+      </div>
+      <pre id="chatBox" class="log" style="margin-top:10px; max-height:220px; overflow:auto"></pre>
+
+      <hr/>
+      <div class="badge">🧾 Log</div>
+      <pre id="log" class="log" style="margin-top:10px; max-height:220px; overflow:auto"></pre>
     </div>
   </div>
 
-<hr />
-<div class="card chat">
-  <div class="badge badge--info">💬 Chat (Live)</div>
-
-  <div class="chatform">
-    <input id="chatName" value="Khách" />
-    <input id="chatText" placeholder="Nhập tin nhắn..." />
-    <button id="chatSend" class="full">Gửi</button>
-  </div>
-
-  <div id="chatBox" class="chatbox"></div>
-</div>
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    const logEl = document.getElementById("log");
-    const badge = document.getElementById("statusBadge");
-    const me = document.getElementById("me");
-    const hostVideo = document.getElementById("hostVideo");
-    const btnStart = document.getElementById("btnStart");
-
+    const socket = io();
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
-    document.getElementById("roomCode").textContent = roomId;
+    document.getElementById("roomLbl").textContent = roomId;
 
-    const socket = io();
-    let localStream = null;
-    const pcs = new Map(); // peerId -> RTCPeerConnection
+    const btnStart = document.getElementById("btnStart");
+    const btnStop = document.getElementById("btnStop");
+    const btnMic = document.getElementById("btnMic");
+    const btnCam = document.getElementById("btnCam");
+    const btnMicIcon = document.getElementById("btnMicIcon");
+    const btnCamIcon = document.getElementById("btnCamIcon");
+    const statusEl = document.getElementById("status");
+    const logEl = document.getElementById("log");
+
+    const me = document.getElementById("me");
+    const hostVideo = document.getElementById("hostVideo");
+
+    // chat
+    const chatBox = document.getElementById("chatBox");
+    const chatName = document.getElementById("chatName");
+    const chatText = document.getElementById("chatText");
+    const chatSend = document.getElementById("chatSend");
+
+    function log(msg){
+      logEl.textContent += msg + "\n";
+      logEl.scrollTop = logEl.scrollHeight;
+      console.log(msg);
+    }
+    function setStatus(t){ statusEl.textContent = t; }
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -88,67 +126,111 @@
         const data = await r.json();
         if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
 
-        const cleanedIceServers = data.iceServers
-          .map(server => {
-            let urls = server.urls;
-            if (!urls) return null;
-            if (!Array.isArray(urls)) urls = [urls];
-            const safeUrls = urls.filter(u =>
-              typeof u === "string" &&
-              !(u.startsWith("stun:") && u.includes("?transport="))
-            );
-            if (safeUrls.length === 0) return null;
-            return { ...server, urls: safeUrls };
-          })
-          .filter(Boolean);
+        const cleaned = data.iceServers.map(s => {
+          let urls = s.urls;
+          if (!Array.isArray(urls)) urls = [urls];
+          urls = urls.filter(u => !(typeof u === "string" && u.startsWith("stun:") && u.includes("?transport=")));
+          return { ...s, urls };
+        }).filter(s => s.urls && (Array.isArray(s.urls) ? s.urls.length : true));
 
-        if (cleanedIceServers.length === 0) return fallback;
-        return { iceServers: cleanedIceServers };
-      } catch (e) {
-        console.error(e);
-        return fallback;
-      }
+        return { iceServers: cleaned.length ? cleaned : fallback.iceServers };
+      } catch { return fallback; }
     }
 
-    function log(msg) {
-      logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
-      console.log(msg);
-    }
-    function setStatus(t){ badge.textContent = t; }
+    let localStream = null;
+    let micMuted = false;
+    let camOff = false;
+    const pcs = new Map(); // peerId -> pc (host + many viewers)
 
     btnStart.onclick = async () => {
       if (localStream) return;
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: "user" } },
-          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-        });
+        localStream = await navigator.mediaDevices.getUserMedia({ video:true, audio:true });
         me.srcObject = localStream;
 
+        btnStart.disabled = true;
+        btnStop.disabled = false;
+        btnMic.disabled = false;
+      btnCam.disabled = false;
+      if (btnMicIcon) btnMicIcon.disabled = false;
+      if (btnCamIcon) btnCamIcon.disabled = false;
+      micMuted = false; camOff = false;
+      setMicMuted(false);
+      setCamOff(false);
+
         socket.emit("join-room", { roomId, role: "guest" });
-        setStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
-        log("Đã xin lên live, chờ host duyệt...");
+        setStatus("⏳ Đang chờ host duyệt...");
+        log("Guest join-room");
       } catch (e) {
         alert("Không mở được camera/mic: " + e.message);
       }
     };
 
+    btnStop.onclick = () => {
+      for (const pc of pcs.values()) { try{ pc.close(); }catch{} }
+      pcs.clear();
+
+      if (localStream) localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+      me.srcObject = null;
+      hostVideo.srcObject = null;
+
+      btnStart.disabled = false;
+      btnStop.disabled = true;
+      btnMic.disabled = true;
+      btnCam.disabled = true;
+      if (btnMicIcon) btnMicIcon.disabled = true;
+      if (btnCamIcon) btnCamIcon.disabled = true;
+      micMuted = false;
+      btnMic.textContent = "🔇 Tắt mic";
+      setStatus("Đã dừng");
+    };
+
+    function setMicMuted(mute) {
+      if (!localStream) return;
+      const at = localStream.getAudioTracks()[0];
+      if (!at) return;
+      at.enabled = !mute;
+      micMuted = mute;
+      btnMic.textContent = micMuted ? "🎙️ Bật mic" : "🔇 Tắt mic";
+      if (btnMicIcon) {
+        btnMicIcon.textContent = micMuted ? "🔇" : "🎙️";
+        btnMicIcon.classList.toggle("off", micMuted);
+        btnMicIcon.classList.toggle("on", !micMuted);
+      }
+      log(micMuted ? "Đã tắt mic" : "Đã bật mic");
+    }
+        function setCamOff(off) {
+      if (!localStream) return;
+      const vt = localStream.getVideoTracks()[0];
+      if (!vt) return;
+      camOff = !!off;
+      vt.enabled = !camOff;
+      btnCam.textContent = camOff ? "📷 Bật camera" : "📷 Tắt camera";
+      if (btnCamIcon) {
+        btnCamIcon.textContent = camOff ? "🚫" : "📷";
+        btnCamIcon.classList.toggle("off", camOff);
+        btnCamIcon.classList.toggle("on", !camOff);
+      }
+      log(camOff ? "Đã tắt camera" : "Đã bật camera");
+    }
+
+btnMic.onclick = () => setMicMuted(!micMuted);
+    btnCam.onclick = () => setCamOff(!camOff);
+    if (btnMicIcon) btnMicIcon.onclick = () => setMicMuted(!micMuted);
+    if (btnCamIcon) btnCamIcon.onclick = () => setCamOff(!camOff);
+
     socket.on("guest-pending", () => setStatus("⏳ Đang chờ host duyệt..."));
     socket.on("guest-rejected", () => setStatus("⛔ Host từ chối."));
-    socket.on("guest-approved", () => {
-      setStatus("✅ Được duyệt! Bạn đang lên live.");
-      log("Được duyệt! Bây giờ viewer/host sẽ kết nối tới bạn.");
-    });
+    socket.on("guest-approved", () => setStatus("✅ Được duyệt! Người xem sẽ thấy bạn."));
 
-    // When someone wants to watch guest, guest creates offer to them
+    // server tells guest: someone wants to watch guest -> guest creates offer to that viewer/host
     socket.on("guest-watcher", async ({ viewerId }) => {
       if (!localStream) return;
       if (pcs.has(viewerId)) return;
 
-      log("Tạo kết nối tới: " + viewerId);
-
-      const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
+      const rtc = await getRtcConfig();
+      const pc = new RTCPeerConnection(rtc);
       pcs.set(viewerId, pc);
 
       localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
@@ -157,57 +239,37 @@
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
       };
 
-      // Receive host stream (host will addTrack when answering)
+      // Host sends tracks back to guest (for conversation) -> we render it
       pc.ontrack = (e) => {
         hostVideo.srcObject = e.streams[0];
-        hostVideo.play().catch(() => {});
+        hostVideo.play().catch(()=>{});
       };
 
-      pc.oniceconnectionstatechange = () => log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+      socket.emit("offer", { to: viewerId, description: pc.localDescription });
 
-      try {
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit("offer", { to: viewerId, description: pc.localDescription });
-      } catch (err) {
-        log("Lỗi tạo offer: " + err.message);
-      }
+      log("Đã gửi offer tới: " + viewerId);
     });
 
     socket.on("answer", async ({ from, description }) => {
       const pc = pcs.get(from);
       if (!pc) return;
-      try { await pc.setRemoteDescription(description); }
-      catch (err) { log("Lỗi setRemoteDescription(answer): " + err.message); }
+      await pc.setRemoteDescription(description);
     });
 
     socket.on("candidate", async ({ from, candidate }) => {
       const pc = pcs.get(from);
       if (!pc) return;
-      try { await pc.addIceCandidate(candidate); }
-      catch (err) { log("Lỗi addIceCandidate: " + err.message); }
+      try { await pc.addIceCandidate(candidate); } catch(e){}
     });
 
-    window.addEventListener("beforeunload", () => {
-      for (const pc of pcs.values()) { try { pc.close(); } catch {} }
-      pcs.clear();
-      if (localStream) localStream.getTracks().forEach(t => t.stop());
-    });
-
-    // ===== CHAT =====
-    const chatBox = document.getElementById("chatBox");
-    const chatName = document.getElementById("chatName");
-    const chatText = document.getElementById("chatText");
-    const chatSend = document.getElementById("chatSend");
-
-    function addChat(msg) {
-      const time = new Date(msg.ts).toLocaleTimeString();
-      const line = document.createElement("div");
-      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
-      chatBox.appendChild(line);
+    // chat
+    function addChat(msg){
+      const t = new Date(msg.ts).toLocaleTimeString();
+      chatBox.textContent += `[${t}] ${msg.name}: ${msg.text}\n`;
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
     socket.on("chat", addChat);
 
     chatSend.onclick = () => {
