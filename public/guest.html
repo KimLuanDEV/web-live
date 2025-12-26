@@ -46,8 +46,10 @@
 
               <div class="chat-overlay" id="chatOverlay"></div>
 
-<!-- CHAT UI (inside video) -->
-<!-- QUICK CHAT INPUT -->
+<!-- CHAT FIXED BOX -->
+<div class="chat-fixed" id="chatFixed"></div>
+
+<!-- CHAT INPUT -->
 <div class="chat-input-wrap">
   <input
     id="chatText"
@@ -58,7 +60,8 @@
   <button id="chatSendBtn" class="chat-send-btn" type="button">➤</button>
 </div>
 
-<button class="chat-fab" id="chatFab" type="button" title="Chat">💬</button>
+<!-- CHAT ICON -->
+<button class="chat-fab" id="chatFab" type="button">💬</button>
 
 
 <!-- /CHAT UI -->
@@ -305,23 +308,40 @@
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-// ===== QUICK CHAT INPUT WITH SEND BUTTON =====
+// ===== CHAT FIXED IN VIDEO =====
+const chatFixed = document.getElementById("chatFixed");
 const chatFab = document.getElementById("chatFab");
 const chatInputWrap = document.querySelector(".chat-input-wrap");
 const chatSendBtn = document.getElementById("chatSendBtn");
 
+// mở input
 chatFab?.addEventListener("click", () => {
-  if (!chatInputWrap || !chatText) return;
-
   chatInputWrap.classList.add("show");
-
-  setTimeout(() => {
-    chatText.focus(); // mobile bật bàn phím
-    chatText.scrollIntoView({ block: "center", behavior: "smooth" });
-  }, 50);
+  setTimeout(() => chatText.focus(), 50);
 });
 
-function sendChatQuick(){
+// render chat vào video
+function renderChatFixed(msg){
+  if (!chatFixed) return;
+
+  const el = document.createElement("div");
+  el.className = "chat-line";
+  el.textContent = `${msg.name}: ${msg.text}`;
+  chatFixed.appendChild(el);
+
+  // giữ tối đa 6 dòng
+  while (chatFixed.children.length > 6) {
+    chatFixed.removeChild(chatFixed.firstChild);
+  }
+}
+
+// nhận chat realtime
+socket.on("chat", (msg) => {
+  renderChatFixed(msg);
+});
+
+// gửi chat
+function sendChat(){
   const text = chatText.value.trim();
   if (!text) return;
 
@@ -335,16 +355,14 @@ function sendChatQuick(){
   chatInputWrap.classList.remove("show");
 }
 
-// click nút ➤
-chatSendBtn?.addEventListener("click", sendChatQuick);
-
-// Enter để gửi
+chatSendBtn?.addEventListener("click", sendChat);
 chatText?.addEventListener("keydown", (e) => {
   if (e.key === "Enter") {
     e.preventDefault();
-    sendChatQuick();
+    sendChat();
   }
 });
+
 
 
    function addChat(msg) {
