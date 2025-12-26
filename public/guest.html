@@ -23,7 +23,6 @@
           </div>
 
           <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
-            <button id="btnFlipCam" disabled>🔄 Đảo camera</button>
             <button id="btnLeaveLive" disabled>🚪 Rời live</button>
           </div>
 
@@ -59,9 +58,11 @@
           </div>
           <!-- /LIVE STAGE -->
              <div class="av-controls">
-                <button id="guestMicBtn" class="av-btn">🎙️</button>
-                <button id="guestCamBtn" class="av-btn">📷</button>
-              </div>
+  <button id="guestMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
+  <button id="guestCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
+  <button id="guestFlipBtn" class="av-btn" title="Đảo camera">🔄</button>
+</div>
+
         </div>
       </div>
     </div>
@@ -98,7 +99,7 @@
     const hostVideo = document.getElementById("hostVideo");
     const btnStart = document.getElementById("btnStart");
 
-    const btnFlipCam = document.getElementById("btnFlipCam");
+    const guestFlipBtn = document.getElementById("guestFlipBtn");
     const btnLeaveLive = document.getElementById("btnLeaveLive");
 
     // PIP elements
@@ -167,8 +168,10 @@
         setStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
 
-        btnFlipCam.disabled = false;
+        guestFlipBtn.disabled = false;
         btnLeaveLive.disabled = false;
+
+
       } catch (e) {
         alert("Không mở được camera/mic: " + e.message);
       }
@@ -282,15 +285,17 @@
 
       if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "true");
 
-      btnFlipCam.disabled = true;
+      guestFlipBtn.disabled = true;
       btnLeaveLive.disabled = true;
+
 
       try { socket.disconnect(); } catch {}
 
       location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
     }
 
-    btnFlipCam.onclick = flipCamera;
+    guestFlipBtn.onclick = flipCamera;
+
     btnLeaveLive.onclick = leaveLive;
 
     window.addEventListener("beforeunload", () => {
