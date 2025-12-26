@@ -82,7 +82,9 @@ hr{border:none;border-top:1px solid var(--stroke);margin:14px 0}
   border:1px solid var(--stroke);
   background: rgba(255,255,255,.07);
   font-size:13px;
+  margin-bottom: 5px;
 }
+
 .badge--live{
   border-color: rgba(255,59,107,.35);
   background: rgba(255,59,107,.10);
@@ -216,6 +218,7 @@ code{
   white-space:pre-wrap;
   font-size:13px;
   color: rgba(234,240,255,.8);
+  margin-bottom: 5px;
 }
 
 /* ===== AV ICON OVERLAY ===== */
