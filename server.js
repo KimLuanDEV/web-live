@@ -24,7 +24,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, pinnedMsg: null });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null });
   }
   return rooms.get(roomId);
 }
@@ -147,49 +147,17 @@ socket.on("host-kick-guest", ({ roomId }) => {
     }
   });
 
-    // send pinned message to new joiner
-    if (room.pinnedMsg) socket.emit("chat-pinned", { msg: room.pinnedMsg });
-
   // ===== CHAT REALTIME =====
-    // ===== CHAT REALTIME (with anti-spam + role) =====
   socket.on("chat", ({ roomId, name, text }) => {
     if (!roomId || !text) return;
 
-    // server-side spam filter per socket
-    const now = Date.now();
-    socket.data.chatSpam = socket.data.chatSpam || { lastTs: 0, lastText: "", burstStart: 0, burstCount: 0 };
-
-    const s = socket.data.chatSpam;
-    if (now - s.lastTs < 650) return; // too fast
-    const cleanText = String(text).slice(0, 300).trim();
-    if (!cleanText) return;
-    if (s.lastText === cleanText && now - s.lastTs < 5000) return; // repeat
-    if (!s.burstStart || now - s.burstStart > 10000) { s.burstStart = now; s.burstCount = 0; }
-    s.burstCount++;
-    if (s.burstCount > 6) return;
-
-    s.lastTs = now;
-    s.lastText = cleanText;
-
     const msg = {
-      id: `${now}-${socket.id.slice(-4)}-${Math.random().toString(16).slice(2,6)}`,
-      role: socket.data.role || "viewer",
       name: (name || "Ẩn danh").slice(0, 20),
-      text: cleanText,
-      ts: now,
+      text: String(text).slice(0, 300),
+      ts: Date.now(),
     };
 
     io.to(roomId).emit("chat", msg);
-  });
-
-  // Host can pin/unpin a message to the room (shows on video)
-  socket.on("chat-pin", ({ roomId, msg }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return;
-
-    room.pinnedMsg = msg || null;
-    io.to(roomId).emit("chat-pinned", { msg: room.pinnedMsg });
   });
 
   // ===== GUEST CO-HOST FLOW =====

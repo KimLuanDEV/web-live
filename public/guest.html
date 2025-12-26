@@ -55,9 +55,7 @@
           <hr />
           <div class="badge badge--info">🔊/🎥 Host</div>
           <div class="video-card" style="margin-top:10px">
-            <div class="pin-overlay" id="pinOverlay" hidden></div>
-
-<div class="chat-overlay" id="chatOverlay"></div>
+            <div class="chat-overlay" id="chatOverlay"></div>
 
           <div class="video-card__inner">
               <video id="hostVideo" autoplay playsinline controls></video>
@@ -304,89 +302,29 @@ window.addEventListener("beforeunload", () => {
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-    function roleLabel(role){
-      if (role === "broadcaster") return "HOST";
-      if (role === "guest") return "GUEST";
-      return "VIEWER";
-    }
-    function roleClass(role){
-      if (role === "broadcaster") return "role-host";
-      if (role === "guest") return "role-guest";
-      return "role-viewer";
-    }
-
-    function escapeHtml(s){
-      return String(s)
-        .replaceAll("&","&amp;")
-        .replaceAll("<","&lt;")
-        .replaceAll(">","&gt;")
-        .replaceAll('"',"&quot;")
-        .replaceAll("'","&#39;");
-    }
-
-
-
-    
     function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
       const line = document.createElement("div");
-      line.className = "chatline";
-
-      const meta = document.createElement("span");
-      meta.className = "chatline__meta " + roleClass(msg.role);
-      meta.textContent = `[${time}] ${roleLabel(msg.role)} • ${msg.name}: `;
-
-      const text = document.createElement("span");
-      text.className = "chatline__text";
-      text.textContent = msg.text;
-
-      line.appendChild(meta);
-      line.appendChild(text);
-
-      // host can pin/unpin
-      if (false) {
-        const pinBtn = document.createElement("button");
-        pinBtn.className = "pin-btn";
-        pinBtn.type = "button";
-        pinBtn.textContent = "📌";
-        pinBtn.title = "Ghim tin nhắn lên video";
-        pinBtn.onclick = () => socket.emit("chat-pin", { roomId, msg });
-        line.appendChild(pinBtn);
-      }
-
+      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
       chatBox.appendChild(line);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
 
-    // pinned message (room-wide)
-    const pinOverlay = document.getElementById("pinOverlay");
-    socket.on("chat-pinned", ({ msg }) => {
-      if (!pinOverlay) return;
-      if (!msg) {
-        pinOverlay.hidden = true;
-        pinOverlay.innerHTML = "";
-        return;
-      }
-      pinOverlay.hidden = false;
-      pinOverlay.className = "pin-overlay " + roleClass(msg.role);
-      pinOverlay.innerHTML = `<b>📌 ${roleLabel(msg.role)} • ${msg.name}:</b> <span>${escapeHtml(msg.text)}</span>`;
-    });
-
-
     // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
     const chatOverlay = document.getElementById("chatOverlay");
-    
     function pushOverlay(msg){
       if (!chatOverlay) return;
       const el = document.createElement("div");
-      el.className = "chat-bubble " + roleClass(msg.role);
-      el.textContent = `${roleLabel(msg.role)} • ${msg.name}: ${msg.text}`;
+      el.className = "chat-bubble";
+      el.textContent = `${msg.name}: ${msg.text}`;
       chatOverlay.appendChild(el);
 
+      // keep only last 4 bubbles
       while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
 
+      // auto fade + remove
       setTimeout(() => el.classList.add("hide"), 2600);
       setTimeout(() => { try { el.remove(); } catch {} }, 3200);
     }
@@ -405,24 +343,9 @@ window.addEventListener("beforeunload", () => {
 
 
     chatSend.onclick = () => {
-      const name = (chatName.value || "Khách").trim();
+      const name = (chatName.value || "Guest").trim();
       const text = chatText.value.trim();
       if (!text) return;
-
-      // client-side spam filter
-      const now = Date.now();
-      window.__chatAntiSpam = window.__chatAntiSpam || { lastTs: 0, lastText: "", burstStart: 0, burstCount: 0 };
-      const s = window.__chatAntiSpam;
-
-      if (now - s.lastTs < 650) return;                // too fast
-      if (s.lastText === text && now - s.lastTs < 5000) return;  // repeat
-      if (!s.burstStart || now - s.burstStart > 10000) { s.burstStart = now; s.burstCount = 0; }
-      s.burstCount++;
-      if (s.burstCount > 6) return; // too many in 10s
-
-      s.lastTs = now;
-      s.lastText = text;
-
       socket.emit("chat", { roomId, name, text });
       chatText.value = "";
     };
