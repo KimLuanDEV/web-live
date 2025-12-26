@@ -408,3 +408,78 @@ code{
 #guestPipWrapHost{
   pointer-events: none;
 }
+
+
+/* ===== CHAT PANEL INSIDE VIDEO ===== */
+.video-card { position: relative; }
+
+.chat-fab{
+  position:absolute;
+  right: 12px;
+  bottom: 64px; /* né cụm mic/cam */
+  z-index: 10;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  cursor: pointer;
+  font-size: 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter: blur(8px);
+}
+.chat-fab:hover{ transform: scale(1.06); }
+
+.chat-panel{
+  position:absolute;
+  right: 12px;
+  bottom: 118px;
+  width: min(92vw, 360px);
+  max-height: min(62vh, 420px);
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(10px);
+  z-index: 11;
+  display: none;
+  pointer-events: auto;
+}
+
+.chat-panel.open{ display:block; }
+
+.chat-panel__head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+.chat-panel__close{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  padding: 0;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.35);
+  cursor:pointer;
+}
+
+.chatbox--panel{
+  height: 180px;
+  margin: 10px 10px 0;
+}
+
+.chatform--panel{
+  padding: 10px;
+}
+
+.chat-panel .emoji-bar{
+  padding: 0 10px 10px;
+  margin-top: 0;
+}
