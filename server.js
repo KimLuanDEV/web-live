@@ -84,6 +84,18 @@ socket.on("host-kick-guest", ({ roomId }) => {
 
 
 
+// Host yêu cầu tắt/bật camera của guest
+socket.on("host-cam-guest", ({ roomId, off }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return; // chỉ host mới được điều khiển
+  if (!room.guestId) return;
+
+  io.to(room.guestId).emit("guest-set-cam", { off: !!off });
+});
+
+
+
   // Host calls this after starting camera so server re-pings existing viewers
   socket.on("broadcaster-ready", ({ roomId }) => {
     if (!roomId) return;

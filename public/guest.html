@@ -414,6 +414,22 @@
     });
 
   
+    // Host yêu cầu guest tắt/bật camera
+socket.on("guest-set-cam", ({ off }) => {
+  if (!localStream) return;
+  const vt = localStream.getVideoTracks()[0];
+  if (!vt) return;
+
+  vt.enabled = !off;
+
+  // đồng bộ icon UI
+  if (typeof guestCamBtn !== "undefined" && guestCamBtn) {
+    guestCamBtn.classList.toggle("off", !!off);
+    guestCamBtn.textContent = off ? "🚫" : "📷";
+  }
+});
+
+
   </script>
 </body>
 </html>

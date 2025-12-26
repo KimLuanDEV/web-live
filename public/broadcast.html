@@ -73,6 +73,8 @@
 <div class="av-controls" id="guestHostControls">
   <button id="btnMuteGuest" class="av-btn" title="Tắt mic khách" disabled>🔇</button>
   <button id="btnUnmuteGuest" class="av-btn" title="Bật mic khách" disabled>🎙️</button>
+  <button id="btnOffCamGuest" class="av-btn" title="Tắt camera khách" disabled>🚫</button>
+  <button id="btnOnCamGuest"  class="av-btn" title="Bật camera khách" disabled>📷</button>
   <button id="btnKickGuest" class="av-btn off" title="Kích khách" disabled>⛔</button>
 </div>
 
@@ -131,6 +133,25 @@
     const hostFlipBtn = document.getElementById("hostFlipBtn");
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
+    const btnOffCamGuest = document.getElementById("btnOffCamGuest");
+    const btnOnCamGuest  = document.getElementById("btnOnCamGuest");
+    
+
+function setGuestControls(on) {
+  btnMuteGuest.disabled = !on;
+  btnUnmuteGuest.disabled = !on;
+  btnKickGuest.disabled = !on;
+
+  btnOffCamGuest.disabled = !on;
+  btnOnCamGuest.disabled = !on;
+}
+
+// nút điều khiển
+btnOffCamGuest.onclick = () => socket.emit("host-cam-guest", { roomId, off: true });
+btnOnCamGuest.onclick  = () => socket.emit("host-cam-guest", { roomId, off: false });
+
+
+
 
     function toast(msg){
   const t = document.createElement("div");
