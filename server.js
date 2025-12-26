@@ -24,7 +24,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestIds: [] });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null });
   }
   return rooms.get(roomId);
 }
@@ -120,10 +120,7 @@ socket.on("host-kick-guest", ({ roomId }) => {
       socket.to(roomId).emit("broadcaster-online");
       emitViewerCount(roomId);
       // If already has guest, tell host
-      if (room.guestIds.length) {
-  socket.emit("guests-online", { guestIds: room.guestIds });
-}
-
+      if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
     }
 
     if (role === "viewer") {
@@ -138,10 +135,7 @@ socket.on("host-kick-guest", ({ roomId }) => {
       }
 
       // If guest already online, inform this viewer so they can request to watch guest
-      if (room.guestIds.length) {
-  socket.emit("guests-online", { guestIds: room.guestIds });
-}
-
+      if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
     }
 
     if (role === "guest") {
@@ -173,18 +167,9 @@ socket.on("host-kick-guest", ({ roomId }) => {
     const room = getRoom(roomId);
     if (room.broadcasterId !== socket.id) return;
 
-    if (room.guestIds.includes(guestId)) return;
-
-if (room.guestIds.length >= 2) {
-  io.to(guestId).emit("guest-rejected");
-  return;
-}
-
-room.guestIds.push(guestId);
-
-io.to(guestId).emit("guest-approved", { roomId });
-io.to(roomId).emit("guests-online", { guestIds: room.guestIds });
-
+    room.guestId = guestId;
+    io.to(guestId).emit("guest-approved", { roomId });
+    io.to(roomId).emit("guest-online", { guestId });
   });
 
   socket.on("guest-reject", ({ guestId }) => {
@@ -193,16 +178,12 @@ io.to(roomId).emit("guests-online", { guestIds: room.guestIds });
   });
 
   // Any viewer (or host) asks to watch guest -> server tells guest to create offer to that viewer
-socket.on("watch-guest", ({ roomId, guestId }) => {
-  const room = getRoom(roomId);
-  if (!room.guestIds.includes(guestId)) return;
-
-  io.to(guestId).emit("guest-watcher", {
-    viewerId: socket.id,
-    roomId
+  socket.on("watch-guest", ({ roomId }) => {
+    if (!roomId) return;
+    const room = getRoom(roomId);
+    if (!room.guestId) return;
+    io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
   });
-});
-
 
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
@@ -241,14 +222,13 @@ socket.on("watch-guest", ({ roomId, guestId }) => {
     }
 
     if (role === "guest") {
-      if (room.guestIds.includes(socket.id)) {
-  room.guestIds = room.guestIds.filter(id => id !== socket.id);
-  io.to(roomId).emit("guests-online", { guestIds: room.guestIds });
-}
+      if (room.guestId === socket.id) {
+        room.guestId = null;
+        io.to(roomId).emit("guest-offline");
+      }
     }
 
-    if (!room.broadcasterId && room.viewers.size === 0 && room.guestIds.length === 0)
- {
+    if (!room.broadcasterId && room.viewers.size === 0 && !room.guestId) {
       rooms.delete(roomId);
     }
   });
