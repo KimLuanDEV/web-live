@@ -283,7 +283,7 @@
 
       // ✅ reset UI state
       document.body.classList.remove("has-guest");
-      document.body.classList.remove("focus-me");
+
       if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "true");
 
       btnFlipCam.disabled = true;
@@ -406,13 +406,7 @@
       }
     });
 
-    // ✅ Click PIP để focus YOU
-    if (mePipWrap) {
-      mePipWrap.addEventListener("click", () => {
-        if (!me || !me.srcObject) return;
-        document.body.classList.toggle("focus-me");
-      });
-    }
+  
   </script>
 </body>
 </html>
