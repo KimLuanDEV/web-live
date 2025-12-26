@@ -92,6 +92,10 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+    const guestPlayer1 = document.getElementById("guestPlayer1");
+const guestPlayer2 = document.getElementById("guestPlayer2");
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -113,7 +117,8 @@ let swapped = false; // false: host main, true: guest main
 
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
-    let guestId = null;
+   let guestIds = [];
+
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -168,17 +173,19 @@ let swapped = false; // false: host main, true: guest main
     });
 
     // guest events
-    socket.on("guest-online", ({ guestId: gid }) => {
+  socket.on("guests-online", ({ guestIds: ids }) => {
+    if (guestIds[0] === from) guestPlayer1.srcObject = stream;
+if (guestIds[1] === from) guestPlayer2.srcObject = stream;
 
-      document.body.classList.add("has-guest");
-if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "false");
+  guestIds = ids.slice(0,2);
 
-      guestId = gid;
-      log("Guest online: " + gid);
-      setStatus("🟢 Có Guest cùng live");
-      // request guest to stream to this viewer
-      socket.emit("watch-guest", { roomId });
-    });
+  document.body.classList.toggle("has-guest", guestIds.length > 0);
+
+  guestIds.forEach(gid => {
+    socket.emit("watch-guest", { roomId, guestId: gid });
+  });
+});
+
 
     socket.on("guest-offline", () => {
 

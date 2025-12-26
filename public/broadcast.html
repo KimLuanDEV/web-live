@@ -61,10 +61,20 @@
   </div>
 
   <!-- GUEST PIP -->
-  <div class="pip-wrap" id="guestPipWrapHost" aria-hidden="true">
-    <div class="pip-badge">👤 GUEST</div>
-    <video id="guestVideo" autoplay playsinline controls></video>
+  <div class="pip-stack" id="guestPips">
+
+  <div class="pip-wrap" id="guestPip1" aria-hidden="true">
+    <div class="pip-badge">👤 GUEST 1</div>
+    <video id="guestVideo1" autoplay playsinline></video>
   </div>
+
+  <div class="pip-wrap" id="guestPip2" aria-hidden="true">
+    <div class="pip-badge">👤 GUEST 2</div>
+    <video id="guestVideo2" autoplay playsinline></video>
+  </div>
+
+</div>
+
 
 </div>
 
@@ -126,6 +136,15 @@
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+const guestVideo1 = document.getElementById("guestVideo1");
+const guestVideo2 = document.getElementById("guestVideo2");
+const guestPip1 = document.getElementById("guestPip1");
+const guestPip2 = document.getElementById("guestPip2");
+
+let guestIds = [];
+const pcGuestMap = new Map(); // guestId -> RTCPeerConnection
+
 
 const guestPipWrapHost = document.getElementById("guestPipWrapHost");
 
@@ -330,40 +349,36 @@ const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     };
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
-    socket.on("offer", async ({ from, description }) => {
-      // Only handle guest offers (viewers never send offers to host in this app)
-      approvedGuestId = approvedGuestId || from;
+   socket.on("offer", async ({ from, description }) => {
+  if (!guestIds.includes(from)) return;
 
-      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
+  if (pcGuestMap.has(from)) {
+    pcGuestMap.get(from).close();
+    pcGuestMap.delete(from);
+  }
 
-      const rtcConfig = await getRtcConfig();
-      pcGuestIn = new RTCPeerConnection(rtcConfig);
+  const pc = new RTCPeerConnection(await getRtcConfig());
+  pcGuestMap.set(from, pc);
 
-      // send host tracks back to guest so guest can hear/see host (co-talk)
-      if (localStream) {
-        localStream.getTracks().forEach(t => pcGuestIn.addTrack(t, localStream));
-      }
+  if (localStream) {
+    localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  }
 
-      pcGuestIn.ontrack = (e) => {
-        guestVideo.srcObject = e.streams[0];
-      };
+  pc.ontrack = (e) => {
+    if (guestIds[0] === from) guestVideo1.srcObject = e.streams[0];
+    if (guestIds[1] === from) guestVideo2.srcObject = e.streams[0];
+  };
 
-      pcGuestIn.onicecandidate = (e) => {
-        if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
-      };
+  pc.onicecandidate = e => {
+    if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
+  };
 
-      pcGuestIn.oniceconnectionstatechange = () => log(`ICE(GUEST): ${pcGuestIn.iceConnectionState}`);
+  await pc.setRemoteDescription(description);
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+  socket.emit("answer", { to: from, description: pc.localDescription });
+});
 
-      try {
-        await pcGuestIn.setRemoteDescription(description);
-        const answer = await pcGuestIn.createAnswer();
-        await pcGuestIn.setLocalDescription(answer);
-        socket.emit("answer", { to: from, description: pcGuestIn.localDescription });
-        log("Đã trả lời offer của guest: " + from);
-      } catch (err) {
-        log("Lỗi xử lý offer guest: " + err.message);
-      }
-    });
 
     // ===== Start/Stop/Flip =====
     async function start() {
@@ -560,13 +575,19 @@ function setGuestControls(on) {
 }
 
 // khi host chấp nhận guest xong (hoặc khi guest-online), bật controls
-socket.on("guest-online", ({ guestId }) => {
+socket.on("guests-online", ({ guestIds: ids }) => {
+  guestIds = ids.slice(0,2);
 
-  document.body.classList.add("has-guest");
-if (guestPipWrapHost) guestPipWrapHost.setAttribute("aria-hidden", "false");
+  document.body.classList.toggle("has-guest", guestIds.length > 0);
 
-  setGuestControls(true);
+  guestPip1.style.display = guestIds[0] ? "block" : "none";
+  guestPip2.style.display = guestIds[1] ? "block" : "none";
+
+  guestIds.forEach(gid => {
+    socket.emit("watch-guest", { roomId, guestId: gid });
+  });
 });
+
 
 // khi guest-offline thì tắt controls
 socket.on("guest-offline", () => {
