@@ -126,7 +126,7 @@
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
-    
+
 const guestPipWrapHost = document.getElementById("guestPipWrapHost");
 
 
@@ -571,8 +571,8 @@ if (guestPipWrapHost) guestPipWrapHost.setAttribute("aria-hidden", "false");
 // khi guest-offline thì tắt controls
 socket.on("guest-offline", () => {
 
-  document.body.classList.remove("has-guest");
-document.body.classList.remove("focus-guest");
+ document.body.classList.remove("has-guest");
+
 if (guestPipWrapHost) guestPipWrapHost.setAttribute("aria-hidden", "true");
 
   setGuestControls(false);
@@ -593,13 +593,7 @@ socket.on("viewer-count", ({ count }) => {
 });
 
 
-if (guestPipWrapHost) {
-  guestPipWrapHost.addEventListener("click", () => {
-    // chỉ cho focus khi đang có guest stream
-    if (!guestVideo || !guestVideo.srcObject) return;
-    document.body.classList.toggle("focus-guest");
-  });
-}
+
 
   </script>
 </body>

@@ -398,49 +398,12 @@ code{
 .has-guest .pip-wrap{ display:block; }
 .pip-wrap{ display:none; } /* mặc định ẩn khi chưa có guest */
 
-/* Focus guest: phóng to guest thành màn hình chính */
-.focus-guest .pip-wrap{
-  inset: 12px;
-  right: 12px;
-  bottom: 12px;
-  width: auto;
-  max-width: none;
-  height: auto;
-  aspect-ratio: auto;
-  border-radius: 18px;
-}
 
-/* Khi focus guest, thu nhỏ host về góc */
-.focus-guest #hostCard{
-  position:absolute;
-  right: 14px;
-  bottom: 14px;
-  width: min(34vw, 320px);
-  aspect-ratio: 16/9;
-  overflow:hidden;
-  z-index: 10;
-  border-radius: 16px;
-}
-
-/* Mobile */
-@media (max-width: 520px){
-  .focus-guest #hostCard{
-    width: min(46vw, 220px);
-    right: 10px;
-    bottom: 10px;
-  }
-}
-
-
-
-@media (max-width: 520px){
-  .focus-me #hostCardGuest{
-    width: min(46vw, 220px);
-    right: 10px;
-    bottom: 10px;
-  }
-}
 
 #mePipWrap{
+  pointer-events: none;
+}
+
+#guestPipWrapHost{
   pointer-events: none;
 }
