@@ -18,14 +18,6 @@
             <div class="badge">Phòng Livestream</div>
             <code id="roomCode">-</code>
 
-            <div class="badge" id="statusBadge">⏳ Chưa bật cam/mic</div>
-            <button id="btnStart">Xin lên live</button>
-          </div>
-
-          <div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
-            <button id="btnLeaveLive" disabled>🚪 Rời live</button>
-          </div>
-
           <hr />
           <div class="log" id="log" style="display: none;"></div>
         </div>
@@ -58,10 +50,14 @@
           </div>
           <!-- /LIVE STAGE -->
              <div class="av-controls">
+  <button id="btnStart" class="av-btn" title="Xin lên live">🎤</button>
+  <button id="btnLeaveLive" class="av-btn" title="Rời live" disabled>🚪</button>
+
   <button id="guestMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
   <button id="guestCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
-  <button id="guestFlipBtn" class="av-btn" title="Đảo camera">🔄</button>
-</div>
+  <button id="guestFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
+             </div>
+
 
         </div>
       </div>
