@@ -347,15 +347,21 @@ chatText?.addEventListener("keydown", (e) => {
 });
 
 
-    function addChat(msg) {
-      const time = new Date(msg.ts).toLocaleTimeString();
-      const line = document.createElement("div");
-      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
-      chatBox.appendChild(line);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
+   function addChat(msg) {
+  if (!chatBox) return; // ✅ không có chatBox thì bỏ qua
+  const time = new Date(msg.ts).toLocaleTimeString();
+  const line = document.createElement("div");
+  line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
+  chatBox.appendChild(line);
+  chatBox.scrollTop = chatBox.scrollHeight;
+}
 
-    socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
+
+    socket.on("chat", (msg)=>{ 
+  try { addChat(msg); } catch(e) { console.warn("addChat skipped", e); }
+  try { pushOverlay(msg); } catch(e) { console.warn("pushOverlay error", e); }
+});
+
 
     const chatOverlay = document.getElementById("chatOverlay");
     function pushOverlay(msg){
