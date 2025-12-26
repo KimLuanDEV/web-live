@@ -9,397 +9,58 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>📱 Host</h1>
+      <h1>📱 Broadcast (Người phát)</h1>
+      <small>Mở trên điện thoại và bấm Start để phát live.</small>
       <hr />
 
       <div class="row">
         <div class="card">
           <div class="kv">
-            <div class="badge">Phòng Livestream</div>
+            <div class="badge">Phòng</div>
             <code id="roomCode">-</code>
 
             <div class="badge">Link xem</div>
             <code id="viewerLink">-</code>
-            <button id="copyViewer">Copy link</button>
-            <small>Gửi link xem cho khách.</small>
+            <button id="copyViewer">Copy link xem</button>
 
             <hr />
-            <button id="btnStart">Bắt đầu phát sóng</button>
-            <button id="btnStop" disabled>Dừng phát sóng</button>
-            <button id="btnFlip" disabled>🔄 Đảo Camera</button>
-
+            <button id="btnStart">Start Camera + Mic</button>
+            <button id="btnStop" disabled>Stop</button>
           </div>
           <hr />
-          <div class="log" id="log" style="display: none;"></div>
+          <div class="log" id="log"></div>
         </div>
 
         <div class="card">
+          <div class="badge">Preview</div>
+          <div class="video-wrap" style="margin-top:10px">
+            <!-- muted để preview tự chạy trên mobile -->
+            <video id="preview" autoplay playsinline muted></video>
+            <div class="av-controls">
+              <button id="hostFlipBtn" class="av-btn" title="Đảo camera">🔄</button>
+            </div>
 
-       
-
-         <div class="video-card" style="margin-top:10px">
-  <div class="live-overlay">
-    <span class="dot"></span>
-    <b>HOST</b>
-    <span style="opacity:.85"></span>
-  </div>
-
-<div class="viewer-count" id="viewerCountHost">👁: 0</div>
-
-  <div class="video-card__inner">
-    <video id="preview" autoplay playsinline muted></video>
-  </div>
-
- <div class="av-controls">
-  <button id="hostMicBtn" class="av-btn">🎙️</button>
-  <button id="hostCamBtn" class="av-btn">📷</button>
+          </div>
+          <small>Preview luôn muted để tránh bị chặn autoplay.</small>
         </div>
-
-</div>
-
       </div>
     </div>
   </div>
 
-<hr />
-<div class="card">
-  <div class="badge badge--info">👤 Khách xin lên live</div>
+  <script src="/socket.io/socket.io.js">
+    // ===== HOST: FLIP CAMERA (overlay button) =====
+    const hostFlipBtn = document.getElementById("hostFlipBtn");
+    let hostFacing = "user"; // "user" | "environment"
 
-<button id="btnMuteGuest" disabled>🔇 Tắt mic Khách</button>
-<button id="btnUnmuteGuest" disabled>🎙️ Bật mic Khách</button>
-<button id="btnKickGuest" disabled>⛔ Kích Khách</button>
-
-  <div style="margin-top:10px">
-    <div class="badge">Link khách mời</div>
-    <code id="guestLink">-</code>
-    <button id="copyGuest">Copy link</button>
-  </div>
-
-  <hr />
-  <div id="guestReq" class="log">Chưa có yêu cầu.</div>
-  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
-    <button id="btnApproveGuest" disabled style="flex:1">✅ Chấp nhận</button>
-    <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
-  </div>
-
-  <hr />
-  <div class="badge">🎥 Video khách mời</div>
-  <div class="video-card" style="margin-top:10px">
-    <div class="video-card__inner">
-      <video id="guestVideo" autoplay playsinline controls></video>
-    </div>
-  </div>
-</div>
-
-
-<hr />
-<div class="card chat">
-  <div class="badge badge--info">💬 Chat (Live)</div>
-
-  <div class="chatform">
-    <input id="chatName" value="Host" />
-    <input id="chatText" placeholder="Nhập tin nhắn..." />
-    <button id="chatSend" class="full">Gửi</button>
-  </div>
-
-  <div id="chatBox" class="chatbox"></div>
-</div>
-
-
-  
-  <script src="/socket.io/socket.io.js"></script>
-  <script>
-    const logEl = document.getElementById("log");
-    const preview = document.getElementById("preview");
-    const btnStart = document.getElementById("btnStart");
-    const btnStop = document.getElementById("btnStop");
-    const btnFlip = document.getElementById("btnFlip");
-
-    const params = new URLSearchParams(location.search);
-    const roomId = params.get("room") || "abc123";
-    document.getElementById("roomCode").textContent = roomId;
-
-    const viewerUrl = `${location.origin}/viewer.html?room=${encodeURIComponent(roomId)}`;
-    document.getElementById("viewerLink").textContent = viewerUrl;
-    document.getElementById("copyViewer").onclick = async () => {
-      try { await navigator.clipboard.writeText(viewerUrl); alert("Đã copy link xem!"); }
-      catch { prompt("Copy thủ công:", viewerUrl); }
-    };
-
-    // guest link
-    const guestUrl = `${location.origin}/guest.html?room=${encodeURIComponent(roomId)}`;
-    document.getElementById("guestLink").textContent = guestUrl;
-    document.getElementById("copyGuest").onclick = async () => {
-      try { await navigator.clipboard.writeText(guestUrl); alert("Đã copy link Guest!"); }
-      catch { prompt("Copy thủ công:", guestUrl); }
-    };
-
-    const socket = io();
-
-    let localStream = null;
-    let currentFacing = "user"; // user | environment
-
-    // One RTCPeerConnection per viewer
-    const pcs = new Map();
-
-    // Guest state
-    let pendingGuestId = null;
-    let approvedGuestId = null;
-    let pcGuestIn = null; // PC to receive guest + send host tracks to guest
-    const guestReq = document.getElementById("guestReq");
-    const btnApproveGuest = document.getElementById("btnApproveGuest");
-    const btnRejectGuest = document.getElementById("btnRejectGuest");
-    const guestVideo = document.getElementById("guestVideo");
-
-    async function getRtcConfig() {
-      const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
-
-      try {
-        const r = await fetch("/ice", { cache: "no-store" });
-        if (!r.ok) return fallback;
-
-        const data = await r.json();
-        if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
-
-        const cleanedIceServers = data.iceServers
-          .map(server => {
-            let urls = server.urls;
-            if (!urls) return null;
-            if (!Array.isArray(urls)) urls = [urls];
-
-            // remove invalid STUN urls that contain ?transport=
-            const safeUrls = urls.filter(u =>
-              typeof u === "string" &&
-              !(u.startsWith("stun:") && u.includes("?transport="))
-            );
-            if (safeUrls.length === 0) return null;
-            return { ...server, urls: safeUrls };
-          })
-          .filter(Boolean);
-
-        if (cleanedIceServers.length === 0) return fallback;
-        return { iceServers: cleanedIceServers };
-      } catch (e) {
-        console.error("ICE fetch error:", e);
-        return fallback;
-      }
-    }
-
-    function log(msg) {
-      logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
-      console.log(msg);
-    }
-
-    socket.emit("join-room", { roomId, role: "broadcaster" });
-
-    // ===== Viewer -> Host streaming =====
-    socket.on("watcher", async ({ viewerId }) => {
-      if (!localStream) {
-        log("Có viewer nhưng bạn chưa Start camera.");
-        return;
-      }
-      if (pcs.has(viewerId)) return;
-
-      log(`Viewer join: ${viewerId}`);
-
-      const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
-      pcs.set(viewerId, pc);
-
-      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-      pc.onicecandidate = (e) => {
-        if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
-      };
-
-      pc.oniceconnectionstatechange = () => log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
-
-      try {
-        const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
-        await pc.setLocalDescription(offer);
-        socket.emit("offer", { to: viewerId, description: pc.localDescription });
-      } catch (err) {
-        log("Lỗi tạo offer: " + err.message);
-      }
-    });
-
-    socket.on("answer", async ({ from, description }) => {
-      // could be viewer answer OR guest answer (rare in this flow)
-      const pc = pcs.get(from);
-      if (pc) {
-        try {
-          await pc.setRemoteDescription(description);
-          log(`Nhận answer từ: ${from}`);
-        } catch (err) {
-          log("Lỗi setRemoteDescription(answer): " + err.message);
-        }
-        return;
-      }
-      if (pcGuestIn && approvedGuestId === from) {
-        try {
-          await pcGuestIn.setRemoteDescription(description);
-          log("Nhận answer từ guest: " + from);
-        } catch (err) {
-          log("Lỗi answer guest: " + err.message);
-        }
-      }
-    });
-
-    socket.on("candidate", async ({ from, candidate }) => {
-      const pc = pcs.get(from);
-      if (pc) {
-        try { await pc.addIceCandidate(candidate); }
-        catch (err) { log("Lỗi addIceCandidate(viewer): " + err.message); }
-        return;
-      }
-      if (pcGuestIn && approvedGuestId === from) {
-        try { await pcGuestIn.addIceCandidate(candidate); }
-        catch (err) { log("Lỗi addIceCandidate(guest): " + err.message); }
-      }
-    });
-
-    socket.on("disconnectPeer", ({ peerId }) => {
-      const pc = pcs.get(peerId);
-      if (pc) {
-        pc.close();
-        pcs.delete(peerId);
-        log(`Viewer rời: ${peerId} -> close peer`);
-      }
-    });
-
-    // ===== Guest request/approve =====
-    socket.on("guest-request", ({ guestId }) => {
-      pendingGuestId = guestId;
-      guestReq.textContent = `GuestID: ${guestId} (bấm Chấp nhận để lên live)`;
-      btnApproveGuest.disabled = false;
-      btnRejectGuest.disabled = false;
-      log("Có guest xin lên live: " + guestId);
-    });
-
-    socket.on("guest-offline", () => {
-      log("Guest offline");
-      approvedGuestId = null;
-      pendingGuestId = null;
-      guestReq.textContent = "Guest đã rời.";
-      btnApproveGuest.disabled = true;
-      btnRejectGuest.disabled = true;
-      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
-      guestVideo.srcObject = null;
-    });
-
-    btnApproveGuest.onclick = () => {
-      if (!pendingGuestId) return;
-      approvedGuestId = pendingGuestId;
-      socket.emit("guest-approve", { roomId, guestId: pendingGuestId });
-      guestReq.textContent = `✅ Đã chấp nhận guest: ${pendingGuestId}`;
-      btnApproveGuest.disabled = true;
-      btnRejectGuest.disabled = true;
-
-      // Host also wants to watch guest so guest will create offer to host
-      socket.emit("watch-guest", { roomId });
-    };
-
-    btnRejectGuest.onclick = () => {
-      if (!pendingGuestId) return;
-      socket.emit("guest-reject", { guestId: pendingGuestId });
-      guestReq.textContent = "⛔ Đã từ chối guest.";
-      pendingGuestId = null;
-      btnApproveGuest.disabled = true;
-      btnRejectGuest.disabled = true;
-    };
-
-    // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
-    socket.on("offer", async ({ from, description }) => {
-      // Only handle guest offers (viewers never send offers to host in this app)
-      approvedGuestId = approvedGuestId || from;
-
-      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
-
-      const rtcConfig = await getRtcConfig();
-      pcGuestIn = new RTCPeerConnection(rtcConfig);
-
-      // send host tracks back to guest so guest can hear/see host (co-talk)
-      if (localStream) {
-        localStream.getTracks().forEach(t => pcGuestIn.addTrack(t, localStream));
-      }
-
-      pcGuestIn.ontrack = (e) => {
-        guestVideo.srcObject = e.streams[0];
-      };
-
-      pcGuestIn.onicecandidate = (e) => {
-        if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
-      };
-
-      pcGuestIn.oniceconnectionstatechange = () => log(`ICE(GUEST): ${pcGuestIn.iceConnectionState}`);
-
-      try {
-        await pcGuestIn.setRemoteDescription(description);
-        const answer = await pcGuestIn.createAnswer();
-        await pcGuestIn.setLocalDescription(answer);
-        socket.emit("answer", { to: from, description: pcGuestIn.localDescription });
-        log("Đã trả lời offer của guest: " + from);
-      } catch (err) {
-        log("Lỗi xử lý offer guest: " + err.message);
-      }
-    });
-
-    // ===== Start/Stop/Flip =====
-    async function start() {
-      if (localStream) return;
-
-      try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
-          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-        });
-
-        preview.srcObject = localStream;
-        btnStart.disabled = true;
-        btnStop.disabled = false;
-        btnFlip.disabled = false;
-
-        log("Đã Start camera + mic. Gửi link xem cho người khác.");
-        socket.emit("broadcaster-ready", { roomId });
-      } catch (err) {
-        log("Không mở được camera/mic: " + err.message);
-        alert("Không mở được camera/mic. Nếu trên điện thoại: cần HTTPS.");
-      }
-    }
-
-    function stop() {
-      // close all viewer peers
-      for (const [id, pc] of pcs.entries()) {
-        try { pc.close(); } catch {}
-        pcs.delete(id);
-      }
-
-      // close guest peer
-      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
-      guestVideo.srcObject = null;
-
-      if (localStream) {
-        localStream.getTracks().forEach(t => t.stop());
-        localStream = null;
-      }
-      preview.srcObject = null;
-
-      btnStart.disabled = false;
-      btnStop.disabled = true;
-      btnFlip.disabled = true;
-
-      log("Đã Stop.");
-    }
-
-    async function flipCamera() {
+    async function flipHostCamera() {
       if (!localStream) return;
 
-      currentFacing = (currentFacing === "user") ? "environment" : "user";
-      log("Đang đổi camera sang: " + (currentFacing === "user" ? "CAM TRƯỚC" : "CAM SAU"));
+      hostFacing = (hostFacing === "user") ? "environment" : "user";
+      log("🔄 Đảo camera Host: " + (hostFacing === "user" ? "TRƯỚC" : "SAU"));
 
       try {
         const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
+          video: { facingMode: { ideal: hostFacing }, width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: false
         });
 
@@ -412,126 +73,247 @@
           oldVideoTrack.stop();
         }
         localStream.addTrack(newVideoTrack);
+
+        // update preview
         preview.srcObject = localStream;
 
-        // replace for all viewer peers
+        // replaceTrack for all viewers
         for (const [viewerId, pc] of pcs.entries()) {
           const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
           if (sender) await sender.replaceTrack(newVideoTrack);
+          else pc.addTrack(newVideoTrack, localStream);
         }
 
-        // replace for guest peer
-        if (pcGuestIn) {
-          const sender = pcGuestIn.getSenders().find(s => s.track && s.track.kind === "video");
-          if (sender) await sender.replaceTrack(newVideoTrack);
-        }
-
-        log("✅ Đổi camera thành công.");
+        log("✅ Đã đảo camera Host.");
       } catch (err) {
-        log("❌ Đổi camera thất bại: " + err.message);
-        currentFacing = (currentFacing === "user") ? "environment" : "user";
-        alert("Không đổi được camera. Hãy kiểm tra quyền camera.");
+        // revert facing toggle on error
+        hostFacing = (hostFacing === "user") ? "environment" : "user";
+        log("❌ Đảo camera lỗi: " + err.message);
+        alert("Không đảo được camera: " + err.message);
       }
+    }
+
+    if (hostFlipBtn) {
+      hostFlipBtn.onclick = flipHostCamera;
+    }
+
+</script>
+  <script>
+    const logEl = document.getElementById("log");
+    const preview = document.getElementById("preview");
+    const btnStart = document.getElementById("btnStart");
+    const btnStop = document.getElementById("btnStop");
+
+    const params = new URLSearchParams(location.search);
+    const roomId = params.get("room") || "abc123";
+
+    document.getElementById("roomCode").textContent = roomId;
+
+    const viewerUrl = `${location.origin}/viewer.html?room=${encodeURIComponent(roomId)}`;
+    document.getElementById("viewerLink").textContent = viewerUrl;
+    document.getElementById("copyViewer").onclick = async () => {
+      try { await navigator.clipboard.writeText(viewerUrl); alert("Đã copy link xem!"); }
+      catch { prompt("Copy thủ công:", viewerUrl); }
+    };
+
+    const socket = io();
+    let localStream = null;
+
+    // One RTCPeerConnection per viewer
+    const pcs = new Map();
+
+    // STUN server (demo). TURN sẽ cần nếu mạng khó (4G/Carrier NAT)
+async function getRtcConfig() {
+  // fallback STUN nếu Twilio lỗi
+  const fallback = {
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+  };
+
+  try {
+    const r = await fetch("/ice", { cache: "no-store" });
+    if (!r.ok) return fallback;
+    const data = await r.json();
+    if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
+    return { iceServers: data.iceServers };
+  } catch {
+    return fallback;
+  }
+}
+
+
+
+    function log(msg) {
+      logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
+      console.log(msg);
+    }
+
+    socket.emit("join-room", { roomId, role: "broadcaster" });
+
+    socket.on("watcher", async ({ viewerId }) => {
+      if (!localStream) {
+        log("Có viewer nhưng bạn chưa Start camera.");
+        return;
+      }
+      log(`Viewer join: ${viewerId}`);
+
+      const rtcConfig = await getRtcConfig();
+const pc = new RTCPeerConnection(rtcConfig);
+
+
+
+      pcs.set(viewerId, pc);
+
+      // Add tracks
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          socket.emit("candidate", { to: viewerId, candidate: e.candidate });
+        }
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
+      };
+
+      try {
+        const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
+        await pc.setLocalDescription(offer);
+        socket.emit("offer", { to: viewerId, description: pc.localDescription });
+      } catch (err) {
+        log("Lỗi tạo offer: " + err.message);
+      }
+    });
+
+    socket.on("answer", async ({ from, description }) => {
+      const pc = pcs.get(from);
+      if (!pc) return;
+      try {
+        await pc.setRemoteDescription(description);
+        log(`Nhận answer từ viewer: ${from}`);
+      } catch (err) {
+        log("Lỗi setRemoteDescription(answer): " + err.message);
+      }
+    });
+
+    socket.on("candidate", async ({ from, candidate }) => {
+      const pc = pcs.get(from);
+      if (!pc) return;
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (err) {
+        log("Lỗi addIceCandidate: " + err.message);
+      }
+    });
+
+    socket.on("disconnectPeer", ({ peerId }) => {
+      const pc = pcs.get(peerId);
+      if (pc) {
+        pc.close();
+        pcs.delete(peerId);
+        log(`Viewer rời: ${peerId} -> close peer`);
+      }
+    });
+
+    socket.on("broadcaster-changed", () => {
+      log("Có broadcaster mới trong phòng (đang là bạn).");
+    });
+
+    async function start() {
+      if (localStream) return;
+
+      // Mobile best practice: request via user gesture (button click)
+      try {
+        localStream = await navigator.mediaDevices.getUserMedia({
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: "user" },
+          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        });
+
+        preview.srcObject = localStream;
+        btnStart.disabled = true;
+        btnStop.disabled = false;
+
+        log("Đã Start camera + mic. Gửi link xem cho người khác.");
+
+        // Nếu viewers đã vào trước, server sẽ gửi danh sách
+        // Mình sẽ yêu cầu họ reload bằng broadcaster-online đã đủ.
+      } catch (err) {
+        log("Không mở được camera/mic: " + err.message);
+        alert("Không mở được camera/mic. Nếu trên điện thoại: cần HTTPS.");
+      }
+    }
+
+    function stop() {
+      if (!localStream) return;
+
+      // close all peers
+      for (const [id, pc] of pcs.entries()) {
+        pc.close();
+        pcs.delete(id);
+      }
+
+      localStream.getTracks().forEach(t => t.stop());
+      localStream = null;
+      preview.srcObject = null;
+
+      btnStart.disabled = false;
+      btnStop.disabled = true;
+
+      log("Đã Stop.");
     }
 
     btnStart.onclick = start;
     btnStop.onclick = stop;
-    btnFlip.onclick = flipCamera;
 
+    // cleanup on close
     window.addEventListener("beforeunload", stop);
+  
+  
+    async function flipHostCamera() {
+      if (!localStream) return;
 
-    // ===== CHAT (BROADCAST) =====
-    const chatBox = document.getElementById("chatBox");
-    const chatName = document.getElementById("chatName");
-    const chatText = document.getElementById("chatText");
-    const chatSend = document.getElementById("chatSend");
+      hostFacing = (hostFacing === "user") ? "environment" : "user";
+      log("🔄 Đảo camera Host: " + (hostFacing === "user" ? "TRƯỚC" : "SAU"));
 
-    function addChat(msg) {
-      const time = new Date(msg.ts).toLocaleTimeString();
-      const line = document.createElement("div");
-      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
-      chatBox.appendChild(line);
-      chatBox.scrollTop = chatBox.scrollHeight;
+      try {
+        const newStream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: { ideal: hostFacing }, width: { ideal: 1280 }, height: { ideal: 720 } },
+          audio: false
+        });
+
+        const newVideoTrack = newStream.getVideoTracks()[0];
+        if (!newVideoTrack) throw new Error("Không lấy được video track mới");
+
+        const oldVideoTrack = localStream.getVideoTracks()[0];
+        if (oldVideoTrack) {
+          localStream.removeTrack(oldVideoTrack);
+          oldVideoTrack.stop();
+        }
+        localStream.addTrack(newVideoTrack);
+
+        // update preview
+        preview.srcObject = localStream;
+
+        // replaceTrack for all viewers
+        for (const [viewerId, pc] of pcs.entries()) {
+          const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
+          if (sender) await sender.replaceTrack(newVideoTrack);
+          else pc.addTrack(newVideoTrack, localStream);
+        }
+
+        log("✅ Đã đảo camera Host.");
+      } catch (err) {
+        // revert facing toggle on error
+        hostFacing = (hostFacing === "user") ? "environment" : "user";
+        log("❌ Đảo camera lỗi: " + err.message);
+        alert("Không đảo được camera: " + err.message);
+      }
     }
 
-    socket.on("chat", addChat);
+    if (hostFlipBtn) {
+      hostFlipBtn.onclick = flipHostCamera;
+    }
 
-    chatSend.onclick = () => {
-      const name = (chatName.value || "Host").trim();
-      const text = chatText.value.trim();
-      if (!text) return;
-
-      socket.emit("chat", { roomId, name, text });
-      chatText.value = "";
-    };
-
-// ===== HOST AV TOGGLE =====
-const hostMicBtn = document.getElementById("hostMicBtn");
-const hostCamBtn = document.getElementById("hostCamBtn");
-
-let hostMicOn = true;
-let hostCamOn = true;
-
-function toggleHostMic(){
-  if (!localStream) return;
-  const track = localStream.getAudioTracks()[0];
-  if (!track) return;
-
-  hostMicOn = !hostMicOn;
-  track.enabled = hostMicOn;
-  hostMicBtn.classList.toggle("off", !hostMicOn);
-  hostMicBtn.textContent = hostMicOn ? "🎙️" : "🔇";
-}
-
-function toggleHostCam(){
-  if (!localStream) return;
-  const track = localStream.getVideoTracks()[0];
-  if (!track) return;
-
-  hostCamOn = !hostCamOn;
-  track.enabled = hostCamOn;
-  hostCamBtn.classList.toggle("off", !hostCamOn);
-  hostCamBtn.textContent = hostCamOn ? "📷" : "🚫";
-}
-
-hostMicBtn.onclick = toggleHostMic;
-hostCamBtn.onclick = toggleHostCam;
-
-    
-const btnMuteGuest = document.getElementById("btnMuteGuest");
-const btnUnmuteGuest = document.getElementById("btnUnmuteGuest");
-const btnKickGuest = document.getElementById("btnKickGuest");
-
-function setGuestControls(on) {
-  btnMuteGuest.disabled = !on;
-  btnUnmuteGuest.disabled = !on;
-  btnKickGuest.disabled = !on;
-}
-
-// khi host chấp nhận guest xong (hoặc khi guest-online), bật controls
-socket.on("guest-online", ({ guestId }) => {
-  setGuestControls(true);
-});
-
-// khi guest-offline thì tắt controls
-socket.on("guest-offline", () => {
-  setGuestControls(false);
-});
-
-// nút điều khiển
-btnMuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: true });
-btnUnmuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: false });
-btnKickGuest.onclick = () => socket.emit("host-kick-guest", { roomId });
-
-
-const viewerCountHost = document.getElementById("viewerCountHost");
-
-socket.on("viewer-count", ({ count }) => {
-  if (viewerCountHost) {
-    viewerCountHost.textContent = `👁: ${count}`;
-  }
-});
-
-  </script>
+</script>
 </body>
 </html>
