@@ -133,23 +133,7 @@
     const hostFlipBtn = document.getElementById("hostFlipBtn");
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
-    const btnOffCamGuest = document.getElementById("btnOffCamGuest");
-    const btnOnCamGuest  = document.getElementById("btnOnCamGuest");
-    
-
-function setGuestControls(on) {
-  btnMuteGuest.disabled = !on;
-  btnUnmuteGuest.disabled = !on;
-  btnKickGuest.disabled = !on;
-
-  btnOffCamGuest.disabled = !on;
-  btnOnCamGuest.disabled = !on;
-}
-
-// nút điều khiển
-btnOffCamGuest.onclick = () => socket.emit("host-cam-guest", { roomId, off: true });
-btnOnCamGuest.onclick  = () => socket.emit("host-cam-guest", { roomId, off: false });
-
+   
 
 
 
@@ -166,7 +150,7 @@ btnOnCamGuest.onclick  = () => socket.emit("host-cam-guest", { roomId, off: fals
     const viewerUrl = `${location.origin}/viewer.html?room=${encodeURIComponent(roomId)}`;
     
     document.getElementById("copyViewer").onclick = async () => {
-      try { await navigator.clipboard.writeText(viewerUrl); toast("👀 Đã copy link xem"); }
+      try { await navigator.clipboard.writeText(viewerUrl); alert("👀 Đã copy link xem"); }
       catch { prompt("Copy link xem:", viewerUrl); }
     };
 
@@ -174,7 +158,7 @@ btnOnCamGuest.onclick  = () => socket.emit("host-cam-guest", { roomId, off: fals
     const guestUrl = `${location.origin}/guest.html?room=${encodeURIComponent(roomId)}`;
     
     document.getElementById("copyGuest").onclick = async () => {
-      try { await navigator.clipboard.writeText(guestUrl); toast("👤 Đã copy link khách mời"); }
+      try { await navigator.clipboard.writeText(guestUrl); alert("👤 Đã copy link khách mời"); }
       catch { prompt("Copy link khách mời:", guestUrl); }
     };
 
@@ -577,12 +561,18 @@ hostCamBtn.onclick = toggleHostCam;
 const btnMuteGuest = document.getElementById("btnMuteGuest");
 const btnUnmuteGuest = document.getElementById("btnUnmuteGuest");
 const btnKickGuest = document.getElementById("btnKickGuest");
+const btnOffCamGuest = document.getElementById("btnOffCamGuest");
+const btnOnCamGuest  = document.getElementById("btnOnCamGuest");
 
 function setGuestControls(on) {
   btnMuteGuest.disabled = !on;
   btnUnmuteGuest.disabled = !on;
   btnKickGuest.disabled = !on;
 }
+
+// nút điều khiển
+btnOffCamGuest.onclick = () => socket.emit("host-cam-guest", { roomId, off: true });
+btnOnCamGuest.onclick  = () => socket.emit("host-cam-guest", { roomId, off: false });
 
 // khi host chấp nhận guest xong (hoặc khi guest-online), bật controls
 socket.on("guest-online", ({ guestId }) => {
