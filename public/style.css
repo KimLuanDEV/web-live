@@ -318,3 +318,53 @@ code{
   line-height:1;
 }
 .emoji-btn:hover{ filter:brightness(1.12); }
+
+/* ===== CHAT LIST (with role colors) ===== */
+.chatline{display:flex;gap:8px;align-items:flex-start}
+.chatline__meta{font-weight:700;opacity:.9}
+.chatline__text{opacity:.95}
+.chatline__meta.role-host{color: var(--red);}
+.chatline__meta.role-guest{color: var(--gold);}
+.chatline__meta.role-viewer{color: var(--blue);}
+
+.pin-btn{
+  width:auto;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid var(--stroke);
+  background: rgba(255,255,255,.06);
+  cursor:pointer;
+  font-size:14px;
+  line-height:1;
+}
+.pin-btn:hover{ filter:brightness(1.1); }
+
+.pin-tools{display:flex;gap:10px;margin-top:8px}
+.pin-tools button{width:auto}
+
+/* ===== ROLE COLORS ON VIDEO CHAT BUBBLES ===== */
+.chat-bubble.role-host{ border-color: rgba(255,59,107,.35); background: rgba(255,59,107,.12); }
+.chat-bubble.role-guest{ border-color: rgba(255,211,110,.35); background: rgba(255,211,110,.10); }
+.chat-bubble.role-viewer{ border-color: rgba(95,168,255,.35); background: rgba(95,168,255,.10); }
+
+/* ===== PINNED MESSAGE OVERLAY ===== */
+.pin-overlay{
+  position:absolute;
+  left:12px;
+  top:54px;
+  width:min(84%, 560px);
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  z-index:7;
+  box-shadow: 0 10px 24px rgba(0,0,0,.45);
+  font-size:13px;
+  line-height:1.25;
+  overflow-wrap:anywhere;
+}
+.pin-overlay.role-host{ border-color: rgba(255,59,107,.35); }
+.pin-overlay.role-guest{ border-color: rgba(255,211,110,.35); }
+.pin-overlay.role-viewer{ border-color: rgba(95,168,255,.35); }
+.pin-overlay b{margin-right:6px}
