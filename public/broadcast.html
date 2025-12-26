@@ -50,28 +50,6 @@
     <div class="viewer-count" id="viewerCountHost">👁: 0</div>
     <div class="chat-overlay" id="chatOverlay"></div>
 
-<!-- CHAT FIXED BOX -->
-<div class="chat-fixed" id="chatFixed"></div>
-
-<!-- CHAT INPUT -->
-<div class="chat-input-wrap">
-  <input
-    id="chatText"
-    class="chat-input"
-    placeholder="Nhập chat..."
-    autocomplete="off"
-  />
-  <button id="chatSendBtn" class="chat-send-btn" type="button">➤</button>
-</div>
-
-<!-- CHAT ICON -->
-<button class="chat-fab" id="chatFab" type="button">💬</button>
-
-
-
-<!-- /CHAT UI -->
-
-
     <div class="video-card__inner">
       <video id="preview" autoplay playsinline muted></video>
     </div>
@@ -120,6 +98,29 @@
 </div>
 
 
+<hr />
+<div class="card chat">
+  <div class="badge badge--info">💬 Chat (Live)</div>
+
+  <div class="chatform">
+    <input id="chatName" value="Host" />
+    <input id="chatText" placeholder="Nhập tin nhắn..." />
+    <button id="chatSend" class="full">Gửi</button>
+  </div>
+
+  <div class="emoji-bar" id="emojiBar">
+    <button type="button" class="emoji-btn" data-emoji="❤️">❤️</button>
+    <button type="button" class="emoji-btn" data-emoji="🔥">🔥</button>
+    <button type="button" class="emoji-btn" data-emoji="😂">😂</button>
+    <button type="button" class="emoji-btn" data-emoji="👍">👍</button>
+    <button type="button" class="emoji-btn" data-emoji="👏">👏</button>
+    <button type="button" class="emoji-btn" data-emoji="😮">😮</button>
+    <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
+  </div>
+
+
+  <div id="chatBox" class="chatbox"></div>
+</div>
 
 
   
@@ -466,78 +467,15 @@ const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-// ===== CHAT FIXED IN VIDEO =====
-const chatFixed = document.getElementById("chatFixed");
-const chatFab = document.getElementById("chatFab");
-const chatInputWrap = document.querySelector(".chat-input-wrap");
-const chatSendBtn = document.getElementById("chatSendBtn");
+    function addChat(msg) {
+      const time = new Date(msg.ts).toLocaleTimeString();
+      const line = document.createElement("div");
+      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
+      chatBox.appendChild(line);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
-// mở input
-chatFab?.addEventListener("click", () => {
-  chatInputWrap.classList.add("show");
-  setTimeout(() => chatText.focus(), 50);
-});
-
-// render chat vào video
-function renderChatFixed(msg){
-  if (!chatFixed) return;
-
-  const el = document.createElement("div");
-  el.className = "chat-line";
-  el.textContent = `${msg.name}: ${msg.text}`;
-  chatFixed.appendChild(el);
-
-  // giữ tối đa 6 dòng
-  while (chatFixed.children.length > 6) {
-    chatFixed.removeChild(chatFixed.firstChild);
-  }
-}
-
-// nhận chat realtime
-socket.on("chat", (msg) => {
-  renderChatFixed(msg);
-});
-
-// gửi chat
-function sendChat(){
-  const text = chatText.value.trim();
-  if (!text) return;
-
-  socket.emit("chat", {
-    roomId,
-    name: chatName?.value || "Viewer",
-    text
-  });
-
-  chatText.value = "";
-  chatInputWrap.classList.remove("show");
-}
-
-chatSendBtn?.addEventListener("click", sendChat);
-chatText?.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    sendChat();
-  }
-});
-
-
-
-
-   function addChat(msg) {
-  if (!chatBox) return; // ✅ không có chatBox thì bỏ qua
-  const time = new Date(msg.ts).toLocaleTimeString();
-  const line = document.createElement("div");
-  line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
-  chatBox.appendChild(line);
-  chatBox.scrollTop = chatBox.scrollHeight;
-}
-
-   socket.on("chat", (msg)=>{ 
-  try { addChat(msg); } catch(e) { console.warn("addChat skipped", e); }
-  try { pushOverlay(msg); } catch(e) { console.warn("pushOverlay error", e); }
-});
-
+    socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
 
     // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
     const chatOverlay = document.getElementById("chatOverlay");
