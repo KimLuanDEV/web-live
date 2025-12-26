@@ -34,28 +34,30 @@
         </div>
 
         <div class="card">
-         <div class="video-card" style="margin-top:10px">
-  <div class="live-overlay">
-    <span class="dot"></span>
-    <b>LIVE</b>
-    
+
+        <div class="live-stage" id="liveStage" style="margin-top:10px">
+  <!-- HOST -->
+  <div class="video-card live-main" id="hostCard">
+    <div class="live-overlay">
+      <span class="dot"></span>
+      <b>LIVE</b>
+    </div>
+
+    <div class="viewer-count" id="viewerCountViewer"> 👁: 0</div>
+    <div class="chat-overlay" id="chatOverlay"></div>
+
+    <div class="video-card__inner">
+      <video id="player" autoplay playsinline controls></video>
+    </div>
   </div>
 
-<div class="viewer-count" id="viewerCountViewer"> 👁: 0</div>
-
-<div class="chat-overlay" id="chatOverlay"></div>
-
-  <div class="video-card__inner">
-    <video id="player" autoplay playsinline controls></video>
-  </div>
-</div>
-<hr />
-<div class="badge badge--info">👤 Khách mời</div>
-<div class="video-card" style="margin-top:10px">
-  <div class="video-card__inner">
+  <!-- GUEST (PIP) -->
+  <div class="pip-wrap" id="guestPipWrap" aria-hidden="true">
+    <div class="pip-badge">👤 GUEST</div>
     <video id="guestPlayer" autoplay playsinline controls></video>
   </div>
 </div>
+
 
         </div>
       </div>
@@ -99,6 +101,12 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
     document.getElementById("roomCode").textContent = roomId;
+
+const liveStage = document.getElementById("liveStage");
+const guestPipWrap = document.getElementById("guestPipWrap");
+
+let swapped = false; // false: host main, true: guest main
+
 
     const socket = io();
     let joined = false;
@@ -161,6 +169,10 @@
 
     // guest events
     socket.on("guest-online", ({ guestId: gid }) => {
+
+      document.body.classList.add("has-guest");
+if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "false");
+
       guestId = gid;
       log("Guest online: " + gid);
       setStatus("🟢 Có Guest cùng live");
@@ -169,12 +181,20 @@
     });
 
     socket.on("guest-offline", () => {
+
+      document.body.classList.remove("has-guest");
+document.body.classList.remove("swap-live");
+swapped = false;
+if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
+
       log("Guest offline");
       guestId = null;
       guestPlayer.srcObject = null;
       // close guest pc if exists
       cleanupPeer("guest");
     });
+
+
 
     async function join() {
       if (joined) return;
@@ -357,6 +377,26 @@ socket.on("viewer-count", ({ count }) => {
     viewerCountViewer.textContent = `👁: ${count}`;
   }
 });
+
+
+function swapStreams(){
+  const hostStream = player.srcObject;
+  const guestStream = guestPlayer.srcObject;
+  if (!hostStream || !guestStream) return;
+
+  // đổi stream
+  player.srcObject = guestStream;
+  guestPlayer.srcObject = hostStream;
+
+  swapped = !swapped;
+  document.body.classList.toggle("swap-live", swapped);
+}
+
+if (guestPipWrap) {
+  guestPipWrap.addEventListener("click", () => {
+    swapStreams();
+  });
+}
 
   </script>
 </body>
