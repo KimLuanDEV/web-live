@@ -46,6 +46,8 @@
 
 <div class="viewer-count" id="viewerCountHost">👁: 0</div>
 
+<div class="chat-overlay" id="chatOverlay"></div>
+
   <div class="video-card__inner">
     <video id="preview" autoplay playsinline muted></video>
   </div>
@@ -101,6 +103,17 @@
     <input id="chatText" placeholder="Nhập tin nhắn..." />
     <button id="chatSend" class="full">Gửi</button>
   </div>
+
+  <div class="emoji-bar" id="emojiBar">
+    <button type="button" class="emoji-btn" data-emoji="❤️">❤️</button>
+    <button type="button" class="emoji-btn" data-emoji="🔥">🔥</button>
+    <button type="button" class="emoji-btn" data-emoji="😂">😂</button>
+    <button type="button" class="emoji-btn" data-emoji="👍">👍</button>
+    <button type="button" class="emoji-btn" data-emoji="👏">👏</button>
+    <button type="button" class="emoji-btn" data-emoji="😮">😮</button>
+    <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
+  </div>
+
 
   <div id="chatBox" class="chatbox"></div>
 </div>
@@ -454,7 +467,37 @@
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    socket.on("chat", addChat);
+    socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
+
+    // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
+    const chatOverlay = document.getElementById("chatOverlay");
+    function pushOverlay(msg){
+      if (!chatOverlay) return;
+      const el = document.createElement("div");
+      el.className = "chat-bubble";
+      el.textContent = `${msg.name}: ${msg.text}`;
+      chatOverlay.appendChild(el);
+
+      // keep only last 4 bubbles
+      while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
+
+      // auto fade + remove
+      setTimeout(() => el.classList.add("hide"), 2600);
+      setTimeout(() => { try { el.remove(); } catch {} }, 3200);
+    }
+
+    // add emoji buttons
+    const emojiBar = document.getElementById("emojiBar");
+    if (emojiBar) {
+      emojiBar.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-emoji]");
+        if (!btn) return;
+        const em = btn.getAttribute("data-emoji") || "";
+        chatText.value = (chatText.value || "") + em;
+        chatText.focus();
+      });
+    }
+
 
     chatSend.onclick = () => {
       const name = (chatName.value || "Host").trim();
