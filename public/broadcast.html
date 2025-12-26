@@ -26,7 +26,7 @@
             <hr />
             <button id="btnStart">Bắt đầu phát sóng</button>
             <button id="btnStop" disabled>Dừng phát sóng</button>
-            <button id="btnFlip" disabled>🔄 Đảo Camera</button>
+           
 
           </div>
           <hr />
@@ -63,10 +63,12 @@
   </div>
 </div>
 
-   <div class="av-controls">
-      <button id="hostMicBtn" class="av-btn">🎙️</button>
-      <button id="hostCamBtn" class="av-btn">📷</button>
-    </div>
+  <div class="av-controls">
+  <button id="hostMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
+  <button id="hostCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
+  <button id="hostFlipBtn" class="av-btn" title="Đảo camera">🔄</button>
+</div>
+
 
       </div>
     </div>
@@ -133,7 +135,8 @@ const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const preview = document.getElementById("preview");
     const btnStart = document.getElementById("btnStart");
     const btnStop = document.getElementById("btnStop");
-    const btnFlip = document.getElementById("btnFlip");
+    const hostFlipBtn = document.getElementById("hostFlipBtn");
+   
 
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
@@ -378,6 +381,8 @@ const guestPipWrapHost = document.getElementById("guestPipWrapHost");
         btnStart.disabled = true;
         btnStop.disabled = false;
         btnFlip.disabled = false;
+        hostFlipBtn.disabled = false;
+
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
         socket.emit("broadcaster-ready", { roomId });
@@ -407,6 +412,8 @@ const guestPipWrapHost = document.getElementById("guestPipWrapHost");
       btnStart.disabled = false;
       btnStop.disabled = true;
       btnFlip.disabled = true;
+      hostFlipBtn.disabled = true;
+
 
       log("Đã Stop.");
     }
@@ -456,7 +463,7 @@ const guestPipWrapHost = document.getElementById("guestPipWrapHost");
 
     btnStart.onclick = start;
     btnStop.onclick = stop;
-    btnFlip.onclick = flipCamera;
+    hostFlipBtn.onclick = flipCamera;
 
     window.addEventListener("beforeunload", stop);
 
