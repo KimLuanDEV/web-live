@@ -334,9 +334,7 @@
         } catch (err) {
           log("Lỗi answer guest: " + err.message);
         }
-      } catch (err) {
-          log("Lỗi answer guest: " + err.message);
-        }
+      
       }
     });
 
@@ -356,8 +354,7 @@
           log("Lỗi answer guest: " + err.message);
         }
       }
-        catch (err) { log("Lỗi addIceCandidate(guest): " + err.message); }
-      }
+        
     });
 
     socket.on("disconnectPeer", ({ peerId }) => {
