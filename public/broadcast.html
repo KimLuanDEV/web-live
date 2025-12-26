@@ -150,7 +150,7 @@
     const viewerUrl = `${location.origin}/viewer.html?room=${encodeURIComponent(roomId)}`;
     
     document.getElementById("copyViewer").onclick = async () => {
-      try { await navigator.clipboard.writeText(viewerUrl); alert("👀 Đã copy link xem"); }
+      try { await navigator.clipboard.writeText(viewerUrl); toast("👀 Đã copy link xem"); }
       catch { prompt("Copy link xem:", viewerUrl); }
     };
 
@@ -158,7 +158,7 @@
     const guestUrl = `${location.origin}/guest.html?room=${encodeURIComponent(roomId)}`;
     
     document.getElementById("copyGuest").onclick = async () => {
-      try { await navigator.clipboard.writeText(guestUrl); alert("👤 Đã copy link khách mời"); }
+      try { await navigator.clipboard.writeText(guestUrl); toast("👤 Đã copy link khách mời"); }
       catch { prompt("Copy link khách mời:", guestUrl); }
     };
 
