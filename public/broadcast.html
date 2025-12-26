@@ -51,32 +51,18 @@
     <div class="chat-overlay" id="chatOverlay"></div>
 
 <!-- CHAT UI (inside video) -->
-<button class="chat-fab" id="chatFab" type="button" title="Mở chat">💬</button>
-
-<div class="chat-panel" id="chatPanel" aria-hidden="true">
-  <div class="chat-panel__head">
-    <b>💬 Chat</b>
-    <button class="chat-panel__close" id="chatClose" type="button">✕</button>
-  </div>
-
-  <div id="chatBox" class="chatbox chatbox--panel"></div>
-
-  <div class="chatform chatform--panel">
-    <input id="chatName" placeholder="Tên của bạn" />
-    <input id="chatText" placeholder="Nhập tin nhắn..." />
-    <button id="chatSend" class="full" type="button">Gửi</button>
-  </div>
-
-  <div class="emoji-bar" id="emojiBar">
-    <button type="button" class="emoji-btn" data-emoji="❤️">❤️</button>
-    <button type="button" class="emoji-btn" data-emoji="🔥">🔥</button>
-    <button type="button" class="emoji-btn" data-emoji="😂">😂</button>
-    <button type="button" class="emoji-btn" data-emoji="👍">👍</button>
-    <button type="button" class="emoji-btn" data-emoji="👏">👏</button>
-    <button type="button" class="emoji-btn" data-emoji="😮">😮</button>
-    <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
-  </div>
+<!-- CHAT INPUT OVER VIDEO -->
+<div class="chat-input-wrap">
+  <input
+    id="chatText"
+    class="chat-input"
+    placeholder="Nhập chat..."
+    autocomplete="off"
+  />
 </div>
+
+<button class="chat-fab" id="chatFab" type="button" title="Chat">💬</button>
+
 <!-- /CHAT UI -->
 
 
@@ -474,33 +460,45 @@ const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-// ===== CHAT PANEL TOGGLE =====
+// ===== QUICK CHAT INPUT =====
 const chatFab = document.getElementById("chatFab");
-const chatPanel = document.getElementById("chatPanel");
-const chatClose = document.getElementById("chatClose");
+const chatInputWrap = document.querySelector(".chat-input-wrap");
 
-function openChatPanel(){
-  if (!chatPanel) return;
-  chatPanel.classList.add("open");
-  chatPanel.setAttribute("aria-hidden", "false");
-  setTimeout(() => chatText?.focus(), 50);
-}
-function closeChatPanel(){
-  if (!chatPanel) return;
-  chatPanel.classList.remove("open");
-  chatPanel.setAttribute("aria-hidden", "true");
-}
 
 chatFab?.addEventListener("click", () => {
-  if (!chatPanel) return;
-  chatPanel.classList.contains("open") ? closeChatPanel() : openChatPanel();
-});
-chatClose?.addEventListener("click", closeChatPanel);
+  if (!chatInputWrap || !chatText) return;
 
-// bấm ESC để đóng
-window.addEventListener("keydown", (e) => {
-  if (e.key === "Escape") closeChatPanel();
+  chatInputWrap.classList.add("show");
+
+  // force focus → mobile bật bàn phím
+  setTimeout(() => {
+    chatText.focus();
+    chatText.scrollIntoView({ block: "center", behavior: "smooth" });
+  }, 50);
 });
+
+// gửi bằng Enter
+chatText?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    sendChat();
+  }
+});
+
+function sendChat(){
+  const text = chatText.value.trim();
+  if (!text) return;
+
+  socket.emit("chat", {
+    roomId,
+    name: chatName?.value || "Viewer",
+    text
+  });
+
+  chatText.value = "";
+  chatInputWrap.classList.remove("show");
+}
+
 
 
     function addChat(msg) {
