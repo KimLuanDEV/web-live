@@ -9,7 +9,7 @@
 <body>
   <div class="container">
     <div class="card">
-      <h1>🎤 Khách mời</h1>
+      <h1>👤 Khách mời</h1>
       <hr />
 
       <div class="row">
@@ -20,18 +20,21 @@
 
             <div class="badge" id="statusBadge">⏳ Chưa bật cam/mic</div>
             <button id="btnStart">Xin lên live</button>
-            <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
-              <button id="btnFlipCam" disabled>🔄 Đảo camera</button>
-              <button id="btnLeaveLive" disabled>🚪 Rời live</button>
-            </div>
-
           </div>
+          
+<div style="display:flex; gap:10px; margin-top:10px; flex-wrap:wrap">
+  <button id="btnFlipCam" disabled>🔄 Đảo camera</button>
+  <button id="btnLeaveLive" disabled>🚪 Rời live</button>
+</div>
 
           <hr />
-          <div class="log" id="log"></div>
+          <div class="log" id="log" style="display: none;"></div>
         </div>
 
         <div class="card">
+
+       
+   
           <div class="video-card" style="margin-top:10px">
             <div class="live-overlay">
               <span class="dot"></span>
@@ -42,6 +45,11 @@
             <div class="video-card__inner">
               <video id="me" autoplay playsinline muted></video>
             </div>
+
+              <div class="av-controls">
+  <button id="guestMicBtn" class="av-btn">🎙️</button>
+  <button id="guestCamBtn" class="av-btn">📷</button>
+</div>
           </div>
 
           <hr />
@@ -76,6 +84,7 @@
     const me = document.getElementById("me");
     const hostVideo = document.getElementById("hostVideo");
     const btnStart = document.getElementById("btnStart");
+
     const btnFlipCam = document.getElementById("btnFlipCam");
     const btnLeaveLive = document.getElementById("btnLeaveLive");
 
@@ -86,8 +95,8 @@
     const socket = io();
     let localStream = null;
     const pcs = new Map(); // peerId -> RTCPeerConnection
-    let currentFacing = "user";
-    let approved = false;
+
+    let currentFacing = "user"; // user (cam trước) | environment (cam sau)
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -129,105 +138,26 @@
       if (localStream) return;
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: "user" } },
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
           audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
         });
         me.srcObject = localStream;
-        btnFlipCam.disabled = false;
-        btnLeaveLive.disabled = false;
 
         socket.emit("join-room", { roomId, role: "guest" });
         setStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
+
+        // bật nút điều khiển guest
+        btnFlipCam.disabled = false;
+        btnLeaveLive.disabled = false;
       } catch (e) {
         alert("Không mở được camera/mic: " + e.message);
       }
     };
-function closeAllPeers() {
-  try {
-    pcs.forEach((pc) => { try { pc.close(); } catch {} });
-    pcs.clear();
-  } catch {}
-}
-
-function stopLocalStream() {
-  try {
-    if (localStream) {
-      localStream.getTracks().forEach(t => { try { t.stop(); } catch {} });
-    }
-  } catch {}
-  localStream = null;
-  me.srcObject = null;
-}
-
-function leaveLive(reason = "") {
-  if (reason) log(reason);
-  // reset state
-  approved = false;
-  btnStart.disabled = false;
-  btnFlipCam.disabled = true;
-  btnLeaveLive.disabled = true;
-
-  closeAllPeers();
-  stopLocalStream();
-
-  try { socket.disconnect(); } catch {}
-
-  // quay về viewer cùng room
-  location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
-}
-
-btnLeaveLive.onclick = () => leaveLive("🚪 Bạn đã rời live.");
-
-btnFlipCam.onclick = async () => {
-  if (!localStream) return;
-
-  currentFacing = (currentFacing === "user") ? "environment" : "user";
-  log("🔄 Đang đảo camera: " + (currentFacing === "user" ? "TRƯỚC" : "SAU"));
-
-  try {
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
-      audio: false
-    });
-    const newVideoTrack = newStream.getVideoTracks()[0];
-    if (!newVideoTrack) throw new Error("Không lấy được camera mới");
-
-    // thay video track trong localStream
-    const oldVideoTrack = localStream.getVideoTracks()[0];
-    if (oldVideoTrack) {
-      localStream.removeTrack(oldVideoTrack);
-      try { oldVideoTrack.stop(); } catch {}
-    }
-    localStream.addTrack(newVideoTrack);
-
-    // update preview
-    me.srcObject = localStream;
-
-    // replaceTrack cho mọi peer
-    pcs.forEach(async (pc) => {
-      const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
-      if (sender) {
-        try { await sender.replaceTrack(newVideoTrack); } catch {}
-      } else {
-        try { pc.addTrack(newVideoTrack, localStream); } catch {}
-      }
-    });
-
-    log("✅ Đảo camera xong.");
-  } catch (e) {
-    // revert facing for next attempt
-    currentFacing = (currentFacing === "user") ? "environment" : "user";
-    alert("Không đảo được camera: " + e.message);
-    log("❌ Lỗi đảo camera: " + e.message);
-  }
-};
-
 
     socket.on("guest-pending", () => setStatus("⏳ Đang chờ host duyệt..."));
     socket.on("guest-rejected", () => setStatus("⛔ Host từ chối."));
     socket.on("guest-approved", () => {
-      approved = true;
       setStatus("✅ Được duyệt! Bạn đang lên live.");
       log("Được duyệt! Bây giờ viewer/host sẽ kết nối tới bạn.");
     });
@@ -280,7 +210,74 @@ btnFlipCam.onclick = async () => {
       catch (err) { log("Lỗi addIceCandidate: " + err.message); }
     });
 
-    window.addEventListener("beforeunload", () => {
+    // ===== GUEST: FLIP CAMERA + LEAVE LIVE =====
+async function flipCamera() {
+  if (!localStream) return;
+  currentFacing = (currentFacing === "user") ? "environment" : "user";
+  log("🔄 Đang đảo camera: " + (currentFacing === "user" ? "TRƯỚC" : "SAU"));
+
+  try {
+    const newStream = await navigator.mediaDevices.getUserMedia({
+      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
+      audio: false
+    });
+    const newVideoTrack = newStream.getVideoTracks()[0];
+    if (!newVideoTrack) throw new Error("Không lấy được camera mới");
+
+    const oldVideoTrack = localStream.getVideoTracks()[0];
+    if (oldVideoTrack) {
+      localStream.removeTrack(oldVideoTrack);
+      oldVideoTrack.stop();
+    }
+    localStream.addTrack(newVideoTrack);
+
+    // cập nhật preview
+    me.srcObject = localStream;
+
+    // replaceTrack cho tất cả peer
+    for (const pc of pcs.values()) {
+      const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
+      if (sender) await sender.replaceTrack(newVideoTrack);
+      else pc.addTrack(newVideoTrack, localStream);
+    }
+
+    log("✅ Đảo camera thành công");
+  } catch (err) {
+    // revert state để lần sau thử lại
+    currentFacing = (currentFacing === "user") ? "environment" : "user";
+    log("❌ Không đảo được camera: " + err.message);
+    alert("Không đảo được camera: " + err.message);
+  }
+}
+
+function leaveLive() {
+  log("🚪 Rời live...");
+
+  // đóng tất cả peer
+  for (const pc of pcs.values()) { try { pc.close(); } catch {} }
+  pcs.clear();
+
+  // tắt cam/mic
+  if (localStream) {
+    try { localStream.getTracks().forEach(t => t.stop()); } catch {}
+    localStream = null;
+  }
+
+  // disable controls
+  btnFlipCam.disabled = true;
+  btnLeaveLive.disabled = true;
+
+  // ngắt socket để server nhận disconnect -> guest-offline
+  try { socket.disconnect(); } catch {}
+
+  // về viewer
+  location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
+}
+
+btnFlipCam.onclick = flipCamera;
+btnLeaveLive.onclick = leaveLive;
+
+window.addEventListener("beforeunload", () => {
       for (const pc of pcs.values()) { try { pc.close(); } catch {} }
       pcs.clear();
       if (localStream) localStream.getTracks().forEach(t => t.stop());
@@ -309,6 +306,65 @@ btnFlipCam.onclick = async () => {
       socket.emit("chat", { roomId, name, text });
       chatText.value = "";
     };
+
+
+    // ===== GUEST AV TOGGLE =====
+const guestMicBtn = document.getElementById("guestMicBtn");
+const guestCamBtn = document.getElementById("guestCamBtn");
+
+let guestMicOn = true;
+let guestCamOn = true;
+
+function toggleGuestMic(){
+  if (!localStream) return;
+  const track = localStream.getAudioTracks()[0];
+  if (!track) return;
+
+  guestMicOn = !guestMicOn;
+  track.enabled = guestMicOn;
+  guestMicBtn.classList.toggle("off", !guestMicOn);
+  guestMicBtn.textContent = guestMicOn ? "🎙️" : "🔇";
+}
+
+function toggleGuestCam(){
+  if (!localStream) return;
+  const track = localStream.getVideoTracks()[0];
+  if (!track) return;
+
+  guestCamOn = !guestCamOn;
+  track.enabled = guestCamOn;
+  guestCamBtn.classList.toggle("off", !guestCamOn);
+  guestCamBtn.textContent = guestCamOn ? "📷" : "🚫";
+}
+
+guestMicBtn.onclick = toggleGuestMic;
+guestCamBtn.onclick = toggleGuestCam;
+
+// Host yêu cầu guest tắt/bật mic
+socket.on("guest-set-mic", ({ mute }) => {
+  if (!localStream) return;
+  const at = localStream.getAudioTracks()[0];
+  if (!at) return;
+
+  at.enabled = !mute;
+
+  // nếu bạn có icon mic của guest thì cập nhật luôn:
+  if (typeof guestMicBtn !== "undefined" && guestMicBtn) {
+    guestMicBtn.classList.toggle("off", !!mute);
+    guestMicBtn.textContent = mute ? "🔇" : "🎙️";
+  }
+});
+
+// Host kick guest
+socket.on("guest-kicked", () => {
+  alert("Bạn đã bị Host kích khỏi live.");
+  // dùng cùng luồng rời live để dọn dẹp
+  try { leaveLive(); } catch {
+    location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
+  }
+});
+
+
   </script>
 </body>
 </html>
