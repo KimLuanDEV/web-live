@@ -260,8 +260,3 @@ code{
   backdrop-filter: blur(6px);
   z-index: 5;
 }
-
-
-/* ensure overlays work in video containers */
-.video-wrap{position:relative; border-radius:18px; overflow:hidden; background:#000;}
-.video-wrap video{width:100%; display:block; background:#000;}
