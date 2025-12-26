@@ -47,7 +47,7 @@
               <div class="chat-overlay" id="chatOverlay"></div>
 
 <!-- CHAT UI (inside video) -->
-<!-- CHAT INPUT OVER VIDEO -->
+<!-- QUICK CHAT INPUT -->
 <div class="chat-input-wrap">
   <input
     id="chatText"
@@ -55,9 +55,11 @@
     placeholder="Nhập chat..."
     autocomplete="off"
   />
+  <button id="chatSendBtn" class="chat-send-btn" type="button">➤</button>
 </div>
 
 <button class="chat-fab" id="chatFab" type="button" title="Chat">💬</button>
+
 
 <!-- /CHAT UI -->
 
@@ -303,32 +305,23 @@
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-// ===== QUICK CHAT INPUT =====
+// ===== QUICK CHAT INPUT WITH SEND BUTTON =====
 const chatFab = document.getElementById("chatFab");
 const chatInputWrap = document.querySelector(".chat-input-wrap");
-
+const chatSendBtn = document.getElementById("chatSendBtn");
 
 chatFab?.addEventListener("click", () => {
   if (!chatInputWrap || !chatText) return;
 
   chatInputWrap.classList.add("show");
 
-  // force focus → mobile bật bàn phím
   setTimeout(() => {
-    chatText.focus();
+    chatText.focus(); // mobile bật bàn phím
     chatText.scrollIntoView({ block: "center", behavior: "smooth" });
   }, 50);
 });
 
-// gửi bằng Enter
-chatText?.addEventListener("keydown", (e) => {
-  if (e.key === "Enter") {
-    e.preventDefault();
-    sendChat();
-  }
-});
-
-function sendChat(){
+function sendChatQuick(){
   const text = chatText.value.trim();
   if (!text) return;
 
@@ -341,6 +334,17 @@ function sendChat(){
   chatText.value = "";
   chatInputWrap.classList.remove("show");
 }
+
+// click nút ➤
+chatSendBtn?.addEventListener("click", sendChatQuick);
+
+// Enter để gửi
+chatText?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") {
+    e.preventDefault();
+    sendChatQuick();
+  }
+});
 
 
     function addChat(msg) {

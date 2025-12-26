@@ -411,6 +411,7 @@ code{
 
 
 /* ===== CHAT INPUT QUICK ===== */
+/* ===== QUICK CHAT SEND BUTTON ===== */
 .chat-input-wrap{
   position:absolute;
   left:12px;
@@ -418,14 +419,16 @@ code{
   bottom:14px;
   z-index:11;
   display:none;
+  align-items:center;
+  gap:8px;
 }
 
 .chat-input-wrap.show{
-  display:block;
+  display:flex;
 }
 
 .chat-input{
-  width:100%;
+  flex:1;
   padding:12px 14px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,.22);
@@ -443,8 +446,8 @@ code{
 /* icon chat */
 .chat-fab{
   position:absolute;
-  right:12px;
-  bottom:14px;
+  left:5px;
+  bottom:5px;
   z-index:12;
   width:44px;
   height:44px;
@@ -463,3 +466,18 @@ code{
   transform:scale(.94);
 }
 
+.chat-send-btn{
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);
+  background:rgba(37,240,154,.85);
+  color:#000;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.chat-send-btn:active{
+  transform:scale(.92);
+}
