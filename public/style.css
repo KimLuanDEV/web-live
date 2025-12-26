@@ -220,13 +220,17 @@ code{
 
 /* ===== AV ICON OVERLAY ===== */
 .av-controls{
-  position:absolute;
-  right:12px;
-  bottom:12px;
-  display:flex;
-  gap:10px;
-  z-index:5;
+  position: static;
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(8px);
+  padding: 10px 14px;
+  border-radius: 999px;
 }
+
 .av-btn{
   width:42px;
   height:42px;
