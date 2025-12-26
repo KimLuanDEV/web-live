@@ -37,27 +37,37 @@
 
        
 
-         <div class="video-card" style="margin-top:10px">
-  <div class="live-overlay">
-    <span class="dot"></span>
-    <b>HOST</b>
-    <span style="opacity:.85"></span>
+     <div class="live-stage" id="liveStageHost" style="margin-top:10px">
+
+  <!-- HOST MAIN -->
+  <div class="video-card live-main" id="hostCard">
+    <div class="live-overlay">
+      <span class="dot"></span>
+      <b>HOST</b>
+      <span style="opacity:.85"></span>
+    </div>
+
+    <div class="viewer-count" id="viewerCountHost">👁: 0</div>
+    <div class="chat-overlay" id="chatOverlay"></div>
+
+    <div class="video-card__inner">
+      <video id="preview" autoplay playsinline muted></video>
+    </div>
+
+    <div class="av-controls">
+      <button id="hostMicBtn" class="av-btn">🎙️</button>
+      <button id="hostCamBtn" class="av-btn">📷</button>
+    </div>
   </div>
 
-<div class="viewer-count" id="viewerCountHost">👁: 0</div>
-
-<div class="chat-overlay" id="chatOverlay"></div>
-
-  <div class="video-card__inner">
-    <video id="preview" autoplay playsinline muted></video>
+  <!-- GUEST PIP -->
+  <div class="pip-wrap" id="guestPipWrapHost" aria-hidden="true">
+    <div class="pip-badge">👤 GUEST</div>
+    <video id="guestVideo" autoplay playsinline controls></video>
   </div>
-
- <div class="av-controls">
-  <button id="hostMicBtn" class="av-btn">🎙️</button>
-  <button id="hostCamBtn" class="av-btn">📷</button>
-        </div>
 
 </div>
+
 
       </div>
     </div>
@@ -84,13 +94,7 @@
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
-  <hr />
-  <div class="badge">🎥 Video khách mời</div>
-  <div class="video-card" style="margin-top:10px">
-    <div class="video-card__inner">
-      <video id="guestVideo" autoplay playsinline controls></video>
-    </div>
-  </div>
+  
 </div>
 
 
@@ -122,6 +126,10 @@
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    
+const guestPipWrapHost = document.getElementById("guestPipWrapHost");
+
+
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
     const btnStart = document.getElementById("btnStart");
@@ -553,11 +561,20 @@ function setGuestControls(on) {
 
 // khi host chấp nhận guest xong (hoặc khi guest-online), bật controls
 socket.on("guest-online", ({ guestId }) => {
+
+  document.body.classList.add("has-guest");
+if (guestPipWrapHost) guestPipWrapHost.setAttribute("aria-hidden", "false");
+
   setGuestControls(true);
 });
 
 // khi guest-offline thì tắt controls
 socket.on("guest-offline", () => {
+
+  document.body.classList.remove("has-guest");
+document.body.classList.remove("focus-guest");
+if (guestPipWrapHost) guestPipWrapHost.setAttribute("aria-hidden", "true");
+
   setGuestControls(false);
 });
 
@@ -574,6 +591,15 @@ socket.on("viewer-count", ({ count }) => {
     viewerCountHost.textContent = `👁: ${count}`;
   }
 });
+
+
+if (guestPipWrapHost) {
+  guestPipWrapHost.addEventListener("click", () => {
+    // chỉ cho focus khi đang có guest stream
+    if (!guestVideo || !guestVideo.srcObject) return;
+    document.body.classList.toggle("focus-guest");
+  });
+}
 
   </script>
 </body>
