@@ -18,6 +18,12 @@
             <div class="badge">Phòng Livestream</div>
             <code id="roomCode">-</code>
 
+            <div class="badge" id="statusBadge">⏳ Chưa bật cam/mic</div>
+            
+          </div>
+
+         
+
           <hr />
           <div class="log" id="log" style="display: none;"></div>
         </div>
@@ -56,7 +62,7 @@
   <button id="guestMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
   <button id="guestCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
   <button id="guestFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
-             </div>
+              </div>
 
 
         </div>
@@ -94,9 +100,9 @@
     const me = document.getElementById("me");
     const hostVideo = document.getElementById("hostVideo");
     const btnStart = document.getElementById("btnStart");
-
-    const guestFlipBtn = document.getElementById("guestFlipBtn");
     const btnLeaveLive = document.getElementById("btnLeaveLive");
+    const guestFlipBtn = document.getElementById("guestFlipBtn");
+    
 
     // PIP elements
     const mePipWrap = document.getElementById("mePipWrap");
@@ -164,8 +170,10 @@
         setStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
 
-        guestFlipBtn.disabled = false;
+        btnStart.disabled = true;
         btnLeaveLive.disabled = false;
+        guestFlipBtn.disabled = false;
+        
 
 
       } catch (e) {
@@ -281,8 +289,10 @@
 
       if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "true");
 
-      guestFlipBtn.disabled = true;
+      btnStart.disabled = false;
       btnLeaveLive.disabled = true;
+      guestFlipBtn.disabled = true;
+      
 
 
       try { socket.disconnect(); } catch {}
