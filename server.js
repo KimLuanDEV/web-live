@@ -65,6 +65,17 @@ socket.on("host-mute-guest", ({ roomId, mute }) => {
   io.to(room.guestId).emit("guest-set-mic", { mute: !!mute });
 });
 
+// Host yêu cầu tắt/bật camera của guest
+socket.on("host-cam-guest", ({ roomId, off }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return; // chỉ host mới được điều khiển
+  if (!room.guestId) return;
+
+  io.to(room.guestId).emit("guest-set-cam", { off: !!off });
+});
+
+
 // Host kick guest khỏi live
 socket.on("host-kick-guest", ({ roomId }) => {
   const room = rooms.get(roomId);
@@ -84,15 +95,6 @@ socket.on("host-kick-guest", ({ roomId }) => {
 
 
 
-// Host yêu cầu tắt/bật camera của guest
-socket.on("host-cam-guest", ({ roomId, off }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  if (room.broadcasterId !== socket.id) return; // chỉ host mới được điều khiển
-  if (!room.guestId) return;
-
-  io.to(room.guestId).emit("guest-set-cam", { off: !!off });
-});
 
 
 

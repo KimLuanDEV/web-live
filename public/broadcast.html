@@ -567,6 +567,8 @@ const btnOnCamGuest  = document.getElementById("btnOnCamGuest");
 function setGuestControls(on) {
   btnMuteGuest.disabled = !on;
   btnUnmuteGuest.disabled = !on;
+  btnOffCamGuest.disabled = !on;
+  btnOnCamGuest.disabled = !on;
   btnKickGuest.disabled = !on;
 }
 
@@ -597,7 +599,8 @@ if (guestPipWrapHost) guestPipWrapHost.setAttribute("aria-hidden", "true");
 btnMuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: true });
 btnUnmuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: false });
 btnKickGuest.onclick = () => socket.emit("host-kick-guest", { roomId });
-
+btnOffCamGuest.onclick = () => socket.emit("host-cam-guest", { roomId, off: true });
+btnOnCamGuest.onclick  = () => socket.emit("host-cam-guest", { roomId, off: false });
 
 const viewerCountHost = document.getElementById("viewerCountHost");
 

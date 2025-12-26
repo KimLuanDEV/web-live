@@ -405,16 +405,7 @@
       }
     });
 
-    // Host kick guest
-    socket.on("guest-kicked", () => {
-      alert("Bạn đã bị Host kích khỏi live.");
-      try { leaveLive(); } catch {
-        location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
-      }
-    });
-
-  
-    // Host yêu cầu guest tắt/bật camera
+        // Host yêu cầu guest tắt/bật camera
 socket.on("guest-set-cam", ({ off }) => {
   if (!localStream) return;
   const vt = localStream.getVideoTracks()[0];
@@ -428,6 +419,16 @@ socket.on("guest-set-cam", ({ off }) => {
     guestCamBtn.textContent = off ? "🚫" : "📷";
   }
 });
+
+    // Host kick guest
+    socket.on("guest-kicked", () => {
+      alert("Bạn đã bị Host kích khỏi live.");
+      try { leaveLive(); } catch {
+        location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
+      }
+    });
+
+  
 
 
   </script>
