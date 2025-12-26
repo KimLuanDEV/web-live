@@ -24,9 +24,16 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guests: new Set(), pendingGuests: new Set() });
   }
   return rooms.get(roomId);
+}
+
+
+function emitGuestList(roomId) {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  io.to(roomId).emit("guest-list", { guests: Array.from(room.guests) });
 }
 
 function emitViewerCount(roomId) {
@@ -56,30 +63,32 @@ app.get("/ice", async (_req, res) => {
 io.on("connection", (socket) => {
 
 // Host yêu cầu tắt/bật mic của guest
-socket.on("host-mute-guest", ({ roomId, mute }) => {
+socket.on("host-mute-guest", ({ roomId, guestId, mute }) => {
   const room = rooms.get(roomId);
   if (!room) return;
-  if (room.broadcasterId !== socket.id) return;   // chỉ host mới được điều khiển
+  if (room.broadcasterId !== socket.id) return; // chỉ host mới được điều khiển
 
-  if (!room.guestId) return;
-  io.to(room.guestId).emit("guest-set-mic", { mute: !!mute });
+  const gid = guestId && room.guests.has(guestId) ? guestId : null;
+  if (!gid) return;
+  io.to(gid).emit("guest-set-mic", { mute: !!mute });
 });
 
 // Host kick guest khỏi live
-socket.on("host-kick-guest", ({ roomId }) => {
+socket.on("host-kick-guest", ({ roomId, guestId }) => {
   const room = rooms.get(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return;
 
-  if (!room.guestId) return;
-  const gid = room.guestId;
+  const gid = guestId && room.guests.has(guestId) ? guestId : null;
+  if (!gid) return;
 
   // báo guest tự thoát
   io.to(gid).emit("guest-kicked");
 
-  // clear guest trong room + báo cho tất cả viewers
-  room.guestId = null;
-  io.to(roomId).emit("guest-offline");
+  // remove guest + báo cho tất cả clients
+  room.guests.delete(gid);
+  io.to(roomId).emit("guest-offline", { guestId: gid });
+  emitGuestList(roomId);
 });
 
 
@@ -119,8 +128,8 @@ socket.on("host-kick-guest", ({ roomId }) => {
       socket.emit("room-viewers", Array.from(room.viewers));
       socket.to(roomId).emit("broadcaster-online");
       emitViewerCount(roomId);
-      // If already has guest, tell host
-      if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
+      // If already has guests, tell host
+      if (room.guests.size) socket.emit("guest-list", { guests: Array.from(room.guests) });
     }
 
     if (role === "viewer") {
@@ -134,12 +143,13 @@ socket.on("host-kick-guest", ({ roomId }) => {
         socket.emit("broadcaster-offline");
       }
 
-      // If guest already online, inform this viewer so they can request to watch guest
-      if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
+      // If guests already online, inform this viewer so they can request to watch guests
+      if (room.guests.size) socket.emit("guest-list", { guests: Array.from(room.guests) });
     }
 
     if (role === "guest") {
       // Guest requests to go live; host must approve
+      room.pendingGuests.add(socket.id);
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });
       }
@@ -167,22 +177,44 @@ socket.on("host-kick-guest", ({ roomId }) => {
     const room = getRoom(roomId);
     if (room.broadcasterId !== socket.id) return;
 
-    room.guestId = guestId;
+    // limit 4 guests
+    if (room.guests.size >= 4) {
+      io.to(guestId).emit("guest-rejected", { reason: "Room full" });
+      return;
+    }
+
+    room.pendingGuests.delete(guestId);
+    room.guests.add(guestId);
+
     io.to(guestId).emit("guest-approved", { roomId });
     io.to(roomId).emit("guest-online", { guestId });
+    emitGuestList(roomId);
   });
 
-  socket.on("guest-reject", ({ guestId }) => {
+  socket.on("guest-reject", ({ roomId, guestId }) => {
     if (!guestId) return;
+    if (roomId) {
+      const room = rooms.get(roomId);
+      if (room) room.pendingGuests.delete(guestId);
+    }
     io.to(guestId).emit("guest-rejected");
   });
 
   // Any viewer (or host) asks to watch guest -> server tells guest to create offer to that viewer
-  socket.on("watch-guest", ({ roomId }) => {
+  socket.on("watch-guest", ({ roomId, guestId }) => {
     if (!roomId) return;
     const room = getRoom(roomId);
-    if (!room.guestId) return;
-    io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
+    if (!room.guests.size) return;
+
+    // If guestId provided -> watch one guest; else watch all guests
+    if (guestId) {
+      if (!room.guests.has(guestId)) return;
+      io.to(guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
+      return;
+    }
+    for (const gid of room.guests) {
+      io.to(gid).emit("guest-watcher", { viewerId: socket.id, roomId });
+    }
   });
 
   // WebRTC signaling passthrough
@@ -222,13 +254,15 @@ socket.on("host-kick-guest", ({ roomId }) => {
     }
 
     if (role === "guest") {
-      if (room.guestId === socket.id) {
-        room.guestId = null;
-        io.to(roomId).emit("guest-offline");
+      room.pendingGuests.delete(socket.id);
+      if (room.guests.has(socket.id)) {
+        room.guests.delete(socket.id);
+        io.to(roomId).emit("guest-offline", { guestId: socket.id });
+        emitGuestList(roomId);
       }
     }
 
-    if (!room.broadcasterId && room.viewers.size === 0 && !room.guestId) {
+    if (!room.broadcasterId && room.viewers.size === 0 && room.guests.size === 0 && room.pendingGuests.size === 0) {
       rooms.delete(roomId);
     }
   });
