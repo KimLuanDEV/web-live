@@ -93,7 +93,7 @@
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
-    const guestGridViewer = document.getElementById("guestGridViewer");
+    const guestPlayer = document.getElementById("guestPlayer");
     const btnJoin = document.getElementById("btnJoin");
 
     const params = new URLSearchParams(location.search);
@@ -105,7 +105,7 @@
 
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
-    let guests = [];
+    let guestId = null;
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -159,57 +159,21 @@
       cleanupAll();
     });
 
-    // guest events (multi-guest)
-    function ensureGuestTile(gid){
-      if (!guestGridViewer) return null;
-      let tile = guestGridViewer.querySelector(`[data-guest="${gid}"]`);
-      if (tile) return tile;
-      tile = document.createElement("div");
-      tile.className = "guest-tile";
-      tile.dataset.guest = gid;
-      tile.innerHTML = `<div class="guest-tag">GUEST</div><video autoplay playsinline controls></video>`;
-      guestGridViewer.appendChild(tile);
-      return tile;
-    }
-
-    function removeGuestTile(gid){
-      if (!guestGridViewer) return;
-      const el = guestGridViewer.querySelector(`[data-guest="${gid}"]`);
-      if (el) el.remove();
-    }
-
+    // guest events
     socket.on("guest-online", ({ guestId: gid }) => {
-      if (!gid) return;
-      if (!guests.includes(gid)) guests.push(gid);
-      ensureGuestTile(gid);
+      guestId = gid;
       log("Guest online: " + gid);
       setStatus("🟢 Có Guest cùng live");
-      socket.emit("watch-guest", { roomId, guestId: gid });
+      // request guest to stream to this viewer
+      socket.emit("watch-guest", { roomId });
     });
 
-    socket.on("guest-list", ({ guests: list }) => {
-      const arr = Array.isArray(list) ? list : [];
-      // remove tiles not in list
-      for (const old of guests.slice()) {
-        if (!arr.includes(old)) {
-          cleanupPeer(old);
-          removeGuestTile(old);
-        }
-      }
-      guests = arr.slice(0, 4);
-      for (const gid of guests) {
-        ensureGuestTile(gid);
-        socket.emit("watch-guest", { roomId, guestId: gid });
-      }
-      if (!guests.length) setStatus("✅ Host online");
-    });
-
-    socket.on("guest-offline", ({ guestId: gid }) => {
-      if (!gid) return;
-      log("Guest offline: " + gid);
-      guests = guests.filter(x => x !== gid);
-      cleanupPeer(gid);
-      removeGuestTile(gid);
+    socket.on("guest-offline", () => {
+      log("Guest offline");
+      guestId = null;
+      guestPlayer.srcObject = null;
+      // close guest pc if exists
+      cleanupPeer("guest");
     });
 
     async function join() {
@@ -220,11 +184,20 @@
       log("Đã join room, đợi offer từ host/guest...");
     }
 
-    function cleanupPeer(peerId) {
-      const pc = pcs.get(peerId);
+    function cleanupPeer(peerKey) {
+      // peerKey can be actual peerId or "guest"
+      if (peerKey === "guest") {
+        // find by guestId if present
+        if (guestId && pcs.has(guestId)) {
+          try { pcs.get(guestId).close(); } catch {}
+          pcs.delete(guestId);
+        }
+        return;
+      }
+      const pc = pcs.get(peerKey);
       if (pc) {
         try { pc.close(); } catch {}
-        pcs.delete(peerId);
+        pcs.delete(peerKey);
       }
     }
 
@@ -234,6 +207,7 @@
       }
       pcs.clear();
       player.srcObject = null;
+      guestPlayer.srcObject = null;
       joined = false;
     }
 
@@ -249,14 +223,10 @@
       pc.ontrack = (event) => {
         const stream = event.streams[0];
 
-        if (guests && guests.includes(from)) {
-          const tile = ensureGuestTile(from);
-          const v = tile ? tile.querySelector("video") : null;
-          if (v) {
-            v.srcObject = stream;
-            v.play().catch(() => log("Autoplay bị chặn, bấm Play ở video Guest."));
-          }
-          log("Đã nhận stream GUEST: " + from);
+        if (guestId && from === guestId) {
+          guestPlayer.srcObject = stream;
+          log("Đã nhận stream GUEST.");
+          guestPlayer.play().catch(() => log("Autoplay bị chặn, bấm Play ở video Guest."));
         } else {
           player.srcObject = stream;
           log("Đã nhận stream HOST.");

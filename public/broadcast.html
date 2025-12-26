@@ -48,8 +48,6 @@
 
 <div class="chat-overlay" id="chatOverlay"></div>
 
-<div class="guest-grid" id="guestGridHost"></div>
-
   <div class="video-card__inner">
     <video id="preview" autoplay playsinline muted></video>
   </div>
@@ -81,7 +79,6 @@
 
   <hr />
   <div id="guestReq" class="log">Chưa có yêu cầu.</div>
-  <div id="pendingList" class="pending-list" style="margin-top:10px"></div>
   <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
     <button id="btnApproveGuest" disabled style="flex:1">✅ Chấp nhận</button>
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
@@ -158,89 +155,14 @@
     // One RTCPeerConnection per viewer
     const pcs = new Map();
 
-    // Guest state (multi-guest)
-    const pendingGuests = new Set();
-    const approvedGuests = new Set();
-    const guestPCsIn = new Map(); // guestId -> RTCPeerConnection
+    // Guest state
+    let pendingGuestId = null;
+    let approvedGuestId = null;
+    let pcGuestIn = null; // PC to receive guest + send host tracks to guest
     const guestReq = document.getElementById("guestReq");
     const btnApproveGuest = document.getElementById("btnApproveGuest");
     const btnRejectGuest = document.getElementById("btnRejectGuest");
     const guestVideo = document.getElementById("guestVideo");
-    const pendingList = document.getElementById("pendingList");
-    const guestGridHost = document.getElementById("guestGridHost");
-
-    function ensureGuestTile(guestId){
-      if (!guestGridHost) return null;
-      let tile = guestGridHost.querySelector(`[data-guest="${guestId}"]`);
-      if (tile) return tile;
-      tile = document.createElement("div");
-      tile.className = "guest-tile";
-      tile.dataset.guest = guestId;
-      tile.innerHTML = `
-        <div class="guest-tag">GUEST</div>
-        <video autoplay playsinline></video>
-        <div class="guest-actions">
-          <button type="button" data-act="mute" title="Tắt mic">🔇</button>
-          <button type="button" data-act="unmute" title="Bật mic">🎙️</button>
-          <button type="button" data-act="kick" title="Kích">⛔</button>
-        </div>
-      `;
-      guestGridHost.appendChild(tile);
-
-      // action buttons
-      tile.addEventListener("click", (e)=>{
-        const btn = e.target.closest("button[data-act]");
-        if (!btn) return;
-        const act = btn.getAttribute("data-act");
-        if (act === "mute") socket.emit("host-mute-guest", { roomId, guestId, mute: true });
-        if (act === "unmute") socket.emit("host-mute-guest", { roomId, guestId, mute: false });
-        if (act === "kick") socket.emit("host-kick-guest", { roomId, guestId });
-      });
-      return tile;
-    }
-
-    function removeGuestTile(guestId){
-      if (!guestGridHost) return;
-      const tile = guestGridHost.querySelector(`[data-guest="${guestId}"]`);
-      if (tile) tile.remove();
-    }
-
-    function renderPending(){
-      if (!pendingList) return;
-      pendingList.innerHTML = "";
-      const arr = Array.from(pendingGuests);
-      if (!arr.length) return;
-      for (const gid of arr) {
-        const row = document.createElement("div");
-        row.className = "pending-row";
-        row.innerHTML = `
-          <div class="pending-id">${gid}</div>
-          <div class="pending-actions">
-            <button type="button" data-act="approve">✅ Duyệt</button>
-            <button type="button" data-act="reject">❌ Từ chối</button>
-          </div>
-        `;
-        row.addEventListener("click", (e)=>{
-          const b = e.target.closest("button[data-act]");
-          if (!b) return;
-          const act = b.getAttribute("data-act");
-          if (act === "approve") {
-            socket.emit("guest-approve", { roomId, guestId: gid });
-            pendingGuests.delete(gid);
-            approvedGuests.add(gid);
-            renderPending();
-            // host also requests to watch this guest
-            socket.emit("watch-guest", { roomId, guestId: gid });
-          }
-          if (act === "reject") {
-            socket.emit("guest-reject", { roomId, guestId: gid });
-            pendingGuests.delete(gid);
-            renderPending();
-          }
-        });
-        pendingList.appendChild(row);
-      }
-    }
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -326,15 +248,13 @@
         }
         return;
       }
-      const pcg = guestPCsIn.get(from);
-      if (pcg) {
+      if (pcGuestIn && approvedGuestId === from) {
         try {
-          await pcg.setRemoteDescription(description);
+          await pcGuestIn.setRemoteDescription(description);
           log("Nhận answer từ guest: " + from);
         } catch (err) {
           log("Lỗi answer guest: " + err.message);
         }
-      
       }
     });
 
@@ -345,16 +265,10 @@
         catch (err) { log("Lỗi addIceCandidate(viewer): " + err.message); }
         return;
       }
-      const pcg = guestPCsIn.get(from);
-      if (pcg) {
-        try {
-          await pcg.setRemoteDescription(description);
-          log("Nhận answer từ guest: " + from);
-        } catch (err) {
-          log("Lỗi answer guest: " + err.message);
-        }
+      if (pcGuestIn && approvedGuestId === from) {
+        try { await pcGuestIn.addIceCandidate(candidate); }
+        catch (err) { log("Lỗi addIceCandidate(guest): " + err.message); }
       }
-        
     });
 
     socket.on("disconnectPeer", ({ peerId }) => {
@@ -368,74 +282,75 @@
 
     // ===== Guest request/approve =====
     socket.on("guest-request", ({ guestId }) => {
-      pendingGuests.add(guestId);
-      guestReq.textContent = `Có khách xin lên live (${pendingGuests.size})`;
-      btnApproveGuest.disabled = true;
-      btnRejectGuest.disabled = true;
-      renderPending();
+      pendingGuestId = guestId;
+      guestReq.textContent = `GuestID: ${guestId} (bấm Chấp nhận để lên live)`;
+      btnApproveGuest.disabled = false;
+      btnRejectGuest.disabled = false;
       log("Có guest xin lên live: " + guestId);
     });
 
-    socket.on("guest-offline", ({ guestId }) => {
-      log("Guest offline: " + (guestId || ""));
-      if (guestId) {
-        approvedGuests.delete(guestId);
-        pendingGuests.delete(guestId);
-        const pc = guestPCsIn.get(guestId);
-        if (pc) { try { pc.close(); } catch {} guestPCsIn.delete(guestId); }
-        removeGuestTile(guestId);
-      }
+    socket.on("guest-offline", () => {
+      log("Guest offline");
+      approvedGuestId = null;
+      pendingGuestId = null;
       guestReq.textContent = "Guest đã rời.";
-      renderPending();
-      // backward: clear big guestVideo if used
-      if (guestVideo) guestVideo.srcObject = null;
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
+      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
+      guestVideo.srcObject = null;
     });
 
-    btnApproveGuest.onclick = () => {};
-    btnRejectGuest.onclick = () => {};
+    btnApproveGuest.onclick = () => {
+      if (!pendingGuestId) return;
+      approvedGuestId = pendingGuestId;
+      socket.emit("guest-approve", { roomId, guestId: pendingGuestId });
+      guestReq.textContent = `✅ Đã chấp nhận guest: ${pendingGuestId}`;
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
+
+      // Host also wants to watch guest so guest will create offer to host
+      socket.emit("watch-guest", { roomId });
+    };
+
+    btnRejectGuest.onclick = () => {
+      if (!pendingGuestId) return;
+      socket.emit("guest-reject", { guestId: pendingGuestId });
+      guestReq.textContent = "⛔ Đã từ chối guest.";
+      pendingGuestId = null;
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
+    };
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
     socket.on("offer", async ({ from, description }) => {
-      // Only handle guest offers here (viewers never send offers to host in this app)
-      // Multi-guest: keep one PC per guest
-      if (guestPCsIn.has(from)) {
-        try { guestPCsIn.get(from).close(); } catch {}
-        guestPCsIn.delete(from);
-      }
+      // Only handle guest offers (viewers never send offers to host in this app)
+      approvedGuestId = approvedGuestId || from;
+
+      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
 
       const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
-      guestPCsIn.set(from, pc);
+      pcGuestIn = new RTCPeerConnection(rtcConfig);
 
       // send host tracks back to guest so guest can hear/see host (co-talk)
       if (localStream) {
-        localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+        localStream.getTracks().forEach(t => pcGuestIn.addTrack(t, localStream));
       }
 
-      pc.ontrack = (e) => {
-        // attach to tile video
-        const tile = ensureGuestTile(from);
-        const v = tile ? tile.querySelector("video") : null;
-        if (v) {
-          v.srcObject = e.streams[0];
-          v.play().catch(() => {});
-        } else if (guestVideo) {
-          // fallback to big guestVideo
-          guestVideo.srcObject = e.streams[0];
-        }
+      pcGuestIn.ontrack = (e) => {
+        guestVideo.srcObject = e.streams[0];
       };
 
-      pc.onicecandidate = (e) => {
+      pcGuestIn.onicecandidate = (e) => {
         if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
       };
 
-      pc.oniceconnectionstatechange = () => log(`ICE(GUEST ${from}): ${pc.iceConnectionState}`);
+      pcGuestIn.oniceconnectionstatechange = () => log(`ICE(GUEST): ${pcGuestIn.iceConnectionState}`);
 
       try {
-        await pc.setRemoteDescription(description);
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        socket.emit("answer", { to: from, description: pc.localDescription });
+        await pcGuestIn.setRemoteDescription(description);
+        const answer = await pcGuestIn.createAnswer();
+        await pcGuestIn.setLocalDescription(answer);
+        socket.emit("answer", { to: from, description: pcGuestIn.localDescription });
         log("Đã trả lời offer của guest: " + from);
       } catch (err) {
         log("Lỗi xử lý offer guest: " + err.message);
@@ -472,11 +387,9 @@
         pcs.delete(id);
       }
 
-      // close guest peers
-      for (const pc of guestPCsIn.values()) { try { pc.close(); } catch {} }
-      guestPCsIn.clear();
+      // close guest peer
+      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
       guestVideo.srcObject = null;
-      if (guestGridHost) guestGridHost.innerHTML = "";
 
       if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
@@ -520,9 +433,9 @@
           if (sender) await sender.replaceTrack(newVideoTrack);
         }
 
-        // replace for all guest peers
-        for (const pc of guestPCsIn.values()) {
-          const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
+        // replace for guest peer
+        if (pcGuestIn) {
+          const sender = pcGuestIn.getSenders().find(s => s.track && s.track.kind === "video");
           if (sender) await sender.replaceTrack(newVideoTrack);
         }
 
@@ -641,60 +554,17 @@ function setGuestControls(on) {
 // khi host chấp nhận guest xong (hoặc khi guest-online), bật controls
 socket.on("guest-online", ({ guestId }) => {
   setGuestControls(true);
-  if (guestId) {
-    approvedGuests.add(guestId);
-    ensureGuestTile(guestId);
-    // if host wants to watch immediately
-    socket.emit("watch-guest", { roomId, guestId });
-  }
-});
-
-socket.on("guest-list", ({ guests }) => {
-  // sync full list
-  const list = Array.isArray(guests) ? guests : [];
-  // remove missing
-  if (guestGridHost) {
-    for (const el of Array.from(guestGridHost.querySelectorAll("[data-guest]"))) {
-      const gid = el.getAttribute("data-guest");
-      if (gid && !list.includes(gid)) removeGuestTile(gid);
-    }
-  }
-  for (const gid of list) {
-    approvedGuests.add(gid);
-    ensureGuestTile(gid);
-    socket.emit("watch-guest", { roomId, guestId: gid });
-  }
 });
 
 // khi guest-offline thì tắt controls
-socket.on("guest-offline", ({ guestId }) => {
-  if (guestId) {
-    // tile removed in other handler above
-  }
-  // if no guests left, disable global buttons
-  setGuestControls(approvedGuests.size > 0);
+socket.on("guest-offline", () => {
+  setGuestControls(false);
 });
 
 // nút điều khiển
-function pickAnyGuest(){
-  const arr = Array.from(approvedGuests);
-  return arr[0] || null;
-}
-btnMuteGuest.onclick = () => {
-  const gid = pickAnyGuest();
-  if (!gid) return;
-  socket.emit("host-mute-guest", { roomId, guestId: gid, mute: true });
-};
-btnUnmuteGuest.onclick = () => {
-  const gid = pickAnyGuest();
-  if (!gid) return;
-  socket.emit("host-mute-guest", { roomId, guestId: gid, mute: false });
-};
-btnKickGuest.onclick = () => {
-  const gid = pickAnyGuest();
-  if (!gid) return;
-  socket.emit("host-kick-guest", { roomId, guestId: gid });
-};
+btnMuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: true });
+btnUnmuteGuest.onclick = () => socket.emit("host-mute-guest", { roomId, mute: false });
+btnKickGuest.onclick = () => socket.emit("host-kick-guest", { roomId });
 
 
 const viewerCountHost = document.getElementById("viewerCountHost");
