@@ -386,7 +386,8 @@ code{
 /* Mobile: pip nhỏ hơn */
 @media (max-width: 520px){
   .pip-wrap{
-    width: min(46vw, 220px);
+    width: 50px;
+    height: 220px;
     right: 10px;
     bottom: 10px;
   }
