@@ -18,11 +18,6 @@
             <div class="badge">Phòng Livestream</div>
             <code id="roomCode">-</code>
 
-            <div class="badge">Link xem</div>
-            <code id="viewerLink">-</code>
-            <button id="copyViewer">Copy link</button>
-            <small>Gửi link xem cho khách.</small>
-
           </div>
           <hr />
           <div class="log" id="log" style="display: none;"></div>
@@ -59,13 +54,20 @@
 </div>
 
   <div class="av-controls">
+  <!-- LIVE CONTROL -->
   <button id="btnStart" class="av-btn" title="Bắt đầu phát sóng">▶️</button>
   <button id="btnStop" class="av-btn" title="Dừng phát sóng" disabled>⏹️</button>
 
+  <!-- AV -->
   <button id="hostMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
   <button id="hostCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
   <button id="hostFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
-  </div>
+
+  <!-- LINKS -->
+  <button id="copyViewer" class="av-btn" title="Copy link xem">👀</button>
+  <button id="copyGuest" class="av-btn" title="Copy link khách mời">👤</button>
+</div>
+
 
 
 
@@ -127,33 +129,38 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
-const guestPipWrapHost = document.getElementById("guestPipWrapHost");
-
-
+    const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
     const btnStart = document.getElementById("btnStart");
     const btnStop = document.getElementById("btnStop");
     const hostFlipBtn = document.getElementById("hostFlipBtn");
-   
-
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
+
+    function toast(msg){
+  const t = document.createElement("div");
+  t.className = "toast";
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 1600);
+}
+
     document.getElementById("roomCode").textContent = roomId;
 
     const viewerUrl = `${location.origin}/viewer.html?room=${encodeURIComponent(roomId)}`;
-    document.getElementById("viewerLink").textContent = viewerUrl;
+    
     document.getElementById("copyViewer").onclick = async () => {
-      try { await navigator.clipboard.writeText(viewerUrl); alert("Đã copy link xem!"); }
-      catch { prompt("Copy thủ công:", viewerUrl); }
+      try { await navigator.clipboard.writeText(viewerUrl); toast("👀 Đã copy link xem"); }
+      catch { prompt("Copy link xem:", viewerUrl); }
     };
 
     // guest link
     const guestUrl = `${location.origin}/guest.html?room=${encodeURIComponent(roomId)}`;
-    document.getElementById("guestLink").textContent = guestUrl;
+    
     document.getElementById("copyGuest").onclick = async () => {
-      try { await navigator.clipboard.writeText(guestUrl); alert("Đã copy link Guest!"); }
-      catch { prompt("Copy thủ công:", guestUrl); }
+      try { await navigator.clipboard.writeText(guestUrl); toast("👤 Đã copy link khách mời"); }
+      catch { prompt("Copy link khách mời:", guestUrl); }
     };
 
     const socket = io();
