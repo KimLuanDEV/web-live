@@ -24,19 +24,9 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, guestQueue: [] });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null });
   }
   return rooms.get(roomId);
-}
-
-
-function emitGuestQueue(roomId) {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  // send to broadcaster only
-  if (room.broadcasterId) {
-    io.to(room.broadcasterId).emit("guest-queue", { queue: room.guestQueue || [] });
-  }
 }
 
 function emitViewerCount(roomId) {
@@ -129,7 +119,6 @@ socket.on("host-kick-guest", ({ roomId }) => {
       socket.emit("room-viewers", Array.from(room.viewers));
       socket.to(roomId).emit("broadcaster-online");
       emitViewerCount(roomId);
-      emitGuestQueue(roomId);
       // If already has guest, tell host
       if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
     }
@@ -150,64 +139,25 @@ socket.on("host-kick-guest", ({ roomId }) => {
     }
 
     if (role === "guest") {
-  // Guest requests to go live; put into queue (dedupe)
-  if (!room.guestQueue) room.guestQueue = [];
-  if (!room.guestQueue.includes(socket.id) && room.guestId !== socket.id) {
-    room.guestQueue.push(socket.id);
-  }
-
-  // Inform host there is a queue update
-  emitGuestQueue(roomId);
-
-  // Also send a one-off notification for UX (optional)
-  if (room.broadcasterId) {
-    io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });
-  }
-
-  socket.emit("guest-pending");
-}
-  });
-
-  // Guest can cancel their request (e.g., close tab before being approved)
-  socket.on("guest-cancel", ({ roomId }) => {
-    if (!roomId) return;
-    const room = rooms.get(roomId);
-    if (!room) return;
-    if (room.guestQueue) {
-      room.guestQueue = room.guestQueue.filter(id => id !== socket.id);
-      emitGuestQueue(roomId);
+      // Guest requests to go live; host must approve
+      if (room.broadcasterId) {
+        io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });
+      }
+      socket.emit("guest-pending");
     }
   });
 
   // ===== CHAT REALTIME =====
   socket.on("chat", ({ roomId, name, text }) => {
     if (!roomId || !text) return;
-    const now = Date.now();
-    const last = socket.data._lastChatTs || 0;
-    if (now - last < 1200) {
-      socket.emit("chat-error", { message: "Bạn chat quá nhanh. Vui lòng chờ 1 giây." });
-      return;
-    }
-    socket.data._lastChatTs = now;
 
     const msg = {
       name: (name || "Ẩn danh").slice(0, 20),
       text: String(text).slice(0, 300),
-      ts: now,
+      ts: Date.now(),
     };
 
     io.to(roomId).emit("chat", msg);
-  });
-
-  // ===== REACTIONS (hearts, likes...) =====
-  socket.on("reaction", ({ roomId, type }) => {
-    if (!roomId) return;
-    const now = Date.now();
-    const last = socket.data._lastReactTs || 0;
-    if (now - last < 200) return; // rate limit
-    socket.data._lastReactTs = now;
-    const safe = ["heart","like","wow"].includes(type) ? type : "heart";
-    io.to(roomId).emit("reaction", { type: safe, ts: now });
   });
 
   // ===== GUEST CO-HOST FLOW =====
@@ -218,19 +168,12 @@ socket.on("host-kick-guest", ({ roomId }) => {
     if (room.broadcasterId !== socket.id) return;
 
     room.guestId = guestId;
-    if (room.guestQueue) room.guestQueue = room.guestQueue.filter(id => id !== guestId);
-    emitGuestQueue(roomId);
-
     io.to(guestId).emit("guest-approved", { roomId });
     io.to(roomId).emit("guest-online", { guestId });
   });
 
-  socket.on("guest-reject", ({ roomId, guestId }) => {
-    if (!roomId || !guestId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return;
-    if (room.guestQueue) room.guestQueue = room.guestQueue.filter(id => id !== guestId);
-    emitGuestQueue(roomId);
+  socket.on("guest-reject", ({ guestId }) => {
+    if (!guestId) return;
     io.to(guestId).emit("guest-rejected");
   });
 
@@ -279,19 +222,13 @@ socket.on("host-kick-guest", ({ roomId }) => {
     }
 
     if (role === "guest") {
-      // remove from queue if waiting
-      if (room.guestQueue) {
-        const before = room.guestQueue.length;
-        room.guestQueue = room.guestQueue.filter(id => id !== socket.id);
-        if (room.guestQueue.length !== before) emitGuestQueue(roomId);
-      }
       if (room.guestId === socket.id) {
         room.guestId = null;
         io.to(roomId).emit("guest-offline");
       }
     }
 
-    if (!room.broadcasterId && room.viewers.size === 0 && !room.guestId && (!room.guestQueue || room.guestQueue.length === 0)) {
+    if (!room.broadcasterId && room.viewers.size === 0 && !room.guestId) {
       rooms.delete(roomId);
     }
   });
