@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Broadcast</title>
+  <title>Host</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
@@ -16,7 +16,7 @@
         <div class="card">
           <div class="kv">
             <div class="badge">Phòng Livestream</div>
-            <code id="roomCode" ><span>ID: </span>-</code>
+            <code id="roomCode" >-</code>
 
           </div>
           <hr />
@@ -24,9 +24,6 @@
         </div>
 
         <div class="card">
-
-       
-
      <div class="live-stage" id="liveStageHost" style="margin-top:10px">
 
   <!-- HOST MAIN -->
@@ -67,12 +64,17 @@
 
   </div>
 
-   <div class="av-controls1">
+   <div class="av-controls">
 <!-- LINKS -->
   <button id="copyViewer" class="av-btn" title="Copy link xem">👀</button>
   <button id="copyGuest" class="av-btn" title="Copy link khách mời">👤</button>
-
    </div>
+
+<div class="av-controls" id="guestHostControls">
+  <button id="btnMuteGuest" class="av-btn" title="Tắt mic khách" disabled>🔇</button>
+  <button id="btnUnmuteGuest" class="av-btn" title="Bật mic khách" disabled>🎙️</button>
+  <button id="btnKickGuest" class="av-btn off" title="Kích khách" disabled>⛔</button>
+</div>
 
       </div>
     </div>
@@ -82,12 +84,6 @@
 <div class="card">
   <div class="badge badge--info">👤 Khách xin lên live</div>
 
-<button id="btnMuteGuest" disabled>🔇 Tắt mic Khách</button>
-<button id="btnUnmuteGuest" disabled>🎙️ Bật mic Khách</button>
-<button id="btnKickGuest" disabled>⛔ Kích Khách</button>
-
-  
-
   <hr />
   <div id="guestReq" class="log">Chưa có yêu cầu.</div>
   <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
@@ -95,7 +91,6 @@
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
-  
 </div>
 
 
