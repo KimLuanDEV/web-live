@@ -260,3 +260,9 @@ code{
   backdrop-filter: blur(6px);
   z-index: 5;
 }
+
+
+/* ===== REACTIONS ===== */
+.reaction-layer{position:absolute;inset:0;pointer-events:none;z-index:4;}
+.react{position:absolute;font-size:22px;animation:floatUp 1.4s ease-out forwards;filter:drop-shadow(0 6px 10px rgba(0,0,0,.45));}
+@keyframes floatUp{0%{transform:translateY(0) scale(.9);opacity:.95}100%{transform:translateY(-120px) scale(1.15);opacity:0}}

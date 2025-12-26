@@ -39,6 +39,7 @@
 
             <div class="video-card__inner">
               <video id="me" autoplay playsinline muted></video>
+          <div id="reactionLayerMe" class="reaction-layer"></div>
             </div>
 
               <div class="av-controls">
@@ -72,7 +73,32 @@
   <div id="chatBox" class="chatbox"></div>
 </div>
 
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="/socket.io/socket.io.js">
+  // ===== REACTIONS =====
+  const btnReact = document.getElementById("btnReact");
+  const reactionLayerMe = document.getElementById("reactionLayerMe");
+
+  function spawnReaction(layer, type) {
+    if (!layer) return;
+    const el = document.createElement("div");
+    el.className = "react react-" + type;
+    el.textContent = type === "like" ? "👍" : (type === "wow" ? "😮" : "❤️");
+    el.style.left = (70 + Math.random() * 25) + "%";
+    el.style.bottom = "10px";
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), 1400);
+  }
+
+  socket.on("reaction", ({ type }) => {
+    spawnReaction(reactionLayerMe, type || "heart");
+  });
+
+  btnReact && (btnReact.onclick = () => {
+    socket.emit("reaction", { roomId, type: "heart" });
+  });
+
+</script>
+
   <script>
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
@@ -197,6 +223,8 @@
     });
 
     window.addEventListener("beforeunload", () => {
+    try { socket.emit("guest-cancel", { roomId }); } catch {}
+
       for (const pc of pcs.values()) { try { pc.close(); } catch {} }
       pcs.clear();
       if (localStream) localStream.getTracks().forEach(t => t.stop());
@@ -217,6 +245,10 @@
     }
 
     socket.on("chat", addChat);
+
+  socket.on("chat-error", ({ message }) => {
+    log("⚠️ " + (message || "Chat bị chặn"));
+  });
 
     chatSend.onclick = () => {
       const name = (chatName.value || "Guest").trim();
@@ -296,6 +328,31 @@ socket.on("guest-kicked", () => {
 });
 
 
-  </script>
+  
+  // ===== REACTIONS =====
+  const btnReact = document.getElementById("btnReact");
+  const reactionLayerMe = document.getElementById("reactionLayerMe");
+
+  function spawnReaction(layer, type) {
+    if (!layer) return;
+    const el = document.createElement("div");
+    el.className = "react react-" + type;
+    el.textContent = type === "like" ? "👍" : (type === "wow" ? "😮" : "❤️");
+    el.style.left = (70 + Math.random() * 25) + "%";
+    el.style.bottom = "10px";
+    layer.appendChild(el);
+    setTimeout(() => el.remove(), 1400);
+  }
+
+  socket.on("reaction", ({ type }) => {
+    spawnReaction(reactionLayerMe, type || "heart");
+  });
+
+  btnReact && (btnReact.onclick = () => {
+    socket.emit("reaction", { roomId, type: "heart" });
+  });
+
+</script>
+
 </body>
 </html>

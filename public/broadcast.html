@@ -48,6 +48,7 @@
 
   <div class="video-card__inner">
     <video id="preview" autoplay playsinline muted></video>
+        <div id="reactionLayerHost" class="reaction-layer"></div>
   </div>
 
  <div class="av-controls">
@@ -107,7 +108,43 @@
 
 
   
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="/socket.io/socket.io.js">
+// ===== REACTIONS =====
+const btnReact = document.getElementById("btnReact");
+const reactionLayerHost = document.getElementById("reactionLayerHost");
+
+function spawnReaction(layer, type) {
+  if (!layer) return;
+  const el = document.createElement("div");
+  el.className = "react react-" + type;
+  el.textContent = type === "like" ? "👍" : (type === "wow" ? "😮" : "❤️");
+  el.style.left = (70 + Math.random() * 25) + "%";
+  el.style.bottom = "10px";
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+
+socket.on("reaction", ({ type }) => {
+  spawnReaction(reactionLayerHost, type || "heart");
+});
+
+btnReact && (btnReact.onclick = () => {
+  socket.emit("reaction", { roomId, type: "heart" });
+});
+
+// enable react when connected as broadcaster
+socket.on("broadcaster-online", () => {
+  if (btnReact) btnReact.disabled = false;
+});
+// also enable after start
+const _origStart = start;
+start = async function() {
+  await _origStart();
+  if (btnReact) btnReact.disabled = false;
+};
+
+</script>
+
   <script>
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -144,6 +181,9 @@
 
     // Guest state
     let pendingGuestId = null;
+    let selectedGuestId = null;
+    let guestQueue = [];
+
     let approvedGuestId = null;
     let pcGuestIn = null; // PC to receive guest + send host tracks to guest
     const guestReq = document.getElementById("guestReq");
@@ -268,8 +308,26 @@
     });
 
     // ===== Guest request/approve =====
+    socket.on("guest-queue", ({ queue }) => {
+      guestQueue = Array.isArray(queue) ? queue : [];
+      // auto-select first in queue if none selected
+      if (!selectedGuestId || !guestQueue.includes(selectedGuestId)) {
+        selectedGuestId = guestQueue[0] || null;
+      }
+      const lines = guestQueue.map((id, idx) => {
+        const mark = (id === selectedGuestId) ? "👉 " : "   ";
+        return `${mark}${idx+1}. ${id}`;
+      });
+      guestReq.textContent = guestQueue.length
+        ? `Danh sách xin lên live (${guestQueue.length}):\n` + lines.join("\n") + "\n\n(Host duyệt theo thứ tự: ưu tiên #1)"
+        : "Chưa có yêu cầu.";
+      btnApproveGuest.disabled = !selectedGuestId;
+      btnRejectGuest.disabled = !selectedGuestId;
+    });
+
     socket.on("guest-request", ({ guestId }) => {
       pendingGuestId = guestId;
+      if (!selectedGuestId) selectedGuestId = guestId;
       guestReq.textContent = `GuestID: ${guestId} (bấm Chấp nhận để lên live)`;
       btnApproveGuest.disabled = false;
       btnRejectGuest.disabled = false;
@@ -288,24 +346,17 @@
     });
 
     btnApproveGuest.onclick = () => {
-      if (!pendingGuestId) return;
-      approvedGuestId = pendingGuestId;
-      socket.emit("guest-approve", { roomId, guestId: pendingGuestId });
-      guestReq.textContent = `✅ Đã chấp nhận guest: ${pendingGuestId}`;
-      btnApproveGuest.disabled = true;
-      btnRejectGuest.disabled = true;
-
-      // Host also wants to watch guest so guest will create offer to host
-      socket.emit("watch-guest", { roomId });
+      const gid = selectedGuestId || pendingGuestId;
+      if (!gid) return;
+      socket.emit("guest-approve", { roomId, guestId: gid });
+      log("✅ Đã chấp nhận guest: " + gid);
     };
 
     btnRejectGuest.onclick = () => {
-      if (!pendingGuestId) return;
-      socket.emit("guest-reject", { guestId: pendingGuestId });
-      guestReq.textContent = "⛔ Đã từ chối guest.";
-      pendingGuestId = null;
-      btnApproveGuest.disabled = true;
-      btnRejectGuest.disabled = true;
+      const gid = selectedGuestId || pendingGuestId;
+      if (!gid) return;
+      socket.emit("guest-reject", { roomId, guestId: gid });
+      log("❌ Đã từ chối guest: " + gid);
     };
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
@@ -456,6 +507,10 @@
 
     socket.on("chat", addChat);
 
+    socket.on("chat-error", ({ message }) => {
+      log("⚠️ " + (message || "Chat bị chặn"));
+    });
+
     chatSend.onclick = () => {
       const name = (chatName.value || "Host").trim();
       const text = chatText.value.trim();
@@ -532,6 +587,42 @@ socket.on("viewer-count", ({ count }) => {
   }
 });
 
-  </script>
+  
+// ===== REACTIONS =====
+const btnReact = document.getElementById("btnReact");
+const reactionLayerHost = document.getElementById("reactionLayerHost");
+
+function spawnReaction(layer, type) {
+  if (!layer) return;
+  const el = document.createElement("div");
+  el.className = "react react-" + type;
+  el.textContent = type === "like" ? "👍" : (type === "wow" ? "😮" : "❤️");
+  el.style.left = (70 + Math.random() * 25) + "%";
+  el.style.bottom = "10px";
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+
+socket.on("reaction", ({ type }) => {
+  spawnReaction(reactionLayerHost, type || "heart");
+});
+
+btnReact && (btnReact.onclick = () => {
+  socket.emit("reaction", { roomId, type: "heart" });
+});
+
+// enable react when connected as broadcaster
+socket.on("broadcaster-online", () => {
+  if (btnReact) btnReact.disabled = false;
+});
+// also enable after start
+const _origStart = start;
+start = async function() {
+  await _origStart();
+  if (btnReact) btnReact.disabled = false;
+};
+
+</script>
+
 </body>
 </html>

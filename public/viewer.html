@@ -45,6 +45,7 @@
 
   <div class="video-card__inner">
     <video id="player" autoplay playsinline controls></video>
+        <div id="reactionLayerHost" class="reaction-layer"></div>
   </div>
 </div>
 <hr />
@@ -52,6 +53,7 @@
 <div class="video-card" style="margin-top:10px">
   <div class="video-card__inner">
     <video id="guestPlayer" autoplay playsinline controls></video>
+        <div id="reactionLayerGuest" class="reaction-layer"></div>
   </div>
 </div>
 
@@ -75,7 +77,36 @@
 
 
 
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="/socket.io/socket.io.js">
+// ===== REACTIONS =====
+const btnReact = document.getElementById("btnReact");
+const reactionLayerHost = document.getElementById("reactionLayerHost");
+const reactionLayerGuest = document.getElementById("reactionLayerGuest");
+
+function spawnReaction(layer, type) {
+  if (!layer) return;
+  const el = document.createElement("div");
+  el.className = "react react-" + type;
+  el.textContent = type === "like" ? "👍" : (type === "wow" ? "😮" : "❤️");
+  el.style.left = (70 + Math.random() * 25) + "%";
+  el.style.bottom = "10px";
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+
+socket.on("reaction", ({ type }) => {
+  const t = type || "heart";
+  // show on both layers if exist
+  spawnReaction(reactionLayerHost, t);
+  spawnReaction(reactionLayerGuest, t);
+});
+
+btnReact && (btnReact.onclick = () => {
+  socket.emit("reaction", { roomId, type: "heart" });
+});
+
+</script>
+
   <script>
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
@@ -298,6 +329,10 @@ socket.on("broadcaster-offline", () => {
  
     socket.on("chat", addChat);
 
+  socket.on("chat-error", ({ message }) => {
+    log("⚠️ " + (message || "Chat bị chặn"));
+  });
+
     chatSend.onclick = () => {
       const name = (chatName.value || "Viewer").trim();
       const text = chatText.value.trim();
@@ -315,6 +350,35 @@ socket.on("viewer-count", ({ count }) => {
   }
 });
 
-  </script>
+  
+// ===== REACTIONS =====
+const btnReact = document.getElementById("btnReact");
+const reactionLayerHost = document.getElementById("reactionLayerHost");
+const reactionLayerGuest = document.getElementById("reactionLayerGuest");
+
+function spawnReaction(layer, type) {
+  if (!layer) return;
+  const el = document.createElement("div");
+  el.className = "react react-" + type;
+  el.textContent = type === "like" ? "👍" : (type === "wow" ? "😮" : "❤️");
+  el.style.left = (70 + Math.random() * 25) + "%";
+  el.style.bottom = "10px";
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1400);
+}
+
+socket.on("reaction", ({ type }) => {
+  const t = type || "heart";
+  // show on both layers if exist
+  spawnReaction(reactionLayerHost, t);
+  spawnReaction(reactionLayerGuest, t);
+});
+
+btnReact && (btnReact.onclick = () => {
+  socket.emit("reaction", { roomId, type: "heart" });
+});
+
+</script>
+
 </body>
 </html>
