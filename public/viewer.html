@@ -48,6 +48,7 @@
       </span>
     </div>
 <div class="chat-overlay" id="chatOverlay"></div>
+<div class="join-overlay" id="joinOverlayViewer" aria-live="polite"></div>
 <div class="pin-overlay" id="pinOverlay"></div>
 
         <div class="reactions-layer" id="reactionsLayerViewer"></div>
@@ -530,10 +531,30 @@ socket.on("broadcaster-offline", () => {
 
     const viewerCountViewer = document.getElementById("viewerCountViewer");
 
+
+const joinOverlayViewer = document.getElementById("joinOverlayViewer");
+function pushJoinViewer(text){
+  if (!joinOverlayViewer) return;
+  const el = document.createElement("div");
+  el.className = "join-bubble";
+  el.textContent = text;
+  joinOverlayViewer.appendChild(el);
+  while (joinOverlayViewer.children.length > 3) joinOverlayViewer.removeChild(joinOverlayViewer.firstChild);
+  setTimeout(()=>el.classList.add("hide"), 1400);
+  setTimeout(()=>{ try{el.remove();}catch{} }, 2000);
+}
+socket.on("viewer-join", ({ id }) => {
+  pushJoinViewer("➕ Có người vào xem");
+});
+socket.on("viewer-leave", ({ id }) => {
+  pushJoinViewer("➖ Có người rời");
+});
+
 socket.on("viewer-count", ({ count }) => {
   if (viewerCountViewer) {
     viewerCountViewer.textContent = `👁: ${count}`;
-  }
+  
+    try { viewerCountViewer.classList.remove("pulse"); void viewerCountViewer.offsetWidth; viewerCountViewer.classList.add("pulse"); } catch {}}
 });
 
 

@@ -167,6 +167,7 @@ socket.on("live-stop", ({ roomId }) => {
     if (role === "viewer") {
       room.viewers.add(socket.id);
       emitViewerCount(roomId);
+      io.to(roomId).emit("viewer-join", { id: socket.id, count: room.viewers.size });
 
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("watcher", { viewerId: socket.id, roomId });
@@ -317,6 +318,7 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     if (role === "viewer") {
       room.viewers.delete(socket.id);
       emitViewerCount(roomId);
+      io.to(roomId).emit("viewer-leave", { id: socket.id, count: room.viewers.size });
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
       }

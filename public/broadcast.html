@@ -44,6 +44,39 @@
 <div class="video-card__inner">
       <video id="preview" autoplay playsinline muted></video>
     </div>
+  
+
+    <div class="join-overlay" id="joinOverlayHost" aria-live="polite"></div>
+    <div class="av-overlay" id="avOverlayHost">
+      <div class="av-controls">
+
+  
+        <!-- LIVE CONTROL -->
+        <button id="btnStart" class="av-btn" title="Bắt đầu phát sóng">▶️</button>
+        <button id="btnStop" class="av-btn" title="Dừng phát sóng" disabled>⏹️</button>
+
+        <!-- AV -->
+        <button id="hostMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
+        <button id="hostCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
+        <button id="hostFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
+
+        </div>
+
+         <div class="av-controls">
+      <!-- LINKS -->
+        <button id="copyViewer" class="av-btn" title="Copy link xem">👀</button>
+        <button id="copyGuest" class="av-btn" title="Copy link khách mời">👤</button>
+         </div>
+
+      <div class="av-controls" id="guestHostControls">
+        <button id="btnMuteGuest" class="av-btn" title="Tắt mic khách" disabled>🔇</button>
+        <button id="btnUnmuteGuest" class="av-btn" title="Bật mic khách" disabled>🎙️</button>
+        <button id="btnOffCamGuest" class="av-btn" title="Tắt camera khách" disabled>🚫</button>
+        <button id="btnOnCamGuest"  class="av-btn" title="Bật camera khách" disabled>📷</button>
+        <button id="btnKickGuest" class="av-btn off" title="Kích khách" disabled>⛔</button>
+      </div>
+    </div>
+
   </div>
 
  
@@ -54,33 +87,7 @@
   </div>
 </div>
 
-  <div class="av-controls">
-
   
-  <!-- LIVE CONTROL -->
-  <button id="btnStart" class="av-btn" title="Bắt đầu phát sóng">▶️</button>
-  <button id="btnStop" class="av-btn" title="Dừng phát sóng" disabled>⏹️</button>
-
-  <!-- AV -->
-  <button id="hostMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
-  <button id="hostCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
-  <button id="hostFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
-
-  </div>
-
-   <div class="av-controls">
-<!-- LINKS -->
-  <button id="copyViewer" class="av-btn" title="Copy link xem">👀</button>
-  <button id="copyGuest" class="av-btn" title="Copy link khách mời">👤</button>
-   </div>
-
-<div class="av-controls" id="guestHostControls">
-  <button id="btnMuteGuest" class="av-btn" title="Tắt mic khách" disabled>🔇</button>
-  <button id="btnUnmuteGuest" class="av-btn" title="Bật mic khách" disabled>🎙️</button>
-  <button id="btnOffCamGuest" class="av-btn" title="Tắt camera khách" disabled>🚫</button>
-  <button id="btnOnCamGuest"  class="av-btn" title="Bật camera khách" disabled>📷</button>
-  <button id="btnKickGuest" class="av-btn off" title="Kích khách" disabled>⛔</button>
-</div>
 
       </div>
     </div>
@@ -994,10 +1001,26 @@ btnOnCamGuest.onclick  = () => socket.emit("host-cam-guest", { roomId, off: fals
 
 const viewerCountHost = document.getElementById("viewerCountHost");
 
+
+const joinOverlayHost = document.getElementById("joinOverlayHost");
+function pushJoinHost(text){
+  if (!joinOverlayHost) return;
+  const el = document.createElement("div");
+  el.className = "join-bubble";
+  el.textContent = text;
+  joinOverlayHost.appendChild(el);
+  while (joinOverlayHost.children.length > 3) joinOverlayHost.removeChild(joinOverlayHost.firstChild);
+  setTimeout(()=>el.classList.add("hide"), 1400);
+  setTimeout(()=>{ try{el.remove();}catch{} }, 2000);
+}
+socket.on("viewer-join", () => pushJoinHost("➕ +1 người xem"));
+socket.on("viewer-leave", () => pushJoinHost("➖ -1 người xem"));
+
 socket.on("viewer-count", ({ count }) => {
   if (viewerCountHost) {
     viewerCountHost.textContent = `👁: ${count}`;
-  }
+  
+    try { viewerCountHost.classList.remove("pulse"); void viewerCountHost.offsetWidth; viewerCountHost.classList.add("pulse"); } catch {}}
 });
 
 
