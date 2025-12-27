@@ -174,6 +174,18 @@ socket.on("host-kick-guest", ({ roomId }) => {
     io.to(roomId).emit("chat", msg);
   });
 
+  // ===== REACTIONS (emoji / tap hearts) =====
+  socket.on("reaction", ({ roomId, emoji, x, y }) => {
+    if (!roomId) return;
+
+    const safeEmoji = String(emoji || "❤️").slice(0, 6);
+    const nx = (typeof x === "number") ? Math.max(0, Math.min(1, x)) : undefined;
+    const ny = (typeof y === "number") ? Math.max(0, Math.min(1, y)) : undefined;
+
+    io.to(roomId).emit("reaction", { emoji: safeEmoji, x: nx, y: ny, ts: Date.now() });
+  });
+
+
   // ===== GUEST CO-HOST FLOW =====
   // Host approves guest: guest becomes room.guestId; all clients get guest-online
   socket.on("guest-approve", ({ roomId, guestId }) => {
