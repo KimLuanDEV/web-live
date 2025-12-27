@@ -353,7 +353,9 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
     async function join() {
       if (joined) return;
       joined = true;
-      socket.emit("join-room", { roomId, role: "viewer" });
+      
+      try{ btnJoin.style.display = "none"; }catch{}
+socket.emit("join-room", { roomId, role: "viewer" });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host/guest...");
     }
@@ -445,6 +447,24 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
     btnJoin.onclick = () => {
       join().catch(err => log("Join lỗi: " + err.message));
     };
+
+    // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
+    (function autoJoinViewer(){
+      try {
+        btnJoin.disabled = true;
+        btnJoin.textContent = "⏳ Đang tham gia...";
+        // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
+        setTimeout(() => {
+          join().catch(err => {
+            // nếu lỗi, mở lại nút cho user bấm thử
+            btnJoin.disabled = false;
+            btnJoin.textContent = "Tham gia xem Livestream";
+            log("Auto-join lỗi: " + (err?.message || err));
+          });
+        }, 120);
+      } catch {}
+    })();
+
 
 // ===== REQUEST TO GO LIVE (VIEWER -> GUEST) =====
 const btnRequestLive = document.getElementById("btnRequestLive");
