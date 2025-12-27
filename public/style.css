@@ -739,3 +739,42 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
   .ctrl-grid{ grid-template-columns: repeat(4, 44px); }
 }
 /* ===== /CTRL TAB ===== */
+
+
+.gift-bar{
+  display:flex;
+  gap:8px;
+  margin-top:8px;
+}
+.gift-bar button{
+  padding:10px 14px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  border:1px solid var(--stroke);
+  cursor:pointer;
+  font-size:18px;
+}
+
+.gift-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:20;
+}
+
+.gift-item{
+  position:absolute;
+  font-size:32px;
+  animation: giftFloat 2s ease-out forwards;
+}
+
+@keyframes giftFloat{
+  from{
+    transform: translateY(40px) scale(.6);
+    opacity:0;
+  }
+  to{
+    transform: translateY(-120px) scale(1.3);
+    opacity:1;
+  }
+}

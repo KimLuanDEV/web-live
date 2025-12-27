@@ -346,5 +346,23 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
   });
 });
 
+// ===== GIFT SYSTEM =====
+socket.on("send-gift", ({ roomId, gift }) => {
+  if (!roomId || !gift) return;
+
+  const payload = {
+    gift: {
+      type: gift.type,     // heart | flower | rocket | coin
+      value: gift.value,   // số coin (optional)
+    },
+    ts: Date.now()
+  };
+
+  io.to(roomId).emit("gift", payload);
+});
+
+
+
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

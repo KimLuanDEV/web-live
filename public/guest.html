@@ -33,6 +33,8 @@
           <!-- ✅ LIVE STAGE: HOST MAIN + ME PIP -->
           <div class="live-stage" id="liveStageGuest" style="margin-top:10px">
 
+            <div class="gift-layer" id="giftLayer"></div>
+
             <!-- HOST MAIN -->
             <div class="video-card live-main" id="hostCardGuest">
               <div class="live-overlay">
@@ -759,6 +761,41 @@ socket.on("guest-set-cam", ({ off }) => {
     });
 
   
+    const giftLayer = document.getElementById("giftLayer");
+
+function spawnGift(type){
+  const el = document.createElement("div");
+  el.className = "gift-item";
+
+  el.textContent =
+    type === "heart"  ? "❤️" :
+    type === "flower" ? "🌸" :
+    type === "rocket" ? "🚀" :
+    "💰";
+
+  el.style.left = Math.random()*80 + 10 + "%";
+  el.style.bottom = "10%";
+
+  giftLayer.appendChild(el);
+  setTimeout(()=>el.remove(), 2000);
+}
+
+socket.on("gift", ({ gift })=>{
+  spawnGift(gift.type);
+});
+
+
+if(gift.type === "rocket"){
+  for(let i=0;i<6;i++){
+    setTimeout(()=>spawnGift("rocket"), i*150);
+  }
+}
+
+if(gift.type === "coin"){
+  showCoinRain(); // animation rơi tiền
+}
+
+room.giftStats[userId] += gift.value;
 
 
   </script>
