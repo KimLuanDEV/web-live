@@ -60,17 +60,25 @@
           
             <div class="join-overlay" id="joinOverlayGuest" aria-live="polite"></div>
             <div class="av-overlay" id="avOverlayGuest">
-              <div class="av-controls">
-                <button id="btnStart" class="av-btn" title="Xin lên live">🎤</button>
-                <button id="btnLeaveLive" class="av-btn" title="Rời live" disabled>🚪</button>
+</div>
 
-                <button id="guestMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
-                <button id="guestCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
-                <button id="guestFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
-                            </div>
+          
+            <div class="ctrl-tab ctrl-tab--stage" id="ctrlTabGuest">
+              <button class="ctrl-fab" id="ctrlFabGuest" type="button" aria-expanded="false" title="Mở điều khiển">☰</button>
+              <div class="ctrl-drawer" id="ctrlDrawerGuest" hidden>
+                <div class="ctrl-title">🎛 Điều khiển</div>
+                <div class="ctrl-grid">
+                  <button id="btnStart" class="av-btn" title="Xin lên live">🎤</button>
+                  <button id="btnLeaveLive" class="av-btn" title="Rời live" disabled>🚪</button>
+
+                  <button id="guestMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
+                  <button id="guestCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
+                  <button id="guestFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
+                </div>
+                <div class="ctrl-hint">Nhấn ☰ để thu gọn</div>
+              </div>
             </div>
-
-          </div>
+</div>
           <!-- /LIVE STAGE -->
              
 
@@ -122,6 +130,37 @@
     document.getElementById("roomCode").textContent = roomId;
 
     const socket = io();
+    // ===== CTRL TAB (collapse/expand) =====
+    (function initCtrlTabGuest(){
+      const fab = document.getElementById("ctrlFabGuest");
+      const drawer = document.getElementById("ctrlDrawerGuest");
+      const tab = document.getElementById("ctrlTabGuest");
+      if (!fab || !drawer || !tab) return;
+
+      function open(){
+        drawer.hidden = false;
+        tab.classList.add("is-open");
+        fab.setAttribute("aria-expanded","true");
+      }
+      function close(){
+        tab.classList.remove("is-open");
+        fab.setAttribute("aria-expanded","false");
+        setTimeout(()=>{ drawer.hidden = !tab.classList.contains("is-open"); }, 160);
+      }
+      function toggle(){ tab.classList.contains("is-open") ? close() : open(); }
+
+      fab.addEventListener("click", (e)=>{ e.stopPropagation(); toggle(); });
+      document.addEventListener("click", (e)=>{
+        if (!tab.classList.contains("is-open")) return;
+        if (tab.contains(e.target)) return;
+        close();
+      });
+      document.addEventListener("keydown", (e)=>{
+        if (e.key === "Escape" && tab.classList.contains("is-open")) close();
+      });
+    })();
+    // ===== /CTRL TAB =====
+
 
 // ===== VIEWER JOIN/LEAVE TOAST =====
 const joinOverlayGuest = document.getElementById("joinOverlayGuest");
