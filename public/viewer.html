@@ -48,6 +48,7 @@
       </span>
     </div>
 <div class="chat-overlay" id="chatOverlay"></div>
+<div class="join-overlay" id="joinOverlayViewer" aria-live="polite"></div>
 <div class="pin-overlay" id="pinOverlay"></div>
 
         <div class="reactions-layer" id="reactionsLayerViewer"></div>
@@ -352,7 +353,9 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
     async function join() {
       if (joined) return;
       joined = true;
-      socket.emit("join-room", { roomId, role: "viewer" });
+      
+      try{ btnJoin.style.display = "none"; }catch{}
+socket.emit("join-room", { roomId, role: "viewer" });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host/guest...");
     }
@@ -445,50 +448,41 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       join().catch(err => log("Join lỗi: " + err.message));
     };
 
-// ===== REQUEST TO GO LIVE (VIEWER -> HOST) =====
+    // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
+    (function autoJoinViewer(){
+      try {
+        btnJoin.disabled = true;
+        btnJoin.textContent = "⏳ Đang tham gia...";
+        // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
+        setTimeout(() => {
+          join().catch(err => {
+            // nếu lỗi, mở lại nút cho user bấm thử
+            btnJoin.disabled = false;
+            btnJoin.textContent = "Tham gia xem Livestream";
+            log("Auto-join lỗi: " + (err?.message || err));
+          });
+        }, 120);
+      } catch {}
+    })();
+
+
+// ===== REQUEST TO GO LIVE (VIEWER -> GUEST) =====
 const btnRequestLive = document.getElementById("btnRequestLive");
 
 // mặc định disable khi host chưa online
 btnRequestLive.disabled = true;
 
-function toast(msg){
-  const t = document.createElement("div");
-  t.className = "toast";
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 1600);
-}
-
 btnRequestLive.onclick = () => {
-  // Gửi yêu cầu lên HOST (không cần mở guest.html ngay)
-  const nameEl = document.getElementById("chatName"); // reuse name input if any
-  const name = nameEl ? (nameEl.value || "").trim() : "";
-  socket.emit("viewer-request-live", { roomId, name });
-  toast("📨 Đã gửi yêu cầu xin lên live tới Host");
-};
-
-// Kết quả gửi yêu cầu (optional UI)
-socket.on("viewer-request-result", ({ ok, reason }) => {
-  if (ok) return;
-  if (reason === "host_offline") toast("⛔ Host đang offline");
-});
-
-// Host duyệt => viewer tự mở trang guest để bật cam/mic
-socket.on("viewer-open-guest", ({ url }) => {
-  const u = url || `/guest.html?room=${encodeURIComponent(roomId)}`;
-  toast("✅ Host đã chấp nhận! Mở trang Guest...");
+  const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
   // mở tab mới để vẫn xem được live
-  window.open(u, "_blank");
-});
-
-socket.on("viewer-rejected", () => {
-  toast("⛔ Host đã từ chối yêu cầu lên live");
-});
+  window.open(url, "_blank");
+};
 
 // chỉ cho xin lên live khi broadcaster online
 socket.on("broadcaster-online", () => {
   btnRequestLive.disabled = false;
 });
+
 socket.on("broadcaster-offline", () => {
   btnRequestLive.disabled = true;
 });
@@ -557,10 +551,30 @@ socket.on("broadcaster-offline", () => {
 
     const viewerCountViewer = document.getElementById("viewerCountViewer");
 
+
+const joinOverlayViewer = document.getElementById("joinOverlayViewer");
+function pushJoinViewer(text){
+  if (!joinOverlayViewer) return;
+  const el = document.createElement("div");
+  el.className = "join-bubble";
+  el.textContent = text;
+  joinOverlayViewer.appendChild(el);
+  while (joinOverlayViewer.children.length > 3) joinOverlayViewer.removeChild(joinOverlayViewer.firstChild);
+  setTimeout(()=>el.classList.add("hide"), 1400);
+  setTimeout(()=>{ try{el.remove();}catch{} }, 2000);
+}
+socket.on("viewer-join", ({ id }) => {
+  pushJoinViewer("➕ Có người vào xem");
+});
+socket.on("viewer-leave", ({ id }) => {
+  pushJoinViewer("➖ Có người rời");
+});
+
 socket.on("viewer-count", ({ count }) => {
   if (viewerCountViewer) {
     viewerCountViewer.textContent = `👁: ${count}`;
-  }
+  
+    try { viewerCountViewer.classList.remove("pulse"); void viewerCountViewer.offsetWidth; viewerCountViewer.classList.add("pulse"); } catch {}}
 });
 
 

@@ -167,6 +167,7 @@ socket.on("live-stop", ({ roomId }) => {
     if (role === "viewer") {
       room.viewers.add(socket.id);
       emitViewerCount(roomId);
+      io.to(roomId).emit("viewer-join", { id: socket.id, count: room.viewers.size });
 
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("watcher", { viewerId: socket.id, roomId });
@@ -285,54 +286,7 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     io.to(guestId).emit("guest-rejected");
   });
 
-  
-  // ===== VIEWER -> HOST: REQUEST TO GO LIVE =====
-  // Viewer can request host to allow them to go live. Host will approve => viewer receives open-guest url.
-  socket.on("viewer-request-live", ({ roomId, name }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-
-    // only viewers can request from viewer page
-    const role = String(socket.data.role || "");
-    if (role !== "viewer") return;
-
-    if (!room.broadcasterId) {
-      return io.to(socket.id).emit("viewer-request-result", { ok: false, reason: "host_offline" });
-    }
-
-    if (!room.pendingViewerRequests) room.pendingViewerRequests = new Map(); // viewerId -> {ts,name}
-    room.pendingViewerRequests.set(socket.id, { ts: Date.now(), name: String(name || "").slice(0, 20) });
-
-    io.to(room.broadcasterId).emit("viewer-request", { viewerId: socket.id, roomId, name: String(name || "").slice(0, 20) });
-    io.to(socket.id).emit("viewer-request-result", { ok: true });
-  });
-
-  socket.on("viewer-approve", ({ roomId, viewerId }) => {
-    if (!roomId || !viewerId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-
-    // optional: verify pending
-    if (room.pendingViewerRequests && room.pendingViewerRequests.has(viewerId)) {
-      room.pendingViewerRequests.delete(viewerId);
-    }
-
-    const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
-    io.to(viewerId).emit("viewer-open-guest", { url });
-  });
-
-  socket.on("viewer-reject", ({ roomId, viewerId }) => {
-    if (!roomId || !viewerId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-
-    if (room.pendingViewerRequests && room.pendingViewerRequests.has(viewerId)) {
-      room.pendingViewerRequests.delete(viewerId);
-    }
-    io.to(viewerId).emit("viewer-rejected");
-  });
-  // ===== /VIEWER -> HOST: REQUEST TO GO LIVE =====
-// Any viewer (or host) asks to watch guest -> server tells guest to create offer to that viewer
+  // Any viewer (or host) asks to watch guest -> server tells guest to create offer to that viewer
   socket.on("watch-guest", ({ roomId }) => {
     if (!roomId) return;
     const room = getRoom(roomId);
@@ -364,6 +318,7 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     if (role === "viewer") {
       room.viewers.delete(socket.id);
       emitViewerCount(roomId);
+      io.to(roomId).emit("viewer-leave", { id: socket.id, count: room.viewers.size });
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
       }

@@ -41,9 +41,46 @@
 <div class="pin-overlay" id="pinOverlay"></div>
 
         <div class="reactions-layer" id="reactionsLayerHost"></div>
+        <div class="ctrl-tab" id="ctrlTabHost">
+          <button class="ctrl-fab" id="ctrlFabHost" type="button" aria-expanded="false" title="Mở điều khiển">☰</button>
+          <div class="ctrl-drawer" id="ctrlDrawerHost" hidden>
+            <div class="ctrl-title">🎛 Điều khiển</div>
+            <div class="ctrl-grid">
+              <!-- LIVE -->
+              <button id="btnStart" class="av-btn" title="Bắt đầu phát sóng">▶️</button>
+              <button id="btnStop" class="av-btn" title="Dừng phát sóng" disabled>⏹️</button>
+
+              <!-- HOST AV -->
+              <button id="hostMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
+              <button id="hostCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
+              <button id="hostFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
+
+              <!-- LINKS -->
+              <button id="copyViewer" class="av-btn" title="Copy link xem">👀</button>
+              <button id="copyGuest" class="av-btn" title="Copy link khách mời">👤</button>
+
+              <!-- GUEST CONTROL -->
+              <button id="btnMuteGuest" class="av-btn" title="Tắt mic khách" disabled>🔇</button>
+              <button id="btnUnmuteGuest" class="av-btn" title="Bật mic khách" disabled>🎙️</button>
+              <button id="btnOffCamGuest" class="av-btn" title="Tắt camera khách" disabled>🚫</button>
+              <button id="btnOnCamGuest"  class="av-btn" title="Bật camera khách" disabled>📷</button>
+              <button id="btnKickGuest" class="av-btn off" title="Kích khách" disabled>⛔</button>
+            </div>
+            <div class="ctrl-hint">Nhấn ☰ để thu gọn</div>
+          </div>
+        </div>
+
 <div class="video-card__inner">
       <video id="preview" autoplay playsinline muted></video>
     </div>
+  
+
+    <div class="join-overlay" id="joinOverlayHost" aria-live="polite"></div>
+    <div class="av-overlay" id="avOverlayHost">
+
+
+</div>
+
   </div>
 
  
@@ -54,33 +91,7 @@
   </div>
 </div>
 
-  <div class="av-controls">
-
   
-  <!-- LIVE CONTROL -->
-  <button id="btnStart" class="av-btn" title="Bắt đầu phát sóng">▶️</button>
-  <button id="btnStop" class="av-btn" title="Dừng phát sóng" disabled>⏹️</button>
-
-  <!-- AV -->
-  <button id="hostMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
-  <button id="hostCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
-  <button id="hostFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
-
-  </div>
-
-   <div class="av-controls">
-<!-- LINKS -->
-  <button id="copyViewer" class="av-btn" title="Copy link xem">👀</button>
-  <button id="copyGuest" class="av-btn" title="Copy link khách mời">👤</button>
-   </div>
-
-<div class="av-controls" id="guestHostControls">
-  <button id="btnMuteGuest" class="av-btn" title="Tắt mic khách" disabled>🔇</button>
-  <button id="btnUnmuteGuest" class="av-btn" title="Bật mic khách" disabled>🎙️</button>
-  <button id="btnOffCamGuest" class="av-btn" title="Tắt camera khách" disabled>🚫</button>
-  <button id="btnOnCamGuest"  class="av-btn" title="Bật camera khách" disabled>📷</button>
-  <button id="btnKickGuest" class="av-btn off" title="Kích khách" disabled>⛔</button>
-</div>
 
       </div>
     </div>
@@ -174,6 +185,41 @@
 
     const socket = io();
     document.body.classList.add("is-host");
+    // ===== CTRL TAB (collapse/expand) =====
+    (function initCtrlTabHost(){
+      const fab = document.getElementById("ctrlFabHost");
+      const drawer = document.getElementById("ctrlDrawerHost");
+      const tab = document.getElementById("ctrlTabHost");
+      if (!fab || !drawer || !tab) return;
+
+      function open(){
+        drawer.hidden = false;
+        tab.classList.add("is-open");
+        fab.setAttribute("aria-expanded","true");
+      }
+      function close(){
+        tab.classList.remove("is-open");
+        fab.setAttribute("aria-expanded","false");
+        // allow transition
+        setTimeout(()=>{ drawer.hidden = !tab.classList.contains("is-open"); }, 160);
+      }
+      function toggle(){
+        tab.classList.contains("is-open") ? close() : open();
+      }
+
+      fab.addEventListener("click", (e)=>{ e.stopPropagation(); toggle(); });
+      // click outside to close
+      document.addEventListener("click", (e)=>{
+        if (!tab.classList.contains("is-open")) return;
+        if (tab.contains(e.target)) return;
+        close();
+      });
+      document.addEventListener("keydown", (e)=>{
+        if (e.key === "Escape" && tab.classList.contains("is-open")) close();
+      });
+    })();
+    // ===== /CTRL TAB =====
+
 
 
 // ===== PER-PEER ICE RESTART (auto) =====
@@ -406,7 +452,6 @@ socket.on("reaction", (msg)=>{
 
     // Guest state
     let pendingGuestId = null;
-    let pendingReqType = "guest"; // guest | viewer
     let approvedGuestId = null;
     let pcGuestIn = null; // PC to receive guest + send host tracks to guest
     const guestReq = document.getElementById("guestReq");
@@ -547,18 +592,7 @@ socket.on("reaction", (msg)=>{
       log("Có guest xin lên live: " + guestId);
     });
 
-    
-    // Viewer on viewer.html requests to go live (no need to open guest page yet)
-    socket.on("viewer-request", ({ viewerId, name }) => {
-      pendingGuestId = viewerId;
-      pendingReqType = "viewer";
-      const label = name ? `${name} (${viewerId})` : viewerId;
-      guestReq.textContent = `Viewer: ${label} (bấm Chấp nhận để gửi link lên live)`;
-      btnApproveGuest.disabled = false;
-      btnRejectGuest.disabled = false;
-      log("Có viewer xin lên live: " + viewerId);
-    });
-socket.on("guest-offline", () => {
+    socket.on("guest-offline", () => {
       log("Guest offline");
       approvedGuestId = null;
       pendingGuestId = null;
@@ -571,19 +605,6 @@ socket.on("guest-offline", () => {
 
     btnApproveGuest.onclick = () => {
       if (!pendingGuestId) return;
-
-      // If request comes from viewer page => just send them the guest link to open
-      if (pendingReqType === "viewer") {
-        socket.emit("viewer-approve", { roomId, viewerId: pendingGuestId });
-        guestReq.textContent = `✅ Đã chấp nhận viewer: ${pendingGuestId} (đã gửi link guest)`;
-        btnApproveGuest.disabled = true;
-        btnRejectGuest.disabled = true;
-        pendingGuestId = null;
-        pendingReqType = "guest";
-        return;
-      }
-
-      // Normal guest flow
       approvedGuestId = pendingGuestId;
       socket.emit("guest-approve", { roomId, guestId: pendingGuestId });
       guestReq.textContent = `✅ Đã chấp nhận guest: ${pendingGuestId}`;
@@ -596,17 +617,6 @@ socket.on("guest-offline", () => {
 
     btnRejectGuest.onclick = () => {
       if (!pendingGuestId) return;
-
-      if (pendingReqType === "viewer") {
-        socket.emit("viewer-reject", { roomId, viewerId: pendingGuestId });
-        guestReq.textContent = "⛔ Đã từ chối viewer.";
-        pendingGuestId = null;
-        pendingReqType = "guest";
-        btnApproveGuest.disabled = true;
-        btnRejectGuest.disabled = true;
-        return;
-      }
-
       socket.emit("guest-reject", { guestId: pendingGuestId });
       guestReq.textContent = "⛔ Đã từ chối guest.";
       pendingGuestId = null;
@@ -1030,10 +1040,26 @@ btnOnCamGuest.onclick  = () => socket.emit("host-cam-guest", { roomId, off: fals
 
 const viewerCountHost = document.getElementById("viewerCountHost");
 
+
+const joinOverlayHost = document.getElementById("joinOverlayHost");
+function pushJoinHost(text){
+  if (!joinOverlayHost) return;
+  const el = document.createElement("div");
+  el.className = "join-bubble";
+  el.textContent = text;
+  joinOverlayHost.appendChild(el);
+  while (joinOverlayHost.children.length > 3) joinOverlayHost.removeChild(joinOverlayHost.firstChild);
+  setTimeout(()=>el.classList.add("hide"), 1400);
+  setTimeout(()=>{ try{el.remove();}catch{} }, 2000);
+}
+socket.on("viewer-join", () => pushJoinHost("➕ +1 người xem"));
+socket.on("viewer-leave", () => pushJoinHost("➖ -1 người xem"));
+
 socket.on("viewer-count", ({ count }) => {
   if (viewerCountHost) {
     viewerCountHost.textContent = `👁: ${count}`;
-  }
+  
+    try { viewerCountHost.classList.remove("pulse"); void viewerCountHost.offsetWidth; viewerCountHost.classList.add("pulse"); } catch {}}
 });
 
 
