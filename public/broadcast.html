@@ -26,6 +26,8 @@
         <div class="card">
      <div class="live-stage" id="liveStageHost" style="margin-top:10px">
 
+      <div class="gift-layer" id="giftLayer"></div>
+
   <!-- HOST MAIN -->
   <div class="video-card live-main" id="hostCard">
     <div class="live-overlay">
@@ -1062,6 +1064,29 @@ socket.on("viewer-count", ({ count }) => {
     try { viewerCountHost.classList.remove("pulse"); void viewerCountHost.offsetWidth; viewerCountHost.classList.add("pulse"); } catch {}}
 });
 
+
+const giftLayer = document.getElementById("giftLayer");
+
+function spawnGift(type){
+  const el = document.createElement("div");
+  el.className = "gift-item";
+
+  el.textContent =
+    type === "heart"  ? "❤️" :
+    type === "flower" ? "🌸" :
+    type === "rocket" ? "🚀" :
+    "💰";
+
+  el.style.left = Math.random()*80 + 10 + "%";
+  el.style.bottom = "10%";
+
+  giftLayer.appendChild(el);
+  setTimeout(()=>el.remove(), 2000);
+}
+
+socket.on("gift", ({ gift })=>{
+  spawnGift(gift.type);
+});
 
 
 
