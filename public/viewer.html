@@ -91,12 +91,7 @@
 
 
 
-  <script src="/socket.io/socket.io.js">// enable tap/click to send ❤️ on main live card
-const __tapEl = document.getElementById("hostCard");
-const __layerEl = document.getElementById("reactionsLayerViewer");
-attachTapToHeart(__tapEl, __layerEl, ()=>roomId);
-
-  </script>
+  <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
@@ -185,6 +180,15 @@ socket.on("reaction", (msg)=>{
     console.warn("reaction render error", e);
   }
 });
+
+// ===== INIT TAP-TO-HEART on main live card =====
+(function initTapHearts(){
+  const __tapEl = document.getElementById("hostCard");
+  const __layerEl = document.getElementById("reactionsLayerViewer");
+  if (!__tapEl || !__layerEl) return;
+  attachTapToHeart(__tapEl, __layerEl, ()=>roomId);
+})();
+
 
     let joined = false;
 
