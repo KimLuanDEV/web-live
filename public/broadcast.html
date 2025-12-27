@@ -312,6 +312,31 @@ socket.on("reaction", (msg)=>{
         // allow again after a short cooldown
         setTimeout(()=>{ try{ pc.__iceRestarting = false; }catch{} }, 1200);
       }
+
+
+    // Auto ICE-restart toàn bộ peer khi mạng quay lại / tab quay lại foreground
+    function restartAllPeers(reason){
+      try{
+        let n = 0;
+        for (const [pid, pc] of pcs.entries()){
+          if (pc && pc.signalingState !== "closed"){
+            doIceRestart(pid, pc);
+            n++;
+          }
+        }
+        // guest PC (host <-> guest)
+        if (typeof approvedGuestId !== "undefined" && approvedGuestId && typeof pcGuestIn !== "undefined" && pcGuestIn && pcGuestIn.signalingState !== "closed"){
+          doIceRestart(approvedGuestId, pcGuestIn);
+          n++;
+        }
+        if (n > 0) log("🧊 Auto ICE restart ("+reason+"): " + n + " peer(s)");
+      }catch(e){ console.warn(e); }
+    }
+
+    window.addEventListener("online", ()=> restartAllPeers("online"));
+    document.addEventListener("visibilitychange", ()=>{
+      if (!document.hidden) restartAllPeers("visible");
+    });
     }
 
     // When peer requests an ICE restart, host will create a new offer with iceRestart:true

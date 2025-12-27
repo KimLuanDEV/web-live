@@ -255,6 +255,26 @@ socket.on("reaction", (msg)=>{
       }finally{
         setTimeout(()=>{ try{ pc.__iceRestarting = false; }catch{} }, 1200);
       }
+
+
+    // Auto ICE-restart toàn bộ peer khi mạng quay lại / tab quay lại foreground
+    function restartAllPeers(reason){
+      try{
+        let n = 0;
+        for (const [pid, pc] of pcs.entries()){
+          if (pc && pc.signalingState !== "closed"){
+            doIceRestart(pid, pc);
+            n++;
+          }
+        }
+        if (n > 0) log("🧊 Auto ICE restart ("+reason+"): " + n + " peer(s)");
+      }catch(e){ console.warn(e); }
+    }
+
+    window.addEventListener("online", ()=> restartAllPeers("online"));
+    document.addEventListener("visibilitychange", ()=>{
+      if (!document.hidden) restartAllPeers("visible");
+    });
     }
 
     // peer asks guest to restart ICE
