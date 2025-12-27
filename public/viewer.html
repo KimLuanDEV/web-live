@@ -45,6 +45,11 @@
 
     <div class="viewer-count" id="viewerCountViewer"> 👁: 0</div>
     <div class="chat-overlay" id="chatOverlay"></div>
+    <div class="chat-float" id="chatFloat">
+      <div class="chat-float__hd">💬 Chat</div>
+      <div class="chat-float__bd" id="chatFloatBox"></div>
+    </div>
+
 
         <div class="reactions-layer" id="reactionsLayerViewer"></div>
 <div class="video-card__inner">
@@ -402,7 +407,28 @@ socket.on("broadcaster-offline", () => {
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-    function addChat(msg) {
+    
+const chatFloatBox = document.getElementById("chatFloatBox");
+
+function _chatWasBottom(el){
+  return (el.scrollTop + el.clientHeight) >= (el.scrollHeight - 24);
+}
+function addChatFloat(msg){
+  if (!chatFloatBox) return;
+  const wasBottom = _chatWasBottom(chatFloatBox);
+  const time = new Date(msg.ts).toLocaleTimeString();
+  const line = document.createElement("div");
+  line.className = "chat-float__line";
+  line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
+  chatFloatBox.appendChild(line);
+
+  // giới hạn để tránh DOM quá nặng
+  while (chatFloatBox.children.length > 120) chatFloatBox.removeChild(chatFloatBox.firstChild);
+
+  if (wasBottom) chatFloatBox.scrollTop = chatFloatBox.scrollHeight;
+}
+
+function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
       const line = document.createElement("div");
       line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
@@ -410,9 +436,9 @@ socket.on("broadcaster-offline", () => {
       chatBox.scrollTop = chatBox.scrollHeight;
     }
  
-    socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
+    socket.on("chat", (msg)=>{ addChat(msg); addChatFloat(msg); pushOverlay(msg); });
 
-    // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
+// ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
     const chatOverlay = document.getElementById("chatOverlay");
     function pushOverlay(msg){
       if (!chatOverlay) return;
