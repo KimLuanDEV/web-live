@@ -428,27 +428,36 @@ code{
   pointer-events: none;
 }
 
-
-/* ===== REACTIONS (tap hearts / emoji float) ===== */
+/* ===== REACTIONS (tap/click hearts) ===== */
 .reactions-layer{
   position:absolute;
   inset:0;
-  z-index:10;
   pointer-events:none;
+  z-index:8;
   overflow:hidden;
 }
-.reaction{
+.reaction-float{
   position:absolute;
-  left: calc(var(--x) * 100%);
-  top:  calc(var(--y) * 100%);
-  transform: translate(-50%, -50%);
-  font-size: 24px;
-  filter: drop-shadow(0 10px 18px rgba(0,0,0,.55));
-  animation: reactionFloat 1.7s ease-out forwards;
+  left: calc(var(--x, .5) * 100%);
+  top:  calc(var(--y, .7) * 100%);
+  transform: translate(-50%, -50%) translateX(0) translateY(0) rotate(0deg) scale(1);
+  font-size: 26px;
+  line-height: 1;
+  filter: drop-shadow(0 10px 18px rgba(0,0,0,.45));
   will-change: transform, opacity;
+  animation: reactionFloat 1.6s ease-out forwards;
+}
+.reaction-float.is-local{
+  filter: drop-shadow(0 0 18px rgba(255,59,107,.35)) drop-shadow(0 10px 18px rgba(0,0,0,.45));
 }
 @keyframes reactionFloat{
-  0%   { opacity:.0; transform: translate(-50%, -35%) scale(.85); }
-  10%  { opacity:1; }
-  100% { opacity:0; transform: translate(calc(-50% + var(--dx)), calc(-50% - 160px)) scale(1.45); }
+  0%{
+    opacity:0;
+    transform: translate(-50%, -50%) translateX(0) translateY(10px) rotate(0deg) scale(var(--sc, 1));
+  }
+  10%{ opacity:1; }
+  100%{
+    opacity:0;
+    transform: translate(-50%, -50%) translateX(var(--dx, 0px)) translateY(-150px) rotate(var(--rot, 0deg)) scale(calc(var(--sc, 1) + .15));
+  }
 }

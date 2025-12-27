@@ -174,16 +174,20 @@ socket.on("host-kick-guest", ({ roomId }) => {
     io.to(roomId).emit("chat", msg);
   });
 
-  // ===== REACTIONS (emoji / tap hearts) =====
-  socket.on("reaction", ({ roomId, emoji, x, y }) => {
-    if (!roomId) return;
 
-    const safeEmoji = String(emoji || "❤️").slice(0, 6);
-    const nx = (typeof x === "number") ? Math.max(0, Math.min(1, x)) : undefined;
-    const ny = (typeof y === "number") ? Math.max(0, Math.min(1, y)) : undefined;
-
-    io.to(roomId).emit("reaction", { emoji: safeEmoji, x: nx, y: ny, ts: Date.now() });
-  });
+// ===== REACTIONS (emoji/hearts) =====
+// client emits: { roomId, emoji, x, y }
+socket.on("reaction", ({ roomId, emoji, x, y }) => {
+  if (!roomId) return;
+  const em = String(emoji || "❤️").slice(0, 4);
+  const msg = {
+    emoji: em,
+    x: typeof x === "number" ? x : Number(x),
+    y: typeof y === "number" ? y : Number(y),
+    ts: Date.now(),
+  };
+  io.to(roomId).emit("reaction", msg);
+});
 
 
   // ===== GUEST CO-HOST FLOW =====

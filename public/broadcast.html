@@ -36,9 +36,9 @@
 
     <div class="viewer-count" id="viewerCountHost">👁: 0</div>
     <div class="chat-overlay" id="chatOverlay"></div>
-    <div class="reactions-layer" id="reactionsLayerHost"></div>
 
-    <div class="video-card__inner">
+        <div class="reactions-layer" id="reactionsLayerHost"></div>
+<div class="video-card__inner">
       <video id="preview" autoplay playsinline muted></video>
     </div>
   </div>
@@ -123,7 +123,12 @@
 
 
   
-  <script src="/socket.io/socket.io.js"></script>
+  <script src="/socket.io/socket.io.js">// enable tap/click to send ❤️ on main live card
+const __tapEl = document.getElementById("hostCard");
+const __layerEl = document.getElementById("reactionsLayerHost");
+attachTapToHeart(__tapEl, __layerEl, ()=>roomId);
+
+  </script>
   <script>
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
@@ -164,51 +169,76 @@
     };
 
     const socket = io();
+// ===== REACTIONS (tap/click to heart) =====
+function clamp01(n){ return Math.max(0, Math.min(1, n)); }
+function now(){ return Date.now(); }
 
-    
-    // ===== REACTIONS (tap hearts / emoji float) =====
-    function spawnReaction(layerEl, emoji, xNorm, yNorm) {
-      if (!layerEl) return;
-      const el = document.createElement("div");
-      el.className = "reaction";
-      el.textContent = emoji || "❤️";
+function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
+  if (!tapEl || !layerEl) return;
+  let last = 0;
+  const MIN_MS = 180; // anti-spam client side
 
-      const x = (typeof xNorm === "number") ? xNorm : (Math.random() * 0.30 + 0.62); // default near right-bottom
-      const y = (typeof yNorm === "number") ? yNorm : (Math.random() * 0.18 + 0.72);
+  const handler = (ev) => {
+    // ignore clicks on controls/buttons/inputs
+    const t = ev.target;
+    if (t && (t.closest("button") || t.closest("input") || t.closest("textarea"))) return;
 
-      el.style.setProperty("--x", Math.min(0.98, Math.max(0.02, x)));
-      el.style.setProperty("--y", Math.min(0.98, Math.max(0.02, y)));
-      el.style.setProperty("--dx", (Math.random() * 70 - 35).toFixed(1) + "px");
+    const ts = now();
+    if (ts - last < MIN_MS) return;
+    last = ts;
 
-      layerEl.appendChild(el);
-      setTimeout(() => { try { el.remove(); } catch {} }, 1850);
-    }
+    const rect = tapEl.getBoundingClientRect();
+    const cx = ("clientX" in ev) ? ev.clientX : (ev.touches && ev.touches[0] ? ev.touches[0].clientX : rect.left + rect.width/2);
+    const cy = ("clientY" in ev) ? ev.clientY : (ev.touches && ev.touches[0] ? ev.touches[0].clientY : rect.top + rect.height/2);
+    const x = clamp01((cx - rect.left) / rect.width);
+    const y = clamp01((cy - rect.top) / rect.height);
 
-    function setupTapHearts(tapEl, layerEl) {
-      if (!tapEl || !layerEl) return;
+    const msg = { roomId: getRoomIdFn(), emoji: "❤️", x, y };
+    // show immediately on self
+    spawnReaction(layerEl, msg.emoji, msg.x, msg.y, true);
+    socket.emit("reaction", msg);
+  };
 
-      tapEl.addEventListener("pointerdown", (e) => {
-        // ignore right click & avoid tapping UI controls
-        if (e.button !== undefined && e.button !== 0) return;
-        const bad = e.target.closest("button, input, textarea, select, a, .av-controls, .chat, .emoji-bar");
-        if (bad) return;
+  tapEl.addEventListener("pointerdown", handler);
+  // also fallback for old browsers
+  tapEl.addEventListener("click", handler);
+}
 
-        const rect = tapEl.getBoundingClientRect();
-        const x = (e.clientX - rect.left) / rect.width;
-        const y = (e.clientY - rect.top) / rect.height;
+function spawnReaction(layerEl, emoji, x, y, local=false) {
+  if (!layerEl) return;
+  const el = document.createElement("div");
+  el.className = "reaction-float";
+  el.textContent = emoji || "❤️";
+  // random motion
+  const dx = (Math.random() * 120 - 60).toFixed(1); // px
+  const rot = (Math.random() * 30 - 15).toFixed(1); // deg
+  const sc = (0.85 + Math.random() * 0.8).toFixed(2);
+  el.style.setProperty("--x", String(x));
+  el.style.setProperty("--y", String(y));
+  el.style.setProperty("--dx", dx + "px");
+  el.style.setProperty("--rot", rot + "deg");
+  el.style.setProperty("--sc", sc);
+  if (local) el.classList.add("is-local");
+  layerEl.appendChild(el);
+  setTimeout(()=>{ try{ el.remove(); }catch{} }, 1800);
+}
 
-        socket.emit("reaction", { roomId, emoji: "❤️", x, y });
-      }, { passive: true });
-    }
+socket.on("reaction", (msg)=>{
+  try {
+    if (!msg) return;
+    const emoji = msg.emoji || "❤️";
+    const x = clamp01(Number(msg.x ?? 0.5));
+    const y = clamp01(Number(msg.y ?? 0.7));
+    // choose layer based on whether it's guest/host layer (we only have one layer per page for now)
+    const layer = document.getElementById("reactionsLayerHost");
+    spawnReaction(layer, emoji, x, y, false);
+  } catch (e) {
+    console.warn("reaction render error", e);
+  }
+});
 
-    // receive reactions from room (including self)
-    socket.on("reaction", (r) => {
-      if (!r) return;
-      const layerEl = document.getElementById("reactionsLayerHost") || document.querySelector(".reactions-layer");
-      spawnReaction(layerEl, r.emoji, r.x, r.y);
-    });
 
-let localStream = null;
+    let localStream = null;
     let currentFacing = "user"; // user | environment
 
     // One RTCPeerConnection per viewer
@@ -554,16 +584,10 @@ let localStream = null;
         const btn = e.target.closest("[data-emoji]");
         if (!btn) return;
         const em = btn.getAttribute("data-emoji") || "";
-
-        // Shift+Click => chèn emoji vào ô chat, Click thường => thả reaction
-        if (e.shiftKey) {
-          chatText.value = (chatText.value || "") + em;
-          chatText.focus();
-          return;
-        }
-        socket.emit("reaction", { roomId, emoji: em });
+        chatText.value = (chatText.value || "") + em;
+        chatText.focus();
       });
-}
+    }
 
 
     chatSend.onclick = () => {
