@@ -771,6 +771,17 @@ socket.on("guest-set-cam", ({ off }) => {
   
     const giftLayer = document.getElementById("giftLayer");
 
+document.querySelectorAll(".gift-bar button").forEach(btn=>{
+  btn.onclick = ()=>{
+    const type = btn.dataset.gift;
+    socket.emit("send-gift", {
+      roomId,
+      gift: { type, value: 1 }
+    });
+  };
+});
+
+
 function spawnGift(type){
   const el = document.createElement("div");
   el.className = "gift-item";
