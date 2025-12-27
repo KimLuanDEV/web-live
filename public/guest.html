@@ -38,10 +38,10 @@
               <div class="live-overlay">
                 <span class="dot"></span>
                 <b>HOST</b>
-                <span style="opacity:.85"></span>
+                <span class="live-meta">
+                  <span class="meta-item" id="liveTimerGuest">⏱ 00:00:00</span>
+                </span>
               </div>
-
-              <div class="live-timer is-off" id="liveTimerGuest">⏱ 00:00:00</div>
 
               <div class="chat-overlay" id="chatOverlay"></div>
 
@@ -116,40 +116,44 @@
 
     const socket = io();
 
-    // ===== LIVE TIMER =====
-    const liveTimerGuest = document.getElementById('liveTimerGuest');
-    let __liveStartTs = null;
-    let __liveTick = null;
-    function pad2(n){ return String(n).padStart(2,'0'); }
-    function fmtHMS(ms){
-      const s = Math.max(0, Math.floor(ms/1000));
-      const hh = Math.floor(s/3600);
-      const mm = Math.floor((s%3600)/60);
-      const ss = s%60;
-      return `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
-    }
-    function startLiveTimer(ts){
-      __liveStartTs = Number(ts || Date.now());
-      if (liveTimerGuest) liveTimerGuest.classList.remove('is-off');
-      if (__liveTick) clearInterval(__liveTick);
-      const tick = ()=>{
-        if (!liveTimerGuest || __liveStartTs == null) return;
-        liveTimerGuest.textContent = `⏱ ${fmtHMS(Date.now() - __liveStartTs)}`;
-      };
-      tick();
-      __liveTick = setInterval(tick, 1000);
-    }
-    function stopLiveTimer(){
-      __liveStartTs = null;
-      if (__liveTick) clearInterval(__liveTick);
-      __liveTick = null;
-      if (liveTimerGuest){
-        liveTimerGuest.classList.add('is-off');
-        liveTimerGuest.textContent = '⏱ 00:00:00';
-      }
-    }
-    socket.on('live-start', ({ startTs }) => startLiveTimer(startTs));
-    socket.on('live-stop', () => stopLiveTimer());
+// ===== LIVE TIMER (HH:MM:SS) =====
+let __liveStartTs = null;
+let __liveTick = null;
+
+function __pad2(n){ n = Math.floor(Math.max(0, n)); return String(n).padStart(2,"0"); }
+function __fmtHMS(ms){
+  const s = Math.floor(ms/1000);
+  const hh = Math.floor(s/3600);
+  const mm = Math.floor((s%3600)/60);
+  const ss = s%60;
+  return `${__pad2(hh)}:${__pad2(mm)}:${__pad2(ss)}`;
+}
+function __setTimerText(el, ms){
+  if (!el) return;
+  el.textContent = `⏱ ${__fmtHMS(ms)}`;
+}
+function __startTimer(el, startTs){
+  __liveStartTs = startTs;
+  if (__liveTick) clearInterval(__liveTick);
+  __setTimerText(el, Date.now() - __liveStartTs);
+  __liveTick = setInterval(()=>__setTimerText(el, Date.now() - __liveStartTs), 250);
+}
+function __stopTimer(el){
+  __liveStartTs = null;
+  if (__liveTick) clearInterval(__liveTick);
+  __liveTick = null;
+  if (el) el.textContent = "⏱ 00:00:00";
+}
+
+const liveTimerGuest = document.getElementById("liveTimerGuest");
+socket.on("live-start", ({ startTs }) => {
+  if (typeof startTs === "number") __startTimer(liveTimerGuest, startTs);
+});
+socket.on("live-stop", () => {
+  __stopTimer(liveTimerGuest);
+});
+
+
 // ===== REACTIONS (tap/click to heart) =====
 function clamp01(n){ return Math.max(0, Math.min(1, n)); }
 function now(){ return Date.now(); }

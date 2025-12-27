@@ -24,14 +24,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, {
-      broadcasterId: null,
-      viewers: new Set(),
-      guestId: null,
-      // Live timer state
-      liveOn: false,
-      liveStartTs: null,
-    });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null });
   }
   return rooms.get(roomId);
 }
@@ -61,27 +54,6 @@ app.get("/ice", async (_req, res) => {
 });
 
 io.on("connection", (socket) => {
-
-  // ===== LIVE TIMER (Host start/stop) =====
-  socket.on("live-start", ({ roomId }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (!room || room.broadcasterId !== socket.id) return;
-
-    room.liveOn = true;
-    room.liveStartTs = Date.now();
-    io.to(roomId).emit("live-start", { startTs: room.liveStartTs });
-  });
-
-  socket.on("live-stop", ({ roomId }) => {
-    if (!roomId) return;
-    const room = rooms.get(roomId);
-    if (!room || room.broadcasterId !== socket.id) return;
-
-    room.liveOn = false;
-    room.liveStartTs = null;
-    io.to(roomId).emit("live-stop");
-  });
 
 // Host yêu cầu tắt/bật mic của guest
 socket.on("host-mute-guest", ({ roomId, mute }) => {
@@ -121,6 +93,25 @@ socket.on("host-kick-guest", ({ roomId }) => {
   io.to(roomId).emit("guest-offline");
 });
 
+// ===== LIVE TIMER (server-side source of truth) =====
+// Host starts live => store start timestamp; late joiners will receive it.
+socket.on("live-start", ({ roomId, startTs }) => {
+  if (!roomId) return;
+  const room = getRoom(roomId);
+  if (room.broadcasterId !== socket.id) return; // only host can start
+  const ts = typeof startTs === "number" ? startTs : Date.now();
+  room.liveStartTs = ts;
+  io.to(roomId).emit("live-start", { startTs: ts });
+});
+
+socket.on("live-stop", ({ roomId }) => {
+  if (!roomId) return;
+  const room = getRoom(roomId);
+  if (room.broadcasterId !== socket.id) return; // only host can stop
+  room.liveStartTs = null;
+  io.to(roomId).emit("live-stop");
+});
+
 
 
 
@@ -148,11 +139,6 @@ socket.on("host-kick-guest", ({ roomId }) => {
     socket.data.role = role;
 
     const room = getRoom(roomId);
-
-    // If live already started, inform this socket immediately so timer can sync
-    if (room.liveOn && room.liveStartTs) {
-      socket.emit("live-start", { startTs: room.liveStartTs });
-    }
 
     if (role === "broadcaster") {
       const old = room.broadcasterId;
@@ -193,8 +179,9 @@ socket.on("host-kick-guest", ({ roomId }) => {
       socket.emit("guest-pending");
     }
 
-    // If host is already live, sync timer for late joiners (host/guest/viewer)
-    if (room.liveOn && room.liveStartTs) {
+
+    // If room is already live, send start timestamp to this socket (late joiners)
+    if (room.liveStartTs) {
       socket.emit("live-start", { startTs: room.liveStartTs });
     }
   });
@@ -285,12 +272,8 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     if (role === "broadcaster") {
       if (room.broadcasterId === socket.id) {
         room.broadcasterId = null;
-        // end live timer if host went offline
-        if (room.liveOn) {
-          room.liveOn = false;
-          room.liveStartTs = null;
-          io.to(roomId).emit("live-stop");
-        }
+        room.liveStartTs = null;
+        io.to(roomId).emit("live-stop");
         io.to(roomId).emit("broadcaster-offline");
       }
     }
