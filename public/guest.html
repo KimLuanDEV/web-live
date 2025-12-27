@@ -57,30 +57,16 @@
               <div class="pip-badge">👤 YOU</div>
               <video id="me" autoplay playsinline muted></video>
             </div>
-          
-            <div class="join-overlay" id="joinOverlayGuest" aria-live="polite"></div>
-            <div class="av-overlay" id="avOverlayGuest">
-</div>
-
-          
-            <div class="ctrl-tab ctrl-tab--stage" id="ctrlTabGuest">
-              <button class="ctrl-fab" id="ctrlFabGuest" type="button" aria-expanded="false" title="Mở điều khiển">☰</button>
-              <div class="ctrl-drawer" id="ctrlDrawerGuest" hidden>
-                <div class="ctrl-title">🎛 Điều khiển</div>
-                <div class="ctrl-grid">
-                  <button id="btnStart" class="av-btn" title="Xin lên live">🎤</button>
-                  <button id="btnLeaveLive" class="av-btn" title="Rời live" disabled>🚪</button>
-
-                  <button id="guestMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
-                  <button id="guestCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
-                  <button id="guestFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
-                </div>
-                <div class="ctrl-hint">Nhấn ☰ để thu gọn</div>
-              </div>
-            </div>
-</div>
+          </div>
           <!-- /LIVE STAGE -->
-             
+             <div class="av-controls">
+  <button id="btnStart" class="av-btn" title="Xin lên live">🎤</button>
+  <button id="btnLeaveLive" class="av-btn" title="Rời live" disabled>🚪</button>
+
+  <button id="guestMicBtn" class="av-btn" title="Bật / Tắt mic">🎙️</button>
+  <button id="guestCamBtn" class="av-btn" title="Bật / Tắt camera">📷</button>
+  <button id="guestFlipBtn" class="av-btn" title="Đảo camera" disabled>🔄</button>
+              </div>
 
 
         </div>
@@ -130,53 +116,6 @@
     document.getElementById("roomCode").textContent = roomId;
 
     const socket = io();
-    // ===== CTRL TAB (collapse/expand) =====
-    (function initCtrlTabGuest(){
-      const fab = document.getElementById("ctrlFabGuest");
-      const drawer = document.getElementById("ctrlDrawerGuest");
-      const tab = document.getElementById("ctrlTabGuest");
-      if (!fab || !drawer || !tab) return;
-
-      function open(){
-        drawer.hidden = false;
-        tab.classList.add("is-open");
-        fab.setAttribute("aria-expanded","true");
-      }
-      function close(){
-        tab.classList.remove("is-open");
-        fab.setAttribute("aria-expanded","false");
-        setTimeout(()=>{ drawer.hidden = !tab.classList.contains("is-open"); }, 160);
-      }
-      function toggle(){ tab.classList.contains("is-open") ? close() : open(); }
-
-      fab.addEventListener("click", (e)=>{ e.stopPropagation(); toggle(); });
-      document.addEventListener("click", (e)=>{
-        if (!tab.classList.contains("is-open")) return;
-        if (tab.contains(e.target)) return;
-        close();
-      });
-      document.addEventListener("keydown", (e)=>{
-        if (e.key === "Escape" && tab.classList.contains("is-open")) close();
-      });
-    })();
-    // ===== /CTRL TAB =====
-
-
-// ===== VIEWER JOIN/LEAVE TOAST =====
-const joinOverlayGuest = document.getElementById("joinOverlayGuest");
-function pushJoinGuest(text){
-  if (!joinOverlayGuest) return;
-  const el = document.createElement("div");
-  el.className = "join-bubble";
-  el.textContent = text;
-  joinOverlayGuest.appendChild(el);
-  while (joinOverlayGuest.children.length > 3) joinOverlayGuest.removeChild(joinOverlayGuest.firstChild);
-  setTimeout(()=>el.classList.add("hide"), 1400);
-  setTimeout(()=>{ try{el.remove();}catch{} }, 2000);
-}
-socket.on("viewer-join", () => pushJoinGuest("➕ +1 người xem"));
-socket.on("viewer-leave", () => pushJoinGuest("➖ -1 người xem"));
-// ===== /VIEWER JOIN/LEAVE TOAST =====
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
