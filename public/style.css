@@ -280,6 +280,24 @@ code{
   z-index: 5;
 }
 
+/* ===== LIVE TIMER ===== */
+.live-timer{
+  position:absolute;
+  top: 46px;
+  right: 12px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .3px;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,.25);
+  backdrop-filter: blur(6px);
+  z-index: 5;
+}
+.live-timer.is-off{ opacity:.65; }
+
 
 /* ===== CHAT OVERLAY ON VIDEO ===== */
 .chat-overlay{

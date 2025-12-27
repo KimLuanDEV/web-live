@@ -41,6 +41,8 @@
                 <span style="opacity:.85"></span>
               </div>
 
+              <div class="live-timer is-off" id="liveTimerGuest">⏱ 00:00:00</div>
+
               <div class="chat-overlay" id="chatOverlay"></div>
 
                   <div class="reactions-layer" id="reactionsLayerGuestMain"></div>
@@ -113,6 +115,41 @@
     document.getElementById("roomCode").textContent = roomId;
 
     const socket = io();
+
+    // ===== LIVE TIMER =====
+    const liveTimerGuest = document.getElementById('liveTimerGuest');
+    let __liveStartTs = null;
+    let __liveTick = null;
+    function pad2(n){ return String(n).padStart(2,'0'); }
+    function fmtHMS(ms){
+      const s = Math.max(0, Math.floor(ms/1000));
+      const hh = Math.floor(s/3600);
+      const mm = Math.floor((s%3600)/60);
+      const ss = s%60;
+      return `${pad2(hh)}:${pad2(mm)}:${pad2(ss)}`;
+    }
+    function startLiveTimer(ts){
+      __liveStartTs = Number(ts || Date.now());
+      if (liveTimerGuest) liveTimerGuest.classList.remove('is-off');
+      if (__liveTick) clearInterval(__liveTick);
+      const tick = ()=>{
+        if (!liveTimerGuest || __liveStartTs == null) return;
+        liveTimerGuest.textContent = `⏱ ${fmtHMS(Date.now() - __liveStartTs)}`;
+      };
+      tick();
+      __liveTick = setInterval(tick, 1000);
+    }
+    function stopLiveTimer(){
+      __liveStartTs = null;
+      if (__liveTick) clearInterval(__liveTick);
+      __liveTick = null;
+      if (liveTimerGuest){
+        liveTimerGuest.classList.add('is-off');
+        liveTimerGuest.textContent = '⏱ 00:00:00';
+      }
+    }
+    socket.on('live-start', ({ startTs }) => startLiveTimer(startTs));
+    socket.on('live-stop', () => stopLiveTimer());
 // ===== REACTIONS (tap/click to heart) =====
 function clamp01(n){ return Math.max(0, Math.min(1, n)); }
 function now(){ return Date.now(); }
