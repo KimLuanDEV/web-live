@@ -318,6 +318,25 @@ code{
   from{opacity:0; transform: translateY(10px) scale(.98)}
   to{opacity:1; transform: translateY(0) scale(1)}
 }
+/* ===== CHAT ROLE COLORS ===== */
+.chat-bubble.chat-host{
+  border-color: rgba(255,59,107,.55);
+  background: rgba(255,59,107,.16);
+}
+.chat-bubble.chat-guest{
+  border-color: rgba(95,168,255,.55);
+  background: rgba(95,168,255,.16);
+}
+.chat-bubble.chat-viewer{
+  border-color: rgba(234,240,255,.22);
+}
+.chat-line{
+  padding: 2px 0;
+}
+.chat-line.chat-host{ color: rgba(255,59,107,.95); }
+.chat-line.chat-guest{ color: rgba(95,168,255,.95); }
+.chat-line.chat-viewer{ color: rgba(234,240,255,.88); }
+
 
 /* ===== EMOJI QUICK BAR ===== */
 .emoji-bar{

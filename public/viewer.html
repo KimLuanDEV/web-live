@@ -446,8 +446,11 @@ socket.on("broadcaster-offline", () => {
 
     function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
+      const role = String(msg.role || "viewer");
+      const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
       const line = document.createElement("div");
-      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
+      line.className = "chat-line chat-" + role;
+      line.textContent = `[${time}] ${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
       chatBox.appendChild(line);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
@@ -458,9 +461,11 @@ socket.on("broadcaster-offline", () => {
     const chatOverlay = document.getElementById("chatOverlay");
     function pushOverlay(msg){
       if (!chatOverlay) return;
+      const role = String(msg.role || "viewer");
+      const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
       const el = document.createElement("div");
-      el.className = "chat-bubble";
-      el.textContent = `${msg.name}: ${msg.text}`;
+      el.className = "chat-bubble chat-" + role;
+      el.textContent = `${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
       chatOverlay.appendChild(el);
 
       // keep only last 4 bubbles
@@ -489,7 +494,7 @@ socket.on("broadcaster-offline", () => {
       const text = chatText.value.trim();
       if (!text) return;
 
-      socket.emit("chat", { roomId, name, text });
+      socket.emit("chat", { roomId, name, text, role: "viewer" });
       chatText.value = "";
     };
 

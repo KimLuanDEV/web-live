@@ -198,7 +198,12 @@ socket.on("live-stop", ({ roomId }) => {
   socket.on("chat", ({ roomId, name, text }) => {
     if (!roomId || !text) return;
 
+    // Trust server-side role (avoid spoofing)
+    const r = String(socket.data.role || "").toLowerCase();
+    const role = (r === "broadcaster") ? "host" : (r === "guest") ? "guest" : "viewer";
+
     const msg = {
+      role,
       name: (name || "Ẩn danh").slice(0, 20),
       text: String(text).slice(0, 300),
       ts: Date.now(),
