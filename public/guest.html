@@ -114,23 +114,8 @@
     const roomId = params.get("room") || "abc123";
     document.getElementById("roomCode").textContent = roomId;
 
-    const socket = io({ transports: ["websocket"], reconnection: true, reconnectionAttempts: Infinity, reconnectionDelayMax: 2000 });
+    const socket = io();
 
-
-// ===== SOCKET CONNECT / RECONNECT =====
-socket.on("connect", () => {
-  // If user already bật cam/mic (localStream exists), auto rejoin as guest after reconnect
-  if (localStream) {
-    socket.emit("join-room", { roomId, role: "guest" });
-    log("✅ Reconnected -> đã join lại room (guest)");
-  } else {
-    log("✅ Socket connected: " + socket.id);
-  }
-});
-socket.on("disconnect", () => {
-  setStatus("⚠️ Mất kết nối... đang kết nối lại");
-  log("⚠️ Mất kết nối server... đang tự kết nối lại");
-});
 // ===== LIVE TIMER (HH:MM:SS) =====
 let __liveStartTs = null;
 let __liveTick = null;
@@ -252,6 +237,33 @@ socket.on("reaction", (msg)=>{
     let localStream = null;
     const pcs = new Map(); // peerId -> RTCPeerConnection
 
+    // ===== REAL ICE RESTART (guest side) =====
+    function canIceRestart(pc){
+      return pc && pc.signalingState !== "closed";
+    }
+    async function doIceRestart(peerId, pc){
+      if (!canIceRestart(pc)) return;
+      if (pc.__iceRestarting) return;
+      pc.__iceRestarting = true;
+      try{
+        const offer = await pc.createOffer({ iceRestart: true });
+        await pc.setLocalDescription(offer);
+        socket.emit("offer", { to: peerId, description: pc.localDescription });
+        log("🧊 ICE restart -> gửi offer mới tới: " + peerId);
+      }catch(e){
+        log("❌ ICE restart lỗi ("+peerId+"): " + e.message);
+      }finally{
+        setTimeout(()=>{ try{ pc.__iceRestarting = false; }catch{} }, 1200);
+      }
+    }
+
+    // peer asks guest to restart ICE
+    socket.on("request-ice-restart", ({ from }) => {
+      if (!from) return;
+      const pc = pcs.get(from);
+      if (pc) doIceRestart(from, pc);
+    });
+
     let currentFacing = "user"; // user (cam trước) | environment (cam sau)
 
     async function getRtcConfig() {
@@ -349,11 +361,17 @@ socket.on("reaction", (msg)=>{
       };
 
       pc.oniceconnectionstatechange = () => {
-        log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
-        if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
-          log("🔄 WebRTC yếu -> đóng peer để bên kia kết nối lại...");
-          try { pc.close(); } catch {}
-          pcs.delete(viewerId);
+        const st = pc.iceConnectionState;
+        log(`ICE(${viewerId}): ${st}`);
+        if (st === "failed") {
+          doIceRestart(viewerId, pc);
+        } else if (st === "disconnected") {
+          clearTimeout(pc.__discT);
+          pc.__discT = setTimeout(() => {
+            try { if (pc.iceConnectionState === "disconnected") doIceRestart(viewerId, pc); } catch {}
+          }, 1800);
+        } else if (st === "connected") {
+          clearTimeout(pc.__discT);
         }
       };
 

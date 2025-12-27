@@ -165,7 +165,7 @@
       catch { prompt("Copy link khách mời:", guestUrl); }
     };
 
-    const socket = io({ transports: ["websocket"], reconnection: true, reconnectionAttempts: Infinity, reconnectionDelayMax: 2000 });
+    const socket = io();
 
 // ===== LIVE TIMER (HH:MM:SS) =====
 let __liveStartTs = null;
@@ -292,6 +292,36 @@ socket.on("reaction", (msg)=>{
     // One RTCPeerConnection per viewer
     const pcs = new Map();
 
+    // ===== REAL ICE RESTART (host side) =====
+    // Avoid spamming renegotiation
+    function canIceRestart(pc){
+      return pc && pc.signalingState !== "closed";
+    }
+    async function doIceRestart(peerId, pc){
+      if (!canIceRestart(pc)) return;
+      if (pc.__iceRestarting) return;
+      pc.__iceRestarting = true;
+      try{
+        const offer = await pc.createOffer({ iceRestart: true });
+        await pc.setLocalDescription(offer);
+        socket.emit("offer", { to: peerId, description: pc.localDescription });
+        log("🧊 ICE restart -> gửi offer mới tới: " + peerId);
+      }catch(e){
+        log("❌ ICE restart lỗi ("+peerId+"): " + e.message);
+      }finally{
+        // allow again after a short cooldown
+        setTimeout(()=>{ try{ pc.__iceRestarting = false; }catch{} }, 1200);
+      }
+    }
+
+    // When peer requests an ICE restart, host will create a new offer with iceRestart:true
+    socket.on("request-ice-restart", async ({ from }) => {
+      if (!from) return;
+      const pc = pcs.get(from);
+      if (pc) return doIceRestart(from, pc);
+      if (pcGuestIn && approvedGuestId === from) return doIceRestart(from, pcGuestIn);
+    });
+
     // Guest state
     let pendingGuestId = null;
     let approvedGuestId = null;
@@ -340,18 +370,9 @@ socket.on("reaction", (msg)=>{
       console.log(msg);
     }
 
-    // ===== SOCKET CONNECT / RECONNECT =====
-socket.on("connect", () => {
-  // (re)join as broadcaster whenever socket connects/reconnects
-  socket.emit("join-room", { roomId, role: "broadcaster" });
-  // if camera already started, re-ping current viewers so they receive fresh offers
-  if (localStream) socket.emit("broadcaster-ready", { roomId });
-  log("✅ Socket connected: " + socket.id);
-});
-socket.on("disconnect", () => {
-  log("⚠️ Mất kết nối server... đang tự kết nối lại");
-});
-// ===== Viewer -> Host streaming =====
+    socket.emit("join-room", { roomId, role: "broadcaster" });
+
+    // ===== Viewer -> Host streaming =====
     socket.on("watcher", async ({ viewerId }) => {
       if (!localStream) {
         log("Có viewer nhưng bạn chưa Start camera.");
@@ -372,11 +393,17 @@ socket.on("disconnect", () => {
       };
 
       pc.oniceconnectionstatechange = () => {
-        log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
-        if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
-          log("🔄 WebRTC yếu -> đóng peer để viewer tự join lại...");
-          try { pc.close(); } catch {}
-          pcs.delete(viewerId);
+        const st = pc.iceConnectionState;
+        log(`ICE(${viewerId}): ${st}`);
+        if (st === "failed") {
+          doIceRestart(viewerId, pc);
+        } else if (st === "disconnected") {
+          clearTimeout(pc.__discT);
+          pc.__discT = setTimeout(() => {
+            try { if (pc.iceConnectionState === "disconnected") doIceRestart(viewerId, pc); } catch {}
+          }, 1800);
+        } else if (st === "connected") {
+          clearTimeout(pc.__discT);
         }
       };
 
@@ -497,7 +524,20 @@ socket.on("disconnect", () => {
         if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
       };
 
-      pcGuestIn.oniceconnectionstatechange = () => log(`ICE(GUEST): ${pcGuestIn.iceConnectionState}`);
+      pcGuestIn.oniceconnectionstatechange = () => {
+        const st = pcGuestIn.iceConnectionState;
+        log(`ICE(GUEST): ${st}`);
+        if (st === "failed") {
+          doIceRestart(from, pcGuestIn);
+        } else if (st === "disconnected") {
+          clearTimeout(pcGuestIn.__discT);
+          pcGuestIn.__discT = setTimeout(() => {
+            try { if (pcGuestIn.iceConnectionState === "disconnected") doIceRestart(from, pcGuestIn); } catch {}
+          }, 1800);
+        } else if (st === "connected") {
+          clearTimeout(pcGuestIn.__discT);
+        }
+      };
 
       try {
         await pcGuestIn.setRemoteDescription(description);

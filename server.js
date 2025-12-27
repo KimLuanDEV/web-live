@@ -6,7 +6,7 @@ const twilio = require("twilio");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" }, pingTimeout: 20000, pingInterval: 25000 });
+const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -251,6 +251,12 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
 
   socket.on("candidate", ({ to, candidate }) => {
     io.to(to).emit("candidate", { from: socket.id, candidate });
+  });
+  
+  // Viewer/Guest asks peer to do a real ICE restart (renegotiate with iceRestart:true)
+  socket.on("request-ice-restart", ({ to }) => {
+    if (!to) return;
+    io.to(to).emit("request-ice-restart", { from: socket.id });
   });
 
   socket.on("disconnect", () => {
