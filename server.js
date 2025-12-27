@@ -24,17 +24,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, {
-      broadcasterId: null,
-      viewers: new Set(),
-      guestId: null,
-      liveStartTs: null,
-      pinnedNote: null,
-
-      // NEW: platform features
-      followers: new Set(), // Set<viewerKey> (persist across reconnects)
-      profiles: new Map(),  // Map<socket.id, { viewerKey, name, avatar }>
-    });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null });
   }
   return rooms.get(roomId);
 }
@@ -44,13 +34,6 @@ function emitViewerCount(roomId) {
   if (!room) return;
   io.to(roomId).emit("viewer-count", { count: room.viewers.size });
 }
-
-function emitFollowCount(roomId) {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  io.to(roomId).emit("follow-count", { count: room.followers.size });
-}
-
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
   try {
@@ -156,7 +139,7 @@ socket.on("live-stop", ({ roomId }) => {
   });
 
   // Join room with role: broadcaster | viewer | guest
-  socket.on("join-room", ({ roomId, role, viewerKey, profile }) => {
+  socket.on("join-room", ({ roomId, role }) => {
     if (!roomId || !role) return;
 
     socket.join(roomId);
@@ -177,27 +160,12 @@ socket.on("live-stop", ({ roomId }) => {
       socket.emit("room-viewers", Array.from(room.viewers));
       socket.to(roomId).emit("broadcaster-online");
       emitViewerCount(roomId);
-      socket.emit("follow-count", { count: room.followers.size });
       // If already has guest, tell host
       if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
     }
 
     if (role === "viewer") {
       room.viewers.add(socket.id);
-
-
-      // NEW: store viewer profile for this socket
-      const vk = String(viewerKey || "").trim().slice(0, 80) || null;
-      const p = profile || {};
-      const safeName = String(p.name || "Viewer").trim().slice(0, 20);
-      const safeAvatar = String(p.avatar || "").trim().slice(0, 300);
-      room.profiles.set(socket.id, { viewerKey: vk, name: safeName, avatar: safeAvatar });
-
-      // send current follow count + follow state to this viewer
-      socket.emit("follow-count", { count: room.followers.size });
-      socket.emit("follow-state", { following: !!(vk && room.followers.has(vk)) });
-      // broadcast follow count for everyone
-      emitFollowCount(roomId);
       emitViewerCount(roomId);
       io.to(roomId).emit("viewer-join", { id: socket.id, count: room.viewers.size });
 
@@ -240,17 +208,8 @@ socket.on("live-stop", ({ roomId }) => {
     const r = String(socket.data.role || "").toLowerCase();
     const role = (r === "broadcaster") ? "host" : (r === "guest") ? "guest" : "viewer";
 
-    const room = getRoom(roomId);
-    let badge = "";
-    if (role === "viewer") {
-      const prof = room.profiles.get(socket.id);
-      const vk = prof && prof.viewerKey;
-      if (vk && room.followers.has(vk)) badge = "FAN";
-    }
-
     const msg = {
       role,
-      badge,
       name: (name || "Ẩn danh").slice(0, 20),
       text: String(text).slice(0, 300),
       ts: Date.now(),
@@ -258,39 +217,6 @@ socket.on("live-stop", ({ roomId }) => {
 
     io.to(roomId).emit("chat", msg);
   });
-
-
-  // ===== PROFILE + FOLLOW (platform) =====
-  socket.on("profile-set", ({ roomId, viewerKey, name, avatar }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-
-    const vk = String(viewerKey || "").trim().slice(0, 80) || null;
-    const nm = String(name || "Viewer").trim().slice(0, 20);
-    const av = String(avatar || "").trim().slice(0, 300);
-
-    room.profiles.set(socket.id, { viewerKey: vk, name: nm, avatar: av });
-    socket.emit("profile-saved", { name: nm, avatar: av });
-  });
-
-  socket.on("follow-toggle", ({ roomId, viewerKey, follow }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-
-    // only viewers can follow
-    const r = String(socket.data.role || "").toLowerCase();
-    if (r !== "viewer") return;
-
-    const vk = String(viewerKey || "").trim().slice(0, 80);
-    if (!vk) return;
-
-    if (follow) room.followers.add(vk);
-    else room.followers.delete(vk);
-
-    socket.emit("follow-state", { following: room.followers.has(vk) });
-    emitFollowCount(roomId);
-  });
-  // ===== /PROFILE + FOLLOW =====
 
 
 // ===== REACTIONS (emoji/hearts) =====

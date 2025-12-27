@@ -29,28 +29,7 @@
   Bấm để mở trang Khách và gửi yêu cầu lên Host.
 </small>
 
-          
-
-<hr />
-<div class="card mini">
-  <div class="badge badge--info">👤 Profile Viewer</div>
-
-  <div class="profile-row">
-    <img id="pfAvatar" class="pf-avatar" alt="avatar" />
-    <div class="pf-col">
-      <input id="pfName" placeholder="Tên của bạn..." />
-      <input id="pfAvatarUrl" placeholder="Link avatar (tùy chọn)" />
-      <div class="pf-actions">
-        <button id="pfSave">Lưu</button>
-        <button id="btnFollow" class="btn-follow">⭐ Theo dõi</button>
-      </div>
-      <div class="pf-meta">
-        <span id="followCountViewer" class="badge badge--info">👤: 0</span>
-      </div>
-    </div>
-  </div>
-</div>
-<hr />
+          <hr />
           <div class="log" id="log" style="display: none;"></div>
         </div>
 
@@ -136,73 +115,6 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
-
-// ===== PROFILE + FOLLOW (Viewer) =====
-function getOrCreateViewerKey(){
-  let k = localStorage.getItem("viewerKey");
-  if (!k) {
-    k = "vk_" + Math.random().toString(36).slice(2) + Date.now().toString(36);
-    localStorage.setItem("viewerKey", k);
-  }
-  return k;
-}
-function getDefaultAvatar(seed){
-  return `https://i.pravatar.cc/120?u=${encodeURIComponent(seed)}`;
-}
-const viewerKey = getOrCreateViewerKey();
-
-const pfAvatar = document.getElementById("pfAvatar");
-const pfName = document.getElementById("pfName");
-const pfAvatarUrl = document.getElementById("pfAvatarUrl");
-const pfSave = document.getElementById("pfSave");
-const btnFollow = document.getElementById("btnFollow");
-const followCountViewer = document.getElementById("followCountViewer");
-
-let following = false;
-
-function loadProfile(){
-  const stored = JSON.parse(localStorage.getItem("viewerProfile") || "{}");
-  const name = stored.name || "Viewer";
-  const avatar = stored.avatar || getDefaultAvatar(viewerKey);
-  if (pfName) pfName.value = name;
-  if (pfAvatarUrl) pfAvatarUrl.value = stored.avatar || "";
-  if (pfAvatar) pfAvatar.src = avatar;
-  return { name, avatar, avatarRaw: stored.avatar || "" };
-}
-
-function saveProfile(){
-  const name = (pfName?.value || "Viewer").trim().slice(0, 20);
-  const rawAv = (pfAvatarUrl?.value || "").trim().slice(0, 300);
-  const avatar = rawAv || getDefaultAvatar(viewerKey);
-  localStorage.setItem("viewerProfile", JSON.stringify({ name, avatar: rawAv }));
-  if (pfAvatar) pfAvatar.src = avatar;
-  socket.emit("profile-set", { roomId, viewerKey, name, avatar: rawAv });
-  return { name, avatar, avatarRaw: rawAv };
-}
-
-loadProfile();
-if (pfSave) pfSave.onclick = saveProfile;
-
-function setFollowUI(on){
-  following = !!on;
-  if (!btnFollow) return;
-  btnFollow.classList.toggle("is-on", following);
-  btnFollow.textContent = following ? "✅ Đang theo dõi" : "⭐ Theo dõi";
-}
-
-if (btnFollow) {
-  btnFollow.onclick = () => {
-    const next = !following;
-    socket.emit("follow-toggle", { roomId, viewerKey, follow: next });
-  };
-}
-
-socket.on("follow-state", ({ following }) => setFollowUI(!!following));
-socket.on("follow-count", ({ count }) => {
-  if (followCountViewer) followCountViewer.textContent = `👤: ${count}`;
-});
-// ===== /PROFILE + FOLLOW =====
-
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
@@ -443,8 +355,7 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       joined = true;
       
       try{ btnJoin.style.display = "none"; }catch{}
-const p0 = loadProfile();
-socket.emit("join-room", { roomId, role: "viewer", viewerKey, profile: { name: p0.name, avatar: p0.avatarRaw } });
+socket.emit("join-room", { roomId, role: "viewer" });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host/guest...");
     }
@@ -587,9 +498,7 @@ socket.on("broadcaster-offline", () => {
     function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
       const role = String(msg.role || "viewer");
-      const badge = msg.badge ? `[${msg.badge}]` : "";
       const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
-      const prefix = `${tag ? tag + " " : ""}${badge ? badge + " " : ""}`;
       const line = document.createElement("div");
       line.className = "chat-line chat-" + role;
       line.textContent = `[${time}] ${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
