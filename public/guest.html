@@ -124,12 +124,62 @@ function __clearIceTimer(peerId){
   const st = __iceRestartState.get(peerId);
   if (st && st.timer) { clearTimeout(st.timer); st.timer = null; }
 }
-async function __doIceRestart(peerId, pc, reason){
+
+// ---- THROTTLE (token bucket) ----
+// Limit ICE-restart offers to avoid spamming when many viewers drop at once.
+// Tune here:
+const __ICE_MAX_PER_SEC = 3;     // max restarts per second
+const __ICE_BURST = 6;           // allow short burst
+const __iceThrottle = { tokens: __ICE_BURST, lastRefill: Date.now(), queue: [], queued: new Set(), pumpTimer: null };
+
+function __refillTokens(){
+  const now = Date.now();
+  const dt = Math.max(0, now - (__iceThrottle.lastRefill || now));
+  if (dt <= 0) return;
+  const add = (dt / 1000) * __ICE_MAX_PER_SEC;
+  __iceThrottle.tokens = Math.min(__ICE_BURST, __iceThrottle.tokens + add);
+  __iceThrottle.lastRefill = now;
+}
+function __schedulePump(ms){
+  if (__iceThrottle.pumpTimer) return;
+  __iceThrottle.pumpTimer = setTimeout(()=>{
+    __iceThrottle.pumpTimer = null;
+    __pumpIceQueue();
+  }, Math.max(0, ms|0));
+}
+function __pumpIceQueue(){
+  __refillTokens();
+  while (__iceThrottle.tokens >= 1 && __iceThrottle.queue.length) {
+    __iceThrottle.tokens -= 1;
+    const job = __iceThrottle.queue.shift();
+    if (!job) break;
+    __iceThrottle.queued.delete(job.peerId);
+    __doIceRestartImmediate(job.peerId, job.getPc(), job.reason);
+  }
+  if (__iceThrottle.queue.length) {
+    // next token time
+    const need = Math.max(0, 1 - __iceThrottle.tokens);
+    const ms = Math.ceil((need / __ICE_MAX_PER_SEC) * 1000);
+    __schedulePump(ms);
+  }
+}
+function __enqueueIceRestart(peerId, getPc, reason){
+  if (!peerId || typeof getPc !== "function") return;
+  if (__iceThrottle.queued.has(peerId)) return; // already queued
+  __iceThrottle.queued.add(peerId);
+  __iceThrottle.queue.push({ peerId, getPc, reason: reason || "" });
+  // optional: show queue length
+  try { log(`🧊 Queue ICE-restart -> ${peerId} (${__iceThrottle.queue.length} waiting)`); } catch {}
+  __pumpIceQueue();
+}
+// ---- /THROTTLE ----
+
+async function __doIceRestartImmediate(peerId, pc, reason){
   if (!peerId || !pc) return;
   if (pc.signalingState === "closed") return;
 
   const st = __iceRestartState.get(peerId) || { timer:null, lastTs:0, restarting:false };
-  // debounce: avoid spamming offers
+  // debounce per-peer: avoid repeated offers for same peer
   const ts = __now();
   if (st.restarting) return;
   if (ts - st.lastTs < 1500) return;
@@ -139,7 +189,7 @@ async function __doIceRestart(peerId, pc, reason){
   __iceRestartState.set(peerId, st);
 
   try {
-    log(`🧊 ICE restart -> ${peerId} (GUEST) ${reason ? "- " + reason : ""}`);
+    log(`🧊 ICE restart -> ${peerId} (${GUEST}) ${reason ? "- " + reason : ""}`);
     const offer = await pc.createOffer({ iceRestart: true });
     await pc.setLocalDescription(offer);
     socket.emit("offer", { to: peerId, description: pc.localDescription, iceRestart: true });
@@ -151,7 +201,9 @@ async function __doIceRestart(peerId, pc, reason){
     __iceRestartState.set(peerId, st2);
   }
 }
+
 function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
+(peerId, pc, reason, delayMs=2200){
   if (!peerId || !pc) return;
   const st = __iceRestartState.get(peerId) || { timer:null, lastTs:0, restarting:false };
   __clearIceTimer(peerId);
@@ -161,7 +213,7 @@ function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
     const cs  = pc.connectionState;
     if (pc.signalingState === "closed") return;
     if (ice === "failed" || ice === "disconnected" || cs === "failed" || cs === "disconnected") {
-      __doIceRestart(peerId, pc, reason);
+      __enqueueIceRestart(peerId, ()=>pc, reason);
     }
   }, delayMs);
   __iceRestartState.set(peerId, st);
@@ -206,7 +258,7 @@ function __restartBadPeers(getPeers){
       const ice = pc.iceConnectionState;
       const cs = pc.connectionState;
       if (ice === "failed" || ice === "disconnected" || cs === "failed" || cs === "disconnected") {
-        __doIceRestart(peerId, pc, "auto resume");
+        __enqueueIceRestart(peerId, ()=>pc, "auto resume");
       }
     }
   } catch {}
@@ -345,8 +397,8 @@ socket.on("reaction", (msg)=>{
     socket.on("request-ice-restart", async ({ from, reason }) => {
       const peerId = from;
       const pc = pcs.get(peerId);
-      if (pc) __doIceRestart(peerId, pc, reason || "requested");
-    });
+      if (pc) __enqueueIceRestart(peerId, ()=>pcs.get(peerId), reason || "requested");
+});
 
 
     let currentFacing = "user"; // user (cam trước) | environment (cam sau)
