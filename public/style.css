@@ -494,3 +494,99 @@ code{
 }
 .meta-item{display:inline-flex;align-items:center;gap:6px;}
 .meta-sep{opacity:.55;}
+
+/* ===== PIN NOTE OVERLAY (Host-created, draggable) ===== */
+.pin-overlay{
+  position:absolute;
+  inset:0;
+  z-index:7;
+  pointer-events:none;
+}
+.pin-note{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%);
+  max-width: min(78%, 520px);
+  padding:10px 12px;
+  border-radius:14px;
+  border:1px solid rgba(255,211,110,.35);
+  background: rgba(255,211,110,.12);
+  box-shadow: 0 12px 28px rgba(0,0,0,.35), 0 0 26px rgba(255,211,110,.10);
+  backdrop-filter: blur(10px);
+  color: rgba(234,240,255,.95);
+  font-size:13px;
+  line-height:1.25;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+.pin-note .pin-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  margin-bottom:6px;
+  font-weight:700;
+  letter-spacing:.2px;
+}
+.pin-note .pin-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  opacity:.95;
+}
+.pin-note .pin-hint{
+  font-weight:600;
+  font-size:12px;
+  opacity:.75;
+}
+.pin-note .pin-close{
+  pointer-events:auto;
+  width:30px;
+  height:30px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.35);
+  color: #fff;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  line-height:1;
+}
+.pin-note .pin-close:hover{ filter:brightness(1.12); }
+
+/* Host can drag */
+body.is-host .pin-overlay{ pointer-events:auto; }
+body.is-host .pin-note{ cursor: grab; }
+body.is-host .pin-note:active{ cursor: grabbing; }
+body.is-host .pin-note .pin-close{ cursor:pointer; }
+
+/* Pin form (Host) */
+.pin-form{
+  margin-top:10px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:10px;
+}
+@media(min-width: 520px){
+  .pin-form{ grid-template-columns: 1fr auto auto; }
+  .pin-form .pin-input{ grid-column: 1 / 2; }
+}
+.pin-btn{
+  width:100%;
+  padding:12px 12px;
+  border-radius:14px;
+  border:1px solid var(--stroke);
+  background: rgba(0,0,0,.22);
+  color:var(--text);
+  cursor:pointer;
+}
+.pin-btn--set{
+  background: linear-gradient(135deg, rgba(255,211,110,.20), rgba(95,168,255,.14));
+  border-color: rgba(255,211,110,.30);
+}
+.pin-btn--clear{
+  background: rgba(255,59,107,.14);
+  border-color: rgba(255,59,107,.28);
+}

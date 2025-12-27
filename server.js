@@ -24,7 +24,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null });
   }
   return rooms.get(roomId);
 }
@@ -192,6 +192,11 @@ socket.on("live-stop", ({ roomId }) => {
     if (room.liveStartTs) {
       socket.emit("live-start", { startTs: room.liveStartTs });
     }
+
+    // If has pinned note, send to late joiner
+    if (room.pinnedNote) {
+      socket.emit("pin-note-update", room.pinnedNote);
+    }
   });
 
   // ===== CHAT REALTIME =====
@@ -226,6 +231,41 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
   };
   io.to(roomId).emit("reaction", msg);
 });
+
+  // ===== PIN NOTE (host creates custom pinned content + draggable position) =====
+  function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
+
+  socket.on("pin-note-set", ({ roomId, text, x, y }) => {
+    if (!roomId) return;
+    const room = getRoom(roomId);
+    if (room.broadcasterId !== socket.id) return; // host only
+    const t = String(text || "").trim().slice(0, 220);
+    if (!t) return;
+    const note = { text: t, x: __clamp01(x), y: __clamp01(y), ts: Date.now() };
+    room.pinnedNote = note;
+    io.to(roomId).emit("pin-note-update", note);
+  });
+
+  socket.on("pin-note-move", ({ roomId, x, y }) => {
+    if (!roomId) return;
+    const room = getRoom(roomId);
+    if (room.broadcasterId !== socket.id) return; // host only
+    if (!room.pinnedNote) return;
+    room.pinnedNote.x = __clamp01(x);
+    room.pinnedNote.y = __clamp01(y);
+    room.pinnedNote.ts = Date.now();
+    io.to(roomId).emit("pin-note-update", room.pinnedNote);
+  });
+
+  socket.on("pin-note-clear", ({ roomId }) => {
+    if (!roomId) return;
+    const room = getRoom(roomId);
+    if (room.broadcasterId !== socket.id) return; // host only
+    room.pinnedNote = null;
+    io.to(roomId).emit("pin-note-update", null);
+  });
+  // ===== /PIN NOTE =====
+
 
 
   // ===== GUEST CO-HOST FLOW =====

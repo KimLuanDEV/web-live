@@ -38,6 +38,7 @@
       </span>
     </div>
 <div class="chat-overlay" id="chatOverlay"></div>
+<div class="pin-overlay" id="pinOverlay"></div>
 
         <div class="reactions-layer" id="reactionsLayerHost"></div>
 <div class="video-card__inner">
@@ -109,6 +110,12 @@
     <button id="chatSend" class="full">Gửi</button>
   </div>
 
+  <div class="pin-form" id="pinForm">
+    <input id="pinText" class="pin-input" placeholder="📌 Nhập nội dung ghim (Host)..." />
+    <button id="pinSet" class="pin-btn pin-btn--set">📌 Ghim</button>
+    <button id="pinClear" class="pin-btn pin-btn--clear">✖ Bỏ ghim</button>
+  </div>
+
   <div class="emoji-bar" id="emojiBar">
     <button type="button" class="emoji-btn" data-emoji="❤️">❤️</button>
     <button type="button" class="emoji-btn" data-emoji="🔥">🔥</button>
@@ -166,6 +173,7 @@
     };
 
     const socket = io();
+    document.body.classList.add("is-host");
 
 
 // ===== PER-PEER ICE RESTART (auto) =====
@@ -712,6 +720,140 @@ socket.on("reaction", (msg)=>{
     hostFlipBtn.onclick = flipCamera;
 
     window.addEventListener("beforeunload", stop);
+
+    // ===== PIN NOTE (Host-created draggable overlay) =====
+const pinOverlay = document.getElementById("pinOverlay");
+const pinText = document.getElementById("pinText");
+const pinSet = document.getElementById("pinSet");
+const pinClear = document.getElementById("pinClear");
+const hostCard = document.getElementById("hostCard");
+
+let __pinState = null;
+let __drag = null;
+let __lastEmit = 0;
+
+function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
+
+function renderPin(note){
+  __pinState = note || null;
+  if (!pinOverlay) return;
+  pinOverlay.innerHTML = "";
+  if (!note) return;
+
+  const wrap = document.createElement("div");
+  wrap.className = "pin-note";
+  wrap.style.left = (__clamp01(note.x) * 100).toFixed(3) + "%";
+  wrap.style.top  = (__clamp01(note.y) * 100).toFixed(3) + "%";
+
+  const head = document.createElement("div");
+  head.className = "pin-head";
+
+  const title = document.createElement("div");
+  title.className = "pin-title";
+  title.innerHTML = `<span>📌</span><span>PIN</span>`;
+
+  const hint = document.createElement("div");
+  hint.className = "pin-hint";
+  hint.textContent = "Kéo để di chuyển";
+
+  const close = document.createElement("button");
+  close.className = "pin-close";
+  close.type = "button";
+  close.textContent = "✖";
+  close.title = "Bỏ ghim";
+  close.addEventListener("click", (e)=>{
+    e.preventDefault(); e.stopPropagation();
+    socket.emit("pin-note-clear", { roomId });
+  });
+
+  head.appendChild(title);
+  head.appendChild(hint);
+  head.appendChild(close);
+
+  const body = document.createElement("div");
+  body.className = "pin-body";
+  body.textContent = String(note.text || "");
+
+  wrap.appendChild(head);
+  wrap.appendChild(body);
+  pinOverlay.appendChild(wrap);
+
+  // enable dragging (host only)
+  wireDrag(wrap);
+}
+
+function wireDrag(el){
+  if (!el || !hostCard) return;
+
+  const onDown = (ev)=>{
+    // don't drag when clicking close
+    if (ev.target && ev.target.closest(".pin-close")) return;
+    try { el.setPointerCapture(ev.pointerId); } catch {}
+    const rect = hostCard.getBoundingClientRect();
+    const px = ("clientX" in ev) ? ev.clientX : 0;
+    const py = ("clientY" in ev) ? ev.clientY : 0;
+    __drag = { rect, startX: px, startY: py };
+  };
+
+  const onMove = (ev)=>{
+    if (!__drag || !__pinState || !hostCard) return;
+    const rect = hostCard.getBoundingClientRect();
+    const px = ("clientX" in ev) ? ev.clientX : 0;
+    const py = ("clientY" in ev) ? ev.clientY : 0;
+    const x = __clamp01((px - rect.left) / rect.width);
+    const y = __clamp01((py - rect.top) / rect.height);
+
+    // update locally for smooth drag
+    el.style.left = (x * 100).toFixed(3) + "%";
+    el.style.top  = (y * 100).toFixed(3) + "%";
+    __pinState.x = x; __pinState.y = y;
+
+    // throttle emit so viewers see it moving
+    const t = Date.now();
+    if (t - __lastEmit > 80) {
+      __lastEmit = t;
+      socket.emit("pin-note-move", { roomId, x, y });
+    }
+  };
+
+  const onUp = (ev)=>{
+    if (!__drag || !__pinState || !hostCard) { __drag = null; return; }
+    __drag = null;
+    // final sync
+    socket.emit("pin-note-move", { roomId, x: __pinState.x, y: __pinState.y });
+  };
+
+  el.addEventListener("pointerdown", onDown);
+  el.addEventListener("pointermove", onMove);
+  el.addEventListener("pointerup", onUp);
+  el.addEventListener("pointercancel", onUp);
+  el.addEventListener("lostpointercapture", onUp);
+
+  // quick edit by double click
+  el.addEventListener("dblclick", (e)=>{
+    e.preventDefault(); e.stopPropagation();
+    const next = prompt("Sửa nội dung ghim:", String(__pinState?.text || ""));
+    if (next == null) return;
+    const t = String(next).trim();
+    if (!t) return;
+    pinText && (pinText.value = t);
+    socket.emit("pin-note-set", { roomId, text: t, x: __pinState?.x ?? 0.5, y: __pinState?.y ?? 0.2 });
+  });
+}
+
+// Host set/clear
+if (pinSet) pinSet.onclick = ()=>{
+  const text = String(pinText?.value || "").trim();
+  if (!text) return;
+  const x = __pinState?.x ?? 0.5;
+  const y = __pinState?.y ?? 0.2; // near top
+  socket.emit("pin-note-set", { roomId, text, x, y });
+};
+if (pinClear) pinClear.onclick = ()=> socket.emit("pin-note-clear", { roomId });
+
+// Receive updates
+socket.on("pin-note-update", (note)=> renderPin(note));
+// ===== /PIN NOTE =====
 
     // ===== CHAT (BROADCAST) =====
     const chatBox = document.getElementById("chatBox");

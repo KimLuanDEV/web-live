@@ -44,6 +44,7 @@
               </div>
 
               <div class="chat-overlay" id="chatOverlay"></div>
+<div class="pin-overlay" id="pinOverlay"></div>
 
                   <div class="reactions-layer" id="reactionsLayerGuestMain"></div>
 <div class="video-card__inner">
@@ -115,6 +116,35 @@
     document.getElementById("roomCode").textContent = roomId;
 
     const socket = io();
+// ===== PIN NOTE (display only) =====
+const pinOverlay = document.getElementById("pinOverlay");
+function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
+function renderPin(note){
+  if (!pinOverlay) return;
+  pinOverlay.innerHTML = "";
+  if (!note) return;
+  const wrap = document.createElement("div");
+  wrap.className = "pin-note";
+  wrap.style.left = (__clamp01(note.x) * 100).toFixed(3) + "%";
+  wrap.style.top  = (__clamp01(note.y) * 100).toFixed(3) + "%";
+
+  const head = document.createElement("div");
+  head.className = "pin-head";
+  const title = document.createElement("div");
+  title.className = "pin-title";
+  title.innerHTML = `<span>📌</span><span>PIN</span>`;
+  head.appendChild(title);
+
+  const body = document.createElement("div");
+  body.className = "pin-body";
+  body.textContent = String(note.text || "");
+
+  wrap.appendChild(head);
+  wrap.appendChild(body);
+  pinOverlay.appendChild(wrap);
+}
+socket.on("pin-note-update", (note)=> renderPin(note));
+// ===== /PIN NOTE =====
 
 
 // ===== PER-PEER ICE RESTART (auto) =====
