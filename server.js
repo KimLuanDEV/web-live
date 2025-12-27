@@ -55,6 +55,14 @@ app.get("/ice", async (_req, res) => {
 
 io.on("connection", (socket) => {
 
+  // ===== ICE RESTART RELAY =====
+  // Any peer can ask another peer to perform ICE restart
+  socket.on("request-ice-restart", ({ to, reason }) => {
+    if (!to) return;
+    io.to(to).emit("request-ice-restart", { from: socket.id, reason: String(reason || "") });
+  });
+
+
 // Host yêu cầu tắt/bật mic của guest
 socket.on("host-mute-guest", ({ roomId, mute }) => {
   const room = rooms.get(roomId);
@@ -251,12 +259,6 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
 
   socket.on("candidate", ({ to, candidate }) => {
     io.to(to).emit("candidate", { from: socket.id, candidate });
-  });
-  
-  // Viewer/Guest asks peer to do a real ICE restart (renegotiate with iceRestart:true)
-  socket.on("request-ice-restart", ({ to }) => {
-    if (!to) return;
-    io.to(to).emit("request-ice-restart", { from: socket.id });
   });
 
   socket.on("disconnect", () => {

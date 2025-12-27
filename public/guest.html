@@ -116,6 +116,103 @@
 
     const socket = io();
 
+
+// ===== PER-PEER ICE RESTART (auto) =====
+const __iceRestartState = new Map(); // peerId -> { timer, lastTs, restarting }
+function __now(){ return Date.now(); }
+function __clearIceTimer(peerId){
+  const st = __iceRestartState.get(peerId);
+  if (st && st.timer) { clearTimeout(st.timer); st.timer = null; }
+}
+async function __doIceRestart(peerId, pc, reason){
+  if (!peerId || !pc) return;
+  if (pc.signalingState === "closed") return;
+
+  const st = __iceRestartState.get(peerId) || { timer:null, lastTs:0, restarting:false };
+  // debounce: avoid spamming offers
+  const ts = __now();
+  if (st.restarting) return;
+  if (ts - st.lastTs < 1500) return;
+
+  st.restarting = true;
+  st.lastTs = ts;
+  __iceRestartState.set(peerId, st);
+
+  try {
+    log(`🧊 ICE restart -> ${peerId} (GUEST) ${reason ? "- " + reason : ""}`);
+    const offer = await pc.createOffer({ iceRestart: true });
+    await pc.setLocalDescription(offer);
+    socket.emit("offer", { to: peerId, description: pc.localDescription, iceRestart: true });
+  } catch (e) {
+    log("ICE restart error: " + (e?.message || e));
+  } finally {
+    const st2 = __iceRestartState.get(peerId) || st;
+    st2.restarting = false;
+    __iceRestartState.set(peerId, st2);
+  }
+}
+function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
+  if (!peerId || !pc) return;
+  const st = __iceRestartState.get(peerId) || { timer:null, lastTs:0, restarting:false };
+  __clearIceTimer(peerId);
+  st.timer = setTimeout(()=>{
+    // only restart if still not connected
+    const ice = pc.iceConnectionState;
+    const cs  = pc.connectionState;
+    if (pc.signalingState === "closed") return;
+    if (ice === "failed" || ice === "disconnected" || cs === "failed" || cs === "disconnected") {
+      __doIceRestart(peerId, pc, reason);
+    }
+  }, delayMs);
+  __iceRestartState.set(peerId, st);
+}
+function __wireIceAuto(peerId, pc, opts={}){
+  if (!pc) return;
+  const disconnectedDelay = opts.disconnectedDelay ?? 2500;
+
+  pc.addEventListener("iceconnectionstatechange", () => {
+    const st = pc.iceConnectionState;
+    log(`ICE(${peerId}): ${st}`);
+    if (st === "connected" || st === "completed") {
+      __clearIceTimer(peerId);
+      return;
+    }
+    if (st === "failed") {
+      __scheduleIceRestart(peerId, pc, "ice failed", 50);
+      return;
+    }
+    if (st === "disconnected") {
+      __scheduleIceRestart(peerId, pc, "ice disconnected", disconnectedDelay);
+      return;
+    }
+  });
+
+  pc.addEventListener("connectionstatechange", () => {
+    const st = pc.connectionState;
+    if (!st) return;
+    log(`CS(${peerId}): ${st}`);
+    if (st === "connected") __clearIceTimer(peerId);
+    if (st === "failed") __scheduleIceRestart(peerId, pc, "conn failed", 50);
+    if (st === "disconnected") __scheduleIceRestart(peerId, pc, "conn disconnected", disconnectedDelay);
+  });
+}
+
+// Restart only peers that are actually bad (NOT all)
+function __restartBadPeers(getPeers){
+  try {
+    const peers = getPeers?.() || [];
+    for (const [peerId, pc] of peers) {
+      if (!pc || pc.signalingState === "closed") continue;
+      const ice = pc.iceConnectionState;
+      const cs = pc.connectionState;
+      if (ice === "failed" || ice === "disconnected" || cs === "failed" || cs === "disconnected") {
+        __doIceRestart(peerId, pc, "auto resume");
+      }
+    }
+  } catch {}
+}
+// ===== /PER-PEER ICE RESTART =====
+
 // ===== LIVE TIMER (HH:MM:SS) =====
 let __liveStartTs = null;
 let __liveTick = null;
@@ -237,52 +334,20 @@ socket.on("reaction", (msg)=>{
     let localStream = null;
     const pcs = new Map(); // peerId -> RTCPeerConnection
 
-    // ===== REAL ICE RESTART (guest side) =====
-    function canIceRestart(pc){
-      return pc && pc.signalingState !== "closed";
-    }
-    async function doIceRestart(peerId, pc){
-      if (!canIceRestart(pc)) return;
-      if (pc.__iceRestarting) return;
-      pc.__iceRestarting = true;
-      try{
-        const offer = await pc.createOffer({ iceRestart: true });
-        await pc.setLocalDescription(offer);
-        socket.emit("offer", { to: peerId, description: pc.localDescription });
-        log("🧊 ICE restart -> gửi offer mới tới: " + peerId);
-      }catch(e){
-        log("❌ ICE restart lỗi ("+peerId+"): " + e.message);
-      }finally{
-        setTimeout(()=>{ try{ pc.__iceRestarting = false; }catch{} }, 1200);
-      }
-
-
-    // Auto ICE-restart toàn bộ peer khi mạng quay lại / tab quay lại foreground
-    function restartAllPeers(reason){
-      try{
-        let n = 0;
-        for (const [pid, pc] of pcs.entries()){
-          if (pc && pc.signalingState !== "closed"){
-            doIceRestart(pid, pc);
-            n++;
-          }
-        }
-        if (n > 0) log("🧊 Auto ICE restart ("+reason+"): " + n + " peer(s)");
-      }catch(e){ console.warn(e); }
-    }
-
-    window.addEventListener("online", ()=> restartAllPeers("online"));
-    document.addEventListener("visibilitychange", ()=>{
-      if (!document.hidden) restartAllPeers("visible");
+    // When network comes back / tab returns, restart only bad peers
+    window.addEventListener("online", () => __restartBadPeers(() => Array.from(pcs.entries())));
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === "visible") __restartBadPeers(() => Array.from(pcs.entries()));
     });
-    }
 
-    // peer asks guest to restart ICE
-    socket.on("request-ice-restart", ({ from }) => {
-      if (!from) return;
-      const pc = pcs.get(from);
-      if (pc) doIceRestart(from, pc);
+
+    // Peer asks GUEST to ICE-restart this connection (GUEST is offerer to watchers)
+    socket.on("request-ice-restart", async ({ from, reason }) => {
+      const peerId = from;
+      const pc = pcs.get(peerId);
+      if (pc) __doIceRestart(peerId, pc, reason || "requested");
     });
+
 
     let currentFacing = "user"; // user (cam trước) | environment (cam sau)
 
@@ -380,20 +445,7 @@ socket.on("reaction", (msg)=>{
         hostVideo.play().catch(() => {});
       };
 
-      pc.oniceconnectionstatechange = () => {
-        const st = pc.iceConnectionState;
-        log(`ICE(${viewerId}): ${st}`);
-        if (st === "failed") {
-          doIceRestart(viewerId, pc);
-        } else if (st === "disconnected") {
-          clearTimeout(pc.__discT);
-          pc.__discT = setTimeout(() => {
-            try { if (pc.iceConnectionState === "disconnected") doIceRestart(viewerId, pc); } catch {}
-          }, 1800);
-        } else if (st === "connected") {
-          clearTimeout(pc.__discT);
-        }
-      };
+            __wireIceAuto(viewerId, pc);
 
       try {
         const offer = await pc.createOffer();

@@ -386,25 +386,7 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       };
 
       pc.oniceconnectionstatechange = () => {
-        const st = pc.iceConnectionState;
-        log(`ICE(${from}): ${st}`);
-        if (st === "failed") {
-          // ask peer (host/guest) to do real ICE restart
-          socket.emit("request-ice-restart", { to: from });
-          log("🧊 Đã yêu cầu ICE restart tới: " + from);
-        } else if (st === "disconnected") {
-          clearTimeout(pc.__discT);
-          pc.__discT = setTimeout(() => {
-            try {
-              if (pc.iceConnectionState === "disconnected") {
-                socket.emit("request-ice-restart", { to: from });
-                log("🧊 (delayed) yêu cầu ICE restart tới: " + from);
-              }
-            } catch {}
-          }, 1800);
-        } else if (st === "connected") {
-          clearTimeout(pc.__discT);
-        }
+        log(`ICE(${from}): ${pc.iceConnectionState}`);
       };
 
       try {
