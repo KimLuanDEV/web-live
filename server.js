@@ -267,6 +267,21 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
   });
   // ===== /PIN NOTE =====
 
+// ===== GIFT SYSTEM =====
+socket.on("send-gift", ({ roomId, gift }) => {
+  if (!roomId || !gift) return;
+
+  const payload = {
+    gift: {
+      type: gift.type,     // heart | flower | rocket | coin
+      value: gift.value,   // số coin (optional)
+    },
+    ts: Date.now()
+  };
+
+  io.to(roomId).emit("gift", payload);
+});
+
 
 
   // ===== GUEST CO-HOST FLOW =====
@@ -344,21 +359,6 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
       rooms.delete(roomId);
     }
   });
-});
-
-// ===== GIFT SYSTEM =====
-socket.on("send-gift", ({ roomId, gift }) => {
-  if (!roomId || !gift) return;
-
-  const payload = {
-    gift: {
-      type: gift.type,     // heart | flower | rocket | coin
-      value: gift.value,   // số coin (optional)
-    },
-    ts: Date.now()
-  };
-
-  io.to(roomId).emit("gift", payload);
 });
 
 
