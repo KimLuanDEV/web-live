@@ -179,6 +179,9 @@ function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
   const MIN_MS = 180; // anti-spam client side
 
   const handler = (ev) => {
+    // prevent video click from toggling play/pause
+    try { if (ev && ev.cancelable) ev.preventDefault(); } catch {}
+    try { ev.stopPropagation(); } catch {}
     // ignore clicks on controls/buttons/inputs
     const t = ev.target;
     if (t && (t.closest("button") || t.closest("input") || t.closest("textarea"))) return;
@@ -199,7 +202,7 @@ function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
     socket.emit("reaction", msg);
   };
 
-  tapEl.addEventListener("pointerdown", handler);
+  tapEl.addEventListener("pointerdown", handler, { passive: false });
   // also fallback for old browsers
   tapEl.addEventListener("click", handler);
 }
