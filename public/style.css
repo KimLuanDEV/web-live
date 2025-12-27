@@ -309,6 +309,29 @@ code{
   overflow-wrap:anywhere;
   animation: chatPop .18s ease-out;
 }
+
+/* ===== CHAT ROLE COLORS ===== */
+.chat-bubble.role-host{
+  border-color: rgba(255,59,107,.45);
+  background: rgba(255,59,107,.14);
+}
+.chat-bubble.role-guest{
+  border-color: rgba(95,168,255,.45);
+  background: rgba(95,168,255,.14);
+}
+.chat-bubble.role-viewer{
+  border-color: rgba(255,255,255,.22);
+  background: rgba(0,0,0,.55);
+}
+
+/* Chat list (below) */
+.chat-line{
+  padding: 2px 0;
+}
+.chat-line.role-host{ color: rgba(255,210,220,.95); }
+.chat-line.role-guest{ color: rgba(200,225,255,.95); }
+.chat-line.role-viewer{ color: rgba(234,240,255,.92); }
+
 .chat-bubble.hide{
   opacity:0;
   transform: translateY(6px);

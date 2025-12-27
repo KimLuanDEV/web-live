@@ -438,25 +438,44 @@ socket.on("reaction", (msg)=>{
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-    function addChat(msg) {
+    
+
+    function __roleClass(role){
+      role = String(role || "viewer");
+      if (role === "broadcaster") return "role-host";
+      if (role === "guest") return "role-guest";
+      return "role-viewer";
+    }
+    function __roleTag(role){
+      role = String(role || "viewer");
+      if (role === "broadcaster") return "[HOST]";
+      if (role === "guest") return "[GUEST]";
+      return "[VIEWER]";
+    }
+function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
+      const role = msg.role || "viewer";
+      const tag = msg.tag || __roleTag(role);
+
       const line = document.createElement("div");
-      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
+      line.className = `chat-line ${__roleClass(role)}`;
+      line.textContent = `[${time}] ${tag} ${msg.name}: ${msg.text}`;
       chatBox.appendChild(line);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
-
-    const chatOverlay = document.getElementById("chatOverlay");
+const chatOverlay = document.getElementById("chatOverlay");
     function pushOverlay(msg){
       if (!chatOverlay) return;
-      const el = document.createElement("div");
-      el.className = "chat-bubble";
-      el.textContent = `${msg.name}: ${msg.text}`;
-      chatOverlay.appendChild(el);
+      const role = msg.role || "viewer";
+      const tag = msg.tag || __roleTag(role);
 
-      while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
+      const el = document.createElement("div");
+      el.className = `chat-bubble ${__roleClass(role)}`;
+      el.textContent = `${tag} ${msg.name}: ${msg.text}`;
+      chatOverlay.appendChild(el);
+while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
 
       setTimeout(() => el.classList.add("hide"), 2600);
       setTimeout(() => { try { el.remove(); } catch {} }, 3200);
