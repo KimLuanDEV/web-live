@@ -785,19 +785,6 @@ socket.on("gift", ({ gift })=>{
 });
 
 
-if(gift.type === "rocket"){
-  for(let i=0;i<6;i++){
-    setTimeout(()=>spawnGift("rocket"), i*150);
-  }
-}
-
-if(gift.type === "coin"){
-  showCoinRain(); // animation rơi tiền
-}
-
-room.giftStats[userId] += gift.value;
-
-
   </script>
 </body>
 </html>
