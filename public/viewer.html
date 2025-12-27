@@ -96,25 +96,6 @@
 
 
 
-  <!-- ===== Inline Guest Panel (viewer xin lên live ngay tại đây) ===== -->
-<div id="inlineGuestPanel" class="inline-guest" style="display:none">
-  <div class="inline-guest__head">
-    <div id="inlineGuestStatus" class="inline-guest__status">⏳ Chờ host duyệt...</div>
-    <button id="inlineGuestClose" class="inline-guest__close" type="button" aria-label="Đóng">✕</button>
-  </div>
-
-  <div class="inline-guest__videoWrap">
-    <video id="inlineGuestMe" autoplay playsinline muted></video>
-  </div>
-
-  <div class="inline-guest__controls">
-    <button id="inlineGuestMicBtn" type="button" title="Bật / Tắt mic">🎙️</button>
-    <button id="inlineGuestCamBtn" type="button" title="Bật / Tắt camera">📷</button>
-    <button id="inlineGuestFlipBtn" type="button" title="Đảo camera" disabled>🔄</button>
-    <button id="inlineGuestLeaveBtn" type="button" title="Rời live" disabled>🚪</button>
-  </div>
-</div>
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -454,22 +435,14 @@ socket.emit("join-room", { roomId, role: "viewer" });
     });
 
     socket.on("candidate", async ({ from, candidate }) => {
-  // If we're in inline-guest mode, candidates for offerer PCs come here
-  if (typeof guestOfferPCs !== "undefined" && guestOfferPCs && guestOfferPCs.has(from)) {
-    const pcG = guestOfferPCs.get(from);
-    try { await pcG.addIceCandidate(candidate); }
-    catch (err) { log("Inline-Guest: lỗi addIceCandidate: " + (err?.message || err)); }
-    return;
-  }
-
-  const pc = pcs.get(from);
-  if (!pc) return;
-  try {
-    await pc.addIceCandidate(candidate);
-  } catch (err) {
-    log("Lỗi addIceCandidate: " + err.message);
-  }
-});
+      const pc = pcs.get(from);
+      if (!pc) return;
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (err) {
+        log("Lỗi addIceCandidate: " + err.message);
+      }
+    });
 
     btnJoin.onclick = () => {
       join().catch(err => log("Join lỗi: " + err.message));
@@ -493,205 +466,26 @@ socket.emit("join-room", { roomId, role: "viewer" });
     })();
 
 
-// ===== REQUEST TO GO LIVE (VIEWER -> INLINE GUEST) =====
+// ===== REQUEST TO GO LIVE (VIEWER -> GUEST) =====
 const btnRequestLive = document.getElementById("btnRequestLive");
 
-// Inline guest UI
-const inlineGuestPanel   = document.getElementById("inlineGuestPanel");
-const inlineGuestStatus  = document.getElementById("inlineGuestStatus");
-const inlineGuestClose   = document.getElementById("inlineGuestClose");
-const inlineGuestMe      = document.getElementById("inlineGuestMe");
-const inlineGuestMicBtn  = document.getElementById("inlineGuestMicBtn");
-const inlineGuestCamBtn  = document.getElementById("inlineGuestCamBtn");
-const inlineGuestFlipBtn = document.getElementById("inlineGuestFlipBtn");
-const inlineGuestLeaveBtn= document.getElementById("inlineGuestLeaveBtn");
-
-function setInlineGuestStatus(t){
-  if (inlineGuestStatus) inlineGuestStatus.textContent = t;
-}
-
-// default disable until host online
+// mặc định disable khi host chưa online
 btnRequestLive.disabled = true;
 
-// offerer PCs for when THIS viewer becomes guest
-const guestOfferPCs = new Map(); // peerId -> RTCPeerConnection
-let inlineLocalStream = null;
-let inlineFacing = "user";
-let inlineGuestMode = false;
-let inlineMicOn = true;
-let inlineCamOn = true;
-
-function cleanupInlineGuestPeers(){
-  for (const pc of guestOfferPCs.values()) { try { pc.close(); } catch {} }
-  guestOfferPCs.clear();
-}
-function stopInlineLocal(){
-  if (inlineLocalStream) {
-    try { inlineLocalStream.getTracks().forEach(t => t.stop()); } catch {}
-  }
-  inlineLocalStream = null;
-  try { if (inlineGuestMe) inlineGuestMe.srcObject = null; } catch {}
-}
-
-async function startInlineGuest(){
-  if (inlineGuestMode) return;
-  inlineGuestMode = true;
-
-  try{
-    if (inlineGuestPanel) inlineGuestPanel.style.display = "block";
-    setInlineGuestStatus("⏳ Đang xin quyền camera/mic...");
-
-    inlineLocalStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: inlineFacing } },
-      audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-    });
-
-    if (inlineGuestMe) inlineGuestMe.srcObject = inlineLocalStream;
-
-    inlineGuestFlipBtn.disabled = false;
-    inlineGuestLeaveBtn.disabled = false;
-
-    // chuyển role sang guest (không mở tab mới)
-    socket.emit("switch-to-guest", { roomId });
-
-    setInlineGuestStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
-  } catch (e){
-    inlineGuestMode = false;
-    if (inlineGuestPanel) inlineGuestPanel.style.display = "none";
-    alert("Không mở được camera/mic: " + (e?.message || e));
-  }
-}
-
-function leaveInlineGuest(){
-  cleanupInlineGuestPeers();
-  stopInlineLocal();
-
-  inlineGuestMode = false;
-  if (inlineGuestPanel) inlineGuestPanel.style.display = "none";
-
-  // quay lại role viewer
-  socket.emit("switch-to-viewer", { roomId });
-}
-
-// click xin lên live
-btnRequestLive.onclick = () => startInlineGuest();
-
-// close / leave
-if (inlineGuestClose) inlineGuestClose.onclick = () => leaveInlineGuest();
-if (inlineGuestLeaveBtn) inlineGuestLeaveBtn.onclick = () => leaveInlineGuest();
-
-// mic/cam toggle (local)
-if (inlineGuestMicBtn) inlineGuestMicBtn.onclick = () => {
-  if (!inlineLocalStream) return;
-  const at = inlineLocalStream.getAudioTracks()[0];
-  if (!at) return;
-
-  inlineMicOn = !inlineMicOn;
-  at.enabled = inlineMicOn;
-
-  inlineGuestMicBtn.classList.toggle("off", !inlineMicOn);
-  inlineGuestMicBtn.textContent = inlineMicOn ? "🎙️" : "🔇";
+btnRequestLive.onclick = () => {
+  const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
+  // mở tab mới để vẫn xem được live
+  window.open(url, "_blank");
 };
 
-if (inlineGuestCamBtn) inlineGuestCamBtn.onclick = () => {
-  if (!inlineLocalStream) return;
-  const vt = inlineLocalStream.getVideoTracks()[0];
-  if (!vt) return;
-
-  inlineCamOn = !inlineCamOn;
-  vt.enabled = inlineCamOn;
-
-  inlineGuestCamBtn.classList.toggle("off", !inlineCamOn);
-  inlineGuestCamBtn.textContent = inlineCamOn ? "📷" : "🚫";
-};
-
-// flip camera (replaceTrack)
-if (inlineGuestFlipBtn) inlineGuestFlipBtn.onclick = async () => {
-  if (!inlineLocalStream) return;
-  inlineFacing = (inlineFacing === "user") ? "environment" : "user";
-
-  try{
-    const newStream = await navigator.mediaDevices.getUserMedia({
-      video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: inlineFacing } },
-      audio: false
-    });
-    const newVideoTrack = newStream.getVideoTracks()[0];
-    if (!newVideoTrack) throw new Error("Không lấy được camera mới");
-
-    const oldVideoTrack = inlineLocalStream.getVideoTracks()[0];
-    if (oldVideoTrack) {
-      inlineLocalStream.removeTrack(oldVideoTrack);
-      oldVideoTrack.stop();
-    }
-    inlineLocalStream.addTrack(newVideoTrack);
-
-    if (inlineGuestMe) inlineGuestMe.srcObject = inlineLocalStream;
-
-    // replace for all offerer PCs
-    for (const pc of guestOfferPCs.values()){
-      const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
-      if (sender) await sender.replaceTrack(newVideoTrack);
-    }
-  } catch (e){
-    alert("Không đảo được camera: " + (e?.message || e));
-  }
-};
-
-// trạng thái duyệt guest
-socket.on("guest-pending", () => setInlineGuestStatus("⏳ Đang chờ host duyệt..."));
-socket.on("guest-rejected", () => setInlineGuestStatus("⛔ Host từ chối."));
-socket.on("guest-approved", () => setInlineGuestStatus("✅ Được duyệt! Bạn đang lên live."));
-socket.on("guest-kicked", () => {
-  alert("Bạn đã bị Host kích khỏi live.");
-  leaveInlineGuest();
+// chỉ cho xin lên live khi broadcaster online
+socket.on("broadcaster-online", () => {
+  btnRequestLive.disabled = false;
 });
 
-// chỉ cho xin lên live khi host online
-socket.on("broadcaster-online", () => { btnRequestLive.disabled = false; });
-socket.on("broadcaster-offline", () => { btnRequestLive.disabled = true; });
-
-// Khi ai đó muốn xem guest => server yêu cầu guest tạo offer cho viewer đó
-socket.on("guest-watcher", async ({ viewerId }) => {
-  if (!inlineLocalStream) return;
-  if (!viewerId) return;
-  if (guestOfferPCs.has(viewerId)) return;
-
-  try{
-    log("Inline-Guest: tạo kết nối tới viewer " + viewerId);
-
-    const rtcConfig = await getRtcConfig();
-    const pc = new RTCPeerConnection(rtcConfig);
-    guestOfferPCs.set(viewerId, pc);
-
-    inlineLocalStream.getTracks().forEach(t => pc.addTrack(t, inlineLocalStream));
-
-    pc.onicecandidate = (e) => {
-      if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
-    };
-
-    // Host sẽ addTrack khi answer => nếu muốn nghe host thì có thể map stream vào player
-    pc.ontrack = (e) => {
-      // optional: dùng để nghe host audio khi đang lên live
-      // player.srcObject = e.streams[0];
-    };
-
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-    socket.emit("offer", { to: viewerId, description: pc.localDescription });
-  } catch (err){
-    log("Inline-Guest: lỗi tạo offer: " + (err?.message || err));
-  }
+socket.on("broadcaster-offline", () => {
+  btnRequestLive.disabled = true;
 });
-
-// inline guest receives answers (because it's offerer)
-socket.on("answer", async ({ from, description }) => {
-  const pc = guestOfferPCs.get(from);
-  if (!pc) return;
-  try { await pc.setRemoteDescription(description); }
-  catch (err){ log("Inline-Guest: lỗi setRemoteDescription(answer): " + (err?.message || err)); }
-});
-// ===== /REQUEST TO GO LIVE =====
-
 
 
 

@@ -138,57 +138,7 @@ socket.on("live-stop", ({ roomId }) => {
     io.to(roomId).emit("broadcaster-online");
   });
 
-    // ===== SWITCH ROLE (viewer <-> guest) =====
-  // Viewer can request to go live without opening guest.html
-  socket.on("switch-to-guest", ({ roomId }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-
-    socket.join(roomId);
-    socket.data.roomId = roomId;
-
-    // Remove from viewers set so viewer-count stays correct
-    if (room.viewers.has(socket.id)) {
-      room.viewers.delete(socket.id);
-      emitViewerCount(roomId);
-      io.to(roomId).emit("viewer-leave", { id: socket.id, count: room.viewers.size });
-    }
-
-    socket.data.role = "guest";
-
-    // Ask host to approve (same flow as join-room role=guest)
-    if (room.broadcasterId) {
-      io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });
-    }
-    socket.emit("guest-pending");
-  });
-
-  socket.on("switch-to-viewer", ({ roomId }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-
-    socket.join(roomId);
-    socket.data.roomId = roomId;
-    socket.data.role = "viewer";
-
-    if (!room.viewers.has(socket.id)) {
-      room.viewers.add(socket.id);
-      emitViewerCount(roomId);
-      io.to(roomId).emit("viewer-join", { id: socket.id, count: room.viewers.size });
-    }
-
-    if (room.broadcasterId) {
-      io.to(room.broadcasterId).emit("watcher", { viewerId: socket.id, roomId });
-      socket.emit("broadcaster-online");
-    } else {
-      socket.emit("broadcaster-offline");
-    }
-
-    if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
-  });
-  // ===== /SWITCH ROLE =====
-
-// Join room with role: broadcaster | viewer | guest
+  // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role }) => {
     if (!roomId || !role) return;
 
