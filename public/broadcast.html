@@ -165,7 +165,7 @@
       catch { prompt("Copy link khách mời:", guestUrl); }
     };
 
-    const socket = io();
+    const socket = io({ transports: ["websocket"], reconnection: true, reconnectionAttempts: Infinity, reconnectionDelayMax: 2000 });
 
 // ===== LIVE TIMER (HH:MM:SS) =====
 let __liveStartTs = null;
@@ -340,9 +340,18 @@ socket.on("reaction", (msg)=>{
       console.log(msg);
     }
 
-    socket.emit("join-room", { roomId, role: "broadcaster" });
-
-    // ===== Viewer -> Host streaming =====
+    // ===== SOCKET CONNECT / RECONNECT =====
+socket.on("connect", () => {
+  // (re)join as broadcaster whenever socket connects/reconnects
+  socket.emit("join-room", { roomId, role: "broadcaster" });
+  // if camera already started, re-ping current viewers so they receive fresh offers
+  if (localStream) socket.emit("broadcaster-ready", { roomId });
+  log("✅ Socket connected: " + socket.id);
+});
+socket.on("disconnect", () => {
+  log("⚠️ Mất kết nối server... đang tự kết nối lại");
+});
+// ===== Viewer -> Host streaming =====
     socket.on("watcher", async ({ viewerId }) => {
       if (!localStream) {
         log("Có viewer nhưng bạn chưa Start camera.");
@@ -362,7 +371,14 @@ socket.on("reaction", (msg)=>{
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
       };
 
-      pc.oniceconnectionstatechange = () => log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
+      pc.oniceconnectionstatechange = () => {
+        log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
+        if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
+          log("🔄 WebRTC yếu -> đóng peer để viewer tự join lại...");
+          try { pc.close(); } catch {}
+          pcs.delete(viewerId);
+        }
+      };
 
       try {
         const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
@@ -601,45 +617,26 @@ socket.on("reaction", (msg)=>{
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-    
-
-    function __roleClass(role){
-      role = String(role || "viewer");
-      if (role === "broadcaster") return "role-host";
-      if (role === "guest") return "role-guest";
-      return "role-viewer";
-    }
-    function __roleTag(role){
-      role = String(role || "viewer");
-      if (role === "broadcaster") return "[HOST]";
-      if (role === "guest") return "[GUEST]";
-      return "[VIEWER]";
-    }
-function addChat(msg) {
+    function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
-      const role = msg.role || "viewer";
-      const tag = msg.tag || __roleTag(role);
-
       const line = document.createElement("div");
-      line.className = `chat-line ${__roleClass(role)}`;
-      line.textContent = `[${time}] ${tag} ${msg.name}: ${msg.text}`;
+      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
       chatBox.appendChild(line);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
-// ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
+
+    // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
     const chatOverlay = document.getElementById("chatOverlay");
     function pushOverlay(msg){
       if (!chatOverlay) return;
-      const role = msg.role || "viewer";
-      const tag = msg.tag || __roleTag(role);
-
       const el = document.createElement("div");
-      el.className = `chat-bubble ${__roleClass(role)}`;
-      el.textContent = `${tag} ${msg.name}: ${msg.text}`;
+      el.className = "chat-bubble";
+      el.textContent = `${msg.name}: ${msg.text}`;
       chatOverlay.appendChild(el);
-// keep only last 4 bubbles
+
+      // keep only last 4 bubbles
       while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
 
       // auto fade + remove

@@ -6,7 +6,7 @@ const twilio = require("twilio");
 
 const app = express();
 const server = http.createServer(app);
-const io = new Server(server, { cors: { origin: "*" } });
+const io = new Server(server, { cors: { origin: "*" }, pingTimeout: 20000, pingInterval: 25000 });
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -190,15 +190,7 @@ socket.on("live-stop", ({ roomId }) => {
   socket.on("chat", ({ roomId, name, text }) => {
     if (!roomId || !text) return;
 
-    // role is set when client called join-room: broadcaster | guest | viewer
-    const role = String(socket.data.role || "viewer");
-    const tag =
-      role === "broadcaster" ? "[HOST]" :
-      role === "guest" ? "[GUEST]" : "[VIEWER]";
-
     const msg = {
-      role,          // broadcaster | guest | viewer
-      tag,           // [HOST] | [GUEST] | [VIEWER]
       name: (name || "Ẩn danh").slice(0, 20),
       text: String(text).slice(0, 300),
       ts: Date.now(),

@@ -114,8 +114,23 @@
     const roomId = params.get("room") || "abc123";
     document.getElementById("roomCode").textContent = roomId;
 
-    const socket = io();
+    const socket = io({ transports: ["websocket"], reconnection: true, reconnectionAttempts: Infinity, reconnectionDelayMax: 2000 });
 
+
+// ===== SOCKET CONNECT / RECONNECT =====
+socket.on("connect", () => {
+  // If user already bật cam/mic (localStream exists), auto rejoin as guest after reconnect
+  if (localStream) {
+    socket.emit("join-room", { roomId, role: "guest" });
+    log("✅ Reconnected -> đã join lại room (guest)");
+  } else {
+    log("✅ Socket connected: " + socket.id);
+  }
+});
+socket.on("disconnect", () => {
+  setStatus("⚠️ Mất kết nối... đang kết nối lại");
+  log("⚠️ Mất kết nối server... đang tự kết nối lại");
+});
 // ===== LIVE TIMER (HH:MM:SS) =====
 let __liveStartTs = null;
 let __liveTick = null;
@@ -333,7 +348,14 @@ socket.on("reaction", (msg)=>{
         hostVideo.play().catch(() => {});
       };
 
-      pc.oniceconnectionstatechange = () => log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
+      pc.oniceconnectionstatechange = () => {
+        log(`ICE(${viewerId}): ${pc.iceConnectionState}`);
+        if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
+          log("🔄 WebRTC yếu -> đóng peer để bên kia kết nối lại...");
+          try { pc.close(); } catch {}
+          pcs.delete(viewerId);
+        }
+      };
 
       try {
         const offer = await pc.createOffer();
@@ -438,44 +460,25 @@ socket.on("reaction", (msg)=>{
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-    
-
-    function __roleClass(role){
-      role = String(role || "viewer");
-      if (role === "broadcaster") return "role-host";
-      if (role === "guest") return "role-guest";
-      return "role-viewer";
-    }
-    function __roleTag(role){
-      role = String(role || "viewer");
-      if (role === "broadcaster") return "[HOST]";
-      if (role === "guest") return "[GUEST]";
-      return "[VIEWER]";
-    }
-function addChat(msg) {
+    function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
-      const role = msg.role || "viewer";
-      const tag = msg.tag || __roleTag(role);
-
       const line = document.createElement("div");
-      line.className = `chat-line ${__roleClass(role)}`;
-      line.textContent = `[${time}] ${tag} ${msg.name}: ${msg.text}`;
+      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
       chatBox.appendChild(line);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
-const chatOverlay = document.getElementById("chatOverlay");
+
+    const chatOverlay = document.getElementById("chatOverlay");
     function pushOverlay(msg){
       if (!chatOverlay) return;
-      const role = msg.role || "viewer";
-      const tag = msg.tag || __roleTag(role);
-
       const el = document.createElement("div");
-      el.className = `chat-bubble ${__roleClass(role)}`;
-      el.textContent = `${tag} ${msg.name}: ${msg.text}`;
+      el.className = "chat-bubble";
+      el.textContent = `${msg.name}: ${msg.text}`;
       chatOverlay.appendChild(el);
-while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
+
+      while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
 
       setTimeout(() => el.classList.add("hide"), 2600);
       setTimeout(() => { try { el.remove(); } catch {} }, 3200);

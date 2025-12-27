@@ -112,8 +112,28 @@ const guestPipWrap = document.getElementById("guestPipWrap");
 let swapped = false; // false: host main, true: guest main
 
 
-    const socket = io();
+    const socket = io({ transports: ["websocket"], reconnection: true, reconnectionAttempts: Infinity, reconnectionDelayMax: 2000 });
 
+
+// ===== SOCKET CONNECT / RECONNECT =====
+socket.on("connect", () => {
+  // auto re-join if previously joined
+  if (joined) {
+    cleanupAll();
+    joined = false;
+  }
+  // If user already clicked Join, reconnect should auto-join again
+  if (wantJoin && !joined) {
+    join().catch(()=>{});
+  }
+});
+socket.on("disconnect", () => {
+  setStatus("⚠️ Mất kết nối... đang kết nối lại");
+  log("⚠️ Mất kết nối server... đang tự kết nối lại");
+});
+socket.io.on("reconnect", () => {
+  if (wantJoin && !joined) join().catch(()=>{});
+});
 // ===== LIVE TIMER (HH:MM:SS) =====
 let __liveStartTs = null;
 let __liveTick = null;
@@ -233,8 +253,8 @@ socket.on("reaction", (msg)=>{
 
 
     let joined = false;
-
-    // multiple peer connections: broadcaster + guest
+let wantJoin = false; // remembers if user has clicked Join
+// multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
     let guestId = null;
 
@@ -320,10 +340,11 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
 
 
     async function join() {
+      wantJoin = true;
       if (joined) return;
       joined = true;
       socket.emit("join-room", { roomId, role: "viewer" });
-      setStatus("⏳ Đang chờ Host gửi LIVE...");
+setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host/guest...");
     }
 
@@ -387,6 +408,14 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
 
       pc.oniceconnectionstatechange = () => {
         log(`ICE(${from}): ${pc.iceConnectionState}`);
+        if (pc.iceConnectionState === "failed" || pc.iceConnectionState === "disconnected") {
+          log("🔄 Mất kết nối WebRTC -> Join lại để khôi phục...");
+          // Close all and re-join (server will make host send offer lại)
+          try { cleanupAll(); } catch {}
+          joined = false;
+          setStatus("🔄 Đang khôi phục kết nối...");
+          if (wantJoin) setTimeout(()=>join().catch(()=>{}), 800);
+        }
       };
 
       try {
@@ -444,45 +473,26 @@ socket.on("broadcaster-offline", () => {
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-    
-
-    function __roleClass(role){
-      role = String(role || "viewer");
-      if (role === "broadcaster") return "role-host";
-      if (role === "guest") return "role-guest";
-      return "role-viewer";
-    }
-    function __roleTag(role){
-      role = String(role || "viewer");
-      if (role === "broadcaster") return "[HOST]";
-      if (role === "guest") return "[GUEST]";
-      return "[VIEWER]";
-    }
-function addChat(msg) {
+    function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
-      const role = msg.role || "viewer";
-      const tag = msg.tag || __roleTag(role);
-
       const line = document.createElement("div");
-      line.className = `chat-line ${__roleClass(role)}`;
-      line.textContent = `[${time}] ${tag} ${msg.name}: ${msg.text}`;
+      line.textContent = `[${time}] ${msg.name}: ${msg.text}`;
       chatBox.appendChild(line);
       chatBox.scrollTop = chatBox.scrollHeight;
     }
-
+ 
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
-// ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
+
+    // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
     const chatOverlay = document.getElementById("chatOverlay");
     function pushOverlay(msg){
       if (!chatOverlay) return;
-      const role = msg.role || "viewer";
-      const tag = msg.tag || __roleTag(role);
-
       const el = document.createElement("div");
-      el.className = `chat-bubble ${__roleClass(role)}`;
-      el.textContent = `${tag} ${msg.name}: ${msg.text}`;
+      el.className = "chat-bubble";
+      el.textContent = `${msg.name}: ${msg.text}`;
       chatOverlay.appendChild(el);
-// keep only last 4 bubbles
+
+      // keep only last 4 bubbles
       while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
 
       // auto fade + remove
