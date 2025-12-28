@@ -332,6 +332,16 @@ if(quickInput && quickSend){
   });
 }
 
+quickInput.addEventListener("touchstart", e=>{
+  e.stopPropagation();
+  setTimeout(()=>quickInput.focus(), 50);
+});
+
+quickInput.addEventListener("click", e=>{
+  e.stopPropagation();
+  setTimeout(()=>quickInput.focus(), 50);
+});
+
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");

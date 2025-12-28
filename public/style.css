@@ -1944,3 +1944,36 @@ button.is-loading{
     width:94%;
   }
 }
+
+/* ===== FIX MOBILE CHAT INPUT NOT FOCUS ===== */
+
+/* Cho phép click */
+.chat-input-overlay{
+  pointer-events: auto !important;
+  z-index: 9999;
+}
+
+/* Video KHÔNG được ăn click */
+.live-stage video{
+  pointer-events: none;
+}
+
+/* Các layer khác không chặn input */
+.chat-overlay,
+.reactions-layer,
+.join-overlay,
+.pin-overlay{
+  pointer-events: none;
+}
+
+/* Input nhận tương tác */
+.chat-input-overlay input,
+.chat-input-overlay button{
+  pointer-events: auto;
+}
+
+@media(max-width:520px){
+  body:has(input:focus){
+    padding-bottom:260px;
+  }
+}
