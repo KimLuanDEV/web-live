@@ -132,12 +132,6 @@
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
-<div class="card">
-  <div class="badge badge--info">🎤 Viewer xin nói</div>
-  <div id="voiceQueue" class="log">Chưa có yêu cầu</div>
-</div>
-
-
 </div>
 
 
@@ -443,71 +437,6 @@ if(nameFromLobby){
     };
 
     const socket = io();
-
-
-const voiceQueue = document.getElementById("voiceQueue");
-const voicePeers = new Map();
-
-socket.on("viewer-voice-request", ({ viewerId }) => {
-  const row = document.createElement("div");
-  row.innerHTML = `
-    🎧 ${viewerId.slice(0,6)}
-    <button onclick="approveVoice('${viewerId}')">✅</button>
-    <button onclick="denyVoice('${viewerId}')">❌</button>
-  `;
-  voiceQueue.appendChild(row);
-});
-
-window.approveVoice = (id) => {
-  socket.emit("host-voice-approve", {
-    roomId,
-    viewerId: id,
-    ok: true
-  });
-};
-
-window.denyVoice = (id) => {
-  socket.emit("host-voice-approve", {
-    roomId,
-    viewerId: id,
-    ok: false
-  });
-};
-
-socket.on("offer", async ({ from, description, voiceOnly }) => {
-  if (!voiceOnly) return;
-
-  const pc = new RTCPeerConnection(iceConfig);
-  voicePeers.set(from, pc);
-
-  pc.ontrack = e => {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    audio.dataset.viewer = from;
-    document.body.appendChild(audio);
-
-    // relay audio cho các peer khác
-    allPeers.forEach(p =>
-      e.streams[0].getTracks().forEach(t =>
-        p.addTrack(t, e.streams[0])
-      )
-    );
-  };
-
-  await pc.setRemoteDescription(description);
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-
-  socket.emit("answer", {
-    to: from,
-    description: pc.localDescription
-  });
-});
-
-
-
-
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){

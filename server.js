@@ -38,10 +38,10 @@ function getRoom(roomId) {
   broadcasterId: null,
   viewers: new Set(),
   guestId: null,
-  voiceViewers: new Set(),
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
+
   releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
 });
@@ -104,42 +104,6 @@ app.get("/ice", async (_req, res) => {
 });
 
 io.on("connection", (socket) => {
-
-
-// 🎤 Viewer xin bật mic
-socket.on("viewer-voice-request", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room || !room.broadcasterId) return;
-
-  io.to(room.broadcasterId).emit("viewer-voice-request", {
-    viewerId: socket.id
-  });
-});
-
-// Host duyệt / từ chối
-socket.on("host-voice-approve", ({ roomId, viewerId, ok }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  if (!ok) {
-    io.to(viewerId).emit("viewer-voice-denied");
-    return;
-  }
-
-  room.voiceViewers.add(viewerId);
-  io.to(viewerId).emit("viewer-voice-approved");
-});
-
-// Host tắt mic viewer
-socket.on("host-voice-mute", ({ roomId, viewerId }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  room.voiceViewers.delete(viewerId);
-  io.to(viewerId).emit("viewer-voice-muted");
-});
-
-
 
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);

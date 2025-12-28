@@ -27,8 +27,6 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<button id="btnVoice" style="margin-top:8px">🎤 Xin bật mic nói</button>
-
 <small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
   Bấm để mở trang Khách và gửi yêu cầu lên Host.
 </small>
@@ -55,21 +53,6 @@
       </span>
     </div>
 <div class="chat-overlay" id="chatOverlay"></div>
-
-
-<div class="chat-input-overlay">
-  <input
-    id="quickChatInput"
-    type="text"
-    placeholder="💬 Chat nhanh..."
-    inputmode="text"
-    autocomplete="off"
-  />
-  <button id="quickChatSend">➤</button>
-</div>
-
-
-
 <div class="join-overlay" id="joinOverlayViewer" aria-live="polite"></div>
 <div class="pin-overlay" id="pinOverlay"></div>
 
@@ -174,32 +157,6 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
-
-
-    // ===== CHAT INPUT: chỉ hiện khi LIVE =====
-const chatInputOverlay = document.getElementById("chatInputOverlay");
-
-function setChatInputVisible(show){
-  if (!chatInputOverlay) return;
-  chatInputOverlay.style.display = show ? "flex" : "none";
-}
-
-// mặc định: chưa live => ẩn
-setChatInputVisible(false);
-
-// server báo bắt đầu live
-socket.on("live-start", () => {
-  setChatInputVisible(true);
-});
-
-// server báo dừng live
-socket.on("live-stop", () => {
-  setChatInputVisible(false);
-});
-
-
-
-
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
@@ -765,90 +722,6 @@ socket.on("host-profile-update", (profile) => {
 
   document.querySelectorAll(".host-avatar")
     .forEach(img => img.src = getAvatarByName(profile.name));
-});
-
-
-const quickInput = document.getElementById("quickChatInput");
-const quickSend  = document.getElementById("quickChatSend");
-
-function sendQuickChat(){
-  const text = quickInput.value.trim();
-  if(!text) return;
-
-  socket.emit("chat-send", {
-    roomId,
-    name: chatName?.value || "Guest",
-    text
-  });
-
-  quickInput.value = "";
-}
-
-quickSend?.addEventListener("click", sendQuickChat);
-
-quickInput?.addEventListener("keydown", e=>{
-  if(e.key === "Enter") sendQuickChat();
-});
-
-
-let voicePC = null;
-let voiceStream = null;
-
-const btnVoice = document.getElementById("btnVoice");
-
-btnVoice.onclick = () => {
-  socket.emit("viewer-voice-request", { roomId });
-  btnVoice.disabled = true;
-  btnVoice.textContent = "⏳ Đang chờ host...";
-};
-
-socket.on("viewer-voice-approved", async () => {
-  voiceStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false
-  });
-
-  voicePC = new RTCPeerConnection(iceConfig);
-
-  voiceStream.getTracks().forEach(t =>
-    voicePC.addTrack(t, voiceStream)
-  );
-
-  voicePC.onicecandidate = e => {
-    if (e.candidate) {
-      socket.emit("candidate", {
-        toRole: "host",
-        candidate: e.candidate
-      });
-    }
-  };
-
-  const offer = await voicePC.createOffer();
-  await voicePC.setLocalDescription(offer);
-
-  socket.emit("offer", {
-    toRole: "host",
-    voiceOnly: true,
-    description: offer
-  });
-
-  btnVoice.textContent = "🎙️ Đang nói";
-});
-
-socket.on("viewer-voice-denied", () => {
-  btnVoice.disabled = false;
-  btnVoice.textContent = "🎤 Xin bật mic";
-  alert("❌ Host từ chối");
-});
-
-socket.on("viewer-voice-muted", () => {
-  voiceStream?.getTracks().forEach(t => t.stop());
-  voicePC?.close();
-  voicePC = null;
-
-  btnVoice.disabled = false;
-  btnVoice.textContent = "🎤 Xin bật mic";
-  alert("🔇 Host đã tắt mic bạn");
 });
 
 
