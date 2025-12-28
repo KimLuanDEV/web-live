@@ -1921,7 +1921,3 @@ button.is-loading{
   cursor:pointer;
 }
 
-.chat-input-overlay{
-  display:none;          /* 👈 MẶC ĐỊNH ẨN */
-  pointer-events:auto;
-}
