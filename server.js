@@ -183,13 +183,23 @@ socket.on("live-start", ({ roomId, startTs }) => {
 
 socket.on("live-stop", ({ roomId }) => {
   if (!roomId) return;
-  const room = getRoom(roomId);
-  if (room.broadcasterId !== socket.id) return; // only host can stop
-  room.liveStartTs = null;
-  io.to(roomId).emit("live-stop");
-  emitLobbyUpdate();
 
+  const key = String(roomId).toLowerCase();
+  const room = rooms.get(key);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  // ✅ clear trạng thái host
+  room.liveStartTs = null;
+  room.broadcasterId = null;
+  room.hostProfile = null;
+
+  io.to(key).emit("live-stop");
+  io.to(key).emit("broadcaster-offline");
+
+  emitLobbyUpdate();
 });
+
 
 
 
