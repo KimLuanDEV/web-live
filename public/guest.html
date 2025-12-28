@@ -857,6 +857,12 @@ chatInput.addEventListener("keydown", e => {
   if (e.key === "Enter") sendChat();
 });
 
+chatInput.addEventListener("pointerdown", () => {
+  chatInput.focus({ preventScroll: true });
+});
+chatInput.addEventListener("click", () => {
+  chatInput.focus({ preventScroll: true });
+});
 
   </script>
 </body>
