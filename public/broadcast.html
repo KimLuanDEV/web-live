@@ -124,7 +124,6 @@
 <hr />
 <div class="card">
   <div class="badge badge--info">👤 Khách xin lên live</div>
-
   <hr />
   <div id="guestReq" class="log">Chưa có yêu cầu.</div>
   <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
@@ -132,10 +131,10 @@
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
+<hr />
+<div class="badge badge--info">🎙️ Viewer xin bật mic</div>
+<div id="viewerMicReq" class="log">Chưa có yêu cầu.</div>
 
-  <div id="viewerMicReq" class="log"></div>
-<button id="btnAllowViewerMic">🎙️ Cho nói</button>
-<button id="btnDenyViewerMic">❌ Từ chối</button>
 
 </div>
 
@@ -442,6 +441,35 @@ if(nameFromLobby){
     };
 
     const socket = io();
+
+
+const viewerMicReq = document.getElementById("viewerMicReq");
+
+// Viewer xin mic
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  viewerMicReq.innerHTML = `
+    🎙️ Viewer ${viewerId.slice(0,6)}...
+    <br/>
+    <button onclick="approveViewerMic('${viewerId}')">✅ Cho nói</button>
+    <button onclick="muteViewerMic('${viewerId}')">🔇 Tắt mic</button>
+    <button onclick="revokeViewerMic('${viewerId}')">⛔ Thu hồi</button>
+  `;
+});
+
+window.approveViewerMic = (viewerId) => {
+  socket.emit("host-approve-viewer-mic", { roomId, viewerId });
+};
+
+window.muteViewerMic = (viewerId) => {
+  socket.emit("host-mute-viewer", { viewerId, mute: true });
+};
+
+window.revokeViewerMic = (viewerId) => {
+  socket.emit("host-revoke-viewer-mic", { viewerId });
+};
+
+
+
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
@@ -1396,26 +1424,6 @@ if (nameFromLobby) {
     socket.on("connect", () => btnUpdateProfile.onclick());
   }
 }
-
-
-let pendingViewerMic = null;
-
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  pendingViewerMic = viewerId;
-  document.getElementById("viewerMicReq").textContent =
-    "🎤 Viewer xin bật mic";
-});
-
-document.getElementById("btnAllowViewerMic").onclick = () => {
-  socket.emit("host-allow-viewer-mic", {
-    roomId,
-    viewerId: pendingViewerMic
-  });
-};
-
-document.getElementById("btnDenyViewerMic").onclick = () => {
-  pendingViewerMic = null;
-};
 
 
 

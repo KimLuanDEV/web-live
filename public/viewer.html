@@ -27,11 +27,7 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<button id="btnRequestMic">🎙️ Xin bật mic</button>
-<button id="btnMuteSelf" disabled>🔇 Tắt mic</button>
-
-<small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
-  Bấm để mở trang Khách và gửi yêu cầu lên Host.
+<button id="btnRequestMic" style="margin-top:8px">🎙️ Xin bật mic</button>
 </small>
 
           <hr />
@@ -160,6 +156,62 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
+
+
+const btnRequestMic = document.getElementById("btnRequestMic");
+
+let micStream = null;
+let micTrack = null;
+
+btnRequestMic.onclick = () => {
+  socket.emit("viewer-request-mic", { roomId });
+  btnRequestMic.disabled = true;
+  btnRequestMic.textContent = "⏳ Đang xin mic...";
+};
+
+// Host duyệt
+socket.on("viewer-mic-approved", async () => {
+  try {
+    micStream = await navigator.mediaDevices.getUserMedia({
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      },
+      video: false
+    });
+
+    micTrack = micStream.getAudioTracks()[0];
+
+    // gửi audio track lên TẤT CẢ peer (host)
+    for (const pc of pcs.values()) {
+      pc.addTrack(micTrack, micStream);
+    }
+
+    btnRequestMic.textContent = "🎙️ Mic đang bật";
+  } catch (e) {
+    alert("Không mở được mic");
+  }
+});
+
+// Host tắt / bật mic
+socket.on("viewer-set-mic", ({ mute }) => {
+  if (micTrack) micTrack.enabled = !mute;
+});
+
+// Host thu hồi quyền nói
+socket.on("viewer-mic-revoked", () => {
+  if (micStream) {
+    micStream.getTracks().forEach(t => t.stop());
+  }
+  micStream = null;
+  micTrack = null;
+
+  btnRequestMic.disabled = false;
+  btnRequestMic.textContent = "🎙️ Xin bật mic";
+});
+
+
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
@@ -725,56 +777,6 @@ socket.on("host-profile-update", (profile) => {
 
   document.querySelectorAll(".host-avatar")
     .forEach(img => img.src = getAvatarByName(profile.name));
-});
-
-
-let micStream = null;
-let micEnabled = false;
-
-const btnRequestMic = document.getElementById("btnRequestMic");
-const btnMuteSelf = document.getElementById("btnMuteSelf");
-
-btnRequestMic.onclick = async () => {
-  if (micEnabled) return;
-
-  micStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false
-  });
-
-  micEnabled = true;
-  btnMuteSelf.disabled = false;
-
-  socket.emit("viewer-request-mic", { roomId });
-};
-
-btnMuteSelf.onclick = () => {
-  if (!micStream) return;
-  micStream.getAudioTracks().forEach(t => t.enabled = !t.enabled);
-};
-
-
-socket.on("viewer-mic-approved", async () => {
-  const pc = new RTCPeerConnection(await getIce());
-
-  micStream.getTracks().forEach(track =>
-    pc.addTrack(track, micStream)
-  );
-
-  pc.onicecandidate = e => {
-    if (e.candidate) socket.emit("ice", {
-      to: hostSocketId,
-      candidate: e.candidate
-    });
-  };
-
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-
-  socket.emit("offer", {
-    to: hostSocketId,
-    description: pc.localDescription
-  });
 });
 
 
