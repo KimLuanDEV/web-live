@@ -1941,9 +1941,9 @@ button.is-loading{
 /* ===== QUICK CHAT ON VIDEO (FIX KEYBOARD) ===== */
 .chat-fab{
   position:absolute;
-  left:20px;
-  bottom:10px;
-  width:22px;height:22px;
+  left:5px;
+  bottom:20px;
+  width:0;height:0;
   border-radius:999px;
   z-index:30;
   pointer-events:auto; /* ✅ quan trọng */
