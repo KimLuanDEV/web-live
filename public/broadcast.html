@@ -85,6 +85,10 @@
               <button id="btnOffCamGuest" class="av-btn" title="Tắt camera khách" disabled>🚫</button>
               <button id="btnOnCamGuest"  class="av-btn" title="Bật camera khách" disabled>📷</button>
               <button id="btnKickGuest" class="av-btn off" title="Kích khách" disabled>⛔</button>
+
+               <!-- Hướng dẫn -->
+              <button id="btnHostGuide" class="av-btn" title="Hướng dẫn sử dụng">❔</button>
+
             </div>
             <div class="ctrl-hint">Nhấn ☰ để thu gọn</div>
           </div>
@@ -335,6 +339,15 @@ hgmOk?.addEventListener("click", ()=>{ rememberHgm(); closeHgm(); });
 document.addEventListener("keydown", (e)=>{
   if (!hgm || hgm.classList.contains("hidden")) return;
   if (e.key === "Escape") { rememberHgm(); closeHgm(); }
+});
+
+
+// ===== Open Host Guide from ctrl drawer =====
+const btnHostGuide = document.getElementById("btnHostGuide");
+btnHostGuide?.addEventListener("click", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  if (typeof openHgm === "function") openHgm();
 });
 
 
