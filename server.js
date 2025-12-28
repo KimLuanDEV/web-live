@@ -25,7 +25,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null,  broadcasterToken: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null, hostProfile: null, });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null, hostProfile: null, });
   }
   return rooms.get(roomId);
 }
@@ -83,22 +83,6 @@ app.get("/ice", async (_req, res) => {
 });
 
 io.on("connection", (socket) => {
-
-
-// ===== CHECK ROOM ID EXIST =====
-socket.on("check-room-available", ({ roomId }, cb) => {
-  if (!roomId) return cb({ ok: false, reason: "INVALID" });
-
-  const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
-  const room = rooms.get(key);
-
-  if (room && room.broadcasterId) {
-    return cb({ ok: false, reason: "EXIST" });
-  }
-
-  return cb({ ok: true });
-});
-
 
 
 
@@ -183,23 +167,13 @@ socket.on("live-start", ({ roomId, startTs }) => {
 
 socket.on("live-stop", ({ roomId }) => {
   if (!roomId) return;
-
-  const key = String(roomId).toLowerCase();
-  const room = rooms.get(key);
-  if (!room) return;
-  if (room.broadcasterId !== socket.id) return;
-
-  // ✅ clear trạng thái host
+  const room = getRoom(roomId);
+  if (room.broadcasterId !== socket.id) return; // only host can stop
   room.liveStartTs = null;
-  room.broadcasterId = null;
-  room.hostProfile = null;
-
-  io.to(key).emit("live-stop");
-  io.to(key).emit("broadcaster-offline");
-
+  io.to(roomId).emit("live-stop");
   emitLobbyUpdate();
-});
 
+});
 
 
 
@@ -223,39 +197,15 @@ socket.on("live-stop", ({ roomId }) => {
   socket.on("join-room", ({ roomId, role, profile }) => {
     if (!roomId || !role) return;
 
-const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
-
-    socket.join(key);
-    socket.data.roomId = key;
+    socket.join(roomId);
+    socket.data.roomId = roomId;
     socket.data.role = role;
 
-    const room = getRoom(key);
+    const room = getRoom(roomId);
 
     if (role === "broadcaster") {
-  // ✅ host reconnect (reload)
-  if (
-    room.broadcasterToken &&
-    token &&
-    room.broadcasterToken === token
-  ) {
-    room.broadcasterId = socket.id;
-  }
-  // ❌ host khác chiếm room
-  else if (room.broadcasterId && room.broadcasterId !== socket.id) {
-    socket.emit("room-error", { reason: "HOST_EXISTS" });
-    return;
-  }
-  // ✅ host mới hoàn toàn
-  else {
-    room.broadcasterId = socket.id;
-    room.broadcasterToken = token;
-  }
-
-
-
-  const old = room.broadcasterId;
-  room.broadcasterId = socket.id;
-
+      const old = room.broadcasterId;
+      room.broadcasterId = socket.id;
 
        // ✅ Lưu profile host
     const name = String(profile?.name || "").trim().slice(0, 20);
@@ -460,20 +410,18 @@ socket.on("send-gift", ({ roomId, gift }) => {
       }
     }
 
-   if (role === "broadcaster") {
-  const token = room.broadcasterToken;
+    if (role === "broadcaster") {
+      if (room.broadcasterId === socket.id) {
+        room.broadcasterId = null;
+        room.liveStartTs = null;
+        room.hostProfile = null;
 
-  setTimeout(() => {
-    // nếu host chưa reconnect
-    if (room.broadcasterToken === token && !room.broadcasterId) {
-      room.broadcasterToken = null;
-      room.liveStartTs = null;
-      room.hostProfile = null;
-      emitLobbyUpdate();
+        emitLobbyUpdate();
+
+        io.to(roomId).emit("live-stop");
+        io.to(roomId).emit("broadcaster-offline");
+      }
     }
-  }, 10000); // ⏱ 10 giây chờ reconnect
-}
-
 
     if (role === "guest") {
       if (room.guestId === socket.id) {
