@@ -46,6 +46,20 @@
               </div>
 
               <div class="chat-overlay" id="chatOverlay"></div>
+
+              <div class="chat-input-overlay">
+  <input
+    id="quickChatInput"
+    type="text"
+    placeholder="💬 Chat nhanh..."
+    inputmode="text"
+    autocomplete="off"
+  />
+  <button id="quickChatSend">➤</button>
+</div>
+
+
+
 <div class="pin-overlay" id="pinOverlay"></div>
 
                   <div class="reactions-layer" id="reactionsLayerGuestMain"></div>
@@ -140,6 +154,30 @@
     document.getElementById("roomCode").textContent = roomId;
 
     const socket = io();
+
+// ===== CHAT INPUT: chỉ hiện khi LIVE =====
+const chatInputOverlay = document.getElementById("chatInputOverlay");
+
+function setChatInputVisible(show){
+  if (!chatInputOverlay) return;
+  chatInputOverlay.style.display = show ? "flex" : "none";
+}
+
+// mặc định: chưa live => ẩn
+setChatInputVisible(false);
+
+// server báo bắt đầu live
+socket.on("live-start", () => {
+  setChatInputVisible(true);
+});
+
+// server báo dừng live
+socket.on("live-stop", () => {
+  setChatInputVisible(false);
+});
+
+
+
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabGuest(){
       const fab = document.getElementById("ctrlFabGuest");
@@ -812,6 +850,27 @@ socket.on("host-profile-update", (profile) => {
     .forEach(img => img.src = getAvatarByName(profile.name));
 });
 
+const quickInput = document.getElementById("quickChatInput");
+const quickSend  = document.getElementById("quickChatSend");
+
+function sendQuickChat(){
+  const text = quickInput.value.trim();
+  if(!text) return;
+
+  socket.emit("chat-send", {
+    roomId,
+    name: chatName?.value || "Guest",
+    text
+  });
+
+  quickInput.value = "";
+}
+
+quickSend?.addEventListener("click", sendQuickChat);
+
+quickInput?.addEventListener("keydown", e=>{
+  if(e.key === "Enter") sendQuickChat();
+});
 
 
   </script>
