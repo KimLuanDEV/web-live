@@ -90,86 +90,133 @@
 </div>
 
 
-<!-- WELCOME MODAL -->
+<!-- WELCOME MODAL (NEON) -->
 <div id="welcomeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
-  <div class="modal-backdrop"></div>
+  <div class="modal-backdrop modal-backdrop--neon"></div>
 
-  <div class="modal-card modal-card--welcome">
-    <div class="welcome-head">
-      <div class="welcome-badge">🔴 LIVE</div>
-      <div>
-        <h3 id="welcomeTitle" style="margin:0">Chào mừng đến Sảnh Live</h3>
-        <small style="opacity:.8">Xem host đang phát hoặc tạo phòng để lên live ngay</small>
+  <div class="neon-modal" tabindex="-1">
+    <div class="neon-frame"></div>
+    <div class="neon-scan"></div>
+
+    <div class="neon-top">
+      <div class="neon-livePill">
+        <span class="neon-dot"></span>
+        <span>LIVE LOBBY</span>
+      </div>
+
+      <button id="btnWelcomeX" class="neon-x" type="button" aria-label="Đóng">✕</button>
+    </div>
+
+    <div class="neon-hero">
+      <div class="neon-titleWrap">
+        <div class="neon-kicker">🏟️ SẢNH LIVE</div>
+        <h3 id="welcomeTitle" class="neon-title">Chào mừng đến Livestream Pro</h3>
+        <div class="neon-sub">
+          Xem host đang LIVE theo thời gian thực • tạo phòng để lên live trong 5 giây
+        </div>
+      </div>
+
+      <div class="neon-badges">
+        <div class="neon-chip">⚡ Real-time</div>
+        <div class="neon-chip">💬 Chat + Reaction</div>
+        <div class="neon-chip">🎤 Xin lên live</div>
       </div>
     </div>
 
-    <div class="welcome-body">
-      <div class="welcome-item">✅ Xem danh sách phòng đang LIVE theo thời gian thực</div>
-      <div class="welcome-item">✅ Tạo phòng nhanh → vào Host để phát sóng</div>
-      <div class="welcome-item">✅ Viewer có thể chat, reaction, xin lên live</div>
+    <div class="neon-grid">
+      <div class="neon-card">
+        <div class="neon-ic">👀</div>
+        <div>
+          <div class="neon-cardTitle">Vào xem siêu nhanh</div>
+          <div class="neon-cardText">Click phòng đang live → vào Viewer ngay.</div>
+        </div>
+      </div>
+
+      <div class="neon-card">
+        <div class="neon-ic">🎥</div>
+        <div>
+          <div class="neon-cardTitle">Tạo phòng trong Lobby</div>
+          <div class="neon-cardText">Nhập Room ID + tên host → chuyển sang Host.</div>
+        </div>
+      </div>
+
+      <div class="neon-card">
+        <div class="neon-ic">✨</div>
+        <div>
+          <div class="neon-cardTitle">Trải nghiệm neon</div>
+          <div class="neon-cardText">Giao diện LED/Glow, cảm giác “sân khấu”.</div>
+        </div>
+      </div>
     </div>
 
-    <div class="welcome-actions">
-      <label class="welcome-check">
+    <div class="neon-actions">
+      <label class="neon-check">
         <input type="checkbox" id="welcomeDontShow" />
         <span>Không hiện lại</span>
       </label>
 
-      <div style="display:flex; gap:10px; width:100%">
-        <button type="button" id="btnWelcomeClose">Đóng</button>
-        <button type="button" id="btnWelcomeCreate">➕ Tạo phòng</button>
+      <div class="neon-btns">
+        <button id="btnWelcomeClose" class="neon-btn neon-btn--ghost" type="button">Để sau</button>
+        <button id="btnWelcomeCreate" class="neon-btn neon-btn--main" type="button">➕ Tạo phòng ngay</button>
       </div>
     </div>
   </div>
 </div>
 
 
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
 
-// ===== WELCOME MODAL =====
+// ===== WELCOME MODAL (NEON) =====
 const welcomeModal = document.getElementById("welcomeModal");
 const btnWelcomeClose = document.getElementById("btnWelcomeClose");
 const btnWelcomeCreate = document.getElementById("btnWelcomeCreate");
+const btnWelcomeX = document.getElementById("btnWelcomeX");
 const welcomeDontShow = document.getElementById("welcomeDontShow");
 
-// mở/đóng modal
 function openWelcome(){ welcomeModal?.classList.remove("hidden"); }
 function closeWelcome(){ welcomeModal?.classList.add("hidden"); }
 
-// hiện khi vào lobby (nếu chưa tắt)
 (function showWelcomeOnce(){
   const off = localStorage.getItem("lobby_welcome_off") === "1";
   if (!off) openWelcome();
 })();
 
-// click nền để đóng
-welcomeModal?.querySelector(".modal-backdrop")?.addEventListener("click", closeWelcome);
-
-// nút đóng
-btnWelcomeClose?.addEventListener("click", ()=>{
+function rememberIfChecked(){
   if (welcomeDontShow?.checked) localStorage.setItem("lobby_welcome_off","1");
+}
+
+welcomeModal?.querySelector(".modal-backdrop")?.addEventListener("click", ()=>{
+  rememberIfChecked();
   closeWelcome();
 });
 
-// nút tạo phòng => đóng welcome + mở create room modal (nếu bạn có)
+btnWelcomeClose?.addEventListener("click", ()=>{
+  rememberIfChecked();
+  closeWelcome();
+});
+
+btnWelcomeX?.addEventListener("click", ()=>{
+  rememberIfChecked();
+  closeWelcome();
+});
+
 btnWelcomeCreate?.addEventListener("click", ()=>{
-  if (welcomeDontShow?.checked) localStorage.setItem("lobby_welcome_off","1");
+  rememberIfChecked();
   closeWelcome();
 
-  // Nếu bạn đã làm modal tạo phòng:
-  // - nút mở: #btnOpenCreate
-  // - modal tạo phòng: #createRoomModal
+  // mở modal tạo phòng nếu bạn đã làm (id nút tạo phòng trong lobby)
   const btnOpenCreate = document.getElementById("btnOpenCreate");
   if (btnOpenCreate) btnOpenCreate.click();
 });
 
-// ESC để đóng
 document.addEventListener("keydown", (e)=>{
   if (!welcomeModal || welcomeModal.classList.contains("hidden")) return;
-  if (e.key === "Escape") closeWelcome();
+  if (e.key === "Escape") { rememberIfChecked(); closeWelcome(); }
 });
+
 
 
 // ===== CREATE ROOM MODAL =====
