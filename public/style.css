@@ -1473,3 +1473,23 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
   box-shadow: 0 0 26px rgba(95,168,255,.14);
 }
 .neon-btn:hover{ filter: brightness(1.10); }
+
+/* ===== CREATE ROOM COUNTDOWN ===== */
+button.is-loading{
+  pointer-events: none;
+  opacity: .9;
+}
+.countdown-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width: 34px;
+  height: 26px;
+  margin-left: 10px;
+  padding: 0 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.28);
+  font-weight: 900;
+}
+
