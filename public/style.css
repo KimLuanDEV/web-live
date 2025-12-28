@@ -1930,7 +1930,7 @@ button.is-loading{
 }
 
 .chat-input-overlay button{
-  width:48px;
+  width:36px;
   border-radius:14px;
   font-size:16px;
 }
@@ -1943,9 +1943,9 @@ button.is-loading{
 /* ===== QUICK CHAT ON VIDEO (FIX KEYBOARD) ===== */
 .chat-fab{
   position:absolute;
-  right:14px;
+  left:14px;
   bottom:14px;
-  width:44px;height:44px;
+  width:22px;height:22px;
   border-radius:999px;
   z-index:30;
   pointer-events:auto; /* ✅ quan trọng */
