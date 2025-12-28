@@ -246,6 +246,7 @@ socket.on("live-stop", ({ roomId }) => {
   }
   room.pendingRelease = false;
 
+  const old = room.broadcasterId;
   room.broadcasterId = socket.id;
 
        // ✅ Lưu profile host
