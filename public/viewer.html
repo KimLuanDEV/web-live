@@ -196,6 +196,20 @@ socket.on("live-stop", () => {
 });
 
 
+const quickInput = document.getElementById("quickChatInput");
+
+// ép focus khi chạm
+quickInput?.addEventListener("pointerdown", (e)=>{
+  e.stopPropagation();
+  quickInput.focus();
+});
+
+// fallback cho mobile cũ
+quickInput?.addEventListener("touchstart", ()=>{
+  quickInput.focus();
+});
+
+
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
