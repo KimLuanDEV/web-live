@@ -6,24 +6,65 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="./style.css">
 </head>
-<body>
-  <div class="wrap">
-    <div class="card">
-      <div class="topbar">
+<body class="lobby-page">
+  <div class="container lobby-shell">
+    <div class="card lobby-hero">
+      <div class="topbar" style="margin-bottom:6px">
         <div class="brand">
           <span class="brand__dot"></span>
           <div>
             <div class="brand__title">🏟️ SẢNH CHỜ</div>
-            <small>Danh sách host đang LIVE</small>
+            <small>Danh sách host đang LIVE • click để vào xem</small>
           </div>
         </div>
+
         <div class="pills">
-          <a class="btn" href="./index.html">➕ Tạo phòng</a>
-          <button id="refresh">🔄</button>
+          <a class="btn lobby-btn" href="./index.html">➕ Tạo phòng</a>
+          <button id="refresh" class="lobby-btn" title="Làm mới">🔄</button>
         </div>
       </div>
 
+      <div class="lobby-controls">
+        <div class="lobby-searchWrap">
+          <div class="lobby-searchIcon">🔎</div>
+          <input id="q" class="lobby-search" placeholder="Tìm theo Room ID hoặc tên host..." autocomplete="off" />
+          <button id="clearQ" class="lobby-clear" title="Xóa tìm kiếm" aria-label="Xóa">✕</button>
+        </div>
+
+        <div class="lobby-filters">
+          <button class="lobby-chipBtn is-active" data-filter="all">Tất cả</button>
+          <button class="lobby-chipBtn" data-filter="cohost">Có co-host</button>
+
+          <select id="sort" class="lobby-select" title="Sắp xếp">
+            <option value="viewers">🔥 Đông người xem</option>
+            <option value="new">🆕 Mới live</option>
+            <option value="old">⏱ Live lâu</option>
+          </select>
+        </div>
+
+        <div class="lobby-stats" aria-live="polite">
+          <div class="lobby-stat">
+            <div class="lobby-statLabel">Phòng đang live</div>
+            <div class="lobby-statVal" id="statRooms">0</div>
+          </div>
+          <div class="lobby-stat">
+            <div class="lobby-statLabel">Tổng viewers</div>
+            <div class="lobby-statVal" id="statViewers">0</div>
+          </div>
+          <div class="lobby-stat lobby-stat--right">
+            <div class="lobby-statLabel">Cập nhật</div>
+            <div class="lobby-statVal lobby-statTime" id="statTs">--:--:--</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
       <div id="empty" class="log">Chưa có phòng nào đang live.</div>
+
+      <!-- skeleton loading -->
+      <div id="skeleton" class="lobby-grid" style="display:none"></div>
+
       <div id="grid" class="lobby-grid"></div>
     </div>
   </div>
@@ -31,57 +72,215 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
+
 const grid = document.getElementById("grid");
 const empty = document.getElementById("empty");
+const skeleton = document.getElementById("skeleton");
 
-function pad(n){return String(n).padStart(2,"0")}
+const qEl = document.getElementById("q");
+const clearQ = document.getElementById("clearQ");
+const sortEl = document.getElementById("sort");
+
+const statRooms = document.getElementById("statRooms");
+const statViewers = document.getElementById("statViewers");
+const statTs = document.getElementById("statTs");
+
+let __rooms = [];
+let __filter = "all";
+let __q = "";
+let __ts = null;
+
+function pad(n){ return String(n).padStart(2,"0"); }
 function hms(ms){
   const s = Math.floor(ms/1000);
-  return `${pad(s/3600|0)}:${pad((s%3600)/60|0)}:${pad(s%60)}`
+  return `${pad(s/3600|0)}:${pad((s%3600)/60|0)}:${pad(s%60)}`;
+}
+function fmtTime(ts){
+  const d = new Date(ts);
+  return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+
+function setActiveFilter(btn){
+  document.querySelectorAll(".lobby-chipBtn").forEach(b=>b.classList.remove("is-active"));
+  btn.classList.add("is-active");
+}
+
+function roomMatches(r, q){
+  if (!q) return true;
+  q = q.trim().toLowerCase();
+  const roomId = String(r.roomId || "").toLowerCase();
+  const hostName = String(r.host?.name || "").toLowerCase();
+  return roomId.includes(q) || hostName.includes(q);
+}
+
+function applyFilterSort(list){
+  let out = list.slice();
+
+  // filter
+  if (__filter === "cohost") out = out.filter(r => !!r.hasGuest);
+
+  // search
+  if (__q) out = out.filter(r => roomMatches(r, __q));
+
+  // sort
+  const mode = sortEl.value;
+  if (mode === "viewers") {
+    out.sort((a,b)=> (b.viewers - a.viewers) || (b.liveStartTs - a.liveStartTs));
+  } else if (mode === "new") {
+    out.sort((a,b)=> (b.liveStartTs - a.liveStartTs) || (b.viewers - a.viewers));
+  } else if (mode === "old") {
+    out.sort((a,b)=> (a.liveStartTs - b.liveStartTs) || (b.viewers - a.viewers));
+  }
+  return out;
+}
+
+function renderStats(list){
+  const totalRooms = list.length;
+  const totalViewers = list.reduce((s,r)=> s + (Number(r.viewers)||0), 0);
+
+  statRooms.textContent = totalRooms;
+  statViewers.textContent = totalViewers;
+  statTs.textContent = __ts ? fmtTime(__ts) : "--:--:--";
+}
+
+function renderSkeleton(){
+  skeleton.style.display = "grid";
+  grid.style.display = "none";
+  empty.style.display = "none";
+
+  skeleton.innerHTML = "";
+  for (let i=0;i<8;i++){
+    const d = document.createElement("div");
+    d.className = "lobby-skel";
+    d.innerHTML = `
+      <div class="lobby-skelHead">
+        <div class="lobby-skelAva"></div>
+        <div style="flex:1">
+          <div class="lobby-skelLine w60"></div>
+          <div class="lobby-skelLine w40" style="margin-top:8px"></div>
+        </div>
+        <div class="lobby-skelPill"></div>
+      </div>
+      <div class="lobby-skelRow">
+        <div class="lobby-skelChip"></div>
+        <div class="lobby-skelChip"></div>
+      </div>
+      <div class="lobby-skelLine w35" style="margin-top:12px"></div>
+    `;
+    skeleton.appendChild(d);
+  }
+}
+
+function hideSkeleton(){
+  skeleton.style.display = "none";
+  grid.style.display = "";
 }
 
 function render(list){
-  grid.innerHTML = "";
-  empty.style.display = list.length ? "none" : "block";
+  const show = applyFilterSort(list);
+  renderStats(list);
 
-  list.forEach(r => {
+  grid.innerHTML = "";
+  empty.style.display = show.length ? "none" : "block";
+  hideSkeleton();
+
+  show.forEach(r => {
     const a = document.createElement("a");
-    a.className = "lobby-item";
+    a.className = "lobby-card";
     a.href = `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
 
     const hostName   = r.host?.name   || "Host";
     const hostAvatar = r.host?.avatar || `https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360`;
 
+    const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
+
     a.innerHTML = `
-      <div class="lobby-head">
+      <div class="lobby-cardGlow"></div>
+
+      <div class="lobby-cardTop">
         <div class="lobby-host">
-          <img class="lobby-ava" src="${hostAvatar}" alt="avatar">
+          <img class="lobby-ava" src="${hostAvatar}" alt="avatar" loading="lazy">
           <div class="lobby-hostinfo">
-            <div class="lobby-hostname">${hostName}</div>
-            <div class="lobby-roomid">🎥 ${r.roomId}</div>
+            <div class="lobby-hostname">${escapeHtml(hostName)}</div>
+            <div class="lobby-roomid">🎥 ${escapeHtml(r.roomId)}</div>
           </div>
         </div>
 
         <div class="lobby-badges">
-          <span class="badge badge--live">LIVE</span>
-          ${r.hasGuest ? `<span class="badge badge--info">Co-host</span>` : ``}
+          <span class="lobby-livePill"><span class="lobby-liveDot"></span> LIVE</span>
+          ${r.hasGuest ? `<span class="badge badge--info" style="margin:0">Co-host</span>` : ``}
         </div>
       </div>
 
-      <div class="lobby-meta">
-        <span class="lobby-chip">👁 ${r.viewers}</span>
-        <span class="lobby-chip">⏱ ${hms(Date.now() - r.liveStartTs)}</span>
+      <div class="lobby-cardMeta">
+        <span class="lobby-chip">👁 <b>${Number(r.viewers)||0}</b></span>
+        <span class="lobby-chip">⏱ <b>${hms(liveFor)}</b></span>
       </div>
 
-      <div class="lobby-cta">Vào xem ➜</div>
+      <div class="lobby-cardFoot">
+        <div class="lobby-cta">Vào xem</div>
+        <div class="lobby-arrow">➜</div>
+      </div>
     `;
+
     grid.appendChild(a);
   });
 }
 
-socket.emit("lobby-get");
-socket.on("lobby-update", d => render(d.rooms || []));
-document.getElementById("refresh").onclick = () => socket.emit("lobby-get");
+function escapeHtml(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+/* ===== events ===== */
+document.querySelectorAll(".lobby-chipBtn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    __filter = btn.dataset.filter || "all";
+    setActiveFilter(btn);
+    render(__rooms);
+  });
+});
+
+sortEl.addEventListener("change", ()=> render(__rooms));
+
+let __qTimer = null;
+qEl.addEventListener("input", ()=>{
+  clearTimeout(__qTimer);
+  __qTimer = setTimeout(()=>{
+    __q = qEl.value || "";
+    clearQ.style.opacity = __q.trim() ? "1" : ".45";
+    render(__rooms);
+  }, 80);
+});
+
+clearQ.addEventListener("click", ()=>{
+  qEl.value = "";
+  __q = "";
+  clearQ.style.opacity = ".45";
+  render(__rooms);
+  qEl.focus();
+});
+
+/* ===== socket ===== */
+function requestLobby(){
+  renderSkeleton();
+  socket.emit("lobby-get");
+}
+
+socket.on("lobby-update", d => {
+  __rooms = (d && d.rooms) ? d.rooms : [];
+  __ts = d && d.ts ? d.ts : Date.now();
+  render(__rooms);
+});
+
+document.getElementById("refresh").onclick = requestLobby;
+
+// load
+requestLobby();
 setInterval(() => socket.emit("lobby-get"), 3000);
 </script>
 </body>
