@@ -362,6 +362,8 @@ const ncfBg = ncf?.querySelector(".ncf__bg");
 const ncfOk = document.getElementById("ncfOk");
 const ncfCancel = document.getElementById("ncfCancel");
 const ncfX = document.getElementById("ncfX");
+const viewerMicPcs = new Map();
+
 
 function openNcf(){
   if (!ncf) return;
@@ -441,6 +443,37 @@ if(nameFromLobby){
     };
 
     const socket = io();
+
+socket.on("viewer-mic-offer", async ({ viewerId, description }) => {
+  const pc = new RTCPeerConnection(iceConfig);
+  viewerMicPcs.set(viewerId, pc);
+
+  pc.ontrack = e => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    document.body.appendChild(audio);
+  };
+
+  pc.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("candidate", {
+        to: viewerId,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  await pc.setRemoteDescription(description);
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+
+  socket.emit("viewer-mic-answer", {
+    to: viewerId,
+    description: pc.localDescription
+  });
+});
+
 
 
 const viewerMicReq = document.getElementById("viewerMicReq");

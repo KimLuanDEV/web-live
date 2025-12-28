@@ -162,6 +162,7 @@ const btnRequestMic = document.getElementById("btnRequestMic");
 
 let micStream = null;
 let micTrack = null;
+let micPc = null;
 
 btnRequestMic.onclick = () => {
   socket.emit("viewer-request-mic", { roomId });
@@ -169,30 +170,58 @@ btnRequestMic.onclick = () => {
   btnRequestMic.textContent = "⏳ Đang xin mic...";
 };
 
+
+socket.on("viewer-mic-answer", async ({ description }) => {
+  if (!micPc) return;
+  await micPc.setRemoteDescription(description);
+});
+
+socket.on("candidate", async ({ candidate }) => {
+  if (micPc) {
+    await micPc.addIceCandidate(candidate);
+  }
+});
+
+
 // Host duyệt
 socket.on("viewer-mic-approved", async () => {
   try {
     micStream = await navigator.mediaDevices.getUserMedia({
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true
-      },
+      audio: true,
       video: false
     });
 
     micTrack = micStream.getAudioTracks()[0];
 
-    // gửi audio track lên TẤT CẢ peer (host)
-    for (const pc of pcs.values()) {
-      pc.addTrack(micTrack, micStream);
-    }
+    micPc = new RTCPeerConnection(iceConfig);
+
+    micStream.getTracks().forEach(track => {
+      micPc.addTrack(track, micStream);
+    });
+
+    micPc.onicecandidate = e => {
+      if (e.candidate) {
+        socket.emit("candidate", {
+          to: broadcasterId,
+          candidate: e.candidate
+        });
+      }
+    };
+
+    const offer = await micPc.createOffer();
+    await micPc.setLocalDescription(offer);
+
+    socket.emit("viewer-mic-offer", {
+      roomId,
+      description: micPc.localDescription
+    });
 
     btnRequestMic.textContent = "🎙️ Mic đang bật";
   } catch (e) {
     alert("Không mở được mic");
   }
 });
+
 
 // Host tắt / bật mic
 socket.on("viewer-set-mic", ({ mute }) => {

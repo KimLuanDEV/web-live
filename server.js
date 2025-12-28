@@ -491,6 +491,16 @@ socket.on("send-gift", ({ roomId, gift }) => {
 
 // ===== VIEWER MIC-ONLY =====
 
+socket.on("viewer-mic-offer", ({ roomId, description }) => {
+  const room = rooms.get(roomId);
+  if (!room || !room.broadcasterId) return;
+
+  io.to(room.broadcasterId).emit("viewer-mic-offer", {
+    viewerId: socket.id,
+    description
+  });
+});
+
 // Viewer xin bật mic
 socket.on("viewer-request-mic", ({ roomId }) => {
   const room = rooms.get(roomId);
