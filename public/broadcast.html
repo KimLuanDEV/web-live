@@ -175,7 +175,9 @@
     const roomId = params.get("room") || "abc123";
    
 
-const nameFromLobby = params.get("name");
+// ✅ nhận tên từ Lobby
+const nameFromLobby = (params.get("name") || "").trim();
+
 if(nameFromLobby){
   document.getElementById("hostNameInput").value = nameFromLobby;
 }
@@ -1150,6 +1152,17 @@ btnUpdateProfile.onclick = () => {
   toast("✅ Đã cập nhật tên host");
 };
 
+// ✅ nếu đi từ Lobby qua thì auto fill + auto update luôn
+if (nameFromLobby) {
+  hostNameInput.value = nameFromLobby.slice(0, 20);
+
+  // đợi socket connect xong rồi emit
+  if (socket.connected) {
+    btnUpdateProfile.onclick();
+  } else {
+    socket.on("connect", () => btnUpdateProfile.onclick());
+  }
+}
 
 
 
