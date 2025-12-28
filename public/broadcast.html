@@ -132,6 +132,11 @@
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
+
+  <div id="viewerMicReq" class="log"></div>
+<button id="btnAllowViewerMic">🎙️ Cho nói</button>
+<button id="btnDenyViewerMic">❌ Từ chối</button>
+
 </div>
 
 
@@ -1391,6 +1396,26 @@ if (nameFromLobby) {
     socket.on("connect", () => btnUpdateProfile.onclick());
   }
 }
+
+
+let pendingViewerMic = null;
+
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  pendingViewerMic = viewerId;
+  document.getElementById("viewerMicReq").textContent =
+    "🎤 Viewer xin bật mic";
+});
+
+document.getElementById("btnAllowViewerMic").onclick = () => {
+  socket.emit("host-allow-viewer-mic", {
+    roomId,
+    viewerId: pendingViewerMic
+  });
+};
+
+document.getElementById("btnDenyViewerMic").onclick = () => {
+  pendingViewerMic = null;
+};
 
 
 

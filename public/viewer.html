@@ -27,6 +27,9 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
+<button id="btnRequestMic">🎙️ Xin bật mic</button>
+<button id="btnMuteSelf" disabled>🔇 Tắt mic</button>
+
 <small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
   Bấm để mở trang Khách và gửi yêu cầu lên Host.
 </small>
@@ -722,6 +725,56 @@ socket.on("host-profile-update", (profile) => {
 
   document.querySelectorAll(".host-avatar")
     .forEach(img => img.src = getAvatarByName(profile.name));
+});
+
+
+let micStream = null;
+let micEnabled = false;
+
+const btnRequestMic = document.getElementById("btnRequestMic");
+const btnMuteSelf = document.getElementById("btnMuteSelf");
+
+btnRequestMic.onclick = async () => {
+  if (micEnabled) return;
+
+  micStream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false
+  });
+
+  micEnabled = true;
+  btnMuteSelf.disabled = false;
+
+  socket.emit("viewer-request-mic", { roomId });
+};
+
+btnMuteSelf.onclick = () => {
+  if (!micStream) return;
+  micStream.getAudioTracks().forEach(t => t.enabled = !t.enabled);
+};
+
+
+socket.on("viewer-mic-approved", async () => {
+  const pc = new RTCPeerConnection(await getIce());
+
+  micStream.getTracks().forEach(track =>
+    pc.addTrack(track, micStream)
+  );
+
+  pc.onicecandidate = e => {
+    if (e.candidate) socket.emit("ice", {
+      to: hostSocketId,
+      candidate: e.candidate
+    });
+  };
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+
+  socket.emit("offer", {
+    to: hostSocketId,
+    description: pc.localDescription
+  });
 });
 
 
