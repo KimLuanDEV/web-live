@@ -647,13 +647,11 @@ if (btnBackLobby) btnBackLobby.onclick = () => { location.href = "/lobby.html"; 
 
 
 socket.on("host-profile-update", (profile) => {
-  const nameEls = document.querySelectorAll(".host-name");
-  const avaEls  = document.querySelectorAll(".host-avatar");
+  document.querySelectorAll(".host-name")
+    .forEach(el => el.textContent = profile.name);
 
-  nameEls.forEach(el => el.textContent = profile.name || "Host");
-  avaEls.forEach(el => {
-    el.src = profile.avatar || `https://i.pravatar.cc/80?u=${profile.name}`;
-  });
+  document.querySelectorAll(".host-avatar")
+    .forEach(img => img.src = getAvatarByName(profile.name));
 });
 
 

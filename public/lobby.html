@@ -50,7 +50,7 @@ function render(list){
     a.href = `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
 
     const hostName   = r.host?.name   || "Host";
-    const hostAvatar = r.host?.avatar || `https://i.pravatar.cc/80?u=${encodeURIComponent(hostName)}`;
+    const hostAvatar = r.host?.avatar || `https://static.vecteezy.com/system/resources/previews/011/016/931/original/live-streaming-icon-for-the-broadcast-system-live-streaming-icon-design-with-red-and-white-colors-live-streaming-image-with-text-effect-red-and-white-gradient-colors-free-png.png`;
 
     a.innerHTML = `
       <div class="lobby-head">

@@ -85,20 +85,21 @@ io.on("connection", (socket) => {
 
 
 
-  socket.on("host-update-profile", ({ roomId, name, avatar }) => {
+socket.on("host-update-profile", ({ roomId, name }) => {
   const room = rooms.get(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return;
 
   room.hostProfile = {
     name: String(name || "Host").slice(0, 20),
-    avatar: String(avatar || "").slice(0, 500),
+    avatar: "", // ❌ không dùng nữa
     ts: Date.now(),
   };
 
   io.to(roomId).emit("host-profile-update", room.hostProfile);
   emitLobbyUpdate();
 });
+
 
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
 socket.on("lobby-get", () => {

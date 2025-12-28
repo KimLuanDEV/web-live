@@ -12,15 +12,15 @@
       <h1>📱 Host</h1>
 
       <div class="card">
-  <div class="badge badge--info">👤 Hồ sơ Host</div>
+  <div class="badge badge--info">👤 Cập nhật tên hiển thị ngoài Lobby</div>
   <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
     <img id="hostAvatarPreview"
-         src="https://i.pravatar.cc/80"
+         src="https://static.vecteezy.com/system/resources/previews/011/016/931/original/live-streaming-icon-for-the-broadcast-system-live-streaming-icon-design-with-red-and-white-colors-live-streaming-image-with-text-effect-red-and-white-gradient-colors-free-png.png"
          style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid #fff3">
     
     <div style="flex:1">
       <input id="hostNameInput" placeholder="Tên host..." />
-      <input id="hostAvatarInput" type="file" accept="image/*" />
+      
     </div>
 
     <button id="btnUpdateProfile">💾 Lưu</button>
@@ -1132,40 +1132,20 @@ socket.on("gift", ({ gift })=>{
 
 
 const hostNameInput = document.getElementById("hostNameInput");
-const hostAvatarInput = document.getElementById("hostAvatarInput");
-const hostAvatarPreview = document.getElementById("hostAvatarPreview");
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");
-
-let hostAvatarBase64 = "";
-
-hostAvatarInput.onchange = () => {
-  const file = hostAvatarInput.files[0];
-  if (!file) return;
-
-  if (file.size > 300 * 1024) {
-    alert("Ảnh tối đa 300KB");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.onload = () => {
-    hostAvatarBase64 = reader.result;
-    hostAvatarPreview.src = hostAvatarBase64;
-  };
-  reader.readAsDataURL(file);
-};
 
 btnUpdateProfile.onclick = () => {
   const name = hostNameInput.value.trim().slice(0, 20);
+  if (!name) return toast("❌ Chưa nhập tên");
 
   socket.emit("host-update-profile", {
     roomId,
-    name,
-    avatar: hostAvatarBase64
+    name
   });
 
-  toast("✅ Đã cập nhật hồ sơ host");
+  toast("✅ Đã cập nhật tên host");
 };
+
 
 
 
