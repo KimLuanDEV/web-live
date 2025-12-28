@@ -118,10 +118,22 @@
   <div class="badge badge--info">💬 Chat (Live)</div>
 
   <div class="chatform">
-    <input id="chatName" value="Host" />
-    <input id="chatText" placeholder="Nhập tin nhắn..." />
-    <button id="chatSend" class="full">Gửi</button>
+  <div class="host-profile">
+    <img id="hostAvatarImg" class="host-ava" src="" alt="avatar">
+    <div class="host-profile__right">
+      <input id="hostNameInput" class="host-name" placeholder="Tên host..." />
+      <div class="host-profile__actions">
+        <label class="btn mini" for="hostAvatarFile">🖼️ Avatar</label>
+        <input id="hostAvatarFile" type="file" accept="image/*" hidden />
+        <button id="hostProfileSave" type="button" class="btn mini">💾 Lưu</button>
+      </div>
+    </div>
   </div>
+
+  <input id="chatText" placeholder="Nhập tin nhắn..." />
+  <button id="chatSend" class="full">Gửi</button>
+</div>
+
 
   <div class="pin-form" id="pinForm">
     <input id="pinText" class="pin-input" placeholder="📌 Nhập nội dung ghim (Host)..." />
@@ -157,6 +169,68 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
    
+const hostAvatarImg = document.getElementById("hostAvatarImg");
+const hostNameInput = document.getElementById("hostNameInput");
+const hostAvatarFile = document.getElementById("hostAvatarFile");
+const hostProfileSave = document.getElementById("hostProfileSave");
+
+function applyHostProfileToUI(p){
+  const name = (p?.name || "Host").trim().slice(0,20) || "Host";
+  const avatar = (p?.avatar || "").trim();
+  hostNameInput.value = name;
+  hostAvatarImg.src = avatar || `https://i.pravatar.cc/80?u=${encodeURIComponent(name)}`;
+}
+
+function pushHostProfileUpdate(){
+  const name = (hostNameInput.value || "Host").trim().slice(0,20) || "Host";
+  const avatar = (localStorage.getItem("hostAvatar") || "").trim();
+  localStorage.setItem("hostName", name);
+
+  const profile = { name, avatar };
+  __hostProfile = profile;
+
+  socket.emit("host-profile-update", { roomId, profile }); // ✅ realtime lên lobby
+}
+
+applyHostProfileToUI(__hostProfile);
+
+// đổi tên: cập nhật sau khi gõ 400ms
+let __nameT;
+hostNameInput.addEventListener("input", () => {
+  clearTimeout(__nameT);
+  __nameT = setTimeout(pushHostProfileUpdate, 400);
+});
+
+// nút lưu (manual)
+hostProfileSave.onclick = () => {
+  pushHostProfileUpdate();
+  toast("✅ Đã cập nhật tên/avatar");
+};
+
+// upload avatar thật (convert base64 dataURL)
+hostAvatarFile.addEventListener("change", () => {
+  const file = hostAvatarFile.files?.[0];
+  if (!file) return;
+  if (!file.type.startsWith("image/")) return alert("File không phải ảnh!");
+
+  // giới hạn nhẹ để tránh base64 quá to
+  if (file.size > 800 * 1024) {
+    alert("Ảnh hơi lớn. Hãy chọn ảnh < 800KB để load nhanh nhé.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    const dataUrl = String(reader.result || "");
+    localStorage.setItem("hostAvatar", dataUrl);
+    hostAvatarImg.src = dataUrl;
+
+    // đẩy realtime lên lobby
+    pushHostProfileUpdate();
+    toast("🖼️ Đã cập nhật avatar");
+  };
+  reader.readAsDataURL(file);
+});
 
 
 
@@ -520,11 +594,20 @@ socket.on("reaction", (msg)=>{
 
 const hostProfile = getHostProfile();
 
+function getHostProfileFromStorage(){
+  const name = (localStorage.getItem("hostName") || "Host").trim().slice(0,20) || "Host";
+  const avatar = (localStorage.getItem("hostAvatar") || "").trim();
+  return { name, avatar };
+}
+
+let __hostProfile = getHostProfileFromStorage();
+
 socket.emit("join-room", {
   roomId,
   role: "broadcaster",
-  profile: hostProfile
+  profile: __hostProfile
 });
+
 
 
     // Peer asks HOST to ICE-restart this connection (HOST is offerer for viewers)
@@ -980,7 +1063,7 @@ socket.on("pin-note-update", (note)=> renderPin(note));
 
 
     chatSend.onclick = () => {
-      const name = (chatName.value || "Host").trim();
+      const name = (hostNameInput.value || "Host").trim();
       const text = chatText.value.trim();
       if (!text) return;
 

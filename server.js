@@ -44,7 +44,7 @@ function getLobbyList() {
     if (room.broadcasterId && room.liveStartTs) {
       list.push({
   roomId,
-  viewers: room.viewers.size,
+  viewers: room.viewers.size || 0,
   liveStartTs: room.liveStartTs,
   hasGuest: !!room.guestId,
   host: room.hostProfile || null, // 👈 thêm
@@ -82,6 +82,27 @@ app.get("/ice", async (_req, res) => {
 });
 
 io.on("connection", (socket) => {
+
+// ✅ Host update profile realtime (name/avatar)
+socket.on("host-profile-update", ({ roomId, profile }) => {
+  if (!roomId) return;
+  const room = getRoom(roomId);
+  if (room.broadcasterId !== socket.id) return; // chỉ host
+
+  const name = String(profile?.name || "").trim().slice(0, 20);
+  const avatar = String(profile?.avatar || "").trim().slice(0, 200000);
+
+  room.hostProfile = {
+    name: name || (room.hostProfile?.name || "Host"),
+    avatar: avatar || (room.hostProfile?.avatar || ""),
+    ts: Date.now(),
+  };
+
+  emitLobbyUpdate();               // Lobby đổi ngay
+  io.to(roomId).emit("host-profile-update", room.hostProfile); // (tuỳ bạn dùng trong viewer)
+});
+
+
 
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
 socket.on("lobby-get", () => {
@@ -188,14 +209,16 @@ socket.on("live-stop", ({ roomId }) => {
       const old = room.broadcasterId;
       room.broadcasterId = socket.id;
 
-       // ✅ Lưu profile host
-    const name = String(profile?.name || "").trim().slice(0, 20);
-    const avatar = String(profile?.avatar || "").trim().slice(0, 300);
-    room.hostProfile = {
-      name: name || "Host",
-      avatar: avatar || "",
-      ts: Date.now(),
-    };
+    // ✅ Lưu profile host (lúc join)
+const name = String(profile?.name || "").trim().slice(0, 20);
+const avatar = String(profile?.avatar || "").trim().slice(0, 200000); // dataURL có thể dài
+room.hostProfile = {
+  name: name || "Host",
+  avatar: avatar || "",
+  ts: Date.now(),
+};
+emitLobbyUpdate();
+
 
       if (old && old !== socket.id) {
         io.to(roomId).emit("broadcaster-changed");
@@ -205,6 +228,7 @@ socket.on("live-stop", ({ roomId }) => {
       socket.emit("room-viewers", Array.from(room.viewers));
       socket.to(roomId).emit("broadcaster-online");
       emitViewerCount(roomId);
+      emitLobbyUpdate();
       // If already has guest, tell host
       if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
     }
