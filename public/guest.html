@@ -828,36 +828,56 @@ socket.on("host-profile-update", (profile) => {
 });
 
 const chatFab = document.getElementById("chatFab");
+const chatInputOverlay = document.getElementById("chatInputOverlay");
+const quickChatInput = document.getElementById("quickChatInput");
+const quickChatSend = document.getElementById("quickChatSend");
 
-const quickInput = document.getElementById("quickChatInput");
-const quickSend = document.getElementById("quickChatSend");
+// ✅ iOS/Android: phải focus trong cùng “user gesture”
+function openQuickChat(){
+  chatInputOverlay.classList.remove("hidden");
+  quickChatInput.focus({ preventScroll: false });
+  quickChatInput.click();         // ✅ ép bật keyboard (Android)
+  quickChatInput.scrollIntoView({ block:"nearest" });
+}
 
-chatFab?.addEventListener("click", () => {
-  chatOverlay.classList.toggle("hidden");
+function closeQuickChat(){
+  chatInputOverlay.classList.add("hidden");
+  quickChatInput.blur();
+}
 
-  // 📱 QUAN TRỌNG: focus để bật bàn phím mobile
-  setTimeout(() => quickInput?.focus(), 50);
+chatFab?.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (chatInputOverlay.classList.contains("hidden")) openQuickChat();
+  else closeQuickChat();
 });
 
-// gửi chat
-quickSend?.addEventListener("click", sendQuickChat);
-quickInput?.addEventListener("keydown", (e) => {
+quickChatSend?.addEventListener("pointerdown", (e)=>{
+  e.preventDefault();
+  sendQuickChat();
+});
+
+quickChatInput?.addEventListener("keydown", (e)=>{
   if (e.key === "Enter") sendQuickChat();
 });
 
 function sendQuickChat(){
-  const text = quickInput.value.trim();
+  const text = (quickChatInput.value || "").trim();
   if (!text) return;
 
   socket.emit("chat", {
     roomId,
-    name: chatName?.value || "User",
-    text
+    name: (chatName?.value || "User").trim(),
+    text,
+    // role tùy trang bạn set:
+    // role: "host" / "viewer" / "guest"
   });
 
-  quickInput.value = "";
-  chatOverlay.classList.add("hidden");
+  quickChatInput.value = "";
+  closeQuickChat();
 }
+
 
 
   </script>
