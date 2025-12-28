@@ -10,6 +10,28 @@
   <div class="container">
     <div class="card">
       <h1>📱 Host</h1>
+
+<div class="card" style="margin-bottom:12px">
+  <div class="badge badge--info">👤 Hồ sơ Host (Live)</div>
+
+  <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap">
+    <img id="hostAvatarImg"
+         src=""
+         style="width:64px;height:64px;border-radius:50%;object-fit:cover;border:2px solid rgba(255,255,255,.3)">
+
+    <div style="flex:1">
+      <input id="hostNameInput" placeholder="Tên host hiển thị" />
+      <small style="opacity:.7">Đổi tên sẽ cập nhật ngay cho người xem</small>
+    </div>
+
+    <label class="btn" style="width:auto;cursor:pointer">
+      📷 Đổi avatar
+      <input id="hostAvatarInput" type="file" accept="image/*" hidden>
+    </label>
+  </div>
+</div>
+
+
       <hr />
 
       <div class="row">
@@ -1113,6 +1135,52 @@ socket.on("gift", ({ gift })=>{
   spawnGift(gift.type);
 });
 
+
+
+// ===== HOST PROFILE LIVE UPDATE =====
+const hostNameInput   = document.getElementById("hostNameInput");
+const hostAvatarInput = document.getElementById("hostAvatarInput");
+const hostAvatarImg   = document.getElementById("hostAvatarImg");
+
+// load từ localStorage
+function loadHostProfileUI(){
+  const name = localStorage.getItem("hostName") || "Host";
+  const avatar = localStorage.getItem("hostAvatar") ||
+    `https://i.pravatar.cc/80?u=${encodeURIComponent(name)}`;
+
+  hostNameInput.value = name;
+  hostAvatarImg.src = avatar;
+}
+loadHostProfileUI();
+
+function emitHostProfile(){
+  const profile = {
+    name: localStorage.getItem("hostName") || "Host",
+    avatar: localStorage.getItem("hostAvatar") || ""
+  };
+  socket.emit("host-update-profile", { roomId, profile });
+}
+
+// đổi tên realtime
+hostNameInput.addEventListener("input", () => {
+  const name = hostNameInput.value.trim().slice(0,20) || "Host";
+  localStorage.setItem("hostName", name);
+  emitHostProfile();
+});
+
+// upload avatar
+hostAvatarInput.addEventListener("change", () => {
+  const file = hostAvatarInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    localStorage.setItem("hostAvatar", reader.result);
+    hostAvatarImg.src = reader.result;
+    emitHostProfile();
+  };
+  reader.readAsDataURL(file);
+});
 
 
   </script>

@@ -804,6 +804,12 @@ socket.on("gift", ({ gift })=>{
 });
 
 
+socket.on("host-profile-update", (profile) => {
+  if (!profile) return;
+  const name = profile.name || "Host";
+  document.querySelector(".live-overlay b").textContent = name;
+});
+
   </script>
 </body>
 </html>

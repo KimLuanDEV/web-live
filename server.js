@@ -83,6 +83,27 @@ app.get("/ice", async (_req, res) => {
 
 io.on("connection", (socket) => {
 
+
+  // ===== HOST UPDATE PROFILE (LIVE) =====
+socket.on("host-update-profile", ({ roomId, profile }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  room.hostProfile = {
+    name: String(profile?.name || "Host").slice(0,20),
+    avatar: String(profile?.avatar || "").slice(0,500),
+    ts: Date.now()
+  };
+
+  // cập nhật cho viewer + guest
+  io.to(roomId).emit("host-profile-update", room.hostProfile);
+
+  // cập nhật lobby
+  emitLobbyUpdate();
+});
+
+
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
 socket.on("lobby-get", () => {
   socket.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
