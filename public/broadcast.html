@@ -290,6 +290,12 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
+let hostToken = localStorage.getItem("host_token");
+if (!hostToken) {
+  hostToken = crypto.randomUUID();
+  localStorage.setItem("host_token", hostToken);
+}
+
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -774,7 +780,8 @@ const hostProfile = getHostProfile();
 socket.emit("join-room", {
   roomId,
   role: "broadcaster",
-  profile: hostProfile
+  profile: { name },
+  token: hostToken, // ⭐
 });
 
 

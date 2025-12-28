@@ -25,7 +25,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null, hostProfile: null, });
+    rooms.set(roomId, { broadcasterId: null,  broadcasterToken: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null, hostProfile: null, });
   }
   return rooms.get(roomId);
 }
@@ -227,16 +227,36 @@ const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
 
     socket.join(key);
     socket.data.roomId = key;
-   
+    socket.data.role = role;
 
-    const room = getRoom(roomId);
+    const room = getRoom(key);
 
-    if (role === "broadcaster") {
-  // ❌ ĐÃ CÓ HOST → CHẶN
-  if (room.broadcasterId && room.broadcasterId !== socket.id) {
+   if (role === "broadcaster") {
+  // ✅ host reconnect (reload)
+  if (
+    room.broadcasterToken &&
+    token &&
+    room.broadcasterToken === token
+  ) {
+    room.broadcasterId = socket.id;
+  }
+  // ❌ host khác chiếm room
+  else if (room.broadcasterId && room.broadcasterId !== socket.id) {
     socket.emit("room-error", { reason: "HOST_EXISTS" });
     return;
   }
+  // ✅ host mới hoàn toàn
+  else {
+    room.broadcasterId = socket.id;
+    room.broadcasterToken = token;
+  }
+
+  room.hostProfile = {
+    name: profile?.name || "Host",
+    ts: Date.now(),
+  };
+}
+
 
   const old = room.broadcasterId;
   room.broadcasterId = socket.id;
@@ -445,18 +465,20 @@ socket.on("send-gift", ({ roomId, gift }) => {
       }
     }
 
-    if (role === "broadcaster") {
-      if (room.broadcasterId === socket.id) {
-        room.broadcasterId = null;
-        room.liveStartTs = null;
-        room.hostProfile = null;
+   if (role === "broadcaster") {
+  const token = room.broadcasterToken;
 
-        emitLobbyUpdate();
-
-        io.to(roomId).emit("live-stop");
-        io.to(roomId).emit("broadcaster-offline");
-      }
+  setTimeout(() => {
+    // nếu host chưa reconnect
+    if (room.broadcasterToken === token && !room.broadcasterId) {
+      room.broadcasterToken = null;
+      room.liveStartTs = null;
+      room.hostProfile = null;
+      emitLobbyUpdate();
     }
+  }, 10000); // ⏱ 10 giây chờ reconnect
+}
+
 
     if (role === "guest") {
       if (room.guestId === socket.id) {
