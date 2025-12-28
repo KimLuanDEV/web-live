@@ -1364,6 +1364,13 @@ socket.on("gift", ({ gift })=>{
   spawnGift(gift.type);
 });
 
+socket.on("room-error", (err)=>{
+  if (err?.reason === "HOST_EXISTS") {
+    alert("❌ Room này đã có host đang live!");
+    window.location.href = "/lobby.html";
+  }
+});
+
 
 const hostNameInput = document.getElementById("hostNameInput");
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");

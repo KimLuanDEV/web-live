@@ -85,6 +85,21 @@ app.get("/ice", async (_req, res) => {
 io.on("connection", (socket) => {
 
 
+// ===== CHECK ROOM ID EXIST =====
+socket.on("check-room-available", ({ roomId }, cb) => {
+  if (!roomId) return cb({ ok: false, reason: "INVALID" });
+
+  const room = rooms.get(roomId);
+
+  // đã có host hoặc đang live
+  if (room && room.broadcasterId) {
+    return cb({ ok: false, reason: "EXIST" });
+  }
+
+  return cb({ ok: true });
+});
+
+
 
 socket.on("host-update-profile", ({ roomId, name }) => {
   const room = rooms.get(roomId);
@@ -204,8 +219,15 @@ socket.on("live-stop", ({ roomId }) => {
     const room = getRoom(roomId);
 
     if (role === "broadcaster") {
-      const old = room.broadcasterId;
-      room.broadcasterId = socket.id;
+  // ❌ ĐÃ CÓ HOST → CHẶN
+  if (room.broadcasterId && room.broadcasterId !== socket.id) {
+    socket.emit("room-error", { reason: "HOST_EXISTS" });
+    return;
+  }
+
+  const old = room.broadcasterId;
+  room.broadcasterId = socket.id;
+
 
        // ✅ Lưu profile host
     const name = String(profile?.name || "").trim().slice(0, 20);

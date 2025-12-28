@@ -295,35 +295,45 @@ btnConfirmRoom?.addEventListener("click", ()=>{
   const name = (hostNameInput.value || "").trim();
 
   if(!room){
-    alert("Vui lòng nhập Room ID");
+    alert("⚠️ Vui lòng nhập Room ID");
     roomInput.focus();
     return;
   }
 
-  const url = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
+  // 👉 CHECK TRÙNG ROOM TRƯỚC
+  socket.emit("check-room-available", { roomId: room }, (res)=>{
+    if (!res?.ok) {
+      if (res.reason === "EXIST") {
+        alert("❌ Room ID đã tồn tại hoặc đang LIVE.\nVui lòng chọn ID khác!");
+      } else {
+        alert("❌ Room ID không hợp lệ");
+      }
+      return;
+    }
 
-  // khóa UI modal tạo phòng
-  btnConfirmRoom.classList.add("is-loading");
-  if (btnCancelRoom) btnCancelRoom.disabled = true;
-  roomInput.disabled = true;
-  hostNameInput.disabled = true;
+    // ===== ROOM OK → MỚI CHO VÀO =====
+    const url = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
 
-  // bật overlay + countdown
-  showCountdownOverlay(room);
+    btnConfirmRoom.classList.add("is-loading");
+    if (btnCancelRoom) btnCancelRoom.disabled = true;
+    roomInput.disabled = true;
+    hostNameInput.disabled = true;
 
-  let n = 3;
-  cdNumber && (cdNumber.textContent = String(n));
+    showCountdownOverlay(room);
 
-  const timer = setInterval(()=>{
-    n--;
+    let n = 3;
     cdNumber && (cdNumber.textContent = String(n));
 
-    if (n <= 0){
-      clearInterval(timer);
-      // chuyển trang
-      window.location.href = url;
-    }
-  }, 650);
+    const timer = setInterval(()=>{
+      n--;
+      cdNumber && (cdNumber.textContent = String(n));
+
+      if (n <= 0){
+        clearInterval(timer);
+        window.location.href = url;
+      }
+    }, 650);
+  });
 });
 
 
