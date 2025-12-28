@@ -107,6 +107,36 @@
 </div>
 
 
+<!-- NEON CONFIRM (Back to Lobby) -->
+<div id="neonConfirm" class="ncf hidden" aria-hidden="true">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box" role="dialog" aria-modal="true" aria-labelledby="ncfTitle">
+    <div class="ncf__frame"></div>
+    <div class="ncf__scan"></div>
+
+    <div class="ncf__top">
+      <div class="ncf__pill">
+        <span class="ncf__dot"></span>
+        <span>RỜI PHÒNG XEM</span>
+      </div>
+      <button class="ncf__x" id="ncfX" type="button" aria-label="Đóng">✕</button>
+    </div>
+
+    <h3 id="ncfTitle" class="ncf__title">Quay về Lobby?</h3>
+
+    <div class="ncf__desc">
+      <div class="ncf__row">• Bạn sẽ rời khỏi phòng đang xem</div>
+      <div class="ncf__row">• Có thể vào lại từ Lobby bất kỳ lúc nào</div>
+    </div>
+
+    <div class="ncf__actions">
+      <button id="ncfCancel" class="ncf__btn ncf__btn--ghost" type="button">Ở lại</button>
+      <button id="ncfOk" class="ncf__btn ncf__btn--main" type="button">✅ Về Lobby</button>
+    </div>
+  </div>
+</div>
+
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -643,7 +673,47 @@ socket.on("gift", ({ gift })=>{
 });
 
 
-if (btnBackLobby) btnBackLobby.onclick = () => { location.href = "/lobby.html"; };
+// ===== NEON CONFIRM: Back to Lobby (VIEWER) =====
+const ncf = document.getElementById("neonConfirm");
+const ncfBg = ncf?.querySelector(".ncf__bg");
+const ncfOk = document.getElementById("ncfOk");
+const ncfCancel = document.getElementById("ncfCancel");
+const ncfX = document.getElementById("ncfX");
+
+function openNcf(){
+  if (!ncf) return;
+  ncf.classList.remove("hidden");
+  ncf.setAttribute("aria-hidden", "false");
+  setTimeout(()=>{ try{ ncfOk?.focus(); }catch{} }, 0);
+}
+function closeNcf(){
+  if (!ncf) return;
+  ncf.classList.add("hidden");
+  ncf.setAttribute("aria-hidden", "true");
+}
+
+// nút quay về lobby (đã có)
+const btnBackLobby = document.getElementById("btnBackLobby");
+btnBackLobby?.addEventListener("click", () => openNcf());
+
+// click nền / X / Cancel => đóng
+ncfBg?.addEventListener("click", closeNcf);
+ncfX?.addEventListener("click", closeNcf);
+ncfCancel?.addEventListener("click", closeNcf);
+
+// ESC đóng
+document.addEventListener("keydown", (e)=>{
+  if (!ncf || ncf.classList.contains("hidden")) return;
+  if (e.key === "Escape") closeNcf();
+});
+
+// OK => ngắt socket nhẹ nhàng + về lobby
+ncfOk?.addEventListener("click", () => {
+  try { if (typeof socket !== "undefined" && socket) socket.disconnect(); } catch {}
+  window.location.href = "/lobby.html";   // nếu home của bạn là lobby
+  // window.location.href = "/lobby.html"; // nếu bạn dùng file trực tiếp
+});
+
 
 
 socket.on("host-profile-update", (profile) => {
