@@ -192,6 +192,96 @@
   </div>
 </div>
 
+
+
+<!-- HOST GUIDE MODAL (NEON) -->
+<div id="hostGuideModal" class="hgm hidden" aria-hidden="true">
+  <div class="hgm__bg"></div>
+
+  <div class="hgm__box" role="dialog" aria-modal="true" aria-labelledby="hgmTitle">
+    <div class="hgm__frame"></div>
+    <div class="hgm__scan"></div>
+
+    <div class="hgm__top">
+      <div class="hgm__pill">
+        <span class="hgm__dot"></span>
+        <span>HƯỚNG DẪN HOST</span>
+      </div>
+      <button class="hgm__x" id="hgmX" type="button" aria-label="Đóng">✕</button>
+    </div>
+
+    <div class="hgm__hero">
+      <div class="hgm__kicker">🎥 HOST PANEL</div>
+      <h3 id="hgmTitle" class="hgm__title">Cách phát sóng & điều khiển</h3>
+      <div class="hgm__sub">
+        Bạn đang ở phòng: <b id="hgmRoom">-</b> • Nhấn ☰ để mở bảng điều khiển.
+      </div>
+    </div>
+
+    <div class="hgm__grid">
+      <div class="hgm__card">
+        <div class="hgm__ic">▶️</div>
+        <div>
+          <div class="hgm__cardTitle">Bắt đầu live</div>
+          <div class="hgm__cardText">Bấm ▶️ để phát • ⏹️ để dừng.</div>
+        </div>
+      </div>
+
+      <div class="hgm__card">
+        <div class="hgm__ic">🎙️</div>
+        <div>
+          <div class="hgm__cardTitle">Mic / Camera</div>
+          <div class="hgm__cardText">Dùng 🎙️ / 📷 để bật tắt • 🔄 để đảo camera (nếu hỗ trợ).</div>
+        </div>
+      </div>
+
+      <div class="hgm__card">
+        <div class="hgm__ic">👤</div>
+        <div>
+          <div class="hgm__cardTitle">Co-host (Khách)</div>
+          <div class="hgm__cardText">Chấp nhận yêu cầu khách • có thể 🔇/📷/⛔ điều khiển khách.</div>
+        </div>
+      </div>
+
+      <div class="hgm__card">
+        <div class="hgm__ic">👀</div>
+        <div>
+          <div class="hgm__cardTitle">Link Viewer / Guest</div>
+          <div class="hgm__cardText">Bấm 👀 để copy link xem • 👤 để copy link khách mời.</div>
+        </div>
+      </div>
+
+      <div class="hgm__card">
+        <div class="hgm__ic">💬</div>
+        <div>
+          <div class="hgm__cardTitle">Chat & Ghim</div>
+          <div class="hgm__cardText">Chat realtime • Host có thể 📌 ghim nội dung lên video.</div>
+        </div>
+      </div>
+
+      <div class="hgm__card">
+        <div class="hgm__ic">🏟️</div>
+        <div>
+          <div class="hgm__cardTitle">Quay về Lobby</div>
+          <div class="hgm__cardText">Dùng nút “Quay về Lobby” (có xác nhận) để rời phòng.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="hgm__actions">
+      <label class="hgm__check">
+        <input type="checkbox" id="hgmDontShow" />
+        <span>Không hiện lại</span>
+      </label>
+
+      <div class="hgm__btns">
+        <button id="hgmLater" class="hgm__btn hgm__btn--ghost" type="button">Để sau</button>
+        <button id="hgmOk" class="hgm__btn hgm__btn--main" type="button">✅ Đã hiểu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -205,6 +295,48 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
    
+
+// ===== HOST GUIDE MODAL =====
+const hgm = document.getElementById("hostGuideModal");
+const hgmBg = hgm?.querySelector(".hgm__bg");
+const hgmX = document.getElementById("hgmX");
+const hgmOk = document.getElementById("hgmOk");
+const hgmLater = document.getElementById("hgmLater");
+const hgmDontShow = document.getElementById("hgmDontShow");
+const hgmRoom = document.getElementById("hgmRoom");
+
+function openHgm(){
+  if (!hgm) return;
+  if (hgmRoom) hgmRoom.textContent = (typeof roomId !== "undefined" ? roomId : "-");
+  hgm.classList.remove("hidden");
+  hgm.setAttribute("aria-hidden", "false");
+  setTimeout(()=>{ try{ hgmOk?.focus(); }catch{} }, 0);
+}
+function closeHgm(){
+  if (!hgm) return;
+  hgm.classList.add("hidden");
+  hgm.setAttribute("aria-hidden", "true");
+}
+function rememberHgm(){
+  if (hgmDontShow?.checked) localStorage.setItem("host_guide_off", "1");
+}
+
+// auto show on enter host
+(function(){
+  const off = localStorage.getItem("host_guide_off") === "1";
+  if (!off) openHgm();
+})();
+
+hgmBg?.addEventListener("click", ()=>{ rememberHgm(); closeHgm(); });
+hgmX?.addEventListener("click", ()=>{ rememberHgm(); closeHgm(); });
+hgmLater?.addEventListener("click", ()=>{ rememberHgm(); closeHgm(); });
+hgmOk?.addEventListener("click", ()=>{ rememberHgm(); closeHgm(); });
+
+document.addEventListener("keydown", (e)=>{
+  if (!hgm || hgm.classList.contains("hidden")) return;
+  if (e.key === "Escape") { rememberHgm(); closeHgm(); }
+});
+
 
    // ===== Back to Lobby =====
 // ===== NEON CONFIRM: Back to Lobby =====
