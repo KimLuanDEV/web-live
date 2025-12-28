@@ -1889,3 +1889,52 @@ button.is-loading{
   box-shadow: 0 0 26px rgba(95,168,255,.14);
 }
 .hgm__btn:hover{ filter:brightness(1.10); }
+
+
+/* ===== CHAT FAB ===== */
+.chat-fab{
+  position:absolute;
+  right:14px;
+  bottom:14px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  font-size:18px;
+  z-index:10;
+  background:rgba(0,0,0,.65);
+  border:1px solid rgba(255,255,255,.25);
+  color:#fff;
+  cursor:pointer;
+}
+.chat-fab:hover{ transform:scale(1.1); }
+
+/* ===== CHAT INPUT OVERLAY ===== */
+.chat-input-overlay{
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:70px;
+  display:flex;
+  gap:8px;
+  z-index:10;
+}
+
+.chat-input-overlay input{
+  flex:1;
+  padding:12px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.3);
+  background:rgba(0,0,0,.7);
+  color:#fff;
+  font-size:14px;
+}
+
+.chat-input-overlay button{
+  width:48px;
+  border-radius:14px;
+  font-size:16px;
+}
+
+.chat-input-overlay.hidden{
+  display:none;
+}

@@ -53,6 +53,21 @@
       </span>
     </div>
 <div class="chat-overlay" id="chatOverlay"></div>
+
+<!-- CHAT QUICK BUTTON -->
+<button class="chat-fab" id="chatFab">💬</button>
+
+<!-- CHAT INPUT OVERLAY -->
+<div class="chat-input-overlay hidden" id="chatInputOverlay">
+  <input
+    id="quickChatInput"
+    placeholder="Nhập tin nhắn..."
+    autocomplete="off"
+  />
+  <button id="quickChatSend">➤</button>
+</div>
+
+
 <div class="join-overlay" id="joinOverlayViewer" aria-live="polite"></div>
 <div class="pin-overlay" id="pinOverlay"></div>
 
@@ -723,6 +738,39 @@ socket.on("host-profile-update", (profile) => {
   document.querySelectorAll(".host-avatar")
     .forEach(img => img.src = getAvatarByName(profile.name));
 });
+
+const chatFab = document.getElementById("chatFab");
+
+const quickInput = document.getElementById("quickChatInput");
+const quickSend = document.getElementById("quickChatSend");
+
+chatFab?.addEventListener("click", () => {
+  chatOverlay.classList.toggle("hidden");
+
+  // 📱 QUAN TRỌNG: focus để bật bàn phím mobile
+  setTimeout(() => quickInput?.focus(), 50);
+});
+
+// gửi chat
+quickSend?.addEventListener("click", sendQuickChat);
+quickInput?.addEventListener("keydown", (e) => {
+  if (e.key === "Enter") sendQuickChat();
+});
+
+function sendQuickChat(){
+  const text = quickInput.value.trim();
+  if (!text) return;
+
+  socket.emit("chat", {
+    roomId,
+    name: chatName?.value || "User",
+    text
+  });
+
+  quickInput.value = "";
+  chatOverlay.classList.add("hidden");
+}
+
 
 
   </script>
