@@ -417,8 +417,19 @@ socket.on("send-gift", ({ roomId, gift }) => {
       rooms.delete(roomId);
     }
   });
+
 });
 
+
+socket.on("host-profile-update", (profile) => {
+  const nameEls = document.querySelectorAll(".host-name");
+  const avaEls  = document.querySelectorAll(".host-avatar");
+
+  nameEls.forEach(el => el.textContent = profile.name || "Host");
+  avaEls.forEach(el => {
+    el.src = profile.avatar || `https://i.pravatar.cc/80?u=${profile.name}`;
+  });
+});
 
 app.get("/lobby", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "lobby.html"));
