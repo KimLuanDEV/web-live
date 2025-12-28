@@ -58,6 +58,18 @@
       </span>
     </div>
 <div class="chat-overlay" id="chatOverlay"></div>
+
+<!-- CHAT INPUT OVERLAY -->
+<div class="chat-input-overlay" id="chatInputOverlay">
+  <input
+    id="chatInput"
+    type="text"
+    placeholder="Nhập chat..."
+    autocomplete="off"
+  />
+  <button id="chatSendBtn">➤</button>
+</div>
+
 <div class="pin-overlay" id="pinOverlay"></div>
 
         <div class="reactions-layer" id="reactionsLayerHost"></div>
@@ -1193,26 +1205,31 @@ socket.on("pin-note-update", (note)=> renderPin(note));
       chatBox.scrollTop = chatBox.scrollHeight;
     }
 
-    socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
+   const chatOverlay = document.getElementById("chatOverlay");
 
-    // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
-    const chatOverlay = document.getElementById("chatOverlay");
-    function pushOverlay(msg){
-      if (!chatOverlay) return;
-      const role = String(msg.role || "viewer");
-      const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
-      const el = document.createElement("div");
-      el.className = "chat-bubble chat-" + role;
-      el.textContent = `${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
-      chatOverlay.appendChild(el);
+function pushChatOverlay({ name, text, role }) {
+  if (!chatOverlay) return;
 
-      // keep only last 4 bubbles
-      while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
+  const bubble = document.createElement("div");
+  bubble.className = `chat-bubble chat-${role || "viewer"}`;
+  bubble.innerHTML = `<b>${name}:</b> ${text}`;
 
-      // auto fade + remove
-      setTimeout(() => el.classList.add("hide"), 2600);
-      setTimeout(() => { try { el.remove(); } catch {} }, 3200);
-    }
+  chatOverlay.appendChild(bubble);
+
+  // chỉ giữ tối đa 5 tin
+  while (chatOverlay.children.length > 5) {
+    chatOverlay.removeChild(chatOverlay.firstChild);
+  }
+
+  // auto ẩn sau 4s
+  setTimeout(() => bubble.classList.add("hide"), 3500);
+  setTimeout(() => bubble.remove(), 4200);
+}
+
+socket.on("chat", (msg) => {
+  pushChatOverlay(msg);
+});
+
 
     // add emoji buttons
     const emojiBar = document.getElementById("emojiBar");
@@ -1389,6 +1406,28 @@ if (nameFromLobby) {
   }
 }
 
+const chatInput = document.getElementById("chatInput");
+const chatSendBtn = document.getElementById("chatSendBtn");
+
+function sendChat(){
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  socket.emit("chat", {
+    roomId,
+    name: chatName || "Viewer",
+    text,
+    role: "viewer" // host | guest | viewer
+  });
+
+  chatInput.value = "";
+}
+
+chatSendBtn.onclick = sendChat;
+
+chatInput.addEventListener("keydown", e => {
+  if (e.key === "Enter") sendChat();
+});
 
 
   </script>
