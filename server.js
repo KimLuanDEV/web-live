@@ -231,7 +231,7 @@ const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
 
     const room = getRoom(key);
 
-   if (role === "broadcaster") {
+    if (role === "broadcaster") {
   // ✅ host reconnect (reload)
   if (
     room.broadcasterToken &&
@@ -251,13 +251,10 @@ const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
     room.broadcasterToken = token;
   }
 
-  room.hostProfile = {
+ room.hostProfile = {
     name: profile?.name || "Host",
     ts: Date.now(),
   };
-}
-
-
   const old = room.broadcasterId;
   room.broadcasterId = socket.id;
 
