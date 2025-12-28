@@ -803,6 +803,7 @@ socket.on("gift", ({ gift })=>{
   spawnGift(gift.type);
 });
 
+
 socket.on("host-profile-update", (profile) => {
   const nameEls = document.querySelectorAll(".host-name");
   const avaEls  = document.querySelectorAll(".host-avatar");
@@ -812,7 +813,6 @@ socket.on("host-profile-update", (profile) => {
     el.src = profile.avatar || `https://i.pravatar.cc/80?u=${profile.name}`;
   });
 });
-
 
 
   </script>

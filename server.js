@@ -81,21 +81,24 @@ app.get("/ice", async (_req, res) => {
   }
 });
 
-
-
 io.on("connection", (socket) => {
 
 
-  socket.on("host-profile-update", (profile) => {
-  const nameEls = document.querySelectorAll(".host-name");
-  const avaEls  = document.querySelectorAll(".host-avatar");
 
-  nameEls.forEach(el => el.textContent = profile.name || "Host");
-  avaEls.forEach(el => {
-    el.src = profile.avatar || `https://i.pravatar.cc/80?u=${profile.name}`;
-  });
+  socket.on("host-update-profile", ({ roomId, name, avatar }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  room.hostProfile = {
+    name: String(name || "Host").slice(0, 20),
+    avatar: String(avatar || "").slice(0, 500),
+    ts: Date.now(),
+  };
+
+  io.to(roomId).emit("host-profile-update", room.hostProfile);
+  emitLobbyUpdate();
 });
-
 
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
 socket.on("lobby-get", () => {
@@ -431,10 +434,7 @@ socket.on("send-gift", ({ roomId, gift }) => {
       rooms.delete(roomId);
     }
   });
-
 });
-
-
 
 
 app.get("/lobby", (_, res) => {
