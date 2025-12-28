@@ -11,8 +11,9 @@ const io = new Server(server, { cors: { origin: "*" } });
 app.use(express.static(path.join(__dirname, "public")));
 
 app.get("/", (_, res) => {
-  res.sendFile(path.join(__dirname, "public", "index.html"));
+  res.sendFile(path.join(__dirname, "public", "lobby.html"));
 });
+
 
 /**
  * Room state:

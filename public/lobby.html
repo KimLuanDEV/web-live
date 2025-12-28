@@ -19,7 +19,7 @@
         </div>
 
         <div class="pills">
-          <a class="btn lobby-btn" href="./index.html">➕ Tạo phòng</a>
+          <button class="btn lobby-btn" id="btnOpenCreate">➕ Tạo phòng</button>
           <button id="refresh" class="lobby-btn" title="Làm mới">🔄</button>
         </div>
       </div>
@@ -286,16 +286,14 @@ setInterval(() => socket.emit("lobby-get"), 3000);
 
 // ===== CREATE ROOM MODAL =====
 const modal = document.getElementById("createRoomModal");
-const btnOpen = document.querySelector('a[href="./index.html"]');
+const btnOpen = document.getElementById("btnOpenCreate");
 const btnCancel = document.getElementById("btnCancelRoom");
 const btnConfirm = document.getElementById("btnConfirmRoom");
 
 const roomInput = document.getElementById("roomInput");
 const hostNameInput = document.getElementById("hostNameInput");
 
-// mở modal
-btnOpen.addEventListener("click", (e)=>{
-  e.preventDefault();
+btnOpen.addEventListener("click", ()=>{
   modal.classList.remove("hidden");
   roomInput.value = "";
   hostNameInput.value = "";
