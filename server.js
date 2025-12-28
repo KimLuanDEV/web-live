@@ -24,7 +24,7 @@ const rooms = new Map();
 
 function getRoom(roomId) {
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null });
+    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null, hostProfile: null, });
   }
   return rooms.get(roomId);
 }
@@ -43,11 +43,13 @@ function getLobbyList() {
     // điều kiện "đang live": có host + đã live-start
     if (room.broadcasterId && room.liveStartTs) {
       list.push({
-        roomId,
-        viewers: room.viewers.size,
-        liveStartTs: room.liveStartTs,
-        hasGuest: !!room.guestId
-      });
+  roomId,
+  viewers: room.viewers.size,
+  liveStartTs: room.liveStartTs,
+  hasGuest: !!room.guestId,
+  host: room.hostProfile || null, // 👈 thêm
+});
+
     }
   }
   // ưu tiên phòng đông người xem
@@ -173,7 +175,7 @@ socket.on("live-stop", ({ roomId }) => {
   });
 
   // Join room with role: broadcaster | viewer | guest
-  socket.on("join-room", ({ roomId, role }) => {
+  socket.on("join-room", ({ roomId, role, profile }) => {
     if (!roomId || !role) return;
 
     socket.join(roomId);
@@ -185,6 +187,15 @@ socket.on("live-stop", ({ roomId }) => {
     if (role === "broadcaster") {
       const old = room.broadcasterId;
       room.broadcasterId = socket.id;
+
+       // ✅ Lưu profile host
+    const name = String(profile?.name || "").trim().slice(0, 20);
+    const avatar = String(profile?.avatar || "").trim().slice(0, 300);
+    room.hostProfile = {
+      name: name || "Host",
+      avatar: avatar || "",
+      ts: Date.now(),
+    };
 
       if (old && old !== socket.id) {
         io.to(roomId).emit("broadcaster-changed");
@@ -384,6 +395,8 @@ socket.on("send-gift", ({ roomId, gift }) => {
       if (room.broadcasterId === socket.id) {
         room.broadcasterId = null;
         room.liveStartTs = null;
+        room.hostProfile = null;
+
         emitLobbyUpdate();
 
         io.to(roomId).emit("live-stop");

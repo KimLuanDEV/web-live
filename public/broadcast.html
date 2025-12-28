@@ -500,7 +500,32 @@ socket.on("reaction", (msg)=>{
       console.log(msg);
     }
 
-    socket.emit("join-room", { roomId, role: "broadcaster" });
+    function getHostProfile() {
+  let name = localStorage.getItem("hostName") || "";
+  if (!name) {
+    name = prompt("Nhập tên host hiển thị trên sảnh chờ:", "Host") || "Host";
+    name = name.trim().slice(0, 20) || "Host";
+    localStorage.setItem("hostName", name);
+  }
+
+  // Avatar mặc định (pravatar) — đổi theo tên để mỗi host khác nhau
+  let avatar = localStorage.getItem("hostAvatar") || "";
+  if (!avatar) {
+    avatar = `https://i.pravatar.cc/80?u=${encodeURIComponent(name)}`;
+    localStorage.setItem("hostAvatar", avatar);
+  }
+
+  return { name, avatar };
+}
+
+const hostProfile = getHostProfile();
+
+socket.emit("join-room", {
+  roomId,
+  role: "broadcaster",
+  profile: hostProfile
+});
+
 
     // Peer asks HOST to ICE-restart this connection (HOST is offerer for viewers)
     socket.on("request-ice-restart", async ({ from, reason }) => {

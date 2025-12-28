@@ -826,3 +826,29 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
   border-radius:6px;
   font-size:12px;
 }
+
+.lobby-host{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.lobby-ava{
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.25);
+}
+.lobby-hostinfo{ line-height:1.15; }
+.lobby-hostname{
+  font-weight:800;
+}
+.lobby-roomid{
+  font-size:13px;
+  opacity:.8;
+}
+.lobby-badges{
+  display:flex;
+  gap:6px;
+  align-items:center;
+}

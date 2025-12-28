@@ -42,31 +42,47 @@ function hms(ms){
 
 function render(list){
   grid.innerHTML = "";
-  empty.style.display = list.length ? "none":"block";
+  empty.style.display = list.length ? "none" : "block";
 
-  list.forEach(r=>{
+  list.forEach(r => {
     const a = document.createElement("a");
-    a.className="lobby-item";
-    a.href=`/viewer.html?room=${r.roomId}`;
-    a.innerHTML=`
+    a.className = "lobby-item";
+    a.href = `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
+
+    const hostName   = r.host?.name   || "Host";
+    const hostAvatar = r.host?.avatar || `https://i.pravatar.cc/80?u=${encodeURIComponent(hostName)}`;
+
+    a.innerHTML = `
       <div class="lobby-head">
-        <b>🎥 ${r.roomId}</b>
-        <span class="badge badge--live">LIVE</span>
+        <div class="lobby-host">
+          <img class="lobby-ava" src="${hostAvatar}" alt="avatar">
+          <div class="lobby-hostinfo">
+            <div class="lobby-hostname">${hostName}</div>
+            <div class="lobby-roomid">🎥 ${r.roomId}</div>
+          </div>
+        </div>
+
+        <div class="lobby-badges">
+          <span class="badge badge--live">LIVE</span>
+          ${r.hasGuest ? `<span class="badge badge--info">Co-host</span>` : ``}
+        </div>
       </div>
+
       <div class="lobby-meta">
         <span class="lobby-chip">👁 ${r.viewers}</span>
-        <span class="lobby-chip">⏱ ${hms(Date.now()-r.liveStartTs)}</span>
+        <span class="lobby-chip">⏱ ${hms(Date.now() - r.liveStartTs)}</span>
       </div>
+
       <div class="lobby-cta">Vào xem ➜</div>
     `;
     grid.appendChild(a);
-  })
+  });
 }
 
 socket.emit("lobby-get");
-socket.on("lobby-update", d=>render(d.rooms||[]));
-document.getElementById("refresh").onclick=()=>socket.emit("lobby-get");
-setInterval(()=>socket.emit("lobby-get"),3000);
+socket.on("lobby-update", d => render(d.rooms || []));
+document.getElementById("refresh").onclick = () => socket.emit("lobby-get");
+setInterval(() => socket.emit("lobby-get"), 3000);
 </script>
 </body>
 </html>
