@@ -1933,3 +1933,21 @@ button.is-loading{
     bottom:10px;
   }
 }
+
+/* ===== FIX: CHAT INPUT MUST BE CLICKABLE ===== */
+.chat-input-overlay{
+  pointer-events: auto;      /* ✅ cho phép click */
+  z-index: 999;              /* ✅ nằm trên video/overlay khác */
+}
+
+.chat-input-overlay *{
+  pointer-events: auto;      /* ✅ đảm bảo input/button nhận click */
+}
+
+/* nếu video đang đè input trên vài máy */
+.video-card video{
+  position: relative;
+  z-index: 1;
+}
+
+.chat-overlay{ pointer-events: none; } /* giữ nguyên: chat hiển thị không chặn */
