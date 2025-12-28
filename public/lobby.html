@@ -375,6 +375,7 @@ btnConfirmRoom?.addEventListener("click", ()=>{
       if (res.reason === "EXIST") {
   openErrorModal();
 }
+      return;
     }
 
     // ===== ROOM OK → MỚI CHO VÀO =====
