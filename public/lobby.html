@@ -371,10 +371,13 @@ btnConfirmRoom?.addEventListener("click", ()=>{
 
   // 👉 CHECK TRÙNG ROOM TRƯỚC
   socket.emit("check-room-available", { roomId: room }, (res)=>{
-    if (res.reason === "EXIST") {
+    if (!res?.ok) {
+      if (res.reason === "EXIST") {
   openErrorModal();
 }
 
+      return;
+    }
 
     // ===== ROOM OK → MỚI CHO VÀO =====
     const url = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;

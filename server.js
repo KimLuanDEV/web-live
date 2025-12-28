@@ -217,7 +217,7 @@ const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
 
     socket.join(key);
     socket.data.roomId = key;
-    socket.data.role = role;
+   
 
     const room = getRoom(roomId);
 
