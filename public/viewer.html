@@ -27,7 +27,8 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<button id="btnRequestMic" style="margin-top:8px">🎙️ Xin bật mic</button>
+<small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
+  Bấm để mở trang Khách và gửi yêu cầu lên Host.
 </small>
 
           <hr />
@@ -156,91 +157,6 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
-
-
-const btnRequestMic = document.getElementById("btnRequestMic");
-
-let micStream = null;
-let micTrack = null;
-let micPc = null;
-
-btnRequestMic.onclick = () => {
-  socket.emit("viewer-request-mic", { roomId });
-  btnRequestMic.disabled = true;
-  btnRequestMic.textContent = "⏳ Đang xin mic...";
-};
-
-
-socket.on("viewer-mic-answer", async ({ description }) => {
-  if (!micPc) return;
-  await micPc.setRemoteDescription(description);
-});
-
-socket.on("candidate", async ({ candidate }) => {
-  if (micPc) {
-    await micPc.addIceCandidate(candidate);
-  }
-});
-
-
-// Host duyệt
-socket.on("viewer-mic-approved", async () => {
-  try {
-    micStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: false
-    });
-
-    micTrack = micStream.getAudioTracks()[0];
-
-    micPc = new RTCPeerConnection(iceConfig);
-
-    micStream.getTracks().forEach(track => {
-      micPc.addTrack(track, micStream);
-    });
-
-    micPc.onicecandidate = e => {
-      if (e.candidate) {
-        socket.emit("candidate", {
-          to: broadcasterId,
-          candidate: e.candidate
-        });
-      }
-    };
-
-    const offer = await micPc.createOffer();
-    await micPc.setLocalDescription(offer);
-
-    socket.emit("viewer-mic-offer", {
-      roomId,
-      description: micPc.localDescription
-    });
-
-    btnRequestMic.textContent = "🎙️ Mic đang bật";
-  } catch (e) {
-    alert("Không mở được mic");
-  }
-});
-
-
-// Host tắt / bật mic
-socket.on("viewer-set-mic", ({ mute }) => {
-  if (micTrack) micTrack.enabled = !mute;
-});
-
-// Host thu hồi quyền nói
-socket.on("viewer-mic-revoked", () => {
-  if (micStream) {
-    micStream.getTracks().forEach(t => t.stop());
-  }
-  micStream = null;
-  micTrack = null;
-
-  btnRequestMic.disabled = false;
-  btnRequestMic.textContent = "🎙️ Xin bật mic";
-});
-
-
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }

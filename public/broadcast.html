@@ -124,17 +124,13 @@
 <hr />
 <div class="card">
   <div class="badge badge--info">👤 Khách xin lên live</div>
+
   <hr />
   <div id="guestReq" class="log">Chưa có yêu cầu.</div>
   <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
     <button id="btnApproveGuest" disabled style="flex:1">✅ Chấp nhận</button>
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
-
-<hr />
-<div class="badge badge--info">🎙️ Viewer xin bật mic</div>
-<div id="viewerMicReq" class="log">Chưa có yêu cầu.</div>
-
 
 </div>
 
@@ -362,8 +358,6 @@ const ncfBg = ncf?.querySelector(".ncf__bg");
 const ncfOk = document.getElementById("ncfOk");
 const ncfCancel = document.getElementById("ncfCancel");
 const ncfX = document.getElementById("ncfX");
-const viewerMicPcs = new Map();
-
 
 function openNcf(){
   if (!ncf) return;
@@ -443,66 +437,6 @@ if(nameFromLobby){
     };
 
     const socket = io();
-
-socket.on("viewer-mic-offer", async ({ viewerId, description }) => {
-  const pc = new RTCPeerConnection(iceConfig);
-  viewerMicPcs.set(viewerId, pc);
-
-  pc.ontrack = e => {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    document.body.appendChild(audio);
-  };
-
-  pc.onicecandidate = e => {
-    if (e.candidate) {
-      socket.emit("candidate", {
-        to: viewerId,
-        candidate: e.candidate
-      });
-    }
-  };
-
-  await pc.setRemoteDescription(description);
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-
-  socket.emit("viewer-mic-answer", {
-    to: viewerId,
-    description: pc.localDescription
-  });
-});
-
-
-
-const viewerMicReq = document.getElementById("viewerMicReq");
-
-// Viewer xin mic
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  viewerMicReq.innerHTML = `
-    🎙️ Viewer ${viewerId.slice(0,6)}...
-    <br/>
-    <button onclick="approveViewerMic('${viewerId}')">✅ Cho nói</button>
-    <button onclick="muteViewerMic('${viewerId}')">🔇 Tắt mic</button>
-    <button onclick="revokeViewerMic('${viewerId}')">⛔ Thu hồi</button>
-  `;
-});
-
-window.approveViewerMic = (viewerId) => {
-  socket.emit("host-approve-viewer-mic", { roomId, viewerId });
-};
-
-window.muteViewerMic = (viewerId) => {
-  socket.emit("host-mute-viewer", { viewerId, mute: true });
-};
-
-window.revokeViewerMic = (viewerId) => {
-  socket.emit("host-revoke-viewer-mic", { viewerId });
-};
-
-
-
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){

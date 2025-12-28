@@ -487,49 +487,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
       rooms.delete(roomId);
     }
   });
-
-
-// ===== VIEWER MIC-ONLY =====
-
-socket.on("viewer-mic-offer", ({ roomId, description }) => {
-  const room = rooms.get(roomId);
-  if (!room || !room.broadcasterId) return;
-
-  io.to(room.broadcasterId).emit("viewer-mic-offer", {
-    viewerId: socket.id,
-    description
-  });
-});
-
-// Viewer xin bật mic
-socket.on("viewer-request-mic", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room || !room.broadcasterId) return;
-
-  io.to(room.broadcasterId).emit("viewer-mic-request", {
-    viewerId: socket.id
-  });
-});
-
-// Host duyệt mic viewer
-socket.on("host-approve-viewer-mic", ({ roomId, viewerId }) => {
-  const room = rooms.get(roomId);
-  if (!room || room.broadcasterId !== socket.id) return;
-
-  io.to(viewerId).emit("viewer-mic-approved");
-});
-
-// Host tắt / bật mic viewer
-socket.on("host-mute-viewer", ({ viewerId, mute }) => {
-  io.to(viewerId).emit("viewer-set-mic", { mute: !!mute });
-});
-
-// Host thu hồi mic viewer
-socket.on("host-revoke-viewer-mic", ({ viewerId }) => {
-  io.to(viewerId).emit("viewer-mic-revoked");
-});
-
-
 });
 
 
