@@ -10,7 +10,9 @@
   <div class="container">
     <div class="card">
       <h1> 👁 Viewer</h1>
-      
+
+      <button id="btnBackLobby" style="margin-top:10px">🏟️ Quay về Lobby</button>
+
       <hr />
 
       <div class="row">
@@ -641,6 +643,7 @@ socket.on("gift", ({ gift })=>{
 });
 
 
+if (btnBackLobby) btnBackLobby.onclick = () => { location.href = "/lobby.html"; };
 
 
   </script>
