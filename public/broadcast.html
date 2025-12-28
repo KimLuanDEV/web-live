@@ -15,7 +15,7 @@
   <div class="badge badge--info">👤 Cập nhật tên hiển thị ngoài Lobby</div>
   <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
     <img id="hostAvatarPreview"
-         src="https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
+         src="https://static.vecteezy.com/system/resources/previews/011/016/931/original/live-streaming-icon-for-the-broadcast-system-live-streaming-icon-design-with-red-and-white-colors-live-streaming-image-with-text-effect-red-and-white-gradient-colors-free-png.png"
          style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid #fff3">
     
     <div style="flex:1">
@@ -175,6 +175,10 @@
     const roomId = params.get("room") || "abc123";
    
 
+const nameFromLobby = params.get("name");
+if(nameFromLobby){
+  document.getElementById("hostNameInput").value = nameFromLobby;
+}
 
 
     function toast(msg){

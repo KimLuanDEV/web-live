@@ -13,7 +13,7 @@
         <div class="brand">
           <span class="brand__dot"></span>
           <div>
-            <div class="brand__title">🏟️ SẢNH CHỜ</div>
+            <div class="brand__title">🏟️ SẢNH LIVE</div>
             <small>Danh sách host đang LIVE • click để vào xem</small>
           </div>
         </div>
@@ -282,6 +282,70 @@ document.getElementById("refresh").onclick = requestLobby;
 // load
 requestLobby();
 setInterval(() => socket.emit("lobby-get"), 3000);
+
+
+// ===== CREATE ROOM MODAL =====
+const modal = document.getElementById("createRoomModal");
+const btnOpen = document.querySelector('a[href="./index.html"]');
+const btnCancel = document.getElementById("btnCancelRoom");
+const btnConfirm = document.getElementById("btnConfirmRoom");
+
+const roomInput = document.getElementById("roomInput");
+const hostNameInput = document.getElementById("hostNameInput");
+
+// mở modal
+btnOpen.addEventListener("click", (e)=>{
+  e.preventDefault();
+  modal.classList.remove("hidden");
+  roomInput.value = "";
+  hostNameInput.value = "";
+});
+
+// đóng modal
+btnCancel.onclick = () => modal.classList.add("hidden");
+
+// xác nhận
+btnConfirm.onclick = () => {
+  const room = roomInput.value.trim();
+  const name = hostNameInput.value.trim();
+
+  if(!room){
+    alert("Vui lòng nhập Room ID");
+    return;
+  }
+
+  const url =
+    `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
+
+  window.location.href = url;
+};
+
+
 </script>
+
+
+
+
+
+<!-- CREATE ROOM MODAL -->
+<div id="createRoomModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3>🎥 Tạo phòng livestream</h3>
+
+    <label>Room ID</label>
+    <input id="roomInput" placeholder="vd: greedyking01">
+
+    <label>Tên Host</label>
+    <input id="hostNameInput" placeholder="Tên hiển thị">
+
+    <div class="modal-actions">
+      <button id="btnCancelRoom">Hủy</button>
+      <button id="btnConfirmRoom">🚀 Vào phòng</button>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>

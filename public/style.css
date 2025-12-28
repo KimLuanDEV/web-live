@@ -1224,3 +1224,48 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
   background: rgba(255,255,255,.06);
   border: 1px solid rgba(255,255,255,.08);
 }
+
+/* ===== MODAL ===== */
+.modal{
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+.modal.hidden{ display:none; }
+
+.modal-backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(4px);
+}
+
+.modal-card{
+  position:relative;
+  max-width:360px;
+  margin:12vh auto;
+  background: var(--panel);
+  border:1px solid var(--stroke);
+  border-radius:18px;
+  padding:18px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6);
+}
+
+.modal-card h3{
+  margin-top:0;
+}
+
+.modal-card label{
+  font-size:13px;
+  opacity:.8;
+}
+
+.modal-card input{
+  margin:6px 0 14px;
+}
+
+.modal-actions{
+  display:flex;
+  gap:10px;
+}
+
