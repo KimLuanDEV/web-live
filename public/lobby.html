@@ -69,9 +69,79 @@
     </div>
   </div>
 
+<!-- CREATE ROOM MODAL -->
+<div id="createRoomModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card">
+    <h3>🎥 Tạo phòng livestream</h3>
+
+    <label>Room ID</label>
+    <input id="roomInput" placeholder="vd: greedyking01" />
+
+    <label>Tên Host</label>
+    <input id="hostNameInput" placeholder="Tên hiển thị" />
+
+    <div class="modal-actions">
+      <button id="btnCancelRoom" type="button">Hủy</button>
+      <button id="btnConfirmRoom" type="button">🚀 Vào phòng</button>
+    </div>
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
+
+// ===== CREATE ROOM MODAL =====
+const modal = document.getElementById("createRoomModal");
+const btnOpenCreate = document.getElementById("btnOpenCreate");
+const btnCancelRoom = document.getElementById("btnCancelRoom");
+const btnConfirmRoom = document.getElementById("btnConfirmRoom");
+
+const roomInput = document.getElementById("roomInput");
+const hostNameInput = document.getElementById("hostNameInput");
+
+function openModal(){
+  modal.classList.remove("hidden");
+  roomInput.value = "";
+  hostNameInput.value = "";
+  setTimeout(()=>roomInput.focus(), 0);
+}
+function closeModal(){
+  modal.classList.add("hidden");
+}
+
+btnOpenCreate?.addEventListener("click", (e)=>{
+  e.preventDefault();
+  openModal();
+});
+
+btnCancelRoom?.addEventListener("click", closeModal);
+
+// click nền để tắt
+modal?.querySelector(".modal-backdrop")?.addEventListener("click", closeModal);
+
+// Enter để xác nhận
+modal?.addEventListener("keydown", (e)=>{
+  if (e.key === "Escape") closeModal();
+  if (e.key === "Enter") btnConfirmRoom.click();
+});
+
+btnConfirmRoom?.addEventListener("click", ()=>{
+  const room = (roomInput.value || "").trim();
+  const name = (hostNameInput.value || "").trim();
+
+  if(!room){
+    alert("Vui lòng nhập Room ID");
+    roomInput.focus();
+    return;
+  }
+
+  location.href = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
+});
+
 
 const grid = document.getElementById("grid");
 const empty = document.getElementById("empty");
@@ -284,39 +354,6 @@ requestLobby();
 setInterval(() => socket.emit("lobby-get"), 3000);
 
 
-// ===== CREATE ROOM MODAL =====
-const modal = document.getElementById("createRoomModal");
-const btnOpen = document.getElementById("btnOpenCreate");
-const btnCancel = document.getElementById("btnCancelRoom");
-const btnConfirm = document.getElementById("btnConfirmRoom");
-
-const roomInput = document.getElementById("roomInput");
-const hostNameInput = document.getElementById("hostNameInput");
-
-btnOpen.addEventListener("click", ()=>{
-  modal.classList.remove("hidden");
-  roomInput.value = "";
-  hostNameInput.value = "";
-});
-
-// đóng modal
-btnCancel.onclick = () => modal.classList.add("hidden");
-
-// xác nhận
-btnConfirm.onclick = () => {
-  const room = roomInput.value.trim();
-  const name = hostNameInput.value.trim();
-
-  if(!room){
-    alert("Vui lòng nhập Room ID");
-    return;
-  }
-
-  const url =
-    `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
-
-  window.location.href = url;
-};
 
 
 </script>
@@ -325,24 +362,7 @@ btnConfirm.onclick = () => {
 
 
 
-<!-- CREATE ROOM MODAL -->
-<div id="createRoomModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-  <div class="modal-card">
-    <h3>🎥 Tạo phòng livestream</h3>
 
-    <label>Room ID</label>
-    <input id="roomInput" placeholder="vd: greedyking01">
-
-    <label>Tên Host</label>
-    <input id="hostNameInput" placeholder="Tên hiển thị">
-
-    <div class="modal-actions">
-      <button id="btnCancelRoom">Hủy</button>
-      <button id="btnConfirmRoom">🚀 Vào phòng</button>
-    </div>
-  </div>
-</div>
 
 
 </body>
