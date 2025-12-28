@@ -82,7 +82,11 @@ app.get("/ice", async (_req, res) => {
 });
 
 
-socket.on("host-profile-update", (profile) => {
+
+io.on("connection", (socket) => {
+
+
+  socket.on("host-profile-update", (profile) => {
   const nameEls = document.querySelectorAll(".host-name");
   const avaEls  = document.querySelectorAll(".host-avatar");
 
@@ -92,7 +96,6 @@ socket.on("host-profile-update", (profile) => {
   });
 });
 
-io.on("connection", (socket) => {
 
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
 socket.on("lobby-get", () => {
