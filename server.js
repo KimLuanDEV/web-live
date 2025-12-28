@@ -89,15 +89,16 @@ io.on("connection", (socket) => {
 socket.on("check-room-available", ({ roomId }, cb) => {
   if (!roomId) return cb({ ok: false, reason: "INVALID" });
 
-  const room = rooms.get(roomId);
+  const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
+  const room = rooms.get(key);
 
-  // đã có host hoặc đang live
   if (room && room.broadcasterId) {
     return cb({ ok: false, reason: "EXIST" });
   }
 
   return cb({ ok: true });
 });
+
 
 
 
@@ -212,8 +213,10 @@ socket.on("live-stop", ({ roomId }) => {
   socket.on("join-room", ({ roomId, role, profile }) => {
     if (!roomId || !role) return;
 
-    socket.join(roomId);
-    socket.data.roomId = roomId;
+const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
+
+    socket.join(key);
+    socket.data.roomId = key;
     socket.data.role = role;
 
     const room = getRoom(roomId);

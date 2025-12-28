@@ -291,7 +291,8 @@ function hideCountdownOverlay(){
 
 // ===== REPLACE confirm handler =====
 btnConfirmRoom?.addEventListener("click", ()=>{
-  const room = (roomInput.value || "").trim();
+  const room = (roomInput.value || "").trim().toLowerCase(); // ⭐
+
   const name = (hostNameInput.value || "").trim();
 
   if(!room){
