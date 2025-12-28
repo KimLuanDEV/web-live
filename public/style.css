@@ -1253,3 +1253,62 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 .modal-actions{ display:flex; gap:10px; margin-top:14px; }
 .modal-actions button{ width:100%; }
 
+/* ===== WELCOME MODAL ===== */
+.modal-card--welcome{
+  max-width: 440px;
+}
+
+.welcome-head{
+  display:flex;
+  gap:12px;
+  align-items:center;
+  margin-bottom: 12px;
+}
+
+.welcome-badge{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:64px;
+  height:34px;
+  padding:0 12px;
+  border-radius:999px;
+  font-weight:800;
+  letter-spacing:.5px;
+  border:1px solid rgba(255,59,107,.35);
+  background: rgba(255,59,107,.12);
+  box-shadow: 0 0 22px rgba(255,59,107,.18);
+}
+
+.welcome-body{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  padding: 10px 0 2px;
+}
+
+.welcome-item{
+  border:1px solid var(--stroke);
+  background: rgba(0,0,0,.22);
+  border-radius:14px;
+  padding:10px 12px;
+  font-size:13px;
+  color: rgba(234,240,255,.9);
+}
+
+.welcome-actions{
+  margin-top: 14px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.welcome-check{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  font-size:13px;
+  opacity:.9;
+  user-select:none;
+}
+.welcome-check input{ width:auto; }

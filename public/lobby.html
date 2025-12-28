@@ -90,9 +90,87 @@
 </div>
 
 
+<!-- WELCOME MODAL -->
+<div id="welcomeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card modal-card--welcome">
+    <div class="welcome-head">
+      <div class="welcome-badge">🔴 LIVE</div>
+      <div>
+        <h3 id="welcomeTitle" style="margin:0">Chào mừng đến Sảnh Live</h3>
+        <small style="opacity:.8">Xem host đang phát hoặc tạo phòng để lên live ngay</small>
+      </div>
+    </div>
+
+    <div class="welcome-body">
+      <div class="welcome-item">✅ Xem danh sách phòng đang LIVE theo thời gian thực</div>
+      <div class="welcome-item">✅ Tạo phòng nhanh → vào Host để phát sóng</div>
+      <div class="welcome-item">✅ Viewer có thể chat, reaction, xin lên live</div>
+    </div>
+
+    <div class="welcome-actions">
+      <label class="welcome-check">
+        <input type="checkbox" id="welcomeDontShow" />
+        <span>Không hiện lại</span>
+      </label>
+
+      <div style="display:flex; gap:10px; width:100%">
+        <button type="button" id="btnWelcomeClose">Đóng</button>
+        <button type="button" id="btnWelcomeCreate">➕ Tạo phòng</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
+
+// ===== WELCOME MODAL =====
+const welcomeModal = document.getElementById("welcomeModal");
+const btnWelcomeClose = document.getElementById("btnWelcomeClose");
+const btnWelcomeCreate = document.getElementById("btnWelcomeCreate");
+const welcomeDontShow = document.getElementById("welcomeDontShow");
+
+// mở/đóng modal
+function openWelcome(){ welcomeModal?.classList.remove("hidden"); }
+function closeWelcome(){ welcomeModal?.classList.add("hidden"); }
+
+// hiện khi vào lobby (nếu chưa tắt)
+(function showWelcomeOnce(){
+  const off = localStorage.getItem("lobby_welcome_off") === "1";
+  if (!off) openWelcome();
+})();
+
+// click nền để đóng
+welcomeModal?.querySelector(".modal-backdrop")?.addEventListener("click", closeWelcome);
+
+// nút đóng
+btnWelcomeClose?.addEventListener("click", ()=>{
+  if (welcomeDontShow?.checked) localStorage.setItem("lobby_welcome_off","1");
+  closeWelcome();
+});
+
+// nút tạo phòng => đóng welcome + mở create room modal (nếu bạn có)
+btnWelcomeCreate?.addEventListener("click", ()=>{
+  if (welcomeDontShow?.checked) localStorage.setItem("lobby_welcome_off","1");
+  closeWelcome();
+
+  // Nếu bạn đã làm modal tạo phòng:
+  // - nút mở: #btnOpenCreate
+  // - modal tạo phòng: #createRoomModal
+  const btnOpenCreate = document.getElementById("btnOpenCreate");
+  if (btnOpenCreate) btnOpenCreate.click();
+});
+
+// ESC để đóng
+document.addEventListener("keydown", (e)=>{
+  if (!welcomeModal || welcomeModal.classList.contains("hidden")) return;
+  if (e.key === "Escape") closeWelcome();
+});
+
 
 // ===== CREATE ROOM MODAL =====
 const modal = document.getElementById("createRoomModal");
