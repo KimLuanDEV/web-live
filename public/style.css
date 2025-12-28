@@ -1889,3 +1889,8 @@ button.is-loading{
   box-shadow: 0 0 26px rgba(95,168,255,.14);
 }
 .hgm__btn:hover{ filter:brightness(1.10); }
+
+.voice-speaking{
+  color:#25F09A;
+  font-weight:700;
+}
