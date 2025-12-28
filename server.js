@@ -1,3 +1,6 @@
+const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
+
+
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -31,14 +34,18 @@ function normRoomId(roomId) {
 function getRoom(roomId) {
   roomId = normRoomId(roomId);
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, {
-      broadcasterId: null,
-      viewers: new Set(),
-      guestId: null,
-      liveStartTs: null,
-      pinnedNote: null,
-      hostProfile: null,
-    });
+   rooms.set(roomId, {
+  broadcasterId: null,
+  viewers: new Set(),
+  guestId: null,
+  liveStartTs: null,
+  pinnedNote: null,
+  hostProfile: null,
+
+  releaseTimer: null,        // ⏱️ timer giải phóng
+  pendingRelease: false,     // đang chờ giải phóng?
+});
+
   }
   return rooms.get(roomId);
 }
@@ -233,8 +240,13 @@ socket.on("live-stop", ({ roomId }) => {
     const room = getRoom(roomId);
 
     if (role === "broadcaster") {
-      const old = room.broadcasterId;
-      room.broadcasterId = socket.id;
+       if (room.releaseTimer) {
+    clearTimeout(room.releaseTimer);
+    room.releaseTimer = null;
+  }
+  room.pendingRelease = false;
+
+  room.broadcasterId = socket.id;
 
        // ✅ Lưu profile host
     const name = String(profile?.name || "").trim().slice(0, 20);
@@ -439,18 +451,27 @@ socket.on("send-gift", ({ roomId, gift }) => {
       }
     }
 
-    if (role === "broadcaster") {
-      if (room.broadcasterId === socket.id) {
-        room.broadcasterId = null;
-        room.liveStartTs = null;
-        room.hostProfile = null;
+   if (role === "broadcaster") {
+  // ⏱️ Bắt đầu chờ giải phóng
+  room.pendingRelease = true;
 
-        emitLobbyUpdate();
+  room.releaseTimer = setTimeout(() => {
+    // Nếu trong thời gian chờ host KHÔNG quay lại
+    if (room.pendingRelease) {
+      console.log("⏱️ Auto release room:", roomId);
 
-        io.to(roomId).emit("live-stop");
-        io.to(roomId).emit("broadcaster-offline");
-      }
+      room.broadcasterId = null;
+      room.liveStartTs = null;
+      room.guestId = null;
+      room.pendingRelease = false;
+      room.releaseTimer = null;
+
+      io.to(roomId).emit("live-stop");
+      emitLobbyUpdate();
     }
+  }, ROOM_RELEASE_DELAY);
+}
+
 
     if (role === "guest") {
       if (room.guestId === socket.id) {
