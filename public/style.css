@@ -1941,8 +1941,8 @@ button.is-loading{
 /* ===== QUICK CHAT ON VIDEO (FIX KEYBOARD) ===== */
 .chat-fab{
   position:absolute;
-  left:5px;
-  bottom:20px;
+  left:20px;
+  bottom:10px;
   width:22px;height:22px;
   border-radius:999px;
   z-index:30;
