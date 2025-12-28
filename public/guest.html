@@ -46,6 +46,19 @@
               </div>
 
               <div class="chat-overlay" id="chatOverlay"></div>
+
+<div class="chat-input-overlay">
+  <input
+    id="quickChatInput"
+    type="text"
+    placeholder="💬 Nhập tin nhắn..."
+    autocomplete="off"
+  />
+  <button id="quickChatSend">➤</button>
+</div>
+
+
+
 <div class="pin-overlay" id="pinOverlay"></div>
 
                   <div class="reactions-layer" id="reactionsLayerGuestMain"></div>
@@ -123,6 +136,35 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+const quickInput = document.getElementById("quickChatInput");
+const quickSend  = document.getElementById("quickChatSend");
+
+if(quickInput && quickSend){
+  function sendQuickChat(){
+    const text = quickInput.value.trim();
+    if(!text) return;
+
+    socket.emit("chat", {
+      roomId,
+      name: document.getElementById("chatName")?.value || "Viewer",
+      text
+    });
+
+    quickInput.value = "";
+  }
+
+  quickSend.onclick = sendQuickChat;
+
+  quickInput.addEventListener("keydown", e=>{
+    if(e.key === "Enter"){
+      e.preventDefault();
+      sendQuickChat();
+    }
+  });
+}
+
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const me = document.getElementById("me");
