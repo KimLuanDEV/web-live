@@ -778,3 +778,51 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
     opacity:1;
   }
 }
+
+/* ===== LOBBY ===== */
+.lobby-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill,minmax(240px,1fr));
+  gap:12px;
+}
+.lobby-item{
+  text-decoration:none;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:14px;
+  padding:14px;
+  background:rgba(0,0,0,.35);
+  transition:.15s;
+}
+.lobby-item:hover{
+  transform:translateY(-2px);
+  border-color:#ff3b6b;
+}
+.lobby-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.lobby-meta{
+  margin-top:8px;
+  display:flex;
+  gap:8px;
+}
+.lobby-chip{
+  font-size:13px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.2);
+}
+.lobby-cta{
+  margin-top:10px;
+  font-size:13px;
+  opacity:.85;
+}
+.badge--live{
+  background:#ff3b6b;
+  color:#fff;
+  padding:4px 8px;
+  border-radius:6px;
+  font-size:12px;
+}

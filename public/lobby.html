@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Lobby - Đang LIVE</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="./style.css">
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="topbar">
+        <div class="brand">
+          <span class="brand__dot"></span>
+          <div>
+            <div class="brand__title">🏟️ SẢNH CHỜ</div>
+            <small>Danh sách host đang LIVE</small>
+          </div>
+        </div>
+        <div class="pills">
+          <a class="btn" href="./index.html">➕ Tạo phòng</a>
+          <button id="refresh">🔄</button>
+        </div>
+      </div>
+
+      <div id="empty" class="log">Chưa có phòng nào đang live.</div>
+      <div id="grid" class="lobby-grid"></div>
+    </div>
+  </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+const grid = document.getElementById("grid");
+const empty = document.getElementById("empty");
+
+function pad(n){return String(n).padStart(2,"0")}
+function hms(ms){
+  const s = Math.floor(ms/1000);
+  return `${pad(s/3600|0)}:${pad((s%3600)/60|0)}:${pad(s%60)}`
+}
+
+function render(list){
+  grid.innerHTML = "";
+  empty.style.display = list.length ? "none":"block";
+
+  list.forEach(r=>{
+    const a = document.createElement("a");
+    a.className="lobby-item";
+    a.href=`/viewer.html?room=${r.roomId}`;
+    a.innerHTML=`
+      <div class="lobby-head">
+        <b>🎥 ${r.roomId}</b>
+        <span class="badge badge--live">LIVE</span>
+      </div>
+      <div class="lobby-meta">
+        <span class="lobby-chip">👁 ${r.viewers}</span>
+        <span class="lobby-chip">⏱ ${hms(Date.now()-r.liveStartTs)}</span>
+      </div>
+      <div class="lobby-cta">Vào xem ➜</div>
+    `;
+    grid.appendChild(a);
+  })
+}
+
+socket.emit("lobby-get");
+socket.on("lobby-update", d=>render(d.rooms||[]));
+document.getElementById("refresh").onclick=()=>socket.emit("lobby-get");
+setInterval(()=>socket.emit("lobby-get"),3000);
+</script>
+</body>
+</html>

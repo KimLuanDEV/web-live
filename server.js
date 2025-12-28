@@ -34,6 +34,32 @@ function emitViewerCount(roomId) {
   if (!room) return;
   io.to(roomId).emit("viewer-count", { count: room.viewers.size });
 }
+
+
+/* ===== LOBBY (SẢNH CHỜ) ===== */
+function getLobbyList() {
+  const list = [];
+  for (const [roomId, room] of rooms.entries()) {
+    // điều kiện "đang live": có host + đã live-start
+    if (room.broadcasterId && room.liveStartTs) {
+      list.push({
+        roomId,
+        viewers: room.viewers.size,
+        liveStartTs: room.liveStartTs,
+        hasGuest: !!room.guestId
+      });
+    }
+  }
+  // ưu tiên phòng đông người xem
+  list.sort((a, b) => (b.viewers - a.viewers) || (b.liveStartTs - a.liveStartTs));
+  return list;
+}
+
+function emitLobbyUpdate() {
+  io.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
+}
+
+
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
   try {
@@ -54,6 +80,11 @@ app.get("/ice", async (_req, res) => {
 });
 
 io.on("connection", (socket) => {
+
+  // Client (lobby.html) gọi để lấy danh sách phòng đang live
+socket.on("lobby-get", () => {
+  socket.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
+});
 
   // ===== ICE RESTART RELAY =====
   // Any peer can ask another peer to perform ICE restart
@@ -110,6 +141,7 @@ socket.on("live-start", ({ roomId, startTs }) => {
   const ts = typeof startTs === "number" ? startTs : Date.now();
   room.liveStartTs = ts;
   io.to(roomId).emit("live-start", { startTs: ts });
+   emitLobbyUpdate();
 });
 
 socket.on("live-stop", ({ roomId }) => {
@@ -118,6 +150,8 @@ socket.on("live-stop", ({ roomId }) => {
   if (room.broadcasterId !== socket.id) return; // only host can stop
   room.liveStartTs = null;
   io.to(roomId).emit("live-stop");
+  emitLobbyUpdate();
+
 });
 
 
@@ -167,6 +201,8 @@ socket.on("live-stop", ({ roomId }) => {
     if (role === "viewer") {
       room.viewers.add(socket.id);
       emitViewerCount(roomId);
+      emitLobbyUpdate();
+
       io.to(roomId).emit("viewer-join", { id: socket.id, count: room.viewers.size });
 
       if (room.broadcasterId) {
@@ -294,6 +330,9 @@ socket.on("send-gift", ({ roomId, gift }) => {
     room.guestId = guestId;
     io.to(guestId).emit("guest-approved", { roomId });
     io.to(roomId).emit("guest-online", { guestId });
+
+    emitLobbyUpdate();
+
   });
 
   socket.on("guest-reject", ({ guestId }) => {
@@ -333,6 +372,8 @@ socket.on("send-gift", ({ roomId, gift }) => {
     if (role === "viewer") {
       room.viewers.delete(socket.id);
       emitViewerCount(roomId);
+      emitLobbyUpdate();
+
       io.to(roomId).emit("viewer-leave", { id: socket.id, count: room.viewers.size });
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
@@ -343,6 +384,8 @@ socket.on("send-gift", ({ roomId, gift }) => {
       if (room.broadcasterId === socket.id) {
         room.broadcasterId = null;
         room.liveStartTs = null;
+        emitLobbyUpdate();
+
         io.to(roomId).emit("live-stop");
         io.to(roomId).emit("broadcaster-offline");
       }
@@ -351,6 +394,8 @@ socket.on("send-gift", ({ roomId, gift }) => {
     if (role === "guest") {
       if (room.guestId === socket.id) {
         room.guestId = null;
+        emitLobbyUpdate();
+
         io.to(roomId).emit("guest-offline");
       }
     }
@@ -362,6 +407,9 @@ socket.on("send-gift", ({ roomId, gift }) => {
 });
 
 
+app.get("/lobby", (_, res) => {
+  res.sendFile(path.join(__dirname, "public", "lobby.html"));
+});
 
 
 const PORT = process.env.PORT || 3000;
