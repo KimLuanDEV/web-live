@@ -164,6 +164,22 @@
 </div>
 
 
+<!-- COUNTDOWN OVERLAY -->
+<div id="countdownOverlay" class="cd-overlay hidden" aria-hidden="true">
+  <div class="cd-bg"></div>
+
+  <div class="cd-panel">
+    <div class="cd-ring"></div>
+
+    <div class="cd-title">🎥 Đang vào phòng LIVE</div>
+    <div class="cd-sub" id="cdRoomText">Room: -</div>
+
+    <div class="cd-number" id="cdNumber">3</div>
+
+    <div class="cd-hint">Chuẩn bị chuyển sang Host…</div>
+  </div>
+</div>
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -254,6 +270,26 @@ modal?.addEventListener("keydown", (e)=>{
   if (e.key === "Enter") btnConfirmRoom.click();
 });
 
+// ===== COUNTDOWN OVERLAY HELPERS =====
+const countdownOverlay = document.getElementById("countdownOverlay");
+const cdNumber = document.getElementById("cdNumber");
+const cdRoomText = document.getElementById("cdRoomText");
+
+function showCountdownOverlay(room){
+  if (!countdownOverlay) return;
+  cdRoomText && (cdRoomText.textContent = `Room: ${room}`);
+  cdNumber && (cdNumber.textContent = "3");
+  countdownOverlay.classList.remove("hidden");
+  countdownOverlay.setAttribute("aria-hidden","false");
+}
+
+function hideCountdownOverlay(){
+  if (!countdownOverlay) return;
+  countdownOverlay.classList.add("hidden");
+  countdownOverlay.setAttribute("aria-hidden","true");
+}
+
+// ===== REPLACE confirm handler =====
 btnConfirmRoom?.addEventListener("click", ()=>{
   const room = (roomInput.value || "").trim();
   const name = (hostNameInput.value || "").trim();
@@ -264,37 +300,32 @@ btnConfirmRoom?.addEventListener("click", ()=>{
     return;
   }
 
-  // URL đích
   const url = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
 
-  // ===== COUNTDOWN 3..2..1 =====
+  // khóa UI modal tạo phòng
   btnConfirmRoom.classList.add("is-loading");
-  btnCancelRoom && (btnCancelRoom.disabled = true);
+  if (btnCancelRoom) btnCancelRoom.disabled = true;
+  roomInput.disabled = true;
+  hostNameInput.disabled = true;
 
-  const oldText = btnConfirmRoom.textContent;
-  btnConfirmRoom.textContent = "🚀 Đang vào phòng";
-
-  let pill = btnConfirmRoom.querySelector(".countdown-pill");
-  if (!pill){
-    pill = document.createElement("span");
-    pill.className = "countdown-pill";
-    btnConfirmRoom.appendChild(pill);
-  }
+  // bật overlay + countdown
+  showCountdownOverlay(room);
 
   let n = 3;
-  pill.textContent = String(n);
+  cdNumber && (cdNumber.textContent = String(n));
 
   const timer = setInterval(()=>{
     n--;
-    pill.textContent = String(n);
+    cdNumber && (cdNumber.textContent = String(n));
 
     if (n <= 0){
       clearInterval(timer);
-      // chuyển qua host sau khi đếm xong
+      // chuyển trang
       window.location.href = url;
     }
   }, 650);
 });
+
 
 
 
