@@ -251,10 +251,8 @@ const key = String(roomId).toLowerCase(); // ⭐ CHUẨN HOÁ
     room.broadcasterToken = token;
   }
 
- room.hostProfile = {
-    name: profile?.name || "Host",
-    ts: Date.now(),
-  };
+
+
   const old = room.broadcasterId;
   room.broadcasterId = socket.id;
 
