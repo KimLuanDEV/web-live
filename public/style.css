@@ -1941,11 +1941,13 @@ button.is-loading{
 .chat-fab{
   position:absolute;
   left:5px;
-  bottom:80px;
+  bottom:20px;
   width:0;height:0;
   border-radius:999px;
   z-index:30;
   pointer-events:auto; /* ✅ quan trọng */
+  align-items: center;
+  justify-content: center;
 }
 
 .chat-input-overlay{
