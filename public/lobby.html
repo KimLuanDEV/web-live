@@ -164,6 +164,43 @@
 </div>
 
 
+<!-- NEON ERROR MODAL -->
+<div id="errorModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-backdrop modal-backdrop--neon"></div>
+
+  <div class="neon-modal neon-modal--error" tabindex="-1">
+    <div class="neon-frame"></div>
+    <div class="neon-scan"></div>
+
+    <div class="neon-top">
+      <div class="neon-livePill neon-livePill--error">
+        <span class="neon-dot"></span>
+        <span>LỖI TẠO PHÒNG</span>
+      </div>
+      <button id="btnErrorX" class="neon-x" aria-label="Đóng">✕</button>
+    </div>
+
+    <div class="neon-hero">
+      <h3 class="neon-title" style="color:#ff5c7c">
+        ❌ Room đã tồn tại
+      </h3>
+      <div class="neon-sub">
+        Room ID này đang được sử dụng hoặc đang LIVE.<br>
+        Vui lòng chọn ID khác.
+      </div>
+    </div>
+
+    <div class="neon-actions">
+      <button id="btnErrorOk" class="neon-btn neon-btn--main">
+        🔁 Nhập Room khác
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+
 <!-- COUNTDOWN OVERLAY -->
 <div id="countdownOverlay" class="cd-overlay hidden" aria-hidden="true">
   <div class="cd-bg"></div>
@@ -270,6 +307,37 @@ modal?.addEventListener("keydown", (e)=>{
   if (e.key === "Enter") btnConfirmRoom.click();
 });
 
+
+// ===== NEON ERROR MODAL =====
+const errorModal = document.getElementById("errorModal");
+const btnErrorOk = document.getElementById("btnErrorOk");
+const btnErrorX  = document.getElementById("btnErrorX");
+
+function openErrorModal(){
+  if (!errorModal) return;
+  errorModal.classList.remove("hidden");
+  setTimeout(()=> roomInput?.focus(), 0);
+}
+
+function closeErrorModal(){
+  if (!errorModal) return;
+  errorModal.classList.add("hidden");
+}
+
+// click nền để đóng
+errorModal?.querySelector(".modal-backdrop")
+  ?.addEventListener("click", closeErrorModal);
+
+btnErrorOk?.addEventListener("click", closeErrorModal);
+btnErrorX?.addEventListener("click", closeErrorModal);
+
+document.addEventListener("keydown", (e)=>{
+  if (!errorModal || errorModal.classList.contains("hidden")) return;
+  if (e.key === "Escape") closeErrorModal();
+});
+
+
+
 // ===== COUNTDOWN OVERLAY HELPERS =====
 const countdownOverlay = document.getElementById("countdownOverlay");
 const cdNumber = document.getElementById("cdNumber");
@@ -303,14 +371,10 @@ btnConfirmRoom?.addEventListener("click", ()=>{
 
   // 👉 CHECK TRÙNG ROOM TRƯỚC
   socket.emit("check-room-available", { roomId: room }, (res)=>{
-    if (!res?.ok) {
-      if (res.reason === "EXIST") {
-        alert("❌ Room ID đã tồn tại hoặc đang LIVE.\nVui lòng chọn ID khác!");
-      } else {
-        alert("❌ Room ID không hợp lệ");
-      }
-      return;
-    }
+    if (res.reason === "EXIST") {
+  openErrorModal();
+}
+
 
     // ===== ROOM OK → MỚI CHO VÀO =====
     const url = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
