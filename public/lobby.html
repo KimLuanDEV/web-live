@@ -90,6 +90,37 @@
 </div>
 
 
+<!-- ERROR MODAL (NEON) -->
+<div id="errModal" class="modal hidden" role="dialog" aria-modal="true">
+  <div class="modal-backdrop modal-backdrop--neon"></div>
+
+  <div class="neon-modal" tabindex="-1" style="max-width:520px">
+    <div class="neon-frame"></div>
+    <div class="neon-scan"></div>
+
+    <div class="neon-top">
+      <div class="neon-livePill">
+        <span class="neon-dot"></span>
+        <span>LỖI TẠO PHÒNG</span>
+      </div>
+      <button id="errX" class="neon-x" type="button" aria-label="Đóng">✕</button>
+    </div>
+
+    <div style="padding:14px 2px 6px">
+      <h3 style="margin:0 0 6px">⚠️ Không tạo được</h3>
+      <div id="errText" style="opacity:.9; line-height:1.4"></div>
+    </div>
+
+    <div class="neon-actions" style="border-top:0; padding-top:6px">
+      <div></div>
+      <div class="neon-btns">
+        <button id="errOk" class="neon-btn neon-btn--main" type="button">OK</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <!-- WELCOME MODAL (NEON) -->
 <div id="welcomeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
   <div class="modal-backdrop modal-backdrop--neon"></div>
@@ -270,6 +301,31 @@ modal?.addEventListener("keydown", (e)=>{
   if (e.key === "Enter") btnConfirmRoom.click();
 });
 
+
+// ===== ERROR MODAL (NEON) =====
+const errModal = document.getElementById("errModal");
+const errText = document.getElementById("errText");
+const errOk = document.getElementById("errOk");
+const errX = document.getElementById("errX");
+
+function openErr(msg){
+  if (errText) errText.textContent = String(msg || "Có lỗi xảy ra.");
+  errModal?.classList.remove("hidden");
+  setTimeout(()=> errOk?.focus?.(), 0);
+}
+function closeErr(){
+  errModal?.classList.add("hidden");
+}
+errOk?.addEventListener("click", closeErr);
+errX?.addEventListener("click", closeErr);
+errModal?.querySelector(".modal-backdrop")?.addEventListener("click", closeErr);
+document.addEventListener("keydown", (e)=>{
+  if (!errModal || errModal.classList.contains("hidden")) return;
+  if (e.key === "Escape") closeErr();
+});
+
+
+
 // ===== COUNTDOWN OVERLAY HELPERS =====
 const countdownOverlay = document.getElementById("countdownOverlay");
 const cdNumber = document.getElementById("cdNumber");
@@ -291,16 +347,17 @@ function hideCountdownOverlay(){
 
 // ===== REPLACE confirm handler =====
 btnConfirmRoom?.addEventListener("click", ()=>{
-  const room = (roomInput.value || "").trim();
+  const roomRaw = (roomInput.value || "").trim();
   const name = (hostNameInput.value || "").trim();
 
-  if(!room){
-    alert("Vui lòng nhập Room ID");
+  if(!roomRaw){
+    openErr("Vui lòng nhập Room ID.");
     roomInput.focus();
     return;
   }
 
-  const url = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
+  // chuẩn hoá client-side luôn (để hoa/thường coi như 1)
+  const room = roomRaw.toLowerCase();
 
   // khóa UI modal tạo phòng
   btnConfirmRoom.classList.add("is-loading");
@@ -308,23 +365,46 @@ btnConfirmRoom?.addEventListener("click", ()=>{
   roomInput.disabled = true;
   hostNameInput.disabled = true;
 
-  // bật overlay + countdown
-  showCountdownOverlay(room);
+  // hỏi server xem room có bị chiếm không
+  socket.emit("room-check", { roomId: room }, (res)=>{
+    const ok = !!res?.ok;
 
-  let n = 3;
-  cdNumber && (cdNumber.textContent = String(n));
+    if (!ok){
+      // mở khoá UI
+      btnConfirmRoom.classList.remove("is-loading");
+      if (btnCancelRoom) btnCancelRoom.disabled = false;
+      roomInput.disabled = false;
+      hostNameInput.disabled = false;
 
-  const timer = setInterval(()=>{
-    n--;
+      // lý do
+      if (res?.reason === "taken"){
+        openErr(`Room ID "${room}" đang có host sử dụng. Vui lòng chọn ID khác.`);
+      } else {
+        openErr("Không kiểm tra được Room ID. Thử lại nhé.");
+      }
+      roomInput.focus();
+      return;
+    }
+
+    // OK => bật overlay + countdown rồi chuyển trang
+    const url = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
+
+    showCountdownOverlay(room);
+
+    let n = 3;
     cdNumber && (cdNumber.textContent = String(n));
 
-    if (n <= 0){
-      clearInterval(timer);
-      // chuyển trang
-      window.location.href = url;
-    }
-  }, 650);
+    const timer = setInterval(()=>{
+      n--;
+      cdNumber && (cdNumber.textContent = String(n));
+      if (n <= 0){
+        clearInterval(timer);
+        window.location.href = url;
+      }
+    }, 650);
+  });
 });
+
 
 
 

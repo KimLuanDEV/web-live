@@ -23,12 +23,26 @@ app.get("/", (_, res) => {
  */
 const rooms = new Map();
 
+function normRoomId(roomId) {
+  return String(roomId || "").trim().toLowerCase();
+}
+
+
 function getRoom(roomId) {
+  roomId = normRoomId(roomId);
   if (!rooms.has(roomId)) {
-    rooms.set(roomId, { broadcasterId: null, viewers: new Set(), guestId: null, liveStartTs: null, pinnedNote: null, hostProfile: null, });
+    rooms.set(roomId, {
+      broadcasterId: null,
+      viewers: new Set(),
+      guestId: null,
+      liveStartTs: null,
+      pinnedNote: null,
+      hostProfile: null,
+    });
   }
   return rooms.get(roomId);
 }
+
 
 function emitViewerCount(roomId) {
   const room = rooms.get(roomId);
@@ -84,6 +98,20 @@ app.get("/ice", async (_req, res) => {
 
 io.on("connection", (socket) => {
 
+socket.on("room-check", ({ roomId }, cb) => {
+  const rid = normRoomId(roomId);
+  if (!rid) return cb?.({ ok: false, reason: "empty" });
+
+  const room = rooms.get(rid);
+
+  // CHỈ CHẶN khi phòng đang có host online (đang chiếm room)
+  // -> host thoát/reload thì broadcasterId sẽ bị clear ở disconnect, nên tạo lại được.
+  const taken = !!(room && room.broadcasterId);
+
+  if (taken) return cb?.({ ok: false, reason: "taken", roomId: rid });
+
+  return cb?.({ ok: true, roomId: rid });
+});
 
 
 socket.on("host-update-profile", ({ roomId, name }) => {
@@ -195,6 +223,7 @@ socket.on("live-stop", ({ roomId }) => {
 
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
+     roomId = normRoomId(roomId);
     if (!roomId || !role) return;
 
     socket.join(roomId);
