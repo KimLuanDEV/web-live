@@ -1894,8 +1894,7 @@ button.is-loading{
 /* ===== CHAT FAB ===== */
 .chat-fab{
   position:absolute;
-  right:14px;
-  bottom:14px;
+  bottom:20px;
   width:44px;
   height:44px;
   border-radius:50%;
@@ -1942,7 +1941,7 @@ button.is-loading{
 .chat-fab{
   position:absolute;
   left:5px;
-  bottom:20px;
+  bottom:80px;
   width:0;height:0;
   border-radius:999px;
   z-index:30;
