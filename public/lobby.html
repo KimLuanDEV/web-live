@@ -241,7 +241,7 @@
     </div>
 
     <label>Tên hiển thị</label>
-    <input id="loginName" placeholder="Ví dụ: GreedyKing" />
+    <input id="loginName" placeholder="Ví dụ: abc123" />
 
     <label>Avatar (URL)</label>
     <input id="loginAvatar" placeholder="https://..." />
@@ -295,7 +295,7 @@ function renderUser(){
     btnLogin.classList.add("hidden");
     userInfo.classList.remove("hidden");
     userNameEl.textContent = user.name;
-    userAvatarEl.src = user.avatar || "https://i.pravatar.cc/100?u=" + user.name;
+    userAvatarEl.src = user.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360" + user.name;
   }else{
     btnLogin.classList.remove("hidden");
     userInfo.classList.add("hidden");
