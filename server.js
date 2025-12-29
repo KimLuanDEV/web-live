@@ -103,6 +103,29 @@ app.get("/ice", async (_req, res) => {
   }
 });
 
+
+function closeRoom(roomId, reason = "host_left") {
+  const room = rooms.get(roomId);
+  if (!room) return;
+
+  // 🚨 báo cho toàn bộ viewer + guest
+  io.to(roomId).emit("room-closed", { reason });
+
+  // clear state
+  room.broadcasterId = null;
+  room.guestId = null;
+  room.liveStartTs = null;
+  room.viewers.clear();
+
+  emitLobbyUpdate();
+
+  // xoá room sau 1 chút cho client kịp nhận event
+  setTimeout(() => {
+    rooms.delete(roomId);
+  }, 1000);
+}
+
+
 io.on("connection", (socket) => {
 
 socket.on("room-check", ({ roomId }, cb) => {
@@ -203,12 +226,11 @@ socket.on("live-start", ({ roomId, startTs }) => {
 socket.on("live-stop", ({ roomId }) => {
   if (!roomId) return;
   const room = getRoom(roomId);
-  if (room.broadcasterId !== socket.id) return; // only host can stop
-  room.liveStartTs = null;
-  io.to(roomId).emit("live-stop");
-  emitLobbyUpdate();
+  if (room.broadcasterId !== socket.id) return;
 
+  closeRoom(roomId, "host_stop");
 });
+
 
 
 
@@ -434,6 +456,17 @@ socket.on("send-gift", ({ roomId, gift }) => {
   });
 
   socket.on("disconnect", () => {
+
+
+  for (const [roomId, room] of rooms.entries()) {
+    if (room.broadcasterId === socket.id) {
+      closeRoom(roomId, "host_disconnect");
+      break;
+    }
+  }
+
+
+
     const roomId = socket.data.roomId;
     const role = socket.data.role;
     if (!roomId) return;
@@ -452,33 +485,26 @@ socket.on("send-gift", ({ roomId, gift }) => {
       }
     }
 
-  if (role === "broadcaster") {
-  // ⏱️ Đánh dấu host đã rời
+   if (role === "broadcaster") {
+  // ⏱️ Bắt đầu chờ giải phóng
   room.pendingRelease = true;
 
-  // 🔔 BÁO NGAY cho viewer + guest → hiện modal + countdown
-  io.to(roomId).emit("host-left", {
-    reason: "host-disconnect",
-    redirectAfter: 5 // giây (client tự đếm)
-  });
-
-  // ⏱️ Sau ROOM_RELEASE_DELAY nếu host không quay lại thì giải phóng phòng
   room.releaseTimer = setTimeout(() => {
-    if (!room.pendingRelease) return;
+    // Nếu trong thời gian chờ host KHÔNG quay lại
+    if (room.pendingRelease) {
+      console.log("⏱️ Auto release room:", roomId);
 
-    console.log("⏱️ Auto release room:", roomId);
+      room.broadcasterId = null;
+      room.liveStartTs = null;
+      room.guestId = null;
+      room.pendingRelease = false;
+      room.releaseTimer = null;
 
-    room.broadcasterId = null;
-    room.liveStartTs = null;
-    room.guestId = null;
-    room.pendingRelease = false;
-    room.releaseTimer = null;
-
-    io.to(roomId).emit("live-stop");
-    emitLobbyUpdate();
+      io.to(roomId).emit("live-stop");
+      emitLobbyUpdate();
+    }
   }, ROOM_RELEASE_DELAY);
 }
-
 
 
     if (role === "guest") {
