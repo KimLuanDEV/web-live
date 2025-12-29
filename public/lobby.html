@@ -615,57 +615,11 @@ function requestLobby(){
   socket.emit("lobby-get");
 }
 
-
-function fmtTime(ms){
-  const s = Math.floor(ms/1000);
-  const m = Math.floor(s/60);
-  return `${m}p`;
-}
-
-socket.on("lobby-update", ({ rooms }) => {
-  grid.innerHTML = "";
-
-  if (!rooms.length){
-    empty.style.display = "block";
-    return;
-  }
-  empty.style.display = "none";
-
-  rooms.forEach(r => {
-    const card = document.createElement("div");
-    card.className = "host-card";
-
-    const avatar =
-      r.host?.avatar ||
-      "https://ui-avatars.com/api/?background=0D8ABC&color=fff&name=" +
-      encodeURIComponent(r.host?.name || "Host");
-
-    const isHot = r.viewers >= 10;
-
-    card.innerHTML = `
-      <img class="host-avatar" src="${avatar}">
-      <div class="host-body">
-        <div class="host-name">${r.host?.name || "Host"}</div>
-        <div class="host-room">Room: ${r.roomId}</div>
-
-        <div class="host-meta">
-          <span class="h-badge h-live">🔴 LIVE</span>
-          ${r.hasGuest ? `<span class="h-badge h-guest">👤 Guest</span>` : ``}
-          ${isHot ? `<span class="h-badge h-hot">🔥 HOT</span>` : ``}
-          <span class="h-badge">👁 ${r.viewers}</span>
-          <span class="h-badge">⏱ ${fmtTime(Date.now() - r.liveStartTs)}</span>
-        </div>
-      </div>
-    `;
-
-    card.onclick = () => {
-      location.href = `/viewer.html?room=${r.roomId}`;
-    };
-
-    grid.appendChild(card);
-  });
+socket.on("lobby-update", d => {
+  __rooms = (d && d.rooms) ? d.rooms : [];
+  __ts = d && d.ts ? d.ts : Date.now();
+  render(__rooms);
 });
-
 
 document.getElementById("refresh").onclick = requestLobby;
 
