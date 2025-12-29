@@ -538,6 +538,7 @@ socket.on("send-gift", ({ roomId, gift }) => {
   }
 });
 
+});
 
 
 app.get("/lobby", (_, res) => {
