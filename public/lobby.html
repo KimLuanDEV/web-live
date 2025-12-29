@@ -246,7 +246,21 @@ const VIRTUAL_ROOMS = [
     viewers: 462,
     avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
     link: "https://www.bigo.tv/146414661"
-  }
+  },
+  {
+    roomId: "ZaiZai1102",
+    title: "ZaiZai1102",
+    viewers: 358,
+    avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    link: "https://www.bigo.tv/Zaizai1102"
+  },
+  {
+    roomId: "mie39793979",
+    title: "Mie❤️",
+    viewers: 462,
+    avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    link: "https://www.bigo.tv/815253377"
+  },
 ];
 
 function getVirtualRooms(){
@@ -604,7 +618,7 @@ function render(list){
         <div class="lobby-badges">
           ${
             r.__virtual
-              ? `<span class="badge badge--virtual" style="margin:0">Live</span>`
+              ? `<span class="badge badge--virtual" style="margin:0">Bigo Live</span>`
               : `<span class="lobby-livePill"><span class="lobby-liveDot"></span> LIVE</span>`
           }
           ${(!r.__virtual && r.hasGuest) ? `<span class="badge badge--info" style="margin:0">Co-host</span>` : ``}
