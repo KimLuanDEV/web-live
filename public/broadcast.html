@@ -111,6 +111,10 @@
                <!-- Hướng dẫn -->
               <button id="btnHostGuide" class="av-btn" title="Hướng dẫn sử dụng">❔</button>
 
+               <!-- PK -->
+              <button id="btnPK" class="av-btn" title="PK với host khác">⚔️</button>
+
+
             </div>
             <div class="ctrl-hint">Nhấn ☰ để thu gọn</div>
           </div>
@@ -1538,6 +1542,55 @@ socket.on("live-ended-stats", (stats) => {
   document.addEventListener("wheel", e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
+
+
+
+const btnPK = document.getElementById("btnPK");
+
+btnPK.onclick = () => {
+  socket.emit("lobby-get");
+
+  socket.once("lobby-update", ({ rooms }) => {
+    const others = rooms.filter(r => r.roomId !== roomId);
+    if (!others.length) {
+      alert("Không có host nào đang live");
+      return;
+    }
+
+    const target = prompt(
+      "Nhập Room ID host muốn PK:\n" +
+      others.map(r => `- ${r.roomId}`).join("\n")
+    );
+
+    if (target) {
+      socket.emit("pk-invite", {
+        fromRoom: roomId,
+        toRoom: target
+      });
+    }
+  });
+};
+
+socket.on("pk-invite-received", ({ fromRoom }) => {
+  if (confirm(`⚔️ Host ${fromRoom} muốn PK với bạn`)) {
+    socket.emit("pk-accept", {
+      roomA: fromRoom,
+      roomB: roomId
+    });
+  }
+});
+
+socket.on("pk-start", () => toast("⚔️ PK BẮT ĐẦU"));
+socket.on("pk-score", ({ my, opp }) => {
+  console.log("PK SCORE:", my, opp);
+});
+socket.on("pk-end", ({ my, opp }) => {
+  alert(
+    my > opp ? "🏆 Bạn thắng PK" :
+    my < opp ? "💀 Bạn thua PK" :
+    "🤝 Hòa PK"
+  );
+});
 
 
 

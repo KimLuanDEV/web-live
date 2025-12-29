@@ -877,6 +877,9 @@ socket.on("room-closed", ({ reason }) => {
   showKickModal("Host đã kết thúc livestream");
 });
 
+socket.on("pk-start", ()=>console.log("PK start"));
+socket.on("pk-score", s=>console.log("PK score", s));
+socket.on("pk-end", ()=>console.log("PK end"));
 
 
 

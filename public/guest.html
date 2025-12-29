@@ -943,6 +943,11 @@ socket.on("room-closed", ({ reason }) => {
 });
 
 
+socket.on("pk-start", ()=>console.log("PK start"));
+socket.on("pk-score", s=>console.log("PK score", s));
+socket.on("pk-end", ()=>console.log("PK end"));
+
+
   // Chặn pinch zoom (iOS)
   document.addEventListener("gesturestart", e => e.preventDefault());
   document.addEventListener("gesturechange", e => e.preventDefault());
