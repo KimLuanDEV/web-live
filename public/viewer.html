@@ -152,6 +152,13 @@
   </div>
 </div>
 
+<div id="kickModal" class="kick-modal hidden">
+  <div class="kick-box">
+    <h3>📴 Livestream đã kết thúc</h3>
+    <p id="kickReason">Host đã rời phòng</p>
+    <p>Quay về Lobby sau <b id="kickCount">5</b>s</p>
+  </div>
+</div>
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -172,6 +179,28 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
+
+    const kickModal = document.getElementById("kickModal");
+const kickReason = document.getElementById("kickReason");
+const kickCount = document.getElementById("kickCount");
+
+socket.on("room-closing", ({ reason, delay }) => {
+  kickReason.textContent = reason || "Phòng đã đóng";
+  kickModal.classList.remove("hidden");
+
+  let sec = Math.floor((delay || 5000) / 1000);
+  kickCount.textContent = sec;
+
+  const t = setInterval(() => {
+    sec--;
+    kickCount.textContent = sec;
+    if (sec <= 0) {
+      clearInterval(t);
+      window.location.href = "/lobby.html";
+    }
+  }, 1000);
+});
+
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
@@ -791,37 +820,11 @@ function sendQuickChat(){
 }
 
 
-const kickModal = document.getElementById("kickModal");
-const kickReason = document.getElementById("kickReason");
-const kickCount = document.getElementById("kickCount");
-
-socket.on("room-closing", ({ reason, delay }) => {
-  kickReason.textContent = reason || "Phòng đã đóng";
-  kickModal.classList.remove("hidden");
-
-  let sec = Math.floor((delay || 5000) / 1000);
-  kickCount.textContent = sec;
-
-  const t = setInterval(() => {
-    sec--;
-    kickCount.textContent = sec;
-    if (sec <= 0) {
-      clearInterval(t);
-      window.location.href = "/lobby.html";
-    }
-  }, 1000);
-});
 
 
   </script>
 
-<div id="kickModal" class="kick-modal hidden">
-  <div class="kick-box">
-    <h3>📴 Livestream đã kết thúc</h3>
-    <p id="kickReason">Host đã rời phòng</p>
-    <p>Quay về Lobby sau <b id="kickCount">5</b>s</p>
-  </div>
-</div>
+
 
 
 </body>

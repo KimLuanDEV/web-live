@@ -136,6 +136,17 @@
     <div id="chatBox" class="chatbox"></div>
   </div>
 
+
+
+<div id="kickModal" class="kick-modal hidden">
+  <div class="kick-box">
+    <h3>📴 Livestream đã kết thúc</h3>
+    <p id="kickReason">Host đã rời phòng</p>
+    <p>Quay về Lobby sau <b id="kickCount">5</b>s</p>
+  </div>
+</div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -155,6 +166,30 @@
     document.getElementById("roomCode").textContent = roomId;
 
     const socket = io();
+
+
+    const kickModal = document.getElementById("kickModal");
+const kickReason = document.getElementById("kickReason");
+const kickCount = document.getElementById("kickCount");
+
+socket.on("room-closing", ({ reason, delay }) => {
+  kickReason.textContent = reason || "Phòng đã đóng";
+  kickModal.classList.remove("hidden");
+
+  let sec = Math.floor((delay || 5000) / 1000);
+  kickCount.textContent = sec;
+
+  const t = setInterval(() => {
+    sec--;
+    kickCount.textContent = sec;
+    if (sec <= 0) {
+      clearInterval(t);
+      window.location.href = "/lobby.html";
+    }
+  }, 1000);
+});
+
+
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabGuest(){
       const fab = document.getElementById("ctrlFabGuest");
@@ -878,39 +913,11 @@ function sendQuickChat(){
   closeQuickChat();
 }
 
-const kickModal = document.getElementById("kickModal");
-const kickReason = document.getElementById("kickReason");
-const kickCount = document.getElementById("kickCount");
-
-socket.on("room-closing", ({ reason, delay }) => {
-  kickReason.textContent = reason || "Phòng đã đóng";
-  kickModal.classList.remove("hidden");
-
-  let sec = Math.floor((delay || 5000) / 1000);
-  kickCount.textContent = sec;
-
-  const t = setInterval(() => {
-    sec--;
-    kickCount.textContent = sec;
-    if (sec <= 0) {
-      clearInterval(t);
-      window.location.href = "/lobby.html";
-    }
-  }, 1000);
-});
 
 
   </script>
 
 
-
-<div id="kickModal" class="kick-modal hidden">
-  <div class="kick-box">
-    <h3>📴 Livestream đã kết thúc</h3>
-    <p id="kickReason">Host đã rời phòng</p>
-    <p>Quay về Lobby sau <b id="kickCount">5</b>s</p>
-  </div>
-</div>
 
 
 </body>
