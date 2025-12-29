@@ -119,13 +119,6 @@ io.to(rid).emit("room-closed", {
   seconds: 5,
   redirect: "/lobby.html"
 });
-
-
-
-  // vẫn emit live-stop để UI nào đang nghe live-stop thì tắt
-  io.to(rid).emit("live-stop");
-
-  emitLobbyUpdate();
 }
 
 
