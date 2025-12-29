@@ -153,8 +153,108 @@
 </div>
 
 
+<!-- ROOM CLOSED MODAL (NEON) -->
+<div id="roomClosedModal" class="ncf hidden" aria-hidden="true">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box" role="dialog" aria-modal="true" aria-labelledby="rcmTitle">
+    <div class="ncf__frame"></div>
+    <div class="ncf__scan"></div>
+
+    <div class="ncf__top">
+      <div class="ncf__pill">
+        <span class="ncf__dot"></span>
+        <span>PHÒNG ĐÃ ĐÓNG</span>
+      </div>
+      <!-- không cho đóng bằng X để tránh kẹt -->
+      <button class="ncf__x" id="rcmX" type="button" aria-label="Đóng">✕</button>
+    </div>
+
+    <h3 id="rcmTitle" class="ncf__title">📴 Host đã kết thúc livestream</h3>
+
+    <div class="ncf__desc">
+      <div class="ncf__row">• Bạn sẽ được đưa về Lobby sau <b id="rcmCount">3</b> giây</div>
+      <div class="ncf__row" id="rcmReason" style="opacity:.9"></div>
+    </div>
+
+    <div class="ncf__actions">
+      <button id="rcmGoNow" class="ncf__btn ncf__btn--main" type="button">🏟️ Về Lobby ngay</button>
+    </div>
+  </div>
+</div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
+// ===== ROOM CLOSED MODAL (auto redirect 3s) =====
+const rcm = document.getElementById("roomClosedModal");
+const rcmBg = rcm?.querySelector(".ncf__bg");
+const rcmX = document.getElementById("rcmX");
+const rcmCountEl = document.getElementById("rcmCount");
+const rcmReasonEl = document.getElementById("rcmReason");
+const rcmGoNow = document.getElementById("rcmGoNow");
+
+let __rcmTimer = null;
+let __rcmOpen = false;
+
+function __goLobbyNow(){
+  try { if (typeof socket !== "undefined" && socket) socket.disconnect(); } catch {}
+  window.location.href = "/lobby.html";
+}
+
+function openRoomClosedModal(reason){
+  if (!rcm || __rcmOpen) return;
+  __rcmOpen = true;
+
+  // show
+  rcm.classList.remove("hidden");
+  rcm.setAttribute("aria-hidden", "false");
+
+  // reason text
+  const r = String(reason || "");
+  if (rcmReasonEl) {
+    rcmReasonEl.textContent =
+      r === "host_stop" ? "• Host đã bấm dừng live" :
+      r === "host_disconnect" ? "• Host mất kết nối / thoát phòng" :
+      "• Host đã rời phòng";
+  }
+
+  // countdown
+  let n = 3;
+  if (rcmCountEl) rcmCountEl.textContent = String(n);
+
+  if (__rcmTimer) clearInterval(__rcmTimer);
+  __rcmTimer = setInterval(() => {
+    n--;
+    if (rcmCountEl) rcmCountEl.textContent = String(Math.max(0, n));
+    if (n <= 0) {
+      clearInterval(__rcmTimer);
+      __rcmTimer = null;
+      __goLobbyNow();
+    }
+  }, 1000);
+
+  // actions
+  rcmGoNow?.addEventListener("click", __goLobbyNow, { once: true });
+
+  // nếu bạn muốn cho đóng modal thì vẫn về lobby luôn (tránh kẹt)
+  rcmBg?.addEventListener("click", __goLobbyNow, { once: true });
+  rcmX?.addEventListener("click", __goLobbyNow, { once: true });
+
+  document.addEventListener("keydown", (e)=>{
+    if (!rcm || rcm.classList.contains("hidden")) return;
+    if (e.key === "Escape") __goLobbyNow();
+  }, { once: true });
+}
+
+// Server bắn event này khi host rời/đóng phòng
+socket.on("room-closed", ({ reason }) => {
+  openRoomClosedModal(reason);
+});
+
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -800,5 +900,10 @@ function sendQuickChat(){
 
 
   </script>
+
+
+
+
+
 </body>
 </html>
