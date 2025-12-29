@@ -827,6 +827,12 @@ socket.on("host-profile-update", (profile) => {
     .forEach(img => img.src = getAvatarByName(profile.name));
 });
 
+socket.on("room-closed", ({ reason }) => {
+  alert("📴 Host đã rời phòng!");
+  window.location.href = "/lobby.html";
+});
+
+
 const chatFab = document.getElementById("chatFab");
 const chatInputOverlay = document.getElementById("chatInputOverlay");
 const quickChatInput = document.getElementById("quickChatInput");

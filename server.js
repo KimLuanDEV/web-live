@@ -103,6 +103,24 @@ app.get("/ice", async (_req, res) => {
   }
 });
 
+
+function closeRoom(roomId, reason = "host_left") {
+  const room = rooms.get(roomId);
+  if (!room) return;
+
+  // 🔔 báo cho tất cả client trong phòng
+  io.to(roomId).emit("room-closed", { reason });
+
+  // ❌ clear trạng thái phòng
+  room.broadcasterId = null;
+  room.guestId = null;
+  room.viewers.clear();
+  room.liveStartTs = null;
+
+  emitLobbyUpdate();
+}
+
+
 io.on("connection", (socket) => {
 
 socket.on("room-check", ({ roomId }, cb) => {
@@ -204,6 +222,9 @@ socket.on("live-stop", ({ roomId }) => {
   if (!roomId) return;
   const room = getRoom(roomId);
   if (room.broadcasterId !== socket.id) return; // only host can stop
+
+   closeRoom(roomId, "host_stop");
+
   room.liveStartTs = null;
   io.to(roomId).emit("live-stop");
   emitLobbyUpdate();
@@ -434,6 +455,13 @@ socket.on("send-gift", ({ roomId, gift }) => {
   });
 
   socket.on("disconnect", () => {
+
+     for (const [roomId, room] of rooms.entries()) {
+    if (room.broadcasterId === socket.id) {
+      // ❌ host rời → đóng phòng
+      closeRoom(roomId, "host_disconnect");
+    }
+  }
     const roomId = socket.data.roomId;
     const role = socket.data.role;
     if (!roomId) return;
