@@ -224,6 +224,44 @@
 <script>
 const socket = io();
 
+
+const VIRTUAL_ROOMS = [
+  {
+    roomId: "live-ao-1",
+    title: "🎬 Live Ảo: Clip Có Sẵn",
+    viewers: 128,
+    avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    link: "/viewer.html?room=live-ao-1"
+  },
+  {
+    roomId: "live-ao-2",
+    title: "🎵 Live Ảo: Music 24/7",
+    viewers: 56,
+    avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    link: "/viewer.html?room=live-ao-2"
+  },
+  {
+    roomId: "demo-room",
+    title: "✨ Demo Room (ảo)",
+    viewers: 12,
+    avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    link: "/viewer.html?room=demo-room"
+  }
+];
+
+function getVirtualRooms(){
+  // map về format giống room thật để tái dùng render()
+  return VIRTUAL_ROOMS.map(v => ({
+    roomId: v.roomId,
+    viewers: v.viewers || 0,
+    liveStartTs: Date.now() - 5 * 60 * 1000, // giả lập "đang live"
+    hasGuest: false,
+    host: { name: v.title || "Room Ảo", avatar: v.avatar || "" },
+    __virtual: true,
+    __link: v.link
+  }));
+}
+
 // ===== WELCOME MODAL (NEON) =====
 const welcomeModal = document.getElementById("welcomeModal");
 const btnWelcomeClose = document.getElementById("btnWelcomeClose");
@@ -521,7 +559,16 @@ function hideSkeleton(){
 }
 
 function render(list){
-  const show = applyFilterSort(list);
+  // 1) room thật (server)
+  const showReal = applyFilterSort(list);
+
+  // 2) room ảo (frontend)
+  const showVirtual = applyFilterSort(getVirtualRooms());
+
+  // Room ảo luôn đứng đầu
+  const show = [...showVirtual, ...showReal];
+
+  // Stats: chỉ tính room thật để khỏi “ảo số”
   renderStats(list);
 
   grid.innerHTML = "";
@@ -530,10 +577,14 @@ function render(list){
 
   show.forEach(r => {
     const a = document.createElement("a");
-    a.className = "lobby-card";
-    a.href = `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
+    a.className = "lobby-card" + (r.__virtual ? " lobby-card--virtual" : "");
 
-    const hostName   = r.host?.name   || "Host";
+    // ✅ room ảo đi theo link cố định, room thật đi theo viewer.html?room=
+    a.href = r.__virtual
+      ? (r.__link || `/viewer.html?room=${encodeURIComponent(r.roomId)}`)
+      : `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
+
+    const hostName   = r.host?.name   || (r.__virtual ? "Room Ảo" : "Host");
     const hostAvatar = r.host?.avatar || `https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360`;
 
     const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
@@ -551,8 +602,12 @@ function render(list){
         </div>
 
         <div class="lobby-badges">
-          <span class="lobby-livePill"><span class="lobby-liveDot"></span> LIVE</span>
-          ${r.hasGuest ? `<span class="badge badge--info" style="margin:0">Co-host</span>` : ``}
+          ${
+            r.__virtual
+              ? `<span class="badge badge--virtual" style="margin:0">ROOM ẢO</span>`
+              : `<span class="lobby-livePill"><span class="lobby-liveDot"></span> LIVE</span>`
+          }
+          ${(!r.__virtual && r.hasGuest) ? `<span class="badge badge--info" style="margin:0">Co-host</span>` : ``}
         </div>
       </div>
 
@@ -562,7 +617,7 @@ function render(list){
       </div>
 
       <div class="lobby-cardFoot">
-        <div class="lobby-cta">Vào xem</div>
+        <div class="lobby-cta">${r.__virtual ? "Vào xem (ảo)" : "Vào xem"}</div>
         <div class="lobby-arrow">➜</div>
       </div>
     `;
@@ -570,6 +625,7 @@ function render(list){
     grid.appendChild(a);
   });
 }
+
 
 function escapeHtml(s){
   return String(s ?? "")
@@ -644,8 +700,6 @@ setInterval(() => socket.emit("lobby-get"), 3000);
 
 
 </script>
-
-
 
 
 

@@ -175,33 +175,6 @@
 
 
 
-const VIRTUAL_ROOM_ID = "tv-demo";
-
-if (roomId.toLowerCase() === VIRTUAL_ROOM_ID) {
-  // auto join để tính viewer count trên server
-  socket.emit("join-room", { roomId, role: "viewer" }); // giống join() :contentReference[oaicite:4]{index=4}
-  try{ btnJoin.style.display = "none"; }catch{}
-
-  // phát clip local (bạn đặt file vào public/videos/demo.mp4)
-  player.srcObject = null;
-  player.src = "https://www.youtube.com/watch?v=CEiQd76hYEw";   // ✅ đổi link clip ở đây
-  player.autoplay = true;
-  player.loop = true;
-  player.playsInline = true;
-  player.muted = false;              // nếu muốn có tiếng
-
-  badge.textContent = "📺 LIVE ẢO: Đang phát clip";
-
-  // timer: lấy theo liveStartTs server phát ra (nếu bạn đã có listener live-start)
-  // nếu chưa có, có thể tự chạy:
-  // __startTimer(document.getElementById("liveTimerViewer"), Date.now());
-
-  // không chạy các flow WebRTC nữa
-}
-
-
-
-
 const liveStage = document.getElementById("liveStage");
 const guestPipWrap = document.getElementById("guestPipWrap");
 

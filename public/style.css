@@ -2004,3 +2004,24 @@ body.auto-mini .container{
 video {
   touch-action: pan-x pan-y;
 }
+
+
+/* ===== VIRTUAL ROOM BADGE ===== */
+.badge--virtual{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:12px;
+  letter-spacing:.3px;
+  background: rgba(95,168,255,.16);
+  border: 1px dashed rgba(95,168,255,.55);
+  color: rgba(180,220,255,.95);
+}
+
+/* viền card room ảo */
+.lobby-card--virtual{
+  border: 1px dashed rgba(95,168,255,.45);
+}

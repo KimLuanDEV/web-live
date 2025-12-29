@@ -18,45 +18,11 @@ app.get("/", (_, res) => {
 });
 
 
-/**
- * Room state:
- * - broadcasterId: socket.id người phát
- * - viewers: Set socket.id người xem
- * - guestId: socket.id guest đang "lên live" (co-host)
- */
+
 const rooms = new Map();
 
 
-// ===== VIRTUAL LIVE ROOM (AUTO) =====
-const VIRTUAL_ROOM_ID = "tv-demo";
 
-function ensureVirtualRoom(){
-  const rid = VIRTUAL_ROOM_ID;
-  if (!rooms.has(rid)) {
-    rooms.set(rid, {
-      broadcasterId: "virtual-bot",     // fake host id (không phải socket)
-      viewers: new Set(),
-      guestId: null,
-      liveStartTs: Date.now(),          // coi như đang live
-      pinnedNote: null,
-      hostProfile: { name: "📺 LIVE ẢO", avatar: "", ts: Date.now() },
-      releaseTimer: null,
-      pendingRelease: false,
-    });
-  } else {
-    const r = rooms.get(rid);
-    // đảm bảo luôn live
-    r.broadcasterId = r.broadcasterId || "virtual-bot";
-    r.liveStartTs = r.liveStartTs || Date.now();
-    r.hostProfile = r.hostProfile || { name: "📺 LIVE ẢO", avatar: "", ts: Date.now() };
-  }
-}
-
-ensureVirtualRoom();
-setInterval(() => {
-  ensureVirtualRoom();
-  emitLobbyUpdate();
-}, 5000);
 
 
 
