@@ -1961,3 +1961,39 @@ button.is-loading{
 }
 
 .chat-input-overlay.hidden{ display:none; }
+
+
+
+
+/* ===== AUTO MINI PLAYER (mobile tab background) ===== */
+body.auto-mini #hostCard{
+  position: fixed !important;
+  right: 10px;
+  bottom: 10px;
+  width: 180px;
+  aspect-ratio: 16/9;
+  z-index: 9999;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+
+body.auto-mini #hostCard video{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* chừa không gian để chat không bị che */
+body.auto-mini .container{
+  padding-bottom: 220px;
+}
+
+/* chỉ áp dụng mobile */
+@media (min-width: 768px){
+  body.auto-mini #hostCard{
+    position: static !important;
+    width: auto;
+    box-shadow: none;
+  }
+}

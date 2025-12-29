@@ -172,6 +172,40 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
+
+
+    // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
+let __wasAutoMini = false;
+
+function enableAutoMini(){
+  if (!document.body.classList.contains("auto-mini")){
+    document.body.classList.add("auto-mini");
+    __wasAutoMini = true;
+  }
+}
+
+function disableAutoMini(){
+  if (__wasAutoMini){
+    document.body.classList.remove("auto-mini");
+    __wasAutoMini = false;
+  }
+}
+
+// Khi chuyển tab / app
+document.addEventListener("visibilitychange", ()=>{
+  if (document.hidden){
+    enableAutoMini();
+  } else {
+    disableAutoMini();
+  }
+});
+
+// iOS Safari đặc biệt hay dùng pagehide/pageshow
+window.addEventListener("pagehide", enableAutoMini);
+window.addEventListener("pageshow", disableAutoMini);
+
+
+
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
@@ -453,21 +487,43 @@ socket.emit("join-room", { roomId, role: "viewer" });
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
 
-      pc.ontrack = (event) => {
-        const stream = event.streams[0];
+     pc.ontrack = (event) => {
+  const stream = event.streams[0];
 
-        if (guestId && from === guestId) {
-          guestPlayer.srcObject = stream;
-          log("Đã nhận stream GUEST.");
-          guestPlayer.play().catch(() => log("Autoplay bị chặn, bấm Play ở video Guest."));
-        } else {
-          player.srcObject = stream;
-          log("Đã nhận stream HOST.");
-          player.play().catch(() => log("Autoplay bị chặn, bấm Play ở video Host."));
-        }
+  if (guestId && from === guestId) {
+    // ===== GUEST VIDEO =====
+    guestPlayer.srcObject = stream;
 
-        setStatus("🟢 Đang xem LIVE");
-      };
+    guestPlayer.muted = false;
+    guestPlayer.playsInline = true;
+
+    guestPlayer.play().catch(() =>
+      log("Autoplay bị chặn, bấm Play ở video Guest.")
+    );
+
+  } else {
+    // ===== HOST VIDEO (CHÍNH) =====
+    player.srcObject = stream;
+
+    // 🔥 QUAN TRỌNG: chống pause trên mobile
+    player.muted = false;        // cho phép có tiếng
+    player.playsInline = true;  // iOS Safari KHÔNG fullscreen
+
+    player.play().catch(() =>
+      log("Autoplay bị chặn, bấm Play ở video Host.")
+    );
+
+    // 🛡️ CHỐNG PAUSE KHI TAB ẨN / BACKGROUND
+    player.onpause = () => {
+      if (document.hidden) {
+        player.play().catch(() => {});
+      }
+    };
+  }
+
+  setStatus("🟢 Đang xem LIVE");
+};
+
 
       pc.onicecandidate = (e) => {
         if (e.candidate) {
