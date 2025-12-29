@@ -5,6 +5,8 @@
   <title>Lobby - Livestream Pro</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <link rel="stylesheet" href="./style.css">
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
 </head>
 <body class="lobby-page">
   <div class="container lobby-shell">
@@ -621,6 +623,38 @@ setInterval(() => socket.emit("lobby-get"), 3000);
 
 
 
+  (function initLobbyQR(){
+    const el = document.getElementById("lobbyQR");
+    if (!el || typeof QRCode === "undefined") return;
+
+    // Trỏ thẳng vào /lobby.html (ổn định)
+    const lobbyUrl = location.origin + "/lobby.html";
+
+    // Clear (tránh render lại nếu hot reload)
+    el.innerHTML = "";
+
+    new QRCode(el, {
+      text: lobbyUrl,
+      width: 160,
+      height: 160,
+      correctLevel: QRCode.CorrectLevel.H
+    });
+
+    const btn = document.getElementById("btnCopyLobbyLink");
+    if (btn) {
+      btn.onclick = async () => {
+        try {
+          await navigator.clipboard.writeText(lobbyUrl);
+          btn.textContent = "✅ Đã copy";
+          setTimeout(()=>btn.textContent="📋 Copy link", 1200);
+        } catch {
+          prompt("Copy link Lobby:", lobbyUrl);
+        }
+      };
+    }
+  })();
+
+
 
 </script>
 
@@ -629,6 +663,15 @@ setInterval(() => socket.emit("lobby-get"), 3000);
 
 
 
+<!-- QR TO LOBBY (fixed) -->
+<div class="lobby-qr">
+  <div class="badge badge--info">📱 Quét QR vào Lobby</div>
+  <div id="lobbyQR"></div>
+  <div class="lobby-qr__actions">
+    <button id="btnCopyLobbyLink" class="lobby-btn" type="button">📋 Copy link</button>
+  </div>
+  <small class="lobby-qr__hint">Scan để vào sảnh live</small>
+</div>
 
 
 </body>
