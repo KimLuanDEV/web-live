@@ -227,25 +227,25 @@ const socket = io();
 
 const VIRTUAL_ROOMS = [
   {
-    roomId: "live-ao-1",
-    title: "🎬 Live Ảo: Clip Có Sẵn",
-    viewers: 128,
+    roomId: "LilyLala016",
+    title: "𝓛𝓲𝓵𝔂 𝓷𝓮̀💋",
+    viewers: 639,
     avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    link: "/viewer.html?room=live-ao-1"
+    link: "https://www.bigo.tv/965500915"
   },
   {
-    roomId: "live-ao-2",
-    title: "🎵 Live Ảo: Music 24/7",
-    viewers: 56,
+    roomId: "hanh09031996",
+    title: "Hạnh Bơ Vơ 😢",
+    viewers: 568,
     avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    link: "/viewer.html?room=live-ao-2"
+    link: "https://www.bigo.tv/815253377"
   },
   {
-    roomId: "demo-room",
-    title: "✨ Demo Room (ảo)",
-    viewers: 12,
+    roomId: "Kim1612",
+    title: "Kimm🐷",
+    viewers: 462,
     avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    link: "/viewer.html?room=demo-room"
+    link: "https://www.bigo.tv/146414661"
   }
 ];
 
@@ -604,7 +604,7 @@ function render(list){
         <div class="lobby-badges">
           ${
             r.__virtual
-              ? `<span class="badge badge--virtual" style="margin:0">ROOM ẢO</span>`
+              ? `<span class="badge badge--virtual" style="margin:0">Live</span>`
               : `<span class="lobby-livePill"><span class="lobby-liveDot"></span> LIVE</span>`
           }
           ${(!r.__virtual && r.hasGuest) ? `<span class="badge badge--info" style="margin:0">Co-host</span>` : ``}
@@ -617,7 +617,7 @@ function render(list){
       </div>
 
       <div class="lobby-cardFoot">
-        <div class="lobby-cta">${r.__virtual ? "Vào xem (ảo)" : "Vào xem"}</div>
+        <div class="lobby-cta">${r.__virtual ? "Vào xem" : "Vào xem"}</div>
         <div class="lobby-arrow">➜</div>
       </div>
     `;
