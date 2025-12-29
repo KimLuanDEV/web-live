@@ -790,83 +790,107 @@ function sendQuickChat(){
   closeQuickChat();
 }
 
-socket.on("room-closed", ({ reason }) => {
-  alert("📴 Host đã kết thúc livestream!");
+
+
+// ===== KICK MODAL (NEON) =====
+const kickModal = document.getElementById("kickModal");
+const kickBg = kickModal?.querySelector(".ncf__bg");
+const kickX = document.getElementById("kickX");
+const kickText = document.getElementById("kickText");
+const kickCd = document.getElementById("kickCd");
+const kickNow = document.getElementById("kickNow");
+
+let __kickTick = null;
+let __kickFired = false;
+
+function closeKickModal(){
+  if (!kickModal) return;
+  kickModal.classList.add("hidden");
+  kickModal.setAttribute("aria-hidden","true");
+  if (__kickTick) { clearInterval(__kickTick); __kickTick = null; }
+}
+
+function goLobbyNow(){
+  try { if (typeof socket !== "undefined" && socket) socket.disconnect(); } catch {}
   window.location.href = "/lobby.html";
-});
+}
 
-// ===== ROOM CLOSED MODAL =====
-const roomClosedModal = document.getElementById("roomClosedModal");
-const roomCloseCountdownEl = document.getElementById("roomCloseCountdown");
-const roomCloseNowBtn = document.getElementById("roomCloseNow");
+function openKickModal(msg, totalSeconds = 5){
+  if (!kickModal) return;
 
-let roomCloseTimer = null;
-let roomCloseLeft = 5;
+  if (kickText) kickText.textContent = msg || "Host đã rời phòng. Bạn sẽ được đưa về Lobby.";
+  kickModal.classList.remove("hidden");
+  kickModal.setAttribute("aria-hidden","false");
 
-function openRoomClosedModal() {
-  if (!roomClosedModal) return;
+  let left = Number(totalSeconds) || 5;
+  if (kickCd) kickCd.textContent = String(left);
 
-  roomCloseLeft = 5;
-  roomCloseCountdownEl.textContent = roomCloseLeft;
-
-  roomClosedModal.classList.remove("hidden");
-
-  roomCloseTimer = setInterval(() => {
-    roomCloseLeft--;
-    roomCloseCountdownEl.textContent = roomCloseLeft;
-
-    if (roomCloseLeft <= 0) {
-      goLobby();
+  if (__kickTick) clearInterval(__kickTick);
+  __kickTick = setInterval(()=>{
+    left--;
+    if (kickCd) kickCd.textContent = String(Math.max(0,left));
+    if (left <= 0){
+      clearInterval(__kickTick);
+      __kickTick = null;
+      goLobbyNow();
     }
   }, 1000);
 }
 
-function goLobby() {
-  if (roomCloseTimer) clearInterval(roomCloseTimer);
-  location.href = "/lobby.html";
-}
+// click nền / X => vẫn cho đóng (tuỳ bạn muốn ép thì bỏ close)
+kickBg?.addEventListener("click", closeKickModal);
+kickX?.addEventListener("click", closeKickModal);
+kickNow?.addEventListener("click", goLobbyNow);
 
-roomCloseNowBtn?.addEventListener("click", goLobby);
-
-// 🔔 SERVER BÁO PHÒNG ĐÓNG
-socket.on("room-closed", ({ reason }) => {
-  console.log("ROOM CLOSED:", reason);
-  openRoomClosedModal();
+document.addEventListener("keydown", (e)=>{
+  if (!kickModal || kickModal.classList.contains("hidden")) return;
+  if (e.key === "Escape") closeKickModal();
 });
+// ===== /KICK MODAL =====
 
+socket.on("room-closed", ({ reason }) => {
+  if (__kickFired) return;     // tránh bị gọi nhiều lần
+  __kickFired = true;
+
+  const msg =
+    (reason === "host_stop") ? "Host đã dừng livestream. Bạn sẽ được đưa về Lobby." :
+    (reason === "host_disconnect") ? "Host mất kết nối. Bạn sẽ được đưa về Lobby." :
+    "Host đã rời phòng. Bạn sẽ được đưa về Lobby.";
+
+  openKickModal(msg, 5); // 5 giây rồi chuyển
+});
 
   </script>
 
-<!-- ROOM CLOSED MODAL -->
-<div id="roomClosedModal" class="modal hidden">
-  <div class="modal-backdrop modal-backdrop--neon"></div>
+<!-- ===== KICK MODAL (NEON) ===== -->
+<div id="kickModal" class="ncf hidden" aria-hidden="true">
+  <div class="ncf__bg"></div>
 
-  <div class="neon-modal" style="max-width:420px">
-    <div class="neon-frame"></div>
-    <div class="neon-scan"></div>
+  <div class="ncf__panel" role="dialog" aria-modal="true" aria-labelledby="kickTitle">
+    <button class="ncf__x" id="kickX" aria-label="Close">✕</button>
 
-    <div class="neon-top">
-      <div class="neon-livePill">
-        <span class="neon-dot"></span>
-        <span>PHÒNG ĐÃ ĐÓNG</span>
+    <div class="ncf__head">
+      <div class="ncf__badge">📴</div>
+      <div>
+        <div class="ncf__title" id="kickTitle">Livestream đã kết thúc</div>
+        <div class="ncf__desc" id="kickText">Host đã rời phòng. Bạn sẽ được đưa về Lobby.</div>
       </div>
     </div>
 
-    <div style="padding:16px 6px;text-align:center">
-      <h3 style="margin-bottom:8px">📴 Host đã rời livestream</h3>
-      <p style="opacity:.85">
-        Bạn sẽ được chuyển về Lobby sau<br>
-        <b id="roomCloseCountdown">5</b> giây
-      </p>
-    </div>
+    <div class="ncf__divider"></div>
 
-    <div class="neon-actions">
-      <button id="roomCloseNow" class="neon-btn neon-btn--main">
-        🏟️ Về Lobby ngay
-      </button>
+    <div class="ncf__actions">
+      <div class="ncf__hint">
+        Chuyển về Lobby sau <span class="countdown-pill" id="kickCd">5</span> giây
+      </div>
+
+      <div class="ncf__btns">
+        <button class="btn btn--ghost" id="kickNow">Về Lobby ngay</button>
+      </div>
     </div>
   </div>
 </div>
+<!-- ===== /KICK MODAL ===== -->
 
 
 </body>
