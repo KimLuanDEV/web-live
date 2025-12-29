@@ -1997,3 +1997,10 @@ body.auto-mini .container{
     box-shadow: none;
   }
 }
+
+
+.live-stage,
+.video-card,
+video {
+  touch-action: pan-x pan-y;
+}
