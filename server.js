@@ -452,26 +452,33 @@ socket.on("send-gift", ({ roomId, gift }) => {
       }
     }
 
-   if (role === "broadcaster") {
-  // ⏱️ Bắt đầu chờ giải phóng
+  if (role === "broadcaster") {
+  // ⏱️ Đánh dấu host đã rời
   room.pendingRelease = true;
 
+  // 🔔 BÁO NGAY cho viewer + guest → hiện modal + countdown
+  io.to(roomId).emit("host-left", {
+    reason: "host-disconnect",
+    redirectAfter: 5 // giây (client tự đếm)
+  });
+
+  // ⏱️ Sau ROOM_RELEASE_DELAY nếu host không quay lại thì giải phóng phòng
   room.releaseTimer = setTimeout(() => {
-    // Nếu trong thời gian chờ host KHÔNG quay lại
-    if (room.pendingRelease) {
-      console.log("⏱️ Auto release room:", roomId);
+    if (!room.pendingRelease) return;
 
-      room.broadcasterId = null;
-      room.liveStartTs = null;
-      room.guestId = null;
-      room.pendingRelease = false;
-      room.releaseTimer = null;
+    console.log("⏱️ Auto release room:", roomId);
 
-      io.to(roomId).emit("live-stop");
-      emitLobbyUpdate();
-    }
+    room.broadcasterId = null;
+    room.liveStartTs = null;
+    room.guestId = null;
+    room.pendingRelease = false;
+    room.releaseTimer = null;
+
+    io.to(roomId).emit("live-stop");
+    emitLobbyUpdate();
   }, ROOM_RELEASE_DELAY);
 }
+
 
 
     if (role === "guest") {

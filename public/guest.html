@@ -879,7 +879,76 @@ function sendQuickChat(){
 }
 
 
+// ===== HOST LEFT HANDLER =====
+const hostLeftModal = document.getElementById("hostLeftModal");
+const hostLeftCountdown = document.getElementById("hostLeftCountdown");
+const hostLeftNow = document.getElementById("hostLeftNow");
+
+let hostLeftTimer = null;
+
+function showHostLeftModal() {
+  if (!hostLeftModal) return;
+
+  hostLeftModal.classList.remove("hidden");
+
+  let sec = 5;
+  hostLeftCountdown.textContent = sec;
+
+  hostLeftTimer = setInterval(() => {
+    sec--;
+    hostLeftCountdown.textContent = sec;
+    if (sec <= 0) {
+      clearInterval(hostLeftTimer);
+      goLobby();
+    }
+  }, 1000);
+}
+
+function goLobby() {
+  clearInterval(hostLeftTimer);
+  location.href = "/lobby.html";
+}
+
+hostLeftNow?.addEventListener("click", goLobby);
+
+// socket event
+socket.on("host-left", () => {
+  showHostLeftModal();
+});
 
   </script>
+
+<!-- HOST LEFT MODAL -->
+<div id="hostLeftModal" class="ncf hidden">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box">
+    <div class="ncf__frame"></div>
+    <div class="ncf__scan"></div>
+
+    <div class="ncf__top">
+      <div class="ncf__pill">
+        <span class="ncf__dot"></span>
+        <span>PHÒNG ĐÃ KẾT THÚC</span>
+      </div>
+    </div>
+
+    <h3 class="ncf__title">📴 Host đã rời phòng</h3>
+
+    <div class="ncf__desc">
+      Livestream đã kết thúc<br>
+      Tự động quay về Lobby sau
+      <b><span id="hostLeftCountdown">5</span>s</b>
+    </div>
+
+    <div class="ncf__actions">
+      <button id="hostLeftNow" class="ncf__btn ncf__btn--main">
+        🏟️ Về Lobby ngay
+      </button>
+    </div>
+  </div>
+</div>
+
+
 </body>
 </html>
