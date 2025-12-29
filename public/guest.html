@@ -137,98 +137,10 @@
   </div>
 
 
-  <!-- ROOM CLOSED MODAL (NEON) -->
-<div id="roomClosedModal" class="ncf hidden" aria-hidden="true">
-  <div class="ncf__bg"></div>
-
-  <div class="ncf__box" role="dialog" aria-modal="true" aria-labelledby="rcmTitle">
-    <div class="ncf__frame"></div>
-    <div class="ncf__scan"></div>
-
-    <div class="ncf__top">
-      <div class="ncf__pill">
-        <span class="ncf__dot"></span>
-        <span>PHÒNG ĐÃ ĐÓNG</span>
-      </div>
-      <button class="ncf__x" id="rcmX" type="button" aria-label="Đóng">✕</button>
-    </div>
-
-    <h3 id="rcmTitle" class="ncf__title">📴 Host đã kết thúc livestream</h3>
-
-    <div class="ncf__desc">
-      <div class="ncf__row">• Bạn sẽ được đưa về Lobby sau <b id="rcmCount">3</b> giây</div>
-      <div class="ncf__row" id="rcmReason" style="opacity:.9"></div>
-    </div>
-
-    <div class="ncf__actions">
-      <button id="rcmGoNow" class="ncf__btn ncf__btn--main" type="button">🏟️ Về Lobby ngay</button>
-    </div>
-  </div>
-</div>
-
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
-
-// ===== ROOM CLOSED MODAL (auto redirect 3s) =====
-const rcm = document.getElementById("roomClosedModal");
-const rcmBg = rcm?.querySelector(".ncf__bg");
-const rcmX = document.getElementById("rcmX");
-const rcmCountEl = document.getElementById("rcmCount");
-const rcmReasonEl = document.getElementById("rcmReason");
-const rcmGoNow = document.getElementById("rcmGoNow");
-
-let __rcmTimer = null;
-let __rcmOpen = false;
-
-function __goLobbyNow(){
-  try { if (typeof socket !== "undefined" && socket) socket.disconnect(); } catch {}
-  window.location.href = "/lobby.html";
-}
-
-function openRoomClosedModal(reason){
-  if (!rcm || __rcmOpen) return;
-  __rcmOpen = true;
-
-  rcm.classList.remove("hidden");
-  rcm.setAttribute("aria-hidden", "false");
-
-  const r = String(reason || "");
-  if (rcmReasonEl) {
-    rcmReasonEl.textContent =
-      r === "host_stop" ? "• Host đã bấm dừng live" :
-      r === "host_disconnect" ? "• Host mất kết nối / thoát phòng" :
-      "• Host đã rời phòng";
-  }
-
-  let n = 3;
-  if (rcmCountEl) rcmCountEl.textContent = String(n);
-
-  if (__rcmTimer) clearInterval(__rcmTimer);
-  __rcmTimer = setInterval(() => {
-    n--;
-    if (rcmCountEl) rcmCountEl.textContent = String(Math.max(0, n));
-    if (n <= 0) {
-      clearInterval(__rcmTimer);
-      __rcmTimer = null;
-      __goLobbyNow();
-    }
-  }, 1000);
-
-  rcmGoNow?.addEventListener("click", __goLobbyNow, { once: true });
-  rcmBg?.addEventListener("click", __goLobbyNow, { once: true });
-  rcmX?.addEventListener("click", __goLobbyNow, { once: true });
-
-  document.addEventListener("keydown", (e)=>{
-    if (!rcm || rcm.classList.contains("hidden")) return;
-    if (e.key === "Escape") __goLobbyNow();
-  }, { once: true });
-}
-
-socket.on("room-closed", ({ reason }) => {
-  openRoomClosedModal(reason);
-});
 
 
     const logEl = document.getElementById("log");
@@ -248,6 +160,47 @@ socket.on("room-closed", ({ reason }) => {
     document.getElementById("roomCode").textContent = roomId;
 
     const socket = io();
+
+
+    const kickOverlay = document.getElementById("kickOverlay");
+const kickNumber  = document.getElementById("kickNumber");
+const kickHint    = document.getElementById("kickHint");
+
+let __kickTimer = null;
+
+function showKickModal({ seconds = 3, redirect = "/lobby.html", reason = "" } = {}) {
+  if (kickHint) {
+    const map = {
+      host_stop: "Host đã dừng live. Đang đưa bạn về Lobby…",
+      host_left: "Host đã rời phòng. Đang đưa bạn về Lobby…",
+      host_disconnect_timeout: "Host mất kết nối. Phòng đã đóng. Đang về Lobby…"
+    };
+    kickHint.textContent = map[reason] || "Phòng đã đóng. Đang đưa bạn về Lobby…";
+  }
+
+  let s = Number(seconds) || 3;
+  if (kickNumber) kickNumber.textContent = String(s);
+
+  kickOverlay?.classList.remove("hidden");
+
+  clearInterval(__kickTimer);
+  __kickTimer = setInterval(() => {
+    s -= 1;
+    if (kickNumber) kickNumber.textContent = String(Math.max(0, s));
+    if (s <= 0) {
+      clearInterval(__kickTimer);
+      location.href = redirect;
+    }
+  }, 1000);
+}
+
+socket.on("room-closed", (payload) => {
+  // tắt peer/stream nếu bạn muốn (optional)
+  // cleanupPeers();
+  showKickModal(payload || {});
+});
+
+
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabGuest(){
       const fab = document.getElementById("ctrlFabGuest");
@@ -926,6 +879,69 @@ socket.on("room-closed", ({ reason }) => {
 });
 
 
+
+
+// ===== ROOM CLOSED MODAL (auto redirect 3s) =====
+const rcm = document.getElementById("roomClosedModal");
+const rcmBg = rcm?.querySelector(".ncf__bg");
+const rcmX = document.getElementById("rcmX");
+const rcmCountEl = document.getElementById("rcmCount");
+const rcmReasonEl = document.getElementById("rcmReason");
+const rcmGoNow = document.getElementById("rcmGoNow");
+
+let __rcmTimer = null;
+let __rcmOpen = false;
+
+function __goLobbyNow(){
+  try { if (typeof socket !== "undefined" && socket) socket.disconnect(); } catch {}
+  window.location.href = "/lobby.html";
+}
+
+function openRoomClosedModal(reason){
+  if (!rcm || __rcmOpen) return;
+  __rcmOpen = true;
+
+  rcm.classList.remove("hidden");
+  rcm.setAttribute("aria-hidden", "false");
+
+  const r = String(reason || "");
+  if (rcmReasonEl) {
+    rcmReasonEl.textContent =
+      r === "host_stop" ? "• Host đã bấm dừng live" :
+      r === "host_disconnect" ? "• Host mất kết nối / thoát phòng" :
+      "• Host đã rời phòng";
+  }
+
+  let n = 3;
+  if (rcmCountEl) rcmCountEl.textContent = String(n);
+
+  if (__rcmTimer) clearInterval(__rcmTimer);
+  __rcmTimer = setInterval(() => {
+    n--;
+    if (rcmCountEl) rcmCountEl.textContent = String(Math.max(0, n));
+    if (n <= 0) {
+      clearInterval(__rcmTimer);
+      __rcmTimer = null;
+      __goLobbyNow();
+    }
+  }, 1000);
+
+  rcmGoNow?.addEventListener("click", __goLobbyNow, { once: true });
+  rcmBg?.addEventListener("click", __goLobbyNow, { once: true });
+  rcmX?.addEventListener("click", __goLobbyNow, { once: true });
+
+  document.addEventListener("keydown", (e)=>{
+    if (!rcm || rcm.classList.contains("hidden")) return;
+    if (e.key === "Escape") __goLobbyNow();
+  }, { once: true });
+}
+
+socket.on("room-closed", ({ reason }) => {
+  openRoomClosedModal(reason);
+});
+
+
+
 const chatFab = document.getElementById("chatFab");
 const chatInputOverlay = document.getElementById("chatInputOverlay");
 const quickChatInput = document.getElementById("quickChatInput");
@@ -980,5 +996,49 @@ function sendQuickChat(){
 
 
   </script>
+
+
+
+  <!-- ROOM CLOSED MODAL (NEON) -->
+<div id="roomClosedModal" class="ncf hidden" aria-hidden="true">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box" role="dialog" aria-modal="true" aria-labelledby="rcmTitle">
+    <div class="ncf__frame"></div>
+    <div class="ncf__scan"></div>
+
+    <div class="ncf__top">
+      <div class="ncf__pill">
+        <span class="ncf__dot"></span>
+        <span>PHÒNG ĐÃ ĐÓNG</span>
+      </div>
+      <button class="ncf__x" id="rcmX" type="button" aria-label="Đóng">✕</button>
+    </div>
+
+    <h3 id="rcmTitle" class="ncf__title">📴 Host đã kết thúc livestream</h3>
+
+    <div class="ncf__desc">
+      <div class="ncf__row">• Bạn sẽ được đưa về Lobby sau <b id="rcmCount">3</b> giây</div>
+      <div class="ncf__row" id="rcmReason" style="opacity:.9"></div>
+    </div>
+
+    <div class="ncf__actions">
+      <button id="rcmGoNow" class="ncf__btn ncf__btn--main" type="button">🏟️ Về Lobby ngay</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- ROOM CLOSED OVERLAY (NEON) -->
+<div class="cd-overlay hidden" id="kickOverlay" aria-live="polite">
+  <div class="cd-bg"></div>
+  <div class="cd-panel">
+    <div class="cd-kicker">⛔ PHÒNG ĐÃ KẾT THÚC</div>
+    <div class="cd-number" id="kickNumber">3</div>
+    <div class="cd-hint" id="kickHint">Host đã rời phòng. Đang đưa bạn về Lobby…</div>
+  </div>
+</div>
+
+
 </body>
 </html>

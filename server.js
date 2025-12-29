@@ -104,18 +104,24 @@ app.get("/ice", async (_req, res) => {
 });
 
 
-function closeRoom(roomId, reason = "host_left") {
-  const room = rooms.get(roomId);
+function closeRoomAndKick(roomId, reason = "host_left") {
+  const rid = normRoomId(roomId);
+  const room = rooms.get(rid);
   if (!room) return;
 
-  // 🔔 báo cho tất cả client trong phòng
-  io.to(roomId).emit("room-closed", { reason });
-
-  // ❌ clear trạng thái phòng
-  room.broadcasterId = null;
-  room.guestId = null;
-  room.viewers.clear();
+  // reset trạng thái live
   room.liveStartTs = null;
+  room.guestId = null;
+
+  // ⚡ báo tất cả client trong phòng hiện modal + countdown rồi về lobby
+  io.to(rid).emit("room-closed", {
+    reason,
+    seconds: 3,
+    redirect: "/lobby.html"
+  });
+
+  // vẫn emit live-stop để UI nào đang nghe live-stop thì tắt
+  io.to(rid).emit("live-stop");
 
   emitLobbyUpdate();
 }
@@ -220,16 +226,13 @@ socket.on("live-start", ({ roomId, startTs }) => {
 
 socket.on("live-stop", ({ roomId }) => {
   if (!roomId) return;
-  const room = getRoom(roomId);
-  if (room.broadcasterId !== socket.id) return; // only host can stop
+  const rid = normRoomId(roomId);
+  const room = getRoom(rid);
+  if (room.broadcasterId !== socket.id) return; // only host
 
-   closeRoom(roomId, "host_stop");
-
-  room.liveStartTs = null;
-  io.to(roomId).emit("live-stop");
-  emitLobbyUpdate();
-
+  closeRoomAndKick(rid, "host_stop");
 });
+
 
 
 
@@ -459,7 +462,8 @@ socket.on("send-gift", ({ roomId, gift }) => {
      for (const [roomId, room] of rooms.entries()) {
     if (room.broadcasterId === socket.id) {
       // ❌ host rời → đóng phòng
-      closeRoom(roomId, "host_disconnect");
+     closeRoomAndKick(roomId, "host_disconnect_timeout");
+
     }
   }
     const roomId = socket.data.roomId;

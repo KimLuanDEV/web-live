@@ -188,71 +188,6 @@
   <script>
 
 
-// ===== ROOM CLOSED MODAL (auto redirect 3s) =====
-const rcm = document.getElementById("roomClosedModal");
-const rcmBg = rcm?.querySelector(".ncf__bg");
-const rcmX = document.getElementById("rcmX");
-const rcmCountEl = document.getElementById("rcmCount");
-const rcmReasonEl = document.getElementById("rcmReason");
-const rcmGoNow = document.getElementById("rcmGoNow");
-
-let __rcmTimer = null;
-let __rcmOpen = false;
-
-function __goLobbyNow(){
-  try { if (typeof socket !== "undefined" && socket) socket.disconnect(); } catch {}
-  window.location.href = "/lobby.html";
-}
-
-function openRoomClosedModal(reason){
-  if (!rcm || __rcmOpen) return;
-  __rcmOpen = true;
-
-  // show
-  rcm.classList.remove("hidden");
-  rcm.setAttribute("aria-hidden", "false");
-
-  // reason text
-  const r = String(reason || "");
-  if (rcmReasonEl) {
-    rcmReasonEl.textContent =
-      r === "host_stop" ? "• Host đã bấm dừng live" :
-      r === "host_disconnect" ? "• Host mất kết nối / thoát phòng" :
-      "• Host đã rời phòng";
-  }
-
-  // countdown
-  let n = 3;
-  if (rcmCountEl) rcmCountEl.textContent = String(n);
-
-  if (__rcmTimer) clearInterval(__rcmTimer);
-  __rcmTimer = setInterval(() => {
-    n--;
-    if (rcmCountEl) rcmCountEl.textContent = String(Math.max(0, n));
-    if (n <= 0) {
-      clearInterval(__rcmTimer);
-      __rcmTimer = null;
-      __goLobbyNow();
-    }
-  }, 1000);
-
-  // actions
-  rcmGoNow?.addEventListener("click", __goLobbyNow, { once: true });
-
-  // nếu bạn muốn cho đóng modal thì vẫn về lobby luôn (tránh kẹt)
-  rcmBg?.addEventListener("click", __goLobbyNow, { once: true });
-  rcmX?.addEventListener("click", __goLobbyNow, { once: true });
-
-  document.addEventListener("keydown", (e)=>{
-    if (!rcm || rcm.classList.contains("hidden")) return;
-    if (e.key === "Escape") __goLobbyNow();
-  }, { once: true });
-}
-
-// Server bắn event này khi host rời/đóng phòng
-socket.on("room-closed", ({ reason }) => {
-  openRoomClosedModal(reason);
-});
 
 
     const logEl = document.getElementById("log");
@@ -272,6 +207,47 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
+
+
+    const kickOverlay = document.getElementById("kickOverlay");
+const kickNumber  = document.getElementById("kickNumber");
+const kickHint    = document.getElementById("kickHint");
+
+let __kickTimer = null;
+
+function showKickModal({ seconds = 3, redirect = "/lobby.html", reason = "" } = {}) {
+  if (kickHint) {
+    const map = {
+      host_stop: "Host đã dừng live. Đang đưa bạn về Lobby…",
+      host_left: "Host đã rời phòng. Đang đưa bạn về Lobby…",
+      host_disconnect_timeout: "Host mất kết nối. Phòng đã đóng. Đang về Lobby…"
+    };
+    kickHint.textContent = map[reason] || "Phòng đã đóng. Đang đưa bạn về Lobby…";
+  }
+
+  let s = Number(seconds) || 3;
+  if (kickNumber) kickNumber.textContent = String(s);
+
+  kickOverlay?.classList.remove("hidden");
+
+  clearInterval(__kickTimer);
+  __kickTimer = setInterval(() => {
+    s -= 1;
+    if (kickNumber) kickNumber.textContent = String(Math.max(0, s));
+    if (s <= 0) {
+      clearInterval(__kickTimer);
+      location.href = redirect;
+    }
+  }, 1000);
+}
+
+socket.on("room-closed", (payload) => {
+  // tắt peer/stream nếu bạn muốn (optional)
+  // cleanupPeers();
+  showKickModal(payload || {});
+});
+
+
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
@@ -846,6 +822,75 @@ socket.on("room-closed", ({ reason }) => {
 });
 
 
+
+// ===== ROOM CLOSED MODAL (auto redirect 3s) =====
+const rcm = document.getElementById("roomClosedModal");
+const rcmBg = rcm?.querySelector(".ncf__bg");
+const rcmX = document.getElementById("rcmX");
+const rcmCountEl = document.getElementById("rcmCount");
+const rcmReasonEl = document.getElementById("rcmReason");
+const rcmGoNow = document.getElementById("rcmGoNow");
+
+let __rcmTimer = null;
+let __rcmOpen = false;
+
+function __goLobbyNow(){
+  try { if (typeof socket !== "undefined" && socket) socket.disconnect(); } catch {}
+  window.location.href = "/lobby.html";
+}
+
+function openRoomClosedModal(reason){
+  if (!rcm || __rcmOpen) return;
+  __rcmOpen = true;
+
+  // show
+  rcm.classList.remove("hidden");
+  rcm.setAttribute("aria-hidden", "false");
+
+  // reason text
+  const r = String(reason || "");
+  if (rcmReasonEl) {
+    rcmReasonEl.textContent =
+      r === "host_stop" ? "• Host đã bấm dừng live" :
+      r === "host_disconnect" ? "• Host mất kết nối / thoát phòng" :
+      "• Host đã rời phòng";
+  }
+
+  // countdown
+  let n = 3;
+  if (rcmCountEl) rcmCountEl.textContent = String(n);
+
+  if (__rcmTimer) clearInterval(__rcmTimer);
+  __rcmTimer = setInterval(() => {
+    n--;
+    if (rcmCountEl) rcmCountEl.textContent = String(Math.max(0, n));
+    if (n <= 0) {
+      clearInterval(__rcmTimer);
+      __rcmTimer = null;
+      __goLobbyNow();
+    }
+  }, 1000);
+
+  // actions
+  rcmGoNow?.addEventListener("click", __goLobbyNow, { once: true });
+
+  // nếu bạn muốn cho đóng modal thì vẫn về lobby luôn (tránh kẹt)
+  rcmBg?.addEventListener("click", __goLobbyNow, { once: true });
+  rcmX?.addEventListener("click", __goLobbyNow, { once: true });
+
+  document.addEventListener("keydown", (e)=>{
+    if (!rcm || rcm.classList.contains("hidden")) return;
+    if (e.key === "Escape") __goLobbyNow();
+  }, { once: true });
+}
+
+// Server bắn event này khi host rời/đóng phòng
+socket.on("room-closed", ({ reason }) => {
+  openRoomClosedModal(reason);
+});
+
+
+
 const chatFab = document.getElementById("chatFab");
 const chatInputOverlay = document.getElementById("chatInputOverlay");
 const quickChatInput = document.getElementById("quickChatInput");
@@ -903,6 +948,15 @@ function sendQuickChat(){
 
 
 
+<!-- ROOM CLOSED OVERLAY (NEON) -->
+<div class="cd-overlay hidden" id="kickOverlay" aria-live="polite">
+  <div class="cd-bg"></div>
+  <div class="cd-panel">
+    <div class="cd-kicker">⛔ PHÒNG ĐÃ KẾT THÚC</div>
+    <div class="cd-number" id="kickNumber">3</div>
+    <div class="cd-hint" id="kickHint">Host đã rời phòng. Đang đưa bạn về Lobby…</div>
+  </div>
+</div>
 
 
 </body>
