@@ -228,6 +228,22 @@ socket.on("live-stop", ({ roomId }) => {
   const room = getRoom(roomId);
   if (room.broadcasterId !== socket.id) return;
 
+// 📊 Thống kê buổi live
+  const stats = {
+    durationMs: room.liveStartTs ? Date.now() - room.liveStartTs : 0,
+    viewers: room.viewers.size,
+    hasGuest: !!room.guestId,
+  };
+
+  // ⛔ dừng live
+  room.liveStartTs = null;
+
+  // 🔔 gửi cho riêng HOST
+  socket.emit("live-ended-stats", stats);
+
+  emitLobbyUpdate();
+
+
   closeRoom(roomId, "host_stop");
 });
 

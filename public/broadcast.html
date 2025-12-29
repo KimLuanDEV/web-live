@@ -297,6 +297,34 @@
   </div>
 </div>
 
+
+
+<!-- LIVE STATS MODAL -->
+<div id="liveStatsModal" class="ncf hidden">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box">
+    <div class="ncf__frame"></div>
+    <div class="ncf__scan"></div>
+
+    <div class="ncf__top">
+      <div class="ncf__pill">
+        <span class="ncf__dot"></span>
+        <span>KẾT THÚC LIVE</span>
+      </div>
+    </div>
+
+    <h3 class="ncf__title">📊 Thống kê buổi live</h3>
+
+    <div class="ncf__desc" id="liveStatsContent">
+      <!-- JS render -->
+    </div>
+
+    <div class="ncf__actions">
+      <span id="liveStatsCountdown">⏳ Trở về lobby sau 5s</span>
+    </div>
+  </div>
+</div>
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
@@ -1455,6 +1483,47 @@ function sendQuickChat(){
 }
 
 
+const liveStatsModal = document.getElementById("liveStatsModal");
+const liveStatsContent = document.getElementById("liveStatsContent");
+const liveStatsCountdown = document.getElementById("liveStatsCountdown");
+
+function fmtTime(ms){
+  const s = Math.floor(ms/1000);
+  const m = Math.floor(s/60);
+  const r = s%60;
+  return `${m} phút ${r} giây`;
+}
+
+socket.on("live-ended-stats", (stats) => {
+  // render nội dung
+  liveStatsContent.innerHTML = `
+    <div>⏱ Thời gian live: <b>${fmtTime(stats.durationMs)}</b></div>
+    <div>👁 Người xem: <b>${stats.viewers}</b></div>
+    <div>👤 Có guest: <b>${stats.hasGuest ? "Có" : "Không"}</b></div>
+  `;
+
+  // show modal
+  liveStatsModal.classList.remove("hidden");
+
+  // ⏳ countdown về lobby
+  let sec = 5;
+  liveStatsCountdown.textContent = `⏳ Trở về lobby sau ${sec}s`;
+
+  const t = setInterval(() => {
+    sec--;
+    liveStatsCountdown.textContent = `⏳ Trở về lobby sau ${sec}s`;
+    if (sec <= 0) {
+      clearInterval(t);
+      location.href = "/lobby.html";
+    }
+  }, 1000);
+});
+
+
   </script>
+
+
+
+
 </body>
 </html>
