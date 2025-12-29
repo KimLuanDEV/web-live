@@ -136,6 +136,39 @@
     <div id="chatBox" class="chatbox"></div>
   </div>
 
+
+  
+<!-- NEON CONFIRM (Back to Lobby) -->
+<div id="neonConfirm" class="ncf hidden" aria-hidden="true">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box" role="dialog" aria-modal="true" aria-labelledby="ncfTitle">
+    <div class="ncf__frame"></div>
+    <div class="ncf__scan"></div>
+
+    <div class="ncf__top">
+      <div class="ncf__pill">
+        <span class="ncf__dot"></span>
+        <span>RỜI PHÒNG XEM</span>
+      </div>
+      <button class="ncf__x" id="ncfX" type="button" aria-label="Đóng">✕</button>
+    </div>
+
+    <h3 id="ncfTitle" class="ncf__title">Quay về Lobby?</h3>
+
+    <div class="ncf__desc">
+      <div class="ncf__row">• Bạn sẽ rời khỏi phòng đang xem</div>
+      <div class="ncf__row">• Có thể vào lại từ Lobby bất kỳ lúc nào</div>
+    </div>
+
+    <div class="ncf__actions">
+      <button id="ncfCancel" class="ncf__btn ncf__btn--ghost" type="button">Ở lại</button>
+      <button id="ncfOk" class="ncf__btn ncf__btn--main" type="button">✅ Về Lobby</button>
+    </div>
+  </div>
+</div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
