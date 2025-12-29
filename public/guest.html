@@ -168,31 +168,45 @@ const kickHint    = document.getElementById("kickHint");
 
 let __kickTimer = null;
 
-function showKickModal({ seconds = 3, redirect = "/lobby.html", reason = "" } = {}) {
-  if (kickHint) {
-    const map = {
-      host_stop: "Host đã dừng live. Đang đưa bạn về Lobby…",
-      host_left: "Host đã rời phòng. Đang đưa bạn về Lobby…",
-      host_disconnect_timeout: "Host mất kết nối. Phòng đã đóng. Đang về Lobby…"
-    };
-    kickHint.textContent = map[reason] || "Phòng đã đóng. Đang đưa bạn về Lobby…";
-  }
-
-  let s = Number(seconds) || 3;
-  if (kickNumber) kickNumber.textContent = String(s);
-
+function showKickModal({ seconds = 5, redirect = "/lobby.html", reason = "" } = {}) {
+  // hiện modal NGAY
   kickOverlay?.classList.remove("hidden");
 
-  clearInterval(__kickTimer);
+  // text lý do
+  if (kickHint) {
+    const map = {
+      host_stop: "Host đã dừng live",
+      host_left: "Host đã rời phòng",
+      host_disconnect: "Host mất kết nối",
+      host_disconnect_timeout: "Host mất kết nối, phòng đã đóng"
+    };
+    kickHint.textContent = map[reason] || "Phòng đã kết thúc";
+  }
+
+  // countdown
+  let remain = Number(seconds) || 5;
+  kickNumber.textContent = remain;
+
+  // ❌ clear timer cũ
+  if (__kickTimer) clearInterval(__kickTimer);
+
   __kickTimer = setInterval(() => {
-    s -= 1;
-    if (kickNumber) kickNumber.textContent = String(Math.max(0, s));
-    if (s <= 0) {
+    remain--;
+    kickNumber.textContent = remain;
+
+    // ⏱ chỉ redirect khi = 0
+    if (remain <= 0) {
       clearInterval(__kickTimer);
-      location.href = redirect;
+      __kickTimer = null;
+
+      // đảm bảo không redirect sớm
+      setTimeout(() => {
+        window.location.href = redirect;
+      }, 100); // delay nhẹ cho mượt
     }
-  }, 3000);
+  }, 1000);
 }
+
 
 socket.on("room-closed", (payload) => {
   // tắt peer/stream nếu bạn muốn (optional)

@@ -114,11 +114,12 @@ function closeRoomAndKick(roomId, reason = "host_left") {
   room.guestId = null;
 
   // ⚡ báo tất cả client trong phòng hiện modal + countdown rồi về lobby
-  io.to(rid).emit("room-closed", {
-    reason,
-    seconds: 3,
-    redirect: "/lobby.html"
-  });
+io.to(roomId).emit("room-closed", {
+  reason: "host_stop",
+  seconds: 5,
+  redirect: "/lobby.html"
+});
+
 
   // vẫn emit live-stop để UI nào đang nghe live-stop thì tắt
   io.to(rid).emit("live-stop");
