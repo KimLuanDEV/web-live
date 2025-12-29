@@ -44,8 +44,6 @@ function getRoom(roomId) {
 
   releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
-
-  pk: null
 });
 
   }
@@ -129,53 +127,6 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
-
-socket.on("pk-invite", ({ fromRoom, toRoom }) => {
-  fromRoom = normRoomId(fromRoom);
-  toRoom   = normRoomId(toRoom);
-
-  const A = rooms.get(fromRoom);
-  const B = rooms.get(toRoom);
-
-  if (!A || !B) return;
-  if (!B.broadcasterId) return;
-
-  io.to(B.broadcasterId).emit("pk-invite-received", { fromRoom });
-});
-
-
-
-socket.on("pk-accept", ({ roomA, roomB, duration = 180 }) => {
-  roomA = normRoomId(roomA);
-  roomB = normRoomId(roomB);
-
-  const A = rooms.get(roomA);
-  const B = rooms.get(roomB);
-  if (!A || !B) return;
-
-  const pkId = "pk_" + Date.now();
-
-  A.pk = {
-    pkId,
-    opponentRoom: roomB,
-    score: 0,
-    startedAt: Date.now(),
-    duration
-  };
-
-  B.pk = {
-    pkId,
-    opponentRoom: roomA,
-    score: 0,
-    startedAt: Date.now(),
-    duration
-  };
-
-  io.to(roomA).emit("pk-start", A.pk);
-  io.to(roomB).emit("pk-start", B.pk);
-});
-
-
 
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);
@@ -478,29 +429,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
 });
 
 
-socket.on("send-gift", ({ roomId, gift }) => {
-  roomId = normRoomId(roomId);
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  io.to(roomId).emit("gift", { gift });
-
-  if (room.pk) {
-    room.pk.score += gift.value || 1;
-
-    const opp = rooms.get(room.pk.opponentRoom);
-
-    io.to(roomId).emit("pk-score", {
-      my: room.pk.score,
-      opp: opp?.pk?.score || 0
-    });
-
-    io.to(room.pk.opponentRoom).emit("pk-score", {
-      my: opp?.pk?.score || 0,
-      opp: room.pk.score
-    });
-  }
-});
 
   // ===== GUEST CO-HOST FLOW =====
   // Host approves guest: guest becomes room.guestId; all clients get guest-online
@@ -609,25 +537,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
     }
   });
 });
-
-
-setInterval(() => {
-  for (const [roomId, room] of rooms.entries()) {
-    if (!room.pk) continue;
-
-    const elapsed = (Date.now() - room.pk.startedAt) / 1000;
-    if (elapsed >= room.pk.duration) {
-      const opp = rooms.get(room.pk.opponentRoom);
-
-      io.to(roomId).emit("pk-end", {
-        my: room.pk.score,
-        opp: opp?.pk?.score || 0
-      });
-
-      room.pk = null;
-    }
-  }
-}, 1000);
 
 
 app.get("/lobby", (_, res) => {
