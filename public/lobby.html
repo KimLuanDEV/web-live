@@ -630,6 +630,19 @@ setInterval(() => socket.emit("lobby-get"), 3000);
 
 
 
+
+  // Chặn pinch zoom (iOS)
+  document.addEventListener("gesturestart", e => e.preventDefault());
+  document.addEventListener("gesturechange", e => e.preventDefault());
+  document.addEventListener("gestureend", e => e.preventDefault());
+
+  // Chặn Ctrl + scroll zoom (PC)
+  document.addEventListener("wheel", e => {
+    if (e.ctrlKey) e.preventDefault();
+  }, { passive: false });
+
+
+
 </script>
 
 
