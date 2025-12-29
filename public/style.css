@@ -1997,3 +1997,42 @@ body.auto-mini .container{
     box-shadow: none;
   }
 }
+
+
+/* ===== LOGIN USER BOX ===== */
+.user-box{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.user-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid var(--stroke);
+  background: rgba(0,0,0,.35);
+}
+
+.user-info img{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.25);
+}
+
+.user-info span{
+  font-size:13px;
+  font-weight:600;
+}
+
+.user-info button{
+  width:auto;
+  padding:6px 8px;
+  border-radius:50%;
+}
+
+.hidden{ display:none; }

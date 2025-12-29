@@ -18,6 +18,19 @@
           </div>
         </div>
 
+<div class="user-box" id="userBox">
+  <!-- Chưa login -->
+  <button id="btnLogin" class="lobby-btn">🔐 Đăng nhập</button>
+
+  <!-- Đã login -->
+  <div id="userInfo" class="user-info hidden">
+    <img id="userAvatar" />
+    <span id="userName"></span>
+    <button id="btnLogout" title="Đăng xuất">⎋</button>
+  </div>
+</div>
+
+
         <div class="pills">
           <button class="btn lobby-btn" id="btnOpenCreate">➕ Tạo phòng</button>
           <button id="refresh" class="lobby-btn" title="Làm mới">🔄</button>
@@ -276,6 +289,12 @@ const roomInput = document.getElementById("roomInput");
 const hostNameInput = document.getElementById("hostNameInput");
 
 function openModal(){
+
+  const u = getUser();
+if(u){
+  document.getElementById("hostNameInput").value = u.name;
+}
+
   modal.classList.remove("hidden");
   roomInput.value = "";
   hostNameInput.value = "";
@@ -622,11 +641,106 @@ setInterval(() => socket.emit("lobby-get"), 3000);
 
 
 
+const btnLogin = document.getElementById("btnLogin");
+const userInfo = document.getElementById("userInfo");
+const userNameEl = document.getElementById("userName");
+const userAvatarEl = document.getElementById("userAvatar");
+const btnLogout = document.getElementById("btnLogout");
+
+const loginModal = document.getElementById("loginModal");
+const loginOk = document.getElementById("loginOk");
+const loginCancel = document.getElementById("loginCancel");
+const loginX = document.getElementById("loginX");
+
+function getUser(){
+  try{
+    return JSON.parse(localStorage.getItem("live_user"));
+  }catch{
+    return null;
+  }
+}
+
+function setUser(user){
+  localStorage.setItem("live_user", JSON.stringify(user));
+  renderUser();
+}
+
+function clearUser(){
+  localStorage.removeItem("live_user");
+  renderUser();
+}
+
+function renderUser(){
+  const user = getUser();
+  if(user){
+    btnLogin.classList.add("hidden");
+    userInfo.classList.remove("hidden");
+    userNameEl.textContent = user.name;
+    userAvatarEl.src = user.avatar || "https://i.pravatar.cc/100?u=" + user.name;
+  }else{
+    btnLogin.classList.remove("hidden");
+    userInfo.classList.add("hidden");
+  }
+}
+
+// Open modal
+btnLogin.onclick = ()=> loginModal.classList.remove("hidden");
+
+// Close modal
+loginCancel.onclick = loginX.onclick = ()=> loginModal.classList.add("hidden");
+
+// Login confirm
+loginOk.onclick = ()=>{
+  const name = document.getElementById("loginName").value.trim();
+  const avatar = document.getElementById("loginAvatar").value.trim();
+  if(!name) return alert("Nhập tên hiển thị");
+
+  setUser({ name, avatar });
+  loginModal.classList.add("hidden");
+};
+
+// Logout
+btnLogout.onclick = ()=>{
+  if(confirm("Đăng xuất khỏi tài khoản?")){
+    clearUser();
+  }
+};
+
+renderUser();
+
+
 </script>
 
 
 
 
+<div id="loginModal" class="modal hidden">
+  <div class="modal-backdrop modal-backdrop--neon"></div>
+
+  <div class="neon-modal">
+    <div class="neon-frame"></div>
+    <div class="neon-scan"></div>
+
+    <div class="neon-top">
+      <div class="neon-livePill">
+        <span class="neon-dot"></span>
+        <span>ĐĂNG NHẬP</span>
+      </div>
+      <button id="loginX" class="neon-x">✕</button>
+    </div>
+
+    <label>Tên hiển thị</label>
+    <input id="loginName" placeholder="Ví dụ: GreedyKing" />
+
+    <label>Avatar (URL)</label>
+    <input id="loginAvatar" placeholder="https://..." />
+
+    <div class="neon-actions">
+      <button id="loginCancel" class="neon-btn neon-btn--ghost">Hủy</button>
+      <button id="loginOk" class="neon-btn neon-btn--main">✅ Đăng nhập</button>
+    </div>
+  </div>
+</div>
 
 
 
