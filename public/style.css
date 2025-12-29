@@ -1968,7 +1968,7 @@ button.is-loading{
   position: fixed;
   right: 16px;
   bottom: 16px;
-  z-index: 9999;
+  z-index: 1;
 
   width: 220px;
   padding: 12px;
