@@ -880,16 +880,25 @@ function sendQuickChat(){
 
 
 function showKickModal(text){
-  alert(text + "\nBạn sẽ được chuyển về Lobby");
-  setTimeout(() => {
-    location.href = "/lobby.html";
-  }, 1500);
+  const modal = document.getElementById("neonConfirm");
+  document.getElementById("ncfTitle").textContent = "Livestream đã kết thúc";
+
+  modal.classList.remove("hidden");
+
+  let sec = 5;
+  const timer = setInterval(() => {
+    document.getElementById("ncfTitle").textContent =
+      `Host đã rời phòng • về Lobby sau ${sec}s`;
+    sec--;
+    if (sec < 0) {
+      clearInterval(timer);
+      location.href = "/lobby.html";
+    }
+  }, 1000);
 }
 
-
-
 socket.on("room-closed", ({ reason }) => {
-  showKickModal("Host đã rời phòng");
+  showKickModal("Host đã kết thúc livestream");
 });
 
 
