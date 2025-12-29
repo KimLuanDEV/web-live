@@ -61,6 +61,7 @@
 
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
+<button id="btnInvitePK" class="av-btn" title="Mời host PK">⚔️</button>
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -329,6 +330,9 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
+
+
+
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -476,6 +480,37 @@ if(nameFromLobby){
     };
 
     const socket = io();
+
+
+const btnInvitePK = document.getElementById("btnInvitePK");
+
+btnInvitePK.onclick = () => {
+  const targetRoom = prompt("Nhập Room ID host muốn PK:");
+  if (!targetRoom) return;
+
+  socket.emit("pk-invite", {
+    fromRoom: roomId,
+    toRoom: targetRoom.trim().toLowerCase(),
+  });
+};
+
+socket.on("pk-invite-received", ({ fromRoom, fromHost }) => {
+  const ok = confirm(`⚔️ ${fromHost.name} muốn PK với bạn!`);
+  if (!ok) return;
+
+  socket.emit("pk-accept", {
+    fromRoom,
+    toRoom: roomId,
+  });
+});
+
+
+socket.on("pk-start", ({ opponent }) => {
+  alert(`🔥 PK BẮT ĐẦU với ${opponent.name}`);
+  document.body.classList.add("pk-mode");
+});
+
+
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
