@@ -588,6 +588,29 @@ socket.on("pk-accept", ({ fromRoom, toRoom }) => {
   });
 });
 
+// ===== PK SIGNALING =====
+socket.on("pk-offer", ({ to, sdp }) => {
+  io.to(to).emit("pk-offer", {
+    from: socket.id,
+    sdp,
+  });
+});
+
+socket.on("pk-answer", ({ to, sdp }) => {
+  io.to(to).emit("pk-answer", {
+    from: socket.id,
+    sdp,
+  });
+});
+
+socket.on("pk-candidate", ({ to, candidate }) => {
+  io.to(to).emit("pk-candidate", {
+    from: socket.id,
+    candidate,
+  });
+});
+
+
 
 });
 

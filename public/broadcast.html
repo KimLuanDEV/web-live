@@ -333,6 +333,10 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
+let pkPeer = null;
+let pkStream = null;
+
+
 
 
 
@@ -508,10 +512,40 @@ socket.on("pk-invite-received", ({ fromRoom, fromHost }) => {
 });
 
 
-socket.on("pk-start", ({ opponent }) => {
-  alert(`🔥 PK BẮT ĐẦU với ${opponent.name}`);
-  document.body.classList.add("pk-mode");
+socket.on("pk-start", async ({ opponent }) => {
+  alert(`🔥 PK với ${opponent.name}`);
+
+  // opponent socket id được server lưu
+  const targetSocketId = opponent.socketId || null;
+  if (!targetSocketId) return;
+
+  pkPeer = await createPKPeer(targetSocketId, true);
 });
+
+socket.on("pk-offer", async ({ from, sdp }) => {
+  pkPeer = await createPKPeer(from, false);
+  await pkPeer.setRemoteDescription(new RTCSessionDescription(sdp));
+
+  const answer = await pkPeer.createAnswer();
+  await pkPeer.setLocalDescription(answer);
+
+  socket.emit("pk-answer", {
+    to: from,
+    sdp: answer,
+  });
+});
+
+socket.on("pk-answer", async ({ sdp }) => {
+  await pkPeer.setRemoteDescription(new RTCSessionDescription(sdp));
+});
+
+socket.on("pk-candidate", ({ candidate }) => {
+  if (pkPeer && candidate) {
+    pkPeer.addIceCandidate(new RTCIceCandidate(candidate));
+  }
+});
+
+
 
 
     document.body.classList.add("is-host");
@@ -1121,6 +1155,48 @@ socket.emit("join-room", {
     hostFlipBtn.onclick = flipCamera;
 
     window.addEventListener("beforeunload", stop);
+
+
+
+async function createPKPeer(targetSocketId, isCaller){
+  const pc = new RTCPeerConnection(await getIceConfig());
+
+  // gửi stream của mình sang đối phương
+  localStream.getTracks().forEach(track => {
+    pc.addTrack(track, localStream);
+  });
+
+  // nhận stream đối phương
+  pc.ontrack = (e) => {
+    pkStream = e.streams[0];
+
+    // 👉 dùng PIP guest có sẵn
+    guestVideo.srcObject = pkStream;
+    document.body.classList.add("has-guest");
+  };
+
+  pc.onicecandidate = (e) => {
+    if (e.candidate) {
+      socket.emit("pk-candidate", {
+        to: targetSocketId,
+        candidate: e.candidate,
+      });
+    }
+  };
+
+  if (isCaller){
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    socket.emit("pk-offer", {
+      to: targetSocketId,
+      sdp: offer,
+    });
+  }
+
+  return pc;
+}
+
 
     // ===== PIN NOTE (Host-created draggable overlay) =====
 const pinOverlay = document.getElementById("pinOverlay");
