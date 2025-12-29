@@ -153,43 +153,8 @@
 </div>
 
 
-<!-- ROOM CLOSED MODAL (NEON) -->
-<div id="roomClosedModal" class="ncf hidden" aria-hidden="true">
-  <div class="ncf__bg"></div>
-
-  <div class="ncf__box" role="dialog" aria-modal="true" aria-labelledby="rcmTitle">
-    <div class="ncf__frame"></div>
-    <div class="ncf__scan"></div>
-
-    <div class="ncf__top">
-      <div class="ncf__pill">
-        <span class="ncf__dot"></span>
-        <span>PHÒNG ĐÃ ĐÓNG</span>
-      </div>
-      <button class="ncf__x" id="rcmX" type="button" aria-label="Đóng">✕</button>
-    </div>
-
-    <h3 id="rcmTitle" class="ncf__title">📴 Host đã kết thúc livestream</h3>
-
-    <div class="ncf__desc">
-      <div class="ncf__row">• Bạn sẽ được đưa về Lobby sau <b id="rcmCount">5</b> giây</div>
-      <div class="ncf__row" id="rcmReason" style="opacity:.9"></div>
-    </div>
-
-    <div class="ncf__actions">
-      <button id="rcmGoNow" class="ncf__btn ncf__btn--main" type="button">🏟️ Về Lobby ngay</button>
-    </div>
-  </div>
-</div>
-
-
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-
-
-
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -207,72 +172,6 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
-
-
-// ===== ROOM CLOSED MODAL (NEON) + COUNTDOWN 5s =====
-const rcm = document.getElementById("roomClosedModal");
-const rcmBg = rcm?.querySelector(".ncf__bg");
-const rcmX = document.getElementById("rcmX");
-const rcmCountEl = document.getElementById("rcmCount");
-const rcmReasonEl = document.getElementById("rcmReason");
-const rcmGoNow = document.getElementById("rcmGoNow");
-
-let __rcmTimer = null;
-let __rcmOpen = false;
-
-function __goLobbyNow(){
-  try { socket?.disconnect(); } catch {}
-  window.location.href = "/lobby.html";
-}
-
-function openRoomClosedModal({ reason = "", seconds = 5, redirect = "/lobby.html" } = {}){
-  if (!rcm) return;
-
-  rcm.classList.remove("hidden");
-  rcm.setAttribute("aria-hidden", "false");
-
-  const r = String(reason || "");
-  if (rcmReasonEl) {
-    rcmReasonEl.textContent =
-      r === "host_stop" ? "• Host đã bấm dừng live" :
-      r === "host_disconnect_timeout" ? "• Host mất kết nối, phòng đã đóng" :
-      r === "host_disconnect" ? "• Host mất kết nối / thoát phòng" :
-      "• Host đã rời phòng";
-  }
-
-  let remain = Number(seconds);
-  if (!Number.isFinite(remain) || remain <= 0) remain = 5;
-
-  if (rcmCountEl) rcmCountEl.textContent = String(remain);
-
-  if (__rcmTimer) clearInterval(__rcmTimer);
-  __rcmTimer = setInterval(() => {
-    remain -= 1;
-    if (rcmCountEl) rcmCountEl.textContent = String(Math.max(0, remain));
-    if (remain <= 0) {
-      clearInterval(__rcmTimer);
-      __rcmTimer = null;
-      window.location.href = redirect || "/lobby.html";
-    }
-  }, 1000);
-
-  if (!__rcmOpen) {
-    __rcmOpen = true;
-    rcmGoNow?.addEventListener("click", __goLobbyNow);
-    rcmBg?.addEventListener("click", __goLobbyNow);
-    rcmX?.addEventListener("click", __goLobbyNow);
-    document.addEventListener("keydown", (e)=>{
-      if (e.key === "Escape") __goLobbyNow();
-    });
-  }
-}
-
-socket.on("room-closed", (payload) => {
-  openRoomClosedModal(payload || {});
-});
-
-
-
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
 function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
@@ -840,17 +739,6 @@ socket.on("host-profile-update", (profile) => {
     .forEach(img => img.src = getAvatarByName(profile.name));
 });
 
-
-socket.on("room-closed", ({ reason }) => {
-
-  window.location.href = "/lobby.html";
-});
-
-
-
-
-
-
 const chatFab = document.getElementById("chatFab");
 const chatInputOverlay = document.getElementById("chatInputOverlay");
 const quickChatInput = document.getElementById("quickChatInput");
@@ -902,19 +790,81 @@ function sendQuickChat(){
   closeQuickChat();
 }
 
+socket.on("room-closed", ({ reason }) => {
+  alert("📴 Host đã kết thúc livestream!");
+  window.location.href = "/lobby.html";
+});
+
+// ===== ROOM CLOSED MODAL =====
+const roomClosedModal = document.getElementById("roomClosedModal");
+const roomCloseCountdownEl = document.getElementById("roomCloseCountdown");
+const roomCloseNowBtn = document.getElementById("roomCloseNow");
+
+let roomCloseTimer = null;
+let roomCloseLeft = 5;
+
+function openRoomClosedModal() {
+  if (!roomClosedModal) return;
+
+  roomCloseLeft = 5;
+  roomCloseCountdownEl.textContent = roomCloseLeft;
+
+  roomClosedModal.classList.remove("hidden");
+
+  roomCloseTimer = setInterval(() => {
+    roomCloseLeft--;
+    roomCloseCountdownEl.textContent = roomCloseLeft;
+
+    if (roomCloseLeft <= 0) {
+      goLobby();
+    }
+  }, 1000);
+}
+
+function goLobby() {
+  if (roomCloseTimer) clearInterval(roomCloseTimer);
+  location.href = "/lobby.html";
+}
+
+roomCloseNowBtn?.addEventListener("click", goLobby);
+
+// 🔔 SERVER BÁO PHÒNG ĐÓNG
+socket.on("room-closed", ({ reason }) => {
+  console.log("ROOM CLOSED:", reason);
+  openRoomClosedModal();
+});
 
 
   </script>
 
+<!-- ROOM CLOSED MODAL -->
+<div id="roomClosedModal" class="modal hidden">
+  <div class="modal-backdrop modal-backdrop--neon"></div>
 
+  <div class="neon-modal" style="max-width:420px">
+    <div class="neon-frame"></div>
+    <div class="neon-scan"></div>
 
-<!-- ROOM CLOSED OVERLAY (NEON) -->
-<div class="cd-overlay hidden" id="kickOverlay" aria-live="polite">
-  <div class="cd-bg"></div>
-  <div class="cd-panel">
-    <div class="cd-kicker">⛔ PHÒNG ĐÃ KẾT THÚC</div>
-    <div class="cd-number" id="kickNumber">3</div>
-    <div class="cd-hint" id="kickHint">Host đã rời phòng. Đang đưa bạn về Lobby…</div>
+    <div class="neon-top">
+      <div class="neon-livePill">
+        <span class="neon-dot"></span>
+        <span>PHÒNG ĐÃ ĐÓNG</span>
+      </div>
+    </div>
+
+    <div style="padding:16px 6px;text-align:center">
+      <h3 style="margin-bottom:8px">📴 Host đã rời livestream</h3>
+      <p style="opacity:.85">
+        Bạn sẽ được chuyển về Lobby sau<br>
+        <b id="roomCloseCountdown">5</b> giây
+      </p>
+    </div>
+
+    <div class="neon-actions">
+      <button id="roomCloseNow" class="neon-btn neon-btn--main">
+        🏟️ Về Lobby ngay
+      </button>
+    </div>
   </div>
 </div>
 

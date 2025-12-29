@@ -104,31 +104,21 @@ app.get("/ice", async (_req, res) => {
 });
 
 
-function closeRoomAndKick(roomId, reason = "host_left") {
-  const rid = normRoomId(roomId);
-  const room = rooms.get(rid);
+function closeRoom(roomId, reason = "host_left") {
+  const room = rooms.get(roomId);
   if (!room) return;
 
-  // clear timer nếu còn
-  if (room.releaseTimer) {
-    clearTimeout(room.releaseTimer);
-    room.releaseTimer = null;
-  }
-  room.pendingRelease = false;
+  // 🔔 báo cho tất cả client trong phòng
+  io.to(roomId).emit("room-closed", { reason });
 
-  // reset trạng thái live
+  // ❌ clear trạng thái phòng
   room.broadcasterId = null;
-  room.liveStartTs = null;
   room.guestId = null;
+  room.viewers.clear();
+  room.liveStartTs = null;
 
-  // ⚡ báo tất cả client trong phòng hiện modal + countdown rồi về lobby
-  io.to(rid).emit("room-closed", {
-    reason,
-    seconds: 5,
-    redirect: "/lobby.html",
-  });
+  emitLobbyUpdate();
 }
-
 
 
 io.on("connection", (socket) => {
@@ -230,13 +220,11 @@ socket.on("live-start", ({ roomId, startTs }) => {
 
 socket.on("live-stop", ({ roomId }) => {
   if (!roomId) return;
-  const rid = normRoomId(roomId);
-  const room = getRoom(rid);
-  if (room.broadcasterId !== socket.id) return; // only host
+  const room = getRoom(roomId);
+  if (room.broadcasterId !== socket.id) return;
 
-  closeRoomAndKick(rid, "host_stop");
+  closeRoom(roomId, "host_stop");
 });
-
 
 
 
@@ -462,82 +450,68 @@ socket.on("send-gift", ({ roomId, gift }) => {
   });
 
   socket.on("disconnect", () => {
-  const roomId = socket.data.roomId;
-  const role = socket.data.role;
-  if (!roomId) return;
 
-  const room = rooms.get(roomId);
-  if (!room) return;
 
-  // ===== VIEWER DISCONNECT =====
-  if (role === "viewer") {
-    room.viewers.delete(socket.id);
-    emitViewerCount(roomId);
-    emitLobbyUpdate();
-
-    io.to(roomId).emit("viewer-leave", { id: socket.id, count: room.viewers.size });
-    if (room.broadcasterId) {
-      io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
-    }
-  }
-
-  // ===== GUEST DISCONNECT =====
-  if (role === "guest") {
-    if (room.guestId === socket.id) {
-      room.guestId = null;
-      emitLobbyUpdate();
-      io.to(roomId).emit("guest-offline");
-    }
-  }
-
-  // ===== HOST DISCONNECT (GRACE PERIOD) =====
-  if (role === "broadcaster") {
-    // nếu host vẫn là socket này mới xử lý
+    for (const [roomId, room] of rooms.entries()) {
     if (room.broadcasterId === socket.id) {
-      // giải phóng broadcasterId NGAY để lobby tạo lại/host reload không bị "taken"
-      room.broadcasterId = null;
-
-      // bắt đầu chờ
-      room.pendingRelease = true;
-
-      // tránh setTimeout trùng
-      if (room.releaseTimer) {
-        clearTimeout(room.releaseTimer);
-        room.releaseTimer = null;
-      }
-
-      room.releaseTimer = setTimeout(() => {
-        if (!rooms.has(roomId)) return;
-        const r = rooms.get(roomId);
-        if (!r) return;
-
-        // nếu trong thời gian chờ host chưa quay lại
-        if (r.pendingRelease) {
-          closeRoomAndKick(roomId, "host_disconnect_timeout");
-
-          // sau khi đã báo room-closed, có thể xoá room nếu không còn ai
-          // (tuỳ bạn, nhưng xoá giúp lobby sạch)
-          if (r.viewers.size === 0 && !r.guestId) {
-            rooms.delete(roomId);
-          }
-
-          emitLobbyUpdate();
-        }
-      }, ROOM_RELEASE_DELAY);
-
-      // optional: báo viewers host offline (nếu client có xử lý)
-      io.to(roomId).emit("broadcaster-offline");
-      emitLobbyUpdate();
+      // ❌ host rời → đóng phòng
+      closeRoom(roomId, "host_disconnect");
     }
   }
+  
+    const roomId = socket.data.roomId;
+    const role = socket.data.role;
+    if (!roomId) return;
 
-  // ===== dọn room nếu trống =====
-  if (!room.broadcasterId && room.viewers.size === 0 && !room.guestId) {
-    rooms.delete(roomId);
-    emitLobbyUpdate();
-  }
-});
+    const room = rooms.get(roomId);
+    if (!room) return;
 
+    if (role === "viewer") {
+      room.viewers.delete(socket.id);
+      emitViewerCount(roomId);
+      emitLobbyUpdate();
+
+      io.to(roomId).emit("viewer-leave", { id: socket.id, count: room.viewers.size });
+      if (room.broadcasterId) {
+        io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
+      }
+    }
+
+   if (role === "broadcaster") {
+  // ⏱️ Bắt đầu chờ giải phóng
+  room.pendingRelease = true;
+
+  room.releaseTimer = setTimeout(() => {
+    // Nếu trong thời gian chờ host KHÔNG quay lại
+    if (room.pendingRelease) {
+      console.log("⏱️ Auto release room:", roomId);
+
+      room.broadcasterId = null;
+      room.liveStartTs = null;
+      room.guestId = null;
+      room.pendingRelease = false;
+      room.releaseTimer = null;
+
+      io.to(roomId).emit("live-stop");
+      emitLobbyUpdate();
+    }
+  }, ROOM_RELEASE_DELAY);
+}
+
+
+    if (role === "guest") {
+      if (room.guestId === socket.id) {
+        room.guestId = null;
+        emitLobbyUpdate();
+
+        io.to(roomId).emit("guest-offline");
+      }
+    }
+
+    if (!room.broadcasterId && room.viewers.size === 0 && !room.guestId) {
+      rooms.delete(roomId);
+    }
+  });
 });
 
 
