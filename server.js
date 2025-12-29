@@ -200,23 +200,15 @@ socket.on("live-start", ({ roomId, startTs }) => {
    emitLobbyUpdate();
 });
 
-
 socket.on("live-stop", ({ roomId }) => {
   if (!roomId) return;
   const room = getRoom(roomId);
-  if (room.broadcasterId !== socket.id) return;
-
+  if (room.broadcasterId !== socket.id) return; // only host can stop
   room.liveStartTs = null;
-
-  // 🔔 BÁO CHO VIEWER + GUEST (KHÔNG ĐÁ NGAY)
-  io.to(roomId).emit("room-closing", {
-    reason: "Host đã tắt livestream",
-    delay: 5000
-  });
-
+  io.to(roomId).emit("live-stop");
   emitLobbyUpdate();
-});
 
+});
 
 
 
@@ -442,21 +434,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
   });
 
   socket.on("disconnect", () => {
-
-
-    if (room.broadcasterId === socket.id) {
-  room.broadcasterId = null;
-  room.liveStartTs = null;
-
-  io.to(roomId).emit("room-closing", {
-    reason: "Host đã rời phòng",
-    delay: 5000
-  });
-
-  emitLobbyUpdate();
-}
-
-
     const roomId = socket.data.roomId;
     const role = socket.data.role;
     if (!roomId) return;
