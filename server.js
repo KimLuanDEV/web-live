@@ -34,24 +34,17 @@ function normRoomId(roomId) {
 function getRoom(roomId) {
   roomId = normRoomId(roomId);
   if (!rooms.has(roomId)) {
-
    rooms.set(roomId, {
   broadcasterId: null,
   viewers: new Set(),
   guestId: null,
-
-  // ===== PK HOST =====
-  pkHostId: null,
-  pkRoomId: null,
-  pkStartTs: null,
-
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
-  releaseTimer: null,
-  pendingRelease: false,
-});
 
+  releaseTimer: null,        // ⏱️ timer giải phóng
+  pendingRelease: false,     // đang chờ giải phóng?
+});
 
   }
   return rooms.get(roomId);
@@ -543,75 +536,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
       rooms.delete(roomId);
     }
   });
-
-
-// ===== HOST INVITE PK =====
-socket.on("pk-invite", ({ fromRoom, toRoom }) => {
-  const roomA = rooms.get(fromRoom);
-  const roomB = rooms.get(toRoom);
-
-  if (!roomA || !roomB) return;
-  if (roomA.broadcasterId !== socket.id) return; // chỉ host A
-
-  // gửi lời mời cho host B
-  io.to(roomB.broadcasterId).emit("pk-invite-received", {
-    fromRoom,
-    fromHost: roomA.hostProfile,
-  });
-});
-
-
-// ===== HOST ACCEPT PK =====
-socket.on("pk-accept", ({ fromRoom, toRoom }) => {
-  const roomA = rooms.get(fromRoom);
-  const roomB = rooms.get(toRoom);
-  if (!roomA || !roomB) return;
-
-  const ts = Date.now();
-
-  roomA.pkHostId = roomB.broadcasterId;
-  roomA.pkRoomId = toRoom;
-  roomA.pkStartTs = ts;
-
-  roomB.pkHostId = roomA.broadcasterId;
-  roomB.pkRoomId = fromRoom;
-  roomB.pkStartTs = ts;
-
-  io.to(fromRoom).emit("pk-start", {
-    opponent: roomB.hostProfile,
-    startTs: ts,
-  });
-
-  io.to(toRoom).emit("pk-start", {
-    opponent: roomA.hostProfile,
-    startTs: ts,
-  });
-});
-
-// ===== PK SIGNALING =====
-socket.on("pk-offer", ({ to, sdp }) => {
-  io.to(to).emit("pk-offer", {
-    from: socket.id,
-    sdp,
-  });
-});
-
-socket.on("pk-answer", ({ to, sdp }) => {
-  io.to(to).emit("pk-answer", {
-    from: socket.id,
-    sdp,
-  });
-});
-
-socket.on("pk-candidate", ({ to, candidate }) => {
-  io.to(to).emit("pk-candidate", {
-    from: socket.id,
-    candidate,
-  });
-});
-
-
-
 });
 
 

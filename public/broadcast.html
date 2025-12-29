@@ -62,7 +62,6 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
-
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
   <input
@@ -103,9 +102,6 @@
 
                <!-- Hướng dẫn -->
               <button id="btnHostGuide" class="av-btn" title="Hướng dẫn sử dụng">❔</button>
-
-               <!-- PK -->
-              <button id="btnInvitePK" class="av-btn" title="Mời host PK">⚔️</button>
 
             </div>
             <div class="ctrl-hint">Nhấn ☰ để thu gọn</div>
@@ -330,94 +326,8 @@
   </div>
 </div>
   
-
-<!-- ===== PK INVITE MODAL ===== -->
-<div id="pkInviteModal" class="ncf hidden">
-  <div class="ncf__bg"></div>
-
-  <div class="ncf__box">
-    <div class="ncf__frame"></div>
-    <div class="ncf__scan"></div>
-
-    <div class="ncf__top">
-      <div class="ncf__pill">
-        <span class="ncf__dot"></span>
-        <span>⚔️ LỜI MỜI PK</span>
-      </div>
-      <button class="ncf__x" id="pkInviteClose">✕</button>
-    </div>
-
-    <h3 class="ncf__title">Host muốn giao lưu PK</h3>
-
-    <div class="ncf__desc">
-      <div id="pkInviteText"></div>
-    </div>
-
-    <div class="ncf__actions">
-      <button id="pkInviteReject" class="ncf__btn ncf__btn--ghost">❌ Từ chối</button>
-      <button id="pkInviteAccept" class="ncf__btn ncf__btn--main">⚔️ Chấp nhận PK</button>
-    </div>
-  </div>
-</div>
-
-<!-- ===== PK START MODAL ===== -->
-<div id="pkStartModal" class="ncf hidden">
-  <div class="ncf__bg"></div>
-
-  <div class="ncf__box">
-    <div class="ncf__frame"></div>
-    <div class="ncf__scan"></div>
-
-    <div class="ncf__top">
-      <div class="ncf__pill">
-        <span class="ncf__dot"></span>
-        <span>🔥 PK BẮT ĐẦU</span>
-      </div>
-    </div>
-
-    <h3 class="ncf__title">⚔️ Song đấu Livestream</h3>
-
-    <div class="ncf__desc">
-      <div id="pkStartText"></div>
-      <div style="margin-top:8px;opacity:.85">Chuẩn bị kết nối video…</div>
-    </div>
-
-    <div class="ncf__actions">
-      <button id="pkStartOk" class="ncf__btn ncf__btn--main">🚀 VÀO PK</button>
-    </div>
-  </div>
-</div>
-
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-let pkPeer = null;
-let pkStream = null;
-
-const pkInviteModal = document.getElementById("pkInviteModal");
-const pkInviteText  = document.getElementById("pkInviteText");
-const pkInviteAccept = document.getElementById("pkInviteAccept");
-const pkInviteReject = document.getElementById("pkInviteReject");
-const pkInviteClose  = document.getElementById("pkInviteClose");
-
-const pkStartModal = document.getElementById("pkStartModal");
-const pkStartText  = document.getElementById("pkStartText");
-const pkStartOk    = document.getElementById("pkStartOk");
-
-let __pkFromRoom = null;
-
-function openModal(el){
-  el.classList.remove("hidden");
-  el.setAttribute("aria-hidden","false");
-}
-
-function closeModal(el){
-  el.classList.add("hidden");
-  el.setAttribute("aria-hidden","true");
-}
-
-
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
@@ -566,91 +476,6 @@ if(nameFromLobby){
     };
 
     const socket = io();
-
-
-const btnInvitePK = document.getElementById("btnInvitePK");
-
-btnInvitePK.onclick = () => {
-  const targetRoom = prompt("Nhập Room ID host muốn PK:");
-  if (!targetRoom) return;
-
-  socket.emit("pk-invite", {
-    fromRoom: roomId,
-    toRoom: targetRoom.trim().toLowerCase(),
-  });
-};
-
-socket.on("pk-invite-received", ({ fromRoom, fromHost }) => {
-  __pkFromRoom = fromRoom;
-
-  pkInviteText.innerHTML = `
-    <b>${fromHost.name}</b> đang LIVE<br/>
-    muốn giao lưu PK với bạn
-  `;
-
-  openModal(pkInviteModal);
-});
-
-
-pkInviteAccept.onclick = () => {
-  closeModal(pkInviteModal);
-
-  socket.emit("pk-accept", {
-    fromRoom: __pkFromRoom,
-    toRoom: roomId,
-  });
-};
-
-pkInviteReject.onclick = () => closeModal(pkInviteModal);
-pkInviteClose.onclick  = () => closeModal(pkInviteModal);
-
-
-socket.on("pk-start", async ({ opponent }) => {
-   pkStartText.innerHTML = `
-    <b>${opponent.name}</b><br/>
-    PK sắp bắt đầu!
-  `;
-  openModal(pkStartModal);
-
-  // opponent socket id được server lưu
-  const targetSocketId = opponent.socketId || null;
-  if (!targetSocketId) return;
-
-  pkPeer = await createPKPeer(targetSocketId, true);
-});
-
-pkStartOk.onclick = () => {
-  closeModal(pkStartModal);
-  document.body.classList.add("pk-mode");
-};
-
-
-socket.on("pk-offer", async ({ from, sdp }) => {
-  pkPeer = await createPKPeer(from, false);
-  await pkPeer.setRemoteDescription(new RTCSessionDescription(sdp));
-
-  const answer = await pkPeer.createAnswer();
-  await pkPeer.setLocalDescription(answer);
-
-  socket.emit("pk-answer", {
-    to: from,
-    sdp: answer,
-  });
-});
-
-socket.on("pk-answer", async ({ sdp }) => {
-  await pkPeer.setRemoteDescription(new RTCSessionDescription(sdp));
-});
-
-socket.on("pk-candidate", ({ candidate }) => {
-  if (pkPeer && candidate) {
-    pkPeer.addIceCandidate(new RTCIceCandidate(candidate));
-  }
-});
-
-
-
-
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
@@ -1258,48 +1083,6 @@ socket.emit("join-room", {
     hostFlipBtn.onclick = flipCamera;
 
     window.addEventListener("beforeunload", stop);
-
-
-
-async function createPKPeer(targetSocketId, isCaller){
-  const pc = new RTCPeerConnection(await getIceConfig());
-
-  // gửi stream của mình sang đối phương
-  localStream.getTracks().forEach(track => {
-    pc.addTrack(track, localStream);
-  });
-
-  // nhận stream đối phương
-  pc.ontrack = (e) => {
-    pkStream = e.streams[0];
-
-    // 👉 dùng PIP guest có sẵn
-    guestVideo.srcObject = pkStream;
-    document.body.classList.add("has-guest");
-  };
-
-  pc.onicecandidate = (e) => {
-    if (e.candidate) {
-      socket.emit("pk-candidate", {
-        to: targetSocketId,
-        candidate: e.candidate,
-      });
-    }
-  };
-
-  if (isCaller){
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    socket.emit("pk-offer", {
-      to: targetSocketId,
-      sdp: offer,
-    });
-  }
-
-  return pc;
-}
-
 
     // ===== PIN NOTE (Host-created draggable overlay) =====
 const pinOverlay = document.getElementById("pinOverlay");
