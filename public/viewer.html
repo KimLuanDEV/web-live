@@ -238,7 +238,7 @@ function showKickModal({ seconds = 3, redirect = "/lobby.html", reason = "" } = 
       clearInterval(__kickTimer);
       location.href = redirect;
     }
-  }, 1000);
+  }, 3000);
 }
 
 socket.on("room-closed", (payload) => {
@@ -869,7 +869,7 @@ function openRoomClosedModal(reason){
       __rcmTimer = null;
       __goLobbyNow();
     }
-  }, 1000);
+  }, 3000);
 
   // actions
   rcmGoNow?.addEventListener("click", __goLobbyNow, { once: true });
