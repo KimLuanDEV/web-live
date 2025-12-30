@@ -2635,3 +2635,42 @@ body.vip-spotlight .vip-zoom{
   position: relative;
   z-index: 1;
 }
+
+
+/* ===== SPOTLIGHT OVERLAY ===== */
+.spotlight-overlay{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:9000;
+  opacity:0;
+  transition:opacity .25s ease;
+}
+
+/* nền tối */
+.spotlight-overlay::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.55);
+}
+
+/* vùng spotlight */
+.spotlight-overlay::after{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:45%;
+  width:60%;
+  height:60%;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  box-shadow:
+    0 0 0 9999px rgba(0,0,0,.55),
+    0 0 60px rgba(255,215,0,.6);
+}
+
+/* bật spotlight */
+.spotlight-overlay.is-on{
+  opacity:1;
+}

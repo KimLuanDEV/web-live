@@ -47,6 +47,8 @@
 
         <div class="live-stage" id="liveStage" style="margin-top:10px">
 
+          <div class="spotlight-overlay" id="spotlightOverlay"></div>
+
           <div class="gift-layer" id="giftLayer"></div>
 
   <!-- HOST -->
@@ -294,22 +296,17 @@ function freezeChat(ms=1000){
   }catch{}
 }
 
-function startVipSpotlight(ms=1200){
-  try{
-    // add overlay class
-    document.body.classList.add("vip-spotlight");
-    // zoom main card if exists
-    const card = document.getElementById("hostCard") || document.getElementById("hostCardGuest");
-    if (card) card.classList.add("vip-zoom");
-    // remove
-    setTimeout(()=>{
-      try{
-        document.body.classList.remove("vip-spotlight");
-        if (card) card.classList.remove("vip-zoom");
-      }catch{}
-    }, ms);
-  }catch{}
+function startVipSpotlight(ms = 1200){
+  const el = document.getElementById("spotlightOverlay");
+  if (!el) return;
+
+  el.classList.add("is-on");
+
+  setTimeout(()=>{
+    el.classList.remove("is-on");
+  }, ms);
 }
+
 
 function spawnFireworksBurst(){
   try{
