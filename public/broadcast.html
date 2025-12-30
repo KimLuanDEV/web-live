@@ -860,15 +860,18 @@ socket.emit("join-room", {
 
 
 pc.ontrack = (e) => {
-  // 🎤 AUDIO từ VIEWER
   if (e.track.kind === "audio") {
     const audio = document.createElement("audio");
     audio.srcObject = e.streams[0];
     audio.autoplay = true;
     audio.muted = false;
+    audio.dataset.viewer = viewerId;
     document.body.appendChild(audio);
+
+    log("🎤 Nhận audio từ viewer: " + viewerId);
   }
 };
+
 
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
@@ -1581,8 +1584,12 @@ function approveMic(viewerId, ok){
     viewerId,
     ok
   });
-  viewerMicReq.textContent = ok ? "🎤 Đã duyệt mic" : "❌ Đã từ chối";
+
+  viewerMicReq.textContent = ok
+    ? "✅ Đã duyệt mic cho viewer"
+    : "❌ Đã từ chối yêu cầu";
 }
+
 
 
   </script>

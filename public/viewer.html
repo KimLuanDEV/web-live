@@ -200,12 +200,15 @@ socket.on("viewer-mic-result", async ({ ok }) => {
     return;
   }
 
+  // ✅ ĐÃ ĐƯỢC DUYỆT → UPDATE UI
+  btnRequestMic.textContent = "🎙️ Mic đã bật";
+  btnRequestMic.disabled = true;
+
   const stream = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: false
   });
 
-  // 🔥 TÌM peer đang kết nối tới HOST
   const pc = [...pcs.values()][0];
   if (!pc) {
     alert("Chưa kết nối tới host");
@@ -218,6 +221,7 @@ socket.on("viewer-mic-result", async ({ ok }) => {
 
   badge.textContent = "🎤 Đang nói chuyện";
 });
+
 
 
     // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
