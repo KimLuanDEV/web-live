@@ -41,17 +41,6 @@ const GIFT_CATALOG = {
   king:   { emoji: "👑", cost: 800, title: "Vương miện" },
   dragonking: { emoji: "🐲", cost: 1500, title: "Dragon King" },
   supernova:  { emoji: "🌠", cost: 2200, title: "Supernova" },
-
-
- // ⭐ QUÀ MỚI
-  goddragon: {
-    emoji: "🐲🔥",
-    cost: 5000,
-    title: "Thần Long",
-    video: "https://www.youtube.com/shorts/Jonr4DAj1_Q", // 🎥 VIDEO
-    vip: true
-  }
-
 };
 
 
@@ -498,16 +487,6 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   if (!roomId || !gift) return;
 
   const room = getRoom(roomId);
-
-
-  if (giftCfg.video) {
-  io.to(roomId).emit("gift-video", {
-    video: giftCfg.video,
-    title: giftCfg.title,
-    from: socket.data.userName,
-    vip: !!giftCfg.vip
-  });
-}
 
   // Only allow gifts when room is live (has host + started)
   if (!room.broadcasterId || !room.liveStartTs) return;

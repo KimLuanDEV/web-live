@@ -52,13 +52,6 @@
         <div class="card">
      <div class="live-stage" id="liveStageHost" style="margin-top:10px">
 
-      <!-- 🎥 GIFT VIDEO OVERLAY -->
-<div class="gift-video-layer hidden" id="giftVideoLayer">
-  <video id="giftVideo" playsinline muted></video>
-  <div class="gift-video-title" id="giftVideoTitle"></div>
-</div>
-
-
       <div class="gift-layer" id="giftLayer"></div>
 
   <!-- HOST MAIN -->
@@ -1769,35 +1762,6 @@ socket.on("live-ended-stats", (stats) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
-
-
-
-  const giftVideoLayer = document.getElementById("giftVideoLayer");
-const giftVideo = document.getElementById("giftVideo");
-const giftVideoTitle = document.getElementById("giftVideoTitle");
-
-socket.on("gift-video", ({ video, title, from, vip }) => {
-  if (!video || !giftVideoLayer) return;
-
-  giftVideo.src = video;
-  giftVideo.currentTime = 0;
-  giftVideoLayer.classList.remove("hidden");
-  giftVideoTitle.textContent = `🎁 ${from} gửi ${title}`;
-
-  giftVideo.play().catch(()=>{});
-
-  // VIP effect thêm
-  if (vip){
-    startVipSpotlight(2000);
-    freezeChat(1500);
-  }
-
-  giftVideo.onended = () => {
-    giftVideo.pause();
-    giftVideo.src = "";
-    giftVideoLayer.classList.add("hidden");
-  };
-});
 
 
   </script>
