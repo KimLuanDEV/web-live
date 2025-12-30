@@ -75,6 +75,29 @@
 <div class="video-card__inner">
                 <video id="hostVideo" autoplay playsinline></video>
               </div>
+
+<!-- GIFT FLOAT BUTTON -->
+<button class="gift-fab" id="giftFab" title="Tặng quà">🎁</button>
+
+<!-- GIFT PANEL -->
+<div class="gift-panel hidden" id="giftPanel">
+  <div class="gift-panel__title">🎁 Tặng quà</div>
+  <div class="gift-panel__grid">
+    <button data-gift="heart">❤️</button>
+    <button data-gift="flower">🌸</button>
+    <button data-gift="rocket">🚀</button>
+    <button data-gift="coin">💰</button>
+    <button data-gift="dragon">🐉</button>
+    <button data-gift="phoenix">🦅</button>
+    <button data-gift="galaxy">🌌</button>
+    <button data-gift="meteor">☄️</button>
+    <button data-gift="king">👑</button>
+    <button data-gift="dragonking">🐲</button>
+    <button data-gift="supernova">🌠</button>
+  </div>
+</div>
+
+
             </div>
 
             <!-- ME PIP -->
@@ -1234,6 +1257,28 @@ socket.on("room-closed", ({ reason }) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
+const giftFab = document.getElementById("giftFab");
+const giftPanel = document.getElementById("giftPanel");
+
+giftFab?.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  giftPanel.classList.toggle("hidden");
+});
+
+// click ngoài → đóng
+document.addEventListener("click", ()=>{
+  giftPanel.classList.add("hidden");
+});
+giftPanel?.addEventListener("click", e=>e.stopPropagation());
+
+// gửi quà
+giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const gift = btn.dataset.gift;
+    socket.emit("send-gift", { roomId, gift });
+    giftPanel.classList.add("hidden");
+  });
+});
 
 
   </script>
