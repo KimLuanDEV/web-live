@@ -484,7 +484,91 @@ if(nameFromLobby){
     };
 
     const socket = io();
-    document.body.classList.add("is-host");
+    
+
+// ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
+function attachSpeakingIndicator(videoEl, targetEl){
+  try{
+    if (!videoEl || !targetEl) return;
+    let ctx = null, src = null, analyser = null, data = null, raf = 0;
+    let speaking = false;
+    let lastOn = 0;
+
+    function start(){
+      const st = videoEl.srcObject;
+      if (!st) return;
+      const at = st.getAudioTracks && st.getAudioTracks()[0];
+      if (!at) return; // no audio -> skip
+
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      data = new Uint8Array(analyser.frequencyBinCount);
+
+      src = ctx.createMediaStreamSource(new MediaStream([at]));
+      src.connect(analyser);
+
+      const TH = 16; // threshold 0..255 (tuning)
+      const HOLD_MS = 450;
+
+      const loop = ()=>{
+        if (!analyser) return;
+        analyser.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i=0;i<data.length;i++) sum += data[i];
+        const avg = sum / data.length;
+
+        const now = Date.now();
+        if (avg > TH){
+          lastOn = now;
+          if (!speaking){
+            speaking = true;
+            targetEl.classList.add("is-speaking");
+          }
+        } else {
+          if (speaking && (now - lastOn) > HOLD_MS){
+            speaking = false;
+            targetEl.classList.remove("is-speaking");
+          }
+        }
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    }
+
+    function stop(){
+      try{ if (raf) cancelAnimationFrame(raf); }catch{}
+      raf = 0;
+      try{ targetEl.classList.remove("is-speaking"); }catch{}
+      speaking = false;
+      try{ if (src) src.disconnect(); }catch{}
+      src = null;
+      try{ if (ctx) ctx.close(); }catch{}
+      ctx = null;
+      analyser = null;
+      data = null;
+    }
+
+    // restart when stream changes
+    const _set = ()=>{
+      stop();
+      start();
+    };
+
+    // run now + also after play
+    _set();
+    videoEl.addEventListener("loadedmetadata", _set);
+    videoEl.addEventListener("play", _set);
+
+    // expose for manual cleanup
+    videoEl.__stopSpeakingIndicator = stop;
+  }catch(e){
+    console.warn("attachSpeakingIndicator error:", e);
+  }
+}
+// ===== /AUTO SPEAKING HIGHLIGHT =====
+
+document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
       const fab = document.getElementById("ctrlFabHost");
@@ -899,7 +983,32 @@ socket.emit("join-room", {
       }
     });
 
-    socket.on("disconnectPeer", ({ peerId }) => {
+    
+
+// ===== ICE RESTART: host regenerates offer when asked =====
+socket.on('request-ice-restart', async ({ from, reason })=>{
+  try{
+    // from viewer
+    const pc = pcs.get(from);
+    if (pc){
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
+      socket.emit('offer', { to: from, description: pc.localDescription });
+      log('ICE restart -> new offer to viewer ' + from + (reason ? ' ('+reason+')' : ''));
+      return;
+    }
+    // from guest (if guest asks host)
+    if (pcGuestIn && approvedGuestId === from){
+      const offer = await pcGuestIn.createOffer({ iceRestart: true });
+      await pcGuestIn.setLocalDescription(offer);
+      socket.emit('offer', { to: from, description: pcGuestIn.localDescription });
+      log('ICE restart -> new offer to guest ' + from + (reason ? ' ('+reason+')' : ''));
+      return;
+    }
+  }catch(e){ log('ICE restart error: ' + (e?.message||e)); }
+});
+// ===== /ICE RESTART =====
+socket.on("disconnectPeer", ({ peerId }) => {
       const pc = pcs.get(peerId);
       if (pc) {
         pc.close();
@@ -966,6 +1075,7 @@ socket.emit("join-room", {
 
       pcGuestIn.ontrack = (e) => {
         guestVideo.srcObject = e.streams[0];
+        try{ attachSpeakingIndicator(guestVideo, document.getElementById('guestPipWrapHost')); }catch{}
       };
 
       pcGuestIn.onicecandidate = (e) => {
@@ -1002,6 +1112,7 @@ socket.emit("join-room", {
         });
 
         preview.srcObject = localStream;
+    try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
         btnStart.disabled = true;
         btnStop.disabled = false;
         hostFlipBtn.disabled = false;
@@ -1065,6 +1176,7 @@ socket.emit("join-room", {
         }
         localStream.addTrack(newVideoTrack);
         preview.srcObject = localStream;
+    try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
 
         // replace for all viewer peers
         for (const [viewerId, pc] of pcs.entries()) {

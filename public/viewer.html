@@ -184,7 +184,91 @@ let swapped = false; // false: host main, true: guest main
     const socket = io();
 
 
-    // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
+    
+
+// ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
+function attachSpeakingIndicator(videoEl, targetEl){
+  try{
+    if (!videoEl || !targetEl) return;
+    let ctx = null, src = null, analyser = null, data = null, raf = 0;
+    let speaking = false;
+    let lastOn = 0;
+
+    function start(){
+      const st = videoEl.srcObject;
+      if (!st) return;
+      const at = st.getAudioTracks && st.getAudioTracks()[0];
+      if (!at) return; // no audio -> skip
+
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      data = new Uint8Array(analyser.frequencyBinCount);
+
+      src = ctx.createMediaStreamSource(new MediaStream([at]));
+      src.connect(analyser);
+
+      const TH = 16; // threshold 0..255 (tuning)
+      const HOLD_MS = 450;
+
+      const loop = ()=>{
+        if (!analyser) return;
+        analyser.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i=0;i<data.length;i++) sum += data[i];
+        const avg = sum / data.length;
+
+        const now = Date.now();
+        if (avg > TH){
+          lastOn = now;
+          if (!speaking){
+            speaking = true;
+            targetEl.classList.add("is-speaking");
+          }
+        } else {
+          if (speaking && (now - lastOn) > HOLD_MS){
+            speaking = false;
+            targetEl.classList.remove("is-speaking");
+          }
+        }
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    }
+
+    function stop(){
+      try{ if (raf) cancelAnimationFrame(raf); }catch{}
+      raf = 0;
+      try{ targetEl.classList.remove("is-speaking"); }catch{}
+      speaking = false;
+      try{ if (src) src.disconnect(); }catch{}
+      src = null;
+      try{ if (ctx) ctx.close(); }catch{}
+      ctx = null;
+      analyser = null;
+      data = null;
+    }
+
+    // restart when stream changes
+    const _set = ()=>{
+      stop();
+      start();
+    };
+
+    // run now + also after play
+    _set();
+    videoEl.addEventListener("loadedmetadata", _set);
+    videoEl.addEventListener("play", _set);
+
+    // expose for manual cleanup
+    videoEl.__stopSpeakingIndicator = stop;
+  }catch(e){
+    console.warn("attachSpeakingIndicator error:", e);
+  }
+}
+// ===== /AUTO SPEAKING HIGHLIGHT =====
+
+// ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
 let __wasAutoMini = false;
 
 function enableAutoMini(){
@@ -497,12 +581,22 @@ socket.emit("join-room", { roomId, role: "viewer" });
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
 
-     pc.ontrack = (event) => {
+     
+  // Auto ask peer to ICE-restart if connection degrades
+  pc.onconnectionstatechange = () => {
+    const st = pc.connectionState;
+    if (st === 'failed' || st === 'disconnected'){
+      try{ socket.emit('request-ice-restart', { to: from, reason: 'viewer_pc_' + st }); }catch{}
+    }
+  };
+pc.ontrack = (event) => {
   const stream = event.streams[0];
 
   if (guestId && from === guestId) {
     // ===== GUEST VIDEO =====
     guestPlayer.srcObject = stream;
+    // voice activity highlight
+    try{ attachSpeakingIndicator(guestPlayer, document.getElementById('guestPipWrap')); }catch{}
 
     guestPlayer.muted = false;
     guestPlayer.playsInline = true;
@@ -514,6 +608,8 @@ socket.emit("join-room", { roomId, role: "viewer" });
   } else {
     // ===== HOST VIDEO (CHÍNH) =====
     player.srcObject = stream;
+    // voice activity highlight
+    try{ attachSpeakingIndicator(player, document.getElementById('hostCard')); }catch{}
 
     // 🔥 QUAN TRỌNG: chống pause trên mobile
     player.muted = false;        // cho phép có tiếng

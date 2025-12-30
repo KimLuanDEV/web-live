@@ -482,6 +482,16 @@ code{
 }
 
 
+
+/* ===== SPEAKING HIGHLIGHT (auto voice activity) ===== */
+.video-card.is-speaking,
+.pip-wrap.is-speaking{
+  box-shadow:
+    0 0 0 2px rgba(37,240,154,.55),
+    0 0 26px rgba(37,240,154,.22),
+    0 16px 46px rgba(0,0,0,.45);
+}
+
 /* ===== LIVE META (viewer count + timer inside live-overlay) ===== */
 .live-meta{
   display:flex;
