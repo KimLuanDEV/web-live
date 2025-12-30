@@ -83,49 +83,6 @@
 <div class="video-card__inner">
       <video id="player" autoplay playsinline></video>
     </div>
-
-<!-- GIFT FLOAT BUTTON -->
-<button class="gift-fab" id="giftFab" title="Tặng quà">🎁</button>
-
-<!-- GIFT PANEL -->
-<div class="gift-panel hidden" id="giftPanel">
-  <div class="gift-panel__title">🎁 Tặng quà</div>
-
-<!-- ✅ Ví - Coins NGAY TRONG PANEL -->
-  <div class="gift-wallet">
-  <div class="gift-wallet__row">
-    <span class="gift-wallet__label">Ví coin:</span>
-    <b id="walletCoins">0</b>
-    <span class="gift-wallet__unit">coin</span>
-  </div>
-  
-
- <!-- ✅ COMBO NGAY TRONG PANEL -->
-  <div class="gift-combo" id="giftCombo">
-    <span class="gift-combo__label">Combo:</span>
-    <button type="button" class="gift-combo__btn is-active" data-combo="1">x1</button>
-    <button type="button" class="gift-combo__btn" data-combo="5">x5</button>
-    <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
-  </div>
-
-  <!-- ✅ QÙA NGAY TRONG PANEL -->
-  <div class="gift-panel__grid">
-    <button data-gift="heart">❤️</button>
-    <button data-gift="flower">🌸</button>
-    <button data-gift="rocket">🚀</button>
-    <button data-gift="coin">💰</button>
-    <button data-gift="dragon">🐉</button>
-    <button data-gift="phoenix">🦅</button>
-    <button data-gift="galaxy">🌌</button>
-    <button data-gift="meteor">☄️</button>
-    <button data-gift="king">👑</button>
-    <button data-gift="dragonking">🐲</button>
-    <button data-gift="supernova">🌠</button>
-  </div>
-</div>
-
-
-
   </div>
 
   <!-- GUEST (PIP) -->
@@ -166,27 +123,7 @@
   <button data-gift="flower">🌸</button>
   <button data-gift="rocket">🚀</button>
   <button data-gift="coin">💰</button>
-  <button data-gift="dragon">🐉</button>
-  <button data-gift="phoenix">🦅</button>
-  <button data-gift="galaxy">🌌</button>
-  <button data-gift="meteor">☄️</button>
-  <button data-gift="king">👑</button>
-  <button data-gift="dragonking">🐲</button>
-  <button data-gift="supernova">🌠</button>
 </div>
-
-</div>
-
-
- 
-
-  <div class="gift-board">
-    <div class="gift-board__head">🏆 Top donate</div>
-    <div class="gift-board__meta">Tổng: <b id="giftTotalCoins">0</b> coin</div>
-    <div id="giftTopList" class="gift-board__list"></div>
-  </div>
-</div>
-
 
 
   <div id="chatBox" class="chatbox"></div>
@@ -223,40 +160,9 @@
   </div>
 </div>
 
-<!-- 🎁 CONFIRM GIFT MODAL -->
-<div id="giftConfirmModal" class="modal hidden">
-  <div class="modal-backdrop modal-backdrop--neon"></div>
-
-  <div class="neon-modal" style="max-width:420px">
-    <div class="neon-frame"></div>
-    <div class="neon-scan"></div>
-
-    <div class="neon-top">
-      <div class="neon-livePill">
-        <span class="neon-dot"></span>
-        <span>XÁC NHẬN TẶNG QUÀ</span>
-      </div>
-      <button id="giftConfirmX" class="neon-x">✕</button>
-    </div>
-
-    <div style="padding:14px">
-      <div id="giftConfirmInfo" style="text-align:center;font-size:15px"></div>
-    </div>
-
-    <div class="neon-actions">
-      <button id="giftCancel" class="neon-btn neon-btn--ghost">❌ Huỷ</button>
-      <button id="giftSend" class="neon-btn neon-btn--main">🎁 Gửi quà</button>
-    </div>
-  </div>
-</div>
-
-
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-    let pendingGift = null;
-
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -278,174 +184,7 @@ let swapped = false; // false: host main, true: guest main
     const socket = io();
 
 
-    
-
-
-// ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
-const vipTicker = document.getElementById("vipTicker");
-let __vipQueue = [];
-let __vipBusy = false;
-
-function showVipTicker(text, ms){
-  try{
-    if (!vipTicker) return;
-    const item = document.createElement("div");
-    item.className = "vip-ticker__item";
-    item.textContent = text;
-    vipTicker.appendChild(item);
-    // auto remove after animation
-    setTimeout(()=>{ try{ item.classList.add("hide"); }catch{} }, Math.max(0, ms-350));
-    setTimeout(()=>{ try{ item.remove(); }catch{} }, ms+200);
-  }catch{}
-}
-
-function enqueueVip(text, ms=3000){
-  __vipQueue.push({ text, ms });
-  if (!__vipBusy) runVipQueue();
-}
-
-function runVipQueue(){
-  if (__vipBusy) return;
-  const next = __vipQueue.shift();
-  if (!next) return;
-  __vipBusy = true;
-  showVipTicker(next.text, next.ms);
-  setTimeout(()=>{
-    __vipBusy = false;
-    runVipQueue();
-  }, next.ms + 120);
-}
-
-function freezeChat(ms=1000){
-  try{
-    document.body.classList.add("chat-frozen");
-    setTimeout(()=>{ try{document.body.classList.remove("chat-frozen");}catch{} }, ms);
-  }catch{}
-}
-
-function startVipSpotlight(ms=1200){
-  try{
-    // add overlay class
-    document.body.classList.add("vip-spotlight");
-    // zoom main card if exists
-    const card = document.getElementById("hostCard") || document.getElementById("hostCardGuest");
-    if (card) card.classList.add("vip-zoom");
-    // remove
-    setTimeout(()=>{
-      try{
-        document.body.classList.remove("vip-spotlight");
-        if (card) card.classList.remove("vip-zoom");
-      }catch{}
-    }, ms);
-  }catch{}
-}
-
-function spawnFireworksBurst(){
-  try{
-    const layer = document.createElement("div");
-    layer.className = "vip-fireworks";
-    document.body.appendChild(layer);
-
-    const n = 18;
-    for (let i=0;i<n;i++){
-      const p = document.createElement("div");
-      p.className = "vip-fireworks__p";
-      p.style.left = (50 + (Math.random()*18-9))+"%";
-      p.style.top  = (22 + (Math.random()*18-9))+"%";
-      p.style.setProperty("--dx", (Math.random()*360-180)+"px");
-      p.style.setProperty("--dy", (Math.random()*340-220)+"px");
-      p.style.setProperty("--rot",(Math.random()*160-80)+"deg");
-      p.style.setProperty("--sc",(Math.random()*0.9+0.7));
-      layer.appendChild(p);
-    }
-
-    setTimeout(()=>{ try{layer.remove();}catch{} }, 1600);
-  }catch{}
-}
-// ===== /VIP TICKER =====
-// ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
-function attachSpeakingIndicator(videoEl, targetEl){
-  try{
-    if (!videoEl || !targetEl) return;
-    let ctx = null, src = null, analyser = null, data = null, raf = 0;
-    let speaking = false;
-    let lastOn = 0;
-
-    function start(){
-      const st = videoEl.srcObject;
-      if (!st) return;
-      const at = st.getAudioTracks && st.getAudioTracks()[0];
-      if (!at) return; // no audio -> skip
-
-      ctx = new (window.AudioContext || window.webkitAudioContext)();
-      analyser = ctx.createAnalyser();
-      analyser.fftSize = 512;
-      data = new Uint8Array(analyser.frequencyBinCount);
-
-      src = ctx.createMediaStreamSource(new MediaStream([at]));
-      src.connect(analyser);
-
-      const TH = 16; // threshold 0..255 (tuning)
-      const HOLD_MS = 450;
-
-      const loop = ()=>{
-        if (!analyser) return;
-        analyser.getByteFrequencyData(data);
-        let sum = 0;
-        for (let i=0;i<data.length;i++) sum += data[i];
-        const avg = sum / data.length;
-
-        const now = Date.now();
-        if (avg > TH){
-          lastOn = now;
-          if (!speaking){
-            speaking = true;
-            targetEl.classList.add("is-speaking");
-          }
-        } else {
-          if (speaking && (now - lastOn) > HOLD_MS){
-            speaking = false;
-            targetEl.classList.remove("is-speaking");
-          }
-        }
-        raf = requestAnimationFrame(loop);
-      };
-      raf = requestAnimationFrame(loop);
-    }
-
-    function stop(){
-      try{ if (raf) cancelAnimationFrame(raf); }catch{}
-      raf = 0;
-      try{ targetEl.classList.remove("is-speaking"); }catch{}
-      speaking = false;
-      try{ if (src) src.disconnect(); }catch{}
-      src = null;
-      try{ if (ctx) ctx.close(); }catch{}
-      ctx = null;
-      analyser = null;
-      data = null;
-    }
-
-    // restart when stream changes
-    const _set = ()=>{
-      stop();
-      start();
-    };
-
-    // run now + also after play
-    _set();
-    videoEl.addEventListener("loadedmetadata", _set);
-    videoEl.addEventListener("play", _set);
-
-    // expose for manual cleanup
-    videoEl.__stopSpeakingIndicator = stop;
-  }catch(e){
-    console.warn("attachSpeakingIndicator error:", e);
-  }
-}
-// ===== /AUTO SPEAKING HIGHLIGHT =====
-
-// ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
+    // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
 let __wasAutoMini = false;
 
 function enableAutoMini(){
@@ -717,7 +456,7 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       joined = true;
       
       try{ btnJoin.style.display = "none"; }catch{}
-socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
+socket.emit("join-room", { roomId, role: "viewer" });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host/guest...");
     }
@@ -758,22 +497,12 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
 
-     
-  // Auto ask peer to ICE-restart if connection degrades
-  pc.onconnectionstatechange = () => {
-    const st = pc.connectionState;
-    if (st === 'failed' || st === 'disconnected'){
-      try{ socket.emit('request-ice-restart', { to: from, reason: 'viewer_pc_' + st }); }catch{}
-    }
-  };
-pc.ontrack = (event) => {
+     pc.ontrack = (event) => {
   const stream = event.streams[0];
 
   if (guestId && from === guestId) {
     // ===== GUEST VIDEO =====
     guestPlayer.srcObject = stream;
-    // voice activity highlight
-    try{ attachSpeakingIndicator(guestPlayer, document.getElementById('guestPipWrap')); }catch{}
 
     guestPlayer.muted = false;
     guestPlayer.playsInline = true;
@@ -785,8 +514,6 @@ pc.ontrack = (event) => {
   } else {
     // ===== HOST VIDEO (CHÍNH) =====
     player.srcObject = stream;
-    // voice activity highlight
-    try{ attachSpeakingIndicator(player, document.getElementById('hostCard')); }catch{}
 
     // 🔥 QUAN TRỌNG: chống pause trên mobile
     player.muted = false;        // cho phép có tiếng
@@ -993,249 +720,40 @@ if (guestPipWrap) {
   });
 }
 
-// ===== GIFT ENGINE (client) =====
-const GIFT_CLIENT_CATALOG = {
-  heart:  { emoji:"❤️", cost:5,  title:"Tim" },
-  flower: { emoji:"🌸", cost:5,  title:"Hoa" },
-  rocket: { emoji:"🚀", cost:5, title:"Rocket" },
-  coin:   { emoji:"💰", cost:5, title:"Túi tiền" },
-  dragon: { emoji:"🐉", cost:5, title:"Rồng" },
-  phoenix:{ emoji:"🦅", cost:5, title:"Phượng hoàng" },
-  galaxy: { emoji:"🌌", cost:5, title:"Dải ngân hà" },
-  meteor: { emoji:"☄️", cost:5, title:"Sao băng" },
-  king:   { emoji:"👑", cost:5, title:"Vương miện" },
-  dragonking: { emoji:"🐲", cost:5, title:"Dragon King" },
-  supernova:  { emoji:"🌠", cost:5, title:"Supernova" },
-};
-
-// ✅ Combo multiplier (x1/x5/x10)
-let __giftCombo = 1;
-try {
-  const saved = Number(localStorage.getItem("ls_gift_combo") || 1);
-  if (Number.isFinite(saved) && saved >= 1) __giftCombo = saved;
-} catch {}
-
-const __comboWrap = document.getElementById("giftCombo");
-if (__comboWrap) {
-  const __btns = __comboWrap.querySelectorAll(".gift-combo__btn");
-  // init active by saved value
-  __btns.forEach(b => {
-    const v = Number(b.dataset.combo || 1) || 1;
-    b.classList.toggle("is-active", v === __giftCombo);
-  });
-
-  __comboWrap.addEventListener("click", (ev) => {
-    const btn = ev.target && ev.target.closest(".gift-combo__btn");
-    if (!btn) return;
-    const v = Number(btn.dataset.combo || 1) || 1;
-    __giftCombo = Math.max(1, Math.min(999, v));
-    try { localStorage.setItem("ls_gift_combo", String(__giftCombo)); } catch {}
-    __btns.forEach(b => b.classList.toggle("is-active", b === btn));
-
-    // feedback
-    try {
-      const t = document.createElement("div");
-      t.className = "gift-toast";
-      t.textContent = `✅ Đã chọn combo x${__giftCombo}`;
-      document.body.appendChild(t);
-      setTimeout(()=>t.classList.add("hide"), 900);
-      setTimeout(()=>{ try{t.remove();}catch{} }, 1400);
-    } catch {}
-  });
-}
-
-// Send gift with selected combo qty
-document.querySelectorAll(".gift-bar button").forEach(btn => {
-  btn.onclick = () => {
+document.querySelectorAll(".gift-bar button").forEach(btn=>{
+  btn.onclick = ()=>{
     const type = btn.dataset.gift;
-    const name = (chatName.value || "Viewer").trim().slice(0,20);
-    const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
-    const giftKey = btn.dataset.gift;
-    const combo = getCurrentCombo(); // x1 / x5 / x10
-    openGiftConfirm(giftKey, combo);
+    socket.emit("send-gift", {
+      roomId,
+      gift: { type, value: 1 }
+    });
   };
 });
-// ===== /GIFT ENGINE (client) =====
+
 const giftLayer = document.getElementById("giftLayer");
 
-function spawnBigGiftSfx(mode){
-  try{
-    const ctx = new (window.AudioContext || window.webkitAudioContext)();
-
-    // layered chord for VIP
-    const isVip = (mode==="dragonking" || mode==="supernova");
-    const o1 = ctx.createOscillator();
-    const o2 = ctx.createOscillator();
-    const g  = ctx.createGain();
-
-    o1.type = "sine";
-    o2.type = isVip ? "triangle" : "sine";
-
-    const now = ctx.currentTime;
-    const base = mode==="supernova" ? 196 : mode==="dragonking" ? 220
-               : mode==="king" ? 330
-               : mode==="meteor" ? 246
-               : mode==="galaxy" ? 260
-               : 300;
-
-    // chord interval
-    const interval = isVip ? 1.4983 : 1.2599; // perfect fifth / major third
-
-    o1.frequency.setValueAtTime(base, now);
-    o2.frequency.setValueAtTime(base*interval, now);
-
-    // little rise
-    o1.frequency.exponentialRampToValueAtTime(base*2.2, now+0.20);
-    o2.frequency.exponentialRampToValueAtTime(base*interval*2.0, now+0.20);
-
-    g.gain.setValueAtTime(0.0001, now);
-    g.gain.exponentialRampToValueAtTime(isVip ? 0.24 : 0.18, now+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, now + (isVip ? 0.34 : 0.22));
-
-    o1.connect(g); o2.connect(g); g.connect(ctx.destination);
-    o1.start(now); o2.start(now);
-    o1.stop(now + (isVip ? 0.36 : 0.24));
-    o2.stop(now + (isVip ? 0.36 : 0.24));
-
-    setTimeout(()=>{ try{ctx.close();}catch{} }, 600);
-  }
-  catch{}
-}
-
-function spawnGiftParticles(mode){
-  try{
-    const wrap = document.createElement("div");
-    wrap.className = "gift-particles gift-particles--" + (mode||"");
-    document.body.appendChild(wrap);
-    const n = mode==="meteor" ? 26 : mode==="king" ? 32 : 18;
-    for (let i=0;i<n;i++){
-      const p = document.createElement("div");
-      p.className = "gift-p";
-      p.style.left = (Math.random()*100)+"%";
-      p.style.top  = (Math.random()*100)+"%";
-      p.style.setProperty("--dx", (Math.random()*220-110)+"px");
-      p.style.setProperty("--dy", (Math.random()*220-140)+"px");
-      p.style.setProperty("--rot", (Math.random()*120-60)+"deg");
-      p.style.setProperty("--sc", (Math.random()*0.7+0.6));
-      wrap.appendChild(p);
-    }
-    setTimeout(()=>{ try{wrap.remove();}catch{} }, 2200);
-  }catch{}
-}
-
-function spawnBigGift(emoji, mode, donor, giftMeta){
-  const big = document.createElement("div");
-  big.className = "gift-big " + (mode ? ("gift-big--"+mode) : "");
-  big.innerHTML = `
-    <div class="gift-big__bg"></div>
-    <div class="gift-big__emoji">${emoji}</div>
-    <div class="gift-big__spark"></div>
-    <div class="gift-big__fx"></div>
-    <div class="gift-big__banner" id="giftBanner">
-      <div class="gift-big__title" id="giftTitle"></div>
-      <div class="gift-big__sub" id="giftSub"></div>
-      <div class="gift-big__cd"><span class="gift-big__cdbar"></span></div>
-    </div>
-  `;
-  document.body.appendChild(big);
-  spawnBigGiftSfx(mode);
-  spawnGiftParticles(mode);
-
-  // banner text + duration
-  try{
-    const dn = (donor || "Ai đó").toString().slice(0, 20);
-    const qty = Number(giftMeta?.qty || 1) || 1;
-    const coins = Number(giftMeta?.coins || 0) || 0;
-    const title = (mode === "dragonking") ? "🐲 DRAGON KING" :
-                  (mode === "supernova") ? "🌠 SUPERNOVA" :
-                  (mode === "king") ? "👑 KING" :
-                  (mode === "meteor") ? "☄️ METEOR" :
-                  (mode === "galaxy") ? "🌌 GALAXY" :
-                  (mode === "phoenix") ? "🦅 PHOENIX" :
-                  (mode === "dragon") ? "🐉 DRAGON" :
-                  (mode === "rocket") ? "🚀 ROCKET" : "🎁 GIFT";
-    const sub = `${dn} • x${qty} • +${coins} coin`;
-    big.querySelector("#giftTitle")?.replaceChildren(document.createTextNode(title));
-    big.querySelector("#giftSub")?.replaceChildren(document.createTextNode(sub));
-  }catch{}
-
-  const __dur = (mode==="dragonking" || mode==="supernova") ? 3000 : 2200;
-if (mode==="meteor" || mode==="king") document.body.classList.add("gift-shake");
-  setTimeout(()=>{ try{document.body.classList.remove("gift-shake");}catch{} }, 520);
-setTimeout(()=>big.classList.add("hide"), Math.max(1400, __dur - 800));
-  setTimeout(()=>{ try{big.remove();}catch{} }, __dur);
-}
-
-function spawnGift(type, donor, giftMeta){
+function spawnGift(type){
   const el = document.createElement("div");
-  el.className = "gift-item gift-item--" + type;
+  el.className = "gift-item";
 
-  const emoji =
+  el.textContent =
     type === "heart"  ? "❤️" :
     type === "flower" ? "🌸" :
     type === "rocket" ? "🚀" :
-    type === "dragon" ? "🐉" :
-    type === "phoenix"? "🦅" :
-    type === "galaxy" ? "🌌" :
-    type === "meteor" ? "☄️" :
-    type === "king"   ? "👑" :
-    type === "dragonking" ? "🐲" :
-    type === "supernova"  ? "🌠" :
     "💰";
 
-  el.textContent = emoji;
   el.style.left = Math.random()*80 + 10 + "%";
   el.style.bottom = "10%";
 
   giftLayer.appendChild(el);
   setTimeout(()=>el.remove(), 2000);
-
-  if (type === "rocket") spawnBigGift("🚀", "rocket", donor, giftMeta);
-  if (type === "dragon") spawnBigGift("🐉", "dragon", donor, giftMeta);
-  if (type === "phoenix") spawnBigGift("🦅", "phoenix", donor, giftMeta);
-  if (type === "galaxy") spawnBigGift("🌌", "galaxy", donor, giftMeta);
-  if (type === "meteor") spawnBigGift("☄️", "meteor", donor, giftMeta);
-  if (type === "king") spawnBigGift("👑", "king", donor, giftMeta);
-  if (type === "dragonking") spawnBigGift("🐲", "dragonking", donor, giftMeta);
-  if (type === "supernova") spawnBigGift("🌠", "supernova", donor, giftMeta);
 }
-socket.on("gift", ({ gift, donor })=>{
-  // spawn animation
-  spawnGift(gift.type, donor, gift);
 
-  // also push a small chat-bubble like donate note
-  try{
-    const note = document.createElement("div");
-    note.className = "gift-toast";
-    const em = gift.emoji || (GIFT_CLIENT_CATALOG[gift.type]?.emoji) || "🎁";
-    note.textContent = `${em} ${donor || "Ai đó"} tặng +${gift.coins || 0} coin`;
-    document.body.appendChild(note);
-    setTimeout(()=>note.classList.add("hide"), 1600);
-    setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
-  }catch{}
+socket.on("gift", ({ gift })=>{
+  spawnGift(gift.type);
 });
 
-const walletCoinsEl = document.getElementById("walletCoins");
-socket.on("wallet-sync", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); });
-socket.on("wallet-update", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); });
 
-socket.on("gift-failed", ({ reason, need, coins })=>{
-  if (reason === "no_coins"){
-    alert(`Không đủ coin! Cần ${need} coin, bạn còn ${coins} coin.`);
-  }
-});
-
-const giftTotalCoinsEl = document.getElementById("giftTotalCoins");
-const giftTopList = document.getElementById("giftTopList");
-socket.on("gift-stats", ({ totalCoins, topDonors })=>{
-  if (giftTotalCoinsEl) giftTotalCoinsEl.textContent = String(totalCoins ?? 0);
-  if (giftTopList){
-    const arr = Array.isArray(topDonors) ? topDonors : [];
-    giftTopList.innerHTML = arr.length
-      ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
-      : `<div class="gift-board__empty">Chưa có donate</div>`;
-  }
-});
 // ===== NEON CONFIRM: Back to Lobby (VIEWER) =====
 const ncf = document.getElementById("neonConfirm");
 const ncfBg = ncf?.querySelector(".ncf__bg");
@@ -1375,86 +893,6 @@ socket.on("room-closed", ({ reason }) => {
   }, { passive: false });
 
 
-const giftFab = document.getElementById("giftFab");
-const giftPanel = document.getElementById("giftPanel");
-
-giftFab?.addEventListener("click", (e)=>{
-  e.stopPropagation();
-  giftPanel.classList.toggle("hidden");
-});
-
-// click ngoài → đóng
-document.addEventListener("click", ()=>{
-  giftPanel.classList.add("hidden");
-});
-giftPanel?.addEventListener("click", e=>e.stopPropagation());
-
-// gửi quà (đúng format server)
-giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    const type = btn.dataset.gift;
-
-    // lấy tên giống gift-bar đang dùng
-    const name = (chatName?.value || "Viewer").trim().slice(0,20);
-
-    // lấy combo giống hệ đang có (x1/x5/x10)
-    const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
-
-    const giftKey = btn.dataset.gift;
-    const combo = getCurrentCombo(); // x1 / x5 / x10
-    openGiftConfirm(giftKey, combo);
-
-    giftPanel.classList.add("hidden");
-  });
-});
-
-
-function openGiftConfirm(giftKey, combo){
-  const gift = GIFT_CATALOG[giftKey];
-  if (!gift) return;
-
-  const total = gift.cost * combo;
-
-  pendingGift = { giftKey, combo, total };
-
-  document.getElementById("giftConfirmInfo").innerHTML = `
-    <div style="font-size:42px">${gift.emoji}</div>
-    <b>${gift.title}</b><br/>
-    Giá: ${gift.cost} coin<br/>
-    Combo: x${combo}<br/>
-    <hr/>
-    <b style="color:#FFD36E">Tổng: ${total} coin</b>
-  `;
-
-  document.getElementById("giftConfirmModal").classList.remove("hidden");
-}
-
-
-function closeGiftConfirm(){
-  pendingGift = null;
-  document.getElementById("giftConfirmModal").classList.add("hidden");
-}
-
-giftCancel.onclick = closeGiftConfirm;
-giftConfirmX.onclick = closeGiftConfirm;
-
-
-giftSend.onclick = () => {
-  if (!pendingGift) return;
-
-  socket.emit("send-gift", {
-    roomId,
-    giftKey: pendingGift.giftKey,
-    combo: pendingGift.combo
-  });
-
-  closeGiftConfirm();
-};
-
   </script>
-
-<!-- VIP TICKER (donation banner) -->
-<div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
-
 </body>
 </html>

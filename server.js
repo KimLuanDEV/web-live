@@ -26,46 +26,6 @@ const rooms = new Map();
 
 
 
-
-
-// ===== GIFT ENGINE (coins) =====
-const GIFT_CATALOG = {
-  heart:  { emoji: "❤️", cost: 1,  title: "Tim" },
-  flower: { emoji: "🌸", cost: 5,  title: "Hoa" },
-  rocket: { emoji: "🚀", cost: 20, title: "Rocket" },
-  coin:   { emoji: "💰", cost: 50, title: "Túi tiền" },
-  dragon: { emoji: "🐉", cost: 120, title: "Rồng" },
-  phoenix:{ emoji: "🦅", cost: 200, title: "Phượng hoàng" },
-  galaxy: { emoji: "🌌", cost: 300, title: "Dải ngân hà" },
-  meteor: { emoji: "☄️", cost: 500, title: "Sao băng" },
-  king:   { emoji: "👑", cost: 800, title: "Vương miện" },
-  dragonking: { emoji: "🐲", cost: 1500, title: "Dragon King" },
-  supernova:  { emoji: "🌠", cost: 2200, title: "Supernova" },
-};
-
-
-const START_COINS = 200000; // coin mặc định cho mỗi người (demo)
-function clampInt(n, min, max){
-  n = Number(n);
-  if (!Number.isFinite(n)) n = 0;
-  n = Math.floor(n);
-  return Math.max(min, Math.min(max, n));
-}
-function safeName(name){
-  return String(name || "Ẩn danh").trim().slice(0, 20);
-}
-function roomGiftTop(room, limit=5){
-  const arr = [];
-  try{
-    for (const [k,v] of room.giftByUser.entries()){
-      arr.push({ name: k, coins: v });
-    }
-  }catch{}
-  arr.sort((a,b)=>b.coins-a.coins);
-  return arr.slice(0, limit);
-}
-// ===== /GIFT ENGINE =====
-
 function normRoomId(roomId) {
   return String(roomId || "").trim().toLowerCase();
 }
@@ -82,10 +42,7 @@ function getRoom(roomId) {
   pinnedNote: null,
   hostProfile: null,
 
-  
-  giftTotal: 0,
-  giftByUser: new Map(),
-releaseTimer: null,        // ⏱️ timer giải phóng
+  releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
 });
 
@@ -160,10 +117,7 @@ function closeRoom(roomId, reason = "host_left") {
   room.liveStartTs = null;
   room.viewers.clear();
 
-  
-  room.giftTotal = 0;
-  room.giftByUser = new Map();
-emitLobbyUpdate();
+  emitLobbyUpdate();
 
   // xoá room sau 1 chút cho client kịp nhận event
   setTimeout(() => {
@@ -279,8 +233,6 @@ socket.on("live-stop", ({ roomId }) => {
     durationMs: room.liveStartTs ? Date.now() - room.liveStartTs : 0,
     viewers: room.viewers.size,
     hasGuest: !!room.guestId,
-      giftsCoins: room.giftTotal || 0,
-    topDonors: roomGiftTop(room, 5),
   };
 
   // ⛔ dừng live
@@ -322,16 +274,6 @@ socket.on("live-stop", ({ roomId }) => {
     socket.join(roomId);
     socket.data.roomId = roomId;
     socket.data.role = role;
-
-    // store profile (name/coins) for Gift Engine
-    socket.data.userName = safeName(profile?.name || (role === "broadcaster" ? "Host" : role === "guest" ? "Guest" : "Viewer"));
-    socket.data.coins = clampInt(profile?.coins, 0, 1_000_000_000);
-    if (!socket.data.coins) socket.data.coins = START_COINS;
-
-    // sync wallet to this socket
-    socket.emit("wallet-sync", { coins: socket.data.coins });
-
-
 
     const room = getRoom(roomId);
 
@@ -402,17 +344,7 @@ socket.on("live-stop", ({ roomId }) => {
     if (room.pinnedNote) {
       socket.emit("pin-note-update", room.pinnedNote);
     }
-  
-
-    // Gift stats for late joiners
-    try{
-      socket.emit("gift-stats", {
-        totalCoins: room.giftTotal || 0,
-        topDonors: roomGiftTop(room, 5)
-      });
-    }catch{}
-
-});
+  });
 
   // ===== CHAT REALTIME =====
   socket.on("chat", ({ roomId, name, text }) => {
@@ -481,55 +413,24 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
   });
   // ===== /PIN NOTE =====
 
-// ===== GIFT ENGINE (paid gifts) =====
-socket.on("send-gift", ({ roomId, gift, name }) => {
-  roomId = normRoomId(roomId);
+// ===== GIFT SYSTEM =====
+socket.on("send-gift", ({ roomId, gift }) => {
   if (!roomId || !gift) return;
 
-  const room = getRoom(roomId);
-
-  // Only allow gifts when room is live (has host + started)
-  if (!room.broadcasterId || !room.liveStartTs) return;
-
-  const type = String(gift.type || "").toLowerCase();
-  const catalog = GIFT_CATALOG[type];
-  if (!catalog) return;
-
-  const qty = clampInt(gift.qty ?? 1, 1, 999);
-  const cost = catalog.cost * qty;
-
-  // wallet check
-  const cur = clampInt(socket.data.coins ?? START_COINS, 0, 1_000_000_000);
-  if (cur < cost){
-    socket.emit("gift-failed", { reason: "no_coins", need: cost, coins: cur });
-    return;
-  }
-
-  socket.data.coins = cur - cost;
-  socket.emit("wallet-update", { coins: socket.data.coins });
-
-  // donor name
-  const donor = safeName(name || socket.data.userName || "Ẩn danh");
-
-  // update room stats
-  room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
-  try{
-    const prev = clampInt(room.giftByUser.get(donor) || 0, 0, 1_000_000_000);
-    room.giftByUser.set(donor, prev + cost);
-  }catch(e){}
-
   const payload = {
-    gift: { type, emoji: catalog.emoji, cost: catalog.cost, qty, coins: cost },
-    donor,
-    totalCoins: room.giftTotal,
-    ts: Date.now(),
+    gift: {
+      type: gift.type,     // heart | flower | rocket | coin
+      value: gift.value,   // số coin (optional)
+    },
+    ts: Date.now()
   };
 
   io.to(roomId).emit("gift", payload);
-  io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
 });
-/* ===== /GIFT ENGINE ===== */
-// ===== GUEST CO-HOST FLOW =====
+
+
+
+  // ===== GUEST CO-HOST FLOW =====
   // Host approves guest: guest becomes room.guestId; all clients get guest-online
   socket.on("guest-approve", ({ roomId, guestId }) => {
     if (!roomId || !guestId) return;
