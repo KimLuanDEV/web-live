@@ -2035,3 +2035,43 @@ video {
 .lobby-card--virtual{
   border: 1px dashed rgba(95,168,255,.45);
 }
+
+
+/* ===== MULTI CO-HOST GRID (2-4 guests) ===== */
+
+.guest-grid{
+  display:grid !important;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  grid-auto-rows: 1fr;
+  gap: 10px;
+  align-items: stretch;
+  justify-items: stretch;
+}
+.guest-grid video.guestVideo{
+  width:100%;
+  height:100%;
+  object-fit: cover;
+  border-radius: 14px;
+  background: rgba(0,0,0,.25);
+  box-shadow: 0 0 0 2px rgba(0,255,255,.18), 0 0 22px rgba(0,255,255,.15);
+}
+.guest-grid--viewer{
+  position:absolute;
+  right: 14px;
+  bottom: 14px;
+  width: min(44vw, 360px);
+  height: min(30vh, 240px);
+  padding: 10px;
+  border-radius: 18px;
+  backdrop-filter: blur(10px);
+  background: rgba(0,0,0,.32);
+  border: 1px solid rgba(0,255,255,.22);
+}
+@media (max-width: 640px){
+  .guest-grid--viewer{
+    width: min(56vw, 320px);
+    height: min(26vh, 200px);
+    right: 10px;
+    bottom: 10px;
+  }
+}

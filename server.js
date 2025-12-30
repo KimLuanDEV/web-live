@@ -37,7 +37,8 @@ function getRoom(roomId) {
    rooms.set(roomId, {
   broadcasterId: null,
   viewers: new Set(),
-  guestId: null,
+  guestIds: [],
+  pendingGuestIds: [],
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
@@ -68,7 +69,7 @@ function getLobbyList() {
   roomId,
   viewers: room.viewers.size,
   liveStartTs: room.liveStartTs,
-  hasGuest: !!room.guestId,
+  hasGuest: !!(room.guestIdss && room.guestIdss.length),
   host: room.hostProfile || null, // 👈 thêm
 });
 
@@ -113,7 +114,8 @@ function closeRoom(roomId, reason = "host_left") {
 
   // clear state
   room.broadcasterId = null;
-  room.guestId = null;
+  room.guestIdss = [];
+  room.pendingGuestIds = [];
   room.liveStartTs = null;
   room.viewers.clear();
 
@@ -174,43 +176,48 @@ socket.on("lobby-get", () => {
 
 
 // Host yêu cầu tắt/bật mic của guest
-socket.on("host-mute-guest", ({ roomId, mute }) => {
+socket.on("host-mute-guest", ({ roomId, guestId, mute }) => {
   const room = rooms.get(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return;   // chỉ host mới được điều khiển
 
-  if (!room.guestId) return;
-  io.to(room.guestId).emit("guest-set-mic", { mute: !!mute });
+  const gid = guestId || (room.guestIdss && room.guestIdss[0]);
+  if (!gid) return;
+  io.to(gid).emit("guest-set-mic", { mute: !!mute });
+});
 });
 
 // Host yêu cầu tắt/bật camera của guest
-socket.on("host-cam-guest", ({ roomId, off }) => {
+socket.on("host-cam-guest", ({ roomId, guestId, off }) => {
   const room = rooms.get(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return; // chỉ host mới được điều khiển
-  if (!room.guestId) return;
 
-  io.to(room.guestId).emit("guest-set-cam", { off: !!off });
+  const gid = guestId || (room.guestIdss && room.guestIdss[0]);
+  if (!gid) return;
+
+  io.to(gid).emit("guest-set-cam", { off: !!off });
+});
 });
 
 
 // Host kick guest khỏi live
-socket.on("host-kick-guest", ({ roomId }) => {
+socket.on("host-kick-guest", ({ roomId, guestId }) => {
   const room = rooms.get(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return;
 
-  if (!room.guestId) return;
-  const gid = room.guestId;
+  const gid = guestId || (room.guestIdss && room.guestIdss[0]);
+  if (!gid) return;
 
-  // báo guest tự thoát
   io.to(gid).emit("guest-kicked");
 
-  // clear guest trong room + báo cho tất cả viewers
-  room.guestId = null;
-  io.to(roomId).emit("guest-offline");
-});
+  room.guestIdss = (room.guestIdss || []).filter(x => x !== gid);
+  room.pendingGuestIds = (room.pendingGuestIds || []).filter(x => x !== gid);
 
+  io.to(roomId).emit("guest-offline", { guestId: gid, guestIds: room.guestIdss });
+  emitLobbyUpdate();
+});
 // ===== LIVE TIMER (server-side source of truth) =====
 // Host starts live => store start timestamp; late joiners will receive it.
 socket.on("live-start", ({ roomId, startTs }) => {
@@ -232,7 +239,7 @@ socket.on("live-stop", ({ roomId }) => {
   const stats = {
     durationMs: room.liveStartTs ? Date.now() - room.liveStartTs : 0,
     viewers: room.viewers.size,
-    hasGuest: !!room.guestId,
+    hasGuest: !!(room.guestIdss && room.guestIdss.length),
   };
 
   // ⛔ dừng live
@@ -304,8 +311,8 @@ socket.on("live-stop", ({ roomId }) => {
       socket.emit("room-viewers", Array.from(room.viewers));
       socket.to(roomId).emit("broadcaster-online");
       emitViewerCount(roomId);
-      // If already has guest, tell host
-      if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
+      // If already has guests, tell host
+      if (room.guestIdss && room.guestIdss.length) socket.emit("guest-online", { guestIds: room.guestIdss });
     }
 
     if (role === "viewer") {
@@ -322,217 +329,24 @@ socket.on("live-stop", ({ roomId }) => {
         socket.emit("broadcaster-offline");
       }
 
-      // If guest already online, inform this viewer so they can request to watch guest
-      if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
+      // If guests already online, inform this viewer so they can request to watch guest(s)
+      if (room.guestIdss && room.guestIdss.length) socket.emit("guest-online", { guestIds: room.guestIdss });
     }
 
     if (role === "guest") {
-      // Guest requests to go live; host must approve
-      if (room.broadcasterId) {
-        io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });
-      }
-      socket.emit("guest-pending");
-    }
+      room.pendingGuestIds = (room.pendingGuestIds || []).filter(x => x !== socket.id);
+      const wasActive = (room.guestIds || []).includes(socket.id);
+      room.guestIds = (room.guestIds || []).filter(x => x !== socket.id);
 
-
-    // If room is already live, send start timestamp to this socket (late joiners)
-    if (room.liveStartTs) {
-      socket.emit("live-start", { startTs: room.liveStartTs });
-    }
-
-    // If has pinned note, send to late joiner
-    if (room.pinnedNote) {
-      socket.emit("pin-note-update", room.pinnedNote);
-    }
-  });
-
-  // ===== CHAT REALTIME =====
-  socket.on("chat", ({ roomId, name, text }) => {
-    if (!roomId || !text) return;
-
-    // Trust server-side role (avoid spoofing)
-    const r = String(socket.data.role || "").toLowerCase();
-    const role = (r === "broadcaster") ? "host" : (r === "guest") ? "guest" : "viewer";
-
-    const msg = {
-      role,
-      name: (name || "Ẩn danh").slice(0, 20),
-      text: String(text).slice(0, 300),
-      ts: Date.now(),
-    };
-
-    io.to(roomId).emit("chat", msg);
-  });
-
-
-// ===== REACTIONS (emoji/hearts) =====
-// client emits: { roomId, emoji, x, y }
-socket.on("reaction", ({ roomId, emoji, x, y }) => {
-  if (!roomId) return;
-  const em = String(emoji || "❤️").slice(0, 4);
-  const msg = {
-    emoji: em,
-    x: typeof x === "number" ? x : Number(x),
-    y: typeof y === "number" ? y : Number(y),
-    ts: Date.now(),
-  };
-  io.to(roomId).emit("reaction", msg);
-});
-
-  // ===== PIN NOTE (host creates custom pinned content + draggable position) =====
-  function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
-
-  socket.on("pin-note-set", ({ roomId, text, x, y }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-    const t = String(text || "").trim().slice(0, 220);
-    if (!t) return;
-    const note = { text: t, x: __clamp01(x), y: __clamp01(y), ts: Date.now() };
-    room.pinnedNote = note;
-    io.to(roomId).emit("pin-note-update", note);
-  });
-
-  socket.on("pin-note-move", ({ roomId, x, y }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-    if (!room.pinnedNote) return;
-    room.pinnedNote.x = __clamp01(x);
-    room.pinnedNote.y = __clamp01(y);
-    room.pinnedNote.ts = Date.now();
-    io.to(roomId).emit("pin-note-update", room.pinnedNote);
-  });
-
-  socket.on("pin-note-clear", ({ roomId }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-    room.pinnedNote = null;
-    io.to(roomId).emit("pin-note-update", null);
-  });
-  // ===== /PIN NOTE =====
-
-// ===== GIFT SYSTEM =====
-socket.on("send-gift", ({ roomId, gift }) => {
-  if (!roomId || !gift) return;
-
-  const payload = {
-    gift: {
-      type: gift.type,     // heart | flower | rocket | coin
-      value: gift.value,   // số coin (optional)
-    },
-    ts: Date.now()
-  };
-
-  io.to(roomId).emit("gift", payload);
-});
-
-
-
-  // ===== GUEST CO-HOST FLOW =====
-  // Host approves guest: guest becomes room.guestId; all clients get guest-online
-  socket.on("guest-approve", ({ roomId, guestId }) => {
-    if (!roomId || !guestId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return;
-
-    room.guestId = guestId;
-    io.to(guestId).emit("guest-approved", { roomId });
-    io.to(roomId).emit("guest-online", { guestId });
-
-    emitLobbyUpdate();
-
-  });
-
-  socket.on("guest-reject", ({ guestId }) => {
-    if (!guestId) return;
-    io.to(guestId).emit("guest-rejected");
-  });
-
-  // Any viewer (or host) asks to watch guest -> server tells guest to create offer to that viewer
-  socket.on("watch-guest", ({ roomId }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (!room.guestId) return;
-    io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
-  });
-
-  // WebRTC signaling passthrough
-  socket.on("offer", ({ to, description }) => {
-    io.to(to).emit("offer", { from: socket.id, description });
-  });
-
-  socket.on("answer", ({ to, description }) => {
-    io.to(to).emit("answer", { from: socket.id, description });
-  });
-
-  socket.on("candidate", ({ to, candidate }) => {
-    io.to(to).emit("candidate", { from: socket.id, candidate });
-  });
-
-  socket.on("disconnect", () => {
-
-
-  for (const [roomId, room] of rooms.entries()) {
-    if (room.broadcasterId === socket.id) {
-      closeRoom(roomId, "host_disconnect");
-      break;
-    }
-  }
-
-
-
-    const roomId = socket.data.roomId;
-    const role = socket.data.role;
-    if (!roomId) return;
-
-    const room = rooms.get(roomId);
-    if (!room) return;
-
-    if (role === "viewer") {
-      room.viewers.delete(socket.id);
-      emitViewerCount(roomId);
       emitLobbyUpdate();
 
-      io.to(roomId).emit("viewer-leave", { id: socket.id, count: room.viewers.size });
-      if (room.broadcasterId) {
-        io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
+      if (wasActive) {
+        io.to(roomId).emit("guest-offline", { guestId: socket.id, guestIds: room.guestIds });
       }
+      if (room.broadcasterId) io.to(room.broadcasterId).emit("guest-pending-list", { pending: room.pendingGuestIds });
     }
 
-   if (role === "broadcaster") {
-  // ⏱️ Bắt đầu chờ giải phóng
-  room.pendingRelease = true;
-
-  room.releaseTimer = setTimeout(() => {
-    // Nếu trong thời gian chờ host KHÔNG quay lại
-    if (room.pendingRelease) {
-      console.log("⏱️ Auto release room:", roomId);
-
-      room.broadcasterId = null;
-      room.liveStartTs = null;
-      room.guestId = null;
-      room.pendingRelease = false;
-      room.releaseTimer = null;
-
-      io.to(roomId).emit("live-stop");
-      emitLobbyUpdate();
-    }
-  }, ROOM_RELEASE_DELAY);
-}
-
-
-    if (role === "guest") {
-      if (room.guestId === socket.id) {
-        room.guestId = null;
-        emitLobbyUpdate();
-
-        io.to(roomId).emit("guest-offline");
-      }
-    }
-
-    if (!room.broadcasterId && room.viewers.size === 0 && !room.guestId) {
+    if (!room.broadcasterId && room.viewers.size === 0 && !(room.guestIds && room.guestIds.length)) {
       rooms.delete(roomId);
     }
   });
