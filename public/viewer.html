@@ -35,9 +35,8 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
-  Bấm để mở trang Khách và gửi yêu cầu lên Host.
-</small>
+<button id="btnRaiseHand">✋ Giơ tay xin nói</button>
+
 
           <hr />
           <div class="log" id="log" style="display: none;"></div>
@@ -892,6 +891,47 @@ socket.on("room-closed", ({ reason }) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
+
+
+const btnRaiseHand = document.getElementById("btnRaiseHand");
+const handStatus = document.getElementById("handStatus");
+
+btnRaiseHand.onclick = () => {
+  socket.emit("raise-hand", {
+    roomId,
+    name: document.getElementById("chatName")?.value || "Viewer"
+  });
+
+  btnRaiseHand.disabled = true;
+  handStatus.textContent = "✋ Đã giơ tay – chờ host duyệt";
+};
+
+socket.on("hand-approved", () => {
+  handStatus.textContent = "🎤 Host đã cho bạn nói";
+  btnRaiseHand.style.display = "none";
+  enableViewerMic(); // ⬅️ hàm bật mic audio-only
+});
+
+socket.on("hand-rejected", () => {
+  handStatus.textContent = "❌ Host từ chối";
+  btnRaiseHand.disabled = false;
+});
+
+
+async function enableViewerMic(){
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false
+  });
+
+  stream.getAudioTracks()[0].enabled = true;
+
+  // ❗ Gửi audio track lên host
+  peerConnection.addTrack(stream.getAudioTracks()[0], stream);
+
+  // chống echo
+  player.muted = true;
+}
 
   </script>
 </body>
