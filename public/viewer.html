@@ -85,8 +85,9 @@
     </div>
   </div>
 
-  <!-- GUESTS (MULTI GRID) -->
-  <div class="guest-grid" id="guestGrid" aria-hidden="true"></div>
+  <!-- GUEST (PIP) -->
+  <div class="pip-wrap" id="guestPipWrap" aria-hidden="true">
+    <div class="pip-badge">👤 GUEST</div>
     <video id="guestPlayer" autoplay playsinline></video>
   </div>
 </div>
@@ -182,43 +183,92 @@ let swapped = false; // false: host main, true: guest main
 
     const socket = io();
 
-// ===== MULTI GUESTS UPDATE =====
-const guestGrid = document.getElementById('guestGrid');
-function renderGuestGrid(){
-  if (!guestGrid) return;
-  guestGrid.innerHTML = '';
-  const ids = guestIds.slice(0,4);
-  guestGrid.setAttribute('aria-hidden', ids.length ? 'false' : 'true');
-  if (!ids.length){ document.body.classList.remove('has-guest'); return; }
-  document.body.classList.add('has-guest');
-  for (const gid of ids){
-    const tile = document.createElement('div');
-    tile.className = 'guest-tile';
-    tile.dataset.gid = gid;
-    const badge = document.createElement('div');
-    badge.className = 'guest-tile__badge';
-    badge.textContent = '👤 GUEST';
-    const vid = document.createElement('video');
-    vid.autoplay = true; vid.playsInline = true;
-    vid.muted = false;
-    guestEls.set(gid, vid);
-    tile.appendChild(vid);
-    tile.appendChild(badge);
-    guestGrid.appendChild(tile);
+
+    
+
+// ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
+function attachSpeakingIndicator(videoEl, targetEl){
+  try{
+    if (!videoEl || !targetEl) return;
+    let ctx = null, src = null, analyser = null, data = null, raf = 0;
+    let speaking = false;
+    let lastOn = 0;
+
+    function start(){
+      const st = videoEl.srcObject;
+      if (!st) return;
+      const at = st.getAudioTracks && st.getAudioTracks()[0];
+      if (!at) return; // no audio -> skip
+
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      data = new Uint8Array(analyser.frequencyBinCount);
+
+      src = ctx.createMediaStreamSource(new MediaStream([at]));
+      src.connect(analyser);
+
+      const TH = 16; // threshold 0..255 (tuning)
+      const HOLD_MS = 450;
+
+      const loop = ()=>{
+        if (!analyser) return;
+        analyser.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i=0;i<data.length;i++) sum += data[i];
+        const avg = sum / data.length;
+
+        const now = Date.now();
+        if (avg > TH){
+          lastOn = now;
+          if (!speaking){
+            speaking = true;
+            targetEl.classList.add("is-speaking");
+          }
+        } else {
+          if (speaking && (now - lastOn) > HOLD_MS){
+            speaking = false;
+            targetEl.classList.remove("is-speaking");
+          }
+        }
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    }
+
+    function stop(){
+      try{ if (raf) cancelAnimationFrame(raf); }catch{}
+      raf = 0;
+      try{ targetEl.classList.remove("is-speaking"); }catch{}
+      speaking = false;
+      try{ if (src) src.disconnect(); }catch{}
+      src = null;
+      try{ if (ctx) ctx.close(); }catch{}
+      ctx = null;
+      analyser = null;
+      data = null;
+    }
+
+    // restart when stream changes
+    const _set = ()=>{
+      stop();
+      start();
+    };
+
+    // run now + also after play
+    _set();
+    videoEl.addEventListener("loadedmetadata", _set);
+    videoEl.addEventListener("play", _set);
+
+    // expose for manual cleanup
+    videoEl.__stopSpeakingIndicator = stop;
+  }catch(e){
+    console.warn("attachSpeakingIndicator error:", e);
   }
 }
+// ===== /AUTO SPEAKING HIGHLIGHT =====
 
-socket.on('guests-update', ({ guests })=>{
-  guestIds = Array.isArray(guests) ? guests.slice(0,4) : [];
-  renderGuestGrid();
-  // request each guest stream
-  for (const gid of guestIds){ socket.emit('watch-guest', { roomId, guestId: gid }); }
-});
-// ===== /MULTI GUESTS UPDATE =====
-
-
-
-    // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
+// ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
 let __wasAutoMini = false;
 
 function enableAutoMini(){
@@ -402,9 +452,7 @@ socket.on("reaction", (msg)=>{
 
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
-    let guestIds = []; // approved guests
-    const guestEls = new Map(); // guestId -> video element
-
+    let guestId = null;
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -459,29 +507,31 @@ socket.on("reaction", (msg)=>{
     });
 
     // guest events
-    // legacy single guest-online still supported, but we mainly use guests-update
-socket.on("guest-online", ({ guestId: gid }) => {
-  if (!gid) return;
-  if (!guestIds.includes(gid)) guestIds = [...guestIds, gid].slice(0,4);
-  renderGuestGrid();
-  socket.emit("watch-guest", { roomId, guestId: gid });
-});
+    socket.on("guest-online", ({ guestId: gid }) => {
 
-    socket.on("guest-offline", ({ guestId: gid } = {}) => {
-  // legacy event: if gid provided remove only that; else clear all
-  if (gid){
-    guestIds = guestIds.filter(x=>x!==gid);
-    const v = guestEls.get(gid);
-    if (v) { try{ v.srcObject = null; }catch{} }
-    cleanupPeer(gid);
-    guestEls.delete(gid);
-  } else {
-    for (const id of guestIds){ cleanupPeer(id); }
-    guestIds = [];
-    guestEls.clear();
-  }
-  renderGuestGrid();
-});
+      document.body.classList.add("has-guest");
+if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "false");
+
+      guestId = gid;
+      log("Guest online: " + gid);
+      setStatus("🟢 Có Guest cùng live");
+      // request guest to stream to this viewer
+      socket.emit("watch-guest", { roomId });
+    });
+
+    socket.on("guest-offline", () => {
+
+      document.body.classList.remove("has-guest");
+document.body.classList.remove("swap-live");
+swapped = false;
+if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
+
+      log("Guest offline");
+      guestId = null;
+      guestPlayer.srcObject = null;
+      // close guest pc if exists
+      cleanupPeer("guest");
+    });
 
 
 
@@ -497,7 +547,14 @@ socket.emit("join-room", { roomId, role: "viewer" });
 
     function cleanupPeer(peerKey) {
       // peerKey can be actual peerId or "guest"
-      
+      if (peerKey === "guest") {
+        // find by guestId if present
+        if (guestId && pcs.has(guestId)) {
+          try { pcs.get(guestId).close(); } catch {}
+          pcs.delete(guestId);
+        }
+        return;
+      }
       const pc = pcs.get(peerKey);
       if (pc) {
         try { pc.close(); } catch {}
@@ -524,13 +581,22 @@ socket.emit("join-room", { roomId, role: "viewer" });
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
 
-     pc.ontrack = (event) => {
+     
+  // Auto ask peer to ICE-restart if connection degrades
+  pc.onconnectionstatechange = () => {
+    const st = pc.connectionState;
+    if (st === 'failed' || st === 'disconnected'){
+      try{ socket.emit('request-ice-restart', { to: from, reason: 'viewer_pc_' + st }); }catch{}
+    }
+  };
+pc.ontrack = (event) => {
   const stream = event.streams[0];
 
-  if (guestIds.includes(from)) {
+  if (guestId && from === guestId) {
     // ===== GUEST VIDEO =====
-    const __v = guestEls.get(from);
-    if (__v) __v.srcObject = stream;
+    guestPlayer.srcObject = stream;
+    // voice activity highlight
+    try{ attachSpeakingIndicator(guestPlayer, document.getElementById('guestPipWrap')); }catch{}
 
     guestPlayer.muted = false;
     guestPlayer.playsInline = true;
@@ -542,6 +608,8 @@ socket.emit("join-room", { roomId, role: "viewer" });
   } else {
     // ===== HOST VIDEO (CHÍNH) =====
     player.srcObject = stream;
+    // voice activity highlight
+    try{ attachSpeakingIndicator(player, document.getElementById('hostCard')); }catch{}
 
     // 🔥 QUAN TRỌNG: chống pause trên mobile
     player.muted = false;        // cho phép có tiếng

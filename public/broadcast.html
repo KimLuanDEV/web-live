@@ -484,7 +484,91 @@ if(nameFromLobby){
     };
 
     const socket = io();
-    document.body.classList.add("is-host");
+    
+
+// ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
+function attachSpeakingIndicator(videoEl, targetEl){
+  try{
+    if (!videoEl || !targetEl) return;
+    let ctx = null, src = null, analyser = null, data = null, raf = 0;
+    let speaking = false;
+    let lastOn = 0;
+
+    function start(){
+      const st = videoEl.srcObject;
+      if (!st) return;
+      const at = st.getAudioTracks && st.getAudioTracks()[0];
+      if (!at) return; // no audio -> skip
+
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      data = new Uint8Array(analyser.frequencyBinCount);
+
+      src = ctx.createMediaStreamSource(new MediaStream([at]));
+      src.connect(analyser);
+
+      const TH = 16; // threshold 0..255 (tuning)
+      const HOLD_MS = 450;
+
+      const loop = ()=>{
+        if (!analyser) return;
+        analyser.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i=0;i<data.length;i++) sum += data[i];
+        const avg = sum / data.length;
+
+        const now = Date.now();
+        if (avg > TH){
+          lastOn = now;
+          if (!speaking){
+            speaking = true;
+            targetEl.classList.add("is-speaking");
+          }
+        } else {
+          if (speaking && (now - lastOn) > HOLD_MS){
+            speaking = false;
+            targetEl.classList.remove("is-speaking");
+          }
+        }
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    }
+
+    function stop(){
+      try{ if (raf) cancelAnimationFrame(raf); }catch{}
+      raf = 0;
+      try{ targetEl.classList.remove("is-speaking"); }catch{}
+      speaking = false;
+      try{ if (src) src.disconnect(); }catch{}
+      src = null;
+      try{ if (ctx) ctx.close(); }catch{}
+      ctx = null;
+      analyser = null;
+      data = null;
+    }
+
+    // restart when stream changes
+    const _set = ()=>{
+      stop();
+      start();
+    };
+
+    // run now + also after play
+    _set();
+    videoEl.addEventListener("loadedmetadata", _set);
+    videoEl.addEventListener("play", _set);
+
+    // expose for manual cleanup
+    videoEl.__stopSpeakingIndicator = stop;
+  }catch(e){
+    console.warn("attachSpeakingIndicator error:", e);
+  }
+}
+// ===== /AUTO SPEAKING HIGHLIGHT =====
+
+document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
       const fab = document.getElementById("ctrlFabHost");
@@ -751,10 +835,7 @@ socket.on("reaction", (msg)=>{
 
 
     // Guest state
-    let pendingGuestIds = [];
-    let approvedGuestIds = [];
-    const pcGuestsIn = new Map(); // guestId -> RTCPeerConnection
-
+    let pendingGuestId = null;
     let approvedGuestId = null;
     let pcGuestIn = null; // PC to receive guest + send host tracks to guest
     const guestReq = document.getElementById("guestReq");
@@ -797,9 +878,7 @@ socket.on("reaction", (msg)=>{
     }
 
     function log(msg) {
-      logEl.textContent = `[${new Date().toLocaleTimeString()}
-
- ${msg}\n` + logEl.textContent;
+      logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
       console.log(msg);
     }
 
@@ -881,10 +960,9 @@ socket.emit("join-room", {
         }
         return;
       }
-      const pcG = pcGuestsIn.get(from);
-      if (pcG) {
+      if (pcGuestIn && approvedGuestId === from) {
         try {
-          await pcG.setRemoteDescription(description);
+          await pcGuestIn.setRemoteDescription(description);
           log("Nhận answer từ guest: " + from);
         } catch (err) {
           log("Lỗi answer guest: " + err.message);
@@ -899,14 +977,38 @@ socket.emit("join-room", {
         catch (err) { log("Lỗi addIceCandidate(viewer): " + err.message); }
         return;
       }
-      const pcG = pcGuestsIn.get(from);
-      if (pcG) {
-        try { await pcG.addIceCandidate(candidate); }
+      if (pcGuestIn && approvedGuestId === from) {
+        try { await pcGuestIn.addIceCandidate(candidate); }
         catch (err) { log("Lỗi addIceCandidate(guest): " + err.message); }
       }
     });
 
-    socket.on("disconnectPeer", ({ peerId }) => {
+    
+
+// ===== ICE RESTART: host regenerates offer when asked =====
+socket.on('request-ice-restart', async ({ from, reason })=>{
+  try{
+    // from viewer
+    const pc = pcs.get(from);
+    if (pc){
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
+      socket.emit('offer', { to: from, description: pc.localDescription });
+      log('ICE restart -> new offer to viewer ' + from + (reason ? ' ('+reason+')' : ''));
+      return;
+    }
+    // from guest (if guest asks host)
+    if (pcGuestIn && approvedGuestId === from){
+      const offer = await pcGuestIn.createOffer({ iceRestart: true });
+      await pcGuestIn.setLocalDescription(offer);
+      socket.emit('offer', { to: from, description: pcGuestIn.localDescription });
+      log('ICE restart -> new offer to guest ' + from + (reason ? ' ('+reason+')' : ''));
+      return;
+    }
+  }catch(e){ log('ICE restart error: ' + (e?.message||e)); }
+});
+// ===== /ICE RESTART =====
+socket.on("disconnectPeer", ({ peerId }) => {
       const pc = pcs.get(peerId);
       if (pc) {
         pc.close();
@@ -916,137 +1018,88 @@ socket.emit("join-room", {
     });
 
     // ===== Guest request/approve =====
-    socket.on("guest-request", ({ guestId, profile }) => {
-  if (!guestId) return;
-  if (!pendingGuestIds.includes(guestId)) pendingGuestIds.push(guestId);
-  guestReq.textContent = `📨 Có guest xin lên live: ${guestId}${profile?.name ? " • " + profile.name : ""}`;
-  renderGuestPending();
-  log("Có guest xin lên live: " + guestId);
-});
+    socket.on("guest-request", ({ guestId }) => {
+      pendingGuestId = guestId;
+      guestReq.textContent = `GuestID: ${guestId} (bấm Chấp nhận để lên live)`;
+      btnApproveGuest.disabled = false;
+      btnRejectGuest.disabled = false;
+      log("Có guest xin lên live: " + guestId);
+    });
 
-    socket.on('guests-update', ({ guests })=>{
-  approvedGuestIds = Array.isArray(guests) ? guests.slice(0,4) : [];
-  const grid = document.getElementById('guestGridHost');
-  if (grid){
-    // ensure tiles
-    const existing = new Set(Array.from(grid.querySelectorAll('[data-gid]')).map(x=>x.dataset.gid));
-    for (const gid of approvedGuestIds){
-      if (existing.has(gid)) continue;
-      const tile = document.createElement('div');
-      tile.className = 'guest-tile';
-      tile.dataset.gid = gid;
-      const badge = document.createElement('div'); badge.className='guest-tile__badge'; badge.textContent='👤 GUEST';
-      const actions = document.createElement('div'); actions.className='guest-tile__actions';
-      const bMic = document.createElement('button'); bMic.className='guest-tile__btn'; bMic.textContent='🔇'; bMic.title='Mute guest';
-      bMic.onclick = ()=> socket.emit('host-mute-guest', { roomId, guestId: gid, mute: true });
-      const bCam = document.createElement('button'); bCam.className='guest-tile__btn'; bCam.textContent='🚫'; bCam.title='Tắt cam guest';
-      bCam.onclick = ()=> socket.emit('host-cam-guest', { roomId, guestId: gid, off: true });
-      const bKick = document.createElement('button'); bKick.className='guest-tile__btn'; bKick.textContent='⛔'; bKick.title='Kick guest';
-      bKick.onclick = ()=> socket.emit('host-kick-guest', { roomId, guestId: gid });
-      actions.appendChild(bMic); actions.appendChild(bCam); actions.appendChild(bKick);
-      const vid = document.createElement('video'); vid.autoplay=true; vid.playsInline=true;
-      tile.appendChild(vid); tile.appendChild(badge); tile.appendChild(actions);
-      grid.appendChild(tile);
-    }
-    // remove stale
-    for (const el of Array.from(grid.querySelectorAll('[data-gid]'))){
-      if (!approvedGuestIds.includes(el.dataset.gid)) el.remove();
-    }
-  }
-  // ensure host watches each guest
-  for (const gid of approvedGuestIds){ socket.emit('watch-guest', { roomId, guestId: gid }); }
-});
-
-socket.on("guest-offline", ({ guestId } = {}) => {
-  if (guestId){
-    approvedGuestIds = approvedGuestIds.filter(x=>x!==guestId);
-    const pc = pcGuestsIn.get(guestId);
-    if (pc){ try{pc.close();}catch{} pcGuestsIn.delete(guestId); }
-    // remove tile
-    const grid = document.getElementById("guestGridHost");
-    if (grid){ const t = grid.querySelector(`[data-gid="${guestId}"]`); if (t) t.remove(); }
-    log("Guest offline: " + guestId);
-    return;
-  }
-  // legacy: clear all
-  approvedGuestIds = [];
-  for (const pc of pcGuestsIn.values()) { try{ pc.close(); }catch{} }
-  pcGuestsIn.clear();
-  const grid = document.getElementById('guestGridHost'); if (grid) grid.innerHTML='';
-  log('Guest offline');
-
-});
+    socket.on("guest-offline", () => {
+      log("Guest offline");
+      approvedGuestId = null;
+      pendingGuestId = null;
+      guestReq.textContent = "Guest đã rời.";
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
+      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
+      guestVideo.srcObject = null;
+    });
 
     btnApproveGuest.onclick = () => {
-  const sel = guestReq && guestReq.__sel ? guestReq.__sel.value : (pendingGuestIds[0] || "");
-  const gid = sel || pendingGuestIds[0];
-  if (!gid) return;
+      if (!pendingGuestId) return;
+      approvedGuestId = pendingGuestId;
+      socket.emit("guest-approve", { roomId, guestId: pendingGuestId });
+      guestReq.textContent = `✅ Đã chấp nhận guest: ${pendingGuestId}`;
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
 
-  socket.emit("guest-approve", { roomId, guestId: gid });
-
-  pendingGuestIds = pendingGuestIds.filter(x=>x!==gid);
-  if (!approvedGuestIds.includes(gid)) approvedGuestIds = [...approvedGuestIds, gid].slice(0,4);
-  guestReq.textContent = `✅ Đã chấp nhận guest: ${gid}`;
-  renderGuestPending();
-
-  // Host wants to watch this guest so guest will create offer to host
-  socket.emit("watch-guest", { roomId, guestId: gid });
-};
+      // Host also wants to watch guest so guest will create offer to host
+      socket.emit("watch-guest", { roomId });
+    };
 
     btnRejectGuest.onclick = () => {
-  const sel = guestReq && guestReq.__sel ? guestReq.__sel.value : (pendingGuestIds[0] || "");
-  const gid = sel || pendingGuestIds[0];
-  if (!gid) return;
-  socket.emit("guest-reject", { guestId: gid });
-  pendingGuestIds = pendingGuestIds.filter(x=>x!==gid);
-  guestReq.textContent = "⛔ Đã từ chối guest.";
-  renderGuestPending();
-};
+      if (!pendingGuestId) return;
+      socket.emit("guest-reject", { guestId: pendingGuestId });
+      guestReq.textContent = "⛔ Đã từ chối guest.";
+      pendingGuestId = null;
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
+    };
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
     socket.on("offer", async ({ from, description }) => {
-  // Guest sends offer to HOST when host called watch-guest
-  if (!from) return;
-  if (!approvedGuestIds.includes(from)) {
-    // auto-approve fallback if still room says it's guest; ignore for safety
-    log("Nhận offer từ guest chưa duyệt: " + from);
-    return;
-  }
+      // Only handle guest offers (viewers never send offers to host in this app)
+      approvedGuestId = approvedGuestId || from;
 
-  // close old pc for this guest
-  const old = pcGuestsIn.get(from);
-  if (old){ try{ old.close(); }catch{} pcGuestsIn.delete(from); }
+      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
 
-  const rtcConfig = await getRtcConfig();
-  const pc = new RTCPeerConnection(rtcConfig);
-  pcGuestsIn.set(from, pc);
+      const rtcConfig = await getRtcConfig();
+      pcGuestIn = new RTCPeerConnection(rtcConfig);
 
-  // send host tracks back to guest so guest can hear/see host
-  if (localStream) localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+      // send host tracks back to guest so guest can hear/see host (co-talk)
+      if (localStream) {
+        localStream.getTracks().forEach(t => pcGuestIn.addTrack(t, localStream));
+      }
 
-  pc.ontrack = (e) => {
-    const grid = document.getElementById("guestGridHost");
-    const tile = grid ? grid.querySelector(`[data-gid="${from}"]`) : null;
-    const vid = tile ? tile.querySelector("video") : null;
-    if (vid) { vid.srcObject = e.streams[0]; vid.play().catch(()=>{}); }
-  };
+      pcGuestIn.ontrack = (e) => {
+        guestVideo.srcObject = e.streams[0];
+        try{ attachSpeakingIndicator(guestVideo, document.getElementById('guestPipWrapHost')); }catch{}
+      };
 
-  pc.onicecandidate = (e) => {
-    if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
-  };
+      pcGuestIn.onicecandidate = (e) => {
+        if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
+      };
 
-  __wireIceAuto(from, pc);
+            pcGuestIn.addEventListener("iceconnectionstatechange", () => {
+        const st = pcGuestIn.iceConnectionState;
+        log(`ICE(GUEST): ${st}`);
+        if (st === "failed" || st === "disconnected") {
+          if (approvedGuestId) socket.emit("request-ice-restart", { to: approvedGuestId, reason: "guest link " + st });
+        }
+      });
 
-  try{
-    await pc.setRemoteDescription(description);
-    const answer = await pc.createAnswer();
-    await pc.setLocalDescription(answer);
-    socket.emit("answer", { to: from, description: pc.localDescription });
-    log("Đã trả lời offer của guest: " + from);
-  }catch(err){
-    log("Lỗi xử lý offer guest: " + err.message);
-  }
-});
+      try {
+        await pcGuestIn.setRemoteDescription(description);
+        const answer = await pcGuestIn.createAnswer();
+        await pcGuestIn.setLocalDescription(answer);
+        socket.emit("answer", { to: from, description: pcGuestIn.localDescription });
+        log("Đã trả lời offer của guest: " + from);
+      } catch (err) {
+        log("Lỗi xử lý offer guest: " + err.message);
+      }
+    });
 
     // ===== Start/Stop/Flip =====
     async function start() {
@@ -1059,6 +1112,7 @@ socket.on("guest-offline", ({ guestId } = {}) => {
         });
 
         preview.srcObject = localStream;
+    try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
         btnStart.disabled = true;
         btnStop.disabled = false;
         hostFlipBtn.disabled = false;
@@ -1081,8 +1135,6 @@ socket.on("guest-offline", ({ guestId } = {}) => {
       }
 
       // close guest peer
-      for (const pc of pcGuestsIn.values()) { try{ pc.close(); }catch{} }
-      pcGuestsIn.clear();
       if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
       guestVideo.srcObject = null;
 
@@ -1124,6 +1176,7 @@ socket.on("guest-offline", ({ guestId } = {}) => {
         }
         localStream.addTrack(newVideoTrack);
         preview.srcObject = localStream;
+    try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
 
         // replace for all viewer peers
         for (const [viewerId, pc] of pcs.entries()) {
