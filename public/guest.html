@@ -111,15 +111,6 @@
     <button data-gift="dragonking">🐲</button>
     <button data-gift="supernova">🌠</button>
   </div>
-
-<!-- PREVIEW GIÁ QUÀ -->
-<div class="gift-preview" id="giftPreview"></div>
-
-<button class="gift-send-btn" id="btnSendGift" disabled>
-  🎁 Gửi quà
-</button>
-
-
 </div>
 
 
@@ -245,6 +236,20 @@
 </div>
 
 
+<div id="giftConfirm" class="ncf hidden">
+  <div class="ncf__bg"></div>
+  <div class="ncf__box">
+    <h3>🎁 Xác nhận tặng quà</h3>
+    <p id="giftConfirmText"></p>
+    <div class="ncf__actions">
+      <button id="giftCancel">Hủy</button>
+      <button id="giftOk">Tặng</button>
+    </div>
+  </div>
+</div>
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -265,123 +270,6 @@
 
     const socket = io();
     
-
-
-   
-/* ===== HARD BLOCK AUTO SEND GIFT (CAPTURE PHASE) ===== */
-document.addEventListener("click", function (e) {
-  const btn = e.target.closest("[data-gift]");
-  if (!btn) return;
-
-  // Nếu click trong GIFT PANEL → CHỈ CHỌN, KHÔNG GỬI
-  if (btn.closest("#giftPanel")) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-    return;
-  }
-
-  // Nếu click trong GIFT BAR → KHÔNG GỬI (chỉ mở panel)
-  if (btn.closest(".gift-bar")) {
-    e.preventDefault();
-    e.stopImmediatePropagation();
-    e.stopPropagation();
-
-    const panel = document.getElementById("giftPanel");
-    if (panel) panel.classList.remove("hidden");
-    return;
-  }
-}, true); // 👈 TRUE = capture phase
-
-
-
-   
-/* ===== DISABLE GIFT-BAR AUTO SEND (FIX BUG) ===== */
-document.querySelectorAll(".gift-bar [data-gift]").forEach(btn=>{
-  btn.onclick = (e)=>{
-    e.preventDefault();
-    e.stopPropagation();
-    // ❌ không gửi quà ở đây
-    // chỉ mở panel cho người dùng chọn
-    const panel = document.getElementById("giftPanel");
-    if (panel) panel.classList.remove("hidden");
-  };
-});
-
-
-// ===== GIFT SELECT & PREVIEW =====
-const GIFT_CATALOG = {
-  heart:{emoji:"❤️",cost:1},
-  flower:{emoji:"🌸",cost:5},
-  rocket:{emoji:"🚀",cost:20},
-  coin:{emoji:"💰",cost:50},
-  dragon:{emoji:"🐉",cost:120},
-  phoenix:{emoji:"🦅",cost:200},
-  galaxy:{emoji:"🌌",cost:300},
-  meteor:{emoji:"☄️",cost:500},
-  king:{emoji:"👑",cost:800},
-  dragonking:{emoji:"🐲",cost:1500},
-  supernova:{emoji:"🌠",cost:2200},
-};
-
-let selectedGift = null;
-let selectedCombo = 1;
-
-const giftPreview = document.getElementById("giftPreview");
-const btnSendGift = document.getElementById("btnSendGift");
-
-// chọn quà (KHÔNG gửi)
-document.querySelectorAll("#giftPanel [data-gift]").forEach(btn=>{
-  btn.onclick = ()=>{
-    selectedGift = btn.dataset.gift;
-    renderGiftPreview();
-  };
-});
-
-// chọn combo
-document.querySelectorAll(".gift-combo__btn").forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll(".gift-combo__btn")
-      .forEach(b=>b.classList.remove("is-active"));
-    btn.classList.add("is-active");
-    selectedCombo = Number(btn.dataset.combo);
-    renderGiftPreview();
-  };
-});
-
-function renderGiftPreview(){
-  if (!selectedGift){
-    giftPreview.innerHTML = "";
-    btnSendGift.disabled = true;
-    return;
-  }
-  const g = GIFT_CATALOG[selectedGift];
-  const total = g.cost * selectedCombo;
-
-  giftPreview.innerHTML = `
-    <b>${g.emoji} ${g.cost} coin</b>
-    × <b>${selectedCombo}</b>
-    = <b>${total}</b> coin
-  `;
-  btnSendGift.disabled = false;
-}
-
-// chỉ khi bấm nút này mới gửi quà
-btnSendGift.onclick = ()=>{
-  if (!selectedGift) return;
-
-  socket.emit("send-gift", {
-    roomId,
-    gift: selectedGift,
-    combo: selectedCombo,
-    name: chatName?.value || "Viewer"
-  });
-
-  // reset
-  selectedGift = null;
-  selectedCombo = 1;
-  renderGiftPreview();
-};
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -1416,6 +1304,56 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
     giftPanel.classList.add("hidden");
   });
 });
+
+
+const giftGrid = document.querySelector(".gift-panel__grid");
+
+socket.on("gift-catalog", (catalog) => {
+  giftGrid.innerHTML = Object.entries(catalog).map(([key, g]) => `
+    <button class="gift-item" data-gift="${key}">
+      <div class="gift-emoji">${g.emoji}</div>
+      <div class="gift-cost">${g.cost}💰</div>
+    </button>
+  `).join("");
+});
+
+
+let pendingGift = null;
+
+document.addEventListener("click", (e) => {
+  const btn = e.target.closest("[data-gift]");
+  if (!btn) return;
+
+  const gift = btn.dataset.gift;
+  const combo = currentCombo; // x1 / x5 / x10
+  const g = giftCatalog[gift];
+
+  pendingGift = { gift, combo };
+
+  document.getElementById("giftConfirmText").innerHTML =
+    `Bạn muốn tặng <b>${g.emoji} ${g.title}</b><br>
+     Giá: <b>${g.cost * combo} coin</b>?`;
+
+  giftConfirm.classList.remove("hidden");
+});
+
+giftCancel.onclick = () => {
+  pendingGift = null;
+  giftConfirm.classList.add("hidden");
+};
+
+giftOk.onclick = () => {
+  if (!pendingGift) return;
+
+  socket.emit("send-gift", {
+    roomId,
+    gift: pendingGift.gift,
+    combo: pendingGift.combo
+  });
+
+  pendingGift = null;
+  giftConfirm.classList.add("hidden");
+};
 
 
   </script>
