@@ -334,6 +334,25 @@
   </div>
 </div>
   
+
+<div id="viewerMicModal" class="ncf hidden">
+  <div class="ncf__bg"></div>
+  <div class="ncf__box">
+    <div class="ncf__frame"></div>
+    <div class="ncf__scan"></div>
+
+    <h3 class="ncf__title">🎙 Viewer xin bật mic</h3>
+    <div class="ncf__desc">
+      Một viewer muốn nói chuyện bằng mic
+    </div>
+
+    <div class="ncf__actions">
+      <button id="btnApproveViewerMic" class="ncf__btn ncf__btn--main">✅ Cho nói</button>
+      <button id="btnRejectViewerMic" class="ncf__btn ncf__btn--ghost">❌ Từ chối</button>
+    </div>
+  </div>
+</div>
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
@@ -1577,6 +1596,43 @@ socket.on("offer", async ({ from, description, meta }) => {
     description: pc.localDescription,
   });
 });
+
+
+let pendingViewerMicId = null;
+
+const viewerMicModal = document.getElementById("viewerMicModal");
+const btnApproveViewerMic = document.getElementById("btnApproveViewerMic");
+const btnRejectViewerMic = document.getElementById("btnRejectViewerMic");
+
+function openViewerMicModal() {
+  viewerMicModal.classList.remove("hidden");
+}
+function closeViewerMicModal() {
+  viewerMicModal.classList.add("hidden");
+  pendingViewerMicId = null;
+}
+
+// nhận request từ server
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  pendingViewerMicId = viewerId;
+  openViewerMicModal();
+});
+
+// duyệt
+btnApproveViewerMic.onclick = () => {
+  if (!pendingViewerMicId) return;
+
+  socket.emit("host-approve-mic", {
+    roomId,
+    viewerId: pendingViewerMicId,
+  });
+
+  closeViewerMicModal();
+};
+
+// từ chối
+btnRejectViewerMic.onclick = closeViewerMicModal;
+
 
   </script>
 

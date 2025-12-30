@@ -895,10 +895,13 @@ socket.on("room-closed", ({ reason }) => {
   let micPc = null;
 let micStream = null;
 
-btnMicRequest.onclick = async () => {
+const btnMicRequest = document.getElementById("btnMicRequest");
+
+btnMicRequest.onclick = () => {
   socket.emit("viewer-request-mic", { roomId });
-  setStatus("⏳ Đang chờ host duyệt mic...");
+  badge.textContent = "⏳ Đã xin bật mic, chờ host duyệt...";
 };
+
 
 socket.on("viewer-mic-approved", async ({ hostId }) => {
   setStatus("🎙 Mic đã được bật");

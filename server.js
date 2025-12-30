@@ -538,12 +538,16 @@ socket.on("send-gift", ({ roomId, gift }) => {
   });
 
 
+// ===== VIEWER MIC REQUEST =====
 socket.on("viewer-request-mic", ({ roomId }) => {
-  const room = getRoom(roomId);
-  if (!room?.broadcasterId) return;
+  roomId = normRoomId(roomId);
+  const room = rooms.get(roomId);
+  if (!room || !room.broadcasterId) return;
 
+  // gửi yêu cầu lên HOST
   io.to(room.broadcasterId).emit("viewer-mic-request", {
     viewerId: socket.id,
+    roomId,
   });
 });
 
