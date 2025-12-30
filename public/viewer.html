@@ -603,6 +603,31 @@ socket.emit("join-room", { roomId, role: "viewer" });
       }
     });
 
+
+    // ===== HANDLE ICE RESTART FROM HOST (BẮT BUỘC) =====
+socket.on("request-ice-restart", async ({ from, reason }) => {
+  const pc = pcs.get(from);
+  if (!pc) {
+    console.warn("ICE restart nhưng không tìm thấy PC:", from);
+    return;
+  }
+
+  try {
+    console.log("🔄 ICE restart từ host:", reason);
+
+    const offer = await pc.createOffer({ iceRestart: true });
+    await pc.setLocalDescription(offer);
+
+    socket.emit("offer", {
+      to: from,
+      description: pc.localDescription
+    });
+  } catch (e) {
+    console.error("ICE restart error:", e);
+  }
+});
+
+
     btnJoin.onclick = () => {
       join().catch(err => log("Join lỗi: " + err.message));
     };
