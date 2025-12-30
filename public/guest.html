@@ -260,6 +260,13 @@
     
 
 // ===== GIFT EFFECT (GUEST) =====
+socket.on("gift", ({ gift, donor }) => {
+  if (!gift || !gift.type) return;
+
+  // render animation
+  spawnGift(gift.type, donor, gift);
+});
+
 
 
 

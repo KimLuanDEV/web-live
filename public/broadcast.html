@@ -497,6 +497,12 @@ if(nameFromLobby){
     const socket = io();
     
 // ===== GIFT EFFECT (HOST) =====
+socket.on("gift", ({ gift, donor }) => {
+  if (!gift || !gift.type) return;
+
+  // render animation
+  spawnGift(gift.type, donor, gift);
+});
 
 
 
