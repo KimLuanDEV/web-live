@@ -2616,3 +2616,22 @@ body.vip-spotlight .vip-zoom{
   max-height: 120px;
   overflow: auto;
 }
+
+/* ===== FIX: GIFT ANIMATION OVER VIDEO (HOST + GUEST) ===== */
+.live-stage{
+  position: relative;
+}
+
+.gift-layer{
+  position: absolute !important;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9999 !important;
+}
+
+.video-card,
+.video-card__inner,
+.video-card video{
+  position: relative;
+  z-index: 1;
+}
