@@ -200,7 +200,6 @@ socket.on("viewer-mic-result", async ({ ok }) => {
     return;
   }
 
-  // ✅ ĐÃ ĐƯỢC DUYỆT → UPDATE UI
   btnRequestMic.textContent = "🎙️ Mic đã bật";
   btnRequestMic.disabled = true;
 
@@ -217,6 +216,12 @@ socket.on("viewer-mic-result", async ({ ok }) => {
 
   stream.getTracks().forEach(track => {
     pc.addTrack(track, stream);
+  });
+
+  // 🔥🔥🔥 QUAN TRỌNG NHẤT
+  socket.emit("request-ice-restart", {
+    to: [...pcs.keys()][0],
+    reason: "viewer_add_audio"
   });
 
   badge.textContent = "🎤 Đang nói chuyện";

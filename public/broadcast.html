@@ -865,12 +865,15 @@ pc.ontrack = (e) => {
     audio.srcObject = e.streams[0];
     audio.autoplay = true;
     audio.muted = false;
-    audio.dataset.viewer = viewerId;
+
+    // tránh bị GC
+    audio.style.display = "none";
     document.body.appendChild(audio);
 
-    log("🎤 Nhận audio từ viewer: " + viewerId);
+    log("🎤 Đang nghe mic viewer: " + viewerId);
   }
 };
+
 
 
 
@@ -1590,6 +1593,11 @@ function approveMic(viewerId, ok){
     : "❌ Đã từ chối yêu cầu";
 }
 
+document.addEventListener("click", () => {
+  document.querySelectorAll("audio").forEach(a => {
+    a.play().catch(()=>{});
+  });
+}, { once: true });
 
 
   </script>
