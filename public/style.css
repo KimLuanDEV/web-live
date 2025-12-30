@@ -285,7 +285,7 @@ code{
 .chat-overlay{
   position:absolute;
   left:12px;
-  bottom:12px;
+  bottom:30px;
   width:min(78%, 520px);
   display:flex;
   flex-direction:column;
