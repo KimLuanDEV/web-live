@@ -337,10 +337,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
-
-
-
-
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -488,11 +484,6 @@ if(nameFromLobby){
     };
 
     const socket = io();
-
-
-
-
-
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
@@ -855,24 +846,6 @@ socket.emit("join-room", {
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
-
-
-
-     pc.ontrack = (event) => {
-    const track = event.track;
-
-    if (track.kind === "audio") {
-      console.log("🎤 Host nhận mic từ viewer:", viewerId);
-
-      // 🔊 RELAY AUDIO CHO TẤT CẢ VIEWER KHÁC
-      for (const [vid, vpc] of pcs.entries()) {
-        try {
-          vpc.addTrack(track);
-        } catch (e) {}
-      }
-    }
-  };
-
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
@@ -1567,33 +1540,6 @@ socket.on("live-ended-stats", (stats) => {
   }, { passive: false });
 
 
-
-let pendingViewerMic = null;
-
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  pendingViewerMic = viewerId;
-  document.getElementById("guestReq").textContent =
-    "🎤 Viewer xin bật mic";
-  
-  btnApproveGuest.disabled = false;
-  btnRejectGuest.disabled = false;
-});
-
-btnApproveGuest.onclick = () => {
-  socket.emit("host-approve-mic", {
-    viewerId: pendingViewerMic,
-    allow: true,
-  });
-  document.getElementById("guestReq").textContent = "✅ Đã duyệt mic";
-};
-
-btnRejectGuest.onclick = () => {
-  socket.emit("host-approve-mic", {
-    viewerId: pendingViewerMic,
-    allow: false,
-  });
-  document.getElementById("guestReq").textContent = "❌ Đã từ chối mic";
-};
 
   </script>
 

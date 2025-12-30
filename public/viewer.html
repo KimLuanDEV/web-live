@@ -38,8 +38,6 @@
 <small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
   Bấm để mở trang Khách và gửi yêu cầu lên Host.
 </small>
-<button id="btnRequestMic">🎤 Xin mic nói</button>
-<small id="micStatus" style="opacity:.8"></small>
 
           <hr />
           <div class="log" id="log" style="display: none;"></div>
@@ -184,57 +182,6 @@ let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
-
-
-const btnRequestMic = document.getElementById("btnRequestMic");
-const micStatus = document.getElementById("micStatus");
-
-let micStream = null;
-
-btnRequestMic.onclick = async () => {
-  socket.emit("viewer-request-mic", { roomId });
-  micStatus.textContent = "⏳ Đang chờ host duyệt...";
-};
-
-
-
-  // gửi audio track cho host
-  micStream.getAudioTracks().forEach(track => {
-  // ===== VIEWER MIC ONLY =====
-socket.on("viewer-mic-approved", async ({ allow }) => {
-  if (!allow) {
-    micStatus.textContent = "❌ Host từ chối mic";
-    return;
-  }
-
-  micStatus.textContent = "🎙️ Mic đang bật";
-
-  // Lấy mic
-  micStream = await navigator.mediaDevices.getUserMedia({
-    audio: {
-      echoCancellation: true,
-      noiseSuppression: true,
-      autoGainControl: true
-    },
-    video: false,
-  });
-
-  // 👉 GỬI AUDIO TRACK QUA WEBRTC ĐẾN HOST
-  const pc = pcs.get("broadcaster");
-  if (!pc) {
-    console.error("❌ Chưa có PeerConnection tới host");
-    return;
-  }
-
-  micStream.getAudioTracks().forEach(track => {
-    pc.addTrack(track, micStream);
-    console.log("🎤 Đã add mic track vào PC");
-  });
-});
-
-  });
-
-
 
 
     // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
