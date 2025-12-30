@@ -237,6 +237,8 @@
 
 
   <script src="/socket.io/socket.io.js"></script>
+  <script src="/gift-effects.js"></script>
+
   <script>
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
@@ -258,24 +260,7 @@
     
 
 // ===== GIFT EFFECT (GUEST) =====
-const giftLayer = document.getElementById("giftLayer");
 
-socket.on("gift", ({ gift, donor })=>{
-  if (!gift || !gift.type) return;
-
-  spawnGift(gift.type, donor, gift);
-
-  // toast nhỏ
-  try{
-    const note = document.createElement("div");
-    note.className = "gift-toast";
-    const em = gift.emoji || "🎁";
-    note.textContent = `${em} ${donor || "Ai đó"} tặng +${gift.coins || 0} coin`;
-    document.body.appendChild(note);
-    setTimeout(()=>note.classList.add("hide"), 1600);
-    setTimeout(()=>note.remove(), 2300);
-  }catch{}
-});
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -1176,6 +1161,7 @@ socket.on("gift-failed", ({ reason, need, coins })=>{
   }
 });
 
+const giftLayer = document.getElementById("giftLayer");
 const giftTotalCoinsEl = document.getElementById("giftTotalCoins");
 const giftTopList = document.getElementById("giftTopList");
 socket.on("gift-stats", ({ totalCoins, topDonors })=>{
