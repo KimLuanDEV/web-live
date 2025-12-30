@@ -2553,8 +2553,8 @@ body.vip-spotlight .vip-zoom{
 /* 🎁 Gift Panel */
 .gift-panel{
   position:absolute;
-  right:12px;
-  bottom:130px;
+  right:15px;
+  bottom:40px;
   width:260px;
   border-radius:18px;
   background:rgba(0,0,0,.75);

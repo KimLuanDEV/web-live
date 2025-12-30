@@ -64,9 +64,6 @@
 
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
-<!-- GIFT QUICK BUTTON -->
-<button class="gift-fab" id="giftFab">🎁</button>
-
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -86,50 +83,6 @@
 <div class="video-card__inner">
       <video id="player" autoplay playsinline></video>
     </div>
-
-
-    <!-- GIFT PANEL -->
-<div class="gift-panel hidden" id="giftPanel">
-  <div class="gift-panel__head">
-    <span>🎁 Quà tặng</span>
-    <button id="giftClose">✕</button>
-  </div>
-
-  <!-- QUÀ -->
-  <div class="gift-bar">
-    <button data-gift="heart">❤️</button>
-    <button data-gift="flower">🌸</button>
-    <button data-gift="rocket">🚀</button>
-    <button data-gift="coin">💰</button>
-    <button data-gift="dragon">🐉</button>
-    <button data-gift="phoenix">🦅</button>
-    <button data-gift="galaxy">🌌</button>
-    <button data-gift="meteor">☄️</button>
-    <button data-gift="king">👑</button>
-    <button data-gift="dragonking">🐲</button>
-    <button data-gift="supernova">🌠</button>
-  </div>
-
- <div class="gift-wallet">
-  <div class="gift-wallet__row">
-    <span class="gift-wallet__label">Ví coin:</span>
-    <b id="walletCoins">0</b>
-    <span class="gift-wallet__unit">coin</span>
-  </div>
-  <div class="gift-wallet__row gift-wallet__row--small">
-    <span class="gift-wallet__hint">Mỗi quà trừ coin • dùng để test Gift Engine</span>
-  </div>
-  
-  <div class="gift-combo" id="giftCombo">
-    <span class="gift-combo__label">Combo:</span>
-    <button type="button" class="gift-combo__btn is-active" data-combo="1">x1</button>
-    <button type="button" class="gift-combo__btn" data-combo="5">x5</button>
-    <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
-  </div>
-
-
-
-
   </div>
 
   <!-- GUEST (PIP) -->
@@ -164,8 +117,38 @@
       <button type="button" class="emoji-btn" data-emoji="😮">😮</button>
       <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
     </div>
+
+  <div class="gift-bar">
+  <button data-gift="heart">❤️</button>
+  <button data-gift="flower">🌸</button>
+  <button data-gift="rocket">🚀</button>
+  <button data-gift="coin">💰</button>
+  <button data-gift="dragon">🐉</button>
+  <button data-gift="phoenix">🦅</button>
+  <button data-gift="galaxy">🌌</button>
+  <button data-gift="meteor">☄️</button>
+  <button data-gift="king">👑</button>
+  <button data-gift="dragonking">🐲</button>
+  <button data-gift="supernova">🌠</button>
 </div>
 
+</div>
+
+<div class="gift-wallet">
+  <div class="gift-wallet__row">
+    <span class="gift-wallet__label">Ví coin:</span>
+    <b id="walletCoins">0</b>
+    <span class="gift-wallet__unit">coin</span>
+  </div>
+  <div class="gift-wallet__row gift-wallet__row--small">
+    <span class="gift-wallet__hint">Mỗi quà trừ coin • dùng để test Gift Engine</span>
+  </div>
+  <div class="gift-combo" id="giftCombo">
+    <span class="gift-combo__label">Combo:</span>
+    <button type="button" class="gift-combo__btn is-active" data-combo="1">x1</button>
+    <button type="button" class="gift-combo__btn" data-combo="5">x5</button>
+    <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
+  </div>
 
   <div class="gift-board">
     <div class="gift-board__head">🏆 Top donate</div>
@@ -213,11 +196,6 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-
-
-
-
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -969,11 +947,49 @@ const GIFT_CLIENT_CATALOG = {
   supernova:  { emoji:"🌠", cost:5, title:"Supernova" },
 };
 
-document.querySelectorAll(".gift-bar button").forEach(btn=>{
-  btn.onclick = ()=>{
+// ✅ Combo multiplier (x1/x5/x10)
+let __giftCombo = 1;
+try {
+  const saved = Number(localStorage.getItem("ls_gift_combo") || 1);
+  if (Number.isFinite(saved) && saved >= 1) __giftCombo = saved;
+} catch {}
+
+const __comboWrap = document.getElementById("giftCombo");
+if (__comboWrap) {
+  const __btns = __comboWrap.querySelectorAll(".gift-combo__btn");
+  // init active by saved value
+  __btns.forEach(b => {
+    const v = Number(b.dataset.combo || 1) || 1;
+    b.classList.toggle("is-active", v === __giftCombo);
+  });
+
+  __comboWrap.addEventListener("click", (ev) => {
+    const btn = ev.target && ev.target.closest(".gift-combo__btn");
+    if (!btn) return;
+    const v = Number(btn.dataset.combo || 1) || 1;
+    __giftCombo = Math.max(1, Math.min(999, v));
+    try { localStorage.setItem("ls_gift_combo", String(__giftCombo)); } catch {}
+    __btns.forEach(b => b.classList.toggle("is-active", b === btn));
+
+    // feedback
+    try {
+      const t = document.createElement("div");
+      t.className = "gift-toast";
+      t.textContent = `✅ Đã chọn combo x${__giftCombo}`;
+      document.body.appendChild(t);
+      setTimeout(()=>t.classList.add("hide"), 900);
+      setTimeout(()=>{ try{t.remove();}catch{} }, 1400);
+    } catch {}
+  });
+}
+
+// Send gift with selected combo qty
+document.querySelectorAll(".gift-bar button").forEach(btn => {
+  btn.onclick = () => {
     const type = btn.dataset.gift;
     const name = (chatName.value || "Viewer").trim().slice(0,20);
-    socket.emit("send-gift", { roomId, name, gift: { type, qty: 1 } });
+    const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
+    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
   };
 });
 // ===== /GIFT ENGINE (client) =====
@@ -1294,19 +1310,6 @@ socket.on("room-closed", ({ reason }) => {
   document.addEventListener("wheel", e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
-
-
-const giftFab   = document.getElementById("giftFab");
-const giftPanel = document.getElementById("giftPanel");
-const giftClose = document.getElementById("giftClose");
-
-giftFab.onclick = () => {
-  giftPanel.classList.toggle("hidden");
-};
-
-giftClose.onclick = () => {
-  giftPanel.classList.add("hidden");
-};
 
 
   </script>
