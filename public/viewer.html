@@ -183,6 +183,47 @@ let swapped = false; // false: host main, true: guest main
     const socket = io();
 
 
+    
+const btnRaiseHand = document.getElementById("btnRaiseHand");
+const handStatus = document.getElementById("handStatus");
+
+btnRaiseHand.onclick = () => {
+  socket.emit("raise-hand", {
+    roomId,
+    name: document.getElementById("chatName")?.value || "Viewer"
+  });
+
+  btnRaiseHand.disabled = true;
+  handStatus.textContent = "✋ Đã giơ tay – chờ host duyệt";
+};
+
+socket.on("hand-approved", () => {
+  handStatus.textContent = "🎤 Host đã cho bạn nói";
+  btnRaiseHand.style.display = "none";
+  enableViewerMic(); // ⬅️ hàm bật mic audio-only
+});
+
+socket.on("hand-rejected", () => {
+  handStatus.textContent = "❌ Host từ chối";
+  btnRaiseHand.disabled = false;
+});
+
+
+async function enableViewerMic(){
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false
+  });
+
+  stream.getAudioTracks()[0].enabled = true;
+
+  // ❗ Gửi audio track lên host
+  peerConnection.addTrack(stream.getAudioTracks()[0], stream);
+
+  // chống echo
+  player.muted = true;
+}
+
     // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
 let __wasAutoMini = false;
 
@@ -893,45 +934,6 @@ socket.on("room-closed", ({ reason }) => {
 
 
 
-const btnRaiseHand = document.getElementById("btnRaiseHand");
-const handStatus = document.getElementById("handStatus");
-
-btnRaiseHand.onclick = () => {
-  socket.emit("raise-hand", {
-    roomId,
-    name: document.getElementById("chatName")?.value || "Viewer"
-  });
-
-  btnRaiseHand.disabled = true;
-  handStatus.textContent = "✋ Đã giơ tay – chờ host duyệt";
-};
-
-socket.on("hand-approved", () => {
-  handStatus.textContent = "🎤 Host đã cho bạn nói";
-  btnRaiseHand.style.display = "none";
-  enableViewerMic(); // ⬅️ hàm bật mic audio-only
-});
-
-socket.on("hand-rejected", () => {
-  handStatus.textContent = "❌ Host từ chối";
-  btnRaiseHand.disabled = false;
-});
-
-
-async function enableViewerMic(){
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false
-  });
-
-  stream.getAudioTracks()[0].enabled = true;
-
-  // ❗ Gửi audio track lên host
-  peerConnection.addTrack(stream.getAudioTracks()[0], stream);
-
-  // chống echo
-  player.muted = true;
-}
 
   </script>
 </body>
