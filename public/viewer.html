@@ -86,6 +86,46 @@
 <div class="video-card__inner">
       <video id="player" autoplay playsinline></video>
     </div>
+
+
+    <!-- GIFT PANEL -->
+<div class="gift-panel hidden" id="giftPanel">
+  <div class="gift-panel__head">
+    <span>🎁 Quà tặng</span>
+    <button id="giftClose">✕</button>
+  </div>
+
+  <!-- QUÀ -->
+  <div class="gift-bar">
+    <button data-gift="heart">❤️</button>
+    <button data-gift="flower">🌸</button>
+    <button data-gift="rocket">🚀</button>
+    <button data-gift="coin">💰</button>
+    <button data-gift="dragon">🐉</button>
+    <button data-gift="phoenix">🦅</button>
+    <button data-gift="galaxy">🌌</button>
+    <button data-gift="meteor">☄️</button>
+    <button data-gift="king">👑</button>
+    <button data-gift="dragonking">🐲</button>
+    <button data-gift="supernova">🌠</button>
+  </div>
+
+  <!-- COMBO -->
+  <div class="gift-combo" id="giftCombo">
+    <button class="gift-combo__btn is-active" data-combo="1">x1</button>
+    <button class="gift-combo__btn" data-combo="5">x5</button>
+    <button class="gift-combo__btn" data-combo="10">x10</button>
+  </div>
+
+  <!-- WALLET -->
+  <div class="gift-wallet">
+    <b id="walletCoins">0</b> coin
+  </div>
+</div>
+
+
+
+
   </div>
 
   <!-- GUEST (PIP) -->
@@ -120,38 +160,7 @@
       <button type="button" class="emoji-btn" data-emoji="😮">😮</button>
       <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
     </div>
-
-  <div class="gift-bar">
-  <button data-gift="heart">❤️</button>
-  <button data-gift="flower">🌸</button>
-  <button data-gift="rocket">🚀</button>
-  <button data-gift="coin">💰</button>
-  <button data-gift="dragon">🐉</button>
-  <button data-gift="phoenix">🦅</button>
-  <button data-gift="galaxy">🌌</button>
-  <button data-gift="meteor">☄️</button>
-  <button data-gift="king">👑</button>
-  <button data-gift="dragonking">🐲</button>
-  <button data-gift="supernova">🌠</button>
 </div>
-
-</div>
-
-<div class="gift-wallet">
-  <div class="gift-wallet__row">
-    <span class="gift-wallet__label">Ví coin:</span>
-    <b id="walletCoins">0</b>
-    <span class="gift-wallet__unit">coin</span>
-  </div>
-  <div class="gift-wallet__row gift-wallet__row--small">
-    <span class="gift-wallet__hint">Mỗi quà trừ coin • dùng để test Gift Engine</span>
-  </div>
-  <div class="gift-combo" id="giftCombo">
-    <span class="gift-combo__label">Combo:</span>
-    <button type="button" class="gift-combo__btn is-active" data-combo="1">x1</button>
-    <button type="button" class="gift-combo__btn" data-combo="5">x5</button>
-    <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
-  </div>
 
   <div class="gift-board">
     <div class="gift-board__head">🏆 Top donate</div>
@@ -225,19 +234,7 @@ let swapped = false; // false: host main, true: guest main
     const socket = io();
 
 
-    const giftFab   = document.getElementById("giftFab");
-const giftPanel = document.getElementById("giftPanel");
-const giftClose = document.getElementById("giftClose");
-
-giftFab.onclick = () => {
-  giftPanel.classList.toggle("hidden");
-};
-
-giftClose.onclick = () => {
-  giftPanel.classList.add("hidden");
-};
-
-
+    
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -1293,6 +1290,17 @@ socket.on("room-closed", ({ reason }) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
+const giftFab   = document.getElementById("giftFab");
+const giftPanel = document.getElementById("giftPanel");
+const giftClose = document.getElementById("giftClose");
+
+giftFab.onclick = () => {
+  giftPanel.classList.toggle("hidden");
+};
+
+giftClose.onclick = () => {
+  giftPanel.classList.add("hidden");
+};
 
 
 

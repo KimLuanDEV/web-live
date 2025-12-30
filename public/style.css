@@ -2538,10 +2538,10 @@ body.vip-spotlight .vip-zoom{
 /* 🎁 Gift FAB */
 .gift-fab{
   position:absolute;
-  left:20px;
-  bottom:20px;
-  width:46px;
-  height:46px;
+  left:40px;
+  bottom:10px;
+  width:20px;
+  height:20px;
   border-radius:50%;
   background:linear-gradient(135deg,#FFD36E,#FF9F3F);
   border:none;

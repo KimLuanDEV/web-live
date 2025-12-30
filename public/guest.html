@@ -245,17 +245,7 @@
 
     const socket = io();
     
-  const giftFab   = document.getElementById("giftFab");
-const giftPanel = document.getElementById("giftPanel");
-const giftClose = document.getElementById("giftClose");
 
-giftFab.onclick = () => {
-  giftPanel.classList.toggle("hidden");
-};
-
-giftClose.onclick = () => {
-  giftPanel.classList.add("hidden");
-};
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
 const vipTicker = document.getElementById("vipTicker");
@@ -1222,6 +1212,17 @@ socket.on("room-closed", ({ reason }) => {
   }, { passive: false });
 
 
+const giftFab   = document.getElementById("giftFab");
+const giftPanel = document.getElementById("giftPanel");
+const giftClose = document.getElementById("giftClose");
+
+giftFab.onclick = () => {
+  giftPanel.classList.toggle("hidden");
+};
+
+giftClose.onclick = () => {
+  giftPanel.classList.add("hidden");
+};
 
 
 
