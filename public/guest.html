@@ -236,8 +236,39 @@
 </div>
 
 
+<!-- 🎁 CONFIRM GIFT MODAL -->
+<div id="giftConfirmModal" class="modal hidden">
+  <div class="modal-backdrop modal-backdrop--neon"></div>
+
+  <div class="neon-modal" style="max-width:420px">
+    <div class="neon-frame"></div>
+    <div class="neon-scan"></div>
+
+    <div class="neon-top">
+      <div class="neon-livePill">
+        <span class="neon-dot"></span>
+        <span>XÁC NHẬN TẶNG QUÀ</span>
+      </div>
+      <button id="giftConfirmX" class="neon-x">✕</button>
+    </div>
+
+    <div style="padding:14px">
+      <div id="giftConfirmInfo" style="text-align:center;font-size:15px"></div>
+    </div>
+
+    <div class="neon-actions">
+      <button id="giftCancel" class="neon-btn neon-btn--ghost">❌ Huỷ</button>
+      <button id="giftSend" class="neon-btn neon-btn--main">🎁 Gửi quà</button>
+    </div>
+  </div>
+</div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
+    
+    let pendingGift = null;
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const me = document.getElementById("me");
@@ -1290,6 +1321,49 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
     giftPanel.classList.add("hidden");
   });
 });
+
+
+function openGiftConfirm(giftKey, combo){
+  const gift = GIFT_CATALOG[giftKey];
+  if (!gift) return;
+
+  const total = gift.cost * combo;
+
+  pendingGift = { giftKey, combo, total };
+
+  document.getElementById("giftConfirmInfo").innerHTML = `
+    <div style="font-size:42px">${gift.emoji}</div>
+    <b>${gift.title}</b><br/>
+    Giá: ${gift.cost} coin<br/>
+    Combo: x${combo}<br/>
+    <hr/>
+    <b style="color:#FFD36E">Tổng: ${total} coin</b>
+  `;
+
+  document.getElementById("giftConfirmModal").classList.remove("hidden");
+}
+
+
+function closeGiftConfirm(){
+  pendingGift = null;
+  document.getElementById("giftConfirmModal").classList.add("hidden");
+}
+
+giftCancel.onclick = closeGiftConfirm;
+giftConfirmX.onclick = closeGiftConfirm;
+
+
+giftSend.onclick = () => {
+  if (!pendingGift) return;
+
+  socket.emit("send-gift", {
+    roomId,
+    giftKey: pendingGift.giftKey,
+    combo: pendingGift.combo
+  });
+
+  closeGiftConfirm();
+};
 
 
   </script>

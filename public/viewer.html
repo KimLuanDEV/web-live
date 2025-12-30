@@ -223,9 +223,40 @@
   </div>
 </div>
 
+<!-- 🎁 CONFIRM GIFT MODAL -->
+<div id="giftConfirmModal" class="modal hidden">
+  <div class="modal-backdrop modal-backdrop--neon"></div>
+
+  <div class="neon-modal" style="max-width:420px">
+    <div class="neon-frame"></div>
+    <div class="neon-scan"></div>
+
+    <div class="neon-top">
+      <div class="neon-livePill">
+        <span class="neon-dot"></span>
+        <span>XÁC NHẬN TẶNG QUÀ</span>
+      </div>
+      <button id="giftConfirmX" class="neon-x">✕</button>
+    </div>
+
+    <div style="padding:14px">
+      <div id="giftConfirmInfo" style="text-align:center;font-size:15px"></div>
+    </div>
+
+    <div class="neon-actions">
+      <button id="giftCancel" class="neon-btn neon-btn--ghost">❌ Huỷ</button>
+      <button id="giftSend" class="neon-btn neon-btn--main">🎁 Gửi quà</button>
+    </div>
+  </div>
+</div>
+
+
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+    let pendingGift = null;
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -1019,7 +1050,9 @@ document.querySelectorAll(".gift-bar button").forEach(btn => {
     const type = btn.dataset.gift;
     const name = (chatName.value || "Viewer").trim().slice(0,20);
     const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
-    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
+    const giftKey = btn.dataset.gift;
+    const combo = getCurrentCombo(); // x1 / x5 / x10
+    openGiftConfirm(giftKey, combo);
   };
 });
 // ===== /GIFT ENGINE (client) =====
@@ -1367,12 +1400,56 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
     // lấy combo giống hệ đang có (x1/x5/x10)
     const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
 
-    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
+    const giftKey = btn.dataset.gift;
+    const combo = getCurrentCombo(); // x1 / x5 / x10
+    openGiftConfirm(giftKey, combo);
 
     giftPanel.classList.add("hidden");
   });
 });
 
+
+function openGiftConfirm(giftKey, combo){
+  const gift = GIFT_CATALOG[giftKey];
+  if (!gift) return;
+
+  const total = gift.cost * combo;
+
+  pendingGift = { giftKey, combo, total };
+
+  document.getElementById("giftConfirmInfo").innerHTML = `
+    <div style="font-size:42px">${gift.emoji}</div>
+    <b>${gift.title}</b><br/>
+    Giá: ${gift.cost} coin<br/>
+    Combo: x${combo}<br/>
+    <hr/>
+    <b style="color:#FFD36E">Tổng: ${total} coin</b>
+  `;
+
+  document.getElementById("giftConfirmModal").classList.remove("hidden");
+}
+
+
+function closeGiftConfirm(){
+  pendingGift = null;
+  document.getElementById("giftConfirmModal").classList.add("hidden");
+}
+
+giftCancel.onclick = closeGiftConfirm;
+giftConfirmX.onclick = closeGiftConfirm;
+
+
+giftSend.onclick = () => {
+  if (!pendingGift) return;
+
+  socket.emit("send-gift", {
+    roomId,
+    giftKey: pendingGift.giftKey,
+    combo: pendingGift.combo
+  });
+
+  closeGiftConfirm();
+};
 
   </script>
 
