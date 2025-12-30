@@ -2117,3 +2117,93 @@ video {
   opacity:1;
 }
 /* ===== /GIFT ENGINE UI ===== */
+
+
+/* ===== GIFT COMBO + BIG ANIM ===== */
+.gift-combo{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-top:8px;
+  flex-wrap:wrap;
+}
+.gift-combo__label{ opacity:.85; font-size:13px; }
+.gift-combo__btn{
+  width:auto;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(255,255,255,.06);
+  cursor:pointer;
+  font-weight:800;
+}
+.gift-combo__btn.is-active{
+  border-color: rgba(255,211,110,.55);
+  box-shadow: 0 0 22px rgba(255,211,110,.18);
+  background: rgba(255,211,110,.10);
+}
+
+.gift-big{
+  position:fixed;
+  inset:0;
+  z-index:9998;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation: giftBigIn .18s ease-out forwards;
+}
+.gift-big.hide{ animation: giftBigOut .25s ease-in forwards; }
+.gift-big__bg{
+  position:absolute; inset:0;
+  background: radial-gradient(600px 380px at 50% 60%, rgba(0,0,0,.65), rgba(0,0,0,.15), transparent 65%);
+}
+.gift-big__emoji{
+  position:relative;
+  font-size:min(28vw, 200px);
+  filter: drop-shadow(0 18px 35px rgba(0,0,0,.55));
+  transform: translateY(10px) scale(.92);
+  animation: giftBigPop 1.4s ease-out forwards;
+}
+.gift-big__spark{
+  position:absolute;
+  width:min(70vw, 520px);
+  height:min(70vw, 520px);
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow: 0 0 80px rgba(95,168,255,.14), 0 0 90px rgba(37,240,154,.10);
+  animation: giftBigRing 1.4s ease-out forwards;
+}
+
+.gift-big--rocket .gift-big__emoji{ animation: rocketShake 1.4s ease-out forwards; }
+.gift-big--dragon .gift-big__emoji{ animation: dragonRoar 1.4s ease-out forwards; }
+
+@keyframes giftBigIn{ from{opacity:0} to{opacity:1} }
+@keyframes giftBigOut{ from{opacity:1} to{opacity:0} }
+@keyframes giftBigPop{
+  0%{ transform: translateY(18px) scale(.86); opacity:.0}
+  12%{ opacity:1 }
+  100%{ transform: translateY(-10px) scale(1.03); opacity:1 }
+}
+@keyframes giftBigRing{
+  0%{ transform: scale(.55); opacity:.0}
+  18%{ opacity:.9 }
+  100%{ transform: scale(1.15); opacity:.0}
+}
+@keyframes rocketShake{
+  0%{ transform: translateY(18px) scale(.86); opacity:0}
+  15%{ opacity:1 }
+  30%{ transform: translateY(-6px) scale(1.05) rotate(-4deg) }
+  45%{ transform: translateY(-12px) scale(1.05) rotate(4deg) }
+  60%{ transform: translateY(-18px) scale(1.05) rotate(-3deg) }
+  100%{ transform: translateY(-24px) scale(1.06) rotate(0deg); opacity:1 }
+}
+@keyframes dragonRoar{
+  0%{ transform: translateY(18px) scale(.86); opacity:0}
+  12%{ opacity:1 }
+  28%{ transform: translateY(-10px) scale(1.06) rotate(-2deg) }
+  40%{ transform: translateY(-12px) scale(1.08) rotate(2deg) }
+  58%{ transform: translateY(-16px) scale(1.10) rotate(-1deg) }
+  100%{ transform: translateY(-20px) scale(1.08) rotate(0deg); opacity:1 }
+}
+/* ===== /GIFT COMBO + BIG ANIM ===== */

@@ -34,7 +34,9 @@ const GIFT_CATALOG = {
   flower: { emoji: "🌸", cost: 5,  title: "Hoa" },
   rocket: { emoji: "🚀", cost: 20, title: "Rocket" },
   coin:   { emoji: "💰", cost: 50, title: "Túi tiền" },
+  dragon: { emoji: "🐉", cost: 120, title: "Rồng" },
 };
+
 
 const START_COINS = 200; // coin mặc định cho mỗi người (demo)
 function clampInt(n, min, max){

@@ -138,6 +138,7 @@
   <button data-gift="flower">🌸</button>
   <button data-gift="rocket">🚀</button>
   <button data-gift="coin">💰</button>
+  <button data-gift="dragon">🐉</button>
 </div>
 
 <div class="gift-wallet">
@@ -149,6 +150,13 @@
   <div class="gift-wallet__row gift-wallet__row--small">
     <span class="gift-wallet__hint">Mỗi quà trừ coin • dùng để test Gift Engine</span>
   </div>
+  <div class="gift-combo" id="giftCombo">
+    <span class="gift-combo__label">Combo:</span>
+    <button type="button" class="gift-combo__btn is-active" data-combo="1">x1</button>
+    <button type="button" class="gift-combo__btn" data-combo="5">x5</button>
+    <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
+  </div>
+
   <div class="gift-board">
     <div class="gift-board__head">🏆 Top donate</div>
     <div class="gift-board__meta">Tổng: <b id="giftTotalCoins">0</b> coin</div>
@@ -936,6 +944,7 @@ const GIFT_CLIENT_CATALOG = {
   flower: { emoji:"🌸", cost:5,  title:"Hoa" },
   rocket: { emoji:"🚀", cost:20, title:"Rocket" },
   coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
+  dragon: { emoji:"🐉", cost:120, title:"Rồng" },
 };
 
 document.querySelectorAll(".gift-bar button").forEach(btn=>{
