@@ -41,7 +41,8 @@ function getRoom(roomId) {
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
-  micViewers: new Set(),  
+  viewerMics: new Map(), // socket.id -> true
+
   releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
 });
@@ -127,6 +128,31 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+
+
+
+  socket.on("viewer-request-mic", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room || !room.broadcasterId) return;
+
+  io.to(room.broadcasterId).emit("viewer-mic-request", {
+    viewerId: socket.id,
+  });
+});
+
+
+socket.on("host-approve-viewer-mic", ({ roomId, viewerId, ok }) => {
+  const room = rooms.get(roomId);
+  if (!room || room.broadcasterId !== socket.id) return;
+
+  io.to(viewerId).emit("viewer-mic-result", { ok });
+
+  if (ok) {
+    room.viewerMics.set(viewerId, true);
+  }
+});
+
+
 
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);
@@ -473,7 +499,10 @@ socket.on("send-gift", ({ roomId, gift }) => {
 
   socket.on("disconnect", () => {
 
-
+for (const room of rooms.values()) {
+    room.viewerMics?.delete(socket.id);
+  }
+  
   for (const [roomId, room] of rooms.entries()) {
     if (room.broadcasterId === socket.id) {
       closeRoom(roomId, "host_disconnect");
@@ -536,33 +565,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
       rooms.delete(roomId);
     }
   });
-
-
-// ===== VIEWER MIC REQUEST =====
-socket.on("viewer-request-mic", ({ roomId }) => {
-  roomId = normRoomId(roomId);
-  const room = rooms.get(roomId);
-  if (!room || !room.broadcasterId) return;
-
-  // gửi yêu cầu lên HOST
-  io.to(room.broadcasterId).emit("viewer-mic-request", {
-    viewerId: socket.id,
-    roomId,
-  });
-});
-
-socket.on("host-approve-mic", ({ roomId, viewerId }) => {
-  const room = getRoom(roomId);
-  if (!room || socket.id !== room.broadcasterId) return;
-
-  room.micViewers.add(viewerId);
-
-  io.to(viewerId).emit("viewer-mic-approved", {
-    hostId: room.broadcasterId,
-  });
-});
-
-
 });
 
 

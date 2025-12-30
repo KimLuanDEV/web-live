@@ -151,6 +151,13 @@
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
+<hr />
+<div class="card">
+  <div class="badge badge--info">🎤 Viewer xin bật mic</div>
+  <div id="viewerMicReq" class="log">Chưa có yêu cầu.</div>
+</div>
+
+
 </div>
 
 
@@ -334,27 +341,36 @@
   </div>
 </div>
   
-
-<div id="viewerMicModal" class="ncf hidden">
-  <div class="ncf__bg"></div>
-  <div class="ncf__box">
-    <div class="ncf__frame"></div>
-    <div class="ncf__scan"></div>
-
-    <h3 class="ncf__title">🎙 Viewer xin bật mic</h3>
-    <div class="ncf__desc">
-      Một viewer muốn nói chuyện bằng mic
-    </div>
-
-    <div class="ncf__actions">
-      <button id="btnApproveViewerMic" class="ncf__btn ncf__btn--main">✅ Cho nói</button>
-      <button id="btnRejectViewerMic" class="ncf__btn ncf__btn--ghost">❌ Từ chối</button>
-    </div>
-  </div>
-</div>
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
+const viewerMicReq = document.getElementById("viewerMicReq");
+
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  viewerMicReq.innerHTML = `
+    Viewer ${viewerId.slice(0,6)}...
+    <br/>
+    <button onclick="approveMic('${viewerId}',true)">✅ Duyệt</button>
+    <button onclick="approveMic('${viewerId}',false)">❌ Từ chối</button>
+  `;
+});
+
+function approveMic(viewerId, ok){
+  socket.emit("host-approve-viewer-mic", {
+    roomId,
+    viewerId,
+    ok
+  });
+  viewerMicReq.textContent = ok ? "🎤 Đã duyệt mic" : "❌ Đã từ chối";
+}
+
+pc.ontrack = (e) => {
+  const audio = document.createElement("audio");
+  audio.srcObject = e.streams[0];
+  audio.autoplay = true;
+};
+
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
@@ -1558,80 +1574,6 @@ socket.on("live-ended-stats", (stats) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
-
-const micViewers = new Map(); // viewerId -> pc
-
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  showApproveMicModal(viewerId); // modal neon duyệt mic
-});
-
-
-socket.on("offer", async ({ from, description, meta }) => {
-  if (meta?.type !== "viewer-mic") return;
-
-  const rtcConfig = await getRtcConfig();
-  const pc = new RTCPeerConnection(rtcConfig);
-  micViewers.set(from, pc);
-
-  pc.ontrack = e => {
-    // 🔊 đưa audio viewer vào stream phát
-    broadcastStream.addTrack(e.track);
-  };
-
-  pc.onicecandidate = e => {
-    if (e.candidate) {
-      socket.emit("candidate", {
-        to: from,
-        candidate: e.candidate,
-      });
-    }
-  };
-
-  await pc.setRemoteDescription(description);
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-
-  socket.emit("answer", {
-    to: from,
-    description: pc.localDescription,
-  });
-});
-
-
-let pendingViewerMicId = null;
-
-const viewerMicModal = document.getElementById("viewerMicModal");
-const btnApproveViewerMic = document.getElementById("btnApproveViewerMic");
-const btnRejectViewerMic = document.getElementById("btnRejectViewerMic");
-
-function openViewerMicModal() {
-  viewerMicModal.classList.remove("hidden");
-}
-function closeViewerMicModal() {
-  viewerMicModal.classList.add("hidden");
-  pendingViewerMicId = null;
-}
-
-// nhận request từ server
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  pendingViewerMicId = viewerId;
-  openViewerMicModal();
-});
-
-// duyệt
-btnApproveViewerMic.onclick = () => {
-  if (!pendingViewerMicId) return;
-
-  socket.emit("host-approve-mic", {
-    roomId,
-    viewerId: pendingViewerMicId,
-  });
-
-  closeViewerMicModal();
-};
-
-// từ chối
-btnRejectViewerMic.onclick = closeViewerMicModal;
 
 
   </script>

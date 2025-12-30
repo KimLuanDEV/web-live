@@ -35,7 +35,7 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<button id="btnMicRequest" class="btn-mic">🎙 Xin bật mic</button>
+<button id="btnRequestMic">🎤 Xin bật mic</button>
 
 
           <hr />
@@ -162,6 +162,8 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -182,6 +184,34 @@ let swapped = false; // false: host main, true: guest main
 
     const socket = io();
 
+
+    
+btnRequestMic.onclick = () => {
+  socket.emit("viewer-request-mic", { roomId });
+  btnRequestMic.disabled = true;
+  btnRequestMic.textContent = "⏳ Đang chờ duyệt...";
+};
+
+socket.on("viewer-mic-result", async ({ ok }) => {
+  if (!ok) {
+    alert("Host từ chối bật mic");
+    btnRequestMic.disabled = false;
+    btnRequestMic.textContent = "🎤 Xin bật mic";
+    return;
+  }
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false
+  });
+
+  // 👉 Gửi audio stream tới host
+  stream.getTracks().forEach(track => {
+    peerConnection.addTrack(track, stream);
+  });
+
+  badge.textContent = "🎤 Đang nói chuyện";
+});
 
     // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
 let __wasAutoMini = false;
@@ -890,52 +920,6 @@ socket.on("room-closed", ({ reason }) => {
   document.addEventListener("wheel", e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
-
-
-  let micPc = null;
-let micStream = null;
-
-const btnMicRequest = document.getElementById("btnMicRequest");
-
-btnMicRequest.onclick = () => {
-  socket.emit("viewer-request-mic", { roomId });
-  badge.textContent = "⏳ Đã xin bật mic, chờ host duyệt...";
-};
-
-
-socket.on("viewer-mic-approved", async ({ hostId }) => {
-  setStatus("🎙 Mic đã được bật");
-
-  micStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false,
-  });
-
-  const rtcConfig = await getRtcConfig();
-  micPc = new RTCPeerConnection(rtcConfig);
-
-  micStream.getTracks().forEach(t =>
-    micPc.addTrack(t, micStream)
-  );
-
-  micPc.onicecandidate = e => {
-    if (e.candidate) {
-      socket.emit("candidate", {
-        to: hostId,
-        candidate: e.candidate,
-      });
-    }
-  };
-
-  const offer = await micPc.createOffer();
-  await micPc.setLocalDescription(offer);
-
-  socket.emit("offer", {
-    to: hostId,
-    description: micPc.localDescription,
-    meta: { type: "viewer-mic" },
-  });
-});
 
 
   </script>
