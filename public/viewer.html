@@ -256,6 +256,34 @@ let swapped = false; // false: host main, true: guest main
     const socket = io();
 
 
+   
+/* ===== HARD BLOCK AUTO SEND GIFT (CAPTURE PHASE) ===== */
+document.addEventListener("click", function (e) {
+  const btn = e.target.closest("[data-gift]");
+  if (!btn) return;
+
+  // Nếu click trong GIFT PANEL → CHỈ CHỌN, KHÔNG GỬI
+  if (btn.closest("#giftPanel")) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+    return;
+  }
+
+  // Nếu click trong GIFT BAR → KHÔNG GỬI (chỉ mở panel)
+  if (btn.closest(".gift-bar")) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    e.stopPropagation();
+
+    const panel = document.getElementById("giftPanel");
+    if (panel) panel.classList.remove("hidden");
+    return;
+  }
+}, true); // 👈 TRUE = capture phase
+
+
+
 /* ===== DISABLE GIFT-BAR AUTO SEND (FIX BUG) ===== */
 document.querySelectorAll(".gift-bar [data-gift]").forEach(btn=>{
   btn.onclick = (e)=>{
