@@ -214,17 +214,21 @@ socket.on("viewer-mic-result", async ({ ok }) => {
     return;
   }
 
-  stream.getTracks().forEach(track => {
-    pc.addTrack(track, stream);
-  });
+  const audioTrack = stream.getAudioTracks()[0];
 
-  // 🔥🔥🔥 QUAN TRỌNG NHẤT
-  socket.emit("request-ice-restart", {
-    to: [...pcs.keys()][0],
-    reason: "viewer_add_audio"
-  });
+const sender = pc.getSenders().find(s => s.track?.kind === "audio");
+if (sender) {
+  await sender.replaceTrack(audioTrack);
+} else {
+  pc.addTrack(audioTrack, stream);
+}
 
-  badge.textContent = "🎤 Đang nói chuyện";
+// yêu cầu host tạo offer mới
+socket.emit("request-ice-restart", {
+  to: [...pcs.keys()][0],
+  reason: "viewer_add_audio"
+});
+
 });
 
 

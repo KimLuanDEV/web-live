@@ -861,8 +861,11 @@ socket.emit("join-room", {
 
 pc.ontrack = (event) => {
   const stream = event.streams[0];
+  const track = event.track;
 
-  if (event.track.kind === "audio") {
+  // ===== AUDIO TỪ VIEWER =====
+  if (track.kind === "audio") {
+    // 1️⃣ Host nghe được viewer
     let audio = document.getElementById("viewerAudio");
     if (!audio) {
       audio = document.createElement("audio");
@@ -872,24 +875,23 @@ pc.ontrack = (event) => {
       document.body.appendChild(audio);
     }
     audio.srcObject = stream;
-    return;
 
- const track = event.track;
-
-  if (track.kind === "audio") {
-    // 🔁 relay audio viewer cho toàn bộ viewer khác
+    // 2️⃣ Relay audio cho toàn bộ viewer khác
     for (const [vid, viewerPc] of pcs.entries()) {
       try {
-        viewerPc.addTrack(track, event.streams[0]);
-      } catch {}
+        const sender = viewerPc.getSenders().find(s => s.track?.kind === "audio");
+        if (!sender) {
+          viewerPc.addTrack(track, stream);
+        }
+      } catch (e) {
+        console.warn("relay audio fail", e);
+      }
     }
+    return;
   }
 
-  }
-
-  // video viewer (nếu có)
+  // ===== VIDEO (nếu sau này viewer có video) =====
 };
-
 
 
 
