@@ -860,12 +860,13 @@ socket.emit("join-room", {
 
 
 pc.ontrack = (event) => {
-  const stream = event.streams[0];
   const track = event.track;
+  const stream = event.streams[0];
 
   // ===== AUDIO TỪ VIEWER =====
   if (track.kind === "audio") {
-    // 1️⃣ Host nghe được viewer
+
+    // 1️⃣ HOST NGHE ĐƯỢC
     let audio = document.getElementById("viewerAudio");
     if (!audio) {
       audio = document.createElement("audio");
@@ -876,22 +877,29 @@ pc.ontrack = (event) => {
     }
     audio.srcObject = stream;
 
-    // 2️⃣ Relay audio cho toàn bộ viewer khác
-    for (const [vid, viewerPc] of pcs.entries()) {
+    // 2️⃣ RELAY AUDIO CHO VIEWER KHÁC
+    for (const [viewerId, viewerPc] of pcs.entries()) {
+      // ❌ không relay lại cho chính viewer gửi mic
+      if (viewerPc === pc) continue;
+
       try {
-        const sender = viewerPc.getSenders().find(s => s.track?.kind === "audio");
-        if (!sender) {
+        const hasAudioSender =
+          viewerPc.getSenders().some(s => s.track?.kind === "audio");
+
+        if (!hasAudioSender) {
           viewerPc.addTrack(track, stream);
         }
       } catch (e) {
-        console.warn("relay audio fail", e);
+        console.warn("Relay audio failed:", e);
       }
     }
+
     return;
   }
 
-  // ===== VIDEO (nếu sau này viewer có video) =====
+  // (video xử lý riêng nếu có)
 };
+
 
 
 // 🔥 BẮT BUỘC: cho phép host NHẬN AUDIO từ viewer
