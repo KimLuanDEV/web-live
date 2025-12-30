@@ -74,30 +74,6 @@
                   <div class="reactions-layer" id="reactionsLayerGuestMain"></div>
 <div class="video-card__inner">
                 <video id="hostVideo" autoplay playsinline></video>
-      <!-- Gift Drawer (icon in video) -->
-      <div class="gift-overlay">
-        <button type="button" class="gift-fab" id="giftFab" aria-label="Quà tặng">🎁</button>
-        <div class="gift-drawer-backdrop" id="giftDrawerBackdrop" aria-hidden="true"></div>
-        <div class="gift-drawer" id="giftDrawer" aria-hidden="true">
-          <div class="gift-drawer__head">
-            <div class="gift-drawer__title">🎁 Quà tặng</div>
-            <div class="gift-drawer__coins">Coin: <b id="drawerCoins">0</b></div>
-            <button type="button" class="gift-drawer__close" id="giftDrawerClose" aria-label="Đóng">✕</button>
-          </div>
-
-          <div class="gift-drawer__combo" id="giftDrawerCombo">
-            <span class="gift-drawer__comboLabel">Combo</span>
-            <button type="button" class="gift-combo__btn is-active" data-combo="1">x1</button>
-            <button type="button" class="gift-combo__btn" data-combo="5">x5</button>
-            <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
-          </div>
-
-          <div class="gift-drawer__grid" id="giftDrawerGrid"></div>
-          <div class="gift-drawer__hint">Tip: chọn combo rồi bấm quà • quà VIP sẽ có hiệu ứng lớn</div>
-        </div>
-      </div>
-      <!-- /Gift Drawer -->
-
               </div>
             </div>
 
@@ -162,7 +138,40 @@
   <button data-gift="flower">🌸</button>
   <button data-gift="rocket">🚀</button>
   <button data-gift="coin">💰</button>
+  <button data-gift="dragon">🐉</button>
+  <button data-gift="phoenix">🦅</button>
+  <button data-gift="galaxy">🌌</button>
+  <button data-gift="meteor">☄️</button>
+  <button data-gift="king">👑</button>
+  <button data-gift="dragonking">🐲</button>
+  <button data-gift="supernova">🌠</button>
 </div>
+
+</div>
+
+<div class="gift-wallet">
+  <div class="gift-wallet__row">
+    <span class="gift-wallet__label">Ví coin:</span>
+    <b id="walletCoins">0</b>
+    <span class="gift-wallet__unit">coin</span>
+  </div>
+  <div class="gift-wallet__row gift-wallet__row--small">
+    <span class="gift-wallet__hint">Mỗi quà trừ coin • dùng để test Gift Engine</span>
+  </div>
+  <div class="gift-combo" id="giftCombo">
+    <span class="gift-combo__label">Combo:</span>
+    <button type="button" class="gift-combo__btn is-active" data-combo="1">x1</button>
+    <button type="button" class="gift-combo__btn" data-combo="5">x5</button>
+    <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
+  </div>
+
+  <div class="gift-board">
+    <div class="gift-board__head">🏆 Top donate</div>
+    <div class="gift-board__meta">Tổng: <b id="giftTotalCoins">0</b> coin</div>
+    <div id="giftTopList" class="gift-board__list"></div>
+  </div>
+</div>
+
 
 
     <div id="chatBox" class="chatbox"></div>
@@ -222,6 +231,89 @@
     const socket = io();
     
 
+
+// ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
+const vipTicker = document.getElementById("vipTicker");
+let __vipQueue = [];
+let __vipBusy = false;
+
+function showVipTicker(text, ms){
+  try{
+    if (!vipTicker) return;
+    const item = document.createElement("div");
+    item.className = "vip-ticker__item";
+    item.textContent = text;
+    vipTicker.appendChild(item);
+    // auto remove after animation
+    setTimeout(()=>{ try{ item.classList.add("hide"); }catch{} }, Math.max(0, ms-350));
+    setTimeout(()=>{ try{ item.remove(); }catch{} }, ms+200);
+  }catch{}
+}
+
+function enqueueVip(text, ms=3000){
+  __vipQueue.push({ text, ms });
+  if (!__vipBusy) runVipQueue();
+}
+
+function runVipQueue(){
+  if (__vipBusy) return;
+  const next = __vipQueue.shift();
+  if (!next) return;
+  __vipBusy = true;
+  showVipTicker(next.text, next.ms);
+  setTimeout(()=>{
+    __vipBusy = false;
+    runVipQueue();
+  }, next.ms + 120);
+}
+
+function freezeChat(ms=1000){
+  try{
+    document.body.classList.add("chat-frozen");
+    setTimeout(()=>{ try{document.body.classList.remove("chat-frozen");}catch{} }, ms);
+  }catch{}
+}
+
+function startVipSpotlight(ms=1200){
+  try{
+    // add overlay class
+    document.body.classList.add("vip-spotlight");
+    // zoom main card if exists
+    const card = document.getElementById("hostCard") || document.getElementById("hostCardGuest");
+    if (card) card.classList.add("vip-zoom");
+    // remove
+    setTimeout(()=>{
+      try{
+        document.body.classList.remove("vip-spotlight");
+        if (card) card.classList.remove("vip-zoom");
+      }catch{}
+    }, ms);
+  }catch{}
+}
+
+function spawnFireworksBurst(){
+  try{
+    const layer = document.createElement("div");
+    layer.className = "vip-fireworks";
+    document.body.appendChild(layer);
+
+    const n = 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "vip-fireworks__p";
+      p.style.left = (50 + (Math.random()*18-9))+"%";
+      p.style.top  = (22 + (Math.random()*18-9))+"%";
+      p.style.setProperty("--dx", (Math.random()*360-180)+"px");
+      p.style.setProperty("--dy", (Math.random()*340-220)+"px");
+      p.style.setProperty("--rot",(Math.random()*160-80)+"deg");
+      p.style.setProperty("--sc",(Math.random()*0.9+0.7));
+      layer.appendChild(p);
+    }
+
+    setTimeout(()=>{ try{layer.remove();}catch{} }, 1600);
+  }catch{}
+}
+// ===== /VIP TICKER =====
 // ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
 function attachSpeakingIndicator(videoEl, targetEl){
   try{
@@ -667,7 +759,7 @@ socket.on("reaction", (msg)=>{
         document.body.classList.add("has-guest");
         if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "false");
 
-        socket.emit("join-room", { roomId, role: "guest" });
+        socket.emit("join-room", { roomId, role: "guest", profile: { name: (chatName.value||"Guest").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
         setStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
 
@@ -937,18 +1029,30 @@ socket.on("guest-set-cam", ({ off }) => {
   
     const giftLayer = document.getElementById("giftLayer");
 
+// ===== GIFT ENGINE (client) =====
+const GIFT_CLIENT_CATALOG = {
+  heart:  { emoji:"❤️", cost:1,  title:"Tim" },
+  flower: { emoji:"🌸", cost:5,  title:"Hoa" },
+  rocket: { emoji:"🚀", cost:20, title:"Rocket" },
+  coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
+  dragon: { emoji:"🐉", cost:120, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:200, title:"Phượng hoàng" },
+  galaxy: { emoji:"🌌", cost:300, title:"Dải ngân hà" },
+  meteor: { emoji:"☄️", cost:500, title:"Sao băng" },
+  king:   { emoji:"👑", cost:800, title:"Vương miện" },
+  dragonking: { emoji:"🐲", cost:1500, title:"Dragon King" },
+  supernova:  { emoji:"🌠", cost:2200, title:"Supernova" },
+};
+
 document.querySelectorAll(".gift-bar button").forEach(btn=>{
   btn.onclick = ()=>{
     const type = btn.dataset.gift;
-    socket.emit("send-gift", {
-      roomId,
-      gift: { type, value: 1 }
-    });
+    const name = (chatName.value || "Guest").trim().slice(0,20);
+    socket.emit("send-gift", { roomId, name, gift: { type, qty: 1 } });
   };
 });
-
-
-function spawnGift(type){
+// ===== /GIFT ENGINE (client) =====
+function spawnGift(type, donor, giftMeta){
   const el = document.createElement("div");
   el.className = "gift-item";
 
@@ -965,11 +1069,40 @@ function spawnGift(type){
   setTimeout(()=>el.remove(), 2000);
 }
 
-socket.on("gift", ({ gift })=>{
-  spawnGift(gift.type);
+socket.on("gift", ({ gift, donor })=>{
+  spawnGift(gift.type, donor, gift);
+  try{
+    const note = document.createElement("div");
+    note.className = "gift-toast";
+    const em = gift.emoji || (GIFT_CLIENT_CATALOG[gift.type]?.emoji) || "🎁";
+    note.textContent = `${em} ${donor || "Ai đó"} tặng +${gift.coins || 0} coin`;
+    document.body.appendChild(note);
+    setTimeout(()=>note.classList.add("hide"), 1600);
+    setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
+  }catch{}
 });
 
+const walletCoinsEl = document.getElementById("walletCoins");
+socket.on("wallet-sync", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); try{ localStorage.setItem("ls_coins", String(coins ?? 0)); }catch{} });
+socket.on("wallet-update", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); try{ localStorage.setItem("ls_coins", String(coins ?? 0)); }catch{} });
 
+socket.on("gift-failed", ({ reason, need, coins })=>{
+  if (reason === "no_coins"){
+    alert(`Không đủ coin! Cần ${need} coin, bạn còn ${coins} coin.`);
+  }
+});
+
+const giftTotalCoinsEl = document.getElementById("giftTotalCoins");
+const giftTopList = document.getElementById("giftTopList");
+socket.on("gift-stats", ({ totalCoins, topDonors })=>{
+  if (giftTotalCoinsEl) giftTotalCoinsEl.textContent = String(totalCoins ?? 0);
+  if (giftTopList){
+    const arr = Array.isArray(topDonors) ? topDonors : [];
+    giftTopList.innerHTML = arr.length
+      ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
+      : `<div class="gift-board__empty">Chưa có donate</div>`;
+  }
+});
 socket.on("host-profile-update", (profile) => {
   document.querySelectorAll(".host-name")
     .forEach(el => el.textContent = profile.name);
@@ -1066,5 +1199,9 @@ socket.on("room-closed", ({ reason }) => {
 
 
   </script>
+
+<!-- VIP TICKER (donation banner) -->
+<div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
+
 </body>
 </html>
