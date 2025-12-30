@@ -35,8 +35,9 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<button id="btnRequestMic" style="margin-top:10px">🎙 Xin mở mic</button>
-
+<small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
+  Bấm để mở trang Khách và gửi yêu cầu lên Host.
+</small>
 
           <hr />
           <div class="log" id="log" style="display: none;"></div>
@@ -499,16 +500,6 @@ socket.emit("join-room", { roomId, role: "viewer" });
      pc.ontrack = (event) => {
   const stream = event.streams[0];
 
-  if (event.track.kind === "audio") {
-  // 🔥 Forward audio viewer cho tất cả viewer khác
-  pcs.forEach(vpc => {
-    try {
-      vpc.addTrack(event.track, event.streams[0]);
-    } catch {}
-  });
-}
-
-
   if (guestId && from === guestId) {
     // ===== GUEST VIDEO =====
     guestPlayer.srcObject = stream;
@@ -900,39 +891,6 @@ socket.on("room-closed", ({ reason }) => {
   document.addEventListener("wheel", e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
-
-const btnRequestMic = document.getElementById("btnRequestMic");
-
-btnRequestMic.onclick = () => {
-  socket.emit("viewer-request-mic", { roomId });
-  btnRequestMic.disabled = true;
-  btnRequestMic.textContent = "⏳ Đang chờ host duyệt...";
-};
-
-
-let viewerMicStream = null;
-
-socket.on("viewer-mic-approved", async () => {
-  viewerMicStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false
-  });
-
-  viewerMicStream.getTracks().forEach(track => {
-    // gửi audio cho HOST
-    pcs.forEach(pc => {
-      pc.addTrack(track, viewerMicStream);
-    });
-  });
-
-  btnRequestMic.textContent = "🎙 Mic đang bật";
-});
-
-socket.on("viewer-mic-rejected", () => {
-  btnRequestMic.disabled = false;
-  btnRequestMic.textContent = "🎙 Xin mở mic";
-  alert("❌ Host từ chối mở mic");
-});
 
 
   </script>

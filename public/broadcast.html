@@ -917,20 +917,6 @@ socket.emit("join-room", {
       log("Có guest xin lên live: " + guestId);
     });
 
-socket.on("viewer-request-mic", ({ viewerId }) => {
-  if (!confirm("🎙 Viewer xin mở mic, cho phép?")) {
-    socket.emit("host-reject-viewer-mic", { viewerId });
-    return;
-  }
-
-  socket.emit("host-approve-viewer-mic", {
-    roomId,
-    viewerId
-  });
-});
-
-
-
     socket.on("guest-offline", () => {
       log("Guest offline");
       approvedGuestId = null;

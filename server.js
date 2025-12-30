@@ -41,7 +41,6 @@ function getRoom(roomId) {
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
-  viewerMics: new Map(), // viewerId -> true
 
   releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
@@ -537,30 +536,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
       rooms.delete(roomId);
     }
   });
-
-
-// ===== VIEWER REQUEST MIC =====
-socket.on("viewer-request-mic", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room || !room.broadcasterId) return;
-
-  io.to(room.broadcasterId).emit("viewer-request-mic", {
-    viewerId: socket.id
-  });
-});
-
-socket.on("host-approve-viewer-mic", ({ roomId, viewerId }) => {
-  const room = rooms.get(roomId);
-  if (!room || room.broadcasterId !== socket.id) return;
-
-  room.viewerMics.set(viewerId, true);
-  io.to(viewerId).emit("viewer-mic-approved");
-});
-
-socket.on("host-reject-viewer-mic", ({ viewerId }) => {
-  io.to(viewerId).emit("viewer-mic-rejected");
-});
-
 });
 
 
