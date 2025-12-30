@@ -345,25 +345,6 @@
   <script>
 
 
-const viewerMicReq = document.getElementById("viewerMicReq");
-
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  viewerMicReq.innerHTML = `
-    Viewer ${viewerId.slice(0,6)}...
-    <br/>
-    <button onclick="approveMic('${viewerId}',true)">✅ Duyệt</button>
-    <button onclick="approveMic('${viewerId}',false)">❌ Từ chối</button>
-  `;
-});
-
-function approveMic(viewerId, ok){
-  socket.emit("host-approve-viewer-mic", {
-    roomId,
-    viewerId,
-    ok
-  });
-  viewerMicReq.textContent = ok ? "🎤 Đã duyệt mic" : "❌ Đã từ chối";
-}
 
 
 
@@ -1582,6 +1563,26 @@ socket.on("live-ended-stats", (stats) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
+
+const viewerMicReq = document.getElementById("viewerMicReq");
+
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  viewerMicReq.innerHTML = `
+    Viewer ${viewerId.slice(0,6)}...
+    <br/>
+    <button onclick="approveMic('${viewerId}',true)">✅ Duyệt</button>
+    <button onclick="approveMic('${viewerId}',false)">❌ Từ chối</button>
+  `;
+});
+
+function approveMic(viewerId, ok){
+  socket.emit("host-approve-viewer-mic", {
+    roomId,
+    viewerId,
+    ok
+  });
+  viewerMicReq.textContent = ok ? "🎤 Đã duyệt mic" : "❌ Đã từ chối";
+}
 
 
   </script>
