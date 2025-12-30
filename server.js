@@ -562,6 +562,28 @@ socket.on("host-mute-viewer-mic", ({ roomId, viewerId }) => {
 });
 
 
+// viewer -> host
+socket.on("viewer-mic-offer", ({ roomId, sdp }) => {
+  const room = rooms.get(roomId);
+  if (!room?.broadcasterId) return;
+
+  io.to(room.broadcasterId).emit("viewer-mic-offer", {
+    viewerId: socket.id,
+    sdp
+  });
+});
+
+// host -> viewer
+socket.on("host-mic-answer", ({ viewerId, sdp }) => {
+  io.to(viewerId).emit("host-mic-answer", { sdp });
+});
+
+// ICE
+socket.on("viewer-mic-ice", ({ to, candidate }) => {
+  io.to(to).emit("viewer-mic-ice", { candidate });
+});
+
+
 });
 
 

@@ -1561,6 +1561,40 @@ micStream.getTracks().forEach(t => t.stop());
 
 socket.emit("host-mute-viewer-mic", { roomId, viewerId });
 
+
+const micViewers = new Map(); // viewerId -> PC
+
+socket.on("viewer-mic-offer", async ({ viewerId, sdp }) => {
+  const pc = new RTCPeerConnection(iceConfig);
+  micViewers.set(viewerId, pc);
+
+  pc.ontrack = (e) => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    audio.controls = false;
+    document.body.appendChild(audio);
+  };
+
+  pc.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("viewer-mic-ice", {
+        to: viewerId,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+
+  socket.emit("host-mic-answer", {
+    viewerId,
+    sdp: answer
+  });
+});
+
   </script>
 
 

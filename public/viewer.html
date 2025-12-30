@@ -919,6 +919,43 @@ socket.on("viewer-mic-approved", async () => {
 });
 
 
+let micPC;
+
+async function startMicOnly() {
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false
+  });
+
+  micPC = new RTCPeerConnection(iceConfig);
+
+  stream.getTracks().forEach(t => micPC.addTrack(t, stream));
+
+  micPC.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("viewer-mic-ice", {
+        to: roomId,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  const offer = await micPC.createOffer();
+  await micPC.setLocalDescription(offer);
+
+  socket.emit("viewer-mic-offer", {
+    roomId,
+    sdp: offer
+  });
+}
+
+socket.on("viewer-mic-approved", startMicOnly);
+
+socket.on("host-mic-answer", async ({ sdp }) => {
+  await micPC.setRemoteDescription(new RTCSessionDescription(sdp));
+});
+
+
   </script>
 </body>
 </html>
