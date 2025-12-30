@@ -224,6 +224,54 @@
 </div>
 
 
+<!-- 🎁 GIFT CONFIRM MODAL (NEON) -->
+<div id="giftConfirmModal" class="gcm hidden" aria-hidden="true">
+  <div class="gcm__bg"></div>
+
+  <div class="gcm__box" role="dialog" aria-modal="true">
+    <div class="gcm__frame"></div>
+    <div class="gcm__scan"></div>
+
+    <div class="gcm__top">
+      <div class="gcm__pill">
+        <span class="gcm__dot"></span>
+        <span>XÁC NHẬN TẶNG QUÀ</span>
+      </div>
+      <button class="gcm__x" id="gcmClose">✕</button>
+    </div>
+
+    <div class="gcm__content">
+      <div class="gcm__gift">
+        <div class="gcm__emoji" id="gcmEmoji">🎁</div>
+        <div class="gcm__info">
+          <div class="gcm__title" id="gcmTitle">Tên quà</div>
+          <div class="gcm__sub">
+            <span>Giá:</span> <b id="gcmCost">0</b> coin
+            <span class="sep">•</span>
+            <span>Combo:</span> <b id="gcmQty">x1</b>
+          </div>
+        </div>
+      </div>
+
+      <div class="gcm__summary">
+        <div>💰 Tổng trừ:</div>
+        <b class="gcm__total" id="gcmTotal">0 coin</b>
+      </div>
+
+      <div class="gcm__wallet">
+        Ví hiện tại: <b id="gcmWallet">0</b> coin
+      </div>
+    </div>
+
+    <div class="gcm__actions">
+      <button id="gcmCancel" class="gcm__btn ghost">Hủy</button>
+      <button id="gcmOk" class="gcm__btn main">🎁 GỬI QUÀ</button>
+    </div>
+  </div>
+</div>
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -976,6 +1024,88 @@ const GIFT_CLIENT_CATALOG = {
   dragonking: { emoji:"🐲", cost:5, title:"Dragon King" },
   supernova:  { emoji:"🌠", cost:5, title:"Supernova" },
 };
+
+
+
+// ===== GIFT CONFIRM LOGIC =====
+const gcm = document.getElementById("giftConfirmModal");
+const gcmEmoji = document.getElementById("gcmEmoji");
+const gcmTitle = document.getElementById("gcmTitle");
+const gcmCost = document.getElementById("gcmCost");
+const gcmQty = document.getElementById("gcmQty");
+const gcmTotal = document.getElementById("gcmTotal");
+const gcmWallet = document.getElementById("gcmWallet");
+const gcmOk = document.getElementById("gcmOk");
+const gcmCancel = document.getElementById("gcmCancel");
+const gcmClose = document.getElementById("gcmClose");
+
+let __pendingGift = null;
+
+function openGiftConfirm(data){
+  __pendingGift = data;
+  gcmEmoji.textContent = data.emoji;
+  gcmTitle.textContent = data.title;
+  gcmCost.textContent = data.cost;
+  gcmQty.textContent = "x" + data.qty;
+  gcmTotal.textContent = (data.cost * data.qty) + " coin";
+  gcmWallet.textContent = walletCoins.textContent || "0";
+
+  gcm.classList.remove("hidden");
+  gcm.setAttribute("aria-hidden","false");
+}
+
+function closeGiftConfirm(){
+  gcm.classList.add("hidden");
+  gcm.setAttribute("aria-hidden","true");
+  __pendingGift = null;
+}
+
+gcmCancel?.addEventListener("click", closeGiftConfirm);
+gcmClose?.addEventListener("click", closeGiftConfirm);
+gcm?.querySelector(".gcm__bg")?.addEventListener("click", closeGiftConfirm);
+
+// CONFIRM SEND
+gcmOk?.addEventListener("click", ()=>{
+  if (!__pendingGift) return;
+  socket.emit("send-gift", {
+    roomId,
+    name: (chatName?.value || "Viewer").slice(0,20),
+    gift: {
+      type: __pendingGift.type,
+      qty: __pendingGift.qty
+    }
+  });
+  closeGiftConfirm();
+});
+
+// OVERRIDE click quà
+document.querySelectorAll(".gift-panel__grid button").forEach(btn=>{
+  btn.onclick = ()=>{
+    const type = btn.dataset.gift;
+    const catalog = {
+      heart:{emoji:"❤️",cost:1,title:"Tim"},
+      flower:{emoji:"🌸",cost:5,title:"Hoa"},
+      rocket:{emoji:"🚀",cost:20,title:"Rocket"},
+      coin:{emoji:"💰",cost:50,title:"Túi tiền"},
+      dragon:{emoji:"🐉",cost:120,title:"Rồng"},
+      phoenix:{emoji:"🦅",cost:200,title:"Phượng hoàng"},
+      galaxy:{emoji:"🌌",cost:300,title:"Dải ngân hà"},
+      meteor:{emoji:"☄️",cost:500,title:"Sao băng"},
+      king:{emoji:"👑",cost:800,title:"Vương miện"},
+      dragonking:{emoji:"🐲",cost:1500,title:"Dragon King"},
+      supernova:{emoji:"🌠",cost:2200,title:"Supernova"},
+    }[type];
+    if (!catalog) return;
+
+    openGiftConfirm({
+      type,
+      ...catalog,
+      qty: __giftCombo || 1
+    });
+  };
+});
+
+
 
 // ✅ Combo multiplier (x1/x5/x10)
 let __giftCombo = 1;

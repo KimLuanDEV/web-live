@@ -2616,3 +2616,86 @@ body.vip-spotlight .vip-zoom{
   max-height: 120px;
   overflow: auto;
 }
+
+
+/* ===== GIFT CONFIRM MODAL ===== */
+.gcm{position:fixed;inset:0;z-index:9999}
+.gcm.hidden{display:none}
+.gcm__bg{
+  position:absolute;inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
+}
+.gcm__box{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  width:min(92vw,420px);
+  background:rgba(8,12,24,.9);
+  border-radius:20px;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 0 40px rgba(95,168,255,.35);
+  padding:14px;
+}
+.gcm__frame{
+  position:absolute;inset:-2px;
+  border-radius:22px;
+  background:conic-gradient(
+    rgba(95,168,255,.6),
+    rgba(37,240,154,.5),
+    rgba(255,59,107,.5),
+    rgba(255,211,110,.5),
+    rgba(95,168,255,.6)
+  );
+  filter:blur(14px);
+  opacity:.35;
+  z-index:-1;
+}
+.gcm__scan{
+  position:absolute;inset:0;
+  background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.08),transparent 60%);
+  animation:scan 2.8s linear infinite;
+}
+@keyframes scan{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+
+.gcm__top{display:flex;justify-content:space-between;align-items:center}
+.gcm__pill{
+  display:flex;align-items:center;gap:8px;
+  padding:6px 12px;border-radius:999px;
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.18);
+}
+.gcm__dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#25F09A;box-shadow:0 0 12px #25F09A;
+}
+.gcm__x{background:none;border:none;color:#fff;font-size:18px;cursor:pointer}
+
+.gcm__content{margin-top:12px;display:grid;gap:12px}
+.gcm__gift{display:flex;gap:12px;align-items:center}
+.gcm__emoji{font-size:40px}
+.gcm__title{font-weight:800;font-size:16px}
+.gcm__sub{font-size:13px;opacity:.9}
+.sep{opacity:.5;margin:0 6px}
+
+.gcm__summary{
+  display:flex;justify-content:space-between;
+  padding:10px 12px;border-radius:14px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.14);
+}
+.gcm__total{color:#FFD36E;font-size:16px}
+
+.gcm__wallet{text-align:right;font-size:13px;opacity:.85}
+
+.gcm__actions{display:flex;gap:10px;margin-top:6px}
+.gcm__btn{
+  flex:1;padding:12px;border-radius:14px;
+  border:1px solid rgba(255,255,255,.2);
+  cursor:pointer;font-weight:700;
+}
+.gcm__btn.ghost{background:rgba(0,0,0,.35)}
+.gcm__btn.main{
+  background:linear-gradient(135deg,#5FA8FF,#25F09A);
+  color:#000;
+}
+/* ===== /GIFT CONFIRM MODAL ===== */
