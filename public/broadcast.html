@@ -494,6 +494,24 @@ if(nameFromLobby){
 
     const socket = io();
     
+// ===== GIFT EFFECT (HOST) =====
+const giftLayer = document.getElementById("giftLayer");
+
+socket.on("gift", ({ gift, donor })=>{
+  if (!gift || !gift.type) return;
+
+  spawnGift(gift.type, donor, gift);
+
+  try{
+    const note = document.createElement("div");
+    note.className = "gift-toast";
+    const em = gift.emoji || "🎁";
+    note.textContent = `${em} ${donor || "Ai đó"} tặng +${gift.coins || 0} coin`;
+    document.body.appendChild(note);
+    setTimeout(()=>note.classList.add("hide"), 1600);
+    setTimeout(()=>note.remove(), 2300);
+  }catch{}
+});
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -1592,7 +1610,7 @@ socket.on("viewer-count", ({ count }) => {
 });
 
 
-const giftLayer = document.getElementById("giftLayer");
+
 const giftTotalCoinsHost = document.getElementById("giftTotalCoinsHost");
 const giftTopListHost = document.getElementById("giftTopListHost");
 socket.on("gift-stats", ({ totalCoins, topDonors })=>{

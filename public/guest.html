@@ -257,6 +257,26 @@
     const socket = io();
     
 
+// ===== GIFT EFFECT (GUEST) =====
+const giftLayer = document.getElementById("giftLayer");
+
+socket.on("gift", ({ gift, donor })=>{
+  if (!gift || !gift.type) return;
+
+  spawnGift(gift.type, donor, gift);
+
+  // toast nhỏ
+  try{
+    const note = document.createElement("div");
+    note.className = "gift-toast";
+    const em = gift.emoji || "🎁";
+    note.textContent = `${em} ${donor || "Ai đó"} tặng +${gift.coins || 0} coin`;
+    document.body.appendChild(note);
+    setTimeout(()=>note.classList.add("hide"), 1600);
+    setTimeout(()=>note.remove(), 2300);
+  }catch{}
+});
+
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
 const vipTicker = document.getElementById("vipTicker");
@@ -1053,7 +1073,7 @@ socket.on("guest-set-cam", ({ off }) => {
     });
 
   
-    const giftLayer = document.getElementById("giftLayer");
+    
 
 // ===== GIFT ENGINE (client) =====
 const GIFT_CLIENT_CATALOG = {
