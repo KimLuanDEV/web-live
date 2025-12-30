@@ -894,6 +894,8 @@ pc.ontrack = (event) => {
 };
 
 
+// 🔥 BẮT BUỘC: cho phép host NHẬN AUDIO từ viewer
+pc.addTransceiver("audio", { direction: "recvonly" });
 
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
