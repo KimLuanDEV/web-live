@@ -266,6 +266,21 @@
     const socket = io();
     
 
+
+   
+/* ===== DISABLE GIFT-BAR AUTO SEND (FIX BUG) ===== */
+document.querySelectorAll(".gift-bar [data-gift]").forEach(btn=>{
+  btn.onclick = (e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    // ❌ không gửi quà ở đây
+    // chỉ mở panel cho người dùng chọn
+    const panel = document.getElementById("giftPanel");
+    if (panel) panel.classList.remove("hidden");
+  };
+});
+
+
 // ===== GIFT SELECT & PREVIEW =====
 const GIFT_CATALOG = {
   heart:{emoji:"❤️",cost:1},
