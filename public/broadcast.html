@@ -799,25 +799,7 @@ socket.on("reaction", (msg)=>{
     function log(msg) {
       logEl.textContent = `[${new Date().toLocaleTimeString()}
 
-function renderGuestPending(){
-  const box = guestReq;
-  if (!box) return;
-  const list = pendingGuestIds.slice(0,20);
-  if (!box.__sel){
-    const sel = document.createElement("select");
-    sel.style.width = "100%";
-    sel.style.marginTop = "8px";
-    sel.id = "pendingGuestSelect";
-    box.appendChild(sel);
-    box.__sel = sel;
-  }
-  const sel = box.__sel;
-  sel.innerHTML = list.map(id=>`<option value="${id}">${id}</option>`).join("") || `<option value="">(trống)</option>`;
-  btnApproveGuest.disabled = !list.length;
-  btnRejectGuest.disabled = !list.length;
-}
-
-] ${msg}\n` + logEl.textContent;
+ ${msg}\n` + logEl.textContent;
       console.log(msg);
     }
 
