@@ -35,6 +35,8 @@ const GIFT_CATALOG = {
   rocket: { emoji: "🚀", cost: 20, title: "Rocket" },
   coin:   { emoji: "💰", cost: 50, title: "Túi tiền" },
   dragon: { emoji: "🐉", cost: 120, title: "Rồng" },
+  phoenix:{ emoji: "🦅", cost: 200, title: "Phượng hoàng" },
+  galaxy: { emoji: "🌌", cost: 300, title: "Dải ngân hà" },
 };
 
 

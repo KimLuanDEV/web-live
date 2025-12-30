@@ -124,6 +124,8 @@
   <button data-gift="rocket">🚀</button>
   <button data-gift="coin">💰</button>
   <button data-gift="dragon">🐉</button>
+  <button data-gift="phoenix">🦅</button>
+  <button data-gift="galaxy">🌌</button>
 </div>
 
 <div class="gift-wallet">
@@ -848,6 +850,8 @@ const GIFT_CLIENT_CATALOG = {
   rocket: { emoji:"🚀", cost:20, title:"Rocket" },
   coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
   dragon: { emoji:"🐉", cost:120, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:200, title:"Phượng hoàng" },
+  galaxy: { emoji:"🌌", cost:300, title:"Dải ngân hà" },
 };
 
 document.querySelectorAll(".gift-bar button").forEach(btn=>{
@@ -867,6 +871,7 @@ function spawnBigGift(emoji, mode){
     <div class="gift-big__bg"></div>
     <div class="gift-big__emoji">${emoji}</div>
     <div class="gift-big__spark"></div>
+    <div class="gift-big__fx"></div>
   `;
   document.body.appendChild(big);
   setTimeout(()=>big.classList.add("hide"), 1400);
@@ -882,6 +887,8 @@ function spawnGift(type){
     type === "flower" ? "🌸" :
     type === "rocket" ? "🚀" :
     type === "dragon" ? "🐉" :
+    type === "phoenix"? "🦅" :
+    type === "galaxy" ? "🌌" :
     "💰";
 
   el.textContent = emoji;
@@ -893,6 +900,8 @@ function spawnGift(type){
 
   if (type === "rocket") spawnBigGift("🚀", "rocket");
   if (type === "dragon") spawnBigGift("🐉", "dragon");
+  if (type === "phoenix") spawnBigGift("🦅", "phoenix");
+  if (type === "galaxy") spawnBigGift("🌌", "galaxy");
 }
 socket.on("gift", ({ gift, donor })=>{
   // spawn animation

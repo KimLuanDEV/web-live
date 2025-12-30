@@ -2207,3 +2207,60 @@ video {
   100%{ transform: translateY(-20px) scale(1.08) rotate(0deg); opacity:1 }
 }
 /* ===== /GIFT COMBO + BIG ANIM ===== */
+
+
+/* ===== BIG FX: PHOENIX / GALAXY ===== */
+.gift-big__fx{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  opacity:0;
+}
+
+.gift-big--phoenix .gift-big__fx{
+  opacity:1;
+  background:
+    radial-gradient(420px 260px at 50% 60%, rgba(255,59,107,.22), transparent 60%),
+    radial-gradient(520px 320px at 50% 60%, rgba(255,211,110,.18), transparent 65%),
+    radial-gradient(700px 420px at 50% 70%, rgba(255,120,40,.14), transparent 70%);
+  animation: phoenixFlare 1.4s ease-out forwards;
+}
+@keyframes phoenixFlare{
+  0%{ transform: scale(.92); opacity:0; }
+  20%{ opacity:1; }
+  100%{ transform: scale(1.12); opacity:0; }
+}
+
+.gift-big--galaxy .gift-big__fx{
+  opacity:1;
+  background:
+    radial-gradient(500px 320px at 50% 55%, rgba(95,168,255,.22), transparent 62%),
+    radial-gradient(700px 420px at 50% 70%, rgba(37,240,154,.12), transparent 70%),
+    radial-gradient(900px 520px at 50% 60%, rgba(255,59,107,.10), transparent 72%);
+  animation: galaxyZoom 1.4s ease-out forwards;
+}
+@keyframes galaxyZoom{
+  0%{ transform: scale(.75); opacity:0; filter: blur(2px); }
+  18%{ opacity:1; }
+  100%{ transform: scale(1.25); opacity:0; filter: blur(0px); }
+}
+
+.gift-big--phoenix .gift-big__emoji{ animation: phoenixRise 1.4s ease-out forwards; }
+@keyframes phoenixRise{
+  0%{ transform: translateY(24px) scale(.82); opacity:0}
+  14%{ opacity:1 }
+  55%{ transform: translateY(-18px) scale(1.12) rotate(-2deg) }
+  100%{ transform: translateY(-28px) scale(1.10) rotate(0deg); opacity:1 }
+}
+
+.gift-big--galaxy .gift-big__emoji{ animation: galaxySpin 1.4s ease-out forwards; }
+@keyframes galaxySpin{
+  0%{ transform: translateY(18px) scale(.84) rotate(-8deg); opacity:0}
+  14%{ opacity:1 }
+  60%{ transform: translateY(-16px) scale(1.10) rotate(6deg) }
+  100%{ transform: translateY(-22px) scale(1.08) rotate(0deg); opacity:1 }
+}
+
+.gift-item--phoenix{ filter: drop-shadow(0 0 18px rgba(255,120,40,.25)) drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
+.gift-item--galaxy{ filter: drop-shadow(0 0 18px rgba(95,168,255,.25)) drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
+/* ===== /BIG FX: PHOENIX / GALAXY ===== */
