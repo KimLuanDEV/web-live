@@ -47,16 +47,6 @@
 
         <div class="live-stage" id="liveStage" style="margin-top:10px">
 
-<!-- 🎁 GIFT FLOATING -->
-<div id="giftFab" class="gift-fab">🎁</div>
-
-<div id="giftPanel" class="gift-panel hidden">
-  <div class="gift-header">
-    <span>🎁 Quà tặng</span>
-    <button id="giftClose">✕</button>
-  </div>
-  <div id="giftGrid" class="gift-grid"></div>
-</div>
 
 
 
@@ -156,9 +146,6 @@
     </div>
 
   <div class="gift-bar">
-<style>
-  .gift-bar{ display:none !important; }
-</style>
 
   <button data-gift="heart">❤️</button>
   <button data-gift="flower">🌸</button>
@@ -1030,48 +1017,7 @@ socket.on("room-closed", ({ reason }) => {
   }, { passive: false });
 
 
-// ===== 🎁 GIFT PANEL (VIEWER + GUEST) =====
-const giftFab   = document.getElementById("giftFab");
-const giftPanel = document.getElementById("giftPanel");
-const giftClose = document.getElementById("giftClose");
-const giftGrid  = document.getElementById("giftGrid");
 
-if (giftFab && giftPanel && giftGrid){
-  giftFab.onclick = ()=> giftPanel.classList.toggle("hidden");
-  giftClose.onclick = ()=> giftPanel.classList.add("hidden");
-
-  const GIFT_CATALOG = {
-    heart:{emoji:"❤️",cost:1},
-    flower:{emoji:"🌸",cost:5},
-    rocket:{emoji:"🚀",cost:20},
-    coin:{emoji:"💰",cost:50},
-    dragon:{emoji:"🐉",cost:120},
-    phoenix:{emoji:"🦅",cost:200},
-    galaxy:{emoji:"🌌",cost:300},
-    meteor:{emoji:"☄️",cost:500},
-    king:{emoji:"👑",cost:800},
-    dragonking:{emoji:"🐲",cost:1500},
-    supernova:{emoji:"🌠",cost:2200},
-  };
-
-  Object.entries(GIFT_CATALOG).forEach(([type,g])=>{
-    const el = document.createElement("div");
-    el.className = "gift-item";
-    el.innerHTML = `
-      <div class="gift-emoji">${g.emoji}</div>
-      <div class="gift-cost">${g.cost}</div>
-    `;
-    el.onclick = ()=>{
-      socket.emit("send-gift", {
-        roomId,
-        name: (chatName?.value || "User").trim().slice(0,20),
-        gift: { type, qty: 1 }
-      });
-      giftPanel.classList.add("hidden");
-    };
-    giftGrid.appendChild(el);
-  });
-}
 
 
   </script>
