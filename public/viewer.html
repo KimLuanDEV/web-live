@@ -205,13 +205,20 @@ socket.on("viewer-mic-result", async ({ ok }) => {
     video: false
   });
 
-  // 👉 Gửi audio stream tới host
+  // 🔥 TÌM peer đang kết nối tới HOST
+  const pc = [...pcs.values()][0];
+  if (!pc) {
+    alert("Chưa kết nối tới host");
+    return;
+  }
+
   stream.getTracks().forEach(track => {
-    peerConnection.addTrack(track, stream);
+    pc.addTrack(track, stream);
   });
 
   badge.textContent = "🎤 Đang nói chuyện";
 });
+
 
     // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
 let __wasAutoMini = false;

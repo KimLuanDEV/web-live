@@ -365,11 +365,6 @@ function approveMic(viewerId, ok){
   viewerMicReq.textContent = ok ? "🎤 Đã duyệt mic" : "❌ Đã từ chối";
 }
 
-pc.ontrack = (e) => {
-  const audio = document.createElement("audio");
-  audio.srcObject = e.streams[0];
-  audio.autoplay = true;
-};
 
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
@@ -881,6 +876,19 @@ socket.emit("join-room", {
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
+
+
+pc.ontrack = (e) => {
+  // 🎤 AUDIO từ VIEWER
+  if (e.track.kind === "audio") {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    audio.muted = false;
+    document.body.appendChild(audio);
+  }
+};
+
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
