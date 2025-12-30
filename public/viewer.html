@@ -192,6 +192,10 @@ btnRequestMic.onclick = () => {
   btnRequestMic.textContent = "⏳ Đang chờ duyệt...";
 };
 
+
+let micRecorder = null;
+
+
 socket.on("viewer-mic-result", async ({ ok }) => {
   if (!ok) {
     alert("Host từ chối bật mic");
@@ -203,34 +207,49 @@ socket.on("viewer-mic-result", async ({ ok }) => {
   btnRequestMic.textContent = "🎙️ Mic đã bật";
   btnRequestMic.disabled = true;
 
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  micRecorder = new MediaRecorder(stream, {
+    mimeType: "audio/webm"
   });
 
-  const pc = [...pcs.values()][0];
-  if (!pc) {
-    alert("Chưa kết nối tới host");
+  micRecorder.ondataavailable = (e) => {
+    if (e.data && e.data.size > 0) {
+      socket.emit("voice-data", {
+        roomId,
+        blob: e.data
+      });
+    }
+  };
+
+  micRecorder.start(200); // gửi mỗi 200ms
+});
+
+
+
+
+const voiceQueue = [];
+let playing = false;
+
+socket.on("voice-data", ({ blob }) => {
+  voiceQueue.push(blob);
+  if (!playing) playNextVoice();
+});
+
+function playNextVoice() {
+  if (voiceQueue.length === 0) {
+    playing = false;
     return;
   }
 
-  const audioTrack = stream.getAudioTracks()[0];
-
-const sender = pc.getSenders().find(s => s.track?.kind === "audio");
-if (sender) {
-  await sender.replaceTrack(audioTrack);
-} else {
-  pc.addTrack(audioTrack, stream);
+  playing = true;
+  const blob = voiceQueue.shift();
+  const audio = new Audio(URL.createObjectURL(blob));
+  audio.onended = playNextVoice;
+  audio.play().catch(() => {
+    playing = false;
+  });
 }
-
-// yêu cầu host tạo offer mới
-socket.emit("request-ice-restart", {
-  to: [...pcs.keys()][0],
-  reason: "viewer_add_audio"
-});
-
-});
-
 
 
     // ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====

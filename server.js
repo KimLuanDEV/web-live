@@ -128,7 +128,17 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+  
 
+socket.on("voice-data", ({ roomId, blob }) => {
+  if (!roomId || !blob) return;
+
+  // phát cho TẤT CẢ viewer khác (kể cả host nếu muốn)
+  socket.to(roomId).emit("voice-data", {
+    from: socket.id,
+    blob
+  });
+});
 
 
   socket.on("viewer-request-mic", ({ roomId }) => {
@@ -502,7 +512,7 @@ socket.on("send-gift", ({ roomId, gift }) => {
 for (const room of rooms.values()) {
     room.viewerMics?.delete(socket.id);
   }
-  
+
   for (const [roomId, room] of rooms.entries()) {
     if (room.broadcasterId === socket.id) {
       closeRoom(roomId, "host_disconnect");
