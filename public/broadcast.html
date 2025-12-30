@@ -337,6 +337,10 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
+
+
+
+
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -484,6 +488,38 @@ if(nameFromLobby){
     };
 
     const socket = io();
+
+
+let pendingViewerMic = null;
+
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  pendingViewerMic = viewerId;
+  document.getElementById("guestReq").textContent =
+    "🎤 Viewer xin bật mic";
+  
+  btnApproveGuest.disabled = false;
+  btnRejectGuest.disabled = false;
+});
+
+btnApproveGuest.onclick = () => {
+  socket.emit("host-approve-mic", {
+    viewerId: pendingViewerMic,
+    allow: true,
+  });
+  document.getElementById("guestReq").textContent = "✅ Đã duyệt mic";
+};
+
+btnRejectGuest.onclick = () => {
+  socket.emit("host-approve-mic", {
+    viewerId: pendingViewerMic,
+    allow: false,
+  });
+  document.getElementById("guestReq").textContent = "❌ Đã từ chối mic";
+};
+
+
+
+
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){

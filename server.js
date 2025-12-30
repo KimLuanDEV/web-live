@@ -128,6 +128,28 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
+
+
+// ===== VIEWER REQUEST MIC =====
+socket.on("viewer-request-mic", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room || !room.broadcasterId) return;
+
+  // gửi yêu cầu cho host
+  io.to(room.broadcasterId).emit("viewer-mic-request", {
+    viewerId: socket.id,
+    ts: Date.now(),
+  });
+});
+
+// Host duyệt / từ chối
+socket.on("host-approve-mic", ({ viewerId, allow }) => {
+  if (!viewerId) return;
+  io.to(viewerId).emit("viewer-mic-approved", { allow });
+});
+
+
+
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);
   if (!rid) return cb?.({ ok: false, reason: "empty" });
