@@ -863,42 +863,42 @@ pc.ontrack = (event) => {
   const track = event.track;
   const stream = event.streams[0];
 
-  // ===== AUDIO TỪ VIEWER =====
-  if (track.kind === "audio") {
+  if (track.kind !== "audio") return;
 
-    // 1️⃣ HOST NGHE ĐƯỢC
-    let audio = document.getElementById("viewerAudio");
-    if (!audio) {
-      audio = document.createElement("audio");
-      audio.id = "viewerAudio";
-      audio.autoplay = true;
-      audio.muted = false;
-      document.body.appendChild(audio);
-    }
-    audio.srcObject = stream;
-
-    // 2️⃣ RELAY AUDIO CHO VIEWER KHÁC
-    for (const [viewerId, viewerPc] of pcs.entries()) {
-      // ❌ không relay lại cho chính viewer gửi mic
-      if (viewerPc === pc) continue;
-
-      try {
-        const hasAudioSender =
-          viewerPc.getSenders().some(s => s.track?.kind === "audio");
-
-        if (!hasAudioSender) {
-          viewerPc.addTrack(track, stream);
-        }
-      } catch (e) {
-        console.warn("Relay audio failed:", e);
-      }
-    }
-
-    return;
+  // ===== 1️⃣ HOST NGHE =====
+  let audio = document.getElementById("viewerAudio");
+  if (!audio) {
+    audio = document.createElement("audio");
+    audio.id = "viewerAudio";
+    audio.autoplay = true;
+    audio.muted = false;
+    document.body.appendChild(audio);
   }
+  audio.srcObject = stream;
 
-  // (video xử lý riêng nếu có)
+  // ===== 2️⃣ RELAY AUDIO CHO VIEWER KHÁC =====
+  for (const [viewerId, viewerPc] of pcs.entries()) {
+    if (viewerPc === pc) continue; // bỏ qua viewer đang nói
+
+    try {
+      const hasAudioSender =
+        viewerPc.getSenders().some(s => s.track?.kind === "audio");
+
+      if (!hasAudioSender) {
+        // 🔥 DÙNG TRANSCEIVER (QUAN TRỌNG)
+        viewerPc.addTransceiver(track, {
+          direction: "sendonly"
+        });
+
+        // 🔔 BẮT BUỘC RENEGOTIATE
+        __doIceRestart(viewerId, viewerPc, "relay_viewer_audio");
+      }
+    } catch (e) {
+      console.warn("Relay audio error:", e);
+    }
+  }
 };
+
 
 
 
