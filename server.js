@@ -41,7 +41,7 @@ function getRoom(roomId) {
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
-  micOnlyViewers: new Map(), // socketId -> name
+  micViewers: new Set(),  
   releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
 });
@@ -537,50 +537,25 @@ socket.on("send-gift", ({ roomId, gift }) => {
     }
   });
 
-socket.on("viewer-request-mic", ({ roomId, name }) => {
-  const room = rooms.get(roomId);
-  if (!room || !room.broadcasterId) return;
+
+socket.on("viewer-request-mic", ({ roomId }) => {
+  const room = getRoom(roomId);
+  if (!room?.broadcasterId) return;
 
   io.to(room.broadcasterId).emit("viewer-mic-request", {
     viewerId: socket.id,
-    name: name || "Viewer",
   });
 });
 
-socket.on("host-approve-viewer-mic", ({ roomId, viewerId }) => {
-  const room = rooms.get(roomId);
-  if (!room || room.broadcasterId !== socket.id) return;
+socket.on("host-approve-mic", ({ roomId, viewerId }) => {
+  const room = getRoom(roomId);
+  if (!room || socket.id !== room.broadcasterId) return;
 
-  room.micOnlyViewers.set(viewerId, true);
+  room.micViewers.add(viewerId);
 
-  io.to(viewerId).emit("viewer-mic-approved");
-});
-
-
-socket.on("host-mute-viewer-mic", ({ roomId, viewerId }) => {
-  io.to(viewerId).emit("viewer-mic-muted");
-});
-
-
-// viewer -> host
-socket.on("viewer-mic-offer", ({ roomId, sdp }) => {
-  const room = rooms.get(roomId);
-  if (!room?.broadcasterId) return;
-
-  io.to(room.broadcasterId).emit("viewer-mic-offer", {
-    viewerId: socket.id,
-    sdp
+  io.to(viewerId).emit("viewer-mic-approved", {
+    hostId: room.broadcasterId,
   });
-});
-
-// host -> viewer
-socket.on("host-mic-answer", ({ viewerId, sdp }) => {
-  io.to(viewerId).emit("host-mic-answer", { sdp });
-});
-
-// ICE
-socket.on("viewer-mic-ice", ({ to, candidate }) => {
-  io.to(to).emit("viewer-mic-ice", { candidate });
 });
 
 

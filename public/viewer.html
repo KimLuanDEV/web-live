@@ -35,7 +35,7 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<button id="btnRequestMic">🎤 Xin bật mic</button>
+<button id="btnMicRequest" class="btn-mic">🎙 Xin bật mic</button>
 
 
           <hr />
@@ -892,67 +892,46 @@ socket.on("room-closed", ({ reason }) => {
   }, { passive: false });
 
 
-const btnRequestMic = document.getElementById("btnRequestMic");
-
-btnRequestMic.onclick = () => {
-  socket.emit("viewer-request-mic", {
-    roomId,
-    name: document.getElementById("chatName").value || "Viewer"
-  });
-  btnRequestMic.disabled = true;
-  btnRequestMic.textContent = "⏳ Đang chờ host...";
-};
-
+  let micPc = null;
 let micStream = null;
 
-socket.on("viewer-mic-approved", async () => {
+btnMicRequest.onclick = async () => {
+  socket.emit("viewer-request-mic", { roomId });
+  setStatus("⏳ Đang chờ host duyệt mic...");
+};
+
+socket.on("viewer-mic-approved", async ({ hostId }) => {
+  setStatus("🎙 Mic đã được bật");
+
   micStream = await navigator.mediaDevices.getUserMedia({
     audio: true,
-    video: false
+    video: false,
   });
 
-  micStream.getAudioTracks().forEach(track => {
-    pc.addTrack(track, micStream); // pc = RTCPeerConnection hiện có
-  });
+  const rtcConfig = await getRtcConfig();
+  micPc = new RTCPeerConnection(rtcConfig);
 
-  alert("🎤 Mic đã được bật!");
-});
+  micStream.getTracks().forEach(t =>
+    micPc.addTrack(t, micStream)
+  );
 
-
-let micPC;
-
-async function startMicOnly() {
-  const stream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false
-  });
-
-  micPC = new RTCPeerConnection(iceConfig);
-
-  stream.getTracks().forEach(t => micPC.addTrack(t, stream));
-
-  micPC.onicecandidate = e => {
+  micPc.onicecandidate = e => {
     if (e.candidate) {
-      socket.emit("viewer-mic-ice", {
-        to: roomId,
-        candidate: e.candidate
+      socket.emit("candidate", {
+        to: hostId,
+        candidate: e.candidate,
       });
     }
   };
 
-  const offer = await micPC.createOffer();
-  await micPC.setLocalDescription(offer);
+  const offer = await micPc.createOffer();
+  await micPc.setLocalDescription(offer);
 
-  socket.emit("viewer-mic-offer", {
-    roomId,
-    sdp: offer
+  socket.emit("offer", {
+    to: hostId,
+    description: micPc.localDescription,
+    meta: { type: "viewer-mic" },
   });
-}
-
-socket.on("viewer-mic-approved", startMicOnly);
-
-socket.on("host-mic-answer", async ({ sdp }) => {
-  await micPC.setRemoteDescription(new RTCSessionDescription(sdp));
 });
 
 
