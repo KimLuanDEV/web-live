@@ -495,6 +495,12 @@ if(nameFromLobby){
     };
 
     const socket = io();
+
+// ===== AUDIO MIXER (HOST) =====
+const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+const mixedDest = audioCtx.createMediaStreamDestination();
+
+
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
@@ -855,17 +861,21 @@ socket.emit("join-room", {
       log(`Viewer join: ${viewerId}`);
 
       const rtcConfig = await getRtcConfig();
+
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
 
 
+// 🔊 Gửi audio đã trộn cho viewer
+mixedDest.stream.getAudioTracks().forEach(track => {
+  pc.addTrack(track, mixedDest.stream);
+});
+
+
 pc.ontrack = (event) => {
-  const track = event.track;
-  const stream = event.streams[0];
+  if (event.track.kind !== "audio") return;
 
-  if (track.kind !== "audio") return;
-
-  // ===== 1️⃣ HOST NGHE =====
+  // 1️⃣ HOST NGHE
   let audio = document.getElementById("viewerAudio");
   if (!audio) {
     audio = document.createElement("audio");
@@ -874,30 +884,15 @@ pc.ontrack = (event) => {
     audio.muted = false;
     document.body.appendChild(audio);
   }
-  audio.srcObject = stream;
+  audio.srcObject = event.streams[0];
 
-  // ===== 2️⃣ RELAY AUDIO CHO VIEWER KHÁC =====
-  for (const [viewerId, viewerPc] of pcs.entries()) {
-    if (viewerPc === pc) continue; // bỏ qua viewer đang nói
+  // 2️⃣ TRỘN AUDIO VÀO MIXER
+  const src = audioCtx.createMediaStreamSource(event.streams[0]);
+  src.connect(mixedDest);
 
-    try {
-      const hasAudioSender =
-        viewerPc.getSenders().some(s => s.track?.kind === "audio");
-
-      if (!hasAudioSender) {
-        // 🔥 DÙNG TRANSCEIVER (QUAN TRỌNG)
-        viewerPc.addTransceiver(track, {
-          direction: "sendonly"
-        });
-
-        // 🔔 BẮT BUỘC RENEGOTIATE
-        __doIceRestart(viewerId, viewerPc, "relay_viewer_audio");
-      }
-    } catch (e) {
-      console.warn("Relay audio error:", e);
-    }
-  }
+  console.log("🎤 Đã trộn audio viewer vào mixer");
 };
+
 
 
 
