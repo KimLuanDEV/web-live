@@ -125,6 +125,23 @@
   <button data-gift="coin">💰</button>
 </div>
 
+<div class="gift-wallet">
+  <div class="gift-wallet__row">
+    <span class="gift-wallet__label">Ví coin:</span>
+    <b id="walletCoins">0</b>
+    <span class="gift-wallet__unit">coin</span>
+  </div>
+  <div class="gift-wallet__row gift-wallet__row--small">
+    <span class="gift-wallet__hint">Mỗi quà trừ coin • dùng để test Gift Engine</span>
+  </div>
+  <div class="gift-board">
+    <div class="gift-board__head">🏆 Top donate</div>
+    <div class="gift-board__meta">Tổng: <b id="giftTotalCoins">0</b> coin</div>
+    <div id="giftTopList" class="gift-board__list"></div>
+  </div>
+</div>
+
+
 
   <div id="chatBox" class="chatbox"></div>
 </div>
@@ -540,7 +557,7 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       joined = true;
       
       try{ btnJoin.style.display = "none"; }catch{}
-socket.emit("join-room", { roomId, role: "viewer" });
+socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host/guest...");
     }
@@ -816,16 +833,22 @@ if (guestPipWrap) {
   });
 }
 
+// ===== GIFT ENGINE (client) =====
+const GIFT_CLIENT_CATALOG = {
+  heart:  { emoji:"❤️", cost:1,  title:"Tim" },
+  flower: { emoji:"🌸", cost:5,  title:"Hoa" },
+  rocket: { emoji:"🚀", cost:20, title:"Rocket" },
+  coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
+};
+
 document.querySelectorAll(".gift-bar button").forEach(btn=>{
   btn.onclick = ()=>{
     const type = btn.dataset.gift;
-    socket.emit("send-gift", {
-      roomId,
-      gift: { type, value: 1 }
-    });
+    const name = (chatName.value || "Viewer").trim().slice(0,20);
+    socket.emit("send-gift", { roomId, name, gift: { type, qty: 1 } });
   };
 });
-
+// ===== /GIFT ENGINE (client) =====
 const giftLayer = document.getElementById("giftLayer");
 
 function spawnGift(type){
@@ -845,11 +868,43 @@ function spawnGift(type){
   setTimeout(()=>el.remove(), 2000);
 }
 
-socket.on("gift", ({ gift })=>{
+socket.on("gift", ({ gift, donor })=>{
+  // spawn animation
   spawnGift(gift.type);
+
+  // also push a small chat-bubble like donate note
+  try{
+    const note = document.createElement("div");
+    note.className = "gift-toast";
+    const em = gift.emoji || (GIFT_CLIENT_CATALOG[gift.type]?.emoji) || "🎁";
+    note.textContent = `${em} ${donor || "Ai đó"} tặng +${gift.coins || 0} coin`;
+    document.body.appendChild(note);
+    setTimeout(()=>note.classList.add("hide"), 1600);
+    setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
+  }catch{}
 });
 
+const walletCoinsEl = document.getElementById("walletCoins");
+socket.on("wallet-sync", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); });
+socket.on("wallet-update", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); });
 
+socket.on("gift-failed", ({ reason, need, coins })=>{
+  if (reason === "no_coins"){
+    alert(`Không đủ coin! Cần ${need} coin, bạn còn ${coins} coin.`);
+  }
+});
+
+const giftTotalCoinsEl = document.getElementById("giftTotalCoins");
+const giftTopList = document.getElementById("giftTopList");
+socket.on("gift-stats", ({ totalCoins, topDonors })=>{
+  if (giftTotalCoinsEl) giftTotalCoinsEl.textContent = String(totalCoins ?? 0);
+  if (giftTopList){
+    const arr = Array.isArray(topDonors) ? topDonors : [];
+    giftTopList.innerHTML = arr.length
+      ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
+      : `<div class="gift-board__empty">Chưa có donate</div>`;
+  }
+});
 // ===== NEON CONFIRM: Back to Lobby (VIEWER) =====
 const ncf = document.getElementById("neonConfirm");
 const ncfBg = ncf?.querySelector(".ncf__bg");

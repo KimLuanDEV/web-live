@@ -184,6 +184,15 @@
   <div id="chatBox" class="chatbox"></div>
 </div>
 
+<div class="card" style="margin-top:12px">
+  <div class="badge badge--info">🎁 Gift Engine</div>
+  <div class="gift-board gift-board--host">
+    <div class="gift-board__meta">Tổng donate: <b id="giftTotalCoinsHost">0</b> coin</div>
+    <div id="giftTopListHost" class="gift-board__list"></div>
+  </div>
+</div>
+
+
 <!-- NEON CONFIRM (Back to Lobby) -->
 <div id="neonConfirm" class="ncf hidden" aria-hidden="true">
   <div class="ncf__bg"></div>
@@ -1501,6 +1510,18 @@ socket.on("viewer-count", ({ count }) => {
 
 
 const giftLayer = document.getElementById("giftLayer");
+const giftTotalCoinsHost = document.getElementById("giftTotalCoinsHost");
+const giftTopListHost = document.getElementById("giftTopListHost");
+socket.on("gift-stats", ({ totalCoins, topDonors })=>{
+  if (giftTotalCoinsHost) giftTotalCoinsHost.textContent = String(totalCoins ?? 0);
+  if (giftTopListHost){
+    const arr = Array.isArray(topDonors) ? topDonors : [];
+    giftTopListHost.innerHTML = arr.length
+      ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
+      : `<div class="gift-board__empty">Chưa có donate</div>`;
+  }
+});
+
 
 function spawnGift(type){
   const el = document.createElement("div");
@@ -1519,11 +1540,18 @@ function spawnGift(type){
   setTimeout(()=>el.remove(), 2000);
 }
 
-socket.on("gift", ({ gift })=>{
+socket.on("gift", ({ gift, donor })=>{
   spawnGift(gift.type);
+  try{
+    const note = document.createElement("div");
+    note.className = "gift-toast";
+    const em = gift.emoji || "🎁";
+    note.textContent = `${em} ${donor || "Ai đó"} donate +${gift.coins || 0} coin`;
+    document.body.appendChild(note);
+    setTimeout(()=>note.classList.add("hide"), 1600);
+    setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
+  }catch{}
 });
-
-
 const hostNameInput = document.getElementById("hostNameInput");
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");
 
