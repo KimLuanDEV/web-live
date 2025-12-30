@@ -2588,3 +2588,31 @@ body.vip-spotlight .vip-zoom{
 }
 
 .gift-bar{ display:none }
+
+.gift-panel .gift-combo{
+  margin-top:6px;
+  margin-bottom:10px;
+  justify-content:flex-start;
+}
+.gift-panel .gift-combo__btn{
+  padding:7px 10px;
+  font-size:13px;
+}
+
+
+.gift-wallet--panel{
+  margin: 6px 0 10px;
+  padding: 10px;
+  border-radius: 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(255,255,255,.05);
+}
+
+.gift-panel .gift-board{
+  margin-top: 10px;
+}
+
+.gift-panel .gift-board__list{
+  max-height: 120px;
+  overflow: auto;
+}
