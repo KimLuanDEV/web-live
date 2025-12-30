@@ -41,7 +41,7 @@ function getRoom(roomId) {
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
-  viewerMics: new Map(), // socket.id -> true
+  viewerMics: new Map(), // viewerId -> true
 
   releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
@@ -128,41 +128,6 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
-  
-
-socket.on("voice-data", ({ roomId, blob }) => {
-  if (!roomId || !blob) return;
-
-  // phát cho TẤT CẢ viewer khác (kể cả host nếu muốn)
-  socket.to(roomId).emit("voice-data", {
-    from: socket.id,
-    blob
-  });
-});
-
-
-  socket.on("viewer-request-mic", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room || !room.broadcasterId) return;
-
-  io.to(room.broadcasterId).emit("viewer-mic-request", {
-    viewerId: socket.id,
-  });
-});
-
-
-socket.on("host-approve-viewer-mic", ({ roomId, viewerId, ok }) => {
-  const room = rooms.get(roomId);
-  if (!room || room.broadcasterId !== socket.id) return;
-
-  io.to(viewerId).emit("viewer-mic-result", { ok });
-
-  if (ok) {
-    room.viewerMics.set(viewerId, true);
-  }
-});
-
-
 
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);
@@ -509,9 +474,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
 
   socket.on("disconnect", () => {
 
-for (const room of rooms.values()) {
-    room.viewerMics?.delete(socket.id);
-  }
 
   for (const [roomId, room] of rooms.entries()) {
     if (room.broadcasterId === socket.id) {
@@ -575,6 +537,30 @@ for (const room of rooms.values()) {
       rooms.delete(roomId);
     }
   });
+
+
+// ===== VIEWER REQUEST MIC =====
+socket.on("viewer-request-mic", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room || !room.broadcasterId) return;
+
+  io.to(room.broadcasterId).emit("viewer-request-mic", {
+    viewerId: socket.id
+  });
+});
+
+socket.on("host-approve-viewer-mic", ({ roomId, viewerId }) => {
+  const room = rooms.get(roomId);
+  if (!room || room.broadcasterId !== socket.id) return;
+
+  room.viewerMics.set(viewerId, true);
+  io.to(viewerId).emit("viewer-mic-approved");
+});
+
+socket.on("host-reject-viewer-mic", ({ viewerId }) => {
+  io.to(viewerId).emit("viewer-mic-rejected");
+});
+
 });
 
 

@@ -151,13 +151,6 @@
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
-<hr />
-<div class="card">
-  <div class="badge badge--info">🎤 Viewer xin bật mic</div>
-  <div id="viewerMicReq" class="log">Chưa có yêu cầu.</div>
-</div>
-
-
 </div>
 
 
@@ -344,10 +337,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
-
-
-
-
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -495,47 +484,6 @@ if(nameFromLobby){
     };
 
     const socket = io();
-
-function playBlobAudio(blob) {
-  const reader = new FileReader();
-  reader.onload = async () => {
-    try {
-      const buffer = await audioCtx.decodeAudioData(reader.result);
-      const src = audioCtx.createBufferSource();
-      src.buffer = buffer;
-      src.connect(audioCtx.destination);
-      src.start(0);
-    } catch (e) {
-      console.warn("decode audio fail", e);
-    }
-  };
-  reader.readAsArrayBuffer(blob);
-}
-
-
-socket.on("voice-data", ({ blob }) => {
-  unlockAudio();
-  playBlobAudio(blob);
-});
-
-    // ===== AUDIO UNLOCK (BẮT BUỘC CHO AUTOPLAY) =====
-const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-
-function unlockAudio() {
-  if (audioCtx.state !== "running") {
-    audioCtx.resume().catch(()=>{});
-  }
-}
-
-document.addEventListener("pointerdown", unlockAudio, { once: true });
-document.addEventListener("touchstart", unlockAudio, { once: true });
-
-
-// ===== AUDIO MIXER (HOST) =====
-
-const mixedDest = audioCtx.createMediaStreamDestination();
-
-
     document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
@@ -896,45 +844,8 @@ socket.emit("join-room", {
       log(`Viewer join: ${viewerId}`);
 
       const rtcConfig = await getRtcConfig();
-
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
-
-
-// 🔊 Gửi audio đã trộn cho viewer
-mixedDest.stream.getAudioTracks().forEach(track => {
-  pc.addTrack(track, mixedDest.stream);
-});
-
-
-pc.ontrack = (event) => {
-  if (event.track.kind !== "audio") return;
-
-  // 1️⃣ HOST NGHE
-  let audio = document.getElementById("viewerAudio");
-  if (!audio) {
-    audio = document.createElement("audio");
-    audio.id = "viewerAudio";
-    audio.autoplay = true;
-    audio.muted = false;
-    document.body.appendChild(audio);
-  }
-  audio.srcObject = event.streams[0];
-
-  // 2️⃣ TRỘN AUDIO VÀO MIXER
-  const src = audioCtx.createMediaStreamSource(event.streams[0]);
-  src.connect(mixedDest);
-
-  console.log("🎤 Đã trộn audio viewer vào mixer");
-};
-
-
-
-
-
-// 🔥 BẮT BUỘC: cho phép host NHẬN AUDIO từ viewer
-pc.addTransceiver("audio", { direction: "recvonly" });
-
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
@@ -1005,6 +916,20 @@ pc.addTransceiver("audio", { direction: "recvonly" });
       btnRejectGuest.disabled = false;
       log("Có guest xin lên live: " + guestId);
     });
+
+socket.on("viewer-request-mic", ({ viewerId }) => {
+  if (!confirm("🎙 Viewer xin mở mic, cho phép?")) {
+    socket.emit("host-reject-viewer-mic", { viewerId });
+    return;
+  }
+
+  socket.emit("host-approve-viewer-mic", {
+    roomId,
+    viewerId
+  });
+});
+
+
 
     socket.on("guest-offline", () => {
       log("Guest offline");
@@ -1628,35 +1553,6 @@ socket.on("live-ended-stats", (stats) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
-
-const viewerMicReq = document.getElementById("viewerMicReq");
-
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  viewerMicReq.innerHTML = `
-    Viewer ${viewerId.slice(0,6)}...
-    <br/>
-    <button onclick="approveMic('${viewerId}',true)">✅ Duyệt</button>
-    <button onclick="approveMic('${viewerId}',false)">❌ Từ chối</button>
-  `;
-});
-
-function approveMic(viewerId, ok){
-  socket.emit("host-approve-viewer-mic", {
-    roomId,
-    viewerId,
-    ok
-  });
-
-  viewerMicReq.textContent = ok
-    ? "✅ Đã duyệt mic cho viewer"
-    : "❌ Đã từ chối yêu cầu";
-}
-
-document.addEventListener("click", () => {
-  document.querySelectorAll("audio").forEach(a => {
-    a.play().catch(()=>{});
-  });
-}, { once: true });
 
 
   </script>
