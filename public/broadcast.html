@@ -496,8 +496,43 @@ if(nameFromLobby){
 
     const socket = io();
 
-// ===== AUDIO MIXER (HOST) =====
+function playBlobAudio(blob) {
+  const reader = new FileReader();
+  reader.onload = async () => {
+    try {
+      const buffer = await audioCtx.decodeAudioData(reader.result);
+      const src = audioCtx.createBufferSource();
+      src.buffer = buffer;
+      src.connect(audioCtx.destination);
+      src.start(0);
+    } catch (e) {
+      console.warn("decode audio fail", e);
+    }
+  };
+  reader.readAsArrayBuffer(blob);
+}
+
+
+socket.on("voice-data", ({ blob }) => {
+  unlockAudio();
+  playBlobAudio(blob);
+});
+
+    // ===== AUDIO UNLOCK (BẮT BUỘC CHO AUTOPLAY) =====
 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+function unlockAudio() {
+  if (audioCtx.state !== "running") {
+    audioCtx.resume().catch(()=>{});
+  }
+}
+
+document.addEventListener("pointerdown", unlockAudio, { once: true });
+document.addEventListener("touchstart", unlockAudio, { once: true });
+
+
+// ===== AUDIO MIXER (HOST) =====
+
 const mixedDest = audioCtx.createMediaStreamDestination();
 
 
