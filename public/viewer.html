@@ -35,9 +35,8 @@
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
-  Bấm để mở trang Khách và gửi yêu cầu lên Host.
-</small>
+<button id="btnRequestMic">🎤 Xin bật mic</button>
+
 
           <hr />
           <div class="log" id="log" style="display: none;"></div>
@@ -891,6 +890,33 @@ socket.on("room-closed", ({ reason }) => {
   document.addEventListener("wheel", e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
+
+
+const btnRequestMic = document.getElementById("btnRequestMic");
+
+btnRequestMic.onclick = () => {
+  socket.emit("viewer-request-mic", {
+    roomId,
+    name: document.getElementById("chatName").value || "Viewer"
+  });
+  btnRequestMic.disabled = true;
+  btnRequestMic.textContent = "⏳ Đang chờ host...";
+};
+
+let micStream = null;
+
+socket.on("viewer-mic-approved", async () => {
+  micStream = await navigator.mediaDevices.getUserMedia({
+    audio: true,
+    video: false
+  });
+
+  micStream.getAudioTracks().forEach(track => {
+    pc.addTrack(track, micStream); // pc = RTCPeerConnection hiện có
+  });
+
+  alert("🎤 Mic đã được bật!");
+});
 
 
   </script>

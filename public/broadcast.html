@@ -1541,6 +1541,26 @@ socket.on("live-ended-stats", (stats) => {
 
 
 
+  socket.on("viewer-mic-request", ({ viewerId, name }) => {
+  const ok = confirm(`🎤 ${name} xin bật mic (voice-only)?`);
+  if (ok) {
+    socket.emit("host-approve-viewer-mic", { roomId, viewerId });
+  }
+});
+
+
+pc.ontrack = (e) => {
+  const audio = document.createElement("audio");
+  audio.srcObject = e.streams[0];
+  audio.autoplay = true;
+  document.body.appendChild(audio);
+};
+
+micStream.getTracks().forEach(t => t.stop());
+
+
+socket.emit("host-mute-viewer-mic", { roomId, viewerId });
+
   </script>
 
 
