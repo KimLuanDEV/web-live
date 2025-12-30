@@ -1350,11 +1350,19 @@ document.addEventListener("click", ()=>{
 });
 giftPanel?.addEventListener("click", e=>e.stopPropagation());
 
-// gửi quà
+// gửi quà (đúng format server)
 giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
   btn.addEventListener("click", ()=>{
-    const gift = btn.dataset.gift;
-    socket.emit("send-gift", { roomId, gift });
+    const type = btn.dataset.gift;
+
+    // lấy tên giống gift-bar đang dùng
+    const name = (chatName?.value || "Viewer").trim().slice(0,20);
+
+    // lấy combo giống hệ đang có (x1/x5/x10)
+    const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
+
+    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
+
     giftPanel.classList.add("hidden");
   });
 });
