@@ -2616,3 +2616,28 @@ body.vip-spotlight .vip-zoom{
   max-height: 120px;
   overflow: auto;
 }
+
+
+.gift-preview{
+  margin-top:8px;
+  font-size:14px;
+  text-align:center;
+  color:#ffd36e;
+}
+
+.gift-send-btn{
+  width:100%;
+  margin-top:8px;
+  padding:10px;
+  border-radius:10px;
+  background:linear-gradient(135deg,#ff9800,#ff5722);
+  color:#000;
+  font-weight:700;
+  border:none;
+  cursor:pointer;
+  opacity:.5;
+}
+
+.gift-send-btn:not(:disabled){
+  opacity:1;
+}

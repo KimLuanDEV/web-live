@@ -111,6 +111,15 @@
     <button data-gift="dragonking">🐲</button>
     <button data-gift="supernova">🌠</button>
   </div>
+
+<!-- PREVIEW GIÁ QUÀ -->
+<div class="gift-preview" id="giftPreview"></div>
+
+<button class="gift-send-btn" id="btnSendGift" disabled>
+  🎁 Gửi quà
+</button>
+
+
 </div>
 
 
@@ -256,6 +265,80 @@
 
     const socket = io();
     
+
+// ===== GIFT SELECT & PREVIEW =====
+const GIFT_CATALOG = {
+  heart:{emoji:"❤️",cost:1},
+  flower:{emoji:"🌸",cost:5},
+  rocket:{emoji:"🚀",cost:20},
+  coin:{emoji:"💰",cost:50},
+  dragon:{emoji:"🐉",cost:120},
+  phoenix:{emoji:"🦅",cost:200},
+  galaxy:{emoji:"🌌",cost:300},
+  meteor:{emoji:"☄️",cost:500},
+  king:{emoji:"👑",cost:800},
+  dragonking:{emoji:"🐲",cost:1500},
+  supernova:{emoji:"🌠",cost:2200},
+};
+
+let selectedGift = null;
+let selectedCombo = 1;
+
+const giftPreview = document.getElementById("giftPreview");
+const btnSendGift = document.getElementById("btnSendGift");
+
+// chọn quà (KHÔNG gửi)
+document.querySelectorAll("#giftPanel [data-gift]").forEach(btn=>{
+  btn.onclick = ()=>{
+    selectedGift = btn.dataset.gift;
+    renderGiftPreview();
+  };
+});
+
+// chọn combo
+document.querySelectorAll(".gift-combo__btn").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".gift-combo__btn")
+      .forEach(b=>b.classList.remove("is-active"));
+    btn.classList.add("is-active");
+    selectedCombo = Number(btn.dataset.combo);
+    renderGiftPreview();
+  };
+});
+
+function renderGiftPreview(){
+  if (!selectedGift){
+    giftPreview.innerHTML = "";
+    btnSendGift.disabled = true;
+    return;
+  }
+  const g = GIFT_CATALOG[selectedGift];
+  const total = g.cost * selectedCombo;
+
+  giftPreview.innerHTML = `
+    <b>${g.emoji} ${g.cost} coin</b>
+    × <b>${selectedCombo}</b>
+    = <b>${total}</b> coin
+  `;
+  btnSendGift.disabled = false;
+}
+
+// chỉ khi bấm nút này mới gửi quà
+btnSendGift.onclick = ()=>{
+  if (!selectedGift) return;
+
+  socket.emit("send-gift", {
+    roomId,
+    gift: selectedGift,
+    combo: selectedCombo,
+    name: chatName?.value || "Viewer"
+  });
+
+  // reset
+  selectedGift = null;
+  selectedCombo = 1;
+  renderGiftPreview();
+};
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
