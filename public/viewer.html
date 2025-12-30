@@ -199,6 +199,23 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
+const giftFab   = document.getElementById("giftFab");
+const giftPanel = document.getElementById("giftPanel");
+const giftClose = document.getElementById("giftClose");
+
+giftFab.onclick = () => {
+  giftPanel.classList.toggle("hidden");
+};
+
+giftClose.onclick = () => {
+  giftPanel.classList.add("hidden");
+};
+
+
+
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -1275,19 +1292,6 @@ socket.on("room-closed", ({ reason }) => {
   document.addEventListener("wheel", e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
-
-
-const giftFab   = document.getElementById("giftFab");
-const giftPanel = document.getElementById("giftPanel");
-const giftClose = document.getElementById("giftClose");
-
-giftFab.onclick = () => {
-  giftPanel.classList.toggle("hidden");
-};
-
-giftClose.onclick = () => {
-  giftPanel.classList.add("hidden");
-};
 
 
 

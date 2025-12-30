@@ -223,6 +223,20 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
+  const giftFab   = document.getElementById("giftFab");
+const giftPanel = document.getElementById("giftPanel");
+const giftClose = document.getElementById("giftClose");
+
+giftFab.onclick = () => {
+  giftPanel.classList.toggle("hidden");
+};
+
+giftClose.onclick = () => {
+  giftPanel.classList.add("hidden");
+};
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const me = document.getElementById("me");
@@ -1209,17 +1223,6 @@ socket.on("room-closed", ({ reason }) => {
 
 
 
-  const giftFab   = document.getElementById("giftFab");
-const giftPanel = document.getElementById("giftPanel");
-const giftClose = document.getElementById("giftClose");
-
-giftFab.onclick = () => {
-  giftPanel.classList.toggle("hidden");
-};
-
-giftClose.onclick = () => {
-  giftPanel.classList.add("hidden");
-};
 
 
   </script>
