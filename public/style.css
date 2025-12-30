@@ -285,7 +285,7 @@ code{
 .chat-overlay{
   position:absolute;
   left:12px;
-  bottom:30px;
+  bottom:50px;
   width:min(78%, 520px);
   display:flex;
   flex-direction:column;
@@ -1950,9 +1950,9 @@ button.is-loading{
 /* ===== QUICK CHAT ON VIDEO (FIX KEYBOARD) ===== */
 .chat-fab{
   position:absolute;
-  left:5px;
-  bottom:20px;
-  width:0;height:0;
+  left:14px;
+  bottom:10px;
+  width:52;height:52;
   border-radius:999px;
   z-index:30;
   pointer-events:auto; /* ✅ quan trọng */
