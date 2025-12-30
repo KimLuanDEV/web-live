@@ -2358,3 +2358,178 @@ body.gift-shake{
   100%{ opacity:0; transform: translate(var(--dx,0px), var(--dy,-120px)) rotate(var(--rot,0deg)) scale(calc(var(--sc,1) + .2)); }
 }
 /* ===== /BIG FX ===== */
+
+
+/* ===== VIP BANNER + COUNTDOWN ===== */
+.gift-big__banner{
+  position:absolute;
+  left:50%;
+  top:10%;
+  transform: translateX(-50%);
+  padding:10px 14px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.16);
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 18px 48px rgba(0,0,0,.55);
+  min-width: min(86vw, 520px);
+  text-align:center;
+}
+.gift-big__title{
+  font-weight:1000;
+  letter-spacing:.8px;
+  font-size:18px;
+}
+.gift-big__sub{
+  margin-top:4px;
+  opacity:.9;
+  font-weight:700;
+  font-size:13px;
+}
+.gift-big__cd{
+  margin-top:8px;
+  height:8px;
+  border-radius:999px;
+  overflow:hidden;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(255,255,255,.06);
+}
+.gift-big__cdbar{
+  display:block;
+  height:100%;
+  width:100%;
+  background: rgba(255,211,110,.55);
+  animation: cdBar 2.2s linear forwards;
+}
+.gift-big--dragonking .gift-big__cdbar,
+.gift-big--supernova .gift-big__cdbar{ animation-duration: 3s; }
+@keyframes cdBar{
+  from{ transform: translateX(0%); }
+  to{ transform: translateX(-100%); }
+}
+/* ===== /VIP BANNER ===== */
+
+
+/* ===== VIP TICKER + FREEZE + FIREWORKS ===== */
+.vip-ticker{
+  position:fixed;
+  left:0;
+  right:0;
+  top:12px;
+  z-index:10000;
+  pointer-events:none;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:10px;
+}
+.vip-ticker__item{
+  max-width:min(92vw, 860px);
+  padding:10px 16px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.62);
+  backdrop-filter: blur(10px);
+  font-weight:1000;
+  letter-spacing:.6px;
+  box-shadow: 0 18px 52px rgba(0,0,0,.58);
+  transform: translateX(-120%);
+  opacity:1;
+  animation: vipTickerMove 3.2s linear forwards;
+}
+.vip-ticker__item.hide{ opacity:0; transition: opacity .25s ease; }
+
+@keyframes vipTickerMove{
+  0%{ transform: translateX(-120%); }
+  10%{ transform: translateX(0%); }
+  90%{ transform: translateX(0%); }
+  100%{ transform: translateX(120%); }
+}
+
+/* Freeze chat interactions 1s */
+body.chat-frozen .chatbox,
+body.chat-frozen .chat-input-overlay,
+body.chat-frozen #chatText,
+body.chat-frozen #quickChatInput,
+body.chat-frozen #chatSend,
+body.chat-frozen #quickChatSend{
+  pointer-events:none !important;
+  filter: saturate(.8) brightness(.9);
+  opacity:.85;
+}
+body.chat-frozen::after{
+  content:"VIP DONATE!";
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  font-weight:1000;
+  letter-spacing:1px;
+  font-size:28px;
+  color: rgba(255,211,110,.95);
+  background: rgba(0,0,0,.18);
+  backdrop-filter: blur(2px);
+  opacity:0;
+  animation: freezeFlash 1s ease-out forwards;
+  pointer-events:none;
+}
+@keyframes freezeFlash{
+  0%{ opacity:0; transform: scale(.98); }
+  12%{ opacity:1; }
+  100%{ opacity:0; transform: scale(1.02); }
+}
+
+/* fireworks burst */
+.vip-fireworks{
+  position:fixed;
+  inset:0;
+  z-index:9996;
+  pointer-events:none;
+  overflow:hidden;
+}
+.vip-fireworks__p{
+  position:absolute;
+  width:10px;
+  height:10px;
+  border-radius:999px;
+  background: rgba(255,211,110,.85);
+  box-shadow: 0 0 24px rgba(255,211,110,.22);
+  transform: translate(0,0) rotate(0deg) scale(var(--sc,1));
+  opacity:0;
+  animation: vipFire 1.4s ease-out forwards;
+}
+@keyframes vipFire{
+  0%{ opacity:0; transform: translate(0,0) rotate(0deg) scale(var(--sc,1)); }
+  12%{ opacity:1; }
+  100%{ opacity:0; transform: translate(var(--dx,0px), var(--dy,-220px)) rotate(var(--rot,0deg)) scale(calc(var(--sc,1) + .25)); }
+}
+/* ===== /VIP TICKER ===== */
+
+
+/* ===== VIP SPOTLIGHT (Level 3) ===== */
+body.vip-spotlight::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:9995;
+  pointer-events:none;
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(1px);
+  animation: vipSpotIn 1.2s ease-out forwards;
+}
+@keyframes vipSpotIn{
+  0%{ opacity:0; }
+  15%{ opacity:1; }
+  100%{ opacity:0; }
+}
+.vip-zoom{
+  transform: scale(1.05);
+  transition: transform .18s ease;
+  box-shadow: 0 0 0 2px rgba(255,211,110,.20), 0 24px 70px rgba(0,0,0,.60);
+}
+body.vip-spotlight .vip-zoom{
+  transform: scale(1.06);
+}
+/* ===== /VIP SPOTLIGHT ===== */

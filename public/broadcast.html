@@ -495,6 +495,89 @@ if(nameFromLobby){
     const socket = io();
     
 
+
+// ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
+const vipTicker = document.getElementById("vipTicker");
+let __vipQueue = [];
+let __vipBusy = false;
+
+function showVipTicker(text, ms){
+  try{
+    if (!vipTicker) return;
+    const item = document.createElement("div");
+    item.className = "vip-ticker__item";
+    item.textContent = text;
+    vipTicker.appendChild(item);
+    // auto remove after animation
+    setTimeout(()=>{ try{ item.classList.add("hide"); }catch{} }, Math.max(0, ms-350));
+    setTimeout(()=>{ try{ item.remove(); }catch{} }, ms+200);
+  }catch{}
+}
+
+function enqueueVip(text, ms=3000){
+  __vipQueue.push({ text, ms });
+  if (!__vipBusy) runVipQueue();
+}
+
+function runVipQueue(){
+  if (__vipBusy) return;
+  const next = __vipQueue.shift();
+  if (!next) return;
+  __vipBusy = true;
+  showVipTicker(next.text, next.ms);
+  setTimeout(()=>{
+    __vipBusy = false;
+    runVipQueue();
+  }, next.ms + 120);
+}
+
+function freezeChat(ms=1000){
+  try{
+    document.body.classList.add("chat-frozen");
+    setTimeout(()=>{ try{document.body.classList.remove("chat-frozen");}catch{} }, ms);
+  }catch{}
+}
+
+function startVipSpotlight(ms=1200){
+  try{
+    // add overlay class
+    document.body.classList.add("vip-spotlight");
+    // zoom main card if exists
+    const card = document.getElementById("hostCard") || document.getElementById("hostCardGuest");
+    if (card) card.classList.add("vip-zoom");
+    // remove
+    setTimeout(()=>{
+      try{
+        document.body.classList.remove("vip-spotlight");
+        if (card) card.classList.remove("vip-zoom");
+      }catch{}
+    }, ms);
+  }catch{}
+}
+
+function spawnFireworksBurst(){
+  try{
+    const layer = document.createElement("div");
+    layer.className = "vip-fireworks";
+    document.body.appendChild(layer);
+
+    const n = 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "vip-fireworks__p";
+      p.style.left = (50 + (Math.random()*18-9))+"%";
+      p.style.top  = (22 + (Math.random()*18-9))+"%";
+      p.style.setProperty("--dx", (Math.random()*360-180)+"px");
+      p.style.setProperty("--dy", (Math.random()*340-220)+"px");
+      p.style.setProperty("--rot",(Math.random()*160-80)+"deg");
+      p.style.setProperty("--sc",(Math.random()*0.9+0.7));
+      layer.appendChild(p);
+    }
+
+    setTimeout(()=>{ try{layer.remove();}catch{} }, 1600);
+  }catch{}
+}
+// ===== /VIP TICKER =====
 // ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
 function attachSpeakingIndicator(videoEl, targetEl){
   try{
@@ -1523,7 +1606,7 @@ socket.on("gift-stats", ({ totalCoins, topDonors })=>{
 });
 
 
-function spawnGift(type){
+function spawnGift(type, donor, giftMeta){
   const el = document.createElement("div");
   el.className = "gift-item";
 
@@ -1541,7 +1624,7 @@ function spawnGift(type){
 }
 
 socket.on("gift", ({ gift, donor })=>{
-  spawnGift(gift.type);
+  spawnGift(gift.type, donor, gift);
   try{
     const note = document.createElement("div");
     note.className = "gift-toast";
@@ -1685,6 +1768,10 @@ socket.on("live-ended-stats", (stats) => {
 
 
 
+
+
+<!-- VIP TICKER (donation banner) -->
+<div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
 
 </body>
 </html>

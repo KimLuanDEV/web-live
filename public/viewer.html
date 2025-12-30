@@ -128,6 +128,8 @@
   <button data-gift="galaxy">🌌</button>
   <button data-gift="meteor">☄️</button>
   <button data-gift="king">👑</button>
+  <button data-gift="dragonking">🐲</button>
+  <button data-gift="supernova">🌠</button>
 </div>
 
 </div>
@@ -217,6 +219,89 @@ let swapped = false; // false: host main, true: guest main
 
     
 
+
+// ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
+const vipTicker = document.getElementById("vipTicker");
+let __vipQueue = [];
+let __vipBusy = false;
+
+function showVipTicker(text, ms){
+  try{
+    if (!vipTicker) return;
+    const item = document.createElement("div");
+    item.className = "vip-ticker__item";
+    item.textContent = text;
+    vipTicker.appendChild(item);
+    // auto remove after animation
+    setTimeout(()=>{ try{ item.classList.add("hide"); }catch{} }, Math.max(0, ms-350));
+    setTimeout(()=>{ try{ item.remove(); }catch{} }, ms+200);
+  }catch{}
+}
+
+function enqueueVip(text, ms=3000){
+  __vipQueue.push({ text, ms });
+  if (!__vipBusy) runVipQueue();
+}
+
+function runVipQueue(){
+  if (__vipBusy) return;
+  const next = __vipQueue.shift();
+  if (!next) return;
+  __vipBusy = true;
+  showVipTicker(next.text, next.ms);
+  setTimeout(()=>{
+    __vipBusy = false;
+    runVipQueue();
+  }, next.ms + 120);
+}
+
+function freezeChat(ms=1000){
+  try{
+    document.body.classList.add("chat-frozen");
+    setTimeout(()=>{ try{document.body.classList.remove("chat-frozen");}catch{} }, ms);
+  }catch{}
+}
+
+function startVipSpotlight(ms=1200){
+  try{
+    // add overlay class
+    document.body.classList.add("vip-spotlight");
+    // zoom main card if exists
+    const card = document.getElementById("hostCard") || document.getElementById("hostCardGuest");
+    if (card) card.classList.add("vip-zoom");
+    // remove
+    setTimeout(()=>{
+      try{
+        document.body.classList.remove("vip-spotlight");
+        if (card) card.classList.remove("vip-zoom");
+      }catch{}
+    }, ms);
+  }catch{}
+}
+
+function spawnFireworksBurst(){
+  try{
+    const layer = document.createElement("div");
+    layer.className = "vip-fireworks";
+    document.body.appendChild(layer);
+
+    const n = 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "vip-fireworks__p";
+      p.style.left = (50 + (Math.random()*18-9))+"%";
+      p.style.top  = (22 + (Math.random()*18-9))+"%";
+      p.style.setProperty("--dx", (Math.random()*360-180)+"px");
+      p.style.setProperty("--dy", (Math.random()*340-220)+"px");
+      p.style.setProperty("--rot",(Math.random()*160-80)+"deg");
+      p.style.setProperty("--sc",(Math.random()*0.9+0.7));
+      layer.appendChild(p);
+    }
+
+    setTimeout(()=>{ try{layer.remove();}catch{} }, 1600);
+  }catch{}
+}
+// ===== /VIP TICKER =====
 // ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
 function attachSpeakingIndicator(videoEl, targetEl){
   try{
@@ -851,13 +936,15 @@ if (guestPipWrap) {
 const GIFT_CLIENT_CATALOG = {
   heart:  { emoji:"❤️", cost:1,  title:"Tim" },
   flower: { emoji:"🌸", cost:5,  title:"Hoa" },
-  rocket: { emoji:"🚀", cost:10, title:"Rocket" },
-  coin:   { emoji:"💰", cost:20, title:"Túi tiền" },
-  dragon: { emoji:"🐉", cost:30, title:"Rồng" },
-  phoenix:{ emoji:"🦅", cost:50, title:"Phượng hoàng" },
-  galaxy: { emoji:"🌌", cost:100, title:"Dải ngân hà" },
-  meteor: { emoji:"☄️", cost:150, title:"Sao băng" },
-  king:   { emoji:"👑", cost:200, title:"Vương miện" },
+  rocket: { emoji:"🚀", cost:20, title:"Rocket" },
+  coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
+  dragon: { emoji:"🐉", cost:120, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:200, title:"Phượng hoàng" },
+  galaxy: { emoji:"🌌", cost:300, title:"Dải ngân hà" },
+  meteor: { emoji:"☄️", cost:500, title:"Sao băng" },
+  king:   { emoji:"👑", cost:800, title:"Vương miện" },
+  dragonking: { emoji:"🐲", cost:1500, title:"Dragon King" },
+  supernova:  { emoji:"🌠", cost:2200, title:"Supernova" },
 };
 
 document.querySelectorAll(".gift-bar button").forEach(btn=>{
@@ -872,22 +959,44 @@ const giftLayer = document.getElementById("giftLayer");
 
 function spawnBigGiftSfx(mode){
   try{
-    // WebAudio beep (no external files)
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const o = ctx.createOscillator();
-    const g = ctx.createGain();
-    o.type = "sine";
+
+    // layered chord for VIP
+    const isVip = (mode==="dragonking" || mode==="supernova");
+    const o1 = ctx.createOscillator();
+    const o2 = ctx.createOscillator();
+    const g  = ctx.createGain();
+
+    o1.type = "sine";
+    o2.type = isVip ? "triangle" : "sine";
+
     const now = ctx.currentTime;
-    const base = mode==="king" ? 330 : mode==="meteor" ? 220 : mode==="galaxy" ? 260 : 300;
-    o.frequency.setValueAtTime(base, now);
-    o.frequency.exponentialRampToValueAtTime(base*2.2, now+0.18);
+    const base = mode==="supernova" ? 196 : mode==="dragonking" ? 220
+               : mode==="king" ? 330
+               : mode==="meteor" ? 246
+               : mode==="galaxy" ? 260
+               : 300;
+
+    // chord interval
+    const interval = isVip ? 1.4983 : 1.2599; // perfect fifth / major third
+
+    o1.frequency.setValueAtTime(base, now);
+    o2.frequency.setValueAtTime(base*interval, now);
+
+    // little rise
+    o1.frequency.exponentialRampToValueAtTime(base*2.2, now+0.20);
+    o2.frequency.exponentialRampToValueAtTime(base*interval*2.0, now+0.20);
+
     g.gain.setValueAtTime(0.0001, now);
-    g.gain.exponentialRampToValueAtTime(0.18, now+0.02);
-    g.gain.exponentialRampToValueAtTime(0.0001, now+0.22);
-    o.connect(g); g.connect(ctx.destination);
-    o.start(now);
-    o.stop(now+0.24);
-    setTimeout(()=>{ try{ctx.close();}catch{} }, 400);
+    g.gain.exponentialRampToValueAtTime(isVip ? 0.24 : 0.18, now+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + (isVip ? 0.34 : 0.22));
+
+    o1.connect(g); o2.connect(g); g.connect(ctx.destination);
+    o1.start(now); o2.start(now);
+    o1.stop(now + (isVip ? 0.36 : 0.24));
+    o2.stop(now + (isVip ? 0.36 : 0.24));
+
+    setTimeout(()=>{ try{ctx.close();}catch{} }, 600);
   }catch{}
 }
 
@@ -912,7 +1021,7 @@ function spawnGiftParticles(mode){
   }catch{}
 }
 
-function spawnBigGift(emoji, mode){
+function spawnBigGift(emoji, mode, donor, giftMeta){
   const big = document.createElement("div");
   big.className = "gift-big " + (mode ? ("gift-big--"+mode) : "");
   big.innerHTML = `
@@ -920,17 +1029,42 @@ function spawnBigGift(emoji, mode){
     <div class="gift-big__emoji">${emoji}</div>
     <div class="gift-big__spark"></div>
     <div class="gift-big__fx"></div>
+    <div class="gift-big__banner" id="giftBanner">
+      <div class="gift-big__title" id="giftTitle"></div>
+      <div class="gift-big__sub" id="giftSub"></div>
+      <div class="gift-big__cd"><span class="gift-big__cdbar"></span></div>
+    </div>
   `;
   document.body.appendChild(big);
   spawnBigGiftSfx(mode);
   spawnGiftParticles(mode);
-  if (mode==="meteor" || mode==="king") document.body.classList.add("gift-shake");
+
+  // banner text + duration
+  try{
+    const dn = (donor || "Ai đó").toString().slice(0, 20);
+    const qty = Number(giftMeta?.qty || 1) || 1;
+    const coins = Number(giftMeta?.coins || 0) || 0;
+    const title = (mode === "dragonking") ? "🐲 DRAGON KING" :
+                  (mode === "supernova") ? "🌠 SUPERNOVA" :
+                  (mode === "king") ? "👑 KING" :
+                  (mode === "meteor") ? "☄️ METEOR" :
+                  (mode === "galaxy") ? "🌌 GALAXY" :
+                  (mode === "phoenix") ? "🦅 PHOENIX" :
+                  (mode === "dragon") ? "🐉 DRAGON" :
+                  (mode === "rocket") ? "🚀 ROCKET" : "🎁 GIFT";
+    const sub = `${dn} • x${qty} • +${coins} coin`;
+    big.querySelector("#giftTitle")?.replaceChildren(document.createTextNode(title));
+    big.querySelector("#giftSub")?.replaceChildren(document.createTextNode(sub));
+  }catch{}
+
+  const __dur = (mode==="dragonking" || mode==="supernova") ? 3000 : 2200;
+if (mode==="meteor" || mode==="king") document.body.classList.add("gift-shake");
   setTimeout(()=>{ try{document.body.classList.remove("gift-shake");}catch{} }, 520);
-setTimeout(()=>big.classList.add("hide"), 1400);
-  setTimeout(()=>{ try{big.remove();}catch{} }, 2200);
+setTimeout(()=>big.classList.add("hide"), Math.max(1400, __dur - 800));
+  setTimeout(()=>{ try{big.remove();}catch{} }, __dur);
 }
 
-function spawnGift(type){
+function spawnGift(type, donor, giftMeta){
   const el = document.createElement("div");
   el.className = "gift-item gift-item--" + type;
 
@@ -943,6 +1077,8 @@ function spawnGift(type){
     type === "galaxy" ? "🌌" :
     type === "meteor" ? "☄️" :
     type === "king"   ? "👑" :
+    type === "dragonking" ? "🐲" :
+    type === "supernova"  ? "🌠" :
     "💰";
 
   el.textContent = emoji;
@@ -950,18 +1086,20 @@ function spawnGift(type){
   el.style.bottom = "10%";
 
   giftLayer.appendChild(el);
-  setTimeout(()=>el.remove(), 5000);
+  setTimeout(()=>el.remove(), 2000);
 
-  if (type === "rocket") spawnBigGift("🚀", "rocket");
-  if (type === "dragon") spawnBigGift("🐉", "dragon");
-  if (type === "phoenix") spawnBigGift("🦅", "phoenix");
-  if (type === "galaxy") spawnBigGift("🌌", "galaxy");
-  if (type === "meteor") spawnBigGift("☄️", "meteor");
-  if (type === "king") spawnBigGift("👑", "king");
+  if (type === "rocket") spawnBigGift("🚀", "rocket", donor, giftMeta);
+  if (type === "dragon") spawnBigGift("🐉", "dragon", donor, giftMeta);
+  if (type === "phoenix") spawnBigGift("🦅", "phoenix", donor, giftMeta);
+  if (type === "galaxy") spawnBigGift("🌌", "galaxy", donor, giftMeta);
+  if (type === "meteor") spawnBigGift("☄️", "meteor", donor, giftMeta);
+  if (type === "king") spawnBigGift("👑", "king", donor, giftMeta);
+  if (type === "dragonking") spawnBigGift("🐲", "dragonking", donor, giftMeta);
+  if (type === "supernova") spawnBigGift("🌠", "supernova", donor, giftMeta);
 }
 socket.on("gift", ({ gift, donor })=>{
   // spawn animation
-  spawnGift(gift.type);
+  spawnGift(gift.type, donor, gift);
 
   // also push a small chat-bubble like donate note
   try{
@@ -1136,5 +1274,9 @@ socket.on("room-closed", ({ reason }) => {
 
 
   </script>
+
+<!-- VIP TICKER (donation banner) -->
+<div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
+
 </body>
 </html>
