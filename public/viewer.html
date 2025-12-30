@@ -934,17 +934,17 @@ if (guestPipWrap) {
 
 // ===== GIFT ENGINE (client) =====
 const GIFT_CLIENT_CATALOG = {
-  heart:  { emoji:"❤️", cost:1,  title:"Tim" },
+  heart:  { emoji:"❤️", cost:5,  title:"Tim" },
   flower: { emoji:"🌸", cost:5,  title:"Hoa" },
-  rocket: { emoji:"🚀", cost:20, title:"Rocket" },
-  coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
-  dragon: { emoji:"🐉", cost:120, title:"Rồng" },
-  phoenix:{ emoji:"🦅", cost:200, title:"Phượng hoàng" },
-  galaxy: { emoji:"🌌", cost:300, title:"Dải ngân hà" },
-  meteor: { emoji:"☄️", cost:500, title:"Sao băng" },
-  king:   { emoji:"👑", cost:800, title:"Vương miện" },
-  dragonking: { emoji:"🐲", cost:1500, title:"Dragon King" },
-  supernova:  { emoji:"🌠", cost:2200, title:"Supernova" },
+  rocket: { emoji:"🚀", cost:5, title:"Rocket" },
+  coin:   { emoji:"💰", cost:5, title:"Túi tiền" },
+  dragon: { emoji:"🐉", cost:5, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:5, title:"Phượng hoàng" },
+  galaxy: { emoji:"🌌", cost:5, title:"Dải ngân hà" },
+  meteor: { emoji:"☄️", cost:5, title:"Sao băng" },
+  king:   { emoji:"👑", cost:5, title:"Vương miện" },
+  dragonking: { emoji:"🐲", cost:5, title:"Dragon King" },
+  supernova:  { emoji:"🌠", cost:5, title:"Supernova" },
 };
 
 document.querySelectorAll(".gift-bar button").forEach(btn=>{
@@ -997,7 +997,8 @@ function spawnBigGiftSfx(mode){
     o2.stop(now + (isVip ? 0.36 : 0.24));
 
     setTimeout(()=>{ try{ctx.close();}catch{} }, 600);
-  }catch{}
+  }
+  catch{}
 }
 
 function spawnGiftParticles(mode){

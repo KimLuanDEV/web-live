@@ -44,7 +44,7 @@ const GIFT_CATALOG = {
 };
 
 
-const START_COINS = 200; // coin mặc định cho mỗi người (demo)
+const START_COINS = 200000; // coin mặc định cho mỗi người (demo)
 function clampInt(n, min, max){
   n = Number(n);
   if (!Number.isFinite(n)) n = 0;
