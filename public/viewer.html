@@ -224,25 +224,8 @@
 </div>
 
 
-<div id="giftConfirm" class="ncf hidden">
-  <div class="ncf__bg"></div>
-  <div class="ncf__box">
-    <h3>🎁 Xác nhận tặng quà</h3>
-    <p id="giftConfirmText"></p>
-    <div class="ncf__actions">
-      <button id="giftCancel">Hủy</button>
-      <button id="giftOk">Tặng</button>
-    </div>
-  </div>
-</div>
-
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-
-
-
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -1389,55 +1372,6 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
     giftPanel.classList.add("hidden");
   });
 });
-
-
-const giftGrid = document.querySelector(".gift-panel__grid");
-
-socket.on("gift-catalog", (catalog) => {
-  giftGrid.innerHTML = Object.entries(catalog).map(([key, g]) => `
-    <button class="gift-item" data-gift="${key}">
-      <div class="gift-emoji">${g.emoji}</div>
-      <div class="gift-cost">${g.cost}💰</div>
-    </button>
-  `).join("");
-});
-
-let pendingGift = null;
-
-document.addEventListener("click", (e) => {
-  const btn = e.target.closest("[data-gift]");
-  if (!btn) return;
-
-  const gift = btn.dataset.gift;
-  const combo = currentCombo; // x1 / x5 / x10
-  const g = giftCatalog[gift];
-
-  pendingGift = { gift, combo };
-
-  document.getElementById("giftConfirmText").innerHTML =
-    `Bạn muốn tặng <b>${g.emoji} ${g.title}</b><br>
-     Giá: <b>${g.cost * combo} coin</b>?`;
-
-  giftConfirm.classList.remove("hidden");
-});
-
-giftCancel.onclick = () => {
-  pendingGift = null;
-  giftConfirm.classList.add("hidden");
-};
-
-giftOk.onclick = () => {
-  if (!pendingGift) return;
-
-  socket.emit("send-gift", {
-    roomId,
-    gift: pendingGift.gift,
-    combo: pendingGift.combo
-  });
-
-  pendingGift = null;
-  giftConfirm.classList.add("hidden");
-};
 
 
   </script>

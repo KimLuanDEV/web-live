@@ -174,9 +174,6 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
-  socket.emit("gift-catalog", GIFT_CATALOG);
-  
-
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);
   if (!rid) return cb?.({ ok: false, reason: "empty" });
