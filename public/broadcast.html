@@ -184,6 +184,15 @@
   <div id="chatBox" class="chatbox"></div>
 </div>
 
+<div class="card" style="margin-top:12px">
+  <div class="badge badge--info">🎁 Gift Engine</div>
+  <div class="gift-board gift-board--host">
+    <div class="gift-board__meta">Tổng donate: <b id="giftTotalCoinsHost">0</b> coin</div>
+    <div id="giftTopListHost" class="gift-board__list"></div>
+  </div>
+</div>
+
+
 <!-- NEON CONFIRM (Back to Lobby) -->
 <div id="neonConfirm" class="ncf hidden" aria-hidden="true">
   <div class="ncf__bg"></div>
@@ -484,7 +493,174 @@ if(nameFromLobby){
     };
 
     const socket = io();
-    document.body.classList.add("is-host");
+    
+
+
+// ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
+const vipTicker = document.getElementById("vipTicker");
+let __vipQueue = [];
+let __vipBusy = false;
+
+function showVipTicker(text, ms){
+  try{
+    if (!vipTicker) return;
+    const item = document.createElement("div");
+    item.className = "vip-ticker__item";
+    item.textContent = text;
+    vipTicker.appendChild(item);
+    // auto remove after animation
+    setTimeout(()=>{ try{ item.classList.add("hide"); }catch{} }, Math.max(0, ms-350));
+    setTimeout(()=>{ try{ item.remove(); }catch{} }, ms+200);
+  }catch{}
+}
+
+function enqueueVip(text, ms=3000){
+  __vipQueue.push({ text, ms });
+  if (!__vipBusy) runVipQueue();
+}
+
+function runVipQueue(){
+  if (__vipBusy) return;
+  const next = __vipQueue.shift();
+  if (!next) return;
+  __vipBusy = true;
+  showVipTicker(next.text, next.ms);
+  setTimeout(()=>{
+    __vipBusy = false;
+    runVipQueue();
+  }, next.ms + 120);
+}
+
+function freezeChat(ms=1000){
+  try{
+    document.body.classList.add("chat-frozen");
+    setTimeout(()=>{ try{document.body.classList.remove("chat-frozen");}catch{} }, ms);
+  }catch{}
+}
+
+function startVipSpotlight(ms=1200){
+  try{
+    // add overlay class
+    document.body.classList.add("vip-spotlight");
+    // zoom main card if exists
+    const card = document.getElementById("hostCard") || document.getElementById("hostCardGuest");
+    if (card) card.classList.add("vip-zoom");
+    // remove
+    setTimeout(()=>{
+      try{
+        document.body.classList.remove("vip-spotlight");
+        if (card) card.classList.remove("vip-zoom");
+      }catch{}
+    }, ms);
+  }catch{}
+}
+
+function spawnFireworksBurst(){
+  try{
+    const layer = document.createElement("div");
+    layer.className = "vip-fireworks";
+    document.body.appendChild(layer);
+
+    const n = 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "vip-fireworks__p";
+      p.style.left = (50 + (Math.random()*18-9))+"%";
+      p.style.top  = (22 + (Math.random()*18-9))+"%";
+      p.style.setProperty("--dx", (Math.random()*360-180)+"px");
+      p.style.setProperty("--dy", (Math.random()*340-220)+"px");
+      p.style.setProperty("--rot",(Math.random()*160-80)+"deg");
+      p.style.setProperty("--sc",(Math.random()*0.9+0.7));
+      layer.appendChild(p);
+    }
+
+    setTimeout(()=>{ try{layer.remove();}catch{} }, 1600);
+  }catch{}
+}
+// ===== /VIP TICKER =====
+// ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
+function attachSpeakingIndicator(videoEl, targetEl){
+  try{
+    if (!videoEl || !targetEl) return;
+    let ctx = null, src = null, analyser = null, data = null, raf = 0;
+    let speaking = false;
+    let lastOn = 0;
+
+    function start(){
+      const st = videoEl.srcObject;
+      if (!st) return;
+      const at = st.getAudioTracks && st.getAudioTracks()[0];
+      if (!at) return; // no audio -> skip
+
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      data = new Uint8Array(analyser.frequencyBinCount);
+
+      src = ctx.createMediaStreamSource(new MediaStream([at]));
+      src.connect(analyser);
+
+      const TH = 16; // threshold 0..255 (tuning)
+      const HOLD_MS = 450;
+
+      const loop = ()=>{
+        if (!analyser) return;
+        analyser.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i=0;i<data.length;i++) sum += data[i];
+        const avg = sum / data.length;
+
+        const now = Date.now();
+        if (avg > TH){
+          lastOn = now;
+          if (!speaking){
+            speaking = true;
+            targetEl.classList.add("is-speaking");
+          }
+        } else {
+          if (speaking && (now - lastOn) > HOLD_MS){
+            speaking = false;
+            targetEl.classList.remove("is-speaking");
+          }
+        }
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    }
+
+    function stop(){
+      try{ if (raf) cancelAnimationFrame(raf); }catch{}
+      raf = 0;
+      try{ targetEl.classList.remove("is-speaking"); }catch{}
+      speaking = false;
+      try{ if (src) src.disconnect(); }catch{}
+      src = null;
+      try{ if (ctx) ctx.close(); }catch{}
+      ctx = null;
+      analyser = null;
+      data = null;
+    }
+
+    // restart when stream changes
+    const _set = ()=>{
+      stop();
+      start();
+    };
+
+    // run now + also after play
+    _set();
+    videoEl.addEventListener("loadedmetadata", _set);
+    videoEl.addEventListener("play", _set);
+
+    // expose for manual cleanup
+    videoEl.__stopSpeakingIndicator = stop;
+  }catch(e){
+    console.warn("attachSpeakingIndicator error:", e);
+  }
+}
+// ===== /AUTO SPEAKING HIGHLIGHT =====
+
+document.body.classList.add("is-host");
     // ===== CTRL TAB (collapse/expand) =====
     (function initCtrlTabHost(){
       const fab = document.getElementById("ctrlFabHost");
@@ -899,7 +1075,32 @@ socket.emit("join-room", {
       }
     });
 
-    socket.on("disconnectPeer", ({ peerId }) => {
+    
+
+// ===== ICE RESTART: host regenerates offer when asked =====
+socket.on('request-ice-restart', async ({ from, reason })=>{
+  try{
+    // from viewer
+    const pc = pcs.get(from);
+    if (pc){
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
+      socket.emit('offer', { to: from, description: pc.localDescription });
+      log('ICE restart -> new offer to viewer ' + from + (reason ? ' ('+reason+')' : ''));
+      return;
+    }
+    // from guest (if guest asks host)
+    if (pcGuestIn && approvedGuestId === from){
+      const offer = await pcGuestIn.createOffer({ iceRestart: true });
+      await pcGuestIn.setLocalDescription(offer);
+      socket.emit('offer', { to: from, description: pcGuestIn.localDescription });
+      log('ICE restart -> new offer to guest ' + from + (reason ? ' ('+reason+')' : ''));
+      return;
+    }
+  }catch(e){ log('ICE restart error: ' + (e?.message||e)); }
+});
+// ===== /ICE RESTART =====
+socket.on("disconnectPeer", ({ peerId }) => {
       const pc = pcs.get(peerId);
       if (pc) {
         pc.close();
@@ -966,6 +1167,7 @@ socket.emit("join-room", {
 
       pcGuestIn.ontrack = (e) => {
         guestVideo.srcObject = e.streams[0];
+        try{ attachSpeakingIndicator(guestVideo, document.getElementById('guestPipWrapHost')); }catch{}
       };
 
       pcGuestIn.onicecandidate = (e) => {
@@ -1002,6 +1204,7 @@ socket.emit("join-room", {
         });
 
         preview.srcObject = localStream;
+    try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
         btnStart.disabled = true;
         btnStop.disabled = false;
         hostFlipBtn.disabled = false;
@@ -1065,6 +1268,7 @@ socket.emit("join-room", {
         }
         localStream.addTrack(newVideoTrack);
         preview.srcObject = localStream;
+    try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
 
         // replace for all viewer peers
         for (const [viewerId, pc] of pcs.entries()) {
@@ -1389,8 +1593,20 @@ socket.on("viewer-count", ({ count }) => {
 
 
 const giftLayer = document.getElementById("giftLayer");
+const giftTotalCoinsHost = document.getElementById("giftTotalCoinsHost");
+const giftTopListHost = document.getElementById("giftTopListHost");
+socket.on("gift-stats", ({ totalCoins, topDonors })=>{
+  if (giftTotalCoinsHost) giftTotalCoinsHost.textContent = String(totalCoins ?? 0);
+  if (giftTopListHost){
+    const arr = Array.isArray(topDonors) ? topDonors : [];
+    giftTopListHost.innerHTML = arr.length
+      ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
+      : `<div class="gift-board__empty">Chưa có donate</div>`;
+  }
+});
 
-function spawnGift(type){
+
+function spawnGift(type, donor, giftMeta){
   const el = document.createElement("div");
   el.className = "gift-item";
 
@@ -1407,11 +1623,18 @@ function spawnGift(type){
   setTimeout(()=>el.remove(), 2000);
 }
 
-socket.on("gift", ({ gift })=>{
-  spawnGift(gift.type);
+socket.on("gift", ({ gift, donor })=>{
+  spawnGift(gift.type, donor, gift);
+  try{
+    const note = document.createElement("div");
+    note.className = "gift-toast";
+    const em = gift.emoji || "🎁";
+    note.textContent = `${em} ${donor || "Ai đó"} donate +${gift.coins || 0} coin`;
+    document.body.appendChild(note);
+    setTimeout(()=>note.classList.add("hide"), 1600);
+    setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
+  }catch{}
 });
-
-
 const hostNameInput = document.getElementById("hostNameInput");
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");
 
@@ -1545,6 +1768,10 @@ socket.on("live-ended-stats", (stats) => {
 
 
 
+
+
+<!-- VIP TICKER (donation banner) -->
+<div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
 
 </body>
 </html>
