@@ -52,9 +52,6 @@
         <div class="card">
      <div class="live-stage" id="liveStageHost" style="margin-top:10px">
 
-      <div class="spotlight-overlay" id="spotlightOverlay"></div>
-
-
       <div class="gift-layer" id="giftLayer"></div>
 
   <!-- HOST MAIN -->
@@ -347,8 +344,6 @@
 </div>
   
   <script src="/socket.io/socket.io.js"></script>
-  <script src="/gift-effects.js"></script>
-
   <script>
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
@@ -499,31 +494,6 @@ if(nameFromLobby){
 
     const socket = io();
     
-// ===== FORCE GIFT ANIMATION (HOST) =====
-socket.on("gift", ({ gift, donor }) => {
-  if (!gift || !gift.emoji) return;
-
-  const layer = document.getElementById("giftLayer");
-  if (!layer) return;
-
-  const el = document.createElement("div");
-  el.className = "reaction-float";
-  el.textContent = gift.emoji;
-
-  el.style.setProperty("--x", Math.random() * 0.6 + 0.2);
-  el.style.setProperty("--y", 0.8);
-  el.style.setProperty("--dx", (Math.random() * 120 - 60) + "px");
-  el.style.setProperty("--rot", (Math.random() * 40 - 20) + "deg");
-  el.style.setProperty("--sc", 1.2);
-
-  layer.appendChild(el);
-  setTimeout(() => el.remove(), 1800);
-});
-
-
-
-
-
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -568,17 +538,22 @@ function freezeChat(ms=1000){
   }catch{}
 }
 
-function startVipSpotlight(ms = 1200){
-  const el = document.getElementById("spotlightOverlay");
-  if (!el) return;
-
-  el.classList.add("is-on");
-
-  setTimeout(()=>{
-    el.classList.remove("is-on");
-  }, ms);
+function startVipSpotlight(ms=1200){
+  try{
+    // add overlay class
+    document.body.classList.add("vip-spotlight");
+    // zoom main card if exists
+    const card = document.getElementById("hostCard") || document.getElementById("hostCardGuest");
+    if (card) card.classList.add("vip-zoom");
+    // remove
+    setTimeout(()=>{
+      try{
+        document.body.classList.remove("vip-spotlight");
+        if (card) card.classList.remove("vip-zoom");
+      }catch{}
+    }, ms);
+  }catch{}
 }
-
 
 function spawnFireworksBurst(){
   try{
@@ -1617,7 +1592,7 @@ socket.on("viewer-count", ({ count }) => {
 });
 
 
-
+const giftLayer = document.getElementById("giftLayer");
 const giftTotalCoinsHost = document.getElementById("giftTotalCoinsHost");
 const giftTopListHost = document.getElementById("giftTopListHost");
 socket.on("gift-stats", ({ totalCoins, topDonors })=>{
@@ -1647,8 +1622,6 @@ function spawnGift(type, donor, giftMeta){
   giftLayer.appendChild(el);
   setTimeout(()=>el.remove(), 2000);
 }
-
-const giftLayer = document.getElementById("giftLayer");
 
 socket.on("gift", ({ gift, donor })=>{
   spawnGift(gift.type, donor, gift);

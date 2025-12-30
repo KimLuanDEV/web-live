@@ -1908,7 +1908,7 @@ button.is-loading{
   width:44px;
   height:44px;
   border-radius:50%;
-  font-size:15px;
+  font-size:18px;
   z-index:10;
   color:#fff;
   cursor:pointer;
@@ -2615,62 +2615,4 @@ body.vip-spotlight .vip-zoom{
 .gift-panel .gift-board__list{
   max-height: 120px;
   overflow: auto;
-}
-
-/* ===== FIX: GIFT ANIMATION OVER VIDEO (HOST + GUEST) ===== */
-.live-stage{
-  position: relative;
-}
-
-.gift-layer{
-  position: absolute !important;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9999 !important;
-}
-
-.video-card,
-.video-card__inner,
-.video-card video{
-  position: relative;
-  z-index: 1;
-}
-
-
-/* ===== SPOTLIGHT OVERLAY ===== */
-.spotlight-overlay{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:9000;
-  opacity:0;
-  transition:opacity .25s ease;
-}
-
-/* nền tối */
-.spotlight-overlay::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:rgba(0,0,0,.55);
-}
-
-/* vùng spotlight */
-.spotlight-overlay::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:45%;
-  width:60%;
-  height:60%;
-  transform:translate(-50%,-50%);
-  border-radius:50%;
-  box-shadow:
-    0 0 0 9999px rgba(0,0,0,.55),
-    0 0 60px rgba(255,215,0,.6);
-}
-
-/* bật spotlight */
-.spotlight-overlay.is-on{
-  opacity:1;
 }
