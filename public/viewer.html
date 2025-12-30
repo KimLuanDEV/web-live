@@ -126,6 +126,10 @@
   <button data-gift="dragon">🐉</button>
   <button data-gift="phoenix">🦅</button>
   <button data-gift="galaxy">🌌</button>
+  <button data-gift="meteor">☄️</button>
+  <button data-gift="king">👑</button>
+</div>
+
 </div>
 
 <div class="gift-wallet">
@@ -847,11 +851,13 @@ if (guestPipWrap) {
 const GIFT_CLIENT_CATALOG = {
   heart:  { emoji:"❤️", cost:1,  title:"Tim" },
   flower: { emoji:"🌸", cost:5,  title:"Hoa" },
-  rocket: { emoji:"🚀", cost:20, title:"Rocket" },
-  coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
-  dragon: { emoji:"🐉", cost:120, title:"Rồng" },
-  phoenix:{ emoji:"🦅", cost:200, title:"Phượng hoàng" },
-  galaxy: { emoji:"🌌", cost:300, title:"Dải ngân hà" },
+  rocket: { emoji:"🚀", cost:10, title:"Rocket" },
+  coin:   { emoji:"💰", cost:20, title:"Túi tiền" },
+  dragon: { emoji:"🐉", cost:30, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:50, title:"Phượng hoàng" },
+  galaxy: { emoji:"🌌", cost:100, title:"Dải ngân hà" },
+  meteor: { emoji:"☄️", cost:150, title:"Sao băng" },
+  king:   { emoji:"👑", cost:200, title:"Vương miện" },
 };
 
 document.querySelectorAll(".gift-bar button").forEach(btn=>{
@@ -864,6 +870,48 @@ document.querySelectorAll(".gift-bar button").forEach(btn=>{
 // ===== /GIFT ENGINE (client) =====
 const giftLayer = document.getElementById("giftLayer");
 
+function spawnBigGiftSfx(mode){
+  try{
+    // WebAudio beep (no external files)
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const o = ctx.createOscillator();
+    const g = ctx.createGain();
+    o.type = "sine";
+    const now = ctx.currentTime;
+    const base = mode==="king" ? 330 : mode==="meteor" ? 220 : mode==="galaxy" ? 260 : 300;
+    o.frequency.setValueAtTime(base, now);
+    o.frequency.exponentialRampToValueAtTime(base*2.2, now+0.18);
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(0.18, now+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, now+0.22);
+    o.connect(g); g.connect(ctx.destination);
+    o.start(now);
+    o.stop(now+0.24);
+    setTimeout(()=>{ try{ctx.close();}catch{} }, 400);
+  }catch{}
+}
+
+function spawnGiftParticles(mode){
+  try{
+    const wrap = document.createElement("div");
+    wrap.className = "gift-particles gift-particles--" + (mode||"");
+    document.body.appendChild(wrap);
+    const n = mode==="meteor" ? 26 : mode==="king" ? 32 : 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "gift-p";
+      p.style.left = (Math.random()*100)+"%";
+      p.style.top  = (Math.random()*100)+"%";
+      p.style.setProperty("--dx", (Math.random()*220-110)+"px");
+      p.style.setProperty("--dy", (Math.random()*220-140)+"px");
+      p.style.setProperty("--rot", (Math.random()*120-60)+"deg");
+      p.style.setProperty("--sc", (Math.random()*0.7+0.6));
+      wrap.appendChild(p);
+    }
+    setTimeout(()=>{ try{wrap.remove();}catch{} }, 2200);
+  }catch{}
+}
+
 function spawnBigGift(emoji, mode){
   const big = document.createElement("div");
   big.className = "gift-big " + (mode ? ("gift-big--"+mode) : "");
@@ -874,7 +922,11 @@ function spawnBigGift(emoji, mode){
     <div class="gift-big__fx"></div>
   `;
   document.body.appendChild(big);
-  setTimeout(()=>big.classList.add("hide"), 1400);
+  spawnBigGiftSfx(mode);
+  spawnGiftParticles(mode);
+  if (mode==="meteor" || mode==="king") document.body.classList.add("gift-shake");
+  setTimeout(()=>{ try{document.body.classList.remove("gift-shake");}catch{} }, 520);
+setTimeout(()=>big.classList.add("hide"), 1400);
   setTimeout(()=>{ try{big.remove();}catch{} }, 2200);
 }
 
@@ -889,6 +941,8 @@ function spawnGift(type){
     type === "dragon" ? "🐉" :
     type === "phoenix"? "🦅" :
     type === "galaxy" ? "🌌" :
+    type === "meteor" ? "☄️" :
+    type === "king"   ? "👑" :
     "💰";
 
   el.textContent = emoji;
@@ -896,12 +950,14 @@ function spawnGift(type){
   el.style.bottom = "10%";
 
   giftLayer.appendChild(el);
-  setTimeout(()=>el.remove(), 2000);
+  setTimeout(()=>el.remove(), 5000);
 
   if (type === "rocket") spawnBigGift("🚀", "rocket");
   if (type === "dragon") spawnBigGift("🐉", "dragon");
   if (type === "phoenix") spawnBigGift("🦅", "phoenix");
   if (type === "galaxy") spawnBigGift("🌌", "galaxy");
+  if (type === "meteor") spawnBigGift("☄️", "meteor");
+  if (type === "king") spawnBigGift("👑", "king");
 }
 socket.on("gift", ({ gift, donor })=>{
   // spawn animation

@@ -2264,3 +2264,97 @@ video {
 .gift-item--phoenix{ filter: drop-shadow(0 0 18px rgba(255,120,40,.25)) drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
 .gift-item--galaxy{ filter: drop-shadow(0 0 18px rgba(95,168,255,.25)) drop-shadow(0 10px 18px rgba(0,0,0,.45)); }
 /* ===== /BIG FX: PHOENIX / GALAXY ===== */
+
+
+/* ===== BIG FX: METEOR / KING + PARTICLES + SHAKE ===== */
+body.gift-shake{
+  animation: giftShake .52s ease-in-out;
+}
+@keyframes giftShake{
+  0%,100%{ transform: translate3d(0,0,0); }
+  10%{ transform: translate3d(-2px,1px,0); }
+  20%{ transform: translate3d(2px,-1px,0); }
+  30%{ transform: translate3d(-3px,-1px,0); }
+  40%{ transform: translate3d(3px,2px,0); }
+  50%{ transform: translate3d(-2px,2px,0); }
+  60%{ transform: translate3d(2px,-2px,0); }
+  70%{ transform: translate3d(-1px,1px,0); }
+  80%{ transform: translate3d(1px,-1px,0); }
+  90%{ transform: translate3d(-1px,0px,0); }
+}
+
+.gift-big--meteor .gift-big__fx{
+  opacity:1;
+  background:
+    linear-gradient(120deg, transparent 0%, rgba(255,255,255,.08) 30%, transparent 55%),
+    radial-gradient(520px 320px at 50% 60%, rgba(255,211,110,.18), transparent 65%),
+    radial-gradient(900px 520px at 50% 70%, rgba(255,59,107,.10), transparent 72%);
+  animation: meteorStreak 1.4s ease-out forwards;
+}
+@keyframes meteorStreak{
+  0%{ transform: translateX(-16%) translateY(8%) skewX(-10deg); opacity:0; filter: blur(1px); }
+  16%{ opacity:1; }
+  100%{ transform: translateX(12%) translateY(-10%) skewX(-10deg); opacity:0; filter: blur(0px); }
+}
+.gift-big--meteor .gift-big__emoji{ animation: meteorDrop 1.4s ease-out forwards; }
+@keyframes meteorDrop{
+  0%{ transform: translateY(-26px) scale(.86) rotate(-12deg); opacity:0 }
+  14%{ opacity:1 }
+  55%{ transform: translateY(-6px) scale(1.14) rotate(6deg) }
+  100%{ transform: translateY(-16px) scale(1.10) rotate(0deg); opacity:1 }
+}
+
+.gift-big--king .gift-big__fx{
+  opacity:1;
+  background:
+    radial-gradient(520px 340px at 50% 58%, rgba(255,211,110,.24), transparent 65%),
+    radial-gradient(860px 520px at 50% 70%, rgba(95,168,255,.10), transparent 72%);
+  animation: kingGlow 1.4s ease-out forwards;
+}
+@keyframes kingGlow{
+  0%{ transform: scale(.88); opacity:0; }
+  20%{ opacity:1; }
+  100%{ transform: scale(1.18); opacity:0; }
+}
+.gift-big--king .gift-big__emoji{ animation: kingPop 1.4s ease-out forwards; }
+@keyframes kingPop{
+  0%{ transform: translateY(22px) scale(.80); opacity:0}
+  12%{ opacity:1 }
+  40%{ transform: translateY(-14px) scale(1.18) rotate(-2deg) }
+  65%{ transform: translateY(-18px) scale(1.12) rotate(2deg) }
+  100%{ transform: translateY(-22px) scale(1.10) rotate(0deg); opacity:1 }
+}
+
+/* particles */
+.gift-particles{
+  position:fixed;
+  inset:0;
+  z-index:9997;
+  pointer-events:none;
+  overflow:hidden;
+}
+.gift-p{
+  position:absolute;
+  width:10px;
+  height:10px;
+  border-radius:3px;
+  background: rgba(255,255,255,.75);
+  box-shadow: 0 0 18px rgba(255,255,255,.22);
+  transform: translate(0,0) rotate(0deg) scale(var(--sc,1));
+  opacity:0;
+  animation: giftParticle 1.8s ease-out forwards;
+}
+.gift-particles--king .gift-p{
+  background: rgba(255,211,110,.85);
+  border-radius:999px;
+}
+.gift-particles--meteor .gift-p{
+  background: rgba(255,255,255,.78);
+  border-radius:2px;
+}
+@keyframes giftParticle{
+  0%{ opacity:0; transform: translate(0,0) rotate(0deg) scale(var(--sc,1)); }
+  12%{ opacity:1; }
+  100%{ opacity:0; transform: translate(var(--dx,0px), var(--dy,-120px)) rotate(var(--rot,0deg)) scale(calc(var(--sc,1) + .2)); }
+}
+/* ===== /BIG FX ===== */
