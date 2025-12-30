@@ -856,6 +856,24 @@ socket.emit("join-room", {
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
 
+
+
+     pc.ontrack = (event) => {
+    const track = event.track;
+
+    if (track.kind === "audio") {
+      console.log("🎤 Host nhận mic từ viewer:", viewerId);
+
+      // 🔊 RELAY AUDIO CHO TẤT CẢ VIEWER KHÁC
+      for (const [vid, vpc] of pcs.entries()) {
+        try {
+          vpc.addTrack(track);
+        } catch (e) {}
+      }
+    }
+  };
+
+
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
       pc.onicecandidate = (e) => {

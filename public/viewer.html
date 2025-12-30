@@ -196,7 +196,11 @@ btnRequestMic.onclick = async () => {
   micStatus.textContent = "⏳ Đang chờ host duyệt...";
 };
 
-// Host trả kết quả
+
+
+  // gửi audio track cho host
+  micStream.getAudioTracks().forEach(track => {
+  // ===== VIEWER MIC ONLY =====
 socket.on("viewer-mic-approved", async ({ allow }) => {
   if (!allow) {
     micStatus.textContent = "❌ Host từ chối mic";
@@ -205,17 +209,31 @@ socket.on("viewer-mic-approved", async ({ allow }) => {
 
   micStatus.textContent = "🎙️ Mic đang bật";
 
-  // bật mic
+  // Lấy mic
   micStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
+    audio: {
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true
+    },
     video: false,
   });
 
-  // gửi audio track cho host
+  // 👉 GỬI AUDIO TRACK QUA WEBRTC ĐẾN HOST
+  const pc = pcs.get("broadcaster");
+  if (!pc) {
+    console.error("❌ Chưa có PeerConnection tới host");
+    return;
+  }
+
   micStream.getAudioTracks().forEach(track => {
-    socket.emit("viewer-mic-track", { trackId: track.id });
+    pc.addTrack(track, micStream);
+    console.log("🎤 Đã add mic track vào PC");
   });
 });
+
+  });
+
 
 
 
