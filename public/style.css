@@ -2862,3 +2862,9 @@ body.vip-spotlight .vip-zoom{
     saturate(1.15)
     blur(0.6px);
 }
+
+
+/* ===== MIRROR SELFIE (HOST ONLY) ===== */
+.video-mirror {
+  transform: scaleX(-1);
+}

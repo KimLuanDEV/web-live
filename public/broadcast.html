@@ -1205,6 +1205,9 @@ socket.on("disconnectPeer", ({ peerId }) => {
         });
 
         preview.srcObject = localStream;
+       
+        applyMirrorByFacingMode(stream);
+
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
         btnStart.disabled = true;
         btnStop.disabled = false;
@@ -1269,6 +1272,8 @@ socket.on("disconnectPeer", ({ peerId }) => {
         }
         localStream.addTrack(newVideoTrack);
         preview.srcObject = localStream;
+        applyMirrorByFacingMode(localStream);
+
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
 
         // replace for all viewer peers
@@ -1762,6 +1767,19 @@ socket.on("live-ended-stats", (stats) => {
   document.addEventListener("wheel", e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
+
+
+
+
+function applyMirrorByFacingMode(stream) {
+  const videoTrack = stream.getVideoTracks()[0];
+  if (!videoTrack) return;
+
+  const settings = videoTrack.getSettings();
+  const isFrontCam = settings.facingMode === "user";
+
+  preview.classList.toggle("video-mirror", isFrontCam);
+}
 
 
 
