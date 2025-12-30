@@ -2852,19 +2852,3 @@ body.vip-spotlight .vip-zoom{
   color:#000;
 }
 /* ===== END COIN ERROR MODAL ===== */
-
-
-/* ===== BEAUTY FILTER HOST ===== */
-.video-card video.beauty {
-  filter:
-    brightness(1.05)
-    contrast(1.08)
-    saturate(1.15)
-    blur(0.6px);
-}
-
-
-/* ===== MIRROR SELFIE (HOST ONLY) ===== */
-.video-mirror {
-  transform: scaleX(-1);
-}
