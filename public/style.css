@@ -2533,3 +2533,48 @@ body.vip-spotlight .vip-zoom{
   transform: scale(1.06);
 }
 /* ===== /VIP SPOTLIGHT ===== */
+
+
+/* 🎁 Gift FAB */
+.gift-fab{
+  position:absolute;
+  left:20px;
+  bottom:20px;
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#FFD36E,#FF9F3F);
+  border:none;
+  font-size:20px;
+  z-index:10;
+  box-shadow:0 0 22px rgba(255,211,110,.55);
+}
+
+/* 🎁 Gift Panel */
+.gift-panel{
+  position:absolute;
+  right:12px;
+  bottom:130px;
+  width:260px;
+  border-radius:18px;
+  background:rgba(0,0,0,.75);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(10px);
+  z-index:12;
+  padding:10px;
+}
+
+.gift-panel.hidden{ display:none; }
+
+.gift-panel__head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:700;
+  margin-bottom:8px;
+}
+
+.gift-panel__head button{
+  width:auto;
+  padding:4px 8px;
+}
