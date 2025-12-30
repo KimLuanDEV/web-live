@@ -2852,3 +2852,45 @@ body.vip-spotlight .vip-zoom{
   color:#000;
 }
 /* ===== END COIN ERROR MODAL ===== */
+
+
+/* ===== FILTER PANEL ===== */
+.filter-panel{
+  position: fixed;
+  right: 18px;
+  bottom: 90px;
+  width: 220px;
+  background: rgba(0,0,0,.75);
+  border: 1px solid rgba(255,255,255,.2);
+  border-radius: 16px;
+  padding: 12px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 30px rgba(95,168,255,.35);
+  z-index: 999;
+}
+
+.filter-panel.hidden{ display:none }
+
+.filter-title{
+  font-weight: 700;
+  margin-bottom: 8px;
+  text-align: center;
+}
+
+.filter-grid{
+  display: grid;
+  grid-template-columns: repeat(2,1fr);
+  gap: 8px;
+}
+
+.filter-grid button{
+  padding: 8px;
+  border-radius: 10px;
+  font-size: 13px;
+  background: rgba(255,255,255,.08);
+}
+
+.filter-grid button.is-active{
+  border-color: var(--green);
+  box-shadow: 0 0 12px rgba(37,240,154,.5);
+}

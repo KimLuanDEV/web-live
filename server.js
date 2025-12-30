@@ -557,6 +557,11 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
   });
 
+
+  socket.on("host-filter", ({ roomId, filter })=>{
+  socket.to(roomId).emit("host-filter", filter);
+});
+
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
     io.to(to).emit("offer", { from: socket.id, description });

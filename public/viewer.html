@@ -1533,6 +1533,9 @@ socket.on("room-closed", ({ reason }) => {
 });
 
 
+socket.on("host-filter", filter=>{
+  player.style.filter = filter || "";
+});
 
 
   // Chặn pinch zoom (iOS)
