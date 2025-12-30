@@ -1412,7 +1412,7 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
     // lấy combo giống hệ đang có (x1/x5/x10)
     const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
 
-    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
+    
 
     giftPanel.classList.add("hidden");
   });
