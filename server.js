@@ -41,8 +41,7 @@ function getRoom(roomId) {
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
-  hands: new Set(),     // viewer giơ tay
-  activeMics: new Set(), // viewer đang được nói
+
   releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
 });
@@ -128,37 +127,6 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
-
-
-socket.on("raise-hand", ({ roomId, name }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  room.hands.add(socket.id);
-
-  io.to(room.broadcasterId).emit("hand-raised", {
-    id: socket.id,
-    name: name || "Viewer"
-  });
-});
-
-socket.on("host-handle-hand", ({ roomId, viewerId, action }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  if (room.broadcasterId !== socket.id) return;
-
-  room.hands.delete(viewerId);
-
-  if (action === "approve") {
-    room.activeMics.add(viewerId);
-    io.to(viewerId).emit("hand-approved");
-  } else {
-    io.to(viewerId).emit("hand-rejected");
-  }
-
-  io.to(room.broadcasterId).emit("hand-list-update", [...room.hands]);
-});
-
 
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);
@@ -504,11 +472,6 @@ socket.on("send-gift", ({ roomId, gift }) => {
   });
 
   socket.on("disconnect", () => {
-
-for (const room of rooms.values()) {
-  room.hands.delete(socket.id);
-  room.activeMics.delete(socket.id);
-}
 
 
   for (const [roomId, room] of rooms.entries()) {

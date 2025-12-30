@@ -151,13 +151,6 @@
     <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
   </div>
 
-<div class="card">
-  <div class="badge badge--info">✋ Viewer giơ tay</div>
-  <div id="handList" class="log">Chưa có ai</div>
-</div>
-
-
-
 </div>
 
 
@@ -343,34 +336,6 @@
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-
- const handList = document.getElementById("handList");
-
-socket.on("hand-raised", ({ id, name }) => {
-  const div = document.createElement("div");
-  div.innerHTML = `
-    ✋ <b>${name}</b>
-    <button onclick="handleHand('${id}','approve')">✅</button>
-    <button onclick="handleHand('${id}','reject')">❌</button>
-  `;
-  handList.appendChild(div);
-});
-
-function handleHand(viewerId, action){
-  socket.emit("host-handle-hand", {
-    roomId,
-    viewerId,
-    action
-  });
-}
-
-if (room.activeMics.size >= 2) {
-  io.to(viewerId).emit("hand-rejected");
-  return;
-}
-
-
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
@@ -1574,9 +1539,6 @@ socket.on("live-ended-stats", (stats) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
-
-
- 
 
 
   </script>
