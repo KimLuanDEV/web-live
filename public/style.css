@@ -2857,8 +2857,8 @@ body.vip-spotlight .vip-zoom{
 /* ===== BEAUTY FILTER HOST ===== */
 .video-card video.beauty {
   filter:
-    brightness(1.07)
+    brightness(1.05)
     contrast(1.08)
-    saturate(1.2)
-    blur(0.8px);
+    saturate(1.15)
+    blur(0.6px);
 }
