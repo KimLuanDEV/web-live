@@ -118,10 +118,6 @@
 
 <div class="video-card__inner">
       <video id="preview" autoplay playsinline muted></video>
-        <video id="guestVideo1" class="guestVideo" autoplay playsinline></video>
-        <video id="guestVideo2" class="guestVideo" autoplay playsinline></video>
-        <video id="guestVideo3" class="guestVideo" autoplay playsinline></video>
-
     </div>
   
 
@@ -132,9 +128,9 @@
 
  
   <!-- GUEST PIP -->
-  <div class="pip-wrap" id="guestPipWrapHost" class="guest-grid guest-grid--host" aria-hidden="true">
+  <div class="pip-wrap" id="guestPipWrapHost" aria-hidden="true">
     <div class="pip-badge">👤 GUEST</div>
-    <video id="guestVideo0" class="guestVideo" autoplay playsinline controls></video>
+    <video id="guestVideo" autoplay playsinline controls></video>
   </div>
 </div>
 
@@ -964,17 +960,11 @@ socket.emit("join-room", {
         }
         return;
       }
-      {
-        const gpc = guestPcs.get(from);
-        if (gpc) {
-          try {
-            await gpc.setRemoteDescription(description);
-            log("Nhận answer từ guest: " + from);
-          } catch (err) {
-            log("Lỗi answer guest: " + err.message);
-          }
-        }
-      } catch (err) {
+      if (pcGuestIn && approvedGuestId === from) {
+        try {
+          await pcGuestIn.setRemoteDescription(description);
+          log("Nhận answer từ guest: " + from);
+        } catch (err) {
           log("Lỗi answer guest: " + err.message);
         }
       }
@@ -987,17 +977,8 @@ socket.emit("join-room", {
         catch (err) { log("Lỗi addIceCandidate(viewer): " + err.message); }
         return;
       }
-      {
-        const gpc = guestPcs.get(from);
-        if (gpc) {
-          try {
-            await gpc.setRemoteDescription(description);
-            log("Nhận answer từ guest: " + from);
-          } catch (err) {
-            log("Lỗi answer guest: " + err.message);
-          }
-        }
-      }
+      if (pcGuestIn && approvedGuestId === from) {
+        try { await pcGuestIn.addIceCandidate(candidate); }
         catch (err) { log("Lỗi addIceCandidate(guest): " + err.message); }
       }
     });
@@ -1036,102 +1017,64 @@ socket.on("disconnectPeer", ({ peerId }) => {
       }
     });
 
-    // ===== Guest request/approve (multi) =====
+    // ===== Guest request/approve =====
     socket.on("guest-request", ({ guestId }) => {
-      if (!guestId) return;
-      if (!pendingGuestIds.includes(guestId) && !activeGuestIds.includes(guestId)) pendingGuestIds.unshift(guestId);
-      guestReq.textContent = `Có ${pendingGuestIds.length} guest đang chờ duyệt`;
-      renderGuestPending();
+      pendingGuestId = guestId;
+      guestReq.textContent = `GuestID: ${guestId} (bấm Chấp nhận để lên live)`;
+      btnApproveGuest.disabled = false;
+      btnRejectGuest.disabled = false;
       log("Có guest xin lên live: " + guestId);
     });
 
-    socket.on("guest-pending-list", ({ pending }) => {
-      pendingGuestIds.length = 0;
-      (pending || []).forEach(id=>pendingGuestIds.push(id));
-      guestReq.textContent = `Có ${pendingGuestIds.length} guest đang chờ duyệt`;
-      renderGuestPending();
-    });
-
-    socket.on("guest-online", ({ guestIds }) => {
-      activeGuestIds.length = 0;
-      (guestIds || []).slice(0,4).forEach(id=>activeGuestIds.push(id));
-      syncGuestSlots(activeGuestIds);
-
-      activeGuestIds.forEach(gid => socket.emit("watch-guest", { roomId, guestId: gid }));
-
-      guestReq.textContent = activeGuestIds.length ? `🟢 Đang có ${activeGuestIds.length} co-host` : "Chưa có co-host";
-      renderGuestPending();
-    });
-
-    socket.on("guest-offline", ({ guestId, guestIds }) => {
-      log("Guest offline: " + (guestId || ""));
-      if (Array.isArray(guestIds)){
-        activeGuestIds.length = 0;
-        guestIds.slice(0,4).forEach(id=>activeGuestIds.push(id));
-      } else if (guestId){
-        const idx = activeGuestIds.indexOf(guestId);
-        if (idx >= 0) activeGuestIds.splice(idx, 1);
-      }
-      syncGuestSlots(activeGuestIds);
-
-      if (guestId && guestPcs.has(guestId)){
-        try{ guestPcs.get(guestId).close(); }catch{}
-        guestPcs.delete(guestId);
-      }
-      guestReq.textContent = activeGuestIds.length ? `🟢 Đang có ${activeGuestIds.length} co-host` : "Guest đã rời.";
-      renderGuestPending();
+    socket.on("guest-offline", () => {
+      log("Guest offline");
+      approvedGuestId = null;
+      pendingGuestId = null;
+      guestReq.textContent = "Guest đã rời.";
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
+      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
+      guestVideo.srcObject = null;
     });
 
     btnApproveGuest.onclick = () => {
-      const sel = guestReq && guestReq.__sel;
-      const gid = sel ? sel.value : (pendingGuestIds[0] || "");
-      if (!gid) return;
+      if (!pendingGuestId) return;
+      approvedGuestId = pendingGuestId;
+      socket.emit("guest-approve", { roomId, guestId: pendingGuestId });
+      guestReq.textContent = `✅ Đã chấp nhận guest: ${pendingGuestId}`;
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
 
-      socket.emit("guest-approve", { roomId, guestId: gid });
-      const i = pendingGuestIds.indexOf(gid);
-      if (i >= 0) pendingGuestIds.splice(i, 1);
-      guestReq.textContent = `✅ Đã chấp nhận guest: ${gid}`;
-      renderGuestPending();
+      // Host also wants to watch guest so guest will create offer to host
+      socket.emit("watch-guest", { roomId });
     };
 
     btnRejectGuest.onclick = () => {
-      const sel = guestReq && guestReq.__sel;
-      const gid = sel ? sel.value : (pendingGuestIds[0] || "");
-      if (!gid) return;
-
-      socket.emit("guest-reject", { roomId, guestId: gid });
-      const i = pendingGuestIds.indexOf(gid);
-      if (i >= 0) pendingGuestIds.splice(i, 1);
+      if (!pendingGuestId) return;
+      socket.emit("guest-reject", { guestId: pendingGuestId });
       guestReq.textContent = "⛔ Đã từ chối guest.";
-      renderGuestPending();
+      pendingGuestId = null;
+      btnApproveGuest.disabled = true;
+      btnRejectGuest.disabled = true;
     };
 
-    // Host receives OFFER from guests
+    // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
     socket.on("offer", async ({ from, description }) => {
       // Only handle guest offers (viewers never send offers to host in this app)
-      const gid = from;
-      if (!gid) return;
+      approvedGuestId = approvedGuestId || from;
 
-      if (!activeGuestIds.includes(gid)){
-        activeGuestIds.push(gid);
-        if (activeGuestIds.length > 4) activeGuestIds.length = 4;
-      }
-      syncGuestSlots(activeGuestIds);
-
-      const old = guestPcs.get(gid);
-      if (old) { try{ old.close(); }catch{} }
-      guestPcs.delete(gid);
+      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
 
       const rtcConfig = await getRtcConfig();
-      const pcGuestIn = new RTCPeerConnection(rtcConfig);
-      guestPcs.set(gid, pcGuestIn);
-// send host tracks back to guest so guest can hear/see host (co-talk)
+      pcGuestIn = new RTCPeerConnection(rtcConfig);
+
+      // send host tracks back to guest so guest can hear/see host (co-talk)
       if (localStream) {
         localStream.getTracks().forEach(t => pcGuestIn.addTrack(t, localStream));
       }
 
       pcGuestIn.ontrack = (e) => {
-        const v = guestVideoById.get(gid) || guestVideos[0]; if (v) v.srcObject = e.streams[0];
+        guestVideo.srcObject = e.streams[0];
         try{ attachSpeakingIndicator(guestVideo, document.getElementById('guestPipWrapHost')); }catch{}
       };
 
@@ -1191,10 +1134,9 @@ socket.on("disconnectPeer", ({ peerId }) => {
         pcs.delete(id);
       }
 
-      // close all guest peers
-      for (const [gid, pc] of guestPcs.entries()){ try{ pc.close(); }catch{} }
-      guestPcs.clear();
-      guestVideos.forEach(v=>{ try{ v.srcObject=null; }catch{} });
+      // close guest peer
+      if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
+      guestVideo.srcObject = null;
 
       if (localStream) {
         localStream.getTracks().forEach(t => t.stop());
@@ -1242,9 +1184,9 @@ socket.on("disconnectPeer", ({ peerId }) => {
           if (sender) await sender.replaceTrack(newVideoTrack);
         }
 
-        // replace for all guest peers
-        for (const [gid, gpc] of guestPcs.entries()){
-          const sender = gpc.getSenders().find(s => s.track && s.track.kind === "video");
+        // replace for guest peer
+        if (pcGuestIn) {
+          const sender = pcGuestIn.getSenders().find(s => s.track && s.track.kind === "video");
           if (sender) await sender.replaceTrack(newVideoTrack);
         }
 

@@ -82,17 +82,13 @@
         <div class="reactions-layer" id="reactionsLayerViewer"></div>
 <div class="video-card__inner">
       <video id="player" autoplay playsinline></video>
-        <video id="guestVideo1" class="guestVideo" autoplay playsinline></video>
-        <video id="guestVideo2" class="guestVideo" autoplay playsinline></video>
-        <video id="guestVideo3" class="guestVideo" autoplay playsinline></video>
-
     </div>
   </div>
 
   <!-- GUEST (PIP) -->
-  <div class="pip-wrap" id="guestPipWrap" class="guest-grid guest-grid--viewer" aria-hidden="true">
+  <div class="pip-wrap" id="guestPipWrap" aria-hidden="true">
     <div class="pip-badge">👤 GUEST</div>
-    <video id="guestVideo0" class="guestVideo" autoplay playsinline></video>
+    <video id="guestPlayer" autoplay playsinline></video>
   </div>
 </div>
 
@@ -456,7 +452,8 @@ socket.on("reaction", (msg)=>{
 
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
-    
+    let guestId = null;
+
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 
@@ -509,30 +506,7 @@ socket.on("reaction", (msg)=>{
       cleanupAll();
     });
 
-    // guest events (multi 2-4)
-    const activeGuestIds = new Set();
-    const guestVideos = [
-      document.getElementById("guestVideo0"),
-      document.getElementById("guestVideo1"),
-      document.getElementById("guestVideo2"),
-      document.getElementById("guestVideo3"),
-    ];
-    const guestVideoById = new Map();
-
-    function syncGuestSlots(){
-      guestVideoById.clear();
-      const ids = Array.from(activeGuestIds).slice(0,4);
-      ids.forEach((gid, i)=>{
-        guestVideoById.set(gid, guestVideos[i]);
-        if (guestVideos[i]) guestVideos[i].dataset.guestId = gid;
-      });
-      for (let i = ids.length; i < guestVideos.length; i++){
-        if (guestVideos[i]) { guestVideos[i].srcObject = null; guestVideos[i].removeAttribute("data-guest-id"); }
-      }
-      document.body.classList.toggle("has-guest", ids.length>0);
-      if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", ids.length? "false":"true");
-    }
-
+    // guest events
     socket.on("guest-online", ({ guestId: gid }) => {
 
       document.body.classList.add("has-guest");
@@ -545,19 +519,23 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "false");
       socket.emit("watch-guest", { roomId });
     });
 
-    socket.on("guest-offline", ({ guestId, guestIds }) => {
-  if (Array.isArray(guestIds)){
-    activeGuestIds.clear();
-    guestIds.slice(0,4).forEach(id=>activeGuestIds.add(id));
-  } else if (guestId){
-    activeGuestIds.delete(guestId);
-  }
-  syncGuestSlots();
-  log("Guest offline: " + (guestId || ""));
-  setStatus(activeGuestIds.size ? ("🟢 Có " + activeGuestIds.size + " co-host") : "✅ Host online");
-  if (guestId && pcs.has(guestId)) { try{ pcs.get(guestId).close(); }catch{} pcs.delete(guestId); }
-});
-async function join() {
+    socket.on("guest-offline", () => {
+
+      document.body.classList.remove("has-guest");
+document.body.classList.remove("swap-live");
+swapped = false;
+if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
+
+      log("Guest offline");
+      guestId = null;
+      guestPlayer.srcObject = null;
+      // close guest pc if exists
+      cleanupPeer("guest");
+    });
+
+
+
+    async function join() {
       if (joined) return;
       joined = true;
       
@@ -590,7 +568,7 @@ socket.emit("join-room", { roomId, role: "viewer" });
       }
       pcs.clear();
       player.srcObject = null;
-      guestVideos.forEach(v=>{ try{ v.srcObject=null; }catch{} });
+      guestPlayer.srcObject = null;
       joined = false;
     }
 
@@ -613,15 +591,40 @@ socket.emit("join-room", { roomId, role: "viewer" });
   };
 pc.ontrack = (event) => {
   const stream = event.streams[0];
-  if (activeGuestIds.has(from)) {
-    const gv = guestVideoById.get(from) || guestVideos[0];
-    if (gv) gv.srcObject = stream;
-    try{ attachSpeakingIndicator(gv, guestPipWrap); }catch{}
-    return;
-  }
-  player.srcObject = stream;
-  try{ attachSpeakingIndicator(player, document.getElementById('liveCard')); }catch{}
-};
+
+  if (guestId && from === guestId) {
+    // ===== GUEST VIDEO =====
+    guestPlayer.srcObject = stream;
+    // voice activity highlight
+    try{ attachSpeakingIndicator(guestPlayer, document.getElementById('guestPipWrap')); }catch{}
+
+    guestPlayer.muted = false;
+    guestPlayer.playsInline = true;
+
+    guestPlayer.play().catch(() =>
+      log("Autoplay bị chặn, bấm Play ở video Guest.")
+    );
+
+  } else {
+    // ===== HOST VIDEO (CHÍNH) =====
+    player.srcObject = stream;
+    // voice activity highlight
+    try{ attachSpeakingIndicator(player, document.getElementById('hostCard')); }catch{}
+
+    // 🔥 QUAN TRỌNG: chống pause trên mobile
+    player.muted = false;        // cho phép có tiếng
+    player.playsInline = true;  // iOS Safari KHÔNG fullscreen
+
+    player.play().catch(() =>
+      log("Autoplay bị chặn, bấm Play ở video Host.")
+    );
+
+    // 🛡️ CHỐNG PAUSE KHI TAB ẨN / BACKGROUND
+    player.onpause = () => {
+      if (document.hidden) {
+        player.play().catch(() => {});
+      }
+    };
   }
 
   setStatus("🟢 Đang xem LIVE");
