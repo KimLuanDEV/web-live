@@ -2617,85 +2617,140 @@ body.vip-spotlight .vip-zoom{
   overflow: auto;
 }
 
-
-/* ===== GIFT CONFIRM MODAL ===== */
+/* ===== GIFT CONFIRM MODAL – ULTRA NEON ===== */
 .gcm{position:fixed;inset:0;z-index:9999}
 .gcm.hidden{display:none}
-.gcm__bg{
+
+.gcm-bg{
   position:absolute;inset:0;
-  background:rgba(0,0,0,.65);
-  backdrop-filter: blur(6px);
+  background:radial-gradient(circle at center,rgba(0,0,0,.4),rgba(0,0,0,.85));
+  backdrop-filter: blur(10px);
 }
-.gcm__box{
-  position:absolute;left:50%;top:50%;
+
+.gcm-box{
+  position:absolute;
+  left:50%;top:50%;
   transform:translate(-50%,-50%);
   width:min(92vw,420px);
-  background:rgba(8,12,24,.9);
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 0 40px rgba(95,168,255,.35);
-  padding:14px;
+  padding:16px;
+  border-radius:24px;
+  background:rgba(10,14,28,.92);
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 0 50px rgba(95,168,255,.35);
+  overflow:hidden;
 }
-.gcm__frame{
+
+.gcm-glow{
   position:absolute;inset:-2px;
-  border-radius:22px;
+  border-radius:26px;
   background:conic-gradient(
-    rgba(95,168,255,.6),
-    rgba(37,240,154,.5),
-    rgba(255,59,107,.5),
-    rgba(255,211,110,.5),
-    rgba(95,168,255,.6)
+    #5fa8ff,#25f09a,#ffd36e,#ff3b6b,#5fa8ff
   );
-  filter:blur(14px);
+  filter:blur(18px);
   opacity:.35;
   z-index:-1;
 }
-.gcm__scan{
+
+.gcm-scan{
   position:absolute;inset:0;
-  background:linear-gradient(120deg,transparent 40%,rgba(255,255,255,.08),transparent 60%);
-  animation:scan 2.8s linear infinite;
+  background:linear-gradient(120deg,transparent 35%,rgba(255,255,255,.08),transparent 65%);
+  animation:scan 3s linear infinite;
 }
 @keyframes scan{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
 
-.gcm__top{display:flex;justify-content:space-between;align-items:center}
-.gcm__pill{
-  display:flex;align-items:center;gap:8px;
-  padding:6px 12px;border-radius:999px;
+.gcm-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.gcm-pill{
+  display:flex;gap:8px;align-items:center;
+  padding:6px 14px;
+  border-radius:999px;
   background:rgba(0,0,0,.45);
-  border:1px solid rgba(255,255,255,.18);
-}
-.gcm__dot{
-  width:8px;height:8px;border-radius:50%;
-  background:#25F09A;box-shadow:0 0 12px #25F09A;
-}
-.gcm__x{background:none;border:none;color:#fff;font-size:18px;cursor:pointer}
-
-.gcm__content{margin-top:12px;display:grid;gap:12px}
-.gcm__gift{display:flex;gap:12px;align-items:center}
-.gcm__emoji{font-size:40px}
-.gcm__title{font-weight:800;font-size:16px}
-.gcm__sub{font-size:13px;opacity:.9}
-.sep{opacity:.5;margin:0 6px}
-
-.gcm__summary{
-  display:flex;justify-content:space-between;
-  padding:10px 12px;border-radius:14px;
-  background:rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.14);
-}
-.gcm__total{color:#FFD36E;font-size:16px}
-
-.gcm__wallet{text-align:right;font-size:13px;opacity:.85}
-
-.gcm__actions{display:flex;gap:10px;margin-top:6px}
-.gcm__btn{
-  flex:1;padding:12px;border-radius:14px;
   border:1px solid rgba(255,255,255,.2);
-  cursor:pointer;font-weight:700;
 }
-.gcm__btn.ghost{background:rgba(0,0,0,.35)}
-.gcm__btn.main{
-  background:linear-gradient(135deg,#5FA8FF,#25F09A);
+.gcm-pill .dot{
+  width:8px;height:8px;border-radius:50%;
+  background:#25f09a;
+  box-shadow:0 0 12px #25f09a;
+}
+
+.gcm-close{
+  background:none;border:none;
+  color:#fff;font-size:18px;cursor:pointer;
+}
+
+.gcm-body{margin-top:14px;display:grid;gap:16px}
+
+.gcm-gift{
+  position:relative;
+  text-align:center;
+}
+.gcm-gift-ring{
+  position:absolute;
+  left:50%;top:50%;
+  width:120px;height:120px;
+  transform:translate(-50%,-50%);
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(95,168,255,.35),transparent 70%);
+  filter:blur(2px);
+}
+.gcm-gift-emoji{
+  font-size:56px;
+  text-shadow:0 0 18px rgba(255,255,255,.6);
+}
+.gcm-gift-name{
+  margin-top:6px;
+  font-weight:800;
+  letter-spacing:.3px;
+}
+
+.gcm-info{
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:16px;
+  padding:12px;
+}
+.gcm-row{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:6px;
+}
+.gcm-row.total{
+  margin-top:6px;
+  font-size:16px;
+  color:#ffd36e;
+}
+
+.gcm-wallet{
+  text-align:right;
+  font-size:13px;
+  opacity:.9;
+}
+
+.gcm-actions{
+  display:flex;
+  gap:12px;
+  margin-top:14px;
+}
+.gcm-btn{
+  flex:1;
+  padding:14px;
+  border-radius:16px;
+  font-weight:800;
+  cursor:pointer;
+  border:none;
+}
+.gcm-btn.cancel{
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;
+}
+.gcm-btn.send{
+  background:linear-gradient(135deg,#5fa8ff,#25f09a);
   color:#000;
+  box-shadow:0 0 22px rgba(95,168,255,.6);
 }
-/* ===== /GIFT CONFIRM MODAL ===== */
+/* ===== END GIFT CONFIRM MODAL ===== */

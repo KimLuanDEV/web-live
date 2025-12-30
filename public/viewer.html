@@ -224,48 +224,56 @@
 </div>
 
 
-<!-- 🎁 GIFT CONFIRM MODAL (NEON) -->
+<!-- 🎁 GIFT CONFIRM MODAL – ULTRA NEON -->
 <div id="giftConfirmModal" class="gcm hidden" aria-hidden="true">
-  <div class="gcm__bg"></div>
+  <div class="gcm-bg"></div>
 
-  <div class="gcm__box" role="dialog" aria-modal="true">
-    <div class="gcm__frame"></div>
-    <div class="gcm__scan"></div>
+  <div class="gcm-box">
+    <div class="gcm-glow"></div>
+    <div class="gcm-scan"></div>
 
-    <div class="gcm__top">
-      <div class="gcm__pill">
-        <span class="gcm__dot"></span>
+    <div class="gcm-head">
+      <div class="gcm-pill">
+        <span class="dot"></span>
         <span>XÁC NHẬN TẶNG QUÀ</span>
       </div>
-      <button class="gcm__x" id="gcmClose">✕</button>
+      <button class="gcm-close" id="gcmClose">✕</button>
     </div>
 
-    <div class="gcm__content">
-      <div class="gcm__gift">
-        <div class="gcm__emoji" id="gcmEmoji">🎁</div>
-        <div class="gcm__info">
-          <div class="gcm__title" id="gcmTitle">Tên quà</div>
-          <div class="gcm__sub">
-            <span>Giá:</span> <b id="gcmCost">0</b> coin
-            <span class="sep">•</span>
-            <span>Combo:</span> <b id="gcmQty">x1</b>
-          </div>
+    <div class="gcm-body">
+      <!-- GIFT ICON -->
+      <div class="gcm-gift">
+        <div class="gcm-gift-ring"></div>
+        <div class="gcm-gift-emoji" id="gcmEmoji">🎁</div>
+        <div class="gcm-gift-name" id="gcmTitle">Supernova</div>
+      </div>
+
+      <!-- INFO -->
+      <div class="gcm-info">
+        <div class="gcm-row">
+          <span>Giá / quà</span>
+          <b><span id="gcmCost">0</span> coin</b>
+        </div>
+        <div class="gcm-row">
+          <span>Combo</span>
+          <b id="gcmQty">x1</b>
+        </div>
+        <div class="gcm-row total">
+          <span>Tổng trừ</span>
+          <b id="gcmTotal">0 coin</b>
         </div>
       </div>
 
-      <div class="gcm__summary">
-        <div>💰 Tổng trừ:</div>
-        <b class="gcm__total" id="gcmTotal">0 coin</b>
-      </div>
-
-      <div class="gcm__wallet">
-        Ví hiện tại: <b id="gcmWallet">0</b> coin
+      <div class="gcm-wallet">
+        💼 Ví hiện tại: <b id="gcmWallet">0</b> coin
       </div>
     </div>
 
-    <div class="gcm__actions">
-      <button id="gcmCancel" class="gcm__btn ghost">Hủy</button>
-      <button id="gcmOk" class="gcm__btn main">🎁 GỬI QUÀ</button>
+    <div class="gcm-actions">
+      <button class="gcm-btn cancel" id="gcmCancel">Hủy</button>
+      <button class="gcm-btn send" id="gcmOk">
+        🎁 GỬI QUÀ
+      </button>
     </div>
   </div>
 </div>
