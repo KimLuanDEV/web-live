@@ -47,6 +47,13 @@
 
         <div class="live-stage" id="liveStage" style="margin-top:10px">
 
+          <!-- 🎥 GIFT VIDEO OVERLAY -->
+<div class="gift-video-layer hidden" id="giftVideoLayer">
+  <video id="giftVideo" playsinline muted></video>
+  <div class="gift-video-title" id="giftVideoTitle"></div>
+</div>
+
+
           <div class="gift-layer" id="giftLayer"></div>
 
   <!-- HOST -->
@@ -121,6 +128,8 @@
     <button data-gift="king">👑</button>
     <button data-gift="dragonking">🐲</button>
     <button data-gift="supernova">🌠</button>
+    <button data-gift="goddragon">🐲🔥</button>
+
   </div>
 </div>
 
@@ -134,6 +143,7 @@
     <video id="guestPlayer" autoplay playsinline></video>
   </div>
 </div>
+
 
 
         </div>
@@ -1131,6 +1141,13 @@ gcmOk.addEventListener("click", ()=>{
   const wallet = Number(walletCoins.textContent || 0);
   const total = __pendingGift.cost * __pendingGift.qty;
 
+if (total >= 5000) {
+  // VIP EFFECT
+  startVipSpotlight(1500);
+  spawnFireworksBurst();
+  freezeChat(1200);
+}
+
   // ❌ KHÔNG ĐỦ COIN → MỞ MODAL LỖI
   if (wallet < total){
     closeGiftConfirm();
@@ -1168,6 +1185,7 @@ document.querySelectorAll(".gift-panel__grid button").forEach(btn=>{
       king:{emoji:"👑",cost:800,title:"Vương miện"},
       dragonking:{emoji:"🐲",cost:1500,title:"Dragon King"},
       supernova:{emoji:"🌠",cost:2200,title:"Supernova"},
+      goddragon:{emoji:"🐲🔥",cost:5000,title:"Thần Long"},
     }[type];
     if (!catalog) return;
 
@@ -1575,6 +1593,34 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
 
     giftPanel.classList.add("hidden");
   });
+});
+
+
+const giftVideoLayer = document.getElementById("giftVideoLayer");
+const giftVideo = document.getElementById("giftVideo");
+const giftVideoTitle = document.getElementById("giftVideoTitle");
+
+socket.on("gift-video", ({ video, title, from, vip }) => {
+  if (!video || !giftVideoLayer) return;
+
+  giftVideo.src = video;
+  giftVideo.currentTime = 0;
+  giftVideoLayer.classList.remove("hidden");
+  giftVideoTitle.textContent = `🎁 ${from} gửi ${title}`;
+
+  giftVideo.play().catch(()=>{});
+
+  // VIP effect thêm
+  if (vip){
+    startVipSpotlight(2000);
+    freezeChat(1500);
+  }
+
+  giftVideo.onended = () => {
+    giftVideo.pause();
+    giftVideo.src = "";
+    giftVideoLayer.classList.add("hidden");
+  };
 });
 
 
