@@ -859,20 +859,37 @@ socket.emit("join-room", {
       pcs.set(viewerId, pc);
 
 
-pc.ontrack = (e) => {
-  if (e.track.kind === "audio") {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    audio.muted = false;
+pc.ontrack = (event) => {
+  const stream = event.streams[0];
 
-    // tránh bị GC
-    audio.style.display = "none";
-    document.body.appendChild(audio);
+  if (event.track.kind === "audio") {
+    let audio = document.getElementById("viewerAudio");
+    if (!audio) {
+      audio = document.createElement("audio");
+      audio.id = "viewerAudio";
+      audio.autoplay = true;
+      audio.muted = false;
+      document.body.appendChild(audio);
+    }
+    audio.srcObject = stream;
+    return;
 
-    log("🎤 Đang nghe mic viewer: " + viewerId);
+ const track = event.track;
+
+  if (track.kind === "audio") {
+    // 🔁 relay audio viewer cho toàn bộ viewer khác
+    for (const [vid, viewerPc] of pcs.entries()) {
+      try {
+        viewerPc.addTrack(track, event.streams[0]);
+      } catch {}
+    }
   }
+
+  }
+
+  // video viewer (nếu có)
 };
+
 
 
 
