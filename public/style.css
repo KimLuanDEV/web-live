@@ -482,16 +482,6 @@ code{
 }
 
 
-
-/* ===== SPEAKING HIGHLIGHT (auto voice activity) ===== */
-.video-card.is-speaking,
-.pip-wrap.is-speaking{
-  box-shadow:
-    0 0 0 2px rgba(37,240,154,.55),
-    0 0 26px rgba(37,240,154,.22),
-    0 16px 46px rgba(0,0,0,.45);
-}
-
 /* ===== LIVE META (viewer count + timer inside live-overlay) ===== */
 .live-meta{
   display:flex;
@@ -2034,4 +2024,64 @@ video {
 /* viền card room ảo */
 .lobby-card--virtual{
   border: 1px dashed rgba(95,168,255,.45);
+}
+
+/* ===== MULTI GUEST GRID (viewer/host) ===== */
+.guest-grid{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  display:grid;
+  grid-template-columns: 1fr;
+  gap:10px;
+  z-index:9;
+}
+@media (min-width: 720px){
+  .guest-grid{ grid-template-columns: 1fr 1fr; }
+}
+.guest-tile{
+  width: min(34vw, 240px);
+  max-width: 260px;
+  aspect-ratio: 16/9;
+  border-radius: 16px;
+  overflow:hidden;
+  border: 1px solid rgba(255,255,255,.18);
+  background:#000;
+  box-shadow: 0 18px 52px rgba(0,0,0,.55);
+  position:relative;
+}
+.guest-tile video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  background:#000;
+}
+.guest-tile__badge{
+  position:absolute;
+  left:10px; top:10px;
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.55);
+  color:#fff;
+}
+.guest-tile__actions{
+  position:absolute;
+  right:8px; top:8px;
+  display:flex;
+  gap:6px;
+  pointer-events:auto;
+}
+.guest-tile__btn{
+  width:30px;height:30px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.55);
+  color:#fff;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  padding:0;
 }
