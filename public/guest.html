@@ -259,12 +259,25 @@
     const socket = io();
     
 
-// ===== GIFT EFFECT (GUEST) =====
+// ===== FORCE GIFT ANIMATION (GUEST) =====
 socket.on("gift", ({ gift, donor }) => {
-  if (!gift || !gift.type) return;
+  if (!gift || !gift.emoji) return;
 
-  // render animation
-  spawnGift(gift.type, donor, gift);
+  const layer = document.getElementById("giftLayer");
+  if (!layer) return;
+
+  const el = document.createElement("div");
+  el.className = "reaction-float";
+  el.textContent = gift.emoji;
+
+  el.style.setProperty("--x", Math.random() * 0.6 + 0.2);
+  el.style.setProperty("--y", 0.8);
+  el.style.setProperty("--dx", (Math.random() * 120 - 60) + "px");
+  el.style.setProperty("--rot", (Math.random() * 40 - 20) + "deg");
+  el.style.setProperty("--sc", 1.2);
+
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 1800);
 });
 
 
