@@ -65,9 +65,6 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
-<!-- GIFT QUICK BUTTON -->
-<button class="gift-fab" id="giftFab" title="Quà tặng">🎁</button>
-
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
   <input
@@ -79,36 +76,6 @@
 </div>
 
 
-
-
-<!-- GIFT PANEL (inside video) -->
-<div class="gift-panel hidden" id="giftPanel" role="dialog" aria-label="Quà tặng">
-  <div class="gift-panel__head">
-    <span class="gift-panel__title">🎁 Quà tặng</span>
-    <button id="giftClose" class="gift-panel__close" type="button" aria-label="Đóng">✕</button>
-  </div>
-
-  <div class="gift-bar">
-  <button data-gift="heart">❤️</button>
-  <button data-gift="flower">🌸</button>
-  <button data-gift="rocket">🚀</button>
-  <button data-gift="coin">💰</button>
-  <button data-gift="dragon">🐉</button>
-  <button data-gift="phoenix">🦅</button>
-  <button data-gift="galaxy">🌌</button>
-  <button data-gift="meteor">☄️</button>
-  <button data-gift="king">👑</button>
-  <button data-gift="dragonking">🐲</button>
-  <button data-gift="supernova">🌠</button>
-</div>
-
-  <div class="gift-wallet">
-  <div class="gift-wallet__row">
-    <span class="gift-wallet__label">Ví coin:</span>
-    <b id="walletCoins">0</b>
-    <span class="gift-wallet__unit">coin</span>
-  </div>
-</div>
 <div class="join-overlay" id="joinOverlayViewer" aria-live="polite"></div>
 <div class="pin-overlay" id="pinOverlay"></div>
 
@@ -151,11 +118,28 @@
       <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
     </div>
 
-  
+  <div class="gift-bar">
+  <button data-gift="heart">❤️</button>
+  <button data-gift="flower">🌸</button>
+  <button data-gift="rocket">🚀</button>
+  <button data-gift="coin">💰</button>
+  <button data-gift="dragon">🐉</button>
+  <button data-gift="phoenix">🦅</button>
+  <button data-gift="galaxy">🌌</button>
+  <button data-gift="meteor">☄️</button>
+  <button data-gift="king">👑</button>
+  <button data-gift="dragonking">🐲</button>
+  <button data-gift="supernova">🌠</button>
+</div>
 
 </div>
 
-
+<div class="gift-wallet">
+  <div class="gift-wallet__row">
+    <span class="gift-wallet__label">Ví coin:</span>
+    <b id="walletCoins">0</b>
+    <span class="gift-wallet__unit">coin</span>
+  </div>
   <div class="gift-wallet__row gift-wallet__row--small">
     <span class="gift-wallet__hint">Mỗi quà trừ coin • dùng để test Gift Engine</span>
   </div>
@@ -1009,26 +993,6 @@ document.querySelectorAll(".gift-bar button").forEach(btn => {
   };
 });
 // ===== /GIFT ENGINE (client) =====
-
-// ===== GIFT PANEL TOGGLE (inside video) =====
-try{
-  const giftFab = document.getElementById("giftFab");
-  const giftPanel = document.getElementById("giftPanel");
-  const giftClose = document.getElementById("giftClose");
-
-  function openGift(){
-    if (!giftPanel) return;
-    giftPanel.classList.remove("hidden");
-  }
-  function closeGift(){
-    if (!giftPanel) return;
-    giftPanel.classList.add("hidden");
-  }
-
-  if (giftFab) giftFab.addEventListener("click", (e)=>{ e.preventDefault(); openGift(); });
-  if (giftClose) giftClose.addEventListener("click", (e)=>{ e.preventDefault(); closeGift(); });
-}catch{}
-// ===== /GIFT PANEL TOGGLE =====
 const giftLayer = document.getElementById("giftLayer");
 
 function spawnBigGiftSfx(mode){
