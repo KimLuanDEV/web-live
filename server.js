@@ -225,6 +225,17 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
+  socket.on("resume-guests", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  const guests = [];
+  if (room.guestId) guests.push(room.guestId);
+
+  socket.emit("resume-guests-list", { guests });
+});
+
 
 socket.on("resume-viewers", ({ roomId }) => {
   if (!roomId) return;
