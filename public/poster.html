@@ -10,12 +10,18 @@
 <body class="poster-page">
 
 <!-- BACKGROUND -->
-<div class="poster-bg"></div>
+<div class="poster-bg parallax-bg layer-bg"></div>
+
+<div class="poster-glow layer-glow"></div>
+
 <div class="poster-scan"></div>
 
 <!-- HERO -->
 <section class="poster-hero">
-  <div class="hero-card">
+ <div class="hero-card parallax-fg-soft mouse-parallax layer-front">
+
+
+
     <div class="hero-logo neon-text">
   <span class="neon-shine">🔥 LIVESTREAM PRO</span>
 </div>
@@ -39,8 +45,12 @@
 </section>
 
 <!-- SHOWCASE -->
-<section class="poster-showcase">
-  <div class="showcase-box">
+<section class="poster-showcase reveal">
+
+<div class="showcase-box parallax-fg mouse-parallax-strong layer-mid">
+
+
+
     <div class="showcase-glow"></div>
     <div class="showcase-text">
       <h2>🎥 Trải nghiệm như đang ở sân khấu thật</h2>
@@ -57,7 +67,8 @@
   <h2>✨ TÍNH NĂNG NỔI BẬT</h2>
 
   <div class="feature-grid">
-    <div class="feature-card">
+    <div class="feature-card reveal-item">
+
       <div class="ic">⚡</div>
       <h3>Realtime thật sự</h3>
       <p>Không delay – Host và Viewer tương tác tức thì.</p>
@@ -100,15 +111,18 @@
   <h2>🚀 HOẠT ĐỘNG NHƯ THẾ NÀO?</h2>
 
   <div class="how-steps">
-    <div class="step">
+    <div class="step reveal-item">
+
       <div class="num">1</div>
       <p>Vào sảnh xem các host đang LIVE</p>
     </div>
-    <div class="step">
+    <div class="step reveal-item">
+
       <div class="num">2</div>
       <p>Tạo phòng hoặc xin lên live</p>
     </div>
-    <div class="step">
+   <div class="step reveal-item">
+
       <div class="num">3</div>
       <p>Chat • Tặng quà • Giao lưu realtime</p>
     </div>
@@ -128,6 +142,132 @@
     location.href = "/lobby.html";
   };
 </script>
+
+
+<script>
+  const observer = new IntersectionObserver(
+    entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("is-visible");
+          observer.unobserve(entry.target);
+        }
+      });
+    },
+    {
+      threshold: 0.18
+    }
+  );
+
+  document.querySelectorAll(".reveal, .reveal-item")
+    .forEach(el => observer.observe(el));
+</script>
+
+
+<script>
+  let lastY = 0;
+  let ticking = false;
+
+  function onScrollParallax(){
+    lastY = window.scrollY;
+
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const bg = document.querySelector(".parallax-bg");
+        const fg = document.querySelector(".parallax-fg");
+        const fgSoft = document.querySelector(".parallax-fg-soft");
+
+        if (bg) {
+          bg.style.transform = `translateY(${lastY * 0.18}px)`;
+        }
+        if (fg) {
+          fg.style.transform = `translateY(${lastY * -0.06}px)`;
+        }
+        if (fgSoft) {
+          fgSoft.style.transform = `translateY(${lastY * -0.03}px)`;
+        }
+
+        ticking = false;
+      });
+
+      ticking = true;
+    }
+  }
+
+  window.addEventListener("scroll", onScrollParallax, { passive: true });
+</script>
+
+
+<script>
+  const layers = {
+    bg: document.querySelector(".layer-bg"),
+    glow: document.querySelector(".layer-glow"),
+    mid: document.querySelector(".layer-mid"),
+    front: document.querySelector(".layer-front")
+  };
+
+  let scrollY = 0;
+  let mouseX = 0;
+  let mouseY = 0;
+  let ticking = false;
+
+  function updateLayers(){
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    const mx = (mouseX / w - 0.5);
+    const my = (mouseY / h - 0.5);
+
+    // SCROLL PARALLAX
+    if (layers.bg)
+      layers.bg.style.transform = `translateY(${scrollY * 0.12}px)`;
+    if (layers.glow)
+      layers.glow.style.transform = `translateY(${scrollY * 0.18}px)`;
+    if (layers.mid)
+      layers.mid.style.transform =
+        `translateY(${scrollY * -0.05}px)`;
+    if (layers.front)
+      layers.front.style.transform =
+        `translateY(${scrollY * -0.08}px)`;
+
+    // MOUSE PARALLAX (DESKTOP)
+    if (window.matchMedia("(pointer: fine)").matches) {
+      if (layers.mid) {
+        layers.mid.style.transform +=
+          ` perspective(1000px)
+            rotateX(${(-my * 6).toFixed(2)}deg)
+            rotateY(${( mx * 6).toFixed(2)}deg)`;
+      }
+      if (layers.front) {
+        layers.front.style.transform +=
+          ` perspective(1200px)
+            rotateX(${(-my * 10).toFixed(2)}deg)
+            rotateY(${( mx * 10).toFixed(2)}deg)`;
+      }
+    }
+
+    ticking = false;
+  }
+
+  function requestTick(){
+    if (!ticking){
+      requestAnimationFrame(updateLayers);
+      ticking = true;
+    }
+  }
+
+  window.addEventListener("scroll", () => {
+    scrollY = window.scrollY;
+    requestTick();
+  }, { passive:true });
+
+  window.addEventListener("mousemove", e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+    requestTick();
+  });
+</script>
+
 
 </body>
 </html>

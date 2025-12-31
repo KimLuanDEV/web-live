@@ -3156,3 +3156,153 @@ body.vip-spotlight .vip-zoom{
     0 0 24px rgba(255,211,110,.9),
     0 0 60px rgba(255,211,110,.7);
 }
+
+
+/* ===== SCROLL REVEAL ANIMATION ===== */
+
+/* trạng thái ban đầu */
+.reveal,
+.reveal-item{
+  opacity:0;
+  transform: translateY(30px) scale(.98);
+  filter: blur(6px);
+  transition:
+    opacity .9s ease,
+    transform .9s cubic-bezier(.2,.8,.2,1),
+    filter .9s ease;
+  will-change: opacity, transform;
+}
+
+/* khi hiện */
+.reveal.is-visible,
+.reveal-item.is-visible{
+  opacity:1;
+  transform: translateY(0) scale(1);
+  filter: blur(0);
+}
+
+/* delay so le cho item */
+.reveal-item:nth-child(1){ transition-delay:.05s }
+.reveal-item:nth-child(2){ transition-delay:.15s }
+.reveal-item:nth-child(3){ transition-delay:.25s }
+.reveal-item:nth-child(4){ transition-delay:.35s }
+.reveal-item:nth-child(5){ transition-delay:.45s }
+.reveal-item:nth-child(6){ transition-delay:.55s }
+
+/* mobile: nhẹ hơn */
+@media (max-width:520px){
+  .reveal,
+  .reveal-item{
+    transform: translateY(18px);
+    filter: blur(3px);
+  }
+}
+
+/* ===== PARALLAX EFFECT ===== */
+
+/* background di chuyển chậm */
+.parallax-bg{
+  will-change: transform;
+  transform: translateY(0);
+}
+
+/* foreground nổi nhẹ */
+.parallax-fg{
+  will-change: transform;
+  transform: translateY(0);
+}
+
+/* foreground rất nhẹ (hero) */
+.parallax-fg-soft{
+  will-change: transform;
+  transform: translateY(0);
+}
+
+/* mobile: giảm hiệu ứng */
+@media (max-width: 520px){
+  .parallax-bg,
+  .parallax-fg,
+  .parallax-fg-soft{
+    will-change: auto;
+  }
+}
+
+
+/* ===== MOUSE PARALLAX (DESKTOP ONLY) ===== */
+
+.mouse-parallax,
+.mouse-parallax-strong{
+  will-change: transform;
+  transform-style: preserve-3d;
+  transition: transform .15s ease-out;
+}
+
+/* nghiêng nhẹ */
+.mouse-parallax{
+  --mx: 0deg;
+  --my: 0deg;
+  transform:
+    perspective(900px)
+    rotateX(var(--my))
+    rotateY(var(--mx))
+    translateZ(0);
+}
+
+/* nghiêng rõ hơn (showcase) */
+.mouse-parallax-strong{
+  --mx: 0deg;
+  --my: 0deg;
+  transform:
+    perspective(1200px)
+    rotateX(var(--my))
+    rotateY(var(--mx))
+    translateZ(0);
+}
+
+/* hover tăng chiều sâu */
+.mouse-parallax:hover{
+  transform:
+    perspective(900px)
+    rotateX(calc(var(--my) * 1.2))
+    rotateY(calc(var(--mx) * 1.2));
+}
+
+/* mobile / tablet: tắt hoàn toàn */
+@media (max-width: 768px){
+  .mouse-parallax,
+  .mouse-parallax-strong{
+    transform: none !important;
+    transition: none !important;
+  }
+}
+
+/* ===== MULTI DEPTH PARALLAX ===== */
+
+/* glow layer */
+.poster-glow{
+  position:fixed;
+  inset:-20%;
+  background:
+    radial-gradient(600px 400px at 30% 20%, rgba(255,59,107,.25), transparent 60%),
+    radial-gradient(700px 500px at 70% 80%, rgba(95,168,255,.22), transparent 60%);
+  pointer-events:none;
+  z-index:-1;
+}
+
+/* depth base */
+.layer-bg,
+.layer-glow,
+.layer-mid,
+.layer-front{
+  will-change: transform;
+}
+
+/* mobile giảm hiệu ứng */
+@media (max-width:768px){
+  .layer-bg,
+  .layer-glow,
+  .layer-mid,
+  .layer-front{
+    transform:none !important;
+  }
+}
