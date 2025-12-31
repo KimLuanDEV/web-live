@@ -74,6 +74,16 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
+
+<!-- 🔔 GUEST REQUEST ICON -->
+<button id="guestReqFab"
+        class="guest-req-fab"
+        title="Yêu cầu xin lên live">
+  👤
+  <span id="guestReqDot" class="guest-req-dot hidden"></span>
+</button>
+
+
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
   <input
@@ -347,6 +357,34 @@
   </div>
 </div>
   
+
+
+<!-- 👤 GUEST REQUEST MODAL -->
+<div id="guestReqModal" class="ncf hidden">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box">
+    <div class="ncf__top">
+      <div class="ncf__pill">
+        <span class="ncf__dot"></span>
+        <span>YÊU CẦU LÊN LIVE</span>
+      </div>
+      <button class="ncf__x" id="guestReqClose">✕</button>
+    </div>
+
+    <div id="guestReqList" class="log">
+      Chưa có yêu cầu
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button id="btnApproveGuest" disabled>✅ Chấp nhận</button>
+      <button id="btnRejectGuest" disabled>❌ Từ chối</button>
+    </div>
+  </div>
+</div>
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
@@ -1201,6 +1239,10 @@ socket.on("disconnectPeer", ({ peerId }) => {
 
       // Host also wants to watch guest so guest will create offer to host
       socket.emit("watch-guest", { roomId });
+
+      pendingGuestIds.shift();
+      renderGuestReqList();
+
     };
 
     btnRejectGuest.onclick = () => {
@@ -1210,6 +1252,10 @@ socket.on("disconnectPeer", ({ peerId }) => {
       pendingGuestId = null;
       btnApproveGuest.disabled = true;
       btnRejectGuest.disabled = true;
+
+      pendingGuestIds.shift();
+      renderGuestReqList();
+
     };
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
@@ -1850,6 +1896,52 @@ if (profile){
     avatar.src = profile.avatar;
   }
 }
+
+
+const guestReqFab = document.getElementById("guestReqFab");
+const guestReqDot = document.getElementById("guestReqDot");
+const guestReqModal = document.getElementById("guestReqModal");
+const guestReqClose = document.getElementById("guestReqClose");
+const guestReqList = document.getElementById("guestReqList");
+
+let pendingGuestIds = [];
+
+// 📩 Server báo có guest xin lên
+socket.on("guest-requested", ({ guestId }) => {
+  if (!pendingGuestIds.includes(guestId)) {
+    pendingGuestIds.push(guestId);
+  }
+
+  guestReqFab.classList.add("active");
+  guestReqDot.classList.remove("hidden");
+  renderGuestReqList();
+});
+
+function renderGuestReqList(){
+  if (!pendingGuestIds.length){
+    guestReqList.textContent = "Chưa có yêu cầu";
+    guestReqFab.classList.remove("active");
+    guestReqDot.classList.add("hidden");
+    return;
+  }
+
+  guestReqList.innerHTML = pendingGuestIds
+    .map(id => `👤 ${id}`)
+    .join("<br>");
+
+  btnApproveGuest.disabled = false;
+  btnRejectGuest.disabled = false;
+}
+
+// mở modal
+guestReqFab.onclick = () => {
+  guestReqModal.classList.remove("hidden");
+};
+
+// đóng modal
+guestReqClose.onclick = () => {
+  guestReqModal.classList.add("hidden");
+};
 
 
 

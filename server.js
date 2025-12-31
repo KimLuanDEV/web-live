@@ -238,6 +238,14 @@ socket.on("resume-viewers", ({ roomId }) => {
   });
 });
 
+socket.on("guest-request-live", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room || !room.broadcasterId) return;
+
+  io.to(room.broadcasterId).emit("guest-requested", {
+    guestId: socket.id
+  });
+});
 
 
 

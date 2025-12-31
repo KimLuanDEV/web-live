@@ -874,7 +874,8 @@ socket.on("reaction", (msg)=>{
 // ✅ bật PIP (YOU)
         document.body.classList.add("has-guest");
         if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "false");
-
+        
+        socket.emit("guest-request-live", { roomId });
         socket.emit("join-room", { roomId, role: "guest", profile: { name: (chatName.value||"Guest").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
         setStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
