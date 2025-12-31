@@ -3463,8 +3463,8 @@ body[data-fps="safe"] .text3d{
 /* ===== GUEST REQUEST FAB ===== */
 .guest-req-fab{
   position:absolute;
-  bottom:15px;
-  left:50px;
+  bottom:10px;
+  left:65px;
   width:44px;
   height:44px;
   border-radius:50%;

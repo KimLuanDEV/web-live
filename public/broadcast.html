@@ -1209,6 +1209,7 @@ socket.on("disconnectPeer", ({ peerId }) => {
       }
     });
 
+    /*
     // ===== Guest request/approve =====
     socket.on("guest-request", ({ guestId }) => {
       pendingGuestId = guestId;
@@ -1217,7 +1218,8 @@ socket.on("disconnectPeer", ({ peerId }) => {
       btnRejectGuest.disabled = false;
       log("Có guest xin lên live: " + guestId);
     });
-
+    */
+   
     socket.on("guest-offline", () => {
       log("Guest offline");
       approvedGuestId = null;
@@ -1912,16 +1914,26 @@ socket.on("guest-requested", ({ guestId }) => {
     pendingGuestIds.push(guestId);
   }
 
+  // 🔔 bật icon
   guestReqFab.classList.add("active");
   guestReqDot.classList.remove("hidden");
+
+  // ✅ BẬT NÚT DUYỆT
+  btnApproveGuest.disabled = false;
+  btnRejectGuest.disabled  = false;
+
   renderGuestReqList();
 });
+
 
 function renderGuestReqList(){
   if (!pendingGuestIds.length){
     guestReqList.textContent = "Chưa có yêu cầu";
     guestReqFab.classList.remove("active");
     guestReqDot.classList.add("hidden");
+
+    btnApproveGuest.disabled = true;
+    btnRejectGuest.disabled  = true;
     return;
   }
 
@@ -1929,9 +1941,11 @@ function renderGuestReqList(){
     .map(id => `👤 ${id}`)
     .join("<br>");
 
+  // ✅ CÓ YÊU CẦU → BẬT NÚT
   btnApproveGuest.disabled = false;
-  btnRejectGuest.disabled = false;
+  btnRejectGuest.disabled  = false;
 }
+
 
 // mở modal
 guestReqFab.onclick = () => {
