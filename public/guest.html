@@ -336,7 +336,7 @@
     const btnLeaveLive = document.getElementById("btnLeaveLive");
     const guestFlipBtn = document.getElementById("guestFlipBtn");
     
-let hostStream = null;
+
 
 
     // PIP elements
@@ -1021,20 +1021,7 @@ socket.on("offer", async ({ from, description, resume, role }) => {
   // (guest không nhận offer từ viewer)
   let pc = pcs.get(from);
 
- // 🔄 NẾU LÀ RESUME → RESET VIDEO STREAM
-  if (resume) {
-    log("🔄 Resume offer → reset host video");
-
-    try {
-      if (hostVideo.srcObject) {
-        hostVideo.pause();
-        hostVideo.srcObject = null;
-      }
-    } catch {}
-
-    hostStream = new MediaStream();
-  }
-
+ 
 
   // 🔄 CHỈ TẠO PC NẾU CHƯA CÓ (KHÔNG CLEANUP)
   if (!pc || pc.signalingState === "closed") {
@@ -1074,9 +1061,7 @@ function wireIceWatchdog(pc, role) {
 
     pc.ontrack = (e) => {
 
- // 🔥 LUÔN ADD TRACK VÀO STREAM MỚI
-      if (!hostStream) hostStream = new MediaStream();
-      
+
       hostStream.addTrack(e.track);
 
       setTimeout(() => {
