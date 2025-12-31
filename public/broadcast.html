@@ -1231,8 +1231,7 @@ socket.on("disconnectPeer", ({ peerId }) => {
       // Host also wants to watch guest so guest will create offer to host
       socket.emit("watch-guest", { roomId });
 
-      pendingGuestIds.shift();
-      renderGuestReqList();
+      
 
     };
 
@@ -1244,9 +1243,7 @@ socket.on("disconnectPeer", ({ peerId }) => {
       btnApproveGuest.disabled = true;
       btnRejectGuest.disabled = true;
 
-      pendingGuestIds.shift();
-      renderGuestReqList();
-
+     
     };
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
