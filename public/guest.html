@@ -724,6 +724,35 @@ socket.on("live-stop", () => {
 });
 
 
+
+// ===== 🔄 GUEST AUTO RECONNECT KHI HOST QUAY LẠI =====
+let isCoHosting = false;
+
+// đánh dấu khi guest được duyệt lên live
+socket.on("guest-approved", () => {
+  isCoHosting = true;
+});
+
+// đánh dấu khi guest bị kick / rời live
+socket.on("guest-kicked", () => {
+  isCoHosting = false;
+});
+
+// 🔥 QUAN TRỌNG: khi host reload xong → guest CHỦ ĐỘNG xin reconnect
+socket.on("host-back-online", () => {
+  if (!isCoHosting) return;
+
+  log("🔄 Host back online → guest request reconnect");
+
+  socket.emit("peer-needs-reconnect", {
+    roomId,
+    peerId: socket.id,
+    role: "guest"
+  });
+});
+
+
+
 // ===== REACTIONS (tap/click to heart) =====
 function clamp01(n){ return Math.max(0, Math.min(1, n)); }
 function now(){ return Date.now(); }
