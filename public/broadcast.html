@@ -377,6 +377,9 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
+
+let pendingGuestIds = [];
+
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -1022,6 +1025,40 @@ socket.on("reaction", (msg)=>{
     const btnApproveGuest = document.getElementById("btnApproveGuest");
     const btnRejectGuest = document.getElementById("btnRejectGuest");
     const guestVideo = document.getElementById("guestVideo");
+
+
+
+btnApproveGuest?.addEventListener("click", () => {
+  if (!pendingGuestIds.length) return;
+
+  const guestId = pendingGuestIds.shift();
+
+  console.log("✅ Approve guest:", guestId);
+
+  socket.emit("host-approve-guest", {
+    roomId,
+    guestId
+  });
+
+  renderGuestReqList();
+});
+
+btnRejectGuest?.addEventListener("click", () => {
+  if (!pendingGuestIds.length) return;
+
+  const guestId = pendingGuestIds.shift();
+
+  console.log("❌ Reject guest:", guestId);
+
+  socket.emit("host-reject-guest", {
+    roomId,
+    guestId
+  });
+
+  renderGuestReqList();
+});
+
+
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -1892,7 +1929,7 @@ const guestReqModal = document.getElementById("guestReqModal");
 const guestReqClose = document.getElementById("guestReqClose");
 const guestReqList = document.getElementById("guestReqList");
 
-let pendingGuestIds = [];
+
 
 // 📩 Server báo có guest xin lên
 socket.on("guest-requested", ({ guestId }) => {
