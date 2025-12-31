@@ -2928,11 +2928,7 @@ body.vip-spotlight .vip-zoom{
   background:linear-gradient(135deg,#ff3b6b,#ffd36e);
   color:#000;
 }
-.hero-btn.ghost{
-  background:rgba(255,255,255,.08);
-  border:1px solid rgba(255,255,255,.18);
-  color:#fff;
-}
+
 .hero-btn.big{font-size:16px;padding:16px 24px}
 
 .hero-badges{
@@ -3037,4 +3033,126 @@ body.vip-spotlight .vip-zoom{
   padding:20px;
   font-size:12px;
   opacity:.6;
+}
+
+
+/* ===== NEON TEXT ANIMATION ===== */
+
+/* LOGO NEON */
+.neon-text{
+  position:relative;
+  font-size:32px;
+  font-weight:900;
+  letter-spacing:1px;
+  color:#fff;
+  text-shadow:
+    0 0 10px rgba(255,59,107,.6),
+    0 0 24px rgba(255,59,107,.6),
+    0 0 48px rgba(255,59,107,.4);
+  animation: neonPulse 2.6s infinite ease-in-out;
+}
+
+/* Pulse glow */
+@keyframes neonPulse{
+  0%,100%{
+    text-shadow:
+      0 0 10px rgba(255,59,107,.6),
+      0 0 24px rgba(255,59,107,.6),
+      0 0 48px rgba(255,59,107,.4);
+  }
+  50%{
+    text-shadow:
+      0 0 16px rgba(255,211,110,.9),
+      0 0 38px rgba(255,211,110,.8),
+      0 0 72px rgba(255,211,110,.6);
+  }
+}
+
+/* SHINE SCAN */
+.neon-shine{
+  position:relative;
+  display:inline-block;
+  overflow:hidden;
+}
+
+.neon-shine::after{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-120%;
+  width:120%;
+  height:100%;
+  background:linear-gradient(
+    120deg,
+    transparent,
+    rgba(255,255,255,.55),
+    transparent
+  );
+  animation: shineMove 3.2s infinite;
+}
+
+@keyframes shineMove{
+  0%{left:-120%}
+  50%{left:120%}
+  100%{left:120%}
+}
+
+/* ===== SUBTITLE ANIMATION ===== */
+.neon-sub span{
+  display:inline-block;
+  opacity:0;
+  transform:translateY(8px);
+  animation: subFade 0.9s ease forwards;
+}
+
+.neon-sub span:nth-child(1){
+  animation-delay:.2s;
+}
+.neon-sub span:nth-child(2){
+  animation-delay:.6s;
+}
+
+@keyframes subFade{
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+/* ===== CTA BUTTON GLOW ===== */
+.hero-btn.primary{
+  position:relative;
+  overflow:hidden;
+  box-shadow:
+    0 0 14px rgba(255,59,107,.6),
+    0 0 34px rgba(255,59,107,.4);
+}
+
+.hero-btn.primary::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:inherit;
+  background:conic-gradient(
+    from 0deg,
+    rgba(255,59,107,.8),
+    rgba(255,211,110,.8),
+    rgba(95,168,255,.8),
+    rgba(255,59,107,.8)
+  );
+  filter:blur(14px);
+  opacity:.45;
+  z-index:-1;
+  animation: btnGlowSpin 4s linear infinite;
+}
+
+@keyframes btnGlowSpin{
+  to{transform:rotate(360deg)}
+}
+
+.hero-btn.primary:hover{
+  transform:scale(1.06);
+  box-shadow:
+    0 0 24px rgba(255,211,110,.9),
+    0 0 60px rgba(255,211,110,.7);
 }
