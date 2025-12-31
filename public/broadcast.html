@@ -1209,6 +1209,14 @@ guestReqModal.querySelector(".ncf__bg").onclick = () => {
   guestReqModal.classList.add("hidden");
 };
 
+
+// khi có guest xin live
+socket.on("guest-request", ({ guestId }) => {
+  guestReqIcon.classList.add("has-request");
+  guestReqList.textContent = `Guest: ${guestId}`;
+  window.__pendingGuestId = guestId;
+});
+
     socket.on("guest-offline", () => {
       log("Guest offline");
       approvedGuestId = null;
