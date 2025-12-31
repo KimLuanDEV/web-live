@@ -1139,15 +1139,14 @@ gcmOk.addEventListener("click", ()=>{
   }
 
   // ✅ ĐỦ COIN → GỬI
-  const profile = getUserProfile();
-
-socket.emit("send-gift", {
-  roomId,
-  gift,
-  qty,
-  name: profile?.name || "Guest",
-  avatar: profile?.avatar || "",
-});
+  socket.emit("send-gift", {
+    roomId,
+    name: (chatName?.value || "Viewer").slice(0,20),
+    gift: {
+      type: __pendingGift.type,
+      qty: __pendingGift.qty
+    }
+  });
 
   closeGiftConfirm();
 });
@@ -1224,16 +1223,7 @@ document.querySelectorAll(".gift-bar button").forEach(btn => {
     const type = btn.dataset.gift;
     const name = (chatName.value || "Viewer").trim().slice(0,20);
     const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
-    const profile = getUserProfile();
-
-socket.emit("send-gift", {
-  roomId,
-  gift,
-  qty,
-  name: profile?.name || "Guest",
-  avatar: profile?.avatar || "",
-});
-
+    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
   };
 });
 // ===== /GIFT ENGINE (client) =====
