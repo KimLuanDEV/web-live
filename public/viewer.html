@@ -1578,29 +1578,6 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
 });
 
 
-function genAvatar(name){
-  return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(name)}`;
-}
-
-
-const viewerProfile = {
-  id: socket.id,
-  name: chatName.value || "Viewer",
-  avatar: genAvatar(chatName.value),
-  level: 1,
-  exp: 0,
-  badge: "normal"
-};
-
-socket.emit("user-profile", viewerProfile);
-
-
-socket.on("user-level-update", (u)=>{
-  if(u.id === socket.id){
-    viewerProfile.level = u.level;
-  }
-});
-
   </script>
 
 <!-- VIP TICKER (donation banner) -->

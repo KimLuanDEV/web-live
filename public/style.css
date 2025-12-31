@@ -2852,36 +2852,3 @@ body.vip-spotlight .vip-zoom{
   color:#000;
 }
 /* ===== END COIN ERROR MODAL ===== */
-
-/* ===== AVATAR + LEVEL ===== */
-.chat-user{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  font-weight:600;
-}
-
-.chat-avatar{
-  width:22px;
-  height:22px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.3);
-}
-
-.chat-level{
-  font-size:11px;
-  opacity:.75;
-}
-
-.badge-host{
-  color:#FFD36E;
-}
-
-.badge-vip{
-  color:#5FA8FF;
-  text-shadow:0 0 12px rgba(95,168,255,.8);
-}
-
-.avatar-glow{
-  box-shadow:0 0 18px rgba(255,211,110,.9);
-}
