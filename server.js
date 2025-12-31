@@ -56,6 +56,7 @@ for (const roomId in persisted) {
     broadcasterId: null,        // chờ host quay lại
     viewers: new Set(),
     guestId: null,
+    pendingGuests: new Set(), // ✅ THÊM DÒNG NÀY
     liveStartTs: data.liveStartTs,
     pinnedNote: data.pinnedNote || null,
     hostProfile: data.hostProfile || null,
@@ -224,6 +225,50 @@ emitLobbyUpdate();
 
 
 io.on("connection", (socket) => {
+
+
+socket.on("guest-request-live", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+
+  // không cho xin nếu đã có guest
+  if (room.guestId) return;
+
+  room.pendingGuests.add(socket.id);
+
+  // 🔔 báo cho HOST
+  if (room.broadcasterId) {
+    io.to(room.broadcasterId).emit("guest-requested", {
+      guestId: socket.id
+    });
+  }
+});
+
+
+socket.on("host-approve-guest", ({ roomId, guestId }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+  if (!room.pendingGuests.has(guestId)) return;
+
+  room.pendingGuests.delete(guestId);
+  room.guestId = guestId;
+
+  // báo guest được duyệt
+  io.to(guestId).emit("guest-approved");
+
+  // báo toàn phòng
+  io.to(roomId).emit("guest-online", { guestId });
+});
+
+socket.on("host-reject-guest", ({ roomId, guestId }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  room.pendingGuests.delete(guestId);
+  io.to(guestId).emit("guest-rejected");
+});
 
 
 socket.on("resume-viewers", ({ roomId }) => {
@@ -667,6 +712,9 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     emitLobbyUpdate();
 
   });
+
+
+
 
   socket.on("guest-reject", ({ guestId }) => {
     if (!guestId) return;

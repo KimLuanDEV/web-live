@@ -861,6 +861,10 @@ socket.on("reaction", (msg)=>{
     function setStatus(t){ badge.textContent = t; }
 
     btnStart.onclick = async () => {
+
+socket.emit("guest-request-live", { roomId });
+badge.textContent = "⏳ Đang chờ host duyệt...";
+
       if (localStream) return;
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
