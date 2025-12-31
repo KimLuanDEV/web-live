@@ -279,15 +279,26 @@ socket.on("host-kick-guest", ({ roomId }) => {
 
 // ===== LIVE TIMER (server-side source of truth) =====
 // Host starts live => store start timestamp; late joiners will receive it.
-socket.on("live-start", ({ roomId, startTs }) => {
+socket.on("live-start", ({ roomId }) => {
   if (!roomId) return;
+
   const room = getRoom(roomId);
-  if (room.broadcasterId !== socket.id) return; // only host can start
-  const ts = typeof startTs === "number" ? startTs : Date.now();
-  room.liveStartTs = ts;
-  io.to(roomId).emit("live-start", { startTs: ts });
-   emitLobbyUpdate();
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  // ✅ SET 1 LẦN DUY NHẤT
+  if (!room.liveStartTs) {
+    room.liveStartTs = Date.now();
+  }
+
+  // báo cho toàn bộ phòng
+  io.to(roomId).emit("live-start", {
+    startTs: room.liveStartTs
+  });
+
+  emitLobbyUpdate();
 });
+
 
 socket.on("live-stop", ({ roomId }) => {
   if (!roomId) return;

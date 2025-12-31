@@ -1025,6 +1025,7 @@ socket.emit("join-room", {
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
 
+
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
       pc.onicecandidate = (e) => {
@@ -1214,7 +1215,8 @@ socket.on("disconnectPeer", ({ peerId }) => {
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
         socket.emit("broadcaster-ready", { roomId });
-        socket.emit("live-start", { roomId, startTs: Date.now() });
+        socket.emit("live-start", { roomId });
+
       } catch (err) {
         log("Không mở được camera/mic: " + err.message);
         alert("Không mở được camera/mic. Nếu trên điện thoại: cần HTTPS.");
