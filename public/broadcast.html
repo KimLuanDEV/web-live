@@ -829,6 +829,28 @@ const liveTimerHost = document.getElementById("liveTimerHost");
 socket.on("live-start", ({ startTs }) => {
   if (typeof startTs === "number") __startTimer(liveTimerHost, startTs);
 });
+
+// 🔄 AUTO RESUME KHI HOST RELOAD
+socket.on("live-resume", async ({ startTs }) => {
+  console.log("🔄 Auto resume live");
+
+  // nếu reload mà chưa có stream thì mở lại camera
+  if (!localStream) {
+    await start(); // dùng lại hàm start() sẵn có
+  }
+
+  // chạy timer theo server
+  if (typeof startTs === "number") {
+    __startTimer(liveTimerHost, startTs);
+  }
+
+  btnStart.disabled = true;
+  btnStop.disabled = false;
+  hostFlipBtn.disabled = false;
+});
+
+
+
 socket.on("live-stop", () => {
   __stopTimer(liveTimerHost);
 });

@@ -376,6 +376,19 @@ socket.on("live-stop", ({ roomId }) => {
   const old = room.broadcasterId;
   room.broadcasterId = socket.id;
 
+
+// 🔄 AUTO RESUME LIVE NẾU ĐANG LIVE TRƯỚC ĐÓ
+if (room.liveStartTs) {
+  // gửi lại mốc thời gian cho host
+  socket.emit("live-resume", {
+    startTs: room.liveStartTs
+  });
+
+  // báo cho viewer biết host đã quay lại
+  io.to(roomId).emit("host-back-online");
+}
+
+
        // ✅ Lưu profile host
     const name = String(profile?.name || "").trim().slice(0, 20);
     const avatar = String(profile?.avatar || "").trim().slice(0, 300);
