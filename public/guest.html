@@ -1059,20 +1059,25 @@ function wireIceWatchdog(pc, role) {
     // nhận stream HOST
     let hostStream = new MediaStream();
 
-    pc.ontrack = (e) => {
+    setTimeout(() => {
+    if (hostVideo.srcObject !== hostStream) {
+      hostVideo.pause();
+      hostVideo.srcObject = null;
+      hostVideo.srcObject = hostStream;
+    }
 
+    hostVideo.playsInline = true;
 
-      hostStream.addTrack(e.track);
+    // 🔥 FIX ÂM THANH
+    hostVideo.muted = false;
+    hostVideo.volume = 1;
 
-      setTimeout(() => {
-        if (hostVideo.srcObject !== hostStream) {
-          hostVideo.srcObject = hostStream;
-        }
-        hostVideo.muted = true;
-        hostVideo.playsInline = true;
-        hostVideo.play().catch(()=>{});
-      }, 50);
-    };
+    const p = hostVideo.play();
+    if (p) p.catch(() => {
+      console.warn("Autoplay audio blocked, waiting user gesture");
+    });
+  }, 50);
+
 
     // auto ICE recover
     __wireIceAuto(from, pc);
@@ -1097,6 +1102,14 @@ function wireIceWatchdog(pc, role) {
     log("❌ Guest handle offer error: " + e.message);
   }
 });
+
+if (resume && isCoHosting) {
+  setTimeout(() => {
+    hostVideo.muted = false;
+    hostVideo.volume = 1;
+    hostVideo.play().catch(()=>{});
+  }, 200);
+}
 
 
     socket.on("candidate", async ({ from, candidate }) => {
