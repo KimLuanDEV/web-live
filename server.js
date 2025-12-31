@@ -225,6 +225,20 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
+
+  socket.on("peer-needs-reconnect", ({ roomId, peerId, role }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (!room.broadcasterId) return;
+
+  io.to(room.broadcasterId).emit("peer-needs-reconnect", {
+    peerId,
+    role: role || "viewer"
+  });
+});
+
+
+
   socket.on("resume-guests", ({ roomId }) => {
   const room = rooms.get(roomId);
   if (!room) return;

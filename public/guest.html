@@ -996,6 +996,22 @@ socket.on("offer", async ({ from, description, resume, role }) => {
     pc = new RTCPeerConnection(rtcConfig);
     pcs.set(from, pc);
 
+function wireIceWatchdog(pc, role) {
+  pc.oniceconnectionstatechange = () => {
+    const st = pc.iceConnectionState;
+
+    if (st === "failed" || st === "disconnected") {
+      socket.emit("peer-needs-reconnect", {
+        roomId,
+        peerId: socket.id,
+        role
+      });
+    }
+  };
+}
+
+
+
     // gửi ICE
     pc.onicecandidate = (e) => {
       if (e.candidate) {
@@ -1631,6 +1647,14 @@ socket.on("host-live", ({ liveStartTs }) => {
   startLiveTimer(liveStartTs);
 });
 
+
+socket.on("reconnecting", () => {
+  showOverlay("🔄 Đang kết nối lại…");
+});
+
+socket.on("reconnected", () => {
+  hideOverlay();
+});
 
 
   </script>

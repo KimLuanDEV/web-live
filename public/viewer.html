@@ -690,6 +690,9 @@ socket.on("reaction", (msg)=>{
 
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
+
+
+
     let guestId = null;
 
     async function getRtcConfig() {
@@ -817,10 +820,25 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       // reset pc for this peer only
       cleanupPeer(from);
       */
-     
+
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
+
+
+      function wireIceWatchdog(pc, role) {
+  pc.oniceconnectionstatechange = () => {
+    const st = pc.iceConnectionState;
+
+    if (st === "failed" || st === "disconnected") {
+      socket.emit("peer-needs-reconnect", {
+        roomId,
+        peerId: socket.id,
+        role
+      });
+    }
+  };
+}
 
      
   // Auto ask peer to ICE-restart if connection degrades
@@ -1631,6 +1649,13 @@ socket.on("host-live", ({ liveStartTs }) => {
   startLiveTimer(liveStartTs);
 });
 
+socket.on("reconnecting", () => {
+  showOverlay("🔄 Đang kết nối lại…");
+});
+
+socket.on("reconnected", () => {
+  hideOverlay();
+});
 
 
   </script>
