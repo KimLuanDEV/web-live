@@ -908,18 +908,63 @@ socket.on("reaction", (msg)=>{
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
 
+// 🔴 DÁN ĐOẠN NÀY NGAY SAU ĐÂY
+pc.oniceconnectionstatechange = () => {
+  const st = pc.iceConnectionState;
+  console.log("ICE (guest):", st);
+
+  if (st === "failed" || st === "disconnected") {
+    socket.emit("request-ice-restart", {
+      to: hostId,
+      reason: "guest_no_video"
+    });
+  }
+};
+
       localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
       pc.onicecandidate = (e) => {
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
       };
 
+// ===== FIX RACE: host stream =====
+let hostStream = new MediaStream();
+
+function attachHostVideoSafe() {
+  if (!hostStream || hostStream.getTracks().length === 0) return;
+
+  if (hostVideo.srcObject !== hostStream) {
+    hostVideo.srcObject = hostStream;
+  }
+
+  hostVideo.muted = true;
+  hostVideo.playsInline = true;
+
+  const p = hostVideo.play();
+  if (p && typeof p.catch === "function") {
+    p.catch(() => {
+      console.warn("Autoplay blocked, will retry on user gesture");
+    });
+  }
+}
+
+      pc.ontrack = (e) => {
+  // add từng track, không overwrite stream
+  hostStream.addTrack(e.track);
+
+  // delay nhẹ để tránh ICE + DOM race
+  setTimeout(() => {
+    attachHostVideoSafe();
+  }, 50);
+};
+
+      /*
       // Receive host stream (host will addTrack when answering)
       pc.ontrack = (e) => {
         hostVideo.srcObject = e.streams[0];
         hostVideo.play().catch(() => {});
       };
-
+      */
             __wireIceAuto(viewerId, pc);
 
       try {
