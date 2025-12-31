@@ -1240,6 +1240,9 @@ gcmOk.addEventListener("click", ()=>{
       qty: __pendingGift.qty
     }
   });
+  
+// 🎯 TĂNG EXP THEO DONATE
+  addExpToProfile(totalCost);
 
   closeGiftConfirm();
 });
@@ -1508,6 +1511,55 @@ const profile = getUserProfile();
 if (profile){
   chatName.value = profile.name;
   chatName.disabled = true;
+}
+
+
+function getLevelNeed(level){
+  return 100 + (level - 1) * 60; 
+  // Lv1:100, Lv2:160, Lv3:220, tăng dần
+}
+
+function addExpToProfile(expAdd){
+  const profile = getUserProfile();
+  if (!profile) return;
+
+  if (typeof profile.exp !== "number") profile.exp = 0;
+  if (typeof profile.level !== "number") profile.level = 1;
+
+  profile.exp += expAdd;
+
+  let leveledUp = false;
+
+  while (profile.exp >= getLevelNeed(profile.level)){
+    profile.exp -= getLevelNeed(profile.level);
+    profile.level++;
+    leveledUp = true;
+  }
+
+  localStorage.setItem("user_profile", JSON.stringify(profile));
+
+  if (leveledUp){
+    onLevelUp(profile.level);
+  }
+}
+
+function onLevelUp(level){
+  const el = document.createElement("div");
+  el.style.position = "fixed";
+  el.style.left = "50%";
+  el.style.top = "20%";
+  el.style.transform = "translateX(-50%)";
+  el.style.padding = "14px 22px";
+  el.style.borderRadius = "999px";
+  el.style.background = "linear-gradient(135deg,#ffb300,#ff6a00)";
+  el.style.color = "#000";
+  el.style.fontWeight = "700";
+  el.style.zIndex = 9999;
+  el.style.boxShadow = "0 0 30px rgba(255,180,0,.6)";
+  el.textContent = `⬆️ LEVEL ${level}!`;
+
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 2000);
 }
 
 
