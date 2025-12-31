@@ -74,6 +74,14 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
+
+<!-- GUEST REQUEST ICON -->
+<button id="guestRequestIcon" class="guest-request-icon hidden" title="Khách xin lên live">
+  👤➕
+  <span class="guest-request-dot"></span>
+</button>
+
+
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
   <input
@@ -986,6 +994,7 @@ socket.on("reaction", (msg)=>{
       if (document.visibilityState === "visible") __restartBadPeers(() => Array.from(pcs.entries()));
     });
 
+    const guestRequestIcon = document.getElementById("guestRequestIcon");
 
     // Guest state
     let pendingGuestId = null;
@@ -1174,11 +1183,37 @@ socket.on("disconnectPeer", ({ peerId }) => {
     // ===== Guest request/approve =====
     socket.on("guest-request", ({ guestId }) => {
       pendingGuestId = guestId;
+      guestRequestIcon.classList.remove("hidden");
+      guestRequestIcon.classList.add("active");
       guestReq.textContent = `GuestID: ${guestId} (bấm Chấp nhận để lên live)`;
       btnApproveGuest.disabled = false;
       btnRejectGuest.disabled = false;
       log("Có guest xin lên live: " + guestId);
     });
+
+guestRequestIcon.addEventListener("click", () => {
+  if (!pendingGuestId) return;
+
+  // dùng confirm tạm (hoặc modal neon của bạn)
+  const ok = confirm("Cho khách lên live?");
+  if (ok) {
+    socket.emit("host-approve-guest", {
+      roomId,
+      guestId: pendingGuestId
+    });
+  } else {
+    socket.emit("host-reject-guest", {
+      roomId,
+      guestId: pendingGuestId
+    });
+  }
+
+  pendingGuestId = null;
+  guestRequestIcon.classList.add("hidden");
+  guestRequestIcon.classList.remove("active");
+});
+
+
 
     socket.on("guest-offline", () => {
       log("Guest offline");

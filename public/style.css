@@ -3458,3 +3458,56 @@ body[data-fps="safe"] *{
 body[data-fps="safe"] .text3d{
   filter:none !important;
 }
+
+
+/* ===== GUEST REQUEST ICON ===== */
+.guest-request-icon{
+  position:absolute;
+  left:50px;
+  bottom:10px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:rgba(0,0,0,.65);
+  border:1px solid rgba(95,168,255,.45);
+  color:#fff;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:30;
+  box-shadow:0 0 18px rgba(95,168,255,.25);
+}
+
+.guest-request-icon.hidden{
+  display:none;
+}
+
+/* Khi có request */
+.guest-request-icon.active{
+  animation: pulseGlow 1.2s infinite;
+  border-color: rgba(37,240,154,.7);
+}
+
+.guest-request-dot{
+  position:absolute;
+  top:6px;
+  right:6px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#25F09A;
+  box-shadow:0 0 12px #25F09A;
+  display:none;
+}
+
+.guest-request-icon.active .guest-request-dot{
+  display:block;
+}
+
+@keyframes pulseGlow{
+  0%{ box-shadow:0 0 12px rgba(37,240,154,.4); }
+  50%{ box-shadow:0 0 28px rgba(37,240,154,.9); }
+  100%{ box-shadow:0 0 12px rgba(37,240,154,.4); }
+}
