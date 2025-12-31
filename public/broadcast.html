@@ -27,10 +27,7 @@
          src="https://static.vecteezy.com/system/resources/previews/011/016/931/original/live-streaming-icon-for-the-broadcast-system-live-streaming-icon-design-with-red-and-white-colors-live-streaming-image-with-text-effect-red-and-white-gradient-colors-free-png.png"
          style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid #fff3">
     
-    <div style="flex:1">
-      <input id="hostNameInput" placeholder="Tên host..." />
-      
-    </div>
+    
 
     <button id="btnUpdateProfile">💾 Lưu</button>
   </div>
@@ -345,6 +342,25 @@
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
+  if (!localStorage.getItem("live_name")) {
+    location.href = "/login.html";
+  }
+
+
+
+
+  const USER_NAME = localStorage.getItem("live_name");
+  if (!USER_NAME) location.href = "/login.html";
+
+  const hostNameInput = document.getElementById("hostNameInput");
+  if (hostNameInput) {
+    hostNameInput.value = USER_NAME;
+    hostNameInput.disabled = true; // khóa chỉnh sửa
+  }
+
+
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
@@ -1635,7 +1651,7 @@ socket.on("gift", ({ gift, donor })=>{
     setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
   }catch{}
 });
-const hostNameInput = document.getElementById("hostNameInput");
+
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");
 
 btnUpdateProfile.onclick = () => {
@@ -1761,6 +1777,12 @@ socket.on("live-ended-stats", (stats) => {
   document.addEventListener("wheel", e => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
+
+
+socket.emit("host-update-profile", {
+  roomId,
+  name: USER_NAME
+});
 
 
 

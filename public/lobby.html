@@ -220,7 +220,7 @@
 </div>
 
 <div class="badge badge--info">
-  👤 Xin chào, <b id="meName"></b>
+  👤 <b id="lobbyUserName"></b>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -238,11 +238,11 @@ const name = localStorage.getItem("live_name");
   }
 
 
-  const userName = localStorage.getItem("live_name");
+  
 const userRole = localStorage.getItem("live_role");
 
-document.getElementById("meName").textContent =
-    localStorage.getItem("live_name") || "Guest";
+const userName = localStorage.getItem("live_name");
+document.getElementById("lobbyUserName").textContent = userName;
 
 const socket = io();
 
