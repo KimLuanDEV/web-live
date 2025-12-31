@@ -226,6 +226,21 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+socket.on("resume-viewers", ({ roomId }) => {
+  if (!roomId) return;
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  // gửi danh sách viewer hiện tại cho host
+  socket.emit("resume-viewers-list", {
+    viewers: Array.from(room.viewers)
+  });
+});
+
+
+
+
 socket.on("host-start-live", ({ roomId }) => {
   const room = getRoom(roomId);
   if (!room) return;

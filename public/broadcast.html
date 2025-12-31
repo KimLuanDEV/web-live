@@ -847,6 +847,41 @@ socket.on("live-resume", async ({ startTs }) => {
   btnStart.disabled = true;
   btnStop.disabled = false;
   hostFlipBtn.disabled = false;
+
+    // 🔄 YÊU CẦU SERVER GỬI LẠI DANH SÁCH VIEWER
+  socket.emit("resume-viewers", { roomId });
+
+});
+
+
+socket.on("resume-viewers-list", async ({ viewers }) => {
+  if (!Array.isArray(viewers)) return;
+  console.log("🔄 Resume viewers:", viewers.length);
+
+  for (const viewerId of viewers) {
+    // nếu viewer chưa có PC → tạo mới như watcher
+    if (!pcs.has(viewerId)) {
+      socket.emit("watcher", { viewerId, roomId });
+      continue;
+    }
+
+    const pc = pcs.get(viewerId);
+    if (!pc || pc.signalingState === "closed") continue;
+
+    try {
+      // 🔥 ICE RESTART OFFER
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
+      socket.emit("offer", {
+        to: viewerId,
+        description: pc.localDescription,
+        resume: true
+      });
+      log("🔄 Re-offer to viewer " + viewerId);
+    } catch (e) {
+      log("Resume offer error " + viewerId + ": " + e.message);
+    }
+  }
 });
 
 

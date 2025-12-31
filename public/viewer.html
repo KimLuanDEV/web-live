@@ -812,9 +812,12 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
 
     // Receive offer from broadcaster OR guest
     socket.on("offer", async ({ from, description }) => {
+
+      /*
       // reset pc for this peer only
       cleanupPeer(from);
-
+      */
+     
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
@@ -877,6 +880,15 @@ pc.ontrack = (event) => {
 
       pc.oniceconnectionstatechange = () => {
         log(`ICE(${from}): ${pc.iceConnectionState}`);
+
+const st = pc.iceConnectionState;
+  if (st === "failed" || st === "disconnected") {
+    socket.emit("request-ice-restart", {
+      to: hostId,
+      reason: "viewer_resume"
+    });
+  }
+
       };
 
       try {
@@ -884,6 +896,13 @@ pc.ontrack = (event) => {
         const answer = await pc.createAnswer();
         await pc.setLocalDescription(answer);
         socket.emit("answer", { to: from, description: pc.localDescription });
+
+    if (resume) {
+      log("🔄 Viewer resumed WebRTC");
+    } else {
+      log("🎥 Viewer nhận stream mới");
+    }
+
         setStatus("🟢 Đang xem live trực tiếp.");
         log("Đã gửi answer cho: " + from);
       } catch (err) {
