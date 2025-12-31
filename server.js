@@ -258,28 +258,6 @@ socket.on("host-start-live", ({ roomId }) => {
 });
 
 
-socket.on("guest-request-live", ({ roomId }) => {
-  const room = getRoom(roomId);
-  if (!room || !room.broadcasterId) return;
-  io.to(room.broadcasterId).emit("guest-request-live", {
-    guestId: socket.id
-  });
-});
-
-socket.on("host-approve-guest", ({ roomId, guestId }) => {
-  const room = getRoom(roomId);
-  if (!room || room.broadcasterId !== socket.id) return;
-
-  room.guestId = guestId;
-  io.to(guestId).emit("guest-approved");
-  io.to(roomId).emit("guest-online");
-});
-
-socket.on("host-reject-guest", ({ guestId }) => {
-  io.to(guestId).emit("guest-rejected");
-});
-
-
 
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);

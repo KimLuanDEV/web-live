@@ -74,13 +74,15 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
-
 <!-- GUEST REQUEST ICON -->
-<button id="guestRequestIcon" class="guest-request-icon hidden" title="Khách xin lên live">
-  👤➕
-  <span class="guest-request-dot"></span>
+<button
+  id="guestReqIcon"
+  class="guest-req-icon"
+  title="Khách xin lên live"
+>
+  👤
+  <span class="guest-req-dot" id="guestReqDot"></span>
 </button>
-
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -152,18 +154,7 @@
     </div>
   </div>
 
-<hr />
-<div class="card">
-  <div class="badge badge--info">👤 Khách xin lên live</div>
 
-  <hr />
-  <div id="guestReq" class="log">Chưa có yêu cầu.</div>
-  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
-    <button id="btnApproveGuest" disabled style="flex:1">✅ Chấp nhận</button>
-    <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
-  </div>
-
-</div>
 
 <div class="pin-form" id="pinForm">
     <input id="pinText" class="pin-input" placeholder="📌 Nhập nội dung ghim (Host)..." />
@@ -355,6 +346,30 @@
   </div>
 </div>
   
+
+
+<!-- GUEST REQUEST MODAL -->
+<div id="guestReqModal" class="ncf hidden">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box">
+    <div class="ncf__frame"></div>
+
+    <h3 class="ncf__title">👤 Khách xin lên live</h3>
+
+    <div id="guestReqList" class="log">
+      Chưa có yêu cầu.
+    </div>
+
+    <div class="ncf__actions">
+      <button id="btnApproveGuest">✅ Chấp nhận</button>
+      <button id="btnRejectGuest">❌ Từ chối</button>
+    </div>
+  </div>
+</div>
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
@@ -994,7 +1009,6 @@ socket.on("reaction", (msg)=>{
       if (document.visibilityState === "visible") __restartBadPeers(() => Array.from(pcs.entries()));
     });
 
-    const guestRequestIcon = document.getElementById("guestRequestIcon");
 
     // Guest state
     let pendingGuestId = null;
@@ -1180,40 +1194,60 @@ socket.on("disconnectPeer", ({ peerId }) => {
       }
     });
 
+
+const guestReqIcon  = document.getElementById("guestReqIcon");
+const guestReqDot   = document.getElementById("guestReqDot");
+const guestReqModal = document.getElementById("guestReqModal");
+const guestReqList  = document.getElementById("guestReqList");
+
+guestReqIcon.onclick = () => {
+  guestReqModal.classList.remove("hidden");
+};
+
+// click nền để đóng
+guestReqModal.querySelector(".ncf__bg").onclick = () => {
+  guestReqModal.classList.add("hidden");
+};
+
+// khi có guest xin live
+socket.on("guest-request", ({ guestId }) => {
+  guestReqIcon.classList.add("has-request");
+  guestReqList.textContent = `Guest: ${guestId}`;
+  window.__pendingGuestId = guestId;
+});
+
+// duyệt
+btnApproveGuest.onclick = () => {
+  if (!window.__pendingGuestId) return;
+  socket.emit("host-approve-guest", {
+    roomId,
+    guestId: window.__pendingGuestId
+  });
+  guestReqIcon.classList.remove("has-request");
+  guestReqModal.classList.add("hidden");
+};
+
+// từ chối
+btnRejectGuest.onclick = () => {
+  if (!window.__pendingGuestId) return;
+  socket.emit("host-reject-guest", {
+    roomId,
+    guestId: window.__pendingGuestId
+  });
+  guestReqIcon.classList.remove("has-request");
+  guestReqModal.classList.add("hidden");
+};
+
+
+
     // ===== Guest request/approve =====
     socket.on("guest-request", ({ guestId }) => {
       pendingGuestId = guestId;
-      guestRequestIcon.classList.remove("hidden");
-      guestRequestIcon.classList.add("active");
       guestReq.textContent = `GuestID: ${guestId} (bấm Chấp nhận để lên live)`;
       btnApproveGuest.disabled = false;
       btnRejectGuest.disabled = false;
       log("Có guest xin lên live: " + guestId);
     });
-
-guestRequestIcon.addEventListener("click", () => {
-  if (!pendingGuestId) return;
-
-  // dùng confirm tạm (hoặc modal neon của bạn)
-  const ok = confirm("Cho khách lên live?");
-  if (ok) {
-    socket.emit("host-approve-guest", {
-      roomId,
-      guestId: pendingGuestId
-    });
-  } else {
-    socket.emit("host-reject-guest", {
-      roomId,
-      guestId: pendingGuestId
-    });
-  }
-
-  pendingGuestId = null;
-  guestRequestIcon.classList.add("hidden");
-  guestRequestIcon.classList.remove("active");
-});
-
-
 
     socket.on("guest-offline", () => {
       log("Guest offline");
