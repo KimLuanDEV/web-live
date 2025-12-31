@@ -886,6 +886,27 @@ socket.on("live-resume", async ({ startTs }) => {
 });
 
 
+socket.on("guest-approved-start-webrtc", async ({ guestId }) => {
+  console.log("🎥 Start WebRTC with guest:", guestId);
+
+  const pc = createPeerConnection(guestId);
+
+  // add stream host
+  localStream.getTracks().forEach(track => {
+    pc.addTrack(track, localStream);
+  });
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+
+  socket.emit("offer", {
+    to: guestId,
+    description: pc.localDescription
+  });
+});
+
+
+
 socket.on("guest-ready", ({ guestId }) => {
   console.log("🎥 Guest ready:", guestId);
 
@@ -1157,6 +1178,14 @@ socket.emit("join-room", {
       pcs.set(viewerId, pc);
 
 
+      pc.ontrack = (e) => {
+  console.log("🎥 Host received guest stream");
+
+  const guestVideo = document.getElementById("guestVideo");
+  guestVideo.srcObject = e.streams[0];
+};
+
+
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
       pc.onicecandidate = (e) => {
@@ -1175,6 +1204,8 @@ socket.emit("join-room", {
     });
 
     socket.on("answer", async ({ from, description }) => {
+
+
       // could be viewer answer OR guest answer (rare in this flow)
       const pc = pcs.get(from);
       if (pc) {

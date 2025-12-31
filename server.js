@@ -226,13 +226,10 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
-  // ===== HOST APPROVE / REJECT GUEST =====
 socket.on("host-approve-guest", ({ roomId, guestId }) => {
   const room = rooms.get(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return;
-
-  console.log("✅ Host approved guest:", guestId);
 
   room.guestId = guestId;
 
@@ -242,9 +239,14 @@ socket.on("host-approve-guest", ({ roomId, guestId }) => {
     hostId: socket.id
   });
 
-  // báo host + viewer
+  // 🔥 QUAN TRỌNG: báo host bắt đầu tạo WebRTC
+  io.to(socket.id).emit("guest-approved-start-webrtc", {
+    guestId
+  });
+
   io.to(roomId).emit("guest-online", { guestId });
 });
+
 
 socket.on("host-reject-guest", ({ roomId, guestId }) => {
   const room = rooms.get(roomId);
