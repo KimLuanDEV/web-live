@@ -157,7 +157,7 @@
     <div class="badge badge--info">💬 Chat (Live)</div>
 
     <div class="chatform">
-      <input id="chatName" value="Khách" />
+      <input id="chatName" />
       <input id="chatText" placeholder="Nhập tin nhắn..." />
       <button id="chatSend" class="full">Gửi</button>
     </div>
@@ -1493,6 +1493,22 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
     giftPanel.classList.add("hidden");
   });
 });
+
+
+
+function getUserProfile(){
+  const p = localStorage.getItem("user_profile");
+  if (!p) return null;
+  try { return JSON.parse(p); }
+  catch { return null; }
+}
+
+
+const profile = getUserProfile();
+if (profile){
+  chatName.value = profile.name;
+  chatName.disabled = true;
+}
 
 
   </script>

@@ -1139,14 +1139,15 @@ gcmOk.addEventListener("click", ()=>{
   }
 
   // ✅ ĐỦ COIN → GỬI
-  socket.emit("send-gift", {
-    roomId,
-    name: (chatName?.value || "Viewer").slice(0,20),
-    gift: {
-      type: __pendingGift.type,
-      qty: __pendingGift.qty
-    }
-  });
+  const profile = getUserProfile();
+
+socket.emit("send-gift", {
+  roomId,
+  gift,
+  qty,
+  name: profile?.name || "Guest",
+  avatar: profile?.avatar || "",
+});
 
   closeGiftConfirm();
 });
@@ -1223,7 +1224,16 @@ document.querySelectorAll(".gift-bar button").forEach(btn => {
     const type = btn.dataset.gift;
     const name = (chatName.value || "Viewer").trim().slice(0,20);
     const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
-    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
+    const profile = getUserProfile();
+
+socket.emit("send-gift", {
+  roomId,
+  gift,
+  qty,
+  name: profile?.name || "Guest",
+  avatar: profile?.avatar || "",
+});
+
   };
 });
 // ===== /GIFT ENGINE (client) =====
@@ -1576,6 +1586,23 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
     giftPanel.classList.add("hidden");
   });
 });
+
+
+function getUserProfile(){
+  const p = localStorage.getItem("user_profile");
+  if (!p) return null;
+  try { return JSON.parse(p); }
+  catch { return null; }
+}
+
+const profile = getUserProfile();
+if (profile){
+  const chatNameInput = document.getElementById("chatName");
+  if (chatNameInput) {
+    chatNameInput.value = profile.name;
+    chatNameInput.disabled = true; // 🔒 khóa không cho sửa
+  }
+}
 
 
   </script>

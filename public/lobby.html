@@ -29,6 +29,8 @@
         <div class="pills">
           <button class="btn lobby-btn" id="btnOpenCreate">➕ Tạo phòng</button>
           <button id="refresh" class="lobby-btn" title="Làm mới">🔄</button>
+          <button onclick="location.href='/profile.html'" class="lobby-btn">👤 Hồ sơ</button>
+
         </div>
       </div>
 
@@ -742,6 +744,20 @@ setInterval(() => socket.emit("lobby-get"), 3000);
   }, { passive: false });
 
 
+
+
+  function getUserProfile(){
+  const p = localStorage.getItem("user_profile");
+  if (!p) return null;
+  try { return JSON.parse(p); }
+  catch { return null; }
+}
+
+const profile = getUserProfile();
+if (profile){
+  hostNameInput.value = profile.name;
+  hostNameInput.disabled = true;
+}
 
 </script>
 

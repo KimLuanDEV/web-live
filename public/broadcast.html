@@ -1764,6 +1764,32 @@ socket.on("live-ended-stats", (stats) => {
 
 
 
+
+  function getUserProfile(){
+  const p = localStorage.getItem("user_profile");
+  if (!p) return null;
+  try { return JSON.parse(p); }
+  catch { return null; }
+}
+
+
+const profile = getUserProfile();
+if (profile){
+  const hostNameInput = document.getElementById("hostNameInput");
+  const avatar = document.getElementById("hostAvatarPreview");
+
+  if (hostNameInput){
+    hostNameInput.value = profile.name;
+    hostNameInput.disabled = true;
+  }
+
+  if (avatar){
+    avatar.src = profile.avatar;
+  }
+}
+
+
+
   </script>
 
 
