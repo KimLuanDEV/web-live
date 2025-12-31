@@ -348,10 +348,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
-const reconnectQueue = [];
-let reconnectRunning = false;
-
-
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -500,52 +496,6 @@ if(nameFromLobby){
 
     const socket = io();
     
-
-socket.on("peer-needs-reconnect", ({ peerId, role }) => {
-  // tránh trùng
-  if (reconnectQueue.find(p => p.peerId === peerId)) return;
-
-  reconnectQueue.push({ peerId, role });
-  runReconnectQueue();
-});
-
-
-async function runReconnectQueue() {
-  if (reconnectRunning) return;
-  reconnectRunning = true;
-
-  while (reconnectQueue.length) {
-    const { peerId, role } = reconnectQueue.shift();
-
-    const pc = pcs.get(peerId);
-    if (!pc || pc.signalingState === "closed") continue;
-
-    try {
-      console.log("🔄 Progressive reconnect:", peerId, role);
-
-      const offer = await pc.createOffer({ iceRestart: true });
-      await pc.setLocalDescription(offer);
-
-      socket.emit("offer", {
-        to: peerId,
-        description: pc.localDescription,
-        resume: true,
-        role
-      });
-
-      // ⏳ delay nhẹ giữa các peer (RẤT QUAN TRỌNG)
-      await new Promise(r => setTimeout(r, 400));
-    } catch (e) {
-      console.warn("Reconnect failed:", peerId, e.message);
-    }
-  }
-
-  reconnectRunning = false;
-}
-
-
-
-
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -900,35 +850,7 @@ socket.on("live-resume", async ({ startTs }) => {
 
     // 🔄 YÊU CẦU SERVER GỬI LẠI DANH SÁCH VIEWER
   socket.emit("resume-viewers", { roomId });
-  socket.emit("resume-guests", { roomId });
-  socket.emit("reconnected", { to: peerId });
 
-});
-
-socket.on("resume-guests-list", async ({ guests }) => {
-  if (!Array.isArray(guests)) return;
-  console.log("🔄 Resume guests:", guests);
-
-  for (const gid of guests) {
-    const pc = pcs.get(gid);
-    if (!pc || pc.signalingState === "closed") continue;
-
-    try {
-      const offer = await pc.createOffer({ iceRestart: true });
-      await pc.setLocalDescription(offer);
-
-      socket.emit("offer", {
-        to: gid,
-        description: pc.localDescription,
-        resume: true,
-        role: "guest"
-      });
-
-      console.log("🔄 Re-offer guest:", gid);
-    } catch (e) {
-      console.warn("Resume guest failed:", gid, e.message);
-    }
-  }
 });
 
 
