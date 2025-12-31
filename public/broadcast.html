@@ -154,18 +154,7 @@
     </div>
   </div>
 
-<hr />
-<div class="card">
-  <div class="badge badge--info">👤 Khách xin lên live</div>
 
-  <hr />
-  <div id="guestReq" class="log">Chưa có yêu cầu.</div>
-  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
-    <button id="btnApproveGuest" disabled style="flex:1">✅ Chấp nhận</button>
-    <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
-  </div>
-
-</div>
 
 <div class="pin-form" id="pinForm">
     <input id="pinText" class="pin-input" placeholder="📌 Nhập nội dung ghim (Host)..." />
@@ -1219,7 +1208,7 @@ socket.on("disconnectPeer", ({ peerId }) => {
       log("Có guest xin lên live: " + guestId);
     });
     */
-   
+
     socket.on("guest-offline", () => {
       log("Guest offline");
       approvedGuestId = null;
