@@ -22,9 +22,12 @@
 
 
 
-    <div class="hero-logo neon-text">
-  <span class="neon-shine">🔥 LIVESTREAM PRO</span>
+   <div class="hero-logo text3d mouse-text3d">
+  <span class="text3d-layer front">🔥 LIVESTREAM PRO</span>
+  <span class="text3d-layer mid">🔥 LIVESTREAM PRO</span>
+  <span class="text3d-layer back">🔥 LIVESTREAM PRO</span>
 </div>
+
    <div class="hero-sub neon-sub">
   <span>Nền tảng livestream <b>Realtime</b> thế hệ mới</span><br>
   <span>Giao lưu • Quà tặng • Co-host • Neon UI</span>
@@ -83,7 +86,7 @@
     <div class="feature-card">
       <div class="ic">🎤</div>
       <h3>Xin lên live</h3>
-      <p>Viewer xin mic, host duyệt – giống Zoom / TikTok Live.</p>
+      <p>Viewer xin mic, host duyệt – Giao lưu cùng mọi người.</p>
     </div>
 
     <div class="feature-card">
@@ -209,7 +212,7 @@
   let scrollY = 0;
   let mouseX = 0;
   let mouseY = 0;
-  let ticking = false;
+  
 
   function updateLayers(){
     const w = window.innerWidth;
@@ -266,6 +269,110 @@
     mouseY = e.clientY;
     requestTick();
   });
+</script>
+
+
+<script>
+  if (window.matchMedia("(pointer: fine)").matches) {
+    const logo = document.querySelector(".mouse-text3d");
+    if (logo){
+      let mx = 0, my = 0, ticking = false;
+
+      function update3D(){
+        const rx = (-my * 14).toFixed(2);
+        const ry = ( mx * 18).toFixed(2);
+
+        logo.style.transform =
+          `perspective(1200px)
+           rotateX(${rx}deg)
+           rotateY(${ry}deg)`;
+
+        ticking = false;
+      }
+
+      window.addEventListener("mousemove", e => {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        mx = (e.clientX / w) - 0.5;
+        my = (e.clientY / h) - 0.5;
+
+        if (!ticking){
+          requestAnimationFrame(update3D);
+          ticking = true;
+        }
+      });
+    }
+  }
+</script>
+
+
+<script>
+  const logo3D = document.querySelector(".text3d");
+  if (logo3D && window.matchMedia("(pointer: fine)").matches){
+
+    let idleTimer = null;
+    let isIdle = true;
+
+    function startIdle(){
+      if (!isIdle){
+        isIdle = true;
+        logo3D.classList.add("is-idle");
+      }
+    }
+
+    function stopIdle(){
+      if (isIdle){
+        isIdle = false;
+        logo3D.classList.remove("is-idle");
+      }
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(startIdle, 1500); // 1.5s không động → idle
+    }
+
+    // init idle
+    idleTimer = setTimeout(startIdle, 800);
+
+    window.addEventListener("mousemove", stopIdle, { passive:true });
+    window.addEventListener("scroll", stopIdle, { passive:true });
+  }
+</script>
+
+
+<script>
+(function(){
+  let last = performance.now();
+  let frames = 0;
+  let fps = 60;
+  let level = "full";
+
+  function detectLevel(fps){
+    if (fps >= 50) return "full";
+    if (fps >= 35) return "medium";
+    if (fps >= 20) return "low";
+    return "safe";
+  }
+
+  function loop(now){
+    frames++;
+    if (now >= last + 1000){
+      fps = frames;
+      frames = 0;
+      last = now;
+
+      const nextLevel = detectLevel(fps);
+      if (nextLevel !== level){
+        level = nextLevel;
+        document.body.setAttribute("data-fps", level);
+        console.log("FPS Guardian:", fps, "→", level);
+      }
+    }
+    requestAnimationFrame(loop);
+  }
+
+  // khởi động
+  document.body.setAttribute("data-fps", "full");
+  requestAnimationFrame(loop);
+})();
 </script>
 
 

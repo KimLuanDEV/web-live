@@ -3306,3 +3306,155 @@ body.vip-spotlight .vip-zoom{
     transform:none !important;
   }
 }
+
+/* ===== 3D TEXT LOGO ===== */
+
+.text3d{
+  position:relative;
+  font-size:34px;
+  font-weight:900;
+  letter-spacing:1.2px;
+  perspective:1200px;
+  transform-style:preserve-3d;
+  user-select:none;
+}
+
+.text3d-layer{
+  position:absolute;
+  inset:0;
+  text-align:center;
+  pointer-events:none;
+  transform-style:preserve-3d;
+}
+
+/* FRONT */
+.text3d-layer.front{
+  position:relative;
+  color:#fff;
+  text-shadow:
+    0 0 12px rgba(255,59,107,.7),
+    0 0 32px rgba(255,59,107,.6),
+    0 0 64px rgba(255,59,107,.4);
+  transform: translateZ(30px);
+}
+
+/* MID */
+.text3d-layer.mid{
+  color:#ffd36e;
+  opacity:.55;
+  transform: translateZ(15px);
+  filter: blur(.6px);
+}
+
+/* BACK */
+.text3d-layer.back{
+  color:#5fa8ff;
+  opacity:.35;
+  transform: translateZ(0);
+  filter: blur(1.2px);
+}
+
+/* subtle idle glow */
+.text3d{
+  animation: textIdleGlow 3.5s ease-in-out infinite;
+}
+@keyframes textIdleGlow{
+  0%,100%{
+    filter: drop-shadow(0 0 18px rgba(255,59,107,.4));
+  }
+  50%{
+    filter: drop-shadow(0 0 32px rgba(255,211,110,.6));
+  }
+}
+
+/* mobile: giảm độ nổi */
+@media (max-width:768px){
+  .text3d{
+    font-size:28px;
+  }
+}
+
+
+/* ===== IDLE BREATHING ANIMATION (3D LOGO) ===== */
+
+.text3d.is-idle{
+  animation: idleFloat 5.5s ease-in-out infinite;
+}
+
+@keyframes idleFloat{
+  0%{
+    transform:
+      perspective(1200px)
+      rotateX(0deg)
+      rotateY(0deg);
+    filter: drop-shadow(0 0 18px rgba(255,59,107,.45));
+  }
+  25%{
+    transform:
+      perspective(1200px)
+      rotateX(2.5deg)
+      rotateY(-3deg);
+    filter: drop-shadow(0 0 28px rgba(255,211,110,.6));
+  }
+  50%{
+    transform:
+      perspective(1200px)
+      rotateX(-2deg)
+      rotateY(3.5deg);
+    filter: drop-shadow(0 0 34px rgba(95,168,255,.6));
+  }
+  75%{
+    transform:
+      perspective(1200px)
+      rotateX(2deg)
+      rotateY(2deg);
+    filter: drop-shadow(0 0 26px rgba(255,211,110,.55));
+  }
+  100%{
+    transform:
+      perspective(1200px)
+      rotateX(0deg)
+      rotateY(0deg);
+    filter: drop-shadow(0 0 18px rgba(255,59,107,.45));
+  }
+}
+
+/* mobile: giảm cường độ */
+@media (max-width:768px){
+  .text3d.is-idle{
+    animation-duration:7s;
+  }
+}
+
+
+/* ===== FPS GUARDIAN ===== */
+
+/* MEDIUM – giảm chuột parallax */
+body[data-fps="medium"] .mouse-parallax-strong{
+  transform: none !important;
+}
+body[data-fps="medium"] .layer-front{
+  transition-duration: .25s;
+}
+
+/* LOW – tắt parallax + blur */
+body[data-fps="low"] .mouse-parallax,
+body[data-fps="low"] .mouse-parallax-strong,
+body[data-fps="low"] .parallax-bg,
+body[data-fps="low"] .layer-mid,
+body[data-fps="low"] .layer-front{
+  transform: none !important;
+}
+body[data-fps="low"] .reveal,
+body[data-fps="low"] .reveal-item{
+  filter:none !important;
+}
+
+/* SAFE – chỉ giữ layout */
+body[data-fps="safe"] *{
+  animation: none !important;
+  transition: none !important;
+}
+body[data-fps="safe"] .text3d{
+  filter:none !important;
+}
