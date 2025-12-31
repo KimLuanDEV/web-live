@@ -1225,6 +1225,9 @@ btnApproveGuest.onclick = () => {
   });
   guestReqIcon.classList.remove("has-request");
   guestReqModal.classList.add("hidden");
+
+  // Host also wants to watch guest so guest will create offer to host
+  socket.emit("watch-guest", { roomId });
 };
 
 // từ chối
@@ -1239,16 +1242,6 @@ btnRejectGuest.onclick = () => {
 };
 
 
-
-    // ===== Guest request/approve =====
-    socket.on("guest-request", ({ guestId }) => {
-      pendingGuestId = guestId;
-      guestReq.textContent = `GuestID: ${guestId} (bấm Chấp nhận để lên live)`;
-      btnApproveGuest.disabled = false;
-      btnRejectGuest.disabled = false;
-      log("Có guest xin lên live: " + guestId);
-    });
-
     socket.on("guest-offline", () => {
       log("Guest offline");
       approvedGuestId = null;
@@ -1260,26 +1253,7 @@ btnRejectGuest.onclick = () => {
       guestVideo.srcObject = null;
     });
 
-    btnApproveGuest.onclick = () => {
-      if (!pendingGuestId) return;
-      approvedGuestId = pendingGuestId;
-      socket.emit("guest-approve", { roomId, guestId: pendingGuestId });
-      guestReq.textContent = `✅ Đã chấp nhận guest: ${pendingGuestId}`;
-      btnApproveGuest.disabled = true;
-      btnRejectGuest.disabled = true;
-
-      // Host also wants to watch guest so guest will create offer to host
-      socket.emit("watch-guest", { roomId });
-    };
-
-    btnRejectGuest.onclick = () => {
-      if (!pendingGuestId) return;
-      socket.emit("guest-reject", { guestId: pendingGuestId });
-      guestReq.textContent = "⛔ Đã từ chối guest.";
-      pendingGuestId = null;
-      btnApproveGuest.disabled = true;
-      btnRejectGuest.disabled = true;
-    };
+  
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
     socket.on("offer", async ({ from, description }) => {
