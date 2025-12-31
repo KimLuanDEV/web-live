@@ -74,16 +74,6 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
-
-<!-- 🔔 GUEST REQUEST ICON -->
-<button id="guestReqFab"
-        class="guest-req-fab"
-        title="Yêu cầu xin lên live">
-  👤
-  <span id="guestReqDot" class="guest-req-dot hidden"></span>
-</button>
-
-
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
   <input
@@ -154,7 +144,18 @@
     </div>
   </div>
 
+<hr />
+<div class="card">
+  <div class="badge badge--info">👤 Khách xin lên live</div>
 
+  <hr />
+  <div id="guestReq" class="log">Chưa có yêu cầu.</div>
+  <div style="display:flex; gap:10px; flex-wrap:wrap; margin-top:10px">
+    <button id="btnApproveGuest" disabled style="flex:1">✅ Chấp nhận</button>
+    <button id="btnRejectGuest" disabled style="flex:1">❌ Từ chối</button>
+  </div>
+
+</div>
 
 <div class="pin-form" id="pinForm">
     <input id="pinText" class="pin-input" placeholder="📌 Nhập nội dung ghim (Host)..." />
@@ -346,39 +347,8 @@
   </div>
 </div>
   
-
-
-<!-- 👤 GUEST REQUEST MODAL -->
-<div id="guestReqModal" class="ncf hidden">
-  <div class="ncf__bg"></div>
-
-  <div class="ncf__box">
-    <div class="ncf__top">
-      <div class="ncf__pill">
-        <span class="ncf__dot"></span>
-        <span>YÊU CẦU LÊN LIVE</span>
-      </div>
-      <button class="ncf__x" id="guestReqClose">✕</button>
-    </div>
-
-    <div id="guestReqList" class="log">
-      Chưa có yêu cầu
-    </div>
-
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button id="btnApproveGuest" disabled>✅ Chấp nhận</button>
-      <button id="btnRejectGuest" disabled>❌ Từ chối</button>
-    </div>
-  </div>
-</div>
-
-
-
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-
-let pendingGuestIds = [];
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
@@ -886,35 +856,6 @@ socket.on("live-resume", async ({ startTs }) => {
 });
 
 
-socket.on("guest-approved-start-webrtc", async ({ guestId }) => {
-  console.log("🎥 Start WebRTC with guest:", guestId);
-
-  const pc = createPeerConnection(guestId);
-
-  // add stream host
-  localStream.getTracks().forEach(track => {
-    pc.addTrack(track, localStream);
-  });
-
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-
-  socket.emit("offer", {
-    to: guestId,
-    description: pc.localDescription
-  });
-});
-
-
-
-socket.on("guest-ready", ({ guestId }) => {
-  console.log("🎥 Guest ready:", guestId);
-
-  // tạo peer WebRTC cho guest
-  createPeerForGuest(guestId); 
-});
-
-
 socket.on("resume-viewers-list", async ({ viewers }) => {
   if (!Array.isArray(viewers)) return;
   console.log("🔄 Resume viewers:", viewers.length);
@@ -1055,40 +996,6 @@ socket.on("reaction", (msg)=>{
     const btnRejectGuest = document.getElementById("btnRejectGuest");
     const guestVideo = document.getElementById("guestVideo");
 
-
-
-btnApproveGuest?.addEventListener("click", () => {
-  if (!pendingGuestIds.length) return;
-
-  const guestId = pendingGuestIds.shift();
-
-  console.log("✅ Approve guest:", guestId);
-
-  socket.emit("host-approve-guest", {
-    roomId,
-    guestId
-  });
-
-  renderGuestReqList();
-});
-
-btnRejectGuest?.addEventListener("click", () => {
-  if (!pendingGuestIds.length) return;
-
-  const guestId = pendingGuestIds.shift();
-
-  console.log("❌ Reject guest:", guestId);
-
-  socket.emit("host-reject-guest", {
-    roomId,
-    guestId
-  });
-
-  renderGuestReqList();
-});
-
-
-
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 
@@ -1178,14 +1085,6 @@ socket.emit("join-room", {
       pcs.set(viewerId, pc);
 
 
-      pc.ontrack = (e) => {
-  console.log("🎥 Host received guest stream");
-
-  const guestVideo = document.getElementById("guestVideo");
-  guestVideo.srcObject = e.streams[0];
-};
-
-
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
       pc.onicecandidate = (e) => {
@@ -1204,8 +1103,6 @@ socket.emit("join-room", {
     });
 
     socket.on("answer", async ({ from, description }) => {
-
-
       // could be viewer answer OR guest answer (rare in this flow)
       const pc = pcs.get(from);
       if (pc) {
@@ -1274,7 +1171,6 @@ socket.on("disconnectPeer", ({ peerId }) => {
       }
     });
 
-    /*
     // ===== Guest request/approve =====
     socket.on("guest-request", ({ guestId }) => {
       pendingGuestId = guestId;
@@ -1283,7 +1179,6 @@ socket.on("disconnectPeer", ({ peerId }) => {
       btnRejectGuest.disabled = false;
       log("Có guest xin lên live: " + guestId);
     });
-    */
 
     socket.on("guest-offline", () => {
       log("Guest offline");
@@ -1306,9 +1201,6 @@ socket.on("disconnectPeer", ({ peerId }) => {
 
       // Host also wants to watch guest so guest will create offer to host
       socket.emit("watch-guest", { roomId });
-
-      
-
     };
 
     btnRejectGuest.onclick = () => {
@@ -1318,8 +1210,6 @@ socket.on("disconnectPeer", ({ peerId }) => {
       pendingGuestId = null;
       btnApproveGuest.disabled = true;
       btnRejectGuest.disabled = true;
-
-     
     };
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
@@ -1960,64 +1850,6 @@ if (profile){
     avatar.src = profile.avatar;
   }
 }
-
-
-const guestReqFab = document.getElementById("guestReqFab");
-const guestReqDot = document.getElementById("guestReqDot");
-const guestReqModal = document.getElementById("guestReqModal");
-const guestReqClose = document.getElementById("guestReqClose");
-const guestReqList = document.getElementById("guestReqList");
-
-
-
-// 📩 Server báo có guest xin lên
-socket.on("guest-requested", ({ guestId }) => {
-  if (!pendingGuestIds.includes(guestId)) {
-    pendingGuestIds.push(guestId);
-  }
-
-  // 🔔 bật icon
-  guestReqFab.classList.add("active");
-  guestReqDot.classList.remove("hidden");
-
-  // ✅ BẬT NÚT DUYỆT
-  btnApproveGuest.disabled = false;
-  btnRejectGuest.disabled  = false;
-
-  renderGuestReqList();
-});
-
-
-function renderGuestReqList(){
-  if (!pendingGuestIds.length){
-    guestReqList.textContent = "Chưa có yêu cầu";
-    guestReqFab.classList.remove("active");
-    guestReqDot.classList.add("hidden");
-
-    btnApproveGuest.disabled = true;
-    btnRejectGuest.disabled  = true;
-    return;
-  }
-
-  guestReqList.innerHTML = pendingGuestIds
-    .map(id => `👤 ${id}`)
-    .join("<br>");
-
-  // ✅ CÓ YÊU CẦU → BẬT NÚT
-  btnApproveGuest.disabled = false;
-  btnRejectGuest.disabled  = false;
-}
-
-
-// mở modal
-guestReqFab.onclick = () => {
-  guestReqModal.classList.remove("hidden");
-};
-
-// đóng modal
-guestReqClose.onclick = () => {
-  guestReqModal.classList.add("hidden");
-};
 
 
 

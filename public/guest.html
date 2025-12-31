@@ -875,7 +875,6 @@ socket.on("reaction", (msg)=>{
         document.body.classList.add("has-guest");
         if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "false");
 
-        socket.emit("guest-request-live", { roomId });
         socket.emit("join-room", { roomId, role: "guest", profile: { name: (chatName.value||"Guest").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
         setStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
@@ -893,54 +892,10 @@ socket.on("reaction", (msg)=>{
 
     socket.on("guest-pending", () => setStatus("⏳ Đang chờ host duyệt..."));
     socket.on("guest-rejected", () => setStatus("⛔ Host từ chối."));
-
-    socket.on("guest-approved", async ({ roomId, hostId }) => {
-  console.log("🎉 Guest approved – starting live");
-
-  badge.textContent = "✅ Đã được duyệt – đang lên live";
-
-  // bật camera + mic
-  await startMedia(); // ⚠️ dùng hàm bạn đã có
-
-  // báo server guest sẵn sàng
-  socket.emit("guest-ready", {
-    roomId
-  });
-});
-
-socket.on("guest-ready", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  if (room.broadcasterId) {
-    // báo host bắt đầu WebRTC với guest
-    io.to(room.broadcasterId).emit("guest-ready", {
-      guestId: socket.id
+    socket.on("guest-approved", () => {
+      setStatus("✅ Được duyệt! Bạn đang lên live.");
+      log("Được duyệt! Bây giờ viewer/host sẽ kết nối tới bạn.");
     });
-  }
-});
-
-socket.on("offer", async ({ from, description }) => {
-  console.log("📩 Guest received offer from host");
-
-  const pc = createPeerConnection(from);
-
-  await pc.setRemoteDescription(description);
-
-  // add guest stream
-  localStream.getTracks().forEach(track => {
-    pc.addTrack(track, localStream);
-  });
-
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-
-  socket.emit("answer", {
-    to: from,
-    description: pc.localDescription
-  });
-});
-
 
     // When someone wants to watch guest, guest creates offer to them
     socket.on("guest-watcher", async ({ viewerId }) => {
@@ -996,9 +951,7 @@ function attachHostVideoSafe() {
       pc.ontrack = (e) => {
   // add từng track, không overwrite stream
   hostStream.addTrack(e.track);
-  
- const hostVideo = document.getElementById("hostVideo");
-  hostVideo.srcObject = e.streams[0];
+
   // delay nhẹ để tránh ICE + DOM race
   setTimeout(() => {
     attachHostVideoSafe();
