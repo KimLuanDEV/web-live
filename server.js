@@ -175,6 +175,25 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
+
+socket.on("host-start-live", ({ roomId }) => {
+  const room = getRoom(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  if (!room.liveStartTs) {
+    room.liveStartTs = Date.now();
+  }
+
+  io.to(roomId).emit("host-live", {
+    liveStartTs: room.liveStartTs
+  });
+
+  emitLobbyUpdate();
+});
+
+
+
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);
   if (!rid) return cb?.({ ok: false, reason: "empty" });
@@ -574,13 +593,37 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.on("disconnect", () => {
 
 
-  for (const [roomId, room] of rooms.entries()) {
+   for (const [roomId, room] of rooms.entries()) {
     if (room.broadcasterId === socket.id) {
-      closeRoom(roomId, "host_disconnect");
-      break;
+
+      room.pendingRelease = true;
+
+      room.releaseTimer = setTimeout(() => {
+        // nếu host KHÔNG quay lại
+        if (room.pendingRelease) {
+          closeRoom(roomId, "host_left");
+        }
+      }, ROOM_RELEASE_DELAY);
+
+      io.to(roomId).emit("host-temp-offline");
     }
   }
 
+socket.on("host-join", ({ roomId }) => {
+  const room = getRoom(roomId);
+
+  room.broadcasterId = socket.id;
+  room.pendingRelease = false;
+
+  if (room.releaseTimer) {
+    clearTimeout(room.releaseTimer);
+    room.releaseTimer = null;
+  }
+
+  socket.join(roomId);
+
+  io.to(roomId).emit("host-back-online");
+});
 
 
     const roomId = socket.data.roomId;

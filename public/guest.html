@@ -1514,6 +1514,21 @@ if (profile){
 }
 
 
+socket.on("host-temp-offline", () => {
+  statusBadge.textContent = "⚠️ Host mất kết nối tạm thời...";
+});
+
+socket.on("host-back-online", () => {
+  statusBadge.textContent = "🔴 Đang LIVE";
+});
+
+socket.on("host-live", ({ liveStartTs }) => {
+  statusBadge.textContent = "🔴 Đang LIVE";
+  startLiveTimer(liveStartTs);
+});
+
+
+
   </script>
 
 <!-- VIP TICKER (donation banner) -->
