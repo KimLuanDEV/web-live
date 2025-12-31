@@ -49,6 +49,9 @@
 
           <div class="gift-layer" id="giftLayer"></div>
 
+<div class="gift-video-layer" id="giftVideoLayer"></div>
+
+
   <!-- HOST -->
   <div class="video-card live-main" id="hostCard">
     <div class="live-overlay">
@@ -1385,6 +1388,39 @@ socket.on("gift", ({ gift, donor })=>{
     setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
   }catch{}
 });
+
+const giftVideoLayer = document.getElementById("giftVideoLayer");
+let __giftVideoLock = false;
+
+socket.on("gift:video", ({ src, donor, type, qty }) => {
+  playGiftVideo(src, donor, type, qty);
+});
+
+function playGiftVideo(src, donor, type, qty){
+  if (!giftVideoLayer) return;
+
+  // tránh spam chồng chéo
+  if (__giftVideoLock) return;
+  __giftVideoLock = true;
+
+  giftVideoLayer.innerHTML = `
+    <video src="${src}" autoplay muted playsinline></video>
+  `;
+
+  const v = giftVideoLayer.querySelector("video");
+  const clear = () => {
+    giftVideoLayer.innerHTML = "";
+    __giftVideoLock = false;
+  };
+
+  v.onended = clear;
+  v.onerror = clear;
+
+  // fallback 6s
+  setTimeout(clear, 6000);
+}
+
+
 
 const walletCoinsEl = document.getElementById("walletCoins");
 socket.on("wallet-sync", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); });

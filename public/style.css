@@ -2852,3 +2852,26 @@ body.vip-spotlight .vip-zoom{
   color:#000;
 }
 /* ===== END COIN ERROR MODAL ===== */
+
+
+/* ===== GIFT VIDEO OVERLAY ===== */
+.gift-video-layer{
+  position:absolute;
+  inset:0;
+  z-index:9999;
+  pointer-events:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background: rgba(0,0,0,.10);
+  backdrop-filter: blur(1px);
+}
+
+.gift-video-layer video{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  filter:
+    drop-shadow(0 0 30px rgba(255,211,110,.55))
+    drop-shadow(0 0 60px rgba(255,59,107,.35));
+}
