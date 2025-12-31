@@ -8,37 +8,124 @@
 </head>
 
 <body class="poster-page">
-  <div class="poster-bg"></div>
 
-  <div class="poster-wrap">
-    <div class="poster-card">
-      <div class="poster-logo">🔥 LIVESTREAM PRO</div>
-      <div class="poster-slogan">
-        Nền tảng livestream <b>Realtime</b><br>
-        Chat • Quà tặng • Co-host • Neon UI
-      </div>
+<!-- BACKGROUND -->
+<div class="poster-bg"></div>
+<div class="poster-scan"></div>
 
-      <div class="poster-features">
-        <div>⚡ Không delay</div>
-        <div>🎤 Xin lên live</div>
-        <div>🎁 Gift animation</div>
-        <div>👥 Co-host nhiều người</div>
-      </div>
+<!-- HERO -->
+<section class="poster-hero">
+  <div class="hero-card">
+    <div class="hero-logo">🔥 LIVESTREAM PRO</div>
+    <div class="hero-sub">
+      Nền tảng livestream <b>Realtime</b> thế hệ mới<br>
+      Giao lưu • Quà tặng • Co-host • Neon UI
+    </div>
 
-      <button id="enterLobby" class="poster-btn">
-        🚀 VÀO SẢNH LIVE
-      </button>
+    <div class="hero-cta">
+      <button id="enterLobby" class="hero-btn primary">🚀 VÀO SẢNH LIVE</button>
+      <button class="hero-btn ghost">📖 XEM TÍNH NĂNG</button>
+    </div>
 
-      <div class="poster-footer">
-        © 2026 Livestream Pro
-      </div>
+    <div class="hero-badges">
+      <span>⚡ Zero Delay</span>
+      <span>🎁 Gift Engine</span>
+      <span>🎤 Co-host</span>
+      <span>💬 Live Chat</span>
     </div>
   </div>
+</section>
+
+<!-- SHOWCASE -->
+<section class="poster-showcase">
+  <div class="showcase-box">
+    <div class="showcase-glow"></div>
+    <div class="showcase-text">
+      <h2>🎥 Trải nghiệm như đang ở sân khấu thật</h2>
+      <p>
+        Livestream realtime không delay, chat hiển thị trực tiếp trên video,
+        hiệu ứng quà tặng và phản ứng bay mượt mà.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="poster-features-pro">
+  <h2>✨ TÍNH NĂNG NỔI BẬT</h2>
+
+  <div class="feature-grid">
+    <div class="feature-card">
+      <div class="ic">⚡</div>
+      <h3>Realtime thật sự</h3>
+      <p>Không delay – Host và Viewer tương tác tức thì.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="ic">🎁</div>
+      <h3>Gift Engine</h3>
+      <p>Hệ thống quà tặng + combo + animation đồng bộ.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="ic">🎤</div>
+      <h3>Xin lên live</h3>
+      <p>Viewer xin mic, host duyệt – giống Zoom / TikTok Live.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="ic">👥</div>
+      <h3>Co-host</h3>
+      <p>Nhiều khách mời cùng live, hiển thị dạng sân khấu.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="ic">💬</div>
+      <h3>Chat Overlay</h3>
+      <p>Tin nhắn hiển thị trực tiếp trên video.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="ic">🎨</div>
+      <h3>Neon UI</h3>
+      <p>Giao diện LED / Glow hiện đại, tối ưu mobile & PC.</p>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="poster-how">
+  <h2>🚀 HOẠT ĐỘNG NHƯ THẾ NÀO?</h2>
+
+  <div class="how-steps">
+    <div class="step">
+      <div class="num">1</div>
+      <p>Vào sảnh xem các host đang LIVE</p>
+    </div>
+    <div class="step">
+      <div class="num">2</div>
+      <p>Tạo phòng hoặc xin lên live</p>
+    </div>
+    <div class="step">
+      <div class="num">3</div>
+      <p>Chat • Tặng quà • Giao lưu realtime</p>
+    </div>
+  </div>
+
+  <button class="hero-btn primary big" onclick="location.href='/lobby.html'">
+    🎬 BẮT ĐẦU NGAY
+  </button>
+</section>
+
+<footer class="poster-footer">
+  © 2026 Livestream Pro — Realtime Interactive Platform
+</footer>
 
 <script>
   document.getElementById("enterLobby").onclick = () => {
     location.href = "/lobby.html";
   };
 </script>
+
 </body>
 </html>
