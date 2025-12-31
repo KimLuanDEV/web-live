@@ -27,8 +27,11 @@
         </div>
 
         <div class="pills">
+          <span id="meName" class="badge badge--info">👤</span>
           <button class="btn lobby-btn" id="btnOpenCreate">➕ Tạo phòng</button>
           <button id="refresh" class="lobby-btn" title="Làm mới">🔄</button>
+          <button id="btnLogout">🚪 Đăng xuất</button>
+
         </div>
       </div>
 
@@ -222,6 +225,27 @@
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
+
+const user = localStorage.getItem("live_user");
+  if (!user) {
+    location.href = "/login.html";
+  }
+
+ const me = JSON.parse(localStorage.getItem("live_user"));
+
+ hostNameInput.value = me.name;
+hostNameInput.disabled = true;
+
+  if (me) {
+    document.getElementById("meName").textContent = "👤 " + me.name;
+  }
+
+document.getElementById("btnLogout").onclick = () => {
+  localStorage.removeItem("live_user");
+  location.href = "/login.html";
+};
+
+
 const socket = io();
 
 

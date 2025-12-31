@@ -314,6 +314,18 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
+  const me = JSON.parse(localStorage.getItem("live_user"));
+  if (!me) {
+    location.href = "/login.html";
+  }
+
+
+  if (me && document.getElementById("chatName")) {
+  document.getElementById("chatName").value = me.name;
+}
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
