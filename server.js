@@ -226,6 +226,37 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+  // ===== HOST APPROVE / REJECT GUEST =====
+socket.on("host-approve-guest", ({ roomId, guestId }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  console.log("✅ Host approved guest:", guestId);
+
+  room.guestId = guestId;
+
+  // báo guest được duyệt
+  io.to(guestId).emit("guest-approved", {
+    roomId,
+    hostId: socket.id
+  });
+
+  // báo host + viewer
+  io.to(roomId).emit("guest-online", { guestId });
+});
+
+socket.on("host-reject-guest", ({ roomId, guestId }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  console.log("❌ Host rejected guest:", guestId);
+
+  io.to(guestId).emit("guest-rejected");
+});
+
+
 socket.on("resume-viewers", ({ roomId }) => {
   if (!roomId) return;
   const room = rooms.get(roomId);

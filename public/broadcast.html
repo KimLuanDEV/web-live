@@ -886,6 +886,14 @@ socket.on("live-resume", async ({ startTs }) => {
 });
 
 
+socket.on("guest-ready", ({ guestId }) => {
+  console.log("🎥 Guest ready:", guestId);
+
+  // tạo peer WebRTC cho guest
+  createPeerForGuest(guestId); 
+});
+
+
 socket.on("resume-viewers-list", async ({ viewers }) => {
   if (!Array.isArray(viewers)) return;
   console.log("🔄 Resume viewers:", viewers.length);
