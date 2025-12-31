@@ -219,31 +219,9 @@
   </div>
 </div>
 
-<div class="badge badge--info">
-  👤 <b id="lobbyUserName"></b>
-</div>
 
 <script src="/socket.io/socket.io.js"></script>
-
-
-
-
-
-
 <script>
-
-const name = localStorage.getItem("live_name");
-  if (!name) {
-    location.href = "/login.html";
-  }
-
-
-  
-const userRole = localStorage.getItem("live_role");
-
-const userName = localStorage.getItem("live_name");
-document.getElementById("lobbyUserName").textContent = userName;
-
 const socket = io();
 
 

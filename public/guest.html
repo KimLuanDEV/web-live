@@ -157,6 +157,7 @@
     <div class="badge badge--info">💬 Chat (Live)</div>
 
     <div class="chatform">
+      <input id="chatName" value="Khách" />
       <input id="chatText" placeholder="Nhập tin nhắn..." />
       <button id="chatSend" class="full">Gửi</button>
     </div>
@@ -324,18 +325,6 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-
-  if (!localStorage.getItem("live_name")) {
-    location.href = "/login.html";
-  }
-
-
-
-const USER_NAME = localStorage.getItem("live_name");
-if (!USER_NAME) location.href = "/login.html";
-
-
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const me = document.getElementById("me");
@@ -1077,12 +1066,7 @@ socket.on("reaction", (msg)=>{
       const name = (chatName.value || "Guest").trim();
       const text = chatText.value.trim();
       if (!text) return;
- socket.emit("chat", {
-  roomId,
-  name: USER_NAME,
-  text
-});
-
+      socket.emit("chat", { roomId, name, text, role: "guest" });
       chatText.value = "";
     };
 
@@ -1434,11 +1418,12 @@ function sendQuickChat(){
   if (!text) return;
 
   socket.emit("chat", {
-  roomId,
-  name: USER_NAME,
-  text
-});
-
+    roomId,
+    name: (chatName?.value || "User").trim(),
+    text,
+    // role tùy trang bạn set:
+    // role: "host" / "viewer" / "guest"
+  });
 
   quickChatInput.value = "";
   closeQuickChat();
@@ -1508,9 +1493,6 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
     giftPanel.classList.add("hidden");
   });
 });
-
-
-
 
 
   </script>
