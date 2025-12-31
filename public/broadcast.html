@@ -54,9 +54,6 @@
 
       <div class="gift-layer" id="giftLayer"></div>
 
-<div class="gift-video-layer" id="giftVideoLayer"></div>
-
-
   <!-- HOST MAIN -->
   <div class="video-card live-main" id="hostCard">
     <div class="live-overlay">
@@ -348,6 +345,9 @@
   
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
+
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
@@ -1638,41 +1638,6 @@ socket.on("gift", ({ gift, donor })=>{
     setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
   }catch{}
 });
-
-
-const giftVideoLayer = document.getElementById("giftVideoLayer");
-let __giftVideoLock = false;
-
-socket.on("gift:video", ({ src, donor, type, qty }) => {
-  playGiftVideo(src, donor, type, qty);
-});
-
-function playGiftVideo(src, donor, type, qty){
-  if (!giftVideoLayer) return;
-
-  // tránh spam chồng chéo
-  if (__giftVideoLock) return;
-  __giftVideoLock = true;
-
-  giftVideoLayer.innerHTML = `
-    <video src="${src}" autoplay muted playsinline></video>
-  `;
-
-  const v = giftVideoLayer.querySelector("video");
-  const clear = () => {
-    giftVideoLayer.innerHTML = "";
-    __giftVideoLock = false;
-  };
-
-  v.onended = clear;
-  v.onerror = clear;
-
-  // fallback 6s
-  setTimeout(clear, 6000);
-}
-
-
-
 const hostNameInput = document.getElementById("hostNameInput");
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");
 
@@ -1800,6 +1765,41 @@ socket.on("live-ended-stats", (stats) => {
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
+
+
+
+function genAvatar(name){
+  return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(name)}`;
+}
+
+
+const HostProfile = {
+  id: socket.id,
+  name: document.getElementById("hostNameInput")?.value || "Host",
+  avatar: genAvatar("host"),
+  level: 1,
+  exp: 0,
+  badge: "host"
+};
+
+socket.emit("user-profile", HostProfile);
+
+
+
+function renderChat(u, msg){
+  const div = document.createElement("div");
+  div.className = "chat-bubble chat-host";
+  div.innerHTML = `
+    <div class="chat-user">
+      <img class="chat-avatar" src="${u.avatar}">
+      <span class="badge-host">${u.name}</span>
+      <small class="chat-level">Lv.${u.level}</small>
+    </div>
+    <div>${msg}</div>
+  `;
+  chatOverlay.appendChild(div);
+  setTimeout(()=>div.classList.add("hide"),4000);
+}
 
 
   </script>

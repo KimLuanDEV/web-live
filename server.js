@@ -23,6 +23,12 @@ const rooms = new Map();
 
 
 
+// ===== USER PROFILE / LEVEL =====
+const userProfiles = new Map();
+
+function calcLevel(exp){
+  return Math.floor(exp / 100) + 1;
+}
 
 
 
@@ -173,6 +179,16 @@ emitLobbyUpdate();
 
 
 io.on("connection", (socket) => {
+
+
+socket.on("user-profile", (profile)=>{
+  userProfiles.set(socket.id, {
+    ...profile,
+    exp: profile.exp || 0,
+    level: profile.level || 1
+  });
+});
+
 
 socket.on("room-check", ({ roomId }, cb) => {
   const rid = normRoomId(roomId);
@@ -429,6 +445,16 @@ socket.on("live-stop", ({ roomId }) => {
       ts: Date.now(),
     };
 
+const u = userProfiles.get(socket.id);
+if(u){
+  u.exp += 2;
+  u.level = calcLevel(u.exp);
+  io.to(roomId).emit("user-level-update", u);
+}
+
+
+
+
     io.to(roomId).emit("chat", msg);
   });
 
@@ -524,6 +550,16 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     totalCoins: room.giftTotal,
     ts: Date.now(),
   };
+
+const u = userProfiles.get(socket.id);
+if(u){
+  u.exp += Math.floor(totalCoins / 10);
+  u.level = calcLevel(u.exp);
+  io.to(roomId).emit("user-level-update", u);
+}
+
+
+
 
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });

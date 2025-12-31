@@ -43,9 +43,6 @@
 
             <div class="gift-layer" id="giftLayer"></div>
 
-
-            <div class="gift-video-layer" id="giftVideoLayer"></div>
-
             <!-- HOST MAIN -->
             <div class="video-card live-main" id="hostCardGuest">
               <div class="live-overlay">
@@ -1352,40 +1349,6 @@ socket.on("gift", ({ gift, donor })=>{
   }catch{}
 });
 
-
-const giftVideoLayer = document.getElementById("giftVideoLayer");
-let __giftVideoLock = false;
-
-socket.on("gift:video", ({ src, donor, type, qty }) => {
-  playGiftVideo(src, donor, type, qty);
-});
-
-function playGiftVideo(src, donor, type, qty){
-  if (!giftVideoLayer) return;
-
-  // tránh spam chồng chéo
-  if (__giftVideoLock) return;
-  __giftVideoLock = true;
-
-  giftVideoLayer.innerHTML = `
-    <video src="${src}" autoplay muted playsinline></video>
-  `;
-
-  const v = giftVideoLayer.querySelector("video");
-  const clear = () => {
-    giftVideoLayer.innerHTML = "";
-    __giftVideoLock = false;
-  };
-
-  v.onended = clear;
-  v.onerror = clear;
-
-  // fallback 6s
-  setTimeout(clear, 6000);
-}
-
-
-
 const walletCoinsEl = document.getElementById("walletCoins");
 socket.on("wallet-sync", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); try{ localStorage.setItem("ls_coins", String(coins ?? 0)); }catch{} });
 socket.on("wallet-update", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); try{ localStorage.setItem("ls_coins", String(coins ?? 0)); }catch{} });
@@ -1529,6 +1492,29 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
 
     giftPanel.classList.add("hidden");
   });
+});
+
+function genAvatar(name){
+  return `https://api.dicebear.com/7.x/thumbs/svg?seed=${encodeURIComponent(name)}`;
+}
+
+
+const guestProfile = {
+  id: socket.id,
+  name: chatName.value || "Guest",
+  avatar: genAvatar(chatName.value),
+  level: 1,
+  exp: 0,
+  badge: "guest"
+};
+
+socket.emit("user-profile", guestProfile);
+
+
+socket.on("user-level-update", (u)=>{
+  if(u.id === socket.id){
+    guestProfile.level = u.level;
+  }
 });
 
 
