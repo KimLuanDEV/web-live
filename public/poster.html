@@ -142,9 +142,12 @@
 
 <script>
   document.getElementById("enterLobby").onclick = () => {
+    // đánh dấu đã đi qua poster
+    localStorage.setItem("__ENTERED_FROM_POSTER__", "1");
     location.href = "/lobby.html";
   };
 </script>
+
 
 
 <script>
