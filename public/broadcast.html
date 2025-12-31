@@ -22,7 +22,7 @@
       <h1>📱 Host</h1>
 <button id="btnBackLobbyHost" style="margin-top:10px">🏟️ Quay về Lobby</button>
 
-      <div class="card">
+      <div class="card" style="display: none;">
   <div class="badge badge--info">👤 Cập nhật tên hiển thị ngoài Lobby</div>
   <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
     <img id="hostAvatarPreview"
@@ -33,15 +33,16 @@
       <input id="hostNameInput" placeholder="Tên host..." />
       
     </div>
-
     <button id="btnUpdateProfile">💾 Lưu</button>
   </div>
 </div>
 
-      <hr />
 
+
+      <hr />
       <div class="row">
-        <div class="card">
+
+        <div class="card" style="display: none;">
           <div class="kv">
             <div class="badge">Phòng Livestream</div>
             <code id="roomCode" >-</code>
@@ -50,6 +51,7 @@
           <hr />
           <div class="log" id="log" style="display: none;"></div>
         </div>
+
 
         <div class="card">
      <div class="live-stage" id="liveStageHost" style="margin-top:10px">
