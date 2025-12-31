@@ -7,6 +7,30 @@ const path = require("path");
 const { Server } = require("socket.io");
 const twilio = require("twilio");
 
+
+const fs = require("fs");
+
+const LIVE_STATE_FILE = path.join(__dirname, "live_state.json");
+
+function loadLiveState() {
+  try {
+    if (!fs.existsSync(LIVE_STATE_FILE)) return {};
+    return JSON.parse(fs.readFileSync(LIVE_STATE_FILE, "utf8"));
+  } catch {
+    return {};
+  }
+}
+
+function saveLiveState(state) {
+  try {
+    fs.writeFileSync(LIVE_STATE_FILE, JSON.stringify(state, null, 2));
+  } catch (e) {
+    console.error("Save live state failed:", e);
+  }
+}
+
+
+
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
@@ -23,6 +47,26 @@ app.get("/", (_, res) => {
 const rooms = new Map();
 
 
+// ♻️ RESTORE LIVE ROOMS AFTER SERVER RESTART
+const persisted = loadLiveState();
+
+for (const roomId in persisted) {
+  const data = persisted[roomId];
+  rooms.set(roomId, {
+    broadcasterId: null,        // chờ host quay lại
+    viewers: new Set(),
+    guestId: null,
+    liveStartTs: data.liveStartTs,
+    pinnedNote: data.pinnedNote || null,
+    hostProfile: data.hostProfile || null,
+    giftTotal: data.giftTotal || 0,
+    giftByUser: new Map(data.giftByUser || []),
+    releaseTimer: null,
+    pendingRelease: false,
+  });
+}
+
+console.log("♻️ Restored live rooms:", Object.keys(persisted));
 
 
 
@@ -149,6 +193,12 @@ app.get("/ice", async (_req, res) => {
 
 
 function closeRoom(roomId, reason = "host_left") {
+
+  const state = loadLiveState();
+delete state[roomId];
+saveLiveState(state);
+
+
   const room = rooms.get(roomId);
   if (!room) return;
 
@@ -291,6 +341,18 @@ socket.on("live-start", ({ roomId }) => {
     room.liveStartTs = Date.now();
   }
 
+// 💾 persist live state
+const state = loadLiveState();
+state[roomId] = {
+  liveStartTs: room.liveStartTs,
+  hostProfile: room.hostProfile,
+  pinnedNote: room.pinnedNote,
+  giftTotal: room.giftTotal,
+  giftByUser: Array.from(room.giftByUser.entries()),
+};
+saveLiveState(state);
+
+
   // báo cho toàn bộ phòng
   io.to(roomId).emit("live-start", {
     startTs: room.liveStartTs
@@ -322,6 +384,9 @@ socket.on("live-stop", ({ roomId }) => {
 
   emitLobbyUpdate();
 
+const state = loadLiveState();
+delete state[roomId];
+saveLiveState(state);
 
   closeRoom(roomId, "host_stop");
 });
