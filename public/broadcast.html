@@ -83,8 +83,7 @@
     </div>
 <div class="chat-overlay" id="chatOverlay"></div>
 
-<!-- CHAT BOX OVERLAY -->
-<div class="chatbox-overlay" id="chatBox"></div>
+
 
 
 <!-- CHAT QUICK BUTTON -->
@@ -202,7 +201,7 @@
     </div>
 
 
- 
+  <div id="chatBox" class="chatbox"></div>
 
 </div>
 
@@ -1697,26 +1696,16 @@ socket.on("pin-note-update", (note)=> renderPin(note));
     const chatText = document.getElementById("chatText");
     const chatSend = document.getElementById("chatSend");
 
-   function addChatLine(name, text){
-  const line = document.createElement("div");
-  line.className = "chat-line";
-  line.innerHTML = `<span class="chat-name">${name}:</span> ${text}`;
-  chatBox.appendChild(line);
-
-  // giữ tối đa 50 dòng (cuộn xem)
-  while (chatBox.children.length > 50){
-    chatBox.removeChild(chatBox.firstChild);
-  }
-
-  // auto scroll xuống nếu đang ở đáy
-  const nearBottom =
-    chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 20;
-
-  if (nearBottom){
-    chatBox.scrollTop = chatBox.scrollHeight;
-  }
-}
-
+    function addChat(msg) {
+      const time = new Date(msg.ts).toLocaleTimeString();
+      const role = String(msg.role || "viewer");
+      const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
+      const line = document.createElement("div");
+      line.className = "chat-line chat-" + role;
+      line.textContent = `[${time}] ${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
+      chatBox.appendChild(line);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
 
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
 
