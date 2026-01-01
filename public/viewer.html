@@ -50,7 +50,6 @@
             <button id="btnJoin">Tham gia xem Livestream</button>
           </div>
 
-<button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
 
 
           <hr />
@@ -78,6 +77,10 @@
 
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
+
+<!-- REQUEST LIVE ICON -->
+<button class="req-live-fab" id="reqLiveFab" title="Xin lên live">🎤</button>
+
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -953,6 +956,15 @@ const st = pc.iceConnectionState;
         }, 120);
       } catch {}
     })();
+
+
+const reqLiveFab = document.getElementById("reqLiveFab");
+
+reqLiveFab?.addEventListener("click", () => {
+  // mở trang guest để xin live (logic cũ)
+  const guestUrl = `${location.origin}/guest.html?room=${encodeURIComponent(roomId)}`;
+  window.open(guestUrl, "_blank");
+});
 
 
 // ===== REQUEST TO GO LIVE (VIEWER -> GUEST) =====

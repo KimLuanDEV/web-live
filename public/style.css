@@ -3630,3 +3630,31 @@ body.is-live .chat-fab {
   transform: scale(1.1);
   box-shadow: 0 0 12px rgba(255,255,255,.35);
 }
+
+/* ===== REQUEST LIVE ICON (VIEWER) ===== */
+.req-live-fab{
+  position: absolute;
+  left: 60px;
+  bottom: 10px; /* nằm trên 🎁 một chút */
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(0,0,0,.65);
+  color: #fff;
+  font-size: 20px;
+  cursor: pointer;
+  display: none; /* chỉ hiện khi live */
+  align-items: center;
+  justify-content: center;
+  z-index: 25;
+}
+
+.req-live-fab:hover{
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(255,255,255,.35);
+}
+
+body.is-live .req-live-fab{
+  display: flex;
+}
