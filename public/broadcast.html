@@ -936,6 +936,19 @@ socket.on("live-resume", async ({ startTs }) => {
 
 });
 
+// ===== HOST RECEIVE MIC REQUEST =====
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  const ok = confirm("🎙 Viewer xin bật mic. Cho phép?");
+  socket.emit("host-approve-mic", {
+    roomId,
+    viewerId,
+    ok
+  });
+});
+
+
+
+
 
 socket.on("resume-viewers-list", async ({ viewers }) => {
   if (!Array.isArray(viewers)) return;
@@ -1166,6 +1179,35 @@ socket.emit("join-room", {
 
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+
+
+pc.ontrack = (e) => {
+  const track = e.track;
+  const stream = e.streams[0];
+
+  // ===== AUDIO FROM VIEWER =====
+  if (track.kind === "audio") {
+    console.log("🎙 Viewer đang nói");
+
+    // Host nghe được
+    const audio = document.createElement("audio");
+    audio.srcObject = stream;
+    audio.autoplay = true;
+    audio.playsInline = true;
+
+    // Relay audio cho tất cả viewer khác
+    viewersPCMap.forEach(vpc => {
+      try {
+        vpc.addTrack(track, stream);
+      } catch {}
+    });
+  }
+
+  // ===== VIDEO (giữ nguyên logic cũ của bạn) =====
+};
+
+
 
       pc.onicecandidate = (e) => {
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
