@@ -90,6 +90,7 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
+
 <!-- GUEST REQUEST ICON -->
 <button
   id="guestReqIcon"
@@ -99,6 +100,16 @@
   👤
   <span class="guest-req-dot" id="guestReqDot"></span>
 </button>
+
+
+<button
+  id="btnMicManager"
+  class="av-btn"
+  title="Duyệt mic viewer"
+>
+  🎧
+</button>
+
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -416,6 +427,21 @@
 
 
 
+<div id="micModal" class="ncf hidden">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box">
+    <h3 class="ncf__title">🎧 Viewer xin bật mic</h3>
+
+    <div id="micRequestList"></div>
+
+    <div class="ncf__actions">
+      <button onclick="closeMicModal()" class="ncf__btn">Đóng</button>
+    </div>
+  </div>
+</div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
@@ -572,6 +598,55 @@ if(nameFromLobby){
 
     const socket = io();
     
+
+
+
+    const btnMicManager = document.getElementById("btnMicManager");
+const micModal = document.getElementById("micModal");
+const micRequestList = document.getElementById("micRequestList");
+
+let pendingMicViewers = [];
+
+btnMicManager.onclick = () => {
+  renderMicList();
+  micModal.classList.remove("hidden");
+};
+
+function closeMicModal(){
+  micModal.classList.add("hidden");
+}
+
+socket.on("viewer-request-mic", ({ viewerId }) => {
+  if (!pendingMicViewers.includes(viewerId)) {
+    pendingMicViewers.push(viewerId);
+  }
+});
+
+function renderMicList(){
+  micRequestList.innerHTML = pendingMicViewers.map(id => `
+    <div style="margin:8px 0;display:flex;gap:8px">
+      <span>${id}</span>
+      <button onclick="approveMic('${id}')">✅</button>
+      <button onclick="rejectMic('${id}')">❌</button>
+      <button onclick="muteMic('${id}')">🔇</button>
+    </div>
+  `).join("");
+}
+
+function approveMic(id){
+  socket.emit("host-approve-viewer-mic", { viewerId:id });
+}
+
+function rejectMic(id){
+  socket.emit("host-reject-viewer-mic", { viewerId:id });
+}
+
+function muteMic(id){
+  socket.emit("host-mute-viewer", { viewerId:id });
+}
+
+
+
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
@@ -1162,20 +1237,33 @@ socket.emit("join-room", {
 
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
-      pcs.set(viewerId, pc);
 
 
-      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+pc.ontrack = (event) => {
+  const stream = event.streams[0];
+  if (!stream) return;
 
+  // chỉ xử lý audio
+  if (stream.getAudioTracks().length === 0) return;
 
-pc.ontrack = (e) => {
-  const audio = document.createElement("audio");
-  audio.srcObject = e.streams[0];
-  audio.autoplay = true;
+  let audio = document.getElementById("webrtc-audio");
+  if (!audio) {
+    audio = document.createElement("audio");
+    audio.id = "webrtc-audio";
+    audio.autoplay = true;
+    audio.playsInline = true;
+    document.body.appendChild(audio);
+  }
+
+  audio.srcObject = stream;
 };
 
 
 
+      pcs.set(viewerId, pc);
+
+
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
       pc.onicecandidate = (e) => {
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
@@ -1227,17 +1315,7 @@ pc.ontrack = (e) => {
       }
     });
 
-
-socket.on("viewer-request-mic", ({ viewerId }) => {
-  window.__pendingMicViewer = viewerId;
-  guestReqDot.style.display = "block"; // dùng chung icon báo
-});
-
-
-    socket.emit("host-approve-viewer-mic", {
-  viewerId: window.__pendingMicViewer
-});
-
+    
 
 // ===== ICE RESTART: host regenerates offer when asked =====
 socket.on('request-ice-restart', async ({ from, reason })=>{

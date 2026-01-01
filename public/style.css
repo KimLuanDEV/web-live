@@ -3667,13 +3667,13 @@ body.is-live .req-live-fab{
   width:44px;
   height:44px;
   border-radius:50%;
-  background:rgba(37,240,154,.9);
+  background:#25F09A;
   color:#000;
   font-size:20px;
   border:none;
   cursor:pointer;
-  box-shadow:0 0 18px rgba(37,240,154,.8);
-  z-index:20;
+  box-shadow:0 0 18px rgba(37,240,154,.9);
+  z-index:30;
 }
 .req-mic-fab.waiting{
   background:#FFD36E;

@@ -214,7 +214,6 @@
 
 
     <div id="chatBox" class="chatbox"></div>
-    
   </div>
 
 
@@ -920,6 +919,28 @@ socket.on("reaction", (msg)=>{
 
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
+
+pc.ontrack = (event) => {
+  const stream = event.streams[0];
+  if (!stream) return;
+
+  if (stream.getAudioTracks().length === 0) return;
+
+  let audio = document.getElementById("webrtc-audio");
+  if (!audio) {
+    audio = document.createElement("audio");
+    audio.id = "webrtc-audio";
+    audio.autoplay = true;
+    audio.playsInline = true;
+    document.body.appendChild(audio);
+  }
+
+  audio.srcObject = stream;
+};
+
+
+
+
       pcs.set(viewerId, pc);
 
 // 🔴 DÁN ĐOẠN NÀY NGAY SAU ĐÂY
@@ -963,10 +984,6 @@ function attachHostVideoSafe() {
 }
 
       pc.ontrack = (e) => {
-
-        const audio = document.createElement("audio");
-  audio.srcObject = e.streams[0];
-  audio.autoplay = true;
   // add từng track, không overwrite stream
   hostStream.addTrack(e.track);
 

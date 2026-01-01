@@ -77,15 +77,14 @@
 <!-- REQUEST LIVE ICON -->
 <button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
-<!-- REQUEST MIC ONLY -->
+<!-- REQUEST MIC BUTTON (VIEWER) -->
 <button
-  class="req-mic-fab"
   id="btnRequestMic"
+  class="req-mic-fab"
   title="Xin bật mic nói chuyện"
 >
   🗣️
 </button>
-
 
 
 <!-- CHAT INPUT OVERLAY -->
@@ -363,7 +362,6 @@ let swapped = false; // false: host main, true: guest main
     const btnRequestMic = document.getElementById("btnRequestMic");
 
 let micRequested = false;
-let micEnabled = false;
 let micStream = null;
 
 btnRequestMic.onclick = () => {
@@ -394,14 +392,16 @@ socket.on("viewer-mic-approved", async () => {
   socket.emit("renegotiate", { roomId });
 });
 
-
 socket.on("viewer-mic-rejected", () => {
   micRequested = false;
   btnRequestMic.className = "req-mic-fab";
   btnRequestMic.textContent = "🗣️";
-  alert("Host chưa cho phép bật mic");
 });
 
+socket.on("viewer-mic-muted", () => {
+  micStream?.getTracks().forEach(t => t.enabled = false);
+  btnRequestMic.textContent = "🔇";
+});
 
 
 
@@ -910,6 +910,26 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
      
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
+
+pc.ontrack = (event) => {
+  const stream = event.streams[0];
+  if (!stream) return;
+
+  if (stream.getAudioTracks().length === 0) return;
+
+  let audio = document.getElementById("webrtc-audio");
+  if (!audio) {
+    audio = document.createElement("audio");
+    audio.id = "webrtc-audio";
+    audio.autoplay = true;
+    audio.playsInline = true;
+    document.body.appendChild(audio);
+  }
+
+  audio.srcObject = stream;
+};
+
+
       pcs.set(from, pc);
 
      
@@ -921,11 +941,6 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
     }
   };
 pc.ontrack = (event) => {
-
-   const audio = document.createElement("audio");
-  audio.srcObject = e.streams[0];
-  audio.autoplay = true;
-  
   const stream = event.streams[0];
 
   if (!stream) return;

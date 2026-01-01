@@ -227,8 +227,7 @@ io.on("connection", (socket) => {
 
 
 
-
-  socket.on("viewer-request-mic", ({ roomId }) => {
+socket.on("viewer-request-mic", ({ roomId }) => {
   const room = rooms.get(roomId);
   if (!room || !room.broadcasterId) return;
 
@@ -244,6 +243,11 @@ socket.on("host-approve-viewer-mic", ({ viewerId }) => {
 socket.on("host-reject-viewer-mic", ({ viewerId }) => {
   io.to(viewerId).emit("viewer-mic-rejected");
 });
+
+socket.on("host-mute-viewer", ({ viewerId }) => {
+  io.to(viewerId).emit("viewer-mic-muted");
+});
+
 
 
 
