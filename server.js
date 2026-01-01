@@ -226,25 +226,23 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+
+
+// VIEWER xin bật mic
 socket.on("viewer-request-mic", ({ roomId }) => {
   const room = rooms.get(roomId);
-  if (!room) return;
-  if (room.broadcasterId) {
-    io.to(room.broadcasterId).emit("viewer-request-mic", {
-      viewerId: socket.id
-    });
-  }
+  if (!room || !room.broadcasterId) return;
+
+  io.to(room.broadcasterId).emit("viewer-request-mic", {
+    viewerId: socket.id
+  });
+});
+
+socket.on("host-approve-viewer-mic", ({ viewerId }) => {
+  io.to(viewerId).emit("viewer-mic-approved");
 });
 
 
-
-socket.on("host-approve-viewer-mic", ({ to, allow }) => {
-  io.to(to).emit("viewer-mic-approved", { allow });
-});
-
-
-
-  
 socket.on("resume-viewers", ({ roomId }) => {
   if (!roomId) return;
   const room = rooms.get(roomId);

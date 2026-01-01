@@ -78,10 +78,7 @@
 <button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
 <!-- REQUEST MIC ICON -->
-<button class="req-live-fab" id="btnRequestMic" title="Xin bật mic nói chuyện">🎤</button>
-
-
-
+<button class="req-mic-fab" id="btnRequestMic" title="Xin bật mic để nói">🎙️</button>
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -358,42 +355,39 @@ let swapped = false; // false: host main, true: guest main
     const btnRequestMic = document.getElementById("btnRequestMic");
 
 let viewerMicStream = null;
-let viewerMicAllowed = false;
+let viewerMicPc = null;
 
 btnRequestMic.onclick = async () => {
-  if (viewerMicAllowed) return;
+  btnRequestMic.classList.add("waiting");
 
   socket.emit("viewer-request-mic", {
     roomId
   });
-
-  btnRequestMic.textContent = "⏳";
 };
 
-
-socket.on("viewer-mic-approved", async ({ allow }) => {
-  if (!allow) {
-    btnRequestMic.textContent = "🎤";
-    alert("Host từ chối bật mic");
-    return;
-  }
-
-  viewerMicAllowed = true;
-  btnRequestMic.textContent = "🔴";
+socket.on("viewer-mic-approved", async () => {
+  btnRequestMic.classList.remove("waiting");
 
   viewerMicStream = await navigator.mediaDevices.getUserMedia({
-    audio: true
+    audio: true,
+    video: false
   });
 
-  const audioTrack = viewerMicStream.getAudioTracks()[0];
+  viewerMicPc = new RTCPeerConnection(iceServers);
 
-  // 👉 Gửi audio track vào PeerConnection đang xem host
-  if (pc) {
-    pc.addTrack(audioTrack, viewerMicStream);
-  }
+  viewerMicStream.getTracks().forEach(track=>{
+    viewerMicPc.addTrack(track, viewerMicStream);
+  });
+
+  // gửi audio track về host
+  const offer = await viewerMicPc.createOffer();
+  await viewerMicPc.setLocalDescription(offer);
+
+  socket.emit("viewer-mic-offer", {
+    roomId,
+    sdp: offer
+  });
 });
-
-
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -912,12 +906,6 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
     }
   };
 pc.ontrack = (event) => {
-
-  const audio = document.createElement("audio");
-  audio.srcObject = event.streams[0];
-  audio.autoplay = true;
-  document.body.appendChild(audio);
-
   const stream = event.streams[0];
 
   if (!stream) return;

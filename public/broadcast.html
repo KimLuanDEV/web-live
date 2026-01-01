@@ -572,6 +572,55 @@ if(nameFromLobby){
 
     const socket = io();
     
+
+let pendingMicViewer = null;
+
+socket.on("viewer-request-mic", ({ viewerId }) => {
+  pendingMicViewer = viewerId;
+
+  // icon rung + sáng
+  guestReqDot.style.display = "block";
+  guestReqIcon.classList.add("active");
+
+  // optional: sound
+  // new Audio("/sounds/request.mp3").play();
+});
+
+function approveViewerMic(){
+  if (!pendingMicViewer) return;
+
+  socket.emit("host-approve-viewer-mic", {
+    viewerId: pendingMicViewer
+  });
+
+  pendingMicViewer = null;
+  guestReqDot.style.display = "none";
+}
+
+
+socket.on("viewer-mic-offer", async ({ sdp, from }) => {
+  const pc = new RTCPeerConnection(iceServers);
+
+  pc.ontrack = (e)=>{
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    document.body.appendChild(audio);
+  };
+
+  await pc.setRemoteDescription(sdp);
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+
+  socket.emit("host-answer-viewer-mic", {
+    to: from,
+    sdp: answer
+  });
+});
+
+
+
+
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
@@ -937,17 +986,6 @@ socket.on("live-resume", async ({ startTs }) => {
 });
 
 
-socket.on("viewer-request-mic", ({ viewerId }) => {
-  const ok = confirm("Viewer xin bật mic nói chuyện. Cho phép?");
-  socket.emit("host-approve-viewer-mic", {
-    to: viewerId,
-    allow: ok
-  });
-});
-
-
-
-
 socket.on("resume-viewers-list", async ({ viewers }) => {
   if (!Array.isArray(viewers)) return;
   console.log("🔄 Resume viewers:", viewers.length);
@@ -1174,15 +1212,6 @@ socket.emit("join-room", {
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
-
-
-pc.ontrack = (e) => {
-  const audio = document.createElement("audio");
-  audio.srcObject = e.streams[0];
-  audio.autoplay = true;
-  document.body.appendChild(audio);
-};
-
 
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
