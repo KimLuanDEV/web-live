@@ -918,11 +918,25 @@ function resetMicBtn(){
       try{ socket.emit('request-ice-restart', { to: from, reason: 'viewer_pc_' + st }); }catch{}
     }
   };
+
+
 pc.ontrack = (event) => {
   const stream = event.streams[0];
 
   if (!stream) return;
 
+
+   // nếu là audio → phát
+  const audioTrack = stream.getAudioTracks?.()[0];
+  if (audioTrack) {
+    const audio = document.createElement("audio");
+    audio.srcObject = stream;
+    audio.autoplay = true;
+    audio.playsInline = true;
+    audio.muted = false;
+    document.body.appendChild(audio);
+  }
+  
   if (player.srcObject !== stream) {
     player.srcObject = stream;
   }

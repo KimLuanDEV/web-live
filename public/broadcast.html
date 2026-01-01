@@ -1186,27 +1186,48 @@ pc.ontrack = (e) => {
   const track = e.track;
   const stream = e.streams[0];
 
-  // ===== AUDIO FROM VIEWER =====
   if (track.kind === "audio") {
-    console.log("🎙 Viewer đang nói");
+    console.log("🎙 Viewer audio received");
 
-    // Host nghe được
+    // 🔊 HOST NGHE
     const audio = document.createElement("audio");
     audio.srcObject = stream;
     audio.autoplay = true;
     audio.playsInline = true;
+    audio.muted = false;
+    document.body.appendChild(audio);
 
-    // Relay audio cho tất cả viewer khác
-    viewersPCMap.forEach(vpc => {
-      try {
-        vpc.addTrack(track, stream);
-      } catch {}
-    });
+    // 🔁 RELAY AUDIO CHO VIEWER KHÁC
+    relayViewerAudio(track, stream);
+    return;
   }
 
-  // ===== VIDEO (giữ nguyên logic cũ của bạn) =====
+  // giữ nguyên xử lý video cũ
 };
 
+
+function relayViewerAudio(track, stream){
+  pcs.forEach((pc, peerId) => {
+    try {
+      // chỉ relay cho viewer, không relay ngược lại host
+      if (pc.connectionState !== "connected") return;
+
+      pc.addTrack(track, stream);
+
+      // 🔄 renegotiate
+      pc.createOffer().then(offer => {
+        pc.setLocalDescription(offer);
+        socket.emit("signal", {
+          to: peerId,
+          data: offer
+        });
+      });
+
+    } catch (e) {
+      console.warn("relay audio failed", e);
+    }
+  });
+}
 
 
       pc.onicecandidate = (e) => {
