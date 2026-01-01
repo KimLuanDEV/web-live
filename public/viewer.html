@@ -78,7 +78,10 @@
 <button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
 <!-- REQUEST MIC ICON -->
-<button id="btnRequestMic" class="mic-fab" title="Xin bật mic"> 🎙️ </button>
+<button class="req-live-fab" id="btnRequestMic" title="Xin bật mic nói chuyện">🎤</button>
+
+
+
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -352,7 +355,45 @@ let swapped = false; // false: host main, true: guest main
     const socket = io();
 
 
-    
+    const btnRequestMic = document.getElementById("btnRequestMic");
+
+let viewerMicStream = null;
+let viewerMicAllowed = false;
+
+btnRequestMic.onclick = async () => {
+  if (viewerMicAllowed) return;
+
+  socket.emit("viewer-request-mic", {
+    roomId
+  });
+
+  btnRequestMic.textContent = "⏳";
+};
+
+
+socket.on("viewer-mic-approved", async ({ allow }) => {
+  if (!allow) {
+    btnRequestMic.textContent = "🎤";
+    alert("Host từ chối bật mic");
+    return;
+  }
+
+  viewerMicAllowed = true;
+  btnRequestMic.textContent = "🔴";
+
+  viewerMicStream = await navigator.mediaDevices.getUserMedia({
+    audio: true
+  });
+
+  const audioTrack = viewerMicStream.getAudioTracks()[0];
+
+  // 👉 Gửi audio track vào PeerConnection đang xem host
+  if (pc) {
+    pc.addTrack(audioTrack, viewerMicStream);
+  }
+});
+
+
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -863,54 +904,6 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       pcs.set(from, pc);
 
      
-// ===== VIEWER MIC REQUEST (ICON IN VIDEO) =====
-const btnRequestMic = document.getElementById("btnRequestMic");
-
-let viewerMicStream = null;
-let viewerMicTrack = null;
-
-btnRequestMic.onclick = () => {
-  btnRequestMic.classList.add("waiting");
-  btnRequestMic.disabled = true;
-
-  socket.emit("viewer-request-mic", { roomId });
-};
-
-// host duyệt
-socket.on("mic-approved", async () => {
-  try {
-    viewerMicStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: false
-    });
-
-    viewerMicTrack = viewerMicStream.getAudioTracks()[0];
-    pc.addTrack(viewerMicTrack, viewerMicStream);
-
-    btnRequestMic.classList.remove("waiting");
-    btnRequestMic.textContent = "🔴"; // đang nói
-    btnRequestMic.disabled = false;
-
-  } catch (e) {
-    alert("❌ Không bật được mic");
-    resetMicBtn();
-  }
-});
-
-// host từ chối
-socket.on("mic-denied", () => {
-  alert("❌ Host không cho phép bật mic");
-  resetMicBtn();
-});
-
-function resetMicBtn(){
-  btnRequestMic.classList.remove("waiting");
-  btnRequestMic.textContent = "🎙️";
-  btnRequestMic.disabled = false;
-}
-
-
-
   // Auto ask peer to ICE-restart if connection degrades
   pc.onconnectionstatechange = () => {
     const st = pc.connectionState;
@@ -918,25 +911,17 @@ function resetMicBtn(){
       try{ socket.emit('request-ice-restart', { to: from, reason: 'viewer_pc_' + st }); }catch{}
     }
   };
-
-
 pc.ontrack = (event) => {
+
+  const audio = document.createElement("audio");
+  audio.srcObject = event.streams[0];
+  audio.autoplay = true;
+  document.body.appendChild(audio);
+
   const stream = event.streams[0];
 
   if (!stream) return;
 
-
-   // nếu là audio → phát
-  const audioTrack = stream.getAudioTracks?.()[0];
-  if (audioTrack) {
-    const audio = document.createElement("audio");
-    audio.srcObject = stream;
-    audio.autoplay = true;
-    audio.playsInline = true;
-    audio.muted = false;
-    document.body.appendChild(audio);
-  }
-  
   if (player.srcObject !== stream) {
     player.srcObject = stream;
   }
@@ -1753,8 +1738,6 @@ setInterval(() => {
     forcePlayVideo(player);
   }
 }, 2000);
-
-
 
 
 

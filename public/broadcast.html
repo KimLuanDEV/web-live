@@ -936,16 +936,14 @@ socket.on("live-resume", async ({ startTs }) => {
 
 });
 
-// ===== HOST RECEIVE MIC REQUEST =====
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  const ok = confirm("🎙 Viewer xin bật mic. Cho phép?");
-  socket.emit("host-approve-mic", {
-    roomId,
-    viewerId,
-    ok
+
+socket.on("viewer-request-mic", ({ viewerId }) => {
+  const ok = confirm("Viewer xin bật mic nói chuyện. Cho phép?");
+  socket.emit("host-approve-viewer-mic", {
+    to: viewerId,
+    allow: ok
   });
 });
-
 
 
 
@@ -1178,57 +1176,16 @@ socket.emit("join-room", {
       pcs.set(viewerId, pc);
 
 
-      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
-
-
-
 pc.ontrack = (e) => {
-  const track = e.track;
-  const stream = e.streams[0];
-
-  if (track.kind === "audio") {
-    console.log("🎙 Viewer audio received");
-
-    // 🔊 HOST NGHE
-    const audio = document.createElement("audio");
-    audio.srcObject = stream;
-    audio.autoplay = true;
-    audio.playsInline = true;
-    audio.muted = false;
-    document.body.appendChild(audio);
-
-    // 🔁 RELAY AUDIO CHO VIEWER KHÁC
-    relayViewerAudio(track, stream);
-    return;
-  }
-
-  // giữ nguyên xử lý video cũ
+  const audio = document.createElement("audio");
+  audio.srcObject = e.streams[0];
+  audio.autoplay = true;
+  document.body.appendChild(audio);
 };
 
 
-function relayViewerAudio(track, stream){
-  pcs.forEach((pc, peerId) => {
-    try {
-      // chỉ relay cho viewer, không relay ngược lại host
-      if (pc.connectionState !== "connected") return;
 
-      pc.addTrack(track, stream);
-
-      // 🔄 renegotiate
-      pc.createOffer().then(offer => {
-        pc.setLocalDescription(offer);
-        socket.emit("signal", {
-          to: peerId,
-          data: offer
-        });
-      });
-
-    } catch (e) {
-      console.warn("relay audio failed", e);
-    }
-  });
-}
-
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
       pc.onicecandidate = (e) => {
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });

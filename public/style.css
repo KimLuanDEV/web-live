@@ -3660,36 +3660,4 @@ body.is-live .req-live-fab{
 }
 
 
-/* ===== MIC REQUEST ICON (VIEWER) ===== */
-.mic-fab{
-  position:absolute;
-  left:110px;
-  bottom:10px; /* nằm trên nút 🎁 */
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  border:none;
-  background:rgba(0,0,0,.65);
-  color:#fff;
-  font-size:22px;
-  cursor:pointer;
-  z-index:20;
-  box-shadow:0 0 18px rgba(0,0,0,.6);
-  transition:transform .15s ease, filter .15s ease;
-}
-.mic-fab:hover{
-  transform:scale(1.1);
-  filter:brightness(1.1);
-}
-
-/* chờ duyệt */
-.mic-fab.waiting{
-  animation:pulseMic 1.1s infinite;
-  background:rgba(255,211,110,.85);
-}
-
-@keyframes pulseMic{
-  0%,100%{ transform:scale(1); }
-  50%{ transform:scale(1.15); }
-}
 
