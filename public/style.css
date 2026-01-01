@@ -3521,3 +3521,13 @@ body.is-live .guest-req-icon{
 .guest-req-icon.is-shake {
   animation: guestShake 0.45s ease-in-out;
 }
+
+
+/* ===== CHAT ICON CHỈ HIỆN KHI LIVE ===== */
+.chat-fab {
+  display: none;
+}
+
+body.is-live .chat-fab {
+  display: flex;
+}

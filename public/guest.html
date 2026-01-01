@@ -717,6 +717,9 @@ function __stopTimer(el){
 
 const liveTimerGuest = document.getElementById("liveTimerGuest");
 socket.on("live-start", ({ startTs }) => {
+
+  document.body.classList.add("is-live");
+
   if (typeof startTs === "number") __startTimer(liveTimerGuest, startTs);
 });
 socket.on("live-stop", () => {
@@ -1497,6 +1500,9 @@ function showKickModal(text){
 }
 
 socket.on("room-closed", ({ reason }) => {
+  
+ document.body.classList.remove("is-live");
+
   showKickModal("Host đã kết thúc livestream");
 });
 
