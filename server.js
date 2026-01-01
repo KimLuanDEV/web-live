@@ -228,8 +228,7 @@ io.on("connection", (socket) => {
 
 
 
-// VIEWER xin bật mic
-socket.on("viewer-request-mic", ({ roomId }) => {
+  socket.on("viewer-request-mic", ({ roomId }) => {
   const room = rooms.get(roomId);
   if (!room || !room.broadcasterId) return;
 
@@ -241,6 +240,11 @@ socket.on("viewer-request-mic", ({ roomId }) => {
 socket.on("host-approve-viewer-mic", ({ viewerId }) => {
   io.to(viewerId).emit("viewer-mic-approved");
 });
+
+socket.on("host-reject-viewer-mic", ({ viewerId }) => {
+  io.to(viewerId).emit("viewer-mic-rejected");
+});
+
 
 
 socket.on("resume-viewers", ({ roomId }) => {

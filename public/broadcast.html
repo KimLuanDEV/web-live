@@ -572,55 +572,6 @@ if(nameFromLobby){
 
     const socket = io();
     
-
-let pendingMicViewer = null;
-
-socket.on("viewer-request-mic", ({ viewerId }) => {
-  pendingMicViewer = viewerId;
-
-  // icon rung + sáng
-  guestReqDot.style.display = "block";
-  guestReqIcon.classList.add("active");
-
-  // optional: sound
-  // new Audio("/sounds/request.mp3").play();
-});
-
-function approveViewerMic(){
-  if (!pendingMicViewer) return;
-
-  socket.emit("host-approve-viewer-mic", {
-    viewerId: pendingMicViewer
-  });
-
-  pendingMicViewer = null;
-  guestReqDot.style.display = "none";
-}
-
-
-socket.on("viewer-mic-offer", async ({ sdp, from }) => {
-  const pc = new RTCPeerConnection(iceServers);
-
-  pc.ontrack = (e)=>{
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    document.body.appendChild(audio);
-  };
-
-  await pc.setRemoteDescription(sdp);
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-
-  socket.emit("host-answer-viewer-mic", {
-    to: from,
-    sdp: answer
-  });
-});
-
-
-
-
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
@@ -1216,6 +1167,16 @@ socket.emit("join-room", {
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
+
+pc.ontrack = (e) => {
+  const audio = document.createElement("audio");
+  audio.srcObject = e.streams[0];
+  audio.autoplay = true;
+};
+
+
+
+
       pc.onicecandidate = (e) => {
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
       };
@@ -1266,7 +1227,17 @@ socket.emit("join-room", {
       }
     });
 
-    
+
+socket.on("viewer-request-mic", ({ viewerId }) => {
+  window.__pendingMicViewer = viewerId;
+  guestReqDot.style.display = "block"; // dùng chung icon báo
+});
+
+
+    socket.emit("host-approve-viewer-mic", {
+  viewerId: window.__pendingMicViewer
+});
+
 
 // ===== ICE RESTART: host regenerates offer when asked =====
 socket.on('request-ice-restart', async ({ from, reason })=>{

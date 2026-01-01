@@ -77,8 +77,16 @@
 <!-- REQUEST LIVE ICON -->
 <button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
-<!-- REQUEST MIC ICON -->
-<button class="req-mic-fab" id="btnRequestMic" title="Xin bật mic để nói">🎙️</button>
+<!-- REQUEST MIC ONLY -->
+<button
+  class="req-mic-fab"
+  id="btnRequestMic"
+  title="Xin bật mic nói chuyện"
+>
+  🗣️
+</button>
+
+
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -354,40 +362,47 @@ let swapped = false; // false: host main, true: guest main
 
     const btnRequestMic = document.getElementById("btnRequestMic");
 
-let viewerMicStream = null;
-let viewerMicPc = null;
+let micRequested = false;
+let micEnabled = false;
+let micStream = null;
 
-btnRequestMic.onclick = async () => {
+btnRequestMic.onclick = () => {
+  if (micRequested) return;
+
+  micRequested = true;
   btnRequestMic.classList.add("waiting");
+  btnRequestMic.textContent = "⏳";
 
-  socket.emit("viewer-request-mic", {
-    roomId
-  });
+  socket.emit("viewer-request-mic", { roomId });
 };
+
 
 socket.on("viewer-mic-approved", async () => {
   btnRequestMic.classList.remove("waiting");
+  btnRequestMic.classList.add("active");
+  btnRequestMic.textContent = "🎙️";
 
-  viewerMicStream = await navigator.mediaDevices.getUserMedia({
+  micStream = await navigator.mediaDevices.getUserMedia({
     audio: true,
     video: false
   });
 
-  viewerMicPc = new RTCPeerConnection(iceServers);
-
-  viewerMicStream.getTracks().forEach(track=>{
-    viewerMicPc.addTrack(track, viewerMicStream);
+  micStream.getTracks().forEach(track => {
+    pc.addTrack(track, micStream);
   });
 
-  // gửi audio track về host
-  const offer = await viewerMicPc.createOffer();
-  await viewerMicPc.setLocalDescription(offer);
-
-  socket.emit("viewer-mic-offer", {
-    roomId,
-    sdp: offer
-  });
+  socket.emit("renegotiate", { roomId });
 });
+
+
+socket.on("viewer-mic-rejected", () => {
+  micRequested = false;
+  btnRequestMic.className = "req-mic-fab";
+  btnRequestMic.textContent = "🗣️";
+  alert("Host chưa cho phép bật mic");
+});
+
+
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -906,6 +921,11 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
     }
   };
 pc.ontrack = (event) => {
+
+   const audio = document.createElement("audio");
+  audio.srcObject = e.streams[0];
+  audio.autoplay = true;
+  
   const stream = event.streams[0];
 
   if (!stream) return;

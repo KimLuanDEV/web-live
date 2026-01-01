@@ -214,6 +214,7 @@
 
 
     <div id="chatBox" class="chatbox"></div>
+    
   </div>
 
 
@@ -962,6 +963,10 @@ function attachHostVideoSafe() {
 }
 
       pc.ontrack = (e) => {
+
+        const audio = document.createElement("audio");
+  audio.srcObject = e.streams[0];
+  audio.autoplay = true;
   // add từng track, không overwrite stream
   hostStream.addTrack(e.track);
 

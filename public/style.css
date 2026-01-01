@@ -3660,31 +3660,26 @@ body.is-live .req-live-fab{
 }
 
 
-/* ===== REQUEST MIC (VIEWER) ===== */
 .req-mic-fab{
   position:absolute;
-  left: 110px;
-  bottom: 10px;
+  left:110px;
+  bottom:10px;
   width:44px;
   height:44px;
   border-radius:50%;
-  border:1px solid rgba(255,255,255,.25);
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
-  color:#fff;
-  font-size:18px;
+  background:rgba(37,240,154,.9);
+  color:#000;
+  font-size:20px;
+  border:none;
   cursor:pointer;
+  box-shadow:0 0 18px rgba(37,240,154,.8);
   z-index:20;
-  box-shadow: 0 0 18px rgba(95,168,255,.45);
 }
-
 .req-mic-fab.waiting{
-  animation: pulseMic 1.2s infinite;
-  box-shadow: 0 0 22px rgba(255,211,110,.8);
+  background:#FFD36E;
+  box-shadow:0 0 18px rgba(255,211,110,.9);
 }
-
-@keyframes pulseMic{
-  0%,100%{transform:scale(1)}
-  50%{transform:scale(1.15)}
+.req-mic-fab.active{
+  background:#25F09A;
 }
 
