@@ -1711,30 +1711,6 @@ socket.on("pin-note-update", (note)=> renderPin(note));
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
 
 
-function addOverlayChat(name, text){
-  const line = document.createElement("div");
-  line.className = "chat-line";
-  line.innerHTML = `<span class="chat-name">${name}:</span> ${text}`;
-
-  chatOverlay.appendChild(line);
-
-  // giữ tối đa 50 dòng (đủ cuộn)
-  while (chatOverlay.children.length > 50){
-    chatOverlay.removeChild(chatOverlay.firstChild);
-  }
-
-  // auto scroll nếu đang ở gần đáy
-  const nearBottom =
-    chatOverlay.scrollHeight
-    - chatOverlay.scrollTop
-    - chatOverlay.clientHeight < 20;
-
-  if (nearBottom){
-    chatOverlay.scrollTop = chatOverlay.scrollHeight;
-  }
-}
-
-
 
     // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
     const chatOverlay = document.getElementById("chatOverlay");
