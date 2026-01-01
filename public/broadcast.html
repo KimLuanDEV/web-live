@@ -526,7 +526,7 @@ if(nameFromLobby){
     const socket = io();
     
 // 🔔 guest request sound
-const guestReqSound = new Audio("https://assets.mixkit.co/sfx/preview/mixkit-bell-notification-933.mp3");
+const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
 
 let __lastGuestNotify = 0;
