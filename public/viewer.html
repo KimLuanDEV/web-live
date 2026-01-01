@@ -824,6 +824,30 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       joined = false;
     }
 
+
+    function forcePlayVideo(video) {
+  if (!video) return;
+
+  video.muted = true;        // BẮT BUỘC
+  video.playsInline = true;
+
+  const tryPlay = () => {
+    const p = video.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => {
+        // retry sau 300ms
+        setTimeout(tryPlay, 300);
+      });
+    }
+  };
+
+  // gọi nhiều lần cho chắc
+  tryPlay();
+  setTimeout(tryPlay, 500);
+  setTimeout(tryPlay, 1000);
+}
+
+
     // Receive offer from broadcaster OR guest
     socket.on("offer", async ({ from, description }) => {
 
@@ -846,6 +870,14 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
   };
 pc.ontrack = (event) => {
   const stream = event.streams[0];
+
+  if (!stream) return;
+
+  if (player.srcObject !== stream) {
+    player.srcObject = stream;
+  }
+
+  forcePlayVideo(player);
 
   if (guestId && from === guestId) {
     // ===== GUEST VIDEO =====
@@ -870,12 +902,10 @@ pc.ontrack = (event) => {
     player.muted = false;        // cho phép có tiếng
     player.playsInline = true;  // iOS Safari KHÔNG fullscreen
 
-
-player.onloadedmetadata = () => {
     player.play().catch(() =>
       log("Autoplay bị chặn, bấm Play ở video Host.")
     );
-};
+
     // 🛡️ CHỐNG PAUSE KHI TAB ẨN / BACKGROUND
     player.onpause = () => {
       if (document.hidden) {
@@ -895,7 +925,6 @@ player.onloadedmetadata = () => {
       };
 
       pc.oniceconnectionstatechange = () => {
-
         log(`ICE(${from}): ${pc.iceConnectionState}`);
 
 const st = pc.iceConnectionState;
@@ -1315,10 +1344,6 @@ function spawnBigGiftSfx(mode){
   catch{}
 }
 
-
-socket.emit("viewer-join", { roomId });
-
-
 function spawnGiftParticles(mode){
   try{
     const wrap = document.createElement("div");
@@ -1653,9 +1678,17 @@ socket.on("host-back-online", () => {
 });
 
 socket.on("host-live", ({ liveStartTs }) => {
+  joinViewerStream();
   statusBadge.textContent = "🔴 Đang LIVE";
   startLiveTimer(liveStartTs);
 });
+
+setInterval(() => {
+  if (player.srcObject && player.readyState < 2) {
+    console.warn("🔄 Video stalled → retry play");
+    forcePlayVideo(player);
+  }
+}, 2000);
 
 
 

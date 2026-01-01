@@ -936,20 +936,6 @@ socket.on("live-resume", async ({ startTs }) => {
 
 });
 
-socket.on("need-offer-for-viewer", async ({ viewerId }) => {
-  if (!pc) return;
-
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
-
-  socket.emit("offer", {
-    to: viewerId,
-    sdp: pc.localDescription
-  });
-});
-
-
-
 
 socket.on("resume-viewers-list", async ({ viewers }) => {
   if (!Array.isArray(viewers)) return;

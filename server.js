@@ -239,23 +239,6 @@ socket.on("resume-viewers", ({ roomId }) => {
 });
 
 
-socket.on("viewer-join", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  room.viewers.add(socket.id);
-
-  // 🚀 báo host gửi lại offer cho viewer mới
-  if (room.broadcasterId) {
-    io.to(room.broadcasterId).emit("need-offer-for-viewer", {
-      viewerId: socket.id
-    });
-  }
-
-  emitViewerCount(roomId);
-});
-
-
 
 
 socket.on("host-start-live", ({ roomId }) => {
