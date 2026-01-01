@@ -893,7 +893,7 @@ socket.on("reaction", (msg)=>{
         if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "false");
 
         socket.emit("join-room", { roomId, role: "guest", profile: { name: (chatName.value||"Guest").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
-        setStatus("⏳ Đã bật cam/mic. Đang chờ host duyệt...");
+        setStatus("⏳ Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
 
         btnStart.disabled = true;
@@ -910,7 +910,7 @@ socket.on("reaction", (msg)=>{
     socket.on("guest-pending", () => setStatus("⏳ Đang chờ host duyệt..."));
     socket.on("guest-rejected", () => setStatus("⛔ Host từ chối."));
     socket.on("guest-approved", () => {
-      setStatus("✅ Được duyệt! Bạn đang lên live.");
+      setStatus("✅ Được duyệt!");
       log("Được duyệt! Bây giờ viewer/host sẽ kết nối tới bạn.");
     });
 
