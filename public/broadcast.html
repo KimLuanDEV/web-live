@@ -373,6 +373,14 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
+
+// 🔔 guest request sound
+const guestReqSound = new Audio("/sounds/notify.mp3");
+guestReqSound.volume = 0.6;
+
+let __lastGuestNotify = 0;
+
+
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -1225,6 +1233,24 @@ socket.on("guest-request", ({ guestId }) => {
 
   btnApproveGuest.disabled = false;
   btnRejectGuest.disabled = false;
+
+  // ===== 🔔 RUNG + ÂM THANH =====
+  const now = Date.now();
+  if (now - __lastGuestNotify > 1200) {
+    __lastGuestNotify = now;
+
+    // rung icon
+    guestReqIcon.classList.remove("is-shake");
+    void guestReqIcon.offsetWidth; // reset animation
+    guestReqIcon.classList.add("is-shake");
+
+    // phát âm thanh
+    try {
+      guestReqSound.currentTime = 0;
+      guestReqSound.play().catch(()=>{});
+    } catch {}
+  }
+
 });
 
 
@@ -1241,15 +1267,16 @@ socket.on("guest-request", ({ guestId }) => {
     });
 
     btnApproveGuest.onclick = () => {
-  if (!pendingGuestId) return;
-
-  socket.emit("guest-approve", {
+    if (!pendingGuestId) return;
+    socket.emit("guest-approve", {
     roomId,
     guestId: pendingGuestId
-  });
+    });
+
+
 
   // reset UI
-  guestReqIcon.classList.remove("has-request");
+  guestReqIcon.classList.remove("has-request", "is-shake");
   guestReqModal.classList.add("hidden");
   guestReqList.textContent = "Đã duyệt guest";
 
@@ -1261,15 +1288,14 @@ socket.on("guest-request", ({ guestId }) => {
   socket.emit("watch-guest", { roomId });
 };
 
-btnRejectGuest.onclick = () => {
+  btnRejectGuest.onclick = () => {
   if (!pendingGuestId) return;
-
   socket.emit("guest-reject", {
-    guestId: pendingGuestId
+  guestId: pendingGuestId
   });
 
   // reset UI
-  guestReqIcon.classList.remove("has-request");
+  guestReqIcon.classList.remove("has-request", "is-shake");
   guestReqModal.classList.add("hidden");
   guestReqList.textContent = "Đã từ chối guest";
 
@@ -1277,6 +1303,11 @@ btnRejectGuest.onclick = () => {
   btnApproveGuest.disabled = true;
   btnRejectGuest.disabled = true;
 };
+
+
+document.addEventListener("pointerdown", () => {
+  guestReqSound.play().then(()=>guestReqSound.pause()).catch(()=>{});
+}, { once:true });
 
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")

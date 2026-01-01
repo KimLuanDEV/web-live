@@ -3506,3 +3506,18 @@ body[data-fps="safe"] .text3d{
 body.is-live .guest-req-icon{
   display: flex;
 }
+
+
+/* ===== GUEST REQUEST SHAKE ===== */
+@keyframes guestShake {
+  0%   { transform: translateX(0); }
+  20%  { transform: translateX(-3px); }
+  40%  { transform: translateX(3px); }
+  60%  { transform: translateX(-2px); }
+  80%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+
+.guest-req-icon.is-shake {
+  animation: guestShake 0.45s ease-in-out;
+}
