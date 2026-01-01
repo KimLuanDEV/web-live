@@ -3531,3 +3531,41 @@ body.is-live .guest-req-icon{
 body.is-live .chat-fab {
   display: flex;
 }
+
+
+/* ===== PAGE HEADER ===== */
+.page-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.page-title {
+  margin: 0;
+  font-size: 22px;
+}
+
+/* ===== EXIT BUTTON (LOBBY) ===== */
+.page-exit-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-exit-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(255,255,255,.35);
+}
+
+.page-exit-btn:active {
+  transform: scale(0.95);
+}

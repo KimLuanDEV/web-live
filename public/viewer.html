@@ -21,10 +21,16 @@
   
   <div class="container">
     <div class="card">
-      <h1> 👁 Viewer</h1>
 
-      <button id="btnBackLobby" style="margin-top:10px">🏟️ Quay về Lobby</button>
+      
+      <div class="page-header">
+      <h1 class="page-title">📱 Host</h1>
 
+      <button id="btnBackLobby" class="page-exit-btn" title="Quay về Lobby">🚪</button>
+
+      </div>
+
+      
       <hr />
 
       <div class="row">
@@ -1557,7 +1563,7 @@ function showKickModal(text){
 socket.on("room-closed", ({ reason }) => {
 
    document.body.classList.remove("is-live");
-   
+
   showKickModal("Host đã kết thúc livestream");
 });
 
