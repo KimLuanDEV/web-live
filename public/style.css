@@ -3663,7 +3663,7 @@ body.is-live .req-live-fab{
 /* ===== MIC REQUEST ICON (VIEWER) ===== */
 .mic-fab{
   position:absolute;
-  right:110px;
+  left:110px;
   bottom:10px; /* nằm trên nút 🎁 */
   width:44px;
   height:44px;

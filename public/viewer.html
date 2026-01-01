@@ -863,6 +863,54 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       pcs.set(from, pc);
 
      
+// ===== VIEWER MIC REQUEST (ICON IN VIDEO) =====
+const btnRequestMic = document.getElementById("btnRequestMic");
+
+let viewerMicStream = null;
+let viewerMicTrack = null;
+
+btnRequestMic.onclick = () => {
+  btnRequestMic.classList.add("waiting");
+  btnRequestMic.disabled = true;
+
+  socket.emit("viewer-request-mic", { roomId });
+};
+
+// host duyệt
+socket.on("mic-approved", async () => {
+  try {
+    viewerMicStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false
+    });
+
+    viewerMicTrack = viewerMicStream.getAudioTracks()[0];
+    pc.addTrack(viewerMicTrack, viewerMicStream);
+
+    btnRequestMic.classList.remove("waiting");
+    btnRequestMic.textContent = "🔴"; // đang nói
+    btnRequestMic.disabled = false;
+
+  } catch (e) {
+    alert("❌ Không bật được mic");
+    resetMicBtn();
+  }
+});
+
+// host từ chối
+socket.on("mic-denied", () => {
+  alert("❌ Host không cho phép bật mic");
+  resetMicBtn();
+});
+
+function resetMicBtn(){
+  btnRequestMic.classList.remove("waiting");
+  btnRequestMic.textContent = "🎙️";
+  btnRequestMic.disabled = false;
+}
+
+
+
   // Auto ask peer to ICE-restart if connection degrades
   pc.onconnectionstatechange = () => {
     const st = pc.connectionState;
@@ -1694,51 +1742,7 @@ setInterval(() => {
 
 
 
-// ===== VIEWER MIC REQUEST (ICON IN VIDEO) =====
-const btnRequestMic = document.getElementById("btnRequestMic");
 
-let viewerMicStream = null;
-let viewerMicTrack = null;
-
-btnRequestMic.onclick = () => {
-  btnRequestMic.classList.add("waiting");
-  btnRequestMic.disabled = true;
-
-  socket.emit("viewer-request-mic", { roomId });
-};
-
-// host duyệt
-socket.on("mic-approved", async () => {
-  try {
-    viewerMicStream = await navigator.mediaDevices.getUserMedia({
-      audio: true,
-      video: false
-    });
-
-    viewerMicTrack = viewerMicStream.getAudioTracks()[0];
-    pc.addTrack(viewerMicTrack, viewerMicStream);
-
-    btnRequestMic.classList.remove("waiting");
-    btnRequestMic.textContent = "🔴"; // đang nói
-    btnRequestMic.disabled = false;
-
-  } catch (e) {
-    alert("❌ Không bật được mic");
-    resetMicBtn();
-  }
-});
-
-// host từ chối
-socket.on("mic-denied", () => {
-  alert("❌ Host không cho phép bật mic");
-  resetMicBtn();
-});
-
-function resetMicBtn(){
-  btnRequestMic.classList.remove("waiting");
-  btnRequestMic.textContent = "🎙️";
-  btnRequestMic.disabled = false;
-}
 
   </script>
 
