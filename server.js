@@ -471,6 +471,10 @@ saveLiveState(state);
 
     const room = getRoom(roomId);
 
+
+
+
+
     if (role === "broadcaster") {
        if (room.releaseTimer) {
     clearTimeout(room.releaseTimer);
@@ -515,6 +519,12 @@ if (room.liveStartTs) {
       if (room.guestId) socket.emit("guest-online", { guestId: room.guestId });
     }
 
+
+     if (role === "host") {
+    room.broadcasterId = socket.id;
+  }
+
+  
     if (role === "viewer") {
       room.viewers.add(socket.id);
       emitViewerCount(roomId);
@@ -534,6 +544,7 @@ if (room.liveStartTs) {
     }
 
     if (role === "guest") {
+       room.guestId = socket.id;
       // Guest requests to go live; host must approve
       if (room.broadcasterId) {
         io.to(room.broadcasterId).emit("guest-request", { guestId: socket.id, roomId });

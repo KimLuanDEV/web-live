@@ -358,6 +358,10 @@ let swapped = false; // false: host main, true: guest main
 
     const socket = io();
 
+socket.emit("join-room", {
+  roomId,
+  role: "viewer"
+});
 
     const btnRequestMic = document.getElementById("btnRequestMic");
 
