@@ -77,15 +77,6 @@
 <!-- REQUEST LIVE ICON -->
 <button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
-<!-- REQUEST MIC BUTTON (VIEWER) -->
-<button
-  id="btnRequestMic"
-  class="req-mic-fab"
-  title="Xin bật mic nói chuyện"
->
-  🗣️
-</button>
-
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -358,55 +349,8 @@ let swapped = false; // false: host main, true: guest main
 
     const socket = io();
 
-socket.emit("join-room", {
-  roomId,
-  role: "viewer"
-});
 
-    const btnRequestMic = document.getElementById("btnRequestMic");
-
-let micRequested = false;
-let micStream = null;
-
-btnRequestMic.onclick = () => {
-  if (micRequested) return;
-
-  micRequested = true;
-  btnRequestMic.classList.add("waiting");
-  btnRequestMic.textContent = "⏳";
-
-  socket.emit("viewer-request-mic", { roomId });
-};
-
-
-socket.on("viewer-mic-approved", async () => {
-  btnRequestMic.classList.remove("waiting");
-  btnRequestMic.classList.add("active");
-  btnRequestMic.textContent = "🎙️";
-
-  micStream = await navigator.mediaDevices.getUserMedia({
-    audio: true,
-    video: false
-  });
-
-  micStream.getTracks().forEach(track => {
-    pc.addTrack(track, micStream);
-  });
-
-  socket.emit("renegotiate", { roomId });
-});
-
-socket.on("viewer-mic-rejected", () => {
-  micRequested = false;
-  btnRequestMic.className = "req-mic-fab";
-  btnRequestMic.textContent = "🗣️";
-});
-
-socket.on("viewer-mic-muted", () => {
-  micStream?.getTracks().forEach(t => t.enabled = false);
-  btnRequestMic.textContent = "🔇";
-});
-
+    
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -914,26 +858,6 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
      
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
-
-pc.ontrack = (event) => {
-  const stream = event.streams[0];
-  if (!stream) return;
-
-  if (stream.getAudioTracks().length === 0) return;
-
-  let audio = document.getElementById("webrtc-audio");
-  if (!audio) {
-    audio = document.createElement("audio");
-    audio.id = "webrtc-audio";
-    audio.autoplay = true;
-    audio.playsInline = true;
-    document.body.appendChild(audio);
-  }
-
-  audio.srcObject = stream;
-};
-
-
       pcs.set(from, pc);
 
      
