@@ -125,6 +125,12 @@
                <!-- Hướng dẫn -->
               <button id="btnHostGuide" class="av-btn" title="Hướng dẫn sử dụng">❔</button>
 
+               <!-- Ghim -->
+              <button id="btnPinToggle"class="av-btn"title="Ghim nội dung lên video">📌</button>
+
+
+
+
             </div>
             <div class="ctrl-hint">Nhấn ☰ để thu gọn</div>
           </div>
@@ -156,11 +162,7 @@
 
 
 
-<div class="pin-form" id="pinForm">
-    <input id="pinText" class="pin-input" placeholder="📌 Nhập nội dung ghim (Host)..." />
-    <button id="pinSet" class="pin-btn pin-btn--set">📌 Ghim</button>
-    <button id="pinClear" class="pin-btn pin-btn--clear">✖ Bỏ ghim</button>
-  </div>
+
 
 <hr />
 <div class="card chat">
@@ -364,6 +366,31 @@
     <div class="ncf__actions">
       <button id="btnApproveGuest">✅ Chấp nhận</button>
       <button id="btnRejectGuest">❌ Từ chối</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- PIN MODAL -->
+<div id="pinModal" class="ncf hidden">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box">
+    <div class="ncf__frame"></div>
+
+    <h3 class="ncf__title">📌 Ghim nội dung</h3>
+
+    <input
+      id="pinText"
+      class="pin-input"
+      placeholder="Nhập nội dung ghim..."
+      maxlength="120"
+    />
+
+    <div class="ncf__actions">
+      <button id="pinSet" class="ncf__btn ncf__btn--main">📌 Ghim</button>
+      <button id="pinClear" class="ncf__btn ncf__btn--ghost">✖ Bỏ ghim</button>
     </div>
   </div>
 </div>
@@ -1468,11 +1495,55 @@ document.addEventListener("pointerdown", () => {
 
     window.addEventListener("beforeunload", stop);
 
-    // ===== PIN NOTE (Host-created draggable overlay) =====
-const pinOverlay = document.getElementById("pinOverlay");
+
+
+
+// ===== PIN (Ghim nội dung) =====
+const btnPinToggle = document.getElementById("btnPinToggle");
+const pinModal = document.getElementById("pinModal");
+const pinBg = pinModal?.querySelector(".ncf__bg");
 const pinText = document.getElementById("pinText");
 const pinSet = document.getElementById("pinSet");
 const pinClear = document.getElementById("pinClear");
+
+// mở modal khi bấm icon 📌
+btnPinToggle?.addEventListener("click", () => {
+  pinModal.classList.remove("hidden");
+  setTimeout(() => pinText?.focus(), 0);
+});
+
+// click nền để đóng
+pinBg?.addEventListener("click", () => {
+  pinModal.classList.add("hidden");
+});
+
+// ghim
+pinSet?.addEventListener("click", () => {
+  const text = pinText.value.trim();
+  if (!text) return;
+
+  socket.emit("pin-set", { roomId, text });
+  pinModal.classList.add("hidden");
+});
+
+// bỏ ghim
+pinClear?.addEventListener("click", () => {
+  socket.emit("pin-clear", { roomId });
+  pinText.value = "";
+  pinModal.classList.add("hidden");
+});
+
+
+
+socket.on("pin-update", (text) => {
+  pinOverlay.textContent = text || "";
+});
+
+
+
+
+    // ===== PIN NOTE (Host-created draggable overlay) =====
+const pinOverlay = document.getElementById("pinOverlay");
 const hostCard = document.getElementById("hostCard");
 
 let __pinState = null;
