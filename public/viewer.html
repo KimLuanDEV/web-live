@@ -870,10 +870,12 @@ pc.ontrack = (event) => {
     player.muted = false;        // cho phép có tiếng
     player.playsInline = true;  // iOS Safari KHÔNG fullscreen
 
+
+player.onloadedmetadata = () => {
     player.play().catch(() =>
       log("Autoplay bị chặn, bấm Play ở video Host.")
     );
-
+};
     // 🛡️ CHỐNG PAUSE KHI TAB ẨN / BACKGROUND
     player.onpause = () => {
       if (document.hidden) {
@@ -893,6 +895,7 @@ pc.ontrack = (event) => {
       };
 
       pc.oniceconnectionstatechange = () => {
+
         log(`ICE(${from}): ${pc.iceConnectionState}`);
 
 const st = pc.iceConnectionState;
@@ -1311,6 +1314,10 @@ function spawnBigGiftSfx(mode){
   }
   catch{}
 }
+
+
+socket.emit("viewer-join", { roomId });
+
 
 function spawnGiftParticles(mode){
   try{
