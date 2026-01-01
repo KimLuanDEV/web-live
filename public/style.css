@@ -3498,3 +3498,11 @@ body[data-fps="safe"] .text3d{
 .guest-req-icon.has-request .guest-req-dot{
   display:block;
 }
+
+/* Guest request icon chỉ hiện khi đang live */
+.guest-req-icon{
+  display: none;
+}
+body.is-live .guest-req-icon{
+  display: flex;
+}

@@ -859,6 +859,9 @@ socket.on("live-start", ({ startTs }) => {
 socket.on("live-resume", async ({ startTs }) => {
   console.log("🔄 Auto resume live");
 
+  document.body.classList.add("is-live");
+
+
   // nếu reload mà chưa có stream thì mở lại camera
   if (!localStream) {
     await start(); // dùng lại hàm start() sẵn có
@@ -1330,6 +1333,11 @@ btnRejectGuest.onclick = () => {
         });
 
         preview.srcObject = localStream;
+
+// ✅ BẬT TRẠNG THÁI LIVE
+    document.body.classList.add("is-live");
+
+
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
         btnStart.disabled = true;
         btnStop.disabled = false;
@@ -1362,6 +1370,12 @@ btnRejectGuest.onclick = () => {
         localStream = null;
       }
       preview.srcObject = null;
+
+  // ❌ TẮT TRẠNG THÁI LIVE
+  document.body.classList.remove("is-live");
+
+  // reset icon guest
+  guestReqIcon.classList.remove("has-request");
 
       btnStart.disabled = false;
       btnStop.disabled = true;
