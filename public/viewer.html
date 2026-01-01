@@ -79,7 +79,7 @@
 <button class="chat-fab" id="chatFab">💬</button>
 
 <!-- REQUEST LIVE ICON -->
-<button class="req-live-fab" id="reqLiveFab" title="Xin lên live">🎤</button>
+<button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
 
 <!-- CHAT INPUT OVERLAY -->
@@ -958,13 +958,6 @@ const st = pc.iceConnectionState;
     })();
 
 
-const reqLiveFab = document.getElementById("reqLiveFab");
-
-reqLiveFab?.addEventListener("click", () => {
-  // mở trang guest để xin live (logic cũ)
-  const guestUrl = `${location.origin}/guest.html?room=${encodeURIComponent(roomId)}`;
-  window.open(guestUrl, "_blank");
-});
 
 
 // ===== REQUEST TO GO LIVE (VIEWER -> GUEST) =====
