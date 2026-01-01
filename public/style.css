@@ -3569,3 +3569,64 @@ body.is-live .chat-fab {
 .page-exit-btn:active {
   transform: scale(0.95);
 }
+
+
+/* ===== PAGE HEADER ===== */
+.page-header{
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.page-title{
+  margin: 0;
+  font-size: 22px;
+  white-space: nowrap;
+}
+
+/* ===== STATUS BADGE ===== */
+.status-badge{
+  justify-self: center;
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(0,0,0,.45);
+  white-space: nowrap;
+}
+
+/* trạng thái */
+.status-live{
+  color: #ff4d4f;
+  box-shadow: 0 0 10px rgba(255,77,79,.5);
+}
+
+.status-wait{
+  color: #ffd666;
+}
+
+.status-idle{
+  color: #9cdcfe;
+}
+
+/* ===== EXIT BUTTON ===== */
+.page-exit-btn{
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,255,255,.25);
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.page-exit-btn:hover{
+  transform: scale(1.1);
+  box-shadow: 0 0 12px rgba(255,255,255,.35);
+}

@@ -24,13 +24,19 @@
 
       
       <div class="page-header">
-      <h1 class="page-title">📱 Host</h1>
+  <h1 class="page-title">📱 Host</h1>
 
-      <button id="btnBackLobby" class="page-exit-btn" title="Quay về Lobby">🚪</button>
+  <span class="status-badge status-live" id="statusBadge">
+    🔴 LIVE
+  </span>
 
-      </div>
+  <button id="btnBackLobby" class="page-exit-btn" title="Quay về Lobby">
+    🚪
+  </button>
+</div>
 
-      
+
+
       <hr />
 
       <div class="row">
@@ -39,15 +45,13 @@
             <div class="badge">Phòng Livestream</div>
             <code id="roomCode">-</code>
 
-            <div class="badge" id="statusBadge">⏳ Đang chờ...</div>
+           
 
             <button id="btnJoin">Tham gia xem Livestream</button>
           </div>
 
 <button id="btnRequestLive" style="margin-top:10px">🎤 Xin lên live</button>
-<small id="reqTip" style="display:block;opacity:.8;margin-top:6px">
-  Bấm để mở trang Khách và gửi yêu cầu lên Host.
-</small>
+
 
           <hr />
           <div class="log" id="log" style="display: none;"></div>
