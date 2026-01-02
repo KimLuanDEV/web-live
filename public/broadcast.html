@@ -1,7 +1,12 @@
 <!doctype html>
 <html lang="vi">
 <head>
-<script src="https://unpkg.com/livekit-client@2/dist/livekit-client.umd.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/livekit-client@2/dist/livekit-client.umd.min.js"></script>
+<script>
+  window.LiveKit = window.LiveKit || window.livekit;
+</script>
+
 
   <meta charset="utf-8" />
  <meta
@@ -503,11 +508,9 @@ const hgmRoom = document.getElementById("hgmRoom");
 const startLiveOverlay = document.getElementById("startLiveOverlay");
 const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
 
-// Click nút giữa màn hình = click nút start trong control
 startLiveBigBtn?.addEventListener("click", () => {
- 
+  startHostLive();
 });
-
 
 function syncStartLiveOverlay(isLive) {
   if (!startLiveOverlay) return;
