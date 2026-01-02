@@ -1806,6 +1806,17 @@ setInterval(() => {
 }, 4000);
 
 
+window.addEventListener("beforeunload", () => {
+  const overlay = document.getElementById("reconnectOverlay");
+  if (!overlay) return;
+  overlay.classList.remove("hidden");
+
+  const text = overlay.querySelector(".reconnect-text");
+  if (text) text.textContent = "Đang tải lại livestream…";
+});
+
+
+
   </script>
 
 <!-- VIP TICKER (donation banner) -->
