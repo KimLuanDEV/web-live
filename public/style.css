@@ -3675,8 +3675,8 @@ body.is-live .req-live-fab{
 
 .start-live-btn{
   position:relative;
-  width:120px;
-  height:120px;
+  width:50px;
+  height:50px;
   border-radius:50%;
   border:none;
   cursor:pointer;
@@ -3697,6 +3697,13 @@ body.is-live .req-live-fab{
   position:absolute;
   inset:-6px;
   border-radius:50%;
+  background: conic-gradient(
+    from 0deg,
+    #ff3b6b,
+    #ff8f5f,
+    #ffd36e,
+    #ff3b6b
+  );
   filter: blur(6px);
   opacity:.85;
   animation: spinRing 2.8s linear infinite;
