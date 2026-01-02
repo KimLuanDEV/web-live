@@ -524,9 +524,36 @@ function closeNcf(){
   ncf.setAttribute("aria-hidden", "true");
 }
 
-// mở khi bấm nút quay về lobby
 const btnBackLobby = document.getElementById("btnBackLobby");
-btnBackLobby?.addEventListener("click", () => openNcf());
+const neonConfirm = document.getElementById("neonConfirm");
+
+
+// Mở modal xác nhận
+btnBackLobby?.addEventListener("click", () => {
+  neonConfirm?.classList.remove("hidden");
+  neonConfirm?.setAttribute("aria-hidden", "false");
+});
+
+// Đóng modal
+function closeConfirm(){
+  neonConfirm?.classList.add("hidden");
+  neonConfirm?.setAttribute("aria-hidden", "true");
+}
+
+ncfCancel?.addEventListener("click", closeConfirm);
+ncfX?.addEventListener("click", closeConfirm);
+
+// XÁC NHẬN → QUAY VỀ LOBBY
+ncfOk?.addEventListener("click", () => {
+  // báo server guest rời live (nếu có)
+  try{
+    socket.emit("guest-leave", { roomId });
+  }catch(e){}
+
+  // về lobby
+  window.location.href = "/lobby.html";
+});
+
 
 
 // click nền / X / Cancel => đóng

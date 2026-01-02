@@ -373,13 +373,13 @@ guestRequestBtn?.addEventListener("click", () => {
 });
 
 
-// mở khi bấm nút quay về lobby
-const btnBackLobby = document.getElementById("btnBackLobby");
-btnBackLobby?.addEventListener("click", () => openNcf());
+
 
     const socket = io();
     
-
+// mở khi bấm nút quay về lobby
+const btnBackLobby = document.getElementById("btnBackLobby");
+btnBackLobby?.addEventListener("click", () => openNcf());
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
 const vipTicker = document.getElementById("vipTicker");
