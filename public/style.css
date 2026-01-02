@@ -3795,3 +3795,10 @@ video{
 @keyframes spin {
   to { transform: rotate(360deg); }
 }
+
+
+/* 🔒 NEVER SHOW START LIVE BUTTON WHEN LIVE */
+body.is-live #startLiveOverlay {
+  display: none !important;
+  pointer-events: none !important;
+}

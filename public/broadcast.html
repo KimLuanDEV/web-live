@@ -461,6 +461,19 @@ startLiveBigBtn?.addEventListener("click", () => {
 });
 
 
+function syncStartLiveOverlay(isLive) {
+  if (!startLiveOverlay) return;
+
+  if (isLive) {
+    startLiveOverlay.style.display = "none";
+    startLiveOverlay.setAttribute("aria-hidden", "true");
+  } else {
+    startLiveOverlay.style.display = "";
+    startLiveOverlay.setAttribute("aria-hidden", "false");
+  }
+}
+
+
 function openHgm(){
   if (!hgm) return;
   if (hgmRoom) hgmRoom.textContent = (typeof roomId !== "undefined" ? roomId : "-");
@@ -954,6 +967,8 @@ function __stopTimer(el){
 const liveTimerHost = document.getElementById("liveTimerHost");
 socket.on("live-start", ({ startTs }) => {
 
+syncStartLiveOverlay(true);
+
   document.body.classList.add("is-live");
 
   if (typeof startTs === "number") __startTimer(liveTimerHost, startTs);
@@ -961,6 +976,9 @@ socket.on("live-start", ({ startTs }) => {
 
 // 🔄 AUTO RESUME KHI HOST RELOAD
 socket.on("live-resume", async ({ startTs }) => {
+
+  syncStartLiveOverlay(true);
+
   console.log("🔄 Auto resume live");
 
   document.body.classList.add("is-live");
@@ -1603,6 +1621,8 @@ audio: {
 
       socket.emit("live-stop", { roomId });
 
+syncStartLiveOverlay(false);
+
       log("Đã Stop.");
     }
 
@@ -2169,6 +2189,9 @@ function fmtTime(ms){
 }
 
 socket.on("live-ended-stats", (stats) => {
+
+  syncStartLiveOverlay(false);
+
   // render nội dung
   liveStatsContent.innerHTML = `
     <div>⏱ Thời gian live: <b>${fmtTime(stats.durationMs)}</b></div>
