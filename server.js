@@ -211,7 +211,9 @@ saveLiveState(state);
   room.liveStartTs = null;
   room.viewers.clear();
 
-  
+  room.micRequests = new Set();
+  room.activeMicViewer = null;
+
   room.giftTotal = 0;
   room.giftByUser = new Map();
 emitLobbyUpdate();
@@ -226,9 +228,6 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
-
-room.micRequests = new Set();
-room.activeMicViewer = null;
 
 
 
