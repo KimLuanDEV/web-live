@@ -1,10 +1,6 @@
-
-const { AccessToken } = require("livekit-server-sdk");
-
-
-
-
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
+
+
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -195,40 +191,6 @@ app.get("/ice", async (_req, res) => {
   }
 });
 
-app.get("/livekit-token", (req, res) => {
-  try {
-    const roomId = String(req.query.roomId || "").trim().toLowerCase();
-    const identity = String(req.query.identity || "").trim();
-    const role = String(req.query.role || "viewer").trim();
-
-    if (!roomId || !identity) {
-      return res.status(400).json({ error: "missing roomId or identity" });
-    }
-
-    const at = new AccessToken(
-      process.env.LIVEKIT_API_KEY,
-      process.env.LIVEKIT_API_SECRET,
-      { identity }
-    );
-
-    at.addGrant({
-      roomJoin: true,
-      room: roomId,
-      canPublish: role !== "viewer",
-      canSubscribe: true,
-    });
-
-    res.json({
-      url: process.env.LIVEKIT_URL,
-      token: at.toJwt(),
-    });
-  } catch (e) {
-    res.status(500).json({ error: e.message });
-  }
-});
-
-
-
 
 function closeRoom(roomId, reason = "host_left") {
 
@@ -334,6 +296,12 @@ socket.on("lobby-get", () => {
   socket.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
 });
 
+  // ===== ICE RESTART RELAY =====
+  // Any peer can ask another peer to perform ICE restart
+  socket.on("request-ice-restart", ({ to, reason }) => {
+    if (!to) return;
+    io.to(to).emit("request-ice-restart", { from: socket.id, reason: String(reason || "") });
+  });
 
 
 // Host yêu cầu tắt/bật mic của guest
@@ -714,7 +682,6 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
   });
 
-  /*
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
     io.to(to).emit("offer", { from: socket.id, description });
@@ -727,14 +694,6 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.on("candidate", ({ to, candidate }) => {
     io.to(to).emit("candidate", { from: socket.id, candidate });
   });
-
-    // ===== ICE RESTART RELAY =====
-  // Any peer can ask another peer to perform ICE restart
-  socket.on("request-ice-restart", ({ to, reason }) => {
-    if (!to) return;
-    io.to(to).emit("request-ice-restart", { from: socket.id, reason: String(reason || "") });
-  });
-*/
 
   socket.on("disconnect", () => {
 
