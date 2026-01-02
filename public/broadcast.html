@@ -444,6 +444,49 @@
    
 let lkRoomHost = null;
 
+async function startHostLive() {
+  console.log("▶️ START HOST LIVE CLICKED");
+
+  try {
+    const identity = "host-" + roomId;
+
+    const res = await fetch(
+      `/livekit-token?roomId=${encodeURIComponent(roomId)}&identity=${identity}&role=host`
+    );
+    const { url, token } = await res.json();
+
+    console.log("🎫 Got LiveKit token");
+
+    lkRoomHost = new LiveKitClient.Room({
+      adaptiveStream: true,
+      dynacast: true,
+    });
+
+    await lkRoomHost.connect(url, token);
+    console.log("🔗 LiveKit connected");
+
+    await lkRoomHost.localParticipant.setCameraEnabled(true);
+    await lkRoomHost.localParticipant.setMicrophoneEnabled(true);
+
+    const pubs = [...lkRoomHost.localParticipant.videoTrackPublications.values()];
+    if (pubs[0]?.track?.mediaStreamTrack) {
+      preview.srcObject = new MediaStream([pubs[0].track.mediaStreamTrack]);
+      console.log("📷 Preview attached");
+    }
+
+    socket.emit("live-start", { roomId });
+
+    // UI sync
+    syncStartLiveOverlay(true);
+    btnStart.disabled = true;
+    btnStop.disabled = false;
+    document.body.classList.add("is-live");
+
+  } catch (e) {
+    console.error("❌ Start live failed:", e);
+    alert("Không thể start live: " + e.message);
+  }
+}
 
 // ===== HOST GUIDE MODAL =====
 const hgm = document.getElementById("hostGuideModal");
@@ -460,7 +503,7 @@ const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
 
 // Click nút giữa màn hình = click nút start trong control
 startLiveBigBtn?.addEventListener("click", () => {
-  btnStart?.click();
+ 
 });
 
 
@@ -1676,33 +1719,10 @@ syncStartLiveOverlay(false);
       }
     }
 
+btnStart?.addEventListener("click", startHostLive);
+startLiveBigBtn?.addEventListener("click", startHostLive);
 
    
-
-async function startHostLive() {
-  const identity = "host-" + roomId;
-
-  const res = await fetch(
-    `/livekit-token?roomId=${encodeURIComponent(roomId)}&identity=${identity}&role=host`
-  );
-  const { url, token } = await res.json();
-
-  lkRoomHost = new LiveKitClient.Room({
-    adaptiveStream: true,
-    dynacast: true,
-  });
-
-  await lkRoomHost.connect(url, token);
-  await lkRoomHost.localParticipant.setCameraEnabled(true);
-  await lkRoomHost.localParticipant.setMicrophoneEnabled(true);
-
-  const pubs = Array.from(lkRoomHost.localParticipant.videoTrackPublications.values());
-  if (pubs[0]?.track?.mediaStreamTrack) {
-    preview.srcObject = new MediaStream([pubs[0].track.mediaStreamTrack]);
-  }
-
-  socket.emit("host-start-live", { roomId });
-}
 
   btnStart.onclick = async () => {
   const identity = "host-" + roomId;
