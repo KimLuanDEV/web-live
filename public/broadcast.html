@@ -421,6 +421,29 @@
 
 
 
+<!-- VIEWER MIC REQUEST MODAL -->
+<div id="viewerMicModal" class="ncf hidden">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box">
+    <div class="ncf__frame"></div>
+
+    <h3 class="ncf__title">🎙 Viewer xin bật mic</h3>
+
+    <div id="viewerMicInfo" class="log">
+      Có viewer đang xin bật mic để nói
+    </div>
+
+    <div class="ncf__actions">
+      <button id="btnApproveViewerMic">🎙 Cho nói</button>
+      <button id="btnRejectViewerMic">❌ Từ chối</button>
+    </div>
+  </div>
+</div>
+
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
@@ -575,7 +598,43 @@ if(nameFromLobby){
     const socket = io();
     
 
+    let pendingViewerMicId = null;
+
+const viewerMicModal = document.getElementById("viewerMicModal");
+const viewerMicInfo  = document.getElementById("viewerMicInfo");
+
+
 const viewerMicPCs = {}; // key = viewerId
+
+
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  pendingViewerMicId = viewerId;
+
+  if (viewerMicInfo) {
+    viewerMicInfo.textContent = `Viewer (${viewerId.slice(0,6)}...) xin bật mic`;
+  }
+
+  viewerMicModal.classList.remove("hidden");
+});
+
+
+document.getElementById("btnApproveViewerMic").onclick = () => {
+  if (!pendingViewerMicId) return;
+
+  socket.emit("host-approve-mic", {
+    roomId,
+    viewerId: pendingViewerMicId
+  });
+
+  viewerMicModal.classList.add("hidden");
+  pendingViewerMicId = null;
+};
+
+
+document.getElementById("btnRejectViewerMic").onclick = () => {
+  viewerMicModal.classList.add("hidden");
+  pendingViewerMicId = null;
+};
 
 
 socket.on("signal", async ({ from, data }) => {
@@ -623,20 +682,7 @@ socket.on("signal", async ({ from, data }) => {
 });
 
 
-    
-let pendingMicViewer = null;
 
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  pendingMicViewer = viewerId;
-  document.getElementById("guestReqModal").classList.remove("hidden");
-});
-
-document.getElementById("btnApproveMic").onclick = () => {
-  socket.emit("host-approve-mic", {
-    roomId,
-    viewerId: pendingMicViewer
-  });
-};
 
 function handleViewerMic(pc) {
   pc.ontrack = e => {
