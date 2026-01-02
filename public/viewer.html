@@ -359,13 +359,13 @@ async function joinLiveKitViewer() {
   );
   const { url, token } = await res.json();
 
-  lkRoom = new LiveKitClient.Room({
+  lkRoom = new LiveKit.Room({
     adaptiveStream: true,
     dynacast: true,
   });
 
   lkRoom.on(
-    LiveKitClient.RoomEvent.TrackSubscribed,
+    LiveKit.RoomEvent.TrackSubscribed,
     (track, pub, participant) => {
       if (track.kind !== "video" && track.kind !== "audio") return;
 
@@ -388,7 +388,7 @@ async function joinLiveKitViewer() {
   );
 
   lkRoom.on(
-    LiveKitClient.RoomEvent.TrackUnsubscribed,
+    LiveKit.RoomEvent.TrackSubscribed,
     (track, pub, participant) => {
       const isGuest = participant.identity?.startsWith("guest-");
       const el = isGuest ? guestPlayer : player;
@@ -956,12 +956,12 @@ async function joinViewerLiveKit() {
   );
   const { url, token } = await res.json();
 
-  lkRoom = new LiveKitClient.Room({
+  lkRoom = new LiveKit.Room({
     adaptiveStream: true,
     dynacast: true,
   });
 
-  lkRoom.on(LiveKitClient.RoomEvent.TrackSubscribed, (track, pub, participant) => {
+  lkRoom.on(LiveKit.RoomEvent.TrackSubscribed, (track, pub, participant) => {
     if (track.kind === "video" || track.kind === "audio") {
       const isGuest = participant.identity?.startsWith("guest-");
       const el = isGuest ? guestPlayer : player;
@@ -977,7 +977,7 @@ async function joinViewerLiveKit() {
     }
   });
 
-  lkRoom.on(LiveKitClient.RoomEvent.TrackUnsubscribed, (track, pub, participant) => {
+  lkRoom.on(LiveKit.RoomEvent.TrackSubscribed, (track, pub, participant) => {
     const isGuest = participant.identity?.startsWith("guest-");
     const el = isGuest ? guestPlayer : player;
     const ms = el.srcObject;

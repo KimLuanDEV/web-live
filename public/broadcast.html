@@ -458,10 +458,10 @@ async function startHostLive() {
 
     console.log("🎫 Got LiveKit token");
 
-    lkRoomHost = new LiveKitClient.Room({
-      adaptiveStream: true,
-      dynacast: true,
-    });
+   lkRoomHost = new LiveKit.Room({
+  adaptiveStream: true,
+  dynacast: true,
+});
 
     await lkRoomHost.connect(url, token);
     console.log("🔗 LiveKit connected");
@@ -1733,10 +1733,10 @@ startLiveBigBtn?.addEventListener("click", startHostLive);
   );
   const { url, token } = await res.json();
 
-  lkRoomHost = new LiveKitClient.Room({
-    adaptiveStream: true,
-    dynacast: true,
-  });
+  lkRoomHost = new LiveKit.Room({
+  adaptiveStream: true,
+  dynacast: true,
+});
 
   await lkRoomHost.connect(url, token);
   await lkRoomHost.localParticipant.setCameraEnabled(true);

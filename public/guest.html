@@ -375,10 +375,11 @@ async function startGuestLiveKit() {
   );
   const { url, token } = await res.json();
 
-  lkRoomGuest = new LiveKitClient.Room({
-    adaptiveStream: true,
-    dynacast: true,
-  });
+lkRoomHost = new LiveKit.Room({
+  adaptiveStream: true,
+  dynacast: true,
+});
+
 
   await lkRoomGuest.connect(url, token);
   await lkRoomGuest.localParticipant.setCameraEnabled(true);
