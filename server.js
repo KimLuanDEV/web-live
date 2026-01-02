@@ -433,6 +433,7 @@ saveLiveState(state);
     socket.join(roomId);
     socket.data.roomId = roomId;
     socket.data.role = role;
+    socket.role = role;
 
     // store profile (name/coins) for Gift Engine
     socket.data.userName = safeName(profile?.name || (role === "broadcaster" ? "Host" : role === "guest" ? "Guest" : "Viewer"));

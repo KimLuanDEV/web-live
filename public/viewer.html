@@ -341,6 +341,13 @@
 
 
 
+const peerRole = new Map(); // peerId -> "host" | "guest"
+
+socket.on("webrtc-offer", ({ from, sdp, role }) => {
+  peerRole.set(from, role);
+});
+
+
 const liveStage = document.getElementById("liveStage");
 const guestPipWrap = document.getElementById("guestPipWrap");
 
@@ -871,9 +878,9 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
 pc.ontrack = (event) => {
   const stream = event.streams[0];
 
-  const role = event.transceiver?.mid === "guest" ? "guest" : "host";
+  const role = peerRole.get(peerId);
 
-   if (role === "host") {
+    if (role === "host") {
     if (player.srcObject !== stream) {
       player.srcObject = stream;
       player.muted = false;

@@ -1113,6 +1113,11 @@ socket.on("reaction", (msg)=>{
     // One RTCPeerConnection per viewer
     const pcs = new Map();
 
+    socket.on("viewer-join", ({ viewerId }) => {
+  const pc = createPeerConnection(viewerId);
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pcs.set(viewerId, pc);
+});
     // When network comes back / tab returns, restart only bad peers
     window.addEventListener("online", () => __restartBadPeers(() => Array.from(pcs.entries())));
     document.addEventListener("visibilitychange", () => {
