@@ -425,28 +425,6 @@
   <script>
 
 
-let pendingMicViewer = null;
-
-socket.on("viewer-mic-request", ({ viewerId }) => {
-  pendingMicViewer = viewerId;
-  document.getElementById("guestReqModal").classList.remove("hidden");
-});
-
-document.getElementById("btnApproveMic").onclick = () => {
-  socket.emit("host-approve-mic", {
-    roomId,
-    viewerId: pendingMicViewer
-  });
-};
-
-function handleViewerMic(pc) {
-  pc.ontrack = e => {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    document.body.appendChild(audio);
-  };
-}
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");
@@ -596,6 +574,33 @@ if(nameFromLobby){
 
     const socket = io();
     
+
+
+    
+let pendingMicViewer = null;
+
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  pendingMicViewer = viewerId;
+  document.getElementById("guestReqModal").classList.remove("hidden");
+});
+
+document.getElementById("btnApproveMic").onclick = () => {
+  socket.emit("host-approve-mic", {
+    roomId,
+    viewerId: pendingMicViewer
+  });
+};
+
+function handleViewerMic(pc) {
+  pc.ontrack = e => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    document.body.appendChild(audio);
+  };
+}
+
+
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
