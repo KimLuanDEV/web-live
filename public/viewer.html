@@ -379,6 +379,32 @@ window.addEventListener("focus", () => {
   }, 700);
 });
 
+function clearGuestView(reason = "") {
+  console.warn("👋 Guest left → clear PIP", reason);
+
+  guestId = null;
+
+  // stop & clear guest video
+  try {
+    if (guestPlayer?.srcObject) {
+      guestPlayer.srcObject.getTracks().forEach(t => t.stop());
+    }
+  } catch {}
+
+  if (guestPlayer) {
+    guestPlayer.pause();
+    guestPlayer.srcObject = null;
+  }
+
+  // hide PIP
+  if (guestPipWrap) {
+    guestPipWrap.style.display = "none";
+    guestPipWrap.classList.remove("is-speaking");
+  }
+
+  // remove global state
+  document.body.classList.remove("has-guest");
+}
 
 
      let swapped = false; // false: host main, true: guest main
@@ -826,8 +852,9 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "false");
       socket.emit("watch-guest", { roomId });
     });
 
-    socket.on("guest-offline", () => {
 
+    socket.on("guest-offline", () => {
+clearGuestView("server-event");
       document.body.classList.remove("has-guest");
 document.body.classList.remove("swap-live");
 swapped = false;
@@ -839,6 +866,7 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       // close guest pc if exists
       cleanupPeer("guest");
     });
+
 
 
 
