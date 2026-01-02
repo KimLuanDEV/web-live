@@ -869,7 +869,7 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
     }
   };
 
-  
+
 pc.ontrack = (event) => {
   const stream = event.streams[0];
   if (!stream) return;
@@ -906,6 +906,19 @@ pc.ontrack = (event) => {
       player.playsInline = true;
       player.play().catch(() => {});
     }
+
+    const hasAudio = stream.getAudioTracks().length > 0;
+
+if (hasAudio) {
+  player.muted = false;
+  player.volume = 1.0;
+
+  const tryPlay = async () => {
+    try { await player.play(); } catch {}
+  };
+
+  if (player.paused) tryPlay();
+}
 
     try {
       attachSpeakingIndicator(
@@ -1695,6 +1708,20 @@ setInterval(() => {
   }
 }, 2000);
 
+
+setInterval(() => {
+  const st = player.srcObject;
+  if (!st) return;
+
+  const at = st.getAudioTracks()[0];
+  if (!at || at.readyState !== "live") {
+    console.warn("🔄 Audio dead → request ICE restart");
+    socket.emit("request-ice-restart", {
+      to: hostId,
+      reason: "audio_lost"
+    });
+  }
+}, 3000);
 
 
   </script>

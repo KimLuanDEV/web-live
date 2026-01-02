@@ -1854,16 +1854,52 @@ const hostCamBtn = document.getElementById("hostCamBtn");
 let hostMicOn = true;
 let hostCamOn = true;
 
-function toggleHostMic(){
+
+async function replaceHostAudioTrack(){
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const newTrack = stream.getAudioTracks()[0];
+
+  // replace cho TẤT CẢ viewer
+  pcs.forEach(pc => {
+    const sender = pc.getSenders().find(s => s.track?.kind === "audio");
+    if (sender) sender.replaceTrack(newTrack);
+  });
+
+  // replace cho guest (nếu có)
+  if (pcGuestIn){
+    const sender = pcGuestIn.getSenders().find(s => s.track?.kind === "audio");
+    if (sender) sender.replaceTrack(newTrack);
+  }
+
+  // thay trong localStream
+  const old = localStream.getAudioTracks()[0];
+  if (old) {
+    localStream.removeTrack(old);
+    old.stop();
+  }
+  localStream.addTrack(newTrack);
+}
+
+
+
+async function toggleHostMic(){
   if (!localStream) return;
-  const track = localStream.getAudioTracks()[0];
-  if (!track) return;
 
   hostMicOn = !hostMicOn;
-  track.enabled = hostMicOn;
+
+  if (hostMicOn) {
+    // 🔥 bật mic = replace track
+    await replaceHostAudioTrack();
+  } else {
+    // tắt mic = disable track
+    const t = localStream.getAudioTracks()[0];
+    if (t) t.enabled = false;
+  }
+
   hostMicBtn.classList.toggle("off", !hostMicOn);
   hostMicBtn.textContent = hostMicOn ? "🎙️" : "🔇";
 }
+
 
 function toggleHostCam(){
   if (!localStream) return;
