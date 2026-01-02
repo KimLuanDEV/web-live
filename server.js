@@ -231,21 +231,6 @@ room.micRequests = new Set();
 room.activeMicViewer = null;
 
 
-socket.on("host-approve-mic", ({ roomId, viewerId }) => {
-  const room = rooms.get(roomId);
-  if (!room || socket.id !== room.broadcasterId) return;
-
-  room.activeMicViewer = viewerId;
-  io.to(viewerId).emit("viewer-mic-approved");
-});
-
-socket.on("host-mute-mic", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room?.activeMicViewer) return;
-
-  io.to(room.activeMicViewer).emit("viewer-mic-muted");
-  room.activeMicViewer = null;
-});
 
 
 socket.on("viewer-mic-request", ({ roomId, name }) => {
