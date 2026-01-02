@@ -1,4 +1,4 @@
-require("dotenv").config();
+
 const { AccessToken } = require("livekit-server-sdk");
 
 
