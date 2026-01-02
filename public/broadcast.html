@@ -1,15 +1,6 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  
-<script src="https://cdn.jsdelivr.net/npm/livekit-client@2/dist/livekit-client.umd.min.js"></script>
-<script>
-  window.LiveKitClient = window.LiveKit;
-</script>
-
-
-
-
   <meta charset="utf-8" />
  <meta
   name="viewport"
@@ -433,14 +424,13 @@
 </div>
 
 
-  
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
 
 
 
-    const USE_LIVEKIT = true;
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
@@ -451,52 +441,6 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
    
-let lkRoomHost = null;
-
-async function startHostLive() {
-  console.log("▶️ START HOST LIVE CLICKED");
-
-  try {
-    const identity = "host-" + roomId;
-
-    const res = await fetch(
-      `/livekit-token?roomId=${encodeURIComponent(roomId)}&identity=${identity}&role=host`
-    );
-    const { url, token } = await res.json();
-
-    console.log("🎫 Got LiveKit token");
-
-   lkRoomHost = new LiveKitClient.Room({
-  adaptiveStream: true,
-  dynacast: true,
-});
-
-
-    await lkRoomHost.connect(url, token);
-    console.log("🔗 LiveKit connected");
-
-    await lkRoomHost.localParticipant.setCameraEnabled(true);
-    await lkRoomHost.localParticipant.setMicrophoneEnabled(true);
-
-    const pubs = [...lkRoomHost.localParticipant.videoTrackPublications.values()];
-    if (pubs[0]?.track?.mediaStreamTrack) {
-      preview.srcObject = new MediaStream([pubs[0].track.mediaStreamTrack]);
-      console.log("📷 Preview attached");
-    }
-
-socket.emit("host-start-live", { roomId });
-
-    // UI sync
-    syncStartLiveOverlay(true);
-    btnStart.disabled = true;
-    btnStop.disabled = false;
-    document.body.classList.add("is-live");
-
-  } catch (e) {
-    console.error("❌ Start live failed:", e);
-    alert("Không thể start live: " + e.message);
-  }
-}
 
 // ===== HOST GUIDE MODAL =====
 const hgm = document.getElementById("hostGuideModal");
@@ -513,7 +457,7 @@ const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
 
 // Click nút giữa màn hình = click nút start trong control
 startLiveBigBtn?.addEventListener("click", () => {
-  startHostLive();
+  btnStart?.click();
 });
 
 
@@ -918,8 +862,8 @@ async function __doIceRestart(peerId, pc, reason){
 
   try {
     log(`🧊 ICE restart -> ${peerId} (HOST) ${reason ? "- " + reason : ""}`);
-  
- 
+    const offer = await pc.createOffer({ iceRestart: true });
+    await pc.setLocalDescription(offer);
     socket.emit("offer", { to: peerId, description: pc.localDescription, iceRestart: true });
   } catch (e) {
     log("ICE restart error: " + (e?.message || e));
@@ -1030,7 +974,6 @@ syncStartLiveOverlay(true);
   if (typeof startTs === "number") __startTimer(liveTimerHost, startTs);
 });
 
-/*
 // 🔄 AUTO RESUME KHI HOST RELOAD
 socket.on("live-resume", async ({ startTs }) => {
 
@@ -1059,7 +1002,7 @@ socket.on("live-resume", async ({ startTs }) => {
   socket.emit("resume-viewers", { roomId });
 
 });
-*/
+
 
 socket.on("resume-viewers-list", async ({ viewers }) => {
   if (!Array.isArray(viewers)) return;
@@ -1077,8 +1020,8 @@ socket.on("resume-viewers-list", async ({ viewers }) => {
 
     try {
       // 🔥 ICE RESTART OFFER
-     
-    
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
       socket.emit("offer", {
         to: viewerId,
         description: pc.localDescription,
@@ -1185,7 +1128,7 @@ socket.on("reaction", (msg)=>{
     let localStream = null;
     let currentFacing = "user"; // user | environment
 
-    
+    // One RTCPeerConnection per viewer
     const pcs = new Map();
 
 
@@ -1343,7 +1286,6 @@ socket.emit("join-room", {
       log(`Viewer join: ${viewerId}`);
 
       const rtcConfig = await getRtcConfig();
-
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
 
@@ -1363,8 +1305,6 @@ pc.addEventListener("iceconnectionstatechange", () => {
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
 
-
-
 const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
 if (sender) {
   const params = sender.getParameters();
@@ -1377,13 +1317,15 @@ if (sender) {
 }
 
 
-   
+      pc.onicecandidate = (e) => {
+        if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
+      };
 
             __wireIceAuto(viewerId, pc);
 
       try {
-      
-    
+        const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
+        await pc.setLocalDescription(offer);
         socket.emit("offer", { to: viewerId, description: pc.localDescription });
       } catch (err) {
         log("Lỗi tạo offer: " + err.message);
@@ -1433,16 +1375,16 @@ socket.on('request-ice-restart', async ({ from, reason })=>{
     // from viewer
     const pc = pcs.get(from);
     if (pc){
-      
-      
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
       socket.emit('offer', { to: from, description: pc.localDescription });
       log('ICE restart -> new offer to viewer ' + from + (reason ? ' ('+reason+')' : ''));
       return;
     }
     // from guest (if guest asks host)
     if (pcGuestIn && approvedGuestId === from){
-    
-    
+      const offer = await pcGuestIn.createOffer({ iceRestart: true });
+      await pcGuestIn.setLocalDescription(offer);
       socket.emit('offer', { to: from, description: pcGuestIn.localDescription });
       log('ICE restart -> new offer to guest ' + from + (reason ? ' ('+reason+')' : ''));
       return;
@@ -1573,7 +1515,7 @@ document.addEventListener("pointerdown", () => {
       if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
 
       const rtcConfig = await getRtcConfig();
-    
+      pcGuestIn = new RTCPeerConnection(rtcConfig);
 
       // send host tracks back to guest so guest can hear/see host (co-talk)
       if (localStream) {
@@ -1585,7 +1527,9 @@ document.addEventListener("pointerdown", () => {
         try{ attachSpeakingIndicator(guestVideo, document.getElementById('guestPipWrapHost')); }catch{}
       };
 
-    
+      pcGuestIn.onicecandidate = (e) => {
+        if (e.candidate) socket.emit("candidate", { to: from, candidate: e.candidate });
+      };
 
             pcGuestIn.addEventListener("iceconnectionstatechange", () => {
         const st = pcGuestIn.iceConnectionState;
@@ -1598,7 +1542,7 @@ document.addEventListener("pointerdown", () => {
       try {
         await pcGuestIn.setRemoteDescription(description);
         const answer = await pcGuestIn.createAnswer();
-     
+        await pcGuestIn.setLocalDescription(answer);
         socket.emit("answer", { to: from, description: pcGuestIn.localDescription });
         log("Đã trả lời offer của guest: " + from);
       } catch (err) {
@@ -1608,8 +1552,6 @@ document.addEventListener("pointerdown", () => {
 
     // ===== Start/Stop/Flip =====
     async function start() {
- if (USE_LIVEKIT) return;
-
       if (localStream) return;
 
       try {
@@ -1641,7 +1583,7 @@ audio: {
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
         socket.emit("broadcaster-ready", { roomId });
-        socket.emit("host-start-live", { roomId });
+        socket.emit("live-start", { roomId });
 
       } catch (err) {
         log("Không mở được camera/mic: " + err.message);
@@ -1729,64 +1671,8 @@ syncStartLiveOverlay(false);
       }
     }
 
-btnStart?.addEventListener("click", startHostLive);
-startLiveBigBtn?.addEventListener("click", startHostLive);
-
-   
-
-  btnStart.onclick = async () => {
-  const identity = "host-" + roomId;
-
-  const res = await fetch(
-    `/livekit-token?roomId=${encodeURIComponent(roomId)}&identity=${identity}&role=host`
-  );
-  const { url, token } = await res.json();
-
- lkRoomHost = new LiveKitClient.Room({
-  adaptiveStream: true,
-  dynacast: true,
-});
-
-
-  await lkRoomHost.connect(url, token);
-  await lkRoomHost.localParticipant.setCameraEnabled(true);
-  await lkRoomHost.localParticipant.setMicrophoneEnabled(true);
-
-// ⏳ ĐỢI track publish xong
-await new Promise(r => setTimeout(r, 300));
-
-  const pubs = Array.from(
-    lkRoomHost.localParticipant.videoTrackPublications.values()
-  );
-  if (pubs[0]?.track?.mediaStreamTrack) {
-    preview.srcObject = new MediaStream([
-      pubs[0].track.mediaStreamTrack,
-    ]);
-  }
-
-  
-  socket.emit("host-start-live", { roomId });
-
-  btnStart.disabled = true;
-btnStop.disabled = false;
-syncStartLiveOverlay(true);
-document.body.classList.add("is-live");
-
-};
-
-
-btnStop.onclick = async () => {
-  await lkRoomHost?.disconnect();
-  lkRoomHost = null;
-  socket.emit("live-stop", { roomId });
-};
-
-
-
-
-    
-
-
+    btnStart.onclick = start;
+    btnStop.onclick = stop;
     hostFlipBtn.onclick = flipCamera;
 
     window.addEventListener("beforeunload", stop);
