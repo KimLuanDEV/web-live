@@ -379,6 +379,34 @@ guestRequestBtn?.addEventListener("click", () => {
     
 // mở khi bấm nút quay về lobby
 const btnBackLobby = document.getElementById("btnBackLobby");
+const neonConfirm = document.getElementById("neonConfirm");
+const ncfOk = document.getElementById("ncfOk");
+const ncfCancel = document.getElementById("ncfCancel");
+const ncfX = document.getElementById("ncfX");
+
+function openNcf(){
+  neonConfirm?.classList.remove("hidden");
+  neonConfirm?.setAttribute("aria-hidden", "false");
+}
+
+function closeNcf(){
+  neonConfirm?.classList.add("hidden");
+  neonConfirm?.setAttribute("aria-hidden", "true");
+}
+
+ncfCancel?.addEventListener("click", closeNcf);
+ncfX?.addEventListener("click", closeNcf);
+
+// ✅ XÁC NHẬN → VỀ LOBBY
+ncfOk?.addEventListener("click", () => {
+  try {
+    socket.emit("guest-leave", { roomId });
+  } catch {}
+
+  window.location.href = "/lobby.html";
+});
+
+
 btnBackLobby?.addEventListener("click", () => openNcf());
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
