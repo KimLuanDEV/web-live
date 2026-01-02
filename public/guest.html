@@ -57,6 +57,15 @@
 
             <!-- HOST MAIN -->
             <div class="video-card live-main" id="hostCardGuest">
+
+              <!-- REQUEST MIC OVERLAY (GUEST) -->
+<div id="guestRequestOverlay" class="start-live-overlay">
+  <button id="guestRequestBtn" class="start-live-btn">
+    🎤
+  </button>
+</div>
+
+
               <div class="live-overlay">
                 <span class="dot"></span>
                 <b>HOST</b>
@@ -353,6 +362,15 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
     document.getElementById("roomCode").textContent = roomId;
+
+
+ const guestRequestOverlay = document.getElementById("guestRequestOverlay");
+const guestRequestBtn = document.getElementById("guestRequestBtn");
+
+// Click nút giữa = xin lên mic
+guestRequestBtn?.addEventListener("click", () => {
+  btnStart?.click();
+});
 
     const socket = io();
     
@@ -733,6 +751,9 @@ socket.on("live-start", ({ startTs }) => {
   if (typeof startTs === "number") __startTimer(liveTimerGuest, startTs);
 });
 socket.on("live-stop", () => {
+
+  document.body.classList.add("is-live");
+  
   __stopTimer(liveTimerGuest);
 });
 

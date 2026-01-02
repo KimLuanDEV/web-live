@@ -3732,3 +3732,8 @@ body.is-live .start-live-overlay{
 body:not(.is-live) #ctrlTabHost{
   display: none;
 }
+
+/* Guest: chưa live → ẩn bảng điều khiển */
+body:not(.is-live) #ctrlTabGuest{
+  display:none;
+}
