@@ -484,7 +484,7 @@ async function startHostLive() {
       console.log("📷 Preview attached");
     }
 
-    socket.emit("live-start", { roomId });
+socket.emit("host-start-live", { roomId });
 
     // UI sync
     syncStartLiveOverlay(true);
@@ -1641,7 +1641,7 @@ audio: {
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
         socket.emit("broadcaster-ready", { roomId });
-        socket.emit("live-start", { roomId });
+        socket.emit("host-start-live", { roomId });
 
       } catch (err) {
         log("Không mở được camera/mic: " + err.message);
@@ -1751,6 +1751,9 @@ startLiveBigBtn?.addEventListener("click", startHostLive);
   await lkRoomHost.connect(url, token);
   await lkRoomHost.localParticipant.setCameraEnabled(true);
   await lkRoomHost.localParticipant.setMicrophoneEnabled(true);
+
+// ⏳ ĐỢI track publish xong
+await new Promise(r => setTimeout(r, 300));
 
   const pubs = Array.from(
     lkRoomHost.localParticipant.videoTrackPublications.values()
