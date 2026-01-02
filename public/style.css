@@ -3661,39 +3661,3 @@ body.is-live .req-live-fab{
 
 
 
-.req-mic-fab{
-  position:absolute;
-  left:110px;
-  bottom:10px;
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:rgba(0,0,0,.6);
-  border:1px solid rgba(255,255,255,.2);
-  font-size:22px;
-  cursor:pointer;
-  z-index:30;
-}
-.req-mic-fab.active{
-  box-shadow:0 0 16px rgba(37,240,154,.8);
-  background:rgba(37,240,154,.85);
-}
-
-
-.req-mic-fab1{
-  position:absolute;
-  left:110px;
-  bottom:10px;
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  background:rgba(0,0,0,.6);
-  border:1px solid rgba(255,255,255,.2);
-  font-size:22px;
-  cursor:pointer;
-  z-index:30;
-}
-.req-mic-fab1.active{
-  box-shadow:0 0 16px rgba(37,240,154,.8);
-  background:rgba(37,240,154,.85);
-}

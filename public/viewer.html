@@ -77,15 +77,6 @@
 <!-- REQUEST LIVE ICON -->
 <button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
-<!-- REQUEST MIC ICON -->
-<button
-  class="req-mic-fab"
-  id="btnRequestMic"
-  title="Xin bật mic để nói"
->
-🎙
-</button>
-
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -338,12 +329,6 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-
-
-
-
-
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -364,79 +349,8 @@ let swapped = false; // false: host main, true: guest main
 
     const socket = io();
 
-socket.emit("join-room", {
-  roomId,
-  role: "viewer"
-});
 
-const pcConfig = {
-  iceServers: [
-    { urls: "stun:stun.l.google.com:19302" }
-  ]
-};
-
-   
-const btnRequestMic = document.getElementById("btnRequestMic");
-
-let micStream = null;
-let micPC = null;
-
-btnRequestMic.onclick = () => {
-  socket.emit("viewer-request-mic", { roomId });
-  btnRequestMic.classList.add("active");
-};
-
-// Host duyệt → bật mic
-socket.on("viewer-mic-approved", async ({ hostId }) => {
-  micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-
-  micStream.getAudioTracks().forEach(t => {
-  t.enabled = true;
-  console.log("🎙 mic enabled:", t.label);
-});
-
-
-
-  micPC = new RTCPeerConnection(pcConfig);
-
-
-  micStream.getTracks().forEach(track => {
-    micPC.addTrack(track, micStream);
-  });
-
-  micPC.onicecandidate = e => {
-    if (e.candidate) {
-      socket.emit("signal", {
-        to: hostId,
-        data: { candidate: e.candidate }
-      });
-    }
-  };
-
-  const offer = await micPC.createOffer();
-  await micPC.setLocalDescription(offer);
-
-  socket.emit("signal", {
-    to: hostId,
-    data: { sdp: offer }
-  });
-});
-
- 
-socket.on("signal", async ({ data }) => {
-  if (!micPC) return;
-
-  if (data.sdp) {
-    await micPC.setRemoteDescription(data.sdp);
-  }
-
-  if (data.candidate) {
-    await micPC.addIceCandidate(data.candidate);
-  }
-});
-
-
+    
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -943,8 +857,7 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       */
      
       const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(pcConfig);
-
+      const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
 
      
@@ -1080,14 +993,57 @@ const st = pc.iceConnectionState;
 // ===== REQUEST TO GO LIVE (VIEWER -> GUEST) =====
 const btnRequestLive = document.getElementById("btnRequestLive");
 
-// mặc định disable khi host chưa online
-btnRequestLive.disabled = true;
+let voiceStream = null;
 
-btnRequestLive.onclick = () => {
-  const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
-  // mở tab mới để vẫn xem được live
-  window.open(url, "_blank");
+btnRequestLive.onclick = async () => {
+  try {
+    voiceStream = await navigator.mediaDevices.getUserMedia({
+      audio: true,
+      video: false
+    });
+
+    socket.emit("viewer-request-voice", {
+      roomId
+    });
+
+    btnRequestLive.disabled = true;
+    btnRequestLive.textContent = "⏳ Đang xin nói...";
+  } catch (e) {
+    alert("Không bật được mic");
+  }
 };
+
+socket.on("voice-approved", async () => {
+  const pc = new RTCPeerConnection();
+
+  voiceStream.getTracks().forEach(t => pc.addTrack(t, voiceStream));
+
+  pc.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("voice-ice", {
+        roomId,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+
+  socket.emit("voice-offer", {
+    roomId,
+    sdp: offer
+  });
+
+  btnRequestLive.textContent = "🎙️ Đang nói";
+});
+
+
+socket.on("voice-mute", ({ mute }) => {
+  voiceStream?.getAudioTracks().forEach(t => {
+    t.enabled = !mute;
+  });
+});
 
 // chỉ cho xin lên live khi broadcaster online
 socket.on("broadcaster-online", () => {
