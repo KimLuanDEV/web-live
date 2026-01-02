@@ -1030,12 +1030,6 @@ if (p?.catch) p.catch(()=>{});
 
       pc.ontrack = (e) => {
 
-const track = stream.getVideoTracks()[0];
-if (track) {
-  track.onended = () => {
-    clearGuestView("track-ended");
-  };
-}
 
         
   // add từng track, không overwrite stream
