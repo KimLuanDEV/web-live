@@ -364,6 +364,16 @@ let swapped = false; // false: host main, true: guest main
 
     const socket = io();
 
+socket.emit("join-room", {
+  roomId,
+  role: "viewer"
+});
+
+const pcConfig = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" }
+  ]
+};
 
    
 const btnRequestMic = document.getElementById("btnRequestMic");
@@ -388,7 +398,8 @@ socket.on("viewer-mic-approved", async ({ hostId }) => {
 
 
 
-  micPC = new RTCPeerConnection();
+  micPC = new RTCPeerConnection(pcConfig);
+
 
   micStream.getTracks().forEach(track => {
     micPC.addTrack(track, micStream);
@@ -932,7 +943,8 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       */
      
       const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
+      const pc = new RTCPeerConnection(pcConfig);
+
       pcs.set(from, pc);
 
      

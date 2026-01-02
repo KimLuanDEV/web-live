@@ -597,6 +597,20 @@ if(nameFromLobby){
 
     const socket = io();
     
+setTimeout(() => {
+  document.querySelectorAll("audio").forEach(a => {
+    a.muted = false;
+    a.volume = 1;
+  });
+  console.log("🔊 Force unmute all audio");
+}, 1000);
+
+const pcConfig = {
+  iceServers: [
+    { urls: "stun:stun.l.google.com:19302" }
+  ]
+};
+
 
     let pendingViewerMicId = null;
 
@@ -661,7 +675,8 @@ socket.on("signal", async ({ from, data }) => {
   let pc = viewerMicPCs[from];
 
   if (!pc) {
-    pc = new RTCPeerConnection();
+    pc = new RTCPeerConnection(pcConfig);
+
     viewerMicPCs[from] = pc;
 
     pc.onicecandidate = e => {
@@ -1310,7 +1325,8 @@ socket.emit("join-room", {
       log(`Viewer join: ${viewerId}`);
 
       const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
+      const pc = new RTCPeerConnection(pcConfig);
+
       pcs.set(viewerId, pc);
 
 
@@ -1514,7 +1530,8 @@ document.addEventListener("pointerdown", () => {
       if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
 
       const rtcConfig = await getRtcConfig();
-      pcGuestIn = new RTCPeerConnection(rtcConfig);
+      pcGuestIn = new RTCPeerConnection(pcConfig);
+
 
       // send host tracks back to guest so guest can hear/see host (co-talk)
       if (localStream) {
