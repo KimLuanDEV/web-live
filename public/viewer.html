@@ -343,21 +343,42 @@
     document.getElementById("roomCode").textContent = roomId;
 
 // ===== AUTO RECOVER AUDIO/VIDEO (VIEWER) =====
-  document.addEventListener("visibilitychange", async () => {
-  if (document.visibilityState !== "visible") return;
-  if (!player || !player.srcObject) return;
-
-  console.log("🔄 Viewer tab active → recover media");
-
-  try {
-    player.muted = false;
-    player.volume = 1.0;
-    await player.play();
-  } catch (e) {
-    console.warn("Viewer play recover blocked", e);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    console.warn("👀 Viewer background → mark resume");
+    __viewerNeedResume = true;
   }
 });
 
+window.addEventListener("focus", () => {
+  if (!__viewerNeedResume) return;
+  __viewerNeedResume = false;
+
+  console.warn("🔄 Viewer resume → HARD reconnect");
+
+  // 1️⃣ close toàn bộ peer
+  for (const pc of pcs.values()) {
+    try { pc.close(); } catch {}
+  }
+  pcs.clear();
+
+  // 2️⃣ clear video
+  try {
+    player.pause();
+    player.srcObject = null;
+    guestPlayer.pause();
+    guestPlayer.srcObject = null;
+  } catch {}
+
+  // 3️⃣ reset state
+  joined = false;
+  guestId = null;
+
+  // 4️⃣ join lại room (xin offer mới)
+  setTimeout(() => {
+    join().catch(err => console.error("Resume join failed", err));
+  }, 300);
+});
 
 
 
@@ -718,6 +739,7 @@ socket.on("reaction", (msg)=>{
 
 
     let joined = false;
+    let __viewerNeedResume = false;
 
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
