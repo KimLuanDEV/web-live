@@ -871,6 +871,21 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
 pc.ontrack = (event) => {
   const stream = event.streams[0];
 
+  const role = event.transceiver?.mid === "guest" ? "guest" : "host";
+
+   if (role === "host") {
+    if (player.srcObject !== stream) {
+      player.srcObject = stream;
+      player.muted = false;
+    }
+  }
+
+  if (role === "guest") {
+    guestPipWrap.style.display = "block";
+    guestPlayer.srcObject = stream;
+  }
+
+
   if (!stream) return;
 
   if (player.srcObject !== stream) {
@@ -927,6 +942,26 @@ if (p?.catch) p.catch(()=>{});
   }
 
   setStatus("🟢 Đang xem LIVE");
+};
+
+
+const peerRole = new Map(); // peerId → "host" | "guest"
+
+socket.on("webrtc-offer", ({ from, sdp, role }) => {
+  peerRole.set(from, role);
+});
+
+pc.ontrack = (e) => {
+  const role = peerRole.get(peerId);
+
+  if (role === "host") {
+    player.srcObject = e.streams[0];
+  }
+
+  if (role === "guest") {
+    guestPipWrap.style.display = "block";
+    guestPlayer.srcObject = e.streams[0];
+  }
 };
 
 
