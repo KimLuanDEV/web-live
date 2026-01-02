@@ -341,13 +341,6 @@
 
 
 
-const peerRole = new Map(); // peerId -> "host" | "guest"
-
-socket.on("webrtc-offer", ({ from, sdp, role }) => {
-  peerRole.set(from, role);
-});
-
-
 const liveStage = document.getElementById("liveStage");
 const guestPipWrap = document.getElementById("guestPipWrap");
 
@@ -875,81 +868,56 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       try{ socket.emit('request-ice-restart', { to: from, reason: 'viewer_pc_' + st }); }catch{}
     }
   };
+
+  
 pc.ontrack = (event) => {
   const stream = event.streams[0];
-
-  const role = peerRole.get(peerId);
-
-    if (role === "host") {
-    if (player.srcObject !== stream) {
-      player.srcObject = stream;
-      player.muted = false;
-    }
-  }
-
-  if (role === "guest") {
-    guestPipWrap.style.display = "block";
-    guestPlayer.srcObject = stream;
-  }
-
-
   if (!stream) return;
 
-  if (player.srcObject !== stream) {
-   player.srcObject = stream;
-player.muted = true;          // autoplay policy
-player.playsInline = true;
-
-const p = player.play();
-if (p?.catch) p.catch(()=>{});
-
-  }
-
-  forcePlayVideo(player);
-
+  // 🔑 PHÂN BIỆT DUY NHẤT BẰNG peerId
   if (guestId && from === guestId) {
-    // ===== GUEST VIDEO =====
-    guestPlayer.srcObject = stream;
-    // voice activity highlight
-    try{ attachSpeakingIndicator(guestPlayer, document.getElementById('guestPipWrap')); }catch{}
+    // ===== GUEST STREAM =====
+    console.log("🎥 Viewer nhận stream GUEST");
 
-    guestPlayer.muted = false;
-    guestPlayer.playsInline = true;
+    guestPipWrap.style.display = "block";
+    guestPipWrap.setAttribute("aria-hidden", "false");
 
-    guestPlayer.play().catch(() =>
-      log("Autoplay bị chặn, bấm Play ở video Guest.")
-    );
+    if (guestPlayer.srcObject !== stream) {
+      guestPlayer.srcObject = stream;
+      guestPlayer.muted = false;
+      guestPlayer.playsInline = true;
+      guestPlayer.play().catch(() => {});
+    }
+
+    try {
+      attachSpeakingIndicator(
+        guestPlayer,
+        document.getElementById("guestPipWrap")
+      );
+    } catch {}
 
   } else {
-    // ===== HOST VIDEO (CHÍNH) =====
-   player.srcObject = stream;
-player.muted = true;          // autoplay policy
-player.playsInline = true;
+    // ===== HOST STREAM (CHÍNH) =====
+    console.log("🎥 Viewer nhận stream HOST");
 
-const p = player.play();
-if (p?.catch) p.catch(()=>{});
+    if (player.srcObject !== stream) {
+      player.srcObject = stream;
+      player.muted = true;          // autoplay mobile
+      player.playsInline = true;
+      player.play().catch(() => {});
+    }
 
-    // voice activity highlight
-    try{ attachSpeakingIndicator(player, document.getElementById('hostCard')); }catch{}
-
-    // 🔥 QUAN TRỌNG: chống pause trên mobile
-    player.muted = false;        // cho phép có tiếng
-    player.playsInline = true;  // iOS Safari KHÔNG fullscreen
-
-    player.play().catch(() =>
-      log("Autoplay bị chặn, bấm Play ở video Host.")
-    );
-
-    // 🛡️ CHỐNG PAUSE KHI TAB ẨN / BACKGROUND
-    player.onpause = () => {
-      if (document.hidden) {
-        player.play().catch(() => {});
-      }
-    };
+    try {
+      attachSpeakingIndicator(
+        player,
+        document.getElementById("hostCard")
+      );
+    } catch {}
   }
 
   setStatus("🟢 Đang xem LIVE");
 };
+
 
 
 
