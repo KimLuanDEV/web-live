@@ -931,8 +931,16 @@ socket.on("reaction", (msg)=>{
       if (localStream) return;
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
-          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+         video: {
+  width:  { ideal: 1280, max: 1280 },
+  height: { ideal: 720,  max: 720 },
+  frameRate: { ideal: 30, max: 30 }
+},
+audio: {
+  echoCancellation: true,
+  noiseSuppression: true
+}
+
         });
         me.srcObject = localStream;
 
@@ -1004,10 +1012,15 @@ function attachHostVideoSafe() {
     hostVideo.srcObject = hostStream;
   }
 
-  hostVideo.muted = true;
-  hostVideo.playsInline = true;
+  hostVideo.srcObject = stream;
+hostVideo.muted = true;
+hostVideo.playsInline = true;
 
-  const p = hostVideo.play();
+const p = hostVideo.play();
+if (p?.catch) p.catch(()=>{});
+
+
+
   if (p && typeof p.catch === "function") {
     p.catch(() => {
       console.warn("Autoplay blocked, will retry on user gesture");
@@ -1065,8 +1078,16 @@ function attachHostVideoSafe() {
 
       try {
         const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
-          audio: false
+          video: {
+  width:  { ideal: 1280, max: 1280 },
+  height: { ideal: 720,  max: 720 },
+  frameRate: { ideal: 30, max: 30 }
+},
+audio: {
+  echoCancellation: true,
+  noiseSuppression: true
+}
+
         });
         const newVideoTrack = newStream.getVideoTracks()[0];
         if (!newVideoTrack) throw new Error("Không lấy được camera mới");

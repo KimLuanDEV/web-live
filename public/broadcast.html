@@ -1216,8 +1216,33 @@ socket.emit("join-room", {
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
 
+pc.addEventListener("iceconnectionstatechange", () => {
+  if (pc.iceConnectionState === "disconnected") {
+    const s = pc.getSenders().find(x => x.track?.kind === "video");
+    if (!s) return;
+    const p = s.getParameters();
+    if (p.encodings?.[0]) {
+      p.encodings[0].maxBitrate = 700_000;
+      s.setParameters(p);
+      console.log("🔻 Host giảm bitrate do mạng yếu");
+    }
+  }
+});
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+
+
+const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
+if (sender) {
+  const params = sender.getParameters();
+  if (!params.encodings) params.encodings = [{}];
+
+  params.encodings[0].maxBitrate = 1_500_000; // 1.5 Mbps
+  params.encodings[0].maxFramerate = 30;
+
+  sender.setParameters(params);
+}
+
 
       pc.onicecandidate = (e) => {
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
@@ -1458,8 +1483,17 @@ document.addEventListener("pointerdown", () => {
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
-          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+          video: {
+  width:  { ideal: 1280, max: 1280 },
+  height: { ideal: 720,  max: 720 },
+  frameRate: { ideal: 30, max: 30 }
+},
+audio: {
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true
+}
+
         });
 
         preview.srcObject = localStream;
@@ -1525,8 +1559,17 @@ document.addEventListener("pointerdown", () => {
 
       try {
         const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
-          audio: false
+          video: {
+  width:  { ideal: 1280, max: 1280 },
+  height: { ideal: 720,  max: 720 },
+  frameRate: { ideal: 30, max: 30 }
+},
+audio: {
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true
+}
+
         });
 
         const newVideoTrack = newStream.getVideoTracks()[0];

@@ -874,7 +874,13 @@ pc.ontrack = (event) => {
   if (!stream) return;
 
   if (player.srcObject !== stream) {
-    player.srcObject = stream;
+   player.srcObject = stream;
+player.muted = true;          // autoplay policy
+player.playsInline = true;
+
+const p = player.play();
+if (p?.catch) p.catch(()=>{});
+
   }
 
   forcePlayVideo(player);
@@ -894,7 +900,13 @@ pc.ontrack = (event) => {
 
   } else {
     // ===== HOST VIDEO (CHÍNH) =====
-    player.srcObject = stream;
+   player.srcObject = stream;
+player.muted = true;          // autoplay policy
+player.playsInline = true;
+
+const p = player.play();
+if (p?.catch) p.catch(()=>{});
+
     // voice activity highlight
     try{ attachSpeakingIndicator(player, document.getElementById('hostCard')); }catch{}
 

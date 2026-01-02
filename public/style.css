@@ -3737,3 +3737,11 @@ body:not(.is-live) #ctrlTabHost{
 body:not(.is-live) #ctrlTabGuest{
   display:none;
 }
+
+
+video{
+  width:100%;
+  height:auto;
+  object-fit: cover;
+  image-rendering: auto;
+}
