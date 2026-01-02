@@ -431,6 +431,7 @@
 
 
 
+    const USE_LIVEKIT = true;
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
@@ -976,6 +977,7 @@ syncStartLiveOverlay(true);
   if (typeof startTs === "number") __startTimer(liveTimerHost, startTs);
 });
 
+/*
 // 🔄 AUTO RESUME KHI HOST RELOAD
 socket.on("live-resume", async ({ startTs }) => {
 
@@ -1004,7 +1006,7 @@ socket.on("live-resume", async ({ startTs }) => {
   socket.emit("resume-viewers", { roomId });
 
 });
-
+*/
 
 socket.on("resume-viewers-list", async ({ viewers }) => {
   if (!Array.isArray(viewers)) return;
@@ -1553,6 +1555,8 @@ document.addEventListener("pointerdown", () => {
 
     // ===== Start/Stop/Flip =====
     async function start() {
+ if (USE_LIVEKIT) return;
+
       if (localStream) return;
 
       try {
@@ -1700,7 +1704,7 @@ async function startHostLive() {
   socket.emit("host-start-live", { roomId });
 }
 
-btnStart.onclick = async () => {
+  btnStart.onclick = async () => {
   const identity = "host-" + roomId;
 
   const res = await fetch(
@@ -1726,7 +1730,14 @@ btnStart.onclick = async () => {
     ]);
   }
 
+  
   socket.emit("host-start-live", { roomId });
+
+  btnStart.disabled = true;
+btnStop.disabled = false;
+syncStartLiveOverlay(true);
+document.body.classList.add("is-live");
+
 };
 
 
