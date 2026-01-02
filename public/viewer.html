@@ -339,6 +339,8 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
+let __viewerWasBackground = false;
+let __viewerAutoReloaded = false;
 
     document.getElementById("roomCode").textContent = roomId;
 
@@ -351,32 +353,15 @@ document.addEventListener("visibilitychange", () => {
 });
 
 window.addEventListener("focus", () => {
-  if (!__viewerNeedResume) return;
-  __viewerNeedResume = false;
+  if (!__viewerWasBackground) return;
+  if (__viewerAutoReloaded) return;
 
-  console.warn("🔄 Viewer resume → HARD reconnect");
+  __viewerAutoReloaded = true;
+  console.warn("🔄 Viewer resume → AUTO RELOAD");
 
-  // 1️⃣ close toàn bộ peer
-  for (const pc of pcs.values()) {
-    try { pc.close(); } catch {}
-  }
-  pcs.clear();
-
-  // 2️⃣ clear video
-  try {
-    player.pause();
-    player.srcObject = null;
-    guestPlayer.pause();
-    guestPlayer.srcObject = null;
-  } catch {}
-
-  // 3️⃣ reset state
-  joined = false;
-  guestId = null;
-
-  // 4️⃣ join lại room (xin offer mới)
+  // delay nhẹ để browser ổn định
   setTimeout(() => {
-    join().catch(err => console.error("Resume join failed", err));
+    location.reload();
   }, 300);
 });
 
