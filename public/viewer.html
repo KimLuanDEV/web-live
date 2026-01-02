@@ -337,6 +337,8 @@
 
 
   <script src="/socket.io/socket.io.js"></script>
+
+  
   <script>
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
@@ -346,7 +348,38 @@
     const liveStage = document.getElementById("liveStage");
     const guestPipWrap = document.getElementById("guestPipWrap");
     const params = new URLSearchParams(location.search);
-    const roomId = params.get("room") || "abc123";
+ 
+
+
+
+const roomId = new URLSearchParams(location.search).get("room") || "abc123";
+const identity = "viewer_" + Math.random().toString(36).slice(2,8);
+
+async function joinLiveKit() {
+  const res = await fetch(`/livekit-token?roomId=${roomId}&identity=${identity}&role=viewer`);
+  const { url, token } = await res.json();
+
+  const room = new LiveKit.Room({
+    adaptiveStream: true,
+    dynacast: true
+  });
+
+  room.on("trackSubscribed", (track) => {
+    if (track.kind === "video") {
+      const stream = new MediaStream([track.mediaStreamTrack]);
+      player.srcObject = stream;
+      player.play().catch(()=>{});
+    }
+  });
+
+  await room.connect(url, token);
+  console.log("👁 Viewer joined LiveKit room");
+}
+
+joinLiveKit();
+
+
+
 
 let __viewerWasBackground = false;
 let __viewerAutoReloaded = false;
@@ -1849,6 +1882,9 @@ window.addEventListener("beforeunload", () => {
 
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
+
+
+<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.min.js"></script>
 
 </body>
 </html>
