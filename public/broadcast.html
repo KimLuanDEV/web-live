@@ -655,7 +655,8 @@ document.addEventListener("touchstart", unlockAudio, { once: true });
 
 socket.on("signal", async ({ from, data }) => {
   // Chỉ xử lý viewer xin mic
-  if (!pendingMicViewer || from !== pendingMicViewer) return;
+  if (!pendingViewerMicId || from !== pendingViewerMicId) return;
+
 
   let pc = viewerMicPCs[from];
 
