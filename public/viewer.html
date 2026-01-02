@@ -405,6 +405,19 @@ socket.on("viewer-mic-approved", async ({ hostId }) => {
 });
 
  
+socket.on("signal", async ({ data }) => {
+  if (!micPC) return;
+
+  if (data.sdp) {
+    await micPC.setRemoteDescription(data.sdp);
+  }
+
+  if (data.candidate) {
+    await micPC.addIceCandidate(data.candidate);
+  }
+});
+
+
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
