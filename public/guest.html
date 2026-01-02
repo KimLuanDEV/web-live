@@ -372,6 +372,11 @@ guestRequestBtn?.addEventListener("click", () => {
   btnStart?.click();
 });
 
+
+// mở khi bấm nút quay về lobby
+const btnBackLobby = document.getElementById("btnBackLobby");
+btnBackLobby?.addEventListener("click", () => openNcf());
+
     const socket = io();
     
 
@@ -753,7 +758,7 @@ socket.on("live-start", ({ startTs }) => {
 socket.on("live-stop", () => {
 
   document.body.classList.add("is-live");
-  
+
   __stopTimer(liveTimerGuest);
 });
 
