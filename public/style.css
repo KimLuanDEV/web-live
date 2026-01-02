@@ -3727,3 +3727,8 @@ body.is-live .req-live-fab{
 body.is-live .start-live-overlay{
   display:none;
 }
+
+/* Ẩn bảng điều khiển khi CHƯA live */
+body:not(.is-live) #ctrlTabHost{
+  display: none;
+}
