@@ -1113,6 +1113,56 @@ socket.on("reaction", (msg)=>{
     // One RTCPeerConnection per viewer
     const pcs = new Map();
 
+
+// ===== AUTO RECOVER AV WHEN TAB BACKGROUND =====
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState !== "visible") return;
+  if (!localStream) return;
+
+  console.log("🔄 Host tab active → recover AV");
+
+  // 🔁 Recover AUDIO
+  try {
+    await replaceHostAudioTrack();
+    console.log("🎙️ Audio recovered");
+  } catch (e) {
+    console.warn("Recover audio failed", e);
+  }
+
+  // 🔁 Recover VIDEO
+  try {
+    const videoTrack = localStream.getVideoTracks()[0];
+    if (videoTrack && videoTrack.readyState !== "live") {
+      console.log("📷 Video dead → restart camera");
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
+      const newTrack = stream.getVideoTracks()[0];
+
+      for (const pc of pcs.values()) {
+        const sender = pc.getSenders().find(s => s.track?.kind === "video");
+        if (sender) await sender.replaceTrack(newTrack);
+      }
+
+      localStream.removeTrack(videoTrack);
+      videoTrack.stop();
+      localStream.addTrack(newTrack);
+      preview.srcObject = localStream;
+    }
+  } catch (e) {
+    console.warn("Recover video failed", e);
+  }
+});
+
+window.addEventListener("online", async () => {
+  console.log("🌐 Host online again → recover AV");
+  if (!localStream) return;
+  try { await replaceHostAudioTrack(); } catch {}
+});
+
+
+
     socket.on("viewer-join", ({ viewerId }) => {
   const pc = createPeerConnection(viewerId);
   localStream.getTracks().forEach(t => pc.addTrack(t, localStream));

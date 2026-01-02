@@ -334,17 +334,34 @@
     const player = document.getElementById("player");
     const guestPlayer = document.getElementById("guestPlayer");
     const btnJoin = document.getElementById("btnJoin");
-
+    const liveStage = document.getElementById("liveStage");
+    const guestPipWrap = document.getElementById("guestPipWrap");
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
+
+
     document.getElementById("roomCode").textContent = roomId;
 
+// ===== AUTO RECOVER AUDIO/VIDEO (VIEWER) =====
+  document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState !== "visible") return;
+  if (!player || !player.srcObject) return;
+
+  console.log("🔄 Viewer tab active → recover media");
+
+  try {
+    player.muted = false;
+    player.volume = 1.0;
+    await player.play();
+  } catch (e) {
+    console.warn("Viewer play recover blocked", e);
+  }
+});
 
 
-const liveStage = document.getElementById("liveStage");
-const guestPipWrap = document.getElementById("guestPipWrap");
 
-let swapped = false; // false: host main, true: guest main
+
+     let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
@@ -1722,6 +1739,26 @@ setInterval(() => {
     });
   }
 }, 3000);
+
+
+setInterval(() => {
+  if (!player || !player.srcObject) return;
+
+  const st = player.srcObject;
+
+  const v = st.getVideoTracks()[0];
+  const a = st.getAudioTracks()[0];
+
+  // nếu track chết → xin host ICE restart
+  if ((v && v.readyState !== "live") || (a && a.readyState !== "live")) {
+    console.warn("🧊 Viewer detect dead track → request ICE restart");
+    socket.emit("request-ice-restart", {
+      to: hostId,
+      reason: "tab background recover"
+    });
+  }
+}, 4000);
+
 
 
   </script>
