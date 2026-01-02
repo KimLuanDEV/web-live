@@ -335,7 +335,7 @@
   </div>
 </div>
 
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/livekit-client/2.15.7/livekit-client.umd.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -348,41 +348,77 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
-let __viewerWasBackground = false;
-let __viewerAutoReloaded = false;
+let lkRoom = null;
+
+async function joinLiveKitViewer() {
+  const identity = "viewer-" + Math.random().toString(36).slice(2);
+
+  const res = await fetch(
+    `/livekit-token?roomId=${encodeURIComponent(roomId)}&identity=${identity}&role=viewer`
+  );
+  const { url, token } = await res.json();
+
+  lkRoom = new LiveKitClient.Room({
+    adaptiveStream: true,
+    dynacast: true,
+  });
+
+  lkRoom.on(
+    LiveKitClient.RoomEvent.TrackSubscribed,
+    (track, pub, participant) => {
+      if (track.kind !== "video" && track.kind !== "audio") return;
+
+      const isGuest = participant.identity?.startsWith("guest-");
+      const el = isGuest ? guestPlayer : player;
+
+      const ms =
+        el.srcObject instanceof MediaStream
+          ? el.srcObject
+          : new MediaStream();
+
+      ms.addTrack(track.mediaStreamTrack);
+      el.srcObject = ms;
+
+      if (isGuest && guestPipWrap) {
+        guestPipWrap.style.display = "";
+        document.body.classList.add("has-guest");
+      }
+    }
+  );
+
+  lkRoom.on(
+    LiveKitClient.RoomEvent.TrackUnsubscribed,
+    (track, pub, participant) => {
+      const isGuest = participant.identity?.startsWith("guest-");
+      const el = isGuest ? guestPlayer : player;
+
+      const ms = el.srcObject;
+      if (ms instanceof MediaStream) {
+        try { ms.removeTrack(track.mediaStreamTrack); } catch {}
+        if (!ms.getTracks().length) el.srcObject = null;
+      }
+
+      if (isGuest && guestPipWrap) {
+        guestPipWrap.style.display = "none";
+        document.body.classList.remove("has-guest");
+      }
+    }
+  );
+
+  await lkRoom.connect(url, token);
+}
+
+joinLiveKitViewer();
+
 
     document.getElementById("roomCode").textContent = roomId;
 
-// ===== AUTO RECOVER AUDIO/VIDEO (VIEWER) =====
-document.addEventListener("visibilitychange", () => {
-  if (document.hidden) {
-    console.warn("👀 Viewer background → mark resume");
-    __viewerNeedResume = true;
-  }
-});
 
-window.addEventListener("focus", () => {
-  if (!__viewerWasBackground) return;
-  if (__viewerReloading) return;
-
-  __viewerReloading = true;
-
-  const overlay = document.getElementById("reconnectOverlay");
-  if (overlay) overlay.classList.remove("hidden");
-
-  console.warn("🔄 Viewer resume → show overlay & reload");
-
-  // delay nhẹ cho mượt
-  setTimeout(() => {
-    // reload sạch, không back history
-    location.replace(location.href);
-  }, 700);
-});
 
 function clearGuestView(reason = "") {
   console.warn("👋 Guest left → clear PIP", reason);
 
-  guestId = null;
+ 
 
   // stop & clear guest video
   try {
@@ -412,25 +448,8 @@ function clearGuestView(reason = "") {
 
     const socket = io();
 
-socket.on("host-back-online", () => {
-  console.warn("🔔 Host back online → try rejoin");
 
-  if (!joined) {
-    setTimeout(() => {
-      join().catch(e => console.error("Rejoin on host-back failed", e));
-    }, 300);
-  }
-});
-
-    socket.on("broadcaster-online", () => {
-  console.warn("📡 Broadcaster online → force join");
-
-  // tránh join lặp
-  if (joined) return;
-
-  join().catch(e => console.error("Join on broadcaster-online failed", e));
-});
-
+   
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -780,12 +799,12 @@ socket.on("reaction", (msg)=>{
 })();
 
 
-    let joined = false;
-    let __viewerNeedResume = false;
+    
+  
 
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
-    let guestId = null;
+    
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -832,7 +851,7 @@ socket.on("reaction", (msg)=>{
       if (liveStatusText) liveStatusText.textContent = text.replace(/^[^ ]+\s*/, "");
     }
 
-    socket.on("broadcaster-online", () => setStatus("✅ Host online"));
+   
     socket.on("broadcaster-offline", () => setStatus("⛔ Host offline"));
     socket.on("broadcaster-changed", () => {
       setStatus("🔄 Host changed – hãy bấm Join lại");
@@ -840,12 +859,12 @@ socket.on("reaction", (msg)=>{
     });
 
     // guest events
-    socket.on("guest-online", ({ guestId: gid }) => {
+    socket.on("guest-online", ({ gid }) => {
 
       document.body.classList.add("has-guest");
 if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "false");
 
-      guestId = gid;
+      
       log("Guest online: " + gid);
       setStatus("🟢 Có Guest cùng live");
       // request guest to stream to this viewer
@@ -861,7 +880,7 @@ swapped = false;
 if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
 
       log("Guest offline");
-      guestId = null;
+     
       guestPlayer.srcObject = null;
       // close guest pc if exists
       cleanupPeer("guest");
@@ -870,24 +889,12 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
 
 
 
-    async function join() {
-      if (joined) return;
-      joined = true;
-      
-      try{ btnJoin.style.display = "none"; }catch{}
-socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
-      setStatus("⏳ Đang chờ Host gửi LIVE...");
-      log("Đã join room, đợi offer từ host/guest...");
-    }
-
+   
     function cleanupPeer(peerKey) {
       // peerKey can be actual peerId or "guest"
       if (peerKey === "guest") {
-        // find by guestId if present
-        if (guestId && pcs.has(guestId)) {
-          try { pcs.get(guestId).close(); } catch {}
-          pcs.delete(guestId);
-        }
+        
+        
         return;
       }
       const pc = pcs.get(peerKey);
@@ -904,7 +911,7 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       pcs.clear();
       player.srcObject = null;
       guestPlayer.srcObject = null;
-      joined = false;
+     
     }
 
 
@@ -938,8 +945,62 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       // reset pc for this peer only
       cleanupPeer(from);
       */
-     
+     let lkRoom;
+
+async function joinViewerLiveKit() {
+  const identity = "viewer-" + Math.random().toString(36).slice(2);
+
+  const res = await fetch(
+    `/livekit-token?roomId=${encodeURIComponent(roomId)}&identity=${identity}&role=viewer`
+  );
+  const { url, token } = await res.json();
+
+  lkRoom = new LiveKitClient.Room({
+    adaptiveStream: true,
+    dynacast: true,
+  });
+
+  lkRoom.on(LiveKitClient.RoomEvent.TrackSubscribed, (track, pub, participant) => {
+    if (track.kind === "video" || track.kind === "audio") {
+      const isGuest = participant.identity?.startsWith("guest-");
+      const el = isGuest ? guestPlayer : player;
+
+      const ms = el.srcObject instanceof MediaStream ? el.srcObject : new MediaStream();
+      ms.addTrack(track.mediaStreamTrack);
+      el.srcObject = ms;
+
+      if (isGuest) {
+        document.body.classList.add("has-guest");
+        guestPipWrap?.setAttribute("aria-hidden", "false");
+      }
+    }
+  });
+
+  lkRoom.on(LiveKitClient.RoomEvent.TrackUnsubscribed, (track, pub, participant) => {
+    const isGuest = participant.identity?.startsWith("guest-");
+    const el = isGuest ? guestPlayer : player;
+    const ms = el.srcObject;
+    if (ms instanceof MediaStream) {
+      ms.removeTrack(track.mediaStreamTrack);
+      if (!ms.getTracks().length) el.srcObject = null;
+    }
+    if (isGuest) {
+      guestPlayer.srcObject = null;
+      document.body.classList.remove("has-guest");
+    }
+  });
+
+  await lkRoom.connect(url, token);
+}
+
+joinViewerLiveKit();
+
+
+
+
       const rtcConfig = await getRtcConfig();
+
+
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
 
@@ -957,29 +1018,7 @@ pc.ontrack = (event) => {
   const stream = event.streams[0];
   if (!stream) return;
 
-  // 🔑 PHÂN BIỆT DUY NHẤT BẰNG peerId
-  if (guestId && from === guestId) {
-    // ===== GUEST STREAM =====
-    console.log("🎥 Viewer nhận stream GUEST");
-
-    guestPipWrap.style.display = "block";
-    guestPipWrap.setAttribute("aria-hidden", "false");
-
-    if (guestPlayer.srcObject !== stream) {
-      guestPlayer.srcObject = stream;
-      guestPlayer.muted = false;
-      guestPlayer.playsInline = true;
-      guestPlayer.play().catch(() => {});
-    }
-
-    try {
-      attachSpeakingIndicator(
-        guestPlayer,
-        document.getElementById("guestPipWrap")
-      );
-    } catch {}
-
-  } else {
+   else {
     // ===== HOST STREAM (CHÍNH) =====
     console.log("🎥 Viewer nhận stream HOST");
 
@@ -1068,7 +1107,7 @@ const st = pc.iceConnectionState;
     });
 
     btnJoin.onclick = () => {
-      join().catch(err => log("Join lỗi: " + err.message));
+     
     };
 
     // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
@@ -1078,12 +1117,7 @@ const st = pc.iceConnectionState;
         btnJoin.textContent = "⏳ Đang tham gia...";
         // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
         setTimeout(() => {
-          join().catch(err => {
-            // nếu lỗi, mở lại nút cho user bấm thử
-            btnJoin.disabled = false;
-            btnJoin.textContent = "Tham gia xem Livestream";
-            log("Auto-join lỗi: " + (err?.message || err));
-          });
+         
         }, 120);
       } catch {}
     })();
@@ -1103,10 +1137,7 @@ btnRequestLive.onclick = () => {
   window.open(url, "_blank");
 };
 
-// chỉ cho xin lên live khi broadcaster online
-socket.on("broadcaster-online", () => {
-  btnRequestLive.disabled = false;
-});
+
 
 socket.on("broadcaster-offline", () => {
   btnRequestLive.disabled = true;
@@ -1774,9 +1805,7 @@ socket.on("host-temp-offline", () => {
   statusBadge.textContent = "⚠️ Host mất kết nối tạm thời...";
 });
 
-socket.on("host-back-online", () => {
-  statusBadge.textContent = "🔴 Đang LIVE";
-});
+
 
 socket.on("host-live", ({ liveStartTs }) => {
   joinViewerStream();
@@ -1826,11 +1855,11 @@ setInterval(() => {
 }, 4000);
 
 setInterval(() => {
-  if (joined) return;
+ 
   if (!document.body.classList.contains("is-live")) return;
 
   console.warn("⏳ Viewer still waiting → retry join");
-  join().catch(()=>{});
+ 
 }, 4000);
 
 

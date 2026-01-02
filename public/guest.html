@@ -344,7 +344,7 @@
   </div>
 </div>
 
-
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/livekit-client/2.15.7/livekit-client.umd.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -363,6 +363,40 @@
     const roomId = params.get("room") || "abc123";
     document.getElementById("roomCode").textContent = roomId;
 
+
+let lkRoomGuest = null;
+
+async function startGuestLiveKit() {
+  const identity = "guest-" + Math.random().toString(36).slice(2);
+
+  const res = await fetch(
+    `/livekit-token?roomId=${encodeURIComponent(roomId)}&identity=${identity}&role=guest`
+  );
+  const { url, token } = await res.json();
+
+  lkRoomGuest = new LiveKitClient.Room({
+    adaptiveStream: true,
+    dynacast: true,
+  });
+
+  await lkRoomGuest.connect(url, token);
+  await lkRoomGuest.localParticipant.setCameraEnabled(true);
+  await lkRoomGuest.localParticipant.setMicrophoneEnabled(true);
+
+  const pubs = Array.from(
+    lkRoomGuest.localParticipant.videoTrackPublications.values()
+  );
+  if (pubs[0]?.track?.mediaStreamTrack) {
+    me.srcObject = new MediaStream([
+      pubs[0].track.mediaStreamTrack,
+    ]);
+  }
+
+  mePipWrap?.setAttribute("aria-hidden", "false");
+}
+
+    
+    
 
  const guestRequestOverlay = document.getElementById("guestRequestOverlay");
 const guestRequestBtn = document.getElementById("guestRequestBtn");
@@ -663,7 +697,7 @@ async function __doIceRestart(peerId, pc, reason){
   if (pc.signalingState === "closed") return;
 
   const st = __iceRestartState.get(peerId) || { timer:null, lastTs:0, restarting:false };
-  // debounce: avoid spamming offers
+
   const ts = __now();
   if (st.restarting) return;
   if (ts - st.lastTs < 1500) return;
@@ -674,9 +708,9 @@ async function __doIceRestart(peerId, pc, reason){
 
   try {
     log(`🧊 ICE restart -> ${peerId} (GUEST) ${reason ? "- " + reason : ""}`);
-    const offer = await pc.createOffer({ iceRestart: true });
-    await pc.setLocalDescription(offer);
-    socket.emit("offer", { to: peerId, description: pc.localDescription, iceRestart: true });
+   
+   
+   
   } catch (e) {
     log("ICE restart error: " + (e?.message || e));
   } finally {
@@ -872,7 +906,7 @@ socket.on("reaction", (msg)=>{
 
 
     let localStream = null;
-    const pcs = new Map(); // peerId -> RTCPeerConnection
+    const pcs = new Map();
 
     // When network comes back / tab returns, restart only bad peers
     window.addEventListener("online", () => __restartBadPeers(() => Array.from(pcs.entries())));
@@ -881,7 +915,7 @@ socket.on("reaction", (msg)=>{
     });
 
 
-    // Peer asks GUEST to ICE-restart this connection (GUEST is offerer to watchers)
+    
     socket.on("request-ice-restart", async ({ from, reason }) => {
       const peerId = from;
       const pc = pcs.get(peerId);
@@ -965,14 +999,22 @@ audio: {
       }
     };
 
+
+
+    
     socket.on("guest-pending", () => setStatus("⏳ Đang chờ host duyệt..."));
     socket.on("guest-rejected", () => setStatus("⛔ Host từ chối."));
     socket.on("guest-approved", () => {
+      startGuestLiveKit().catch(console.error);
       setStatus("✅ Được duyệt!");
       log("Được duyệt! Bây giờ viewer/host sẽ kết nối tới bạn.");
     });
 
-    // When someone wants to watch guest, guest creates offer to them
+
+
+
+
+    
     socket.on("guest-watcher", async ({ viewerId }) => {
       if (!localStream) return;
       if (pcs.has(viewerId)) return;
@@ -980,7 +1022,7 @@ audio: {
       log("Tạo kết nối tới: " + viewerId);
 
       const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
+      
       pcs.set(viewerId, pc);
 
 // 🔴 DÁN ĐOẠN NÀY NGAY SAU ĐÂY
@@ -998,9 +1040,7 @@ pc.oniceconnectionstatechange = () => {
 
       localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
 
-      pc.onicecandidate = (e) => {
-        if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
-      };
+     
 
 // ===== FIX RACE: host stream =====
 let hostStream = new MediaStream();
@@ -1041,37 +1081,16 @@ if (p?.catch) p.catch(()=>{});
   }, 50);
 };
 
-      /*
-      // Receive host stream (host will addTrack when answering)
-      pc.ontrack = (e) => {
-        hostVideo.srcObject = e.streams[0];
-        hostVideo.play().catch(() => {});
-      };
-      */
+    
             __wireIceAuto(viewerId, pc);
 
-      try {
-        const offer = await pc.createOffer();
-        await pc.setLocalDescription(offer);
-        socket.emit("offer", { to: viewerId, description: pc.localDescription });
-      } catch (err) {
-        log("Lỗi tạo offer: " + err.message);
-      }
+     
+       
     });
 
-    socket.on("answer", async ({ from, description }) => {
-      const pc = pcs.get(from);
-      if (!pc) return;
-      try { await pc.setRemoteDescription(description); }
-      catch (err) { log("Lỗi setRemoteDescription(answer): " + err.message); }
-    });
+ 
 
-    socket.on("candidate", async ({ from, candidate }) => {
-      const pc = pcs.get(from);
-      if (!pc) return;
-      try { await pc.addIceCandidate(candidate); }
-      catch (err) { log("Lỗi addIceCandidate: " + err.message); }
-    });
+    
 
     // ===== GUEST: FLIP CAMERA + LEAVE LIVE =====
     async function flipCamera() {
@@ -1140,7 +1159,12 @@ if (p?.catch) p.catch(()=>{});
 
     guestFlipBtn.onclick = flipCamera;
 
-    btnLeaveLive.onclick = leaveLive;
+   btnLeaveLive.onclick = async () => {
+  try { await lkRoomGuest?.disconnect(); } catch {}
+  lkRoomGuest = null;
+  window.location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
+};
+
 
     window.addEventListener("beforeunload", () => {
       for (const pc of pcs.values()) { try { pc.close(); } catch {} }
