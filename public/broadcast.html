@@ -72,6 +72,15 @@
 
   <!-- HOST MAIN -->
   <div class="video-card live-main" id="hostCard">
+
+<!-- START LIVE OVERLAY -->
+<div id="startLiveOverlay" class="start-live-overlay">
+  <button id="startLiveBigBtn" class="start-live-btn">
+    ▶️ BẮT ĐẦU LIVE
+  </button>
+</div>
+
+
     <div class="live-overlay">
       <span class="dot"></span>
       <b>HOST</b>
@@ -441,6 +450,16 @@ const hgmOk = document.getElementById("hgmOk");
 const hgmLater = document.getElementById("hgmLater");
 const hgmDontShow = document.getElementById("hgmDontShow");
 const hgmRoom = document.getElementById("hgmRoom");
+
+
+const startLiveOverlay = document.getElementById("startLiveOverlay");
+const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
+
+// Click nút giữa màn hình = click nút start trong control
+startLiveBigBtn?.addEventListener("click", () => {
+  btnStart?.click();
+});
+
 
 function openHgm(){
   if (!hgm) return;
@@ -907,6 +926,9 @@ function __stopTimer(el){
 
 const liveTimerHost = document.getElementById("liveTimerHost");
 socket.on("live-start", ({ startTs }) => {
+
+  document.body.classList.add("is-live");
+
   if (typeof startTs === "number") __startTimer(liveTimerHost, startTs);
 });
 
@@ -970,6 +992,9 @@ socket.on("resume-viewers-list", async ({ viewers }) => {
 
 
 socket.on("live-stop", () => {
+
+  document.body.classList.remove("is-live");
+
   __stopTimer(liveTimerHost);
 });
 
