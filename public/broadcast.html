@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="vi">
 <head>
-
+  
 <script src="https://cdn.jsdelivr.net/npm/livekit-client@2/dist/livekit-client.umd.min.js"></script>
 <script>
   window.LiveKit = window.LiveKit || window.livekit;
@@ -464,10 +464,11 @@ async function startHostLive() {
 
     console.log("🎫 Got LiveKit token");
 
-   lkRoomHost = new LiveKit.Room({
+   lkRoomHost = new LiveKitClient.Room({
   adaptiveStream: true,
   dynacast: true,
 });
+
 
     await lkRoomHost.connect(url, token);
     console.log("🔗 LiveKit connected");
@@ -508,9 +509,11 @@ const hgmRoom = document.getElementById("hgmRoom");
 const startLiveOverlay = document.getElementById("startLiveOverlay");
 const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
 
+// Click nút giữa màn hình = click nút start trong control
 startLiveBigBtn?.addEventListener("click", () => {
   startHostLive();
 });
+
 
 function syncStartLiveOverlay(isLive) {
   if (!startLiveOverlay) return;
@@ -1737,10 +1740,11 @@ startLiveBigBtn?.addEventListener("click", startHostLive);
   );
   const { url, token } = await res.json();
 
-  lkRoomHost = new LiveKit.Room({
+ lkRoomHost = new LiveKitClient.Room({
   adaptiveStream: true,
   dynacast: true,
 });
+
 
   await lkRoomHost.connect(url, token);
   await lkRoomHost.localParticipant.setCameraEnabled(true);
