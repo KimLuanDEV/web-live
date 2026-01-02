@@ -3745,3 +3745,53 @@ video{
   object-fit: cover;
   image-rendering: auto;
 }
+
+
+/* ===== RECONNECT OVERLAY ===== */
+.reconnect-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: radial-gradient(ellipse at center, #000c, #000);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.reconnect-overlay.hidden {
+  display: none;
+}
+
+.reconnect-box {
+  text-align: center;
+  padding: 28px 34px;
+  border-radius: 16px;
+  background: rgba(20,20,20,0.85);
+  border: 1px solid rgba(0,255,200,0.25);
+  box-shadow:
+    0 0 30px rgba(0,255,200,0.25),
+    inset 0 0 20px rgba(0,255,200,0.15);
+}
+
+.reconnect-text {
+  margin-top: 14px;
+  font-size: 16px;
+  letter-spacing: 0.5px;
+  color: #9ff;
+  text-shadow: 0 0 8px rgba(0,255,200,0.6);
+}
+
+/* spinner */
+.reconnect-spinner {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 3px solid rgba(0,255,200,0.2);
+  border-top-color: #00ffd0;
+  animation: spin 0.9s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

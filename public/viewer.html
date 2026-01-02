@@ -327,6 +327,15 @@
 </div>
 
 
+<!-- 🔄 RECONNECT OVERLAY -->
+<div id="reconnectOverlay" class="reconnect-overlay hidden">
+  <div class="reconnect-box">
+    <div class="reconnect-spinner"></div>
+    <div class="reconnect-text">Đang kết nối lại…</div>
+  </div>
+</div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -354,15 +363,20 @@ document.addEventListener("visibilitychange", () => {
 
 window.addEventListener("focus", () => {
   if (!__viewerWasBackground) return;
-  if (__viewerAutoReloaded) return;
+  if (__viewerReloading) return;
 
-  __viewerAutoReloaded = true;
-  console.warn("🔄 Viewer resume → AUTO RELOAD");
+  __viewerReloading = true;
 
-  // delay nhẹ để browser ổn định
+  const overlay = document.getElementById("reconnectOverlay");
+  if (overlay) overlay.classList.remove("hidden");
+
+  console.warn("🔄 Viewer resume → show overlay & reload");
+
+  // delay nhẹ cho mượt
   setTimeout(() => {
-    location.reload();
-  }, 300);
+    // reload sạch, không back history
+    location.replace(location.href);
+  }, 700);
 });
 
 
