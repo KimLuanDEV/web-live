@@ -77,15 +77,6 @@
 <!-- REQUEST LIVE ICON -->
 <button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
-<!-- 🎙️ REQUEST MIC BUTTON (NEW) -->
-<button
-  class="req-mic-fab"
-  id="btnRequestMic"
-  title="Xin bật micro"
->
-  🎙️
-</button>
-
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -358,41 +349,8 @@ let swapped = false; // false: host main, true: guest main
 
     const socket = io();
 
-let micStream = null;
 
-socket.on("viewer-mic-approved", async () => {
-  micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-  micStream.getTracks().forEach(track => {
-    peerConnection.addTrack(track, micStream);
-  });
-
-  badge.textContent = "🎙️ Đang nói";
-});
-
-  
-socket.on("viewer-mic-muted", () => {
-  micStream?.getTracks().forEach(t => t.stop());
-  micStream = null;
-
-  badge.textContent = "🔇 Mic đã tắt";
-  btnRequestMic.classList.remove("waiting");
-  btnRequestMic.textContent = "🎙️";
-});
-
- const btnRequestMic = document.getElementById("btnRequestMic");
-
-btnRequestMic.onclick = () => {
-  socket.emit("viewer-mic-request", {
-    roomId,
-    name: chatName?.value || "Viewer"
-  });
-
-  btnRequestMic.classList.add("waiting");
-  btnRequestMic.textContent = "⏳";
-};
-   
-
+    
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====

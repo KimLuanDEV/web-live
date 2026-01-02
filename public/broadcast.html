@@ -100,16 +100,6 @@
   <span class="guest-req-dot" id="guestReqDot"></span>
 </button>
 
-
-
-<button id="btnApproveMic" class="av-btn" title="Duyệt mic viewer">
-  🎙️
-</button>
-<button id="btnMuteMic" class="av-btn off" title="Tắt mic viewer">
-  🔇
-</button>
-
-
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
   <input
@@ -582,35 +572,6 @@ if(nameFromLobby){
 
     const socket = io();
     
-
-
-let currentMicViewer = null;
-
-socket.on("host-mic-request", ({ viewerId, name }) => {
-  const ok = confirm(`🎙️ Cho ${name} bật micro?`);
-  if (ok) {
-    socket.emit("host-approve-mic", { roomId, viewerId });
-    currentMicViewer = viewerId;
-  }
-});
-
-socket.on("host-approve-mic", ({ roomId, viewerId }) => {
-  const room = rooms.get(roomId);
-  if (!room || socket.id !== room.broadcasterId) return;
-
-  room.activeMicViewer = viewerId;
-  io.to(viewerId).emit("viewer-mic-approved");
-});
-
-socket.on("host-mute-mic", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room?.activeMicViewer) return;
-
-  io.to(room.activeMicViewer).emit("viewer-mic-muted");
-  room.activeMicViewer = null;
-});
-
-
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
@@ -1204,6 +1165,32 @@ socket.emit("join-room", {
       pcs.set(viewerId, pc);
 
 
+      // 🚑 FIX LAG: giới hạn bitrate WebRTC cho HOST
+pc.addEventListener("connectionstatechange", async () => {
+  if (pc.connectionState !== "connected") return;
+
+  setTimeout(async () => {
+    try {
+      const sender = pc.getSenders().find(
+        s => s.track && s.track.kind === "video"
+      );
+      if (!sender) return;
+
+      const params = sender.getParameters();
+      if (!params.encodings) params.encodings = [{}];
+
+      params.encodings[0].maxBitrate = 1_200_000; // 1.2 Mbps
+      params.encodings[0].maxFramerate = 24;
+
+      await sender.setParameters(params);
+      console.log("✅ Video bitrate capped (HOST)");
+    } catch (e) {
+      console.warn("⚠️ setParameters failed:", e);
+    }
+  }, 800);
+});
+
+
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
       pc.onicecandidate = (e) => {
@@ -1406,18 +1393,6 @@ document.addEventListener("pointerdown", () => {
       const rtcConfig = await getRtcConfig();
       pcGuestIn = new RTCPeerConnection(rtcConfig);
 
-
-
-peerConnection.ontrack = (e) => {
-  if (e.track.kind === "audio") {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    document.body.appendChild(audio);
-  }
-};
-
-
       // send host tracks back to guest so guest can hear/see host (co-talk)
       if (localStream) {
         localStream.getTracks().forEach(t => pcGuestIn.addTrack(t, localStream));
@@ -1456,10 +1431,19 @@ peerConnection.ontrack = (e) => {
       if (localStream) return;
 
       try {
-        localStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
-          audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
-        });
+        const stream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    width: { ideal: 1280, max: 1280 },
+    height: { ideal: 720, max: 720 },
+    frameRate: { ideal: 24, max: 30 }
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true
+  }
+});
+
 
         preview.srcObject = localStream;
 
@@ -1523,10 +1507,19 @@ peerConnection.ontrack = (e) => {
       log("Đang đổi camera sang: " + (currentFacing === "user" ? "CAM TRƯỚC" : "CAM SAU"));
 
       try {
-        const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
-          audio: false
-        });
+        const stream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    width: { ideal: 1280, max: 1280 },
+    height: { ideal: 720, max: 720 },
+    frameRate: { ideal: 24, max: 30 }
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true
+  }
+});
+
 
         const newVideoTrack = newStream.getVideoTracks()[0];
         if (!newVideoTrack) throw new Error("Không lấy được video track mới");

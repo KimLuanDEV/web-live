@@ -211,9 +211,7 @@ saveLiveState(state);
   room.liveStartTs = null;
   room.viewers.clear();
 
-  room.micRequests = new Set();
-  room.activeMicViewer = null;
-
+  
   room.giftTotal = 0;
   room.giftByUser = new Map();
 emitLobbyUpdate();
@@ -226,26 +224,6 @@ emitLobbyUpdate();
 
 
 io.on("connection", (socket) => {
-
-
-
-
-
-
-socket.on("viewer-mic-request", ({ roomId, name }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  room.micRequests.add(socket.id);
-
-  // gửi cho host
-  if (room.broadcasterId) {
-    io.to(room.broadcasterId).emit("host-mic-request", {
-      viewerId: socket.id,
-      name
-    });
-  }
-});
 
 
 socket.on("resume-viewers", ({ roomId }) => {

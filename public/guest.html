@@ -921,6 +921,32 @@ socket.on("reaction", (msg)=>{
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
 
+// 🚑 FIX LAG: giới hạn bitrate WebRTC cho HOST
+pc.addEventListener("connectionstatechange", async () => {
+  if (pc.connectionState !== "connected") return;
+
+  setTimeout(async () => {
+    try {
+      const sender = pc.getSenders().find(
+        s => s.track && s.track.kind === "video"
+      );
+      if (!sender) return;
+
+      const params = sender.getParameters();
+      if (!params.encodings) params.encodings = [{}];
+
+      params.encodings[0].maxBitrate = 1_200_000; // 1.2 Mbps
+      params.encodings[0].maxFramerate = 24;
+
+      await sender.setParameters(params);
+      console.log("✅ Video bitrate capped (HOST)");
+    } catch (e) {
+      console.warn("⚠️ setParameters failed:", e);
+    }
+  }, 800);
+});
+
+
 // 🔴 DÁN ĐOẠN NÀY NGAY SAU ĐÂY
 pc.oniceconnectionstatechange = () => {
   const st = pc.iceConnectionState;
