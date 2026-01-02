@@ -100,6 +100,11 @@
   <span class="guest-req-dot" id="guestReqDot"></span>
 </button>
 
+
+<button id="btnApproveMic">🎙 Cho nói</button>
+
+
+
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
   <input
@@ -420,9 +425,28 @@
   <script>
 
 
+let pendingMicViewer = null;
 
+socket.on("viewer-mic-request", ({ viewerId }) => {
+  pendingMicViewer = viewerId;
+  document.getElementById("guestReqModal").classList.remove("hidden");
+});
 
+document.getElementById("btnApproveMic").onclick = () => {
+  socket.emit("host-approve-mic", {
+    roomId,
+    viewerId: pendingMicViewer
+  });
+};
 
+function handleViewerMic(pc) {
+  pc.ontrack = e => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    document.body.appendChild(audio);
+  };
+}
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
     const logEl = document.getElementById("log");
     const preview = document.getElementById("preview");

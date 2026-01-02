@@ -77,6 +77,15 @@
 <!-- REQUEST LIVE ICON -->
 <button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
+<!-- REQUEST MIC ICON -->
+<button
+  class="req-mic-fab"
+  id="btnRequestMic"
+  title="Xin bật mic để nói"
+>
+🎙
+</button>
+
 
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
@@ -329,6 +338,12 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+
+
+
+
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -350,7 +365,46 @@ let swapped = false; // false: host main, true: guest main
     const socket = io();
 
 
-    
+   
+const btnRequestMic = document.getElementById("btnRequestMic");
+
+let micStream = null;
+let micPC = null;
+
+btnRequestMic.onclick = () => {
+  socket.emit("viewer-request-mic", { roomId });
+  btnRequestMic.classList.add("active");
+};
+
+// Host duyệt → bật mic
+socket.on("viewer-mic-approved", async ({ hostId }) => {
+  micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  micPC = new RTCPeerConnection();
+
+  micStream.getTracks().forEach(track => {
+    micPC.addTrack(track, micStream);
+  });
+
+  micPC.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("signal", {
+        to: hostId,
+        data: { candidate: e.candidate }
+      });
+    }
+  };
+
+  const offer = await micPC.createOffer();
+  await micPC.setLocalDescription(offer);
+
+  socket.emit("signal", {
+    to: hostId,
+    data: { sdp: offer }
+  });
+});
+
+ 
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====

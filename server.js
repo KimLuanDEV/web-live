@@ -226,6 +226,23 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+socket.on("viewer-request-mic", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room || !room.broadcasterId) return;
+
+  io.to(room.broadcasterId).emit("viewer-mic-request", {
+    viewerId: socket.id
+  });
+});
+
+
+socket.on("host-approve-mic", ({ roomId, viewerId }) => {
+  io.to(viewerId).emit("viewer-mic-approved", {
+    hostId: socket.id
+  });
+});
+
+
 socket.on("resume-viewers", ({ roomId }) => {
   if (!roomId) return;
   const room = rooms.get(roomId);
