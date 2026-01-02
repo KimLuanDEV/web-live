@@ -380,6 +380,14 @@ btnRequestMic.onclick = () => {
 socket.on("viewer-mic-approved", async ({ hostId }) => {
   micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
+
+  micStream.getAudioTracks().forEach(t => {
+  t.enabled = true;
+  console.log("🎙 mic enabled:", t.label);
+});
+
+
+
   micPC = new RTCPeerConnection();
 
   micStream.getTracks().forEach(track => {
