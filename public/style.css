@@ -3661,3 +3661,21 @@ body.is-live .req-live-fab{
 
 
 
+.req-mic-fab{
+  position:absolute;
+  left:110px;
+  bottom:10px;
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  font-size:22px;
+  border:1px solid rgba(255,255,255,.25);
+  background:rgba(0,0,0,.6);
+  color:#fff;
+  cursor:pointer;
+  z-index:15;
+}
+.req-mic-fab.waiting{
+  opacity:.6;
+  pointer-events:none;
+}

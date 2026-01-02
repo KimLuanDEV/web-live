@@ -100,6 +100,16 @@
   <span class="guest-req-dot" id="guestReqDot"></span>
 </button>
 
+
+
+<button id="btnApproveMic" class="av-btn" title="Duyệt mic viewer">
+  🎙️
+</button>
+<button id="btnMuteMic" class="av-btn off" title="Tắt mic viewer">
+  🔇
+</button>
+
+
 <!-- CHAT INPUT OVERLAY -->
 <div class="chat-input-overlay hidden" id="chatInputOverlay">
   <input
@@ -574,44 +584,31 @@ if(nameFromLobby){
     
 
 
-const voiceRequests = [];
+let currentMicViewer = null;
 
-socket.on("voice-request", ({ viewerId }) => {
-  voiceRequests.push(viewerId);
-  showToast(`🎤 Viewer xin nói`);
+socket.on("host-mic-request", ({ viewerId, name }) => {
+  const ok = confirm(`🎙️ Cho ${name} bật micro?`);
+  if (ok) {
+    socket.emit("host-approve-mic", { roomId, viewerId });
+    currentMicViewer = viewerId;
+  }
 });
 
+socket.on("host-approve-mic", ({ roomId, viewerId }) => {
+  const room = rooms.get(roomId);
+  if (!room || socket.id !== room.broadcasterId) return;
 
-function approveVoice(viewerId){
-  socket.emit("host-approve-voice", {
-    roomId,
-    viewerId
-  });
-}
-
-const voicePCs = new Map();
-
-socket.on("voice-offer", async ({ sdp, from }) => {
-  const pc = new RTCPeerConnection();
-  voicePCs.set(from, pc);
-
-  pc.ontrack = e => {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    document.body.appendChild(audio);
-  };
-
-  await pc.setRemoteDescription(sdp);
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-
-  socket.emit("voice-answer", {
-    to: from,
-    sdp: answer
-  });
+  room.activeMicViewer = viewerId;
+  io.to(viewerId).emit("viewer-mic-approved");
 });
 
+socket.on("host-mute-mic", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room?.activeMicViewer) return;
+
+  io.to(room.activeMicViewer).emit("viewer-mic-muted");
+  room.activeMicViewer = null;
+});
 
 
 // 🔔 guest request sound
@@ -1408,6 +1405,18 @@ document.addEventListener("pointerdown", () => {
 
       const rtcConfig = await getRtcConfig();
       pcGuestIn = new RTCPeerConnection(rtcConfig);
+
+
+
+peerConnection.ontrack = (e) => {
+  if (e.track.kind === "audio") {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    document.body.appendChild(audio);
+  }
+};
+
 
       // send host tracks back to guest so guest can hear/see host (co-talk)
       if (localStream) {

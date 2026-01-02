@@ -226,27 +226,41 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
-  socket.on("viewer-request-voice", ({ roomId }) => {
-  const room = rooms.get(roomId);
-  if (!room || !room.broadcasterId) return;
 
-  io.to(room.broadcasterId).emit("voice-request", {
-    viewerId: socket.id
-  });
+room.micRequests = new Set();
+room.activeMicViewer = null;
+
+
+socket.on("host-approve-mic", ({ roomId, viewerId }) => {
+  const room = rooms.get(roomId);
+  if (!room || socket.id !== room.broadcasterId) return;
+
+  room.activeMicViewer = viewerId;
+  io.to(viewerId).emit("viewer-mic-approved");
+});
+
+socket.on("host-mute-mic", ({ roomId }) => {
+  const room = rooms.get(roomId);
+  if (!room?.activeMicViewer) return;
+
+  io.to(room.activeMicViewer).emit("viewer-mic-muted");
+  room.activeMicViewer = null;
 });
 
 
-socket.on("host-approve-voice", ({ roomId, viewerId }) => {
+socket.on("viewer-mic-request", ({ roomId, name }) => {
   const room = rooms.get(roomId);
   if (!room) return;
-  if (room.broadcasterId !== socket.id) return;
 
-  io.to(viewerId).emit("voice-approved");
-});
+  room.micRequests.add(socket.id);
 
-
-socket.on("host-mute-voice", ({ viewerId, mute }) => {
-  io.to(viewerId).emit("voice-mute", { mute });
+  // gửi cho host
+  if (room.broadcasterId) {
+    io.to(room.broadcasterId).emit("host-mic-request", {
+      viewerId: socket.id,
+      name
+    });
+  }
 });
 
 
