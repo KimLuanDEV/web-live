@@ -387,8 +387,25 @@ window.addEventListener("focus", () => {
 
     const socket = io();
 
+socket.on("host-back-online", () => {
+  console.warn("🔔 Host back online → try rejoin");
 
-    
+  if (!joined) {
+    setTimeout(() => {
+      join().catch(e => console.error("Rejoin on host-back failed", e));
+    }, 300);
+  }
+});
+
+    socket.on("broadcaster-online", () => {
+  console.warn("📡 Broadcaster online → force join");
+
+  // tránh join lặp
+  if (joined) return;
+
+  join().catch(e => console.error("Join on broadcaster-online failed", e));
+});
+
 
 
 // ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
@@ -1781,6 +1798,13 @@ setInterval(() => {
   }
 }, 4000);
 
+setInterval(() => {
+  if (joined) return;
+  if (!document.body.classList.contains("is-live")) return;
+
+  console.warn("⏳ Viewer still waiting → retry join");
+  join().catch(()=>{});
+}, 4000);
 
 
   </script>
