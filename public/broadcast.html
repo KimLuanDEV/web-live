@@ -428,19 +428,6 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
-const auth = JSON.parse(localStorage.getItem("auth"));
-const currentUser = auth.user;
-
-// dùng ở chat
-chatName.value = currentUser.name;
-
-// dùng ở gift
-senderName = currentUser.name;
-
-// dùng avatar
-userAvatar.src = currentUser.avatar;
-
-
 
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
@@ -642,6 +629,23 @@ if(nameFromLobby){
 
     const socket = io();
     
+
+const auth = JSON.parse(localStorage.getItem("auth"));
+const currentUser = auth.user;
+
+// dùng ở chat
+chatName.value = currentUser.name;
+
+// dùng ở gift
+senderName = currentUser.name;
+
+// dùng avatar
+userAvatar.src = currentUser.avatar;
+
+
+
+
+
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
