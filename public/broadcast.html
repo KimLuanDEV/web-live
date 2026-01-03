@@ -1450,6 +1450,11 @@ socket.on("guest-request", ({ guestId }) => {
 
 });
 
+socket.on("cancel-request-guest", ({ roomId, socketId }) => {
+  // xóa khỏi pending list
+});
+
+
 
     socket.on("guest-offline", () => {
       log("Guest offline");

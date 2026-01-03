@@ -3802,3 +3802,70 @@ body.is-live #startLiveOverlay {
   display: none !important;
   pointer-events: none !important;
 }
+
+
+/* ===== GUEST WAIT HOST OVERLAY ===== */
+.guest-wait-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.guest-wait-overlay.hidden{
+  display: none;
+}
+
+.guest-wait-box{
+  background: #0b0f14;
+  padding: 22px 26px;
+  border-radius: 16px;
+  text-align: center;
+  min-width: 240px;
+  border: 1px solid rgba(255,255,255,.18);
+  box-shadow: 0 0 28px rgba(95,168,255,.25);
+}
+
+.guest-spinner{
+  width: 42px;
+  height: 42px;
+  margin: 0 auto 12px;
+  border-radius: 50%;
+  border: 3px solid rgba(255,255,255,.15);
+  border-top-color: #5FA8FF;
+  animation: guestSpin 1s linear infinite;
+}
+
+@keyframes guestSpin{
+  to{ transform: rotate(360deg); }
+}
+
+.guest-wait-title{
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.guest-wait-desc{
+  font-size: 13px;
+  opacity: .75;
+}
+
+
+.guest-wait-cancel{
+  margin-top: 14px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.28);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.guest-wait-cancel:hover{
+  background: rgba(255,255,255,.08);
+}
