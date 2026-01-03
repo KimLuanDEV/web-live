@@ -1857,28 +1857,13 @@ if (pinClear) pinClear.onclick = ()=> socket.emit("pin-note-clear", { roomId });
 socket.on("pin-note-update", (note)=> renderPin(note));
 // ===== /PIN NOTE =====
 
-    // ===== CHAT (BROADCAST) =====
-    const chatBox = document.getElementById("chatBox");
-    const chatName = document.getElementById("chatName");
-    const chatText = document.getElementById("chatText");
-    const chatSend = document.getElementById("chatSend");
 
-    function addChat(msg) {
-      const time = new Date(msg.ts).toLocaleTimeString();
-      const role = String(msg.role || "viewer");
-      const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
-      const line = document.createElement("div");
-      line.className = "chat-line chat-" + role;
-      line.textContent = `[${time}] ${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
-      chatBox.appendChild(line);
-      chatBox.scrollTop = chatBox.scrollHeight;
-    }
 
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
 
 
 
-    // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
+ 
   
     function pushOverlay(msg){
       if (!chatOverlay) return;
@@ -2138,51 +2123,57 @@ if (nameFromLobby) {
 }
 
 
+// ===== CHAT OVERLAY ONLY (CLEAN) =====
 const chatOverlay = document.getElementById("chatOverlay");
 const chatFab = document.getElementById("chatFab");
-const chatInputBox = document.getElementById("chatInputOverlay");
+const chatInputWrap = document.getElementById("chatInputOverlay");
 const chatInput = document.getElementById("quickChatInput");
-const chatSend = document.getElementById("quickChatSend");
+const chatSendBtn = document.getElementById("quickChatSend");
 
-const MAX_CHAT = 6;
+const MAX_CHAT = 5;
 
-// mở input
+// mở / đóng input
 chatFab.onclick = () => {
-  chatInputBox.classList.toggle("hidden");
+  chatInputWrap.classList.toggle("hidden");
   chatInput.focus();
 };
 
 // gửi chat
-chatSend.onclick = sendChat;
-chatInput.onkeydown = e => {
+chatSendBtn.onclick = sendChat;
+chatInput.addEventListener("keydown", e => {
   if (e.key === "Enter") sendChat();
-};
-
-function sendChat(){
-  const text = chatInput.value.trim();
-  if (!text) return;
-  socket.emit("chat-message", { text });
-  chatInput.value = "";
-  chatInputBox.classList.add("hidden");
-}
-
-// nhận chat
-socket.on("chat-message", data => {
-  addChatLine({
-    name: data.name || "Viewer",
-    text: data.text || "",
-    role: data.role || "viewer"
-  });
 });
 
-function addChatLine({ name, text, role }){
+function sendChat() {
+  const text = chatInput.value.trim();
+  if (!text) return;
+
+  socket.emit("chat", {
+    roomId,
+    name: hostProfile?.name || "Host",
+    text,
+    role: "host"
+  });
+
+  chatInput.value = "";
+  chatInputWrap.classList.add("hidden");
+}
+
+// nhận chat → render overlay
+socket.on("chat", msg => {
+  pushChatOverlay(msg);
+});
+
+function pushChatOverlay(msg) {
+  if (!chatOverlay) return;
+
   const div = document.createElement("div");
-  div.className = `chat-line ${role}`;
-  div.textContent = `${name}: ${text}`;
+  div.className = `chat-line ${msg.role || "viewer"}`;
+  div.textContent = `${msg.name}: ${msg.text}`;
 
   chatOverlay.appendChild(div);
 
-  // giới hạn số dòng
+  // chỉ giữ N dòng
   while (chatOverlay.children.length > MAX_CHAT) {
     chatOverlay.removeChild(chatOverlay.firstChild);
   }

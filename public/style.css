@@ -4014,3 +4014,32 @@ body.is-live #startLiveOverlay {
   bottom:16px;
   z-index:10;
 }
+
+
+.chat-overlay {
+  position: absolute;
+  left: 12px;
+  bottom: 80px;
+  width: min(75%, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  pointer-events: none;
+  z-index: 6;
+}
+
+.chat-line {
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 13px;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  backdrop-filter: blur(8px);
+}
+
+.chat-line.fade {
+  opacity: .25;
+}
+
+.chat-line.host { border-left: 3px solid #ff4d6d; }
+.chat-line.guest { border-left: 3px solid #5fa8ff; }
