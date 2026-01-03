@@ -69,6 +69,11 @@
         <span class="meta-item" id="liveTimerViewer">⏱ 00:00:00</span>
       </span>
     </div>
+
+ <div id="qualityBadge" class="quality-badge hd">🟢 HD</div>
+
+
+
 <div class="chat-overlay" id="chatOverlay"></div>
 
 <!-- CHAT QUICK BUTTON -->
@@ -334,6 +339,8 @@
     <div class="reconnect-text">Đang kết nối lại…</div>
   </div>
 </div>
+
+
 
 
   <script src="/socket.io/socket.io.js"></script>
@@ -783,6 +790,118 @@ socket.on("reaction", (msg)=>{
     let joined = false;
     let __viewerNeedResume = false;
 
+
+
+
+
+
+// ================== ANTI LAG PRO ==================
+function applyBitrateGuard(pc, profile = "MEDIUM") {
+  const VIDEO_PROFILES = {
+    LOW:    { max: 350_000,  min: 150_000 },
+    MEDIUM: { max: 800_000,  min: 300_000 },
+    HIGH:   { max: 1_500_000, min: 600_000 },
+  };
+
+  const cfg = VIDEO_PROFILES[profile] || VIDEO_PROFILES.MEDIUM;
+
+  pc.getSenders().forEach(sender => {
+    if (!sender.track) return;
+
+    const params = sender.getParameters();
+    if (!params.encodings) params.encodings = [{}];
+
+    if (sender.track.kind === "video") {
+      params.encodings[0].maxBitrate = cfg.max;
+      params.encodings[0].minBitrate = cfg.min;
+      params.encodings[0].priority = "medium";
+      params.encodings[0].networkPriority = "high";
+    }
+
+    if (sender.track.kind === "audio") {
+      params.encodings[0].priority = "high";
+      params.encodings[0].networkPriority = "high";
+      params.encodings[0].maxBitrate = 96_000;
+    }
+
+    sender.setParameters(params).catch(()=>{});
+  });
+}
+
+function enableAdaptiveQuality(pc, videoTrack) {
+  setInterval(async () => {
+    if (!pc || !videoTrack) return;
+
+    const stats = await pc.getStats();
+    let loss = 0, rtt = 0;
+
+    stats.forEach(r => {
+      if (r.type === "outbound-rtp" && r.kind === "video") {
+        loss = r.packetsLost || 0;
+      }
+      if (r.type === "candidate-pair" && r.currentRoundTripTime) {
+        rtt = r.currentRoundTripTime;
+      }
+    });
+
+    // mạng yếu
+    if (loss > 20 || rtt > 0.4) {
+      videoTrack.applyConstraints({
+        width: 640,
+        height: 360,
+        frameRate: 20
+      }).catch(()=>{});
+    }
+
+    // mạng tốt
+    if (loss === 0 && rtt < 0.2) {
+      videoTrack.applyConstraints({
+        width: 1280,
+        height: 720,
+        frameRate: 30
+      }).catch(()=>{});
+    }
+  }, 4000);
+}
+
+function detectViewerProfile() {
+  const isMobile = /Android|iPhone/i.test(navigator.userAgent);
+  const lowCPU = navigator.hardwareConcurrency <= 4;
+  return (isMobile || lowCPU) ? "LOW" : "MEDIUM";
+}
+// ================== /ANTI LAG PRO ==================
+
+
+
+
+const qualityBadge = document.getElementById("qualityBadge");
+
+function setQualityBadge(mode){
+
+   
+
+  if (!qualityBadge) return;
+
+  if (mode === "audio"){
+    qualityBadge.className = "quality-badge audio";
+    qualityBadge.textContent = "🎧 AUDIO";
+  }
+  else if (mode === "low"){
+   
+    qualityBadge.className = "quality-badge low";
+    qualityBadge.textContent = "🟡 LOW";
+  }
+  else {
+    
+    qualityBadge.className = "quality-badge hd";
+    qualityBadge.textContent = "🟢 HD";
+  }
+}
+
+
+
+
+
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
     let guestId = null;
@@ -867,7 +986,56 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       cleanupPeer("guest");
     });
 
+// ===== VIEWER AUDIO ONLY STATE =====
 
+let __viewerAudioOnlyTimer = null;
+
+
+    function startViewerAudioOnlyWatch(player){
+
+   
+
+  if (__viewerAudioOnlyTimer) return; // ❌ chặn tạo trùng
+
+  __viewerAudioOnlyTimer = setInterval(() => {
+    if (!player || !player.srcObject) return;
+
+    const frozen =
+      player.readyState < 2 ||
+      player.videoWidth === 0;
+
+    // 🚨 audio-only
+  if (frozen && !__viewerAudioOnly){
+  player.style.display = "none";
+  __viewerAudioOnly = true;
+  document.body.classList.add("audio-only");
+  setQualityBadge("audio");
+}
+
+    // ✅ resume video
+    if (!frozen && __viewerAudioOnly){
+  player.style.display = "";
+  __viewerAudioOnly = false;
+  document.body.classList.remove("audio-only");
+  setQualityBadge("low"); // mới thoát audio → thường là low
+}
+  }, 2000);
+}
+
+setInterval(() => {
+  if (__viewerAudioOnly) return;
+  if (!player || !player.srcObject) return;
+
+  const v = player;
+  const w = v.videoWidth || 0;
+  const h = v.videoHeight || 0;
+
+  if (w >= 1200 && h >= 700){
+    setQualityBadge("hd");
+  } else if (w > 0){
+    setQualityBadge("low");
+  }
+}, 2000);
 
 
     async function join() {
@@ -943,6 +1111,10 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
 
+      // 🚀 ANTI LAG – VIEWER
+const profile = detectViewerProfile();
+applyBitrateGuard(pc, profile);
+
      
   // Auto ask peer to ICE-restart if connection degrades
   pc.onconnectionstatechange = () => {
@@ -985,6 +1157,7 @@ pc.ontrack = (event) => {
 
     if (player.srcObject !== stream) {
       player.srcObject = stream;
+      startViewerAudioOnlyWatch(player);
       player.muted = true;          // autoplay mobile
       player.playsInline = true;
       player.play().catch(() => {});
@@ -1100,7 +1273,7 @@ btnRequestLive.disabled = true;
 btnRequestLive.onclick = () => {
   const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
   // mở tab mới để vẫn xem được live
-  window.open(url, "_blank");
+ window.location.href = url;
 };
 
 // chỉ cho xin lên live khi broadcaster online
