@@ -4019,4 +4019,8 @@ body.viewer-fullscreen video {
   background: #000;
 }
 
+.chat-overlay {
+  will-change: scroll-position;
+  transform: translateZ(0); /* 🔥 ép GPU repaint */
+}
 
