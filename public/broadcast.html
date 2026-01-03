@@ -1921,27 +1921,33 @@ socket.on("pin-note-update", (note)=> renderPin(note));
    // ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) =====
 const chatOverlay = document.getElementById("chatOverlay");
 
-let __scrollY = 0;
-
+// ✅ FIX CHỐT: chỉ chặn scroll BODY khi vuốt trong chat
 if (chatOverlay) {
-  chatOverlay.addEventListener("touchstart", () => {
-    __scrollY = window.scrollY || window.pageYOffset;
-    document.body.classList.add("body-scroll-lock");
-    document.body.style.top = `-${__scrollY}px`;
+  let startY = 0;
+
+  chatOverlay.addEventListener("touchstart", (e) => {
+    if (e.touches.length !== 1) return;
+    startY = e.touches[0].clientY;
   }, { passive: true });
 
-  chatOverlay.addEventListener("touchend", () => {
-    document.body.classList.remove("body-scroll-lock");
-    document.body.style.top = "";
-    window.scrollTo(0, __scrollY);
-  });
+  chatOverlay.addEventListener("touchmove", (e) => {
+    if (e.touches.length !== 1) return;
 
-  chatOverlay.addEventListener("touchcancel", () => {
-    document.body.classList.remove("body-scroll-lock");
-    document.body.style.top = "";
-    window.scrollTo(0, __scrollY);
-  });
+    const curY = e.touches[0].clientY;
+    const deltaY = curY - startY;
+
+    const atTop = chatOverlay.scrollTop === 0;
+    const atBottom =
+      Math.ceil(chatOverlay.scrollTop + chatOverlay.clientHeight)
+      >= chatOverlay.scrollHeight;
+
+    // 👉 chỉ chặn khi scroll vượt biên
+    if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
+      e.preventDefault();   // 🔥 CHỐT
+    }
+  }, { passive: false });
 }
+
 
 
 
