@@ -155,50 +155,9 @@
 
 
         </div>
-      
-
-
     </div>
   </div>
 
-<hr />
-<div class="card chat" style="display: none;">
-  <div class="badge badge--info">💬 Chat (Live)</div>
-
-  <div class="chatform">
-    <input id="chatName" placeholder="Tên của bạn" />
-    <input id="chatText" placeholder="Nhập tin nhắn..." />
-    <button id="chatSend" class="full">Gửi</button>
-  </div>
-
-   <div class="emoji-bar" id="emojiBar" style="display: none;">
-      <button type="button" class="emoji-btn" data-emoji="❤️">❤️</button>
-      <button type="button" class="emoji-btn" data-emoji="🔥">🔥</button>
-      <button type="button" class="emoji-btn" data-emoji="😂">😂</button>
-      <button type="button" class="emoji-btn" data-emoji="👍">👍</button>
-      <button type="button" class="emoji-btn" data-emoji="👏">👏</button>
-      <button type="button" class="emoji-btn" data-emoji="😮">😮</button>
-      <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
-    </div>
-
-  <div class="gift-bar">
-  <button data-gift="heart">❤️</button>
-  <button data-gift="flower">🌸</button>
-  <button data-gift="rocket">🚀</button>
-  <button data-gift="coin">💰</button>
-  <button data-gift="dragon">🐉</button>
-  <button data-gift="phoenix">🦅</button>
-  <button data-gift="galaxy">🌌</button>
-  <button data-gift="meteor">☄️</button>
-  <button data-gift="king">👑</button>
-  <button data-gift="dragonking">🐲</button>
-  <button data-gift="supernova">🌠</button>
-</div>
-
-</div>
-
-
- 
 
   <div class="gift-board">
     <div class="gift-board__head">🏆 Top donate</div>
@@ -209,8 +168,6 @@
 
 
 
-  <div id="chatBox" class="chatbox"></div>
-</div>
 
 
 <!-- NEON CONFIRM (Back to Lobby) -->
@@ -352,6 +309,7 @@
     const guestPipWrap = document.getElementById("guestPipWrap");
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
+
 
 
 
@@ -1283,34 +1241,6 @@ socket.on("broadcaster-offline", () => {
   btnRequestLive.disabled = true;
 });
 
-// ===== CHAT OVERLAY ENGINE =====
-const chatOverlay = document.getElementById("chatOverlay");
-const MAX_CHAT = 6;
-const FADE_AFTER = 3500; // ms
-
-function addChatOverlay({ name, text, role }) {
-  if (!chatOverlay) return;
-
-  const bubble = document.createElement("div");
-  bubble.className = `chat-bubble chat-${role || "viewer"}`;
-
-  bubble.innerHTML = `
-    <span class="chat-name">${name}:</span>
-    <span class="chat-text">${text}</span>
-  `;
-
-  chatOverlay.appendChild(bubble);
-
-  // giữ số lượng gọn
-  while (chatOverlay.children.length > MAX_CHAT) {
-    chatOverlay.removeChild(chatOverlay.firstChild);
-  }
-
-  // fade tin cũ
-  setTimeout(() => {
-    bubble.classList.add("fade");
-  }, FADE_AFTER);
-}
 
 
     // ===== CHAT (VIEWER) =====
@@ -1330,22 +1260,10 @@ function addChatOverlay({ name, text, role }) {
       chatBox.scrollTop = chatBox.scrollHeight;
     }
  
-    socket.on("chat", (msg)=>{ 
-     addChatOverlay({
-    name: data.name || "Viewer",
-    text: data.text || "",
-    role: data.role || "viewer"
-  });
-  pushOverlay(msg);
-      });
+    socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
 
     // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
-   
-
-
-
-
-
+    const chatOverlay = document.getElementById("chatOverlay");
     function pushOverlay(msg){
       if (!chatOverlay) return;
       const role = String(msg.role || "viewer");
@@ -1842,9 +1760,6 @@ socket.on("host-profile-update", (profile) => {
 });
 
 const chatFab = document.getElementById("chatFab");
-
-
-
 const chatInputOverlay = document.getElementById("chatInputOverlay");
 const quickChatInput = document.getElementById("quickChatInput");
 const quickChatSend = document.getElementById("quickChatSend");
@@ -2061,7 +1976,6 @@ window.addEventListener("beforeunload", () => {
 });
 
 
-document.body.classList.add("viewer-fullscreen");
 
   </script>
 

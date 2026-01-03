@@ -179,44 +179,11 @@
     <video id="guestVideo" autoplay playsinline controls></video>
   </div>
 </div>
-
-  
-
-    
-
-
     </div>
   </div>
 
 
 
-
-
-<hr />
-<div class="card chat">
-  <div class="badge badge--info" style="display: none;">💬 Chat (Live)</div>
-
-  <div class="chatform" style="display: none;">
-    <input id="chatName" value="Host" />
-    <input id="chatText" placeholder="Nhập tin nhắn..." />
-    <button id="chatSend" class="full">Gửi</button>
-  </div>
-
-  
-   <div class="emoji-bar" id="emojiBar" style="display: none;">
-      <button type="button" class="emoji-btn" data-emoji="❤️">❤️</button>
-      <button type="button" class="emoji-btn" data-emoji="🔥">🔥</button>
-      <button type="button" class="emoji-btn" data-emoji="😂">😂</button>
-      <button type="button" class="emoji-btn" data-emoji="👍">👍</button>
-      <button type="button" class="emoji-btn" data-emoji="👏">👏</button>
-      <button type="button" class="emoji-btn" data-emoji="😮">😮</button>
-      <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
-    </div>
-
-
-  <div id="chatBox" class="chatbox"></div>
-
-</div>
 
 <div class="card" style="margin-top:12px">
   <div class="badge badge--info">🎁 Gift Engine</div>
@@ -1912,7 +1879,7 @@ socket.on("pin-note-update", (note)=> renderPin(note));
 
 
     // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
-    const chatOverlay = document.getElementById("chatOverlay");
+  
     function pushOverlay(msg){
       if (!chatOverlay) return;
       const role = String(msg.role || "viewer");
@@ -2170,7 +2137,65 @@ if (nameFromLobby) {
   }
 }
 
+
+const chatOverlay = document.getElementById("chatOverlay");
 const chatFab = document.getElementById("chatFab");
+const chatInputBox = document.getElementById("chatInputOverlay");
+const chatInput = document.getElementById("quickChatInput");
+const chatSend = document.getElementById("quickChatSend");
+
+const MAX_CHAT = 6;
+
+// mở input
+chatFab.onclick = () => {
+  chatInputBox.classList.toggle("hidden");
+  chatInput.focus();
+};
+
+// gửi chat
+chatSend.onclick = sendChat;
+chatInput.onkeydown = e => {
+  if (e.key === "Enter") sendChat();
+};
+
+function sendChat(){
+  const text = chatInput.value.trim();
+  if (!text) return;
+  socket.emit("chat-message", { text });
+  chatInput.value = "";
+  chatInputBox.classList.add("hidden");
+}
+
+// nhận chat
+socket.on("chat-message", data => {
+  addChatLine({
+    name: data.name || "Viewer",
+    text: data.text || "",
+    role: data.role || "viewer"
+  });
+});
+
+function addChatLine({ name, text, role }){
+  const div = document.createElement("div");
+  div.className = `chat-line ${role}`;
+  div.textContent = `${name}: ${text}`;
+
+  chatOverlay.appendChild(div);
+
+  // giới hạn số dòng
+  while (chatOverlay.children.length > MAX_CHAT) {
+    chatOverlay.removeChild(chatOverlay.firstChild);
+  }
+
+  // làm mờ dòng cũ
+  [...chatOverlay.children].forEach((el, i) => {
+    el.classList.toggle("fade", i < chatOverlay.children.length - 2);
+  });
+}
+
+
+
+
 const chatInputOverlay = document.getElementById("chatInputOverlay");
 const quickChatInput = document.getElementById("quickChatInput");
 const quickChatSend = document.getElementById("quickChatSend");
