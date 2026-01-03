@@ -1333,6 +1333,34 @@ socket.on("broadcaster-offline", () => {
   btnRequestLive.disabled = true;
 });
 
+// ===== CHAT OVERLAY ENGINE =====
+const chatOverlay = document.getElementById("chatOverlay");
+const MAX_CHAT = 6;
+const FADE_AFTER = 3500; // ms
+
+function addChatOverlay({ name, text, role }) {
+  if (!chatOverlay) return;
+
+  const bubble = document.createElement("div");
+  bubble.className = `chat-bubble chat-${role || "viewer"}`;
+
+  bubble.innerHTML = `
+    <span class="chat-name">${name}:</span>
+    <span class="chat-text">${text}</span>
+  `;
+
+  chatOverlay.appendChild(bubble);
+
+  // giữ số lượng gọn
+  while (chatOverlay.children.length > MAX_CHAT) {
+    chatOverlay.removeChild(chatOverlay.firstChild);
+  }
+
+  // fade tin cũ
+  setTimeout(() => {
+    bubble.classList.add("fade");
+  }, FADE_AFTER);
+}
 
 
     // ===== CHAT (VIEWER) =====
@@ -1352,10 +1380,21 @@ socket.on("broadcaster-offline", () => {
       chatBox.scrollTop = chatBox.scrollHeight;
     }
  
-    socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
+    socket.on("chat", (msg)=>{ 
+     addChatOverlay({
+    name: data.name || "Viewer",
+    text: data.text || "",
+    role: data.role || "viewer"
+  });
+      });
 
     // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
-    const chatOverlay = document.getElementById("chatOverlay");
+   
+
+
+
+
+
     function pushOverlay(msg){
       if (!chatOverlay) return;
       const role = String(msg.role || "viewer");

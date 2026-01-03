@@ -4006,3 +4006,92 @@ body.viewer-fullscreen hr {
     transition: opacity .25s ease, transform .25s ease;
   }
 }
+
+
+/* ===== CHAT OVERLAY PRO ===== */
+.chat-overlay {
+  position: absolute;
+  left: 12px;
+  bottom: 90px;
+  width: min(78%, 360px);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  z-index: 6;
+  pointer-events: none; /* RẤT QUAN TRỌNG */
+}
+
+/* bubble chat */
+.chat-bubble {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 100%;
+  padding: 6px 10px;
+  border-radius: 14px;
+  font-size: 13px;
+  line-height: 1.25;
+  color: #fff;
+
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.15);
+  box-shadow: 0 8px 20px rgba(0,0,0,.35);
+
+  animation: chatIn .18s ease-out;
+}
+
+/* tên người chat */
+.chat-name {
+  font-weight: 700;
+  opacity: .9;
+  white-space: nowrap;
+}
+
+/* nội dung */
+.chat-text {
+  opacity: .95;
+  overflow-wrap: anywhere;
+}
+
+/* role colors */
+.chat-host {
+  border-color: rgba(255,59,107,.45);
+  background: rgba(255,59,107,.18);
+}
+
+.chat-guest {
+  border-color: rgba(95,168,255,.45);
+  background: rgba(95,168,255,.18);
+}
+
+.chat-viewer {
+  border-color: rgba(255,255,255,.22);
+}
+
+/* tin cũ mờ dần */
+.chat-bubble.fade {
+  opacity: .15;
+  transform: translateY(-4px);
+  transition: opacity .35s ease, transform .35s ease;
+}
+
+/* animation vào */
+@keyframes chatIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* mobile gọn hơn */
+@media (max-width: 520px) {
+  .chat-overlay {
+    bottom: 80px;
+    width: min(82%, 300px);
+  }
+}
