@@ -783,6 +783,84 @@ socket.on("reaction", (msg)=>{
     let joined = false;
     let __viewerNeedResume = false;
 
+
+// ================== ANTI LAG PRO ==================
+function applyBitrateGuard(pc, profile = "MEDIUM") {
+  const VIDEO_PROFILES = {
+    LOW:    { max: 350_000,  min: 150_000 },
+    MEDIUM: { max: 800_000,  min: 300_000 },
+    HIGH:   { max: 1_500_000, min: 600_000 },
+  };
+
+  const cfg = VIDEO_PROFILES[profile] || VIDEO_PROFILES.MEDIUM;
+
+  pc.getSenders().forEach(sender => {
+    if (!sender.track) return;
+
+    const params = sender.getParameters();
+    if (!params.encodings) params.encodings = [{}];
+
+    if (sender.track.kind === "video") {
+      params.encodings[0].maxBitrate = cfg.max;
+      params.encodings[0].minBitrate = cfg.min;
+      params.encodings[0].priority = "medium";
+      params.encodings[0].networkPriority = "high";
+    }
+
+    if (sender.track.kind === "audio") {
+      params.encodings[0].priority = "high";
+      params.encodings[0].networkPriority = "high";
+      params.encodings[0].maxBitrate = 96_000;
+    }
+
+    sender.setParameters(params).catch(()=>{});
+  });
+}
+
+function enableAdaptiveQuality(pc, videoTrack) {
+  setInterval(async () => {
+    if (!pc || !videoTrack) return;
+
+    const stats = await pc.getStats();
+    let loss = 0, rtt = 0;
+
+    stats.forEach(r => {
+      if (r.type === "outbound-rtp" && r.kind === "video") {
+        loss = r.packetsLost || 0;
+      }
+      if (r.type === "candidate-pair" && r.currentRoundTripTime) {
+        rtt = r.currentRoundTripTime;
+      }
+    });
+
+    // mạng yếu
+    if (loss > 20 || rtt > 0.4) {
+      videoTrack.applyConstraints({
+        width: 640,
+        height: 360,
+        frameRate: 20
+      }).catch(()=>{});
+    }
+
+    // mạng tốt
+    if (loss === 0 && rtt < 0.2) {
+      videoTrack.applyConstraints({
+        width: 1280,
+        height: 720,
+        frameRate: 30
+      }).catch(()=>{});
+    }
+  }, 4000);
+}
+
+function detectViewerProfile() {
+  const isMobile = /Android|iPhone/i.test(navigator.userAgent);
+  const lowCPU = navigator.hardwareConcurrency <= 4;
+  return (isMobile || lowCPU) ? "LOW" : "MEDIUM";
+}
+// ================== /ANTI LAG PRO ==================
+
+
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
     let guestId = null;
@@ -942,6 +1020,10 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
+
+      // 🚀 ANTI LAG – VIEWER
+const profile = detectViewerProfile();
+applyBitrateGuard(pc, profile);
 
      
   // Auto ask peer to ICE-restart if connection degrades
