@@ -1096,7 +1096,7 @@ guestCancelWait?.addEventListener("click", () => {
 
   // 2️⃣ Báo cho host biết guest đã hủy
   socket.emit("cancel-request-guest", { roomId });
-guestWaitOverlay.classList.add("hidden");
+
   // 3️⃣ TẮT MIC + CAM NGAY
   if (localStream){
     localStream.getTracks().forEach(t => t.stop());
@@ -1112,9 +1112,6 @@ guestWaitOverlay.classList.add("hidden");
 
 
     btnStart.onclick = async () => {
-
-      socket.emit("guest-request", { roomId });
-
       if (localStream) return;
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
@@ -1885,8 +1882,6 @@ socket.on("host-live", ({ liveStartTs }) => {
 
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
-<!-- 🔔 TOAST -->
-<div id="toast" class="toast hidden"></div>
 
 </body>
 </html>

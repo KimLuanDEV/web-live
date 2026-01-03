@@ -239,12 +239,6 @@ socket.on("resume-viewers", ({ roomId }) => {
 });
 
 
-socket.on("cancel-request-guest", ({ roomId }) => {
-  socket.to(roomId).emit("cancel-request-guest", {
-    socketId: socket.id
-  });
-});
-
 
 
 socket.on("host-start-live", ({ roomId }) => {
