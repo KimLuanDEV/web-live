@@ -1748,6 +1748,9 @@ syncStartLiveOverlay(false);
   await lkRoom.localParticipant.publishTrack(audioTrack);
 
 
+  // 🔥 BÁO SERVER: HOST ĐÃ BẮT ĐẦU LIVE (BẮT BUỘC)
+socket.emit("host-start-live", { roomId });
+
   socket.emit("live-start", {
   roomId,
   startTs: Date.now()
