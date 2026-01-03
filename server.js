@@ -256,6 +256,41 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+socket.on("join-room", ({ roomId, role, profile }) => {
+  if (!roomId) return;
+
+  roomId = normRoomId(roomId);
+  const room = getRoom(roomId);
+
+  socket.join(roomId);
+
+  if (role === "broadcaster") {
+    room.broadcasterId = socket.id;
+
+    room.hostProfile = {
+      name: String(profile?.name || "Host").slice(0, 20),
+      ts: Date.now(),
+    };
+
+    console.log("🎥 Broadcaster joined:", roomId, socket.id);
+
+    // báo cho viewer biết host online
+    io.to(roomId).emit("broadcaster-online");
+  }
+
+  if (role === "viewer") {
+    room.viewers.add(socket.id);
+    emitViewerCount(roomId);
+  }
+
+  if (role === "guest") {
+    room.guestId = socket.id;
+    io.to(roomId).emit("guest-online");
+  }
+});
+
+
+
 socket.on("resume-viewers", ({ roomId }) => {
   if (!roomId) return;
   const room = rooms.get(roomId);

@@ -1272,11 +1272,6 @@ window.addEventListener("online", async () => {
 
 const hostProfile = getHostProfile();
 
-socket.emit("join-room", {
-  roomId,
-  role: "broadcaster",
-  profile: hostProfile
-});
 
 
     // Peer asks HOST to ICE-restart this connection (HOST is offerer for viewers)
