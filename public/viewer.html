@@ -69,6 +69,9 @@
         <span class="meta-item" id="liveTimerViewer">⏱ 00:00:00</span>
       </span>
     </div>
+
+ <div id="qualityBadge" class="quality-badge hd">🟢 HD</div>
+
 <div class="chat-overlay" id="chatOverlay"></div>
 
 <!-- CHAT QUICK BUTTON -->
@@ -909,6 +912,28 @@ function enableAudioOnlyFallback(pc, videoTrack, label = "") {
 // ================= /AUDIO ONLY FALLBACK =================
 
 
+const qualityBadge = document.getElementById("qualityBadge");
+
+function setQualityBadge(mode){
+  if (!qualityBadge) return;
+
+  if (mode === "audio"){
+    qualityBadge.className = "quality-badge audio";
+    qualityBadge.textContent = "🎧 AUDIO";
+  }
+  else if (mode === "low"){
+    qualityBadge.className = "quality-badge low";
+    qualityBadge.textContent = "🟡 LOW";
+  }
+  else {
+    qualityBadge.className = "quality-badge hd";
+    qualityBadge.textContent = "🟢 HD";
+  }
+}
+
+
+
+
 
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
@@ -1010,23 +1035,37 @@ let __viewerAudioOnlyTimer = null;
       player.videoWidth === 0;
 
     // 🚨 audio-only
-    if (frozen && !__viewerAudioOnly){
-      console.warn("🎧 Viewer audio only");
-      player.style.display = "none";
-      __viewerAudioOnly = true;
-      document.body.classList.add("audio-only");
-    }
+  if (frozen && !__viewerAudioOnly){
+  player.style.display = "none";
+  __viewerAudioOnly = true;
+  document.body.classList.add("audio-only");
+  setQualityBadge("audio");
+}
 
     // ✅ resume video
     if (!frozen && __viewerAudioOnly){
-      console.warn("🎥 Viewer video resume");
-      player.style.display = "";
-      __viewerAudioOnly = false;
-      document.body.classList.remove("audio-only");
-    }
+  player.style.display = "";
+  __viewerAudioOnly = false;
+  document.body.classList.remove("audio-only");
+  setQualityBadge("low"); // mới thoát audio → thường là low
+}
   }, 2000);
 }
 
+setInterval(() => {
+  if (__viewerAudioOnly) return;
+  if (!player || !player.srcObject) return;
+
+  const v = player;
+  const w = v.videoWidth || 0;
+  const h = v.videoHeight || 0;
+
+  if (w >= 1200 && h >= 700){
+    setQualityBadge("hd");
+  } else if (w > 0){
+    setQualityBadge("low");
+  }
+}, 2000);
 
 
     async function join() {

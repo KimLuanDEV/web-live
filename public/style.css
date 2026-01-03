@@ -3817,3 +3817,35 @@ body.is-live #startLiveOverlay {
   font-size: 13px;
   z-index: 9999;
 }
+
+
+.quality-badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  z-index:20;
+  padding:4px 10px;
+  font-size:12px;
+  font-weight:600;
+  border-radius:999px;
+  background:rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+  border:1px solid rgba(255,255,255,.15);
+  transition:.25s ease;
+  user-select:none;
+}
+
+.quality-badge.hd{
+  color:#00ffea;
+  box-shadow:0 0 8px rgba(0,255,234,.6);
+}
+
+.quality-badge.low{
+  color:#ffd000;
+  box-shadow:0 0 8px rgba(255,208,0,.6);
+}
+
+.quality-badge.audio{
+  color:#ff5ea0;
+  box-shadow:0 0 8px rgba(255,94,160,.7);
+}
