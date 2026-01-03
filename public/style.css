@@ -3941,25 +3941,29 @@ body.is-live #startLiveOverlay {
 
 
 /* ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) ===== */
+/* ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) ===== */
 .chat-overlay{
   position:absolute;
   left:12px;
   bottom:60px;
   width:min(78%, 520px);
   max-height:40%;
+
   display:flex;
   flex-direction:column;
   gap:8px;
+
   z-index:6;
 
-  /* 🔥 QUAN TRỌNG */
+  /* 🔥 QUAN TRỌNG: cho phép scroll */
   overflow-y:auto;
   pointer-events:auto;
 
-  padding-right:4px;
+  padding-right:6px;
+  scroll-behavior:smooth;
 }
 
-/* scrollbar nhẹ */
+/* scrollbar đẹp – nhẹ */
 .chat-overlay::-webkit-scrollbar{
   width:6px;
 }
