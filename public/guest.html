@@ -2,14 +2,13 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
-  <meta
+<meta
   name="viewport"
   content="width=device-width,
            initial-scale=1,
-           maximum-scale=1,
-           minimum-scale=1,
-           user-scalable=no"
+           viewport-fit=cover"
 />
+
 
   <title>Guest - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
@@ -1343,31 +1342,24 @@ if (p?.catch) p.catch(()=>{});
     // ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) =====
 const chatOverlay = document.getElementById("chatOverlay");
 
-// ✅ FIX CHỐT: chỉ chặn scroll BODY khi vuốt trong chat
+// 🔒 FIX MOBILE CHỐT: lock body scroll khi vuốt chat
 if (chatOverlay) {
-  let startY = 0;
+  let __lock = false;
 
-  chatOverlay.addEventListener("touchstart", (e) => {
-    if (e.touches.length !== 1) return;
-    startY = e.touches[0].clientY;
+  chatOverlay.addEventListener("touchstart", e => {
+    __lock = true;
+    document.body.style.overflow = "hidden";
   }, { passive: true });
 
-  chatOverlay.addEventListener("touchmove", (e) => {
-    if (e.touches.length !== 1) return;
+  chatOverlay.addEventListener("touchend", () => {
+    __lock = false;
+    document.body.style.overflow = "";
+  });
 
-    const curY = e.touches[0].clientY;
-    const deltaY = curY - startY;
-
-    const atTop = chatOverlay.scrollTop === 0;
-    const atBottom =
-      Math.ceil(chatOverlay.scrollTop + chatOverlay.clientHeight)
-      >= chatOverlay.scrollHeight;
-
-    // 👉 chỉ chặn khi scroll vượt biên
-    if ((atTop && deltaY > 0) || (atBottom && deltaY < 0)) {
-      e.preventDefault();   // 🔥 CHỐT
-    }
-  }, { passive: false });
+  chatOverlay.addEventListener("touchcancel", () => {
+    __lock = false;
+    document.body.style.overflow = "";
+  });
 }
 
 
