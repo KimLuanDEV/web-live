@@ -1153,9 +1153,19 @@ document.addEventListener("visibilitychange", async () => {
     if (videoTrack && videoTrack.readyState !== "live") {
       console.log("📷 Video dead → restart camera");
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false
-      });
+  video: {
+    width:  { ideal: 1280 },
+    height: { ideal: 720 },
+    frameRate: { ideal: 30, max: 30 },
+    facingMode: "user"
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true
+  }
+});
+
       const newTrack = stream.getVideoTracks()[0];
 
       for (const pc of pcs.values()) {
@@ -1556,16 +1566,17 @@ document.addEventListener("pointerdown", () => {
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
-          video: {
-  width:  { ideal: 1280, max: 1280 },
-  height: { ideal: 720,  max: 720 },
-  frameRate: { ideal: 30, max: 30 }
-},
-audio: {
-  echoCancellation: true,
-  noiseSuppression: true,
-  autoGainControl: true
-}
+       video: {
+    width:  { ideal: 1280 },
+    height: { ideal: 720 },
+    frameRate: { ideal: 30, max: 30 },
+    facingMode: "user"
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true
+  }
 
         });
 
@@ -1634,7 +1645,12 @@ syncStartLiveOverlay(false);
 
       try {
         const newStream = await navigator.mediaDevices.getUserMedia({
-          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
+         video: {
+    width:  { ideal: 1280 },
+    height: { ideal: 720 },
+    frameRate: { ideal: 30, max: 30 },
+    facingMode: "user"
+  },
           audio: false
 
         });
@@ -1926,7 +1942,20 @@ let hostCamOn = true;
 
 
 async function replaceHostAudioTrack(){
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const stream = await navigator.mediaDevices.getUserMedia({
+  video: {
+    width:  { ideal: 1280 },
+    height: { ideal: 720 },
+    frameRate: { ideal: 30, max: 30 },
+    facingMode: "user"
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true
+  }
+});
+
   const newTrack = stream.getAudioTracks()[0];
 
   // replace cho TẤT CẢ viewer

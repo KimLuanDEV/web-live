@@ -94,7 +94,14 @@
 
         <div class="reactions-layer" id="reactionsLayerViewer"></div>
 <div class="video-card__inner">
-      <video id="player" autoplay playsinline></video>
+      <video
+  id="player"
+  autoplay
+  playsinline
+  muted
+  style="object-fit: cover"
+></video>
+
     </div>
 
 <!-- GIFT FLOAT BUTTON -->
@@ -985,6 +992,8 @@ pc.ontrack = (event) => {
 
     if (player.srcObject !== stream) {
       player.srcObject = stream;
+      forcePlayVideo(player);
+
       player.muted = true;          // autoplay mobile
       player.playsInline = true;
       player.play().catch(() => {});
