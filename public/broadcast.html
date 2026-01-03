@@ -1911,24 +1911,43 @@ socket.on("pin-note-update", (note)=> renderPin(note));
 
 
 
-    // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
-    const chatOverlay = document.getElementById("chatOverlay");
-    function pushOverlay(msg){
-      if (!chatOverlay) return;
-      const role = String(msg.role || "viewer");
-      const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
-      const el = document.createElement("div");
-      el.className = "chat-bubble chat-" + role;
-      el.textContent = `${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
-      chatOverlay.appendChild(el);
+   // ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) =====
+const chatOverlay = document.getElementById("chatOverlay");
 
-      // keep only last 4 bubbles
-      while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
+function pushOverlay(msg){
+  if (!chatOverlay) return;
 
-      // auto fade + remove
-      setTimeout(() => el.classList.add("hide"), 2600);
-      setTimeout(() => { try { el.remove(); } catch {} }, 3200);
-    }
+  const role = String(msg.role || "viewer");
+  const tag =
+    role === "host" ? "[HOST]" :
+    role === "guest" ? "[GUEST]" : "";
+
+  const el = document.createElement("div");
+  el.className = "chat-bubble chat-" + role;
+  el.textContent = `${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
+
+  chatOverlay.appendChild(el);
+
+  // ✅ GIỚI HẠN LỊCH SỬ (nhẹ máy)
+  const MAX_CHAT = 80;
+  while (chatOverlay.children.length > MAX_CHAT) {
+    chatOverlay.removeChild(chatOverlay.firstChild);
+  }
+
+  // ✅ AUTO SCROLL NẾU ĐANG Ở CUỐI
+  const nearBottom =
+    chatOverlay.scrollHeight -
+    chatOverlay.scrollTop -
+    chatOverlay.clientHeight < 80;
+
+  if (nearBottom) {
+    chatOverlay.scrollTop = chatOverlay.scrollHeight;
+  }
+
+  // ❌ KHÔNG fade
+  // ❌ KHÔNG remove
+}
+
 
     // add emoji buttons
     const emojiBar = document.getElementById("emojiBar");
