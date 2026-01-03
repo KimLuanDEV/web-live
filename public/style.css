@@ -3980,28 +3980,39 @@ body.is-live #startLiveOverlay {
   background:transparent;
 }
 
-/* ===== FULLSCREEN OVERLAY ===== */
-.fs-overlay{
-  position:absolute;
-  inset:0;
-  z-index:30;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:rgba(0,0,0,.35);
-  color:#fff;
-  font-size:18px;
-  font-weight:600;
-  text-align:center;
+/* ===== VIEWER FULLSCREEN UI ===== */
+body.viewer-full,
+body.viewer-full .container,
+body.viewer-full .card,
+body.viewer-full .live-stage {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100svh;
+  max-height: 100svh;
+  overflow: hidden;
 }
 
-.fs-overlay.hidden{
-  display:none;
+/* video chiếm toàn bộ màn hình */
+body.viewer-full .video-card,
+body.viewer-full .video-card__inner {
+  width: 100%;
+  height: 100%;
 }
 
-.fs-hint{
-  padding:14px 20px;
-  border-radius:14px;
-  background:rgba(0,0,0,.6);
-  backdrop-filter: blur(6px);
+/* video không zoom */
+body.viewer-full video {
+  width: 100%;
+  height: 100%;
+  object-fit: contain; /* hoặc cover nếu bạn muốn */
+  background: #000;
+}
+
+/* ẩn header / panel viewer */
+body.viewer-full .page-header,
+body.viewer-full .viewer-header,
+body.viewer-full .ctrl-tab,
+body.viewer-full .footer,
+body.viewer-full .chat-fab {
+  display: none !important;
 }
