@@ -3980,67 +3980,41 @@ body.is-live #startLiveOverlay {
   background:transparent;
 }
 
-/* =====================================================
-   VIEWER VIDEO ONLY – CHỈ HIỂN THỊ VIDEO
-   ===================================================== */
 
-/* reset toàn bộ layout */
-body.viewer-video-only {
-  margin: 0 !important;
-  padding: 0 !important;
-  background: #000 !important;
-  overflow: hidden !important;
+/* ===== VIEWER: VIDEO FULL MÀN HÌNH ===== */
+body.viewer-fullscreen {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #000;
 }
 
-/* container không giới hạn width */
-body.viewer-video-only .container {
-  max-width: none !important;
-  padding: 0 !important;
-  margin: 0 !important;
+/* khung live chiếm toàn viewport */
+body.viewer-fullscreen .live-stage {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100svh;
+  margin: 0;
+  padding: 0;
+  background: #000;
 }
 
-/* ẨN TẤT CẢ NGOÀI LIVE-STAGE */
-body.viewer-video-only .page-header,
-body.viewer-video-only hr,
-body.viewer-video-only .card:not(.live-stage),
-body.viewer-video-only .gift-board,
-body.viewer-video-only .chat,
-body.viewer-video-only .topbar,
-body.viewer-video-only .footer {
-  display: none !important;
+/* video-card chiếm toàn màn */
+body.viewer-fullscreen .video-card,
+body.viewer-fullscreen .video-card__inner {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
 }
 
-/* live-stage chiếm toàn màn hình */
-body.viewer-video-only .live-stage {
-  position: fixed !important;
-  inset: 0 !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  background: #000 !important;
-}
-
-/* video-card là khung duy nhất */
-body.viewer-video-only .video-card {
-  width: 100vw !important;
-  height: 100vh !important;
-  margin: 0 !important;
-  border-radius: 0 !important;
-  border: none !important;
-  overflow: hidden !important;
-  background: #000 !important;
-}
-
-/* inner luôn full */
-body.viewer-video-only .video-card__inner {
-  position: absolute !important;
-  inset: 0 !important;
-  background: #000 !important;
-}
-
-/* VIDEO – KHÔNG ZOOM, KHÔNG NHẢY */
-body.viewer-video-only video {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: contain !important; /* đổi cover nếu muốn fill */
-  background: #000 !important;
+/* VIDEO FULL MÀN */
+body.viewer-fullscreen video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* 🔥 full màn */
+  background: #000;
 }
