@@ -1747,6 +1747,13 @@ syncStartLiveOverlay(false);
   await lkRoom.localParticipant.publishTrack(videoTrack);
   await lkRoom.localParticipant.publishTrack(audioTrack);
 
+
+  socket.emit("live-start", {
+  roomId,
+  startTs: Date.now()
+});
+
+
   // 8️⃣ lưu lại để stop sau
   lkLocalTracks = [videoTrack, audioTrack];
 
@@ -1755,6 +1762,8 @@ syncStartLiveOverlay(false);
   hostFlipBtn.disabled = false;
 
   console.log("🎥 LIVEKIT HOST STREAMING");
+
+  
 };
 
 
