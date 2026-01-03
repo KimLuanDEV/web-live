@@ -353,6 +353,55 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
+// ===== SWIPE TO TOGGLE CHAT (MOBILE VIEWER) =====
+(function enableSwipeChat() {
+  if (window.innerWidth > 768) return; // chỉ mobile
+
+  const stage = document.getElementById("liveStage");
+  if (!stage) return;
+
+  let startX = 0;
+  let startY = 0;
+  let isSwiping = false;
+
+  stage.addEventListener("touchstart", e => {
+    if (!e.touches[0]) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    isSwiping = true;
+  }, { passive: true });
+
+  stage.addEventListener("touchmove", e => {
+    if (!isSwiping || !e.touches[0]) return;
+
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+
+    // tránh conflict với scroll dọc
+    if (Math.abs(dy) > Math.abs(dx)) {
+      isSwiping = false;
+    }
+  }, { passive: true });
+
+  stage.addEventListener("touchend", e => {
+    if (!isSwiping) return;
+    isSwiping = false;
+
+    const endX = e.changedTouches[0].clientX;
+    const dx = endX - startX;
+
+    // threshold swipe
+    if (Math.abs(dx) < 60) return;
+
+    if (dx < 0) {
+      // swipe LEFT → ẩn chat
+      document.body.classList.add("chat-hidden");
+    } else {
+      // swipe RIGHT → hiện chat
+      document.body.classList.remove("chat-hidden");
+    }
+  });
+})();
 
 
 
@@ -1803,6 +1852,13 @@ socket.on("host-profile-update", (profile) => {
 });
 
 const chatFab = document.getElementById("chatFab");
+if (chatFab) {
+  chatFab.addEventListener("click", () => {
+    document.body.classList.remove("chat-hidden");
+  });
+}
+
+
 const chatInputOverlay = document.getElementById("chatInputOverlay");
 const quickChatInput = document.getElementById("quickChatInput");
 const quickChatSend = document.getElementById("quickChatSend");
