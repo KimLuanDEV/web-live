@@ -413,6 +413,8 @@ guestCancelWait?.addEventListener("click", () => {
 });
 
 
+
+
     const socket = io();
     
 // mở khi bấm nút quay về lobby
@@ -977,6 +979,21 @@ function hideGuestWait(){
 }
 
 
+function optimizeVideoForMobile(videoEl){
+  if (!isMobile() || !videoEl) return;
+
+  videoEl.playsInline = true;
+  videoEl.muted = false;
+
+  // ưu tiên mượt
+  videoEl.setAttribute("playsinline", "");
+  videoEl.setAttribute("webkit-playsinline", "");
+
+  // giảm render cost
+  videoEl.style.objectFit = "cover";
+}
+
+
 
     btnStart.onclick = async () => {
       if (localStream) return;
@@ -999,6 +1016,7 @@ audio: {
 showGuestWait();
 
         me.srcObject = localStream;
+        optimizeVideoForMobile(me);
 
         
     try{ attachSpeakingIndicator(me, document.getElementById('mePipWrap')); }catch{}
@@ -1171,6 +1189,7 @@ if (p?.catch) p.catch(()=>{});
         localStream.addTrack(newVideoTrack);
 
         me.srcObject = localStream;
+        optimizeVideoForMobile(me);
 
         for (const pc of pcs.values()) {
           const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");

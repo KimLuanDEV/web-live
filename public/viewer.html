@@ -410,6 +410,44 @@ function clearGuestView(reason = "") {
 }
 
 
+function isMobile(){
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function optimizeVideoForMobile(videoEl){
+  if (!isMobile() || !videoEl) return;
+
+  videoEl.playsInline = true;
+  videoEl.muted = false;
+
+  // ưu tiên mượt
+  videoEl.setAttribute("playsinline", "");
+  videoEl.setAttribute("webkit-playsinline", "");
+
+  // giảm render cost
+  videoEl.style.objectFit = "cover";
+}
+
+function limitBitrateForMobile(pc){
+  if (!isMobile() || !pc) return;
+
+  pc.getSenders().forEach(sender=>{
+    if (!sender.track || sender.track.kind !== "video") return;
+
+    const p = sender.getParameters();
+    if (!p.encodings) p.encodings = [{}];
+
+    p.encodings[0].maxBitrate = 900_000; // ~900kbps
+    p.encodings[0].maxFramerate = 24;
+
+    sender.setParameters(p).catch(()=>{});
+  });
+}
+
+
+
+
+
 // ===== HD QUALITY MONITOR (Viewer) =====
 const hdBadge = document.getElementById("hdBadge");
 let __lastBytes = 0;
@@ -1002,6 +1040,9 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
      
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
+      
+      limitBitrateForMobile(pc);
+
       pcs.set(from, pc);
 
      
@@ -1028,6 +1069,8 @@ pc.ontrack = (event) => {
 
     if (guestPlayer.srcObject !== stream) {
       guestPlayer.srcObject = stream;
+      optimizeVideoForMobile(guestPlayer);
+
       guestPlayer.muted = false;
       guestPlayer.playsInline = true;
       guestPlayer.play().catch(() => {});
@@ -1046,6 +1089,8 @@ pc.ontrack = (event) => {
 
     if (player.srcObject !== stream) {
       player.srcObject = stream;
+      optimizeVideoForMobile(player);
+
       player.muted = true;          // autoplay mobile
       player.playsInline = true;
       player.play().catch(() => {});

@@ -3896,3 +3896,45 @@ body.is-live #startLiveOverlay {
   box-shadow: 0 0 14px rgba(255,211,110,.45);
 }
 
+.pip-badge .hd-badge{
+  margin-left:6px;
+  padding:2px 8px;
+  font-size:11px;
+}
+
+
+@media (max-width: 520px){
+  /* tắt glow nặng */
+  .video-card:before,
+  .lobby-cardGlow,
+  .vip-fireworks{
+    display:none !important;
+  }
+
+  /* giảm shadow */
+  .video-card,
+  .pip-wrap{
+    box-shadow: 0 10px 26px rgba(0,0,0,.45);
+  }
+
+  /* tắt animation pulse */
+  .dot{
+    animation:none !important;
+  }
+}
+
+@media (max-width: 520px){
+  /* tắt hiệu ứng nặng */
+  .vip-fireworks,
+  .video-card:before,
+  .dot{
+    display:none !important;
+    animation:none !important;
+  }
+
+  /* giảm shadow GPU */
+  .video-card,
+  .pip-wrap{
+    box-shadow: 0 8px 22px rgba(0,0,0,.45);
+  }
+}
