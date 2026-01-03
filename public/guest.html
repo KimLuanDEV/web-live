@@ -1103,6 +1103,9 @@ guestCancelWait?.addEventListener("click", () => {
     localStream = null;
   }
 
+  // 4️⃣ QUAY VỀ VIEWER (CÙNG TAB)
+  window.location.href = `/viewer.html?room=${encodeURIComponent(roomId)}`;
+
   // 4️⃣ Reset trạng thái UI nếu cần
   console.warn("❌ Guest cancelled request");
 });
@@ -1152,10 +1155,23 @@ showGuestWait();
 
     socket.on("guest-pending", () => setStatus("⏳ Đang chờ host duyệt..."));
 
-    socket.on("guest-rejected", () => {
-      hideGuestWait();
-      setStatus("⛔ Host từ chối.");
-    });
+   socket.on("guest-rejected", () => {
+  // 1️⃣ Ẩn overlay
+  hideGuestWait();
+
+  // 2️⃣ TẮT MIC + CAM NGAY
+  if (localStream){
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+
+  // 3️⃣ Thông báo (optional)
+  alert("❌ Host đã từ chối yêu cầu");
+
+  // 4️⃣ QUAY VỀ VIEWER (CÙNG TAB)
+  window.location.href = `/viewer.html?room=${encodeURIComponent(roomId)}`;
+});
+
 
     socket.on("guest-approved", () => {
       hideGuestWait();
