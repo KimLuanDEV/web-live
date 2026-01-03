@@ -4,3 +4,11 @@
     location.replace("/poster.html");
   }
 })();
+
+
+(function () {
+  const auth = localStorage.getItem("auth");
+  if (!auth) {
+    location.href = "/login.html";
+  }
+})();

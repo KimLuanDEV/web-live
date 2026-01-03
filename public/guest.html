@@ -344,9 +344,27 @@
   </div>
 </div>
 
-
+  <script src="/user.js"></script>
   <script src="/socket.io/socket.io.js"></script>
+
+
   <script>
+
+
+const auth = JSON.parse(localStorage.getItem("auth"));
+const currentUser = auth.user;
+
+// dùng ở chat
+chatName.value = currentUser.name;
+
+// dùng ở gift
+senderName = currentUser.name;
+
+// dùng avatar
+userAvatar.src = currentUser.avatar;
+
+
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const me = document.getElementById("me");

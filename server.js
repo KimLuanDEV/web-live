@@ -46,6 +46,60 @@ app.get("/", (_, res) => {
 
 const rooms = new Map();
 
+// === USER STORE (demo) ===
+const users = new Map();
+// email -> { id, email, password, name, avatar, coins, level }
+
+function uid() {
+  return Math.random().toString(36).slice(2, 10);
+}
+
+app.use(express.json());
+
+app.post("/api/register", (req, res) => {
+  const { email, password, name } = req.body;
+  if (!email || !password) {
+    return res.status(400).json({ error: "Thiếu thông tin" });
+  }
+  if (users.has(email)) {
+    return res.status(400).json({ error: "Email đã tồn tại" });
+  }
+
+  const user = {
+    id: uid(),
+    email,
+    password, // demo: plaintext (sau này băm)
+    name: name || "User",
+    avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360" + email,
+    coins: 0,
+    level: 1,
+  };
+
+  users.set(email, user);
+  res.json({ ok: true });
+});
+
+app.post("/api/login", (req, res) => {
+  const { email, password } = req.body;
+  const user = users.get(email);
+  if (!user || user.password !== password) {
+    return res.status(401).json({ error: "Sai tài khoản hoặc mật khẩu" });
+  }
+
+  // token rất đơn giản (demo)
+  const token = Buffer.from(user.id).toString("base64");
+  res.json({
+    token,
+    user: {
+      id: user.id,
+      name: user.name,
+      avatar: user.avatar,
+      coins: user.coins,
+      level: user.level,
+    },
+  });
+});
+
 
 // ♻️ RESTORE LIVE ROOMS AFTER SERVER RESTART
 const persisted = loadLiveState();
