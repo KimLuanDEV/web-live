@@ -867,6 +867,11 @@ function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
   const MIN_MS = 180; // anti-spam client side
 
   const handler = (ev) => {
+
+    // 🚫 KHÔNG xử lý nếu đang thao tác trong chat
+  if (ev.target && ev.target.closest("#chatOverlay")) {
+    return; // cho browser scroll chat
+  }
     // prevent video click from toggling play/pause
     try { if (ev && ev.cancelable) ev.preventDefault(); } catch {}
     try { ev.stopPropagation(); } catch {}
@@ -1305,24 +1310,63 @@ socket.on("broadcaster-offline", () => {
  
     socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
 
-    // ===== CHAT OVERLAY + EMOJI QUICK BAR ===== // CHAT OVERLAY
-    const chatOverlay = document.getElementById("chatOverlay");
-    function pushOverlay(msg){
-      if (!chatOverlay) return;
-      const role = String(msg.role || "viewer");
-      const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
-      const el = document.createElement("div");
-      el.className = "chat-bubble chat-" + role;
-      el.textContent = `${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
-      chatOverlay.appendChild(el);
+ // ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) =====
+const chatOverlay = document.getElementById("chatOverlay");
 
-      // keep only last 4 bubbles
-      while (chatOverlay.children.length > 4) chatOverlay.removeChild(chatOverlay.firstChild);
+// 🔒 FIX MOBILE CHỐT: lock body scroll khi vuốt chat
+if (chatOverlay) {
+  let __lock = false;
 
-      // auto fade + remove
-      setTimeout(() => el.classList.add("hide"), 2600);
-      setTimeout(() => { try { el.remove(); } catch {} }, 3200);
-    }
+  chatOverlay.addEventListener("touchstart", e => {
+    __lock = true;
+    document.body.style.overflow = "hidden";
+  }, { passive: true });
+
+  chatOverlay.addEventListener("touchend", () => {
+    __lock = false;
+    document.body.style.overflow = "";
+  });
+
+  chatOverlay.addEventListener("touchcancel", () => {
+    __lock = false;
+    document.body.style.overflow = "";
+  });
+}
+
+function pushOverlay(msg){
+  if (!chatOverlay) return;
+
+  const role = String(msg.role || "viewer");
+  const tag =
+    role === "host" ? "[HOST]" :
+    role === "guest" ? "[GUEST]" : "";
+
+  const el = document.createElement("div");
+  el.className = "chat-bubble chat-" + role;
+  el.textContent = `${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
+
+  chatOverlay.appendChild(el);
+
+  // ✅ GIỚI HẠN LỊCH SỬ (nhẹ máy)
+  const MAX_CHAT = 80;
+  while (chatOverlay.children.length > MAX_CHAT) {
+    chatOverlay.removeChild(chatOverlay.firstChild);
+  }
+
+  // ✅ AUTO SCROLL NẾU ĐANG Ở CUỐI
+  const nearBottom =
+    chatOverlay.scrollHeight -
+    chatOverlay.scrollTop -
+    chatOverlay.clientHeight < 80;
+
+  if (nearBottom) {
+    chatOverlay.scrollTop = chatOverlay.scrollHeight;
+  }
+
+  // ❌ KHÔNG fade
+  // ❌ KHÔNG remove
+}
+
 
     // add emoji buttons
     const emojiBar = document.getElementById("emojiBar");
