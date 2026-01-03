@@ -70,21 +70,9 @@
       </span>
     </div>
 
- <div id="qualityBadge" class="quality-badge hd">
-  <span id="qbMode">🟢 HD</span>
-  <span class="qb-sep">•</span>
-  <span id="qbRes">--×--</span>
-  <span class="qb-sep">•</span>
-  <span id="qbPing" class="qb-ping">--ms</span>
-</div>
+ <div id="qualityBadge" class="quality-badge hd">🟢 HD</div>
 
 
-<!-- QUALITY MODE SELECT -->
-<div id="qualitySelect" class="quality-select">
-  <button data-mode="AUTO" class="is-active">AUTO</button>
-  <button data-mode="HD">HD</button>
-  <button data-mode="AUDIO">AUDIO</button>
-</div>
 
 <div class="chat-overlay" id="chatOverlay"></div>
 
@@ -801,50 +789,6 @@ socket.on("reaction", (msg)=>{
     let __viewerNeedResume = false;
 
 
-// ===== VIEWER QUALITY OVERRIDE =====
-let __viewerQualityMode = localStorage.getItem("viewer_quality_mode") || "AUTO";
-
-function setViewerQualityMode(mode){
-  __viewerQualityMode = mode;
-  localStorage.setItem("viewer_quality_mode", mode);
-
-  document
-    .querySelectorAll("#qualitySelect button")
-    .forEach(b => b.classList.toggle("is-active", b.dataset.mode === mode));
-
-  console.warn("🎛 Viewer quality:", mode);
-
-  if (mode === "AUDIO"){
-    // ép audio-only
-    __viewerAudioOnly = true;
-    if (player){
-      player.style.display = "none";
-    }
-    setQualityBadge("audio");
-  }
-
-  if (mode === "HD"){
-    // ép bật lại video nếu có
-    __viewerAudioOnly = false;
-    if (player){
-      player.style.display = "";
-      player.play().catch(()=>{});
-    }
-    setQualityBadge("hd");
-  }
-
-  // AUTO → để hệ thống tự xử
-}
-
-document.querySelectorAll("#qualitySelect button").forEach(btn=>{
-  btn.onclick = ()=>{
-    const mode = btn.dataset.mode;
-    setViewerQualityMode(mode);
-  };
-});
-
-// khôi phục khi load trang
-setViewerQualityMode(__viewerQualityMode);
 
 
 
@@ -975,97 +919,26 @@ function enableAudioOnlyFallback(pc, videoTrack, label = "") {
 
 
 const qualityBadge = document.getElementById("qualityBadge");
-const qbMode = document.getElementById("qbMode");
-const qbRes  = document.getElementById("qbRes");
-const qbPing = document.getElementById("qbPing");
-
-setInterval(() => {
-  if (!player || !player.srcObject) return;
-
-  const w = player.videoWidth || 0;
-  const h = player.videoHeight || 0;
-
-  if (w && h){
-    qbRes.textContent = `${w}×${h}`;
-  } else {
-    qbRes.textContent = "--×--";
-  }
-}, 2000);
-
-
-function startViewerPingWatch(pc){
-  if (!pc) return;
-
-  setInterval(async () => {
-    try{
-      const stats = await pc.getStats();
-      let rtt = null;
-
-      stats.forEach(r => {
-        if (r.type === "candidate-pair" && r.currentRoundTripTime){
-          rtt = Math.round(r.currentRoundTripTime * 1000);
-        }
-      });
-
-     if (rtt !== null){
-  qbPing.textContent = rtt + "ms";
-
-  qbPing.classList.remove("good","warn","bad");
-
-  if (rtt < 120){
-    qbPing.classList.add("good");
-  }
-  else if (rtt < 250){
-    qbPing.classList.add("warn");
-  }
-  else {
-    qbPing.classList.add("bad");
-  }
-}
-
-    }catch{}
-  }, 2500);
-}
-
-let __lastPing = null;
-
-if (rtt !== null){
-  if (__lastPing !== null){
-    rtt = Math.round(__lastPing * 0.7 + rtt * 0.3);
-  }
-  __lastPing = rtt;
-
-  qbPing.textContent = rtt + "ms";
-
-  qbPing.classList.remove("good","warn","bad");
-  if (rtt < 120) qbPing.classList.add("good");
-  else if (rtt < 250) qbPing.classList.add("warn");
-  else qbPing.classList.add("bad");
-}
-
 
 function setQualityBadge(mode){
 
-   if (__viewerQualityMode !== "AUTO") return;
+   
 
   if (!qualityBadge) return;
 
   if (mode === "audio"){
     qualityBadge.className = "quality-badge audio";
     qualityBadge.textContent = "🎧 AUDIO";
-    setPerfMode("AUDIO");
   }
   else if (mode === "low"){
-    if (__viewerQualityMode !== "AUTO") return;
+   
     qualityBadge.className = "quality-badge low";
     qualityBadge.textContent = "🟡 LOW";
-     setPerfMode("LOW");
   }
   else {
-    if (__viewerQualityMode !== "AUTO") return;
+    
     qualityBadge.className = "quality-badge hd";
     qualityBadge.textContent = "🟢 HD";
-    setPerfMode("HD");
   }
 }
 
@@ -1164,7 +1037,7 @@ let __viewerAudioOnlyTimer = null;
 
     function startViewerAudioOnlyWatch(player){
 
-   if (__viewerQualityMode !== "AUTO") return;
+   
 
   if (__viewerAudioOnlyTimer) return; // ❌ chặn tạo trùng
 
@@ -1281,15 +1154,6 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
       pcs.set(from, pc);
-
-// 📡 Ping chỉ lấy từ HOST
-if (!window.__pingBound && !guestId){
-  window.__pingBound = true;
-  startViewerPingWatch(pc);
-}
-
-
-
 
       // 🚀 ANTI LAG – VIEWER
 const profile = detectViewerProfile();
