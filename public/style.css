@@ -3979,3 +3979,9 @@ body.is-live #startLiveOverlay {
 .chat-overlay::-webkit-scrollbar-track{
   background:transparent;
 }
+
+/* 🔒 Lock scroll mà KHÔNG làm layout nhảy */
+.body-scroll-lock {
+  position: fixed;
+  width: 100%;
+}

@@ -1921,25 +1921,28 @@ socket.on("pin-note-update", (note)=> renderPin(note));
    // ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) =====
 const chatOverlay = document.getElementById("chatOverlay");
 
-// 🔒 FIX MOBILE CHỐT: lock body scroll khi vuốt chat
-if (chatOverlay) {
-  let __lock = false;
+let __scrollY = 0;
 
-  chatOverlay.addEventListener("touchstart", e => {
-    __lock = true;
-    document.body.style.overflow = "hidden";
+if (chatOverlay) {
+  chatOverlay.addEventListener("touchstart", () => {
+    __scrollY = window.scrollY || window.pageYOffset;
+    document.body.classList.add("body-scroll-lock");
+    document.body.style.top = `-${__scrollY}px`;
   }, { passive: true });
 
   chatOverlay.addEventListener("touchend", () => {
-    __lock = false;
-    document.body.style.overflow = "";
+    document.body.classList.remove("body-scroll-lock");
+    document.body.style.top = "";
+    window.scrollTo(0, __scrollY);
   });
 
   chatOverlay.addEventListener("touchcancel", () => {
-    __lock = false;
-    document.body.style.overflow = "";
+    document.body.classList.remove("body-scroll-lock");
+    document.body.style.top = "";
+    window.scrollTo(0, __scrollY);
   });
 }
+
 
 
 function pushOverlay(msg){
