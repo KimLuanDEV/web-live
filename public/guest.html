@@ -344,16 +344,9 @@
   </div>
 </div>
 
- 
+
   <script src="/socket.io/socket.io.js"></script>
-
-
   <script>
-
-
-
-
-
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const me = document.getElementById("me");
@@ -384,19 +377,6 @@ guestRequestBtn?.addEventListener("click", () => {
 
     const socket = io();
     
-
-    const auth = JSON.parse(localStorage.getItem("auth"));
-const currentUser = auth.user;
-
-// dùng ở chat
-chatName.value = currentUser.name;
-
-// dùng ở gift
-senderName = currentUser.name;
-
-// dùng avatar
-userAvatar.src = currentUser.avatar;
-
 // mở khi bấm nút quay về lobby
 const btnBackLobby = document.getElementById("btnBackLobby");
 const neonConfirm = document.getElementById("neonConfirm");
