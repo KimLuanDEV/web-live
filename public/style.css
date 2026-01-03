@@ -3985,3 +3985,17 @@ body.is-live #startLiveOverlay {
   position: fixed;
   width: 100%;
 }
+
+
+/* 🔒 KHÓA TỈ LỆ VIDEO – CHỐNG ZOOM */
+.video-card__inner{
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;     /* 🔥 CHỐT */
+  overflow: hidden;
+  background: #000;
+}
+
+video{
+  transform: none !important;
+}
