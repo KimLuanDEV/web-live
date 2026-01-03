@@ -13,8 +13,6 @@
 
   <title>Host - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
-  <script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
-
 </head>
 <body>
 <script src="/guard.js"></script>
@@ -457,51 +455,10 @@ const hgmRoom = document.getElementById("hgmRoom");
 const startLiveOverlay = document.getElementById("startLiveOverlay");
 const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
 
-
-async function startHostLive() {
-  const roomId = roomCode; // bạn đã có sẵn
-  const identity = "host_" + Date.now();
-
-  const res = await fetch(
-    `/livekit-token?room=${roomId}&identity=${identity}&role=host`
-  );
-  const { token, url } = await res.json();
-
-  const room = new LiveKitClient.Room({
-    adaptiveStream: true,
-    dynacast: true,
-    publishDefaults: {
-      videoEncoding: {
-        maxBitrate: 1_500_000,
-        maxFramerate: 30,
-      },
-    },
-  });
-
-  await room.connect(url, token);
-
-  const stream = await navigator.mediaDevices.getUserMedia({
-    video: { width: 1280, height: 720 },
-    audio: true,
-  });
-
-  await room.localParticipant.publishTrack(
-    stream.getVideoTracks()[0]
-  );
-  await room.localParticipant.publishTrack(
-    stream.getAudioTracks()[0]
-  );
-
-  document.getElementById("preview").srcObject = stream;
-
-  console.log("✅ HOST LIVE VIA LIVEKIT");
-}
-
-
-
 // Click nút giữa màn hình = click nút start trong control
-startLiveBigBtn.onclick = startHostLive;
-
+startLiveBigBtn?.addEventListener("click", () => {
+  btnStart?.click();
+});
 
 
 function syncStartLiveOverlay(isLive) {
