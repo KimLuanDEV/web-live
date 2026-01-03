@@ -1503,6 +1503,10 @@ if (sender) {
     });
 
     
+    socket.on("cancel-request-guest", ({ roomId, socketId }) => {
+  // xóa khỏi pending list
+});
+
 
 // ===== ICE RESTART: host regenerates offer when asked =====
 socket.on('request-ice-restart', async ({ from, reason })=>{

@@ -3901,3 +3901,18 @@ body.is-live #startLiveOverlay {
   opacity: .75;
 }
 
+
+.guest-wait-cancel{
+  margin-top: 14px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.28);
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.guest-wait-cancel:hover{
+  background: rgba(255,255,255,.08);
+}

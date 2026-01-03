@@ -353,6 +353,12 @@
     <div class="guest-wait-desc">
       Mic & Camera đã sẵn sàng
     </div>
+
+ <!-- NÚT HỦY -->
+    <button id="guestCancelWait" class="guest-wait-cancel">
+      Hủy chờ
+    </button>
+
   </div>
 </div>
 
@@ -418,6 +424,10 @@ ncfOk?.addEventListener("click", () => {
 
   window.location.href = "/lobby.html";
 });
+
+
+
+
 
 
 btnBackLobby?.addEventListener("click", () => openNcf());
@@ -1078,6 +1088,24 @@ function hideGuestWait(){
 }
 
 
+const guestCancelWait = document.getElementById("guestCancelWait");
+
+guestCancelWait?.addEventListener("click", () => {
+  // 1️⃣ Ẩn overlay
+  hideGuestWait();
+
+  // 2️⃣ Báo cho host biết guest đã hủy
+  socket.emit("cancel-request-guest", { roomId });
+
+  // 3️⃣ TẮT MIC + CAM NGAY
+  if (localStream){
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+
+  // 4️⃣ Reset trạng thái UI nếu cần
+  console.warn("❌ Guest cancelled request");
+});
 
 
     btnStart.onclick = async () => {
