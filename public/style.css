@@ -4021,6 +4021,6 @@ body.viewer-fullscreen video {
 
 /* ===== TINH CHỈNH VỊ TRÍ KHUNG VIDEO ===== */
 body.viewer-fullscreen .video-card {
-  transform: translate(-8px, -10px); /* ← trái | ↑ lên */
+  transform: translate(-8px, -20px); /* ← trái | ↑ lên */
 }
 
