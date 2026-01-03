@@ -994,6 +994,38 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       cleanupPeer("guest");
     });
 
+// ===== VIEWER AUDIO ONLY STATE =====
+let __viewerAudioOnly = false;
+let __viewerAudioOnlyTimer = null;
+
+
+    function startViewerAudioOnlyWatch(player){
+  if (__viewerAudioOnlyTimer) return; // ❌ chặn tạo trùng
+
+  __viewerAudioOnlyTimer = setInterval(() => {
+    if (!player || !player.srcObject) return;
+
+    const frozen =
+      player.readyState < 2 ||
+      player.videoWidth === 0;
+
+    // 🚨 audio-only
+    if (frozen && !__viewerAudioOnly){
+      console.warn("🎧 Viewer audio only");
+      player.style.display = "none";
+      __viewerAudioOnly = true;
+      document.body.classList.add("audio-only");
+    }
+
+    // ✅ resume video
+    if (!frozen && __viewerAudioOnly){
+      console.warn("🎥 Viewer video resume");
+      player.style.display = "";
+      __viewerAudioOnly = false;
+      document.body.classList.remove("audio-only");
+    }
+  }, 2000);
+}
 
 
 
@@ -1116,34 +1148,7 @@ pc.ontrack = (event) => {
 
     if (player.srcObject !== stream) {
       player.srcObject = stream;
-
-
-      // 🎧 AUDIO ONLY – VIEWER (decode lag)
-let __viewerAudioOnly = false;
-
-setInterval(() => {
-  if (!player || !player.srcObject) return;
-
-  const v = player;
-  const frozen = v.readyState < 2 || v.videoWidth === 0;
-
-  if (frozen && !__viewerAudioOnly) {
-    console.warn("🎧 Viewer audio only");
-    v.style.display = "none";
-    __viewerAudioOnly = true;
-    document.body.classList.add("audio-only");
-  }
-
-  if (!frozen && __viewerAudioOnly) {
-    console.warn("🎥 Viewer video resume");
-    v.style.display = "";
-    __viewerAudioOnly = false;
-    document.body.classList.remove("audio-only");
-  }
-}, 2000);
-
-
-
+      startViewerAudioOnlyWatch(player);
       player.muted = true;          // autoplay mobile
       player.playsInline = true;
       player.play().catch(() => {});
