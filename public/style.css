@@ -4018,3 +4018,24 @@ body.viewer-fullscreen video {
   object-fit: cover;   /* 🔥 full màn */
   background: #000;
 }
+
+
+/* ===== FIX TOUCH FREEZE ===== */
+
+/* các layer chỉ hiển thị, KHÔNG được chặn click */
+.reactions-layer,
+.pin-overlay,
+.live-overlay {
+  pointer-events: none !important;
+}
+
+/* các control PHẢI cho click */
+.chat-overlay,
+.chat-input,
+.chat-fab,
+.mic-btn,
+.gift-btn,
+.control-bar,
+.viewer-controls {
+  pointer-events: auto !important;
+}
