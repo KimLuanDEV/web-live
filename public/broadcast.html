@@ -1436,8 +1436,7 @@ applyBitrateGuard(pc, "HIGH");
 
 const videoTrack = localStream.getVideoTracks()[0];
 enableAdaptiveQuality(pc, videoTrack);
-// 🎧 AUDIO ONLY – HOST
-enableAudioOnlyFallback(pc, videoTrack, "HOST");
+
 
 
 const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
