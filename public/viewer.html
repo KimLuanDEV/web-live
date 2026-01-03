@@ -13,6 +13,9 @@
 
   <title>Viewer - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
+  <script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
+
+
 </head>
 <body>
 
@@ -94,14 +97,7 @@
 
         <div class="reactions-layer" id="reactionsLayerViewer"></div>
 <div class="video-card__inner">
-      <video
-  id="player"
-  autoplay
-  playsinline
-  muted
-  style="object-fit: cover"
-></video>
-
+      <video id="player" autoplay playsinline></video>
     </div>
 
 <!-- GIFT FLOAT BUTTON -->
@@ -877,15 +873,45 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
 
 
 
-    async function join() {
-      if (joined) return;
-      joined = true;
-      
-      try{ btnJoin.style.display = "none"; }catch{}
-socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
-      setStatus("⏳ Đang chờ Host gửi LIVE...");
-      log("Đã join room, đợi offer từ host/guest...");
+    let lkRoom = null;
+
+async function join() {
+  if (lkRoom) return;
+
+  const identity = "viewer_" + Math.random().toString(36).slice(2);
+
+  const res = await fetch(
+    `/livekit-token?room=${roomId}&identity=${identity}&role=viewer`
+  );
+
+  const { token, url } = await res.json();
+
+  lkRoom = new LiveKitClient.Room({
+    adaptiveStream: true,
+    dynacast: true,
+  });
+
+  await lkRoom.connect(url, token);
+
+  lkRoom.on("trackSubscribed", (track) => {
+    if (track.kind === "video") {
+      track.attach(player);
     }
+    if (track.kind === "audio") {
+      track.attach();
+    }
+  });
+
+  console.log("👁 Viewer joined LiveKit");
+}
+
+window.addEventListener("beforeunload", () => {
+  try {
+    lkRoom?.disconnect();
+  } catch {}
+});
+
+
 
     function cleanupPeer(peerKey) {
       // peerKey can be actual peerId or "guest"
@@ -992,8 +1018,6 @@ pc.ontrack = (event) => {
 
     if (player.srcObject !== stream) {
       player.srcObject = stream;
-      forcePlayVideo(player);
-
       player.muted = true;          // autoplay mobile
       player.playsInline = true;
       player.play().catch(() => {});

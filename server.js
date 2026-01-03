@@ -1,3 +1,33 @@
+const { AccessToken } = require("livekit-server-sdk");
+
+app.get("/livekit-token", (req, res) => {
+  const { room, identity, role } = req.query;
+
+  if (!room || !identity) {
+    return res.status(400).json({ error: "Missing params" });
+  }
+
+  const at = new AccessToken(
+    process.env.LIVEKIT_API_KEY,
+    process.env.LIVEKIT_API_SECRET,
+    { identity }
+  );
+
+  at.addGrant({
+    room,
+    roomJoin: true,
+    canPublish: role !== "viewer",
+    canSubscribe: true,
+  });
+
+  res.json({
+    token: at.toJwt(),
+    url: process.env.LIVEKIT_URL,
+  });
+});
+
+
+
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
 
 

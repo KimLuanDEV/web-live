@@ -13,6 +13,8 @@
 
   <title>Host - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
+  <script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
+
 </head>
 <body>
 <script src="/guard.js"></script>
@@ -455,10 +457,51 @@ const hgmRoom = document.getElementById("hgmRoom");
 const startLiveOverlay = document.getElementById("startLiveOverlay");
 const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
 
+
+async function startHostLive() {
+  const roomId = roomCode; // bạn đã có sẵn
+  const identity = "host_" + Date.now();
+
+  const res = await fetch(
+    `/livekit-token?room=${roomId}&identity=${identity}&role=host`
+  );
+  const { token, url } = await res.json();
+
+  const room = new LiveKitClient.Room({
+    adaptiveStream: true,
+    dynacast: true,
+    publishDefaults: {
+      videoEncoding: {
+        maxBitrate: 1_500_000,
+        maxFramerate: 30,
+      },
+    },
+  });
+
+  await room.connect(url, token);
+
+  const stream = await navigator.mediaDevices.getUserMedia({
+    video: { width: 1280, height: 720 },
+    audio: true,
+  });
+
+  await room.localParticipant.publishTrack(
+    stream.getVideoTracks()[0]
+  );
+  await room.localParticipant.publishTrack(
+    stream.getAudioTracks()[0]
+  );
+
+  document.getElementById("preview").srcObject = stream;
+
+  console.log("✅ HOST LIVE VIA LIVEKIT");
+}
+
+
+
 // Click nút giữa màn hình = click nút start trong control
-startLiveBigBtn?.addEventListener("click", () => {
-  btnStart?.click();
-});
+startLiveBigBtn.onclick = startHostLive;
+
 
 
 function syncStartLiveOverlay(isLive) {
@@ -1153,19 +1196,9 @@ document.addEventListener("visibilitychange", async () => {
     if (videoTrack && videoTrack.readyState !== "live") {
       console.log("📷 Video dead → restart camera");
       const stream = await navigator.mediaDevices.getUserMedia({
-  video: {
-    width:  { ideal: 1280 },
-    height: { ideal: 720 },
-    frameRate: { ideal: 30, max: 30 },
-    facingMode: "user"
-  },
-  audio: {
-    echoCancellation: true,
-    noiseSuppression: true,
-    autoGainControl: true
-  }
-});
-
+        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
+        audio: false
+      });
       const newTrack = stream.getVideoTracks()[0];
 
       for (const pc of pcs.values()) {
@@ -1566,17 +1599,16 @@ document.addEventListener("pointerdown", () => {
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
-       video: {
-    width:  { ideal: 1280 },
-    height: { ideal: 720 },
-    frameRate: { ideal: 30, max: 30 },
-    facingMode: "user"
-  },
-  audio: {
-    echoCancellation: true,
-    noiseSuppression: true,
-    autoGainControl: true
-  }
+          video: {
+  width:  { ideal: 1280, max: 1280 },
+  height: { ideal: 720,  max: 720 },
+  frameRate: { ideal: 30, max: 30 }
+},
+audio: {
+  echoCancellation: true,
+  noiseSuppression: true,
+  autoGainControl: true
+}
 
         });
 
@@ -1645,12 +1677,7 @@ syncStartLiveOverlay(false);
 
       try {
         const newStream = await navigator.mediaDevices.getUserMedia({
-         video: {
-    width:  { ideal: 1280 },
-    height: { ideal: 720 },
-    frameRate: { ideal: 30, max: 30 },
-    facingMode: "user"
-  },
+          video: { width: { ideal: 1280 }, height: { ideal: 720 }, facingMode: { ideal: currentFacing } },
           audio: false
 
         });
@@ -1942,20 +1969,7 @@ let hostCamOn = true;
 
 
 async function replaceHostAudioTrack(){
-  const stream = await navigator.mediaDevices.getUserMedia({
-  video: {
-    width:  { ideal: 1280 },
-    height: { ideal: 720 },
-    frameRate: { ideal: 30, max: 30 },
-    facingMode: "user"
-  },
-  audio: {
-    echoCancellation: true,
-    noiseSuppression: true,
-    autoGainControl: true
-  }
-});
-
+  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
   const newTrack = stream.getAudioTracks()[0];
 
   // replace cho TẤT CẢ viewer
