@@ -1692,14 +1692,40 @@ syncStartLiveOverlay(false);
 
   console.log("▶️ START LIVE CLICKED");
 
-  // 1️⃣ ẨN OVERLAY NGAY
+  // 1️⃣ HỎI QUYỀN CAM + MIC (BẮT BUỘC)
+  let stream;
+  try {
+    stream = await navigator.mediaDevices.getUserMedia({
+      video: {
+        width:  { ideal: 1280 },
+        height: { ideal: 720 },
+        frameRate: { ideal: 30 }
+      },
+      audio: {
+        echoCancellation: true,
+        noiseSuppression: true,
+        autoGainControl: true
+      }
+    });
+  } catch (e) {
+    alert("❌ Bạn chưa cho phép Camera / Microphone");
+    console.error(e);
+    return;
+  }
+
+  console.log("✅ Đã được cấp quyền cam + mic");
+
+  // 2️⃣ ẨN OVERLAY + UI LIVE
   syncStartLiveOverlay(true);
   document.body.classList.add("is-live");
 
-  // 2️⃣ identity
+  // 3️⃣ preview local NGAY
+  preview.srcObject = stream;
+
+  // 4️⃣ identity
   hostIdentity = `host_${roomId}`;
 
-  // 3️⃣ join socket (để lobby/chat/gift hoạt động)
+  // 5️⃣ socket join (chat/gift/lobby)
   socket.emit("join-room", {
     roomId,
     role: "broadcaster",
@@ -1709,38 +1735,27 @@ syncStartLiveOverlay(false);
     }
   });
 
-  // 4️⃣ lấy token LiveKit
+  // 6️⃣ LiveKit connect
   const { url, token } = await lkGetToken("host");
-
-  // 5️⃣ connect LiveKit
   lkRoom = new LK.Room({ adaptiveStream: true, dynacast: true });
   await lkRoom.connect(url, token);
 
-  // 6️⃣ tạo track
-  lkLocalTracks = await LK.createLocalTracks({
-    audio: true,
-    video: true
-  });
+  // 7️⃣ publish track từ stream đã xin quyền
+  const videoTrack = new LK.LocalVideoTrack(stream.getVideoTracks()[0]);
+  const audioTrack = new LK.LocalAudioTrack(stream.getAudioTracks()[0]);
 
-  // 7️⃣ publish
-  for (const t of lkLocalTracks) {
-    await lkRoom.localParticipant.publishTrack(t);
-  }
+  await lkRoom.localParticipant.publishTrack(videoTrack);
+  await lkRoom.localParticipant.publishTrack(audioTrack);
 
-  // 8️⃣ attach preview (QUAN TRỌNG)
-  const videoTrack = lkLocalTracks.find(t => t.kind === "video");
-  if (videoTrack) {
-    videoTrack.attach(preview);
-  }
+  // 8️⃣ lưu lại để stop sau
+  lkLocalTracks = [videoTrack, audioTrack];
 
-  // 9️⃣ UI state
   btnStart.disabled = true;
   btnStop.disabled = false;
   hostFlipBtn.disabled = false;
 
-  console.log("✅ LIVEKIT HOST STARTED");
+  console.log("🎥 LIVEKIT HOST STREAMING");
 };
-
 
 
 
