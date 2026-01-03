@@ -871,8 +871,6 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
 
 
     async function join() {
-
-      
       if (joined) return;
       joined = true;
       
@@ -932,11 +930,14 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
   setTimeout(tryPlay, 1000);
 }
 
-/*
+
     // Receive offer from broadcaster OR guest
     socket.on("offer", async ({ from, description }) => {
 
-      
+      /*
+      // reset pc for this peer only
+      cleanupPeer(from);
+      */
      
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
@@ -1055,9 +1056,7 @@ const st = pc.iceConnectionState;
         log("Lỗi xử lý offer: " + err.message);
       }
     });
-*/
 
-/*
     socket.on("candidate", async ({ from, candidate }) => {
       const pc = pcs.get(from);
       if (!pc) return;
@@ -1067,10 +1066,8 @@ const st = pc.iceConnectionState;
         log("Lỗi addIceCandidate: " + err.message);
       }
     });
-*/
-   
 
-btnJoin.onclick = () => {
+    btnJoin.onclick = () => {
       join().catch(err => log("Join lỗi: " + err.message));
     };
 
@@ -1773,52 +1770,6 @@ if (profile){
 }
 
 
-const LK = window.LiveKitClient;
-let lkRoom = null;
-
-async function lkJoinViewer() {
-  if (lkRoom) return;
-
-  const identity = `viewer_${Date.now()}`;
-  const res = await fetch(`/livekit/token?room=${encodeURIComponent(roomId)}&identity=${encodeURIComponent(identity)}&role=viewer`);
-  const { url, token } = await res.json();
-
-  lkRoom = new LK.Room({ adaptiveStream: true });
-
-  lkRoom.on(LK.RoomEvent.TrackSubscribed, (track, pub, participant) => {
-    const pid = participant.identity || "";
-
-    if (track.kind === LK.Track.Kind.Video) {
-      if (pid.startsWith("host_")) {
-        track.attach(player); // <video id="player"> :contentReference[oaicite:18]{index=18}
-        setStatus("🟢 Đang xem LIVE");
-      } else if (pid.startsWith("guest_")) {
-        document.body.classList.add("has-guest");
-        if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "false");
-        track.attach(guestPlayer); // <video id="guestPlayer"> :contentReference[oaicite:19]{index=19}
-      }
-    }
-
-    if (track.kind === LK.Track.Kind.Audio) {
-      // audio element auto play
-      const a = track.attach();
-      a.autoplay = true;
-      document.body.appendChild(a);
-    }
-  });
-
-  lkRoom.on(LK.RoomEvent.ParticipantDisconnected, (p) => {
-    const pid = p.identity || "";
-    if (pid.startsWith("guest_")) {
-      document.body.classList.remove("has-guest");
-      if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
-    }
-  });
-
-  await lkRoom.connect(url, token);
-}
-
-
 socket.on("host-temp-offline", () => {
   statusBadge.textContent = "⚠️ Host mất kết nối tạm thời...";
 });
@@ -1828,8 +1779,7 @@ socket.on("host-back-online", () => {
 });
 
 socket.on("host-live", ({ liveStartTs }) => {
-  lkJoinViewer().catch(err => console.error(err));
-
+  joinViewerStream();
   statusBadge.textContent = "🔴 Đang LIVE";
   startLiveTimer(liveStartTs);
 });
@@ -1899,10 +1849,6 @@ window.addEventListener("beforeunload", () => {
 
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
-
-
-<script src="https://unpkg.com/livekit-client@2.15.13/dist/livekit-client.umd.js"></script>
-
 
 </body>
 </html>

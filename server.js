@@ -1,6 +1,6 @@
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
 
-const { AccessToken } = require("livekit-server-sdk");
+
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -34,36 +34,6 @@ function saveLiveState(state) {
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-
-
-
-
-app.get("/livekit/token", (req, res) => {
-  const room = String(req.query.room || "").trim().toLowerCase();
-  const identity = String(req.query.identity || "").trim();
-  const role = String(req.query.role || "viewer").toLowerCase();
-
-  if (!room || !identity) return res.status(400).json({ error: "missing room/identity" });
-
-  const at = new AccessToken(
-    process.env.LIVEKIT_API_KEY,
-    process.env.LIVEKIT_API_SECRET,
-    { identity }
-  );
-
-  at.addGrant({
-    room,
-    roomJoin: true,
-    canSubscribe: true,
-    canPublish: role !== "viewer",
-  });
-
-  res.json({
-    url: process.env.LIVEKIT_URL,
-    token: at.toJwt(),
-  });
-});
-
 
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -256,41 +226,6 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
-socket.on("join-room", ({ roomId, role, profile }) => {
-  if (!roomId) return;
-
-  roomId = normRoomId(roomId);
-  const room = getRoom(roomId);
-
-  socket.join(roomId);
-
-  if (role === "broadcaster") {
-    room.broadcasterId = socket.id;
-
-    room.hostProfile = {
-      name: String(profile?.name || "Host").slice(0, 20),
-      ts: Date.now(),
-    };
-
-    console.log("🎥 Broadcaster joined:", roomId, socket.id);
-
-    // báo cho viewer biết host online
-    io.to(roomId).emit("broadcaster-online");
-  }
-
-  if (role === "viewer") {
-    room.viewers.add(socket.id);
-    emitViewerCount(roomId);
-  }
-
-  if (role === "guest") {
-    room.guestId = socket.id;
-    io.to(roomId).emit("guest-online");
-  }
-});
-
-
-
 socket.on("resume-viewers", ({ roomId }) => {
   if (!roomId) return;
   const room = rooms.get(roomId);
@@ -363,12 +298,11 @@ socket.on("lobby-get", () => {
 
   // ===== ICE RESTART RELAY =====
   // Any peer can ask another peer to perform ICE restart
-  /*
   socket.on("request-ice-restart", ({ to, reason }) => {
     if (!to) return;
     io.to(to).emit("request-ice-restart", { from: socket.id, reason: String(reason || "") });
   });
-*/
+
 
 // Host yêu cầu tắt/bật mic của guest
 socket.on("host-mute-guest", ({ roomId, mute }) => {
@@ -741,15 +675,13 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   });
 
   // Any viewer (or host) asks to watch guest -> server tells guest to create offer to that viewer
-  /*
   socket.on("watch-guest", ({ roomId }) => {
     if (!roomId) return;
     const room = getRoom(roomId);
     if (!room.guestId) return;
     io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
   });
-*/
-/*
+
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
     io.to(to).emit("offer", { from: socket.id, description });
@@ -762,9 +694,6 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.on("candidate", ({ to, candidate }) => {
     io.to(to).emit("candidate", { from: socket.id, candidate });
   });
-
-  */
-
 
   socket.on("disconnect", () => {
 

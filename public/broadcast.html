@@ -424,7 +424,7 @@
 </div>
 
 
-<script src="https://unpkg.com/livekit-client@2.15.13/dist/livekit-client.umd.js"></script>
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
@@ -441,18 +441,6 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
    
-const LK = window.LiveKitClient;
-let lkRoom = null;
-let lkLocalTracks = [];
-let hostIdentity = null;
-
-async function lkGetToken(role) {
-  const res = await fetch(`/livekit/token?room=${encodeURIComponent(roomId)}&identity=${encodeURIComponent(hostIdentity)}&role=${role}`);
-  if (!res.ok) throw new Error("Token API failed");
-  return res.json(); // { url, token }
-}
-
-
 
 // ===== HOST GUIDE MODAL =====
 const hgm = document.getElementById("hostGuideModal");
@@ -642,44 +630,6 @@ if(nameFromLobby){
     };
 
     const socket = io();
-    
-
-// ===== HOST LIVE TIMER (BẮT BUỘC) =====
-let __liveTimerInterval = null;
-
-function startHostLiveTimer(startTs) {
-  const el = document.getElementById("liveTimerHost");
-  if (!el) {
-    console.warn("⚠️ liveTimerHost element not found");
-    return;
-  }
-
-  if (__liveTimerInterval) {
-    clearInterval(__liveTimerInterval);
-  }
-
-  function tick() {
-    const diff = Date.now() - startTs;
-    const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
-    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
-    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
-    el.textContent = `⏱ ${h}:${m}:${s}`;
-  }
-
-  tick();
-  __liveTimerInterval = setInterval(tick, 1000);
-}
-
-// 🔥 HOST PHẢI NGHE EVENT NÀY
-socket.on("live-start", ({ startTs }) => {
-  console.log("🟢 HOST RECEIVED live-start", startTs);
-
-  document.body.classList.add("is-live");
-
-  // chạy timer
-  startHostLiveTimer(startTs);
-});
-
     
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
@@ -1310,6 +1260,11 @@ window.addEventListener("online", async () => {
 
 const hostProfile = getHostProfile();
 
+socket.emit("join-room", {
+  roomId,
+  role: "broadcaster",
+  profile: hostProfile
+});
 
 
     // Peer asks HOST to ICE-restart this connection (HOST is offerer for viewers)
@@ -1595,10 +1550,6 @@ document.addEventListener("pointerdown", () => {
       }
     });
 
-window.start = () => {
-  console.warn("⚠️ start() bị khoá – dùng LiveKit");
-};
-
     // ===== Start/Stop/Flip =====
     async function start() {
       if (localStream) return;
@@ -1720,108 +1671,8 @@ syncStartLiveOverlay(false);
       }
     }
 
-  btnStart.onclick = async () => {
-  if (lkRoom) return;
-
-  console.log("▶️ START LIVE CLICKED");
-
-  // 1️⃣ HỎI QUYỀN CAM + MIC (BẮT BUỘC)
-  let stream;
-  try {
-    stream = await navigator.mediaDevices.getUserMedia({
-      video: {
-        width:  { ideal: 1280 },
-        height: { ideal: 720 },
-        frameRate: { ideal: 30 }
-      },
-      audio: {
-        echoCancellation: true,
-        noiseSuppression: true,
-        autoGainControl: true
-      }
-    });
-  } catch (e) {
-    alert("❌ Bạn chưa cho phép Camera / Microphone");
-    console.error(e);
-    return;
-  }
-
-  console.log("✅ Đã được cấp quyền cam + mic");
-
-  // 2️⃣ ẨN OVERLAY + UI LIVE
-  syncStartLiveOverlay(true);
-  document.body.classList.add("is-live");
-
-  // 3️⃣ preview local NGAY
-  preview.srcObject = stream;
-
-  // 4️⃣ identity
-  hostIdentity = `host_${roomId}`;
-
-  
-
-  // 6️⃣ LiveKit connect
-  const { url, token } = await lkGetToken("host");
-  lkRoom = new LK.Room({ adaptiveStream: true, dynacast: true });
-  await lkRoom.connect(url, token);
-
-  // 7️⃣ publish track từ stream đã xin quyền
-  const videoTrack = new LK.LocalVideoTrack(stream.getVideoTracks()[0]);
-  const audioTrack = new LK.LocalAudioTrack(stream.getAudioTracks()[0]);
-
-  await lkRoom.localParticipant.publishTrack(videoTrack);
-  await lkRoom.localParticipant.publishTrack(audioTrack);
-
-// 5️⃣ socket join (chat/gift/lobby)
-  socket.emit("join-room", {
-    roomId,
-    role: "broadcaster",
-    profile: {
-      name: (hostNameInput?.value || "Host").trim().slice(0, 20),
-      coins: Number(localStorage.getItem("ls_coins") || 0)
-    }
-  });
-  
-  // 🔥 BÁO SERVER: HOST ĐÃ BẮT ĐẦU LIVE (BẮT BUỘC)
-socket.emit("host-start-live", { roomId });
-
-  socket.emit("live-start", {
-  roomId,
-  startTs: Date.now()
-});
-
-
-  // 8️⃣ lưu lại để stop sau
-  lkLocalTracks = [videoTrack, audioTrack];
-
-  btnStart.disabled = true;
-  btnStop.disabled = false;
-  hostFlipBtn.disabled = false;
-
-  console.log("🎥 LIVEKIT HOST STREAMING");
-
-  
-};
-
-
-
-
-    btnStop.onclick = async () => {
-  try {
-    if (lkRoom) await lkRoom.disconnect();
-  } catch {}
-  lkRoom = null;
-
-  try { lkLocalTracks.forEach(t => t.stop()); } catch {}
-  lkLocalTracks = [];
-
-  socket.emit("leave-room", { roomId }); // nếu bạn có event này thì giữ; nếu không thì bỏ
-};
-
-
-
-
-
+    btnStart.onclick = start;
+    btnStop.onclick = stop;
     hostFlipBtn.onclick = flipCamera;
 
     window.addEventListener("beforeunload", stop);
@@ -2247,7 +2098,6 @@ socket.on("gift", ({ gift, donor })=>{
     setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
   }catch{}
 });
-
 const hostNameInput = document.getElementById("hostNameInput");
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");
 
@@ -2414,10 +2264,6 @@ if (profile){
 
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
-
-
-
-<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
 
 </body>
 </html>
