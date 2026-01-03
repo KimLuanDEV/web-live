@@ -416,7 +416,10 @@ code{
   filter: brightness(1.06);
 }
 
-
+/* ===== SWAP MODE: guest becomes main ===== */
+.swap-live .live-main{
+  /* vẫn là card lớn, chỉ đổi stream bằng JS */
+}
 
 /* Mobile: pip nhỏ hơn */
 @media (max-width: 520px){
@@ -3798,118 +3801,4 @@ video{
 body.is-live #startLiveOverlay {
   display: none !important;
   pointer-events: none !important;
-}
-
-
-.audio-only::after {
-  content: "🎧 Đang nghe audio (mạng yếu)";
-  position: fixed;
-  bottom: 12px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0,0,0,.7);
-  color: #0ff;
-  padding: 6px 12px;
-  border-radius: 20px;
-  font-size: 13px;
-  z-index: 9999;
-}
-
-
-.quality-badge{
-  position:absolute;
-  top:10px;
-  right:10px;
-  z-index:20;
-  padding:4px 10px;
-  font-size:12px;
-  font-weight:600;
-  border-radius:999px;
-  background:rgba(0,0,0,.55);
-  backdrop-filter: blur(6px);
-  border:1px solid rgba(255,255,255,.15);
-  transition:.25s ease;
-  user-select:none;
-}
-
-.quality-badge.hd{
-  color:#00ffea;
-  box-shadow:0 0 8px rgba(0,255,234,.6);
-}
-
-.quality-badge.low{
-  color:#ffd000;
-  box-shadow:0 0 8px rgba(255,208,0,.6);
-}
-
-.quality-badge.audio{
-  color:#ff5ea0;
-  box-shadow:0 0 8px rgba(255,94,160,.7);
-}
-
-
-/* ===== GUEST WAIT HOST OVERLAY ===== */
-.guest-wait-overlay{
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.guest-wait-overlay.hidden{
-  display: none;
-}
-
-.guest-wait-box{
-  background: #0b0f14;
-  padding: 22px 26px;
-  border-radius: 16px;
-  text-align: center;
-  min-width: 240px;
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow: 0 0 28px rgba(95,168,255,.25);
-}
-
-.guest-spinner{
-  width: 42px;
-  height: 42px;
-  margin: 0 auto 12px;
-  border-radius: 50%;
-  border: 3px solid rgba(255,255,255,.15);
-  border-top-color: #5FA8FF;
-  animation: guestSpin 1s linear infinite;
-}
-
-@keyframes guestSpin{
-  to{ transform: rotate(360deg); }
-}
-
-.guest-wait-title{
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.guest-wait-desc{
-  font-size: 13px;
-  opacity: .75;
-}
-
-
-.guest-wait-cancel{
-  margin-top: 14px;
-  padding: 6px 16px;
-  border-radius: 999px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,.28);
-  color: #fff;
-  font-size: 13px;
-  cursor: pointer;
-}
-
-.guest-wait-cancel:hover{
-  background: rgba(255,255,255,.08);
 }

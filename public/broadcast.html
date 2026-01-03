@@ -1128,133 +1128,6 @@ socket.on("reaction", (msg)=>{
     let localStream = null;
     let currentFacing = "user"; // user | environment
 
-
-// ================== ANTI LAG PRO ==================
-function applyBitrateGuard(pc, profile = "MEDIUM") {
-  const VIDEO_PROFILES = {
-    LOW:    { max: 350_000,  min: 150_000 },
-    MEDIUM: { max: 800_000,  min: 300_000 },
-    HIGH:   { max: 1_500_000, min: 600_000 },
-  };
-
-  const cfg = VIDEO_PROFILES[profile] || VIDEO_PROFILES.MEDIUM;
-
-  pc.getSenders().forEach(sender => {
-    if (!sender.track) return;
-
-    const params = sender.getParameters();
-    if (!params.encodings) params.encodings = [{}];
-
-    if (sender.track.kind === "video") {
-      params.encodings[0].maxBitrate = cfg.max;
-      params.encodings[0].minBitrate = cfg.min;
-      params.encodings[0].priority = "medium";
-      params.encodings[0].networkPriority = "high";
-    }
-
-    if (sender.track.kind === "audio") {
-      params.encodings[0].priority = "high";
-      params.encodings[0].networkPriority = "high";
-      params.encodings[0].maxBitrate = 96_000;
-    }
-
-    sender.setParameters(params).catch(()=>{});
-  });
-}
-
-function enableAdaptiveQuality(pc, videoTrack) {
-  setInterval(async () => {
-    if (!pc || !videoTrack) return;
-
-    const stats = await pc.getStats();
-    let loss = 0, rtt = 0;
-
-    stats.forEach(r => {
-      if (r.type === "outbound-rtp" && r.kind === "video") {
-        loss = r.packetsLost || 0;
-      }
-      if (r.type === "candidate-pair" && r.currentRoundTripTime) {
-        rtt = r.currentRoundTripTime;
-      }
-    });
-
-    // mạng yếu
-    if (loss > 20 || rtt > 0.4) {
-      videoTrack.applyConstraints({
-        width: 640,
-        height: 360,
-        frameRate: 20
-      }).catch(()=>{});
-    }
-
-    // mạng tốt
-    if (loss === 0 && rtt < 0.2) {
-      videoTrack.applyConstraints({
-        width: 1280,
-        height: 720,
-        frameRate: 30
-      }).catch(()=>{});
-    }
-  }, 4000);
-}
-
-function detectViewerProfile() {
-  const isMobile = /Android|iPhone/i.test(navigator.userAgent);
-  const lowCPU = navigator.hardwareConcurrency <= 4;
-  return (isMobile || lowCPU) ? "LOW" : "MEDIUM";
-}
-// ================== /ANTI LAG PRO ==================
-
-
-// ================= AUDIO ONLY FALLBACK =================
-function enableAudioOnlyFallback(pc, videoTrack, label = "") {
-  let audioOnly = false;
-  let lastSwitch = 0;
-
-  setInterval(async () => {
-    if (!pc || !videoTrack) return;
-
-    const stats = await pc.getStats();
-    let loss = 0, rtt = 0;
-
-    stats.forEach(r => {
-      if (r.type === "outbound-rtp" && r.kind === "video") {
-        loss = r.packetsLost || 0;
-      }
-      if (r.type === "candidate-pair" && r.currentRoundTripTime) {
-        rtt = r.currentRoundTripTime;
-      }
-    });
-
-    const now = Date.now();
-    if (now - lastSwitch < 5000) return; // tránh bật tắt liên tục
-
-    // 🚨 MẠNG RẤT YẾU → AUDIO ONLY
-    if (!audioOnly && (loss > 50 || rtt > 0.8)) {
-      console.warn("🎧 AUDIO ONLY ON", label);
-      videoTrack.enabled = false;
-      audioOnly = true;
-      lastSwitch = now;
-
-      document.body.classList.add("audio-only");
-    }
-
-    // ✅ MẠNG ỔN LẠI → BẬT VIDEO
-    if (audioOnly && loss < 10 && rtt < 0.3) {
-      console.warn("🎥 VIDEO RESUME", label);
-      videoTrack.enabled = true;
-      audioOnly = false;
-      lastSwitch = now;
-
-      document.body.classList.remove("audio-only");
-    }
-  }, 3000);
-}
-// ================= /AUDIO ONLY FALLBACK =================
-
-
-
-
     // One RTCPeerConnection per viewer
     const pcs = new Map();
 
@@ -1431,13 +1304,6 @@ pc.addEventListener("iceconnectionstatechange", () => {
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
 
-// 🚀 ANTI LAG – HOST
-applyBitrateGuard(pc, "HIGH");
-
-const videoTrack = localStream.getVideoTracks()[0];
-enableAdaptiveQuality(pc, videoTrack);
-
-
 
 const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
 if (sender) {
@@ -1502,10 +1368,6 @@ if (sender) {
     });
 
     
-    socket.on("cancel-request-guest", ({ roomId, socketId }) => {
-  // xóa khỏi pending list
-});
-
 
 // ===== ICE RESTART: host regenerates offer when asked =====
 socket.on('request-ice-restart', async ({ from, reason })=>{
