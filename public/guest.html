@@ -1044,12 +1044,11 @@ function hideGuestWait(){
   guestWaitOverlay?.classList.add("hidden");
 }
 
-// 📱 Detect mobile (GLOBAL)
-const isMobile =
-  /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i
-    .test(navigator.userAgent);
+function isMobile(){
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
 
-    
+
 function optimizeVideoForMobile(videoEl){
   if (!isMobile() || !videoEl) return;
 
