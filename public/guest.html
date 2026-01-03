@@ -965,14 +965,47 @@ audio: {
       }
     };
 
+const LK = window.LiveKitClient;
+let lkRoom = null;
+let lkTracks = [];
+const guestIdentity = `guest_${Date.now()}`;
+
+async function lkConnectGuestAndPublish() {
+  const res = await fetch(`/livekit/token?room=${encodeURIComponent(roomId)}&identity=${encodeURIComponent(guestIdentity)}&role=guest`);
+  const { url, token } = await res.json();
+
+  lkRoom = new LK.Room({ adaptiveStream: true, dynacast: true });
+  await lkRoom.connect(url, token);
+
+  // publish tracks (dùng chính localStream bạn đang mở)
+  lkTracks = await LK.createLocalTracks({ audio: true, video: true });
+  for (const t of lkTracks) await lkRoom.localParticipant.publishTrack(t);
+
+  // gắn preview lên <video id="me">
+  const v = lkTracks.find(t => t.kind === "video");
+  if (v) v.attach(me);
+}
+
+
     socket.on("guest-pending", () => setStatus("⏳ Đang chờ host duyệt..."));
     socket.on("guest-rejected", () => setStatus("⛔ Host từ chối."));
-    socket.on("guest-approved", () => {
-      setStatus("✅ Được duyệt!");
-      log("Được duyệt! Bây giờ viewer/host sẽ kết nối tới bạn.");
-    });
+
+
+    socket.on("guest-approved", async () => {
+  setStatus("✅ Được duyệt! Đang kết nối LiveKit...");
+  try {
+    await lkConnectGuestAndPublish();
+    setStatus("🟢 Bạn đang co-host (LiveKit)");
+  } catch (e) {
+    console.error(e);
+    setStatus("⛔ LiveKit lỗi: " + e.message);
+  }
+});
+
 
     // When someone wants to watch guest, guest creates offer to them
+
+    /*
     socket.on("guest-watcher", async ({ viewerId }) => {
       if (!localStream) return;
       if (pcs.has(viewerId)) return;
@@ -1041,13 +1074,7 @@ if (p?.catch) p.catch(()=>{});
   }, 50);
 };
 
-      /*
-      // Receive host stream (host will addTrack when answering)
-      pc.ontrack = (e) => {
-        hostVideo.srcObject = e.streams[0];
-        hostVideo.play().catch(() => {});
-      };
-      */
+      
             __wireIceAuto(viewerId, pc);
 
       try {
@@ -1059,20 +1086,24 @@ if (p?.catch) p.catch(()=>{});
       }
     });
 
-    socket.on("answer", async ({ from, description }) => {
+*/
+    
+
+socket.on("answer", async ({ from, description }) => {
       const pc = pcs.get(from);
       if (!pc) return;
       try { await pc.setRemoteDescription(description); }
       catch (err) { log("Lỗi setRemoteDescription(answer): " + err.message); }
     });
 
+    /*
     socket.on("candidate", async ({ from, candidate }) => {
       const pc = pcs.get(from);
       if (!pc) return;
       try { await pc.addIceCandidate(candidate); }
       catch (err) { log("Lỗi addIceCandidate: " + err.message); }
     });
-
+*/
     // ===== GUEST: FLIP CAMERA + LEAVE LIVE =====
     async function flipCamera() {
       if (!localStream) return;
@@ -1665,6 +1696,9 @@ socket.on("host-live", ({ liveStartTs }) => {
 
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
+
+
+<script src="https://unpkg.com/livekit-client@2.15.13/dist/livekit-client.umd.js"></script>
 
 </body>
 </html>

@@ -441,6 +441,18 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
    
+const LK = window.LiveKitClient;
+let lkRoom = null;
+let lkLocalTracks = [];
+let hostIdentity = null;
+
+async function lkGetToken(role) {
+  const res = await fetch(`/livekit/token?room=${encodeURIComponent(roomId)}&identity=${encodeURIComponent(hostIdentity)}&role=${role}`);
+  if (!res.ok) throw new Error("Token API failed");
+  return res.json(); // { url, token }
+}
+
+
 
 // ===== HOST GUIDE MODAL =====
 const hgm = document.getElementById("hostGuideModal");
@@ -1671,8 +1683,102 @@ syncStartLiveOverlay(false);
       }
     }
 
-    btnStart.onclick = start;
-    btnStop.onclick = stop;
+   btnStart.onclick = async () => {
+  if (lkRoom) return;
+
+  // identity cố định theo room để dễ phân biệt
+  hostIdentity = `host_${roomId}`;
+
+  // 1) vẫn join socket room để lobby/chat/gift chạy như cũ
+  socket.emit("join-room", {
+    roomId,
+    role: "broadcaster",
+    profile: { name: (hostName?.value || "Host").trim().slice(0, 20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 }
+  });
+
+  // 2) connect LiveKit
+  const { url, token } = await lkGetToken("host");
+
+  lkRoom = new LK.Room({
+    adaptiveStream: true,
+    dynacast: true,
+  });
+
+  // 3) subscribe guest track để gắn vào PIP (host nhìn thấy guest)
+  lkRoom.on(LK.RoomEvent.TrackSubscribed, (track, pub, participant) => {
+    const pid = participant.identity || "";
+    if (pid.startsWith("guest_") && track.kind === LK.Track.Kind.Video) {
+      // gắn vào guestVideo / pip của host (bạn đang có guestPipWrapHost) :contentReference[oaicite:12]{index=12}
+      document.body.classList.add("has-guest");
+      const el = track.attach();
+      // bạn thay element đích theo id video guest của host (nếu có)
+      // ví dụ: document.getElementById("guestVideo").replaceWith(el)
+      // nếu bạn đang dùng <video id="guestVideo"> thì:
+      const gv = document.getElementById("guestVideo");
+      if (gv) {
+        gv.srcObject = null;
+        gv.replaceWith(el);
+        el.id = "guestVideo"; // giữ lại id cho CSS/JS
+        el.autoplay = true;
+        el.playsInline = true;
+      }
+    }
+
+    if (pid.startsWith("guest_") && track.kind === LK.Track.Kind.Audio) {
+      const a = track.attach(); // <audio>
+      a.autoplay = true;
+      document.body.appendChild(a);
+    }
+  });
+
+  lkRoom.on(LK.RoomEvent.ParticipantDisconnected, (p) => {
+    const pid = p.identity || "";
+    if (pid.startsWith("guest_")) {
+      document.body.classList.remove("has-guest");
+    }
+  });
+
+  await lkRoom.connect(url, token);
+
+  // 4) tạo local tracks
+  lkLocalTracks = await LK.createLocalTracks({
+    audio: { echoCancellation: true, noiseSuppression: true },
+    video: { width: 1280, height: 720, frameRate: 30 }
+  });
+
+  // 5) publish
+  for (const t of lkLocalTracks) {
+    await lkRoom.localParticipant.publishTrack(t);
+  }
+
+  // 6) preview lên UI hiện tại
+  const v = lkLocalTracks.find(t => t.kind === "video");
+  if (v) {
+    v.attach(preview); // preview là <video id="preview"> của bạn :contentReference[oaicite:13]{index=13}
+  }
+
+  // 7) báo “đang live” cho hệ lobby của bạn như cũ
+  socket.emit("host-start-live", { roomId }); // server đang dùng cái này :contentReference[oaicite:14]{index=14}
+};
+
+
+
+    btnStop.onclick = async () => {
+  try {
+    if (lkRoom) await lkRoom.disconnect();
+  } catch {}
+  lkRoom = null;
+
+  try { lkLocalTracks.forEach(t => t.stop()); } catch {}
+  lkLocalTracks = [];
+
+  socket.emit("leave-room", { roomId }); // nếu bạn có event này thì giữ; nếu không thì bỏ
+};
+
+
+
+
+
     hostFlipBtn.onclick = flipCamera;
 
     window.addEventListener("beforeunload", stop);
@@ -2264,6 +2370,9 @@ if (profile){
 
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
+
+
+<script src="https://unpkg.com/livekit-client@2.15.13/dist/livekit-client.umd.js"></script>
 
 </body>
 </html>

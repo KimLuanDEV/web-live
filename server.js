@@ -328,11 +328,12 @@ socket.on("lobby-get", () => {
 
   // ===== ICE RESTART RELAY =====
   // Any peer can ask another peer to perform ICE restart
+  /*
   socket.on("request-ice-restart", ({ to, reason }) => {
     if (!to) return;
     io.to(to).emit("request-ice-restart", { from: socket.id, reason: String(reason || "") });
   });
-
+*/
 
 // Host yêu cầu tắt/bật mic của guest
 socket.on("host-mute-guest", ({ roomId, mute }) => {
@@ -705,13 +706,15 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   });
 
   // Any viewer (or host) asks to watch guest -> server tells guest to create offer to that viewer
+  /*
   socket.on("watch-guest", ({ roomId }) => {
     if (!roomId) return;
     const room = getRoom(roomId);
     if (!room.guestId) return;
     io.to(room.guestId).emit("guest-watcher", { viewerId: socket.id, roomId });
   });
-
+*/
+/*
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
     io.to(to).emit("offer", { from: socket.id, description });
@@ -724,6 +727,9 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.on("candidate", ({ to, candidate }) => {
     io.to(to).emit("candidate", { from: socket.id, candidate });
   });
+
+  */
+
 
   socket.on("disconnect", () => {
 
