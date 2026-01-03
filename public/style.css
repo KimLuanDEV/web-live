@@ -3976,36 +3976,7 @@ body.viewer-fullscreen hr {
 }
 
 
-/* ===== MOBILE SWIPE CHAT ===== */
-@media (max-width: 768px) {
 
-  body.chat-hidden .chat-overlay {
-    transform: translateX(-120%);
-    opacity: 0;
-    pointer-events: none;
-  }
-
-  body.chat-hidden .chat-fab {
-    opacity: 1;
-    transform: scale(1);
-  }
-
-  /* trạng thái bình thường */
-  .chat-overlay {
-    transition: transform .25s ease, opacity .25s ease;
-  }
-
-  /* nút chat nổi khi chat bị ẩn */
-  .chat-fab {
-    position: absolute;
-    right: 12px;
-    bottom: 80px;
-    z-index: 20;
-    opacity: 0;
-    transform: scale(.85);
-    transition: opacity .25s ease, transform .25s ease;
-  }
-}
 
 
 /* ===== CHAT OVERLAY PRO ===== */
