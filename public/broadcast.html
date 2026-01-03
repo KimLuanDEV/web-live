@@ -1502,9 +1502,15 @@ if (sender) {
       }
     });
 
-    
+
     socket.on("cancel-request-guest", ({ roomId, socketId }) => {
-  // xóa khỏi pending list
+   // 1️⃣ XÓA guest khỏi danh sách xin mic
+  pendingGuestIds = pendingGuestIds.filter(id => id !== socketId);
+
+  // 2️⃣ Render lại danh sách
+  renderGuestReqList();
+
+  console.log("❌ Guest đã hủy yêu cầu:", socketId);
 });
 
 
