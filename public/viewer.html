@@ -342,18 +342,6 @@
   <script>
 
 
-const auth = JSON.parse(localStorage.getItem("auth"));
-const currentUser = auth.user;
-
-// dùng ở chat
-chatName.value = currentUser.name;
-
-// dùng ở gift
-senderName = currentUser.name;
-
-// dùng avatar
-userAvatar.src = currentUser.avatar;
-
 
 
 
@@ -430,6 +418,22 @@ function clearGuestView(reason = "") {
 
 
     const socket = io();
+
+
+    
+const auth = JSON.parse(localStorage.getItem("auth"));
+const currentUser = auth.user;
+
+// dùng ở chat
+chatName.value = currentUser.name;
+
+// dùng ở gift
+senderName = currentUser.name;
+
+// dùng avatar
+userAvatar.src = currentUser.avatar;
+
+
 
 socket.on("host-back-online", () => {
   console.warn("🔔 Host back online → try rejoin");
