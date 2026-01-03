@@ -1317,7 +1317,7 @@ btnRequestLive.disabled = true;
 btnRequestLive.onclick = () => {
   const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
   // mở tab mới để vẫn xem được live
-  window.open(url, "_blank");
+ window.location.href = url;
 };
 
 // chỉ cho xin lên live khi broadcaster online
