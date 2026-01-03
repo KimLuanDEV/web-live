@@ -3980,39 +3980,37 @@ body.is-live #startLiveOverlay {
   background:transparent;
 }
 
-/* ===== VIEWER FULLSCREEN UI ===== */
-body.viewer-full,
+/* ===== VIEWER FULL TOP FIX ===== */
+body.viewer-full {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* dán sát viewport thật */
 body.viewer-full .container,
 body.viewer-full .card,
 body.viewer-full .live-stage {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  height: 100svh;
-  max-height: 100svh;
-  overflow: hidden;
+  margin: 0 !important;
+  padding: 0 !important;
+  inset: 0;
 }
 
-/* video chiếm toàn bộ màn hình */
+/* ép video lên sát đỉnh */
 body.viewer-full .video-card,
 body.viewer-full .video-card__inner {
-  width: 100%;
-  height: 100%;
+  margin-top: calc(-1 * env(safe-area-inset-top));
 }
 
-/* video không zoom */
-body.viewer-full video {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* hoặc cover nếu bạn muốn */
-  background: #000;
+/* fallback cho Android / trình duyệt không hỗ trợ env */
+@supports not (margin-top: env(safe-area-inset-top)) {
+  body.viewer-full .video-card,
+  body.viewer-full .video-card__inner {
+    margin-top: 0;
+  }
 }
 
-/* ẩn header / panel viewer */
 body.viewer-full .page-header,
-body.viewer-full .viewer-header,
-body.viewer-full .ctrl-tab,
-body.viewer-full .footer,
-body.viewer-full .chat-fab {
+body.viewer-full .viewer-header {
   display: none !important;
 }
+
