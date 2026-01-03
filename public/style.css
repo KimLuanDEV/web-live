@@ -3871,3 +3871,28 @@ body.is-live #startLiveOverlay {
 }
 
 
+/* ===== HD NETWORK BADGE ===== */
+.hd-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:4px;
+  margin-left:8px;
+  padding:4px 10px;
+  font-size:12px;
+  font-weight:800;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(6px);
+}
+
+.hd-good{
+  color:#25F09A;
+  box-shadow: 0 0 14px rgba(37,240,154,.45);
+}
+
+.hd-bad{
+  color:#FFD36E;
+  box-shadow: 0 0 14px rgba(255,211,110,.45);
+}
+
