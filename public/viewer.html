@@ -861,6 +861,55 @@ function detectViewerProfile() {
 // ================== /ANTI LAG PRO ==================
 
 
+
+// ================= AUDIO ONLY FALLBACK =================
+function enableAudioOnlyFallback(pc, videoTrack, label = "") {
+  let audioOnly = false;
+  let lastSwitch = 0;
+
+  setInterval(async () => {
+    if (!pc || !videoTrack) return;
+
+    const stats = await pc.getStats();
+    let loss = 0, rtt = 0;
+
+    stats.forEach(r => {
+      if (r.type === "outbound-rtp" && r.kind === "video") {
+        loss = r.packetsLost || 0;
+      }
+      if (r.type === "candidate-pair" && r.currentRoundTripTime) {
+        rtt = r.currentRoundTripTime;
+      }
+    });
+
+    const now = Date.now();
+    if (now - lastSwitch < 5000) return; // tránh bật tắt liên tục
+
+    // 🚨 MẠNG RẤT YẾU → AUDIO ONLY
+    if (!audioOnly && (loss > 50 || rtt > 0.8)) {
+      console.warn("🎧 AUDIO ONLY ON", label);
+      videoTrack.enabled = false;
+      audioOnly = true;
+      lastSwitch = now;
+
+      document.body.classList.add("audio-only");
+    }
+
+    // ✅ MẠNG ỔN LẠI → BẬT VIDEO
+    if (audioOnly && loss < 10 && rtt < 0.3) {
+      console.warn("🎥 VIDEO RESUME", label);
+      videoTrack.enabled = true;
+      audioOnly = false;
+      lastSwitch = now;
+
+      document.body.classList.remove("audio-only");
+    }
+  }, 3000);
+}
+// ================= /AUDIO ONLY FALLBACK =================
+
+
+
     // multiple peer connections: broadcaster + guest
     const pcs = new Map(); // peerId -> RTCPeerConnection
     let guestId = null;
@@ -1067,6 +1116,34 @@ pc.ontrack = (event) => {
 
     if (player.srcObject !== stream) {
       player.srcObject = stream;
+
+
+      // 🎧 AUDIO ONLY – VIEWER (decode lag)
+let __viewerAudioOnly = false;
+
+setInterval(() => {
+  if (!player || !player.srcObject) return;
+
+  const v = player;
+  const frozen = v.readyState < 2 || v.videoWidth === 0;
+
+  if (frozen && !__viewerAudioOnly) {
+    console.warn("🎧 Viewer audio only");
+    v.style.display = "none";
+    __viewerAudioOnly = true;
+    document.body.classList.add("audio-only");
+  }
+
+  if (!frozen && __viewerAudioOnly) {
+    console.warn("🎥 Viewer video resume");
+    v.style.display = "";
+    __viewerAudioOnly = false;
+    document.body.classList.remove("audio-only");
+  }
+}, 2000);
+
+
+
       player.muted = true;          // autoplay mobile
       player.playsInline = true;
       player.play().catch(() => {});

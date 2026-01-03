@@ -950,6 +950,53 @@ function detectViewerProfile() {
 // ================== /ANTI LAG PRO ==================
 
 
+// ================= AUDIO ONLY FALLBACK =================
+function enableAudioOnlyFallback(pc, videoTrack, label = "") {
+  let audioOnly = false;
+  let lastSwitch = 0;
+
+  setInterval(async () => {
+    if (!pc || !videoTrack) return;
+
+    const stats = await pc.getStats();
+    let loss = 0, rtt = 0;
+
+    stats.forEach(r => {
+      if (r.type === "outbound-rtp" && r.kind === "video") {
+        loss = r.packetsLost || 0;
+      }
+      if (r.type === "candidate-pair" && r.currentRoundTripTime) {
+        rtt = r.currentRoundTripTime;
+      }
+    });
+
+    const now = Date.now();
+    if (now - lastSwitch < 5000) return; // tránh bật tắt liên tục
+
+    // 🚨 MẠNG RẤT YẾU → AUDIO ONLY
+    if (!audioOnly && (loss > 50 || rtt > 0.8)) {
+      console.warn("🎧 AUDIO ONLY ON", label);
+      videoTrack.enabled = false;
+      audioOnly = true;
+      lastSwitch = now;
+
+      document.body.classList.add("audio-only");
+    }
+
+    // ✅ MẠNG ỔN LẠI → BẬT VIDEO
+    if (audioOnly && loss < 10 && rtt < 0.3) {
+      console.warn("🎥 VIDEO RESUME", label);
+      videoTrack.enabled = true;
+      audioOnly = false;
+      lastSwitch = now;
+
+      document.body.classList.remove("audio-only");
+    }
+  }, 3000);
+}
+// ================= /AUDIO ONLY FALLBACK =================
+
+
     const pcs = new Map(); // peerId -> RTCPeerConnection
 
     // When network comes back / tab returns, restart only bad peers
@@ -1081,6 +1128,8 @@ applyBitrateGuard(pc, "MEDIUM");
 
 const videoTrack = localStream.getVideoTracks()[0];
 enableAdaptiveQuality(pc, videoTrack);
+// 🎧 AUDIO ONLY – GUEST
+enableAudioOnlyFallback(pc, videoTrack, "GUEST");
 
 
 
