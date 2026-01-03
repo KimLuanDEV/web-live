@@ -225,6 +225,39 @@ function emitLobbyUpdate() {
   io.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
 }
 
+// ===== PROFILE API =====
+app.get("/api/me", (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) return res.status(401).json({ error: "No token" });
+
+  const userId = Buffer.from(token, "base64").toString();
+  const user = [...users.values()].find(u => u.id === userId);
+  if (!user) return res.status(401).json({ error: "Invalid token" });
+
+  res.json({
+    id: user.id,
+    name: user.name,
+    avatar: user.avatar,
+    coins: user.coins,
+    level: user.level,
+  });
+});
+
+app.post("/api/profile", (req, res) => {
+  const token = req.headers.authorization;
+  if (!token) return res.status(401).json({ error: "No token" });
+
+  const userId = Buffer.from(token, "base64").toString();
+  const user = [...users.values()].find(u => u.id === userId);
+  if (!user) return res.status(401).json({ error: "Invalid token" });
+
+  const { name, avatar } = req.body;
+  if (name) user.name = String(name).slice(0, 20);
+  if (avatar) user.avatar = avatar;
+
+  res.json({ ok: true, user });
+});
+
 
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {

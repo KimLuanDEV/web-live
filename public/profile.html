@@ -2,62 +2,119 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8" />
-  <title>👤 Hồ sơ cá nhân</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Hồ sơ cá nhân</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <link rel="stylesheet" href="/style.css" />
 </head>
+<body class="profile-page">
 
-<body>
+<script src="/guard.js"></script>
 
-    <script src="/guard.js"></script>
+<div class="container" style="max-width:700px">
+  <div class="card">
 
-    
-  <div class="container">
-    <div class="card">
-
-      <h1>👤 Thông tin cá nhân</h1>
-      <small>Cập nhật hồ sơ hiển thị trong Livestream</small>
-
-      <hr />
-
-      <!-- AVATAR -->
-      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap">
-        <img id="avatarPreview"
-             src="https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg"
-             style="width:90px;height:90px;border-radius:50%;border:2px solid rgba(255,255,255,.25)" />
-
-        <div style="flex:1">
-          <label>Tên hiển thị</label>
-          <input id="nameInput" placeholder="Nhập tên của bạn" />
-        </div>
-      </div>
-
-      <hr />
-
-      <!-- STATS -->
-      <div class="row">
-        <div class="card">
-          <div class="badge badge--info">💰 Coin</div>
-          <h2 id="coinVal">0</h2>
-        </div>
-
-        <div class="card">
-          <div class="badge badge--ok">⭐ Level</div>
-          <h2 id="levelVal">1</h2>
-        </div>
-      </div>
-
-      <hr />
-
-      <!-- ACTION -->
-      <div style="display:flex; gap:12px; flex-wrap:wrap">
-        <button id="btnSave">💾 Lưu hồ sơ</button>
-        <button onclick="location.href='/lobby.html'">🏟️ Về Lobby</button>
-      </div>
-
+    <div class="page-header">
+      <h1 class="page-title">👤 Hồ sơ cá nhân</h1>
+      <button onclick="location.href='/lobby.html'" class="page-exit-btn">🚪</button>
     </div>
-  </div>
 
-<script src="/profile.js"></script>
+    <hr />
+
+    <!-- AVATAR -->
+    <div style="display:flex;gap:16px;align-items:center;flex-wrap:wrap">
+      <img id="avatarPreview"
+           src="https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
+           style="width:96px;height:96px;border-radius:50%;object-fit:cover;border:2px solid var(--stroke)" />
+
+      <div style="flex:1">
+        <div class="badge badge--info">Ảnh đại diện</div>
+        <input id="avatarInput" placeholder="URL avatar (hoặc để trống)" />
+      </div>
+    </div>
+
+    <hr />
+
+    <!-- INFO -->
+    <div class="row">
+      <div class="card">
+        <div class="badge">Tên hiển thị</div>
+        <input id="nameInput" />
+      </div>
+
+      <div class="card">
+        <div class="badge">Level</div>
+        <code id="levelText">1</code>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="card">
+        <div class="badge badge--ok">💰 Coin</div>
+        <code id="coinText">0</code>
+      </div>
+
+      <div class="card">
+        <div class="badge badge--info">User ID</div>
+        <code id="uidText">-</code>
+      </div>
+    </div>
+
+    <hr />
+
+    <button id="saveBtn">💾 Lưu thay đổi</button>
+    <button onclick="logout()" style="margin-top:8px">🚪 Đăng xuất</button>
+
+  </div>
+</div>
+
+<script type="module">
+import { getAuth, saveAuth, logout } from "./auth.js";
+
+const auth = getAuth();
+const token = auth.token;
+
+// load profile
+async function loadProfile(){
+  const res = await fetch("/api/me", {
+    headers: { Authorization: token }
+  });
+  const user = await res.json();
+
+  avatarPreview.src = user.avatar;
+  avatarInput.value = user.avatar;
+  nameInput.value = user.name;
+  coinText.textContent = user.coins;
+  levelText.textContent = user.level;
+  uidText.textContent = user.id;
+}
+loadProfile();
+
+// save
+saveBtn.onclick = async () => {
+  const res = await fetch("/api/profile", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: token
+    },
+    body: JSON.stringify({
+      name: nameInput.value,
+      avatar: avatarInput.value
+    })
+  });
+
+  const data = await res.json();
+  if (!res.ok) return alert("Lỗi lưu profile");
+
+  // cập nhật local auth
+  auth.user.name = data.user.name;
+  auth.user.avatar = data.user.avatar;
+  saveAuth(auth);
+
+  avatarPreview.src = data.user.avatar;
+  alert("✅ Đã cập nhật hồ sơ");
+};
+</script>
+
 </body>
 </html>
