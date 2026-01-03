@@ -1074,6 +1074,11 @@ function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
   const MIN_MS = 180; // anti-spam client side
 
   const handler = (ev) => {
+
+    // 🚫 KHÔNG xử lý nếu đang thao tác trong chat
+  if (ev.target && ev.target.closest("#chatOverlay")) {
+    return; // cho browser scroll chat
+  }
     // prevent video click from toggling play/pause
     try { if (ev && ev.cancelable) ev.preventDefault(); } catch {}
     try { ev.stopPropagation(); } catch {}
