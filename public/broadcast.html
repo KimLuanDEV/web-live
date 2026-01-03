@@ -1562,6 +1562,10 @@ document.addEventListener("pointerdown", () => {
       }
     });
 
+window.start = () => {
+  console.warn("⚠️ start() bị khoá – dùng LiveKit");
+};
+
     // ===== Start/Stop/Flip =====
     async function start() {
       if (localStream) return;
@@ -1683,83 +1687,61 @@ syncStartLiveOverlay(false);
       }
     }
 
-   btnStart.onclick = async () => {
+  btnStart.onclick = async () => {
   if (lkRoom) return;
 
-  // identity cố định theo room để dễ phân biệt
+  console.log("▶️ START LIVE CLICKED");
+
+  // 1️⃣ ẨN OVERLAY NGAY
+  syncStartLiveOverlay(true);
+  document.body.classList.add("is-live");
+
+  // 2️⃣ identity
   hostIdentity = `host_${roomId}`;
 
-  // 1) vẫn join socket room để lobby/chat/gift chạy như cũ
+  // 3️⃣ join socket (để lobby/chat/gift hoạt động)
   socket.emit("join-room", {
     roomId,
     role: "broadcaster",
-    profile: { name: (hostNameInput?.value || "Host").trim().slice(0, 20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 }
+    profile: {
+      name: (hostNameInput?.value || "Host").trim().slice(0, 20),
+      coins: Number(localStorage.getItem("ls_coins") || 0)
+    }
   });
 
-  // 2) connect LiveKit
+  // 4️⃣ lấy token LiveKit
   const { url, token } = await lkGetToken("host");
 
-  lkRoom = new LK.Room({
-    adaptiveStream: true,
-    dynacast: true,
-  });
-
-  // 3) subscribe guest track để gắn vào PIP (host nhìn thấy guest)
-  lkRoom.on(LK.RoomEvent.TrackSubscribed, (track, pub, participant) => {
-    const pid = participant.identity || "";
-    if (pid.startsWith("guest_") && track.kind === LK.Track.Kind.Video) {
-      // gắn vào guestVideo / pip của host (bạn đang có guestPipWrapHost) :contentReference[oaicite:12]{index=12}
-      document.body.classList.add("has-guest");
-      const el = track.attach();
-      // bạn thay element đích theo id video guest của host (nếu có)
-      // ví dụ: document.getElementById("guestVideo").replaceWith(el)
-      // nếu bạn đang dùng <video id="guestVideo"> thì:
-      const gv = document.getElementById("guestVideo");
-      if (gv) {
-        gv.srcObject = null;
-        gv.replaceWith(el);
-        el.id = "guestVideo"; // giữ lại id cho CSS/JS
-        el.autoplay = true;
-        el.playsInline = true;
-      }
-    }
-
-    if (pid.startsWith("guest_") && track.kind === LK.Track.Kind.Audio) {
-      const a = track.attach(); // <audio>
-      a.autoplay = true;
-      document.body.appendChild(a);
-    }
-  });
-
-  lkRoom.on(LK.RoomEvent.ParticipantDisconnected, (p) => {
-    const pid = p.identity || "";
-    if (pid.startsWith("guest_")) {
-      document.body.classList.remove("has-guest");
-    }
-  });
-
+  // 5️⃣ connect LiveKit
+  lkRoom = new LK.Room({ adaptiveStream: true, dynacast: true });
   await lkRoom.connect(url, token);
 
-  // 4) tạo local tracks
+  // 6️⃣ tạo track
   lkLocalTracks = await LK.createLocalTracks({
-    audio: { echoCancellation: true, noiseSuppression: true },
-    video: { width: 1280, height: 720, frameRate: 30 }
+    audio: true,
+    video: true
   });
 
-  // 5) publish
+  // 7️⃣ publish
   for (const t of lkLocalTracks) {
     await lkRoom.localParticipant.publishTrack(t);
   }
 
-  // 6) preview lên UI hiện tại
-  const v = lkLocalTracks.find(t => t.kind === "video");
-  if (v) {
-    v.attach(preview); // preview là <video id="preview"> của bạn :contentReference[oaicite:13]{index=13}
+  // 8️⃣ attach preview (QUAN TRỌNG)
+  const videoTrack = lkLocalTracks.find(t => t.kind === "video");
+  if (videoTrack) {
+    videoTrack.attach(preview);
   }
 
-  // 7) báo “đang live” cho hệ lobby của bạn như cũ
-  socket.emit("host-start-live", { roomId }); // server đang dùng cái này :contentReference[oaicite:14]{index=14}
+  // 9️⃣ UI state
+  btnStart.disabled = true;
+  btnStop.disabled = false;
+  hostFlipBtn.disabled = false;
+
+  console.log("✅ LIVEKIT HOST STARTED");
 };
+
+
 
 
 
