@@ -1503,15 +1503,45 @@ if (sender) {
     });
 
 
-    socket.on("cancel-request-guest", ({ roomId, socketId }) => {
-   // 1️⃣ XÓA guest khỏi danh sách xin mic
+function renderGuestReqText(){
+  const box = document.getElementById("guestReqList");
+  if (!box) return;
+
+  if (!pendingGuestIds.length){
+    box.textContent = "Chưa có yêu cầu.";
+    return;
+  }
+
+  box.innerHTML = pendingGuestIds
+    .map(id => `👤 ${id}`)
+    .join("<br>");
+}
+
+
+function updateGuestReqUI(){
+  const dot = document.getElementById("guestReqDot");
+  if (!dot) return;
+
+  dot.style.display = pendingGuestIds.length ? "inline-block" : "none";
+}
+
+
+socket.on("cancel-request-guest", ({ socketId }) => {
+  const before = pendingGuestIds.length;
+
+  // 1️⃣ XÓA guest khỏi mảng pending
   pendingGuestIds = pendingGuestIds.filter(id => id !== socketId);
 
-  // 2️⃣ Render lại danh sách
-  renderGuestReqList();
+  // 2️⃣ Nếu có thay đổi → render lại UI
+  if (pendingGuestIds.length !== before){
+    updateGuestReqUI();
+    renderGuestReqText();
+  }
 
-  console.log("❌ Guest đã hủy yêu cầu:", socketId);
+  console.log("❌ Guest đã hủy:", socketId);
 });
+
+
 
 
 // ===== ICE RESTART: host regenerates offer when asked =====
