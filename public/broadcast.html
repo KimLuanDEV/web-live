@@ -1523,10 +1523,38 @@ function showGuestRequestUI(){
 
 
 socket.on("cancel-request-guest", ({ socketId }) => {
-  console.log("❌ Guest hủy xin mic:", socketId);
+  pendingGuests.delete(socketId);
 
-  resetGuestRequestUI();
+  renderGuestReqList();
+
+  if (pendingGuests.size === 0) {
+    guestReqDot.style.display = "none";
+  }
 });
+
+
+function renderGuestReqList() {
+  guestReqList.innerHTML = "";
+
+  if (pendingGuests.size === 0) {
+    guestReqList.textContent = "Chưa có yêu cầu.";
+    btnApproveGuest.disabled = true;
+    btnRejectGuest.disabled = true;
+    return;
+  }
+
+  for (const id of pendingGuests) {
+    const div = document.createElement("div");
+    div.className = "guest-req-item";
+    div.dataset.guestId = id;
+    div.textContent = "👤 Guest xin lên mic";
+    guestReqList.appendChild(div);
+  }
+
+  btnApproveGuest.disabled = false;
+  btnRejectGuest.disabled = false;
+}
+
 
 
 
@@ -1574,6 +1602,9 @@ const btnRejectGuest  = document.getElementById("btnRejectGuest");
 
 let pendingGuestId = null;
 
+
+const pendingGuests = new Set();
+
 // mở modal khi bấm icon
 guestReqIcon.onclick = () => {
   guestReqModal.classList.remove("hidden");
@@ -1584,39 +1615,13 @@ guestReqModal.querySelector(".ncf__bg").onclick = () => {
   guestReqModal.classList.add("hidden");
 };
 
-// 🔔 khi có guest xin live
-socket.on("guest-request", ({ guestId }) => {
-  pendingGuestId = guestId;
+socket.on("guest-request", ({ socketId }) => {
+  if (pendingGuests.has(socketId)) return; // tránh trùng
 
-  guestReqIcon.classList.add("has-request");
-  guestReqList.textContent = `👤 Guest ID: ${guestId}`;
+  pendingGuests.add(socketId);
 
-  btnApproveGuest.disabled = false;
-  btnRejectGuest.disabled = false;
-
-  // ===== 🔔 RUNG + ÂM THANH =====
-  const now = Date.now();
-  if (now - __lastGuestNotify > 1200) {
-    __lastGuestNotify = now;
-
-    // rung icon
-    guestReqIcon.classList.remove("is-shake");
-    void guestReqIcon.offsetWidth; // reset animation
-    guestReqIcon.classList.add("is-shake");
-
-    // phát âm thanh
-    try {
-      guestReqSound.currentTime = 0;
-      guestReqSound.play().catch(()=>{});
-    } catch {}
-
-     console.log("👤 Guest xin lên mic:", socketId);
-
-  // 🔥 BẬT LẠI UI MỖI LẦN CÓ REQUEST
-  showGuestRequestUI();
-  
-  }
-
+  renderGuestReqList();
+  guestReqDot.style.display = "inline-block";
 });
 
 
