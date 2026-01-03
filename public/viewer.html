@@ -341,16 +341,6 @@
 </div>
 
 
-<!-- 🎤 REQUEST MIC OVERLAY -->
-<div id="requestMicOverlay" class="rmo hidden" aria-hidden="true">
-  <div class="rmo-backdrop"></div>
-  <div class="rmo-box">
-    <div class="rmo-spinner"></div>
-    <div class="rmo-title">🎤 Đang xin lên mic…</div>
-    <div class="rmo-desc">Vui lòng chờ host duyệt</div>
-    <button id="rmoCancel" class="rmo-cancel">Hủy</button>
-  </div>
-</div>
 
 
   <script src="/socket.io/socket.io.js"></script>
@@ -425,22 +415,6 @@ function clearGuestView(reason = "") {
 
 
      let swapped = false; // false: host main, true: guest main
-
-
-
-     const rmo = document.getElementById("requestMicOverlay");
-const rmoCancel = document.getElementById("rmoCancel");
-
-function openRequestMic(){
-  rmo.classList.remove("hidden");
-  rmo.setAttribute("aria-hidden","false");
-}
-
-function closeRequestMic(){
-  rmo.classList.add("hidden");
-  rmo.setAttribute("aria-hidden","true");
-}
-
 
 
     const socket = io();
@@ -1343,42 +1317,10 @@ const btnRequestLive = document.getElementById("btnRequestLive");
 btnRequestLive.disabled = true;
 
 btnRequestLive.onclick = () => {
-  openRequestMic();
-
-  socket.emit("request-guest", {
-    roomId,
-    name: (chatName?.value || "Viewer").trim().slice(0,20)
-  });
-
-  // timeout an toàn (30s)
-  window.__reqMicTimeout = setTimeout(() => {
-    closeRequestMic();
-    alert("⏳ Host chưa phản hồi, vui lòng thử lại");
-  }, 30000);
+  const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
+  // mở tab mới để vẫn xem được live
+ window.location.href = url;
 };
-
-rmoCancel.onclick = () => {
-  closeRequestMic();
-  clearTimeout(window.__reqMicTimeout);
-
-  socket.emit("cancel-request-guest", { roomId });
-};
-
-socket.on("guest-approved", () => {
-  clearTimeout(window.__reqMicTimeout);
-  closeRequestMic();
-
-  // chuyển role → guest trong cùng tab
-  window.location.href = `/guest.html?room=${encodeURIComponent(roomId)}`;
-});
-
-
-socket.on("guest-rejected", () => {
-  clearTimeout(window.__reqMicTimeout);
-  closeRequestMic();
-  alert("❌ Host từ chối yêu cầu lên mic");
-});
-
 
 // chỉ cho xin lên live khi broadcaster online
 socket.on("broadcaster-online", () => {
