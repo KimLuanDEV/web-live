@@ -1,6 +1,6 @@
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
 
-
+const { AccessToken } = require("livekit-server-sdk");
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -34,6 +34,36 @@ function saveLiveState(state) {
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
+
+
+
+
+app.get("/livekit/token", (req, res) => {
+  const room = String(req.query.room || "").trim().toLowerCase();
+  const identity = String(req.query.identity || "").trim();
+  const role = String(req.query.role || "viewer").toLowerCase();
+
+  if (!room || !identity) return res.status(400).json({ error: "missing room/identity" });
+
+  const at = new AccessToken(
+    process.env.LIVEKIT_API_KEY,
+    process.env.LIVEKIT_API_SECRET,
+    { identity }
+  );
+
+  at.addGrant({
+    room,
+    roomJoin: true,
+    canSubscribe: true,
+    canPublish: role !== "viewer",
+  });
+
+  res.json({
+    url: process.env.LIVEKIT_URL,
+    token: at.toJwt(),
+  });
+});
+
 
 app.use(express.static(path.join(__dirname, "public")));
 
