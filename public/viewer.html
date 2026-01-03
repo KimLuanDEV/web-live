@@ -60,6 +60,13 @@
           <div class="gift-layer" id="giftLayer"></div>
 
   <!-- HOST -->
+
+<!-- FULLSCREEN TAP OVERLAY -->
+<div id="fsOverlay" class="fs-overlay">
+  <div class="fs-hint">👆 Chạm để xem toàn màn hình</div>
+</div>
+
+
   <div class="video-card live-main" id="hostCard">
     <div class="live-overlay">
       <span class="dot"></span>
@@ -505,6 +512,36 @@ function limitAudioBitrate(pc, kbps = 32){
     r.setParameters?.(params);
   });
 }
+
+
+const fsOverlay = document.getElementById("fsOverlay");
+const videoEl   = document.querySelector("video");
+
+// 📺 Fullscreen helper
+function requestFullScreen(el){
+  if (el.requestFullscreen) return el.requestFullscreen();
+  if (el.webkitRequestFullscreen) return el.webkitRequestFullscreen();
+  if (el.mozRequestFullScreen) return el.mozRequestFullScreen();
+  if (el.msRequestFullscreen) return el.msRequestFullscreen();
+}
+
+// 👉 Tap lần đầu = fullscreen
+fsOverlay?.addEventListener("click", async () => {
+  try {
+    await requestFullScreen(videoEl || document.documentElement);
+  } catch {}
+
+  fsOverlay.classList.add("hidden");
+}, { once:true });
+
+// 👉 Fallback: nếu user tap trực tiếp video
+videoEl?.addEventListener("click", async () => {
+  if (document.fullscreenElement) return;
+  try {
+    await requestFullScreen(videoEl);
+    fsOverlay?.classList.add("hidden");
+  } catch {}
+}, { once:true });
 
 
 
