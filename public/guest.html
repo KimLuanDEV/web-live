@@ -345,6 +345,19 @@
 </div>
 
 
+<!-- ⏳ GUEST WAIT HOST OVERLAY -->
+<div id="guestWaitOverlay" class="guest-wait-overlay hidden">
+  <div class="guest-wait-box">
+    <div class="guest-spinner"></div>
+    <div class="guest-wait-title">⏳ Đang chờ host duyệt</div>
+    <div class="guest-wait-desc">
+      Mic & Camera đã sẵn sàng
+    </div>
+  </div>
+</div>
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script>
     const logEl = document.getElementById("log");
@@ -1052,6 +1065,21 @@ function enableAudioOnlyFallback(pc, videoTrack, label = "") {
     }
     function setStatus(t){ badge.textContent = t; }
 
+
+
+const guestWaitOverlay = document.getElementById("guestWaitOverlay");
+
+function showGuestWait(){
+  guestWaitOverlay?.classList.remove("hidden");
+}
+
+function hideGuestWait(){
+  guestWaitOverlay?.classList.add("hidden");
+}
+
+
+
+
     btnStart.onclick = async () => {
       if (localStream) return;
       try {
@@ -1067,6 +1095,10 @@ audio: {
 }
 
         });
+
+        // ✅ ĐÚNG THỜI ĐIỂM MỞ OVERLAY
+showGuestWait();
+
         me.srcObject = localStream;
 
         
@@ -1091,8 +1123,14 @@ audio: {
     };
 
     socket.on("guest-pending", () => setStatus("⏳ Đang chờ host duyệt..."));
-    socket.on("guest-rejected", () => setStatus("⛔ Host từ chối."));
+
+    socket.on("guest-rejected", () => {
+      hideGuestWait();
+      setStatus("⛔ Host từ chối.");
+    });
+
     socket.on("guest-approved", () => {
+      hideGuestWait();
       setStatus("✅ Được duyệt!");
       log("Được duyệt! Bây giờ viewer/host sẽ kết nối tới bạn.");
     });
