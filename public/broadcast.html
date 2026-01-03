@@ -84,6 +84,9 @@
     <div class="live-overlay">
       <span class="dot"></span>
       <b>HOST</b>
+      <span class="audio-badge audio-off" id="audioBadge">
+      ❌
+      </span>
       <span class="live-meta">
         <span class="meta-item" id="viewerCountHost">👁 0</span>
         <span class="meta-sep">•</span>
@@ -459,6 +462,80 @@ const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
 startLiveBigBtn?.addEventListener("click", () => {
   btnStart?.click();
 });
+
+
+// ===== AUDIO BADGE MONITOR =====
+function attachAudioBadge(videoEl, badgeEl){
+  if (!videoEl || !badgeEl) return;
+
+  let ctx, analyser, src, data;
+  let lastSoundTs = 0;
+
+  function setBadge(state){
+    badgeEl.classList.remove("audio-ok","audio-warn","audio-off");
+    badgeEl.classList.add(state);
+    badgeEl.textContent =
+      state === "audio-ok" ? "🔊" :
+      state === "audio-warn" ? "⚠️" :
+      "❌";
+  }
+
+  function start(){
+    try{
+      const stream = videoEl.srcObject;
+      if (!stream) return;
+
+      const track = stream.getAudioTracks?.()[0];
+      if (!track){
+        setBadge("audio-off");
+        return;
+      }
+
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 256;
+      data = new Uint8Array(analyser.frequencyBinCount);
+
+      src = ctx.createMediaStreamSource(new MediaStream([track]));
+      src.connect(analyser);
+
+      const loop = ()=>{
+        analyser.getByteFrequencyData(data);
+
+        let sum = 0;
+        for (let i=0;i<data.length;i++) sum += data[i];
+        const avg = sum / data.length;
+
+        const now = Date.now();
+
+        if (track.readyState !== "live" || track.muted){
+          setBadge("audio-off");
+        }
+        else if (avg > 8){
+          lastSoundTs = now;
+          setBadge("audio-ok");
+        }
+        else if (now - lastSoundTs < 1500){
+          setBadge("audio-warn");
+        }
+        else{
+          setBadge("audio-off");
+        }
+
+        requestAnimationFrame(loop);
+      };
+
+      loop();
+    }catch(e){
+      console.warn("audio badge error", e);
+      setBadge("audio-off");
+    }
+  }
+
+  videoEl.addEventListener("play", start);
+  videoEl.addEventListener("loadedmetadata", start);
+}
+
 
 
 function syncStartLiveOverlay(isLive) {
@@ -1601,6 +1678,7 @@ audio: {
         });
 
         preview.srcObject = localStream;
+attachAudioBadge(localVideo, document.getElementById("audioBadge"));
 
 // ✅ BẬT TRẠNG THÁI LIVE
     document.body.classList.add("is-live");
