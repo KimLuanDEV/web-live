@@ -631,6 +631,24 @@ if(nameFromLobby){
 
     const socket = io();
     
+
+
+function limitAudioBitrate(pc, kbps = 32) {
+  try {
+    pc.getSenders().forEach(sender => {
+      if (!sender.track || sender.track.kind !== "audio") return;
+
+      const params = sender.getParameters();
+      if (!params.encodings) params.encodings = [{}];
+
+      params.encodings[0].maxBitrate = kbps * 1000; // 32kbps
+      sender.setParameters(params).catch(()=>{});
+    });
+  } catch {}
+}
+
+
+
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
@@ -1125,6 +1143,9 @@ socket.on("reaction", (msg)=>{
 
 
 
+
+
+
     let localStream = null;
     let currentFacing = "user"; // user | environment
 
@@ -1303,6 +1324,10 @@ pc.addEventListener("iceconnectionstatechange", () => {
 });
 
       localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+ 
+// 🔒 khóa audio bitrate cho viewer này
+limitAudioBitrate(pc, 32);
+
 
 
 const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
@@ -1567,6 +1592,7 @@ document.addEventListener("pointerdown", () => {
   frameRate: { ideal: 30, max: 30 }
 },
 audio: {
+  channelCount: 1,
   echoCancellation: true,
   noiseSuppression: true,
   autoGainControl: true
@@ -1931,22 +1957,32 @@ let hostCamOn = true;
 
 
 async function replaceHostAudioTrack(){
-  const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const stream = await navigator.mediaDevices.getUserMedia({
+    audio: {
+      channelCount: 1,
+      echoCancellation: true,
+      noiseSuppression: true,
+      autoGainControl: true
+    }
+  });
+
   const newTrack = stream.getAudioTracks()[0];
 
-  // replace cho TẤT CẢ viewer
+  // replace cho viewer
   pcs.forEach(pc => {
     const sender = pc.getSenders().find(s => s.track?.kind === "audio");
     if (sender) sender.replaceTrack(newTrack);
+    limitAudioBitrate(pc, 32); // 🔒 QUAN TRỌNG
   });
 
-  // replace cho guest (nếu có)
+  // replace cho guest
   if (pcGuestIn){
     const sender = pcGuestIn.getSenders().find(s => s.track?.kind === "audio");
     if (sender) sender.replaceTrack(newTrack);
+    limitAudioBitrate(pcGuestIn, 32);
   }
 
-  // thay trong localStream
+  // update localStream
   const old = localStream.getAudioTracks()[0];
   if (old) {
     localStream.removeTrack(old);

@@ -351,6 +351,44 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
+
+// ===== FORCE RESUME AUDIO (VIEWER) =====
+function forceResumeAudio(videoEl){
+  if (!videoEl) return;
+
+  try {
+    videoEl.muted = false;
+    videoEl.volume = 1.0;
+  } catch {}
+
+  if (!window.__viewerAudioCtx) {
+    try {
+      window.__viewerAudioCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    } catch {}
+  }
+
+  try {
+    if (window.__viewerAudioCtx?.state === "suspended") {
+      window.__viewerAudioCtx.resume().catch(()=>{});
+    }
+  } catch {}
+
+  try {
+    if (videoEl.paused) videoEl.play().catch(()=>{});
+  } catch {}
+}
+
+// user gesture unlock (mobile bắt buộc)
+["click","touchstart","pointerdown"].forEach(evt=>{
+  document.addEventListener(evt, ()=>{
+    forceResumeAudio(player);
+    forceResumeAudio(guestPlayer);
+  }, { passive:true });
+});
+
+
+
 let __viewerWasBackground = false;
 let __viewerAutoReloaded = false;
 
@@ -377,6 +415,10 @@ window.addEventListener("focus", () => {
 
   // delay nhẹ cho mượt
   setTimeout(() => {
+
+    forceResumeAudio(player);
+    forceResumeAudio(guestPlayer);
+
     // reload sạch, không back history
     location.replace(location.href);
   }, 700);
@@ -444,6 +486,18 @@ function limitBitrateForMobile(pc){
   });
 }
 
+function limitAudioBitrate(pc, kbps = 32){
+  if (!pc) return;
+  pc.getReceivers().forEach(r=>{
+    if (!r.track || r.track.kind !== "audio") return;
+
+    const params = r.getParameters();
+    if (!params.encodings) params.encodings = [{}];
+
+    params.encodings[0].maxBitrate = kbps * 1000;
+    r.setParameters?.(params);
+  });
+}
 
 
 
@@ -1040,8 +1094,10 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
      
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
-      
+
       limitBitrateForMobile(pc);
+      limitAudioBitrate(pc, 32); // 🔒 FIX MẤT TIẾNG KHI ĐÔNG
+
 
       pcs.set(from, pc);
 
@@ -1069,11 +1125,13 @@ pc.ontrack = (event) => {
 
     if (guestPlayer.srcObject !== stream) {
       guestPlayer.srcObject = stream;
-      optimizeVideoForMobile(guestPlayer);
+optimizeVideoForMobile(guestPlayer);
 
-      guestPlayer.muted = false;
-      guestPlayer.playsInline = true;
-      guestPlayer.play().catch(() => {});
+guestPlayer.playsInline = true;
+guestPlayer.muted = false;
+
+forceResumeAudio(guestPlayer);
+
     }
 
     try {
@@ -1088,12 +1146,14 @@ pc.ontrack = (event) => {
     console.log("🎥 Viewer nhận stream HOST");
 
     if (player.srcObject !== stream) {
-      player.srcObject = stream;
-      optimizeVideoForMobile(player);
+     player.srcObject = stream;
+optimizeVideoForMobile(player);
 
-      player.muted = true;          // autoplay mobile
-      player.playsInline = true;
-      player.play().catch(() => {});
+player.playsInline = true;
+player.muted = false;
+
+forceResumeAudio(player);
+
     }
 
     const hasAudio = stream.getAudioTracks().length > 0;
@@ -1903,13 +1963,16 @@ setInterval(() => {
   if (!st) return;
 
   const at = st.getAudioTracks()[0];
+
   if (!at || at.readyState !== "live") {
-    console.warn("🔄 Audio dead → request ICE restart");
-    socket.emit("request-ice-restart", {
-      to: hostId,
-      reason: "audio_lost"
-    });
-  }
+  console.warn("🔊 Viewer audio dead → resume + ICE");
+  forceResumeAudio(player);
+
+  socket.emit("request-ice-restart", {
+    to: hostId,
+    reason: "viewer_audio_dead"
+  });
+}
 }, 3000);
 
 

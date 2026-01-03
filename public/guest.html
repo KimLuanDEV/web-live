@@ -383,6 +383,45 @@
  const guestRequestOverlay = document.getElementById("guestRequestOverlay");
 const guestRequestBtn = document.getElementById("guestRequestBtn");
 
+
+
+// ===== FORCE RESUME AUDIO (GUEST) =====
+function forceResumeAudio(videoEl){
+  if (!videoEl) return;
+
+  try {
+    videoEl.muted = false;
+    videoEl.volume = 1.0;
+  } catch {}
+
+  if (!window.__guestAudioCtx) {
+    try {
+      window.__guestAudioCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    } catch {}
+  }
+
+  try {
+    if (window.__guestAudioCtx?.state === "suspended") {
+      window.__guestAudioCtx.resume().catch(()=>{});
+    }
+  } catch {}
+
+  try {
+    if (videoEl.paused) videoEl.play().catch(()=>{});
+  } catch {}
+}
+
+// unlock audio bằng user gesture (mobile)
+["click","touchstart","pointerdown"].forEach(evt=>{
+  document.addEventListener(evt, ()=>{
+    forceResumeAudio(hostVideo);
+    forceResumeAudio(me);
+  }, { passive:true });
+});
+
+
+
 // Click nút giữa = xin lên mic
 guestRequestBtn?.addEventListener("click", () => {
   btnStart?.click();
@@ -917,7 +956,10 @@ socket.on("reaction", (msg)=>{
     // When network comes back / tab returns, restart only bad peers
     window.addEventListener("online", () => __restartBadPeers(() => Array.from(pcs.entries())));
     document.addEventListener("visibilitychange", () => {
-      if (document.visibilityState === "visible") __restartBadPeers(() => Array.from(pcs.entries()));
+      if (document.visibilityState === "visible") 
+      forceResumeAudio(hostVideo);
+      forceResumeAudio(me);
+      __restartBadPeers(() => Array.from(pcs.entries()));
     });
 
 
@@ -927,6 +969,24 @@ socket.on("reaction", (msg)=>{
       const pc = pcs.get(peerId);
       if (pc) __doIceRestart(peerId, pc, reason || "requested");
     });
+
+
+function limitAudioBitrate(pc, kbps = 32){
+  if (!pc) return;
+
+  pc.getSenders().forEach(sender=>{
+    if (!sender.track || sender.track.kind !== "audio") return;
+
+    const params = sender.getParameters();
+    if (!params.encodings) params.encodings = [{}];
+
+    params.encodings[0].maxBitrate = kbps * 1000;
+    sender.setParameters(params).catch(()=>{});
+  });
+}
+
+
+
 
 
     let currentFacing = "user"; // user (cam trước) | environment (cam sau)
@@ -1082,14 +1142,19 @@ pc.oniceconnectionstatechange = () => {
   console.log("ICE (guest):", st);
 
   if (st === "failed" || st === "disconnected") {
-    socket.emit("request-ice-restart", {
-      to: hostId,
-      reason: "guest_no_video"
-    });
+    forceResumeAudio(hostVideo);
+   socket.emit("request-ice-restart", {
+    to: hostId,
+    reason: "guest_audio_dead"
+  });
   }
 };
 
       localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+// 🔒 khóa audio bitrate cho peer này
+limitAudioBitrate(pc, 32);
+
 
       pc.onicecandidate = (e) => {
         if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
@@ -1105,9 +1170,12 @@ function attachHostVideoSafe() {
     hostVideo.srcObject = hostStream;
   }
 
-  hostVideo.srcObject = stream;
-hostVideo.muted = true;
+ hostVideo.srcObject = hostStream;
+hostVideo.muted = false;
 hostVideo.playsInline = true;
+
+forceResumeAudio(hostVideo);
+
 
 const p = hostVideo.play();
 if (p?.catch) p.catch(()=>{});
