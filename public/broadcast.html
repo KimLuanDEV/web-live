@@ -1914,6 +1914,18 @@ socket.on("pin-note-update", (note)=> renderPin(note));
    // ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) =====
 const chatOverlay = document.getElementById("chatOverlay");
 
+// 🔒 FIX MOBILE: chặn scroll xuyên body khi vuốt chat
+if (chatOverlay) {
+  chatOverlay.addEventListener("touchstart", e => {
+    e.stopPropagation();
+  }, { passive: true });
+
+  chatOverlay.addEventListener("touchmove", e => {
+    e.stopPropagation();
+  }, { passive: true });
+}
+
+
 function pushOverlay(msg){
   if (!chatOverlay) return;
 
