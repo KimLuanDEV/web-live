@@ -643,6 +643,44 @@ if(nameFromLobby){
 
     const socket = io();
     
+
+// ===== HOST LIVE TIMER (BẮT BUỘC) =====
+let __liveTimerInterval = null;
+
+function startHostLiveTimer(startTs) {
+  const el = document.getElementById("liveTimerHost");
+  if (!el) {
+    console.warn("⚠️ liveTimerHost element not found");
+    return;
+  }
+
+  if (__liveTimerInterval) {
+    clearInterval(__liveTimerInterval);
+  }
+
+  function tick() {
+    const diff = Date.now() - startTs;
+    const h = String(Math.floor(diff / 3600000)).padStart(2, "0");
+    const m = String(Math.floor((diff % 3600000) / 60000)).padStart(2, "0");
+    const s = String(Math.floor((diff % 60000) / 1000)).padStart(2, "0");
+    el.textContent = `⏱ ${h}:${m}:${s}`;
+  }
+
+  tick();
+  __liveTimerInterval = setInterval(tick, 1000);
+}
+
+// 🔥 HOST PHẢI NGHE EVENT NÀY
+socket.on("live-start", ({ startTs }) => {
+  console.log("🟢 HOST RECEIVED live-start", startTs);
+
+  document.body.classList.add("is-live");
+
+  // chạy timer
+  startHostLiveTimer(startTs);
+});
+
+    
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
 guestReqSound.volume = 0.6;
@@ -1720,15 +1758,7 @@ syncStartLiveOverlay(false);
   // 4️⃣ identity
   hostIdentity = `host_${roomId}`;
 
-  // 5️⃣ socket join (chat/gift/lobby)
-  socket.emit("join-room", {
-    roomId,
-    role: "broadcaster",
-    profile: {
-      name: (hostNameInput?.value || "Host").trim().slice(0, 20),
-      coins: Number(localStorage.getItem("ls_coins") || 0)
-    }
-  });
+  
 
   // 6️⃣ LiveKit connect
   const { url, token } = await lkGetToken("host");
@@ -1742,7 +1772,16 @@ syncStartLiveOverlay(false);
   await lkRoom.localParticipant.publishTrack(videoTrack);
   await lkRoom.localParticipant.publishTrack(audioTrack);
 
-
+// 5️⃣ socket join (chat/gift/lobby)
+  socket.emit("join-room", {
+    roomId,
+    role: "broadcaster",
+    profile: {
+      name: (hostNameInput?.value || "Host").trim().slice(0, 20),
+      coins: Number(localStorage.getItem("ls_coins") || 0)
+    }
+  });
+  
   // 🔥 BÁO SERVER: HOST ĐÃ BẮT ĐẦU LIVE (BẮT BUỘC)
 socket.emit("host-start-live", { roomId });
 
