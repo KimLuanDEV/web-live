@@ -392,6 +392,23 @@ guestRequestBtn?.addEventListener("click", () => {
 });
 
 
+const toastEl = document.getElementById("toast");
+let __toastTimer = null;
+
+function showToast(msg, type = "info", duration = 2500){
+  if (!toastEl) return;
+
+  toastEl.textContent = msg;
+  toastEl.className = `toast ${type} show`;
+
+  clearTimeout(__toastTimer);
+  __toastTimer = setTimeout(() => {
+    toastEl.classList.remove("show");
+  }, duration);
+}
+
+
+
 
 
     const socket = io();
@@ -1149,7 +1166,7 @@ showGuestWait();
 
 
       } catch (e) {
-        alert("Không mở được camera/mic: " + e.message);
+        showToast("Không mở được camera/mic: " + e.message);
       }
     };
 
@@ -1166,7 +1183,7 @@ showGuestWait();
   }
 
   // 3️⃣ Thông báo (optional)
-  alert("❌ Host đã từ chối yêu cầu");
+  showToast("❌ Host đã từ chối yêu cầu");
 
   // 4️⃣ QUAY VỀ VIEWER (CÙNG TAB)
   window.location.href = `/viewer.html?room=${encodeURIComponent(roomId)}`;
@@ -1324,7 +1341,7 @@ if (p?.catch) p.catch(()=>{});
       } catch (err) {
         currentFacing = (currentFacing === "user") ? "environment" : "user";
         log("❌ Không đảo được camera: " + err.message);
-        alert("Không đảo được camera: " + err.message);
+        showToast("Không đảo được camera: " + err.message);
       }
     }
 
@@ -1482,7 +1499,7 @@ socket.on("guest-set-cam", ({ off }) => {
 
     // Host kick guest
     socket.on("guest-kicked", () => {
-      alert("Bạn đã bị Host kích khỏi live.");
+      showToast("Bạn đã bị Host kích khỏi live.");
       try { leaveLive(); } catch {
         location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
       }
@@ -1882,6 +1899,9 @@ socket.on("host-live", ({ liveStartTs }) => {
 
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
+<!-- 🔔 TOAST -->
+<div id="toast" class="toast hidden"></div>
+
 
 </body>
 </html>

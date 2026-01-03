@@ -3913,3 +3913,44 @@ body.is-live #startLiveOverlay {
 .guest-wait-cancel:hover{
   background: rgba(255,255,255,.08);
 }
+
+
+/* ===== TOAST ===== */
+.toast{
+  position: fixed;
+  bottom: 18px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  padding: 10px 16px;
+  border-radius: 999px;
+  font-size: 14px;
+  color: #fff;
+  background: rgba(0,0,0,.75);
+  border: 1px solid rgba(255,255,255,.2);
+  box-shadow: 0 6px 20px rgba(0,0,0,.35);
+  opacity: 0;
+  transition: .25s ease;
+  z-index: 10000;
+  pointer-events: none;
+}
+
+.toast.show{
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.toast.success{
+  background: rgba(0,180,120,.9);
+}
+
+.toast.error{
+  background: rgba(220,60,60,.9);
+}
+
+.toast.info{
+  background: rgba(60,120,220,.9);
+}
+
+.toast.hidden{
+  display:none;
+}
