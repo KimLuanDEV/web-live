@@ -75,7 +75,7 @@
   <span class="qb-sep">•</span>
   <span id="qbRes">--×--</span>
   <span class="qb-sep">•</span>
-  <span id="qbPing">--ms</span>
+  <span id="qbPing" class="qb-ping">--ms</span>
 </div>
 
 
@@ -1007,13 +1007,41 @@ function startViewerPingWatch(pc){
         }
       });
 
-      if (rtt !== null){
-        qbPing.textContent = rtt + "ms";
-      }
+     if (rtt !== null){
+  qbPing.textContent = rtt + "ms";
+
+  qbPing.classList.remove("good","warn","bad");
+
+  if (rtt < 120){
+    qbPing.classList.add("good");
+  }
+  else if (rtt < 250){
+    qbPing.classList.add("warn");
+  }
+  else {
+    qbPing.classList.add("bad");
+  }
+}
+
     }catch{}
   }, 2500);
 }
 
+let __lastPing = null;
+
+if (rtt !== null){
+  if (__lastPing !== null){
+    rtt = Math.round(__lastPing * 0.7 + rtt * 0.3);
+  }
+  __lastPing = rtt;
+
+  qbPing.textContent = rtt + "ms";
+
+  qbPing.classList.remove("good","warn","bad");
+  if (rtt < 120) qbPing.classList.add("good");
+  else if (rtt < 250) qbPing.classList.add("warn");
+  else qbPing.classList.add("bad");
+}
 
 
 function setQualityBadge(mode){
