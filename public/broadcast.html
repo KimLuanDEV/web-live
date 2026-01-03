@@ -1512,6 +1512,14 @@ if (sender) {
 }
 
 
+function showGuestRequestUI(){
+  const list = document.getElementById("guestReqList");
+  const dot  = document.getElementById("guestReqDot");
+
+  if (list) list.textContent = "👤 Có guest xin lên mic";
+  if (dot)  dot.style.display = "inline-block";
+}
+
 
 
 socket.on("cancel-request-guest", ({ socketId }) => {
@@ -1601,6 +1609,12 @@ socket.on("guest-request", ({ guestId }) => {
       guestReqSound.currentTime = 0;
       guestReqSound.play().catch(()=>{});
     } catch {}
+
+     console.log("👤 Guest xin lên mic:", socketId);
+
+  // 🔥 BẬT LẠI UI MỖI LẦN CÓ REQUEST
+  showGuestRequestUI();
+  
   }
 
 });
