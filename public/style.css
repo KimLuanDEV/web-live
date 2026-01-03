@@ -3986,6 +3986,12 @@ body.is-live #startLiveOverlay {
   width: 100%;
 }
 
+video{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;     /* 🔥 KHÔNG ZOOM */
+  background: #000;
+}
 
 /* 🔒 KHÓA TỈ LỆ VIDEO – CHỐNG ZOOM */
 .video-card__inner{
