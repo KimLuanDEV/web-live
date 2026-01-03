@@ -424,7 +424,7 @@
 </div>
 
 
-
+<script src="https://unpkg.com/livekit-client@2.15.13/dist/livekit-client.umd.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
@@ -1693,7 +1693,7 @@ syncStartLiveOverlay(false);
   socket.emit("join-room", {
     roomId,
     role: "broadcaster",
-    profile: { name: (hostName?.value || "Host").trim().slice(0, 20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 }
+    profile: { name: (hostNameInput?.value || "Host").trim().slice(0, 20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 }
   });
 
   // 2) connect LiveKit
@@ -2204,6 +2204,7 @@ socket.on("gift", ({ gift, donor })=>{
     setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
   }catch{}
 });
+
 const hostNameInput = document.getElementById("hostNameInput");
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");
 
@@ -2372,7 +2373,8 @@ if (profile){
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
 
 
-<script src="https://unpkg.com/livekit-client@2.15.13/dist/livekit-client.umd.js"></script>
+
+<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
 
 </body>
 </html>
