@@ -580,6 +580,15 @@ setInterval(checkHDQuality, 2500);
 
     const socket = io();
 
+
+socket.emit("viewer-join", {
+  roomId,
+  name: localStorage.getItem("profileName") || "Viewer",
+  avatar: localStorage.getItem("profileAvatar") || "/avatar-default.png"
+});
+
+
+
 socket.on("host-back-online", () => {
   console.warn("🔔 Host back online → try rejoin");
 
@@ -1422,6 +1431,7 @@ function pushJoinViewer(text){
 socket.on("viewer-join", ({ id }) => {
   pushJoinViewer("➕ Có người vào xem");
 });
+
 socket.on("viewer-leave", ({ id }) => {
   pushJoinViewer("➖ Có người rời");
 });

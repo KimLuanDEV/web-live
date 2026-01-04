@@ -99,46 +99,16 @@ function clampInt(n, min, max){
 function safeName(name){
   return String(name || "Ẩn danh").trim().slice(0, 20);
 }
-
-function roomGiftTop(room, limit = 5) {
+function roomGiftTop(room, limit=5){
   const arr = [];
-  for (const [name, coins] of room.giftByUser.entries()) {
-    arr.push({
-      name,
-      coins,
-      avatar: `https://i.pravatar.cc/100?u=${encodeURIComponent(name)}`
-    });
-  }
-  arr.sort((a, b) => b.coins - a.coins);
+  try{
+    for (const [k,v] of room.giftByUser.entries()){
+      arr.push({ name: k, coins: v });
+    }
+  }catch{}
+  arr.sort((a,b)=>b.coins-a.coins);
   return arr.slice(0, limit);
 }
-
-
-
-socket.on("gift-send", ({ roomId, giftId }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  const gift = GIFT_CATALOG[giftId];
-  if (!gift) return;
-
-  const name = socket.data.userName || "Ẩn danh";
-
-  // cộng coin
-  room.giftTotal += gift.cost;
-  room.giftByUser.set(
-    name,
-    (room.giftByUser.get(name) || 0) + gift.cost
-  );
-
-  // 🔥 TOP DONATE
-  const top = roomGiftTop(room, 5);
-
-  io.to(roomId).emit("gift-top-update", {
-    top
-  });
-});
-
 // ===== /GIFT ENGINE =====
 
 function normRoomId(roomId) {
@@ -152,15 +122,14 @@ function getRoom(roomId) {
    rooms.set(roomId, {
   broadcasterId: null,
   viewers: new Set(),
+  viewerProfiles: new Map(), // 👈 thêm
   guestId: null,
   liveStartTs: null,
   pinnedNote: null,
   hostProfile: null,
-
-  
   giftTotal: 0,
   giftByUser: new Map(),
-releaseTimer: null,        // ⏱️ timer giải phóng
+  releaseTimer: null,        // ⏱️ timer giải phóng
   pendingRelease: false,     // đang chờ giải phóng?
 });
 
@@ -254,6 +223,25 @@ emitLobbyUpdate();
 
 
 io.on("connection", (socket) => {
+
+
+socket.on("viewer-join", ({ roomId, name, avatar }) => {
+  const room = getRoom(roomId);
+  if (!room) return;
+
+  room.viewers.add(socket.id);
+  room.viewerProfiles.set(socket.id, {
+    name: safeName(name),
+    avatar: avatar || "/avatar-default.png"
+  });
+
+  emitViewerCount(roomId);
+
+  io.to(roomId).emit("viewer-list", {
+    viewers: Array.from(room.viewerProfiles.values())
+  });
+});
+
 
 
 socket.on("resume-viewers", ({ roomId }) => {
@@ -728,7 +716,17 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.on("disconnect", () => {
 
 
+
+
    for (const [roomId, room] of rooms.entries()) {
+
+room.viewerProfiles.delete(socket.id);
+
+io.to(roomId).emit("viewer-list", {
+  viewers: Array.from(room.viewerProfiles.values())
+});
+
+
     if (room.broadcasterId === socket.id) {
 
       room.pendingRelease = true;
