@@ -2237,8 +2237,8 @@ const giftTotalCoinsHost = document.getElementById("giftTotalCoinsHost");
 const giftTopListHost = document.getElementById("giftTopListHost");
 socket.on("gift-stats", ({ totalCoins, topDonors })=>{
 
-   renderDonorAvatars(list, "giftTopListHost");
    
+
   if (giftTotalCoinsHost) giftTotalCoinsHost.textContent = String(totalCoins ?? 0);
   if (giftTopListHost){
     const arr = Array.isArray(topDonors) ? topDonors : [];
@@ -2267,6 +2267,7 @@ function spawnGift(type, donor, giftMeta){
 }
 
 socket.on("gift", ({ gift, donor })=>{
+  renderDonorAvatars(list, "giftTopListHost");
   spawnGift(gift.type, donor, gift);
   try{
     const note = document.createElement("div");
