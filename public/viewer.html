@@ -1836,13 +1836,14 @@ socket.on("gift-failed", ({ reason, need, coins })=>{
 
 const giftTotalCoinsEl = document.getElementById("giftTotalCoins");
 const giftTopList = document.getElementById("giftTopList");
+
 socket.on("gift-stats", ({ totalCoins, topDonors })=>{
   if (giftTotalCoinsEl) giftTotalCoinsEl.textContent = String(totalCoins ?? 0);
   if (giftTopList){
     const arr = Array.isArray(topDonors) ? topDonors : [];
     giftTopList.innerHTML = arr.length
       ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
-      : `<div class="gift-board__empty">Chưa có donate</div>`;
+      : `<div class="gift-board__empty"></div>`;
   }
 });
 // ===== NEON CONFIRM: Back to Lobby (VIEWER) =====
