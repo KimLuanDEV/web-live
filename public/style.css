@@ -4059,5 +4059,24 @@ body.viewer-fullscreen .video-card {
   z-index:9999;
 }
 
+/* ===== FIX CTRL FAB POSITION JUMP ===== */
+.ctrl-tab {
+  position: absolute;
+}
+
+/* tách fab khỏi flow */
+.ctrl-fab {
+  position: absolute !important;
+  bottom: 0;
+  left: 0;
+  z-index: 30;
+}
+
+/* drawer mở lên TRÊN fab */
+.ctrl-drawer {
+  position: absolute;
+  bottom: 52px; /* = height fab + gap */
+  right: 0;
+}
 
 
