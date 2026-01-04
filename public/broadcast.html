@@ -2423,7 +2423,7 @@ const viewerAvatarBox = document.getElementById("viewerAvatars");
 socket.on("viewer-list", ({ viewers }) => {
   if (!viewerAvatarBox) return;
 
-  const maxShow = 4;
+  const maxShow = 3;
   const showList = viewers.slice(0, maxShow);
   const remain = viewers.length - maxShow;
 
