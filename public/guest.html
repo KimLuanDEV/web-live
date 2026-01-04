@@ -15,7 +15,7 @@
   <title>Guest - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
 </head>
-<body>
+<body class="viewer-fullscreen">
 
   <script src="/guard.js"></script>
   
@@ -1881,7 +1881,7 @@ socket.on("host-live", ({ liveStartTs }) => {
   startLiveTimer(liveStartTs);
 });
 
-
+document.body.classList.add("viewer-fullscreen");
 
   </script>
 
