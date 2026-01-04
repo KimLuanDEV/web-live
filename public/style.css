@@ -4123,8 +4123,8 @@ body.viewer-fullscreen .video-card {
 /* ===== VIEWER AVATAR OVERLAY ===== */
 .viewer-avatars-overlay{
   position:absolute;
-  top:56px;
-  right:12px;
+  top:58px;
+  right:15px;
   display:flex;
   gap:6px;
   flex-wrap:wrap;
