@@ -85,6 +85,10 @@
   <b id="giftTotalCoins">0</b>
 </div>
 
+<!-- 👥 VIEWER AVATAR OVERLAY -->
+<div class="viewer-avatars-overlay" id="viewerAvatars"></div>
+
+
               <div class="chat-overlay" id="chatOverlay"></div>
 
               <!-- CHAT QUICK BUTTON -->
@@ -471,6 +475,31 @@ const neonConfirm = document.getElementById("neonConfirm");
 const ncfOk = document.getElementById("ncfOk");
 const ncfCancel = document.getElementById("ncfCancel");
 const ncfX = document.getElementById("ncfX");
+
+
+
+/* ===== VIEWER AVATAR OVERLAY (GUEST) ===== */
+const viewerAvatarBox = document.getElementById("viewerAvatars");
+
+socket.on("viewer-list", ({ viewers }) => {
+  if (!viewerAvatarBox) return;
+
+  const maxShow = 3;
+  const showList = viewers.slice(0, maxShow);
+  const remain = viewers.length - maxShow;
+
+  viewerAvatarBox.innerHTML =
+    showList.map(v => `
+      <div class="viewer-avatar" title="${v.name}">
+        <img src="https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360">
+      </div>
+    `).join("") +
+    (remain > 0
+      ? `<div class="viewer-avatar viewer-avatar--more">+${remain}</div>`
+      : "");
+});
+
+
 
 function openNcf(){
   neonConfirm?.classList.remove("hidden");
