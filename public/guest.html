@@ -664,6 +664,9 @@ async function checkHDQuality(){
 setInterval(checkHDQuality, 2500);
 
 
+const viewerCountHost = document.getElementById("viewerCountHost");
+
+
 // ===== /VIP TICKER =====
 // ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
 function attachSpeakingIndicator(videoEl, targetEl){
@@ -793,6 +796,13 @@ function pushJoinGuest(text){
 }
 socket.on("viewer-join", () => pushJoinGuest("➕ +1 người xem"));
 socket.on("viewer-leave", () => pushJoinGuest("➖ -1 người xem"));
+
+socket.on("viewer-count", ({ count }) => {
+  if (viewerCountHost) {
+    viewerCountHost.textContent = `👁: ${count}`;
+  
+    try { viewerCountHost.classList.remove("pulse"); void viewerCountHost.offsetWidth; viewerCountHost.classList.add("pulse"); } catch {}}
+});
 // ===== /VIEWER JOIN/LEAVE TOAST =====
 // ===== PIN NOTE (display only) =====
 const pinOverlay = document.getElementById("pinOverlay");
