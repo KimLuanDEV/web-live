@@ -725,6 +725,7 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 .ctrl-tab.is-open .ctrl-drawer{
   opacity:1;
   transform: translateY(0) scale(1);
+  z-index:20;
 }
 
 .ctrl-title{
@@ -4036,7 +4037,7 @@ body.viewer-fullscreen .video-card {
 .viewer-fullscreen .ctrl-tab {
   top: auto !important;
   right: auto !important;
-  bottom: 14px;
+  bottom: 10px;
   left: 110px;
 
   flex-direction: row;
@@ -4055,4 +4056,34 @@ body.viewer-fullscreen .video-card {
 .fullscreen-video .ctrl-drawer,
 .viewer-fullscreen .ctrl-drawer {
   transform-origin: bottom left;
+  z-index:999;
+}
+
+
+
+/* ===== MOVE CTRL FAB INTO VIDEO (BOTTOM) ===== */
+.fullscreen-video .ctrl-tab1,
+.viewer-fullscreen .ctrl-tab1 {
+  top: auto !important;
+  right: auto !important;
+  bottom: 10px;
+  left: 110px;
+
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.fullscreen-video .ctrl-fab1,
+.viewer-fullscreen .ctrl-fab1 {
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  background: rgba(0,0,0,.6);
+}
+
+.fullscreen-video .ctrl-drawer,
+.viewer-fullscreen .ctrl-drawer {
+  transform-origin: bottom left;
+  z-index:999;
 }
