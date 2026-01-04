@@ -4076,7 +4076,7 @@ body.viewer-fullscreen .video-card {
 .ctrl-drawer {
   position: absolute;
   bottom: 52px; /* = height fab + gap */
-  left: 150px;
+  left: 60px;
 }
 
 
