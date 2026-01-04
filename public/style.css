@@ -4047,8 +4047,8 @@ body.viewer-fullscreen .video-card {
 
 .fullscreen-video .ctrl-fab,
 .viewer-fullscreen .ctrl-fab {
-  width: 42px;
-  height: 42px;
+  width: 44px;
+  height: 44px;
   font-size: 18px;
   background: rgba(0,0,0,.6);
 }
@@ -4061,29 +4061,3 @@ body.viewer-fullscreen .video-card {
 
 
 
-/* ===== MOVE CTRL FAB INTO VIDEO (BOTTOM) ===== */
-.fullscreen-video .ctrl-tab1,
-.viewer-fullscreen .ctrl-tab1 {
-  top: auto !important;
-  right: auto !important;
-  bottom: 10px;
-  left: 110px;
-
-  flex-direction: row;
-  align-items: center;
-  gap: 10px;
-}
-
-.fullscreen-video .ctrl-fab1,
-.viewer-fullscreen .ctrl-fab1 {
-  width: 42px;
-  height: 42px;
-  font-size: 18px;
-  background: rgba(0,0,0,.6);
-}
-
-.fullscreen-video .ctrl-drawer,
-.viewer-fullscreen .ctrl-drawer {
-  transform-origin: bottom left;
-  z-index:999;
-}
