@@ -2410,7 +2410,7 @@ document.body.classList.add("viewer-fullscreen");
 
 
 
-/* ===== VIEWER AVATAR OVERLAY (HOST) ===== */
+/* ===== VIEWER AVATAR OVERLAY (GUEST) ===== */
 const viewerAvatarBox = document.getElementById("viewerAvatars");
 
 socket.on("viewer-list", ({ viewers }) => {
@@ -2423,7 +2423,7 @@ socket.on("viewer-list", ({ viewers }) => {
   viewerAvatarBox.innerHTML =
     showList.map(v => `
       <div class="viewer-avatar" title="${v.name}">
-        <img src="https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360">
+        <img src="${v.avatar}">
       </div>
     `).join("") +
     (remain > 0
