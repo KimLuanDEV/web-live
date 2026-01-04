@@ -2238,14 +2238,11 @@ const giftTotalCoinsHost = document.getElementById("giftTotalCoinsHost");
 const giftTopListHost = document.getElementById("giftTopListHost");
 socket.on("gift-stats", ({ totalCoins, topDonors })=>{
 
-   
+    renderDonorAvatars(list, "giftTopListHost");
 
   if (giftTotalCoinsHost) giftTotalCoinsHost.textContent = String(totalCoins ?? 0);
   if (giftTopListHost){
     const arr = Array.isArray(topDonors) ? topDonors : [];
-    giftTopListHost.innerHTML = arr.length
-      ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
-      : `<div class="gift-board__empty">Chưa có donate</div>`;
   }
 });
 
