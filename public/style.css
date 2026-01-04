@@ -691,8 +691,6 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 }
 
 .ctrl-fab{
-  bottom: 10px;
-  left: 110px;
   width:44px;
   height:44px;
   border-radius:999px;
@@ -709,24 +707,6 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 }
 .ctrl-fab:hover{ transform: scale(1.06); }
 
-.ctrl-fab1{
-  bottom: 10px;
-  left: 60px;
-  width:44px;
-  height:44px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.22);
-  background: rgba(0,0,0,.62);
-  color:#fff;
-  box-shadow: 0 14px 34px rgba(0,0,0,.55);
-  cursor:pointer;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:16px;
-  backdrop-filter: blur(8px);
-}
-.ctrl-fab1:hover{ transform: scale(1.06); }
 
 .ctrl-drawer{
   min-width: 210px;
@@ -4051,4 +4031,28 @@ body.viewer-fullscreen .video-card {
   transform: scale(0.92);
 }
 
+/* ===== MOVE CTRL FAB INTO VIDEO (BOTTOM) ===== */
+.fullscreen-video .ctrl-tab,
+.viewer-fullscreen .ctrl-tab {
+  top: auto !important;
+  right: auto !important;
+  bottom: 14px;
+  left: 110px;
 
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.fullscreen-video .ctrl-fab,
+.viewer-fullscreen .ctrl-fab {
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  background: rgba(0,0,0,.6);
+}
+
+.fullscreen-video .ctrl-drawer,
+.viewer-fullscreen .ctrl-drawer {
+  transform-origin: bottom left;
+}
