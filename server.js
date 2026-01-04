@@ -237,6 +237,16 @@ socket.on("viewer-join", ({ roomId, name, avatar }) => {
 
   emitViewerCount(roomId);
 
+
+  const viewers = Array.from(room.viewerProfiles.values());
+
+  // ✅ 1️⃣ GỬI NGAY CHO NGƯỜI VỪA JOIN (QUAN TRỌNG)
+  socket.emit("viewer-list", { viewers });
+
+  // ✅ 2️⃣ VẪN BROADCAST CHO NGƯỜI KHÁC
+  socket.to(roomId).emit("viewer-list", { viewers });
+
+  
   io.to(roomId).emit("viewer-list", {
     viewers: Array.from(room.viewerProfiles.values())
   });
