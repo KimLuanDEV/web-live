@@ -228,7 +228,7 @@
 
 
 
-  <div class="gift-board">
+  <div class="gift-board" style="display: none;">
     <div class="gift-board__head">🏆 Top donate</div>
     <div class="gift-board__meta">Tổng: <b id="giftTotalCoins">0</b> coin</div>
     <div id="giftTopList" class="gift-board__list"></div>
@@ -1815,7 +1815,7 @@ socket.on("gift-stats", ({ totalCoins, topDonors })=>{
     const arr = Array.isArray(topDonors) ? topDonors : [];
     giftTopList.innerHTML = arr.length
       ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
-      : `<div class="gift-board__empty">Chưa có donate</div>`;
+      : `<div class="gift-board__empty"></div>`;
   }
 });
 socket.on("host-profile-update", (profile) => {

@@ -1842,7 +1842,7 @@ socket.on("gift-stats", ({ totalCoins, topDonors })=>{
     const arr = Array.isArray(topDonors) ? topDonors : [];
     giftTopList.innerHTML = arr.length
       ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
-      : `<div class="gift-board__empty">Chưa có donate</div>`;
+      : `<div class="gift-board__empty"></div>`;
   }
 });
 // ===== NEON CONFIRM: Back to Lobby (VIEWER) =====
