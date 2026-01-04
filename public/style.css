@@ -4005,8 +4005,8 @@ body.viewer-fullscreen .video-card {
 /* ===== VIEWER EXIT (X) BUTTON ===== */
 .page-exit-btn {
   position: absolute;
-  top: 10px;
-  left: 10px;
+  top: 13px;
+  right: 10px;
 
   width: 36px;
   height: 36px;
