@@ -81,7 +81,7 @@
 
 
         <div class="gift-total-overlay viewer">
-  <span class="coin-icon">🪙</span>
+  <span class="coin-icon">💎</span>
   <b id="giftTotalCoins">0</b>
 </div>
 
@@ -578,6 +578,63 @@ function spawnFireworksBurst(){
     setTimeout(()=>{ try{layer.remove();}catch{} }, 1600);
   }catch{}
 }
+
+
+
+// ===== HD QUALITY MONITOR (Viewer) =====
+const hdBadge = document.getElementById("hdBadge");
+let __lastBytes = 0;
+let __lastTs = 0;
+
+async function checkHDQuality(){
+  try{
+    if (!pc || pc.connectionState !== "connected") return;
+
+    const stats = await pc.getStats();
+    let bytes = 0;
+    let packetsLost = 0;
+    let packets = 0;
+
+    stats.forEach(r=>{
+      if (r.type === "inbound-rtp" && r.kind === "video"){
+        bytes += r.bytesReceived || 0;
+        packetsLost += r.packetsLost || 0;
+        packets += r.packetsReceived || 0;
+      }
+    });
+
+    const now = performance.now();
+    if (__lastTs){
+      const bitrate = ((bytes - __lastBytes) * 8) / (now - __lastTs); // kbps approx
+      const lossRate = packets ? packetsLost / packets : 0;
+
+      // 👉 Điều kiện mạng yếu
+      const weak =
+        bitrate < 400 ||     // bitrate thấp
+        lossRate > 0.05;     // mất gói > 5%
+
+      if (weak){
+        hdBadge.textContent = "🟡 HD";
+        hdBadge.classList.remove("hd-good");
+        hdBadge.classList.add("hd-bad");
+      }else{
+        hdBadge.textContent = "🟢 HD";
+        hdBadge.classList.remove("hd-bad");
+        hdBadge.classList.add("hd-good");
+      }
+    }
+
+    __lastBytes = bytes;
+    __lastTs = now;
+  }catch(e){
+    console.warn("HD quality check error", e);
+  }
+}
+
+// check mỗi 2.5s
+setInterval(checkHDQuality, 2500);
+
+
 // ===== /VIP TICKER =====
 // ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
 function attachSpeakingIndicator(videoEl, targetEl){
