@@ -100,7 +100,15 @@
 <div class="gift-total-overlay">
   <span class="coin-icon">💎</span>
   <b id="giftTotalCoinsHost">0</b>
+
+  <!-- GIFT TOP OVERLAY (AVATAR) -->
+<div class="gift-top-overlay">
+  <div id="giftTopListHost" class="gift-top-list"></div>
 </div>
+
+
+</div>
+
 
 
 <div class="chat-overlay" id="chatOverlay"></div>
@@ -228,13 +236,6 @@
   <div id="chatBox" class="chatbox"></div>
 </div>
 
-<div class="card" style="margin-top:12px">
-  <div class="badge badge--info">🎁 Gift Engine</div>
-  <div class="gift-board gift-board--host">
-    <div class="gift-board__meta">Tổng donate: <b id="giftTotalCoinsHost">0</b></div>
-    <div id="giftTopListHost" class="gift-board__list"></div>
-  </div>
-</div>
 
 
 <!-- NEON CONFIRM (Back to Lobby) -->
@@ -472,6 +473,29 @@ startLiveBigBtn?.addEventListener("click", () => {
 });
 
 
+function renderGiftTopHost(list){
+  const box = document.getElementById("giftTopListHost");
+  if (!box) return;
+
+  box.innerHTML = "";
+
+  list.forEach(u => {
+    const ava = document.createElement("div");
+    ava.className = "gift-avatar";
+
+    // avatar: ưu tiên profile.avatar, fallback pravatar
+    const img = document.createElement("img");
+    img.src = u.avatar || `https://i.pravatar.cc/100?u=${encodeURIComponent(u.name)}`;
+
+    const coin = document.createElement("div");
+    coin.className = "gift-coin";
+    coin.textContent = u.coins;
+
+    ava.appendChild(img);
+    ava.appendChild(coin);
+    box.appendChild(ava);
+  });
+}
 
 
 function syncStartLiveOverlay(isLive) {
@@ -644,6 +668,12 @@ if(nameFromLobby){
 
     const socket = io();
     
+// ===== GIFT TOP UPDATE =====
+socket.on("gift-top-update", ({ top }) => {
+  if (!Array.isArray(top)) return;
+  renderGiftTopHost(top);
+});
+
 
 
 function limitAudioBitrate(pc, kbps = 32) {
@@ -2212,6 +2242,7 @@ const giftLayer = document.getElementById("giftLayer");
 const giftTotalCoinsHost = document.getElementById("giftTotalCoinsHost");
 const giftTopListHost = document.getElementById("giftTopListHost");
 socket.on("gift-stats", ({ totalCoins, topDonors })=>{
+  
   if (giftTotalCoinsHost) giftTotalCoinsHost.textContent = String(totalCoins ?? 0);
   if (giftTopListHost){
     const arr = Array.isArray(topDonors) ? topDonors : [];

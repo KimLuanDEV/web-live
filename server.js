@@ -99,16 +99,46 @@ function clampInt(n, min, max){
 function safeName(name){
   return String(name || "Ẩn danh").trim().slice(0, 20);
 }
-function roomGiftTop(room, limit=5){
+
+function roomGiftTop(room, limit = 5) {
   const arr = [];
-  try{
-    for (const [k,v] of room.giftByUser.entries()){
-      arr.push({ name: k, coins: v });
-    }
-  }catch{}
-  arr.sort((a,b)=>b.coins-a.coins);
+  for (const [name, coins] of room.giftByUser.entries()) {
+    arr.push({
+      name,
+      coins,
+      avatar: `https://i.pravatar.cc/100?u=${encodeURIComponent(name)}`
+    });
+  }
+  arr.sort((a, b) => b.coins - a.coins);
   return arr.slice(0, limit);
 }
+
+
+
+socket.on("gift-send", ({ roomId, giftId }) => {
+  const room = rooms.get(roomId);
+  if (!room) return;
+
+  const gift = GIFT_CATALOG[giftId];
+  if (!gift) return;
+
+  const name = socket.data.userName || "Ẩn danh";
+
+  // cộng coin
+  room.giftTotal += gift.cost;
+  room.giftByUser.set(
+    name,
+    (room.giftByUser.get(name) || 0) + gift.cost
+  );
+
+  // 🔥 TOP DONATE
+  const top = roomGiftTop(room, 5);
+
+  io.to(roomId).emit("gift-top-update", {
+    top
+  });
+});
+
 // ===== /GIFT ENGINE =====
 
 function normRoomId(roomId) {
