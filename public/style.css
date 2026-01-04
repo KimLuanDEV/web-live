@@ -4080,3 +4080,41 @@ body.viewer-fullscreen .video-card {
 }
 
 
+/* ===== GIFT TOTAL COIN OVERLAY ===== */
+.gift-total-overlay{
+  position: absolute;
+  top: 52px;
+  left: 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 6px 10px;
+  border-radius: 999px;
+
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(8px);
+
+  font-size: 13px;
+  font-weight: 800;
+  color: #FFD36E;
+
+  z-index: 6;
+}
+
+.gift-total-overlay .coin-icon{
+  font-size: 16px;
+  filter: drop-shadow(0 0 6px rgba(255,211,110,.6));
+}
+
+
+.gift-board__meta{
+  display:none;
+}
+
+
+.gift-total-overlay.pulse{
+  animation: pulsePop .25s ease;
+}
