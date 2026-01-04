@@ -725,7 +725,7 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 .ctrl-tab.is-open .ctrl-drawer{
   opacity:1;
   transform: translateY(0) scale(1);
-  z-index:20;
+  z-index:9999;
 }
 
 .ctrl-title{
@@ -4038,7 +4038,7 @@ body.viewer-fullscreen .video-card {
   top: auto !important;
   right: auto !important;
   bottom: 10px;
-  left: 108px;
+  left: 105px;
 
   flex-direction: row;
   align-items: center;
@@ -4056,7 +4056,7 @@ body.viewer-fullscreen .video-card {
 .fullscreen-video .ctrl-drawer,
 .viewer-fullscreen .ctrl-drawer {
   transform-origin: bottom left;
-  z-index:999;
+  z-index:9999;
 }
 
 
