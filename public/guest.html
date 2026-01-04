@@ -468,6 +468,22 @@ guestCancelWait?.addEventListener("click", () => {
 
 
     const socket = io();
+
+    // ✅ GUEST CŨNG LÀ VIEWER KHI VÀO PHÒNG
+const guestProfile = (() => {
+  try {
+    return JSON.parse(localStorage.getItem("user_profile") || "{}");
+  } catch {
+    return {};
+  }
+})();
+
+socket.emit("viewer-join", {
+  roomId,
+  name: guestProfile.name || "Guest",
+  avatar: guestProfile.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
+});
+
     
 // mở khi bấm nút quay về lobby
 const btnBackLobby = document.getElementById("btnBackLobby");
@@ -491,13 +507,14 @@ socket.on("viewer-list", ({ viewers }) => {
   viewerAvatarBox.innerHTML =
     showList.map(v => `
       <div class="viewer-avatar" title="${v.name}">
-        <img src="https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360">
+        <img src="${v.avatar}">
       </div>
     `).join("") +
     (remain > 0
       ? `<div class="viewer-avatar viewer-avatar--more">+${remain}</div>`
       : "");
 });
+
 
 
 
