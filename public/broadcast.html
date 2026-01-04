@@ -103,9 +103,6 @@
 </div>
 
 
-<div class="donor-ava-list gift-ava-overlay" id="giftTopListHost"></div>
-
-
 <div class="chat-overlay" id="chatOverlay"></div>
 
 
@@ -235,8 +232,7 @@
   <div class="badge badge--info">🎁 Gift Engine</div>
   <div class="gift-board gift-board--host">
     <div class="gift-board__meta">Tổng donate: <b id="giftTotalCoinsHost">0</b></div>
-   <div id="giftTopListHostText" class="gift-board__list"></div>
-
+    <div id="giftTopListHost" class="gift-board__list"></div>
   </div>
 </div>
 
@@ -474,27 +470,6 @@ const startLiveBigBtn  = document.getElementById("startLiveBigBtn");
 startLiveBigBtn?.addEventListener("click", () => {
   btnStart?.click();
 });
-
-
-function renderDonorAvatars(list, containerId){
-  const box = document.getElementById(containerId);
-  if (!box) return;
-
-  box.className = "donor-ava-list";
-
-  box.innerHTML = list.map(d => {
-    const name = d.name || "User";
-    const coins = d.coins || 0;
-    const ava = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=0D8ABC&color=fff`;
-
-    return `
-      <div class="donor-ava-item">
-        <img class="donor-ava" src="${ava}" alt="${name}">
-        <span class="donor-coin">🪙 ${coins}</span>
-      </div>
-    `;
-  }).join("");
-}
 
 
 
@@ -2237,12 +2212,12 @@ const giftLayer = document.getElementById("giftLayer");
 const giftTotalCoinsHost = document.getElementById("giftTotalCoinsHost");
 const giftTopListHost = document.getElementById("giftTopListHost");
 socket.on("gift-stats", ({ totalCoins, topDonors })=>{
-
-   
-
   if (giftTotalCoinsHost) giftTotalCoinsHost.textContent = String(totalCoins ?? 0);
   if (giftTopListHost){
     const arr = Array.isArray(topDonors) ? topDonors : [];
+    giftTopListHost.innerHTML = arr.length
+      ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
+      : `<div class="gift-board__empty">Chưa có donate</div>`;
   }
 });
 
@@ -2265,7 +2240,6 @@ function spawnGift(type, donor, giftMeta){
 }
 
 socket.on("gift", ({ gift, donor })=>{
-  
   spawnGift(gift.type, donor, gift);
   try{
     const note = document.createElement("div");
