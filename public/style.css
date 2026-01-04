@@ -3546,29 +3546,6 @@ body.is-live .chat-fab {
   font-size: 22px;
 }
 
-/* ===== EXIT BUTTON (LOBBY) ===== */
-.page-exit-btn {
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,.25);
-  background: rgba(0,0,0,.55);
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.page-exit-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 0 0 12px rgba(255,255,255,.35);
-}
-
-.page-exit-btn:active {
-  transform: scale(0.95);
-}
 
 
 /* ===== PAGE HEADER ===== */
@@ -4024,3 +4001,31 @@ body.viewer-fullscreen .video-card {
   transform: translate(-8px, -20px); /* ← trái | ↑ lên */
 }
 
+
+/* ===== VIEWER EXIT (X) BUTTON ===== */
+.page-exit-btn {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+
+  border: none;
+  background: rgba(0,0,0,0.55);
+  color: #fff;
+  font-size: 22px;
+  line-height: 36px;
+  text-align: center;
+
+  cursor: pointer;
+  z-index: 40;
+
+  backdrop-filter: blur(6px);
+}
+
+/* tap feedback */
+.page-exit-btn:active {
+  transform: scale(0.92);
+}
