@@ -266,6 +266,8 @@ io.on("connection", (socket) => {
 
 
 socket.on("viewer-join", ({ roomId, name, avatar }) => {
+
+  
   const room = getRoom(roomId);
   if (!room) return;
 

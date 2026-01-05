@@ -673,11 +673,6 @@ socket.on("profile-updated", ({ socketId, avatar }) => {
 
 
 
-socket.emit("viewer-join", {
-  roomId,
-  name: localStorage.getItem("profileName") || "Viewer",
-  avatar: localStorage.getItem("userAvatar")
-});
 
 function limitAudioBitrate(pc, kbps = 32) {
   try {
