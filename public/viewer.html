@@ -1473,28 +1473,40 @@ if (chatOverlay) {
 }
 
 
-
 function pushOverlay(msg){
   if (!chatOverlay) return;
 
   const role = String(msg.role || "viewer");
-  const tag =
-    role === "host" ? "[HOST]" :
-    role === "guest" ? "[GUEST]" : "";
+
+  const avatar = msg.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360";
+  const level  = msg.level || 1;
+  const name   = msg.name || "User";
 
   const el = document.createElement("div");
   el.className = "chat-bubble chat-" + role;
-  el.textContent = `${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
+
+  el.innerHTML = `
+    <div class="chat-avatar">
+      <img src="${avatar}">
+    </div>
+    <div class="chat-body">
+      <div class="chat-head">
+        <span class="chat-name">${name}</span>
+        <span class="chat-level">⭐ Lv ${level}</span>
+      </div>
+      <div class="chat-text">${msg.text}</div>
+    </div>
+  `;
 
   chatOverlay.appendChild(el);
 
-  // ✅ GIỚI HẠN LỊCH SỬ (nhẹ máy)
+  // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
   const MAX_CHAT = 80;
   while (chatOverlay.children.length > MAX_CHAT) {
     chatOverlay.removeChild(chatOverlay.firstChild);
   }
 
-  // ✅ AUTO SCROLL NẾU ĐANG Ở CUỐI
+  // ✅ AUTO SCROLL nếu đang ở cuối
   const nearBottom =
     chatOverlay.scrollHeight -
     chatOverlay.scrollTop -
@@ -1503,10 +1515,8 @@ function pushOverlay(msg){
   if (nearBottom) {
     chatOverlay.scrollTop = chatOverlay.scrollHeight;
   }
-
-  // ❌ KHÔNG fade
-  // ❌ KHÔNG remove
 }
+
 
 
     // add emoji buttons
