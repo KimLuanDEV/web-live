@@ -104,6 +104,8 @@
 
 <!-- 👥 VIEWER AVATAR OVERLAY -->
 <div class="viewer-avatars-overlay" id="viewerAvatars"></div>
+<!-- 👥 VIEWER LIST POPUP -->
+<div class="viewer-list-popup hidden" id="viewerListPopup"></div>
 
 
 <div class="chat-overlay" id="chatOverlay"></div>
@@ -2410,15 +2412,21 @@ document.body.classList.add("viewer-fullscreen");
 
 
 
-/* ===== VIEWER AVATAR OVERLAY (GUEST) ===== */
+/* ===== VIEWER AVATAR + POPUP LIST ===== */
 const viewerAvatarBox = document.getElementById("viewerAvatars");
+const viewerListPopup = document.getElementById("viewerListPopup");
+
+let __viewerCache = [];
+let __popupOpen = false;
 
 socket.on("viewer-list", ({ viewers }) => {
   if (!viewerAvatarBox) return;
 
+  __viewerCache = viewers || [];
+
   const maxShow = 3;
-  const showList = viewers.slice(0, maxShow);
-  const remain = viewers.length - maxShow;
+  const showList = __viewerCache.slice(0, maxShow);
+  const remain = __viewerCache.length - maxShow;
 
   viewerAvatarBox.innerHTML =
     showList.map(v => `
@@ -2427,9 +2435,44 @@ socket.on("viewer-list", ({ viewers }) => {
       </div>
     `).join("") +
     (remain > 0
-      ? `<div class="viewer-avatar viewer-avatar--more">+${remain}</div>`
+      ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
       : "");
+
+  // bind click +N
+  const moreBtn = document.getElementById("viewerMoreBtn");
+  if (moreBtn){
+    moreBtn.onclick = (e)=>{
+      e.stopPropagation();
+      toggleViewerPopup();
+    };
+  }
+
+  renderViewerPopup();
 });
+
+function renderViewerPopup(){
+  if (!viewerListPopup) return;
+
+  viewerListPopup.innerHTML = __viewerCache.map(v => `
+    <div class="viewer-list-item">
+      <img src="${v.avatar}">
+      <div class="viewer-list-name">${v.name}</div>
+    </div>
+  `).join("");
+}
+
+function toggleViewerPopup(){
+  __popupOpen = !__popupOpen;
+  viewerListPopup.classList.toggle("hidden", !__popupOpen);
+}
+
+// click ra ngoài → đóng popup
+document.addEventListener("click", ()=>{
+  if (!__popupOpen) return;
+  __popupOpen = false;
+  viewerListPopup?.classList.add("hidden");
+});
+
 
 
 
