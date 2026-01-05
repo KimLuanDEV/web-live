@@ -2068,20 +2068,20 @@ socket.on("gift", ({ gift, donor })=>{
   if (!gift || !gift.type) return;
 
   switch (gift.type) {
-    case "heart":
-      playGiftVideo("/gift-videos/dragon.mp4", 1200);
+    case "phoenix":
+      playGiftVideo("/gift-videos/phoenix.mp4", 17000);
       break;
 
-    case "rocket":
+    case "dragon":
       playGiftVideo("/gift-videos/white_dragon.mp4", 12000);
       break;
 
     case "dragonking":
-      playGiftVideo("/gift-videos/dragon.mp4", 12000);
+      playGiftVideo("/gift-videos/dragon.mp4", 7000);
       break;
 
     case "supernova":
-      playGiftVideo("/gift-videos/gold_dragon.mp4", 12000);
+      playGiftVideo("/gift-videos/supernova.mp4", 11000);
       break;
   }
 });
