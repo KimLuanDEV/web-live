@@ -83,6 +83,8 @@
 <div class="viewer-avatars-overlay" id="viewerAvatars"></div>
 <!-- 👥 VIEWER LIST POPUP -->
 <div class="viewer-list-popup hidden" id="viewerListPopup"></div>
+<!-- 👤 MINI PROFILE -->
+<div class="mini-profile hidden" id="miniProfile"></div>
 
     
 <div class="chat-overlay" id="chatOverlay"></div>
@@ -595,21 +597,20 @@ socket.emit("viewer-join", {
 
 const viewerAvatarBox = document.getElementById("viewerAvatars");
 const viewerListPopup = document.getElementById("viewerListPopup");
+const miniProfile = document.getElementById("miniProfile");
 
 let __viewerCache = [];
 
 socket.on("viewer-list", ({ viewers }) => {
-  if (!viewerAvatarBox) return;
-
   __viewerCache = viewers || [];
 
-  const maxShow = 3;
+  const maxShow = 4;
   const showList = __viewerCache.slice(0, maxShow);
   const remain = __viewerCache.length - maxShow;
 
   viewerAvatarBox.innerHTML =
-    showList.map(v => `
-      <div class="viewer-avatar" title="${v.name}">
+    showList.map((v, i) => `
+      <div class="viewer-avatar" data-idx="${i}">
         <img src="${v.avatar}">
       </div>
     `).join("") +
@@ -617,42 +618,68 @@ socket.on("viewer-list", ({ viewers }) => {
       ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
       : "");
 
+  // click avatar (top 4)
+  viewerAvatarBox.querySelectorAll(".viewer-avatar[data-idx]")
+    .forEach(el => {
+      el.onclick = e => {
+        e.stopPropagation();
+        const v = __viewerCache[+el.dataset.idx];
+        openMiniProfile(v);
+      };
+    });
+
+  // +N
   const moreBtn = document.getElementById("viewerMoreBtn");
   if (moreBtn){
-    moreBtn.addEventListener("click", (e)=>{
-      e.preventDefault();
+    moreBtn.onclick = e => {
       e.stopPropagation();
-      toggleViewerPopup();
-    });
+      viewerListPopup.classList.toggle("hidden");
+      renderViewerPopup();
+    };
   }
-
-  renderViewerPopup();
 });
 
 function renderViewerPopup(){
-  if (!viewerListPopup) return;
-
-  viewerListPopup.innerHTML = __viewerCache.map(v => `
-    <div class="viewer-list-item">
+  viewerListPopup.innerHTML = __viewerCache.map((v, i) => `
+    <div class="viewer-list-item" data-idx="${i}">
       <img src="${v.avatar}">
       <div class="viewer-list-name">${v.name}</div>
     </div>
   `).join("");
+
+  viewerListPopup.querySelectorAll(".viewer-list-item")
+    .forEach(el => {
+      el.onclick = e => {
+        e.stopPropagation();
+        const v = __viewerCache[+el.dataset.idx];
+        openMiniProfile(v);
+      };
+    });
 }
 
-function toggleViewerPopup(){
-  viewerListPopup.classList.toggle("hidden");
+function openMiniProfile(v){
+  if (!miniProfile) return;
+
+  miniProfile.innerHTML = `
+    <div class="mini-profile-header">
+      <img src="${v.avatar}">
+      <div class="mini-profile-name">${v.name}</div>
+    </div>
+    <div class="mini-profile-meta">
+      <div class="mini-profile-chip">⭐ Lv ${v.level || 1}</div>
+      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
+    </div>
+  `;
+
+  miniProfile.classList.remove("hidden");
 }
 
-// chặn click trong popup
-viewerListPopup?.addEventListener("click", e => e.stopPropagation());
-
-// click ngoài video-card → đóng
-document.addEventListener("click", (e)=>{
-  if (viewerListPopup?.classList.contains("hidden")) return;
-  if (e.target.closest(".video-card")) return;
-  viewerListPopup.classList.add("hidden");
+// click ra ngoài → đóng
+document.addEventListener("click", () => {
+  miniProfile?.classList.add("hidden");
+  viewerListPopup?.classList.add("hidden");
 });
+
 
 
 

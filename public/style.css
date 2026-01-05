@@ -4210,3 +4210,56 @@ body.viewer-fullscreen .video-card {
   overflow:hidden;
   text-overflow:ellipsis;
 }
+
+/* ===== MINI PROFILE ===== */
+.mini-profile{
+  position:absolute;
+  top:120px;
+  right:12px;
+  width:220px;
+  padding:12px;
+  border-radius:14px;
+  background:rgba(8,12,20,.92);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 0 28px rgba(95,168,255,.25);
+  z-index:40;
+}
+
+.mini-profile.hidden{
+  display:none;
+}
+
+.mini-profile-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.mini-profile-header img{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.25);
+}
+
+.mini-profile-name{
+  font-weight:800;
+  font-size:14px;
+}
+
+.mini-profile-meta{
+  display:flex;
+  gap:10px;
+  margin-top:10px;
+}
+
+.mini-profile-chip{
+  flex:1;
+  text-align:center;
+  padding:6px 0;
+  border-radius:10px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:12px;
+}
