@@ -1476,42 +1476,34 @@ if (chatOverlay) {
 function pushOverlay(msg){
   if (!chatOverlay) return;
 
-  const role = String(msg.role || "viewer");
+  const role  = String(msg.role || "viewer");
+  const name  = msg.name || "User";
+  const level = msg.level || 1;
 
-  const profile = getUserProfile?.();
   const avatar =
-  (typeof msg.avatar === "string" && msg.avatar.trim()) ||
-  (typeof msg.photoURL === "string" && msg.photoURL.trim()) ||
-  "https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg" +
-    encodeURIComponent(msg.name || "user");
-
-
-  const level  = msg.level || 1;
-  const name   = msg.name || "User";
+    (typeof msg.avatar === "string" && msg.avatar.trim()) ||
+    "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+      encodeURIComponent(name);
 
   const el = document.createElement("div");
   el.className = "chat-bubble chat-" + role;
 
- el.innerHTML = `
-  <div class="chat-avatar">
-    <img
-      src="${avatar}"
-      referrerpolicy="no-referrer"
-      loading="lazy"
-      onerror="this.src='https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg'"
-    >
-  </div>
-  <div class="chat-body">
-    <div class="chat-head">
-      <span class="chat-name">${name}</span>
-      <span class="chat-level">⭐ Lv ${level}</span>
+  // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
+  el.innerHTML = `
+    <div class="chat-avatar-bg" style="background-image:url('${avatar}')"></div>
+    <div class="chat-body">
+      <div class="chat-head">
+        <span class="chat-name">${name}</span>
+        <span class="chat-level">⭐ Lv ${level}</span>
+      </div>
+      <div class="chat-text">${msg.text}</div>
     </div>
-    <div class="chat-text">${msg.text}</div>
-  </div>
-`;
-
+  `;
 
   chatOverlay.appendChild(el);
+
+ 
+  setTimeout(() => el.classList.add("hide"), 4500);
 
   // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
   const MAX_CHAT = 80;

@@ -4358,3 +4358,17 @@ body.viewer-fullscreen .video-card {
   object-fit:cover;
   display:block;
 }
+
+.chat-avatar-bg{
+  width:28px;
+  height:28px;
+  min-width:28px;
+  min-height:28px;
+  border-radius:50%;
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  border:1px solid rgba(255,255,255,.25);
+  box-shadow:0 0 6px rgba(0,0,0,.6);
+  flex-shrink:0;
+}
