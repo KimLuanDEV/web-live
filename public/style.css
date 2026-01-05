@@ -4129,7 +4129,8 @@ body.viewer-fullscreen .video-card {
   gap:6px;
   flex-wrap:wrap;
   max-width:160px;
-  z-index:6;
+  z-index:30;
+  pointer-events:auto;
 }
 
 .viewer-avatar{
@@ -4174,7 +4175,8 @@ body.viewer-fullscreen .video-card {
   background:rgba(10,14,20,.9);
   border:1px solid rgba(255,255,255,.2);
   box-shadow:0 0 24px rgba(0,180,255,.25);
-  z-index:7;
+  z-index:31;
+  pointer-events:auto;
 }
 
 .viewer-list-popup.hidden{
