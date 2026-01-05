@@ -2016,7 +2016,7 @@ function pushOverlay(msg){
 
   const avatar =
     (typeof msg.avatar === "string" && msg.avatar.trim()) ||
-    "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360" +
+    "https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg" +
       encodeURIComponent(name);
 
   const el = document.createElement("div");
@@ -2036,8 +2036,7 @@ function pushOverlay(msg){
 
   chatOverlay.appendChild(el);
 
-  // giữ logic cũ
-  setTimeout(() => el.classList.add("hide"), 4500);
+
 
   // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
   const MAX_CHAT = 80;
