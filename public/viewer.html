@@ -1482,7 +1482,7 @@ function pushOverlay(msg){
   const avatar =
   (typeof msg.avatar === "string" && msg.avatar.trim()) ||
   (typeof msg.photoURL === "string" && msg.photoURL.trim()) ||
-  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+  "https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg" +
     encodeURIComponent(msg.name || "user");
 
 
@@ -1498,7 +1498,7 @@ function pushOverlay(msg){
       src="${avatar}"
       referrerpolicy="no-referrer"
       loading="lazy"
-      onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=err'"
+      onerror="this.src='https://demoda.vn/wp-content/uploads/2022/08/hinh-anh-avatar-nu-de-thuong.jpg'"
     >
   </div>
   <div class="chat-body">
