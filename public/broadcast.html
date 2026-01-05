@@ -2494,12 +2494,22 @@ function openMiniProfile(v){
   miniProfile.classList.remove("hidden");
 }
 
-// click ra ngoài → đóng
-document.addEventListener("click", () => {
-  miniProfile?.classList.add("hidden");
-  viewerListPopup?.classList.add("hidden");
-});
 
+
+function closeAllViewerUI(){
+  viewerListPopup?.classList.add("hidden");
+  miniProfile?.classList.add("hidden");
+}
+
+// ⛔ CHẶN CLICK LAN RA NGOÀI popup / avatar
+viewerAvatarBox?.addEventListener("click", e => e.stopPropagation());
+viewerListPopup?.addEventListener("click", e => e.stopPropagation());
+miniProfile?.addEventListener("click", e => e.stopPropagation());
+
+// ✅ CLICK BẤT KỲ ĐÂU KHÁC → ĐÓNG
+window.addEventListener("pointerdown", () => {
+  closeAllViewerUI();
+});
 
 
 
