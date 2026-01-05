@@ -416,10 +416,7 @@ code{
   filter: brightness(1.06);
 }
 
-/* ===== SWAP MODE: guest becomes main ===== */
-.swap-live .live-main{
-  /* vẫn là card lớn, chỉ đổi stream bằng JS */
-}
+
 
 /* Mobile: pip nhỏ hơn */
 @media (max-width: 520px){
