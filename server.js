@@ -603,23 +603,35 @@ if (room.liveStartTs) {
 
 });
 
-  // ===== CHAT REALTIME =====
   socket.on("chat", ({ roomId, name, text }) => {
-    if (!roomId || !text) return;
+  if (!roomId || !text) return;
 
-    // Trust server-side role (avoid spoofing)
-    const r = String(socket.data.role || "").toLowerCase();
-    const role = (r === "broadcaster") ? "host" : (r === "guest") ? "guest" : "viewer";
+  const room = getRoom(roomId);
+  if (!room) return;
 
-    const msg = {
-      role,
-      name: (name || "Ẩn danh").slice(0, 20),
-      text: String(text).slice(0, 300),
-      ts: Date.now(),
-    };
+  // Trust server-side role
+  const r = String(socket.data.role || "").toLowerCase();
+  const role = (r === "broadcaster") ? "host" : (r === "guest") ? "guest" : "viewer";
 
-    io.to(roomId).emit("chat", msg);
-  });
+  // 🔑 LẤY PROFILE ĐÚNG THEO SOCKET
+  const profile =
+    room.viewerProfiles.get(socket.id) ||
+    room.hostProfile ||
+    {};
+
+  const msg = {
+    socketId: socket.id,                 // ⬅️ BẮT BUỘC
+    role,
+    name: safeName(name || profile.name || "Ẩn danh"),
+    avatar: profile.avatar || "",        // ⬅️ BẮT BUỘC
+    level: profile.level || 1,            // (nếu có)
+    text: String(text).slice(0, 300),
+    ts: Date.now(),
+  };
+
+  io.to(roomId).emit("chat", msg);
+});
+
 
 
 // ===== REACTIONS (emoji/hearts) =====
