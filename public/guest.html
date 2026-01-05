@@ -1601,9 +1601,12 @@ function pushOverlay(msg){
     <div class="chat-avatar-bg" style="background-image:url('https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360')"></div>
     <div class="chat-body">
       <div class="chat-head">
-        <span class="chat-name">${name}</span>
-        <span class="chat-level">⭐ Lv ${level}</span>
-      </div>
+  <span class="chat-role chat-role-${role}">
+    ${role === "host" ? "👑" : role === "guest" ? "🎤" : "👤"}
+  </span>
+  <span class="chat-name">${name}</span>
+  <span class="chat-level">⭐ Lv ${level}</span>
+</div>
       <div class="chat-text">${msg.text}</div>
     </div>
   `;
