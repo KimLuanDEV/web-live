@@ -4384,3 +4384,7 @@ body.viewer-fullscreen .video-card {
     pointer-events: none;
   }
 }
+
+.gift-panel:not(.hidden) ~ .chat-overlay {
+  opacity: 0.25;
+}
