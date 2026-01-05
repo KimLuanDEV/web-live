@@ -2012,7 +2012,12 @@ function pushOverlay(msg){
 
   const role = String(msg.role || "viewer");
 
-  const avatar = msg.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360";
+  const profile = getUserProfile?.();
+  const avatar =
+  msg.avatar ||
+  profile?.avatar ||
+  "https://api.dicebear.com/7.x/thumbs/svg?seed=" + encodeURIComponent(msg.name || "user");
+
   const level  = msg.level || 1;
   const name   = msg.name || "User";
 
@@ -2021,7 +2026,7 @@ function pushOverlay(msg){
 
   el.innerHTML = `
     <div class="chat-avatar">
-      <img src="https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360">
+      <img src="${avatar}" onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=err'">
     </div>
     <div class="chat-body">
       <div class="chat-head">
@@ -2070,7 +2075,18 @@ function pushOverlay(msg){
       const text = chatText.value.trim();
       if (!text) return;
 
-      socket.emit("chat", { roomId, name, text, role: "host" });
+      const profile = getUserProfile();
+
+socket.emit("chat", {
+  roomId,
+  name: profile?.name || name,
+  avatar: profile?.avatar,
+  level: profile?.level,
+  text,
+  role: "host" // hoặc guest / host
+});
+
+
       chatText.value = "";
     };
 
