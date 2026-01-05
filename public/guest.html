@@ -1588,9 +1588,11 @@ function pushOverlay(msg){
 
   const profile = getUserProfile?.();
   const avatar =
-  msg.avatar ||
-  profile?.avatar ||
-  "https://api.dicebear.com/7.x/thumbs/svg?seed=" + encodeURIComponent(msg.name || "user");
+  (typeof msg.avatar === "string" && msg.avatar.trim()) ||
+  (typeof msg.photoURL === "string" && msg.photoURL.trim()) ||
+  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+    encodeURIComponent(msg.name || "user");
+
 
   const level  = msg.level || 1;
   const name   = msg.name || "User";
@@ -1598,18 +1600,24 @@ function pushOverlay(msg){
   const el = document.createElement("div");
   el.className = "chat-bubble chat-" + role;
 
-  el.innerHTML = `
-    <div class="chat-avatar">
-      <img src="${avatar}" onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=err'">
+ el.innerHTML = `
+  <div class="chat-avatar">
+    <img
+      src="${avatar}"
+      referrerpolicy="no-referrer"
+      loading="lazy"
+      onerror="this.src='https://api.dicebear.com/7.x/thumbs/svg?seed=err'"
+    >
+  </div>
+  <div class="chat-body">
+    <div class="chat-head">
+      <span class="chat-name">${name}</span>
+      <span class="chat-level">⭐ Lv ${level}</span>
     </div>
-    <div class="chat-body">
-      <div class="chat-head">
-        <span class="chat-name">${name}</span>
-        <span class="chat-level">⭐ Lv ${level}</span>
-      </div>
-      <div class="chat-text">${msg.text}</div>
-    </div>
-  `;
+    <div class="chat-text">${msg.text}</div>
+  </div>
+`;
+
 
   chatOverlay.appendChild(el);
 
