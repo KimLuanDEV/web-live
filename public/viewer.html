@@ -1188,31 +1188,14 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
     });
 
 
-function getMyProfile(){
-  const DEFAULT_AVATAR =
-    "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg";
 
-  const p = JSON.parse(localStorage.getItem("user_profile")) || {};
-  return {
-    name: p.name || "Guest",
-    avatar: p.avatar || DEFAULT_AVATAR,
-    level: p.level || 1,
-  };
-}
-const me = getMyProfile();
 
     async function join() {
       if (joined) return;
       joined = true;
       
       try{ btnJoin.style.display = "none"; }catch{}
-socket.emit("join-room", { 
-  roomId, 
-  name: me.name,
-  avatar: me.avatar, // ✅ luôn có
-  role: "viewer", 
-  profile: { name: (chatName.value||"Viewer").trim().slice(0,20), 
-  coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
+socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host/guest...");
     }

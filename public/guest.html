@@ -1325,28 +1325,7 @@ showGuestWait();
         document.body.classList.add("has-guest");
         if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "false");
 
-function getMyProfile(){
-  const DEFAULT_AVATAR =
-    "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg";
-
-  const p = JSON.parse(localStorage.getItem("user_profile")) || {};
-  return {
-    name: p.name || "Guest",
-    avatar: p.avatar || DEFAULT_AVATAR,
-    level: p.level || 1,
-  };
-}
-
-const me = getMyProfile();
-
-        socket.emit("join-room", { 
-          roomId, 
-          name: me.name,
-          avatar: me.avatar, // ✅ luôn có
-          role: "guest", 
-          profile: { name: (chatName.value||"Guest").trim().slice(0,20), 
-          coins: Number(localStorage.getItem("ls_coins")||0) || 0 } 
-        });
+        socket.emit("join-room", { roomId, role: "guest", profile: { name: (chatName.value||"Guest").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
         setStatus("⏳ Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
 

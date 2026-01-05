@@ -471,16 +471,6 @@ saveLiveState(state);
 });
 
 
-const DEFAULT_AVATAR =
-  "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg";
-
-function normalizeProfile(p = {}) {
-  return {
-    name: (p.name || "Guest").slice(0, 20),
-    avatar: p.avatar || DEFAULT_AVATAR,
-    level: p.level || 1,
-  };
-}
 
 
 
@@ -520,12 +510,7 @@ function normalizeProfile(p = {}) {
 
 
     const room = getRoom(roomId);
-    const profile = normalizeProfile({ name, avatar });
 
-
-    room.viewers.add(socket.id);
-  room.viewerProfiles.set(socket.id, profile);
-  
     if (role === "broadcaster") {
        if (room.releaseTimer) {
     clearTimeout(room.releaseTimer);

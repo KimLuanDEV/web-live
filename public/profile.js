@@ -12,38 +12,22 @@ const defaultProfile = {
   level: 1,
 };
 
-const DEFAULT_AVATAR =
-  "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg";
-
 function loadProfile(){
-  let p = JSON.parse(localStorage.getItem(KEY)) || {};
-
-  // 🔒 ép avatar mặc định nếu thiếu
-  if (!p.avatar) p.avatar = DEFAULT_AVATAR;
-  if (!p.name) p.name = "Guest";
-  if (!p.coins) p.coins = 200000;
-  if (!p.level) p.level = 1;
-
-  localStorage.setItem(KEY, JSON.stringify(p));
-
+  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
   nameInput.value = p.name;
   avatarPreview.src = p.avatar;
   coinVal.textContent = p.coins;
   levelVal.textContent = p.level;
 }
 
-
 document.getElementById("btnSave").onclick = () => {
   const name = nameInput.value.trim() || "Guest";
- const old = JSON.parse(localStorage.getItem(KEY)) || {};
-
-const profile = {
-  name,
-  avatar: old.avatar || DEFAULT_AVATAR,
-  coins: Number(coinVal.textContent) || 0,
-  level: Number(levelVal.textContent) || 1,
-};
-
+  const profile = {
+    name,
+    avatar: `https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg`,
+    coins: Number(coinVal.textContent) || 0,
+    level: Number(levelVal.textContent) || 1,
+  };
   localStorage.setItem(KEY, JSON.stringify(profile));
   alert("✅ Đã lưu hồ sơ!");
 };
