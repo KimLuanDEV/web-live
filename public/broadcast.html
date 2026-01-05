@@ -1377,8 +1377,24 @@ window.addEventListener("online", async () => {
 
 const hostProfile = getHostProfile();
 
+function getMyProfile(){
+  const DEFAULT_AVATAR =
+    "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg";
+
+  const p = JSON.parse(localStorage.getItem("user_profile")) || {};
+  return {
+    name: p.name || "Guest",
+    avatar: p.avatar || DEFAULT_AVATAR,
+    level: p.level || 1,
+  };
+}
+
+const me = getMyProfile();
+
 socket.emit("join-room", {
   roomId,
+  name: me.name,
+  avatar: me.avatar, 
   role: "broadcaster",
   profile: hostProfile
 });
