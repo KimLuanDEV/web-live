@@ -119,7 +119,14 @@
         <div class="reactions-layer" id="reactionsLayerViewer"></div>
 <div class="video-card__inner">
       <video id="player" autoplay playsinline></video>
+
+      <!-- 🎁 GIFT VIDEO OVERLAY -->
+<div id="giftVideoLayer" class="gift-video-layer"></div>
+
+
     </div>
+
+
 
 <!-- GIFT FLOAT BUTTON -->
 <button class="gift-fab" id="giftFab" title="Tặng quà">🎁</button>
@@ -374,6 +381,29 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
+
+
+
+
+
+function playGiftVideo(src, duration = 2500) {
+  if (!giftVideoLayer) return;
+
+  const video = document.createElement("video");
+  video.src = src;
+  video.className = "gift-video";
+  video.autoplay = true;
+  video.muted = true;        // 🔥 bắt buộc (browser policy)
+  video.playsInline = true;
+
+  giftVideoLayer.appendChild(video);
+
+  // tự remove
+  setTimeout(() => {
+    video.pause();
+    video.remove();
+  }, duration);
+}
 
 
 
@@ -1471,6 +1501,27 @@ socket.on("broadcaster-offline", () => {
  // ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) =====
 const chatOverlay = document.getElementById("chatOverlay");
 
+const giftVideoLayer = document.getElementById("giftVideoLayer");
+
+function playGiftVideo(src, duration = 2500) {
+  if (!giftVideoLayer) return;
+
+  const video = document.createElement("video");
+  video.src = src;
+  video.className = "gift-video";
+  video.autoplay = true;
+  video.muted = true;        // 🔥 bắt buộc
+  video.playsInline = true;
+
+  giftVideoLayer.appendChild(video);
+
+  setTimeout(() => {
+    video.pause();
+    video.remove();
+  }, duration);
+}
+
+
 // 🔒 FIX MOBILE CHỐT: lock body scroll khi vuốt chat
 if (chatOverlay) {
   let __lock = false;
@@ -1998,7 +2049,7 @@ function spawnGift(type, donor, giftMeta){
   if (type === "dragonking") spawnBigGift("🐲", "dragonking", donor, giftMeta);
   if (type === "supernova") spawnBigGift("🌠", "supernova", donor, giftMeta);
 }
-socket.on("gift", ({ gift, donor })=>{
+socket.on("gift", payload, ({ gift, donor })=>{
   // spawn animation
   spawnGift(gift.type, donor, gift);
 
@@ -2012,6 +2063,28 @@ socket.on("gift", ({ gift, donor })=>{
     setTimeout(()=>note.classList.add("hide"), 1600);
     setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
   }catch{}
+
+  // ===== 🎁 VIDEO GIFT =====
+  const { gift } = payload;
+  if (!gift) return;
+
+  switch (gift.type) {
+    case "heart":
+      playGiftVideo("/gift-videos/dragon.mp4", 1500);
+      break;
+
+    case "rocket":
+      playGiftVideo("/gift-videos/dragon.mp4", 2000);
+      break;
+
+    case "dragonking":
+      playGiftVideo("/gift-videos/dragon.mp4", 3000);
+      break;
+
+    case "supernova":
+      playGiftVideo("/gift-videos/dragon.mp4", 3500);
+      break;
+  }
 });
 
 const walletCoinsEl = document.getElementById("walletCoins");

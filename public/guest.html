@@ -405,6 +405,29 @@ const guestRequestBtn = document.getElementById("guestRequestBtn");
 
 
 
+const giftVideoLayer = document.getElementById("giftVideoLayer");
+
+function playGiftVideo(src, duration = 2500) {
+  if (!giftVideoLayer) return;
+
+  const video = document.createElement("video");
+  video.src = src;
+  video.className = "gift-video";
+  video.autoplay = true;
+  video.muted = true;        // 🔥 bắt buộc (browser policy)
+  video.playsInline = true;
+
+  giftVideoLayer.appendChild(video);
+
+  // tự remove
+  setTimeout(() => {
+    video.pause();
+    video.remove();
+  }, duration);
+}
+
+
+
 // ===== FORCE RESUME AUDIO (GUEST) =====
 function forceResumeAudio(videoEl){
   if (!videoEl) return;

@@ -4440,3 +4440,25 @@ video {
 .gift-panel__grid button {
   pointer-events: auto;
 }
+
+
+/* =========================
+   🎁 GIFT VIDEO OVERLAY
+========================= */
+
+.gift-video-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 25;          /* trên video, dưới chat */
+  pointer-events: none; /* 🔥 không chặn click */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.gift-video {
+  max-width: 90%;
+  max-height: 90%;
+  object-fit: contain;
+  filter: drop-shadow(0 0 30px rgba(255,200,80,.6));
+}
