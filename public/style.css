@@ -4388,3 +4388,55 @@ body.viewer-fullscreen .video-card {
 .gift-panel:not(.hidden) ~ .chat-overlay {
   opacity: 0.25;
 }
+
+
+/* ===== Z-INDEX STACK (LIVE OVERLAY) ===== */
+
+/* Video nền */
+.video-card,
+.video-card__inner,
+video {
+  position: relative;
+  z-index: 1;
+}
+
+/* Reactions / hearts */
+.reactions-layer {
+  position: absolute;
+  z-index: 20;
+  pointer-events: none;
+}
+
+/* Chat overlay (chỉ hiển thị, không chặn click) */
+.chat-overlay {
+  position: absolute;
+  z-index: 30;
+  pointer-events: none; /* 🔥 QUAN TRỌNG */
+}
+
+/* Chat input (cho phép nhập) */
+.chat-input-overlay {
+  position: absolute;
+  z-index: 40;
+  pointer-events: auto;
+}
+
+/* Gift FAB (nút 🎁) */
+.gift-fab {
+  position: absolute;
+  z-index: 60; /* cao hơn chat */
+  pointer-events: auto;
+}
+
+/* Gift panel + icon quà */
+.gift-panel {
+  position: absolute;
+  z-index: 70; /* 🔥 CAO NHẤT */
+  pointer-events: auto;
+}
+
+/* Gift icons bên trong */
+.gift-panel button,
+.gift-panel__grid button {
+  pointer-events: auto;
+}
