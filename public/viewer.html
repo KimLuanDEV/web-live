@@ -1499,25 +1499,29 @@ function pushOverlay(msg){
   const name  = msg.name || "User";
   const level = msg.level || 1;
 
-  const avatar =
-    (typeof msg.avatar === "string" && msg.avatar.trim()) ||
-    "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360" +
-      encodeURIComponent(name);
+const avatar =
+  (typeof msg.avatar === "string" && msg.avatar.trim()) ||
+  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+    encodeURIComponent(name);
+
 
   const el = document.createElement("div");
   el.className = "chat-bubble chat-" + role;
   el.dataset.socket = msg.socketId;
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
-  el.innerHTML = `
-    <div class="chat-avatar-bg" style="background-image:url('https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360')"></div>
-    <div class="chat-body">
-      <div class="chat-head">
-        <span class="chat-name">${name}</span>
-        <span class="chat-level">⭐ Lv ${level}</span>
-      </div>
-      <div class="chat-text">${msg.text}</div>
+ el.innerHTML = `
+  <div class="chat-avatar-bg"
+       style="background-image:url('${avatar}')">
+  </div>
+  <div class="chat-body">
+    <div class="chat-head">
+      <span class="chat-name">${name}</span>
+      <span class="chat-level">⭐ Lv ${level}</span>
     </div>
-  `;
+    <div class="chat-text">${msg.text}</div>
+  </div>
+`;
+
 
   chatOverlay.appendChild(el);
 
