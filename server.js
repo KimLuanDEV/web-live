@@ -267,7 +267,7 @@ socket.on("viewer-join", ({ roomId, name, avatar }) => {
 
    const profile = {
     name: name || "Ẩn danh",
-    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360", // ⭐ DEFAULT
+    avatar: avatar || "/avatars/default.png", // 🔒 BẢO HIỂM
     level: 1,
     role: "viewer"
   };
