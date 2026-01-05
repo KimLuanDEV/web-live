@@ -33,3 +33,31 @@ document.getElementById("btnSave").onclick = () => {
 };
 
 loadProfile();
+
+
+const avatarInput = document.getElementById("avatarInput");
+const btnChangeAvatar = document.getElementById("btnChangeAvatar");
+
+btnChangeAvatar.onclick = () => avatarInput.click();
+
+avatarInput.onchange = async () => {
+  const file = avatarInput.files[0];
+  if (!file) return;
+
+  const fd = new FormData();
+  fd.append("avatar", file);
+
+  const res = await fetch("/api/upload-avatar", {
+    method: "POST",
+    body: fd
+  });
+
+  const data = await res.json();
+  if (!data.url) return alert("Upload thất bại");
+
+  avatarPreview.src = data.url;
+
+  // 🔑 LƯU PROFILE
+  localStorage.setItem("userAvatar", data.url);
+};
+

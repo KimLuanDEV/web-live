@@ -649,6 +649,11 @@ if(nameFromLobby){
     const socket = io();
     
 
+socket.emit("viewer-join", {
+  roomId,
+  name: localStorage.getItem("profileName") || "Viewer",
+  avatar: localStorage.getItem("userAvatar")
+});
 
 function limitAudioBitrate(pc, kbps = 32) {
   try {

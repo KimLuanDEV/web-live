@@ -1,6 +1,6 @@
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
 
-
+const multer = require("multer");
 const express = require("express");
 const http = require("http");
 const path = require("path");
@@ -11,6 +11,21 @@ const twilio = require("twilio");
 const fs = require("fs");
 
 const LIVE_STATE_FILE = path.join(__dirname, "live_state.json");
+
+
+const upload = multer({
+  storage: multer.diskStorage({
+    destination: "public/avatars",
+    filename: (_, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, Date.now() + ext);
+    }
+  })
+});
+
+
+
+
 
 function loadLiveState() {
   try {
@@ -41,6 +56,10 @@ app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "poster.html"));
 });
 
+app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file" });
+  res.json({ url: "/avatars/" + req.file.filename });
+});
 
 
 
