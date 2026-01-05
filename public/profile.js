@@ -56,8 +56,9 @@ avatarInput.onchange = async () => {
   if (!data.url) return alert("Upload thất bại");
 
   avatarPreview.src = data.url;
-
-  // 🔑 LƯU PROFILE
   localStorage.setItem("userAvatar", data.url);
+
+  // 🔥 CẬP NHẬT REALTIME
+  socket.emit("profile-update", { avatar: data.url });
 };
 

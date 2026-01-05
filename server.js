@@ -244,6 +244,23 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+  socket.on("profile-update", ({ avatar }) => {
+  const room = getRoomBySocket(socket.id);
+  if (!room) return;
+
+  const profile = room.viewerProfiles.get(socket.id);
+  if (!profile) return;
+
+  profile.avatar = avatar;
+
+  // broadcast cho cả room
+  io.to(room.id).emit("profile-updated", {
+    socketId: socket.id,
+    avatar
+  });
+});
+
+
 socket.on("viewer-join", ({ roomId, name, avatar }) => {
   const room = getRoom(roomId);
   if (!room) return;

@@ -476,6 +476,26 @@ guestCancelWait?.addEventListener("click", () => {
 
     const socket = io();
 
+
+socket.on("profile-updated", ({ socketId, avatar }) => {
+  // 1️⃣ cập nhật cache viewer
+  if (viewerProfiles?.[socketId]) {
+    viewerProfiles[socketId].avatar = avatar;
+  }
+
+  // 2️⃣ cập nhật avatar trong chat overlay
+  document
+    .querySelectorAll(`.chat-bubble[data-socket="${socketId}"] .chat-avatar-bg`)
+    .forEach(el => {
+      el.style.backgroundImage = `url('${avatar}')`;
+    });
+
+  // 3️⃣ cập nhật viewer list / mini profile nếu đang mở
+  refreshViewerAvatars?.();
+});
+
+
+
     // ✅ GUEST CŨNG LÀ VIEWER KHI VÀO PHÒNG
 const guestProfile = (() => {
   try {
@@ -1595,6 +1615,7 @@ function pushOverlay(msg){
 
   const el = document.createElement("div");
   el.className = "chat-bubble chat-" + role;
+  el.dataset.socket = msg.socketId;
 
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
   el.innerHTML = `
