@@ -4461,7 +4461,7 @@ video {
   height: 100%;
   object-fit: contain;
 
-  opacity: 0.35;                 /* 👈 xuyên thấu */
+  opacity: 0.7;                 /* 👈 xuyên thấu */
   mix-blend-mode: screen;        /* 👈 hoà ánh sáng */
 
   filter:

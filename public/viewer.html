@@ -2041,13 +2041,13 @@ function spawnGift(type, donor, giftMeta){
   setTimeout(()=>el.remove(), 2000);
 
   if (type === "rocket") spawnBigGift("🚀", "rocket", donor, giftMeta);
-  if (type === "dragon") spawnBigGift("🐉", "dragon", donor, giftMeta);
-  if (type === "phoenix") spawnBigGift("🦅", "phoenix", donor, giftMeta);
+  if (type === "dragon") spawnBigGift("", "dragon", donor, giftMeta);
+  if (type === "phoenix") spawnBigGift("", "phoenix", donor, giftMeta);
   if (type === "galaxy") spawnBigGift("🌌", "galaxy", donor, giftMeta);
   if (type === "meteor") spawnBigGift("☄️", "meteor", donor, giftMeta);
   if (type === "king") spawnBigGift("👑", "king", donor, giftMeta);
-  if (type === "dragonking") spawnBigGift("🐲", "dragonking", donor, giftMeta);
-  if (type === "supernova") spawnBigGift("🌠", "supernova", donor, giftMeta);
+  if (type === "dragonking") spawnBigGift("", "dragonking", donor, giftMeta);
+  if (type === "supernova") spawnBigGift("", "supernova", donor, giftMeta);
 }
 socket.on("gift", ({ gift, donor })=>{
   // spawn animation
