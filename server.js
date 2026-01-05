@@ -265,6 +265,13 @@ socket.on("viewer-join", ({ roomId, name, avatar }) => {
   const room = getRoom(roomId);
   if (!room) return;
 
+   const profile = {
+    name: name || "Ẩn danh",
+    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360", // ⭐ DEFAULT
+    level: 1,
+    role: "viewer"
+  };
+
   room.viewers.add(socket.id);
   room.viewerProfiles.set(socket.id, {
     name: safeName(name),
@@ -623,7 +630,7 @@ if (room.liveStartTs) {
     socketId: socket.id,                 // ⬅️ BẮT BUỘC
     role,
     name: safeName(name || profile.name || "Ẩn danh"),
-    avatar: profile.avatar || "",        // ⬅️ BẮT BUỘC
+    avatar: profile.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",        // ⬅️ BẮT BUỘC
     level: profile.level || 1,            // (nếu có)
     text: String(text).slice(0, 300),
     ts: Date.now(),
