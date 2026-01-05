@@ -2049,7 +2049,7 @@ function spawnGift(type, donor, giftMeta){
   if (type === "dragonking") spawnBigGift("🐲", "dragonking", donor, giftMeta);
   if (type === "supernova") spawnBigGift("🌠", "supernova", donor, giftMeta);
 }
-socket.on("gift", payload, ({ gift, donor })=>{
+socket.on("gift", ({ gift, donor })=>{
   // spawn animation
   spawnGift(gift.type, donor, gift);
 
@@ -2064,9 +2064,8 @@ socket.on("gift", payload, ({ gift, donor })=>{
     setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
   }catch{}
 
-  // ===== 🎁 VIDEO GIFT =====
-  const { gift } = payload;
-  if (!gift) return;
+  // ===== 🎁 VIDEO GIFT (GHÉP THÊM) =====
+  if (!gift || !gift.type) return;
 
   switch (gift.type) {
     case "heart":
