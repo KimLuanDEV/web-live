@@ -2037,8 +2037,10 @@ function pushOverlay(msg){
   const name  = msg.name || "User";
   const level = msg.level || 1;
 
- const avatar = msg.avatar; // server đảm bảo luôn có
-
+  const avatar =
+  (typeof msg.avatar === "string" && msg.avatar.trim()) ||
+  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+    encodeURIComponent(name);
 
 
   const el = document.createElement("div");

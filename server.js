@@ -245,48 +245,48 @@ io.on("connection", (socket) => {
 
 
   socket.on("profile-update", ({ avatar }) => {
-  for (const [roomId, room] of rooms.entries()) {
-    if (room.viewerProfiles?.has(socket.id)) {
-      const profile = room.viewerProfiles.get(socket.id);
-      profile.avatar = avatar || "/avatars/default.png";
+  const room = getRoomBySocket(socket.id);
+  if (!room) return;
 
-      io.to(roomId).emit("profile-updated", {
-        socketId: socket.id,
-        avatar: profile.avatar
-      });
-      break;
-    }
-  }
+  const profile = room.viewerProfiles.get(socket.id);
+  if (!profile) return;
+
+  profile.avatar = avatar;
+
+  // broadcast cho cả room
+  io.to(room.id).emit("profile-updated", {
+    socketId: socket.id,
+    avatar
+  });
 });
-
 
 
 socket.on("viewer-join", ({ roomId, name, avatar }) => {
   const room = getRoom(roomId);
   if (!room) return;
 
-  const profile = {
-    name: safeName(name || "Ẩn danh"),
-    avatar: avatar || "/avatars/default.png", // ⭐ CHỈ 1 DEFAULT DUY NHẤT
-    level: 1,
-    role: "viewer"
-  };
-
   room.viewers.add(socket.id);
-  room.viewerProfiles.set(socket.id, profile);
+  room.viewerProfiles.set(socket.id, {
+    name: safeName(name),
+    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
+  });
 
   emitViewerCount(roomId);
 
+
   const viewers = Array.from(room.viewerProfiles.values());
 
-  // gửi cho người mới
+  // ✅ 1️⃣ GỬI NGAY CHO NGƯỜI VỪA JOIN (QUAN TRỌNG)
   socket.emit("viewer-list", { viewers });
 
-  // broadcast cho room
-  io.to(roomId).emit("viewer-list", { viewers });
+  // ✅ 2️⃣ VẪN BROADCAST CHO NGƯỜI KHÁC
+  socket.to(roomId).emit("viewer-list", { viewers });
+
+  
+  io.to(roomId).emit("viewer-list", {
+    viewers: Array.from(room.viewerProfiles.values())
+  });
 });
-
-
 
 
 
@@ -623,7 +623,7 @@ if (room.liveStartTs) {
     socketId: socket.id,                 // ⬅️ BẮT BUỘC
     role,
     name: safeName(name || profile.name || "Ẩn danh"),
-    avatar: profile.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",        // ⬅️ BẮT BUỘC
+    avatar: profile.avatar || "",        // ⬅️ BẮT BUỘC
     level: profile.level || 1,            // (nếu có)
     text: String(text).slice(0, 300),
     ts: Date.now(),
