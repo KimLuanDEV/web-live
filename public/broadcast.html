@@ -649,6 +649,11 @@ if(nameFromLobby){
     const socket = io();
     
 
+
+
+
+
+
 socket.on("profile-updated", ({ socketId, avatar }) => {
   // 1️⃣ cập nhật cache viewer
   if (viewerProfiles?.[socketId]) {
@@ -665,6 +670,7 @@ socket.on("profile-updated", ({ socketId, avatar }) => {
   // 3️⃣ cập nhật viewer list / mini profile nếu đang mở
   refreshViewerAvatars?.();
 });
+
 
 
 socket.emit("viewer-join", {

@@ -244,21 +244,25 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
-  socket.on("profile-update", ({ avatar }) => {
-  const room = getRoomBySocket(socket.id);
+  socket.on("profile-update", ({ name, avatar }) => {
+  const roomId = socket.data.roomId;
+  if (!roomId) return;
+
+  const room = getRoom(roomId);
   if (!room) return;
 
   const profile = room.viewerProfiles.get(socket.id);
   if (!profile) return;
 
-  profile.avatar = avatar;
+  if (name) profile.name = safeName(name);
+  if (avatar) profile.avatar = avatar;
 
-  // broadcast cho cả room
-  io.to(room.id).emit("profile-updated", {
+  io.to(roomId).emit("viewer-profile-update", {
     socketId: socket.id,
-    avatar
+    profile
   });
 });
+
 
 
 socket.on("viewer-join", ({ roomId, name, avatar }) => {
@@ -491,6 +495,8 @@ saveLiveState(state);
 
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
+
+    
      roomId = normRoomId(roomId);
     if (!roomId || !role) return;
 
@@ -510,6 +516,17 @@ saveLiveState(state);
 
 
     const room = getRoom(roomId);
+
+
+    // 🔥 TẠO PROFILE CHO MỌI ROLE (QUAN TRỌNG)
+room.viewerProfiles.set(socket.id, {
+  name: safeName(profile?.name || socket.data.userName || "Guest"),
+  avatar: profile?.avatar ||
+    "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+  level: profile?.level || 1
+});
+
+
 
     if (role === "broadcaster") {
        if (room.releaseTimer) {
