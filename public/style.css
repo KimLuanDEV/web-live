@@ -4456,9 +4456,16 @@ video {
   justify-content: center;
 }
 
-.gift-video {
-  max-width: 100%;
-  max-height: 100%;
+.gift-video{
+  width: 100%;
+  height: 100%;
   object-fit: contain;
-  filter: drop-shadow(0 0 30px rgba(255,200,80,.6));
+
+  opacity: 0.35;                 /* 👈 xuyên thấu */
+  mix-blend-mode: screen;        /* 👈 hoà ánh sáng */
+
+  filter:
+    drop-shadow(0 0 30px rgba(255,200,80,.6))
+    drop-shadow(0 0 80px rgba(255,180,80,.4));
 }
+
