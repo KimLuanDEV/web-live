@@ -233,11 +233,11 @@ const socket = io();
 const VIRTUAL_ROOMS = [
   
   {
-    roomId: "KimCatDog",
-    title: "Thống Kê Salad 🥗",
-    viewers: 20,
-    avatar: "https://www.symbols.com/images/symbol/4404_green-salad-samsung-one-ui-15.png",
-    link: "http://27.71.27.173/salad/"
+    roomId: "Film",
+    title: "Mr.Bean Holiday",
+    viewers: 999,
+    avatar: "https://img.timviecdienvien.com/2019/06/hinh1-dien-anh-560x420.jpg",
+    link: "https://www.youtube.com/watch?v=cwSoWCJGe9Y"
   },
   /*
   {
@@ -655,8 +655,8 @@ function render(list){
         <div class="lobby-badges">
           ${
             r.__virtual
-              ? `<span class="badge badge--virtual" style="margin:0">Bigo Live</span>`
-              : `<span class="lobby-livePill"><span class="lobby-liveDot"></span> LIVE</span>`
+              ? `<span class="badge badge--virtual" style="margin:0">Live</span>`
+              : `<span class="lobby-livePill"><span class="lobby-liveDot"></span>LIVE</span>`
           }
           ${(!r.__virtual && r.hasGuest) ? `<span class="badge badge--info" style="margin:0">Co-host</span>` : ``}
         </div>
