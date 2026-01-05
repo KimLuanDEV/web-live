@@ -37,6 +37,17 @@ loadProfile();
 
 const avatarInput = document.getElementById("avatarInput");
 const btnChangeAvatar = document.getElementById("btnChangeAvatar");
+const DEFAULT_AVATAR = "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360";
+
+let avatar = localStorage.getItem("userAvatar");
+if (!avatar) {
+  avatar = DEFAULT_AVATAR;
+  localStorage.setItem("userAvatar", avatar);
+}
+
+avatarPreview.src = avatar;
+
+
 
 btnChangeAvatar.onclick = () => avatarInput.click();
 
