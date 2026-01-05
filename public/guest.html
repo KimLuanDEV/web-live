@@ -1601,12 +1601,9 @@ function pushOverlay(msg){
     <div class="chat-avatar-bg" style="background-image:url('https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360')"></div>
     <div class="chat-body">
       <div class="chat-head">
-  <span class="chat-role chat-role-${role}">
-    ${role === "host" ? "👑" : role === "guest" ? "🎤" : "👤"}
-  </span>
-  <span class="chat-name">${name}</span>
-  <span class="chat-level">⭐ Lv ${level}</span>
-</div>
+        <span class="chat-name">${name}</span>
+        <span class="chat-level">⭐ Lv ${level}</span>
+      </div>
       <div class="chat-text">${msg.text}</div>
     </div>
   `;
@@ -1632,6 +1629,53 @@ function pushOverlay(msg){
   }
 }
 
+
+
+/* ===== SWIPE TO TOGGLE CHAT (MOBILE) ===== */
+(function(){
+  if (window.innerWidth > 768) return;
+
+  const chat = document.querySelector(".chat-overlay");
+  if (!chat) return;
+
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  document.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, { passive:true });
+
+  document.addEventListener("touchmove", e => {
+    if (!tracking) return;
+
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+
+    // nếu vuốt dọc nhiều hơn ngang → bỏ (để scroll)
+    if (Math.abs(dy) > Math.abs(dx)) {
+      tracking = false;
+      return;
+    }
+
+    // swipe phải → ẩn chat
+    if (dx > 60){
+      chat.classList.add("chat-hidden");
+      tracking = false;
+    }
+
+    // swipe trái → hiện chat
+    if (dx < -60){
+      chat.classList.remove("chat-hidden");
+      tracking = false;
+    }
+  }, { passive:true });
+
+  document.addEventListener("touchend", ()=>tracking=false);
+})();
 
 
     const emojiBar = document.getElementById("emojiBar");

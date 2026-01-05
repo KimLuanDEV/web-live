@@ -4371,21 +4371,16 @@ body.viewer-fullscreen .video-card {
 }
 
 
-/* ===== CHAT ROLE ICON ===== */
-.chat-role{
-  font-size:14px;
-  line-height:1;
-  filter: drop-shadow(0 0 4px rgba(0,0,0,.6));
-}
+/* ===== SWIPE HIDE CHAT (MOBILE) ===== */
+@media (max-width: 768px){
+  .chat-overlay{
+    transition: transform .25s ease, opacity .25s ease;
+    will-change: transform;
+  }
 
-.chat-role-host{
-  color: var(--gold);
-}
-
-.chat-role-guest{
-  color: var(--blue);
-}
-
-.chat-role-viewer{
-  opacity:.85;
+  .chat-overlay.chat-hidden{
+    transform: translateX(110%);
+    opacity: 0;
+    pointer-events: none;
+  }
 }
