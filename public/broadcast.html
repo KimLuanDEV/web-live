@@ -77,6 +77,9 @@
   <!-- HOST MAIN -->
   <div class="video-card live-main" id="hostCard">
 
+    <div class="viewer-backdrop hidden" id="viewerBackdrop"></div>
+
+
 <!-- START LIVE OVERLAY -->
 <div id="startLiveOverlay" class="start-live-overlay">
   <button id="startLiveBigBtn" class="start-live-btn">
@@ -2418,6 +2421,8 @@ document.body.classList.add("viewer-fullscreen");
 const viewerAvatarBox = document.getElementById("viewerAvatars");
 const viewerListPopup = document.getElementById("viewerListPopup");
 const miniProfile = document.getElementById("miniProfile");
+const viewerBackdrop = document.getElementById("viewerBackdrop");
+
 
 let __viewerCache = [];
 
@@ -2492,24 +2497,31 @@ function openMiniProfile(v){
   `;
 
   miniProfile.classList.remove("hidden");
+  viewerBackdrop.classList.remove("hidden");
 }
 
-
+function toggleViewerPopup(){
+  viewerListPopup.classList.toggle("hidden");
+  viewerBackdrop.classList.remove("hidden");
+}
 
 function closeAllViewerUI(){
   viewerListPopup?.classList.add("hidden");
   miniProfile?.classList.add("hidden");
+  viewerBackdrop?.classList.add("hidden");
 }
+
+viewerBackdrop?.addEventListener("click", () => {
+  closeAllViewerUI();
+});
+
 
 // ⛔ CHẶN CLICK LAN RA NGOÀI popup / avatar
 viewerAvatarBox?.addEventListener("click", e => e.stopPropagation());
 viewerListPopup?.addEventListener("click", e => e.stopPropagation());
 miniProfile?.addEventListener("click", e => e.stopPropagation());
 
-// ✅ CLICK BẤT KỲ ĐÂU KHÁC → ĐÓNG
-window.addEventListener("pointerdown", () => {
-  closeAllViewerUI();
-});
+
 
 
 

@@ -4263,3 +4263,17 @@ body.viewer-fullscreen .video-card {
   border:1px solid rgba(255,255,255,.12);
   font-size:12px;
 }
+
+
+/* ===== VIEWER BACKDROP (CLICK OUTSIDE FIX) ===== */
+.viewer-backdrop{
+  position:absolute;
+  inset:0;
+  z-index:29;              /* dưới avatar (30) – trên mọi overlay khác */
+  background:transparent;
+  pointer-events:auto;
+}
+
+.viewer-backdrop.hidden{
+  display:none;
+}
