@@ -667,6 +667,12 @@ socket.on("viewer-donate-update", ({ name, coins }) => {
     // cập nhật cache
     v.coins = coins;
 
+
+     const el = document.querySelector(
+    `.viewer-avatar[data-name="${CSS.escape(name)}"]`
+  );
+  if (!el) return;
+  
     // tìm hoặc tạo badge
     let badge = el.querySelector(".viewer-coin-badge");
     if (!badge) {
@@ -2615,7 +2621,8 @@ socket.on("viewer-list", ({ viewers }) => {
 
  viewerAvatarBox.innerHTML =
   showList.map((v, i) => `
-    <div class="viewer-avatar" data-idx="${i}">
+    <div class="viewer-avatar" data-name="${v.name}">
+
       <img src="${v.avatar}">
       ${v.coins > 0 ? `
         <div class="viewer-coin-badge">
