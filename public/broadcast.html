@@ -2386,6 +2386,15 @@ socket.on("gift", ({ gift, donor })=>{
   if (!gift || !gift.type) return;
 
   switch (gift.type) {
+
+    case "meteor":
+      playGiftVideo("/gift-videos/meteor.mp4", 10000);
+      break;
+
+    case "galaxy":
+      playGiftVideo("/gift-videos/galaxy.mp4", 10000);
+      break;
+
     case "phoenix":
       playGiftVideo("/gift-videos/phoenix.mp4", 17000);
       break;
