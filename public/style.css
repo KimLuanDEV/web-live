@@ -4469,3 +4469,57 @@ video {
     drop-shadow(0 0 80px rgba(255,180,80,.4));
 }
 
+
+/* ===============================
+   VIEWER AVATAR + COIN BADGE
+   =============================== */
+
+.viewer-avatars-overlay{
+  position:absolute;
+  top:14px;
+  right:14px;
+  display:flex;
+  gap:8px;
+  z-index:6;
+}
+
+.viewer-avatar{
+  position:relative;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+}
+
+.viewer-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  display:block;
+  border:1px solid rgba(255,255,255,.35);
+}
+
+/* 💎 COIN BADGE ĐÈ MÉP DƯỚI */
+.viewer-coin-badge{
+  position:absolute;
+  left:50%;
+  bottom:-6px;              /* ⬅️ ĐÈ MÉP DƯỚI */
+  transform:translateX(-50%);
+
+  padding:2px 6px;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+
+  border-radius:999px;
+  background:linear-gradient(135deg,#FFD36E,#FFAA3C);
+  color:#2a1a00;
+
+  border:1px solid rgba(255,255,255,.6);
+  box-shadow:
+    0 0 10px rgba(255,211,110,.6),
+    0 4px 10px rgba(0,0,0,.45);
+
+  white-space:nowrap;
+  pointer-events:none;
+}
