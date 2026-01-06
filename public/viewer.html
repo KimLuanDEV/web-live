@@ -780,20 +780,50 @@ function addExpFromDonate(coin){
       p.exp -= need;
       p.level += 1;
 
-      // 🔔 FEEDBACK NHẸ
-      try{
-        const toast = document.createElement("div");
-        toast.className = "gift-toast";
-        toast.textContent = `⭐ Level Up! → Lv ${p.level}`;
-        document.body.appendChild(toast);
-        setTimeout(()=>toast.classList.add("hide"), 1200);
-        setTimeout(()=>toast.remove(), 1800);
-      }catch{}
+     // 💥 LEVEL UP EFFECT
+    showLevelUpEffect(p.level);
+    
     } else break;
   }
 
   localStorage.setItem(KEY, JSON.stringify(p));
 }
+
+function showLevelUpEffect(newLevel){
+  try{
+    const overlay = document.createElement("div");
+    overlay.className = "levelup-overlay";
+
+    const box = document.createElement("div");
+    box.className = "levelup-box";
+    box.innerHTML = `
+      ⭐ LEVEL UP!
+      <div class="levelup-sub">Bạn đã lên Lv ${newLevel}</div>
+    `;
+
+    // EXP particles
+    const burst = document.createElement("div");
+    burst.className = "exp-burst";
+
+    const n = 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "exp-p";
+      p.style.left = "50%";
+      p.style.top = "50%";
+      p.style.setProperty("--dx",(Math.random()*360-180)+"px");
+      p.style.setProperty("--dy",(Math.random()*260-130)+"px");
+      burst.appendChild(p);
+    }
+
+    box.appendChild(burst);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 1200);
+  }catch{}
+}
+
 
 
 
