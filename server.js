@@ -738,6 +738,15 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     room.giftByUser.set(donor, prev + cost);
   }catch(e){}
 
+  // 🔥 EMIT REALTIME CHO AVATAR VIEWER
+const total = room.giftByUser.get(donor) || 0;
+
+io.to(roomId).emit("viewer-donate-update", {
+  name: donor,
+  coins: total
+});
+
+
   const payload = {
     gift: { type, emoji: catalog.emoji, cost: catalog.cost, qty, coins: cost },
     donor,
@@ -745,15 +754,6 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     ts: Date.now(),
   };
 
-const prev = room.giftByUser.get(donorName) || 0;
-const total = prev + giftCoins;
-room.giftByUser.set(donorName, total);
-
-// 🔥 emit realtime cho phòng
-io.to(roomId).emit("viewer-donate-update", {
-  name: donorName,
-  coins: total
-});
 
 
   io.to(roomId).emit("gift", payload);
