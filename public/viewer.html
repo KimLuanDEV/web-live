@@ -2481,15 +2481,70 @@ document.body.classList.add("viewer-fullscreen");
 })();
 
 
-// 🎁 CLICK GIFT → OPEN CONFIRM MODAL
+function openGiftConfirmModal(giftId) {
+  const giftMap = {
+    heart:     { emoji:"❤️", title:"Heart", cost:1 },
+    flower:    { emoji:"🌸", title:"Flower", cost:5 },
+    rocket:    { emoji:"🚀", title:"Rocket", cost:20 },
+    coin:      { emoji:"💰", title:"Coin", cost:50 },
+    galaxy:    { emoji:"🌌", title:"Galaxy", cost:100 },
+    meteor:    { emoji:"☄️", title:"Meteor", cost:200 },
+    king:      { emoji:"👑", title:"King", cost:500 },
+    dragon:    { emoji:"🐉", title:"Dragon", cost:10000 },
+    phoenix:   { emoji:"🦅", title:"Phoenix", cost:10000 },
+    dragonking:{ emoji:"🐲", title:"Dragon King", cost:10000 },
+    supernova: { emoji:"🌠", title:"Supernova", cost:10000 },
+  };
+
+  const gift = giftMap[giftId];
+  if (!gift) {
+    console.warn("Gift not found:", giftId);
+    return;
+  }
+
+  // combo
+  const combo = Number(
+    document.querySelector(".gift-combo__btn.is-active")?.dataset.combo || 1
+  );
+
+  // fill modal
+  document.getElementById("gcmEmoji").textContent = gift.emoji;
+  document.getElementById("gcmTitle").textContent = gift.title;
+  document.getElementById("gcmCost").textContent = gift.cost;
+  document.getElementById("gcmQty").textContent = "x" + combo;
+  document.getElementById("gcmTotal").textContent = gift.cost * combo;
+  document.getElementById("gcmWallet").textContent =
+    document.getElementById("walletCoins")?.textContent || "0";
+
+  // show modal
+  document.getElementById("giftConfirmModal").classList.remove("hidden");
+}
+
+
+
+
+// ===============================
+// 🎁 FIX: CLICK GIFT CARD → OPEN CONFIRM MODAL
+// ===============================
 document.addEventListener("click", (e) => {
   const card = e.target.closest(".gift-card");
   if (!card) return;
+
+  e.preventDefault();
+  e.stopPropagation();
 
   const giftId = card.dataset.gift;
   if (!giftId) return;
 
   openGiftConfirmModal(giftId);
+});
+
+document.getElementById("gcmClose")?.addEventListener("click", () => {
+  document.getElementById("giftConfirmModal").classList.add("hidden");
+});
+
+document.getElementById("gcmCancel")?.addEventListener("click", () => {
+  document.getElementById("giftConfirmModal").classList.add("hidden");
 });
 
 
