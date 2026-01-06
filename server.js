@@ -243,6 +243,19 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
+socket.on("host-profile-update", ({ roomId, level }) => {
+  const room = getRoom(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  if (!room.hostProfile) room.hostProfile = {};
+
+  room.hostProfile.level = Number(level) || room.hostProfile.level || 1;
+
+  io.to(roomId).emit("host-profile-sync", room.hostProfile);
+  emitLobbyUpdate();
+});
+
 
   socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
@@ -350,20 +363,7 @@ socket.on("room-check", ({ roomId }, cb) => {
 });
 
 
-socket.on("host-update-profile", ({ roomId, name }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  if (room.broadcasterId !== socket.id) return;
 
-  room.hostProfile = {
-    name: String(name || "Host").slice(0, 20),
-    avatar: "", // ❌ không dùng nữa
-    ts: Date.now(),
-  };
-
-  io.to(roomId).emit("host-profile-update", room.hostProfile);
-  emitLobbyUpdate();
-});
 
 
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
@@ -525,13 +525,16 @@ saveLiveState(state);
     const room = getRoom(roomId);
 
 
-    // 🔥 TẠO PROFILE CHO MỌI ROLE (QUAN TRỌNG)
-room.viewerProfiles.set(socket.id, {
-  name: safeName(profile?.name || socket.data.userName || "Guest"),
-  avatar: profile?.avatar ||
-    "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-  level: profile?.level || 1
-});
+  // ❗ CHỈ TẠO viewerProfiles CHO viewer + guest
+if (role !== "broadcaster") {
+  room.viewerProfiles.set(socket.id, {
+    name: safeName(profile?.name || socket.data.userName || "Guest"),
+    avatar: profile?.avatar ||
+      "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    level: Number(profile?.level) || 1
+  });
+}
+
 
 
 

@@ -700,14 +700,14 @@ function addExpFromDonate(coin){
     } else break;
   }
 
-  // sau khi level thay đổi
-socket.emit("profile-update", {
+socket.emit("host-profile-update", {
+  roomId,
   level: p.level
 });
 
+ 
   localStorage.setItem(KEY, JSON.stringify(p));
 }
-
 
 
 
@@ -1516,30 +1516,30 @@ window.addEventListener("online", async () => {
       console.log(msg);
     }
 
-    function getHostProfile() {
-  let name = localStorage.getItem("hostName") || "";
-  if (!name) {
-    name = prompt("Nhập tên host hiển thị trên sảnh chờ:", "Host") || "Host";
-    name = name.trim().slice(0, 20) || "Host";
-    localStorage.setItem("hostName", name);
-  }
+   function getHostProfileUnified(){
+  let p = {};
+  try{
+    p = JSON.parse(localStorage.getItem("user_profile")) || {};
+  }catch{}
 
-  // Avatar mặc định (pravatar) — đổi theo tên để mỗi host khác nhau
-  let avatar = localStorage.getItem("hostAvatar") || "";
-  if (!avatar) {
-    avatar = `https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360`;
-    localStorage.setItem("hostAvatar", avatar);
-  }
-
-  return { name, avatar };
+  return {
+    name:  (p.name  || "Host").slice(0,20),
+    avatar: p.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    level:  Number(p.level) || 1
+  };
 }
 
-const hostProfile = getHostProfile();
+
+const hostProfile = getHostProfileUnified();
 
 socket.emit("join-room", {
   roomId,
   role: "broadcaster",
-  profile: hostProfile
+  profile: {
+    name: hostProfile.name,
+    avatar: hostProfile.avatar,
+    level: hostProfile.level
+  }
 });
 
 
@@ -2591,8 +2591,23 @@ socket.on("gift", ({ gift, donor })=>{
 
 
 
-const hostNameInput = document.getElementById("hostNameInput");
+
 const btnUpdateProfile = document.getElementById("btnUpdateProfile");
+
+const hp = getHostProfileUnified();
+
+const hostNameInput = document.getElementById("hostNameInput");
+const hostAvatar = document.getElementById("hostAvatarPreview");
+
+if (hostNameInput){
+  hostNameInput.value = hp.name;
+  hostNameInput.disabled = true;
+}
+
+if (hostAvatar){
+  hostAvatar.src = hp.avatar;
+}
+
 
 btnUpdateProfile.onclick = () => {
   const name = hostNameInput.value.trim().slice(0, 20);
