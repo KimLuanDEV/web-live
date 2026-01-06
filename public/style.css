@@ -2542,7 +2542,7 @@ body.vip-spotlight .vip-zoom{
   height:52px;
   border-radius:50%;
   font-size:22px;
-  z-index:99;
+  z-index:10;
   background: linear-gradient(135deg,#ff3b6b,#ffd36e);
   box-shadow:0 0 20px rgba(255,211,110,.6);
 }
@@ -4670,11 +4670,11 @@ video {
 .gift-panel{
   position:absolute;
   right:12px;
-  bottom:0;
+  bottom:72px;
 
-  width:100%;
+  width:340px;
   max-width:92vw;
-  max-height:50vh;
+  max-height:68vh;
 
   display:flex;
   flex-direction:column;
@@ -4777,7 +4777,7 @@ video {
   .gift-panel{
     right:8px;
     left:8px;
-    width:auto;
+    width:100%;
     bottom:64px;
     border-radius:22px;
   }
