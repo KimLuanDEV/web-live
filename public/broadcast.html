@@ -108,7 +108,6 @@
 <!-- 👥 VIEWER AVATAR OVERLAY -->
 <div class="viewer-avatars-overlay" id="viewerAvatars"></div>
 
-
 <!-- 👥 VIEWER LIST POPUP -->
 <div class="viewer-list-popup hidden" id="viewerListPopup"></div>
 
@@ -655,40 +654,6 @@ if(nameFromLobby){
     const socket = io();
     
 
-socket.on("viewer-donate-update", ({ name, coins }) => {
-  // tìm avatar đang hiển thị
-  const avatars = viewerAvatarBox.querySelectorAll(".viewer-avatar");
-
-  avatars.forEach(el => {
-    const idx = el.dataset.idx;
-    const v = __viewerCache[idx];
-    if (!v || v.name !== name) return;
-
-    // cập nhật cache
-    v.coins = coins;
-
-
-     const el = document.querySelector(
-    `.viewer-avatar[data-name="${CSS.escape(name)}"]`
-  );
-  if (!el) return;
-  
-    // tìm hoặc tạo badge
-    let badge = el.querySelector(".viewer-coin-badge");
-    if (!badge) {
-      badge = document.createElement("div");
-      badge.className = "viewer-coin-badge";
-      el.appendChild(badge);
-    }
-
-    badge.textContent = `💎 ${coins}`;
-
-    // 🔥 bật animation pop
-    badge.classList.remove("coin-pop");
-    void badge.offsetWidth; // reflow
-    badge.classList.add("coin-pop");
-  });
-});
 
 
 
@@ -2619,23 +2584,15 @@ socket.on("viewer-list", ({ viewers }) => {
   const showList = __viewerCache.slice(0, maxShow);
   const remain = __viewerCache.length - maxShow;
 
- viewerAvatarBox.innerHTML =
-  showList.map((v, i) => `
-    <div class="viewer-avatar" data-name="${v.name}">
-
-      <img src="${v.avatar}">
-      ${v.coins > 0 ? `
-        <div class="viewer-coin-badge">
-          💎 ${v.coins}
-        </div>
-      ` : ``}
-    </div>
-  `).join("") +
-  (remain > 0
-    ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
-    : "");
-
-
+  viewerAvatarBox.innerHTML =
+    showList.map((v, i) => `
+      <div class="viewer-avatar" data-idx="${i}">
+        <img src="${v.avatar}">
+      </div>
+    `).join("") +
+    (remain > 0
+      ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
+      : "");
 
   // click avatar (top 4)
   viewerAvatarBox.querySelectorAll(".viewer-avatar[data-idx]")

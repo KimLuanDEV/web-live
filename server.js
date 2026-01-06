@@ -272,10 +272,9 @@ socket.on("viewer-join", ({ roomId, name, avatar }) => {
   if (!room) return;
 
   room.viewers.add(socket.id);
-
   room.viewerProfiles.set(socket.id, {
     name: safeName(name),
-    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
   });
 
   emitViewerCount(roomId);
@@ -739,32 +738,12 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     room.giftByUser.set(donor, prev + cost);
   }catch(e){}
 
-// 🔄 sync coins vào viewerProfiles (RẤT QUAN TRỌNG)
-for (const [sid, profile] of room.viewerProfiles.entries()) {
-  if (profile.name === donor) {
-    profile.coins = room.giftByUser.get(donor) || 0;
-    break;
-  }
-}
-
-
-  // 🔥 EMIT REALTIME CHO AVATAR VIEWER
-const total = room.giftByUser.get(donor) || 0;
-
-io.to(roomId).emit("viewer-donate-update", {
-  name: donor,
-  coins: total
-});
-
-
   const payload = {
     gift: { type, emoji: catalog.emoji, cost: catalog.cost, qty, coins: cost },
     donor,
     totalCoins: room.giftTotal,
     ts: Date.now(),
   };
-
-
 
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
