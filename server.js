@@ -649,13 +649,13 @@ if (room.liveStartTs) {
     profile = room.viewerProfiles.get(socket.id);
   }
 
-const msg = {
+  const msg = {
     socketId: socket.id,
-    role,
-    name: profile?.name || "Viewer",
-    avatar: profile?.avatar,
-    level: Number(profile?.level) || 1, // ✅ LEVEL CHUẨN
-    text: String(text).slice(0,300),
+    name: String(name || "User").slice(0, 20),
+    text: String(text).slice(0, 300),
+    avatar: avatar || "",
+    level: Number(level) || 1,   // ✅ FIX CỐT LÕI
+    role: role || "viewer",
     ts: Date.now()
   };
 
