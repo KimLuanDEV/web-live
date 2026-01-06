@@ -2144,6 +2144,7 @@ function spawnGift(type, donor, giftMeta){
     type === "heart"  ? "❤️" :
     type === "flower" ? "🌸" :
     type === "rocket" ? "🚀" :
+    type === "coin"   ? "💰" :
     type === "dragon" ? "🐉" :
     type === "phoenix"? "🦅" :
     type === "galaxy" ? "🌌" :
@@ -2160,11 +2161,14 @@ function spawnGift(type, donor, giftMeta){
   giftLayer.appendChild(el);
   setTimeout(()=>el.remove(), 2000);
 
+  if (type === "heart") spawnBigGift("❤️", "heart", donor, giftMeta);
+  if (type === "flower") spawnBigGift("🌸", "flower", donor, giftMeta);
   if (type === "rocket") spawnBigGift("🚀", "rocket", donor, giftMeta);
+  if (type === "coin") spawnBigGift("💰", "coin", donor, giftMeta);
   if (type === "dragon") spawnBigGift("", "dragon", donor, giftMeta);
   if (type === "phoenix") spawnBigGift("", "phoenix", donor, giftMeta);
-  if (type === "galaxy") spawnBigGift("🌌", "galaxy", donor, giftMeta);
-  if (type === "meteor") spawnBigGift("☄️", "meteor", donor, giftMeta);
+  if (type === "galaxy") spawnBigGift("", "galaxy", donor, giftMeta);
+  if (type === "meteor") spawnBigGift("", "meteor", donor, giftMeta);
   if (type === "king") spawnBigGift("👑", "king", donor, giftMeta);
   if (type === "dragonking") spawnBigGift("", "dragonking", donor, giftMeta);
   if (type === "supernova") spawnBigGift("", "supernova", donor, giftMeta);
