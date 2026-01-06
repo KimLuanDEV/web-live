@@ -126,7 +126,7 @@
 <div class="gift-panel hidden" id="giftPanel">
   <div class="gift-panel__header">
     <span>🎁 Tặng quà</span>
-    <span class="gift-wallet-mini">Số dư:💎 <b id="walletCoins">0</b></span>
+    <span class="gift-wallet-mini">Số dư: <b id="walletCoins">0</b> 💎</span>
   </div>
 
   <div class="gift-combo" id="giftCombo">
@@ -2143,6 +2143,7 @@ function spawnGift(type, donor, giftMeta){
 }
 
 socket.on("gift", ({ gift, donor })=>{
+
   spawnGift(gift.type, donor, gift);
   try{
     const note = document.createElement("div");
@@ -2153,6 +2154,38 @@ socket.on("gift", ({ gift, donor })=>{
     setTimeout(()=>note.classList.add("hide"), 1600);
     setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
   }catch{}
+
+
+ // ===== 🎁 VIDEO GIFT (GHÉP THÊM) =====
+  if (!gift || !gift.type) return;
+
+  switch (gift.type) {
+
+    case "meteor":
+      playGiftVideo("/gift-videos/meteor.mp4", 10000);
+      break;
+
+    case "galaxy":
+      playGiftVideo("/gift-videos/galaxy.mp4", 10000);
+      break;
+
+    case "phoenix":
+      playGiftVideo("/gift-videos/phoenix.mp4", 17000);
+      break;
+
+    case "dragon":
+      playGiftVideo("/gift-videos/gold_dragon.mp4", 12000);
+      break;
+
+    case "dragonking":
+      playGiftVideo("/gift-videos/dragon.mp4", 12000);
+      break;
+
+    case "supernova":
+      playGiftVideo("/gift-videos/supernova.mp4", 11000);
+      break;
+  }
+
 });
 
 const walletCoinsEl = document.getElementById("walletCoins");
