@@ -814,15 +814,6 @@ function getUserProfile(){
 
 const profile = getUserProfile();
 
-socket.emit("viewer-join", {
-  roomId,
-  profile: {
-    name: profile.name || "Viewer",
-    avatar: profile.avatar,
-    level: profile.level || 1,
-    coins: profile.coins || 0
-  }
-});
 
 
 if (profile){
@@ -2224,7 +2215,7 @@ function pushOverlay(msg){
 
   const role  = String(msg.role || "viewer");
   const name  = msg.name || "User";
-  
+
   const cached =
   __viewerCache.find(v => v.name === msg.name);
 
