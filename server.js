@@ -626,33 +626,41 @@ if (room.liveStartTs) {
 
 });
 
-  socket.on("chat", ({ roomId, name, text }) => {
+ socket.on("chat", ({ roomId, name, text }) => {
   if (!roomId || !text) return;
 
   const room = getRoom(roomId);
   if (!room) return;
 
-  // Trust server-side role
+  // xác định role
   const r = String(socket.data.role || "").toLowerCase();
-  const role = (r === "broadcaster") ? "host" : (r === "guest") ? "guest" : "viewer";
+  const role = (r === "broadcaster") ? "host"
+            : (r === "guest") ? "guest"
+            : "viewer";
 
-  // 🔑 LẤY PROFILE ĐÚNG THEO SOCKET
-  const profile =
-    room.viewerProfiles.get(socket.id) ||
-    room.hostProfile ||
-    {};
+  // 🔥 LẤY PROFILE THẬT TỪ SERVER
+  let profile = null;
 
- const msg = {
-    role: socket.data.role || "viewer",
-    name: profile?.name || safeName(name),
+  if (role === "viewer") {
+    profile = room.viewerProfiles.get(socket.id);
+  } else if (role === "host") {
+    profile = room.hostProfile;
+  } else if (role === "guest") {
+    profile = room.viewerProfiles.get(socket.id);
+  }
+
+  const msg = {
+    role,
+    name: profile?.name || (name || "Ẩn danh").slice(0, 20),
     avatar: profile?.avatar,
-    level: profile?.level || 1,   // 🔥 LEVEL CHUẨN TỪ SERVER
-    text: String(text).slice(0,300),
+    level: Number(profile?.level) || 1,   // ✅ LEVEL CHUẨN
+    text: String(text).slice(0, 300),
     ts: Date.now(),
   };
 
   io.to(roomId).emit("chat", msg);
 });
+
 
 
 
