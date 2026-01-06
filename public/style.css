@@ -4661,3 +4661,149 @@ video {
   color:#000;
   box-shadow:0 0 12px rgba(255,59,107,.7);
 }
+
+
+/* ===============================
+   🎁 GIFT PANEL – PRO DESIGN
+   =============================== */
+
+.gift-panel{
+  position:absolute;
+  right:12px;
+  bottom:72px;
+
+  width:340px;
+  max-width:92vw;
+  max-height:68vh;
+
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+
+  padding:14px 14px 16px;
+
+  border-radius:26px;
+  background:
+    linear-gradient(180deg, rgba(15,20,45,.92), rgba(5,8,18,.92));
+  border:1px solid rgba(255,255,255,.18);
+
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+
+  box-shadow:
+    0 24px 80px rgba(0,0,0,.75),
+    0 0 28px rgba(95,168,255,.35);
+
+  z-index:40;
+
+  /* animation state */
+  opacity:1;
+  transform: translateY(0) scale(1);
+  transition:
+    opacity .28s ease,
+    transform .28s cubic-bezier(.22,.61,.36,1);
+}
+
+/* 🔽 HIDDEN STATE */
+.gift-panel.hidden{
+  pointer-events:none;
+  opacity:0;
+  transform: translateY(22px) scale(.96);
+}
+
+/* ===== TOP HEADER ===== */
+.gift-panel__header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  padding-bottom:6px;
+  margin-bottom:4px;
+
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.gift-panel__header span{
+  font-size:14px;
+  font-weight:800;
+  letter-spacing:.3px;
+}
+
+.gift-wallet-mini{
+  font-size:13px;
+  font-weight:700;
+  color:#FFD36E;
+  text-shadow:0 0 10px rgba(255,211,110,.45);
+}
+
+/* ===== COMBO ===== */
+.gift-combo{
+  display:flex;
+  gap:8px;
+}
+
+.gift-combo__btn{
+  flex:1;
+  padding:8px 0;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:800;
+
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.16);
+  color:#fff;
+
+  transition:.15s;
+}
+
+.gift-combo__btn:hover{
+  filter:brightness(1.12);
+}
+
+.gift-combo__btn.is-active{
+  background:linear-gradient(135deg,#5FA8FF,#25F09A);
+  color:#020612;
+  box-shadow:0 0 18px rgba(95,168,255,.55);
+}
+
+/* ===== SLIDER CONTAINER ===== */
+.gift-slider{
+  overflow:hidden;
+  padding-top:4px;
+}
+
+/* ===== MOBILE TỐI ƯU ===== */
+@media (max-width:520px){
+  .gift-panel{
+    right:8px;
+    left:8px;
+    width:auto;
+    bottom:64px;
+    border-radius:22px;
+  }
+}
+
+
+.gift-panel::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:inherit;
+  background:
+    conic-gradient(
+      from 180deg,
+      rgba(95,168,255,.6),
+      rgba(37,240,154,.4),
+      rgba(255,59,107,.5),
+      rgba(255,211,110,.4),
+      rgba(95,168,255,.6)
+    );
+  filter: blur(14px);
+  opacity:.35;
+  z-index:-1;
+  animation: giftGlow 6s linear infinite;
+}
+
+@keyframes giftGlow{
+  to{ transform: rotate(360deg); }
+}
