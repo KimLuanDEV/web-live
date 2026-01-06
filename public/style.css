@@ -291,8 +291,15 @@ code{
   flex-direction:column;
   gap:8px;
   z-index:6;
-  pointer-events:none;
+
+  pointer-events:auto;        /* ✅ CHO PHÉP TƯƠNG TÁC */
+  max-height:45vh;            /* ✅ CÓ VÙNG CUỘN */
+  overflow-y:auto;            /* ✅ CHO CUỘN */
+  overflow-x:hidden;
+  touch-action: pan-y;        /* ✅ VUỐT MOBILE */
+  -webkit-overflow-scrolling: touch;
 }
+
 .chat-bubble{
   display:inline-block;
   align-self:flex-start;
@@ -4409,7 +4416,7 @@ video {
 
 /* Chat overlay (chỉ hiển thị, không chặn click) */
 .chat-overlay {
-  max-height: 45vh;        /* hoặc tuỳ layout */
+  max-height: 30vh;        /* hoặc tuỳ layout */
   overflow-y: auto;
   overflow-x: hidden;
   display: block;          /* ❗ KHÔNG flex-reverse */
@@ -5092,3 +5099,8 @@ video {
   50%{ filter: blur(26px); }
 }
 /* ===== /VIP CHAT SPOTLIGHT ===== */
+
+.chat-overlay,
+.chat-overlay *{
+  pointer-events:auto;
+}
