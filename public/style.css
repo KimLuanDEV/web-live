@@ -4409,6 +4409,11 @@ video {
 
 /* Chat overlay (chỉ hiển thị, không chặn click) */
 .chat-overlay {
+  max-height: 45vh;        /* hoặc tuỳ layout */
+  overflow-y: auto;
+  overflow-x: hidden;
+  display: block;          /* ❗ KHÔNG flex-reverse */
+  scroll-behavior: smooth;
   position: absolute;
   z-index: 30;
   pointer-events: none; /* 🔥 QUAN TRỌNG */

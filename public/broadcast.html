@@ -2260,6 +2260,11 @@ const level =
 
   chatOverlay.appendChild(el);
 
+
+  // auto cuộn xuống
+requestAnimationFrame(() => {
+  chatOverlay.scrollTop = chatOverlay.scrollHeight;
+});
 // 💡 VIP CHAT SPOTLIGHT
 if (vip) {
   showVipChatSpotlight(vip.key);

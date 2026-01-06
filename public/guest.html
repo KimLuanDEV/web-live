@@ -1917,7 +1917,7 @@ function pushOverlay(msg){
 
   const role  = String(msg.role || "viewer");
   const name  = msg.name || "User";
-  
+
   const cached =
   __viewerCache.find(v => v.name === msg.name);
 
@@ -1962,6 +1962,11 @@ const level =
 
   chatOverlay.appendChild(el);
 
+
+  // auto cuộn xuống
+requestAnimationFrame(() => {
+  chatOverlay.scrollTop = chatOverlay.scrollHeight;
+});
   // 💡 VIP CHAT SPOTLIGHT
 if (vip) {
   showVipChatSpotlight(vip.key);

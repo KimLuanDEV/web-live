@@ -1840,7 +1840,7 @@ function pushOverlay(msg){
 const level =
   cached?.level ??
   Number(msg.level || 1);
-  
+
   const vip = getVipBadge(level);
 
 const avatar =
@@ -1880,6 +1880,11 @@ const avatar =
 
   chatOverlay.appendChild(el);
 
+
+  // auto cuộn xuống
+requestAnimationFrame(() => {
+  chatOverlay.scrollTop = chatOverlay.scrollHeight;
+});
  // 💡 VIP CHAT SPOTLIGHT
 if (vip) {
   showVipChatSpotlight(vip.key);
