@@ -2340,19 +2340,17 @@ if (vip) {
       });
     }
 
-
-    chatSend.onclick = () => {
+chatSend.onclick = () => {
   const profile = getUserProfile();
 
   socket.emit("chat", {
-  roomId,
-  name: profile.name,
-  text
-});
-
+    roomId,
+    text: chatText.value.trim()
+  });
 
   chatText.value = "";
 };
+
 
 
 // ===== HOST AV TOGGLE =====
@@ -2652,12 +2650,13 @@ function sendQuickChat(){
   if (!text) return;
 
   socket.emit("chat", {
-    roomId,
-    name: (chatName?.value || "User").trim(),
-    text,
-    // role tùy trang bạn set:
-    // role: "host" / "viewer" / "guest"
-  });
+  roomId,
+  name: profile?.name || name,
+  avatar: profile?.avatar,
+  level: profile?.level || 1,
+  text,
+  role: "viewer"
+});
 
   quickChatInput.value = "";
   closeQuickChat();
