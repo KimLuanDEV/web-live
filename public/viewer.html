@@ -922,6 +922,11 @@ let __viewerCache = [];
 socket.on("viewer-list", ({ viewers }) => {
   __viewerCache = viewers || [];
 
+   // nếu đang mở panel viewer / mini profile thì re-render
+  if (typeof renderViewerList === "function") {
+    renderViewerList(__viewerCache);
+  }
+  
   const maxShow = 3;
   const showList = __viewerCache.slice(0, maxShow);
   const remain = __viewerCache.length - maxShow;
