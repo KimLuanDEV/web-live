@@ -152,39 +152,20 @@
     <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
   </div>
 
-<div class="gift-panel__pages" id="giftPages">
-  <!-- PAGE 1 -->
-  <div class="gift-page">
+  <!-- ✅ QÙA NGAY TRONG PANEL -->
+  <div class="gift-panel__grid">
     <button data-gift="heart">❤️</button>
     <button data-gift="flower">🌸</button>
     <button data-gift="rocket">🚀</button>
     <button data-gift="coin">💰</button>
-
     <button data-gift="dragon">🐉</button>
     <button data-gift="phoenix">🦅</button>
     <button data-gift="galaxy">🌌</button>
     <button data-gift="meteor">☄️</button>
-  </div>
-
-  <!-- PAGE 2 -->
-  <div class="gift-page">
     <button data-gift="king">👑</button>
     <button data-gift="dragonking">🐲</button>
     <button data-gift="supernova">🌠</button>
-    <button data-gift="heart2">💖</button>
-
-    <button data-gift="crown">💎</button>
-    <button data-gift="fire">🔥</button>
-    <button data-gift="star">⭐</button>
-    <button data-gift="vip">🏆</button>
   </div>
-</div>
-
-<!-- DOT INDICATOR -->
-<div class="gift-page-dots" id="giftPageDots"></div>
-
-
-
 </div>
 
 
@@ -2395,25 +2376,6 @@ window.addEventListener("beforeunload", () => {
 
 
 document.body.classList.add("viewer-fullscreen");
-
-
-const pages = document.getElementById("giftPages");
-const dotsBox = document.getElementById("giftPageDots");
-
-if (pages && dotsBox) {
-  const pageCount = pages.children.length;
-
-  dotsBox.innerHTML = Array.from({length: pageCount})
-    .map((_,i)=>`<span ${i===0?'class="active"':''}></span>`)
-    .join("");
-
-  const dots = dotsBox.querySelectorAll("span");
-
-  pages.addEventListener("scroll", () => {
-    const idx = Math.round(pages.scrollLeft / pages.clientWidth);
-    dots.forEach((d,i)=>d.classList.toggle("active", i===idx));
-  });
-}
 
 
   </script>
