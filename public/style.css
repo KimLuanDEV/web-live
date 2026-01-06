@@ -4474,6 +4474,23 @@ video {
    VIEWER AVATAR + COIN BADGE
    =============================== */
 
+.viewer-avatars-overlay{
+  position:absolute;
+  top:58px;
+  right:15px;
+  display:flex;
+  gap:8px;
+  z-index:6;
+}
+
+.viewer-avatar{
+  position:relative;
+  width:32px;
+  height:32px;
+  border-radius:50%;
+}
+
+
 /* 💎 BADGE NỔI LÊN TRÊN */
 .viewer-coin-badge{
   position: absolute;
