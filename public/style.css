@@ -4550,3 +4550,26 @@ video {
     grid-template-columns: repeat(3, 1fr);
   }
 }
+
+
+/* ===== GIFT SLIDER ===== */
+
+.gift-slider{
+  overflow: hidden;
+  margin-top: 10px;
+}
+
+.gift-slider-track{
+  display: flex;
+  transition: transform .35s ease;
+  will-change: transform;
+}
+
+.gift-page{
+  min-width: 100%;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-template-rows: repeat(2, auto);
+  gap: 12px;
+  padding: 6px 4px;
+}

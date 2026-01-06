@@ -141,7 +141,14 @@
     <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
   </div>
   
- <div class="gift-panel__grid gift-grid-pro">
+
+
+ <div class="gift-slider">
+
+  <div class="gift-slider-track" id="giftSliderTrack">
+
+    <!-- PAGE 1 (8 quà) -->
+    <div class="gift-page">
 
   <button class="gift-card" data-gift="heart" data-coin="10">
     <img src="/assets/gifts/heart.png">
@@ -207,6 +214,11 @@
     </div>
   </button>
 
+   </div>
+
+    <!-- PAGE 2 (8 quà tiếp) -->
+  <div class="gift-page">
+
   <button class="gift-card" data-gift="dragonking" data-coin="10000">
     <img src="/assets/gifts/rocket.png">
     <div class="gift-info">
@@ -216,13 +228,14 @@
   </button>
 
   <button class="gift-card gift-rare" data-gift="supernova" data-coin="10000">
-    <img src="/assets/gifts/dragon.png">
+    <img src="/assets/gifts/bigbang.png">
     <div class="gift-info">
       <span class="gift-name">Big Bang</span>
       <span class="gift-coin">💎 10000</span>
     </div>
   </button>
 
+</div>
 </div>
 
 
@@ -478,6 +491,64 @@ const guestRequestBtn = document.getElementById("guestRequestBtn");
 
 
 const giftVideoLayer = document.getElementById("giftVideoLayer");
+
+
+
+(function(){
+  const track = document.getElementById("giftSliderTrack");
+  if (!track) return;
+
+  let page = 0;
+  const pages = track.children.length;
+
+  function update(){
+    track.style.transform = `translateX(${-page * 100}%)`;
+  }
+
+  /* ===== MOBILE SWIPE ===== */
+  let startX = 0;
+  let dx = 0;
+
+  track.addEventListener("touchstart", e=>{
+    startX = e.touches[0].clientX;
+  }, {passive:true});
+
+  track.addEventListener("touchmove", e=>{
+    dx = e.touches[0].clientX - startX;
+  }, {passive:true});
+
+  track.addEventListener("touchend", ()=>{
+    if (Math.abs(dx) > 50){
+      if (dx < 0 && page < pages - 1) page++;
+      if (dx > 0 && page > 0) page--;
+      update();
+    }
+    dx = 0;
+  });
+
+  /* ===== DESKTOP DRAG ===== */
+  let dragging = false;
+  let mouseStartX = 0;
+
+  track.addEventListener("mousedown", e=>{
+    dragging = true;
+    mouseStartX = e.clientX;
+  });
+
+  window.addEventListener("mouseup", e=>{
+    if (!dragging) return;
+    const diff = e.clientX - mouseStartX;
+
+    if (Math.abs(diff) > 60){
+      if (diff < 0 && page < pages - 1) page++;
+      if (diff > 0 && page > 0) page--;
+      update();
+    }
+    dragging = false;
+  });
+})();
+
+
 
 function playGiftVideo(src, duration = 2500) {
   if (!giftVideoLayer) return;
