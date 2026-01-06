@@ -1006,7 +1006,19 @@ function openMiniProfile(v){
   `;
 })()}
 
-      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
+   <!-- 💎 ĐÃ TẶNG -->
+      <div class="mini-profile-chip">
+        💎 Đã tặng:
+        <b>${v.coinsSent || 0}</b>
+      </div>
+
+      <!-- 💎 ĐÃ NHẬN -->
+      <div class="mini-profile-chip">
+        💎 Đã nhận:
+        <b>${v.coinsReceived || 0}</b>
+      </div>
+      
+      <div class="mini-profile-chip">💎 ${v.coins || 0}</div>
     </div>
   `;
 
