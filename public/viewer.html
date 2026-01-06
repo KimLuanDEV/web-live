@@ -144,74 +144,87 @@
     <button class="gift-combo__btn" data-combo="10">x10</button>
   </div>
 
-  <div class="gift-grid">
+  <div class="gift-slider" id="giftSlider">
+   <div class="gift-track">
+
+     <div class="gift-page">
       <div class="gift-card" data-gift="heart">
       <div class="gift-icon">❤️</div>
       <div class="gift-name">Heart</div>
       <div class="gift-price">50 💎</div>
-    </div>
+      </div>
 
-    <div class="gift-card" data-gift="flower">
+      <div class="gift-card" data-gift="flower">
       <div class="gift-icon">🌸</div>
       <div class="gift-name">Flower</div>
       <div class="gift-price">100 💎</div>
-    </div>
+      </div>
 
-    <div class="gift-card" data-gift="rocket">
+      <div class="gift-card" data-gift="rocket">
       <div class="gift-icon">🚀</div>
       <div class="gift-name">Rocket</div>
       <div class="gift-price">200 💎</div>
-    </div>
+      </div>
 
-    <div class="gift-card" data-gift="coin">
+      <div class="gift-card" data-gift="coin">
       <div class="gift-icon">💰</div>
       <div class="gift-name">Coin</div>
       <div class="gift-price">500 💎</div>
-    </div>
+      </div>
 
-     <div class="gift-card" data-gift="king">
+      <div class="gift-card" data-gift="king">
       <div class="gift-icon">👑</div>
       <div class="gift-name">Crown</div>
       <div class="gift-price">1000 💎</div>
-    </div>
+      </div>
 
-     <div class="gift-card" data-gift="galaxy">
+      <div class="gift-card" data-gift="galaxy">
       <div class="gift-icon">🌌</div>
       <div class="gift-name">Galaxy</div>
       <div class="gift-price">2000 💎</div>
-    </div>
+      </div>
 
-     <div class="gift-card" data-gift="meteor">
+      <div class="gift-card" data-gift="meteor">
       <div class="gift-icon">☄️</div>
       <div class="gift-name">Meteor</div>
       <div class="gift-price">5000 💎</div>
-    </div>
+      </div>
 
-     <div class="gift-card" data-gift="dragon">
+      <div class="gift-card" data-gift="dragon">
       <div class="gift-icon">🐉</div>
       <div class="gift-name">Dragon</div>
       <div class="gift-price">10000 💎</div>
-    </div>
+      </div>
 
-     <div class="gift-card" data-gift="phoenix">
+     </div>
+
+     <div class="gift-page">
+      <div class="gift-card" data-gift="phoenix">
       <div class="gift-icon">🦅</div>
       <div class="gift-name">Phoenix</div>
       <div class="gift-price">10000 💎</div>
-    </div>
+      </div>
 
-     <div class="gift-card" data-gift="dragonking">
+     
+      <div class="gift-card" data-gift="dragonking">
       <div class="gift-icon">🐲</div>
       <div class="gift-name">Super Dragon</div>
       <div class="gift-price">10000 💎</div>
-    </div>
+      </div>
 
-     <div class="gift-card" data-gift="supernova">
+      <div class="gift-card" data-gift="supernova">
       <div class="gift-icon">🌠</div>
       <div class="gift-name">Super Nova</div>
       <div class="gift-price">10000 💎</div>
+      </div>
+
     </div>
 
+   </div>
   </div>
+
+<div class="gift-dots" id="giftDots"></div>
+
 </div>
 
 
@@ -2421,6 +2434,53 @@ window.addEventListener("beforeunload", () => {
 
 
 document.body.classList.add("viewer-fullscreen");
+
+
+const slider = document.getElementById("giftSlider");
+const track = slider.querySelector(".gift-track");
+const pages = slider.querySelectorAll(".gift-page");
+const dotsWrap = document.getElementById("giftDots");
+
+let currentPage = 0;
+let startX = 0;
+let dx = 0;
+
+/* dots */
+dotsWrap.innerHTML = "";
+pages.forEach((_, i)=>{
+  const d = document.createElement("div");
+  d.className = "gift-dot" + (i===0 ? " active":"");
+  d.onclick = ()=>goPage(i);
+  dotsWrap.appendChild(d);
+});
+
+function goPage(i){
+  currentPage = Math.max(0, Math.min(i, pages.length-1));
+  track.style.transform = `translateX(-${currentPage*100}%)`;
+
+  dotsWrap.querySelectorAll(".gift-dot")
+    .forEach((d,idx)=>d.classList.toggle("active", idx===currentPage));
+}
+
+/* swipe */
+slider.addEventListener("pointerdown", e=>{
+  startX = e.clientX;
+  dx = 0;
+  slider.setPointerCapture(e.pointerId);
+});
+
+slider.addEventListener("pointermove", e=>{
+  if (!startX) return;
+  dx = e.clientX - startX;
+});
+
+slider.addEventListener("pointerup", ()=>{
+  if (dx > 50) goPage(currentPage - 1);
+  else if (dx < -50) goPage(currentPage + 1);
+  startX = 0;
+});
+
+
 
 
   </script>

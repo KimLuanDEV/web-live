@@ -4557,3 +4557,60 @@ video {
   color:#FFD36E;
   margin-top:2px;
 }
+
+
+/* ===== GIFT SLIDER ===== */
+.gift-slider{
+  overflow:hidden;
+  width:100%;
+}
+
+.gift-track{
+  display:flex;
+  transition: transform .35s ease;
+  will-change: transform;
+}
+
+.gift-page{
+  min-width:100%;
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(2,auto);
+  gap:10px;
+}
+
+/* giữ style gift-card cũ */
+.gift-card{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  padding:10px 6px;
+  text-align:center;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.gift-card:hover{
+  transform:translateY(-4px) scale(1.05);
+  box-shadow:0 0 22px rgba(95,168,255,.45);
+}
+
+/* DOTS */
+.gift-dots{
+  display:flex;
+  justify-content:center;
+  gap:6px;
+  margin-top:10px;
+}
+
+.gift-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,.35);
+}
+
+.gift-dot.active{
+  background:#5FA8FF;
+  box-shadow:0 0 10px #5FA8FF;
+}
