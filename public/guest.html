@@ -2321,6 +2321,18 @@ document.body.classList.add("viewer-fullscreen");
 })();
 
 
+// 🎁 CLICK GIFT → OPEN CONFIRM MODAL
+document.addEventListener("click", (e) => {
+  const card = e.target.closest(".gift-card");
+  if (!card) return;
+
+  const giftId = card.dataset.gift;
+  if (!giftId) return;
+
+  openGiftConfirmModal(giftId);
+});
+
+
 
   </script>
 
