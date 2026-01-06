@@ -745,6 +745,17 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     ts: Date.now(),
   };
 
+const prev = room.giftByUser.get(donorName) || 0;
+const total = prev + giftCoins;
+room.giftByUser.set(donorName, total);
+
+// 🔥 emit realtime cho phòng
+io.to(roomId).emit("viewer-donate-update", {
+  name: donorName,
+  coins: total
+});
+
+
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
 });

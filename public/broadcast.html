@@ -655,6 +655,34 @@ if(nameFromLobby){
     const socket = io();
     
 
+socket.on("viewer-donate-update", ({ name, coins }) => {
+  // tìm avatar đang hiển thị
+  const avatars = viewerAvatarBox.querySelectorAll(".viewer-avatar");
+
+  avatars.forEach(el => {
+    const idx = el.dataset.idx;
+    const v = __viewerCache[idx];
+    if (!v || v.name !== name) return;
+
+    // cập nhật cache
+    v.coins = coins;
+
+    // tìm hoặc tạo badge
+    let badge = el.querySelector(".viewer-coin-badge");
+    if (!badge) {
+      badge = document.createElement("div");
+      badge.className = "viewer-coin-badge";
+      el.appendChild(badge);
+    }
+
+    badge.textContent = `💎 ${coins}`;
+
+    // 🔥 bật animation pop
+    badge.classList.remove("coin-pop");
+    void badge.offsetWidth; // reflow
+    badge.classList.add("coin-pop");
+  });
+});
 
 
 
