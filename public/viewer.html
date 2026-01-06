@@ -145,70 +145,70 @@
   </div>
 
   <div class="gift-grid">
-    <div class="gift-card" data-gift="heart">
+      <div class="gift-card" data-gift="heart">
       <div class="gift-icon">❤️</div>
-      <div class="gift-name">Trái tim</div>
-      <div class="gift-price">10 coin</div>
+      <div class="gift-name">Heart</div>
+      <div class="gift-price">50 coin</div>
     </div>
 
     <div class="gift-card" data-gift="flower">
       <div class="gift-icon">🌸</div>
-      <div class="gift-name">Hoa</div>
-      <div class="gift-price">20 coin</div>
+      <div class="gift-name">Flower</div>
+      <div class="gift-price">100 coin</div>
     </div>
 
     <div class="gift-card" data-gift="rocket">
       <div class="gift-icon">🚀</div>
-      <div class="gift-name">Tên lửa</div>
-      <div class="gift-price">50 coin</div>
+      <div class="gift-name">Rocket</div>
+      <div class="gift-price">200 coin</div>
     </div>
 
     <div class="gift-card" data-gift="coin">
       <div class="gift-icon">💰</div>
       <div class="gift-name">Coin</div>
-      <div class="gift-price">100 coin</div>
+      <div class="gift-price">500 coin</div>
     </div>
 
      <div class="gift-card" data-gift="king">
       <div class="gift-icon">👑</div>
-      <div class="gift-name">Coin</div>
-      <div class="gift-price">100 coin</div>
+      <div class="gift-name">Crown</div>
+      <div class="gift-price">1000 coin</div>
     </div>
 
      <div class="gift-card" data-gift="galaxy">
       <div class="gift-icon">🌌</div>
-      <div class="gift-name">Coin</div>
-      <div class="gift-price">100 coin</div>
+      <div class="gift-name">Galaxy</div>
+      <div class="gift-price">2000 coin</div>
     </div>
 
      <div class="gift-card" data-gift="meteor">
       <div class="gift-icon">☄️</div>
-      <div class="gift-name">Coin</div>
-      <div class="gift-price">100 coin</div>
+      <div class="gift-name">Meteor</div>
+      <div class="gift-price">5000 coin</div>
     </div>
 
      <div class="gift-card" data-gift="dragon">
       <div class="gift-icon">🐉</div>
-      <div class="gift-name">Coin</div>
-      <div class="gift-price">100 coin</div>
+      <div class="gift-name">Dragon</div>
+      <div class="gift-price">10000 coin</div>
     </div>
 
      <div class="gift-card" data-gift="phoenix">
       <div class="gift-icon">🦅</div>
-      <div class="gift-name">Coin</div>
-      <div class="gift-price">100 coin</div>
+      <div class="gift-name">Phoenix</div>
+      <div class="gift-price">10000 coin</div>
     </div>
 
      <div class="gift-card" data-gift="dragonking">
       <div class="gift-icon">🐲</div>
-      <div class="gift-name">Coin</div>
-      <div class="gift-price">100 coin</div>
+      <div class="gift-name">Super Dragon</div>
+      <div class="gift-price">10000 coin</div>
     </div>
 
      <div class="gift-card" data-gift="supernova">
       <div class="gift-icon">🌠</div>
-      <div class="gift-name">Coin</div>
-      <div class="gift-price">100 coin</div>
+      <div class="gift-name">Super Nova</div>
+      <div class="gift-price">10000 coin</div>
     </div>
 
   </div>
@@ -1776,17 +1776,17 @@ if (guestPipWrap) {
 
 // ===== GIFT ENGINE (client) =====
 const GIFT_CLIENT_CATALOG = {
-  heart:  { emoji:"❤️", cost:5,  title:"Tim" },
-  flower: { emoji:"🌸", cost:5,  title:"Hoa" },
-  rocket: { emoji:"🚀", cost:5, title:"Rocket" },
-  coin:   { emoji:"💰", cost:5, title:"Túi tiền" },
-  dragon: { emoji:"🐉", cost:5, title:"Rồng" },
-  phoenix:{ emoji:"🦅", cost:5, title:"Phượng hoàng" },
-  galaxy: { emoji:"🌌", cost:5, title:"Dải ngân hà" },
-  meteor: { emoji:"☄️", cost:5, title:"Sao băng" },
-  king:   { emoji:"👑", cost:5, title:"Vương miện" },
-  dragonking: { emoji:"🐲", cost:5, title:"Dragon King" },
-  supernova:  { emoji:"🌠", cost:5, title:"Supernova" },
+  heart:  { emoji:"❤️", cost:50,  title:"Tim" },
+  flower: { emoji:"🌸", cost:100,  title:"Hoa" },
+  rocket: { emoji:"🚀", cost:200, title:"Rocket" },
+  coin:   { emoji:"💰", cost:500, title:"Túi tiền" },
+  king:   { emoji:"👑", cost:1000, title:"Vương miện" },
+  galaxy: { emoji:"🌌", cost:2000, title:"Dải ngân hà" },
+  meteor: { emoji:"☄️", cost:5000, title:"Sao băng" },
+  dragon: { emoji:"🐉", cost:10000, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:10000, title:"Phượng hoàng" },
+  dragonking: { emoji:"🐲", cost:10000, title:"Dragon King" },
+  supernova:  { emoji:"🌠", cost:10000, title:"Supernova" },
 };
 
 // ===== COIN ERROR MODAL =====
@@ -1881,17 +1881,17 @@ document.querySelectorAll('.gift-card').forEach(btn=>{
   btn.onclick = ()=>{
     const type = btn.dataset.gift;
     const catalog = {
-      heart:{emoji:"❤️",cost:1,title:"Tim"},
-      flower:{emoji:"🌸",cost:5,title:"Hoa"},
-      rocket:{emoji:"🚀",cost:20,title:"Rocket"},
-      coin:{emoji:"💰",cost:50,title:"Túi tiền"},
-      dragon:{emoji:"🐉",cost:120,title:"Rồng"},
-      phoenix:{emoji:"🦅",cost:200,title:"Phượng hoàng"},
-      galaxy:{emoji:"🌌",cost:300,title:"Dải ngân hà"},
-      meteor:{emoji:"☄️",cost:500,title:"Sao băng"},
-      king:{emoji:"👑",cost:800,title:"Vương miện"},
-      dragonking:{emoji:"🐲",cost:1500,title:"Dragon King"},
-      supernova:{emoji:"🌠",cost:2200,title:"Supernova"},
+      heart:{emoji:"❤️",cost:50,title:"Tim"},
+      flower:{emoji:"🌸",cost:100,title:"Hoa"},
+      rocket:{emoji:"🚀",cost:200,title:"Rocket"},
+      coin:{emoji:"💰",cost:500,title:"Túi tiền"},
+      king:{emoji:"👑",cost:1000,title:"Vương miện"},
+      galaxy:{emoji:"🌌",cost:2000,title:"Dải ngân hà"},
+      meteor:{emoji:"☄️",cost:5000,title:"Sao băng"},
+      dragon:{emoji:"🐉",cost:10000,title:"Rồng"},
+      phoenix:{emoji:"🦅",cost:100000,title:"Phượng hoàng"},
+      dragonking:{emoji:"🐲",cost:10000,title:"Dragon King"},
+      supernova:{emoji:"🌠",cost:100000,title:"Supernova"},
     }[type];
     if (!catalog) return;
 

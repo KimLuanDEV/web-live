@@ -94,17 +94,17 @@ console.log("♻️ Restored live rooms:", Object.keys(persisted));
 
 // ===== GIFT ENGINE (coins) =====
 const GIFT_CATALOG = {
-  heart:  { emoji: "❤️", cost: 1,  title: "Tim" },
-  flower: { emoji: "🌸", cost: 5,  title: "Hoa" },
-  rocket: { emoji: "🚀", cost: 20, title: "Rocket" },
-  coin:   { emoji: "💰", cost: 50, title: "Túi tiền" },
-  dragon: { emoji: "🐉", cost: 120, title: "Rồng" },
-  phoenix:{ emoji: "🦅", cost: 200, title: "Phượng hoàng" },
-  galaxy: { emoji: "🌌", cost: 300, title: "Dải ngân hà" },
-  meteor: { emoji: "☄️", cost: 500, title: "Sao băng" },
-  king:   { emoji: "👑", cost: 800, title: "Vương miện" },
-  dragonking: { emoji: "🐲", cost: 1500, title: "Dragon King" },
-  supernova:  { emoji: "🌠", cost: 2200, title: "Supernova" },
+  heart:  { emoji: "❤️", cost: 50,  title: "Tim" },
+  flower: { emoji: "🌸", cost: 100,  title: "Hoa" },
+  rocket: { emoji: "🚀", cost: 200, title: "Rocket" },
+  coin:   { emoji: "💰", cost: 500, title: "Túi tiền" },
+  king:   { emoji: "👑", cost: 1000, title: "Vương miện" },
+  galaxy: { emoji: "🌌", cost: 2000, title: "Dải ngân hà" },
+  meteor: { emoji: "☄️", cost: 5000, title: "Sao băng" },
+  dragon: { emoji: "🐉", cost: 10000, title: "Rồng" },
+  phoenix:{ emoji: "🦅", cost: 10000, title: "Phượng hoàng" },
+  dragonking: { emoji: "🐲", cost: 10000, title: "Dragon King" },
+  supernova:  { emoji: "🌠", cost: 10000, title: "Supernova" },
 };
 
 
