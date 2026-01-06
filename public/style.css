@@ -4942,3 +4942,43 @@ video {
   }
 }
 /* ===== /LEVEL UP EFFECT ===== */
+
+
+/* ===== VIP BADGE ===== */
+.vip-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:3px 8px;
+  border-radius:999px;
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.3px;
+  white-space:nowrap;
+  box-shadow:0 0 12px currentColor;
+}
+
+.vip-vip{
+  color:#5fa8ff;
+  background:rgba(95,168,255,.15);
+  border:1px solid rgba(95,168,255,.45);
+}
+
+.vip-vipplus{
+  color:#c77dff;
+  background:rgba(199,125,255,.15);
+  border:1px solid rgba(199,125,255,.45);
+}
+
+.vip-king{
+  color:#ffd36e;
+  background:rgba(255,211,110,.18);
+  border:1px solid rgba(255,211,110,.55);
+}
+
+.vip-legend{
+  color:#ff3b3b;
+  background:rgba(255,59,59,.18);
+  border:1px solid rgba(255,59,59,.55);
+}
+/* ===== /VIP BADGE ===== */
