@@ -4474,7 +4474,7 @@ video {
 .gift-panel{
   position:absolute;
   right:14px;
-  bottom:160px;
+  bottom:52px;
   width:min(380px, 94vw);
   padding:16px;
   border-radius:24px;
@@ -4618,7 +4618,6 @@ video {
 /* quà VIP */
 .gift-panel__grid button[data-gift="dragon"],
 .gift-panel__grid button[data-gift="phoenix"],
-.gift-panel__grid button[data-gift="king"],
 .gift-panel__grid button[data-gift="dragonking"],
 .gift-panel__grid button[data-gift="supernova"]{
   background:

@@ -158,17 +158,74 @@
 
   <!-- ✅ QÙA NGAY TRONG PANEL -->
   <div class="gift-panel__grid">
-    <button data-gift="heart">❤️</button>
-    <button data-gift="flower">🌸</button>
-    <button data-gift="rocket">🚀</button>
-    <button data-gift="coin">💰</button>
-    <button data-gift="dragon">🐉</button>
-    <button data-gift="phoenix">🦅</button>
-    <button data-gift="galaxy">🌌</button>
-    <button data-gift="meteor">☄️</button>
-    <button data-gift="king">👑</button>
-    <button data-gift="dragonking">🐲</button>
-    <button data-gift="supernova">🌠</button>
+    
+
+    <button class="gift-card" data-gift="heart">
+  <div class="gift-icon">❤️</div>
+  <div class="gift-name">heart</div>
+  <div class="gift-coin">💎 1</div>
+</button> 
+
+ <button class="gift-card" data-gift="flower">
+  <div class="gift-icon">🌸</div>
+  <div class="gift-name">flower</div>
+  <div class="gift-coin">💎 5</div>
+</button>
+
+<button class="gift-card" data-gift="rocket">
+  <div class="gift-icon">🚀</div>
+  <div class="gift-name">Rocket</div>
+  <div class="gift-coin">💎 20</div>
+</button>
+
+<button class="gift-card" data-gift="coin">
+  <div class="gift-icon">💰</div>
+  <div class="gift-name">coin</div>
+  <div class="gift-coin">💎 50</div>
+</button>
+
+<button class="gift-card" data-gift="galaxy">
+  <div class="gift-icon">🌌</div>
+  <div class="gift-name">galaxy</div>
+  <div class="gift-coin">💎 100</div>
+</button>
+
+<button class="gift-card" data-gift="meteor">
+  <div class="gift-icon">☄️</div>
+  <div class="gift-name">meteor</div>
+  <div class="gift-coin">💎 200</div>
+</button>
+
+<button class="gift-card" data-gift="king">
+  <div class="gift-icon">👑</div>
+  <div class="gift-name">king</div>
+  <div class="gift-coin">💎 500</div>
+</button>
+
+<button class="gift-card" data-gift="dragon">
+  <div class="gift-icon">🐉</div>
+  <div class="gift-name">dragon</div>
+  <div class="gift-coin">💎 10000</div>
+</button>
+
+<button class="gift-card" data-gift="phoenix">
+  <div class="gift-icon">🦅</div>
+  <div class="gift-name">phoenix</div>
+  <div class="gift-coin">💎 10000</div>
+</button>
+
+<button class="gift-card" data-gift="dragonking">
+  <div class="gift-icon">🐲</div>
+  <div class="gift-name">dragonking</div>
+  <div class="gift-coin">💎 10000</div>
+</button>
+
+ <button class="gift-card" data-gift="supernova">
+  <div class="gift-icon">🌌</div>
+  <div class="gift-name">supernova</div>
+  <div class="gift-coin">💎 10000</div>
+</button> 
+
   </div>
 </div>
 
@@ -1735,17 +1792,17 @@ if (guestPipWrap) {
 
 // ===== GIFT ENGINE (client) =====
 const GIFT_CLIENT_CATALOG = {
-  heart:  { emoji:"❤️", cost:5,  title:"Tim" },
+  heart:  { emoji:"❤️", cost:1,  title:"Tim" },
   flower: { emoji:"🌸", cost:5,  title:"Hoa" },
-  rocket: { emoji:"🚀", cost:5, title:"Rocket" },
-  coin:   { emoji:"💰", cost:5, title:"Túi tiền" },
-  dragon: { emoji:"🐉", cost:5, title:"Rồng" },
-  phoenix:{ emoji:"🦅", cost:5, title:"Phượng hoàng" },
-  galaxy: { emoji:"🌌", cost:5, title:"Dải ngân hà" },
-  meteor: { emoji:"☄️", cost:5, title:"Sao băng" },
-  king:   { emoji:"👑", cost:5, title:"Vương miện" },
-  dragonking: { emoji:"🐲", cost:5, title:"Dragon King" },
-  supernova:  { emoji:"🌠", cost:5, title:"Supernova" },
+  rocket: { emoji:"🚀", cost:20, title:"Rocket" },
+  coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
+  galaxy: { emoji:"🌌", cost:100, title:"Dải ngân hà" },
+  meteor: { emoji:"☄️", cost:200, title:"Sao băng" },
+  king:   { emoji:"👑", cost:500, title:"Vương miện" },
+  dragon: { emoji:"🐉", cost:10000, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:10000, title:"Phượng hoàng" },
+  dragonking: { emoji:"🐲", cost:10000, title:"Dragon King" },
+  supernova:  { emoji:"🌠", cost:10000, title:"Supernova" },
 };
 
 // ===== COIN ERROR MODAL =====
@@ -1844,13 +1901,13 @@ document.querySelectorAll(".gift-panel__grid button").forEach(btn=>{
       flower:{emoji:"🌸",cost:5,title:"Hoa"},
       rocket:{emoji:"🚀",cost:20,title:"Rocket"},
       coin:{emoji:"💰",cost:50,title:"Túi tiền"},
-      dragon:{emoji:"🐉",cost:120,title:"Rồng"},
-      phoenix:{emoji:"🦅",cost:200,title:"Phượng hoàng"},
-      galaxy:{emoji:"🌌",cost:300,title:"Dải ngân hà"},
-      meteor:{emoji:"☄️",cost:500,title:"Sao băng"},
-      king:{emoji:"👑",cost:800,title:"Vương miện"},
-      dragonking:{emoji:"🐲",cost:1500,title:"Dragon King"},
-      supernova:{emoji:"🌠",cost:2200,title:"Supernova"},
+      galaxy:{emoji:"🌌",cost:100,title:"Dải ngân hà"},
+      meteor:{emoji:"☄️",cost:200,title:"Sao băng"},
+      king:{emoji:"👑",cost:500,title:"Vương miện"},
+      dragon:{emoji:"🐉",cost:10000,title:"Rồng"},
+      phoenix:{emoji:"🦅",cost:10000,title:"Phượng hoàng"},
+      dragonking:{emoji:"🐲",cost:10000,title:"Dragon King"},
+      supernova:{emoji:"🌠",cost:10000,title:"Supernova"},
     }[type];
     if (!catalog) return;
 
