@@ -244,7 +244,7 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
-  socket.on("profile-update", ({ name, avatar }) => {
+  socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
@@ -256,12 +256,13 @@ io.on("connection", (socket) => {
 
   if (name) profile.name = safeName(name);
   if (avatar) profile.avatar = avatar;
+  if (level) profile.level = Number(level) || profile.level;
 
-  io.to(roomId).emit("viewer-profile-update", {
-    socketId: socket.id,
-    profile
+  io.to(roomId).emit("viewer-list", {
+    viewers: Array.from(room.viewerProfiles.values())
   });
 });
+
 
 
 
