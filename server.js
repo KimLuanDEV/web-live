@@ -265,18 +265,22 @@ io.on("connection", (socket) => {
 
 
 
-socket.on("viewer-join", ({ roomId, name, avatar }) => {
+socket.on("viewer-join", ({ roomId, profile }) => {
 
   
   const room = getRoom(roomId);
   if (!room) return;
 
   room.viewers.add(socket.id);
-  room.viewerProfiles.set(socket.id, {
-    name: safeName(name),
-    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
-  });
 
+  room.viewerProfiles.set(socket.id, {
+  name: safeName(profile?.name),
+  avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+  level: Number(profile?.level) || 1,
+  coins: Number(profile?.coins) || 0
+});
+
+ 
   emitViewerCount(roomId);
 
 

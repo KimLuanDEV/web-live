@@ -742,13 +742,6 @@ function showVipChatSpotlight(vipKey){
 }
 
 
-function getUserProfile(){
-  try{
-    return JSON.parse(localStorage.getItem("user_profile")) || {};
-  }catch{
-    return {};
-  }
-}
 
 
 socket.on("profile-updated", ({ socketId, avatar }) => {
@@ -769,6 +762,13 @@ socket.on("profile-updated", ({ socketId, avatar }) => {
 });
 
 
+function getUserProfile(){
+  try{
+    return JSON.parse(localStorage.getItem("user_profile")) || {};
+  }catch{
+    return {};
+  }
+}
 
 const profile = getUserProfile();
 
@@ -827,7 +827,7 @@ socket.on("viewer-list", ({ viewers }) => {
   if (typeof renderViewerList === "function") {
     renderViewerList(__viewerCache);
   }
-  
+
   const maxShow = 3;
   const showList = __viewerCache.slice(0, maxShow);
   const remain = __viewerCache.length - maxShow;
