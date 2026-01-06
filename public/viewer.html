@@ -844,6 +844,33 @@ function getVipBadge(level){
 }
 
 
+function showVipChatSpotlight(vipKey){
+  try{
+    if (!vipKey) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "vip-spotlight-overlay";
+
+    const spot = document.createElement("div");
+    spot.className = "vip-spotlight vip-spot-" + vipKey;
+
+    overlay.appendChild(spot);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 900);
+  }catch{}
+}
+
+
+function getUserProfile(){
+  try{
+    return JSON.parse(localStorage.getItem("user_profile")) || {};
+  }catch{
+    return {};
+  }
+}
+
+
 
     socket.on("profile-updated", ({ socketId, avatar }) => {
   // 1️⃣ cập nhật cache viewer
@@ -864,12 +891,25 @@ function getVipBadge(level){
 
 
 
+const profile = getUserProfile();
+
 socket.emit("viewer-join", {
   roomId,
-  name: localStorage.getItem("profileName") || "Viewer",
-  avatar: localStorage.getItem("userAvatar")
+  profile: {
+    name: profile.name || "Viewer",
+    avatar: profile.avatar,
+    level: profile.level || 1,
+    coins: profile.coins || 0
+  }
 });
 
+if (profile){
+  const chatNameInput = document.getElementById("chatName");
+  if (chatNameInput) {
+    chatNameInput.value = profile.name;
+    chatNameInput.disabled = true; // 🔒 khóa không cho sửa
+  }
+}
 
 const viewerAvatarBox = document.getElementById("viewerAvatars");
 const viewerListPopup = document.getElementById("viewerListPopup");
@@ -1821,7 +1861,11 @@ const avatar =
 
   chatOverlay.appendChild(el);
 
- 
+ // 💡 VIP CHAT SPOTLIGHT
+if (vip) {
+  showVipChatSpotlight(vip.key);
+}
+
   
 
   // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
@@ -1904,31 +1948,24 @@ const avatar =
 
 
     chatSend.onclick = () => {
-      const name = (chatName.value || "Viewer").trim();
-      const text = chatText.value.trim();
-      if (!text) return;
+  const profile = getUserProfile();
 
-      const profile = getUserProfile();
+  socket.emit("chat", {
+    roomId,
+    name: profile.name || "Viewer",
+    avatar: profile.avatar,
+    level: profile.level || 1,
+    text: chatText.value.trim(),
+    role: "viewer"
+  });
 
-socket.emit("chat", {
-  roomId,
-  name: profile?.name || name,
-  avatar: profile?.avatar,
-  level: profile?.level,
-  text,
-  role: "viewer" // hoặc guest / host
-});
-
+  chatText.value = "";
+};
 
 
-
-      chatText.value = "";
-    };
-
-    const viewerCountViewer = document.getElementById("viewerCountViewer");
-
-
+const viewerCountViewer = document.getElementById("viewerCountViewer");
 const joinOverlayViewer = document.getElementById("joinOverlayViewer");
+
 function pushJoinViewer(text){
   if (!joinOverlayViewer) return;
   const el = document.createElement("div");
@@ -2545,14 +2582,9 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
 });
 
 
-function getUserProfile(){
-  const p = localStorage.getItem("user_profile");
-  if (!p) return null;
-  try { return JSON.parse(p); }
-  catch { return null; }
-}
 
-const profile = getUserProfile();
+
+
 if (profile){
   const chatNameInput = document.getElementById("chatName");
   if (chatNameInput) {

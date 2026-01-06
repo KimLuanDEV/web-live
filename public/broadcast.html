@@ -761,6 +761,32 @@ function getVipBadge(level){
 }
 
 
+function showVipChatSpotlight(vipKey){
+  try{
+    if (!vipKey) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "vip-spotlight-overlay";
+
+    const spot = document.createElement("div");
+    spot.className = "vip-spotlight vip-spot-" + vipKey;
+
+    overlay.appendChild(spot);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 900);
+  }catch{}
+}
+
+
+function getUserProfile(){
+  try{
+    return JSON.parse(localStorage.getItem("user_profile")) || {};
+  }catch{
+    return {};
+  }
+}
+
 
 socket.on("profile-updated", ({ socketId, avatar }) => {
   // 1️⃣ cập nhật cache viewer
@@ -779,6 +805,33 @@ socket.on("profile-updated", ({ socketId, avatar }) => {
   refreshViewerAvatars?.();
 });
 
+
+const profile = getUserProfile();
+
+socket.emit("viewer-join", {
+  roomId,
+  profile: {
+    name: profile.name || "Viewer",
+    avatar: profile.avatar,
+    level: profile.level || 1,
+    coins: profile.coins || 0
+  }
+});
+
+
+if (profile){
+  const hostNameInput = document.getElementById("hostNameInput");
+  const avatar = document.getElementById("hostAvatarPreview");
+
+  if (hostNameInput){
+    hostNameInput.value = profile.name;
+    hostNameInput.disabled = true;
+  }
+
+  if (avatar){
+    avatar.src = profile.avatar;
+  }
+}
 
 
 
@@ -2203,6 +2256,10 @@ function pushOverlay(msg){
 
   chatOverlay.appendChild(el);
 
+// 💡 VIP CHAT SPOTLIGHT
+if (vip) {
+  showVipChatSpotlight(vip.key);
+}
 
 
   // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
@@ -2284,24 +2341,20 @@ function pushOverlay(msg){
 
 
     chatSend.onclick = () => {
-      const name = (chatName.value || "Host").trim();
-      const text = chatText.value.trim();
-      if (!text) return;
+  const profile = getUserProfile();
 
-      const profile = getUserProfile();
+  socket.emit("chat", {
+    roomId,
+    name: profile.name || "Viewer",
+    avatar: profile.avatar,
+    level: profile.level || 1,
+    text: chatText.value.trim(),
+    role: "viewer"
+  });
 
-socket.emit("chat", {
-  roomId,
-  name: profile?.name || name,
-  avatar: profile?.avatar,
-  level: profile?.level,
-  text,
-  role: "host" // hoặc guest / host
-});
+  chatText.value = "";
+};
 
-
-      chatText.value = "";
-    };
 
 // ===== HOST AV TOGGLE =====
 const hostMicBtn = document.getElementById("hostMicBtn");
@@ -2666,28 +2719,9 @@ socket.on("live-ended-stats", (stats) => {
 
 
 
-  function getUserProfile(){
-  const p = localStorage.getItem("user_profile");
-  if (!p) return null;
-  try { return JSON.parse(p); }
-  catch { return null; }
-}
 
 
-const profile = getUserProfile();
-if (profile){
-  const hostNameInput = document.getElementById("hostNameInput");
-  const avatar = document.getElementById("hostAvatarPreview");
 
-  if (hostNameInput){
-    hostNameInput.value = profile.name;
-    hostNameInput.disabled = true;
-  }
-
-  if (avatar){
-    avatar.src = profile.avatar;
-  }
-}
 
 
 
