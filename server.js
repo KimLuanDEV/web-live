@@ -156,17 +156,6 @@ function getRoom(roomId) {
   return rooms.get(roomId);
 }
 
-function getViewerList(room){
-  return Array.from(room.viewerProfiles.values()).map(v => ({
-    name: v.name,
-    avatar: v.avatar,
-    level: v.level || 1,
-    coinsSent: v.coinsSent || 0,
-    coinsReceived: v.coinsReceived || 0
-  }));
-}
-
-
 
 function emitViewerCount(roomId) {
   const room = rooms.get(roomId);
@@ -283,9 +272,8 @@ socket.on("host-profile-update", ({ roomId, level }) => {
   if (level) profile.level = Number(level) || profile.level;
 
   io.to(roomId).emit("viewer-list", {
-  viewers: getViewerList(room)
-});
-
+    viewers: Array.from(room.viewerProfiles.values())
+  });
 });
 
 
@@ -303,9 +291,7 @@ socket.on("viewer-join", ({ roomId, profile }) => {
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
-  coins: Number(profile?.coins) || 0,
-  coinsSent: 0,        // 💎 đã tặng
-  coinsReceived: 0     // 💎 đã nhận
+  coins: Number(profile?.coins) || 0
 });
 
  
@@ -322,9 +308,8 @@ socket.on("viewer-join", ({ roomId, profile }) => {
 
   
   io.to(roomId).emit("viewer-list", {
-  viewers: getViewerList(room)
-});
-
+    viewers: Array.from(room.viewerProfiles.values())
+  });
 });
 
 
@@ -777,23 +762,6 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     ts: Date.now(),
   };
 
-  // ===== 💎 UPDATE MINI PROFILE STATS =====
-
-// 1️⃣ NGƯỜI TẶNG
-for (const profile of room.viewerProfiles.values()) {
-  if (profile.name === donor) {
-    profile.coinsSent = (profile.coinsSent || 0) + cost;
-    break;
-  }
-}
-
-// 2️⃣ NGƯỜI NHẬN (HOST)
-if (room.hostProfile) {
-  room.hostProfile.coinsReceived =
-    (room.hostProfile.coinsReceived || 0) + cost;
-}
-
-
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
 });
@@ -849,9 +817,8 @@ if (room.hostProfile) {
 room.viewerProfiles.delete(socket.id);
 
 io.to(roomId).emit("viewer-list", {
-  viewers: getViewerList(room)
+  viewers: Array.from(room.viewerProfiles.values())
 });
-
 
 
     if (room.broadcasterId === socket.id) {
