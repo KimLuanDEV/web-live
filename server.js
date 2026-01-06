@@ -565,10 +565,12 @@ if (room.liveStartTs) {
     const name = String(profile?.name || "").trim().slice(0, 20);
     const avatar = String(profile?.avatar || "").trim().slice(0, 300);
     room.hostProfile = {
-      name: name || "Host",
-      avatar: avatar || "",
-      ts: Date.now(),
-    };
+  name: name || "Host",
+  avatar: avatar || "",
+  level: Number(profile?.level) || 1,   // 🔥 FIX QUAN TRỌNG
+  ts: Date.now(),
+};
+
 
       if (old && old !== socket.id) {
         io.to(roomId).emit("broadcaster-changed");
