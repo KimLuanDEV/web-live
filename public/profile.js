@@ -6,6 +6,8 @@ const coinVal = document.getElementById("coinVal");
 const levelVal = document.getElementById("levelVal");
 const coinSentVal = document.getElementById("coinSentVal");
 const coinReceivedVal = document.getElementById("coinReceivedVal");
+const expText = document.getElementById("expText");
+const expFill = document.getElementById("expFill");
 
 const defaultProfile = {
   name: "Guest",
@@ -20,15 +22,28 @@ const defaultProfile = {
 
 function loadProfile(){
   const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+
   nameInput.value = p.name;
   avatarPreview.src = p.avatar;
-  coinVal.textContent = p.coins;
-  levelVal.textContent = p.level;
-  coinSentVal.textContent = p.coinSent || 0;
-  coinReceivedVal.textContent = p.coinReceived || 0;
-  expVal && (expVal.textContent = p.exp || 0);
+  coinVal.textContent = p.coins || 0;
+  levelVal.textContent = p.level || 1;
 
+  // 🎁 Donate stats
+  if (coinSentVal) coinSentVal.textContent = p.coinSent || 0;
+  if (coinReceivedVal) coinReceivedVal.textContent = p.coinReceived || 0;
+
+  // ⭐ EXP BAR
+  const level = p.level || 1;
+  const exp = p.exp || 0;
+  const need = level * 100;
+
+  if (expText) expText.textContent = `${exp} / ${need}`;
+  if (expFill) {
+    const percent = Math.min(100, (exp / need) * 100);
+    expFill.style.width = percent + "%";
+  }
 }
+
 
 document.getElementById("btnSave").onclick = () => {
   const old = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
