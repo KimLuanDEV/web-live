@@ -4,12 +4,17 @@ const nameInput = document.getElementById("nameInput");
 const avatarPreview = document.getElementById("avatarPreview");
 const coinVal = document.getElementById("coinVal");
 const levelVal = document.getElementById("levelVal");
+const coinSentVal = document.getElementById("coinSentVal");
+const coinReceivedVal = document.getElementById("coinReceivedVal");
 
 const defaultProfile = {
   name: "Guest",
   avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
   coins: 200000,
   level: 1,
+  coinSent: 0,       // 🎁 đã tặng
+  coinReceived: 0,   // 💎 đã nhận
+
 };
 
 function loadProfile(){
@@ -18,15 +23,20 @@ function loadProfile(){
   avatarPreview.src = p.avatar;
   coinVal.textContent = p.coins;
   levelVal.textContent = p.level;
+  coinSentVal.textContent = p.coinSent || 0;
+  coinReceivedVal.textContent = p.coinReceived || 0;
 }
 
 document.getElementById("btnSave").onclick = () => {
+  const old = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
   const name = nameInput.value.trim() || "Guest";
   const profile = {
     name,
     avatar: `https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg`,
     coins: Number(coinVal.textContent) || 0,
     level: Number(levelVal.textContent) || 1,
+    coinSent: old.coinSent || 0,
+    coinReceived: old.coinReceived || 0,
   };
   localStorage.setItem(KEY, JSON.stringify(profile));
   alert("✅ Đã lưu hồ sơ!");

@@ -4777,7 +4777,7 @@ video {
   .gift-panel{
     right:8px;
     left:8px;
-    width:100%;
+    width:auto;
     bottom:64px;
     border-radius:22px;
   }
@@ -4806,4 +4806,17 @@ video {
 
 @keyframes giftGlow{
   to{ transform: rotate(360deg); }
+}
+
+
+.badge--gold{
+  border-color: rgba(255,211,110,.45);
+  background: rgba(255,211,110,.14);
+  box-shadow: 0 0 22px rgba(255,211,110,.25);
+}
+
+.badge--blue{
+  border-color: rgba(95,168,255,.45);
+  background: rgba(95,168,255,.14);
+  box-shadow: 0 0 22px rgba(95,168,255,.22);
 }

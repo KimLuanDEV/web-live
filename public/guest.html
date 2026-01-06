@@ -618,6 +618,21 @@ guestCancelWait?.addEventListener("click", () => {
 
     const socket = io();
 
+    function updateProfileOnSendGift(totalCoin){
+  const KEY = "user_profile";
+  let p = {};
+
+  try{
+    p = JSON.parse(localStorage.getItem(KEY)) || {};
+  }catch{}
+
+  p.coinSent = (p.coinSent || 0) + totalCoin;
+  p.coins = Math.max(0, (p.coins || 0) - totalCoin);
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+}
+
+
 
 socket.on("profile-updated", ({ socketId, avatar }) => {
   // 1️⃣ cập nhật cache viewer
@@ -2036,6 +2051,9 @@ gcmOk.addEventListener("click", ()=>{
     openCoinErrorModal();
     return;
   }
+
+   // 🔥🔥🔥 CHÈN DÒNG NÀY 🔥🔥🔥
+  updateProfileOnSendGift(total);
 
   // ✅ ĐỦ COIN → GỬI
   socket.emit("send-gift", {

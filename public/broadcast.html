@@ -654,6 +654,19 @@ if(nameFromLobby){
     const socket = io();
     
 
+function updateProfileOnReceiveGift(totalCoin){
+  const KEY = "user_profile";
+  let p = {};
+
+  try{
+    p = JSON.parse(localStorage.getItem(KEY)) || {};
+  }catch{}
+
+  p.coinReceived = (p.coinReceived || 0) + totalCoin;
+  p.coins = (p.coins || 0) + totalCoin;
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+}
 
 
 
@@ -2372,6 +2385,9 @@ function spawnGift(type, donor, giftMeta){
 
 socket.on("gift", ({ gift, donor })=>{
   spawnGift(gift.type, donor, gift);
+   // ✅ UPDATE PROFILE (HOST NHẬN)
+  const total = (gift.coins || gift.cost || 0);
+  updateProfileOnReceiveGift(total);
   try{
     const note = document.createElement("div");
     note.className = "gift-toast";
