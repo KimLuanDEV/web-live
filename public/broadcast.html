@@ -2589,12 +2589,17 @@ socket.on("viewer-list", ({ viewers }) => {
   showList.map((v, i) => `
     <div class="viewer-avatar" data-idx="${i}">
       <img src="${v.avatar}">
-      <div class="viewer-coin-badge">💎 ${v.coins || 0}</div>
+      ${v.coins > 0 ? `
+        <div class="viewer-coin-badge">
+          💎 ${v.coins}
+        </div>
+      ` : ``}
     </div>
   `).join("") +
   (remain > 0
     ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
     : "");
+
 
 
   // click avatar (top 4)
