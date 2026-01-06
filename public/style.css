@@ -4469,112 +4469,91 @@ video {
     drop-shadow(0 0 80px rgba(255,180,80,.4));
 }
 
-/* ===== GIFT PANEL PRO ===== */
 
-.gift-grid-pro{
+
+/* ===== GIFT PANEL PRO ===== */
+.gift-panel{
+  position:absolute;
+  right:12px;
+  bottom:70px;
+  width:320px;
+  max-width:90vw;
+  background:rgba(0,0,0,.75);
+  backdrop-filter: blur(14px);
+  border-radius:22px;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 20px 60px rgba(0,0,0,.65),
+             0 0 30px rgba(95,168,255,.25);
+  padding:14px;
+  z-index:30;
+}
+
+.gift-panel__header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:800;
+  font-size:14px;
+  margin-bottom:10px;
+}
+
+.gift-wallet-mini{
+  font-size:13px;
+  color:#FFD36E;
+}
+
+.gift-combo{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.gift-combo__btn{
+  flex:1;
+  padding:8px 0;
+  border-radius:999px;
+  font-weight:700;
+  background:rgba(255,255,255,.08);
+}
+
+.gift-combo__btn.is-active{
+  background:linear-gradient(135deg,#5FA8FF,#25F09A);
+  color:#000;
+}
+
+/* GRID QUÀ */
+.gift-grid{
   display:grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap:12px;
-  margin-top:12px;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
 }
 
 .gift-card{
-  position:relative;
-  padding:10px 8px 8px;
-  border-radius:14px;
-  border:1px solid rgba(255,255,255,.16);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.35));
-  backdrop-filter: blur(8px);
-  box-shadow: 0 10px 26px rgba(0,0,0,.45);
-  cursor:pointer;
-  transition:.18s ease;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  gap:6px;
-}
-
-.gift-card img{
-  width:52px;
-  height:52px;
-  object-fit:contain;
-  filter: drop-shadow(0 6px 14px rgba(0,0,0,.6));
-}
-
-.gift-info{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:16px;
+  padding:10px 6px;
   text-align:center;
-  font-size:12px;
-  line-height:1.2;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.gift-card:hover{
+  transform:translateY(-4px) scale(1.05);
+  box-shadow:0 0 22px rgba(95,168,255,.45);
+}
+
+.gift-icon{
+  font-size:26px;
 }
 
 .gift-name{
-  display:block;
-  font-weight:700;
+  font-size:12px;
+  margin-top:4px;
 }
 
-.gift-coin{
-  color: var(--gold);
-  font-weight:800;
-}
-
-/* hover */
-.gift-card:hover{
-  transform: translateY(-4px) scale(1.05);
-  box-shadow:
-    0 0 0 1px rgba(95,168,255,.55),
-    0 0 22px rgba(95,168,255,.35),
-    0 18px 46px rgba(0,0,0,.55);
-}
-
-/* selected */
-.gift-card.is-selected{
-  border-color: rgba(255,211,110,.65);
-  box-shadow:
-    0 0 0 2px rgba(255,211,110,.55),
-    0 0 28px rgba(255,211,110,.45);
-}
-
-/* rare / vip gift */
-.gift-card.gift-rare::after{
-  content:"✨";
-  position:absolute;
-  top:6px;
-  right:8px;
-  font-size:14px;
-}
-
-/* mobile */
-@media(max-width:520px){
-  .gift-grid-pro{
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-
-/* ===== GIFT SLIDER ===== */
-
-.gift-slider{
-  overflow: hidden;
-  margin-top: 10px;
-}
-
-.gift-slider-track{
-  display: flex;
-  transition: transform .35s ease;
-  will-change: transform;
-}
-
-.gift-page{
-  min-width: 100%;
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, auto);
-  gap: 12px;
-  padding: 6px 4px;
-}
-
-
-.gift-card{
-  touch-action: pan-y;
+.gift-price{
+  font-size:11px;
+  color:#FFD36E;
+  margin-top:2px;
 }

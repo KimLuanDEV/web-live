@@ -141,104 +141,19 @@
     <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
   </div>
   
-
-
- <div class="gift-slider">
-
-  <div class="gift-slider-track" id="giftSliderTrack">
-
-    <!-- PAGE 1 (8 quà) -->
-    <div class="gift-page">
-
-   <button class="gift-card" data-gift="heart" data-coin="10">
-    <img src="/assets/gifts/heart.png">
-    <div class="gift-info">
-      <span class="gift-name">Trái tim</span>
-      <span class="gift-coin">💎 10</span>
-    </div>
-  </button>
-
-   <button class="gift-card" data-gift="flower" data-coin="50">
-    <img src="/assets/gifts/flower.png">
-    <div class="gift-info">
-      <span class="gift-name">Hoa hồng</span>
-      <span class="gift-coin">💎 50</span>
-    </div>
-  </button>
-
-  <button class="gift-card" data-gift="rocket" data-coin="100">
-    <img src="/assets/gifts/rocket.png">
-    <div class="gift-info">
-      <span class="gift-name">Tên lửa</span>
-      <span class="gift-coin">💎 100</span>
-    </div>
-  </button>
-
-  <button class="gift-card" data-gift="galaxy" data-coin="200">
-    <img src="/assets/gifts/galaxy.png">
-    <div class="gift-info">
-      <span class="gift-name">Galaxy</span>
-      <span class="gift-coin">💎 200</span>
-    </div>
-  </button>
-
-  <button class="gift-card" data-gift="meteor" data-coin="500">
-    <img src="/assets/gifts/meteor.png">
-    <div class="gift-info">
-      <span class="gift-name">Meteor</span>
-      <span class="gift-coin">💎 500</span>
-    </div>
-  </button>
-
-  <button class="gift-card" data-gift="king" data-coin="1000">
-    <img src="/assets/gifts/crown.png">
-    <div class="gift-info">
-      <span class="gift-name">Crown</span>
-      <span class="gift-coin">💎 1000</span>
-    </div>
-  </button>
-
-  <button class="gift-card" data-gift="phoenix" data-coin="10000">
-    <img src="/assets/gifts/phoenix.png">
-    <div class="gift-info">
-      <span class="gift-name">Phoenix</span>
-      <span class="gift-coin">💎 10000</span>
-    </div>
-  </button>
-
-  <button class="gift-card" data-gift="dragon" data-coin="10000">
-    <img src="/assets/gifts/dragon.png">
-    <div class="gift-info">
-      <span class="gift-name">Gold Dragon</span>
-      <span class="gift-coin">💎 10000</span>
-    </div>
-  </button>
-
-   </div>
-
-    <!-- PAGE 2 (8 quà tiếp) -->
-  <div class="gift-page">
-
-  <button class="gift-card" data-gift="dragonking" data-coin="10000">
-    <img src="/assets/gifts/dragonking.png">
-    <div class="gift-info">
-      <span class="gift-name">Dragon King</span>
-      <span class="gift-coin">💎 10000</span>
-    </div>
-  </button>
-
-  <button class="gift-card gift-rare" data-gift="supernova" data-coin="10000">
-    <img src="/assets/gifts/bigbang.png">
-    <div class="gift-info">
-      <span class="gift-name">Big Bang</span>
-      <span class="gift-coin">💎 10000</span>
-    </div>
-  </button>
-
-</div>
-</div>
-
-
+  <div class="gift-panel__grid">
+    <button data-gift="heart">❤️</button>
+    <button data-gift="flower">🌸</button>
+    <button data-gift="rocket">🚀</button>
+    <button data-gift="coin">💰</button>
+    <button data-gift="dragon">🐉</button>
+    <button data-gift="phoenix">🦅</button>
+    <button data-gift="galaxy">🌌</button>
+    <button data-gift="meteor">☄️</button>
+    <button data-gift="king">👑</button>
+    <button data-gift="dragonking">🐲</button>
+    <button data-gift="supernova">🌠</button>
+  </div>
 </div>
 
 
@@ -491,90 +406,6 @@ const guestRequestBtn = document.getElementById("guestRequestBtn");
 
 
 const giftVideoLayer = document.getElementById("giftVideoLayer");
-
-
-(function(){
-  const track = document.getElementById("giftSliderTrack");
-  if (!track) return;
-
-  let page = 0;
-  const pages = track.children.length;
-
-  let startX = 0;
-  let moved = false;
-
-  function update(){
-    track.style.transform = `translateX(${-page * 100}%)`;
-  }
-
-  /* ===== TOUCH (mobile) ===== */
-  track.addEventListener("touchstart", e=>{
-    startX = e.touches[0].clientX;
-    moved = false;
-  }, {passive:true});
-
-  track.addEventListener("touchmove", e=>{
-    const dx = e.touches[0].clientX - startX;
-    if (Math.abs(dx) > 10) moved = true;
-  }, {passive:true});
-
-  track.addEventListener("touchend", e=>{
-    if (!moved) return; // 👉 click thật
-
-    const dx = e.changedTouches[0].clientX - startX;
-    if (Math.abs(dx) > 50){
-      if (dx < 0 && page < pages - 1) page++;
-      if (dx > 0 && page > 0) page--;
-      update();
-    }
-  });
-
-  /* ===== MOUSE (desktop) ===== */
-  let mouseDown = false;
-  let mouseStartX = 0;
-
-  track.addEventListener("mousedown", e=>{
-    mouseDown = true;
-    mouseStartX = e.clientX;
-    moved = false;
-  });
-
-  window.addEventListener("mousemove", e=>{
-    if (!mouseDown) return;
-    if (Math.abs(e.clientX - mouseStartX) > 6){
-      moved = true;
-    }
-  });
-
-  window.addEventListener("mouseup", e=>{
-    if (!mouseDown) return;
-    mouseDown = false;
-
-    if (!moved) return; // 👉 click thật
-
-    const dx = e.clientX - mouseStartX;
-    if (Math.abs(dx) > 60){
-      if (dx < 0 && page < pages - 1) page++;
-      if (dx > 0 && page > 0) page--;
-      update();
-    }
-  });
-
-})();
-
-
-document.addEventListener("click", e=>{
-  const card = e.target.closest(".gift-card");
-  if (!card) return;
-
-  const gift = card.dataset.gift;
-  const coin = Number(card.dataset.coin || 0);
-
-  // 👉 gọi logic tặng quà hiện tại của bạn
-  openGiftConfirm(gift, coin);
-});
-
-
 
 function playGiftVideo(src, duration = 2500) {
   if (!giftVideoLayer) return;
@@ -2102,7 +1933,7 @@ gcmOk.addEventListener("click", ()=>{
 
 
 // OVERRIDE click quà
-document.querySelectorAll(".gift-panel__grid button").forEach(btn=>{
+document.querySelectorAll('.gift-card').forEach(btn=>{
   btn.onclick = ()=>{
     const type = btn.dataset.gift;
     const catalog = {
