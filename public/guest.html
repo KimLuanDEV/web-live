@@ -54,6 +54,25 @@
           <!-- ✅ LIVE STAGE: HOST MAIN + ME PIP -->
           <div class="live-stage" id="liveStageGuest" style="margin-top:10px">
 
+<!-- 🎁 GIFT BOX OPEN OVERLAY -->
+<div id="giftBoxOverlay" class="gift-box-overlay hidden">
+  <div class="gift-box-backdrop"></div>
+
+  <div class="gift-box">
+    <div class="gift-box-glow"></div>
+
+    <!-- Nắp -->
+    <div class="gift-box-lid"></div>
+
+    <!-- Thân -->
+    <div class="gift-box-body">
+      <div class="gift-box-icon">🎁</div>
+      <div class="gift-box-text">Mở quà</div>
+    </div>
+  </div>
+</div>
+
+
             <div class="gift-layer" id="giftLayer"></div>
 
             <!-- HOST MAIN -->
@@ -154,6 +173,9 @@
     <button data-gift="dragonking">🐲</button>
     <button data-gift="supernova">🌠</button>
   </div>
+
+
+  
 </div>
 
 
@@ -2154,12 +2176,27 @@ socket.on("room-closed", ({ reason }) => {
   }, { passive: false });
 
 const giftFab = document.getElementById("giftFab");
+const giftBoxOverlay = document.getElementById("giftBoxOverlay");
 const giftPanel = document.getElementById("giftPanel");
+const giftBox = giftBoxOverlay?.querySelector(".gift-box");
 
-giftFab?.addEventListener("click", (e)=>{
-  e.stopPropagation();
-  giftPanel.classList.toggle("hidden");
+giftFab?.addEventListener("click", ()=>{
+  giftBoxOverlay.classList.remove("hidden");
+  giftPanel.classList.add("hidden");
 });
+
+giftBox?.addEventListener("click", ()=>{
+  giftBox.classList.add("open");
+
+  // delay cho animation mở nắp
+  setTimeout(()=>{
+    giftBoxOverlay.classList.add("hidden");
+    giftPanel.classList.remove("hidden");
+    giftPanel.classList.add("gift-panel-animate");
+    giftBox.classList.remove("open");
+  }, 520);
+});
+
 
 // click ngoài → đóng
 document.addEventListener("click", ()=>{
