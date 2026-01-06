@@ -156,11 +156,19 @@
     <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
   </div>
 
-  <!-- ✅ QÙA NGAY TRONG PANEL -->
-  <div class="gift-panel__grid">
-    
+<!-- 🎁 GIFT CATEGORY BAR -->
+<div class="gift-categories" id="giftCategories">
+  <button class="gift-cat active" data-cat="popular">🔥 Phổ biến</button>
+  <button class="gift-cat" data-cat="vip">👑 VIP</button>
+  <button class="gift-cat" data-cat="fx">✨ Hiệu ứng</button>
+</div>
+   
+  <!-- 🎁 GIFT SWIPE AREA -->
+<div class="gift-pages" id="giftPages">  
+ <!-- PAGE 1 -->
+  <div class="gift-page active" data-cat="popular">
 
-    <button class="gift-card" data-gift="heart">
+<button class="gift-card" data-gift="heart">
   <div class="gift-icon">❤️</div>
   <div class="gift-name">heart</div>
   <div class="gift-coin">💎 1</div>
@@ -225,8 +233,10 @@
   <div class="gift-name">supernova</div>
   <div class="gift-coin">💎 10000</div>
 </button> 
-
-  </div>
+   
+    </div>
+</div>
+ 
 </div>
 
 
@@ -2438,6 +2448,35 @@ window.addEventListener("beforeunload", () => {
 
 document.body.classList.add("viewer-fullscreen");
 
+
+(function(){
+  const cats = document.querySelectorAll(".gift-cat");
+  const pages = document.querySelectorAll(".gift-page");
+  let current = 0;
+
+  function show(idx){
+    pages.forEach(p=>p.classList.remove("active"));
+    cats.forEach(c=>c.classList.remove("active"));
+    pages[idx].classList.add("active");
+    cats[idx].classList.add("active");
+    current = idx;
+  }
+
+  cats.forEach((btn,i)=>{
+    btn.onclick = ()=>show(i);
+  });
+
+  // 👆 SWIPE
+  let sx = 0;
+  const wrap = document.getElementById("giftPages");
+  wrap.addEventListener("touchstart", e=>sx = e.touches[0].clientX);
+  wrap.addEventListener("touchend", e=>{
+    const dx = e.changedTouches[0].clientX - sx;
+    if(Math.abs(dx) < 40) return;
+    if(dx < 0 && current < pages.length-1) show(current+1);
+    if(dx > 0 && current > 0) show(current-1);
+  });
+})();
 
   </script>
 
