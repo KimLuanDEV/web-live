@@ -626,7 +626,7 @@ if (room.liveStartTs) {
 
 });
 
- socket.on("chat", ({ roomId, name, text, avatar, level, role }) => {
+ socket.on("chat", ({ roomId, name, text }) => {
   if (!roomId || !text) return;
 
   const room = getRoom(roomId);
@@ -650,13 +650,12 @@ if (room.liveStartTs) {
   }
 
   const msg = {
-    socketId: socket.id,
-    name: String(name || "User").slice(0, 20),
+    role,
+    name: profile?.name || (name || "Ẩn danh").slice(0, 20),
+    avatar: profile?.avatar,
+    level: Number(profile?.level) || 1,   // ✅ LEVEL CHUẨN
     text: String(text).slice(0, 300),
-    avatar: avatar || "",
-    level: Number(level) || 1,   // ✅ FIX CỐT LÕI
-    role: role || "viewer",
-    ts: Date.now()
+    ts: Date.now(),
   };
 
   io.to(roomId).emit("chat", msg);

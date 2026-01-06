@@ -1953,17 +1953,24 @@ if (vip) {
       });
     }
 
-chatSend.onclick = () => {
+
+    chatSend.onclick = () => {
+
+
   const profile = getUserProfile();
 
   socket.emit("chat", {
-    roomId,
-    text: chatText.value.trim()
-  });
+  roomId,
+  name: profile?.name || name,
+  avatar: profile?.avatar,
+  level: profile?.level || 1,
+  text,
+  role: "viewer"
+});
+
 
   chatText.value = "";
 };
-
 
 
 const viewerCountViewer = document.getElementById("viewerCountViewer");
