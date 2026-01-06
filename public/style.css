@@ -4573,3 +4573,8 @@ video {
   gap: 12px;
   padding: 6px 4px;
 }
+
+
+.gift-card{
+  touch-action: pan-y;
+}

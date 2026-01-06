@@ -468,7 +468,6 @@
     const roomId = params.get("room") || "abc123";
 
 
-
 (function(){
   const track = document.getElementById("giftSliderTrack");
   if (!track) return;
@@ -476,52 +475,79 @@
   let page = 0;
   const pages = track.children.length;
 
+  let startX = 0;
+  let moved = false;
+
   function update(){
     track.style.transform = `translateX(${-page * 100}%)`;
   }
 
-  /* ===== MOBILE SWIPE ===== */
-  let startX = 0;
-  let dx = 0;
-
+  /* ===== TOUCH (mobile) ===== */
   track.addEventListener("touchstart", e=>{
     startX = e.touches[0].clientX;
+    moved = false;
   }, {passive:true});
 
   track.addEventListener("touchmove", e=>{
-    dx = e.touches[0].clientX - startX;
+    const dx = e.touches[0].clientX - startX;
+    if (Math.abs(dx) > 10) moved = true;
   }, {passive:true});
 
-  track.addEventListener("touchend", ()=>{
+  track.addEventListener("touchend", e=>{
+    if (!moved) return; // 👉 click thật
+
+    const dx = e.changedTouches[0].clientX - startX;
     if (Math.abs(dx) > 50){
       if (dx < 0 && page < pages - 1) page++;
       if (dx > 0 && page > 0) page--;
       update();
     }
-    dx = 0;
   });
 
-  /* ===== DESKTOP DRAG ===== */
-  let dragging = false;
+  /* ===== MOUSE (desktop) ===== */
+  let mouseDown = false;
   let mouseStartX = 0;
 
   track.addEventListener("mousedown", e=>{
-    dragging = true;
+    mouseDown = true;
     mouseStartX = e.clientX;
+    moved = false;
+  });
+
+  window.addEventListener("mousemove", e=>{
+    if (!mouseDown) return;
+    if (Math.abs(e.clientX - mouseStartX) > 6){
+      moved = true;
+    }
   });
 
   window.addEventListener("mouseup", e=>{
-    if (!dragging) return;
-    const diff = e.clientX - mouseStartX;
+    if (!mouseDown) return;
+    mouseDown = false;
 
-    if (Math.abs(diff) > 60){
-      if (diff < 0 && page < pages - 1) page++;
-      if (diff > 0 && page > 0) page--;
+    if (!moved) return; // 👉 click thật
+
+    const dx = e.clientX - mouseStartX;
+    if (Math.abs(dx) > 60){
+      if (dx < 0 && page < pages - 1) page++;
+      if (dx > 0 && page > 0) page--;
       update();
     }
-    dragging = false;
   });
+
 })();
+
+
+document.addEventListener("click", e=>{
+  const card = e.target.closest(".gift-card");
+  if (!card) return;
+
+  const gift = card.dataset.gift;
+  const coin = Number(card.dataset.coin || 0);
+
+  // 👉 gọi logic tặng quà hiện tại của bạn
+  openGiftConfirm(gift, coin);
+});
 
 
 
