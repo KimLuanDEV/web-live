@@ -1958,13 +1958,11 @@ if (vip) {
   const profile = getUserProfile();
 
   socket.emit("chat", {
-    roomId,
-    name: profile.name || "Viewer",
-    avatar: profile.avatar,
-    level: profile.level || 1,
-    text: chatText.value.trim(),
-    role: "viewer"
-  });
+  roomId,
+  name: profile.name,
+  text
+});
+
 
   chatText.value = "";
 };

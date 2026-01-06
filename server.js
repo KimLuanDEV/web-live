@@ -642,13 +642,12 @@ if (room.liveStartTs) {
     room.hostProfile ||
     {};
 
-  const msg = {
-    socketId: socket.id,                 // ⬅️ BẮT BUỘC
-    role,
-    name: safeName(name || profile.name || "Ẩn danh"),
-    avatar: profile.avatar || "",        // ⬅️ BẮT BUỘC
-    level: profile.level || 1,            // (nếu có)
-    text: String(text).slice(0, 300),
+ const msg = {
+    role: socket.data.role || "viewer",
+    name: profile?.name || safeName(name),
+    avatar: profile?.avatar,
+    level: profile?.level || 1,   // 🔥 LEVEL CHUẨN TỪ SERVER
+    text: String(text).slice(0,300),
     ts: Date.now(),
   };
 
