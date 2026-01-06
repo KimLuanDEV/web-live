@@ -4614,3 +4614,50 @@ video {
   background:#5FA8FF;
   box-shadow:0 0 10px #5FA8FF;
 }
+
+
+/* ===== GIFT IMAGE ICON ===== */
+.gift-icon{
+  width:48px;
+  height:48px;
+  margin:0 auto 4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.gift-icon img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none; /* tránh drag ảnh */
+  filter:
+    drop-shadow(0 0 6px rgba(95,168,255,.45))
+    drop-shadow(0 0 14px rgba(255,211,110,.35));
+}
+
+/* VIP GIF nổi hơn */
+.gift-card[data-vip="1"] .gift-icon img{
+  filter:
+    drop-shadow(0 0 10px rgba(255,59,107,.65))
+    drop-shadow(0 0 22px rgba(255,59,107,.45));
+}
+
+/* hover */
+.gift-card:hover .gift-icon img{
+  transform:scale(1.12);
+  transition:.15s;
+}
+
+.gift-badge{
+  position:absolute;
+  top:6px;
+  right:6px;
+  font-size:10px;
+  font-weight:800;
+  padding:2px 6px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#FF3B6B,#FFD36E);
+  color:#000;
+  box-shadow:0 0 12px rgba(255,59,107,.7);
+}
