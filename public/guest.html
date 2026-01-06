@@ -124,13 +124,7 @@
 
 <!-- GIFT PANEL -->
 <div class="gift-panel hidden" id="giftPanel">
-
-
-  <div class="gift-panel__header">
-  <span class="gift-panel__title">🎁 GIFT SHOP</span>
-  <span class="gift-panel__sub">Ủng hộ streamer • Nhận spotlight</span>
-</div>
-
+  <div class="gift-panel__title">🎁 Tặng quà</div>
 
 
   <div class="gift-wallet">
@@ -147,87 +141,40 @@
     <button type="button" class="gift-combo__btn" data-combo="10">x10</button>
   </div>
   
-  <!-- 🎁 GIFT CATEGORY BAR -->
-<div class="gift-categories" id="giftCategories">
-  <button class="gift-cat active" data-cat="popular">🔥 Phổ biến</button>
-  <button class="gift-cat" data-cat="vip">👑 VIP</button>
-  <button class="gift-cat" data-cat="fx">✨ Hiệu ứng</button>
+ <div class="gift-panel__pages" id="giftPages">
+  <!-- PAGE 1 -->
+  <div class="gift-page">
+    <button data-gift="heart">❤️</button>
+    <button data-gift="flower">🌸</button>
+    <button data-gift="rocket">🚀</button>
+    <button data-gift="coin">💰</button>
+
+    <button data-gift="dragon">🐉</button>
+    <button data-gift="phoenix">🦅</button>
+    <button data-gift="galaxy">🌌</button>
+    <button data-gift="meteor">☄️</button>
+  </div>
+
+  <!-- PAGE 2 -->
+  <div class="gift-page">
+    <button data-gift="king">👑</button>
+    <button data-gift="dragonking">🐲</button>
+    <button data-gift="supernova">🌠</button>
+    <button data-gift="heart2">💖</button>
+
+    <button data-gift="crown">💎</button>
+    <button data-gift="fire">🔥</button>
+    <button data-gift="star">⭐</button>
+    <button data-gift="vip">🏆</button>
+  </div>
 </div>
-   
-  <!-- 🎁 GIFT SWIPE AREA -->
-<div class="gift-pages" id="giftPages">  
- <!-- PAGE 1 -->
-  <div class="gift-page active" data-cat="popular">
 
-<button class="gift-card" data-gift="heart">
-  <div class="gift-icon">❤️</div>
-  <div class="gift-name">heart</div>
-  <div class="gift-coin">💎 1</div>
-</button> 
+<!-- DOT INDICATOR -->
+<div class="gift-page-dots" id="giftPageDots"></div>
 
- <button class="gift-card" data-gift="flower">
-  <div class="gift-icon">🌸</div>
-  <div class="gift-name">flower</div>
-  <div class="gift-coin">💎 5</div>
-</button>
 
-<button class="gift-card" data-gift="rocket">
-  <div class="gift-icon">🚀</div>
-  <div class="gift-name">Rocket</div>
-  <div class="gift-coin">💎 20</div>
-</button>
 
-<button class="gift-card" data-gift="coin">
-  <div class="gift-icon">💰</div>
-  <div class="gift-name">coin</div>
-  <div class="gift-coin">💎 50</div>
-</button>
 
-<button class="gift-card" data-gift="galaxy">
-  <div class="gift-icon">🌌</div>
-  <div class="gift-name">galaxy</div>
-  <div class="gift-coin">💎 100</div>
-</button>
-
-<button class="gift-card" data-gift="meteor">
-  <div class="gift-icon">☄️</div>
-  <div class="gift-name">meteor</div>
-  <div class="gift-coin">💎 200</div>
-</button>
-
-<button class="gift-card" data-gift="king">
-  <div class="gift-icon">👑</div>
-  <div class="gift-name">king</div>
-  <div class="gift-coin">💎 500</div>
-</button>
-
-<button class="gift-card" data-gift="dragon">
-  <div class="gift-icon">🐉</div>
-  <div class="gift-name">dragon</div>
-  <div class="gift-coin">💎 10000</div>
-</button>
-
-<button class="gift-card" data-gift="phoenix">
-  <div class="gift-icon">🦅</div>
-  <div class="gift-name">phoenix</div>
-  <div class="gift-coin">💎 10000</div>
-</button>
-
-<button class="gift-card" data-gift="dragonking">
-  <div class="gift-icon">🐲</div>
-  <div class="gift-name">dragonking</div>
-  <div class="gift-coin">💎 10000</div>
-</button>
-
- <button class="gift-card" data-gift="supernova">
-  <div class="gift-icon">🌌</div>
-  <div class="gift-name">supernova</div>
-  <div class="gift-coin">💎 10000</div>
-</button> 
-   
-    </div>
-</div>
- 
 </div>
 
 
@@ -1909,13 +1856,13 @@ const GIFT_CLIENT_CATALOG = {
   flower: { emoji:"🌸", cost:5,  title:"Hoa" },
   rocket: { emoji:"🚀", cost:20, title:"Rocket" },
   coin:   { emoji:"💰", cost:50, title:"Túi tiền" },
-  galaxy: { emoji:"🌌", cost:100, title:"Dải ngân hà" },
-  meteor: { emoji:"☄️", cost:200, title:"Sao băng" },
-  king:   { emoji:"👑", cost:500, title:"Vương miện" },
-  dragon: { emoji:"🐉", cost:10000, title:"Rồng" },
-  phoenix:{ emoji:"🦅", cost:10000, title:"Phượng hoàng" },
-  dragonking: { emoji:"🐲", cost:10000, title:"Dragon King" },
-  supernova:  { emoji:"🌠", cost:10000, title:"Supernova" },
+  dragon: { emoji:"🐉", cost:120, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:200, title:"Phượng hoàng" },
+  galaxy: { emoji:"🌌", cost:300, title:"Dải ngân hà" },
+  meteor: { emoji:"☄️", cost:500, title:"Sao băng" },
+  king:   { emoji:"👑", cost:800, title:"Vương miện" },
+  dragonking: { emoji:"🐲", cost:1500, title:"Dragon King" },
+  supernova:  { emoji:"🌠", cost:2200, title:"Supernova" },
 };
 
 
@@ -2011,17 +1958,17 @@ document.querySelectorAll(".gift-panel__grid button").forEach(btn=>{
   btn.onclick = ()=>{
     const type = btn.dataset.gift;
     const catalog = {
-     heart:{emoji:"❤️",cost:1,title:"Tim"},
+      heart:{emoji:"❤️",cost:1,title:"Tim"},
       flower:{emoji:"🌸",cost:5,title:"Hoa"},
       rocket:{emoji:"🚀",cost:20,title:"Rocket"},
       coin:{emoji:"💰",cost:50,title:"Túi tiền"},
-      galaxy:{emoji:"🌌",cost:100,title:"Dải ngân hà"},
-      meteor:{emoji:"☄️",cost:200,title:"Sao băng"},
-      king:{emoji:"👑",cost:500,title:"Vương miện"},
-      dragon:{emoji:"🐉",cost:10000,title:"Rồng"},
-      phoenix:{emoji:"🦅",cost:10000,title:"Phượng hoàng"},
-      dragonking:{emoji:"🐲",cost:10000,title:"Dragon King"},
-      supernova:{emoji:"🌠",cost:10000,title:"Supernova"},
+      dragon:{emoji:"🐉",cost:120,title:"Rồng"},
+      phoenix:{emoji:"🦅",cost:200,title:"Phượng hoàng"},
+      galaxy:{emoji:"🌌",cost:300,title:"Dải ngân hà"},
+      meteor:{emoji:"☄️",cost:500,title:"Sao băng"},
+      king:{emoji:"👑",cost:800,title:"Vương miện"},
+      dragonking:{emoji:"🐲",cost:1500,title:"Dragon King"},
+      supernova:{emoji:"🌠",cost:2200,title:"Supernova"},
     }[type];
     if (!catalog) return;
 
@@ -2291,101 +2238,23 @@ socket.on("host-live", ({ liveStartTs }) => {
 document.body.classList.add("viewer-fullscreen");
 
 
-(function(){
-  const cats = document.querySelectorAll(".gift-cat");
-  const pages = document.querySelectorAll(".gift-page");
-  let current = 0;
+const pages = document.getElementById("giftPages");
+const dotsBox = document.getElementById("giftPageDots");
 
-  function show(idx){
-    pages.forEach(p=>p.classList.remove("active"));
-    cats.forEach(c=>c.classList.remove("active"));
-    pages[idx].classList.add("active");
-    cats[idx].classList.add("active");
-    current = idx;
-  }
+if (pages && dotsBox) {
+  const pageCount = pages.children.length;
 
-  cats.forEach((btn,i)=>{
-    btn.onclick = ()=>show(i);
+  dotsBox.innerHTML = Array.from({length: pageCount})
+    .map((_,i)=>`<span ${i===0?'class="active"':''}></span>`)
+    .join("");
+
+  const dots = dotsBox.querySelectorAll("span");
+
+  pages.addEventListener("scroll", () => {
+    const idx = Math.round(pages.scrollLeft / pages.clientWidth);
+    dots.forEach((d,i)=>d.classList.toggle("active", i===idx));
   });
-
-  // 👆 SWIPE
-  let sx = 0;
-  const wrap = document.getElementById("giftPages");
-  wrap.addEventListener("touchstart", e=>sx = e.touches[0].clientX);
-  wrap.addEventListener("touchend", e=>{
-    const dx = e.changedTouches[0].clientX - sx;
-    if(Math.abs(dx) < 40) return;
-    if(dx < 0 && current < pages.length-1) show(current+1);
-    if(dx > 0 && current > 0) show(current-1);
-  });
-})();
-
-
-function openGiftConfirmModal(giftId) {
-  const giftMap = {
-    heart:     { emoji:"❤️", title:"Heart", cost:1 },
-    flower:    { emoji:"🌸", title:"Flower", cost:5 },
-    rocket:    { emoji:"🚀", title:"Rocket", cost:20 },
-    coin:      { emoji:"💰", title:"Coin", cost:50 },
-    galaxy:    { emoji:"🌌", title:"Galaxy", cost:100 },
-    meteor:    { emoji:"☄️", title:"Meteor", cost:200 },
-    king:      { emoji:"👑", title:"King", cost:500 },
-    dragon:    { emoji:"🐉", title:"Dragon", cost:10000 },
-    phoenix:   { emoji:"🦅", title:"Phoenix", cost:10000 },
-    dragonking:{ emoji:"🐲", title:"Dragon King", cost:10000 },
-    supernova: { emoji:"🌠", title:"Supernova", cost:10000 },
-  };
-
-  const gift = giftMap[giftId];
-  if (!gift) {
-    console.warn("Gift not found:", giftId);
-    return;
-  }
-
-  // combo
-  const combo = Number(
-    document.querySelector(".gift-combo__btn.is-active")?.dataset.combo || 1
-  );
-
-  // fill modal
-  document.getElementById("gcmEmoji").textContent = gift.emoji;
-  document.getElementById("gcmTitle").textContent = gift.title;
-  document.getElementById("gcmCost").textContent = gift.cost;
-  document.getElementById("gcmQty").textContent = "x" + combo;
-  document.getElementById("gcmTotal").textContent = gift.cost * combo;
-  document.getElementById("gcmWallet").textContent =
-    document.getElementById("walletCoins")?.textContent || "0";
-
-  // show modal
-  document.getElementById("giftConfirmModal").classList.remove("hidden");
 }
-
-
-// ===============================
-// 🎁 FIX: CLICK GIFT CARD → OPEN CONFIRM MODAL
-// ===============================
-document.addEventListener("click", (e) => {
-  const card = e.target.closest(".gift-card");
-  if (!card) return;
-
-  e.preventDefault();
-  e.stopPropagation();
-
-  const giftId = card.dataset.gift;
-  if (!giftId) return;
-
-  openGiftConfirmModal(giftId);
-});
-
-document.getElementById("gcmClose")?.addEventListener("click", () => {
-  document.getElementById("giftConfirmModal").classList.add("hidden");
-});
-
-document.getElementById("gcmCancel")?.addEventListener("click", () => {
-  document.getElementById("giftConfirmModal").classList.add("hidden");
-});
-
-
 
 
   </script>
