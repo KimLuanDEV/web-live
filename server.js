@@ -276,7 +276,6 @@ socket.on("viewer-join", ({ roomId, name, avatar }) => {
   room.viewerProfiles.set(socket.id, {
     name: safeName(name),
     avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    coins: 0
   });
 
   emitViewerCount(roomId);
