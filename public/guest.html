@@ -889,7 +889,11 @@ function renderViewerPopup(){
 function openMiniProfile(v){
   if (!miniProfile) return;
 
-  miniProfile.innerHTML = `
+ const me = getUserProfile(); // 🔥 lấy stats chuẩn
+  const sent = me.coinSent || 0;
+  const received = me.coinReceived || 0;
+
+    miniProfile.innerHTML = `
     <div class="mini-profile-header">
       <img src="${v.avatar}">
       <div class="mini-profile-name">${v.name}</div>
@@ -905,10 +909,17 @@ function openMiniProfile(v){
           </div>
         `;
       })()}
-      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
+
+      <div class="mini-profile-chip gold">
+        💎 Đã tặng<br><b>${sent}</b>
+      </div>
+
+      <div class="mini-profile-chip blue">
+        💎 Đã nhận<br><b>${received}</b>
+      </div>
     </div>
   `;
-
+  
   // 🔥 LẤY TOẠ ĐỘ VIDEO
   const video = document.querySelector(".video-card");
   if (video){
