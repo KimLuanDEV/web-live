@@ -2829,35 +2829,25 @@ function renderViewerPopup(){
 }
 
 function openMiniProfile(v){
-  if (!miniProfile) return;
+  if (!miniProfile || !v) return;
 
- const me = getUserProfile(); // 🔥 lấy stats chuẩn
-  const sent = me.coinSent || 0;
-  const received = me.coinReceived || 0;
-
-    miniProfile.innerHTML = `
+  miniProfile.innerHTML = `
     <div class="mini-profile-header">
       <img src="${v.avatar}">
       <div class="mini-profile-name">${v.name}</div>
     </div>
 
     <div class="mini-profile-meta">
-      ${(() => {
-        const vip = getVipBadge(v.level || 1);
-        return `
-          <div class="mini-profile-chip">
-            ⭐ Lv ${v.level || 1}
-            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
-          </div>
-        `;
-      })()}
+      <div class="mini-profile-chip">
+        ⭐ Lv ${v.level || 1}
+      </div>
 
       <div class="mini-profile-chip gold">
-        💎 Đã nhận<br><b>${sent}</b>
+        🎁 Đã tặng<br><b>${v.coinSent || 0}</b>
       </div>
 
       <div class="mini-profile-chip blue">
-        💎 Đã tặng<br><b>${received}</b>
+        💎 Đã nhận<br><b>${v.coinReceived || 0}</b>
       </div>
     </div>
   `;
