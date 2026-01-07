@@ -619,6 +619,23 @@ guestCancelWait?.addEventListener("click", () => {
     const socket = io();
 
 
+function updateProfileOnSendGift(totalCoin){
+  const KEY = "user_profile";
+  let p = {};
+
+  try{
+    p = JSON.parse(localStorage.getItem(KEY)) || {};
+  }catch{}
+
+  p.coinSent = (p.coinSent || 0) + totalCoin;
+  p.coins = Math.max(0, (p.coins || 0) - totalCoin);
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+}
+
+
+
+
 socket.on("profile-updated", ({ socketId, avatar }) => {
   // 1️⃣ cập nhật cache viewer
   if (viewerProfiles?.[socketId]) {
@@ -2037,6 +2054,9 @@ gcmOk.addEventListener("click", ()=>{
     return;
   }
 
+  // 🔥🔥🔥 CHÈN DÒNG NÀY 🔥🔥🔥
+  updateProfileOnSendGift(total);
+  
   // ✅ ĐỦ COIN → GỬI
   socket.emit("send-gift", {
     roomId,
@@ -2144,6 +2164,10 @@ function spawnGift(type, donor, giftMeta){
 
 socket.on("gift", ({ gift, donor })=>{
 
+
+
+
+  
   spawnGift(gift.type, donor, gift);
   try{
     const note = document.createElement("div");

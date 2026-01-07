@@ -1,5 +1,7 @@
 const KEY = "user_profile";
 
+const coinSentVal = document.getElementById("coinSentVal");
+const coinReceivedVal = document.getElementById("coinReceivedVal");
 const nameInput = document.getElementById("nameInput");
 const avatarPreview = document.getElementById("avatarPreview");
 const coinVal = document.getElementById("coinVal");
@@ -11,6 +13,9 @@ const defaultProfile = {
   coins: 200000,
   level: 1,
   exp: 0,          // ✅ THÊM
+
+  coinSent: 0,       // 🎁 đã tặng
+  coinReceived: 0,   // 💎 đã nhận
 };
 
 function loadProfile(){
@@ -19,6 +24,9 @@ function loadProfile(){
   avatarPreview.src = p.avatar;
   coinVal.textContent = p.coins;
   levelVal.textContent = p.level;
+  coinSentVal.textContent = p.coinSent || 0;
+  coinReceivedVal.textContent = p.coinReceived || 0;
+
 }
 
 document.getElementById("btnSave").onclick = () => {
@@ -28,6 +36,8 @@ document.getElementById("btnSave").onclick = () => {
     avatar: `https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg`,
     coins: Number(coinVal.textContent) || 0,
     level: Number(levelVal.textContent) || 1,
+    coinSent: old.coinSent || 0,
+    coinReceived: old.coinReceived || 0,
   };
   localStorage.setItem(KEY, JSON.stringify(profile));
   alert("✅ Đã lưu hồ sơ!");
