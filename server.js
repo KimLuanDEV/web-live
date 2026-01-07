@@ -528,17 +528,6 @@ saveLiveState(state);
     const room = getRoom(roomId);
 
 
-  // ❗ CHỈ TẠO viewerProfiles CHO viewer + guest
-if (role !== "broadcaster") {
-  room.viewerProfiles.set(socket.id, {
-    name: safeName(profile?.name || socket.data.userName || "Guest"),
-    avatar: profile?.avatar ||
-      "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    level: Number(profile?.level) || 1
-  });
-}
-
-
 
 
     if (role === "broadcaster") {
@@ -748,17 +737,20 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
-// donor = socket gửi quà
 const donorProfile = room.viewerProfiles.get(socket.id);
 if (donorProfile) {
-  donorProfile.coinSent += totalCoin;
+  donorProfile.coinSent += cost;
 }
 
-// host nhận
 if (room.hostProfile) {
   room.hostProfile.coinReceived =
-    (room.hostProfile.coinReceived || 0) + totalCoin;
+    (room.hostProfile.coinReceived || 0) + cost;
 }
+
+// 🔄 cập nhật lại viewer-list để mini profile / avatar sync realtime
+io.to(roomId).emit("viewer-list", {
+  viewers: Array.from(room.viewerProfiles.values())
+});
 
 
 
@@ -779,9 +771,7 @@ if (room.hostProfile) {
     ts: Date.now(),
   };
 
-  io.to(roomId).emit("viewer-list", {
-  viewers: Array.from(room.viewerProfiles.values())
-});
+
 
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
