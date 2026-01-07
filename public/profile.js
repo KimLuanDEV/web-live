@@ -112,7 +112,14 @@ avatarInput.onchange = async () => {
   localStorage.setItem("userAvatar", data.url);
 
  if (window.socket) {
-  socket.emit("profile-update", { avatar: data.url });
+  socket.emit("profile-update", {
+    name: profile.name,
+    avatar: profile.avatar,
+    level: profile.level
+  });
  }
 };
+
+
+
 

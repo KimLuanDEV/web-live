@@ -244,18 +244,18 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
-  socket.on("profile-update", ({ name, avatar }) => {
+  socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
   const room = getRoom(roomId);
-  if (!room) return;
 
   const profile = room.viewerProfiles.get(socket.id);
   if (!profile) return;
 
   if (name) profile.name = safeName(name);
   if (avatar) profile.avatar = avatar;
+  if (level) profile.level = Number(level);
 
   io.to(roomId).emit("viewer-profile-update", {
     socketId: socket.id,
@@ -265,16 +265,18 @@ io.on("connection", (socket) => {
 
 
 
-socket.on("viewer-join", ({ roomId, name, avatar }) => {
+socket.on("viewer-join", ({ roomId, name, avatar, level }) => {
 
   
   const room = getRoom(roomId);
   if (!room) return;
 
   room.viewers.add(socket.id);
+
   room.viewerProfiles.set(socket.id, {
     name: safeName(name),
-    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
+    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    level: Number(level) || 1
   });
 
   emitViewerCount(roomId);
@@ -622,34 +624,29 @@ if (room.liveStartTs) {
 
 });
 
-  socket.on("chat", ({ roomId, name, text }) => {
+ socket.on("chat", ({ roomId, name, text, level, avatar }) => {
   if (!roomId || !text) return;
 
-  const room = getRoom(roomId);
-  if (!room) return;
+  const role = String(socket.data.role || "viewer").toLowerCase();
+  const room = rooms.get(roomId);
 
-  // Trust server-side role
-  const r = String(socket.data.role || "").toLowerCase();
-  const role = (r === "broadcaster") ? "host" : (r === "guest") ? "guest" : "viewer";
-
-  // 🔑 LẤY PROFILE ĐÚNG THEO SOCKET
-  const profile =
-    room.viewerProfiles.get(socket.id) ||
-    room.hostProfile ||
-    {};
+  // 🔑 LẤY PROFILE GỐC TỪ SERVER (KHÔNG TIN CLIENT)
+  const viewerProfile =
+    room?.viewerProfiles?.get(socket.id) || {};
 
   const msg = {
-    socketId: socket.id,                 // ⬅️ BẮT BUỘC
+    socketId: socket.id,                 // 🔑 để client map
     role,
-    name: safeName(name || profile.name || "Ẩn danh"),
-    avatar: profile.avatar || "",        // ⬅️ BẮT BUỘC
-    level: profile.level || 1,            // (nếu có)
+    name: viewerProfile.name || name,
+    avatar: viewerProfile.avatar || avatar,
+    level: viewerProfile.level || level || 1,
     text: String(text).slice(0, 300),
-    ts: Date.now(),
+    ts: Date.now()
   };
 
   io.to(roomId).emit("chat", msg);
 });
+
 
 
 

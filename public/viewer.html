@@ -885,11 +885,15 @@ function showLevelUpEffect(newLevel){
 
 
 
+const profile = JSON.parse(localStorage.getItem("user_profile")) || {};
+
 socket.emit("viewer-join", {
   roomId,
-  name: localStorage.getItem("profileName") || "Viewer",
-  avatar: localStorage.getItem("userAvatar")
+  name: profile.name,
+  avatar: profile.avatar,
+  level: profile.level || 1
 });
+
 
 
 const viewerAvatarBox = document.getElementById("viewerAvatars");
@@ -2577,7 +2581,7 @@ function getUserProfile(){
   catch { return null; }
 }
 
-const profile = getUserProfile();
+
 if (profile){
   const chatNameInput = document.getElementById("chatName");
   if (chatNameInput) {
