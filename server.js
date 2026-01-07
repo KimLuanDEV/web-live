@@ -291,9 +291,7 @@ socket.on("viewer-join", ({ roomId, profile }) => {
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
-  coins: Number(profile?.coins) || 0,
-  coinSent: Number(profile?.coinSent) || 0,
-  coinReceived: Number(profile?.coinReceived) || 0
+  coins: Number(profile?.coins) || 0
 });
 
  

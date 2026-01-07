@@ -990,6 +990,10 @@ function renderViewerPopup(){
 function openMiniProfile(v){
   if (!miniProfile) return;
 
+  const me = getUserProfile(); // 🔥 lấy stats chuẩn
+  const sent = me.coinSent || 0;
+  const received = me.coinReceived || 0;
+
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
       <img src="${v.avatar}">
@@ -1006,32 +1010,18 @@ function openMiniProfile(v){
           </div>
         `;
       })()}
-      <div class="mini-profile-chip">💎 Số dư ${v.coins || 0}</div>
 
-      <div class="mini-profile-row gold">
-        💎 Đã tặng: <b>${v.coinSent || 0}</b>
+      <div class="mini-profile-chip gold">
+        🎁 Đã tặng<br><b>${sent}</b>
       </div>
 
-      <div class="mini-profile-row blue">
-        💎 Đã nhận: <b>${v.coinReceived || 0}</b>
+      <div class="mini-profile-chip blue">
+        💎 Đã nhận<br><b>${received}</b>
       </div>
-
     </div>
   `;
 
-  // 🔥 LẤY TOẠ ĐỘ VIDEO
-  const video = document.querySelector(".video-card");
-  if (video){
-    const rect = video.getBoundingClientRect();
-    const h = window.innerHeight * 0.32; // = height 32vh
-
-    miniProfile.style.top = `${Math.max(0, rect.bottom - h)}px`;
-  } else {
-    // fallback
-    miniProfile.style.bottom = "0";
-  }
-
-  miniProfile.classList.remove("hidden", "show");
+  miniProfile.classList.remove("hidden");
   viewerBackdrop.classList.remove("hidden");
 
   requestAnimationFrame(()=>{
