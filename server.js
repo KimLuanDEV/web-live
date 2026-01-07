@@ -293,8 +293,8 @@ socket.on("viewer-join", ({ roomId, profile }) => {
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
   coins: Number(profile?.coins) || 0,
-  coinSent: 0,
-  coinReceived: 0
+  coinSentRoom: 0,                    // 🟡 trong room
+  coinSentTotal: Number(profile?.coinSent) || 0 // 🔵 toàn hệ thống
 });
 
  
@@ -750,8 +750,10 @@ if (room.hostProfile) {
 // sau khi cộng giftByUser
 const p = room.viewerProfiles.get(socket.id);
 if (p) {
-  p.coinSentRoom = room.giftByUser.get(p.name) || 0;
+  p.coinSentRoom += totalCoin;
+  p.coinSentTotal += totalCoin;
 }
+
 
 
 // 🔄 cập nhật lại viewer-list để mini profile / avatar sync realtime

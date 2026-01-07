@@ -887,20 +887,11 @@ function renderViewerPopup(){
 }
 
 function openMiniProfile(v){
-   if (!miniProfile) return;
+  if (!miniProfile) return;
 
-  // 🟡 trong room
-  const sentInRoom = v.coinSentRoom || 0;
+  const sentRoom  = v.coinSentRoom  || 0; // 🟡
+  const sentTotal = v.coinSentTotal || 0; // 🔵
 
-  // 🔹 toàn hệ thống (từ profile local)
-  let totalSent = 0;
-  try {
-    const p = JSON.parse(localStorage.getItem("user_profile")) || {};
-    if (p.name === v.name) {
-      totalSent = p.coinSent || 0;
-    }
-  } catch {}
-  
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
       <img src="${v.avatar}">
@@ -918,14 +909,12 @@ function openMiniProfile(v){
         `;
       })()}
 
-       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
-      <div class="mini-profile-chip gold">
-        💎 Room<br><b>${sentInRoom}</b>
+       <div class="mini-profile-chip gold">
+        💎 Room<br><b>${sentRoom}</b>
       </div>
 
-      <!-- 🔹 TỔNG ĐÃ TẶNG -->
       <div class="mini-profile-chip blue">
-        💎 Tổng<br><b>${totalSent}</b>
+        💎 Tổng<br><b>${sentTotal}</b>
       </div>
     </div>
   `;
