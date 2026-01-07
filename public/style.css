@@ -4982,3 +4982,43 @@ video {
   border:1px solid rgba(255,59,59,.55);
 }
 /* ===== /VIP BADGE ===== */
+
+/* ===== VIP CHAT BUBBLE ===== */
+.chat-bubble{
+  position: relative;
+}
+
+/* VIP */
+.chat-vip{
+  border:1px solid rgba(95,168,255,.6);
+  box-shadow:0 0 12px rgba(95,168,255,.5);
+}
+
+/* VIP+ */
+.chat-vipplus{
+  border:1px solid rgba(199,125,255,.65);
+  box-shadow:0 0 14px rgba(199,125,255,.6);
+}
+
+/* KING */
+.chat-king{
+  border:1px solid rgba(255,211,110,.75);
+  box-shadow:
+    0 0 18px rgba(255,211,110,.8),
+    inset 0 0 6px rgba(255,255,255,.25);
+}
+
+/* LEGEND */
+.chat-legend{
+  border:1px solid rgba(255,60,60,.85);
+  box-shadow:
+    0 0 22px rgba(255,60,60,.9),
+    inset 0 0 8px rgba(255,255,255,.35);
+  animation: legendPulse 1.6s ease-in-out infinite;
+}
+
+@keyframes legendPulse{
+  0%,100%{ box-shadow:0 0 16px rgba(255,60,60,.7); }
+  50%{ box-shadow:0 0 26px rgba(255,60,60,1); }
+}
+/* ===== /VIP CHAT BUBBLE ===== */

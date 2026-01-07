@@ -1793,7 +1793,10 @@ function pushOverlay(msg){
 
 
   const el = document.createElement("div");
-  el.className = "chat-bubble chat-" + role;
+  el.className =
+  "chat-bubble chat-" + role +
+  (vip ? ` chat-${vip.key}` : "");
+
   el.dataset.socket = msg.socketId;
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
  el.innerHTML = `
@@ -1802,7 +1805,12 @@ function pushOverlay(msg){
   </div>
   <div class="chat-body">
     <div class="chat-head">
-      <span class="chat-name">${name}</span>
+      
+      <span class="chat-name"
+      style="${vip ? `color:${vip.color}` : ""}">
+      ${name}
+      </span>
+
       <span class="chat-level">
       ⭐ Lv ${level}
        ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
