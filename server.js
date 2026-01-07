@@ -546,6 +546,10 @@ saveLiveState(state);
 
     const room = getRoom(roomId);
 
+// 👑 GỬI PROFILE HOST CHO VIEWER VỪA JOIN
+if (role === "viewer" && room.hostProfile) {
+  socket.emit("host-profile-sync", room.hostProfile);
+}
 
 
 
