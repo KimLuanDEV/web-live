@@ -5022,3 +5022,67 @@ video {
   50%{ box-shadow:0 0 26px rgba(255,60,60,1); }
 }
 /* ===== /VIP CHAT BUBBLE ===== */
+
+
+/* ===== VIP CHAT SPOTLIGHT ===== */
+.vip-spotlight-overlay{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  animation: vipSpotIn .9s ease-out forwards;
+}
+
+@keyframes vipSpotIn{
+  0%{ opacity:0 }
+  15%{ opacity:1 }
+  100%{ opacity:0 }
+}
+
+.vip-spotlight{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:140vmax;
+  height:140vmax;
+  border-radius:50%;
+  filter: blur(18px);
+}
+
+/* Color variants */
+.vip-spot-vip{
+  background: radial-gradient(circle,
+    rgba(95,168,255,.35) 0%,
+    rgba(95,168,255,.18) 30%,
+    rgba(0,0,0,0) 60%);
+}
+
+.vip-spot-vipplus{
+  background: radial-gradient(circle,
+    rgba(199,125,255,.35) 0%,
+    rgba(199,125,255,.18) 30%,
+    rgba(0,0,0,0) 60%);
+}
+
+.vip-spot-king{
+  background: radial-gradient(circle,
+    rgba(255,211,110,.42) 0%,
+    rgba(255,211,110,.22) 28%,
+    rgba(0,0,0,0) 58%);
+}
+
+.vip-spot-legend{
+  background: radial-gradient(circle,
+    rgba(255,60,60,.45) 0%,
+    rgba(255,60,60,.22) 28%,
+    rgba(0,0,0,0) 58%);
+  animation: legendPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes legendPulse{
+  0%,100%{ filter: blur(18px); }
+  50%{ filter: blur(26px); }
+}
+/* ===== /VIP CHAT SPOTLIGHT ===== */
