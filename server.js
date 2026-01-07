@@ -288,10 +288,13 @@ socket.on("viewer-join", ({ roomId, profile }) => {
   room.viewers.add(socket.id);
 
   room.viewerProfiles.set(socket.id, {
+  socketId: socket.id,     // 👈 rất quan trọng
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
-  coins: Number(profile?.coins) || 0
+  coins: Number(profile?.coins) || 0,
+  coinSent: 0,
+  coinReceived: 0
 });
 
  
@@ -745,6 +748,20 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
+// donor = socket gửi quà
+const donorProfile = room.viewerProfiles.get(socket.id);
+if (donorProfile) {
+  donorProfile.coinSent += totalCoin;
+}
+
+// host nhận
+if (room.hostProfile) {
+  room.hostProfile.coinReceived =
+    (room.hostProfile.coinReceived || 0) + totalCoin;
+}
+
+
+
   // donor name
   const donor = safeName(name || socket.data.userName || "Ẩn danh");
 
@@ -761,6 +778,10 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     totalCoins: room.giftTotal,
     ts: Date.now(),
   };
+
+  io.to(roomId).emit("viewer-list", {
+  viewers: Array.from(room.viewerProfiles.values())
+});
 
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });

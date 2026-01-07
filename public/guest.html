@@ -887,11 +887,10 @@ function renderViewerPopup(){
 }
 
 function openMiniProfile(v){
-  if (!miniProfile) return;
+   if (!miniProfile) return;
 
-   const me = getUserProfile(); // 🔥 lấy stats chuẩn
-  const sent = me.coinSent || 0;
-  const received = me.coinReceived || 0;
+  const sent = v.coinSent || 0;
+  const received = v.coinReceived || 0;
 
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
