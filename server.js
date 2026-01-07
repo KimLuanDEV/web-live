@@ -831,13 +831,13 @@ io.to(roomId).emit("viewer-list", {
 
 
 
-  for (const [uid, v] of room.viewerProfiles.entries()) {
+   for (const [roomId, room] of rooms.entries()) {
 
-
+for (const [uid, v] of room.viewerProfiles.entries()) {
   if (v.socketId === socket.id) {
     v.socketId = null; // ⛔ KHÔNG XOÁ PROFILE
   }
-
+}
 
 io.to(roomId).emit("viewer-list", {
   viewers: Array.from(room.viewerProfiles.values())
