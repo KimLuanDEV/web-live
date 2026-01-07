@@ -887,7 +887,7 @@ function renderViewerPopup(){
 }
 
 function openMiniProfile(v){
-  if (!miniProfile || !v) return;
+  if (!miniProfile) return;
 
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
@@ -896,20 +896,19 @@ function openMiniProfile(v){
     </div>
 
     <div class="mini-profile-meta">
-      <div class="mini-profile-chip">
-        ⭐ Lv ${v.level || 1}
-      </div>
-
-      <div class="mini-profile-chip gold">
-        🎁 Đã tặng<br><b>${v.coinSent || 0}</b>
-      </div>
-
-      <div class="mini-profile-chip blue">
-        💎 Đã nhận<br><b>${v.coinReceived || 0}</b>
-      </div>
+      ${(() => {
+        const vip = getVipBadge(v.level || 1);
+        return `
+          <div class="mini-profile-chip">
+            ⭐ Lv ${v.level || 1}
+            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+          </div>
+        `;
+      })()}
+      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
     </div>
   `;
-  
+
   // 🔥 LẤY TOẠ ĐỘ VIDEO
   const video = document.querySelector(".video-card");
   if (video){

@@ -5262,27 +5262,3 @@ video {
 }
 
 
-.mini-profile-chip{
-  padding:10px 12px;
-  border-radius:12px;
-  background:rgba(255,255,255,.08);
-  font-size:13px;
-  text-align:center;
-  min-width:90px;
-}
-
-.mini-profile-chip b{
-  display:block;
-  font-size:16px;
-  margin-top:2px;
-}
-
-.mini-profile-chip.gold{
-  background:linear-gradient(135deg,#ffcc66,#ff9f1c);
-  color:#1b1200;
-}
-
-.mini-profile-chip.blue{
-  background:linear-gradient(135deg,#6ecbff,#3a86ff);
-  color:#081420;
-}

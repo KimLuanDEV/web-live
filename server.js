@@ -291,10 +291,7 @@ socket.on("viewer-join", ({ roomId, profile }) => {
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
-  coins: Number(profile?.coins) || 0,
-   // ✅ THÊM
-  coinSent: Number(profile?.coinSent) || 0,
-  coinReceived: Number(profile?.coinReceived) || 0
+  coins: Number(profile?.coins) || 0
 });
 
  
@@ -534,12 +531,7 @@ if (role !== "broadcaster") {
     name: safeName(profile?.name || socket.data.userName || "Guest"),
     avatar: profile?.avatar ||
       "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    level: Number(profile?.level) || 1,
-     coins: Number(profile?.coins) || 0,
-
-  // 🔥 LẤY TỪ PROFILE GỐC
-  coinSent: Number(profile?.coinSent) || 0,
-  coinReceived: Number(profile?.coinReceived) || 0
+    level: Number(profile?.level) || 1
   });
 }
 
@@ -753,26 +745,6 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
-
-  // ===== UPDATE COIN STATS PER VIEWER =====
-const roomProfileSender = room.viewerProfiles.get(socket.id);
-if (roomProfileSender) {
-  roomProfileSender.coinSent =
-    (roomProfileSender.coinSent || 0) + cost;
-}
-
-// HOST nhận quà
-if (room.broadcasterId) {
-  const hostProfile = room.viewerProfiles.get(room.broadcasterId);
-  if (hostProfile) {
-    hostProfile.coinReceived =
-      (hostProfile.coinReceived || 0) + cost;
-  }
-}
-// ===== /UPDATE COIN STATS =====
-
-
-
   // donor name
   const donor = safeName(name || socket.data.userName || "Ẩn danh");
 
@@ -792,12 +764,6 @@ if (room.broadcasterId) {
 
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
-
-  io.to(roomId).emit("viewer-list", {
-  viewers: Array.from(room.viewerProfiles.values())
-});
-
-
 });
 /* ===== /GIFT ENGINE ===== */
 // ===== GUEST CO-HOST FLOW =====
