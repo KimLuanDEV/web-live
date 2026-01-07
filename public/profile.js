@@ -8,6 +8,7 @@ const coinVal = document.getElementById("coinVal");
 const levelVal = document.getElementById("levelVal");
 const expText = document.getElementById("expText");
 const expFill = document.getElementById("expFill");
+const vipBadgeBox = document.getElementById("vipBadgeBox");
 
 const defaultProfile = {
   name: "User",
@@ -41,6 +42,19 @@ function loadProfile(){
   if (expFill) {
   const percent = Math.min(100, (exp / need) * 100);
   expFill.style.width = percent + "%";
+
+  // 🎖 VIP BADGE
+if (vipBadgeBox){
+  vipBadgeBox.innerHTML = "";
+  const badge = getVipBadge(p.level || 1);
+  if (badge){
+    vipBadgeBox.innerHTML = `
+      <span class="vip-badge vip-${badge.key}">
+        ${badge.text}
+      </span>
+    `;
+  }
+}
   }
 }
 

@@ -790,6 +790,24 @@ function addExpFromDonate(coin){
 }
 
 
+function getVipBadge(level){
+  level = Number(level) || 1;
+
+  if (level >= 100) {
+    return { key:"legend", text:"🔥 LEGEND", color:"#ff3b3b" };
+  }
+  if (level >= 50) {
+    return { key:"king", text:"👑 KING", color:"#ffd36e" };
+  }
+  if (level >= 20) {
+    return { key:"vipplus", text:"💎 VIP+", color:"#c77dff" };
+  }
+  if (level >= 10) {
+    return { key:"vip", text:"🟦 VIP", color:"#5fa8ff" };
+  }
+  return null;
+}
+
 function showLevelUpEffect(newLevel){
   try{
     const overlay = document.createElement("div");
@@ -929,7 +947,15 @@ function openMiniProfile(v){
       <div class="mini-profile-name">${v.name}</div>
     </div>
     <div class="mini-profile-meta">
-      <div class="mini-profile-chip">⭐ Lv ${v.level || 1}</div>
+      ${(() => {
+  const vip = getVipBadge(v.level || 1);
+  return `
+    <div class="mini-profile-chip">
+      ⭐ Lv ${v.level || 1}
+      ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+    </div>
+  `;
+})()}
       <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
     </div>
   `;
@@ -1758,8 +1784,9 @@ function pushOverlay(msg){
   const role  = String(msg.role || "viewer");
   const name  = msg.name || "User";
   const level = msg.level || 1;
+  const vip = getVipBadge(level);
 
-const avatar =
+  const avatar =
   (typeof msg.avatar === "string" && msg.avatar.trim()) ||
   "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
     encodeURIComponent(name);
@@ -1776,7 +1803,10 @@ const avatar =
   <div class="chat-body">
     <div class="chat-head">
       <span class="chat-name">${name}</span>
-      <span class="chat-level">⭐ Lv ${level}</span>
+      <span class="chat-level">
+      ⭐ Lv ${level}
+       ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+      </span>
     </div>
     <div class="chat-text">${msg.text}</div>
   </div>
@@ -2044,47 +2074,6 @@ gcmOk.addEventListener("click", ()=>{
 
   closeGiftConfirm();
 });
-
-function addExpFromDonate(coin){
-  const KEY = "user_profile";
-  let p = {};
-
-  try{
-    p = JSON.parse(localStorage.getItem(KEY)) || {};
-  }catch{}
-
-  p.exp = p.exp || 0;
-  p.level = p.level || 1;
-
-  // 🎯 100 coin = 1 EXP
-  const gainedExp = Math.floor(coin / 100);
-  if (gainedExp <= 0) return;
-
-  p.exp += gainedExp;
-
-  // 🔁 CHECK LEVEL UP
-  let need;
-  while (true) {
-    need = p.level * 100;
-    if (p.exp >= need) {
-      p.exp -= need;
-      p.level += 1;
-
-      // 🔔 FEEDBACK NHẸ
-      try{
-        const toast = document.createElement("div");
-        toast.className = "gift-toast";
-        toast.textContent = `⭐ Level Up! → Lv ${p.level}`;
-        document.body.appendChild(toast);
-        setTimeout(()=>toast.classList.add("hide"), 1200);
-        setTimeout(()=>toast.remove(), 1800);
-      }catch{}
-    } else break;
-  }
-
-  localStorage.setItem(KEY, JSON.stringify(p));
-}
-
 
 
 
