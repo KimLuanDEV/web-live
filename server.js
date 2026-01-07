@@ -259,6 +259,8 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 
   socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
+  if (!roomId) return;
+  
   const room = getRoom(roomId);
   if (!room) return;
 
@@ -268,7 +270,13 @@ socket.on("host-profile-update", ({ roomId, level }) => {
     return;
   }
 
-  const profile = room.viewerProfiles.get(socket.id);
+  // 🔑 LẤY PROFILE VIEWER
+  const profile = room.viewerProfiles.get(
+    [...room.viewerProfiles.keys()].find(
+      uid => room.viewerProfiles.get(uid).socketId === socket.id
+    )
+  );
+
   if (!profile) return;
 
   if (name) profile.name = safeName(name);
