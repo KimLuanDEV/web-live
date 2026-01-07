@@ -4819,3 +4819,49 @@ video {
   background: rgba(95,168,255,.14);
   box-shadow: 0 0 22px rgba(95,168,255,.22);
 }
+
+
+/* ===== EXP BAR ===== */
+.exp-card{
+  margin-top: 14px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+  border: 1px solid rgba(255,215,120,.35);
+  box-shadow: 0 0 28px rgba(255,200,90,.18);
+}
+
+.exp-head{
+  display: flex;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.exp-bar{
+  position: relative;
+  height: 14px;
+  border-radius: 10px;
+  background: rgba(255,255,255,.12);
+  overflow: hidden;
+}
+
+.exp-bar__fill{
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(
+    90deg,
+    #ffd36e,
+    #ff9f43,
+    #ff6f00
+  );
+  box-shadow: 0 0 18px rgba(255,170,50,.9);
+  transition: width .45s ease;
+}
+
+.exp-hint{
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: .75;
+}
+/* ===== /EXP BAR ===== */
