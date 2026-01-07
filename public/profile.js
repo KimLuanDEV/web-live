@@ -21,6 +21,15 @@ const defaultProfile = {
   coinReceived: 0,   // 💎 đã nhận
 };
 
+
+function getVipBadge(level){
+  if (level >= 50) return { key: "diamond", text: "💎 VIP DIAMOND" };
+  if (level >= 30) return { key: "gold", text: "👑 VIP GOLD" };
+  if (level >= 10) return { key: "silver", text: "⭐ VIP SILVER" };
+  return null;
+}
+
+
 function loadProfile(){
   const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
 
