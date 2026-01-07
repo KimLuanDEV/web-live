@@ -851,6 +851,10 @@ function getUserProfile(){
   }
 }
 
+const MY_PROFILE = getUserProfile();
+const MY_NAME = MY_PROFILE?.name;
+
+
 const profile = getUserProfile();
 
 
@@ -2844,6 +2848,16 @@ socket.on("viewer-list", ({ viewers }) => {
       renderViewerPopup();
     };
   }
+
+  // 🔁 SYNC NGƯỢC KIM CƯƠNG VỀ localStorage PROFILE
+  if (MY_NAME) {
+    const me = __viewerCache.find(v => v.name === MY_NAME);
+    if (me) {
+      syncLocalProfileFromRoom(me);
+    }
+  }
+
+
 });
 
 function renderViewerPopup(){
@@ -2960,6 +2974,30 @@ miniProfile?.addEventListener("click", e => e.stopPropagation());
 
 
 
+function syncLocalProfileFromRoom(roomProfile){
+  const KEY = "user_profile";
+  let old;
+
+  try{
+    old = JSON.parse(localStorage.getItem(KEY));
+  }catch{
+    return;
+  }
+  if (!old) return;
+
+  const updated = {
+    ...old,
+
+    // 💎 ĐỒNG BỘ TỪ SERVER (NGUỒN CHUẨN)
+    diamondGiven: Number(roomProfile.diamondGiven || 0),
+    diamondReceived: Number(roomProfile.diamondReceived || 0),
+
+    // (nếu muốn sync thêm level / exp)
+    level: Number(roomProfile.level || old.level),
+  };
+
+  localStorage.setItem(KEY, JSON.stringify(updated));
+}
 
 
 
