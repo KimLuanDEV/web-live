@@ -1535,15 +1535,18 @@ window.addEventListener("online", async () => {
 
 const hostProfile = getHostProfileUnified();
 
+
 socket.emit("join-room", {
   roomId,
   role: "broadcaster",
   profile: {
-    name: hostProfile.name,
-    avatar: hostProfile.avatar,
-    level: hostProfile.level
+    name: profile.name,
+    avatar: profile.avatar, // ✅ BẮT BUỘC
+    level: profile.level,
+    coins: profile.coins
   }
 });
+
 
 
     // Peer asks HOST to ICE-restart this connection (HOST is offerer for viewers)
