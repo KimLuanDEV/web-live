@@ -748,6 +748,26 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
+
+  // ===== UPDATE COIN STATS PER VIEWER =====
+const roomProfileSender = room.viewerProfiles.get(socket.id);
+if (roomProfileSender) {
+  roomProfileSender.coinSent =
+    (roomProfileSender.coinSent || 0) + cost;
+}
+
+// HOST nhận quà
+if (room.broadcasterId) {
+  const hostProfile = room.viewerProfiles.get(room.broadcasterId);
+  if (hostProfile) {
+    hostProfile.coinReceived =
+      (hostProfile.coinReceived || 0) + cost;
+  }
+}
+// ===== /UPDATE COIN STATS =====
+
+
+
   // donor name
   const donor = safeName(name || socket.data.userName || "Ẩn danh");
 
@@ -767,6 +787,12 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
 
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
+
+  io.to(roomId).emit("viewer-list", {
+  viewers: Array.from(room.viewerProfiles.values())
+});
+
+
 });
 /* ===== /GIFT ENGINE ===== */
 // ===== GUEST CO-HOST FLOW =====
