@@ -6,10 +6,11 @@ const coinVal = document.getElementById("coinVal");
 const levelVal = document.getElementById("levelVal");
 
 const defaultProfile = {
-  name: "Guest",
+  name: "User",
   avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
   coins: 200000,
   level: 1,
+  exp: 0,          // ✅ THÊM
 };
 
 function loadProfile(){
