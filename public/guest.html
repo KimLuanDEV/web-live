@@ -889,7 +889,7 @@ function renderViewerPopup(){
 function openMiniProfile(v){
   if (!miniProfile) return;
 
-  miniProfile.innerHTML = `
+miniProfile.innerHTML = `
     <div class="mini-profile-header">
       <img src="${v.avatar}">
       <div class="mini-profile-name">${v.name}</div>
@@ -905,7 +905,16 @@ function openMiniProfile(v){
           </div>
         `;
       })()}
-      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
+      <div class="mini-profile-chip">💎 Số dư ${v.coins || 0}</div>
+
+      <div class="mini-profile-row gold">
+        💎 Đã tặng: <b>${v.coinSent || 0}</b>
+      </div>
+
+      <div class="mini-profile-row blue">
+        💎 Đã nhận: <b>${v.coinReceived || 0}</b>
+      </div>
+
     </div>
   `;
 

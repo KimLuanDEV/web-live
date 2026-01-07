@@ -5262,3 +5262,22 @@ video {
 }
 
 
+.mini-profile-meta{
+  padding: 10px 14px;
+}
+
+.mini-profile-row{
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  font-size: 14px;
+}
+
+.mini-profile-row.gold{
+  color: #ffd700;
+}
+
+.mini-profile-row.blue{
+  color: #6ecbff;
+}
+
