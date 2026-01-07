@@ -45,18 +45,22 @@ function loadProfile(){
 }
 
 document.getElementById("btnSave").onclick = () => {
-  const name = nameInput.value.trim() || "Guest";
+  const old = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+
   const profile = {
-    name,
-    avatar: `https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg`,
+    name: nameInput.value.trim() || "Guest",
+    avatar: avatarPreview.src,
     coins: Number(coinVal.textContent) || 0,
     level: Number(levelVal.textContent) || 1,
+    exp: old.exp || 0,              // ⭐ BẮT BUỘC
     coinSent: old.coinSent || 0,
     coinReceived: old.coinReceived || 0,
   };
+
   localStorage.setItem(KEY, JSON.stringify(profile));
   alert("✅ Đã lưu hồ sơ!");
 };
+
 
 loadProfile();
 
@@ -84,7 +88,8 @@ avatarInput.onchange = async () => {
   avatarPreview.src = data.url;
   localStorage.setItem("userAvatar", data.url);
 
-  // 🔥 CẬP NHẬT REALTIME
+ if (window.socket) {
   socket.emit("profile-update", { avatar: data.url });
+ }
 };
 
