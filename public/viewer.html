@@ -808,6 +808,24 @@ function getVipBadge(level){
   return null;
 }
 
+function showVipChatSpotlight(vipKey){
+  try{
+    if (!vipKey) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "vip-spotlight-overlay";
+
+    const spot = document.createElement("div");
+    spot.className = "vip-spotlight vip-spot-" + vipKey;
+
+    overlay.appendChild(spot);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 900);
+  }catch{}
+}
+
+
 function showLevelUpEffect(newLevel){
   try{
     const overlay = document.createElement("div");
@@ -1823,7 +1841,11 @@ function pushOverlay(msg){
 
   chatOverlay.appendChild(el);
 
- 
+ // 💡 VIP CHAT SPOTLIGHT
+if (vip) {
+  showVipChatSpotlight(vip.key);
+}
+
   
 
   // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
