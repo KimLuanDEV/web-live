@@ -99,7 +99,7 @@ avatarInput.onchange = async () => {
   if (!file) return;
 
   // ⚠️ Giới hạn size để tránh localStorage quá lớn
-  if (file.size > 300 * 1024) {
+  if (file.size > 1250 * 1250) {
     alert("❌ Ảnh quá lớn (tối đa 300KB)");
     return;
   }
