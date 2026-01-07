@@ -1,3 +1,5 @@
+const socket = io();
+
 const KEY = "user_profile";
 
 const nameInput = document.getElementById("nameInput");
@@ -100,7 +102,9 @@ avatarInput.onchange = async () => {
   if (!data.url) return alert("Upload thất bại");
 
   avatarPreview.src = data.url;
-  localStorage.setItem("userAvatar", data.url);
+ const p = JSON.parse(localStorage.getItem(KEY)) || {};
+p.avatar = data.url;
+localStorage.setItem(KEY, JSON.stringify(p));
 
   // 🔥 CẬP NHẬT REALTIME
   socket.emit("profile-update", { avatar: data.url });
