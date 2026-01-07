@@ -257,33 +257,24 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 });
 
 
-socket.on("profile-update", ({ name, avatar, level }) => {
+  socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
   const room = getRoom(roomId);
   if (!room) return;
 
-  // ✅ tìm profile đúng bằng socketId
-  let profile = null;
-  for (const p of room.viewerProfiles.values()) {
-    if (p.socketId === socket.id) {
-      profile = p;
-      break;
-    }
-  }
+  const profile = room.viewerProfiles.get(socket.id);
   if (!profile) return;
 
   if (name) profile.name = safeName(name);
   if (avatar) profile.avatar = avatar;
   if (level) profile.level = Number(level) || profile.level;
 
-  // 🔥 broadcast lại danh sách viewer
   io.to(roomId).emit("viewer-list", {
     viewers: Array.from(room.viewerProfiles.values())
   });
 });
-
 
 
 
