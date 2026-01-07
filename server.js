@@ -296,8 +296,9 @@ socket.on("viewer-join", ({ roomId, profile }) => {
   // 🔥 THỐNG KÊ REALTIME (KHỞI TẠO)
   coinGiven: 0,
   coinReceived: 0,
-  diamondGiven: 0,
-  diamondReceived: 0
+   // 🔥 LẤY TỪ PROFILE
+  diamondGiven: Number(profile?.diamondGiven) || 0,
+  diamondReceived: Number(profile?.diamondReceived) || 0,
 });
 
 
@@ -772,14 +773,14 @@ for (const profile of room.viewerProfiles.values()) {
 
   // 👤 NGƯỜI TẶNG
   if (profile.name === donor) {
-    profile.coinGiven += cost;
+     profile.diamondGiven += cost;
   }
 }
 
 // 👑 HOST NHẬN (coin nhận)
 if (room.hostProfile) {
-  room.hostProfile.coinReceived =
-    (room.hostProfile.coinReceived || 0) + cost;
+   room.hostProfile.diamondReceived =
+    (room.hostProfile.diamondReceived || 0) + cost;
 }
 
 // 🔄 ĐẨY REALTIME CHO CLIENT
