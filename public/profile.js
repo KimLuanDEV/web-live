@@ -28,9 +28,8 @@ function loadProfile(){
   coinVal.textContent = p.coins;
   levelVal.textContent = p.level;
 
-   // 🎁 Donate stats
-  if (coinSentVal) coinSentVal.textContent = p.coinSent || 0;
-  if (coinReceivedVal) coinReceivedVal.textContent = p.coinReceived || 0;
+  coinSentVal.textContent = p.coinSent || 0;
+  coinReceivedVal.textContent = p.coinReceived || 0;
 
   // ⭐ EXP BAR
   const level = p.level || 1;
