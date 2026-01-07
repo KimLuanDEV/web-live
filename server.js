@@ -260,7 +260,7 @@ socket.on("host-profile-update", ({ roomId, level }) => {
   socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
   if (!roomId) return;
-  
+
   const room = getRoom(roomId);
   if (!room) return;
 
@@ -643,34 +643,39 @@ if (room.liveStartTs) {
 
 });
 
- socket.on("chat", ({ roomId, name, text }) => {
+ socket.on("chat", ({ roomId, text }) => {
   if (!roomId || !text) return;
 
   const room = getRoom(roomId);
   if (!room) return;
 
-  // xác định role
   const r = String(socket.data.role || "").toLowerCase();
   const role = (r === "broadcaster") ? "host"
             : (r === "guest") ? "guest"
             : "viewer";
 
-  // 🔥 LẤY PROFILE THẬT TỪ SERVER
   let profile = null;
 
-  if (role === "viewer") {
-    profile = room.viewerProfiles.get(socket.id);
-  } else if (role === "host") {
+  // 👑 HOST
+  if (role === "host") {
     profile = room.hostProfile;
-  } else if (role === "guest") {
-    profile = room.viewerProfiles.get(socket.id);
+  }
+
+  // 👀 VIEWER / GUEST → TÌM THEO socketId
+  if (role !== "host") {
+    for (const p of room.viewerProfiles.values()) {
+      if (p.socketId === socket.id) {
+        profile = p;
+        break;
+      }
+    }
   }
 
   const msg = {
     role,
-    name: profile?.name || (name || "Ẩn danh").slice(0, 20),
+    name: profile?.name || "Ẩn danh",
     avatar: profile?.avatar,
-    level: Number(profile?.level) || 1,   // ✅ LEVEL CHUẨN
+    level: Number(profile?.level) || 1,
     text: String(text).slice(0, 300),
     ts: Date.now(),
   };
