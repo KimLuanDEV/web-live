@@ -2310,20 +2310,19 @@ if (vip) {
       const text = chatText.value.trim();
       if (!text) return;
 
-      const profile = getUserProfile();
+    const profile = getUserProfile();
 
-socket.emit("chat", {
-  roomId,
-  name: profile?.name || name,
-  avatar: profile?.avatar,
-  level: profile?.level,
-  text,
-  role: "host" // hoặc guest / host
-});
+  socket.emit("chat", {
+    roomId,
+    name: profile.name || "Host",
+    avatar: profile.avatar,
+    level: profile.level || 1,
+    text: chatText.value.trim(),
+    role: "host"
+  });
 
-
-      chatText.value = "";
-    };
+  chatText.value = "";
+};
 
 // ===== HOST AV TOGGLE =====
 const hostMicBtn = document.getElementById("hostMicBtn");
@@ -2682,11 +2681,13 @@ socket.on("live-ended-stats", (stats) => {
 
 
   function getUserProfile(){
-  const p = localStorage.getItem("user_profile");
-  if (!p) return null;
-  try { return JSON.parse(p); }
-  catch { return null; }
+  try{
+    return JSON.parse(localStorage.getItem("user_profile")) || {};
+  }catch{
+    return {};
+  }
 }
+
 
 
 const profile = getUserProfile();
@@ -2722,6 +2723,13 @@ let __viewerCache = [];
 socket.on("viewer-list", ({ viewers }) => {
   __viewerCache = viewers || [];
 
+
+   // nếu đang mở panel viewer / mini profile thì re-render
+  if (typeof renderViewerList === "function") {
+    renderViewerList(__viewerCache);
+  }
+
+  
   const maxShow = 3;
   const showList = __viewerCache.slice(0, maxShow);
   const remain = __viewerCache.length - maxShow;
