@@ -885,18 +885,11 @@ function showLevelUpEffect(newLevel){
 
 
 
-const profile = getUserProfile();
-
 socket.emit("viewer-join", {
   roomId,
-  profile: {
-    name: profile.name || "Viewer",
-    avatar: profile.avatar,
-    level: profile.level || 1,
-    coins: profile.coins || 0
-  }
+  name: localStorage.getItem("profileName") || "Viewer",
+  avatar: localStorage.getItem("userAvatar")
 });
-
 
 
 const viewerAvatarBox = document.getElementById("viewerAvatars");
@@ -909,11 +902,6 @@ let __viewerCache = [];
 
 socket.on("viewer-list", ({ viewers }) => {
   __viewerCache = viewers || [];
-
-   // nếu đang mở panel viewer / mini profile thì re-render
-  if (typeof renderViewerList === "function") {
-    renderViewerList(__viewerCache);
-  }
 
   const maxShow = 3;
   const showList = __viewerCache.slice(0, maxShow);
@@ -1944,19 +1932,22 @@ if (vip) {
       const text = chatText.value.trim();
       if (!text) return;
 
-   const profile = getUserProfile();
+      const profile = getUserProfile();
 
-  socket.emit("chat", {
-    roomId,
-    name: profile.name || "Viewer",
-    avatar: profile.avatar,
-    level: profile.level || 1,
-    text: chatText.value.trim(),
-    role: "viewer"
-  });
+socket.emit("chat", {
+  roomId,
+  name: profile?.name || name,
+  avatar: profile?.avatar,
+  level: profile?.level,
+  text,
+  role: "viewer" // hoặc guest / host
+});
 
-  chatText.value = "";
-};
+
+
+
+      chatText.value = "";
+    };
 
     const viewerCountViewer = document.getElementById("viewerCountViewer");
 
@@ -2580,15 +2571,13 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
 
 
 function getUserProfile(){
-  try{
-    return JSON.parse(localStorage.getItem("user_profile")) || {};
-  }catch{
-    return {};
-  }
+  const p = localStorage.getItem("user_profile");
+  if (!p) return null;
+  try { return JSON.parse(p); }
+  catch { return null; }
 }
 
-
-
+const profile = getUserProfile();
 if (profile){
   const chatNameInput = document.getElementById("chatName");
   if (chatNameInput) {
