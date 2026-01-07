@@ -993,11 +993,12 @@ function openMiniProfile(v){
   const level = Number(v.level || 1);
   const vip = getVipBadge(level);
 
-  // các field mở rộng (nếu server có gửi thì tự hiện; không có thì = 0)
-  const coinIn  = Number(v.coinsReceived || v.coinReceived || 0);
-  const coinOut = Number(v.coinsGiven    || v.coinGiven    || 0);
-  const diaIn   = Number(v.diamondsReceived || v.diamondReceived || 0);
-  const diaOut  = Number(v.diamondsGiven    || v.diamondGiven    || 0);
+  // 🔥 SỐ REALTIME TỪ SERVER
+const coinIn  = Number(v.coinReceived || 0);
+const coinOut = Number(v.coinGiven || 0);
+const diaIn   = Number(v.diamondReceived || 0);
+const diaOut  = Number(v.diamondGiven || 0);
+
 
   miniProfile.innerHTML = `
     <div class="mp">
