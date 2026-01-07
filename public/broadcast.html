@@ -112,7 +112,46 @@
 <div class="viewer-list-popup hidden" id="viewerListPopup"></div>
 
 <!-- 👤 MINI PROFILE -->
-<div class="mini-profile hidden" id="miniProfile"></div>
+<div class="mini-profile hidden" id="miniProfile">
+  <div class="mp-card">
+    <button class="mp-close" id="mpClose">✕</button>
+
+    <div class="mp-avatar-wrap">
+      <img id="mpAvatar" />
+      <span class="mp-level" id="mpLevel">Lv.1</span>
+    </div>
+
+    <div class="mp-name" id="mpName">Username</div>
+    <div class="mp-vip" id="mpVip">VIP</div>
+
+    <!-- EXP -->
+    <div class="mp-exp">
+      <div class="mp-exp-bar">
+        <div class="mp-exp-fill" id="mpExpFill"></div>
+      </div>
+      <small id="mpExpText">120 / 300 EXP</small>
+    </div>
+
+    <!-- Stats -->
+    <div class="mp-stats">
+      <div class="mp-stat">
+        <span>💎 Đã tặng</span>
+        <b id="mpCoinSent">0</b>
+      </div>
+      <div class="mp-stat">
+        <span>💎 Đã nhận</span>
+        <b id="mpCoinReceived">0</b>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="mp-actions">
+      <button class="mp-btn mp-btn--gift">🎁 Tặng quà</button>
+      <button class="mp-btn mp-btn--follow">⭐ Theo dõi</button>
+    </div>
+  </div>
+</div>
+
 
 <div class="chat-overlay" id="chatOverlay"></div>
 
@@ -2828,29 +2867,73 @@ function renderViewerPopup(){
 function openMiniProfile(v){
   if (!miniProfile) return;
 
-  miniProfile.innerHTML = `
-    <div class="mini-profile-header">
-      <img src="${v.avatar}">
-      <div class="mini-profile-name">${v.name}</div>
-    </div>
-    <div class="mini-profile-meta">
-      ${(() => {
-  const vip = getVipBadge(v.level || 1);
-  return `
-    <div class="mini-profile-chip">
-      ⭐ Lv ${v.level || 1}
-      ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
-    </div>
-  `;
-})()}
+  const level = Number(v.level || 1);
+  const vip = getVipBadge(level);
 
-      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
+  // các field mở rộng (nếu server có gửi thì tự hiện; không có thì = 0)
+  const coinIn  = Number(v.coinsReceived || v.coinReceived || 0);
+  const coinOut = Number(v.coinsGiven    || v.coinGiven    || 0);
+  const diaIn   = Number(v.diamondsReceived || v.diamondReceived || 0);
+  const diaOut  = Number(v.diamondsGiven    || v.diamondGiven    || 0);
+
+  miniProfile.innerHTML = `
+    <div class="mp">
+      <button class="mp__close" type="button" aria-label="Đóng">✕</button>
+
+      <div class="mp__top">
+        <div class="mp__avatar">
+          <img src="${v.avatar}" alt="">
+        </div>
+
+        <div class="mp__who">
+          <div class="mp__name">${v.name || "Ẩn danh"}</div>
+
+          <div class="mp__badges">
+            <span class="mp__lvl">Lv ${level}</span>
+            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+          </div>
+        </div>
+      </div>
+
+      <div class="mp__grid">
+        <div class="mp__stat">
+          <div class="mp__label">💰 Coin nhận</div>
+          <div class="mp__value">${coinIn}</div>
+        </div>
+        <div class="mp__stat">
+          <div class="mp__label">💰 Coin tặng</div>
+          <div class="mp__value">${coinOut}</div>
+        </div>
+        <div class="mp__stat">
+          <div class="mp__label">💎 Kim cương nhận</div>
+          <div class="mp__value">${diaIn}</div>
+        </div>
+        <div class="mp__stat">
+          <div class="mp__label">💎 Kim cương tặng</div>
+          <div class="mp__value">${diaOut}</div>
+        </div>
+      </div>
+
+      <div class="mp__footer">
+        <div class="mp__chip">💰 <b>${Number(v.coins || 0)}</b></div>
+        <div class="mp__chip">👁 <b>${v.role || "viewer"}</b></div>
+      </div>
     </div>
   `;
 
   miniProfile.classList.remove("hidden");
-  viewerBackdrop.classList.remove("hidden");
+  viewerBackdrop?.classList.remove("hidden");
+
+  // nút đóng
+  miniProfile.querySelector(".mp__close")?.addEventListener("click", (e) => {
+    e.stopPropagation();
+    closeAllViewerUI();
+  });
 }
+
+
+
+
 
 function toggleViewerPopup(){
   viewerListPopup.classList.toggle("hidden");
