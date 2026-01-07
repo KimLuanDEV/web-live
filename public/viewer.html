@@ -786,13 +786,6 @@ function addExpFromDonate(coin){
 
   } else break;
 }
-
-// sau khi level thay đổi
-socket.emit("profile-update", {
-  level: p.level
-});
-
-
   localStorage.setItem(KEY, JSON.stringify(p));
 }
 
@@ -814,26 +807,6 @@ function getVipBadge(level){
   }
   return null;
 }
-
-
-function showVipChatSpotlight(vipKey){
-  try{
-    if (!vipKey) return;
-
-    const overlay = document.createElement("div");
-    overlay.className = "vip-spotlight-overlay";
-
-    const spot = document.createElement("div");
-    spot.className = "vip-spotlight vip-spot-" + vipKey;
-
-    overlay.appendChild(spot);
-    document.body.appendChild(overlay);
-
-    setTimeout(()=>overlay.remove(), 900);
-  }catch{}
-}
-
-
 
 function showLevelUpEffect(newLevel){
   try{
@@ -1810,9 +1783,9 @@ function pushOverlay(msg){
 
   const role  = String(msg.role || "viewer");
   const name  = msg.name || "User";
-  const cached = __viewerCache.find(v => v.name === msg.name);
-  const level = cached?.level ?? Number(msg.level || 1);
+  const level = msg.level || 1;
   const vip = getVipBadge(level);
+
   const avatar =
   (typeof msg.avatar === "string" && msg.avatar.trim()) ||
   "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
@@ -1832,7 +1805,7 @@ function pushOverlay(msg){
   </div>
   <div class="chat-body">
     <div class="chat-head">
-
+      
       <span class="chat-name"
       style="${vip ? `color:${vip.color}` : ""}">
       ${name}
@@ -1850,11 +1823,7 @@ function pushOverlay(msg){
 
   chatOverlay.appendChild(el);
 
- // 💡 VIP CHAT SPOTLIGHT
-if (vip) {
-  showVipChatSpotlight(vip.key);
-}
-
+ 
   
 
   // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)

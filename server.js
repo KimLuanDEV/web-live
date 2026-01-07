@@ -256,13 +256,11 @@ io.on("connection", (socket) => {
 
   if (name) profile.name = safeName(name);
   if (avatar) profile.avatar = avatar;
-  if (level) profile.level = Number(level) || profile.level;
 
-  io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+  io.to(roomId).emit("viewer-profile-update", {
+    socketId: socket.id,
+    profile
   });
-
- 
 });
 
 
