@@ -72,7 +72,7 @@ document.getElementById("btnSave").onclick = () => {
   const old = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
   const profile = {
     name: nameInput.value.trim() || "Guest",
-    avatar: `https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg`,
+    avatar: old.avatar || defaultProfile.avatar,
     coins: Number(coinVal.textContent) || 0,
     level: Number(levelVal.textContent) || 1,
     exp: old.exp || 0, 
@@ -106,9 +106,15 @@ avatarInput.onchange = async () => {
   const data = await res.json();
   if (!data.url) return alert("Upload thất bại");
 
+  // ✅ update UI
   avatarPreview.src = data.url;
-  localStorage.setItem("userAvatar", data.url);
 
+   // ✅ LƯU VÀO PROFILE CHÍNH
+  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  p.avatar = data.url;
+  localStorage.setItem(KEY, JSON.stringify(p));
+
+   // (optional) realtime update nếu đang ở room
    if (window.socket) {
   socket.emit("profile-update", { avatar: data.url });
    }
