@@ -990,47 +990,47 @@ function renderViewerPopup(){
 function openMiniProfile(v){
   if (!miniProfile) return;
 
-  const vip = getVipBadge(v.level || 1);
-
   miniProfile.innerHTML = `
-    <div class="mini-profile-card">
+    <div class="mini-profile-header">
+      <img src="${v.avatar}">
+      <div class="mini-profile-name">${v.name}</div>
+    </div>
 
-      <!-- HEADER -->
-      <div class="mini-profile-header">
-        <div class="mini-avatar-wrap">
-          <img src="${v.avatar}">
-          <span class="mini-level">Lv ${v.level || 1}</span>
-        </div>
+    <div class="mini-profile-meta">
+      ${(() => {
+        const vip = getVipBadge(v.level || 1);
+        return `
+          <div class="mini-profile-chip">
+            ⭐ Lv ${v.level || 1}
+            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+          </div>
+        `;
+      })()}
 
-        <div class="mini-info">
-          <div class="mini-name">${v.name}</div>
-          ${vip ? `<div class="mini-vip vip-${vip.key}">${vip.text}</div>` : ``}
-        </div>
-      </div>
-
-      <!-- STATS -->
-      <div class="mini-stats">
-        <div class="mini-stat">
-          <span>💰 Coin</span>
-          <b>${v.coins || 0}</b>
-        </div>
-
-        <div class="mini-stat">
-          <span>🎁 Đã tặng</span>
-          <b>${v.coinSent || 0}</b>
-        </div>
-
-        <div class="mini-stat">
-          <span>💎 Đã nhận</span>
-          <b>${v.coinReceived || 0}</b>
-        </div>
-      </div>
-
+      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
     </div>
   `;
 
-  miniProfile.classList.remove("hidden");
+  // ✅ mở backdrop
   viewerBackdrop.classList.remove("hidden");
+
+  // ✅ reset trạng thái để animation luôn chạy
+  miniProfile.classList.remove("hidden", "show");
+
+  // 🔥 trigger slide-up
+  requestAnimationFrame(()=>{
+    miniProfile.classList.add("show");
+  });
+}
+
+
+function closeMiniProfile(){
+  miniProfile.classList.remove("show");
+
+  setTimeout(()=>{
+    miniProfile.classList.add("hidden");
+    viewerBackdrop.classList.add("hidden");
+  }, 280);
 }
 
 
@@ -1047,6 +1047,7 @@ function closeAllViewerUI(){
 
 viewerBackdrop?.addEventListener("click", () => {
   closeAllViewerUI();
+  closeMiniProfile();
 });
 
 
