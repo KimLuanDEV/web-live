@@ -578,7 +578,7 @@ if (room.liveStartTs) {
 
        // ✅ Lưu profile host
     const name = String(profile?.name || "").trim().slice(0, 20);
-    const avatar = String(profile?.avatar || "").trim().slice(0, 300);
+    const avatar = String(profile?.avatar || "").trim();
     room.hostProfile = {
   name: name || "Host",
   avatar: avatar || "",
