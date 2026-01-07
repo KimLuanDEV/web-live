@@ -243,8 +243,21 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
+socket.on("host-profile-update", ({ roomId, level }) => {
+  const room = getRoom(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
 
-  socket.on("profile-update", ({ name, avatar }) => {
+  if (!room.hostProfile) room.hostProfile = {};
+
+  room.hostProfile.level = Number(level) || room.hostProfile.level || 1;
+
+  io.to(roomId).emit("host-profile-sync", room.hostProfile);
+  emitLobbyUpdate();
+});
+
+
+  socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
@@ -256,27 +269,32 @@ io.on("connection", (socket) => {
 
   if (name) profile.name = safeName(name);
   if (avatar) profile.avatar = avatar;
+  if (level) profile.level = Number(level) || profile.level;
 
-  io.to(roomId).emit("viewer-profile-update", {
-    socketId: socket.id,
-    profile
+  io.to(roomId).emit("viewer-list", {
+    viewers: Array.from(room.viewerProfiles.values())
   });
 });
 
 
 
-socket.on("viewer-join", ({ roomId, name, avatar }) => {
+
+socket.on("viewer-join", ({ roomId, profile }) => {
 
   
   const room = getRoom(roomId);
   if (!room) return;
 
   room.viewers.add(socket.id);
-  room.viewerProfiles.set(socket.id, {
-    name: safeName(name),
-    avatar: avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
-  });
 
+  room.viewerProfiles.set(socket.id, {
+  name: safeName(profile?.name),
+  avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+  level: Number(profile?.level) || 1,
+  coins: Number(profile?.coins) || 0
+});
+
+ 
   emitViewerCount(roomId);
 
 
@@ -345,20 +363,7 @@ socket.on("room-check", ({ roomId }, cb) => {
 });
 
 
-socket.on("host-update-profile", ({ roomId, name }) => {
-  const room = rooms.get(roomId);
-  if (!room) return;
-  if (room.broadcasterId !== socket.id) return;
 
-  room.hostProfile = {
-    name: String(name || "Host").slice(0, 20),
-    avatar: "", // ❌ không dùng nữa
-    ts: Date.now(),
-  };
-
-  io.to(roomId).emit("host-profile-update", room.hostProfile);
-  emitLobbyUpdate();
-});
 
 
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
@@ -520,13 +525,16 @@ saveLiveState(state);
     const room = getRoom(roomId);
 
 
-    // 🔥 TẠO PROFILE CHO MỌI ROLE (QUAN TRỌNG)
-room.viewerProfiles.set(socket.id, {
-  name: safeName(profile?.name || socket.data.userName || "Guest"),
-  avatar: profile?.avatar ||
-    "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-  level: profile?.level || 1
-});
+  // ❗ CHỈ TẠO viewerProfiles CHO viewer + guest
+if (role !== "broadcaster") {
+  room.viewerProfiles.set(socket.id, {
+    name: safeName(profile?.name || socket.data.userName || "Guest"),
+    avatar: profile?.avatar ||
+      "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    level: Number(profile?.level) || 1
+  });
+}
+
 
 
 
@@ -557,10 +565,12 @@ if (room.liveStartTs) {
     const name = String(profile?.name || "").trim().slice(0, 20);
     const avatar = String(profile?.avatar || "").trim().slice(0, 300);
     room.hostProfile = {
-      name: name || "Host",
-      avatar: avatar || "",
-      ts: Date.now(),
-    };
+  name: name || "Host",
+  avatar: avatar || "",
+  level: Number(profile?.level) || 1,   // 🔥 FIX QUAN TRỌNG
+  ts: Date.now(),
+};
+
 
       if (old && old !== socket.id) {
         io.to(roomId).emit("broadcaster-changed");
@@ -622,34 +632,41 @@ if (room.liveStartTs) {
 
 });
 
-  socket.on("chat", ({ roomId, name, text }) => {
+ socket.on("chat", ({ roomId, name, text }) => {
   if (!roomId || !text) return;
 
   const room = getRoom(roomId);
   if (!room) return;
 
-  // Trust server-side role
+  // xác định role
   const r = String(socket.data.role || "").toLowerCase();
-  const role = (r === "broadcaster") ? "host" : (r === "guest") ? "guest" : "viewer";
+  const role = (r === "broadcaster") ? "host"
+            : (r === "guest") ? "guest"
+            : "viewer";
 
-  // 🔑 LẤY PROFILE ĐÚNG THEO SOCKET
-  const profile =
-    room.viewerProfiles.get(socket.id) ||
-    room.hostProfile ||
-    {};
+  // 🔥 LẤY PROFILE THẬT TỪ SERVER
+  let profile = null;
+
+  if (role === "viewer") {
+    profile = room.viewerProfiles.get(socket.id);
+  } else if (role === "host") {
+    profile = room.hostProfile;
+  } else if (role === "guest") {
+    profile = room.viewerProfiles.get(socket.id);
+  }
 
   const msg = {
-    socketId: socket.id,                 // ⬅️ BẮT BUỘC
     role,
-    name: safeName(name || profile.name || "Ẩn danh"),
-    avatar: profile.avatar || "",        // ⬅️ BẮT BUỘC
-    level: profile.level || 1,            // (nếu có)
+    name: profile?.name || (name || "Ẩn danh").slice(0, 20),
+    avatar: profile?.avatar,
+    level: Number(profile?.level) || 1,   // ✅ LEVEL CHUẨN
     text: String(text).slice(0, 300),
     ts: Date.now(),
   };
 
   io.to(roomId).emit("chat", msg);
 });
+
 
 
 
