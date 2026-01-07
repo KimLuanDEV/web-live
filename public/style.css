@@ -5262,3 +5262,8 @@ video {
 }
 
 
+/* ===== SWIPE DOWN CLOSE ===== */
+.mini-profile{
+  touch-action: pan-y;
+  will-change: transform;
+}

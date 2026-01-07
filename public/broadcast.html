@@ -2881,6 +2881,54 @@ function closeMiniProfile(){
   }, 280);
 }
 
+// ===== SWIPE DOWN TO CLOSE MINI PROFILE =====
+(function(){
+  if (!miniProfile) return;
+
+  let startY = 0;
+  let currentY = 0;
+  let dragging = false;
+
+  miniProfile.addEventListener("touchstart", (e)=>{
+    if (!miniProfile.classList.contains("show")) return;
+
+    // chỉ bắt gesture khi chạm vào HEADER hoặc nền
+    const allow = e.target.closest(".mini-profile-header") || e.target === miniProfile;
+    if (!allow) return;
+
+    startY = e.touches[0].clientY;
+    dragging = true;
+    miniProfile.style.transition = "none";
+  }, { passive: true });
+
+  miniProfile.addEventListener("touchmove", (e)=>{
+    if (!dragging) return;
+
+    currentY = e.touches[0].clientY;
+    const delta = currentY - startY;
+
+    if (delta > 0){
+      miniProfile.style.transform = `translateY(${delta}px)`;
+    }
+  }, { passive: true });
+
+  miniProfile.addEventListener("touchend", ()=>{
+    if (!dragging) return;
+    dragging = false;
+
+    miniProfile.style.transition = "";
+
+    // vuốt đủ xa → đóng
+    if (currentY - startY > 60){
+      closeMiniProfile();
+    } else {
+      // bật lại vị trí cũ
+      miniProfile.style.transform = "";
+    }
+  });
+})();
+
+
 
 function toggleViewerPopup(){
   viewerListPopup.classList.toggle("hidden");
