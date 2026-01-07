@@ -5111,24 +5111,33 @@ video {
   left: 0;
   right: 0;
   bottom: 0;
-  z-index: 9999;
+
+  width: 100vw;
+  height: 33vh;              /* ✅ 1/3 màn hình */
 
   background: linear-gradient(
     180deg,
-    rgba(10,14,30,.96),
+    rgba(10,14,30,.98),
     rgba(5,8,18,.98)
   );
+
   border-top-left-radius: 22px;
   border-top-right-radius: 22px;
-  border: 1px solid rgba(255,255,255,.14);
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
 
+  border-top: 1px solid rgba(255,255,255,.16);
   box-shadow:
     0 -20px 60px rgba(0,0,0,.65),
     0 0 0 1px rgba(255,255,255,.05) inset;
 
   transform: translateY(110%);
   transition: transform .32s cubic-bezier(.22,.61,.36,1);
+
+  z-index: 9999;
+  overflow: hidden;         /* khóa tràn ngoài */
 }
+
 
 .mini-profile.show{
   transform: translateY(0);
@@ -5203,6 +5212,26 @@ video {
   width:0%;
   background: linear-gradient(90deg,#5fa8ff,#25f09a);
   transition: width .3s ease;
+}
+
+
+.mini-profile-body,
+.mini-profile-meta{
+  overflow-y: auto;
+  max-height: 100%;
+  padding-bottom: 12px;
+}
+
+.mini-profile::before{
+  content:"";
+  width:44px;
+  height:5px;
+  border-radius:999px;
+  background:rgba(255,255,255,.28);
+  position:absolute;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
 }
 
 
