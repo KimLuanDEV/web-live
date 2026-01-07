@@ -88,16 +88,6 @@ for (const roomId in persisted) {
 console.log("♻️ Restored live rooms:", Object.keys(persisted));
 
 
-function applyExpLevel(profile, gainedExp){
-  profile.exp = (profile.exp || 0) + gainedExp;
-
-  while (profile.exp >= profile.level * 1000) {
-    profile.exp -= profile.level * 1000;
-    profile.level += 1;
-  }
-
-  return profile;
-}
 
 
 
@@ -738,21 +728,8 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
-// 🎁 EXP = coin donate
-const gainedExp = gift.cost * combo;
 
-// cập nhật profile viewer
-const vp = room.viewerProfiles.get(socket.id);
-if (vp) {
-  applyExpLevel(vp, gainedExp);
-}
-
-// 🔥 sync lại viewer list realtime
-io.to(roomId).emit("viewer-list", {
-  viewers: Array.from(room.viewerProfiles.values())
-});
-
-
+  
   // donor name
   const donor = safeName(name || socket.data.userName || "Ẩn danh");
 
