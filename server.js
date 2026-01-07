@@ -257,7 +257,7 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 });
 
 
-  socket.on("profile-update", ({ name, avatar, level }) => {
+socket.on("profile-update", ({ name, avatar, level, coins, coinSent, coinReceived }) => {
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
@@ -271,10 +271,16 @@ socket.on("host-profile-update", ({ roomId, level }) => {
   if (avatar) profile.avatar = avatar;
   if (level) profile.level = Number(level) || profile.level;
 
+  // ✅ thêm:
+  if (coins != null) profile.coins = clampInt(coins, 0, 1_000_000_000);
+  if (coinSent != null) profile.coinSent = clampInt(coinSent, 0, 1_000_000_000);
+  if (coinReceived != null) profile.coinReceived = clampInt(coinReceived, 0, 1_000_000_000);
+
   io.to(roomId).emit("viewer-list", {
     viewers: Array.from(room.viewerProfiles.values())
   });
 });
+
 
 
 
@@ -291,7 +297,9 @@ socket.on("viewer-join", ({ roomId, profile }) => {
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
-  coins: Number(profile?.coins) || 0
+  coins: Number(profile?.coins) || 0,
+  coinSent: Number(profile?.coinSent) || 0,
+  coinReceived: Number(profile?.coinReceived) || 0,
 });
 
  
@@ -529,11 +537,16 @@ saveLiveState(state);
 if (role !== "broadcaster") {
   room.viewerProfiles.set(socket.id, {
     name: safeName(profile?.name || socket.data.userName || "Guest"),
-    avatar: profile?.avatar ||
-      "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    level: Number(profile?.level) || 1
+    avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    level: Number(profile?.level) || 1,
+
+    // ✅ thêm các field để mini profile khớp “profile”
+    coins: clampInt(profile?.coins ?? socket.data.coins ?? START_COINS, 0, 1_000_000_000),
+    coinSent: clampInt(profile?.coinSent ?? 0, 0, 1_000_000_000),
+    coinReceived: clampInt(profile?.coinReceived ?? 0, 0, 1_000_000_000),
   });
 }
+
 
 
 
@@ -745,6 +758,14 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
+  // ✅ cập nhật donor profile (để mini profile + viewer-list khớp)
+const donorProfile = room.viewerProfiles.get(socket.id);
+if (donorProfile) {
+  donorProfile.coins = clampInt(socket.data.coins, 0, 1_000_000_000);
+  donorProfile.coinSent = clampInt((donorProfile.coinSent || 0) + cost, 0, 1_000_000_000);
+}
+
+
   // donor name
   const donor = safeName(name || socket.data.userName || "Ẩn danh");
 
@@ -762,9 +783,24 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     ts: Date.now(),
   };
 
+  // ✅ host nhận coin (coinReceived)
+if (!room.hostProfile) room.hostProfile = {};
+room.hostProfile.coinReceived = clampInt((room.hostProfile.coinReceived || 0) + cost, 0, 1_000_000_000);
+
+io.to(roomId).emit("viewer-list", {
+  viewers: Array.from(room.viewerProfiles.values())
+});
+
+// (tuỳ bạn) nếu host UI cũng cần đồng bộ coinReceived
+io.to(roomId).emit("host-profile-sync", room.hostProfile);
+
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
 });
+
+
+
+
 /* ===== /GIFT ENGINE ===== */
 // ===== GUEST CO-HOST FLOW =====
   // Host approves guest: guest becomes room.guestId; all clients get guest-online
