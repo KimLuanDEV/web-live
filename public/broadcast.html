@@ -448,35 +448,8 @@
   <script src="/socket.io/socket.io.js"></script>
   <script>
 
-// ===== MINI PROFILE DATA CACHE =====
-const viewerMap = new Map();
 
 
-const viewerAvatarsEl = document.getElementById("viewerAvatars");
-
-function renderViewerAvatars() {
-  if (!viewerAvatarsEl) return;
-
-  viewerAvatarsEl.innerHTML = "";
-
-  for (const v of viewerMap.values()) {
-    const av = document.createElement("div");
-    av.className = "viewer-avatar";
-    av.dataset.socketId = v.socketId;
-
-    av.innerHTML = `
-      <img src="${v.avatar || ""}" alt="">
-    `;
-
-    // 👉 CLICK → MỞ MINI PROFILE
-    av.addEventListener("click", (e) => {
-      e.stopPropagation();
-      openMiniProfile(v.socketId);
-    });
-
-    viewerAvatarsEl.appendChild(av);
-  }
-}
 
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
@@ -2795,16 +2768,7 @@ const viewerBackdrop = document.getElementById("viewerBackdrop");
 let __viewerCache = [];
 
 socket.on("viewer-list", ({ viewers }) => {
-  
-   viewerMap.clear();
-
-  (viewers || []).forEach(v => {
-    if (v.socketId) {
-      viewerMap.set(v.socketId, v);
-    }
-  });
-
-  renderViewerAvatars(); // ✅ QUAN TRỌNG
+  __viewerCache = viewers || [];
 
    // nếu đang mở panel viewer / mini profile thì re-render
   if (typeof renderViewerList === "function") {
@@ -2831,7 +2795,7 @@ socket.on("viewer-list", ({ viewers }) => {
       el.onclick = e => {
         e.stopPropagation();
         const v = __viewerCache[+el.dataset.idx];
-        openMiniProfile(v.socketId);
+        openMiniProfile(v);
       };
     });
 
@@ -2859,17 +2823,17 @@ function renderViewerPopup(){
       el.onclick = e => {
         e.stopPropagation();
         const v = __viewerCache[+el.dataset.idx];
-        openMiniProfile(v.socketId);
+        openMiniProfile(v);
       };
     });
 }
 
-function openMiniProfile(socketId){
-   const v = viewerMap.get(socketId);
-  if (!v) return;
-
-  const miniProfile = document.getElementById("miniProfile");
+function openMiniProfile(v){
   if (!miniProfile) return;
+
+  const me = getUserProfile(); // 🔥 lấy stats chuẩn
+  const sent = me.coinSent || 0;
+  const received = me.coinReceived || 0;
 
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
@@ -2889,13 +2853,12 @@ function openMiniProfile(socketId){
       })()}
 
       <div class="mini-profile-chip gold">
-      🎁 Đã tặng<br><b>${v.coinSent || 0}</b>
-    </div>
+        🎁 Đã tặng<br><b>${sent}</b>
+      </div>
 
-    <div class="mini-profile-chip blue">
-      💎 Đã nhận<br><b>${v.coinReceived || 0}</b>
-    </div>
-
+      <div class="mini-profile-chip blue">
+        💎 Đã nhận<br><b>${received}</b>
+      </div>
     </div>
   `;
 
