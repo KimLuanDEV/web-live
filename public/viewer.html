@@ -903,6 +903,7 @@ const profile = getUserProfile();
 socket.emit("viewer-join", {
   roomId,
   profile: {
+    uid: profile.name, // 🔥 BẮT BUỘC
     name: profile.name || "Viewer",
     avatar: profile.avatar,
     level: profile.level || 1,

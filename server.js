@@ -287,14 +287,20 @@ socket.on("viewer-join", ({ roomId, profile }) => {
 
   room.viewers.add(socket.id);
 
-  room.viewerProfiles.set(socket.id, {
+const uid = profile.uid || safeName(profile?.name);
+
+const old = room.viewerProfiles.get(uid);
+
+  room.viewerProfiles.set(uid, {
+  uid,
   socketId: socket.id,     // 👈 rất quan trọng
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
   coins: Number(profile?.coins) || 0,
-  coinSent: 0,
-  coinReceived: 0
+  // 🔥 KHÔI PHỤC LẠI DỮ LIỆU CŨ
+  coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
+  coinReceivedRoom: old?.coinReceivedRoom || 0
 });
 
  
@@ -737,14 +743,13 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
-const donorProfile = room.viewerProfiles.get(socket.id);
-if (donorProfile) {
-  donorProfile.coinSent += cost;
-}
+const donor = safeName(name || socket.data.userName || "Ẩn danh");
+const uid = donor;
 
-if (room.hostProfile) {
-  room.hostProfile.coinReceived =
-    (room.hostProfile.coinReceived || 0) + cost;
+const donorProfile = room.viewerProfiles.get(uid);
+if (donorProfile) {
+  donorProfile.coinSentRoom =
+    (donorProfile.coinSentRoom || 0) + cost;
 }
 
 // sau khi cộng giftByUser
@@ -760,15 +765,11 @@ io.to(roomId).emit("viewer-list", {
 });
 
 
-
-  // donor name
-  const donor = safeName(name || socket.data.userName || "Ẩn danh");
-
   // update room stats
   room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
   try{
     const prev = clampInt(room.giftByUser.get(donor) || 0, 0, 1_000_000_000);
-    room.giftByUser.set(donor, prev + cost);
+    room.giftByUser.set(uid, (room.giftByUser.get(uid) || 0) + cost);
   }catch(e){}
 
   const payload = {
@@ -830,9 +831,13 @@ io.to(roomId).emit("viewer-list", {
 
 
 
-   for (const [roomId, room] of rooms.entries()) {
+  for (const [uid, v] of room.viewerProfiles.entries()) {
 
-room.viewerProfiles.delete(socket.id);
+
+  if (v.socketId === socket.id) {
+    v.socketId = null; // ⛔ KHÔNG XOÁ PROFILE
+  }
+
 
 io.to(roomId).emit("viewer-list", {
   viewers: Array.from(room.viewerProfiles.values())
