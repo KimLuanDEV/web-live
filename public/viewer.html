@@ -1070,6 +1070,39 @@ function openMiniProfile(v){
 }
 
 
+function openHostMiniProfile(h){
+  if (!miniProfile || !h) return;
+
+  miniProfile.innerHTML = `
+    <div class="mini-profile-header">
+      <img src="${h.avatar}">
+      <div class="mini-profile-name">👑 ${h.name || "HOST"}</div>
+    </div>
+
+    <div class="mini-profile-meta">
+      <div class="mini-profile-chip gold">👑 HOST</div>
+      <div class="mini-profile-chip">
+        ⭐ Lv ${h.level || 1}
+      </div>
+    </div>
+  `;
+
+  const video = document.querySelector(".video-card");
+  if (video){
+    const rect = video.getBoundingClientRect();
+    const hgt = window.innerHeight * 0.32;
+    miniProfile.style.top = `${Math.max(0, rect.bottom - hgt)}px`;
+  }
+
+  miniProfile.classList.remove("hidden");
+  viewerBackdrop.classList.remove("hidden");
+
+  requestAnimationFrame(()=>{
+    miniProfile.classList.add("show");
+  });
+}
+
+
 
 function closeMiniProfile(){
   miniProfile.classList.remove("show");
@@ -1929,10 +1962,11 @@ const avatar =
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
  el.innerHTML = `
 
-  <div class="chat-avatar-bg"
-       data-name="${name}"
-       style="background-image:url('${avatar}')">
-  </div>
+ <div class="chat-avatar-bg"
+     data-name="${name}"
+     data-role="${role}"
+     style="background-image:url('${avatar}')">
+</div>
 
   <div class="chat-body">
     <div class="chat-head">
@@ -1982,6 +2016,12 @@ if (vip) {
   }
 }
 
+// 👑 LƯU PROFILE HOST ĐỂ MỞ MINI PROFILE
+let __hostProfile = null;
+
+socket.on("host-profile-sync", (profile) => {
+  __hostProfile = profile;
+});
 
 
 // 🎭 CLICK AVATAR CHAT → MINI PROFILE
@@ -1991,17 +2031,29 @@ chatOverlay?.addEventListener("click", (e) => {
 
   e.stopPropagation();
 
+  const role = avatarEl.dataset.role;
   const name = avatarEl.dataset.name;
-  if (!name) return;
 
-  const v = __viewerCache.find(u => u.name === name);
-  if (!v) {
-    console.warn("❌ Không tìm thấy viewer cho chat avatar:", name);
+  // 👑 HOST
+  if (role === "host") {
+    if (!__hostProfile) {
+      console.warn("❌ Chưa có host profile");
+      return;
+    }
+
+    openHostMiniProfile(__hostProfile);
     return;
   }
 
-  openMiniProfile(v);
+  // 👀 VIEWER
+  if (name) {
+    const v = __viewerCache.find(u => u.name === name);
+    if (v) {
+      openMiniProfile(v);
+    }
+  }
 });
+
 
 /* ===== SWIPE TO TOGGLE CHAT (MOBILE) ===== */
 (function(){

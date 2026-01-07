@@ -2243,9 +2243,10 @@ const level =
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
   el.innerHTML = `
     <div class="chat-avatar-bg"
-       data-name="${name}"
-       style="background-image:url('${avatar}')">
-  </div>
+     data-name="${name}"
+     data-role="${role}"
+     style="background-image:url('${avatar}')">
+</div>
   <div class="chat-body">
     <div class="chat-head">
       <span class="chat-name"
