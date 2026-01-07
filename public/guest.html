@@ -780,6 +780,7 @@ const profile = getUserProfile();
 socket.emit("viewer-join", {
   roomId,
   profile: {
+    uid: profile.name, // 🔥 BẮT BUỘC
     name: profile.name || "Viewer",
     avatar: profile.avatar,
     level: profile.level || 1,
@@ -887,31 +888,81 @@ function renderViewerPopup(){
 }
 
 function openMiniProfile(v){
-  if (!miniProfile) return;
+   if (!miniProfile) return;
 
+  // 🟡 trong room
+  const sentInRoom = v.coinSentRoom || 0;
+
+  // 🔹 toàn hệ thống (từ profile local)
+  let totalSent = 0;
+  try {
+    const p = JSON.parse(localStorage.getItem("user_profile")) || {};
+    if (p.name === v.name) {
+      totalSent = p.coinSent || 0;
+    }
+  } catch {}
+  
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
       <img src="${v.avatar}">
       <div class="mini-profile-name">${v.name}</div>
     </div>
+
     <div class="mini-profile-meta">
       ${(() => {
-  const vip = getVipBadge(v.level || 1);
-  return `
-    <div class="mini-profile-chip">
-      ⭐ Lv ${v.level || 1}
-      ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+        const vip = getVipBadge(v.level || 1);
+        return `
+          <div class="mini-profile-chip">
+            ⭐ Lv ${v.level || 1}
+            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+          </div>
+        `;
+      })()}
+
+       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
+      <div class="mini-profile-chip gold">
+        💎 Room<br><b>${sentInRoom}</b>
+      </div>
+
+      <!-- 🔹 TỔNG ĐÃ TẶNG -->
+      <div class="mini-profile-chip blue">
+        💎 Tổng<br><b>${totalSent}</b>
+      </div>
     </div>
   `;
-})()}
 
-      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
-    </div>
-  `;
+  // 🔥 LẤY TOẠ ĐỘ VIDEO
+  const video = document.querySelector(".video-card");
+  if (video){
+    const rect = video.getBoundingClientRect();
+    const h = window.innerHeight * 0.32; // = height 32vh
 
-  miniProfile.classList.remove("hidden");
+    miniProfile.style.top = `${Math.max(0, rect.bottom - h)}px`;
+  } else {
+    // fallback
+    miniProfile.style.bottom = "0";
+  }
+
+  miniProfile.classList.remove("hidden", "show");
   viewerBackdrop.classList.remove("hidden");
+
+  requestAnimationFrame(()=>{
+    miniProfile.classList.add("show");
+  });
 }
+
+
+function closeMiniProfile(){
+  miniProfile.classList.remove("show");
+
+  setTimeout(()=>{
+    miniProfile.classList.add("hidden");
+    viewerBackdrop.classList.add("hidden");
+  }, 280);
+}
+
+
+
 
 function toggleViewerPopup(){
   viewerListPopup.classList.toggle("hidden");
@@ -926,6 +977,7 @@ function closeAllViewerUI(){
 
 viewerBackdrop?.addEventListener("click", () => {
   closeAllViewerUI();
+  closeMiniProfile();
 });
 
 
@@ -1917,7 +1969,7 @@ function pushOverlay(msg){
 
   const role  = String(msg.role || "viewer");
   const name  = msg.name || "User";
-  
+
   const cached =
   __viewerCache.find(v => v.name === msg.name);
 
@@ -1962,6 +2014,11 @@ const level =
 
   chatOverlay.appendChild(el);
 
+
+  // auto cuộn xuống
+requestAnimationFrame(() => {
+  chatOverlay.scrollTop = chatOverlay.scrollHeight;
+});
   // 💡 VIP CHAT SPOTLIGHT
 if (vip) {
   showVipChatSpotlight(vip.key);

@@ -287,11 +287,20 @@ socket.on("viewer-join", ({ roomId, profile }) => {
 
   room.viewers.add(socket.id);
 
-  room.viewerProfiles.set(socket.id, {
+const uid = profile.uid || safeName(profile?.name);
+
+const old = room.viewerProfiles.get(uid);
+
+  room.viewerProfiles.set(uid, {
+  uid,
+  socketId: socket.id,     // 👈 rất quan trọng
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
-  coins: Number(profile?.coins) || 0
+  coins: Number(profile?.coins) || 0,
+  // 🔥 KHÔI PHỤC LẠI DỮ LIỆU CŨ
+  coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
+  coinReceivedRoom: old?.coinReceivedRoom || 0
 });
 
  
@@ -525,17 +534,6 @@ saveLiveState(state);
     const room = getRoom(roomId);
 
 
-  // ❗ CHỈ TẠO viewerProfiles CHO viewer + guest
-if (role !== "broadcaster") {
-  room.viewerProfiles.set(socket.id, {
-    name: safeName(profile?.name || socket.data.userName || "Guest"),
-    avatar: profile?.avatar ||
-      "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    level: Number(profile?.level) || 1
-  });
-}
-
-
 
 
     if (role === "broadcaster") {
@@ -745,14 +743,33 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
-  // donor name
-  const donor = safeName(name || socket.data.userName || "Ẩn danh");
+const donor = safeName(name || socket.data.userName || "Ẩn danh");
+const uid = donor;
+
+const donorProfile = room.viewerProfiles.get(uid);
+if (donorProfile) {
+  donorProfile.coinSentRoom =
+    (donorProfile.coinSentRoom || 0) + cost;
+}
+
+// sau khi cộng giftByUser
+const p = room.viewerProfiles.get(socket.id);
+if (p) {
+  p.coinSentRoom = room.giftByUser.get(p.name) || 0;
+}
+
+
+// 🔄 cập nhật lại viewer-list để mini profile / avatar sync realtime
+io.to(roomId).emit("viewer-list", {
+  viewers: Array.from(room.viewerProfiles.values())
+});
+
 
   // update room stats
   room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
   try{
     const prev = clampInt(room.giftByUser.get(donor) || 0, 0, 1_000_000_000);
-    room.giftByUser.set(donor, prev + cost);
+    room.giftByUser.set(uid, (room.giftByUser.get(uid) || 0) + cost);
   }catch(e){}
 
   const payload = {
@@ -761,6 +778,8 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     totalCoins: room.giftTotal,
     ts: Date.now(),
   };
+
+
 
   io.to(roomId).emit("gift", payload);
   io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
@@ -814,7 +833,11 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
 
    for (const [roomId, room] of rooms.entries()) {
 
-room.viewerProfiles.delete(socket.id);
+for (const [uid, v] of room.viewerProfiles.entries()) {
+  if (v.socketId === socket.id) {
+    v.socketId = null; // ⛔ KHÔNG XOÁ PROFILE
+  }
+}
 
 io.to(roomId).emit("viewer-list", {
   viewers: Array.from(room.viewerProfiles.values())
