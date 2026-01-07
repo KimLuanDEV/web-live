@@ -452,6 +452,31 @@
 const viewerMap = new Map();
 
 
+const viewerAvatarsEl = document.getElementById("viewerAvatars");
+
+function renderViewerAvatars() {
+  if (!viewerAvatarsEl) return;
+
+  viewerAvatarsEl.innerHTML = "";
+
+  for (const v of viewerMap.values()) {
+    const av = document.createElement("div");
+    av.className = "viewer-avatar";
+    av.dataset.socketId = v.socketId;
+
+    av.innerHTML = `
+      <img src="${v.avatar || ""}" alt="">
+    `;
+
+    // 👉 CLICK → MỞ MINI PROFILE
+    av.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openMiniProfile(v.socketId);
+    });
+
+    viewerAvatarsEl.appendChild(av);
+  }
+}
 
 
     const guestPipWrapHost = document.getElementById("guestPipWrapHost");
@@ -2772,11 +2797,14 @@ let __viewerCache = [];
 socket.on("viewer-list", ({ viewers }) => {
   
    viewerMap.clear();
+
   (viewers || []).forEach(v => {
     if (v.socketId) {
       viewerMap.set(v.socketId, v);
     }
   });
+
+  renderViewerAvatars(); // ✅ QUAN TRỌNG
 
    // nếu đang mở panel viewer / mini profile thì re-render
   if (typeof renderViewerList === "function") {
@@ -2867,6 +2895,7 @@ function openMiniProfile(socketId){
     <div class="mini-profile-chip blue">
       💎 Đã nhận<br><b>${v.coinReceived || 0}</b>
     </div>
+
     </div>
   `;
 

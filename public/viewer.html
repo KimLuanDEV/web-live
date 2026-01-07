@@ -495,6 +495,32 @@
     // ===== MINI PROFILE DATA CACHE =====
 const viewerMap = new Map();
 
+const viewerAvatarsEl = document.getElementById("viewerAvatars");
+
+function renderViewerAvatars() {
+  if (!viewerAvatarsEl) return;
+
+  viewerAvatarsEl.innerHTML = "";
+
+  for (const v of viewerMap.values()) {
+    const av = document.createElement("div");
+    av.className = "viewer-avatar";
+    av.dataset.socketId = v.socketId;
+
+    av.innerHTML = `
+      <img src="${v.avatar || ""}" alt="">
+    `;
+
+    // 👉 CLICK → MỞ MINI PROFILE
+    av.addEventListener("click", (e) => {
+      e.stopPropagation();
+      openMiniProfile(v.socketId);
+    });
+
+    viewerAvatarsEl.appendChild(av);
+  }
+}
+
 
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
@@ -932,13 +958,15 @@ const viewerBackdrop = document.getElementById("viewerBackdrop");
 let __viewerCache = [];
 
 socket.on("viewer-list", ({ viewers }) => {
-   viewerMap.clear();
+    viewerMap.clear();
+
   (viewers || []).forEach(v => {
     if (v.socketId) {
       viewerMap.set(v.socketId, v);
     }
   });
 
+  renderViewerAvatars(); // ✅ QUAN TRỌNG
    // nếu đang mở panel viewer / mini profile thì re-render
   if (typeof renderViewerList === "function") {
     renderViewerList(__viewerCache);
