@@ -2242,7 +2242,8 @@ const level =
 
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
   el.innerHTML = `
-  <div class="chat-avatar-bg"
+    <div class="chat-avatar-bg"
+       data-name="${name}"
        style="background-image:url('${avatar}')">
   </div>
   <div class="chat-body">
@@ -2290,6 +2291,26 @@ if (vip) {
     chatOverlay.scrollTop = chatOverlay.scrollHeight;
   }
 }
+
+
+// 🎭 CLICK AVATAR CHAT → MINI PROFILE
+chatOverlay?.addEventListener("click", (e) => {
+  const avatarEl = e.target.closest(".chat-avatar-bg");
+  if (!avatarEl) return;
+
+  e.stopPropagation();
+
+  const name = avatarEl.dataset.name;
+  if (!name) return;
+
+  const v = __viewerCache.find(u => u.name === name);
+  if (!v) {
+    console.warn("❌ Không tìm thấy viewer cho chat avatar:", name);
+    return;
+  }
+
+  openMiniProfile(v);
+});
 
 
 /* ===== SWIPE TO TOGGLE CHAT (MOBILE) ===== */

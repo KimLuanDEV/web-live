@@ -618,7 +618,8 @@ guestCancelWait?.addEventListener("click", () => {
 
     const socket = io();
 
-    function updateProfileOnSendGift(totalCoin){
+
+function updateProfileOnSendGift(totalCoin){
   const KEY = "user_profile";
   let p = {};
 
@@ -631,6 +632,7 @@ guestCancelWait?.addEventListener("click", () => {
 
   localStorage.setItem(KEY, JSON.stringify(p));
 }
+
 
 
 function addExpFromDonate(coin){
@@ -653,61 +655,38 @@ function addExpFromDonate(coin){
   // 🔁 CHECK LEVEL UP
   let need;
   while (true) {
-    need = p.level * 100;
-    if (p.exp >= need) {
-      p.exp -= need;
-      p.level += 1;
+  need = p.level * 100;
+  if (p.exp >= need) {
+    p.exp -= need;
+    p.level += 1;
 
-      // 💥 LEVEL UP EFFECT
+    // 💥 LEVEL UP EFFECT
     showLevelUpEffect(p.level);
 
-    } else break;
-  }
-
-  // sau khi level thay đổi
-socket.emit("profile-update", {
-  level: p.level
-});
+  } else break;
+}
 
   localStorage.setItem(KEY, JSON.stringify(p));
 }
 
 
-function showLevelUpEffect(newLevel){
-  try{
-    const overlay = document.createElement("div");
-    overlay.className = "levelup-overlay";
+function getVipBadge(level){
+  level = Number(level) || 1;
 
-    const box = document.createElement("div");
-    box.className = "levelup-box";
-    box.innerHTML = `
-      ⭐ LEVEL UP!
-      <div class="levelup-sub">Bạn đã lên Lv ${newLevel}</div>
-    `;
-
-    // EXP particles
-    const burst = document.createElement("div");
-    burst.className = "exp-burst";
-
-    const n = 18;
-    for (let i=0;i<n;i++){
-      const p = document.createElement("div");
-      p.className = "exp-p";
-      p.style.left = "50%";
-      p.style.top = "50%";
-      p.style.setProperty("--dx",(Math.random()*360-180)+"px");
-      p.style.setProperty("--dy",(Math.random()*260-130)+"px");
-      burst.appendChild(p);
-    }
-
-    box.appendChild(burst);
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-
-    setTimeout(()=>overlay.remove(), 3000);
-  }catch{}
+  if (level >= 100) {
+    return { key:"legend", text:"🔥 LEGEND", color:"#ff3b3b" };
+  }
+  if (level >= 50) {
+    return { key:"king", text:"👑 KING", color:"#ffd36e" };
+  }
+  if (level >= 20) {
+    return { key:"vipplus", text:"💎 VIP+", color:"#c77dff" };
+  }
+  if (level >= 10) {
+    return { key:"vip", text:"🟦 VIP", color:"#5fa8ff" };
+  }
+  return null;
 }
-
 
 
 function getVipBadge(level){
@@ -748,6 +727,41 @@ function showVipChatSpotlight(vipKey){
 
 
 
+function showLevelUpEffect(newLevel){
+  try{
+    const overlay = document.createElement("div");
+    overlay.className = "levelup-overlay";
+
+    const box = document.createElement("div");
+    box.className = "levelup-box";
+    box.innerHTML = `
+      ⭐ LEVEL UP!
+      <div class="levelup-sub">Bạn đã lên Lv ${newLevel}</div>
+    `;
+
+    // EXP particles
+    const burst = document.createElement("div");
+    burst.className = "exp-burst";
+
+    const n = 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "exp-p";
+      p.style.left = "50%";
+      p.style.top = "50%";
+      p.style.setProperty("--dx",(Math.random()*360-180)+"px");
+      p.style.setProperty("--dy",(Math.random()*260-130)+"px");
+      burst.appendChild(p);
+    }
+
+    box.appendChild(burst);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 1200);
+  }catch{}
+}
+
 
 socket.on("profile-updated", ({ socketId, avatar }) => {
   // 1️⃣ cập nhật cache viewer
@@ -767,32 +781,6 @@ socket.on("profile-updated", ({ socketId, avatar }) => {
 });
 
 
-function getUserProfile(){
-  try{
-    return JSON.parse(localStorage.getItem("user_profile")) || {};
-  }catch{
-    return {};
-  }
-}
-
-const profile = getUserProfile();
-
-socket.emit("viewer-join", {
-  roomId,
-  profile: {
-    uid: profile.name, // 🔥 BẮT BUỘC
-    name: profile.name || "Viewer",
-    avatar: profile.avatar,
-    level: profile.level || 1,
-    coins: profile.coins || 0
-  }
-});
-
-if (profile){
-  chatName.value = profile.name;
-  chatName.disabled = true;
-}
-
 
     // ✅ GUEST CŨNG LÀ VIEWER KHI VÀO PHÒNG
 const guestProfile = (() => {
@@ -802,6 +790,8 @@ const guestProfile = (() => {
     return {};
   }
 })();
+
+
 
 socket.emit("viewer-join", {
   roomId,
@@ -828,11 +818,6 @@ let __viewerCache = [];
 
 socket.on("viewer-list", ({ viewers }) => {
   __viewerCache = viewers || [];
-
-   // nếu đang mở panel viewer / mini profile thì re-render
-  if (typeof renderViewerList === "function") {
-    renderViewerList(__viewerCache);
-  }
 
   const maxShow = 3;
   const showList = __viewerCache.slice(0, maxShow);
@@ -888,81 +873,31 @@ function renderViewerPopup(){
 }
 
 function openMiniProfile(v){
-   if (!miniProfile) return;
+  if (!miniProfile) return;
 
-  // 🟡 trong room
-  const sentInRoom = v.coinSentRoom || 0;
-
-  // 🔹 toàn hệ thống (từ profile local)
-  let totalSent = 0;
-  try {
-    const p = JSON.parse(localStorage.getItem("user_profile")) || {};
-    if (p.name === v.name) {
-      totalSent = p.coinSent || 0;
-    }
-  } catch {}
-  
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
       <img src="${v.avatar}">
       <div class="mini-profile-name">${v.name}</div>
     </div>
-
     <div class="mini-profile-meta">
       ${(() => {
-        const vip = getVipBadge(v.level || 1);
-        return `
-          <div class="mini-profile-chip">
-            ⭐ Lv ${v.level || 1}
-            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
-          </div>
-        `;
-      })()}
+  const vip = getVipBadge(v.level || 1);
+  return `
+    <div class="mini-profile-chip">
+      ⭐ Lv ${v.level || 1}
+      ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+    </div>
+  `;
+})()}
 
-       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
-      <div class="mini-profile-chip gold">
-        💎 Room<br><b>${sentInRoom}</b>
-      </div>
-
-      <!-- 🔹 TỔNG ĐÃ TẶNG -->
-      <div class="mini-profile-chip blue">
-        💎 Tổng<br><b>${totalSent}</b>
-      </div>
+      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
     </div>
   `;
 
-  // 🔥 LẤY TOẠ ĐỘ VIDEO
-  const video = document.querySelector(".video-card");
-  if (video){
-    const rect = video.getBoundingClientRect();
-    const h = window.innerHeight * 0.32; // = height 32vh
-
-    miniProfile.style.top = `${Math.max(0, rect.bottom - h)}px`;
-  } else {
-    // fallback
-    miniProfile.style.bottom = "0";
-  }
-
-  miniProfile.classList.remove("hidden", "show");
+  miniProfile.classList.remove("hidden");
   viewerBackdrop.classList.remove("hidden");
-
-  requestAnimationFrame(()=>{
-    miniProfile.classList.add("show");
-  });
 }
-
-
-function closeMiniProfile(){
-  miniProfile.classList.remove("show");
-
-  setTimeout(()=>{
-    miniProfile.classList.add("hidden");
-    viewerBackdrop.classList.add("hidden");
-  }, 280);
-}
-
-
-
 
 function toggleViewerPopup(){
   viewerListPopup.classList.toggle("hidden");
@@ -977,7 +912,6 @@ function closeAllViewerUI(){
 
 viewerBackdrop?.addEventListener("click", () => {
   closeAllViewerUI();
-  closeMiniProfile();
 });
 
 
@@ -1969,14 +1903,7 @@ function pushOverlay(msg){
 
   const role  = String(msg.role || "viewer");
   const name  = msg.name || "User";
-
-  const cached =
-  __viewerCache.find(v => v.name === msg.name);
-
-const level =
-  cached?.level ??
-  Number(msg.level || 1);
-
+  const level = msg.level || 1;
   const vip = getVipBadge(level);
   const avatar =
   (typeof msg.avatar === "string" && msg.avatar.trim()) ||
@@ -1994,6 +1921,7 @@ const level =
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
   el.innerHTML = `
   <div class="chat-avatar-bg"
+       data-name="${name}"
        style="background-image:url('${avatar}')">
   </div>
   <div class="chat-body">
@@ -2014,11 +1942,6 @@ const level =
 
   chatOverlay.appendChild(el);
 
-
-  // auto cuộn xuống
-requestAnimationFrame(() => {
-  chatOverlay.scrollTop = chatOverlay.scrollHeight;
-});
   // 💡 VIP CHAT SPOTLIGHT
 if (vip) {
   showVipChatSpotlight(vip.key);
@@ -2042,6 +1965,25 @@ if (vip) {
   }
 }
 
+
+// 🎭 CLICK AVATAR CHAT → MINI PROFILE
+chatOverlay?.addEventListener("click", (e) => {
+  const avatarEl = e.target.closest(".chat-avatar-bg");
+  if (!avatarEl) return;
+
+  e.stopPropagation();
+
+  const name = avatarEl.dataset.name;
+  if (!name) return;
+
+  const v = __viewerCache.find(u => u.name === name);
+  if (!v) {
+    console.warn("❌ Không tìm thấy viewer cho chat avatar:", name);
+    return;
+  }
+
+  openMiniProfile(v);
+});
 
 
 /* ===== SWIPE TO TOGGLE CHAT (MOBILE) ===== */
@@ -2103,21 +2045,24 @@ if (vip) {
     }
 
     chatSend.onclick = () => {
-  const profile = getUserProfile();
+      const name = (chatName.value || "Guest").trim();
+      const text = chatText.value.trim();
+      if (!text) return;
 
- socket.emit("chat", {
+      const profile = getUserProfile();
+
+socket.emit("chat", {
   roomId,
   name: profile?.name || name,
   avatar: profile?.avatar,
-  level: profile?.level || 1,
+  level: profile?.level,
   text,
-  role: "viewer"
+  role: "guest" // hoặc guest / host
 });
 
 
-  chatText.value = "";
-};
-
+      chatText.value = "";
+    };
 
     // ===== GUEST AV TOGGLE =====
     const guestMicBtn = document.getElementById("guestMicBtn");
@@ -2280,7 +2225,7 @@ gcmOk.addEventListener("click", ()=>{
     return;
   }
 
-   // 🔥 update coin
+  // 🔥🔥🔥 CHÈN DÒNG NÀY 🔥🔥🔥
   updateProfileOnSendGift(total);
 
   // ⭐ update EXP / Level
@@ -2393,6 +2338,10 @@ function spawnGift(type, donor, giftMeta){
 
 socket.on("gift", ({ gift, donor })=>{
 
+
+
+
+  
   spawnGift(gift.type, donor, gift);
   try{
     const note = document.createElement("div");
@@ -2506,13 +2455,12 @@ function sendQuickChat(){
   if (!text) return;
 
   socket.emit("chat", {
-  roomId,
-  name: profile?.name || name,
-  avatar: profile?.avatar,
-  level: profile?.level || 1,
-  text,
-  role: "guest"
-});
+    roomId,
+    name: (chatName?.value || "User").trim(),
+    text,
+    // role tùy trang bạn set:
+    // role: "host" / "viewer" / "guest"
+  });
 
   quickChatInput.value = "";
   closeQuickChat();
@@ -2588,10 +2536,19 @@ giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
 
 
 
+function getUserProfile(){
+  const p = localStorage.getItem("user_profile");
+  if (!p) return null;
+  try { return JSON.parse(p); }
+  catch { return null; }
+}
 
 
-
-
+const profile = getUserProfile();
+if (profile){
+  chatName.value = profile.name;
+  chatName.disabled = true;
+}
 
 
 socket.on("host-temp-offline", () => {
