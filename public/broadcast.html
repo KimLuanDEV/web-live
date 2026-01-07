@@ -669,6 +669,45 @@ function updateProfileOnReceiveGift(totalCoin){
 }
 
 
+function addExpFromDonate(coin){
+  const KEY = "user_profile";
+  let p = {};
+
+  try{
+    p = JSON.parse(localStorage.getItem(KEY)) || {};
+  }catch{}
+
+  p.exp = p.exp || 0;
+  p.level = p.level || 1;
+
+  // 🎯 100 coin = 1 EXP
+  const gainedExp = Math.floor(coin / 100);
+  if (gainedExp <= 0) return;
+
+  p.exp += gainedExp;
+
+  // 🔁 CHECK LEVEL UP
+  let need;
+  while (true) {
+    need = p.level * 100;
+    if (p.exp >= need) {
+      p.exp -= need;
+      p.level += 1;
+
+      // 🔔 FEEDBACK NHẸ
+      try{
+        const toast = document.createElement("div");
+        toast.className = "gift-toast";
+        toast.textContent = `⭐ Level Up! → Lv ${p.level}`;
+        document.body.appendChild(toast);
+        setTimeout(()=>toast.classList.add("hide"), 1200);
+        setTimeout(()=>toast.remove(), 1800);
+      }catch{}
+    } else break;
+  }
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+}
 
 
 
@@ -2390,6 +2429,9 @@ socket.on("gift", ({ gift, donor })=>{
 // ✅ UPDATE PROFILE (HOST NHẬN)
   const total = (gift.coins || gift.cost || 0);
   updateProfileOnReceiveGift(total);
+
+  // EXP nhận = 50% coin
+  addExpFromDonate(total * 0.5);
 
   try{
     const note = document.createElement("div");

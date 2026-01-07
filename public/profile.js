@@ -12,8 +12,8 @@ const defaultProfile = {
   avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
   coins: 200000,
   level: 1,
-  exp: 0,          // ✅ THÊM
 
+  exp: 0,          // ✅ THÊM
   coinSent: 0,       // 🎁 đã tặng
   coinReceived: 0,   // 💎 đã nhận
 };
@@ -26,6 +26,7 @@ function loadProfile(){
   levelVal.textContent = p.level;
   coinSentVal.textContent = p.coinSent || 0;
   coinReceivedVal.textContent = p.coinReceived || 0;
+  expVal && (expVal.textContent = p.exp || 0);
 
 }
 
