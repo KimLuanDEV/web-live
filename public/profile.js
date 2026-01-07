@@ -34,6 +34,9 @@ function loadProfile(){
 
   nameInput.value = p.name;
   avatarPreview.src = p.avatar;
+  avatarPreview.onerror = () => {
+  avatarPreview.src = defaultProfile.avatar;
+};
   coinVal.textContent = p.coins || 0;
   levelVal.textContent = p.level || 1;
 
@@ -95,28 +98,30 @@ avatarInput.onchange = async () => {
   const file = avatarInput.files[0];
   if (!file) return;
 
-  const fd = new FormData();
-  fd.append("avatar", file);
+  // ⚠️ Giới hạn size để tránh localStorage quá lớn
+  if (file.size > 300 * 1024) {
+    alert("❌ Ảnh quá lớn (tối đa 300KB)");
+    return;
+  }
 
-  const res = await fetch("/api/upload-avatar", {
-    method: "POST",
-    body: fd
-  });
+  const reader = new FileReader();
 
-  const data = await res.json();
-  if (!data.url) return alert("Upload thất bại");
+  reader.onload = () => {
+    const base64 = reader.result; // ✅ data:image/...
 
-  // ✅ update UI
-  avatarPreview.src = data.url;
+    // update UI
+    avatarPreview.src = base64;
 
-   // ✅ LƯU VÀO PROFILE CHÍNH
-  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-  p.avatar = data.url;
-  localStorage.setItem(KEY, JSON.stringify(p));
+    // ✅ LƯU TRỰC TIẾP VÀO PROFILE (KHÔNG PHỤ THUỘC SERVER)
+    const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+    p.avatar = base64;
+    localStorage.setItem(KEY, JSON.stringify(p));
 
-   // (optional) realtime update nếu đang ở room
-   if (window.socket) {
-  socket.emit("profile-update", { avatar: data.url });
-   }
+    // realtime sync nếu đang ở room
+    if (window.socket) {
+      socket.emit("profile-update", { avatar: base64 });
+    }
+  };
+
+  reader.readAsDataURL(file);
 };
-
