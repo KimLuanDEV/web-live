@@ -259,10 +259,14 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 
   socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
-  if (!roomId) return;
-
   const room = getRoom(roomId);
   if (!room) return;
+
+  // 🚫 CHẶN HOST
+  if (room.broadcasterId === socket.id) {
+    console.warn("⛔ Host không được dùng profile-update");
+    return;
+  }
 
   const profile = room.viewerProfiles.get(socket.id);
   if (!profile) return;
@@ -275,6 +279,7 @@ socket.on("host-profile-update", ({ roomId, level }) => {
     viewers: Array.from(room.viewerProfiles.values())
   });
 });
+
 
 
 
