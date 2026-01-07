@@ -261,11 +261,8 @@ io.on("connection", (socket) => {
   io.to(roomId).emit("viewer-list", {
     viewers: Array.from(room.viewerProfiles.values())
   });
-  
-  io.to(roomId).emit("viewer-profile-update", {
-    socketId: socket.id,
-    profile
-  });
+
+ 
 });
 
 
