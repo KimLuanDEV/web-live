@@ -491,6 +491,11 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+    // ===== MINI PROFILE DATA CACHE =====
+const viewerMap = new Map();
+
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -927,7 +932,12 @@ const viewerBackdrop = document.getElementById("viewerBackdrop");
 let __viewerCache = [];
 
 socket.on("viewer-list", ({ viewers }) => {
-  __viewerCache = viewers || [];
+   viewerMap.clear();
+  (viewers || []).forEach(v => {
+    if (v.socketId) {
+      viewerMap.set(v.socketId, v);
+    }
+  });
 
    // nếu đang mở panel viewer / mini profile thì re-render
   if (typeof renderViewerList === "function") {
@@ -954,7 +964,7 @@ socket.on("viewer-list", ({ viewers }) => {
       el.onclick = e => {
         e.stopPropagation();
         const v = __viewerCache[+el.dataset.idx];
-        openMiniProfile(v);
+        openMiniProfile(v.socketId);
       };
     });
 
@@ -982,17 +992,17 @@ function renderViewerPopup(){
       el.onclick = e => {
         e.stopPropagation();
         const v = __viewerCache[+el.dataset.idx];
-        openMiniProfile(v);
+        openMiniProfile(v.socketId);
       };
     });
 }
 
-function openMiniProfile(v){
-  if (!miniProfile) return;
+function openMiniProfile(socketId){
+    const v = viewerMap.get(socketId);
+  if (!v) return;
 
-   const me = getUserProfile(); // 🔥 lấy stats chuẩn
-  const sent = me.coinSent || 0;
-  const received = me.coinReceived || 0;
+  const miniProfile = document.getElementById("miniProfile");
+  if (!miniProfile) return;
 
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
@@ -1012,12 +1022,13 @@ function openMiniProfile(v){
       })()}
 
       <div class="mini-profile-chip gold">
-        🎁 Đã tặng<br><b>${sent}</b>
-      </div>
+      🎁 Đã tặng<br><b>${v.coinSent || 0}</b>
+    </div>
 
-      <div class="mini-profile-chip blue">
-        💎 Đã nhận<br><b>${received}</b>
-      </div>
+    <div class="mini-profile-chip blue">
+      💎 Đã nhận<br><b>${v.coinReceived || 0}</b>
+    </div>
+    
     </div>
   `;
 
