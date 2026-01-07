@@ -991,7 +991,7 @@ function openMiniProfile(v){
   if (!miniProfile) return;
 
   const sent = v.coinSent || 0;
-  const received = v.coinReceived || 0;
+  
 
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
@@ -1011,11 +1011,11 @@ function openMiniProfile(v){
       })()}
 
       <div class="mini-profile-chip gold">
-        🎁 Đã tặng<br><b>${sent}</b>
+        💎 Đã tặng<br><b>${sent}</b>
       </div>
 
       <div class="mini-profile-chip blue">
-        💎 Đã nhận<br><b>${received}</b>
+        💎 Tổng đã tặng<br><b>${v.coinSent || 0}</b>
       </div>
     </div>
   `;
