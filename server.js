@@ -747,6 +747,13 @@ if (room.hostProfile) {
     (room.hostProfile.coinReceived || 0) + cost;
 }
 
+// sau khi cộng giftByUser
+const p = room.viewerProfiles.get(socket.id);
+if (p) {
+  p.coinSentRoom = room.giftByUser.get(p.name) || 0;
+}
+
+
 // 🔄 cập nhật lại viewer-list để mini profile / avatar sync realtime
 io.to(roomId).emit("viewer-list", {
   viewers: Array.from(room.viewerProfiles.values())

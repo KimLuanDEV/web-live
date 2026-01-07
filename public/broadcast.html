@@ -2831,8 +2831,17 @@ function renderViewerPopup(){
 function openMiniProfile(v){
    if (!miniProfile) return;
 
-  const sent = v.coinSent || 0;
- 
+   // 🟡 trong room
+  const sentInRoom = v.coinSentRoom || 0;
+
+  // 🔹 toàn hệ thống (từ profile local)
+  let totalSent = 0;
+  try {
+    const p = JSON.parse(localStorage.getItem("user_profile")) || {};
+    if (p.name === v.name) {
+      totalSent = p.coinSent || 0;
+    }
+  } catch {}
 
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
@@ -2851,14 +2860,15 @@ function openMiniProfile(v){
         `;
       })()}
 
+       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
       <div class="mini-profile-chip gold">
-        💎 Đã tặng<br><b>${sent}</b>
+        💎 Room<br><b>${sentInRoom}</b>
       </div>
 
+      <!-- 🔹 TỔNG ĐÃ TẶNG -->
       <div class="mini-profile-chip blue">
-        💎 Tổng đã tặng<br><b>${v.coinSent || 0}</b>
+        💎 Tổng<br><b>${totalSent}</b>
       </div>
-
     </div>
   `;
 
