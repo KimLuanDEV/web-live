@@ -272,7 +272,7 @@ socket.on("host-profile-update", ({ roomId, level }) => {
   if (level) profile.level = Number(level) || profile.level;
 
   io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+    viewers: Array.from(room.viewerProfiles.values()).filter(v => v.online)
   });
 });
 
@@ -294,6 +294,7 @@ const old = room.viewerProfiles.get(uid);
   room.viewerProfiles.set(uid, {
   uid,
   socketId: socket.id,     // 👈 rất quan trọng
+  online: true,          // 🔥 THÊM
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
@@ -317,7 +318,7 @@ const old = room.viewerProfiles.get(uid);
 
   
   io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+    viewers: Array.from(room.viewerProfiles.values()).filter(v => v.online)
   });
 });
 
@@ -761,7 +762,7 @@ if (p) {
 
 // 🔄 cập nhật lại viewer-list để mini profile / avatar sync realtime
 io.to(roomId).emit("viewer-list", {
-  viewers: Array.from(room.viewerProfiles.values())
+  viewers: Array.from(room.viewerProfiles.values()).filter(v => v.online)
 });
 
 
@@ -833,14 +834,16 @@ io.to(roomId).emit("viewer-list", {
 
    for (const [roomId, room] of rooms.entries()) {
 
-for (const [uid, v] of room.viewerProfiles.entries()) {
+for (const v of room.viewerProfiles.values()) {
   if (v.socketId === socket.id) {
-    v.socketId = null; // ⛔ KHÔNG XOÁ PROFILE
+    v.online = false;     // 🔥 OFFLINE
+    v.socketId = null;
   }
 }
 
+
 io.to(roomId).emit("viewer-list", {
-  viewers: Array.from(room.viewerProfiles.values())
+ viewers: Array.from(room.viewerProfiles.values()).filter(v => v.online)
 });
 
 
