@@ -26,7 +26,7 @@ function loadProfile(){
   levelVal.textContent = p.level;
   coinSentVal.textContent = p.coinSent || 0;
   coinReceivedVal.textContent = p.coinReceived || 0;
-  expVal && (expVal.textContent = p.exp || 0);
+  
 
 }
 
