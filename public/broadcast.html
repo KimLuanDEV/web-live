@@ -112,51 +112,7 @@
 <div class="viewer-list-popup hidden" id="viewerListPopup"></div>
 
 <!-- 👤 MINI PROFILE -->
-<div class="mini-profile hidden" id="miniProfile">
-
-
-<div class="mini-profile-card">
-  <div class="mp-glow"></div>
-
-  <!-- HEADER -->
-  <div class="mp-header">
-    <div class="mp-avatar-wrap">
-      <img id="mpAvatar" class="mp-avatar" src="" />
-      <span class="mp-level">Lv <b id="mpLevel">1</b></span>
-    </div>
-
-    <div class="mp-info">
-      <div class="mp-name" id="mpName">Username</div>
-      <div class="mp-vip" id="mpVip">VIP</div>
-    </div>
-  </div>
-
-  <!-- STATS -->
-  <div class="mp-stats">
-    <div class="mp-stat">
-      <span class="mp-icon">💎</span>
-      <div>
-        <div class="mp-val" id="mpCoinReceived">0</div>
-        <div class="mp-label">Đã nhận</div>
-      </div>
-    </div>
-
-    <div class="mp-stat">
-      <span class="mp-icon">💸</span>
-      <div>
-        <div class="mp-val" id="mpCoinSent">0</div>
-        <div class="mp-label">Đã tặng</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- ACTION -->
-  <button class="mp-close" id="miniProfileClose">✕</button>
-</div>
-
-
-
-</div>
+<div class="mini-profile hidden" id="miniProfile"></div>
 
 <div class="chat-overlay" id="chatOverlay"></div>
 
@@ -710,13 +666,6 @@ function updateProfileOnReceiveGift(totalCoin){
   p.coins = (p.coins || 0) + totalCoin;
 
   localStorage.setItem(KEY, JSON.stringify(p));
-
-  // sync cho miniProfile nếu đang mở
-if (window.__currentMiniProfileId && viewerProfiles[__currentMiniProfileId]) {
-  viewerProfiles[__currentMiniProfileId].coinReceived =
-    (viewerProfiles[__currentMiniProfileId].coinReceived || 0) + totalCoin;
-}
-
 }
 
 
@@ -2877,25 +2826,51 @@ function renderViewerPopup(){
 }
 
 function openMiniProfile(v){
-  if (!miniProfile || !v) return;
-
-  document.getElementById("mpAvatar").src = v.avatar || "";
-  document.getElementById("mpName").textContent = v.name || "User";
-  document.getElementById("mpLevel").textContent = v.level || 1;
-  document.getElementById("mpCoinReceived").textContent = v.coinReceived || 0;
-  document.getElementById("mpCoinSent").textContent = v.coinSent || 0;
+  if (!miniProfile) return;
 
   const vip = getVipBadge(v.level || 1);
-  document.getElementById("mpVip").textContent = vip ? vip.text : "Thường";
+
+  miniProfile.innerHTML = `
+    <div class="mini-profile-card">
+
+      <!-- HEADER -->
+      <div class="mini-profile-header">
+        <div class="mini-avatar-wrap">
+          <img src="${v.avatar}">
+          <span class="mini-level">Lv ${v.level || 1}</span>
+        </div>
+
+        <div class="mini-info">
+          <div class="mini-name">${v.name}</div>
+          ${vip ? `<div class="mini-vip vip-${vip.key}">${vip.text}</div>` : ``}
+        </div>
+      </div>
+
+      <!-- STATS -->
+      <div class="mini-stats">
+        <div class="mini-stat">
+          <span>💰 Coin</span>
+          <b>${v.coins || 0}</b>
+        </div>
+
+        <div class="mini-stat">
+          <span>🎁 Đã tặng</span>
+          <b>${v.coinSent || 0}</b>
+        </div>
+
+        <div class="mini-stat">
+          <span>💎 Đã nhận</span>
+          <b>${v.coinReceived || 0}</b>
+        </div>
+      </div>
+
+    </div>
+  `;
 
   miniProfile.classList.remove("hidden");
-  viewerBackdrop?.classList.remove("hidden");
-
-  document.getElementById("miniProfileClose").onclick = () => {
-    miniProfile.classList.add("hidden");
-    viewerBackdrop?.classList.add("hidden");
-  };
+  viewerBackdrop.classList.remove("hidden");
 }
+
 
 function toggleViewerPopup(){
   viewerListPopup.classList.toggle("hidden");
