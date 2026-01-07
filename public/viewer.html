@@ -990,7 +990,7 @@ function renderViewerPopup(){
 function openMiniProfile(v){
   if (!miniProfile) return;
 
-  const me = getUserProfile(); // 🔥 lấy stats chuẩn
+   const me = getUserProfile(); // 🔥 lấy stats chuẩn
   const sent = me.coinSent || 0;
   const received = me.coinReceived || 0;
 
@@ -1021,7 +1021,19 @@ function openMiniProfile(v){
     </div>
   `;
 
-  miniProfile.classList.remove("hidden");
+  // 🔥 LẤY TOẠ ĐỘ VIDEO
+  const video = document.querySelector(".video-card");
+  if (video){
+    const rect = video.getBoundingClientRect();
+    const h = window.innerHeight * 0.32; // = height 32vh
+
+    miniProfile.style.top = `${Math.max(0, rect.bottom - h)}px`;
+  } else {
+    // fallback
+    miniProfile.style.bottom = "0";
+  }
+
+  miniProfile.classList.remove("hidden", "show");
   viewerBackdrop.classList.remove("hidden");
 
   requestAnimationFrame(()=>{
