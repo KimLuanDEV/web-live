@@ -2847,22 +2847,30 @@ function openMiniProfile(v){
           </div>
         `;
       })()}
-
       <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
     </div>
   `;
 
-  // ✅ mở backdrop
+  // 🔥 LẤY TOẠ ĐỘ VIDEO
+  const video = document.querySelector(".video-card");
+  if (video){
+    const rect = video.getBoundingClientRect();
+    const h = window.innerHeight * 0.32; // = height 32vh
+
+    miniProfile.style.top = `${Math.max(0, rect.bottom - h)}px`;
+  } else {
+    // fallback
+    miniProfile.style.bottom = "0";
+  }
+
+  miniProfile.classList.remove("hidden", "show");
   viewerBackdrop.classList.remove("hidden");
 
-  // ✅ reset trạng thái để animation luôn chạy
-  miniProfile.classList.remove("hidden", "show");
-
-  // 🔥 trigger slide-up
   requestAnimationFrame(()=>{
     miniProfile.classList.add("show");
   });
 }
+
 
 function closeMiniProfile(){
   miniProfile.classList.remove("show");
