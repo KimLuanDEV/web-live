@@ -897,10 +897,6 @@ function getUserProfile(){
   }
 }
 
-const MY_PROFILE = getUserProfile();
-const MY_NAME = MY_PROFILE?.name;
-
-
 
 const profile = getUserProfile();
 
@@ -971,15 +967,6 @@ socket.on("viewer-list", ({ viewers }) => {
       renderViewerPopup();
     };
   }
-
-    // 🔁 SYNC NGƯỢC KIM CƯƠNG VỀ localStorage PROFILE
-  if (MY_NAME) {
-    const me = __viewerCache.find(v => v.name === MY_NAME);
-    if (me) {
-      syncLocalProfileFromRoom(me);
-    }
-  }
-
 });
 
 function renderViewerPopup(){
@@ -1003,69 +990,28 @@ function renderViewerPopup(){
 function openMiniProfile(v){
   if (!miniProfile) return;
 
-  const level = Number(v.level || 1);
-  const vip = getVipBadge(level);
-
-  // 🔥 SỐ REALTIME TỪ SERVER
-const coinIn  = Number(v.coinReceived || 0);
-const coinOut = Number(v.coinGiven || 0);
-const diaIn   = Number(v.diamondReceived || 0);
-const diaOut  = Number(v.diamondGiven || 0);
-
-
   miniProfile.innerHTML = `
-    <div class="mp">
-      <button class="mp__close" type="button" aria-label="Đóng">✕</button>
+    <div class="mini-profile-header">
+      <img src="${v.avatar}">
+      <div class="mini-profile-name">${v.name}</div>
+    </div>
+    <div class="mini-profile-meta">
+      ${(() => {
+  const vip = getVipBadge(v.level || 1);
+  return `
+    <div class="mini-profile-chip">
+      ⭐ Lv ${v.level || 1}
+      ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+    </div>
+  `;
+})()}
 
-      <div class="mp__top">
-        <div class="mp__avatar">
-          <img src="${v.avatar}" alt="">
-        </div>
-
-        <div class="mp__who">
-          <div class="mp__name">${v.name || "Ẩn danh"}</div>
-
-          <div class="mp__badges">
-            <span class="mp__lvl">Lv ${level}</span>
-            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
-          </div>
-        </div>
-      </div>
-
-      <div class="mp__grid">
-        <div class="mp__stat">
-          <div class="mp__label">💰 Coin nhận</div>
-          <div class="mp__value">${coinIn}</div>
-        </div>
-        <div class="mp__stat">
-          <div class="mp__label">💰 Coin tặng</div>
-          <div class="mp__value">${coinOut}</div>
-        </div>
-        <div class="mp__stat">
-          <div class="mp__label">💎 Kim cương nhận</div>
-          <div class="mp__value">${diaIn}</div>
-        </div>
-        <div class="mp__stat">
-          <div class="mp__label">💎 Kim cương tặng</div>
-          <div class="mp__value">${diaOut}</div>
-        </div>
-      </div>
-
-      <div class="mp__footer">
-        <div class="mp__chip">💰 <b>${Number(v.coins || 0)}</b></div>
-        <div class="mp__chip">👁 <b>${v.role || "viewer"}</b></div>
-      </div>
+      <div class="mini-profile-chip">💰 ${v.coins || 0}</div>
     </div>
   `;
 
   miniProfile.classList.remove("hidden");
-  viewerBackdrop?.classList.remove("hidden");
-
-  // nút đóng
-  miniProfile.querySelector(".mp__close")?.addEventListener("click", (e) => {
-    e.stopPropagation();
-    closeAllViewerUI();
-  });
+  viewerBackdrop.classList.remove("hidden");
 }
 
 function toggleViewerPopup(){
@@ -2801,30 +2747,6 @@ slider.addEventListener("pointerup", ()=>{
 });
 
 
-function syncLocalProfileFromRoom(roomProfile){
-  const KEY = "user_profile";
-  let old;
-
-  try{
-    old = JSON.parse(localStorage.getItem(KEY));
-  }catch{
-    return;
-  }
-  if (!old) return;
-
-  const updated = {
-    ...old,
-
-    // 💎 ĐỒNG BỘ TỪ SERVER (NGUỒN CHUẨN)
-    diamondGiven: Number(roomProfile.diamondGiven || 0),
-    diamondReceived: Number(roomProfile.diamondReceived || 0),
-
-    // (nếu muốn sync thêm level / exp)
-    level: Number(roomProfile.level || old.level),
-  };
-
-  localStorage.setItem(KEY, JSON.stringify(updated));
-}
 
 
   </script>

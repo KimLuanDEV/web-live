@@ -16,9 +16,8 @@ const defaultProfile = {
   coins: 200000,
   level: 1,
   exp: 0,            // 🔥 exp
-  // 💎 THỐNG NHẤT TÊN FIELD
-  diamondGiven: 0,
-  diamondReceived: 0
+  coinSent: 0,       // 🎁 đã tặng
+  coinReceived: 0,   // 💎 đã nhận
 
 };
 
@@ -31,8 +30,8 @@ function loadProfile(){
   levelVal.textContent = p.level || 1;
 
   // 🎁 Donate stats
-  if (coinSentVal) coinSentVal.textContent = p.diamondGiven || 0;
-  if (coinReceivedVal) coinReceivedVal.textContent = p.diamondReceived || 0;
+  if (coinSentVal) coinSentVal.textContent = p.coinSent || 0;
+  if (coinReceivedVal) coinReceivedVal.textContent = p.coinReceived || 0;
 
   // ⭐ EXP BAR
   const level = p.level || 1;
@@ -70,9 +69,8 @@ document.getElementById("btnSave").onclick = () => {
     avatar: `https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg`,
     coins: Number(coinVal.textContent) || 0,
     level: Number(levelVal.textContent) || 1,
-    exp: old.exp || 0,
-    diamondGiven: old.diamondGiven || 0,
-    diamondReceived: old.diamondReceived || 0
+    coinSent: old.coinSent || 0,
+    coinReceived: old.coinReceived || 0,
   };
   localStorage.setItem(KEY, JSON.stringify(profile));
   alert("✅ Đã lưu hồ sơ!");
