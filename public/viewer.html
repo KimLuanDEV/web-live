@@ -786,6 +786,13 @@ function addExpFromDonate(coin){
 
   } else break;
 }
+
+// sau khi level thay đổi
+socket.emit("profile-update", {
+  level: p.level
+});
+
+
   localStorage.setItem(KEY, JSON.stringify(p));
 }
 
@@ -1803,9 +1810,9 @@ function pushOverlay(msg){
 
   const role  = String(msg.role || "viewer");
   const name  = msg.name || "User";
-  const level = msg.level || 1;
+  const cached = __viewerCache.find(v => v.name === msg.name);
+  const level = cached?.level ?? Number(msg.level || 1);
   const vip = getVipBadge(level);
-
   const avatar =
   (typeof msg.avatar === "string" && msg.avatar.trim()) ||
   "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
