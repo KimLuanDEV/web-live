@@ -4865,3 +4865,81 @@ video {
   opacity: .75;
 }
 /* ===== /EXP BAR ===== */
+
+
+/* ===== LEVEL UP EFFECT ===== */
+.levelup-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    circle at center,
+    rgba(255,200,80,.25),
+    rgba(0,0,0,.65)
+  );
+  animation: levelFlash .9s ease forwards;
+}
+
+@keyframes levelFlash{
+  0%{ opacity:0 }
+  20%{ opacity:1 }
+  100%{ opacity:0 }
+}
+
+.levelup-box{
+  position: relative;
+  padding: 26px 36px;
+  border-radius: 22px;
+  background: linear-gradient(180deg,#ffd36e,#ff9f43);
+  color:#1a0f00;
+  font-weight: 900;
+  font-size: 28px;
+  box-shadow:
+    0 0 60px rgba(255,180,60,.9),
+    inset 0 0 12px rgba(255,255,255,.6);
+  transform: scale(.6);
+  animation: levelPop .8s cubic-bezier(.2,1.4,.3,1) forwards;
+}
+
+@keyframes levelPop{
+  to{ transform: scale(1) }
+}
+
+.levelup-sub{
+  margin-top: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+}
+
+/* EXP PARTICLES */
+.exp-burst{
+  position:absolute;
+  inset:0;
+  overflow:visible;
+}
+
+.exp-p{
+  position:absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#fff1a8;
+  box-shadow:0 0 12px #ffd36e;
+  animation: expFly 900ms ease-out forwards;
+}
+
+@keyframes expFly{
+  to{
+    transform:
+      translate(var(--dx),var(--dy))
+      scale(0);
+    opacity:0;
+  }
+}
+/* ===== /LEVEL UP EFFECT ===== */
+
