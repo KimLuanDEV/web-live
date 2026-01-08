@@ -5364,3 +5364,78 @@ video {
 }
 
 
+/* ===== VIP AVATAR FRAME ===== */
+.viewer-avatar{
+  position: relative;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin-right: 6px;
+}
+
+.viewer-avatar img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:50%;
+  z-index:1;
+  position:relative;
+}
+
+/* level badge */
+.viewer-avatar .viewer-lv{
+  position:absolute;
+  bottom:-4px;
+  right:-4px;
+  background:#000;
+  color:#fff;
+  font-size:10px;
+  font-weight:700;
+  padding:2px 5px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.25);
+  z-index:3;
+}
+
+/* ===== VIP RINGS ===== */
+.vip-ring{
+  position:absolute;
+  inset:-2px;
+  border-radius:50%;
+  z-index:0;
+  filter: blur(6px);
+  opacity:.75;
+  animation: vipSpin 4s linear infinite;
+}
+
+@keyframes vipSpin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+/* ===== VIP LEVEL COLORS ===== */
+.vip-immortal .vip-ring{
+  background: conic-gradient(#ff004c,#ffcc00,#7f00ff,#ff004c);
+}
+.vip-emperor .vip-ring{
+  background: conic-gradient(#ffd36e,#ff9800,#ffd36e);
+}
+.vip-king .vip-ring{
+  background: conic-gradient(#c77dff,#7f00ff,#c77dff);
+}
+.vip-legend .vip-ring{
+  background: conic-gradient(#ff6a00,#ff3b3b,#ff6a00);
+}
+.vip-diamond .vip-ring{
+  background: conic-gradient(#5fd1ff,#00e5ff,#5fd1ff);
+}
+.vip-gold .vip-ring{
+  background: conic-gradient(#ffd36e,#ffb300,#ffd36e);
+}
+.vip-silver .vip-ring{
+  background: conic-gradient(#cfd8dc,#90a4ae,#cfd8dc);
+}
+.vip-vip .vip-ring{
+  background: conic-gradient(#8bc34a,#4caf50,#8bc34a);
+}

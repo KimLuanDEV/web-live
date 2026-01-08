@@ -927,22 +927,28 @@ function renderViewerAvatars(viewers){
   wrap.innerHTML = "";
 
   viewers.forEach(v => {
+    const vip = getVipBadge(v.level);
     const div = document.createElement("div");
-    div.className = "viewer-avatar";
+
+    div.className = "viewer-avatar" + (vip ? " vip-" + vip.key : "");
+
     div.innerHTML = `
-      <img src="${v.avatar}" />
+      ${vip ? `<div class="vip-ring"></div>` : ""}
+      <img src="${v.avatar || '/assets/avatar-default.png'}" />
       <span class="viewer-lv">Lv.${v.level || 1}</span>
     `;
+
     wrap.appendChild(div);
   });
 }
+
 
 
 let __viewerCache = [];
 
 socket.on("viewer-list", ({ viewers }) => {
   __viewerCache = viewers || [];
-   renderViewerAvatars(viewers);
+  
    // nếu đang mở panel viewer / mini profile thì re-render
   if (typeof renderViewerList === "function") {
     renderViewerList(__viewerCache);
@@ -952,12 +958,17 @@ socket.on("viewer-list", ({ viewers }) => {
   const showList = __viewerCache.slice(0, maxShow);
   const remain = __viewerCache.length - maxShow;
 
-  viewerAvatarBox.innerHTML =
-    showList.map((v, i) => `
-      <div class="viewer-avatar" data-idx="${i}">
+ viewerAvatarBox.innerHTML =
+  showList.map((v,i)=>{
+    const vip = getVipBadge(v.level);
+    return `
+      <div class="viewer-avatar ${vip ? "vip-"+vip.key : ""}" data-idx="${i}">
+        ${vip ? `<div class="vip-ring"></div>` : ""}
         <img src="${v.avatar}">
+        <span class="viewer-lv">Lv.${v.level||1}</span>
       </div>
-    `).join("") +
+    `;
+  }).join("") +
     (remain > 0
       ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
       : "");
