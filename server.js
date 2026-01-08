@@ -318,12 +318,16 @@ const old = room.viewerProfiles.get(uid);
 
   const viewers = Array.from(room.viewerProfiles.values());
 
+  // ✅ 1️⃣ GỬI NGAY CHO NGƯỜI VỪA JOIN (QUAN TRỌNG)
+  socket.emit("viewer-list", { viewers });
+
+  // ✅ 2️⃣ VẪN BROADCAST CHO NGƯỜI KHÁC
+  socket.to(roomId).emit("viewer-list", { viewers });
+
+  
   io.to(roomId).emit("viewer-list", {
-  viewers: Array.from(room.viewerProfiles.values())
-});
-
-
-
+    viewers: Array.from(room.viewerProfiles.values())
+  });
 });
 
 
@@ -704,12 +708,11 @@ if (p) {
   p.coinSentRoom = room.giftByUser.get(p.name) || 0;
 }
 
-/*
+
 // 🔄 cập nhật lại viewer-list để mini profile / avatar sync realtime
 io.to(roomId).emit("viewer-list", {
   viewers: Array.from(room.viewerProfiles.values())
 });
-*/
 
 
   // update room stats
@@ -748,38 +751,36 @@ io.to(roomId).emit("viewer-list", {
 
   socket.on("disconnect", () => {
 
-   const roomId = socket.data.roomId;
-  if (!roomId) return;
 
-  const room = rooms.get(roomId);
-  if (!room) return;
 
-  // ❌ chỉ xử lý viewer trong room này
-  for (const [uid, v] of room.viewerProfiles.entries()) {
-    if (v.socketId === socket.id) {
-      v.socketId = null; // không xoá profile
+
+   for (const [roomId, room] of rooms.entries()) {
+
+for (const [uid, v] of room.viewerProfiles.entries()) {
+  if (v.socketId === socket.id) {
+    v.socketId = null; // ⛔ KHÔNG XOÁ PROFILE
+  }
+}
+
+io.to(roomId).emit("viewer-list", {
+  viewers: Array.from(room.viewerProfiles.values())
+});
+
+
+    if (room.broadcasterId === socket.id) {
+
+      room.pendingRelease = true;
+
+      room.releaseTimer = setTimeout(() => {
+        // nếu host KHÔNG quay lại
+        if (room.pendingRelease) {
+          closeRoom(roomId, "host_left");
+        }
+      }, ROOM_RELEASE_DELAY);
+
+      io.to(roomId).emit("host-temp-offline");
     }
   }
-
-  // ✅ emit đúng 1 room
-  io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
-  });
-
-  // ===== xử lý host disconnect =====
-  if (room.broadcasterId === socket.id) {
-    room.pendingRelease = true;
-
-    room.releaseTimer = setTimeout(() => {
-      if (room.pendingRelease) {
-        closeRoom(roomId, "host_left");
-      }
-    }, ROOM_RELEASE_DELAY);
-
-    io.to(roomId).emit("host-temp-offline");
-  
-  }
-
 
 socket.on("host-join", ({ roomId }) => {
   const room = getRoom(roomId);
@@ -798,11 +799,11 @@ socket.on("host-join", ({ roomId }) => {
 });
 
 
-   
+    const roomId = socket.data.roomId;
     const role = socket.data.role;
     if (!roomId) return;
 
-   
+    const room = rooms.get(roomId);
     if (!room) return;
 
     if (role === "viewer") {
