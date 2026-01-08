@@ -23,6 +23,11 @@ const defaultProfile = {
 
 
 function getVipBadge(level){
+  if (level >= 1000) return { key: "overlord", text: "🪐 VIP OVERLORD" };
+  if (level >= 700) return { key: "void",  text: "🕳️ VIP VOID" };
+  if (level >= 500) return { key: "god",     text: "👁️ VIP GOD" };
+  if (level >= 400) return { key: "eternal", text: "🌀 VIP ETERNAL" };
+  if (level >= 300) return { key: "celestial", text: "🌠 VIP CELESTIAL" };
   if (level >= 250) return { key: "immortal", text: "🌌 VIP IMMORTAL" };
   if (level >= 200) return { key: "emperor",  text: "👑 VIP EMPEROR" };
   if (level >= 150) return { key: "king",     text: "🔱 VIP KING" };
@@ -70,6 +75,10 @@ if (vipBadgeBox){
     `;
   }
 }
+
+// ⭐ AVATAR VIP PRO trong profile
+const wrap = document.getElementById("avatarProfileWrap");
+if (wrap) applyAvatarVIP(wrap, p.level || 1);
 
 
 }
@@ -129,3 +138,19 @@ avatarInput.onchange = async () => {
 
   reader.readAsDataURL(file);
 };
+
+function applyAvatarVIP(el, level){
+  if (!el) return;
+  el.classList.add("avatar-pro");
+  el.classList.remove(
+    "lv-silver","lv-gold","lv-diamond",
+    "lv-legend","lv-king","lv-immortal"
+  );
+
+  if (level >= 250) el.classList.add("lv-immortal");
+  else if (level >= 150) el.classList.add("lv-king");
+  else if (level >= 100) el.classList.add("lv-legend");
+  else if (level >= 50) el.classList.add("lv-diamond");
+  else if (level >= 30) el.classList.add("lv-gold");
+  else if (level >= 10) el.classList.add("lv-silver");
+}

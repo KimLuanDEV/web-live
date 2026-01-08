@@ -5439,3 +5439,112 @@ video {
     0 0 20px rgba(0,255,225,.8),
     0 0 36px rgba(123,92,255,.7);
 }
+
+/* ===== VIP ULTRA TIERS ===== */
+
+.vip-celestial{
+  box-shadow:0 0 22px rgba(77,156,255,.8);
+}
+
+.vip-eternal{
+  box-shadow:
+    0 0 18px rgba(123,255,225,.7),
+    0 0 36px rgba(123,255,225,.5);
+}
+
+.vip-god{
+  box-shadow:
+    0 0 22px rgba(255,46,209,.9),
+    0 0 44px rgba(255,46,209,.6);
+}
+
+.vip-void{
+  box-shadow:
+    0 0 26px rgba(155,92,255,.9),
+    0 0 50px rgba(40,0,80,.8);
+}
+
+.vip-overlord{
+  box-shadow:
+    0 0 30px rgba(255,215,0,1),
+    0 0 60px rgba(255,215,0,.8);
+}
+
+
+/* ================= AVATAR VIP PRO ================= */
+.avatar-pro{
+  position:relative;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.avatar-pro img,
+.avatar-pro .chat-avatar-bg{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  object-fit:cover;
+  z-index:3;
+}
+
+/* Aura */
+.avatar-pro::before{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  opacity:.8;
+  z-index:1;
+}
+
+/* Crown */
+.avatar-pro::after{
+  content:"";
+  position:absolute;
+  top:-14px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:16px;
+  z-index:4;
+  animation:vip-float 2.4s ease-in-out infinite;
+}
+
+/* ===== LEVEL ===== */
+.lv-silver::before{ box-shadow:0 0 0 2px #5fa8ff; }
+.lv-gold::before{ box-shadow:0 0 0 2px #ffd36e,0 0 16px #ffd36e; }
+.lv-diamond::before{
+  box-shadow:0 0 0 2px #9ee7ff,0 0 22px #9ee7ff;
+  animation:vip-pulse 2s infinite;
+}
+
+/* 🔥 LEGEND */
+.lv-legend::before{
+  background:radial-gradient(circle,#ff3b3b,transparent 70%);
+  animation:vip-spin 6s linear infinite;
+}
+
+/* 🔱 KING */
+.lv-king::before{
+  background:conic-gradient(#ffd36e,#c77dff,#ffd36e);
+  animation:vip-spin 4s linear infinite;
+}
+.lv-king::after{ content:"👑"; }
+
+/* 🌌 IMMORTAL */
+.lv-immortal::before{
+  background:conic-gradient(
+    #5fa8ff,#c77dff,#25f09a,#ff3b3b,#5fa8ff
+  );
+  filter:blur(2px);
+  animation:vip-spin 2.8s linear infinite;
+}
+.lv-immortal::after{ content:"🌌"; }
+
+/* Anim */
+@keyframes vip-spin{ from{transform:rotate(0)}to{transform:rotate(360deg)} }
+@keyframes vip-pulse{50%{transform:scale(1.08)}}
+@keyframes vip-float{50%{transform:translate(-50%,-6px)}}
