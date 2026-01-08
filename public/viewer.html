@@ -2214,15 +2214,7 @@ if (__comboWrap) {
   });
 }
 
-// Send gift with selected combo qty
-document.querySelectorAll(".gift-bar button").forEach(btn => {
-  btn.onclick = () => {
-    const type = btn.dataset.gift;
-    const name = (chatName.value || "Viewer").trim().slice(0,20);
-    const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
-    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
-  };
-});
+
 // ===== /GIFT ENGINE (client) =====
 const giftLayer = document.getElementById("giftLayer");
 
