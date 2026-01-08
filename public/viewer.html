@@ -886,6 +886,16 @@ const profile = getUserProfile();
 syncWalletUI();
 
 
+socket.emit("join-room", {
+  roomId,
+  role: "viewer",
+  profile: {
+    name: profile.name,
+    avatar: profile.avatar,
+    level: profile.level || 1,
+    coins: profile.coins || 0
+  }
+});
 
 
 socket.emit("viewer-join", {
