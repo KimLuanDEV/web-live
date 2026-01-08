@@ -485,9 +485,6 @@ socket.data.coins = Number.isFinite(profile?.coins)
   : 0;
 
 
-    // sync wallet to this socket
-    socket.emit("wallet-sync", { coins: socket.data.coins });
-
 
 
     const room = getRoom(roomId);

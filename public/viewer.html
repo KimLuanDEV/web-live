@@ -892,7 +892,7 @@ socket.emit("viewer-join", {
     name: profile.name || "Viewer",
     avatar: profile.avatar,
     level: profile.level || 1,
-    coins: profile.coins || 0
+    coins: Number.isFinite(profile.coins) ? profile.coins : 0
   }
 });
 
