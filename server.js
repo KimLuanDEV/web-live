@@ -676,11 +676,37 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
   });
   // ===== /PIN NOTE =====
 
+
+// ===== ANTI SPAM GIFT =====
+const GIFT_COOLDOWN_MS = 1500; // 1.5s / lần gửi
+const giftCooldown = new Map(); // key: socket.id
+
+function canSendGift(socket) {
+  const now = Date.now();
+  const last = giftCooldown.get(socket.id) || 0;
+  if (now - last < GIFT_COOLDOWN_MS) return false;
+  giftCooldown.set(socket.id, now);
+  return true;
+}
+
+
+
 // ===== GIFT ENGINE (paid gifts) =====
 socket.on("send-gift", ({ roomId, gift, name }) => {
   roomId = normRoomId(roomId);
   if (!roomId || !gift) return;
 
+
+   // 🚫 CHẶN SPAM
+  if (!canSendGift(socket)) {
+    socket.emit("gift-failed", {
+      reason: "spam",
+      message: "Bạn gửi quà quá nhanh ⏳"
+    });
+    return;
+  }
+
+  
   const room = getRoom(roomId);
   if (!room.broadcasterId || !room.liveStartTs) return;
 
