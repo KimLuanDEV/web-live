@@ -5061,6 +5061,8 @@ video {
   }
 }
 
+.chat-legend{ box-shadow:none !important; }
+
 /* ===== /VIP CHAT BUBBLE ===== */
 
 
