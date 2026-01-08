@@ -5610,3 +5610,15 @@ video {
   position: relative; /* 🔥 BẮT BUỘC cho glow & viền */
 }
 
+
+.gift-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+}
