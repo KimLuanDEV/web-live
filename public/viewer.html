@@ -699,6 +699,18 @@ setInterval(checkHDQuality, 2500);
 
     const socket = io();
 
+// 🔁 SYNC COIN GIỮA PROFILE (coinVal) & VIEWER (walletCoins)
+function syncCoinsUI(coins){
+  // viewer wallet
+  const wallet = document.getElementById("walletCoins");
+  if (wallet) wallet.textContent = coins;
+
+  // profile page (nếu đang mở tab profile song song)
+  const coinVal = document.getElementById("coinVal");
+  if (coinVal) coinVal.textContent = coins;
+}
+
+
 function updateProfileOnSendGift(totalCoin){
   const KEY = "user_profile";
   let p = {};
@@ -711,6 +723,15 @@ function updateProfileOnSendGift(totalCoin){
   p.coins = Math.max(0, (p.coins || 0) - totalCoin);
 
   localStorage.setItem(KEY, JSON.stringify(p));
+
+ // 🔥 SYNC CẢ 2 UI
+  if (typeof syncCoinsUI === "function") {
+    syncCoinsUI(p.coins);
+  }
+
+   // 🔥 ĐỒNG BỘ CẢ coinVal + walletCoins
+  syncCoinsUI(p.coins);
+
 }
 
 
@@ -858,6 +879,11 @@ function getUserProfile(){
 
 
 const profile = getUserProfile();
+
+// 🔄 Sync coin ngay khi load viewer
+if (Number.isFinite(profile?.coins)) {
+  syncCoinsUI(profile.coins);
+}
 
 socket.emit("viewer-join", {
   roomId,

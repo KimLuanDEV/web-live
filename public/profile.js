@@ -53,7 +53,8 @@ function loadProfile(){
   };
 
   // 🔥 COIN KHÔNG BAO GIỜ RESET
-  coinVal.textContent = Number.isFinite(p.coins) ? p.coins : 0;
+  const coins = Number.isFinite(p.coins) ? p.coins : 0;
+  syncCoinsUI(coins);
   levelVal.textContent = Number.isFinite(p.level) ? p.level : 1;
   coinSentVal.textContent = Number.isFinite(p.coinSent) ? p.coinSent : 0;
   coinReceivedVal.textContent = Number.isFinite(p.coinReceived) ? p.coinReceived : 0;
@@ -102,6 +103,7 @@ document.getElementById("btnSave").onclick = () => {
   };
 
   localStorage.setItem(KEY, JSON.stringify(profile));
+  syncCoinsUI(profile.coins);
   alert("✅ Đã lưu hồ sơ!");
 };
 
@@ -144,3 +146,15 @@ avatarInput.onchange = () => {
 
   reader.readAsDataURL(file);
 };
+
+
+// 🔁 GLOBAL COIN SYNC (profile ↔ viewer)
+function syncCoinsUI(coins){
+  // profile page
+  const coinValEl = document.getElementById("coinVal");
+  if (coinValEl) coinValEl.textContent = coins;
+
+  // viewer wallet
+  const walletEl = document.getElementById("walletCoins");
+  if (walletEl) walletEl.textContent = coins;
+}
