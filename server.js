@@ -296,7 +296,8 @@ socket.on("viewer-join", ({ roomId, profile }) => {
 
   room.viewers.add(socket.id);
 
-const uid = profile.uid || safeName(profile?.name);
+const uid = String(profile.uid || profile.name || socket.id);
+
 
 const old = room.viewerProfiles.get(uid);
 
@@ -693,20 +694,26 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
-const donor = safeName(name || socket.data.userName || "Ẩn danh");
-const uid = donor;
+const donorName = safeName(name || socket.data.userName || "Ẩn danh");
 
-const donorProfile = room.viewerProfiles.get(uid);
+// 🔑 tìm đúng UID theo socket.id
+let donorUid = null;
+for (const [uid, p] of room.viewerProfiles.entries()) {
+  if (p.socketId === socket.id) {
+    donorUid = uid;
+    break;
+  }
+}
+
+if (!donorUid) return;
+
+
+const donorProfile = room.viewerProfiles.get(donorUid);
 if (donorProfile) {
   donorProfile.coinSentRoom =
     (donorProfile.coinSentRoom || 0) + cost;
 }
 
-// sau khi cộng giftByUser
-const p = room.viewerProfiles.get(socket.id);
-if (p) {
-  p.coinSentRoom = room.giftByUser.get(p.name) || 0;
-}
 
 
 // 🔄 cập nhật lại viewer-list để mini profile / avatar sync realtime
@@ -719,7 +726,10 @@ io.to(roomId).emit("viewer-list", {
   room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
   try{
     const prev = clampInt(room.giftByUser.get(donor) || 0, 0, 1_000_000_000);
-    room.giftByUser.set(uid, (room.giftByUser.get(uid) || 0) + cost);
+    room.giftByUser.set(
+  donorUid,
+  (room.giftByUser.get(donorUid) || 0) + cost
+);
   }catch(e){}
 
   const payload = {

@@ -11,6 +11,7 @@ const expFill = document.getElementById("expFill");
 const vipBadgeBox = document.getElementById("vipBadgeBox");
 
 const defaultProfile = {
+  uid: null,
   name: "User",
   avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
   coins: 200000,
