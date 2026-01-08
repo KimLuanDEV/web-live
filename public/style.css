@@ -5023,17 +5023,44 @@ video {
 
 /* LEGEND */
 .chat-legend{
+  position: relative;
   border:1px solid rgba(255,60,60,.85);
-  box-shadow:
-    0 0 22px rgba(255,60,60,.9),
-    inset 0 0 8px rgba(255,255,255,.35);
   animation: legendPulse 1.6s ease-in-out infinite;
+  background: rgba(0,0,0,.45); /* nền rõ chữ */
 }
 
-@keyframes legendPulse{
-  0%,100%{ box-shadow:0 0 16px rgba(255,60,60,.7); }
-  50%{ box-shadow:0 0 26px rgba(255,60,60,1); }
+.chat-legend::before{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:inherit;
+  box-shadow:
+    0 0 16px rgba(255,60,60,.7),
+    0 0 28px rgba(255,60,60,.9);
+  animation: legendPulse 1.6s ease-in-out infinite;
+  pointer-events:none;
+  z-index:0;
 }
+
+.chat-legend > *{
+  position:relative;
+  z-index:1;
+}
+
+
+@keyframes legendPulse{
+  0%,100%{
+    box-shadow:
+      0 0 10px rgba(255,60,60,.6),
+      0 0 18px rgba(255,60,60,.4);
+  }
+  50%{
+    box-shadow:
+      0 0 20px rgba(255,60,60,.9),
+      0 0 32px rgba(255,60,60,.6);
+  }
+}
+
 /* ===== /VIP CHAT BUBBLE ===== */
 
 
