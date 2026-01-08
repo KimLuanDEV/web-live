@@ -791,21 +791,30 @@ function showLevelUpEffect(newLevel){
 
 function getVipBadge(level){
   level = Number(level) || 1;
-
+ if (level >= 250) {
+    return { key:"immortal", text:"🌌 VIP IMMORTAL", color:"#00FFE1" };
+  }
+  if (level >= 200) {
+    return { key:"emperor", text:"👑 VIP EMPEROR", color:"#FF9F1C" };
+  }
+  if (level >= 150) {
+    return { key:"king", text:"🔱 VIP KING", color:"#C77DFF" };
+  }
   if (level >= 100) {
-    return { key:"legend", text:"🔥 LEGEND", color:"#ff3b3b" };
+    return { key:"legend", text:"🔥 LEGEND", color:"#FF4D4D" };
   }
   if (level >= 50) {
-    return { key:"king", text:"👑 KING", color:"#ffd36e" };
+    return { key:"king", text:"👑 KING", color:"#FFD36E" };
   }
   if (level >= 20) {
-    return { key:"vipplus", text:"💎 VIP+", color:"#c77dff" };
+    return { key:"vipplus", text:"💎 VIP+", color:"#7CF5FF" };
   }
   if (level >= 10) {
     return { key:"vip", text:"🟦 VIP", color:"#5fa8ff" };
   }
   return null;
 }
+
 
 
 function showVipChatSpotlight(vipKey){

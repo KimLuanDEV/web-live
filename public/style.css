@@ -5372,3 +5372,70 @@ video {
     0 0 12px rgba(255,60,60,.6),
     0 0 22px rgba(255,60,60,.9) !important;
 }
+
+/* ======================
+   VIP HIGH TIER
+   ====================== */
+
+.vip-badge{
+  display:inline-block;
+  padding:6px 14px;
+  border-radius:999px;
+  font-weight:800;
+  letter-spacing:.3px;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,.25);
+}
+
+/* 🔥 LEGEND */
+.vip-legend{
+  background: linear-gradient(135deg,#ff5a5a,#ff2d2d);
+  box-shadow:0 0 18px rgba(255,60,60,.6);
+}
+
+/* 🔱 KING */
+.vip-king{
+  background: linear-gradient(135deg,#ffcc66,#ff9900);
+  box-shadow:
+    0 0 22px rgba(255,180,60,.8),
+    0 0 36px rgba(255,150,0,.6);
+}
+
+/* 👑 EMPEROR */
+.vip-emperor{
+  background: linear-gradient(135deg,#9b5cff,#5f2bff);
+  box-shadow:
+    0 0 26px rgba(155,92,255,.9),
+    0 0 42px rgba(95,43,255,.7);
+}
+
+/* 🌌 IMMORTAL */
+.vip-immortal{
+  background: linear-gradient(135deg,#00ffe1,#008cff,#7b5cff);
+  box-shadow:
+    0 0 30px rgba(0,255,225,.9),
+    0 0 48px rgba(123,92,255,.8);
+  animation: immortalGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes immortalGlow{
+  0%,100%{
+    box-shadow:
+      0 0 22px rgba(0,255,225,.6),
+      0 0 40px rgba(123,92,255,.5);
+  }
+  50%{
+    box-shadow:
+      0 0 36px rgba(0,255,225,1),
+      0 0 60px rgba(123,92,255,.9);
+  }
+}
+
+.chat-king{ border-color:#ff9900 }
+.chat-emperor{ border-color:#7b5cff }
+.chat-immortal{
+  border-color:#00ffe1;
+  box-shadow:
+    0 0 20px rgba(0,255,225,.8),
+    0 0 36px rgba(123,92,255,.7);
+}
