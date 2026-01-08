@@ -22,6 +22,16 @@ const defaultProfile = {
 };
 
 
+function getUID(){
+  let uid = localStorage.getItem("uid");
+  if (!uid){
+    uid = "u_" + crypto.randomUUID();
+    localStorage.setItem("uid", uid);
+  }
+  return uid;
+}
+
+
 function getVipBadge(level){
   if (level >= 1000) return { key: "overlord", text: "🪐 VIP OVERLORD" };
   if (level >= 700) return { key: "void",  text: "🕳️ VIP VOID" };
@@ -40,6 +50,8 @@ function getVipBadge(level){
 
 function loadProfile(){
   const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  p.uid = getUID();
+  localStorage.setItem(KEY, JSON.stringify(p));
 
   nameInput.value = p.name;
   avatarPreview.src = p.avatar;
@@ -86,7 +98,9 @@ if (wrap) applyAvatarVIP(wrap, p.level || 1);
 
 document.getElementById("btnSave").onclick = () => {
   const old = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+
   const profile = {
+    uid: old.uid, // ⬅️ BẮT BUỘC
     name: nameInput.value.trim() || "Guest",
     avatar: old.avatar || defaultProfile.avatar,
     coins: Number(coinVal.textContent) || 0,
@@ -95,6 +109,7 @@ document.getElementById("btnSave").onclick = () => {
     coinSent: old.coinSent || 0,
     coinReceived: old.coinReceived || 0,
   };
+
   localStorage.setItem(KEY, JSON.stringify(profile));
   alert("✅ Đã lưu hồ sơ!");
 };

@@ -885,18 +885,18 @@ function getUserProfile(){
 }
 
 
-const profile = getUserProfile();
+const profile = JSON.parse(localStorage.getItem("user_profile")) || {};
 
 const stableUID = getStableUID();
 
 socket.emit("viewer-join", {
   roomId,
   profile: {
-    uid: stableUID,               // ✅ UID CỐ ĐỊNH
-    name: profile.name || "Viewer",
+    uid: profile.uid,
+    name: profile.name,
     avatar: profile.avatar,
-    level: profile.level || 1,
-    coins: profile.coins || 0
+    level: profile.level,
+    coins: profile.coins
   }
 });
 
