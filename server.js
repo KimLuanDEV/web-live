@@ -243,6 +243,59 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
+
+ // ===== GUEST REQUEST TO GO LIVE =====
+socket.on("guest-request", ({ roomId }) => {
+  if (!roomId) return;
+
+  const room = getRoom(roomId);
+  if (!room) return;
+
+  // ❌ Chưa có host
+  if (!room.broadcasterId) {
+    socket.emit("guest-denied", { reason: "host_offline" });
+    return;
+  }
+
+  // ❌ Đã có guest khác
+  if (room.guestId) {
+    socket.emit("guest-denied", { reason: "guest_exists" });
+    return;
+  }
+
+  // ✅ Set guest
+  room.guestId = socket.id;
+
+  // 🔔 Báo cho HOST
+  io.to(room.broadcasterId).emit("guest-requested", {
+    guestId: socket.id,
+    roomId
+  });
+
+  console.log("👤 Guest requested live:", socket.id, "room:", roomId);
+});
+ 
+
+// ===== GUEST CANCEL REQUEST =====
+socket.on("cancel-request-guest", ({ roomId }) => {
+  if (!roomId) return;
+  const room = getRoom(roomId);
+  if (!room) return;
+
+  if (room.guestId === socket.id) {
+    room.guestId = null;
+
+    // báo host
+    if (room.broadcasterId) {
+      io.to(room.broadcasterId).emit("guest-cancelled");
+    }
+
+    console.log("❌ Guest cancelled request:", socket.id);
+  }
+});
+
+
+
 socket.on("host-profile-update", ({ roomId, level }) => {
   const room = getRoom(roomId);
   if (!room) return;
@@ -525,11 +578,7 @@ saveLiveState(state);
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
 
-     if (socket.data.role === "guest") {
-    console.warn("⛔ Guest bị chặn join-room:", socket.id);
-    return;
-  }
-  
+    
      roomId = normRoomId(roomId);
     if (!roomId || !role) return;
 
@@ -859,6 +908,12 @@ io.to(roomId).emit("viewer-list", {
 
    for (const [roomId, room] of rooms.entries()) {
 
+ if (room.guestId === socket.id) {
+      room.guestId = null;
+      io.to(roomId).emit("guest-offline");
+      console.log("👤 Guest disconnected:", socket.id);
+    }
+    
 for (const [uid, v] of room.viewerProfiles.entries()) {
   if (v.socketId === socket.id) {
     v.socketId = null; // ⛔ KHÔNG XOÁ PROFILE
