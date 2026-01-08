@@ -493,6 +493,25 @@
 
 
 
+function playGiftVideo(src, duration = 2500) {
+  if (!giftVideoLayer) return;
+
+  const video = document.createElement("video");
+  video.src = src;
+  video.className = "gift-video";
+  video.autoplay = true;
+  video.muted = true;        // 🔥 bắt buộc (browser policy)
+  video.playsInline = true;
+
+  giftVideoLayer.appendChild(video);
+
+  // tự remove
+  setTimeout(() => {
+    video.pause();
+    video.remove();
+  }, duration);
+}
+
 
 
 // ===== FORCE RESUME AUDIO (VIEWER) =====
@@ -1805,49 +1824,6 @@ const chatOverlay = document.getElementById("chatOverlay");
 const giftVideoLayer = document.getElementById("giftVideoLayer");
 
 
-// ===== GIFT VIDEO QUEUE (VIEWER – PRO) =====
-const giftVideoQueue = [];
-let giftVideoRunning = false;
-
-function runGiftVideoQueue() {
-  if (giftVideoRunning) return;
-  if (giftVideoQueue.length === 0) return;
-
-  giftVideoRunning = true;
-
-  const { src, duration } = giftVideoQueue.shift();
-  if (!giftVideoLayer) {
-    giftVideoRunning = false;
-    return;
-  }
-
-  const video = document.createElement("video");
-  video.src = src;
-  video.className = "gift-video";
-  video.autoplay = true;
-  video.muted = true;      // browser policy
-  video.playsInline = true;
-
-  giftVideoLayer.appendChild(video);
-
-  const cleanup = () => {
-    try { video.pause(); } catch {}
-    try { video.remove(); } catch {}
-    giftVideoRunning = false;
-    setTimeout(runGiftVideoQueue, 120); // chạy gift tiếp
-  };
-
-  video.onended = cleanup;
-  setTimeout(cleanup, duration);
-}
-
-function enqueueGiftVideo(src, duration = 2500) {
-  giftVideoQueue.push({ src, duration });
-  runGiftVideoQueue();
-}
-
-
-
 // 🔒 FIX MOBILE CHỐT: lock body scroll khi vuốt chat
 if (chatOverlay) {
   let __lock = false;
@@ -2458,27 +2434,27 @@ socket.on("gift", ({ gift, donor })=>{
   switch (gift.type) {
 
     case "meteor":
-     enqueueGiftVideo("/gift-videos/meteor.mp4", 10000);
+      playGiftVideo("/gift-videos/meteor.mp4", 10000);
       break;
 
     case "galaxy":
-      enqueueGiftVideo("/gift-videos/galaxy.mp4", 10000);
+      playGiftVideo("/gift-videos/galaxy.mp4", 10000);
       break;
 
     case "phoenix":
-      enqueueGiftVideo("/gift-videos/phoenix.mp4", 17000);
+      playGiftVideo("/gift-videos/phoenix.mp4", 17000);
       break;
 
     case "dragon":
-      enqueueGiftVideo("/gift-videos/gold_dragon.mp4", 12000);
+      playGiftVideo("/gift-videos/gold_dragon.mp4", 12000);
       break;
 
     case "dragonking":
-     enqueueGiftVideo("/gift-videos/dragon.mp4", 12000);
+      playGiftVideo("/gift-videos/dragon.mp4", 12000);
       break;
 
     case "supernova":
-      enqueueGiftVideo("/gift-videos/supernova.mp4", 11000);
+      playGiftVideo("/gift-videos/supernova.mp4", 11000);
       break;
   }
 });
