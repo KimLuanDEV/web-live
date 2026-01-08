@@ -187,6 +187,11 @@ function emitLobbyUpdate() {
   io.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
 }
 
+app.get("/api/profile/:uid", (req, res) => {
+  const user = getUser(req.params.uid);
+  if (!user) return res.json(null);
+  res.json(user);
+});
 
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {

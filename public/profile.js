@@ -48,19 +48,51 @@ function getVipBadge(level){
   return null;
 }
 
-function loadProfile(){
-  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-  p.uid = getUID();
-  localStorage.setItem(KEY, JSON.stringify(p));
+async function loadProfile(){
+  let p = null;
+  const uid = getUID();
 
+  try{
+    p = JSON.parse(localStorage.getItem(KEY));
+  }catch{}
+
+  // ❌ MẤT CACHE → RESTORE TỪ SERVER
+  if (!p || !p.uid){
+    try{
+      const res = await fetch(`/api/profile/${uid}`);
+      const serverProfile = await res.json();
+
+      if (serverProfile){
+        p = {
+          uid: serverProfile.uid,
+          name: serverProfile.name || defaultProfile.name,
+          avatar: serverProfile.avatar || defaultProfile.avatar,
+          coins: serverProfile.coins ?? defaultProfile.coins,
+          level: serverProfile.level ?? 1,
+          exp: serverProfile.exp ?? 0,
+          coinSent: serverProfile.coinSentTotal ?? 0,
+          coinReceived: serverProfile.coinReceivedTotal ?? 0,
+        };
+      } else {
+        // user mới hoàn toàn
+        p = { ...defaultProfile, uid };
+      }
+
+      localStorage.setItem(KEY, JSON.stringify(p));
+    }catch(e){
+      console.error("Restore profile failed", e);
+      p = { ...defaultProfile, uid };
+      localStorage.setItem(KEY, JSON.stringify(p));
+    }
+  }
+
+  // ===== RENDER UI =====
   nameInput.value = p.name;
   avatarPreview.src = p.avatar;
-  avatarPreview.onerror = () => {
-  avatarPreview.src = defaultProfile.avatar;
-};
+  avatarPreview.onerror = () => avatarPreview.src = defaultProfile.avatar;
+
   coinVal.textContent = p.coins || 0;
   levelVal.textContent = p.level || 1;
-
   coinSentVal.textContent = p.coinSent || 0;
   coinReceivedVal.textContent = p.coinReceived || 0;
 
@@ -70,29 +102,26 @@ function loadProfile(){
   const need = level * 100;
 
   if (expText) expText.textContent = `${exp} / ${need}`;
-  if (expFill) {
-    const percent = Math.min(100, (exp / need) * 100);
-    expFill.style.width = percent + "%";
+  if (expFill){
+    expFill.style.width = Math.min(100, (exp / need) * 100) + "%";
   }
 
   // 🎖 VIP BADGE
-if (vipBadgeBox){
-  vipBadgeBox.innerHTML = "";
-  const badge = getVipBadge(p.level || 1);
-  if (badge){
-    vipBadgeBox.innerHTML = `
-      <span class="vip-badge vip-${badge.key}">
-        ${badge.text}
-      </span>
-    `;
+  if (vipBadgeBox){
+    vipBadgeBox.innerHTML = "";
+    const badge = getVipBadge(p.level || 1);
+    if (badge){
+      vipBadgeBox.innerHTML = `
+        <span class="vip-badge vip-${badge.key}">
+          ${badge.text}
+        </span>
+      `;
+    }
   }
-}
 
-// ⭐ AVATAR VIP PRO trong profile
-const wrap = document.getElementById("avatarProfileWrap");
-if (wrap) applyAvatarVIP(wrap, p.level || 1);
-
-
+  // ⭐ AVATAR VIP PRO
+  const wrap = document.getElementById("avatarProfileWrap");
+  if (wrap) applyAvatarVIP(wrap, p.level || 1);
 }
 
 
