@@ -308,7 +308,6 @@ code{
   border-radius:14px;
   border:1px solid rgba(255,255,255,.18);
   background: rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
   box-shadow: 0 10px 22px rgba(0,0,0,.35);
   font-size:13px;
   line-height:1.25;
@@ -316,6 +315,23 @@ code{
   overflow-wrap:anywhere;
   animation: chatPop .18s ease-out;
 }
+
+.chat-bubble::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
+  z-index:0;
+}
+
+.chat-bubble > *{
+  position:relative;
+  z-index:1;
+}
+
+
 .chat-bubble.hide{
   opacity:0;
   transform: translateY(6px);
