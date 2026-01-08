@@ -1867,9 +1867,12 @@ const avatar =
 
 
   const el = document.createElement("div");
+
   el.className =
   "chat-bubble chat-" + role +
+  " lv-" + Math.floor(level / 10) * 10 +
   (vip ? ` chat-${vip.key}` : "");
+
 
 
   el.dataset.socket = msg.socketId;

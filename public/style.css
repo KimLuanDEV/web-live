@@ -5521,3 +5521,91 @@ video {
 @keyframes vip-spin{ from{transform:rotate(0)}to{transform:rotate(360deg)} }
 @keyframes vip-pulse{50%{transform:scale(1.08)}}
 @keyframes vip-float{50%{transform:translate(-50%,-6px)}}
+
+
+/* =========================
+   CHAT LEVEL STYLE (PRO)
+   ========================= */
+
+/* Level thấp */
+.chat-bubble.lv-1{
+  opacity:.9;
+}
+
+/* VIP */
+.chat-bubble.lv-10{
+  border-color: rgba(95,168,255,.6);
+  box-shadow: 0 0 14px rgba(95,168,255,.25);
+}
+
+/* VIP+ */
+.chat-bubble.lv-20{
+  border-color: rgba(199,125,255,.7);
+  box-shadow: 0 0 18px rgba(199,125,255,.35);
+}
+
+/* KING */
+.chat-bubble.lv-50{
+  border-color: rgba(255,211,110,.75);
+  background: linear-gradient(
+    135deg,
+    rgba(255,211,110,.25),
+    rgba(0,0,0,.55)
+  );
+  box-shadow:
+    0 0 22px rgba(255,211,110,.45),
+    0 12px 26px rgba(0,0,0,.45);
+}
+
+/* LEGEND */
+.chat-bubble.lv-100{
+  border-color: rgba(255,59,107,.9);
+  background: linear-gradient(
+    135deg,
+    rgba(255,59,107,.28),
+    rgba(0,0,0,.6)
+  );
+  box-shadow:
+    0 0 26px rgba(255,59,107,.6),
+    0 0 60px rgba(255,59,107,.35);
+}
+
+/* EMPEROR */
+.chat-bubble.lv-200{
+  border:1px solid transparent;
+  background:
+    linear-gradient(#000,#000) padding-box,
+    linear-gradient(135deg,#ffd36e,#ff3b6b,#5fa8ff) border-box;
+  box-shadow:
+    0 0 30px rgba(255,211,110,.6),
+    0 0 60px rgba(255,59,107,.35);
+}
+
+/* IMMORTAL – viền động */
+.chat-bubble.lv-250{
+  position:relative;
+  border:1px solid transparent;
+  background:
+    linear-gradient(#000,#000) padding-box,
+    conic-gradient(
+      from 0deg,
+      #ffd36e,
+      #ff3b6b,
+      #5fa8ff,
+      #25f09a,
+      #ffd36e
+    ) border-box;
+  animation: immortalGlow 3s linear infinite;
+  box-shadow:
+    0 0 38px rgba(255,211,110,.7),
+    0 0 80px rgba(95,168,255,.45);
+}
+
+@keyframes immortalGlow{
+  from{ filter:hue-rotate(0deg); }
+  to{ filter:hue-rotate(360deg); }
+}
+
+.chat-bubble{
+  position: relative; /* 🔥 BẮT BUỘC cho glow & viền */
+}
