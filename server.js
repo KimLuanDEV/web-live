@@ -690,7 +690,7 @@ const cur = clampInt(socket.data.coins, 0, 1_000_000_000);
   }
 
   socket.data.coins = cur - cost;
-  socket.emit("wallet-update", { coins: socket.data.coins });
+ 
 
 const donor = safeName(name || socket.data.userName || "Ẩn danh");
 const uid = donor;
