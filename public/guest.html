@@ -1622,7 +1622,15 @@ showGuestWait();
         document.body.classList.add("has-guest");
         if (mePipWrap) mePipWrap.setAttribute("aria-hidden", "false");
 
-        socket.emit("join-room", { roomId, role: "guest", profile: { name: (chatName.value||"Guest").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
+  socket.emit("guest-request", {
+  roomId,
+  profile: {
+    name: (chatName.value || "Guest").trim().slice(0,20),
+    avatar: guestProfile.avatar,
+    level: guestProfile.level
+  }
+});
+
         setStatus("⏳ Đang chờ host duyệt...");
         log("Đã xin lên live, chờ host duyệt...");
 
@@ -1839,7 +1847,8 @@ if (p?.catch) p.catch(()=>{});
 
       try { socket.disconnect(); } catch {}
 
-      location.href = "/viewer.html?room=" + encodeURIComponent(roomId);
+      window.location.href = `/viewer.html?room=${encodeURIComponent(roomId)}`;
+
     }
 
     guestFlipBtn.onclick = flipCamera;

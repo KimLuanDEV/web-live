@@ -525,7 +525,11 @@ saveLiveState(state);
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
 
-    
+     if (socket.data.role === "guest") {
+    console.warn("⛔ Guest bị chặn join-room:", socket.id);
+    return;
+  }
+  
      roomId = normRoomId(roomId);
     if (!roomId || !role) return;
 
