@@ -95,8 +95,6 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
-<!-- REQUEST LIVE ICON -->
-<button class="req-live-fab" id="btnRequestLive" title="Xin lên live">🎤</button>
 
 <!-- ❌ EXIT BUTTON -->
     <button id="btnBackLobby" class="page-exit-btn">✕</button>
@@ -288,15 +286,6 @@
 <div class="gift-dots" id="giftDots"></div>
 
 </div>
-
-
-
-
-  <!-- GUEST (PIP) -->
-  <div class="pip-wrap" id="guestPipWrap" aria-hidden="true">
-    <div class="pip-badge">👤 GUEST</div>
-    <video id="guestPlayer" autoplay playsinline></video>
-  </div>
 </div>
 
 
@@ -494,10 +483,8 @@
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
-    const guestPlayer = document.getElementById("guestPlayer");
     const btnJoin = document.getElementById("btnJoin");
     const liveStage = document.getElementById("liveStage");
-    const guestPipWrap = document.getElementById("guestPipWrap");
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
@@ -558,7 +545,6 @@ function forceResumeAudio(videoEl){
 ["click","touchstart","pointerdown"].forEach(evt=>{
   document.addEventListener(evt, ()=>{
     forceResumeAudio(player);
-    forceResumeAudio(guestPlayer);
   }, { passive:true });
 });
 
@@ -592,39 +578,13 @@ window.addEventListener("focus", () => {
   setTimeout(() => {
 
     forceResumeAudio(player);
-    forceResumeAudio(guestPlayer);
+   
 
     // reload sạch, không back history
     location.replace(location.href);
   }, 700);
 });
 
-function clearGuestView(reason = "") {
-  console.warn("👋 Guest left → clear PIP", reason);
-
-  guestId = null;
-
-  // stop & clear guest video
-  try {
-    if (guestPlayer?.srcObject) {
-      guestPlayer.srcObject.getTracks().forEach(t => t.stop());
-    }
-  } catch {}
-
-  if (guestPlayer) {
-    guestPlayer.pause();
-    guestPlayer.srcObject = null;
-  }
-
-  // hide PIP
-  if (guestPipWrap) {
-    guestPipWrap.style.display = "none";
-    guestPipWrap.classList.remove("is-speaking");
-  }
-
-  // remove global state
-  document.body.classList.remove("has-guest");
-}
 
 
 function isMobile(){
@@ -735,7 +695,6 @@ setInterval(checkHDQuality, 2500);
 
 
 
-     let swapped = false; // false: host main, true: guest main
 
 
     const socket = io();
@@ -1211,7 +1170,8 @@ function startVipSpotlight(ms=1200){
     // add overlay class
     document.body.classList.add("vip-spotlight");
     // zoom main card if exists
-    const card = document.getElementById("hostCard") || document.getElementById("hostCardGuest");
+    const card = document.getElementById("hostCard");
+
     if (card) card.classList.add("vip-zoom");
     // remove
     setTimeout(()=>{
@@ -1521,9 +1481,8 @@ socket.on("reaction", (msg)=>{
     let joined = false;
     let __viewerNeedResume = false;
 
-    // multiple peer connections: broadcaster + guest
+
     const pcs = new Map(); // peerId -> RTCPeerConnection
-    let guestId = null;
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -1577,36 +1536,6 @@ socket.on("reaction", (msg)=>{
       cleanupAll();
     });
 
-    // guest events
-    socket.on("guest-online", ({ guestId: gid }) => {
-
-      document.body.classList.add("has-guest");
-if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "false");
-
-      guestId = gid;
-      log("Guest online: " + gid);
-      setStatus("🟢 Có Guest cùng live");
-      // request guest to stream to this viewer
-      socket.emit("watch-guest", { roomId });
-    });
-
-
-    socket.on("guest-offline", () => {
-clearGuestView("server-event");
-      document.body.classList.remove("has-guest");
-document.body.classList.remove("swap-live");
-swapped = false;
-if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
-
-      log("Guest offline");
-      guestId = null;
-      guestPlayer.srcObject = null;
-      // close guest pc if exists
-      cleanupPeer("guest");
-    });
-
-
-
 
     async function join() {
       if (joined) return;
@@ -1615,19 +1544,11 @@ if (guestPipWrap) guestPipWrap.setAttribute("aria-hidden", "true");
       try{ btnJoin.style.display = "none"; }catch{}
 socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
-      log("Đã join room, đợi offer từ host/guest...");
+      log("Đã join room, đợi offer từ host...");
     }
 
     function cleanupPeer(peerKey) {
-      // peerKey can be actual peerId or "guest"
-      if (peerKey === "guest") {
-        // find by guestId if present
-        if (guestId && pcs.has(guestId)) {
-          try { pcs.get(guestId).close(); } catch {}
-          pcs.delete(guestId);
-        }
-        return;
-      }
+     
       const pc = pcs.get(peerKey);
       if (pc) {
         try { pc.close(); } catch {}
@@ -1641,7 +1562,7 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
       }
       pcs.clear();
       player.srcObject = null;
-      guestPlayer.srcObject = null;
+     
       joined = false;
     }
 
@@ -1668,8 +1589,6 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
   setTimeout(tryPlay, 1000);
 }
 
-
-    // Receive offer from broadcaster OR guest
     socket.on("offer", async ({ from, description }) => {
 
       /*
@@ -1700,33 +1619,9 @@ pc.ontrack = (event) => {
   const stream = event.streams[0];
   if (!stream) return;
 
-  // 🔑 PHÂN BIỆT DUY NHẤT BẰNG peerId
-  if (guestId && from === guestId) {
-    // ===== GUEST STREAM =====
-    console.log("🎥 Viewer nhận stream GUEST");
+   
 
-    guestPipWrap.style.display = "block";
-    guestPipWrap.setAttribute("aria-hidden", "false");
-
-    if (guestPlayer.srcObject !== stream) {
-      guestPlayer.srcObject = stream;
-optimizeVideoForMobile(guestPlayer);
-
-guestPlayer.playsInline = true;
-guestPlayer.muted = false;
-
-forceResumeAudio(guestPlayer);
-
-    }
-
-    try {
-      attachSpeakingIndicator(
-        guestPlayer,
-        document.getElementById("guestPipWrap")
-      );
-    } catch {}
-
-  } else {
+ else {
     // ===== HOST STREAM (CHÍNH) =====
     console.log("🎥 Viewer nhận stream HOST");
 
@@ -1784,9 +1679,10 @@ if (hasAudio) {
 const st = pc.iceConnectionState;
   if (st === "failed" || st === "disconnected") {
     socket.emit("request-ice-restart", {
-      to: hostId,
-      reason: "viewer_resume"
-    });
+  to: from,
+  reason: "viewer_resume"
+});
+
   }
 
       };
@@ -1797,11 +1693,6 @@ const st = pc.iceConnectionState;
         await pc.setLocalDescription(answer);
         socket.emit("answer", { to: from, description: pc.localDescription });
 
-    if (resume) {
-      log("🔄 Viewer resumed WebRTC");
-    } else {
-      log("🎥 Viewer nhận stream mới");
-    }
 
         setStatus("🟢 Đang xem live trực tiếp.");
         log("Đã gửi answer cho: " + from);
@@ -1842,31 +1733,6 @@ const st = pc.iceConnectionState;
     })();
 
 
-
-
-// ===== REQUEST TO GO LIVE (VIEWER -> GUEST) =====
-const btnRequestLive = document.getElementById("btnRequestLive");
-
-// mặc định disable khi host chưa online
-btnRequestLive.disabled = true;
-
-btnRequestLive.onclick = () => {
-  const url = `/guest.html?room=${encodeURIComponent(roomId)}`;
-  // mở tab mới để vẫn xem được live
-   window.location.href = url; // ✅ cùng tab
-};
-
-// chỉ cho xin lên live khi broadcaster online
-socket.on("broadcaster-online", () => {
-  btnRequestLive.disabled = false;
-});
-
-socket.on("broadcaster-offline", () => {
-  btnRequestLive.disabled = true;
-});
-
-
-
     // ===== CHAT (VIEWER) =====
     const chatBox = document.getElementById("chatBox");
     const chatName = document.getElementById("chatName");
@@ -1876,7 +1742,7 @@ socket.on("broadcaster-offline", () => {
     function addChat(msg) {
       const time = new Date(msg.ts).toLocaleTimeString();
       const role = String(msg.role || "viewer");
-      const tag = role === "host" ? "[HOST]" : role === "guest" ? "[GUEST]" : "";
+      const tag = role === "host" ? "[HOST]" : "";
       const line = document.createElement("div");
       line.className = "chat-line chat-" + role;
       line.textContent = `[${time}] ${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
@@ -1890,24 +1756,6 @@ socket.on("broadcaster-offline", () => {
 const chatOverlay = document.getElementById("chatOverlay");
 
 const giftVideoLayer = document.getElementById("giftVideoLayer");
-
-function playGiftVideo(src, duration = 2500) {
-  if (!giftVideoLayer) return;
-
-  const video = document.createElement("video");
-  video.src = src;
-  video.className = "gift-video";
-  video.autoplay = true;
-  video.muted = true;        // 🔥 bắt buộc
-  video.playsInline = true;
-
-  giftVideoLayer.appendChild(video);
-
-  setTimeout(() => {
-    video.pause();
-    video.remove();
-  }, duration);
-}
 
 
 // 🔒 FIX MOBILE CHỐT: lock body scroll khi vuốt chat
@@ -2164,24 +2012,8 @@ socket.on("viewer-count", ({ count }) => {
 });
 
 
-function swapStreams(){
-  const hostStream = player.srcObject;
-  const guestStream = guestPlayer.srcObject;
-  if (!hostStream || !guestStream) return;
 
-  // đổi stream
-  player.srcObject = guestStream;
-  guestPlayer.srcObject = hostStream;
 
-  swapped = !swapped;
-  document.body.classList.toggle("swap-live", swapped);
-}
-
-if (guestPipWrap) {
-  guestPipWrap.addEventListener("click", () => {
-    swapStreams();
-  });
-}
 
 // ===== GIFT ENGINE (client) =====
 const GIFT_CLIENT_CATALOG = {
