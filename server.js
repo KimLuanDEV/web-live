@@ -750,99 +750,56 @@ io.to(roomId).emit("viewer-list", {
   });
 
   socket.on("disconnect", () => {
+  const roomId = socket.data.roomId;
+  const role = socket.data.role;
+  if (!roomId) return;
 
+  const room = rooms.get(roomId);
+  if (!room) return;
 
+  /* ========= VIEWER ========= */
+  if (role === "viewer") {
+    // xoá khỏi viewers set
+    room.viewers.delete(socket.id);
 
-
-   for (const [roomId, room] of rooms.entries()) {
-
-for (const [uid, v] of room.viewerProfiles.entries()) {
-  if (v.socketId === socket.id) {
-    v.socketId = null; // ⛔ KHÔNG XOÁ PROFILE
-  }
-}
-
-io.to(roomId).emit("viewer-list", {
-  viewers: Array.from(room.viewerProfiles.values())
-});
-
-
-    if (room.broadcasterId === socket.id) {
-
-      room.pendingRelease = true;
-
-      room.releaseTimer = setTimeout(() => {
-        // nếu host KHÔNG quay lại
-        if (room.pendingRelease) {
-          closeRoom(roomId, "host_left");
-        }
-      }, ROOM_RELEASE_DELAY);
-
-      io.to(roomId).emit("host-temp-offline");
-    }
-  }
-
-socket.on("host-join", ({ roomId }) => {
-  const room = getRoom(roomId);
-
-  room.broadcasterId = socket.id;
-  room.pendingRelease = false;
-
-  if (room.releaseTimer) {
-    clearTimeout(room.releaseTimer);
-    room.releaseTimer = null;
-  }
-
-  socket.join(roomId);
-
-  io.to(roomId).emit("host-back-online");
-});
-
-
-    const roomId = socket.data.roomId;
-    const role = socket.data.role;
-    if (!roomId) return;
-
-    const room = rooms.get(roomId);
-    if (!room) return;
-
-    if (role === "viewer") {
-      room.viewers.delete(socket.id);
-      emitViewerCount(roomId);
-      emitLobbyUpdate();
-
-      io.to(roomId).emit("viewer-leave", { id: socket.id, count: room.viewers.size });
-      if (room.broadcasterId) {
-        io.to(room.broadcasterId).emit("disconnectPeer", { peerId: socket.id });
+    // xoá profile viewer
+    for (const [uid, profile] of room.viewerProfiles.entries()) {
+      if (profile.socketId === socket.id) {
+        room.viewerProfiles.delete(uid);
+        break;
       }
     }
 
-   if (role === "broadcaster") {
-  // ⏱️ Bắt đầu chờ giải phóng
-  room.pendingRelease = true;
+    emitViewerCount(roomId);
 
-  room.releaseTimer = setTimeout(() => {
-    // Nếu trong thời gian chờ host KHÔNG quay lại
-    if (room.pendingRelease) {
-      console.log("⏱️ Auto release room:", roomId);
+    io.to(roomId).emit("viewer-list", {
+      viewers: Array.from(room.viewerProfiles.values())
+    });
 
-      room.broadcasterId = null;
-      room.liveStartTs = null;
-      room.pendingRelease = false;
-      room.releaseTimer = null;
+    emitLobbyUpdate();
+  }
 
-      io.to(roomId).emit("live-stop");
-      emitLobbyUpdate();
-    }
-  }, ROOM_RELEASE_DELAY);
-}
+  /* ========= HOST ========= */
+  if (role === "broadcaster") {
+    room.pendingRelease = true;
+
+    room.releaseTimer = setTimeout(() => {
+      if (room.pendingRelease) {
+        closeRoom(roomId, "host_left");
+      }
+    }, ROOM_RELEASE_DELAY);
+
+    io.to(roomId).emit("host-temp-offline");
+  }
+
+  /* ========= CLEAN ROOM ========= */
+  if (!room.broadcasterId && room.viewers.size === 0) {
+    rooms.delete(roomId);
+  }
+});
 
 
-   if (!room.broadcasterId && room.viewers.size === 0) {
-  rooms.delete(roomId);
-}
 
-  });
 });
 
 
