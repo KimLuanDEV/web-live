@@ -846,6 +846,25 @@ function limitAudioBitrate(pc, kbps = 32) {
   } catch {}
 }
 
+function limitVideoBitrate(pc, kbps = 800) {
+  try {
+    pc.getSenders().forEach(sender => {
+      if (!sender.track || sender.track.kind !== "video") return;
+
+      const params = sender.getParameters();
+      if (!params.encodings) params.encodings = [{}];
+
+      params.encodings[0].maxBitrate = kbps * 1000; // 800kbps
+      params.encodings[0].scaleResolutionDownBy = 1.5; // giảm tải GPU
+      params.encodings[0].maxFramerate = 24; // ép fps thấp hơn
+
+      sender.setParameters(params).catch(()=>{});
+    });
+  } catch {}
+}
+
+
+
 // ===== HD QUALITY MONITOR (Viewer) =====
 const hdBadge = document.getElementById("hdBadge");
 let __lastBytes = 0;
@@ -1161,7 +1180,8 @@ function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
 }
 function __wireIceAuto(peerId, pc, opts={}){
   if (!pc) return;
-  const disconnectedDelay = opts.disconnectedDelay ?? 2500;
+  const disconnectedDelay = opts.disconnectedDelay ?? 6000;
+
 
   pc.addEventListener("iceconnectionstatechange", () => {
     const st = pc.iceConnectionState;
@@ -1588,19 +1608,8 @@ pc.addEventListener("iceconnectionstatechange", () => {
  
 // 🔒 khóa audio bitrate cho viewer này
 limitAudioBitrate(pc, 32);
+limitVideoBitrate(pc, 800); // 👈 CHỐT bitrate video cho viewer
 
-
-
-const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
-if (sender) {
-  const params = sender.getParameters();
-  if (!params.encodings) params.encodings = [{}];
-
-  params.encodings[0].maxBitrate = 1_500_000; // 1.5 Mbps
-  params.encodings[0].maxFramerate = 30;
-
-  sender.setParameters(params);
-}
 
 
       pc.onicecandidate = (e) => {
@@ -1848,9 +1857,9 @@ document.addEventListener("pointerdown", () => {
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
           video: {
-  width:  { ideal: 1280, max: 1280 },
-  height: { ideal: 720,  max: 720 },
-  frameRate: { ideal: 30, max: 30 }
+  width:  { ideal: 960, max: 960 },
+  height: { ideal: 540, max: 540 },
+  frameRate: { ideal: 24, max: 24 }
 },
 audio: {
   channelCount: 1,
