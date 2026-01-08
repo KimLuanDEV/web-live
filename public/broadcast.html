@@ -2838,25 +2838,15 @@ function renderViewerAvatars(viewers){
   wrap.innerHTML = "";
 
   viewers.forEach(v => {
-    const vip = getVipBadge(v.level || 1);
-
     const div = document.createElement("div");
     div.className = "viewer-avatar";
-
-    if (vip) div.classList.add("viewer-vip", `vip-${vip.key}`);
-
     div.innerHTML = `
-      <img src="${v.avatar}" onerror="this.src='${defaultAvatar}'">
-      <div class="viewer-level">Lv ${v.level || 1}</div>
+      <img src="${v.avatar}" />
+      <span class="viewer-lv">Lv.${v.level || 1}</span>
     `;
-
-    // click → mở mini profile
-    div.onclick = () => openMiniProfile(v);
-
     wrap.appendChild(div);
   });
 }
-
 
 
 
