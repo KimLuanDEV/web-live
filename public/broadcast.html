@@ -2853,10 +2853,10 @@ function renderViewerAvatars(viewers){
        </div>
       <span class="viewer-lv">Lv.${v.level || 1}</span>
     `;
-
-    applyAvatarVIP(div.querySelector(".avatar-pro"), v.level || 1);
-
     wrap.appendChild(div);
+
+     applyAvatarVIP(div.querySelector(".avatar-pro"), v.level || 1);
+     
   });
 }
 

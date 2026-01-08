@@ -947,10 +947,19 @@ function renderViewerAvatars(viewers){
     const div = document.createElement("div");
     div.className = "viewer-avatar";
     div.innerHTML = `
+    <div class="avatar-pro">
       <img src="${v.avatar}" />
+    </div>
       <span class="viewer-lv">Lv.${v.level || 1}</span>
     `;
     wrap.appendChild(div);
+
+    // 🔥 GẮN VIP PRO NGAY SAU KHI APPEND
+applyAvatarVIP(
+  div.querySelector(".avatar-pro"),
+  v.level || 1
+);
+
   });
 }
 
