@@ -750,64 +750,38 @@ function showLevelUpEffect(newLevel){
 function getVipBadge(level){
   level = Number(level) || 1;
 
-  if (level >= 1000) {
-    return { key:"overlord", text:"🪐 VIP OVERLORD", color:"#FFD700" };
-  }
-  if (level >= 700) {
-    return { key:"void", text:"🕳️ VIP VOID", color:"#9B5CFF" };
-  }
-  if (level >= 500) {
-    return { key:"god", text:"👁️ VIP GOD", color:"#FF2ED1" };
-  }
-  if (level >= 400) {
-    return { key:"eternal", text:"🌀 VIP ETERNAL", color:"#7BFFE1" };
-  }
-  if (level >= 300) {
-    return { key:"celestial", text:"🌠 VIP CELESTIAL", color:"#4D9CFF" };
-  }
-  if (level >= 250) {
-    return { key:"immortal", text:"🌌 VIP IMMORTAL", color:"#00FFE1" };
-  }
-  if (level >= 200) {
-    return { key:"emperor", text:"👑 VIP EMPEROR", color:"#FF9F1C" };
-  }
-  if (level >= 150) {
-    return { key:"king", text:"🔱 VIP KING", color:"#C77DFF" };
-  }
   if (level >= 100) {
-    return { key:"legend", text:"🔥 LEGEND", color:"#FF4D4D" };
+    return { key:"legend", text:"🔥 LEGEND", color:"#ff3b3b" };
   }
   if (level >= 50) {
-    return { key:"kinglite", text:"👑 KING", color:"#FFD36E" };
+    return { key:"king", text:"👑 KING", color:"#ffd36e" };
   }
   if (level >= 20) {
-    return { key:"vipplus", text:"💎 VIP+", color:"#7CF5FF" };
+    return { key:"vipplus", text:"💎 VIP+", color:"#c77dff" };
   }
   if (level >= 10) {
-    return { key:"vip", text:"🟦 VIP", color:"#5FA8FF" };
+    return { key:"vip", text:"🟦 VIP", color:"#5fa8ff" };
   }
   return null;
 }
 
 
-function applyAvatarVIP(el, level){
-  if (!el) return;
+function showVipChatSpotlight(vipKey){
+  try{
+    if (!vipKey) return;
 
-  el.classList.add("avatar-pro");
-  el.classList.remove(
-    "lv-silver","lv-gold","lv-diamond",
-    "lv-legend","lv-king","lv-immortal"
-  );
+    const overlay = document.createElement("div");
+    overlay.className = "vip-spotlight-overlay";
 
-  if (level >= 250) el.classList.add("lv-immortal");
-  else if (level >= 150) el.classList.add("lv-king");
-  else if (level >= 100) el.classList.add("lv-legend");
-  else if (level >= 50) el.classList.add("lv-diamond");
-  else if (level >= 30) el.classList.add("lv-gold");
-  else if (level >= 10) el.classList.add("lv-silver");
+    const spot = document.createElement("div");
+    spot.className = "vip-spotlight vip-spot-" + vipKey;
+
+    overlay.appendChild(spot);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 900);
+  }catch{}
 }
-
-
 
 
 
@@ -873,6 +847,22 @@ function limitAudioBitrate(pc, kbps = 32) {
 }
 
 
+function limitVideoBitrate(pc, kbps = 800) {
+  try {
+    pc.getSenders().forEach(sender => {
+      if (!sender.track || sender.track.kind !== "video") return;
+
+      const params = sender.getParameters();
+      if (!params.encodings) params.encodings = [{}];
+
+      params.encodings[0].maxBitrate = kbps * 1000; // 800kbps
+      params.encodings[0].scaleResolutionDownBy = 1.5; // giảm tải GPU
+      params.encodings[0].maxFramerate = 24; // ép fps thấp hơn
+
+      sender.setParameters(params).catch(()=>{});
+    });
+  } catch {}
+}
 
 
 // ===== HD QUALITY MONITOR (Viewer) =====
@@ -1190,7 +1180,7 @@ function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
 }
 function __wireIceAuto(peerId, pc, opts={}){
   if (!pc) return;
- const disconnectedDelay = opts.disconnectedDelay ?? 2500;
+  const disconnectedDelay = opts.disconnectedDelay ?? 6000;
 
 
   pc.addEventListener("iceconnectionstatechange", () => {
@@ -1618,17 +1608,8 @@ pc.addEventListener("iceconnectionstatechange", () => {
  
 // 🔒 khóa audio bitrate cho viewer này
 limitAudioBitrate(pc, 32);
+limitVideoBitrate(pc, 800); // 👈 CHỐT bitrate video cho viewer
 
-const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
-if (sender) {
-  const params = sender.getParameters();
-  if (!params.encodings) params.encodings = [{}];
-
-  params.encodings[0].maxBitrate = 1_500_000;
-  params.encodings[0].maxFramerate = 30;
-
-  sender.setParameters(params);
-}
 
 
       pc.onicecandidate = (e) => {
@@ -1875,10 +1856,10 @@ document.addEventListener("pointerdown", () => {
 
       try {
         localStream = await navigator.mediaDevices.getUserMedia({
-       video: {
-  width:  { ideal: 1280, max: 1280 },
-  height: { ideal: 720,  max: 720 },
-  frameRate: { ideal: 30, max: 30 }
+         video: {
+  width:  { ideal: 960, max: 960 },
+  height: { ideal: 540, max: 540 },
+  frameRate: { ideal: 24, max: 24 }
 },
 audio: {
   channelCount: 1,
@@ -2265,19 +2246,15 @@ const level =
 
 
   const el = document.createElement("div");
-
-
- el.className =
+  el.className =
   "chat-bubble chat-" + role +
-  " lv-" + Math.floor(level / 10) * 10 +
   (vip ? ` chat-${vip.key}` : "");
-
 
   el.dataset.socket = msg.socketId;
 
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
   el.innerHTML = `
-    <div class="avatar-pro chat-avatar-bg"
+    <div class="chat-avatar-bg"
      data-name="${name}"
      data-role="${role}"
      style="background-image:url('${avatar}')">
@@ -2297,10 +2274,7 @@ const level =
   </div>
 `;
 
-applyAvatarVIP(
-  el.querySelector(".chat-avatar-bg"),
-  level || 1
-);
+
   chatOverlay.appendChild(el);
 
 
@@ -2308,6 +2282,10 @@ applyAvatarVIP(
 requestAnimationFrame(() => {
   chatOverlay.scrollTop = chatOverlay.scrollHeight;
 });
+// 💡 VIP CHAT SPOTLIGHT
+if (vip) {
+  showVipChatSpotlight(vip.key);
+}
 
 
   // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
@@ -2831,15 +2809,10 @@ function renderViewerAvatars(viewers){
     const div = document.createElement("div");
     div.className = "viewer-avatar";
     div.innerHTML = `
-       <div class="avatar-pro">
-    <img src="${v.avatar}">
-       </div>
+      <img src="${v.avatar}" />
       <span class="viewer-lv">Lv.${v.level || 1}</span>
     `;
     wrap.appendChild(div);
-
-     applyAvatarVIP(div.querySelector(".avatar-pro"), v.level || 1);
-
   });
 }
 
@@ -2925,9 +2898,7 @@ function openMiniProfile(v){
 
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
-      <div class="avatar-pro" id="miniAvatar">
-  <img src="${v.avatar}">
-</div>
+      <img src="${v.avatar}">
       <div class="mini-profile-name">${v.name}</div>
     </div>
 
@@ -2953,11 +2924,6 @@ function openMiniProfile(v){
       </div>
     </div>
   `;
-
-  applyAvatarVIP(
-  document.getElementById("miniAvatar"),
-  v.level || 1
-);
 
   // 🔥 LẤY TOẠ ĐỘ VIDEO
   const video = document.querySelector(".video-card");

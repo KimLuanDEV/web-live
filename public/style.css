@@ -308,6 +308,7 @@ code{
   border-radius:14px;
   border:1px solid rgba(255,255,255,.18);
   background: rgba(0,0,0,.55);
+  backdrop-filter: blur(8px);
   box-shadow: 0 10px 22px rgba(0,0,0,.35);
   font-size:13px;
   line-height:1.25;
@@ -315,23 +316,6 @@ code{
   overflow-wrap:anywhere;
   animation: chatPop .18s ease-out;
 }
-
-.chat-bubble::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
-  z-index:0;
-}
-
-.chat-bubble > *{
-  position:relative;
-  z-index:1;
-}
-
-
 .chat-bubble.hide{
   opacity:0;
   transform: translateY(6px);
@@ -2531,7 +2515,7 @@ body.chat-frozen::after{
 
 
 /* ===== VIP SPOTLIGHT (Level 3) ===== */
-body.vip-tlightspo::before{
+body.vip-spotlight::before{
   content:"";
   position:fixed;
   inset:0;
@@ -2551,7 +2535,9 @@ body.vip-tlightspo::before{
   transition: transform .18s ease;
   box-shadow: 0 0 0 2px rgba(255,211,110,.20), 0 24px 70px rgba(0,0,0,.60);
 }
-
+body.vip-spotlight .vip-zoom{
+  transform: scale(1.06);
+}
 /* ===== /VIP SPOTLIGHT ===== */
 
 /* ===== GIFT FLOAT BUTTON ===== */
@@ -5037,49 +5023,46 @@ video {
 
 /* LEGEND */
 .chat-legend{
-  position: relative;
   border:1px solid rgba(255,60,60,.85);
-  animation: legendPulse 1.6s ease-in-out infinite;
-  background: rgba(0,0,0,.45); /* nền rõ chữ */
-}
-
-.chat-legend::before{
-  content:"";
-  position:absolute;
-  inset:-2px;
-  border-radius:inherit;
   box-shadow:
-    0 0 16px rgba(255,60,60,.7),
-    0 0 28px rgba(255,60,60,.9);
+    0 0 22px rgba(255,60,60,.9),
+    inset 0 0 8px rgba(255,255,255,.35);
   animation: legendPulse 1.6s ease-in-out infinite;
-  pointer-events:none;
-  z-index:0;
 }
-
-.chat-legend > *{
-  position:relative;
-  z-index:1;
-}
-
 
 @keyframes legendPulse{
-  0%,100%{
-    box-shadow:
-      0 0 10px rgba(255,60,60,.6),
-      0 0 18px rgba(255,60,60,.4);
-  }
-  50%{
-    box-shadow:
-      0 0 20px rgba(255,60,60,.9),
-      0 0 32px rgba(255,60,60,.6);
-  }
+  0%,100%{ box-shadow:0 0 16px rgba(255,60,60,.7); }
+  50%{ box-shadow:0 0 26px rgba(255,60,60,1); }
 }
-
-
 /* ===== /VIP CHAT BUBBLE ===== */
 
 
+/* ===== VIP CHAT SPOTLIGHT ===== */
+.vip-spotlight-overlay{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9998;
+  opacity: 0;
+  animation: vipSpotIn .9s ease-out forwards;
+}
 
+@keyframes vipSpotIn{
+  0%{ opacity:0 }
+  15%{ opacity:1 }
+  100%{ opacity:0 }
+}
+
+.vip-spotlight{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:140vmax;
+  height:140vmax;
+  border-radius:50%;
+  filter: blur(18px);
+}
 
 /* Color variants */
 .vip-spot-vip{
@@ -5303,6 +5286,7 @@ video {
   background:linear-gradient(135deg,#6ecbff,#3a86ff);
   color:#081420;
 }
+
 /* ===============================
    🔥 ANTI BLUR – CHAT LEGEND FIX
    =============================== */
@@ -5345,268 +5329,3 @@ video {
     0 0 12px rgba(255,60,60,.6),
     0 0 22px rgba(255,60,60,.9) !important;
 }
-
-/* ======================
-   VIP HIGH TIER
-   ====================== */
-
-.vip-badge{
-  display:inline-block;
-  padding:6px 14px;
-  border-radius:999px;
-  font-weight:800;
-  letter-spacing:.3px;
-  font-size:13px;
-  border:1px solid rgba(255,255,255,.25);
-}
-
-/* 🔥 LEGEND */
-.vip-legend{
-  background: linear-gradient(135deg,#ff5a5a,#ff2d2d);
-  box-shadow:0 0 18px rgba(255,60,60,.6);
-}
-
-/* 🔱 KING */
-.vip-king{
-  background: linear-gradient(135deg,#ffcc66,#ff9900);
-  box-shadow:
-    0 0 22px rgba(255,180,60,.8),
-    0 0 36px rgba(255,150,0,.6);
-}
-
-/* 👑 EMPEROR */
-.vip-emperor{
-  background: linear-gradient(135deg,#9b5cff,#5f2bff);
-  box-shadow:
-    0 0 26px rgba(155,92,255,.9),
-    0 0 42px rgba(95,43,255,.7);
-}
-
-/* 🌌 IMMORTAL */
-.vip-immortal{
-  background: linear-gradient(135deg,#00ffe1,#008cff,#7b5cff);
-  box-shadow:
-    0 0 30px rgba(0,255,225,.9),
-    0 0 48px rgba(123,92,255,.8);
-  animation: immortalGlow 2.4s ease-in-out infinite;
-}
-
-@keyframes immortalGlow{
-  0%,100%{
-    box-shadow:
-      0 0 22px rgba(0,255,225,.6),
-      0 0 40px rgba(123,92,255,.5);
-  }
-  50%{
-    box-shadow:
-      0 0 36px rgba(0,255,225,1),
-      0 0 60px rgba(123,92,255,.9);
-  }
-}
-
-.chat-king{ border-color:#ff9900 }
-.chat-emperor{ border-color:#7b5cff }
-.chat-immortal{
-  border-color:#00ffe1;
-  box-shadow:
-    0 0 20px rgba(0,255,225,.8),
-    0 0 36px rgba(123,92,255,.7);
-}
-
-/* ===== VIP ULTRA TIERS ===== */
-
-.vip-celestial{
-  box-shadow:0 0 22px rgba(77,156,255,.8);
-}
-
-.vip-eternal{
-  box-shadow:
-    0 0 18px rgba(123,255,225,.7),
-    0 0 36px rgba(123,255,225,.5);
-}
-
-.vip-god{
-  box-shadow:
-    0 0 22px rgba(255,46,209,.9),
-    0 0 44px rgba(255,46,209,.6);
-}
-
-.vip-void{
-  box-shadow:
-    0 0 26px rgba(155,92,255,.9),
-    0 0 50px rgba(40,0,80,.8);
-}
-
-.vip-overlord{
-  box-shadow:
-    0 0 30px rgba(255,215,0,1),
-    0 0 60px rgba(255,215,0,.8);
-}
-
-
-/* ================= AVATAR VIP PRO ================= */
-.avatar-pro{
-  position:relative;
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.avatar-pro img,
-.avatar-pro .chat-avatar-bg{
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  object-fit:cover;
-  z-index:3;
-}
-
-/* Aura */
-.avatar-pro::before{
-  content:"";
-  position:absolute;
-  inset:-4px;
-  border-radius:50%;
-  opacity:.8;
-  z-index:1;
-}
-
-/* Crown */
-.avatar-pro::after{
-  content:"";
-  position:absolute;
-  top:-14px;
-  left:50%;
-  transform:translateX(-50%);
-  font-size:16px;
-  z-index:4;
-  animation:vip-float 2.4s ease-in-out infinite;
-}
-
-/* ===== LEVEL ===== */
-.lv-silver::before{ box-shadow:0 0 0 2px #5fa8ff; }
-.lv-gold::before{ box-shadow:0 0 0 2px #ffd36e,0 0 16px #ffd36e; }
-.lv-diamond::before{
-  box-shadow:0 0 0 2px #9ee7ff,0 0 22px #9ee7ff;
-  animation:vip-pulse 2s infinite;
-}
-
-/* 🔥 LEGEND */
-.lv-legend::before{
-  background:radial-gradient(circle,#ff3b3b,transparent 70%);
-  animation:vip-spin 6s linear infinite;
-}
-
-/* 🔱 KING */
-.lv-king::before{
-  background:conic-gradient(#ffd36e,#c77dff,#ffd36e);
-  animation:vip-spin 4s linear infinite;
-}
-.lv-king::after{ content:"👑"; }
-
-/* 🌌 IMMORTAL */
-.lv-immortal::before{
-  background:conic-gradient(
-    #5fa8ff,#c77dff,#25f09a,#ff3b3b,#5fa8ff
-  );
-  filter:blur(2px);
-  animation:vip-spin 2.8s linear infinite;
-}
-.lv-immortal::after{ content:"🌌"; }
-
-/* Anim */
-@keyframes vip-spin{ from{transform:rotate(0)}to{transform:rotate(360deg)} }
-@keyframes vip-pulse{50%{transform:scale(1.08)}}
-@keyframes vip-float{50%{transform:translate(-50%,-6px)}}
-
-
-/* =========================
-   CHAT LEVEL STYLE (PRO)
-   ========================= */
-
-/* Level thấp */
-.chat-bubble.lv-1{
-  opacity:.9;
-}
-
-/* VIP */
-.chat-bubble.lv-10{
-  border-color: rgba(95,168,255,.6);
-  box-shadow: 0 0 14px rgba(95,168,255,.25);
-}
-
-/* VIP+ */
-.chat-bubble.lv-20{
-  border-color: rgba(199,125,255,.7);
-  box-shadow: 0 0 18px rgba(199,125,255,.35);
-}
-
-/* KING */
-.chat-bubble.lv-50{
-  border-color: rgba(255,211,110,.75);
-  background: linear-gradient(
-    135deg,
-    rgba(255,211,110,.25),
-    rgba(0,0,0,.55)
-  );
-  box-shadow:
-    0 0 22px rgba(255,211,110,.45),
-    0 12px 26px rgba(0,0,0,.45);
-}
-
-/* LEGEND */
-.chat-bubble.lv-100{
-  border-color: rgba(255,59,107,.9);
-  background: linear-gradient(
-    135deg,
-    rgba(255,59,107,.28),
-    rgba(0,0,0,.6)
-  );
-  box-shadow:
-    0 0 26px rgba(255,59,107,.6),
-    0 0 60px rgba(255,59,107,.35);
-}
-
-/* EMPEROR */
-.chat-bubble.lv-200{
-  border:1px solid transparent;
-  background:
-    linear-gradient(#000,#000) padding-box,
-    linear-gradient(135deg,#ffd36e,#ff3b6b,#5fa8ff) border-box;
-  box-shadow:
-    0 0 30px rgba(255,211,110,.6),
-    0 0 60px rgba(255,59,107,.35);
-}
-
-/* IMMORTAL – viền động */
-.chat-bubble.lv-250{
-  position:relative;
-  border:1px solid transparent;
-  background:
-    linear-gradient(#000,#000) padding-box,
-    conic-gradient(
-      from 0deg,
-      #ffd36e,
-      #ff3b6b,
-      #5fa8ff,
-      #25f09a,
-      #ffd36e
-    ) border-box;
-  animation: immortalGlow 3s linear infinite;
-  box-shadow:
-    0 0 38px rgba(255,211,110,.7),
-    0 0 80px rgba(95,168,255,.45);
-}
-
-@keyframes immortalGlow{
-  from{ filter:hue-rotate(0deg); }
-  to{ filter:hue-rotate(360deg); }
-}
-
-.chat-bubble{
-  position: relative; /* 🔥 BẮT BUỘC cho glow & viền */
-}
-

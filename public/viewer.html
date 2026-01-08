@@ -788,64 +788,46 @@ function showLevelUpEffect(newLevel){
   }catch{}
 }
 
+
 function getVipBadge(level){
   level = Number(level) || 1;
 
-  if (level >= 1000) {
-    return { key:"overlord", text:"🪐 VIP OVERLORD", color:"#FFD700" };
-  }
-  if (level >= 700) {
-    return { key:"void", text:"🕳️ VIP VOID", color:"#9B5CFF" };
-  }
-  if (level >= 500) {
-    return { key:"god", text:"👁️ VIP GOD", color:"#FF2ED1" };
-  }
-  if (level >= 400) {
-    return { key:"eternal", text:"🌀 VIP ETERNAL", color:"#7BFFE1" };
-  }
-  if (level >= 300) {
-    return { key:"celestial", text:"🌠 VIP CELESTIAL", color:"#4D9CFF" };
-  }
-  if (level >= 250) {
-    return { key:"immortal", text:"🌌 VIP IMMORTAL", color:"#00FFE1" };
-  }
-  if (level >= 200) {
-    return { key:"emperor", text:"👑 VIP EMPEROR", color:"#FF9F1C" };
-  }
-  if (level >= 150) {
-    return { key:"king", text:"🔱 VIP KING", color:"#C77DFF" };
-  }
   if (level >= 100) {
-    return { key:"legend", text:"🔥 LEGEND", color:"#FF4D4D" };
+    return { key:"legend", text:"🔥 LEGEND", color:"#ff3b3b" };
   }
   if (level >= 50) {
-    return { key:"kinglite", text:"👑 KING", color:"#FFD36E" };
+    return { key:"king", text:"👑 KING", color:"#ffd36e" };
   }
   if (level >= 20) {
-    return { key:"vipplus", text:"💎 VIP+", color:"#7CF5FF" };
+    return { key:"vipplus", text:"💎 VIP+", color:"#c77dff" };
   }
   if (level >= 10) {
-    return { key:"vip", text:"🟦 VIP", color:"#5FA8FF" };
+    return { key:"vip", text:"🟦 VIP", color:"#5fa8ff" };
   }
   return null;
 }
 
 
-function applyAvatarVIP(el, level){
-  if (!el) return;
-  el.classList.add("avatar-pro");
-  el.classList.remove(
-    "lv-silver","lv-gold","lv-diamond",
-    "lv-legend","lv-king","lv-immortal"
-  );
+function showVipChatSpotlight(vipKey){
+  try{
+    if (!vipKey) return;
 
-  if (level >= 250) el.classList.add("lv-immortal");
-  else if (level >= 150) el.classList.add("lv-king");
-  else if (level >= 100) el.classList.add("lv-legend");
-  else if (level >= 50) el.classList.add("lv-diamond");
-  else if (level >= 30) el.classList.add("lv-gold");
-  else if (level >= 10) el.classList.add("lv-silver");
+    const overlay = document.createElement("div");
+    overlay.className = "vip-spotlight-overlay";
+
+    const spot = document.createElement("div");
+    spot.className = "vip-spotlight vip-spot-" + vipKey;
+
+    overlay.appendChild(spot);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 900);
+  }catch{}
 }
+
+
+
+
 
 
     socket.on("profile-updated", ({ socketId, avatar }) => {
@@ -885,18 +867,18 @@ function getUserProfile(){
 }
 
 
-const profile = JSON.parse(localStorage.getItem("user_profile")) || {};
+const profile = getUserProfile();
 
 const stableUID = getStableUID();
 
 socket.emit("viewer-join", {
   roomId,
   profile: {
-    uid: profile.uid,
-    name: profile.name,
+    uid: stableUID,               // ✅ UID CỐ ĐỊNH
+    name: profile.name || "Viewer",
     avatar: profile.avatar,
-    level: profile.level,
-    coins: profile.coins
+    level: profile.level || 1,
+    coins: profile.coins || 0
   }
 });
 
@@ -924,19 +906,10 @@ function renderViewerAvatars(viewers){
     const div = document.createElement("div");
     div.className = "viewer-avatar";
     div.innerHTML = `
-    <div class="avatar-pro">
       <img src="${v.avatar}" />
-    </div>
       <span class="viewer-lv">Lv.${v.level || 1}</span>
     `;
     wrap.appendChild(div);
-
-    // 🔥 GẮN VIP PRO NGAY SAU KHI APPEND
-applyAvatarVIP(
-  div.querySelector(".avatar-pro"),
-  v.level || 1
-);
-
   });
 }
 
@@ -957,16 +930,13 @@ socket.on("viewer-list", ({ viewers }) => {
 
   viewerAvatarBox.innerHTML =
     showList.map((v, i) => `
-      <div class="viewer-avatar avatar-pro lv-${getVipBadge(v.level||1)?.key||''}" data-idx="${i}">
+      <div class="viewer-avatar" data-idx="${i}">
         <img src="${v.avatar}">
       </div>
     `).join("") +
     (remain > 0
       ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
       : "");
-
-      const avatar = div.querySelector(".viewer-avatar");
-      applyAvatarVIP(avatar, v.level || 1);
 
   // click avatar (top 4)
   viewerAvatarBox.querySelectorAll(".viewer-avatar[data-idx]")
@@ -1040,9 +1010,7 @@ function openMiniProfile(v){
 
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
-      <div class="avatar-pro" id="miniAvatar">
-         <img src="${v.avatar}">
-      </div>
+      <img src="${v.avatar}">
       <div class="mini-profile-name">${v.name}</div>
     </div>
 
@@ -1068,11 +1036,6 @@ function openMiniProfile(v){
       </div>
     </div>
   `;
-
-  applyAvatarVIP(
-  document.getElementById("miniAvatar"),
-  v.level || 1
-);
 
   // 🔥 LẤY TOẠ ĐỘ VIDEO
   const video = document.querySelector(".video-card");
@@ -1867,19 +1830,16 @@ const avatar =
 
 
   const el = document.createElement("div");
-
   el.className =
   "chat-bubble chat-" + role +
-  " lv-" + Math.floor(level / 10) * 10 +
   (vip ? ` chat-${vip.key}` : "");
-
 
 
   el.dataset.socket = msg.socketId;
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
  el.innerHTML = `
 
- <div class="avatar-pro chat-avatar-bg"
+ <div class="chat-avatar-bg"
      data-name="${name}"
      data-role="${role}"
      style="background-image:url('${avatar}')">
@@ -1901,8 +1861,6 @@ const avatar =
   </div>
 `;
 
-const av = el.querySelector(".chat-avatar-bg");
-applyAvatarVIP(av, level);
 
   chatOverlay.appendChild(el);
 
@@ -1911,7 +1869,10 @@ applyAvatarVIP(av, level);
 requestAnimationFrame(() => {
   chatOverlay.scrollTop = chatOverlay.scrollHeight;
 });
-
+ // 💡 VIP CHAT SPOTLIGHT
+if (vip) {
+  showVipChatSpotlight(vip.key);
+}
 
   
 

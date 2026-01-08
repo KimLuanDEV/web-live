@@ -1,5 +1,4 @@
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
-const { getUser, saveUser } = require("./user_store");
 
 const multer = require("multer");
 const express = require("express");
@@ -187,11 +186,6 @@ function emitLobbyUpdate() {
   io.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
 }
 
-app.get("/api/profile/:uid", (req, res) => {
-  const user = getUser(req.params.uid);
-  if (!user) return res.json(null);
-  res.json(user);
-});
 
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
@@ -283,91 +277,67 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 
   if (name) profile.name = safeName(name);
   if (avatar) profile.avatar = avatar;
-  if (typeof level === "number" && level > profile.level) {
-  profile.level = level;
-}
-
+  if (level) profile.level = Number(level) || profile.level;
 
   io.to(roomId).emit("viewer-list", {
     viewers: Array.from(room.viewerProfiles.values())
   });
-
-saveUser(profile.uid, {
-  uid: profile.uid,
-  name: profile.name,
-  avatar: profile.avatar,
-  level: profile.level,
-  coins: profile.coins,
-  coinSentTotal: profile.coinSentTotal || 0,
-  coinReceivedTotal: profile.coinReceivedTotal || 0
 });
 
-
-});
 
 
 
 
 socket.on("viewer-join", ({ roomId, profile }) => {
   roomId = normRoomId(roomId);
-  if (!roomId || !profile?.uid) return;
+  if (!roomId) return;
 
   const room = getRoom(roomId);
   if (!room) return;
 
+  // ✅ BẮT BUỘC: join phòng + set data để disconnect cleanup chạy đúng
   socket.join(roomId);
   socket.data.roomId = roomId;
   socket.data.role = "viewer";
 
-  const uid = String(profile.uid).trim();
-  if (!uid) return;
+  // ✅ UID ổn định (ưu tiên profile.uid)
+  const uid = String(profile?.uid || "").trim() || safeName(profile?.name);
 
-  // 🔁 LOAD USER TỪ FILE
-  let saved = getUser(uid);
-
-  if (!saved) {
-    saved = {
-      uid,
-      name: safeName(profile.name),
-      avatar: profile.avatar,
-      level: Number(profile.level) || 1,
-      coins: Number(profile.coins) || START_COINS,
-      coinSentTotal: 0,
-      coinReceivedTotal: 0
-    };
-    saveUser(uid, saved);
-  }
-
-  // 👻 CHỐNG MULTI TAB
+  // 👻 CHỐNG MULTI-TAB: kick socket cũ
   const old = room.viewerProfiles.get(uid);
-  if (old?.socketId && old.socketId !== socket.id) {
+  if (old && old.socketId && old.socketId !== socket.id) {
     io.to(old.socketId).emit("force-disconnect", { reason: "multi_tab" });
-    io.sockets.sockets.get(old.socketId)?.disconnect(true);
+
+    const oldSocket = io.sockets.sockets.get(old.socketId);
+    if (oldSocket) oldSocket.disconnect(true);
+
     room.viewers.delete(old.socketId);
   }
 
+  // add viewer
   room.viewers.add(socket.id);
 
-  // ✅ PROFILE TRONG ROOM = PROFILE TỪ FILE
+  // upsert profile (giữ dữ liệu room cũ nếu có)
   room.viewerProfiles.set(uid, {
-    ...saved,
+    uid,
     socketId: socket.id,
-    coinSentRoom: room.giftByUser.get(uid) || 0
+    name: safeName(profile?.name),
+    avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    level: Number(profile?.level) || 1,
+    coins: Number(profile?.coins) || 0,
+    coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
+    coinReceivedRoom: old?.coinReceivedRoom || 0
   });
-
-  // 🔑 SYNC WALLET
-  socket.data.coins = saved.coins;
-  socket.emit("wallet-sync", { coins: saved.coins });
 
   emitViewerCount(roomId);
 
+  // ✅ CHỈ emit 1 lần cho cả phòng (đỡ spam)
   io.to(roomId).emit("viewer-list", {
     viewers: Array.from(room.viewerProfiles.values())
   });
 
   emitLobbyUpdate();
 });
-
 
 
 
@@ -520,11 +490,12 @@ saveLiveState(state);
   profile?.name || (role === "broadcaster" ? "Host" : "Viewer")
 );
 
-   if (role === "broadcaster") {
-  socket.data.coins = clampInt(profile?.coins, 0, 1e9);
-  if (!socket.data.coins) socket.data.coins = START_COINS;
-  socket.emit("wallet-sync", { coins: socket.data.coins });
-}
+    socket.data.coins = clampInt(profile?.coins, 0, 1_000_000_000);
+    if (!socket.data.coins) socket.data.coins = START_COINS;
+
+    // sync wallet to this socket
+    socket.emit("wallet-sync", { coins: socket.data.coins });
+
 
 
     const room = getRoom(roomId);
@@ -720,19 +691,15 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   const qty = clampInt(gift.qty ?? 1, 1, 999);
   const cost = catalog.cost * qty;
 
- if (!donorProfile || donorProfile.coins < cost) {
-  socket.emit("gift-failed", {
-    reason: "no_coins",
-    need: cost,
-    coins: donorProfile?.coins || 0
-  });
-  return;
-}
+  // ===== WALLET CHECK =====
+  const cur = clampInt(socket.data.coins ?? START_COINS, 0, 1_000_000_000);
+  if (cur < cost) {
+    socket.emit("gift-failed", { reason: "no_coins", need: cost, coins: cur });
+    return;
+  }
 
-donorProfile.coins -= cost;
-socket.data.coins = donorProfile.coins;
-socket.emit("wallet-update", { coins: donorProfile.coins });
-
+  socket.data.coins = cur - cost;
+  socket.emit("wallet-update", { coins: socket.data.coins });
 
   // ===== TÌM PROFILE THEO SOCKET.ID (CHUẨN) =====
   let donorProfile = null;
@@ -746,25 +713,13 @@ socket.emit("wallet-update", { coins: donorProfile.coins });
   const donorName = safeName(name || donorProfile?.name || socket.data.userName || "Ẩn danh");
   const uid = donorProfile?.uid;
 
- if (donorProfile && uid) {
-  donorProfile.coinSentRoom = (donorProfile.coinSentRoom || 0) + cost;
-  donorProfile.coins = clampInt(donorProfile.coins - cost, 0, 1e9);
-  donorProfile.coinSentTotal = (donorProfile.coinSentTotal || 0) + cost;
+  // ===== UPDATE DONOR PROFILE =====
+  if (donorProfile && uid) {
+    donorProfile.coinSentRoom = (donorProfile.coinSentRoom || 0) + cost;
 
-  room.giftByUser.set(uid, (room.giftByUser.get(uid) || 0) + cost);
-
-  // 💾 SAVE USER
-  saveUser(uid, {
-    uid,
-    name: donorProfile.name,
-    avatar: donorProfile.avatar,
-    level: donorProfile.level,
-    coins: donorProfile.coins,
-    coinSentTotal: donorProfile.coinSentTotal,
-    coinReceivedTotal: donorProfile.coinReceivedTotal || 0
-  });
-}
-
+    // giftByUser LUÔN DÙNG UID
+    room.giftByUser.set(uid, (room.giftByUser.get(uid) || 0) + cost);
+  }
 
   // ===== UPDATE ROOM STATS =====
   room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
