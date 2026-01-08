@@ -306,7 +306,7 @@ const old = room.viewerProfiles.get(uid);
   name: safeName(profile?.name),
   avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
   level: Number(profile?.level) || 1,
-  coins: Number(profile?.coins) || 0,
+  coins: Number.isFinite(profile?.coins) ? profile.coins : 0,
   // 🔥 KHÔI PHỤC LẠI DỮ LIỆU CŨ
   coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
   coinReceivedRoom: old?.coinReceivedRoom || 0
@@ -480,8 +480,10 @@ saveLiveState(state);
   profile?.name || (role === "broadcaster" ? "Host" : "Viewer")
 );
 
-    socket.data.coins = clampInt(profile?.coins, 0, 1_000_000_000);
-    if (!socket.data.coins) socket.data.coins = START_COINS;
+socket.data.coins = Number.isFinite(profile?.coins)
+  ? clampInt(profile.coins, 0, 1_000_000_000)
+  : 0;
+
 
     // sync wallet to this socket
     socket.emit("wallet-sync", { coins: socket.data.coins });
@@ -684,7 +686,7 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   const cost = catalog.cost * qty;
 
   // wallet check
-  const cur = clampInt(socket.data.coins ?? START_COINS, 0, 1_000_000_000);
+const cur = clampInt(socket.data.coins, 0, 1_000_000_000);
   if (cur < cost){
     socket.emit("gift-failed", { reason: "no_coins", need: cost, coins: cur });
     return;
