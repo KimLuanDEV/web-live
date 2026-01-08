@@ -3,21 +3,26 @@ const path = require("path");
 
 const FILE = path.join(__dirname, "users.json");
 
-function loadAll(){
+function loadAll() {
   if (!fs.existsSync(FILE)) return {};
-  return JSON.parse(fs.readFileSync(FILE, "utf8"));
+  try {
+    return JSON.parse(fs.readFileSync(FILE, "utf8"));
+  } catch {
+    return {};
+  }
 }
 
-function saveAll(data){
+function saveAll(data) {
   fs.writeFileSync(FILE, JSON.stringify(data, null, 2));
 }
 
-function getUser(uid){
+function getUser(uid) {
   const all = loadAll();
   return all[uid] || null;
 }
 
-function saveUser(uid, profile){
+function saveUser(uid, profile) {
+  if (!uid) return;
   const all = loadAll();
   all[uid] = profile;
   saveAll(all);
