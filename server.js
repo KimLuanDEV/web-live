@@ -289,46 +289,56 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 
 
 socket.on("viewer-join", ({ roomId, profile }) => {
+  roomId = normRoomId(roomId);
+  if (!roomId) return;
 
-  
   const room = getRoom(roomId);
   if (!room) return;
 
+  // ✅ BẮT BUỘC: join phòng + set data để disconnect cleanup chạy đúng
+  socket.join(roomId);
+  socket.data.roomId = roomId;
+  socket.data.role = "viewer";
+
+  // ✅ UID ổn định (ưu tiên profile.uid)
+  const uid = String(profile?.uid || "").trim() || safeName(profile?.name);
+
+  // 👻 CHỐNG MULTI-TAB: kick socket cũ
+  const old = room.viewerProfiles.get(uid);
+  if (old && old.socketId && old.socketId !== socket.id) {
+    io.to(old.socketId).emit("force-disconnect", { reason: "multi_tab" });
+
+    const oldSocket = io.sockets.sockets.get(old.socketId);
+    if (oldSocket) oldSocket.disconnect(true);
+
+    room.viewers.delete(old.socketId);
+  }
+
+  // add viewer
   room.viewers.add(socket.id);
 
-const uid = profile.uid || safeName(profile?.name);
-
-const old = room.viewerProfiles.get(uid);
-
+  // upsert profile (giữ dữ liệu room cũ nếu có)
   room.viewerProfiles.set(uid, {
-  uid,
-  socketId: socket.id,     // 👈 rất quan trọng
-  name: safeName(profile?.name),
-  avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-  level: Number(profile?.level) || 1,
-  coins: Number(profile?.coins) || 0,
-  // 🔥 KHÔI PHỤC LẠI DỮ LIỆU CŨ
-  coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
-  coinReceivedRoom: old?.coinReceivedRoom || 0
-});
+    uid,
+    socketId: socket.id,
+    name: safeName(profile?.name),
+    avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    level: Number(profile?.level) || 1,
+    coins: Number(profile?.coins) || 0,
+    coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
+    coinReceivedRoom: old?.coinReceivedRoom || 0
+  });
 
- 
   emitViewerCount(roomId);
 
-
-  const viewers = Array.from(room.viewerProfiles.values());
-
-  // ✅ 1️⃣ GỬI NGAY CHO NGƯỜI VỪA JOIN (QUAN TRỌNG)
-  socket.emit("viewer-list", { viewers });
-
-  // ✅ 2️⃣ VẪN BROADCAST CHO NGƯỜI KHÁC
-  socket.to(roomId).emit("viewer-list", { viewers });
-
-  
+  // ✅ CHỈ emit 1 lần cho cả phòng (đỡ spam)
   io.to(roomId).emit("viewer-list", {
     viewers: Array.from(room.viewerProfiles.values())
   });
+
+  emitLobbyUpdate();
 });
+
 
 
 
@@ -672,8 +682,6 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   if (!roomId || !gift) return;
 
   const room = getRoom(roomId);
-
-  // Only allow gifts when room is live (has host + started)
   if (!room.broadcasterId || !room.liveStartTs) return;
 
   const type = String(gift.type || "").toLowerCase();
@@ -683,9 +691,9 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   const qty = clampInt(gift.qty ?? 1, 1, 999);
   const cost = catalog.cost * qty;
 
-  // wallet check
+  // ===== WALLET CHECK =====
   const cur = clampInt(socket.data.coins ?? START_COINS, 0, 1_000_000_000);
-  if (cur < cost){
+  if (cur < cost) {
     socket.emit("gift-failed", { reason: "no_coins", need: cost, coins: cur });
     return;
   }
@@ -693,47 +701,56 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   socket.data.coins = cur - cost;
   socket.emit("wallet-update", { coins: socket.data.coins });
 
-const donor = safeName(name || socket.data.userName || "Ẩn danh");
-const uid = donor;
+  // ===== TÌM PROFILE THEO SOCKET.ID (CHUẨN) =====
+  let donorProfile = null;
+  for (const p of room.viewerProfiles.values()) {
+    if (p.socketId === socket.id) {
+      donorProfile = p;
+      break;
+    }
+  }
 
-const donorProfile = room.viewerProfiles.get(uid);
-if (donorProfile) {
-  donorProfile.coinSentRoom =
-    (donorProfile.coinSentRoom || 0) + cost;
-}
+  const donorName = safeName(name || donorProfile?.name || socket.data.userName || "Ẩn danh");
+  const uid = donorProfile?.uid;
 
-// sau khi cộng giftByUser
-const p = room.viewerProfiles.get(socket.id);
-if (p) {
-  p.coinSentRoom = room.giftByUser.get(p.name) || 0;
-}
+  // ===== UPDATE DONOR PROFILE =====
+  if (donorProfile && uid) {
+    donorProfile.coinSentRoom = (donorProfile.coinSentRoom || 0) + cost;
 
-
-// 🔄 cập nhật lại viewer-list để mini profile / avatar sync realtime
-io.to(roomId).emit("viewer-list", {
-  viewers: Array.from(room.viewerProfiles.values())
-});
-
-
-  // update room stats
-  room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
-  try{
-    const prev = clampInt(room.giftByUser.get(donor) || 0, 0, 1_000_000_000);
+    // giftByUser LUÔN DÙNG UID
     room.giftByUser.set(uid, (room.giftByUser.get(uid) || 0) + cost);
-  }catch(e){}
+  }
 
+  // ===== UPDATE ROOM STATS =====
+  room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
+
+  // ===== SYNC VIEWER LIST (mini profile / avatar) =====
+  io.to(roomId).emit("viewer-list", {
+    viewers: Array.from(room.viewerProfiles.values())
+  });
+
+  // ===== EMIT GIFT EVENT =====
   const payload = {
-    gift: { type, emoji: catalog.emoji, cost: catalog.cost, qty, coins: cost },
-    donor,
+    gift: {
+      type,
+      emoji: catalog.emoji,
+      cost: catalog.cost,
+      qty,
+      coins: cost
+    },
+    donor: donorName,
+    uid, // 👈 thêm để client nếu cần
     totalCoins: room.giftTotal,
     ts: Date.now(),
   };
 
-
-
   io.to(roomId).emit("gift", payload);
-  io.to(roomId).emit("gift-stats", { totalCoins: room.giftTotal, topDonors: roomGiftTop(room, 5) });
+  io.to(roomId).emit("gift-stats", {
+    totalCoins: room.giftTotal,
+    topDonors: roomGiftTop(room, 5)
+  });
 });
+
 
 
   // WebRTC signaling passthrough

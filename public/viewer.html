@@ -847,6 +847,16 @@ function showVipChatSpotlight(vipKey){
   refreshViewerAvatars?.();
 });
 
+function getStableUID(){
+  const KEY = "viewer_uid";
+  let uid = localStorage.getItem(KEY);
+  if (!uid){
+    uid = "u_" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem(KEY, uid);
+  }
+  return uid;
+}
+
 
 function getUserProfile(){
   try{
@@ -859,16 +869,19 @@ function getUserProfile(){
 
 const profile = getUserProfile();
 
+const stableUID = getStableUID();
+
 socket.emit("viewer-join", {
   roomId,
   profile: {
-    uid: profile.name, // 🔥 BẮT BUỘC
+    uid: stableUID,               // ✅ UID CỐ ĐỊNH
     name: profile.name || "Viewer",
     avatar: profile.avatar,
     level: profile.level || 1,
     coins: profile.coins || 0
   }
 });
+
 
 if (profile){
   const chatNameInput = document.getElementById("chatName");
@@ -945,6 +958,22 @@ socket.on("viewer-list", ({ viewers }) => {
     };
   }
 });
+
+
+socket.on("force-disconnect", ({ reason }) => {
+  if (reason === "multi_tab") {
+    console.warn("👻 Multi-tab detected → kicked");
+
+    // UX nhẹ nhàng
+    alert("Tài khoản đang được mở ở tab khác 👻");
+
+    // quay về lobby hoặc reload
+    location.href = "/lobby";
+  }
+});
+
+
+
 
 function renderViewerPopup(){
   viewerListPopup.innerHTML = __viewerCache.map((v, i) => `
