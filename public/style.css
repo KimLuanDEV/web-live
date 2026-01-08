@@ -5077,7 +5077,6 @@ video {
   }
 }
 
-.chat-legend{ box-shadow:none !important; }
 
 /* ===== /VIP CHAT BUBBLE ===== */
 
@@ -5330,4 +5329,46 @@ video {
 .mini-profile-chip.blue{
   background:linear-gradient(135deg,#6ecbff,#3a86ff);
   color:#081420;
+}
+/* ===============================
+   🔥 ANTI BLUR – CHAT LEGEND FIX
+   =============================== */
+
+/* 1️⃣ TẮT TOÀN BỘ BLUR ẢNH HƯỞNG CHAT */
+.chat-overlay,
+.chat-overlay *{
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  filter: none !important;
+}
+
+/* 2️⃣ CHAT BUBBLE KHÔNG BAO GIỜ MỜ */
+.chat-bubble,
+.chat-bubble *{
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* 3️⃣ FIX RIÊNG LEGEND */
+.chat-bubble.chat-legend,
+.chat-bubble.chat-legend *{
+  opacity: 1 !important;
+  filter: none !important;
+  text-shadow: none !important;
+}
+
+/* 4️⃣ ÉP RENDER TEXT SẮC NÉT */
+.chat-bubble{
+  text-rendering: geometricPrecision;
+  -webkit-font-smoothing: antialiased;
+  font-smooth: always;
+}
+
+/* 5️⃣ LEGEND GLOW = BOX-SHADOW RIÊNG */
+.chat-bubble.chat-legend{
+  box-shadow:
+    0 0 12px rgba(255,60,60,.6),
+    0 0 22px rgba(255,60,60,.9) !important;
 }
