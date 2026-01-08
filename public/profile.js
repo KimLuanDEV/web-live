@@ -23,6 +23,7 @@ const defaultProfile = {
 
 
 function getVipBadge(level){
+  if (level >= 100) return { key: "legend", text: "🔥 VIP LEGEND" };
   if (level >= 50) return { key: "diamond", text: "💎 VIP DIAMOND" };
   if (level >= 30) return { key: "gold", text: "👑 VIP GOLD" };
   if (level >= 10) return { key: "silver", text: "⭐ VIP SILVER" };
