@@ -5329,3 +5329,49 @@ video {
     0 0 12px rgba(255,60,60,.6),
     0 0 22px rgba(255,60,60,.9) !important;
 }
+
+
+/* ===== VIP BADGE ===== */
+.vip-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:999px;
+  font-weight:800;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,.25);
+  background: rgba(0,0,0,.45);
+  box-shadow: 0 0 18px rgba(255,255,255,.15);
+}
+
+/* từng cấp */
+.vip-immortal{
+  color:#ff3b3b;
+  box-shadow:0 0 25px rgba(255,59,59,.8);
+}
+.vip-emperor{
+  color:#ffd36e;
+  box-shadow:0 0 22px rgba(255,211,110,.8);
+}
+.vip-king{
+  color:#c77dff;
+  box-shadow:0 0 22px rgba(199,125,255,.8);
+}
+.vip-legend{
+  color:#ff6a00;
+  box-shadow:0 0 22px rgba(255,106,0,.8);
+}
+.vip-diamond{
+  color:#5fd1ff;
+  box-shadow:0 0 22px rgba(95,209,255,.8);
+}
+.vip-gold{
+  color:#ffd36e;
+}
+.vip-silver{
+  color:#e0e0e0;
+}
+.vip-vip{
+  color:#8bc34a;
+}

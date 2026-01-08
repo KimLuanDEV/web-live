@@ -804,17 +804,29 @@ function showLevelUpEffect(newLevel){
 function getVipBadge(level){
   level = Number(level) || 1;
 
-  if (level >= 100) {
-    return { key:"legend", text:"🔥 LEGEND", color:"#ff3b3b" };
+  if (level >= 250) {
+    return { key:"immortal", text:"🌌 VIP IMMORTAL", color:"#ff3b3b" };
   }
-  if (level >= 50) {
-    return { key:"king", text:"👑 KING", color:"#ffd36e" };
+  if (level >= 200) {
+    return { key:"emperor", text:"👑 VIP EMPEROR", color:"#ffd36e" };
+  }
+  if (level >= 150) {
+    return { key:"king", text:"🔱 VIP KING", color:"#c77dff" };
+  }
+  if (level >= 100) {
+    return { key:"legend", text:"🔥 VIP LEGEND", color:"#ff6a00" };
+  }
+  if (level >= 70) {
+    return { key:"diamond", text:"💎 VIP DIAMOND", color:"#5fd1ff" };
+  }
+  if (level >= 40) {
+    return { key:"gold", text:"👑 VIP GOLD", color:"#ffd36e" };
   }
   if (level >= 20) {
-    return { key:"vipplus", text:"💎 VIP+", color:"#c77dff" };
+    return { key:"silver", text:"⭐ VIP SILVER", color:"#cfd8dc" };
   }
   if (level >= 10) {
-    return { key:"vip", text:"🟦 VIP", color:"#5fa8ff" };
+    return { key:"vip", text:"💠 VIP", color:"#8bc34a" };
   }
   return null;
 }

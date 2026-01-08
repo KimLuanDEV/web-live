@@ -13,7 +13,7 @@ const vipBadgeBox = document.getElementById("vipBadgeBox");
 const defaultProfile = {
   name: "User",
   avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
-  coins: 200000,
+  coins: 10000,
   level: 1,
   exp: 0,            // 🔥 exp
   coinSent: 0,       // 🎁 đã tặng
@@ -23,11 +23,35 @@ const defaultProfile = {
 
 
 function getVipBadge(level){
-  if (level >= 50) return { key: "diamond", text: "💎 VIP DIAMOND" };
-  if (level >= 30) return { key: "gold", text: "👑 VIP GOLD" };
-  if (level >= 10) return { key: "silver", text: "⭐ VIP SILVER" };
+  level = Number(level) || 1;
+
+  if (level >= 250) {
+    return { key:"immortal", text:"🌌 VIP IMMORTAL", color:"#ff3b3b" };
+  }
+  if (level >= 200) {
+    return { key:"emperor", text:"👑 VIP EMPEROR", color:"#ffd36e" };
+  }
+  if (level >= 150) {
+    return { key:"king", text:"🔱 VIP KING", color:"#c77dff" };
+  }
+  if (level >= 100) {
+    return { key:"legend", text:"🔥 VIP LEGEND", color:"#ff6a00" };
+  }
+  if (level >= 70) {
+    return { key:"diamond", text:"💎 VIP DIAMOND", color:"#5fd1ff" };
+  }
+  if (level >= 40) {
+    return { key:"gold", text:"👑 VIP GOLD", color:"#ffd36e" };
+  }
+  if (level >= 20) {
+    return { key:"silver", text:"⭐ VIP SILVER", color:"#cfd8dc" };
+  }
+  if (level >= 10) {
+    return { key:"vip", text:"💠 VIP", color:"#8bc34a" };
+  }
   return null;
 }
+
 
 function loadProfile(){
   const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
@@ -125,3 +149,20 @@ avatarInput.onchange = async () => {
 
   reader.readAsDataURL(file);
 };
+
+
+function addExp(amount){
+  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  p.exp = (p.exp || 0) + amount;
+
+  let need = p.level * 100;
+
+  while (p.exp >= need) {
+    p.exp -= need;
+    p.level++;
+    need = p.level * 100;
+  }
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+  loadProfile();
+}
