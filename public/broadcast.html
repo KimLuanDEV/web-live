@@ -809,23 +809,6 @@ function applyAvatarVIP(el, level){
 
 
 
-function showVipChatSpotlight(vipKey){
-  try{
-    if (!vipKey) return;
-
-    const overlay = document.createElement("div");
-    overlay.className = "vip-spotlight-overlay";
-
-    const spot = document.createElement("div");
-    spot.className = "vip-spotlight vip-spot-" + vipKey;
-
-    overlay.appendChild(spot);
-    document.body.appendChild(overlay);
-
-    setTimeout(()=>overlay.remove(), 900);
-  }catch{}
-}
-
 
 
 
@@ -2321,10 +2304,6 @@ applyAvatarVIP(
 requestAnimationFrame(() => {
   chatOverlay.scrollTop = chatOverlay.scrollHeight;
 });
-// 💡 VIP CHAT SPOTLIGHT
-if (vip) {
-  showVipChatSpotlight(vip.key);
-}
 
 
   // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
@@ -2856,7 +2835,7 @@ function renderViewerAvatars(viewers){
     wrap.appendChild(div);
 
      applyAvatarVIP(div.querySelector(".avatar-pro"), v.level || 1);
-     
+
   });
 }
 

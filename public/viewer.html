@@ -848,29 +848,6 @@ function applyAvatarVIP(el, level){
 }
 
 
-
-function showVipChatSpotlight(vipKey){
-  try{
-    if (!vipKey) return;
-
-    const overlay = document.createElement("div");
-    overlay.className = "vip-spotlight-overlay";
-
-    const spot = document.createElement("div");
-    spot.className = "vip-spotlight vip-spot-" + vipKey;
-
-    overlay.appendChild(spot);
-    document.body.appendChild(overlay);
-
-    setTimeout(()=>overlay.remove(), 900);
-  }catch{}
-}
-
-
-
-
-
-
     socket.on("profile-updated", ({ socketId, avatar }) => {
   // 1️⃣ cập nhật cache viewer
   if (viewerProfiles?.[socketId]) {
@@ -1931,10 +1908,7 @@ applyAvatarVIP(av, level);
 requestAnimationFrame(() => {
   chatOverlay.scrollTop = chatOverlay.scrollHeight;
 });
- // 💡 VIP CHAT SPOTLIGHT
-if (vip) {
-  showVipChatSpotlight(vip.key);
-}
+
 
   
 

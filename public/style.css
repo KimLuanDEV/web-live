@@ -2531,7 +2531,7 @@ body.chat-frozen::after{
 
 
 /* ===== VIP SPOTLIGHT (Level 3) ===== */
-body.vip-spotlight::before{
+body.vip-tlightspo::before{
   content:"";
   position:fixed;
   inset:0;
@@ -2551,9 +2551,7 @@ body.vip-spotlight::before{
   transition: transform .18s ease;
   box-shadow: 0 0 0 2px rgba(255,211,110,.20), 0 24px 70px rgba(0,0,0,.60);
 }
-body.vip-spotlight .vip-zoom{
-  transform: scale(1.06);
-}
+
 /* ===== /VIP SPOTLIGHT ===== */
 
 /* ===== GIFT FLOAT BUTTON ===== */
@@ -5081,32 +5079,7 @@ video {
 /* ===== /VIP CHAT BUBBLE ===== */
 
 
-/* ===== VIP CHAT SPOTLIGHT ===== */
-.vip-spotlight-overlay{
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 9998;
-  opacity: 0;
-  animation: vipSpotIn .9s ease-out forwards;
-}
 
-@keyframes vipSpotIn{
-  0%{ opacity:0 }
-  15%{ opacity:1 }
-  100%{ opacity:0 }
-}
-
-.vip-spotlight{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform:translate(-50%,-50%);
-  width:140vmax;
-  height:140vmax;
-  border-radius:50%;
-  filter: blur(18px);
-}
 
 /* Color variants */
 .vip-spot-vip{
