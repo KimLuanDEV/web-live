@@ -1,11 +1,5 @@
-const { initMediasoup, getRouter } = require("./sfu/mediasoupServer");
-const { createWebRtcTransport } = require("./sfu/sfuTransport");
-const { getSfuRoom } = require("./sfu/sfuRoom");
-
-initMediasoup();
-
-
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
+
 const multer = require("multer");
 const express = require("express");
 const http = require("http");
@@ -244,68 +238,6 @@ emitLobbyUpdate();
 
 
 io.on("connection", (socket) => {
-
-
-socket.on("sfu-create-transport", async ({ roomId }, cb) => {
-  const router = getRouter();
-  const { transport, params } = await createWebRtcTransport(router);
-  socket.sfuTransport = transport;
-  cb(params);
-});
-
-socket.on("sfu-produce", async ({ roomId, kind, rtpParameters }, cb) => {
-  const room = getSfuRoom(roomId);
-
-  const producer = await socket.sfuTransport.produce({
-    kind,
-    rtpParameters
-  });
-
-  room.producers.set(socket.id, producer);
-
-  cb({ id: producer.id });
-});
-
-
-socket.on("sfu-consume", async ({ roomId, rtpCapabilities }, cb) => {
-  const room = getSfuRoom(roomId);
-  const router = getRouter();
-
-  const producer = [...room.producers.values()][0];
-  if (!producer) return;
-
-  if (!router.canConsume({
-    producerId: producer.id,
-    rtpCapabilities
-  })) return;
-
-  const { transport } = await createWebRtcTransport(router);
-  socket.sfuRecvTransport = transport;
-
-  const consumer = await transport.consume({
-    producerId: producer.id,
-    rtpCapabilities,
-    paused: false
-  });
-
-  cb({
-    transportOptions: {
-      id: transport.id,
-      iceParameters: transport.iceParameters,
-      iceCandidates: transport.iceCandidates,
-      dtlsParameters: transport.dtlsParameters
-    },
-    consumerOptions: {
-      id: consumer.id,
-      producerId: producer.id,
-      kind: consumer.kind,
-      rtpParameters: consumer.rtpParameters
-    }
-  });
-});
-
-
-
 
 socket.on("host-profile-update", ({ roomId, level }) => {
   const room = getRoom(roomId);

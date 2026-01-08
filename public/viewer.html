@@ -827,16 +827,6 @@ function showVipChatSpotlight(vipKey){
 }
 
 
-socket.emit("sfu-consume", {
-  roomId,
-  rtpCapabilities: device.rtpCapabilities
-}, async ({ transportOptions, consumerOptions }) => {
-
-  const recvTransport = device.createRecvTransport(transportOptions);
-
-  const consumer = await recvTransport.consume(consumerOptions);
-  video.srcObject = new MediaStream([consumer.track]);
-});
 
 
 

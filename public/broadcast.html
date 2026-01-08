@@ -784,13 +784,6 @@ function showVipChatSpotlight(vipKey){
 }
 
 
-socket.emit("sfu-create-transport", { roomId }, async (params) => {
-  sendTransport = device.createSendTransport(params);
-
-  await sendTransport.produce({
-    track: localStream.getVideoTracks()[0]
-  });
-});
 
 
 socket.on("profile-updated", ({ socketId, avatar }) => {
