@@ -330,10 +330,8 @@ code{
   border-color: rgba(255,59,107,.55);
   background: rgba(255,59,107,.16);
 }
-.chat-bubble.chat-guest{
-  border-color: rgba(95,168,255,.55);
-  background: rgba(95,168,255,.16);
-}
+
+
 .chat-bubble.chat-viewer{
   border-color: rgba(234,240,255,.22);
 }
@@ -341,7 +339,6 @@ code{
   padding: 2px 0;
 }
 .chat-line.chat-host{ color: rgba(255,59,107,.95); }
-.chat-line.chat-guest{ color: rgba(95,168,255,.95); }
 .chat-line.chat-viewer{ color: rgba(234,240,255,.88); }
 
 
@@ -369,87 +366,9 @@ code{
   position: relative;
 }
 
-.pip-wrap{
-  position: absolute;
-  right: 18px;
-  bottom: 52px;
-  width: min(34vw, 320px);
-  max-width: 400px;
-  aspect-ratio: 16/9;
-  border-radius: 16px;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.18);
-  background: #000;
-  box-shadow: 0 18px 52px rgba(0,0,0,.55);
-  backdrop-filter: blur(8px);
-  z-index: 9;
-
-  display: none; /* chỉ hiện khi có guest */
-}
-
-.pip-wrap video{
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  background: #000;
-}
-
-.pip-badge{
-  position: absolute;
-  left: 10px;
-  top: 10px;
-  padding: 6px 10px;
-  border-radius: 999px;
-  font-size: 12px;
-  font-weight: 700;
-  border: 1px solid rgba(255,255,255,.18);
-  background: rgba(0,0,0,.55);
-  color: #fff;
-  z-index: 2;
-}
-
-.has-guest .pip-wrap{
-  display: block;
-}
-
-/* click to swap hint */
-.has-guest .pip-wrap{
-  cursor: pointer;
-  transition: transform .12s ease, filter .12s ease;
-}
-.has-guest .pip-wrap:hover{
-  transform: scale(1.03);
-  filter: brightness(1.06);
-}
-
-
-
-/* Mobile: pip nhỏ hơn */
-@media (max-width: 520px){
-  .pip-wrap{
-    width: 110px;
-    height: 200px;
-    right: 15px;
-    bottom: 65px;
-  }
-}
-
 /* ===== PIP on Host/Viewer + Focus Guest ===== */
 .live-stage{ position:relative; }
 
-.has-guest .pip-wrap{ display:block; }
-.pip-wrap{ display:none; } /* mặc định ẩn khi chưa có guest */
-
-
-
-#mePipWrap{
-  pointer-events: none;
-}
-
-#guestPipWrapHost{
-  pointer-events: none;
-}
 
 /* ===== REACTIONS (tap/click hearts) ===== */
 .reactions-layer{
@@ -488,8 +407,7 @@ code{
 
 
 /* ===== SPEAKING HIGHLIGHT (auto voice activity) ===== */
-.video-card.is-speaking,
-.pip-wrap.is-speaking{
+.video-card.is-speaking{
   box-shadow:
     0 0 0 2px rgba(37,240,154,.55),
     0 0 26px rgba(37,240,154,.22),
@@ -3466,67 +3384,9 @@ body[data-fps="safe"] .text3d{
 }
 
 
-/* ===== GUEST REQUEST ICON (HOST) ===== */
-.guest-req-icon{
-  position:absolute;
-  bottom:10px;
-  left:60px;
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  border:1px solid rgba(255,255,255,.25);
-  background: rgba(0,0,0,.65);
-  color:#fff;
-  font-size:18px;
-  cursor:pointer;
-  z-index:30;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.guest-req-icon:hover{
-  transform:scale(1.08);
-}
-
-.guest-req-dot{
-  position:absolute;
-  top:6px;
-  right:6px;
-  width:10px;
-  height:10px;
-  border-radius:50%;
-  background:#FF3B6B;
-  box-shadow:0 0 12px #FF3B6B;
-  display:none;
-}
-
-.guest-req-icon.has-request .guest-req-dot{
-  display:block;
-}
-
-/* Guest request icon chỉ hiện khi đang live */
-.guest-req-icon{
-  display: none;
-}
-body.is-live .guest-req-icon{
-  display: flex;
-}
 
 
-/* ===== GUEST REQUEST SHAKE ===== */
-@keyframes guestShake {
-  0%   { transform: translateX(0); }
-  20%  { transform: translateX(-3px); }
-  40%  { transform: translateX(3px); }
-  60%  { transform: translateX(-2px); }
-  80%  { transform: translateX(2px); }
-  100% { transform: translateX(0); }
-}
 
-.guest-req-icon.is-shake {
-  animation: guestShake 0.45s ease-in-out;
-}
 
 
 /* ===== CHAT ICON CHỈ HIỆN KHI LIVE ===== */
@@ -3787,71 +3647,10 @@ body.is-live #startLiveOverlay {
 }
 
 
-/* ===== GUEST WAIT HOST OVERLAY ===== */
-.guest-wait-overlay{
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background: rgba(0,0,0,.55);
-  backdrop-filter: blur(6px);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.guest-wait-overlay.hidden{
-  display: none;
-}
-
-.guest-wait-box{
-  background: #0b0f14;
-  padding: 22px 26px;
-  border-radius: 16px;
-  text-align: center;
-  min-width: 240px;
-  border: 1px solid rgba(255,255,255,.18);
-  box-shadow: 0 0 28px rgba(95,168,255,.25);
-}
-
-.guest-spinner{
-  width: 42px;
-  height: 42px;
-  margin: 0 auto 12px;
-  border-radius: 50%;
-  border: 3px solid rgba(255,255,255,.15);
-  border-top-color: #5FA8FF;
-  animation: guestSpin 1s linear infinite;
-}
-
-@keyframes guestSpin{
-  to{ transform: rotate(360deg); }
-}
-
-.guest-wait-title{
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.guest-wait-desc{
-  font-size: 13px;
-  opacity: .75;
-}
 
 
-.guest-wait-cancel{
-  margin-top: 14px;
-  padding: 6px 16px;
-  border-radius: 999px;
-  background: transparent;
-  border: 1px solid rgba(255,255,255,.28);
-  color: #fff;
-  font-size: 13px;
-  cursor: pointer;
-}
 
-.guest-wait-cancel:hover{
-  background: rgba(255,255,255,.08);
-}
+
 
 
 /* ===== HD NETWORK BADGE ===== */
@@ -3895,8 +3694,7 @@ body.is-live #startLiveOverlay {
   }
 
   /* giảm shadow */
-  .video-card,
-  .pip-wrap{
+  .video-card{
     box-shadow: 0 10px 26px rgba(0,0,0,.45);
   }
 
@@ -3916,8 +3714,7 @@ body.is-live #startLiveOverlay {
   }
 
   /* giảm shadow GPU */
-  .video-card,
-  .pip-wrap{
+  .video-card{
     box-shadow: 0 8px 22px rgba(0,0,0,.45);
   }
 }
