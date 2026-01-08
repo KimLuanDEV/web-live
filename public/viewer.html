@@ -711,7 +711,6 @@ function updateProfileOnSendGift(totalCoin){
   p.coins = Math.max(0, (p.coins || 0) - totalCoin);
 
   localStorage.setItem(KEY, JSON.stringify(p));
-  syncWalletUI(); // ✅ THÊM DÒNG NÀY
 }
 
 
@@ -857,34 +856,8 @@ function getUserProfile(){
   }
 }
 
-function syncWalletUI(){
-  let p = {};
-  try {
-    p = JSON.parse(localStorage.getItem("user_profile")) || {};
-  } catch {}
-
-  const coin = Number(p.coins || 0);
-
-  // gift panel
-  const walletCoins = document.getElementById("walletCoins");
-  if (walletCoins) walletCoins.textContent = coin;
-
-  // gift confirm modal
-  const gcmWallet = document.getElementById("gcmWallet");
-  if (gcmWallet) gcmWallet.textContent = coin;
-
-  // coin error modal
-  const cemWallet = document.getElementById("cemWallet");
-  if (cemWallet) cemWallet.textContent = coin;
-}
-
-
 
 const profile = getUserProfile();
-syncWalletUI();
-
-
-
 
 socket.emit("viewer-join", {
   roomId,
@@ -1569,20 +1542,9 @@ socket.on("reaction", (msg)=>{
       joined = true;
       
       try{ btnJoin.style.display = "none"; }catch{}
-
-const p = getUserProfile();
-
-socket.emit("join-room", {
-  roomId,
-  role: "viewer",
-  profile: {
-    name: (p.name || "Viewer").slice(0,20),
-    coins: Number(p.coins || 0) // ✅ ĐÚNG
-  }
-});
-
-  setStatus("⏳ Đang chờ Host gửi LIVE...");
-  log("Đã join room, đợi offer từ host...");
+socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
+      setStatus("⏳ Đang chờ Host gửi LIVE...");
+      log("Đã join room, đợi offer từ host...");
     }
 
     function cleanupPeer(peerKey) {
@@ -2594,11 +2556,6 @@ socket.on("room-closed", ({ reason }) => {
 
 
 const giftFab = document.getElementById("giftFab");
-
-giftFab?.addEventListener("click", () => {
-  syncWalletUI();
-});
-
 const giftPanel = document.getElementById("giftPanel");
 
 giftFab?.addEventListener("click", (e)=>{

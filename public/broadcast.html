@@ -666,8 +666,6 @@ function updateProfileOnReceiveGift(totalCoin){
   p.coins = (p.coins || 0) + totalCoin;
 
   localStorage.setItem(KEY, JSON.stringify(p));
-   syncHostWalletUI(); // ✅ THÊM DÒNG NÀY
-
 }
 
 
@@ -814,22 +812,7 @@ function getUserProfile(){
   }
 }
 
-function syncHostWalletUI(){
-  let p = {};
-  try{
-    p = JSON.parse(localStorage.getItem("user_profile")) || {};
-  }catch{}
-
-  const coin = Number(p.coins || 0);
-
-  // 💎 tổng coin nhận trong live
-  const giftTotal = document.getElementById("giftTotalCoinsHost");
-  if (giftTotal) giftTotal.textContent = coin;
-}
-
-
 const profile = getUserProfile();
-syncHostWalletUI();
 
 
 
