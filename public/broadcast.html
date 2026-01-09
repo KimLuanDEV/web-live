@@ -2838,17 +2838,12 @@ function renderViewerAvatars(viewers){
   wrap.innerHTML = "";
 
   viewers.forEach(v => {
-    const vip = getVipBadge(v.level);
     const div = document.createElement("div");
-
-    div.className = "viewer-avatar" + (vip ? " vip-" + vip.key : "");
-
+    div.className = "viewer-avatar";
     div.innerHTML = `
-      ${vip ? `<div class="vip-ring"></div>` : ""}
-      <img src="${v.avatar || '/assets/avatar-default.png'}" />
+      <img src="${v.avatar}" />
       <span class="viewer-lv">Lv.${v.level || 1}</span>
     `;
-
     wrap.appendChild(div);
   });
 }
@@ -2870,16 +2865,11 @@ socket.on("viewer-list", ({ viewers }) => {
   const remain = __viewerCache.length - maxShow;
 
   viewerAvatarBox.innerHTML =
-  showList.map((v,i)=>{
-    const vip = getVipBadge(v.level);
-    return `
-      <div class="viewer-avatar ${vip ? "vip-"+vip.key : ""}" data-idx="${i}">
-        ${vip ? `<div class="vip-ring"></div>` : ""}
+    showList.map((v, i) => `
+      <div class="viewer-avatar" data-idx="${i}">
         <img src="${v.avatar}">
-        <span class="viewer-lv">Lv.${v.level||1}</span>
       </div>
-    `;
-  }).join("") +
+    `).join("") +
     (remain > 0
       ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
       : "");
