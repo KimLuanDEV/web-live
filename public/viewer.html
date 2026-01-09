@@ -94,6 +94,8 @@
 
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
+<!-- PIP BUTTON -->
+<button id="pipBtn" class="pip-btn" title="Thu nhỏ (PiP)">🗔</button>
 
 
 <!-- ❌ EXIT BUTTON -->
@@ -2806,6 +2808,31 @@ slider.addEventListener("pointerup", ()=>{
   startX = 0;
 });
 
+
+
+const pipBtn = document.getElementById("pipBtn");
+
+async function togglePiP(){
+  try{
+    // Nếu đang PiP → thoát
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else {
+      // Bật PiP cho video đang xem
+      await player.requestPictureInPicture();
+    }
+  }catch(e){
+    console.warn("PiP not available:", e);
+    alert("Trình duyệt không hỗ trợ PiP");
+  }
+}
+
+pipBtn?.addEventListener("click", togglePiP);
+
+// Khi user thoát PiP (Alt+Tab, đóng cửa sổ PiP) → cập nhật icon
+player?.addEventListener("leavepictureinpicture", ()=>{
+  // có thể đổi icon nếu muốn
+});
 
 
 

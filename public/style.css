@@ -5426,3 +5426,26 @@ video {
   50%{ filter:blur(10px) brightness(1.6); }
   100%{ filter:blur(6px) brightness(1); }
 }
+
+
+/* ===== PiP button ===== */
+.pip-btn{
+  position:absolute;
+  right:64px;      /* né nút X và ctrl */
+  bottom:16px;
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.6);
+  color:#fff;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:30;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 14px 34px rgba(0,0,0,.55);
+}
+.pip-btn:hover{ transform: scale(1.06); }
