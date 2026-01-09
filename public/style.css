@@ -5364,3 +5364,65 @@ video {
 }
 
 
+/* ===== CHAT AVATAR VIP RING ===== */
+
+.chat-avatar-bg{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background-size:cover;
+  background-position:center;
+  position:relative;
+  flex-shrink:0;
+}
+
+/* vòng glow */
+.chat-avatar-bg::before{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  background:linear-gradient(45deg,#777,#444);
+  filter:blur(6px);
+  opacity:.55;
+  z-index:-1;
+}
+
+/* Level badge */
+.chat-avatar-bg::after{
+  content: attr(data-level);
+  position:absolute;
+  right:-6px;
+  bottom:-6px;
+  background:#000;
+  color:#fff;
+  font-size:9px;
+  padding:2px 5px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.4);
+}
+
+/* ===== VIP COLORS (khớp getVipBadge) ===== */
+
+.chat-legend .chat-avatar-bg::before{ background:linear-gradient(45deg,#ff3b3b,#ff8c00); }
+.chat-king   .chat-avatar-bg::before{ background:linear-gradient(45deg,#c77dff,#ff3bff); }
+.chat-emperor .chat-avatar-bg::before{ background:linear-gradient(45deg,#ffd36e,#ff3b3b); }
+.chat-immortal .chat-avatar-bg::before{ background:linear-gradient(45deg,#00f0ff,#ff3bff); }
+.chat-diamond .chat-avatar-bg::before{ background:linear-gradient(45deg,#5fd1ff,#00e5ff); }
+.chat-gold .chat-avatar-bg::before{ background:linear-gradient(45deg,#ffd36e,#ffb300); }
+.chat-silver .chat-avatar-bg::before{ background:linear-gradient(45deg,#cfd8dc,#90a4ae); }
+.chat-vip .chat-avatar-bg::before{ background:linear-gradient(45deg,#8bc34a,#4caf50); }
+
+/* glow động cho VIP cao */
+.chat-legend .chat-avatar-bg::before,
+.chat-king .chat-avatar-bg::before,
+.chat-emperor .chat-avatar-bg::before,
+.chat-immortal .chat-avatar-bg::before{
+  animation: chatGlow 2s infinite linear;
+}
+
+@keyframes chatGlow{
+  0%{ filter:blur(6px) brightness(1); }
+  50%{ filter:blur(10px) brightness(1.6); }
+  100%{ filter:blur(6px) brightness(1); }
+}
