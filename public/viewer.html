@@ -1390,14 +1390,18 @@ function disableAutoMini(){
   }
 }
 
-// Khi chuyển tab / app
-document.addEventListener("visibilitychange", ()=>{
-  if (document.hidden){
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
     enableAutoMini();
+    socket.emit("viewer-mini-mode", { roomId, mini: true });
+    __miniMode = true;
   } else {
     disableAutoMini();
+    socket.emit("viewer-mini-mode", { roomId, mini: false });
+    __miniMode = false;
   }
 });
+
 
 // iOS Safari đặc biệt hay dùng pagehide/pageshow
 window.addEventListener("pagehide", enableAutoMini);
@@ -2839,16 +2843,25 @@ let __miniMode = false;
 pipBtn.onclick = async () => {
   __miniMode = !__miniMode;
 
+  // báo server chuyển viewer sang mini-mode
   socket.emit("viewer-mini-mode", {
     roomId,
     mini: __miniMode
   });
 
-  // bật PiP nếu muốn
+  // UI
+  pipBtn.textContent = __miniMode ? "🟡 MINI" : "🔛";
+
+  // bật Picture-in-Picture nếu có
   try {
-    await player.requestPictureInPicture();
+    if (__miniMode) {
+      await player.requestPictureInPicture();
+    } else if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    }
   } catch {}
 };
+
 
 
   </script>
