@@ -2834,6 +2834,21 @@ player?.addEventListener("leavepictureinpicture", ()=>{
   // có thể đổi icon nếu muốn
 });
 
+let __miniMode = false;
+
+pipBtn.onclick = async () => {
+  __miniMode = !__miniMode;
+
+  socket.emit("viewer-mini-mode", {
+    roomId,
+    mini: __miniMode
+  });
+
+  // bật PiP nếu muốn
+  try {
+    await player.requestPictureInPicture();
+  } catch {}
+};
 
 
   </script>

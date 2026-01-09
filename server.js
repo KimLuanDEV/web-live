@@ -158,7 +158,11 @@ function getRoom(roomId) {
 function emitViewerCount(roomId) {
   const room = rooms.get(roomId);
   if (!room) return;
-  io.to(roomId).emit("viewer-count", { count: room.viewers.size });
+
+  const active = [...room.viewerProfiles.values()]
+    .filter(v => !v.mini).length;
+
+  io.to(roomId).emit("viewer-count", { count: active });
 }
 
 
@@ -305,9 +309,15 @@ socket.on("host-profile-update", ({ roomId, level }) => {
   if (avatar) profile.avatar = avatar;
   if (level) profile.level = Number(level) || profile.level;
 
-  io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+ const list = Array.from(room.viewerProfiles.values());
+
+for (const v of list) {
+  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
+  io.to(v.socketId).emit("viewer-list", {
+    viewers: list.filter(x => !x.mini)
   });
+}
+
 });
 
 
@@ -352,19 +362,39 @@ socket.on("viewer-join", ({ roomId, profile }) => {
     level: Number(profile?.level) || 1,
     coins: Number(profile?.coins) || 0,
     coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
-    coinReceivedRoom: old?.coinReceivedRoom || 0
+    coinReceivedRoom: old?.coinReceivedRoom || 0,
+    mini: false   // 👈 thêm
   });
 
   emitViewerCount(roomId);
 
   // ✅ CHỈ emit 1 lần cho cả phòng (đỡ spam)
-  io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+ const list = Array.from(room.viewerProfiles.values());
+
+for (const v of list) {
+  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
+  io.to(v.socketId).emit("viewer-list", {
+    viewers: list.filter(x => !x.mini)
   });
+}
 
   emitLobbyUpdate();
 });
 
+
+socket.on("viewer-mini-mode", ({ roomId, mini }) => {
+  const room = getRoom(roomId);
+  if (!room) return;
+
+  for (const v of room.viewerProfiles.values()) {
+    if (v.socketId === socket.id) {
+      v.mini = mini === true;
+      break;
+    }
+  }
+
+  emitViewerCount(roomId); // update số viewer active
+});
 
 
 
@@ -648,7 +678,13 @@ if (room.liveStartTs) {
     ts: Date.now(),
   };
 
-  io.to(roomId).emit("chat", msg);
+for (const v of room.viewerProfiles.values()) {
+  if (!v.mini) io.to(v.socketId).emit("chat", msg);
+}
+
+// host vẫn nhận
+if (room.broadcasterId) io.to(room.broadcasterId).emit("chat", msg);
+
 });
 
 
@@ -665,7 +701,12 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     y: typeof y === "number" ? y : Number(y),
     ts: Date.now(),
   };
-  io.to(roomId).emit("reaction", msg);
+
+ for (const v of room.viewerProfiles.values()) {
+  if (!v.mini) io.to(v.socketId).emit("reaction", msg);
+}
+if (room.broadcasterId) io.to(room.broadcasterId).emit("reaction", msg);
+
 });
 
   // ===== PIN NOTE (host creates custom pinned content + draggable position) =====
@@ -679,7 +720,12 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     if (!t) return;
     const note = { text: t, x: __clamp01(x), y: __clamp01(y), ts: Date.now() };
     room.pinnedNote = note;
-    io.to(roomId).emit("pin-note-update", note);
+
+   for (const v of room.viewerProfiles.values()) {
+  if (!v.mini) io.to(v.socketId).emit("pin-note-update", note);
+}
+if (room.broadcasterId) io.to(room.broadcasterId).emit("pin-note-update", note);
+
   });
 
   socket.on("pin-note-move", ({ roomId, x, y }) => {
@@ -777,9 +823,15 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
 
   // ===== SYNC VIEWER LIST (mini profile / avatar) =====
-  io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+ const list = Array.from(room.viewerProfiles.values());
+
+for (const v of list) {
+  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
+  io.to(v.socketId).emit("viewer-list", {
+    viewers: list.filter(x => !x.mini)
   });
+}
+
 
   // ===== EMIT GIFT EVENT =====
   const payload = {
@@ -796,11 +848,24 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     ts: Date.now(),
   };
 
-  io.to(roomId).emit("gift", payload);
-  io.to(roomId).emit("gift-stats", {
+ // gift
+for (const v of list) {
+  if (!v.mini) io.to(v.socketId).emit("gift", payload);
+}
+if (room.broadcasterId) io.to(room.broadcasterId).emit("gift", payload);
+
+  // stats
+for (const v of list) {
+  if (!v.mini) io.to(v.socketId).emit("gift-stats", {
     totalCoins: room.giftTotal,
     topDonors: roomGiftTop(room, 5)
   });
+}
+if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
+  totalCoins: room.giftTotal,
+  topDonors: roomGiftTop(room, 5)
+});
+
 });
 
 
@@ -841,9 +906,15 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
 
     emitViewerCount(roomId);
 
-    io.to(roomId).emit("viewer-list", {
-      viewers: Array.from(room.viewerProfiles.values())
-    });
+const list = Array.from(room.viewerProfiles.values());
+
+for (const v of list) {
+  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
+  io.to(v.socketId).emit("viewer-list", {
+    viewers: list.filter(x => !x.mini)
+  });
+}
+
 
     emitLobbyUpdate();
   }
