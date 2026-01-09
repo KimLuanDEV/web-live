@@ -97,6 +97,8 @@
 <!-- PIP BUTTON -->
 <button id="pipBtn" class="pip-btn" title="Thu nhỏ (PiP)">🔛</button>
 
+<button id="muteBtn" class="ctrl-fab" title="Tắt tiếng">🔊</button>
+
 
 <!-- ❌ EXIT BUTTON -->
     <button id="btnBackLobby" class="page-exit-btn">✕</button>
@@ -2862,6 +2864,21 @@ pipBtn.onclick = async () => {
   } catch {}
 };
 
+
+const muteBtn = document.getElementById("muteBtn");
+let __muted = false;
+
+muteBtn.onclick = () => {
+  __muted = !__muted;
+
+  const stream = player.srcObject;
+  if (stream) {
+    stream.getAudioTracks().forEach(t => t.enabled = !__muted);
+  }
+
+  muteBtn.textContent = __muted ? "🔇" : "🔊";
+  muteBtn.classList.toggle("muted", __muted);
+};
 
 
   </script>
