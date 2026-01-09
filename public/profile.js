@@ -13,7 +13,7 @@ const vipBadgeBox = document.getElementById("vipBadgeBox");
 const defaultProfile = {
   name: "User",
   avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
-  coins: 10000,
+  coins: 0,
   level: 1,
   exp: 0,            // 🔥 exp
   coinSent: 0,       // 🎁 đã tặng
