@@ -1,0 +1,2818 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+<meta
+  name="viewport"
+  content="width=device-width,
+           initial-scale=1,
+           maximum-scale=1,
+           minimum-scale=1,
+           user-scalable=no"
+/>
+
+
+  <title>Viewer - Livestream Pro</title>
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body class="viewer-fullscreen">
+
+
+
+  
+  <div class="container">
+    <div class="card">
+
+      
+      <div class="page-header">
+  <h1 class="page-title">👁 Viewer</h1>
+
+  <span class="status-badge status-live" id="statusBadge">
+    🔴 LIVE
+  </span>
+
+  
+</div>
+
+
+
+      <hr />
+
+      <div class="row">
+
+        <div class="card" style="display: none;">
+          <div class="kv">
+            <div class="badge">Phòng Livestream</div>
+            <code id="roomCode">-</code>
+            <button id="btnJoin">Tham gia xem Livestream</button>
+          </div>
+
+          <hr />
+          <div class="log" id="log" style="display: none;"></div>
+        </div>
+
+       
+
+        <div class="live-stage" id="liveStage" style="margin-top:10px">
+
+          <div class="gift-layer" id="giftLayer"></div>
+
+  <!-- HOST -->
+
+  
+  <div class="video-card live-main" id="hostCard">
+    <div class="viewer-backdrop hidden" id="viewerBackdrop"></div>
+
+
+    <div class="live-overlay">
+      <span class="dot"></span>
+      <b>LIVE</b>
+     
+
+      <span class="hd-badge hd-good" id="hdBadge">🟢 HD</span>
+      <span class="live-meta">
+        <span class="meta-item" id="viewerCountViewer">👁 0</span>
+        <span class="meta-sep">•</span>
+        <span class="meta-item" id="liveTimerViewer">⏱ 00:00:00</span>
+      </span>
+    </div>
+
+          <div class="gift-total-overlay viewer">
+  <span class="coin-icon">💎</span>
+  <b id="giftTotalCoins">0</b>
+</div>
+
+<!-- 👥 VIEWER AVATAR OVERLAY -->
+<div class="viewer-avatars-overlay" id="viewerAvatars"></div>
+<!-- 👥 VIEWER LIST POPUP -->
+<div class="viewer-list-popup hidden" id="viewerListPopup"></div>
+<!-- 👤 MINI PROFILE -->
+<div class="mini-profile hidden" id="miniProfile"></div>
+
+    
+<div class="chat-overlay" id="chatOverlay"></div>
+
+<!-- CHAT QUICK BUTTON -->
+<button class="chat-fab" id="chatFab">💬</button>
+
+
+<!-- ❌ EXIT BUTTON -->
+    <button id="btnBackLobby" class="page-exit-btn">✕</button>
+
+
+<!-- CHAT INPUT OVERLAY -->
+<div class="chat-input-overlay hidden" id="chatInputOverlay">
+  <input
+    id="quickChatInput"
+    placeholder="Nhập tin nhắn..."
+    autocomplete="off"
+  />
+  <button id="quickChatSend">➤</button>
+</div>
+
+
+<div class="join-overlay" id="joinOverlayViewer" aria-live="polite"></div>
+<div class="pin-overlay" id="pinOverlay"></div>
+
+        <div class="reactions-layer" id="reactionsLayerViewer"></div>
+<div class="video-card__inner">
+      <video id="player" autoplay playsinline></video>
+
+      <!-- 🎁 GIFT VIDEO OVERLAY -->
+<div id="giftVideoLayer" class="gift-video-layer"></div>
+
+
+    </div>
+
+
+
+<!-- GIFT FLOAT BUTTON -->
+<button class="gift-fab" id="giftFab" title="Tặng quà">🎁</button>
+
+<!-- GIFT PANEL -->
+<div class="gift-panel hidden" id="giftPanel">
+  <div class="gift-panel__header">
+    <span>🎁 Tặng quà</span>
+    <span class="gift-wallet-mini">Số dư: <b id="walletCoins">0</b> 💎</span>
+  </div>
+
+  <div class="gift-combo" id="giftCombo">
+    <button class="gift-combo__btn is-active" data-combo="1">x1</button>
+    <button class="gift-combo__btn" data-combo="5">x5</button>
+    <button class="gift-combo__btn" data-combo="10">x10</button>
+  </div>
+
+  <div class="gift-slider" id="giftSlider">
+   <div class="gift-track">
+
+     <div class="gift-page">
+      <div class="gift-card" data-gift="heart">
+      <div class="gift-icon">
+      <img src="/assets/gifts/heart.png" alt="heart" />
+      </div>
+      <div class="gift-name">Heart</div>
+      <div class="gift-price">50 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="flower">
+      <div class="gift-icon">
+      <img src="/assets/gifts/flower.png" alt="flower" />
+      </div>
+      <div class="gift-name">Flower</div>
+      <div class="gift-price">100 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="rocket">
+      <div class="gift-icon">
+      <img src="/assets/gifts/rocket.png" alt="rocket" />
+      </div>
+      <div class="gift-name">Rocket</div>
+      <div class="gift-price">200 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="coin">
+      <div class="gift-icon">
+      <img src="/assets/gifts/coin.png" alt="coin" />
+      </div>
+      <div class="gift-name">Coin</div>
+      <div class="gift-price">500 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="king">
+      <div class="gift-icon">
+      <img src="/assets/gifts/crown.png" alt="king" />
+      </div>
+      <div class="gift-name">Crown</div>
+      <div class="gift-price">1000 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="galaxy">
+      <div class="gift-icon">
+      <img src="/assets/gifts/galaxy.png" alt="galaxy" />
+      </div>
+      <div class="gift-name">Galaxy</div>
+      <div class="gift-price">2000 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="meteor">
+      <div class="gift-icon">
+      <img src="/assets/gifts/meteor.png" alt="meteor" />
+      </div>
+      <div class="gift-name">Meteor</div>
+      <div class="gift-price">5000 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="dragon">
+      <div class="gift-icon">
+      <img src="/assets/gifts/dragon.png" alt="dragon" />
+      </div>
+      <div class="gift-name">Dragon</div>
+      <div class="gift-price">10000 💎</div>
+      </div>
+
+     </div>
+
+     <div class="gift-page">
+      <div class="gift-card" data-gift="phoenix">
+      <div class="gift-icon">
+      <img src="/assets/gifts/phoenix.png" alt="phoenix" />
+      </div>
+      <div class="gift-name">Phoenix</div>
+      <div class="gift-price">10000 💎</div>
+      </div>
+
+     
+      <div class="gift-card" data-gift="dragonking">
+      <div class="gift-icon">
+      <img src="/assets/gifts/superdragon.png" alt="superdragon" />
+      </div>
+      <div class="gift-name">Super Dragon</div>
+      <div class="gift-price">10000 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="supernova">
+      <div class="gift-icon">
+      <img src="/assets/gifts/supernova.png" alt="supernova" />
+      </div>
+      <div class="gift-name">Super Nova</div>
+      <div class="gift-price">10000 💎</div>
+      </div>
+
+      <div class="gift-card" data-gift="coom1">
+      <div class="gift-icon">
+      <img src="/assets/gifts/coom.png" alt="coom1" />
+      </div>
+      <div class="gift-name">Sắp ra mắt</div>
+      <div class="gift-price"></div>
+      </div>
+
+     <div class="gift-card" data-gift="coom2">
+      <div class="gift-icon">
+      <img src="/assets/gifts/coom.png" alt="coom2" />
+      </div>
+      <div class="gift-name">Sắp ra mắt</div>
+      <div class="gift-price"></div>
+      </div>
+
+      <div class="gift-card" data-gift="coom3">
+      <div class="gift-icon">
+      <img src="/assets/gifts/coom.png" alt="coom3" />
+      </div>
+      <div class="gift-name">Sắp ra mắt</div>
+      <div class="gift-price"></div>
+      </div>
+
+      <div class="gift-card" data-gift="coom4">
+      <div class="gift-icon">
+      <img src="/assets/gifts/coom.png" alt="coom4" />
+      </div>
+      <div class="gift-name">Sắp ra mắt</div>
+      <div class="gift-price"></div>
+      </div>
+
+      <div class="gift-card" data-gift="coom5">
+      <div class="gift-icon">
+      <img src="/assets/gifts/coom.png" alt="coom5" />
+      </div>
+      <div class="gift-name">Sắp ra mắt</div>
+      <div class="gift-price"></div>
+      </div>
+
+    </div>
+
+   </div>
+  </div>
+
+<div class="gift-dots" id="giftDots"></div>
+
+</div>
+</div>
+
+
+        </div>
+      
+
+
+    </div>
+  </div>
+
+<hr />
+<div class="card chat" style="display: none;">
+  <div class="badge badge--info">💬 Chat (Live)</div>
+
+  <div class="chatform">
+    <input id="chatName" placeholder="Tên của bạn" />
+    <input id="chatText" placeholder="Nhập tin nhắn..." />
+    <button id="chatSend" class="full">Gửi</button>
+  </div>
+
+   <div class="emoji-bar" id="emojiBar" style="display: none;">
+      <button type="button" class="emoji-btn" data-emoji="❤️">❤️</button>
+      <button type="button" class="emoji-btn" data-emoji="🔥">🔥</button>
+      <button type="button" class="emoji-btn" data-emoji="😂">😂</button>
+      <button type="button" class="emoji-btn" data-emoji="👍">👍</button>
+      <button type="button" class="emoji-btn" data-emoji="👏">👏</button>
+      <button type="button" class="emoji-btn" data-emoji="😮">😮</button>
+      <button type="button" class="emoji-btn" data-emoji="😢">😢</button>
+    </div>
+
+  <div class="gift-bar">
+  <button data-gift="heart">❤️</button>
+  <button data-gift="flower">🌸</button>
+  <button data-gift="rocket">🚀</button>
+  <button data-gift="coin">💰</button>
+  <button data-gift="dragon">🐉</button>
+  <button data-gift="phoenix">🦅</button>
+  <button data-gift="galaxy">🌌</button>
+  <button data-gift="meteor">☄️</button>
+  <button data-gift="king">👑</button>
+  <button data-gift="dragonking">🐲</button>
+  <button data-gift="supernova">🌠</button>
+</div>
+
+<div id="chatBox" class="chatbox"></div>
+
+</div>
+
+
+ 
+
+  <div class="gift-board" style="display: none;">
+    <div class="gift-board__head">🏆 Top donate</div>
+    <div class="gift-board__meta">Tổng: <b id="giftTotalCoins">0</b> coin</div>
+    <div id="giftTopList" class="gift-board__list"></div>
+  </div>
+</div>
+
+
+
+  
+
+
+
+<!-- NEON CONFIRM (Back to Lobby) -->
+<div id="neonConfirm" class="ncf hidden" aria-hidden="true">
+  <div class="ncf__bg"></div>
+
+  <div class="ncf__box" role="dialog" aria-modal="true" aria-labelledby="ncfTitle">
+    <div class="ncf__frame"></div>
+    <div class="ncf__scan"></div>
+
+    <div class="ncf__top">
+      <div class="ncf__pill">
+        <span class="ncf__dot"></span>
+        <span>RỜI PHÒNG XEM</span>
+      </div>
+      <button class="ncf__x" id="ncfX" type="button" aria-label="Đóng">✕</button>
+    </div>
+
+    <h3 id="ncfTitle" class="ncf__title">Quay về Lobby?</h3>
+
+    <div class="ncf__desc">
+      <div class="ncf__row">• Bạn sẽ rời khỏi phòng đang xem</div>
+      <div class="ncf__row">• Có thể vào lại từ Lobby bất kỳ lúc nào</div>
+    </div>
+
+    <div class="ncf__actions">
+      <button id="ncfCancel" class="ncf__btn ncf__btn--ghost" type="button">Ở lại</button>
+      <button id="ncfOk" class="ncf__btn ncf__btn--main" type="button">✅ Về Lobby</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- 🎁 GIFT CONFIRM MODAL – ULTRA NEON -->
+<div id="giftConfirmModal" class="gcm hidden" aria-hidden="true">
+  <div class="gcm-bg"></div>
+
+  <div class="gcm-box">
+    <div class="gcm-glow"></div>
+    <div class="gcm-scan"></div>
+
+    <div class="gcm-head">
+      <div class="gcm-pill">
+        <span class="dot"></span>
+        <span>XÁC NHẬN TẶNG QUÀ</span>
+      </div>
+      <button class="gcm-close" id="gcmClose">✕</button>
+    </div>
+
+    <div class="gcm-body">
+      <!-- GIFT ICON -->
+      <div class="gcm-gift">
+        <div class="gcm-gift-ring"></div>
+        <div class="gcm-gift-emoji" id="gcmEmoji">🎁</div>
+        <div class="gcm-gift-name" id="gcmTitle">Supernova</div>
+      </div>
+
+      <!-- INFO -->
+      <div class="gcm-info">
+        <div class="gcm-row">
+          <span>Giá / quà</span>
+          <b><span id="gcmCost">0</span> coin</b>
+        </div>
+        <div class="gcm-row">
+          <span>Combo</span>
+          <b id="gcmQty">x1</b>
+        </div>
+        <div class="gcm-row total">
+          <span>Tổng trừ</span>
+          <b id="gcmTotal">0 coin</b>
+        </div>
+      </div>
+
+      <div class="gcm-wallet">
+        💼 Ví hiện tại: <b id="gcmWallet">0</b> coin
+      </div>
+    </div>
+
+    <div class="gcm-actions">
+      <button class="gcm-btn cancel" id="gcmCancel">Hủy</button>
+      <button class="gcm-btn send" id="gcmOk">
+        🎁 GỬI QUÀ
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 🚫 NOT ENOUGH COIN MODAL -->
+<div id="coinErrorModal" class="cem hidden" aria-hidden="true">
+  <div class="cem-bg"></div>
+
+  <div class="cem-box" role="dialog" aria-modal="true">
+    <div class="cem-glow"></div>
+
+    <div class="cem-head">
+      <div class="cem-pill">
+        <span class="dot"></span>
+        <span>KHÔNG ĐỦ COIN</span>
+      </div>
+      <button class="cem-close" id="cemClose">✕</button>
+    </div>
+
+    <div class="cem-body">
+      <div class="cem-icon">💸</div>
+      <div class="cem-text">
+        Ví của bạn <b>không đủ coin</b><br />
+        để thực hiện giao dịch này.
+      </div>
+
+      <div class="cem-wallet">
+        Ví hiện tại: <b id="cemWallet">0</b> coin
+      </div>
+    </div>
+
+    <div class="cem-actions">
+      <button id="cemOk" class="cem-btn">Đã hiểu</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- 🔄 RECONNECT OVERLAY -->
+<div id="reconnectOverlay" class="reconnect-overlay hidden">
+  <div class="reconnect-box">
+    <div class="reconnect-spinner"></div>
+    <div class="reconnect-text">Đang kết nối lại…</div>
+  </div>
+</div>
+
+
+  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    const logEl = document.getElementById("log");
+    const badge = document.getElementById("statusBadge");
+    const player = document.getElementById("player");
+    const btnJoin = document.getElementById("btnJoin");
+    const liveStage = document.getElementById("liveStage");
+    const params = new URLSearchParams(location.search);
+    const roomId = params.get("room") || "abc123";
+
+
+
+const giftVideoQueue = [];
+let playingGiftVideo = false;
+const MAX_GIFT_QUEUE = 2;
+
+function enqueueGiftVideo(videoUrl){
+  if (giftVideoQueue.length >= MAX_GIFT_QUEUE) return;
+  giftVideoQueue.push(videoUrl);
+  playNextGiftVideo();
+}
+
+function playNextGiftVideo(){
+  if (playingGiftVideo) return;
+  const url = giftVideoQueue.shift();
+  if (!url) return;
+
+  playingGiftVideo = true;
+
+  const video = document.createElement("video");
+  video.src = url;
+  video.autoplay = true;
+  video.muted = true;
+  video.playsInline = true;
+  video.style.opacity = "0.85";
+
+  const layer = document.getElementById("giftVideoLayer");
+  layer.appendChild(video);
+
+  video.onended = () => {
+    video.remove();
+    playingGiftVideo = false;
+    playNextGiftVideo();
+  };
+}
+
+
+let __lastIceReq = 0;
+
+function safeIceRestart(to, reason){
+  const now = Date.now();
+  if (now - __lastIceReq < 5000) return; // ⏱ 5s
+  __lastIceReq = now;
+  socket.emit("request-ice-restart", { to, reason });
+}
+
+
+
+// ===== FORCE RESUME AUDIO (VIEWER) =====
+function forceResumeAudio(videoEl){
+  if (!videoEl) return;
+
+  try {
+    videoEl.muted = false;
+    videoEl.volume = 1.0;
+  } catch {}
+
+  if (!window.__viewerAudioCtx) {
+    try {
+      window.__viewerAudioCtx =
+        new (window.AudioContext || window.webkitAudioContext)();
+    } catch {}
+  }
+
+  try {
+    if (window.__viewerAudioCtx?.state === "suspended") {
+      window.__viewerAudioCtx.resume().catch(()=>{});
+    }
+  } catch {}
+
+  try {
+    if (videoEl.paused) videoEl.play().catch(()=>{});
+  } catch {}
+}
+
+// user gesture unlock (mobile bắt buộc)
+["click","touchstart","pointerdown"].forEach(evt=>{
+  document.addEventListener(evt, ()=>{
+    forceResumeAudio(player);
+  }, { passive:true });
+});
+
+
+
+let __viewerWasBackground = false;
+let __viewerAutoReloaded = false;
+
+    document.getElementById("roomCode").textContent = roomId;
+
+// ===== AUTO RECOVER AUDIO/VIDEO (VIEWER) =====
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
+    console.warn("👀 Viewer background → mark resume");
+    __viewerNeedResume = true;
+    __viewerWasBackground = true; // ✅ FIX QUAN TRỌNG
+  }
+});
+
+window.addEventListener("focus", () => {
+  if (!__viewerWasBackground) return;
+  if (__viewerReloading) return;
+
+  __viewerReloading = true;
+
+  const overlay = document.getElementById("reconnectOverlay");
+  if (overlay) overlay.classList.remove("hidden");
+
+  setTimeout(() => {
+    forceResumeAudio(player);
+
+    // ✅ reconnect socket, KHÔNG reload page
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    // thử join lại nếu cần
+    if (!joined) {
+      join().catch(()=>{});
+    }
+
+    if (overlay) overlay.classList.add("hidden");
+    __viewerReloading = false;
+  }, 700);
+});
+
+
+
+
+function isMobile(){
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+}
+
+function optimizeVideoForMobile(videoEl){
+  if (!isMobile() || !videoEl) return;
+
+  videoEl.playsInline = true;
+  videoEl.muted = false;
+
+  // ưu tiên mượt
+  videoEl.setAttribute("playsinline", "");
+  videoEl.setAttribute("webkit-playsinline", "");
+
+  // giảm render cost
+  videoEl.style.objectFit = "cover";
+}
+
+function limitBitrateForMobile(pc){
+  if (!isMobile() || !pc) return;
+
+  pc.getSenders().forEach(sender=>{
+    if (!sender.track || sender.track.kind !== "video") return;
+
+    const p = sender.getParameters();
+    if (!p.encodings) p.encodings = [{}];
+
+    p.encodings[0].maxBitrate = 900_000; // ~900kbps
+    p.encodings[0].maxFramerate = 24;
+
+    sender.setParameters(p).catch(()=>{});
+  });
+}
+
+function limitAudioBitrate(pc, kbps = 32){
+  if (!pc) return;
+  pc.getReceivers().forEach(r=>{
+    if (!r.track || r.track.kind !== "audio") return;
+
+    const params = r.getParameters();
+    if (!params.encodings) params.encodings = [{}];
+
+    params.encodings[0].maxBitrate = kbps * 1000;
+    r.setParameters?.(params);
+  });
+}
+
+
+
+
+// ===== HD QUALITY MONITOR (Viewer) =====
+const hdBadge = document.getElementById("hdBadge");
+let __lastBytes = 0;
+let __lastTs = 0;
+
+async function checkHDQuality(){
+  try{
+    if (!pc || pc.connectionState !== "connected") return;
+
+    const stats = await pc.getStats();
+    let bytes = 0;
+    let packetsLost = 0;
+    let packets = 0;
+
+    stats.forEach(r=>{
+      if (r.type === "inbound-rtp" && r.kind === "video"){
+        bytes += r.bytesReceived || 0;
+        packetsLost += r.packetsLost || 0;
+        packets += r.packetsReceived || 0;
+      }
+    });
+
+    const now = performance.now();
+    if (__lastTs){
+      const bitrate = ((bytes - __lastBytes) * 8) / (now - __lastTs); // kbps approx
+      const lossRate = packets ? packetsLost / packets : 0;
+
+      // 👉 Điều kiện mạng yếu
+      const weak =
+        bitrate < 400 ||     // bitrate thấp
+        lossRate > 0.05;     // mất gói > 5%
+
+      if (weak){
+        hdBadge.textContent = "🟡 HD";
+        hdBadge.classList.remove("hd-good");
+        hdBadge.classList.add("hd-bad");
+      }else{
+        hdBadge.textContent = "🟢 HD";
+        hdBadge.classList.remove("hd-bad");
+        hdBadge.classList.add("hd-good");
+      }
+    }
+
+    __lastBytes = bytes;
+    __lastTs = now;
+  }catch(e){
+    console.warn("HD quality check error", e);
+  }
+}
+
+// check mỗi 2.5s
+setInterval(checkHDQuality, 2500);
+
+
+
+
+
+
+
+
+    const socket = io();
+
+function updateProfileOnSendGift(totalCoin){
+  const KEY = "user_profile";
+  let p = {};
+
+  try{
+    p = JSON.parse(localStorage.getItem(KEY)) || {};
+  }catch{}
+
+  p.coinSent = (p.coinSent || 0) + totalCoin;
+  p.coins = Math.max(0, (p.coins || 0) - totalCoin);
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+}
+
+
+function addExpFromDonate(coin){
+  const KEY = "user_profile";
+  let p = {};
+
+  try{
+    p = JSON.parse(localStorage.getItem(KEY)) || {};
+  }catch{}
+
+  p.exp = p.exp || 0;
+  p.level = p.level || 1;
+
+  // 🎯 100 coin = 1 EXP
+  const gainedExp = Math.floor(coin / 100);
+  if (gainedExp <= 0) return;
+
+  p.exp += gainedExp;
+
+  // 🔁 CHECK LEVEL UP
+  let need;
+  while (true) {
+    need = p.level * 100;
+    if (p.exp >= need) {
+      p.exp -= need;
+      p.level += 1;
+
+     // 💥 LEVEL UP EFFECT
+    showLevelUpEffect(p.level);
+
+    } else break;
+  }
+
+// sau khi level thay đổi
+socket.emit("profile-update", {
+  level: p.level
+});
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+}
+
+function showLevelUpEffect(newLevel){
+  try{
+    const overlay = document.createElement("div");
+    overlay.className = "levelup-overlay";
+
+    const box = document.createElement("div");
+    box.className = "levelup-box";
+    box.innerHTML = `
+      ⭐ LEVEL UP!
+      <div class="levelup-sub">Bạn đã lên Lv ${newLevel}</div>
+    `;
+
+    // EXP particles
+    const burst = document.createElement("div");
+    burst.className = "exp-burst";
+
+    const n = 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "exp-p";
+      p.style.left = "50%";
+      p.style.top = "50%";
+      p.style.setProperty("--dx",(Math.random()*360-180)+"px");
+      p.style.setProperty("--dy",(Math.random()*260-130)+"px");
+      burst.appendChild(p);
+    }
+
+    box.appendChild(burst);
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 3000);
+  }catch{}
+}
+
+function getVipClass(level){
+  level = Number(level)||1;
+  if(level>=250) return "vip-250";
+  if(level>=200) return "vip-200";
+  if(level>=150) return "vip-150";
+  if(level>=100) return "vip-100";
+  if(level>=50) return "vip-50";
+  if(level>=20) return "vip-20";
+  if(level>=10) return "vip-10";
+  return "";
+}
+
+
+function getVipBadge(level){
+  level = Number(level) || 1;
+
+  if (level >= 250) {
+    return { key:"immortal", text:"🌌 VIP IMMORTAL", color:"#ff3b3b" };
+  }
+  if (level >= 200) {
+    return { key:"emperor", text:"👑 VIP EMPEROR", color:"#ffd36e" };
+  }
+  if (level >= 150) {
+    return { key:"king", text:"🔱 VIP KING", color:"#c77dff" };
+  }
+  if (level >= 100) {
+    return { key:"legend", text:"🔥 VIP LEGEND", color:"#ff6a00" };
+  }
+  if (level >= 70) {
+    return { key:"diamond", text:"💎 VIP DIAMOND", color:"#5fd1ff" };
+  }
+  if (level >= 40) {
+    return { key:"gold", text:"👑 VIP GOLD", color:"#ffd36e" };
+  }
+  if (level >= 20) {
+    return { key:"silver", text:"⭐ VIP SILVER", color:"#cfd8dc" };
+  }
+  if (level >= 10) {
+    return { key:"vip", text:"💠 VIP", color:"#8bc34a" };
+  }
+  return null;
+}
+
+
+function showVipChatSpotlight(vipKey){
+  try{
+    if (!vipKey) return;
+
+    const overlay = document.createElement("div");
+    overlay.className = "vip-spotlight-overlay";
+
+    const spot = document.createElement("div");
+    spot.className = "vip-spotlight vip-spot-" + vipKey;
+
+    overlay.appendChild(spot);
+    document.body.appendChild(overlay);
+
+    setTimeout(()=>overlay.remove(), 900);
+  }catch{}
+}
+
+
+
+
+
+
+    socket.on("profile-updated", ({ socketId, avatar }) => {
+  // 1️⃣ cập nhật cache viewer
+  if (viewerProfiles?.[socketId]) {
+    viewerProfiles[socketId].avatar = avatar;
+  }
+
+  // 2️⃣ cập nhật avatar trong chat overlay
+  document
+    .querySelectorAll(`.chat-bubble[data-socket="${socketId}"] .chat-avatar-bg`)
+    .forEach(el => {
+      el.style.backgroundImage = `url('${avatar}')`;
+    });
+
+  // 3️⃣ cập nhật viewer list / mini profile nếu đang mở
+  refreshViewerAvatars?.();
+});
+
+function getStableUID(){
+  const KEY = "viewer_uid";
+  let uid = localStorage.getItem(KEY);
+  if (!uid){
+    uid = "u_" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem(KEY, uid);
+  }
+  return uid;
+}
+
+
+function getUserProfile(){
+  try{
+    return JSON.parse(localStorage.getItem("user_profile")) || {};
+  }catch{
+    return {};
+  }
+}
+
+
+const profile = getUserProfile();
+
+const stableUID = getStableUID();
+
+socket.emit("viewer-join", {
+  roomId,
+  profile: {
+    uid: stableUID,               // ✅ UID CỐ ĐỊNH
+    name: profile.name || "Viewer",
+    avatar: profile.avatar,
+    level: profile.level || 1,
+    coins: profile.coins || 0
+  }
+});
+
+
+if (profile){
+  const chatNameInput = document.getElementById("chatName");
+  if (chatNameInput) {
+    chatNameInput.value = profile.name;
+    chatNameInput.disabled = true; // 🔒 khóa không cho sửa
+  }
+}
+
+const viewerAvatarBox = document.getElementById("viewerAvatars");
+const viewerListPopup = document.getElementById("viewerListPopup");
+const miniProfile = document.getElementById("miniProfile");
+const viewerBackdrop = document.getElementById("viewerBackdrop");
+
+function renderViewerAvatars(viewers){
+  const wrap = document.getElementById("viewerAvatars");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+
+  viewers.forEach(v => {
+    const div = document.createElement("div");
+    div.className = "viewer-avatar";
+    div.innerHTML = `
+      <img src="${v.avatar}" />
+      <span class="viewer-lv">Lv.${v.level || 1}</span>
+    `;
+    wrap.appendChild(div);
+  });
+}
+
+
+let __viewerCache = [];
+
+socket.on("viewer-list", ({ viewers }) => {
+  __viewerCache = viewers || [];
+   renderViewerAvatars(viewers);
+   // nếu đang mở panel viewer / mini profile thì re-render
+  if (typeof renderViewerList === "function") {
+    renderViewerList(__viewerCache);
+  }
+
+  const maxShow = 3;
+  const showList = __viewerCache.slice(0, maxShow);
+  const remain = __viewerCache.length - maxShow;
+
+  viewerAvatarBox.innerHTML =
+  showList.map((v, i) => `
+    <div class="viewer-avatar ${getVipClass(v.level)}" data-idx="${i}">
+      <img src="${v.avatar}">
+      <div class="viewer-level">Lv${v.level || 1}</div>
+    </div>
+  `).join("") +
+  (remain > 0
+    ? `<div class="viewer-avatar viewer-avatar--more" id="viewerMoreBtn">+${remain}</div>`
+    : "");
+
+
+  // click avatar (top 4)
+  viewerAvatarBox.querySelectorAll(".viewer-avatar[data-idx]")
+    .forEach(el => {
+      el.onclick = e => {
+        e.stopPropagation();
+        const v = __viewerCache[+el.dataset.idx];
+        openMiniProfile(v);
+      };
+    });
+
+  // +N
+  const moreBtn = document.getElementById("viewerMoreBtn");
+  if (moreBtn){
+    moreBtn.onclick = e => {
+      e.stopPropagation();
+      viewerListPopup.classList.toggle("hidden");
+      renderViewerPopup();
+    };
+  }
+});
+
+
+socket.on("force-disconnect", ({ reason }) => {
+  if (reason === "multi_tab") {
+    console.warn("👻 Multi-tab detected → kicked");
+
+    // UX nhẹ nhàng
+    alert("Tài khoản đang được mở ở tab khác 👻");
+
+    // quay về lobby hoặc reload
+    location.href = "/lobby";
+  }
+});
+
+
+
+
+function renderViewerPopup(){
+  viewerListPopup.innerHTML = __viewerCache.map((v, i) => `
+    <div class="viewer-list-item" data-idx="${i}">
+      <img src="${v.avatar}">
+      <div class="viewer-list-name">${v.name}</div>
+    </div>
+  `).join("");
+
+  viewerListPopup.querySelectorAll(".viewer-list-item")
+    .forEach(el => {
+      el.onclick = e => {
+        e.stopPropagation();
+        const v = __viewerCache[+el.dataset.idx];
+        openMiniProfile(v);
+      };
+    });
+}
+
+function openMiniProfile(v){
+  if (!miniProfile) return;
+
+  // 🟡 trong room
+  const sentInRoom = v.coinSentRoom || 0;
+
+  // 🔹 toàn hệ thống (từ profile local)
+  let totalSent = 0;
+  try {
+    const p = JSON.parse(localStorage.getItem("user_profile")) || {};
+    if (p.name === v.name) {
+      totalSent = p.coinSent || 0;
+    }
+  } catch {}
+
+  miniProfile.innerHTML = `
+    <div class="mini-profile-header">
+      <img src="${v.avatar}">
+      <div class="mini-profile-name">${v.name}</div>
+    </div>
+
+    <div class="mini-profile-meta">
+      ${(() => {
+        const vip = getVipBadge(v.level || 1);
+        return `
+          <div class="mini-profile-chip">
+            ⭐ Lv ${v.level || 1}
+            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+          </div>
+        `;
+      })()}
+
+       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
+      <div class="mini-profile-chip gold">
+        💎 Room<br><b>${sentInRoom}</b>
+      </div>
+
+      <!-- 🔹 TỔNG ĐÃ TẶNG -->
+      <div class="mini-profile-chip blue">
+        💎 Tổng<br><b>${totalSent}</b>
+      </div>
+    </div>
+  `;
+
+  // 🔥 LẤY TOẠ ĐỘ VIDEO
+  const video = document.querySelector(".video-card");
+  if (video){
+    const rect = video.getBoundingClientRect();
+    const h = window.innerHeight * 0.32; // = height 32vh
+
+    miniProfile.style.top = `${Math.max(0, rect.bottom - h)}px`;
+  } else {
+    // fallback
+    miniProfile.style.bottom = "0";
+  }
+
+  miniProfile.classList.remove("hidden", "show");
+  viewerBackdrop.classList.remove("hidden");
+
+  requestAnimationFrame(()=>{
+    miniProfile.classList.add("show");
+  });
+}
+
+
+function openHostMiniProfile(h){
+  if (!miniProfile || !h) return;
+
+  miniProfile.innerHTML = `
+    <div class="mini-profile-header">
+      <img src="${h.avatar}">
+      <div class="mini-profile-name">👑 ${h.name || "HOST"}</div>
+    </div>
+
+    <div class="mini-profile-meta">
+      <div class="mini-profile-chip gold">👑 HOST</div>
+      <div class="mini-profile-chip">
+        ⭐ Lv ${h.level || 1}
+      </div>
+    </div>
+  `;
+
+  const video = document.querySelector(".video-card");
+  if (video){
+    const rect = video.getBoundingClientRect();
+    const hgt = window.innerHeight * 0.32;
+    miniProfile.style.top = `${Math.max(0, rect.bottom - hgt)}px`;
+  }
+
+  miniProfile.classList.remove("hidden");
+  viewerBackdrop.classList.remove("hidden");
+
+  requestAnimationFrame(()=>{
+    miniProfile.classList.add("show");
+  });
+}
+
+
+
+function closeMiniProfile(){
+  miniProfile.classList.remove("show");
+
+  setTimeout(()=>{
+    miniProfile.classList.add("hidden");
+    viewerBackdrop.classList.add("hidden");
+  }, 280);
+}
+
+
+
+
+function toggleViewerPopup(){
+  viewerListPopup.classList.toggle("hidden");
+  viewerBackdrop.classList.remove("hidden");
+}
+
+function closeAllViewerUI(){
+  viewerListPopup?.classList.add("hidden");
+  miniProfile?.classList.add("hidden");
+  viewerBackdrop?.classList.add("hidden");
+}
+
+viewerBackdrop?.addEventListener("click", () => {
+  closeAllViewerUI();
+  closeMiniProfile();
+});
+
+
+// ⛔ CHẶN CLICK LAN RA NGOÀI popup / avatar
+viewerAvatarBox?.addEventListener("click", e => e.stopPropagation());
+viewerListPopup?.addEventListener("click", e => e.stopPropagation());
+miniProfile?.addEventListener("click", e => e.stopPropagation());
+
+
+
+
+
+
+socket.on("host-back-online", () => {
+  console.warn("🔔 Host back online → try rejoin");
+
+  if (!joined) {
+    setTimeout(() => {
+      join().catch(e => console.error("Rejoin on host-back failed", e));
+    }, 300);
+  }
+});
+
+    socket.on("broadcaster-online", () => {
+  console.warn("📡 Broadcaster online → force join");
+
+  // tránh join lặp
+  if (joined) return;
+
+  join().catch(e => console.error("Join on broadcaster-online failed", e));
+});
+
+
+
+// ===== VIP TICKER + CHAT FREEZE + FIREWORKS =====
+const vipTicker = document.getElementById("vipTicker");
+let __vipQueue = [];
+let __vipBusy = false;
+
+function showVipTicker(text, ms){
+  try{
+    if (!vipTicker) return;
+    const item = document.createElement("div");
+    item.className = "vip-ticker__item";
+    item.textContent = text;
+    vipTicker.appendChild(item);
+    // auto remove after animation
+    setTimeout(()=>{ try{ item.classList.add("hide"); }catch{} }, Math.max(0, ms-350));
+    setTimeout(()=>{ try{ item.remove(); }catch{} }, ms+200);
+  }catch{}
+}
+
+function enqueueVip(text, ms=3000){
+  __vipQueue.push({ text, ms });
+  if (!__vipBusy) runVipQueue();
+}
+
+function runVipQueue(){
+  if (__vipBusy) return;
+  const next = __vipQueue.shift();
+  if (!next) return;
+  __vipBusy = true;
+  showVipTicker(next.text, next.ms);
+  setTimeout(()=>{
+    __vipBusy = false;
+    runVipQueue();
+  }, next.ms + 120);
+}
+
+function freezeChat(ms=1000){
+  try{
+    document.body.classList.add("chat-frozen");
+    setTimeout(()=>{ try{document.body.classList.remove("chat-frozen");}catch{} }, ms);
+  }catch{}
+}
+
+function startVipSpotlight(ms=1200){
+  try{
+    // add overlay class
+    document.body.classList.add("vip-spotlight");
+    // zoom main card if exists
+    const card = document.getElementById("hostCard");
+
+    if (card) card.classList.add("vip-zoom");
+    // remove
+    setTimeout(()=>{
+      try{
+        document.body.classList.remove("vip-spotlight");
+        if (card) card.classList.remove("vip-zoom");
+      }catch{}
+    }, ms);
+  }catch{}
+}
+
+function spawnFireworksBurst(){
+  try{
+    const layer = document.createElement("div");
+    layer.className = "vip-fireworks";
+    document.body.appendChild(layer);
+
+    const n = 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "vip-fireworks__p";
+      p.style.left = (50 + (Math.random()*18-9))+"%";
+      p.style.top  = (22 + (Math.random()*18-9))+"%";
+      p.style.setProperty("--dx", (Math.random()*360-180)+"px");
+      p.style.setProperty("--dy", (Math.random()*340-220)+"px");
+      p.style.setProperty("--rot",(Math.random()*160-80)+"deg");
+      p.style.setProperty("--sc",(Math.random()*0.9+0.7));
+      layer.appendChild(p);
+    }
+
+    setTimeout(()=>{ try{layer.remove();}catch{} }, 1600);
+  }catch{}
+}
+// ===== /VIP TICKER =====
+// ===== AUTO SPEAKING HIGHLIGHT (Voice Activity) =====
+function attachSpeakingIndicator(videoEl, targetEl){
+  try{
+    if (!videoEl || !targetEl) return;
+    let ctx = null, src = null, analyser = null, data = null, raf = 0;
+    let speaking = false;
+    let lastOn = 0;
+
+    function start(){
+      const st = videoEl.srcObject;
+      if (!st) return;
+      const at = st.getAudioTracks && st.getAudioTracks()[0];
+      if (!at) return; // no audio -> skip
+
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      analyser = ctx.createAnalyser();
+      analyser.fftSize = 512;
+      data = new Uint8Array(analyser.frequencyBinCount);
+
+      src = ctx.createMediaStreamSource(new MediaStream([at]));
+      src.connect(analyser);
+
+      const TH = 16; // threshold 0..255 (tuning)
+      const HOLD_MS = 450;
+
+      const loop = ()=>{
+        if (!analyser) return;
+        analyser.getByteFrequencyData(data);
+        let sum = 0;
+        for (let i=0;i<data.length;i++) sum += data[i];
+        const avg = sum / data.length;
+
+        const now = Date.now();
+        if (avg > TH){
+          lastOn = now;
+          if (!speaking){
+            speaking = true;
+            targetEl.classList.add("is-speaking");
+          }
+        } else {
+          if (speaking && (now - lastOn) > HOLD_MS){
+            speaking = false;
+            targetEl.classList.remove("is-speaking");
+          }
+        }
+        raf = requestAnimationFrame(loop);
+      };
+      raf = requestAnimationFrame(loop);
+    }
+
+    function stop(){
+      try{ if (raf) cancelAnimationFrame(raf); }catch{}
+      raf = 0;
+      try{ targetEl.classList.remove("is-speaking"); }catch{}
+      speaking = false;
+      try{ if (src) src.disconnect(); }catch{}
+      src = null;
+      try{ if (ctx) ctx.close(); }catch{}
+      ctx = null;
+      analyser = null;
+      data = null;
+    }
+
+    // restart when stream changes
+    const _set = ()=>{
+      stop();
+      start();
+    };
+
+    // run now + also after play
+    _set();
+    videoEl.addEventListener("loadedmetadata", _set);
+    videoEl.addEventListener("play", _set);
+
+    // expose for manual cleanup
+    videoEl.__stopSpeakingIndicator = stop;
+  }catch(e){
+    console.warn("attachSpeakingIndicator error:", e);
+  }
+}
+// ===== /AUTO SPEAKING HIGHLIGHT =====
+
+// ===== AUTO MINI PLAYER WHEN TAB BACKGROUND (MOBILE) =====
+let __wasAutoMini = false;
+
+function enableAutoMini(){
+  if (!document.body.classList.contains("auto-mini")){
+    document.body.classList.add("auto-mini");
+    __wasAutoMini = true;
+  }
+}
+
+function disableAutoMini(){
+  if (__wasAutoMini){
+    document.body.classList.remove("auto-mini");
+    __wasAutoMini = false;
+  }
+}
+
+// Khi chuyển tab / app
+document.addEventListener("visibilitychange", ()=>{
+  if (document.hidden){
+    enableAutoMini();
+  } else {
+    disableAutoMini();
+  }
+});
+
+// iOS Safari đặc biệt hay dùng pagehide/pageshow
+window.addEventListener("pagehide", enableAutoMini);
+window.addEventListener("pageshow", disableAutoMini);
+
+
+
+// ===== PIN NOTE (display only) =====
+const pinOverlay = document.getElementById("pinOverlay");
+function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
+function renderPin(note){
+  if (!pinOverlay) return;
+  pinOverlay.innerHTML = "";
+  if (!note) return;
+  const wrap = document.createElement("div");
+  wrap.className = "pin-note";
+  wrap.style.left = (__clamp01(note.x) * 100).toFixed(3) + "%";
+  wrap.style.top  = (__clamp01(note.y) * 100).toFixed(3) + "%";
+
+  const head = document.createElement("div");
+  head.className = "pin-head";
+  const title = document.createElement("div");
+  title.className = "pin-title";
+  title.innerHTML = ``;
+  head.appendChild(title);
+
+  const body = document.createElement("div");
+  body.className = "pin-body";
+  body.textContent = String(note.text || "");
+
+  wrap.appendChild(head);
+  wrap.appendChild(body);
+  pinOverlay.appendChild(wrap);
+}
+socket.on("pin-note-update", (note)=> renderPin(note));
+// ===== /PIN NOTE =====
+
+// ===== LIVE TIMER (HH:MM:SS) =====
+let __liveStartTs = null;
+let __liveTick = null;
+
+function __pad2(n){ n = Math.floor(Math.max(0, n)); return String(n).padStart(2,"0"); }
+function __fmtHMS(ms){
+  const s = Math.floor(ms/1000);
+  const hh = Math.floor(s/3600);
+  const mm = Math.floor((s%3600)/60);
+  const ss = s%60;
+  return `${__pad2(hh)}:${__pad2(mm)}:${__pad2(ss)}`;
+}
+function __setTimerText(el, ms){
+  if (!el) return;
+  el.textContent = `⏱ ${__fmtHMS(ms)}`;
+}
+function __startTimer(el, startTs){
+  __liveStartTs = startTs;
+  if (__liveTick) clearInterval(__liveTick);
+  __setTimerText(el, Date.now() - __liveStartTs);
+  __liveTick = setInterval(()=>__setTimerText(el, Date.now() - __liveStartTs), 250);
+}
+function __stopTimer(el){
+  __liveStartTs = null;
+  if (__liveTick) clearInterval(__liveTick);
+  __liveTick = null;
+  if (el) el.textContent = "⏱ 00:00:00";
+}
+
+const liveTimerViewer = document.getElementById("liveTimerViewer");
+socket.on("live-start", ({ startTs }) => {
+
+  document.body.classList.add("is-live");
+
+  if (typeof startTs === "number") __startTimer(liveTimerViewer, startTs);
+});
+socket.on("live-stop", () => {
+  __stopTimer(liveTimerViewer);
+});
+
+
+// ===== REACTIONS (tap/click to heart) =====
+function clamp01(n){ return Math.max(0, Math.min(1, n)); }
+function now(){ return Date.now(); }
+
+function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
+  if (!tapEl || !layerEl) return;
+  let last = 0;
+  const MIN_MS = 180; // anti-spam client side
+
+  const handler = (ev) => {
+
+    // 🚫 KHÔNG xử lý nếu đang thao tác trong chat
+  if (ev.target && ev.target.closest("#chatOverlay")) {
+    return; // cho browser scroll chat
+  }
+    // prevent video click from toggling play/pause
+    try { if (ev && ev.cancelable) ev.preventDefault(); } catch {}
+    try { ev.stopPropagation(); } catch {}
+    // ignore clicks on controls/buttons/inputs
+    const t = ev.target;
+    if (t && (t.closest("button") || t.closest("input") || t.closest("textarea"))) return;
+
+    const ts = now();
+    if (ts - last < MIN_MS) return;
+    last = ts;
+
+    const rect = tapEl.getBoundingClientRect();
+    const cx = ("clientX" in ev) ? ev.clientX : (ev.touches && ev.touches[0] ? ev.touches[0].clientX : rect.left + rect.width/2);
+    const cy = ("clientY" in ev) ? ev.clientY : (ev.touches && ev.touches[0] ? ev.touches[0].clientY : rect.top + rect.height/2);
+    const x = clamp01((cx - rect.left) / rect.width);
+    const y = clamp01((cy - rect.top) / rect.height);
+
+    const msg = { roomId: getRoomIdFn(), emoji: "❤️", x, y };
+    // show immediately on self
+    spawnReaction(layerEl, msg.emoji, msg.x, msg.y, true);
+    socket.emit("reaction", msg);
+  };
+
+  tapEl.addEventListener("pointerdown", handler, { passive: false });
+  // also fallback for old browsers
+  tapEl.addEventListener("click", handler);
+}
+
+
+
+function spawnReaction(layerEl, emoji, x, y, local=false) {
+  if (!layerEl) return;
+  const el = document.createElement("div");
+  el.className = "reaction-float";
+  el.textContent = emoji || "❤️";
+  // random motion
+  const dx = (Math.random() * 120 - 60).toFixed(1); // px
+  const rot = (Math.random() * 30 - 15).toFixed(1); // deg
+  const sc = (0.85 + Math.random() * 0.8).toFixed(2);
+  el.style.setProperty("--x", String(x));
+  el.style.setProperty("--y", String(y));
+  el.style.setProperty("--dx", dx + "px");
+  el.style.setProperty("--rot", rot + "deg");
+  el.style.setProperty("--sc", sc);
+  if (local) el.classList.add("is-local");
+  layerEl.appendChild(el);
+  setTimeout(()=>{ try{ el.remove(); }catch{} }, 1800);
+}
+
+socket.on("reaction", (msg)=>{
+  try {
+    if (!msg) return;
+    const emoji = msg.emoji || "❤️";
+    const x = clamp01(Number(msg.x ?? 0.5));
+    const y = clamp01(Number(msg.y ?? 0.7));
+    // choose layer based on whether it's guest/host layer (we only have one layer per page for now)
+    const layer = document.getElementById("reactionsLayerViewer");
+    spawnReaction(layer, emoji, x, y, false);
+  } catch (e) {
+    console.warn("reaction render error", e);
+  }
+});
+
+// ===== INIT TAP-TO-HEART on main live card =====
+(function initTapHearts(){
+  const __tapEl = document.getElementById("hostCard");
+  const __layerEl = document.getElementById("reactionsLayerViewer");
+  if (!__tapEl || !__layerEl) return;
+  attachTapToHeart(__tapEl, __layerEl, ()=>roomId);
+})();
+
+
+    let joined = false;
+    let __viewerNeedResume = false;
+
+
+    const pcs = new Map(); // peerId -> RTCPeerConnection
+
+    async function getRtcConfig() {
+      const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+
+      try {
+        const r = await fetch("/ice", { cache: "no-store" });
+        if (!r.ok) return fallback;
+
+        const data = await r.json();
+        if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
+
+        // Remove invalid STUN urls that contain ?transport=
+        const cleanedIceServers = data.iceServers
+          .map(server => {
+            let urls = server.urls;
+            if (!urls) return null;
+            if (!Array.isArray(urls)) urls = [urls];
+
+            const safeUrls = urls.filter(u =>
+              typeof u === "string" &&
+              !(u.startsWith("stun:") && u.includes("?transport="))
+            );
+            if (safeUrls.length === 0) return null;
+            return { ...server, urls: safeUrls };
+          })
+          .filter(Boolean);
+
+        if (cleanedIceServers.length === 0) return fallback;
+        return { iceServers: cleanedIceServers };
+      } catch (e) {
+        console.error("ICE fetch error:", e);
+        return fallback;
+      }
+    }
+
+    function log(msg) {
+      logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
+      console.log(msg);
+    }
+
+    const liveStatusText = document.getElementById("liveStatusText");
+    function setStatus(text) {
+      badge.textContent = text;
+      if (liveStatusText) liveStatusText.textContent = text.replace(/^[^ ]+\s*/, "");
+    }
+
+    socket.on("broadcaster-online", () => setStatus("✅ Host online"));
+    socket.on("broadcaster-offline", () => setStatus("⛔ Host offline"));
+    socket.on("broadcaster-changed", () => {
+      setStatus("🔄 Host changed – hãy bấm Join lại");
+      cleanupAll();
+    });
+
+
+    async function join() {
+      if (joined) return;
+      joined = true;
+      
+      try{ btnJoin.style.display = "none"; }catch{}
+socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
+      setStatus("⏳ Đang chờ Host gửi LIVE...");
+      log("Đã join room, đợi offer từ host...");
+    }
+
+    function cleanupPeer(peerKey) {
+     
+      const pc = pcs.get(peerKey);
+      if (pc) {
+        try { pc.close(); } catch {}
+        pcs.delete(peerKey);
+      }
+    }
+
+    function cleanupAll() {
+      for (const pc of pcs.values()) {
+        try { pc.close(); } catch {}
+      }
+      pcs.clear();
+      player.srcObject = null;
+     
+      joined = false;
+    }
+
+
+    function forcePlayVideo(video) {
+  if (!video) return;
+
+  video.muted = true;        // BẮT BUỘC
+  video.playsInline = true;
+
+  const tryPlay = () => {
+    const p = video.play();
+    if (p && typeof p.catch === "function") {
+      p.catch(() => {
+        // retry sau 300ms
+        setTimeout(tryPlay, 300);
+      });
+    }
+  };
+
+  // gọi nhiều lần cho chắc
+  tryPlay();
+  setTimeout(tryPlay, 500);
+  setTimeout(tryPlay, 1000);
+}
+
+    socket.on("offer", async ({ from, description }) => {
+
+      /*
+      // reset pc for this peer only
+      cleanupPeer(from);
+      */
+     
+      const rtcConfig = await getRtcConfig();
+      const pc = new RTCPeerConnection(rtcConfig);
+
+      limitBitrateForMobile(pc);
+      limitAudioBitrate(pc, 32); // 🔒 FIX MẤT TIẾNG KHI ĐÔNG
+
+
+      pcs.set(from, pc);
+
+     
+  // Auto ask peer to ICE-restart if connection degrades
+  pc.onconnectionstatechange = () => {
+    const st = pc.connectionState;
+    if (st === 'failed' || st === 'disconnected'){
+      try{ safeIceRestart(from, 'viewer_pc_' + st);
+ }catch{}
+    }
+  };
+
+
+pc.ontrack = (event) => {
+  const stream = event.streams[0];
+  if (!stream) return;
+
+   
+
+ else {
+    // ===== HOST STREAM (CHÍNH) =====
+    console.log("🎥 Viewer nhận stream HOST");
+
+    if (player.srcObject !== stream) {
+     player.srcObject = stream;
+     
+
+optimizeVideoForMobile(player);
+
+player.playsInline = true;
+player.muted = false;
+
+forceResumeAudio(player);
+
+    }
+
+    const hasAudio = stream.getAudioTracks().length > 0;
+
+if (hasAudio) {
+  player.muted = false;
+  player.volume = 1.0;
+
+  const tryPlay = async () => {
+    try { await player.play(); } catch {}
+  };
+
+  if (player.paused) tryPlay();
+}
+
+    try {
+      attachSpeakingIndicator(
+        player,
+        document.getElementById("hostCard")
+      );
+    } catch {}
+  }
+
+  setStatus("🟢 Đang xem LIVE");
+};
+
+
+
+
+
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          socket.emit("candidate", { to: from, candidate: e.candidate });
+        }
+      };
+
+      pc.oniceconnectionstatechange = () => {
+        log(`ICE(${from}): ${pc.iceConnectionState}`);
+
+const st = pc.iceConnectionState;
+  if (st === "failed" || st === "disconnected") {
+   safeIceRestart(from, "viewer_resume");
+
+
+  }
+
+      };
+
+      try {
+        await pc.setRemoteDescription(description);
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        socket.emit("answer", { to: from, description: pc.localDescription });
+
+
+        setStatus("🟢 Đang xem live trực tiếp.");
+        log("Đã gửi answer cho: " + from);
+      } catch (err) {
+        log("Lỗi xử lý offer: " + err.message);
+      }
+    });
+
+    socket.on("candidate", async ({ from, candidate }) => {
+      const pc = pcs.get(from);
+      if (!pc) return;
+      try {
+        await pc.addIceCandidate(candidate);
+      } catch (err) {
+        log("Lỗi addIceCandidate: " + err.message);
+      }
+    });
+
+    btnJoin.onclick = () => {
+      join().catch(err => log("Join lỗi: " + err.message));
+    };
+
+    // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
+    (function autoJoinViewer(){
+      try {
+        btnJoin.disabled = true;
+        btnJoin.textContent = "⏳ Đang tham gia...";
+        // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
+        setTimeout(() => {
+          join().catch(err => {
+            // nếu lỗi, mở lại nút cho user bấm thử
+            btnJoin.disabled = false;
+            btnJoin.textContent = "Tham gia xem Livestream";
+            log("Auto-join lỗi: " + (err?.message || err));
+          });
+        }, 120);
+      } catch {}
+    })();
+
+
+    // ===== CHAT (VIEWER) =====
+    const chatBox = document.getElementById("chatBox");
+    const chatName = document.getElementById("chatName");
+    const chatText = document.getElementById("chatText");
+    const chatSend = document.getElementById("chatSend");
+
+    function addChat(msg) {
+      const time = new Date(msg.ts).toLocaleTimeString();
+      const role = String(msg.role || "viewer");
+      const tag = role === "host" ? "[HOST]" : "";
+      const line = document.createElement("div");
+      line.className = "chat-line chat-" + role;
+      line.textContent = `[${time}] ${tag ? tag + " " : ""}${msg.name}: ${msg.text}`;
+      chatBox.appendChild(line);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+ 
+    socket.on("chat", (msg)=>{ addChat(msg); pushOverlay(msg); });
+
+ // ===== CHAT OVERLAY (PERSISTENT + SCROLLABLE) =====
+const chatOverlay = document.getElementById("chatOverlay");
+
+const giftVideoLayer = document.getElementById("giftVideoLayer");
+
+
+// 🔒 FIX MOBILE CHỐT: lock body scroll khi vuốt chat
+if (chatOverlay) {
+  let __lock = false;
+
+  chatOverlay.addEventListener("touchstart", e => {
+    __lock = true;
+    document.body.style.overflow = "hidden";
+  }, { passive: true });
+
+  chatOverlay.addEventListener("touchend", () => {
+    __lock = false;
+    document.body.style.overflow = "";
+  });
+
+  chatOverlay.addEventListener("touchcancel", () => {
+    __lock = false;
+    document.body.style.overflow = "";
+  });
+}
+
+
+function pushOverlay(msg){
+  if (!chatOverlay) return;
+
+  const role  = String(msg.role || "viewer");
+  const name  = msg.name || "User";
+
+  const cached =
+  __viewerCache.find(v => v.name === msg.name);
+
+const level =
+  cached?.level ??
+  Number(msg.level || 1);
+
+  const vip = getVipBadge(level);
+
+const avatar =
+  (typeof msg.avatar === "string" && msg.avatar.trim()) ||
+  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+    encodeURIComponent(name);
+
+
+  const el = document.createElement("div");
+  el.className =
+  "chat-bubble chat-" + role +
+  (vip ? ` chat-${vip.key}` : "");
+
+
+  el.dataset.socket = msg.socketId;
+  // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
+ el.innerHTML = `
+
+ <div class="chat-avatar-bg"
+     data-name="${name}"
+     data-role="${role}"
+     style="background-image:url('${avatar}')">
+</div>
+
+  <div class="chat-body">
+    <div class="chat-head">
+      <span class="chat-name"
+      style="${vip ? `color:${vip.color}` : ""}">
+  ${name}
+</span>
+
+      <span class="chat-level">
+  ⭐ Lv ${level}
+  ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+</span>
+    </div>
+    <div class="chat-text">${msg.text}</div>
+  </div>
+`;
+
+
+  chatOverlay.appendChild(el);
+
+
+  // auto cuộn xuống
+requestAnimationFrame(() => {
+  chatOverlay.scrollTop = chatOverlay.scrollHeight;
+});
+ // 💡 VIP CHAT SPOTLIGHT
+if (vip) {
+  showVipChatSpotlight(vip.key);
+}
+
+  
+
+  // ✅ GIỚI HẠN LỊCH SỬ (giữ nguyên logic cũ)
+  const MAX_CHAT = 80;
+  while (chatOverlay.children.length > MAX_CHAT) {
+    chatOverlay.removeChild(chatOverlay.firstChild);
+  }
+
+  // ✅ AUTO SCROLL nếu đang ở cuối
+  const nearBottom =
+    chatOverlay.scrollHeight -
+    chatOverlay.scrollTop -
+    chatOverlay.clientHeight < 80;
+
+  if (nearBottom) {
+    chatOverlay.scrollTop = chatOverlay.scrollHeight;
+  }
+}
+
+// 👑 LƯU PROFILE HOST ĐỂ MỞ MINI PROFILE
+let __hostProfile = null;
+
+socket.on("host-profile-sync", (profile) => {
+  __hostProfile = profile;
+});
+
+
+// 🎭 CLICK AVATAR CHAT → MINI PROFILE
+chatOverlay?.addEventListener("click", (e) => {
+  const avatarEl = e.target.closest(".chat-avatar-bg");
+  if (!avatarEl) return;
+
+  e.stopPropagation();
+
+  const role = avatarEl.dataset.role;
+  const name = avatarEl.dataset.name;
+
+  // 👑 HOST
+  if (role === "host") {
+    if (!__hostProfile) {
+      console.warn("❌ Chưa có host profile");
+      return;
+    }
+
+    openHostMiniProfile(__hostProfile);
+    return;
+  }
+
+  // 👀 VIEWER
+  if (name) {
+    const v = __viewerCache.find(u => u.name === name);
+    if (v) {
+      openMiniProfile(v);
+    }
+  }
+});
+
+
+/* ===== SWIPE TO TOGGLE CHAT (MOBILE) ===== */
+(function(){
+  if (window.innerWidth > 768) return;
+
+  const chat = document.querySelector(".chat-overlay");
+  if (!chat) return;
+
+  let startX = 0;
+  let startY = 0;
+  let tracking = false;
+
+  document.addEventListener("touchstart", e => {
+    if (e.touches.length !== 1) return;
+    startX = e.touches[0].clientX;
+    startY = e.touches[0].clientY;
+    tracking = true;
+  }, { passive:true });
+
+  document.addEventListener("touchmove", e => {
+    if (!tracking) return;
+
+    const dx = e.touches[0].clientX - startX;
+    const dy = e.touches[0].clientY - startY;
+
+    // nếu vuốt dọc nhiều hơn ngang → bỏ (để scroll)
+    if (Math.abs(dy) > Math.abs(dx)) {
+      tracking = false;
+      return;
+    }
+
+    // swipe phải → ẩn chat
+    if (dx > 60){
+      chat.classList.add("chat-hidden");
+      tracking = false;
+    }
+
+    // swipe trái → hiện chat
+    if (dx < -60){
+      chat.classList.remove("chat-hidden");
+      tracking = false;
+    }
+  }, { passive:true });
+
+  document.addEventListener("touchend", ()=>tracking=false);
+})();
+
+
+
+    // add emoji buttons
+    const emojiBar = document.getElementById("emojiBar");
+    if (emojiBar) {
+      emojiBar.addEventListener("click", (e) => {
+        const btn = e.target.closest("[data-emoji]");
+        if (!btn) return;
+        const em = btn.getAttribute("data-emoji") || "";
+        chatText.value = (chatText.value || "") + em;
+        chatText.focus();
+      });
+    }
+
+
+    chatSend.onclick = () => {
+
+
+  const profile = getUserProfile();
+
+  socket.emit("chat", {
+  roomId,
+  name: profile?.name || name,
+  avatar: profile?.avatar,
+  level: profile?.level || 1,
+  text,
+  role: "viewer"
+});
+
+
+  chatText.value = "";
+};
+
+
+const viewerCountViewer = document.getElementById("viewerCountViewer");
+const joinOverlayViewer = document.getElementById("joinOverlayViewer");
+
+function pushJoinViewer(text){
+  if (!joinOverlayViewer) return;
+  const el = document.createElement("div");
+  el.className = "join-bubble";
+  el.textContent = text;
+  joinOverlayViewer.appendChild(el);
+  while (joinOverlayViewer.children.length > 3) joinOverlayViewer.removeChild(joinOverlayViewer.firstChild);
+  setTimeout(()=>el.classList.add("hide"), 1400);
+  setTimeout(()=>{ try{el.remove();}catch{} }, 2000);
+}
+socket.on("viewer-join", ({ id }) => {
+  pushJoinViewer("➕ Có người vào xem");
+});
+
+socket.on("viewer-leave", ({ id }) => {
+  pushJoinViewer("➖ Có người rời");
+});
+
+socket.on("viewer-count", ({ count }) => {
+  if (viewerCountViewer) {
+    viewerCountViewer.textContent = `👁: ${count}`;
+  
+    try { viewerCountViewer.classList.remove("pulse"); void viewerCountViewer.offsetWidth; viewerCountViewer.classList.add("pulse"); } catch {}}
+});
+
+
+
+
+
+// ===== GIFT ENGINE (client) =====
+const GIFT_CLIENT_CATALOG = {
+  heart:  { emoji:"❤️", cost:50,  title:"Tim" },
+  flower: { emoji:"🌸", cost:100,  title:"Hoa" },
+  rocket: { emoji:"🚀", cost:200, title:"Rocket" },
+  coin:   { emoji:"💰", cost:500, title:"Túi tiền" },
+  king:   { emoji:"👑", cost:1000, title:"Vương miện" },
+  galaxy: { emoji:"🌌", cost:2000, title:"Dải ngân hà" },
+  meteor: { emoji:"☄️", cost:5000, title:"Sao băng" },
+  dragon: { emoji:"🐉", cost:10000, title:"Rồng" },
+  phoenix:{ emoji:"🦅", cost:10000, title:"Phượng hoàng" },
+  dragonking: { emoji:"🐲", cost:10000, title:"Dragon King" },
+  supernova:  { emoji:"🌠", cost:10000, title:"Supernova" },
+};
+
+// ===== COIN ERROR MODAL =====
+const cem = document.getElementById("coinErrorModal");
+const cemWallet = document.getElementById("cemWallet");
+const cemClose = document.getElementById("cemClose");
+const cemOk = document.getElementById("cemOk");
+
+function openCoinErrorModal(){
+  cemWallet.textContent = walletCoins?.textContent || "0";
+  cem.classList.remove("hidden");
+  cem.setAttribute("aria-hidden","false");
+}
+
+function closeCoinErrorModal(){
+  cem.classList.add("hidden");
+  cem.setAttribute("aria-hidden","true");
+}
+
+cemClose?.addEventListener("click", closeCoinErrorModal);
+cemOk?.addEventListener("click", closeCoinErrorModal);
+cem?.querySelector(".cem-bg")?.addEventListener("click", closeCoinErrorModal);
+
+
+// ===== GIFT CONFIRM LOGIC =====
+const gcm = document.getElementById("giftConfirmModal");
+const gcmEmoji = document.getElementById("gcmEmoji");
+const gcmTitle = document.getElementById("gcmTitle");
+const gcmCost = document.getElementById("gcmCost");
+const gcmQty = document.getElementById("gcmQty");
+const gcmTotal = document.getElementById("gcmTotal");
+const gcmWallet = document.getElementById("gcmWallet");
+const gcmOk = document.getElementById("gcmOk");
+const gcmCancel = document.getElementById("gcmCancel");
+const gcmClose = document.getElementById("gcmClose");
+
+let __pendingGift = null;
+
+function openGiftConfirm(data){
+  __pendingGift = data;
+  gcmEmoji.textContent = data.emoji;
+  gcmTitle.textContent = data.title;
+  gcmCost.textContent = data.cost;
+  gcmQty.textContent = "x" + data.qty;
+  gcmTotal.textContent = (data.cost * data.qty) + " coin";
+  gcmWallet.textContent = walletCoins.textContent || "0";
+
+  gcm.classList.remove("hidden");
+  gcm.setAttribute("aria-hidden","false");
+}
+
+function closeGiftConfirm(){
+  gcm.classList.add("hidden");
+  gcm.setAttribute("aria-hidden","true");
+  __pendingGift = null;
+}
+
+gcmCancel?.addEventListener("click", closeGiftConfirm);
+gcmClose?.addEventListener("click", closeGiftConfirm);
+gcm?.querySelector(".gcm__bg")?.addEventListener("click", closeGiftConfirm);
+
+// CONFIRM SEND
+gcmOk.addEventListener("click", ()=>{
+  if (!__pendingGift) return;
+
+  const wallet = Number(walletCoins.textContent || 0);
+  const total = __pendingGift.cost * __pendingGift.qty;
+
+  // ❌ KHÔNG ĐỦ COIN → MỞ MODAL LỖI
+  if (wallet < total){
+    closeGiftConfirm();
+    openCoinErrorModal();
+    return;
+  }
+
+  // 🔥 update coin
+  updateProfileOnSendGift(total);
+
+  // ⭐ update EXP / Level
+  addExpFromDonate(total);
+
+  // ✅ ĐỦ COIN → gửi coin
+  socket.emit("send-gift", {
+    roomId,
+    name: (chatName?.value || "Viewer").slice(0,20),
+    gift: {
+      type: __pendingGift.type,
+      qty: __pendingGift.qty
+    }
+  });
+
+  closeGiftConfirm();
+});
+
+
+// OVERRIDE click quà
+document.querySelectorAll('.gift-card').forEach(btn=>{
+  btn.onclick = ()=>{
+    const type = btn.dataset.gift;
+    const catalog = {
+      heart:{emoji:"❤️",cost:50,title:"Tim"},
+      flower:{emoji:"🌸",cost:100,title:"Hoa"},
+      rocket:{emoji:"🚀",cost:200,title:"Rocket"},
+      coin:{emoji:"💰",cost:500,title:"Túi tiền"},
+      king:{emoji:"👑",cost:1000,title:"Vương miện"},
+      galaxy:{emoji:"🌌",cost:2000,title:"Dải ngân hà"},
+      meteor:{emoji:"☄️",cost:5000,title:"Sao băng"},
+      dragon:{emoji:"🐉",cost:10000,title:"Rồng"},
+      phoenix:{emoji:"🦅",cost:10000,title:"Phượng hoàng"},
+      dragonking:{emoji:"🐲",cost:10000,title:"Dragon King"},
+      supernova:{emoji:"🌠",cost:10000,title:"Supernova"},
+    }[type];
+    if (!catalog) return;
+
+    openGiftConfirm({
+      type,
+      ...catalog,
+      qty: __giftCombo || 1
+    });
+  };
+});
+
+
+
+// ✅ Combo multiplier (x1/x5/x10)
+let __giftCombo = 1;
+try {
+  const saved = Number(localStorage.getItem("ls_gift_combo") || 1);
+  if (Number.isFinite(saved) && saved >= 1) __giftCombo = saved;
+} catch {}
+
+const __comboWrap = document.getElementById("giftCombo");
+if (__comboWrap) {
+  const __btns = __comboWrap.querySelectorAll(".gift-combo__btn");
+  // init active by saved value
+  __btns.forEach(b => {
+    const v = Number(b.dataset.combo || 1) || 1;
+    b.classList.toggle("is-active", v === __giftCombo);
+  });
+
+  __comboWrap.addEventListener("click", (ev) => {
+    const btn = ev.target && ev.target.closest(".gift-combo__btn");
+    if (!btn) return;
+    const v = Number(btn.dataset.combo || 1) || 1;
+    __giftCombo = Math.max(1, Math.min(999, v));
+    try { localStorage.setItem("ls_gift_combo", String(__giftCombo)); } catch {}
+    __btns.forEach(b => b.classList.toggle("is-active", b === btn));
+
+    // feedback
+    try {
+      const t = document.createElement("div");
+      t.className = "gift-toast";
+      t.textContent = `✅ Đã chọn combo x${__giftCombo}`;
+      document.body.appendChild(t);
+      setTimeout(()=>t.classList.add("hide"), 900);
+      setTimeout(()=>{ try{t.remove();}catch{} }, 1400);
+    } catch {}
+  });
+}
+
+// Send gift with selected combo qty
+document.querySelectorAll(".gift-bar button").forEach(btn => {
+  btn.onclick = () => {
+    const type = btn.dataset.gift;
+    const name = (chatName.value || "Viewer").trim().slice(0,20);
+    const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
+    socket.emit("send-gift", { roomId, name, gift: { type, qty } });
+  };
+});
+// ===== /GIFT ENGINE (client) =====
+const giftLayer = document.getElementById("giftLayer");
+
+function spawnBigGiftSfx(mode){
+  try{
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+
+    // layered chord for VIP
+    const isVip = (mode==="dragonking" || mode==="supernova");
+    const o1 = ctx.createOscillator();
+    const o2 = ctx.createOscillator();
+    const g  = ctx.createGain();
+
+    o1.type = "sine";
+    o2.type = isVip ? "triangle" : "sine";
+
+    const now = ctx.currentTime;
+    const base = mode==="supernova" ? 196 : mode==="dragonking" ? 220
+               : mode==="king" ? 330
+               : mode==="meteor" ? 246
+               : mode==="galaxy" ? 260
+               : 300;
+
+    // chord interval
+    const interval = isVip ? 1.4983 : 1.2599; // perfect fifth / major third
+
+    o1.frequency.setValueAtTime(base, now);
+    o2.frequency.setValueAtTime(base*interval, now);
+
+    // little rise
+    o1.frequency.exponentialRampToValueAtTime(base*2.2, now+0.20);
+    o2.frequency.exponentialRampToValueAtTime(base*interval*2.0, now+0.20);
+
+    g.gain.setValueAtTime(0.0001, now);
+    g.gain.exponentialRampToValueAtTime(isVip ? 0.24 : 0.18, now+0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, now + (isVip ? 0.34 : 0.22));
+
+    o1.connect(g); o2.connect(g); g.connect(ctx.destination);
+    o1.start(now); o2.start(now);
+    o1.stop(now + (isVip ? 0.36 : 0.24));
+    o2.stop(now + (isVip ? 0.36 : 0.24));
+
+    setTimeout(()=>{ try{ctx.close();}catch{} }, 600);
+  }
+  catch{}
+}
+
+function spawnGiftParticles(mode){
+  try{
+    const wrap = document.createElement("div");
+    wrap.className = "gift-particles gift-particles--" + (mode||"");
+    document.body.appendChild(wrap);
+    const n = mode==="meteor" ? 26 : mode==="king" ? 32 : 18;
+    for (let i=0;i<n;i++){
+      const p = document.createElement("div");
+      p.className = "gift-p";
+      p.style.left = (Math.random()*100)+"%";
+      p.style.top  = (Math.random()*100)+"%";
+      p.style.setProperty("--dx", (Math.random()*220-110)+"px");
+      p.style.setProperty("--dy", (Math.random()*220-140)+"px");
+      p.style.setProperty("--rot", (Math.random()*120-60)+"deg");
+      p.style.setProperty("--sc", (Math.random()*0.7+0.6));
+      wrap.appendChild(p);
+    }
+    setTimeout(()=>{ try{wrap.remove();}catch{} }, 2200);
+  }catch{}
+}
+
+function spawnBigGift(emoji, mode, donor, giftMeta){
+  const big = document.createElement("div");
+  big.className = "gift-big " + (mode ? ("gift-big--"+mode) : "");
+  big.innerHTML = `
+    <div class="gift-big__bg"></div>
+    <div class="gift-big__emoji">${emoji}</div>
+    <div class="gift-big__spark"></div>
+    <div class="gift-big__fx"></div>
+    <div class="gift-big__banner" id="giftBanner">
+      <div class="gift-big__title" id="giftTitle"></div>
+      <div class="gift-big__sub" id="giftSub"></div>
+      <div class="gift-big__cd"><span class="gift-big__cdbar"></span></div>
+    </div>
+  `;
+  document.body.appendChild(big);
+  spawnBigGiftSfx(mode);
+  spawnGiftParticles(mode);
+
+  // banner text + duration
+  try{
+    const dn = (donor || "Ai đó").toString().slice(0, 20);
+    const qty = Number(giftMeta?.qty || 1) || 1;
+    const coins = Number(giftMeta?.coins || 0) || 0;
+    const title = (mode === "dragonking") ? "🐲 DRAGON KING" :
+                  (mode === "supernova") ? "🌠 SUPERNOVA" :
+                  (mode === "king") ? "👑 KING" :
+                  (mode === "meteor") ? "☄️ METEOR" :
+                  (mode === "galaxy") ? "🌌 GALAXY" :
+                  (mode === "phoenix") ? "🦅 PHOENIX" :
+                  (mode === "dragon") ? "🐉 DRAGON" :
+                  (mode === "rocket") ? "🚀 ROCKET" : "🎁 GIFT";
+    const sub = `${dn} • x${qty} • +${coins} coin`;
+    big.querySelector("#giftTitle")?.replaceChildren(document.createTextNode(title));
+    big.querySelector("#giftSub")?.replaceChildren(document.createTextNode(sub));
+  }catch{}
+
+  const __dur = (mode==="dragonking" || mode==="supernova") ? 3000 : 2200;
+if (mode==="meteor" || mode==="king") document.body.classList.add("gift-shake");
+  setTimeout(()=>{ try{document.body.classList.remove("gift-shake");}catch{} }, 520);
+setTimeout(()=>big.classList.add("hide"), Math.max(1400, __dur - 800));
+  setTimeout(()=>{ try{big.remove();}catch{} }, __dur);
+}
+
+function spawnGift(type, donor, giftMeta){
+  const el = document.createElement("div");
+  el.className = "gift-item gift-item--" + type;
+
+  const emoji =
+    type === "heart"  ? "❤️" :
+    type === "flower" ? "🌸" :
+    type === "rocket" ? "🚀" :
+    type === "coin"   ? "💰" :
+    type === "dragon" ? "🐉" :
+    type === "phoenix"? "🦅" :
+    type === "galaxy" ? "🌌" :
+    type === "meteor" ? "☄️" :
+    type === "king"   ? "👑" :
+    type === "dragonking" ? "🐲" :
+    type === "supernova"  ? "🌠" :
+    "💰";
+
+  el.textContent = emoji;
+  el.style.left = Math.random()*80 + 10 + "%";
+  el.style.bottom = "10%";
+
+  giftLayer.appendChild(el);
+  setTimeout(()=>el.remove(), 2000);
+
+  if (type === "heart") spawnBigGift("❤️", "heart", donor, giftMeta);
+  if (type === "flower") spawnBigGift("🌸", "flower", donor, giftMeta);
+  if (type === "rocket") spawnBigGift("🚀", "rocket", donor, giftMeta);
+  if (type === "coin") spawnBigGift("💰", "coin", donor, giftMeta);
+  if (type === "dragon") spawnBigGift("", "dragon", donor, giftMeta);
+  if (type === "phoenix") spawnBigGift("", "phoenix", donor, giftMeta);
+  if (type === "galaxy") spawnBigGift("", "galaxy", donor, giftMeta);
+  if (type === "meteor") spawnBigGift("", "meteor", donor, giftMeta);
+  if (type === "king") spawnBigGift("👑", "king", donor, giftMeta);
+  if (type === "dragonking") spawnBigGift("", "dragonking", donor, giftMeta);
+  if (type === "supernova") spawnBigGift("", "supernova", donor, giftMeta);
+}
+socket.on("gift", ({ gift, donor })=>{
+  // spawn animation
+  spawnGift(gift.type, donor, gift);
+
+  // also push a small chat-bubble like donate note
+  try{
+    const note = document.createElement("div");
+    note.className = "gift-toast";
+    const em = gift.emoji || (GIFT_CLIENT_CATALOG[gift.type]?.emoji) || "🎁";
+    note.textContent = `${em} ${donor || "Ai đó"} tặng +${gift.coins || 0} coin`;
+    document.body.appendChild(note);
+    setTimeout(()=>note.classList.add("hide"), 1600);
+    setTimeout(()=>{ try{note.remove();}catch{} }, 2300);
+  }catch{}
+
+  // ===== 🎁 VIDEO GIFT (GHÉP THÊM) =====
+  if (!gift || !gift.type) return;
+
+  switch (gift.type) {
+
+    case "meteor":
+       enqueueGiftVideo("/gift-videos/meteor.mp4", 10000);
+      break;
+
+    case "galaxy":
+       enqueueGiftVideo("/gift-videos/galaxy.mp4", 10000);
+      break;
+
+    case "phoenix":
+       enqueueGiftVideo("/gift-videos/phoenix.mp4", 17000);
+      break;
+
+    case "dragon":
+       enqueueGiftVideo("/gift-videos/gold_dragon.mp4", 12000);
+      break;
+
+    case "dragonking":
+      enqueueGiftVideo("/gift-videos/dragon.mp4", 12000);
+      break;
+
+    case "supernova":
+       enqueueGiftVideo("/gift-videos/supernova.mp4", 11000);
+      break;
+  }
+});
+
+const walletCoinsEl = document.getElementById("walletCoins");
+socket.on("wallet-sync", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); });
+socket.on("wallet-update", ({ coins }) => { if (walletCoinsEl) walletCoinsEl.textContent = String(coins ?? 0); });
+
+socket.on("gift-failed", ({ reason, need, coins })=>{
+  if (reason === "no_coins"){
+    
+  }
+});
+
+const giftTotalCoinsEl = document.getElementById("giftTotalCoins");
+const giftTopList = document.getElementById("giftTopList");
+socket.on("gift-stats", ({ totalCoins, topDonors })=>{
+  if (giftTotalCoinsEl) giftTotalCoinsEl.textContent = String(totalCoins ?? 0);
+  if (giftTopList){
+    const arr = Array.isArray(topDonors) ? topDonors : [];
+    giftTopList.innerHTML = arr.length
+      ? arr.map((d,i)=>`<div class="gift-board__row"><span>#${i+1} ${d.name}</span><b>${d.coins}</b></div>`).join("")
+      : `<div class="gift-board__empty"></div>`;
+  }
+});
+// ===== NEON CONFIRM: Back to Lobby (VIEWER) =====
+const ncf = document.getElementById("neonConfirm");
+const ncfBg = ncf?.querySelector(".ncf__bg");
+const ncfOk = document.getElementById("ncfOk");
+const ncfCancel = document.getElementById("ncfCancel");
+const ncfX = document.getElementById("ncfX");
+
+function openNcf(){
+  if (!ncf) return;
+  ncf.classList.remove("hidden");
+  ncf.setAttribute("aria-hidden", "false");
+  setTimeout(()=>{ try{ ncfOk?.focus(); }catch{} }, 0);
+}
+function closeNcf(){
+  if (!ncf) return;
+  ncf.classList.add("hidden");
+  ncf.setAttribute("aria-hidden", "true");
+}
+
+// nút quay về lobby (đã có)
+const btnBackLobby = document.getElementById("btnBackLobby");
+btnBackLobby?.addEventListener("click", () => openNcf());
+
+// click nền / X / Cancel => đóng
+ncfBg?.addEventListener("click", closeNcf);
+ncfX?.addEventListener("click", closeNcf);
+ncfCancel?.addEventListener("click", closeNcf);
+
+// ESC đóng
+document.addEventListener("keydown", (e)=>{
+  if (!ncf || ncf.classList.contains("hidden")) return;
+  if (e.key === "Escape") closeNcf();
+});
+
+// OK => ngắt socket nhẹ nhàng + về lobby
+ncfOk?.addEventListener("click", () => {
+  try { if (typeof socket !== "undefined" && socket) socket.disconnect(); } catch {}
+  window.location.href = "/lobby.html";   // nếu home của bạn là lobby
+  // window.location.href = "/lobby.html"; // nếu bạn dùng file trực tiếp
+});
+
+
+
+socket.on("host-profile-update", (profile) => {
+  document.querySelectorAll(".host-name")
+    .forEach(el => el.textContent = profile.name);
+
+  document.querySelectorAll(".host-avatar")
+    .forEach(img => img.src = getAvatarByName(profile.name));
+});
+
+const chatFab = document.getElementById("chatFab");
+const chatInputOverlay = document.getElementById("chatInputOverlay");
+const quickChatInput = document.getElementById("quickChatInput");
+const quickChatSend = document.getElementById("quickChatSend");
+
+// ✅ iOS/Android: phải focus trong cùng “user gesture”
+function openQuickChat(){
+  chatInputOverlay.classList.remove("hidden");
+  quickChatInput.focus({ preventScroll: false });
+  quickChatInput.click();         // ✅ ép bật keyboard (Android)
+  quickChatInput.scrollIntoView({ block:"nearest" });
+}
+
+function closeQuickChat(){
+  chatInputOverlay.classList.add("hidden");
+  quickChatInput.blur();
+}
+
+chatFab?.addEventListener("pointerdown", (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+
+  if (chatInputOverlay.classList.contains("hidden")) openQuickChat();
+  else closeQuickChat();
+});
+
+quickChatSend?.addEventListener("pointerdown", (e)=>{
+  e.preventDefault();
+  sendQuickChat();
+});
+
+quickChatInput?.addEventListener("keydown", (e)=>{
+  if (e.key === "Enter") sendQuickChat();
+});
+
+function sendQuickChat(){
+  const text = (quickChatInput.value || "").trim();
+  if (!text) return;
+
+ socket.emit("chat", {
+  roomId,
+  name: profile?.name || name,
+  avatar: profile?.avatar,
+  level: profile?.level || 1,
+  text,
+  role: "viewer"
+});
+
+  quickChatInput.value = "";
+  closeQuickChat();
+}
+
+
+function showKickModal(text){
+  const modal = document.getElementById("neonConfirm");
+  document.getElementById("ncfTitle").textContent = "Livestream đã kết thúc";
+
+  modal.classList.remove("hidden");
+
+  let sec = 5;
+  const timer = setInterval(() => {
+    document.getElementById("ncfTitle").textContent =
+      `Host đã rời phòng • về Lobby sau ${sec}s`;
+    sec--;
+    if (sec < 0) {
+      clearInterval(timer);
+      location.href = "/lobby.html";
+    }
+  }, 1000);
+}
+
+socket.on("room-closed", ({ reason }) => {
+
+   document.body.classList.remove("is-live");
+
+  showKickModal("Host đã kết thúc livestream");
+});
+
+
+
+
+  // Chặn pinch zoom (iOS)
+  document.addEventListener("gesturestart", e => e.preventDefault());
+  document.addEventListener("gesturechange", e => e.preventDefault());
+  document.addEventListener("gestureend", e => e.preventDefault());
+
+  // Chặn Ctrl + scroll zoom (PC)
+  document.addEventListener("wheel", e => {
+    if (e.ctrlKey) e.preventDefault();
+  }, { passive: false });
+
+
+const giftFab = document.getElementById("giftFab");
+const giftPanel = document.getElementById("giftPanel");
+
+giftFab?.addEventListener("click", (e)=>{
+  e.stopPropagation();
+  giftPanel.classList.toggle("hidden");
+});
+
+// click ngoài → đóng
+document.addEventListener("click", ()=>{
+  giftPanel.classList.add("hidden");
+});
+giftPanel?.addEventListener("click", e=>e.stopPropagation());
+
+// gửi quà (đúng format server)
+giftPanel?.querySelectorAll("button[data-gift]").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    const type = btn.dataset.gift;
+
+    // lấy tên giống gift-bar đang dùng
+    const name = (chatName?.value || "Viewer").trim().slice(0,20);
+
+    // lấy combo giống hệ đang có (x1/x5/x10)
+    const qty = Math.max(1, Math.min(999, Number(__giftCombo || 1) || 1));
+
+  
+
+    giftPanel.classList.add("hidden");
+  });
+});
+
+
+
+
+
+if (profile){
+  const chatNameInput = document.getElementById("chatName");
+  if (chatNameInput) {
+    chatNameInput.value = profile.name;
+    chatNameInput.disabled = true; // 🔒 khóa không cho sửa
+  }
+}
+
+
+socket.on("host-temp-offline", () => {
+  statusBadge.textContent = "⚠️ Host mất kết nối tạm thời...";
+});
+
+socket.on("host-back-online", () => {
+  statusBadge.textContent = "🔴 Đang LIVE";
+});
+
+socket.on("host-live", ({ liveStartTs }) => {
+  joinViewerStream();
+  statusBadge.textContent = "🔴 Đang LIVE";
+  startLiveTimer(liveStartTs);
+});
+
+setInterval(() => {
+  if (player.srcObject && player.readyState < 2) {
+    console.warn("🔄 Video stalled → retry play");
+    forcePlayVideo(player);
+  }
+}, 2000);
+
+
+setInterval(() => {
+  const st = player.srcObject;
+  if (!st) return;
+
+  const at = st.getAudioTracks()[0];
+
+  if (!at || at.readyState !== "live") {
+  console.warn("🔊 Viewer audio dead → resume + ICE");
+  forceResumeAudio(player);
+
+  socket.emit("request-ice-restart", {
+    to: hostId,
+    reason: "viewer_audio_dead"
+  });
+}
+}, 3000);
+
+
+setInterval(() => {
+  if (!player || !player.srcObject) return;
+
+  const st = player.srcObject;
+
+  const v = st.getVideoTracks()[0];
+  const a = st.getAudioTracks()[0];
+
+  // nếu track chết → xin host ICE restart
+  if ((v && v.readyState !== "live") || (a && a.readyState !== "live")) {
+    console.warn("🧊 Viewer detect dead track → request ICE restart");
+    socket.emit("request-ice-restart", {
+      to: hostId,
+      reason: "tab background recover"
+    });
+  }
+}, 4000);
+
+setInterval(() => {
+  if (joined) return;
+  if (!document.body.classList.contains("is-live")) return;
+
+  console.warn("⏳ Viewer still waiting → retry join");
+  join().catch(()=>{});
+}, 4000);
+
+
+window.addEventListener("beforeunload", () => {
+  const overlay = document.getElementById("reconnectOverlay");
+  if (!overlay) return;
+  overlay.classList.remove("hidden");
+
+  const text = overlay.querySelector(".reconnect-text");
+  if (text) text.textContent = "Đang tải lại livestream…";
+});
+
+
+document.body.classList.add("viewer-fullscreen");
+
+
+const slider = document.getElementById("giftSlider");
+const track = slider.querySelector(".gift-track");
+const pages = slider.querySelectorAll(".gift-page");
+const dotsWrap = document.getElementById("giftDots");
+
+let currentPage = 0;
+let startX = 0;
+let dx = 0;
+
+/* dots */
+dotsWrap.innerHTML = "";
+pages.forEach((_, i)=>{
+  const d = document.createElement("div");
+  d.className = "gift-dot" + (i===0 ? " active":"");
+  d.onclick = ()=>goPage(i);
+  dotsWrap.appendChild(d);
+});
+
+function goPage(i){
+  currentPage = Math.max(0, Math.min(i, pages.length-1));
+  track.style.transform = `translateX(-${currentPage*100}%)`;
+
+  dotsWrap.querySelectorAll(".gift-dot")
+    .forEach((d,idx)=>d.classList.toggle("active", idx===currentPage));
+}
+
+/* swipe */
+slider.addEventListener("pointerdown", e=>{
+  startX = e.clientX;
+  dx = 0;
+  slider.setPointerCapture(e.pointerId);
+});
+
+slider.addEventListener("pointermove", e=>{
+  if (!startX) return;
+  dx = e.clientX - startX;
+});
+
+slider.addEventListener("pointerup", ()=>{
+  if (dx > 50) goPage(currentPage - 1);
+  else if (dx < -50) goPage(currentPage + 1);
+  startX = 0;
+});
+
+
+
+
+  </script>
+
+<!-- VIP TICKER (donation banner) -->
+<div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
+
+</body>
+</html>
