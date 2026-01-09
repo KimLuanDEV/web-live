@@ -5431,8 +5431,8 @@ video {
 /* ===== PiP button ===== */
 .pip-btn{
   position:absolute;
-  right:64px;      /* né nút X và ctrl */
-  bottom:16px;
+  right:60px;      /* né nút X và ctrl */
+  bottom:10px;
   width:44px;
   height:44px;
   border-radius:999px;
