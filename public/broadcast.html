@@ -747,6 +747,19 @@ function showLevelUpEffect(newLevel){
 }
 
 
+function getChatVip(level){
+  level = Number(level)||1;
+  if(level>=250) return "chat-vip-250";
+  if(level>=200) return "chat-vip-200";
+  if(level>=150) return "chat-vip-150";
+  if(level>=100) return "chat-vip-100";
+  if(level>=50) return "chat-vip-50";
+  if(level>=20) return "chat-vip-20";
+  if(level>=10) return "chat-vip-10";
+  return "";
+}
+
+
 function getVipBadge(level){
   level = Number(level) || 1;
 
@@ -2297,10 +2310,12 @@ const level =
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
   el.innerHTML = `
     <div class="chat-avatar-bg"
-     data-name="${name}"
-     data-role="${role}"
-     style="background-image:url('${avatar}')">
+ data-name="${name}"
+ data-role="${role}"
+ data-level="Lv${level}"
+ style="background-image:url('${avatar}')">
 </div>
+
   <div class="chat-body">
     <div class="chat-head">
       <span class="chat-name"
