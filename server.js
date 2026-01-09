@@ -702,6 +702,9 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     ts: Date.now(),
   };
 
+const room = getRoom(roomId);
+if (!room) return;
+
  for (const v of room.viewerProfiles.values()) {
   if (!v.mini) io.to(v.socketId).emit("reaction", msg);
 }
@@ -728,24 +731,35 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("pin-note-update", note);
 
   });
 
-  socket.on("pin-note-move", ({ roomId, x, y }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-    if (!room.pinnedNote) return;
-    room.pinnedNote.x = __clamp01(x);
-    room.pinnedNote.y = __clamp01(y);
-    room.pinnedNote.ts = Date.now();
-    io.to(roomId).emit("pin-note-update", room.pinnedNote);
-  });
+socket.on("pin-note-move", ({ roomId, x, y }) => {
+  if (!roomId) return;
+  const room = getRoom(roomId);
+  if (!room || room.broadcasterId !== socket.id) return;
+  if (!room.pinnedNote) return;
 
-  socket.on("pin-note-clear", ({ roomId }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-    room.pinnedNote = null;
-    io.to(roomId).emit("pin-note-update", null);
-  });
+  room.pinnedNote.x = __clamp01(x);
+  room.pinnedNote.y = __clamp01(y);
+  room.pinnedNote.ts = Date.now();
+
+  for (const v of room.viewerProfiles.values()) {
+    if (!v.mini) io.to(v.socketId).emit("pin-note-update", room.pinnedNote);
+  }
+  if (room.broadcasterId) io.to(room.broadcasterId).emit("pin-note-update", room.pinnedNote);
+});
+
+ socket.on("pin-note-clear", ({ roomId }) => {
+  if (!roomId) return;
+  const room = getRoom(roomId);
+  if (!room || room.broadcasterId !== socket.id) return;
+
+  room.pinnedNote = null;
+
+  for (const v of room.viewerProfiles.values()) {
+    if (!v.mini) io.to(v.socketId).emit("pin-note-update", null);
+  }
+  if (room.broadcasterId) io.to(room.broadcasterId).emit("pin-note-update", null);
+});
+
   // ===== /PIN NOTE =====
 
 
