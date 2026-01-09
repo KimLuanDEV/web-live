@@ -5431,14 +5431,14 @@ video {
 /* ===== PiP button ===== */
 .pip-btn{
   position:absolute;
-  right:60px;      /* né nút X và ctrl */
+  left:60px;      /* né nút X và ctrl */
   bottom:10px;
   width:44px;
   height:44px;
   border-radius:999px;
   border:1px solid rgba(255,255,255,.22);
   background: rgba(0,0,0,.6);
-  color:#fff;
+  color: white;
   font-size:16px;
   display:flex;
   align-items:center;
