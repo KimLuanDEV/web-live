@@ -525,6 +525,16 @@ function playNextGiftVideo(){
 }
 
 
+let __lastIceReq = 0;
+
+function safeIceRestart(to, reason){
+  const now = Date.now();
+  if (now - __lastIceReq < 5000) return; // ⏱ 5s
+  __lastIceReq = now;
+  socket.emit("request-ice-restart", { to, reason });
+}
+
+
 
 // ===== FORCE RESUME AUDIO (VIEWER) =====
 function forceResumeAudio(videoEl){
@@ -572,6 +582,7 @@ document.addEventListener("visibilitychange", () => {
   if (document.hidden) {
     console.warn("👀 Viewer background → mark resume");
     __viewerNeedResume = true;
+    __viewerWasBackground = true; // ✅ FIX QUAN TRỌNG
   }
 });
 
@@ -584,18 +595,24 @@ window.addEventListener("focus", () => {
   const overlay = document.getElementById("reconnectOverlay");
   if (overlay) overlay.classList.remove("hidden");
 
-  console.warn("🔄 Viewer resume → show overlay & reload");
-
-  // delay nhẹ cho mượt
   setTimeout(() => {
-
     forceResumeAudio(player);
-   
 
-    // reload sạch, không back history
-    location.replace(location.href);
+    // ✅ reconnect socket, KHÔNG reload page
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    // thử join lại nếu cần
+    if (!joined) {
+      join().catch(()=>{});
+    }
+
+    if (overlay) overlay.classList.add("hidden");
+    __viewerReloading = false;
   }, 700);
 });
+
 
 
 
@@ -1663,7 +1680,8 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
   pc.onconnectionstatechange = () => {
     const st = pc.connectionState;
     if (st === 'failed' || st === 'disconnected'){
-      try{ socket.emit('request-ice-restart', { to: from, reason: 'viewer_pc_' + st }); }catch{}
+      try{ safeIceRestart(from, 'viewer_pc_' + st);
+ }catch{}
     }
   };
 
@@ -1731,10 +1749,8 @@ if (hasAudio) {
 
 const st = pc.iceConnectionState;
   if (st === "failed" || st === "disconnected") {
-    socket.emit("request-ice-restart", {
-  to: from,
-  reason: "viewer_resume"
-});
+   safeIceRestart(from, "viewer_resume");
+
 
   }
 

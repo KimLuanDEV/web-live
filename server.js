@@ -239,6 +239,32 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
+
+socket.on("host-reconnect", ({ roomId }) => {
+  const room = getRoom(roomId);
+  if (!room) return;
+
+  room.broadcasterId = socket.id;
+  room.pendingRelease = false;
+
+  if (room.releaseTimer) {
+    clearTimeout(room.releaseTimer);
+    room.releaseTimer = null;
+  }
+
+  socket.join(roomId);
+
+  socket.emit("host-resume", {
+    liveStartTs: room.liveStartTs,
+    viewers: Array.from(room.viewerProfiles.values())
+  });
+
+  io.to(roomId).emit("host-back-online");
+});
+
+
+
+
 socket.on("host-profile-update", ({ roomId, level }) => {
   const room = getRoom(roomId);
   if (!room) return;
@@ -822,15 +848,20 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     emitLobbyUpdate();
   }
 
+
+
+
   /* ========= HOST ========= */
   if (role === "broadcaster") {
     room.pendingRelease = true;
 
-    room.releaseTimer = setTimeout(() => {
-      if (room.pendingRelease) {
-        closeRoom(roomId, "host_left");
-      }
-    }, ROOM_RELEASE_DELAY);
+ room.releaseTimer = setTimeout(() => {
+  // ⛔ CHỈ đóng room nếu host KHÔNG quay lại
+  if (room.pendingRelease && !room.broadcasterId) {
+    closeRoom(roomId, "host_timeout");
+  }
+}, ROOM_RELEASE_DELAY);
+
 
     io.to(roomId).emit("host-temp-offline");
   }

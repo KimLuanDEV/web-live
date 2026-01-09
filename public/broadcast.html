@@ -1763,6 +1763,10 @@ socket.on("cancel-request-guest", ({ roomId, socketId }) => {
 });
 
 
+socket.on("connect", () => {
+  socket.emit("host-reconnect", { roomId });
+});
+
 
     socket.on("guest-offline", () => {
       log("Guest offline");
@@ -1990,7 +1994,13 @@ syncStartLiveOverlay(false);
     btnStop.onclick = stop;
     hostFlipBtn.onclick = flipCamera;
 
-    window.addEventListener("beforeunload", stop);
+    window.addEventListener("beforeunload", () => {
+  // ❌ KHÔNG stop live ở đây
+  try {
+    socket.emit("host-temp-disconnect", { roomId });
+  } catch {}
+});
+
 
 
 
