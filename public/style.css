@@ -5537,3 +5537,61 @@ video {
 .logout-btn:hover{
   background:rgba(255,59,107,.35) !important;
 }
+
+/* ===== MOBILE TAB BAR ===== */
+.mobile-tabbar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:64px;
+  background:rgba(5,8,18,.85);
+  backdrop-filter: blur(14px);
+  border-top:1px solid rgba(255,255,255,.12);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:9999;
+}
+
+.tab-item{
+  flex:1;
+  text-align:center;
+  color:rgba(255,255,255,.65);
+  font-size:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+}
+
+.tab-item.active{
+  color:#00f6ff;
+  text-shadow:0 0 12px rgba(0,246,255,.8);
+}
+
+.tab-icon{
+  font-size:20px;
+}
+
+.tab-main{
+  transform: translateY(-18px);
+}
+
+.tab-plus{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00f6ff,#5f7dff);
+  color:#00141a;
+  font-size:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 28px rgba(0,246,255,.8);
+}
+
+/* desktop ẩn */
+@media(min-width: 900px){
+  .mobile-tabbar{ display:none; }
+}

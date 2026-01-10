@@ -811,9 +811,66 @@ document.getElementById("btnLogout").onclick = () => {
 
 
 
+// Mobile Tab Logic
+document.querySelectorAll(".tab-item").forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll(".tab-item").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+
+    const type = tab.dataset.tab;
+
+    if(type === "profile"){
+      location.href = "/profile.html";
+    }
+
+    if(type === "hot"){
+      document.getElementById("q").value = "";
+      document.getElementById("sort").value = "viewers";
+      document.getElementById("sort").dispatchEvent(new Event("change"));
+    }
+
+    if(type === "lobby"){
+      location.href = "/lobby.html";
+    }
+  }
+});
+
+document.getElementById("tabCreate").onclick = ()=>{
+  document.getElementById("btnOpenCreate").click();
+};
+
+
 </script>
 
 
+
+
+<!-- MOBILE TAB BAR -->
+<div class="mobile-tabbar">
+  <div class="tab-item active" data-tab="lobby">
+    <div class="tab-icon">🏟</div>
+    <div class="tab-text">Lobby</div>
+  </div>
+
+  <div class="tab-item" data-tab="hot">
+    <div class="tab-icon">🔥</div>
+    <div class="tab-text">Hot</div>
+  </div>
+
+  <div class="tab-item tab-main" id="tabCreate">
+    <div class="tab-plus">＋</div>
+  </div>
+
+  <div class="tab-item" data-tab="chat">
+    <div class="tab-icon">💬</div>
+    <div class="tab-text">Chat</div>
+  </div>
+
+  <div class="tab-item" data-tab="profile">
+    <div class="tab-icon">👤</div>
+    <div class="tab-text">Me</div>
+  </div>
+</div>
 
 
 
