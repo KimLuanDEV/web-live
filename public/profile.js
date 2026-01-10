@@ -203,3 +203,64 @@ function addExp(amount){
   localStorage.setItem(KEY, JSON.stringify(p));
   loadProfile();
 }
+
+
+// ===== CHANGE PASSWORD =====
+const passModal = document.getElementById("passModal");
+const btnChangePass = document.getElementById("btnChangePass");
+
+if(btnChangePass){
+  btnChangePass.onclick = ()=>{
+    passModal.classList.remove("hidden");
+  };
+}
+
+function closePass(){
+  passModal.classList.add("hidden");
+}
+
+async function submitChangePass(){
+  const oldPass = document.getElementById("oldPass").value;
+  const newPass = document.getElementById("newPass").value;
+  const newPass2 = document.getElementById("newPass2").value;
+
+  if(!oldPass || !newPass || !newPass2){
+    alert("❌ Nhập đầy đủ thông tin");
+    return;
+  }
+
+  if(newPass.length < 6){
+    alert("❌ Mật khẩu mới phải >= 6 ký tự");
+    return;
+  }
+
+  if(newPass !== newPass2){
+    alert("❌ Mật khẩu nhập lại không khớp");
+    return;
+  }
+
+  const uid = __profileAuth.uid;
+  if(!uid){
+    alert("❌ Chưa đăng nhập");
+    return;
+  }
+
+  const res = await fetch("/api/change-password",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      uid,
+      oldPass,
+      newPass
+    })
+  });
+
+  const data = await res.json();
+
+  if(data.ok){
+    alert("✅ Đổi mật khẩu thành công");
+    closePass();
+  }else{
+    alert("❌ Mật khẩu cũ không đúng");
+  }
+}

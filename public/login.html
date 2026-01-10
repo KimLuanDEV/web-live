@@ -120,11 +120,24 @@ body{
   <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
 
 
-  <div class="login-links">
-    Chưa có tài khoản?
-    <a href="/register.html">Tạo ngay</a>
+<div class="login-links">
+  <a href="#" onclick="openForgot()">Quên mật khẩu?</a>
+  <br>
+  Chưa có tài khoản?
+  <a href="/register.html">Tạo ngay</a>
+</div>
+
+
+<div id="forgotModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3>🔑 Quên mật khẩu</h3>
+    <input id="forgotUser" placeholder="Tên đăng nhập">
+    <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
+    <button onclick="submitForgot()">Đặt lại mật khẩu</button>
   </div>
 </div>
+
 
 <script>
 async function login(){
@@ -157,6 +170,32 @@ async function login(){
 
   location.href = "/lobby.html";
 }
+
+
+
+function openForgot(){
+  document.getElementById("forgotModal").classList.remove("hidden");
+}
+function submitForgot(){
+  fetch("/api/forgot-password",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      username: forgotUser.value,
+      newPassword: forgotPass.value
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.ok){
+      alert("✅ Đổi mật khẩu thành công");
+      location.reload();
+    }else{
+      alert("❌ Không tìm thấy tài khoản");
+    }
+  });
+}
+
 </script>
 
 
