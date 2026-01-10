@@ -280,16 +280,6 @@
 
 
 
-<!-- PRIVATE CHAT -->
-<div id="dmModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-  <div class="modal-card">
-    <h3 id="dmTitle">💬 Chat</h3>
-    <div id="dmList" style="height:260px;overflow-y:auto"></div>
-    <input id="dmInput" placeholder="Nhập tin nhắn..." />
-    <button id="dmSend">Gửi</button>
-  </div>
-</div>
 
 
 <script src="/socket.io/socket.io.js"></script>
@@ -721,8 +711,7 @@ function render(list){
 
       <div class="lobby-cardTop">
         <div class="lobby-host">
-          <img class="lobby-ava" src="..." onclick="openDM('${r.host?.uid}')">
-
+          <img class="lobby-ava" src="${hostAvatar}" alt="avatar" loading="lazy">
           <div class="lobby-hostinfo">
             <div class="lobby-hostname">${escapeHtml(hostName)}</div>
             <div class="lobby-roomid">🎥 ${escapeHtml(r.roomId)}</div>
@@ -937,31 +926,6 @@ socket.on("inbox-new", ()=>{
   document.querySelector('[data-tab="chat"]')?.classList.add("has-new");
 });
 
-
-
-let currentDM = null;
-
-function openDM(uid){
-  currentDM = uid;
-  document.getElementById("dmTitle").textContent = "💬 Chat với " + uid;
-  document.getElementById("dmList").innerHTML = "";
-  document.getElementById("dmModal").classList.remove("hidden");
-}
-
-document.getElementById("dmSend").onclick = ()=>{
-  const t = dmInput.value.trim();
-  if(!t || !currentDM) return;
-  socket.emit("private-send", { toUid: currentDM, text: t });
-  dmInput.value = "";
-};
-
-socket.on("private-msg", msg=>{
-  if(msg.from !== currentDM && msg.to !== currentDM) return;
-
-  const div = document.createElement("div");
-  div.innerText = (msg.from === profile.uid ? "Bạn: " : "Họ: ") + msg.text;
-  dmList.appendChild(div);
-});
 
 
 </script>

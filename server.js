@@ -341,42 +341,6 @@ io.on("connection", (socket) => {
 });
 
 
-// ===== PRIVATE CHAT =====
-socket.on("private-send", ({ toUid, text })=>{
-  const fromUid = socket.data.uid;
-  if(!fromUid || !toUid || !text) return;
-
-  const msg = {
-    from: fromUid,
-    to: toUid,
-    text: String(text).slice(0,500),
-    ts: Date.now()
-  };
-
-  // Lưu vào inbox 2 phía
-  pushNotify(toUid, {
-    type:"dm",
-    text:`💬 Tin nhắn mới từ ${fromUid}`,
-    msg
-  });
-
-  pushNotify(fromUid,{
-    type:"dm",
-    text:`Bạn → ${toUid}: ${msg.text}`,
-    msg
-  });
-
-  // realtime cho người nhận
-  const toSocket = activeUsers.get(toUid);
-  if(toSocket){
-    io.to(toSocket).emit("private-msg", msg);
-    io.to(toSocket).emit("inbox-new");
-  }
-
-  // gửi lại cho người gửi
-  socket.emit("private-msg", msg);
-});
-
 
 socket.on("auth-ping", ({ uid }) => {
   if (!uid) return;
