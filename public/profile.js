@@ -1,3 +1,20 @@
+const socket = io();
+
+// 🔐 AUTH ACCOUNT – bắt buộc
+const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+if (__profileAuth.uid) {
+  socket.emit("auth-login", { uid: __profileAuth.uid });
+}
+
+// nếu bị login nơi khác → đá
+socket.on("force-logout", () => {
+  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
+
+
 const KEY = "user_profile";
 
 const nameInput = document.getElementById("nameInput");
@@ -97,7 +114,10 @@ if (vipBadgeBox){
 
 document.getElementById("btnSave").onclick = () => {
   const old = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  const uid = __profileAuth.uid || old.uid;   // 🔐 giữ uid
+
   const profile = {
+    uid,                                     // 🔥 BẮT BUỘC
     name: nameInput.value.trim() || "Guest",
     avatar: old.avatar || defaultProfile.avatar,
     coins: Number(coinVal.textContent) || 0,
@@ -106,7 +126,14 @@ document.getElementById("btnSave").onclick = () => {
     coinSent: old.coinSent || 0,
     coinReceived: old.coinReceived || 0,
   };
+
   localStorage.setItem(KEY, JSON.stringify(profile));
+
+  // 🔁 gửi lại auth-login để server không mất uid
+  if(uid){
+    socket.emit("auth-login", { uid });
+  }
+
   alert("✅ Đã lưu hồ sơ!");
 };
 
@@ -142,9 +169,11 @@ avatarInput.onchange = async () => {
     localStorage.setItem(KEY, JSON.stringify(p));
 
     // realtime sync nếu đang ở room
-    if (window.socket) {
-      socket.emit("profile-update", { avatar: base64 });
-    }
+    if (socket && __profileAuth.uid) {
+  socket.emit("profile-update", { avatar: base64 });
+  socket.emit("auth-login", { uid: __profileAuth.uid }); // 🔐 GIỮ KHÓA LOGIN
+}
+
   };
 
   reader.readAsDataURL(file);
