@@ -10,6 +10,24 @@ const twilio = require("twilio");
 
 const fs = require("fs");
 
+
+const bcrypt = require("bcrypt");
+const USERS_FILE = path.join(__dirname, "users.json");
+
+function loadUsers(){
+  try{
+    if (!fs.existsSync(USERS_FILE)) return {};
+    return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
+  }catch{
+    return {};
+  }
+}
+
+function saveUsers(users){
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users,null,2));
+}
+
+
 const LIVE_STATE_FILE = path.join(__dirname, "live_state.json");
 
 
@@ -62,6 +80,54 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
 });
 
 
+app.post("/api/register", express.json(), async (req,res)=>{
+  const { username, password } = req.body;
+  if(!username || !password){
+    return res.status(400).json({ error:"missing" });
+  }
+
+  const users = loadUsers();
+  if(users[username]){
+    return res.status(400).json({ error:"exists" });
+  }
+
+  const hash = await bcrypt.hash(password,10);
+
+  users[username] = {
+    uid: "u_" + Date.now(),
+    username,
+    password: hash,
+    name: username,
+    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed="+username,
+    level: 1,
+    coins: 1000,
+    vip: 0
+  };
+
+  saveUsers(users);
+  res.json({ ok:true });
+});
+
+
+app.post("/api/login", express.json(), async (req,res)=>{
+  const { username, password } = req.body;
+  const users = loadUsers();
+
+  const u = users[username];
+  if(!u) return res.status(401).json({ error:"not_found" });
+
+  const ok = await bcrypt.compare(password, u.password);
+  if(!ok) return res.status(401).json({ error:"wrong_pass" });
+
+  res.json({
+    uid: u.uid,
+    name: u.name,
+    avatar: u.avatar,
+    level: u.level,
+    coins: u.coins,
+    vip: u.vip
+  });
+});
 
 const rooms = new Map();
 
@@ -532,7 +598,8 @@ saveLiveState(state);
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
 
-    
+    const uid = String(profile?.uid || "").trim() || safeName(profile?.name);
+
      roomId = normRoomId(roomId);
     if (!roomId || !role) return;
 
