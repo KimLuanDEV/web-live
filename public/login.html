@@ -55,24 +55,39 @@
 </div>
 
 <script>
-function login(){
+async function login(){
   const u = loginUser.value.trim();
-  const p = loginPass.value.trim();
-  if(!u || !p) return alert("Nhập đủ thông tin");
+  const p = loginPass.value;
 
-  const db = JSON.parse(localStorage.getItem("users")||"{}");
-  const acc = db[u];
-  if(!acc || acc.password !== p){
-    alert("Sai tài khoản hoặc mật khẩu");
+  if(!u || !p){
+    alert("❌ Nhập đủ tài khoản và mật khẩu");
     return;
   }
 
-  localStorage.setItem("user_profile", JSON.stringify(acc.profile));
-  localStorage.setItem("login_uid", acc.profile.uid);
-  location.href = "/lobby.html";
+  const res = await fetch("/api/login",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      username: u,
+      password: p
+    })
+  });
 
+  const data = await res.json();
+
+  if(data.error){
+    alert("❌ Sai tài khoản hoặc mật khẩu");
+    return;
+  }
+
+  // server trả profile chuẩn
+  localStorage.setItem("user_profile", JSON.stringify(data.profile));
+  localStorage.setItem("login_uid", data.profile.uid);
+
+  location.href = "/lobby.html";
 }
 </script>
+
 
 </body>
 </html>

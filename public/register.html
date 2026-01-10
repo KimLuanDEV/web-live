@@ -19,7 +19,9 @@
 </div>
 
 <script>
-function register(){
+
+
+async function register(){
   const u = regUser.value.trim();
   const p = regPass.value;
   const p2 = regPass2.value;
@@ -40,35 +42,36 @@ function register(){
     return;
   }
 
-  const db = JSON.parse(localStorage.getItem("users") || "{}");
+  const res = await fetch("/api/register",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      username: u,
+      password: p,
+      name
+    })
+  });
 
-  if(db[u]){
-    alert("❌ Tài khoản đã tồn tại");
+  const data = await res.json();
+
+  if(data.error){
+    if(data.error === "exists"){
+      alert("❌ Tài khoản đã tồn tại");
+    }else{
+      alert("❌ Lỗi tạo tài khoản");
+    }
     return;
   }
 
-  const profile = {
-    uid: u,
-    name,
-    avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
-    coins: 0,
-    level: 1,
-    exp: 0,
-    coinSent: 0,
-    coinReceived: 0
-  };
-
-  db[u] = {
-    password: p,
-    profile
-  };
-
-  localStorage.setItem("users", JSON.stringify(db));
-  localStorage.setItem("user_profile", JSON.stringify(profile));
+  // server trả về profile chuẩn
+  localStorage.setItem("user_profile", JSON.stringify(data.profile));
+  localStorage.setItem("login_uid", data.profile.uid);
 
   alert("🎉 Tạo tài khoản thành công!");
   location.href = "/profile.html";
 }
+
+
 
 
 </script>

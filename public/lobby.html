@@ -240,11 +240,19 @@
 <script>
 const socket = io();
 
-const profile = JSON.parse(localStorage.getItem("user_profile")||"{}");
+
+
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 if(profile.uid){
   socket.emit("auth-login", { uid: profile.uid });
 }
+
+socket.on("force-logout", () => {
+  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
 
 
 
@@ -801,12 +809,6 @@ document.getElementById("btnLogout").onclick = () => {
   location.href = "/login.html";
 };
 
-
-socket.on("force-logout", ({ reason }) => {
-  alert("Tài khoản của bạn đã đăng nhập ở thiết bị khác!");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
 
 
 </script>

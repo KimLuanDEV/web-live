@@ -69,6 +69,61 @@ const rooms = new Map();
 const activeUsers = new Map();   // uid -> socketId
 
 
+const USERS_FILE = path.join(__dirname, "users.json");
+
+function loadUsers(){
+  if(!fs.existsSync(USERS_FILE)) return {};
+  return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
+}
+function saveUsers(db){
+  fs.writeFileSync(USERS_FILE, JSON.stringify(db,null,2));
+}
+
+
+app.use(express.json());
+
+app.post("/api/register", (req,res)=>{
+  const { username, password, name } = req.body;
+  if(!username || !password || !name) return res.json({error:"missing"});
+
+  const db = loadUsers();
+
+  if(db[username]){
+    return res.json({error:"exists"});
+  }
+
+  db[username] = {
+    password,
+    profile:{
+      uid: username,
+      name,
+      avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+      coins:0,
+      level:1,
+      exp:0,
+      coinSent:0,
+      coinReceived:0
+    }
+  };
+
+  saveUsers(db);
+  res.json({ok:true, profile:db[username].profile});
+});
+
+
+app.post("/api/login",(req,res)=>{
+  const { username, password } = req.body;
+  const db = loadUsers();
+  const acc = db[username];
+
+  if(!acc || acc.password !== password){
+    return res.json({error:"invalid"});
+  }
+
+  res.json({ok:true, profile:acc.profile});
+});
+
+
 // ♻️ RESTORE LIVE ROOMS AFTER SERVER RESTART
 const persisted = loadLiveState();
 
