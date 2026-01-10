@@ -39,6 +39,7 @@
     </div>
   </div>
 
+  
 
   <button class="lobby-btn logout-btn" id="btnLogout">⏻</button>
 </div>
@@ -408,11 +409,9 @@ btnWelcomeX?.addEventListener("click", ()=>{
 btnWelcomeCreate?.addEventListener("click", ()=>{
   rememberIfChecked();
   closeWelcome();
-
-  // mở modal tạo phòng nếu bạn đã làm (id nút tạo phòng trong lobby)
-  const btnOpenCreate = document.getElementById("btnOpenCreate");
-  if (btnOpenCreate) btnOpenCreate.click();
+  openCreateRoom();
 });
+
 
 document.addEventListener("keydown", (e)=>{
   if (!welcomeModal || welcomeModal.classList.contains("hidden")) return;
@@ -423,27 +422,23 @@ document.addEventListener("keydown", (e)=>{
 
 // ===== CREATE ROOM MODAL =====
 const modal = document.getElementById("createRoomModal");
-const btnOpenCreate = document.getElementById("btnOpenCreate");
 const btnCancelRoom = document.getElementById("btnCancelRoom");
 const btnConfirmRoom = document.getElementById("btnConfirmRoom");
 
 const roomInput = document.getElementById("roomInput");
 const hostNameInput = document.getElementById("hostNameInput");
 
-function openModal(){
+function openCreateRoom(){
   modal.classList.remove("hidden");
   roomInput.value = "";
-  hostNameInput.value = "";
+  hostNameInput.value = profile?.name || "";
+  hostNameInput.disabled = true;
   setTimeout(()=>roomInput.focus(), 0);
 }
+
 function closeModal(){
   modal.classList.add("hidden");
 }
-
-btnOpenCreate?.addEventListener("click", (e)=>{
-  e.preventDefault();
-  openModal();
-});
 
 btnCancelRoom?.addEventListener("click", closeModal);
 
@@ -786,7 +781,6 @@ socket.on("lobby-update", d => {
   render(__rooms);
 });
 
-document.getElementById("refresh").onclick = requestLobby;
 
 // load
 requestLobby();
@@ -868,8 +862,9 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 });
 
 document.getElementById("tabCreate").onclick = ()=>{
-  document.getElementById("btnOpenCreate").click();
+  openCreateRoom();
 };
+
 
 
 </script>
