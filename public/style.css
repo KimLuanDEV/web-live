@@ -5485,3 +5485,46 @@ video {
   box-shadow: 0 0 18px rgba(255,60,60,.7);
   border-color: rgba(255,80,80,.8);
 }
+
+
+/* ===== USER BAR ===== */
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.18);
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(95,168,255,.15);
+}
+.user-chip:hover{
+  filter:brightness(1.1);
+  transform:scale(1.03);
+}
+
+.user-chip img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #5fa8ff;
+  box-shadow:0 0 16px rgba(95,168,255,.5);
+}
+
+.user-info{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+
+#userName{
+  font-weight:800;
+  font-size:14px;
+}
+
+.user-level{
+  font-size:12px;
+  color:#ffd36e;
+}

@@ -12,21 +12,40 @@
 
   <input id="regUser" placeholder="Tên đăng nhập">
   <input id="regPass" type="password" placeholder="Mật khẩu">
+  <input id="regPass2" type="password" placeholder="Nhập lại mật khẩu">
   <input id="regName" placeholder="Tên hiển thị">
 
-  <button onclick="register()">TẠO</button>
+  <button onclick="register()">TẠO TÀI KHOẢN</button>
 </div>
 
 <script>
 function register(){
   const u = regUser.value.trim();
-  const p = regPass.value.trim();
+  const p = regPass.value;
+  const p2 = regPass2.value;
   const name = regName.value.trim();
 
-  if(!u || !p || !name) return alert("Nhập đủ");
+  if(!u || !p || !p2 || !name){
+    alert("❌ Nhập đầy đủ thông tin");
+    return;
+  }
 
-  const db = JSON.parse(localStorage.getItem("users")||"{}");
-  if(db[u]) return alert("Tài khoản đã tồn tại");
+  if(p.length < 6){
+    alert("❌ Mật khẩu phải ít nhất 6 ký tự");
+    return;
+  }
+
+  if(p !== p2){
+    alert("❌ Mật khẩu nhập lại không khớp");
+    return;
+  }
+
+  const db = JSON.parse(localStorage.getItem("users") || "{}");
+
+  if(db[u]){
+    alert("❌ Tài khoản đã tồn tại");
+    return;
+  }
 
   const profile = {
     uid: u,
@@ -47,8 +66,11 @@ function register(){
   localStorage.setItem("users", JSON.stringify(db));
   localStorage.setItem("user_profile", JSON.stringify(profile));
 
-  location.href="/profile.html";
+  alert("🎉 Tạo tài khoản thành công!");
+  location.href = "/profile.html";
 }
+
+
 </script>
 
 </body>
