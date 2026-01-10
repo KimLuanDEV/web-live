@@ -654,6 +654,18 @@ if(nameFromLobby){
 
     const socket = io();
     
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+if(profile.uid){
+  socket.emit("auth-login", { uid: profile.uid });
+}
+
+socket.on("force-logout", () => {
+  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
+
 
 function updateProfileOnReceiveGift(totalCoin){
   const KEY = "user_profile";
@@ -839,7 +851,7 @@ function getUserProfile(){
   }
 }
 
-const profile = getUserProfile();
+
 
 
 
