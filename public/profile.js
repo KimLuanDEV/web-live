@@ -1,5 +1,13 @@
 const socket = io();
 
+// 🔁 giữ socket sống để server không mất uid
+setInterval(() => {
+  if (socket.connected && __profileAuth.uid) {
+    socket.emit("auth-ping", { uid: __profileAuth.uid });
+  }
+}, 4000);
+
+
 // 🔐 AUTH ACCOUNT – bắt buộc
 const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 

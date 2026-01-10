@@ -302,6 +302,16 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+socket.on("auth-ping", ({ uid }) => {
+  if (!uid) return;
+
+  // refresh mapping
+  const old = activeUsers.get(uid);
+  if (!old || old !== socket.id) {
+    activeUsers.set(uid, socket.id);
+    socket.data.uid = uid;
+  }
+});
 
   socket.on("auth-login", ({ uid }) => {
   uid = String(uid||"").trim();
