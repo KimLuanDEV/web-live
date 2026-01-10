@@ -1,3 +1,6 @@
+const bcrypt = require("bcrypt");
+
+
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
 
 const multer = require("multer");
@@ -82,18 +85,17 @@ function saveUsers(db){
 
 app.use(express.json());
 
-app.post("/api/register", (req,res)=>{
+app.post("/api/register", async (req,res)=>{
   const { username, password, name } = req.body;
   if(!username || !password || !name) return res.json({error:"missing"});
 
   const db = loadUsers();
+  if(db[username]) return res.json({error:"exists"});
 
-  if(db[username]){
-    return res.json({error:"exists"});
-  }
+  const hash = await bcrypt.hash(String(password), 10);
 
   db[username] = {
-    password,
+    password: hash,   // 🔐 HASH
     profile:{
       uid: username,
       name,
@@ -111,12 +113,15 @@ app.post("/api/register", (req,res)=>{
 });
 
 
-app.post("/api/login",(req,res)=>{
+app.post("/api/login", async (req,res)=>{
   const { username, password } = req.body;
   const db = loadUsers();
   const acc = db[username];
 
-  if(!acc || acc.password !== password){
+  if(!acc) return res.json({error:"invalid"});
+
+  const ok = await bcrypt.compare(String(password), acc.password);
+  if(!ok){
     return res.json({error:"invalid"});
   }
 
