@@ -144,6 +144,25 @@ app.post("/api/login", async (req,res)=>{
 });
 
 
+
+  app.post("/api/forgot-password",(req,res)=>{
+  const { username, newPassword } = req.body;
+  const user = users.find(u=>u.username===username);
+  if(!user) return res.json({error:true});
+  user.password = hash(newPassword);
+  res.json({ ok:true });
+});
+
+app.post("/api/change-password",(req,res)=>{
+  const { uid, oldPass, newPass } = req.body;
+  const user = users.find(u=>u.uid===uid);
+  if(!user || !compare(oldPass,user.password))
+    return res.json({ error:true });
+
+  user.password = hash(newPass);
+  res.json({ ok:true });
+});
+
 // ♻️ RESTORE LIVE ROOMS AFTER SERVER RESTART
 const persisted = loadLiveState();
 
@@ -331,23 +350,6 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
-  app.post("/api/forgot-password",(req,res)=>{
-  const { username, newPassword } = req.body;
-  const user = users.find(u=>u.username===username);
-  if(!user) return res.json({error:true});
-  user.password = hash(newPassword);
-  res.json({ ok:true });
-});
-
-app.post("/api/change-password",(req,res)=>{
-  const { uid, oldPass, newPass } = req.body;
-  const user = users.find(u=>u.uid===uid);
-  if(!user || !compare(oldPass,user.password))
-    return res.json({ error:true });
-
-  user.password = hash(newPass);
-  res.json({ ok:true });
-});
 
 
   socket.on("get-inbox", ()=>{
