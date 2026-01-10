@@ -732,6 +732,60 @@ setInterval(checkHDQuality, 2500);
 
     const socket = io();
 
+function updateProfileOnSendGift(totalCoin){
+  const KEY = "user_profile";
+  let p = {};
+
+  try{
+    p = JSON.parse(localStorage.getItem(KEY)) || {};
+  }catch{}
+
+  p.coinSent = (p.coinSent || 0) + totalCoin;
+  p.coins = Math.max(0, (p.coins || 0) - totalCoin);
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+}
+
+
+function addExpFromDonate(coin){
+  const KEY = "user_profile";
+  let p = {};
+
+  try{
+    p = JSON.parse(localStorage.getItem(KEY)) || {};
+  }catch{}
+
+  p.exp = p.exp || 0;
+  p.level = p.level || 1;
+
+  // 🎯 100 coin = 1 EXP
+  const gainedExp = Math.floor(coin / 100);
+  if (gainedExp <= 0) return;
+
+  p.exp += gainedExp;
+
+  // 🔁 CHECK LEVEL UP
+  let need;
+  while (true) {
+    need = p.level * 100;
+    if (p.exp >= need) {
+      p.exp -= need;
+      p.level += 1;
+
+     // 💥 LEVEL UP EFFECT
+    showLevelUpEffect(p.level);
+
+    } else break;
+  }
+
+// sau khi level thay đổi
+socket.emit("profile-update", {
+  level: p.level
+});
+
+  localStorage.setItem(KEY, JSON.stringify(p));
+}
+
 function showLevelUpEffect(newLevel){
   try{
     const overlay = document.createElement("div");
@@ -870,7 +924,21 @@ function getUserProfile(){
   }
 }
 
+
+const profile = getUserProfile();
+
 const stableUID = getStableUID();
+
+socket.emit("viewer-join", {
+  roomId,
+  profile: {
+    uid: stableUID,               // ✅ UID CỐ ĐỊNH
+    name: profile.name || "Viewer",
+    avatar: profile.avatar,
+    level: profile.level || 1,
+    coins: profile.coins || 0
+  }
+});
 
 
 if (profile){
@@ -1565,11 +1633,7 @@ socket.on("reaction", (msg)=>{
       joined = true;
       
       try{ btnJoin.style.display = "none"; }catch{}
-socket.emit("join-room", {
-  roomId,
-  role: "viewer"
-});
-
+socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host...");
     }
@@ -1996,8 +2060,11 @@ chatOverlay?.addEventListener("click", (e) => {
 
   const profile = getUserProfile();
 
-socket.emit("chat", {
+  socket.emit("chat", {
   roomId,
+  name: profile?.name || name,
+  avatar: profile?.avatar,
+  level: profile?.level || 1,
   text,
   role: "viewer"
 });
@@ -2127,15 +2194,21 @@ gcmOk.addEventListener("click", ()=>{
     return;
   }
 
-  // ✅ CHỈ GỬI GIFT – KHÔNG ĐỤNG COIN / EXP
-socket.emit("send-gift", {
-  roomId,
-  gift: {
-    type: __pendingGift.type,
-    qty: __pendingGift.qty
-  }
-});
+  // 🔥 update coin
+  updateProfileOnSendGift(total);
 
+  // ⭐ update EXP / Level
+  addExpFromDonate(total);
+
+  // ✅ ĐỦ COIN → gửi coin
+  socket.emit("send-gift", {
+    roomId,
+    name: (chatName?.value || "Viewer").slice(0,20),
+    gift: {
+      type: __pendingGift.type,
+      qty: __pendingGift.qty
+    }
+  });
 
   closeGiftConfirm();
 });
@@ -2520,12 +2593,14 @@ function sendQuickChat(){
   const text = (quickChatInput.value || "").trim();
   if (!text) return;
 
-socket.emit("chat", {
+ socket.emit("chat", {
   roomId,
+  name: profile?.name || name,
+  avatar: profile?.avatar,
+  level: profile?.level || 1,
   text,
   role: "viewer"
 });
-
 
   quickChatInput.value = "";
   closeQuickChat();
