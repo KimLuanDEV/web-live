@@ -129,12 +129,17 @@ body{
 
 
 <div id="forgotModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
+  <div class="modal-backdrop" onclick="closeForgot()"></div>
   <div class="modal-card">
     <h3>🔑 Quên mật khẩu</h3>
+
     <input id="forgotUser" placeholder="Tên đăng nhập">
     <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
-    <button onclick="submitForgot()">Đặt lại mật khẩu</button>
+
+    <div style="display:flex;gap:12px;margin-top:14px">
+      <button style="flex:1" onclick="closeForgot()">Hủy</button>
+      <button style="flex:1" onclick="submitForgot()">Đặt lại</button>
+    </div>
   </div>
 </div>
 
@@ -204,6 +209,11 @@ async function submitForgot(){
   }else{
     alert("❌ Không tìm thấy tài khoản");
   }
+}
+
+
+function closeForgot(){
+  document.getElementById("forgotModal").classList.add("hidden");
 }
 
 
