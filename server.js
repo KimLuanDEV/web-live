@@ -145,23 +145,51 @@ app.post("/api/login", async (req,res)=>{
 
 
 
-  app.post("/api/forgot-password",(req,res)=>{
+ // ===== RESET / CHANGE PASSWORD =====
+
+app.post("/api/forgot-password", async (req,res)=>{
   const { username, newPassword } = req.body;
-  const user = users.find(u=>u.username===username);
-  if(!user) return res.json({error:true});
-  user.password = hash(newPassword);
+  if(!username || !newPassword) return res.json({error:"missing"});
+
+  const db = loadUsers();
+  const acc = db[username];
+  if(!acc) return res.json({error:"notfound"});
+
+  acc.password = await bcrypt.hash(String(newPassword), 10);
+  saveUsers(db);
+
   res.json({ ok:true });
 });
 
-app.post("/api/change-password",(req,res)=>{
+
+app.post("/api/change-password", async (req,res)=>{
   const { uid, oldPass, newPass } = req.body;
-  const user = users.find(u=>u.uid===uid);
-  if(!user || !compare(oldPass,user.password))
-    return res.json({ error:true });
+  if(!uid || !oldPass || !newPass) return res.json({error:"missing"});
 
-  user.password = hash(newPass);
+  const db = loadUsers();
+
+  let foundUser = null;
+  let foundKey = null;
+
+  for(const k in db){
+    if(db[k].profile?.uid === uid){
+      foundUser = db[k];
+      foundKey = k;
+      break;
+    }
+  }
+
+  if(!foundUser) return res.json({error:"notfound"});
+
+  const ok = await bcrypt.compare(String(oldPass), foundUser.password);
+  if(!ok) return res.json({error:"pass"});
+
+  foundUser.password = await bcrypt.hash(String(newPass), 10);
+  saveUsers(db);
+
   res.json({ ok:true });
 });
+
 
 // ♻️ RESTORE LIVE ROOMS AFTER SERVER RESTART
 const persisted = loadLiveState();
