@@ -176,36 +176,25 @@ async function login(){
 function openForgot(){
   document.getElementById("forgotModal").classList.remove("hidden");
 }
-
-
-async function submitForgot(){
-  const u = document.getElementById("forgotUser").value.trim();
-  const p = document.getElementById("forgotPass").value;
-
-  if(!u || !p){
-    alert("❌ Nhập đầy đủ tên đăng nhập và mật khẩu mới");
-    return;
-  }
-
-  const res = await fetch("/api/forgot-password",{
+function submitForgot(){
+  fetch("/api/forgot-password",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
-      username: u,
-      newPassword: p
+      username: forgotUser.value,
+      newPassword: forgotPass.value
     })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(d.ok){
+      alert("✅ Đổi mật khẩu thành công");
+      location.reload();
+    }else{
+      alert("❌ Không tìm thấy tài khoản");
+    }
   });
-
-  const d = await res.json();
-
-  if(d.ok || d.success){
-    alert("✅ Đặt lại mật khẩu thành công");
-    document.getElementById("forgotModal").classList.add("hidden");
-  }else{
-    alert("❌ Không tìm thấy tài khoản");
-  }
 }
-
 
 </script>
 
