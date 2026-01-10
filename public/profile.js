@@ -255,12 +255,30 @@ async function submitChangePass(){
     })
   });
 
-  const data = await res.json();
+ const data = await res.json();
 
-  if(data.ok){
-    alert("✅ Đổi mật khẩu thành công");
-    closePass();
-  }else{
-    alert("❌ Mật khẩu cũ không đúng");
-  }
+if(data.ok || data.success){
+  alert("✅ Đổi mật khẩu thành công");
+  closePass();
+
+  // xoá input cho sạch
+  oldPass.value = "";
+  newPass.value = "";
+  newPass2.value = "";
+  return;
+}
+
+// các dạng lỗi
+if(data.error === "pass"){
+  alert("❌ Mật khẩu cũ không đúng");
+  return;
+}
+
+if(data.error === "otp"){
+  alert("❌ OTP sai hoặc hết hạn");
+  return;
+}
+
+alert("❌ Đổi mật khẩu thất bại");
+
 }
