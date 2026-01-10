@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Tạo tài khoản</title>
+<link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="card auth-shell">
+  <h2>✨ Tạo tài khoản</h2>
+
+  <input id="regUser" placeholder="Tên đăng nhập">
+  <input id="regPass" type="password" placeholder="Mật khẩu">
+  <input id="regName" placeholder="Tên hiển thị">
+
+  <button onclick="register()">TẠO</button>
+</div>
+
+<script>
+function register(){
+  const u = regUser.value.trim();
+  const p = regPass.value.trim();
+  const name = regName.value.trim();
+
+  if(!u || !p || !name) return alert("Nhập đủ");
+
+  const db = JSON.parse(localStorage.getItem("users")||"{}");
+  if(db[u]) return alert("Tài khoản đã tồn tại");
+
+  const profile = {
+    uid: u,
+    name,
+    avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    coins: 0,
+    level: 1,
+    exp: 0,
+    coinSent: 0,
+    coinReceived: 0
+  };
+
+  db[u] = {
+    password: p,
+    profile
+  };
+
+  localStorage.setItem("users", JSON.stringify(db));
+  localStorage.setItem("user_profile", JSON.stringify(profile));
+
+  location.href="/profile.html";
+}
+</script>
+
+</body>
+</html>

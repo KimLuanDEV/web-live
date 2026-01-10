@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Đăng nhập • Livestream Pro</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+.auth-shell{
+  max-width:420px;
+  margin:10vh auto;
+  padding:24px;
+  text-align:center;
+}
+.auth-avatar{
+  width:96px;
+  height:96px;
+  border-radius:50%;
+  margin:auto;
+  background:url(https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360) center/cover;
+  border:3px solid #ff3b6b;
+  box-shadow:0 0 40px rgba(255,59,107,.8);
+}
+.auth-title{
+  margin-top:14px;
+  font-size:22px;
+  font-weight:900;
+}
+.auth-input{
+  margin-top:14px;
+}
+.auth-btn{
+  margin-top:16px;
+  background:linear-gradient(135deg,#ff3b6b,#5fa8ff);
+  border:none;
+}
+.auth-link{
+  margin-top:14px;
+  display:block;
+  opacity:.8;
+}
+</style>
+</head>
+<body>
+
+<div class="card auth-shell">
+  <div class="auth-avatar"></div>
+  <div class="auth-title">🔥 LIVESTREAM PRO</div>
+
+  <input id="loginUser" class="auth-input" placeholder="Tên đăng nhập">
+  <input id="loginPass" type="password" class="auth-input" placeholder="Mật khẩu">
+
+  <button class="auth-btn" onclick="login()">ĐĂNG NHẬP</button>
+
+  <a href="/register.html" class="auth-link">Chưa có tài khoản? Tạo ngay</a>
+</div>
+
+<script>
+function login(){
+  const u = loginUser.value.trim();
+  const p = loginPass.value.trim();
+  if(!u || !p) return alert("Nhập đủ thông tin");
+
+  const db = JSON.parse(localStorage.getItem("users")||"{}");
+  const acc = db[u];
+  if(!acc || acc.password !== p){
+    alert("Sai tài khoản hoặc mật khẩu");
+    return;
+  }
+
+  localStorage.setItem("user_profile", JSON.stringify(acc.profile));
+  location.href = "/lobby.html";
+}
+</script>
+
+</body>
+</html>
