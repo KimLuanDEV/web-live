@@ -7,68 +7,122 @@
 <link rel="stylesheet" href="/style.css">
 
 <style>
-@media (max-width: 600px){
-  body{
-    padding:0;
-    margin:0;
-  }
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(circle at top,#0f1b3a,#05070d);
+  font-family:system-ui,-apple-system;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
 
-  .auth-shell{
-    max-width:100%;
-    width:100%;
+.login-shell{
+  width:100%;
+  max-width:420px;
+  background:linear-gradient(180deg,#0b1327,#080c18);
+  border-radius:24px;
+  padding:36px 26px 42px;
+  box-shadow:0 0 50px rgba(0,255,255,.15);
+  text-align:center;
+}
+
+.login-avatar{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  margin:0 auto 14px;
+  background:url("https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360") center/cover;
+  box-shadow:0 0 40px rgba(0,255,255,.6);
+}
+
+.login-title{
+  font-size:26px;
+  font-weight:900;
+  color:#00f6ff;
+  margin-bottom:6px;
+}
+
+.login-sub{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:28px;
+}
+
+.login-shell input{
+  width:100%;
+  height:52px;
+  margin-top:14px;
+  background:#0e172c;
+  border:none;
+  border-radius:16px;
+  padding:0 16px;
+  color:white;
+  font-size:16px;
+  box-shadow:inset 0 0 0 1px rgba(0,255,255,.15);
+}
+
+.login-shell input::placeholder{
+  color:#6c7da8;
+}
+
+.login-btn{
+  width:100%;
+  height:56px;
+  margin-top:26px;
+  border:none;
+  border-radius:18px;
+  background:linear-gradient(135deg,#00f6ff,#5f7dff);
+  color:#00141a;
+  font-size:18px;
+  font-weight:900;
+  box-shadow:0 0 30px rgba(0,246,255,.6);
+}
+
+.login-links{
+  margin-top:22px;
+  font-size:13px;
+  opacity:.75;
+}
+
+.login-links a{
+  color:#00f6ff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* mobile */
+@media(max-width:600px){
+  .login-shell{
     min-height:100vh;
-    margin:0;
     border-radius:0;
-    padding:20px 16px 40px;
+    padding:48px 24px 40px;
     display:flex;
     flex-direction:column;
     justify-content:center;
   }
-
-  .auth-avatar{
-    width:80px;
-    height:80px;
-  }
-
-  .auth-title{
-    font-size:20px;
-  }
-
-  .auth-input{
-    width:100%;
-    height:48px;
-    font-size:16px;
-    border-radius:12px;
-  }
-
-  .auth-btn{
-    width:100%;
-    height:50px;
-    font-size:17px;
-    border-radius:14px;
-    margin-top:20px;
-  }
-
-  .auth-link{
-    margin-top:18px;
-    font-size:14px;
-  }
 }
+
 
 </style>
 </head>
 <body>
 
-<div class="card auth-shell">
-  <div class="auth-avatar"></div>
-  <div class="auth-title">🔥 LIVESTREAM PRO</div>
+<div class="login-shell">
+  <div class="login-avatar"></div>
+  <div class="login-title">LIVESTREAM PRO</div>
+  <div class="login-sub">Đăng nhập để bắt đầu</div>
 
-  <input id="loginUser" class="auth-input" placeholder="Tên đăng nhập">
-  <input id="loginPass" type="password" class="auth-input" placeholder="Mật khẩu">
+  <input id="username" placeholder="Tên đăng nhập">
+  <input id="password" type="password" placeholder="Mật khẩu">
 
-  <button class="auth-btn" onclick="login()">ĐĂNG NHẬP</button>
+  <button class="login-btn" onclick="doLogin()">ĐĂNG NHẬP</button>
 
-  <a href="/register.html" class="auth-link">Chưa có tài khoản? Tạo ngay</a>
+  <div class="login-links">
+    Chưa có tài khoản?
+    <a href="/register.html">Tạo ngay</a>
+  </div>
 </div>
 
 <script>
