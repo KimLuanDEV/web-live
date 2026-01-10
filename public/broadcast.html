@@ -655,97 +655,8 @@ if(nameFromLobby){
     const socket = io();
     
 
-function updateProfileOnReceiveGift(totalCoin){
-  const KEY = "user_profile";
-  let p = {};
-
-  try{
-    p = JSON.parse(localStorage.getItem(KEY)) || {};
-  }catch{}
-
-  p.coinReceived = (p.coinReceived || 0) + totalCoin;
-  p.coins = (p.coins || 0) + totalCoin;
-
-  localStorage.setItem(KEY, JSON.stringify(p));
-}
 
 
-function addExpFromDonate(coin){
-  const KEY = "user_profile";
-  let p = {};
-
-  try{
-    p = JSON.parse(localStorage.getItem(KEY)) || {};
-  }catch{}
-
-  p.exp = p.exp || 0;
-  p.level = p.level || 1;
-
-  // 🎯 100 coin = 1 EXP
-  const gainedExp = Math.floor(coin / 100);
-  if (gainedExp <= 0) return;
-
-  p.exp += gainedExp;
-
-  // 🔁 CHECK LEVEL UP
-  let need;
-  while (true) {
-    need = p.level * 100;
-    if (p.exp >= need) {
-      p.exp -= need;
-      p.level += 1;
-
-     // 💥 LEVEL UP EFFECT
-    showLevelUpEffect(p.level);
-
-    } else break;
-  }
-
-socket.emit("host-profile-update", {
-  roomId,
-  level: p.level
-});
-
- 
-  localStorage.setItem(KEY, JSON.stringify(p));
-}
-
-
-
-function showLevelUpEffect(newLevel){
-  try{
-    const overlay = document.createElement("div");
-    overlay.className = "levelup-overlay";
-
-    const box = document.createElement("div");
-    box.className = "levelup-box";
-    box.innerHTML = `
-      ⭐ LEVEL UP!
-      <div class="levelup-sub">Bạn đã lên Lv ${newLevel}</div>
-    `;
-
-    // EXP particles
-    const burst = document.createElement("div");
-    burst.className = "exp-burst";
-
-    const n = 18;
-    for (let i=0;i<n;i++){
-      const p = document.createElement("div");
-      p.className = "exp-p";
-      p.style.left = "50%";
-      p.style.top = "50%";
-      p.style.setProperty("--dx",(Math.random()*360-180)+"px");
-      p.style.setProperty("--dy",(Math.random()*260-130)+"px");
-      burst.appendChild(p);
-    }
-
-    box.appendChild(burst);
-    overlay.appendChild(box);
-    document.body.appendChild(overlay);
-
-    setTimeout(()=>overlay.remove(), 3000);
-  }catch{}
-}
 
 
 function getChatVip(level){
@@ -1585,14 +1496,9 @@ const hostProfile = getHostProfileUnified();
 
 socket.emit("join-room", {
   roomId,
-  role: "broadcaster",
-  profile: {
-    name: profile.name,
-    avatar: profile.avatar, // ✅ BẮT BUỘC
-    level: profile.level,
-    coins: profile.coins
-  }
+  role: "broadcaster"
 });
+
 
 
 

@@ -5485,3 +5485,79 @@ video {
   box-shadow: 0 0 18px rgba(255,60,60,.7);
   border-color: rgba(255,80,80,.8);
 }
+
+/* ===== LOGIN ===== */
+.login-page{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.login-card{
+  text-align:center;
+  animation: fadeIn .5s ease;
+}
+
+.login-logo{
+  margin-bottom:20px;
+}
+.login-logo h1{
+  margin:6px 0;
+  letter-spacing:.6px;
+}
+
+.login-form{
+  display:grid;
+  gap:12px;
+}
+
+.login-form input{
+  text-align:center;
+  font-size:15px;
+}
+
+.btn-ghost{
+  background:transparent;
+  border:1px solid var(--stroke);
+}
+
+.btn-google{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  background:#fff;
+  color:#000;
+  font-weight:700;
+}
+.btn-google img{
+  width:20px;
+}
+
+.login-divider{
+  position:relative;
+  margin:8px 0;
+  opacity:.7;
+}
+.login-divider span{
+  background:#070A14;
+  padding:0 10px;
+}
+.login-divider:before{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  top:50%;
+  height:1px;
+  background:rgba(255,255,255,.15);
+  z-index:-1;
+}
+
+.login-error{
+  margin-top:6px;
+  color:#ff5f5f;
+  font-size:13px;
+  min-height:18px;
+}

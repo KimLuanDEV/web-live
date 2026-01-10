@@ -6,9 +6,15 @@ const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
 const twilio = require("twilio");
-
-
 const fs = require("fs");
+
+
+const admin = require("firebase-admin");
+admin.initializeApp({
+  credential: admin.credential.cert(require("./serviceAccount.json"))
+});
+const fdb = admin.firestore();
+
 
 const LIVE_STATE_FILE = path.join(__dirname, "live_state.json");
 
@@ -24,6 +30,17 @@ const upload = multer({
 });
 
 
+function calcLevelFromCoin(coinSent){
+  if (coinSent >= 1_000_000) return 250; // IMMORTAL
+  if (coinSent >= 500_000) return 200;   // EMPEROR
+  if (coinSent >= 200_000) return 150;   // KING
+  if (coinSent >= 100_000) return 100;   // LEGEND
+  if (coinSent >= 50_000)  return 70;    // DIAMOND
+  if (coinSent >= 20_000)  return 40;    // GOLD
+  if (coinSent >= 10_000)  return 20;    // SILVER
+  if (coinSent >= 1_000)   return 10;    // VIP
+  return 1;
+}
 
 
 
@@ -74,6 +91,7 @@ for (const roomId in persisted) {
   rooms.set(roomId, {
     broadcasterId: null,        // chờ host quay lại
     viewers: new Set(),
+    viewerProfiles: new Map(),   // 👈 PHẢI CÓ
     liveStartTs: data.liveStartTs,
     pinnedNote: data.pinnedNote || null,
     hostProfile: data.hostProfile || null,
@@ -353,6 +371,8 @@ socket.on("viewer-join", ({ roomId, profile }) => {
   // add viewer
   room.viewers.add(socket.id);
 
+
+
   // upsert profile (giữ dữ liệu room cũ nếu có)
   room.viewerProfiles.set(uid, {
     uid,
@@ -529,8 +549,8 @@ saveLiveState(state);
 
 
 
-  // Join room with role: broadcaster | viewer | guest
-  socket.on("join-room", ({ roomId, role, profile }) => {
+ socket.on("join-room", async ({ roomId, role, uid }) => {
+
 
     
      roomId = normRoomId(roomId);
@@ -541,20 +561,35 @@ saveLiveState(state);
     socket.data.role = role;
     socket.role = role;
 
-    // store profile (name/coins) for Gift Engine
-   socket.data.userName = safeName(
-  profile?.name || (role === "broadcaster" ? "Host" : "Viewer")
-);
+    
 
-    socket.data.coins = clampInt(profile?.coins, 0, 1_000_000_000);
-    if (!socket.data.coins) socket.data.coins = START_COINS;
-
-    // sync wallet to this socket
-    socket.emit("wallet-sync", { coins: socket.data.coins });
-
-
+   
 
     const room = getRoom(roomId);
+
+    // 🔥 LOAD PROFILE TỪ FIREBASE
+let snap;
+try{
+  snap = await fdb.collection("users").doc(uid).get();
+}catch(e){
+  console.error("Firebase read fail", e);
+}
+if (!snap || !snap.exists) {
+  socket.emit("force-disconnect", { reason:"no_profile" });
+  return socket.disconnect(true);
+}
+
+const fbProfile = snap.data();
+fbProfile.uid = uid;
+
+socket.data.userName = fbProfile.name;
+socket.data.coins = clampInt(fbProfile.coins, 0, 1_000_000_000);
+const roomSpent = room.giftByUser.get(uid) || 0;
+socket.data.coins = Math.max(0, socket.data.coins - roomSpent);
+
+    // sync wallet to this socket
+socket.emit("wallet-sync", { coins: socket.data.coins });
+
 
 // 👑 GỬI PROFILE HOST CHO VIEWER VỪA JOIN
 if (role === "viewer" && room.hostProfile) {
@@ -586,15 +621,20 @@ if (room.liveStartTs) {
 }
 
 
-       // ✅ Lưu profile host
-    const name = String(profile?.name || "").trim().slice(0, 20);
-    const avatar = String(profile?.avatar || "").trim();
-    room.hostProfile = {
-  name: name || "Host",
-  avatar: avatar || "",
-  level: Number(profile?.level) || 1,   // 🔥 FIX QUAN TRỌNG
+room.hostProfile = {
+  uid,
+  name: fbProfile.name,
+  avatar: fbProfile.avatar,
+  level: fbProfile.level,
   ts: Date.now(),
 };
+
+
+io.to(roomId).emit("host-profile-sync", room.hostProfile);
+const list = Array.from(room.viewerProfiles.values());
+io.to(roomId).emit("viewer-list", { viewers: list.filter(v => !v.mini) });
+
+emitLobbyUpdate();
 
 
       if (old && old !== socket.id) {
@@ -609,6 +649,30 @@ if (room.liveStartTs) {
 
     if (role === "viewer") {
       room.viewers.add(socket.id);
+
+
+const old = room.viewerProfiles.get(uid);
+if (old && old.socketId && old.socketId !== socket.id) {
+  io.to(old.socketId).emit("force-disconnect", { reason: "multi_tab" });
+  const oldSocket = io.sockets.sockets.get(old.socketId);
+  if (oldSocket) oldSocket.disconnect(true);
+  room.viewers.delete(old.socketId);
+}
+
+
+      room.viewerProfiles.set(uid, {
+  uid,
+  socketId: socket.id,
+  name: fbProfile.name,
+  avatar: fbProfile.avatar,
+  level: fbProfile.level,
+  coins: fbProfile.coins,
+  coinSentRoom: room.giftByUser.get(uid) || 0,
+  coinReceivedRoom: 0,
+  mini: false
+});
+
+
       emitViewerCount(roomId);
       emitLobbyUpdate();
 
@@ -778,7 +842,8 @@ function canSendGift(socket) {
 
 
 // ===== GIFT ENGINE (paid gifts) =====
-socket.on("send-gift", ({ roomId, gift, name }) => {
+socket.on("send-gift", async ({ roomId, gift, name }) => {
+
   roomId = normRoomId(roomId);
   if (!roomId || !gift) return;
 
@@ -810,10 +875,8 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     return;
   }
 
-  socket.data.coins = cur - cost;
-  socket.emit("wallet-update", { coins: socket.data.coins });
 
-  // ===== TÌM PROFILE THEO SOCKET.ID (CHUẨN) =====
+    // ===== TÌM PROFILE THEO SOCKET.ID (CHUẨN) =====
   let donorProfile = null;
   for (const p of room.viewerProfiles.values()) {
     if (p.socketId === socket.id) {
@@ -822,8 +885,30 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     }
   }
 
-  const donorName = safeName(name || donorProfile?.name || socket.data.userName || "Ẩn danh");
+
   const uid = donorProfile?.uid;
+
+  socket.data.coins = cur - cost;
+
+if (uid) {
+  await fdb.collection("users").doc(uid).update({
+    coins: admin.firestore.FieldValue.increment(-cost),
+    coinSent: admin.firestore.FieldValue.increment(cost)
+  });
+
+  if (room.hostProfile?.uid) {
+    await fdb.collection("users").doc(room.hostProfile.uid).update({
+      coinReceived: admin.firestore.FieldValue.increment(cost)
+    });
+  }
+}
+
+  
+  socket.emit("wallet-update", { coins: socket.data.coins });
+
+
+  const donorName = safeName(name || donorProfile?.name || socket.data.userName || "Ẩn danh");
+
 
   // ===== UPDATE DONOR PROFILE =====
   if (donorProfile && uid) {
