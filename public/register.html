@@ -120,7 +120,8 @@ body{
   <input id="password" type="password" placeholder="Mật khẩu">
   <input id="confirm" type="password" placeholder="Nhập lại mật khẩu">
 
-  <button class="register-btn" onclick="doRegister()">TẠO TÀI KHOẢN</button>
+  <button class="register-btn" onclick="register()">TẠO TÀI KHOẢN</button>
+
 
   <div class="register-links">
     Đã có tài khoản?
@@ -130,13 +131,11 @@ body{
 
 
 <script>
-
-
 async function register(){
-  const u = regUser.value.trim();
-  const p = regPass.value;
-  const p2 = regPass2.value;
-  const name = regName.value.trim();
+  const u = document.getElementById("username").value.trim();
+  const name = document.getElementById("name").value.trim();
+  const p = document.getElementById("password").value;
+  const p2 = document.getElementById("confirm").value;
 
   if(!u || !p || !p2 || !name){
     alert("❌ Nhập đầy đủ thông tin");
@@ -174,18 +173,14 @@ async function register(){
     return;
   }
 
-  // server trả về profile chuẩn
   localStorage.setItem("user_profile", JSON.stringify(data.profile));
   localStorage.setItem("login_uid", data.profile.uid);
 
   alert("🎉 Tạo tài khoản thành công!");
   location.href = "/profile.html";
 }
-
-
-
-
 </script>
+
 
 </body>
 </html>

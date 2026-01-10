@@ -117,7 +117,8 @@ body{
   <input id="username" placeholder="Tên đăng nhập">
   <input id="password" type="password" placeholder="Mật khẩu">
 
-  <button class="login-btn" onclick="doLogin()">ĐĂNG NHẬP</button>
+  <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
+
 
   <div class="login-links">
     Chưa có tài khoản?
@@ -127,8 +128,8 @@ body{
 
 <script>
 async function login(){
-  const u = loginUser.value.trim();
-  const p = loginPass.value;
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value;
 
   if(!u || !p){
     alert("❌ Nhập đủ tài khoản và mật khẩu");
@@ -151,13 +152,13 @@ async function login(){
     return;
   }
 
-  // server trả profile chuẩn
   localStorage.setItem("user_profile", JSON.stringify(data.profile));
   localStorage.setItem("login_uid", data.profile.uid);
 
   location.href = "/lobby.html";
 }
 </script>
+
 
 
 </body>
