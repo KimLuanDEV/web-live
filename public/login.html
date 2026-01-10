@@ -68,7 +68,9 @@ function login(){
   }
 
   localStorage.setItem("user_profile", JSON.stringify(acc.profile));
+  localStorage.setItem("login_uid", acc.profile.uid);
   location.href = "/lobby.html";
+
 }
 </script>
 

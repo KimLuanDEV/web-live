@@ -240,6 +240,13 @@
 <script>
 const socket = io();
 
+const profile = JSON.parse(localStorage.getItem("user_profile")||"{}");
+
+if(profile.uid){
+  socket.emit("auth-login", { uid: profile.uid });
+}
+
+
 
 const VIRTUAL_ROOMS = [
   
@@ -769,7 +776,7 @@ setInterval(() => socket.emit("lobby-get"), 3000);
   catch { return null; }
 }
 
-const profile = getUserProfile();
+
 if (profile){
   hostNameInput.value = profile.name;
   hostNameInput.disabled = true;
@@ -793,6 +800,13 @@ document.getElementById("btnLogout").onclick = () => {
   localStorage.removeItem("user_profile");
   location.href = "/login.html";
 };
+
+
+socket.on("force-logout", ({ reason }) => {
+  alert("Tài khoản của bạn đã đăng nhập ở thiết bị khác!");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
 
 
 </script>

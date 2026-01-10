@@ -66,6 +66,9 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
 const rooms = new Map();
 
 
+const activeUsers = new Map();   // uid -> socketId
+
+
 // ♻️ RESTORE LIVE ROOMS AFTER SERVER RESTART
 const persisted = loadLiveState();
 
@@ -242,6 +245,27 @@ emitLobbyUpdate();
 
 
 io.on("connection", (socket) => {
+
+
+
+  socket.on("auth-login", ({ uid }) => {
+  uid = String(uid||"").trim();
+  if(!uid) return;
+
+  // nếu uid đang online ở socket khác → đá
+  const oldSocketId = activeUsers.get(uid);
+  if(oldSocketId && oldSocketId !== socket.id){
+    io.to(oldSocketId).emit("force-logout", { reason:"login_elsewhere" });
+
+    const oldSocket = io.sockets.sockets.get(oldSocketId);
+    if(oldSocket){
+      oldSocket.disconnect(true);
+    }
+  }
+
+  activeUsers.set(uid, socket.id);
+  socket.data.uid = uid;
+});
 
 
 socket.on("host-reconnect", ({ roomId }) => {
@@ -898,6 +922,18 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
   });
 
   socket.on("disconnect", () => {
+
+
+  const uid = socket.data.uid;
+  if(uid){
+  const cur = activeUsers.get(uid);
+  if(cur === socket.id){
+    activeUsers.delete(uid);
+  }
+}
+
+
+
   const roomId = socket.data.roomId;
   const role = socket.data.role;
   if (!roomId) return;

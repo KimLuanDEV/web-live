@@ -2881,6 +2881,14 @@ muteBtn.onclick = () => {
 };
 
 
+
+socket.on("force-logout", ({ reason }) => {
+  alert("Tài khoản của bạn đã đăng nhập ở thiết bị khác!");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
+
+
   </script>
 
 <!-- VIP TICKER (donation banner) -->
