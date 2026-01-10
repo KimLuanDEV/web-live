@@ -29,7 +29,7 @@
           </div>
         </div>
 
-        <div class="pills" id="userBar">
+      <div class="pills" id="userBar">
 
   <div class="user-chip" onclick="location.href='/profile.html'">
     <img id="userAva">
@@ -39,9 +39,12 @@
     </div>
   </div>
 
-  <button class="btn lobby-btn" id="btnOpenCreate">➕ Tạo phòng</button>
-  <button id="refresh" class="lobby-btn">🔄</button>
+  <button class="lobby-btn" id="btnOpenCreate">➕ Tạo phòng</button>
+  <button class="lobby-btn" id="refresh">🔄</button>
+
+  <button class="lobby-btn logout-btn" id="btnLogout">⏻</button>
 </div>
+
 
       </div>
 
@@ -780,6 +783,16 @@ if(profile.name){
   document.getElementById("userAva").src = profile.avatar || 
     "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360";
 }
+
+
+
+
+document.getElementById("btnLogout").onclick = () => {
+  if(!confirm("Đăng xuất khỏi tài khoản này?")) return;
+
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+};
 
 
 </script>

@@ -5528,3 +5528,12 @@ video {
   font-size:12px;
   color:#ffd36e;
 }
+
+.logout-btn{
+  background:rgba(255,59,107,.22) !important;
+  border:1px solid rgba(255,59,107,.4) !important;
+  box-shadow:0 0 18px rgba(255,59,107,.25);
+}
+.logout-btn:hover{
+  background:rgba(255,59,107,.35) !important;
+}
