@@ -268,6 +268,17 @@
 
 
 
+<!-- 📩 INBOX MODAL -->
+<div id="inboxModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card inbox-card">
+    <h3>📩 Thông báo</h3>
+    <div id="inboxList" class="inbox-list"></div>
+  </div>
+</div>
+
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -849,6 +860,11 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
       location.href = "/profile.html";
     }
 
+    if(type === "chat"){
+  openInbox();
+}
+
+
     if(type === "hot"){
       document.getElementById("q").value = "";
       document.getElementById("sort").value = "viewers";
@@ -864,6 +880,49 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 document.getElementById("tabCreate").onclick = ()=>{
   openCreateRoom();
 };
+
+
+
+// ===== INBOX =====
+const inboxModal = document.getElementById("inboxModal");
+const inboxList = document.getElementById("inboxList");
+
+function openInbox(){
+  inboxModal.classList.remove("hidden");
+  socket.emit("get-inbox");
+}
+
+inboxModal?.querySelector(".modal-backdrop")?.addEventListener("click", ()=>{
+  inboxModal.classList.add("hidden");
+});
+
+// Nhận dữ liệu inbox
+socket.on("inbox-data", list=>{
+  inboxList.innerHTML = "";
+
+  if(!list || !list.length){
+    inboxList.innerHTML = "<div style='padding:14px;opacity:.6'>Chưa có thông báo</div>";
+    return;
+  }
+
+  list.forEach(n=>{
+    const div = document.createElement("div");
+    div.className = "inbox-item" + (n.read ? "" : " new");
+    div.innerHTML = `
+      <div>${n.text}</div>
+      <small>${new Date(n.ts).toLocaleString()}</small>
+    `;
+    inboxList.appendChild(div);
+  });
+
+  // clear badge
+  document.querySelector('[data-tab="chat"]')?.classList.remove("has-new");
+});
+
+// Có notify mới
+socket.on("inbox-new", ()=>{
+  document.querySelector('[data-tab="chat"]')?.classList.add("has-new");
+});
 
 
 

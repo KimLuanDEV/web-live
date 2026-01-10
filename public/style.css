@@ -5595,3 +5595,37 @@ video {
 @media(min-width: 900px){
   .mobile-tabbar{ display:none; }
 }
+
+
+.inbox-card{
+  max-height:70vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.inbox-list{
+  overflow-y:auto;
+  margin-top:12px;
+}
+
+.inbox-item{
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:14px;
+}
+
+.inbox-item.new{
+  background:rgba(0,246,255,.12);
+}
+
+.inbox-item small{
+  display:block;
+  opacity:.6;
+  margin-top:4px;
+}
+
+.tab-item.has-new .tab-icon{
+  color:#ff3b6b;
+  text-shadow:0 0 12px #ff3b6b;
+}

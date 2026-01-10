@@ -72,6 +72,20 @@ const rooms = new Map();
 const activeUsers = new Map();   // uid -> socketId
 
 
+// ===== USER INBOX / NOTIFICATION =====
+const userInbox = new Map();   // uid -> [ {type, text, ts, read} ]
+
+function pushNotify(uid, payload){
+  if(!uid) return;
+  if(!userInbox.has(uid)) userInbox.set(uid, []);
+  userInbox.get(uid).unshift({
+    ...payload,
+    ts: Date.now(),
+    read:false
+  });
+}
+
+
 const USERS_FILE = path.join(__dirname, "users.json");
 
 function loadUsers(){
@@ -276,6 +290,15 @@ app.get("/ice", async (_req, res) => {
 
 function closeRoom(roomId, reason = "host_left") {
 
+  // 🔔 notify host
+if(room.hostProfile?.uid){
+  pushNotify(room.hostProfile.uid,{
+    type:"system",
+    text:"Phòng live của bạn đã bị đóng"
+  });
+}
+
+
   const state = loadLiveState();
 delete state[roomId];
 saveLiveState(state);
@@ -305,6 +328,16 @@ emitLobbyUpdate();
 
 
 io.on("connection", (socket) => {
+
+
+  socket.on("get-inbox", ()=>{
+  const uid = socket.data.uid;
+  if(!uid){
+    socket.emit("inbox-data", []);
+    return;
+  }
+  socket.emit("inbox-data", userInbox.get(uid) || []);
+});
 
 
 socket.on("auth-ping", ({ uid }) => {
@@ -683,12 +716,15 @@ if (room.liveStartTs) {
        // ✅ Lưu profile host
     const name = String(profile?.name || "").trim().slice(0, 20);
     const avatar = String(profile?.avatar || "").trim();
-    room.hostProfile = {
+
+ room.hostProfile = {
+  uid: profile?.uid || socket.data.uid,   // 🔥 THÊM
   name: name || "Host",
   avatar: avatar || "",
-  level: Number(profile?.level) || 1,   // 🔥 FIX QUAN TRỌNG
+  level: Number(profile?.level) || 1,
   ts: Date.now(),
 };
+
 
 
       if (old && old !== socket.id) {
@@ -918,6 +954,22 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
 
   const donorName = safeName(name || donorProfile?.name || socket.data.userName || "Ẩn danh");
   const uid = donorProfile?.uid;
+
+// 🔔 Notify host khi nhận quà
+const hostUid = room.hostProfile?.uid;
+if(hostUid){
+  pushNotify(hostUid,{
+    type:"gift",
+    text:`${donorName} đã tặng ${cost} coin`
+  });
+
+  const hostSocket = activeUsers.get(hostUid);
+  if(hostSocket){
+    io.to(hostSocket).emit("inbox-new");
+  }
+}
+
+
 
   // ===== UPDATE DONOR PROFILE =====
   if (donorProfile && uid) {
