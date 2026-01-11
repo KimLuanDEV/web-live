@@ -93,6 +93,34 @@ function loadProfile(){
   coinVal.textContent = p.coins || 0;
   levelVal.textContent = p.level || 1;
 
+  // ===== AVATAR VIP RING =====
+  const lv = Number(p.level || 1);
+  const ava = avatarPreview;
+
+  // 🌟 Halo for high VIP
+const wrap = document.querySelector(".avatar-wrap");
+if(wrap){
+  if(lv >= 1) wrap.classList.add("halo-on");   // LEGEND+
+  else wrap.classList.remove("halo-on");
+}
+
+
+  ava.classList.remove("avatar-lv1","avatar-lv10","avatar-lv50","avatar-lv100");
+
+  if(lv >= 100) ava.classList.add("avatar-lv100");
+  else if(lv >= 50) ava.classList.add("avatar-lv50");
+  else if(lv >= 10) ava.classList.add("avatar-lv10");
+  else ava.classList.add("avatar-lv1");
+
+
+  // 👑 Crown for VIP
+  const crown = document.getElementById("avatarCrown");
+  if(crown){
+    if(lv >= 1) crown.classList.remove("hidden");   // GOLD+
+    else crown.classList.add("hidden");
+  }
+
+
   coinSentVal.textContent = p.coinSent || 0;
   coinReceivedVal.textContent = p.coinReceived || 0;
 
