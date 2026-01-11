@@ -281,15 +281,19 @@
 
 
 
-<!-- GLOBAL MESSAGE MODAL -->
 <div id="msgModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
+  <div class="modal-backdrop" onclick="closeMsg()"></div>
   <div class="modal-card">
     <h3 id="msgTitle">Thông báo</h3>
-    <div id="msgText" style="margin:12px 0;opacity:.9"></div>
-    <button onclick="closeMsg()">OK</button>
+    <div id="msgText"></div>
+
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button id="msgCancel" onclick="closeMsg()">Hủy</button>
+      <button id="msgOk">OK</button>
+    </div>
   </div>
 </div>
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -872,7 +876,6 @@ if(profile.name){
 
 
 
-
 document.getElementById("btnLogout").onclick = () => {
   if(isGuest){
     localStorage.clear();
@@ -880,10 +883,15 @@ document.getElementById("btnLogout").onclick = () => {
     return;
   }
 
-  if(!confirm("Đăng xuất khỏi tài khoản này?")) return;
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
+  showMsg("Bạn có chắc muốn đăng xuất không?", "Xác nhận", ()=>{
+    localStorage.removeItem("user_profile");
+    localStorage.removeItem("login_uid");
+    localStorage.removeItem("isGuest");
+    location.href = "/login.html";
+  });
 };
+
+
 
 
 
@@ -989,14 +997,23 @@ if(isGuest){
 }
 
 
-function showMsg(text, title="Thông báo"){
+let __msgOkAction = null;
+
+function showMsg(text, title="Thông báo", onOk=null){
   document.getElementById("msgTitle").textContent = title;
   document.getElementById("msgText").textContent = text;
   document.getElementById("msgModal").classList.remove("hidden");
+  __msgOkAction = onOk;
 }
+
+document.getElementById("msgOk").onclick = ()=>{
+  if(__msgOkAction) __msgOkAction();
+  closeMsg();
+};
 
 function closeMsg(){
   document.getElementById("msgModal").classList.add("hidden");
+  __msgOkAction = null;
 }
 
 
