@@ -161,6 +161,17 @@ body{
 </div>
 
 
+<!-- GLOBAL MESSAGE MODAL -->
+<div id="msgModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3 id="msgTitle">Thông báo</h3>
+    <div id="msgText" style="margin:12px 0;opacity:.9"></div>
+    <button onclick="closeMsg()">OK</button>
+  </div>
+</div>
+
+
 <script>
 async function register(){
   const u = document.getElementById("username").value.trim();
@@ -169,17 +180,17 @@ async function register(){
   const p2 = document.getElementById("password2").value;
 
   if(!u || !p || !p2 || !name){
-    alert("❌ Nhập đầy đủ thông tin");
+    showMsg("❌ Nhập đầy đủ thông tin");
     return;
   }
 
   if(p.length < 6){
-    alert("❌ Mật khẩu phải ít nhất 6 ký tự");
+    showMsg("❌ Mật khẩu phải ít nhất 6 ký tự");
     return;
   }
 
   if(p !== p2){
-    alert("❌ Mật khẩu không khớp");
+   showMsg("❌ Mật khẩu không khớp");
     return;
   }
 
@@ -198,9 +209,9 @@ async function register(){
 
   if(data.error){
     if(data.error === "exists"){
-      alert("❌ Tài khoản đã tồn tại");
+      showMsg("❌ Tài khoản đã tồn tại");
     }else{
-      alert("❌ Lỗi tạo tài khoản");
+      showMsg("❌ Lỗi tạo tài khoản");
     }
     return;
   }
@@ -212,7 +223,7 @@ localStorage.setItem("login_uid", data.profile.uid);
 localStorage.removeItem("isGuest");
 
 
-  alert("🎉 Tạo tài khoản thành công!");
+  showMsg("🎉 Tạo tài khoản thành công!");
   location.href = "/lobby.html";
 }
 
@@ -247,6 +258,19 @@ function checkMatch(){
 
 p1.addEventListener("input", checkMatch);
 p2.addEventListener("input", checkMatch);
+
+
+
+function showMsg(text, title="Thông báo"){
+  document.getElementById("msgTitle").textContent = title;
+  document.getElementById("msgText").textContent = text;
+  document.getElementById("msgModal").classList.remove("hidden");
+}
+
+function closeMsg(){
+  document.getElementById("msgModal").classList.add("hidden");
+}
+
 
 </script>
 

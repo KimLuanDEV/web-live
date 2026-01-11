@@ -180,6 +180,17 @@ body{
 </div>
 
 
+<!-- GLOBAL MESSAGE MODAL -->
+<div id="msgModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3 id="msgTitle">Thông báo</h3>
+    <div id="msgText" style="margin:12px 0;opacity:.9"></div>
+    <button onclick="closeMsg()">OK</button>
+  </div>
+</div>
+
+
 <script>
 
   function guestLogin(){
@@ -202,7 +213,7 @@ async function login(){
   const p = document.getElementById("password").value;
 
   if(!u || !p){
-    alert("❌ Nhập đủ tài khoản và mật khẩu");
+    showMsg("❌ Nhập đủ tài khoản và mật khẩu");
     return;
   }
 
@@ -218,7 +229,7 @@ async function login(){
   const data = await res.json();
 
   if(data.error){
-    alert("❌ Sai tài khoản hoặc mật khẩu");
+    showMsg("❌ Sai tài khoản hoặc mật khẩu");
     return;
   }
 
@@ -243,7 +254,7 @@ async function submitForgot(){
   const p = document.getElementById("forgotPass").value;
 
   if(!u || !p){
-    alert("❌ Nhập đầy đủ tên đăng nhập và mật khẩu mới");
+   showMsg("❌ Nhập đầy đủ tên đăng nhập và mật khẩu mới");
     return;
   }
 
@@ -259,10 +270,10 @@ async function submitForgot(){
   const d = await res.json();
 
   if(d.ok || d.success){
-    alert("✅ Đặt lại mật khẩu thành công");
+    showMsg("✅ Đặt lại mật khẩu thành công");
     document.getElementById("forgotModal").classList.add("hidden");
   }else{
-    alert("❌ Không tìm thấy tài khoản");
+    showMsg("❌ Không tìm thấy tài khoản");
   }
 }
 
@@ -281,6 +292,18 @@ function togglePass(id, el){
     input.type = "password";
     el.textContent = "👁";
   }
+}
+
+
+
+function showMsg(text, title="Thông báo"){
+  document.getElementById("msgTitle").textContent = title;
+  document.getElementById("msgText").textContent = text;
+  document.getElementById("msgModal").classList.remove("hidden");
+}
+
+function closeMsg(){
+  document.getElementById("msgModal").classList.add("hidden");
 }
 
 
