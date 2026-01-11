@@ -377,6 +377,10 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
+  
+if(socket.data.uid?.startsWith("guest_")){
+  socket.data.role = "guest";
+}
 
 
 
