@@ -6139,3 +6139,25 @@ body.is-guest .reactions-layer{
 .name-input.hidden{
   display:none;
 }
+
+/* ===== EDIT ICON ON NAME ===== */
+.profile-name{
+  position:relative;
+  padding-right:28px;
+}
+
+.profile-name::after{
+  content:"✏️";
+  position:absolute;
+  right:0;
+  top:50%;
+  transform: translateY(-50%) scale(.6);
+  opacity:0;
+  transition:.25s;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.6));
+}
+
+.profile-name:hover::after{
+  opacity:1;
+  transform: translateY(-50%) scale(1);
+}
