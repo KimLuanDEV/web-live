@@ -762,7 +762,17 @@ if(isGuest){
   document.getElementById("chatInputOverlay")?.remove();
   document.getElementById("giftFab")?.remove();
   document.getElementById("giftPanel")?.remove();
+
+  // 🔥 FIX: backdrop không được che video controls
+  const bd = document.getElementById("viewerBackdrop");
+  if (bd){
+    bd.classList.add("hidden");
+    bd.style.pointerEvents = "none";
+  }
 }
+
+
+
 
 
 if(profile.uid){
@@ -2975,7 +2985,6 @@ if (isGuest) {
   document.getElementById("viewerAvatars")?.remove();
   document.getElementById("viewerListPopup")?.remove();
   document.getElementById("miniProfile")?.remove();
-  document.getElementById("chatOverlay")?.remove(); // 🔥 quan trọng
 
   // Ẩn pin note (guest chỉ xem)
   document.getElementById("pinOverlay")?.classList.add("hidden");
@@ -2983,14 +2992,6 @@ if (isGuest) {
 
 
 
-// 🔥 FIX Guest không bị backdrop che video controls
-if(isGuest){
-  const bd = document.getElementById("viewerBackdrop");
-  if (bd) {
-    bd.classList.add("hidden");
-    bd.style.pointerEvents = "none";
-  }
-}
 
 
 
