@@ -104,13 +104,15 @@ if(wrap){
   else wrap.classList.remove("halo-on");
 }
 
+// ✨ Aura particles
+if(lv >= 1) wrap.classList.add("aura-on");   // KING+
+else wrap.classList.remove("aura-on");
+
 
   ava.classList.remove("avatar-lv1","avatar-lv10","avatar-lv50","avatar-lv100");
 
-  if(lv >= 100) ava.classList.add("avatar-lv100");
-  else if(lv >= 50) ava.classList.add("avatar-lv50");
-  else if(lv >= 10) ava.classList.add("avatar-lv10");
-  else ava.classList.add("avatar-lv1");
+  if(lv >= 1) ava.classList.add("avatar-lv100");
+ 
 
 
   // 👑 Crown for VIP

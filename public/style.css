@@ -6042,3 +6042,40 @@ body.is-guest .reactions-layer{
   0%,100%{ transform: scale(1); opacity:.7; }
   50%{ transform: scale(1.08); opacity:1; }
 }
+
+
+/* ===== AVATAR AURA PARTICLES ===== */
+.avatar-wrap::after{
+  content:"";
+  position:absolute;
+  inset:-22px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle, rgba(255,255,255,.9) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(95,168,255,.8) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(255,211,110,.9) 0 2px, transparent 3px),
+    radial-gradient(circle, rgba(255,59,107,.9) 0 2px, transparent 3px);
+  background-size:
+    18px 18px,
+    26px 26px,
+    32px 32px,
+    40px 40px;
+  background-position:
+    0 0,
+    40% 20%,
+    70% 80%,
+    20% 60%;
+  opacity:0;
+  filter: blur(.4px);
+  pointer-events:none;
+}
+
+.avatar-wrap.aura-on::after{
+  opacity:1;
+  animation: auraSpin 6s linear infinite;
+}
+
+@keyframes auraSpin{
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
+}
