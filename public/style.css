@@ -6209,3 +6209,8 @@ body.is-guest .reactions-layer{
   margin-bottom: 0 !important;
   padding-bottom: 0 !important;
 }
+
+/* Ẩn nút Lobby cũ trong profile card */
+.page-profile .profile-actions button[onclick*="lobby"]{
+  display:none !important;
+}
