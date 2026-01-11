@@ -96,10 +96,11 @@
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
 
-<div class="ctrl-tab">
-  <button id="pipBtn" class="ctrl-fab" title="Thu nhỏ (PiP)">🔛</button>
-  <button id="muteBtn" class="ctrl-fab" title="Tắt tiếng">🔊</button>
-</div>
+
+<!-- PIP BUTTON -->
+<button id="pipBtn" class="pip-btn" title="Thu nhỏ (PiP)">🔛</button>
+
+<button id="muteBtn" class="ctrl-fab" title="Tắt tiếng">🔊</button>
 
 
 <!-- ❌ EXIT BUTTON -->
@@ -765,6 +766,10 @@ if(isGuest){
   document.getElementById("giftPanel")?.remove();
 }
 
+const uid = localStorage.getItem("uid"); // hoặc cách bạn đang lưu
+if (uid && uid.startsWith("guest_")) {
+  document.body.classList.add("is-guest");
+}
 
 
 

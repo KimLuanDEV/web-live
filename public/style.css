@@ -5688,3 +5688,12 @@ body.is-guest .reactions-layer{
   background:linear-gradient(135deg,#00f6ff,#5f7dff);
   font-weight:800;
 }
+
+
+/* ===== HIDE CONTROLS FOR GUEST ===== */
+body.is-guest #pipBtn,
+body.is-guest #muteBtn{
+  display: none !important;
+  pointer-events: none !important;
+  opacity: 0 !important;
+}
