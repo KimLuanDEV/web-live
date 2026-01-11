@@ -5890,16 +5890,28 @@ body.is-guest .reactions-layer{
 }
 
 
-.profile-shell{
-  margin: 0 auto !important;
-  padding: 18px !important;
+/* ===== PROFILE PAGE ONLY ===== */
+
+.page-profile .container{
+  min-height:100vh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.profile-actions{
-  margin-top: 12px !important;
+.page-profile .profile-shell{
+  margin:0 auto;
+  max-width:460px;
 }
 
-.profile-actions button{
-  padding: 10px 12px !important;
-  font-size: 14px;
+/* giảm khoảng trống dưới */
+.page-profile .profile-actions{
+  margin-top:12px;
 }
+
+/* nút gọn hơn */
+.page-profile .profile-actions button{
+  padding:10px 12px;
+  font-size:14px;
+}
+
