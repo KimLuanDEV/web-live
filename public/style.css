@@ -6079,3 +6079,39 @@ body.is-guest .reactions-layer{
   from{ transform: rotate(0deg); }
   to{ transform: rotate(360deg); }
 }
+
+#btnChangeAvatar{ display:none; }
+
+
+.avatar-wrap{
+  cursor:pointer;
+}
+
+.avatar-wrap:hover{
+  transform: scale(1.04);
+  filter: brightness(1.15);
+}
+
+.avatar-wrap:active{
+  transform: scale(.96);
+}
+
+/* ===== AVATAR CAMERA ICON ===== */
+.avatar-camera{
+  position:absolute;
+  bottom:-6px;
+  right:-6px;
+  width:28px;
+  height:28px;
+  background: linear-gradient(135deg,#00f6ff,#5f7dff);
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:14px;
+  box-shadow:
+    0 0 12px rgba(0,246,255,.8),
+    0 6px 18px rgba(0,0,0,.6);
+  border:2px solid #0b1327;
+  pointer-events:none;
+}

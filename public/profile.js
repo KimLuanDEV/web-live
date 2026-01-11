@@ -181,7 +181,10 @@ loadProfile();
 const avatarInput = document.getElementById("avatarInput");
 const btnChangeAvatar = document.getElementById("btnChangeAvatar");
 
-btnChangeAvatar.onclick = () => avatarInput.click();
+document.querySelector(".avatar-wrap").onclick = () => {
+  avatarInput.click();
+};
+
 
 avatarInput.onchange = async () => {
   const file = avatarInput.files[0];
