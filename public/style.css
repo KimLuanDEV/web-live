@@ -5690,3 +5690,94 @@ body.is-guest .reactions-layer{
 }
 
 
+
+.profile-shell{
+  padding:20px;
+}
+
+.profile-header{
+  display:flex;
+  gap:16px;
+  align-items:center;
+}
+
+.profile-header img{
+  width:88px;
+  height:88px;
+  border-radius:50%;
+  border:2px solid rgba(0,255,255,.5);
+}
+
+.profile-info{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.profile-info input{
+  width:100%;
+}
+
+.profile-info button{
+  align-self:flex-start;
+  font-size:13px;
+}
+
+.profile-level{
+  margin-top:16px;
+  padding:12px;
+  border-radius:12px;
+  background:rgba(255,255,255,.04);
+}
+
+.level-left{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:8px;
+}
+
+.level-badge{
+  font-size:18px;
+  font-weight:700;
+  color:#00f6ff;
+}
+
+.profile-stats{
+  margin-top:16px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.stat-box{
+  background:rgba(255,255,255,.05);
+  border-radius:12px;
+  padding:10px;
+  text-align:center;
+}
+
+.stat-label{
+  font-size:12px;
+  opacity:.7;
+}
+
+.stat-val{
+  font-size:20px;
+  font-weight:800;
+  margin-top:4px;
+}
+
+.stat-box.gold{ color:#ffd36e; }
+.stat-box.blue{ color:#5fdcff; }
+
+.profile-actions{
+  margin-top:18px;
+  display:flex;
+  gap:10px;
+}
+
+.profile-actions button{
+  flex:1;
+}

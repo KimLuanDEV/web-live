@@ -13,91 +13,70 @@
 
     
   <div class="container">
+
     <div class="card">
 
-      <h1>👤 Thông tin cá nhân</h1>
-      <small>Cập nhật hồ sơ hiển thị trong Livestream</small>
+     <div class="card profile-shell">
 
-      <hr />
+  <!-- HEADER -->
+  <div class="profile-header">
+    <img id="avatarPreview"
+      src="https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360">
 
-      <!-- AVATAR -->
-      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap">
-        <img id="avatarPreview"
-             src="https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360"
-             style="width:90px;height:90px;border-radius:50%;border:2px solid rgba(255,255,255,.25)" />
-
-<input
-  type="file"
-  id="avatarInput"
-  accept="image/*"
-  style="display:none"
-/>
-
-<button id="btnChangeAvatar" type="button">
-  📤 Đổi avatar
-</button>
-
-
-
-        <div style="flex:1">
-          <label>Tên hiển thị</label>
-          <input id="nameInput" placeholder="Nhập tên của bạn" />
-        </div>
-      </div>
-
-      <hr />
-
-     <!-- STATS -->
-<div class="row">
-  <div class="card">
-    <div class="badge badge--info">💎 Kim cương</div>
-    <h2 id="coinVal">0</h2>
-  </div>
-
-  <div class="card">
-    <div class="badge badge--ok">⭐ Level</div>
-    <h2 id="levelVal">1</h2>
-    <div id="vipBadgeBox"></div>
-      <!-- ⭐ EXP BAR -->
-<div class="exp-card">
-  <div class="exp-head">
-    <span>⭐ EXP</span>
-    <span id="expText">0 / 100</span>
-  </div>
-
-  <div class="exp-bar">
-    <div class="exp-bar__fill" id="expFill"></div>
-  </div>
-
-  <div class="exp-hint">
-    Lên level tiếp theo khi đầy EXP
-  </div>
-</div>
-  </div>
-
-  <div class="card">
-    <div class="badge badge--gold">💎 đã tặng</div>
-    <h2 id="coinSentVal">0</h2>
-    <small>Tổng kim cương đã tặng</small>
-  </div>
-
-  <div class="card">
-    <div class="badge badge--blue">💎 đã nhận</div>
-    <h2 id="coinReceivedVal">0</h2>
-    <small>Tổng kim cương đã nhận </small>
-  </div>
-</div>
-
-
-      <!-- ACTION -->
-    <div style="display:flex; gap:12px; flex-wrap:wrap">
-  <button id="btnSave">💾 Lưu hồ sơ</button>
-  <button id="btnChangePass">🔐 Đổi mật khẩu</button>
-  <button onclick="location.href='/lobby.html'">🏟️ Về Lobby</button>
-</div>
-
-
+    <div class="profile-info">
+      <label>Tên hiển thị</label>
+      <input id="nameInput" placeholder="Nhập tên của bạn">
+      <button id="btnChangeAvatar">📤 Đổi avatar</button>
     </div>
+
+    <input type="file" id="avatarInput" accept="image/*" hidden>
+  </div>
+
+  <!-- LEVEL -->
+  <div class="profile-level">
+    <div class="level-left">
+      <div class="level-badge">⭐ Level <b id="levelVal">1</b></div>
+      <div id="vipBadgeBox"></div>
+    </div>
+
+    <div class="exp-card">
+      <div class="exp-head">
+        <span>EXP</span>
+        <span id="expText">0 / 100</span>
+      </div>
+      <div class="exp-bar">
+        <div class="exp-bar__fill" id="expFill"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- STATS -->
+  <div class="profile-stats">
+    <div class="stat-box">
+      <div class="stat-label">💎 Kim cương</div>
+      <div class="stat-val" id="coinVal">0</div>
+    </div>
+
+    <div class="stat-box gold">
+      <div class="stat-label">💎 Đã tặng</div>
+      <div class="stat-val" id="coinSentVal">0</div>
+    </div>
+
+    <div class="stat-box blue">
+      <div class="stat-label">💎 Đã nhận</div>
+      <div class="stat-val" id="coinReceivedVal">0</div>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="profile-actions">
+    <button id="btnSave">💾 Lưu</button>
+    <button id="btnChangePass">🔐 Đổi mật khẩu</button>
+    <button onclick="location.href='/lobby.html'">🏟 Lobby</button>
+  </div>
+
+</div>
+
   </div>
 
 
