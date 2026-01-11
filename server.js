@@ -337,23 +337,21 @@ app.get("/ice", async (_req, res) => {
 
 
 function closeRoom(roomId, reason = "host_left") {
+  const room = rooms.get(roomId);   // 🔥 LẤY ROOM TRƯỚC
+  if (!room) return;
 
   // 🔔 notify host
-if(room.hostProfile?.uid){
-  pushNotify(room.hostProfile.uid,{
-    type:"system",
-    text:"Phòng live của bạn đã bị đóng"
-  });
-}
+  if(room.hostProfile?.uid){
+    pushNotify(room.hostProfile.uid,{
+      type:"system",
+      text:"Phòng live của bạn đã bị đóng"
+    });
+  }
 
-
+  // 💾 xóa live_state
   const state = loadLiveState();
-delete state[roomId];
-saveLiveState(state);
-
-
-  const room = rooms.get(roomId);
-  if (!room) return;
+  delete state[roomId];
+  saveLiveState(state);
 
   // 🚨 báo cho toàn bộ viewer + guest
   io.to(roomId).emit("room-closed", { reason });
@@ -362,11 +360,12 @@ saveLiveState(state);
   room.broadcasterId = null;
   room.liveStartTs = null;
   room.viewers.clear();
+  room.viewerProfiles?.clear?.();
 
-  
   room.giftTotal = 0;
   room.giftByUser = new Map();
-emitLobbyUpdate();
+
+  emitLobbyUpdate();
 
   // xoá room sau 1 chút cho client kịp nhận event
   setTimeout(() => {
@@ -519,7 +518,7 @@ for (const v of list) {
 
 
 socket.on("viewer-join", ({ roomId, profile }) => {
-  
+
 if(isGuest(socket)){
   // ép profile Guest an toàn
   profile = {
