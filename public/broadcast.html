@@ -2378,35 +2378,22 @@ if (vip) {
 
 // 🎭 CLICK AVATAR CHAT → MINI PROFILE
 chatOverlay?.addEventListener("click", (e) => {
-  if(isGuest) return;
-
   const avatarEl = e.target.closest(".chat-avatar-bg");
   if (!avatarEl) return;
 
   e.stopPropagation();
 
-  const role = avatarEl.dataset.role;
   const name = avatarEl.dataset.name;
+  if (!name) return;
 
-  // 👑 HOST
-  if (role === "host") {
-    if (!__hostProfile) {
-      console.warn("❌ Chưa có host profile");
-      return;
-    }
-    openHostMiniProfile(__hostProfile);
+  const v = __viewerCache.find(u => u.name === name);
+  if (!v) {
+    console.warn("❌ Không tìm thấy viewer cho chat avatar:", name);
     return;
   }
 
-  // 👀 VIEWER
-  if (name) {
-    const v = __viewerCache.find(u => u.name === name);
-    if (v) {
-      openMiniProfile(v);
-    }
-  }
+  openMiniProfile(v);
 });
-
 
 
 /* ===== SWIPE TO TOGGLE CHAT (MOBILE) ===== */
@@ -2979,41 +2966,34 @@ function openMiniProfile(v){
     }
   } catch {}
 
-const bio = (v.bio || "").trim();
-
-miniProfile.innerHTML = `
-  <div class="mini-profile-header">
-    <img src="${v.avatar}">
-    <div class="mini-profile-name">${v.name}</div>
-  </div>
-
-  ${bio ? `
-    <div class="mini-profile-bio">
-      📝 ${bio}
-    </div>
-  ` : ""}
-
-  <div class="mini-profile-meta">
-    ${(() => {
-      const vip = getVipBadge(v.level || 1);
-      return `
-        <div class="mini-profile-chip">
-          ⭐ Lv ${v.level || 1}
-          ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
-        </div>
-      `;
-    })()}
-
-    <div class="mini-profile-chip gold">
-      💎 Room<br><b>${v.coinSentRoom || 0}</b>
+  miniProfile.innerHTML = `
+    <div class="mini-profile-header">
+      <img src="${v.avatar}">
+      <div class="mini-profile-name">${v.name}</div>
     </div>
 
-    <div class="mini-profile-chip blue">
-      💎 Tổng<br><b>${v.coinSent || 0}</b>
-    </div>
-  </div>
-`;
+    <div class="mini-profile-meta">
+      ${(() => {
+        const vip = getVipBadge(v.level || 1);
+        return `
+          <div class="mini-profile-chip">
+            ⭐ Lv ${v.level || 1}
+            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+          </div>
+        `;
+      })()}
 
+       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
+      <div class="mini-profile-chip gold">
+        💎 Room<br><b>${sentInRoom}</b>
+      </div>
+
+      <!-- 🔹 TỔNG ĐÃ TẶNG -->
+      <div class="mini-profile-chip blue">
+        💎 Tổng<br><b>${totalSent}</b>
+      </div>
+    </div>
+  `;
 
   // 🔥 LẤY TOẠ ĐỘ VIDEO
   const video = document.querySelector(".video-card");

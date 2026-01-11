@@ -202,7 +202,6 @@ document.getElementById("btnSave").onclick = () => {
     exp: old.exp || 0, 
     coinSent: old.coinSent || 0,
     coinReceived: old.coinReceived || 0,
-    bio: old.bio || "" ,         // 🔥 BẮT BUỘC
   };
 
   localStorage.setItem(KEY, JSON.stringify(profile));
