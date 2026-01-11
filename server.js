@@ -377,9 +377,12 @@ emitLobbyUpdate();
 
 io.on("connection", (socket) => {
 
-  
-if(socket.data.uid?.startsWith("guest_")){
+
+if(String(socket.data.uid || "").startsWith("guest_")){
   socket.data.role = "guest";
+  socket.data.isGuest = true;
+}else{
+  socket.data.isGuest = false;
 }
 
 
@@ -746,6 +749,12 @@ if (role === "viewer" && room.hostProfile) {
 
 
     if (role === "broadcaster") {
+
+      if(socket.data.isGuest){
+  socket.emit("room-error", { error:"guest" });
+  return;
+}
+
        if (room.releaseTimer) {
     clearTimeout(room.releaseTimer);
     room.releaseTimer = null;
