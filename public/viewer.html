@@ -762,6 +762,9 @@ if(isGuest){
   document.getElementById("chatInputOverlay")?.remove();
   document.getElementById("giftFab")?.remove();
   document.getElementById("giftPanel")?.remove();
+  document.getElementById("viewerBackdrop")?.remove(); // 🔥 cho phép click video
+  document.getElementById("chatOverlay")?.remove();    // 🔥 cho phép PiP + Mute
+
 
   // 🔥 FIX: backdrop không được che video controls
   const bd = document.getElementById("viewerBackdrop");
@@ -772,6 +775,13 @@ if(isGuest){
 }
 
 
+// 🔥 FIX CHUẨN: cho phép bấm nút PiP + Mute
+const hostCard = document.getElementById("hostCard");
+if (isGuest && hostCard) {
+  hostCard.style.pointerEvents = "none";   // video không ăn click
+  document.getElementById("pipBtn").style.pointerEvents = "auto";
+  document.getElementById("muteBtn").style.pointerEvents = "auto";
+}
 
 
 
