@@ -55,6 +55,14 @@
 
         <div class="live-stage" id="liveStage" style="margin-top:10px">
 
+<div id="guestViewLock" class="guest-lock hidden">
+  <div class="guest-lock-card">
+    <h3>👀 Đang xem với tư cách Guest</h3>
+    <p>Đăng nhập để chat, tặng quà và tương tác với host</p>
+    <button onclick="location.href='/login.html'">🔐 Đăng nhập</button>
+  </div>
+</div>
+
           <div class="gift-layer" id="giftLayer"></div>
 
   <!-- HOST -->
@@ -734,6 +742,19 @@ setInterval(checkHDQuality, 2500);
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
+const isGuest = localStorage.getItem("isGuest") === "1";
+
+if(isGuest){
+  document.getElementById("viewerAvatars")?.remove();
+  document.getElementById("viewerListPopup")?.remove();
+  document.getElementById("miniProfile")?.remove();
+  document.getElementById("chatFab")?.remove();
+  document.getElementById("chatInputOverlay")?.remove();
+  document.getElementById("giftFab")?.remove();
+  document.getElementById("giftPanel")?.remove();
+}
+
+
 if(profile.uid){
   socket.emit("auth-login", { uid: profile.uid });
 }
@@ -941,16 +962,25 @@ function getUserProfile(){
 
 const stableUID = getStableUID();
 
+const sendProfile = isGuest ? {
+  uid: stableUID,
+  name: "Guest",
+  avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest",
+  level: 1,
+  coins: 0
+} : {
+  uid: stableUID,
+  name: profile.name || "Viewer",
+  avatar: profile.avatar,
+  level: profile.level || 1,
+  coins: profile.coins || 0
+};
+
 socket.emit("viewer-join", {
   roomId,
-  profile: {
-    uid: stableUID,               // ✅ UID CỐ ĐỊNH
-    name: profile.name || "Viewer",
-    avatar: profile.avatar,
-    level: profile.level || 1,
-    coins: profile.coins || 0
-  }
+  profile: sendProfile
 });
+
 
 
 if (profile){
@@ -1529,7 +1559,10 @@ function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
     const msg = { roomId: getRoomIdFn(), emoji: "❤️", x, y };
     // show immediately on self
     spawnReaction(layerEl, msg.emoji, msg.x, msg.y, true);
-    socket.emit("reaction", msg);
+    if (!isGuest) {
+  socket.emit("reaction", msg);
+}
+
   };
 
   tapEl.addEventListener("pointerdown", handler, { passive: false });
@@ -1977,6 +2010,8 @@ socket.on("host-profile-sync", (profile) => {
 
 // 🎭 CLICK AVATAR CHAT → MINI PROFILE
 chatOverlay?.addEventListener("click", (e) => {
+  if(isGuest) return;
+
   const avatarEl = e.target.closest(".chat-avatar-bg");
   if (!avatarEl) return;
 
@@ -2067,7 +2102,11 @@ chatOverlay?.addEventListener("click", (e) => {
     }
 
 
-    chatSend.onclick = () => {
+   chatSend.onclick = () => {
+  if(isGuest){
+    alert("🔒 Đăng nhập để chat");
+    return;
+  }
 
 
   const profile = getUserProfile();
@@ -2213,7 +2252,12 @@ gcmOk.addEventListener("click", ()=>{
   addExpFromDonate(total);
 
   // ✅ ĐỦ COIN → gửi coin
-  socket.emit("send-gift", {
+  if(isGuest){
+  alert("🔒 Đăng nhập để tặng quà");
+  return;
+}
+socket.emit("send-gift", {
+
     roomId,
     name: (chatName?.value || "Viewer").slice(0,20),
     gift: {
@@ -2899,6 +2943,36 @@ socket.on("force-logout", ({ reason }) => {
   localStorage.removeItem("user_profile");
   location.href = "/login.html";
 });
+
+
+
+if (isGuest) {
+  console.warn("👀 Guest mode – view only");
+
+  // Ẩn chat
+  document.getElementById("chatFab")?.remove();
+  document.getElementById("chatInputOverlay")?.remove();
+  document.querySelector(".chat-overlay")?.classList.add("hidden");
+
+  // Ẩn gift
+  document.getElementById("giftFab")?.remove();
+  document.getElementById("giftPanel")?.remove();
+
+  // Ẩn reaction layer (tap to heart)
+  document.getElementById("reactionsLayerViewer")?.remove();
+
+  // Ẩn avatar list + mini profile
+  document.getElementById("viewerAvatars")?.remove();
+  document.getElementById("viewerListPopup")?.remove();
+  document.getElementById("miniProfile")?.remove();
+
+  // Ẩn pin note (guest chỉ xem)
+  document.getElementById("pinOverlay")?.classList.add("hidden");
+}
+
+if(isGuest){
+  document.getElementById("guestViewLock")?.classList.remove("hidden");
+}
 
 
   </script>
