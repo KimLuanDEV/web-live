@@ -749,6 +749,22 @@ if (profile.uid) {
 
 const isGuest = localStorage.getItem("isGuest") === "1";
 
+// 🧩 Guest overlay click outside to close
+const guestLock = document.getElementById("guestViewLock");
+
+if (guestLock) {
+  // click nền mờ → đóng
+  guestLock.addEventListener("click", () => {
+    guestLock.classList.add("hidden");
+  });
+
+  // click vào card → không đóng
+  const card = guestLock.querySelector(".guest-lock-card");
+  if (card) {
+    card.addEventListener("click", e => e.stopPropagation());
+  }
+}
+
 
 if(isGuest){
   document.getElementById("viewerAvatars")?.remove();
@@ -2981,20 +2997,6 @@ if(isGuest){
 }
 
 
-const guestLock = document.getElementById("guestViewLock");
-
-if (guestLock) {
-  // Click ra nền mờ → ẩn overlay
-  guestLock.addEventListener("click", () => {
-    guestLock.classList.add("hidden");
-  });
-
-  // Click vào hộp → không đóng
-  const card = guestLock.querySelector(".guest-lock-card");
-  if (card) {
-    card.addEventListener("click", e => e.stopPropagation());
-  }
-}
 
 
   </script>
