@@ -55,6 +55,7 @@
 
         <div class="live-stage" id="liveStage" style="margin-top:10px">
 
+
           <div class="gift-layer" id="giftLayer"></div>
 
   <!-- HOST -->
@@ -94,6 +95,10 @@
 
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
+<!-- PIP BUTTON -->
+<button id="pipBtn" class="pip-btn" title="Thu nhỏ (PiP)">🔛</button>
+
+<button id="muteBtn" class="ctrl-fab" title="Tắt tiếng">🔊</button>
 
 
 <!-- ❌ EXIT BUTTON -->
@@ -728,6 +733,49 @@ setInterval(checkHDQuality, 2500);
 
     const socket = io();
 
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+const isGuest = localStorage.getItem("isGuest") === "1";
+
+// 🧩 Guest overlay click outside to close
+const guestLock = document.getElementById("guestViewLock");
+
+if (guestLock) {
+  // click nền mờ → đóng
+  guestLock.addEventListener("click", () => {
+    guestLock.classList.add("hidden");
+  });
+
+  // click vào card → không đóng
+  const card = guestLock.querySelector(".guest-lock-card");
+  if (card) {
+    card.addEventListener("click", e => e.stopPropagation());
+  }
+}
+
+
+if(isGuest){
+  document.getElementById("viewerAvatars")?.remove();
+  document.getElementById("viewerListPopup")?.remove();
+  document.getElementById("miniProfile")?.remove();
+  document.getElementById("chatFab")?.remove();
+  document.getElementById("chatInputOverlay")?.remove();
+  document.getElementById("giftFab")?.remove();
+  document.getElementById("giftPanel")?.remove();
+}
+
+
+if(profile.uid){
+  socket.emit("auth-login", { uid: profile.uid });
+}
+
+socket.on("force-logout", () => {
+  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
+
+
 function updateProfileOnSendGift(totalCoin){
   const KEY = "user_profile";
   let p = {};
@@ -815,6 +863,19 @@ function showLevelUpEffect(newLevel){
 
     setTimeout(()=>overlay.remove(), 3000);
   }catch{}
+}
+
+
+function getChatVip(level){
+  level = Number(level)||1;
+  if(level>=250) return "chat-vip-250";
+  if(level>=200) return "chat-vip-200";
+  if(level>=150) return "chat-vip-150";
+  if(level>=100) return "chat-vip-100";
+  if(level>=50) return "chat-vip-50";
+  if(level>=20) return "chat-vip-20";
+  if(level>=10) return "chat-vip-10";
+  return "";
 }
 
 
@@ -908,20 +969,28 @@ function getUserProfile(){
 }
 
 
-const profile = getUserProfile();
 
 const stableUID = getStableUID();
 
+const sendProfile = isGuest ? {
+  uid: stableUID,
+  name: "Guest",
+  avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest",
+  level: 1,
+  coins: 0
+} : {
+  uid: stableUID,
+  name: profile.name || "Viewer",
+  avatar: profile.avatar,
+  level: profile.level || 1,
+  coins: profile.coins || 0
+};
+
 socket.emit("viewer-join", {
   roomId,
-  profile: {
-    uid: stableUID,               // ✅ UID CỐ ĐỊNH
-    name: profile.name || "Viewer",
-    avatar: profile.avatar,
-    level: profile.level || 1,
-    coins: profile.coins || 0
-  }
+  profile: sendProfile
 });
+
 
 
 if (profile){
@@ -1375,14 +1444,18 @@ function disableAutoMini(){
   }
 }
 
-// Khi chuyển tab / app
-document.addEventListener("visibilitychange", ()=>{
-  if (document.hidden){
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) {
     enableAutoMini();
+    socket.emit("viewer-mini-mode", { roomId, mini: true });
+    __miniMode = true;
   } else {
     disableAutoMini();
+    socket.emit("viewer-mini-mode", { roomId, mini: false });
+    __miniMode = false;
   }
 });
+
 
 // iOS Safari đặc biệt hay dùng pagehide/pageshow
 window.addEventListener("pagehide", enableAutoMini);
@@ -1496,7 +1569,10 @@ function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
     const msg = { roomId: getRoomIdFn(), emoji: "❤️", x, y };
     // show immediately on self
     spawnReaction(layerEl, msg.emoji, msg.x, msg.y, true);
-    socket.emit("reaction", msg);
+    if (!isGuest) {
+  socket.emit("reaction", msg);
+}
+
   };
 
   tapEl.addEventListener("pointerdown", handler, { passive: false });
@@ -1879,21 +1955,22 @@ const avatar =
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
  el.innerHTML = `
 
- <div class="chat-avatar-bg"
-     data-name="${name}"
-     data-role="${role}"
-     style="background-image:url('${avatar}')">
+<div class="chat-avatar-bg"
+ data-name="${name}"
+ data-role="${role}"
+ data-level="Lv${level}"
+ style="background-image:url('${avatar}')">
 </div>
 
   <div class="chat-body">
     <div class="chat-head">
-      <span class="chat-name"
+     
+
+      <span class="chat-level">
+   <span class="chat-name"
       style="${vip ? `color:${vip.color}` : ""}">
   ${name}
 </span>
-
-      <span class="chat-level">
-  ⭐ Lv ${level}
   ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
 </span>
     </div>
@@ -1943,6 +2020,8 @@ socket.on("host-profile-sync", (profile) => {
 
 // 🎭 CLICK AVATAR CHAT → MINI PROFILE
 chatOverlay?.addEventListener("click", (e) => {
+  if(isGuest) return;
+
   const avatarEl = e.target.closest(".chat-avatar-bg");
   if (!avatarEl) return;
 
@@ -2033,7 +2112,11 @@ chatOverlay?.addEventListener("click", (e) => {
     }
 
 
-    chatSend.onclick = () => {
+   chatSend.onclick = () => {
+  if(isGuest){
+    alert("🔒 Đăng nhập để chat");
+    return;
+  }
 
 
   const profile = getUserProfile();
@@ -2179,7 +2262,12 @@ gcmOk.addEventListener("click", ()=>{
   addExpFromDonate(total);
 
   // ✅ ĐỦ COIN → gửi coin
-  socket.emit("send-gift", {
+  if(isGuest){
+  alert("🔒 Đăng nhập để tặng quà");
+  return;
+}
+socket.emit("send-gift", {
+
     roomId,
     name: (chatName?.value || "Viewer").slice(0,20),
     gift: {
@@ -2791,6 +2879,108 @@ slider.addEventListener("pointerup", ()=>{
   else if (dx < -50) goPage(currentPage + 1);
   startX = 0;
 });
+
+
+
+const pipBtn = document.getElementById("pipBtn");
+
+async function togglePiP(){
+  try{
+    // Nếu đang PiP → thoát
+    if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    } else {
+      // Bật PiP cho video đang xem
+      await player.requestPictureInPicture();
+    }
+  }catch(e){
+    console.warn("PiP not available:", e);
+    alert("Trình duyệt không hỗ trợ PiP");
+  }
+}
+
+pipBtn?.addEventListener("click", togglePiP);
+
+// Khi user thoát PiP (Alt+Tab, đóng cửa sổ PiP) → cập nhật icon
+player?.addEventListener("leavepictureinpicture", ()=>{
+  // có thể đổi icon nếu muốn
+});
+
+let __miniMode = false;
+
+pipBtn.onclick = async () => {
+  __miniMode = !__miniMode;
+
+  // báo server chuyển viewer sang mini-mode
+  socket.emit("viewer-mini-mode", {
+    roomId,
+    mini: __miniMode
+  });
+
+  // UI
+  pipBtn.textContent = __miniMode ? "🟡 MINI" : "🔛";
+
+  // bật Picture-in-Picture nếu có
+  try {
+    if (__miniMode) {
+      await player.requestPictureInPicture();
+    } else if (document.pictureInPictureElement) {
+      await document.exitPictureInPicture();
+    }
+  } catch {}
+};
+
+
+const muteBtn = document.getElementById("muteBtn");
+let __muted = false;
+
+muteBtn.onclick = () => {
+  __muted = !__muted;
+
+  const stream = player.srcObject;
+  if (stream) {
+    stream.getAudioTracks().forEach(t => t.enabled = !__muted);
+  }
+
+  muteBtn.textContent = __muted ? "🔇" : "🔊";
+  muteBtn.classList.toggle("muted", __muted);
+};
+
+
+
+socket.on("force-logout", ({ reason }) => {
+  alert("Tài khoản của bạn đã đăng nhập ở thiết bị khác!");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
+
+
+
+if (isGuest) {
+  console.warn("👀 Guest mode – view only");
+
+  // Ẩn chat
+  document.getElementById("chatFab")?.remove();
+  document.getElementById("chatInputOverlay")?.remove();
+  document.querySelector(".chat-overlay")?.classList.add("hidden");
+
+  // Ẩn gift
+  document.getElementById("giftFab")?.remove();
+  document.getElementById("giftPanel")?.remove();
+
+  // Ẩn reaction layer (tap to heart)
+  document.getElementById("reactionsLayerViewer")?.remove();
+
+  // Ẩn avatar list + mini profile
+  document.getElementById("viewerAvatars")?.remove();
+  document.getElementById("viewerListPopup")?.remove();
+  document.getElementById("miniProfile")?.remove();
+
+  // Ẩn pin note (guest chỉ xem)
+  document.getElementById("pinOverlay")?.classList.add("hidden");
+}
+
+
 
 
 

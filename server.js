@@ -1,3 +1,6 @@
+const bcrypt = require("bcrypt");
+
+
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
 
 const multer = require("multer");
@@ -64,6 +67,128 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
 
 
 const rooms = new Map();
+
+
+const activeUsers = new Map();   // uid -> socketId
+
+
+// ===== USER INBOX / NOTIFICATION =====
+const userInbox = new Map();   // uid -> [ {type, text, ts, read} ]
+
+function pushNotify(uid, payload){
+  if(!uid) return;
+  if(!userInbox.has(uid)) userInbox.set(uid, []);
+  userInbox.get(uid).unshift({
+    ...payload,
+    ts: Date.now(),
+    read:false
+  });
+}
+
+
+
+const USERS_FILE = path.join(__dirname, "users.json");
+
+function loadUsers(){
+  if(!fs.existsSync(USERS_FILE)) return {};
+  return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
+}
+function saveUsers(db){
+  fs.writeFileSync(USERS_FILE, JSON.stringify(db,null,2));
+}
+
+
+app.use(express.json());
+
+app.post("/api/register", async (req,res)=>{
+  const { username, password, name } = req.body;
+  if(!username || !password || !name) return res.json({error:"missing"});
+
+  const db = loadUsers();
+  if(db[username]) return res.json({error:"exists"});
+
+  const hash = await bcrypt.hash(String(password), 10);
+
+  db[username] = {
+    password: hash,   // 🔐 HASH
+    profile:{
+      uid: username,
+      name,
+      avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+      coins:0,
+      level:1,
+      exp:0,
+      coinSent:0,
+      coinReceived:0
+    }
+  };
+
+  saveUsers(db);
+  res.json({ok:true, profile:db[username].profile});
+});
+
+
+app.post("/api/login", async (req,res)=>{
+  const { username, password } = req.body;
+  const db = loadUsers();
+  const acc = db[username];
+
+  if(!acc) return res.json({error:"invalid"});
+
+  const ok = await bcrypt.compare(String(password), acc.password);
+  if(!ok){
+    return res.json({error:"invalid"});
+  }
+
+  res.json({ok:true, profile:acc.profile});
+});
+
+
+
+ // ===== RESET / CHANGE PASSWORD =====
+
+app.post("/api/forgot-password", async (req,res)=>{
+  const { username, newPassword } = req.body;
+  if(!username || !newPassword) return res.json({error:"missing"});
+
+  const db = loadUsers();
+  const acc = db[username];
+  if(!acc) return res.json({error:"notfound"});
+
+  acc.password = await bcrypt.hash(String(newPassword), 10);
+  saveUsers(db);
+
+  res.json({ ok:true });
+});
+
+
+app.post("/api/change-password", async (req,res)=>{
+  const { uid, oldPass, newPass } = req.body;
+  if(!uid || !oldPass || !newPass) return res.json({error:"missing"});
+
+  const db = loadUsers();
+
+  let foundUser = null;
+  let foundKey = null;
+
+  for(const k in db){
+    if(db[k].profile?.uid === uid){
+      foundUser = db[k];
+      foundKey = k;
+      break;
+    }
+  }
+
+  if(!foundUser) return res.json({error:"notfound"});
+
+  const ok = await bcrypt.compare(String(oldPass), foundUser.password);
+  if(!ok) return res.json({error:"pass"});
+
+  foundUser.password = await bcrypt.hash(String(newPass), 10);
+  saveUsers(db);
+
+  res.json({ ok:true });
+});
 
 
 // ♻️ RESTORE LIVE ROOMS AFTER SERVER RESTART
@@ -158,7 +283,11 @@ function getRoom(roomId) {
 function emitViewerCount(roomId) {
   const room = rooms.get(roomId);
   if (!room) return;
-  io.to(roomId).emit("viewer-count", { count: room.viewers.size });
+
+  const active = [...room.viewerProfiles.values()]
+    .filter(v => !v.mini).length;
+
+  io.to(roomId).emit("viewer-count", { count: active });
 }
 
 
@@ -208,14 +337,21 @@ app.get("/ice", async (_req, res) => {
 
 
 function closeRoom(roomId, reason = "host_left") {
-
-  const state = loadLiveState();
-delete state[roomId];
-saveLiveState(state);
-
-
-  const room = rooms.get(roomId);
+  const room = rooms.get(roomId);   // 🔥 LẤY ROOM TRƯỚC
   if (!room) return;
+
+  // 🔔 notify host
+  if(room.hostProfile?.uid){
+    pushNotify(room.hostProfile.uid,{
+      type:"system",
+      text:"Phòng live của bạn đã bị đóng"
+    });
+  }
+
+  // 💾 xóa live_state
+  const state = loadLiveState();
+  delete state[roomId];
+  saveLiveState(state);
 
   // 🚨 báo cho toàn bộ viewer + guest
   io.to(roomId).emit("room-closed", { reason });
@@ -224,11 +360,12 @@ saveLiveState(state);
   room.broadcasterId = null;
   room.liveStartTs = null;
   room.viewers.clear();
+  room.viewerProfiles?.clear?.();
 
-  
   room.giftTotal = 0;
   room.giftByUser = new Map();
-emitLobbyUpdate();
+
+  emitLobbyUpdate();
 
   // xoá room sau 1 chút cho client kịp nhận event
   setTimeout(() => {
@@ -238,6 +375,66 @@ emitLobbyUpdate();
 
 
 io.on("connection", (socket) => {
+
+
+  function isGuest(socket){
+  return String(socket.data.uid || "").startsWith("guest_");
+}
+
+function blockGuest(socket, feature){
+  if(isGuest(socket)){
+    socket.emit("need-login", { feature });
+    return true;
+  }
+  return false;
+}
+
+
+if(socket.data.uid?.startsWith("guest_")){
+  socket.data.role = "guest";
+}
+
+
+  socket.on("get-inbox", ()=>{
+  const uid = socket.data.uid;
+  if(!uid){
+    socket.emit("inbox-data", []);
+    return;
+  }
+  socket.emit("inbox-data", userInbox.get(uid) || []);
+});
+
+
+
+socket.on("auth-ping", ({ uid }) => {
+  if (!uid) return;
+
+  // refresh mapping
+  const old = activeUsers.get(uid);
+  if (!old || old !== socket.id) {
+    activeUsers.set(uid, socket.id);
+    socket.data.uid = uid;
+  }
+});
+
+  socket.on("auth-login", ({ uid }) => {
+  uid = String(uid||"").trim();
+  if(!uid) return;
+
+  // nếu uid đang online ở socket khác → đá
+  const oldSocketId = activeUsers.get(uid);
+  if(oldSocketId && oldSocketId !== socket.id){
+    io.to(oldSocketId).emit("force-logout", { reason:"login_elsewhere" });
+
+    const oldSocket = io.sockets.sockets.get(oldSocketId);
+    if(oldSocket){
+      oldSocket.disconnect(true);
+    }
+  }
+
+  activeUsers.set(uid, socket.id);
+  socket.data.uid = uid;
+});
 
 
 socket.on("host-reconnect", ({ roomId }) => {
@@ -305,9 +502,15 @@ socket.on("host-profile-update", ({ roomId, level }) => {
   if (avatar) profile.avatar = avatar;
   if (level) profile.level = Number(level) || profile.level;
 
-  io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+ const list = Array.from(room.viewerProfiles.values());
+
+for (const v of list) {
+  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
+  io.to(v.socketId).emit("viewer-list", {
+    viewers: list.filter(x => !x.mini)
   });
+}
+
 });
 
 
@@ -315,6 +518,19 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 
 
 socket.on("viewer-join", ({ roomId, profile }) => {
+
+if(isGuest(socket)){
+  // ép profile Guest an toàn
+  profile = {
+    uid: socket.data.uid,
+    name: "Guest",
+    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest",
+    level: 1,
+    coins: 0
+  };
+}
+
+
   roomId = normRoomId(roomId);
   if (!roomId) return;
 
@@ -352,19 +568,39 @@ socket.on("viewer-join", ({ roomId, profile }) => {
     level: Number(profile?.level) || 1,
     coins: Number(profile?.coins) || 0,
     coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
-    coinReceivedRoom: old?.coinReceivedRoom || 0
+    coinReceivedRoom: old?.coinReceivedRoom || 0,
+    mini: false   // 👈 thêm
   });
 
   emitViewerCount(roomId);
 
   // ✅ CHỈ emit 1 lần cho cả phòng (đỡ spam)
-  io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+ const list = Array.from(room.viewerProfiles.values());
+
+for (const v of list) {
+  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
+  io.to(v.socketId).emit("viewer-list", {
+    viewers: list.filter(x => !x.mini)
   });
+}
 
   emitLobbyUpdate();
 });
 
+
+socket.on("viewer-mini-mode", ({ roomId, mini }) => {
+  const room = getRoom(roomId);
+  if (!room) return;
+
+  for (const v of room.viewerProfiles.values()) {
+    if (v.socketId === socket.id) {
+      v.mini = mini === true;
+      break;
+    }
+  }
+
+  emitViewerCount(roomId); // update số viewer active
+});
 
 
 
@@ -502,7 +738,12 @@ saveLiveState(state);
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
 
-    
+    // 🔒 Guest chỉ được join với role=viewer
+if(isGuest(socket) && role !== "viewer"){
+  socket.emit("need-login", { feature:"join-as-host" });
+  return;
+}
+
      roomId = normRoomId(roomId);
     if (!roomId || !role) return;
 
@@ -559,12 +800,15 @@ if (room.liveStartTs) {
        // ✅ Lưu profile host
     const name = String(profile?.name || "").trim().slice(0, 20);
     const avatar = String(profile?.avatar || "").trim();
-    room.hostProfile = {
+
+ room.hostProfile = {
+  uid: profile?.uid || socket.data.uid,   // 🔥 THÊM
   name: name || "Host",
   avatar: avatar || "",
-  level: Number(profile?.level) || 1,   // 🔥 FIX QUAN TRỌNG
+  level: Number(profile?.level) || 1,
   ts: Date.now(),
 };
+
 
 
       if (old && old !== socket.id) {
@@ -648,7 +892,13 @@ if (room.liveStartTs) {
     ts: Date.now(),
   };
 
-  io.to(roomId).emit("chat", msg);
+for (const v of room.viewerProfiles.values()) {
+  if (!v.mini) io.to(v.socketId).emit("chat", msg);
+}
+
+// host vẫn nhận
+if (room.broadcasterId) io.to(room.broadcasterId).emit("chat", msg);
+
 });
 
 
@@ -657,6 +907,10 @@ if (room.liveStartTs) {
 // ===== REACTIONS (emoji/hearts) =====
 // client emits: { roomId, emoji, x, y }
 socket.on("reaction", ({ roomId, emoji, x, y }) => {
+  if(blockGuest(socket,"reaction")) return;   // 🔒
+
+
+
   if (!roomId) return;
   const em = String(emoji || "❤️").slice(0, 4);
   const msg = {
@@ -665,13 +919,24 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     y: typeof y === "number" ? y : Number(y),
     ts: Date.now(),
   };
-  io.to(roomId).emit("reaction", msg);
+
+const room = getRoom(roomId);
+if (!room) return;
+
+ for (const v of room.viewerProfiles.values()) {
+  if (!v.mini) io.to(v.socketId).emit("reaction", msg);
+}
+if (room.broadcasterId) io.to(room.broadcasterId).emit("reaction", msg);
+
 });
 
   // ===== PIN NOTE (host creates custom pinned content + draggable position) =====
   function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
 
   socket.on("pin-note-set", ({ roomId, text, x, y }) => {
+if(blockGuest(socket,"pin")) return;
+
+
     if (!roomId) return;
     const room = getRoom(roomId);
     if (room.broadcasterId !== socket.id) return; // host only
@@ -679,27 +944,47 @@ socket.on("reaction", ({ roomId, emoji, x, y }) => {
     if (!t) return;
     const note = { text: t, x: __clamp01(x), y: __clamp01(y), ts: Date.now() };
     room.pinnedNote = note;
-    io.to(roomId).emit("pin-note-update", note);
+
+   for (const v of room.viewerProfiles.values()) {
+  if (!v.mini) io.to(v.socketId).emit("pin-note-update", note);
+}
+if (room.broadcasterId) io.to(room.broadcasterId).emit("pin-note-update", note);
+
   });
 
-  socket.on("pin-note-move", ({ roomId, x, y }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-    if (!room.pinnedNote) return;
-    room.pinnedNote.x = __clamp01(x);
-    room.pinnedNote.y = __clamp01(y);
-    room.pinnedNote.ts = Date.now();
-    io.to(roomId).emit("pin-note-update", room.pinnedNote);
-  });
+socket.on("pin-note-move", ({ roomId, x, y }) => {
+  if(blockGuest(socket,"pin")) return;
 
-  socket.on("pin-note-clear", ({ roomId }) => {
-    if (!roomId) return;
-    const room = getRoom(roomId);
-    if (room.broadcasterId !== socket.id) return; // host only
-    room.pinnedNote = null;
-    io.to(roomId).emit("pin-note-update", null);
-  });
+  if (!roomId) return;
+  const room = getRoom(roomId);
+  if (!room || room.broadcasterId !== socket.id) return;
+  if (!room.pinnedNote) return;
+
+  room.pinnedNote.x = __clamp01(x);
+  room.pinnedNote.y = __clamp01(y);
+  room.pinnedNote.ts = Date.now();
+
+  for (const v of room.viewerProfiles.values()) {
+    if (!v.mini) io.to(v.socketId).emit("pin-note-update", room.pinnedNote);
+  }
+  if (room.broadcasterId) io.to(room.broadcasterId).emit("pin-note-update", room.pinnedNote);
+});
+
+ socket.on("pin-note-clear", ({ roomId }) => {
+  if(blockGuest(socket,"pin")) return;
+
+  if (!roomId) return;
+  const room = getRoom(roomId);
+  if (!room || room.broadcasterId !== socket.id) return;
+
+  room.pinnedNote = null;
+
+  for (const v of room.viewerProfiles.values()) {
+    if (!v.mini) io.to(v.socketId).emit("pin-note-update", null);
+  }
+  if (room.broadcasterId) io.to(room.broadcasterId).emit("pin-note-update", null);
+});
+
   // ===== /PIN NOTE =====
 
 
@@ -719,6 +1004,8 @@ function canSendGift(socket) {
 
 // ===== GIFT ENGINE (paid gifts) =====
 socket.on("send-gift", ({ roomId, gift, name }) => {
+  if(blockGuest(socket,"gift")) return;   // 🔒 GUEST KHÔNG ĐƯỢC TẶNG QUÀ
+
   roomId = normRoomId(roomId);
   if (!roomId || !gift) return;
 
@@ -765,6 +1052,22 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   const donorName = safeName(name || donorProfile?.name || socket.data.userName || "Ẩn danh");
   const uid = donorProfile?.uid;
 
+// 🔔 Notify host khi nhận quà
+const hostUid = room.hostProfile?.uid;
+if(hostUid){
+  pushNotify(hostUid,{
+    type:"gift",
+    text:`${donorName} đã tặng ${cost} coin`
+  });
+
+  const hostSocket = activeUsers.get(hostUid);
+  if(hostSocket){
+    io.to(hostSocket).emit("inbox-new");
+  }
+}
+
+
+
   // ===== UPDATE DONOR PROFILE =====
   if (donorProfile && uid) {
     donorProfile.coinSentRoom = (donorProfile.coinSentRoom || 0) + cost;
@@ -777,9 +1080,15 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
 
   // ===== SYNC VIEWER LIST (mini profile / avatar) =====
-  io.to(roomId).emit("viewer-list", {
-    viewers: Array.from(room.viewerProfiles.values())
+ const list = Array.from(room.viewerProfiles.values());
+
+for (const v of list) {
+  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
+  io.to(v.socketId).emit("viewer-list", {
+    viewers: list.filter(x => !x.mini)
   });
+}
+
 
   // ===== EMIT GIFT EVENT =====
   const payload = {
@@ -796,11 +1105,24 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     ts: Date.now(),
   };
 
-  io.to(roomId).emit("gift", payload);
-  io.to(roomId).emit("gift-stats", {
+ // gift
+for (const v of list) {
+  if (!v.mini) io.to(v.socketId).emit("gift", payload);
+}
+if (room.broadcasterId) io.to(room.broadcasterId).emit("gift", payload);
+
+  // stats
+for (const v of list) {
+  if (!v.mini) io.to(v.socketId).emit("gift-stats", {
     totalCoins: room.giftTotal,
     topDonors: roomGiftTop(room, 5)
   });
+}
+if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
+  totalCoins: room.giftTotal,
+  topDonors: roomGiftTop(room, 5)
+});
+
 });
 
 
@@ -819,6 +1141,18 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   });
 
   socket.on("disconnect", () => {
+
+
+  const uid = socket.data.uid;
+  if(uid){
+  const cur = activeUsers.get(uid);
+  if(cur === socket.id){
+    activeUsers.delete(uid);
+  }
+}
+
+
+
   const roomId = socket.data.roomId;
   const role = socket.data.role;
   if (!roomId) return;
@@ -841,9 +1175,15 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
 
     emitViewerCount(roomId);
 
-    io.to(roomId).emit("viewer-list", {
-      viewers: Array.from(room.viewerProfiles.values())
-    });
+const list = Array.from(room.viewerProfiles.values());
+
+for (const v of list) {
+  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
+  io.to(v.socketId).emit("viewer-list", {
+    viewers: list.filter(x => !x.mini)
+  });
+}
+
 
     emitLobbyUpdate();
   }

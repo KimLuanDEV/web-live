@@ -5364,3 +5364,327 @@ video {
 }
 
 
+/* ===== CHAT AVATAR VIP RING ===== */
+
+.chat-avatar-bg{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  background-size:cover;
+  background-position:center;
+  position:relative;
+  flex-shrink:0;
+}
+
+/* vòng glow */
+.chat-avatar-bg::before{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  background:linear-gradient(45deg,#777,#444);
+  filter:blur(6px);
+  opacity:.55;
+  z-index:-1;
+}
+
+/* Level badge */
+.chat-avatar-bg::after{
+  content: attr(data-level);
+  position:absolute;
+  right:-6px;
+  bottom:-6px;
+  background:#000;
+  color:#fff;
+  font-size:9px;
+  padding:2px 5px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.4);
+}
+
+/* ===== VIP COLORS (khớp getVipBadge) ===== */
+
+.chat-legend .chat-avatar-bg::before{ background:linear-gradient(45deg,#ff3b3b,#ff8c00); }
+.chat-king   .chat-avatar-bg::before{ background:linear-gradient(45deg,#c77dff,#ff3bff); }
+.chat-emperor .chat-avatar-bg::before{ background:linear-gradient(45deg,#ffd36e,#ff3b3b); }
+.chat-immortal .chat-avatar-bg::before{ background:linear-gradient(45deg,#00f0ff,#ff3bff); }
+.chat-diamond .chat-avatar-bg::before{ background:linear-gradient(45deg,#5fd1ff,#00e5ff); }
+.chat-gold .chat-avatar-bg::before{ background:linear-gradient(45deg,#ffd36e,#ffb300); }
+.chat-silver .chat-avatar-bg::before{ background:linear-gradient(45deg,#cfd8dc,#90a4ae); }
+.chat-vip .chat-avatar-bg::before{ background:linear-gradient(45deg,#8bc34a,#4caf50); }
+
+/* glow động cho VIP cao */
+.chat-legend .chat-avatar-bg::before,
+.chat-king .chat-avatar-bg::before,
+.chat-emperor .chat-avatar-bg::before,
+.chat-immortal .chat-avatar-bg::before{
+  animation: chatGlow 2s infinite linear;
+}
+
+@keyframes chatGlow{
+  0%{ filter:blur(6px) brightness(1); }
+  50%{ filter:blur(10px) brightness(1.6); }
+  100%{ filter:blur(6px) brightness(1); }
+}
+
+
+/* ===== PiP button ===== */
+.pip-btn{
+  position:absolute;
+  left:60px;      /* né nút X và ctrl */
+  bottom:10px;
+  width:44px;
+  height:44px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.22);
+  background: rgba(0,0,0,.6);
+  color: white;
+  font-size:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  z-index:30;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 14px 34px rgba(0,0,0,.55);
+}
+.pip-btn:hover{ transform: scale(1.06); }
+
+
+/* ===== MUTE BUTTON (Viewer) ===== */
+#muteBtn{
+  position: absolute;
+  left: 110px;            /* nằm cạnh nút PiP */
+  bottom: 10px;
+  width: 44px;
+  height: 44px;
+  border-radius: 999px;
+  background: rgba(0,0,0,.65);
+  border: 1px solid rgba(255,255,255,.2);
+  color: #fff;
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 30;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 14px 35px rgba(0,0,0,.55);
+  transition: .15s ease;
+}
+
+/* hover */
+#muteBtn:hover{
+  transform: scale(1.08);
+  background: rgba(0,0,0,.8);
+}
+
+/* khi đang mute */
+#muteBtn.muted{
+  background: linear-gradient(135deg, #ff3b3b, #ff9c9c);
+  box-shadow: 0 0 18px rgba(255,60,60,.7);
+  border-color: rgba(255,80,80,.8);
+}
+
+
+/* ===== USER BAR ===== */
+.user-chip{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:6px 12px;
+  border-radius:999px;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.18);
+  cursor:pointer;
+  box-shadow:0 0 18px rgba(95,168,255,.15);
+}
+.user-chip:hover{
+  filter:brightness(1.1);
+  transform:scale(1.03);
+}
+
+.user-chip img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid #5fa8ff;
+  box-shadow:0 0 16px rgba(95,168,255,.5);
+}
+
+.user-info{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+
+#userName{
+  font-weight:800;
+  font-size:14px;
+}
+
+.user-level{
+  font-size:12px;
+  color:#ffd36e;
+}
+
+.logout-btn{
+  background:rgba(255,59,107,.22) !important;
+  border:1px solid rgba(255,59,107,.4) !important;
+  box-shadow:0 0 18px rgba(255,59,107,.25);
+}
+.logout-btn:hover{
+  background:rgba(255,59,107,.35) !important;
+}
+
+/* ===== MOBILE TAB BAR ===== */
+.mobile-tabbar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:64px;
+  background:rgba(5,8,18,.85);
+  backdrop-filter: blur(14px);
+  border-top:1px solid rgba(255,255,255,.12);
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  z-index:9999;
+}
+
+.tab-item{
+  flex:1;
+  text-align:center;
+  color:rgba(255,255,255,.65);
+  font-size:12px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:4px;
+}
+
+.tab-item.active{
+  color:#00f6ff;
+  text-shadow:0 0 12px rgba(0,246,255,.8);
+}
+
+.tab-icon{
+  font-size:20px;
+}
+
+.tab-main{
+  transform: translateY(-18px);
+}
+
+.tab-plus{
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#00f6ff,#5f7dff);
+  color:#00141a;
+  font-size:32px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 28px rgba(0,246,255,.8);
+}
+
+/* desktop ẩn */
+@media(min-width: 900px){
+  .mobile-tabbar{ display:none; }
+}
+
+
+.inbox-card{
+  max-height:70vh;
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+
+.inbox-list{
+  overflow-y:auto;
+  margin-top:12px;
+}
+
+.inbox-item{
+  padding:12px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  font-size:14px;
+}
+
+.inbox-item.new{
+  background:rgba(0,246,255,.12);
+}
+
+.inbox-item small{
+  display:block;
+  opacity:.6;
+  margin-top:4px;
+}
+
+.tab-item.has-new .tab-icon{
+  color:#ff3b6b;
+  text-shadow:0 0 12px #ff3b6b;
+}
+
+
+/* ===== GUEST MODE ===== */
+
+body.is-guest .chat,
+body.is-guest .chatform,
+body.is-guest .emoji-bar,
+body.is-guest .gift-bar,
+body.is-guest .ctrl-tab,
+body.is-guest .av-controls,
+body.is-guest .av-overlay,
+body.is-guest .pin-form,
+body.is-guest .pin-overlay .pin-close{
+  display:none !important;
+}
+
+body.is-guest .chat-overlay{
+  pointer-events:none;
+}
+
+body.is-guest .gift-layer,
+body.is-guest .reactions-layer{
+  display:none;
+}
+
+/* Hiện banner yêu cầu đăng nhập */
+.guest-lock{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+  background:rgba(0,0,0,.45);
+  backdrop-filter: blur(6px);
+}
+
+.guest-lock-card{
+  background:rgba(0,0,0,.8);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:18px;
+  padding:20px 24px;
+  text-align:center;
+  box-shadow:0 0 40px rgba(0,255,255,.25);
+}
+
+.guest-lock-card h3{
+  margin:0 0 10px;
+  color:#00f6ff;
+}
+
+.guest-lock-card button{
+  margin-top:14px;
+  padding:12px 18px;
+  border-radius:999px;
+  border:none;
+  background:linear-gradient(135deg,#00f6ff,#5f7dff);
+  font-weight:800;
+}

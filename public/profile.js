@@ -1,3 +1,32 @@
+const socket = io();
+
+// 🔁 giữ socket sống để server không mất uid
+setInterval(() => {
+  if (socket.connected && __profileAuth.uid) {
+    socket.emit("auth-ping", { uid: __profileAuth.uid });
+  }
+}, 4000);
+
+
+// 🔐 AUTH ACCOUNT – bắt buộc
+const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+// 🔥 Nếu có UID thật → chắc chắn không phải Guest
+if (__profileAuth.uid) {
+  localStorage.removeItem("isGuest");
+}
+
+if (__profileAuth.uid) {
+  socket.emit("auth-login", { uid: __profileAuth.uid });
+}
+
+// nếu bị login nơi khác → đá
+socket.on("force-logout", () => {
+  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
+
+
 const KEY = "user_profile";
 
 const nameInput = document.getElementById("nameInput");
@@ -97,7 +126,10 @@ if (vipBadgeBox){
 
 document.getElementById("btnSave").onclick = () => {
   const old = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  const uid = __profileAuth.uid || old.uid;   // 🔐 giữ uid
+
   const profile = {
+    uid,                                     // 🔥 BẮT BUỘC
     name: nameInput.value.trim() || "Guest",
     avatar: old.avatar || defaultProfile.avatar,
     coins: Number(coinVal.textContent) || 0,
@@ -106,7 +138,14 @@ document.getElementById("btnSave").onclick = () => {
     coinSent: old.coinSent || 0,
     coinReceived: old.coinReceived || 0,
   };
+
   localStorage.setItem(KEY, JSON.stringify(profile));
+
+  // 🔁 gửi lại auth-login để server không mất uid
+  if(uid){
+    socket.emit("auth-login", { uid });
+  }
+
   alert("✅ Đã lưu hồ sơ!");
 };
 
@@ -142,9 +181,11 @@ avatarInput.onchange = async () => {
     localStorage.setItem(KEY, JSON.stringify(p));
 
     // realtime sync nếu đang ở room
-    if (window.socket) {
-      socket.emit("profile-update", { avatar: base64 });
-    }
+    if (socket && __profileAuth.uid) {
+  socket.emit("profile-update", { avatar: base64 });
+  socket.emit("auth-login", { uid: __profileAuth.uid }); // 🔐 GIỮ KHÓA LOGIN
+}
+
   };
 
   reader.readAsDataURL(file);
@@ -165,4 +206,83 @@ function addExp(amount){
 
   localStorage.setItem(KEY, JSON.stringify(p));
   loadProfile();
+}
+
+
+// ===== CHANGE PASSWORD =====
+const passModal = document.getElementById("passModal");
+const btnChangePass = document.getElementById("btnChangePass");
+
+if(btnChangePass){
+  btnChangePass.onclick = ()=>{
+    passModal.classList.remove("hidden");
+  };
+}
+
+function closePass(){
+  passModal.classList.add("hidden");
+}
+
+async function submitChangePass(){
+  const oldPass = document.getElementById("oldPass").value;
+  const newPass = document.getElementById("newPass").value;
+  const newPass2 = document.getElementById("newPass2").value;
+
+  if(!oldPass || !newPass || !newPass2){
+    alert("❌ Nhập đầy đủ thông tin");
+    return;
+  }
+
+  if(newPass.length < 6){
+    alert("❌ Mật khẩu mới phải >= 6 ký tự");
+    return;
+  }
+
+  if(newPass !== newPass2){
+    alert("❌ Mật khẩu nhập lại không khớp");
+    return;
+  }
+
+  const uid = __profileAuth.uid;
+  if(!uid){
+    alert("❌ Chưa đăng nhập");
+    return;
+  }
+
+  const res = await fetch("/api/change-password",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      uid,
+      oldPass,
+      newPass
+    })
+  });
+
+ const data = await res.json();
+
+if(data.ok || data.success){
+  alert("✅ Đổi mật khẩu thành công");
+  closePass();
+
+  // xoá input cho sạch
+  oldPass.value = "";
+  newPass.value = "";
+  newPass2.value = "";
+  return;
+}
+
+// các dạng lỗi
+if(data.error === "pass"){
+  alert("❌ Mật khẩu cũ không đúng");
+  return;
+}
+
+if(data.error === "otp"){
+  alert("❌ OTP sai hoặc hết hạn");
+  return;
+}
+
+alert("❌ Đổi mật khẩu thất bại");
+
 }

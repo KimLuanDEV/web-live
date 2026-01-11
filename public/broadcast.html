@@ -39,7 +39,7 @@
 
 
       <div class="card" style="display: none;">
-  <div class="badge badge--info">👤 Cập nhật tên hiển thị ngoài Lobby</div>
+  <div class="badge badge--info">👤 Cập nhật tên hiển thị ngoài Lobby.</div>
   <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap">
     <img id="hostAvatarPreview"
          src="https://static.vecteezy.com/system/resources/previews/011/016/931/original/live-streaming-icon-for-the-broadcast-system-live-streaming-icon-design-with-red-and-white-colors-live-streaming-image-with-text-effect-red-and-white-gradient-colors-free-png.png"
@@ -121,6 +121,7 @@
 
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
+
 
 <!-- GUEST REQUEST ICON -->
 <button
@@ -412,8 +413,8 @@
     </div>
 
     <div class="ncf__actions">
-      <button id="btnApproveGuest">✅ Chấp nhận</button>
-      <button id="btnRejectGuest">❌ Từ chối</button>
+      <button id="btnApproveGuest">✅ Chấp nhận.</button>
+      <button id="btnRejectGuest">❌ Từ chối.</button>
     </div>
   </div>
 </div>
@@ -653,6 +654,18 @@ if(nameFromLobby){
 
     const socket = io();
     
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+if(profile.uid){
+  socket.emit("auth-login", { uid: profile.uid });
+}
+
+socket.on("force-logout", () => {
+  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
+
 
 function updateProfileOnReceiveGift(totalCoin){
   const KEY = "user_profile";
@@ -747,6 +760,19 @@ function showLevelUpEffect(newLevel){
 }
 
 
+function getChatVip(level){
+  level = Number(level)||1;
+  if(level>=250) return "chat-vip-250";
+  if(level>=200) return "chat-vip-200";
+  if(level>=150) return "chat-vip-150";
+  if(level>=100) return "chat-vip-100";
+  if(level>=50) return "chat-vip-50";
+  if(level>=20) return "chat-vip-20";
+  if(level>=10) return "chat-vip-10";
+  return "";
+}
+
+
 function getVipBadge(level){
   level = Number(level) || 1;
 
@@ -825,7 +851,7 @@ function getUserProfile(){
   }
 }
 
-const profile = getUserProfile();
+
 
 
 
@@ -2297,18 +2323,20 @@ const level =
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
   el.innerHTML = `
     <div class="chat-avatar-bg"
-     data-name="${name}"
-     data-role="${role}"
-     style="background-image:url('${avatar}')">
+ data-name="${name}"
+ data-role="${role}"
+ data-level="Lv${level}"
+ style="background-image:url('${avatar}')">
 </div>
+
   <div class="chat-body">
     <div class="chat-head">
-      <span class="chat-name"
+      
+      <span class="chat-level">
+  <span class="chat-name"
       style="${vip ? `color:${vip.color}` : ""}">
   ${name}
 </span>
-      <span class="chat-level">
-  ⭐ Lv ${level}
   ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
 </span>
     </div>
@@ -3027,6 +3055,11 @@ miniProfile?.addEventListener("click", e => e.stopPropagation());
 
 
 
+socket.on("force-logout", ({ reason }) => {
+  alert("Tài khoản của bạn đã đăng nhập ở thiết bị khác!");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
 
 
 

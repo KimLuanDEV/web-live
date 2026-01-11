@@ -90,14 +90,36 @@
 
 
       <!-- ACTION -->
-      <div style="display:flex; gap:12px; flex-wrap:wrap">
-        <button id="btnSave">💾 Lưu hồ sơ</button>
-        <button onclick="location.href='/lobby.html'">🏟️ Về Lobby</button>
-      </div>
+    <div style="display:flex; gap:12px; flex-wrap:wrap">
+  <button id="btnSave">💾 Lưu hồ sơ</button>
+  <button id="btnChangePass">🔐 Đổi mật khẩu</button>
+  <button onclick="location.href='/lobby.html'">🏟️ Về Lobby</button>
+</div>
+
 
     </div>
   </div>
 
+
+  <!-- 🔐 CHANGE PASSWORD -->
+<div id="passModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3>🔐 Đổi mật khẩu</h3>
+
+    <input id="oldPass" type="password" placeholder="Mật khẩu cũ">
+    <input id="newPass" type="password" placeholder="Mật khẩu mới">
+    <input id="newPass2" type="password" placeholder="Nhập lại mật khẩu mới">
+
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button onclick="closePass()">Hủy</button>
+      <button onclick="submitChangePass()">Đổi mật khẩu</button>
+    </div>
+  </div>
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
 <script src="/profile.js"></script>
 </body>
 </html>

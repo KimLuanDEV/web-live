@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tạo tài khoản</title>
+<link rel="stylesheet" href="/style.css">
+
+<style>
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(circle at top,#0f1b3a,#05070d);
+  font-family:system-ui,-apple-system;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
+
+.register-shell{
+  width:100%;
+  max-width:420px;
+  background:linear-gradient(180deg,#0b1327,#080c18);
+  border-radius:24px;
+  padding:36px 26px 42px;
+  box-shadow:0 0 50px rgba(0,255,255,.15);
+  text-align:center;
+}
+
+.register-avatar{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  margin:0 auto 14px;
+  background:url("https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360") center/cover;
+  box-shadow:0 0 40px rgba(0,255,255,.6);
+}
+
+.register-title{
+  font-size:26px;
+  font-weight:900;
+  color:#00f6ff;
+  margin-bottom:6px;
+}
+
+.register-sub{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:28px;
+}
+
+.register-shell input{
+  width:100%;
+  height:52px;
+  margin-top:14px;
+  background:#0e172c;
+  border:none;
+  border-radius:16px;
+  padding:0 16px;
+  color:white;
+  font-size:16px;
+  box-shadow:inset 0 0 0 1px rgba(0,255,255,.15);
+}
+
+.register-shell input::placeholder{
+  color:#6c7da8;
+}
+
+.register-btn{
+  width:100%;
+  height:56px;
+  margin-top:26px;
+  border:none;
+  border-radius:18px;
+  background:linear-gradient(135deg,#00f6ff,#5f7dff);
+  color:#00141a;
+  font-size:18px;
+  font-weight:900;
+  box-shadow:0 0 30px rgba(0,246,255,.6);
+}
+
+.register-links{
+  margin-top:22px;
+  font-size:13px;
+  opacity:.75;
+}
+
+.register-links a{
+  color:#00f6ff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* mobile */
+@media(max-width:600px){
+  .register-shell{
+    min-height:100vh;
+    border-radius:0;
+    padding:48px 24px 40px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+}
+
+.pass-wrap{
+  position:relative;
+}
+
+.pass-eye{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-size:18px;
+  opacity:.7;
+}
+
+.pass-eye:hover{
+  opacity:1;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="register-shell">
+  <div class="register-avatar"></div>
+  <div class="register-title">LIVESTREAM PRO</div>
+  <div class="register-sub">Tạo tài khoản mới</div>
+
+  <input id="username" placeholder="Tên đăng nhập">
+  <input id="name" placeholder="Tên hiển thị">
+
+  <div class="pass-wrap">
+  <input id="password" type="password" placeholder="Mật khẩu">
+  <span class="pass-eye" onclick="togglePass('password', this)">👁</span>
+</div>
+
+<div class="pass-wrap">
+  <input id="password2" type="password" placeholder="Nhập lại mật khẩu">
+  <span class="pass-eye" onclick="togglePass('password2', this)">👁</span>
+</div>
+
+<div id="passWarn" style="font-size:13px;margin-top:6px;color:#ff6b6b;display:none">
+  ❌ Mật khẩu không khớp
+</div>
+
+
+  <button class="register-btn" onclick="register()">TẠO TÀI KHOẢN</button>
+
+
+  <div class="register-links">
+    Đã có tài khoản?
+    <a href="/login.html">Đăng nhập</a>
+  </div>
+</div>
+
+
+<script>
+async function register(){
+  const u = document.getElementById("username").value.trim();
+  const name = document.getElementById("name").value.trim();
+  const p = document.getElementById("password").value;
+  const p2 = document.getElementById("password2").value;
+
+  if(!u || !p || !p2 || !name){
+    alert("❌ Nhập đầy đủ thông tin");
+    return;
+  }
+
+  if(p.length < 6){
+    alert("❌ Mật khẩu phải ít nhất 6 ký tự");
+    return;
+  }
+
+  if(p !== p2){
+    alert("❌ Mật khẩu không khớp");
+    return;
+  }
+
+
+  const res = await fetch("/api/register",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      username: u,
+      password: p,
+      name
+    })
+  });
+
+  const data = await res.json();
+
+  if(data.error){
+    if(data.error === "exists"){
+      alert("❌ Tài khoản đã tồn tại");
+    }else{
+      alert("❌ Lỗi tạo tài khoản");
+    }
+    return;
+  }
+
+  localStorage.setItem("user_profile", JSON.stringify(data.profile));
+localStorage.setItem("login_uid", data.profile.uid);
+
+// 🔥 XÓA CỜ GUEST
+localStorage.removeItem("isGuest");
+
+
+  alert("🎉 Tạo tài khoản thành công!");
+  location.href = "/profile.html";
+}
+
+function togglePass(id, el){
+  const input = document.getElementById(id);
+  if(input.type === "password"){
+    input.type = "text";
+    el.textContent = "🙈";
+  }else{
+    input.type = "password";
+    el.textContent = "👁";
+  }
+}
+
+
+const p1 = document.getElementById("password");
+const p2 = document.getElementById("password2");
+const warn = document.getElementById("passWarn");
+
+function checkMatch(){
+  if(!p1.value || !p2.value){
+    warn.style.display = "none";
+    return;
+  }
+
+  if(p1.value !== p2.value){
+    warn.style.display = "block";
+  }else{
+    warn.style.display = "none";
+  }
+}
+
+p1.addEventListener("input", checkMatch);
+p2.addEventListener("input", checkMatch);
+
+</script>
+
+
+</body>
+</html>

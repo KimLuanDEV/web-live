@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Đăng nhập • Livestream Pro</title>
+<link rel="stylesheet" href="/style.css">
+
+<style>
+body{
+  margin:0;
+  min-height:100vh;
+  background:radial-gradient(circle at top,#0f1b3a,#05070d);
+  font-family:system-ui,-apple-system;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:white;
+}
+
+.login-shell{
+  width:100%;
+  max-width:420px;
+  background:linear-gradient(180deg,#0b1327,#080c18);
+  border-radius:24px;
+  padding:36px 26px 42px;
+  box-shadow:0 0 50px rgba(0,255,255,.15);
+  text-align:center;
+}
+
+.login-avatar{
+  width:110px;
+  height:110px;
+  border-radius:50%;
+  margin:0 auto 14px;
+  background:url("https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360") center/cover;
+  box-shadow:0 0 40px rgba(0,255,255,.6);
+}
+
+.login-title{
+  font-size:26px;
+  font-weight:900;
+  color:#00f6ff;
+  margin-bottom:6px;
+}
+
+.login-sub{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:28px;
+}
+
+.login-shell input{
+  width:100%;
+  height:52px;
+  margin-top:14px;
+  background:#0e172c;
+  border:none;
+  border-radius:16px;
+  padding:0 16px;
+  color:white;
+  font-size:16px;
+  box-shadow:inset 0 0 0 1px rgba(0,255,255,.15);
+}
+
+.login-shell input::placeholder{
+  color:#6c7da8;
+}
+
+.login-btn{
+  width:100%;
+  height:56px;
+  margin-top:26px;
+  border:none;
+  border-radius:18px;
+  background:linear-gradient(135deg,#00f6ff,#5f7dff);
+  color:#00141a;
+  font-size:18px;
+  font-weight:900;
+  box-shadow:0 0 30px rgba(0,246,255,.6);
+}
+
+.login-links{
+  margin-top:22px;
+  font-size:13px;
+  opacity:.75;
+}
+
+.login-links a{
+  color:#00f6ff;
+  text-decoration:none;
+  font-weight:600;
+}
+
+/* mobile */
+@media(max-width:600px){
+  .login-shell{
+    min-height:100vh;
+    border-radius:0;
+    padding:48px 24px 40px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+  }
+}
+
+.pass-wrap{
+  position:relative;
+}
+
+.pass-eye{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-size:18px;
+  opacity:.7;
+}
+
+.pass-eye:hover{
+  opacity:1;
+}
+
+</style>
+</head>
+<body>
+
+<div class="login-shell">
+  <div class="login-avatar"></div>
+  <div class="login-title">LIVESTREAM PRO</div>
+  <div class="login-sub">Đăng nhập để bắt đầu</div>
+
+  <input id="username" placeholder="Tên đăng nhập">
+
+
+  <div class="pass-wrap">
+  <input id="password" type="password" placeholder="Mật khẩu">
+  <span class="pass-eye" onclick="togglePass('password', this)">👁</span>
+</div>
+
+
+  <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
+
+  <button class="login-btn" style="
+  background:linear-gradient(135deg,#666,#999);
+  color:white;
+  margin-top:14px"
+  onclick="guestLogin()">
+  ⚡ Trải nghiệm nhanh
+</button>
+
+
+<div class="login-links">
+  <a href="#" onclick="openForgot()">Quên mật khẩu?</a>
+  <br>
+  Chưa có tài khoản?
+  <a href="/register.html">Tạo ngay</a>
+</div>
+
+
+<div id="forgotModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeForgot()"></div>
+  <div class="modal-card">
+    <h3>🔑 Quên mật khẩu</h3>
+
+    <input id="forgotUser" placeholder="Tên đăng nhập">
+
+    <div class="pass-wrap">
+  <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
+  <span class="pass-eye" onclick="togglePass('forgotPass', this)">👁</span>
+</div>
+
+
+    <div style="display:flex;gap:12px;margin-top:14px">
+      <button style="flex:1" onclick="closeForgot()">Hủy</button>
+      <button style="flex:1" onclick="submitForgot()">Đặt lại</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+
+  function guestLogin(){
+  const guest = {
+    uid: "guest_" + Math.random().toString(36).slice(2,10),
+    name: "Guest",
+    level: 1,
+    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest"
+  };
+
+  localStorage.setItem("user_profile", JSON.stringify(guest));
+  localStorage.setItem("login_uid", guest.uid);
+  localStorage.setItem("isGuest", "1");
+
+  location.href = "/lobby.html";
+}
+
+async function login(){
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value;
+
+  if(!u || !p){
+    alert("❌ Nhập đủ tài khoản và mật khẩu");
+    return;
+  }
+
+  const res = await fetch("/api/login",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      username: u,
+      password: p
+    })
+  });
+
+  const data = await res.json();
+
+  if(data.error){
+    alert("❌ Sai tài khoản hoặc mật khẩu");
+    return;
+  }
+
+ localStorage.setItem("user_profile", JSON.stringify(data.profile));
+localStorage.setItem("login_uid", data.profile.uid);
+
+// 🔥 BẮT BUỘC XÓA CỜ GUEST
+localStorage.removeItem("isGuest");
+
+  location.href = "/lobby.html";
+}
+
+
+
+function openForgot(){
+  document.getElementById("forgotModal").classList.remove("hidden");
+}
+
+
+async function submitForgot(){
+  const u = document.getElementById("forgotUser").value.trim();
+  const p = document.getElementById("forgotPass").value;
+
+  if(!u || !p){
+    alert("❌ Nhập đầy đủ tên đăng nhập và mật khẩu mới");
+    return;
+  }
+
+  const res = await fetch("/api/forgot-password",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      username: u,
+      newPassword: p
+    })
+  });
+
+  const d = await res.json();
+
+  if(d.ok || d.success){
+    alert("✅ Đặt lại mật khẩu thành công");
+    document.getElementById("forgotModal").classList.add("hidden");
+  }else{
+    alert("❌ Không tìm thấy tài khoản");
+  }
+}
+
+
+function closeForgot(){
+  document.getElementById("forgotModal").classList.add("hidden");
+}
+
+
+function togglePass(id, el){
+  const input = document.getElementById(id);
+  if(input.type === "password"){
+    input.type = "text";
+    el.textContent = "🙈";
+  }else{
+    input.type = "password";
+    el.textContent = "👁";
+  }
+}
+
+
+</script>
+
+
+
+</body>
+</html>

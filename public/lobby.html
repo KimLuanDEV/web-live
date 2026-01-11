@@ -29,12 +29,22 @@
           </div>
         </div>
 
-        <div class="pills">
-          <button class="btn lobby-btn" id="btnOpenCreate">➕ Tạo phòng</button>
-          <button id="refresh" class="lobby-btn" title="Làm mới">🔄</button>
-          <button onclick="location.href='/profile.html'" class="lobby-btn">👤 Hồ sơ</button>
+      <div class="pills" id="userBar">
 
-        </div>
+  <div class="user-chip" onclick="location.href='/profile.html'">
+    <img id="userAva">
+    <div class="user-info">
+      <div id="userName"></div>
+      <div class="user-level" id="userLevel"></div>
+    </div>
+  </div>
+
+  
+
+  <button class="lobby-btn logout-btn" id="btnLogout">⏻ Đăng xuất</button>
+</div>
+
+
       </div>
 
       <div class="lobby-controls">
@@ -225,9 +235,78 @@
 </div>
 
 
+
+
+
+
+<!-- MOBILE TAB BAR -->
+<div class="mobile-tabbar">
+  <div class="tab-item active" data-tab="lobby">
+    <div class="tab-icon">🏟</div>
+    <div class="tab-text">Lobby</div>
+  </div>
+
+  <div class="tab-item" data-tab="hot">
+    <div class="tab-icon">🔥</div>
+    <div class="tab-text">Hot</div>
+  </div>
+
+  <div class="tab-item tab-main" id="tabCreate">
+    <div class="tab-plus">＋</div>
+  </div>
+
+  <div class="tab-item" data-tab="chat">
+    <div class="tab-icon">💬</div>
+    <div class="tab-text">Chat</div>
+  </div>
+
+  <div class="tab-item" data-tab="profile">
+    <div class="tab-icon">👤</div>
+    <div class="tab-text">Me</div>
+  </div>
+</div>
+
+
+
+<!-- 📩 INBOX MODAL -->
+<div id="inboxModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card inbox-card">
+    <h3>📩 Thông báo</h3>
+    <div id="inboxList" class="inbox-list"></div>
+  </div>
+</div>
+
+
+
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
+
+
+
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+const isGuest = localStorage.getItem("isGuest") === "1";
+
+
+
+if(profile.uid){
+  socket.emit("auth-login", { uid: profile.uid });
+}
+
+socket.on("force-logout", () => {
+  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+  localStorage.removeItem("user_profile");
+localStorage.removeItem("login_uid");
+localStorage.removeItem("isGuest"); // 🔥
+
+  location.href = "/login.html";
+});
+
 
 
 const VIRTUAL_ROOMS = [
@@ -350,11 +429,9 @@ btnWelcomeX?.addEventListener("click", ()=>{
 btnWelcomeCreate?.addEventListener("click", ()=>{
   rememberIfChecked();
   closeWelcome();
-
-  // mở modal tạo phòng nếu bạn đã làm (id nút tạo phòng trong lobby)
-  const btnOpenCreate = document.getElementById("btnOpenCreate");
-  if (btnOpenCreate) btnOpenCreate.click();
+  openCreateRoom();
 });
+
 
 document.addEventListener("keydown", (e)=>{
   if (!welcomeModal || welcomeModal.classList.contains("hidden")) return;
@@ -365,27 +442,29 @@ document.addEventListener("keydown", (e)=>{
 
 // ===== CREATE ROOM MODAL =====
 const modal = document.getElementById("createRoomModal");
-const btnOpenCreate = document.getElementById("btnOpenCreate");
 const btnCancelRoom = document.getElementById("btnCancelRoom");
 const btnConfirmRoom = document.getElementById("btnConfirmRoom");
 
 const roomInput = document.getElementById("roomInput");
 const hostNameInput = document.getElementById("hostNameInput");
 
-function openModal(){
+function openCreateRoom(){
+  if(isGuest){
+    openErr("🔒 Chỉ tài khoản đăng nhập mới được tạo phòng livestream.");
+    return;
+  }
+
   modal.classList.remove("hidden");
   roomInput.value = "";
-  hostNameInput.value = "";
+  hostNameInput.value = profile?.name || "";
+  hostNameInput.disabled = true;
   setTimeout(()=>roomInput.focus(), 0);
 }
+
+
 function closeModal(){
   modal.classList.add("hidden");
 }
-
-btnOpenCreate?.addEventListener("click", (e)=>{
-  e.preventDefault();
-  openModal();
-});
 
 btnCancelRoom?.addEventListener("click", closeModal);
 
@@ -728,7 +807,6 @@ socket.on("lobby-update", d => {
   render(__rooms);
 });
 
-document.getElementById("refresh").onclick = requestLobby;
 
 // load
 requestLobby();
@@ -758,13 +836,142 @@ setInterval(() => socket.emit("lobby-get"), 3000);
   catch { return null; }
 }
 
-const profile = getUserProfile();
+
 if (profile){
   hostNameInput.value = profile.name;
   hostNameInput.disabled = true;
 }
 
+
+
+if(profile.name){
+  document.getElementById("userName").textContent = profile.name;
+  document.getElementById("userLevel").textContent = "Lv " + (profile.level || 1);
+  document.getElementById("userAva").src = profile.avatar || 
+    "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360";
+}
+
+
+
+
+document.getElementById("btnLogout").onclick = () => {
+  if(isGuest){
+    localStorage.clear();
+    location.href = "/login.html";
+    return;
+  }
+
+  if(!confirm("Đăng xuất khỏi tài khoản này?")) return;
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+};
+
+
+
+
+// Mobile Tab Logic
+document.querySelectorAll(".tab-item").forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll(".tab-item").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+
+    const type = tab.dataset.tab;
+
+    if(type === "profile"){
+  if(isGuest){
+    alert("🔒 Đăng nhập để xem hồ sơ");
+    return;
+  }
+  location.href = "/profile.html";
+}
+
+
+    if(type === "chat"){
+  openInbox();
+}
+
+
+    if(type === "hot"){
+      document.getElementById("q").value = "";
+      document.getElementById("sort").value = "viewers";
+      document.getElementById("sort").dispatchEvent(new Event("change"));
+    }
+
+    if(type === "lobby"){
+      location.href = "/lobby.html";
+    }
+  }
+});
+
+document.getElementById("tabCreate").onclick = ()=>{
+  if(isGuest){
+    alert("🔒 Đăng nhập để tạo phòng livestream");
+    return;
+  }
+  openCreateRoom();
+};
+
+
+
+
+// ===== INBOX =====
+const inboxModal = document.getElementById("inboxModal");
+const inboxList = document.getElementById("inboxList");
+
+function openInbox(){
+  if(isGuest){
+    alert("🔒 Đăng nhập để xem thông báo");
+    return;
+  }
+  inboxModal.classList.remove("hidden");
+  socket.emit("get-inbox");
+}
+
+
+inboxModal?.querySelector(".modal-backdrop")?.addEventListener("click", ()=>{
+  inboxModal.classList.add("hidden");
+});
+
+// Nhận dữ liệu inbox
+socket.on("inbox-data", list=>{
+  inboxList.innerHTML = "";
+
+  if(!list || !list.length){
+    inboxList.innerHTML = "<div style='padding:14px;opacity:.6'>Chưa có thông báo</div>";
+    return;
+  }
+
+  list.forEach(n=>{
+    const div = document.createElement("div");
+    div.className = "inbox-item" + (n.read ? "" : " new");
+    div.innerHTML = `
+      <div>${n.text}</div>
+      <small>${new Date(n.ts).toLocaleString()}</small>
+    `;
+    inboxList.appendChild(div);
+  });
+
+  // clear badge
+  document.querySelector('[data-tab="chat"]')?.classList.remove("has-new");
+});
+
+// Có notify mới
+socket.on("inbox-new", ()=>{
+  document.querySelector('[data-tab="chat"]')?.classList.add("has-new");
+});
+
+if(isGuest){
+  document.getElementById("userBar").innerHTML = `
+    <div class="badge badge--info">👀 Đang xem với tư cách Guest</div>
+    <button class="lobby-btn" onclick="location.href='/login.html'">
+      🔐 Đăng nhập
+    </button>
+  `;
+}
+
+
 </script>
+
 
 
 
