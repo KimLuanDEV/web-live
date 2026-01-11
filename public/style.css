@@ -6156,9 +6156,6 @@ body.is-guest .reactions-layer{
   filter: drop-shadow(0 0 6px rgba(255,255,255,.6));
 }
 
-#btnSave{
-  display:none !important;
-}
 
 .page-profile .profile-shell{
   margin-bottom:90px;
