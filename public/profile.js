@@ -104,10 +104,6 @@ if(wrap){
   else wrap.classList.remove("halo-on");
 }
 
-// ✨ Aura particles
-if(lv >= 1) wrap.classList.add("aura-on");   // KING+
-else wrap.classList.remove("aura-on");
-
 
   ava.classList.remove("avatar-lv1","avatar-lv10","avatar-lv50","avatar-lv100");
 
