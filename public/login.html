@@ -142,14 +142,6 @@ body{
 
   <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
 
-<button class="login-btn" style="
-  background:linear-gradient(135deg,#666,#999);
-  color:white;
-  margin-top:14px"
-  onclick="guestLogin()">
-  🎮 Trải nghiệm nhanh
-</button>
-
 
 <div class="login-links">
   <a href="#" onclick="openForgot()">Quên mật khẩu?</a>
@@ -208,7 +200,6 @@ async function login(){
 
   localStorage.setItem("user_profile", JSON.stringify(data.profile));
   localStorage.setItem("login_uid", data.profile.uid);
-  localStorage.setItem("last_username", u);
 
   location.href = "/lobby.html";
 }
@@ -263,31 +254,6 @@ function togglePass(id, el){
     input.type = "password";
     el.textContent = "👁";
   }
-}
-
-window.addEventListener("DOMContentLoaded", ()=>{
-  const last = localStorage.getItem("last_username");
-  if(last){
-    document.getElementById("username").value = last;
-    document.getElementById("password").focus();
-  }
-});
-
-
-
-function guestLogin(){
-  const guest = {
-    uid: "guest_" + Math.random().toString(36).slice(2,10),
-    name: "Guest",
-    level: 1,
-    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest"
-  };
-
-  localStorage.setItem("user_profile", JSON.stringify(guest));
-  localStorage.setItem("login_uid", guest.uid);
-  localStorage.setItem("isGuest", "1");
-
-  location.href = "/lobby.html";
 }
 
 

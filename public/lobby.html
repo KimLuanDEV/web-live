@@ -927,14 +927,6 @@ socket.on("inbox-new", ()=>{
 });
 
 
-socket.on("room-error", e=>{
-  if(e.error === "guest"){
-    alert("🔒 Cần đăng nhập để tạo phòng");
-    location.href = "/login.html";
-  }
-});
-
-
 
 </script>
 

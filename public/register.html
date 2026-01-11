@@ -143,12 +143,7 @@ body{
 
 <div class="pass-wrap">
   <input id="password2" type="password" placeholder="Nhập lại mật khẩu">
-
   <span class="pass-eye" onclick="togglePass('password2', this)">👁</span>
-</div>
-
-<div id="passWarn" style="font-size:13px;margin-top:6px;color:#ff6b6b;display:none">
-  ❌ Mật khẩu không khớp
 </div>
 
 
@@ -167,7 +162,7 @@ async function register(){
   const u = document.getElementById("username").value.trim();
   const name = document.getElementById("name").value.trim();
   const p = document.getElementById("password").value;
-  const p2 = document.getElementById("password2").value;
+  const p2 = document.getElementById("confirm").value;
 
   if(!u || !p || !p2 || !name){
     alert("❌ Nhập đầy đủ thông tin");
@@ -180,10 +175,9 @@ async function register(){
   }
 
   if(p !== p2){
-    alert("❌ Mật khẩu không khớp");
+    alert("❌ Mật khẩu nhập lại không khớp");
     return;
   }
-
 
   const res = await fetch("/api/register",{
     method:"POST",
@@ -223,27 +217,6 @@ function togglePass(id, el){
     el.textContent = "👁";
   }
 }
-
-
-const p1 = document.getElementById("password");
-const p2 = document.getElementById("password2");
-const warn = document.getElementById("passWarn");
-
-function checkMatch(){
-  if(!p1.value || !p2.value){
-    warn.style.display = "none";
-    return;
-  }
-
-  if(p1.value !== p2.value){
-    warn.style.display = "block";
-  }else{
-    warn.style.display = "none";
-  }
-}
-
-p1.addEventListener("input", checkMatch);
-p2.addEventListener("input", checkMatch);
 
 </script>
 
