@@ -742,11 +742,6 @@ setInterval(checkHDQuality, 2500);
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-// 🛡️ BẢO HIỂM: nếu có uid thật → xóa guest
-if (profile.uid) {
-  localStorage.removeItem("isGuest");
-}
-
 const isGuest = localStorage.getItem("isGuest") === "1";
 
 // 🧩 Guest overlay click outside to close
