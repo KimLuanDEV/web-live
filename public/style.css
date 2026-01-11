@@ -6242,26 +6242,3 @@ body.is-guest .reactions-layer{
   line-height:1.5;
   outline:none;
 }
-
-
-.mini-profile-bio{
-  margin-top: 10px;
-  padding: 10px 12px;
-  border-radius: 12px;
-  border: 1px solid rgba(255,255,255,.15);
-  background: rgba(0,0,0,.35);
-  backdrop-filter: blur(8px);
-}
-
-.mini-profile-bio-label{
-  font-size: 12px;
-  opacity: .75;
-  margin-bottom: 4px;
-}
-
-.mini-profile-bio-text{
-  font-size: 13px;
-  line-height: 1.35;
-  white-space: pre-wrap;
-  word-break: break-word;
-}

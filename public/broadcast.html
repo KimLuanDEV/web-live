@@ -715,10 +715,8 @@ function addExpFromDonate(coin){
 
 socket.emit("host-profile-update", {
   roomId,
-  level: p.level,
-  bio: p.bio || ""    // 🔥 UPDATE BIO REALTIME
+  level: p.level
 });
-
 
  
   localStorage.setItem(KEY, JSON.stringify(p));
@@ -1602,10 +1600,9 @@ socket.emit("join-room", {
   role: "broadcaster",
   profile: {
     name: profile.name,
-    avatar: profile.avatar,
+    avatar: profile.avatar, // ✅ BẮT BUỘC
     level: profile.level,
-    coins: profile.coins,
-    bio: profile.bio || ""   // 🔥 GỬI BIO HOST
+    coins: profile.coins
   }
 });
 

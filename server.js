@@ -462,20 +462,14 @@ socket.on("host-reconnect", ({ roomId }) => {
 
 
 
-socket.on("host-profile-update", ({ roomId, level, bio }) => {
+socket.on("host-profile-update", ({ roomId, level }) => {
   const room = getRoom(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return;
 
   if (!room.hostProfile) room.hostProfile = {};
 
-  if (level !== undefined) {
-    room.hostProfile.level = Number(level) || room.hostProfile.level || 1;
-  }
-
-  if (bio !== undefined) {
-    room.hostProfile.bio = String(bio || "");
-  }
+  room.hostProfile.level = Number(level) || room.hostProfile.level || 1;
 
   io.to(roomId).emit("host-profile-sync", room.hostProfile);
   emitLobbyUpdate();
@@ -807,12 +801,11 @@ if (room.liveStartTs) {
     const name = String(profile?.name || "").trim().slice(0, 20);
     const avatar = String(profile?.avatar || "").trim();
 
-room.hostProfile = {
-  uid: profile?.uid || socket.data.uid,
+ room.hostProfile = {
+  uid: profile?.uid || socket.data.uid,   // 🔥 THÊM
   name: name || "Host",
   avatar: avatar || "",
   level: Number(profile?.level) || 1,
-  bio: String(profile?.bio || ""),   // 🔥 THÊM BIO HOST
   ts: Date.now(),
 };
 
