@@ -61,10 +61,26 @@ displayName.onclick = ()=>{
 
 nameInput.onblur = ()=>{
   const val = nameInput.value.trim() || "User";
+
+  // update UI
   displayName.textContent = val;
   displayName.classList.remove("hidden");
   nameInput.classList.add("hidden");
+
+  // 🔥 tự lưu vào profile
+  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  p.name = val;
+  localStorage.setItem(KEY, JSON.stringify(p));
+
+  // 🔄 sync realtime nếu đang login
+  if (__profileAuth.uid){
+    socket.emit("profile-update", { name: val });
+    socket.emit("auth-login", { uid: __profileAuth.uid });
+  }
+
+  showMsg("✅ Đã cập nhật tên hiển thị");
 };
+
 
 
 function getVipBadge(level){
