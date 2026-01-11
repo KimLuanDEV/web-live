@@ -206,7 +206,11 @@ async function register(){
   }
 
   localStorage.setItem("user_profile", JSON.stringify(data.profile));
-  localStorage.setItem("login_uid", data.profile.uid);
+localStorage.setItem("login_uid", data.profile.uid);
+
+// 🔥 XÓA CỜ GUEST
+localStorage.removeItem("isGuest");
+
 
   alert("🎉 Tạo tài khoản thành công!");
   location.href = "/profile.html";

@@ -222,8 +222,11 @@ async function login(){
     return;
   }
 
-  localStorage.setItem("user_profile", JSON.stringify(data.profile));
-  localStorage.setItem("login_uid", data.profile.uid);
+ localStorage.setItem("user_profile", JSON.stringify(data.profile));
+localStorage.setItem("login_uid", data.profile.uid);
+
+// 🔥 BẮT BUỘC XÓA CỜ GUEST
+localStorage.removeItem("isGuest");
 
   location.href = "/lobby.html";
 }

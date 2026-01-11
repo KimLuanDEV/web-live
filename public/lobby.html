@@ -299,6 +299,9 @@ if(profile.uid){
 socket.on("force-logout", () => {
   alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
   localStorage.removeItem("user_profile");
+localStorage.removeItem("login_uid");
+localStorage.removeItem("isGuest"); // 🔥
+
   location.href = "/login.html";
 });
 
