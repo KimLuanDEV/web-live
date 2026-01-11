@@ -981,16 +981,19 @@ const stableUID = getStableUID();
 const sendProfile = isGuest ? {
   uid: stableUID,
   name: "Guest",
-  avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest",
+  avatar: "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
   level: 1,
-  coins: 0
+  coins: 0,
+  bio: ""   // guest không có bio
 } : {
   uid: stableUID,
   name: profile.name || "Viewer",
   avatar: profile.avatar,
   level: profile.level || 1,
-  coins: profile.coins || 0
+  coins: profile.coins || 0,
+  bio: profile.bio || ""   // 🔥 GỬI BIO
 };
+
 
 socket.emit("viewer-join", {
   roomId,
@@ -1124,34 +1127,47 @@ function openMiniProfile(v){
     }
   } catch {}
 
-  miniProfile.innerHTML = `
-    <div class="mini-profile-header">
-      <img src="${v.avatar}">
-      <div class="mini-profile-name">${v.name}</div>
+const bio = (v.bio || "").trim();
+
+miniProfile.innerHTML = `
+  <div class="mini-profile-header">
+    <img src="${v.avatar}">
+    <div class="mini-profile-name">${v.name}</div>
+  </div>
+
+  <div class="mini-profile-meta">
+    ${(() => {
+      const vip = getVipBadge(v.level || 1);
+      return `
+        <div class="mini-profile-chip">
+          ⭐ Lv ${v.level || 1}
+          ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+        </div>
+      `;
+    })()}
+
+    <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
+    <div class="mini-profile-chip gold">
+      💎 Room<br><b>${sentInRoom}</b>
     </div>
 
-    <div class="mini-profile-meta">
-      ${(() => {
-        const vip = getVipBadge(v.level || 1);
-        return `
-          <div class="mini-profile-chip">
-            ⭐ Lv ${v.level || 1}
-            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
-          </div>
-        `;
-      })()}
-
-       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
-      <div class="mini-profile-chip gold">
-        💎 Room<br><b>${sentInRoom}</b>
-      </div>
-
-      <!-- 🔹 TỔNG ĐÃ TẶNG -->
-      <div class="mini-profile-chip blue">
-        💎 Tổng<br><b>${totalSent}</b>
-      </div>
+    <!-- 🔹 TỔNG ĐÃ TẶNG -->
+    <div class="mini-profile-chip blue">
+      💎 Tổng<br><b>${totalSent}</b>
     </div>
-  `;
+  </div>
+
+  ${
+    bio
+      ? `
+      <div class="mini-profile-bio">
+        <div class="mini-profile-bio-label">📝 Giới thiệu</div>
+        <div class="mini-profile-bio-text">${bio}</div>
+      </div>
+      `
+      : ``
+  }
+`;
 
   // 🔥 LẤY TOẠ ĐỘ VIDEO
   const video = document.querySelector(".video-card");
