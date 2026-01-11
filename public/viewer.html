@@ -742,7 +742,13 @@ setInterval(checkHDQuality, 2500);
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
+// 🛡️ BẢO HIỂM: nếu có uid thật → xóa guest
+if (profile.uid) {
+  localStorage.removeItem("isGuest");
+}
+
 const isGuest = localStorage.getItem("isGuest") === "1";
+
 
 if(isGuest){
   document.getElementById("viewerAvatars")?.remove();
@@ -2972,6 +2978,22 @@ if (isGuest) {
 
 if(isGuest){
   document.getElementById("guestViewLock")?.classList.remove("hidden");
+}
+
+
+const guestLock = document.getElementById("guestViewLock");
+
+if (guestLock) {
+  // Click ra nền mờ → ẩn overlay
+  guestLock.addEventListener("click", () => {
+    guestLock.classList.add("hidden");
+  });
+
+  // Click vào hộp → không đóng
+  const card = guestLock.querySelector(".guest-lock-card");
+  if (card) {
+    card.addEventListener("click", e => e.stopPropagation());
+  }
 }
 
 

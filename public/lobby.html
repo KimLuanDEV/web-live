@@ -289,7 +289,14 @@ const socket = io();
 
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+// 🛡️ BẢO HIỂM: có UID thật thì KHÔNG BAO GIỜ là guest
+if (profile.uid) {
+  localStorage.removeItem("isGuest");
+}
+
 const isGuest = localStorage.getItem("isGuest") === "1";
+
 
 
 if(profile.uid){
