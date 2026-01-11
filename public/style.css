@@ -6151,13 +6151,7 @@ body.is-guest .reactions-layer{
   position:absolute;
   right:0;
   top:50%;
-  transform: translateY(-50%) scale(.6);
-  opacity:0;
-  transition:.25s;
-  filter: drop-shadow(0 0 6px rgba(255,255,255,.6));
-}
-
-.profile-name:hover::after{
-  opacity:1;
   transform: translateY(-50%) scale(1);
+  opacity:.85;
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.6));
 }
