@@ -361,3 +361,33 @@ function closeMsg(){
 }
 
 
+
+// ===== MOBILE TAB BAR (PROFILE) =====
+document.querySelectorAll(".tab-item").forEach(tab=>{
+  tab.onclick = ()=>{
+    const type = tab.dataset.tab;
+
+    if(type === "profile") return;
+
+    if(type === "lobby"){
+      location.href = "/lobby.html";
+    }
+
+    if(type === "chat"){
+      location.href = "/lobby.html#chat";
+    }
+
+    if(type === "hot"){
+      location.href = "/lobby.html#hot";
+    }
+  };
+});
+
+document.getElementById("tabCreate")?.addEventListener("click", ()=>{
+  const isGuest = localStorage.getItem("isGuest") === "1";
+  if(isGuest){
+    showMsg("🔒 Đăng nhập để tạo phòng livestream");
+    return;
+  }
+  location.href = "/lobby.html";
+});
