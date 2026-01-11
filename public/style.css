@@ -5629,3 +5629,62 @@ video {
   color:#ff3b6b;
   text-shadow:0 0 12px #ff3b6b;
 }
+
+
+/* ===== GUEST MODE ===== */
+
+body.is-guest .chat,
+body.is-guest .chatform,
+body.is-guest .emoji-bar,
+body.is-guest .gift-bar,
+body.is-guest .ctrl-tab,
+body.is-guest .av-controls,
+body.is-guest .av-overlay,
+body.is-guest .pin-form,
+body.is-guest .pin-overlay .pin-close{
+  display:none !important;
+}
+
+body.is-guest .chat-overlay{
+  pointer-events:none;
+}
+
+body.is-guest .gift-layer,
+body.is-guest .reactions-layer{
+  display:none;
+}
+
+/* Hiện banner yêu cầu đăng nhập */
+.guest-lock{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+  background:rgba(0,0,0,.45);
+  backdrop-filter: blur(6px);
+}
+
+.guest-lock-card{
+  background:rgba(0,0,0,.8);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:18px;
+  padding:20px 24px;
+  text-align:center;
+  box-shadow:0 0 40px rgba(0,255,255,.25);
+}
+
+.guest-lock-card h3{
+  margin:0 0 10px;
+  color:#00f6ff;
+}
+
+.guest-lock-card button{
+  margin-top:14px;
+  padding:12px 18px;
+  border-radius:999px;
+  border:none;
+  background:linear-gradient(135deg,#00f6ff,#5f7dff);
+  font-weight:800;
+}

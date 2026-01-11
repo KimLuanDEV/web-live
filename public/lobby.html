@@ -289,6 +289,8 @@ const socket = io();
 
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+const isGuest = localStorage.getItem("isGuest") === "1";
+
 
 if(profile.uid){
   socket.emit("auth-login", { uid: profile.uid });
@@ -442,12 +444,18 @@ const roomInput = document.getElementById("roomInput");
 const hostNameInput = document.getElementById("hostNameInput");
 
 function openCreateRoom(){
+  if(isGuest){
+    openErr("🔒 Chỉ tài khoản đăng nhập mới được tạo phòng livestream.");
+    return;
+  }
+
   modal.classList.remove("hidden");
   roomInput.value = "";
   hostNameInput.value = profile?.name || "";
   hostNameInput.disabled = true;
   setTimeout(()=>roomInput.focus(), 0);
 }
+
 
 function closeModal(){
   modal.classList.add("hidden");
@@ -842,11 +850,17 @@ if(profile.name){
 
 
 document.getElementById("btnLogout").onclick = () => {
-  if(!confirm("Đăng xuất khỏi tài khoản này?")) return;
+  if(isGuest){
+    localStorage.clear();
+    location.href = "/login.html";
+    return;
+  }
 
+  if(!confirm("Đăng xuất khỏi tài khoản này?")) return;
   localStorage.removeItem("user_profile");
   location.href = "/login.html";
 };
+
 
 
 
@@ -859,8 +873,13 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
     const type = tab.dataset.tab;
 
     if(type === "profile"){
-      location.href = "/profile.html";
-    }
+  if(isGuest){
+    alert("🔒 Đăng nhập để xem hồ sơ");
+    return;
+  }
+  location.href = "/profile.html";
+}
+
 
     if(type === "chat"){
   openInbox();
@@ -880,8 +899,13 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 });
 
 document.getElementById("tabCreate").onclick = ()=>{
+  if(isGuest){
+    alert("🔒 Đăng nhập để tạo phòng livestream");
+    return;
+  }
   openCreateRoom();
 };
+
 
 
 
@@ -890,9 +914,14 @@ const inboxModal = document.getElementById("inboxModal");
 const inboxList = document.getElementById("inboxList");
 
 function openInbox(){
+  if(isGuest){
+    alert("🔒 Đăng nhập để xem thông báo");
+    return;
+  }
   inboxModal.classList.remove("hidden");
   socket.emit("get-inbox");
 }
+
 
 inboxModal?.querySelector(".modal-backdrop")?.addEventListener("click", ()=>{
   inboxModal.classList.add("hidden");
@@ -926,6 +955,14 @@ socket.on("inbox-new", ()=>{
   document.querySelector('[data-tab="chat"]')?.classList.add("has-new");
 });
 
+if(isGuest){
+  document.getElementById("userBar").innerHTML = `
+    <div class="badge badge--info">👀 Đang xem với tư cách Guest</div>
+    <button class="lobby-btn" onclick="location.href='/login.html'">
+      🔐 Đăng nhập
+    </button>
+  `;
+}
 
 
 </script>

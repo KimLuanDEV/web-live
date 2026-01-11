@@ -378,6 +378,19 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+  function isGuest(socket){
+  return String(socket.data.uid || "").startsWith("guest_");
+}
+
+function blockGuest(socket, feature){
+  if(isGuest(socket)){
+    socket.emit("need-login", { feature });
+    return true;
+  }
+  return false;
+}
+
+
 if(socket.data.uid?.startsWith("guest_")){
   socket.data.role = "guest";
 }
@@ -506,6 +519,19 @@ for (const v of list) {
 
 
 socket.on("viewer-join", ({ roomId, profile }) => {
+  
+if(isGuest(socket)){
+  // ép profile Guest an toàn
+  profile = {
+    uid: socket.data.uid,
+    name: "Guest",
+    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest",
+    level: 1,
+    coins: 0
+  };
+}
+
+
   roomId = normRoomId(roomId);
   if (!roomId) return;
 
@@ -713,7 +739,12 @@ saveLiveState(state);
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
 
-    
+    // 🔒 Guest chỉ được join với role=viewer
+if(isGuest(socket) && role !== "viewer"){
+  socket.emit("need-login", { feature:"join-as-host" });
+  return;
+}
+
      roomId = normRoomId(roomId);
     if (!roomId || !role) return;
 
@@ -877,6 +908,10 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("chat", msg);
 // ===== REACTIONS (emoji/hearts) =====
 // client emits: { roomId, emoji, x, y }
 socket.on("reaction", ({ roomId, emoji, x, y }) => {
+  if(blockGuest(socket,"reaction")) return;   // 🔒
+
+
+
   if (!roomId) return;
   const em = String(emoji || "❤️").slice(0, 4);
   const msg = {
@@ -900,6 +935,9 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("reaction", msg);
   function __clamp01(n){ n = Number(n); if (!isFinite(n)) return 0.5; return Math.max(0, Math.min(1, n)); }
 
   socket.on("pin-note-set", ({ roomId, text, x, y }) => {
+if(blockGuest(socket,"pin")) return;
+
+
     if (!roomId) return;
     const room = getRoom(roomId);
     if (room.broadcasterId !== socket.id) return; // host only
@@ -916,6 +954,8 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("pin-note-update", note);
   });
 
 socket.on("pin-note-move", ({ roomId, x, y }) => {
+  if(blockGuest(socket,"pin")) return;
+
   if (!roomId) return;
   const room = getRoom(roomId);
   if (!room || room.broadcasterId !== socket.id) return;
@@ -932,6 +972,8 @@ socket.on("pin-note-move", ({ roomId, x, y }) => {
 });
 
  socket.on("pin-note-clear", ({ roomId }) => {
+  if(blockGuest(socket,"pin")) return;
+
   if (!roomId) return;
   const room = getRoom(roomId);
   if (!room || room.broadcasterId !== socket.id) return;
@@ -963,6 +1005,8 @@ function canSendGift(socket) {
 
 // ===== GIFT ENGINE (paid gifts) =====
 socket.on("send-gift", ({ roomId, gift, name }) => {
+  if(blockGuest(socket,"gift")) return;   // 🔒 GUEST KHÔNG ĐƯỢC TẶNG QUÀ
+
   roomId = normRoomId(roomId);
   if (!roomId || !gift) return;
 
