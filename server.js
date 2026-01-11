@@ -469,6 +469,9 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 
 
   socket.on("profile-update", ({ name, avatar, level }) => {
+
+    if(socket.data.isGuest) return;
+
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
@@ -732,6 +735,11 @@ saveLiveState(state);
 );
 
     socket.data.coins = clampInt(profile?.coins, 0, 1_000_000_000);
+
+    if(socket.data.isGuest){
+  socket.data.coins = 0;
+}
+
     if (!socket.data.coins) socket.data.coins = START_COINS;
 
     // sync wallet to this socket
@@ -887,6 +895,9 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("chat", msg);
 // ===== REACTIONS (emoji/hearts) =====
 // client emits: { roomId, emoji, x, y }
 socket.on("reaction", ({ roomId, emoji, x, y }) => {
+
+  if(socket.data.isGuest) return;
+
   if (!roomId) return;
   const em = String(emoji || "❤️").slice(0, 4);
   const msg = {
@@ -973,6 +984,15 @@ function canSendGift(socket) {
 
 // ===== GIFT ENGINE (paid gifts) =====
 socket.on("send-gift", ({ roomId, gift, name }) => {
+
+  if(socket.data.isGuest){
+  socket.emit("gift-failed", {
+    reason:"guest",
+    message:"🔒 Đăng nhập để tặng quà"
+  });
+  return;
+}
+
   roomId = normRoomId(roomId);
   if (!roomId || !gift) return;
 
