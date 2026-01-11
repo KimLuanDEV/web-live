@@ -281,6 +281,15 @@
 
 
 
+<!-- GLOBAL MESSAGE MODAL -->
+<div id="msgModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3 id="msgTitle">Thông báo</h3>
+    <div id="msgText" style="margin:12px 0;opacity:.9"></div>
+    <button onclick="closeMsg()">OK</button>
+  </div>
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -299,7 +308,7 @@ if(profile.uid){
 }
 
 socket.on("force-logout", () => {
-  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+   showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
   localStorage.removeItem("user_profile");
 localStorage.removeItem("login_uid");
 localStorage.removeItem("isGuest"); // 🔥
@@ -655,6 +664,16 @@ function renderStats(list){
   statTs.textContent = __ts ? fmtTime(__ts) : "--:--:--";
 }
 
+
+function confirmLogout(){
+  showMsg("Bạn có chắc muốn đăng xuất?", "Xác nhận");
+  document.getElementById("msgModal").onclick = () => {
+    localStorage.removeItem("user_profile");
+    location.href = "/login.html";
+  };
+}
+
+
 function renderSkeleton(){
   skeleton.style.display = "grid";
   grid.style.display = "none";
@@ -879,7 +898,7 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 
     if(type === "profile"){
   if(isGuest){
-    alert("🔒 Đăng nhập để xem hồ sơ");
+     showMsgt("🔒 Đăng nhập để xem hồ sơ");
     return;
   }
   location.href = "/profile.html";
@@ -905,7 +924,7 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 
 document.getElementById("tabCreate").onclick = ()=>{
   if(isGuest){
-    alert("🔒 Đăng nhập để tạo phòng livestream");
+     showMsg("🔒 Đăng nhập để tạo phòng livestream");
     return;
   }
   openCreateRoom();
@@ -920,7 +939,7 @@ const inboxList = document.getElementById("inboxList");
 
 function openInbox(){
   if(isGuest){
-    alert("🔒 Đăng nhập để xem thông báo");
+     showMsg("🔒 Đăng nhập để xem thông báo");
     return;
   }
   inboxModal.classList.remove("hidden");
@@ -967,6 +986,17 @@ if(isGuest){
       🔐 Đăng nhập
     </button>
   `;
+}
+
+
+function showMsg(text, title="Thông báo"){
+  document.getElementById("msgTitle").textContent = title;
+  document.getElementById("msgText").textContent = text;
+  document.getElementById("msgModal").classList.remove("hidden");
+}
+
+function closeMsg(){
+  document.getElementById("msgModal").classList.add("hidden");
 }
 
 

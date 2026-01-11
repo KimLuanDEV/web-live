@@ -21,7 +21,7 @@ if (__profileAuth.uid) {
 
 // nếu bị login nơi khác → đá
 socket.on("force-logout", () => {
-  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
+   showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
   localStorage.removeItem("user_profile");
   location.href = "/login.html";
 });
@@ -146,7 +146,7 @@ document.getElementById("btnSave").onclick = () => {
     socket.emit("auth-login", { uid });
   }
 
-  alert("✅ Đã lưu hồ sơ!");
+   showMsg("✅ Đã lưu hồ sơ!");
 };
 
 loadProfile();
@@ -163,7 +163,7 @@ avatarInput.onchange = async () => {
 
   // ⚠️ Giới hạn size để tránh localStorage quá lớn
   if (file.size > 300 * 1024) {
-    alert("❌ Ảnh quá lớn (tối đa 300KB)");
+     showMsg("❌ Ảnh quá lớn (tối đa 300KB)");
     return;
   }
 
@@ -229,23 +229,23 @@ async function submitChangePass(){
   const newPass2 = document.getElementById("newPass2").value;
 
   if(!oldPass || !newPass || !newPass2){
-    alert("❌ Nhập đầy đủ thông tin");
+     showMsg("❌ Nhập đầy đủ thông tin");
     return;
   }
 
   if(newPass.length < 6){
-    alert("❌ Mật khẩu mới phải >= 6 ký tự");
+     showMsg("❌ Mật khẩu mới phải >= 6 ký tự");
     return;
   }
 
   if(newPass !== newPass2){
-    alert("❌ Mật khẩu nhập lại không khớp");
+     showMsg("❌ Mật khẩu nhập lại không khớp");
     return;
   }
 
   const uid = __profileAuth.uid;
   if(!uid){
-    alert("❌ Chưa đăng nhập");
+    showMsg("❌ Chưa đăng nhập");
     return;
   }
 
@@ -262,7 +262,7 @@ async function submitChangePass(){
  const data = await res.json();
 
 if(data.ok || data.success){
-  alert("✅ Đổi mật khẩu thành công");
+   showMsg("✅ Đổi mật khẩu thành công");
   closePass();
 
   // xoá input cho sạch
@@ -274,15 +274,26 @@ if(data.ok || data.success){
 
 // các dạng lỗi
 if(data.error === "pass"){
-  alert("❌ Mật khẩu cũ không đúng");
+   showMsg("❌ Mật khẩu cũ không đúng");
   return;
 }
 
 if(data.error === "otp"){
-  alert("❌ OTP sai hoặc hết hạn");
+   showMsg("❌ OTP sai hoặc hết hạn");
   return;
 }
 
-alert("❌ Đổi mật khẩu thất bại");
+ showMsg("❌ Đổi mật khẩu thất bại");
 
+}
+
+
+function showMsg(text, title="Thông báo"){
+  document.getElementById("msgTitle").textContent = title;
+  document.getElementById("msgText").textContent = text;
+  document.getElementById("msgModal").classList.remove("hidden");
+}
+
+function closeMsg(){
+  document.getElementById("msgModal").classList.add("hidden");
 }

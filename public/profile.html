@@ -119,6 +119,17 @@
 </div>
 
 
+<!-- GLOBAL MESSAGE MODAL -->
+<div id="msgModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3 id="msgTitle">Thông báo</h3>
+    <div id="msgText" style="margin:12px 0;opacity:.9"></div>
+    <button onclick="closeMsg()">OK</button>
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/profile.js"></script>
 </body>
