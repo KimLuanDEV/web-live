@@ -2983,6 +2983,14 @@ if (isGuest) {
 
 
 
+// 🔥 FIX Guest không bị backdrop che video controls
+if(isGuest){
+  const bd = document.getElementById("viewerBackdrop");
+  if (bd) {
+    bd.classList.add("hidden");
+    bd.style.pointerEvents = "none";
+  }
+}
 
 
 
