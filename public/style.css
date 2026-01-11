@@ -5895,12 +5895,12 @@ body.is-guest .reactions-layer{
 .page-profile .container{
   min-height:100vh;
   display:flex;
-  align-items:center;
+  padding-bottom:90px; /* chừa chỗ cho tabbar */
   justify-content:center;
 }
 
 .page-profile .profile-shell{
-  margin:0 auto;
+  margin-top: -20px;
   max-width:460px;
 }
 
