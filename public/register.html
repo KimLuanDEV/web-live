@@ -104,6 +104,24 @@ body{
   }
 }
 
+.pass-wrap{
+  position:relative;
+}
+
+.pass-eye{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-size:18px;
+  opacity:.7;
+}
+
+.pass-eye:hover{
+  opacity:1;
+}
+
 </style>
 
 </head>
@@ -117,8 +135,17 @@ body{
 
   <input id="username" placeholder="Tên đăng nhập">
   <input id="name" placeholder="Tên hiển thị">
+
+  <div class="pass-wrap">
   <input id="password" type="password" placeholder="Mật khẩu">
-  <input id="confirm" type="password" placeholder="Nhập lại mật khẩu">
+  <span class="pass-eye" onclick="togglePass('password', this)">👁</span>
+</div>
+
+<div class="pass-wrap">
+  <input id="password2" type="password" placeholder="Nhập lại mật khẩu">
+  <span class="pass-eye" onclick="togglePass('password2', this)">👁</span>
+</div>
+
 
   <button class="register-btn" onclick="register()">TẠO TÀI KHOẢN</button>
 
@@ -179,6 +206,18 @@ async function register(){
   alert("🎉 Tạo tài khoản thành công!");
   location.href = "/profile.html";
 }
+
+function togglePass(id, el){
+  const input = document.getElementById(id);
+  if(input.type === "password"){
+    input.type = "text";
+    el.textContent = "🙈";
+  }else{
+    input.type = "password";
+    el.textContent = "👁";
+  }
+}
+
 </script>
 
 
