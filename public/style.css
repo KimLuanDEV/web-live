@@ -5888,3 +5888,25 @@ body.is-guest .reactions-layer{
     0 0 26px rgba(255,59,107,.28),
     0 14px 40px rgba(0,0,0,.55);
 }
+
+/* Center profile vertically */
+.container{
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.profile-shell{
+  margin: 0 auto !important;
+  padding: 18px !important;
+}
+
+.profile-actions{
+  margin-top: 12px !important;
+}
+
+.profile-actions button{
+  padding: 10px 12px !important;
+  font-size: 14px;
+}
