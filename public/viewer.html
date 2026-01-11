@@ -1124,11 +1124,19 @@ function openMiniProfile(v){
     }
   } catch {}
 
+   const bio = (v.bio || "").trim();
+
   miniProfile.innerHTML = `
     <div class="mini-profile-header">
       <img src="${v.avatar}">
       <div class="mini-profile-name">${v.name}</div>
     </div>
+
+    ${bio ? `
+      <div class="mini-profile-bio">
+        📝 ${bio}
+      </div>
+    ` : ""}
 
     <div class="mini-profile-meta">
       ${(() => {
@@ -1141,7 +1149,7 @@ function openMiniProfile(v){
         `;
       })()}
 
-       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
+      <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
       <div class="mini-profile-chip gold">
         💎 Room<br><b>${sentInRoom}</b>
       </div>
@@ -1152,6 +1160,7 @@ function openMiniProfile(v){
       </div>
     </div>
   `;
+
 
   // 🔥 LẤY TOẠ ĐỘ VIDEO
   const video = document.querySelector(".video-card");

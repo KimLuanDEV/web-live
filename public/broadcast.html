@@ -2966,34 +2966,41 @@ function openMiniProfile(v){
     }
   } catch {}
 
-  miniProfile.innerHTML = `
-    <div class="mini-profile-header">
-      <img src="${v.avatar}">
-      <div class="mini-profile-name">${v.name}</div>
+const bio = (v.bio || "").trim();
+
+miniProfile.innerHTML = `
+  <div class="mini-profile-header">
+    <img src="${v.avatar}">
+    <div class="mini-profile-name">${v.name}</div>
+  </div>
+
+  ${bio ? `
+    <div class="mini-profile-bio">
+      📝 ${bio}
+    </div>
+  ` : ""}
+
+  <div class="mini-profile-meta">
+    ${(() => {
+      const vip = getVipBadge(v.level || 1);
+      return `
+        <div class="mini-profile-chip">
+          ⭐ Lv ${v.level || 1}
+          ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
+        </div>
+      `;
+    })()}
+
+    <div class="mini-profile-chip gold">
+      💎 Room<br><b>${v.coinSentRoom || 0}</b>
     </div>
 
-    <div class="mini-profile-meta">
-      ${(() => {
-        const vip = getVipBadge(v.level || 1);
-        return `
-          <div class="mini-profile-chip">
-            ⭐ Lv ${v.level || 1}
-            ${vip ? `<span class="vip-badge vip-${vip.key}">${vip.text}</span>` : ""}
-          </div>
-        `;
-      })()}
-
-       <!-- 🟡 ĐÃ TẶNG TRONG ROOM -->
-      <div class="mini-profile-chip gold">
-        💎 Room<br><b>${sentInRoom}</b>
-      </div>
-
-      <!-- 🔹 TỔNG ĐÃ TẶNG -->
-      <div class="mini-profile-chip blue">
-        💎 Tổng<br><b>${totalSent}</b>
-      </div>
+    <div class="mini-profile-chip blue">
+      💎 Tổng<br><b>${v.coinSent || 0}</b>
     </div>
-  `;
+  </div>
+`;
+
 
   // 🔥 LẤY TOẠ ĐỘ VIDEO
   const video = document.querySelector(".video-card");

@@ -6242,3 +6242,15 @@ body.is-guest .reactions-layer{
   line-height:1.5;
   outline:none;
 }
+
+.mini-profile-bio{
+  margin:10px 12px;
+  padding:10px 12px;
+  border-radius:12px;
+  background: rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.12);
+  font-size:13px;
+  line-height:1.4;
+  color:#dff;
+  box-shadow:0 8px 20px rgba(0,0,0,.4);
+}

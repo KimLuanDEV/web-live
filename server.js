@@ -119,7 +119,8 @@ app.post("/api/register", async (req,res)=>{
       level:1,
       exp:0,
       coinSent:0,
-      coinReceived:0
+      coinReceived:0,
+      bio:"",
     }
   };
 
@@ -476,7 +477,8 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 });
 
 
-  socket.on("profile-update", ({ name, avatar, level }) => {
+  socket.on("profile-update", ({ name, avatar, level, bio }) => {
+
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
@@ -501,6 +503,7 @@ socket.on("host-profile-update", ({ roomId, level }) => {
   if (name) profile.name = safeName(name);
   if (avatar) profile.avatar = avatar;
   if (level) profile.level = Number(level) || profile.level;
+  if (typeof bio === "string") profile.bio = String(bio).slice(0, 300);
 
  const list = Array.from(room.viewerProfiles.values());
 
@@ -569,7 +572,9 @@ if(isGuest(socket)){
     coins: Number(profile?.coins) || 0,
     coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
     coinReceivedRoom: old?.coinReceivedRoom || 0,
-    mini: false   // 👈 thêm
+    mini: false, // 👈 thêm
+    bio: String(profile?.bio || ""),
+
   });
 
   emitViewerCount(roomId);
@@ -807,6 +812,8 @@ if (room.liveStartTs) {
   avatar: avatar || "",
   level: Number(profile?.level) || 1,
   ts: Date.now(),
+  bio: String(profile?.bio || ""),
+
 };
 
 
@@ -890,6 +897,7 @@ if (room.liveStartTs) {
     level: Number(profile?.level) || 1,
     text: String(text).slice(0, 300),
     ts: Date.now(),
+    bio: profile?.bio || "",
   };
 
 for (const v of room.viewerProfiles.values()) {
