@@ -5690,10 +5690,3 @@ body.is-guest .reactions-layer{
 }
 
 
-/* ===== HIDE CONTROLS FOR GUEST ===== */
-body.is-guest #pipBtn,
-body.is-guest #muteBtn{
-  display: none !important;
-  pointer-events: none !important;
-  opacity: 0 !important;
-}

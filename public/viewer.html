@@ -764,12 +764,10 @@ if(isGuest){
   document.getElementById("chatInputOverlay")?.remove();
   document.getElementById("giftFab")?.remove();
   document.getElementById("giftPanel")?.remove();
+  document.getElementById("pipBtn")?.remove();
+  document.getElementById("muteBtn")?.remove();
 }
 
-const uid = localStorage.getItem("uid"); // hoặc cách bạn đang lưu
-if (uid && uid.startsWith("guest_")) {
-  document.body.classList.add("is-guest");
-}
 
 
 
