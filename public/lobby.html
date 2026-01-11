@@ -906,7 +906,7 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 
     if(type === "profile"){
   if(isGuest){
-     showMsgt("🔒 Đăng nhập để xem hồ sơ");
+    showMsg("🔒 Đăng nhập để xem hồ sơ");
     return;
   }
   location.href = "/profile.html";
@@ -1003,6 +1003,16 @@ function showMsg(text, title="Thông báo", onOk=null){
   document.getElementById("msgTitle").textContent = title;
   document.getElementById("msgText").textContent = text;
   document.getElementById("msgModal").classList.remove("hidden");
+
+  const btnCancel = document.getElementById("msgCancel");
+
+  // 🔥 chỉ hiện HỦY khi có callback (logout)
+  if(onOk){
+    btnCancel.style.display = "";
+  }else{
+    btnCancel.style.display = "none";
+  }
+
   __msgOkAction = onOk;
 }
 
@@ -1015,6 +1025,7 @@ function closeMsg(){
   document.getElementById("msgModal").classList.add("hidden");
   __msgOkAction = null;
 }
+
 
 
 </script>
