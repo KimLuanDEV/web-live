@@ -479,6 +479,20 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 
   socket.on("profile-update", ({ name, avatar, level, bio }) => {
 
+      const uid = socket.data.uid;
+  if(!uid) return;
+
+  // 🔄 UPDATE USER DATABASE (users.json)
+  const db = loadUsers();
+  const acc = db[uid];
+  if(acc && acc.profile){
+    if(name) acc.profile.name = safeName(name);
+    if(avatar) acc.profile.avatar = avatar;
+    if(level) acc.profile.level = Number(level) || acc.profile.level;
+    if(typeof bio === "string") acc.profile.bio = String(bio).slice(0,300);
+    saveUsers(db);
+  }
+  
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
@@ -513,7 +527,6 @@ for (const v of list) {
     viewers: list.filter(x => !x.mini)
   });
 }
-
 });
 
 
