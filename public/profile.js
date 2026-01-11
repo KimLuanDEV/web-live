@@ -10,6 +10,10 @@ setInterval(() => {
 
 // 🔐 AUTH ACCOUNT – bắt buộc
 const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+// 🔥 Nếu có UID thật → chắc chắn không phải Guest
+if (__profileAuth.uid) {
+  localStorage.removeItem("isGuest");
+}
 
 if (__profileAuth.uid) {
   socket.emit("auth-login", { uid: __profileAuth.uid });
