@@ -104,6 +104,23 @@ body{
   }
 }
 
+.pass-wrap{
+  position:relative;
+}
+
+.pass-eye{
+  position:absolute;
+  right:16px;
+  top:50%;
+  transform:translateY(-50%);
+  cursor:pointer;
+  font-size:18px;
+  opacity:.7;
+}
+
+.pass-eye:hover{
+  opacity:1;
+}
 
 </style>
 </head>
@@ -115,7 +132,13 @@ body{
   <div class="login-sub">Đăng nhập để bắt đầu</div>
 
   <input id="username" placeholder="Tên đăng nhập">
+
+
+  <div class="pass-wrap">
   <input id="password" type="password" placeholder="Mật khẩu">
+  <span class="pass-eye" onclick="togglePass('password', this)">👁</span>
+</div>
+
 
   <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
 
@@ -134,7 +157,12 @@ body{
     <h3>🔑 Quên mật khẩu</h3>
 
     <input id="forgotUser" placeholder="Tên đăng nhập">
-    <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
+
+    <div class="pass-wrap">
+  <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
+  <span class="pass-eye" onclick="togglePass('forgotPass', this)">👁</span>
+</div>
+
 
     <div style="display:flex;gap:12px;margin-top:14px">
       <button style="flex:1" onclick="closeForgot()">Hủy</button>
@@ -214,6 +242,18 @@ async function submitForgot(){
 
 function closeForgot(){
   document.getElementById("forgotModal").classList.add("hidden");
+}
+
+
+function togglePass(id, el){
+  const input = document.getElementById(id);
+  if(input.type === "password"){
+    input.type = "text";
+    el.textContent = "🙈";
+  }else{
+    input.type = "password";
+    el.textContent = "👁";
+  }
 }
 
 
