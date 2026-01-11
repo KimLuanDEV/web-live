@@ -86,6 +86,7 @@ function loadProfile(){
   const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
 
   nameInput.value = p.name;
+  displayName.textContent = p.name;
   avatarPreview.src = p.avatar;
   avatarPreview.onerror = () => {
   avatarPreview.src = defaultProfile.avatar;
@@ -326,3 +327,20 @@ function showMsg(text, title="Thông báo"){
 function closeMsg(){
   document.getElementById("msgModal").classList.add("hidden");
 }
+
+
+
+const displayName = document.getElementById("displayName");
+
+displayName.onclick = ()=>{
+  displayName.classList.add("hidden");
+  nameInput.classList.remove("hidden");
+  nameInput.focus();
+};
+
+nameInput.onblur = ()=>{
+  const val = nameInput.value.trim() || "User";
+  displayName.textContent = val;
+  displayName.classList.remove("hidden");
+  nameInput.classList.add("hidden");
+};

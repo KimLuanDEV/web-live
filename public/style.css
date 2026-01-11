@@ -6115,3 +6115,27 @@ body.is-guest .reactions-layer{
   border:2px solid #0b1327;
   pointer-events:none;
 }
+
+/* ===== PROFILE NAME ===== */
+.profile-name{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:.6px;
+  color:#00f6ff;
+  text-shadow:
+    0 0 12px rgba(0,246,255,.8),
+    0 0 24px rgba(95,168,255,.6);
+  cursor:pointer;
+}
+
+.name-input{
+  background: rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:14px;
+  padding:10px 14px;
+  color:white;
+}
+
+.name-input.hidden{
+  display:none;
+}
