@@ -142,6 +142,14 @@ body{
 
   <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
 
+  <button class="login-btn" style="
+  background:linear-gradient(135deg,#666,#999);
+  color:white;
+  margin-top:14px"
+  onclick="guestLogin()">
+  🎮 Trải nghiệm nhanh
+</button>
+
 
 <div class="login-links">
   <a href="#" onclick="openForgot()">Quên mật khẩu?</a>
@@ -173,6 +181,22 @@ body{
 
 
 <script>
+
+  function guestLogin(){
+  const guest = {
+    uid: "guest_" + Math.random().toString(36).slice(2,10),
+    name: "Guest",
+    level: 1,
+    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=guest"
+  };
+
+  localStorage.setItem("user_profile", JSON.stringify(guest));
+  localStorage.setItem("login_uid", guest.uid);
+  localStorage.setItem("isGuest", "1");
+
+  location.href = "/lobby.html";
+}
+
 async function login(){
   const u = document.getElementById("username").value.trim();
   const p = document.getElementById("password").value;

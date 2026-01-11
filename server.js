@@ -378,6 +378,9 @@ emitLobbyUpdate();
 io.on("connection", (socket) => {
 
 
+if(socket.data.uid?.startsWith("guest_")){
+  socket.data.role = "guest";
+}
 
 
   socket.on("get-inbox", ()=>{
