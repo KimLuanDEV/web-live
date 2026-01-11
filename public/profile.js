@@ -47,6 +47,7 @@ const defaultProfile = {
   exp: 0,            // 🔥 exp
   coinSent: 0,       // 🎁 đã tặng
   coinReceived: 0,   // 💎 đã nhận
+  bio: "",
 
 };
 
@@ -120,6 +121,11 @@ function loadProfile(){
   nameInput.value = p.name;
   displayName.textContent = p.name;
   avatarPreview.src = p.avatar;
+
+  const bioInput = document.getElementById("bioInput");
+if(bioInput) bioInput.value = p.bio || "";
+
+
   avatarPreview.onerror = () => {
   avatarPreview.src = defaultProfile.avatar;
 };
@@ -391,3 +397,18 @@ document.getElementById("tabCreate")?.addEventListener("click", ()=>{
   }
   location.href = "/lobby.html";
 });
+
+
+const bioInput = document.getElementById("bioInput");
+
+if(bioInput){
+  bioInput.oninput = ()=>{
+    const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+    p.bio = bioInput.value.slice(0, 300); // giới hạn 300 ký tự
+    localStorage.setItem(KEY, JSON.stringify(p));
+
+    if(__profileAuth.uid){
+      socket.emit("profile-update", { bio: p.bio });
+    }
+  };
+}

@@ -6214,3 +6214,31 @@ body.is-guest .reactions-layer{
 .page-profile .profile-actions button[onclick*="lobby"]{
   display:none !important;
 }
+
+
+/* ===== PROFILE BIO ===== */
+.profile-bio{
+  margin-top:16px;
+  padding:14px;
+  border-radius:16px;
+  background: rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.12);
+  box-shadow:0 10px 30px rgba(0,0,0,.5);
+}
+
+.bio-label{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:6px;
+}
+
+#bioInput{
+  width:100%;
+  background: transparent;
+  border:none;
+  resize:none;
+  color:white;
+  font-size:14px;
+  line-height:1.5;
+  outline:none;
+}
