@@ -51,6 +51,22 @@ const defaultProfile = {
 };
 
 
+const displayName = document.getElementById("displayName");
+
+displayName.onclick = ()=>{
+  displayName.classList.add("hidden");
+  nameInput.classList.remove("hidden");
+  nameInput.focus();
+};
+
+nameInput.onblur = ()=>{
+  const val = nameInput.value.trim() || "User";
+  displayName.textContent = val;
+  displayName.classList.remove("hidden");
+  nameInput.classList.add("hidden");
+};
+
+
 function getVipBadge(level){
   level = Number(level) || 1;
 
@@ -329,18 +345,3 @@ function closeMsg(){
 }
 
 
-
-const displayName = document.getElementById("displayName");
-
-displayName.onclick = ()=>{
-  displayName.classList.add("hidden");
-  nameInput.classList.remove("hidden");
-  nameInput.focus();
-};
-
-nameInput.onblur = ()=>{
-  const val = nameInput.value.trim() || "User";
-  displayName.textContent = val;
-  displayName.classList.remove("hidden");
-  nameInput.classList.add("hidden");
-};
