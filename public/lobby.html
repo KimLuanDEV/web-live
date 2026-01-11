@@ -738,7 +738,7 @@ function render(list){
       : `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
 
     const hostName   = r.host?.name   || (r.__virtual ? "Room Ảo" : "Host");
-    const hostAvatar = r.host?.avatar || `https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360`;
+    const hostAvatar = r.host?.avatar || `https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg`;
 
     const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
 
@@ -871,7 +871,7 @@ if(profile.name){
   document.getElementById("userName").textContent = profile.name;
   document.getElementById("userLevel").textContent = "Lv " + (profile.level || 1);
   document.getElementById("userAva").src = profile.avatar || 
-    "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360";
+    "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg";
 }
 
 

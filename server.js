@@ -114,7 +114,7 @@ app.post("/api/register", async (req,res)=>{
     profile:{
       uid: username,
       name,
-      avatar: "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+      avatar: "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
       coins:0,
       level:1,
       exp:0,
@@ -564,7 +564,7 @@ if(isGuest(socket)){
     uid,
     socketId: socket.id,
     name: safeName(profile?.name),
-    avatar: profile?.avatar || "https://img.freepik.com/premium-vector/live-streaming-text-neon-sign-illustration_189374-265.jpg?w=360",
+    avatar: profile?.avatar || "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
     level: Number(profile?.level) || 1,
     coins: Number(profile?.coins) || 0,
     coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
