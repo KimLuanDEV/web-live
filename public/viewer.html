@@ -95,10 +95,11 @@
 
 <!-- CHAT QUICK BUTTON -->
 <button class="chat-fab" id="chatFab">💬</button>
-<!-- PIP BUTTON -->
-<button id="pipBtn" class="pip-btn" title="Thu nhỏ (PiP)">🔛</button>
 
-<button id="muteBtn" class="ctrl-fab" title="Tắt tiếng">🔊</button>
+<div class="ctrl-tab">
+  <button id="pipBtn" class="ctrl-fab" title="Thu nhỏ (PiP)">🔛</button>
+  <button id="muteBtn" class="ctrl-fab" title="Tắt tiếng">🔊</button>
+</div>
 
 
 <!-- ❌ EXIT BUTTON -->
@@ -762,26 +763,8 @@ if(isGuest){
   document.getElementById("chatInputOverlay")?.remove();
   document.getElementById("giftFab")?.remove();
   document.getElementById("giftPanel")?.remove();
-  document.getElementById("viewerBackdrop")?.remove(); // 🔥 cho phép click video
-  document.getElementById("chatOverlay")?.remove();    // 🔥 cho phép PiP + Mute
-
-
-  // 🔥 FIX: backdrop không được che video controls
-  const bd = document.getElementById("viewerBackdrop");
-  if (bd){
-    bd.classList.add("hidden");
-    bd.style.pointerEvents = "none";
-  }
 }
 
-
-// 🔥 FIX CHUẨN: cho phép bấm nút PiP + Mute
-const hostCard = document.getElementById("hostCard");
-if (isGuest && hostCard) {
-  hostCard.style.pointerEvents = "none";   // video không ăn click
-  document.getElementById("pipBtn").style.pointerEvents = "auto";
-  document.getElementById("muteBtn").style.pointerEvents = "auto";
-}
 
 
 
