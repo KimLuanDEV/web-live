@@ -55,13 +55,6 @@
 
         <div class="live-stage" id="liveStage" style="margin-top:10px">
 
-<div id="guestViewLock" class="guest-lock hidden">
-  <div class="guest-lock-card">
-    <h3>👀 Đang xem với tư cách Guest</h3>
-    <p>Đăng nhập để chat, tặng quà và tương tác với host</p>
-    <button onclick="location.href='/login.html'">🔐 Đăng nhập</button>
-  </div>
-</div>
 
           <div class="gift-layer" id="giftLayer"></div>
 
@@ -2987,9 +2980,7 @@ if (isGuest) {
   document.getElementById("pinOverlay")?.classList.add("hidden");
 }
 
-if(isGuest){
-  document.getElementById("guestViewLock")?.classList.remove("hidden");
-}
+
 
 
 
