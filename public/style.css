@@ -6163,3 +6163,27 @@ body.is-guest .reactions-layer{
 .page-profile .profile-shell{
   margin-bottom:90px;
 }
+
+/* ===== FLOATING SHADOW FOR PROFILE CARD ===== */
+.page-profile .profile-shell{
+  box-shadow:
+    0 40px 80px rgba(0,0,0,.85),
+    0 0 0 1px rgba(255,255,255,.06) inset,
+    0 0 40px rgba(0,246,255,.12);
+}
+
+/* ===== FIX TABBAR POSITION FOR PROFILE ===== */
+.page-profile .container{
+  padding-bottom: 0 !important; /* bỏ padding làm đội tabbar */
+}
+
+.page-profile .mobile-tabbar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.page-profile .profile-shell{
+  margin-bottom: 100px;
+}
