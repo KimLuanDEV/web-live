@@ -1980,15 +1980,11 @@ audio: {
         preview.srcObject = localStream;
 
 
-if (USE_SFU) {
-  await startSfuProduce(localStream);
-}
 
 
 
 
-// ✅ BẬT TRẠNG THÁI LIVE
-    document.body.classList.add("is-live");
+
 
 
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
@@ -1998,8 +1994,7 @@ if (USE_SFU) {
 
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
-        socket.emit("broadcaster-ready", { roomId });
-        socket.emit("live-start", { roomId });
+        
 
       } catch (err) {
         log("Không mở được camera/mic: " + err.message);
@@ -2098,7 +2093,28 @@ syncStartLiveOverlay(false);
       }
     }
 
-    btnStart.onclick = start;
+btnStart.onclick = async () => {
+  // 1) đảm bảo đã mở camera
+  if (!localStream) await start();
+
+  // 2) BẬT SFU TẠI ĐÂY
+  if (USE_SFU) {
+    await startSfuProduce(localStream);
+    console.log("🚀 SFU LIVE STARTED");
+  }
+
+  // 3) báo server phòng đang live
+  socket.emit("live-start", { roomId });
+
+  // 4) UI
+  syncStartLiveOverlay(true);
+  document.body.classList.add("is-live");
+  btnStart.disabled = true;
+  btnStop.disabled = false;
+  hostFlipBtn.disabled = false;
+};
+
+
     btnStop.onclick = stop;
     hostFlipBtn.onclick = flipCamera;
 
@@ -3148,23 +3164,18 @@ socket.on("force-logout", ({ reason }) => {
 
 
 
-
-
 async function startSfuProduce(stream) {
-  // 1) Kết nối socket tới SFU
   sfuSocket = io(SFU_URL, { transports: ["websocket"] });
 
-  // 2) Join room (dùng roomId hiện tại của bạn)
-  const roomId = params.get("room") || "abc123";
+  const roomId = params.get("room") || "abc123";   // ⭐ DÒNG QUAN TRỌNG
+
   const rtpCaps = await new Promise(res =>
     sfuSocket.emit("join", { roomId, role: "broadcaster" }, res)
   );
 
-  // 3) Tạo device
   sfuDevice = new mediasoupClient.Device();
   await sfuDevice.load({ routerRtpCapabilities: rtpCaps.rtpCapabilities });
 
-  // 4) Tạo transport gửi
   const tData = await new Promise(res =>
     sfuSocket.emit("create-transport", {}, res)
   );
@@ -3180,21 +3191,18 @@ async function startSfuProduce(stream) {
     sfuSocket.emit("produce", { transportId: sendTransport.id, kind, rtpParameters }, ({ id }) => cb({ id }));
   });
 
-  // 5) Gửi track video + audio lên SFU
   const videoTrack = stream.getVideoTracks()[0];
   const audioTrack = stream.getAudioTracks()[0];
 
   await sendTransport.produce({
     track: videoTrack,
-    encodings: [{ maxBitrate: 1_500_000 }], // 720p ~1.5Mbps
+    encodings: [{ maxBitrate: 1_500_000 }],
     codecOptions: { videoGoogleStartBitrate: 1200 }
   });
 
-  if (audioTrack) {
-    await sendTransport.produce({ track: audioTrack });
-  }
+  if (audioTrack) await sendTransport.produce({ track: audioTrack });
 
-  console.log("HOST is producing to SFU");
+  console.log("🔥 HOST IS LIVE ON SFU", roomId);
 }
 
 
