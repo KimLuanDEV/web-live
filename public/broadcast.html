@@ -2092,13 +2092,22 @@ syncStartLiveOverlay(false);
     }
 
 btnStart.onclick = async () => {
-  if (!localStream) await start();      // mở camera
-  if (USE_SFU) await startSfuProduce(localStream);  // bật SFU
-  socket.emit("live-start", { roomId }); // báo server
+  if (!localStream) await start();     // mở camera
+
+  if (USE_SFU) {
+    await startSfuProduce(localStream);  // 🔥 gửi video lên SFU
+  }
+
+  socket.emit("live-start", { roomId });  // báo server
+
+  document.body.classList.add("is-live");
   syncStartLiveOverlay(true);
+
   btnStart.disabled = true;
   btnStop.disabled = false;
+  hostFlipBtn.disabled = false;
 };
+
 
 
     btnStop.onclick = stop;
