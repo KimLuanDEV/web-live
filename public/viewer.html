@@ -665,6 +665,66 @@ let __lastTs = 0;
     const SFU_URL = "http://207.148.79.73:4000";
 const sfu = io(SFU_URL, { transports:["websocket"] });
 
+let sfuDevice;
+let recvTransport;
+
+async function startSFUViewer(){
+  console.log("🔥 Viewer connecting to SFU");
+
+  // join room on SFU
+  const { rtpCapabilities } = await new Promise(res=>{
+    sfu.emit("join", { roomId, role:"viewer" }, res);
+  });
+
+  sfuDevice = new mediasoupClient.Device();
+  await sfuDevice.load({ routerRtpCapabilities: rtpCapabilities });
+
+  const transportInfo = await new Promise(res=>{
+    sfu.emit("create-transport", null, res);
+  });
+
+  recvTransport = sfuDevice.createRecvTransport(transportInfo);
+
+  recvTransport.on("connect", ({ dtlsParameters }, cb)=>{
+    sfu.emit("connect-transport", {
+      transportId: transportInfo.id,
+      dtlsParameters
+    });
+    cb();
+  });
+
+  const producers = await new Promise(res=>{
+    sfu.emit("get-producers", null, res);
+  });
+
+  if (!producers || !producers.length){
+    console.warn("⏳ No producer yet");
+    return;
+  }
+
+  for(const pid of producers){
+    const data = await new Promise(res=>{
+      sfu.emit("consume", {
+        transportId: transportInfo.id,
+        producerId: pid,
+        rtpCapabilities: sfuDevice.rtpCapabilities
+      }, res);
+    });
+
+    const consumer = await recvTransport.consume(data);
+
+    const stream = new MediaStream([consumer.track]);
+    player.srcObject = stream;
+    player.playsInline = true;
+    player.muted = false;
+    await player.play().catch(()=>{});
+
+    console.log("🎥 Viewer receiving video");
+  }
+}
+
+
+
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
@@ -928,6 +988,7 @@ socket.emit("viewer-join", {
   profile: sendProfile
 });
 
+startSFUViewer().catch(e=>console.error("SFU viewer error", e));
 
 
 if (profile){
@@ -2799,56 +2860,6 @@ if (isGuest) {
 }
 
 
-
-let sfuDevice;
-let recvTransport;
-
-async function startSFUViewer(){
-  const { rtpCapabilities } = await new Promise(res=>{
-    sfu.emit("join", { roomId, role:"viewer" }, res);
-  });
-
-  sfuDevice = new mediasoupClient.Device();
-  await sfuDevice.load({ routerRtpCapabilities: rtpCapabilities });
-
-  const transportInfo = await new Promise(res=>{
-    sfu.emit("create-transport", null, res);
-  });
-
-  recvTransport = sfuDevice.createRecvTransport(transportInfo);
-
-  recvTransport.on("connect", ({ dtlsParameters }, cb)=>{
-    sfu.emit("connect-transport", {
-      transportId: transportInfo.id,
-      dtlsParameters
-    });
-    cb();
-  });
-
-  const producers = await new Promise(res=>{
-    sfu.emit("get-producers", null, res);
-  });
-
-  for(const pid of producers){
-    const data = await new Promise(res=>{
-      sfu.emit("consume", {
-        transportId: transportInfo.id,
-        producerId: pid,
-        rtpCapabilities: sfuDevice.rtpCapabilities
-      }, res);
-    });
-
-    const consumer = await recvTransport.consume(data);
-
-    const stream = new MediaStream([consumer.track]);
-    player.srcObject = stream;
-    player.playsInline = true;
-    player.muted = false;
-    await player.play().catch(()=>{});
-  }
-
-  console.log("🔥 Viewer connected to SFU");
-}
 
 
 
