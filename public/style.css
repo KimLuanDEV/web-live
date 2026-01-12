@@ -6245,3 +6245,6 @@ body.is-guest .reactions-layer{
   outline:none;
 }
 
+input, textarea, select {
+  font-size: 16px !important;
+}

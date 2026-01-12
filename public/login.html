@@ -2,7 +2,9 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport"
+content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
 <title>Đăng nhập • Livestream Pro</title>
 <link rel="stylesheet" href="/style.css">
 
@@ -126,6 +128,10 @@ body{
 
 .pass-eye:hover{
   opacity:1;
+}
+
+input, textarea, select {
+  font-size: 16px !important;
 }
 
 </style>
@@ -311,6 +317,24 @@ function showMsg(text, title="Thông báo"){
 function closeMsg(){
   document.getElementById("msgModal").classList.add("hidden");
 }
+
+
+
+const viewport = document.querySelector('meta[name=viewport]');
+const original = viewport.content;
+
+function lockViewport(){
+  viewport.content = "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no";
+}
+
+function unlockViewport(){
+  viewport.content = original;
+}
+
+document.querySelectorAll("input").forEach(el=>{
+  el.addEventListener("focus", lockViewport);
+  el.addEventListener("blur", unlockViewport);
+});
 
 
 
