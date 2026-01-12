@@ -637,7 +637,8 @@ if(nameFromLobby){
 
     document.getElementById("roomCode").textContent = roomId;
 
-    const viewerUrl = `${location.origin}/viewer.html?room=${encodeURIComponent(roomId)}`;
+    const viewerUrl = `${location.origin}/viewer_sfu.html?room=${encodeURIComponent(roomId)}`;
+
     
     document.getElementById("copyViewer").onclick = async () => {
       try { await navigator.clipboard.writeText(viewerUrl); toast("👀 Đã copy link xem"); }
