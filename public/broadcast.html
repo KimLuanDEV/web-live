@@ -657,6 +657,9 @@ if(nameFromLobby){
 
     const socket = io();
 
+let sfuVideoProducer = null;
+let sfuAudioProducer = null;
+
 const SFU_URL = "http://207.148.79.73:4000";
 const sfu = io(SFU_URL, { transports:["websocket"] });
 
@@ -1075,6 +1078,8 @@ function attachSpeakingIndicator(videoEl, targetEl){
     }
 
     function stop(){
+
+
       try{ if (raf) cancelAnimationFrame(raf); }catch{}
       raf = 0;
       try{ targetEl.classList.remove("is-speaking"); }catch{}
@@ -1735,13 +1740,13 @@ audio: {
 
         });
 
-   preview.srcObject = localStream;
+  preview.srcObject = localStream;
 
-// 🔥 BÁO SERVER PHÒNG ĐÃ LIVE
-socket.emit("live-start", { roomId });
+// 🔥 đổi track cho SFU
+if (sfuVideoProducer) {
+  await sfuVideoProducer.replaceTrack({ track: newVideoTrack });
+}
 
-// 🔥 GỬI VIDEO VÀO SFU
-await startSFUProducer();
 // ✅ BẬT TRẠNG THÁI LIVE
     document.body.classList.add("is-live");
 
@@ -1761,6 +1766,16 @@ await startSFUProducer();
     }
 
     function stop() {
+
+      try {
+  sfuVideoProducer?.close();
+  sfuAudioProducer?.close();
+  sendTransport?.close();
+} catch {}
+sfuVideoProducer = null;
+sfuAudioProducer = null;
+sendTransport = null;
+
       // close all viewer peers
       for (const [id, pc] of pcs.entries()) {
         try { pc.close(); } catch {}
@@ -1823,11 +1838,10 @@ syncStartLiveOverlay(false);
 
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
 
-        // replace for all viewer peers
-        for (const [viewerId, pc] of pcs.entries()) {
-          const sender = pc.getSenders().find(s => s.track && s.track.kind === "video");
-          if (sender) await sender.replaceTrack(newVideoTrack);
-        }
+      if (sfuVideoProducer) {
+  await sfuVideoProducer.replaceTrack({ track: newVideoTrack });
+}
+
 
         // replace for guest peer
         if (pcGuestIn) {
@@ -2890,6 +2904,13 @@ socket.on("force-logout", ({ reason }) => {
 
 
 async function startSFUProducer(){
+
+  if (track.kind === "video") {
+  sfuVideoProducer = await sendTransport.produce({ track, encodings:[{ maxBitrate: 800000 }] });
+} else {
+  sfuAudioProducer = await sendTransport.produce({ track });
+}
+
   console.log("🔥 Starting SFU producer");
 
   const { rtpCapabilities } = await new Promise(res=>{
