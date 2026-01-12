@@ -1985,8 +1985,6 @@ audio: {
 
 
 
-
-
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
         btnStart.disabled = true;
         btnStop.disabled = false;
@@ -2094,24 +2092,12 @@ syncStartLiveOverlay(false);
     }
 
 btnStart.onclick = async () => {
-  // 1) đảm bảo đã mở camera
-  if (!localStream) await start();
-
-  // 2) BẬT SFU TẠI ĐÂY
-  if (USE_SFU) {
-    await startSfuProduce(localStream);
-    console.log("🚀 SFU LIVE STARTED");
-  }
-
-  // 3) báo server phòng đang live
-  socket.emit("live-start", { roomId });
-
-  // 4) UI
+  if (!localStream) await start();      // mở camera
+  if (USE_SFU) await startSfuProduce(localStream);  // bật SFU
+  socket.emit("live-start", { roomId }); // báo server
   syncStartLiveOverlay(true);
-  document.body.classList.add("is-live");
   btnStart.disabled = true;
   btnStop.disabled = false;
-  hostFlipBtn.disabled = false;
 };
 
 
