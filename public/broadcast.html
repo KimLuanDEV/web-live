@@ -660,7 +660,8 @@ if(nameFromLobby){
 const SFU_URL = "http://207.148.79.73:4000";
 const sfu = io(SFU_URL, { transports:["websocket"] });
 
-
+let sfuDevice;
+let sendTransport;
     
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
@@ -1815,6 +1816,8 @@ syncStartLiveOverlay(false);
         }
         localStream.addTrack(newVideoTrack);
         preview.srcObject = localStream;
+        await startSFUProducer();
+
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
 
         // replace for all viewer peers
@@ -2883,12 +2886,9 @@ socket.on("force-logout", ({ reason }) => {
 });
 
 
-
-
-let sfuDevice;
-let sendTransport;
-
 async function startSFUProducer(){
+  console.log("🔥 Starting SFU producer");
+
   const { rtpCapabilities } = await new Promise(res=>{
     sfu.emit("join", { roomId, role:"broadcaster" }, res);
   });
@@ -2921,12 +2921,15 @@ async function startSFUProducer(){
   for(const track of localStream.getTracks()){
     await sendTransport.produce({
       track,
-      encodings: [{ maxBitrate: track.kind==="video" ? 800000 : 32000 }]
+      encodings: [{
+        maxBitrate: track.kind === "video" ? 800000 : 64000
+      }]
     });
   }
 
-  console.log("🔥 Host streaming to SFU");
+  console.log("🔥 Host is streaming to SFU");
 }
+
 
 
 
