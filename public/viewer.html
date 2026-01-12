@@ -14,6 +14,9 @@
 
   <title>Viewer - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
+
+  <script src="https://unpkg.com/mediasoup-client@3/lib/index.js"></script>
+
 </head>
 <body class="viewer-fullscreen">
 
@@ -487,6 +490,14 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
+
+const USE_SFU = true;
+const SFU_URL = "wss://207.148.79.73:4000"; // site bạn là HTTPS
+
+let sfuSocket, sfuDevice, recvTransport;
+
+
+
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -495,6 +506,10 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
+// ====== SFU CONSUME ======
+if (USE_SFU) {
+  startSfuConsume(roomId);
+}
 
 
 const giftVideoQueue = [];
@@ -538,6 +553,7 @@ function safeIceRestart(to, reason){
   const now = Date.now();
   if (now - __lastIceReq < 5000) return; // ⏱ 5s
   __lastIceReq = now;
+   if (USE_SFU) return;   // 🚫 SFU không dùng ICE restart kiểu P2P
   socket.emit("request-ice-restart", { to, reason });
 }
 
@@ -727,9 +743,9 @@ async function checkHDQuality(){
   }
 }
 
-// check mỗi 2.5s
-setInterval(checkHDQuality, 2500);
-
+if (!USE_SFU) {
+  setInterval(checkHDQuality, 2500);
+}
 
 
 
@@ -1745,6 +1761,7 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
   setTimeout(tryPlay, 1000);
 }
 
+if (!USE_SFU) {
     socket.on("offer", async ({ from, description }) => {
 
       /*
@@ -1855,7 +1872,11 @@ const st = pc.iceConnectionState;
         log("Lỗi xử lý offer: " + err.message);
       }
     });
+}
 
+
+
+if (!USE_SFU) {
     socket.on("candidate", async ({ from, candidate }) => {
       const pc = pcs.get(from);
       if (!pc) return;
@@ -1865,6 +1886,8 @@ const st = pc.iceConnectionState;
         log("Lỗi addIceCandidate: " + err.message);
       }
     });
+  }
+
 
     btnJoin.onclick = () => {
       join().catch(err => log("Join lỗi: " + err.message));
@@ -2992,6 +3015,70 @@ if (isGuest) {
 
 
 
+async function startSfuConsume(roomId) {
+  // 1) Kết nối SFU
+  sfuSocket = io(SFU_URL, { transports: ["websocket"] });
+
+  // 2) Join room với role viewer
+  const data = await new Promise(res =>
+    sfuSocket.emit("join", { roomId, role: "viewer" }, res)
+  );
+
+  // 3) Tạo Device
+  sfuDevice = new mediasoupClient.Device();
+  await sfuDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+
+  // 4) Tạo recv transport
+  const tData = await new Promise(res =>
+    sfuSocket.emit("create-transport", {}, res)
+  );
+
+  recvTransport = sfuDevice.createRecvTransport(tData);
+
+  recvTransport.on("connect", ({ dtlsParameters }, cb) => {
+    sfuSocket.emit("connect-transport", { transportId: recvTransport.id, dtlsParameters });
+    cb();
+  });
+
+  // 5) Lấy danh sách producer (host)
+  const producers = await new Promise(res =>
+    sfuSocket.emit("get-producers", null, res)
+  );
+
+  for (const producerId of producers) {
+    await consumeProducer(producerId);
+  }
+
+  // Khi host produce mới
+  sfuSocket.on("new-producer", async ({ producerId }) => {
+    await consumeProducer(producerId);
+  });
+}
+
+async function consumeProducer(producerId) {
+  const { id, kind, rtpParameters } = await new Promise(res =>
+    sfuSocket.emit(
+      "consume",
+      {
+        transportId: recvTransport.id,
+        producerId,
+        rtpCapabilities: sfuDevice.rtpCapabilities
+      },
+      res
+    )
+  );
+
+  const consumer = await recvTransport.consume({ id, producerId, kind, rtpParameters });
+
+  if (kind === "video") {
+    const stream = new MediaStream([consumer.track]);
+    document.getElementById("player").srcObject = stream;
+  } else if (kind === "audio") {
+    const audio = new Audio();
+    audio.srcObject = new MediaStream([consumer.track]);
+    audio.autoplay = true;
+  }
+}
 
 
 
