@@ -470,10 +470,7 @@ let sfuSocket, sfuDevice, sendTransport;
     const btnStop = document.getElementById("btnStop");
     const hostFlipBtn = document.getElementById("hostFlipBtn");
     const params = new URLSearchParams(location.search);
-    const roomId = params.get("room") || "abc123";
-   
-
-// ===== HOST GUIDE MODAL =====
+  // roomId lấy từ broadcast.html (query param) – truyền vào từ ngoài
 const hgm = document.getElementById("hostGuideModal");
 const hgmBg = hgm?.querySelector(".hgm__bg");
 const hgmX = document.getElementById("hgmX");
@@ -1974,19 +1971,11 @@ audio: {
   noiseSuppression: true,
   autoGainControl: true
 }
-
         });
 
         preview.srcObject = localStream;
 
-
-
-
-
-
-
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
-        btnStart.disabled = true;
         btnStop.disabled = false;
         hostFlipBtn.disabled = false;
 
@@ -3155,48 +3144,14 @@ socket.on("force-logout", ({ reason }) => {
 });
 
 
-// ================== START LIVE (FIX CỨNG) ==================
-btnStart.onclick = async () => {
-  try {
-    // 1. nếu chưa có camera → mở camera
-    if (!window.localStream) {
-      window.localStream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 1280, height: 720, frameRate: 30 },
-        audio: true
-      });
-      preview.srcObject = window.localStream;
-    }
-
-    // 2. bật SFU
-    if (USE_SFU) {
-      await startSfuProduce(window.localStream);
-      console.log("🚀 SFU LIVE STARTED");
-    }
-
-    // 3. báo server
-    socket.emit("live-start", { roomId });
-
-    // 4. cập nhật UI
-    document.body.classList.add("is-live");
-    syncStartLiveOverlay(true);
-
-    btnStart.disabled = true;
-    btnStop.disabled = false;
-    hostFlipBtn.disabled = false;
-
-  } catch (err) {
-    console.error("❌ Start live failed:", err);
-    alert("Không thể bắt đầu live, xem Console (F12)");
-  }
-};
+// (đã bỏ START LIVE (FIX CỨNG) – dùng handler Start LIVE ở trên)
 
 
 
 
-async function startSfuProduce(stream) {
+async function startSfuProduce(roomId, stream) {
   sfuSocket = io(SFU_URL, { transports: ["websocket"] });
-
-  const roomId = params.get("room") || "abc123";   // ⭐ DÒNG QUAN TRỌNG
+  // roomId lấy từ broadcast.html (query param) – truyền vào từ ngoài
 
   const rtpCaps = await new Promise(res =>
     sfuSocket.emit("join", { roomId, role: "broadcaster" }, res)
