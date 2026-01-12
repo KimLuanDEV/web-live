@@ -1,8 +1,18 @@
+const ioClient = require("socket.io-client");
+
+const SFU_URL = "http://207.148.79.73:4000";
+const sfu = ioClient(SFU_URL, {
+  transports: ["websocket"]
+});
+
+sfu.on("connect", () => {
+  console.log("🔥 Connected to SFU");
+});
+
+
+
 const bcrypt = require("bcrypt");
-
-
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
-
 const multer = require("multer");
 const express = require("express");
 const http = require("http");
@@ -542,6 +552,13 @@ if(isGuest(socket)){
   socket.data.roomId = roomId;
   socket.data.role = "viewer";
 
+
+  // 🔥 join SFU với vai trò viewer
+sfu.emit("join", {
+  roomId,
+  role: "viewer"
+});
+
   // ✅ UID ổn định (ưu tiên profile.uid)
   const uid = String(profile?.uid || "").trim() || safeName(profile?.name);
 
@@ -673,6 +690,9 @@ socket.on("lobby-get", () => {
 // ===== LIVE TIMER (server-side source of truth) =====
 // Host starts live => store start timestamp; late joiners will receive it.
 socket.on("live-start", ({ roomId }) => {
+
+
+  
   if (!roomId) return;
 
   const room = getRoom(roomId);
@@ -683,6 +703,13 @@ socket.on("live-start", ({ roomId }) => {
   if (!room.liveStartTs) {
     room.liveStartTs = Date.now();
   }
+
+  // 🔥 join SFU với vai trò broadcaster
+sfu.emit("join", {
+  roomId,
+  role: "broadcaster"
+});
+
 
 // 💾 persist live state
 const state = loadLiveState();
@@ -775,6 +802,8 @@ if (role === "viewer" && room.hostProfile) {
 
 
     if (role === "broadcaster") {
+
+      
        if (room.releaseTimer) {
     clearTimeout(room.releaseTimer);
     room.releaseTimer = null;
@@ -1162,6 +1191,12 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
 
   /* ========= VIEWER ========= */
   if (role === "viewer") {
+
+    sfu.emit("leave", {
+  roomId,
+  socketId: socket.id
+});
+
     // xoá khỏi viewers set
     room.viewers.delete(socket.id);
 
@@ -1193,6 +1228,12 @@ for (const v of list) {
 
   /* ========= HOST ========= */
   if (role === "broadcaster") {
+    
+    sfu.emit("leave", {
+  roomId,
+  socketId: socket.id
+});
+
     room.pendingRelease = true;
 
  room.releaseTimer = setTimeout(() => {

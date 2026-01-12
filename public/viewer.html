@@ -14,7 +14,6 @@
 
   <title>Viewer - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
-
   <script src="https://unpkg.com/mediasoup-client@3/lib/index.js"></script>
 
 </head>
@@ -490,15 +489,6 @@
 
   <script src="/socket.io/socket.io.js"></script>
   <script>
-
-const USE_SFU = true;
-const SFU_URL = "ws://207.148.79.73:4000";
-
-
-let sfuSocket, sfuDevice, recvTransport;
-
-
-
     const logEl = document.getElementById("log");
     const badge = document.getElementById("statusBadge");
     const player = document.getElementById("player");
@@ -507,10 +497,6 @@ let sfuSocket, sfuDevice, recvTransport;
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
-// ====== SFU CONSUME ======
-if (USE_SFU) {
-  startSfuConsume(roomId);
-}
 
 
 const giftVideoQueue = [];
@@ -554,7 +540,6 @@ function safeIceRestart(to, reason){
   const now = Date.now();
   if (now - __lastIceReq < 5000) return; // ⏱ 5s
   __lastIceReq = now;
-   if (USE_SFU) return;   // 🚫 SFU không dùng ICE restart kiểu P2P
   socket.emit("request-ice-restart", { to, reason });
 }
 
@@ -658,34 +643,6 @@ function optimizeVideoForMobile(videoEl){
   videoEl.style.objectFit = "cover";
 }
 
-function limitBitrateForMobile(pc){
-  if (!isMobile() || !pc) return;
-
-  pc.getSenders().forEach(sender=>{
-    if (!sender.track || sender.track.kind !== "video") return;
-
-    const p = sender.getParameters();
-    if (!p.encodings) p.encodings = [{}];
-
-    p.encodings[0].maxBitrate = 900_000; // ~900kbps
-    p.encodings[0].maxFramerate = 24;
-
-    sender.setParameters(p).catch(()=>{});
-  });
-}
-
-function limitAudioBitrate(pc, kbps = 32){
-  if (!pc) return;
-  pc.getReceivers().forEach(r=>{
-    if (!r.track || r.track.kind !== "audio") return;
-
-    const params = r.getParameters();
-    if (!params.encodings) params.encodings = [{}];
-
-    params.encodings[0].maxBitrate = kbps * 1000;
-    r.setParameters?.(params);
-  });
-}
 
 
 
@@ -695,58 +652,7 @@ const hdBadge = document.getElementById("hdBadge");
 let __lastBytes = 0;
 let __lastTs = 0;
 
-async function checkHDQuality(){
-  try{
-    if (!pc || pc.connectionState !== "connected") return;
 
-    const stats = await pc.getStats();
-    let bytes = 0;
-    let packetsLost = 0;
-    let packets = 0;
-
-    stats.forEach(r=>{
-      if (r.type === "inbound-rtp" && r.kind === "video"){
-        bytes += r.bytesReceived || 0;
-        packetsLost += r.packetsLost || 0;
-        packets += r.packetsReceived || 0;
-      }
-    });
-
-    const now = performance.now();
-    if (__lastTs){
-      const bitrate = ((bytes - __lastBytes) * 8) / (now - __lastTs); // kbps approx
-      const lossRate = packets ? packetsLost / packets : 0;
-
-      // 👉 Điều kiện mạng yếu
-      const weak =
-        bitrate < 400 ||     // bitrate thấp
-        lossRate > 0.05;     // mất gói > 5%
-
-        if (weak) {
-        safeIceRestart(roomId, "low_quality");
-        }
-
-      if (weak){
-        hdBadge.textContent = "🟡 HD";
-        hdBadge.classList.remove("hd-good");
-        hdBadge.classList.add("hd-bad");
-      }else{
-        hdBadge.textContent = "🟢 HD";
-        hdBadge.classList.remove("hd-bad");
-        hdBadge.classList.add("hd-good");
-      }
-    }
-
-    __lastBytes = bytes;
-    __lastTs = now;
-  }catch(e){
-    console.warn("HD quality check error", e);
-  }
-}
-
-if (!USE_SFU) {
-  setInterval(checkHDQuality, 2500);
-}
 
 
 
@@ -755,6 +661,10 @@ if (!USE_SFU) {
 
 
     const socket = io();
+
+    const SFU_URL = "http://207.148.79.73:4000";
+const sfu = io(SFU_URL, { transports:["websocket"] });
+
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
@@ -1655,7 +1565,7 @@ socket.on("reaction", (msg)=>{
     let __viewerNeedResume = false;
 
 
-    const pcs = new Map(); // peerId -> RTCPeerConnection
+   
 
     async function getRtcConfig() {
       const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
@@ -1717,6 +1627,8 @@ socket.on("reaction", (msg)=>{
       try{ btnJoin.style.display = "none"; }catch{}
 socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
+      await startSFUViewer();
+
       log("Đã join room, đợi offer từ host...");
     }
 
@@ -1761,134 +1673,6 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
   setTimeout(tryPlay, 500);
   setTimeout(tryPlay, 1000);
 }
-
-if (!USE_SFU) {
-    socket.on("offer", async ({ from, description }) => {
-
-      /*
-      // reset pc for this peer only
-      cleanupPeer(from);
-      */
-     
-      const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
-
-      limitBitrateForMobile(pc);
-      limitAudioBitrate(pc, 32); // 🔒 FIX MẤT TIẾNG KHI ĐÔNG
-
-
-      pcs.set(from, pc);
-
-     
-  // Auto ask peer to ICE-restart if connection degrades
-  pc.onconnectionstatechange = () => {
-    const st = pc.connectionState;
-    if (st === 'failed' || st === 'disconnected'){
-      try{ safeIceRestart(from, 'viewer_pc_' + st);
- }catch{}
-    }
-  };
-
-
-pc.ontrack = (event) => {
-  const stream = event.streams[0];
-  if (!stream) return;
-
-   
-
- else {
-    // ===== HOST STREAM (CHÍNH) =====
-    console.log("🎥 Viewer nhận stream HOST");
-
-    if (player.srcObject !== stream) {
-     player.srcObject = stream;
-     
-
-optimizeVideoForMobile(player);
-
-player.playsInline = true;
-player.muted = false;
-
-forceResumeAudio(player);
-
-    }
-
-    const hasAudio = stream.getAudioTracks().length > 0;
-
-if (hasAudio) {
-  player.muted = false;
-  player.volume = 1.0;
-
-  const tryPlay = async () => {
-    try { await player.play(); } catch {}
-  };
-
-  if (player.paused) tryPlay();
-}
-
-    try {
-      attachSpeakingIndicator(
-        player,
-        document.getElementById("hostCard")
-      );
-    } catch {}
-  }
-
-  setStatus("🟢 Đang xem LIVE");
-};
-
-
-
-
-
-
-      pc.onicecandidate = (e) => {
-        if (e.candidate) {
-          socket.emit("candidate", { to: from, candidate: e.candidate });
-        }
-      };
-
-      pc.oniceconnectionstatechange = () => {
-        log(`ICE(${from}): ${pc.iceConnectionState}`);
-
-const st = pc.iceConnectionState;
-  if (st === "failed" || st === "disconnected") {
-   safeIceRestart(from, "viewer_resume");
-
-
-  }
-
-      };
-
-      try {
-        await pc.setRemoteDescription(description);
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        socket.emit("answer", { to: from, description: pc.localDescription });
-
-
-        setStatus("🟢 Đang xem live trực tiếp.");
-        log("Đã gửi answer cho: " + from);
-      } catch (err) {
-        log("Lỗi xử lý offer: " + err.message);
-      }
-    });
-}
-
-
-
-if (!USE_SFU) {
-    socket.on("candidate", async ({ from, candidate }) => {
-      const pc = pcs.get(from);
-      if (!pc) return;
-      try {
-        await pc.addIceCandidate(candidate);
-      } catch (err) {
-        log("Lỗi addIceCandidate: " + err.message);
-      }
-    });
-  }
-
 
     btnJoin.onclick = () => {
       join().catch(err => log("Join lỗi: " + err.message));
@@ -3016,69 +2800,54 @@ if (isGuest) {
 
 
 
-async function startSfuConsume(roomId) {
-  // 1) Kết nối SFU
-  sfuSocket = io(SFU_URL, { transports: ["websocket"] });
+let sfuDevice;
+let recvTransport;
 
-  // 2) Join room với role viewer
-  const data = await new Promise(res =>
-    sfuSocket.emit("join", { roomId, role: "viewer" }, res)
-  );
+async function startSFUViewer(){
+  const { rtpCapabilities } = await new Promise(res=>{
+    sfu.emit("join", { roomId, role:"viewer" }, res);
+  });
 
-  // 3) Tạo Device
   sfuDevice = new mediasoupClient.Device();
-  await sfuDevice.load({ routerRtpCapabilities: data.rtpCapabilities });
+  await sfuDevice.load({ routerRtpCapabilities: rtpCapabilities });
 
-  // 4) Tạo recv transport
-  const tData = await new Promise(res =>
-    sfuSocket.emit("create-transport", {}, res)
-  );
+  const transportInfo = await new Promise(res=>{
+    sfu.emit("create-transport", null, res);
+  });
 
-  recvTransport = sfuDevice.createRecvTransport(tData);
+  recvTransport = sfuDevice.createRecvTransport(transportInfo);
 
-  recvTransport.on("connect", ({ dtlsParameters }, cb) => {
-    sfuSocket.emit("connect-transport", { transportId: recvTransport.id, dtlsParameters });
+  recvTransport.on("connect", ({ dtlsParameters }, cb)=>{
+    sfu.emit("connect-transport", {
+      transportId: transportInfo.id,
+      dtlsParameters
+    });
     cb();
   });
 
-  // 5) Lấy danh sách producer (host)
-  const producers = await new Promise(res =>
-    sfuSocket.emit("get-producers", null, res)
-  );
-
-  for (const producerId of producers) {
-    await consumeProducer(producerId);
-  }
-
-  // Khi host produce mới
-  sfuSocket.on("new-producer", async ({ producerId }) => {
-    await consumeProducer(producerId);
+  const producers = await new Promise(res=>{
+    sfu.emit("get-producers", null, res);
   });
-}
 
-async function consumeProducer(producerId) {
-  const { id, kind, rtpParameters } = await new Promise(res =>
-    sfuSocket.emit(
-      "consume",
-      {
-        transportId: recvTransport.id,
-        producerId,
+  for(const pid of producers){
+    const data = await new Promise(res=>{
+      sfu.emit("consume", {
+        transportId: transportInfo.id,
+        producerId: pid,
         rtpCapabilities: sfuDevice.rtpCapabilities
-      },
-      res
-    )
-  );
+      }, res);
+    });
 
-  const consumer = await recvTransport.consume({ id, producerId, kind, rtpParameters });
+    const consumer = await recvTransport.consume(data);
 
-  if (kind === "video") {
     const stream = new MediaStream([consumer.track]);
-    document.getElementById("player").srcObject = stream;
-  } else if (kind === "audio") {
-    const audio = new Audio();
-    audio.srcObject = new MediaStream([consumer.track]);
-    audio.autoplay = true;
+    player.srcObject = stream;
+    player.playsInline = true;
+    player.muted = false;
+    await player.play().catch(()=>{});
   }
+
+  console.log("🔥 Viewer connected to SFU");
 }
 
 
