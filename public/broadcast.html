@@ -3155,6 +3155,40 @@ socket.on("force-logout", ({ reason }) => {
 });
 
 
+// ================== START LIVE (FIX CỨNG) ==================
+btnStart.onclick = async () => {
+  try {
+    // 1. nếu chưa có camera → mở camera
+    if (!window.localStream) {
+      window.localStream = await navigator.mediaDevices.getUserMedia({
+        video: { width: 1280, height: 720, frameRate: 30 },
+        audio: true
+      });
+      preview.srcObject = window.localStream;
+    }
+
+    // 2. bật SFU
+    if (USE_SFU) {
+      await startSfuProduce(window.localStream);
+      console.log("🚀 SFU LIVE STARTED");
+    }
+
+    // 3. báo server
+    socket.emit("live-start", { roomId });
+
+    // 4. cập nhật UI
+    document.body.classList.add("is-live");
+    syncStartLiveOverlay(true);
+
+    btnStart.disabled = true;
+    btnStop.disabled = false;
+    hostFlipBtn.disabled = false;
+
+  } catch (err) {
+    console.error("❌ Start live failed:", err);
+    alert("Không thể bắt đầu live, xem Console (F12)");
+  }
+};
 
 
 
