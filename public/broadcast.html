@@ -1491,9 +1491,19 @@ document.addEventListener("visibilitychange", async () => {
     if (videoTrack && videoTrack.readyState !== "live") {
       console.log("📷 Video dead → restart camera");
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false
-      });
+  video: {
+    width: { ideal: 960 },
+    height: { ideal: 540 },
+    frameRate: { ideal: 24, max: 30 },
+    facingMode: "user"
+  },
+  audio: {
+    echoCancellation: true,
+    noiseSuppression: true,
+    autoGainControl: true
+  }
+});
+
       const newTrack = stream.getVideoTracks()[0];
 
       for (const pc of pcs.values()) {
@@ -1628,6 +1638,29 @@ socket.emit("join-room", {
 
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
+
+pc.oniceconnectionstatechange = () => {
+  if (pc.iceConnectionState === "disconnected") {
+    console.warn("ICE disconnected – lowering bitrate");
+    lowerBitrate(pc);
+  }
+};
+
+function lowerBitrate(pc){
+  pc.getSenders().forEach(sender=>{
+    if(sender.track?.kind !== "video") return;
+
+    const p = sender.getParameters();
+    if(!p.encodings) p.encodings = [{}];
+
+    p.encodings[0].maxBitrate = 700_000;   // 700kbps
+    p.encodings[0].maxFramerate = 20;
+
+    sender.setParameters(p).catch(()=>{});
+  });
+}
+
+
       pcs.set(viewerId, pc);
 
 pc.addEventListener("iceconnectionstatechange", () => {

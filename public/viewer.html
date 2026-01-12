@@ -705,6 +705,10 @@ async function checkHDQuality(){
         bitrate < 400 ||     // bitrate thấp
         lossRate > 0.05;     // mất gói > 5%
 
+        if (weak) {
+        safeIceRestart(roomId, "low_quality");
+        }
+
       if (weak){
         hdBadge.textContent = "🟡 HD";
         hdBadge.classList.remove("hd-good");
