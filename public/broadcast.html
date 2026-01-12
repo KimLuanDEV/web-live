@@ -3155,7 +3155,7 @@ async function startSfuProduce(stream) {
   sfuSocket = io(SFU_URL, { transports: ["websocket"] });
 
   // 2) Join room (dùng roomId hiện tại của bạn)
-  const roomId = window.roomId || window.currentRoom || "default";
+  const roomId = params.get("room") || "abc123";
   const rtpCaps = await new Promise(res =>
     sfuSocket.emit("join", { roomId, role: "broadcaster" }, res)
   );
