@@ -1,5 +1,3 @@
-
-
 :root{
   color-scheme: dark;
   --bg:#070A14;
@@ -6243,8 +6241,4 @@ body.is-guest .reactions-layer{
   font-size:14px;
   line-height:1.5;
   outline:none;
-}
-
-input, textarea, select {
-  font-size: 16px !important;
 }
