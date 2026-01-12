@@ -6245,39 +6245,3 @@ body.is-guest .reactions-layer{
   outline:none;
 }
 
-/* ===== HIDE BROWSER / HOSTING FOOTER BAR ===== */
-html, body {
-  height: 100%;
-  overscroll-behavior: none;
-}
-
-body::after,
-body::before {
-  display: none !important;
-}
-
-/* Android WebView / Chrome injected footer */
-iframe,
-.webview-footer,
-.browser-footer,
-.app-footer,
-.bottom-bar,
-.toolbar,
-[role="toolbar"],
-[role="contentinfo"]{
-  display:none !important;
-  visibility:hidden !important;
-  height:0 !important;
-}
-
-/* Remove default mobile browser bottom safe-area */
-body {
-  padding-bottom: env(safe-area-inset-bottom);
-}
-
-/* iOS Safari bottom bar fix */
-@supports (-webkit-touch-callout: none) {
-  body {
-    min-height: -webkit-fill-available;
-  }
-}
