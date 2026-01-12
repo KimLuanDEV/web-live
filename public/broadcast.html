@@ -1735,22 +1735,24 @@ audio: {
 
         });
 
-        preview.srcObject = localStream;
-await startSFUProducer();
+   preview.srcObject = localStream;
 
+// 🔥 BÁO SERVER PHÒNG ĐÃ LIVE
+socket.emit("live-start", { roomId });
+
+// 🔥 GỬI VIDEO VÀO SFU
+await startSFUProducer();
 // ✅ BẬT TRẠNG THÁI LIVE
     document.body.classList.add("is-live");
 
-
-    try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
         btnStart.disabled = true;
         btnStop.disabled = false;
         hostFlipBtn.disabled = false;
 
 
-        log("Đã Start camera + mic. Gửi link xem cho người khác.");
+       log("Đã Start camera + mic. Phòng đã LIVE.");
         socket.emit("broadcaster-ready", { roomId });
-        socket.emit("live-start", { roomId });
+      
 
       } catch (err) {
         log("Không mở được camera/mic: " + err.message);
@@ -1817,6 +1819,7 @@ syncStartLiveOverlay(false);
         localStream.addTrack(newVideoTrack);
         preview.srcObject = localStream;
         await startSFUProducer();
+        socket.emit("live-start", { roomId });
 
     try{ attachSpeakingIndicator(preview, document.getElementById('hostCard')); }catch{}
 
