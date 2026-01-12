@@ -24,7 +24,13 @@ body{
   justify-content:center;
   align-items:center;
   color:white;
+   position: fixed;
+  inset: 0;
+  overflow: hidden;
+  height: 100dvh;   /* dùng dvh mới – không bị keyboard ảnh hưởng */
+  width: 100vw;
 }
+
 
 .login-shell{
   width:100%;
@@ -134,10 +140,27 @@ input, textarea, select {
   font-size: 16px !important;
 }
 
+.screen{
+  position: fixed;
+  inset: 0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height: 100dvh;
+  width: 100vw;
+  overflow:hidden;
+}
+
+.login-shell{
+  max-height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 </style>
 </head>
 <body>
-
+  <div class="screen">
 <div class="login-shell">
   <div class="login-avatar"></div>
   <div class="login-title">LIVESTREAM PRO</div>
@@ -181,6 +204,8 @@ input, textarea, select {
     <div class="pass-wrap">
   <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
   <span class="pass-eye" onclick="togglePass('forgotPass', this)">👁</span>
+</div>
+
 </div>
 
 

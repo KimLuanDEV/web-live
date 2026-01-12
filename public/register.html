@@ -24,6 +24,11 @@ body{
   justify-content:center;
   align-items:center;
   color:white;
+   position: fixed;
+  inset: 0;
+  overflow: hidden;
+  height: 100dvh;   /* dùng dvh mới – không bị keyboard ảnh hưởng */
+  width: 100vw;
 }
 
 .register-shell{
@@ -134,12 +139,29 @@ input, textarea, select {
   font-size: 16px !important;
 }
 
+.screen{
+  position: fixed;
+  inset: 0;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height: 100dvh;
+  width: 100vw;
+  overflow:hidden;
+}
+
+.register-shell{
+  max-height: 100dvh;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
 </style>
 
 </head>
 
 <body>
-
+<div class="screen">
 <div class="register-shell">
   <div class="register-avatar"></div>
   <div class="register-title">LIVESTREAM PRO</div>
@@ -172,7 +194,7 @@ input, textarea, select {
   </div>
 </div>
 
-
+</div>
 <!-- GLOBAL MESSAGE MODAL -->
 <div id="msgModal" class="modal hidden">
   <div class="modal-backdrop"></div>
