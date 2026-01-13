@@ -28,7 +28,9 @@ function saveChat(msg){
   const key = chatKey();
   if(!key) return;
 
-  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+ const arr = (JSON.parse(localStorage.getItem(key) || "[]"))
+  .filter(m => m.me || m.uid === currentTarget.uid);
+
   arr.push(msg);
   localStorage.setItem(key, JSON.stringify(arr));
 }
@@ -204,9 +206,11 @@ socket.on("private-message", ({ from, text, msgId }) => {
   
 saveChat({
   me:false,
+  uid: from.uid,     // 🔥 gắn UID người gửi
   text:text,
   time:Date.now()
 });
+
 
 
  

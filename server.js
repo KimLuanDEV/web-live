@@ -462,7 +462,12 @@ socket.on("private-call", ({ to }) => {
 
  socket.on("private-message", ({ to, text, msgId }) => {
    const targetSocket = activeUsers.get(to);   // 🔥 UID -> socketId
-  const fromProfile = socket.data.profile || { name:"User" };
+
+  const fromProfile = {
+  ...(socket.data.profile || {}),
+  uid: socket.data.uid
+};
+
 
   // gửi cho người nhận
    io.to(targetSocket).emit("private-message", {
