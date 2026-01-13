@@ -6623,7 +6623,7 @@ body.is-guest .reactions-layer{
   display: flex;
   flex-direction: column-reverse; /* tin mới ở dưới */
   overflow-y: auto;
-  padding-bottom: 32px;
+  padding-bottom: 40px;
 }
 
 
