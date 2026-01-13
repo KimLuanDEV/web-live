@@ -6364,3 +6364,141 @@ body.is-guest .reactions-layer{
   padding:6px 10px;
   border-radius:999px;
 }
+
+
+/* ===== PRIVATE MESSAGES ===== */
+
+.messages-shell{
+  height: calc(100vh - 40px);
+  display:flex;
+  flex-direction:column;
+}
+
+.messages-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+.messages-title{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:.5px;
+}
+
+.back-btn{
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  background:rgba(0,0,0,.5);
+  border:1px solid rgba(255,255,255,.2);
+  color:#fff;
+}
+
+.messages-body{
+  flex:1;
+  display:grid;
+  grid-template-columns: 260px 1fr;
+  gap:10px;
+  margin-top:10px;
+}
+
+.messages-users{
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:16px;
+  padding:10px;
+  overflow:auto;
+}
+
+.msg-user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:12px;
+  cursor:pointer;
+}
+.msg-user:hover{
+  background:rgba(255,255,255,.06);
+}
+.msg-user img{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:2px solid rgba(255,255,255,.2);
+}
+
+.msg-user-name{
+  font-weight:700;
+  font-size:14px;
+}
+
+.messages-chat{
+  display:flex;
+  flex-direction:column;
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:16px;
+}
+
+.chat-top{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.chat-top img{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+}
+
+.chat-messages{
+  flex:1;
+  padding:12px;
+  overflow:auto;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.msg-bubble{
+  max-width:75%;
+  padding:8px 12px;
+  border-radius:14px;
+  font-size:13px;
+  line-height:1.4;
+}
+
+.msg-me{
+  align-self:flex-end;
+  background:linear-gradient(135deg,#5fa8ff,#25f09a);
+  color:#000;
+  font-weight:600;
+}
+
+.msg-other{
+  align-self:flex-start;
+  background:rgba(255,255,255,.1);
+}
+
+.chat-input{
+  display:flex;
+  gap:8px;
+  padding:10px;
+  border-top:1px solid rgba(255,255,255,.12);
+}
+
+.chat-input input{
+  flex:1;
+}
+
+.chat-input button{
+  width:50px;
+  font-size:18px;
+}

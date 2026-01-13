@@ -42,6 +42,7 @@ socket.on("private-chat-history", (list) => {
 });
 
 
+
 document.getElementById("sendBtn").onclick = () => {
   const txt = document.getElementById("msgInput").value.trim();
   if(!txt || !currentTarget) return;
@@ -51,7 +52,7 @@ document.getElementById("sendBtn").onclick = () => {
     text: txt
   });
 
-  pushMsg("Bạn", txt);
+  pushMsg(from.name, text, false);
   document.getElementById("msgInput").value = "";
 };
 
@@ -59,10 +60,10 @@ socket.on("private-message", ({ from, text }) => {
   pushMsg(from.name, text);
 });
 
-function pushMsg(name, text){
+function pushMsg(name, text, mine=false){
   const div = document.createElement("div");
-  div.className = "chat-line";
-  div.textContent = `${name}: ${text}`;
+  div.className = "msg-bubble " + (mine ? "msg-me" : "msg-other");
+  div.textContent = text;
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
