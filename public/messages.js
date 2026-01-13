@@ -151,6 +151,13 @@ callBtn.onclick = async () => {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
   });
 
+voicePC.ontrack = e => {
+  const audio = document.createElement("audio");
+  audio.srcObject = e.streams[0];
+  audio.autoplay = true;
+  audio.play();
+};
+
   voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
 
   voicePC.onicecandidate = e => {
