@@ -421,6 +421,29 @@ io.on("connection", (socket) => {
 
 
 
+  socket.on("voice-offer", ({ to, sdp }) => {
+  io.to(to).emit("voice-offer", {
+    from: socket.id,
+    sdp
+  });
+});
+
+socket.on("voice-answer", ({ to, sdp }) => {
+  io.to(to).emit("voice-answer", {
+    from: socket.id,
+    sdp
+  });
+});
+
+socket.on("voice-ice", ({ to, candidate }) => {
+  io.to(to).emit("voice-ice", {
+    from: socket.id,
+    candidate
+  });
+});
+
+
+
 socket.on("private-call", ({ to }) => {
   const from = socket.data.profile;
   io.to(to).emit("private-call", {

@@ -1,6 +1,9 @@
 const socket = io();
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
+let voicePC = null;
+let voiceStream = null;
+let voiceTarget = null;
 let currentTarget = null;
 
 socket.emit("auth-login", { uid: auth.uid });
@@ -137,15 +140,93 @@ window.addEventListener("resize", () => {
 });
 
 
-document.getElementById("callBtn").onclick = () => {
-  if(!currentTarget){
-    alert("Chưa chọn người để gọi");
-    return;
-  }
+callBtn.onclick = async () => {
+  if(!currentTarget) return;
 
-  socket.emit("private-call", {
-    to: currentTarget.socketId
+  voiceTarget = currentTarget.socketId;
+
+  voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+  voicePC = new RTCPeerConnection({
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+  });
+
+  voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+
+  voicePC.onicecandidate = e => {
+    if(e.candidate){
+      socket.emit("voice-ice", {
+        to: voiceTarget,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  const offer = await voicePC.createOffer();
+  await voicePC.setLocalDescription(offer);
+
+  socket.emit("voice-offer", {
+    to: voiceTarget,
+    sdp: offer
   });
 
   alert("📞 Đang gọi " + currentTarget.name);
 };
+
+
+socket.on("voice-offer", async ({ from, sdp }) => {
+  if(!confirm("📞 Có cuộc gọi đến. Nhận?")) return;
+
+  voiceTarget = from;
+
+  voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+  voicePC = new RTCPeerConnection({
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+  });
+
+  voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+
+  voicePC.ontrack = e => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    audio.play();
+  };
+
+  voicePC.onicecandidate = e => {
+    if(e.candidate){
+      socket.emit("voice-ice", {
+        to: voiceTarget,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  await voicePC.setRemoteDescription(sdp);
+  const answer = await voicePC.createAnswer();
+  await voicePC.setLocalDescription(answer);
+
+  socket.emit("voice-answer", {
+    to: voiceTarget,
+    sdp: answer
+  });
+});
+
+
+socket.on("voice-answer", async ({ sdp }) => {
+  await voicePC.setRemoteDescription(sdp);
+});
+
+socket.on("voice-ice", async ({ candidate }) => {
+  if(voicePC){
+    await voicePC.addIceCandidate(candidate);
+  }
+});
+
+
+socket.on("private-call", ({ from }) => {
+  if(confirm("📞 " + from.name + " đang gọi bạn. Nhận cuộc gọi?")){
+    alert("🎙 Kết nối voice sẽ mở ở bước tiếp theo");
+  }
+});
