@@ -976,8 +976,7 @@ function getUserProfile(){
 
 
 
-const stableUID = profile.uid || getStableUID();
-
+const stableUID = getStableUID();
 
 const sendProfile = isGuest ? {
   uid: stableUID,
@@ -1958,7 +1957,7 @@ const avatar =
   (vip ? ` chat-${vip.key}` : "");
 
 
-  el.dataset.uid = msg.uid || msg.name;
+  el.dataset.socket = msg.socketId;
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
  el.innerHTML = `
 

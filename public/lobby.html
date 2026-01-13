@@ -39,7 +39,10 @@
     </div>
   </div>
 
-  
+  <button class="lobby-btn" id="btnPlayerLobby">
+  👥 Sảnh người chơi
+</button>
+
 
   <button class="lobby-btn logout-btn" id="btnLogout">⏻ Đăng xuất</button>
 </div>
@@ -84,29 +87,12 @@
 
     <div class="card">
       <div id="empty" class="log">Chưa có phòng nào đang live.</div>
+
       <!-- skeleton loading -->
       <div id="skeleton" class="lobby-grid" style="display:none"></div>
+
       <div id="grid" class="lobby-grid"></div>
     </div>
-
-
-<div class="card lobby-users-card">
-  <div class="lobby-users-head">
-    <div class="lobby-users-title">
-      🧑‍🤝‍🧑 Sảnh online
-    </div>
-    <div class="lobby-users-count">
-      <span id="onlineCount">0</span> online
-    </div>
-  </div>
-
-  <div id="onlineUsers" class="lobby-users-grid">
-    <!-- users render ở đây -->
-  </div>
-</div>
-
-
-
   </div>
 
 <!-- CREATE ROOM MODAL -->
@@ -312,16 +298,39 @@
 </div>
 
 
+<!-- 👥 PLAYER LOBBY -->
+<div id="playerLobby" class="player-lobby hidden">
+  <div class="player-lobby-backdrop"></div>
+
+  <div class="player-lobby-panel">
+    <div class="player-lobby-header">
+      <div class="title">👥 Sảnh người chơi</div>
+      <button id="closePlayerLobby">✕</button>
+    </div>
+
+    <div class="player-lobby-sub">
+      Danh sách người chơi đang online (sẽ cập nhật realtime)
+    </div>
+
+    <div id="playerList" class="player-lobby-list">
+      <div class="player-lobby-empty">
+        Chưa có dữ liệu người chơi
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 const socket = io();
 
-const onlineUsersEl = document.getElementById("onlineUsers");
-const onlineCountEl = document.getElementById("onlineCount");
+
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
-const isGuest = localStorage.getItem("isGuest") === "1";
 
+const isGuest = localStorage.getItem("isGuest") === "1";
 
 
 
@@ -338,21 +347,16 @@ localStorage.removeItem("isGuest"); // 🔥
   location.href = "/login.html";
 });
 
-socket.emit("lobby-get-users");
-
-socket.on("lobby-users", users => {
-  renderOnlineUsers(users);
-});
 
 
 const VIRTUAL_ROOMS = [
   
   {
     roomId: "Film",
-    title: "Mr.Bean Film",
+    title: "Mr.Bean Holiday",
     viewers: 999,
-    avatar: "https://i.pinimg.com/736x/0f/95/3c/0f953cc248c3ebcbe8fb742818dc588e.jpg",
-    link: "https://www.youtube.com/watch?v=STrz4s0woMk&t=2127s"
+    avatar: "https://img.timviecdienvien.com/2019/06/hinh1-dien-anh-560x420.jpg",
+    link: "https://www.youtube.com/watch?v=cwSoWCJGe9Y"
   },
   /*
   {
@@ -414,40 +418,6 @@ const VIRTUAL_ROOMS = [
   */
   
 ];
-
-
-
-function renderOnlineUsers(users){
-  const box = document.getElementById("onlineUsers");
-  const count = document.getElementById("onlineCount");
-
-  if(!box) return;
-
-  count.textContent = users.length;
-
-  box.innerHTML = users.map(u => {
-    const ava = u.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + encodeURIComponent(u.name);
-    return `
-      <div class="lobby-user ${u.isHost ? "live" : ""}">
-        <img src="${ava}">
-        <div class="lobby-user-name">${u.name}</div>
-        <div class="lobby-user-status">
-          ${u.isHost ? "🔴 HOST" : "🟢 Online"}
-        </div>
-      </div>
-    `;
-  }).join("");
-}
-
-
-
-function openUser(uid){
-  socket.emit("get-user-profile", uid, (profile)=>{
-    if(profile) openMiniProfile(profile);
-  });
-}
-
-
 
 function getVirtualRooms(){
   // map về format giống room thật để tái dùng render()
@@ -1082,6 +1052,24 @@ function closeMsg(){
   document.getElementById("msgModal").classList.add("hidden");
   __msgOkAction = null;
 }
+
+
+const btnPlayerLobby = document.getElementById("btnPlayerLobby");
+const playerLobby = document.getElementById("playerLobby");
+const closePlayerLobby = document.getElementById("closePlayerLobby");
+
+btnPlayerLobby.onclick = () => {
+  playerLobby.classList.remove("hidden");
+};
+
+closePlayerLobby.onclick = () => {
+  playerLobby.classList.add("hidden");
+};
+
+playerLobby.querySelector(".player-lobby-backdrop").onclick = () => {
+  playerLobby.classList.add("hidden");
+};
+
 
 
 

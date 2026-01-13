@@ -6244,80 +6244,83 @@ body.is-guest .reactions-layer{
 }
 
 
-/* ===== USER LOBBY ===== */
-
-.lobby-users-card{
-  margin-top:14px;
+/* ===== PLAYER LOBBY ===== */
+.player-lobby{
+  position:fixed;
+  inset:0;
+  z-index:99999;
 }
 
-.lobby-users-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  margin-bottom:12px;
+.player-lobby.hidden{
+  display:none;
 }
 
-.lobby-users-title{
-  font-weight:900;
-  letter-spacing:.5px;
-  font-size:15px;
+.player-lobby-backdrop{
+  position:absolute;
+  inset:0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
 }
 
-.lobby-users-count{
-  font-size:13px;
-  opacity:.8;
-}
-
-.lobby-users-grid{
-  display:grid;
-  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
-  gap:10px;
-}
-
-.lobby-user{
+.player-lobby-panel{
+  position:absolute;
+  right:0;
+  top:0;
+  height:100%;
+  width:min(92vw,420px);
+  background: rgba(5,8,18,.85);
+  border-left:1px solid rgba(255,255,255,.15);
+  box-shadow: -20px 0 60px rgba(0,0,0,.6);
   display:flex;
   flex-direction:column;
+  animation: slideIn .25s ease;
+}
+
+@keyframes slideIn{
+  from{ transform: translateX(30px); opacity:0 }
+  to{ transform: translateX(0); opacity:1 }
+}
+
+.player-lobby-header{
+  display:flex;
   align-items:center;
-  gap:6px;
-  padding:10px 6px;
-  border-radius:14px;
-  background: rgba(0,0,0,.28);
-  border:1px solid rgba(255,255,255,.14);
-  text-align:center;
-  cursor:pointer;
-  transition:.15s;
+  justify-content:space-between;
+  padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,.12);
 }
 
-.lobby-user:hover{
-  transform: translateY(-2px);
-  border-color: rgba(95,168,255,.45);
-  box-shadow: 0 0 22px rgba(95,168,255,.15);
+.player-lobby-header .title{
+  font-size:16px;
+  font-weight:900;
+  letter-spacing:.3px;
 }
 
-.lobby-user img{
-  width:46px;
-  height:46px;
-  border-radius:16px;
-  object-fit:cover;
-  border:1px solid rgba(255,255,255,.25);
+.player-lobby-header button{
+  width:36px;
+  height:36px;
+  border-radius:999px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
 }
 
-.lobby-user-name{
-  font-size:12px;
-  font-weight:700;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width:80px;
-}
-
-.lobby-user-status{
-  font-size:11px;
+.player-lobby-sub{
+  padding:10px 16px;
+  font-size:13px;
   opacity:.75;
 }
 
-/* host đang live */
-.lobby-user.live{
-  border-color: rgba(255,59,107,.5);
-  box-shadow: 0 0 18px rgba(255,59,107,.2);
+.player-lobby-list{
+  flex:1;
+  overflow:auto;
+  padding:12px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.player-lobby-empty{
+  opacity:.5;
+  text-align:center;
+  margin-top:40px;
 }
