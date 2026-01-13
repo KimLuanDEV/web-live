@@ -898,12 +898,6 @@ if (profile){
 
 
 
-if(profile.name){
-  document.getElementById("userName").textContent = profile.name;
-  document.getElementById("userLevel").textContent = "Lv " + (profile.level || 1);
-  document.getElementById("userAva").src = profile.avatar || 
-    "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg";
-}
 
 
 
@@ -993,6 +987,15 @@ inboxModal?.querySelector(".modal-backdrop")?.addEventListener("click", ()=>{
 
 socket.on("active-users", ({ users }) => {
   renderPlayerLobby(users);
+
+    // 🔥 cập nhật userBar từ chính socket của mình
+  const me = users.find(u => u.uid === profile.uid);
+  if(me){
+    document.getElementById("userName").textContent = me.name;
+    document.getElementById("userLevel").textContent = "Lv " + me.level;
+    document.getElementById("userAva").src = me.avatar;
+  }
+
 });
 
 
