@@ -662,8 +662,12 @@ let device, sendTransport;
 
 async function startSFUTest(){
   socket.emit("getRtpCapabilities", async (caps)=>{
-    device = new mediasoupClient.Device();
+
+    const { Device } = window.mediasoupClient;
+    device = new Device();
+
     await device.load({ routerRtpCapabilities: caps });
+
 
     socket.emit("createTransport", async (params)=>{
       sendTransport = device.createSendTransport(params);
@@ -681,7 +685,8 @@ async function startSFUTest(){
 
       // 🎥 Fake camera bằng video file
 const video = document.createElement("video");
-video.src = "/assets/demo.mp4";
+video.src = "https://www.w3schools.com/html/mov_bbb.mp4";
+
 video.loop = true;
 video.muted = true;
 await video.play();
