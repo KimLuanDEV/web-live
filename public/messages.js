@@ -188,6 +188,11 @@ callBtn.classList.add("hidden");
 socket.on("voice-offer", async ({ from, sdp }) => {
   if(!confirm("📞 Có cuộc gọi đến. Nhận?")) return;
 
+  muteBtn.classList.remove("hidden");
+endCallBtn.classList.remove("hidden");
+callBtn.classList.add("hidden");
+
+
   voiceTarget = from;
 
   voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
@@ -264,10 +269,13 @@ socket.on("private-call", ({ from }) => {
 });
 
 
+const callBtn = document.getElementById("callBtn");   // 🔥 BẮT BUỘC
 const endCallBtn = document.getElementById("endCallBtn");
 const muteBtn = document.getElementById("muteBtn");
 let micMuted = false;
+
 endCallBtn.onclick = endVoiceCall;
+
 
 function endVoiceCall(){
   if(voiceStream){
