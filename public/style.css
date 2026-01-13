@@ -6528,3 +6528,46 @@ body.is-guest .reactions-layer{
   line-height: 1;
   opacity: .6;
 }
+
+
+/* ===== FULL SCREEN CHAT MODAL ===== */
+#chatModal{
+  --kb: 0px; /* keyboard height */
+}
+
+#chatModal .modal-card{
+  position: fixed;
+  inset: 0;                      /* full màn hình */
+  margin: 0 !important;
+  max-width: none !important;
+  width: 100vw;
+  height: calc(100vh - var(--kb));
+  border-radius: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+}
+
+/* header (Chat với ...) */
+#chatModal h4{
+  margin: 0;
+}
+
+/* vùng tin nhắn */
+#chatModal .chatbox{
+  flex: 1;
+  height: auto;
+  overflow-y: auto;
+  margin-top: 8px;
+}
+
+/* input bar luôn nằm dưới */
+#chatModal .chatform{
+  position: sticky;
+  bottom: 0;
+  background: rgba(5,8,18,.95);
+  padding-top: 8px;
+  display: flex;
+  gap: 8px;
+  z-index: 5;
+}
