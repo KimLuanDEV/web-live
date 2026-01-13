@@ -10,37 +10,41 @@
 <body class="page-messages">
 <script src="/guard.js"></script>
 
-<div class="messages-app">
-
-  <!-- LEFT SIDEBAR -->
-  <div class="msg-sidebar">
-    <div class="msg-logo">💬 Chat</div>
-    <div id="userList" class="msg-userlist"></div>
-  </div>
-
-  <!-- RIGHT CHAT -->
-  <div class="msg-main">
-
-    <div class="msg-header">
-      <div class="msg-peer">
-        <img id="chatAvatar">
-        <div id="chatTitle">Chọn người để chat</div>
+<div class="container">
+  <div class="card">
+    <div class="topbar">
+      <div class="brand">
+        <span class="brand__dot"></span>
+        <div>
+          <div class="brand__title">📩 Tin nhắn</div>
+          <small>Chat riêng giữa người dùng</small>
+        </div>
       </div>
-      <button onclick="location.href='/profile.html'">✕</button>
+
+      <button onclick="location.href='/profile.html'">← Quay lại</button>
     </div>
 
-    <div id="chatBox" class="msg-body"></div>
+    <div class="row">
+      <!-- Danh sách người -->
+      <div class="card" style="max-height:70vh;overflow:auto">
+        <h4>👥 Người đang online</h4>
+        <div id="userList"></div>
+      </div>
 
-    <div class="msg-inputbar">
-      <input id="msgInput" placeholder="Nhập tin nhắn…" />
-      <button id="sendBtn">➤</button>
+      <!-- Khung chat -->
+      <div class="card">
+        <h4 id="chatTitle">Chọn người để chat</h4>
+
+        <div id="chatBox" class="chatbox"></div>
+
+        <div class="chatform">
+          <input id="msgInput" placeholder="Nhập tin nhắn..." />
+          <button id="sendBtn">Gửi</button>
+        </div>
+      </div>
     </div>
-
   </div>
-
 </div>
-
-
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/messages.js"></script>

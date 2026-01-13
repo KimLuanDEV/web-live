@@ -20,7 +20,6 @@ socket.on("active-users", ({ users }) => {
     div.innerHTML = `<img src="${u.avatar}" width="24" style="border-radius:50%"> ${u.name}`;
 
     div.onclick = () => {
-  chatAvatar.src = u.avatar;
   currentTarget = u;
   chatTitle.textContent = "Chat với " + u.name;
   chatBox.innerHTML = "";
@@ -42,8 +41,6 @@ socket.on("private-chat-history", (list) => {
   });
 });
 
-
-
 document.getElementById("sendBtn").onclick = () => {
   const txt = document.getElementById("msgInput").value.trim();
   if(!txt || !currentTarget) return;
@@ -53,7 +50,7 @@ document.getElementById("sendBtn").onclick = () => {
     text: txt
   });
 
-  pushMsg(from.name, text, false);
+  pushMsg("Bạn", txt);
   document.getElementById("msgInput").value = "";
 };
 
@@ -61,10 +58,10 @@ socket.on("private-message", ({ from, text }) => {
   pushMsg(from.name, text);
 });
 
-function pushMsg(name, text, mine=false){
+function pushMsg(name, text){
   const div = document.createElement("div");
-  div.className = "msg-bubble " + (mine ? "msg-me" : "msg-other");
-  div.textContent = text;
+  div.className = "chat-line";
+  div.textContent = `${name}: ${text}`;
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
