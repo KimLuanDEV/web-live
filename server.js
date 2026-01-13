@@ -461,10 +461,11 @@ socket.on("private-call", ({ to }) => {
 
 
  socket.on("private-message", ({ to, text, msgId }) => {
+   const targetSocket = activeUsers.get(to);   // 🔥 UID -> socketId
   const fromProfile = socket.data.profile || { name:"User" };
 
   // gửi cho người nhận
-  io.to(to).emit("private-message", {
+   io.to(targetSocket).emit("private-message", {
     from: fromProfile,
     text,
     msgId
@@ -478,7 +479,10 @@ socket.on("private-call", ({ to }) => {
 });
 
 socket.on("msg-seen", ({ to, msgId }) => {
-  io.to(to).emit("msg-status", {
+   const targetSocket = activeUsers.get(to);
+  if(!targetSocket) return;
+
+  io.to(targetSocket).emit("msg-status", {
     msgId,
     status: "seen"
   });

@@ -182,11 +182,11 @@ document.getElementById("sendBtn").onclick = () => {
 
   const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-  socket.emit("private-message", {
-    to: currentTarget.socketId,
-    text: txt,
-    msgId
-  });
+ socket.emit("private-message", {
+  to: currentTarget.uid,   // 🔥 GỬI THEO UID
+  text: txt,
+  msgId
+});
 
   pushMsg("Bạn", txt, true, msgId, "⏳");
 
@@ -210,11 +210,11 @@ saveChat({
 
 
  
-  // báo là đã xem
-  socket.emit("msg-seen", {
-    to: from.socketId,
-    msgId
-  });
+socket.emit("msg-seen", {
+  to: from.uid,
+  msgId
+});
+
 });
 
 socket.on("msg-status", ({ msgId, status }) => {
