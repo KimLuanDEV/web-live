@@ -6623,7 +6623,27 @@ body.is-guest .reactions-layer{
   display: flex;
   flex-direction: column-reverse; /* tin mới ở dưới */
   overflow-y: auto;
-  padding-bottom: 40px;
+  padding-bottom: 48px;
 }
 
 
+
+/* ===== CHAT CALL BUTTON ===== */
+.chat-call{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:1px solid rgba(95,168,255,.45);
+  background: rgba(95,168,255,.18);
+  color:#5FA8FF;
+  font-size:18px;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow: 0 0 18px rgba(95,168,255,.25);
+}
+.chat-call:hover{
+  filter:brightness(1.15);
+  transform:scale(1.05);
+}

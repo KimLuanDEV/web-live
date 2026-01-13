@@ -135,3 +135,17 @@ window.addEventListener("resize", () => {
       .style.setProperty("--kb", "0px");
   }
 });
+
+
+document.getElementById("callBtn").onclick = () => {
+  if(!currentTarget){
+    alert("Chưa chọn người để gọi");
+    return;
+  }
+
+  socket.emit("private-call", {
+    to: currentTarget.socketId
+  });
+
+  alert("📞 Đang gọi " + currentTarget.name);
+};
