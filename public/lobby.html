@@ -898,6 +898,12 @@ if (profile){
 
 
 
+if(profile.name){
+  document.getElementById("userName").textContent = profile.name;
+  document.getElementById("userLevel").textContent = "Lv " + (profile.level || 1);
+  document.getElementById("userAva").src = profile.avatar || 
+    "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg";
+}
 
 
 
@@ -995,7 +1001,7 @@ socket.on("active-users", ({ users }) => {
     document.getElementById("userLevel").textContent = "Lv " + me.level;
     document.getElementById("userAva").src = me.avatar;
   }
-
+  
 });
 
 
