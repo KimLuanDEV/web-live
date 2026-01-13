@@ -189,7 +189,13 @@ callBtn.classList.add("hidden");
 
 socket.on("voice-answer", async ({ sdp }) => {
   await voicePC.setRemoteDescription(sdp);
+
+  // 🔥 đảm bảo UI ở trạng thái đang gọi
+  muteBtn.classList.remove("hidden");
+  endCallBtn.classList.remove("hidden");
+  callBtn.classList.add("hidden");
 });
+
 
 socket.on("voice-ice", async ({ candidate }) => {
   if(voicePC){
