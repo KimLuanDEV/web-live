@@ -6366,67 +6366,59 @@ body.is-guest .reactions-layer{
 }
 
 
-/* ===== PRIVATE MESSAGES ===== */
+/* ===== GREEDY KING MESSENGER ===== */
 
-.messages-shell{
-  height: calc(100vh - 40px);
+.messages-app{
+  position:fixed;
+  inset:0;
+  display:grid;
+  grid-template-columns: 280px 1fr;
+  background: linear-gradient(180deg,#060814,#070A14);
+}
+
+.msg-sidebar{
+  background: rgba(0,0,0,.65);
+  border-right:1px solid rgba(255,255,255,.08);
   display:flex;
   flex-direction:column;
 }
 
-.messages-header{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:12px 14px;
-  border-bottom:1px solid rgba(255,255,255,.1);
-}
-
-.messages-title{
-  font-size:18px;
+.msg-logo{
+  padding:16px;
   font-weight:900;
-  letter-spacing:.5px;
+  font-size:18px;
+  letter-spacing:.4px;
+  color:#ffd36e;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  text-shadow:0 0 15px rgba(255,211,110,.5);
 }
 
-.back-btn{
-  width:36px;
-  height:36px;
-  border-radius:999px;
-  background:rgba(0,0,0,.5);
-  border:1px solid rgba(255,255,255,.2);
-  color:#fff;
-}
-
-.messages-body{
+.msg-userlist{
   flex:1;
-  display:grid;
-  grid-template-columns: 260px 1fr;
-  gap:10px;
-  margin-top:10px;
-}
-
-.messages-users{
-  background:rgba(0,0,0,.4);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:16px;
-  padding:10px;
   overflow:auto;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
 .msg-user{
   display:flex;
-  align-items:center;
   gap:10px;
   padding:10px;
-  border-radius:12px;
+  border-radius:14px;
   cursor:pointer;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
 }
 .msg-user:hover{
-  background:rgba(255,255,255,.06);
+  background:rgba(255,255,255,.08);
+  border-color:#ffd36e;
 }
+
 .msg-user img{
-  width:38px;
-  height:38px;
+  width:42px;
+  height:42px;
   border-radius:50%;
   border:2px solid rgba(255,255,255,.2);
 }
@@ -6436,69 +6428,97 @@ body.is-guest .reactions-layer{
   font-size:14px;
 }
 
-.messages-chat{
+.msg-main{
   display:flex;
   flex-direction:column;
-  background:rgba(0,0,0,.35);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:16px;
+  background:
+    radial-gradient(900px 500px at 80% 10%, rgba(95,168,255,.08), transparent 60%),
+    #070A14;
 }
 
-.chat-top{
+.msg-header{
+  height:64px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0 16px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  background:rgba(0,0,0,.5);
+}
+
+.msg-peer{
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:10px 14px;
-  border-bottom:1px solid rgba(255,255,255,.12);
+  gap:12px;
 }
 
-.chat-top img{
-  width:36px;
-  height:36px;
+.msg-peer img{
+  width:40px;
+  height:40px;
   border-radius:50%;
+  border:2px solid #ffd36e;
+  box-shadow:0 0 12px rgba(255,211,110,.5);
 }
 
-.chat-messages{
+.msg-body{
   flex:1;
-  padding:12px;
   overflow:auto;
+  padding:20px;
   display:flex;
   flex-direction:column;
-  gap:8px;
+  gap:10px;
 }
 
 .msg-bubble{
-  max-width:75%;
-  padding:8px 12px;
-  border-radius:14px;
-  font-size:13px;
+  max-width:70%;
+  padding:10px 14px;
+  border-radius:18px;
+  font-size:14px;
   line-height:1.4;
+  animation: chatPop .15s ease-out;
 }
 
 .msg-me{
   align-self:flex-end;
-  background:linear-gradient(135deg,#5fa8ff,#25f09a);
+  background: linear-gradient(135deg,#ffd36e,#ff6a00);
   color:#000;
-  font-weight:600;
+  font-weight:700;
+  box-shadow:0 0 18px rgba(255,211,110,.4);
 }
 
 .msg-other{
   align-self:flex-start;
-  background:rgba(255,255,255,.1);
+  background: rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.12);
 }
 
-.chat-input{
+.msg-inputbar{
   display:flex;
-  gap:8px;
-  padding:10px;
-  border-top:1px solid rgba(255,255,255,.12);
+  gap:10px;
+  padding:14px;
+  background:rgba(0,0,0,.7);
+  border-top:1px solid rgba(255,255,255,.08);
 }
 
-.chat-input input{
+.msg-inputbar input{
   flex:1;
+  background:rgba(0,0,0,.6);
 }
 
-.chat-input button{
-  width:50px;
-  font-size:18px;
+.msg-inputbar button{
+  width:56px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#ffd36e,#ff6a00);
+  color:#000;
+  font-weight:900;
+}
+
+/* Mobile fullscreen */
+@media(max-width:720px){
+  .messages-app{
+    grid-template-columns: 1fr;
+  }
+  .msg-sidebar{
+    display:none;
+  }
 }

@@ -10,37 +10,36 @@
 <body class="page-messages">
 <script src="/guard.js"></script>
 
-<div class="container messages-shell">
+<div class="messages-app">
 
-  <div class="messages-header">
-    <button class="back-btn" onclick="location.href='/profile.html'">←</button>
-    <div class="messages-title">📩 Tin nhắn</div>
+  <!-- LEFT SIDEBAR -->
+  <div class="msg-sidebar">
+    <div class="msg-logo">💬 Chat</div>
+    <div id="userList" class="msg-userlist"></div>
   </div>
 
-  <div class="messages-body">
+  <!-- RIGHT CHAT -->
+  <div class="msg-main">
 
-    <!-- LEFT: user list -->
-    <div class="messages-users" id="userList"></div>
-
-    <!-- RIGHT: chat -->
-    <div class="messages-chat">
-
-      <div class="chat-top">
+    <div class="msg-header">
+      <div class="msg-peer">
         <img id="chatAvatar">
         <div id="chatTitle">Chọn người để chat</div>
       </div>
+      <button onclick="location.href='/profile.html'">✕</button>
+    </div>
 
-      <div id="chatBox" class="chat-messages"></div>
+    <div id="chatBox" class="msg-body"></div>
 
-      <div class="chat-input">
-        <input id="msgInput" placeholder="Nhập tin nhắn..." />
-        <button id="sendBtn">➤</button>
-      </div>
-
+    <div class="msg-inputbar">
+      <input id="msgInput" placeholder="Nhập tin nhắn…" />
+      <button id="sendBtn">➤</button>
     </div>
 
   </div>
+
 </div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>

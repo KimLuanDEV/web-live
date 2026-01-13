@@ -20,6 +20,7 @@ socket.on("active-users", ({ users }) => {
     div.innerHTML = `<img src="${u.avatar}" width="24" style="border-radius:50%"> ${u.name}`;
 
     div.onclick = () => {
+  chatAvatar.src = u.avatar;
   currentTarget = u;
   chatTitle.textContent = "Chat với " + u.name;
   chatBox.innerHTML = "";
