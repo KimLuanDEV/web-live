@@ -196,7 +196,7 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
     </div>
   `;
 
-  chatBox.prepend(div);
+ chatBox.appendChild(div);
 
   requestAnimationFrame();
 }
