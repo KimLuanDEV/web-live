@@ -20,12 +20,17 @@ socket.on("active-users", ({ users }) => {
     div.className = "badge";
     div.innerHTML = `<img src="${u.avatar}" width="24" style="border-radius:50%"> ${u.name}`;
 
-    div.onclick = () => {
+   div.onclick = () => {
   currentTarget = u;
   chatTitle.textContent = u.name;
+
+  const headerAva = document.getElementById("chatHeaderAvatar");
+  if(headerAva) headerAva.src = u.avatar || "";
+
   chatBox.innerHTML = "";
   openChat();
 };
+
 
 
     userList.appendChild(div);

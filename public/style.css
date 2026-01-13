@@ -6606,3 +6606,13 @@ body.is-guest .reactions-layer{
   overflow:hidden;
   text-overflow:ellipsis;
 }
+
+/* ===== CHAT HEADER AVATAR ===== */
+.chat-header-avatar{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid rgba(255,255,255,.25);
+  background:#000;
+}
