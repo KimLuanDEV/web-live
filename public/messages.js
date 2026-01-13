@@ -23,14 +23,9 @@ div.innerHTML = `
 `;
 
 div.onclick = () => {
-  document.querySelectorAll(".user-item").forEach(x=>x.classList.remove("active"));
-  div.classList.add("active");
-
-  currentTarget = u;
-  chatTitle.textContent = "💬 " + u.name;
-  chatBox.innerHTML = "";
-  socket.emit("load-private-chat", { uid: u.uid });
+  location.href = "/chat.html?uid=" + u.uid;
 };
+
 
 
 

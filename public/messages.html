@@ -10,50 +10,11 @@
 <body class="page-messages">
 <script src="/guard.js"></script>
 
-<div class="container">
-  <div class="card">
-    <div class="topbar">
-      <div class="brand">
-        <span class="brand__dot"></span>
-        <div>
-          <div class="brand__title">📩 Tin nhắn</div>
-          <small>Chat riêng giữa người dùng</small>
-        </div>
-      </div>
-
-      <button onclick="location.href='/profile.html'">← Quay lại</button>
-    </div>
-
-   <div class="messages-layout">
-
-  <!-- LEFT: User list -->
-  <div class="messages-users">
-    <div class="messages-users-header">
-      <h3>💬 Tin nhắn</h3>
-      <input id="searchUser" placeholder="🔍 Tìm người..." />
-    </div>
-    <div id="userList" class="user-list"></div>
-  </div>
-
-  <!-- RIGHT: Chat -->
-  <div class="messages-chat">
-    <div class="messages-chat-header" id="chatTitle">
-      Chọn người để chat
-    </div>
-
-    <div id="chatBox" class="messages-chat-body"></div>
-
-    <div class="messages-chat-input">
-      <input id="msgInput" placeholder="Nhập tin nhắn..." />
-      <button id="sendBtn">➤</button>
-    </div>
-  </div>
+<div class="card">
+  <h3>💬 Tin nhắn</h3>
+  <div id="userList"></div>
 </div>
 
-
-
-  </div>
-</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/messages.js"></script>
