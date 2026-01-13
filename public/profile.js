@@ -75,7 +75,14 @@ nameInput.onblur = ()=>{
 
   // 🔄 sync realtime nếu đang login
   if (__profileAuth.uid){
-    socket.emit("profile-update", { name: val });
+
+  const current = JSON.parse(localStorage.getItem(KEY)) || {};
+
+  socket.emit("profile-update", {
+  name: current.name,
+  avatar: current.avatar   // 🔥 gửi avatar hiện tại
+});
+
     socket.emit("auth-login", { uid: __profileAuth.uid });
   }
 
@@ -190,29 +197,34 @@ if (vipBadgeBox){
 
 
 document.getElementById("btnSave").onclick = () => {
-  const old = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-  const uid = __profileAuth.uid || old.uid;   // 🔐 giữ uid
+  const current = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  const uid = __profileAuth.uid || current.uid;
 
   const profile = {
-    uid,                                     // 🔥 BẮT BUỘC
+    uid,
     name: nameInput.value.trim() || "Guest",
-    avatar: old.avatar || defaultProfile.avatar,
+    avatar: current.avatar || defaultProfile.avatar,   // ✅ GIỮ AVATAR MỚI
     coins: Number(coinVal.textContent) || 0,
     level: Number(levelVal.textContent) || 1,
-    exp: old.exp || 0, 
-    coinSent: old.coinSent || 0,
-    coinReceived: old.coinReceived || 0,
+    exp: current.exp || 0,
+    coinSent: current.coinSent || 0,
+    coinReceived: current.coinReceived || 0,
+    bio: current.bio || ""
   };
 
   localStorage.setItem(KEY, JSON.stringify(profile));
 
-  // 🔁 gửi lại auth-login để server không mất uid
   if(uid){
+    socket.emit("profile-update", {
+      name: profile.name,
+      avatar: profile.avatar
+    });
     socket.emit("auth-login", { uid });
   }
 
-   showMsg("✅ Đã lưu hồ sơ!");
+  showMsg("✅ Đã lưu hồ sơ!");
 };
+
 
 loadProfile();
 
