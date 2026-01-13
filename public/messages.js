@@ -154,9 +154,9 @@ pushMsg("Bạn", txt, true, msgId, "sent");
 
   document.getElementById("msgInput").value = "";
 const input = document.getElementById("msgInput");
-input.blur();      // buộc browser commit value rỗng
-input.focus();     // đặt lại con trỏ
-
+input.value = "";
+input.dispatchEvent(new Event("input", { bubbles:true }));
+input.setAttribute("value","");
 
 };
 
