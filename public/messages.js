@@ -164,7 +164,6 @@ socket.on("active-users", ({ users }) => {
   const headerAva = document.getElementById("chatHeaderAvatar");
   if(headerAva) headerAva.src = u.avatar || "";
 
-  chatBox.innerHTML = "";
   loadChat();
   openChat();
   
