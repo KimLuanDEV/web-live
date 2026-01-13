@@ -529,6 +529,14 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 
 
   socket.on("profile-update", ({ name, avatar, level }) => {
+
+   // 🔥 cập nhật profile cho Player Lobby
+if (!socket.data.profile) socket.data.profile = {};
+if (name) socket.data.profile.name = safeName(name);
+if (avatar) socket.data.profile.avatar = avatar;
+if (level) socket.data.profile.level = Number(level) || socket.data.profile.level;
+
+
   const roomId = socket.data.roomId;
   if (!roomId) return;
 
@@ -562,6 +570,8 @@ for (const v of list) {
     viewers: list.filter(x => !x.mini)
   });
 }
+emitActiveUsers();   // 🔄 refresh Sảnh người chơi realtime
+
 
 });
 

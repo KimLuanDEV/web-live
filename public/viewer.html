@@ -939,6 +939,8 @@ function showVipChatSpotlight(vipKey){
 
 
     socket.on("profile-updated", ({ socketId, avatar }) => {
+
+
   // 1️⃣ cập nhật cache viewer
   if (viewerProfiles?.[socketId]) {
     viewerProfiles[socketId].avatar = avatar;
@@ -953,6 +955,8 @@ function showVipChatSpotlight(vipKey){
 
   // 3️⃣ cập nhật viewer list / mini profile nếu đang mở
   refreshViewerAvatars?.();
+  
+
 });
 
 function getStableUID(){
