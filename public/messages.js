@@ -44,7 +44,8 @@ socket.emit("private-message", {
   msgId
 });
 
-pushMsg("Bạn", txt, true, msgId, "sent", auth.avatar);
+pushMsg("Bạn", txt, true, msgId, "sent");
+
 
 
 
@@ -52,7 +53,7 @@ pushMsg("Bạn", txt, true, msgId, "sent", auth.avatar);
 };
 
 socket.on("private-message", ({ from, text, msgId }) => {
-  pushMsg(from.name, text, false, null, "", from.avatar);
+ pushMsg(from.name, text, false);
   
 
   // báo là đã xem
@@ -71,34 +72,24 @@ socket.on("msg-status", ({ msgId, status }) => {
 });
 
 
-function pushMsg(name, text, isMe=false, msgId=null, status="", avatar=null){
+function pushMsg(name, text, isMe=false, msgId=null, status=""){
   const div = document.createElement("div");
   div.className = "chat-line " + (isMe ? "me" : "other");
+  div.dataset.msgId = msgId || "";
 
   const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
-  const ava = avatar || (isMe ? auth.avatar : currentTarget?.avatar);
-
   div.innerHTML = `
-    <div class="chat-msg">
-      <div class="chat-avatar-wrap">
-        <img class="chat-avatar" src="${ava}">
-        ${!isMe ? `<span class="chat-online-dot"></span>` : ""}
-      </div>
-
-      <div>
-        <div class="chat-bubble">${text}</div>
-        <div class="chat-time">
-          ${time} ${isMe ? `<span class="msg-status">${status}</span>` : ""}
-        </div>
-      </div>
+    <div class="bubble">${text}</div>
+    <div class="chat-time">
+      ${time}
+      ${isMe ? `<span class="msg-status">${status}</span>` : ""}
     </div>
   `;
 
   chatBox.appendChild(div);
   requestAnimationFrame(() => chatBox.scrollTop = chatBox.scrollHeight);
 }
-
 
 
 
