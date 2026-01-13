@@ -36,31 +36,58 @@ document.getElementById("sendBtn").onclick = () => {
   const txt = document.getElementById("msgInput").value.trim();
   if(!txt || !currentTarget) return;
 
-  socket.emit("private-message", {
-    to: currentTarget.socketId,
-    text: txt
-  });
+const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-  pushMsg("Bạn", txt, true);
+socket.emit("private-message", {
+  to: currentTarget.socketId,
+  text: txt,
+  msgId
+});
+
+pushMsg("Bạn", txt, true, msgId, "sent");
+
+
   document.getElementById("msgInput").value = "";
 };
 
-socket.on("private-message", ({ from, text }) => {
+socket.on("private-message", ({ from, text, msgId }) => {
   pushMsg(from.name, text, false);
+
+  // báo là đã xem
+  socket.emit("msg-seen", {
+    to: from.socketId,
+    msgId
+  });
+});
+
+socket.on("msg-status", ({ msgId, status }) => {
+  const el = document.querySelector(`[data-msg-id="${msgId}"] .msg-status`);
+  if(el){
+    if(status === "delivered") el.textContent = "✓";
+    if(status === "seen") el.textContent = "👁";
+  }
 });
 
 
-function pushMsg(name, text, isMe=false){
+function pushMsg(name, text, isMe=false, msgId=null, status=""){
   const div = document.createElement("div");
   div.className = "chat-line " + (isMe ? "me" : "other");
+  div.dataset.msgId = msgId || "";
 
-  div.innerHTML = `<div class="bubble">${text}</div>`;
+  const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
+
+  div.innerHTML = `
+    <div class="bubble">${text}</div>
+    <div class="chat-time">
+      ${time}
+      ${isMe ? `<span class="msg-status">${status}</span>` : ""}
+    </div>
+  `;
+
   chatBox.appendChild(div);
-
-  requestAnimationFrame(() => {
-    chatBox.scrollTop = chatBox.scrollHeight;
-  });
+  requestAnimationFrame(() => chatBox.scrollTop = chatBox.scrollHeight);
 }
+
 
 
 

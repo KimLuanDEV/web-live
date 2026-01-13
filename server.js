@@ -420,13 +420,29 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
-  socket.on("private-message", ({ to, text }) => {
-    const fromProfile = socket.data.profile || { name:"User" };
-    io.to(to).emit("private-message", {
-      from: fromProfile,
-      text
-    });
+ socket.on("private-message", ({ to, text, msgId }) => {
+  const fromProfile = socket.data.profile || { name:"User" };
+
+  // gửi cho người nhận
+  io.to(to).emit("private-message", {
+    from: fromProfile,
+    text,
+    msgId
   });
+
+  // báo cho người gửi là đã delivered
+  socket.emit("msg-status", {
+    msgId,
+    status: "delivered"
+  });
+});
+
+socket.on("msg-seen", ({ to, msgId }) => {
+  io.to(to).emit("msg-status", {
+    msgId,
+    status: "seen"
+  });
+});
 
 
   function isGuest(socket){
