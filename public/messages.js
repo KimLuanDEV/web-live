@@ -158,6 +158,7 @@ input.value = "";
 input.dispatchEvent(new Event("input", { bubbles:true }));
 input.setAttribute("value","");
 
+input.focus();
 };
 
 socket.on("private-message", ({ from, text, msgId }) => {
@@ -209,9 +210,7 @@ function openChat(){
   document.body.style.overflow = "hidden"; // khóa nền
   chatModal.classList.remove("hidden");
 
-  setTimeout(() => {
-    document.getElementById("msgInput").focus();
-  }, 120);
+
 }
 
 function closeChat(){
