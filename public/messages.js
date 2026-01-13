@@ -19,6 +19,41 @@ let currentTarget = null;
 
 
 
+function chatKey(){
+  if(!currentTarget || !auth?.uid) return null;
+  return "chat_" + auth.uid + "_" + currentTarget.uid;
+}
+
+function saveChat(msg){
+  const key = chatKey();
+  if(!key) return;
+
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+  arr.push(msg);
+  localStorage.setItem(key, JSON.stringify(arr));
+}
+
+function loadChat(){
+  const key = chatKey();
+  if(!key) return;
+
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+  chatBox.innerHTML = "";
+
+  arr.forEach(m=>{
+    pushMsg(
+      m.me ? "Bạn" : currentTarget.name,
+      m.text,
+      m.me,
+      null,
+      "",
+      m.me ? auth.avatar : currentTarget.avatar
+    );
+  });
+}
+
+
+
 function showModal(text, okText="OK", cancelText=null){
   return new Promise(resolve=>{
     sysText.textContent = text;
@@ -129,6 +164,8 @@ socket.on("active-users", ({ users }) => {
 
   chatBox.innerHTML = "";
   openChat();
+  loadChat();
+
 };
 
 
@@ -152,14 +189,26 @@ document.getElementById("sendBtn").onclick = () => {
 
   pushMsg("Bạn", txt, true, msgId, "⏳");
 
-  // ❌ KHÔNG XÓA Ở ĐÂY NỮA
+saveChat({
+  me:true,
+  text:txt,
+  time:Date.now()
+});
+
 };
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
  pushMsg(from.name, text, false);
   
+saveChat({
+  me:false,
+  text:text,
+  time:Date.now()
+});
 
+
+ 
   // báo là đã xem
   socket.emit("msg-seen", {
     to: from.socketId,
