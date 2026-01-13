@@ -6772,3 +6772,13 @@ body.is-guest .reactions-layer{
   50%{ opacity:1 }
   100%{ opacity:.4 }
 }
+
+
+.net-status{
+  font-size:13px;
+  margin-top:2px;
+  color:#5fa8ff;
+}
+.net-status.good{ color:#37f0a3 }
+.net-status.mid{ color:#ffd36e }
+.net-status.bad{ color:#ff4b4b }

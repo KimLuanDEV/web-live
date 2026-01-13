@@ -1,23 +1,22 @@
 const socket = io();
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
-
-let voicePC = null;
-let voiceStream = null;
-let voiceTarget = null;
-let currentTarget = null;
-
 const callBtn = document.getElementById("callBtn");   // 🔥 BẮT BUỘC
 const endCallBtn = document.getElementById("endCallBtn");
 const muteBtn = document.getElementById("chatMuteBtn");
 const callStatus = document.getElementById("callStatus");
-
-
+const netStatus = document.getElementById("netStatus");
 const sysModal = document.getElementById("sysModal");
 const sysText = document.getElementById("sysText");
 const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
 
 let micMuted = false;
+let netTimer = null;
+let voicePC = null;
+let voiceStream = null;
+let voiceTarget = null;
+let currentTarget = null;
+
 
 
 function showModal(text, okText="OK", cancelText=null){
@@ -40,6 +39,47 @@ function showModal(text, okText="OK", cancelText=null){
   });
 }
 
+function startNetMonitor(){
+  stopNetMonitor();
+
+  netTimer = setInterval(async () => {
+    if(!voicePC) return;
+
+    const stats = await voicePC.getStats();
+    let rtt = 0, loss = 0;
+
+    stats.forEach(r => {
+      if(r.type === "candidate-pair" && r.currentRoundTripTime){
+        rtt = r.currentRoundTripTime * 1000;
+      }
+      if(r.type === "inbound-rtp" && r.packetsLost){
+        loss = r.packetsLost;
+      }
+    });
+
+    let level = "good", bars = "📶📶📶📶";
+
+    if(rtt > 300 || loss > 30){
+      level = "bad";
+      bars = "📶";
+    }else if(rtt > 150 || loss > 10){
+      level = "mid";
+      bars = "📶📶";
+    }else{
+      bars = "📶📶📶📶";
+    }
+
+    netStatus.textContent = bars;
+    netStatus.className = "net-status " + level;
+  }, 2000);
+}
+
+function stopNetMonitor(){
+  if(netTimer){
+    clearInterval(netTimer);
+    netTimer = null;
+  }
+}
 
 
 
@@ -205,6 +245,8 @@ if(!ok) return;
 
 
 setCallUI(true);
+netStatus.classList.remove("hidden");
+startNetMonitor();
 
 
   voiceTarget = from;
@@ -248,6 +290,8 @@ socket.on("voice-answer", async ({ sdp }) => {
   await voicePC.setRemoteDescription(sdp);
 
   setCallUI(true);
+netStatus.classList.remove("hidden");
+startNetMonitor();
 
 });
 
@@ -273,7 +317,8 @@ socket.on("voice-end", () => {
   showModal("📞 Cuộc gọi đã kết thúc");
 
   setCallUI(false);
-
+netStatus.classList.add("hidden");
+stopNetMonitor();
  
 });
 
@@ -332,6 +377,8 @@ voicePC.ontrack = e => {
 
   showModal("📞 Đang gọi " + currentTarget.name);
  setCallUI(true);
+netStatus.classList.remove("hidden");
+startNetMonitor();
 
 
 };
@@ -352,7 +399,8 @@ function endVoiceCall(){
   voiceTarget = null;
 
   setCallUI(false);
-
+netStatus.classList.add("hidden");
+stopNetMonitor();
 
   showModal("📞 Đã kết thúc cuộc gọi");
 }
