@@ -9,6 +9,7 @@ let currentTarget = null;
 const callBtn = document.getElementById("callBtn");   // 🔥 BẮT BUỘC
 const endCallBtn = document.getElementById("endCallBtn");
 const muteBtn = document.getElementById("chatMuteBtn");
+const callStatus = document.getElementById("callStatus");
 
 
 const sysModal = document.getElementById("sysModal");
@@ -42,21 +43,23 @@ function showModal(text, okText="OK", cancelText=null){
 
 
 
-
 function setCallUI(active){
   if(active){
     callBtn.classList.add("hidden");
     muteBtn.classList.remove("hidden");
     endCallBtn.classList.remove("hidden");
+    callStatus.classList.remove("hidden");
   }else{
     callBtn.classList.remove("hidden");
     muteBtn.classList.add("hidden");
     endCallBtn.classList.add("hidden");
+    callStatus.classList.add("hidden");
     micMuted = false;
     muteBtn.classList.remove("active");
     muteBtn.textContent = "🔇";
   }
 }
+
 
 
 
