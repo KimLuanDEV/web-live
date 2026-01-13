@@ -212,12 +212,14 @@ socket.on("voice-end", () => {
   alert("📞 Cuộc gọi đã kết thúc");
 
   muteBtn.classList.add("hidden");
-micMuted = false;
-muteBtn.classList.remove("active");
-muteBtn.textContent = "🔇";
-callBtn.classList.remove("hidden");
-
+  endCallBtn.classList.add("hidden");   // 🔥 THÊM DÒNG NÀY
+  micMuted = false;
+  muteBtn.classList.remove("active");
+  muteBtn.textContent = "🔇";
+  callBtn.classList.remove("hidden");
 });
+
+
 
 socket.on("private-call", ({ from }) => {
   if(confirm("📞 " + from.name + " đang gọi bạn. Nhận cuộc gọi?")){
