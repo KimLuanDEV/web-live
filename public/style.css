@@ -6535,3 +6535,97 @@ body.is-guest .reactions-layer{
   background:#000;
 }
 
+/* ===== CHAT ONLINE DOT ===== */
+.chat-avatar-wrap{
+  position: relative;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+}
+
+.chat-avatar-wrap .chat-avatar{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.chat-online-dot{
+  position:absolute;
+  right:-2px;
+  bottom:-2px;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#28ff7a;
+  border:2px solid #070a14;
+  box-shadow:0 0 8px rgba(40,255,122,.8);
+}
+
+
+/* ===== FIX CHAT ALIGN LEFT / RIGHT ===== */
+.chat-line{
+  display:flex;
+  width:100%;
+  margin-bottom:10px;
+  align-items:flex-end;
+}
+
+.chat-line.me{
+  justify-content:flex-end;
+}
+
+.chat-line.other{
+  justify-content:flex-start;
+}
+
+/* gói avatar + bubble */
+.chat-msg{
+  display:flex;
+  align-items:flex-end;
+  gap:6px;
+  max-width:80%;
+}
+
+/* đảo chiều cho tin của mình */
+.chat-line.me .chat-msg{
+  flex-direction: row-reverse;
+}
+
+/* avatar */
+.chat-avatar-wrap{
+  width:28px;
+  height:28px;
+  flex-shrink:0;
+  position:relative;
+}
+
+.chat-avatar{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+/* bong bóng */
+.chat-bubble{
+  padding:10px 12px;
+  border-radius:16px;
+  font-size:14px;
+  line-height:1.35;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(255,255,255,.08);
+  word-break:break-word;
+}
+
+/* màu của mình */
+.chat-line.me .chat-bubble{
+  background: linear-gradient(135deg,#5fa8ff,#37f0a3);
+  color:#000;
+  border-radius:16px 16px 4px 16px;
+}
+
+/* màu người khác */
+.chat-line.other .chat-bubble{
+  border-radius:16px 16px 16px 4px;
+}

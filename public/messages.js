@@ -74,20 +74,23 @@ socket.on("msg-status", ({ msgId, status }) => {
 function pushMsg(name, text, isMe=false, msgId=null, status="", avatar=null){
   const div = document.createElement("div");
   div.className = "chat-line " + (isMe ? "me" : "other");
-  div.dataset.msgId = msgId || "";
 
   const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
-  const ava = avatar ||
-    (isMe ? auth.avatar : (currentTarget?.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed="+name));
+  const ava = avatar || (isMe ? auth.avatar : currentTarget?.avatar);
 
   div.innerHTML = `
-    <img class="chat-avatar" src="${ava}">
-    <div>
-      <div class="bubble">${text}</div>
-      <div class="chat-time">
-        ${time}
-        ${isMe ? `<span class="msg-status">${status}</span>` : ""}
+    <div class="chat-msg">
+      <div class="chat-avatar-wrap">
+        <img class="chat-avatar" src="${ava}">
+        ${!isMe ? `<span class="chat-online-dot"></span>` : ""}
+      </div>
+
+      <div>
+        <div class="chat-bubble">${text}</div>
+        <div class="chat-time">
+          ${time} ${isMe ? `<span class="msg-status">${status}</span>` : ""}
+        </div>
       </div>
     </div>
   `;
