@@ -151,10 +151,12 @@ socket.emit("private-message", {
 
 pushMsg("Bạn", txt, true, msgId, "sent");
 
-
-
-
   document.getElementById("msgInput").value = "";
+const input = document.getElementById("msgInput");
+input.blur();      // buộc browser commit value rỗng
+input.focus();     // đặt lại con trỏ
+
+
 };
 
 socket.on("private-message", ({ from, text, msgId }) => {
