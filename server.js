@@ -443,6 +443,13 @@ socket.on("voice-ice", ({ to, candidate }) => {
 });
 
 
+socket.on("voice-end", ({ to }) => {
+  io.to(to).emit("voice-end");
+});
+
+
+
+
 
 socket.on("private-call", ({ to }) => {
   const from = socket.data.profile;

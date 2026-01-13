@@ -232,8 +232,47 @@ socket.on("voice-ice", async ({ candidate }) => {
 });
 
 
+socket.on("voice-end", () => {
+  if(voicePC){
+    voicePC.close();
+    voicePC = null;
+  }
+
+  if(voiceStream){
+    voiceStream.getTracks().forEach(t => t.stop());
+    voiceStream = null;
+  }
+
+  alert("📞 Cuộc gọi đã kết thúc");
+});
+
 socket.on("private-call", ({ from }) => {
   if(confirm("📞 " + from.name + " đang gọi bạn. Nhận cuộc gọi?")){
     alert("🎙 Kết nối voice sẽ mở ở bước tiếp theo");
   }
 });
+
+
+const endCallBtn = document.getElementById("endCallBtn");
+endCallBtn.onclick = endVoiceCall;
+
+function endVoiceCall(){
+  if(voiceStream){
+    voiceStream.getTracks().forEach(t => t.stop());
+    voiceStream = null;
+  }
+
+  if(voicePC){
+    voicePC.close();
+    voicePC = null;
+  }
+
+  socket.emit("voice-end", { to: voiceTarget });
+
+  voiceTarget = null;
+
+  endCallBtn.classList.add("hidden");
+  callBtn.classList.remove("hidden");
+
+  alert("📞 Đã kết thúc cuộc gọi");
+}
