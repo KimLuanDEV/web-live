@@ -140,49 +140,6 @@ window.addEventListener("resize", () => {
 });
 
 
-callBtn.onclick = async () => {
-  if(!currentTarget) return;
-
-  voiceTarget = currentTarget.socketId;
-
-  voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
-
-  voicePC = new RTCPeerConnection({
-    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-  });
-
-voicePC.ontrack = e => {
-  const audio = document.createElement("audio");
-  audio.srcObject = e.streams[0];
-  audio.autoplay = true;
-  audio.play();
-};
-
-  voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
-
-  voicePC.onicecandidate = e => {
-    if(e.candidate){
-      socket.emit("voice-ice", {
-        to: voiceTarget,
-        candidate: e.candidate
-      });
-    }
-  };
-
-  const offer = await voicePC.createOffer();
-  await voicePC.setLocalDescription(offer);
-
-  socket.emit("voice-offer", {
-    to: voiceTarget,
-    sdp: offer
-  });
-
-  alert("📞 Đang gọi " + currentTarget.name);
-  muteBtn.classList.remove("hidden");
-endCallBtn.classList.remove("hidden");
-callBtn.classList.add("hidden");
-
-};
 
 
 socket.on("voice-offer", async ({ from, sdp }) => {
@@ -276,6 +233,51 @@ let micMuted = false;
 
 endCallBtn.onclick = endVoiceCall;
 
+
+
+callBtn.onclick = async () => {
+  if(!currentTarget) return;
+
+  voiceTarget = currentTarget.socketId;
+
+  voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+  voicePC = new RTCPeerConnection({
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
+  });
+
+voicePC.ontrack = e => {
+  const audio = document.createElement("audio");
+  audio.srcObject = e.streams[0];
+  audio.autoplay = true;
+  audio.play();
+};
+
+  voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+
+  voicePC.onicecandidate = e => {
+    if(e.candidate){
+      socket.emit("voice-ice", {
+        to: voiceTarget,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  const offer = await voicePC.createOffer();
+  await voicePC.setLocalDescription(offer);
+
+  socket.emit("voice-offer", {
+    to: voiceTarget,
+    sdp: offer
+  });
+
+  alert("📞 Đang gọi " + currentTarget.name);
+  muteBtn.classList.remove("hidden");
+endCallBtn.classList.remove("hidden");
+callBtn.classList.add("hidden");
+
+};
 
 function endVoiceCall(){
   if(voiceStream){
