@@ -137,30 +137,24 @@ socket.on("active-users", ({ users }) => {
   });
 });
 
-document.getElementById("sendBtn").onclick = (e) => {
-  e.preventDefault();   // 🔥 chặn form submit
-  const txt = document.getElementById("msgInput").value.trim();
+document.getElementById("sendBtn").onclick = () => {
+  const input = document.getElementById("msgInput");
+  const txt = input.value.trim();
   if(!txt || !currentTarget) return;
 
-const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+  const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-socket.emit("private-message", {
-  to: currentTarget.socketId,
-  text: txt,
-  msgId
-});
+  socket.emit("private-message", {
+    to: currentTarget.socketId,
+    text: txt,
+    msgId
+  });
 
-pushMsg("Bạn", txt, true, msgId, "sent");
+  pushMsg("Bạn", txt, true, msgId, "⏳");
 
-  document.getElementById("msgInput").value = "";
-const input = document.getElementById("msgInput");
-input.value = "";
-input.blur();          // đóng keyboard ảo
-setTimeout(() => {
-  input.focus();       // bật lại keyboard
-}, 10);
-
+  // ❌ KHÔNG XÓA Ở ĐÂY NỮA
 };
+
 
 socket.on("private-message", ({ from, text, msgId }) => {
  pushMsg(from.name, text, false);
@@ -176,10 +170,19 @@ socket.on("private-message", ({ from, text, msgId }) => {
 socket.on("msg-status", ({ msgId, status }) => {
   const el = document.querySelector(`[data-msg-id="${msgId}"] .msg-status`);
   if(el){
-    if(status === "delivered") el.textContent = "✓";
+    if(status === "delivered"){
+      el.textContent = "✓";
+
+      // ✅ XÓA INPUT TẠI ĐÂY
+      const input = document.getElementById("msgInput");
+      input.value = "";
+      input.blur();
+      setTimeout(()=>input.focus(),20);
+    }
     if(status === "seen") el.textContent = "👁";
   }
 });
+
 
 
 function pushMsg(name, text, isMe=false, msgId=null, status=""){
