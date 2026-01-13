@@ -6616,3 +6616,11 @@ body.is-guest .reactions-layer{
   border:2px solid rgba(255,255,255,.25);
   background:#000;
 }
+
+
+/* ===== CHAT BOTTOM UP ===== */
+#chatModal .chatbox{
+  display: flex;
+  flex-direction: column-reverse; /* tin mới ở dưới */
+  overflow-y: auto;
+}

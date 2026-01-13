@@ -92,8 +92,9 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
     </div>
   `;
 
-  chatBox.appendChild(div);
-  requestAnimationFrame(() => chatBox.scrollTop = chatBox.scrollHeight);
+  chatBox.prepend(div);
+
+  requestAnimationFrame();
 }
 
 
