@@ -54,20 +54,44 @@ function pushMsg(name, text){
   div.className = "chat-line";
   div.textContent = `${name}: ${text}`;
   chatBox.appendChild(div);
+  requestAnimationFrame(() => {
   chatBox.scrollTop = chatBox.scrollHeight;
+});
 }
 
 
 const chatModal = document.getElementById("chatModal");
 
 function openChat(){
+  document.body.style.overflow = "hidden"; // khóa nền
   chatModal.classList.remove("hidden");
+
   setTimeout(() => {
     document.getElementById("msgInput").focus();
-  }, 100);
+  }, 120);
 }
 
 function closeChat(){
+  document.body.style.overflow = ""; // mở lại
   chatModal.classList.add("hidden");
   currentTarget = null;
 }
+
+
+let baseHeight = window.innerHeight;
+
+window.addEventListener("resize", () => {
+  const h = window.innerHeight;
+  const diff = baseHeight - h;
+
+  // nếu bàn phím mở
+  if(diff > 150){
+    document
+      .getElementById("chatModal")
+      .style.setProperty("--kb", diff + "px");
+  }else{
+    document
+      .getElementById("chatModal")
+      .style.setProperty("--kb", "0px");
+  }
+});

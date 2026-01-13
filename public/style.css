@@ -6364,3 +6364,85 @@ body.is-guest .reactions-layer{
   padding:6px 10px;
   border-radius:999px;
 }
+
+
+/* ===== FIX CHAT MODAL INPUT ZOOM / SCALE ===== */
+#chatModal{
+  position: fixed;
+  inset: 0;
+  touch-action: none;
+}
+
+#chatModal .modal-card{
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  transform: translateZ(0); /* chống iOS scale */
+}
+
+#chatModal .chatbox{
+  flex: 1;
+  min-height: 120px;
+  overflow-y: auto;
+}
+
+#chatModal .chatform{
+  display: flex;
+  gap: 8px;
+  position: sticky;
+  bottom: 0;
+  background: rgba(5,8,18,.92);
+  padding-top: 8px;
+}
+
+/* iOS / Chrome mobile fix */
+#chatModal input{
+  font-size: 16px;     /* ⚠ bắt buộc để iOS không zoom */
+  touch-action: manipulation;
+}
+
+
+/* ===== CHAT MODAL KEYBOARD SAFE (ZALO STYLE) ===== */
+#chatModal{
+  --kb: 0px; /* chiều cao bàn phím */
+}
+
+#chatModal .modal-card{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: auto;
+  margin: 0 auto;
+  width: min(520px, 100%);
+  border-radius: 18px 18px 0 0;
+  max-height: calc(100vh - var(--kb));
+  display: flex;
+  flex-direction: column;
+}
+
+/* vùng tin nhắn tự co */
+#chatModal .chatbox{
+  flex: 1;
+  overflow-y: auto;
+  min-height: 120px;
+  padding-bottom: 10px;
+}
+
+/* input luôn nổi */
+#chatModal .chatform{
+  position: sticky;
+  bottom: 0;
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: rgba(5,8,18,.95);
+  backdrop-filter: blur(8px);
+  border-top: 1px solid rgba(255,255,255,.12);
+  z-index: 5;
+}
+
+/* bắt buộc cho iOS không zoom */
+#chatModal input{
+  font-size: 16px;
+}
