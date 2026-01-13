@@ -6242,3 +6242,82 @@ body.is-guest .reactions-layer{
   line-height:1.5;
   outline:none;
 }
+
+
+/* ===== USER LOBBY ===== */
+
+.lobby-users-card{
+  margin-top:14px;
+}
+
+.lobby-users-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+
+.lobby-users-title{
+  font-weight:900;
+  letter-spacing:.5px;
+  font-size:15px;
+}
+
+.lobby-users-count{
+  font-size:13px;
+  opacity:.8;
+}
+
+.lobby-users-grid{
+  display:grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap:10px;
+}
+
+.lobby-user{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+  padding:10px 6px;
+  border-radius:14px;
+  background: rgba(0,0,0,.28);
+  border:1px solid rgba(255,255,255,.14);
+  text-align:center;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.lobby-user:hover{
+  transform: translateY(-2px);
+  border-color: rgba(95,168,255,.45);
+  box-shadow: 0 0 22px rgba(95,168,255,.15);
+}
+
+.lobby-user img{
+  width:46px;
+  height:46px;
+  border-radius:16px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.25);
+}
+
+.lobby-user-name{
+  font-size:12px;
+  font-weight:700;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  max-width:80px;
+}
+
+.lobby-user-status{
+  font-size:11px;
+  opacity:.75;
+}
+
+/* host đang live */
+.lobby-user.live{
+  border-color: rgba(255,59,107,.5);
+  box-shadow: 0 0 18px rgba(255,59,107,.2);
+}

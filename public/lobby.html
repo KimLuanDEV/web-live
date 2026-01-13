@@ -84,12 +84,29 @@
 
     <div class="card">
       <div id="empty" class="log">Chưa có phòng nào đang live.</div>
-
       <!-- skeleton loading -->
       <div id="skeleton" class="lobby-grid" style="display:none"></div>
-
       <div id="grid" class="lobby-grid"></div>
     </div>
+
+
+<div class="card lobby-users-card">
+  <div class="lobby-users-head">
+    <div class="lobby-users-title">
+      🧑‍🤝‍🧑 Sảnh online
+    </div>
+    <div class="lobby-users-count">
+      <span id="onlineCount">0</span> online
+    </div>
+  </div>
+
+  <div id="onlineUsers" class="lobby-users-grid">
+    <!-- users render ở đây -->
+  </div>
+</div>
+
+
+
   </div>
 
 <!-- CREATE ROOM MODAL -->
@@ -299,11 +316,12 @@
 <script>
 const socket = io();
 
-
+const onlineUsersEl = document.getElementById("onlineUsers");
+const onlineCountEl = document.getElementById("onlineCount");
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
-
 const isGuest = localStorage.getItem("isGuest") === "1";
+
 
 
 
@@ -320,16 +338,21 @@ localStorage.removeItem("isGuest"); // 🔥
   location.href = "/login.html";
 });
 
+socket.emit("lobby-get-users");
+
+socket.on("lobby-users", users => {
+  renderOnlineUsers(users);
+});
 
 
 const VIRTUAL_ROOMS = [
   
   {
     roomId: "Film",
-    title: "Mr.Bean Holiday",
+    title: "Mr.Bean Film",
     viewers: 999,
-    avatar: "https://img.timviecdienvien.com/2019/06/hinh1-dien-anh-560x420.jpg",
-    link: "https://www.youtube.com/watch?v=cwSoWCJGe9Y"
+    avatar: "https://i.pinimg.com/736x/0f/95/3c/0f953cc248c3ebcbe8fb742818dc588e.jpg",
+    link: "https://www.youtube.com/watch?v=STrz4s0woMk&t=2127s"
   },
   /*
   {
@@ -391,6 +414,40 @@ const VIRTUAL_ROOMS = [
   */
   
 ];
+
+
+
+function renderOnlineUsers(users){
+  const box = document.getElementById("onlineUsers");
+  const count = document.getElementById("onlineCount");
+
+  if(!box) return;
+
+  count.textContent = users.length;
+
+  box.innerHTML = users.map(u => {
+    const ava = u.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + encodeURIComponent(u.name);
+    return `
+      <div class="lobby-user ${u.isHost ? "live" : ""}">
+        <img src="${ava}">
+        <div class="lobby-user-name">${u.name}</div>
+        <div class="lobby-user-status">
+          ${u.isHost ? "🔴 HOST" : "🟢 Online"}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
+
+
+
+function openUser(uid){
+  socket.emit("get-user-profile", uid, (profile)=>{
+    if(profile) openMiniProfile(profile);
+  });
+}
+
+
 
 function getVirtualRooms(){
   // map về format giống room thật để tái dùng render()

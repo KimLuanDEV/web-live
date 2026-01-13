@@ -1957,7 +1957,7 @@ const avatar =
   (vip ? ` chat-${vip.key}` : "");
 
 
-  el.dataset.socket = msg.socketId;
+  el.dataset.uid = msg.uid || msg.name;
   // 🔥 QUAN TRỌNG: dùng background-image, KHÔNG dùng <img>
  el.innerHTML = `
 

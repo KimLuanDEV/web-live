@@ -374,7 +374,49 @@ function closeRoom(roomId, reason = "host_left") {
 }
 
 
+
+function getOnlineUsers(){
+  const db = loadUsers();   // users.json
+  const arr = [];
+
+  for(const [uid, socketId] of activeUsers.entries()){
+    for(const k in db){
+      if(db[k].profile?.uid === uid){
+        const p = db[k].profile;
+        arr.push({
+          uid: p.uid,
+          name: p.name,
+          avatar: p.avatar,
+          level: p.level,
+          isHost: false
+        });
+        break;
+      }
+    }
+  }
+
+  // đánh dấu host đang live
+  for(const [roomId, room] of rooms.entries()){
+    if(room.broadcasterId && room.hostProfile?.uid){
+      const u = arr.find(x => x.uid === room.hostProfile.uid);
+      if(u) u.isHost = true;
+    }
+  }
+
+  return arr;
+}
+
+
+
+
+
 io.on("connection", (socket) => {
+
+
+socket.on("lobby-get-users", ()=>{
+  socket.emit("lobby-users", getOnlineUsers());
+});
+
 
 
   function isGuest(socket){
@@ -434,6 +476,8 @@ socket.on("auth-ping", ({ uid }) => {
 
   activeUsers.set(uid, socket.id);
   socket.data.uid = uid;
+  io.emit("lobby-users", getOnlineUsers());
+
 });
 
 
@@ -885,6 +929,7 @@ if (room.liveStartTs) {
 
   const msg = {
     role,
+    uid: profile?.uid,
     name: profile?.name || "Ẩn danh",
     avatar: profile?.avatar,
     level: Number(profile?.level) || 1,
@@ -1148,6 +1193,8 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
   const cur = activeUsers.get(uid);
   if(cur === socket.id){
     activeUsers.delete(uid);
+    io.emit("lobby-users", getOnlineUsers());
+
   }
 }
 
