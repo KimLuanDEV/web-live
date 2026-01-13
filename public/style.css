@@ -6519,7 +6519,7 @@ body.is-guest .reactions-layer{
 }
 
 .chat-msg{
-  gap: 6px;               /* avatar ↔ bubble */
+  gap: 3px;               /* avatar ↔ bubble */
 }
 
 .chat-time{
