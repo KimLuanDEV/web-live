@@ -335,7 +335,11 @@ const isGuest = localStorage.getItem("isGuest") === "1";
 
 
 if(profile.uid){
-  socket.emit("auth-login", { uid: profile.uid });
+  socket.emit("auth-login", {
+  uid: profile.uid,
+  profile   // 🔥 gửi localStorage profile
+});
+
 }
 
 socket.on("force-logout", () => {

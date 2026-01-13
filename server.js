@@ -165,6 +165,7 @@ app.post("/api/register", async (req,res)=>{
   };
 
   saveUsers(db);
+  
   res.json({ok:true, profile:db[username].profile});
 });
 
@@ -460,39 +461,33 @@ socket.on("auth-ping", ({ uid }) => {
 
 });
 
-  socket.on("auth-login", ({ uid }) => {
+socket.on("auth-login", ({ uid, profile }) => {
 
   uid = String(uid||"").trim();
   if(!uid) return;
 
   const db = loadUsers();
 
-if(db[uid]){
-  // chỉ load nếu chưa có profile realtime
-  socket.data.profile = {
-    ...db[uid].profile,
-    ...socket.data.profile   // 🔥 realtime ghi đè DB
-  };
-}
+  let merged = {};
 
+  if(db[uid]?.profile) merged = { ...db[uid].profile };
+  if(profile) merged = { ...merged, ...profile };   // 🔥 localStorage override
 
-  // nếu uid đang online ở socket khác → đá
+  socket.data.profile = merged;
+
+  // kick multi-tab
   const oldSocketId = activeUsers.get(uid);
   if(oldSocketId && oldSocketId !== socket.id){
-    io.to(oldSocketId).emit("force-logout", { reason:"login_elsewhere" });
-
-    const oldSocket = io.sockets.sockets.get(oldSocketId);
-    if(oldSocket){
-      oldSocket.disconnect(true);
-    }
+    io.to(oldSocketId).emit("force-logout");
+    io.sockets.sockets.get(oldSocketId)?.disconnect(true);
   }
 
   activeUsers.set(uid, socket.id);
   socket.data.uid = uid;
 
   emitActiveUsers();
-
 });
+
 
 
 socket.on("host-reconnect", ({ roomId }) => {
