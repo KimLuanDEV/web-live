@@ -335,11 +335,7 @@ const isGuest = localStorage.getItem("isGuest") === "1";
 
 
 if(profile.uid){
-  socket.emit("auth-login", {
-  uid: profile.uid,
-  profile   // 🔥 gửi localStorage profile
-});
-
+  socket.emit("auth-login", { uid: profile.uid });
 }
 
 socket.on("force-logout", () => {
@@ -993,15 +989,6 @@ inboxModal?.querySelector(".modal-backdrop")?.addEventListener("click", ()=>{
 
 socket.on("active-users", ({ users }) => {
   renderPlayerLobby(users);
-
-    // 🔥 cập nhật userBar từ chính socket của mình
-  const me = users.find(u => u.uid === profile.uid);
-  if(me){
-    document.getElementById("userName").textContent = me.name;
-    document.getElementById("userLevel").textContent = "Lv " + me.level;
-    document.getElementById("userAva").src = me.avatar;
-  }
-  
 });
 
 

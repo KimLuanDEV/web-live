@@ -461,33 +461,39 @@ socket.on("auth-ping", ({ uid }) => {
 
 });
 
-socket.on("auth-login", ({ uid, profile }) => {
+  socket.on("auth-login", ({ uid }) => {
 
   uid = String(uid||"").trim();
   if(!uid) return;
 
   const db = loadUsers();
 
-  let merged = {};
+if(db[uid]){
+  // chỉ load nếu chưa có profile realtime
+  socket.data.profile = {
+    ...db[uid].profile,
+    ...socket.data.profile   // 🔥 realtime ghi đè DB
+  };
+}
 
-  if(db[uid]?.profile) merged = { ...db[uid].profile };
-  if(profile) merged = { ...merged, ...profile };   // 🔥 localStorage override
 
-  socket.data.profile = merged;
-
-  // kick multi-tab
+  // nếu uid đang online ở socket khác → đá
   const oldSocketId = activeUsers.get(uid);
   if(oldSocketId && oldSocketId !== socket.id){
-    io.to(oldSocketId).emit("force-logout");
-    io.sockets.sockets.get(oldSocketId)?.disconnect(true);
+    io.to(oldSocketId).emit("force-logout", { reason:"login_elsewhere" });
+
+    const oldSocket = io.sockets.sockets.get(oldSocketId);
+    if(oldSocket){
+      oldSocket.disconnect(true);
+    }
   }
 
   activeUsers.set(uid, socket.id);
   socket.data.uid = uid;
 
   emitActiveUsers();
-});
 
+});
 
 
 socket.on("host-reconnect", ({ roomId }) => {
