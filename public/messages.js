@@ -15,17 +15,23 @@ socket.on("active-users", ({ users }) => {
   users.forEach(u => {
     if(u.name === auth.name) return;
 
-    const div = document.createElement("div");
-    div.className = "badge";
-    div.innerHTML = `<img src="${u.avatar}" width="24" style="border-radius:50%"> ${u.name}`;
+  const div = document.createElement("div");
+div.className = "user-item";
+div.innerHTML = `
+  <img class="user-avatar" src="${u.avatar}">
+  <div class="user-name">${u.name}</div>
+`;
 
-    div.onclick = () => {
+div.onclick = () => {
+  document.querySelectorAll(".user-item").forEach(x=>x.classList.remove("active"));
+  div.classList.add("active");
+
   currentTarget = u;
-  chatTitle.textContent = "Chat với " + u.name;
+  chatTitle.textContent = "💬 " + u.name;
   chatBox.innerHTML = "";
-
   socket.emit("load-private-chat", { uid: u.uid });
 };
+
 
 
     userList.appendChild(div);
@@ -59,9 +65,10 @@ socket.on("private-message", ({ from, text }) => {
 });
 
 function pushMsg(name, text){
+  const isMe = name === "Bạn";
   const div = document.createElement("div");
-  div.className = "chat-line";
-  div.textContent = `${name}: ${text}`;
+  div.className = "msg " + (isMe ? "me" : "other");
+  div.textContent = text;
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
