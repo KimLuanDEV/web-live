@@ -6571,3 +6571,38 @@ body.is-guest .reactions-layer{
   gap: 8px;
   z-index: 5;
 }
+
+
+/* ===== iOS STYLE CHAT HEADER ===== */
+.chat-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 6px 10px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.chat-back{
+  width:auto;
+  padding:4px 6px;
+  border:none;
+  background:none;
+  font-size:26px;
+  line-height:1;
+  color:#5FA8FF;
+  cursor:pointer;
+}
+
+.chat-back:hover{
+  filter:brightness(1.2);
+}
+
+.chat-header-title{
+  flex:1;
+  text-align:left;
+  font-weight:700;
+  font-size:16px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}

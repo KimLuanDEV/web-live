@@ -22,7 +22,7 @@ socket.on("active-users", ({ users }) => {
 
     div.onclick = () => {
   currentTarget = u;
-  chatTitle.textContent = "Chat với " + u.name;
+  chatTitle.textContent = u.name;
   chatBox.innerHTML = "";
   openChat();
 };

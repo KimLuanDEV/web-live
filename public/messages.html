@@ -33,10 +33,17 @@
   <div class="modal-backdrop" onclick="closeChat()"></div>
 
   <div class="modal-card" style="max-width:520px">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
-      <h4 id="chatTitle">Chat</h4>
-      <button onclick="closeChat()">✖</button>
-    </div>
+
+    <div class="chat-header">
+  <button class="chat-back" onclick="closeChat()">
+    ‹
+  </button>
+
+  <div class="chat-header-title">
+    <span id="chatTitle">Chat</span>
+  </div>
+</div>
+
 
     <div id="chatBox" class="chatbox"></div>
 
