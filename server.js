@@ -549,6 +549,24 @@ if (level) socket.data.profile.level = Number(level) || socket.data.profile.leve
   const room = getRoom(roomId);
   if (!room) return;
 
+// 💾 LƯU PROFILE VÀO users.json (giữ khi F5 / reconnect)
+const uid = socket.data.uid;
+if (uid) {
+  const db = loadUsers();
+
+  // tìm account theo uid
+  for (const k in db) {
+    if (db[k].profile?.uid === uid) {
+      if (name)  db[k].profile.name  = safeName(name);
+      if (avatar) db[k].profile.avatar = avatar;
+      if (level) db[k].profile.level = Number(level) || db[k].profile.level;
+      saveUsers(db);
+      break;
+    }
+  }
+}
+
+
   // 🚫 CHẶN HOST
   if (room.broadcasterId === socket.id) {
     console.warn("⛔ Host không được dùng profile-update");
