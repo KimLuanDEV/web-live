@@ -6783,7 +6783,3 @@ body.is-guest .reactions-layer{
 .net-status.mid{ color:#ffd36e }
 .net-status.bad{ color:#ff4b4b }
 
-.chat-scroll{
-  flex:1;
-  overflow-y:auto;
-}

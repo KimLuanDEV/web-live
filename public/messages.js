@@ -155,10 +155,11 @@ pushMsg("Bạn", txt, true, msgId, "sent");
   document.getElementById("msgInput").value = "";
 const input = document.getElementById("msgInput");
 input.value = "";
-input.dispatchEvent(new Event("input", { bubbles:true }));
-input.setAttribute("value","");
+input.blur();          // đóng keyboard ảo
+setTimeout(() => {
+  input.focus();       // bật lại keyboard
+}, 10);
 
-input.focus();
 };
 
 socket.on("private-message", ({ from, text, msgId }) => {
