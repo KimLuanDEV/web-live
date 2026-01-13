@@ -570,6 +570,9 @@ for (const v of list) {
 
 
 socket.on("viewer-join", ({ roomId, profile }) => {
+  // ✅ lưu profile cho Player Lobby
+socket.data.profile = profile;
+
 
 if(isGuest(socket)){
   // ép profile Guest an toàn
