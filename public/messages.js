@@ -20,14 +20,27 @@ socket.on("active-users", ({ users }) => {
     div.innerHTML = `<img src="${u.avatar}" width="24" style="border-radius:50%"> ${u.name}`;
 
     div.onclick = () => {
-      currentTarget = u;
-      chatTitle.textContent = "Chat với " + u.name;
-      chatBox.innerHTML = "";
-    };
+  currentTarget = u;
+  chatTitle.textContent = "Chat với " + u.name;
+  chatBox.innerHTML = "";
+
+  socket.emit("load-private-chat", { uid: u.uid });
+};
+
 
     userList.appendChild(div);
   });
 });
+
+
+socket.on("private-chat-history", (list) => {
+  chatBox.innerHTML = "";
+  list.forEach(m => {
+    const name = m.from.uid === auth.uid ? "Bạn" : m.from.name;
+    pushMsg(name, m.text);
+  });
+});
+
 
 document.getElementById("sendBtn").onclick = () => {
   const txt = document.getElementById("msgInput").value.trim();
