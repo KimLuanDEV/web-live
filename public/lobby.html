@@ -309,7 +309,7 @@
     </div>
 
     <div class="player-lobby-sub">
-      Danh sách người chơi đang online (sẽ cập nhật realtime)
+      Danh sách người chơi đang online.
     </div>
 
     <div id="playerList" class="player-lobby-list">
@@ -986,6 +986,12 @@ inboxModal?.querySelector(".modal-backdrop")?.addEventListener("click", ()=>{
   inboxModal.classList.add("hidden");
 });
 
+
+socket.on("active-users", ({ users }) => {
+  renderPlayerLobby(users);
+});
+
+
 // Nhận dữ liệu inbox
 socket.on("inbox-data", list=>{
   inboxList.innerHTML = "";
@@ -1070,6 +1076,27 @@ playerLobby.querySelector(".player-lobby-backdrop").onclick = () => {
   playerLobby.classList.add("hidden");
 };
 
+
+
+function renderPlayerLobby(users){
+  const box = document.getElementById("playerList");
+
+  if(!users || !users.length){
+    box.innerHTML = `<div class="player-lobby-empty">Không có người online</div>`;
+    return;
+  }
+
+  box.innerHTML = users.map(u => `
+    <div class="player-row">
+      <img src="${u.avatar}">
+      <div class="pinfo">
+        <div class="pname">${u.name}</div>
+        <div class="plevel">Lv ${u.level}</div>
+      </div>
+      ${u.roomId ? `<div class="proom">🎥 ${u.roomId}</div>` : ""}
+    </div>
+  `).join("");
+}
 
 
 

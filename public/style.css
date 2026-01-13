@@ -6324,3 +6324,43 @@ body.is-guest .reactions-layer{
   text-align:center;
   margin-top:40px;
 }
+
+
+.player-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:14px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+}
+
+.player-row img{
+  width:42px;
+  height:42px;
+  border-radius:999px;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.25);
+}
+
+.player-row .pinfo{
+  flex:1;
+}
+
+.player-row .pname{
+  font-weight:800;
+}
+
+.player-row .plevel{
+  font-size:12px;
+  opacity:.7;
+}
+
+.player-row .proom{
+  font-size:12px;
+  opacity:.8;
+  background:rgba(255,59,107,.15);
+  padding:6px 10px;
+  border-radius:999px;
+}

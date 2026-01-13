@@ -72,6 +72,38 @@ const rooms = new Map();
 const activeUsers = new Map();   // uid -> socketId
 
 
+function getActiveUserList(){
+  const list = [];
+
+  for(const [uid, socketId] of activeUsers.entries()){
+    const s = io.sockets.sockets.get(socketId);
+    if(!s) continue;
+
+    const profile = s.data.profile || null;
+
+    list.push({
+      uid,
+      socketId,
+      name: profile?.name || uid,
+      avatar: profile?.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
+      level: profile?.level || 1,
+      role: s.data.role || "user",
+      roomId: s.data.roomId || null
+    });
+  }
+
+  return list;
+}
+
+
+function emitActiveUsers(){
+  io.emit("active-users", {
+    users: getActiveUserList(),
+    ts: Date.now()
+  });
+}
+
+
 // ===== USER INBOX / NOTIFICATION =====
 const userInbox = new Map();   // uid -> [ {type, text, ts, read} ]
 
@@ -415,11 +447,19 @@ socket.on("auth-ping", ({ uid }) => {
     activeUsers.set(uid, socket.id);
     socket.data.uid = uid;
   }
+  emitActiveUsers();
+
 });
 
   socket.on("auth-login", ({ uid }) => {
+
   uid = String(uid||"").trim();
   if(!uid) return;
+
+  const db = loadUsers();
+if(db[uid]){
+  socket.data.profile = db[uid].profile;
+}
 
   // nếu uid đang online ở socket khác → đá
   const oldSocketId = activeUsers.get(uid);
@@ -434,6 +474,9 @@ socket.on("auth-ping", ({ uid }) => {
 
   activeUsers.set(uid, socket.id);
   socket.data.uid = uid;
+
+  emitActiveUsers();
+
 });
 
 
