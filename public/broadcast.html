@@ -699,8 +699,7 @@ const stream = video.captureStream();
 }
 
 
-// 🚀 BẮT ĐẦU gửi video vào Mediasoup SFU
-startSFUTest();
+
 
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
@@ -919,7 +918,7 @@ if (profile){
 }
 
 
-
+/*
 function limitAudioBitrate(pc, kbps = 32) {
   try {
     pc.getSenders().forEach(sender => {
@@ -934,7 +933,9 @@ function limitAudioBitrate(pc, kbps = 32) {
   } catch {}
 }
 
+*/
 
+/*
 function limitVideoBitrate(pc, kbps = 800) {
   try {
     pc.getSenders().forEach(sender => {
@@ -952,12 +953,14 @@ function limitVideoBitrate(pc, kbps = 800) {
   } catch {}
 }
 
+*/
 
 // ===== HD QUALITY MONITOR (Viewer) =====
 const hdBadge = document.getElementById("hdBadge");
 let __lastBytes = 0;
 let __lastTs = 0;
 
+/*
 async function checkHDQuality(){
   try{
     if (!pc || pc.connectionState !== "connected") return;
@@ -1005,6 +1008,8 @@ async function checkHDQuality(){
 
 // check mỗi 2.5s
 setInterval(checkHDQuality, 2500);
+
+*/
 
 // 🔔 guest request sound
 const guestReqSound = new Audio("/public/audio/sound.mp3");
@@ -1515,9 +1520,9 @@ socket.on("reaction", (msg)=>{
     let localStream = null;
     let currentFacing = "user"; // user | environment
 
-    // One RTCPeerConnection per viewer
+    /*
     const pcs = new Map();
-
+*/
 
 // ===== AUTO RECOVER AV WHEN TAB BACKGROUND =====
 document.addEventListener("visibilitychange", async () => {
@@ -1664,7 +1669,7 @@ socket.emit("join-room", {
       if (pc) __doIceRestart(peerId, pc, reason || "requested");
     });
 
-
+/*
     // ===== Viewer -> Host streaming =====
     socket.on("watcher", async ({ viewerId }) => {
       if (!localStream) {
@@ -1715,6 +1720,9 @@ limitVideoBitrate(pc, 800); // 👈 CHỐT bitrate video cho viewer
       }
     });
 
+*/
+
+/*
     socket.on("answer", async ({ from, description }) => {
       // could be viewer answer OR guest answer (rare in this flow)
       const pc = pcs.get(from);
@@ -1737,6 +1745,9 @@ limitVideoBitrate(pc, 800); // 👈 CHỐT bitrate video cho viewer
       }
     });
 
+*/
+
+/*
     socket.on("candidate", async ({ from, candidate }) => {
       const pc = pcs.get(from);
       if (pc) {
@@ -1749,7 +1760,7 @@ limitVideoBitrate(pc, 800); // 👈 CHỐT bitrate video cho viewer
         catch (err) { log("Lỗi addIceCandidate(guest): " + err.message); }
       }
     });
-
+*/
     
 
 // ===== ICE RESTART: host regenerates offer when asked =====
@@ -1898,7 +1909,7 @@ document.addEventListener("pointerdown", () => {
   guestReqSound.play().then(()=>guestReqSound.pause()).catch(()=>{});
 }, { once:true });
 
-
+/*
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
     socket.on("offer", async ({ from, description }) => {
       // Only handle guest offers (viewers never send offers to host in this app)
@@ -1942,7 +1953,9 @@ document.addEventListener("pointerdown", () => {
       }
     });
 
-    // ===== Start/Stop/Flip =====
+*/
+
+   /*
     async function start() {
       if (localStream) return;
 
@@ -1985,6 +1998,10 @@ audio: {
       }
     }
 
+
+    */
+
+/*
     function stop() {
       // close all viewer peers
       for (const [id, pc] of pcs.entries()) {
@@ -2019,6 +2036,8 @@ syncStartLiveOverlay(false);
 
       log("Đã Stop.");
     }
+
+*/
 
     async function flipCamera() {
       if (!localStream) return;
@@ -2065,8 +2084,17 @@ syncStartLiveOverlay(false);
       }
     }
 
-    btnStart.onclick = start;
-    btnStop.onclick = stop;
+    btnStart.onclick = () => {
+  startSFUTest();      // SFU
+  syncStartLiveOverlay(true);
+};
+
+btnStop.onclick = () => {
+  syncStartLiveOverlay(false);
+};
+
+
+
     hostFlipBtn.onclick = flipCamera;
 
     window.addEventListener("beforeunload", () => {
