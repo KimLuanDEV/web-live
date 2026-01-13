@@ -137,7 +137,8 @@ socket.on("active-users", ({ users }) => {
   });
 });
 
-document.getElementById("sendBtn").onclick = () => {
+document.getElementById("sendBtn").onclick = (e) => {
+  e.preventDefault();   // 🔥 chặn form submit
   const txt = document.getElementById("msgInput").value.trim();
   if(!txt || !currentTarget) return;
 
