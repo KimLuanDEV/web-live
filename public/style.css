@@ -6512,3 +6512,19 @@ body.is-guest .reactions-layer{
 
 
 
+/* ===== FIX CHAT SPACING ===== */
+.chat-line{
+  padding: 0 !important;
+  margin-bottom: 6px;      /* khoảng cách giữa 2 tin */
+}
+
+.chat-msg{
+  gap: 6px;               /* avatar ↔ bubble */
+}
+
+.chat-time{
+  margin-top: 2px;
+  font-size: 11px;
+  line-height: 1;
+  opacity: .6;
+}
