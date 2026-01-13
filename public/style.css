@@ -6510,3 +6510,28 @@ body.is-guest .reactions-layer{
   opacity:.8;
 }
 
+
+/* ===== CHAT AVATAR ===== */
+.chat-line{
+  display:flex;
+  align-items:flex-end;
+  gap:6px;
+}
+
+.chat-line.other{
+  flex-direction: row;
+}
+
+.chat-line.me{
+  flex-direction: row-reverse;
+}
+
+.chat-avatar{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid rgba(255,255,255,.25);
+  background:#000;
+}
+

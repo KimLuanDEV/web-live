@@ -44,14 +44,16 @@ socket.emit("private-message", {
   msgId
 });
 
-pushMsg("Bạn", txt, true, msgId, "sent");
+pushMsg("Bạn", txt, true, msgId, "sent", auth.avatar);
+
 
 
   document.getElementById("msgInput").value = "";
 };
 
 socket.on("private-message", ({ from, text, msgId }) => {
-  pushMsg(from.name, text, false);
+  pushMsg(from.name, text, false, null, "", from.avatar);
+  
 
   // báo là đã xem
   socket.emit("msg-seen", {
@@ -69,24 +71,31 @@ socket.on("msg-status", ({ msgId, status }) => {
 });
 
 
-function pushMsg(name, text, isMe=false, msgId=null, status=""){
+function pushMsg(name, text, isMe=false, msgId=null, status="", avatar=null){
   const div = document.createElement("div");
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
   const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
+  const ava = avatar ||
+    (isMe ? auth.avatar : (currentTarget?.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed="+name));
+
   div.innerHTML = `
-    <div class="bubble">${text}</div>
-    <div class="chat-time">
-      ${time}
-      ${isMe ? `<span class="msg-status">${status}</span>` : ""}
+    <img class="chat-avatar" src="${ava}">
+    <div>
+      <div class="bubble">${text}</div>
+      <div class="chat-time">
+        ${time}
+        ${isMe ? `<span class="msg-status">${status}</span>` : ""}
+      </div>
     </div>
   `;
 
   chatBox.appendChild(div);
   requestAnimationFrame(() => chatBox.scrollTop = chatBox.scrollHeight);
 }
+
 
 
 
