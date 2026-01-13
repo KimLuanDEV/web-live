@@ -733,7 +733,8 @@ setInterval(checkHDQuality, 2500);
 
 
 
-    const socket = io();
+    const socket = io("http://207.148.79.73:4000");
+
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 

@@ -652,7 +652,8 @@ if(nameFromLobby){
       catch { prompt("Copy link khách mời:", guestUrl); }
     };
 
-    const socket = io();
+    const socket = io("http://207.148.79.73:4000");
+
     
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
