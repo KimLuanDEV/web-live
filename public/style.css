@@ -6446,3 +6446,39 @@ body.is-guest .reactions-layer{
 #chatModal input{
   font-size: 16px;
 }
+
+
+/* ===== PRIVATE CHAT BUBBLES ===== */
+.chat-line{
+  display:flex;
+  margin-bottom:8px;
+}
+
+.chat-line.me{
+  justify-content:flex-end;
+}
+
+.chat-line.me .bubble{
+  background: linear-gradient(135deg,#5fa8ff,#37f0a3);
+  color:#000;
+  border-radius:16px 16px 4px 16px;
+}
+
+.chat-line.other{
+  justify-content:flex-start;
+}
+
+.chat-line.other .bubble{
+  background: rgba(255,255,255,.08);
+  border-radius:16px 16px 16px 4px;
+}
+
+.chat-line .bubble{
+  max-width:78%;
+  padding:10px 12px;
+  font-size:14px;
+  line-height:1.35;
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 6px 18px rgba(0,0,0,.4);
+  word-wrap:break-word;
+}

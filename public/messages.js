@@ -41,23 +41,27 @@ document.getElementById("sendBtn").onclick = () => {
     text: txt
   });
 
-  pushMsg("Bạn", txt);
+  pushMsg("Bạn", txt, true);
   document.getElementById("msgInput").value = "";
 };
 
 socket.on("private-message", ({ from, text }) => {
-  pushMsg(from.name, text);
+  pushMsg(from.name, text, false);
 });
 
-function pushMsg(name, text){
+
+function pushMsg(name, text, isMe=false){
   const div = document.createElement("div");
-  div.className = "chat-line";
-  div.textContent = `${name}: ${text}`;
+  div.className = "chat-line " + (isMe ? "me" : "other");
+
+  div.innerHTML = `<div class="bubble">${text}</div>`;
   chatBox.appendChild(div);
+
   requestAnimationFrame(() => {
-  chatBox.scrollTop = chatBox.scrollHeight;
-});
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
 }
+
 
 
 const chatModal = document.getElementById("chatModal");
