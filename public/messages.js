@@ -6,6 +6,25 @@ let voiceStream = null;
 let voiceTarget = null;
 let currentTarget = null;
 
+
+
+function setCallUI(active){
+  if(active){
+    callBtn.classList.add("hidden");
+    muteBtn.classList.remove("hidden");
+    endCallBtn.classList.remove("hidden");
+  }else{
+    callBtn.classList.remove("hidden");
+    muteBtn.classList.add("hidden");
+    endCallBtn.classList.add("hidden");
+    micMuted = false;
+    muteBtn.classList.remove("active");
+    muteBtn.textContent = "🔇";
+  }
+}
+
+
+
 socket.emit("auth-login", { uid: auth.uid });
 
 const userList = document.getElementById("userList");
@@ -145,9 +164,7 @@ window.addEventListener("resize", () => {
 socket.on("voice-offer", async ({ from, sdp }) => {
   if(!confirm("📞 Có cuộc gọi đến. Nhận?")) return;
 
-  muteBtn.classList.remove("hidden");
-endCallBtn.classList.remove("hidden");
-callBtn.classList.add("hidden");
+setCallUI(true);
 
 
   voiceTarget = from;
@@ -190,10 +207,8 @@ callBtn.classList.add("hidden");
 socket.on("voice-answer", async ({ sdp }) => {
   await voicePC.setRemoteDescription(sdp);
 
-  // 🔥 đảm bảo UI ở trạng thái đang gọi
-  muteBtn.classList.remove("hidden");
-  endCallBtn.classList.remove("hidden");
-  callBtn.classList.add("hidden");
+  setCallUI(true);
+
 });
 
 
@@ -217,12 +232,9 @@ socket.on("voice-end", () => {
 
   alert("📞 Cuộc gọi đã kết thúc");
 
-  muteBtn.classList.add("hidden");
-  endCallBtn.classList.add("hidden");   // 🔥 THÊM DÒNG NÀY
-  micMuted = false;
-  muteBtn.classList.remove("active");
-  muteBtn.textContent = "🔇";
-  callBtn.classList.remove("hidden");
+  setCallUI(false);
+
+ 
 });
 
 
@@ -281,9 +293,8 @@ voicePC.ontrack = e => {
   });
 
   alert("📞 Đang gọi " + currentTarget.name);
-  muteBtn.classList.remove("hidden");
-endCallBtn.classList.remove("hidden");
-callBtn.classList.add("hidden");
+ setCallUI(true);
+
 
 };
 
@@ -302,12 +313,8 @@ function endVoiceCall(){
 
   voiceTarget = null;
 
-  endCallBtn.classList.add("hidden");
-  callBtn.classList.remove("hidden");
-muteBtn.classList.add("hidden");
-micMuted = false;
-muteBtn.classList.remove("active");
-muteBtn.textContent = "🔇";
+  setCallUI(false);
+
 
   alert("📞 Đã kết thúc cuộc gọi");
 }
