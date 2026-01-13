@@ -79,14 +79,16 @@ function getActiveUserList(){
     const s = io.sockets.sockets.get(socketId);
     if(!s) continue;
 
-    const profile = s.data.profile || null;
+    const profile = s.data.profile;
+
+    // ⛔ BỎ QUA user chưa có profile (chưa login hoặc chưa sync)
+    if (!profile || !profile.name) continue;
 
     list.push({
-      uid,
       socketId,
-      name: profile?.name || uid,
-      avatar: profile?.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
-      level: profile?.level || 1,
+      name: String(profile.name).slice(0, 32),   // ✅ CHỈ LẤY TÊN PROFILE
+      avatar: profile.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + encodeURIComponent(profile.name),
+      level: Number(profile.level || 1),
       role: s.data.role || "user",
       roomId: s.data.roomId || null
     });
