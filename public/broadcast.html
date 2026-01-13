@@ -16,6 +16,8 @@
 
   <title>Host - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
+  <script src="https://unpkg.com/mediasoup-client@3/lib/index.js"></script>
+
 </head>
 <body class="viewer-fullscreen">
 <script src="/guard.js"></script>
@@ -655,6 +657,48 @@ if(nameFromLobby){
     const socket = io("http://207.148.79.73:4000");
 
     
+let device, sendTransport;
+
+async function startSFUTest(){
+  socket.emit("getRtpCapabilities", async (caps)=>{
+    device = new mediasoupClient.Device();
+    await device.load({ routerRtpCapabilities: caps });
+
+    socket.emit("createTransport", async (params)=>{
+      sendTransport = device.createSendTransport(params);
+
+      sendTransport.on("connect", ({ dtlsParameters }, cb)=>{
+        socket.emit("connectTransport", { dtlsParameters });
+        cb();
+      });
+
+      sendTransport.on("produce", ({ kind, rtpParameters }, cb)=>{
+        socket.emit("produce", { kind, rtpParameters }, ({ id })=>{
+          cb({ id });
+        });
+      });
+
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true
+      });
+
+      preview.srcObject = stream;
+
+      for (const track of stream.getTracks()){
+        await sendTransport.produce({ track });
+      }
+
+      console.log("🎥 Host sending video to SFU");
+    });
+  });
+}
+
+
+// 🚀 BẮT ĐẦU gửi video vào Mediasoup SFU
+startSFUTest();
+
+
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 if(profile.uid){

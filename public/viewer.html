@@ -14,6 +14,8 @@
 
   <title>Viewer - Livestream Pro</title>
   <link rel="stylesheet" href="/style.css" />
+  <script src="https://unpkg.com/mediasoup-client@3/lib/index.js"></script>
+
 </head>
 <body class="viewer-fullscreen">
 
@@ -734,6 +736,43 @@ setInterval(checkHDQuality, 2500);
 
 
     const socket = io("http://207.148.79.73:4000");
+
+
+let device, recvTransport;
+
+socket.emit("getRtpCapabilities", async (caps)=>{
+  device = new mediasoupClient.Device();
+  await device.load({ routerRtpCapabilities: caps });
+
+  socket.emit("createTransport", (params)=>{
+    recvTransport = device.createRecvTransport(params);
+
+    recvTransport.on("connect", ({ dtlsParameters }, cb)=>{
+      socket.emit("connectTransport", { dtlsParameters });
+      cb();
+    });
+  });
+});
+
+socket.on("newProducer", ({ id })=>{
+  socket.emit("consume", {
+    producerId: id,
+    rtpCapabilities: device.rtpCapabilities
+  }, async ({ kind, rtpParameters, id: consumerId })=>{
+    const consumer = await recvTransport.consume({
+      id: consumerId,
+      producerId: id,
+      kind,
+      rtpParameters
+    });
+
+    const stream = new MediaStream();
+    stream.addTrack(consumer.track);
+    player.srcObject = stream;
+  });
+});
+
+
 
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
