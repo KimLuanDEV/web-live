@@ -8,7 +8,8 @@ let currentTarget = null;
 
 const callBtn = document.getElementById("callBtn");   // 🔥 BẮT BUỘC
 const endCallBtn = document.getElementById("endCallBtn");
-const muteBtn = document.getElementById("muteBtn");
+const muteBtn = document.getElementById("chatMuteBtn");
+
 let micMuted = false;
 
 function setCallUI(active){
