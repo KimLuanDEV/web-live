@@ -466,9 +466,15 @@ socket.on("auth-ping", ({ uid }) => {
   if(!uid) return;
 
   const db = loadUsers();
+
 if(db[uid]){
-  socket.data.profile = db[uid].profile;
+  // chỉ load nếu chưa có profile realtime
+  socket.data.profile = {
+    ...db[uid].profile,
+    ...socket.data.profile   // 🔥 realtime ghi đè DB
+  };
 }
+
 
   // nếu uid đang online ở socket khác → đá
   const oldSocketId = activeUsers.get(uid);
