@@ -6702,3 +6702,59 @@ body.is-guest .reactions-layer{
 .hidden{
   display: none !important;
 }
+
+
+/* ===== SYSTEM MODAL ===== */
+.sys-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.sys-modal.hidden{
+  display:none;
+}
+
+.sys-box{
+  width:85%;
+  max-width:320px;
+  background:#0b1222;
+  border-radius:18px;
+  padding:20px;
+  box-shadow:0 0 40px rgba(95,168,255,.3);
+  text-align:center;
+}
+
+.sys-text{
+  font-size:15px;
+  margin-bottom:18px;
+  line-height:1.4;
+}
+
+.sys-actions{
+  display:flex;
+  gap:12px;
+}
+
+.sys-btn{
+  flex:1;
+  padding:10px 0;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.sys-btn.primary{
+  background:linear-gradient(135deg,#5fa8ff,#37f0a3);
+  color:#000;
+}
+
+.sys-btn.ghost{
+  background:rgba(255,255,255,.08);
+  color:#fff;
+}

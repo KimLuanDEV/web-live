@@ -10,7 +10,38 @@ const callBtn = document.getElementById("callBtn");   // 🔥 BẮT BUỘC
 const endCallBtn = document.getElementById("endCallBtn");
 const muteBtn = document.getElementById("chatMuteBtn");
 
+
+const sysModal = document.getElementById("sysModal");
+const sysText = document.getElementById("sysText");
+const sysOk = document.getElementById("sysOk");
+const sysCancel = document.getElementById("sysCancel");
+
 let micMuted = false;
+
+
+function showModal(text, okText="OK", cancelText=null){
+  return new Promise(resolve=>{
+    sysText.textContent = text;
+    sysOk.textContent = okText;
+    sysCancel.style.display = cancelText ? "block" : "none";
+    sysCancel.textContent = cancelText || "";
+
+    sysModal.classList.remove("hidden");
+
+    sysOk.onclick = () => {
+      sysModal.classList.add("hidden");
+      resolve(true);
+    };
+    sysCancel.onclick = () => {
+      sysModal.classList.add("hidden");
+      resolve(false);
+    };
+  });
+}
+
+
+
+
 
 function setCallUI(active){
   if(active){
@@ -166,7 +197,9 @@ window.addEventListener("resize", () => {
 
 
 socket.on("voice-offer", async ({ from, sdp }) => {
-  if(!confirm("📞 Có cuộc gọi đến. Nhận?")) return;
+ const ok = await showModal("📞 " + from.name + " đang gọi bạn", "Nhận", "Từ chối");
+if(!ok) return;
+
 
 setCallUI(true);
 
@@ -234,7 +267,7 @@ socket.on("voice-end", () => {
     voiceStream = null;
   }
 
-  alert("📞 Cuộc gọi đã kết thúc");
+  showModal("📞 Cuộc gọi đã kết thúc");
 
   setCallUI(false);
 
@@ -245,7 +278,7 @@ socket.on("voice-end", () => {
 
 socket.on("private-call", ({ from }) => {
   if(confirm("📞 " + from.name + " đang gọi bạn. Nhận cuộc gọi?")){
-    alert("🎙 Kết nối voice sẽ mở ở bước tiếp theo");
+    showModal("🎙 Kết nối voice sẽ mở ở bước tiếp theo");
   }
 });
 
@@ -294,7 +327,7 @@ voicePC.ontrack = e => {
     sdp: offer
   });
 
-  alert("📞 Đang gọi " + currentTarget.name);
+  showModal("📞 Đang gọi " + currentTarget.name);
  setCallUI(true);
 
 
@@ -318,7 +351,7 @@ function endVoiceCall(){
   setCallUI(false);
 
 
-  alert("📞 Đã kết thúc cuộc gọi");
+  showModal("📞 Đã kết thúc cuộc gọi");
 }
 
 
