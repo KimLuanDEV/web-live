@@ -20,10 +20,12 @@ socket.on("active-users", ({ users }) => {
     div.innerHTML = `<img src="${u.avatar}" width="24" style="border-radius:50%"> ${u.name}`;
 
     div.onclick = () => {
-      currentTarget = u;
-      chatTitle.textContent = "Chat với " + u.name;
-      chatBox.innerHTML = "";
-    };
+  currentTarget = u;
+  chatTitle.textContent = "Chat với " + u.name;
+  chatBox.innerHTML = "";
+  openChat();
+};
+
 
     userList.appendChild(div);
   });
@@ -52,4 +54,19 @@ function pushMsg(name, text){
   div.textContent = `${name}: ${text}`;
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
+}
+
+
+const chatModal = document.getElementById("chatModal");
+
+function openChat(){
+  chatModal.classList.remove("hidden");
+  setTimeout(() => {
+    document.getElementById("msgInput").focus();
+  }, 100);
+}
+
+function closeChat(){
+  chatModal.classList.add("hidden");
+  currentTarget = null;
 }

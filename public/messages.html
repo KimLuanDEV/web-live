@@ -31,20 +31,36 @@
         <div id="userList"></div>
       </div>
 
-      <!-- Khung chat -->
-      <div class="card">
-        <h4 id="chatTitle">Chọn người để chat</h4>
+    
 
-        <div id="chatBox" class="chatbox"></div>
 
-        <div class="chatform">
-          <input id="msgInput" placeholder="Nhập tin nhắn..." />
-          <button id="sendBtn">Gửi</button>
-        </div>
-      </div>
+
     </div>
   </div>
 </div>
+
+
+
+
+<!-- CHAT MODAL -->
+<div id="chatModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeChat()"></div>
+
+  <div class="modal-card" style="max-width:520px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
+      <h4 id="chatTitle">Chat</h4>
+      <button onclick="closeChat()">✖</button>
+    </div>
+
+    <div id="chatBox" class="chatbox"></div>
+
+    <div class="chatform">
+      <input id="msgInput" placeholder="Nhập tin nhắn..." />
+      <button id="sendBtn">Gửi</button>
+    </div>
+  </div>
+</div>
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/messages.js"></script>
