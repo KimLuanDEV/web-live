@@ -88,6 +88,7 @@ function getActiveUserList(){
 
     list.push({
       socketId,
+      uid,   
       name: displayName,        // ✅ Tên hiển thị
       avatar:
         profile.avatar ||

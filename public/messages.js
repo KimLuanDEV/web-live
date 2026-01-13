@@ -13,7 +13,8 @@ socket.on("active-users", ({ users }) => {
   userList.innerHTML = "";
 
   users.forEach(u => {
-    if(u.name === auth.name) return;
+   if(u.uid === auth.uid) return;
+
 
     const div = document.createElement("div");
     div.className = "badge";
