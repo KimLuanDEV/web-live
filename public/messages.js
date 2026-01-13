@@ -6,7 +6,10 @@ let voiceStream = null;
 let voiceTarget = null;
 let currentTarget = null;
 
-
+const callBtn = document.getElementById("callBtn");   // 🔥 BẮT BUỘC
+const endCallBtn = document.getElementById("endCallBtn");
+const muteBtn = document.getElementById("muteBtn");
+let micMuted = false;
 
 function setCallUI(active){
   if(active){
@@ -246,10 +249,8 @@ socket.on("private-call", ({ from }) => {
 });
 
 
-const callBtn = document.getElementById("callBtn");   // 🔥 BẮT BUỘC
-const endCallBtn = document.getElementById("endCallBtn");
-const muteBtn = document.getElementById("muteBtn");
-let micMuted = false;
+
+
 
 endCallBtn.onclick = endVoiceCall;
 
