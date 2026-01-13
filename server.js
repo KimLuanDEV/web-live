@@ -71,14 +71,6 @@ const rooms = new Map();
 
 const activeUsers = new Map();   // uid -> socketId
 
-// ===== PRIVATE CHAT STORAGE =====
-const privateChats = new Map();  
-// key = "uid1|uid2" → [ {from, to, text, ts} ]
-
-function chatKey(a, b){
-  return [a, b].sort().join("|");
-}
-
 
 function getActiveUserList(){
   const list = [];
@@ -428,52 +420,12 @@ io.on("connection", (socket) => {
 
 
   socket.on("private-message", ({ to, text }) => {
-  const from = socket.data.profile;
-  if(!from || !from.uid) return;
-
-  const targetSocket = io.sockets.sockets.get(to);
-  if(!targetSocket) return;
-
-  const toProfile = targetSocket.data.profile;
-  if(!toProfile || !toProfile.uid) return;
-
-  const msg = {
-    from: {
-      uid: from.uid,
-      name: from.name,
-      avatar: from.avatar
-    },
-    to: {
-      uid: toProfile.uid,
-      name: toProfile.name
-    },
-    text,
-    ts: Date.now()
-  };
-
-  // 🔒 Lưu lịch sử
-  const key = chatKey(from.uid, toProfile.uid);
-  if(!privateChats.has(key)) privateChats.set(key, []);
-  privateChats.get(key).push(msg);
-
-  // gửi cho người nhận
-  io.to(to).emit("private-message", msg);
-
-  // gửi lại cho người gửi (đồng bộ)
-  socket.emit("private-message", msg);
-});
-
-
-
-socket.on("load-private-chat", ({ uid }) => {
-  const me = socket.data.profile;
-  if(!me || !me.uid || !uid) return;
-
-  const key = chatKey(me.uid, uid);
-  const history = privateChats.get(key) || [];
-
-  socket.emit("private-chat-history", history);
-});
+    const fromProfile = socket.data.profile || { name:"User" };
+    io.to(to).emit("private-message", {
+      from: fromProfile,
+      text
+    });
+  });
 
 
   function isGuest(socket){
