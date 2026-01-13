@@ -79,15 +79,20 @@ function getActiveUserList(){
     const s = io.sockets.sockets.get(socketId);
     if(!s) continue;
 
-    const profile = s.data.profile;
+    const profile = s.data.profile || {};
 
-    // ⛔ BỎ QUA user chưa có profile (chưa login hoặc chưa sync)
-    if (!profile || !profile.name) continue;
+    const displayName =
+      profile.name ||
+      profile.displayName ||
+      "Người chơi";
 
     list.push({
       socketId,
-      name: String(profile.name).slice(0, 32),   // ✅ CHỈ LẤY TÊN PROFILE
-      avatar: profile.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + encodeURIComponent(profile.name),
+      name: displayName,        // ✅ Tên hiển thị
+      avatar:
+        profile.avatar ||
+        "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+        encodeURIComponent(displayName),
       level: Number(profile.level || 1),
       role: s.data.role || "user",
       roomId: s.data.roomId || null
@@ -96,6 +101,8 @@ function getActiveUserList(){
 
   return list;
 }
+
+
 
 
 function emitActiveUsers(){
