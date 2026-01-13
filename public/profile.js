@@ -192,8 +192,15 @@ if (vipBadgeBox){
   }
 }
 
-
 }
+
+const btnMessages = document.getElementById("btnMessages");
+if(btnMessages){
+  btnMessages.onclick = () => {
+    window.location.href = "/messages.html";
+  };
+}
+
 
 
 document.getElementById("btnSave").onclick = () => {

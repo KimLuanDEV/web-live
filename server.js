@@ -419,6 +419,15 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+  socket.on("private-message", ({ to, text }) => {
+    const fromProfile = socket.data.profile || { name:"User" };
+    io.to(to).emit("private-message", {
+      from: fromProfile,
+      text
+    });
+  });
+
+
   function isGuest(socket){
   return String(socket.data.uid || "").startsWith("guest_");
 }

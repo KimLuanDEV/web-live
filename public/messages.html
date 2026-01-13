@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>📩 Tin nhắn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+
+<body class="page-messages">
+<script src="/guard.js"></script>
+
+<div class="container">
+  <div class="card">
+    <div class="topbar">
+      <div class="brand">
+        <span class="brand__dot"></span>
+        <div>
+          <div class="brand__title">📩 Tin nhắn</div>
+          <small>Chat riêng giữa người dùng</small>
+        </div>
+      </div>
+
+      <button onclick="location.href='/profile.html'">← Quay lại</button>
+    </div>
+
+    <div class="row">
+      <!-- Danh sách người -->
+      <div class="card" style="max-height:70vh;overflow:auto">
+        <h4>👥 Người đang online</h4>
+        <div id="userList"></div>
+      </div>
+
+      <!-- Khung chat -->
+      <div class="card">
+        <h4 id="chatTitle">Chọn người để chat</h4>
+
+        <div id="chatBox" class="chatbox"></div>
+
+        <div class="chatform">
+          <input id="msgInput" placeholder="Nhập tin nhắn..." />
+          <button id="sendBtn">Gửi</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/messages.js"></script>
+</body>
+</html>
