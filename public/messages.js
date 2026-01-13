@@ -178,6 +178,10 @@ voicePC.ontrack = e => {
   });
 
   alert("📞 Đang gọi " + currentTarget.name);
+  muteBtn.classList.remove("hidden");
+endCallBtn.classList.remove("hidden");
+callBtn.classList.add("hidden");
+
 };
 
 
@@ -244,6 +248,13 @@ socket.on("voice-end", () => {
   }
 
   alert("📞 Cuộc gọi đã kết thúc");
+
+  muteBtn.classList.add("hidden");
+micMuted = false;
+muteBtn.classList.remove("active");
+muteBtn.textContent = "🔇";
+callBtn.classList.remove("hidden");
+
 });
 
 socket.on("private-call", ({ from }) => {
@@ -254,6 +265,8 @@ socket.on("private-call", ({ from }) => {
 
 
 const endCallBtn = document.getElementById("endCallBtn");
+const muteBtn = document.getElementById("muteBtn");
+let micMuted = false;
 endCallBtn.onclick = endVoiceCall;
 
 function endVoiceCall(){
@@ -273,6 +286,24 @@ function endVoiceCall(){
 
   endCallBtn.classList.add("hidden");
   callBtn.classList.remove("hidden");
+muteBtn.classList.add("hidden");
+micMuted = false;
+muteBtn.classList.remove("active");
+muteBtn.textContent = "🔇";
 
   alert("📞 Đã kết thúc cuộc gọi");
 }
+
+
+muteBtn.onclick = () => {
+  if(!voiceStream) return;
+
+  micMuted = !micMuted;
+
+  voiceStream.getAudioTracks().forEach(t => {
+    t.enabled = !micMuted;
+  });
+
+  muteBtn.classList.toggle("active", micMuted);
+  muteBtn.textContent = micMuted ? "🔈" : "🔇";
+};
