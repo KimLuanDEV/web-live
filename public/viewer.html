@@ -976,7 +976,8 @@ function getUserProfile(){
 
 
 
-const stableUID = getStableUID();
+const stableUID = profile.uid || getStableUID();
+
 
 const sendProfile = isGuest ? {
   uid: stableUID,

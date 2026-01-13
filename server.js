@@ -292,6 +292,40 @@ function emitViewerCount(roomId) {
 
 
 /* ===== LOBBY (SẢNH CHỜ) ===== */
+
+function getOnlineUsers(){
+  const db = loadUsers(); // users.json
+  const arr = [];
+
+  for (const [uid, socketId] of activeUsers.entries()) {
+    for (const k in db) {
+      if (db[k].profile?.uid === uid) {
+        const p = db[k].profile;
+        arr.push({
+          uid: p.uid,
+          name: p.name,
+          avatar: p.avatar,
+          level: p.level,
+          isHost: false
+        });
+        break;
+      }
+    }
+  }
+
+  // đánh dấu host đang live
+  for (const [roomId, room] of rooms.entries()) {
+    if (room.broadcasterId && room.hostProfile?.uid) {
+      const u = arr.find(x => x.uid === room.hostProfile.uid);
+      if (u) u.isHost = true;
+    }
+  }
+
+  return arr;
+}
+
+
+
 function getLobbyList() {
   const list = [];
   for (const [roomId, room] of rooms.entries()) {
@@ -373,38 +407,6 @@ function closeRoom(roomId, reason = "host_left") {
   }, 1000);
 }
 
-
-
-function getOnlineUsers(){
-  const db = loadUsers();   // users.json
-  const arr = [];
-
-  for(const [uid, socketId] of activeUsers.entries()){
-    for(const k in db){
-      if(db[k].profile?.uid === uid){
-        const p = db[k].profile;
-        arr.push({
-          uid: p.uid,
-          name: p.name,
-          avatar: p.avatar,
-          level: p.level,
-          isHost: false
-        });
-        break;
-      }
-    }
-  }
-
-  // đánh dấu host đang live
-  for(const [roomId, room] of rooms.entries()){
-    if(room.broadcasterId && room.hostProfile?.uid){
-      const u = arr.find(x => x.uid === room.hostProfile.uid);
-      if(u) u.isHost = true;
-    }
-  }
-
-  return arr;
-}
 
 
 
