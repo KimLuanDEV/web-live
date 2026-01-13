@@ -10,10 +10,21 @@
 <body class="page-messages">
 <script src="/guard.js"></script>
 
-<div class="card">
-  <h3>💬 Tin nhắn</h3>
-  <div id="userList"></div>
+<body class="page-messages">
+<div class="messages-shell">
+
+  <div class="messages-header">
+    <h2>📩 Tin nhắn</h2>
+    <div class="messages-sub">Chat riêng giữa người dùng</div>
+  </div>
+
+  <div id="userList" class="messages-list"></div>
+
 </div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/messages.js"></script>
+</body>
 
 
 <script src="/socket.io/socket.io.js"></script>

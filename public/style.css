@@ -6504,3 +6504,110 @@ body.is-guest .reactions-layer{
   border-radius:50%;
   font-size:18px;
 }
+
+
+/* ===== INBOX ===== */
+
+.messages-shell{
+  max-width:520px;
+  margin: 40px auto;
+  padding:16px;
+  border-radius:22px;
+  background: rgba(5,8,18,.75);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow: 0 30px 90px rgba(0,0,0,.65);
+}
+
+.messages-header h2{
+  margin:0;
+  font-size:22px;
+  text-shadow: 0 0 18px rgba(95,168,255,.4);
+}
+
+.messages-sub{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:14px;
+}
+
+.messages-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.inbox-item{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  border-radius:16px;
+  background: rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.12);
+  cursor:pointer;
+  transition:.15s;
+}
+
+.inbox-item:hover{
+  background: rgba(95,168,255,.18);
+  border-color: rgba(95,168,255,.4);
+}
+
+.inbox-avatar{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+  border:2px solid rgba(95,168,255,.5);
+  box-shadow: 0 0 18px rgba(95,168,255,.4);
+}
+
+.inbox-name{
+  font-weight:800;
+}
+
+/* ===== CHAT PAGE ===== */
+
+.page-chat .card{
+  max-width:720px;
+  margin: 30px auto;
+  height:80vh;
+  display:flex;
+  flex-direction:column;
+}
+
+#chatBox{
+  flex:1;
+  overflow:auto;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.msg{
+  max-width:70%;
+  padding:10px 14px;
+  border-radius:16px;
+  line-height:1.4;
+  font-size:14px;
+}
+
+.msg.me{
+  align-self:flex-end;
+  background: linear-gradient(135deg,#5fa8ff,#25f09a);
+  color:#000;
+  border-bottom-right-radius:4px;
+}
+
+.msg.other{
+  align-self:flex-start;
+  background: rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.18);
+  border-bottom-left-radius:4px;
+}
+
+.messages-chat-input{
+  display:flex;
+  gap:10px;
+}
