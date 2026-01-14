@@ -159,6 +159,9 @@ body{
 </div>
 
 
+<div id="forgotModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeForgot()"></div>
+  <div class="modal-card">
 <h3>🔑 Quên mật khẩu</h3>
 
 <input id="forgotUser" placeholder="Tên đăng nhập">
@@ -168,8 +171,10 @@ body{
 <div id="forgotStep2" style="display:none">
   <input id="forgotOtp" placeholder="Mã OTP">
   <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
-
+  <button style="flex:1" onclick="closeForgot()">Hủy</button>
   <button onclick="submitForgot()">Đặt lại</button>
+    </div>
+  </div>
 </div>
 
 
@@ -280,7 +285,6 @@ function openForgot(){
   document.getElementById("forgotModal").classList.remove("hidden");
 }
 
-
 async function sendForgotOtp(){
   const u = document.getElementById("forgotUser").value.trim();
   if(!u) return showMsg("Nhập tên đăng nhập");
@@ -301,6 +305,8 @@ async function sendForgotOtp(){
   showMsg("📲 Đã gửi OTP về số điện thoại");
 }
 
+
+
 async function submitForgot(){
   const u = document.getElementById("forgotUser").value.trim();
   const otp = document.getElementById("forgotOtp").value.trim();
@@ -320,26 +326,6 @@ async function submitForgot(){
 
   showMsg("✅ Đổi mật khẩu thành công");
   closeForgot();
-}
-
-
-  const res = await fetch("/api/forgot-password",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      username: u,
-      newPassword: p
-    })
-  });
-
-  const d = await res.json();
-
-  if(d.ok || d.success){
-    showMsg("✅ Đặt lại mật khẩu thành công");
-    document.getElementById("forgotModal").classList.add("hidden");
-  }else{
-    showMsg("❌ Không tìm thấy tài khoản");
-  }
 }
 
 
