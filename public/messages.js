@@ -17,8 +17,6 @@ const callAvatar = document.getElementById("callAvatar");
 const callMute = document.getElementById("callMute");
 const callEnd = document.getElementById("callEnd");
 const callNet = document.getElementById("callNet");
-const callAccept = document.getElementById("callAccept");
-const callReject = document.getElementById("callReject");
 
 
 let micMuted = false;

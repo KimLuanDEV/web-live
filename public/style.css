@@ -6831,11 +6831,3 @@ body.is-guest .reactions-layer{
 }
 
 
-#callAccept{
-  background:#37f0a3;
-  color:#000;
-}
-#callReject, #callEnd{
-  background:#ff4b4b;
-  color:#fff;
-}
