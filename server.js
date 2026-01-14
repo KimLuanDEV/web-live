@@ -167,29 +167,39 @@ app.use(express.json());
 
 
 
+function normalizePhone(p){
+  p = String(p||"").replace(/\s+/g,"");
+  if(p.startsWith("0")) return "+84" + p.slice(1);
+  if(p.startsWith("84")) return "+" + p;
+  if(!p.startsWith("+")) return "+" + p;
+  return p;
+}
 
 app.post("/api/send-otp", async (req,res)=>{
-  const { username, phone } = req.body;
+  let { username, phone } = req.body;
+  phone = normalizePhone(phone);
+
   const db = loadUsers();
   const acc = db[username];
   if(!acc) return res.json({error:"notfound"});
 
-  const otp = genOTP();
+  acc.phone = phone;           // 🔥 lưu bản đã chuẩn hóa
+  acc.phoneVerified = false;
 
-  acc.phone = phone;
+  const otp = genOTP();
   acc.otp = otp;
   acc.otpExpire = Date.now() + 5*60*1000;
-
   saveUsers(db);
 
   await twilioSMS.messages.create({
     body: `Livestream OTP: ${otp}`,
     from: process.env.TWILIO_SMS_FROM,
-    to: phone
+    to: phone                  // 🔥 dùng bản đã normalize
   });
 
   res.json({ok:true});
 });
+
 
 
 
@@ -997,7 +1007,7 @@ if (role === "viewer" && room.hostProfile) {
     socket.emit("need-otp");
     return;
   }
-  
+
        if (room.releaseTimer) {
     clearTimeout(room.releaseTimer);
     room.releaseTimer = null;
