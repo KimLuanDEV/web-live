@@ -285,17 +285,20 @@ const persisted = loadLiveState();
 
 for (const roomId in persisted) {
   const data = persisted[roomId];
-  rooms.set(roomId, {
-    broadcasterId: null,        // chờ host quay lại
-    viewers: new Set(),
-    liveStartTs: data.liveStartTs,
-    pinnedNote: data.pinnedNote || null,
-    hostProfile: data.hostProfile || null,
-    giftTotal: data.giftTotal || 0,
-    giftByUser: new Map(data.giftByUser || []),
-    releaseTimer: null,
-    pendingRelease: false,
-  });
+
+ rooms.set(roomId, {
+  broadcasterId: null,
+  viewers: new Set(),
+  viewerProfiles: new Map(),   // 🛡️ FIX CRASH
+  liveStartTs: data.liveStartTs,
+  pinnedNote: data.pinnedNote || null,
+  hostProfile: data.hostProfile || null,
+  giftTotal: data.giftTotal || 0,
+  giftByUser: new Map(data.giftByUser || []),
+  releaseTimer: null,
+  pendingRelease: false,
+});
+
 }
 
 console.log("♻️ Restored live rooms:", Object.keys(persisted));
@@ -351,18 +354,20 @@ function normRoomId(roomId) {
 function getRoom(roomId) {
   roomId = normRoomId(roomId);
   if (!rooms.has(roomId)) {
+
    rooms.set(roomId, {
   broadcasterId: null,
   viewers: new Set(),
-  viewerProfiles: new Map(), // 👈 thêm
-  liveStartTs: null,
-  pinnedNote: null,
-  hostProfile: null,
-  giftTotal: 0,
-  giftByUser: new Map(),
-  releaseTimer: null,        // ⏱️ timer giải phóng
-  pendingRelease: false,     // đang chờ giải phóng?
+  viewerProfiles: new Map(),   // 🛡️ FIX CRASH
+  liveStartTs: data.liveStartTs,
+  pinnedNote: data.pinnedNote || null,
+  hostProfile: data.hostProfile || null,
+  giftTotal: data.giftTotal || 0,
+  giftByUser: new Map(data.giftByUser || []),
+  releaseTimer: null,
+  pendingRelease: false,
 });
+
 
   }
   return rooms.get(roomId);
