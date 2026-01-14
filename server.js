@@ -16,6 +16,15 @@ const fs = require("fs");
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
 
 
+const twilioSMS = require("twilio")(
+  process.env.TWILIO_SMS_SID,
+  process.env.TWILIO_SMS_TOKEN
+);
+
+function genOTP(){
+  return Math.floor(100000 + Math.random()*900000).toString();
+}
+
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -133,6 +142,18 @@ function pushNotify(uid, payload){
 const USERS_FILE = path.join("/opt/render/project/data", "users.json");
 
 
+function requirePhone(socket){
+  const uid = socket.data.uid;
+  const db = loadUsers();
+  const acc = db[uid];
+  if(!acc?.phoneVerified){
+    socket.emit("need-otp");
+    return false;
+  }
+  return true;
+}
+
+
 function loadUsers(){
   if(!fs.existsSync(USERS_FILE)) return {};
   return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
@@ -144,8 +165,58 @@ function saveUsers(db){
 
 app.use(express.json());
 
+
+
+
+app.post("/api/send-otp", async (req,res)=>{
+  const { username, phone } = req.body;
+  const db = loadUsers();
+  const acc = db[username];
+  if(!acc) return res.json({error:"notfound"});
+
+  const otp = genOTP();
+
+  acc.phone = phone;
+  acc.otp = otp;
+  acc.otpExpire = Date.now() + 5*60*1000;
+
+  saveUsers(db);
+
+  await twilioSMS.messages.create({
+    body: `Livestream OTP: ${otp}`,
+    from: process.env.TWILIO_SMS_FROM,
+    to: phone
+  });
+
+  res.json({ok:true});
+});
+
+
+
+app.post("/api/verify-otp", (req,res)=>{
+  const { username, otp } = req.body;
+  const db = loadUsers();
+  const acc = db[username];
+  if(!acc) return res.json({error:"notfound"});
+
+  if(acc.otp !== otp || Date.now() > acc.otpExpire){
+    return res.json({error:"invalid"});
+  }
+
+  acc.phoneVerified = true;
+  acc.otp = null;
+  acc.otpExpire = 0;
+  saveUsers(db);
+
+  res.json({ok:true});
+});
+
+
+
 app.post("/api/register", async (req,res)=>{
-  const { username, password, name } = req.body;
+
+const { username, password, name, phone } = req.body;
+
   if(!username || !password || !name) return res.json({error:"missing"});
 
   const db = loadUsers();
@@ -164,7 +235,12 @@ app.post("/api/register", async (req,res)=>{
       exp:0,
       coinSent:0,
       coinReceived:0
-    }
+    },
+  phone: phone,
+  phoneVerified: false,
+  otp: null,
+  otpExpire: 0
+
   };
 
   saveUsers(db);
@@ -176,6 +252,7 @@ app.post("/api/register", async (req,res)=>{
 app.post("/api/login", async (req,res)=>{
   const { username, password } = req.body;
   const db = loadUsers();
+
   const acc = db[username];
 
   if(!acc) return res.json({error:"invalid"});
@@ -185,8 +262,20 @@ app.post("/api/login", async (req,res)=>{
     return res.json({error:"invalid"});
   }
 
-  res.json({ok:true, profile:acc.profile});
+
+ if(!acc.phoneVerified){
+  return res.json({
+    needOtp:true,
+    username
+  });
+}
+
+res.json({ok:true, profile:acc.profile});
+
+
+
 });
+
 
 
 
@@ -903,6 +992,12 @@ if (role === "viewer" && room.hostProfile) {
 
 
     if (role === "broadcaster") {
+
+       if(!requirePhone(socket)){
+    socket.emit("need-otp");
+    return;
+  }
+  
        if (room.releaseTimer) {
     clearTimeout(room.releaseTimer);
     room.releaseTimer = null;
@@ -1132,6 +1227,9 @@ function canSendGift(socket) {
 
 // ===== GIFT ENGINE (paid gifts) =====
 socket.on("send-gift", ({ roomId, gift, name }) => {
+
+  if(!requirePhone(socket)) return;
+
   if(blockGuest(socket,"gift")) return;   // 🔒 GUEST KHÔNG ĐƯỢC TẶNG QUÀ
 
   roomId = normRoomId(roomId);

@@ -191,6 +191,40 @@ body{
 </div>
 
 
+<div id="otpModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3>📱 Nhập mã OTP</h3>
+    <input id="otpCode" placeholder="6 chữ số OTP">
+    <button onclick="verifyOtp()">Xác nhận</button>
+  </div>
+</div>
+
+<script>
+async function verifyOtp(){
+  const otp = document.getElementById("otpCode").value.trim();
+  const username = localStorage.getItem("otp_user");
+
+  const res = await fetch("/api/verify-otp",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username, otp })
+  });
+
+  const d = await res.json();
+  if(!d.ok){
+    showMsg("❌ OTP sai hoặc hết hạn");
+    return;
+  }
+
+  // OTP OK → login lại
+  document.getElementById("otpModal").classList.add("hidden");
+  login();
+}
+</script>
+
+
+
 <script>
 
   function guestLogin(){
@@ -220,10 +254,7 @@ async function login(){
   const res = await fetch("/api/login",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      username: u,
-      password: p
-    })
+    body: JSON.stringify({ username:u, password:p })
   });
 
   const data = await res.json();
@@ -233,11 +264,17 @@ async function login(){
     return;
   }
 
- localStorage.setItem("user_profile", JSON.stringify(data.profile));
-localStorage.setItem("login_uid", data.profile.uid);
+  // 🔐 CHƯA XÁC MINH SĐT → BẮT OTP
+  if(data.needOtp){
+    localStorage.setItem("otp_user", u);
+    document.getElementById("otpModal").classList.remove("hidden");
+    return;
+  }
 
-// 🔥 BẮT BUỘC XÓA CỜ GUEST
-localStorage.removeItem("isGuest");
+  // ✅ ĐÃ VERIFY → LOGIN
+  localStorage.setItem("user_profile", JSON.stringify(data.profile));
+  localStorage.setItem("login_uid", data.profile.uid);
+  localStorage.removeItem("isGuest");
 
   location.href = "/lobby.html";
 }
@@ -307,6 +344,11 @@ function closeMsg(){
 }
 
 
+if(data.needOtp){
+  localStorage.setItem("otp_user", u);
+  openOtpModal();
+  return;
+}
 
 
 </script>

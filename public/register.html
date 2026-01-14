@@ -133,6 +133,7 @@ body{
   <div class="register-title">LIVESTREAM PRO</div>
   <div class="register-sub">Tạo tài khoản mới</div>
 
+  <input id="phone" placeholder="Số điện thoại (VD: 0123...)">
   <input id="username" placeholder="Tên đăng nhập">
   <input id="name" placeholder="Tên hiển thị">
 
@@ -172,60 +173,79 @@ body{
 </div>
 
 
+<div id="otpModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+    <h3>📱 Nhập mã OTP</h3>
+    <input id="otpCode" placeholder="6 chữ số OTP">
+    <button onclick="verifyOtp()">Xác nhận</button>
+  </div>
+</div>
+
 <script>
+async function verifyOtp(){
+  const otp = document.getElementById("otpCode").value.trim();
+  const username = localStorage.getItem("otp_user");
+
+  const res = await fetch("/api/verify-otp",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username, otp })
+  });
+
+  const d = await res.json();
+  if(!d.ok){
+    showMsg("❌ OTP sai hoặc hết hạn");
+    return;
+  }
+
+  location.href="/login.html";
+}
+</script>
+
+
+<script>
+
 async function register(){
+  const phone = document.getElementById("phone").value.trim();
   const u = document.getElementById("username").value.trim();
   const name = document.getElementById("name").value.trim();
   const p = document.getElementById("password").value;
   const p2 = document.getElementById("password2").value;
 
-  if(!u || !p || !p2 || !name){
+  if(!u || !p || !p2 || !name || !phone){
     showMsg("❌ Nhập đầy đủ thông tin");
     return;
   }
 
-  if(p.length < 6){
-    showMsg("❌ Mật khẩu phải ít nhất 6 ký tự");
-    return;
-  }
-
   if(p !== p2){
-   showMsg("❌ Mật khẩu không khớp");
+    showMsg("❌ Mật khẩu không khớp");
     return;
   }
-
 
   const res = await fetch("/api/register",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({
-      username: u,
-      password: p,
-      name
-    })
+    body: JSON.stringify({ username:u, password:p, name, phone })
   });
 
   const data = await res.json();
-
   if(data.error){
-    if(data.error === "exists"){
-      showMsg("❌ Tài khoản đã tồn tại");
-    }else{
-      showMsg("❌ Lỗi tạo tài khoản");
-    }
+    showMsg("❌ Tài khoản đã tồn tại");
     return;
   }
 
-  localStorage.setItem("user_profile", JSON.stringify(data.profile));
-localStorage.setItem("login_uid", data.profile.uid);
+  // Gửi OTP sau khi tạo account
+  await fetch("/api/send-otp",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username:u, phone })
+  });
 
-// 🔥 XÓA CỜ GUEST
-localStorage.removeItem("isGuest");
-
-
-  showMsg("🎉 Tạo tài khoản thành công!");
-  location.href = "/lobby.html";
+  localStorage.setItem("otp_user", u);
+  document.getElementById("otpModal").classList.remove("hidden");
 }
+
 
 function togglePass(id, el){
   const input = document.getElementById(id);
