@@ -20,20 +20,27 @@ let currentTarget = null;
 
 
 function chatKey(){
-  if(!currentTarget || !auth?.uid) return null;
-  return "chat_" + auth.uid + "_" + currentTarget.uid;
+  if(!auth?.uid || !currentTarget?.uid) return null;
+
+  const a = auth.uid;
+  const b = currentTarget.uid;
+
+  return a < b
+    ? "chat_" + a + "_" + b
+    : "chat_" + b + "_" + a;
 }
+
+
 
 function saveChat(msg){
   const key = chatKey();
   if(!key) return;
 
- const arr = (JSON.parse(localStorage.getItem(key) || "[]"))
-  .filter(m => m.me || m.uid === currentTarget.uid);
-
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
   arr.push(msg);
   localStorage.setItem(key, JSON.stringify(arr));
 }
+
 
 function loadChat(){
   const key = chatKey();
@@ -43,16 +50,19 @@ function loadChat(){
   chatBox.innerHTML = "";
 
   arr.forEach(m=>{
+    const isMe = m.from === auth.uid;
+
     pushMsg(
-      m.me ? "Bạn" : currentTarget.name,
+      isMe ? "Bạn" : currentTarget.name,
       m.text,
-      m.me,
+      isMe,
       null,
       "",
-      m.me ? auth.avatar : currentTarget.avatar
+      isMe ? auth.avatar : currentTarget.avatar
     );
   });
 }
+
 
 
 
@@ -192,10 +202,12 @@ document.getElementById("sendBtn").onclick = () => {
   pushMsg("Bạn", txt, true, msgId, "⏳");
 
 saveChat({
-  me:true,
-  text:txt,
-  time:Date.now()
+  from: auth.uid,
+  to: currentTarget.uid,
+  text: txt,
+  time: Date.now()
 });
+
 
 };
 
@@ -204,10 +216,10 @@ socket.on("private-message", ({ from, text, msgId }) => {
  pushMsg(from.name, text, false);
   
 saveChat({
-  me:false,
-  uid: from.uid,     // 🔥 gắn UID người gửi
-  text:text,
-  time:Date.now()
+  from: from.uid,
+  to: auth.uid,
+  text: text,
+  time: Date.now()
 });
 
 
