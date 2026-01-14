@@ -16,19 +16,20 @@ let voicePC = null;
 let voiceStream = null;
 let voiceTarget = null;
 let currentTarget = null;
-
+let currentTargetUID = null;
 
 
 function chatKey(){
-  if(!auth?.uid || !currentTarget?.uid) return null;
+  if(!auth?.uid || !currentTargetUID) return null;
 
   const a = auth.uid;
-  const b = currentTarget.uid;
+  const b = currentTargetUID;
 
   return a < b
     ? "chat_" + a + "_" + b
     : "chat_" + b + "_" + a;
 }
+
 
 
 
@@ -168,7 +169,9 @@ socket.on("active-users", ({ users }) => {
     div.innerHTML = `<img src="${u.avatar}" width="24" style="border-radius:50%"> ${u.name}`;
 
    div.onclick = () => {
-  currentTarget = u;
+  currentTarget = u;         // vẫn giữ để lấy name, avatar
+  currentTargetUID = u.uid; // 🔥 dùng UID này cho chat
+
   chatTitle.textContent = u.name;
 
   const headerAva = document.getElementById("chatHeaderAvatar");
@@ -203,7 +206,7 @@ document.getElementById("sendBtn").onclick = () => {
 
 saveChat({
   from: auth.uid,
-  to: currentTarget.uid,
+  to: currentTargetUID,
   text: txt,
   time: Date.now()
 });
