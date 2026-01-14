@@ -432,18 +432,24 @@ socket.on("voice-offer", ({ to, sdp }) => {
 
 
 socket.on("voice-answer", ({ to, sdp }) => {
-  io.to(to).emit("voice-answer", {
-    from: socket.id,
+  const target = activeUsers.get(to);   // UID -> socketId
+  if(!target) return;
+
+  io.to(target).emit("voice-answer", {
     sdp
   });
 });
 
+
 socket.on("voice-ice", ({ to, candidate }) => {
-  io.to(to).emit("voice-ice", {
-    from: socket.id,
+  const target = activeUsers.get(to);   // UID -> socketId
+  if(!target) return;
+
+  io.to(target).emit("voice-ice", {
     candidate
   });
 });
+
 
 
 socket.on("voice-end", ({ to }) => {

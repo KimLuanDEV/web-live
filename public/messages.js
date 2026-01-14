@@ -354,7 +354,8 @@ netStatus.classList.remove("hidden");
 startNetMonitor();
 
 
-  voiceTarget = from;
+ voiceTarget = from.uid;   // 🔥 CHỈ LẤY UID
+
 
   voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
 
