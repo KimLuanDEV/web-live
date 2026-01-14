@@ -523,12 +523,16 @@ voicePC = new RTCPeerConnection({
 });
 
 
-
-
-
 // add tất cả track 1 lần duy nhất
 voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
 
+
+  await voicePC.setRemoteDescription(sdp);
+  const answer = await voicePC.createAnswer();
+  
+  await voicePC.setLocalDescription(answer);
+
+  
 // tắt camera mặc định bằng enable=false
 voiceStream.getVideoTracks().forEach(t => t.enabled = false);
 camOff = true;
@@ -561,9 +565,7 @@ localVideo.style.display = "none";
     }
   };
 
-  await voicePC.setRemoteDescription(sdp);
-  const answer = await voicePC.createAnswer();
-  await voicePC.setLocalDescription(answer);
+
 
   socket.emit("voice-answer", {
     to: voiceTarget,
@@ -694,6 +696,10 @@ voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
 
 // tắt camera mặc định bằng enable=false
 voiceStream.getVideoTracks().forEach(t => t.enabled = false);
+
+  const offer = await voicePC.createOffer();
+  await voicePC.setLocalDescription(offer);
+
 camOff = true;
 callCam.textContent = "📷";
 flipBtn.style.display = "none";
@@ -709,8 +715,7 @@ localVideo.style.display = "none";
     }
   };
 
-  const offer = await voicePC.createOffer();
-  await voicePC.setLocalDescription(offer);
+
 
   socket.emit("voice-offer", {
     to: voiceTarget,
