@@ -539,11 +539,18 @@ localVideo.style.display = "none";
 
 
   voicePC.ontrack = e => {
-    document.getElementById("remoteVideo").srcObject = e.streams[0];
+  const rv = document.getElementById("remoteVideo");
+  rv.srcObject = e.streams[0];
+  rv.muted = false;
+  rv.playsInline = true;
 
-    remoteVideo.srcObject = e.streams[0];
+  // 🔥 unlock audio/video on mobile
+  rv.play().catch(()=>{
+    document.addEventListener("click", () => rv.play(), { once:true });
+    document.addEventListener("touchstart", () => rv.play(), { once:true });
+  });
+};
 
-  };
 
   voicePC.onicecandidate = e => {
     if(e.candidate){
@@ -669,9 +676,16 @@ voicePC = new RTCPeerConnection({
 
 
 voicePC.ontrack = e => {
-  document.getElementById("remoteVideo").srcObject = e.streams[0];
-  remoteVideo.srcObject = e.streams[0];
+  const rv = document.getElementById("remoteVideo");
+  rv.srcObject = e.streams[0];
+  rv.muted = false;
+  rv.playsInline = true;
 
+  // 🔥 unlock audio/video on mobile
+  rv.play().catch(()=>{
+    document.addEventListener("click", () => rv.play(), { once:true });
+    document.addEventListener("touchstart", () => rv.play(), { once:true });
+  });
 };
 
 
