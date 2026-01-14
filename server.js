@@ -322,18 +322,19 @@ const persisted = loadLiveState();
 for (const roomId in persisted) {
   const data = persisted[roomId];
 
- rooms.set(roomId, {
+rooms.set(roomId, {
   broadcasterId: null,
   viewers: new Set(),
-  viewerProfiles: new Map(),   // 🛡️ FIX CRASH
+  viewerProfiles: new Map(),
   liveStartTs: null,
-  pinnedNote: data.pinnedNote || null,
-  hostProfile: data.hostProfile || null,
-  giftTotal: data.giftTotal || 0,
-  giftByUser: new Map(data.giftByUser || []),
+  pinnedNote: null,
+  hostProfile: null,
+  giftTotal: 0,
+  giftByUser: new Map(),
   releaseTimer: null,
   pendingRelease: false,
 });
+
 
 }
 
@@ -391,15 +392,15 @@ function getRoom(roomId) {
   roomId = normRoomId(roomId);
   if (!rooms.has(roomId)) {
 
-   rooms.set(roomId, {
+ rooms.set(roomId, {
   broadcasterId: null,
   viewers: new Set(),
-  viewerProfiles: new Map(),   // 🛡️ FIX CRASH
+  viewerProfiles: new Map(),
   liveStartTs: null,
-  pinnedNote: data.pinnedNote || null,
-  hostProfile: data.hostProfile || null,
-  giftTotal: data.giftTotal || 0,
-  giftByUser: new Map(data.giftByUser || []),
+  pinnedNote: null,
+  hostProfile: null,
+  giftTotal: 0,
+  giftByUser: new Map(),
   releaseTimer: null,
   pendingRelease: false,
 });
