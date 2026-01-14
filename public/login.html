@@ -251,6 +251,11 @@ body{
   <span class="pass-eye" onclick="togglePass('password', this)">👁</span>
 </div>
 
+<div class="pass-wrap">
+  <input id="securityCode" type="password" placeholder="Mã bảo mật">
+  <span class="pass-eye" onclick="togglePass('securityCode', this)">👁</span>
+</div>
+
 
   <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
 
@@ -287,6 +292,12 @@ body{
       <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
     </div>
 
+    <div class="input-group">
+  <label>Mã bảo mật</label>
+  <input id="forgotSec" type="password" placeholder="Nhập mã bảo mật">
+</div>
+
+
     <div class="forgot-actions">
       <button class="btn-primary" onclick="submitForgot()">Đặt lại</button>
       <button class="btn-cancel" onclick="closeForgot()">Hủy</button>
@@ -316,18 +327,23 @@ body{
 
 
 async function submitForgot(){
-  const u = document.getElementById("forgotUser").value.trim();
-  const p = document.getElementById("forgotPass").value;
+ const u = document.getElementById("forgotUser").value.trim();
+const p = document.getElementById("forgotPass").value;
+const sec = document.getElementById("forgotSec").value;
 
-  if(!u || !p){
-    showMsg("❌ Nhập đủ username và mật khẩu mới");
-    return;
-  }
+if(!u || !p || !sec){
+  showMsg("❌ Nhập đủ username, mật khẩu mới và mã bảo mật");
+  return;
+}
 
   const res = await fetch("/api/change-password",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username:u, newPassword:p })
+   body: JSON.stringify({ 
+  username: u, 
+  newPassword: p,
+  securityCode: sec
+})
   });
 
   const d = await res.json();
@@ -357,18 +373,25 @@ async function submitForgot(){
 }
 
 async function login(){
-  const u = document.getElementById("username").value.trim();
-  const p = document.getElementById("password").value;
+ const u = document.getElementById("username").value.trim();
+const p = document.getElementById("password").value;
+const sec = document.getElementById("securityCode").value;
 
-  if(!u || !p){
-    showMsg("❌ Nhập đủ tài khoản và mật khẩu");
-    return;
-  }
+if(!u || !p || !sec){
+  showMsg("❌ Nhập đủ tài khoản, mật khẩu và mã bảo mật");
+  return;
+}
+
 
   const res = await fetch("/api/login",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username:u, password:p })
+    body: JSON.stringify({ 
+  username: u, 
+  password: p,
+  securityCode: sec
+})
+
   });
 
   const data = await res.json();

@@ -170,16 +170,21 @@ app.use(express.json());
 
 
 app.post("/api/register", async (req,res)=>{
-  const { username, password, name } = req.body;
-  if(!username || !password || !name) return res.json({error:"missing"});
+
+  const { username, password, name, securityCode } = req.body;
+
+  if(!username || !password || !name || !securityCode)
+    return res.json({ error:"missing" });
 
   const db = loadUsers();
   if(db[username]) return res.json({error:"exists"});
 
   const hash = await bcrypt.hash(password,10);
+  const secHash = await bcrypt.hash(securityCode,10);
 
   db[username] = {
     password: hash,
+    securityCode: secHash, 
     profile:{
       uid: username,
       name,
@@ -199,22 +204,22 @@ app.post("/api/register", async (req,res)=>{
 
 
 app.post("/api/login", async (req,res)=>{
-  const { username, password } = req.body;
+  const { username, password, securityCode } = req.body;
   const db = loadUsers();
 
   const acc = db[username];
+  if(!acc) return res.json({ error:"invalid" });
 
-  if(!acc) return res.json({error:"invalid"});
+  const okPass = await bcrypt.compare(String(password), acc.password);
+  const okSec  = await bcrypt.compare(String(securityCode), acc.securityCode);
 
-  const ok = await bcrypt.compare(String(password), acc.password);
-  if(!ok){
-    return res.json({error:"invalid"});
+  if(!okPass || !okSec){
+    return res.json({ error:"invalid" });
   }
 
-
-res.json({ok:true, profile:acc.profile});
-
+  res.json({ ok:true, profile: acc.profile });
 });
+
 
 
 
@@ -240,28 +245,20 @@ app.get("/api/all-users", (req,res)=>{
  // ===== RESET / CHANGE PASSWORD =====
 
 app.post("/api/change-password", async (req,res)=>{
-  const { uid, oldPass, newPass } = req.body;
-  if(!uid || !oldPass || !newPass) return res.json({error:"missing"});
+  const { username, securityCode, newPassword } = req.body;
+  if(!username || !securityCode || !newPassword)
+    return res.json({ error:"missing" });
 
   const db = loadUsers();
 
-  let foundUser = null;
-  let foundKey = null;
+  const acc = db[username];
+if(!acc) return res.json({ error:"notfound" });
 
-  for(const k in db){
-    if(db[k].profile?.uid === uid){
-      foundUser = db[k];
-      foundKey = k;
-      break;
-    }
-  }
+const ok = await bcrypt.compare(String(securityCode), acc.securityCode);
+if(!ok) return res.json({ error:"invalid" });
 
-  if(!foundUser) return res.json({error:"notfound"});
+acc.password = await bcrypt.hash(String(newPassword), 10);
 
-  const ok = await bcrypt.compare(String(oldPass), foundUser.password);
-  if(!ok) return res.json({error:"pass"});
-
-  foundUser.password = await bcrypt.hash(String(newPass), 10);
   saveUsers(db);
 
   res.json({ ok:true });

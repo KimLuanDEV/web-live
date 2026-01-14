@@ -147,6 +147,12 @@ body{
   <span class="pass-eye" onclick="togglePass('password2', this)">👁</span>
 </div>
 
+<div class="pass-wrap">
+  <input id="securityCode" type="password" placeholder="Mã bảo mật (dùng để khôi phục)">
+  <span class="pass-eye" onclick="togglePass('securityCode', this)">👁</span>
+</div>
+
+
 <div id="passWarn" style="font-size:13px;margin-top:6px;color:#ff6b6b;display:none">
   ❌ Mật khẩu không khớp
 </div>
@@ -178,15 +184,16 @@ body{
 
 
 async function register(){
-  const u = document.getElementById("username").value.trim();
-  const name = document.getElementById("name").value.trim();
-  const p = document.getElementById("password").value;
-  const p2 = document.getElementById("password2").value;
+const u = document.getElementById("username").value.trim();
+const name = document.getElementById("name").value.trim();
+const p = document.getElementById("password").value;
+const p2 = document.getElementById("password2").value;
+const sec = document.getElementById("securityCode").value;
 
-  if(!u || !p || !p2 || !name){
-    showMsg("❌ Nhập đầy đủ thông tin");
-    return;
-  }
+if(!u || !p || !p2 || !name || !sec){
+  showMsg("❌ Nhập đầy đủ thông tin");
+  return;
+}
 
   if(p !== p2){
     showMsg("❌ Mật khẩu không khớp");
@@ -196,7 +203,13 @@ async function register(){
   const res = await fetch("/api/register",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username:u, password:p, name })
+   body: JSON.stringify({ 
+  username: u, 
+  password: p, 
+  name, 
+  securityCode: sec 
+})
+
   });
 
   const data = await res.json();
