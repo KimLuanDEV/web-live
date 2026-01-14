@@ -258,10 +258,12 @@
     <div class="tab-plus">＋</div>
   </div>
 
-  <div class="tab-item" data-tab="chat">
-    <div class="tab-icon">💬</div>
-    <div class="tab-text">Chat</div>
-  </div>
+  <div class="tab-item" data-tab="chat"
+     onclick="openMessages()">
+  <div class="tab-icon">💬</div>
+  <div class="tab-text">Chat</div>
+</div>
+
 
   <div class="tab-item" data-tab="profile">
     <div class="tab-icon">👤</div>
@@ -974,7 +976,6 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 
 
     if(type === "chat"){
-  openInbox();
 }
 
 
@@ -1133,6 +1134,17 @@ function renderPlayerLobbyAll(){
   }).join("");
 }
 
+
+function openMessages(){
+  // nếu chưa đăng nhập → ép login
+  if(!profile?.uid){
+    location.href = "/login.html";
+    return;
+  }
+
+  // chuyển sang trang messages (chat riêng)
+  location.href = "/messages.html";
+}
 
 
 </script>
