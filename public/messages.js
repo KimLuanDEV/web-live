@@ -18,8 +18,6 @@ const callMute = document.getElementById("callMute");
 const callEnd = document.getElementById("callEnd");
 const callNet = document.getElementById("callNet");
 const callTimer = document.getElementById("callTimer");
-const imgBtn = document.getElementById("imgBtn");
-const imgInput = document.getElementById("imgInput");
 
 let micMuted = false;
 let netTimer = null;
@@ -35,62 +33,6 @@ let vibrateLoop = null;
 // 🔗 Gắn nút trong Call Modal với nút chat
 callMute.onclick = () => muteBtn.click();
 callEnd.onclick  = () => endCallBtn.click();
-
-
-imgBtn.onclick = () => {
-  imgInput.value = "";          // reset để mobile nhận onchange
-  imgInput.click();
-};
-
-
-
-
-imgBtn.onclick = () => {
-  imgInput.value = "";
-  imgInput.click();
-};
-
-imgInput.addEventListener("change", async () => {
-  const file = imgInput.files && imgInput.files.length ? imgInput.files[0] : null;
-  if (!file || !currentTarget) return;
-
-  await new Promise(r => setTimeout(r, 50)); // ⏱ mobile fix
-
-  const fd = new FormData();
-  fd.append("image", file);
-
-  const res = await fetch("/api/upload-chat-image", {
-    method: "POST",
-    body: fd
-  });
-
-  const data = await res.json();
-  if (!data.ok || !data.url) {
-    alert("Upload ảnh lỗi");
-    return;
-  }
-
-  const msgId = Date.now()+"_"+Math.random();
-
-  socket.emit("private-message", {
-    to: currentTarget.uid,
-    text: "[img]" + data.url,
-    msgId
-  });
-
-  pushMsg("Bạn", "[img]" + data.url, true, msgId, "⏳");
-
-  saveChat({
-    from: auth.uid,
-    to: currentTargetUID,
-    text: "[img]" + data.url,
-    time: Date.now(),
-    peer: currentTargetUID
-  });
-
-  imgInput.value = "";
-});
-
 
 
 function startVibrate(){
@@ -395,30 +337,22 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
 
   const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
-  let html = text;
-
-  // 🖼️ Nếu là ảnh
-  if(typeof text === "string" && text.startsWith("[img]")){
-    const url = text.replace("[img]","");
-    html = `<img src="${url}" style="max-width:180px;border-radius:12px;cursor:pointer" onclick="openImage('${url}')">`;
-  }
-
   div.innerHTML = `
-    <div class="bubble">${html}</div>
+    <div class="bubble">${text}</div>
     <div class="chat-time">
       ${time}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
     </div>
   `;
 
-  chatBox.appendChild(div);
+ chatBox.appendChild(div);
 
-  requestAnimationFrame(()=>{
-    chatBox.scrollTop = chatBox.scrollHeight;
-  });
+ // ⬇️ Luôn cuộn xuống tin mới nhất
+requestAnimationFrame(() => {
+  chatBox.scrollTop = chatBox.scrollHeight;
+});
+
 }
-
-
 
 
 
@@ -714,13 +648,4 @@ muteBtn.onclick = () => {
 function syncCallMute(){
   callMute.classList.toggle("active", micMuted);
   callMute.textContent = micMuted ? "🔇" : "🔈";
-}
-
-
-function openImage(url){
-  const d = document.createElement("div");
-  d.className = "chat-image-view";
-  d.innerHTML = `<img src="${url}">`;
-  d.onclick = ()=>d.remove();
-  document.body.appendChild(d);
 }

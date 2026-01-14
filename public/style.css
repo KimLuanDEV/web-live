@@ -6918,25 +6918,3 @@ body.is-guest .reactions-layer{
   opacity:.9;
   font-weight:700;
 }
-
-
-.chat-line .bubble img{
-  max-width: 180px;
-  border-radius: 12px;
-  cursor: pointer;
-  display: block;
-}
-.chat-image-view{
-  position:fixed;
-  inset:0;
-  background: rgba(0,0,0,.9);
-  z-index:99999;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-.chat-image-view img{
-  max-width:95%;
-  max-height:95%;
-  border-radius:12px;
-}
