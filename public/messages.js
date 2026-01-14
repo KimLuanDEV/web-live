@@ -36,7 +36,7 @@ let camOff = false;
 callCam.onclick = ()=>{
   camOff = !camOff;
   voiceStream.getVideoTracks().forEach(t=>t.enabled = !camOff);
-  callCam.textContent = camOff ? "🚫" : "📷";
+  callCam.textContent = camOff ? "📷" : "🚫";
 };
 
 // 🔗 Gắn nút trong Call Modal với nút chat
@@ -461,7 +461,7 @@ document.getElementById("localVideo").srcObject = voiceStream;
 // 🔴 TẮT camera mặc định
 voiceStream.getVideoTracks().forEach(t => t.enabled = false);
 camOff = true;
-callCam.textContent = "🚫";
+callCam.textContent = "📷";
 
 
   voicePC = new RTCPeerConnection({
@@ -584,7 +584,7 @@ document.getElementById("localVideo").srcObject = voiceStream;
 // 🔴 TẮT camera mặc định
 voiceStream.getVideoTracks().forEach(t => t.enabled = false);
 camOff = true;
-callCam.textContent = "🚫";
+callCam.textContent = "📷";
 
 
 
