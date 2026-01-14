@@ -45,16 +45,17 @@ imgBtn.onclick = () => {
 
 
 
+imgBtn.onclick = () => {
+  imgInput.value = "";
+  imgInput.click();
+};
+
 imgInput.addEventListener("change", async () => {
-
- const file = imgInput.files && imgInput.files.length ? imgInput.files[0] : null;
-
+  const file = imgInput.files && imgInput.files.length ? imgInput.files[0] : null;
   if (!file || !currentTarget) return;
 
+  await new Promise(r => setTimeout(r, 50)); // ⏱ mobile fix
 
-   await new Promise(r => setTimeout(r, 50)); // ⏱ mobile fix
-
-   
   const fd = new FormData();
   fd.append("image", file);
 
@@ -62,8 +63,12 @@ imgInput.addEventListener("change", async () => {
     method: "POST",
     body: fd
   });
+
   const data = await res.json();
-  if (!data.ok) return alert("Upload lỗi");
+  if (!data.ok || !data.url) {
+    alert("Upload ảnh lỗi");
+    return;
+  }
 
   const msgId = Date.now()+"_"+Math.random();
 
@@ -84,7 +89,8 @@ imgInput.addEventListener("change", async () => {
   });
 
   imgInput.value = "";
-};
+});
+
 
 
 function startVibrate(){
