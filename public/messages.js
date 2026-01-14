@@ -21,8 +21,9 @@ const callTimer = document.getElementById("callTimer");
 const callCam = document.getElementById("callCam");
 const pip = document.getElementById("localVideo");
 const callUI = document.getElementById("callModal");
+const callFlip = document.getElementById("callFlip");
 
-
+let currentFacing = "user"; // user = trước, environment = sau
 let uiTimer = null;
 let micMuted = false;
 let netTimer = null;
@@ -45,6 +46,16 @@ let drag = {
 
 callCam.onclick = ()=>{
   camOff = !camOff;
+
+
+  const flipBtn = document.getElementById("callFlip");
+
+if(camOff){
+  flipBtn.style.display = "none";
+}else{
+  flipBtn.style.display = "block";
+}
+
 
   const tracks = voiceStream.getVideoTracks();
   tracks.forEach(t=>t.enabled = !camOff);
@@ -771,3 +782,38 @@ pip.addEventListener("pointerup", ()=>{
 pip.addEventListener("pointercancel", ()=>{
   drag.active = false;
 });
+
+
+async function flipCamera(){
+  if(!voiceStream) return;
+
+  currentFacing =
+    currentFacing === "user" ? "environment" : "user";
+
+  const newStream = await navigator.mediaDevices.getUserMedia({
+    video: { facingMode: currentFacing },
+    audio: true
+  });
+
+  // replace video track
+  const newVideo = newStream.getVideoTracks()[0];
+  const sender = voicePC.getSenders()
+    .find(s => s.track && s.track.kind === "video");
+
+  if(sender){
+    await sender.replaceTrack(newVideo);
+  }
+
+  // update local stream
+  voiceStream.getVideoTracks().forEach(t=>t.stop());
+  voiceStream.removeTrack(voiceStream.getVideoTracks()[0]);
+  voiceStream.addTrack(newVideo);
+
+  // update video element
+  localVideo.srcObject = voiceStream;
+}
+
+
+callFlip.onclick = ()=>{
+  flipCamera();
+};
