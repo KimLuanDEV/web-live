@@ -6941,128 +6941,163 @@ body.is-guest .reactions-layer{
 }
 
 
-/* ===== VIDEO CALL MODAL ===== */
+/* =========================
+   VIDEO CALL MODAL (PRO)
+========================= */
 
-.vc-modal{
+.call-modal{
   position:fixed;
   inset:0;
   z-index:99999;
   background:#000;
 }
 
-.vc-modal.hidden{ display:none; }
+.call-modal.hidden{ display:none; }
 
-.vc-bg{
+/* nền blur nhẹ */
+.call-bg{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(1000px 600px at 20% 10%, rgba(95,168,255,.18), transparent 60%),
-    radial-gradient(900px 600px at 80% 20%, rgba(37,240,154,.14), transparent 60%),
-    radial-gradient(900px 700px at 40% 90%, rgba(255,59,107,.12), transparent 60%),
+    radial-gradient(800px 500px at 20% 10%, rgba(95,168,255,.15), transparent 60%),
+    radial-gradient(900px 600px at 80% 20%, rgba(37,240,154,.12), transparent 60%),
     #000;
-  filter: blur(10px);
-  z-index:0;
 }
 
-.vc-stage{
-  position:relative;
-  width:100%;
-  height:100%;
-  z-index:1;
-  overflow:hidden;
+/* khung chính */
+.call-box{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
 
-.vc-stage video{
+/* video người kia (full) */
+#remoteVideo{
+  position:absolute;
+  inset:0;
   width:100%;
   height:100%;
   object-fit:cover;
   background:#000;
 }
 
-/* video của mình */
-.vc-me{
+/* video của mình (PIP) */
+#localVideo{
   position:absolute;
   right:16px;
-  bottom:90px;
-  width:110px;
-  height:160px;
+  bottom:120px;
+  width:120px;
+  height:180px;
   border-radius:16px;
-  overflow:hidden;
-  border:2px solid rgba(255,255,255,.25);
-  box-shadow:0 12px 30px rgba(0,0,0,.6);
-}
-
-.vc-me video{
-  width:100%;
-  height:100%;
   object-fit:cover;
-  transform: scaleX(-1);
+  background:#000;
+  border:2px solid rgba(255,255,255,.25);
+  box-shadow:0 10px 40px rgba(0,0,0,.6);
+  z-index:5;
 }
 
 /* top bar */
-.vc-top{
-  position:absolute;
-  left:0;
-  top:0;
-  width:100%;
-  padding:16px;
+.call-top{
+  position:relative;
+  z-index:10;
+  padding:18px;
   display:flex;
   justify-content:center;
-  pointer-events:none;
 }
 
-.vc-user{
+.call-status{
   display:flex;
-  gap:12px;
   align-items:center;
-  background:rgba(0,0,0,.45);
-  backdrop-filter:blur(10px);
-  padding:10px 14px;
+  gap:10px;
+  padding:8px 14px;
   border-radius:999px;
-  border:1px solid rgba(255,255,255,.2);
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(8px);
+  font-weight:600;
 }
 
-.vc-user img{
-  width:42px;
-  height:42px;
+.call-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ff3b6b;
+  box-shadow:0 0 16px #ff3b6b;
+  animation:pulse 1s infinite;
+}
+
+/* info người */
+.call-user{
+  position:absolute;
+  top:80px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:10;
+  text-align:center;
+  color:#fff;
+}
+
+.call-user img{
+  width:90px;
+  height:90px;
   border-radius:50%;
   object-fit:cover;
-  border:1px solid rgba(255,255,255,.3);
+  border:3px solid rgba(255,255,255,.3);
+  box-shadow:0 0 40px rgba(95,168,255,.5);
 }
 
-.vc-time{
-  font-size:13px;
-  opacity:.8;
+.call-name{
+  font-size:18px;
+  font-weight:700;
+  margin-top:10px;
 }
 
-/* controls */
-.vc-controls{
-  position:absolute;
-  left:50%;
-  bottom:20px;
-  transform:translateX(-50%);
+.call-net,
+.call-timer{
+  margin-top:6px;
+  font-size:14px;
+  opacity:.85;
+}
+
+/* thanh nút */
+.call-actions{
+  position:relative;
+  z-index:20;
   display:flex;
-  gap:16px;
-  background:rgba(0,0,0,.55);
-  backdrop-filter:blur(10px);
-  padding:14px 20px;
-  border-radius:999px;
-  border:1px solid rgba(255,255,255,.2);
+  justify-content:center;
+  gap:18px;
+  padding:24px;
+  margin-bottom:20px;
 }
 
-.vc-btn{
-  width:54px;
-  height:54px;
+/* nút tròn */
+.call-btn{
+  width:64px;
+  height:64px;
   border-radius:50%;
   border:none;
-  background:rgba(255,255,255,.12);
+  font-size:26px;
+  background:rgba(0,0,0,.55);
   color:#fff;
-  font-size:22px;
-  cursor:pointer;
+  backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 12px 40px rgba(0,0,0,.6);
 }
 
-.vc-btn:hover{ transform:scale(1.1); }
-
-.vc-btn.end{
+.call-btn.end{
   background:#ff3b6b;
+  box-shadow:0 0 40px rgba(255,59,107,.7);
+}
+
+.call-btn.mute.active{
+  background:#ff3b6b;
+}
+
+/* đang nói -> viền xanh */
+.is-speaking #remoteVideo,
+.is-speaking #localVideo{
+  box-shadow:0 0 0 3px rgba(37,240,154,.6),
+             0 0 40px rgba(37,240,154,.4);
 }
