@@ -635,4 +635,12 @@ muteBtn.onclick = () => {
 
   muteBtn.classList.toggle("active", micMuted);
   muteBtn.textContent = micMuted ? "🔈" : "🔇";
+  
+   syncCallMute();   // 🔥 cập nhật nút trong modal
 };
+
+// 🔄 Đồng bộ nút mute trong Call Modal
+function syncCallMute(){
+  callMute.classList.toggle("active", micMuted);
+  callMute.textContent = micMuted ? "🔈" : "🔇";
+}
