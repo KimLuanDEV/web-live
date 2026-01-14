@@ -403,6 +403,37 @@ async function login(){
     return;
   }
 
+  const t = localStorage.getItem("trustedToken");
+const tu = localStorage.getItem("trustedUser");
+
+if(t && tu === u){
+  const res = await fetch("/api/check-trusted",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username:u, trustedToken:t })
+  });
+
+  const d = await res.json();
+  if(d.ok){
+    // đăng nhập luôn, bỏ qua mã bảo mật
+    const res2 = await fetch("/api/login",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({
+        username:u,
+        password:p,
+        securityCode:"__TRUSTED__"
+      })
+    });
+
+    const data = await res2.json();
+    localStorage.setItem("user_profile", JSON.stringify(data.profile));
+    location.href="/lobby.html";
+    return;
+  }
+}
+
+
   const res = await fetch("/api/prelogin",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
@@ -455,6 +486,12 @@ async function submitSecurity(){
   localStorage.setItem("user_profile", JSON.stringify(data.profile));
   localStorage.setItem("login_uid", data.profile.uid);
   localStorage.removeItem("isGuest");
+
+if(data.trustedToken){
+  localStorage.setItem("trustedToken", data.trustedToken);
+  localStorage.setItem("trustedUser", __loginUser);
+}
+
 
   location.href = "/lobby.html";
 }

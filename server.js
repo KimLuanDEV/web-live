@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const crypto = require("crypto");
 
 
 const ROOM_RELEASE_DELAY = 15000; // 15 giây (tuỳ bạn)
@@ -225,16 +226,51 @@ app.post("/api/login", async (req,res)=>{
   const acc = db[username];
   if(!acc) return res.json({ error:"invalid" });
 
-  const okPass = await bcrypt.compare(String(password), acc.password);
-  const okSec  = await bcrypt.compare(String(securityCode), acc.securityCode);
+ const okPass = await bcrypt.compare(String(password), acc.password);
+
+let okSec;
+if (securityCode === "__TRUSTED__") {
+  okSec = true;            // ✅ bypass khi máy đã trusted
+} else {
+  okSec = await bcrypt.compare(String(securityCode), acc.securityCode);
+}
+
 
   if(!okPass || !okSec){
     return res.json({ error:"invalid" });
   }
 
-  res.json({ ok:true, profile: acc.profile });
+  const trusted = crypto.randomBytes(24).toString("hex");
+
+acc.trusted = acc.trusted || {};
+acc.trusted[trusted] = Date.now() + 30*24*60*60*1000; // 30 ngày
+
+saveUsers(db);
+
+res.json({
+  ok:true,
+  profile: acc.profile,
+  trustedToken: trusted
 });
 
+});
+
+app.post("/api/check-trusted", (req,res)=>{
+  const { username, trustedToken } = req.body;
+  const db = loadUsers();
+  const acc = db[username];
+
+  if(!acc || !acc.trusted) return res.json({ ok:false });
+
+  const exp = acc.trusted[trustedToken];
+  if(!exp || exp < Date.now()){
+    delete acc.trusted[trustedToken];
+    saveUsers(db);
+    return res.json({ ok:false });
+  }
+
+  res.json({ ok:true });
+});
 
 
 
