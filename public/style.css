@@ -6911,3 +6911,10 @@ body.is-guest .reactions-layer{
   box-shadow:0 0 30px rgba(255,59,107,.7);
 }
 
+.call-timer{
+  margin-top:10px;
+  font-size:20px;
+  letter-spacing:2px;
+  opacity:.9;
+  font-weight:700;
+}

@@ -17,7 +17,7 @@ const callAvatar = document.getElementById("callAvatar");
 const callMute = document.getElementById("callMute");
 const callEnd = document.getElementById("callEnd");
 const callNet = document.getElementById("callNet");
-
+const callTimer = document.getElementById("callTimer");
 
 let micMuted = false;
 let netTimer = null;
@@ -26,11 +26,34 @@ let voiceStream = null;
 let voiceTarget = null;
 let currentTarget = null;
 let currentTargetUID = null;
-
+let callStartTime = 0;
+let callTimerInterval = null;
 
 // 🔗 Gắn nút trong Call Modal với nút chat
 callMute.onclick = () => muteBtn.click();
 callEnd.onclick  = () => endCallBtn.click();
+
+
+
+function startCallTimer(){
+  callStartTime = Date.now();
+  callTimer.textContent = "00:00";
+
+  callTimerInterval = setInterval(()=>{
+    const s = Math.floor((Date.now() - callStartTime)/1000);
+    const m = Math.floor(s / 60);
+    const ss = s % 60;
+    callTimer.textContent =
+      String(m).padStart(2,"0") + ":" + String(ss).padStart(2,"0");
+  }, 1000);
+}
+
+function stopCallTimer(){
+  if(callTimerInterval){
+    clearInterval(callTimerInterval);
+    callTimerInterval = null;
+  }
+}
 
 
 function openCallModal(user){
@@ -414,6 +437,8 @@ startNetMonitor();
     to: voiceTarget,
     sdp: answer
   });
+
+  startCallTimer();   // ⏱ BÊN ĐƯỢC GỌI CHẠY
 });
 
 
@@ -425,7 +450,7 @@ socket.on("voice-answer", async ({ sdp }) => {
   setCallUI(true);
 netStatus.classList.remove("hidden");
 startNetMonitor();
-
+ startCallTimer();   // ⏱
 });
 
 
@@ -458,6 +483,9 @@ if(reason === "rejected"){
   stopAllRings();
 
   setCallUI(false);
+  stopCallTimer();
+  callTimer.textContent = "00:00";
+
   closeCallModal();
 
 netStatus.classList.add("hidden");
@@ -546,6 +574,9 @@ function endVoiceCall(){
 
 netStatus.classList.add("hidden");
 stopNetMonitor();
+
+stopCallTimer();
+callTimer.textContent = "00:00";
 
   showModal("📞 Đã kết thúc cuộc gọi");
   stopAllRings();
