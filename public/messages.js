@@ -9,6 +9,8 @@ const sysModal = document.getElementById("sysModal");
 const sysText = document.getElementById("sysText");
 const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
+const ringtone = document.getElementById("ringtone");
+const ringback = document.getElementById("ringback");
 
 let micMuted = false;
 let netTimer = null;
@@ -18,6 +20,11 @@ let voiceTarget = null;
 let currentTarget = null;
 let currentTargetUID = null;
 
+
+function stopAllRings(){
+  ringtone.pause(); ringtone.currentTime = 0;
+  ringback.pause(); ringback.currentTime = 0;
+}
 
 function chatKey(){
   if(!auth?.uid || !currentTargetUID) return null;
@@ -317,10 +324,11 @@ window.addEventListener("resize", () => {
 
 
 socket.on("voice-offer", async ({ from, sdp }) => {
+ ringtone.play();   // 🔔 chuông cho người nhận
  const ok = await showModal("📞 " + from.name + " đang gọi bạn", "Nhận", "Từ chối");
 if(!ok) return;
 
-
+stopAllRings();   // 🔔 TẮT CHUÔNG NGAY KHI BẤM NHẬN
 setCallUI(true);
 netStatus.classList.remove("hidden");
 startNetMonitor();
@@ -392,6 +400,7 @@ socket.on("voice-end", () => {
   }
 
   showModal("📞 Cuộc gọi đã kết thúc");
+  stopAllRings();
 
   setCallUI(false);
 netStatus.classList.add("hidden");
@@ -401,11 +410,7 @@ stopNetMonitor();
 
 
 
-socket.on("private-call", ({ from }) => {
-  if(confirm("📞 " + from.name + " đang gọi bạn. Nhận cuộc gọi?")){
-    showModal("🎙 Kết nối voice sẽ mở ở bước tiếp theo");
-  }
-});
+
 
 
 
@@ -452,6 +457,7 @@ voicePC.ontrack = e => {
     sdp: offer
   });
 
+  ringback.play();   // 🔔 tút tút cho người gọi
   showModal("📞 Đang gọi " + currentTarget.name);
  setCallUI(true);
 netStatus.classList.remove("hidden");
@@ -480,6 +486,8 @@ netStatus.classList.add("hidden");
 stopNetMonitor();
 
   showModal("📞 Đã kết thúc cuộc gọi");
+  stopAllRings();
+
 }
 
 
