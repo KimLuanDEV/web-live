@@ -22,6 +22,7 @@ const callCam = document.getElementById("callCam");
 const pip = document.getElementById("localVideo");
 const callUI = document.getElementById("callModal");
 const callFlip = document.getElementById("callFlip");
+const flipBtn = document.getElementById("callFlip");
 
 let currentFacing = "user"; // user = trước, environment = sau
 let uiTimer = null;
@@ -47,30 +48,16 @@ let drag = {
 callCam.onclick = ()=>{
   camOff = !camOff;
 
-
-  const flipBtn = document.getElementById("callFlip");
-
-if(camOff){
-  flipBtn.style.display = "none";
-}else{
-  flipBtn.style.display = "block";
-}
-
-
   const tracks = voiceStream.getVideoTracks();
-  tracks.forEach(t=>t.enabled = !camOff);
-
-  const pip = document.getElementById("localVideo");
+  tracks.forEach(t => t.enabled = !camOff);
 
   if(camOff){
     localVideo.style.display = "none";  // ẩn PIP
     flipBtn.style.display = "none";     // ẩn nút lật
-    pip.style.display = "none";   // tắt cam → ẩn PIP
     callCam.textContent = "📷";
   }else{
     localVideo.style.display = "block"; // hiện PIP
     flipBtn.style.display = "block";    // hiện nút lật
-    pip.style.display = "block";  // bật cam → hiện PIP
     callCam.textContent = "🚫";
   }
 };
