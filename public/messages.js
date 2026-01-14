@@ -518,8 +518,10 @@ callCam.textContent = "📷";
 const ice = await fetch("/ice").then(r=>r.json());
 
 voicePC = new RTCPeerConnection({
-  iceServers: ice.iceServers
+  iceServers: ice.iceServers,
+  iceTransportPolicy: "relay"
 });
+
 
 
 
@@ -575,10 +577,15 @@ startNetMonitor();
 
 
 socket.on("voice-ice", async ({ candidate }) => {
-  if(voicePC){
-    await voicePC.addIceCandidate(candidate);
+  if(voicePC && candidate){
+    try{
+      await voicePC.addIceCandidate(new RTCIceCandidate(candidate));
+    }catch(e){
+      console.warn("ICE add failed", e);
+    }
   }
 });
+
 
 
 socket.on("voice-end", ({ reason } = {}) => {
@@ -653,8 +660,10 @@ callCam.textContent = "📷";
 const ice = await fetch("/ice").then(r=>r.json());
 
 voicePC = new RTCPeerConnection({
-  iceServers: ice.iceServers
+  iceServers: ice.iceServers,
+  iceTransportPolicy: "relay"
 });
+
 
 voicePC.ontrack = e => {
   document.getElementById("remoteVideo").srcObject = e.streams[0];
