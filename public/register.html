@@ -174,15 +174,35 @@ body{
 
 
 <div id="otpModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-  <div class="modal-card">
+  <div class="modal-backdrop" onclick="closeOtp()"></div>
+
+  <div class="modal-card" style="position:relative">
+    <div onclick="closeOtp()" 
+         style="position:absolute;top:10px;right:14px;
+                font-size:22px;cursor:pointer;opacity:.7">
+      ✖
+    </div>
+
     <h3>📱 Nhập mã OTP</h3>
     <input id="otpCode" placeholder="6 chữ số OTP">
     <button onclick="verifyOtp()">Xác nhận</button>
   </div>
 </div>
 
+
 <script>
+
+  function closeOtp(){
+  document.getElementById("otpModal").classList.add("hidden");
+}
+
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape"){
+    closeOtp();
+  }
+});
+
+
 async function verifyOtp(){
   const otp = document.getElementById("otpCode").value.trim();
   const username = localStorage.getItem("otp_user");

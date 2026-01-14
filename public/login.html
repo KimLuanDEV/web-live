@@ -191,14 +191,6 @@ body{
 </div>
 
 
-<div id="otpModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-  <div class="modal-card">
-    <h3>📱 Nhập mã OTP</h3>
-    <input id="otpCode" placeholder="6 chữ số OTP">
-    <button onclick="verifyOtp()">Xác nhận</button>
-  </div>
-</div>
 
 <script>
 async function verifyOtp(){
@@ -264,12 +256,6 @@ async function login(){
     return;
   }
 
-  // 🔐 CHƯA XÁC MINH SĐT → BẮT OTP
-  if(data.needOtp){
-    localStorage.setItem("otp_user", u);
-    document.getElementById("otpModal").classList.remove("hidden");
-    return;
-  }
 
   // ✅ ĐÃ VERIFY → LOGIN
   localStorage.setItem("user_profile", JSON.stringify(data.profile));

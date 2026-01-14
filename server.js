@@ -273,16 +273,7 @@ app.post("/api/login", async (req,res)=>{
   }
 
 
- if(!acc.phoneVerified){
-  return res.json({
-    needOtp:true,
-    username
-  });
-}
-
 res.json({ok:true, profile:acc.profile});
-
-
 
 });
 
