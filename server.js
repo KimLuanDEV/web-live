@@ -118,10 +118,11 @@ function getActiveUserList(){
 
 function emitActiveUsers(){
   io.emit("active-users", {
-    users: getActiveUserList(),
+    online: Array.from(activeUsers.keys()),
     ts: Date.now()
   });
 }
+
 
 
 // ===== USER INBOX / NOTIFICATION =====
@@ -357,6 +358,24 @@ res.json({ok:true, profile:acc.profile});
 
 });
 
+
+
+app.get("/api/all-users", (req,res)=>{
+  const db = loadUsers();
+  const list = [];
+
+  for(const uid in db){
+    const p = db[uid].profile || {};
+    list.push({
+      uid,
+      name: p.name || uid,
+      avatar: p.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
+      level: p.level || 1
+    });
+  }
+
+  res.json(list);
+});
 
 
 

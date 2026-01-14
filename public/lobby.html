@@ -327,10 +327,37 @@
 const socket = io();
 
 
+let ALL_USERS = [];
+let ONLINE_UIDS = [];
+
+// load tất cả tài khoản
+fetch("/api/all-users")
+  .then(r=>r.json())
+  .then(list=>{
+    ALL_USERS = list || [];
+    renderPlayerLobbyAll();
+  });
+
+// nhận realtime online
+socket.on("active-users", ({ users, online })=>{
+  // server cũ có thể gửi {users} hoặc {online}
+  if(Array.isArray(online)){
+    ONLINE_UIDS = online;
+  } else if(Array.isArray(users)){
+    // fallback: nếu server gửi full users online, map về uid
+    ONLINE_UIDS = users.map(u=>u.uid);
+  }
+  renderPlayerLobbyAll();
+});
+
+
 
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const isGuest = localStorage.getItem("isGuest") === "1";
+
+
+
 
 
 
@@ -987,9 +1014,6 @@ inboxModal?.querySelector(".modal-backdrop")?.addEventListener("click", ()=>{
 });
 
 
-socket.on("active-users", ({ users }) => {
-  renderPlayerLobby(users);
-});
 
 
 // Nhận dữ liệu inbox
@@ -1078,24 +1102,29 @@ playerLobby.querySelector(".player-lobby-backdrop").onclick = () => {
 
 
 
-function renderPlayerLobby(users){
+function renderPlayerLobbyAll(){
   const box = document.getElementById("playerList");
 
-  if(!users || !users.length){
-    box.innerHTML = `<div class="player-lobby-empty">Không có người online</div>`;
+  if(!ALL_USERS.length){
+    box.innerHTML = `<div class="player-lobby-empty">Chưa có người chơi</div>`;
     return;
   }
 
-  box.innerHTML = users.map(u => `
-    <div class="player-row">
-      <img src="${u.avatar}">
-      <div class="pinfo">
-        <div class="pname">${u.name}</div>
-        <div class="plevel">Lv ${u.level}</div>
+  box.innerHTML = ALL_USERS.map(u=>{
+    const isOn = ONLINE_UIDS.includes(u.uid);
+    return `
+      <div class="player-row ${isOn ? "online":"offline"}">
+        <div class="pava">
+          <img src="${u.avatar}">
+          <span class="dot ${isOn ? "on":"off"}"></span>
+        </div>
+        <div class="pinfo">
+          <div class="pname">${u.name}</div>
+          <div class="plevel">Lv ${u.level}</div>
+        </div>
       </div>
-      ${u.roomId ? `<div class="proom">🎥 ${u.roomId}</div>` : ""}
-    </div>
-  `).join("");
+    `;
+  }).join("");
 }
 
 

@@ -6773,3 +6773,11 @@ body.is-guest .reactions-layer{
   100%{ opacity:.4 }
 }
 
+
+.player-row.offline{opacity:.35;filter:grayscale(1)}
+.player-row .pava{position:relative}
+.player-row .dot{
+  position:absolute;right:0;bottom:0;width:10px;height:10px;border-radius:50%;
+  background:#444
+}
+.player-row .dot.on{background:#00ff6a;box-shadow:0 0 8px #00ff6a}
