@@ -696,15 +696,17 @@ socket.on("profile-update", ({ name, avatar, level }) => {
   const roomId = socket.data.roomId;
   if (roomId) {
     const room = rooms.get(roomId);
-    if (room && room.viewerProfiles) {
-      for (const p of room.viewerProfiles.values()) {
-        if (p.socketId === socket.id) {
-          if (name)   p.name   = safeName(name);
-          if (avatar) p.avatar = avatar;
-          if (level)  p.level  = Number(level) || p.level;
-          break;
-        }
-      }
+    
+  if (room) {
+  for (const p of safeMap(room.viewerProfiles).values()) {
+    if (p.socketId === socket.id) {
+      if (name)   p.name   = safeName(name);
+      if (avatar) p.avatar = avatar;
+      if (level)  p.level  = Number(level) || p.level;
+      break;
+    }
+  }
+
 
       const list = Array.from(safeMap(room.viewerProfiles).values());
 
@@ -1441,9 +1443,11 @@ for (const v of list) {
   }
 
   /* ========= CLEAN ROOM ========= */
-  if (!room.broadcasterId && room.viewers.size === 0) {
-    rooms.delete(roomId);
-  }
+ if (!room.broadcasterId && safeSet(room.viewers).size === 0) {
+  rooms.delete(roomId);
+}
+
+
 });
 
 
