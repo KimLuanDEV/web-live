@@ -1,4 +1,5 @@
-const socket = io();
+const socket = io("/call");
+
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const callBtn = document.getElementById("callBtn");   // 🔥 BẮT BUỘC
 const endCallBtn = document.getElementById("endCallBtn");

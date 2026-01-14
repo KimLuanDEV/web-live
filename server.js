@@ -104,6 +104,30 @@ function getActiveUserList(){
 }
 
 
+const callNS = io.of("/call");
+
+callNS.on("connection", socket => {
+
+  socket.on("voice-offer", ({ to, sdp }) => {
+    const target = activeUsers.get(to);
+    if(!target) return;
+    callNS.to(target).emit("voice-offer", { from: socket.data.uid, sdp });
+  });
+
+  socket.on("voice-answer", ({ to, sdp }) => {
+    const target = activeUsers.get(to);
+    if(!target) return;
+    callNS.to(target).emit("voice-answer", { sdp });
+  });
+
+  socket.on("voice-ice", ({ to, candidate }) => {
+    const target = activeUsers.get(to);
+    if(!target) return;
+    callNS.to(target).emit("voice-ice", { candidate });
+  });
+
+});
+
 
 
 function emitActiveUsers(){
