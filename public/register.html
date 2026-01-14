@@ -206,6 +206,10 @@ async function verifyOtp(){
 
 <script>
 
+let phone = document.getElementById("phone").value.trim();
+phone = normalizePhone(phone);
+
+
 async function register(){
   const phone = document.getElementById("phone").value.trim();
   const u = document.getElementById("username").value.trim();
@@ -291,6 +295,19 @@ function closeMsg(){
   document.getElementById("msgModal").classList.add("hidden");
 }
 
+function normalizePhone(p){
+  p = p.replace(/\s+/g,"");
+  if(p.startsWith("0")){
+    return "+84" + p.slice(1);
+  }
+  if(p.startsWith("84")){
+    return "+" + p;
+  }
+  if(!p.startsWith("+")){
+    return "+" + p;
+  }
+  return p;
+}
 
 </script>
 
