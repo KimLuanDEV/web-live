@@ -6621,7 +6621,7 @@ body.is-guest .reactions-layer{
 /* ===== CHAT BOTTOM UP ===== */
 #chatModal .chatbox{
   display: flex;
-  flex-direction: column-reverse; /* tin mới ở dưới */
+  flex-direction: column;     /* ✅ ĐÚNG */
   overflow-y: auto;
   padding-bottom: 52px;
 }
