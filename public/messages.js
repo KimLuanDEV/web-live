@@ -413,12 +413,16 @@ socket.on("voice-offer", async ({ from, sdp }) => {
   
   startVibrate();   // 📳 rung khi có người gọi
   ringtone.play();   // 🔔 chuông cho người nhận
+
+   // 🔥 HIỆN AVATAR + TÊN NGƯỜI GỌI NGAY
+  openCallModal(from);
+
 const ok = await showModal("📞 " + from.name + " đang gọi bạn", "Nhận", "Từ chối");
 if(!ok){
   socket.emit("voice-reject", { to: from.uid });   // 🔥 báo server
   stopAllRings();
   stopVibrate();   // 🛑 tắt rung
-
+  closeCallModal();   // 🔥 Ẩn modal khi từ chối
   return;
 }
 
