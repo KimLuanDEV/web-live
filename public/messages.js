@@ -688,7 +688,7 @@ voicePC.ontrack = e => {
   });
 };
 
-await voicePC.setRemoteDescription(sdp);
+
 
 // add tất cả track 1 lần duy nhất
 voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));

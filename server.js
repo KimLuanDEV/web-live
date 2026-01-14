@@ -459,13 +459,18 @@ socket.on("voice-answer", ({ to, sdp }) => {
 
 
 socket.on("voice-ice", ({ to, candidate }) => {
-  const target = activeUsers.get(to);   // UID -> socketId
-  if(!target) return;
+  const target = activeUsers.get(to);
+  if(!target || !candidate) return;
 
   io.to(target).emit("voice-ice", {
-    candidate
+    candidate: {
+      candidate: candidate.candidate,
+      sdpMid: candidate.sdpMid,
+      sdpMLineIndex: candidate.sdpMLineIndex
+    }
   });
 });
+
 
 
 
