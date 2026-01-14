@@ -37,11 +37,11 @@ function saveChat(msg){
   const key = chatKey();
   if(!key) return;
 
-  const arr = (JSON.parse(localStorage.getItem(key) || "[]"))
-  .filter(m => m.peer === currentTargetUID);
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
   arr.push(msg);
   localStorage.setItem(key, JSON.stringify(arr));
 }
+
 
 
 function loadChat(){
