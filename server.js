@@ -453,9 +453,11 @@ socket.on("voice-ice", ({ to, candidate }) => {
 
 
 socket.on("voice-end", ({ to }) => {
-  io.to(to).emit("voice-end");
-});
+  const target = activeUsers.get(to);   // UID -> socketId
+  if(!target) return;
 
+  io.to(target).emit("voice-end");      // 🔥 gửi cho người kia
+});
 
 
 
