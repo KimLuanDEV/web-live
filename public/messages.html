@@ -94,38 +94,41 @@
 
 
 
-<div id="callModal" class="call-modal hidden">
-  <div class="call-bg"></div>
+<div id="callModal" class="vc-modal hidden">
 
-  <div class="call-box">
-    <div class="call-top">
-      <div class="call-status">
-        <span class="call-dot"></span>
-        <span id="callStatusText">Đang gọi…</span>
+  <!-- nền mờ + blur -->
+  <div class="vc-bg"></div>
+
+  <!-- video -->
+  <div class="vc-stage">
+    <video id="remoteVideo" autoplay playsinline></video>
+
+    <!-- video mình (pip) -->
+    <div class="vc-me">
+      <video id="localVideo" autoplay muted playsinline></video>
+    </div>
+
+    <!-- info -->
+    <div class="vc-top">
+      <div class="vc-user">
+        <img id="callAvatar">
+        <div>
+          <div id="callName"></div>
+          <div id="callTimer" class="vc-time">00:00</div>
+        </div>
       </div>
     </div>
 
-    <div class="call-user">
-      <img id="callAvatar" src="" />
-      <div id="callName" class="call-name">User</div>
-      <div id="callNet" class="call-net">📶</div>
-      <div id="callTimer" class="call-timer">00:00</div>
-
+    <!-- nút -->
+    <div class="vc-controls">
+      <button id="callCam" class="vc-btn">📷</button>
+      <button id="callMute" class="vc-btn">🔈</button>
+      <button id="callEnd" class="vc-btn end">❌</button>
     </div>
 
-<div class="call-video-wrap">
-  <video id="localVideo" autoplay muted playsinline></video>
-  <video id="remoteVideo" autoplay playsinline></video>
-</div>
-
-  
-    <div class="call-actions">
-      <button id="callCam" class="call-btn">📷</button>
-      <button id="callMute" class="call-btn mute">🔈</button>
-      <button id="callEnd" class="call-btn end">❌</button>
-    </div>
   </div>
 </div>
+
 
 
 
