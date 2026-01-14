@@ -63,9 +63,13 @@ if(camOff){
   const pip = document.getElementById("localVideo");
 
   if(camOff){
+    localVideo.style.display = "none";  // ẩn PIP
+    flipBtn.style.display = "none";     // ẩn nút lật
     pip.style.display = "none";   // tắt cam → ẩn PIP
     callCam.textContent = "📷";
   }else{
+    localVideo.style.display = "block"; // hiện PIP
+    flipBtn.style.display = "block";    // hiện nút lật
     pip.style.display = "block";  // bật cam → hiện PIP
     callCam.textContent = "🚫";
   }
