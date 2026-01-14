@@ -35,14 +35,26 @@ let vibrateLoop = null;
 // 🔗 Gắn nút trong Call Modal với nút chat
 callMute.onclick = () => muteBtn.click();
 callEnd.onclick  = () => endCallBtn.click();
-imgBtn.onclick = () => imgInput.click();
+
+
+imgBtn.onclick = () => {
+  imgInput.value = "";          // reset để mobile nhận onchange
+  imgInput.click();
+};
 
 
 
-imgInput.onchange = async () => {
-  const file = imgInput.files[0];
+
+imgInput.addEventListener("change", async () => {
+
+ const file = imgInput.files && imgInput.files.length ? imgInput.files[0] : null;
+
   if (!file || !currentTarget) return;
 
+
+   await new Promise(r => setTimeout(r, 50)); // ⏱ mobile fix
+
+   
   const fd = new FormData();
   fd.append("image", file);
 
