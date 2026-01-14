@@ -20,7 +20,10 @@ const callNet = document.getElementById("callNet");
 const callTimer = document.getElementById("callTimer");
 const callCam = document.getElementById("callCam");
 const pip = document.getElementById("localVideo");
+const callUI = document.getElementById("callModal");
 
+
+let uiTimer = null;
 let micMuted = false;
 let netTimer = null;
 let voicePC = null;
@@ -73,6 +76,31 @@ function startVibrate(){
   }, 900); // cứ 0.9s rung lại
 }
 
+
+
+function showCallUI(){
+  callUI.classList.remove("ui-hidden");
+
+  // auto hide sau 3s
+  clearTimeout(uiTimer);
+  uiTimer = setTimeout(()=>{
+    callUI.classList.add("ui-hidden");
+  }, 3000);
+}
+
+// tap bất kỳ đâu trên call
+callUI.addEventListener("click", e=>{
+  // không toggle khi bấm vào nút
+  if(e.target.closest(".call-actions")) return;
+
+  if(callUI.classList.contains("ui-hidden")){
+    showCallUI();
+  }else{
+    callUI.classList.add("ui-hidden");
+  }
+});
+
+
 function stopVibrate(){
   if(vibrateLoop){
     clearInterval(vibrateLoop);
@@ -106,7 +134,9 @@ function stopCallTimer(){
 
 
 function openCallModal(user){
-  callModal.classList.remove("hidden");
+ callModal.classList.remove("hidden");
+showCallUI();   // hiện rồi tự ẩn
+
   callName.textContent = user.name;
   callAvatar.src = user.avatar || "";
 }

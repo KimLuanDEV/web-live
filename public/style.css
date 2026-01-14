@@ -7102,3 +7102,19 @@ body.is-guest .reactions-layer{
   box-shadow:0 0 0 3px rgba(37,240,154,.6),
              0 0 40px rgba(37,240,154,.4);
 }
+
+
+/* ===== CALL UI AUTO HIDE ===== */
+.call-modal.ui-hidden .call-top,
+.call-modal.ui-hidden .call-user,
+.call-modal.ui-hidden .call-actions{
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .3s ease;
+}
+
+.call-top,
+.call-user,
+.call-actions{
+  transition: opacity .3s ease;
+}
