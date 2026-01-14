@@ -526,9 +526,10 @@ voicePC = new RTCPeerConnection({
 
 
 
+// add tất cả track 1 lần duy nhất
 voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
 
-// sau đó mới tắt video
+// tắt camera mặc định bằng enable=false
 voiceStream.getVideoTracks().forEach(t => t.enabled = false);
 camOff = true;
 callCam.textContent = "📷";
@@ -536,18 +537,12 @@ flipBtn.style.display = "none";
 localVideo.style.display = "none";
 
 
-// chỉ add video nếu camera đang bật
-if(!camOff){
-  voiceStream.getVideoTracks().forEach(t => voicePC.addTrack(t, voiceStream));
-}
-
 
   voicePC.ontrack = e => {
     document.getElementById("remoteVideo").srcObject = e.streams[0];
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    audio.play();
+
+    remoteVideo.srcObject = e.streams[0];
+
   };
 
   voicePC.onicecandidate = e => {
@@ -675,26 +670,20 @@ voicePC = new RTCPeerConnection({
 
 voicePC.ontrack = e => {
   document.getElementById("remoteVideo").srcObject = e.streams[0];
-  const audio = document.createElement("audio");
-  audio.srcObject = e.streams[0];
-  audio.autoplay = true;
-  audio.play();
+  remoteVideo.srcObject = e.streams[0];
+
 };
 
+
+// add tất cả track 1 lần duy nhất
 voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
 
-// sau đó mới tắt video
+// tắt camera mặc định bằng enable=false
 voiceStream.getVideoTracks().forEach(t => t.enabled = false);
 camOff = true;
 callCam.textContent = "📷";
 flipBtn.style.display = "none";
 localVideo.style.display = "none";
-
-
-// chỉ add video nếu camera đang bật
-if(!camOff){
-  voiceStream.getVideoTracks().forEach(t => voicePC.addTrack(t, voiceStream));
-}
 
 
   voicePC.onicecandidate = e => {
