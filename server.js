@@ -756,8 +756,7 @@ if (avatar) socket.data.profile.avatar = avatar;
 if (level) socket.data.profile.level = Number(level) || socket.data.profile.level;
 
 
-  const roomId = socket.data.roomId;
-  if (!roomId) return;
+
 
   const room = getRoom(roomId);
   if (!room) return;
