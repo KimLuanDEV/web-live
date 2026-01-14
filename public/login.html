@@ -159,25 +159,20 @@ body{
 </div>
 
 
-<div id="forgotModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeForgot()"></div>
-  <div class="modal-card">
-    <h3>🔑 Quên mật khẩu</h3>
+<h3>🔑 Quên mật khẩu</h3>
 
-    <input id="forgotUser" placeholder="Tên đăng nhập">
+<input id="forgotUser" placeholder="Tên đăng nhập">
 
-    <div class="pass-wrap">
+<button onclick="sendForgotOtp()">Gửi OTP</button>
+
+<div id="forgotStep2" style="display:none">
+  <input id="forgotOtp" placeholder="Mã OTP">
   <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
-  <span class="pass-eye" onclick="togglePass('forgotPass', this)">👁</span>
+
+  <button onclick="submitForgot()">Đặt lại</button>
 </div>
 
 
-    <div style="display:flex;gap:12px;margin-top:14px">
-      <button style="flex:1" onclick="closeForgot()">Hủy</button>
-      <button style="flex:1" onclick="submitForgot()">Đặt lại</button>
-    </div>
-  </div>
-</div>
 
 
 <!-- GLOBAL MESSAGE MODAL -->
@@ -286,14 +281,47 @@ function openForgot(){
 }
 
 
-async function submitForgot(){
+async function sendForgotOtp(){
   const u = document.getElementById("forgotUser").value.trim();
-  const p = document.getElementById("forgotPass").value;
+  if(!u) return showMsg("Nhập tên đăng nhập");
 
-  if(!u || !p){
-   showMsg("❌ Nhập đầy đủ tên đăng nhập và mật khẩu mới");
+  const res = await fetch("/api/forgot-request",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username:u })
+  });
+
+  const d = await res.json();
+  if(!d.ok){
+    showMsg("❌ Không tìm thấy tài khoản hoặc chưa gắn SĐT");
     return;
   }
+
+  document.getElementById("forgotStep2").style.display="block";
+  showMsg("📲 Đã gửi OTP về số điện thoại");
+}
+
+async function submitForgot(){
+  const u = document.getElementById("forgotUser").value.trim();
+  const otp = document.getElementById("forgotOtp").value.trim();
+  const p = document.getElementById("forgotPass").value;
+
+  const res = await fetch("/api/forgot-reset",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username:u, otp, newPassword:p })
+  });
+
+  const d = await res.json();
+  if(!d.ok){
+    showMsg("❌ OTP sai hoặc hết hạn");
+    return;
+  }
+
+  showMsg("✅ Đổi mật khẩu thành công");
+  closeForgot();
+}
+
 
   const res = await fetch("/api/forgot-password",{
     method:"POST",

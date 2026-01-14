@@ -175,6 +175,53 @@ function normalizePhone(p){
   return p;
 }
 
+const forgotOtp = {}; // username -> { otp, expire }
+
+app.post("/api/forgot-request", async (req,res)=>{
+  const { username } = req.body;
+  const db = loadUsers();
+  const acc = db[username];
+  if(!acc || !acc.phone) return res.json({ error:"notfound" });
+
+  const phone = acc.phone;
+  const otp = genOTP();
+
+  forgotOtp[username] = {
+    otp,
+    expire: Date.now() + 5*60*1000
+  };
+
+  await twilioSMS.messages.create({
+    body: `Reset password OTP: ${otp}`,
+    from: process.env.TWILIO_SMS_FROM,
+    to: phone
+  });
+
+  res.json({ ok:true });
+});
+
+
+app.post("/api/forgot-reset", async (req,res)=>{
+  const { username, otp, newPassword } = req.body;
+
+  const rec = forgotOtp[username];
+  if(!rec) return res.json({ error:"no_otp" });
+  if(Date.now() > rec.expire) return res.json({ error:"expired" });
+  if(rec.otp !== otp) return res.json({ error:"invalid" });
+
+  const db = loadUsers();
+  const acc = db[username];
+  if(!acc) return res.json({ error:"notfound" });
+
+  acc.password = await bcrypt.hash(String(newPassword), 10);
+  saveUsers(db);
+
+  delete forgotOtp[username];
+
+  res.json({ ok:true });
+});
+
+
 app.post("/api/send-otp", async (req,res)=>{
   let { username, phone } = req.body;
   phone = normalizePhone(phone);
@@ -314,21 +361,6 @@ res.json({ok:true, profile:acc.profile});
 
 
  // ===== RESET / CHANGE PASSWORD =====
-
-app.post("/api/forgot-password", async (req,res)=>{
-  const { username, newPassword } = req.body;
-  if(!username || !newPassword) return res.json({error:"missing"});
-
-  const db = loadUsers();
-  const acc = db[username];
-  if(!acc) return res.json({error:"notfound"});
-
-  acc.password = await bcrypt.hash(String(newPassword), 10);
-  saveUsers(db);
-
-  res.json({ ok:true });
-});
-
 
 app.post("/api/change-password", async (req,res)=>{
   const { uid, oldPass, newPass } = req.body;
