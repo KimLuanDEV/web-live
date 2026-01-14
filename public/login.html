@@ -251,10 +251,7 @@ body{
   <span class="pass-eye" onclick="togglePass('password', this)">👁</span>
 </div>
 
-<div class="pass-wrap">
-  <input id="securityCode" type="password" placeholder="Mã bảo mật">
-  <span class="pass-eye" onclick="togglePass('securityCode', this)">👁</span>
-</div>
+
 
 
   <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
@@ -320,6 +317,28 @@ body{
 </div>
 
 
+<div id="secModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card" style="text-align:center">
+    <h3>🔐 Xác thực bảo mật</h3>
+    <p style="opacity:.8;font-size:14px">
+      Nhập mã bảo mật để hoàn tất đăng nhập
+    </p>
+
+    <div class="pass-wrap">
+      <input id="secInput" type="password" placeholder="Mã bảo mật">
+      <span class="pass-eye" onclick="togglePass('secInput', this)">👁</span>
+    </div>
+
+    <div class="modal-actions">
+      <button onclick="submitSecurity()">Xác nhận</button>
+      <button onclick="closeSec()" style="background:#333">Hủy</button>
+    </div>
+  </div>
+</div>
+
+
 
 
 <script>
@@ -372,37 +391,53 @@ if(!u || !p || !sec){
   location.href = "/lobby.html";
 }
 
-async function login(){
- const u = document.getElementById("username").value.trim();
-const p = document.getElementById("password").value;
-const sec = document.getElementById("securityCode").value;
+let __loginUser = null;
+let __loginPass = null;
 
-if(!u || !p || !sec){
-  showMsg("❌ Nhập đủ tài khoản, mật khẩu và mã bảo mật");
-  return;
+function login(){
+  const u = document.getElementById("username").value.trim();
+  const p = document.getElementById("password").value;
+
+  if(!u || !p){
+    showMsg("❌ Nhập tài khoản và mật khẩu");
+    return;
+  }
+
+  __loginUser = u;
+  __loginPass = p;
+
+  // 👉 mở modal nhập mã bảo mật
+  document.getElementById("secModal").classList.remove("hidden");
+  document.getElementById("secInput").focus();
 }
 
+
+
+async function submitSecurity(){
+  const sec = document.getElementById("secInput").value;
+  if(!sec){
+    showMsg("❌ Nhập mã bảo mật");
+    return;
+  }
 
   const res = await fetch("/api/login",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ 
-  username: u, 
-  password: p,
-  securityCode: sec
-})
-
+    body: JSON.stringify({
+      username: __loginUser,
+      password: __loginPass,
+      securityCode: sec
+    })
   });
 
   const data = await res.json();
 
   if(data.error){
-    showMsg("❌ Sai tài khoản hoặc mật khẩu");
+    showMsg("❌ Sai thông tin bảo mật");
     return;
   }
 
-
-  // ✅ ĐÃ VERIFY → LOGIN
+  // login thành công
   localStorage.setItem("user_profile", JSON.stringify(data.profile));
   localStorage.setItem("login_uid", data.profile.uid);
   localStorage.removeItem("isGuest");
@@ -411,6 +446,10 @@ if(!u || !p || !sec){
 }
 
 
+function closeSec(){
+  document.getElementById("secModal").classList.add("hidden");
+  document.getElementById("secInput").value = "";
+}
 
 
 function openForgot(){
