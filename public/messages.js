@@ -11,6 +11,13 @@ const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
 const ringtone = document.getElementById("ringtone");
 const ringback = document.getElementById("ringback");
+const callModal = document.getElementById("callModal");
+const callName = document.getElementById("callName");
+const callAvatar = document.getElementById("callAvatar");
+const callMute = document.getElementById("callMute");
+const callEnd = document.getElementById("callEnd");
+const callNet = document.getElementById("callNet");
+
 
 let micMuted = false;
 let netTimer = null;
@@ -19,6 +26,22 @@ let voiceStream = null;
 let voiceTarget = null;
 let currentTarget = null;
 let currentTargetUID = null;
+
+
+// 🔗 Gắn nút trong Call Modal với nút chat
+callMute.onclick = () => muteBtn.click();
+callEnd.onclick  = () => endCallBtn.click();
+
+
+function openCallModal(user){
+  callModal.classList.remove("hidden");
+  callName.textContent = user.name;
+  callAvatar.src = user.avatar || "";
+}
+
+function closeCallModal(){
+  callModal.classList.add("hidden");
+}
 
 
 function stopAllRings(){
@@ -350,6 +373,8 @@ if(!ok){
 
 stopAllRings();   // 🔔 TẮT CHUÔNG NGAY KHI BẤM NHẬN
 setCallUI(true);
+openCallModal(from);
+
 netStatus.classList.remove("hidden");
 startNetMonitor();
 
@@ -431,6 +456,8 @@ if(reason === "rejected"){
   stopAllRings();
 
   setCallUI(false);
+  closeCallModal();
+
 netStatus.classList.add("hidden");
 stopNetMonitor();
  
@@ -489,6 +516,8 @@ voicePC.ontrack = e => {
   ringback.play();   // 🔔 tút tút cho người gọi
   showModal("📞 Đang gọi " + currentTarget.name);
  setCallUI(true);
+ openCallModal(currentTarget);
+
 netStatus.classList.remove("hidden");
 startNetMonitor();
 
@@ -511,6 +540,8 @@ function endVoiceCall(){
   voiceTarget = null;
 
   setCallUI(false);
+  closeCallModal();
+
 netStatus.classList.add("hidden");
 stopNetMonitor();
 

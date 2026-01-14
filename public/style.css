@@ -6783,3 +6783,49 @@ body.is-guest .reactions-layer{
 .net-status.mid{ color:#ffd36e }
 .net-status.bad{ color:#ff4b4b }
 
+
+.call-modal{
+  position:fixed;
+  inset:0;
+  background:#050914;
+  display:flex;
+  flex-direction:column;
+  z-index:10000;
+}
+
+.call-modal.hidden{ display:none }
+
+.call-header{
+  padding:12px;
+  display:flex;
+  gap:12px;
+  align-items:center;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.call-body{
+  flex:1;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.call-body img{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  border:3px solid #37f0a3;
+}
+
+.call-actions{
+  display:flex;
+  justify-content:center;
+  gap:30px;
+  padding:20px;
+}
+.call-actions button{
+  width:64px;
+  height:64px;
+  border-radius:50%;
+  font-size:24px;
+}
