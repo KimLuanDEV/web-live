@@ -95,7 +95,7 @@ function getVipBadge(level){
   level = Number(level) || 1;
 
   if (level >= 250) {
-    return { key:"immortal", text:"🌌 VIP IMMORTAL", color:"#ff3b3b" };
+    return { key:"immortal", text:"💎 VIP IMMORTAL", color:"#ff3b3b" };
   }
   if (level >= 200) {
     return { key:"emperor", text:"👑 VIP EMPEROR", color:"#ffd36e" };
