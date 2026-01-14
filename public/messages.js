@@ -455,7 +455,14 @@ startNetMonitor();
   video:true
 });
 
+// GẮN video preview
 document.getElementById("localVideo").srcObject = voiceStream;
+
+// 🔴 TẮT camera mặc định
+voiceStream.getVideoTracks().forEach(t => t.enabled = false);
+camOff = true;
+callCam.textContent = "🚫";
+
 
   voicePC = new RTCPeerConnection({
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
@@ -566,12 +573,19 @@ callBtn.onclick = async () => {
   voiceTarget = currentTarget.uid;
 
 
-  voiceStream = await navigator.mediaDevices.getUserMedia({
+ voiceStream = await navigator.mediaDevices.getUserMedia({
   audio:true,
   video:true
 });
 
+// GẮN video preview
 document.getElementById("localVideo").srcObject = voiceStream;
+
+// 🔴 TẮT camera mặc định
+voiceStream.getVideoTracks().forEach(t => t.enabled = false);
+camOff = true;
+callCam.textContent = "🚫";
+
 
 
   voicePC = new RTCPeerConnection({
