@@ -133,7 +133,7 @@ body{
   <div class="register-title">LIVESTREAM PRO</div>
   <div class="register-sub">Tạo tài khoản mới</div>
 
-  <input id="phone" placeholder="Số điện thoại (VD: 0123...)">
+
   <input id="username" placeholder="Tên đăng nhập">
   <input id="name" placeholder="Tên hiển thị">
 
@@ -173,74 +173,17 @@ body{
 </div>
 
 
-<div id="otpModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeOtp()"></div>
-
-  <div class="modal-card" style="position:relative">
-    <div onclick="closeOtp()" 
-         style="position:absolute;top:10px;right:14px;
-                font-size:22px;cursor:pointer;opacity:.7">
-      ✖
-    </div>
-
-    <h3>📱 Nhập mã OTP</h3>
-    <input id="otpCode" placeholder="6 chữ số OTP">
-    <button onclick="verifyOtp()">Xác nhận</button>
-  </div>
-</div>
-
 
 <script>
-
-  function closeOtp(){
-  document.getElementById("otpModal").classList.add("hidden");
-}
-
-document.addEventListener("keydown", e=>{
-  if(e.key==="Escape"){
-    closeOtp();
-  }
-});
-
-
-async function verifyOtp(){
-  const otp = document.getElementById("otpCode").value.trim();
-  let phone = document.getElementById("phone").value.trim();
-  phone = normalizePhone(phone);
-
-  const res = await fetch("/api/register",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ phone, otp })
-  });
-
-  const d = await res.json();
-  if(!d.ok){
-    showMsg("❌ OTP sai hoặc hết hạn");
-    return;
-  }
-
-  location.href="/login.html";
-}
-
-
-</script>
-
-
-<script>
-
-let phone = document.getElementById("phone").value.trim();
-phone = normalizePhone(phone);
 
 
 async function register(){
-  const phone = document.getElementById("phone").value.trim();
   const u = document.getElementById("username").value.trim();
   const name = document.getElementById("name").value.trim();
   const p = document.getElementById("password").value;
   const p2 = document.getElementById("password2").value;
 
-  if(!u || !p || !p2 || !name || !phone){
+  if(!u || !p || !p2 || !name){
     showMsg("❌ Nhập đầy đủ thông tin");
     return;
   }
@@ -250,11 +193,11 @@ async function register(){
     return;
   }
 
-  const res = await fetch("/api/request-otp", {
-  method:"POST",
-  headers:{ "Content-Type":"application/json" },
-  body: JSON.stringify({ username:u, password:p, name, phone })
-});
+  const res = await fetch("/api/register",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username:u, password:p, name })
+  });
 
   const data = await res.json();
   if(data.error){
@@ -262,16 +205,9 @@ async function register(){
     return;
   }
 
-  // Gửi OTP sau khi tạo account
-  await fetch("/api/send-otp",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username:u, phone })
-  });
-
-  localStorage.setItem("otp_user", u);
-  document.getElementById("otpModal").classList.remove("hidden");
+  location.href="/login.html";
 }
+
 
 
 function togglePass(id, el){
@@ -316,20 +252,6 @@ function showMsg(text, title="Thông báo"){
 
 function closeMsg(){
   document.getElementById("msgModal").classList.add("hidden");
-}
-
-function normalizePhone(p){
-  p = p.replace(/\s+/g,"");
-  if(p.startsWith("0")){
-    return "+84" + p.slice(1);
-  }
-  if(p.startsWith("84")){
-    return "+" + p;
-  }
-  if(!p.startsWith("+")){
-    return "+" + p;
-  }
-  return p;
 }
 
 </script>

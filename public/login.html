@@ -162,21 +162,15 @@ body{
 
 
 <div id="forgotModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeForgot()"></div>
-  <div class="modal-card">
-<h3>🔑 Quên mật khẩu</h3>
+  
+  <h3>🔑 Quên mật khẩu</h3>
 
 <input id="forgotUser" placeholder="Tên đăng nhập">
+<input id="forgotPass" type="password" placeholder="Mật khẩu mới">
 
-<button onclick="sendForgotOtp()">Gửi OTP</button>
+<button onclick="submitForgot()">Đặt lại</button>
+<button onclick="closeForgot()">Hủy</button>
 
-<div id="forgotStep2" style="display:none">
-  <input id="forgotOtp" placeholder="Mã OTP">
-  <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
-  <button style="flex:1" onclick="closeForgot()">Hủy</button>
-  <button onclick="submitForgot()">Đặt lại</button>
-    </div>
-  </div>
 </div>
 
 
@@ -194,32 +188,36 @@ body{
 
 
 
-<script>
-async function verifyOtp(){
-  const otp = document.getElementById("otpCode").value.trim();
-  const username = localStorage.getItem("otp_user");
 
-  const res = await fetch("/api/verify-otp",{
+<script>
+
+
+
+async function submitForgot(){
+  const u = document.getElementById("forgotUser").value.trim();
+  const p = document.getElementById("forgotPass").value;
+
+  if(!u || !p){
+    showMsg("❌ Nhập đủ username và mật khẩu mới");
+    return;
+  }
+
+  const res = await fetch("/api/change-password",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username, otp })
+    body: JSON.stringify({ username:u, newPassword:p })
   });
 
   const d = await res.json();
   if(!d.ok){
-    showMsg("❌ OTP sai hoặc hết hạn");
+    showMsg("❌ Không tìm thấy tài khoản");
     return;
   }
 
-  // OTP OK → login lại
-  document.getElementById("otpModal").classList.add("hidden");
-  login();
+  showMsg("✅ Đổi mật khẩu thành công");
+  closeForgot();
 }
-</script>
 
-
-
-<script>
 
   function guestLogin(){
   const guest = {
@@ -268,68 +266,11 @@ async function login(){
 }
 
 
-function normalizePhone(p){
-  p = p.replace(/\s+/g,"");
-  if(p.startsWith("0")){
-    return "+84" + p.slice(1);
-  }
-  if(p.startsWith("84")){
-    return "+" + p;
-  }
-  if(!p.startsWith("+")){
-    return "+" + p;
-  }
-  return p;
-}
 
 
 function openForgot(){
   document.getElementById("forgotModal").classList.remove("hidden");
 }
-
-async function sendForgotOtp(){
-  const u = document.getElementById("forgotUser").value.trim();
-  if(!u) return showMsg("Nhập tên đăng nhập");
-
-  const res = await fetch("/api/forgot-request",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username:u })
-  });
-
-  const d = await res.json();
-  if(!d.ok){
-    showMsg("❌ Không tìm thấy tài khoản hoặc chưa gắn SĐT");
-    return;
-  }
-
-  document.getElementById("forgotStep2").style.display="block";
-  showMsg("📲 Đã gửi OTP về số điện thoại");
-}
-
-
-
-async function submitForgot(){
-  const u = document.getElementById("forgotUser").value.trim();
-  const otp = document.getElementById("forgotOtp").value.trim();
-  const p = document.getElementById("forgotPass").value;
-
-  const res = await fetch("/api/forgot-reset",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username:u, otp, newPassword:p })
-  });
-
-  const d = await res.json();
-  if(!d.ok){
-    showMsg("❌ OTP sai hoặc hết hạn");
-    return;
-  }
-
-  showMsg("✅ Đổi mật khẩu thành công");
-  closeForgot();
-}
-
 
 function closeForgot(){
   document.getElementById("forgotModal").classList.add("hidden");

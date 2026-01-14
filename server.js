@@ -16,14 +16,9 @@ const fs = require("fs");
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
 
 
-const twilioSMS = require("twilio")(
-  process.env.TWILIO_SMS_SID,
-  process.env.TWILIO_SMS_TOKEN
-);
 
-function genOTP(){
-  return Math.floor(100000 + Math.random()*900000).toString();
-}
+
+
 
 
 const upload = multer({
@@ -160,17 +155,6 @@ function pushNotify(uid, payload){
 const USERS_FILE = path.join("/opt/render/project/data", "users.json");
 
 
-function requirePhone(socket){
-  const uid = socket.data.uid;
-  const db = loadUsers();
-  const acc = db[uid];
-  if(!acc?.phoneVerified){
-    socket.emit("need-otp");
-    return false;
-  }
-  return true;
-}
-
 
 function loadUsers(){
   if(!fs.existsSync(USERS_FILE)) return {};
@@ -185,128 +169,17 @@ app.use(express.json());
 
 
 
-function normalizePhone(p){
-  p = String(p||"").replace(/\s+/g,"");
-  if(p.startsWith("0")) return "+84" + p.slice(1);
-  if(p.startsWith("84")) return "+" + p;
-  if(!p.startsWith("+")) return "+" + p;
-  return p;
-}
-
-const forgotOtp = {}; // username -> { otp, expire }
-
-app.post("/api/forgot-request", async (req,res)=>{
-  const { username } = req.body;
-  const db = loadUsers();
-  const acc = db[username];
-  if(!acc || !acc.phone) return res.json({ error:"notfound" });
-
-  const phone = acc.phone;
-  const otp = genOTP();
-
-  forgotOtp[username] = {
-    otp,
-    expire: Date.now() + 5*60*1000
-  };
-
-  await twilioSMS.messages.create({
-    body: `Reset password OTP: ${otp}`,
-    from: process.env.TWILIO_SMS_FROM,
-    to: phone
-  });
-
-  res.json({ ok:true });
-});
-
-
-app.post("/api/forgot-reset", async (req,res)=>{
-  const { username, otp, newPassword } = req.body;
-
-  const rec = forgotOtp[username];
-  if(!rec) return res.json({ error:"no_otp" });
-  if(Date.now() > rec.expire) return res.json({ error:"expired" });
-  if(rec.otp !== otp) return res.json({ error:"invalid" });
-
-  const db = loadUsers();
-  const acc = db[username];
-  if(!acc) return res.json({ error:"notfound" });
-
-  acc.password = await bcrypt.hash(String(newPassword), 10);
-  saveUsers(db);
-
-  delete forgotOtp[username];
-
-  res.json({ ok:true });
-});
-
-
-app.post("/api/send-otp", async (req,res)=>{
-  let { username, phone } = req.body;
-  phone = normalizePhone(phone);
-
-  const db = loadUsers();
-  const acc = db[username];
-  if(!acc) return res.json({error:"notfound"});
-
-  acc.phone = phone;           // 🔥 lưu bản đã chuẩn hóa
-  acc.phoneVerified = false;
-
-  const otp = genOTP();
-  acc.otp = otp;
-  acc.otpExpire = Date.now() + 5*60*1000;
-  saveUsers(db);
-
-  await twilioSMS.messages.create({
-    body: `Livestream OTP: ${otp}`,
-    from: process.env.TWILIO_SMS_FROM,
-    to: phone                  // 🔥 dùng bản đã normalize
-  });
-
-  res.json({ok:true});
-});
-
-
-
-
-app.post("/api/verify-otp", (req,res)=>{
-  const { username, otp } = req.body;
-  const db = loadUsers();
-  const acc = db[username];
-  if(!acc) return res.json({error:"notfound"});
-
-  if(acc.otp !== otp || Date.now() > acc.otpExpire){
-    return res.json({error:"invalid"});
-  }
-
-  acc.phoneVerified = true;
-  acc.otp = null;
-  acc.otpExpire = 0;
-  saveUsers(db);
-
-  res.json({ok:true});
-});
-
-
-
 app.post("/api/register", async (req,res)=>{
-  const { phone, otp } = req.body;
-  const data = pendingOtp[normalizePhone(phone)];
-
-  if(!data) return res.json({ error:"no_otp" });
-  if(Date.now() > data.expire) return res.json({ error:"expired" });
-  if(data.otp !== otp) return res.json({ error:"invalid_otp" });
-
-  const { username, password, name } = data.data;
+  const { username, password, name } = req.body;
+  if(!username || !password || !name) return res.json({error:"missing"});
 
   const db = loadUsers();
-  if(db[username]) return res.json({ error:"exists" });
+  if(db[username]) return res.json({error:"exists"});
 
   const hash = await bcrypt.hash(password,10);
 
   db[username] = {
     password: hash,
-    phone: normalizePhone(phone),
-    phoneVerified:true,
     profile:{
       uid: username,
       name,
@@ -320,39 +193,7 @@ app.post("/api/register", async (req,res)=>{
   };
 
   saveUsers(db);
-  delete pendingOtp[normalizePhone(phone)];
-
-  res.json({ ok:true });
-});
-
-
-
-const pendingOtp = {}; // { phone: { otp, expire, data } }
-
-app.post("/api/request-otp", async (req,res)=>{
-  let { phone, username, name, password } = req.body;
-  phone = normalizePhone(phone);
-
-  const db = loadUsers();
-  if(db[username]){
-    return res.json({ error:"exists" });
-  }
-
-  const otp = genOTP();
-
-  pendingOtp[phone] = {
-    otp,
-    expire: Date.now() + 5*60*1000,
-    data:{ phone, username, name, password }
-  };
-
-  await twilioSMS.messages.create({
-    body:`Livestream OTP: ${otp}`,
-    from: process.env.TWILIO_SMS_FROM,
-    to: phone
-  });
-
-  res.json({ ok:true });
+  res.json({ok:true});
 });
 
 
@@ -1083,10 +924,7 @@ if (role === "viewer" && room.hostProfile) {
 
     if (role === "broadcaster") {
 
-       if(!requirePhone(socket)){
-    socket.emit("need-otp");
-    return;
-  }
+
 
        if (room.releaseTimer) {
     clearTimeout(room.releaseTimer);
@@ -1318,7 +1156,7 @@ function canSendGift(socket) {
 // ===== GIFT ENGINE (paid gifts) =====
 socket.on("send-gift", ({ roomId, gift, name }) => {
 
-  if(!requirePhone(socket)) return;
+
 
   if(blockGuest(socket,"gift")) return;   // 🔒 GUEST KHÔNG ĐƯỢC TẶNG QUÀ
 
