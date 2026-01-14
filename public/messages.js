@@ -326,7 +326,11 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
 
  chatBox.appendChild(div);
 
-  requestAnimationFrame();
+ // ⬇️ Luôn cuộn xuống tin mới nhất
+requestAnimationFrame(() => {
+  chatBox.scrollTop = chatBox.scrollHeight;
+});
+
 }
 
 
