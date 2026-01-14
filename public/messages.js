@@ -340,8 +340,13 @@ socket.on("voice-rejected", () => {
 
 socket.on("voice-offer", async ({ from, sdp }) => {
  ringtone.play();   // 🔔 chuông cho người nhận
- const ok = await showModal("📞 " + from.name + " đang gọi bạn", "Nhận", "Từ chối");
-if(!ok) return;
+const ok = await showModal("📞 " + from.name + " đang gọi bạn", "Nhận", "Từ chối");
+if(!ok){
+  socket.emit("voice-reject", { to: from.uid });   // 🔥 báo server
+  stopAllRings();
+  return;
+}
+
 
 stopAllRings();   // 🔔 TẮT CHUÔNG NGAY KHI BẤM NHẬN
 setCallUI(true);
