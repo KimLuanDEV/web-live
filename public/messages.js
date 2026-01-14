@@ -526,7 +526,15 @@ voicePC = new RTCPeerConnection({
 
 
 
-voiceStream.getAudioTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+
+// sau đó mới tắt video
+voiceStream.getVideoTracks().forEach(t => t.enabled = false);
+camOff = true;
+callCam.textContent = "📷";
+flipBtn.style.display = "none";
+localVideo.style.display = "none";
+
 
 // chỉ add video nếu camera đang bật
 if(!camOff){
@@ -673,7 +681,15 @@ voicePC.ontrack = e => {
   audio.play();
 };
 
-  voiceStream.getAudioTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+
+// sau đó mới tắt video
+voiceStream.getVideoTracks().forEach(t => t.enabled = false);
+camOff = true;
+callCam.textContent = "📷";
+flipBtn.style.display = "none";
+localVideo.style.display = "none";
+
 
 // chỉ add video nếu camera đang bật
 if(!camOff){
