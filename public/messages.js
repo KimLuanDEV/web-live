@@ -37,7 +37,8 @@ function saveChat(msg){
   const key = chatKey();
   if(!key) return;
 
-  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+  const arr = (JSON.parse(localStorage.getItem(key) || "[]"))
+  .filter(m => m.peer === currentTargetUID);
   arr.push(msg);
   localStorage.setItem(key, JSON.stringify(arr));
 }
@@ -208,7 +209,8 @@ saveChat({
   from: auth.uid,
   to: currentTargetUID,
   text: txt,
-  time: Date.now()
+  time: Date.now(),
+  peer: currentTargetUID   // 🔥 QUAN TRỌNG
 });
 
 
@@ -222,7 +224,8 @@ saveChat({
   from: from.uid,
   to: auth.uid,
   text: text,
-  time: Date.now()
+  time: Date.now(),
+  peer: from.uid   // 🔥 QUAN TRỌNG
 });
 
 
