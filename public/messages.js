@@ -28,6 +28,7 @@ let currentTarget = null;
 let currentTargetUID = null;
 let callStartTime = 0;
 let callTimerInterval = null;
+let vibrateLoop = null;
 
 // 🔗 Gắn nút trong Call Modal với nút chat
 callMute.onclick = () => muteBtn.click();
@@ -35,17 +36,24 @@ callEnd.onclick  = () => endCallBtn.click();
 
 
 function startVibrate(){
-  if("vibrate" in navigator){
-    navigator.vibrate([400, 200, 400, 200, 400]); // rung-rung-rung
-  }
+  if(!("vibrate" in navigator)) return;
+
+  stopVibrate(); // clear cũ nếu có
+
+  vibrateLoop = setInterval(() => {
+    navigator.vibrate([300, 150, 300]);
+  }, 900); // cứ 0.9s rung lại
 }
 
 function stopVibrate(){
+  if(vibrateLoop){
+    clearInterval(vibrateLoop);
+    vibrateLoop = null;
+  }
   if("vibrate" in navigator){
     navigator.vibrate(0);
   }
 }
-
 
 
 function startCallTimer(){
@@ -409,11 +417,15 @@ const ok = await showModal("📞 " + from.name + " đang gọi bạn", "Nhận",
 if(!ok){
   socket.emit("voice-reject", { to: from.uid });   // 🔥 báo server
   stopAllRings();
+  stopVibrate();   // 🛑 tắt rung
+
   return;
 }
 
 
 stopAllRings();   // 🔔 TẮT CHUÔNG NGAY KHI BẤM NHẬN
+stopVibrate();   // 🛑 tắt rung
+
 setCallUI(true);
 openCallModal(from);
 
@@ -503,6 +515,7 @@ if(reason === "rejected"){
  
  
   stopAllRings();
+  stopVibrate();   // 🛑 tắt rung
 
   setCallUI(false);
   stopCallTimer();
@@ -606,6 +619,7 @@ callTimer.textContent = "00:00";
 
   showModal("📞 Đã kết thúc cuộc gọi");
   stopAllRings();
+  stopVibrate();   // 🛑 tắt rung
 
 }
 
