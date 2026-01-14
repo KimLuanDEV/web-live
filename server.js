@@ -326,7 +326,7 @@ for (const roomId in persisted) {
   broadcasterId: null,
   viewers: new Set(),
   viewerProfiles: new Map(),   // 🛡️ FIX CRASH
-  liveStartTs: data.liveStartTs,
+  liveStartTs: null,
   pinnedNote: data.pinnedNote || null,
   hostProfile: data.hostProfile || null,
   giftTotal: data.giftTotal || 0,
@@ -395,7 +395,7 @@ function getRoom(roomId) {
   broadcasterId: null,
   viewers: new Set(),
   viewerProfiles: new Map(),   // 🛡️ FIX CRASH
-  liveStartTs: data.liveStartTs,
+  liveStartTs: null,
   pinnedNote: data.pinnedNote || null,
   hostProfile: data.hostProfile || null,
   giftTotal: data.giftTotal || 0,
