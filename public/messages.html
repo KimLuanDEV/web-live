@@ -43,20 +43,8 @@
 
  <div class="chat-header-title">
   <span id="chatTitle">Chat</span>
-  <div id="callStatus" class="chat-status hidden">📡 Đang gọi…</div>
-  <div id="netStatus" class="net-status hidden">📶</div>
 </div>
-
-
-  <button id="callBtn" class="chat-call">📞</button>
-  <button id="chatMuteBtn" class="chat-mute hidden">🔈</button>
-
-  <button id="endCallBtn" class="chat-endcall hidden">✖</button>
-
 </div>
-
-
-
 
     <div id="chatBox" class="chatbox"></div>
 
@@ -84,49 +72,7 @@
 </div>
 
 
-<audio id="ringtone" loop>
-  <source src="/sounds/ringtone.mp3" type="audio/mpeg">
-</audio>
 
-<audio id="ringback" loop>
-  <source src="/sounds/ringback.mp3" type="audio/mpeg">
-</audio>
-
-
-
-<div id="callModal" class="call-modal hidden">
-  <div class="call-bg"></div>
-
-  <div class="call-box">
-    <div class="call-top">
-      <div class="call-status">
-        <span class="call-dot"></span>
-        <span id="callStatusText">Đang gọi…</span>
-      </div>
-    </div>
-
-    <div class="call-user">
-      <img id="callAvatar" src="" />
-      <div id="callName" class="call-name">User</div>
-      <div id="callNet" class="call-net">📶</div>
-      <div id="callTimer" class="call-timer">00:00</div>
-
-    </div>
-
-<div class="call-video-wrap">
-  <video id="localVideo" autoplay muted playsinline></video>
-  <video id="remoteVideo" autoplay playsinline></video>
-</div>
-
-  
-    <div class="call-actions">
-     <button id="callFlip" class="call-btn" style="display:none">🔄</button>
-      <button id="callCam" class="call-btn">📷</button>
-      <button id="callMute" class="call-btn mute">🔈</button>
-      <button id="callEnd" class="call-btn end">❌</button>
-    </div>
-  </div>
-</div>
 
 
 

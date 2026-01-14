@@ -104,30 +104,6 @@ function getActiveUserList(){
 }
 
 
-const callNS = io.of("/call");
-
-callNS.on("connection", socket => {
-
-  socket.on("voice-offer", ({ to, sdp }) => {
-    const target = activeUsers.get(to);
-    if(!target) return;
-    callNS.to(target).emit("voice-offer", { from: socket.data.uid, sdp });
-  });
-
-  socket.on("voice-answer", ({ to, sdp }) => {
-    const target = activeUsers.get(to);
-    if(!target) return;
-    callNS.to(target).emit("voice-answer", { sdp });
-  });
-
-  socket.on("voice-ice", ({ to, candidate }) => {
-    const target = activeUsers.get(to);
-    if(!target) return;
-    callNS.to(target).emit("voice-ice", { candidate });
-  });
-
-});
-
 
 
 function emitActiveUsers(){
@@ -442,86 +418,6 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
-
-
-socket.on("voice-offer", ({ to, sdp }) => {
-  const target = activeUsers.get(to);   // to = UID
-  if(!target) return;
-
-  const uid = socket.data.uid;
-  const db = loadUsers();
-
-  let profile = null;
-  for(const k in db){
-    if(db[k].profile?.uid === uid){
-      profile = db[k].profile;
-      break;
-    }
-  }
-
-  io.to(target).emit("voice-offer", {
-    from: {
-      uid,
-      name: profile?.name || "Người gọi",
-      avatar: profile?.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
-      level: profile?.level || 1
-    },
-    sdp
-  });
-});
-
-
-
-socket.on("voice-answer", ({ to, sdp }) => {
-  const target = activeUsers.get(to);   // UID -> socketId
-  if(!target) return;
-
-  io.to(target).emit("voice-answer", {
-    sdp
-  });
-});
-
-
-socket.on("voice-ice", ({ to, candidate }) => {
-  const target = activeUsers.get(to);
-  if(!target || !candidate) return;
-
-  io.to(target).emit("voice-ice", {
-    candidate: {
-      candidate: candidate.candidate,
-      sdpMid: candidate.sdpMid,
-      sdpMLineIndex: candidate.sdpMLineIndex
-    }
-  });
-});
-
-
-
-
-socket.on("voice-end", ({ to }) => {
-  const target = activeUsers.get(to);   // UID -> socketId
-  if(!target) return;
-
-  io.to(target).emit("voice-end");      // 🔥 gửi cho người kia
-});
-
-
-
-
-socket.on("private-call", ({ to }) => {
-  const from = socket.data.profile;
-  io.to(to).emit("private-call", {
-    from
-  });
-});
-
-
-socket.on("voice-reject", ({ to }) => {
-  const target = activeUsers.get(to);   // to = UID
-  if(target){
-    io.to(target).emit("voice-end", { reason: "rejected" });
-  }
-});
 
 
 
