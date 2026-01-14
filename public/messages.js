@@ -515,11 +515,22 @@ camOff = true;
 callCam.textContent = "📷";
 
 
-  voicePC = new RTCPeerConnection({
-    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-  });
+const ice = await fetch("/ice").then(r=>r.json());
 
-  voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+voicePC = new RTCPeerConnection({
+  iceServers: ice.iceServers
+});
+
+
+
+
+voiceStream.getAudioTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+
+// chỉ add video nếu camera đang bật
+if(!camOff){
+  voiceStream.getVideoTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+}
+
 
   voicePC.ontrack = e => {
     document.getElementById("remoteVideo").srcObject = e.streams[0];
@@ -639,9 +650,11 @@ callCam.textContent = "📷";
 
 
 
-  voicePC = new RTCPeerConnection({
-    iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
-  });
+const ice = await fetch("/ice").then(r=>r.json());
+
+voicePC = new RTCPeerConnection({
+  iceServers: ice.iceServers
+});
 
 voicePC.ontrack = e => {
   document.getElementById("remoteVideo").srcObject = e.streams[0];
@@ -651,7 +664,13 @@ voicePC.ontrack = e => {
   audio.play();
 };
 
-  voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+  voiceStream.getAudioTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+
+// chỉ add video nếu camera đang bật
+if(!camOff){
+  voiceStream.getVideoTracks().forEach(t => voicePC.addTrack(t, voiceStream));
+}
+
 
   voicePC.onicecandidate = e => {
     if(e.candidate){
