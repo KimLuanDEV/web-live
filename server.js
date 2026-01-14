@@ -424,14 +424,28 @@ socket.on("voice-offer", ({ to, sdp }) => {
   const target = activeUsers.get(to);   // to = UID
   if(!target) return;
 
+  const uid = socket.data.uid;
+  const db = loadUsers();
 
+  let profile = null;
+  for(const k in db){
+    if(db[k].profile?.uid === uid){
+      profile = db[k].profile;
+      break;
+    }
+  }
 
-  
   io.to(target).emit("voice-offer", {
-    from: { ...socket.data.profile, uid: socket.data.uid },
+    from: {
+      uid,
+      name: profile?.name || "Người gọi",
+      avatar: profile?.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
+      level: profile?.level || 1
+    },
     sdp
   });
 });
+
 
 
 socket.on("voice-answer", ({ to, sdp }) => {
