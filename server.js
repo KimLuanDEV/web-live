@@ -13,7 +13,8 @@ const twilio = require("twilio");
 
 const fs = require("fs");
 
-const LIVE_STATE_FILE = path.join(__dirname, "live_state.json");
+const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
+
 
 
 const upload = multer({
@@ -129,7 +130,8 @@ function pushNotify(uid, payload){
 
 
 
-const USERS_FILE = path.join(__dirname, "users.json");
+const USERS_FILE = path.join("/opt/render/project/data", "users.json");
+
 
 function loadUsers(){
   if(!fs.existsSync(USERS_FILE)) return {};
