@@ -438,7 +438,8 @@ endCallBtn.onclick = endVoiceCall;
 callBtn.onclick = async () => {
   if(!currentTarget) return;
 
-  voiceTarget = currentTarget.socketId;
+  voiceTarget = currentTarget.uid;
+
 
   voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
 

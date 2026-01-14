@@ -420,13 +420,16 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+socket.on("voice-offer", ({ to, sdp }) => {
+  const target = activeUsers.get(to);   // to = UID
+  if(!target) return;
 
-  socket.on("voice-offer", ({ to, sdp }) => {
-  io.to(to).emit("voice-offer", {
-    from: socket.id,
+  io.to(target).emit("voice-offer", {
+    from: { ...socket.data.profile, uid: socket.data.uid },
     sdp
   });
 });
+
 
 socket.on("voice-answer", ({ to, sdp }) => {
   io.to(to).emit("voice-answer", {
@@ -460,11 +463,13 @@ socket.on("private-call", ({ to }) => {
 
 
 socket.on("voice-reject", ({ to }) => {
-  const target = activeUsers.get(to);
+  const target = activeUsers.get(to);   // to = UID
   if(target){
     io.to(target).emit("voice-rejected");
   }
 });
+
+
 
  socket.on("private-message", ({ to, text, msgId }) => {
    const targetSocket = activeUsers.get(to);   // 🔥 UID -> socketId
