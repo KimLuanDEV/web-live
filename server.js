@@ -224,18 +224,24 @@ app.post("/api/verify-otp", (req,res)=>{
 
 
 app.post("/api/register", async (req,res)=>{
+  const { phone, otp } = req.body;
+  const data = pendingOtp[normalizePhone(phone)];
 
-const { username, password, name, phone } = req.body;
+  if(!data) return res.json({ error:"no_otp" });
+  if(Date.now() > data.expire) return res.json({ error:"expired" });
+  if(data.otp !== otp) return res.json({ error:"invalid_otp" });
 
-  if(!username || !password || !name) return res.json({error:"missing"});
+  const { username, password, name } = data.data;
 
   const db = loadUsers();
-  if(db[username]) return res.json({error:"exists"});
+  if(db[username]) return res.json({ error:"exists" });
 
-  const hash = await bcrypt.hash(String(password), 10);
+  const hash = await bcrypt.hash(password,10);
 
   db[username] = {
-    password: hash,   // 🔐 HASH
+    password: hash,
+    phone: normalizePhone(phone),
+    phoneVerified:true,
     profile:{
       uid: username,
       name,
@@ -245,18 +251,45 @@ const { username, password, name, phone } = req.body;
       exp:0,
       coinSent:0,
       coinReceived:0
-    },
-  phone: phone,
-  phoneVerified: false,
-  otp: null,
-  otpExpire: 0
-
+    }
   };
 
   saveUsers(db);
-  
-  res.json({ok:true, profile:db[username].profile});
+  delete pendingOtp[normalizePhone(phone)];
+
+  res.json({ ok:true });
 });
+
+
+
+const pendingOtp = {}; // { phone: { otp, expire, data } }
+
+app.post("/api/request-otp", async (req,res)=>{
+  let { phone, username, name, password } = req.body;
+  phone = normalizePhone(phone);
+
+  const db = loadUsers();
+  if(db[username]){
+    return res.json({ error:"exists" });
+  }
+
+  const otp = genOTP();
+
+  pendingOtp[phone] = {
+    otp,
+    expire: Date.now() + 5*60*1000,
+    data:{ phone, username, name, password }
+  };
+
+  await twilioSMS.messages.create({
+    body:`Livestream OTP: ${otp}`,
+    from: process.env.TWILIO_SMS_FROM,
+    to: phone
+  });
+
+  res.json({ ok:true });
+});
+
 
 
 app.post("/api/login", async (req,res)=>{

@@ -205,12 +205,13 @@ document.addEventListener("keydown", e=>{
 
 async function verifyOtp(){
   const otp = document.getElementById("otpCode").value.trim();
-  const username = localStorage.getItem("otp_user");
+  let phone = document.getElementById("phone").value.trim();
+  phone = normalizePhone(phone);
 
-  const res = await fetch("/api/verify-otp",{
+  const res = await fetch("/api/register",{
     method:"POST",
     headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username, otp })
+    body: JSON.stringify({ phone, otp })
   });
 
   const d = await res.json();
@@ -221,6 +222,8 @@ async function verifyOtp(){
 
   location.href="/login.html";
 }
+
+
 </script>
 
 
@@ -247,11 +250,11 @@ async function register(){
     return;
   }
 
-  const res = await fetch("/api/register",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-    body: JSON.stringify({ username:u, password:p, name, phone })
-  });
+  const res = await fetch("/api/request-otp", {
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body: JSON.stringify({ username:u, password:p, name, phone })
+});
 
   const data = await res.json();
   if(data.error){
