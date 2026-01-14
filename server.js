@@ -465,7 +465,7 @@ socket.on("private-call", ({ to }) => {
 socket.on("voice-reject", ({ to }) => {
   const target = activeUsers.get(to);   // to = UID
   if(target){
-    io.to(target).emit("voice-end");    // 🔥 kết thúc cuộc gọi bên caller
+    io.to(target).emit("voice-end", { reason: "rejected" });
   }
 });
 

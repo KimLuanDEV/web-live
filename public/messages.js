@@ -408,7 +408,7 @@ socket.on("voice-ice", async ({ candidate }) => {
 });
 
 
-socket.on("voice-end", () => {
+socket.on("voice-end", ({ reason } = {}) => {
   if(voicePC){
     voicePC.close();
     voicePC = null;
@@ -419,7 +419,14 @@ socket.on("voice-end", () => {
     voiceStream = null;
   }
 
+if(reason === "rejected"){
+  showModal("❌ Người nhận đã từ chối cuộc gọi");
+}else{
   showModal("📞 Cuộc gọi đã kết thúc");
+}
+
+ 
+ 
   stopAllRings();
 
   setCallUI(false);
