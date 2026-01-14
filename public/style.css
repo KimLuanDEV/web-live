@@ -6829,3 +6829,13 @@ body.is-guest .reactions-layer{
   border-radius:50%;
   font-size:24px;
 }
+
+
+#callAccept{
+  background:#37f0a3;
+  color:#000;
+}
+#callReject, #callEnd{
+  background:#ff4b4b;
+  color:#fff;
+}
