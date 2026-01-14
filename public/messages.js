@@ -19,7 +19,6 @@ const callEnd = document.getElementById("callEnd");
 const callNet = document.getElementById("callNet");
 const callAccept = document.getElementById("callAccept");
 const callReject = document.getElementById("callReject");
-const callState = document.getElementById("callState");
 
 
 let micMuted = false;
@@ -519,6 +518,7 @@ voicePC.ontrack = e => {
   });
 
   ringback.play();   // 🔔 tút tút cho người gọi
+  showModal("📞 Đang gọi " + currentTarget.name);
  setCallUI(true);
  openCallModal(currentTarget);
 
