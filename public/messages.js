@@ -19,6 +19,7 @@ const callEnd = document.getElementById("callEnd");
 const callNet = document.getElementById("callNet");
 const callTimer = document.getElementById("callTimer");
 const callCam = document.getElementById("callCam");
+const pip = document.getElementById("localVideo");
 
 let micMuted = false;
 let netTimer = null;
@@ -31,13 +32,31 @@ let callStartTime = 0;
 let callTimerInterval = null;
 let vibrateLoop = null;
 let camOff = false;
-
+let drag = {
+  active:false,
+  x:0,
+  y:0,
+  startX:0,
+  startY:0
+};
 
 callCam.onclick = ()=>{
   camOff = !camOff;
-  voiceStream.getVideoTracks().forEach(t=>t.enabled = !camOff);
-  callCam.textContent = camOff ? "📷" : "🚫";
+
+  const tracks = voiceStream.getVideoTracks();
+  tracks.forEach(t=>t.enabled = !camOff);
+
+  const pip = document.getElementById("localVideo");
+
+  if(camOff){
+    pip.style.display = "none";   // tắt cam → ẩn PIP
+    callCam.textContent = "📷";
+  }else{
+    pip.style.display = "block";  // bật cam → hiện PIP
+    callCam.textContent = "🚫";
+  }
 };
+
 
 // 🔗 Gắn nút trong Call Modal với nút chat
 callMute.onclick = () => muteBtn.click();
@@ -685,3 +704,40 @@ function syncCallMute(){
   callMute.classList.toggle("active", micMuted);
   callMute.textContent = micMuted ? "🔇" : "🔈";
 }
+
+
+
+pip.addEventListener("pointerdown", e=>{
+  drag.active = true;
+  pip.setPointerCapture(e.pointerId);
+
+  const rect = pip.getBoundingClientRect();
+  drag.startX = e.clientX;
+  drag.startY = e.clientY;
+  drag.x = rect.left;
+  drag.y = rect.top;
+
+  pip.style.transition = "none";
+});
+
+pip.addEventListener("pointermove", e=>{
+  if(!drag.active) return;
+
+  const dx = e.clientX - drag.startX;
+  const dy = e.clientY - drag.startY;
+
+  pip.style.left = drag.x + dx + "px";
+  pip.style.top  = drag.y + dy + "px";
+  pip.style.right = "auto";
+  pip.style.bottom = "auto";
+  pip.style.position = "fixed";
+});
+
+pip.addEventListener("pointerup", ()=>{
+  drag.active = false;
+  pip.style.transition = "";
+});
+
+pip.addEventListener("pointercancel", ()=>{
+  drag.active = false;
+});

@@ -6985,6 +6985,7 @@ body.is-guest .reactions-layer{
 
 /* video của mình (PIP) */
 #localVideo{
+  display:none;   /* mặc định ẩn */
   position:absolute;
   right:16px;
   bottom:120px;
