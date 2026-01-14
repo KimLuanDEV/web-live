@@ -340,6 +340,12 @@ fetch("/api/all-users")
 
 // nhận realtime online
 socket.on("active-users", ({ users, online })=>{
+
+  socket.on("all-users", list=>{
+  ALL_USERS = list || [];
+  renderPlayerLobbyAll();
+});
+
   // server cũ có thể gửi {users} hoặc {online}
   if(Array.isArray(online)){
     ONLINE_UIDS = online;

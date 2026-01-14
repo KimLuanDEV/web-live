@@ -124,6 +124,23 @@ function emitActiveUsers(){
 }
 
 
+function emitAllUsers(){
+  const db = loadUsers();
+  const list = [];
+
+  for(const uid in db){
+    const p = db[uid].profile || {};
+    list.push({
+      uid,
+      name: p.name || uid,
+      avatar: p.avatar || "",
+      level: p.level || 1
+    });
+  }
+
+  io.emit("all-users", list);
+}
+
 
 // ===== USER INBOX / NOTIFICATION =====
 const userInbox = new Map();   // uid -> [ {type, text, ts, read} ]
@@ -797,6 +814,7 @@ socket.on("profile-update", ({ name, avatar, level }) => {
 
   // ===== 4. Luôn refresh Sảnh người chơi =====
   emitActiveUsers();
+  emitAllUsers();   // 🔥 THÊM DÒNG NÀY
 });
 
 
