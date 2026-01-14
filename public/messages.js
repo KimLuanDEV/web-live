@@ -377,15 +377,16 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
 
   const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
+  let html = text;
+
   // 🖼️ Nếu là ảnh
-  let content = text;
   if(typeof text === "string" && text.startsWith("[img]")){
     const url = text.replace("[img]","");
-    content = `<img src="${url}" onclick="openImage('${url}')">`;
+    html = `<img src="${url}" style="max-width:180px;border-radius:12px;cursor:pointer" onclick="openImage('${url}')">`;
   }
 
   div.innerHTML = `
-    <div class="bubble">${content}</div>
+    <div class="bubble">${html}</div>
     <div class="chat-time">
       ${time}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
@@ -394,11 +395,11 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
 
   chatBox.appendChild(div);
 
-  // ⬇️ Luôn cuộn xuống tin mới nhất
-  requestAnimationFrame(() => {
+  requestAnimationFrame(()=>{
     chatBox.scrollTop = chatBox.scrollHeight;
   });
 }
+
 
 
 
