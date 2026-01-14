@@ -202,6 +202,21 @@ app.post("/api/register", async (req,res)=>{
 });
 
 
+app.post("/api/prelogin", async (req,res)=>{
+  const { username, password } = req.body;
+  const db = loadUsers();
+
+  const acc = db[username];
+  if(!acc) return res.json({ ok:false });
+
+  const ok = await bcrypt.compare(String(password), acc.password);
+  if(!ok) return res.json({ ok:false });
+
+  // Đúng user + pass → cho phép nhập mã bảo mật
+  res.json({ ok:true });
+});
+
+
 
 app.post("/api/login", async (req,res)=>{
   const { username, password, securityCode } = req.body;

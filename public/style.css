@@ -1245,6 +1245,16 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 .modal{ position:fixed; inset:0; z-index:9999; }
 .modal.hidden{ display:none; }
 
+/* Modal xác thực bảo mật luôn nằm trên cùng */
+#secModal{
+  z-index: 10050;
+}
+
+/* Modal thông báo */
+#msgModal{
+  z-index: 10040;
+}
+
 .modal-backdrop{
   position:absolute; inset:0;
   background: rgba(0,0,0,.6);

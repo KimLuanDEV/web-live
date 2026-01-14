@@ -394,7 +394,7 @@ if(!u || !p || !sec){
 let __loginUser = null;
 let __loginPass = null;
 
-function login(){
+async function login(){
   const u = document.getElementById("username").value.trim();
   const p = document.getElementById("password").value;
 
@@ -403,13 +403,27 @@ function login(){
     return;
   }
 
+  const res = await fetch("/api/prelogin",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({ username:u, password:p })
+  });
+
+  const data = await res.json();
+
+  if(!data.ok){
+    showMsg("❌ Sai tài khoản hoặc mật khẩu");
+    return;
+  }
+
+  // Đúng → mới mở modal bảo mật
   __loginUser = u;
   __loginPass = p;
 
-  // 👉 mở modal nhập mã bảo mật
   document.getElementById("secModal").classList.remove("hidden");
   document.getElementById("secInput").focus();
 }
+
 
 
 
