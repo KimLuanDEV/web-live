@@ -123,6 +123,73 @@ body{
 }
 
 
+.forgot-card{
+  background:linear-gradient(180deg,#0b0f1f,#11172b);
+  border:2px solid #00fff2;
+  box-shadow:0 0 25px rgba(0,255,242,.5);
+  border-radius:14px;
+  padding:22px;
+  width:90%;
+  max-width:360px;
+  margin:auto;
+  color:#fff;
+  text-align:center;
+  animation:pop .25s ease;
+}
+
+.forgot-card h3{
+  margin-bottom:16px;
+  color:#00fff2;
+  text-shadow:0 0 8px #00fff2;
+}
+
+.input-group{
+  text-align:left;
+  margin-bottom:12px;
+}
+
+.input-group label{
+  font-size:12px;
+  opacity:.8;
+}
+
+.input-group input{
+  width:100%;
+  padding:10px;
+  border-radius:8px;
+  border:none;
+  background:#0c1222;
+  color:#fff;
+  outline:none;
+  box-shadow:inset 0 0 6px rgba(0,255,242,.4);
+}
+
+.forgot-actions{
+  display:flex;
+  gap:10px;
+  margin-top:16px;
+}
+
+.btn-primary{
+  flex:1;
+  background:#00fff2;
+  border:none;
+  padding:10px;
+  border-radius:10px;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:0 0 12px rgba(0,255,242,.7);
+}
+
+.btn-cancel{
+  flex:1;
+  background:#222;
+  color:#aaa;
+  border:1px solid #444;
+  padding:10px;
+  border-radius:10px;
+}
+
 
 </style>
 </head>
@@ -162,16 +229,28 @@ body{
 
 
 <div id="forgotModal" class="modal hidden">
-  
-  <h3>🔑 Quên mật khẩu</h3>
+  <div class="modal-backdrop" onclick="closeForgot()"></div>
 
-<input id="forgotUser" placeholder="Tên đăng nhập">
-<input id="forgotPass" type="password" placeholder="Mật khẩu mới">
+  <div class="forgot-card">
+    <h3>🔐 Khôi phục mật khẩu</h3>
 
-<button onclick="submitForgot()">Đặt lại</button>
-<button onclick="closeForgot()">Hủy</button>
+    <div class="input-group">
+      <label>Tên đăng nhập</label>
+      <input id="forgotUser" placeholder="Nhập username">
+    </div>
 
+    <div class="input-group">
+      <label>Mật khẩu mới</label>
+      <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
+    </div>
+
+    <div class="forgot-actions">
+      <button class="btn-primary" onclick="submitForgot()">Đặt lại</button>
+      <button class="btn-cancel" onclick="closeForgot()">Hủy</button>
+    </div>
+  </div>
 </div>
+
 
 
 
