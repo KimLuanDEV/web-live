@@ -6784,50 +6784,130 @@ body.is-guest .reactions-layer{
 .net-status.bad{ color:#ff4b4b }
 
 
+/* ===== CALL MODAL ===== */
 .call-modal{
   position:fixed;
   inset:0;
-  background:#050914;
+  z-index:99999;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.call-modal.hidden{ display:none; }
+
+.call-bg{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(600px 400px at 30% 20%, rgba(95,168,255,.18), transparent 60%),
+    radial-gradient(700px 500px at 70% 30%, rgba(37,240,154,.14), transparent 62%),
+    radial-gradient(700px 600px at 50% 90%, rgba(255,59,107,.18), transparent 60%),
+    rgba(0,0,0,.85);
+  backdrop-filter: blur(10px);
+}
+
+.call-box{
+  position:relative;
+  z-index:2;
+  width:100%;
+  height:100%;
   display:flex;
   flex-direction:column;
-  z-index:10000;
-}
-
-.call-modal.hidden{ display:none }
-
-.call-header{
-  padding:12px;
-  display:flex;
-  gap:12px;
   align-items:center;
-  border-bottom:1px solid rgba(255,255,255,.05);
+  justify-content:space-between;
+  padding:40px 20px 50px;
+  color:white;
 }
 
-.call-body{
-  flex:1;
-  display:flex;
-  justify-content:center;
+.call-top{
+  width:100%;
+  text-align:center;
+}
+
+.call-status{
+  display:inline-flex;
   align-items:center;
+  gap:10px;
+  padding:10px 16px;
+  border-radius:999px;
+  background: rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.15);
+  backdrop-filter: blur(8px);
+  font-weight:700;
 }
 
-.call-body img{
+.call-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#ff3b6b;
+  box-shadow:0 0 20px #ff3b6b;
+  animation:pulse 1s infinite;
+}
+
+@keyframes pulse{
+  0%,100%{ transform:scale(1); opacity:1 }
+  50%{ transform:scale(1.4); opacity:.5 }
+}
+
+.call-user{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  margin-top:40px;
+}
+
+.call-user img{
   width:120px;
   height:120px;
   border-radius:50%;
-  border:3px solid #37f0a3;
+  object-fit:cover;
+  border:4px solid rgba(255,255,255,.2);
+  box-shadow:0 0 40px rgba(95,168,255,.35);
+}
+
+.call-name{
+  margin-top:16px;
+  font-size:26px;
+  font-weight:900;
+}
+
+.call-net{
+  margin-top:8px;
+  font-size:18px;
+  opacity:.8;
 }
 
 .call-actions{
   display:flex;
-  justify-content:center;
-  gap:30px;
-  padding:20px;
-}
-.call-actions button{
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  font-size:24px;
+  gap:40px;
 }
 
+.call-btn{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  font-size:28px;
+  border:none;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.call-btn.mute{
+  background:#222;
+  color:white;
+}
+
+.call-btn.mute.active{
+  background:#ff3b6b;
+}
+
+.call-btn.end{
+  background:#ff3b6b;
+  color:white;
+  box-shadow:0 0 30px rgba(255,59,107,.7);
+}
 
