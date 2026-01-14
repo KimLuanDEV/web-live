@@ -18,6 +18,7 @@ const callMute = document.getElementById("callMute");
 const callEnd = document.getElementById("callEnd");
 const callNet = document.getElementById("callNet");
 const callTimer = document.getElementById("callTimer");
+const callCam = document.getElementById("callCam");
 
 let micMuted = false;
 let netTimer = null;
@@ -29,6 +30,14 @@ let currentTargetUID = null;
 let callStartTime = 0;
 let callTimerInterval = null;
 let vibrateLoop = null;
+let camOff = false;
+
+
+callCam.onclick = ()=>{
+  camOff = !camOff;
+  voiceStream.getVideoTracks().forEach(t=>t.enabled = !camOff);
+  callCam.textContent = camOff ? "🚫" : "📷";
+};
 
 // 🔗 Gắn nút trong Call Modal với nút chat
 callMute.onclick = () => muteBtn.click();
@@ -441,7 +450,12 @@ startNetMonitor();
  voiceTarget = from.uid;   // 🔥 CHỈ LẤY UID
 
 
-  voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  voiceStream = await navigator.mediaDevices.getUserMedia({
+  audio:true,
+  video:true
+});
+
+document.getElementById("localVideo").srcObject = voiceStream;
 
   voicePC = new RTCPeerConnection({
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
@@ -450,6 +464,7 @@ startNetMonitor();
   voiceStream.getTracks().forEach(t => voicePC.addTrack(t, voiceStream));
 
   voicePC.ontrack = e => {
+    document.getElementById("remoteVideo").srcObject = e.streams[0];
     const audio = document.createElement("audio");
     audio.srcObject = e.streams[0];
     audio.autoplay = true;
@@ -551,13 +566,20 @@ callBtn.onclick = async () => {
   voiceTarget = currentTarget.uid;
 
 
-  voiceStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+  voiceStream = await navigator.mediaDevices.getUserMedia({
+  audio:true,
+  video:true
+});
+
+document.getElementById("localVideo").srcObject = voiceStream;
+
 
   voicePC = new RTCPeerConnection({
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }]
   });
 
 voicePC.ontrack = e => {
+  document.getElementById("remoteVideo").srcObject = e.streams[0];
   const audio = document.createElement("audio");
   audio.srcObject = e.streams[0];
   audio.autoplay = true;
