@@ -34,6 +34,19 @@ callMute.onclick = () => muteBtn.click();
 callEnd.onclick  = () => endCallBtn.click();
 
 
+function startVibrate(){
+  if("vibrate" in navigator){
+    navigator.vibrate([400, 200, 400, 200, 400]); // rung-rung-rung
+  }
+}
+
+function stopVibrate(){
+  if("vibrate" in navigator){
+    navigator.vibrate(0);
+  }
+}
+
+
 
 function startCallTimer(){
   callStartTime = Date.now();
@@ -389,7 +402,9 @@ socket.on("voice-rejected", () => {
 
 
 socket.on("voice-offer", async ({ from, sdp }) => {
- ringtone.play();   // 🔔 chuông cho người nhận
+  
+  startVibrate();   // 📳 rung khi có người gọi
+  ringtone.play();   // 🔔 chuông cho người nhận
 const ok = await showModal("📞 " + from.name + " đang gọi bạn", "Nhận", "Từ chối");
 if(!ok){
   socket.emit("voice-reject", { to: from.uid });   // 🔥 báo server
@@ -466,6 +481,9 @@ socket.on("voice-ice", async ({ candidate }) => {
 
 
 socket.on("voice-end", ({ reason } = {}) => {
+
+  stopVibrate();   // 🛑 tắt rung
+
   if(voicePC){
     voicePC.close();
     voicePC = null;
@@ -559,6 +577,10 @@ startNetMonitor();
 };
 
 function endVoiceCall(){
+
+  stopVibrate();
+
+
   if(voiceStream){
     voiceStream.getTracks().forEach(t => t.stop());
     voiceStream = null;
