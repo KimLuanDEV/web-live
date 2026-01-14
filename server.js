@@ -333,6 +333,7 @@ rooms.set(roomId, {
   giftByUser: new Map(),
   releaseTimer: null,
   pendingRelease: false,
+  idleTimer: null
 });
 
 
@@ -410,12 +411,44 @@ function getRoom(roomId) {
   giftByUser: new Map(),
   releaseTimer: null,
   pendingRelease: false,
+  idleTimer: null
 });
 
 
   }
   return rooms.get(roomId);
 }
+
+
+function checkRoomIdle(roomId){
+  const room = rooms.get(roomId);
+  if(!room) return;
+
+  const viewerCount = safeMap(room.viewerProfiles).size;
+  const hasHost = !!room.broadcasterId;
+
+  if(!hasHost && viewerCount === 0){
+    if(room.idleTimer) return;
+
+    room.idleTimer = setTimeout(()=>{
+      const r = rooms.get(roomId);
+      if(!r) return;
+
+      if(!r.broadcasterId && safeMap(r.viewerProfiles).size === 0){
+        console.log("💤 Auto-sleep room:", roomId);
+        closeRoom(roomId, "idle_sleep");
+      }
+      r.idleTimer = null;
+    }, 60000); // 60 giây
+  }
+  else{
+    if(room.idleTimer){
+      clearTimeout(room.idleTimer);
+      room.idleTimer = null;
+    }
+  }
+}
+
 
 
 function emitViewerCount(roomId) {
@@ -478,6 +511,12 @@ app.get("/ice", async (_req, res) => {
 function closeRoom(roomId, reason = "host_left") {
   const room = rooms.get(roomId);   // 🔥 LẤY ROOM TRƯỚC
   if (!room) return;
+
+
+  if(room.idleTimer){
+  clearTimeout(room.idleTimer);
+  room.idleTimer = null;
+}
 
   // 🔔 notify host
   if(room.hostProfile?.uid){
@@ -1422,6 +1461,8 @@ for (const v of list) {
 
 
     emitLobbyUpdate();
+    checkRoomIdle(roomId);
+
   }
 
 
@@ -1440,14 +1481,17 @@ for (const v of list) {
 
 
     io.to(roomId).emit("host-temp-offline");
+
+    checkRoomIdle(roomId);
+
   }
 
   /* ========= CLEAN ROOM ========= */
+/*
  if (!room.broadcasterId && safeSet(room.viewers).size === 0) {
   rooms.delete(roomId);
 }
-
-
+*/
 });
 
 
