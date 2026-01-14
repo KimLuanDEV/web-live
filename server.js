@@ -747,68 +747,56 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 });
 
 
-  socket.on("profile-update", ({ name, avatar, level }) => {
+socket.on("profile-update", ({ name, avatar, level }) => {
 
-   // 🔥 cập nhật profile cho Player Lobby
-if (!socket.data.profile) socket.data.profile = {};
-if (name) socket.data.profile.name = safeName(name);
-if (avatar) socket.data.profile.avatar = avatar;
-if (level) socket.data.profile.level = Number(level) || socket.data.profile.level;
+  // ===== 1. Cập nhật profile realtime cho lobby =====
+  if (!socket.data.profile) socket.data.profile = {};
+  if (name)   socket.data.profile.name   = safeName(name);
+  if (avatar) socket.data.profile.avatar = avatar;
+  if (level)  socket.data.profile.level  = Number(level) || socket.data.profile.level;
 
-
-
-
-  const room = getRoom(roomId);
-  if (!room) return;
-
-// 💾 LƯU PROFILE VÀO users.json (giữ khi F5 / reconnect)
-const uid = socket.data.uid;
-if (uid) {
-  const db = loadUsers();
-
-  // tìm account theo uid
-  for (const k in db) {
-    if (db[k].profile?.uid === uid) {
-      if (name)  db[k].profile.name  = safeName(name);
-      if (avatar) db[k].profile.avatar = avatar;
-      if (level) db[k].profile.level = Number(level) || db[k].profile.level;
-      saveUsers(db);
-      break;
+  // ===== 2. Lưu vĩnh viễn vào users.json =====
+  const uid = socket.data.uid;
+  if (uid) {
+    const db = loadUsers();
+    for (const k in db) {
+      if (db[k].profile?.uid === uid) {
+        if (name)   db[k].profile.name   = safeName(name);
+        if (avatar) db[k].profile.avatar = avatar;
+        if (level)  db[k].profile.level  = Number(level) || db[k].profile.level;
+        saveUsers(db);
+        break;
+      }
     }
   }
-}
 
+  // ===== 3. Nếu user đang ở trong room thì sync viewer list =====
+  const roomId = socket.data.roomId;
+  if (roomId) {
+    const room = rooms.get(roomId);
+    if (room && room.viewerProfiles) {
+      for (const p of room.viewerProfiles.values()) {
+        if (p.socketId === socket.id) {
+          if (name)   p.name   = safeName(name);
+          if (avatar) p.avatar = avatar;
+          if (level)  p.level  = Number(level) || p.level;
+          break;
+        }
+      }
 
-  // 🚫 CHẶN HOST
-  if (room.broadcasterId === socket.id) {
-    console.warn("⛔ Host không được dùng profile-update");
-    return;
+      const list = Array.from(room.viewerProfiles.values());
+      for (const v of list) {
+        if (!v.mini) {
+          io.to(v.socketId).emit("viewer-list", {
+            viewers: list.filter(x => !x.mini)
+          });
+        }
+      }
+    }
   }
 
-  // 🔑 LẤY PROFILE VIEWER
-  const profile = room.viewerProfiles.get(
-    [...room.viewerProfiles.keys()].find(
-      uid => room.viewerProfiles.get(uid).socketId === socket.id
-    )
-  );
-
-  if (!profile) return;
-
-  if (name) profile.name = safeName(name);
-  if (avatar) profile.avatar = avatar;
-  if (level) profile.level = Number(level) || profile.level;
-
- const list = Array.from(room.viewerProfiles.values());
-
-for (const v of list) {
-  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
-  io.to(v.socketId).emit("viewer-list", {
-    viewers: list.filter(x => !x.mini)
-  });
-}
-emitActiveUsers();   // 🔄 refresh Sảnh người chơi realtime
-
-
+  // ===== 4. Luôn refresh Sảnh người chơi =====
+  emitActiveUsers();
 });
 
 
