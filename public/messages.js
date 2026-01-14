@@ -321,6 +321,21 @@ window.addEventListener("resize", () => {
 });
 
 
+socket.on("voice-rejected", () => {
+  showModal("📞 Cuộc gọi đã bị từ chối");
+
+  if(voicePC){
+    voicePC.close();
+    voicePC = null;
+  }
+
+  if(voiceStream){
+    voiceStream.getTracks().forEach(t => t.stop());
+    voiceStream = null;
+  }
+
+  setCallUI(false);
+});
 
 
 socket.on("voice-offer", async ({ from, sdp }) => {

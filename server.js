@@ -459,6 +459,12 @@ socket.on("private-call", ({ to }) => {
 });
 
 
+socket.on("voice-reject", ({ to }) => {
+  const target = activeUsers.get(to);
+  if(target){
+    io.to(target).emit("voice-rejected");
+  }
+});
 
  socket.on("private-message", ({ to, text, msgId }) => {
    const targetSocket = activeUsers.get(to);   // 🔥 UID -> socketId
