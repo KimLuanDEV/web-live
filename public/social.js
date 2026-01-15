@@ -122,10 +122,11 @@ socket.on("lp-comment", ({ postId, comment, count })=>{
       <div class="lp-cm-name">${comment.name}</div>
       <div class="lp-cm-text">${comment.text}</div>
 
-     <div class="lp-cm-actions">
-  <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
-  ${comment.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('${p.id}',${idx})">🗑</span>` : ``}
+   <div class="lp-cm-actions">
+  <span onclick="openReply('${postId}',${idx})">Trả lời</span>
+  ${comment.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
 </div>
+
 
 
       <div class="lp-replies" id="rp_${postId}_${idx}"></div>
@@ -236,9 +237,9 @@ if(p.comments && p.comments.length){
         <div class="lp-cm-name">${comment.name}</div>
         <div class="lp-cm-text">${comment.text}</div>
 
-       <div class="lp-cm-actions">
-  <span onclick="openReply('${postId}',${idx})">Trả lời</span>
-  ${comment.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
+     <div class="lp-cm-actions">
+  <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
+  ${comment.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('${p.id}',${idx})">🗑</span>` : ``}
 </div>
 
 
