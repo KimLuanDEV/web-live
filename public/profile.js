@@ -1,4 +1,5 @@
-const socket = io();
+const socket = window.socket;
+
 
 // 🔁 giữ socket sống để server không mất uid
 setInterval(() => {

@@ -1,4 +1,5 @@
-const socket = io();
+const socket = window.socket;
+
 
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const sysModal = document.getElementById("sysModal");
