@@ -600,19 +600,37 @@ socket.on("inbox-clear", ()=>{
 
 
 let lastScroll = 0;
-const tabbar = document.querySelector(".lp-tabbar");
+
+const tabbar =
+  document.querySelector(".mobile-tabbar") ||
+  document.querySelector(".lp-tabbar");
+
+function isNearBottom(){
+  const scrollY = window.scrollY;
+  const winH = window.innerHeight;
+  const docH = document.body.scrollHeight;
+
+  return scrollY + winH >= docH - 120; // cách đáy 120px
+}
 
 window.addEventListener("scroll", ()=>{
+  if(!tabbar) return;
+
   const cur = window.scrollY;
 
-  // cuộn xuống → ẩn
+  // 🔽 Vuốt xuống → ẩn
   if(cur > lastScroll + 10){
     tabbar.classList.add("hide");
   }
-  // cuộn lên → hiện
+  // 🔼 Vuốt lên → hiện
   else if(cur < lastScroll - 10){
     tabbar.classList.remove("hide");
   }
 
+  // 🧲 Gần đáy → ép hiện lại
+  if(isNearBottom()){
+    tabbar.classList.remove("hide");
+  }
+
   lastScroll = cur;
-});
+},{ passive:true });
