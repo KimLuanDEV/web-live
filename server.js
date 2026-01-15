@@ -791,6 +791,31 @@ socket.on("lp-delete-comment", ({ postId, index, uid })=>{
 
 
 
+socket.on("lp-delete-reply", ({ postId, commentIndex, replyId, uid })=>{
+  const post = getPost(postId);
+  if(!post) return;
+
+  const c = post.comments?.[commentIndex];
+  if(!c || !c.replies) return;
+
+  const idx = c.replies.findIndex(r=>r.id===replyId);
+  if(idx < 0) return;
+
+  const r = c.replies[idx];
+
+  // 🔐 chỉ chủ reply hoặc chủ bài
+  if(r.uid !== uid && post.uid !== uid) return;
+
+  c.replies.splice(idx,1);
+  saveSocial();
+
+  io.emit("lp-delete-reply", {
+    postId,
+    commentIndex,
+    replyId
+  });
+});
+
 
 
 

@@ -180,6 +180,23 @@ function likeComment(postId, index){
 }
 
 
+function deleteReply(postId, cIndex, replyId){
+  if(!confirm("Xóa trả lời này?")) return;
+
+  socket.emit("lp-delete-reply",{
+    postId,
+    commentIndex:cIndex,
+    replyId,
+    uid:auth.uid
+  });
+}
+
+socket.on("lp-delete-reply", ({ postId, commentIndex, replyId })=>{
+  const el = document.querySelector(`#rp_${postId}_${commentIndex} .lp-reply[data-id="${replyId}"]`);
+  if(el) el.remove();
+});
+
+
 
 socket.on("lp-delete-comment", ({ postId, index })=>{
   const wrap = document.getElementById("cm_"+postId);
@@ -227,18 +244,24 @@ socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
 
   const div = document.createElement("div");
   div.className="lp-reply";
+  div.dataset.id = reply.id;   // 🔥 bắt buộc
 
 div.innerHTML=`
   <img src="${reply.avatar}">
   <div>
     <b>${reply.name}</b> ${reply.text}
-    <div class="lp-cm-actions">
-      <span class="cm-like" onclick="likeReply('${postId}',${commentIndex},'${reply.id}')">
-      ❤️ <b id="rl_${postId}_${commentIndex}_${reply.id}">${reply.likes?.length||0}</b>
 
-      </span>
-      <span onclick="openReplyChild('${postId}',${commentIndex},'${reply.id}')">💬</span>
-    </div>
+   <div class="lp-cm-actions">
+  <span class="cm-like" onclick="likeReply('${postId}',${commentIndex},'${reply.id}')">
+    ❤️ <b id="rl_${postId}_${commentIndex}_${reply.id}">${reply.likes?.length||0}</b>
+  </span>
+  <span onclick="openReplyChild('${postId}',${commentIndex},'${reply.id}')">💬</span>
+  ${(reply.uid === auth.uid || isPostOwner('${postId}')) ? 
+    `<span class="cm-del" onclick="deleteReply('${postId}',${commentIndex},'${reply.id}')">🗑</span>` : ``}
+</div>
+
+
+
     <div class="lp-replies" id="rp2_${reply.id}"></div>
   </div>
 `;
@@ -427,18 +450,22 @@ if(p.comments && p.comments.length){
       comment.replies.forEach(r=>{
         const rdiv = document.createElement("div");
         rdiv.className="lp-reply";
+        rdiv.dataset.id = r.id;   // 🔥 bắt buộc
 
      rdiv.innerHTML=`
   <img src="${r.avatar}">
   <div>
     <b>${r.name}</b> ${r.text}
 
- <div class="lp-cm-actions">
+<div class="lp-cm-actions">
   <span class="cm-like" onclick="likeReply('${p.id}',${idx},'${r.id}')">
     ❤️ <b id="rl_${p.id}_${idx}_${r.id}">${r.likes?.length||0}</b>
   </span>
   <span onclick="openReplyChild('${p.id}',${idx},'${r.id}')">💬</span>
+  ${(r.uid === auth.uid || p.uid === auth.uid) ? 
+    `<span class="cm-del" onclick="deleteReply('${p.id}',${idx},'${r.id}')">🗑</span>` : ``}
 </div>
+
 
 
     <div class="lp-replies" id="rp2_${r.id}"></div>
