@@ -19,6 +19,7 @@ const fs = require("fs");
 
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
 
+const SOCIAL_FILE = path.join("/opt/render/project/data", "social_posts.json");
 
 
 
@@ -56,6 +57,25 @@ function saveLiveState(state) {
   }
 }
 
+function loadSocial(){
+  try{
+    if(!fs.existsSync(SOCIAL_FILE)) return [];
+    return JSON.parse(fs.readFileSync(SOCIAL_FILE,"utf8"));
+  }catch(e){
+    console.error("Load social failed",e);
+    return [];
+  }
+}
+
+function saveSocial(){
+  try{
+    fs.writeFileSync(SOCIAL_FILE, JSON.stringify(lpPosts,null,2));
+  }catch(e){
+    console.error("Save social failed",e);
+  }
+}
+
+
 
 
 const app = express();
@@ -78,7 +98,8 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
 const rooms = new Map();
 
 // ===== LIVESTREAM PRO SOCIAL =====
-const lpPosts = [];   // {uid, name, avatar, text, time}
+const lpPosts = loadSocial();
+
 
 
 const activeUsers = new Map();   // uid -> socketId
@@ -573,6 +594,8 @@ socket.on("lp-post", post => {
   };
 
   lpPosts.unshift(clean);
+  saveSocial();
+
   if(lpPosts.length > 200) lpPosts.length = 200;
 
   io.emit("lp-post", clean);
@@ -588,6 +611,8 @@ socket.on("lp-like", ({ postId, uid })=>{
   const i = post.likes.indexOf(uid);
   if(i >= 0) post.likes.splice(i,1);
   else post.likes.push(uid);
+
+  saveSocial();
 
   io.emit("lp-like", {
     postId,
@@ -610,6 +635,8 @@ socket.on("lp-comment", ({ postId, uid, name, avatar, text })=>{
   };
 
   post.comments.push(c);
+
+  saveSocial();
 
   io.emit("lp-comment", {
     postId,
@@ -634,6 +661,7 @@ socket.on("lp-reply", ({ postId, commentIndex, uid, name, avatar, text })=>{
   };
 
   c.replies.push(r);
+  saveSocial();
 
   io.emit("lp-reply", {
     postId,
