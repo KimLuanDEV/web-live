@@ -6830,3 +6830,24 @@ body.is-guest .reactions-layer{
   border:2px solid #0b0b0b; /* viền cho nổi trên nền */
   z-index:10;
 }
+
+
+
+.toast-msg{
+  position:fixed;
+  bottom:90px;
+  right:16px;
+  background:#111;
+  color:white;
+  padding:10px 14px;
+  border-radius:12px;
+  box-shadow:0 0 15px rgba(0,255,255,.6);
+  opacity:0;
+  transform:translateY(10px);
+  transition:.3s;
+  z-index:99999;
+}
+.toast-msg.show{
+  opacity:1;
+  transform:translateY(0);
+}

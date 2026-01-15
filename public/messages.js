@@ -24,6 +24,9 @@ async function loadAllUsers(){
 loadAllUsers();
 
 
+if ("Notification" in window) {
+  Notification.requestPermission();
+}
 
 
 function chatKey(){
@@ -169,6 +172,17 @@ saveChat({
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
+
+showToast(`${from.name}: ${text}`);
+
+
+  if (Notification.permission === "granted" && document.hidden) {
+  new Notification(`💬 ${from.name}`, {
+    body: text,
+    icon: from.avatar || "/logo.png"
+  });
+}
+
  pushMsg(from.name, text, false);
   
 saveChat({
@@ -283,8 +297,6 @@ function openChat(){
   document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
 
-  // 🔥 báo server: đã đọc toàn bộ inbox
-  socket.emit("msg-seen-all");
 }
 
 
@@ -316,3 +328,18 @@ window.addEventListener("resize", () => {
 
 
 
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("/sw.js");
+}
+
+
+function showToast(msg){
+  const div = document.createElement("div");
+  div.className = "toast-msg";
+  div.textContent = msg;
+  document.body.appendChild(div);
+
+  setTimeout(()=>div.classList.add("show"),10);
+  setTimeout(()=>div.remove(),4000);
+}
