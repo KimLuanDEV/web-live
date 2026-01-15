@@ -44,7 +44,16 @@ socket.on("lp-comment", ({ postId, comment, count })=>{
 
   const div = document.createElement("div");
   div.className="lp-comment";
-  div.innerHTML=`<b>${comment.name}</b>: ${comment.text}`;
+
+ div.innerHTML = `
+  <img class="lp-cm-ava" src="${comment.avatar}">
+  <div class="lp-cm-body">
+    <div class="lp-cm-name">${comment.name}</div>
+    <div class="lp-cm-text">${comment.text}</div>
+  </div>
+`;
+
+
   list.appendChild(div);
 });
 
