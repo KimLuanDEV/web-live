@@ -234,7 +234,8 @@ div.innerHTML=`
     <b>${reply.name}</b> ${reply.text}
     <div class="lp-cm-actions">
       <span class="cm-like" onclick="likeReply('${postId}',${commentIndex},'${reply.id}')">
-        ❤️ <b id="rl_${reply.id}">${reply.likes?.length||0}</b>
+      ❤️ <b id="rl_${postId}_${commentIndex}_${reply.id}">${reply.likes?.length||0}</b>
+
       </span>
       <span onclick="openReplyChild('${postId}',${commentIndex},'${reply.id}')">💬</span>
     </div>
