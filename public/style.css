@@ -6947,3 +6947,28 @@ body.is-guest .reactions-layer{
   font-size:30px;
   line-height:1;
 }
+
+/* 🔥 FORCE mobile tab bar always clickable */
+.mobile-tabbar{
+  z-index: 100000 !important;
+  pointer-events: auto !important;
+}
+
+/* Modal backdrop không được che tab bar */
+.modal-backdrop{
+  pointer-events: auto;
+}
+
+/* Cho phép click xuyên modal ở vùng tab bar */
+body .mobile-tabbar{
+  position: fixed;
+}
+
+
+/* chừa chỗ cho tab bar bên dưới modal */
+.modal{
+  padding-bottom: 70px;
+}
+.modal-backdrop{
+  bottom: 70px;
+}

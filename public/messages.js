@@ -286,6 +286,8 @@ socket.emit("msg-seen-all", { peer: currentTargetUID });
 function openChat(){
   document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
+ chatModal.style.display = "block";
+
 
   // 🔥 báo server: đã đọc toàn bộ inbox
   socket.emit("msg-seen-all");
@@ -295,6 +297,8 @@ function openChat(){
 function closeChat(){
   document.body.style.overflow = ""; // mở lại
   chatModal.classList.add("hidden");
+  chatModal.style.display = "none";
+
   currentTarget = null;
 }
 
