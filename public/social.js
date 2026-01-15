@@ -4,6 +4,44 @@ const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 document.getElementById("meAvatar").src = auth.avatar;
 
+
+function openReplyChild(postId, cIndex, replyId){
+  const box = document.getElementById(`rp2_${replyId}`);
+  if(!box) return;
+
+  if(box.querySelector(".lp-reply-box")){
+    box.innerHTML = "";
+    return;
+  }
+
+  box.innerHTML = `
+    <div class="lp-reply-box">
+      <input id="ri2_${replyId}" placeholder="Trả lời...">
+      <button onclick="sendReplyChild('${postId}',${cIndex},'${replyId}')">➤</button>
+    </div>
+  `;
+}
+
+function sendReplyChild(postId, cIndex, replyId){
+  const input = document.getElementById(`ri2_${replyId}`);
+  if(!input || !input.value.trim()) return;
+
+  socket.emit("lp-reply-child",{
+    postId,
+    commentIndex: cIndex,
+    replyId,
+    uid: auth.uid,
+    name: auth.name,
+    avatar: auth.avatar,
+    text: input.value
+  });
+
+  input.value="";
+}
+
+
+
+
 function isPostOwner(postId){
   const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
   return el && el.querySelector(".lp-del"); // có nút xóa bài => là chủ bài
@@ -160,12 +198,18 @@ socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
 
   const div = document.createElement("div");
   div.className="lp-reply";
-  div.innerHTML=`
-    <img src="${reply.avatar}">
-    <div>
-      <b>${reply.name}</b> ${reply.text}
+
+ div.innerHTML=`
+  <img src="${reply.avatar}">
+  <div>
+    <b>${reply.name}</b> ${reply.text}
+    <div class="lp-cm-actions">
+      <span onclick="openReplyChild('${postId}',${commentIndex},'${reply.id}')">↪ Trả lời</span>
     </div>
-  `;
+    <div class="lp-replies" id="rp2_${reply.id}"></div>
+  </div>
+`;
+
 
   box.appendChild(div);
 });
@@ -235,6 +279,22 @@ socket.on("lp-init", list=>{
 socket.on("lp-post", post=>{
   renderPost(post,true);
 });
+
+
+socket.on("lp-reply-child", ({ postId, commentIndex, replyId, child })=>{
+  const box = document.getElementById(`rp2_${replyId}`);
+  if(!box) return;
+
+  const div = document.createElement("div");
+  div.className="lp-reply";
+  div.style.marginLeft="16px";
+  div.innerHTML = `
+    <img src="${child.avatar}">
+    <div><b>${child.name}</b> ${child.text}</div>
+  `;
+  box.appendChild(div);
+});
+
 
 function deletePost(id){
   if(!confirm("Xóa bài viết này?")) return;
@@ -333,11 +393,35 @@ if(p.comments && p.comments.length){
       comment.replies.forEach(r=>{
         const rdiv = document.createElement("div");
         rdiv.className="lp-reply";
-        rdiv.innerHTML=`
-          <img src="${r.avatar}">
-          <div><b>${r.name}</b> ${r.text}</div>
-        `;
+
+     rdiv.innerHTML=`
+  <img src="${r.avatar}">
+  <div>
+    <b>${r.name}</b> ${r.text}
+    <div class="lp-cm-actions">
+      <span onclick="openReplyChild('${p.id}',${idx},'${r.id}')">↪ Trả lời</span>
+    </div>
+    <div class="lp-replies" id="rp2_${r.id}"></div>
+  </div>
+`;
+
         box.appendChild(rdiv);
+
+        // 🔥 render reply-of-reply (cấp 2)
+if(r.replies){
+  const box2 = rdiv.querySelector(`#rp2_${r.id}`);
+  r.replies.forEach(child=>{
+    const c2 = document.createElement("div");
+    c2.className="lp-reply";
+    c2.style.marginLeft="16px";
+    c2.innerHTML = `
+      <img src="${child.avatar}">
+      <div><b>${child.name}</b> ${child.text}</div>
+    `;
+    box2.appendChild(c2);
+  });
+}
+
       });
     }
   });
