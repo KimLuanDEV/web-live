@@ -403,8 +403,10 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
     }
 
     if(type === "hot"){
-      location.href = "/lobby.html#hot";
+     location.href = "/social.html";
     }
+
+
   };
 });
 

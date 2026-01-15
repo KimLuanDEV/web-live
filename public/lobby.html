@@ -255,8 +255,8 @@
   </div>
 
   <div class="tab-item" data-tab="hot">
-    <div class="tab-icon">🔥</div>
-    <div class="tab-text">Hot</div>
+    <div class="tab-icon">🌍</div>
+    <div class="tab-text">Status</div>
   </div>
 
   <div class="tab-item tab-main" id="tabCreate">
@@ -1000,11 +1000,10 @@ if(type === "chat"){
 }
 
 
-    if(type === "hot"){
-      document.getElementById("q").value = "";
-      document.getElementById("sort").value = "viewers";
-      document.getElementById("sort").dispatchEvent(new Event("change"));
-    }
+  if(type === "hot"){
+  location.href = "/social.html";
+}
+
 
     if(type === "lobby"){
       location.href = "/lobby.html";
