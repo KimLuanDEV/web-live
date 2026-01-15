@@ -36,6 +36,53 @@ function sendComment(id){
   input.value="";
 }
 
+
+function openReply(postId, index){
+  const box = document.getElementById(`rp_${postId}_${index}`);
+
+  box.innerHTML = `
+    <div class="lp-reply-box">
+      <input id="ri_${postId}_${index}" placeholder="Trả lời...">
+      <button onclick="sendReply('${postId}',${index})">➤</button>
+    </div>
+  `;
+}
+
+function sendReply(postId, index){
+  const input = document.getElementById(`ri_${postId}_${index}`);
+  const text = input.value.trim();
+  if(!text) return;
+
+  socket.emit("lp-reply",{
+    postId,
+    commentIndex:index,
+    uid:auth.uid,
+    name:auth.name,
+    avatar:auth.avatar,
+    text
+  });
+
+  input.value="";
+}
+
+
+socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
+  const box = document.getElementById(`rp_${postId}_${commentIndex}`);
+  if(!box) return;
+
+  const div = document.createElement("div");
+  div.className="lp-reply";
+  div.innerHTML=`
+    <img src="${reply.avatar}">
+    <div>
+      <b>${reply.name}</b> ${reply.text}
+    </div>
+  `;
+
+  box.appendChild(div);
+});
+
+
 socket.on("lp-comment", ({ postId, comment, count })=>{
   document.getElementById("c_"+postId).textContent = count;
 
@@ -43,15 +90,22 @@ socket.on("lp-comment", ({ postId, comment, count })=>{
     .querySelector(`#cm_${postId} .lp-comment-list`);
 
   const div = document.createElement("div");
-  div.className="lp-comment";
 
- div.innerHTML = `
+ div.className="lp-comment";
+div.dataset.index = index;
+
+div.innerHTML = `
   <img class="lp-cm-ava" src="${comment.avatar}">
   <div class="lp-cm-body">
     <div class="lp-cm-name">${comment.name}</div>
     <div class="lp-cm-text">${comment.text}</div>
+    <div class="lp-cm-actions">
+      <span onclick="openReply('${postId}',${index})">Trả lời</span>
+    </div>
+    <div class="lp-replies" id="rp_${postId}_${index}"></div>
   </div>
 `;
+
 
 
   list.appendChild(div);

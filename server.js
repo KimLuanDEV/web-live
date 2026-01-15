@@ -618,6 +618,30 @@ socket.on("lp-comment", ({ postId, uid, name, avatar, text })=>{
   });
 });
 
+socket.on("lp-reply", ({ postId, commentIndex, uid, name, avatar, text })=>{
+  const post = getPost(postId);
+  if(!post || !text) return;
+
+  const c = post.comments[commentIndex];
+  if(!c) return;
+
+  c.replies = c.replies || [];
+
+  const r = {
+    uid, name, avatar,
+    text: text.slice(0,200),
+    time: Date.now()
+  };
+
+  c.replies.push(r);
+
+  io.emit("lp-reply", {
+    postId,
+    commentIndex,
+    reply: r,
+    count: c.replies.length
+  });
+});
 
 
 socket.on("private-message", ({ to, text, msgId }) => {
