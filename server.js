@@ -1442,12 +1442,15 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
 
 
   const uid = socket.data.uid;
+  
   if(uid){
   const cur = activeUsers.get(uid);
   if(cur === socket.id){
     activeUsers.delete(uid);
+    emitActiveUsers();   // 🔥 BẮT BUỘC
   }
 }
+
 
 
 

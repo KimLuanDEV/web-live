@@ -6793,17 +6793,19 @@ body.is-guest .reactions-layer{
 .player-row .dot.on{background:#00ff6a;box-shadow:0 0 8px #00ff6a}
 
 
+/* ===== ONLINE STATUS DOT ===== */
 .dot{
   width:10px;
   height:10px;
+  min-width:10px;
+  min-height:10px;
   border-radius:50%;
   display:inline-block;
-  box-shadow:0 0 6px rgba(0,0,0,.4);
 }
 
 .dot.on{
-  background:#00ff6a;
-  box-shadow:0 0 8px #00ff6a;
+  background:#25F09A;
+  box-shadow: 0 0 10px rgba(37,240,154,.9);
 }
 
 .dot.off{
