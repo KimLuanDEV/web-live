@@ -655,6 +655,8 @@ socket.on("lp-comment", ({ postId, uid, name, avatar, text })=>{
   });
 });
 
+
+
 socket.on("lp-reply", ({ postId, commentIndex, uid, name, avatar, text })=>{
   const post = getPost(postId);
   if(!post || !text) return;
@@ -680,6 +682,25 @@ socket.on("lp-reply", ({ postId, commentIndex, uid, name, avatar, text })=>{
     count: c.replies.length
   });
 });
+
+
+
+socket.on("lp-delete-comment", ({ postId, index, uid })=>{
+  const post = getPost(postId);
+  if(!post || !post.comments || !post.comments[index]) return;
+
+  const c = post.comments[index];
+  if(c.uid !== uid) return;   // 🔒 không phải chủ comment
+
+  post.comments.splice(index,1);
+  saveSocial();
+
+  io.emit("lp-delete-comment", { postId, index });
+});
+
+
+
+
 
 
 socket.on("private-message", ({ to, text, msgId }) => {

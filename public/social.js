@@ -66,6 +66,26 @@ function sendReply(postId, index){
 }
 
 
+function deleteComment(postId, index){
+  if(!confirm("Xóa bình luận này?")) return;
+
+  socket.emit("lp-delete-comment", {
+    postId,
+    index,
+    uid: auth.uid
+  });
+}
+
+socket.on("lp-delete-comment", ({ postId, index })=>{
+  const list = document.querySelector(`#cm_${postId} .lp-comment-list`);
+  if(!list) return;
+
+  const el = list.children[index];
+  if(el) el.remove();
+});
+
+
+
 socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
   const box = document.getElementById(`rp_${postId}_${commentIndex}`);
   if(!box) return;
@@ -101,9 +121,13 @@ socket.on("lp-comment", ({ postId, comment, count })=>{
     <div class="lp-cm-body">
       <div class="lp-cm-name">${comment.name}</div>
       <div class="lp-cm-text">${comment.text}</div>
-      <div class="lp-cm-actions">
-        <span onclick="openReply('${postId}',${idx})">Trả lời</span>
-      </div>
+
+     <div class="lp-cm-actions">
+  <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
+  ${comment.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('${p.id}',${idx})">🗑</span>` : ``}
+</div>
+
+
       <div class="lp-replies" id="rp_${postId}_${idx}"></div>
     </div>
   `;
@@ -211,9 +235,13 @@ if(p.comments && p.comments.length){
       <div class="lp-cm-body">
         <div class="lp-cm-name">${comment.name}</div>
         <div class="lp-cm-text">${comment.text}</div>
-        <div class="lp-cm-actions">
-          <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
-        </div>
+
+       <div class="lp-cm-actions">
+  <span onclick="openReply('${postId}',${idx})">Trả lời</span>
+  ${comment.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
+</div>
+
+
         <div class="lp-replies" id="rp_${p.id}_${idx}"></div>
       </div>
     `;
