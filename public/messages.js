@@ -286,7 +286,8 @@ socket.emit("msg-seen-all", { peer: currentTargetUID });
 function openChat(){
   document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
-
+ // 🔥 bật lại pointer events khi mở chat
+  chatModal.style.pointerEvents = "auto";
   // 🔥 báo server: đã đọc toàn bộ inbox
   socket.emit("msg-seen-all");
 }
@@ -294,9 +295,14 @@ function openChat(){
 
 function closeChat(){
   document.body.style.overflow = ""; // mở lại
+
+  // 🔥 tắt hẳn pointer events của modal
   chatModal.classList.add("hidden");
+  chatModal.style.pointerEvents = "none";
+
   currentTarget = null;
 }
+
 
 
 let baseHeight = window.innerHeight;
