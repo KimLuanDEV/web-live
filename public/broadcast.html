@@ -1365,6 +1365,28 @@ socket.on("resume-viewers-list", async ({ viewers }) => {
 });
 
 
+socket.on("set-bitrate", ({ bitrate })=>{
+  if(pc){
+    pc.getSenders().forEach(s=>{
+      if(s.track && s.track.kind==="video"){
+        socket.on("set-bitrate", ({ bitrate })=>{
+  if(!pc) return;
+
+  pc.getSenders().forEach(s=>{
+    if(!s.track || s.track.kind !== "video") return;
+
+    const p = s.getParameters();
+    if(!p.encodings) p.encodings = [{}];
+    p.encodings[0].maxBitrate = bitrate * 1000;
+    s.setParameters(p).catch(()=>{});
+  });
+});
+
+      }
+    });
+  }
+});
+
 
 socket.on("live-stop", () => {
 

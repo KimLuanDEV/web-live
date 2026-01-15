@@ -1749,6 +1749,27 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
   setTimeout(tryPlay, 1000);
 }
 
+
+socket.on("set-bitrate", ({ bitrate })=>{
+  if(!pc) return;
+
+  pc.getReceivers().forEach(r=>{
+    if(!r.track || r.track.kind !== "video") return;
+
+    const p = r.getParameters();
+    if(!p.encodings) p.encodings = [{}];
+    p.encodings[0].maxBitrate = bitrate * 1000;
+    r.setParameters?.(p);
+  });
+});
+
+
+socket.on("room-full", ()=>{
+  alert("⚠️ Phòng đang quá tải, vui lòng quay lại sau");
+  location.href = "/lobby.html";
+});
+
+
     socket.on("offer", async ({ from, description }) => {
 
       /*

@@ -1,3 +1,6 @@
+const MAX_VIEWERS = 40;        // Render safe
+const SOFT_CAP    = 30;       // bắt đầu degrade
+
 const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 
@@ -395,6 +398,14 @@ function normRoomId(roomId) {
 function safeMap(m){ return m instanceof Map ? m : new Map(); }
 function safeSet(s){ return s instanceof Set ? s : new Set(); }
 
+function calcBitrate(viewerCount){
+  if(viewerCount < 5)   return 1500; // kbps
+  if(viewerCount < 15)  return 1000;
+  if(viewerCount < 30)  return 600;
+  if(viewerCount < 50)  return 400;
+  return 250;
+}
+
 
 function getRoom(roomId) {
   roomId = normRoomId(roomId);
@@ -460,6 +471,10 @@ const active = [...safeMap(room.viewerProfiles).values()]
 
 
   io.to(roomId).emit("viewer-count", { count: active });
+
+   const vc = safeMap(room.viewerProfiles).size;
+  const br = calcBitrate(vc);
+  io.to(roomId).emit("set-bitrate", { bitrate: br });
 }
 
 
@@ -506,6 +521,8 @@ app.get("/ice", async (_req, res) => {
     return res.status(500).json({ error: err.message });
   }
 });
+
+
 
 
 function closeRoom(roomId, reason = "host_left") {
@@ -789,6 +806,13 @@ if(isGuest(socket)){
   if (!roomId) return;
 
   const room = getRoom(roomId);
+
+  const vc = safeMap(room.viewerProfiles).size;
+if(vc >= MAX_VIEWERS){
+  socket.emit("room-full");
+  return;
+}
+
   if (!room) return;
 
   // ✅ BẮT BUỘC: join phòng + set data để disconnect cleanup chạy đúng
