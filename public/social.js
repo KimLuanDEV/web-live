@@ -2,6 +2,17 @@ const socket = io();
 const feed = document.getElementById("lpFeed");
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
+
+if (auth.uid) {
+  socket.emit("auth-login", { uid: auth.uid });
+
+  // keep-alive mỗi 20s để không bị rớt online
+  setInterval(() => {
+    socket.emit("auth-ping", { uid: auth.uid });
+  }, 20000);
+}
+
+
 document.getElementById("meAvatar").src = auth.avatar;
 
 
