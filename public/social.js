@@ -4,6 +4,12 @@ const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 document.getElementById("meAvatar").src = auth.avatar;
 
+function isPostOwner(postId){
+  const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
+  return el && el.querySelector(".lp-del"); // có nút xóa bài => là chủ bài
+}
+
+
 function likePost(id){
   socket.emit("lp-like", {
     postId:id,
@@ -143,11 +149,11 @@ socket.on("lp-comment", ({ postId, comment, count })=>{
       <div class="lp-cm-name">${comment.name}</div>
       <div class="lp-cm-text">${comment.text}</div>
 
-   <div class="lp-cm-actions">
+  <div class="lp-cm-actions">
   <span onclick="openReply('${postId}',${idx})">Trả lời</span>
-${comment.uid === auth.uid || p.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('...',${idx})">🗑</span>` : ``}
-
+  ${(comment.uid === auth.uid || isPostOwner('${postId}')) ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
 </div>
+
 
 
 
@@ -259,10 +265,9 @@ if(p.comments && p.comments.length){
         <div class="lp-cm-name">${comment.name}</div>
         <div class="lp-cm-text">${comment.text}</div>
 
-     <div class="lp-cm-actions">
+  <div class="lp-cm-actions">
   <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
- ${comment.uid === auth.uid || p.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('...',${idx})">🗑</span>` : ``}
-
+  ${(comment.uid === auth.uid || p.uid === auth.uid) ? `<span class="cm-del" onclick="deleteComment('${p.id}',${idx})">🗑</span>` : ``}
 </div>
 
 
