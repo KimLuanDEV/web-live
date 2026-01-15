@@ -100,6 +100,36 @@ function showModal(text, okText="OK", cancelText=null){
 
 socket.emit("auth-login", { uid: auth.uid });
 
+socket.on("offline-messages", (list)=>{
+  console.log("📥 Offline messages:", list);
+
+  list.forEach(m=>{
+    // lưu vào localStorage theo đúng key chat
+    const peer = m.from === auth.uid ? m.to : m.from;
+    const key =
+      auth.uid < peer
+        ? "chat_" + auth.uid + "_" + peer
+        : "chat_" + peer + "_" + auth.uid;
+
+    const arr = JSON.parse(localStorage.getItem(key) || "[]");
+
+    // tránh trùng
+    if(!arr.find(x=>x.id === m.id)){
+      arr.push({
+        id: m.id,
+        from: m.from,
+        to: m.to,
+        text: m.text,
+        time: m.time,
+        peer
+      });
+    }
+
+    localStorage.setItem(key, JSON.stringify(arr));
+  });
+});
+
+
 const userList = document.getElementById("userList");
 const chatBox = document.getElementById("chatBox");
 const chatTitle = document.getElementById("chatTitle");
