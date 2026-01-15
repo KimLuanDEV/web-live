@@ -319,24 +319,43 @@ window.addEventListener("resize", () => {
 
 
 
+// ===== MOBILE TAB BAR (FIX) =====
+const tabs = document.querySelectorAll(".mobile-tabbar .tab-item");
 
-// ===== MOBILE TAB BAR (PROFILE) =====
-document.querySelectorAll(".tab-item").forEach(tab=>{
-  tab.onclick = ()=>{
+tabs.forEach(tab => {
+  tab.addEventListener("click", () => {
+
+    // bỏ active cũ
+    tabs.forEach(t => t.classList.remove("active"));
+    tab.classList.add("active");
+
+    // tab chính giữa (+)
+    if (tab.id === "tabCreate") {
+      // 👉 chuyển sang tạo phòng / lobby
+      location.href = "/lobby.html";
+      return;
+    }
+
     const type = tab.dataset.tab;
 
-    if(type === "profile") {
+    if (type === "profile") {
       location.href = "/profile.html";
+      return;
     }
 
-    if(type === "lobby"){
+    if (type === "lobby") {
       location.href = "/lobby.html";
+      return;
     }
 
-    if(type === "chat") {return;}
+    if (type === "chat") {
+      // đang ở messages.html → không làm gì
+      return;
+    }
 
-    if(type === "hot"){
+    if (type === "hot") {
       location.href = "/lobby.html#hot";
+      return;
     }
-  };
+  });
 });
