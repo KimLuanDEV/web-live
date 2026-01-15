@@ -400,19 +400,11 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 
     if(type === "chat"){
 
-       if(isGuest){
-    showMsg("🔒 Đăng nhập để sử dụng");
-    return;
-  }
       location.href = "/messages.html";
     }
 
     if(type === "hot"){
 
-       if(isGuest){
-    showMsg("🔒 Đăng nhập để sử dụng");
-    return;
-  }
      location.href = "/social.html";
     }
 
