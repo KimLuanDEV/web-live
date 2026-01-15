@@ -680,6 +680,31 @@ if(socket.data.uid?.startsWith("guest_")){
 });
 
 
+socket.on("msg-seen-all", ({ peer })=>{
+  const uid = socket.data.uid;
+  if(!uid || !peer) return;
+
+  const inbox = userInbox.get(uid);
+  if(!inbox) return;
+
+  let changed = false;
+
+  for(const m of inbox){
+    if(m.from === peer && !m.seen){
+      m.seen = true;
+      changed = true;
+    }
+  }
+
+  if(changed){
+    const unread = inbox.filter(m=>!m.seen).length;
+    if(unread === 0){
+      socket.emit("inbox-clear");
+    }
+  }
+});
+
+
 
 socket.on("auth-ping", ({ uid }) => {
   if (!uid) return;

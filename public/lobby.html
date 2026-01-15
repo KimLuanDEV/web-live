@@ -1053,10 +1053,17 @@ socket.on("inbox-data", list=>{
   document.querySelector('[data-tab="chat"]')?.classList.remove("has-new");
 });
 
+
+
 // Có notify mới
 socket.on("inbox-new", ()=>{
   document.querySelector('[data-tab="chat"]')?.classList.add("has-new");
 });
+
+socket.on("inbox-clear", ()=>{
+  document.querySelector('[data-tab="chat"]')?.classList.remove("has-new");
+});
+
 
 if(isGuest){
   document.getElementById("userBar").innerHTML = `
@@ -1142,10 +1149,6 @@ function renderPlayerLobbyAll(){
 }
 
 
-
-socket.on("inbox-new", ()=>{
-  document.querySelector('[data-tab="chat"]')?.classList.add("has-new");
-});
 
 
 </script>

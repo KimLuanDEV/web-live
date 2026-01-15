@@ -276,6 +276,9 @@ div.innerHTML = `
   });
 }
 
+// khi mở khung chat -> coi như đã đọc
+socket.emit("msg-seen-all", { peer: currentTargetUID });
+
 
 function openChat(){
   document.body.style.overflow = "hidden"; // khóa nền
