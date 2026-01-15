@@ -223,7 +223,8 @@ div.innerHTML = `
   <div style="flex:1">
     <div>${u.name}</div>
     <small style="display:flex;align-items:center;gap:6px">
-      <span class="dot ${isOnline ? "on" : "off"}"></span>
+     <span class="status-dot ${isOnline ? "on" : "off"}"></span>
+
       ${isOnline ? "Online" : "Offline"}
     </small>
   </div>
