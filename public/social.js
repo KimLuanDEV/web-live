@@ -40,6 +40,19 @@ function sendReplyChild(postId, cIndex, replyId){
 }
 
 
+function likeReply(postId, cIndex, replyId){
+  socket.emit("lp-like-reply",{
+    postId,
+    commentIndex:cIndex,
+    replyId,
+    uid:auth.uid
+  });
+}
+
+socket.on("lp-like-reply", ({ postId, commentIndex, replyId, likes })=>{
+  const el = document.getElementById(`rl_${replyId}`);
+  if(el) el.textContent = likes;
+});
 
 
 function isPostOwner(postId){
@@ -199,16 +212,20 @@ socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
   const div = document.createElement("div");
   div.className="lp-reply";
 
- div.innerHTML=`
+div.innerHTML=`
   <img src="${reply.avatar}">
   <div>
     <b>${reply.name}</b> ${reply.text}
     <div class="lp-cm-actions">
-      <span onclick="openReplyChild('${postId}',${commentIndex},'${reply.id}')">↪ Trả lời</span>
+      <span class="cm-like" onclick="likeReply('${postId}',${commentIndex},'${reply.id}')">
+        ❤️ <b id="rl_${reply.id}">${reply.likes?.length||0}</b>
+      </span>
+      <span onclick="openReplyChild('${postId}',${commentIndex},'${reply.id}')">💬</span>
     </div>
     <div class="lp-replies" id="rp2_${reply.id}"></div>
   </div>
 `;
+
 
 
   box.appendChild(div);
@@ -398,9 +415,15 @@ if(p.comments && p.comments.length){
   <img src="${r.avatar}">
   <div>
     <b>${r.name}</b> ${r.text}
-    <div class="lp-cm-actions">
-      <span onclick="openReplyChild('${p.id}',${idx},'${r.id}')">↪ Trả lời</span>
-    </div>
+
+ <div class="lp-cm-actions">
+  <span class="cm-like" onclick="likeReply('${p.id}',${idx},'${r.id}')">
+    ❤️ <b id="rl_${r.id}">${r.likes?.length||0}</b>
+  </span>
+  <span onclick="openReplyChild('${p.id}',${idx},'${r.id}')">💬</span>
+</div>
+
+
     <div class="lp-replies" id="rp2_${r.id}"></div>
   </div>
 `;

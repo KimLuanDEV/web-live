@@ -571,7 +571,33 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
-  
+
+
+ socket.on("lp-like-reply", ({ postId, commentIndex, replyId, uid })=>{
+  const post = getPost(postId);
+  if(!post) return;
+
+  const c = post.comments?.[commentIndex];
+  if(!c || !c.replies) return;
+
+  const r = c.replies.find(x=>x.id===replyId);
+  if(!r) return;
+
+  r.likes = r.likes || [];
+  const i = r.likes.indexOf(uid);
+  if(i>=0) r.likes.splice(i,1);
+  else r.likes.push(uid);
+
+  saveSocial();
+
+  io.emit("lp-like-reply", {
+    postId,
+    commentIndex,
+    replyId,
+    likes: r.likes.length
+  });
+});
+ 
 
 socket.on("lp-reply-child", ({ postId, commentIndex, replyId, uid, name, avatar, text })=>{
   const post = getPost(postId);
