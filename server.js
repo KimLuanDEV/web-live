@@ -574,39 +574,70 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+socket.on("private-message", ({ to, text, msgId }) => {
+  const fromUid = socket.data.uid;
+  if(!fromUid || !to || !text) return;
 
- socket.on("private-message", ({ to, text, msgId }) => {
-   const targetSocket = activeUsers.get(to);   // 🔥 UID -> socketId
+  const id = msgId || Date.now() + "_" + Math.random();
 
-  const fromProfile = {
-  ...(socket.data.profile || {}),
-  uid: socket.data.uid
-};
-
-
-  // gửi cho người nhận
-   io.to(targetSocket).emit("private-message", {
-    from: fromProfile,
+  const msg = {
+    id,
+    from: fromUid,
+    to,
     text,
-    msgId
-  });
+    time: Date.now(),
+    seen: false
+  };
 
-  // báo cho người gửi là đã delivered
+  // 1️⃣ LƯU VÀO INBOX NGƯỜI NHẬN
+  if(!userInbox.has(to)) userInbox.set(to, []);
+  userInbox.get(to).push(msg);
+
+  // 2️⃣ GỬI REALTIME NẾU ONLINE
+  const targetSocket = activeUsers.get(to);
+  if(targetSocket){
+    const fromProfile = {
+      ...(socket.data.profile || {}),
+      uid: fromUid
+    };
+
+    io.to(targetSocket).emit("private-message", {
+      from: fromProfile,
+      text,
+      msgId: id
+    });
+  }
+
+  // 3️⃣ báo người gửi là đã gửi
   socket.emit("msg-status", {
-    msgId,
-    status: "delivered"
+    msgId: id,
+    status: targetSocket ? "delivered" : "stored"
   });
 });
+
 
 socket.on("msg-seen", ({ to, msgId }) => {
-   const targetSocket = activeUsers.get(to);
-  if(!targetSocket) return;
+  const targetSocket = activeUsers.get(to);
+  if(targetSocket){
+    io.to(targetSocket).emit("msg-status", {
+      msgId,
+      status: "seen"
+    });
+  }
 
-  io.to(targetSocket).emit("msg-status", {
-    msgId,
-    status: "seen"
-  });
+  // 🔥 update inbox
+  const uid = socket.data.uid;
+  const inbox = userInbox.get(uid);
+  if(inbox){
+    for(const m of inbox){
+      if(m.id === msgId){
+        m.seen = true;
+        break;
+      }
+    }
+  }
 });
+
 
 
   function isGuest(socket){
@@ -679,6 +710,13 @@ if(db[uid]){
   }
 
   activeUsers.set(uid, socket.id);
+
+  // 🔥 GỬI TIN NHẮN OFFLINE
+const inbox = userInbox.get(uid);
+if(inbox && inbox.length){
+  socket.emit("offline-messages", inbox);
+}
+
   socket.data.uid = uid;
 
   emitActiveUsers();
@@ -1442,7 +1480,7 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
 
 
   const uid = socket.data.uid;
-  
+
   if(uid){
   const cur = activeUsers.get(uid);
   if(cur === socket.id){

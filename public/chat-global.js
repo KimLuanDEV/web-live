@@ -37,3 +37,17 @@ socket.on("private-message", ({ from, text, msgId }) => {
 
   socket.emit("msg-seen", { to: from.uid, msgId });
 });
+
+
+socket.on("offline-messages", msgs => {
+  msgs.forEach(m=>{
+    const key = getChatKey(m.from, m.to);
+    const arr = JSON.parse(localStorage.getItem(key)||"[]");
+    arr.push(m);
+    localStorage.setItem(key, JSON.stringify(arr));
+
+    if(!location.pathname.includes("messages.html")){
+      showMsg(`📩 Tin nhắn từ ${m.from}: ${m.text}`);
+    }
+  });
+});
