@@ -320,3 +320,50 @@ window.addEventListener("resize", () => {
 
 
 
+
+// ===== MOBILE NAV BAR =====
+const mnav = document.getElementById("mnavBar");
+let lastY = window.scrollY;
+
+window.addEventListener("scroll", ()=>{
+  const y = window.scrollY;
+  if(y > lastY + 10) mnav?.classList.add("mnav-hide");
+  if(y < lastY - 10) mnav?.classList.remove("mnav-hide");
+  lastY = y;
+});
+
+// chạm gần đáy → hiện
+window.addEventListener("touchstart", e=>{
+  if(window.innerHeight - e.touches[0].clientY < 80){
+    mnav?.classList.remove("mnav-hide");
+  }
+});
+
+// click chuyển tab
+document.querySelectorAll(".mnav-item").forEach(el=>{
+  el.onclick = ()=>{
+    const link = el.dataset.link;
+    if(link) location.href = link;
+  };
+});
+
+// active theo url
+const path = location.pathname;
+document.querySelectorAll(".mnav-item").forEach(el=>{
+  if(path.includes(el.dataset.link.replace("/",""))){
+    el.classList.add("mnav-active");
+  }
+});
+
+const badge = document.getElementById("mnavMsgBadge");
+
+socket.on("offline-messages", list=>{
+  if(list.length) badge.style.display = "block";
+});
+
+function openChat(){
+  badge.style.display = "none";
+  document.body.style.overflow = "hidden";
+  chatModal.classList.remove("hidden");
+  socket.emit("msg-seen-all");
+}
