@@ -572,6 +572,16 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
+socket.on("lp-delete", ({ postId, uid })=>{
+  const idx = lpPosts.findIndex(p => p.id === postId && p.uid === uid);
+  if(idx < 0) return;  // không phải chủ bài → không cho
+
+  lpPosts.splice(idx,1);
+  saveSocial();
+
+  io.emit("lp-delete", { postId });
+});
+
 
   // ===== LIVESTREAM PRO SOCIAL =====
 

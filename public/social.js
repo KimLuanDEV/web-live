@@ -137,6 +137,21 @@ socket.on("lp-post", post=>{
   renderPost(post,true);
 });
 
+function deletePost(id){
+  if(!confirm("Xóa bài viết này?")) return;
+
+  socket.emit("lp-delete", {
+    postId: id,
+    uid: auth.uid
+  });
+}
+
+socket.on("lp-delete", ({ postId })=>{
+  const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
+  if(el) el.remove();
+});
+
+
 function renderPost(p, top=false){
   const div = document.createElement("div");
   div.className="lp-post";
@@ -151,7 +166,9 @@ function renderPost(p, top=false){
     <div class="lp-post-name">${p.name}</div>
     <div class="lp-post-time">${time}</div>
   </div>
+  ${p.uid === auth.uid ? `<div class="lp-del" onclick="deletePost('${p.id}')">🗑</div>` : ``}
 </div>
+
 
 <div class="lp-post-text">${p.text}</div>
 
