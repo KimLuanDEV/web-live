@@ -1622,12 +1622,7 @@ const hostProfile = getHostProfileUnified();
 socket.emit("join-room", {
   roomId,
   role: "broadcaster",
-  profile: {
-    name: profile.name,
-    avatar: profile.avatar, // ✅ BẮT BUỘC
-    level: profile.level,
-    coins: profile.coins
-  }
+  profile: hostProfile
 });
 
 
