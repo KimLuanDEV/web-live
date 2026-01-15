@@ -576,6 +576,7 @@ io.on("connection", (socket) => {
 
 
 socket.on("private-message", ({ to, text, msgId }) => {
+
   const fromUid = socket.data.uid;
   if(!fromUid || !to || !text) return;
 
@@ -598,10 +599,14 @@ socket.on("private-message", ({ to, text, msgId }) => {
   // 2️⃣ GỬI REALTIME NẾU ONLINE
 const targetSocket = activeUsers.get(to);
 if(targetSocket){
-  const fromProfile = {
-    ...(socket.data.profile || {}),
-    uid: fromUid
-  };
+const db = loadUsers();
+const user = db[fromUid];
+
+const fromProfile = {
+  ...(socket.data.profile || {}),
+  uid: fromUid,
+  verified: !!user?.profile?.verified   // ⭐ thêm tick xanh
+};
 
   io.to(targetSocket).emit("private-message", {
     from: fromProfile,
@@ -749,7 +754,15 @@ if(db[uid]){
   // 🔥 GỬI TIN NHẮN OFFLINE
 const inbox = userInbox.get(uid);
 if(inbox && inbox.length){
-  socket.emit("offline-messages", inbox);
+  
+  const db = loadUsers();
+for(const m of inbox){
+  const u = db[m.from];
+  m.verified = !!u?.profile?.verified;
+}
+
+socket.emit("offline-messages", inbox);
+
 
   // 🔴 nếu còn tin chưa đọc → bật badge
   const unread = inbox.filter(m=>!m.seen).length;
