@@ -499,6 +499,8 @@ btnStart.addEventListener("click", () => {
 
 
 
+
+
 function syncStartLiveOverlay(isLive) {
   if (!startLiveOverlay) return;
 
@@ -1576,39 +1578,48 @@ window.addEventListener("online", async () => {
     
     const guestVideo = document.getElementById("guestVideo");
 
-    async function getRtcConfig() {
-      const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+async function getRtcConfig() {
+  const fallback = {
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    iceTransportPolicy: "all"
+  };
 
-      try {
-        const r = await fetch("/ice", { cache: "no-store" });
-        if (!r.ok) return fallback;
+  try {
+    const r = await fetch("/ice", { cache: "no-store" });
+    if (!r.ok) return fallback;
 
-        const data = await r.json();
-        if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
+    const data = await r.json();
+    if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
 
-        const cleanedIceServers = data.iceServers
-          .map(server => {
-            let urls = server.urls;
-            if (!urls) return null;
-            if (!Array.isArray(urls)) urls = [urls];
+    const cleanedIceServers = data.iceServers
+      .map(server => {
+        let urls = server.urls;
+        if (!urls) return null;
+        if (!Array.isArray(urls)) urls = [urls];
 
-            // remove invalid STUN urls that contain ?transport=
-            const safeUrls = urls.filter(u =>
-              typeof u === "string" &&
-              !(u.startsWith("stun:") && u.includes("?transport="))
-            );
-            if (safeUrls.length === 0) return null;
-            return { ...server, urls: safeUrls };
-          })
-          .filter(Boolean);
+        const safeUrls = urls.filter(u =>
+          typeof u === "string" &&
+          !(u.startsWith("stun:") && u.includes("?transport="))
+        );
 
-        if (cleanedIceServers.length === 0) return fallback;
-        return { iceServers: cleanedIceServers };
-      } catch (e) {
-        console.error("ICE fetch error:", e);
-        return fallback;
-      }
-    }
+        if (safeUrls.length === 0) return null;
+        return { ...server, urls: safeUrls };
+      })
+      .filter(Boolean);
+
+    if (cleanedIceServers.length === 0) return fallback;
+
+    return {
+      iceServers: cleanedIceServers,
+      iceTransportPolicy: "relay"   // 🔥 BẮT BUỘC cho 4G / 5G
+    };
+  } catch (e) {
+    console.error("ICE fetch error:", e);
+    return fallback;
+  }
+}
+
+
 
     function log(msg) {
       logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;
