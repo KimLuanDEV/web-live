@@ -9,18 +9,23 @@ function openReplyChild(postId, cIndex, replyId){
   const box = document.getElementById(`rp2_${replyId}`);
   if(!box) return;
 
-  if(box.querySelector(".lp-reply-box")){
-    box.innerHTML = "";
+  // nếu đã có input → chỉ toggle input, KHÔNG xoá reply cũ
+  const exist = box.querySelector(".lp-reply-box");
+  if(exist){
+    exist.remove();
     return;
   }
 
-  box.innerHTML = `
-    <div class="lp-reply-box">
-      <input id="ri2_${replyId}" placeholder="Trả lời...">
-      <button onclick="sendReplyChild('${postId}',${cIndex},'${replyId}')">➤</button>
-    </div>
+  const div = document.createElement("div");
+  div.className = "lp-reply-box";
+  div.innerHTML = `
+    <input id="ri2_${replyId}" placeholder="Trả lời...">
+    <button onclick="sendReplyChild('${postId}',${cIndex},'${replyId}')">➤</button>
   `;
+
+  box.appendChild(div);
 }
+
 
 
 function sendReplyChild(postId, cIndex, replyId){
