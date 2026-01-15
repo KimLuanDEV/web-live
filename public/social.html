@@ -304,6 +304,63 @@
 }
 
 
+/* ===== MOBILE TAB BAR ===== */
+
+.lp-tabbar{
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:64px;
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+  background:rgba(0,0,0,.85);
+  border-top:1px solid rgba(255,255,255,.15);
+  backdrop-filter: blur(12px);
+  z-index:9999;
+}
+
+.lp-tab{
+  flex:1;
+  text-align:center;
+  color:#aaa;
+  font-size:12px;
+  cursor:pointer;
+  position:relative;
+}
+
+.lp-tab .icon{
+  font-size:22px;
+  line-height:22px;
+}
+
+.lp-tab.active{
+  color:#25F09A;
+}
+
+.lp-tab.active .icon{
+  filter: drop-shadow(0 0 10px #25F09A);
+}
+
+.lp-tab .badge{
+  position:absolute;
+  top:4px;
+  right:30%;
+  width:10px;
+  height:10px;
+  background:#ff3b6b;
+  border-radius:50%;
+  box-shadow:0 0 10px #ff3b6b;
+}
+
+/* đẩy nội dung lên để không bị che */
+.lp-shell{
+  padding-bottom:80px;
+}
+
+
+
 </style>
 
 </head>
@@ -339,6 +396,34 @@
   <div id="lpFeed" class="lp-feed"></div>
 
 </div>
+
+
+
+
+<!-- MOBILE TAB BAR -->
+<div class="lp-tabbar">
+  <div class="lp-tab active" data-tab="social">
+    <div class="icon">🏠</div>
+    <div class="txt">Feed</div>
+  </div>
+
+  <div class="lp-tab" data-tab="lobby">
+    <div class="icon">🎥</div>
+    <div class="txt">Live</div>
+  </div>
+
+  <div class="lp-tab" data-tab="messages">
+    <div class="icon">💬</div>
+    <div class="txt">Chat</div>
+    <span class="badge hidden" id="msgBadge"></span>
+  </div>
+
+  <div class="lp-tab" data-tab="profile">
+    <div class="icon">👤</div>
+    <div class="txt">Profile</div>
+  </div>
+</div>
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/social.js"></script>

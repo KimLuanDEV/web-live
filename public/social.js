@@ -567,12 +567,33 @@ if(r.replies){
 
   box2.appendChild(c2);
 });
-
 }
 
       });
     }
   });
 }
-
 }
+
+document.querySelectorAll(".lp-tab").forEach(t=>t.classList.remove("active"));
+document.querySelector('.lp-tab[data-tab="social"]').classList.add("active");
+
+document.querySelectorAll(".lp-tab").forEach(tab=>{
+  tab.onclick = ()=>{
+    const t = tab.dataset.tab;
+
+    if(t === "social") location.href="/social.html";
+    if(t === "lobby") location.href="/lobby.html";
+    if(t === "messages") location.href="/messages.html";
+    if(t === "profile") location.href="/profile.html";
+  };
+});
+
+
+socket.on("inbox-new", ()=>{
+  document.getElementById("msgBadge")?.classList.remove("hidden");
+});
+
+socket.on("inbox-clear", ()=>{
+  document.getElementById("msgBadge")?.classList.add("hidden");
+});
