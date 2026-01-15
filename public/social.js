@@ -145,7 +145,8 @@ socket.on("lp-comment", ({ postId, comment, count })=>{
 
    <div class="lp-cm-actions">
   <span onclick="openReply('${postId}',${idx})">Trả lời</span>
-  ${comment.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
+${comment.uid === auth.uid || p.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('...',${idx})">🗑</span>` : ``}
+
 </div>
 
 
@@ -260,7 +261,8 @@ if(p.comments && p.comments.length){
 
      <div class="lp-cm-actions">
   <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
-  ${comment.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('${p.id}',${idx})">🗑</span>` : ``}
+ ${comment.uid === auth.uid || p.uid === auth.uid ? `<span class="cm-del" onclick="deleteComment('...',${idx})">🗑</span>` : ``}
+
 </div>
 
 

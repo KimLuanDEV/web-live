@@ -690,7 +690,9 @@ socket.on("lp-delete-comment", ({ postId, index, uid })=>{
   if(!post || !post.comments || !post.comments[index]) return;
 
   const c = post.comments[index];
-  if(c.uid !== uid) return;   // 🔒 không phải chủ comment
+
+  // 🔐 chỉ cho chủ comment hoặc chủ bài
+  if(c.uid !== uid && post.uid !== uid) return;
 
   post.comments.splice(index,1);
   saveSocial();
