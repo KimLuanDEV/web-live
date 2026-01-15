@@ -1014,6 +1014,15 @@ document.getElementById("tabCreate").onclick = ()=>{
   openCreateRoom();
 };
 
+// ===== PC: Nút "➕ Tạo phòng LIVE" =====
+document.getElementById("btnCreateRoomDesktop")
+  ?.addEventListener("click", () => {
+    if(isGuest){
+      showMsg("🔒 Đăng nhập để tạo phòng livestream");
+      return;
+    }
+    openCreateRoom();
+  });
 
 
 
