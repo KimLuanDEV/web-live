@@ -218,13 +218,17 @@ function renderUserList(){
     const div = document.createElement("div");
     div.className = "badge " + (isOnline ? "online" : "offline");
 
-    div.innerHTML = `
-      <img src="${u.avatar}" width="28" style="border-radius:50%">
-      <div style="flex:1">
-        <div>${u.name}</div>
-        <small style="opacity:.6">${isOnline ? "● Online" : "Offline"}</small>
-      </div>
-    `;
+div.innerHTML = `
+  <img src="${u.avatar}" width="28" style="border-radius:50%">
+  <div style="flex:1">
+    <div>${u.name}</div>
+    <small style="display:flex;align-items:center;gap:6px">
+      <span class="dot ${isOnline ? "on" : "off"}"></span>
+      ${isOnline ? "Online" : "Offline"}
+    </small>
+  </div>
+`;
+
 
     div.onclick = ()=>{
       currentTarget = u;

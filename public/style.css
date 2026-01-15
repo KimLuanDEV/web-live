@@ -6791,3 +6791,22 @@ body.is-guest .reactions-layer{
   background:#444
 }
 .player-row .dot.on{background:#00ff6a;box-shadow:0 0 8px #00ff6a}
+
+
+.dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  display:inline-block;
+  box-shadow:0 0 6px rgba(0,0,0,.4);
+}
+
+.dot.on{
+  background:#00ff6a;
+  box-shadow:0 0 8px #00ff6a;
+}
+
+.dot.off{
+  background:#666;
+  box-shadow:none;
+}
