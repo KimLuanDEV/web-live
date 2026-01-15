@@ -265,8 +265,12 @@ div.innerHTML = `
       currentTarget = u;
       currentTargetUID = u.uid;
 
-      chatTitle.textContent = u.name;
-      document.getElementById("chatHeaderAvatar").src = u.avatar || "";
+      chatTitle.innerHTML = `
+  ${u.name}
+  ${u.verified ? `<span class="tick-blue tick-chat">✔</span>` : ``}
+`;
+document.getElementById("chatHeaderAvatar").src = u.avatar || "";
+
 
       loadChat();
       openChat();

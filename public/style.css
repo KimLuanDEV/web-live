@@ -6857,3 +6857,33 @@ body.is-guest .reactions-layer{
   font-weight:900;
   box-shadow:0 0 8px rgba(29,161,242,.85);
 }
+
+
+.chat-row{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+}
+
+.chat-avatar-wrap{
+  position:relative;
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+}
+
+.chat-avatar{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.tick-chat{
+  position:absolute;
+  right:-4px;
+  bottom:-4px;
+  width:14px;
+  height:14px;
+  font-size:10px;
+}
