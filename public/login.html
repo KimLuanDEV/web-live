@@ -414,23 +414,30 @@ if(t && tu === u){
   });
 
   const d = await res.json();
-  if(d.ok){
-    // đăng nhập luôn, bỏ qua mã bảo mật
-    const res2 = await fetch("/api/login",{
-      method:"POST",
-      headers:{ "Content-Type":"application/json" },
-      body: JSON.stringify({
-        username:u,
-        password:p,
-        securityCode:"__TRUSTED__"
-      })
-    });
+  
+if(d.ok){
+  const res2 = await fetch("/api/login",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      username:u,
+      password:p,
+      securityCode:"__TRUSTED__"
+    })
+  });
 
-    const data = await res2.json();
-    localStorage.setItem("user_profile", JSON.stringify(data.profile));
-    location.href="/lobby.html";
-    return;
-  }
+  const data = await res2.json();
+
+  // 🔥 LƯU PROFILE + XOÁ GUEST
+  localStorage.setItem("user_profile", JSON.stringify(data.profile));
+  localStorage.setItem("login_uid", data.profile.uid);
+  localStorage.removeItem("isGuest");      // ⭐ QUAN TRỌNG
+  localStorage.removeItem("guest_uid");   // nếu có
+
+  location.href="/lobby.html";
+  return;
+}
+
 }
 
 
