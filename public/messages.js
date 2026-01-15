@@ -286,8 +286,6 @@ socket.emit("msg-seen-all", { peer: currentTargetUID });
 function openChat(){
   document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
- chatModal.style.display = "block";
-
 
   // 🔥 báo server: đã đọc toàn bộ inbox
   socket.emit("msg-seen-all");
@@ -297,8 +295,6 @@ function openChat(){
 function closeChat(){
   document.body.style.overflow = ""; // mở lại
   chatModal.classList.add("hidden");
-  chatModal.style.display = "none";
-
   currentTarget = null;
 }
 
@@ -322,23 +318,5 @@ window.addEventListener("resize", () => {
 });
 
 
-// ===== MOBILE TAB BAR =====
-document.querySelectorAll(".mobile-tabbar .tab-item").forEach(tab => {
-  tab.onclick = () => {
-    const t = tab.dataset.tab;
-
-    if(t === "lobby") location.href = "/lobby.html";
-    if(t === "hot") location.href = "/lobby.html#hot";
-    if(t === "chat") location.href = "/messages.html";
-    if(t === "profile") location.href = "/profile.html";
-  };
-});
-
-const tabCreate = document.getElementById("tabCreate");
-if(tabCreate){
-  tabCreate.onclick = () => {
-    location.href = "/lobby.html#create";
-  };
-}
 
 
