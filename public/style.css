@@ -7023,3 +7023,60 @@ body.is-guest .reactions-layer{
 .msg-bubble.other{
   background: rgba(0,0,0,.45);
 }
+
+
+/* ===============================
+   FIX CHAT MODAL SEE-THROUGH
+   =============================== */
+
+/* Lớp nền sau chat -> làm mờ & tối */
+#chatModal .modal-backdrop{
+  background:
+    radial-gradient(900px 600px at 20% 10%, rgba(95,168,255,.18), transparent 60%),
+    radial-gradient(900px 600px at 80% 20%, rgba(255,59,107,.18), transparent 60%),
+    rgba(0,0,0,.78);
+  backdrop-filter: blur(12px);
+}
+
+/* Card chat -> panel kín */
+#chatModal .modal-card{
+  background:
+    radial-gradient(600px 300px at 20% 0%, rgba(95,168,255,.12), transparent 60%),
+    radial-gradient(600px 300px at 80% 0%, rgba(255,59,107,.12), transparent 60%),
+    #0a0f1f;   /* 🔥 màu nền kín */
+  border: 1px solid rgba(255,255,255,.12);
+  box-shadow:
+    0 40px 120px rgba(0,0,0,.85),
+    0 0 0 1px rgba(255,255,255,.06) inset;
+}
+
+/* Header chat */
+.chat-header{
+  background: rgba(0,0,0,.55);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+/* Khung chat */
+.chatbox{
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.75));
+  border: 1px solid rgba(255,255,255,.12);
+}
+
+/* Form nhập */
+.chatform{
+  background: rgba(0,0,0,.55);
+  border-top: 1px solid rgba(255,255,255,.12);
+  padding-top: 10px;
+}
+
+/* Input & button */
+.chatform input{
+  background: rgba(0,0,0,.65);
+}
+.chatform button{
+  background: linear-gradient(135deg,#ff3b6b,#ff7aa5);
+  border: none;
+  font-weight: 800;
+  box-shadow: 0 0 20px rgba(255,59,107,.5);
+}
