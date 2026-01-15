@@ -157,15 +157,45 @@
   opacity:.9;
 }
 
+/* ===== COMMENT INPUT FIX ===== */
+
 .lp-comment-box{
   display:flex;
-  gap:6px;
-  margin-top:6px;
+  gap:8px;
+  margin-top:8px;
+  align-items:center;
 }
-.lp-comment-box input{
+
+.lp-comment-input{
   flex:1;
+  height:42px;
+  padding:0 14px;
+  border-radius:999px;
   background:rgba(0,0,0,.6);
+  border:1px solid rgba(255,255,255,.15);
+  color:#fff;
+  font-size:14px;
 }
+
+.lp-comment-send{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#25F09A,#5FA8FF);
+  border:none;
+  font-size:18px;
+  font-weight:900;
+  color:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 14px rgba(37,240,154,.6);
+  cursor:pointer;
+}
+.lp-comment-send:hover{
+  filter:brightness(1.15);
+}
+
 
 </style>
 

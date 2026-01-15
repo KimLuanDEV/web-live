@@ -102,10 +102,13 @@ function renderPost(p, top=false){
 
 <div class="lp-comments hidden" id="cm_${p.id}">
   <div class="lp-comment-list"></div>
+
   <div class="lp-comment-box">
-    <input id="ci_${p.id}" placeholder="Viết bình luận...">
-    <button onclick="sendComment('${p.id}')">Gửi</button>
-  </div>
+  <input id="ci_${p.id}" class="lp-comment-input" placeholder="Viết bình luận...">
+  <button class="lp-comment-send" onclick="sendComment('${p.id}')">➤</button>
+</div>
+
+
 </div>
 `;
 
