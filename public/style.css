@@ -6812,3 +6812,17 @@ body.is-guest .reactions-layer{
 #userList .status-dot.off{
   background:#666;
 }
+
+
+/* 🔴 Badge tin nhắn mới trong lobby */
+.tab-item.has-new .tab-icon::after{
+  content:"";
+  position:absolute;
+  top:-4px;
+  right:-4px;
+  width:10px;
+  height:10px;
+  background:#ff3b3b;
+  border-radius:50%;
+  box-shadow:0 0 8px rgba(255,59,59,.9);
+}

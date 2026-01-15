@@ -593,20 +593,25 @@ socket.on("private-message", ({ to, text, msgId }) => {
   if(!userInbox.has(to)) userInbox.set(to, []);
   userInbox.get(to).push(msg);
 
+ 
   // 2️⃣ GỬI REALTIME NẾU ONLINE
-  const targetSocket = activeUsers.get(to);
-  if(targetSocket){
-    const fromProfile = {
-      ...(socket.data.profile || {}),
-      uid: fromUid
-    };
+const targetSocket = activeUsers.get(to);
+if(targetSocket){
+  const fromProfile = {
+    ...(socket.data.profile || {}),
+    uid: fromUid
+  };
 
-    io.to(targetSocket).emit("private-message", {
-      from: fromProfile,
-      text,
-      msgId: id
-    });
-  }
+  io.to(targetSocket).emit("private-message", {
+    from: fromProfile,
+    text,
+    msgId: id
+  });
+
+  // 🔴 BÁO CÓ TIN MỚI (badge)
+  io.to(targetSocket).emit("inbox-new");
+}
+
 
   // 3️⃣ báo người gửi là đã gửi
   socket.emit("msg-status", {
@@ -627,15 +632,22 @@ socket.on("msg-seen", ({ to, msgId }) => {
 
   // 🔥 update inbox
   const uid = socket.data.uid;
-  const inbox = userInbox.get(uid);
-  if(inbox){
-    for(const m of inbox){
-      if(m.id === msgId){
-        m.seen = true;
-        break;
-      }
+ const inbox = userInbox.get(uid);
+if(inbox){
+  for(const m of inbox){
+    if(m.id === msgId){
+      m.seen = true;
+      break;
     }
   }
+
+  // nếu hết tin chưa đọc → tắt badge
+  const unread = inbox.filter(m=>!m.seen).length;
+  if(unread === 0){
+    socket.emit("inbox-clear");
+  }
+}
+
 });
 
 
@@ -715,7 +727,14 @@ if(db[uid]){
 const inbox = userInbox.get(uid);
 if(inbox && inbox.length){
   socket.emit("offline-messages", inbox);
+
+  // 🔴 nếu còn tin chưa đọc → bật badge
+  const unread = inbox.filter(m=>!m.seen).length;
+  if(unread > 0){
+    socket.emit("inbox-new", { count: unread });
+  }
 }
+
 
   socket.data.uid = uid;
 

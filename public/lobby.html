@@ -976,12 +976,13 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 }
 
 
-    if(type === "chat"){
-      if(isGuest){
+if(type === "chat"){
+  if(isGuest){
     showMsg("🔒 Đăng nhập để xem hồ sơ");
     return;
   }
- location.href = "/messages.html";     
+  document.querySelector('[data-tab="chat"]')?.classList.remove("has-new");
+  location.href = "/messages.html";     
 }
 
 
@@ -1140,6 +1141,11 @@ function renderPlayerLobbyAll(){
   }).join("");
 }
 
+
+
+socket.on("inbox-new", ()=>{
+  document.querySelector('[data-tab="chat"]')?.classList.add("has-new");
+});
 
 
 </script>
