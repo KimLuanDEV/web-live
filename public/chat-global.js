@@ -15,8 +15,6 @@ setInterval(()=>{
 // ===== RECEIVE PRIVATE MESSAGE ANYWHERE =====
 socket.on("private-message", ({ from, text, msgId }) => {
 
-   
-
   // lưu vào localStorage
   const a = auth.uid;
   const b = from.uid;
@@ -53,6 +51,3 @@ socket.on("offline-messages", msgs => {
     }
   });
 });
-
-
-
