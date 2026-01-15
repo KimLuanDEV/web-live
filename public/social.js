@@ -77,12 +77,33 @@ function deleteComment(postId, index){
 }
 
 socket.on("lp-delete-comment", ({ postId, index })=>{
-  const list = document.querySelector(`#cm_${postId} .lp-comment-list`);
+  const wrap = document.getElementById("cm_"+postId);
+  if(!wrap) return;
+
+  const list = wrap.querySelector(".lp-comment-list");
   if(!list) return;
 
   const el = list.children[index];
   if(el) el.remove();
+
+  // 🔥 TRỪ SỐ COMMENT
+  const countEl = document.getElementById("c_"+postId);
+  if(countEl){
+    const cur = Number(countEl.textContent || 0);
+    countEl.textContent = Math.max(0, cur - 1);
+  }
+
+  // 🔥 CẬP NHẬT LẠI INDEX ĐỂ KHÔNG LỆCH
+  [...list.children].forEach((c,i)=>{
+    c.dataset.index = i;
+    const replyBtn = c.querySelector(".lp-cm-actions span");
+    if(replyBtn) replyBtn.setAttribute("onclick", `openReply('${postId}',${i})`);
+
+    const del = c.querySelector(".cm-del");
+    if(del) del.setAttribute("onclick", `deleteComment('${postId}',${i})`);
+  });
 });
+
 
 
 
