@@ -248,34 +248,35 @@ avatarInput.onchange = async () => {
   const file = avatarInput.files[0];
   if (!file) return;
 
-  // ⚠️ Giới hạn size để tránh localStorage quá lớn
-  if (file.size > 300 * 1024) {
-     showMsg("❌ Ảnh quá lớn (tối đa 300KB)");
+  const fd = new FormData();
+  fd.append("avatar", file);
+
+  const res = await fetch("/api/upload-avatar", {
+    method: "POST",
+    body: fd
+  });
+
+  const data = await res.json();
+  if (!data.url) {
+    showMsg("❌ Upload thất bại");
     return;
   }
 
-  const reader = new FileReader();
+  const avatarUrl = data.url;
 
-  reader.onload = () => {
-    const base64 = reader.result; // ✅ data:image/...
+  // update UI
+  avatarPreview.src = avatarUrl;
 
-    // update UI
-    avatarPreview.src = base64;
+  // lưu vào profile
+  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  p.avatar = avatarUrl;
+  localStorage.setItem(KEY, JSON.stringify(p));
 
-    // ✅ LƯU TRỰC TIẾP VÀO PROFILE (KHÔNG PHỤ THUỘC SERVER)
-    const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-    p.avatar = base64;
-    localStorage.setItem(KEY, JSON.stringify(p));
-
-    // realtime sync nếu đang ở room
-    if (socket && __profileAuth.uid) {
-  socket.emit("profile-update", { avatar: base64 });
-  socket.emit("auth-login", { uid: __profileAuth.uid }); // 🔐 GIỮ KHÓA LOGIN
-}
-
-  };
-
-  reader.readAsDataURL(file);
+  // sync realtime
+  if (__profileAuth.uid) {
+    socket.emit("profile-update", { avatar: avatarUrl });
+    socket.emit("auth-login", { uid: __profileAuth.uid });
+  }
 };
 
 
