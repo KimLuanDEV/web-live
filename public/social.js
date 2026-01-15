@@ -22,6 +22,7 @@ function openReplyChild(postId, cIndex, replyId){
   `;
 }
 
+
 function sendReplyChild(postId, cIndex, replyId){
   const input = document.getElementById(`ri2_${replyId}`);
   if(!input || !input.value.trim()) return;
@@ -36,8 +37,17 @@ function sendReplyChild(postId, cIndex, replyId){
     text: input.value
   });
 
-  input.value="";
+  // clear text
+  input.value = "";
+
+  // 🔥 đóng box trả lời cấp 2
+  const box = document.getElementById(`rp2_${replyId}`);
+  if(box){
+    const inputBox = box.querySelector(".lp-reply-box");
+    if(inputBox) inputBox.remove();
+  }
 }
+
 
 
 function likeReply(postId, cIndex, replyId){
