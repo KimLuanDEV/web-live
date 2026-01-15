@@ -6887,3 +6887,7 @@ body.is-guest .reactions-layer{
   height:14px;
   font-size:10px;
 }
+
+.page-messages{
+  padding-bottom: 90px; /* chừa chỗ cho tab bar */
+}

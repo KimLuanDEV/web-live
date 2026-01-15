@@ -286,8 +286,7 @@ socket.emit("msg-seen-all", { peer: currentTargetUID });
 function openChat(){
   document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
- // 🔥 bật lại pointer events khi mở chat
-  chatModal.style.pointerEvents = "auto";
+
   // 🔥 báo server: đã đọc toàn bộ inbox
   socket.emit("msg-seen-all");
 }
@@ -295,14 +294,9 @@ function openChat(){
 
 function closeChat(){
   document.body.style.overflow = ""; // mở lại
-
-  // 🔥 tắt hẳn pointer events của modal
   chatModal.classList.add("hidden");
-  chatModal.style.pointerEvents = "none";
-
   currentTarget = null;
 }
-
 
 
 let baseHeight = window.innerHeight;
@@ -324,44 +318,23 @@ window.addEventListener("resize", () => {
 });
 
 
+// ===== MOBILE TAB BAR =====
+document.querySelectorAll(".mobile-tabbar .tab-item").forEach(tab => {
+  tab.onclick = () => {
+    const t = tab.dataset.tab;
 
-// ===== MOBILE TAB BAR (FIX) =====
-const tabs = document.querySelectorAll(".mobile-tabbar .tab-item");
-
-tabs.forEach(tab => {
-  tab.addEventListener("click", () => {
-
-    // bỏ active cũ
-    tabs.forEach(t => t.classList.remove("active"));
-    tab.classList.add("active");
-
-    // tab chính giữa (+)
-    if (tab.id === "tabCreate") {
-      // 👉 chuyển sang tạo phòng / lobby
-      location.href = "/lobby.html";
-      return;
-    }
-
-    const type = tab.dataset.tab;
-
-    if (type === "profile") {
-      location.href = "/profile.html";
-      return;
-    }
-
-    if (type === "lobby") {
-      location.href = "/lobby.html";
-      return;
-    }
-
-    if (type === "chat") {
-      // đang ở messages.html → không làm gì
-      return;
-    }
-
-    if (type === "hot") {
-      location.href = "/lobby.html#hot";
-      return;
-    }
-  });
+    if(t === "lobby") location.href = "/lobby.html";
+    if(t === "hot") location.href = "/lobby.html#hot";
+    if(t === "chat") location.href = "/messages.html";
+    if(t === "profile") location.href = "/profile.html";
+  };
 });
+
+const tabCreate = document.getElementById("tabCreate");
+if(tabCreate){
+  tabCreate.onclick = () => {
+    location.href = "/lobby.html#create";
+  };
+}
+
+
