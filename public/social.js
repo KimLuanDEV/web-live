@@ -204,6 +204,24 @@ function deleteReplyChild(postId, cIndex, replyId, childId){
   });
 }
 
+
+function likeReplyChild(postId, cIndex, replyId, childId){
+  socket.emit("lp-like-reply-child",{
+    postId,
+    commentIndex: cIndex,
+    replyId,
+    childId,
+    uid: auth.uid
+  });
+}
+
+socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, likes })=>{
+  const el = document.getElementById(`rcl_${postId}_${commentIndex}_${replyId}_${childId}`);
+  if(el) el.textContent = likes;
+});
+
+
+
 socket.on("lp-delete-reply-child", ({ replyId, childId })=>{
   const el = document.querySelector(`#rp2_${replyId} .lp-reply[data-id="${childId}"]`);
   if(el) el.remove();
@@ -371,12 +389,22 @@ div.innerHTML = `
   <img src="${child.avatar}">
   <div>
     <b>${child.name}</b> ${child.text}
+
     <div class="lp-cm-actions">
+      <span class="cm-like"
+        onclick="likeReplyChild('${postId}',${commentIndex},'${replyId}','${child.id}')">
+        ❤️ <b id="rcl_${postId}_${commentIndex}_${replyId}_${child.id}">
+          ${child.likes?.length || 0}
+        </b>
+      </span>
+
       ${(child.uid === auth.uid || isPostOwner(postId)) ?
-        `<span class="cm-del" onclick="deleteReplyChild('${postId}',${commentIndex},'${replyId}','${child.id}')">🗑</span>` : ``}
+        `<span class="cm-del"
+          onclick="deleteReplyChild('${postId}',${commentIndex},'${replyId}','${child.id}')">🗑</span>` : ``}
     </div>
   </div>
 `;
+
 
   
 
@@ -517,15 +545,25 @@ if(r.replies){
   c2.style.marginLeft="16px";
 
   c2.innerHTML = `
-    <img src="${child.avatar}">
-    <div>
-      <b>${child.name}</b> ${child.text}
-      <div class="lp-cm-actions">
-        ${(child.uid === auth.uid || p.uid === auth.uid) ?
-          `<span class="cm-del" onclick="deleteReplyChild('${p.id}',${idx},'${r.id}','${child.id}')">🗑</span>` : ``}
-      </div>
+  <img src="${child.avatar}">
+  <div>
+    <b>${child.name}</b> ${child.text}
+
+    <div class="lp-cm-actions">
+      <span class="cm-like"
+        onclick="likeReplyChild('${p.id}',${idx},'${r.id}','${child.id}')">
+        ❤️ <b id="rcl_${p.id}_${idx}_${r.id}_${child.id}">
+          ${child.likes?.length || 0}
+        </b>
+      </span>
+
+      ${(child.uid === auth.uid || p.uid === auth.uid) ?
+        `<span class="cm-del"
+          onclick="deleteReplyChild('${p.id}',${idx},'${r.id}','${child.id}')">🗑</span>` : ``}
     </div>
-  `;
+  </div>
+`;
+
 
   box2.appendChild(c2);
 });

@@ -848,6 +848,38 @@ socket.on("lp-delete-reply-child", ({ postId, commentIndex, replyId, childId, ui
 });
 
 
+socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, uid })=>{
+  const post = getPost(postId);
+  if(!post) return;
+
+  const c = post.comments?.[commentIndex];
+  if(!c || !c.replies) return;
+
+  const parent = c.replies.find(r => r.id === replyId);
+  if(!parent || !parent.replies) return;
+
+  const child = parent.replies.find(x => x.id === childId);
+  if(!child) return;
+
+  child.likes = child.likes || [];
+  const i = child.likes.indexOf(uid);
+  if(i >= 0) child.likes.splice(i,1);
+  else child.likes.push(uid);
+
+  saveSocial();
+
+  io.emit("lp-like-reply-child", {
+    postId,
+    commentIndex,
+    replyId,
+    childId,
+    likes: child.likes.length
+  });
+});
+
+
+
+
 socket.on("private-message", ({ to, text, msgId }) => {
 
   const fromUid = socket.data.uid;
