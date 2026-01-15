@@ -504,7 +504,7 @@ function closeRoom(roomId, reason = "host_left") {
   if (!room) return;
 
 
-}
+
 
   // 🔔 notify host
   if(room.hostProfile?.uid){
