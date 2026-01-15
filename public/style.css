@@ -6793,22 +6793,20 @@ body.is-guest .reactions-layer{
 .player-row .dot.on{background:#00ff6a;box-shadow:0 0 8px #00ff6a}
 
 
-/* ===== ONLINE STATUS DOT ===== */
+/* FORCE DOT */
 .dot{
-  width:10px;
-  height:10px;
-  min-width:10px;
-  min-height:10px;
-  border-radius:50%;
-  display:inline-block;
+  display:inline-block !important;
+  width:12px !important;
+  height:12px !important;
+  min-width:12px !important;
+  min-height:12px !important;
+  border-radius:50% !important;
+  background:red !important;
 }
-
 .dot.on{
-  background:#25F09A;
-  box-shadow: 0 0 10px rgba(37,240,154,.9);
+  background:#25F09A !important;
+  box-shadow:0 0 10px #25F09A !important;
 }
-
 .dot.off{
-  background:#666;
-  box-shadow:none;
+  background:#888 !important;
 }
