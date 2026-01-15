@@ -1673,7 +1673,12 @@ socket.on("reaction", (msg)=>{
           .filter(Boolean);
 
         if (cleanedIceServers.length === 0) return fallback;
-        return { iceServers: cleanedIceServers };
+      return {
+  iceServers: cleanedIceServers,
+  iceTransportPolicy: "relay",
+  iceCandidatePoolSize: 10   // 🔥 chuẩn bị sẵn TURN candidates
+};
+
       } catch (e) {
         console.error("ICE fetch error:", e);
         return fallback;
@@ -1798,50 +1803,40 @@ socket.on("room-full", ()=>{
     }
   };
 
-
 pc.ontrack = (event) => {
-  const stream = event.streams[0];
+  const stream = event.streams && event.streams[0];
   if (!stream) return;
 
-   
+  console.log("🎥 Viewer nhận track");
 
- else {
-    // ===== HOST STREAM (CHÍNH) =====
-    console.log("🎥 Viewer nhận stream HOST");
+  // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
+  if (!player.srcObject) {
+    player.srcObject = stream;
 
-    if (player.srcObject !== stream) {
-     player.srcObject = stream;
-     
+    optimizeVideoForMobile(player);
+    player.playsInline = true;
 
-optimizeVideoForMobile(player);
+    // iOS + Android cần mute để autoplay
+    player.muted = true;
+    forcePlayVideo(player);
 
-player.playsInline = true;
-player.muted = false;
-
-forceResumeAudio(player);
-
-    }
-
-    const hasAudio = stream.getAudioTracks().length > 0;
-
-if (hasAudio) {
-  player.muted = false;
-  player.volume = 1.0;
-
-  const tryPlay = async () => {
-    try { await player.play(); } catch {}
-  };
-
-  if (player.paused) tryPlay();
-}
-
+    // ẩn backdrop đen
     try {
-      attachSpeakingIndicator(
-        player,
-        document.getElementById("hostCard")
-      );
+      document.getElementById("viewerBackdrop")?.classList.add("hidden");
     } catch {}
   }
+
+  // 🔊 Nếu có audio → bật tiếng
+  if (stream.getAudioTracks().length > 0) {
+    player.muted = false;
+    player.volume = 1.0;
+    forceResumeAudio(player);
+  }
+
+  // 🔥 speaking highlight
+  try {
+    attachSpeakingIndicator(player, document.getElementById("hostCard"));
+  } catch {}
 
   setStatus("🟢 Đang xem LIVE");
 };
