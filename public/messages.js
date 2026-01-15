@@ -279,13 +279,14 @@ div.innerHTML = `
 // khi mở khung chat -> coi như đã đọc
 socket.emit("msg-seen-all", { peer: currentTargetUID });
 
-
 function openChat(){
-  document.body.style.overflow = "hidden"; // khóa nền
+  document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
 
-
+  // 🔥 báo server: đã đọc toàn bộ inbox
+  socket.emit("msg-seen-all");
 }
+
 
 function closeChat(){
   document.body.style.overflow = ""; // mở lại
