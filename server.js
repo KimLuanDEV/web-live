@@ -1038,32 +1038,19 @@ socket.on("live-start", ({ roomId }) => {
 
   const room = getRoom(roomId);
   if (!room) return;
-  if (room.broadcasterId !== socket.id) return;
 
-  // ✅ SET 1 LẦN DUY NHẤT
+  // 🔥 CHO PHÉP host đã join dù socket.id có thay đổi do auth
+  if (!room.broadcasterId || room.broadcasterId !== socket.id) {
+    room.broadcasterId = socket.id;   // 👑 force bind host
+  }
+
   if (!room.liveStartTs) {
     room.liveStartTs = Date.now();
   }
 
-// 💾 persist live state
-const state = loadLiveState();
-state[roomId] = {
-  liveStartTs: room.liveStartTs,
-  hostProfile: room.hostProfile,
-  pinnedNote: room.pinnedNote,
-  giftTotal: room.giftTotal,
-  giftByUser: Array.from(room.giftByUser.entries()),
-};
-saveLiveState(state);
-
-
-  // báo cho toàn bộ phòng
-  io.to(roomId).emit("live-start", {
-    startTs: room.liveStartTs
-  });
-
   emitLobbyUpdate();
 });
+
 
 
 socket.on("live-stop", ({ roomId }) => {
