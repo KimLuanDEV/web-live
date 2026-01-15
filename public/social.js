@@ -195,7 +195,7 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
   <span class="cm-like" onclick="likeComment('${postId}',${idx})">
     ❤️ <b id="cl_${postId}_${idx}">${comment.likes?.length || 0}</b>
   </span>
-  <span onclick="openReply('${postId}',${idx})">Trả lời</span>
+  <span onclick="openReply('${postId}',${idx})">💬</span>
   ${(comment.uid === auth.uid || postOwnerUid === auth.uid) ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
 </div>
 
@@ -315,7 +315,7 @@ if(p.comments && p.comments.length){
   <span class="cm-like" onclick="likeComment('${p.id}',${idx})">
     ❤️ <b id="cl_${p.id}_${idx}">${comment.likes?.length || 0}</b>
   </span>
-  <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
+  <span onclick="openReply('${p.id}',${idx})">💬</span>
   ${(comment.uid === auth.uid || p.uid === auth.uid) ? `<span class="cm-del" onclick="deleteComment('${p.id}',${idx})">🗑</span>` : ``}
 </div>
 
