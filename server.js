@@ -1147,6 +1147,51 @@ socket.on("profile-update", ({ name, avatar, level }) => {
     }
   }
 
+    // ===== SYNC AVATAR VÀO TOÀN BỘ SOCIAL POSTS =====
+  if (uid && avatar) {
+    let changed = false;
+
+    for (const p of lpPosts) {
+      if (p.uid === uid) {
+        p.avatar = avatar;
+        changed = true;
+      }
+
+      if (p.comments) {
+        for (const c of p.comments) {
+          if (c.uid === uid) {
+            c.avatar = avatar;
+            changed = true;
+          }
+
+          if (c.replies) {
+            for (const r of c.replies) {
+              if (r.uid === uid) {
+                r.avatar = avatar;
+                changed = true;
+              }
+
+              if (r.replies) {
+                for (const ch of r.replies) {
+                  if (ch.uid === uid) {
+                    ch.avatar = avatar;
+                    changed = true;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+
+    if (changed) saveSocial();
+
+    // 🔥 broadcast cho client update DOM
+    io.emit("social-avatar-sync", { uid, avatar });
+  }
+
+
   // ===== 3. Nếu user đang ở trong room thì sync viewer list =====
   const roomId = socket.data.roomId;
   if (roomId) {

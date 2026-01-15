@@ -29,10 +29,26 @@ socket.on("profile-update", data => {
 
     // 🔥 UPDATE TOÀN BỘ FEED CŨ
     document.querySelectorAll(".lp-post").forEach(post => {
-      const isMine =
-        post.querySelector(".lp-del") ||                 // có nút xóa → là bài của mình
-        post.querySelector(".lp-post-name")?.textContent === auth.name;
 
+      if (post.dataset.uid === auth.uid) {
+    const ava = post.querySelector(".lp-ava");
+    if (ava) ava.src = data.avatar;
+  }
+
+  post.querySelectorAll(".lp-comment").forEach(c => {
+    if (c.dataset.uid === auth.uid) {
+      const img = c.querySelector(".lp-cm-ava");
+      if (img) img.src = data.avatar;
+    }
+  });
+
+  post.querySelectorAll(".lp-reply").forEach(r => {
+    if (r.dataset.uid === auth.uid) {
+      const img = r.querySelector("img");
+      if (img) img.src = data.avatar;
+    }
+  });
+  
       if (isMine) {
         const ava = post.querySelector(".lp-ava");
         if (ava) ava.src = data.avatar;
@@ -495,6 +511,7 @@ function renderPost(p, top=false){
   const div = document.createElement("div");
   div.className="lp-post";
   div.dataset.id = p.id;
+  div.dataset.uid = p.uid;   // 🔥 rất quan trọng
 
   const time = new Date(p.time).toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
@@ -544,6 +561,7 @@ if(p.comments && p.comments.length){
     const c = document.createElement("div");
     c.className="lp-comment";
     c.dataset.index = idx;
+    c.dataset.uid = comment.uid;
 
     c.innerHTML = `
       <img class="lp-cm-ava" src="${comment.avatar}">
@@ -574,6 +592,8 @@ if(p.comments && p.comments.length){
         const rdiv = document.createElement("div");
         rdiv.className="lp-reply";
         rdiv.dataset.id = r.id;   // 🔥 bắt buộc
+        rdiv.dataset.uid = r.uid;
+
 
      rdiv.innerHTML=`
   <img src="${r.avatar}">
@@ -605,6 +625,8 @@ if(r.replies){
   const c2 = document.createElement("div");
   c2.className="lp-reply";
   c2.dataset.id = child.id;   // 🔥 bắt buộc
+  c2.dataset.uid = child.uid;
+
   c2.style.marginLeft="16px";
 
   c2.innerHTML = `
