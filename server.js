@@ -84,6 +84,11 @@ const lpPosts = [];   // {uid, name, avatar, text, time}
 const activeUsers = new Map();   // uid -> socketId
 
 
+function getPost(id){
+  return lpPosts.find(p=>p.id===id);
+}
+
+
 function getActiveUserList(){
   const list = [];
 
@@ -552,25 +557,65 @@ io.on("connection", (socket) => {
 // gửi feed khi user vừa kết nối
 socket.emit("lp-init", lpPosts.slice(0, 50));
 
-// nhận bài viết mới
+
 socket.on("lp-post", post => {
   if(!post || !post.uid || !post.text) return;
 
   const clean = {
+    id: Date.now() + "_" + Math.random().toString(36).slice(2),   // 🔑 ID BÀI
     uid: String(post.uid),
     name: String(post.name || "User").slice(0,20),
     avatar: String(post.avatar || ""),
     text: String(post.text).slice(0, 500),
-    time: Date.now()
+    time: Date.now(),
+    likes: [],
+    comments: []
   };
 
   lpPosts.unshift(clean);
-
-  // giữ tối đa 200 bài
   if(lpPosts.length > 200) lpPosts.length = 200;
 
-  // gửi cho toàn bộ user online
   io.emit("lp-post", clean);
+});
+
+
+socket.on("lp-like", ({ postId, uid })=>{
+  const post = getPost(postId);
+  if(!post || !uid) return;
+
+  post.likes = post.likes || [];
+
+  const i = post.likes.indexOf(uid);
+  if(i >= 0) post.likes.splice(i,1);
+  else post.likes.push(uid);
+
+  io.emit("lp-like", {
+    postId,
+    likes: post.likes.length
+  });
+});
+
+socket.on("lp-comment", ({ postId, uid, name, avatar, text })=>{
+  const post = getPost(postId);
+  if(!post || !uid || !text) return;
+
+  post.comments = post.comments || [];
+
+  const c = {
+    uid,
+    name: String(name || "User").slice(0,20),
+    avatar: String(avatar || ""),
+    text: String(text).slice(0,200),
+    time: Date.now()
+  };
+
+  post.comments.push(c);
+
+  io.emit("lp-comment", {
+    postId,
+    comment: c,
+    count: post.comments.length
+  });
 });
 
 
