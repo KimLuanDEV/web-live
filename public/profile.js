@@ -399,7 +399,7 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
     }
 
     if(type === "chat"){
-      location.href = "/lobby.html#chat";
+      location.href = "/messages.html";
     }
 
     if(type === "hot"){

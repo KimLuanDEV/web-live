@@ -320,3 +320,23 @@ window.addEventListener("resize", () => {
 
 
 
+// ===== MOBILE TAB BAR (PROFILE) =====
+document.querySelectorAll(".tab-item").forEach(tab=>{
+  tab.onclick = ()=>{
+    const type = tab.dataset.tab;
+
+    if(type === "profile") {
+      location.href = "/profile.html";
+    }
+
+    if(type === "lobby"){
+      location.href = "/lobby.html";
+    }
+
+    if(type === "chat") return;
+
+    if(type === "hot"){
+      location.href = "/lobby.html#hot";
+    }
+  };
+});
