@@ -680,9 +680,9 @@ if(socket.data.uid?.startsWith("guest_")){
 });
 
 
-socket.on("msg-seen-all", ({ peer })=>{
+socket.on("msg-seen-all", ()=>{
   const uid = socket.data.uid;
-  if(!uid || !peer) return;
+  if(!uid) return;
 
   const inbox = userInbox.get(uid);
   if(!inbox) return;
@@ -690,17 +690,14 @@ socket.on("msg-seen-all", ({ peer })=>{
   let changed = false;
 
   for(const m of inbox){
-    if(m.from === peer && !m.seen){
+    if(!m.seen){
       m.seen = true;
       changed = true;
     }
   }
 
   if(changed){
-    const unread = inbox.filter(m=>!m.seen).length;
-    if(unread === 0){
-      socket.emit("inbox-clear");
-    }
+    socket.emit("inbox-clear"); // 🔴 tắt badge
   }
 });
 
