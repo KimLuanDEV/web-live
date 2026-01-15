@@ -1183,6 +1183,23 @@ function renderPlayerLobbyAll(){
 
 
 
+let lastScroll = 0;
+const tabbar = document.querySelector(".mobile-tabbar");
+
+window.addEventListener("scroll", ()=>{
+  const cur = window.scrollY;
+
+  if(cur > lastScroll + 10){
+    tabbar.classList.add("hide");     // vuốt xuống → ẩn
+  }
+  else if(cur < lastScroll - 10){
+    tabbar.classList.remove("hide");  // vuốt lên → hiện
+  }
+
+  lastScroll = cur;
+});
+
+
 </script>
 
 

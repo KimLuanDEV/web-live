@@ -7095,4 +7095,15 @@ body.is-guest .reactions-layer{
   box-shadow: 0 0 20px rgba(255,59,107,.5);
 }
 
+/* ===== MOBILE TAB BAR: HIDE ON SCROLL ===== */
+.mobile-tabbar{
+  transition: transform .35s ease, opacity .35s ease;
+  will-change: transform;
+}
+
+.mobile-tabbar.hide{
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
 

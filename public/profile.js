@@ -435,3 +435,22 @@ if(bioInput){
     }
   };
 }
+
+
+let lastScroll = 0;
+const tabbar = document.querySelector(".mobile-tabbar");
+
+window.addEventListener("scroll", ()=>{
+  const cur = window.scrollY;
+
+  if(cur > lastScroll + 10){
+    tabbar.classList.add("hide");
+  }
+  else if(cur < lastScroll - 10){
+    tabbar.classList.remove("hide");
+  }
+
+  lastScroll = cur;
+});
+
+
