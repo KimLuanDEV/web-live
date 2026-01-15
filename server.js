@@ -117,6 +117,7 @@ function getActiveUserList(){
 
 function emitActiveUsers(){
   io.emit("active-users", {
+    users: getActiveUserList(),
     online: Array.from(activeUsers.keys()),
     ts: Date.now()
   });

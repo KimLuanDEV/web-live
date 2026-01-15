@@ -1,14 +1,27 @@
 const socket = io();
+
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
-
-
 const sysModal = document.getElementById("sysModal");
 const sysText = document.getElementById("sysText");
 const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
 
-let currentTarget = null;
 
+
+
+
+let currentTarget = null;
+let allUsers = [];
+let onlineSet = new Set();
+
+
+async function loadAllUsers(){
+  const res = await fetch("/api/all-users");
+  allUsers = await res.json();
+  renderUserList();
+}
+
+loadAllUsers();
 
 
 
@@ -91,37 +104,12 @@ const userList = document.getElementById("userList");
 const chatBox = document.getElementById("chatBox");
 const chatTitle = document.getElementById("chatTitle");
 
-socket.on("active-users", ({ users }) => {
-  userList.innerHTML = "";
 
-  users.forEach(u => {
-   if(u.uid === auth.uid) return;
-
-
-    const div = document.createElement("div");
-    div.className = "badge";
-    div.innerHTML = `<img src="${u.avatar}" width="24" style="border-radius:50%"> ${u.name}`;
-
-   div.onclick = () => {
-  currentTarget = u;         // vẫn giữ để lấy name, avatar
-  currentTargetUID = u.uid; // 🔥 dùng UID này cho chat
-
-  chatTitle.textContent = u.name;
-
-  const headerAva = document.getElementById("chatHeaderAvatar");
-  if(headerAva) headerAva.src = u.avatar || "";
-
-  loadChat();
-  openChat();
-  
-
-};
-
-
-
-    userList.appendChild(div);
-  });
+socket.on("active-users", ({ online }) => {
+  onlineSet = new Set(online || []);
+  renderUserList();
 });
+
 
 document.getElementById("sendBtn").onclick = () => {
   const input = document.getElementById("msgInput");
@@ -217,6 +205,42 @@ requestAnimationFrame(() => {
 
 
 const chatModal = document.getElementById("chatModal");
+
+
+function renderUserList(){
+  userList.innerHTML = "";
+
+  allUsers.forEach(u=>{
+    if(u.uid === auth.uid) return;
+
+    const isOnline = onlineSet.has(u.uid);
+
+    const div = document.createElement("div");
+    div.className = "badge " + (isOnline ? "online" : "offline");
+
+    div.innerHTML = `
+      <img src="${u.avatar}" width="28" style="border-radius:50%">
+      <div style="flex:1">
+        <div>${u.name}</div>
+        <small style="opacity:.6">${isOnline ? "● Online" : "Offline"}</small>
+      </div>
+    `;
+
+    div.onclick = ()=>{
+      currentTarget = u;
+      currentTargetUID = u.uid;
+
+      chatTitle.textContent = u.name;
+      document.getElementById("chatHeaderAvatar").src = u.avatar || "";
+
+      loadChat();
+      openChat();
+    };
+
+    userList.appendChild(div);
+  });
+}
+
 
 function openChat(){
   document.body.style.overflow = "hidden"; // khóa nền
