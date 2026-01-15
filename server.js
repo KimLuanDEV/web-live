@@ -649,10 +649,12 @@ socket.on("lp-comment", ({ postId, uid, name, avatar, text })=>{
   saveSocial();
 
   io.emit("lp-comment", {
-    postId,
-    comment: c,
-    count: post.comments.length
-  });
+  postId,
+  postOwnerUid: post.uid,   // 👑 thêm
+  comment: c,
+  count: post.comments.length
+});
+
 });
 
 

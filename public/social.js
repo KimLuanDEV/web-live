@@ -130,7 +130,8 @@ socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
 });
 
 
-socket.on("lp-comment", ({ postId, comment, count })=>{
+socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
+
   const countEl = document.getElementById("c_"+postId);
   if(countEl) countEl.textContent = count;
 
@@ -151,7 +152,8 @@ socket.on("lp-comment", ({ postId, comment, count })=>{
 
   <div class="lp-cm-actions">
   <span onclick="openReply('${postId}',${idx})">Trả lời</span>
-  ${(comment.uid === auth.uid || isPostOwner('${postId}')) ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
+  ${(comment.uid === auth.uid || postOwnerUid === auth.uid) ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
+
 </div>
 
 
