@@ -104,6 +104,16 @@ function deleteComment(postId, index){
   });
 }
 
+function likeComment(postId, index){
+  socket.emit("lp-like-comment",{
+    postId,
+    index,
+    uid: auth.uid
+  });
+}
+
+
+
 socket.on("lp-delete-comment", ({ postId, index })=>{
   const wrap = document.getElementById("cm_"+postId);
   if(!wrap) return;
@@ -129,10 +139,19 @@ socket.on("lp-delete-comment", ({ postId, index })=>{
 
     const del = c.querySelector(".cm-del");
     if(del) del.setAttribute("onclick", `deleteComment('${postId}',${i})`);
+
+    const like = c.querySelector(".cm-like b");
+    if(like) like.id = `cl_${postId}_${i}`;
+
   });
+
 });
 
 
+socket.on("lp-like-comment", ({ postId, index, likes })=>{
+  const el = document.getElementById(`cl_${postId}_${index}`);
+  if(el) el.textContent = likes;
+});
 
 
 socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
@@ -172,11 +191,14 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
       <div class="lp-cm-name">${comment.name}</div>
       <div class="lp-cm-text">${comment.text}</div>
 
-  <div class="lp-cm-actions">
+<div class="lp-cm-actions">
+  <span class="cm-like" onclick="likeComment('${postId}',${idx})">
+    ❤️ <b id="cl_${postId}_${idx}">${comment.likes?.length || 0}</b>
+  </span>
   <span onclick="openReply('${postId}',${idx})">Trả lời</span>
   ${(comment.uid === auth.uid || postOwnerUid === auth.uid) ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
-
 </div>
+
 
 
 
@@ -289,10 +311,14 @@ if(p.comments && p.comments.length){
         <div class="lp-cm-name">${comment.name}</div>
         <div class="lp-cm-text">${comment.text}</div>
 
-  <div class="lp-cm-actions">
+<div class="lp-cm-actions">
+  <span class="cm-like" onclick="likeComment('${p.id}',${idx})">
+    ❤️ <b id="cl_${p.id}_${idx}">${comment.likes?.length || 0}</b>
+  </span>
   <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
   ${(comment.uid === auth.uid || p.uid === auth.uid) ? `<span class="cm-del" onclick="deleteComment('${p.id}',${idx})">🗑</span>` : ``}
 </div>
+
 
 
         <div class="lp-replies" id="rp_${p.id}_${idx}"></div>

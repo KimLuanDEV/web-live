@@ -572,6 +572,28 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
+socket.on("lp-like-comment", ({ postId, index, uid })=>{
+  const post = getPost(postId);
+  if(!post || !post.comments || !post.comments[index]) return;
+
+  const c = post.comments[index];
+  c.likes = c.likes || [];
+
+  const i = c.likes.indexOf(uid);
+  if(i>=0) c.likes.splice(i,1);
+  else c.likes.push(uid);
+
+  saveSocial();
+
+  io.emit("lp-like-comment", {
+    postId,
+    index,
+    likes: c.likes.length
+  });
+});
+
+
+
 socket.on("lp-delete", ({ postId, uid })=>{
   const idx = lpPosts.findIndex(p => p.id === postId && p.uid === uid);
   if(idx < 0) return;  // không phải chủ bài → không cho
