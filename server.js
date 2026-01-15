@@ -338,7 +338,7 @@ rooms.set(roomId, {
   giftByUser: new Map(),
   releaseTimer: null,
   pendingRelease: false,
-  idleTimer: null
+  
 });
 
 
@@ -424,7 +424,7 @@ function getRoom(roomId) {
   giftByUser: new Map(),
   releaseTimer: null,
   pendingRelease: false,
-  idleTimer: null
+ 
 });
 
 
@@ -433,34 +433,6 @@ function getRoom(roomId) {
 }
 
 
-function checkRoomIdle(roomId){
-  const room = rooms.get(roomId);
-  if(!room) return;
-
-  const viewerCount = safeMap(room.viewerProfiles).size;
-  const hasHost = !!room.broadcasterId;
-
-  if(!hasHost && viewerCount === 0){
-    if(room.idleTimer) return;
-
-    room.idleTimer = setTimeout(()=>{
-      const r = rooms.get(roomId);
-      if(!r) return;
-
-      if(!r.broadcasterId && safeMap(r.viewerProfiles).size === 0){
-        console.log("💤 Auto-sleep room:", roomId);
-        closeRoom(roomId, "idle_sleep");
-      }
-      r.idleTimer = null;
-    }, 60000); // 60 giây
-  }
-  else{
-    if(room.idleTimer){
-      clearTimeout(room.idleTimer);
-      room.idleTimer = null;
-    }
-  }
-}
 
 
 
@@ -532,9 +504,6 @@ function closeRoom(roomId, reason = "host_left") {
   if (!room) return;
 
 
-  if(room.idleTimer){
-  clearTimeout(room.idleTimer);
-  room.idleTimer = null;
 }
 
   // 🔔 notify host
@@ -1569,7 +1538,7 @@ for (const v of list) {
 
 
     emitLobbyUpdate();
-    checkRoomIdle(roomId);
+   
 
   }
 
@@ -1590,7 +1559,7 @@ for (const v of list) {
 
     io.to(roomId).emit("host-temp-offline");
 
-    checkRoomIdle(roomId);
+  
 
   }
 
