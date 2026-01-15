@@ -1,4 +1,4 @@
-const socket = window.socket;
+const socket = io();
 
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const sysModal = document.getElementById("sysModal");
@@ -23,17 +23,6 @@ async function loadAllUsers(){
 
 loadAllUsers();
 
-// 🔥 load inbox offline khi mở Messages
-const keys = Object.keys(localStorage).filter(k => k.startsWith("chat_"));
-keys.forEach(k=>{
-  try{
-    const arr = JSON.parse(localStorage.getItem(k) || "[]");
-    if(arr.length){
-      // chỉ cần giữ, render khi user click
-      console.log("📩 Loaded", k, arr.length, "messages");
-    }
-  }catch{}
-});
 
 
 
