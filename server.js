@@ -753,10 +753,13 @@ socket.on("lp-reply", ({ postId, commentIndex, uid, name, avatar, text })=>{
   c.replies = c.replies || [];
 
   const r = {
-    uid, name, avatar,
-    text: text.slice(0,200),
-    time: Date.now()
-  };
+  id: Date.now() + "_" + Math.random().toString(36).slice(2),   // 🔥 BẮT BUỘC
+  uid, name, avatar,
+  text: text.slice(0,200),
+  time: Date.now(),
+  likes: []     // 🔥 để reload không bị undefined
+};
+
 
   c.replies.push(r);
   saveSocial();
