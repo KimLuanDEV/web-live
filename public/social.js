@@ -16,6 +16,55 @@ if (auth.uid) {
 document.getElementById("meAvatar").src = auth.avatar;
 
 
+socket.on("profile-update", data => {
+  const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+  if (data.avatar) {
+    auth.avatar = data.avatar;
+    localStorage.setItem("user_profile", JSON.stringify(auth));
+
+    // update avatar góc đăng bài
+    const me = document.getElementById("meAvatar");
+    if (me) me.src = data.avatar;
+
+    // 🔥 UPDATE TOÀN BỘ FEED CŨ
+    document.querySelectorAll(".lp-post").forEach(post => {
+      const isMine =
+        post.querySelector(".lp-del") ||                 // có nút xóa → là bài của mình
+        post.querySelector(".lp-post-name")?.textContent === auth.name;
+
+      if (isMine) {
+        const ava = post.querySelector(".lp-ava");
+        if (ava) ava.src = data.avatar;
+      }
+
+      // comments
+      post.querySelectorAll(".lp-comment").forEach(c => {
+        const name = c.querySelector(".lp-cm-name")?.textContent;
+        if (name === auth.name) {
+          const img = c.querySelector(".lp-cm-ava");
+          if (img) img.src = data.avatar;
+        }
+      });
+
+      // replies
+      post.querySelectorAll(".lp-reply").forEach(r => {
+        const name = r.querySelector("b")?.textContent;
+        if (name === auth.name) {
+          const img = r.querySelector("img");
+          if (img) img.src = data.avatar;
+        }
+      });
+    });
+  }
+
+  if (data.name) {
+    auth.name = data.name;
+    localStorage.setItem("user_profile", JSON.stringify(auth));
+  }
+});
+
+
 function openReplyChild(postId, cIndex, replyId){
   const box = document.getElementById(`rp2_${replyId}`);
   if(!box) return;
@@ -366,13 +415,16 @@ function submitPost(){
   const text = postText.value.trim();
   if(!text) return;
 
-  socket.emit("lp-post", {
-    uid: auth.uid,
-    name: auth.name,
-    avatar: auth.avatar,
-    text,
-    time: Date.now()
-  });
+  const cur = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+socket.emit("lp-post", {
+  uid: cur.uid,
+  name: cur.name,
+  avatar: cur.avatar,
+  text,
+  time: Date.now()
+});
+
 
   postText.value="";
 }
