@@ -6830,3 +6830,15 @@ body.is-guest .reactions-layer{
   border:2px solid #0b0b0b; /* viền cho nổi trên nền */
   z-index:10;
 }
+
+
+.lobby-btn--main{
+  background: linear-gradient(135deg,#ff0080,#7928ca);
+  color:white;
+  font-weight:700;
+  box-shadow: 0 0 18px rgba(255,0,128,.5);
+}
+
+@media(max-width:768px){
+  #btnCreateRoomDesktop{ display:none; }
+}
