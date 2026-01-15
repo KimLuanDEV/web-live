@@ -84,29 +84,29 @@ socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
 
 
 socket.on("lp-comment", ({ postId, comment, count })=>{
-  document.getElementById("c_"+postId).textContent = count;
+  const countEl = document.getElementById("c_"+postId);
+  if(countEl) countEl.textContent = count;
 
-  const list = document
-    .querySelector(`#cm_${postId} .lp-comment-list`);
+  const list = document.querySelector(`#cm_${postId} .lp-comment-list`);
+  if(!list) return;
+
+  const idx = list.children.length;   // 🔥 tạo index đúng
 
   const div = document.createElement("div");
+  div.className = "lp-comment";
+  div.dataset.index = idx;
 
- div.className="lp-comment";
-div.dataset.index = index;
-
-div.innerHTML = `
-  <img class="lp-cm-ava" src="${comment.avatar}">
-  <div class="lp-cm-body">
-    <div class="lp-cm-name">${comment.name}</div>
-    <div class="lp-cm-text">${comment.text}</div>
-    <div class="lp-cm-actions">
-      <span onclick="openReply('${postId}',${index})">Trả lời</span>
+  div.innerHTML = `
+    <img class="lp-cm-ava" src="${comment.avatar}">
+    <div class="lp-cm-body">
+      <div class="lp-cm-name">${comment.name}</div>
+      <div class="lp-cm-text">${comment.text}</div>
+      <div class="lp-cm-actions">
+        <span onclick="openReply('${postId}',${idx})">Trả lời</span>
+      </div>
+      <div class="lp-replies" id="rp_${postId}_${idx}"></div>
     </div>
-    <div class="lp-replies" id="rp_${postId}_${index}"></div>
-  </div>
-`;
-
-
+  `;
 
   list.appendChild(div);
 });
