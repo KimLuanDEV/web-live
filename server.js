@@ -972,9 +972,15 @@ socket.on("host-start-live", ({ roomId }) => {
     room.liveStartTs = Date.now();
   }
 
-  io.to(roomId).emit("host-live", {
-    liveStartTs: room.liveStartTs
-  });
+ // gửi cho toàn phòng (viewer)
+io.to(roomId).emit("host-live", {
+  liveStartTs: room.liveStartTs
+});
+
+// 🔥 gửi riêng cho host (chắc chắn nhận được)
+io.to(socket.id).emit("host-live", {
+  liveStartTs: room.liveStartTs
+});
 
   emitLobbyUpdate();
 });

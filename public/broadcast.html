@@ -490,10 +490,12 @@ btnStart.addEventListener("click", () => {
 
   __isLive = true;
 
-  socket.emit("live-start", { roomId });
+  // 🔥 PHẢI dùng event server đang nghe
+  socket.emit("host-start-live", { roomId });
 
   console.log("🔥 LIVE STARTED:", roomId);
 });
+
 
 
 
