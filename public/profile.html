@@ -148,6 +148,29 @@
 </div>
 
 
+<!-- AVATAR CROP MODAL -->
+<div id="cropModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card" style="max-width:420px">
+    <h3>✂️ Cắt ảnh đại diện</h3>
+
+    <div style="position:relative;width:300px;height:300px;margin:auto;overflow:hidden;border-radius:16px;background:#000">
+      <img id="cropImg" style="position:absolute;top:0;left:0;transform-origin:center;touch-action:none;user-select:none">
+      <div style="position:absolute;inset:0;border:2px solid #0ff;pointer-events:none"></div>
+    </div>
+
+    <input id="cropZoom" type="range" min="1" max="3" step="0.01" value="1" style="width:100%;margin-top:10px">
+
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button onclick="closeCrop()">Hủy</button>
+      <button onclick="applyCrop()">Dùng ảnh này</button>
+    </div>
+  </div>
+</div>
+
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/chat-global.js"></script>
 <script src="/profile.js"></script>

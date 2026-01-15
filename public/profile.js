@@ -202,6 +202,130 @@ if(btnMessages){
 }
 
 
+function resizeImageTo512(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      img.src = e.target.result;
+    };
+
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      const size = 512;
+      canvas.width = size;
+      canvas.height = size;
+
+      const ctx = canvas.getContext("2d");
+
+      // Crop center square
+      const s = Math.min(img.width, img.height);
+      const sx = (img.width - s) / 2;
+      const sy = (img.height - s) / 2;
+
+      ctx.drawImage(img, sx, sy, s, s, 0, 0, size, size);
+
+      canvas.toBlob(
+        blob => {
+          if (!blob) return reject("resize failed");
+          resolve(blob);
+        },
+        "image/jpeg",
+        0.92 // quality 92%
+      );
+    };
+
+    img.onerror = reject;
+    reader.readAsDataURL(file);
+  });
+}
+
+
+let cropFile = null;
+let cropScale = 1;
+let cropX = 0, cropY = 0;
+
+const cropModal = document.getElementById("cropModal");
+const cropImg = document.getElementById("cropImg");
+const cropZoom = document.getElementById("cropZoom");
+
+function openCrop(file){
+  cropFile = file;
+  cropScale = 1;
+  cropX = cropY = 0;
+  cropZoom.value = 1;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    cropImg.src = e.target.result;
+    cropImg.onload = () => updateCrop();
+    cropModal.classList.remove("hidden");
+  };
+  reader.readAsDataURL(file);
+}
+
+function closeCrop(){
+  cropModal.classList.add("hidden");
+}
+
+function updateCrop(){
+  cropImg.style.transform =
+    `translate(${cropX}px,${cropY}px) scale(${cropScale})`;
+}
+
+cropZoom.oninput = ()=>{
+  cropScale = Number(cropZoom.value);
+  updateCrop();
+};
+
+// drag
+let drag = false, lastX=0, lastY=0;
+
+cropImg.onpointerdown = e=>{
+  drag = true;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  cropImg.setPointerCapture(e.pointerId);
+};
+
+cropImg.onpointermove = e=>{
+  if(!drag) return;
+  cropX += e.clientX - lastX;
+  cropY += e.clientY - lastY;
+  lastX = e.clientX;
+  lastY = e.clientY;
+  updateCrop();
+};
+
+cropImg.onpointerup = ()=> drag=false;
+
+
+
+function cropToBlob(){
+  const canvas = document.createElement("canvas");
+  const size = 512;
+  canvas.width = size;
+  canvas.height = size;
+  const ctx = canvas.getContext("2d");
+
+  const rect = cropImg.getBoundingClientRect();
+  const box = 300; // crop box size
+
+  const scale = cropImg.naturalWidth / rect.width;
+
+  const sx = (-cropX) * scale;
+  const sy = (-cropY) * scale;
+  const sw = box * scale / cropScale;
+  const sh = box * scale / cropScale;
+
+  ctx.drawImage(cropImg, sx, sy, sw, sh, 0, 0, size, size);
+
+  return new Promise(r=>{
+    canvas.toBlob(b=>r(b),"image/jpeg",0.92);
+  });
+}
+
 
 document.getElementById("btnSave").onclick = () => {
   const current = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
@@ -244,12 +368,23 @@ document.querySelector(".avatar-wrap").onclick = () => {
 };
 
 
-avatarInput.onchange = async () => {
+avatarInput.onchange = () => {
   const file = avatarInput.files[0];
   if (!file) return;
 
+  openCrop(file);   // chỉ mở crop, KHÔNG upload
+};
+
+
+
+async function applyCrop(){
+  showMsg("⏳ Đang xử lý ảnh...");
+
+  const blob = await cropToBlob();
+  closeCrop();
+
   const fd = new FormData();
-  fd.append("avatar", file);
+  fd.append("avatar", blob, "avatar.jpg");
 
   const res = await fetch("/api/upload-avatar", {
     method: "POST",
@@ -257,28 +392,23 @@ avatarInput.onchange = async () => {
   });
 
   const data = await res.json();
-  if (!data.url) {
+  if(!data.url){
     showMsg("❌ Upload thất bại");
     return;
   }
 
   const avatarUrl = data.url;
-
-  // update UI
   avatarPreview.src = avatarUrl;
 
-  // lưu vào profile
   const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
   p.avatar = avatarUrl;
   localStorage.setItem(KEY, JSON.stringify(p));
 
-  // sync realtime
-  if (__profileAuth.uid) {
-    socket.emit("profile-update", { avatar: avatarUrl });
-    socket.emit("auth-login", { uid: __profileAuth.uid });
+  if(__profileAuth.uid){
+    socket.emit("profile-update",{ avatar: avatarUrl });
+    socket.emit("auth-login",{ uid: __profileAuth.uid });
   }
-};
-
+}
 
 function addExp(amount){
   const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
@@ -374,6 +504,8 @@ if(data.error === "otp"){
  showMsg("❌ Đổi mật khẩu thất bại");
 
 }
+
+
 
 
 function showMsg(text, title="Thông báo"){
