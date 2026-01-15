@@ -77,6 +77,9 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
 
 const rooms = new Map();
 
+// ===== LIVESTREAM PRO SOCIAL =====
+const lpPosts = [];   // {uid, name, avatar, text, time}
+
 
 const activeUsers = new Map();   // uid -> socketId
 
@@ -542,6 +545,34 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+
+
+  // ===== LIVESTREAM PRO SOCIAL =====
+
+// gửi feed khi user vừa kết nối
+socket.emit("lp-init", lpPosts.slice(0, 50));
+
+// nhận bài viết mới
+socket.on("lp-post", post => {
+  if(!post || !post.uid || !post.text) return;
+
+  const clean = {
+    uid: String(post.uid),
+    name: String(post.name || "User").slice(0,20),
+    avatar: String(post.avatar || ""),
+    text: String(post.text).slice(0, 500),
+    time: Date.now()
+  };
+
+  lpPosts.unshift(clean);
+
+  // giữ tối đa 200 bài
+  if(lpPosts.length > 200) lpPosts.length = 200;
+
+  // gửi cho toàn bộ user online
+  io.emit("lp-post", clean);
+});
+
 
 
 socket.on("private-message", ({ to, text, msgId }) => {

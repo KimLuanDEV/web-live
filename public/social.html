@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Livestream Pro • Social</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+
+<style>
+
+/* ===== LIVESTREAM PRO SOCIAL ===== */
+
+.lp-shell{
+  max-width:720px;
+  margin:0 auto;
+  padding:10px;
+}
+
+.lp-topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px;
+  background:rgba(0,0,0,.5);
+  border-bottom:1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(10px);
+}
+
+.lp-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+  letter-spacing:.6px;
+}
+
+.lp-dot{
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#25F09A;
+  box-shadow:0 0 14px #25F09A;
+}
+
+/* Composer */
+.lp-compose{
+  margin-top:12px;
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:18px;
+  padding:12px;
+}
+
+.lp-compose-row{
+  display:flex;
+  gap:10px;
+}
+
+.lp-compose textarea{
+  flex:1;
+  height:70px;
+  resize:none;
+  background:rgba(0,0,0,.6);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+  padding:10px;
+  color:#fff;
+}
+
+.lp-compose-actions{
+  display:flex;
+  justify-content:space-between;
+  margin-top:10px;
+}
+
+.lp-post-btn{
+  padding:10px 16px;
+  border-radius:999px;
+  background:linear-gradient(135deg,#25F09A,#5FA8FF);
+  border:none;
+  font-weight:900;
+  color:#000;
+}
+
+/* Feed */
+.lp-feed{
+  margin-top:14px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.lp-post{
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.14);
+  border-radius:20px;
+  padding:14px;
+  box-shadow:0 18px 50px rgba(0,0,0,.6);
+}
+
+.lp-post-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.lp-ava{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  object-fit:cover;
+}
+
+.lp-post-name{
+  font-weight:900;
+}
+
+.lp-post-time{
+  font-size:12px;
+  opacity:.6;
+}
+
+.lp-post-text{
+  margin-top:10px;
+  line-height:1.4;
+}
+
+.lp-post-img{
+  width:100%;
+  margin-top:10px;
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.12);
+}
+</style>
+
+</head>
+
+<body class="social-page">
+
+<script src="/guard.js"></script>
+
+<div class="lp-shell">
+
+  <!-- TOP BAR -->
+  <div class="lp-topbar">
+    <button class="msg-back" onclick="location.href='/profile.html'">‹</button>
+    <div class="lp-title">
+      <span class="lp-dot"></span> Livestream Pro
+    </div>
+  </div>
+
+  <!-- CREATE POST -->
+  <div class="lp-compose">
+    <div class="lp-compose-row">
+      <img id="meAvatar" class="lp-ava" />
+      <textarea id="postText" placeholder="Chia sẻ điều gì đó…"></textarea>
+    </div>
+
+    <div class="lp-compose-actions">
+      <input type="file" id="postImage" accept="image/*">
+      <button class="lp-post-btn" onclick="submitPost()">Đăng</button>
+    </div>
+  </div>
+
+  <!-- FEED -->
+  <div id="lpFeed" class="lp-feed"></div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/social.js"></script>
+</body>
+</html>
