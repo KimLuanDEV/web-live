@@ -842,6 +842,15 @@ function showVipChatSpotlight(vipKey){
 }
 
 
+socket.on("host-live", ({ liveStartTs }) => {
+  if (!liveStartTs) return;
+
+  console.log("⏱ LIVE TIMER START:", liveStartTs);
+
+  __startLiveTimer(liveStartTs);
+  syncStartLiveOverlay(true);
+});
+
 
 
 socket.on("profile-updated", ({ socketId, avatar }) => {
