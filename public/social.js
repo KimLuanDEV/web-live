@@ -68,7 +68,13 @@ function sendReply(postId, index){
     text
   });
 
-  input.value="";
+  // clear input
+input.value="";
+
+// 🔥 đóng box sau khi gửi
+const box = document.getElementById(`rp_${postId}_${index}`);
+if(box) box.innerHTML = "";
+
 }
 
 
