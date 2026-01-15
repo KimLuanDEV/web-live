@@ -809,6 +809,8 @@ function render(list){
       : `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
 
     const hostName   = r.host?.name   || (r.__virtual ? "Room Ảo" : "Host");
+    const verified = r.host?.verified;
+
     const hostAvatar = r.host?.avatar || `https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg`;
 
     const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
@@ -820,7 +822,11 @@ function render(list){
         <div class="lobby-host">
           <img class="lobby-ava" src="${hostAvatar}" alt="avatar" loading="lazy">
           <div class="lobby-hostinfo">
-            <div class="lobby-hostname">${escapeHtml(hostName)}</div>
+           <div class="lobby-hostname">
+  ${escapeHtml(hostName)}
+  ${verified ? `<span class="tick-blue">✔</span>` : ``}
+</div>
+
             <div class="lobby-roomid">🎥 ${escapeHtml(r.roomId)}</div>
           </div>
         </div>
@@ -1157,7 +1163,11 @@ function renderPlayerLobbyAll(){
           <span class="dot ${isOn ? "on":"off"}"></span>
         </div>
         <div class="pinfo">
-          <div class="pname">${u.name}</div>
+          <div class="pname">
+  ${u.name}
+  ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
+</div>
+
           <div class="plevel">Lv ${u.level}</div>
         </div>
       </div>

@@ -288,7 +288,8 @@ app.get("/api/all-users", (req,res)=>{
       uid,
       name: p.name || uid,
       avatar: p.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
-      level: p.level || 1
+      level: p.level || 1,
+      verified: !!p.verified   // ⭐ thêm
     });
   }
 

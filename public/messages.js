@@ -247,7 +247,11 @@ function renderUserList(){
 div.innerHTML = `
   <img src="${u.avatar}" width="28" style="border-radius:50%">
   <div style="flex:1">
-    <div>${u.name}</div>
+   <div>
+  ${u.name}
+  ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
+</div>
+
     <small style="display:flex;align-items:center;gap:6px">
      <span class="status-dot ${isOnline ? "on" : "off"}"></span>
 
