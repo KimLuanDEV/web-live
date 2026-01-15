@@ -164,7 +164,10 @@ saveChat({
   peer: currentTargetUID   // 🔥 QUAN TRỌNG
 });
 
-
+ // ✅ XÓA INPUT NGAY LẬP TỨC (QUAN TRỌNG)
+  input.value = "";
+  input.blur();
+  setTimeout(()=>input.focus(),20);
 };
 
 
@@ -191,19 +194,12 @@ socket.emit("msg-seen", {
 
 socket.on("msg-status", ({ msgId, status }) => {
   const el = document.querySelector(`[data-msg-id="${msgId}"] .msg-status`);
-  if(el){
-    if(status === "delivered"){
-      el.textContent = "✓";
+  if(!el) return;
 
-      // ✅ XÓA INPUT TẠI ĐÂY
-      const input = document.getElementById("msgInput");
-      input.value = "";
-      input.blur();
-      setTimeout(()=>input.focus(),20);
-    }
-    if(status === "seen") el.textContent = "👁";
-  }
+  if(status === "delivered") el.textContent = "✓";
+  if(status === "seen") el.textContent = "👁";
 });
+
 
 
 
