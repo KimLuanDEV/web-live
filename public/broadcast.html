@@ -483,6 +483,19 @@ startLiveBigBtn?.addEventListener("click", () => {
   btnStart?.click();
 });
 
+let __isLive = false;
+
+btnStart.addEventListener("click", () => {
+  if(__isLive) return;
+
+  __isLive = true;
+
+  socket.emit("live-start", { roomId });
+
+  console.log("🔥 LIVE STARTED:", roomId);
+});
+
+
 
 
 
