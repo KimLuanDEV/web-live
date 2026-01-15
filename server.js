@@ -818,6 +818,35 @@ socket.on("lp-delete-reply", ({ postId, commentIndex, replyId, uid })=>{
 
 
 
+socket.on("lp-delete-reply-child", ({ postId, commentIndex, replyId, childId, uid })=>{
+  const post = getPost(postId);
+  if(!post) return;
+
+  const c = post.comments?.[commentIndex];
+  if(!c || !c.replies) return;
+
+  const parent = c.replies.find(r=>r.id===replyId);
+  if(!parent || !parent.replies) return;
+
+  const idx = parent.replies.findIndex(x=>x.id===childId);
+  if(idx < 0) return;
+
+  const child = parent.replies[idx];
+
+  // 🔐 chỉ chủ reply-of-reply hoặc chủ bài
+  if(child.uid !== uid && post.uid !== uid) return;
+
+  parent.replies.splice(idx,1);
+  saveSocial();
+
+  io.emit("lp-delete-reply-child", {
+    postId,
+    commentIndex,
+    replyId,
+    childId
+  });
+});
+
 
 socket.on("private-message", ({ to, text, msgId }) => {
 

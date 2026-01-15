@@ -191,6 +191,26 @@ function deleteReply(postId, cIndex, replyId){
   });
 }
 
+
+function deleteReplyChild(postId, cIndex, replyId, childId){
+  if(!confirm("Xóa trả lời này?")) return;
+
+  socket.emit("lp-delete-reply-child",{
+    postId,
+    commentIndex:cIndex,
+    replyId,
+    childId,
+    uid: auth.uid
+  });
+}
+
+socket.on("lp-delete-reply-child", ({ replyId, childId })=>{
+  const el = document.querySelector(`#rp2_${replyId} .lp-reply[data-id="${childId}"]`);
+  if(el) el.remove();
+});
+
+
+
 socket.on("lp-delete-reply", ({ postId, commentIndex, replyId })=>{
   const el = document.querySelector(`#rp_${postId}_${commentIndex} .lp-reply[data-id="${replyId}"]`);
   if(el) el.remove();
@@ -342,13 +362,25 @@ socket.on("lp-reply-child", ({ postId, commentIndex, replyId, child })=>{
   const box = document.getElementById(`rp2_${replyId}`);
   if(!box) return;
 
-  const div = document.createElement("div");
-  div.className="lp-reply";
-  div.style.marginLeft="16px";
-  div.innerHTML = `
-    <img src="${child.avatar}">
-    <div><b>${child.name}</b> ${child.text}</div>
-  `;
+ const div = document.createElement("div");
+div.className="lp-reply";
+div.dataset.id = child.id;   // 🔥 bắt buộc
+div.style.marginLeft="16px";
+
+div.innerHTML = `
+  <img src="${child.avatar}">
+  <div>
+    <b>${child.name}</b> ${child.text}
+    <div class="lp-cm-actions">
+      ${(child.uid === auth.uid || isPostOwner(postId)) ?
+        `<span class="cm-del" onclick="deleteReplyChild('${postId}',${commentIndex},'${replyId}','${child.id}')">🗑</span>` : ``}
+    </div>
+  </div>
+`;
+
+  
+
+
   box.appendChild(div);
 });
 
@@ -477,16 +509,27 @@ if(p.comments && p.comments.length){
         // 🔥 render reply-of-reply (cấp 2)
 if(r.replies){
   const box2 = rdiv.querySelector(`#rp2_${r.id}`);
-  r.replies.forEach(child=>{
-    const c2 = document.createElement("div");
-    c2.className="lp-reply";
-    c2.style.marginLeft="16px";
-    c2.innerHTML = `
-      <img src="${child.avatar}">
-      <div><b>${child.name}</b> ${child.text}</div>
-    `;
-    box2.appendChild(c2);
-  });
+
+ r.replies.forEach(child=>{
+  const c2 = document.createElement("div");
+  c2.className="lp-reply";
+  c2.dataset.id = child.id;   // 🔥 bắt buộc
+  c2.style.marginLeft="16px";
+
+  c2.innerHTML = `
+    <img src="${child.avatar}">
+    <div>
+      <b>${child.name}</b> ${child.text}
+      <div class="lp-cm-actions">
+        ${(child.uid === auth.uid || p.uid === auth.uid) ?
+          `<span class="cm-del" onclick="deleteReplyChild('${p.id}',${idx},'${r.id}','${child.id}')">🗑</span>` : ``}
+      </div>
+    </div>
+  `;
+
+  box2.appendChild(c2);
+});
+
 }
 
       });
