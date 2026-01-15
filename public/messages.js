@@ -211,7 +211,8 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
   const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
   div.innerHTML = `
-    <div class="bubble">${text}</div>
+   <div class="msg-bubble ${isMe ? "me":"other"}">${text}</div>
+
     <div class="chat-time">
       ${time}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
@@ -242,23 +243,22 @@ function renderUserList(){
     const isOnline = onlineSet.has(u.uid);
 
     const div = document.createElement("div");
-    div.className = "badge " + (isOnline ? "online" : "offline");
+    div.className = "msg-user " + (isOnline ? "online" : "offline");
+
 
 div.innerHTML = `
-  <img src="${u.avatar}" width="28" style="border-radius:50%">
-  <div style="flex:1">
-   <div>
-  ${u.name}
-  ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
-</div>
-
-    <small style="display:flex;align-items:center;gap:6px">
-     <span class="status-dot ${isOnline ? "on" : "off"}"></span>
-
+  <img class="msg-ava" src="${u.avatar}">
+  <div class="msg-uinfo">
+    <div class="msg-uname">
+      ${u.name}
+      ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
+    </div>
+    <div class="msg-ustatus ${isOnline ? "on":"off"}">
       ${isOnline ? "Online" : "Offline"}
-    </small>
+    </div>
   </div>
 `;
+
 
 
     div.onclick = ()=>{

@@ -6888,3 +6888,138 @@ body.is-guest .reactions-layer{
   font-size:10px;
 }
 
+
+/* ===== MESSAGES NEON ===== */
+.msg-shell{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.msg-topbar{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:12px 14px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.35);
+  backdrop-filter:blur(10px);
+}
+
+.msg-back{
+  width:40px;
+  height:40px;
+  border-radius:14px;
+  font-size:22px;
+  background:rgba(0,0,0,.4);
+}
+
+.msg-title{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-weight:900;
+  letter-spacing:.5px;
+}
+
+.msg-title .dot{
+  width:10px;height:10px;border-radius:50%;
+  background:#ff3b6b;
+  box-shadow:0 0 16px #ff3b6b;
+}
+
+.msg-layout{
+  flex:1;
+  display:grid;
+  grid-template-columns: 320px 1fr;
+  overflow:hidden;
+}
+
+@media(max-width:700px){
+  .msg-layout{ grid-template-columns: 1fr; }
+}
+
+.msg-users{
+  border-right:1px solid rgba(255,255,255,.12);
+  background:rgba(0,0,0,.25);
+  display:flex;
+  flex-direction:column;
+}
+
+.msg-users-title{
+  padding:12px;
+  font-weight:800;
+  opacity:.85;
+}
+
+.msg-userlist{
+  flex:1;
+  overflow:auto;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+}
+
+.msg-placeholder{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.msg-empty{
+  text-align:center;
+  opacity:.6;
+}
+.msg-empty-icon{
+  font-size:42px;
+}
+.msg-empty-text{
+  margin-top:10px;
+  font-size:14px;
+}
+
+
+.msg-user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:14px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.1);
+  cursor:pointer;
+}
+.msg-user:hover{
+  border-color:#ff3b6b;
+  box-shadow:0 0 18px rgba(255,59,107,.25);
+}
+.msg-ava{
+  width:42px;height:42px;
+  border-radius:14px;
+  object-fit:cover;
+}
+.msg-uname{ font-weight:800; }
+.msg-ustatus.on{ color:#25F09A; }
+.msg-ustatus.off{ opacity:.5; }
+
+
+.msg-bubble{
+  max-width:75%;
+  padding:10px 14px;
+  border-radius:16px;
+  font-size:14px;
+  backdrop-filter: blur(8px);
+  border:1px solid rgba(255,255,255,.18);
+}
+
+.chat-line.me{ justify-content:flex-end; }
+.msg-bubble.me{
+  background: linear-gradient(135deg,#ff3b6b,#ff7aa5);
+  color:#fff;
+  box-shadow:0 0 18px rgba(255,59,107,.45);
+}
+
+.msg-bubble.other{
+  background: rgba(0,0,0,.45);
+}
