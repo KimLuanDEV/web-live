@@ -333,7 +333,7 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
       location.href = "/lobby.html";
     }
 
-    if(type === "chat") return;
+    if(type === "chat") {return;}
 
     if(type === "hot"){
       location.href = "/lobby.html#hot";
