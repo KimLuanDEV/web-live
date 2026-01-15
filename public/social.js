@@ -50,7 +50,8 @@ function likeReply(postId, cIndex, replyId){
 }
 
 socket.on("lp-like-reply", ({ postId, commentIndex, replyId, likes })=>{
-  const el = document.getElementById(`rl_${replyId}`);
+  const el = document.getElementById(`rl_${postId}_${commentIndex}_${replyId}`);
+
   if(el) el.textContent = likes;
 });
 
@@ -418,7 +419,7 @@ if(p.comments && p.comments.length){
 
  <div class="lp-cm-actions">
   <span class="cm-like" onclick="likeReply('${p.id}',${idx},'${r.id}')">
-    ❤️ <b id="rl_${r.id}">${r.likes?.length||0}</b>
+    ❤️ <b id="rl_${p.id}_${idx}_${r.id}">${r.likes?.length||0}</b>
   </span>
   <span onclick="openReplyChild('${p.id}',${idx},'${r.id}')">💬</span>
 </div>
