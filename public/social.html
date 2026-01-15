@@ -359,6 +359,16 @@
   padding-bottom:80px;
 }
 
+/* ===== TAB BAR HIDE ON SCROLL ===== */
+.lp-tabbar{
+  transition: transform .35s ease, opacity .35s ease;
+}
+
+.lp-tabbar.hide{
+  transform: translateY(100%);
+  opacity: 0;
+  pointer-events: none;
+}
 
 
 </style>

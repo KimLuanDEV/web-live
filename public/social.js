@@ -597,3 +597,22 @@ socket.on("inbox-new", ()=>{
 socket.on("inbox-clear", ()=>{
   document.getElementById("msgBadge")?.classList.add("hidden");
 });
+
+
+let lastScroll = 0;
+const tabbar = document.querySelector(".lp-tabbar");
+
+window.addEventListener("scroll", ()=>{
+  const cur = window.scrollY;
+
+  // cuộn xuống → ẩn
+  if(cur > lastScroll + 10){
+    tabbar.classList.add("hide");
+  }
+  // cuộn lên → hiện
+  else if(cur < lastScroll - 10){
+    tabbar.classList.remove("hide");
+  }
+
+  lastScroll = cur;
+});
