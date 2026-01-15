@@ -140,6 +140,7 @@ socket.on("lp-post", post=>{
 function renderPost(p, top=false){
   const div = document.createElement("div");
   div.className="lp-post";
+  div.dataset.id = p.id;
 
   const time = new Date(p.time).toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
@@ -178,4 +179,44 @@ function renderPost(p, top=false){
 
   if(top) feed.prepend(div);
   else feed.appendChild(div);
+
+  // 🔥 Render lại comment đã có (khi reload)
+if(p.comments && p.comments.length){
+  const list = div.querySelector(".lp-comment-list");
+
+  p.comments.forEach((comment, idx)=>{
+    const c = document.createElement("div");
+    c.className="lp-comment";
+    c.dataset.index = idx;
+
+    c.innerHTML = `
+      <img class="lp-cm-ava" src="${comment.avatar}">
+      <div class="lp-cm-body">
+        <div class="lp-cm-name">${comment.name}</div>
+        <div class="lp-cm-text">${comment.text}</div>
+        <div class="lp-cm-actions">
+          <span onclick="openReply('${p.id}',${idx})">Trả lời</span>
+        </div>
+        <div class="lp-replies" id="rp_${p.id}_${idx}"></div>
+      </div>
+    `;
+
+    list.appendChild(c);
+
+    // 🔥 render replies nếu có
+    if(comment.replies){
+      const box = c.querySelector(".lp-replies");
+      comment.replies.forEach(r=>{
+        const rdiv = document.createElement("div");
+        rdiv.className="lp-reply";
+        rdiv.innerHTML=`
+          <img src="${r.avatar}">
+          <div><b>${r.name}</b> ${r.text}</div>
+        `;
+        box.appendChild(rdiv);
+      });
+    }
+  });
+}
+
 }
