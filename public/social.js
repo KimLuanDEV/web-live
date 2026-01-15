@@ -45,14 +45,26 @@ function sendComment(id){
 
 function openReply(postId, index){
   const box = document.getElementById(`rp_${postId}_${index}`);
+  if(!box) return;
 
-  box.innerHTML = `
-    <div class="lp-reply-box">
-      <input id="ri_${postId}_${index}" placeholder="Trả lời...">
-      <button onclick="sendReply('${postId}',${index})">➤</button>
-    </div>
+  // nếu đã có input thì toggle (đóng)
+  const exist = box.querySelector(".lp-reply-box");
+  if(exist){
+    exist.remove();
+    return;
+  }
+
+  // tạo input riêng, KHÔNG đụng reply cũ
+  const div = document.createElement("div");
+  div.className = "lp-reply-box";
+  div.innerHTML = `
+    <input id="ri_${postId}_${index}" placeholder="Trả lời...">
+    <button onclick="sendReply('${postId}',${index})">➤</button>
   `;
+
+  box.appendChild(div);
 }
+
 
 function sendReply(postId, index){
   const input = document.getElementById(`ri_${postId}_${index}`);
@@ -71,9 +83,13 @@ function sendReply(postId, index){
   // clear input
 input.value="";
 
-// 🔥 đóng box sau khi gửi
+// 🔥 chỉ xóa input box, không xóa replies
 const box = document.getElementById(`rp_${postId}_${index}`);
-if(box) box.innerHTML = "";
+if(box){
+  const inputBox = box.querySelector(".lp-reply-box");
+  if(inputBox) inputBox.remove();
+}
+
 
 }
 
