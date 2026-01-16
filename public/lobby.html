@@ -191,11 +191,6 @@
     <div class="neon-frame"></div>
     <div class="neon-scan"></div>
 
-    <!-- TOP -->
-    <div class="neon-top">
-      <button id="btnWelcomeX" class="neon-x" type="button" aria-label="Đóng">✕</button>
-    </div>
-
     <!-- HERO -->
     <div class="welcome-hero">
       <div class="welcome-logo">🎥</div>
@@ -486,7 +481,6 @@ function getVirtualRooms(){
 const welcomeModal = document.getElementById("welcomeModal");
 const btnWelcomeClose = document.getElementById("btnWelcomeClose");
 const btnWelcomeCreate = document.getElementById("btnWelcomeCreate");
-const btnWelcomeX = document.getElementById("btnWelcomeX");
 const welcomeDontShow = document.getElementById("welcomeDontShow");
 
 function openWelcome(){ welcomeModal?.classList.remove("hidden"); }
@@ -511,10 +505,6 @@ btnWelcomeClose?.addEventListener("click", ()=>{
   closeWelcome();
 });
 
-btnWelcomeX?.addEventListener("click", ()=>{
-  rememberIfChecked();
-  closeWelcome();
-});
 
 btnWelcomeCreate?.addEventListener("click", ()=>{
   rememberIfChecked();
