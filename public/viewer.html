@@ -635,12 +635,10 @@ function playNextGiftVideo(){
 
 let __lastIceReq = 0;
 
-function safeIceRestart(to, reason){
-  const now = Date.now();
-  if (now - __lastIceReq < 5000) return; // ⏱ 5s
-  __lastIceReq = now;
-  socket.emit("request-ice-restart", { to, reason });
+function safeIceRestart(){
+  // ❌ viewer không chủ động ICE restart nữa
 }
+
 
 
 
@@ -1901,19 +1899,23 @@ socket.on("offer", async ({ from, description }) => {
 
     pc.onconnectionstatechange = () => {
       const st = pc.connectionState;
-      if (st === "failed" || st === "disconnected") {
-        try {
-          safeIceRestart(from, "viewer_pc_" + st);
-        } catch {}
-      }
+
+    if (st === "failed" || st === "disconnected") {
+  console.warn("⚠️ Viewer connection degraded:", st);
+  // chờ black-screen timer xử lý
+}
+
     };
 
     pc.oniceconnectionstatechange = () => {
       const st = pc.iceConnectionState;
       log(`ICE(${from}): ${st}`);
-      if (st === "failed" || st === "disconnected") {
-        safeIceRestart(from, "viewer_resume");
-      }
+
+    if (st === "failed" || st === "disconnected") {
+  console.warn("⚠️ Viewer connection degraded:", st);
+  // chờ black-screen timer xử lý
+}
+
     };
 
     // ✅ CHỈ 1 ontrack DUY NHẤT
