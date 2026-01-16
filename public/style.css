@@ -7293,3 +7293,106 @@ body.is-guest .reactions-layer{
     align-items:flex-start;
   }
 }
+
+
+/* ===== WELCOME MODAL v2 ===== */
+.neon-modal--welcome{
+  max-width: 640px;
+}
+
+.welcome-hero{
+  margin-top:12px;
+  text-align:center;
+  padding:14px 12px 10px;
+}
+
+.welcome-logo{
+  width:64px;
+  height:64px;
+  margin:0 auto 8px;
+  border-radius:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:28px;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+  box-shadow:0 0 26px rgba(95,168,255,.25);
+}
+
+.welcome-title{
+  font-size:26px;
+  margin:8px 0 6px;
+  font-weight:900;
+}
+.welcome-title span{
+  color: var(--blue);
+  text-shadow:0 0 18px rgba(95,168,255,.45);
+}
+
+.welcome-sub{
+  font-size:14px;
+  opacity:.85;
+  line-height:1.45;
+}
+
+.welcome-tags{
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+.welcome-tag{
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:13px;
+  border:1px solid rgba(255,255,255,.14);
+  background: rgba(0,0,0,.22);
+}
+
+.welcome-features{
+  margin-top:14px;
+  display:grid;
+  gap:10px;
+}
+
+.welcome-item{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  padding:12px;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.22);
+}
+
+.welcome-ic{
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:18px;
+  background: rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.14);
+}
+
+.welcome-itemTitle{
+  font-weight:900;
+}
+.welcome-itemText{
+  font-size:13px;
+  opacity:.82;
+  margin-top:2px;
+}
+
+.welcome-actions{
+  margin-top:14px;
+}
+
+/* Mobile tweak */
+@media(max-width:520px){
+  .welcome-title{ font-size:22px; }
+}

@@ -88,12 +88,7 @@
     </div>
   </div>
 
-  
     </div>
-
-  
-
-
 
 
 
@@ -120,6 +115,7 @@
 </div>
 
 </div>
+
 
 
     <div class="card">
@@ -156,6 +152,7 @@
 </div>
 
 
+
 <!-- ERROR MODAL (NEON) -->
 <div id="errModal" class="modal hidden" role="dialog" aria-modal="true">
   <div class="modal-backdrop modal-backdrop--neon"></div>
@@ -186,15 +183,15 @@
   </div>
 </div>
 
-
-<!-- WELCOME MODAL (NEON) -->
+<!-- WELCOME MODAL (NEON v2) -->
 <div id="welcomeModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="welcomeTitle">
   <div class="modal-backdrop modal-backdrop--neon"></div>
 
-  <div class="neon-modal" tabindex="-1">
+  <div class="neon-modal neon-modal--welcome" tabindex="-1">
     <div class="neon-frame"></div>
     <div class="neon-scan"></div>
 
+    <!-- TOP -->
     <div class="neon-top">
       <div class="neon-livePill">
         <span class="neon-dot"></span>
@@ -204,59 +201,70 @@
       <button id="btnWelcomeX" class="neon-x" type="button" aria-label="Đóng">✕</button>
     </div>
 
-    <div class="neon-hero">
-      <div class="neon-titleWrap">
-        <div class="neon-kicker">🏟️ SẢNH LIVE</div>
-        <h3 id="welcomeTitle" class="neon-title">Chào mừng đến Livestream Pro</h3>
-        <div class="neon-sub">
-          Xem host đang LIVE theo thời gian thực • tạo phòng để lên live trong 5 giây
-        </div>
+    <!-- HERO -->
+    <div class="welcome-hero">
+      <div class="welcome-logo">🎥</div>
+
+      <h3 id="welcomeTitle" class="welcome-title">
+        Chào mừng đến <span>Livestream Pro</span>
+      </h3>
+
+      <div class="welcome-sub">
+        Nơi host lên LIVE chỉ trong vài giây<br>
+        Viewer vào xem realtime – chat – reaction
       </div>
 
-      <div class="neon-badges">
-        <div class="neon-chip">⚡ Real-time</div>
-        <div class="neon-chip">💬 Chat + Reaction</div>
-        <div class="neon-chip">🎤 Xin lên live</div>
-      </div>
-    </div>
-
-    <div class="neon-grid">
-      <div class="neon-card">
-        <div class="neon-ic">👀</div>
-        <div>
-          <div class="neon-cardTitle">Vào xem siêu nhanh</div>
-          <div class="neon-cardText">Click phòng đang live → vào Viewer ngay.</div>
-        </div>
-      </div>
-
-      <div class="neon-card">
-        <div class="neon-ic">🎥</div>
-        <div>
-          <div class="neon-cardTitle">Tạo phòng trong Lobby</div>
-          <div class="neon-cardText">Nhập Room ID + tên host → chuyển sang Host.</div>
-        </div>
-      </div>
-
-      <div class="neon-card">
-        <div class="neon-ic">✨</div>
-        <div>
-          <div class="neon-cardTitle">Trải nghiệm neon</div>
-          <div class="neon-cardText">Giao diện LED/Glow, cảm giác “sân khấu”.</div>
-        </div>
+      <div class="welcome-tags">
+        <div class="welcome-tag">⚡ Realtime</div>
+        <div class="welcome-tag">💬 Chat & Reaction</div>
+        <div class="welcome-tag">🎤 Xin lên live</div>
       </div>
     </div>
 
-    <div class="neon-actions">
+    <!-- FEATURES -->
+    <div class="welcome-features">
+      <div class="welcome-item">
+        <div class="welcome-ic">👀</div>
+        <div>
+          <div class="welcome-itemTitle">Vào xem cực nhanh</div>
+          <div class="welcome-itemText">Click phòng đang live → vào ngay</div>
+        </div>
+      </div>
+
+      <div class="welcome-item">
+        <div class="welcome-ic">🎥</div>
+        <div>
+          <div class="welcome-itemTitle">Tạo phòng trong Lobby</div>
+          <div class="welcome-itemText">Nhập Room ID → lên host</div>
+        </div>
+      </div>
+
+      <div class="welcome-item">
+        <div class="welcome-ic">✨</div>
+        <div>
+          <div class="welcome-itemTitle">Giao diện Neon</div>
+          <div class="welcome-itemText">Phong cách sân khấu LIVE</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="neon-actions welcome-actions">
       <label class="neon-check">
         <input type="checkbox" id="welcomeDontShow" />
         <span>Không hiện lại</span>
       </label>
 
       <div class="neon-btns">
-        <button id="btnWelcomeClose" class="neon-btn neon-btn--ghost" type="button">Để sau</button>
-        <button id="btnWelcomeCreate" class="neon-btn neon-btn--main" type="button">➕ Tạo phòng ngay</button>
+        <button id="btnWelcomeClose" class="neon-btn neon-btn--ghost" type="button">
+          Để sau
+        </button>
+        <button id="btnWelcomeCreate" class="neon-btn neon-btn--main" type="button">
+          ➕ Tạo phòng LIVE
+        </button>
       </div>
     </div>
+
   </div>
 </div>
 
