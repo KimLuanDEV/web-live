@@ -1803,43 +1803,39 @@ socket.on("room-full", ()=>{
     }
   };
 
+
 pc.ontrack = (event) => {
-  const stream = event.streams && event.streams[0];
-  if (!stream) return;
+  console.log("🎥 Viewer nhận track:", event.track.kind);
 
-  console.log("🎥 Viewer nhận track");
-
-  // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
+  // ✅ LUÔN đảm bảo có MediaStream
   if (!player.srcObject) {
-    player.srcObject = stream;
-
-    optimizeVideoForMobile(player);
-    player.playsInline = true;
-
-    // iOS + Android cần mute để autoplay
-    player.muted = true;
-    forcePlayVideo(player);
-
-    // ẩn backdrop đen
-    try {
-      document.getElementById("viewerBackdrop")?.classList.add("hidden");
-    } catch {}
+    player.srcObject = new MediaStream();
   }
 
-  // 🔊 Nếu có audio → bật tiếng
-  if (stream.getAudioTracks().length > 0) {
+  // ✅ ADD TỪNG TRACK (QUAN TRỌNG)
+  player.srcObject.addTrack(event.track);
+
+  optimizeVideoForMobile(player);
+
+  player.playsInline = true;
+
+  // autoplay safe
+  player.muted = true;
+  forcePlayVideo(player);
+
+  // 🔊 nếu là audio → bật tiếng
+  if (event.track.kind === "audio") {
     player.muted = false;
-    player.volume = 1.0;
+    player.volume = 1;
     forceResumeAudio(player);
   }
 
-  // 🔥 speaking highlight
-  try {
-    attachSpeakingIndicator(player, document.getElementById("hostCard"));
-  } catch {}
+  // ẩn backdrop đen
+  document.getElementById("viewerBackdrop")?.classList.add("hidden");
 
   setStatus("🟢 Đang xem LIVE");
 };
+
 
 
 
@@ -1892,22 +1888,13 @@ const st = pc.iceConnectionState;
       join().catch(err => log("Join lỗi: " + err.message));
     };
 
-    // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
-    (function autoJoinViewer(){
-      try {
-        btnJoin.disabled = true;
-        btnJoin.textContent = "⏳ Đang tham gia...";
-        // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
-        setTimeout(() => {
-          join().catch(err => {
-            // nếu lỗi, mở lại nút cho user bấm thử
-            btnJoin.disabled = false;
-            btnJoin.textContent = "Tham gia xem Livestream";
-            log("Auto-join lỗi: " + (err?.message || err));
-          });
-        }, 120);
-      } catch {}
-    })();
+    
+  socket.on("host-live", () => {
+  if (joined) return;
+
+  console.log("🟢 Host đã live → viewer join");
+  join().catch(console.error);
+});
 
 
     // ===== CHAT (VIEWER) =====
