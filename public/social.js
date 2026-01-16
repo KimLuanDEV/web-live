@@ -16,6 +16,8 @@ if (auth.uid) {
 document.getElementById("meAvatar").src = auth.avatar;
 
 
+
+
 socket.on("profile-update", data => {
   const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
@@ -48,7 +50,7 @@ socket.on("profile-update", data => {
       if (img) img.src = data.avatar;
     }
   });
-  
+
       if (isMine) {
         const ava = post.querySelector(".lp-ava");
         if (ava) ava.src = data.avatar;
@@ -290,6 +292,31 @@ function likeReplyChild(postId, cIndex, replyId, childId){
     uid: auth.uid
   });
 }
+
+
+socket.on("social-name-sync", ({ uid, name }) => {
+  document.querySelectorAll(".lp-post").forEach(post => {
+    if (post.dataset.uid === uid) {
+      const el = post.querySelector(".lp-post-name");
+      if (el) el.textContent = name;
+    }
+
+    post.querySelectorAll(".lp-comment").forEach(c => {
+      if (c.dataset.uid === uid) {
+        const el = c.querySelector(".lp-cm-name");
+        if (el) el.textContent = name;
+      }
+    });
+
+    post.querySelectorAll(".lp-reply").forEach(r => {
+      if (r.dataset.uid === uid) {
+        const el = r.querySelector("b");
+        if (el) el.textContent = name;
+      }
+    });
+  });
+});
+
 
 socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, likes })=>{
   const el = document.getElementById(`rcl_${postId}_${commentIndex}_${replyId}_${childId}`);
