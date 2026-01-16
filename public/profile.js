@@ -351,6 +351,13 @@ function closePass(){
 }
 
 
+// 👉 Tap nền đen để đóng passModal (mobile-friendly)
+passModal
+  ?.querySelector(".modal-backdrop")
+  ?.addEventListener("click", closePass);
+
+
+  
 async function submitChangePass(){
   const oldEl  = document.getElementById("oldPass");
   const newEl  = document.getElementById("newPass");
@@ -460,14 +467,6 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
   };
 });
 
-document.getElementById("tabCreate")?.addEventListener("click", ()=>{
-  const isGuest = localStorage.getItem("isGuest") === "1";
-  if(isGuest){
-    showMsg("🔒 Đăng nhập để tạo phòng livestream");
-    return;
-  }
-  location.href = "/lobby.html";
-});
 
 
 const bioInput = document.getElementById("bioInput");
@@ -575,19 +574,3 @@ function openChangePass(){
 }
 
 
-function confirmLogout(){
-  closeProfileSheet();
-
-  document.getElementById("msgTitle").textContent = "Xác nhận";
-  document.getElementById("msgText").textContent =
-    "Bạn có chắc chắn muốn đăng xuất không?";
-
-  document.getElementById("msgModal").classList.remove("hidden");
-
-  const ok = document.getElementById("msgOk");
-  ok.onclick = () => {
-    localStorage.removeItem("user_profile");
-    localStorage.removeItem("isGuest");
-    location.href = "/login.html";
-  };
-}
