@@ -458,23 +458,43 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
 
 
 
-function submitPost(){
+async function submitPost(){
   const text = postText.value.trim();
-  if(!text) return;
+  const file = postImage.files[0];
+  if(!text && !file) return;
 
-  const cur = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  let imageUrl = "";
 
-socket.emit("lp-post", {
-  uid: cur.uid,
-  name: cur.name,
-  avatar: cur.avatar,
-  text,
-  time: Date.now()
-});
+  if(file){
+    const fd = new FormData();
+    fd.append("image", file);
 
+    const r = await fetch("/api/upload-post-image", {
+      method:"POST",
+      body: fd
+    });
+
+    const data = await r.json();
+    imageUrl = data.url;
+  }
+
+  const cur = JSON.parse(localStorage.getItem("user_profile"));
+
+  socket.emit("lp-post", {
+    uid: cur.uid,
+    name: cur.name,
+    avatar: cur.avatar,
+    text,
+    image: imageUrl,   // 🔥 GỬI ẢNH
+    time: Date.now()
+  });
 
   postText.value="";
+  postImage.value="";
 }
+
+
+
 
 socket.on("lp-init", list=>{
   list.forEach(p=>renderPost(p,false));
@@ -558,6 +578,9 @@ function renderPost(p, top=false){
 
 
 <div class="lp-post-text">${p.text}</div>
+
+${p.image ? `<img class="lp-post-img" src="${p.image}">` : ""}
+
 
 <div class="lp-actions">
   <div class="lp-action like" onclick="likePost('${p.id}')">

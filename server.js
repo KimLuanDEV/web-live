@@ -94,6 +94,21 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
 });
 
 
+const postUpload = multer({
+  storage: multer.diskStorage({
+    destination: "public/post-images",
+    filename: (_, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
+    }
+  })
+});
+
+app.post("/api/upload-post-image", postUpload.single("image"), (req,res)=>{
+  if(!req.file) return res.status(400).json({error:"no file"});
+  res.json({ url: "/post-images/" + req.file.filename });
+});
+
 
 const rooms = new Map();
 
@@ -674,14 +689,15 @@ socket.emit("lp-init", lpPosts.slice(0, 50));
 
 
 socket.on("lp-post", post => {
-  if(!post || !post.uid || !post.text) return;
+  if(!post || !post.uid || (!post.text && !post.image)) return;   // 🔥 cho phép ảnh-only
 
   const clean = {
-    id: Date.now() + "_" + Math.random().toString(36).slice(2),   // 🔑 ID BÀI
+    id: Date.now() + "_" + Math.random().toString(36).slice(2),
     uid: String(post.uid),
     name: String(post.name || "User").slice(0,20),
     avatar: String(post.avatar || ""),
-    text: String(post.text).slice(0, 500),
+    text: String(post.text || "").slice(0, 500),
+    image: String(post.image || ""),   // 🔥 LƯU ẢNH
     time: Date.now(),
     likes: [],
     comments: []
@@ -694,6 +710,7 @@ socket.on("lp-post", post => {
 
   io.emit("lp-post", clean);
 });
+
 
 
 socket.on("lp-like", ({ postId, uid })=>{
