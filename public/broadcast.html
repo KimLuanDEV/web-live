@@ -1620,6 +1620,10 @@ window.addEventListener("online", async () => {
 });
 
 
+socket.on("viewer-need-offer", ({ viewerId, reason }) => {
+  console.warn("🔁 Resend offer to viewer:", viewerId, reason);
+});
+
 
     socket.on("viewer-join", ({ viewerId }) => {
   const pc = createPeerConnection(viewerId);

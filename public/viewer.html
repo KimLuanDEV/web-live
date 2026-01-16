@@ -503,6 +503,12 @@ const giftVideoQueue = [];
 let playingGiftVideo = false;
 const MAX_GIFT_QUEUE = 2;
 
+
+let __viewerHasVideo = false;
+let __viewerBlackTimer = null;
+
+
+
 function enqueueGiftVideo(videoUrl){
   if (giftVideoQueue.length >= MAX_GIFT_QUEUE) return;
   giftVideoQueue.push(videoUrl);
@@ -1807,6 +1813,15 @@ pc.ontrack = (event) => {
   const stream = event.streams && event.streams[0];
   if (!stream) return;
 
+
+  // ✅ ĐÃ CÓ VIDEO
+__viewerHasVideo = true;
+if (__viewerBlackTimer) {
+  clearTimeout(__viewerBlackTimer);
+  __viewerBlackTimer = null;
+}
+
+
   console.log("🎥 Viewer nhận track");
 
   // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
@@ -1888,6 +1903,25 @@ socket.emit("request-ice-restart", {
       } catch (err) {
         log("Lỗi xử lý offer: " + err.message);
       }
+
+      // 🔍 CHECK BLACK SCREEN sau 3.5s
+__viewerHasVideo = false;
+
+if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
+__viewerBlackTimer = setTimeout(() => {
+  if (!__viewerHasVideo) {
+    console.warn("🟥 Viewer black screen detected");
+
+    socket.emit("viewer-black-screen", {
+      roomId,
+      reason: "no_video_track",
+      ua: navigator.userAgent,
+      ts: Date.now()
+    });
+  }
+}, 3500);
+
+
     });
 
     socket.on("candidate", async ({ from, candidate }) => {
