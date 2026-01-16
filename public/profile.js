@@ -548,3 +548,12 @@ function confirmLogoutProfile(){
 }
 
 
+// ===== MOBILE TAB SETTINGS =====
+const tabSettings = document.getElementById("tabSettings");
+if(tabSettings){
+  tabSettings.onclick = () => {
+    // Nếu đang ở profile thì mở bottom-sheet (nâng cao sau)
+    // Hiện tại: ở lại profile
+    showMsg("⚙️ Cài đặt tài khoản");
+  };
+}

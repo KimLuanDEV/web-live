@@ -7465,3 +7465,9 @@ body.is-guest .reactions-layer{
   color:#fff;
   font-weight:900;
 }
+
+
+.tab-main .tab-plus{
+  font-size:22px;
+  background: linear-gradient(135deg,#5fa8ff,#25f09a);
+}
