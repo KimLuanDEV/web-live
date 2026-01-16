@@ -507,6 +507,8 @@ const MAX_GIFT_QUEUE = 2;
 let __viewerHasVideo = false;
 let __viewerBlackTimer = null;
 
+// 🔒 chỉ báo black-screen 1 lần duy nhất khi vào phòng
+let __viewerBlackReportedOnce = false;
 
 
 function enqueueGiftVideo(videoUrl){
@@ -1940,21 +1942,34 @@ __viewerBlackTimer = setTimeout(() => {
     };
 
     // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
-    (function autoJoinViewer(){
-      try {
-        btnJoin.disabled = true;
-        btnJoin.textContent = "⏳ Đang tham gia...";
-        // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
-        setTimeout(() => {
-          join().catch(err => {
-            // nếu lỗi, mở lại nút cho user bấm thử
-            btnJoin.disabled = false;
-            btnJoin.textContent = "Tham gia xem Livestream";
-            log("Auto-join lỗi: " + (err?.message || err));
-          });
-        }, 120);
-      } catch {}
-    })();
+(function autoJoinViewer(){
+  try {
+    btnJoin.disabled = true;
+    btnJoin.textContent = "⏳ Đang tham gia...";
+
+    // 🔥 VIEWER VỪA VÀO PHÒNG → BÁO BLACK SCREEN 1 LẦN DUY NHẤT
+    if (!__viewerBlackReportedOnce) {
+      __viewerBlackReportedOnce = true;
+
+      socket.emit("viewer-black-screen", {
+        roomId,
+        reason: "viewer_enter_room",
+        ua: navigator.userAgent,
+        ts: Date.now()
+      });
+    }
+
+    // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
+    setTimeout(() => {
+      join().catch(err => {
+        btnJoin.disabled = false;
+        btnJoin.textContent = "Tham gia xem Livestream";
+        log("Auto-join lỗi: " + (err?.message || err));
+      });
+    }, 120);
+  } catch {}
+})();
+
 
 
     // ===== CHAT (VIEWER) =====
