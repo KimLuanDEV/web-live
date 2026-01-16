@@ -938,13 +938,8 @@ const hdBadge = document.getElementById("hdBadge");
 let __lastBytes = 0;
 let __lastTs = 0;
 
-
 async function checkHDQuality(){
   try{
-    if (!pcs || pcs.size === 0) return;
-
-    // lấy 1 peer bất kỳ để check (host không có inbound video)
-    const pc = pcs.values().next().value;
     if (!pc || pc.connectionState !== "connected") return;
 
     const stats = await pc.getStats();
@@ -953,10 +948,11 @@ async function checkHDQuality(){
     let packets = 0;
 
     stats.forEach(r=>{
-     if (r.type === "outbound-rtp" && r.kind === "video") {
-  bytes += r.bytesSent || 0;
-}
-
+      if (r.type === "inbound-rtp" && r.kind === "video"){
+        bytes += r.bytesReceived || 0;
+        packetsLost += r.packetsLost || 0;
+        packets += r.packetsReceived || 0;
+      }
     });
 
     const now = performance.now();
@@ -1251,12 +1247,7 @@ function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
   __iceRestartState.set(peerId, st);
 }
 function __wireIceAuto(peerId, pc, opts={}){
-
- if (!pcs || pcs.size === 0) return;
-const pc = pcs.values().next().value;
-if (!pc) return;
-
-
+  if (!pc) return;
   const disconnectedDelay = opts.disconnectedDelay ?? 6000;
 
 
@@ -1579,6 +1570,11 @@ window.addEventListener("online", async () => {
 
 
 
+    socket.on("viewer-join", ({ viewerId }) => {
+  const pc = createPeerConnection(viewerId);
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pcs.set(viewerId, pc);
+});
     // When network comes back / tab returns, restart only bad peers
     window.addEventListener("online", () => __restartBadPeers(() => Array.from(pcs.entries())));
     document.addEventListener("visibilitychange", () => {
