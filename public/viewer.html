@@ -1647,75 +1647,43 @@ socket.on("reaction", (msg)=>{
     const pcs = new Map(); // peerId -> RTCPeerConnection
 
     async function getRtcConfig() {
-  // Detect cellular (4G/5G) -> force TURN for fast connect
-  const isCellular =
-    navigator.connection &&
-    (navigator.connection.type === "cellular" ||
-     String(navigator.connection.effectiveType || "").includes("3g") ||
-     String(navigator.connection.effectiveType || "").includes("4g") ||
-     String(navigator.connection.effectiveType || "").includes("5g"));
+      const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 
-  const fallback = {
-    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    // fallback không ép relay để tránh “kẹt” nếu /ice lỗi
-    bundlePolicy: "max-bundle",
-    rtcpMuxPolicy: "require",
-  };
+      try {
+        const r = await fetch("/ice", { cache: "no-store" });
+        if (!r.ok) return fallback;
 
-  try {
-    const r = await fetch("/ice", { cache: "no-store" });
-    if (!r.ok) return fallback;
+        const data = await r.json();
+        if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
 
-    const data = await r.json();
-    if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
+        // Remove invalid STUN urls that contain ?transport=
+        const cleanedIceServers = data.iceServers
+          .map(server => {
+            let urls = server.urls;
+            if (!urls) return null;
+            if (!Array.isArray(urls)) urls = [urls];
 
-    // ✅ CHỈ GIỮ TURN/TURNS + ƯU TIÊN 443/TCP trước (mobile ổn định hơn)
-    const cleanedIceServers = data.iceServers
-      .map(server => {
-        let urls = server.urls;
-        if (!urls) return null;
-        if (!Array.isArray(urls)) urls = [urls];
+            const safeUrls = urls.filter(u =>
+              typeof u === "string" &&
+              !(u.startsWith("stun:") && u.includes("?transport="))
+            );
+            if (safeUrls.length === 0) return null;
+            return { ...server, urls: safeUrls };
+          })
+          .filter(Boolean);
 
-        const turnUrls = urls
-          .filter(u => typeof u === "string" && (u.startsWith("turn:") || u.startsWith("turns:")))
-          .sort((a, b) => {
-            const score = (u) => {
-              // Ưu tiên turns:443 cao nhất
-              if (u.startsWith("turns:") && u.includes(":443")) return 0;
-              // TCP kế tiếp
-              if (u.includes("transport=tcp")) return 1;
-              // UDP cuối
-              return 2;
-            };
-            return score(a) - score(b);
-          });
+        if (cleanedIceServers.length === 0) return fallback;
+      return {
+  iceServers: cleanedIceServers,
+  iceTransportPolicy: "relay",
+  iceCandidatePoolSize: 10   // 🔥 chuẩn bị sẵn TURN candidates
+};
 
-        if (turnUrls.length === 0) return null;
-
-        return {
-          urls: turnUrls,
-          username: server.username,
-          credential: server.credential
-        };
-      })
-      .filter(Boolean);
-
-    if (cleanedIceServers.length === 0) return fallback;
-
-    return {
-      iceServers: cleanedIceServers,
-      // ⭐ 4G/5G: ép relay để khỏi chờ STUN timeout
-      iceTransportPolicy: isCellular ? "relay" : "all",
-      iceCandidatePoolSize: isCellular ? 10 : 0, // mobile: chuẩn bị sẵn candidates
-      bundlePolicy: "max-bundle",
-      rtcpMuxPolicy: "require",
-    };
-  } catch (e) {
-    console.error("ICE fetch error:", e);
-    return fallback;
-  }
-}
-
+      } catch (e) {
+        console.error("ICE fetch error:", e);
+        return fallback;
+      }
+    }
 
     function log(msg) {
       logEl.textContent = `[${new Date().toLocaleTimeString()}] ${msg}\n` + logEl.textContent;

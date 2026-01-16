@@ -560,57 +560,24 @@ function emitLobbyUpdate() {
 }
 
 
-let _iceCache = null;
-let _iceCacheTs = 0;
-const ICE_TTL = 60 * 1000; // 60s
-
-
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
   try {
-    const now = Date.now();
-    if (_iceCache && now - _iceCacheTs < ICE_TTL) {
-      return res.json({ iceServers: _iceCache });
-    }
-
     const accountSid = process.env.TWILIO_ACCOUNT_SID;
     const authToken = process.env.TWILIO_AUTH_TOKEN;
+
     if (!accountSid || !authToken) {
-      return res.status(500).json({ error: "Missing Twilio credentials" });
+      return res.status(500).json({ error: "Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN" });
     }
 
     const client = twilio(accountSid, authToken);
     const token = await client.tokens.create();
 
-    const onlyTurn = token.iceServers
-      .map(s => {
-        const urls = []
-          .concat(s.urls || [])
-          .filter(u =>
-            typeof u === "string" &&
-            (u.startsWith("turn:") || u.startsWith("turns:"))
-          );
-
-        if (!urls.length) return null;
-
-        return {
-          urls,
-          username: s.username,
-          credential: s.credential
-        };
-      })
-      .filter(Boolean);
-
-    _iceCache = onlyTurn;
-    _iceCacheTs = now;
-
-    return res.json({ iceServers: onlyTurn });
+    return res.json({ iceServers: token.iceServers });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
 });
-
-
 
 
 
