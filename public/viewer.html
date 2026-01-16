@@ -1934,11 +1934,6 @@ const st = pc.iceConnectionState;
   if (st === "failed" || st === "disconnected") {
    safeIceRestart(from, "viewer_resume");
 
-socket.emit("request-ice-restart", {
-  to: from,
-  reason: "viewer_no_video"
-});
-
   }
 
       };
