@@ -1907,23 +1907,6 @@ socket.emit("request-ice-restart", {
         log("Lỗi xử lý offer: " + err.message);
       }
 
-      // 🔍 CHECK BLACK SCREEN sau 3.5s
-__viewerHasVideo = false;
-
-if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
-__viewerBlackTimer = setTimeout(() => {
-  if (!__viewerHasVideo) {
-    console.warn("🟥 Viewer black screen detected");
-
-    socket.emit("viewer-black-screen", {
-      roomId,
-      reason: "no_video_track",
-      ua: navigator.userAgent,
-      ts: Date.now()
-    });
-  }
-}, 60000);
-
 
     });
 
