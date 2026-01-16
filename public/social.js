@@ -298,6 +298,30 @@ socket.on("social-name-sync", ({ uid, name }) => {
 });
 
 
+socket.on("social-avatar-sync", ({ uid, avatar }) => {
+  document.querySelectorAll(".lp-post").forEach(post => {
+    if (post.dataset.uid === uid) {
+      const img = post.querySelector(".lp-ava");
+      if (img) img.src = avatar;
+    }
+
+    post.querySelectorAll(".lp-comment").forEach(c => {
+      if (c.dataset.uid === uid) {
+        const img = c.querySelector(".lp-cm-ava");
+        if (img) img.src = avatar;
+      }
+    });
+
+    post.querySelectorAll(".lp-reply").forEach(r => {
+      if (r.dataset.uid === uid) {
+        const img = r.querySelector("img");
+        if (img) img.src = avatar;
+      }
+    });
+  });
+});
+
+
 socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, likes })=>{
   const el = document.getElementById(`rcl_${postId}_${commentIndex}_${replyId}_${childId}`);
   if(el) el.textContent = likes;
