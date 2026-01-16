@@ -357,7 +357,7 @@ passModal
   ?.addEventListener("click", closePass);
 
 
-  
+
 async function submitChangePass(){
   const oldEl  = document.getElementById("oldPass");
   const newEl  = document.getElementById("newPass");
@@ -574,3 +574,13 @@ function openChangePass(){
 }
 
 
+
+// 📱 Mobile: focus input → đẩy bottom-sheet lên
+document.querySelectorAll("#passModal input").forEach(inp=>{
+  inp.addEventListener("focus", ()=>{
+    document.body.classList.add("keyboard-open");
+  });
+  inp.addEventListener("blur", ()=>{
+    document.body.classList.remove("keyboard-open");
+  });
+});

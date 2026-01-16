@@ -7644,3 +7644,46 @@ body.is-guest .reactions-layer{
     to{ transform: translateY(0); }
   }
 }
+
+
+/* FIX IOS AUTO ZOOM INPUT */
+input,
+textarea,
+select{
+  font-size:16px !important;
+}
+
+
+/* ===== PASS BOTTOM SHEET ===== */
+.pass-sheet{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  z-index:10020;
+
+  background: rgba(10,14,30,.96);
+  backdrop-filter: blur(14px);
+
+  border-radius:18px 18px 0 0;
+  padding:16px;
+
+  transform: translateY(100%);
+  transition: transform .28s ease;
+}
+
+.pass-sheet.show{
+  transform: translateY(0);
+}
+
+/* Để không bị bàn phím che */
+.pass-sheet{
+  max-height: calc(100vh - 80px);
+  overflow-y:auto;
+}
+
+
+/* Khi bàn phím mở → đẩy sheet lên cao hơn */
+body.keyboard-open .pass-sheet{
+  transform: translateY(-120px);
+}
