@@ -20,40 +20,46 @@
 
   <div class="container lobby-shell">
     <div class="card lobby-hero">
-      <div class="topbar" style="margin-bottom:6px">
-        <div class="brand">
-          <span class="brand__dot"></span>
-          <div>
-            <div class="brand__title">🏟️ SẢNH LIVE</div>
-            <small>Danh sách host đang LIVE • click để vào xem</small>
-          </div>
-        </div>
 
-      <div class="pills" id="userBar">
-
-<button id="btnCreateRoomDesktop" class="lobby-btn lobby-btn--main">
-  ➕ Tạo phòng LIVE
-</button>
-
-
-  <div class="user-chip" onclick="location.href='/profile.html'">
-    <img id="userAva">
-    <div class="user-info">
-      <div id="userName"></div>
-      <div class="user-level" id="userLevel"></div>
+     <!-- ===== LOBBY HEADER v2 (FIXED) ===== -->
+<div class="lobby-header">
+  <!-- LEFT: BRAND -->
+  <div class="lobby-brand">
+    <span class="live-dot"></span>
+    <div>
+      <div class="lobby-title">SẢNH LIVE</div>
+      <div class="lobby-sub">Host đang LIVE • click để vào xem</div>
     </div>
   </div>
 
-  <button class="lobby-btn" id="btnPlayerLobby">
-  👥 Sảnh người chơi
-</button>
+  <!-- RIGHT: ACTIONS (GIỮ ID userBar) -->
+  <div class="lobby-actions" id="userBar">
 
+    <button id="btnCreateRoomDesktop" class="lobby-btn lobby-btn--main">
+      ➕ Tạo phòng LIVE
+    </button>
 
-  <button class="lobby-btn logout-btn" id="btnLogout">⏻ Đăng xuất</button>
+    <button class="lobby-btn" id="btnPlayerLobby">
+      👥 User
+    </button>
+
+    <div class="user-chip" onclick="location.href='/profile.html'">
+      <img id="userAva">
+      <div class="user-info">
+        <div id="userName"></div>
+        <div class="user-level" id="userLevel"></div>
+      </div>
+    </div>
+
+    <button class="lobby-btn logout-btn" id="btnLogout">
+      ⏻
+    </button>
+
+  </div>
 </div>
 
 
-      </div>
+
 
       <div class="lobby-controls">
         <div class="lobby-searchWrap">
