@@ -553,7 +553,8 @@ let playingGiftVideo = false;
 const MAX_GIFT_QUEUE = 2;
 
 
-
+let __viewerHasVideo = false;
+let __viewerBlackTimer = null;
 
 
 
@@ -1698,9 +1699,6 @@ socket.on("reaction", (msg)=>{
     let joined = false;
     let __viewerNeedResume = false;
 
-// ===== VIEWER BLACK SCREEN STATE (per peer) =====
-const viewerState = new Map();
-// viewerState.get(peerId) = { hasVideo, checked, timer }
 
     const pcs = new Map(); // peerId -> RTCPeerConnection
 
@@ -1779,13 +1777,6 @@ socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.va
         try { pc.close(); } catch {}
         pcs.delete(peerKey);
       }
-
-// 🧹 clear viewer black screen state
-const st = viewerState.get(peerKey);
-if (st?.timer) clearTimeout(st.timer);
-viewerState.delete(peerKey);
-
-
     }
 
     function cleanupAll() {
@@ -1844,16 +1835,6 @@ socket.on("room-full", ()=>{
 
     socket.on("offer", async ({ from, description }) => {
 
-      // 🔹 init state cho viewer này
-if (!viewerState.has(from)) {
-  viewerState.set(from, {
-    hasVideo: false,
-    checked: false,
-    timer: null
-  });
-}
-const vState = viewerState.get(from);
-
       
       // reset pc for this peer only
       cleanupPeer(from);
@@ -1883,13 +1864,12 @@ pc.ontrack = (event) => {
   if (!stream) return;
 
 
-// ✅ viewer này đã có video
-vState.hasVideo = true;
-if (vState.timer) {
-  clearTimeout(vState.timer);
-  vState.timer = null;
+  // ✅ ĐÃ CÓ VIDEO
+__viewerHasVideo = true;
+if (__viewerBlackTimer) {
+  clearTimeout(__viewerBlackTimer);
+  __viewerBlackTimer = null;
 }
-
 
 
   console.log("🎥 Viewer nhận track");
@@ -1953,6 +1933,11 @@ const st = pc.iceConnectionState;
   if (st === "failed" || st === "disconnected") {
    safeIceRestart(from, "viewer_resume");
 
+socket.emit("request-ice-restart", {
+  to: from,
+  reason: "viewer_no_video"
+});
+
   }
 
       };
@@ -1970,29 +1955,22 @@ const st = pc.iceConnectionState;
         log("Lỗi xử lý offer: " + err.message);
       }
 
-// 🔍 CHECK BLACK SCREEN – RIÊNG CHO VIEWER NÀY (1 LẦN DUY NHẤT)
-if (!vState.checked) {
-  vState.checked = true;
-  vState.hasVideo = false;
+      // 🔍 CHECK BLACK SCREEN sau 55s
+__viewerHasVideo = false;
 
-  if (vState.timer) clearTimeout(vState.timer);
+if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
+__viewerBlackTimer = setTimeout(() => {
+  if (!__viewerHasVideo) {
+    console.warn("🟥 Viewer black screen detected");
 
-  vState.timer = setTimeout(() => {
-    if (!vState.hasVideo) {
-      console.warn("🟥 Viewer black screen:", from);
-
-      socket.emit("viewer-black-screen", {
-        roomId,
-        viewerId: from,
-        reason: "no_video_track_first_join",
-        ua: navigator.userAgent,
-        ts: Date.now()
-      });
-    }
-  }, 55000); // ⏱ 55–60s là chuẩn
-}
-
-
+    socket.emit("viewer-black-screen", {
+      roomId,
+      reason: "no_video_track",
+      ua: navigator.userAgent,
+      ts: Date.now()
+    });
+  }
+}, 55000);
 
 
     });
