@@ -92,7 +92,7 @@
   <div class="profile-actions">
     <button id="btnSave">💾 Lưu</button>
     <button id="btnChangePass">🔐 Đổi mật khẩu</button>
-    <button id="btnLogoutProfile" class="btn-danger desktop-only"> ⏻ Đăng xuất</button>
+    <button id="btnLogoutProfile" class="btn-danger"> ⏻ Đăng xuất</button>
     <button id="btnMessages" style="display: none;">📩 Tin nhắn</button>
     <button onclick="location.href='/lobby.html'">🏟 Lobby</button>
   </div>
@@ -124,9 +124,14 @@
   <div class="modal-card">
     <h3 id="msgTitle">Thông báo</h3>
     <div id="msgText" style="margin:12px 0;opacity:.9"></div>
-    <button onclick="closeMsg()">OK</button>
+
+    <div class="msg-actions">
+      <button id="msgCancel" onclick="closeMsg()">Hủy</button>
+      <button id="msgOk">OK</button>
+    </div>
   </div>
 </div>
+
 
 
 <!-- MOBILE TAB BAR -->
@@ -157,32 +162,6 @@
 </div>
 
 
-<!-- 📱 PROFILE BOTTOM SHEET (MOBILE) -->
-<div id="profileSheet" class="sheet hidden">
-  <div class="sheet-backdrop"></div>
-
-  <div class="sheet-panel">
-    <div class="sheet-handle"></div>
-
-    <div class="sheet-item" id="sheetChangePass">
-      🔐 Đổi mật khẩu
-    </div>
-
-    <div class="sheet-item" id="sheetMessages">
-      📩 Tin nhắn
-    </div>
-
-    <div class="sheet-divider"></div>
-
-    <div class="sheet-item danger" id="sheetLogout">
-      ⏻ Đăng xuất
-    </div>
-
-    <div class="sheet-item" id="sheetCancel">
-      ✖ Hủy
-    </div>
-  </div>
-</div>
 
 
 

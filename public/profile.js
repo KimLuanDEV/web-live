@@ -514,62 +514,37 @@ window.addEventListener("scroll", ()=>{
 },{ passive:true });
 
 
-
+// ===== LOGOUT (PROFILE) – FIX =====
 const btnLogoutProfile = document.getElementById("btnLogoutProfile");
+btnLogoutProfile?.addEventListener("click", confirmLogoutProfile);
 
-btnLogoutProfile?.addEventListener("click", () => {
-  showMsg(
-    "Bạn có chắc muốn đăng xuất không?",
-    "Xác nhận",
-    () => {
-      localStorage.removeItem("user_profile");
-      localStorage.removeItem("login_uid");
-      localStorage.removeItem("isGuest");
-      location.href = "/login.html";
-    }
-  );
+// nếu có bottom-sheet mobile
+document.getElementById("sheetLogout")?.addEventListener("click", ()=>{
+  closeProfileSheet?.();
+  confirmLogoutProfile();
 });
 
 
+function confirmLogoutProfile(){
+  const modal = document.getElementById("msgModal");
+  const title = document.getElementById("msgTitle");
+  const text  = document.getElementById("msgText");
+  const okBtn = document.getElementById("msgOk");
 
+  title.textContent = "Xác nhận đăng xuất";
+  text.textContent  = "Bạn có chắc chắn muốn đăng xuất không?";
 
-// ===== PROFILE BOTTOM SHEET =====
-const btnProfileOptions = document.getElementById("btnProfileOptions");
-const profileSheet = document.getElementById("profileSheet");
+  modal.classList.remove("hidden");
 
-function openProfileSheet(){
-  profileSheet.classList.remove("hidden");
+  // reset để tránh chồng event
+  okBtn.onclick = null;
+
+  okBtn.onclick = () => {
+    localStorage.removeItem("user_profile");
+    localStorage.removeItem("login_uid");
+    localStorage.removeItem("isGuest");
+    location.href = "/login.html";
+  };
 }
-function closeProfileSheet(){
-  profileSheet.classList.add("hidden");
-}
 
-btnProfileOptions?.addEventListener("click", openProfileSheet);
-profileSheet?.querySelector(".sheet-backdrop")
-  ?.addEventListener("click", closeProfileSheet);
 
-document.getElementById("sheetCancel")?.onclick = closeProfileSheet;
-
-document.getElementById("sheetChangePass")?.onclick = ()=>{
-  closeProfileSheet();
-  passModal.classList.remove("hidden");
-};
-
-document.getElementById("sheetMessages")?.onclick = ()=>{
-  closeProfileSheet();
-  location.href = "/messages.html";
-};
-
-document.getElementById("sheetLogout")?.onclick = ()=>{
-  closeProfileSheet();
-  showMsg(
-    "Bạn có chắc muốn đăng xuất không?",
-    "Xác nhận",
-    () => {
-      localStorage.removeItem("user_profile");
-      localStorage.removeItem("login_uid");
-      localStorage.removeItem("isGuest");
-      location.href = "/login.html";
-    }
-  );
-};
