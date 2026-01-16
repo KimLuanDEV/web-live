@@ -51,28 +51,8 @@ socket.on("profile-update", data => {
     }
   });
 
-      if (isMine) {
-        const ava = post.querySelector(".lp-ava");
-        if (ava) ava.src = data.avatar;
-      }
+ 
 
-      // comments
-      post.querySelectorAll(".lp-comment").forEach(c => {
-        const name = c.querySelector(".lp-cm-name")?.textContent;
-        if (name === auth.name) {
-          const img = c.querySelector(".lp-cm-ava");
-          if (img) img.src = data.avatar;
-        }
-      });
-
-      // replies
-      post.querySelectorAll(".lp-reply").forEach(r => {
-        const name = r.querySelector("b")?.textContent;
-        if (name === auth.name) {
-          const img = r.querySelector("img");
-          if (img) img.src = data.avatar;
-        }
-      });
     });
   }
 
