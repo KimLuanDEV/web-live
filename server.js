@@ -32,19 +32,26 @@ MEDIA_DIRS.forEach(dir=>{
 });
 
 
+const AVATAR_DIR = "/opt/render/project/data/avatars";
+
+if(!fs.existsSync(AVATAR_DIR)){
+  fs.mkdirSync(AVATAR_DIR, { recursive:true });
+  console.log("📁 Created", AVATAR_DIR);
+}
 
 
 
 
 const upload = multer({
   storage: multer.diskStorage({
-    destination: "public/avatars",
+    destination: "/opt/render/project/data/avatars",
     filename: (_, file, cb) => {
       const ext = path.extname(file.originalname);
-      cb(null, Date.now() + ext);
+      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
     }
   })
 });
+
 
 
 
@@ -95,6 +102,8 @@ const io = new Server(server, { cors: { origin: "*" } });
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
+app.use("/avatars", express.static("/opt/render/project/data/avatars"));
+
 
 app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "poster.html"));
