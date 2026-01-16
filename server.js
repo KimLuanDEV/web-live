@@ -18,8 +18,18 @@ const twilio = require("twilio");
 const fs = require("fs");
 
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
-
 const SOCIAL_FILE = path.join("/opt/render/project/data", "social_posts.json");
+const MEDIA_DIRS = [
+  "/opt/render/project/data/post-images",
+  "/opt/render/project/data/post-videos"
+];
+
+MEDIA_DIRS.forEach(dir=>{
+  if(!fs.existsSync(dir)){
+    fs.mkdirSync(dir,{ recursive:true });
+    console.log("📁 Created", dir);
+  }
+});
 
 
 
@@ -83,6 +93,8 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/post-images", express.static("/opt/render/project/data/post-images"));
+app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
 
 app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "poster.html"));
@@ -96,7 +108,7 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
 
 const postUpload = multer({
   storage: multer.diskStorage({
-    destination: "public/post-images",
+    destination: "/opt/render/project/data/post-images",
     filename: (_, file, cb) => {
       const ext = path.extname(file.originalname);
       cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
@@ -112,7 +124,8 @@ app.post("/api/upload-post-image", postUpload.single("image"), (req,res)=>{
 
 const postVideoUpload = multer({
   storage: multer.diskStorage({
-    destination: "public/post-videos",
+    destination: "/opt/render/project/data/post-videos",
+
     filename: (_, file, cb) => {
       const ext = path.extname(file.originalname);
       cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
