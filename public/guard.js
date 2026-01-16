@@ -1,16 +1,31 @@
-const p = localStorage.getItem("user_profile");
-if(!p){
-  location.href="/login.html";
-}
+(() => {
+  const raw = localStorage.getItem("user_profile");
+  const profile = raw ? JSON.parse(raw) : null;
 
-window.addEventListener("load", ()=>{
-  const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  const path = location.pathname;
 
-  if(auth?.uid && window.socket){
-    socket.emit("auth-ping", { uid: auth.uid });
+  // cho phép login page
+  const isLoginPage = path.includes("login");
 
-    setInterval(()=>{
-      socket.emit("auth-ping", { uid: auth.uid });
+  // nếu chưa có uid → chỉ được ở login
+  if (!profile || !profile.uid) {
+    if (!isLoginPage) {
+      location.replace("/login.html");
+    }
+    return;
+  }
+
+  // nếu đã login mà còn ở login page → về lobby
+  if (isLoginPage) {
+    location.replace("/lobby.html");
+    return;
+  }
+
+  // keep socket alive
+  if (window.socket) {
+    socket.emit("auth-ping", { uid: profile.uid });
+    setInterval(() => {
+      socket.emit("auth-ping", { uid: profile.uid });
     }, 15000);
   }
-});
+})();
