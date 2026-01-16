@@ -343,12 +343,24 @@ const btnChangePass = document.getElementById("btnChangePass");
 if(btnChangePass){
   btnChangePass.onclick = ()=>{
     passModal.classList.remove("hidden");
+    hideTabbar();
   };
 }
 
 function closePass(){
   passModal.classList.add("hidden");
+  showTabbar();
 }
+
+// Ẩn tab bar khi mở đổi mật khẩu (mobile)
+function hideTabbar(){
+  document.querySelector(".mobile-tabbar")?.classList.add("hide-force");
+}
+
+function showTabbar(){
+  document.querySelector(".mobile-tabbar")?.classList.remove("hide-force");
+}
+
 
 
 // 👉 Tap nền đen để đóng passModal (mobile-friendly)

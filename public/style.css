@@ -7687,3 +7687,16 @@ select{
 body.keyboard-open .pass-sheet{
   transform: translateY(-120px);
 }
+
+
+/* ===== PASS MODAL: chừa chỗ cho mobile tab bar ===== */
+@media (max-width:520px){
+  #passModal .modal-card{
+    padding-bottom: 96px; /* = chiều cao tab bar + dư */
+  }
+}
+
+/* ép ẩn tab bar */
+.mobile-tabbar.hide-force{
+  transform: translateY(120%);
+}
