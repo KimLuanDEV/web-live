@@ -159,6 +159,35 @@
 
 
 
+<!-- PROFILE SETTINGS BOTTOM SHEET -->
+<div id="profileSheet" class="sheet hidden">
+  <div class="sheet-backdrop" onclick="closeProfileSheet()"></div>
+
+  <div class="sheet-panel">
+    <div class="sheet-handle"></div>
+
+    <div class="sheet-title">⚙️ Cài đặt tài khoản</div>
+
+    <button class="sheet-btn" onclick="location.href='/profile.html'">
+      👤 Hồ sơ cá nhân
+    </button>
+
+    <button class="sheet-btn" onclick="openChangePass()">
+      🔐 Đổi mật khẩu
+    </button>
+
+    <button class="sheet-btn danger" onclick="confirmLogout()">
+      ⏻ Đăng xuất
+    </button>
+
+    <button class="sheet-btn ghost" onclick="closeProfileSheet()">
+      ✖ Hủy
+    </button>
+  </div>
+</div>
+
+
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/chat-global.js"></script>

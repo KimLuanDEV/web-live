@@ -549,11 +549,39 @@ function confirmLogoutProfile(){
 
 
 // ===== MOBILE TAB SETTINGS =====
+const profileSheet = document.getElementById("profileSheet");
 const tabSettings = document.getElementById("tabSettings");
+
 if(tabSettings){
   tabSettings.onclick = () => {
-    // Nếu đang ở profile thì mở bottom-sheet (nâng cao sau)
-    // Hiện tại: ở lại profile
-    showMsg("⚙️ Cài đặt tài khoản");
+    profileSheet.classList.remove("hidden");
+  };
+}
+
+function closeProfileSheet(){
+  profileSheet.classList.add("hidden");
+}
+
+/* mở modal đổi mật khẩu từ sheet */
+function openChangePass(){
+  closeProfileSheet();
+  document.getElementById("passModal")?.classList.remove("hidden");
+}
+
+
+function confirmLogout(){
+  closeProfileSheet();
+
+  document.getElementById("msgTitle").textContent = "Xác nhận";
+  document.getElementById("msgText").textContent =
+    "Bạn có chắc chắn muốn đăng xuất không?";
+
+  document.getElementById("msgModal").classList.remove("hidden");
+
+  const ok = document.getElementById("msgOk");
+  ok.onclick = () => {
+    localStorage.removeItem("user_profile");
+    localStorage.removeItem("isGuest");
+    location.href = "/login.html";
   };
 }
