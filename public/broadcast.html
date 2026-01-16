@@ -495,17 +495,12 @@ btnStart.addEventListener("click", () => {
   socket.emit("host-start-live", { roomId });
 
 
+  // 🔥 ép resend offer cho toàn bộ viewer đang chờ
 for (const viewerId of pcs.keys()) {
-  const pc = pcs.get(viewerId);
-  if (!pc) continue;
-
-  // chỉ restart peer xấu
-  if (
-    pc.iceConnectionState === "failed" ||
-    pc.iceConnectionState === "disconnected"
-  ) {
-    __doIceRestart(viewerId, pc, "host_start_live");
-  }
+  socket.emit("viewer-need-offer", {
+    viewerId,
+    reason: "host_start_live_resync"
+  });
 }
 
   console.log("🔥 LIVE STARTED:", roomId);
@@ -1551,18 +1546,6 @@ socket.on("viewer-need-offer", async ({ viewerId, reason }) => {
 
     let pc = pcs.get(viewerId);
 
-    // ⛔ KHÔNG resend nếu kết nối vẫn OK
-if (
-  pc &&
-  (pc.iceConnectionState === "connected" ||
-   pc.iceConnectionState === "completed")
-) {
-  console.warn("🟡 Skip resend – ICE healthy", viewerId, reason);
-  return;
-}
-
-
-
     if (!pc) {
       const rtcConfig = await getRtcConfig();
       pc = new RTCPeerConnection(rtcConfig);
@@ -1590,13 +1573,6 @@ if (
       console.warn("⚠️ PC chưa có sender, skip offer", viewerId);
       return;
     }
-
-
-if (pc.signalingState !== "stable") {
-  console.warn("⏸ Skip offer – signaling not stable", viewerId);
-  return;
-}
-
 
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
@@ -1663,6 +1639,9 @@ window.addEventListener("online", async () => {
 });
 
 
+socket.on("viewer-need-offer", ({ viewerId, reason }) => {
+  console.warn("🔁 Resend offer to viewer:", viewerId, reason);
+});
 
 
     socket.on("viewer-join", ({ viewerId }) => {
