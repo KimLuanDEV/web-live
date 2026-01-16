@@ -1779,10 +1779,10 @@ socket.on("room-full", ()=>{
 
     socket.on("offer", async ({ from, description }) => {
 
-      /*
+      
       // reset pc for this peer only
       cleanupPeer(from);
-      */
+      
      
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
@@ -1812,6 +1812,14 @@ pc.ontrack = (event) => {
   // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
   if (!player.srcObject) {
     player.srcObject = stream;
+
+    // 🔥 BẮT BUỘC: ép play ngay khi có stream
+setTimeout(() => {
+  try {
+    player.play().catch(()=>{});
+  } catch {}
+}, 0);
+
 
     optimizeVideoForMobile(player);
     player.playsInline = true;
@@ -1859,6 +1867,10 @@ const st = pc.iceConnectionState;
   if (st === "failed" || st === "disconnected") {
    safeIceRestart(from, "viewer_resume");
 
+socket.emit("request-ice-restart", {
+  to: from,
+  reason: "viewer_no_video"
+});
 
   }
 

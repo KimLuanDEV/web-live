@@ -1409,6 +1409,15 @@ for (const v of list) {
 }
 
   emitLobbyUpdate();
+
+    // 🔥 FIX LỖI VIEWER VÀO TRỄ KHÔNG THẤY VIDEO
+  // Nếu phòng đang live rồi → ép host gửi offer cho viewer mới
+  if (room.broadcasterId && room.liveStartTs) {
+    io.to(room.broadcasterId).emit("viewer-need-offer", {
+      viewerId: socket.id
+    });
+  }
+
 });
 
 

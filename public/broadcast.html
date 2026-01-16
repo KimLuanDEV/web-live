@@ -1521,6 +1521,57 @@ socket.on("reaction", (msg)=>{
     const pcs = new Map();
 
 
+// 🔥 SERVER YÊU CẦU HOST GỬI OFFER CHO VIEWER VÀO TRỄ
+socket.on("viewer-need-offer", async ({ viewerId }) => {
+  try {
+    if (!localStream) {
+      console.warn("⚠️ viewer-need-offer nhưng host chưa start camera");
+      return;
+    }
+
+    let pc = pcs.get(viewerId);
+
+    // Nếu chưa có PeerConnection → tạo mới như watcher
+    if (!pc) {
+      console.log("🆕 Create PC for late viewer:", viewerId);
+
+      const rtcConfig = await getRtcConfig();
+      pc = new RTCPeerConnection(rtcConfig);
+      pcs.set(viewerId, pc);
+
+      localStream.getTracks().forEach(track =>
+        pc.addTrack(track, localStream)
+      );
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          socket.emit("candidate", {
+            to: viewerId,
+            candidate: e.candidate
+          });
+        }
+      };
+
+      __wireIceAuto(viewerId, pc);
+    }
+
+    // 🔥 TẠO OFFER & GỬI
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    socket.emit("offer", {
+      to: viewerId,
+      description: pc.localDescription
+    });
+
+    console.log("📤 Sent offer to late viewer:", viewerId);
+
+  } catch (e) {
+    console.error("❌ viewer-need-offer error:", e);
+  }
+});
+
+
 // ===== AUTO RECOVER AV WHEN TAB BACKGROUND =====
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState !== "visible") return;
