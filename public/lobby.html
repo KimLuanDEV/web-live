@@ -27,7 +27,7 @@
   <div class="lobby-brand">
     <span class="live-dot"></span>
     <div>
-      <div class="lobby-title">SẢNH LIVE</div>
+      <div class="lobby-title">LIVESTREAM PRO</div>
     </div>
   </div>
 
@@ -50,9 +50,6 @@
       👥 Sảnh User
     </button>
 
-    <button class="lobby-btn logout-btn" id="btnLogout">
-      ⏻
-    </button>
   </div>
 
 
@@ -949,20 +946,6 @@ if(profile.name){
 
 
 
-document.getElementById("btnLogout").onclick = () => {
-  if(isGuest){
-    localStorage.clear();
-    location.href = "/login.html";
-    return;
-  }
-
-  showMsg("Bạn có chắc muốn đăng xuất không?", "Xác nhận", ()=>{
-    localStorage.removeItem("user_profile");
-    localStorage.removeItem("login_uid");
-    localStorage.removeItem("isGuest");
-    location.href = "/login.html";
-  });
-};
 
 
 

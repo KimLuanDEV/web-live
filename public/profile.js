@@ -514,3 +514,18 @@ window.addEventListener("scroll", ()=>{
 },{ passive:true });
 
 
+
+const btnLogoutProfile = document.getElementById("btnLogoutProfile");
+
+btnLogoutProfile?.addEventListener("click", () => {
+  showMsg(
+    "Bạn có chắc muốn đăng xuất không?",
+    "Xác nhận",
+    () => {
+      localStorage.removeItem("user_profile");
+      localStorage.removeItem("login_uid");
+      localStorage.removeItem("isGuest");
+      location.href = "/login.html";
+    }
+  );
+});
