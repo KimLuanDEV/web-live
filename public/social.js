@@ -457,25 +457,30 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
 });
 
 
-
 async function submitPost(){
   const text = postText.value.trim();
-  const file = postImage.files[0];
-  if(!text && !file) return;
+  const imageFile = postImage.files[0];
+  const videoFile = postVideo.files[0];
+
+  if(!text && !imageFile && !videoFile) return;
 
   let imageUrl = "";
+  let videoUrl = "";
 
-  if(file){
+  if(imageFile){
     const fd = new FormData();
-    fd.append("image", file);
-
-    const r = await fetch("/api/upload-post-image", {
-      method:"POST",
-      body: fd
-    });
-
+    fd.append("image", imageFile);
+    const r = await fetch("/api/upload-post-image", { method:"POST", body:fd });
     const data = await r.json();
     imageUrl = data.url;
+  }
+
+  if(videoFile){
+    const fd = new FormData();
+    fd.append("video", videoFile);
+    const r = await fetch("/api/upload-post-video", { method:"POST", body:fd });
+    const data = await r.json();
+    videoUrl = data.url;
   }
 
   const cur = JSON.parse(localStorage.getItem("user_profile"));
@@ -485,12 +490,14 @@ async function submitPost(){
     name: cur.name,
     avatar: cur.avatar,
     text,
-    image: imageUrl,   // 🔥 GỬI ẢNH
+    image: imageUrl,
+    video: videoUrl,
     time: Date.now()
   });
 
   postText.value="";
   postImage.value="";
+  postVideo.value="";
 }
 
 
@@ -580,6 +587,13 @@ function renderPost(p, top=false){
 <div class="lp-post-text">${p.text}</div>
 
 ${p.image ? `<img class="lp-post-img" src="${p.image}">` : ""}
+
+
+${p.video ? `
+<video class="lp-post-video" controls playsinline>
+  <source src="${p.video}" type="video/mp4">
+</video>` : ""}
+
 
 
 <div class="lp-actions">
