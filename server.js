@@ -1162,15 +1162,6 @@ socket.on("host-reconnect", ({ roomId }) => {
 
 
   io.to(roomId).emit("host-back-online");
-
-  // 🔥 RE-EMIT host-live cho viewer đang chờ
-if (room.liveStartTs) {
-  io.to(roomId).emit("host-live", {
-    liveStartTs: room.liveStartTs
-  });
-}
-
-
 });
 
 
@@ -1361,13 +1352,6 @@ if(isGuest(socket)){
 
   const room = getRoom(roomId);
 
-    // ✅ CHẶN: host chưa online hoặc chưa start live -> viewer sẽ bị đen
-  if (!room.broadcasterId || !room.liveStartTs) {
-    socket.emit("live-not-ready", { roomId });
-    return;
-  }
-
-
   const vc = safeMap(room.viewerProfiles).size;
 if(vc >= MAX_VIEWERS){
   socket.emit("room-full");
@@ -1462,28 +1446,26 @@ socket.on("resume-viewers", ({ roomId }) => {
 
 
 socket.on("host-start-live", ({ roomId }) => {
-  roomId = normRoomId(roomId);
-  if (!roomId) return;
-
   const room = getRoom(roomId);
   if (!room) return;
-
-  // ✅ FORCE bind host (giống live-start) để tránh case broadcasterId chưa set
-  room.broadcasterId = socket.id;
+  if (room.broadcasterId !== socket.id) return;
 
   if (!room.liveStartTs) {
     room.liveStartTs = Date.now();
   }
 
-  // gửi cho toàn phòng (viewer)
-  io.to(roomId).emit("host-live", { liveStartTs: room.liveStartTs });
+ // gửi cho toàn phòng (viewer)
+io.to(roomId).emit("host-live", {
+  liveStartTs: room.liveStartTs
+});
 
-  // gửi riêng cho host (chắc chắn nhận được)
-  io.to(socket.id).emit("host-live", { liveStartTs: room.liveStartTs });
+// 🔥 gửi riêng cho host (chắc chắn nhận được)
+io.to(socket.id).emit("host-live", {
+  liveStartTs: room.liveStartTs
+});
 
   emitLobbyUpdate();
 });
-
 
 
 
@@ -1576,17 +1558,6 @@ saveLiveState(state);
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
 
-// ⛔ CHẶN viewer join-room trước khi host live
-if (role === "viewer") {
-  const room = getRoom(roomId);
-  if (!room.broadcasterId || !room.liveStartTs) {
-    socket.emit("live-not-ready", { roomId });
-    return;
-  }
-}
-
-
-
     // 🔒 Guest chỉ được join với role=viewer
 if(isGuest(socket) && role !== "viewer"){
   socket.emit("need-login", { feature:"join-as-host" });
@@ -1669,11 +1640,7 @@ if (room.liveStartTs) {
 
       // Tell broadcaster current viewers list
       socket.emit("room-viewers", Array.from(room.viewers));
-
-  if (room.liveStartTs) {
-  socket.to(roomId).emit("broadcaster-online");
-}
-
+      socket.to(roomId).emit("broadcaster-online");
       emitViewerCount(roomId);
     }
 
