@@ -1251,7 +1251,12 @@ function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
   __iceRestartState.set(peerId, st);
 }
 function __wireIceAuto(peerId, pc, opts={}){
-  if (!pc) return;
+
+ if (!pcs || pcs.size === 0) return;
+const pc = pcs.values().next().value;
+if (!pc) return;
+
+
   const disconnectedDelay = opts.disconnectedDelay ?? 6000;
 
 
