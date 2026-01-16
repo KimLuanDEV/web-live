@@ -514,9 +514,7 @@ window.addEventListener("scroll", ()=>{
 },{ passive:true });
 
 
-// ===== LOGOUT (PROFILE) – FIX =====
-const btnLogoutProfile = document.getElementById("btnLogoutProfile");
-btnLogoutProfile?.addEventListener("click", confirmLogoutProfile);
+
 
 // nếu có bottom-sheet mobile
 document.getElementById("sheetLogout")?.addEventListener("click", ()=>{

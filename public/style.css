@@ -7542,3 +7542,8 @@ body.is-guest .reactions-layer{
 .sheet-btn.ghost{
   opacity:.7;
 }
+
+/* ẨN NÚT ĐỔI MẬT KHẨU BÊN NGOÀI PROFILE */
+.page-profile #btnChangePass{
+  display: none !important;
+}
