@@ -507,6 +507,8 @@ const MAX_GIFT_QUEUE = 2;
 let __viewerHasVideo = false;
 let __viewerBlackTimer = null;
 
+let __viewerBlackChecked = false; // 🔒 chỉ check black screen 1 lần / viewer
+
 
 
 function enqueueGiftVideo(videoUrl){
@@ -1782,6 +1784,32 @@ socket.on("room-full", ()=>{
   location.href = "/lobby.html";
 });
 
+function startViewerBlackScreenCheckOnce() {
+  // ⛔ viewer đã check rồi thì KHÔNG làm lại
+  if (__viewerBlackChecked) return;
+
+  __viewerBlackChecked = true;   // 🔒 khóa vĩnh viễn cho viewer này
+  __viewerHasVideo = false;
+
+  if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
+
+  __viewerBlackTimer = setTimeout(() => {
+    if (!__viewerHasVideo) {
+      console.warn("🟥 Viewer black screen detected (first join only)");
+
+      socket.emit("viewer-black-screen", {
+        roomId,
+        reason: "no_video_track",
+        ua: navigator.userAgent,
+        ts: Date.now()
+      });
+    }
+  }, 5000); // 5s
+}
+
+
+
+
 
     socket.on("offer", async ({ from, description }) => {
 
@@ -1905,23 +1933,7 @@ socket.emit("request-ice-restart", {
         log("Lỗi xử lý offer: " + err.message);
       }
 
-      // 🔍 CHECK BLACK SCREEN sau 3.5s
-__viewerHasVideo = false;
-
-if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
-__viewerBlackTimer = setTimeout(() => {
-  if (!__viewerHasVideo) {
-    console.warn("🟥 Viewer black screen detected");
-
-    socket.emit("viewer-black-screen", {
-      roomId,
-      reason: "no_video_track",
-      ua: navigator.userAgent,
-      ts: Date.now()
-    });
-  }
-}, 60000);
-
+startViewerBlackScreenCheckOnce(); // ✅ chỉ chạy 1 lần cho viewer mới
 
     });
 
