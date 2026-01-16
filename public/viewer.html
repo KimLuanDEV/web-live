@@ -485,6 +485,32 @@
 </div>
 
 
+
+<!-- MODAL: STREAM WILL START -->
+<div id="viewerNoticeModal" class="viewer-notice hidden">
+  <div class="viewer-notice-backdrop"></div>
+
+  <div class="viewer-notice-box">
+    <div class="viewer-notice-title">
+      📢 Livestream sắp phát sóng
+    </div>
+
+    <div class="viewer-notice-desc">
+      Video sẽ bắt đầu sau
+    </div>
+
+    <div class="viewer-notice-time">
+      <span id="viewerNoticeSec">60</span>s
+    </div>
+
+    <div class="viewer-notice-sub">
+      Bạn có thể xem trước, không cần reload
+    </div>
+  </div>
+</div>
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/chat-global.js"></script>
 
@@ -496,6 +522,29 @@
     const liveStage = document.getElementById("liveStage");
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
+
+   
+  const noticeModal = document.getElementById("viewerNoticeModal");
+  const noticeSec = document.getElementById("viewerNoticeSec");
+
+  let noticeTimer = null;
+
+  function showViewerNotice(seconds = 60){
+    let left = seconds;
+    noticeSec.textContent = left;
+    noticeModal.classList.remove("hidden");
+
+    noticeTimer = setInterval(()=>{
+      left--;
+      noticeSec.textContent = left;
+
+      if(left <= 0){
+        clearInterval(noticeTimer);
+        noticeModal.classList.add("hidden");
+      }
+    }, 1000);
+  }
+
 
 
 
@@ -1013,6 +1062,7 @@ socket.emit("viewer-join", {
   profile: sendProfile
 });
 
+showViewerNotice(60);
 
 
 if (profile){
