@@ -1591,9 +1591,11 @@ window.addEventListener("online", async () => {
     const guestVideo = document.getElementById("guestVideo");
 
 async function getRtcConfig() {
+  // HOST: không ép relay, để P2P + TURN tự chọn
   const fallback = {
     iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    iceTransportPolicy: "all"
+    bundlePolicy: "max-bundle",
+    rtcpMuxPolicy: "require"
   };
 
   try {
@@ -1603,30 +1605,47 @@ async function getRtcConfig() {
     const data = await r.json();
     if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
 
+    // ✅ CHỈ GIỮ TURN / TURNS + ƯU TIÊN 443 / TCP
     const cleanedIceServers = data.iceServers
       .map(server => {
         let urls = server.urls;
         if (!urls) return null;
         if (!Array.isArray(urls)) urls = [urls];
 
-        const safeUrls = urls.filter(u =>
-          typeof u === "string" &&
-          !(u.startsWith("stun:") && u.includes("?transport="))
-        );
+        const turnUrls = urls
+          .filter(u =>
+            typeof u === "string" &&
+            (u.startsWith("turn:") || u.startsWith("turns:"))
+          )
+          .sort((a, b) => {
+            const score = (u) => {
+              if (u.startsWith("turns:") && u.includes(":443")) return 0; // ưu tiên cao nhất
+              if (u.includes("transport=tcp")) return 1;
+              return 2; // UDP sau cùng
+            };
+            return score(a) - score(b);
+          });
 
-        if (safeUrls.length === 0) return null;
-        return { ...server, urls: safeUrls };
+        if (!turnUrls.length) return null;
+
+        return {
+          urls: turnUrls,
+          username: server.username,
+          credential: server.credential
+        };
       })
       .filter(Boolean);
 
-    if (cleanedIceServers.length === 0) return fallback;
+    if (!cleanedIceServers.length) return fallback;
 
     return {
       iceServers: cleanedIceServers,
-      iceTransportPolicy: "relay"   // 🔥 BẮT BUỘC cho 4G / 5G
+      // 🚫 KHÔNG dùng iceTransportPolicy: "relay" cho HOST
+      bundlePolicy: "max-bundle",
+      rtcpMuxPolicy: "require"
     };
   } catch (e) {
-    console.error("ICE fetch error:", e);
+    console.error("HOST ICE fetch error:", e);
     return fallback;
   }
 }
