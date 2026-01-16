@@ -506,7 +506,7 @@ const MAX_GIFT_QUEUE = 2;
 
 let __viewerHasVideo = false;
 let __viewerBlackTimer = null;
-
+let __currentStreamId = null;
 
 
 function enqueueGiftVideo(videoUrl){
@@ -1602,6 +1602,16 @@ function attachTapToHeart(tapEl, layerEl, getRoomIdFn) {
   tapEl.addEventListener("click", handler);
 }
 
+function isVideoActuallyPlaying(video) {
+  return (
+    video &&
+    video.readyState >= 3 &&     // HAVE_FUTURE_DATA
+    !video.paused &&
+    !video.ended &&
+    video.videoWidth > 0 &&
+    video.videoHeight > 0
+  );
+}
 
 
 function spawnReaction(layerEl, emoji, x, y, local=false) {
@@ -1809,24 +1819,27 @@ socket.on("room-full", ()=>{
     }
   };
 
-pc.ontrack = (event) => {
-  const stream = event.streams && event.streams[0];
-  if (!stream) return;
 
 
   // ✅ ĐÃ CÓ VIDEO
 __viewerHasVideo = true;
+
 if (__viewerBlackTimer) {
   clearTimeout(__viewerBlackTimer);
   __viewerBlackTimer = null;
 }
 
+pc.ontrack = (event) => {
+  const stream = event.streams && event.streams[0];
+  if (!stream) return;
+
 
   console.log("🎥 Viewer nhận track");
 
   // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
-if (player.srcObject !== stream) {
-  console.warn("🔄 Update stream for viewer");
+if (stream.id !== __currentStreamId) {
+  console.log("🎥 Attach new stream:", stream.id);
+  __currentStreamId = stream.id;
   player.srcObject = stream;
   forcePlayVideo(player);
     // 🔥 BẮT BUỘC: ép play ngay khi có stream
@@ -1838,8 +1851,18 @@ setTimeout(() => {
 
 
     optimizeVideoForMobile(player);
-    player.playsInline = true;
 
+    // ✅ Khi video đã PLAY thật → clear black-screen timer
+player.onplaying = () => {
+  if (__viewerBlackTimer) {
+    clearTimeout(__viewerBlackTimer);
+    __viewerBlackTimer = null;
+    console.log("✅ Video playing → clear black screen timer");
+  }
+};
+
+
+    player.playsInline = true;
     // iOS + Android cần mute để autoplay
     player.muted = true;
     forcePlayVideo(player);
@@ -1881,12 +1904,10 @@ setTimeout(() => {
 
 const st = pc.iceConnectionState;
   if (st === "failed" || st === "disconnected") {
+
    safeIceRestart(from, "viewer_resume");
 
-socket.emit("request-ice-restart", {
-  to: from,
-  reason: "viewer_no_video"
-});
+
 
   }
 
@@ -1905,22 +1926,25 @@ socket.emit("request-ice-restart", {
         log("Lỗi xử lý offer: " + err.message);
       }
 
-      // 🔍 CHECK BLACK SCREEN sau 3.5s
-__viewerHasVideo = false;
 
+
+
+// 🔍 CHECK BLACK SCREEN (CHUẨN)
 if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
 __viewerBlackTimer = setTimeout(() => {
-  if (!__viewerHasVideo) {
-    console.warn("🟥 Viewer black screen detected");
+  if (!isVideoActuallyPlaying(player)) {
+    console.warn("🟥 REAL black screen detected");
 
     socket.emit("viewer-black-screen", {
       roomId,
-      reason: "no_video_track",
-      ua: navigator.userAgent,
+      reason: "no_video_frame",
       ts: Date.now()
     });
+  } else {
+    console.log("✅ Video OK – skip black screen report");
   }
-}, 3500);
+}, 5000); // ⬅️ tăng lên 5s
+
 
 
     });

@@ -516,6 +516,7 @@ function getRoom(roomId) {
 }
 
 
+const blackScreenCooldown = new Map(); // socket.id -> lastTs
 
 
 
@@ -632,7 +633,20 @@ socket.on("viewer-black-screen", ({ roomId, reason, ua, ts }) => {
   const room = rooms.get(roomId);
   if (!room) return;
 
-  console.warn("🟥 BLACK SCREEN", {
+  // ⛔ Viewer đã rời phòng → bỏ qua
+  if (!room.viewers.has(socket.id)) {
+    return;
+  }
+
+  // ⏱️ COOLDOWN 8s / viewer
+  const last = blackScreenCooldown.get(socket.id) || 0;
+  if (Date.now() - last < 8000) {
+    console.warn("⏳ Skip black-screen spam", socket.id);
+    return;
+  }
+  blackScreenCooldown.set(socket.id, Date.now());
+
+  console.warn("🟥 REAL BLACK SCREEN", {
     roomId,
     viewer: socket.id,
     reason,
@@ -640,7 +654,7 @@ socket.on("viewer-black-screen", ({ roomId, reason, ua, ts }) => {
     time: new Date(ts).toLocaleTimeString()
   });
 
-  // 🔥 ÉP HOST GỬI LẠI OFFER
+  // 🔥 CHỈ YÊU CẦU HOST RESEND (KHÔNG ÉP)
   if (room.broadcasterId) {
     io.to(room.broadcasterId).emit("viewer-need-offer", {
       viewerId: socket.id,
@@ -648,6 +662,7 @@ socket.on("viewer-black-screen", ({ roomId, reason, ua, ts }) => {
     });
   }
 });
+
 
 
 
@@ -1434,13 +1449,16 @@ for (const v of list) {
 
   emitLobbyUpdate();
 
-    // 🔥 FIX LỖI VIEWER VÀO TRỄ KHÔNG THẤY VIDEO
-  // Nếu phòng đang live rồi → ép host gửi offer cho viewer mới
   if (room.broadcasterId && room.liveStartTs) {
+  // delay nhẹ cho host ổn định stream
+  setTimeout(() => {
     io.to(room.broadcasterId).emit("viewer-need-offer", {
-      viewerId: socket.id
+      viewerId: socket.id,
+      reason: "late_join"
     });
-  }
+  }, 300);
+}
+
 
 });
 
@@ -1519,6 +1537,7 @@ socket.on("room-check", ({ roomId }, cb) => {
 
 
 
+const iceRestartCooldown = new Map(); // from -> ts
 
 
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
@@ -1529,9 +1548,17 @@ socket.on("lobby-get", () => {
   // ===== ICE RESTART RELAY =====
   // Any peer can ask another peer to perform ICE restart
   socket.on("request-ice-restart", ({ to, reason }) => {
-    if (!to) return;
-    io.to(to).emit("request-ice-restart", { from: socket.id, reason: String(reason || "") });
+  if (!to) return;
+
+  const last = iceRestartCooldown.get(socket.id) || 0;
+  if (Date.now() - last < 5000) return; // 5s
+  iceRestartCooldown.set(socket.id, Date.now());
+
+  io.to(to).emit("request-ice-restart", {
+    from: socket.id,
+    reason: String(reason || "")
   });
+});
 
 
 
