@@ -350,28 +350,33 @@ function closePass(){
   passModal.classList.add("hidden");
 }
 
+
 async function submitChangePass(){
-  const oldPass = document.getElementById("oldPass").value;
-  const newPass = document.getElementById("newPass").value;
-  const newPass2 = document.getElementById("newPass2").value;
+  const oldEl  = document.getElementById("oldPass");
+  const newEl  = document.getElementById("newPass");
+  const new2El = document.getElementById("newPass2");
 
-  if(!oldPass || !newPass || !newPass2){
-     showMsg("❌ Nhập đầy đủ thông tin");
+  const securityCode = (oldEl?.value || "").trim();
+  const newPassword  = (newEl?.value || "").trim();
+  const newPassword2 = (new2El?.value || "").trim();
+
+  if(!securityCode || !newPassword || !newPassword2){
+    showMsg("❌ Nhập đầy đủ thông tin");
     return;
   }
 
-  if(newPass.length < 6){
-     showMsg("❌ Mật khẩu mới phải >= 6 ký tự");
+  if(newPassword.length < 6){
+    showMsg("❌ Mật khẩu mới phải >= 6 ký tự");
     return;
   }
 
-  if(newPass !== newPass2){
-     showMsg("❌ Mật khẩu nhập lại không khớp");
+  if(newPassword !== newPassword2){
+    showMsg("❌ Mật khẩu nhập lại không khớp");
     return;
   }
 
-  const uid = __profileAuth.uid;
-  if(!uid){
+  const username = __profileAuth?.uid;
+  if(!username){
     showMsg("❌ Chưa đăng nhập");
     return;
   }
@@ -380,39 +385,42 @@ async function submitChangePass(){
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
-      uid,
-      oldPass,
-      newPass
+      username,
+      securityCode,
+      newPassword
     })
   });
 
- const data = await res.json();
+  const data = await res.json();
 
-if(data.ok || data.success){
-   showMsg("✅ Đổi mật khẩu thành công");
-  closePass();
+  if(data.ok){
+    showMsg("✅ Đổi mật khẩu thành công");
+    closePass();
 
-  // xoá input cho sạch
-  oldPass.value = "";
-  newPass.value = "";
-  newPass2.value = "";
-  return;
+    // xoá input cho sạch
+    if(oldEl)  oldEl.value  = "";
+    if(newEl)  newEl.value  = "";
+    if(new2El) new2El.value = "";
+    return;
+  }
+
+  // map lỗi theo backend
+  if(data.error === "missing"){
+    showMsg("❌ Thiếu dữ liệu");
+    return;
+  }
+  if(data.error === "notfound"){
+    showMsg("❌ Tài khoản không tồn tại");
+    return;
+  }
+  if(data.error === "invalid"){
+    showMsg("❌ Mã bảo mật không đúng");
+    return;
+  }
+
+  showMsg("❌ Đổi mật khẩu thất bại");
 }
 
-// các dạng lỗi
-if(data.error === "pass"){
-   showMsg("❌ Mật khẩu cũ không đúng");
-  return;
-}
-
-if(data.error === "otp"){
-   showMsg("❌ OTP sai hoặc hết hạn");
-  return;
-}
-
- showMsg("❌ Đổi mật khẩu thất bại");
-
-}
 
 
 function showMsg(text, title="Thông báo"){
