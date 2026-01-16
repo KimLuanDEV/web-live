@@ -556,6 +556,50 @@ const MAX_GIFT_QUEUE = 2;
 let __viewerHasVideo = false;
 let __viewerBlackTimer = null;
 
+function onViewerTrack(event){
+  const stream = event.streams && event.streams[0];
+  if (!stream) return;
+
+  __viewerHasVideo = true;
+  if (__viewerBlackTimer) {
+    clearTimeout(__viewerBlackTimer);
+    __viewerBlackTimer = null;
+  }
+
+  if (player.srcObject !== stream) {
+    player.srcObject = stream;
+    forcePlayVideo(player);
+    optimizeVideoForMobile(player);
+  }
+
+  if (stream.getAudioTracks().length > 0) {
+    player.muted = false;
+    player.volume = 1;
+    forceResumeAudio(player);
+  }
+
+  document.getElementById("viewerBackdrop")?.classList.add("hidden");
+}
+
+
+function startBlackScreenCheckOnce(){
+  if (__viewerBlackTimer) return; // ⛔ chỉ chạy 1 lần
+
+  __viewerHasVideo = false;
+
+  __viewerBlackTimer = setTimeout(() => {
+    if (!__viewerHasVideo) {
+      console.warn("🟥 Viewer black screen detected");
+
+      socket.emit("viewer-black-screen", {
+        roomId,
+        reason: "no_video_track",
+        ua: navigator.userAgent,
+        ts: Date.now()
+      });
+    }
+  }, 55000);
+}
 
 
 function enqueueGiftVideo(videoUrl){
@@ -1768,6 +1812,8 @@ socket.on("reaction", (msg)=>{
 socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
       setStatus("⏳ Đang chờ Host gửi LIVE...");
       log("Đã join room, đợi offer từ host...");
+
+       startBlackScreenCheckOnce(); // ✅ BẮT BUỘC
     }
 
     function cleanupPeer(peerKey) {
@@ -1833,147 +1879,106 @@ socket.on("room-full", ()=>{
 });
 
 
-    socket.on("offer", async ({ from, description }) => {
+socket.on("offer", async ({ from, description }) => {
 
-      
-      // reset pc for this peer only
-      cleanupPeer(from);
-      
-     
-      const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
+  let pc = pcs.get(from);
 
-      limitBitrateForMobile(pc);
-      limitAudioBitrate(pc, 32); // 🔒 FIX MẤT TIẾNG KHI ĐÔNG
+  // ✅ CHỈ tạo PC nếu CHƯA TỒN TẠI
+  if (!pc) {
+    const rtcConfig = await getRtcConfig();
+    pc = new RTCPeerConnection(rtcConfig);
 
+    limitBitrateForMobile(pc);
+    limitAudioBitrate(pc, 32);
 
-      pcs.set(from, pc);
+    pcs.set(from, pc);
 
-     
-  // Auto ask peer to ICE-restart if connection degrades
-  pc.onconnectionstatechange = () => {
-    const st = pc.connectionState;
-    if (st === 'failed' || st === 'disconnected'){
-      try{ safeIceRestart(from, 'viewer_pc_' + st);
- }catch{}
-    }
-  };
+    pc.onicecandidate = (e) => {
+      if (e.candidate) {
+        socket.emit("candidate", { to: from, candidate: e.candidate });
+      }
+    };
 
-pc.ontrack = (event) => {
-  const stream = event.streams && event.streams[0];
-  if (!stream) return;
+    pc.onconnectionstatechange = () => {
+      const st = pc.connectionState;
+      if (st === "failed" || st === "disconnected") {
+        try {
+          safeIceRestart(from, "viewer_pc_" + st);
+        } catch {}
+      }
+    };
 
+    pc.oniceconnectionstatechange = () => {
+      const st = pc.iceConnectionState;
+      log(`ICE(${from}): ${st}`);
+      if (st === "failed" || st === "disconnected") {
+        safeIceRestart(from, "viewer_resume");
+      }
+    };
 
-  // ✅ ĐÃ CÓ VIDEO
-__viewerHasVideo = true;
-if (__viewerBlackTimer) {
-  clearTimeout(__viewerBlackTimer);
-  __viewerBlackTimer = null;
-}
+    // ✅ CHỈ 1 ontrack DUY NHẤT
+    pc.ontrack = (event) => {
+      const stream = event.streams && event.streams[0];
+      if (!stream) return;
 
-
-  console.log("🎥 Viewer nhận track");
-
-  // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
-if (player.srcObject !== stream) {
-  console.warn("🔄 Update stream for viewer");
-  player.srcObject = stream;
-  forcePlayVideo(player);
-    // 🔥 BẮT BUỘC: ép play ngay khi có stream
-setTimeout(() => {
-  try {
-    player.play().catch(()=>{});
-  } catch {}
-}, 0);
-
-
-    optimizeVideoForMobile(player);
-    player.playsInline = true;
-
-    // iOS + Android cần mute để autoplay
-    player.muted = true;
-    forcePlayVideo(player);
-
-    // ẩn backdrop đen
-    try {
-      document.getElementById("viewerBackdrop")?.classList.add("hidden");
-    } catch {}
-  }
-
-  // 🔊 Nếu có audio → bật tiếng
-  if (stream.getAudioTracks().length > 0) {
-    player.muted = false;
-    player.volume = 1.0;
-    forceResumeAudio(player);
-  }
-
-  // 🔥 speaking highlight
-  try {
-    attachSpeakingIndicator(player, document.getElementById("hostCard"));
-  } catch {}
-
-  setStatus("🟢 Đang xem LIVE");
-};
-
-
-
-
-
-
-      pc.onicecandidate = (e) => {
-        if (e.candidate) {
-          socket.emit("candidate", { to: from, candidate: e.candidate });
-        }
-      };
-
-      pc.oniceconnectionstatechange = () => {
-        log(`ICE(${from}): ${pc.iceConnectionState}`);
-
-const st = pc.iceConnectionState;
-  if (st === "failed" || st === "disconnected") {
-   safeIceRestart(from, "viewer_resume");
-
-socket.emit("request-ice-restart", {
-  to: from,
-  reason: "viewer_no_video"
-});
-
-  }
-
-      };
-
-      try {
-        await pc.setRemoteDescription(description);
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        socket.emit("answer", { to: from, description: pc.localDescription });
-
-
-        setStatus("🟢 Đang xem live trực tiếp.");
-        log("Đã gửi answer cho: " + from);
-      } catch (err) {
-        log("Lỗi xử lý offer: " + err.message);
+      // ✅ ĐÃ CÓ VIDEO
+      __viewerHasVideo = true;
+      if (__viewerBlackTimer) {
+        clearTimeout(__viewerBlackTimer);
+        __viewerBlackTimer = null;
       }
 
-      // 🔍 CHECK BLACK SCREEN sau 55s
-__viewerHasVideo = false;
+      console.log("🎥 Viewer nhận track");
 
-if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
-__viewerBlackTimer = setTimeout(() => {
-  if (!__viewerHasVideo) {
-    console.warn("🟥 Viewer black screen detected");
+      if (player.srcObject !== stream) {
+        player.srcObject = stream;
 
-    socket.emit("viewer-black-screen", {
-      roomId,
-      reason: "no_video_track",
-      ua: navigator.userAgent,
-      ts: Date.now()
-    });
+        player.playsInline = true;
+        player.muted = true; // cho autoplay mobile
+        forcePlayVideo(player);
+
+        optimizeVideoForMobile(player);
+
+        document.getElementById("viewerBackdrop")
+          ?.classList.add("hidden");
+      }
+
+      // 🔊 bật tiếng khi có audio
+      if (stream.getAudioTracks().length > 0) {
+        player.muted = false;
+        player.volume = 1.0;
+        forceResumeAudio(player);
+      }
+
+      try {
+        attachSpeakingIndicator(
+          player,
+          document.getElementById("hostCard")
+        );
+      } catch {}
+
+      setStatus("🟢 Đang xem LIVE");
+    };
   }
-}, 55000);
 
+  // ✅ RE-OFFER AN TOÀN – KHÔNG RESET PC
+  try {
+    await pc.setRemoteDescription(description);
+    const answer = await pc.createAnswer();
+    await pc.setLocalDescription(answer);
 
+    socket.emit("answer", {
+      to: from,
+      description: pc.localDescription
     });
+
+    log("Đã gửi answer cho: " + from);
+  } catch (err) {
+    log("Lỗi xử lý offer: " + err.message);
+  }
+});
+
+
 
     socket.on("candidate", async ({ from, candidate }) => {
       const pc = pcs.get(from);

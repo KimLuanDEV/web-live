@@ -640,7 +640,19 @@ socket.on("viewer-black-screen", ({ roomId, reason, ua, ts }) => {
     time: new Date(ts).toLocaleTimeString()
   });
 
-  // 🔥 ÉP HOST GỬI LẠI OFFER
+  // ===== 🛑 THROTTLE viewer-black-screen (10s / viewer) =====
+  if (!room._lastBlack) room._lastBlack = new Map();
+
+  const last = room._lastBlack.get(socket.id) || 0;
+  if (Date.now() - last < 10000) {
+    console.warn("⏱ Skip black-screen (throttled):", socket.id);
+    return;
+  }
+
+  room._lastBlack.set(socket.id, Date.now());
+  // ===== /THROTTLE =====
+
+  // 🔥 ÉP HOST GỬI LẠI OFFER (SAFE)
   if (room.broadcasterId) {
     io.to(room.broadcasterId).emit("viewer-need-offer", {
       viewerId: socket.id,
@@ -1434,13 +1446,14 @@ for (const v of list) {
 
   emitLobbyUpdate();
 
-    // 🔥 FIX LỖI VIEWER VÀO TRỄ KHÔNG THẤY VIDEO
-  // Nếu phòng đang live rồi → ép host gửi offer cho viewer mới
-  if (room.broadcasterId && room.liveStartTs) {
+if (room.broadcasterId && room.liveStartTs) {
+  setTimeout(() => {
     io.to(room.broadcasterId).emit("viewer-need-offer", {
-      viewerId: socket.id
+      viewerId: socket.id,
+      reason: "late_join"
     });
-  }
+  }, 300);
+}
 
 });
 
@@ -1526,12 +1539,7 @@ socket.on("lobby-get", () => {
   socket.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
 });
 
-  // ===== ICE RESTART RELAY =====
-  // Any peer can ask another peer to perform ICE restart
-  socket.on("request-ice-restart", ({ to, reason }) => {
-    if (!to) return;
-    io.to(to).emit("request-ice-restart", { from: socket.id, reason: String(reason || "") });
-  });
+
 
 
 

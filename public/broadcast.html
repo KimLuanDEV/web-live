@@ -495,13 +495,7 @@ btnStart.addEventListener("click", () => {
   socket.emit("host-start-live", { roomId });
 
 
-  // 🔥 ép resend offer cho toàn bộ viewer đang chờ
-for (const viewerId of pcs.keys()) {
-  socket.emit("viewer-need-offer", {
-    viewerId,
-    reason: "host_start_live_resync"
-  });
-}
+
 
   console.log("🔥 LIVE STARTED:", roomId);
 });
@@ -1591,46 +1585,32 @@ socket.on("viewer-need-offer", async ({ viewerId, reason }) => {
 
 
 
-// ===== AUTO RECOVER AV WHEN TAB BACKGROUND =====
-document.addEventListener("visibilitychange", async () => {
+// ===== SAFE AUTO RECOVER WHEN HOST TAB ACTIVE =====
+document.addEventListener("visibilitychange", () => {
   if (document.visibilityState !== "visible") return;
   if (!localStream) return;
 
-  console.log("🔄 Host tab active → recover AV");
+  console.log("🔄 Host tab active → safe recover");
 
-  // 🔁 Recover AUDIO
-  try {
-    await replaceHostAudioTrack();
-    console.log("🎙️ Audio recovered");
-  } catch (e) {
-    console.warn("Recover audio failed", e);
-  }
+  for (const [viewerId, pc] of pcs.entries()) {
+    if (!pc || pc.signalingState === "closed") continue;
 
-  // 🔁 Recover VIDEO
-  try {
-    const videoTrack = localStream.getVideoTracks()[0];
-    if (videoTrack && videoTrack.readyState !== "live") {
-      console.log("📷 Video dead → restart camera");
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: { ideal: 1280 }, height: { ideal: 720 } },
-        audio: false
-      });
-      const newTrack = stream.getVideoTracks()[0];
+    const ice = pc.iceConnectionState;
+    const cs  = pc.connectionState;
 
-      for (const pc of pcs.values()) {
-        const sender = pc.getSenders().find(s => s.track?.kind === "video");
-        if (sender) await sender.replaceTrack(newTrack);
-      }
-
-      localStream.removeTrack(videoTrack);
-      videoTrack.stop();
-      localStream.addTrack(newTrack);
-      preview.srcObject = localStream;
+    // ❗ CHỈ recover peer đang lỗi
+    if (
+      ice === "failed" ||
+      ice === "disconnected" ||
+      cs  === "failed" ||
+      cs  === "disconnected"
+    ) {
+      console.warn("🧊 ICE restart for viewer:", viewerId, ice, cs);
+      __doIceRestart(viewerId, pc, "host_tab_resume");
     }
-  } catch (e) {
-    console.warn("Recover video failed", e);
   }
 });
+
 
 window.addEventListener("online", async () => {
   console.log("🌐 Host online again → recover AV");
@@ -1639,9 +1619,6 @@ window.addEventListener("online", async () => {
 });
 
 
-socket.on("viewer-need-offer", ({ viewerId, reason }) => {
-  console.warn("🔁 Resend offer to viewer:", viewerId, reason);
-});
 
 
     socket.on("viewer-join", ({ viewerId }) => {
