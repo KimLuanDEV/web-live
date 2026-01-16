@@ -531,7 +531,11 @@ const active = [...safeMap(room.viewerProfiles).values()]
 
    const vc = safeMap(room.viewerProfiles).size;
   const br = calcBitrate(vc);
+  
+ if(room.broadcasterId){
   io.to(roomId).emit("set-bitrate", { bitrate: br });
+}
+
 }
 
 
