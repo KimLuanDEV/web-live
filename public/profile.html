@@ -25,6 +25,12 @@
   <div class="avatar-camera">📷</div>
 </div>
 
+<!-- ⚙ PROFILE SETTINGS (MOBILE) -->
+<button id="btnProfileOptions" class="profile-options-btn mobile-only">
+  ⚙ Tuỳ chọn
+</button>
+
+
     <div class="profile-info">
       <div class="profile-name" id="displayName">User</div>
       <input id="nameInput" class="name-input hidden" placeholder="Nhập tên của bạn">
@@ -34,6 +40,8 @@
 
     <input type="file" id="avatarInput" accept="image/*" hidden>
   </div>
+
+
 
   <!-- LEVEL -->
   <div class="profile-level">
@@ -84,7 +92,7 @@
   <div class="profile-actions">
     <button id="btnSave">💾 Lưu</button>
     <button id="btnChangePass">🔐 Đổi mật khẩu</button>
-    <button id="btnLogoutProfile" class="btn-danger"> ⏻ Đăng xuất</button>
+    <button id="btnLogoutProfile" class="btn-danger desktop-only"> ⏻ Đăng xuất</button>
     <button id="btnMessages" style="display: none;">📩 Tin nhắn</button>
     <button onclick="location.href='/lobby.html'">🏟 Lobby</button>
   </div>
@@ -149,6 +157,32 @@
 </div>
 
 
+<!-- 📱 PROFILE BOTTOM SHEET (MOBILE) -->
+<div id="profileSheet" class="sheet hidden">
+  <div class="sheet-backdrop"></div>
+
+  <div class="sheet-panel">
+    <div class="sheet-handle"></div>
+
+    <div class="sheet-item" id="sheetChangePass">
+      🔐 Đổi mật khẩu
+    </div>
+
+    <div class="sheet-item" id="sheetMessages">
+      📩 Tin nhắn
+    </div>
+
+    <div class="sheet-divider"></div>
+
+    <div class="sheet-item danger" id="sheetLogout">
+      ⏻ Đăng xuất
+    </div>
+
+    <div class="sheet-item" id="sheetCancel">
+      ✖ Hủy
+    </div>
+  </div>
+</div>
 
 
 

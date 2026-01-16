@@ -529,3 +529,47 @@ btnLogoutProfile?.addEventListener("click", () => {
     }
   );
 });
+
+
+
+
+// ===== PROFILE BOTTOM SHEET =====
+const btnProfileOptions = document.getElementById("btnProfileOptions");
+const profileSheet = document.getElementById("profileSheet");
+
+function openProfileSheet(){
+  profileSheet.classList.remove("hidden");
+}
+function closeProfileSheet(){
+  profileSheet.classList.add("hidden");
+}
+
+btnProfileOptions?.addEventListener("click", openProfileSheet);
+profileSheet?.querySelector(".sheet-backdrop")
+  ?.addEventListener("click", closeProfileSheet);
+
+document.getElementById("sheetCancel")?.onclick = closeProfileSheet;
+
+document.getElementById("sheetChangePass")?.onclick = ()=>{
+  closeProfileSheet();
+  passModal.classList.remove("hidden");
+};
+
+document.getElementById("sheetMessages")?.onclick = ()=>{
+  closeProfileSheet();
+  location.href = "/messages.html";
+};
+
+document.getElementById("sheetLogout")?.onclick = ()=>{
+  closeProfileSheet();
+  showMsg(
+    "Bạn có chắc muốn đăng xuất không?",
+    "Xác nhận",
+    () => {
+      localStorage.removeItem("user_profile");
+      localStorage.removeItem("login_uid");
+      localStorage.removeItem("isGuest");
+      location.href = "/login.html";
+    }
+  );
+};
