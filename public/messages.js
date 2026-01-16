@@ -172,7 +172,7 @@ saveChat({
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
- pushMsg(from.name, text, false, msgId, "", from.avatar);
+ pushMsg(from.name, text, false);
   
 saveChat({
   from: from.uid,
@@ -202,28 +202,30 @@ socket.on("msg-status", ({ msgId, status }) => {
 
 
 
-function pushMsg(name, text, isMe=false, msgId=null, status="", avatar=""){
+
+function pushMsg(name, text, isMe=false, msgId=null, status=""){
   const div = document.createElement("div");
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
-  div.dataset.uid = isMe ? auth.uid : currentTarget.uid;
 
   const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
   div.innerHTML = `
-    ${!isMe ? `<img class="chat-ava" src="${avatar || ""}">` : ``}
-    <div class="msg-bubble ${isMe ? "me":"other"}">${text}</div>
+   <div class="msg-bubble ${isMe ? "me":"other"}">${text}</div>
+
     <div class="chat-time">
       ${time}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
     </div>
   `;
 
-  chatBox.appendChild(div);
+ chatBox.appendChild(div);
 
-  requestAnimationFrame(() => {
-    chatBox.scrollTop = chatBox.scrollHeight;
-  });
+ // ⬇️ Luôn cuộn xuống tin mới nhất
+requestAnimationFrame(() => {
+  chatBox.scrollTop = chatBox.scrollHeight;
+});
+
 }
 
 
@@ -316,29 +318,5 @@ window.addEventListener("resize", () => {
 });
 
 
-socket.on("dm-avatar-sync", ({ uid, avatar }) => {
-
-  // 1. Update danh sách user bên trái
-  allUsers.forEach(u => {
-    if (u.uid === uid) u.avatar = avatar;
-  });
-
-  renderUserList();
-
-  // 2. Nếu đang chat với người đó → update header
-  if (currentTarget && currentTarget.uid === uid) {
-    currentTarget.avatar = avatar;
-    document.getElementById("chatHeaderAvatar").src = avatar;
-  }
-
-  // 3. Update các tin nhắn đang mở
-document.querySelectorAll(".chat-line.other").forEach(line => {
-  if (String(line.dataset.uid) === String(uid)) {
-    const img = line.querySelector(".chat-ava");
-    if (img) img.src = avatar;
-  }
-});
-
-});
 
 

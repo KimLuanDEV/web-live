@@ -1267,13 +1267,6 @@ if (uid && name) {
   // ===== 4. Luôn refresh Sảnh người chơi =====
   emitActiveUsers();
   emitAllUsers();   // 🔥 THÊM DÒNG NÀY
-
-// ===== SYNC AVATAR CHO INBOX & DM =====
-if (uid && avatar) {
-  io.emit("dm-avatar-sync", { uid, avatar });
-}
-
-
 });
 
 
