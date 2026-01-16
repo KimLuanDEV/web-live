@@ -494,6 +494,15 @@ btnStart.addEventListener("click", () => {
   // 🔥 PHẢI dùng event server đang nghe
   socket.emit("host-start-live", { roomId });
 
+
+  // 🔥 ép resend offer cho toàn bộ viewer đang chờ
+for (const viewerId of pcs.keys()) {
+  socket.emit("viewer-need-offer", {
+    viewerId,
+    reason: "host_start_live_resync"
+  });
+}
+
   console.log("🔥 LIVE STARTED:", roomId);
 });
 
@@ -1522,26 +1531,30 @@ socket.on("reaction", (msg)=>{
 
 
 // 🔥 SERVER YÊU CẦU HOST GỬI OFFER CHO VIEWER VÀO TRỄ
-socket.on("viewer-need-offer", async ({ viewerId }) => {
+socket.on("viewer-need-offer", async ({ viewerId, reason }) => {
   try {
-    if (!localStream) {
-      console.warn("⚠️ viewer-need-offer nhưng host chưa start camera");
+    // ⛔ CHƯA CÓ STREAM → ĐỢI
+    if (!localStream || localStream.getTracks().length === 0) {
+      console.warn("⏳ localStream chưa sẵn sàng, retry offer...", viewerId);
+
+      // retry sau 300ms
+      setTimeout(() => {
+        socket.emit("viewer-need-offer", { viewerId, reason: "retry_wait_stream" });
+      }, 300);
       return;
     }
 
     let pc = pcs.get(viewerId);
 
-    // Nếu chưa có PeerConnection → tạo mới như watcher
     if (!pc) {
-      console.log("🆕 Create PC for late viewer:", viewerId);
-
       const rtcConfig = await getRtcConfig();
       pc = new RTCPeerConnection(rtcConfig);
       pcs.set(viewerId, pc);
 
-      localStream.getTracks().forEach(track =>
-        pc.addTrack(track, localStream)
-      );
+      // 🔥 ADD TRACK BẮT BUỘC
+      localStream.getTracks().forEach(track => {
+        pc.addTrack(track, localStream);
+      });
 
       pc.onicecandidate = (e) => {
         if (e.candidate) {
@@ -1555,7 +1568,12 @@ socket.on("viewer-need-offer", async ({ viewerId }) => {
       __wireIceAuto(viewerId, pc);
     }
 
-    // 🔥 TẠO OFFER & GỬI
+    // 🔥 CHỈ CREATE OFFER KHI ĐÃ CÓ TRACK
+    if (pc.getSenders().length === 0) {
+      console.warn("⚠️ PC chưa có sender, skip offer", viewerId);
+      return;
+    }
+
     const offer = await pc.createOffer();
     await pc.setLocalDescription(offer);
 
@@ -1564,12 +1582,13 @@ socket.on("viewer-need-offer", async ({ viewerId }) => {
       description: pc.localDescription
     });
 
-    console.log("📤 Sent offer to late viewer:", viewerId);
+    console.log("📤 Offer sent OK:", viewerId);
 
   } catch (e) {
     console.error("❌ viewer-need-offer error:", e);
   }
 });
+
 
 
 // ===== AUTO RECOVER AV WHEN TAB BACKGROUND =====

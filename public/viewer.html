@@ -1825,9 +1825,10 @@ if (__viewerBlackTimer) {
   console.log("🎥 Viewer nhận track");
 
   // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
-  if (!player.srcObject) {
-    player.srcObject = stream;
-
+if (player.srcObject !== stream) {
+  console.warn("🔄 Update stream for viewer");
+  player.srcObject = stream;
+  forcePlayVideo(player);
     // 🔥 BẮT BUỘC: ép play ngay khi có stream
 setTimeout(() => {
   try {
