@@ -39,17 +39,17 @@
       ➕ Tạo phòng LIVE
     </button>
 
-    <button class="lobby-btn" id="btnPlayerLobby">
-      👥 User
-    </button>
-
-    <div class="user-chip" onclick="location.href='/profile.html'">
+   <div class="user-chip" onclick="location.href='/profile.html'">
       <img id="userAva">
       <div class="user-info">
         <div id="userName"></div>
         <div class="user-level" id="userLevel"></div>
       </div>
     </div>
+
+    <button class="lobby-btn" id="btnPlayerLobby">
+      👥 User
+    </button>
 
     <button class="lobby-btn logout-btn" id="btnLogout">
       ⏻
@@ -60,42 +60,66 @@
 
 
 
-    <div class="card lobby-hero">
+   <div class="card lobby-hero lobby-hero--v2">
 
-      <div class="lobby-controls">
-        <div class="lobby-searchWrap">
-          <div class="lobby-searchIcon">🔎</div>
-          <input id="q" class="lobby-search" placeholder="Tìm theo Room ID hoặc tên host..." autocomplete="off" />
-          <button id="clearQ" class="lobby-clear" title="Xóa tìm kiếm" aria-label="Xóa">✕</button>
-        </div>
-
-        <div class="lobby-filters">
-          <button class="lobby-chipBtn is-active" data-filter="all">Tất cả</button>
-          <button class="lobby-chipBtn" data-filter="cohost">Có co-host</button>
-
-          <select id="sort" class="lobby-select" title="Sắp xếp">
-            <option value="viewers">🔥 Đông người xem</option>
-            <option value="new">🆕 Mới live</option>
-            <option value="old">⏱ Live lâu</option>
-          </select>
-        </div>
-
-        <div class="lobby-stats" aria-live="polite">
-          <div class="lobby-stat">
-            <div class="lobby-statLabel">Phòng đang live</div>
-            <div class="lobby-statVal" id="statRooms">0</div>
-          </div>
-          <div class="lobby-stat">
-            <div class="lobby-statLabel">Tổng viewers</div>
-            <div class="lobby-statVal" id="statViewers">0</div>
-          </div>
-          <div class="lobby-stat lobby-stat--right">
-            <div class="lobby-statLabel">Cập nhật</div>
-            <div class="lobby-statVal lobby-statTime" id="statTs">--:--:--</div>
-          </div>
-        </div>
+  <!-- HERO TOP -->
+  <div class="hero-top">
+    <div class="hero-left">
+      <div class="hero-title">🔥 Khám phá livestream</div>
+      <div class="hero-desc">
+        Xem host đang LIVE theo thời gian thực • tạo phòng chỉ trong vài giây
       </div>
     </div>
+
+    <div class="hero-right">
+      <div class="hero-stat">
+        <div class="hero-statVal" id="statRooms">0</div>
+        <div class="hero-statLabel">Phòng live</div>
+      </div>
+
+      <div class="hero-stat">
+        <div class="hero-statVal" id="statViewers">0</div>
+        <div class="hero-statLabel">Viewers</div>
+      </div>
+
+      <div class="hero-stat hero-stat--time">
+        <div class="hero-statVal" id="statTs">--:--:--</div>
+        <div class="hero-statLabel">Cập nhật</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SEARCH -->
+  <div class="hero-search">
+    <div class="lobby-searchWrap">
+      <div class="lobby-searchIcon">🔎</div>
+      <input
+        id="q"
+        class="lobby-search"
+        placeholder="Tìm theo Room ID hoặc tên host..."
+        autocomplete="off"
+      />
+      <button id="clearQ" class="lobby-clear" title="Xóa">✕</button>
+    </div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="hero-filters">
+    <div class="hero-filterLeft">
+      <button class="lobby-chipBtn is-active" data-filter="all">Tất cả</button>
+      <button class="lobby-chipBtn" data-filter="cohost">Có co-host</button>
+    </div>
+
+    <div class="hero-filterRight">
+      <select id="sort" class="lobby-select">
+        <option value="viewers">🔥 Đông người xem</option>
+        <option value="new">🆕 Mới live</option>
+        <option value="old">⏱ Live lâu</option>
+      </select>
+    </div>
+  </div>
+
+</div>
 
     <div class="card">
       <div id="empty" class="log">Chưa có phòng nào đang live.</div>
