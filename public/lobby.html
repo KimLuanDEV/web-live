@@ -23,28 +23,45 @@
 <div class="lobby-header-full">
   <div class="lobby-header-inner">
 
-    <!-- BRAND -->
+    <!-- LEFT -->
     <div class="lobby-brand">
       <span class="live-dot"></span>
       <div class="lobby-title">LIVESTREAM PRO</div>
     </div>
 
-    <!-- ACTION -->
-    <button class="lobby-btn lobby-btn-header" id="btnPlayerLobby">
-      👥 Sảnh User
+    <!-- RIGHT ACTIONS -->
+    <div class="lobby-header-actions">
+      <button class="lobby-iconBtn" id="btnToggleSearch" title="Tìm kiếm">
+        🔎
+      </button>
+
+      <button class="lobby-btn lobby-btn-header" id="btnPlayerLobby">
+        👥 Sảnh User
+      </button>
+
+
+       <!-- RIGHT: ACTIONS (GIỮ ID userBar) -->
+  <div class="lobby-actions" id="userBar">
+
+    <button id="btnCreateRoomDesktop" class="lobby-btn lobby-btn--main">
+      ➕ Tạo phòng LIVE
     </button>
 
-  </div>
+   <div class="user-chip" style="display: none;" onclick="location.href='/profile.html'">
+      <img id="userAva">
+      <div class="user-info">
+        <div id="userName"></div>
+        <div class="user-level" id="userLevel"></div>
+      </div>
+    </div>
 </div>
 
+</div>
+</div>
 
-
-  <div class="container lobby-shell">
-
-   <!-- SEARCH -->
-  <div class="hero-search">
+  <!-- SEARCH BAR (ẨN / HIỆN) -->
+  <div class="lobby-header-search hidden" id="headerSearch">
     <div class="lobby-searchWrap">
-      <div class="lobby-searchIcon">🔎</div>
       <input
         id="q"
         class="lobby-search"
@@ -54,6 +71,14 @@
       <button id="clearQ" class="lobby-clear" title="Xóa">✕</button>
     </div>
   </div>
+</div>
+
+
+
+
+  <div class="container lobby-shell">
+
+
 
 
   <!-- FILTERS -->
@@ -77,23 +102,7 @@
 
 
 
- <!-- RIGHT: ACTIONS (GIỮ ID userBar) -->
-  <div class="lobby-actions" id="userBar">
 
-    <button id="btnCreateRoomDesktop" class="lobby-btn lobby-btn--main">
-      ➕ Tạo phòng LIVE
-    </button>
-
-   <div class="user-chip" style="display: none;" onclick="location.href='/profile.html'">
-      <img id="userAva">
-      <div class="user-info">
-        <div id="userName"></div>
-        <div class="user-level" id="userLevel"></div>
-      </div>
-    </div>
-
-
-</div>
 
 
 
@@ -1206,6 +1215,32 @@ window.addEventListener("scroll", ()=>{
   lastScroll = cur;
 },{ passive:true });
 
+
+
+
+const btnToggleSearch = document.getElementById("btnToggleSearch");
+const headerSearch = document.getElementById("headerSearch");
+const searchInput = document.getElementById("q");
+
+btnToggleSearch?.addEventListener("click", () => {
+  headerSearch.classList.toggle("hidden");
+
+  if (!headerSearch.classList.contains("hidden")) {
+    setTimeout(() => searchInput?.focus(), 50);
+  }
+});
+
+clearQ?.addEventListener("click", () => {
+  searchInput.value = "";
+  searchInput.focus();
+});
+
+// Ẩn search khi blur (tuỳ chọn – giống app)
+searchInput?.addEventListener("blur", () => {
+  setTimeout(() => {
+    headerSearch.classList.add("hidden");
+  }, 150);
+});
 
 </script>
 
