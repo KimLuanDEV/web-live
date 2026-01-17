@@ -105,9 +105,11 @@
 </div>
 
 
+<!-- GUEST NOTICE FULL WIDTH -->
+<div id="guestNotice" class="guest-notice-bar hidden">
+  <div class="guest-notice-inner"></div>
+</div>
 
-<!-- GUEST NOTICE (under filter) -->
-<div id="guestNotice" class="guest-notice hidden"></div>
 
 
 
@@ -1104,16 +1106,14 @@ socket.on("inbox-clear", ()=>{
 const guestNotice = document.getElementById("guestNotice");
 
 if (isGuest && guestNotice) {
-  guestNotice.innerHTML = `
-    <div class="guest-notice-inner">
-      <div class="badge badge--info">
-        👀 Đang xem với tư cách Guest
-      </div>
-
-      <button class="lobby-btn" onclick="location.href='/login.html'">
-        🔐 Đăng nhập
-      </button>
+  guestNotice.querySelector(".guest-notice-inner").innerHTML = `
+    <div class="badge badge--info">
+      👀 Đang xem với tư cách Guest
     </div>
+
+    <button class="lobby-btn" onclick="location.href='/login.html'">
+      🔐 Đăng nhập
+    </button>
   `;
   guestNotice.classList.remove("hidden");
 }

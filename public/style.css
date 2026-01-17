@@ -8279,3 +8279,64 @@ body.header-compact .lobby-filter-bar{
     align-items:flex-start;
   }
 }
+
+
+/* =====================================
+   GUEST NOTICE – FULL WIDTH STICKY
+   ===================================== */
+
+.guest-notice-bar{
+  position: sticky;
+  top: calc(var(--header-h, 64px) + 44px + 6px); 
+  /* 64 = header, ~44 = filter */
+
+  z-index: 65;
+  width: 100%;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7,10,20,.92),
+      rgba(7,10,20,.88)
+    );
+
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* inner canh nội dung giống filter */
+.guest-notice-inner{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 12px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+/* badge */
+.guest-notice-inner .badge{
+  margin:0;
+  font-size:13px;
+  padding:6px 10px;
+}
+
+/* nút login gọn */
+.guest-notice-inner .lobby-btn{
+  padding:8px 12px !important;
+  font-size:13px;
+}
+
+/* MOBILE */
+@media(max-width:520px){
+  .guest-notice-inner{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+}
+
+/* khi header compact */
+body.header-compact .guest-notice-bar{
+  top: calc(48px + 44px + 6px);
+}
