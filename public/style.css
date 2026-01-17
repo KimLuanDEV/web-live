@@ -8279,3 +8279,297 @@ body.header-compact .lobby-filter-bar{
     align-items:flex-start;
   }
 }
+
+
+/* =====================================
+   GUEST NOTICE – FULL WIDTH STICKY
+   ===================================== */
+
+.guest-notice-bar{
+  position: sticky;
+  top: calc(var(--header-h, 64px) + 44px + 6px); 
+  /* 64 = header, ~44 = filter */
+
+  z-index: 65;
+  width: 100%;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7,10,20,.92),
+      rgba(7,10,20,.88)
+    );
+
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* inner canh nội dung giống filter */
+.guest-notice-inner{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 12px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+/* badge */
+.guest-notice-inner .badge{
+  margin:0;
+  font-size:13px;
+  padding:6px 10px;
+}
+
+/* nút login gọn */
+.guest-notice-inner .lobby-btn{
+  padding:8px 12px !important;
+  font-size:13px;
+}
+
+/* MOBILE */
+@media(max-width:520px){
+  .guest-notice-inner{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+}
+
+/* khi header compact */
+body.header-compact .guest-notice-bar{
+  top: calc(48px + 44px + 6px);
+}
+
+
+/* =====================================
+   GUEST NOTICE – FULL WIDTH / NO RADIUS
+   ===================================== */
+
+.guest-notice-bar{
+  position: sticky;
+  top: calc(var(--header-h, 64px) + 44px + 6px);
+  z-index: 66;
+
+  width: 100%;
+  border-radius: 0 !important;     /* ❌ KHÔNG BO GÓC */
+  margin: 0 !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7,10,20,.96),
+      rgba(7,10,20,.90)
+    );
+
+  border-top: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* inner: 1 hàng ngang */
+.guest-notice-inner{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 12px;
+
+  display: flex;
+  align-items: center;             /* ✅ CÙNG HÀNG */
+  justify-content: space-between;
+  gap: 12px;
+
+  border-radius: 0 !important;     /* ❌ KHÔNG BO */
+}
+
+/* badge nằm ngang */
+.guest-notice-inner .badge{
+  margin: 0;
+  border-radius: 999px; /* badge riêng vẫn bo */
+  white-space: nowrap;
+}
+
+/* nút đăng nhập – gọn, nằm cùng hàng */
+.guest-notice-inner .lobby-btn{
+  margin: 0;
+  white-space: nowrap;
+  padding: 8px 12px !important;
+  font-size: 13px;
+}
+
+/* MOBILE: vẫn giữ 1 hàng (không xuống dòng) */
+@media (max-width:520px){
+  .guest-notice-inner{
+    flex-direction: row;           /* ❗ KHÔNG column */
+  }
+}
+
+/* khi header compact */
+body.header-compact .guest-notice-bar{
+  top: calc(48px + 44px + 6px);
+}
+
+
+:root{
+  --lobby-bar-bg: linear-gradient(
+    180deg,
+    rgba(7,10,20,.96),
+    rgba(7,10,20,.90)
+  );
+}
+
+
+/* =====================================
+   LOBBY BAR – UNIFIED BACKGROUND
+   ===================================== */
+
+/* HEADER */
+.lobby-header-full{
+  background: var(--lobby-bar-bg) !important;
+}
+
+/* FILTER */
+.lobby-filter-bar{
+  background: var(--lobby-bar-bg) !important;
+}
+
+/* GUEST NOTICE */
+.guest-notice-bar{
+  background: var(--lobby-bar-bg) !important;
+}
+
+.lobby-header-full,
+.lobby-filter-bar,
+.guest-notice-bar{
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+
+.guest-notice-bar{
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
+
+/* =====================================
+   MERGED BAR – SCROLL COMPACT MODE
+   ===================================== */
+
+/* chiều cao chuẩn */
+:root{
+  --bar-normal-h: 64px;
+  --bar-compact-h: 44px;
+}
+
+/* ===== NORMAL STATE ===== */
+.lobby-header-full{
+  height: var(--bar-normal-h);
+  transition: height .22s ease;
+}
+.lobby-header-inner{
+  height: var(--bar-normal-h);
+  transition: height .22s ease;
+}
+
+/* ===== MERGED STATE ===== */
+body.bar-merged .lobby-header-full{
+  height: var(--bar-compact-h);
+}
+
+body.bar-merged .lobby-header-inner{
+  height: var(--bar-compact-h);
+}
+
+/* title nhỏ lại */
+body.bar-merged .lobby-title{
+  font-size: 14px;
+  opacity: .9;
+}
+
+/* ===== FILTER BAR GỘP VÀO HEADER ===== */
+body.bar-merged .lobby-filter-bar{
+  position: absolute;
+  top: 0;
+  height: var(--bar-compact-h);
+  background: transparent;
+  border: none;
+  z-index: 61;
+}
+
+/* chỉ giữ filter đang active */
+body.bar-merged .lobby-chipBtn:not(.is-active){
+  display: none;
+}
+
+/* filter nằm bên phải header */
+body.bar-merged .lobby-filter-scroll{
+  padding: 0 8px;
+  height: var(--bar-compact-h);
+  align-items: center;
+}
+
+/* ===== GUEST BAR GỘP ===== */
+body.bar-merged .guest-notice-bar{
+  position: absolute;
+  top: 0;
+  height: var(--bar-compact-h);
+  background: transparent;
+  border: none;
+  z-index: 62;
+}
+
+/* guest chỉ giữ badge */
+body.bar-merged .guest-notice-inner .lobby-btn{
+  display: none;
+}
+
+/* căn guest về bên phải */
+body.bar-merged .guest-notice-inner{
+  padding: 0 8px;
+  height: var(--bar-compact-h);
+  align-items: center;
+}
+
+/* ===== KHÔNG ĐẨY NỘI DUNG ===== */
+body.bar-merged .lobby-filter-bar,
+body.bar-merged .guest-notice-bar{
+  pointer-events: none;
+}
+
+body.bar-merged .lobby-filter-scroll,
+body.bar-merged .guest-notice-inner{
+  pointer-events: auto;
+}
+
+
+/* =====================================
+   GUEST BAR – FORCE SAME BACKGROUND
+   ===================================== */
+
+/* 1. Cả 3 bar dùng CHUNG nền */
+.lobby-header-full,
+.lobby-filter-bar,
+.guest-notice-bar{
+  background: var(--lobby-bar-bg) !important;
+}
+
+/* 2. GUEST BAR không được có lớp riêng */
+.guest-notice-bar{
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* 3. INNER chỉ layout, KHÔNG tạo nền */
+.guest-notice-inner{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+}
+
+/* 4. Khi MERGED MODE → càng phải trong suốt */
+body.bar-merged .guest-notice-bar,
+body.bar-merged .guest-notice-inner{
+  background: transparent !important;
+}
+
+/* 5. Badge và button vẫn giữ style riêng (OK) */
+
