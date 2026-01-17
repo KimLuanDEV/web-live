@@ -106,6 +106,14 @@
 
 
 
+<!-- GUEST NOTICE (under filter) -->
+<div id="guestNotice" class="guest-notice hidden"></div>
+
+
+
+
+
+
   <div class="container lobby-shell">
 
 
@@ -1092,14 +1100,24 @@ socket.on("inbox-clear", ()=>{
 });
 
 
-if(isGuest){
-  document.getElementById("userBar").innerHTML = `
-    <div class="badge badge--info">👀 Đang xem với tư cách Guest</div>
-    <button class="lobby-btn" onclick="location.href='/login.html'">
-      🔐 Đăng nhập
-    </button>
+
+const guestNotice = document.getElementById("guestNotice");
+
+if (isGuest && guestNotice) {
+  guestNotice.innerHTML = `
+    <div class="guest-notice-inner">
+      <div class="badge badge--info">
+        👀 Đang xem với tư cách Guest
+      </div>
+
+      <button class="lobby-btn" onclick="location.href='/login.html'">
+        🔐 Đăng nhập
+      </button>
+    </div>
   `;
+  guestNotice.classList.remove("hidden");
 }
+
 
 
 let __msgOkAction = null;

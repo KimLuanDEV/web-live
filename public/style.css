@@ -8234,3 +8234,48 @@ body.header-compact .lobby-filter-bar{
 body.header-compact .lobby-filter-bar{
   top: calc(48px + 6px) !important;
 }
+
+
+/* ===== GUEST NOTICE UNDER FILTER ===== */
+.guest-notice{
+  max-width: 1180px;
+  margin: 6px auto 0;   /* sát filter, không hở */
+  padding: 0 12px;
+}
+
+.guest-notice-inner{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+
+  background: rgba(95,168,255,.10);
+  border: 1px solid rgba(95,168,255,.28);
+  backdrop-filter: blur(8px);
+
+  box-shadow: 0 8px 24px rgba(0,0,0,.25);
+}
+
+/* text */
+.guest-notice .badge{
+  margin:0;
+  font-size:13px;
+  padding:6px 10px;
+}
+
+/* button gọn hơn header */
+.guest-notice .lobby-btn{
+  padding:8px 12px !important;
+  font-size:13px;
+}
+
+/* mobile gọn */
+@media(max-width:520px){
+  .guest-notice-inner{
+    flex-direction:column;
+    align-items:flex-start;
+  }
+}
