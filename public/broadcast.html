@@ -677,9 +677,10 @@ if(nameFromLobby){
     
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-if(profile.uid){
-  socket.emit("auth-login", { uid: profile.uid });
+if (profile.uid) {
+  socket.emit("auth-ping", { uid: profile.uid });
 }
+
 
 socket.on("force-logout", () => {
   alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");

@@ -1074,14 +1074,20 @@ socket.on("msg-seen-all", ()=>{
 socket.on("auth-ping", ({ uid }) => {
   if (!uid) return;
 
-  // ❗ auth-ping CHỈ dùng để giữ online
-  // ❗ TUYỆT ĐỐI không đổi socket chủ
+  socket.data.uid = uid;
 
+  // nếu chưa có uid → set
   if (!activeUsers.has(uid)) {
     activeUsers.set(uid, socket.id);
-    socket.data.uid = uid;
     emitActiveUsers();
+    return;
   }
+
+  // nếu là chính socket này → OK
+  if (activeUsers.get(uid) === socket.id) return;
+
+  
+  // ❌ TUYỆT ĐỐI KHÔNG force-logout ở đây
 });
 
 
