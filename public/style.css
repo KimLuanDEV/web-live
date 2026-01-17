@@ -7705,3 +7705,69 @@ body.keyboard-open .pass-sheet{
 .mobile-tabbar {
   display: flex !important;
 }
+
+
+/* ===== LOBBY HEADER FULL WIDTH ===== */
+.lobby-header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  width: 100%;
+  height: 64px;
+
+  display: flex;
+  align-items: center;
+  gap: 16px;
+
+  padding: 0 16px;
+
+  background: rgba(10, 12, 20, 0.9);
+  backdrop-filter: blur(10px);
+
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  z-index: 1000;
+}
+
+
+.lobby-shell {
+  padding-top: 72px; /* = header height + 8px */
+}
+
+
+.lobby-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 220px;
+}
+
+.hero-search {
+  flex: 1;
+  max-width: 520px;
+}
+
+.hero-filters {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.lobby-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+
+@media (max-width: 768px) {
+  .lobby-header {
+    height: 56px;
+    padding: 0 12px;
+  }
+
+  .lobby-shell {
+    padding-top: 64px;
+  }
+}
