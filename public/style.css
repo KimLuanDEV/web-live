@@ -7970,7 +7970,7 @@ body.keyboard-open .pass-sheet{
 .lobby-filter-scroll{
   display: flex;
   gap: 10px;
-  padding: 10px 12px;
+  padding: 6px 12px 10px; /* sát trên – thoáng dưới */
   overflow-x: auto;
   overflow-y: hidden;
   white-space: nowrap;
@@ -8003,3 +8003,26 @@ body.keyboard-open .pass-sheet{
     top: 70px;
   }
 }
+
+
+/* ===== HEADER NO GAP ===== */
+.lobby-header-full{
+  margin-bottom: 0 !important;
+  border-bottom: none;
+}
+
+/* ===== FILTER BAR STICK TO HEADER ===== */
+.lobby-filter-bar{
+  position: sticky;
+  top: calc(var(--header-h, 64px)); /* cùng chiều cao header */
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+
+  border-top: 1px solid rgba(255,255,255,.06);
+}
+
+
+:root{
+  --header-h: 64px;
+}
+
