@@ -1074,15 +1074,16 @@ socket.on("msg-seen-all", ()=>{
 socket.on("auth-ping", ({ uid }) => {
   if (!uid) return;
 
-  // refresh mapping
-  const old = activeUsers.get(uid);
-  if (!old || old !== socket.id) {
+  // ❗ auth-ping CHỈ dùng để giữ online
+  // ❗ TUYỆT ĐỐI không đổi socket chủ
+
+  if (!activeUsers.has(uid)) {
     activeUsers.set(uid, socket.id);
     socket.data.uid = uid;
+    emitActiveUsers();
   }
-  emitActiveUsers();
-
 });
+
 
   socket.on("auth-login", ({ uid }) => {
 
