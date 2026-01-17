@@ -583,6 +583,9 @@ function forceResumeAudio(videoEl){
 
 let __viewerWasBackground = false;
 let __viewerAutoReloaded = false;
+let __viewerReloading = false; // ✅ FIX ReferenceError
+
+
 
     document.getElementById("roomCode").textContent = roomId;
 
@@ -682,7 +685,10 @@ let __lastTs = 0;
 
 async function checkHDQuality(){
   try{
-    if (!pc || pc.connectionState !== "connected") return;
+
+const pc = getCurrentPC();
+if (!pc || pc.connectionState !== "connected") return;
+
 
     const stats = await pc.getStats();
     let bytes = 0;
@@ -1677,6 +1683,14 @@ socket.on("reaction", (msg)=>{
 
     const pcs = new Map(); // peerId -> RTCPeerConnection
 
+function getCurrentPC(){
+  for (const pc of pcs.values()) {
+    return pc; // viewer chỉ có 1 host
+  }
+  return null;
+}
+
+
     async function getRtcConfig() {
      const fallback = {
   iceServers: [],
@@ -1800,13 +1814,15 @@ socket.on("reaction", (msg)=>{
 
 
 socket.on("set-bitrate", ({ bitrate })=>{
-  if(!pc) return;
+  const pc = getCurrentPC();
+  if (!pc) return;
 
   pc.getReceivers().forEach(r=>{
-    if(!r.track || r.track.kind !== "video") return;
+    if (!r.track || r.track.kind !== "video") return;
 
     const p = r.getParameters();
-    if(!p.encodings) p.encodings = [{}];
+    if (!p.encodings) p.encodings = [{}];
+
     p.encodings[0].maxBitrate = bitrate * 1000;
     r.setParameters?.(p);
   });
