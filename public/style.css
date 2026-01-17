@@ -7761,13 +7761,3 @@ body.keyboard-open .pass-sheet{
 }
 
 
-@media (max-width: 768px) {
-  .lobby-header {
-    height: 56px;
-    padding: 0 12px;
-  }
-
-  .lobby-shell {
-    padding-top: 64px;
-  }
-}
