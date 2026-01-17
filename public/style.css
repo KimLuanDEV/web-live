@@ -7920,3 +7920,38 @@ body.keyboard-open .pass-sheet{
   }
 }
 
+
+/* ===== CLEAN ICON BUTTON (HEADER) ===== */
+.lobby-iconBtn{
+  all: unset;                 /* 🔥 xoá toàn bộ style button cũ */
+  cursor: pointer;
+
+  width: 34px;
+  height: 34px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  line-height: 1;
+
+  color: #EAF0FF;
+  opacity: .9;
+
+  /* ❌ KHÔNG viền – KHÔNG nền – KHÔNG blur */
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+/* hover nhẹ cho đẹp */
+.lobby-iconBtn:hover{
+  opacity: 1;
+  transform: scale(1.12);
+}
+
+/* mobile cảm giác bấm */
+.lobby-iconBtn:active{
+  transform: scale(0.95);
+}
