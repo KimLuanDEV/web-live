@@ -68,34 +68,45 @@
 
 
 
-  <div class="container lobby-shell">
 
 
+<!-- SLIDE FILTER BAR -->
+<div class="lobby-filter-bar">
+  <div class="lobby-filter-scroll">
 
+    <button class="lobby-chipBtn is-active" data-filter="all">
+      🔥 Tất cả
+    </button>
 
-  <!-- FILTERS -->
-  <div class="hero-filters">
-    <div class="hero-filterLeft">
-      <button class="lobby-chipBtn is-active" data-filter="all">Tất cả</button>
-      <button class="lobby-chipBtn" data-filter="cohost">Có co-host</button>
+    <button class="lobby-chipBtn" data-filter="cohost">
+      👥 Có co-host
+    </button>
 
+    <button class="lobby-chipBtn" data-filter="hot">
+      🚀 Hot
+    </button>
 
+    <button class="lobby-chipBtn" data-filter="new">
+      🆕 Mới live
+    </button>
 
-        <div class="hero-filterRight">
-      <select id="sort" class="lobby-select">
-        <option value="viewers">🔥 Đông người xem</option>
-        <option value="new">🆕 Mới live</option>
-        <option value="old">⏱ Live lâu</option>
-      </select>
-    </div>
+    <button class="lobby-chipBtn" data-filter="long">
+      ⏱ Live lâu
+    </button>
+
+    <!-- SORT nằm chung trong thanh trượt -->
+    <select id="sort" class="lobby-select lobby-select-inline">
+      <option value="viewers">🔥 Đông người xem</option>
+      <option value="new">🆕 Mới live</option>
+      <option value="old">⏱ Live lâu</option>
+    </select>
+
   </div>
-
- 
-
+</div>
 
 
 
-
+  <div class="container lobby-shell">
 
 
    <div class="card lobby-hero lobby-hero--v2" style="display: none">

@@ -7955,3 +7955,51 @@ body.keyboard-open .pass-sheet{
 .lobby-iconBtn:active{
   transform: scale(0.95);
 }
+
+
+/* ===== SLIDE FILTER BAR ===== */
+.lobby-filter-bar{
+  position: sticky;
+  top: 64px; /* ngay dưới header */
+  z-index: 40;
+  background: rgba(7,10,20,.88);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+.lobby-filter-scroll{
+  display: flex;
+  gap: 10px;
+  padding: 10px 12px;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.lobby-filter-scroll::-webkit-scrollbar{
+  display:none;
+}
+
+/* chip trong slide */
+.lobby-filter-scroll .lobby-chipBtn{
+  flex: 0 0 auto;
+}
+
+/* select inline như chip */
+.lobby-select-inline{
+  flex: 0 0 auto !important;
+  min-width: 160px;
+  height: 42px;
+  padding: 8px 14px !important;
+  border-radius: 999px !important;
+  font-size: 13px;
+}
+
+/* PC nhìn gọn hơn */
+@media (min-width: 920px){
+  .lobby-filter-bar{
+    top: 70px;
+  }
+}
