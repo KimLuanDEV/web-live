@@ -926,7 +926,7 @@ function limitVideoBitrate(pc, kbps = 800) {
       if (!params.encodings) params.encodings = [{}];
 
       params.encodings[0].maxBitrate = kbps * 1000; // 800kbps
-      params.encodings[0].scaleResolutionDownBy = 1.5; // giảm tải GPU
+      params.encodings[0].scaleResolutionDownBy = 1.0; // giảm tải GPU
       params.encodings[0].maxFramerate = 24; // ép fps thấp hơn
 
       sender.setParameters(params).catch(()=>{});
@@ -1258,7 +1258,7 @@ function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
 }
 function __wireIceAuto(peerId, pc, opts={}){
   if (!pc) return;
-  const disconnectedDelay = opts.disconnectedDelay ?? 6000;
+  const disconnectedDelay = opts.disconnectedDelay ?? 8000;
 
 
   pc.addEventListener("iceconnectionstatechange", () => {
@@ -1269,7 +1269,7 @@ function __wireIceAuto(peerId, pc, opts={}){
       return;
     }
     if (st === "failed") {
-      __scheduleIceRestart(peerId, pc, "ice failed", 50);
+      __scheduleIceRestart(peerId, pc, "ice failed", 3000);
       return;
     }
     if (st === "disconnected") {
@@ -1593,6 +1593,7 @@ async function createPeerConnection(viewerId) {
   iceTransportPolicy: "relay" // 🔥 BẮT BUỘC DÙNG TURN
 });
 
+pc.__pendingCandidates = []; // 🔥 BẮT BUỘC PHẢI CÓ
 
 pc.oniceconnectionstatechange = () => {
   console.log("ICE state:", pc.iceConnectionState);
@@ -1604,14 +1605,18 @@ pc.onconnectionstatechange = () => {
 
 
 
-  pc.onicecandidate = (e) => {
-    if (e.candidate) {
-      socket.emit("candidate", {
-        to: viewerId,
-        candidate: e.candidate
-      });
-    }
-  };
+pc.onicecandidate = (e) => {
+  if (!e.candidate) return;
+
+  if (pc.remoteDescription) {
+    socket.emit("candidate", {
+      to: viewerId,
+      candidate: e.candidate
+    });
+  } else {
+    pc.__pendingCandidates.push(e.candidate);
+  }
+};
 
   // auto ICE restart + log
   __wireIceAuto(viewerId, pc);
@@ -1720,13 +1725,6 @@ socket.emit("join-room", {
 
 
 
-    // Peer asks HOST to ICE-restart this connection (HOST is offerer for viewers)
-    socket.on("request-ice-restart", async ({ from, reason }) => {
-      const peerId = from;
-      const pc = pcs.get(peerId);
-      if (pc) __doIceRestart(peerId, pc, reason || "requested");
-    });
-
 
     // ===== Viewer -> Host streaming =====
 socket.on("watcher", async ({ viewerId }) => {
@@ -1736,10 +1734,13 @@ socket.on("watcher", async ({ viewerId }) => {
   }
 
   // ❌ tránh tạo trùng PC
-  if (pcs.has(viewerId)) {
-    console.warn("⚠️ PC đã tồn tại cho viewer:", viewerId);
-    return;
-  }
+ if (pcs.has(viewerId)) {
+  const oldPc = pcs.get(viewerId);
+  try { oldPc.close(); } catch {}
+  pcs.delete(viewerId);
+  log("♻️ Reset PC cũ cho viewer:", viewerId);
+}
+
 
   log(`👀 Viewer join: ${viewerId}`);
 
@@ -1759,11 +1760,11 @@ await new Promise(r => setTimeout(r, 200));
   limitAudioBitrate(pc, 32);
   limitVideoBitrate(pc, 1200); // 1.2 Mbps
 
-// 🔥 TẠO OFFER SAU KHI CÓ TRACK
 const offer = await pc.createOffer({
-  offerToReceiveAudio: false,
-  offerToReceiveVideo: false
+  offerToReceiveAudio: true,
+  offerToReceiveVideo: true
 });
+
 await pc.setLocalDescription(offer);
 
   
@@ -1788,6 +1789,15 @@ socket.on("host-stream-ready", () => {
       if (pc) {
         try {
           await pc.setRemoteDescription(description);
+
+// 🔥 flush ICE cho mobile
+if (pc.__pendingCandidates?.length) {
+  for (const c of pc.__pendingCandidates) {
+    socket.emit("candidate", { to: from, candidate: c });
+  }
+  pc.__pendingCandidates.length = 0;
+}
+
           log(`Nhận answer từ: ${from}`);
         } catch (err) {
           log("Lỗi setRemoteDescription(answer): " + err.message);

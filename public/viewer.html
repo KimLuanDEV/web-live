@@ -539,6 +539,7 @@ function playNextGiftVideo(){
 let __lastIceReq = 0;
 
 function safeIceRestart(to, reason){
+  if (!__viewerGotAnyTrack) return; 
   const now = Date.now();
   if (now - __lastIceReq < 5000) return; // ⏱ 5s
   __lastIceReq = now;
@@ -1839,6 +1840,8 @@ socket.on("room-full", ()=>{
 
     socket.on("offer", async ({ from, description }) => {
 
+let __viewerGotAnyTrack = false;
+
       let __gotTrack = false;
 
       /*
@@ -1862,19 +1865,24 @@ socket.on("room-full", ()=>{
       pcs.set(from, pc);
 
      
-  // Auto ask peer to ICE-restart if connection degrades
-  pc.onconnectionstatechange = () => {
-    const st = pc.connectionState;
-    if (st === 'failed' || st === 'disconnected'){
-      try{ safeIceRestart(from, 'viewer_pc_' + st);
- }catch{}
-    }
-  };
+pc.onconnectionstatechange = () => {
+  const st = pc.connectionState;
+  console.log("🔗 PC:", st);
+
+  if (st === "failed") {
+    console.warn("🔥 PC FAILED → cleanup & wait new offer");
+    cleanupPeer(from);
+  }
+};
+
 
 let __viewerGotVideo = false;
 let __viewerGotAudio = false;
 
 pc.ontrack = (event) => {
+__viewerGotAnyTrack = true;
+
+
   const stream = event.streams && event.streams[0];
   if (!stream) return;
 
@@ -1947,17 +1955,26 @@ pc.ontrack = (event) => {
         }
       };
 
-      pc.oniceconnectionstatechange = () => {
-        log(`ICE(${from}): ${pc.iceConnectionState}`);
+ pc.oniceconnectionstatechange = () => {
+  const st = pc.iceConnectionState;
+  log(`🧊 ICE(${from}): ${st}`);
 
-const st = pc.iceConnectionState;
-  if (st === "failed" || st === "disconnected") {
-   safeIceRestart(from, "viewer_resume");
-
-
+  // ⏳ 4G / 5G NAT thường tự hồi sau 1–3s
+  if (st === "disconnected") {
+    setTimeout(() => {
+      // chỉ restart nếu vẫn disconnected
+      if (pc.iceConnectionState === "disconnected") {
+        safeIceRestart(from, "viewer_ice_disconnected");
+      }
+    }, 2500);
   }
 
-      };
+  // ❗ failed là chết thật → restart ngay
+  if (st === "failed") {
+    safeIceRestart(from, "viewer_ice_failed");
+  }
+};
+
 
       try {
         await pc.setRemoteDescription(description);
