@@ -1091,74 +1091,48 @@ socket.on("auth-ping", ({ uid }) => {
 });
 
 
-  socket.on("auth-login", ({ uid }) => {
+ socket.on("auth-login", ({ uid }) => {
+  uid = String(uid || "").trim();
+  if (!uid) return;
 
-  uid = String(uid||"").trim();
-  if(!uid) return;
-
-  
   // 🚫 BỎ QUA GUEST
-  if(uid.startsWith("guest_")){
+  if (uid.startsWith("guest_")) {
     socket.data.uid = uid;
     socket.data.role = "guest";
     return;
   }
 
   const db = loadUsers();
-
-if(db[uid]){
-  // chỉ load nếu chưa có profile realtime
-  socket.data.profile = {
-    ...db[uid].profile,
-    ...socket.data.profile   // 🔥 realtime ghi đè DB
-  };
-}
-
-
-  // nếu uid đang online ở socket khác → đá
-  const oldSocketId = activeUsers.get(uid);
-
-  if(oldSocketId && oldSocketId !== socket.id){
-    io.to(oldSocketId).emit("force-logout", { reason:"login_elsewhere" });
-
- if(oldSocketId && oldSocketId !== socket.id){
-  const oldSocket = io.sockets.sockets.get(oldSocketId);
-  if(oldSocket){
-    io.to(oldSocketId).emit("force-logout");
-    oldSocket.disconnect(true);
-  }
-}
-
+  if (db[uid]) {
+    socket.data.profile = {
+      ...db[uid].profile,
+      ...socket.data.profile
+    };
   }
 
+  // ✅ KHÔNG ĐÁ – CHỈ GHI ĐÈ SOCKET MỚI
   activeUsers.set(uid, socket.id);
 
-  // 🔥 GỬI TIN NHẮN OFFLINE
-const inbox = userInbox.get(uid);
-if(inbox && inbox.length){
-  
-  const db = loadUsers();
-for(const m of inbox){
-  const u = db[m.from];
-  m.verified = !!u?.profile?.verified;
-}
+  // 🔥 GỬI TIN NHẮN OFFLINE (GIỮ NGUYÊN)
+  const inbox = userInbox.get(uid);
+  if (inbox && inbox.length) {
+    for (const m of inbox) {
+      const u = db[m.from];
+      m.verified = !!u?.profile?.verified;
+    }
 
-socket.emit("offline-messages", inbox);
+    socket.emit("offline-messages", inbox);
 
-
-  // 🔴 nếu còn tin chưa đọc → bật badge
-  const unread = inbox.filter(m=>!m.seen).length;
-  if(unread > 0){
-    socket.emit("inbox-new", { count: unread });
+    const unread = inbox.filter(m => !m.seen).length;
+    if (unread > 0) {
+      socket.emit("inbox-new", { count: unread });
+    }
   }
-}
-
 
   socket.data.uid = uid;
-
   emitActiveUsers();
-
 });
+
 
 
 socket.on("host-reconnect", ({ roomId }) => {
