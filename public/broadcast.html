@@ -996,9 +996,7 @@ async function checkHDQuality(){
 // check mỗi 2.5s
 setInterval(checkHDQuality, 2500);
 
-// 🔔 guest request sound
-const guestReqSound = new Audio("/public/audio/sound.mp3");
-guestReqSound.volume = 0.6;
+
 
 let __lastGuestNotify = 0;
 
@@ -1830,22 +1828,10 @@ socket.on("guest-request", ({ guestId }) => {
   btnApproveGuest.disabled = false;
   btnRejectGuest.disabled = false;
 
-  // ===== 🔔 RUNG + ÂM THANH =====
-  const now = Date.now();
-  if (now - __lastGuestNotify > 1200) {
-    __lastGuestNotify = now;
-
-    // rung icon
-    guestReqIcon.classList.remove("is-shake");
-    void guestReqIcon.offsetWidth; // reset animation
-    guestReqIcon.classList.add("is-shake");
-
-    // phát âm thanh
-    try {
-      guestReqSound.currentTime = 0;
-      guestReqSound.play().catch(()=>{});
-    } catch {}
-  }
+// ===== 🔔 RUNG ICON (KHÔNG ÂM THANH) =====
+guestReqIcon.classList.remove("is-shake");
+void guestReqIcon.offsetWidth;
+guestReqIcon.classList.add("is-shake");
 
 });
 
@@ -1908,11 +1894,6 @@ socket.on("connect", () => {
   btnApproveGuest.disabled = true;
   btnRejectGuest.disabled = true;
 };
-
-
-document.addEventListener("pointerdown", () => {
-  guestReqSound.play().then(()=>guestReqSound.pause()).catch(()=>{});
-}, { once:true });
 
 
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
