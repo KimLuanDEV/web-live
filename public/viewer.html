@@ -1847,7 +1847,22 @@ socket.on("room-full", ()=>{
       */
      
       const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
+
+      const pc = new RTCPeerConnection({
+  ...rtcConfig,
+  iceTransportPolicy: "relay" // 🔥 BẮT BUỘC DÙNG TURN
+});
+
+
+pc.oniceconnectionstatechange = () => {
+  console.log("ICE state:", pc.iceConnectionState);
+};
+
+pc.onconnectionstatechange = () => {
+  console.log("PC state:", pc.connectionState);
+};
+
+
 
       limitBitrateForMobile(pc);
       limitAudioBitrate(pc, 32); // 🔒 FIX MẤT TIẾNG KHI ĐÔNG

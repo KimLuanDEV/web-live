@@ -1587,7 +1587,22 @@ window.addEventListener("online", async () => {
 
 async function createPeerConnection(viewerId) {
   const rtcConfig = await getRtcConfig();
-  const pc = new RTCPeerConnection(rtcConfig);
+
+  const pc = new RTCPeerConnection({
+  ...rtcConfig,
+  iceTransportPolicy: "relay" // 🔥 BẮT BUỘC DÙNG TURN
+});
+
+
+pc.oniceconnectionstatechange = () => {
+  console.log("ICE state:", pc.iceConnectionState);
+};
+
+pc.onconnectionstatechange = () => {
+  console.log("PC state:", pc.connectionState);
+};
+
+
 
   pc.onicecandidate = (e) => {
     if (e.candidate) {
@@ -1619,7 +1634,7 @@ async function createPeerConnection(viewerId) {
    
     
     const guestVideo = document.getElementById("guestVideo");
-    
+
 async function getRtcConfig() {
   // ❌ Không dùng STUN-only cho fallback (4G/5G sẽ fail)
   const hardFallback = {
