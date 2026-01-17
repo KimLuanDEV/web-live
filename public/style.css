@@ -7700,3 +7700,8 @@ body.keyboard-open .pass-sheet{
 .mobile-tabbar.hide-force{
   transform: translateY(120%);
 }
+
+
+.mobile-tabbar {
+  display: flex !important;
+}
