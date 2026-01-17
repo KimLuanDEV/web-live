@@ -8340,3 +8340,69 @@ body.header-compact .lobby-filter-bar{
 body.header-compact .guest-notice-bar{
   top: calc(48px + 44px + 6px);
 }
+
+
+/* =====================================
+   GUEST NOTICE – FULL WIDTH / NO RADIUS
+   ===================================== */
+
+.guest-notice-bar{
+  position: sticky;
+  top: calc(var(--header-h, 64px) + 44px + 6px);
+  z-index: 66;
+
+  width: 100%;
+  border-radius: 0 !important;     /* ❌ KHÔNG BO GÓC */
+  margin: 0 !important;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7,10,20,.96),
+      rgba(7,10,20,.90)
+    );
+
+  border-top: 1px solid rgba(255,255,255,.08);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* inner: 1 hàng ngang */
+.guest-notice-inner{
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 8px 12px;
+
+  display: flex;
+  align-items: center;             /* ✅ CÙNG HÀNG */
+  justify-content: space-between;
+  gap: 12px;
+
+  border-radius: 0 !important;     /* ❌ KHÔNG BO */
+}
+
+/* badge nằm ngang */
+.guest-notice-inner .badge{
+  margin: 0;
+  border-radius: 999px; /* badge riêng vẫn bo */
+  white-space: nowrap;
+}
+
+/* nút đăng nhập – gọn, nằm cùng hàng */
+.guest-notice-inner .lobby-btn{
+  margin: 0;
+  white-space: nowrap;
+  padding: 8px 12px !important;
+  font-size: 13px;
+}
+
+/* MOBILE: vẫn giữ 1 hàng (không xuống dòng) */
+@media (max-width:520px){
+  .guest-notice-inner{
+    flex-direction: row;           /* ❗ KHÔNG column */
+  }
+}
+
+/* khi header compact */
+body.header-compact .guest-notice-bar{
+  top: calc(48px + 44px + 6px);
+}
