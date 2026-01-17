@@ -973,7 +973,7 @@ async function checkHDQuality(){
       const lossRate = packets ? packetsLost / packets : 0;
 
       const weak =
-        bitrate < 400 ||   // kbps
+        bitrate <  600 ||   // kbps
         lossRate > 0.05;
 
       if (weak){
@@ -1757,7 +1757,7 @@ await new Promise(r => setTimeout(r, 200));
 
   // khóa bitrate
   limitAudioBitrate(pc, 32);
-  limitVideoBitrate(pc, 800);
+  limitVideoBitrate(pc, 1200); // 1.2 Mbps
 
 // 🔥 TẠO OFFER SAU KHI CÓ TRACK
 const offer = await pc.createOffer({
@@ -1936,7 +1936,12 @@ socket.on("connect", () => {
       if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
 
       const rtcConfig = await getRtcConfig();
-      pcGuestIn = new RTCPeerConnection(rtcConfig);
+
+      pcGuestIn = new RTCPeerConnection({
+  ...rtcConfig,
+  iceTransportPolicy: "relay" // 🔥 BẮT BUỘC
+});
+
 
       // send host tracks back to guest so guest can hear/see host (co-talk)
       if (localStream) {

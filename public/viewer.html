@@ -657,7 +657,7 @@ function limitBitrateForMobile(pc){
     const p = sender.getParameters();
     if (!p.encodings) p.encodings = [{}];
 
-    p.encodings[0].maxBitrate = 900_000; // ~900kbps
+    p.encodings[0].maxBitrate = 1_200_000;  // ~900kbps
     p.encodings[0].maxFramerate = 24;
 
     sender.setParameters(p).catch(()=>{});
@@ -712,7 +712,7 @@ if (!pc || pc.connectionState !== "connected") return;
 
       // 👉 Điều kiện mạng yếu
       const weak =
-        bitrate < 400 ||     // bitrate thấp
+        bitrate < 600 ||     // bitrate thấp
         lossRate > 0.05;     // mất gói > 5%
 
       if (weak){
@@ -1852,15 +1852,6 @@ socket.on("room-full", ()=>{
   ...rtcConfig,
   iceTransportPolicy: "relay" // 🔥 BẮT BUỘC DÙNG TURN
 });
-
-
-pc.oniceconnectionstatechange = () => {
-  console.log("ICE state:", pc.iceConnectionState);
-};
-
-pc.onconnectionstatechange = () => {
-  console.log("PC state:", pc.connectionState);
-};
 
 
 
