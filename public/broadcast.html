@@ -849,7 +849,7 @@ socket.on("host-live", ({ liveStartTs }) => {
 
   console.log("⏱ LIVE TIMER START:", liveStartTs);
 
-  __startLiveTimer(liveStartTs);
+   __startTimer(liveTimerHost, liveStartTs); // ✅ ĐÚNG
   syncStartLiveOverlay(true);
 });
 
