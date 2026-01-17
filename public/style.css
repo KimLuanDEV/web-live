@@ -8210,3 +8210,26 @@ body.header-compact .lobby-iconBtn{
 body.header-compact .lobby-filter-bar{
   top: 48px;
 }
+
+
+/* =====================================
+   FIX FILTER BỊ CHE VIỀN
+   ===================================== */
+
+/* Đẩy filter xuống 1 xíu */
+.lobby-filter-bar{
+  top: calc(var(--header-h, 64px) + 6px) !important;
+  z-index: 70 !important; /* cao hơn lớp gradient */
+}
+
+/* Header gradient không che filter */
+.lobby-header-full::after{
+  bottom: -12px !important; /* ngắn lại */
+  height: 12px !important;
+  z-index: 1;
+}
+
+/* Khi header compact */
+body.header-compact .lobby-filter-bar{
+  top: calc(48px + 6px) !important;
+}
