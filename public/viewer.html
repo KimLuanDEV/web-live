@@ -13,8 +13,6 @@
 
 
   <title>Viewer - Livestream Pro</title>
-  <link rel="icon" href="data:," />
-
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body class="viewer-fullscreen">
@@ -487,6 +485,32 @@
 </div>
 
 
+
+<!-- MODAL: STREAM WILL START -->
+<div id="viewerNoticeModal" class="viewer-notice hidden">
+  <div class="viewer-notice-backdrop"></div>
+
+  <div class="viewer-notice-box">
+    <div class="viewer-notice-title">
+      📢 Bạn đang trong hàng chờ...
+    </div>
+
+    <div class="viewer-notice-desc">
+      Video sẽ bắt đầu sau
+    </div>
+
+    <div class="viewer-notice-time">
+      <span id="viewerNoticeSec">60</span>s
+    </div>
+
+    <div class="viewer-notice-sub">
+      Đừng rời đi nhé!
+    </div>
+  </div>
+</div>
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/chat-global.js"></script>
 
@@ -499,11 +523,40 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
+   
+  const noticeModal = document.getElementById("viewerNoticeModal");
+  const noticeSec = document.getElementById("viewerNoticeSec");
+
+  let noticeTimer = null;
+
+  function showViewerNotice(seconds = 60){
+    let left = seconds;
+    noticeSec.textContent = left;
+    noticeModal.classList.remove("hidden");
+
+    noticeTimer = setInterval(()=>{
+      left--;
+      noticeSec.textContent = left;
+
+      if(left <= 0){
+        clearInterval(noticeTimer);
+        noticeModal.classList.add("hidden");
+      }
+    }, 1000);
+  }
+
+
 
 
 const giftVideoQueue = [];
 let playingGiftVideo = false;
 const MAX_GIFT_QUEUE = 2;
+
+
+let __viewerHasVideo = false;
+let __viewerBlackTimer = null;
+
+
 
 function enqueueGiftVideo(videoUrl){
   if (giftVideoQueue.length >= MAX_GIFT_QUEUE) return;
@@ -539,7 +592,6 @@ function playNextGiftVideo(){
 let __lastIceReq = 0;
 
 function safeIceRestart(to, reason){
-  if (!__viewerGotAnyTrack) return; 
   const now = Date.now();
   if (now - __lastIceReq < 5000) return; // ⏱ 5s
   __lastIceReq = now;
@@ -586,9 +638,6 @@ function forceResumeAudio(videoEl){
 
 let __viewerWasBackground = false;
 let __viewerAutoReloaded = false;
-let __viewerReloading = false; // ✅ FIX ReferenceError
-
-
 
     document.getElementById("roomCode").textContent = roomId;
 
@@ -658,7 +707,7 @@ function limitBitrateForMobile(pc){
     const p = sender.getParameters();
     if (!p.encodings) p.encodings = [{}];
 
-    p.encodings[0].maxBitrate = 1_200_000;  // ~900kbps
+    p.encodings[0].maxBitrate = 900_000; // ~900kbps
     p.encodings[0].maxFramerate = 24;
 
     sender.setParameters(p).catch(()=>{});
@@ -688,10 +737,7 @@ let __lastTs = 0;
 
 async function checkHDQuality(){
   try{
-
-const pc = getCurrentPC();
-if (!pc || pc.connectionState !== "connected") return;
-
+    if (!pc || pc.connectionState !== "connected") return;
 
     const stats = await pc.getStats();
     let bytes = 0;
@@ -713,7 +759,7 @@ if (!pc || pc.connectionState !== "connected") return;
 
       // 👉 Điều kiện mạng yếu
       const weak =
-        bitrate < 600 ||     // bitrate thấp
+        bitrate < 400 ||     // bitrate thấp
         lossRate > 0.05;     // mất gói > 5%
 
       if (weak){
@@ -746,40 +792,9 @@ setInterval(checkHDQuality, 2500);
 
     const socket = io();
 
-
-let __waitingHostStream = false;
-
-socket.on("wait-host-stream", () => {
-  __waitingHostStream = true;
-
-  try {
-    setStatus("⏳ Host đang chuẩn bị video…");
-    const overlay = document.getElementById("joinOverlayViewer");
-    if (overlay) overlay.textContent = "⏳ Host đang chuẩn bị video…";
-  } catch {}
-});
-
-socket.on("host-stream-ready", () => {
-  if (!__waitingHostStream) return;
-
-  console.log("✅ Host stream ready → join lại");
-  __waitingHostStream = false;
-
-  joined = false;
-  join().catch(()=>{});
-});
-
-
-
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const isGuest = localStorage.getItem("isGuest") === "1";
-
-
-// ❌ GUEST KHÔNG AUTH
-if(profile.uid && !isGuest){
-  socket.emit("auth-login", { uid: profile.uid });
-}
 
 // 🧩 Guest overlay click outside to close
 const guestLock = document.getElementById("guestViewLock");
@@ -1047,6 +1062,7 @@ socket.emit("viewer-join", {
   profile: sendProfile
 });
 
+showViewerNotice(60);
 
 
 if (profile){
@@ -1686,19 +1702,8 @@ socket.on("reaction", (msg)=>{
 
     const pcs = new Map(); // peerId -> RTCPeerConnection
 
-function getCurrentPC(){
-  for (const pc of pcs.values()) {
-    return pc; // viewer chỉ có 1 host
-  }
-  return null;
-}
-
-
     async function getRtcConfig() {
-     const fallback = {
-  iceServers: [],
-  iceTransportPolicy: "relay"
-};
+      const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 
       try {
         const r = await fetch("/ice", { cache: "no-store" });
@@ -1755,23 +1760,15 @@ function getCurrentPC(){
     });
 
 
-  async function join() {
-  if (joined || __waitingHostStream) return;
-
-  joined = true;
-
-  try { btnJoin.style.display = "none"; } catch {}
-
-  socket.emit("join-room", {
-    roomId,
-    role: "viewer",
-    profile: sendProfile
-  });
-
-  setStatus("⏳ Đang kết nối livestream…");
-  log("Viewer join room");
-}
-
+    async function join() {
+      if (joined) return;
+      joined = true;
+      
+      try{ btnJoin.style.display = "none"; }catch{}
+socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
+      setStatus("⏳ Đang chờ Host gửi LIVE...");
+      log("Đã join room, đợi offer từ host...");
+    }
 
     function cleanupPeer(peerKey) {
      
@@ -1817,15 +1814,13 @@ function getCurrentPC(){
 
 
 socket.on("set-bitrate", ({ bitrate })=>{
-  const pc = getCurrentPC();
-  if (!pc) return;
+  if(!pc) return;
 
   pc.getReceivers().forEach(r=>{
-    if (!r.track || r.track.kind !== "video") return;
+    if(!r.track || r.track.kind !== "video") return;
 
     const p = r.getParameters();
-    if (!p.encodings) p.encodings = [{}];
-
+    if(!p.encodings) p.encodings = [{}];
     p.encodings[0].maxBitrate = bitrate * 1000;
     r.setParameters?.(p);
   });
@@ -1840,23 +1835,13 @@ socket.on("room-full", ()=>{
 
     socket.on("offer", async ({ from, description }) => {
 
-let __viewerGotAnyTrack = false;
-
-      let __gotTrack = false;
-
-      /*
+      
       // reset pc for this peer only
       cleanupPeer(from);
-      */
+      
      
       const rtcConfig = await getRtcConfig();
-
-      const pc = new RTCPeerConnection({
-  ...rtcConfig,
-  iceTransportPolicy: "relay" // 🔥 BẮT BUỘC DÙNG TURN
-});
-
-
+      const pc = new RTCPeerConnection(rtcConfig);
 
       limitBitrateForMobile(pc);
       limitAudioBitrate(pc, 32); // 🔒 FIX MẤT TIẾNG KHI ĐÔNG
@@ -1865,84 +1850,70 @@ let __viewerGotAnyTrack = false;
       pcs.set(from, pc);
 
      
-pc.onconnectionstatechange = () => {
-  const st = pc.connectionState;
-  console.log("🔗 PC:", st);
-
-  if (st === "failed") {
-    console.warn("🔥 PC FAILED → cleanup & wait new offer");
-    cleanupPeer(from);
-  }
-};
-
-
-let __viewerGotVideo = false;
-let __viewerGotAudio = false;
+  // Auto ask peer to ICE-restart if connection degrades
+  pc.onconnectionstatechange = () => {
+    const st = pc.connectionState;
+    if (st === 'failed' || st === 'disconnected'){
+      try{ safeIceRestart(from, 'viewer_pc_' + st);
+ }catch{}
+    }
+  };
 
 pc.ontrack = (event) => {
-__viewerGotAnyTrack = true;
-
-
   const stream = event.streams && event.streams[0];
   if (!stream) return;
 
-  const hasVideo = stream.getVideoTracks().length > 0;
-  const hasAudio = stream.getAudioTracks().length > 0;
 
-  console.log("🎥 Viewer nhận track", { hasVideo, hasAudio });
+  // ✅ ĐÃ CÓ VIDEO
+__viewerHasVideo = true;
+if (__viewerBlackTimer) {
+  clearTimeout(__viewerBlackTimer);
+  __viewerBlackTimer = null;
+}
 
-  // 🔥 GÁN STREAM 1 LẦN DUY NHẤT
-  if (!player.srcObject) {
-    player.srcObject = stream;
+
+  console.log("🎥 Viewer nhận track");
+
+  // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
+if (player.srcObject !== stream) {
+  console.warn("🔄 Update stream for viewer");
+  player.srcObject = stream;
+  forcePlayVideo(player);
+    // 🔥 BẮT BUỘC: ép play ngay khi có stream
+setTimeout(() => {
+  try {
+    player.play().catch(()=>{});
+  } catch {}
+}, 0);
+
 
     optimizeVideoForMobile(player);
     player.playsInline = true;
 
-    // Autoplay-safe: bắt đầu muted
+    // iOS + Android cần mute để autoplay
     player.muted = true;
-    player.volume = 1.0;
-
     forcePlayVideo(player);
 
-    // Ẩn backdrop đen khi có stream
+    // ẩn backdrop đen
     try {
       document.getElementById("viewerBackdrop")?.classList.add("hidden");
     } catch {}
   }
 
-  // 🎥 Đánh dấu đã có VIDEO
-  if (hasVideo && !__viewerGotVideo) {
-    __viewerGotVideo = true;
-    setStatus("🟢 Đang xem LIVE");
+  // 🔊 Nếu có audio → bật tiếng
+  if (stream.getAudioTracks().length > 0) {
+    player.muted = false;
+    player.volume = 1.0;
+    forceResumeAudio(player);
   }
 
-  // 🔊 Audio có thể tới sau → xử lý riêng
-  if (hasAudio && !__viewerGotAudio) {
-    __viewerGotAudio = true;
-
-    // ⛔ Không unmute ngay nếu chưa có gesture (tránh iOS block)
-    const tryEnableAudio = () => {
-      player.muted = false;
-      player.volume = 1.0;
-      forceResumeAudio(player);
-      window.removeEventListener("touchstart", tryEnableAudio);
-      window.removeEventListener("click", tryEnableAudio);
-    };
-
-    // Thử bật ngay (Android/Chrome OK)
-    tryEnableAudio();
-
-    // Fallback cho iOS: đợi user gesture
-    window.addEventListener("touchstart", tryEnableAudio, { once: true });
-    window.addEventListener("click", tryEnableAudio, { once: true });
-  }
-
-  // 🔥 speaking highlight (an toàn)
+  // 🔥 speaking highlight
   try {
     attachSpeakingIndicator(player, document.getElementById("hostCard"));
   } catch {}
-};
 
+  setStatus("🟢 Đang xem LIVE");
+};
 
 
 
@@ -1955,26 +1926,21 @@ __viewerGotAnyTrack = true;
         }
       };
 
- pc.oniceconnectionstatechange = () => {
-  const st = pc.iceConnectionState;
-  log(`🧊 ICE(${from}): ${st}`);
+      pc.oniceconnectionstatechange = () => {
+        log(`ICE(${from}): ${pc.iceConnectionState}`);
 
-  // ⏳ 4G / 5G NAT thường tự hồi sau 1–3s
-  if (st === "disconnected") {
-    setTimeout(() => {
-      // chỉ restart nếu vẫn disconnected
-      if (pc.iceConnectionState === "disconnected") {
-        safeIceRestart(from, "viewer_ice_disconnected");
-      }
-    }, 2500);
+const st = pc.iceConnectionState;
+  if (st === "failed" || st === "disconnected") {
+   safeIceRestart(from, "viewer_resume");
+
+socket.emit("request-ice-restart", {
+  to: from,
+  reason: "viewer_no_video"
+});
+
   }
 
-  // ❗ failed là chết thật → restart ngay
-  if (st === "failed") {
-    safeIceRestart(from, "viewer_ice_failed");
-  }
-};
-
+      };
 
       try {
         await pc.setRemoteDescription(description);
@@ -1988,6 +1954,25 @@ __viewerGotAnyTrack = true;
       } catch (err) {
         log("Lỗi xử lý offer: " + err.message);
       }
+
+      // 🔍 CHECK BLACK SCREEN sau 55s
+__viewerHasVideo = false;
+
+if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
+__viewerBlackTimer = setTimeout(() => {
+  if (!__viewerHasVideo) {
+    console.warn("🟥 Viewer black screen detected");
+
+    socket.emit("viewer-black-screen", {
+      roomId,
+      reason: "no_video_track",
+      ua: navigator.userAgent,
+      ts: Date.now()
+    });
+  }
+}, 55000);
+
+
     });
 
     socket.on("candidate", async ({ from, candidate }) => {

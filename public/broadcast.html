@@ -15,7 +15,6 @@
 
 
   <title>Host - Livestream Pro</title>
-  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body class="viewer-fullscreen">
@@ -495,6 +494,15 @@ btnStart.addEventListener("click", () => {
   // 🔥 PHẢI dùng event server đang nghe
   socket.emit("host-start-live", { roomId });
 
+
+  // 🔥 ép resend offer cho toàn bộ viewer đang chờ
+for (const viewerId of pcs.keys()) {
+  socket.emit("viewer-need-offer", {
+    viewerId,
+    reason: "host_start_live_resync"
+  });
+}
+
   console.log("🔥 LIVE STARTED:", roomId);
 });
 
@@ -677,10 +685,9 @@ if(nameFromLobby){
     
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-if (profile.uid) {
-  socket.emit("auth-ping", { uid: profile.uid });
+if(profile.uid){
+  socket.emit("auth-login", { uid: profile.uid });
 }
-
 
 socket.on("force-logout", () => {
   alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
@@ -850,7 +857,7 @@ socket.on("host-live", ({ liveStartTs }) => {
 
   console.log("⏱ LIVE TIMER START:", liveStartTs);
 
-   __startTimer(liveTimerHost, liveStartTs); // ✅ ĐÚNG
+  __startLiveTimer(liveStartTs);
   syncStartLiveOverlay(true);
 });
 
@@ -926,7 +933,7 @@ function limitVideoBitrate(pc, kbps = 800) {
       if (!params.encodings) params.encodings = [{}];
 
       params.encodings[0].maxBitrate = kbps * 1000; // 800kbps
-      params.encodings[0].scaleResolutionDownBy = 1.0; // giảm tải GPU
+      params.encodings[0].scaleResolutionDownBy = 1.5; // giảm tải GPU
       params.encodings[0].maxFramerate = 24; // ép fps thấp hơn
 
       sender.setParameters(params).catch(()=>{});
@@ -942,15 +949,7 @@ let __lastTs = 0;
 
 async function checkHDQuality(){
   try{
-    // lấy peer đầu tiên đang connected
-    let pc = null;
-    for (const p of pcs.values()) {
-      if (p && p.connectionState === "connected") {
-        pc = p;
-        break;
-      }
-    }
-    if (!pc) return;
+    if (!pc || pc.connectionState !== "connected") return;
 
     const stats = await pc.getStats();
     let bytes = 0;
@@ -958,32 +957,31 @@ async function checkHDQuality(){
     let packets = 0;
 
     stats.forEach(r=>{
-      if (r.type === "outbound-rtp" && r.kind === "video"){
-        bytes += r.bytesSent || 0;
-        packets += r.packetsSent || 0;
-      }
-      if (r.type === "remote-inbound-rtp" && r.kind === "video"){
+      if (r.type === "inbound-rtp" && r.kind === "video"){
+        bytes += r.bytesReceived || 0;
         packetsLost += r.packetsLost || 0;
+        packets += r.packetsReceived || 0;
       }
     });
 
     const now = performance.now();
     if (__lastTs){
-      const bitrate = ((bytes - __lastBytes) * 8) / (now - __lastTs);
+      const bitrate = ((bytes - __lastBytes) * 8) / (now - __lastTs); // kbps approx
       const lossRate = packets ? packetsLost / packets : 0;
 
+      // 👉 Điều kiện mạng yếu
       const weak =
-        bitrate <  600 ||   // kbps
-        lossRate > 0.05;
+        bitrate < 400 ||     // bitrate thấp
+        lossRate > 0.05;     // mất gói > 5%
 
       if (weak){
         hdBadge.textContent = "🟡 HD";
-        hdBadge.classList.add("hd-bad");
         hdBadge.classList.remove("hd-good");
+        hdBadge.classList.add("hd-bad");
       }else{
         hdBadge.textContent = "🟢 HD";
-        hdBadge.classList.add("hd-good");
         hdBadge.classList.remove("hd-bad");
+        hdBadge.classList.add("hd-good");
       }
     }
 
@@ -994,11 +992,12 @@ async function checkHDQuality(){
   }
 }
 
-
 // check mỗi 2.5s
 setInterval(checkHDQuality, 2500);
 
-
+// 🔔 guest request sound
+const guestReqSound = new Audio("/public/audio/sound.mp3");
+guestReqSound.volume = 0.6;
 
 let __lastGuestNotify = 0;
 
@@ -1258,7 +1257,7 @@ function __scheduleIceRestart(peerId, pc, reason, delayMs=2200){
 }
 function __wireIceAuto(peerId, pc, opts={}){
   if (!pc) return;
-  const disconnectedDelay = opts.disconnectedDelay ?? 8000;
+  const disconnectedDelay = opts.disconnectedDelay ?? 6000;
 
 
   pc.addEventListener("iceconnectionstatechange", () => {
@@ -1269,7 +1268,7 @@ function __wireIceAuto(peerId, pc, opts={}){
       return;
     }
     if (st === "failed") {
-      __scheduleIceRestart(peerId, pc, "ice failed", 3000);
+      __scheduleIceRestart(peerId, pc, "ice failed", 50);
       return;
     }
     if (st === "disconnected") {
@@ -1380,7 +1379,7 @@ socket.on("resume-viewers-list", async ({ viewers }) => {
   for (const viewerId of viewers) {
     // nếu viewer chưa có PC → tạo mới như watcher
     if (!pcs.has(viewerId)) {
-      socket.emit("resume-viewer", { viewerId, roomId });
+      socket.emit("watcher", { viewerId, roomId });
       continue;
     }
 
@@ -1404,35 +1403,30 @@ socket.on("resume-viewers-list", async ({ viewers }) => {
 });
 
 
-socket.on("set-bitrate", ({ bitrate }) => {
-  if (!bitrate) return;
+socket.on("set-bitrate", ({ bitrate })=>{
+  if(pc){
+    pc.getSenders().forEach(s=>{
+      if(s.track && s.track.kind==="video"){
+        socket.on("set-bitrate", ({ bitrate })=>{
+  if(!pc) return;
 
-  // áp dụng cho TẤT CẢ viewer PCs
-  for (const pc of pcs.values()) {
-    if (!pc) continue;
+  pc.getSenders().forEach(s=>{
+    if(!s.track || s.track.kind !== "video") return;
 
-    pc.getSenders().forEach(sender => {
-      if (!sender.track || sender.track.kind !== "video") return;
+    const p = s.getParameters();
+    if(!p.encodings) p.encodings = [{}];
+    p.encodings[0].maxBitrate = bitrate * 1000;
+    s.setParameters(p).catch(()=>{});
+  });
+});
 
-      const params = sender.getParameters();
-      if (!params.encodings) params.encodings = [{}];
-      params.encodings[0].maxBitrate = bitrate * 1000;
-
-      sender.setParameters(params).catch(()=>{});
+      }
     });
   }
-
-  console.log("🎚️ Host set bitrate:", bitrate, "kbps");
 });
 
 
 socket.on("live-stop", () => {
-
-
-  for (const [id, pc] of pcs.entries()) {
-  try { pc.close(); } catch {}
-  pcs.delete(id);
-}
 
   document.body.classList.remove("is-live");
 
@@ -1536,6 +1530,67 @@ socket.on("reaction", (msg)=>{
     const pcs = new Map();
 
 
+// 🔥 SERVER YÊU CẦU HOST GỬI OFFER CHO VIEWER VÀO TRỄ
+socket.on("viewer-need-offer", async ({ viewerId, reason }) => {
+  try {
+    // ⛔ CHƯA CÓ STREAM → ĐỢI
+    if (!localStream || localStream.getTracks().length === 0) {
+      console.warn("⏳ localStream chưa sẵn sàng, retry offer...", viewerId);
+
+      // retry sau 300ms
+      setTimeout(() => {
+        socket.emit("viewer-need-offer", { viewerId, reason: "retry_wait_stream" });
+      }, 300);
+      return;
+    }
+
+    let pc = pcs.get(viewerId);
+
+    if (!pc) {
+      const rtcConfig = await getRtcConfig();
+      pc = new RTCPeerConnection(rtcConfig);
+      pcs.set(viewerId, pc);
+
+      // 🔥 ADD TRACK BẮT BUỘC
+      localStream.getTracks().forEach(track => {
+        pc.addTrack(track, localStream);
+      });
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) {
+          socket.emit("candidate", {
+            to: viewerId,
+            candidate: e.candidate
+          });
+        }
+      };
+
+      __wireIceAuto(viewerId, pc);
+    }
+
+    // 🔥 CHỈ CREATE OFFER KHI ĐÃ CÓ TRACK
+    if (pc.getSenders().length === 0) {
+      console.warn("⚠️ PC chưa có sender, skip offer", viewerId);
+      return;
+    }
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    socket.emit("offer", {
+      to: viewerId,
+      description: pc.localDescription
+    });
+
+    console.log("📤 Offer sent OK:", viewerId);
+
+  } catch (e) {
+    console.error("❌ viewer-need-offer error:", e);
+  }
+});
+
+
+
 // ===== AUTO RECOVER AV WHEN TAB BACKGROUND =====
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState !== "visible") return;
@@ -1584,47 +1639,16 @@ window.addEventListener("online", async () => {
 });
 
 
-
-async function createPeerConnection(viewerId) {
-  const rtcConfig = await getRtcConfig();
-
-  const pc = new RTCPeerConnection({
-  ...rtcConfig,
-  iceTransportPolicy: "relay" // 🔥 BẮT BUỘC DÙNG TURN
+socket.on("viewer-need-offer", ({ viewerId, reason }) => {
+  console.warn("🔁 Resend offer to viewer:", viewerId, reason);
 });
 
-pc.__pendingCandidates = []; // 🔥 BẮT BUỘC PHẢI CÓ
 
-pc.oniceconnectionstatechange = () => {
-  console.log("ICE state:", pc.iceConnectionState);
-};
-
-pc.onconnectionstatechange = () => {
-  console.log("PC state:", pc.connectionState);
-};
-
-
-
-pc.onicecandidate = (e) => {
-  if (!e.candidate) return;
-
-  if (pc.remoteDescription) {
-    socket.emit("candidate", {
-      to: viewerId,
-      candidate: e.candidate
-    });
-  } else {
-    pc.__pendingCandidates.push(e.candidate);
-  }
-};
-
-  // auto ICE restart + log
-  __wireIceAuto(viewerId, pc);
-
-  return pc;
-}
-
-
+    socket.on("viewer-join", ({ viewerId }) => {
+  const pc = createPeerConnection(viewerId);
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+  pcs.set(viewerId, pc);
+});
     // When network comes back / tab returns, restart only bad peers
     window.addEventListener("online", () => __restartBadPeers(() => Array.from(pcs.entries())));
     document.addEventListener("visibilitychange", () => {
@@ -1641,20 +1665,17 @@ pc.onicecandidate = (e) => {
     const guestVideo = document.getElementById("guestVideo");
 
 async function getRtcConfig() {
-  // ❌ Không dùng STUN-only cho fallback (4G/5G sẽ fail)
-  const hardFallback = {
-    iceServers: [],
-    iceTransportPolicy: "relay"
+  const fallback = {
+    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
+    iceTransportPolicy: "all"
   };
 
   try {
     const r = await fetch("/ice", { cache: "no-store" });
-    if (!r.ok) return hardFallback;
+    if (!r.ok) return fallback;
 
     const data = await r.json();
-    if (!data?.iceServers || !Array.isArray(data.iceServers)) {
-      return hardFallback;
-    }
+    if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
 
     const cleanedIceServers = data.iceServers
       .map(server => {
@@ -1662,34 +1683,25 @@ async function getRtcConfig() {
         if (!urls) return null;
         if (!Array.isArray(urls)) urls = [urls];
 
-        // ✅ CHỈ GIỮ TURN / TURNS
         const safeUrls = urls.filter(u =>
           typeof u === "string" &&
-          (u.startsWith("turn:") || u.startsWith("turns:"))
+          !(u.startsWith("stun:") && u.includes("?transport="))
         );
 
         if (safeUrls.length === 0) return null;
-
-        // giữ nguyên credential/username nếu có
-        return {
-          urls: safeUrls,
-          username: server.username,
-          credential: server.credential
-        };
+        return { ...server, urls: safeUrls };
       })
       .filter(Boolean);
 
-    if (cleanedIceServers.length === 0) {
-      return hardFallback;
-    }
+    if (cleanedIceServers.length === 0) return fallback;
 
     return {
       iceServers: cleanedIceServers,
-      iceTransportPolicy: "relay" // 🔥 BẮT BUỘC cho 4G / 5G
+      iceTransportPolicy: "relay"   // 🔥 BẮT BUỘC cho 4G / 5G
     };
   } catch (e) {
     console.error("ICE fetch error:", e);
-    return hardFallback;
+    return fallback;
   }
 }
 
@@ -1725,63 +1737,63 @@ socket.emit("join-room", {
 
 
 
-
-    // ===== Viewer -> Host streaming =====
-socket.on("watcher", async ({ viewerId }) => {
-  if (!localStream) {
-    log("Có viewer nhưng host chưa start camera.");
-    return;
-  }
-
-  // ❌ tránh tạo trùng PC
- if (pcs.has(viewerId)) {
-  const oldPc = pcs.get(viewerId);
-  try { oldPc.close(); } catch {}
-  pcs.delete(viewerId);
-  log("♻️ Reset PC cũ cho viewer:", viewerId);
-}
-
-
-  log(`👀 Viewer join: ${viewerId}`);
-
-  // ✅ TẠO PC DUY NHẤT
-  const pc = await createPeerConnection(viewerId);
-  pcs.set(viewerId, pc);
-
-  // add host tracks
-  localStream.getTracks().forEach(track => {
-    pc.addTrack(track, localStream);
-  });
-
-  // ⏳ CHỜ TRACK STABLE (rất quan trọng cho mobile)
-await new Promise(r => setTimeout(r, 200));
-
-  // khóa bitrate
-  limitAudioBitrate(pc, 32);
-  limitVideoBitrate(pc, 1200); // 1.2 Mbps
-
-const offer = await pc.createOffer({
-  offerToReceiveAudio: true,
-  offerToReceiveVideo: true
-});
-
-await pc.setLocalDescription(offer);
-
-  
-
-    socket.emit("offer", {
-      to: viewerId,
-      description: pc.localDescription
+    // Peer asks HOST to ICE-restart this connection (HOST is offerer for viewers)
+    socket.on("request-ice-restart", async ({ from, reason }) => {
+      const peerId = from;
+      const pc = pcs.get(peerId);
+      if (pc) __doIceRestart(peerId, pc, reason || "requested");
     });
 
-  
+
+    // ===== Viewer -> Host streaming =====
+    socket.on("watcher", async ({ viewerId }) => {
+      if (!localStream) {
+        log("Có viewer nhưng bạn chưa Start camera.");
+        return;
+      }
+      if (pcs.has(viewerId)) return;
+
+      log(`Viewer join: ${viewerId}`);
+
+      const rtcConfig = await getRtcConfig();
+      const pc = new RTCPeerConnection(rtcConfig);
+      pcs.set(viewerId, pc);
+
+pc.addEventListener("iceconnectionstatechange", () => {
+  if (pc.iceConnectionState === "disconnected") {
+    const s = pc.getSenders().find(x => x.track?.kind === "video");
+    if (!s) return;
+    const p = s.getParameters();
+    if (p.encodings?.[0]) {
+      p.encodings[0].maxBitrate = 700_000;
+      s.setParameters(p);
+      console.log("🔻 Host giảm bitrate do mạng yếu");
+    }
+  }
 });
 
+      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
+ 
+// 🔒 khóa audio bitrate cho viewer này
+limitAudioBitrate(pc, 32);
+limitVideoBitrate(pc, 800); // 👈 CHỐT bitrate video cho viewer
 
-socket.on("host-stream-ready", () => {
-  console.log("✅ Server xác nhận stream ready");
-});
 
+
+      pc.onicecandidate = (e) => {
+        if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
+      };
+
+            __wireIceAuto(viewerId, pc);
+
+      try {
+        const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
+        await pc.setLocalDescription(offer);
+        socket.emit("offer", { to: viewerId, description: pc.localDescription });
+      } catch (err) {
+        log("Lỗi tạo offer: " + err.message);
+      }
+    });
 
     socket.on("answer", async ({ from, description }) => {
       // could be viewer answer OR guest answer (rare in this flow)
@@ -1789,15 +1801,6 @@ socket.on("host-stream-ready", () => {
       if (pc) {
         try {
           await pc.setRemoteDescription(description);
-
-// 🔥 flush ICE cho mobile
-if (pc.__pendingCandidates?.length) {
-  for (const c of pc.__pendingCandidates) {
-    socket.emit("candidate", { to: from, candidate: c });
-  }
-  pc.__pendingCandidates.length = 0;
-}
-
           log(`Nhận answer từ: ${from}`);
         } catch (err) {
           log("Lỗi setRemoteDescription(answer): " + err.message);
@@ -1829,7 +1832,28 @@ if (pc.__pendingCandidates?.length) {
 
     
 
-
+// ===== ICE RESTART: host regenerates offer when asked =====
+socket.on('request-ice-restart', async ({ from, reason })=>{
+  try{
+    // from viewer
+    const pc = pcs.get(from);
+    if (pc){
+      const offer = await pc.createOffer({ iceRestart: true });
+      await pc.setLocalDescription(offer);
+      socket.emit('offer', { to: from, description: pc.localDescription });
+      log('ICE restart -> new offer to viewer ' + from + (reason ? ' ('+reason+')' : ''));
+      return;
+    }
+    // from guest (if guest asks host)
+    if (pcGuestIn && approvedGuestId === from){
+      const offer = await pcGuestIn.createOffer({ iceRestart: true });
+      await pcGuestIn.setLocalDescription(offer);
+      socket.emit('offer', { to: from, description: pcGuestIn.localDescription });
+      log('ICE restart -> new offer to guest ' + from + (reason ? ' ('+reason+')' : ''));
+      return;
+    }
+  }catch(e){ log('ICE restart error: ' + (e?.message||e)); }
+});
 // ===== /ICE RESTART =====
 socket.on("disconnectPeer", ({ peerId }) => {
       const pc = pcs.get(peerId);
@@ -1870,10 +1894,22 @@ socket.on("guest-request", ({ guestId }) => {
   btnApproveGuest.disabled = false;
   btnRejectGuest.disabled = false;
 
-// ===== 🔔 RUNG ICON (KHÔNG ÂM THANH) =====
-guestReqIcon.classList.remove("is-shake");
-void guestReqIcon.offsetWidth;
-guestReqIcon.classList.add("is-shake");
+  // ===== 🔔 RUNG + ÂM THANH =====
+  const now = Date.now();
+  if (now - __lastGuestNotify > 1200) {
+    __lastGuestNotify = now;
+
+    // rung icon
+    guestReqIcon.classList.remove("is-shake");
+    void guestReqIcon.offsetWidth; // reset animation
+    guestReqIcon.classList.add("is-shake");
+
+    // phát âm thanh
+    try {
+      guestReqSound.currentTime = 0;
+      guestReqSound.play().catch(()=>{});
+    } catch {}
+  }
 
 });
 
@@ -1938,6 +1974,11 @@ socket.on("connect", () => {
 };
 
 
+document.addEventListener("pointerdown", () => {
+  guestReqSound.play().then(()=>guestReqSound.pause()).catch(()=>{});
+}, { once:true });
+
+
     // Host receives OFFER from guest (guest creates offer to everyone who "watch-guest")
     socket.on("offer", async ({ from, description }) => {
       // Only handle guest offers (viewers never send offers to host in this app)
@@ -1946,12 +1987,7 @@ socket.on("connect", () => {
       if (pcGuestIn) { try { pcGuestIn.close(); } catch {} pcGuestIn = null; }
 
       const rtcConfig = await getRtcConfig();
-
-      pcGuestIn = new RTCPeerConnection({
-  ...rtcConfig,
-  iceTransportPolicy: "relay" // 🔥 BẮT BUỘC
-});
-
+      pcGuestIn = new RTCPeerConnection(rtcConfig);
 
       // send host tracks back to guest so guest can hear/see host (co-talk)
       if (localStream) {
@@ -2020,13 +2056,8 @@ audio: {
 
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
-
-        // 🔥 báo server: host đã có track
-socket.emit("host-stream-ready", { roomId });
-
-// giữ live-start để chạy timer
-socket.emit("live-start", { roomId });
-
+        socket.emit("broadcaster-ready", { roomId });
+        socket.emit("live-start", { roomId });
 
       } catch (err) {
         log("Không mở được camera/mic: " + err.message);

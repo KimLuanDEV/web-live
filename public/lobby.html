@@ -37,25 +37,26 @@
   </div>
 
 
-      <!-- SEARCH -->
-<div class="hero-search mobile-search">
-  <div class="lobby-searchWrap">
-    <div class="lobby-searchIcon" id="mobileSearchBtn">🔎</div>
-
-    <input
-      id="q"
-      class="lobby-search"
-      placeholder="Tìm theo Room ID hoặc tên host..."
-      autocomplete="off"
-    />
-
-    <button id="clearQ" class="lobby-clear" title="Xóa">✕</button>
+   
   </div>
-</div>
 
 
 
-  
+
+   <!-- SEARCH -->
+  <div class="hero-search">
+    <div class="lobby-searchWrap">
+      <div class="lobby-searchIcon">🔎</div>
+      <input
+        id="q"
+        class="lobby-search"
+        placeholder="Tìm theo Room ID hoặc tên host..."
+        autocomplete="off"
+      />
+      <button id="clearQ" class="lobby-clear" title="Xóa">✕</button>
+    </div>
+  </div>
+
 
   <!-- FILTERS -->
   <div class="hero-filters">
@@ -75,9 +76,6 @@
   </div>
 
  
-   
-
-  </div>
 
 
 
@@ -338,7 +336,6 @@
 
 
 
-
 <script src="/socket.io/socket.io.js"></script>
 <script src="/chat-global.js"></script>
 
@@ -388,10 +385,9 @@ const isGuest = localStorage.getItem("isGuest") === "1";
 
 
 
-if(profile.uid && !isGuest){
+if(profile.uid){
   socket.emit("auth-login", { uid: profile.uid });
 }
-
 
 socket.on("force-logout", () => {
    showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
@@ -1213,42 +1209,10 @@ window.addEventListener("scroll", ()=>{
 },{ passive:true });
 
 
-
-
-
-
 </script>
 
 
 
-<script>
-(function(){
-  if (window.innerWidth > 768) return;
-
-  const wrap = document.querySelector(".mobile-search");
-  const btn  = document.getElementById("mobileSearchBtn");
-  const input = document.getElementById("q");
-  const clear = document.getElementById("clearQ");
-
-  if (!wrap || !btn || !input) return;
-
-  btn.onclick = () => {
-    wrap.classList.add("is-open");
-    setTimeout(() => input.focus(), 80);
-  };
-
-  clear.onclick = () => {
-    input.value = "";
-    wrap.classList.remove("is-open");
-  };
-
-  input.addEventListener("blur", () => {
-    if (!input.value) {
-      wrap.classList.remove("is-open");
-    }
-  });
-})();
-</script>
 
 
 

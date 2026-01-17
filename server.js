@@ -421,7 +421,7 @@ rooms.set(roomId, {
   giftByUser: new Map(),
   releaseTimer: null,
   pendingRelease: false,
-  streamReady: false // ✅ THÊM
+  
 });
 
 
@@ -625,6 +625,30 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+
+
+socket.on("viewer-black-screen", ({ roomId, reason, ua, ts }) => {
+  roomId = normRoomId(roomId);
+  const room = rooms.get(roomId);
+  if (!room) return;
+
+  console.warn("🟥 BLACK SCREEN", {
+    roomId,
+    viewer: socket.id,
+    reason,
+    ua,
+    time: new Date(ts).toLocaleTimeString()
+  });
+
+  // 🔥 ÉP HOST GỬI LẠI OFFER
+  if (room.broadcasterId) {
+    io.to(room.broadcasterId).emit("viewer-need-offer", {
+      viewerId: socket.id,
+      reason: "black_screen_recover"
+    });
+  }
+});
+
 
 
  socket.on("lp-like-reply", ({ postId, commentIndex, replyId, uid })=>{
@@ -1074,65 +1098,71 @@ socket.on("msg-seen-all", ()=>{
 socket.on("auth-ping", ({ uid }) => {
   if (!uid) return;
 
-  socket.data.uid = uid;
-
-  // nếu chưa có uid → set
-  if (!activeUsers.has(uid)) {
+  // refresh mapping
+  const old = activeUsers.get(uid);
+  if (!old || old !== socket.id) {
     activeUsers.set(uid, socket.id);
-    emitActiveUsers();
-    return;
+    socket.data.uid = uid;
   }
+  emitActiveUsers();
 
-  // nếu là chính socket này → OK
-  if (activeUsers.get(uid) === socket.id) return;
-
-  
-  // ❌ TUYỆT ĐỐI KHÔNG force-logout ở đây
 });
 
+  socket.on("auth-login", ({ uid }) => {
 
- socket.on("auth-login", ({ uid }) => {
-  uid = String(uid || "").trim();
-  if (!uid) return;
-
-  // 🚫 BỎ QUA GUEST
-  if (uid.startsWith("guest_")) {
-    socket.data.uid = uid;
-    socket.data.role = "guest";
-    return;
-  }
+  uid = String(uid||"").trim();
+  if(!uid) return;
 
   const db = loadUsers();
-  if (db[uid]) {
-    socket.data.profile = {
-      ...db[uid].profile,
-      ...socket.data.profile
-    };
+
+if(db[uid]){
+  // chỉ load nếu chưa có profile realtime
+  socket.data.profile = {
+    ...db[uid].profile,
+    ...socket.data.profile   // 🔥 realtime ghi đè DB
+  };
+}
+
+
+  // nếu uid đang online ở socket khác → đá
+  const oldSocketId = activeUsers.get(uid);
+  if(oldSocketId && oldSocketId !== socket.id){
+    io.to(oldSocketId).emit("force-logout", { reason:"login_elsewhere" });
+
+    const oldSocket = io.sockets.sockets.get(oldSocketId);
+    if(oldSocket){
+      oldSocket.disconnect(true);
+    }
   }
 
-  // ✅ KHÔNG ĐÁ – CHỈ GHI ĐÈ SOCKET MỚI
   activeUsers.set(uid, socket.id);
 
-  // 🔥 GỬI TIN NHẮN OFFLINE (GIỮ NGUYÊN)
-  const inbox = userInbox.get(uid);
-  if (inbox && inbox.length) {
-    for (const m of inbox) {
-      const u = db[m.from];
-      m.verified = !!u?.profile?.verified;
-    }
+  // 🔥 GỬI TIN NHẮN OFFLINE
+const inbox = userInbox.get(uid);
+if(inbox && inbox.length){
+  
+  const db = loadUsers();
+for(const m of inbox){
+  const u = db[m.from];
+  m.verified = !!u?.profile?.verified;
+}
 
-    socket.emit("offline-messages", inbox);
+socket.emit("offline-messages", inbox);
 
-    const unread = inbox.filter(m => !m.seen).length;
-    if (unread > 0) {
-      socket.emit("inbox-new", { count: unread });
-    }
+
+  // 🔴 nếu còn tin chưa đọc → bật badge
+  const unread = inbox.filter(m=>!m.seen).length;
+  if(unread > 0){
+    socket.emit("inbox-new", { count: unread });
   }
+}
+
 
   socket.data.uid = uid;
-  emitActiveUsers();
-});
 
+  emitActiveUsers();
+
+});
 
 
 socket.on("host-reconnect", ({ roomId }) => {
@@ -1346,11 +1376,6 @@ if(isGuest(socket)){
 
   const room = getRoom(roomId);
 
-if (!room.streamReady) {
-  socket.emit("wait-host-stream");
-  return;
-}
-
   const vc = safeMap(room.viewerProfiles).size;
 if(vc >= MAX_VIEWERS){
   socket.emit("room-full");
@@ -1408,6 +1433,15 @@ for (const v of list) {
 }
 
   emitLobbyUpdate();
+
+    // 🔥 FIX LỖI VIEWER VÀO TRỄ KHÔNG THẤY VIDEO
+  // Nếu phòng đang live rồi → ép host gửi offer cho viewer mới
+  if (room.broadcasterId && room.liveStartTs) {
+    io.to(room.broadcasterId).emit("viewer-need-offer", {
+      viewerId: socket.id
+    });
+  }
+
 });
 
 
@@ -1445,13 +1479,9 @@ socket.on("resume-viewers", ({ roomId }) => {
 
 
 socket.on("host-start-live", ({ roomId }) => {
-
-
   const room = getRoom(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return;
-
-  room.streamReady = false;
 
   if (!room.liveStartTs) {
     room.liveStartTs = Date.now();
@@ -1964,17 +1994,6 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
 });
 
 
-socket.on("host-stream-ready", ({ roomId }) => {
-  const room = getRoom(roomId);
-  if (!room) return;
-  if (room.broadcasterId !== socket.id) return;
-
-  room.streamReady = true;
-
-  // 🔔 báo cho viewer đang đợi
-  io.to(roomId).emit("host-stream-ready");
-});
-
 
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
@@ -1992,14 +2011,16 @@ socket.on("host-stream-ready", ({ roomId }) => {
   socket.on("disconnect", () => {
 
 
+  const uid = socket.data.uid;
 
-    
-    const uid = socket.data.uid;
-    if(uid && activeUsers.get(uid) === socket.id){
-      activeUsers.delete(uid);
-      emitActiveUsers();
-      console.log("🧹 cleared active user:", uid);
-    }
+  if(uid){
+  const cur = activeUsers.get(uid);
+  if(cur === socket.id){
+    activeUsers.delete(uid);
+    emitActiveUsers();   // 🔥 BẮT BUỘC
+  }
+}
+
 
 
 
@@ -2047,7 +2068,6 @@ for (const v of list) {
 
   /* ========= HOST ========= */
   if (role === "broadcaster") {
-    room.streamReady = false;
     room.pendingRelease = true;
 
  room.releaseTimer = setTimeout(() => {
