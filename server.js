@@ -421,7 +421,7 @@ rooms.set(roomId, {
   giftByUser: new Map(),
   releaseTimer: null,
   pendingRelease: false,
-  
+  streamReady: false // ✅ THÊM
 });
 
 
@@ -1346,6 +1346,11 @@ if(isGuest(socket)){
 
   const room = getRoom(roomId);
 
+if (!room.streamReady) {
+  socket.emit("wait-host-stream");
+  return;
+}
+
   const vc = safeMap(room.viewerProfiles).size;
 if(vc >= MAX_VIEWERS){
   socket.emit("room-full");
@@ -1440,9 +1445,13 @@ socket.on("resume-viewers", ({ roomId }) => {
 
 
 socket.on("host-start-live", ({ roomId }) => {
+
+
   const room = getRoom(roomId);
   if (!room) return;
   if (room.broadcasterId !== socket.id) return;
+
+  room.streamReady = false;
 
   if (!room.liveStartTs) {
     room.liveStartTs = Date.now();
@@ -1955,6 +1964,17 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
 });
 
 
+socket.on("host-stream-ready", ({ roomId }) => {
+  const room = getRoom(roomId);
+  if (!room) return;
+  if (room.broadcasterId !== socket.id) return;
+
+  room.streamReady = true;
+
+  // 🔔 báo cho viewer đang đợi
+  io.to(roomId).emit("host-stream-ready");
+});
+
 
   // WebRTC signaling passthrough
   socket.on("offer", ({ to, description }) => {
@@ -2027,6 +2047,7 @@ for (const v of list) {
 
   /* ========= HOST ========= */
   if (role === "broadcaster") {
+    room.streamReady = false;
     room.pendingRelease = true;
 
  room.releaseTimer = setTimeout(() => {

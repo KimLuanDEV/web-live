@@ -737,6 +737,31 @@ setInterval(checkHDQuality, 2500);
 
     const socket = io();
 
+
+let __waitingHostStream = false;
+
+socket.on("wait-host-stream", () => {
+  __waitingHostStream = true;
+
+  try {
+    setStatus("⏳ Host đang chuẩn bị video…");
+    const overlay = document.getElementById("joinOverlayViewer");
+    if (overlay) overlay.textContent = "⏳ Host đang chuẩn bị video…";
+  } catch {}
+});
+
+socket.on("host-stream-ready", () => {
+  if (!__waitingHostStream) return;
+
+  console.log("✅ Host stream ready → join lại");
+  __waitingHostStream = false;
+
+  joined = false;
+  join().catch(()=>{});
+});
+
+
+
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const isGuest = localStorage.getItem("isGuest") === "1";
@@ -1653,7 +1678,10 @@ socket.on("reaction", (msg)=>{
     const pcs = new Map(); // peerId -> RTCPeerConnection
 
     async function getRtcConfig() {
-      const fallback = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
+     const fallback = {
+  iceServers: [],
+  iceTransportPolicy: "relay"
+};
 
       try {
         const r = await fetch("/ice", { cache: "no-store" });
@@ -1710,15 +1738,23 @@ socket.on("reaction", (msg)=>{
     });
 
 
-    async function join() {
-      if (joined) return;
-      joined = true;
-      
-      try{ btnJoin.style.display = "none"; }catch{}
-socket.emit("join-room", { roomId, role: "viewer", profile: { name: (chatName.value||"Viewer").trim().slice(0,20), coins: Number(localStorage.getItem("ls_coins")||0) || 0 } });
-      setStatus("⏳ Đang chờ Host gửi LIVE...");
-      log("Đã join room, đợi offer từ host...");
-    }
+  async function join() {
+  if (joined || __waitingHostStream) return;
+
+  joined = true;
+
+  try { btnJoin.style.display = "none"; } catch {}
+
+  socket.emit("join-room", {
+    roomId,
+    role: "viewer",
+    profile: sendProfile
+  });
+
+  setStatus("⏳ Đang kết nối livestream…");
+  log("Viewer join room");
+}
+
 
     function cleanupPeer(peerKey) {
      
@@ -1785,6 +1821,8 @@ socket.on("room-full", ()=>{
 
     socket.on("offer", async ({ from, description }) => {
 
+      let __gotTrack = false;
+
       /*
       // reset pc for this peer only
       cleanupPeer(from);
@@ -1809,43 +1847,70 @@ socket.on("room-full", ()=>{
     }
   };
 
+let __viewerGotVideo = false;
+let __viewerGotAudio = false;
+
 pc.ontrack = (event) => {
   const stream = event.streams && event.streams[0];
   if (!stream) return;
 
-  console.log("🎥 Viewer nhận track");
+  const hasVideo = stream.getVideoTracks().length > 0;
+  const hasAudio = stream.getAudioTracks().length > 0;
 
-  // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
+  console.log("🎥 Viewer nhận track", { hasVideo, hasAudio });
+
+  // 🔥 GÁN STREAM 1 LẦN DUY NHẤT
   if (!player.srcObject) {
     player.srcObject = stream;
 
     optimizeVideoForMobile(player);
     player.playsInline = true;
 
-    // iOS + Android cần mute để autoplay
+    // Autoplay-safe: bắt đầu muted
     player.muted = true;
+    player.volume = 1.0;
+
     forcePlayVideo(player);
 
-    // ẩn backdrop đen
+    // Ẩn backdrop đen khi có stream
     try {
       document.getElementById("viewerBackdrop")?.classList.add("hidden");
     } catch {}
   }
 
-  // 🔊 Nếu có audio → bật tiếng
-  if (stream.getAudioTracks().length > 0) {
-    player.muted = false;
-    player.volume = 1.0;
-    forceResumeAudio(player);
+  // 🎥 Đánh dấu đã có VIDEO
+  if (hasVideo && !__viewerGotVideo) {
+    __viewerGotVideo = true;
+    setStatus("🟢 Đang xem LIVE");
   }
 
-  // 🔥 speaking highlight
+  // 🔊 Audio có thể tới sau → xử lý riêng
+  if (hasAudio && !__viewerGotAudio) {
+    __viewerGotAudio = true;
+
+    // ⛔ Không unmute ngay nếu chưa có gesture (tránh iOS block)
+    const tryEnableAudio = () => {
+      player.muted = false;
+      player.volume = 1.0;
+      forceResumeAudio(player);
+      window.removeEventListener("touchstart", tryEnableAudio);
+      window.removeEventListener("click", tryEnableAudio);
+    };
+
+    // Thử bật ngay (Android/Chrome OK)
+    tryEnableAudio();
+
+    // Fallback cho iOS: đợi user gesture
+    window.addEventListener("touchstart", tryEnableAudio, { once: true });
+    window.addEventListener("click", tryEnableAudio, { once: true });
+  }
+
+  // 🔥 speaking highlight (an toàn)
   try {
     attachSpeakingIndicator(player, document.getElementById("hostCard"));
   } catch {}
-
-  setStatus("🟢 Đang xem LIVE");
 };
+
 
 
 

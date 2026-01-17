@@ -1619,19 +1619,22 @@ async function createPeerConnection(viewerId) {
    
     
     const guestVideo = document.getElementById("guestVideo");
-
+    
 async function getRtcConfig() {
-  const fallback = {
-    iceServers: [{ urls: "stun:stun.l.google.com:19302" }],
-    iceTransportPolicy: "all"
+  // ❌ Không dùng STUN-only cho fallback (4G/5G sẽ fail)
+  const hardFallback = {
+    iceServers: [],
+    iceTransportPolicy: "relay"
   };
 
   try {
     const r = await fetch("/ice", { cache: "no-store" });
-    if (!r.ok) return fallback;
+    if (!r.ok) return hardFallback;
 
     const data = await r.json();
-    if (!data.iceServers || !Array.isArray(data.iceServers)) return fallback;
+    if (!data?.iceServers || !Array.isArray(data.iceServers)) {
+      return hardFallback;
+    }
 
     const cleanedIceServers = data.iceServers
       .map(server => {
@@ -1639,25 +1642,34 @@ async function getRtcConfig() {
         if (!urls) return null;
         if (!Array.isArray(urls)) urls = [urls];
 
+        // ✅ CHỈ GIỮ TURN / TURNS
         const safeUrls = urls.filter(u =>
           typeof u === "string" &&
-          !(u.startsWith("stun:") && u.includes("?transport="))
+          (u.startsWith("turn:") || u.startsWith("turns:"))
         );
 
         if (safeUrls.length === 0) return null;
-        return { ...server, urls: safeUrls };
+
+        // giữ nguyên credential/username nếu có
+        return {
+          urls: safeUrls,
+          username: server.username,
+          credential: server.credential
+        };
       })
       .filter(Boolean);
 
-    if (cleanedIceServers.length === 0) return fallback;
+    if (cleanedIceServers.length === 0) {
+      return hardFallback;
+    }
 
     return {
       iceServers: cleanedIceServers,
-      iceTransportPolicy: "relay"   // 🔥 BẮT BUỘC cho 4G / 5G
+      iceTransportPolicy: "relay" // 🔥 BẮT BUỘC cho 4G / 5G
     };
   } catch (e) {
     console.error("ICE fetch error:", e);
-    return fallback;
+    return hardFallback;
   }
 }
 
@@ -1725,26 +1737,33 @@ socket.on("watcher", async ({ viewerId }) => {
     pc.addTrack(track, localStream);
   });
 
+  // ⏳ CHỜ TRACK STABLE (rất quan trọng cho mobile)
+await new Promise(r => setTimeout(r, 200));
+
   // khóa bitrate
   limitAudioBitrate(pc, 32);
   limitVideoBitrate(pc, 800);
 
-  try {
-    const offer = await pc.createOffer({
-      offerToReceiveAudio: false,
-      offerToReceiveVideo: false
-    });
-    await pc.setLocalDescription(offer);
+// 🔥 TẠO OFFER SAU KHI CÓ TRACK
+const offer = await pc.createOffer({
+  offerToReceiveAudio: false,
+  offerToReceiveVideo: false
+});
+await pc.setLocalDescription(offer);
+
+  
 
     socket.emit("offer", {
       to: viewerId,
       description: pc.localDescription
     });
 
-    log("📡 Offer gửi tới viewer " + viewerId);
-  } catch (err) {
-    log("❌ Lỗi tạo offer viewer: " + err.message);
-  }
+  
+});
+
+
+socket.on("host-stream-ready", () => {
+  console.log("✅ Server xác nhận stream ready");
 });
 
 
@@ -1971,8 +1990,13 @@ audio: {
 
 
         log("Đã Start camera + mic. Gửi link xem cho người khác.");
-        socket.emit("broadcaster-ready", { roomId });
-        socket.emit("live-start", { roomId });
+
+        // 🔥 báo server: host đã có track
+socket.emit("host-stream-ready", { roomId });
+
+// giữ live-start để chạy timer
+socket.emit("live-start", { roomId });
+
 
       } catch (err) {
         log("Không mở được camera/mic: " + err.message);
