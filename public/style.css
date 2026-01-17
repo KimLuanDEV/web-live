@@ -7919,3 +7919,64 @@ body.keyboard-open .pass-sheet{
     padding:10px 12px 14px;
   }
 }
+
+/* ===== HEADER ACTION GROUP ===== */
+
+.lobby-actionGroup{
+  display:flex;
+  align-items:center;
+  gap:4px;
+  padding:4px;
+  border-radius:999px;
+
+  background: rgba(0,0,0,.35);
+  border:1px solid rgba(255,255,255,.16);
+  backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.45),
+    inset 0 0 0 1px rgba(255,255,255,.05);
+}
+
+/* Button inside capsule */
+.action-btn{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  height:38px;
+  padding:0 12px;
+  border-radius:999px;
+
+  border:none;
+  background: transparent;
+  color:#fff;
+  cursor:pointer;
+
+  font-size:15px;
+  font-weight:700;
+}
+
+.action-btn:hover{
+  background: rgba(255,255,255,.10);
+}
+
+/* Label text */
+.action-label{
+  font-size:13px;
+  font-weight:700;
+  opacity:.9;
+}
+
+/* ===== MOBILE CLEAN ===== */
+@media (max-width:520px){
+  .action-btn{
+    width:38px;
+    padding:0;
+    justify-content:center;
+  }
+
+  .action-label{
+    display:none; /* 🔥 mobile chỉ icon */
+  }
+}
