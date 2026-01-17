@@ -8071,3 +8071,87 @@ body.keyboard-open .pass-sheet{
     rgba(7,10,20,.88)
   ) !important;
 }
+
+
+/* =====================================
+   🌈 GRADIENT LIỀN HEADER → FILTER
+   ===================================== */
+
+/* HEADER nền chính */
+.lobby-header-full{
+  position: sticky;
+  top: 0;
+  z-index: 60;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7,10,20,.98) 0%,
+      rgba(7,10,20,.94) 65%,
+      rgba(7,10,20,.90) 100%
+    );
+
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+/* Gradient CHẢY XUỐNG filter */
+.lobby-header-full::after{
+  content:"";
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:-18px;
+  height:18px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(7,10,20,.90),
+    rgba(7,10,20,0)
+  );
+
+  pointer-events:none;
+  z-index:1;
+}
+
+/* FILTER BAR ăn tiếp nền */
+.lobby-filter-bar{
+  position: sticky;
+  top: 64px; /* chiều cao header */
+  z-index: 55;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(7,10,20,.88),
+      rgba(7,10,20,.84)
+    );
+
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  border-top: none !important;
+}
+
+/* Bỏ padding gây cảm giác tách lớp */
+.lobby-filter-scroll{
+  padding-top: 2px !important;
+}
+
+/* Khi scroll xuống → liền khối hơn */
+.lobby-filter-bar::before{
+  content:"";
+  position:absolute;
+  top:-10px;
+  left:0;
+  right:0;
+  height:10px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(7,10,20,0),
+    rgba(7,10,20,.88)
+  );
+
+  pointer-events:none;
+}
