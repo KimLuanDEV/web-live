@@ -494,15 +494,6 @@ btnStart.addEventListener("click", () => {
   // 🔥 PHẢI dùng event server đang nghe
   socket.emit("host-start-live", { roomId });
 
-
-  // 🔥 ép resend offer cho toàn bộ viewer đang chờ
-for (const viewerId of pcs.keys()) {
-  socket.emit("viewer-need-offer", {
-    viewerId,
-    reason: "host_start_live_resync"
-  });
-}
-
   console.log("🔥 LIVE STARTED:", roomId);
 });
 
@@ -1530,67 +1521,6 @@ socket.on("reaction", (msg)=>{
     const pcs = new Map();
 
 
-// 🔥 SERVER YÊU CẦU HOST GỬI OFFER CHO VIEWER VÀO TRỄ
-socket.on("viewer-need-offer", async ({ viewerId, reason }) => {
-  try {
-    // ⛔ CHƯA CÓ STREAM → ĐỢI
-    if (!localStream || localStream.getTracks().length === 0) {
-      console.warn("⏳ localStream chưa sẵn sàng, retry offer...", viewerId);
-
-      // retry sau 300ms
-      setTimeout(() => {
-        socket.emit("viewer-need-offer", { viewerId, reason: "retry_wait_stream" });
-      }, 300);
-      return;
-    }
-
-    let pc = pcs.get(viewerId);
-
-    if (!pc) {
-      const rtcConfig = await getRtcConfig();
-      pc = new RTCPeerConnection(rtcConfig);
-      pcs.set(viewerId, pc);
-
-      // 🔥 ADD TRACK BẮT BUỘC
-      localStream.getTracks().forEach(track => {
-        pc.addTrack(track, localStream);
-      });
-
-      pc.onicecandidate = (e) => {
-        if (e.candidate) {
-          socket.emit("candidate", {
-            to: viewerId,
-            candidate: e.candidate
-          });
-        }
-      };
-
-      __wireIceAuto(viewerId, pc);
-    }
-
-    // 🔥 CHỈ CREATE OFFER KHI ĐÃ CÓ TRACK
-    if (pc.getSenders().length === 0) {
-      console.warn("⚠️ PC chưa có sender, skip offer", viewerId);
-      return;
-    }
-
-    const offer = await pc.createOffer();
-    await pc.setLocalDescription(offer);
-
-    socket.emit("offer", {
-      to: viewerId,
-      description: pc.localDescription
-    });
-
-    console.log("📤 Offer sent OK:", viewerId);
-
-  } catch (e) {
-    console.error("❌ viewer-need-offer error:", e);
-  }
-});
-
-
-
 // ===== AUTO RECOVER AV WHEN TAB BACKGROUND =====
 document.addEventListener("visibilitychange", async () => {
   if (document.visibilityState !== "visible") return;
@@ -1638,10 +1568,6 @@ window.addEventListener("online", async () => {
   try { await replaceHostAudioTrack(); } catch {}
 });
 
-
-socket.on("viewer-need-offer", ({ viewerId, reason }) => {
-  console.warn("🔁 Resend offer to viewer:", viewerId, reason);
-});
 
 
     socket.on("viewer-join", ({ viewerId }) => {

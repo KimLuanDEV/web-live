@@ -485,32 +485,6 @@
 </div>
 
 
-
-<!-- MODAL: STREAM WILL START -->
-<div id="viewerNoticeModal" class="viewer-notice hidden">
-  <div class="viewer-notice-backdrop"></div>
-
-  <div class="viewer-notice-box">
-    <div class="viewer-notice-title">
-      📢 Bạn đang trong hàng chờ...
-    </div>
-
-    <div class="viewer-notice-desc">
-      Video sẽ bắt đầu sau
-    </div>
-
-    <div class="viewer-notice-time">
-      <span id="viewerNoticeSec">60</span>s
-    </div>
-
-    <div class="viewer-notice-sub">
-      Đừng rời đi nhé!
-    </div>
-  </div>
-</div>
-
-
-
   <script src="/socket.io/socket.io.js"></script>
   <script src="/chat-global.js"></script>
 
@@ -523,40 +497,11 @@
     const params = new URLSearchParams(location.search);
     const roomId = params.get("room") || "abc123";
 
-   
-  const noticeModal = document.getElementById("viewerNoticeModal");
-  const noticeSec = document.getElementById("viewerNoticeSec");
-
-  let noticeTimer = null;
-
-  function showViewerNotice(seconds = 60){
-    let left = seconds;
-    noticeSec.textContent = left;
-    noticeModal.classList.remove("hidden");
-
-    noticeTimer = setInterval(()=>{
-      left--;
-      noticeSec.textContent = left;
-
-      if(left <= 0){
-        clearInterval(noticeTimer);
-        noticeModal.classList.add("hidden");
-      }
-    }, 1000);
-  }
-
-
 
 
 const giftVideoQueue = [];
 let playingGiftVideo = false;
 const MAX_GIFT_QUEUE = 2;
-
-
-let __viewerHasVideo = false;
-let __viewerBlackTimer = null;
-
-
 
 function enqueueGiftVideo(videoUrl){
   if (giftVideoQueue.length >= MAX_GIFT_QUEUE) return;
@@ -1062,7 +1007,6 @@ socket.emit("viewer-join", {
   profile: sendProfile
 });
 
-showViewerNotice(60);
 
 
 if (profile){
@@ -1835,10 +1779,10 @@ socket.on("room-full", ()=>{
 
     socket.on("offer", async ({ from, description }) => {
 
-      
+      /*
       // reset pc for this peer only
       cleanupPeer(from);
-      
+      */
      
       const rtcConfig = await getRtcConfig();
       const pc = new RTCPeerConnection(rtcConfig);
@@ -1863,29 +1807,11 @@ pc.ontrack = (event) => {
   const stream = event.streams && event.streams[0];
   if (!stream) return;
 
-
-  // ✅ ĐÃ CÓ VIDEO
-__viewerHasVideo = true;
-if (__viewerBlackTimer) {
-  clearTimeout(__viewerBlackTimer);
-  __viewerBlackTimer = null;
-}
-
-
   console.log("🎥 Viewer nhận track");
 
   // 🔥 HIỆN VIDEO NGAY LẬP TỨC (không chờ ICE xong)
-if (player.srcObject !== stream) {
-  console.warn("🔄 Update stream for viewer");
-  player.srcObject = stream;
-  forcePlayVideo(player);
-    // 🔥 BẮT BUỘC: ép play ngay khi có stream
-setTimeout(() => {
-  try {
-    player.play().catch(()=>{});
-  } catch {}
-}, 0);
-
+  if (!player.srcObject) {
+    player.srcObject = stream;
 
     optimizeVideoForMobile(player);
     player.playsInline = true;
@@ -1933,10 +1859,6 @@ const st = pc.iceConnectionState;
   if (st === "failed" || st === "disconnected") {
    safeIceRestart(from, "viewer_resume");
 
-socket.emit("request-ice-restart", {
-  to: from,
-  reason: "viewer_no_video"
-});
 
   }
 
@@ -1954,25 +1876,6 @@ socket.emit("request-ice-restart", {
       } catch (err) {
         log("Lỗi xử lý offer: " + err.message);
       }
-
-      // 🔍 CHECK BLACK SCREEN sau 55s
-__viewerHasVideo = false;
-
-if (__viewerBlackTimer) clearTimeout(__viewerBlackTimer);
-__viewerBlackTimer = setTimeout(() => {
-  if (!__viewerHasVideo) {
-    console.warn("🟥 Viewer black screen detected");
-
-    socket.emit("viewer-black-screen", {
-      roomId,
-      reason: "no_video_track",
-      ua: navigator.userAgent,
-      ts: Date.now()
-    });
-  }
-}, 55000);
-
-
     });
 
     socket.on("candidate", async ({ from, candidate }) => {

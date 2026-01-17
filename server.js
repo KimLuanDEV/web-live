@@ -627,30 +627,6 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
-socket.on("viewer-black-screen", ({ roomId, reason, ua, ts }) => {
-  roomId = normRoomId(roomId);
-  const room = rooms.get(roomId);
-  if (!room) return;
-
-  console.warn("🟥 BLACK SCREEN", {
-    roomId,
-    viewer: socket.id,
-    reason,
-    ua,
-    time: new Date(ts).toLocaleTimeString()
-  });
-
-  // 🔥 ÉP HOST GỬI LẠI OFFER
-  if (room.broadcasterId) {
-    io.to(room.broadcasterId).emit("viewer-need-offer", {
-      viewerId: socket.id,
-      reason: "black_screen_recover"
-    });
-  }
-});
-
-
-
  socket.on("lp-like-reply", ({ postId, commentIndex, replyId, uid })=>{
   const post = getPost(postId);
   if(!post) return;
@@ -1433,15 +1409,6 @@ for (const v of list) {
 }
 
   emitLobbyUpdate();
-
-    // 🔥 FIX LỖI VIEWER VÀO TRỄ KHÔNG THẤY VIDEO
-  // Nếu phòng đang live rồi → ép host gửi offer cho viewer mới
-  if (room.broadcasterId && room.liveStartTs) {
-    io.to(room.broadcasterId).emit("viewer-need-offer", {
-      viewerId: socket.id
-    });
-  }
-
 });
 
 
