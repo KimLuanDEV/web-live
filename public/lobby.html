@@ -1320,6 +1320,21 @@ searchInput?.addEventListener("blur", () => {
 })();
 
 
+
+
+btnToggleSearch.onclick = () => {
+  const s = document.getElementById("headerSearch");
+  s.classList.toggle("hidden");
+
+  if (!s.classList.contains("hidden")) {
+    setTimeout(() => {
+      document.getElementById("q")?.focus();
+    }, 60);
+  }
+};
+
+
+
 </script>
 
 

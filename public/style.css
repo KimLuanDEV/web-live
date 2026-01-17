@@ -8671,3 +8671,33 @@ body.bar-merged .guest-notice-inner{
   box-shadow:0 0 18px rgba(255,59,107,.45);
   font-size:12px;
 }
+
+
+/* ===== HEADER SEARCH FIX ===== */
+.lobby-header-search{
+  position: fixed;              /* hoặc absolute nếu bạn không muốn fixed */
+  top: var(--merged-bar-h, 56px); /* nằm ngay dưới header/merged bar */
+  left: 0;
+  right: 0;
+
+  z-index: 10020;               /* 🔥 CAO HƠN header + filter */
+  pointer-events: auto;
+
+  padding: 10px 12px;
+  background: linear-gradient(
+    180deg,
+    rgba(7,10,20,.92),
+    rgba(7,10,20,.82)
+  );
+  backdrop-filter: blur(12px);
+}
+
+.lobby-header-full,
+.lobby-merged-bar{
+  overflow: visible !important;
+}
+
+.lobby-header-search input{
+  pointer-events: auto;
+  z-index: 10021;
+}
