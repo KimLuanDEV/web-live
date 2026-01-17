@@ -7829,3 +7829,47 @@ body.keyboard-open .pass-sheet{
     display: none; /* sort để PC */
   }
 }
+
+
+/* ===== MOBILE SEARCH ICON MODE ===== */
+@media (max-width: 768px) {
+
+  /* Mặc định: chỉ hiện icon */
+  .mobile-search {
+    max-width: 44px;
+    overflow: hidden;
+    transition: max-width .25s ease;
+  }
+
+  .mobile-search .lobby-search {
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .15s ease;
+  }
+
+  .mobile-search .lobby-clear {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Khi mở search */
+  .mobile-search.is-open {
+    max-width: 100%;
+  }
+
+  .mobile-search.is-open .lobby-search {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .mobile-search.is-open .lobby-clear {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  /* Icon search nổi bật như button */
+  .lobby-searchIcon {
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+}
