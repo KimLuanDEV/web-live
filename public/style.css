@@ -8023,6 +8023,11 @@ body.keyboard-open .pass-sheet{
 
 
 :root{
+   --lobby-bar-bg: linear-gradient(
+    180deg,
+    rgba(7,10,20,.96),
+    rgba(7,10,20,.90)
+  );
   --header-h: 64px;
 }
 
@@ -8406,3 +8411,35 @@ body.header-compact .guest-notice-bar{
 body.header-compact .guest-notice-bar{
   top: calc(48px + 44px + 6px);
 }
+
+
+/* =====================================
+   LOBBY BAR – UNIFIED BACKGROUND
+   ===================================== */
+
+/* HEADER */
+.lobby-header-full{
+  background: var(--lobby-bar-bg) !important;
+}
+
+/* FILTER */
+.lobby-filter-bar{
+  background: var(--lobby-bar-bg) !important;
+}
+
+/* GUEST NOTICE */
+.guest-notice-bar{
+  background: var(--lobby-bar-bg) !important;
+}
+
+.lobby-header-full,
+.lobby-filter-bar,
+.guest-notice-bar{
+  border-top: none !important;
+  border-bottom: none !important;
+}
+
+.guest-notice-bar{
+  border-bottom: 1px solid rgba(255,255,255,.06);
+}
+
