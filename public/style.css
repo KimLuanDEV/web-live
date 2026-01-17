@@ -7799,7 +7799,7 @@ body.keyboard-open .pass-sheet{
 }
 
 .lobby-title{
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 900;
   letter-spacing: 1px;
   text-shadow:
@@ -7843,7 +7843,7 @@ body.keyboard-open .pass-sheet{
   }
 
   .lobby-title{
-    font-size: 14px;
+    font-size: 20px;
   }
 
   .lobby-btn-header{
@@ -8154,4 +8154,59 @@ body.keyboard-open .pass-sheet{
   );
 
   pointer-events:none;
+}
+
+
+/* =====================================
+   ✨ HEADER COMPACT ON SCROLL
+   ===================================== */
+
+/* trạng thái thường */
+.lobby-header-full{
+  height: 64px;
+  transition:
+    height .22s ease,
+    background .22s ease;
+}
+
+.lobby-header-inner{
+  height: 64px;
+  transition: height .22s ease;
+}
+
+/* brand to */
+.lobby-title{
+  font-size: 16px;
+  transition: font-size .22s ease, opacity .22s ease;
+}
+
+/* ===== COMPACT MODE ===== */
+body.header-compact .lobby-header-full{
+  height: 48px;
+}
+
+body.header-compact .lobby-header-inner{
+  height: 48px;
+}
+
+/* chữ nhỏ lại */
+body.header-compact .lobby-title{
+  font-size: 14px;
+  opacity: .9;
+}
+
+/* icon gọn hơn */
+body.header-compact .lobby-iconBtn{
+  font-size: 18px;
+}
+
+/* ===== FILTER BAR GIỮ NGUYÊN ===== */
+.lobby-filter-bar{
+  top: 64px;
+  transition: top .22s ease;
+}
+
+/* khi header mỏng → filter tự kéo lên */
+body.header-compact .lobby-filter-bar{
+  top: 48px;
 }

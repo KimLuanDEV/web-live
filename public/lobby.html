@@ -1245,6 +1245,36 @@ searchInput?.addEventListener("blur", () => {
   }, 150);
 });
 
+
+/* ===== HEADER COMPACT ON SCROLL ===== */
+(function(){
+  let lastY = 0;
+  let ticking = false;
+
+  function onScroll(){
+    const y = window.scrollY;
+
+    // scroll xuống đủ xa → compact
+    if (y > 40) {
+      document.body.classList.add("header-compact");
+    } else {
+      document.body.classList.remove("header-compact");
+    }
+
+    lastY = y;
+    ticking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      window.requestAnimationFrame(onScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+})();
+
+
+
 </script>
 
 
