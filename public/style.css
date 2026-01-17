@@ -8595,12 +8595,23 @@ body.bar-merged .guest-notice-inner{
   height:100%;
   object-fit:cover;
 }
+
 .lobby-cardShade{
-  position:absolute;
-  inset:0;
+  position: absolute;
+  inset: 0;        /* chỉ che phần card */
+  z-index: 1;
+
   background:
-    linear-gradient(to top, rgba(0,0,0,.75), rgba(0,0,0,.15), rgba(0,0,0,.6));
+    linear-gradient(
+      to top,
+      rgba(0,0,0,.80),
+      rgba(0,0,0,.20),
+      rgba(0,0,0,.65)
+    );
+
+  border-radius: 18px; /* theo card, KHÔNG theo ảnh */
 }
+
 
 /* overlay layers */
 .lobby-cardOverlay{
@@ -8711,5 +8722,39 @@ body.bar-merged .guest-notice-inner{
   position: absolute;
   left: 0;
   right: 0;
+  z-index: 2;
+}
+
+
+/* ===== CARD CHỈ CÒN LÀ LOGIC, KHÔNG LÀ KHỐI ===== */
+.lobby-card{
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  outline: none !important;
+  overflow: visible !important;   /* 🔥 cho phép ảnh tràn */
+}
+
+
+/* ===== AVATAR / POSTER TRÀN KHỎI CARD ===== */
+.lobby-bgAvatar{
+  position: absolute;
+
+  /* 🔥 TRÀN RA NGOÀI */
+  inset: -18px;   /* càng âm càng tràn mạnh */
+  width: calc(100% + 36px);
+  height: calc(100% + 36px);
+
+  object-fit: cover;
+  z-index: 0;
+
+  border-radius: 22px; /* bo nhẹ ảnh, KHÔNG bo card */
+  box-shadow:
+    0 25px 60px rgba(0,0,0,.55); /* ảnh nổi */
+}
+
+
+.lobby-cardOverlay{
+  position: absolute;
   z-index: 2;
 }
