@@ -741,6 +741,12 @@ const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const isGuest = localStorage.getItem("isGuest") === "1";
 
+
+// ❌ GUEST KHÔNG AUTH
+if(profile.uid && !isGuest){
+  socket.emit("auth-login", { uid: profile.uid });
+}
+
 // 🧩 Guest overlay click outside to close
 const guestLock = document.getElementById("guestViewLock");
 

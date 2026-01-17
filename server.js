@@ -1096,6 +1096,14 @@ socket.on("auth-ping", ({ uid }) => {
   uid = String(uid||"").trim();
   if(!uid) return;
 
+  
+  // 🚫 BỎ QUA GUEST
+  if(uid.startsWith("guest_")){
+    socket.data.uid = uid;
+    socket.data.role = "guest";
+    return;
+  }
+  
   const db = loadUsers();
 
 if(db[uid]){
