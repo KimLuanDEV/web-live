@@ -112,10 +112,6 @@
 
 
 
-
-
-
-
   <div class="container lobby-shell">
 
 
@@ -838,42 +834,48 @@ function render(list){
 
     const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
 
-    a.innerHTML = `
-      <div class="lobby-cardGlow"></div>
+   a.innerHTML = `
+  <div class="lobby-cardBg">
+    <img src="${hostAvatar}" alt="avatar" loading="lazy">
+    <div class="lobby-cardShade"></div>
+  </div>
 
-      <div class="lobby-cardTop">
-        <div class="lobby-host">
-          <img class="lobby-ava" src="${hostAvatar}" alt="avatar" loading="lazy">
-          <div class="lobby-hostinfo">
-           <div class="lobby-hostname">
-  ${escapeHtml(hostName)}
-  ${verified ? `<span class="tick-blue">✔</span>` : ``}
-</div>
+  <!-- TOP OVERLAY -->
+  <div class="lobby-cardOverlay top">
+    <div class="lobby-room">
+      🎥 ${escapeHtml(r.roomId)}
+    </div>
 
-            <div class="lobby-roomid">🎥 ${escapeHtml(r.roomId)}</div>
-          </div>
+    <div class="lobby-badges">
+      ${
+        r.__virtual
+          ? `<span class="badge badge--virtual">Live</span>`
+          : `<span class="lobby-livePill"><span class="lobby-liveDot"></span>LIVE</span>`
+      }
+      ${(!r.__virtual && r.hasGuest) ? `<span class="badge badge--info">Co-host</span>` : ``}
+    </div>
+  </div>
+
+  <!-- BOTTOM OVERLAY -->
+  <div class="lobby-cardOverlay bottom">
+    <div class="lobby-hostRow">
+      <img class="lobby-ava mini" src="${hostAvatar}">
+      <div class="lobby-hostMeta">
+        <div class="lobby-hostname">
+          ${escapeHtml(hostName)}
+          ${verified ? `<span class="tick-blue">✔</span>` : ``}
         </div>
-
-        <div class="lobby-badges">
-          ${
-            r.__virtual
-              ? `<span class="badge badge--virtual" style="margin:0">Live</span>`
-              : `<span class="lobby-livePill"><span class="lobby-liveDot"></span>LIVE</span>`
-          }
-          ${(!r.__virtual && r.hasGuest) ? `<span class="badge badge--info" style="margin:0">Co-host</span>` : ``}
-        </div>
       </div>
+    </div>
 
-      <div class="lobby-cardMeta">
-        <span class="lobby-chip">👁 <b>${Number(r.viewers)||0}</b></span>
-        <span class="lobby-chip">⏱ <b>${hms(liveFor)}</b></span>
-      </div>
+    <div class="lobby-statsRow">
+      <span class="lobby-chip">👁 <b>${Number(r.viewers)||0}</b></span>
+      <span class="lobby-chip">⏱ <b>${hms(liveFor)}</b></span>
+      <span class="lobby-cta">Vào xem ➜</span>
+    </div>
+  </div>
+`;
 
-      <div class="lobby-cardFoot">
-        <div class="lobby-cta">${r.__virtual ? "Vào xem" : "Vào xem"}</div>
-        <div class="lobby-arrow">➜</div>
-      </div>
-    `;
 
     grid.appendChild(a);
   });
