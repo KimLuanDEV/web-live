@@ -382,9 +382,10 @@ const isGuest = localStorage.getItem("isGuest") === "1";
 
 
 
-if(profile.uid){
+if(profile.uid && !isGuest){
   socket.emit("auth-login", { uid: profile.uid });
 }
+
 
 socket.on("force-logout", () => {
    showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");

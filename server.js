@@ -1103,7 +1103,7 @@ socket.on("auth-ping", ({ uid }) => {
     socket.data.role = "guest";
     return;
   }
-  
+
   const db = loadUsers();
 
 if(db[uid]){
@@ -1117,13 +1117,18 @@ if(db[uid]){
 
   // nếu uid đang online ở socket khác → đá
   const oldSocketId = activeUsers.get(uid);
+
   if(oldSocketId && oldSocketId !== socket.id){
     io.to(oldSocketId).emit("force-logout", { reason:"login_elsewhere" });
 
-    const oldSocket = io.sockets.sockets.get(oldSocketId);
-    if(oldSocket){
-      oldSocket.disconnect(true);
-    }
+ if(oldSocketId && oldSocketId !== socket.id){
+  const oldSocket = io.sockets.sockets.get(oldSocketId);
+  if(oldSocket){
+    io.to(oldSocketId).emit("force-logout");
+    oldSocket.disconnect(true);
+  }
+}
+
   }
 
   activeUsers.set(uid, socket.id);
@@ -1993,16 +1998,14 @@ if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
   socket.on("disconnect", () => {
 
 
-  const uid = socket.data.uid;
 
-  if(uid){
-  const cur = activeUsers.get(uid);
-  if(cur === socket.id){
-    activeUsers.delete(uid);
-    emitActiveUsers();   // 🔥 BẮT BUỘC
-  }
-}
-
+    
+    const uid = socket.data.uid;
+    if(uid && activeUsers.get(uid) === socket.id){
+      activeUsers.delete(uid);
+      emitActiveUsers();
+      console.log("🧹 cleared active user:", uid);
+    }
 
 
 
