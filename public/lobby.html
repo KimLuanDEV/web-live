@@ -18,42 +18,29 @@
   
 <script src="/guard.js"></script>
 
-    
-<!-- FULL WIDTH LOBBY HEADER -->
-<div class="lobby-header-full">
-  <div class="lobby-header-inner">
+  <div class="container lobby-shell">
 
-    <!-- LEFT -->
-    <div class="lobby-brand">
-      <span class="live-dot"></span>
+
+     <!-- ===== LOBBY HEADER v2 (FIXED) ===== -->
+<div class="lobby-header">
+  <!-- LEFT: BRAND -->
+  <div class="lobby-brand">
+    <span class="live-dot"></span>
+    <div>
       <div class="lobby-title">LIVESTREAM PRO</div>
     </div>
 
-    <!-- RIGHT ACTIONS -->
-    <div class="lobby-header-actions">
-      <button class="lobby-iconBtn" id="btnToggleSearch" title="Tìm kiếm">🔍</button>
-      <button class="lobby-iconBtn" id="btnPlayerLobby" title="Sảnh User">👥</button>
-      <button class="lobby-iconBtn" id="btnCreateRoomDesktop" title="Tạo phòng LIVE"> 🎥 </button>
+     <button class="lobby-btn" id="btnPlayerLobby">
+      👥 Sảnh User
+    </button>
+
+  </div>
 
 
-       <!-- RIGHT: ACTIONS (GIỮ ID userBar) -->
-  <div class="lobby-actions" id="userBar">
-
-   <div class="user-chip" style="display: none;" onclick="location.href='/profile.html'">
-      <img id="userAva">
-      <div class="user-info">
-        <div id="userName"></div>
-        <div class="user-level" id="userLevel"></div>
-      </div>
-    </div>
-</div>
-
-</div>
-</div>
-
-  <!-- SEARCH BAR (ẨN / HIỆN) -->
-  <div class="lobby-header-search hidden" id="headerSearch">
+      <!-- SEARCH -->
+  <div class="hero-search">
     <div class="lobby-searchWrap">
+      <div class="lobby-searchIcon">🔎</div>
       <input
         id="q"
         class="lobby-search"
@@ -63,60 +50,50 @@
       <button id="clearQ" class="lobby-clear" title="Xóa">✕</button>
     </div>
   </div>
-</div>
+
+
+  <!-- FILTERS -->
+  <div class="hero-filters">
+    <div class="hero-filterLeft">
+      <button class="lobby-chipBtn is-active" data-filter="all">Tất cả</button>
+      <button class="lobby-chipBtn" data-filter="cohost">Có co-host</button>
 
 
 
+        <div class="hero-filterRight">
+      <select id="sort" class="lobby-select">
+        <option value="viewers">🔥 Đông người xem</option>
+        <option value="new">🆕 Mới live</option>
+        <option value="old">⏱ Live lâu</option>
+      </select>
+    </div>
+  </div>
 
-
-
-<!-- SLIDE FILTER BAR -->
-<div class="lobby-filter-bar">
-  <div class="lobby-filter-scroll">
-
-    <button class="lobby-chipBtn is-active" data-filter="all">
-      🔥 Tất cả
-    </button>
-
-    <button class="lobby-chipBtn" data-filter="cohost">
-      👥 Có co-host
-    </button>
-
-    <button class="lobby-chipBtn" data-filter="hot">
-      🚀 Hot
-    </button>
-
-    <button class="lobby-chipBtn" data-filter="new">
-      🆕 Mới live
-    </button>
-
-    <button class="lobby-chipBtn" data-filter="long">
-      ⏱ Live lâu
-    </button>
-
-    <!-- SORT nằm chung trong thanh trượt -->
-    <select id="sort" class="lobby-select lobby-select-inline">
-      <option value="viewers">🔥 Đông người xem</option>
-      <option value="new">🆕 Mới live</option>
-      <option value="old">⏱ Live lâu</option>
-    </select>
+ 
+   
 
   </div>
+
+
+
+ <!-- RIGHT: ACTIONS (GIỮ ID userBar) -->
+  <div class="lobby-actions" id="userBar">
+
+    <button id="btnCreateRoomDesktop" class="lobby-btn lobby-btn--main">
+      ➕ Tạo phòng LIVE
+    </button>
+
+   <div class="user-chip" style="display: none;" onclick="location.href='/profile.html'">
+      <img id="userAva">
+      <div class="user-info">
+        <div id="userName"></div>
+        <div class="user-level" id="userLevel"></div>
+      </div>
+    </div>
+
+
 </div>
 
-
-<!-- GUEST NOTICE FULL WIDTH -->
-<div id="guestNotice" class="guest-notice-bar hidden">
-  <div class="guest-notice-inner"></div>
-</div>
-
-
-
-
-
-
-
-  <div class="container lobby-shell">
 
 
    <div class="card lobby-hero lobby-hero--v2" style="display: none">
@@ -405,9 +382,10 @@ const isGuest = localStorage.getItem("isGuest") === "1";
 
 
 
-if(profile.uid){
+if(profile.uid && !isGuest){
   socket.emit("auth-login", { uid: profile.uid });
 }
+
 
 socket.on("force-logout", () => {
    showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
@@ -1102,22 +1080,14 @@ socket.on("inbox-clear", ()=>{
 });
 
 
-
-const guestNotice = document.getElementById("guestNotice");
-
-if (isGuest && guestNotice) {
-  guestNotice.querySelector(".guest-notice-inner").innerHTML = `
-    <div class="badge badge--info">
-      👀 Đang xem với tư cách Guest
-    </div>
-
+if(isGuest){
+  document.getElementById("userBar").innerHTML = `
+    <div class="badge badge--info">👀 Đang xem với tư cách Guest</div>
     <button class="lobby-btn" onclick="location.href='/login.html'">
       🔐 Đăng nhập
     </button>
   `;
-  guestNotice.classList.remove("hidden");
 }
-
 
 
 let __msgOkAction = null;
@@ -1235,91 +1205,6 @@ window.addEventListener("scroll", ()=>{
 
   lastScroll = cur;
 },{ passive:true });
-
-
-
-
-const btnToggleSearch = document.getElementById("btnToggleSearch");
-const headerSearch = document.getElementById("headerSearch");
-const searchInput = document.getElementById("q");
-
-btnToggleSearch?.addEventListener("click", () => {
-  headerSearch.classList.toggle("hidden");
-
-  if (!headerSearch.classList.contains("hidden")) {
-    setTimeout(() => searchInput?.focus(), 50);
-  }
-});
-
-clearQ?.addEventListener("click", () => {
-  searchInput.value = "";
-  searchInput.focus();
-});
-
-// Ẩn search khi blur (tuỳ chọn – giống app)
-searchInput?.addEventListener("blur", () => {
-  setTimeout(() => {
-    headerSearch.classList.add("hidden");
-  }, 150);
-});
-
-
-/* ===== HEADER COMPACT ON SCROLL ===== */
-(function(){
-  let lastY = 0;
-  let ticking = false;
-
-  function onScroll(){
-    const y = window.scrollY;
-
-    // scroll xuống đủ xa → compact
-    if (y > 40) {
-      document.body.classList.add("header-compact");
-    } else {
-      document.body.classList.remove("header-compact");
-    }
-
-    lastY = y;
-    ticking = false;
-  }
-
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      window.requestAnimationFrame(onScroll);
-      ticking = true;
-    }
-  }, { passive: true });
-})();
-
-
-
-
-
-/* ===== MERGED BAR ON SCROLL ===== */
-(function(){
-  let ticking = false;
-
-  function onScroll(){
-    const y = window.scrollY;
-
-    if (y > 120) {
-      document.body.classList.add("bar-merged");
-    } else {
-      document.body.classList.remove("bar-merged");
-    }
-
-    ticking = false;
-  }
-
-  window.addEventListener("scroll", () => {
-    if (!ticking) {
-      requestAnimationFrame(onScroll);
-      ticking = true;
-    }
-  }, { passive: true });
-})();
-
-
 
 
 </script>
