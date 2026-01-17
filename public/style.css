@@ -8176,9 +8176,9 @@ body.keyboard-open .pass-sheet{
 
 /* brand to */
 .lobby-title{
-  font-size: 20px;
+  font-size: 16px;
   transition: font-size .22s ease, opacity .22s ease;
-  color:var(--red);
+  color: #00f6ff;
 }
 
 /* ===== COMPACT MODE ===== */
