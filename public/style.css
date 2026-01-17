@@ -8026,3 +8026,48 @@ body.keyboard-open .pass-sheet{
   --header-h: 64px;
 }
 
+
+/* ===============================
+   FIX GAP HEADER ↔ FILTER (FINAL)
+   =============================== */
+
+/* 1. Header không được đẩy gì xuống */
+.lobby-header-full{
+  margin-bottom: 0 !important;
+  padding-bottom: 0 !important;
+  border-bottom: none !important;
+}
+
+/* 2. Search BAR không chiếm layout khi ẩn */
+.lobby-header-search{
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 50;
+}
+.lobby-header-search.hidden{
+  display: none !important;
+}
+
+/* 3. Filter BAR dính thẳng vào header */
+.lobby-filter-bar{
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+  top: auto !important;
+  border-top: none !important;
+}
+
+/* 4. Bỏ padding gây cảm giác hở */
+.lobby-filter-scroll{
+  padding-top: 0 !important;
+}
+
+/* 5. Nếu vẫn thấy 1 đường mờ → làm liền màu */
+.lobby-filter-bar{
+  background: linear-gradient(
+    180deg,
+    rgba(7,10,20,.92),
+    rgba(7,10,20,.88)
+  ) !important;
+}
