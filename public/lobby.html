@@ -1293,6 +1293,35 @@ searchInput?.addEventListener("blur", () => {
 
 
 
+
+
+/* ===== MERGED BAR ON SCROLL ===== */
+(function(){
+  let ticking = false;
+
+  function onScroll(){
+    const y = window.scrollY;
+
+    if (y > 120) {
+      document.body.classList.add("bar-merged");
+    } else {
+      document.body.classList.remove("bar-merged");
+    }
+
+    ticking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+    if (!ticking) {
+      requestAnimationFrame(onScroll);
+      ticking = true;
+    }
+  }, { passive: true });
+})();
+
+
+
+
 </script>
 
 
