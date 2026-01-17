@@ -7851,3 +7851,9 @@ body.keyboard-open .pass-sheet{
     font-size: 12px;
   }
 }
+
+
+/* FORCE SHOW MOBILE TAB BAR ON PC */
+.mobile-tabbar{
+  display: flex !important;
+}
