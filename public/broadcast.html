@@ -1379,7 +1379,7 @@ socket.on("resume-viewers-list", async ({ viewers }) => {
   for (const viewerId of viewers) {
     // nếu viewer chưa có PC → tạo mới như watcher
     if (!pcs.has(viewerId)) {
-      socket.emit("watcher", { viewerId, roomId });
+      socket.emit("resume-viewer", { viewerId, roomId });
       continue;
     }
 
@@ -1426,6 +1426,12 @@ socket.on("set-bitrate", ({ bitrate }) => {
 
 
 socket.on("live-stop", () => {
+
+
+  for (const [id, pc] of pcs.entries()) {
+  try { pc.close(); } catch {}
+  pcs.delete(id);
+}
 
   document.body.classList.remove("is-live");
 
@@ -1578,11 +1584,26 @@ window.addEventListener("online", async () => {
 
 
 
-    socket.on("viewer-join", ({ viewerId }) => {
-  const pc = createPeerConnection(viewerId);
-  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-  pcs.set(viewerId, pc);
-});
+async function createPeerConnection(viewerId) {
+  const rtcConfig = await getRtcConfig();
+  const pc = new RTCPeerConnection(rtcConfig);
+
+  pc.onicecandidate = (e) => {
+    if (e.candidate) {
+      socket.emit("candidate", {
+        to: viewerId,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  // auto ICE restart + log
+  __wireIceAuto(viewerId, pc);
+
+  return pc;
+}
+
+
     // When network comes back / tab returns, restart only bad peers
     window.addEventListener("online", () => __restartBadPeers(() => Array.from(pcs.entries())));
     document.addEventListener("visibilitychange", () => {
@@ -1680,54 +1701,51 @@ socket.emit("join-room", {
 
 
     // ===== Viewer -> Host streaming =====
-    socket.on("watcher", async ({ viewerId }) => {
-      if (!localStream) {
-        log("Có viewer nhưng bạn chưa Start camera.");
-        return;
-      }
-      if (pcs.has(viewerId)) return;
+socket.on("watcher", async ({ viewerId }) => {
+  if (!localStream) {
+    log("Có viewer nhưng host chưa start camera.");
+    return;
+  }
 
-      log(`Viewer join: ${viewerId}`);
+  // ❌ tránh tạo trùng PC
+  if (pcs.has(viewerId)) {
+    console.warn("⚠️ PC đã tồn tại cho viewer:", viewerId);
+    return;
+  }
 
-      const rtcConfig = await getRtcConfig();
-      const pc = new RTCPeerConnection(rtcConfig);
-      pcs.set(viewerId, pc);
+  log(`👀 Viewer join: ${viewerId}`);
 
-pc.addEventListener("iceconnectionstatechange", () => {
-  if (pc.iceConnectionState === "disconnected") {
-    const s = pc.getSenders().find(x => x.track?.kind === "video");
-    if (!s) return;
-    const p = s.getParameters();
-    if (p.encodings?.[0]) {
-      p.encodings[0].maxBitrate = 700_000;
-      s.setParameters(p);
-      console.log("🔻 Host giảm bitrate do mạng yếu");
-    }
+  // ✅ TẠO PC DUY NHẤT
+  const pc = await createPeerConnection(viewerId);
+  pcs.set(viewerId, pc);
+
+  // add host tracks
+  localStream.getTracks().forEach(track => {
+    pc.addTrack(track, localStream);
+  });
+
+  // khóa bitrate
+  limitAudioBitrate(pc, 32);
+  limitVideoBitrate(pc, 800);
+
+  try {
+    const offer = await pc.createOffer({
+      offerToReceiveAudio: false,
+      offerToReceiveVideo: false
+    });
+    await pc.setLocalDescription(offer);
+
+    socket.emit("offer", {
+      to: viewerId,
+      description: pc.localDescription
+    });
+
+    log("📡 Offer gửi tới viewer " + viewerId);
+  } catch (err) {
+    log("❌ Lỗi tạo offer viewer: " + err.message);
   }
 });
 
-      localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
- 
-// 🔒 khóa audio bitrate cho viewer này
-limitAudioBitrate(pc, 32);
-limitVideoBitrate(pc, 800); // 👈 CHỐT bitrate video cho viewer
-
-
-
-      pc.onicecandidate = (e) => {
-        if (e.candidate) socket.emit("candidate", { to: viewerId, candidate: e.candidate });
-      };
-
-            __wireIceAuto(viewerId, pc);
-
-      try {
-        const offer = await pc.createOffer({ offerToReceiveAudio: false, offerToReceiveVideo: false });
-        await pc.setLocalDescription(offer);
-        socket.emit("offer", { to: viewerId, description: pc.localDescription });
-      } catch (err) {
-        log("Lỗi tạo offer: " + err.message);
-      }
-    });
 
     socket.on("answer", async ({ from, description }) => {
       // could be viewer answer OR guest answer (rare in this flow)
