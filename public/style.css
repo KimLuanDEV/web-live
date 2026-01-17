@@ -8671,3 +8671,45 @@ body.bar-merged .guest-notice-inner{
   box-shadow:0 0 18px rgba(255,59,107,.45);
   font-size:12px;
 }
+
+
+/* ===== BACKGROUND AVATAR – NO WRAPPER ===== */
+
+.lobby-card{
+  position: relative;
+  overflow: visible !important; /* cho phép tràn */
+}
+
+/* ảnh nền độc lập */
+.lobby-bgAvatar{
+  position: absolute;
+  inset: -6px;                  /* tràn nhẹ ra ngoài card */
+  width: calc(100% + 12px);
+  height: calc(100% + 12px);
+  object-fit: cover;
+  z-index: 0;
+
+  filter: brightness(.92) contrast(1.05);
+}
+
+/* lớp shade phủ lên ảnh */
+.lobby-cardShade{
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background:
+    linear-gradient(
+      to top,
+      rgba(0,0,0,.78),
+      rgba(0,0,0,.22),
+      rgba(0,0,0,.65)
+    );
+}
+
+/* overlay luôn nằm trên */
+.lobby-cardOverlay{
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}

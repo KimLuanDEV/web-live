@@ -834,11 +834,11 @@ function render(list){
 
     const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
 
-   a.innerHTML = `
-  <div class="lobby-cardBg">
-    <img src="${hostAvatar}" alt="avatar" loading="lazy">
-    <div class="lobby-cardShade"></div>
-  </div>
+a.innerHTML = `
+  <!-- BACKGROUND AVATAR (NO WRAPPER) -->
+  <img class="lobby-bgAvatar" src="${hostAvatar}" alt="avatar" loading="lazy">
+
+  <div class="lobby-cardShade"></div>
 
   <!-- TOP OVERLAY -->
   <div class="lobby-cardOverlay top">
@@ -875,6 +875,7 @@ function render(list){
     </div>
   </div>
 `;
+
 
 
     grid.appendChild(a);
