@@ -8915,3 +8915,29 @@ body.bar-merged .guest-notice-inner{
 }
 
 
+
+/* ===== FIXED LOBBY HEADER ===== */
+.lobby-header-full{
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  z-index: 10000; /* luôn nằm trên grid, card */
+  background: rgba(7,10,20,.88);
+  backdrop-filter: blur(12px);
+
+  border-bottom: 1px solid rgba(255,255,255,.12);
+}
+
+
+.lobby-page{
+  padding-top: 64px; /* chỉnh theo chiều cao header */
+}
+
+
+@media (max-width: 520px){
+  .lobby-page{
+    padding-top: 72px;
+  }
+}
