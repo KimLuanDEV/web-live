@@ -826,10 +826,12 @@ const modal = document.getElementById("composeModal");
 const modalTextarea = document.getElementById("postTextModal");
 
 /* MỞ MODAL */
-postText.addEventListener("focus", e => {
-  e.preventDefault();
+postText.addEventListener("pointerdown", e => {
+  e.preventDefault();       // chặn focus
+  postText.blur();          // đảm bảo KHÔNG bật keyboard
   openComposeModal();
 });
+
 
 function openComposeModal(){
   modal.classList.remove("hidden");
