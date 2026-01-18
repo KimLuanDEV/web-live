@@ -1346,46 +1346,30 @@ btnToggleSearch.onclick = () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("btnToggleSearch");
-  const search = document.getElementById("headerSearch");
   const input = document.getElementById("q");
-  const clear = document.getElementById("clearQ");
 
   btn.addEventListener("click", () => {
     const open = document.body.classList.toggle("search-open");
 
-    search.classList.toggle("hidden", !open);
-
     if (open) {
-      setTimeout(() => input?.focus(), 80);
+      setTimeout(() => input?.focus(), 120); // chờ animation
     }
   });
 
-  clear?.addEventListener("click", () => {
+  // clear input
+  document.getElementById("clearQ")?.addEventListener("click", () => {
     input.value = "";
     input.focus();
   });
 
-  /* ESC để đóng (PC) */
+  // ESC để đóng (PC)
   document.addEventListener("keydown", e => {
     if (e.key === "Escape" && document.body.classList.contains("search-open")) {
-      closeSearch();
+      document.body.classList.remove("search-open");
     }
   });
-
-  function closeSearch(){
-    document.body.classList.remove("search-open");
-    search.classList.add("hidden");
-  }
 });
 
-
-
-window.addEventListener("scroll", () => {
-  if (document.body.classList.contains("search-open")) {
-    document.body.classList.remove("search-open");
-    document.getElementById("headerSearch")?.classList.add("hidden");
-  }
-});
 
 
 </script>

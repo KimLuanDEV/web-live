@@ -8754,44 +8754,46 @@ body.bar-merged .guest-notice-inner{
 
 
 /* ================================
-   SEARCH MODE
+   SEARCH SLIDE UP MODE
    ================================ */
 
-/* Khi search mở → ẩn header + filter + guest */
+/* search overlay mặc định ẨN, nằm dưới */
+.lobby-header-search{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;                     /* 🔥 bắt đầu từ dưới */
+  padding: 14px 12px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(7,10,20,.92),
+    rgba(7,10,20,.98)
+  );
+  backdrop-filter: blur(16px);
+
+  transform: translateY(100%);   /* 🔽 ẩn dưới màn hình */
+  opacity: 0;
+  transition: transform .28s cubic-bezier(.4,0,.2,1),
+              opacity .2s ease;
+
+  z-index: 99999;
+  pointer-events: none;
+}
+
+/* khi mở search */
+body.search-open .lobby-header-search{
+  transform: translateY(0);      /* ⬆️ trượt lên */
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* ẩn header + filter + guest khi search mở */
 body.search-open .lobby-header-full,
 body.search-open .lobby-filter-bar,
 body.search-open .guest-notice-bar{
   opacity: 0;
   pointer-events: none;
   transform: translateY(-8px);
-  transition: .2s ease;
-}
-
-/* Search overlay nổi riêng */
-body.search-open .lobby-header-search{
-  display: block !important;
-  z-index: 99999;
-}
-
-/* Mặc định search ẩn */
-.lobby-header-search.hidden{
-  display: none;
-}
-
-
-.lobby-header-search{
-  position: fixed;
-  top: 0;                /* 🔥 chiếm từ đỉnh */
-  left: 0;
-  right: 0;
-
-  padding: 14px 12px;
-  background: linear-gradient(
-    180deg,
-    rgba(7,10,20,.96),
-    rgba(7,10,20,.9)
-  );
-  backdrop-filter: blur(16px);
-
-  z-index: 99999;
+  transition: opacity .2s ease, transform .2s ease;
 }
