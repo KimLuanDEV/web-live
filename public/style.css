@@ -8791,6 +8791,7 @@ body.bar-merged .guest-notice-inner{
 
 /* Lobby grid: mỗi hàng 2 room */
 .lobby-grid{
+  min-height: calc(100vh - 140px); /* ✅ trừ header + filter */
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20x;
@@ -8961,3 +8962,4 @@ body.bar-merged .guest-notice-inner{
     padding-top: 72px;
   }
 }
+
