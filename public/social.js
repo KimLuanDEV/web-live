@@ -1081,7 +1081,8 @@ function renderImagePreview(){
     del.textContent = "✕";
     del.onclick = () => removePreviewImage(index);
 
-   img.onclick = () => openImageLightbox(img.src);
+   img.onclick = () => openImageLightboxByIndex(index);
+
 wrap.appendChild(img);
 
 
@@ -1141,4 +1142,62 @@ imgLightbox?.addEventListener("click", e => {
   if(e.target === imgLightbox){
     closeImageLightbox();
   }
+});
+
+
+let lightboxIndex = 0;
+
+function openImageLightboxByIndex(index){
+  if(!composeImages.length) return;
+
+  lightboxIndex = (index + composeImages.length) % composeImages.length;
+
+  const file = composeImages[lightboxIndex];
+  const src = URL.createObjectURL(file);
+
+  openImageLightbox(src);
+}
+
+function nextLightboxImage(){
+  openImageLightboxByIndex(lightboxIndex + 1);
+}
+
+function prevLightboxImage(){
+  openImageLightboxByIndex(lightboxIndex - 1);
+}
+
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+imgLightbox?.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
+},{ passive:true });
+
+imgLightbox?.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+},{ passive:true });
+
+function handleSwipe(){
+  const diff = touchEndX - touchStartX;
+
+  if(Math.abs(diff) < 40) return; // tránh swipe nhẹ
+
+  if(diff < 0){
+    // ⬅️ vuốt sang trái → ảnh tiếp
+    nextLightboxImage();
+  }else{
+    // ➡️ vuốt sang phải → ảnh trước
+    prevLightboxImage();
+  }
+}
+
+
+document.addEventListener("keydown", e => {
+  if(imgLightbox.classList.contains("hidden")) return;
+
+  if(e.key === "ArrowRight") nextLightboxImage();
+  if(e.key === "ArrowLeft") prevLightboxImage();
+  if(e.key === "Escape") closeImageLightbox();
 });
