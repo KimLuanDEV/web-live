@@ -7960,7 +7960,7 @@ body.keyboard-open .pass-sheet{
 /* ===== SLIDE FILTER BAR ===== */
 .lobby-filter-bar{
   position: sticky;
-  top: 64px; /* ngay dưới header */
+  top: 32px; /* ngay dưới header */
   z-index: 40;
   background: rgba(7,10,20,.88);
   backdrop-filter: blur(10px);
@@ -8000,7 +8000,7 @@ body.keyboard-open .pass-sheet{
 /* PC nhìn gọn hơn */
 @media (min-width: 920px){
   .lobby-filter-bar{
-    top: 70px;
+    top: 32px;
   }
 }
 
@@ -8118,7 +8118,7 @@ body.keyboard-open .pass-sheet{
 /* FILTER BAR ăn tiếp nền */
 .lobby-filter-bar{
   position: sticky;
-  top: 64px; /* chiều cao header */
+  top: 32px; /* chiều cao header */
   z-index: 55;
 
   background:
@@ -8203,7 +8203,7 @@ body.header-compact .lobby-iconBtn{
 
 /* ===== FILTER BAR GIỮ NGUYÊN ===== */
 .lobby-filter-bar{
-  top: 64px;
+  top: 32px;
   transition: top .22s ease;
 }
 
