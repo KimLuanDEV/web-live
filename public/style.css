@@ -1048,13 +1048,13 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 
 /* ===== cards ===== */
 .lobby-page .lobby-grid{
-  gap: 6px !important;
+  gap: 2px !important;
 }
 
 /* Mobile */
 @media (max-width: 520px){
   .lobby-page .lobby-grid{
-    gap: 4px;
+    gap: 2px;
   }
 }
 
