@@ -1048,12 +1048,25 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 
 /* ===== cards ===== */
 .lobby-page .lobby-grid{
+  background: radial-gradient(
+    120% 120% at 50% 0%,
+    #0a0a0a 0%,
+    #000 60%
+  );
   gap: 1px !important;
+   border: 1px solid rgba(255,255,255,.08);
 }
 
 /* Mobile */
 @media (max-width: 520px){
+  
   .lobby-page .lobby-grid{
+    background: radial-gradient(
+    120% 120% at 50% 0%,
+    #0a0a0a 0%,
+    #000 60%
+  );
+   border: 1px solid rgba(255,255,255,.08);
     gap: 1px;
   }
 }
