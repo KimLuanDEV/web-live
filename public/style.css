@@ -8767,3 +8767,24 @@ body.bar-merged .guest-notice-inner{
   position: relative;
   z-index: 9999999;
 }
+
+
+/* Mặc định: mobile 1 cột */
+.lobby-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+/* Từ tablet trở lên: 2 cột */
+@media (min-width: 640px){
+  .lobby-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+
+.lobby-card,
+.lobby-item{
+  min-height: 140px;
+}
