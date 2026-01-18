@@ -8791,7 +8791,7 @@ body.bar-merged .guest-notice-inner{
 
 /* Lobby grid: mỗi hàng 2 room */
 .lobby-grid{
-  min-height: 100vh;     /* ✅ luôn nở tối thiểu */
+  
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 20x;
