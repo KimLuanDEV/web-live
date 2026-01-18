@@ -576,7 +576,7 @@ function renderPost(p, top=false){
  div.innerHTML=`
 
  <div class="lp-post-inner">
- 
+
 <div class="lp-post-head">
   <img class="lp-ava" src="${p.avatar}">
   <div>
@@ -587,7 +587,8 @@ function renderPost(p, top=false){
 </div>
 
 
-<div class="lp-post-text">${p.text}</div>
+<div class="lp-post-text">${p.text.replace(/\n/g, "<br>")}</div>
+
 
 ${p.image ? `<img class="lp-post-img" src="${p.image}">` : ""}
 
