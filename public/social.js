@@ -833,24 +833,39 @@ postText.addEventListener("pointerdown", e => {
 });
 
 
+
+
+
+let scrollTopBeforeModal = 0;
+
 function openComposeModal(){
+  scrollTopBeforeModal = window.scrollY;
+
   modal.classList.remove("hidden");
 
-  // sync text hiện tại
   modalTextarea.value = postText.value;
 
-
-  document.body.style.overflow = "hidden";
+  // 🔒 khóa scroll nền (chuẩn iOS)
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${scrollTopBeforeModal}px`;
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
 }
 
-/* ĐÓNG MODAL */
 function closeComposeModal(){
   modal.classList.add("hidden");
 
-  // sync ngược text
   postText.value = modalTextarea.value;
 
-  document.body.style.overflow = "";
+  // 🔓 mở lại scroll nền
+  document.body.style.position = "";
+  document.body.style.top = "";
+  document.body.style.left = "";
+  document.body.style.right = "";
+  document.body.style.width = "";
+
+  window.scrollTo(0, scrollTopBeforeModal);
 }
 
 
@@ -998,3 +1013,17 @@ function clearComposeMedia(){
 
   updateCenterMode();
 }
+
+
+modal.addEventListener("touchmove", e => {
+  // cho phép vuốt bên trong modal
+}, { passive: true });
+
+// ❌ chặn vuốt nền khi modal mở
+document.addEventListener("touchmove", e => {
+  if (!modal.classList.contains("hidden")) {
+    if (!modal.contains(e.target)) {
+      e.preventDefault();
+    }
+  }
+}, { passive: false });
