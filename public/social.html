@@ -546,6 +546,7 @@
   opacity:.9;
 }
 
+/* nút đăng */
 /* nút gửi (icon) */
 .lp-compose-header .lp-submit.icon{
   width:36px;
@@ -572,6 +573,7 @@
   opacity:.35;
   box-shadow:none;
 }
+
 
 .lp-compose-header .title{
   padding-top: calc(14px + env(safe-area-inset-top));
@@ -639,10 +641,7 @@
       <input type="file" id="postImage" accept="image/*">
       <input type="file" id="postVideo" accept="video/*">
 
-      <button class="lp-submit icon" onclick="submitFromModal()" title="Đăng bài">
-  ➤
-</button>
-
+      <button class="lp-post-btn" onclick="submitPost()">Đăng</button>
     </div>
   </div>
 
@@ -699,7 +698,10 @@
     Tạo bài viết
   </div>
 
-  <button class="lp-submit" onclick="submitFromModal()">Đăng</button>
+<button class="lp-submit icon" onclick="submitFromModal()" title="Đăng bài">
+  ➤
+</button>
+
 </div>
 
     <div class="lp-compose-body">
