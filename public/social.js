@@ -604,9 +604,14 @@ function renderPost(p, top=false){
     <div class="lp-post-time">${time}</div>
   </div>
 
-  ${p.uid === auth.uid ? `<div class="lp-del" onclick="deletePost('${p.id}')">🗑</div>` : ``}
+ ${p.uid === auth.uid ? `
+  <div class="lp-post-tools">
+    <span class="lp-edit" onclick="editPost('${p.id}')">✏️</span>
+    <span class="lp-del" onclick="deletePost('${p.id}')">🗑</span>
+  </div>
+` : ``}
 
-  
+
 </div>
 
 
@@ -1338,3 +1343,59 @@ function showToast(text, timeout = 2000){
     setTimeout(()=> toast.remove(), 300);
   }, timeout);
 }
+
+
+
+function editPost(postId){
+  const postEl = document.querySelector(`.lp-post[data-id="${postId}"]`);
+  if(!postEl) return;
+
+  const textEl = postEl.querySelector(".lp-post-text");
+  const oldText = textEl?.innerText || "";
+
+  const modal = document.createElement("div");
+  modal.className = "lp-compose-modal";
+
+  modal.innerHTML = `
+    <div class="lp-compose-sheet">
+      <div class="lp-compose-header">
+        <button class="lp-close">✕</button>
+        <div class="lp-header-title">Chỉnh sửa bài viết</div>
+        <button class="lp-submit" id="saveEdit">Lưu</button>
+      </div>
+
+      <div class="lp-compose-body">
+        <textarea id="editText"
+          style="width:100%;height:100%;background:transparent;color:#fff;font-size:16px;">${oldText}</textarea>
+      </div>
+    </div>
+  `;
+
+  document.body.appendChild(modal);
+
+  modal.querySelector(".lp-close").onclick = () => modal.remove();
+
+  modal.querySelector("#saveEdit").onclick = () => {
+    const newText = modal.querySelector("#editText").value.trim();
+    if(!newText) return;
+
+    socket.emit("lp-edit-post", {
+      postId,
+      uid: auth.uid,
+      text: newText
+    });
+
+    modal.remove();
+  };
+}
+
+
+socket.on("lp-edit-post", ({ postId, text })=>{
+  const postEl = document.querySelector(`.lp-post[data-id="${postId}"]`);
+  if(!postEl) return;
+
+  const textEl = postEl.querySelector(".lp-post-text");
+  if(textEl){
+    textEl.innerHTML = text.replace(/\n/g,"<br>");
+  }
+});

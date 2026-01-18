@@ -727,6 +727,23 @@ socket.on("lp-delete", ({ postId, uid })=>{
 socket.emit("lp-init", lpPosts.slice(0, 50));
 
 
+socket.on("lp-edit-post", ({ postId, uid, text })=>{
+  const post = getPost(postId);
+  if(!post) return;
+
+  // 🔐 chỉ chủ bài mới được sửa
+  if(post.uid !== uid) return;
+
+  post.text = String(text).slice(0,500);
+  post.edited = Date.now(); // optional
+
+  saveSocial();
+
+  io.emit("lp-edit-post", {
+    postId,
+    text: post.text
+  });
+});
 
 
 
