@@ -3,6 +3,9 @@ const feed = document.getElementById("lpFeed");
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
+let composeImages = []; // 🔥 danh sách ảnh đang preview
+
+
 if (auth.uid) {
   socket.emit("auth-login", { uid: auth.uid });
 
@@ -912,6 +915,7 @@ toggleSubmitBtn();
 const modalImage = document.getElementById("modalImage");
 const modalVideo = document.getElementById("modalVideo");
 
+
 modalImage?.addEventListener("change", () => {
   document.getElementById("postImage").files = modalImage.files;
 });
@@ -962,30 +966,36 @@ function hidePreview(){
 }
 
 function clearComposeMedia(){
-  hidePreview();
+  composeImages = [];
 
-  // clear modal inputs
+  previewBox.classList.add("hidden");
+  previewBox.innerHTML = "";
+
   modalImage.value = "";
   modalVideo.value = "";
 
-  // clear input gốc để submit không gửi file cũ
   postImage.value = "";
   postVideo.value = "";
+
+  updateCenterMode();
 }
+
 
 /* ===== IMAGE PREVIEW ===== */
 modalImage?.addEventListener("change", () => {
-  const file = modalImage.files[0];
-  if (!file) return;
+  const files = [...modalImage.files];
+  if (!files.length) return;
 
   previewVideo.classList.add("hidden");
+  previewImage.classList.add("hidden");
 
-  const url = URL.createObjectURL(file);
-  previewImage.src = url;
-  previewImage.classList.remove("hidden");
+  files.forEach(file => {
+    composeImages.push(file);
+  });
 
-  showPreview();
+  renderImagePreview();
 });
+
 
 /* ===== VIDEO PREVIEW ===== */
 modalVideo?.addEventListener("change", () => {
@@ -1049,3 +1059,58 @@ document.addEventListener("touchmove", e => {
     }
   }
 }, { passive: false });
+
+
+
+function renderImagePreview(){
+  previewBox.classList.remove("hidden");
+  previewBox.innerHTML = "";
+
+  const grid = document.createElement("div");
+  grid.className = "lp-preview-grid";
+
+  composeImages.forEach((file, index) => {
+    const wrap = document.createElement("div");
+    wrap.className = "lp-preview-item";
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+
+    const del = document.createElement("button");
+    del.className = "lp-preview-remove";
+    del.textContent = "✕";
+    del.onclick = () => removePreviewImage(index);
+
+    wrap.appendChild(img);
+    wrap.appendChild(del);
+    grid.appendChild(wrap);
+  });
+
+  previewBox.appendChild(grid);
+
+  // 🔥 sync lại FileList cho submit
+  syncPostImageFiles();
+}
+
+
+function removePreviewImage(index){
+  composeImages.splice(index, 1);
+
+  if(composeImages.length === 0){
+    clearComposeMedia();
+    return;
+  }
+
+  renderImagePreview();
+}
+
+
+function syncPostImageFiles(){
+  const dt = new DataTransfer();
+
+  composeImages.forEach(file => {
+    dt.items.add(file);
+  });
+
+  postImage.files = dt.files;
+}

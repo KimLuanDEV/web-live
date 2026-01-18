@@ -781,6 +781,40 @@
 }
 
 
+.lp-preview-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  width:100%;
+}
+
+.lp-preview-item{
+  position:relative;
+  border-radius:10px;
+  overflow:hidden;
+}
+
+.lp-preview-item img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+.lp-preview-item .lp-preview-remove{
+  position:absolute;
+  top:4px;
+  right:4px;
+  width:22px;
+  height:22px;
+  border-radius:50%;
+  border:none;
+  background:rgba(0,0,0,.6);
+  color:#fff;
+  font-size:14px;
+  cursor:pointer;
+}
+
 
 </style>
 
