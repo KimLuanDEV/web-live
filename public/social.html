@@ -504,20 +504,67 @@
 }
 
 .lp-compose-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  padding:14px;
-  
-  background: rgba(0,0,0,.85); /* bắt buộc */
-  backdrop-filter: blur(12px);
-  border-bottom:1px solid rgba(255,255,255,.12);
-  position: sticky;      /* 🔥 GẮN CỐ ĐỊNH */
-
+  position: sticky;
   top: 0;
   z-index: 10;
 
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  height:52px;
+  padding: 0 14px;
+
+  background: rgba(10,10,10,.88);
+  backdrop-filter: blur(14px);
+  border-bottom:1px solid rgba(255,255,255,.08);
 }
+
+
+/* nút đóng */
+.lp-compose-header .lp-close{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#aaa;
+  font-size:18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+
+/* title giữa */
+.lp-header-title{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  font-weight:700;
+  font-size:15px;
+  opacity:.9;
+}
+
+/* nút đăng */
+.lp-compose-header .lp-submit{
+  padding:8px 14px;
+  border-radius:999px;
+  border:none;
+
+  font-weight:900;
+  font-size:14px;
+
+  color:#000;
+  background:linear-gradient(135deg,#25F09A,#5FA8FF);
+  box-shadow:0 0 12px rgba(37,240,154,.45);
+}
+
+.lp-compose-header .lp-submit:disabled{
+  opacity:.4;
+  box-shadow:none;
+}
+
 
 .lp-compose-header .title{
   padding-top: calc(14px + env(safe-area-inset-top));
@@ -636,10 +683,14 @@
   <div class="lp-compose-sheet">
     
     <div class="lp-compose-header">
-      <button onclick="closeComposeModal()">✕</button>
-      <div class="title">Tạo bài viết</div>
-      <button class="submit" onclick="submitFromModal()">Đăng</button>
-    </div>
+  <button class="lp-close" onclick="closeComposeModal()">✕</button>
+
+  <div class="lp-header-title">
+    Tạo bài viết
+  </div>
+
+  <button class="lp-submit" onclick="submitFromModal()">Đăng</button>
+</div>
 
     <div class="lp-compose-body">
       <textarea
