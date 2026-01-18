@@ -1048,7 +1048,14 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 
 /* ===== cards ===== */
 .lobby-page .lobby-grid{
-  gap: 14px !important;
+  gap: 6px !important;
+}
+
+/* Mobile */
+@media (max-width: 520px){
+  .lobby-page .lobby-grid{
+    gap: 4px;
+  }
 }
 
 .lobby-card{
