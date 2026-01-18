@@ -128,16 +128,14 @@
 }
 
 .lp-post{
-
-  max-width: 720px;
-  margin: 0 auto;          /* canh giữa */
-
-  background:rgba(0,0,0,.55);
-  border: none;
+  width: 100vw;                         /* ✅ full width */
+  margin-left: calc(50% - 50vw);        /* phá giới hạn */
+  background: rgba(0,0,0,.55);
   border-radius: 0;
-  padding: 14px 14px 16px;
-  box-shadow: none;        /* ❌ bỏ shadow */
+  box-shadow: none;
+  padding: 0;                           /* bỏ padding ngoài */
 }
+
 
 .lp-post-head{
   display:flex;
