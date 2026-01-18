@@ -610,18 +610,16 @@ function renderPost(p, top=false){
 <div class="lp-post-text">${p.text.replace(/\n/g, "<br>")}</div>
 
 
-${
-  (p.images && p.images.length) ? `
+${(p.images && p.images.length) ? `
+<div class="lp-post-images fb-${Math.min(p.images.length, 5)}">
 
-<div class="lp-post-images grid-${Math.min(p.images.length, 4)}">
-
-  ${p.images.slice(0,4).map((url, index) => `
-    <div class="lp-post-img-wrap"
+  ${p.images.slice(0,5).map((url, index) => `
+    <div class="fb-img img-${index}"
          onclick='openFeedLightbox(${JSON.stringify(p.images)}, ${index})'>
-      <img class="lp-post-img" src="${url}">
+      <img src="${url}">
       ${
-        index === 3 && p.images.length > 4
-          ? `<div class="lp-more-overlay">+${p.images.length - 4}</div>`
+        index === 4 && p.images.length > 5
+          ? `<div class="fb-more">+${p.images.length - 5}</div>`
           : ``
       }
     </div>

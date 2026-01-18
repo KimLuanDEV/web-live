@@ -937,6 +937,82 @@
 }
 
 
+/* ===== FACEBOOK IMAGE LAYOUT ===== */
+.lp-post-images{
+  margin-top:10px;
+  display:grid;
+  gap:4px;
+}
+
+/* ảnh chung */
+.lp-post-images .fb-img{
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+}
+
+.lp-post-images img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+/* ===== 1 ẢNH ===== */
+.lp-post-images.fb-1{
+  grid-template-columns:1fr;
+}
+.lp-post-images.fb-1 .fb-img{
+  aspect-ratio: 4 / 3;
+}
+
+/* ===== 2 ẢNH ===== */
+.lp-post-images.fb-2{
+  grid-template-columns:1fr 1fr;
+}
+.lp-post-images.fb-2 .fb-img{
+  aspect-ratio:1 / 1;
+}
+
+/* ===== 3 ẢNH ===== */
+.lp-post-images.fb-3{
+  grid-template-columns:2fr 1fr;
+  grid-template-rows:1fr 1fr;
+}
+.lp-post-images.fb-3 .img-0{
+  grid-row:1 / span 2;
+}
+
+/* ===== 4 ẢNH ===== */
+.lp-post-images.fb-4{
+  grid-template-columns:1fr 1fr;
+  grid-template-rows:1fr 1fr;
+}
+
+/* ===== ≥5 ẢNH ===== */
+.lp-post-images.fb-5{
+  grid-template-columns:2fr 1fr;
+  grid-template-rows:1fr 1fr;
+}
+.lp-post-images.fb-5 .img-0{
+  grid-row:1 / span 2;
+}
+
+/* overlay +N */
+.fb-more{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  font-size:34px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  backdrop-filter: blur(2px);
+}
+
+
 </style>
 
 </head>
