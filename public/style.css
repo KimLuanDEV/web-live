@@ -8765,5 +8765,5 @@ body.bar-merged .guest-notice-inner{
 
 .lobby-searchWrap{
   position: relative;
-  z-index: 1201;
+  z-index: 9999999;
 }
