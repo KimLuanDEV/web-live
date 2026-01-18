@@ -1120,9 +1120,9 @@ if (isGuest && guestNotice) {
       👀 Đang xem với tư cách Guest
     </div>
 
-    <button class="lobby-btn" onclick="location.href='/login.html'">
-      🔐 Đăng nhập
-    </button>
+    <button class="lobby-btn" id="btnLogin">
+  🔐 Đăng nhập
+</button>
   `;
   guestNotice.classList.remove("hidden");
 }
@@ -1366,6 +1366,12 @@ document.addEventListener("DOMContentLoaded", () => {
     input.focus();
   });
 });
+
+
+document.getElementById("btnLogin")?.addEventListener("click", () => {
+  window.location.href = "/login.html";
+});
+
 
 
 </script>
