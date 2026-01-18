@@ -837,8 +837,6 @@ function openComposeModal(){
   // sync text hiện tại
   modalTextarea.value = postText.value;
 
-  // focus sau animation
-  setTimeout(()=> modalTextarea.focus(), 120);
 
   document.body.style.overflow = "hidden";
 }
