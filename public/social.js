@@ -787,3 +787,30 @@ window.addEventListener("scroll", ()=>{
 
   lastScroll = cur;
 },{ passive:true });
+
+
+// ===== COMPOSE COLLAPSE ON SCROLL =====
+const compose = document.querySelector(".lp-compose");
+const textarea = document.getElementById("postText");
+
+let lastY = window.scrollY;
+
+window.addEventListener("scroll", () => {
+  const y = window.scrollY;
+
+  // vuốt xuống → thu gọn
+  if (y > lastY + 10) {
+    compose.classList.add("compact");
+  }
+  // vuốt lên → mở lại
+  else if (y < lastY - 10) {
+    compose.classList.remove("compact");
+  }
+
+  lastY = y;
+}, { passive: true });
+
+// focus textarea → luôn mở
+textarea?.addEventListener("focus", () => {
+  compose.classList.remove("compact");
+});

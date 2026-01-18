@@ -420,6 +420,39 @@
   z-index: 1000;
 }
 
+
+/* ===== COMPOSE COLLAPSE ON SCROLL ===== */
+
+.lp-compose{
+  transition:
+    padding .25s ease,
+    transform .25s ease,
+    opacity .25s ease;
+}
+
+/* trạng thái thu gọn */
+.lp-compose.compact{
+  padding-top: 6px;
+  padding-bottom: 6px;
+}
+
+/* ẩn textarea + actions khi thu gọn */
+.lp-compose.compact textarea,
+.lp-compose.compact .lp-compose-actions{
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* avatar vẫn giữ */
+.lp-compose.compact .lp-compose-row{
+  align-items: center;
+}
+
+
+
 </style>
 
 </head>
