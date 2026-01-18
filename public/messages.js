@@ -9,7 +9,7 @@ const sysCancel = document.getElementById("sysCancel");
 
 
 
-
+let currentTargetUID = null;
 let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
@@ -137,7 +137,9 @@ const chatTitle = document.getElementById("chatTitle");
 
 socket.on("active-users", ({ online }) => {
   onlineSet = new Set(online || []);
-  renderUserList();
+    if (allUsers.length) {
+    renderUserList();
+  }
 });
 
 
@@ -238,7 +240,8 @@ function renderUserList(){
   userList.innerHTML = "";
 
   allUsers.forEach(u=>{
-    if(u.uid === auth.uid) return;
+    if(!u || !u.uid || !u.name) return;
+  if(u.uid === auth.uid) return;
 
     const isOnline = onlineSet.has(u.uid);
 
