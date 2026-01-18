@@ -805,7 +805,7 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
   text-decoration:none;
   color:#fff;
   border:1px solid rgba(255,255,255,.15);
-  border-radius:14px;
+  border-radius:4px;
   padding:14px;
   background:rgba(0,0,0,.35);
   transition:.15s;
@@ -1048,13 +1048,13 @@ body.is-host .pin-note .pin-close{ cursor:pointer; }
 
 /* ===== cards ===== */
 .lobby-page .lobby-grid{
-  gap: 2px !important;
+  gap: 1px !important;
 }
 
 /* Mobile */
 @media (max-width: 520px){
   .lobby-page .lobby-grid{
-    gap: 2px;
+    gap: 1px;
   }
 }
 
