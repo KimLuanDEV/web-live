@@ -393,6 +393,31 @@
 }
 
 
+.lp-topbar{
+  position: sticky;       /* nếu muốn dính top */
+  top: 0;
+  left: 0;
+  width: 100vw;           /* FULL WIDTH */
+  margin-left: calc(50% - 50vw); /* phá giới hạn shell */
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: rgba(0,0,0,.5);
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  backdrop-filter: blur(10px);
+  z-index: 1000;
+}
+
+.lp-topbar-inner{
+  max-width: 720px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+
 </style>
 
 </head>
@@ -405,11 +430,13 @@
 
   <!-- TOP BAR -->
   <div class="lp-topbar">
+      <div class="lp-topbar-inner">
     <button class="msg-back" onclick="location.href='/profile.html'">‹</button>
     <div class="lp-title">
       <span class="lp-dot"></span> Livestream Pro
     </div>
   </div>
+</div>
 
   <!-- CREATE POST -->
   <div class="lp-compose">
