@@ -8847,31 +8847,3 @@ body.bar-merged .guest-notice-inner{
   pointer-events:auto;
   cursor:pointer;
 }
-
-/* FIX không click được nút đăng nhập */
-.lobby-btn,
-.lobby-btn * {
-  pointer-events: auto !important;
-  z-index: 50;
-  position: relative;
-}
-
-.guest-notice-bar.hidden {
-  display: none !important;
-  pointer-events: none !important;
-}
-
-.hidden {
-  display: none !important;
-  pointer-events: none !important;
-}
-
-.lobby-filter-bar {
-  pointer-events: auto;
-  z-index: 5;
-}
-
-.lobby-header-full {
-  position: relative;
-  z-index: 20;
-}
