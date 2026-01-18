@@ -869,6 +869,44 @@
 }
 
 
+/* ===== SUBMIT LOADING ===== */
+.lp-submit.loading{
+  pointer-events:none;
+  opacity:.6;
+}
+
+.lp-submit.loading::after{
+  content:"⏳";
+  margin-left:6px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin{
+  from{ transform:rotate(0deg) }
+  to{ transform:rotate(360deg) }
+}
+
+/* ===== TOAST ===== */
+.lp-toast{
+  position:fixed;
+  bottom:90px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(0,0,0,.85);
+  color:#fff;
+  padding:10px 16px;
+  border-radius:12px;
+  font-size:14px;
+  z-index:30000;
+  opacity:0;
+  transition:.25s;
+}
+
+.lp-toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
 
 </style>
 

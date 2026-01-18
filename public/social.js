@@ -4,6 +4,7 @@ const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
 let composeImages = []; // 🔥 danh sách ảnh đang preview
+let isPosting = false;
 
 
 if (auth.uid) {
@@ -514,6 +515,8 @@ async function submitPost(){
   postVideo.value="";
 
   clearComposeMedia(); // 🔥 đảm bảo preview luôn sạch
+
+  return true;
 }
 
 
@@ -903,15 +906,33 @@ function closeComposeModal(){
 }
 
 
-function submitFromModal(){
+async function submitFromModal(){
+  if(isPosting) return;
+
+  isPosting = true;
+  submitBtn.classList.add("loading");
+  submitBtn.disabled = true;
+
   postText.value = modalTextarea.value;
 
-  submitPost();               // 🔥 đăng bài
-  clearComposeMedia();        // 🔥 XOÁ PREVIEW ẢNH / VIDEO
-  modalTextarea.value = "";   // 🔥 xoá text modal
+  try{
+    await submitPost();            // 🔥 upload + emit
+    showToast("✅ Đã đăng bài");
+  }catch(e){
+    console.error(e);
+    showToast("❌ Lỗi đăng bài");
+  }
 
-  closeComposeModal();        // đóng modal sau cùng
+  clearComposeMedia();             // 🔥 reset preview
+  modalTextarea.value = "";
+
+  isPosting = false;
+  submitBtn.classList.remove("loading");
+  submitBtn.disabled = false;
+
+  closeComposeModal();
 }
+
 
 
 
@@ -1291,4 +1312,21 @@ function updateIndicator(current, total){
 
   imgIndicator.textContent = `${current} / ${total}`;
   imgIndicator.style.display = "block";
+}
+
+
+
+function showToast(text, timeout = 2000){
+  const toast = document.createElement("div");
+  toast.className = "lp-toast";
+  toast.textContent = text;
+
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => toast.classList.add("show"));
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(()=> toast.remove(), 300);
+  }, timeout);
 }
