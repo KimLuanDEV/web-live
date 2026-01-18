@@ -604,13 +604,9 @@ function renderPost(p, top=false){
     <div class="lp-post-time">${time}</div>
   </div>
 
- ${p.uid === currentUser.uid ? `
-  <button class="lp-post-edit" onclick="openEditPost('${p.id}')">✏️</button>
-  <button class="lp-post-del" onclick="deletePost('${p.id}')">🗑️</button>
-` : ``}
+  ${p.uid === auth.uid ? `<div class="lp-del" onclick="deletePost('${p.id}')">🗑</div>` : ``}
 
-
-
+  
 </div>
 
 
@@ -928,17 +924,8 @@ async function submitFromModal(){
   postText.value = modalTextarea.value;
 
   try{
-    if(editingPostId){
-  socket.emit("lp-edit-post", {
-    postId: editingPostId,
-    text: modalTextarea.value.trim()
-  });
-  showToast("✏️ Đã cập nhật bài đăng");
-}else{
-  await submitPost();
-  showToast("✅ Đã đăng bài");
-}
-
+    await submitPost();            // 🔥 upload + emit
+    showToast("✅ Đã đăng bài");
   }catch(e){
     console.error(e);
     showToast("❌ Lỗi đăng bài");
@@ -947,14 +934,11 @@ async function submitFromModal(){
   clearComposeMedia();             // 🔥 reset preview
   modalTextarea.value = "";
 
-  editingPostId = null;   // ✅ GẮN Ở ĐÂY
-
   isPosting = false;
   submitBtn.classList.remove("loading");
   submitBtn.disabled = false;
 
   closeComposeModal();
-  
 }
 
 
@@ -1094,7 +1078,16 @@ modalImage?.addEventListener("change", () => {
   setTimeout(updateCenterMode, 50);
 });
 
+/* khi xoá ảnh */
+function clearComposeMedia(){
+  hidePreview();
+  modalImage.value = "";
+  modalVideo.value = "";
+  postImage.value = "";
+  postVideo.value = "";
 
+  updateCenterMode();
+}
 
 
 modal.addEventListener("touchmove", e => {
@@ -1345,27 +1338,3 @@ function showToast(text, timeout = 2000){
     setTimeout(()=> toast.remove(), 300);
   }, timeout);
 }
-
-
-let editingPostId = null;
-
-function openEditPost(postId){
-  const post = posts.find(p => p.id === postId);
-  if(!post) return;
-
-  editingPostId = postId;
-
-  modalTextarea.value = post.text || "";
-  clearComposeMedia(); // không cho sửa ảnh giai đoạn 1
-
-  openComposeModal();
-}
-
-
-socket.on("lp-post-updated", updatedPost => {
-  const i = posts.findIndex(p => p.id === updatedPost.id);
-  if(i === -1) return;
-
-  posts[i] = updatedPost;
-  renderPosts();
-});

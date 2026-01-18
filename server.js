@@ -727,18 +727,6 @@ socket.on("lp-delete", ({ postId, uid })=>{
 socket.emit("lp-init", lpPosts.slice(0, 50));
 
 
-socket.on("lp-edit-post", ({ postId, text }) => {
-  const post = posts.find(p => p.id === postId);
-  if(!post) return;
-
-  // 🔒 chỉ chủ bài mới được sửa
-  if(post.uid !== socket.user?.uid) return;
-
-  post.text = String(text || "").slice(0, 1000);
-  post.editedAt = Date.now();
-
-  io.emit("lp-post-updated", post);
-});
 
 
 
