@@ -818,3 +818,44 @@ window.addEventListener("scroll", () => {
 textarea?.addEventListener("focus", () => {
   compose.classList.remove("compact");
 });
+
+
+
+const postText = document.getElementById("postText");
+const modal = document.getElementById("composeModal");
+const modalTextarea = document.getElementById("postTextModal");
+
+/* MỞ MODAL */
+postText.addEventListener("focus", e => {
+  e.preventDefault();
+  openComposeModal();
+});
+
+function openComposeModal(){
+  modal.classList.remove("hidden");
+
+  // sync text hiện tại
+  modalTextarea.value = postText.value;
+
+  // focus sau animation
+  setTimeout(()=> modalTextarea.focus(), 120);
+
+  document.body.style.overflow = "hidden";
+}
+
+/* ĐÓNG MODAL */
+function closeComposeModal(){
+  modal.classList.add("hidden");
+
+  // sync ngược text
+  postText.value = modalTextarea.value;
+
+  document.body.style.overflow = "";
+}
+
+
+function submitFromModal(){
+  postText.value = modalTextarea.value;
+  closeComposeModal();
+  submitPost(); // dùng lại hàm cũ
+}

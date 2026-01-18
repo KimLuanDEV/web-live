@@ -473,6 +473,76 @@
 
 
 
+/* ===== FULLSCREEN COMPOSE MODAL ===== */
+.lp-compose-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+  z-index:10000;
+  display:flex;
+  justify-content:center;
+  align-items:flex-end;
+}
+
+.lp-compose-modal.hidden{
+  display:none;
+}
+
+.lp-compose-sheet{
+  width:100%;
+  height:100%;
+  background:#000;
+  display:flex;
+  flex-direction:column;
+  animation: slideUp .28s ease;
+}
+
+@keyframes slideUp{
+  from{ transform:translateY(100%); }
+  to{ transform:translateY(0); }
+}
+
+.lp-compose-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.lp-compose-header .title{
+  font-weight:900;
+}
+
+.lp-compose-header button{
+  background:none;
+  border:none;
+  color:#25F09A;
+  font-size:16px;
+  font-weight:900;
+}
+
+.lp-compose-body{
+  flex:1;
+  padding:16px;
+}
+
+#postTextModal{
+  width:100%;
+  height:100%;
+  resize:none;
+  background:transparent;
+  border:none;
+  outline:none;
+  color:#fff;
+  font-size:16px;
+  line-height:1.45;
+}
+
+
+
+
 </style>
 
 </head>
@@ -544,6 +614,29 @@
   <div class="lp-tab" data-tab="profile">
     <div class="icon">👤</div>
     <div class="txt">Profile</div>
+  </div>
+</div>
+
+
+
+
+<!-- FULLSCREEN COMPOSE MODAL -->
+<div id="composeModal" class="lp-compose-modal hidden">
+  <div class="lp-compose-sheet">
+    
+    <div class="lp-compose-header">
+      <button onclick="closeComposeModal()">✕</button>
+      <div class="title">Tạo bài viết</div>
+      <button class="submit" onclick="submitFromModal()">Đăng</button>
+    </div>
+
+    <div class="lp-compose-body">
+      <textarea
+        id="postTextModal"
+        placeholder="Chia sẻ điều gì đó…"
+      ></textarea>
+    </div>
+
   </div>
 </div>
 
