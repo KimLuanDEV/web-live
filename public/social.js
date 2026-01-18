@@ -1081,7 +1081,10 @@ function renderImagePreview(){
     del.textContent = "✕";
     del.onclick = () => removePreviewImage(index);
 
-    wrap.appendChild(img);
+   img.onclick = () => openImageLightbox(img.src);
+wrap.appendChild(img);
+
+
     wrap.appendChild(del);
     grid.appendChild(wrap);
   });
@@ -1114,3 +1117,28 @@ function syncPostImageFiles(){
 
   postImage.files = dt.files;
 }
+
+
+const imgLightbox = document.getElementById("imgLightbox");
+const imgLightboxView = document.getElementById("imgLightboxView");
+
+function openImageLightbox(src){
+  imgLightboxView.src = src;
+  imgLightbox.classList.remove("hidden");
+
+  // 🔒 khóa scroll nền
+  document.body.style.overflow = "hidden";
+}
+
+function closeImageLightbox(){
+  imgLightbox.classList.add("hidden");
+  imgLightboxView.src = "";
+  document.body.style.overflow = "";
+}
+
+// click nền → đóng
+imgLightbox?.addEventListener("click", e => {
+  if(e.target === imgLightbox){
+    closeImageLightbox();
+  }
+});

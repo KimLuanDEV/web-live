@@ -816,6 +816,37 @@
 }
 
 
+.lp-lightbox{
+  position:fixed;
+  inset:0;
+  z-index:20000;
+  background:rgba(0,0,0,.85);
+  backdrop-filter: blur(6px);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.lp-lightbox.hidden{
+  display:none;
+}
+
+.lp-lightbox img{
+  max-width:92vw;
+  max-height:92vh;
+  border-radius:14px;
+  object-fit:contain;
+  box-shadow:0 0 40px rgba(0,0,0,.6);
+  animation: zoomIn .18s ease;
+}
+
+@keyframes zoomIn{
+  from{ transform:scale(.92); opacity:0 }
+  to{ transform:scale(1); opacity:1 }
+}
+
+
 </style>
 
 </head>
@@ -949,6 +980,13 @@
 </div>
 
 </div>
+
+
+<!-- IMAGE LIGHTBOX -->
+<div id="imgLightbox" class="lp-lightbox hidden">
+  <img id="imgLightboxView">
+</div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>
