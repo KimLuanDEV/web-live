@@ -8753,3 +8753,17 @@ body.bar-merged .guest-notice-inner{
 }
 
 
+
+.lobby-header-search{
+  position: fixed;
+  top: 64px;
+  left: 0;
+  right: 0;
+  z-index: 1300;
+}
+
+
+.lobby-searchWrap{
+  position: relative;
+  z-index: 1201;
+}
