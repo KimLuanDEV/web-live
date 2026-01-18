@@ -8963,3 +8963,34 @@ body.bar-merged .guest-notice-inner{
   }
 }
 
+
+
+/* ===== FIX AVATAR FLICKER ===== */
+.lobby-ava{
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  transform: translateZ(0);
+  will-change: transform;
+
+  image-rendering: auto;
+}
+
+
+.lobby-card:hover{
+  transform: none;
+  box-shadow: 0 18px 40px rgba(0,0,0,.45);
+}
+
+
+.lobby-skel img{
+  animation: none !important;
+}
+
+
+@media (max-width: 520px){
+  .lobby-ava{
+    transform: translateZ(0);
+    will-change: transform;
+  }
+}
