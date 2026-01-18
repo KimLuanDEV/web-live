@@ -947,12 +947,14 @@ async function submitFromModal(){
   clearComposeMedia();             // 🔥 reset preview
   modalTextarea.value = "";
 
+  editingPostId = null;   // ✅ GẮN Ở ĐÂY
+
   isPosting = false;
   submitBtn.classList.remove("loading");
   submitBtn.disabled = false;
 
   closeComposeModal();
-  editingPostId = null;
+  
 }
 
 
@@ -1092,16 +1094,7 @@ modalImage?.addEventListener("change", () => {
   setTimeout(updateCenterMode, 50);
 });
 
-/* khi xoá ảnh */
-function clearComposeMedia(){
-  hidePreview();
-  modalImage.value = "";
-  modalVideo.value = "";
-  postImage.value = "";
-  postVideo.value = "";
 
-  updateCenterMode();
-}
 
 
 modal.addEventListener("touchmove", e => {
