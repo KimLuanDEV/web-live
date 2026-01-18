@@ -666,10 +666,13 @@
 /* container preview */
 .lp-compose-preview{
   position: relative;
-  margin: 12px auto;
-  width: calc(100% - 32px);
 
-  max-height: 45vh;        /* 🔥 chiếm gần nửa màn hình */
+  /* 🔥 ĐẨY LÊN CAO HƠN */
+  margin-top: 8px;
+  margin-bottom: auto;   /* QUAN TRỌNG: đẩy preview lên */
+
+  width: calc(100% - 32px);
+  max-height: 45vh;
   min-height: 160px;
 
   display:flex;
@@ -681,6 +684,7 @@
   background:rgba(0,0,0,.75);
   border:1px solid rgba(255,255,255,.12);
 }
+
 
 .lp-compose-preview.hidden{
   display:none;
@@ -815,24 +819,16 @@
 </div>
 
     <div class="lp-compose-body">
-      <textarea
-        id="postTextModal"
-        placeholder="Chia sẻ điều gì đó…"
-      ></textarea>
+      <textarea id="postTextModal" placeholder="Chia sẻ điều gì đó…" ></textarea>
     </div>
 
 
   <!-- COMPOSE PREVIEW -->
 <div id="composePreview" class="lp-compose-preview hidden">
   <button class="lp-preview-remove" onclick="clearComposeMedia()">✕</button>
-
   <img id="previewImage" class="hidden" />
-  
   <video id="previewVideo" class="hidden" controls playsinline></video>
 </div>
-
-
-
 
   </div>
 
