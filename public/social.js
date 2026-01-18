@@ -612,18 +612,25 @@ function renderPost(p, top=false){
 
 ${
   (p.images && p.images.length) ? `
-    <div class="lp-post-images grid-${p.images.length}">
 
-     ${p.images.map((url, index) => `
-  <img
-    class="lp-post-img"
-    src="${url}"
-    onclick='openFeedLightbox(${JSON.stringify(p.images)}, ${index})'
-  >
-`).join("")}
+<div class="lp-post-images grid-${Math.min(p.images.length, 4)}">
 
-
+  ${p.images.slice(0,4).map((url, index) => `
+    <div class="lp-post-img-wrap"
+         onclick='openFeedLightbox(${JSON.stringify(p.images)}, ${index})'>
+      <img class="lp-post-img" src="${url}">
+      ${
+        index === 3 && p.images.length > 4
+          ? `<div class="lp-more-overlay">+${p.images.length - 4}</div>`
+          : ``
+      }
     </div>
+  `).join("")}
+
+</div>
+
+
+
   ` :
   (p.image ? `<img class="lp-post-img" src="${p.image}">` : "")
 }
