@@ -8879,3 +8879,37 @@ body.bar-merged .guest-notice-inner{
   position: relative;
   z-index: 20;
 }
+
+
+/* ===== FIX FRIEND LIST SCROLL ===== */
+
+.page-messages,
+.msg-shell {
+  height: 100vh;
+  overflow: hidden;
+}
+
+.msg-layout {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  height: calc(100vh - 56px); /* trừ topbar */
+}
+
+.msg-users {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 0; /* 🔥 QUAN TRỌNG */
+}
+
+.msg-users-title {
+  flex-shrink: 0;
+}
+
+.msg-userlist {
+  flex: 1;
+  overflow-y: auto;                 /* ✅ CHO CUỘN */
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  padding-right: 4px;
+}

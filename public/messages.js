@@ -283,16 +283,15 @@ document.getElementById("chatHeaderAvatar").src = u.avatar || "";
   });
 }
 
-// khi mở khung chat -> coi như đã đọc
-socket.emit("msg-seen-all", { peer: currentTargetUID });
-
 function openChat(){
   document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
 
-  // 🔥 báo server: đã đọc toàn bộ inbox
-  socket.emit("msg-seen-all");
+  if (currentTargetUID) {
+    socket.emit("msg-seen-all", { peer: currentTargetUID });
+  }
 }
+
 
 
 function closeChat(){
