@@ -8782,6 +8782,40 @@ body.bar-merged .guest-notice-inner{
 }
 
 .lobby-card{
-  padding: 5px;
+  padding: 14px;
 }
 
+
+
+/* ===== FIX FILTER BAR KHÔNG KÉO ĐƯỢC ===== */
+
+.lobby-filter-bar{
+  position: relative;
+  z-index: 900;              /* thấp hơn search, cao hơn grid */
+  overflow: hidden;          /* chỉ scroll bên trong */
+}
+
+.lobby-filter-scroll{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  overflow-x: auto;          /* 🔥 CHO PHÉP KÉO NGANG */
+  overflow-y: hidden;
+  white-space: nowrap;
+
+  padding: 10px 12px;
+  scroll-behavior: smooth;
+
+  -webkit-overflow-scrolling: touch; /* 🔥 iOS mượt */
+  touch-action: pan-x;                /* 🔥 mobile vuốt ngang */
+}
+
+.lobby-filter-scroll::-webkit-scrollbar{
+  display: none;             /* ẩn scrollbar */
+}
+
+.lobby-chipBtn,
+.lobby-select-inline{
+  flex: 0 0 auto;            /* ❗ không bị co lại */
+}
