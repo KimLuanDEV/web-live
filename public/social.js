@@ -608,9 +608,16 @@ function renderPost(p, top=false){
 ${
   (p.images && p.images.length) ? `
     <div class="lp-post-images grid-${p.images.length}">
-      ${p.images.map(url => `
-        <img class="lp-post-img" src="${url}">
-      `).join("")}
+
+     ${p.images.map((url, index) => `
+  <img
+    class="lp-post-img"
+    src="${url}"
+    onclick='openFeedLightbox(${JSON.stringify(p.images)}, ${index})'
+  >
+`).join("")}
+
+
     </div>
   ` :
   (p.image ? `<img class="lp-post-img" src="${p.image}">` : "")
@@ -1135,7 +1142,12 @@ function closeImageLightbox(){
   imgLightbox.classList.add("hidden");
   imgLightboxView.src = "";
   document.body.style.overflow = "";
+
+  // 🔥 reset feed state
+  feedImages = [];
+  feedLightboxIndex = 0;
 }
+
 
 // click nền → đóng
 imgLightbox?.addEventListener("click", e => {
@@ -1181,23 +1193,59 @@ imgLightbox?.addEventListener("touchend", e => {
 
 function handleSwipe(){
   const diff = touchEndX - touchStartX;
+  if(Math.abs(diff) < 40) return;
 
-  if(Math.abs(diff) < 40) return; // tránh swipe nhẹ
-
-  if(diff < 0){
-    // ⬅️ vuốt sang trái → ảnh tiếp
-    nextLightboxImage();
+  if(feedImages.length){
+    if(diff < 0) nextFeedImage();
+    else prevFeedImage();
   }else{
-    // ➡️ vuốt sang phải → ảnh trước
-    prevLightboxImage();
+    if(diff < 0) nextLightboxImage();
+    else prevLightboxImage();
   }
 }
+
 
 
 document.addEventListener("keydown", e => {
   if(imgLightbox.classList.contains("hidden")) return;
 
-  if(e.key === "ArrowRight") nextLightboxImage();
-  if(e.key === "ArrowLeft") prevLightboxImage();
+  if(e.key === "ArrowRight"){
+    feedImages.length ? nextFeedImage() : nextLightboxImage();
+  }
+
+  if(e.key === "ArrowLeft"){
+    feedImages.length ? prevFeedImage() : prevLightboxImage();
+  }
+
   if(e.key === "Escape") closeImageLightbox();
 });
+
+
+
+let feedImages = [];
+let feedLightboxIndex = 0;
+
+function openFeedLightbox(images, index){
+  if(!images || !images.length) return;
+
+  feedImages = images;
+  feedLightboxIndex = index;
+
+  imgLightboxView.src = feedImages[feedLightboxIndex];
+  imgLightbox.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function nextFeedImage(){
+  if(!feedImages.length) return;
+  feedLightboxIndex = (feedLightboxIndex + 1) % feedImages.length;
+  imgLightboxView.src = feedImages[feedLightboxIndex];
+}
+
+function prevFeedImage(){
+  if(!feedImages.length) return;
+  feedLightboxIndex =
+    (feedLightboxIndex - 1 + feedImages.length) % feedImages.length;
+  imgLightboxView.src = feedImages[feedLightboxIndex];
+}
+
