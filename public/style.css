@@ -8724,3 +8724,30 @@ body.bar-merged .guest-notice-inner{
   backdrop-filter: blur(14px);
   pointer-events: auto;
 }
+
+/* ================================
+   FIX SEARCH OVERLAY KHÔNG CLICK
+   ================================ */
+
+/* search phải cao hơn TẤT CẢ */
+.lobby-header-search{
+  position: fixed !important;
+  top: calc(var(--header-h, 64px) + 6px);
+  left: 0;
+  right: 0;
+
+  z-index: 99999 !important;     /* 🔥 CAO NHẤT */
+  pointer-events: auto !important;
+}
+
+/* đảm bảo input nhận focus */
+.lobby-header-search,
+.lobby-header-search *{
+  pointer-events: auto !important;
+}
+
+/* các bar bên dưới không được ăn click */
+.lobby-filter-bar,
+.guest-notice-bar{
+  pointer-events: none;
+}
