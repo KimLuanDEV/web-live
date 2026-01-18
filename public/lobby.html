@@ -850,70 +850,69 @@ function render(list){
   // Stats: chỉ tính room thật để khỏi “ảo số”
   renderStats(list);
 
-  grid.innerHTML = "";
   empty.style.display = show.length ? "none" : "block";
   hideSkeleton();
 
-  show.forEach(r => {
-    const a = document.createElement("a");
-    a.className = "lobby-card" + (r.__virtual ? " lobby-card--virtual" : "");
+const existing = new Set();
 
-    // ✅ room ảo đi theo link cố định, room thật đi theo viewer.html?room=
-    a.href = r.__virtual
+show.forEach(r => {
+  const id = "room_" + r.roomId;
+  existing.add(id);
+
+  let card = document.getElementById(id);
+
+  if (!card) {
+    card = document.createElement("a");
+    card.id = id;
+    card.className = "lobby-card" + (r.__virtual ? " lobby-card--virtual" : "");
+    card.href = r.__virtual
       ? (r.__link || `/viewer.html?room=${encodeURIComponent(r.roomId)}`)
       : `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
 
-    const hostName   = r.host?.name   || (r.__virtual ? "Room Ảo" : "Host");
-    const verified = r.host?.verified;
+    card.innerHTML = `
+      <div class="lobby-cardBg">
+        <img class="room-bg" alt="">
+        <div class="lobby-cardShade"></div>
+      </div>
 
-    const hostAvatar = r.host?.avatar || `https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg`;
-
-    const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
-
-   a.innerHTML = `
-  <div class="lobby-cardBg">
-    <img src="${hostAvatar}" alt="avatar" loading="lazy">
-    <div class="lobby-cardShade"></div>
-  </div>
-
-  <!-- TOP OVERLAY -->
-  <div class="lobby-cardOverlay top">
-    <div class="lobby-room">
-      🎥 ${escapeHtml(r.roomId)}
-    </div>
-
-    <div class="lobby-badges">
-      ${
-        r.__virtual
-          ? `<span class="badge badge--virtual">Live</span>`
-          : `<span class="lobby-livePill"><span class="lobby-liveDot"></span>LIVE</span>`
-      }
-      ${(!r.__virtual && r.hasGuest) ? `<span class="badge badge--info">Co-host</span>` : ``}
-    </div>
-  </div>
-
-  <!-- BOTTOM OVERLAY -->
-  <div class="lobby-cardOverlay bottom">
-    <div class="lobby-hostRow">
-      <img class="lobby-ava mini" src="${hostAvatar}">
-      <div class="lobby-hostMeta">
-        <div class="lobby-hostname">
-          ${escapeHtml(hostName)}
-          ${verified ? `<span class="tick-blue">✔</span>` : ``}
+      <div class="lobby-cardOverlay top"></div>
+      <div class="lobby-cardOverlay bottom">
+        <div class="lobby-hostRow">
+          <img class="lobby-ava mini">
+          <div class="lobby-hostMeta">
+            <div class="lobby-hostname"></div>
+          </div>
+        </div>
+        <div class="lobby-statsRow">
+          <span class="lobby-chip"></span>
+          <span class="lobby-cta">Vào xem ➜</span>
         </div>
       </div>
-    </div>
+    `;
 
-    <div class="lobby-statsRow">
-      <span class="lobby-chip">👁 <b>${Number(r.viewers)||0}</b></span>
-      <span class="lobby-cta">Vào xem ➜</span>
-    </div>
-  </div>
-`;
+    grid.appendChild(card);
+  }
 
+  // ===== UPDATE NHẸ (KHÔNG TẠO IMG MỚI) =====
+  const bgImg = card.querySelector(".room-bg");
+  if (bgImg && bgImg.src !== r.host.avatar) {
+    bgImg.src = r.host.avatar;
+  }
 
-    grid.appendChild(a);
-  });
+  const ava = card.querySelector(".lobby-ava");
+  if (ava && ava.src !== r.host.avatar) {
+    ava.src = r.host.avatar;
+  }
+
+  card.querySelector(".lobby-hostname").textContent = r.host?.name || "Host";
+  card.querySelector(".lobby-chip b")?.textContent = Number(r.viewers)||0;
+});
+
+// ❌ xoá card không còn tồn tại
+[...grid.children].forEach(c=>{
+  if(!existing.has(c.id)) c.remove();
+});
+
 }
 
 

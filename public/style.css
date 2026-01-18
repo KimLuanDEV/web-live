@@ -8994,3 +8994,33 @@ body.bar-merged .guest-notice-inner{
     will-change: transform;
   }
 }
+
+
+/* ===== FIX MOBILE FLICKER: DISABLE HOVER ===== */
+@media (hover: none) and (pointer: coarse){
+  .lobby-card:hover{
+    transform: none !important;
+    filter: none !important;
+    border-color: rgba(255,255,255,.14) !important;
+  }
+}
+
+
+/* ===== FIX AVATAR FLICKER (MOBILE) ===== */
+.lobby-ava{
+  display:block;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+
+  transform: translateZ(0);
+  will-change: transform;
+
+  contain: paint;
+}
+
+
+@media (max-width: 520px){
+  .lobby-skel::after{
+    animation: none !important;
+  }
+}
