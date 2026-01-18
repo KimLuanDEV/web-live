@@ -8819,3 +8819,30 @@ body.bar-merged .guest-notice-inner{
 .lobby-select-inline{
   flex: 0 0 auto;            /* ❗ không bị co lại */
 }
+
+/* ===== FIX FILTER BAR CLICK + SCROLL ===== */
+
+.lobby-filter-bar{
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  pointer-events: auto;
+}
+
+.lobby-filter-scroll{
+  display:flex;
+  gap:10px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  white-space:nowrap;
+
+  touch-action: auto;                /* 🔥 FIX click */
+  -webkit-overflow-scrolling: touch;
+}
+
+.lobby-chipBtn,
+.lobby-select{
+  flex:0 0 auto;
+  pointer-events:auto;
+  cursor:pointer;
+}
