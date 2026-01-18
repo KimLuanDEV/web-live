@@ -1343,6 +1343,32 @@ btnToggleSearch.onclick = () => {
 
 
 
+
+document.addEventListener("DOMContentLoaded", () => {
+  const btn = document.getElementById("btnToggleSearch");
+  const box = document.getElementById("headerSearch");
+  const input = document.getElementById("q");
+
+  if (!btn || !box) {
+    console.warn("❌ Search elements missing");
+    return;
+  }
+
+  btn.addEventListener("click", () => {
+    box.classList.toggle("hidden");
+
+    if (!box.classList.contains("hidden")) {
+      setTimeout(() => input?.focus(), 60);
+    }
+  });
+
+  document.getElementById("clearQ")?.addEventListener("click", () => {
+    input.value = "";
+    input.focus();
+  });
+});
+
+
 </script>
 
 

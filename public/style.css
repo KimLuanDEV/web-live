@@ -8701,3 +8701,26 @@ body.bar-merged .guest-notice-inner{
   pointer-events: auto;
   z-index: 10021;
 }
+
+.hidden {
+  display: none !important;
+}
+
+/* SEARCH OVERLAY */
+.lobby-header-search{
+  position: fixed;
+  top: 58px;              /* ngay dưới header */
+  left: 0;
+  right: 0;
+
+  z-index: 10050;         /* 🔥 cao hơn tất cả */
+  padding: 10px 12px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(7,10,20,.96),
+    rgba(7,10,20,.88)
+  );
+  backdrop-filter: blur(14px);
+  pointer-events: auto;
+}
