@@ -574,6 +574,9 @@ function renderPost(p, top=false){
   const time = new Date(p.time).toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
 
  div.innerHTML=`
+
+ <div class="lp-post-inner">
+ 
 <div class="lp-post-head">
   <img class="lp-ava" src="${p.avatar}">
   <div>
@@ -612,9 +615,9 @@ ${p.video ? `
   <input id="ci_${p.id}" class="lp-comment-input" placeholder="Viết bình luận...">
   <button class="lp-comment-send" onclick="sendComment('${p.id}')">➤</button>
 </div>
-
-
 </div>
+
+ </div>
 `;
 
 
