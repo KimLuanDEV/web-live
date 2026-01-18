@@ -1012,6 +1012,44 @@
   backdrop-filter: blur(2px);
 }
 
+/* ===== GIỚI HẠN KHUNG ẢNH FEED (ANTI THÔ) ===== */
+
+/* wrapper ảnh */
+.lp-post-images .fb-img{
+  position:relative;
+  overflow:hidden;
+  border-radius:12px;
+
+  /* 🔥 GIỚI HẠN KHUNG */
+  aspect-ratio: 1 / 1;        /* mặc định vuông */
+  max-height: 420px;          /* không cao quá */
+}
+
+/* ảnh bên trong */
+.lp-post-images .fb-img img{
+  width:100%;
+  height:100%;
+  object-fit:cover;           /* crop nhẹ */
+  display:block;
+}
+
+/* ẢNH ĐẦU TO HƠN */
+.lp-post-images .img-0{
+  aspect-ratio: 4 / 3;
+  max-height: 520px;
+}
+
+
+@media (max-width:600px){
+  .lp-post-images .fb-img{
+    max-height: 320px;
+  }
+
+  .lp-post-images .img-0{
+    max-height: 420px;
+  }
+}
+
 
 </style>
 
