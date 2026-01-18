@@ -74,6 +74,11 @@
 
   border-radius: 0; /* full width thì bỏ bo ngoài */
   padding: 12px 16px;
+
+  transition:
+    padding .25s ease,
+    transform .25s ease,
+    opacity .25s ease;
 }
 
 
@@ -110,13 +115,21 @@
 
 /* Feed */
 .lp-feed{
+  width: 100vw;
+  margin-left: calc(50% - 50vw); /* phá max-width lp-shell */
+  padding: 14px 0;
   margin-top:14px;
   display:flex;
   flex-direction:column;
   gap:14px;
+  padding-top: 6px;
 }
 
 .lp-post{
+
+  max-width: 720px;
+  margin: 0 auto;          /* canh giữa */
+
   background:rgba(0,0,0,.55);
   border:1px solid rgba(255,255,255,.14);
   border-radius:20px;
@@ -420,16 +433,6 @@
   z-index: 1000;
 }
 
-
-/* ===== COMPOSE COLLAPSE ON SCROLL ===== */
-
-.lp-compose{
-  transition:
-    padding .25s ease,
-    transform .25s ease,
-    opacity .25s ease;
-}
-
 /* trạng thái thu gọn */
 .lp-compose.compact{
   padding-top: 6px;
@@ -450,6 +453,8 @@
 .lp-compose.compact .lp-compose-row{
   align-items: center;
 }
+
+
 
 
 
