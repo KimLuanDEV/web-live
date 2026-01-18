@@ -1346,26 +1346,45 @@ btnToggleSearch.onclick = () => {
 
 document.addEventListener("DOMContentLoaded", () => {
   const btn = document.getElementById("btnToggleSearch");
-  const box = document.getElementById("headerSearch");
+  const search = document.getElementById("headerSearch");
   const input = document.getElementById("q");
-
-  if (!btn || !box) {
-    console.warn("❌ Search elements missing");
-    return;
-  }
+  const clear = document.getElementById("clearQ");
 
   btn.addEventListener("click", () => {
-    box.classList.toggle("hidden");
+    const open = document.body.classList.toggle("search-open");
 
-    if (!box.classList.contains("hidden")) {
-      setTimeout(() => input?.focus(), 60);
+    search.classList.toggle("hidden", !open);
+
+    if (open) {
+      setTimeout(() => input?.focus(), 80);
     }
   });
 
-  document.getElementById("clearQ")?.addEventListener("click", () => {
+  clear?.addEventListener("click", () => {
     input.value = "";
     input.focus();
   });
+
+  /* ESC để đóng (PC) */
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape" && document.body.classList.contains("search-open")) {
+      closeSearch();
+    }
+  });
+
+  function closeSearch(){
+    document.body.classList.remove("search-open");
+    search.classList.add("hidden");
+  }
+});
+
+
+
+window.addEventListener("scroll", () => {
+  if (document.body.classList.contains("search-open")) {
+    document.body.classList.remove("search-open");
+    document.getElementById("headerSearch")?.classList.add("hidden");
+  }
 });
 
 
