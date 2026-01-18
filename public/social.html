@@ -118,11 +118,11 @@
 .lp-feed{
   width: 100vw;
   margin-left: calc(50% - 50vw); /* phá max-width lp-shell */
-  padding: 14px 0;
+  padding: 0;  
   margin-top: 0;
   display:flex;
   flex-direction:column;
-  gap:14px;
+  gap: 0px;
   padding-top: 0;   /* ✅ dính sát compose */
   border-top: 0;
 }
@@ -133,10 +133,10 @@
   margin: 0 auto;          /* canh giữa */
 
   background:rgba(0,0,0,.55);
-  border:1px solid rgba(255,255,255,.14);
+  border: none;
   border-radius: 0;
-  padding:14px;
-  box-shadow:0 18px 50px rgba(0,0,0,.6);
+  padding: 14px 14px 16px;
+  box-shadow: none;        /* ❌ bỏ shadow */
 }
 
 .lp-post-head{
@@ -454,6 +454,9 @@
 }
 
 
+.lp-post + .lp-post{
+  border-top: 1px solid rgba(255,255,255,.08);
+}
 
 
 
