@@ -1143,10 +1143,12 @@ function closeImageLightbox(){
   imgLightboxView.src = "";
   document.body.style.overflow = "";
 
-  // 🔥 reset feed state
   feedImages = [];
   feedLightboxIndex = 0;
+
+  updateIndicator(0, 0); // 🔥 ẩn indicator
 }
+
 
 
 // click nền → đóng
@@ -1168,15 +1170,21 @@ function openImageLightboxByIndex(index){
   const src = URL.createObjectURL(file);
 
   openImageLightbox(src);
+  updateIndicator(lightboxIndex + 1, composeImages.length);
+
 }
 
 function nextLightboxImage(){
   openImageLightboxByIndex(lightboxIndex + 1);
+  updateIndicator(lightboxIndex + 1, composeImages.length);
 }
+
 
 function prevLightboxImage(){
   openImageLightboxByIndex(lightboxIndex - 1);
+  updateIndicator(lightboxIndex + 1, composeImages.length);
 }
+
 
 
 let touchStartX = 0;
@@ -1234,18 +1242,46 @@ function openFeedLightbox(images, index){
   imgLightboxView.src = feedImages[feedLightboxIndex];
   imgLightbox.classList.remove("hidden");
   document.body.style.overflow = "hidden";
+
+  updateIndicator(feedLightboxIndex + 1, feedImages.length);
 }
+
 
 function nextFeedImage(){
   if(!feedImages.length) return;
+
   feedLightboxIndex = (feedLightboxIndex + 1) % feedImages.length;
   imgLightboxView.src = feedImages[feedLightboxIndex];
+
+  updateIndicator(feedLightboxIndex + 1, feedImages.length);
 }
+
 
 function prevFeedImage(){
   if(!feedImages.length) return;
+
   feedLightboxIndex =
     (feedLightboxIndex - 1 + feedImages.length) % feedImages.length;
+
   imgLightboxView.src = feedImages[feedLightboxIndex];
+  updateIndicator(feedLightboxIndex + 1, feedImages.length);
 }
 
+
+
+
+const imgIndicator = document.getElementById("imgIndicator");
+
+
+function updateIndicator(current, total){
+  if(!imgIndicator) return;
+
+  if(total <= 1){
+    imgIndicator.textContent = "";
+    imgIndicator.style.display = "none";
+    return;
+  }
+
+  imgIndicator.textContent = `${current} / ${total}`;
+  imgIndicator.style.display = "block";
+}

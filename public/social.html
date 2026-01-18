@@ -847,6 +847,29 @@
 }
 
 
+
+.lp-img-indicator{
+  position:fixed;
+  top:16px;
+  left:50%;
+  transform:translateX(-50%);
+
+  padding:6px 12px;
+  border-radius:999px;
+
+  background:rgba(0,0,0,.55);
+  color:#fff;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:.5px;
+
+  z-index:20001;
+  pointer-events:none;
+  backdrop-filter: blur(6px);
+}
+
+
+
 </style>
 
 </head>
@@ -985,6 +1008,7 @@
 <!-- IMAGE LIGHTBOX -->
 <div id="imgLightbox" class="lp-lightbox hidden">
   <img id="imgLightboxView">
+   <div id="imgIndicator" class="lp-img-indicator"></div>
 </div>
 
 
