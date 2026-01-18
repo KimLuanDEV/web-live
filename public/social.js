@@ -512,6 +512,8 @@ async function submitPost(){
   postText.value="";
   postImage.value="";
   postVideo.value="";
+
+  clearComposeMedia(); // 🔥 đảm bảo preview luôn sạch
 }
 
 
@@ -903,9 +905,14 @@ function closeComposeModal(){
 
 function submitFromModal(){
   postText.value = modalTextarea.value;
-  closeComposeModal();
-  submitPost(); // dùng lại hàm cũ
+
+  submitPost();               // 🔥 đăng bài
+  clearComposeMedia();        // 🔥 XOÁ PREVIEW ẢNH / VIDEO
+  modalTextarea.value = "";   // 🔥 xoá text modal
+
+  closeComposeModal();        // đóng modal sau cùng
 }
+
 
 
 const modalText = document.getElementById("postTextModal");
