@@ -508,10 +508,19 @@
   align-items:center;
   justify-content:space-between;
   padding:14px;
+  
+  background: rgba(0,0,0,.85); /* bắt buộc */
+  backdrop-filter: blur(12px);
   border-bottom:1px solid rgba(255,255,255,.12);
+  position: sticky;      /* 🔥 GẮN CỐ ĐỊNH */
+
+  top: 0;
+  z-index: 10;
+
 }
 
 .lp-compose-header .title{
+  padding-top: calc(14px + env(safe-area-inset-top));
   font-weight:900;
 }
 
@@ -526,6 +535,8 @@
 .lp-compose-body{
   flex:1;
   padding:16px;
+  overflow-y:auto;   /* 🔥 cuộn phần nội dung */
+  -webkit-overflow-scrolling: touch;
 }
 
 #postTextModal{
