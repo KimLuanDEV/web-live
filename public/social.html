@@ -754,6 +754,33 @@
 }
 
 
+.lp-post-images{
+  margin-top:10px;
+  display:grid;
+  gap:4px;
+}
+
+.lp-post-images.grid-1{
+  grid-template-columns:1fr;
+}
+
+.lp-post-images.grid-2{
+  grid-template-columns:1fr 1fr;
+}
+
+.lp-post-images.grid-3,
+.lp-post-images.grid-4{
+  grid-template-columns:1fr 1fr;
+}
+
+.lp-post-images img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  border-radius:10px;
+}
+
+
 
 </style>
 
@@ -783,7 +810,7 @@
     </div>
 
     <div class="lp-compose-actions">
-      <input type="file" id="postImage" accept="image/*">
+      <input type="file" id="postImage" accept="image/*" multiple>
       <input type="file" id="postVideo" accept="video/*">
 
       <button class="lp-post-btn" onclick="submitPost()">Đăng</button>
@@ -873,7 +900,7 @@
 <div class="lp-compose-footer">
   <label class="lp-tool">
     📷
-    <input type="file" id="modalImage" accept="image/*" hidden>
+    <input type="file" id="modalImage" accept="image/*" multiple hidden >
   </label>
 
   <label class="lp-tool">

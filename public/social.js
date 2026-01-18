@@ -459,26 +459,36 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
 
 async function submitPost(){
   const text = postText.value.trim();
-  const imageFile = postImage.files[0];
+  const imageFiles = [...postImage.files];
   const videoFile = postVideo.files[0];
 
-  if(!text && !imageFile && !videoFile) return;
+  if(!text && imageFiles.length === 0 && !videoFile) return;
 
-  let imageUrl = "";
+  let imageUrls = [];
   let videoUrl = "";
 
-  if(imageFile){
+  // 🔥 UPLOAD NHIỀU ẢNH
+  for(const file of imageFiles){
     const fd = new FormData();
-    fd.append("image", imageFile);
-    const r = await fetch("/api/upload-post-image", { method:"POST", body:fd });
+    fd.append("image", file);
+
+    const r = await fetch("/api/upload-post-image", {
+      method: "POST",
+      body: fd
+    });
+
     const data = await r.json();
-    imageUrl = data.url;
+    if(data.url) imageUrls.push(data.url);
   }
 
+  // upload video (giữ nguyên)
   if(videoFile){
     const fd = new FormData();
     fd.append("video", videoFile);
-    const r = await fetch("/api/upload-post-video", { method:"POST", body:fd });
+    const r = await fetch("/api/upload-post-video", {
+      method:"POST",
+      body:fd
+    });
     const data = await r.json();
     videoUrl = data.url;
   }
@@ -490,15 +500,17 @@ async function submitPost(){
     name: cur.name,
     avatar: cur.avatar,
     text,
-    image: imageUrl,
+    images: imageUrls,   // 🔥 MẢNG ẢNH
     video: videoUrl,
     time: Date.now()
   });
 
+  // reset
   postText.value="";
   postImage.value="";
   postVideo.value="";
 }
+
 
 
 
@@ -590,7 +602,17 @@ function renderPost(p, top=false){
 <div class="lp-post-text">${p.text.replace(/\n/g, "<br>")}</div>
 
 
-${p.image ? `<img class="lp-post-img" src="${p.image}">` : ""}
+${
+  (p.images && p.images.length) ? `
+    <div class="lp-post-images grid-${p.images.length}">
+      ${p.images.map(url => `
+        <img class="lp-post-img" src="${url}">
+      `).join("")}
+    </div>
+  ` :
+  (p.image ? `<img class="lp-post-img" src="${p.image}">` : "")
+}
+
 
 
 ${p.video ? `

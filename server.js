@@ -736,7 +736,7 @@ socket.on("lp-post", post => {
     name: String(post.name || "User").slice(0,20),
     avatar: String(post.avatar || ""),
     text: String(post.text || "").slice(0, 500),
-    image: String(post.image || ""),   // 🔥 LƯU ẢNH
+    images: post.images || [],   // 🔥 MẢNG ẢNH
     video: String(post.video || ""),   // 👈 THÊM
     time: Date.now(),
     likes: [],
