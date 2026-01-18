@@ -882,3 +882,28 @@ modalImage?.addEventListener("change", () => {
 modalVideo?.addEventListener("change", () => {
   document.getElementById("postVideo").files = modalVideo.files;
 });
+
+
+const composeFooter = document.querySelector(".lp-compose-footer");
+
+if (window.visualViewport && composeFooter) {
+  const vv = window.visualViewport;
+
+  const updateFooterPosition = () => {
+    // chiều cao bàn phím
+    const keyboardHeight =
+      window.innerHeight - vv.height - vv.offsetTop;
+
+    if (keyboardHeight > 0) {
+      // 🔥 đẩy footer lên trên bàn phím
+      composeFooter.style.transform =
+        `translateY(-${keyboardHeight}px)`;
+    } else {
+      // bàn phím đóng
+      composeFooter.style.transform = "translateY(0)";
+    }
+  };
+
+  vv.addEventListener("resize", updateFooterPosition);
+  vv.addEventListener("scroll", updateFooterPosition);
+}

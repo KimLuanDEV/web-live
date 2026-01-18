@@ -591,9 +591,11 @@
 .lp-compose-body{
   flex:1;
   padding:16px;
-  overflow-y:auto;   /* 🔥 cuộn phần nội dung */
+  padding-bottom: 68px; /* 🔥 chừa chỗ cho footer */
+  overflow-y:auto;
   -webkit-overflow-scrolling: touch;
 }
+
 
 #postTextModal{
   width:100%;
@@ -610,9 +612,11 @@
 
 /* ===== COMPOSE FOOTER ===== */
 .lp-compose-footer{
-  position: sticky;
+  position: fixed;   /* 🔥 đổi từ sticky → fixed */
+  left: 0;
+  right: 0;
   bottom: 0;
-  z-index: 10;
+  z-index: 10001;
 
   display:flex;
   gap:18px;
@@ -621,9 +625,11 @@
   height:52px;
   padding:0 16px;
 
-  background: rgba(10,10,10,.9);
+  background: rgba(10,10,10,.95);
   backdrop-filter: blur(14px);
   border-top:1px solid rgba(255,255,255,.08);
+
+  transition: transform .25s ease;
 }
 
 /* icon tool */
