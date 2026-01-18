@@ -8756,7 +8756,7 @@ body.bar-merged .guest-notice-inner{
 
 .lobby-header-search{
   position: fixed;
-  top: 64px;
+  top: 130px;
   left: 0;
   right: 0;
   z-index: 9999999;
