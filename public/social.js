@@ -909,3 +909,57 @@ if (window.visualViewport && composeFooter) {
 }
 
 
+
+const previewBox = document.getElementById("composePreview");
+const previewImage = document.getElementById("previewImage");
+const previewVideo = document.getElementById("previewVideo");
+
+function showPreview(){
+  previewBox.classList.remove("hidden");
+}
+
+function hidePreview(){
+  previewBox.classList.add("hidden");
+  previewImage.classList.add("hidden");
+  previewVideo.classList.add("hidden");
+}
+
+function clearComposeMedia(){
+  hidePreview();
+
+  // clear modal inputs
+  modalImage.value = "";
+  modalVideo.value = "";
+
+  // clear input gốc để submit không gửi file cũ
+  postImage.value = "";
+  postVideo.value = "";
+}
+
+/* ===== IMAGE PREVIEW ===== */
+modalImage?.addEventListener("change", () => {
+  const file = modalImage.files[0];
+  if (!file) return;
+
+  previewVideo.classList.add("hidden");
+
+  const url = URL.createObjectURL(file);
+  previewImage.src = url;
+  previewImage.classList.remove("hidden");
+
+  showPreview();
+});
+
+/* ===== VIDEO PREVIEW ===== */
+modalVideo?.addEventListener("change", () => {
+  const file = modalVideo.files[0];
+  if (!file) return;
+
+  previewImage.classList.add("hidden");
+
+  const url = URL.createObjectURL(file);
+  previewVideo.src = url;
+  previewVideo.classList.remove("hidden");
+
+  showPreview();
+});
