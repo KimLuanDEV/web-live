@@ -8779,6 +8779,7 @@ body.bar-merged .guest-notice-inner{
 .lobby-card,
 .lobby-item{
   min-height: 200px;
+  min-width: 150px;
 }
 
 .lobby-card{
