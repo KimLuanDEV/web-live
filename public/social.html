@@ -62,7 +62,10 @@
   width: 100vw;
   margin-left: calc(50% - 50vw); /* phá max-width lp-shell */
   margin-top: 12px;
-
+  position: sticky;
+  top: 56px; /* ngay dưới topbar */
+  z-index: 900;
+  backdrop-filter: blur(12px);
   background: rgba(0,0,0,.55);
   border-top: 1px solid rgba(255,255,255,.14);
   border-bottom: 1px solid rgba(255,255,255,.14);
