@@ -34,8 +34,7 @@
 <script src="/guard.js"></script>
 
     
-<!-- STICKY TOP STACK -->
-<div class="lobby-top-stack">
+
 
 
 <!-- FULL WIDTH LOBBY HEADER -->
@@ -126,7 +125,7 @@
   <div class="guest-notice-inner"></div>
 </div>
 
-</div>
+
 
 
   <div id="grid" class="lobby-grid"></div>
@@ -1371,13 +1370,12 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+
+
 document.getElementById("btnLogin")?.addEventListener("click", () => {
   window.location.href = "/login.html";
 });
 
-window.addEventListener("scroll", ()=>{
-  document.body.classList.toggle("is-scrolled", window.scrollY > 40);
-});
 
 
 
