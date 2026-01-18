@@ -8759,13 +8759,13 @@ body.bar-merged .guest-notice-inner{
   top: 0px;
   left: 0;
   right: 0;
-  z-index: 9999999;
+  z-index: 1200;
 }
 
 
 .lobby-searchWrap{
   position: relative;
-  z-index: 9999999;
+  z-index: 1201;
 }
 
 
