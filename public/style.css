@@ -8773,11 +8773,15 @@ body.bar-merged .guest-notice-inner{
 .lobby-grid{
   display: grid;
   grid-template-columns: repeat(2, 1fr);
-  gap: 8px;
+  gap: 20x;
 }
 
 .lobby-card,
 .lobby-item{
   min-height: 200px;
+}
+
+.lobby-card{
+  padding: 5px;
 }
 
