@@ -963,3 +963,38 @@ modalVideo?.addEventListener("change", () => {
 
   showPreview();
 });
+
+
+const composeBody = document.querySelector(".lp-compose-body");
+
+function updateCenterMode(){
+  const hasImage =
+    previewImage && !previewImage.classList.contains("hidden");
+  const hasText =
+    modalText && modalText.value.trim().length > 0;
+
+  if (hasImage && !hasText) {
+    composeBody.classList.add("center-image");
+  } else {
+    composeBody.classList.remove("center-image");
+  }
+}
+
+/* gọi khi nhập text */
+modalText.addEventListener("input", updateCenterMode);
+
+/* gọi khi chọn ảnh */
+modalImage?.addEventListener("change", () => {
+  setTimeout(updateCenterMode, 50);
+});
+
+/* khi xoá ảnh */
+function clearComposeMedia(){
+  hidePreview();
+  modalImage.value = "";
+  modalVideo.value = "";
+  postImage.value = "";
+  postVideo.value = "";
+
+  updateCenterMode();
+}
