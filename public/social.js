@@ -870,3 +870,15 @@ function toggleSubmitBtn(){
 
 modalText.addEventListener("input", toggleSubmitBtn);
 toggleSubmitBtn();
+
+
+const modalImage = document.getElementById("modalImage");
+const modalVideo = document.getElementById("modalVideo");
+
+modalImage?.addEventListener("change", () => {
+  document.getElementById("postImage").files = modalImage.files;
+});
+
+modalVideo?.addEventListener("change", () => {
+  document.getElementById("postVideo").files = modalVideo.files;
+});
