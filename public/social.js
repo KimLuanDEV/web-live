@@ -859,3 +859,14 @@ function submitFromModal(){
   closeComposeModal();
   submitPost(); // dùng lại hàm cũ
 }
+
+
+const modalText = document.getElementById("postTextModal");
+const submitBtn = document.querySelector(".lp-submit.icon");
+
+function toggleSubmitBtn(){
+  submitBtn.disabled = !modalText.value.trim();
+}
+
+modalText.addEventListener("input", toggleSubmitBtn);
+toggleSubmitBtn();

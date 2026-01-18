@@ -546,25 +546,32 @@
   opacity:.9;
 }
 
-/* nút đăng */
-.lp-compose-header .lp-submit{
-  padding:8px 14px;
-  border-radius:999px;
+/* nút gửi (icon) */
+.lp-compose-header .lp-submit.icon{
+  width:36px;
+  height:36px;
+  border-radius:50%;
   border:none;
 
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:18px;
   font-weight:900;
-  font-size:14px;
 
   color:#000;
   background:linear-gradient(135deg,#25F09A,#5FA8FF);
-  box-shadow:0 0 12px rgba(37,240,154,.45);
+  box-shadow:0 0 10px rgba(37,240,154,.45);
+
+  padding:0;
 }
 
-.lp-compose-header .lp-submit:disabled{
-  opacity:.4;
+/* khi chưa có nội dung */
+.lp-compose-header .lp-submit.icon:disabled{
+  opacity:.35;
   box-shadow:none;
 }
-
 
 .lp-compose-header .title{
   padding-top: calc(14px + env(safe-area-inset-top));
@@ -632,7 +639,10 @@
       <input type="file" id="postImage" accept="image/*">
       <input type="file" id="postVideo" accept="video/*">
 
-      <button class="lp-post-btn" onclick="submitPost()">Đăng</button>
+      <button class="lp-submit icon" onclick="submitFromModal()" title="Đăng bài">
+  ➤
+</button>
+
     </div>
   </div>
 
