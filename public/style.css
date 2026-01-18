@@ -8759,7 +8759,7 @@ body.bar-merged .guest-notice-inner{
   top: 64px;
   left: 0;
   right: 0;
-  z-index: 1300;
+  z-index: 9999999;
 }
 
 
