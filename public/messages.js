@@ -224,24 +224,14 @@ socket.on("private-message", ({ from, text, msgId }) => {
     localStorage.setItem(key, JSON.stringify(arr));
   }
 
-  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER
-  if (!chatModal.classList.contains("hidden")) {
-    const curKey = chatKey();
+  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → CHỈ ĐÁNH DẤU SEEN (❌ KHÔNG RENDER)
+if (
+  !chatModal.classList.contains("hidden") &&
+  chatKey() === key
+) {
+  socket.emit("msg-seen", { to: peer, msgId });
+}
 
-    if (curKey === key) {
-      pushMsg(
-        from.name,
-        text,
-        false,
-        msgId,
-        "",
-        from.avatar
-      );
-
-      socket.emit("msg-seen", { to: peer, msgId });
-      return;
-    }
-  }
 
   // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
   showInboxDot(1);
