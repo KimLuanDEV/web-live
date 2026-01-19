@@ -9305,3 +9305,12 @@ body.page-profile{
   background: rgba(0,0,0,.85);
   border-top: 1px solid rgba(255,255,255,.12);
 }
+
+/* ===== PROFILE: CONTAINER FULL WIDTH ===== */
+.page-profile .container{
+  max-width: none !important;
+  width: 100%;
+  padding-left: 16px;
+  padding-right: 16px;
+}
+
