@@ -5799,6 +5799,7 @@ body.is-guest .reactions-layer{
 
 .profile-shell{
   max-width: 460px;
+  height: 100vh;
   margin: 28px auto;
   padding: 22px;
   border-radius: 24px;
