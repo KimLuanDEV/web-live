@@ -727,23 +727,33 @@ socket.on("lp-delete", ({ postId, uid })=>{
 socket.emit("lp-init", lpPosts.slice(0, 50));
 
 
-socket.on("lp-edit-post", ({ postId, uid, text })=>{
+socket.on("lp-edit-post", ({ postId, uid, text, images })=>{
   const post = getPost(postId);
   if(!post) return;
 
   // 🔐 chỉ chủ bài mới được sửa
   if(post.uid !== uid) return;
 
-  post.text = String(text).slice(0,500);
-  post.edited = Date.now(); // optional
+  post.text = String(text || "").slice(0,500);
+
+  // 🔥 QUAN TRỌNG: cập nhật ảnh
+  if (Array.isArray(images)) {
+    post.images = images;
+    delete post.image; // xoá legacy field nếu còn
+  }
+
+  post.edited = Date.now();
 
   saveSocial();
 
+  // 🔥 EMIT ĐẦY ĐỦ
   io.emit("lp-edit-post", {
     postId,
-    text: post.text
+    text: post.text,
+    images: post.images || []
   });
 });
+
 
 
 
