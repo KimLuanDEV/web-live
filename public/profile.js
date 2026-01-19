@@ -48,8 +48,7 @@ const defaultProfile = {
   coinSent: 0,       // 🎁 đã tặng
   coinReceived: 0,   // 💎 đã nhận
   bio: "",
-  email: "",
-  phone: "",
+
 };
 
 
@@ -199,49 +198,6 @@ if (p.cover && coverPreview) {
 
 
 }
-
-
-function loadUpdateInfo(){
-  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-
-  document.getElementById("infoName").value  = p.name || "";
-  document.getElementById("infoBio").value   = p.bio || "";
-  document.getElementById("infoEmail").value = p.email || "";
-  document.getElementById("infoPhone").value = p.phone || "";
-}
-
-loadUpdateInfo();
-
-
-
-document.getElementById("btnUpdateInfo").onclick = ()=>{
-  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-
-  p.name  = document.getElementById("infoName").value.trim() || "User";
-  p.bio   = document.getElementById("infoBio").value.trim();
-  p.email = document.getElementById("infoEmail").value.trim();
-  p.phone = document.getElementById("infoPhone").value.trim();
-
-  localStorage.setItem(KEY, JSON.stringify(p));
-
-  // cập nhật UI hiện tại
-  displayName.textContent = p.name;
-  document.getElementById("bioInput").value = p.bio;
-
-  // sync server
-  if(__profileAuth.uid){
-    socket.emit("profile-update", {
-      name: p.name,
-      bio: p.bio,
-      email: p.email,
-      phone: p.phone
-    });
-  }
-
-  showMsg("✅ Đã cập nhật thông tin cá nhân");
-};
-
-
 
 const btnMessages = document.getElementById("btnMessages");
 if(btnMessages){
