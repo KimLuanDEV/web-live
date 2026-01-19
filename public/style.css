@@ -9074,7 +9074,7 @@ body.bar-merged .guest-notice-inner{
 .cover-actions {
   position: absolute;
   right: 12px;
-  bottom: 12px;
+  top: 12px;
 }
 
 .cover-actions button {
