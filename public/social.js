@@ -797,9 +797,7 @@ document.querySelectorAll(".lp-tab").forEach(tab=>{
 });
 
 
-socket.on("inbox-new", ()=>{
-  document.getElementById("msgBadge")?.classList.remove("hidden");
-});
+
 
 socket.on("inbox-clear", ()=>{
   document.getElementById("msgBadge")?.classList.add("hidden");
@@ -1583,3 +1581,71 @@ window.addEventListener("scroll", () => {
 
   lastScrollY = curY;
 }, { passive: true });
+
+
+// 🔔 NHẬN THÔNG BÁO CÓ TIN NHẮN MỚI
+socket.on("inbox-new", (data={}) => {
+  showMessageBadge(data.count);
+  showMessageToast();
+});
+
+
+function showMessageBadge(count){
+  const tab = document.querySelector('.lp-tab[data-tab="messages"]');
+  if(!tab) return;
+
+  let badge = tab.querySelector(".badge");
+  if(!badge){
+    badge = document.createElement("div");
+    badge.className = "badge";
+    tab.appendChild(badge);
+  }
+
+  // nếu có count thì dùng, không thì chỉ hiện chấm đỏ
+  if (count && count > 0) {
+    badge.textContent = count > 9 ? "9+" : count;
+    badge.style.width = "18px";
+    badge.style.height = "18px";
+    badge.style.borderRadius = "999px";
+    badge.style.fontSize = "11px";
+    badge.style.display = "flex";
+    badge.style.alignItems = "center";
+    badge.style.justifyContent = "center";
+    badge.style.color = "#fff";
+  }
+}
+
+
+function showMessageToast(){
+  // tránh spam nhiều toast
+  if(document.querySelector(".msg-toast")) return;
+
+  const div = document.createElement("div");
+  div.className = "msg-toast";
+  div.textContent = "💬 Bạn có tin nhắn mới";
+
+  Object.assign(div.style,{
+    position:"fixed",
+    bottom:"90px",
+    left:"50%",
+    transform:"translateX(-50%)",
+    background:"rgba(0,0,0,.85)",
+    color:"#fff",
+    padding:"10px 16px",
+    borderRadius:"999px",
+    fontSize:"14px",
+    zIndex:10000,
+    boxShadow:"0 0 14px rgba(255,59,107,.6)"
+  });
+
+  document.body.appendChild(div);
+
+  setTimeout(()=>div.remove(),2500);
+}
+
+function clearMessageBadge(){
+  const tab = document.querySelector('.lp-tab[data-tab="messages"]');
+  const badge = tab?.querySelector(".badge");
+  if(badge) badge.remove();
+}
+
