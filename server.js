@@ -36,9 +36,6 @@ MEDIA_DIRS.forEach(dir=>{
   }
 });
 
-// 🔔 PUSH PRESENCE TRACKING
-const lastSeen = new Map(); // uid -> timestamp
-
 
 const AVATAR_DIR = "/opt/render/project/data/avatars";
 
@@ -678,23 +675,6 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
-socket.on("msg-delivered", ({ msgId }) => {
-  const uid = socket.data.uid;
-  if (!uid || !msgId) return;
-
-  const inbox = userInbox.get(uid);
-  if (!inbox) return;
-
-  const msg = inbox.find(m => m.id === msgId);
-  if (msg) {
-    msg.delivered = true;
-    saveInbox(Object.fromEntries(userInbox));
-  }
-});
-
-
-
-
  socket.on("lp-like-reply", ({ postId, commentIndex, replyId, uid })=>{
   const post = getPost(postId);
   if(!post) return;
@@ -1080,14 +1060,12 @@ if (sockets) {
     io.to(sid).emit("inbox-new");
   }
 
+  msg.delivered = true;
 }
 
 
-// 🔔 PUSH KHI USER THỰC SỰ VẮNG MẶT (mobile friendly)
-const last = lastSeen.get(to) || 0;
-const away = Date.now() - last > 30000; // 30s không ping
-
-if (!sockets || sockets.size === 0 || away) {
+// 🔔 PUSH NOTIFICATION NẾU USER OFFLINE
+if (!sockets) {
   const sub = pushSubs.get(to);
 
   if (sub) {
@@ -1207,9 +1185,6 @@ socket.on("auth-ping", ({ uid }) => {
   if (!uid) return;
   socket.data.uid = uid;
 
-
-   lastSeen.set(uid, Date.now()); // ✅ THÊM
-
   if (!activeUsers.has(uid)) {
     activeUsers.set(uid, new Set([socket.id]));
     emitActiveUsers(); // 🔥 chỉ emit khi uid mới
@@ -1263,6 +1238,14 @@ if (inbox && inbox.length) {
     }
 
     socket.emit("offline-messages", toSend);
+
+    // ✅ ĐÁNH DẤU ĐÃ GỬI
+    for (const m of toSend) {
+      m.delivered = true;
+    }
+
+
+    saveInbox(Object.fromEntries(userInbox)); // ✅ FIX QUAN TRỌNG
 
     // 🔴 badge chỉ khi còn tin CHƯA XEM
     const unread = inbox.filter(m => !m.seen).length;
@@ -2142,11 +2125,6 @@ socket.on("host-stream-ready", ({ roomId }) => {
 
     
 const uid = socket.data.uid;
-
-if (uid) {
-  lastSeen.set(uid, Date.now()); // ✅ THÊM
-}
-
 if (uid && activeUsers.has(uid)) {
   const set = activeUsers.get(uid);
   set.delete(socket.id);

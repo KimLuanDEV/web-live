@@ -9,7 +9,6 @@ const sysCancel = document.getElementById("sysCancel");
 
 
 
-let __pushRegistered = false;
 let currentTargetUID = null;
 let currentTarget = null;
 let allUsers = [];
@@ -19,7 +18,8 @@ let onlineSet = new Set();
 const renderedMsgIds = new Set();
 
 
-
+// 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
+let offlineHandled = false;
 
 
 async function loadAllUsers(){
@@ -30,11 +30,6 @@ async function loadAllUsers(){
 
 loadAllUsers();
 
-async function enablePushOnce() {
-  if (__pushRegistered) return;
-  __pushRegistered = true;
-  await enablePush();
-}
 
 
 
@@ -114,22 +109,26 @@ function showModal(text, okText="OK", cancelText=null){
 
 
 socket.on("connect", async () => {
-  if (!auth?.uid) return;
+  offlineHandled = false;
 
-  socket.emit("auth-login", { uid: auth.uid });
+  if (auth?.uid) {
+    socket.emit("auth-login", { uid: auth.uid });
 
-  setTimeout(() => {
-    if (document.visibilityState === "visible") {
-      enablePushOnce().catch(console.error);
-    }
-  }, 2000);
+    // 🔔 ĐĂNG KÝ PUSH
+    setTimeout(() => {
+      enablePush().catch(console.error);
+    }, 1000);
+  }
 });
 
 
 
-socket.on("offline-messages", (list) => {
-  if (!Array.isArray(list) || !list.length) return;
+socket.on("offline-messages", (list)=>{
+  // 🔥 CHỈ XỬ LÝ 1 LẦN / LOAD
+  if (offlineHandled) return;
+  offlineHandled = true;
 
+  console.log("📥 Offline messages:", list);
 
   list.forEach(m=>{
     const peer = m.from === auth.uid ? m.to : m.from;
@@ -151,11 +150,12 @@ socket.on("offline-messages", (list) => {
       });
       localStorage.setItem(key, JSON.stringify(arr));
     }
-     socket.emit("msg-delivered", { msgId: m.id });
   });
 
+  if(list.length){
   showInboxDot(list.length); // 🔔 hiện badge
   renderUserList();          // 🔄 refresh danh sách
+}
 
 
 });
@@ -207,9 +207,6 @@ saveChat({
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
-
-  socket.emit("msg-delivered", { msgId });
-
 
   const peer = from.uid;
 
@@ -533,31 +530,29 @@ function showMessageToast({ name, text, avatar, uid }) {
 }
 
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding).replace(/-/g, '+').replace(/_/g, '/');
-  const raw = atob(base64);
-  return Uint8Array.from([...raw].map(c => c.charCodeAt(0)));
-}
-
 async function enablePush() {
   if (!("serviceWorker" in navigator)) return;
   if (!auth?.uid) return;
 
-  const reg = await navigator.serviceWorker.ready;
+  const reg = await navigator.serviceWorker.register("/sw.js");
 
-  // ✅ CHỈ LẤY SUB CŨ – KHÔNG HUỶ
-  let sub = await reg.pushManager.getSubscription();
-
-  if (!sub) {
-    const perm = await Notification.requestPermission();
-    if (perm !== "granted") return;
-
-    sub = await reg.pushManager.subscribe({
-      userVisibleOnly: true,
-      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-    });
+  // 🔥 FIX: unsubscribe subscription cũ nếu có
+  const oldSub = await reg.pushManager.getSubscription();
+  if (oldSub) {
+    console.warn("🔁 Unsubscribing old push subscription");
+    await oldSub.unsubscribe();
   }
+
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") {
+    console.warn("❌ Notification permission denied");
+    return;
+  }
+
+  const sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: "BPG9kTxtU0Fso5VZqUFhqn_ZZLvTeKM32km3pLDnH2UCdKce-owuTMZ5PLzrKyrw_patHMVavHdDM4axJ7L9N7E"
+  });
 
   await fetch("/api/push-subscribe", {
     method: "POST",
@@ -568,5 +563,5 @@ async function enablePush() {
     })
   });
 
-  console.log("🔔 Push ready");
+  console.log("🔔 Push re-subscribed OK");
 }
