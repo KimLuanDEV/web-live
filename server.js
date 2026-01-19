@@ -981,7 +981,8 @@ socket.on("private-message", ({ to, text, msgId }) => {
     to,
     text,
     time: Date.now(),
-    seen: false
+    seen: false,
+    delivered: false   // ✅ THÊM DÒNG NÀY
   };
 
   // 1️⃣ LƯU VÀO INBOX NGƯỜI NHẬN
@@ -1007,6 +1008,8 @@ const fromProfile = {
     msgId: id
   });
 
+  msg.delivered = true; // 🔥 CHỐT CHẶN LẶP
+
   // 🔴 BÁO CÓ TIN MỚI (badge)
   io.to(targetSocket).emit("inbox-new");
 }
@@ -1031,6 +1034,7 @@ socket.on("msg-seen", ({ to, msgId }) => {
 
   // 🔥 update inbox
   const uid = socket.data.uid;
+  
  const inbox = userInbox.get(uid);
 if(inbox){
   for(const m of inbox){
@@ -1144,20 +1148,35 @@ socket.on("auth-ping", ({ uid }) => {
   // ✅ KHÔNG ĐÁ – CHỈ GHI ĐÈ SOCKET MỚI
   activeUsers.set(uid, socket.id);
 
-  // 🔥 GỬI TIN NHẮN OFFLINE (GIỮ NGUYÊN)
-  const inbox = userInbox.get(uid);
-  if (inbox && inbox.length) {
-    for (const m of inbox) {
+ // 🔥 GỬI TIN OFFLINE – CHỈ 1 LẦN
+const inbox = userInbox.get(uid);
+if (inbox && inbox.length) {
+
+  // 👉 CHỈ LẤY TIN CHƯA GỬI
+  const toSend = inbox.filter(m => !m.delivered);
+
+  if (toSend.length) {
+
+    // gắn verified cho sender
+    for (const m of toSend) {
       const u = db[m.from];
       m.verified = !!u?.profile?.verified;
     }
 
-    socket.emit("offline-messages", inbox);
+    socket.emit("offline-messages", toSend);
 
+    // ✅ ĐÁNH DẤU ĐÃ GỬI
+    for (const m of toSend) {
+      m.delivered = true;
+    }
+
+    // 🔴 badge chỉ khi còn tin CHƯA XEM
     const unread = inbox.filter(m => !m.seen).length;
     if (unread > 0) {
       socket.emit("inbox-new", { count: unread });
     }
+  }
+
   }
 
   socket.data.uid = uid;
