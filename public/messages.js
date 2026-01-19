@@ -59,7 +59,7 @@ function saveChat(msg){
 
 
 function loadChat(){
-  renderedMsgIds.clear(); // 🔥 reset chống trùng khi đổi chat
+
 
   const key = chatKey();
   if(!key) return;
@@ -232,7 +232,7 @@ socket.on("private-message", ({ from, text, msgId }) => {
 
       // 🔥 FIX CHỐT: nếu msg đã tồn tại → KHÔNG render nữa
   if (renderedMsgIds.has(msgId)) return;
-  
+
       pushMsg(
         from.name,
         text,
@@ -351,6 +351,8 @@ div.innerHTML = `
     div.onclick = ()=>{
       currentTarget = u;
       currentTargetUID = u.uid;
+
+        renderedMsgIds.clear(); // ✅ reset ĐÚNG LÚC (đổi peer)
 
       chatTitle.innerHTML = `
   ${u.name}
