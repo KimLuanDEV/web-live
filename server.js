@@ -265,9 +265,20 @@ const USERS_FILE = path.join("/opt/render/project/data", "users.json");
 
 
 function loadUsers(){
-  if(!fs.existsSync(USERS_FILE)) return {};
-  return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
+  try{
+    if(!fs.existsSync(USERS_FILE)) return {};
+    const raw = fs.readFileSync(USERS_FILE, "utf8").trim();
+    if(!raw) return {};
+    return JSON.parse(raw);
+  }catch(e){
+    console.error("❌ loadUsers JSON error:", e.message);
+    return {}; // 🔥 không cho server die
+  }
 }
+
+
+
+
 function saveUsers(db){
   fs.writeFileSync(USERS_FILE, JSON.stringify(db,null,2));
 }
@@ -1000,8 +1011,6 @@ socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, uid 
 });
 
 
-
-
 socket.on("private-message", ({ to, text, msgId }) => {
 
   const fromUid = socket.data.uid;
@@ -1016,43 +1025,14 @@ socket.on("private-message", ({ to, text, msgId }) => {
     text,
     time: Date.now(),
     seen: false,
-    delivered: false   // ✅ THÊM DÒNG NÀY
+    delivered: false
   };
-
-
-// 🔔 PUSH NOTIFICATION cho người nhận
-const subs = pushSubs.get(to);
-if (subs && subs.size > 0) {
-  const payload = JSON.stringify({
-    title: fromProfile.name || "Tin nhắn mới",
-    body: text || "",
-    icon: fromProfile.avatar || "/icons/icon-192.png",
-    url: `/messages.html?uid=${fromUid}`
-  });
-
-  for (const raw of subs) {
-    const sub = JSON.parse(raw);
-    webpush.sendNotification(sub, payload).catch((err) => {
-      // (tuỳ chọn) nếu sub chết thì xoá
-      // console.log("push fail:", err?.statusCode);
-    });
-  }
-}
-
-
-
-
-
 
   // 1️⃣ LƯU VÀO INBOX NGƯỜI NHẬN
   if(!userInbox.has(to)) userInbox.set(to, []);
   userInbox.get(to).push(msg);
 
- 
-  // 2️⃣ GỬI REALTIME NẾU ONLINE
-const sockets = activeUsers.get(to);
-
-if (sockets) {
+  // 2️⃣ LẤY PROFILE NGƯỜI GỬI (TRƯỚC KHI DÙNG)
   const db = loadUsers();
   const user = db[fromUid];
 
@@ -1062,26 +1042,41 @@ if (sockets) {
     verified: !!user?.profile?.verified
   };
 
-  for (const sid of sockets) {
-    io.to(sid).emit("private-message", {
-      from: fromProfile,
-      text,
-      msgId: id
+  // 3️⃣ PUSH NOTIFICATION (AN TOÀN)
+  const subs = pushSubs.get(to);
+  if (subs && subs.size > 0) {
+    const payload = JSON.stringify({
+      title: fromProfile.name || "Tin nhắn mới",
+      body: text,
+      icon: fromProfile.avatar || "/icons/icon-192.png",
+      url: `/messages.html?uid=${fromUid}`
     });
 
-    io.to(sid).emit("inbox-new");
+    for (const raw of subs) {
+      const sub = JSON.parse(raw);
+      webpush.sendNotification(sub, payload).catch(()=>{});
+    }
   }
 
-  msg.delivered = true;
-}
+  // 4️⃣ GỬI REALTIME NẾU ONLINE
+  const sockets = activeUsers.get(to);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("private-message", {
+        from: fromProfile,
+        text,
+        msgId: id
+      });
+      io.to(sid).emit("inbox-new");
+    }
+    msg.delivered = true;
+  }
 
-
-
-  // 3️⃣ báo người gửi là đã gửi
-socket.emit("msg-status", {
-  msgId: id,
-  status: sockets ? "delivered" : "stored"
-});
+  // 5️⃣ BÁO NGƯỜI GỬI
+  socket.emit("msg-status", {
+    msgId: id,
+    status: sockets ? "delivered" : "stored"
+  });
 });
 
 
