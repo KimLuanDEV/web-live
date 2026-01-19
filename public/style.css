@@ -6243,6 +6243,7 @@ body.is-guest .reactions-layer{
   font-size:13px;
   opacity:.7;
   margin-bottom:6px;
+  margin-top:10px;
 }
 
 #bioInput{
