@@ -92,3 +92,12 @@
 .st-cover-btn:hover{
   filter:brightness(1.12);
 }
+
+
+/* ===== STATUS WIDTH SAFE ===== */
+.st-cover,
+.st-info,
+.lp-shell{
+  max-width:100%;
+  overflow-x:hidden;
+}
