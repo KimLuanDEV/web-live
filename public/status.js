@@ -260,3 +260,34 @@ document.querySelectorAll(".lp-tab").forEach(tab => {
     if (t === "profile") location.href = "/status.html";
   };
 });
+
+
+// ===== DELETE POST =====
+function deletePost(postId){
+  if (!confirm("Xóa bài viết này?")) return;
+
+  socket.emit("lp-delete", {
+    postId,
+    uid: auth.uid
+  });
+}
+
+
+// ===== EDIT POST (BASIC) =====
+function editPost(postId){
+  const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
+  if (!el) return;
+
+  const textEl = el.querySelector(".lp-post-text");
+  const oldText = textEl.innerText;
+
+  const newText = prompt("Chỉnh sửa bài viết:", oldText);
+  if (newText === null) return;
+
+  socket.emit("lp-edit-post", {
+    postId,
+    uid: auth.uid,
+    text: newText,
+    images: [] // giữ trống nếu chưa sửa ảnh
+  });
+}
