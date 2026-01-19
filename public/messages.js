@@ -525,11 +525,22 @@ function showMessageToast({ name, text, avatar, uid }) {
 
 async function enablePush() {
   if (!("serviceWorker" in navigator)) return;
+  if (!auth?.uid) return;
 
   const reg = await navigator.serviceWorker.register("/sw.js");
 
+  // 🔥 FIX: unsubscribe subscription cũ nếu có
+  const oldSub = await reg.pushManager.getSubscription();
+  if (oldSub) {
+    console.warn("🔁 Unsubscribing old push subscription");
+    await oldSub.unsubscribe();
+  }
+
   const perm = await Notification.requestPermission();
-  if (perm !== "granted") return;
+  if (perm !== "granted") {
+    console.warn("❌ Notification permission denied");
+    return;
+  }
 
   const sub = await reg.pushManager.subscribe({
     userVisibleOnly: true,
@@ -544,6 +555,6 @@ async function enablePush() {
       sub
     })
   });
-}
 
-enablePush();
+  console.log("🔔 Push re-subscribed OK");
+}
