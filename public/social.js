@@ -1358,11 +1358,17 @@ function editPost(postId){
 
   modal.innerHTML = `
     <div class="lp-compose-sheet">
+    
       <div class="lp-compose-header">
-        <button class="lp-close">✕</button>
-        <div class="lp-header-title">Chỉnh sửa bài viết</div>
-        <button class="lp-submit" id="saveEdit">Lưu</button>
-      </div>
+  <button class="lp-close">✕</button>
+
+  <div class="lp-header-title">Chỉnh sửa bài viết</div>
+
+  <button class="lp-submit icon" id="saveEdit" title="Lưu">
+    ✓
+  </button>
+</div>
+
 
       <div class="lp-compose-body">
         <textarea id="editText"
