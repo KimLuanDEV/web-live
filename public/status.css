@@ -237,3 +237,46 @@ body{
 .lp-tab.active .tab-text{
   color:#1877f2;
 }
+
+
+/* ===== POST CARD ===== */
+.lp-post{
+  margin:12px 12px 0;          /* khoảng cách giữa các bài */
+}
+
+.lp-post-inner{
+  background:#111;             /* nền card */
+  border-radius:14px;          /* bo góc */
+  padding:12px;
+  box-shadow:0 2px 6px rgba(0,0,0,.35);
+}
+
+
+/* ===== POST HEADER ===== */
+.lp-post-head{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:8px;
+}
+
+.lp-post-name{
+  font-weight:700;
+}
+
+.lp-post-time{
+  font-size:12px;
+  opacity:.6;
+}
+
+.lp-post-tools{
+  margin-left:auto;
+  display:flex;
+  gap:10px;
+  opacity:.7;
+}
+
+.lp-post-tools span{
+  cursor:pointer;
+}
+
