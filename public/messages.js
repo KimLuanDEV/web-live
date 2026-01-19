@@ -98,7 +98,12 @@ function showModal(text, okText="OK", cancelText=null){
 
 
 
-socket.emit("auth-login", { uid: auth.uid });
+socket.on("connect", () => {
+  if (auth?.uid) {
+    socket.emit("auth-login", { uid: auth.uid });
+  }
+});
+
 
 socket.on("offline-messages", (list)=>{
   console.log("📥 Offline messages:", list);
@@ -175,25 +180,33 @@ saveChat({
 
 socket.on("private-message", ({ from, text, msgId }) => {
 
-  // 1️⃣ LƯU LUÔN
-  saveChat({
-    from: from.uid,
-    to: auth.uid,
-    text,
-    time: Date.now(),
-    peer: from.uid
-  });
+  const peer = from.uid;
 
-  // 2️⃣ NẾU MODAL ĐANG MỞ → RENDER NGAY
-  if (chatModal && !chatModal.classList.contains("hidden")) {
+  // 🔐 xác định đúng chatKey (KHÔNG phụ thuộc state tạm)
+  const key =
+    auth.uid < peer
+      ? "chat_" + auth.uid + "_" + peer
+      : "chat_" + peer + "_" + auth.uid;
 
-    // 🔥 nếu chưa set target (vừa mở modal)
-    if (!currentTargetUID) {
-      currentTargetUID = from.uid;
-    }
+  // 1️⃣ LƯU VÀO LOCALSTORAGE (CHỐNG TRÙNG)
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+  if (!arr.find(x => x.id === msgId)) {
+    arr.push({
+      id: msgId,
+      from: peer,
+      to: auth.uid,
+      text,
+      time: Date.now(),
+      peer
+    });
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
 
-    // 🔥 chỉ render nếu đúng chat đang mở
-    if (currentTargetUID === from.uid) {
+  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER NGAY
+  if (!chatModal.classList.contains("hidden")) {
+    const curKey = chatKey(); // chat hiện tại user đang mở
+
+    if (curKey === key) {
       pushMsg(
         from.name,
         text,
@@ -203,10 +216,12 @@ socket.on("private-message", ({ from, text, msgId }) => {
         from.avatar
       );
 
-      socket.emit("msg-seen", { to: from.uid, msgId });
+      // 👁 seen realtime
+      socket.emit("msg-seen", { to: peer, msgId });
     }
   }
 });
+
 
 
 
