@@ -5,7 +5,7 @@ const sysModal = document.getElementById("sysModal");
 const sysText = document.getElementById("sysText");
 const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
-const VAPID_PUBLIC_KEY = "BA9FPfAtc-EloHtl5nunB1zDlEYEIEURv-CERjmW__WB-s8jga_MDjvP3VXnIGmLyh_YH1DtES_t2Y6di_h1nBc";
+
 
 
 
@@ -523,42 +523,27 @@ function showMessageToast({ name, text, avatar, uid }) {
 }
 
 
-
-
-const enablePushBtn = document.getElementById("enablePush");
-
-enablePushBtn?.addEventListener("click", async () => {
-  if (!auth?.uid) {
-    alert("⚠️ Vui lòng đăng nhập trước khi bật thông báo");
-    return;
-  }
-
-  if (!("serviceWorker" in navigator)) {
-    alert("Thiết bị không hỗ trợ thông báo");
-    return;
-  }
-
-  const perm = await Notification.requestPermission();
-  if (perm !== "granted") {
-    alert("Bạn chưa cho phép thông báo");
-    return;
-  }
+async function enablePush() {
+  if (!("serviceWorker" in navigator)) return;
 
   const reg = await navigator.serviceWorker.register("/sw.js");
 
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") return;
+
   const sub = await reg.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: VAPID_PUBLIC_KEY
+    applicationServerKey: "BPG9kTxtU0Fso5VZqUFhqn_ZZLvTeKM32km3pLDnH2UCdKce-owuTMZ5PLzrKyrw_patHMVavHdDM4axJ7L9N7E"
   });
 
   await fetch("/api/push-subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      uid: auth.uid,   // ✅ ĐẢM BẢO CÓ
+      uid: auth.uid,
       sub
     })
   });
+}
 
-  alert("✅ Đã bật thông báo");
-});
+enablePush();

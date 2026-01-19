@@ -1,12 +1,3 @@
-const webpush = require("web-push");
-
-webpush.setVapidDetails(
-  "mailto:support@livestreampro.app",
-  process.env.VAPID_PUBLIC,
-  process.env.VAPID_PRIVATE
-);
-
-
 
 
 const MAX_VIEWERS = 40;        // Render safe
@@ -27,6 +18,9 @@ const twilio = require("twilio");
 
 
 const fs = require("fs");
+
+
+const webpush = require("web-push");
 
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
 const SOCIAL_FILE = path.join("/opt/render/project/data", "social_posts.json");
@@ -122,32 +116,8 @@ function saveSocial(){
 
 
 const app = express();
-
-app.use(express.json());
-
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-
-
-const pushSubs = new Map(); // uid -> subscription
-
-app.post("/api/push-subscribe", (req, res) => {
-  try {
-    const { uid, sub } = req.body;
-
-    if (!uid || !sub) {
-      return res.status(400).json({ error: "missing uid or sub" });
-    }
-
-    pushSubs.set(uid, sub);
-    res.json({ ok: true });
-
-  } catch (err) {
-    console.error("❌ push-subscribe error:", err);
-    res.sendStatus(500);
-  }
-});
-
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
@@ -309,6 +279,16 @@ function saveUsers(db){
 }
 
 
+app.use(express.json());
+
+webpush.setVapidDetails(
+  "mailto:admin@livestream.pro",
+  process.env.VAPID_PUBLIC,
+  process.env.VAPID_PRIVATE
+);
+
+// uid -> pushSubscription
+const pushSubs = new Map();
 
 
 
@@ -458,6 +438,18 @@ acc.password = await bcrypt.hash(String(newPassword), 10);
 
   res.json({ ok:true });
 });
+
+
+app.post("/api/push-subscribe", (req, res) => {
+  const { uid, sub } = req.body;
+  if (!uid || !sub) return res.sendStatus(400);
+
+  pushSubs.set(uid, sub);
+  console.log("🔔 Push subscribed:", uid);
+
+  res.json({ ok: true });
+});
+
 
 
 // ♻️ RESTORE LIVE ROOMS AFTER SERVER RESTART
@@ -1069,22 +1061,30 @@ if (sockets) {
   }
 
   msg.delivered = true;
-} else {
-  // 🔔 ===== PUSH NOTIFICATION KHI OFFLINE =====
+}
+
+
+// 🔔 PUSH NOTIFICATION NẾU USER OFFLINE
+if (!sockets) {
   const sub = pushSubs.get(to);
+
   if (sub) {
+    const db = loadUsers();
+    const fromUser = db[fromUid];
+
     webpush.sendNotification(
       sub,
       JSON.stringify({
-        title: "📩 Tin nhắn mới",
-        body: text,
-        data: {
-          uid: fromUid
-        }
+        title: "💬 Tin nhắn mới",
+        body: `${fromUser?.profile?.name || fromUid}: ${text}`,
+        url: "/messages.html"
       })
-    ).catch(console.error);
+    ).catch(err => {
+      console.log("❌ Push failed:", err.message);
+    });
   }
 }
+
 
   // 3️⃣ báo người gửi là đã gửi
 socket.emit("msg-status", {
