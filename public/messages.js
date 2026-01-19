@@ -7,7 +7,6 @@ const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
 
 
-const PUSH_PUBLIC_KEY = "BA9FPfAtc-EloHtl5nunB1zDlEYEIEURv-CERjmW__WB-s8jga_MDjvP3VXnIGmLyh_YH1DtES_t2Y6di_h1nBc"; // public key VAPID
 
 
 let currentTargetUID = null;
@@ -32,41 +31,6 @@ async function loadAllUsers(){
 loadAllUsers();
 
 
-async function registerPush() {
-  try {
-    if (!("serviceWorker" in navigator)) return;
-    if (!("PushManager" in window)) return;
-
-    const reg = await navigator.serviceWorker.register("/sw.js");
-
-    const perm = await Notification.requestPermission();
-    if (perm !== "granted") return;
-
-    // nếu đã subscribe rồi thì lấy lại, không tạo mới
-    let sub = await reg.pushManager.getSubscription();
-    if (!sub) {
-      sub = await reg.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(PUSH_PUBLIC_KEY),
-      });
-    }
-
-    // gửi sub lên server
-    socket.emit("push-subscribe", { uid: auth.uid, sub });
-
-    console.log("✅ Push subscribed");
-  } catch (e) {
-    console.warn("❌ registerPush failed:", e);
-  }
-}
-
-
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
-  const raw = atob(base64);
-  return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
-}
 
 
 function chatKey(){
@@ -147,7 +111,6 @@ function showModal(text, okText="OK", cancelText=null){
 socket.on("connect", () => {
   if (auth?.uid) {
     socket.emit("auth-login", { uid: auth.uid });
-     registerPush(); // ✅ gọi ở đây
   }
 });
 
@@ -549,32 +512,4 @@ function showMessageToast({ name, text, avatar, uid }) {
   document.body.appendChild(div);
 
   setTimeout(() => div.remove(), 2500);
-}
-
-
-const btnEnablePush = document.getElementById("enablePush");
-
-if (btnEnablePush) {
-  btnEnablePush.onclick = async () => {
-
-    if (!("Notification" in window)) {
-      alert("Thiết bị không hỗ trợ thông báo");
-      return;
-    }
-
-    // Nếu user đã block trước đó
-    if (Notification.permission === "denied") {
-      alert("Bạn đã chặn thông báo. Vui lòng vào cài đặt để bật lại.");
-      return;
-    }
-
-    const perm = await Notification.requestPermission();
-
-    if (perm === "granted") {
-      registerPush(); // 🔥 GỌI HÀM SUBSCRIBE PUSH
-      alert("✅ Đã bật thông báo");
-    } else {
-      alert("❌ Bạn chưa cho phép thông báo");
-    }
-  };
 }

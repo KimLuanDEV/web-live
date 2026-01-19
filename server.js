@@ -99,19 +99,6 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-const pushSubs = new Map(); // uid -> Set(JSON-string subscription)
-
-const webpush = require("web-push");
-
-webpush.setVapidDetails(
-  "mailto:troll.jayd@gmail.com",// đổi thành email của bạn
-  process.env.VAPID_PUBLIC,
-  process.env.VAPID_PRIVATE
-);
-
-
-
-
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
@@ -265,20 +252,9 @@ const USERS_FILE = path.join("/opt/render/project/data", "users.json");
 
 
 function loadUsers(){
-  try{
-    if(!fs.existsSync(USERS_FILE)) return {};
-    const raw = fs.readFileSync(USERS_FILE, "utf8").trim();
-    if(!raw) return {};
-    return JSON.parse(raw);
-  }catch(e){
-    console.error("❌ loadUsers JSON error:", e.message);
-    return {}; // 🔥 không cho server die
-  }
+  if(!fs.existsSync(USERS_FILE)) return {};
+  return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
 }
-
-
-
-
 function saveUsers(db){
   fs.writeFileSync(USERS_FILE, JSON.stringify(db,null,2));
 }
@@ -658,21 +634,6 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
-socket.on("push-subscribe", ({ uid, sub }) => {
-  if (!uid || !sub) return;
-
-  if (!pushSubs.has(uid)) pushSubs.set(uid, new Set());
-  // lưu dạng string để Set so sánh dễ
-  pushSubs.get(uid).add(JSON.stringify(sub));
-
-  // (tuỳ chọn) log
-  console.log("✅ push-subscribe:", uid, "total:", pushSubs.get(uid).size);
-});
-
-
-
-
-
  socket.on("lp-like-reply", ({ postId, commentIndex, replyId, uid })=>{
   const post = getPost(postId);
   if(!post) return;
@@ -1011,6 +972,8 @@ socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, uid 
 });
 
 
+
+
 socket.on("private-message", ({ to, text, msgId }) => {
 
   const fromUid = socket.data.uid;
@@ -1025,14 +988,18 @@ socket.on("private-message", ({ to, text, msgId }) => {
     text,
     time: Date.now(),
     seen: false,
-    delivered: false
+    delivered: false   // ✅ THÊM DÒNG NÀY
   };
 
   // 1️⃣ LƯU VÀO INBOX NGƯỜI NHẬN
   if(!userInbox.has(to)) userInbox.set(to, []);
   userInbox.get(to).push(msg);
 
-  // 2️⃣ LẤY PROFILE NGƯỜI GỬI (TRƯỚC KHI DÙNG)
+ 
+  // 2️⃣ GỬI REALTIME NẾU ONLINE
+const sockets = activeUsers.get(to);
+
+if (sockets) {
   const db = loadUsers();
   const user = db[fromUid];
 
@@ -1042,62 +1009,27 @@ socket.on("private-message", ({ to, text, msgId }) => {
     verified: !!user?.profile?.verified
   };
 
-  // 3️⃣ PUSH NOTIFICATION (AN TOÀN)
-  const subs = pushSubs.get(to);
-  if (subs && subs.size > 0) {
+  for (const sid of sockets) {
+    io.to(sid).emit("private-message", {
+      from: fromProfile,
+      text,
+      msgId: id
+    });
 
-    const payload = JSON.stringify({
-  title: fromProfile.name || "Tin nhắn mới",
-  body: text || "",
-  icon: "/icons/icon-192.png",   // ⚠️ dùng icon local HTTPS
-  badge: "/icons/icon-192.png",  // ⚠️ iOS rất cần badge
-  data: {
-    url: `/messages.html?uid=${fromUid}`
+    io.to(sid).emit("inbox-new");
   }
+
+  msg.delivered = true;
+}
+
+
+
+  // 3️⃣ báo người gửi là đã gửi
+socket.emit("msg-status", {
+  msgId: id,
+  status: sockets ? "delivered" : "stored"
 });
-
-
-    for (const raw of subs) {
-      const sub = JSON.parse(raw);
-
-      webpush.sendNotification(sub, payload)
-  .then(() => {
-    console.log("📲 Push sent OK to", to);
-  })
-  .catch(err => {
-    console.error("❌ Push send failed:", err.statusCode, err.body || err.message);
-  });
-
-
-    }
-  }
-
-  // 4️⃣ GỬI REALTIME NẾU ONLINE
-  const sockets = activeUsers.get(to);
-  if (sockets) {
-    for (const sid of sockets) {
-      io.to(sid).emit("private-message", {
-        from: fromProfile,
-        text,
-        msgId: id
-      });
-      io.to(sid).emit("inbox-new");
-    }
-    msg.delivered = true;
-  }
-
-  // 5️⃣ BÁO NGƯỜI GỬI
-  socket.emit("msg-status", {
-    msgId: id,
-    status: sockets ? "delivered" : "stored"
-  });
 });
-
-
-
-
-
-
 
 
 socket.on("msg-seen", ({ to, msgId }) => {
@@ -1226,10 +1158,6 @@ socket.on("auth-ping", ({ uid }) => {
   activeUsers.set(uid, new Set());
 }
 activeUsers.get(uid).add(socket.id);
-
-
-if (socket.data._offlineSent) return;
-socket.data._offlineSent = true;
 
 
  // 🔥 GỬI TIN OFFLINE – CHỈ 1 LẦN
