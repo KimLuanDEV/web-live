@@ -550,3 +550,31 @@ function showMessageToast({ name, text, avatar, uid }) {
 
   setTimeout(() => div.remove(), 2500);
 }
+
+
+const btnEnablePush = document.getElementById("enablePush");
+
+if (btnEnablePush) {
+  btnEnablePush.onclick = async () => {
+
+    if (!("Notification" in window)) {
+      alert("Thiết bị không hỗ trợ thông báo");
+      return;
+    }
+
+    // Nếu user đã block trước đó
+    if (Notification.permission === "denied") {
+      alert("Bạn đã chặn thông báo. Vui lòng vào cài đặt để bật lại.");
+      return;
+    }
+
+    const perm = await Notification.requestPermission();
+
+    if (perm === "granted") {
+      registerPush(); // 🔥 GỌI HÀM SUBSCRIBE PUSH
+      alert("✅ Đã bật thông báo");
+    } else {
+      alert("❌ Bạn chưa cho phép thông báo");
+    }
+  };
+}

@@ -9390,3 +9390,14 @@ body.page-profile{
   align-items:center;
   justify-content:center;
 }
+
+
+.btn-enable-push{
+  margin:8px 12px;
+  padding:8px 14px;
+  border-radius:999px;
+  background:#ff3b6b;
+  color:#fff;
+  font-size:14px;
+  border:none;
+}
