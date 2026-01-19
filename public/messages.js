@@ -17,6 +17,10 @@ let onlineSet = new Set();
 // 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
 const renderedMsgIds = new Set();
 
+// 🔒 CHỐNG LƯU TRÙNG MESSAGE (offline + realtime)
+const handledMsgIds = new Set();
+
+
 
 // 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
 let offlineHandled = false;
@@ -59,7 +63,7 @@ function saveChat(msg){
 
 
 function loadChat(){
-
+  renderedMsgIds.clear(); // 🔥 reset chống trùng khi đổi chat
 
   const key = chatKey();
   if(!key) return;
@@ -132,17 +136,24 @@ socket.on("offline-messages", (list)=>{
 
     const arr = JSON.parse(localStorage.getItem(key) || "[]");
 
-    if(!arr.find(x => x.id === m.id)){
-      arr.push({
-        id: m.id,
-        from: m.from,
-        to: m.to,
-        text: m.text,
-        time: m.time,
-        peer
-      });
-      localStorage.setItem(key, JSON.stringify(arr));
-    }
+if (!handledMsgIds.has(m.id)) {
+  handledMsgIds.add(m.id);
+
+  if (!arr.find(x => x.id === m.id)) {
+    arr.push({
+      id: m.id,
+      from: m.from,
+      to: m.to,
+      text: m.text,
+      time: m.time,
+      peer,
+      seen: false
+    });
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
+}
+
+
   });
 
   if(list.length){
@@ -201,6 +212,10 @@ saveChat({
 
 socket.on("private-message", ({ from, text, msgId }) => {
 
+  // 🔒 nếu message đã xử lý (offline) thì bỏ qua
+if (handledMsgIds.has(msgId)) return;
+handledMsgIds.add(msgId);
+
   const peer = from.uid;
 
   // 🔐 xác định đúng chatKey
@@ -229,10 +244,6 @@ socket.on("private-message", ({ from, text, msgId }) => {
     const curKey = chatKey();
 
     if (curKey === key) {
-
-      // 🔥 FIX CHỐT: nếu msg đã tồn tại → KHÔNG render nữa
-  if (renderedMsgIds.has(msgId)) return;
-
       pushMsg(
         from.name,
         text,
@@ -351,8 +362,6 @@ div.innerHTML = `
     div.onclick = ()=>{
       currentTarget = u;
       currentTargetUID = u.uid;
-
-        renderedMsgIds.clear(); // ✅ reset ĐÚNG LÚC (đổi peer)
 
       chatTitle.innerHTML = `
   ${u.name}
