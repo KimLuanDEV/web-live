@@ -111,3 +111,71 @@ postText.addEventListener("pointerdown", e=>{
 function openEditProfile(){
   alert("Sắp có: chỉnh avatar / bio / cover");
 }
+
+
+/* ===== UPLOAD AVATAR ===== */
+function uploadAvatar(){
+  document.getElementById("avatarInput").click();
+}
+
+document.getElementById("avatarInput").addEventListener("change", async e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const fd = new FormData();
+  fd.append("avatar", file);
+
+  const r = await fetch("/api/upload-avatar", {
+    method:"POST",
+    body: fd
+  });
+
+  const data = await r.json();
+  if(!data.url) return;
+
+  // update local
+  auth.avatar = data.url;
+  localStorage.setItem("user_profile", JSON.stringify(auth));
+
+  // update UI
+  document.getElementById("profileAvatar").src = data.url;
+  document.getElementById("meAvatar").src = data.url;
+
+  // realtime sync
+  socket.emit("profile-update", {
+    uid: auth.uid,
+    avatar: data.url
+  });
+});
+
+
+/* ===== UPLOAD COVER ===== */
+function uploadCover(){
+  document.getElementById("coverInput").click();
+}
+
+document.getElementById("coverInput").addEventListener("change", async e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+
+  const fd = new FormData();
+  fd.append("cover", file);
+
+  const r = await fetch("/api/upload-cover", {
+    method:"POST",
+    body: fd
+  });
+
+  const data = await r.json();
+  if(!data.url) return;
+
+  auth.cover = data.url;
+  localStorage.setItem("user_profile", JSON.stringify(auth));
+
+  document.getElementById("profileCover").src = data.url;
+
+  socket.emit("profile-update", {
+    uid: auth.uid,
+    cover: data.url
+  });
+});

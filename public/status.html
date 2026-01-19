@@ -123,6 +123,31 @@
   line-height:1.6;
   font-size:15px;
 }
+
+
+.lp-profile-avatar,
+.lp-profile-cover{
+  cursor:pointer;
+}
+
+.lp-profile-cover::after{
+  content:"📷 Đổi ảnh bìa";
+  position:absolute;
+  right:12px;
+  bottom:12px;
+  background:rgba(0,0,0,.6);
+  padding:6px 10px;
+  border-radius:999px;
+  font-size:12px;
+  opacity:0;
+}
+
+.lp-profile-cover:hover::after{
+  opacity:1;
+}
+
+
+
 </style>
 </head>
 
@@ -139,14 +164,19 @@
 <!-- PROFILE HEADER -->
 <div class="lp-profile-header">
 
-  <div class="lp-profile-cover">
-    <img id="profileCover" src="/default-cover.jpg">
+  <div class="lp-profile-cover" onclick="uploadCover()">
+    <img id="profileCover">
   </div>
 
+<input type="file" id="coverInput" accept="image/*" hidden>
+
   <div class="lp-profile-info">
-    <div class="lp-profile-avatar">
-      <img id="profileAvatar">
-    </div>
+
+  <div class="lp-profile-avatar" onclick="uploadAvatar()">
+    <img id="profileAvatar">
+  </div>
+
+<input type="file" id="avatarInput" accept="image/*" hidden>
 
     <div class="lp-profile-name" id="profileName"></div>
     <div class="lp-profile-bio" id="profileBio"></div>
