@@ -7,15 +7,34 @@ const photoGrid = document.getElementById("photoGrid");
 let myPosts = [];
 
 /* ===== INIT PROFILE ===== */
-document.getElementById("profileAvatar").src = auth.avatar;
-document.getElementById("meAvatar").src = auth.avatar;
-document.getElementById("profileName").textContent = auth.name;
-document.getElementById("profileBio").textContent = auth.bio || "Chưa có giới thiệu";
 
-document.getElementById("aboutName").textContent = auth.name;
+// AVATAR (có fallback)
+const avatar =
+  auth.avatar && auth.avatar.trim()
+    ? auth.avatar
+    : "/default-avatar.png";
+
+document.getElementById("profileAvatar").src = avatar;
+document.getElementById("meAvatar").src = avatar;
+
+// COVER (có fallback)
+const cover =
+  auth.cover && auth.cover.trim()
+    ? auth.cover
+    : "/default-cover.jpg";
+
+document.getElementById("profileCover").src = cover;
+
+// TEXT INFO
+document.getElementById("profileName").textContent = auth.name || "Người dùng";
+document.getElementById("profileBio").textContent =
+  auth.bio || "Chưa có giới thiệu";
+
+document.getElementById("aboutName").textContent = auth.name || "—";
 document.getElementById("aboutBio").textContent = auth.bio || "—";
 document.getElementById("aboutDate").textContent =
   new Date(auth.createdAt || Date.now()).toLocaleDateString("vi-VN");
+
 
 /* ===== LOAD POSTS ===== */
 socket.on("lp-init", list => {
