@@ -488,6 +488,7 @@
   display:flex;
   justify-content:center;
   align-items:flex-end;
+  overscroll-behavior: contain;
 }
 
 .lp-compose-modal.hidden{
@@ -501,6 +502,7 @@
   display:flex;
   flex-direction:column;
   animation: slideUp .28s ease;
+  overscroll-behavior: contain;
 }
 
 @keyframes slideUp{
@@ -662,9 +664,6 @@
 }
 
 
-
-
-
 /* ===== COMPOSE PREVIEW (FIX LAYOUT) ===== */
 /* container preview */
 .lp-compose-preview{
@@ -746,15 +745,8 @@
 }
 
 
-/* 🔒 CHẶN SCROLL XUYÊN NỀN */
-.lp-compose-modal{
-  overscroll-behavior: contain;
-}
 
-/* body modal tự scroll */
-.lp-compose-sheet{
-  overscroll-behavior: contain;
-}
+
 
 
 .lp-post-images{
