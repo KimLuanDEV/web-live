@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Trang cá nhân</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+
+<div class="lp-topbar">
+  <button onclick="history.back()">←</button>
+  <div class="lp-title">Bài viết của bạn</div>
+</div>
+
+<div class="lp-shell">
+  <div id="profileInfo" class="profile-card">
+    <img id="profileAvatar">
+    <div>
+      <div id="profileName"></div>
+      <div class="profile-sub">Bài đăng cá nhân</div>
+    </div>
+  </div>
+
+  <div id="profileFeed" class="lp-feed"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/profile.js"></script>
+</body>
+</html>
