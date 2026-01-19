@@ -200,16 +200,14 @@ saveChat({
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
-
   const peer = from.uid;
 
-  // 🔐 xác định đúng chatKey
   const key =
     auth.uid < peer
       ? "chat_" + auth.uid + "_" + peer
       : "chat_" + peer + "_" + auth.uid;
 
-  // 1️⃣ LƯU VÀO LOCALSTORAGE (CHỐNG TRÙNG)
+  // 1️⃣ LƯU LOCAL (CHỐNG TRÙNG)
   const arr = JSON.parse(localStorage.getItem(key) || "[]");
   if (!arr.find(x => x.id === msgId)) {
     arr.push({
@@ -219,44 +217,22 @@ socket.on("private-message", ({ from, text, msgId }) => {
       text,
       time: Date.now(),
       peer,
-      seen: false        // 🔥 QUAN TRỌNG
+      seen: false
     });
     localStorage.setItem(key, JSON.stringify(arr));
   }
 
-  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER
-  if (!chatModal.classList.contains("hidden")) {
-    const curKey = chatKey();
+  // 2️⃣ NẾU MODAL ĐÓNG → BADGE + TOAST
+  if (chatModal.classList.contains("hidden")) {
+    showInboxDot(1);
 
-    if (curKey === key) {
-      pushMsg(
-        from.name,
-        text,
-        false,
-        msgId,
-        "",
-        from.avatar
-      );
-
-      socket.emit("msg-seen", { to: peer, msgId });
-      return;
-    }
+    showMessageToast({
+      name: from.name,
+      text,
+      avatar: from.avatar,
+      uid: from.uid
+    });
   }
-
-  // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
-  showInboxDot(1);
-
-// 🔔 HIỆN TOAST KHI MODAL ĐANG ĐÓNG
-if (chatModal.classList.contains("hidden")) {
-  showMessageToast({
-    name: from.name,
-    text,
-    avatar: from.avatar,
-    uid: from.uid
-  });
-}
-
-
 });
 
 
