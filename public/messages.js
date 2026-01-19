@@ -14,6 +14,9 @@ let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
 
+// 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
+const renderedMsgIds = new Set();
+
 
 async function loadAllUsers(){
   const res = await fetch("/api/all-users");
@@ -52,6 +55,8 @@ function saveChat(msg){
 
 
 function loadChat(){
+  renderedMsgIds.clear(); // 🔥 reset chống trùng khi đổi chat
+
   const key = chatKey();
   if(!key) return;
 
@@ -65,12 +70,13 @@ function loadChat(){
       isMe ? "Bạn" : currentTarget.name,
       m.text,
       isMe,
-      null,
+      m.id,                  // 🔥 TRUYỀN msgId
       "",
       isMe ? auth.avatar : currentTarget.avatar
     );
   });
 }
+
 
 
 
@@ -237,29 +243,34 @@ socket.on("msg-status", ({ msgId, status }) => {
 
 
 function pushMsg(name, text, isMe=false, msgId=null, status=""){
+  // 🔒 CHẶN RENDER TRÙNG
+  if (msgId && renderedMsgIds.has(msgId)) return;
+  if (msgId) renderedMsgIds.add(msgId);
+
   const div = document.createElement("div");
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
-  const time = new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
+  const time = new Date().toLocaleTimeString("vi-VN",{
+    hour:"2-digit",
+    minute:"2-digit"
+  });
 
   div.innerHTML = `
-   <div class="msg-bubble ${isMe ? "me":"other"}">${text}</div>
-
+    <div class="msg-bubble ${isMe ? "me":"other"}">${text}</div>
     <div class="chat-time">
       ${time}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
     </div>
   `;
 
- chatBox.appendChild(div);
+  chatBox.appendChild(div);
 
- // ⬇️ Luôn cuộn xuống tin mới nhất
-requestAnimationFrame(() => {
-  chatBox.scrollTop = chatBox.scrollHeight;
-});
-
+  requestAnimationFrame(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
 }
+
 
 
 
