@@ -174,19 +174,6 @@ const lpPosts = loadSocial();
 
 const activeUsers = new Map();   // uid -> Set(socketId)
 
-function killOldSockets(uid, keepSid) {
-  const set = activeUsers.get(uid);
-  if (!set) return;
-
-  for (const sid of set) {
-    if (sid !== keepSid) {
-      const s = io.sockets.sockets.get(sid);
-      if (s) {
-        s.disconnect(true); // 🔥 kill socket cũ
-      }
-    }
-  }
-}
 
 
 function getPost(id){
@@ -1026,11 +1013,6 @@ saveInbox(Object.fromEntries(userInbox)); // ✅ BẮT BUỘC
   // 2️⃣ GỬI REALTIME NẾU ONLINE
 const sockets = activeUsers.get(to);
 
-
-
-
-
-
 if (sockets) {
   const db = loadUsers();
   const user = db[fromUid];
@@ -1041,14 +1023,12 @@ if (sockets) {
     verified: !!user?.profile?.verified
   };
 
- const [sid] = sockets; // 👈 CHỈ LẤY 1 SOCKET
-if (sid) {
-  io.to(sid).emit("private-message", {
-    from: fromProfile,
-    text,
-    msgId: id
-  });
-
+  for (const sid of sockets) {
+    io.to(sid).emit("private-message", {
+      from: fromProfile,
+      text,
+      msgId: id
+    });
 
     io.to(sid).emit("inbox-new");
   }
@@ -1163,11 +1143,7 @@ socket.on("auth-ping", ({ uid }) => {
     return;
   }
 
-killOldSockets(uid, socket.id);
-activeUsers.set(uid, new Set([socket.id]));
-emitActiveUsers();
-
-
+  activeUsers.get(uid).add(socket.id);
 });
 
 
@@ -1191,12 +1167,11 @@ emitActiveUsers();
     };
   }
 
-// 🔥 CHỈ CHO 1 SOCKET / 1 UID
-killOldSockets(uid, socket.id);
-
-// reset set
-activeUsers.set(uid, new Set([socket.id]));
-
+  // ✅ KHÔNG ĐÁ – CHỈ GHI ĐÈ SOCKET MỚI
+ if (!activeUsers.has(uid)) {
+  activeUsers.set(uid, new Set());
+}
+activeUsers.get(uid).add(socket.id);
 
 
  // 🔥 GỬI TIN OFFLINE – CHỈ 1 LẦN
