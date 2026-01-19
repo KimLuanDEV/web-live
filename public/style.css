@@ -9156,7 +9156,7 @@ body.bar-merged .guest-notice-inner{
 .profile-cover{
   position: relative;
   width: 100vw;              /* full viewport */
-  height: 240px;
+  height: 280px;
   left: 50%;
   right: 50%;
   margin-left: -50vw;        /* phá container */
