@@ -1364,9 +1364,10 @@ function editPost(postId){
 
   <div class="lp-header-title">Chỉnh sửa bài viết</div>
 
-  <button class="lp-submit icon" id="saveEdit" title="Lưu">
-    ✓
-  </button>
+<button class="lp-submit icon" id="saveEdit" title="Lưu" disabled>
+  ✓
+</button>
+
 </div>
 
 
@@ -1379,20 +1380,40 @@ function editPost(postId){
 
   document.body.appendChild(modal);
 
+
+  const textarea = modal.querySelector("#editText");
+const saveBtn  = modal.querySelector("#saveEdit");
+
+const originalText = oldText.trim();
+
+// trạng thái ban đầu
+saveBtn.disabled = true;
+
+textarea.addEventListener("input", () => {
+  const current = textarea.value.trim();
+
+  // chỉ enable khi nội dung khác ban đầu
+  saveBtn.disabled = (current === originalText || !current);
+});
+
+
   modal.querySelector(".lp-close").onclick = () => modal.remove();
 
-  modal.querySelector("#saveEdit").onclick = () => {
-    const newText = modal.querySelector("#editText").value.trim();
-    if(!newText) return;
+ modal.querySelector("#saveEdit").onclick = () => {
+  if (saveBtn.disabled) return;
 
-    socket.emit("lp-edit-post", {
-      postId,
-      uid: auth.uid,
-      text: newText
-    });
+  const newText = textarea.value.trim();
+  if(!newText) return;
 
-    modal.remove();
-  };
+  socket.emit("lp-edit-post", {
+    postId,
+    uid: auth.uid,
+    text: newText
+  });
+
+  modal.remove();
+};
+
 }
 
 
@@ -1404,4 +1425,11 @@ socket.on("lp-edit-post", ({ postId, text })=>{
   if(textEl){
     textEl.innerHTML = text.replace(/\n/g,"<br>");
   }
+
+  // ✅ chỉ toast cho chính chủ
+  if(postEl.dataset.uid === auth.uid){
+    showToast("Đã cập nhật bài viết");
+  }
 });
+
+
