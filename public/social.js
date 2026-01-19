@@ -1640,7 +1640,7 @@ function showMessageToast(){
 
   document.body.appendChild(div);
 
-  setTimeout(()=>div.remove(),2500);
+  setTimeout(()=>div.remove(),5000);
 }
 
 function clearMessageBadge(){

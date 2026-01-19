@@ -6942,9 +6942,29 @@ body.is-guest .reactions-layer{
 }
 
 .msg-title .dot{
-  width:10px;height:10px;border-radius:50%;
+
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  margin-left:6px;
+  min-width:8px;
+  height:8px;
   background:#ff3b6b;
+  border-radius:999px;
+  color:#fff;
+  font-size:10px;
+  padding:0 4px;
+  opacity:0;
+  transform:scale(0.6);
+  transition:0.2s;
+
+  width:10px;height:10px;border-radius:50%;
   box-shadow:0 0 16px #ff3b6b;
+}
+
+.msg-title .dot.active{
+  opacity:1;
+  transform:scale(1);
 }
 
 .msg-layout{

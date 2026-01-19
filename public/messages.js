@@ -370,3 +370,29 @@ window.addEventListener("resize", () => {
 
 
 
+
+// 🔔 THÔNG BÁO CÓ TIN NHẮN MỚI Ở SẢNH MESSAGES
+socket.on("inbox-new", (data = {}) => {
+  showInboxDot(data.count);
+});
+
+
+function showInboxDot(count){
+  const dot = document.querySelector(".msg-title .dot");
+  if(!dot) return;
+
+  dot.classList.add("active");
+
+  // nếu muốn hiện số (tuỳ chọn)
+  if(count && count > 0){
+    dot.textContent = count > 9 ? "9+" : count;
+  }
+}
+
+function clearInboxDot(){
+  const dot = document.querySelector(".msg-title .dot");
+  if(!dot) return;
+
+  dot.classList.remove("active");
+  dot.textContent = "";
+}
