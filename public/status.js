@@ -152,3 +152,63 @@ function resizeCover(src, w, h, cb){
   };
   img.src = src;
 }
+
+
+// ===== DRAG REPOSITION COVER =====
+let isDragging = false;
+let startY = 0;
+let currentOffsetY = 0;
+
+const savedOffset = localStorage.getItem("cover_offset_y");
+if (savedOffset) {
+  currentOffsetY = parseFloat(savedOffset);
+  stCover.style.transform = `translateY(${currentOffsetY}px)`;
+}
+
+// mouse + touch start
+stCover.addEventListener("mousedown", startDrag);
+stCover.addEventListener("touchstart", startDrag, { passive:false });
+
+function startDrag(e){
+  e.preventDefault();
+  isDragging = true;
+  startY = getY(e);
+  document.querySelector(".st-cover").classList.add("dragging");
+}
+
+// move
+window.addEventListener("mousemove", onDrag);
+window.addEventListener("touchmove", onDrag, { passive:false });
+
+function onDrag(e){
+  if (!isDragging) return;
+  e.preventDefault();
+
+  const delta = getY(e) - startY;
+  let newOffset = currentOffsetY + delta;
+
+  // 🔒 GIỚI HẠN KÉO (tránh lố)
+  newOffset = Math.max(-120, Math.min(120, newOffset));
+
+  stCover.style.transform = `translateY(${newOffset}px)`;
+}
+
+// end
+window.addEventListener("mouseup", endDrag);
+window.addEventListener("touchend", endDrag);
+
+function endDrag(){
+  if (!isDragging) return;
+  isDragging = false;
+
+  const transform = stCover.style.transform;
+  const match = transform.match(/-?\d+\.?\d*/);
+  currentOffsetY = match ? parseFloat(match[0]) : 0;
+
+  localStorage.setItem("cover_offset_y", currentOffsetY);
+  document.querySelector(".st-cover").classList.remove("dragging");
+}
+
+function getY(e){
+  return e.touches ? e.touches[0].clientY : e.clientY;
+}

@@ -101,3 +101,15 @@
   max-width:100%;
   overflow-x:hidden;
 }
+
+
+/* ===== DRAG REPOSITION COVER ===== */
+.st-cover img{
+  cursor: grab;
+  user-select: none;
+  touch-action: none; /* mobile drag */
+}
+
+.st-cover.dragging img{
+  cursor: grabbing;
+}
