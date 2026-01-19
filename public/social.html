@@ -26,12 +26,6 @@
 <style>
 
 
-html, body {
-  background: #000;
-  color: #fff;
-  margin: 0;
-  padding: 0;
-}
 
 
 /* ===== LIVESTREAM PRO SOCIAL ===== */
@@ -48,7 +42,7 @@ html, body {
   align-items:center;
   gap:12px;
   padding:12px;
-  background: #000; /* thay rgba */
+  background:rgba(0,0,0,.5);
   border-bottom:1px solid rgba(255,255,255,.12);
   backdrop-filter: blur(10px);
 }
@@ -78,7 +72,7 @@ html, body {
   top: 56px; /* ngay dưới topbar */
   z-index: 900;
   backdrop-filter: blur(12px);
-  background: #000;
+  background: rgba(0,0,0,.55);
   border-top: 0;              /* ✅ khỏi bị 2 đường viền chồng */
   border-bottom: 1px solid rgba(255,255,255,.14);
   border-left: none;
@@ -136,13 +130,12 @@ html, body {
   gap: 0px;
   padding-top: 0;   /* ✅ dính sát compose */
   border-top: 0;
-  background: #000;
 }
 
 .lp-post{
   width: 100vw;                         /* ✅ full width */
   margin-left: calc(50% - 50vw);        /* phá giới hạn */
-  background: #000;
+  background: rgba(0,0,0,.55);
   border-radius: 0;
   box-shadow: none;
   padding: 0;                           /* bỏ padding ngoài */
