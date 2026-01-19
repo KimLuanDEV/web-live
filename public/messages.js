@@ -5,7 +5,7 @@ const sysModal = document.getElementById("sysModal");
 const sysText = document.getElementById("sysText");
 const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
-
+const VAPID_PUBLIC_KEY = "BA9FPfAtc-EloHtl5nunB1zDlEYEIEURv-CERjmW__WB-s8jga_MDjvP3VXnIGmLyh_YH1DtES_t2Y6di_h1nBc";
 
 
 
