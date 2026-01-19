@@ -209,7 +209,8 @@ saveChat({
   setTimeout(()=>input.focus(),20);
 };
 
-
+// 🔥 FIX DUP: đảm bảo chỉ có 1 listener duy nhất
+socket.off("private-message");
 socket.on("private-message", ({ from, text, msgId }) => {
 
   // 🔒 nếu message đã xử lý (offline) thì bỏ qua
