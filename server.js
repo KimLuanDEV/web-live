@@ -1045,16 +1045,30 @@ socket.on("private-message", ({ to, text, msgId }) => {
   // 3️⃣ PUSH NOTIFICATION (AN TOÀN)
   const subs = pushSubs.get(to);
   if (subs && subs.size > 0) {
+
     const payload = JSON.stringify({
-      title: fromProfile.name || "Tin nhắn mới",
-      body: text,
-      icon: fromProfile.avatar || "/icons/icon-192.png",
-      url: `/messages.html?uid=${fromUid}`
-    });
+  title: fromProfile.name || "Tin nhắn mới",
+  body: text || "",
+  icon: "/icons/icon-192.png",   // ⚠️ dùng icon local HTTPS
+  badge: "/icons/icon-192.png",  // ⚠️ iOS rất cần badge
+  data: {
+    url: `/messages.html?uid=${fromUid}`
+  }
+});
+
 
     for (const raw of subs) {
       const sub = JSON.parse(raw);
-      webpush.sendNotification(sub, payload).catch(()=>{});
+
+      webpush.sendNotification(sub, payload)
+  .then(() => {
+    console.log("📲 Push sent OK to", to);
+  })
+  .catch(err => {
+    console.error("❌ Push send failed:", err.statusCode, err.body || err.message);
+  });
+
+
     }
   }
 
