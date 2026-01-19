@@ -200,14 +200,16 @@ saveChat({
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
+
   const peer = from.uid;
 
+  // 🔐 xác định đúng chatKey
   const key =
     auth.uid < peer
       ? "chat_" + auth.uid + "_" + peer
       : "chat_" + peer + "_" + auth.uid;
 
-  // ✅ CHỈ LƯU
+  // 1️⃣ LƯU VÀO LOCALSTORAGE (CHỐNG TRÙNG)
   const arr = JSON.parse(localStorage.getItem(key) || "[]");
   if (!arr.find(x => x.id === msgId)) {
     arr.push({
@@ -217,25 +219,48 @@ socket.on("private-message", ({ from, text, msgId }) => {
       text,
       time: Date.now(),
       peer,
-      seen: !chatModal.classList.contains("hidden") && chatKey() === key
+      seen: false        // 🔥 QUAN TRỌNG
     });
     localStorage.setItem(key, JSON.stringify(arr));
   }
 
-  // 🔔 UI phụ
-  if (chatModal.classList.contains("hidden")) {
-    showInboxDot(1);
-    showMessageToast({
-      name: from.name,
-      text,
-      avatar: from.avatar,
-      uid: from.uid
-    });
-  } else if (chatKey() === key) {
-    // ✅ modal đang mở → reload lại chat
-    loadChat();
-    socket.emit("msg-seen", { to: peer, msgId });
+  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER
+  if (!chatModal.classList.contains("hidden")) {
+    const curKey = chatKey();
+
+    if (curKey === key) {
+
+      // 🔥 FIX CHỐT: nếu msg đã tồn tại → KHÔNG render nữa
+  if (renderedMsgIds.has(msgId)) return;
+
+      pushMsg(
+        from.name,
+        text,
+        false,
+        msgId,
+        "",
+        from.avatar
+      );
+
+      socket.emit("msg-seen", { to: peer, msgId });
+      return;
+    }
   }
+
+  // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
+  showInboxDot(1);
+
+// 🔔 HIỆN TOAST KHI MODAL ĐANG ĐÓNG
+if (chatModal.classList.contains("hidden")) {
+  showMessageToast({
+    name: from.name,
+    text,
+    avatar: from.avatar,
+    uid: from.uid
+  });
+}
+
+
 });
 
 
