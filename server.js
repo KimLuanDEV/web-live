@@ -174,6 +174,19 @@ const lpPosts = loadSocial();
 
 const activeUsers = new Map();   // uid -> Set(socketId)
 
+function killOldSockets(uid, keepSid) {
+  const set = activeUsers.get(uid);
+  if (!set) return;
+
+  for (const sid of set) {
+    if (sid !== keepSid) {
+      const s = io.sockets.sockets.get(sid);
+      if (s) {
+        s.disconnect(true); // 🔥 kill socket cũ
+      }
+    }
+  }
+}
 
 
 function getPost(id){
@@ -1014,17 +1027,7 @@ saveInbox(Object.fromEntries(userInbox)); // ✅ BẮT BUỘC
 const sockets = activeUsers.get(to);
 
 
-function killOldSockets(uid, keepSid) {
-  const set = activeUsers.get(uid);
-  if (!set) return;
 
-  for (const sid of set) {
-    if (sid !== keepSid) {
-      const s = io.sockets.sockets.get(sid);
-      if (s) s.disconnect(true);
-    }
-  }
-}
 
 
 
