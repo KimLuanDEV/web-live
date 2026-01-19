@@ -192,6 +192,11 @@ if (vipBadgeBox){
   }
 }
 
+if (p.cover && coverPreview) {
+  coverPreview.src = p.cover;
+}
+
+
 }
 
 const btnMessages = document.getElementById("btnMessages");
@@ -596,3 +601,43 @@ document.querySelectorAll("#passModal input").forEach(inp=>{
     document.body.classList.remove("keyboard-open");
   });
 });
+
+
+
+// ===== COVER IMAGE =====
+const coverInput   = document.getElementById("coverInput");
+const coverPreview = document.getElementById("coverPreview");
+const btnChangeCover = document.getElementById("btnChangeCover");
+
+btnChangeCover.onclick = () => coverInput.click();
+
+coverInput.onchange = async () => {
+  const file = coverInput.files[0];
+  if (!file) return;
+
+  const fd = new FormData();
+  fd.append("cover", file);
+
+  const res = await fetch("/api/upload-cover", {
+    method: "POST",
+    body: fd
+  });
+
+  const data = await res.json();
+  if (!data.url) {
+    showMsg("❌ Upload cover thất bại");
+    return;
+  }
+
+  coverPreview.src = data.url;
+
+  // lưu local
+  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+  p.cover = data.url;
+  localStorage.setItem(KEY, JSON.stringify(p));
+
+  // sync realtime
+  if (__profileAuth.uid) {
+    socket.emit("profile-update", { cover: data.url });
+  }
+};

@@ -33,23 +33,43 @@
 
 
   <!-- HEADER -->
-  <div class="profile-header">
-   <div class="avatar-wrap">
-  <img id="avatarPreview" src="https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg">
-  <div id="avatarCrown" class="avatar-crown hidden">👑</div>
-  <div class="avatar-camera">📷</div>
+
+  <!-- PROFILE COVER -->
+<div class="profile-cover">
+  <img id="coverPreview"
+       src="https://i.ibb.co/3mY0H4Xh/Chat-GPT-Image-Jan-19-2026-09-44-27-AM.jpg"
+       alt="cover">
+
+  <div class="cover-actions">
+    <button id="btnChangeCover">📷 Chỉnh sửa ảnh bìa</button>
+  </div>
+
+  <input type="file" id="coverInput" accept="image/*" hidden>
 </div>
 
+<!-- AVATAR + BASIC INFO -->
+<div class="profile-header fb-style">
 
-    <div class="profile-info">
-      <div class="profile-name" id="displayName">User</div>
-      <input id="nameInput" class="name-input hidden" placeholder="Nhập tên của bạn">
-
-      <button id="btnChangeAvatar">📤 Đổi avatar</button>
-    </div>
-
-    <input type="file" id="avatarInput" accept="image/*" hidden>
+  <div class="avatar-wrap fb-avatar">
+    <img id="avatarPreview"
+         src="https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg">
+    <div id="avatarCrown" class="avatar-crown hidden">👑</div>
+    <div class="avatar-camera">📷</div>
   </div>
+
+  <input type="file" id="avatarInput" accept="image/*" hidden>
+
+  <div class="profile-info fb-info">
+    <div class="profile-name" id="displayName">User</div>
+    <input id="nameInput" class="name-input hidden" placeholder="Nhập tên của bạn">
+
+    <div class="profile-bio-inline">
+      <span id="bioText">Chưa có giới thiệu</span>
+    </div>
+  </div>
+
+</div>
+
 
 
 

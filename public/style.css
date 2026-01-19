@@ -9051,3 +9051,101 @@ body.bar-merged .guest-notice-inner{
 
   background:#000;
 }
+
+
+
+/* ===== FACEBOOK STYLE PROFILE ===== */
+
+.profile-cover {
+  position: relative;
+  width: 100%;
+  height: 220px;
+  overflow: hidden;
+  background: #111;
+}
+
+.profile-cover img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-actions {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+}
+
+.cover-actions button {
+  background: rgba(0,0,0,.6);
+  color: #fff;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+/* HEADER */
+.profile-header.fb-style {
+  position: relative;
+  padding: 0 16px;
+  margin-top: -56px; /* avatar đè lên cover */
+  display: flex;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+/* AVATAR */
+.fb-avatar {
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  border: 4px solid #000;
+  background: #000;
+}
+
+.fb-avatar img {
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.fb-avatar .avatar-camera {
+  position: absolute;
+  right: 4px;
+  bottom: 4px;
+  background: #000;
+  border-radius: 50%;
+  padding: 6px;
+  font-size: 14px;
+}
+
+/* INFO */
+.fb-info {
+  padding-bottom: 12px;
+}
+
+.fb-info .profile-name {
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.profile-bio-inline {
+  font-size: 14px;
+  opacity: .85;
+  margin-top: 4px;
+}
+
+/* MOBILE */
+@media (max-width: 600px) {
+  .profile-cover {
+    height: 180px;
+  }
+
+  .fb-avatar {
+    width: 96px;
+    height: 96px;
+  }
+}
