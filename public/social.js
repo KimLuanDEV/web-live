@@ -1350,6 +1350,10 @@ function editPost(postId){
   const postEl = document.querySelector(`.lp-post[data-id="${postId}"]`);
   if(!postEl) return;
 
+
+  const oldImages = [...postEl.querySelectorAll(".lp-post-images img")]
+  .map(img => img.src);
+
   const textEl = postEl.querySelector(".lp-post-text");
   const oldText = textEl?.innerText || "";
 
@@ -1374,11 +1378,73 @@ function editPost(postId){
       <div class="lp-compose-body">
         <textarea id="editText"
           style="width:100%;height:100%;background:transparent;color:#fff;font-size:16px;">${oldText}</textarea>
+
+            <!-- preview ảnh cũ -->
+  <div id="editImagePreview" class="lp-preview-grid"></div>
+
       </div>
     </div>
+
+<!-- footer -->
+<div class="lp-compose-footer">
+  <label class="lp-tool">
+    📷
+    <input type="file" id="editImageInput" accept="image/*" multiple hidden>
+  </label>
+</div>
+
   `;
 
   document.body.appendChild(modal);
+
+
+// ===== EDIT IMAGE LOGIC (PHẢI Ở TRONG editPost) =====
+let editImages = [...oldImages]; // string url hoặc { file, preview }
+
+const preview = modal.querySelector("#editImagePreview");
+const input = modal.querySelector("#editImageInput");
+
+function renderEditImages(){
+  preview.innerHTML = "";
+
+  editImages.forEach((img, index) => {
+    const wrap = document.createElement("div");
+    wrap.className = "lp-preview-item";
+
+    const src = typeof img === "string" ? img : img.preview;
+
+    wrap.innerHTML = `
+      <img src="${src}">
+      <button class="lp-preview-remove">✕</button>
+    `;
+
+    wrap.querySelector("button").onclick = () => {
+      editImages.splice(index, 1);
+      renderEditImages();
+      checkEditChanged();
+    };
+
+    preview.appendChild(wrap);
+  });
+}
+
+renderEditImages();
+
+input.onchange = () => {
+  [...input.files].forEach(file => {
+    editImages.push({
+      file,
+      preview: URL.createObjectURL(file)
+    });
+  });
+  input.value = "";
+  renderEditImages();
+  checkEditChanged();
+};
+
+
+
+
 
 
   const textarea = modal.querySelector("#editText");
@@ -1389,47 +1455,99 @@ const originalText = oldText.trim();
 // trạng thái ban đầu
 saveBtn.disabled = true;
 
-textarea.addEventListener("input", () => {
-  const current = textarea.value.trim();
+function checkEditChanged(){
+  const textChanged =
+    textarea.value.trim() !== originalText;
 
-  // chỉ enable khi nội dung khác ban đầu
-  saveBtn.disabled = (current === originalText || !current);
-});
+  const imageChanged =
+    editImages.length !== oldImages.length ||
+    editImages.some((img, i) => img !== oldImages[i]);
+
+  saveBtn.disabled = !(textChanged || imageChanged);
+}
+
+textarea.addEventListener("input", checkEditChanged);
+
 
 
   modal.querySelector(".lp-close").onclick = () => modal.remove();
 
- modal.querySelector("#saveEdit").onclick = () => {
+
+saveBtn.onclick = async () => {
   if (saveBtn.disabled) return;
 
   const newText = textarea.value.trim();
-  if(!newText) return;
+
+  let imageUrls = [];
+
+  for(const img of editImages){
+    if(typeof img === "string"){
+      imageUrls.push(img); // ảnh cũ
+    }else{
+      const fd = new FormData();
+      fd.append("image", img.file);
+
+      const r = await fetch("/api/upload-post-image", {
+        method: "POST",
+        body: fd
+      });
+
+      const d = await r.json();
+      if(d.url) imageUrls.push(d.url);
+    }
+  }
 
   socket.emit("lp-edit-post", {
     postId,
     uid: auth.uid,
-    text: newText
+    text: newText,
+    images: imageUrls
   });
 
   modal.remove();
 };
 
+
 }
 
 
-socket.on("lp-edit-post", ({ postId, text })=>{
+socket.on("lp-edit-post", ({ postId, text, images })=>{
   const postEl = document.querySelector(`.lp-post[data-id="${postId}"]`);
   if(!postEl) return;
 
+  // update text
   const textEl = postEl.querySelector(".lp-post-text");
   if(textEl){
     textEl.innerHTML = text.replace(/\n/g,"<br>");
   }
 
-  // ✅ chỉ toast cho chính chủ
+  // update images
+  if(images){
+    postEl.querySelector(".lp-post-images")?.remove();
+
+    if(images.length){
+      const html = `
+        <div class="lp-post-images fb-${Math.min(images.length, 5)}">
+          ${images.slice(0,5).map((url, index) => `
+            <div class="fb-img img-${index}"
+              onclick='openFeedLightbox(${JSON.stringify(images)}, ${index})'>
+              <img src="${url}">
+              ${index === 4 && images.length > 5
+                ? `<div class="fb-more">+${images.length - 5}</div>`
+                : ``}
+            </div>
+          `).join("")}
+        </div>
+      `;
+      postEl.querySelector(".lp-post-text")
+        .insertAdjacentHTML("afterend", html);
+    }
+  }
+
   if(postEl.dataset.uid === auth.uid){
     showToast("Đã cập nhật bài viết");
   }
 });
+
 
 
