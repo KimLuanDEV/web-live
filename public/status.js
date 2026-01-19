@@ -97,3 +97,58 @@ function updateStats() {
   stLikes.textContent = likeCount;
   stComments.textContent = commentCount;
 }
+
+
+
+// ===== COVER UPLOAD =====
+const coverInput = document.getElementById("coverInput");
+const stCover = document.getElementById("stCover");
+
+// load cover đã lưu
+const savedCover = localStorage.getItem("user_cover");
+if (savedCover) {
+  stCover.src = savedCover;
+} else {
+  stCover.src = "https://picsum.photos/900/400";
+}
+
+// khi chọn ảnh mới
+coverInput.addEventListener("change", e => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = ev => {
+    resizeCover(ev.target.result, 900, 400, result => {
+      stCover.src = result;
+      localStorage.setItem("user_cover", result);
+    });
+  };
+  reader.readAsDataURL(file);
+});
+
+// resize + crop cover
+function resizeCover(src, w, h, cb){
+  const img = new Image();
+  img.onload = () => {
+    const canvas = document.createElement("canvas");
+    canvas.width = w;
+    canvas.height = h;
+    const ctx = canvas.getContext("2d");
+
+    const scale = Math.max(w / img.width, h / img.height);
+    const nw = img.width * scale;
+    const nh = img.height * scale;
+
+    ctx.drawImage(
+      img,
+      (w - nw) / 2,
+      (h - nh) / 2,
+      nw,
+      nh
+    );
+
+    cb(canvas.toDataURL("image/jpeg", 0.9));
+  };
+  img.src = src;
+}

@@ -60,3 +60,30 @@
   font-size:12px;
   opacity:.6;
 }
+
+
+
+/* ===== COVER UPLOAD ===== */
+.st-cover{
+  position:relative;
+}
+
+.st-cover-btn{
+  position:absolute;
+  right:12px;
+  bottom:12px;
+
+  padding:8px 12px;
+  border-radius:999px;
+  font-size:13px;
+  font-weight:700;
+
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.25);
+  backdrop-filter: blur(6px);
+  cursor:pointer;
+}
+
+.st-cover-btn:hover{
+  filter:brightness(1.12);
+}
