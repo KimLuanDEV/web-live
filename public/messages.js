@@ -17,6 +17,10 @@ let onlineSet = new Set();
 // 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
 const renderedMsgIds = new Set();
 
+// 🔒 CHỐNG LƯU TRÙNG MESSAGE (offline + realtime)
+const handledMsgIds = new Set();
+
+
 
 // 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
 let offlineHandled = false;
@@ -132,17 +136,24 @@ socket.on("offline-messages", (list)=>{
 
     const arr = JSON.parse(localStorage.getItem(key) || "[]");
 
-    if(!arr.find(x => x.id === m.id)){
-      arr.push({
-        id: m.id,
-        from: m.from,
-        to: m.to,
-        text: m.text,
-        time: m.time,
-        peer
-      });
-      localStorage.setItem(key, JSON.stringify(arr));
-    }
+if (!handledMsgIds.has(m.id)) {
+  handledMsgIds.add(m.id);
+
+  if (!arr.find(x => x.id === m.id)) {
+    arr.push({
+      id: m.id,
+      from: m.from,
+      to: m.to,
+      text: m.text,
+      time: m.time,
+      peer,
+      seen: false
+    });
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
+}
+
+
   });
 
   if(list.length){
@@ -201,6 +212,11 @@ saveChat({
 
 socket.on("private-message", ({ from, text, msgId }) => {
 
+  // 🔒 nếu message đã xử lý (offline) thì bỏ qua
+if (handledMsgIds.has(msgId)) return;
+handledMsgIds.add(msgId);
+
+
   const peer = from.uid;
 
   // 🔐 xác định đúng chatKey
@@ -224,14 +240,24 @@ socket.on("private-message", ({ from, text, msgId }) => {
     localStorage.setItem(key, JSON.stringify(arr));
   }
 
-  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → CHỈ ĐÁNH DẤU SEEN (❌ KHÔNG RENDER)
-if (
-  !chatModal.classList.contains("hidden") &&
-  chatKey() === key
-) {
-  socket.emit("msg-seen", { to: peer, msgId });
-}
+  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER
+  if (!chatModal.classList.contains("hidden")) {
+    const curKey = chatKey();
 
+    if (curKey === key) {
+      pushMsg(
+        from.name,
+        text,
+        false,
+        msgId,
+        "",
+        from.avatar
+      );
+
+      socket.emit("msg-seen", { to: peer, msgId });
+      return;
+    }
+  }
 
   // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
   showInboxDot(1);
