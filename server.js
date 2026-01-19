@@ -56,6 +56,7 @@ let userInbox = new Map(Object.entries(loadInbox()));
 
 
 
+
 const upload = multer({
   storage: multer.diskStorage({
     destination: "/opt/render/project/data/avatars",
@@ -246,7 +247,6 @@ function emitAllUsers(){
 }
 
 
-// ===== USER INBOX / NOTIFICATION =====
 
 
 function pushNotify(uid, payload){
@@ -1009,7 +1009,6 @@ socket.on("private-message", ({ to, text, msgId }) => {
   if(!userInbox.has(to)) userInbox.set(to, []);
   userInbox.get(to).push(msg);
 saveInbox(Object.fromEntries(userInbox)); // ✅ BẮT BUỘC
-
  
   // 2️⃣ GỬI REALTIME NẾU ONLINE
 const sockets = activeUsers.get(to);
@@ -1196,6 +1195,7 @@ if (inbox && inbox.length) {
     for (const m of toSend) {
       m.delivered = true;
     }
+
 
     saveInbox(Object.fromEntries(userInbox)); // ✅ FIX QUAN TRỌNG
 

@@ -109,7 +109,7 @@ function showModal(text, okText="OK", cancelText=null){
 
 
 socket.on("connect", () => {
-   offlineHandled = false;   // ✅ FIX
+   offlineHandled = false;          // ✅ FIX
   if (auth?.uid) {
     socket.emit("auth-login", { uid: auth.uid });
   }
@@ -145,7 +145,7 @@ socket.on("offline-messages", (list)=>{
     }
   });
 
-if(list.length){
+  if(list.length){
   showInboxDot(list.length); // 🔔 hiện badge
   renderUserList();          // 🔄 refresh danh sách
 }
@@ -200,14 +200,16 @@ saveChat({
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
+
   const peer = from.uid;
 
+  // 🔐 xác định đúng chatKey
   const key =
     auth.uid < peer
       ? "chat_" + auth.uid + "_" + peer
       : "chat_" + peer + "_" + auth.uid;
 
-  // 1️⃣ LƯU LOCAL (CHỐNG TRÙNG)
+  // 1️⃣ LƯU VÀO LOCALSTORAGE (CHỐNG TRÙNG)
   const arr = JSON.parse(localStorage.getItem(key) || "[]");
   if (!arr.find(x => x.id === msgId)) {
     arr.push({
@@ -217,22 +219,44 @@ socket.on("private-message", ({ from, text, msgId }) => {
       text,
       time: Date.now(),
       peer,
-      seen: false
+      seen: false        // 🔥 QUAN TRỌNG
     });
     localStorage.setItem(key, JSON.stringify(arr));
   }
 
-  // 2️⃣ NẾU MODAL ĐÓNG → BADGE + TOAST
-  if (chatModal.classList.contains("hidden")) {
-    showInboxDot(1);
+  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER
+  if (!chatModal.classList.contains("hidden")) {
+    const curKey = chatKey();
 
-    showMessageToast({
-      name: from.name,
-      text,
-      avatar: from.avatar,
-      uid: from.uid
-    });
+    if (curKey === key) {
+      pushMsg(
+        from.name,
+        text,
+        false,
+        msgId,
+        "",
+        from.avatar
+      );
+
+      socket.emit("msg-seen", { to: peer, msgId });
+      return;
+    }
   }
+
+  // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
+  showInboxDot(1);
+
+// 🔔 HIỆN TOAST KHI MODAL ĐANG ĐÓNG
+if (chatModal.classList.contains("hidden")) {
+  showMessageToast({
+    name: from.name,
+    text,
+    avatar: from.avatar,
+    uid: from.uid
+  });
+}
+
+
 });
 
 
