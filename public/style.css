@@ -9149,3 +9149,49 @@ body.bar-merged .guest-notice-inner{
     height: 96px;
   }
 }
+
+
+
+/* ===== PROFILE COVER FULL WIDTH ===== */
+.profile-cover{
+  position: relative;
+  width: 100vw;              /* full viewport */
+  height: 240px;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;        /* phá container */
+  margin-right: -50vw;
+  overflow: hidden;
+  background: #000;
+}
+
+.profile-cover img{
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* nút chỉnh sửa */
+.cover-actions{
+  position: absolute;
+  right: 16px;
+  bottom: 14px;
+  z-index: 5;
+}
+
+.cover-actions button{
+  background: rgba(0,0,0,.55);
+  color:#fff;
+  border:none;
+  padding:8px 12px;
+  border-radius:10px;
+  font-size:13px;
+  backdrop-filter: blur(6px);
+}
+
+@media (max-width: 600px){
+  .profile-cover{
+    height: 180px;
+  }
+}
