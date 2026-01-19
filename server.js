@@ -678,6 +678,23 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+socket.on("msg-delivered", ({ msgId }) => {
+  const uid = socket.data.uid;
+  if (!uid || !msgId) return;
+
+  const inbox = userInbox.get(uid);
+  if (!inbox) return;
+
+  const msg = inbox.find(m => m.id === msgId);
+  if (msg) {
+    msg.delivered = true;
+    saveInbox(Object.fromEntries(userInbox));
+  }
+});
+
+
+
+
  socket.on("lp-like-reply", ({ postId, commentIndex, replyId, uid })=>{
   const post = getPost(postId);
   if(!post) return;
@@ -1063,7 +1080,6 @@ if (sockets) {
     io.to(sid).emit("inbox-new");
   }
 
-  msg.delivered = true;
 }
 
 

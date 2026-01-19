@@ -215,6 +215,9 @@ saveChat({
 
 socket.on("private-message", ({ from, text, msgId }) => {
 
+  socket.emit("msg-delivered", { msgId });
+
+  
   const peer = from.uid;
 
   // 🔐 xác định đúng chatKey
