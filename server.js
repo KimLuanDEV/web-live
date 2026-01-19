@@ -140,7 +140,8 @@ const postVideoUpload = multer({
       cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
     }
   }),
-  limits: { fileSize: 50 * 1024 * 1024 } // 50MB
+  limits: { fileSize: 200 * 1024 * 1024 } // 200MB (tối đa nên dùng)
+
 });
 
 app.post("/api/upload-post-video", postVideoUpload.single("video"), (req,res)=>{
