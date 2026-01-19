@@ -1,25 +1,41 @@
 const socket = io();
-const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
-const feed = document.getElementById("profileFeed");
+const auth = JSON.parse(localStorage.getItem("user_profile") || {});
+const feed = document.getElementById("statusFeed");
 
-profileAvatar.src = auth.avatar;
-profileName.textContent = auth.name;
+// ===== GÁN THÔNG TIN USER =====
+stAvatar.src = auth.avatar;
+stName.textContent = auth.name;
 
-// ===== INIT: chỉ lấy bài của mình =====
-socket.on("lp-init", list => {
-  list
-    .filter(p => p.uid === auth.uid)
-    .forEach(p => renderPostProfile(p));
+// ===== STATS =====
+let postCount = 0;
+let likeCount = 0;
+let commentCount = 0;
+
+// ===== INIT FEED =====
+socket.on("lp-init", posts => {
+  posts.forEach(p => {
+    if (p.uid !== auth.uid) return;
+
+    postCount++;
+    likeCount += p.likes?.length || 0;
+    commentCount += p.comments?.length || 0;
+
+    renderPost(p);
+  });
+
+  updateStats();
 });
 
-// ===== NEW POST (nếu user đăng từ nơi khác) =====
-socket.on("lp-post", post => {
-  if (post.uid === auth.uid) {
-    renderPostProfile(post, true);
-  }
+// ===== NEW POST =====
+socket.on("lp-post", p => {
+  if (p.uid !== auth.uid) return;
+
+  postCount++;
+  renderPost(p, true);
+  updateStats();
 });
 
-// ===== EDIT POST (đồng bộ realtime) =====
+// ===== EDIT POST (REALTIME) =====
 socket.on("lp-edit-post", ({ postId, text, images }) => {
   const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
   if (!el) return;
@@ -28,7 +44,7 @@ socket.on("lp-edit-post", ({ postId, text, images }) => {
     text.replace(/\n/g, "<br>");
 
   const imgWrap = el.querySelector(".lp-post-images");
-  if (imgWrap) {
+  if (imgWrap && images) {
     imgWrap.innerHTML = images.map(u => `<img src="${u}">`).join("");
   }
 });
@@ -36,15 +52,18 @@ socket.on("lp-edit-post", ({ postId, text, images }) => {
 // ===== DELETE POST =====
 socket.on("lp-delete", ({ postId }) => {
   const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
-  if (el) el.remove();
+  if (el) {
+    el.remove();
+    postCount--;
+    updateStats();
+  }
 });
 
-// ===== RENDER =====
-function renderPostProfile(p, top=false){
+// ===== RENDER BÀI VIẾT =====
+function renderPost(p, top = false) {
   const div = document.createElement("div");
   div.className = "lp-post";
   div.dataset.id = p.id;
-  div.dataset.uid = p.uid;
 
   div.innerHTML = `
     <div class="lp-post-inner">
@@ -63,10 +82,18 @@ function renderPostProfile(p, top=false){
         </div>
       </div>
 
-      <div class="lp-post-text">${p.text.replace(/\n/g,"<br>")}</div>
+      <div class="lp-post-text">
+        ${p.text.replace(/\n/g, "<br>")}
+      </div>
     </div>
   `;
 
-  if (top) feed.prepend(div);
-  else feed.appendChild(div);
+  top ? feed.prepend(div) : feed.appendChild(div);
+}
+
+// ===== UPDATE STATS =====
+function updateStats() {
+  stPosts.textContent = postCount;
+  stLikes.textContent = likeCount;
+  stComments.textContent = commentCount;
 }

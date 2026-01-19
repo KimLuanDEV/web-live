@@ -4,28 +4,46 @@
   <meta charset="utf-8">
   <title>Trang cá nhân</title>
   <meta name="viewport" content="width=device-width,initial-scale=1">
+
   <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/status.css">
 </head>
 <body>
 
+<!-- TOP BAR -->
 <div class="lp-topbar">
   <button onclick="history.back()">←</button>
-  <div class="lp-title">Bài viết của bạn</div>
+  <div class="lp-title">Trang cá nhân</div>
 </div>
 
-<div class="lp-shell">
-  <div id="profileInfo" class="profile-card">
-    <img id="profileAvatar">
-    <div>
-      <div id="profileName"></div>
-      <div class="profile-sub">Bài đăng cá nhân</div>
-    </div>
-  </div>
+<!-- COVER -->
+<div class="st-cover">
+  <img id="stCover" src="https://picsum.photos/900/400">
+</div>
 
-  <div id="profileFeed" class="lp-feed"></div>
+<!-- AVATAR -->
+<div class="st-avatar-wrap">
+  <img id="stAvatar">
+</div>
+
+<!-- INFO -->
+<div class="st-info">
+  <div id="stName" class="st-name"></div>
+  <div id="stBio" class="st-bio">Chưa có mô tả</div>
+
+  <div class="st-stats">
+    <div><b id="stPosts">0</b><span>Bài viết</span></div>
+    <div><b id="stLikes">0</b><span>Lượt thích</span></div>
+    <div><b id="stComments">0</b><span>Bình luận</span></div>
+  </div>
+</div>
+
+<!-- FEED -->
+<div class="lp-shell">
+  <div id="statusFeed" class="lp-feed"></div>
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/profile.js"></script>
+<script src="/status.js"></script>
 </body>
 </html>
