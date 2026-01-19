@@ -154,18 +154,26 @@ function resizeCover(src, w, h, cb){
 }
 
 
-// ===== DRAG REPOSITION COVER =====
+// ===== DRAG REPOSITION COVER + SAVE / CANCEL =====
 let isDragging = false;
 let startY = 0;
-let currentOffsetY = 0;
 
+let currentOffsetY = 0;      // offset đang hiển thị
+let originalOffsetY = 0;     // offset trước khi kéo
+
+const coverBox = document.querySelector(".st-cover");
+const coverActions = document.getElementById("coverActions");
+const btnSave = document.getElementById("saveCover");
+const btnCancel = document.getElementById("cancelCover");
+
+// load offset đã lưu
 const savedOffset = localStorage.getItem("cover_offset_y");
 if (savedOffset) {
   currentOffsetY = parseFloat(savedOffset);
   stCover.style.transform = `translateY(${currentOffsetY}px)`;
 }
 
-// mouse + touch start
+// ===== START DRAG =====
 stCover.addEventListener("mousedown", startDrag);
 stCover.addEventListener("touchstart", startDrag, { passive:false });
 
@@ -173,10 +181,12 @@ function startDrag(e){
   e.preventDefault();
   isDragging = true;
   startY = getY(e);
-  document.querySelector(".st-cover").classList.add("dragging");
+  originalOffsetY = currentOffsetY; // lưu để hủy
+  coverBox.classList.add("dragging");
+  coverActions.classList.add("show");
 }
 
-// move
+// ===== DRAGGING =====
 window.addEventListener("mousemove", onDrag);
 window.addEventListener("touchmove", onDrag, { passive:false });
 
@@ -185,30 +195,39 @@ function onDrag(e){
   e.preventDefault();
 
   const delta = getY(e) - startY;
-  let newOffset = currentOffsetY + delta;
+  let nextOffset = originalOffsetY + delta;
 
-  // 🔒 GIỚI HẠN KÉO (tránh lố)
-  newOffset = Math.max(-120, Math.min(120, newOffset));
+  // giới hạn kéo
+  nextOffset = Math.max(-120, Math.min(120, nextOffset));
 
-  stCover.style.transform = `translateY(${newOffset}px)`;
+  currentOffsetY = nextOffset;
+  stCover.style.transform = `translateY(${currentOffsetY}px)`;
 }
 
-// end
-window.addEventListener("mouseup", endDrag);
-window.addEventListener("touchend", endDrag);
+// ===== END DRAG =====
+window.addEventListener("mouseup", stopDrag);
+window.addEventListener("touchend", stopDrag);
 
-function endDrag(){
+function stopDrag(){
   if (!isDragging) return;
   isDragging = false;
-
-  const transform = stCover.style.transform;
-  const match = transform.match(/-?\d+\.?\d*/);
-  currentOffsetY = match ? parseFloat(match[0]) : 0;
-
-  localStorage.setItem("cover_offset_y", currentOffsetY);
-  document.querySelector(".st-cover").classList.remove("dragging");
+  coverBox.classList.remove("dragging");
 }
 
+// ===== SAVE =====
+btnSave.onclick = () => {
+  localStorage.setItem("cover_offset_y", currentOffsetY);
+  coverActions.classList.remove("show");
+};
+
+// ===== CANCEL =====
+btnCancel.onclick = () => {
+  currentOffsetY = originalOffsetY;
+  stCover.style.transform = `translateY(${currentOffsetY}px)`;
+  coverActions.classList.remove("show");
+};
+
+// ===== UTILS =====
 function getY(e){
   return e.touches ? e.touches[0].clientY : e.clientY;
 }

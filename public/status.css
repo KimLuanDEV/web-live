@@ -113,3 +113,34 @@
 .st-cover.dragging img{
   cursor: grabbing;
 }
+
+
+/* ===== COVER ACTION BUTTONS ===== */
+.st-cover-actions{
+  display:none;
+  justify-content:center;
+  gap:12px;
+  padding:10px;
+}
+
+.st-cover-actions.show{
+  display:flex;
+}
+
+.st-cover-actions button{
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:14px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn-save{
+  background:#1877f2;
+  color:#fff;
+}
+
+.btn-cancel{
+  background:#2a2a2a;
+  color:#fff;
+}
