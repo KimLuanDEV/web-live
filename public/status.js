@@ -64,32 +64,90 @@ function renderPost(p, top = false) {
   const div = document.createElement("div");
   div.className = "lp-post";
   div.dataset.id = p.id;
+  div.dataset.uid = p.uid; // 🔥 bắt buộc
+
+  const time = new Date(p.time).toLocaleTimeString("vi-VN", {
+    hour: "2-digit",
+    minute: "2-digit"
+  });
 
   div.innerHTML = `
     <div class="lp-post-inner">
+
+      <!-- HEADER -->
       <div class="lp-post-head">
         <img class="lp-ava" src="${p.avatar}">
         <div>
           <div class="lp-post-name">${p.name}</div>
-          <div class="lp-post-time">
-            ${new Date(p.time).toLocaleString("vi-VN")}
+          <div class="lp-post-time">${time}</div>
+        </div>
+
+        ${p.uid === auth.uid ? `
+          <div class="lp-post-tools">
+            <span class="lp-edit" onclick="editPost('${p.id}')">✏️</span>
+            <span class="lp-del" onclick="deletePost('${p.id}')">🗑</span>
           </div>
-        </div>
+        ` : ``}
+      </div>
 
-        <div class="lp-post-tools">
-          <span onclick="editPost('${p.id}')">✏️</span>
-          <span onclick="deletePost('${p.id}')">🗑</span>
+      <!-- TEXT -->
+      ${p.text ? `
+        <div class="lp-post-text">
+          ${p.text.replace(/\n/g, "<br>")}
+        </div>
+      ` : ``}
+
+      <!-- IMAGES (FB STYLE) -->
+      ${(p.images && p.images.length) ? `
+        <div class="lp-post-images fb-${Math.min(p.images.length, 5)}">
+          ${p.images.slice(0,5).map((url, index) => `
+            <div class="fb-img img-${index}"
+              onclick='openFeedLightbox(${JSON.stringify(p.images)}, ${index})'>
+              <img src="${url}">
+              ${
+                index === 4 && p.images.length > 5
+                  ? `<div class="fb-more">+${p.images.length - 5}</div>`
+                  : ``
+              }
+            </div>
+          `).join("")}
+        </div>
+      ` : ``}
+
+      <!-- VIDEO -->
+      ${p.video ? `
+        <video class="lp-post-video" controls playsinline>
+          <source src="${p.video}" type="video/mp4">
+        </video>
+      ` : ``}
+
+      <!-- ACTIONS -->
+      <div class="lp-actions">
+        <div class="lp-action like" onclick="likePost('${p.id}')">
+          ❤️ <span id="like_${p.id}">${p.likes?.length || 0}</span>
+        </div>
+        <div class="lp-action" onclick="toggleComments('${p.id}')">
+          💬 <span id="c_${p.id}">${p.comments?.length || 0}</span>
         </div>
       </div>
 
-      <div class="lp-post-text">
-        ${p.text.replace(/\n/g, "<br>")}
+      <!-- COMMENTS -->
+      <div class="lp-comments hidden" id="cm_${p.id}">
+        <div class="lp-comment-list"></div>
+
+        <div class="lp-comment-box">
+          <input id="ci_${p.id}" class="lp-comment-input"
+            placeholder="Viết bình luận...">
+          <button onclick="sendComment('${p.id}')">➤</button>
+        </div>
       </div>
+
     </div>
   `;
 
   top ? feed.prepend(div) : feed.appendChild(div);
 }
+
 
 // ===== UPDATE STATS =====
 function updateStats() {
