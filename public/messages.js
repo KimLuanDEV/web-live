@@ -180,7 +180,8 @@ saveChat({
   to: currentTargetUID,
   text: txt,
   time: Date.now(),
-  peer: currentTargetUID   // 🔥 QUAN TRỌNG
+  peer: currentTargetUID,   // 🔥 QUAN TRỌNG
+  seen: true
 });
 
  // ✅ XÓA INPUT NGAY LẬP TỨC (QUAN TRỌNG)
@@ -209,7 +210,8 @@ socket.on("private-message", ({ from, text, msgId }) => {
       to: auth.uid,
       text,
       time: Date.now(),
-      peer
+      peer,
+      seen: false        // 🔥 QUAN TRỌNG
     });
     localStorage.setItem(key, JSON.stringify(arr));
   }
@@ -315,11 +317,17 @@ allUsers.forEach(u=>{
 
 div.innerHTML = `
   <img class="msg-ava" src="${u.avatar}">
+
   <div class="msg-uinfo">
-    <div class="msg-uname">
-      ${u.name}
-      ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
-    </div>
+  <div class="msg-uname">
+    ${u.name}
+    ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
+    ${countUnread(u.uid) > 0
+      ? `<span class="msg-badge">${countUnread(u.uid) > 9 ? "9+" : countUnread(u.uid)}</span>`
+      : ""}
+  </div>
+
+
     <div class="msg-ustatus ${isOnline ? "on":"off"}">
       ${isOnline ? "Online" : "Offline"}
     </div>
@@ -353,11 +361,45 @@ function openChat(){
 
   clearInboxDot(); // 🔥 THÊM DÒNG NÀY
 
-  if (currentTargetUID) {
-    socket.emit("msg-seen-all", { peer: currentTargetUID });
+if (currentTargetUID) {
+  markPeerSeen(currentTargetUID);   // 🔥 local
+  socket.emit("msg-seen-all", { peer: currentTargetUID });
+}
+
+}
+
+
+function markPeerSeen(peer){
+  const key =
+    auth.uid < peer
+      ? "chat_" + auth.uid + "_" + peer
+      : "chat_" + peer + "_" + auth.uid;
+
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+  let changed = false;
+
+  arr.forEach(m=>{
+    if (!m.seen && m.from === peer) {
+      m.seen = true;
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    localStorage.setItem(key, JSON.stringify(arr));
+    renderUserList(); // 🔄 update badge
   }
 }
 
+function countUnread(peer){
+  const key =
+    auth.uid < peer
+      ? "chat_" + auth.uid + "_" + peer
+      : "chat_" + peer + "_" + auth.uid;
+
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+  return arr.filter(m => !m.seen && m.from === peer).length;
+}
 
 
 
