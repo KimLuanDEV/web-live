@@ -235,6 +235,18 @@ socket.on("private-message", ({ from, text, msgId }) => {
 
   // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
   showInboxDot(1);
+
+// 🔔 HIỆN TOAST KHI MODAL ĐANG ĐÓNG
+if (chatModal.classList.contains("hidden")) {
+  showMessageToast({
+    name: from.name,
+    text,
+    avatar: from.avatar,
+    uid: from.uid
+  });
+}
+
+
 });
 
 
@@ -402,4 +414,60 @@ function clearInboxDot(){
 
   dot.classList.remove("active");
   dot.textContent = "";
+}
+
+
+// 🔔 TOAST TIN NHẮN (MESSAGES)
+function showMessageToast({ name, text, avatar, uid }) {
+  // tránh spam nhiều toast cùng lúc
+  if (document.querySelector(".msg-toast")) return;
+
+  const div = document.createElement("div");
+  div.className = "msg-toast";
+
+  div.innerHTML = `
+    <img src="${avatar || '/icons/icon-192.png'}" class="toast-ava">
+    <div class="toast-body">
+      <div class="toast-name">${name}</div>
+      <div class="toast-text">${text}</div>
+    </div>
+  `;
+
+  Object.assign(div.style, {
+    position: "fixed",
+    left: "50%",
+    bottom: "90px",
+    transform: "translateX(-50%)",
+    background: "rgba(0,0,0,.88)",
+    color: "#fff",
+    borderRadius: "14px",
+    padding: "10px 14px",
+    display: "flex",
+    gap: "10px",
+    alignItems: "center",
+    maxWidth: "90%",
+    zIndex: 9999,
+    boxShadow: "0 0 18px rgba(255,59,107,.6)",
+    cursor: "pointer"
+  });
+
+  div.querySelector(".toast-ava").style.cssText = `
+    width:36px;height:36px;border-radius:50%;object-fit:cover
+  `;
+
+  div.onclick = () => {
+    // 👉 mở chat ngay khi click toast
+    const u = allUsers.find(x => x.uid === uid);
+    if (u) {
+      currentTarget = u;
+      currentTargetUID = u.uid;
+      loadChat();
+      openChat();
+    }
+    div.remove();
+  };
+
+  document.body.appendChild(div);
+
+  setTimeout(() => div.remove(), 2500);
 }
