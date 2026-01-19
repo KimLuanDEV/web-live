@@ -9153,25 +9153,36 @@ body.bar-merged .guest-notice-inner{
 
 
 
-/* ===== PROFILE COVER FULL WIDTH ===== */
+/* ===== PROFILE COVER TALLER ===== */
 .profile-cover{
   position: relative;
-  width: 100vw;              /* full viewport */
-  height: 280px;
+  width: 100vw;
   left: 50%;
   right: 50%;
-  margin-left: -50vw;        /* phá container */
+  margin-left: -50vw;
   margin-right: -50vw;
   overflow: hidden;
   background: #000;
+
+  /* 👇 tăng chiều cao */
+   min-height: 420px;      /* desktop */
 }
 
 .profile-cover img{
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
+
+/* Mobile cao hơn chút */
+@media (max-width: 768px){
+  .profile-cover{
+   min-height: 320px;
+  }
+}
+
 
 /* nút chỉnh sửa */
 .cover-actions{
