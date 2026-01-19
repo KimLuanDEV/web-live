@@ -1069,6 +1069,22 @@
 }
 
 
+/* ===== HIDE TOPBAR + COMPOSE ON SCROLL ===== */
+.lp-topbar,
+.lp-compose{
+  transition: transform .35s ease, opacity .25s ease;
+}
+
+/* trạng thái ẩn */
+.lp-topbar.hide,
+.lp-compose.hide{
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+
+
 
 </style>
 

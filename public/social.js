@@ -1555,3 +1555,31 @@ if (images) {
 
 
 
+// ===== HIDE TOPBAR + COMPOSE ON SCROLL =====
+const topbar = document.querySelector(".lp-topbar");
+const composeBar = document.querySelector(".lp-compose");
+
+let lastScrollY = window.scrollY;
+
+window.addEventListener("scroll", () => {
+  const curY = window.scrollY;
+
+  // 🔽 Vuốt xuống → hiện
+  if (curY < lastScrollY - 10) {
+    topbar?.classList.remove("hide");
+    composeBar?.classList.remove("hide");
+  }
+  // 🔼 Vuốt lên → ẩn
+  else if (curY > lastScrollY + 10) {
+    topbar?.classList.add("hide");
+    composeBar?.classList.add("hide");
+  }
+
+  // 🧲 Ở đầu trang → luôn hiện
+  if (curY < 20) {
+    topbar?.classList.remove("hide");
+    composeBar?.classList.remove("hide");
+  }
+
+  lastScrollY = curY;
+}, { passive: true });
