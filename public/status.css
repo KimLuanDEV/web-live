@@ -144,3 +144,72 @@
   background:#2a2a2a;
   color:#fff;
 }
+
+/* ===== MOBILE TAB BAR ===== */
+.mobile-tabbar{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  height:56px;
+
+  display:flex;
+  justify-content:space-around;
+  align-items:center;
+
+  background:#000;
+  border-top:1px solid rgba(255,255,255,.1);
+  z-index:9999;
+
+  transition:transform .25s ease;
+}
+
+/* ẩn / hiện khi scroll */
+.mobile-tabbar.hide{
+  transform:translateY(100%);
+}
+
+.lp-tab{
+  flex:1;
+  text-align:center;
+  font-size:20px;
+  color:#777;
+  position:relative;
+}
+
+.lp-tab.active{
+  color:#1877f2;
+}
+
+.lp-tab span{
+  pointer-events:none;
+}
+
+/* badge tin nhắn */
+.tab-badge{
+  position:absolute;
+  top:6px;
+  right:28%;
+  width:8px;
+  height:8px;
+  background:red;
+  border-radius:50%;
+}
+
+.hidden{
+  display:none;
+}
+
+/* desktop thì không hiện */
+@media (min-width:768px){
+  .mobile-tabbar{
+    display:none;
+  }
+}
+
+/* chừa chỗ cho tab bar */
+body{
+  padding-bottom:56px;
+}
+
+

@@ -13,7 +13,6 @@
 <!-- TOP BAR -->
 <div class="lp-topbar">
   <button onclick="history.back()">←</button>
-  <div class="lp-title">Trang cá nhân</div>
 </div>
 
 <!-- COVER -->
@@ -55,6 +54,30 @@
 <div class="lp-shell">
   <div id="statusFeed" class="lp-feed"></div>
 </div>
+
+
+
+
+<!-- MOBILE TAB BAR -->
+<div class="lp-tabbar mobile-tabbar">
+  <div class="lp-tab" data-tab="social">
+    <span>🏠</span>
+  </div>
+
+  <div class="lp-tab" data-tab="lobby">
+    <span>🎥</span>
+  </div>
+
+  <div class="lp-tab" data-tab="messages">
+    <span>💬</span>
+    <i id="msgBadge" class="tab-badge hidden"></i>
+  </div>
+
+  <div class="lp-tab active" data-tab="profile">
+    <span>👤</span>
+  </div>
+</div>
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/status.js"></script>

@@ -231,3 +231,32 @@ btnCancel.onclick = () => {
 function getY(e){
   return e.touches ? e.touches[0].clientY : e.clientY;
 }
+
+
+// ===== MOBILE TAB BAR LOGIC =====
+const tabbar = document.querySelector(".mobile-tabbar");
+let lastScrollY = window.scrollY;
+
+window.addEventListener("scroll", () => {
+  const y = window.scrollY;
+
+  if (y > lastScrollY && y > 80) {
+    tabbar.classList.add("hide"); // scroll xuống
+  } else {
+    tabbar.classList.remove("hide"); // scroll lên
+  }
+
+  lastScrollY = y;
+});
+
+// click tab
+document.querySelectorAll(".lp-tab").forEach(tab => {
+  tab.onclick = () => {
+    const t = tab.dataset.tab;
+
+    if (t === "social") location.href = "/social.html";
+    if (t === "lobby") location.href = "/lobby.html";
+    if (t === "messages") location.href = "/messages.html";
+    if (t === "profile") location.href = "/status.html";
+  };
+});
