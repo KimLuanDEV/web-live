@@ -9316,5 +9316,12 @@ body.page-profile{
 }
 
 
-
+.page-profile .profile-shell{
+  width: 100vw;
+  max-width: none;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding-left: 12px;
+  padding-right: 12px;
+}
 
