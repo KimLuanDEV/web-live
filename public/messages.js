@@ -521,3 +521,39 @@ function showMessageToast({ name, text, avatar, uid }) {
 
   setTimeout(() => div.remove(), 2500);
 }
+
+
+
+
+const enablePushBtn = document.getElementById("enablePush");
+
+enablePushBtn?.addEventListener("click", async () => {
+  if (!("serviceWorker" in navigator)) {
+    alert("Thiết bị không hỗ trợ thông báo");
+    return;
+  }
+
+  const perm = await Notification.requestPermission();
+  if (perm !== "granted") {
+    alert("Bạn chưa cho phép thông báo");
+    return;
+  }
+
+  const reg = await navigator.serviceWorker.register("/sw.js");
+
+  const sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: VAPID_PUBLIC_KEY   // 👈 sẽ tạo ở bước 4
+  });
+
+  await fetch("/api/push-subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      uid: auth.uid,
+      sub
+    })
+  });
+
+  alert("✅ Đã bật thông báo");
+});

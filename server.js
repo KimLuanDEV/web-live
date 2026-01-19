@@ -1,3 +1,14 @@
+const webpush = require("web-push");
+
+webpush.setVapidDetails(
+  "mailto:support@livestreampro.app",
+  process.env.VAPID_PUBLIC,
+  process.env.VAPID_PRIVATE
+);
+
+
+
+
 const MAX_VIEWERS = 40;        // Render safe
 const SOFT_CAP    = 30;       // bắt đầu degrade
 
@@ -113,6 +124,19 @@ function saveSocial(){
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
+
+
+const pushSubs = new Map(); // uid -> subscription
+
+app.post("/api/push-subscribe", (req, res) => {
+  const { uid, sub } = req.body;
+  if (!uid || !sub) return res.sendStatus(400);
+
+  pushSubs.set(uid, sub);
+  res.json({ ok: true });
+});
+
+
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
@@ -1034,9 +1058,22 @@ if (sockets) {
   }
 
   msg.delivered = true;
+} else {
+  // 🔔 ===== PUSH NOTIFICATION KHI OFFLINE =====
+  const sub = pushSubs.get(to);
+  if (sub) {
+    webpush.sendNotification(
+      sub,
+      JSON.stringify({
+        title: "📩 Tin nhắn mới",
+        body: text,
+        data: {
+          uid: fromUid
+        }
+      })
+    ).catch(console.error);
+  }
 }
-
-
 
   // 3️⃣ báo người gửi là đã gửi
 socket.emit("msg-status", {
