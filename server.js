@@ -157,7 +157,8 @@ const lpPosts = loadSocial();
 
 
 
-const activeUsers = new Map();   // uid -> socketId
+const activeUsers = new Map();   // uid -> Set(socketId)
+
 
 
 function getPost(id){
@@ -168,8 +169,13 @@ function getPost(id){
 function getActiveUserList(){
   const list = [];
 
-  for(const [uid, socketId] of activeUsers.entries()){
+for (const [uid, sockets] of activeUsers.entries()) {
+  for (const socketId of sockets) {
     const s = io.sockets.sockets.get(socketId);
+    if (!s) continue;
+
+
+    
     if(!s) continue;
 
     const profile = s.data.profile || {};
@@ -192,7 +198,7 @@ function getActiveUserList(){
       roomId: s.data.roomId || null
     });
   }
-
+}
   return list;
 }
 
@@ -991,46 +997,53 @@ socket.on("private-message", ({ to, text, msgId }) => {
 
  
   // 2️⃣ GỬI REALTIME NẾU ONLINE
-const targetSocket = activeUsers.get(to);
-if(targetSocket){
-const db = loadUsers();
-const user = db[fromUid];
+const sockets = activeUsers.get(to);
 
-const fromProfile = {
-  ...(socket.data.profile || {}),
-  uid: fromUid,
-  verified: !!user?.profile?.verified   // ⭐ thêm tick xanh
-};
+if (sockets) {
+  const db = loadUsers();
+  const user = db[fromUid];
 
-  io.to(targetSocket).emit("private-message", {
-    from: fromProfile,
-    text,
-    msgId: id
-  });
+  const fromProfile = {
+    ...(socket.data.profile || {}),
+    uid: fromUid,
+    verified: !!user?.profile?.verified
+  };
 
-  msg.delivered = true; // 🔥 CHỐT CHẶN LẶP
+  for (const sid of sockets) {
+    io.to(sid).emit("private-message", {
+      from: fromProfile,
+      text,
+      msgId: id
+    });
 
-  // 🔴 BÁO CÓ TIN MỚI (badge)
-  io.to(targetSocket).emit("inbox-new");
+    io.to(sid).emit("inbox-new");
+  }
+
+  msg.delivered = true;
 }
 
 
+
   // 3️⃣ báo người gửi là đã gửi
-  socket.emit("msg-status", {
-    msgId: id,
-    status: targetSocket ? "delivered" : "stored"
-  });
+socket.emit("msg-status", {
+  msgId: id,
+  status: sockets ? "delivered" : "stored"
+});
 });
 
 
 socket.on("msg-seen", ({ to, msgId }) => {
-  const targetSocket = activeUsers.get(to);
-  if(targetSocket){
-    io.to(targetSocket).emit("msg-status", {
+
+const sockets = activeUsers.get(to);
+if (sockets) {
+  for (const sid of sockets) {
+    io.to(sid).emit("msg-status", {
       msgId,
       status: "seen"
     });
   }
+}
+
 
   // 🔥 update inbox
   const uid = socket.data.uid;
@@ -1108,22 +1121,17 @@ socket.on("msg-seen-all", ()=>{
 
 socket.on("auth-ping", ({ uid }) => {
   if (!uid) return;
-
   socket.data.uid = uid;
 
-  // nếu chưa có uid → set
   if (!activeUsers.has(uid)) {
-    activeUsers.set(uid, socket.id);
-    emitActiveUsers();
+    activeUsers.set(uid, new Set([socket.id]));
+    emitActiveUsers(); // 🔥 chỉ emit khi uid mới
     return;
   }
 
-  // nếu là chính socket này → OK
-  if (activeUsers.get(uid) === socket.id) return;
-
-  
-  // ❌ TUYỆT ĐỐI KHÔNG force-logout ở đây
+  activeUsers.get(uid).add(socket.id);
 });
+
 
 
  socket.on("auth-login", ({ uid }) => {
@@ -1146,7 +1154,11 @@ socket.on("auth-ping", ({ uid }) => {
   }
 
   // ✅ KHÔNG ĐÁ – CHỈ GHI ĐÈ SOCKET MỚI
-  activeUsers.set(uid, socket.id);
+ if (!activeUsers.has(uid)) {
+  activeUsers.set(uid, new Set());
+}
+activeUsers.get(uid).add(socket.id);
+
 
  // 🔥 GỬI TIN OFFLINE – CHỈ 1 LẦN
 const inbox = userInbox.get(uid);
@@ -1947,10 +1959,13 @@ if(hostUid){
     text:`${donorName} đã tặng ${cost} coin`
   });
 
-  const hostSocket = activeUsers.get(hostUid);
-  if(hostSocket){
-    io.to(hostSocket).emit("inbox-new");
+ const sockets = activeUsers.get(hostUid);
+if (sockets) {
+  for (const sid of sockets) {
+    io.to(sid).emit("inbox-new");
   }
+}
+
 }
 
 
@@ -2044,12 +2059,18 @@ socket.on("host-stream-ready", ({ roomId }) => {
 
 
     
-    const uid = socket.data.uid;
-    if(uid && activeUsers.get(uid) === socket.id){
-      activeUsers.delete(uid);
-      emitActiveUsers();
-      console.log("🧹 cleared active user:", uid);
-    }
+const uid = socket.data.uid;
+if (uid && activeUsers.has(uid)) {
+  const set = activeUsers.get(uid);
+  set.delete(socket.id);
+
+  if (set.size === 0) {
+    activeUsers.delete(uid);
+  }
+
+  emitActiveUsers();
+}
+
 
 
 
