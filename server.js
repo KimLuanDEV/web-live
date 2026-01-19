@@ -36,6 +36,9 @@ MEDIA_DIRS.forEach(dir=>{
   }
 });
 
+// 🔔 PUSH PRESENCE TRACKING
+const lastSeen = new Map(); // uid -> timestamp
+
 
 const AVATAR_DIR = "/opt/render/project/data/avatars";
 
@@ -1064,8 +1067,11 @@ if (sockets) {
 }
 
 
-// 🔔 PUSH NOTIFICATION NẾU USER OFFLINE
-if (!sockets) {
+// 🔔 PUSH KHI USER THỰC SỰ VẮNG MẶT (mobile friendly)
+const last = lastSeen.get(to) || 0;
+const away = Date.now() - last > 30000; // 30s không ping
+
+if (!sockets || sockets.size === 0 || away) {
   const sub = pushSubs.get(to);
 
   if (sub) {
@@ -1184,6 +1190,9 @@ socket.on("msg-seen-all", ()=>{
 socket.on("auth-ping", ({ uid }) => {
   if (!uid) return;
   socket.data.uid = uid;
+
+
+   lastSeen.set(uid, Date.now()); // ✅ THÊM
 
   if (!activeUsers.has(uid)) {
     activeUsers.set(uid, new Set([socket.id]));
@@ -2125,6 +2134,11 @@ socket.on("host-stream-ready", ({ roomId }) => {
 
     
 const uid = socket.data.uid;
+
+if (uid) {
+  lastSeen.set(uid, Date.now()); // ✅ THÊM
+}
+
 if (uid && activeUsers.has(uid)) {
   const set = activeUsers.get(uid);
   set.delete(socket.id);

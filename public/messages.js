@@ -9,6 +9,7 @@ const sysCancel = document.getElementById("sysCancel");
 
 
 
+let __pushRegistered = false;
 let currentTargetUID = null;
 let currentTarget = null;
 let allUsers = [];
@@ -30,6 +31,11 @@ async function loadAllUsers(){
 
 loadAllUsers();
 
+async function enablePushOnce() {
+  if (__pushRegistered) return;
+  __pushRegistered = true;
+  await enablePush();
+}
 
 
 
@@ -116,7 +122,8 @@ socket.on("connect", async () => {
 
     // 🔔 ĐĂNG KÝ PUSH
     setTimeout(() => {
-      enablePush().catch(console.error);
+      enablePushOnce().catch(console.error);
+
     }, 1000);
   }
 });
