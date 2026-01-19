@@ -1264,14 +1264,6 @@ if (inbox && inbox.length) {
 
     socket.emit("offline-messages", toSend);
 
-    // ✅ ĐÁNH DẤU ĐÃ GỬI
-    for (const m of toSend) {
-      m.delivered = true;
-    }
-
-
-    saveInbox(Object.fromEntries(userInbox)); // ✅ FIX QUAN TRỌNG
-
     // 🔴 badge chỉ khi còn tin CHƯA XEM
     const unread = inbox.filter(m => !m.seen).length;
     if (unread > 0) {

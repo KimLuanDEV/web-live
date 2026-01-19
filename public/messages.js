@@ -132,8 +132,9 @@ socket.on("connect", async () => {
 
 socket.on("offline-messages", (list)=>{
   // 🔥 CHỈ XỬ LÝ 1 LẦN / LOAD
-  if (offlineHandled) return;
-  offlineHandled = true;
+if (!list || !list.length) return;
+if (offlineHandled) return;
+offlineHandled = true;
 
   console.log("📥 Offline messages:", list);
 
@@ -157,6 +158,7 @@ socket.on("offline-messages", (list)=>{
       });
       localStorage.setItem(key, JSON.stringify(arr));
     }
+     socket.emit("msg-delivered", { msgId: m.id });
   });
 
   if(list.length){
@@ -217,7 +219,7 @@ socket.on("private-message", ({ from, text, msgId }) => {
 
   socket.emit("msg-delivered", { msgId });
 
-  
+
   const peer = from.uid;
 
   // 🔐 xác định đúng chatKey
