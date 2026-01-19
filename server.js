@@ -40,16 +40,6 @@ if(!fs.existsSync(AVATAR_DIR)){
 }
 
 
-const COVER_DIR = "/opt/render/project/data/covers";
-
-if (!fs.existsSync(COVER_DIR)) {
-  fs.mkdirSync(COVER_DIR, { recursive: true });
-  console.log("📁 Created", COVER_DIR);
-}
-
-
-app.use("/covers", express.static("/opt/render/project/data/covers"));
-
 
 
 const upload = multer({
@@ -63,27 +53,8 @@ const upload = multer({
 });
 
 
-const coverUpload = multer({
-  storage: multer.diskStorage({
-    destination: "/opt/render/project/data/covers",
-    filename: (_, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(
-        null,
-        Date.now() + "_" + Math.random().toString(36).slice(2) + ext
-      );
-    }
-  })
-});
 
 
-app.post("/api/upload-cover", coverUpload.single("cover"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file" });
-
-  res.json({
-    url: "/covers/" + req.file.filename
-  });
-});
 
 
 function loadLiveState() {
@@ -1235,8 +1206,7 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 });
 
 
-socket.on("profile-update", ({ name, avatar, cover, level }) => {
-
+socket.on("profile-update", ({ name, avatar, level }) => {
 
   // ===== 1. Cập nhật profile realtime cho lobby =====
   if (!socket.data.profile) socket.data.profile = {};
@@ -1252,8 +1222,6 @@ socket.on("profile-update", ({ name, avatar, cover, level }) => {
       if (db[k].profile?.uid === uid) {
         if (name)   db[k].profile.name   = safeName(name);
         if (avatar) db[k].profile.avatar = avatar;
-        if (cover) db[k].profile.cover = cover;
-
         if (level)  db[k].profile.level  = Number(level) || db[k].profile.level;
         saveUsers(db);
         break;
@@ -1264,10 +1232,6 @@ socket.on("profile-update", ({ name, avatar, cover, level }) => {
     // ===== SYNC AVATAR VÀO TOÀN BỘ SOCIAL POSTS =====
   if (uid && avatar) {
     let changed = false;
-
-  if (uid && cover) {
-  io.emit("profile-cover-sync", { uid, cover });
-}
 
     for (const p of lpPosts) {
       if (p.uid === uid) {
