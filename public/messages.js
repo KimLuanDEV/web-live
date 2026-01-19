@@ -528,6 +528,11 @@ function showMessageToast({ name, text, avatar, uid }) {
 const enablePushBtn = document.getElementById("enablePush");
 
 enablePushBtn?.addEventListener("click", async () => {
+  if (!auth?.uid) {
+    alert("⚠️ Vui lòng đăng nhập trước khi bật thông báo");
+    return;
+  }
+
   if (!("serviceWorker" in navigator)) {
     alert("Thiết bị không hỗ trợ thông báo");
     return;
@@ -543,14 +548,14 @@ enablePushBtn?.addEventListener("click", async () => {
 
   const sub = await reg.pushManager.subscribe({
     userVisibleOnly: true,
-    applicationServerKey: VAPID_PUBLIC_KEY   // 👈 sẽ tạo ở bước 4
+    applicationServerKey: VAPID_PUBLIC_KEY
   });
 
   await fetch("/api/push-subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      uid: auth.uid,
+      uid: auth.uid,   // ✅ ĐẢM BẢO CÓ
       sub
     })
   });

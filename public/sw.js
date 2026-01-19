@@ -1,27 +1,40 @@
-self.addEventListener("push", e => {
-  if (!e.data) return;
+self.addEventListener("push", event => {
+  if (!event.data) return;
 
-  const data = e.data.json();
+  let data = {};
+  try {
+    data = event.data.json();
+  } catch {
+    data = { title: "Thông báo", body: event.data.text() };
+  }
 
-  self.registration.showNotification(data.title || "Tin nhắn mới", {
-    body: data.body,
+  const title = data.title || "📩 Tin nhắn mới";
+
+  const options = {
+    body: data.body || "",
     icon: "/icons/icon-192.png",
     badge: "/icons/icon-192.png",
-    data: data.data || {}
-  });
+    data: data.data || {},
+    vibrate: [100, 50, 100],
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(title, options)
+  );
 });
 
-self.addEventListener("notificationclick", e => {
-  e.notification.close();
 
-  const uid = e.notification.data?.uid;
+self.addEventListener("notificationclick", event => {
+  event.notification.close();
 
-  e.waitUntil(
+  const uid = event.notification.data?.uid;
+
+  event.waitUntil(
     clients.matchAll({ type: "window", includeUncontrolled: true })
-      .then(list => {
-        for (const c of list) {
-          if (c.url.includes("/messages.html")) {
-            c.focus();
+      .then(clientList => {
+        for (const client of clientList) {
+          if (client.url.includes("/messages.html")) {
+            client.focus();
             return;
           }
         }
