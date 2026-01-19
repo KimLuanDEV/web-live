@@ -274,20 +274,167 @@ function deletePost(postId){
 
 
 // ===== EDIT POST (BASIC) =====
+
 function editPost(postId){
-  const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
-  if (!el) return;
+  const postEl = document.querySelector(`.lp-post[data-id="${postId}"]`);
+  if(!postEl) return;
 
-  const textEl = el.querySelector(".lp-post-text");
-  const oldText = textEl.innerText;
 
-  const newText = prompt("Chỉnh sửa bài viết:", oldText);
-  if (newText === null) return;
+  const oldImages = [...postEl.querySelectorAll(".lp-post-images img")]
+  .map(img => img.src);
+
+  const textEl = postEl.querySelector(".lp-post-text");
+  const oldText = textEl?.innerText || "";
+
+  const modal = document.createElement("div");
+  modal.className = "lp-compose-modal";
+
+  modal.innerHTML = `
+    <div class="lp-compose-sheet">
+    
+      <div class="lp-compose-header">
+  <button class="lp-close">✕</button>
+
+  <div class="lp-header-title">Chỉnh sửa bài viết</div>
+
+<button class="lp-submit icon" id="saveEdit" title="Lưu" disabled>
+  ✓
+</button>
+
+</div>
+
+
+      <div class="lp-compose-body">
+        <textarea id="editText"
+          style="width:100%;height:100%;background:transparent;color:#fff;font-size:16px;">${oldText}</textarea>
+
+            <!-- preview ảnh cũ -->
+  <div id="editImagePreview" class="lp-preview-grid"></div>
+
+      </div>
+    </div>
+
+<!-- footer -->
+<div class="lp-compose-footer">
+  <label class="lp-tool">
+    📷
+    <input type="file" id="editImageInput" accept="image/*" multiple hidden>
+  </label>
+</div>
+
+  `;
+
+  document.body.appendChild(modal);
+
+
+// ===== EDIT IMAGE LOGIC (PHẢI Ở TRONG editPost) =====
+let editImages = [...oldImages]; // string url hoặc { file, preview }
+
+const preview = modal.querySelector("#editImagePreview");
+const input = modal.querySelector("#editImageInput");
+
+function renderEditImages(){
+  preview.innerHTML = "";
+
+  editImages.forEach((img, index) => {
+    const wrap = document.createElement("div");
+    wrap.className = "lp-preview-item";
+
+    const src = typeof img === "string" ? img : img.preview;
+
+    wrap.innerHTML = `
+      <img src="${src}">
+      <button class="lp-preview-remove">✕</button>
+    `;
+
+    wrap.querySelector("button").onclick = () => {
+      editImages.splice(index, 1);
+      renderEditImages();
+      checkEditChanged();
+    };
+
+    preview.appendChild(wrap);
+  });
+}
+
+renderEditImages();
+
+input.onchange = () => {
+  [...input.files].forEach(file => {
+    editImages.push({
+      file,
+      preview: URL.createObjectURL(file)
+    });
+  });
+  input.value = "";
+  renderEditImages();
+  checkEditChanged();
+};
+
+
+
+
+
+
+  const textarea = modal.querySelector("#editText");
+const saveBtn  = modal.querySelector("#saveEdit");
+
+const originalText = oldText.trim();
+
+// trạng thái ban đầu
+saveBtn.disabled = true;
+
+function checkEditChanged(){
+  const textChanged =
+    textarea.value.trim() !== originalText;
+
+  const imageChanged =
+    editImages.length !== oldImages.length ||
+    editImages.some((img, i) => img !== oldImages[i]);
+
+  saveBtn.disabled = !(textChanged || imageChanged);
+}
+
+textarea.addEventListener("input", checkEditChanged);
+
+
+
+  modal.querySelector(".lp-close").onclick = () => modal.remove();
+
+
+saveBtn.onclick = async () => {
+  if (saveBtn.disabled) return;
+
+  const newText = textarea.value.trim();
+
+  let imageUrls = [];
+
+  for(const img of editImages){
+    if(typeof img === "string"){
+      imageUrls.push(img); // ảnh cũ
+    }else{
+      const fd = new FormData();
+      fd.append("image", img.file);
+
+      const r = await fetch("/api/upload-post-image", {
+        method: "POST",
+        body: fd
+      });
+
+      const d = await r.json();
+      if(d.url) imageUrls.push(d.url);
+    }
+  }
 
   socket.emit("lp-edit-post", {
     postId,
     uid: auth.uid,
     text: newText,
-    images: [] // giữ trống nếu chưa sửa ảnh
+    images: imageUrls
   });
+
+  modal.remove();
+};
+
+
 }
