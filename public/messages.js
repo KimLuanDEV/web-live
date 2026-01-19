@@ -7,6 +7,7 @@ const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
 
 
+const PUSH_PUBLIC_KEY = "BA9FPfAtc-EloHtl5nunB1zDlEYEIEURv-CERjmW__WB-s8jga_MDjvP3VXnIGmLyh_YH1DtES_t2Y6di_h1nBc"; // public key VAPID
 
 
 let currentTargetUID = null;
@@ -31,6 +32,41 @@ async function loadAllUsers(){
 loadAllUsers();
 
 
+async function registerPush() {
+  try {
+    if (!("serviceWorker" in navigator)) return;
+    if (!("PushManager" in window)) return;
+
+    const reg = await navigator.serviceWorker.register("/sw.js");
+
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") return;
+
+    // nếu đã subscribe rồi thì lấy lại, không tạo mới
+    let sub = await reg.pushManager.getSubscription();
+    if (!sub) {
+      sub = await reg.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(PUSH_PUBLIC_KEY),
+      });
+    }
+
+    // gửi sub lên server
+    socket.emit("push-subscribe", { uid: auth.uid, sub });
+
+    console.log("✅ Push subscribed");
+  } catch (e) {
+    console.warn("❌ registerPush failed:", e);
+  }
+}
+
+
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding).replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(base64);
+  return Uint8Array.from([...raw].map((c) => c.charCodeAt(0)));
+}
 
 
 function chatKey(){
@@ -111,6 +147,7 @@ function showModal(text, okText="OK", cancelText=null){
 socket.on("connect", () => {
   if (auth?.uid) {
     socket.emit("auth-login", { uid: auth.uid });
+     registerPush(); // ✅ gọi ở đây
   }
 });
 

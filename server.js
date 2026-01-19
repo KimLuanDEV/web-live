@@ -99,6 +99,19 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
+const pushSubs = new Map(); // uid -> Set(JSON-string subscription)
+
+const webpush = require("web-push");
+
+webpush.setVapidDetails(
+  "troll.jayd@gmail.com", // đổi thành email của bạn
+  process.env.VAPID_PUBLIC,
+  process.env.VAPID_PRIVATE
+);
+
+
+
+
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
@@ -634,6 +647,21 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+socket.on("push-subscribe", ({ uid, sub }) => {
+  if (!uid || !sub) return;
+
+  if (!pushSubs.has(uid)) pushSubs.set(uid, new Set());
+  // lưu dạng string để Set so sánh dễ
+  pushSubs.get(uid).add(JSON.stringify(sub));
+
+  // (tuỳ chọn) log
+  console.log("✅ push-subscribe:", uid, "total:", pushSubs.get(uid).size);
+});
+
+
+
+
+
  socket.on("lp-like-reply", ({ postId, commentIndex, replyId, uid })=>{
   const post = getPost(postId);
   if(!post) return;
@@ -991,6 +1019,31 @@ socket.on("private-message", ({ to, text, msgId }) => {
     delivered: false   // ✅ THÊM DÒNG NÀY
   };
 
+
+// 🔔 PUSH NOTIFICATION cho người nhận
+const subs = pushSubs.get(to);
+if (subs && subs.size > 0) {
+  const payload = JSON.stringify({
+    title: fromProfile.name || "Tin nhắn mới",
+    body: text || "",
+    icon: fromProfile.avatar || "/icons/icon-192.png",
+    url: `/messages.html?uid=${fromUid}`
+  });
+
+  for (const raw of subs) {
+    const sub = JSON.parse(raw);
+    webpush.sendNotification(sub, payload).catch((err) => {
+      // (tuỳ chọn) nếu sub chết thì xoá
+      // console.log("push fail:", err?.statusCode);
+    });
+  }
+}
+
+
+
+
+
+
   // 1️⃣ LƯU VÀO INBOX NGƯỜI NHẬN
   if(!userInbox.has(to)) userInbox.set(to, []);
   userInbox.get(to).push(msg);
@@ -1030,6 +1083,12 @@ socket.emit("msg-status", {
   status: sockets ? "delivered" : "stored"
 });
 });
+
+
+
+
+
+
 
 
 socket.on("msg-seen", ({ to, msgId }) => {
@@ -1158,6 +1217,10 @@ socket.on("auth-ping", ({ uid }) => {
   activeUsers.set(uid, new Set());
 }
 activeUsers.get(uid).add(socket.id);
+
+
+if (socket.data._offlineSent) return;
+socket.data._offlineSent = true;
 
 
  // 🔥 GỬI TIN OFFLINE – CHỈ 1 LẦN
