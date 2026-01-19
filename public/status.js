@@ -109,7 +109,7 @@ const savedCover = localStorage.getItem("user_cover");
 if (savedCover) {
   stCover.src = savedCover;
 } else {
-  stCover.src = "https://picsum.photos/900/400";
+  stCover.src = "https://i.ibb.co/3mY0H4Xh/Chat-GPT-Image-Jan-19-2026-09-44-27-AM.jpg";
 }
 
 // khi chọn ảnh mới

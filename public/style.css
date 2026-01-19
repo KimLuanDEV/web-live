@@ -9024,3 +9024,30 @@ body.bar-merged .guest-notice-inner{
     animation: none !important;
   }
 }
+
+
+/* ===============================
+   FIX AVATAR BÀI ĐĂNG (.lp-ava)
+   =============================== */
+
+.lp-post-head{
+  display:flex;
+  align-items:flex-start;
+  gap:10px;
+}
+
+.lp-ava{
+  width:44px;
+  height:44px;
+  min-width:44px;
+  min-height:44px;
+
+  border-radius:50%;
+  object-fit:cover;
+
+  overflow:hidden;
+  display:block;
+  flex-shrink:0;      /* 🔥 CHỐT LỖI TRÀN */
+
+  background:#000;
+}
