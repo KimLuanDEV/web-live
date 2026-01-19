@@ -18,6 +18,10 @@ let onlineSet = new Set();
 const renderedMsgIds = new Set();
 
 
+// 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
+let offlineHandled = false;
+
+
 async function loadAllUsers(){
   const res = await fetch("/api/all-users");
   allUsers = await res.json();
@@ -112,10 +116,13 @@ socket.on("connect", () => {
 
 
 socket.on("offline-messages", (list)=>{
+  // 🔥 CHỈ XỬ LÝ 1 LẦN / LOAD
+  if (offlineHandled) return;
+  offlineHandled = true;
+
   console.log("📥 Offline messages:", list);
 
   list.forEach(m=>{
-    // lưu vào localStorage theo đúng key chat
     const peer = m.from === auth.uid ? m.to : m.from;
     const key =
       auth.uid < peer
@@ -124,8 +131,7 @@ socket.on("offline-messages", (list)=>{
 
     const arr = JSON.parse(localStorage.getItem(key) || "[]");
 
-    // tránh trùng
-    if(!arr.find(x=>x.id === m.id)){
+    if(!arr.find(x => x.id === m.id)){
       arr.push({
         id: m.id,
         from: m.from,
@@ -134,11 +140,11 @@ socket.on("offline-messages", (list)=>{
         time: m.time,
         peer
       });
+      localStorage.setItem(key, JSON.stringify(arr));
     }
-
-    localStorage.setItem(key, JSON.stringify(arr));
   });
 });
+
 
 
 const userList = document.getElementById("userList");
