@@ -104,7 +104,7 @@ const pushSubs = new Map(); // uid -> Set(JSON-string subscription)
 const webpush = require("web-push");
 
 webpush.setVapidDetails(
-  "troll.jayd@gmail.com", // đổi thành email của bạn
+  "mailto:troll.jayd@gmail.com",// đổi thành email của bạn
   process.env.VAPID_PUBLIC,
   process.env.VAPID_PRIVATE
 );
