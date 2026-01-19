@@ -194,7 +194,7 @@ socket.on("private-message", ({ from, text, msgId }) => {
 
   const peer = from.uid;
 
-  // 🔐 xác định đúng chatKey (KHÔNG phụ thuộc state tạm)
+  // 🔐 xác định đúng chatKey
   const key =
     auth.uid < peer
       ? "chat_" + auth.uid + "_" + peer
@@ -214,25 +214,29 @@ socket.on("private-message", ({ from, text, msgId }) => {
     localStorage.setItem(key, JSON.stringify(arr));
   }
 
-  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER NGAY
+  // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER
   if (!chatModal.classList.contains("hidden")) {
-    const curKey = chatKey(); // chat hiện tại user đang mở
+    const curKey = chatKey();
 
     if (curKey === key) {
       pushMsg(
         from.name,
         text,
         false,
-        null,
+        msgId,
         "",
         from.avatar
       );
 
-      // 👁 seen realtime
       socket.emit("msg-seen", { to: peer, msgId });
+      return;
     }
   }
+
+  // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
+  showInboxDot(1);
 });
+
 
 
 
@@ -335,10 +339,13 @@ function openChat(){
   document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
 
+  clearInboxDot(); // 🔥 THÊM DÒNG NÀY
+
   if (currentTargetUID) {
     socket.emit("msg-seen-all", { peer: currentTargetUID });
   }
 }
+
 
 
 
