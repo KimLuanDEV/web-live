@@ -1522,28 +1522,32 @@ socket.on("lp-edit-post", ({ postId, text, images })=>{
   }
 
   // update images
-  if(images){
-    postEl.querySelector(".lp-post-images")?.remove();
+if (images) {
+  // 🔥 xoá TẤT CẢ ảnh cũ (1 ảnh hoặc nhiều ảnh)
+  postEl.querySelector(".lp-post-images")?.remove();
+  postEl.querySelector(".lp-post-img")?.remove();
 
-    if(images.length){
-      const html = `
-        <div class="lp-post-images fb-${Math.min(images.length, 5)}">
-          ${images.slice(0,5).map((url, index) => `
-            <div class="fb-img img-${index}"
-              onclick='openFeedLightbox(${JSON.stringify(images)}, ${index})'>
-              <img src="${url}">
-              ${index === 4 && images.length > 5
-                ? `<div class="fb-more">+${images.length - 5}</div>`
-                : ``}
-            </div>
-          `).join("")}
-        </div>
-      `;
-      postEl.querySelector(".lp-post-text")
-        .insertAdjacentHTML("afterend", html);
-    }
+  if (images.length) {
+    const html = `
+      <div class="lp-post-images fb-${Math.min(images.length, 5)}">
+        ${images.slice(0,5).map((url, index) => `
+          <div class="fb-img img-${index}"
+            onclick='openFeedLightbox(${JSON.stringify(images)}, ${index})'>
+            <img src="${url}">
+            ${index === 4 && images.length > 5
+              ? `<div class="fb-more">+${images.length - 5}</div>`
+              : ``}
+          </div>
+        `).join("")}
+      </div>
+    `;
+    postEl.querySelector(".lp-post-text")
+      .insertAdjacentHTML("afterend", html);
   }
+}
 
+
+  
   if(postEl.dataset.uid === auth.uid){
     showToast("Đã cập nhật bài viết");
   }
