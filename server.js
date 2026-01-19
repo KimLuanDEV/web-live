@@ -41,6 +41,20 @@ if(!fs.existsSync(AVATAR_DIR)){
 
 
 
+const INBOX_FILE = "/opt/render/project/data/inbox.json";
+
+function loadInbox(){
+  if(!fs.existsSync(INBOX_FILE)) return {};
+  return JSON.parse(fs.readFileSync(INBOX_FILE,"utf8"));
+}
+
+function saveInbox(db){
+  fs.writeFileSync(INBOX_FILE, JSON.stringify(db,null,2));
+}
+
+let userInbox = new Map(Object.entries(loadInbox()));
+
+
 
 const upload = multer({
   storage: multer.diskStorage({
@@ -233,7 +247,7 @@ function emitAllUsers(){
 
 
 // ===== USER INBOX / NOTIFICATION =====
-const userInbox = new Map();   // uid -> [ {type, text, ts, read} ]
+
 
 function pushNotify(uid, payload){
   if(!uid) return;
@@ -994,6 +1008,7 @@ socket.on("private-message", ({ to, text, msgId }) => {
   // 1️⃣ LƯU VÀO INBOX NGƯỜI NHẬN
   if(!userInbox.has(to)) userInbox.set(to, []);
   userInbox.get(to).push(msg);
+saveInbox(Object.fromEntries(userInbox)); // ✅ BẮT BUỘC
 
  
   // 2️⃣ GỬI REALTIME NẾU ONLINE
@@ -1181,6 +1196,8 @@ if (inbox && inbox.length) {
     for (const m of toSend) {
       m.delivered = true;
     }
+
+    saveInbox(Object.fromEntries(userInbox)); // ✅ FIX QUAN TRỌNG
 
     // 🔴 badge chỉ khi còn tin CHƯA XEM
     const unread = inbox.filter(m => !m.seen).length;

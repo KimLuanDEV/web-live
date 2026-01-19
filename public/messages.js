@@ -109,6 +109,7 @@ function showModal(text, okText="OK", cancelText=null){
 
 
 socket.on("connect", () => {
+   offlineHandled = false;   // ✅ FIX
   if (auth?.uid) {
     socket.emit("auth-login", { uid: auth.uid });
   }
@@ -143,6 +144,13 @@ socket.on("offline-messages", (list)=>{
       localStorage.setItem(key, JSON.stringify(arr));
     }
   });
+
+if(list.length){
+  showInboxDot(list.length); // 🔔 hiện badge
+  renderUserList();          // 🔄 refresh danh sách
+}
+
+
 });
 
 
