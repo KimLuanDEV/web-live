@@ -9246,3 +9246,62 @@ body.bar-merged .guest-notice-inner{
   position: relative;
   z-index: 5;
 }
+
+
+/* ===== PROFILE DARK BACKGROUND ===== */
+body.page-profile{
+  background: #000 !important;
+  color: #fff;
+}
+
+
+.profile-cover{
+  background: #000;
+}
+
+
+.profile-shell{
+  background: transparent;
+}
+
+.profile-header.fb-style{
+  background: transparent;
+}
+
+.profile-level,
+.profile-stats,
+.profile-bio,
+.profile-actions{
+  background: #0d0d0d;
+  border-radius: 14px;
+  padding: 14px;
+  margin-top: 12px;
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+
+.page-profile input,
+.page-profile textarea{
+  background: #0f0f0f;
+  border: 1px solid rgba(255,255,255,.12);
+  color: #fff;
+}
+
+.page-profile input::placeholder,
+.page-profile textarea::placeholder{
+  color: rgba(255,255,255,.45);
+}
+
+
+.cover-actions button,
+.avatar-camera{
+  background: rgba(0,0,0,.65);
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(8px);
+}
+
+
+.mobile-tabbar{
+  background: rgba(0,0,0,.85);
+  border-top: 1px solid rgba(255,255,255,.12);
+}
