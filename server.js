@@ -122,6 +122,9 @@ function saveSocial(){
 
 
 const app = express();
+
+app.use(express.json());
+
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
@@ -129,13 +132,21 @@ const io = new Server(server, { cors: { origin: "*" } });
 const pushSubs = new Map(); // uid -> subscription
 
 app.post("/api/push-subscribe", (req, res) => {
-  const { uid, sub } = req.body;
-  if (!uid || !sub) return res.sendStatus(400);
+  try {
+    const { uid, sub } = req.body;
 
-  pushSubs.set(uid, sub);
-  res.json({ ok: true });
+    if (!uid || !sub) {
+      return res.status(400).json({ error: "missing uid or sub" });
+    }
+
+    pushSubs.set(uid, sub);
+    res.json({ ok: true });
+
+  } catch (err) {
+    console.error("❌ push-subscribe error:", err);
+    res.sendStatus(500);
+  }
 });
-
 
 
 app.use(express.static(path.join(__dirname, "public")));
@@ -298,7 +309,7 @@ function saveUsers(db){
 }
 
 
-app.use(express.json());
+
 
 
 
