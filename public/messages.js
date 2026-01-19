@@ -175,7 +175,7 @@ saveChat({
 
 socket.on("private-message", ({ from, text, msgId }) => {
 
-  // 🔥 LUÔN LƯU TRƯỚC
+  // 1️⃣ LƯU LUÔN
   saveChat({
     from: from.uid,
     to: auth.uid,
@@ -184,23 +184,30 @@ socket.on("private-message", ({ from, text, msgId }) => {
     peer: from.uid
   });
 
-  // ✅ CHỈ HIỆN REALTIME KHI ĐANG MỞ ĐÚNG CHAT
-  if (chatModal && !chatModal.classList.contains("hidden")
-      && currentTargetUID === from.uid) {
+  // 2️⃣ NẾU MODAL ĐANG MỞ → RENDER NGAY
+  if (chatModal && !chatModal.classList.contains("hidden")) {
 
-    pushMsg(
-      from.name,
-      text,
-      false,
-      null,
-      "",
-      from.avatar
-    );
+    // 🔥 nếu chưa set target (vừa mở modal)
+    if (!currentTargetUID) {
+      currentTargetUID = from.uid;
+    }
 
-    // 👁 seen ngay
-    socket.emit("msg-seen", { to: from.uid, msgId });
+    // 🔥 chỉ render nếu đúng chat đang mở
+    if (currentTargetUID === from.uid) {
+      pushMsg(
+        from.name,
+        text,
+        false,
+        null,
+        "",
+        from.avatar
+      );
+
+      socket.emit("msg-seen", { to: from.uid, msgId });
+    }
   }
 });
+
 
 
 socket.on("msg-status", ({ msgId, status }) => {
