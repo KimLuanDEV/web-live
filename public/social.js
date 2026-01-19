@@ -792,7 +792,7 @@ document.querySelectorAll(".lp-tab").forEach(tab=>{
     if(t === "social") location.href="/social.html";
     if(t === "lobby") location.href="/lobby.html";
     if(t === "messages") location.href="/messages.html";
-    if(t === "profile") location.href="/profile.html";
+    if(t === "profile") location.href="/status.html";
   };
 });
 

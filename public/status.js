@@ -1,0 +1,94 @@
+const socket = io();
+const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+const feed = document.getElementById("lpFeed");
+const photoGrid = document.getElementById("photoGrid");
+
+let myPosts = [];
+
+/* ===== INIT PROFILE ===== */
+document.getElementById("profileAvatar").src = auth.avatar;
+document.getElementById("meAvatar").src = auth.avatar;
+document.getElementById("profileName").textContent = auth.name;
+document.getElementById("profileBio").textContent = auth.bio || "Chưa có giới thiệu";
+
+document.getElementById("aboutName").textContent = auth.name;
+document.getElementById("aboutBio").textContent = auth.bio || "—";
+document.getElementById("aboutDate").textContent =
+  new Date(auth.createdAt || Date.now()).toLocaleDateString("vi-VN");
+
+/* ===== LOAD POSTS ===== */
+socket.on("lp-init", list => {
+  myPosts = list.filter(p => p.uid === auth.uid);
+  renderStats();
+  renderPosts();
+  renderPhotos();
+});
+
+socket.on("lp-post", post => {
+  if(post.uid !== auth.uid) return;
+  myPosts.unshift(post);
+  renderStats();
+  renderPosts();
+  renderPhotos();
+});
+
+/* ===== RENDER ===== */
+function renderPosts(){
+  feed.innerHTML = "";
+  myPosts.forEach(p => renderPost(p, false));
+}
+
+function renderPhotos(){
+  const images = [];
+  myPosts.forEach(p=>{
+    if(p.images) images.push(...p.images);
+  });
+
+  photoGrid.innerHTML = images.map(src =>
+    `<img src="${src}" onclick="openImageLightbox('${src}')">`
+  ).join("");
+}
+
+function renderStats(){
+  document.getElementById("postCount").textContent = myPosts.length;
+
+  const likes = myPosts.reduce((sum,p)=> sum + (p.likes?.length||0), 0);
+  document.getElementById("likeCount").textContent = likes;
+}
+
+/* ===== TABS ===== */
+document.querySelectorAll(".lp-profile-tabs .tab").forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+
+    ["posts","photos","about"].forEach(id=>{
+      document.getElementById("tab-"+id).classList.add("hidden");
+    });
+    document.getElementById("tab-"+tab.dataset.tab).classList.remove("hidden");
+  };
+});
+
+/* ===== TAB BAR ===== */
+document.querySelectorAll(".lp-tab").forEach(tab=>{
+  tab.onclick = ()=>{
+    const t = tab.dataset.tab;
+    if(t==="social") location.href="/social.html";
+    if(t==="lobby") location.href="/lobby.html";
+    if(t==="messages") location.href="/messages.html";
+    if(t==="profile") location.href="/profile.html";
+  };
+});
+
+/* ===== COMPOSE ===== */
+const postText = document.getElementById("postText");
+postText.addEventListener("pointerdown", e=>{
+  e.preventDefault();
+  location.href="/social.html"; // dùng composer chính
+});
+
+/* ===== EDIT PROFILE (PLACEHOLDER) ===== */
+function openEditProfile(){
+  alert("Sắp có: chỉnh avatar / bio / cover");
+}
