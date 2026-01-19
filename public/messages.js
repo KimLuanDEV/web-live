@@ -174,25 +174,34 @@ saveChat({
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
- pushMsg(from.name, text, false);
-  
-saveChat({
-  from: from.uid,
-  to: auth.uid,
-  text: text,
-  time: Date.now(),
-  peer: from.uid   // 🔥 QUAN TRỌNG
+
+  // 🔥 LUÔN LƯU TRƯỚC
+  saveChat({
+    from: from.uid,
+    to: auth.uid,
+    text,
+    time: Date.now(),
+    peer: from.uid
+  });
+
+  // ✅ CHỈ HIỆN REALTIME KHI ĐANG MỞ ĐÚNG CHAT
+  if (chatModal && !chatModal.classList.contains("hidden")
+      && currentTargetUID === from.uid) {
+
+    pushMsg(
+      from.name,
+      text,
+      false,
+      null,
+      "",
+      from.avatar
+    );
+
+    // 👁 seen ngay
+    socket.emit("msg-seen", { to: from.uid, msgId });
+  }
 });
 
-
-
- 
-socket.emit("msg-seen", {
-  to: from.uid,
-  msgId
-});
-
-});
 
 socket.on("msg-status", ({ msgId, status }) => {
   const el = document.querySelector(`[data-msg-id="${msgId}"] .msg-status`);
