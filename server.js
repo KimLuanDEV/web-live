@@ -1261,9 +1261,6 @@ socket.on("private-message", async ({ to, text, msgId }) => {
   if (!fromUid || !to || !text) return;
 
 
-// 🚫 BLOCK CHECK (2 chiều)
-const blockedMe = (me.profile.blocked || []).includes(to);
-const blockedByYou = (you.profile.blocked || []).includes(fromUid);
 
 
 
@@ -1274,6 +1271,9 @@ const you = db[to];
 
 if (!me || !you) return;
 
+// 🚫 BLOCK CHECK (2 chiều)
+const blockedMe = (me.profile.blocked || []).includes(to);
+const blockedByYou = (you.profile.blocked || []).includes(fromUid);
 
 if (blockedMe || blockedByYou) {
   socket.emit("msg-blocked", {
