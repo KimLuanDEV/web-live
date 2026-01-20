@@ -29,6 +29,14 @@ const btnBlock          = document.getElementById("btnBlock");
 if (profileFriendActions) profileFriendActions.style.display = "none";
 if (btnProfileFriends) btnProfileFriends.style.display = "";
 
+
+// 🔒 Mặc định KHÔNG cho nhắn tin
+if (btnMsgFriend) {
+  btnMsgFriend.style.display = "none";
+  btnMsgFriend.disabled = true;
+}
+
+
 // CHỈ KHI XEM PROFILE NGƯỜI KHÁC
 if (viewUid && viewUid !== __profileAuth.uid) {
 
@@ -51,18 +59,33 @@ if (viewUid && viewUid !== __profileAuth.uid) {
       const isFriend = friends.some(u => u.uid === viewUid);
       const isPendingSent = sent.some(u => u.uid === viewUid);
 
-      if (isFriend) {
-        // 👥 ĐÃ LÀ BẠN
-        if (btnUnfriend) btnUnfriend.style.display = "block";
-      }
-      else if (isPendingSent) {
-        // ⏳ ĐÃ GỬI LỜI MỜI
-        if (btnFriendPending) btnFriendPending.style.display = "block";
-      }
-      else {
-        // ➕ CHƯA LÀ BẠN
-        if (btnAddFriend) btnAddFriend.style.display = "block";
-      }
+if (isFriend) {
+  // 👥 ĐÃ LÀ BẠN
+  if (btnUnfriend) btnUnfriend.style.display = "block";
+
+  // 💬 CHO PHÉP NHẮN TIN
+  if (btnMsgFriend) {
+    btnMsgFriend.style.display = "block";
+    btnMsgFriend.disabled = false;
+  }
+}
+
+else if (isPendingSent) {
+  if (btnFriendPending) btnFriendPending.style.display = "block";
+
+  if (btnMsgFriend) {
+    btnMsgFriend.style.display = "none";
+    btnMsgFriend.disabled = true;
+  }
+}
+else {
+  if (btnAddFriend) btnAddFriend.style.display = "block";
+
+  if (btnMsgFriend) {
+    btnMsgFriend.style.display = "none";
+    btnMsgFriend.disabled = true;
+  }
+}
     });
 
   // ➕ KẾT BẠN
@@ -126,13 +149,17 @@ if (btnFriendPending) {
   }
 
 
-  // 💬 NHẮN TIN RIÊNG
-  if (btnMsgFriend) {
+// 💬 NHẮN TIN RIÊNG (CHỈ KHI ĐÃ LÀ BẠN)
+if (btnMsgFriend) {
   btnMsgFriend.onclick = () => {
-    // 👉 mở chat riêng với người này
+    if (btnMsgFriend.disabled) {
+      showMsg("🔒 Chỉ có thể nhắn tin khi đã là bạn");
+      return;
+    }
     location.href = "/messages.html?to=" + encodeURIComponent(viewUid);
-    };
-  }
+  };
+}
+
 
   
 }
