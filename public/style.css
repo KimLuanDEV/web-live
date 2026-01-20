@@ -9593,3 +9593,11 @@ body.page-profile{
   color: #ff3b30;
   border: 1px solid #ff3b30;
 }
+
+
+.btn-primary{
+  background:#25F09A;
+  color:#000;
+  border:none;
+  font-weight:600;
+}
