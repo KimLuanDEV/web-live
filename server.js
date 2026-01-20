@@ -634,6 +634,23 @@ app.get("/ice", async (_req, res) => {
 });
 
 
+async function sendPushToUser(uid, payload) {
+  const subs = pushSubs.get(uid);
+  if (!subs || !subs.length) return;
+
+  for (let i = subs.length - 1; i >= 0; i--) {
+    try {
+      await webpush.sendNotification(subs[i], JSON.stringify(payload));
+    } catch (e) {
+      if (e.statusCode === 410 || e.statusCode === 404) {
+        subs.splice(i, 1); // xoá sub chết
+      }
+    }
+  }
+}
+
+
+
 
 
 function closeRoom(roomId, reason = "host_left") {
@@ -837,7 +854,7 @@ socket.on("lp-post", post => {
 
 
 
-socket.on("lp-like", ({ postId, uid })=>{
+socket.on("lp-like", async ({ postId, uid })=>{
   const post = getPost(postId);
   if(!post || !uid) return;
 
@@ -853,54 +870,71 @@ socket.on("lp-like", ({ postId, uid })=>{
     postId,
     likes: post.likes.length
   });
+
+ // 🔔 PUSH cho chủ bài (nếu like mới & không tự like)
+  if (liked && post.uid !== uid) {
+    await sendPushToUser(post.uid, {
+      title: "❤️ Bài viết được thích",
+      body: `${socket.data.profile?.name || "Ai đó"} đã thích bài viết của bạn`,
+      url: `/social.html#post-${postId}`
+    });
+  }
+  
 });
 
-socket.on("lp-comment", ({ postId, uid, name, avatar, text })=>{
+socket.on("lp-comment", async ({ postId, uid, name, avatar, text }) => {
   const post = getPost(postId);
-  if(!post || !uid || !text) return;
+  if (!post || !uid || !text) return;
 
   post.comments = post.comments || [];
 
   const c = {
     uid,
-    name: String(name || "User").slice(0,20),
-    avatar: String(avatar || ""),
-    text: String(text).slice(0,200),
-    time: Date.now()
+    name,
+    avatar,
+    text: text.slice(0,200),
+    time: Date.now(),
+    likes:[]
   };
 
   post.comments.push(c);
-
   saveSocial();
 
   io.emit("lp-comment", {
-  postId,
-  postOwnerUid: post.uid,   // 👑 thêm
-  comment: c,
-  count: post.comments.length
+    postId,
+    postOwnerUid: post.uid,
+    comment: c,
+    count: post.comments.length
+  });
+
+  // 🔔 PUSH cho chủ bài
+  if (post.uid !== uid) {
+    await sendPushToUser(post.uid, {
+      title: "💬 Bình luận mới",
+      body: `${name}: ${text.slice(0,60)}`,
+      url: `/social.html#post-${postId}`
+    });
+  }
 });
 
-});
 
 
-
-socket.on("lp-reply", ({ postId, commentIndex, uid, name, avatar, text })=>{
+socket.on("lp-reply", async ({ postId, commentIndex, uid, name, avatar, text }) => {
   const post = getPost(postId);
-  if(!post || !text) return;
+  if (!post || !text) return;
 
-  const c = post.comments[commentIndex];
-  if(!c) return;
+  const c = post.comments?.[commentIndex];
+  if (!c) return;
 
   c.replies = c.replies || [];
 
   const r = {
-  id: Date.now() + "_" + Math.random().toString(36).slice(2),   // 🔥 BẮT BUỘC
-  uid, name, avatar,
-  text: text.slice(0,200),
-  time: Date.now(),
-  likes: []     // 🔥 để reload không bị undefined
-};
-
+    id: Date.now()+"_"+Math.random().toString(36).slice(2),
+    uid, name, avatar,
+    text: text.slice(0,200),
+    time: Date.now(),
+    likes:[]
+  };
 
   c.replies.push(r);
   saveSocial();
@@ -911,6 +945,15 @@ socket.on("lp-reply", ({ postId, commentIndex, uid, name, avatar, text })=>{
     reply: r,
     count: c.replies.length
   });
+
+  // 🔔 PUSH cho người bị reply
+  if (c.uid && c.uid !== uid) {
+    await sendPushToUser(c.uid, {
+      title: "💬 Trả lời bình luận",
+      body: `${name}: ${text.slice(0,60)}`,
+      url: `/social.html#post-${postId}`
+    });
+  }
 });
 
 
