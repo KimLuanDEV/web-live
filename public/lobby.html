@@ -402,6 +402,7 @@ let ONLINE_UIDS = [];
 
 let MY_FRIENDS = [];
 let MY_REQUESTS = [];
+let MY_BLOCKED = [];
 
 
 
@@ -452,9 +453,11 @@ if (profile.uid) {
     .then(data => {
       MY_FRIENDS = data.friends.map(f => f.uid);
       MY_REQUESTS = data.requests.map(r => r.uid);
-      renderPlayerLobbyAll(); // 🔥 render lại
+      MY_BLOCKED = data.blocked || [];   // 🚫 BLOCK
+      renderPlayerLobbyAll();
     });
 }
+
 
 
 
@@ -1231,12 +1234,16 @@ function renderPlayerLobbyAll(){
   }
 
   box.innerHTML = ALL_USERS.map(u=>{
+
+    // 🚫 ẨN USER ĐÃ BLOCK
+if (MY_BLOCKED.includes(u.uid)) return "";
+
     const isOn = ONLINE_UIDS.includes(u.uid);
     const isMe = u.uid === profile.uid;
 
 
  const isFriend = MY_FRIENDS.includes(u.uid);
-const isPending = MY_REQUESTS.includes(u.uid);
+ const isPending = MY_REQUESTS.includes(u.uid);
 
 
     return `
@@ -1278,6 +1285,12 @@ ${!isMe ? `
     🔒
   </button>
 `}
+
+<button class="btn-block"
+  title="Chặn user"
+  onclick="blockUser('${u.uid}','${u.name}')">
+  🚫
+</button>
 
 
 
@@ -1509,6 +1522,42 @@ document.getElementById("btnLogin")?.addEventListener("click", () => {
   window.location.href = "/login.html";
 });
 
+
+
+function blockUser(uid, name){
+  showMsg(
+    `Bạn có chắc muốn chặn ${name}?\nNgười này sẽ không thể nhắn tin hay kết bạn với bạn.`,
+    "Chặn user",
+    () => {
+      socket.emit("user-block", { uid });
+
+      if(!MY_BLOCKED.includes(uid)){
+        MY_BLOCKED.push(uid);
+      }
+
+      // xoá khỏi bạn bè nếu có
+      MY_FRIENDS = MY_FRIENDS.filter(x => x !== uid);
+      MY_REQUESTS = MY_REQUESTS.filter(x => x !== uid);
+
+      renderPlayerLobbyAll();
+      showMsg(`🚫 Đã chặn ${name}`);
+    }
+  );
+}
+
+
+
+socket.on("user-blocked", ({ uid }) => {
+  if(!MY_BLOCKED.includes(uid)){
+    MY_BLOCKED.push(uid);
+  }
+  renderPlayerLobbyAll();
+});
+
+socket.on("user-unblocked", ({ uid }) => {
+  MY_BLOCKED = MY_BLOCKED.filter(x => x !== uid);
+  renderPlayerLobbyAll();
+});
 
 
 

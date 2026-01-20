@@ -697,7 +697,56 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
+socket.on("user-block", ({ uid }) => {
+  const me = socket.data.uid;
+  if (!me || !uid || me === uid) return;
+
+  const db = loadUsers();
+  const uMe = db[me];
+  if (!uMe) return;
+
+  uMe.profile.blocked ||= [];
+
+  if (!uMe.profile.blocked.includes(uid)) {
+    uMe.profile.blocked.push(uid);
+  }
+
+  // 🔥 BLOCK → TỰ HUỶ KẾT BẠN NẾU CÓ
+  uMe.profile.friends = (uMe.profile.friends || []).filter(x => x !== uid);
+  const uYou = db[uid];
+  if (uYou) {
+    uYou.profile.friends =
+      (uYou.profile.friends || []).filter(x => x !== me);
+
+    // xoá request 2 chiều nếu còn
+    uYou.profile.friendRequests =
+      (uYou.profile.friendRequests || []).filter(x => x !== me);
+  }
+
+  saveUsers(db);
+
+  socket.emit("user-blocked", { uid });
+});
+
+socket.on("user-unblock", ({ uid }) => {
+  const me = socket.data.uid;
+  if (!me || !uid) return;
+
+  const db = loadUsers();
+  const uMe = db[me];
+  if (!uMe) return;
+
+  uMe.profile.blocked =
+    (uMe.profile.blocked || []).filter(x => x !== uid);
+
+  saveUsers(db);
+
+  socket.emit("user-unblocked", { uid });
+});
+
 socket.on("friend-request", ({ to }) => {
+
+  
   const from = socket.data.uid;
   if (!from || !to || from === to) return;
 
@@ -705,6 +754,15 @@ socket.on("friend-request", ({ to }) => {
   const uFrom = db[from];
   const uTo = db[to];
   if (!uFrom || !uTo) return;
+
+
+// 🚫 BLOCK CHECK
+if (
+  (uFrom.profile.blocked || []).includes(to) ||
+  (uTo.profile.blocked || []).includes(from)
+) {
+  return; // âm thầm bỏ qua
+}
 
   uFrom.profile.friends ||= [];
   uTo.profile.friends ||= [];
@@ -801,9 +859,6 @@ socket.on("friend-remove", ({ uid }) => {
   socket.emit("friend-removed", { uid });
 });
 
-
-
-
 socket.on("lp-like-reply", async ({ postId, commentIndex, replyId, uid }) => {
   const post = getPost(postId);
   if (!post) return;
@@ -841,8 +896,6 @@ socket.on("lp-like-reply", async ({ postId, commentIndex, replyId, uid }) => {
   }
 });
 
- 
-
 socket.on("lp-reply-child", ({ postId, commentIndex, replyId, uid, name, avatar, text })=>{
   const post = getPost(postId);
   if(!post) return;
@@ -875,8 +928,6 @@ socket.on("lp-reply-child", ({ postId, commentIndex, replyId, uid, name, avatar,
   });
 });
 
-
-
 socket.on("lp-like-comment", async ({ postId, index, uid }) => {
   const post = getPost(postId);
   if (!post || !post.comments || !post.comments[index]) return;
@@ -907,8 +958,6 @@ socket.on("lp-like-comment", async ({ postId, index, uid }) => {
     });
   }
 });
-
-
 
 socket.on("lp-delete", ({ postId, uid })=>{
   const idx = lpPosts.findIndex(p => p.id === postId && p.uid === uid);
@@ -1212,6 +1261,20 @@ socket.on("private-message", async ({ to, text, msgId }) => {
   if (!fromUid || !to || !text) return;
 
 
+// 🚫 BLOCK CHECK (2 chiều)
+const blockedMe = (me.profile.blocked || []).includes(to);
+const blockedByYou = (you.profile.blocked || []).includes(fromUid);
+
+if (blockedMe || blockedByYou) {
+  socket.emit("msg-blocked", {
+    reason: "blocked",
+    to
+  });
+  return;
+}
+
+
+
 // 🔒 CHỈ CHO PHÉP NHẮN TIN VỚI BẠN BÈ
 const db = loadUsers();
 const me = db[fromUid];
@@ -1228,6 +1291,8 @@ if (!myFriends.includes(to)) {
   });
   return;
 }
+
+
 
 
 

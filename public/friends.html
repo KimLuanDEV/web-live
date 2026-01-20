@@ -175,6 +175,12 @@ function renderFriends(data){
     onclick="removeFriend('${u.uid}','${u.name}')">
     🗑
   </button>
+
+  <button class="btn-reject"
+  onclick="blockUser('${u.uid}','${u.name}')">
+  🚫
+  </button>
+
 </div>
 
 
@@ -206,6 +212,20 @@ function removeFriend(uid, name){
   if(!ok) return;
 
   socket.emit("friend-remove", { uid });
+
+  setTimeout(()=>{
+    fetch("/api/friends/" + profile.uid)
+      .then(r=>r.json())
+      .then(renderFriends);
+  }, 200);
+}
+
+
+function blockUser(uid, name){
+  const ok = confirm(`Bạn có chắc muốn chặn ${name}? Người này sẽ không thể liên hệ với bạn.`);
+  if(!ok) return;
+
+  socket.emit("user-block", { uid });
 
   setTimeout(()=>{
     fetch("/api/friends/" + profile.uid)

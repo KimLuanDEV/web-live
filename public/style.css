@@ -9451,3 +9451,13 @@ body.page-profile{
   border-color:#ff6666;
   color:#ff6666;
 }
+
+
+.btn-block{
+  background:#400;
+  color:#ff6666;
+  border:none;
+  border-radius:8px;
+  padding:6px 8px;
+  cursor:pointer;
+}
