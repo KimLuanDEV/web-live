@@ -113,9 +113,6 @@ if (btnFriendPending) {
     };
   }
 
-
-
-
   // ⛔ BLOCK
   if (btnBlock) {
     btnBlock.onclick = () => {
@@ -127,6 +124,17 @@ if (btnFriendPending) {
       };
     };
   }
+
+
+  // 💬 NHẮN TIN RIÊNG
+  if (btnMsgFriend) {
+  btnMsgFriend.onclick = () => {
+    // 👉 mở chat riêng với người này
+    location.href = "/messages.html?to=" + encodeURIComponent(viewUid);
+    };
+  }
+
+  
 }
 
 
