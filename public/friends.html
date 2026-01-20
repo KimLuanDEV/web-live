@@ -117,6 +117,53 @@ body{
 .btn-accept{ border-color:#00ff99; color:#00ff99; }
 .btn-reject{ border-color:#ff6666; color:#ff6666; }
 .btn-chat{ border-color:#00c8ff; color:#00c8ff; }
+
+/* 🔍 Search button bên phải */
+.btn-search{
+  position: absolute;
+  right: 12px;
+  top: 6px;
+
+  width: 40px;
+  height: 40px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:18px;
+  z-index: 2;
+}
+
+/* 🔎 Search box */
+.friend-search{
+  position: sticky;
+  top: 52px; /* ngay dưới header */
+  z-index: 90;
+
+  padding: 8px 12px;
+  background:#000;
+  border-bottom:1px solid rgba(255,255,255,.08);
+
+  display:none;
+}
+
+.friend-search input{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.2);
+  background:#111;
+  color:#fff;
+  font-size:14px;
+}
+
+
+
+
 </style>
 </head>
 
@@ -125,7 +172,22 @@ body{
 <div class="friend-header">
   <button onclick="history.back()">←</button>
   <h3>Bạn bè</h3>
+
+  <!-- 🔍 Search button (right) -->
+  <button class="btn-search" onclick="toggleSearch()">🔍</button>
 </div>
+
+
+<div class="friend-search" id="friendSearch">
+  <input
+    id="friendSearchInput"
+    placeholder="Tìm theo tên bạn bè..."
+    oninput="applySearch()"
+    autocomplete="off"
+  >
+</div>
+
+
 
 <div class="friend-section">
   <div class="friend-title">📨 Lời mời kết bạn</div>
@@ -145,6 +207,11 @@ body{
 
 const socket = io();
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+let __searchOpen = false;
+let __lastData = null;
+
+
 if(!profile.uid){
   location.href = "/login.html";
 }
@@ -270,6 +337,58 @@ function blockUser(uid, name){
       .then(renderFriends);
   }, 200);
 }
+
+
+
+
+
+// override renderFriends để giữ data gốc
+const _renderFriends = renderFriends;
+renderFriends = function(data){
+  __lastData = data;
+  _renderFriends(data);
+};
+
+function toggleSearch(){
+  __searchOpen = !__searchOpen;
+  const box = document.getElementById("friendSearch");
+  const input = document.getElementById("friendSearchInput");
+
+  box.style.display = __searchOpen ? "block" : "none";
+
+  if(__searchOpen){
+    setTimeout(()=> input.focus(), 50);
+  }else{
+    input.value = "";
+    if(__lastData) _renderFriends(__lastData);
+  }
+}
+
+function applySearch(){
+  if(!__lastData) return;
+
+  const q = document.getElementById("friendSearchInput")
+    .value
+    .toLowerCase()
+    .trim();
+
+  if(!q){
+    _renderFriends(__lastData);
+    return;
+  }
+
+  const filtered = {
+    requests: __lastData.requests.filter(u =>
+      u.name.toLowerCase().includes(q)
+    ),
+    friends: __lastData.friends.filter(u =>
+      u.name.toLowerCase().includes(q)
+    )
+  };
+
+  _renderFriends(filtered);
+}
+
 
 
 </script>
