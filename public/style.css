@@ -9601,3 +9601,12 @@ body.page-profile{
   border:none;
   font-weight:600;
 }
+
+
+.btn-waiting{
+  background:#222;
+  color:#aaa;
+  border:1px dashed #444;
+  cursor: not-allowed;
+  font-weight:600;
+}

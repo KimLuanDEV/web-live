@@ -18,12 +18,14 @@ const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 // 👥 / 💬 PROFILE ACTION VISIBILITY (FIX DỨT ĐIỂM)
 const btnProfileFriends = document.querySelector(".btn-profile-friends");
 const profileFriendActions = document.getElementById("profileFriendActions");
-const btnMsgFriend = document.getElementById("btnMsgFriend");
-const btnAddFriend = document.getElementById("btnAddFriend");
-const btnUnfriend  = document.getElementById("btnUnfriend");
-const btnBlock     = document.getElementById("btnBlock");
 
-// RESET
+const btnMsgFriend      = document.getElementById("btnMsgFriend");
+const btnAddFriend      = document.getElementById("btnAddFriend");
+const btnFriendPending  = document.getElementById("btnFriendPending");
+const btnUnfriend       = document.getElementById("btnUnfriend");
+const btnBlock          = document.getElementById("btnBlock");
+
+// RESET CỨNG
 if (profileFriendActions) profileFriendActions.style.display = "none";
 if (btnProfileFriends) btnProfileFriends.style.display = "";
 
@@ -33,21 +35,33 @@ if (viewUid && viewUid !== __profileAuth.uid) {
   if (btnProfileFriends) btnProfileFriends.style.display = "none";
   if (profileFriendActions) profileFriendActions.style.display = "flex";
 
-  // 🔍 KIỂM TRA TRẠNG THÁI BẠN BÈ
+  // reset từng nút
+  if (btnAddFriend) btnAddFriend.style.display = "none";
+  if (btnFriendPending) btnFriendPending.style.display = "none";
+  if (btnUnfriend) btnUnfriend.style.display = "none";
+
+  // 🔍 LẤY TRẠNG THÁI BẠN BÈ
   fetch("/api/friends/" + __profileAuth.uid)
     .then(r => r.json())
     .then(data => {
-      const isFriend = (data.friends || []).some(u => u.uid === viewUid);
+      const friends = data.friends || [];
+      const requests = data.requests || []; // lời mời nhận được
+      const sent = data.sent || [];          // 🔥 lời mời đã gửi
 
-      // 🔒 CHƯA LÀ BẠN
-      if (!isFriend) {
-        if (btnAddFriend) btnAddFriend.style.display = "block";
-        if (btnUnfriend) btnUnfriend.style.display = "none";
-      } 
-      // 👥 ĐÃ LÀ BẠN
-      else {
-        if (btnAddFriend) btnAddFriend.style.display = "none";
+      const isFriend = friends.some(u => u.uid === viewUid);
+      const isPendingSent = sent.some(u => u.uid === viewUid);
+
+      if (isFriend) {
+        // 👥 ĐÃ LÀ BẠN
         if (btnUnfriend) btnUnfriend.style.display = "block";
+      }
+      else if (isPendingSent) {
+        // ⏳ ĐÃ GỬI LỜI MỜI
+        if (btnFriendPending) btnFriendPending.style.display = "block";
+      }
+      else {
+        // ➕ CHƯA LÀ BẠN
+        if (btnAddFriend) btnAddFriend.style.display = "block";
       }
     });
 
@@ -55,6 +69,11 @@ if (viewUid && viewUid !== __profileAuth.uid) {
   if (btnAddFriend) {
     btnAddFriend.onclick = () => {
       socket.emit("friend-request", { to: viewUid });
+
+      // đổi UI ngay không cần reload
+      btnAddFriend.style.display = "none";
+      if (btnFriendPending) btnFriendPending.style.display = "block";
+
       showMsg("📨 Đã gửi lời mời kết bạn");
     };
   }
@@ -66,6 +85,10 @@ if (viewUid && viewUid !== __profileAuth.uid) {
       document.getElementById("msgOk").onclick = () => {
         socket.emit("friend-remove", { uid: viewUid });
         closeMsg();
+
+        btnUnfriend.style.display = "none";
+        if (btnAddFriend) btnAddFriend.style.display = "block";
+
         showMsg("🚫 Đã huỷ kết bạn");
       };
     };
@@ -83,6 +106,7 @@ if (viewUid && viewUid !== __profileAuth.uid) {
     };
   }
 }
+
 
 
 
