@@ -880,6 +880,31 @@ socket.on("friend-respond", ({ from, accept }) => {
   }
 });
 
+
+socket.on("friend-cancel", ({ uid }) => {
+  const meUid = socket.data.uid;
+  if (!meUid || !uid) return;
+
+  const db = loadUsers();
+  const me = db[meUid];
+  const other = db[uid];
+
+  if (!me || !other) return;
+
+  // me.sent = lời mời đã gửi
+  me.friends ||= {};
+  other.friends ||= {};
+
+  me.friends.sent = (me.friends.sent || []).filter(u => u !== uid);
+  other.friends.requests = (other.friends.requests || []).filter(u => u !== meUid);
+
+  saveUsers(db);
+});
+
+
+
+
+
 socket.on("friend-remove", ({ uid }) => {
   const me = socket.data.uid;
   if (!me || !uid) return;

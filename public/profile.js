@@ -78,6 +78,25 @@ if (viewUid && viewUid !== __profileAuth.uid) {
     };
   }
 
+    // ❌ HUỶ LỜI MỜI ĐÃ GỬI
+if (btnFriendPending) {
+  btnFriendPending.onclick = () => {
+    showMsg("Huỷ lời mời kết bạn?", "Xác nhận");
+
+    document.getElementById("msgOk").onclick = () => {
+      socket.emit("friend-cancel", { uid: viewUid });
+      closeMsg();
+
+      // UI quay lại trạng thái chưa là bạn
+      btnFriendPending.style.display = "none";
+      if (btnAddFriend) btnAddFriend.style.display = "block";
+
+      showMsg("❌ Đã huỷ lời mời");
+    };
+  };
+}
+
+
   // 🚫 HUỶ BẠN
   if (btnUnfriend) {
     btnUnfriend.onclick = () => {
@@ -93,6 +112,9 @@ if (viewUid && viewUid !== __profileAuth.uid) {
       };
     };
   }
+
+
+
 
   // ⛔ BLOCK
   if (btnBlock) {

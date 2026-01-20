@@ -9610,3 +9610,15 @@ body.page-profile{
   cursor: not-allowed;
   font-weight:600;
 }
+
+
+.btn-waiting{
+  background:#222;
+  color:#ffb020;
+  border:1px dashed #555;
+  font-weight:600;
+}
+
+.btn-waiting:active{
+  opacity:.7;
+}
