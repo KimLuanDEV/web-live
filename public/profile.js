@@ -296,12 +296,14 @@ document.getElementById("btnSave").onclick = () => {
 
   localStorage.setItem(KEY, JSON.stringify(profile));
 
-  if(uid){
-    socket.emit("profile-update", {
-      name: profile.name,
-      avatar: profile.avatar
-    });
-  }
+if(uid){
+  socket.emit("profile-update", {
+    name: profile.name,
+    avatar: profile.avatar,
+    bio: profile.bio
+  });
+}
+
 
   showMsg("✅ Đã lưu hồ sơ!");
 };
@@ -518,17 +520,20 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 
 const bioInput = document.getElementById("bioInput");
 
-if(bioInput){
-  bioInput.oninput = ()=>{
+if (bioInput) {
+  bioInput.onblur = () => {
     const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-    p.bio = bioInput.value.slice(0, 300); // giới hạn 300 ký tự
+    p.bio = bioInput.value.slice(0, 300);
     localStorage.setItem(KEY, JSON.stringify(p));
 
-    if(__profileAuth.uid){
+    if (__profileAuth.uid) {
       socket.emit("profile-update", { bio: p.bio });
     }
+
+    showMsg("✅ Đã lưu giới thiệu");
   };
 }
+
 
 
 let lastScroll = 0;

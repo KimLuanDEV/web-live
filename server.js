@@ -1670,7 +1670,7 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 });
 
 
-socket.on("profile-update", ({ name, avatar, level, cover }) => {
+socket.on("profile-update", ({ name, avatar, level, cover, bio }) => {
 
 
   // ===== 1. Cập nhật profile realtime cho lobby =====
@@ -1690,6 +1690,7 @@ socket.on("profile-update", ({ name, avatar, level, cover }) => {
         if (avatar) db[k].profile.avatar = avatar;
         if (level)  db[k].profile.level  = Number(level) || db[k].profile.level;
         if (cover) db[k].profile.cover = cover;
+        if (bio !== undefined) {db[k].profile.bio = String(bio).slice(0, 500);}
 
         saveUsers(db);
         break;
