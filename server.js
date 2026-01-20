@@ -853,7 +853,6 @@ socket.on("lp-post", post => {
 });
 
 
-
 socket.on("lp-like", async ({ postId, uid }) => {
   const post = getPost(postId);
   if (!post || !uid) return;
@@ -883,8 +882,6 @@ socket.on("lp-like", async ({ postId, uid }) => {
   }
 });
 
-  
-});
 
 socket.on("lp-comment", async ({ postId, uid, name, avatar, text }) => {
   const post = getPost(postId);
