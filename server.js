@@ -1147,35 +1147,34 @@ socket.on("private-message", async ({ to, text, msgId }) => {
     msg.delivered = true;
   }
 
-  // 3️⃣ PUSH NOTIFICATION NẾU USER OFFLINE
-  if (!sockets) {
-    const subs = pushSubs.get(to);
+ // 3️⃣ 🔔 LUÔN GỬI PUSH (KỂ CẢ ONLINE)
+const subs = pushSubs.get(to);
 
-    if (subs && subs.length) {
-      const db = loadUsers();
-      const fromUser = db[fromUid];
+if (subs && subs.length) {
+  const db = loadUsers();
+  const fromUser = db[fromUid];
 
-      const payload = JSON.stringify({
-        title: "💬 Tin nhắn mới",
-        body: `${fromUser?.profile?.name || fromUid}: ${text}`,
-        url: "/messages.html"
-      });
+  const payload = JSON.stringify({
+    title: "💬 Tin nhắn mới",
+    body: `${fromUser?.profile?.name || fromUid}: ${text}`,
+    url: "/messages.html"
+  });
 
-      // 🔥 GỬI PUSH + XOÁ SUB CHẾT
-      for (let i = subs.length - 1; i >= 0; i--) {
-        try {
-          await webpush.sendNotification(subs[i], payload);
-        } catch (e) {
-          if (e.statusCode === 410 || e.statusCode === 404) {
-            subs.splice(i, 1); // ❌ xoá subscription chết
-            console.warn("🧹 Removed dead push sub:", to);
-          } else {
-            console.log("❌ Push failed:", e.message);
-          }
-        }
+  for (let i = subs.length - 1; i >= 0; i--) {
+    try {
+      await webpush.sendNotification(subs[i], payload);
+    } catch (e) {
+      if (e.statusCode === 410 || e.statusCode === 404) {
+        subs.splice(i, 1); // 🧹 xoá sub chết
+      } else {
+        console.log("❌ Push failed:", e.message);
       }
     }
   }
+}
+
+
+
 
   // 4️⃣ BÁO NGƯỜI GỬI TRẠNG THÁI
   socket.emit("msg-status", {
