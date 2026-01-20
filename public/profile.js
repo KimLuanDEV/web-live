@@ -19,6 +19,29 @@ if (__profileAuth.uid) {
   socket.emit("auth-login", { uid: __profileAuth.uid });
 }
 
+
+// 🔥 HYDRATE PROFILE TỪ SERVER (FIX MẤT BIO KHI LOGOUT)
+if (__profileAuth.uid) {
+  fetch("/api/me/" + __profileAuth.uid)
+    .then(r => r.json())
+    .then(data => {
+      if (!data || !data.profile) return;
+
+      const p = {
+        ...defaultProfile,
+        ...data.profile
+      };
+
+      // ✅ ghi lại localStorage từ server
+      localStorage.setItem(KEY, JSON.stringify(p));
+
+      // ✅ update UI ngay
+      loadProfile();
+    })
+    .catch(()=>{});
+}
+
+
 // nếu bị login nơi khác → đá
 socket.on("force-logout", () => {
    showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");

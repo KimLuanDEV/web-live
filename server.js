@@ -344,6 +344,7 @@ app.post("/api/register", async (req,res)=>{
       uid: username,
       name,
       avatar: "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
+      bio: "",  
       coins:0,
       level:1,
       exp:0,
@@ -439,6 +440,7 @@ app.get("/api/all-users", (req,res)=>{
       name: p.name || uid,
       avatar: p.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
       cover: p.cover || "",
+      bio: p.bio || "",
       level: p.level || 1,
       verified: !!p.verified   // ⭐ thêm
     });
