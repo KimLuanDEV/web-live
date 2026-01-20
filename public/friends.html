@@ -15,12 +15,30 @@ body{
 }
 
 .friend-header{
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+
   display:flex;
   align-items:center;
   gap:10px;
-  padding:14px;
+  padding:14px 16px;
+
+  background:#000;
   border-bottom:1px solid rgba(255,255,255,.08);
+  z-index: 100;
 }
+
+.friend-header h3{
+  flex:1;
+  text-align:center;
+  margin:0;
+}
+
 
 .friend-header button{
   background:none;
