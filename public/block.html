@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Đã chặn - Livestream Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./style.css">
+
+<style>
+body{
+  background:#000;
+  color:#fff;
+  margin:0;
+  font-family:system-ui;
+}
+
+.block-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.block-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.block-row img{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.block-info{
+  flex:1;
+}
+
+.block-name{
+  font-weight:600;
+}
+
+.block-actions button{
+  padding:6px 10px;
+  font-size:12px;
+  border-radius:8px;
+  border:1px solid #00ffaa;
+  background:#111;
+  color:#00ffaa;
+}
+</style>
+</head>
+
+<body>
+
+<div class="block-header">
+  <button onclick="history.back()">←</button>
+  <h3>Đã chặn</h3>
+</div>
+
+<div id="blockList"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+if(!profile.uid){
+  location.href = "/login.html";
+}
+
+// 🔑 auth-login
+socket.emit("auth-login", { uid: profile.uid });
+
+fetch("/api/blocked/" + profile.uid)
+  .then(r=>r.json())
+  .then(data => renderBlocked(data.blocked));
+
+function renderBlocked(list){
+  const box = document.getElementById("blockList");
+  box.innerHTML = "";
+
+  if(!list.length){
+    box.innerHTML = `<div style="padding:14px;opacity:.5">Không có user bị chặn</div>`;
+    return;
+  }
+
+  list.forEach(u=>{
+    box.innerHTML += `
+      <div class="block-row">
+        <img src="${u.avatar}">
+        <div class="block-info">
+          <div class="block-name">
+            ${u.name}
+            ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
+          </div>
+          <div style="font-size:12px;opacity:.6">Lv ${u.level}</div>
+        </div>
+        <div class="block-actions">
+          <button onclick="unblock('${u.uid}','${u.name}')">
+            🔓 Bỏ chặn
+          </button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function unblock(uid, name){
+  const ok = confirm(`Bỏ chặn ${name}?`);
+  if(!ok) return;
+
+  socket.emit("user-unblock", { uid });
+
+  setTimeout(()=>{
+    fetch("/api/blocked/" + profile.uid)
+      .then(r=>r.json())
+      .then(data => renderBlocked(data.blocked));
+  }, 200);
+}
+</script>
+</body>
+</html>

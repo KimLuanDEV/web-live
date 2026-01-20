@@ -1410,6 +1410,26 @@ app.get("/api/friends/:uid", (req, res) => {
 });
 
 
+app.get("/api/blocked/:uid", (req, res) => {
+  const uid = req.params.uid;
+  const db = loadUsers();
+  const me = db[uid];
+  if (!me) return res.json({ blocked: [] });
+
+  const blocked = (me.profile.blocked || []).map(bid => {
+    const u = db[bid];
+    if (!u) return null;
+    return {
+      uid: bid,
+      name: u.profile.name,
+      avatar: u.profile.avatar,
+      level: u.profile.level || 1,
+      verified: !!u.profile.verified
+    };
+  }).filter(Boolean);
+
+  res.json({ blocked });
+});
 
 
 
