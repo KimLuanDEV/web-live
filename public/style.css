@@ -9446,3 +9446,8 @@ body.page-profile{
   color:#ccc;
 }
 
+
+.friend-actions .btn-reject{
+  border-color:#ff6666;
+  color:#ff6666;
+}

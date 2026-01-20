@@ -771,6 +771,35 @@ socket.on("friend-respond", ({ from, accept }) => {
   }
 });
 
+socket.on("friend-remove", ({ uid }) => {
+  const me = socket.data.uid;
+  if (!me || !uid) return;
+
+  const db = loadUsers();
+  const uMe = db[me];
+  const uYou = db[uid];
+  if (!uMe || !uYou) return;
+
+  uMe.profile.friends ||= [];
+  uYou.profile.friends ||= [];
+
+  // ❌ xoá 2 chiều
+  uMe.profile.friends = uMe.profile.friends.filter(x => x !== uid);
+  uYou.profile.friends = uYou.profile.friends.filter(x => x !== me);
+
+  saveUsers(db);
+
+  // 🔁 realtime nếu người kia online
+  const sockets = activeUsers.get(uid);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("friend-removed", { uid: me });
+    }
+  }
+
+  // báo lại cho người bấm
+  socket.emit("friend-removed", { uid });
+});
 
 
 

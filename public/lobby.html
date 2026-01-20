@@ -1315,6 +1315,11 @@ socket.on("friend-request", ({ from, name }) => {
 });
 
 
+socket.on("friend-removed", ({ uid }) => {
+  MY_FRIENDS = MY_FRIENDS.filter(x => x !== uid);
+  renderPlayerLobbyAll();
+});
+
 
 function openPrivateChat(uid, name){
   if(isGuest){

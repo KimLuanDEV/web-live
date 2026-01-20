@@ -166,10 +166,18 @@ function renderFriends(data){
           </div>
           <div class="friend-level">Lv ${u.level}</div>
         </div>
-        <div class="friend-actions">
-          <button class="btn-chat"
-            onclick="chat('${u.uid}','${u.name}')">💬</button>
-        </div>
+
+       <div class="friend-actions">
+  <button class="btn-chat"
+    onclick="chat('${u.uid}','${u.name}')">💬</button>
+
+  <button class="btn-reject"
+    onclick="removeFriend('${u.uid}','${u.name}')">
+    🗑
+  </button>
+</div>
+
+
       </div>
     `;
   });
@@ -191,6 +199,24 @@ function chat(uid, name){
   localStorage.setItem("chat_to_name", name);
   location.href = "/messages.html";
 }
+
+
+function removeFriend(uid, name){
+  showMsg(
+    `Bạn có chắc muốn huỷ kết bạn với ${name}?`,
+    "Huỷ kết bạn",
+    () => {
+      socket.emit("friend-remove", { uid });
+
+      setTimeout(()=>{
+        fetch("/api/friends/" + profile.uid)
+          .then(r=>r.json())
+          .then(renderFriends);
+      }, 200);
+    }
+  );
+}
+
 </script>
 </body>
 </html>
