@@ -52,7 +52,7 @@ if (!fs.existsSync(COVER_DIR)) {
   console.log("📁 Created", COVER_DIR);
 }
 
-app.use("/covers", express.static(COVER_DIR));
+
 
 const coverUpload = multer({
   storage: multer.diskStorage({
@@ -64,10 +64,6 @@ const coverUpload = multer({
   })
 });
 
-app.post("/api/upload-cover", coverUpload.single("cover"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file" });
-  res.json({ url: "/covers/" + req.file.filename });
-});
 
 
 
@@ -146,6 +142,9 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
+
+
+app.use("/covers", express.static(COVER_DIR));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
@@ -159,6 +158,11 @@ app.get("/", (_, res) => {
 app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file" });
   res.json({ url: "/avatars/" + req.file.filename });
+});
+
+app.post("/api/upload-cover", coverUpload.single("cover"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file" });
+  res.json({ url: "/covers/" + req.file.filename });
 });
 
 
