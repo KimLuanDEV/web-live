@@ -396,9 +396,17 @@ socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
   div.dataset.id = reply.id;   // 🔥 bắt buộc
 
 div.innerHTML=`
-  <img src="${reply.avatar}">
+
+
+<img src="${reply.avatar}"
+     onclick="openUserProfile('${reply.uid}')"
+     style="cursor:pointer">
   <div>
-    <b>${reply.name}</b> ${reply.text}
+
+  <b onclick="openUserProfile('${reply.uid}')"
+   style="cursor:pointer">
+  ${reply.name}
+</b> ${reply.text}
 
    <div class="lp-cm-actions">
   <span class="cm-like" onclick="likeReply('${postId}',${commentIndex},'${reply.id}')">
@@ -436,9 +444,18 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
   div.dataset.index = idx;
 
   div.innerHTML = `
-    <img class="lp-cm-ava" src="${comment.avatar}">
+
+   <img class="lp-cm-ava"
+     src="${comment.avatar}"
+     onclick="openUserProfile('${comment.uid}')"
+     style="cursor:pointer">
+
     <div class="lp-cm-body">
-      <div class="lp-cm-name">${comment.name}</div>
+      <div class="lp-cm-name"
+     onclick="openUserProfile('${comment.uid}')"
+     style="cursor:pointer">
+  ${comment.name}
+</div>
       <div class="lp-cm-text">${comment.text}</div>
 
 <div class="lp-cm-actions">
@@ -543,9 +560,15 @@ div.dataset.id = child.id;   // 🔥 bắt buộc
 div.style.marginLeft="16px";
 
 div.innerHTML = `
-  <img src="${child.avatar}">
+<img src="${child.avatar}"
+     onclick="openUserProfile('${child.uid}')"
+     style="cursor:pointer">
+
   <div>
-    <b>${child.name}</b> ${child.text}
+   <b onclick="openUserProfile('${child.uid}')"
+   style="cursor:pointer">
+  ${child.name}
+</b> ${child.text}
 
     <div class="lp-cm-actions">
       <span class="cm-like"
@@ -598,11 +621,21 @@ function renderPost(p, top=false){
  <div class="lp-post-inner">
 
 <div class="lp-post-head">
-  <img class="lp-ava" src="${p.avatar}">
-  <div>
-    <div class="lp-post-name">${p.name}</div>
-    <div class="lp-post-time">${time}</div>
+
+<img class="lp-ava"
+     src="${p.avatar}"
+     onclick="openUserProfile('${p.uid}')"
+     style="cursor:pointer">
+
+<div>
+  <div class="lp-post-name"
+       onclick="openUserProfile('${p.uid}')"
+       style="cursor:pointer">
+    ${p.name}
   </div>
+  <div class="lp-post-time">${time}</div>
+</div>
+
 
  ${p.uid === auth.uid ? `
   <div class="lp-post-tools">
@@ -686,9 +719,17 @@ if(p.comments && p.comments.length){
     c.dataset.uid = comment.uid;
 
     c.innerHTML = `
-      <img class="lp-cm-ava" src="${comment.avatar}">
+      <img class="lp-cm-ava"
+     src="${comment.avatar}"
+     onclick="openUserProfile('${comment.uid}')"
+     style="cursor:pointer">
+
       <div class="lp-cm-body">
-        <div class="lp-cm-name">${comment.name}</div>
+     <div class="lp-cm-name"
+     onclick="openUserProfile('${comment.uid}')"
+     style="cursor:pointer">
+  ${comment.name}
+</div>
         <div class="lp-cm-text">${comment.text}</div>
 
 <div class="lp-cm-actions">
@@ -1649,3 +1690,9 @@ function clearMessageBadge(){
   if(badge) badge.remove();
 }
 
+
+
+function openUserProfile(uid){
+  if(!uid) return;
+  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+}
