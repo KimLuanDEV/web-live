@@ -556,3 +556,10 @@ async function enablePush() {
   });
 }
 
+
+socket.on("msg-blocked", ({ reason }) => {
+  if (reason === "not_friend") {
+    alert("🔒 Bạn chỉ có thể nhắn tin với người đã kết bạn.");
+  }
+});
+

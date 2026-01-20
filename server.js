@@ -1211,6 +1211,26 @@ socket.on("private-message", async ({ to, text, msgId }) => {
   const fromUid = socket.data.uid;
   if (!fromUid || !to || !text) return;
 
+
+// 🔒 CHỈ CHO PHÉP NHẮN TIN VỚI BẠN BÈ
+const db = loadUsers();
+const me = db[fromUid];
+const you = db[to];
+
+if (!me || !you) return;
+
+const myFriends = me.profile.friends || [];
+
+if (!myFriends.includes(to)) {
+  socket.emit("msg-blocked", {
+    reason: "not_friend",
+    to
+  });
+  return;
+}
+
+
+
   const id = msgId || Date.now() + "_" + Math.random();
 
   const msg = {

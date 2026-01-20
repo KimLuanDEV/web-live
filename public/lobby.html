@@ -1268,10 +1268,19 @@ ${!isMe ? `
              </button>`
     }
 
-    <button class="btn-chat"
-      onclick="openPrivateChat('${u.uid}', '${u.name}')">
-      💬 Nhắn tin
-    </button>
+    ${isFriend ? `
+  <button class="btn-chat"
+    onclick="openPrivateChat('${u.uid}', '${u.name}')">
+    💬 Nhắn tin
+  </button>
+` : `
+  <button class="btn-chat" disabled title="Chỉ nhắn tin với bạn bè">
+    🔒
+  </button>
+`}
+
+
+
   </div>
 ` : `<div class="pme">Bạn</div>`}
 
