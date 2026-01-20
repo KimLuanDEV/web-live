@@ -309,6 +309,20 @@ function saveUsers(db){
   fs.writeFileSync(USERS_FILE, JSON.stringify(db,null,2));
 }
 
+// 🔒 SERVER BLOCK CHECK (2 chiều)
+function isBlockedBetween(a, b, db){
+  if (!a || !b) return false;
+  const uA = db[a];
+  const uB = db[b];
+  if (!uA || !uB) return false;
+
+  return (
+    (uA.profile.blocked || []).includes(b) ||
+    (uB.profile.blocked || []).includes(a)
+  );
+}
+
+
 
 app.use(express.json());
 
@@ -661,8 +675,29 @@ function getLobbyList() {
 }
 
 function emitLobbyUpdate() {
-  io.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
+  const rooms = getLobbyList();
+  const db = loadUsers();
+
+  // gửi RIÊNG cho từng socket
+  for (const [uid, sockets] of activeUsers.entries()) {
+
+    const filtered = rooms.filter(r => {
+      const hostUid = r.host?.uid;
+      if (!hostUid) return true;
+
+      // 🚫 lọc nếu bị block 2 chiều
+      return !isBlockedBetween(uid, hostUid, db);
+    });
+
+    for (const sid of sockets) {
+      io.to(sid).emit("lobby-update", {
+        rooms: filtered,
+        ts: Date.now()
+      });
+    }
+  }
 }
+
 
 
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
@@ -807,8 +842,22 @@ socket.on("user-unblock", ({ uid }) => {
 
   saveUsers(db);
 
+  // 🔔 realtime cho chính mình
   socket.emit("user-unblocked", { uid });
+
+  // 🔔 realtime cho người vừa được unblock
+  const sockets = activeUsers.get(uid);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("user-unblocked-by", {
+        by: me
+      });
+    }
+  }
 });
+
+
+
 
 socket.on("friend-request", ({ to }) => {
 
@@ -1538,6 +1587,28 @@ app.get("/api/blocked/:uid", (req, res) => {
 });
 
 
+// 🔒 CHECK BLOCK GIỮA 2 USER
+app.get("/api/check-block/:uid", (req, res) => {
+  const me = req.query.me;
+  const you = req.params.uid;
+
+  if (!me || !you) return res.json({ blocked: false });
+
+  const db = loadUsers();
+  const uMe = db[me];
+  const uYou = db[you];
+
+  if (!uMe || !uYou) return res.json({ blocked: false });
+
+  const blocked =
+    (uMe.profile.blocked || []).includes(you) ||
+    (uYou.profile.blocked || []).includes(me);
+
+  res.json({ blocked });
+});
+
+
+
 
 socket.on("msg-seen", ({ to, msgId }) => {
 
@@ -2070,8 +2141,21 @@ socket.on("room-check", ({ roomId }, cb) => {
 
   // Client (lobby.html) gọi để lấy danh sách phòng đang live
 socket.on("lobby-get", () => {
-  socket.emit("lobby-update", { rooms: getLobbyList(), ts: Date.now() });
+  const uid = socket.data.uid;
+  const db = loadUsers();
+
+  const rooms = getLobbyList().filter(r => {
+    const hostUid = r.host?.uid;
+    if (!uid || !hostUid) return true;
+    return !isBlockedBetween(uid, hostUid, db);
+  });
+
+  socket.emit("lobby-update", {
+    rooms,
+    ts: Date.now()
+  });
 });
+
 
   // ===== ICE RESTART RELAY =====
   // Any peer can ask another peer to perform ICE restart

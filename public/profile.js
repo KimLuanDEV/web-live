@@ -2,6 +2,45 @@ const socket = io();
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
 
+// 🚫 BLOCK GUARD – CHẶN MỞ PROFILE NẾU ĐANG BỊ BLOCK
+if (viewUid && __profileAuth?.uid && viewUid !== __profileAuth.uid) {
+  fetch(`/api/check-block/${viewUid}?me=${__profileAuth.uid}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.blocked) {
+        // ❌ DỪNG TOÀN BỘ PROFILE
+        document.body.innerHTML = `
+          <div style="
+            height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            background:#000;
+            color:#fff;
+            font-size:15px;
+            opacity:.9;
+            text-align:center;
+            padding:20px;
+          ">
+            🚫 Bạn không thể xem hồ sơ của người này
+          </div>
+        `;
+
+        // ⏪ quay về trang trước (an toàn)
+        setTimeout(() => history.back(), 1200);
+
+        // ⛔ CHẶN MỌI JS PHÍA DƯỚI
+        throw new Error("PROFILE_BLOCKED");
+      }
+    })
+    .catch(err => {
+      if (String(err).includes("PROFILE_BLOCKED")) return;
+    });
+}
+
+
+
+
 // 🔁 giữ socket sống để server không mất uid
 setInterval(() => {
   if (socket.connected && __profileAuth.uid) {
@@ -177,6 +216,49 @@ if (__profileAuth.uid) {
 }
 
 
+function reloadFriendActions() {
+  if (!viewUid || viewUid === __profileAuth.uid) return;
+
+  // reset cứng
+  btnMsgFriend && (btnMsgFriend.style.display = "none");
+  btnMsgFriend && (btnMsgFriend.disabled = true);
+
+  btnAddFriend && (btnAddFriend.style.display = "none");
+  btnFriendPending && (btnFriendPending.style.display = "none");
+  btnUnfriend && (btnUnfriend.style.display = "none");
+
+  fetch("/api/friends/" + __profileAuth.uid)
+    .then(r => r.json())
+    .then(data => {
+      const friends = data.friends || [];
+      const requests = data.requests || [];
+      const sent = data.sent || [];
+
+      const isFriend = friends.some(u => u.uid === viewUid);
+      const isPendingSent = sent.some(u => u.uid === viewUid);
+
+      if (isFriend) {
+        // 👥 Đã là bạn
+        btnUnfriend && (btnUnfriend.style.display = "block");
+
+        if (btnMsgFriend) {
+          btnMsgFriend.style.display = "block";
+          btnMsgFriend.disabled = false;
+        }
+      }
+      else if (isPendingSent) {
+        // ⏳ Đã gửi lời mời
+        btnFriendPending && (btnFriendPending.style.display = "block");
+      }
+      else {
+        // ➕ Chưa là bạn
+        btnAddFriend && (btnAddFriend.style.display = "block");
+      }
+    })
+    .catch(()=>{});
+}
+
+
 // 🔔 REALTIME: BẬT CHAT KHI ACCEPT KẾT BẠN
 socket.on("friend-accepted", ({ a, b }) => {
   if (!viewUid || !btnMsgFriend) return;
@@ -259,6 +341,35 @@ socket.on("user-blocked", ({ by }) => {
   }, 1200);
 });
 
+
+
+// 🔓 REALTIME: UNBLOCK → HIỆN LẠI PROFILE
+socket.on("user-unblocked-by", ({ by }) => {
+  if (!viewUid) return;
+
+  const myUid = __profileAuth.uid;
+  if (!myUid) return;
+
+  // nếu người đang xem vừa gỡ block mình
+  if (viewUid !== by) return;
+
+  // 👉 HIỆN LẠI PROFILE
+  document.querySelector(".profile-main")?.classList.remove("hidden");
+
+  // 👉 LOAD LẠI PROFILE ĐỂ ĐỒNG BỘ
+  fetch("/api/me/" + viewUid)
+    .then(r => r.json())
+    .then(data => {
+      if (data?.profile) {
+        renderProfileViewOnly(data.profile);
+      }
+    })
+    .catch(()=>{});
+
+    reloadFriendActions();
+
+  showMsg("🔓 Bạn đã được gỡ chặn");
+});
 
 
 

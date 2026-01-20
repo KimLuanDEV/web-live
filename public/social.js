@@ -3,6 +3,7 @@ const feed = document.getElementById("lpFeed");
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
+
 let composeImages = []; // 🔥 danh sách ảnh đang preview
 let isPosting = false;
 
@@ -18,6 +19,22 @@ if (auth.uid) {
 
 
 document.getElementById("meAvatar").src = auth.avatar;
+
+
+function openUserProfile(uid) {
+  if (!auth.uid || !uid) return;
+
+  fetch(`/api/check-block/${uid}?me=${auth.uid}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.blocked) {
+        showMsg("🚫 Bạn không thể xem hồ sơ người này");
+        return;
+      }
+      location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+    });
+}
+
 
 
 
@@ -1697,7 +1714,3 @@ function clearMessageBadge(){
 
 
 
-function openUserProfile(uid){
-  if(!uid) return;
-  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
-}

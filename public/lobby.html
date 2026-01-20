@@ -442,6 +442,29 @@ const isGuest = localStorage.getItem("isGuest") === "1";
 
 
 
+// 🔒 MỞ PROFILE AN TOÀN (CÓ CHECK BLOCK)
+function openUserProfile(uid){
+  if(!uid) return;
+
+  // guest → không cho xem profile người khác
+  if(!profile?.uid){
+    showMsg("🔒 Đăng nhập để xem hồ sơ");
+    return;
+  }
+
+  fetch(`/api/check-block/${uid}?me=${profile.uid}`)
+    .then(r => r.json())
+    .then(data => {
+      if (data.blocked) {
+        showMsg("🚫 Bạn không thể xem hồ sơ người này");
+        return;
+      }
+      location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+    })
+    .catch(()=>{});
+}
+
+
 
 
 
@@ -1573,11 +1596,6 @@ socket.on("user-unblocked", ({ uid }) => {
 });
 
 
-
-function openUserProfile(uid){
-  if(!uid) return;
-  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
-}
 
 
 
