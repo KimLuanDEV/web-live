@@ -698,20 +698,23 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
- socket.on("lp-like-reply", ({ postId, commentIndex, replyId, uid })=>{
+socket.on("lp-like-reply", async ({ postId, commentIndex, replyId, uid }) => {
   const post = getPost(postId);
-  if(!post) return;
+  if (!post) return;
 
   const c = post.comments?.[commentIndex];
-  if(!c || !c.replies) return;
+  if (!c || !c.replies) return;
 
-  const r = c.replies.find(x=>x.id===replyId);
-  if(!r) return;
+  const r = c.replies.find(x => x.id === replyId);
+  if (!r) return;
 
   r.likes = r.likes || [];
+
   const i = r.likes.indexOf(uid);
-  if(i>=0) r.likes.splice(i,1);
-  else r.likes.push(uid);
+  const liked = i === -1;
+
+  if (liked) r.likes.push(uid);
+  else r.likes.splice(i, 1);
 
   saveSocial();
 
@@ -721,7 +724,17 @@ io.on("connection", (socket) => {
     replyId,
     likes: r.likes.length
   });
+
+  // 🔔 PUSH cho chủ reply
+  if (liked && r.uid && r.uid !== uid) {
+    await sendPushToUser(r.uid, {
+      title: "❤️ Trả lời được thích",
+      body: `${socket.data.profile?.name || "Ai đó"} đã thích trả lời của bạn`,
+      url: `/social.html#post-${postId}`
+    });
+  }
 });
+
  
 
 socket.on("lp-reply-child", ({ postId, commentIndex, replyId, uid, name, avatar, text })=>{
@@ -758,17 +771,18 @@ socket.on("lp-reply-child", ({ postId, commentIndex, replyId, uid, name, avatar,
 
 
 
-
-socket.on("lp-like-comment", ({ postId, index, uid })=>{
+socket.on("lp-like-comment", async ({ postId, index, uid }) => {
   const post = getPost(postId);
-  if(!post || !post.comments || !post.comments[index]) return;
+  if (!post || !post.comments || !post.comments[index]) return;
 
   const c = post.comments[index];
   c.likes = c.likes || [];
 
   const i = c.likes.indexOf(uid);
-  if(i>=0) c.likes.splice(i,1);
-  else c.likes.push(uid);
+  const liked = i === -1;
+
+  if (liked) c.likes.push(uid);
+  else c.likes.splice(i, 1);
 
   saveSocial();
 
@@ -777,6 +791,15 @@ socket.on("lp-like-comment", ({ postId, index, uid })=>{
     index,
     likes: c.likes.length
   });
+
+  // 🔔 PUSH cho chủ comment
+  if (liked && c.uid && c.uid !== uid) {
+    await sendPushToUser(c.uid, {
+      title: "❤️ Bình luận được thích",
+      body: `${socket.data.profile?.name || "Ai đó"} đã thích bình luận của bạn`,
+      url: `/social.html#post-${postId}`
+    });
+  }
 });
 
 
@@ -1033,23 +1056,26 @@ socket.on("lp-delete-reply-child", ({ postId, commentIndex, replyId, childId, ui
 });
 
 
-socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, uid })=>{
+socket.on("lp-like-reply-child", async ({ postId, commentIndex, replyId, childId, uid }) => {
   const post = getPost(postId);
-  if(!post) return;
+  if (!post) return;
 
   const c = post.comments?.[commentIndex];
-  if(!c || !c.replies) return;
+  if (!c || !c.replies) return;
 
   const parent = c.replies.find(r => r.id === replyId);
-  if(!parent || !parent.replies) return;
+  if (!parent || !parent.replies) return;
 
   const child = parent.replies.find(x => x.id === childId);
-  if(!child) return;
+  if (!child) return;
 
   child.likes = child.likes || [];
+
   const i = child.likes.indexOf(uid);
-  if(i >= 0) child.likes.splice(i,1);
-  else child.likes.push(uid);
+  const liked = i === -1;
+
+  if (liked) child.likes.push(uid);
+  else child.likes.splice(i, 1);
 
   saveSocial();
 
@@ -1060,6 +1086,15 @@ socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, uid 
     childId,
     likes: child.likes.length
   });
+
+  // 🔔 PUSH cho chủ reply-child
+  if (liked && child.uid && child.uid !== uid) {
+    await sendPushToUser(child.uid, {
+      title: "❤️ Trả lời được thích",
+      body: `${socket.data.profile?.name || "Ai đó"} đã thích trả lời của bạn`,
+      url: `/social.html#post-${postId}`
+    });
+  }
 });
 
 
