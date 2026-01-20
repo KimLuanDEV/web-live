@@ -1206,9 +1206,7 @@ playerLobby.querySelector(".player-lobby-backdrop").onclick = () => {
 
 function renderPlayerLobbyAll(){
   const box = document.getElementById("playerList");
-  const myFriends = profile.friends || [];
-  const isFriend = myFriends.includes(u.uid);
-  
+
   if(!ALL_USERS.length){
     box.innerHTML = `<div class="player-lobby-empty">Chưa có người chơi</div>`;
     return;
@@ -1217,6 +1215,10 @@ function renderPlayerLobbyAll(){
   box.innerHTML = ALL_USERS.map(u=>{
     const isOn = ONLINE_UIDS.includes(u.uid);
     const isMe = u.uid === profile.uid;
+
+
+  const myFriends = profile.friends || [];
+  const isFriend = myFriends.includes(u.uid);
 
     return `
       <div class="player-row ${isOn ? "online":"offline"}">
@@ -1233,20 +1235,19 @@ function renderPlayerLobbyAll(){
           </div>
           <div class="plevel">Lv ${u.level}</div>
         </div>
+${!isMe && !isFriend ? `
+  <div class="pactions">
+    <button class="btn-friend"
+      onclick="addFriend('${u.uid}')">
+      ➕ Kết bạn
+    </button>
 
-        ${!isMe ? `
-        <div class="pactions">
-          <button class="btn-friend"
-            onclick="addFriend('${u.uid}')">
-            ➕ Kết bạn
-          </button>
-
-          <button class="btn-chat"
-            onclick="openPrivateChat('${u.uid}', '${u.name}')">
-            💬 Nhắn tin
-          </button>
-        </div>
-       ` : isFriend ? `<div class="pme">✓ Bạn bè</div>` : `<div class="pme">Bạn</div>`}
+    <button class="btn-chat"
+      onclick="openPrivateChat('${u.uid}', '${u.name}')">
+      💬 Nhắn tin
+    </button>
+  </div>
+` : isFriend ? `<div class="pme">✓ Bạn bè</div>` : `<div class="pme">Bạn</div>`}
 
       </div>
     `;
