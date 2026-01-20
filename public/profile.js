@@ -15,7 +15,7 @@ const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
 // ===============================
-// 👥 / 💬 PROFILE ACTION VISIBILITY
+// 👥 / 💬 PROFILE ACTION VISIBILITY (FIX DỨT ĐIỂM)
 // ===============================
 const btnProfileFriends = document.querySelector(".btn-profile-friends");
 const profileFriendActions = document.getElementById("profileFriendActions");
@@ -23,9 +23,13 @@ const btnMsgFriend = document.getElementById("btnMsgFriend");
 const btnUnfriend  = document.getElementById("btnUnfriend");
 const btnBlock     = document.getElementById("btnBlock");
 
-// 🔒 RESET MẶC ĐỊNH (RẤT QUAN TRỌNG)
-if (profileFriendActions) profileFriendActions.hidden = true;
-if (btnProfileFriends) btnProfileFriends.style.display = "";
+// 🔒 RESET CỨNG (QUAN TRỌNG)
+if (profileFriendActions) {
+  profileFriendActions.style.display = "none";
+}
+if (btnProfileFriends) {
+  btnProfileFriends.style.display = "";
+}
 
 // 👀 CHỈ KHI XEM PROFILE NGƯỜI KHÁC
 if (viewUid && viewUid !== __profileAuth.uid) {
@@ -37,7 +41,7 @@ if (viewUid && viewUid !== __profileAuth.uid) {
 
   // ✅ Hiện 3 nút action
   if (profileFriendActions) {
-    profileFriendActions.hidden = false;
+    profileFriendActions.style.display = "flex";
   }
 
   // 💬 Nhắn tin
