@@ -311,6 +311,8 @@ if(uid){
 
 loadProfile();
 loadFriendCount();
+loadFriendRequestCount();
+
 
 const avatarInput = document.getElementById("avatarInput");
 const btnChangeAvatar = document.getElementById("btnChangeAvatar");
@@ -758,4 +760,31 @@ async function loadFriendCount(){
 
 socket.on("friend-updated", ()=>{
   loadFriendCount();
+  loadFriendRequestCount();
 });
+
+
+
+async function loadFriendRequestCount(){
+  const uid = __profileAuth.uid;
+  if(!uid) return;
+
+  try{
+    const res = await fetch("/api/friends/" + uid);
+    const data = await res.json();
+
+    const pending = (data.requests || []).length;
+    const badge = document.getElementById("friendReqCount");
+
+    if(!badge) return;
+
+    if(pending > 0){
+      badge.textContent = pending;
+      badge.hidden = false;
+    }else{
+      badge.hidden = true;
+    }
+  }catch(e){
+    console.warn("loadFriendRequestCount failed", e);
+  }
+}
