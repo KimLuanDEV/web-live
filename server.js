@@ -44,6 +44,33 @@ if(!fs.existsSync(AVATAR_DIR)){
   console.log("📁 Created", AVATAR_DIR);
 }
 
+// ===== COVER UPLOAD =====
+const COVER_DIR = "/opt/render/project/data/covers";
+
+if (!fs.existsSync(COVER_DIR)) {
+  fs.mkdirSync(COVER_DIR, { recursive: true });
+  console.log("📁 Created", COVER_DIR);
+}
+
+app.use("/covers", express.static(COVER_DIR));
+
+const coverUpload = multer({
+  storage: multer.diskStorage({
+    destination: COVER_DIR,
+    filename: (_, file, cb) => {
+      const ext = path.extname(file.originalname);
+      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
+    }
+  })
+});
+
+app.post("/api/upload-cover", coverUpload.single("cover"), (req, res) => {
+  if (!req.file) return res.status(400).json({ error: "No file" });
+  res.json({ url: "/covers/" + req.file.filename });
+});
+
+
+
 
 
 const INBOX_FILE = "/opt/render/project/data/inbox.json";
@@ -1638,14 +1665,15 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 });
 
 
-socket.on("profile-update", ({ name, avatar, level }) => {
+socket.on("profile-update", ({ name, avatar, level, cover }) => {
+
 
   // ===== 1. Cập nhật profile realtime cho lobby =====
   if (!socket.data.profile) socket.data.profile = {};
   if (name)   socket.data.profile.name   = safeName(name);
   if (avatar) socket.data.profile.avatar = avatar;
   if (level)  socket.data.profile.level  = Number(level) || socket.data.profile.level;
-
+  if (cover)  socket.data.profile.cover  = cover;
   // ===== 2. Lưu vĩnh viễn vào users.json =====
   const uid = socket.data.uid;
   if (uid) {
@@ -1655,6 +1683,7 @@ socket.on("profile-update", ({ name, avatar, level }) => {
         if (name)   db[k].profile.name   = safeName(name);
         if (avatar) db[k].profile.avatar = avatar;
         if (level)  db[k].profile.level  = Number(level) || db[k].profile.level;
+        if (cover)  db[k].profile.cover  = cover;
         saveUsers(db);
         break;
       }

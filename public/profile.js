@@ -641,3 +641,5 @@ coverInput.onchange = async () => {
     socket.emit("profile-update", { cover: data.url });
   }
 };
+
+
