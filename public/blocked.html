@@ -15,12 +15,55 @@ body{
 }
 
 .block-header{
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+
+  height: 52px;
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:14px;
+
+  padding: 0 12px;
+  background:#000;
   border-bottom:1px solid rgba(255,255,255,.08);
+  z-index: 100;
 }
+
+
+.block-header h3{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
+  margin:0;
+  font-size:16px;
+  font-weight:600;
+  pointer-events:none; /* không che nút */
+}
+
+
+
+.block-header button{
+  width: 40px;
+  height: 40px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:20px;
+  z-index: 2;
+}
+
+
+
 
 .block-row{
   display:flex;
