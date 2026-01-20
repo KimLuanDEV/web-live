@@ -238,7 +238,7 @@ socket.on("user-blocked", ({ by }) => {
   const myUid = __profileAuth.uid;
   if (!myUid) return;
 
-  // nếu người đang xem vừa block mình
+// nếu profile đang xem là người vừa block mình
   if (viewUid !== by) return;
 
   // ❌ ẨN TOÀN BỘ ACTION
@@ -275,14 +275,30 @@ socket.on("user-unblocked-by", ({ by }) => {
   document.querySelector(".profile-main")?.classList.remove("hidden");
 
   // 👉 LOAD LẠI PROFILE ĐỂ ĐỒNG BỘ
-  fetch("/api/me/" + viewUid)
-    .then(r => r.json())
-    .then(data => {
-      if (data?.profile) {
-        renderProfileViewOnly(data.profile);
-      }
-    })
-    .catch(()=>{});
+fetch("/api/me/" + viewUid, {
+  headers: {
+    "x-uid": __profileAuth.uid
+  }
+})
+  .then(r => {
+    // 🚫 BỊ BLOCK → KHÔNG CHO XEM PROFILE
+    if (r.status === 403) {
+      showMsg("🚫 Bạn không thể xem hồ sơ của người này");
+      setTimeout(() => history.back(), 1200);
+      throw new Error("blocked");
+    }
+    return r.json();
+  })
+  .then(data => {
+    if (!data || !data.profile) return;
+    renderProfileViewOnly(data.profile);
+  })
+  .catch(err => {
+    if (err.message !== "blocked") {
+      console.warn("Load profile failed", err);
+    }
+  });
+
 
   showMsg("🔓 Bạn đã được gỡ chặn");
 });
@@ -293,13 +309,33 @@ socket.on("user-unblocked-by", ({ by }) => {
 // 🔥 LOAD PROFILE (CỦA MÌNH / NGƯỜI KHÁC)
 if (viewUid && viewUid !== __profileAuth.uid) {
   // 👀 ĐANG XEM PROFILE NGƯỜI KHÁC (READ-ONLY)
-  fetch("/api/me/" + viewUid)
-    .then(r => r.json())
-    .then(data => {
-      if (!data || !data.profile) return;
-      renderProfileViewOnly(data.profile);
-    })
-    .catch(()=>{});
+
+fetch("/api/me/" + viewUid, {
+  headers: {
+    "x-uid": __profileAuth.uid
+  }
+})
+  .then(r => {
+    // 🚫 BỊ BLOCK → KHÔNG CHO XEM PROFILE
+    if (r.status === 403) {
+      showMsg("🚫 Bạn không thể xem hồ sơ của người này");
+      setTimeout(() => history.back(), 1200);
+      throw new Error("blocked");
+    }
+    return r.json();
+  })
+  .then(data => {
+    if (!data || !data.profile) return;
+    renderProfileViewOnly(data.profile);
+  })
+  .catch(err => {
+    if (err.message !== "blocked") {
+      console.warn("Load profile failed", err);
+    }
+  });
+
+
+
 } else if (__profileAuth.uid) {
   // 👤 PROFILE CỦA MÌNH
   fetch("/api/me/" + __profileAuth.uid)

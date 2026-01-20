@@ -430,18 +430,35 @@ app.post("/api/check-trusted", (req,res)=>{
 
 
 app.get("/api/me/:uid", (req, res) => {
-  const uid = req.params.uid;
-  const db = loadUsers();
-  const acc = db[uid];
+  const targetUid = req.params.uid;
+  const viewerUid = req.headers["x-uid"]; // uid người đang xem
 
-  if (!acc || !acc.profile) {
+  const db = loadUsers();
+  const target = db[targetUid];
+  if (!target || !target.profile) {
     return res.status(404).json({ error: "User not found" });
   }
 
+  // 🚫 BLOCK CHECK (2 CHIỀU)
+  if (viewerUid && db[viewerUid]) {
+    const me = db[viewerUid].profile;
+    const you = target.profile;
+
+    const blockedByMe   = (me.blocked || []).includes(targetUid);
+    const blockedByYou  = (you.blocked || []).includes(viewerUid);
+
+    if (blockedByMe || blockedByYou) {
+      return res.status(403).json({
+        error: "blocked"
+      });
+    }
+  }
+
   res.json({
-    profile: acc.profile
+    profile: target.profile
   });
 });
+
 
 
 
