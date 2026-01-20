@@ -29,6 +29,9 @@ socket.on("force-logout", () => {
 
 const KEY = "user_profile";
 
+
+
+
 const nameInput = document.getElementById("nameInput");
 const avatarPreview = document.getElementById("avatarPreview");
 const coinVal = document.getElementById("coinVal");
@@ -53,6 +56,14 @@ const defaultProfile = {
   bio: "",
 
 };
+
+
+// 🔥 SAFETY RESET – tránh treo event mobile
+window.addEventListener("pageshow", () => {
+  if (typeof __coverUploading !== "undefined") {
+    __coverUploading = false;
+  }
+});
 
 
 const displayName = document.getElementById("displayName");
@@ -664,6 +675,8 @@ if (coverInput) {
       showMsg("❌ Lỗi xử lý ảnh bìa");
     } finally {
       __coverUploading = false;
+       // 🔥 reset input để mobile nhận change lần sau
+  coverInput.value = "";
     }
   };
 }
