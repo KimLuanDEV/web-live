@@ -44,29 +44,6 @@ if(!fs.existsSync(AVATAR_DIR)){
   console.log("📁 Created", AVATAR_DIR);
 }
 
-// ===== COVER UPLOAD =====
-const COVER_DIR = "/opt/render/project/data/covers";
-
-if (!fs.existsSync(COVER_DIR)) {
-  fs.mkdirSync(COVER_DIR, { recursive: true });
-  console.log("📁 Created", COVER_DIR);
-}
-
-
-
-const coverUpload = multer({
-  storage: multer.diskStorage({
-    destination: COVER_DIR,
-    filename: (_, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
-    }
-  })
-});
-
-
-
-
 
 
 const INBOX_FILE = "/opt/render/project/data/inbox.json";
@@ -142,9 +119,6 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
-
-
-app.use("/covers", express.static(COVER_DIR));
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
@@ -158,11 +132,6 @@ app.get("/", (_, res) => {
 app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file" });
   res.json({ url: "/avatars/" + req.file.filename });
-});
-
-app.post("/api/upload-cover", coverUpload.single("cover"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file" });
-  res.json({ url: "/covers/" + req.file.filename });
 });
 
 
@@ -1669,15 +1638,14 @@ socket.on("host-profile-update", ({ roomId, level }) => {
 });
 
 
-socket.on("profile-update", ({ name, avatar, level, cover }) => {
-
+socket.on("profile-update", ({ name, avatar, level }) => {
 
   // ===== 1. Cập nhật profile realtime cho lobby =====
   if (!socket.data.profile) socket.data.profile = {};
   if (name)   socket.data.profile.name   = safeName(name);
   if (avatar) socket.data.profile.avatar = avatar;
   if (level)  socket.data.profile.level  = Number(level) || socket.data.profile.level;
-  if (cover)  socket.data.profile.cover  = cover;
+
   // ===== 2. Lưu vĩnh viễn vào users.json =====
   const uid = socket.data.uid;
   if (uid) {
@@ -1687,7 +1655,6 @@ socket.on("profile-update", ({ name, avatar, level, cover }) => {
         if (name)   db[k].profile.name   = safeName(name);
         if (avatar) db[k].profile.avatar = avatar;
         if (level)  db[k].profile.level  = Number(level) || db[k].profile.level;
-        if (cover)  db[k].profile.cover  = cover;
         saveUsers(db);
         break;
       }
