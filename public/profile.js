@@ -48,6 +48,30 @@ if (viewUid && viewUid !== __profileAuth.uid) {
   if (btnFriendPending) btnFriendPending.style.display = "none";
   if (btnUnfriend) btnUnfriend.style.display = "none";
 
+
+  // 🚫 CHECK BLOCK TRƯỚC KHI HIỆN ACTION
+fetch("/api/me/" + viewUid, {
+  headers: {
+    "x-uid": __profileAuth.uid
+  }
+})
+.then(r => {
+  if (r.status === 403) {
+    // 👉 BỊ BLOCK → KHÔNG CHO KẾT BẠN
+    btnAddFriend && (btnAddFriend.style.display = "none");
+    btnFriendPending && (btnFriendPending.style.display = "none");
+    btnUnfriend && (btnUnfriend.style.display = "none");
+    btnMsgFriend && (btnMsgFriend.style.display = "none");
+    btnBlock && (btnBlock.style.display = "none");
+
+    showMsg("🚫 Bạn không thể tương tác với người này");
+    throw new Error("blocked");
+  }
+  return r.json();
+})
+.catch(() => {});
+
+
   // 🔍 LẤY TRẠNG THÁI BẠN BÈ
   fetch("/api/friends/" + __profileAuth.uid)
     .then(r => r.json())
@@ -90,15 +114,29 @@ else {
 
   // ➕ KẾT BẠN
   if (btnAddFriend) {
-    btnAddFriend.onclick = () => {
-      socket.emit("friend-request", { to: viewUid });
 
-      // đổi UI ngay không cần reload
-      btnAddFriend.style.display = "none";
-      if (btnFriendPending) btnFriendPending.style.display = "block";
+btnAddFriend.onclick = () => {
 
-      showMsg("📨 Đã gửi lời mời kết bạn");
-    };
+  // 🚫 SAFETY: nếu đang bị block → không gửi
+  fetch("/api/me/" + viewUid, {
+    headers: { "x-uid": __profileAuth.uid }
+  })
+  .then(r => {
+    if (r.status === 403) {
+      showMsg("🚫 Bạn không thể gửi lời mời cho người này");
+      throw new Error("blocked");
+    }
+    socket.emit("friend-request", { to: viewUid });
+
+    btnAddFriend.style.display = "none";
+    btnFriendPending && (btnFriendPending.style.display = "block");
+    showMsg("📨 Đã gửi lời mời kết bạn");
+  })
+  .catch(()=>{});
+};
+
+
+
   }
 
     // ❌ HUỶ LỜI MỜI ĐÃ GỬI
