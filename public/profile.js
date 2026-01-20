@@ -41,6 +41,10 @@ const coinReceivedVal = document.getElementById("coinReceivedVal");
 const expText = document.getElementById("expText");
 const expFill = document.getElementById("expFill");
 const vipBadgeBox = document.getElementById("vipBadgeBox");
+// ===== COVER ELEMENTS (PHẢI Ở TRƯỚC loadProfile) =====
+const coverPreview = document.getElementById("coverPreview");
+const coverInput   = document.getElementById("coverInput");
+const btnChangeCover = document.getElementById("btnChangeCover");
 
 
 let __coverUploading = false;
@@ -629,11 +633,6 @@ document.querySelectorAll("#passModal input").forEach(inp=>{
 });
 
 
-
-// ===== COVER CHANGE =====
-const coverPreview = document.getElementById("coverPreview");
-const coverInput   = document.getElementById("coverInput");
-const btnChangeCover = document.getElementById("btnChangeCover");
 
 if (btnChangeCover && coverInput) {
   btnChangeCover.onclick = () => coverInput.click();
