@@ -892,3 +892,19 @@ function renderProfileViewOnly(p){
 document.querySelectorAll(".avatar-camera").forEach(el=>{
   el.style.display = "none";
 });
+
+
+const profileHeader = document.getElementById("profileHeader");
+const btnProfileBack = document.getElementById("btnProfileBack");
+
+// 👉 Chỉ hiện khi xem profile người khác
+if (viewUid && viewUid !== __profileAuth.uid) {
+  profileHeader.hidden = false;
+
+  btnProfileBack.onclick = () => {
+    location.href = "/friends.html";
+  };
+
+  // chừa khoảng trống tránh che nội dung
+  document.body.style.paddingTop = "52px";
+}
