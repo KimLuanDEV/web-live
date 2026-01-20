@@ -9624,53 +9624,43 @@ body.page-profile{
 }
 
 
-/* ===== ROTATE NOTICE ===== */
-.rotate-notice{
+/* ===== ROTATE HINT (NON BLOCKING) ===== */
+.rotate-hint{
   position: fixed;
-  inset: 0;
-  z-index: 99999;
-  background: rgba(0,0,0,.88);
+  left: 50%;
+  bottom: 90px;
+  transform: translateX(-50%);
+  z-index: 9999;
+
   display: flex;
   align-items: center;
-  justify-content: center;
-  text-align: center;
-}
+  gap: 8px;
 
-.rotate-notice.hidden{
-  display: none;
-}
+  padding: 10px 14px;
+  border-radius: 999px;
 
-.rotate-box{
-  max-width: 280px;
-  padding: 24px 20px;
-  border-radius: 20px;
   background: rgba(0,0,0,.55);
   border: 1px solid rgba(255,255,255,.18);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 0 40px rgba(0,0,0,.6);
-}
+  backdrop-filter: blur(8px);
 
-.rotate-icon{
-  font-size: 48px;
-  margin-bottom: 12px;
-  animation: rotateHint 1.8s ease-in-out infinite;
-}
-
-.rotate-title{
-  font-size: 18px;
-  font-weight: 700;
-  margin-bottom: 6px;
-}
-
-.rotate-desc{
   font-size: 13px;
-  opacity: .8;
-  line-height: 1.4;
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(0,0,0,.45);
+
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .35s ease, transform .35s ease;
 }
 
-@keyframes rotateHint{
-  0%   { transform: rotate(0deg); }
-  40%  { transform: rotate(-90deg); }
-  100% { transform: rotate(0deg); }
+.rotate-hint.show{
+  opacity: 1;
+  transform: translateX(-50%) translateY(-6px);
 }
 
+.rotate-emoji{
+  font-size: 16px;
+}
+
+.rotate-text{
+  opacity: .9;
+}

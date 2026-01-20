@@ -388,16 +388,12 @@ body.lobby-page{
 
 
 
-<!-- 🔄 ROTATE DEVICE NOTICE -->
-<div id="rotateNotice" class="rotate-notice hidden">
-  <div class="rotate-box">
-    <div class="rotate-icon">📱↻</div>
-    <div class="rotate-title">Xoay ngang màn hình</div>
-    <div class="rotate-desc">
-      Để có trải nghiệm xem livestream tốt hơn
-    </div>
-  </div>
+<!-- 🔄 ROTATE HINT (NON-BLOCKING) -->
+<div id="rotateHint" class="rotate-hint hidden">
+  <span class="rotate-emoji">📱↻</span>
+  <span class="rotate-text">Xoay ngang màn hình để trải nghiệm tốt hơn.</span>
 </div>
+
 
 
 
@@ -1594,34 +1590,40 @@ function openUserProfile(uid){
 
 
 (function(){
-  const notice = document.getElementById("rotateNotice");
-  if(!notice) return;
+  const hint = document.getElementById("rotateHint");
+  if(!hint) return;
+
+  let shown = false;
 
   function isMobile(){
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 
-  function checkOrientation(){
-    if(!isMobile()){
-      notice.classList.add("hidden");
-      return;
-    }
+  function showRotateHint(){
+    if(shown) return;
+    if(!isMobile()) return;
 
     const isPortrait = window.innerHeight > window.innerWidth;
+    if(!isPortrait) return;
 
-    if(isPortrait){
-      notice.classList.remove("hidden");
-    }else{
-      notice.classList.add("hidden");
-    }
+    shown = true;
+
+    hint.classList.add("show");
+    hint.classList.remove("hidden");
+
+    // auto hide sau 3.5s
+    setTimeout(()=>{
+      hint.classList.remove("show");
+    }, 3500);
   }
 
-  // initial
-  checkOrientation();
+  // gọi khi vào viewer
+  showRotateHint();
 
-  // listen
-  window.addEventListener("resize", checkOrientation);
-  window.addEventListener("orientationchange", checkOrientation);
+  // nếu user xoay máy thì không cần hiện lại
+  window.addEventListener("orientationchange", ()=>{
+    hint.classList.remove("show");
+  });
 })();
 
 
