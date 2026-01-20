@@ -9390,3 +9390,35 @@ body.page-profile{
   align-items:center;
   justify-content:center;
 }
+
+
+.pactions{
+  display:flex;
+  gap:6px;
+  margin-left:auto;
+}
+
+.pactions button{
+  font-size:12px;
+  padding:4px 8px;
+  border-radius:8px;
+  background:#111;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.25);
+  cursor:pointer;
+}
+
+.btn-friend{
+  border-color:#00ffaa;
+  color:#00ffaa;
+}
+
+.btn-chat{
+  border-color:#00c8ff;
+  color:#00c8ff;
+}
+
+.pme{
+  font-size:12px;
+  opacity:.6;
+}

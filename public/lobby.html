@@ -1214,25 +1214,64 @@ function renderPlayerLobbyAll(){
 
   box.innerHTML = ALL_USERS.map(u=>{
     const isOn = ONLINE_UIDS.includes(u.uid);
+    const isMe = u.uid === profile.uid;
+
     return `
       <div class="player-row ${isOn ? "online":"offline"}">
+
         <div class="pava">
           <img src="${u.avatar}">
           <span class="dot ${isOn ? "on":"off"}"></span>
         </div>
+
         <div class="pinfo">
           <div class="pname">
-  ${u.name}
-  ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
-</div>
-
+            ${u.name}
+            ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
+          </div>
           <div class="plevel">Lv ${u.level}</div>
         </div>
+
+        ${!isMe ? `
+        <div class="pactions">
+          <button class="btn-friend"
+            onclick="addFriend('${u.uid}')">
+            ➕ Kết bạn
+          </button>
+
+          <button class="btn-chat"
+            onclick="openPrivateChat('${u.uid}', '${u.name}')">
+            💬 Nhắn tin
+          </button>
+        </div>
+        ` : `<div class="pme">Bạn</div>`}
+
       </div>
     `;
   }).join("");
 }
 
+
+function addFriend(uid){
+  if(isGuest){
+    showMsg("🔒 Vui lòng đăng nhập để kết bạn");
+    return;
+  }
+
+  showMsg("👋 Đã gửi lời mời kết bạn");
+}
+
+function openPrivateChat(uid, name){
+  if(isGuest){
+    showMsg("🔒 Vui lòng đăng nhập để nhắn tin");
+    return;
+  }
+
+  localStorage.setItem("chat_to_uid", uid);
+  localStorage.setItem("chat_to_name", name);
+
+  window.location.href = "/messages.html";
+}
 
 
 
