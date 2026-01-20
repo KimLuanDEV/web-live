@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Bạn bè - Livestream Pro</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="./style.css">
+
+<style>
+body{
+  background:#000;
+  color:#fff;
+  margin:0;
+  font-family:system-ui;
+}
+
+.friend-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:14px;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.friend-header button{
+  background:none;
+  color:#fff;
+  border:none;
+  font-size:20px;
+}
+
+.friend-section{
+  padding:10px 14px;
+}
+
+.friend-title{
+  font-size:13px;
+  opacity:.7;
+  margin:12px 0 6px;
+}
+
+.friend-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px;
+  border-radius:10px;
+  background:#111;
+  margin-bottom:8px;
+}
+
+.friend-row img{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.friend-info{
+  flex:1;
+}
+
+.friend-name{
+  font-weight:600;
+}
+
+.friend-level{
+  font-size:12px;
+  opacity:.6;
+}
+
+.friend-actions{
+  display:flex;
+  gap:6px;
+}
+
+.friend-actions button{
+  padding:6px 10px;
+  font-size:12px;
+  border-radius:8px;
+  border:1px solid rgba(255,255,255,.2);
+  background:#111;
+  color:#fff;
+}
+.btn-accept{ border-color:#00ff99; color:#00ff99; }
+.btn-reject{ border-color:#ff6666; color:#ff6666; }
+.btn-chat{ border-color:#00c8ff; color:#00c8ff; }
+</style>
+</head>
+
+<body>
+
+<div class="friend-header">
+  <button onclick="history.back()">←</button>
+  <h3>Bạn bè</h3>
+</div>
+
+<div class="friend-section">
+  <div class="friend-title">📨 Lời mời kết bạn</div>
+  <div id="reqList"></div>
+
+  <div class="friend-title">👥 Danh sách bạn bè</div>
+  <div id="friendList"></div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+const socket = io();
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+if(!profile.uid){
+  location.href = "/login.html";
+}
+
+fetch("/api/friends/" + profile.uid)
+  .then(r=>r.json())
+  .then(renderFriends);
+
+function renderFriends(data){
+  const reqBox = document.getElementById("reqList");
+  const frBox  = document.getElementById("friendList");
+
+  reqBox.innerHTML = "";
+  frBox.innerHTML  = "";
+
+  // Requests
+  if(!data.requests.length){
+    reqBox.innerHTML = `<div style="opacity:.5">Không có lời mời</div>`;
+  }
+
+  data.requests.forEach(u=>{
+    reqBox.innerHTML += `
+      <div class="friend-row">
+        <img src="${u.avatar}">
+        <div class="friend-info">
+          <div class="friend-name">${u.name}</div>
+          <div class="friend-level">Lv ${u.level}</div>
+        </div>
+        <div class="friend-actions">
+          <button class="btn-accept"
+            onclick="respond('${u.uid}',true)">✓</button>
+          <button class="btn-reject"
+            onclick="respond('${u.uid}',false)">✕</button>
+        </div>
+      </div>
+    `;
+  });
+
+  // Friends
+  if(!data.friends.length){
+    frBox.innerHTML = `<div style="opacity:.5">Chưa có bạn bè</div>`;
+  }
+
+  data.friends.forEach(u=>{
+    frBox.innerHTML += `
+      <div class="friend-row">
+        <img src="${u.avatar}">
+        <div class="friend-info">
+          <div class="friend-name">
+            ${u.name}
+            ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
+          </div>
+          <div class="friend-level">Lv ${u.level}</div>
+        </div>
+        <div class="friend-actions">
+          <button class="btn-chat"
+            onclick="chat('${u.uid}','${u.name}')">💬</button>
+        </div>
+      </div>
+    `;
+  });
+}
+
+function respond(uid, accept){
+  socket.emit("friend-respond", { from: uid, accept });
+  location.reload();
+}
+
+function chat(uid, name){
+  localStorage.setItem("chat_to_uid", uid);
+  localStorage.setItem("chat_to_name", name);
+  location.href = "/messages.html";
+}
+</script>
+</body>
+</html>

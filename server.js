@@ -1262,6 +1262,43 @@ if (subs && subs.length) {
 
 
 
+
+app.get("/api/friends/:uid", (req, res) => {
+  const uid = req.params.uid;
+  const db = loadUsers();
+  const me = db[uid];
+  if (!me) return res.json({ friends: [], requests: [] });
+
+  const friends = (me.profile.friends || []).map(fid => {
+    const u = db[fid];
+    if (!u) return null;
+    return {
+      uid: fid,
+      name: u.profile.name,
+      avatar: u.profile.avatar,
+      level: u.profile.level || 1,
+      verified: !!u.profile.verified
+    };
+  }).filter(Boolean);
+
+  const requests = (me.profile.friendRequests || []).map(fid => {
+    const u = db[fid];
+    if (!u) return null;
+    return {
+      uid: fid,
+      name: u.profile.name,
+      avatar: u.profile.avatar,
+      level: u.profile.level || 1
+    };
+  }).filter(Boolean);
+
+  res.json({ friends, requests });
+});
+
+
+
+
+
 socket.on("msg-seen", ({ to, msgId }) => {
 
 const sockets = activeUsers.get(to);
