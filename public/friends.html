@@ -264,18 +264,22 @@ function renderFriends(data){
 
   data.requests.forEach(u=>{
     reqBox.innerHTML += `
+
       <div class="friend-row">
         <img src="${u.avatar}">
+
         <div class="friend-info">
           <div class="friend-name">${u.name}</div>
           <div class="friend-level">Lv ${u.level}</div>
         </div>
+
         <div class="friend-actions">
           <button class="btn-accept"
             onclick="respond('${u.uid}',true)">✓</button>
           <button class="btn-reject"
             onclick="respond('${u.uid}',false)">✕</button>
         </div>
+
       </div>
     `;
   });
@@ -287,15 +291,22 @@ function renderFriends(data){
 
   data.friends.forEach(u=>{
     frBox.innerHTML += `
-      <div class="friend-row">
-        <img src="${u.avatar}">
-        <div class="friend-info">
-          <div class="friend-name">
-            ${u.name}
-            ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
-          </div>
-          <div class="friend-level">Lv ${u.level}</div>
-        </div>
+
+    <div class="friend-row">
+  <img src="${u.avatar}"
+       onclick="openProfile('${u.uid}')"
+       style="cursor:pointer">
+
+  <div class="friend-info"
+       onclick="openProfile('${u.uid}')"
+       style="cursor:pointer">
+    <div class="friend-name">
+      ${u.name}
+      ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
+    </div>
+    <div class="friend-level">Lv ${u.level}</div>
+  </div>
+
 
        <div class="friend-actions">
   <button class="btn-chat"
@@ -415,6 +426,10 @@ function applySearch(){
   _renderFriends(filtered);
 }
 
+
+function openProfile(uid){
+  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+}
 
 
 </script>

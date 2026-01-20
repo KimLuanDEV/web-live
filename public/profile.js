@@ -1,4 +1,6 @@
 const socket = io();
+const params = new URLSearchParams(location.search);
+const viewUid = params.get("uid"); // uid đang xem (có thể null)
 
 // 🔁 giữ socket sống để server không mất uid
 setInterval(() => {
@@ -20,8 +22,18 @@ if (__profileAuth.uid) {
 }
 
 
-// 🔥 HYDRATE PROFILE TỪ SERVER (FIX MẤT BIO KHI LOGOUT)
-if (__profileAuth.uid) {
+// 🔥 LOAD PROFILE (CỦA MÌNH / NGƯỜI KHÁC)
+if (viewUid && viewUid !== __profileAuth.uid) {
+  // 👀 ĐANG XEM PROFILE NGƯỜI KHÁC (READ-ONLY)
+  fetch("/api/me/" + viewUid)
+    .then(r => r.json())
+    .then(data => {
+      if (!data || !data.profile) return;
+      renderProfileViewOnly(data.profile);
+    })
+    .catch(()=>{});
+} else if (__profileAuth.uid) {
+  // 👤 PROFILE CỦA MÌNH
   fetch("/api/me/" + __profileAuth.uid)
     .then(r => r.json())
     .then(data => {
@@ -32,14 +44,12 @@ if (__profileAuth.uid) {
         ...data.profile
       };
 
-      // ✅ ghi lại localStorage từ server
       localStorage.setItem(KEY, JSON.stringify(p));
-
-      // ✅ update UI ngay
       loadProfile();
     })
     .catch(()=>{});
 }
+
 
 
 // nếu bị login nơi khác → đá
@@ -116,6 +126,15 @@ displayName.onclick = ()=>{
 };
 
 nameInput.onblur = ()=>{
+
+    // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG GHI
+  if (viewUid && viewUid !== __profileAuth.uid) {
+    nameInput.classList.add("hidden");
+    displayName.classList.remove("hidden");
+    return;
+  }
+
+
   const val = nameInput.value.trim() || "User";
 
   // update UI
@@ -302,6 +321,10 @@ function resizeImageTo512(file) {
 
 
 document.getElementById("btnSave").onclick = () => {
+
+ // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG LƯU
+  if (viewUid && viewUid !== __profileAuth.uid) return;
+
   const current = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
   const uid = __profileAuth.uid || current.uid;
 
@@ -346,6 +369,10 @@ document.querySelector(".avatar-wrap").onclick = () => {
 
 
 avatarInput.onchange = async () => {
+
+   // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG ĐỔI AVATAR
+  if (viewUid && viewUid !== __profileAuth.uid) return;
+
   const file = avatarInput.files[0];
   if (!file) return;
 
@@ -546,7 +573,12 @@ document.querySelectorAll(".tab-item").forEach(tab=>{
 const bioInput = document.getElementById("bioInput");
 
 if (bioInput) {
+
   bioInput.onblur = () => {
+
+    // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG GHI
+    if (viewUid && viewUid !== __profileAuth.uid) return;
+
     const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
     p.bio = bioInput.value.slice(0, 300);
     localStorage.setItem(KEY, JSON.stringify(p));
@@ -670,6 +702,10 @@ if (btnChangeCover && coverInput) {
 
 if (coverInput) {
   coverInput.onchange = async () => {
+
+   // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG ĐỔI COVER
+    if (viewUid && viewUid !== __profileAuth.uid) return;
+
     if (__coverUploading) return;
     __coverUploading = true;
 
@@ -810,4 +846,35 @@ async function loadFriendRequestCount(){
   }catch(e){
     console.warn("loadFriendRequestCount failed", e);
   }
+}
+
+
+
+function renderProfileViewOnly(p){
+  // avatar + name
+  avatarPreview.src = p.avatar || defaultProfile.avatar;
+  displayName.textContent = p.name || "User";
+
+  // bio (chỉ xem)
+  const bioInput = document.getElementById("bioInput");
+  if (bioInput){
+    bioInput.value = p.bio || "";
+    bioInput.disabled = true;
+  }
+
+  // cover
+  if (p.cover && coverPreview){
+    coverPreview.src = p.cover;
+  }
+
+  // level / stats
+  levelVal.textContent = p.level || 1;
+  coinVal.textContent = p.coins || 0;
+  coinSentVal.textContent = p.coinSent || 0;
+  coinReceivedVal.textContent = p.coinReceived || 0;
+
+  // ẨN CÁC CHỨC NĂNG CHỈ DÀNH CHO CHỦ TÀI KHOẢN
+  document.querySelectorAll(
+    "#btnSave, #btnChangeAvatar, #btnChangeCover, #btnChangePass, .btn-logout"
+  ).forEach(el => el && (el.style.display = "none"));
 }
