@@ -894,23 +894,3 @@ document.querySelectorAll(".avatar-camera").forEach(el=>{
 });
 
 
-const profileHeader = document.getElementById("profileHeader");
-const btnProfileBack = document.getElementById("btnProfileBack");
-
-if (viewUid && viewUid !== __profileAuth.uid) {
-  // 👀 ĐANG XEM PROFILE NGƯỜI KHÁC
-  profileHeader.hidden = false;
-
-  btnProfileBack.onclick = () => {
-    location.href = "/friends.html";
-  };
-
-  // chừa khoảng trống tránh header che nội dung
-  document.body.style.paddingTop = "52px";
-} else {
-  // 👤 PROFILE CỦA MÌNH → ẨN HOÀN TOÀN
-  profileHeader.hidden = true;
-
-  // reset padding (RẤT QUAN TRỌNG)
-  document.body.style.paddingTop = "";
-}
