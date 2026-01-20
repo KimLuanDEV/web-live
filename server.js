@@ -776,8 +776,23 @@ socket.on("user-block", ({ uid }) => {
 
   saveUsers(db);
 
+
+  // 🔔 REALTIME: BLOCK (BÁO CHO NGƯỜI BỊ BLOCK)
+const sockets = activeUsers.get(uid);
+if (sockets) {
+  for (const sid of sockets) {
+    io.to(sid).emit("user-blocked", {
+      by: me
+    });
+  }
+}
+
+
   socket.emit("user-blocked", { uid });
 });
+
+
+
 
 socket.on("user-unblock", ({ uid }) => {
   const me = socket.data.uid;

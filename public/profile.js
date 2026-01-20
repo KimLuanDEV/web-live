@@ -231,6 +231,35 @@ socket.on("friend-removed", ({ uid }) => {
   showMsg("🚫 Hai bạn không còn là bạn bè");
 });
 
+// 🚫 REALTIME: BỊ BLOCK → ẨN PROFILE + TẮT CHAT
+socket.on("user-blocked", ({ by }) => {
+  if (!viewUid) return;
+
+  const myUid = __profileAuth.uid;
+  if (!myUid) return;
+
+  // nếu người đang xem vừa block mình
+  if (viewUid !== by) return;
+
+  // ❌ ẨN TOÀN BỘ ACTION
+  btnMsgFriend && (btnMsgFriend.style.display = "none");
+  btnAddFriend && (btnAddFriend.style.display = "none");
+  btnFriendPending && (btnFriendPending.style.display = "none");
+  btnUnfriend && (btnUnfriend.style.display = "none");
+  btnBlock && (btnBlock.style.display = "none");
+
+  // ❌ ẨN PROFILE CONTENT
+  document.querySelector(".profile-main")?.classList.add("hidden");
+
+  showMsg("🚫 Bạn không thể xem hồ sơ của người này");
+
+  // 👉 Đẩy về trang an toàn sau 1s
+  setTimeout(() => {
+    history.back();
+  }, 1200);
+});
+
+
 
 
 
