@@ -105,11 +105,16 @@ body{
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
+
 const socket = io();
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 if(!profile.uid){
   location.href = "/login.html";
 }
+
+// 🔑 BẮT BUỘC: auth-login để server biết uid
+socket.emit("auth-login", { uid: profile.uid });
+
 
 fetch("/api/friends/" + profile.uid)
   .then(r=>r.json())
@@ -172,8 +177,14 @@ function renderFriends(data){
 
 function respond(uid, accept){
   socket.emit("friend-respond", { from: uid, accept });
-  location.reload();
+
+  setTimeout(()=>{
+    fetch("/api/friends/" + profile.uid)
+      .then(r=>r.json())
+      .then(renderFriends);
+  }, 200);
 }
+
 
 function chat(uid, name){
   localStorage.setItem("chat_to_uid", uid);
