@@ -1638,7 +1638,9 @@ function isMobileDevice(){
 
 
 
- const rotateNotice = document.getElementById("rotateNotice");
+let __rotateLocked = false;
+
+const rotateNotice = document.getElementById("rotateNotice");
 const btnHideToday = document.getElementById("btnHideRotateToday");
 
 const ROTATE_TODAY_KEY = "rotate_hide_date";
@@ -1646,7 +1648,11 @@ const ROTATE_SESSION_KEY = "rotate_shown_session";
 
 function todayKey(){
   const d = new Date();
-  return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+  return `${d.getFullYear()}-${d.getMonth()+1}-${d.getDate()}`;
+}
+
+function isMobileDevice(){
+  return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 }
 
 function isPortrait(){
@@ -1654,54 +1660,46 @@ function isPortrait(){
 }
 
 function shouldShowRotate(){
-  // ❌ Desktop → không hiện
-  if (!isMobileDevice()) return false;
-
-  // ❌ đã chọn không hiện hôm nay
+  if (__rotateLocked) return false;                 // 🔒 khóa cứng
+  if (!isMobileDevice()) return false;              // ❌ desktop
+  if (!isPortrait()) return false;                  // ❌ đang ngang
   if (localStorage.getItem(ROTATE_TODAY_KEY) === todayKey()) return false;
-
-  // ❌ đã hiện trong session này
   if (sessionStorage.getItem(ROTATE_SESSION_KEY) === "1") return false;
-
-  // ❌ đang landscape → không cần hiện
-  if (!isPortrait()) return false;
-
   return true;
 }
 
 function showRotate(){
+  if (!shouldShowRotate()) return;
   rotateNotice?.classList.remove("hidden");
   sessionStorage.setItem(ROTATE_SESSION_KEY, "1");
 }
 
-function hideRotate(){
+function hideRotate(lock = false){
   rotateNotice?.classList.add("hidden");
+  if (lock) __rotateLocked = true; // 🔥 khóa tuyệt đối
 }
 
-
-// ✅ kiểm tra khi load trang
-if (shouldShowRotate()) {
-  showRotate();
-}
+// 🚀 CHỈ CHECK SAU KHI DOM READY
+setTimeout(showRotate, 0);
 
 // 🔄 xoay màn hình
 window.addEventListener("orientationchange", ()=>{
-  if (!isPortrait()) hideRotate();
+  if (!isPortrait()) hideRotate(true);
 });
 
-
+// ❌ click nền để đóng
 rotateNotice?.addEventListener("click", (e)=>{
-  if(e.target === rotateNotice){
-    hideRotate();
+  if (e.target === rotateNotice){
+    hideRotate(true);
   }
 });
 
-
-btnHideToday?.addEventListener("click", ()=>{
+// 🚫 không hiện lại hôm nay
+btnHideToday?.addEventListener("click", (e)=>{
+  e.stopPropagation();
   localStorage.setItem(ROTATE_TODAY_KEY, todayKey());
-  hideRotate();
+  hideRotate(true);
 });
-
 
 </script>
 
