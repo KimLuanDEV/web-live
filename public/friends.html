@@ -62,8 +62,9 @@ body{
 }
 
 .friend-section{
-  padding:10px 14px;
+  padding:10px 14px 90px; /* 👈 thêm padding-bottom */
 }
+
 
 .friend-title{
   font-size:13px;
@@ -162,6 +163,30 @@ body{
 }
 
 
+/* 🚫 Blocked button fixed bottom */
+.btn-blocked-fixed{
+  position: fixed;
+  left: 50%;
+  bottom: 16px;
+  transform: translateX(-50%);
+
+  width: calc(100% - 32px);
+  max-width: 420px;
+
+  padding: 14px 16px;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg, #ff4d4d, #ff0066);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 600;
+
+  border: none;
+  box-shadow: 0 8px 24px rgba(255,0,80,.35);
+
+  z-index: 200;
+}
+
 
 
 </style>
@@ -197,9 +222,10 @@ body{
   <div id="friendList"></div>
 </div>
 
-<button onclick="location.href='/blocked.html'">
+<button class="btn-blocked-fixed" onclick="location.href='/blocked.html'">
   🚫 Đã chặn
 </button>
+
 
 
 <script src="/socket.io/socket.io.js"></script>
