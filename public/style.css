@@ -9622,3 +9622,55 @@ body.page-profile{
 .btn-waiting:active{
   opacity:.7;
 }
+
+
+/* ===== ROTATE NOTICE ===== */
+.rotate-notice{
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: rgba(0,0,0,.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.rotate-notice.hidden{
+  display: none;
+}
+
+.rotate-box{
+  max-width: 280px;
+  padding: 24px 20px;
+  border-radius: 20px;
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.18);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 0 40px rgba(0,0,0,.6);
+}
+
+.rotate-icon{
+  font-size: 48px;
+  margin-bottom: 12px;
+  animation: rotateHint 1.8s ease-in-out infinite;
+}
+
+.rotate-title{
+  font-size: 18px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+
+.rotate-desc{
+  font-size: 13px;
+  opacity: .8;
+  line-height: 1.4;
+}
+
+@keyframes rotateHint{
+  0%   { transform: rotate(0deg); }
+  40%  { transform: rotate(-90deg); }
+  100% { transform: rotate(0deg); }
+}
+

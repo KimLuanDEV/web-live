@@ -500,6 +500,19 @@
 </div>
 
 
+
+<!-- 🔄 ROTATE DEVICE NOTICE -->
+<div id="rotateNotice" class="rotate-notice hidden">
+  <div class="rotate-box">
+    <div class="rotate-icon">📱↻</div>
+    <div class="rotate-title">Xoay ngang màn hình</div>
+    <div class="rotate-desc">
+      Để có trải nghiệm xem livestream tốt hơn
+    </div>
+  </div>
+</div>
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/chat-global.js"></script>
 
@@ -3138,6 +3151,40 @@ if (isGuest) {
 }
 
 
+
+
+
+
+(function(){
+  const notice = document.getElementById("rotateNotice");
+  if(!notice) return;
+
+  function isMobile(){
+    return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+  }
+
+  function checkOrientation(){
+    if(!isMobile()){
+      notice.classList.add("hidden");
+      return;
+    }
+
+    const isPortrait = window.innerHeight > window.innerWidth;
+
+    if(isPortrait){
+      notice.classList.remove("hidden");
+    }else{
+      notice.classList.add("hidden");
+    }
+  }
+
+  // initial
+  checkOrientation();
+
+  // listen
+  window.addEventListener("resize", checkOrientation);
+  window.addEventListener("orientationchange", checkOrientation);
+})();
 
 
 
