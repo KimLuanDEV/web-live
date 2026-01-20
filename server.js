@@ -854,15 +854,17 @@ socket.on("lp-post", post => {
 
 
 
-socket.on("lp-like", async ({ postId, uid })=>{
+socket.on("lp-like", async ({ postId, uid }) => {
   const post = getPost(postId);
-  if(!post || !uid) return;
+  if (!post || !uid) return;
 
   post.likes = post.likes || [];
 
   const i = post.likes.indexOf(uid);
-  if(i >= 0) post.likes.splice(i,1);
-  else post.likes.push(uid);
+  const liked = i < 0;
+
+  if (liked) post.likes.push(uid);
+  else post.likes.splice(i, 1);
 
   saveSocial();
 
@@ -871,7 +873,7 @@ socket.on("lp-like", async ({ postId, uid })=>{
     likes: post.likes.length
   });
 
- // 🔔 PUSH cho chủ bài (nếu like mới & không tự like)
+  // 🔔 PUSH cho chủ bài (nếu like mới & không tự like)
   if (liked && post.uid !== uid) {
     await sendPushToUser(post.uid, {
       title: "❤️ Bài viết được thích",
@@ -879,6 +881,8 @@ socket.on("lp-like", async ({ postId, uid })=>{
       url: `/social.html#post-${postId}`
     });
   }
+});
+
   
 });
 
