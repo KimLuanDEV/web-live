@@ -96,6 +96,17 @@ body{
   background:#111;
   color:#00ffaa;
 }
+
+.btn-unblock{
+  background:#2ecc71;
+  color:#000;
+  border:none;
+  padding:8px 14px;
+  border-radius:8px;
+  font-weight:600;
+}
+
+
 </style>
 </head>
 
@@ -154,17 +165,26 @@ function renderBlocked(list){
 }
 
 function unblock(uid, name){
-  const ok = confirm(`Bỏ chặn ${name}?`);
-  if(!ok) return;
+  // 🔔 confirm riêng – đồng bộ toàn hệ thống
+  showMsg(
+    `🔓 Bỏ chặn <b>${name}</b>?<br><small>Sau khi bỏ chặn, hai bạn chưa phải là bạn bè</small>`,
+    "Xác nhận"
+  );
 
-  socket.emit("user-unblock", { uid });
+  document.getElementById("msgOk").onclick = () => {
+    socket.emit("user-unblock", { uid });
+    closeMsg();
 
-  setTimeout(()=>{
-    fetch("/api/blocked/" + profile.uid)
-      .then(r=>r.json())
-      .then(data => renderBlocked(data.blocked));
-  }, 200);
+    // 🔄 reload lại danh sách block
+    setTimeout(()=>{
+      fetch("/api/blocked/" + profile.uid)
+        .then(r=>r.json())
+        .then(data => renderBlocked(data.blocked));
+    }, 200);
+  };
 }
+
+
 </script>
 </body>
 </html>
