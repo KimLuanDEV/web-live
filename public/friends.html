@@ -202,20 +202,18 @@ function chat(uid, name){
 
 
 function removeFriend(uid, name){
-  showMsg(
-    `Bạn có chắc muốn huỷ kết bạn với ${name}?`,
-    "Huỷ kết bạn",
-    () => {
-      socket.emit("friend-remove", { uid });
+  const ok = confirm(`Bạn có chắc muốn huỷ kết bạn với ${name}?`);
+  if(!ok) return;
 
-      setTimeout(()=>{
-        fetch("/api/friends/" + profile.uid)
-          .then(r=>r.json())
-          .then(renderFriends);
-      }, 200);
-    }
-  );
+  socket.emit("friend-remove", { uid });
+
+  setTimeout(()=>{
+    fetch("/api/friends/" + profile.uid)
+      .then(r=>r.json())
+      .then(renderFriends);
+  }, 200);
 }
+
 
 </script>
 </body>
