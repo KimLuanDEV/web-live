@@ -45,6 +45,20 @@ const vipBadgeBox = document.getElementById("vipBadgeBox");
 
 let __coverUploading = false;
 
+// 🧯 WATCHDOG – chống treo UI vĩnh viễn
+setInterval(() => {
+  if (__coverUploading) {
+    console.warn("⚠️ watchdog reset coverUploading");
+    __coverUploading = false;
+  }
+
+  document.body.style.pointerEvents = "auto";
+  document.body.style.overflow = "auto";
+}, 3000);
+
+
+
+
 const defaultProfile = {
   name: "User",
   avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
@@ -97,7 +111,6 @@ nameInput.onblur = ()=>{
   avatar: current.avatar   // 🔥 gửi avatar hiện tại
 });
 
-    socket.emit("auth-login", { uid: __profileAuth.uid });
   }
 
   showMsg("✅ Đã cập nhật tên hiển thị");
@@ -284,7 +297,6 @@ document.getElementById("btnSave").onclick = () => {
       name: profile.name,
       avatar: profile.avatar
     });
-    socket.emit("auth-login", { uid });
   }
 
   showMsg("✅ Đã lưu hồ sơ!");
@@ -333,7 +345,7 @@ avatarInput.onchange = async () => {
   // sync realtime
   if (__profileAuth.uid) {
     socket.emit("profile-update", { avatar: avatarUrl });
-    socket.emit("auth-login", { uid: __profileAuth.uid });
+    
   }
 };
 
