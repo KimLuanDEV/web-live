@@ -482,7 +482,7 @@ const VIRTUAL_ROOMS = [
     avatar: "https://i.ibb.co/GfwZdM61/107.jpg",
     link: "https://www.bigo.tv/KimDogCat"
   },
-  
+
    /*
   {
     roomId: "cunyeu94",
@@ -1250,16 +1250,26 @@ if (MY_BLOCKED.includes(u.uid)) return "";
     return `
       <div class="player-row ${isOn ? "online":"offline"}">
 
-        <div class="pava">
-          <img src="${u.avatar}">
-          <span class="dot ${isOn ? "on":"off"}"></span>
-        </div>
+     <div class="pava"
+     ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
+     style="${!isMe ? "cursor:pointer" : ""}">
+  <img src="${u.avatar}">
+  <span class="dot ${isOn ? "on":"off"}"></span>
+</div>
+
+
 
         <div class="pinfo">
-          <div class="pname">
-            ${u.name}
-            ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
-          </div>
+
+         <div class="pname"
+     ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
+     style="${!isMe ? "cursor:pointer" : ""}">
+  ${u.name}
+  ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
+</div>
+
+
+
           <div class="plevel">Lv ${u.level}</div>
         </div>
 
@@ -1560,6 +1570,12 @@ socket.on("user-unblocked", ({ uid }) => {
   renderPlayerLobbyAll();
 });
 
+
+
+function openUserProfile(uid){
+  if(!uid) return;
+  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+}
 
 
 </script>
