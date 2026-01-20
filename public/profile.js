@@ -603,43 +603,52 @@ document.querySelectorAll("#passModal input").forEach(inp=>{
 });
 
 
-
-// ===== COVER IMAGE =====
-const coverInput   = document.getElementById("coverInput");
+// ===== COVER CHANGE =====
 const coverPreview = document.getElementById("coverPreview");
+const coverInput   = document.getElementById("coverInput");
 const btnChangeCover = document.getElementById("btnChangeCover");
 
-btnChangeCover.onclick = () => coverInput.click();
+if (btnChangeCover && coverInput) {
+  btnChangeCover.onclick = () => coverInput.click();
+}
 
-coverInput.onchange = async () => {
-  const file = coverInput.files[0];
-  if (!file) return;
+if (coverInput) {
+  coverInput.onchange = async () => {
+    const file = coverInput.files[0];
+    if (!file) return;
 
-  const fd = new FormData();
-  fd.append("cover", file);
+    const fd = new FormData();
+    fd.append("cover", file);
 
-  const res = await fetch("/api/upload-cover", {
-    method: "POST",
-    body: fd
-  });
+    const res = await fetch("/api/upload-cover", {
+      method: "POST",
+      body: fd
+    });
 
-  const data = await res.json();
-  if (!data.url) {
-    showMsg("❌ Upload cover thất bại");
-    return;
-  }
+    const data = await res.json();
+    if (!data.url) {
+      showMsg("❌ Upload ảnh bìa thất bại");
+      return;
+    }
 
-  coverPreview.src = data.url;
+    const coverUrl = data.url;
 
-  // lưu local
-  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-  p.cover = data.url;
-  localStorage.setItem(KEY, JSON.stringify(p));
+    // update UI
+    coverPreview.src = coverUrl;
 
-  // sync realtime
-  if (__profileAuth.uid) {
-    socket.emit("profile-update", { cover: data.url });
-  }
-};
+    // lưu local
+    const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+    p.cover = coverUrl;
+    localStorage.setItem(KEY, JSON.stringify(p));
+
+    // sync realtime
+    if (__profileAuth.uid) {
+      socket.emit("profile-update", { cover: coverUrl });
+      socket.emit("auth-login", { uid: __profileAuth.uid });
+    }
+
+    showMsg("✅ Đã cập nhật ảnh bìa");
+  };
+}
 
 
