@@ -9560,3 +9560,36 @@ body.page-profile{
 }
 
 
+
+.profile-friend-actions{
+  display: flex;
+  gap: 10px;
+  margin: 12px 0 4px;
+}
+
+.profile-friend-actions button{
+  flex: 1;
+  padding: 12px;
+  border-radius: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn-msg{
+  background: #0a84ff;
+  color: #fff;
+  border: none;
+}
+
+.btn-danger{
+  background: #ff3b30;
+  color: #fff;
+  border: none;
+}
+
+.btn-danger-outline{
+  background: transparent;
+  color: #ff3b30;
+  border: 1px solid #ff3b30;
+}

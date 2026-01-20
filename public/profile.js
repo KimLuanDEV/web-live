@@ -17,6 +17,66 @@ const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 // 👥 Ẩn nút "Bạn bè" khi xem profile người khác
 const btnProfileFriends = document.querySelector(".btn-profile-friends");
 
+
+// 👀 ACTIONS KHI XEM PROFILE NGƯỜI KHÁC
+const profileFriendActions = document.getElementById("profileFriendActions");
+const btnMsgFriend   = document.getElementById("btnMsgFriend");
+const btnUnfriend    = document.getElementById("btnUnfriend");
+const btnBlock       = document.getElementById("btnBlock");
+
+if (viewUid && viewUid !== __profileAuth.uid) {
+  // Ẩn nút "Bạn bè"
+  if (btnProfileFriends) btnProfileFriends.style.display = "none";
+
+  // Hiện action cho profile người khác
+  if (profileFriendActions) profileFriendActions.hidden = false;
+
+  // 💬 Nhắn tin riêng
+  if (btnMsgFriend) {
+    btnMsgFriend.onclick = () => {
+      location.href = "/messages.html?to=" + encodeURIComponent(viewUid);
+    };
+  }
+
+  // 🚫 Huỷ bạn
+  if (btnUnfriend) {
+    btnUnfriend.onclick = () => {
+      showMsg(
+        "Bạn có chắc chắn muốn huỷ kết bạn?",
+        "Xác nhận"
+      );
+
+      document.getElementById("msgOk").onclick = () => {
+        socket.emit("friend-remove", { uid: viewUid });
+        closeMsg();
+        showMsg("✅ Đã huỷ kết bạn");
+      };
+    };
+  }
+
+  // ⛔ Block user
+  if (btnBlock) {
+    btnBlock.onclick = () => {
+      showMsg(
+        "Chặn người này? Bạn sẽ không nhận được tin nhắn hay lời mời nữa.",
+        "Xác nhận"
+      );
+
+      document.getElementById("msgOk").onclick = () => {
+        socket.emit("user-block", { uid: viewUid });
+        closeMsg();
+        showMsg("⛔ Đã chặn người dùng");
+      };
+    };
+  }
+
+} else {
+  // 👤 PROFILE CỦA MÌNH
+  if (profileFriendActions) profileFriendActions.hidden = true;
+}
+
+
+
 if (btnProfileFriends) {
   if (viewUid && viewUid !== __profileAuth.uid) {
     // 👀 đang xem profile người khác → ẨN
