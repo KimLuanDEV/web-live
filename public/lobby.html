@@ -388,13 +388,18 @@ body.lobby-page{
 
 
 
-<!-- 🔄 ROTATE DEVICE NOTICE -->
 <div id="rotateNotice" class="rotate-notice hidden">
   <div class="rotate-box">
     <div class="rotate-icon">📱↻</div>
     <div class="rotate-title">Xoay ngang màn hình</div>
     <div class="rotate-desc">
       Để có trải nghiệm xem livestream tốt hơn
+    </div>
+
+    <div class="rotate-actions">
+      <button id="btnHideRotateToday" class="rotate-skip">
+        Không hiện lại hôm nay
+      </button>
     </div>
   </div>
 </div>
@@ -1624,58 +1629,79 @@ function openUserProfile(uid){
 })();
 
 
+function isMobileDevice(){
+  return (
+    /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+    window.matchMedia("(max-width: 820px)").matches
+  );
+}
 
 
 
-  const rotateNotice = document.getElementById("rotateNotice");
+ const rotateNotice = document.getElementById("rotateNotice");
+const btnHideToday = document.getElementById("btnHideRotateToday");
 
-  if (rotateNotice) {
-    rotateNotice.addEventListener("click", (e) => {
-      // chỉ đóng khi click ra ngoài box
-      if (e.target === rotateNotice) {
-        rotateNotice.classList.add("hidden");
-      }
-    });
+const ROTATE_TODAY_KEY = "rotate_hide_date";
+const ROTATE_SESSION_KEY = "rotate_shown_session";
+
+function todayKey(){
+  const d = new Date();
+  return d.getFullYear() + "-" + (d.getMonth()+1) + "-" + d.getDate();
+}
+
+function isPortrait(){
+  return window.innerHeight > window.innerWidth;
+}
+
+function shouldShowRotate(){
+  // ❌ Desktop → không hiện
+  if (!isMobileDevice()) return false;
+
+  // ❌ đã chọn không hiện hôm nay
+  if (localStorage.getItem(ROTATE_TODAY_KEY) === todayKey()) return false;
+
+  // ❌ đã hiện trong session này
+  if (sessionStorage.getItem(ROTATE_SESSION_KEY) === "1") return false;
+
+  // ❌ đang landscape → không cần hiện
+  if (!isPortrait()) return false;
+
+  return true;
+}
+
+function showRotate(){
+  rotateNotice?.classList.remove("hidden");
+  sessionStorage.setItem(ROTATE_SESSION_KEY, "1");
+}
+
+function hideRotate(){
+  rotateNotice?.classList.add("hidden");
+}
+
+
+// ✅ kiểm tra khi load trang
+if (shouldShowRotate()) {
+  showRotate();
+}
+
+// 🔄 xoay màn hình
+window.addEventListener("orientationchange", ()=>{
+  if (!isPortrait()) hideRotate();
+});
+
+
+rotateNotice?.addEventListener("click", (e)=>{
+  if(e.target === rotateNotice){
+    hideRotate();
   }
+});
 
 
+btnHideToday?.addEventListener("click", ()=>{
+  localStorage.setItem(ROTATE_TODAY_KEY, todayKey());
+  hideRotate();
+});
 
-
-  const ROTATE_KEY = "rotate_notice_shown";
-
-  function shouldShowRotateNotice() {
-    return !sessionStorage.getItem(ROTATE_KEY);
-  }
-
-  function showRotateNotice() {
-    if (!rotateNotice) return;
-    rotateNotice.classList.remove("hidden");
-    sessionStorage.setItem(ROTATE_KEY, "1");
-  }
-
-  function hideRotateNotice() {
-    if (!rotateNotice) return;
-    rotateNotice.classList.add("hidden");
-  }
-
-  // 👉 chỉ hiện 1 lần / mỗi phiên
-  if (shouldShowRotateNotice()) {
-    showRotateNotice();
-  }
-
-  // 👉 click ra ngoài để đóng
-  rotateNotice?.addEventListener("click", (e) => {
-    if (e.target === rotateNotice) {
-      hideRotateNotice();
-    }
-  });
-
-  // 👉 nếu người dùng xoay ngang thì tự ẩn
-  window.addEventListener("orientationchange", () => {
-    if (window.innerWidth > window.innerHeight) {
-      hideRotateNotice();
-    }
-  });
 
 </script>
 
