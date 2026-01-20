@@ -501,12 +501,16 @@
 
 
 
-<!-- 🔄 ROTATE HINT (NON-BLOCKING) -->
-<div id="rotateHint" class="rotate-hint hidden">
-  <span class="rotate-emoji">📱↻</span>
-  <span class="rotate-text">Xoay ngang màn hình để xem livestream rõ hơn.</span>
+<!-- 🔄 ROTATE DEVICE NOTICE -->
+<div id="rotateNotice" class="rotate-notice hidden">
+  <div class="rotate-box">
+    <div class="rotate-icon">📱↻</div>
+    <div class="rotate-title">Xoay ngang màn hình</div>
+    <div class="rotate-desc">
+      Để có trải nghiệm xem livestream tốt hơn
+    </div>
+  </div>
 </div>
-
 
 
   <script src="/socket.io/socket.io.js"></script>
@@ -3152,43 +3156,89 @@ if (isGuest) {
 
 
 (function(){
-  const hint = document.getElementById("rotateHint");
-  if(!hint) return;
-
-  let shown = false;
+  const notice = document.getElementById("rotateNotice");
+  if(!notice) return;
 
   function isMobile(){
     return /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   }
 
-  function showRotateHint(){
-    if(shown) return;
-    if(!isMobile()) return;
+  function checkOrientation(){
+    if(!isMobile()){
+      notice.classList.add("hidden");
+      return;
+    }
 
     const isPortrait = window.innerHeight > window.innerWidth;
-    if(!isPortrait) return;
 
-    shown = true;
-
-    hint.classList.add("show");
-    hint.classList.remove("hidden");
-
-    // auto hide sau 3.5s
-    setTimeout(()=>{
-      hint.classList.remove("show");
-    }, 3500);
+    if(isPortrait){
+      notice.classList.remove("hidden");
+    }else{
+      notice.classList.add("hidden");
+    }
   }
 
-  // gọi khi vào viewer
-  showRotateHint();
+  // initial
+  checkOrientation();
 
-  // nếu user xoay máy thì không cần hiện lại
-  window.addEventListener("orientationchange", ()=>{
-    hint.classList.remove("show");
-  });
+  // listen
+  window.addEventListener("resize", checkOrientation);
+  window.addEventListener("orientationchange", checkOrientation);
 })();
 
 
+
+
+  const rotateNotice = document.getElementById("rotateNotice");
+
+  if (rotateNotice) {
+    rotateNotice.addEventListener("click", (e) => {
+      // chỉ đóng khi click ra ngoài box
+      if (e.target === rotateNotice) {
+        rotateNotice.classList.add("hidden");
+      }
+    });
+  }
+
+
+
+
+  const ROTATE_KEY = "rotate_notice_shown";
+
+  function shouldShowRotateNotice() {
+    return !sessionStorage.getItem(ROTATE_KEY);
+  }
+
+  function showRotateNotice() {
+    if (!rotateNotice) return;
+    rotateNotice.classList.remove("hidden");
+    sessionStorage.setItem(ROTATE_KEY, "1");
+  }
+
+  function hideRotateNotice() {
+    if (!rotateNotice) return;
+    rotateNotice.classList.add("hidden");
+  }
+
+  // 👉 chỉ hiện 1 lần / mỗi phiên
+  if (shouldShowRotateNotice()) {
+    showRotateNotice();
+  }
+
+  // 👉 click ra ngoài để đóng
+  rotateNotice?.addEventListener("click", (e) => {
+    if (e.target === rotateNotice) {
+      hideRotateNotice();
+    }
+  });
+
+  // 👉 nếu người dùng xoay ngang thì tự ẩn
+  window.addEventListener("orientationchange", () => {
+    if (window.innerWidth > window.innerHeight) {
+      hideRotateNotice();
+    }
+  });
+  
 
   </script>
 
