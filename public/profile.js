@@ -120,6 +120,11 @@ window.addEventListener("pageshow", () => {
 const displayName = document.getElementById("displayName");
 
 displayName.onclick = ()=>{
+
+  // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG CHO SỬA TÊN
+  if (viewUid && viewUid !== __profileAuth.uid) return;
+
+
   displayName.classList.add("hidden");
   nameInput.classList.remove("hidden");
   nameInput.focus();
@@ -364,6 +369,10 @@ const avatarInput = document.getElementById("avatarInput");
 const btnChangeAvatar = document.getElementById("btnChangeAvatar");
 
 document.querySelector(".avatar-wrap").onclick = () => {
+
+   // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG ĐỔI AVATAR
+  if (viewUid && viewUid !== __profileAuth.uid) return;
+
   avatarInput.click();
 };
 
@@ -878,3 +887,8 @@ function renderProfileViewOnly(p){
     "#btnSave, #btnChangeAvatar, #btnChangeCover, #btnChangePass, .btn-logout"
   ).forEach(el => el && (el.style.display = "none"));
 }
+
+// 🔒 ẨN ICON CAMERA KHI XEM PROFILE NGƯỜI KHÁC
+document.querySelectorAll(".avatar-camera").forEach(el=>{
+  el.style.display = "none";
+});
