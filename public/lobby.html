@@ -1206,6 +1206,8 @@ playerLobby.querySelector(".player-lobby-backdrop").onclick = () => {
 
 function renderPlayerLobbyAll(){
   const box = document.getElementById("playerList");
+  const myFriends = profile.friends || [];
+  const isFriend = myFriends.includes(u.uid);
 
   if(!ALL_USERS.length){
     box.innerHTML = `<div class="player-lobby-empty">Chưa có người chơi</div>`;
@@ -1232,19 +1234,19 @@ function renderPlayerLobbyAll(){
           <div class="plevel">Lv ${u.level}</div>
         </div>
 
-        ${!isMe ? `
-        <div class="pactions">
-          <button class="btn-friend"
-            onclick="addFriend('${u.uid}')">
-            ➕ Kết bạn
-          </button>
+        ${!isMe && !isFriend ? `
+  <div class="pactions">
+    <button class="btn-friend"
+      onclick="addFriend('${u.uid}')">
+      ➕ Kết bạn
+    </button>
 
-          <button class="btn-chat"
-            onclick="openPrivateChat('${u.uid}', '${u.name}')">
-            💬 Nhắn tin
-          </button>
-        </div>
-        ` : `<div class="pme">Bạn</div>`}
+    <button class="btn-chat"
+      onclick="openPrivateChat('${u.uid}', '${u.name}')">
+      💬 Nhắn tin
+    </button>
+  </div>
+` : isFriend ? `<div class="pme">✓ Bạn bè</div>` : `<div class="pme">Bạn</div>`}
 
       </div>
     `;
@@ -1258,8 +1260,26 @@ function addFriend(uid){
     return;
   }
 
-  showMsg("👋 Đã gửi lời mời kết bạn");
+  socket.emit("friend-request", { to: uid });
+  showMsg("📨 Đã gửi lời mời kết bạn");
 }
+
+
+
+socket.on("friend-request", ({ from, name }) => {
+  showMsg(
+    `👤 ${name} muốn kết bạn`,
+    "Lời mời kết bạn",
+    () => {
+      socket.emit("friend-respond", {
+        from,
+        accept: true
+      });
+    }
+  );
+});
+
+
 
 function openPrivateChat(uid, name){
   if(isGuest){

@@ -697,6 +697,83 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
+socket.on("friend-request", ({ to }) => {
+  const from = socket.data.uid;
+  if (!from || !to || from === to) return;
+
+  const db = loadUsers();
+  const uFrom = db[from];
+  const uTo = db[to];
+  if (!uFrom || !uTo) return;
+
+  uFrom.profile.friends ||= [];
+  uTo.profile.friends ||= [];
+  uTo.profile.friendRequests ||= [];
+
+  // đã là bạn → bỏ qua
+  if (uFrom.profile.friends.includes(to)) return;
+
+  // đã gửi rồi → bỏ qua
+  if (uTo.profile.friendRequests.includes(from)) return;
+
+  uTo.profile.friendRequests.push(from);
+  saveUsers(db);
+
+  // realtime nếu online
+  const sockets = activeUsers.get(to);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("friend-request", {
+        from,
+        name: uFrom.profile.name,
+        avatar: uFrom.profile.avatar
+      });
+    }
+  }
+});
+
+socket.on("friend-respond", ({ from, accept }) => {
+  const to = socket.data.uid;
+  if (!from || !to) return;
+
+  const db = loadUsers();
+  const uFrom = db[from];
+  const uTo = db[to];
+  if (!uFrom || !uTo) return;
+
+  uFrom.profile.friends ||= [];
+  uTo.profile.friends ||= [];
+  uTo.profile.friendRequests ||= [];
+
+  // xoá request
+  uTo.profile.friendRequests =
+    uTo.profile.friendRequests.filter(x => x !== from);
+
+  if (accept) {
+    if (!uFrom.profile.friends.includes(to))
+      uFrom.profile.friends.push(to);
+
+    if (!uTo.profile.friends.includes(from))
+      uTo.profile.friends.push(from);
+  }
+
+  saveUsers(db);
+
+  // báo realtime cho người gửi
+  const sockets = activeUsers.get(from);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("friend-respond", {
+        uid: to,
+        accept
+      });
+    }
+  }
+});
+
+
+
+
 
 socket.on("lp-like-reply", async ({ postId, commentIndex, replyId, uid }) => {
   const post = getPost(postId);
