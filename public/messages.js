@@ -536,32 +536,23 @@ async function enablePush() {
 
   const reg = await navigator.serviceWorker.register("/sw.js");
 
-  // 🔥 FIX: unsubscribe subscription cũ nếu có
-  const oldSub = await reg.pushManager.getSubscription();
-  if (oldSub) {
-    console.warn("🔁 Unsubscribing old push subscription");
-    await oldSub.unsubscribe();
+  let sub = await reg.pushManager.getSubscription();
+
+  if (!sub) {
+    const perm = await Notification.requestPermission();
+    if (perm !== "granted") return;
+
+    sub = await reg.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: "BPG9kTxtU0Fso5VZqUFhqn_ZZLvTeKM32km3pLDnH2UCdKce-owuTMZ5PLzrKyrw_patHMVavHdDM4axJ7L9N7E"
+    });
   }
 
-  const perm = await Notification.requestPermission();
-  if (perm !== "granted") {
-    console.warn("❌ Notification permission denied");
-    return;
-  }
-
-  const sub = await reg.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: "BPG9kTxtU0Fso5VZqUFhqn_ZZLvTeKM32km3pLDnH2UCdKce-owuTMZ5PLzrKyrw_patHMVavHdDM4axJ7L9N7E"
-  });
-
+  // 🔥 GỬI SUB LÊN SERVER MỖI LẦN (UPSERT)
   await fetch("/api/push-subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      uid: auth.uid,
-      sub
-    })
+    body: JSON.stringify({ uid: auth.uid, sub })
   });
-
-  console.log("🔔 Push re-subscribed OK");
 }
+

@@ -287,7 +287,7 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE
 );
 
-// uid -> pushSubscription
+// uid -> Set<subscription>
 const pushSubs = new Map();
 
 
@@ -444,11 +444,17 @@ app.post("/api/push-subscribe", (req, res) => {
   const { uid, sub } = req.body;
   if (!uid || !sub) return res.sendStatus(400);
 
-  pushSubs.set(uid, sub);
-  console.log("🔔 Push subscribed:", uid);
+  if (!pushSubs.has(uid)) pushSubs.set(uid, []);
+  const arr = pushSubs.get(uid);
+
+  // tránh trùng endpoint
+  if (!arr.find(s => s.endpoint === sub.endpoint)) {
+    arr.push(sub);
+  }
 
   res.json({ ok: true });
 });
+
 
 
 
@@ -1015,10 +1021,10 @@ socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, uid 
 
 
 
-socket.on("private-message", ({ to, text, msgId }) => {
+socket.on("private-message", async ({ to, text, msgId }) => {
 
   const fromUid = socket.data.uid;
-  if(!fromUid || !to || !text) return;
+  if (!fromUid || !to || !text) return;
 
   const id = msgId || Date.now() + "_" + Math.random();
 
@@ -1029,69 +1035,76 @@ socket.on("private-message", ({ to, text, msgId }) => {
     text,
     time: Date.now(),
     seen: false,
-    delivered: false   // ✅ THÊM DÒNG NÀY
+    delivered: false
   };
 
   // 1️⃣ LƯU VÀO INBOX NGƯỜI NHẬN
-  if(!userInbox.has(to)) userInbox.set(to, []);
+  if (!userInbox.has(to)) userInbox.set(to, []);
   userInbox.get(to).push(msg);
-saveInbox(Object.fromEntries(userInbox)); // ✅ BẮT BUỘC
- 
+  saveInbox(Object.fromEntries(userInbox));
+
   // 2️⃣ GỬI REALTIME NẾU ONLINE
-const sockets = activeUsers.get(to);
+  const sockets = activeUsers.get(to);
 
-if (sockets) {
-  const db = loadUsers();
-  const user = db[fromUid];
+  if (sockets) {
+    const db = loadUsers();
+    const user = db[fromUid];
 
-  const fromProfile = {
-    ...(socket.data.profile || {}),
-    uid: fromUid,
-    verified: !!user?.profile?.verified
-  };
+    const fromProfile = {
+      ...(socket.data.profile || {}),
+      uid: fromUid,
+      verified: !!user?.profile?.verified
+    };
 
-  for (const sid of sockets) {
-    io.to(sid).emit("private-message", {
-      from: fromProfile,
-      text,
-      msgId: id
-    });
+    for (const sid of sockets) {
+      io.to(sid).emit("private-message", {
+        from: fromProfile,
+        text,
+        msgId: id
+      });
+      io.to(sid).emit("inbox-new");
+    }
 
-    io.to(sid).emit("inbox-new");
+    msg.delivered = true;
   }
 
-  msg.delivered = true;
-}
+  // 3️⃣ PUSH NOTIFICATION NẾU USER OFFLINE
+  if (!sockets) {
+    const subs = pushSubs.get(to);
 
+    if (subs && subs.length) {
+      const db = loadUsers();
+      const fromUser = db[fromUid];
 
-// 🔔 PUSH NOTIFICATION NẾU USER OFFLINE
-if (!sockets) {
-  const sub = pushSubs.get(to);
-
-  if (sub) {
-    const db = loadUsers();
-    const fromUser = db[fromUid];
-
-    webpush.sendNotification(
-      sub,
-      JSON.stringify({
+      const payload = JSON.stringify({
         title: "💬 Tin nhắn mới",
         body: `${fromUser?.profile?.name || fromUid}: ${text}`,
         url: "/messages.html"
-      })
-    ).catch(err => {
-      console.log("❌ Push failed:", err.message);
-    });
+      });
+
+      // 🔥 GỬI PUSH + XOÁ SUB CHẾT
+      for (let i = subs.length - 1; i >= 0; i--) {
+        try {
+          await webpush.sendNotification(subs[i], payload);
+        } catch (e) {
+          if (e.statusCode === 410 || e.statusCode === 404) {
+            subs.splice(i, 1); // ❌ xoá subscription chết
+            console.warn("🧹 Removed dead push sub:", to);
+          } else {
+            console.log("❌ Push failed:", e.message);
+          }
+        }
+      }
+    }
   }
-}
 
+  // 4️⃣ BÁO NGƯỜI GỬI TRẠNG THÁI
+  socket.emit("msg-status", {
+    msgId: id,
+    status: sockets ? "delivered" : "stored"
+  });
+});
 
-  // 3️⃣ báo người gửi là đã gửi
-socket.emit("msg-status", {
-  msgId: id,
-  status: sockets ? "delivered" : "stored"
-});
-});
 
 
 socket.on("msg-seen", ({ to, msgId }) => {
