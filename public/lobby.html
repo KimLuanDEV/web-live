@@ -400,6 +400,11 @@ const socket = io();
 let ALL_USERS = [];
 let ONLINE_UIDS = [];
 
+let MY_FRIENDS = [];
+let MY_REQUESTS = [];
+
+
+
 // load tất cả tài khoản
 fetch("/api/all-users")
   .then(r=>r.json())
@@ -440,6 +445,19 @@ const isGuest = localStorage.getItem("isGuest") === "1";
 if(profile.uid){
   socket.emit("auth-login", { uid: profile.uid });
 }
+
+if (profile.uid) {
+  fetch("/api/friends/" + profile.uid)
+    .then(r => r.json())
+    .then(data => {
+      MY_FRIENDS = data.friends.map(f => f.uid);
+      MY_REQUESTS = data.requests.map(r => r.uid);
+      renderPlayerLobbyAll(); // 🔥 render lại
+    });
+}
+
+
+
 
 socket.on("force-logout", () => {
    showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
@@ -1217,8 +1235,9 @@ function renderPlayerLobbyAll(){
     const isMe = u.uid === profile.uid;
 
 
-  const myFriends = profile.friends || [];
-  const isFriend = myFriends.includes(u.uid);
+ const isFriend = MY_FRIENDS.includes(u.uid);
+const isPending = MY_REQUESTS.includes(u.uid);
+
 
     return `
       <div class="player-row ${isOn ? "online":"offline"}">
@@ -1235,19 +1254,27 @@ function renderPlayerLobbyAll(){
           </div>
           <div class="plevel">Lv ${u.level}</div>
         </div>
-${!isMe && !isFriend ? `
+
+${!isMe ? `
   <div class="pactions">
-    <button class="btn-friend"
-      onclick="addFriend('${u.uid}')">
-      ➕ Kết bạn
-    </button>
+    ${
+      isFriend
+        ? `<button class="btn-friend ok" disabled>👥 Bạn bè</button>`
+        : isPending
+          ? `<button class="btn-friend pending" disabled>⏳ Đã gửi</button>`
+          : `<button class="btn-friend add"
+                onclick="addFriend('${u.uid}')">
+                ➕ Kết bạn
+             </button>`
+    }
 
     <button class="btn-chat"
       onclick="openPrivateChat('${u.uid}', '${u.name}')">
       💬 Nhắn tin
     </button>
   </div>
-` : isFriend ? `<div class="pme">✓ Bạn bè</div>` : `<div class="pme">Bạn</div>`}
+` : `<div class="pme">Bạn</div>`}
+
 
       </div>
     `;
@@ -1262,8 +1289,15 @@ function addFriend(uid){
   }
 
   socket.emit("friend-request", { to: uid });
+
+  if(!MY_REQUESTS.includes(uid)){
+    MY_REQUESTS.push(uid);
+  }
+
+  renderPlayerLobbyAll(); // 🔥 đổi nút ngay
   showMsg("📨 Đã gửi lời mời kết bạn");
 }
+
 
 
 

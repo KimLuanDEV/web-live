@@ -9422,3 +9422,27 @@ body.page-profile{
   font-size:12px;
   opacity:.6;
 }
+
+
+.btn-friend{
+  padding:6px 10px;
+  border-radius:8px;
+  font-size:12px;
+  border:none;
+}
+
+.btn-friend.add{
+  background:#1e90ff;
+  color:#fff;
+}
+
+.btn-friend.ok{
+  background:#2ecc71;
+  color:#000;
+}
+
+.btn-friend.pending{
+  background:#555;
+  color:#ccc;
+}
+
