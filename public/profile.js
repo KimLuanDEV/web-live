@@ -177,6 +177,37 @@ if (__profileAuth.uid) {
 }
 
 
+// 🔔 REALTIME: BẬT CHAT KHI ACCEPT KẾT BẠN
+socket.on("friend-accepted", ({ a, b }) => {
+  if (!viewUid || !btnMsgFriend) return;
+
+  const myUid = __profileAuth.uid;
+  if (!myUid) return;
+
+  // nếu mình và người đang xem vừa trở thành bạn
+  const justBecameFriends =
+    (viewUid === a && myUid === b) ||
+    (viewUid === b && myUid === a);
+
+  if (!justBecameFriends) return;
+
+  // 👉 BẬT CHAT
+  btnMsgFriend.style.display = "block";
+  btnMsgFriend.disabled = false;
+
+  // 👉 ẨN NÚT KẾT BẠN / CHỜ
+  btnAddFriend && (btnAddFriend.style.display = "none");
+  btnFriendPending && (btnFriendPending.style.display = "none");
+
+  // 👉 HIỆN HUỶ BẠN
+  btnUnfriend && (btnUnfriend.style.display = "block");
+
+  showMsg("👥 Hai bạn đã là bạn bè, có thể nhắn tin!");
+});
+
+
+
+
 // 🔥 LOAD PROFILE (CỦA MÌNH / NGƯỜI KHÁC)
 if (viewUid && viewUid !== __profileAuth.uid) {
   // 👀 ĐANG XEM PROFILE NGƯỜI KHÁC (READ-ONLY)

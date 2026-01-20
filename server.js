@@ -878,6 +878,24 @@ socket.on("friend-respond", ({ from, accept }) => {
       });
     }
   }
+
+// 🔔 REALTIME: ĐÃ LÀ BẠN (BẬT CHAT CHO CẢ 2)
+if (accept) {
+  const socketsA = activeUsers.get(from); // người gửi lời mời
+  const socketsB = activeUsers.get(to);   // người accept
+
+  [socketsA, socketsB].forEach(socks => {
+    if (!socks) return;
+    for (const sid of socks) {
+      io.to(sid).emit("friend-accepted", {
+        a: from,
+        b: to
+      });
+    }
+  });
+}
+
+
 });
 
 
