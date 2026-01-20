@@ -12,6 +12,23 @@ setInterval(() => {
 
 // 🔐 AUTH ACCOUNT – bắt buộc
 const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+
+// 👥 Ẩn nút "Bạn bè" khi xem profile người khác
+const btnProfileFriends = document.querySelector(".btn-profile-friends");
+
+if (btnProfileFriends) {
+  if (viewUid && viewUid !== __profileAuth.uid) {
+    // 👀 đang xem profile người khác → ẨN
+    btnProfileFriends.style.display = "none";
+  } else {
+    // 👤 profile của mình → HIỆN
+    btnProfileFriends.style.display = "";
+  }
+}
+
+
+
 // 🔥 Nếu có UID thật → chắc chắn không phải Guest
 if (__profileAuth.uid) {
   localStorage.removeItem("isGuest");
