@@ -429,6 +429,23 @@ app.post("/api/check-trusted", (req,res)=>{
 
 
 
+app.get("/api/me/:uid", (req, res) => {
+  const uid = req.params.uid;
+  const db = loadUsers();
+  const acc = db[uid];
+
+  if (!acc || !acc.profile) {
+    return res.status(404).json({ error: "User not found" });
+  }
+
+  res.json({
+    profile: acc.profile
+  });
+});
+
+
+
+
 app.get("/api/all-users", (req,res)=>{
   const db = loadUsers();
   const list = [];
