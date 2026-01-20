@@ -206,6 +206,32 @@ socket.on("friend-accepted", ({ a, b }) => {
 });
 
 
+// 🔔 REALTIME: TẮT CHAT KHI HUỶ KẾT BẠN
+socket.on("friend-removed", ({ uid }) => {
+  if (!viewUid || !btnMsgFriend) return;
+
+  const myUid = __profileAuth.uid;
+  if (!myUid) return;
+
+  // nếu mình và người đang xem vừa bị huỷ bạn
+  const justUnfriended = (viewUid === uid);
+
+  if (!justUnfriended) return;
+
+  // ❌ TẮT CHAT
+  btnMsgFriend.style.display = "none";
+  btnMsgFriend.disabled = true;
+
+  // ❌ ẨN HUỶ BẠN
+  btnUnfriend && (btnUnfriend.style.display = "none");
+
+  // ➕ HIỆN KẾT BẠN
+  btnAddFriend && (btnAddFriend.style.display = "block");
+
+  showMsg("🚫 Hai bạn không còn là bạn bè");
+});
+
+
 
 
 // 🔥 LOAD PROFILE (CỦA MÌNH / NGƯỜI KHÁC)
