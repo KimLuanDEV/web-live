@@ -1265,14 +1265,6 @@ socket.on("private-message", async ({ to, text, msgId }) => {
 const blockedMe = (me.profile.blocked || []).includes(to);
 const blockedByYou = (you.profile.blocked || []).includes(fromUid);
 
-if (blockedMe || blockedByYou) {
-  socket.emit("msg-blocked", {
-    reason: "blocked",
-    to
-  });
-  return;
-}
-
 
 
 // 🔒 CHỈ CHO PHÉP NHẮN TIN VỚI BẠN BÈ
@@ -1281,6 +1273,15 @@ const me = db[fromUid];
 const you = db[to];
 
 if (!me || !you) return;
+
+
+if (blockedMe || blockedByYou) {
+  socket.emit("msg-blocked", {
+    reason: "blocked",
+    to
+  });
+  return;
+}
 
 const myFriends = me.profile.friends || [];
 
@@ -1291,10 +1292,6 @@ if (!myFriends.includes(to)) {
   });
   return;
 }
-
-
-
-
 
   const id = msgId || Date.now() + "_" + Math.random();
 
