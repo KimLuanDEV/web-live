@@ -793,9 +793,14 @@ if(r.replies){
   c2.style.marginLeft="16px";
 
   c2.innerHTML = `
-  <img src="${child.avatar}">
+  <img src="${child.avatar}"
+     onclick="openUserProfile('${child.uid}')"
+     style="cursor:pointer">
   <div>
-    <b>${child.name}</b> ${child.text}
+    <b onclick="openUserProfile('${child.uid}')"
+   style="cursor:pointer">
+  ${child.name}
+</b> ${child.text}
 
     <div class="lp-cm-actions">
       <span class="cm-like"
