@@ -39,6 +39,9 @@ const expText = document.getElementById("expText");
 const expFill = document.getElementById("expFill");
 const vipBadgeBox = document.getElementById("vipBadgeBox");
 
+
+let __coverUploading = false;
+
 const defaultProfile = {
   name: "User",
   avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
@@ -604,40 +607,95 @@ document.querySelectorAll("#passModal input").forEach(inp=>{
 
 
 
-// ===== COVER IMAGE =====
-const coverInput   = document.getElementById("coverInput");
+// ===== COVER CHANGE =====
 const coverPreview = document.getElementById("coverPreview");
+const coverInput   = document.getElementById("coverInput");
 const btnChangeCover = document.getElementById("btnChangeCover");
 
-btnChangeCover.onclick = () => coverInput.click();
+if (btnChangeCover && coverInput) {
+  btnChangeCover.onclick = () => coverInput.click();
+}
 
-coverInput.onchange = async () => {
-  const file = coverInput.files[0];
-  if (!file) return;
+if (coverInput) {
+  coverInput.onchange = async () => {
+    if (__coverUploading) return;
+    __coverUploading = true;
 
-  const fd = new FormData();
-  fd.append("cover", file);
+    try {
+      const file = coverInput.files[0];
+      if (!file) return;
 
-  const res = await fetch("/api/upload-cover", {
-    method: "POST",
-    body: fd
+      const fd = new FormData();
+
+      const resized = await resizeCoverImage(file);
+      fd.append("cover", resized, "cover.jpg");
+
+      const res = await fetch("/api/upload-cover", {
+        method: "POST",
+        body: fd
+      });
+
+      const data = await res.json();
+      if (!data.url) {
+        showMsg("❌ Upload ảnh bìa thất bại");
+        return;
+      }
+
+      const coverUrl = data.url;
+
+      // ✅ update UI
+      coverPreview.src = coverUrl;
+
+      // ✅ lưu local
+      const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
+      p.cover = coverUrl;
+      localStorage.setItem(KEY, JSON.stringify(p));
+
+      // ✅ sync realtime (DELAY cho mobile)
+      if (__profileAuth.uid) {
+        setTimeout(() => {
+          socket.emit("profile-update", { cover: coverUrl });
+        }, 300);
+      }
+
+      showMsg("✅ Đã cập nhật ảnh bìa");
+    } catch (e) {
+      console.error("Cover upload failed", e);
+      showMsg("❌ Lỗi xử lý ảnh bìa");
+    } finally {
+      __coverUploading = false;
+    }
+  };
+}
+
+
+
+
+async function resizeCoverImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = e => img.src = e.target.result;
+
+    img.onload = () => {
+      const maxW = 1280;
+      const scale = Math.min(1, maxW / img.width);
+
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width * scale;
+      canvas.height = img.height * scale;
+
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob(
+        blob => blob ? resolve(blob) : reject(),
+        "image/jpeg",
+        0.85
+      );
+    };
+
+    reader.readAsDataURL(file);
   });
-
-  const data = await res.json();
-  if (!data.url) {
-    showMsg("❌ Upload cover thất bại");
-    return;
-  }
-
-  coverPreview.src = data.url;
-
-  // lưu local
-  const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
-  p.cover = data.url;
-  localStorage.setItem(KEY, JSON.stringify(p));
-
-  // sync realtime
-  if (__profileAuth.uid) {
-    socket.emit("profile-update", { cover: data.url });
-  }
-};
+}
