@@ -9498,3 +9498,33 @@ body.page-profile{
   transform: scale(0.97);
   box-shadow: 0 4px 14px rgba(0, 140, 255, 0.25);
 }
+
+
+/* 🔢 Badge số bạn bè */
+.friend-badge{
+  position: absolute;
+  top: -6px;
+  right: -6px;
+
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #ff3b3b;
+  color: #fff;
+
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 999px;
+
+  box-shadow: 0 4px 12px rgba(255,0,0,.45);
+}
+
+/* để badge không bị trôi */
+.btn-profile-friends{
+  position: relative;
+}

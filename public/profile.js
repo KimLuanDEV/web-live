@@ -310,7 +310,7 @@ if(uid){
 
 
 loadProfile();
-
+loadFriendCount();
 
 const avatarInput = document.getElementById("avatarInput");
 const btnChangeAvatar = document.getElementById("btnChangeAvatar");
@@ -728,3 +728,34 @@ async function resizeCoverImage(file) {
     reader.readAsDataURL(file);
   });
 }
+
+
+
+async function loadFriendCount(){
+  const uid = __profileAuth.uid;
+  if(!uid) return;
+
+  try{
+    const res = await fetch("/api/friends/" + uid);
+    const data = await res.json();
+
+    const count = (data.friends || []).length;
+    const badge = document.getElementById("friendCount");
+
+    if(!badge) return;
+
+    if(count > 0){
+      badge.textContent = count;
+      badge.hidden = false;
+    }else{
+      badge.hidden = true;
+    }
+  }catch(e){
+    console.warn("loadFriendCount failed", e);
+  }
+}
+
+
+socket.on("friend-updated", ()=>{
+  loadFriendCount();
+});
