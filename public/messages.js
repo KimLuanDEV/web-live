@@ -669,3 +669,11 @@ document.getElementById("videoInput").onchange = async e => {
     media: url
   });
 };
+
+
+const msgInput = document.getElementById("msgInput");
+const sendBtn = document.getElementById("sendBtn");
+
+msgInput.addEventListener("input", () => {
+  sendBtn.style.opacity = msgInput.value.trim() ? "1" : "0.4";
+});

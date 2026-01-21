@@ -9822,3 +9822,31 @@ body.page-profile{
 }
 
 
+
+.send-arrow{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+
+  background: linear-gradient(135deg, #00e5ff, #2979ff);
+  color: #fff;
+
+  font-size: 16px;
+  font-weight: bold;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  flex-shrink: 0;
+
+  box-shadow: 0 0 10px rgba(0,229,255,.6);
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+
+.send-arrow:active{
+  transform: scale(0.92);
+  box-shadow: 0 0 6px rgba(0,229,255,.4);
+}
