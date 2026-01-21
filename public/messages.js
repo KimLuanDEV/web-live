@@ -1137,11 +1137,22 @@ async function startVoiceCall(toUid) {
     // 1️⃣ Lấy mic
     voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-    // 2️⃣ Lấy ICE server (Twilio TURN)
-    const ice = await fetch("/ice").then(r => r.json());
+   const iceData = await fetch("/ice").then(r => r.json());
 
-    // 3️⃣ Tạo PeerConnection
-    voicePC = new RTCPeerConnection(ice);
+voicePC = new RTCPeerConnection({
+  iceServers: iceData.iceServers,
+  iceTransportPolicy: "relay"   // 🔥 ÉP TURN
+});
+
+
+voicePC.oniceconnectionstatechange = () => {
+  console.log("🎧 ICE:", voicePC.iceConnectionState);
+};
+
+voicePC.onconnectionstatechange = () => {
+  console.log("🎧 PC:", voicePC.connectionState);
+};
+
 
     // 4️⃣ Add mic track
     voiceStream.getTracks().forEach(t => {
