@@ -139,17 +139,30 @@ socket.on("offline-messages", (list)=>{
 
     const arr = JSON.parse(localStorage.getItem(key) || "[]");
 
-    if(!arr.find(x => x.id === m.id)){
-      arr.push({
-        id: m.id,
-        from: m.from,
-        to: m.to,
-        text: m.text,
-        time: m.time,
-        peer
-      });
-      localStorage.setItem(key, JSON.stringify(arr));
-    }
+const exist = arr.find(x => x.id === m.id);
+
+if (!exist) {
+  // 👉 chưa có → thêm mới
+  arr.push({
+    id: m.id,
+    from: m.from,
+    to: m.to,
+    text: m.text,
+    time: m.time,
+    peer,
+    revoked: m.text === "__REVOKED__"
+  });
+} else {
+  // 🔥 ĐÃ CÓ → SYNC TRẠNG THÁI THU HỒI
+  if (m.text === "__REVOKED__" && exist.text !== "__REVOKED__") {
+    exist.text = "__REVOKED__";
+    exist.revoked = true;
+  }
+}
+
+localStorage.setItem(key, JSON.stringify(arr));
+
+    
   });
 
   if(list.length){
