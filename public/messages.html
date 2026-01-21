@@ -138,8 +138,17 @@
 <!-- IMAGE ZOOM MODAL -->
 <div id="imgZoom" class="img-zoom hidden">
   <div class="img-zoom-backdrop"></div>
-  <img id="imgZoomView" src="">
+
+  <div class="img-zoom-inner">
+    <img id="imgZoomView" />
+
+    <div class="img-zoom-indicator" id="imgZoomIndicator"></div>
+
+    <button class="img-nav left" onclick="prevImg()">‹</button>
+    <button class="img-nav right" onclick="nextImg()">›</button>
+  </div>
 </div>
+
 
 
 

@@ -317,7 +317,6 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
 else if (text?.startsWith("/album ")) {
   const urls = text.slice(7).split("|");
   const total = urls.length;
-
   const showUrls = total > 4 ? urls.slice(0, 4) : urls;
 
   html = `
@@ -327,7 +326,8 @@ else if (text?.startsWith("/album ")) {
         const more = total - 3;
 
         return `
-          <div class="album-item" onclick="openImgZoom('${u}')">
+          <div class="album-item"
+               onclick='openAlbumZoom(${JSON.stringify(urls)}, ${i})'>
             <img src="${u}" class="album-img">
             ${isLast ? `<div class="album-more">+${more}</div>` : ""}
           </div>
@@ -336,6 +336,7 @@ else if (text?.startsWith("/album ")) {
     </div>
   `;
 }
+
 
 
   // 💬 TEXT → GIỮ BUBBLE
@@ -736,3 +737,77 @@ document.querySelector("#imgZoom .img-zoom-backdrop")
   .onclick = () => {
     document.getElementById("imgZoom").classList.add("hidden");
   };
+
+
+
+
+  let zoomImages = [];
+let zoomIndex = 0;
+
+// mở viewer với danh sách ảnh
+function openAlbumZoom(urls, index = 0) {
+  zoomImages = urls;
+  zoomIndex = index;
+
+  const modal = document.getElementById("imgZoom");
+  modal.classList.remove("hidden");
+
+  renderZoomImage();
+}
+
+// render ảnh + indicator
+function renderZoomImage() {
+  const img = document.getElementById("imgZoomView");
+  const ind = document.getElementById("imgZoomIndicator");
+
+  img.src = zoomImages[zoomIndex];
+  ind.textContent = `${zoomIndex + 1} / ${zoomImages.length}`;
+}
+
+// điều hướng
+function nextImg() {
+  if (zoomIndex < zoomImages.length - 1) {
+    zoomIndex++;
+    renderZoomImage();
+  }
+}
+
+function prevImg() {
+  if (zoomIndex > 0) {
+    zoomIndex--;
+    renderZoomImage();
+  }
+}
+
+// đóng modal
+document.querySelector(".img-zoom-backdrop").onclick = () => {
+  document.getElementById("imgZoom").classList.add("hidden");
+};
+
+// phím ← →
+window.addEventListener("keydown", e => {
+  const modal = document.getElementById("imgZoom");
+  if (modal.classList.contains("hidden")) return;
+
+  if (e.key === "ArrowRight") nextImg();
+  if (e.key === "ArrowLeft") prevImg();
+  if (e.key === "Escape")
+    modal.classList.add("hidden");
+});
+
+// 👉 SWIPE MOBILE
+let touchStartX = 0;
+
+document
+  .getElementById("imgZoomView")
+  .addEventListener("touchstart", e => {
+    touchStartX = e.touches[0].clientX;
+  });
+
+document
+  .getElementById("imgZoomView")
+  .addEventListener("touchend", e => {
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    if (dx > 50) prevImg();
+    if (dx < -50) nextImg();
+  });

@@ -10123,3 +10123,62 @@ body.page-profile{
   justify-content: center;
   backdrop-filter: blur(2px);
 }
+
+
+
+.img-zoom {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.95);
+  z-index: 9999;
+}
+
+.img-zoom.hidden {
+  display: none;
+}
+
+.img-zoom-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+.img-zoom-inner {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#imgZoomView {
+  max-width: 92vw;
+  max-height: 85vh;
+  object-fit: contain;
+}
+
+.img-zoom-indicator {
+  position: absolute;
+  bottom: 20px;
+  color: #fff;
+  font-size: 14px;
+  opacity: .8;
+}
+
+.img-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(0,0,0,.4);
+  color: #fff;
+  font-size: 40px;
+  border: none;
+  padding: 0 12px;
+  cursor: pointer;
+}
+
+.img-nav.left { left: 10px; }
+.img-nav.right { right: 10px; }
+
+@media (hover: none) {
+  .img-nav { display: none; }
+}
