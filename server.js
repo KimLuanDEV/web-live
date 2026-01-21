@@ -801,6 +801,39 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+socket.on("call-offer", ({ to, offer })=>{
+  const sockets = activeUsers.get(to);
+  if(!sockets) return;
+
+  for(const sid of sockets){
+    io.to(sid).emit("call-offer", {
+      from: socket.data.uid,
+      offer
+    });
+  }
+});
+
+socket.on("call-answer", ({ to, answer })=>{
+  const sockets = activeUsers.get(to);
+  if(!sockets) return;
+
+  for(const sid of sockets){
+    io.to(sid).emit("call-answer", { answer });
+  }
+});
+
+socket.on("call-end", ({ to })=>{
+  const sockets = activeUsers.get(to);
+  if(!sockets) return;
+
+  for(const sid of sockets){
+    io.to(sid).emit("call-end");
+  }
+});
+
+
+
+
 
   // 🚫 THU HỒI TIN NHẮN
 socket.on("revoke-message", ({ msgId }) => {

@@ -10288,3 +10288,66 @@ body.page-profile{
 }
 
 
+
+.chat-call-btn{
+  margin-left:auto;
+  margin-right:6px;
+  font-size:18px;
+  background:none;
+  border:none;
+  color:#0f0;
+  cursor:pointer;
+}
+
+.call-card{
+  width:280px;
+  background:#111;
+  border-radius:18px;
+  padding:20px;
+  color:#fff;
+  text-align:center;
+}
+
+.call-avatar{
+  width:72px;
+  height:72px;
+  border-radius:50%;
+  object-fit:cover;
+  margin-bottom:10px;
+}
+
+.call-name{
+  font-weight:600;
+  font-size:16px;
+}
+
+.call-status{
+  font-size:13px;
+  opacity:.7;
+  margin-top:4px;
+}
+
+.call-actions{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  margin-top:20px;
+}
+
+.call-btn{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  border:none;
+  font-size:22px;
+}
+
+.call-btn.end{
+  background:#e53935;
+  color:#fff;
+}
+
+.call-btn.mute{
+  background:#333;
+  color:#fff;
+}

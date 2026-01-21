@@ -14,6 +14,11 @@ let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
 
+let localStream = null;
+let peerConn = null;
+let isMuted = false;
+
+
 // 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
 const renderedMsgIds = new Set();
 
@@ -1051,4 +1056,93 @@ socket.on("revoke-message", ({ msgId }) => {
         localStorage.setItem(key, JSON.stringify(arr));
       }
     });
+});
+
+
+async function openCallModal(){
+  if(!currentTarget) return;
+
+  document.getElementById("callModal").classList.remove("hidden");
+  document.getElementById("callAvatar").src = currentTarget.avatar;
+  document.getElementById("callName").textContent = currentTarget.name;
+  document.getElementById("callStatus").textContent = "Đang gọi…";
+
+  // lấy mic
+  localStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+  startAudioCall();
+}
+
+
+async function startAudioCall(){
+  peerConn = new RTCPeerConnection();
+
+  localStream.getTracks().forEach(t=>{
+    peerConn.addTrack(t, localStream);
+  });
+
+  peerConn.ontrack = e=>{
+    document.getElementById("callAudio").srcObject = e.streams[0];
+    document.getElementById("callStatus").textContent = "Đã kết nối";
+  };
+
+  const offer = await peerConn.createOffer();
+  await peerConn.setLocalDescription(offer);
+
+  socket.emit("call-offer", {
+    to: currentTarget.uid,
+    offer
+  });
+}
+
+
+function toggleMute(){
+  if(!localStream) return;
+  isMuted = !isMuted;
+  localStream.getAudioTracks().forEach(t=>t.enabled = !isMuted);
+}
+
+function endCall(){
+  document.getElementById("callModal").classList.add("hidden");
+
+  if(peerConn){
+    peerConn.close();
+    peerConn = null;
+  }
+
+  if(localStream){
+    localStream.getTracks().forEach(t=>t.stop());
+    localStream = null;
+  }
+
+  socket.emit("call-end", { to: currentTarget?.uid });
+}
+
+
+socket.on("call-offer", async ({ from, offer })=>{
+  const u = allUsers.find(x=>x.uid===from);
+  if(!u) return;
+
+  currentTarget = u;
+  currentTargetUID = u.uid;
+
+  openCallModal();
+
+  peerConn = new RTCPeerConnection();
+  localStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+  localStream.getTracks().forEach(t=>{
+    peerConn.addTrack(t, localStream);
+  });
+
+  peerConn.ontrack = e=>{
+    callAudio.srcObject = e.streams[0];
+    callStatus.textContent = "Đã kết nối";
+  };
+
+  await peerConn.setRemoteDescription(offer);
+  const answer = await peerConn.createAnswer();
+  await peerConn.setLocalDescription(answer);
+
+  socket.emit("call-answer", { to: from, answer });
 });
