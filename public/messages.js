@@ -191,6 +191,7 @@ document.getElementById("sendBtn").onclick = () => {
   pushMsg("Bạn", txt, true, msgId, "⏳");
 
 saveChat({
+  id: msgId,  
   from: auth.uid,
   to: currentTargetUID,
   text: txt,
