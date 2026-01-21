@@ -7062,7 +7062,7 @@ body.is-guest .reactions-layer{
   word-break: break-word;
 }
 
-.chat-line.me{ justify-content:flex-end; }
+.chat-line.me{ justify-content:center }
 .msg-bubble.me{
   background: linear-gradient(135deg,#ff3b6b,#ff7aa5);
   color:#fff;
