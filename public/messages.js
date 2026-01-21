@@ -278,7 +278,7 @@ socket.on("msg-status", ({ msgId, status }) => {
   if(status === "seen") el.textContent = "👁";
 });
 
-
+ 
 
 
 function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
@@ -315,11 +315,7 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
 
   // 💬 TEXT → GIỮ BUBBLE
   else {
-    html = `
-      <div class="msg-bubble ${isMe ? "me" : "other"}">
-        ${text}
-      </div>
-    `;
+    content = text;
   }
 
   div.innerHTML = `
