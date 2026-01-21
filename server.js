@@ -800,46 +800,6 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
-socket.on("voice-offer", ({ to, offer }) => {
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("voice-offer", {
-      from: socket.data.profile,
-      offer
-    });
-  }
-});
-
-socket.on("voice-answer", ({ to, answer }) => {
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("voice-answer", { answer });
-  }
-});
-
-socket.on("voice-ice", ({ to, candidate }) => {
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("voice-ice", { candidate });
-  }
-});
-
-socket.on("voice-end", ({ to }) => {
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("voice-end");
-  }
-});
-
-
 
 
   // 🚫 THU HỒI TIN NHẮN
