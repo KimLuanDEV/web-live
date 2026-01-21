@@ -289,19 +289,28 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
-  let content = "";
+  
+let content = "";
 
-  if (text?.startsWith("/img ")) {
-    content = `<img src="${text.slice(5)}" class="chat-img">`;
-  } else if (text?.startsWith("/video ")) {
-    content = `
-      <video src="${text.slice(7)}"
-             controls
-             playsinline
-             class="chat-video"></video>`;
-  } else {
-    content = text;
-  }
+if (text?.startsWith("/img ")) {
+  content = `
+    <div class="chat-img-wrap">
+      <img src="${text.slice(5)}" class="chat-img">
+    </div>
+  `;
+} 
+else if (text?.startsWith("/video ")) {
+  content = `
+    <video src="${text.slice(7)}"
+           controls
+           playsinline
+           class="chat-video"></video>
+  `;
+} 
+else {
+  content = text;
+}
+
 
   div.innerHTML = `
     <div class="msg-bubble ${isMe ? "me":"other"}">${content}</div>
