@@ -10032,3 +10032,43 @@ body.page-profile{
 
 
 
+
+.chat-album {
+  display: grid;
+  gap: 4px;
+  max-width: 70%;
+}
+
+.chat-album.me {
+  margin-left: auto;
+}
+
+.chat-album.other {
+  margin-right: auto;
+}
+
+/* layout theo số ảnh */
+.chat-album img {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+/* 2 ảnh */
+.chat-album img:nth-child(1):nth-last-child(2),
+.chat-album img:nth-child(2):nth-last-child(1) {
+  grid-column: span 1;
+}
+
+/* từ 2 ảnh trở lên */
+.chat-album {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* 3+ ảnh thì ảnh đầu to hơn */
+.chat-album img:first-child:nth-last-child(n+3) {
+  grid-column: span 2;
+  aspect-ratio: 2/1;
+}

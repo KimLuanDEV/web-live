@@ -313,6 +313,24 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
     `;
   }
 
+  // 🖼️ ALBUM
+else if (text?.startsWith("/album ")) {
+  const urls = text.slice(7).split("|");
+
+  html = `
+    <div class="chat-album ${isMe ? "me" : "other"}">
+      ${urls.map((u, i) => `
+        <img
+          src="${u}"
+          class="album-img"
+          onclick="openImgZoom('${u}')"
+        >
+      `).join("")}
+    </div>
+  `;
+}
+
+
   // 💬 TEXT → GIỮ BUBBLE
   else {
     html = `
@@ -615,41 +633,44 @@ document.getElementById("imgInput").onchange = async e => {
   const files = Array.from(e.target.files);
   if (!files.length || !currentTarget) return;
 
+  const urls = [];
+
+  // 1️⃣ upload lần lượt
   for (const file of files) {
-    const msgId =
-      Date.now() + "_" + Math.random().toString(36).slice(2);
-
-    // 1️⃣ upload từng ảnh
     const { url } = await uploadChatFile(file, "image");
-
-    const text = "/img " + url;
-
-    // 2️⃣ hiển thị ngay bên người gửi
-    pushMsg("Bạn", text, true, msgId, "✓");
-
-    // 3️⃣ lưu local
-    saveChat({
-      id: msgId,
-      from: auth.uid,
-      to: currentTarget.uid,
-      text,
-      time: Date.now(),
-      peer: currentTarget.uid,
-      seen: true
-    });
-
-    // 4️⃣ gửi socket
-    socket.emit("private-message", {
-      to: currentTarget.uid,
-      msgId,
-      type: "image",
-      media: url
-    });
+    urls.push(url);
   }
 
-  // 🔥 reset input để lần sau chọn lại cùng ảnh vẫn trigger
+  // 2️⃣ tạo album text
+  const text = "/album " + urls.join("|");
+  const msgId =
+    Date.now() + "_" + Math.random().toString(36).slice(2);
+
+  // 3️⃣ hiển thị ngay
+  pushMsg("Bạn", text, true, msgId, "✓");
+
+  // 4️⃣ lưu local
+  saveChat({
+    id: msgId,
+    from: auth.uid,
+    to: currentTarget.uid,
+    text,
+    time: Date.now(),
+    peer: currentTarget.uid,
+    seen: true
+  });
+
+  // 5️⃣ gửi socket
+  socket.emit("private-message", {
+    to: currentTarget.uid,
+    msgId,
+    type: "album",
+    media: urls
+  });
+
   e.target.value = "";
 };
+
 
 
 
@@ -697,3 +718,14 @@ msgInput.addEventListener("input", () => {
 });
 
 
+function openImgZoom(url) {
+  const modal = document.getElementById("imgZoom");
+  const img = document.getElementById("imgZoomView");
+  img.src = url;
+  modal.classList.remove("hidden");
+}
+
+document.querySelector("#imgZoom .img-zoom-backdrop")
+  .onclick = () => {
+    document.getElementById("imgZoom").classList.add("hidden");
+  };
