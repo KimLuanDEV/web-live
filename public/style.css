@@ -9974,3 +9974,26 @@ body.page-profile{
 .tick-chat{
   transform: translateY(-1px); /* tinh chỉnh nhẹ */
 }
+
+
+/* ===== CHAT TEXTAREA AUTO LINE ===== */
+#msgInput{
+  flex: 1;
+  min-width: 0;
+
+  resize: none;              /* ❌ không cho kéo tay */
+  overflow-y: hidden;        /* 🔥 auto grow */
+  max-height: 120px;         /* 🔥 giới hạn (4–5 dòng) */
+
+  padding: 8px 12px;
+  border-radius: 16px;
+  border: none;
+
+  font-size: 13px;
+  line-height: 1.4;
+
+  background: rgba(255,255,255,.12);
+  color: #fff;
+
+  outline: none;
+}
