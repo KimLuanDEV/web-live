@@ -289,30 +289,41 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
-let content = "";
+  let html = "";
 
-if (text?.startsWith("/img ")) {
-  content = `
-    <div class="chat-img-wrap">
-      <img src="${text.slice(5)}" class="chat-img">
-    </div>
-  `;
-} 
-else if (text?.startsWith("/video ")) {
-  content = `
-    <video src="${text.slice(7)}"
-           controls
-           playsinline
-           class="chat-video"></video>
-  `;
-} 
-else {
-  content = text;
-}
+  // 🖼️ IMAGE → KHÔNG BUBBLE
+  if (text?.startsWith("/img ")) {
+    const url = text.slice(5);
 
+    html = `
+      <div class="chat-media ${isMe ? "me" : "other"}">
+        <img src="${url}" class="chat-img">
+      </div>
+    `;
+  }
+
+  // 🎥 VIDEO → KHÔNG BUBBLE
+  else if (text?.startsWith("/video ")) {
+    const url = text.slice(7);
+
+    html = `
+      <div class="chat-media ${isMe ? "me" : "other"}">
+        <video src="${url}" controls playsinline class="chat-video"></video>
+      </div>
+    `;
+  }
+
+  // 💬 TEXT → GIỮ BUBBLE
+  else {
+    html = `
+      <div class="msg-bubble ${isMe ? "me" : "other"}">
+        ${text}
+      </div>
+    `;
+  }
 
   div.innerHTML = `
-    <div class="msg-bubble ${isMe ? "me":"other"}">${content}</div>
+    ${html}
     <div class="chat-time">
       ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
@@ -322,6 +333,7 @@ else {
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
+
 
 
 
