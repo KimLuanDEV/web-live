@@ -7,6 +7,9 @@ const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
 
 
+let pc = null;
+let localStream = null;
+let callingUid = null;
 
 
 let currentTargetUID = null;
@@ -20,6 +23,142 @@ const renderedMsgIds = new Set();
 
 // 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
 let offlineHandled = false;
+
+
+async function getIceServers() {
+  const res = await fetch("/ice");
+  const data = await res.json();
+  return data.iceServers || [];
+}
+
+
+document.getElementById("btnVoiceCall").onclick = async () => {
+  if (!currentTargetUID) return;
+
+  callingUid = currentTargetUID;
+
+  const iceServers = await getIceServers();
+
+  pc = new RTCPeerConnection({ iceServers });
+
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+  pc.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("voice-ice", {
+        to: callingUid,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  pc.ontrack = e => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    audio.playsInline = true;
+  };
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+
+  socket.emit("voice-offer", {
+    to: callingUid,
+    offer
+  });
+
+  openVoiceModal("Đang gọi...");
+};
+
+
+socket.on("voice-offer", async ({ from, offer }) => {
+  callingUid = from.uid;
+
+  const accept = confirm(`📞 ${from.name} đang gọi bạn`);
+  if (!accept) {
+    socket.emit("voice-reject", { to: from.uid });
+    return;
+  }
+
+  const iceServers = await getIceServers();
+  pc = new RTCPeerConnection({ iceServers });
+
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+  pc.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("voice-ice", {
+        to: callingUid,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  pc.ontrack = e => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+  };
+
+  await pc.setRemoteDescription(offer);
+
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+
+  socket.emit("voice-answer", {
+    to: callingUid,
+    answer
+  });
+
+  openVoiceModal("Đang nói chuyện");
+});
+
+
+socket.on("voice-answer", async ({ answer }) => {
+  if (pc) {
+    await pc.setRemoteDescription(answer);
+    openVoiceModal("Đang nói chuyện");
+  }
+});
+
+socket.on("voice-ice", async ({ candidate }) => {
+  if (pc && candidate) {
+    await pc.addIceCandidate(candidate);
+  }
+});
+
+
+function endVoiceCall() {
+  if (pc) {
+    pc.close();
+    pc = null;
+  }
+  if (localStream) {
+    localStream.getTracks().forEach(t => t.stop());
+    localStream = null;
+  }
+  closeVoiceModal();
+}
+
+document.getElementById("vcEnd").onclick = () => {
+  socket.emit("voice-end", { to: callingUid });
+  endVoiceCall();
+};
+
+
+
+function openVoiceModal(text) {
+  document.getElementById("vcName").textContent = text;
+  document.getElementById("voiceCallModal").classList.remove("hidden");
+}
+
+function closeVoiceModal() {
+  document.getElementById("voiceCallModal").classList.add("hidden");
+}
+
 
 
 async function loadAllUsers(){
