@@ -5,10 +5,7 @@ const sysModal = document.getElementById("sysModal");
 const sysText = document.getElementById("sysText");
 const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
-const chatPreview = document.getElementById("chatPreview");
-const previewImg = document.getElementById("previewImg");
-const previewVideo = document.getElementById("previewVideo");
-const previewClose = chatPreview.querySelector(".preview-close");
+
 
 
 
@@ -16,8 +13,6 @@ let currentTargetUID = null;
 let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
-let pendingFile = null;
-let pendingType = null;
 
 // 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
 const renderedMsgIds = new Set();
@@ -180,69 +175,35 @@ socket.on("active-users", ({ online }) => {
 });
 
 
-document.getElementById("sendBtn").onclick = async () => {
-  if (!currentTarget) return;
+document.getElementById("sendBtn").onclick = () => {
+  const input = document.getElementById("msgInput");
+  const txt = input.value.trim();
+  if(!txt || !currentTarget) return;
 
   const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-  // 🖼️ / 🎥 GỬI MEDIA (SAU KHI PREVIEW)
-  if (pendingFile && pendingType) {
-    const { url } = await uploadChatFile(pendingFile, pendingType);
-
-    const text =
-      pendingType === "image"
-        ? "/img " + url
-        : "/video " + url;
-
-    pushMsg("Bạn", text, true, msgId, "✓");
-
-    saveChat({
-      id: msgId,
-      from: auth.uid,
-      to: currentTarget.uid,
-      text,
-      time: Date.now(),
-      peer: currentTarget.uid,
-      seen: true
-    });
-
-    socket.emit("private-message", {
-      to: currentTarget.uid,
-      msgId,
-      type: pendingType,
-      media: url
-    });
-
-    // reset preview
-    previewClose.onclick();
-    return;
-  }
-
-  // 💬 GỬI TEXT
-  const input = document.getElementById("msgInput");
-  const txt = input.value.trim();
-  if (!txt) return;
-
-  socket.emit("private-message", {
-    to: currentTarget.uid,
-    text: txt,
-    msgId
-  });
+ socket.emit("private-message", {
+  to: currentTarget.uid,   // 🔥 GỬI THEO UID
+  text: txt,
+  msgId
+});
 
   pushMsg("Bạn", txt, true, msgId, "⏳");
 
-  saveChat({
-    from: auth.uid,
-    to: currentTarget.uid,
-    text: txt,
-    time: Date.now(),
-    peer: currentTarget.uid,
-    seen: true
-  });
+saveChat({
+  from: auth.uid,
+  to: currentTargetUID,
+  text: txt,
+  time: Date.now(),
+  peer: currentTargetUID,   // 🔥 QUAN TRỌNG
+  seen: true
+});
 
+ // ✅ XÓA INPUT NGAY LẬP TỨC (QUAN TRỌNG)
   input.value = "";
+  input.blur();
+  setTimeout(()=>input.focus(),20);
 };
-
 
 
 socket.on("private-message", ({ from, text, msgId }) => {
@@ -650,44 +611,75 @@ async function uploadChatFile(file, type) {
 }
 
 
-document.getElementById("imgInput").onchange = e => {
-  const file = e.target.files[0];
-  if (!file) return;
+document.getElementById("imgInput").onchange = async e => {
+  const files = Array.from(e.target.files);
+  if (!files.length || !currentTarget) return;
 
-  pendingFile = file;
-  pendingType = "image";
+  for (const file of files) {
+    const msgId =
+      Date.now() + "_" + Math.random().toString(36).slice(2);
 
-  previewVideo.style.display = "none";
-  previewImg.style.display = "block";
-  previewImg.src = URL.createObjectURL(file);
+    // 1️⃣ upload từng ảnh
+    const { url } = await uploadChatFile(file, "image");
 
-  chatPreview.classList.remove("hidden");
+    const text = "/img " + url;
+
+    // 2️⃣ hiển thị ngay bên người gửi
+    pushMsg("Bạn", text, true, msgId, "✓");
+
+    // 3️⃣ lưu local
+    saveChat({
+      id: msgId,
+      from: auth.uid,
+      to: currentTarget.uid,
+      text,
+      time: Date.now(),
+      peer: currentTarget.uid,
+      seen: true
+    });
+
+    // 4️⃣ gửi socket
+    socket.emit("private-message", {
+      to: currentTarget.uid,
+      msgId,
+      type: "image",
+      media: url
+    });
+  }
+
+  // 🔥 reset input để lần sau chọn lại cùng ảnh vẫn trigger
+  e.target.value = "";
 };
 
 
 
-
-document.getElementById("videoInput").onchange = e => {
+document.getElementById("videoInput").onchange = async e => {
   const file = e.target.files[0];
-  if (!file) return;
+  if (!file || !currentTarget) return;
 
-  pendingFile = file;
-  pendingType = "video";
+  const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-  previewImg.style.display = "none";
-  previewVideo.style.display = "block";
-  previewVideo.src = URL.createObjectURL(file);
+  const { url } = await uploadChatFile(file, "video");
+  const text = "/video " + url;
 
-  chatPreview.classList.remove("hidden");
-};
+  pushMsg("Bạn", text, true, msgId, "✓");
 
-previewClose.onclick = () => {
-  pendingFile = null;
-  pendingType = null;
+  saveChat({
+    id: msgId,
+    from: auth.uid,
+    to: currentTarget.uid,
+    text,
+    time: Date.now(),
+    peer: currentTarget.uid,
+    seen: true
+  });
 
-  previewImg.src = "";
-  previewVideo.src = "";
-  chatPreview.classList.add("hidden");
+  socket.emit("private-message", {
+    to: currentTarget.uid,
+    msgId,
+    type: "video",
+    media: url
+  });
 };
 
 
@@ -705,24 +697,3 @@ msgInput.addEventListener("input", () => {
 });
 
 
-
-// ===== IMAGE ZOOM HANDLER =====
-const imgZoom = document.getElementById("imgZoom");
-const imgZoomView = document.getElementById("imgZoomView");
-
-// click vào ảnh trong chat → zoom
-document.addEventListener("click", e => {
-  const img = e.target.closest(".chat-img");
-  if (!img) return;
-
-  imgZoomView.src = img.src;
-  imgZoom.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-});
-
-// click nền đen → đóng
-imgZoom.addEventListener("click", () => {
-  imgZoom.classList.add("hidden");
-  imgZoomView.src = "";
-  document.body.style.overflow = "";
-});
