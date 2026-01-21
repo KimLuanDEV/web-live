@@ -460,6 +460,13 @@ else if (text?.startsWith("/album ")) {
 
   }
 
+  div.innerHTML = `
+    ${html}
+    <div class="chat-time">
+      ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
+      ${isMe ? `<span class="msg-status">${status}</span>` : ""}
+    </div>
+  `;
 
 
 
