@@ -9726,6 +9726,23 @@ body.page-profile{
   overflow: hidden;
 }
 
+
+.chat-img-wrap {
+  max-width: min(70vw, 320px);
+  max-height: 320px;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #000;
+}
+
+.chat-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;   /* đẹp như Messenger */
+}
+
+
+
 /* Mobile nhỏ hơn chút */
 @media (max-width: 480px) {
   .chat-img {
