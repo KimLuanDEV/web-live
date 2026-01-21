@@ -7044,27 +7044,35 @@ body.is-guest .reactions-layer{
 
 
 .msg-bubble{
-  /* KÍCH THƯỚC */
   max-width: 70%;
-  padding: 6px 10px;          /* 🔥 trên/dưới < trái/phải */
+
+  /* 🔥 ÔM CHỮ THẬT */
+  display: inline-block;
+  padding: 5px 9px;          /* top/bottom nhỏ hơn left/right */
   border-radius: 14px;
 
-  /* CHỮ */
   font-size: 14px;
-  line-height: 1.28;          /* 🔥 gọn, cân */
+  line-height: 1.15;         /* 🔥 QUAN TRỌNG */
   letter-spacing: .1px;
 
-  /* CĂN CHỮ */
-  text-align: left;           /* giống Messenger */
   white-space: pre-wrap;
   word-break: break-word;
+  text-align: left;
 
-  /* HIỂN THỊ */
-  display: inline-block;      /* 🔥 bubble co theo text */
-  
+  /* 🔥 FIX PADDING ẨN CỦA FONT */
+  font-feature-settings: "kern";
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,.18);
 }
+
+.bubble-text{
+  display: inline-block;
+  line-height: 1.15;
+}
+
 
 .msg-bubble{
   text-align: center;
