@@ -211,6 +211,26 @@ socket.on("offline-messages", (list) => {
 const userList = document.getElementById("userList");
 const chatBox = document.getElementById("chatBox");
 const chatTitle = document.getElementById("chatTitle");
+// 🔽 NÚT KÉO XUỐNG CUỐI CHAT
+const btnScrollBottom = document.getElementById("btnScrollBottom");
+
+// bấm nút → về cuối
+btnScrollBottom.onclick = () => {
+  scrollChatToBottom(true);
+  btnScrollBottom.classList.add("hidden");
+};
+
+// theo dõi scroll để hiện / ẩn nút
+chatBox.addEventListener("scroll", () => {
+  const nearBottom =
+    chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 80;
+
+  if (nearBottom) {
+    btnScrollBottom.classList.add("hidden");
+  } else {
+    btnScrollBottom.classList.remove("hidden");
+  }
+});
 
 
 socket.on("active-users", ({ online }) => {
@@ -352,8 +372,18 @@ if (text === "__REVOKED__") {
 
 
 
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
+const nearBottom =
+  chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 80;
+
+chatBox.appendChild(div);
+
+if (nearBottom) {
+  scrollChatToBottom(true);
+} else {
+  btnScrollBottom.classList.remove("hidden"); // 🔔 có tin mới
+}
+
+
   return;
 }
 
