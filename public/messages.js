@@ -278,7 +278,7 @@ socket.on("msg-status", ({ msgId, status }) => {
   if(status === "seen") el.textContent = "👁";
 });
 
- content = text;
+
 
 
 function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
@@ -289,41 +289,31 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
-  let html = "";
+let content = "";
 
-  // 🖼️ IMAGE → KHÔNG BUBBLE
-  if (text?.startsWith("/img ")) {
-    const url = text.slice(5);
-
-    html = `
-      <div class="chat-media ${isMe ? "me" : "other"}">
+if (text?.startsWith("/img ")) {
+  const url = text.slice(5);
+  content = `
+    <div class="chat-media ${isMe ? "me" : "other"}">
         <img src="${url}" class="chat-img">
       </div>
     `;
-  }
-
-  // 🎥 VIDEO → KHÔNG BUBBLE
-  else if (text?.startsWith("/video ")) {
-    const url = text.slice(7);
-
-    html = `
-      <div class="chat-media ${isMe ? "me" : "other"}">
+} 
+else if (text?.startsWith("/video ")) {
+   const url = text.slice(7);
+  content = `
+<div class="chat-media ${isMe ? "me" : "other"}">
         <video src="${url}" controls playsinline class="chat-video"></video>
       </div>
     `;
   }
+else {
+  content = text;
+}
 
-  // 💬 TEXT → GIỮ BUBBLE
-  else {
-    html = `
-      <div class="msg-bubble ${isMe ? "me" : "other"}">
-        ${text}
-      </div>
-    `;
-  }
 
   div.innerHTML = `
-    ${html}
+    <div class="msg-bubble ${isMe ? "me":"other"}">${content}</div>
     <div class="chat-time">
       ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
@@ -333,7 +323,6 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
-
 
 
 
