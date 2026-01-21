@@ -9881,7 +9881,7 @@ body.page-profile{
   display:inline-block;
   align-self:flex-start;
   max-width: 66%;          /* 🔥 hẹp lại – giống Messenger */
-  padding: 5px 9px;        /* 🔥 padding nhỏ hơn */
+  padding: 5px;        /* 🔥 padding nhỏ hơn */
   border-radius: 16px;     /* 🔥 bo mềm */
   font-size: 13px;
   line-height: 1.25;       /* 🔥 gọn dòng */
