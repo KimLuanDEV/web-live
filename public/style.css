@@ -7044,7 +7044,7 @@ body.is-guest .reactions-layer{
 
 
 .msg-bubble{
-  max-width: 70%;
+  
 
   /* 🔥 ÔM CHỮ THẬT */
   display: inline-block;
@@ -7072,10 +7072,11 @@ body.is-guest .reactions-layer{
 .bubble-text{
   display: inline-block;
   line-height: 1.15;
-  padding: 3px;
+  padding: 8px;
   border-radius: 14px;
   font-size: 14px;
   background: pink;
+  border: 1px solid rgba(255,255,255,.18);
 }
 
 
