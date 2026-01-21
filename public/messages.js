@@ -765,18 +765,20 @@ function renderZoomImage() {
 
 // điều hướng
 function nextImg() {
-  if (zoomIndex < zoomImages.length - 1) {
-    zoomIndex++;
-    renderZoomImage();
-  }
+  if (!zoomImages.length) return;
+
+  zoomIndex = (zoomIndex + 1) % zoomImages.length;
+  renderZoomImage();
 }
 
 function prevImg() {
-  if (zoomIndex > 0) {
-    zoomIndex--;
-    renderZoomImage();
-  }
+  if (!zoomImages.length) return;
+
+  zoomIndex =
+    (zoomIndex - 1 + zoomImages.length) % zoomImages.length;
+  renderZoomImage();
 }
+
 
 
 // phím ← →
