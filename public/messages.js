@@ -316,13 +316,29 @@ else {
 }
 
 
-  div.innerHTML = `
-    <div class="msg-bubble ${isMe ? "me":"other"}">${content}</div>
-    <div class="chat-time">
-      ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
-      ${isMe ? `<span class="msg-status">${status}</span>` : ""}
-    </div>
-  `;
+const isImage = text?.startsWith("/img ");
+const isVideo = text?.startsWith("/video ");
+
+div.innerHTML = `
+  ${isImage || isVideo
+    ? `
+      <div class="chat-media ${isMe ? "me" : "other"}">
+        ${content}
+      </div>
+    `
+    : `
+      <div class="msg-bubble ${isMe ? "me" : "other"}">
+        ${content}
+      </div>
+    `
+  }
+
+  <div class="chat-time">
+    ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
+    ${isMe ? `<span class="msg-status">${status}</span>` : ""}
+  </div>
+`;
+
 
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;

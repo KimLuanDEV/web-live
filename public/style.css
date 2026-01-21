@@ -9774,3 +9774,38 @@ body.page-profile{
     max-height: 300px;
   }
 }
+
+/* Media message (image / video) */
+.chat-media {
+  max-width: 72%;
+  margin: 4px 0;
+}
+
+/* Căn theo người gửi */
+.chat-media.me {
+  margin-left: auto;
+  text-align: right;
+}
+.chat-media.other {
+  margin-right: auto;
+  text-align: left;
+}
+
+/* Image */
+.chat-img {
+  max-width: 100%;
+  max-height: 420px;
+  border-radius: 14px;
+  object-fit: contain;
+  display: block;
+}
+
+/* Mobile */
+@media (max-width: 520px) {
+  .chat-media {
+    max-width: 85%;
+  }
+  .chat-img {
+    max-height: 300px;
+  }
+}
