@@ -10,6 +10,8 @@ const userList = document.getElementById("userList");
 const chatBox = document.getElementById("chatBox");
 const chatTitle = document.getElementById("chatTitle");
 const chatModal = document.getElementById("chatModal");
+const btnCall = document.getElementById("btnCall");
+const btnEndCall = document.getElementById("btnEndCall");
 
 
 
@@ -409,6 +411,10 @@ function countUnread(peer){
 }
 
 function closeChat(){
+  if(isCalling){
+    endCall(true);
+  }
+  
   document.body.style.overflow = ""; // mở lại
   chatModal.classList.add("hidden");
   currentTarget = null;
@@ -546,6 +552,9 @@ document.getElementById("btnCall").onclick = async () => {
 
   isCalling = true;
   btnCall.classList.add("calling");
+  btnCall.classList.add("hidden");
+  btnEndCall.classList.remove("hidden");
+
 
   localStream = await navigator.mediaDevices.getUserMedia({ audio:true });
 
@@ -648,5 +657,48 @@ socket.on("call-reject", ()=>{
   showModal("❌ Người kia từ chối cuộc gọi");
   endCall();
 });
+
+function endCall(sendSignal = true){
+  if(sendSignal && currentTargetUID){
+    socket.emit("call-end", { to: currentTargetUID });
+  }
+
+  isCalling = false;
+
+  btnCall.classList.remove("hidden");
+  btnCall.classList.remove("calling");
+  btnEndCall.classList.add("hidden");
+
+  if(callPC){
+    callPC.ontrack = null;
+    callPC.onicecandidate = null;
+    callPC.close();
+    callPC = null;
+  }
+
+  if(localStream){
+    localStream.getTracks().forEach(t=>t.stop());
+    localStream = null;
+  }
+
+  const audio = document.getElementById("remoteAudio");
+  if(audio){
+    audio.srcObject = null;
+  }
+
+  console.log("📴 Call ended");
+}
+
+socket.on("call-end", ()=>{
+  showModal("📴 Cuộc gọi đã kết thúc");
+  endCall(false);
+});
+
+btnEndCall.onclick = ()=>{
+  endCall(true);
+};
+
+
 //End call voice
+
 

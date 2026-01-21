@@ -1401,7 +1401,7 @@ socket.on("private-message", async ({ to, text, msgId }) => {
   if (!fromUid || !to || !text) return;
 
 
-
+//Call Voice
 socket.on("call-offer", ({ to, offer })=>{
   const targets = activeUsers.get(to);
   if(targets){
@@ -1439,8 +1439,15 @@ socket.on("call-reject", ({ to })=>{
   });
 });
 
-
-
+socket.on("call-end", ({ to })=>{
+  const targets = activeUsers.get(to);
+  if(targets){
+    targets.forEach(sid=>{
+      io.to(sid).emit("call-end");
+    });
+  }
+});
+// End Call Voice
 
 
 // 🔒 CHỈ CHO PHÉP NHẮN TIN VỚI BẠN BÈ

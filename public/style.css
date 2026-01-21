@@ -9723,3 +9723,13 @@ body.page-profile{
   background:#25F09A;
   box-shadow:0 0 16px rgba(37,240,154,.6);
 }
+
+
+.chat-call-btn.end{
+  background:#FF3B6B;
+  box-shadow:0 0 16px rgba(255,59,107,.6);
+}
+
+.chat-call-btn.hidden{
+  display:none;
+}
