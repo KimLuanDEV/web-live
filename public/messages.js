@@ -5,7 +5,11 @@ const sysModal = document.getElementById("sysModal");
 const sysText = document.getElementById("sysText");
 const sysOk = document.getElementById("sysOk");
 const sysCancel = document.getElementById("sysCancel");
-
+const renderedMsgIds = new Set();
+const userList = document.getElementById("userList");
+const chatBox = document.getElementById("chatBox");
+const chatTitle = document.getElementById("chatTitle");
+const chatModal = document.getElementById("chatModal");
 
 
 
@@ -13,13 +17,14 @@ let currentTargetUID = null;
 let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
-
-// 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
-const renderedMsgIds = new Set();
-
-
-// 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
+let callPC = null;
+let localStream = null;
+let isCalling = false;
 let offlineHandled = false;
+let baseHeight = window.innerHeight;
+
+
+
 
 
 async function loadAllUsers(){
@@ -162,9 +167,6 @@ socket.on("offline-messages", (list)=>{
 
 
 
-const userList = document.getElementById("userList");
-const chatBox = document.getElementById("chatBox");
-const chatTitle = document.getElementById("chatTitle");
 
 
 socket.on("active-users", ({ online }) => {
@@ -262,8 +264,6 @@ if (chatModal.classList.contains("hidden")) {
     uid: from.uid
   });
 }
-
-
 });
 
 
@@ -309,13 +309,6 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
     chatBox.scrollTop = chatBox.scrollHeight;
   });
 }
-
-
-
-
-
-const chatModal = document.getElementById("chatModal");
-
 
 function renderUserList(){
   userList.innerHTML = "";
@@ -383,7 +376,6 @@ if (currentTargetUID) {
 
 }
 
-
 function markPeerSeen(peer){
   const key =
     auth.uid < peer
@@ -416,16 +408,11 @@ function countUnread(peer){
   return arr.filter(m => !m.seen && m.from === peer).length;
 }
 
-
-
 function closeChat(){
   document.body.style.overflow = ""; // mở lại
   chatModal.classList.add("hidden");
   currentTarget = null;
 }
-
-
-let baseHeight = window.innerHeight;
 
 window.addEventListener("resize", () => {
   const h = window.innerHeight;
@@ -443,15 +430,9 @@ window.addEventListener("resize", () => {
   }
 });
 
-
-
-
-
-// 🔔 THÔNG BÁO CÓ TIN NHẮN MỚI Ở SẢNH MESSAGES
 socket.on("inbox-new", (data = {}) => {
   showInboxDot(data.count);
 });
-
 
 function showInboxDot(count){
   const dot = document.querySelector(".msg-title .dot");
@@ -473,8 +454,6 @@ function clearInboxDot(){
   dot.textContent = "";
 }
 
-
-// 🔔 TOAST TIN NHẮN (MESSAGES)
 function showMessageToast({ name, text, avatar, uid }) {
   // tránh spam nhiều toast cùng lúc
   if (document.querySelector(".msg-toast")) return;
@@ -529,7 +508,6 @@ function showMessageToast({ name, text, avatar, uid }) {
   setTimeout(() => div.remove(), 2500);
 }
 
-
 async function enablePush() {
   if (!("serviceWorker" in navigator)) return;
   if (!auth?.uid) return;
@@ -556,10 +534,119 @@ async function enablePush() {
   });
 }
 
-
 socket.on("msg-blocked", ({ reason }) => {
   if (reason === "not_friend") {
     alert("🔒 Bạn chỉ có thể nhắn tin với người đã kết bạn.");
   }
 });
+
+//Call voice
+document.getElementById("btnCall").onclick = async () => {
+  if(!currentTargetUID || isCalling) return;
+
+  isCalling = true;
+  btnCall.classList.add("calling");
+
+  localStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+  callPC = new RTCPeerConnection({
+    iceServers:[{ urls:"stun:stun.l.google.com:19302" }]
+  });
+
+  localStream.getTracks().forEach(t=>callPC.addTrack(t, localStream));
+
+  callPC.ontrack = e=>{
+    document.getElementById("remoteAudio").srcObject = e.streams[0];
+  };
+
+  callPC.onicecandidate = e=>{
+    if(e.candidate){
+      socket.emit("call-ice", {
+        to: currentTargetUID,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  const offer = await callPC.createOffer();
+  await callPC.setLocalDescription(offer);
+
+  socket.emit("call-offer", {
+    to: currentTargetUID,
+    offer
+  });
+};
+
+socket.on("call-offer", async ({ from, offer })=>{
+  const accept = await showModal(
+    "📞 " + from.name + " đang gọi cho bạn",
+    "Nghe",
+    "Từ chối"
+  );
+
+  if(!accept){
+    socket.emit("call-reject", { to: from.uid });
+    return;
+  }
+
+  localStream = await navigator.mediaDevices.getUserMedia({ audio:true });
+
+  callPC = new RTCPeerConnection({
+    iceServers:[{ urls:"stun:stun.l.google.com:19302" }]
+  });
+
+  localStream.getTracks().forEach(t=>callPC.addTrack(t, localStream));
+
+  callPC.ontrack = e=>{
+    document.getElementById("remoteAudio").srcObject = e.streams[0];
+  };
+
+  callPC.onicecandidate = e=>{
+    if(e.candidate){
+      socket.emit("call-ice", {
+        to: from.uid,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  await callPC.setRemoteDescription(offer);
+  const answer = await callPC.createAnswer();
+  await callPC.setLocalDescription(answer);
+
+  socket.emit("call-answer", {
+    to: from.uid,
+    answer
+  });
+});
+
+socket.on("call-answer", async ({ answer })=>{
+  if(callPC) await callPC.setRemoteDescription(answer);
+});
+
+socket.on("call-ice", async ({ candidate })=>{
+  if(callPC && candidate){
+    await callPC.addIceCandidate(candidate);
+  }
+});
+
+function endCall(){
+  isCalling = false;
+  btnCall.classList.remove("calling");
+
+  if(callPC){
+    callPC.close();
+    callPC = null;
+  }
+  if(localStream){
+    localStream.getTracks().forEach(t=>t.stop());
+    localStream = null;
+  }
+}
+
+socket.on("call-reject", ()=>{
+  showModal("❌ Người kia từ chối cuộc gọi");
+  endCall();
+});
+//End call voice
 

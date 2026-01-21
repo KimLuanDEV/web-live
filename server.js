@@ -1402,6 +1402,45 @@ socket.on("private-message", async ({ to, text, msgId }) => {
 
 
 
+socket.on("call-offer", ({ to, offer })=>{
+  const targets = activeUsers.get(to);
+  if(targets){
+    targets.forEach(sid=>{
+      io.to(sid).emit("call-offer", {
+        from:{
+          uid: socket.data.uid,
+          name: socket.data.profile?.name,
+          avatar: socket.data.profile?.avatar
+        },
+        offer
+      });
+    });
+  }
+});
+
+socket.on("call-answer", ({ to, answer })=>{
+  const targets = activeUsers.get(to);
+  targets?.forEach(sid=>{
+    io.to(sid).emit("call-answer", { answer });
+  });
+});
+
+socket.on("call-ice", ({ to, candidate })=>{
+  const targets = activeUsers.get(to);
+  targets?.forEach(sid=>{
+    io.to(sid).emit("call-ice", { candidate });
+  });
+});
+
+socket.on("call-reject", ({ to })=>{
+  const targets = activeUsers.get(to);
+  targets?.forEach(sid=>{
+    io.to(sid).emit("call-reject");
+  });
+});
+
+
+
 
 
 // 🔒 CHỈ CHO PHÉP NHẮN TIN VỚI BẠN BÈ
