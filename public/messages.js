@@ -661,12 +661,12 @@ document.getElementById("imgInput").onchange = async e => {
   });
 
   // 5️⃣ gửi socket
-  socket.emit("private-message", {
-    to: currentTarget.uid,
-    msgId,
-    type: "album",
-    media: urls
-  });
+ socket.emit("private-message", {
+  to: currentTarget.uid,
+  msgId,
+  text   // 🔥 GỬI TEXT "/album ..."
+});
+
 
   e.target.value = "";
 };
