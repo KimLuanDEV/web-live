@@ -49,12 +49,25 @@ function chatKey(){
 
 function saveChat(msg){
   const key = chatKey();
-  if(!key) return;
+  if(!key || !msg?.id) return;
 
   const arr = JSON.parse(localStorage.getItem(key) || "[]");
+
+  // 🔥 CHỐNG TRÙNG msgId
+  const exist = arr.find(m => m.id === msg.id);
+  if (exist) {
+    // nếu bản mới là revoke → ghi đè
+    if (msg.revoked || msg.text === "__REVOKED__") {
+      exist.text = "__REVOKED__";
+      exist.revoked = true;
+    }
+    return;
+  }
+
   arr.push(msg);
   localStorage.setItem(key, JSON.stringify(arr));
 }
+
 
 
 
