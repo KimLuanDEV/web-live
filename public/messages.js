@@ -683,9 +683,32 @@ const sendBtn = document.getElementById("sendBtn");
 
 // 🔥 AUTO GROW TEXTAREA
 msgInput.addEventListener("input", () => {
-  msgInput.style.height = "auto";
+  
   msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + "px";
 
   // giữ logic mờ / hiện nút gửi
   sendBtn.style.opacity = msgInput.value.trim() ? "1" : "0.4";
+});
+
+
+
+// ===== IMAGE ZOOM HANDLER =====
+const imgZoom = document.getElementById("imgZoom");
+const imgZoomView = document.getElementById("imgZoomView");
+
+// click vào ảnh trong chat → zoom
+document.addEventListener("click", e => {
+  const img = e.target.closest(".chat-img");
+  if (!img) return;
+
+  imgZoomView.src = img.src;
+  imgZoom.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+});
+
+// click nền đen → đóng
+imgZoom.addEventListener("click", () => {
+  imgZoom.classList.add("hidden");
+  imgZoomView.src = "";
+  document.body.style.overflow = "";
 });
