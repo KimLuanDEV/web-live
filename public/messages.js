@@ -14,98 +14,12 @@ let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
 
-let callPC = null;
-let localStream = null;
-let remoteAudio = null;
-let callingUID = null;
-
-
 // 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
 const renderedMsgIds = new Set();
 
 
 // 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
 let offlineHandled = false;
-
-
-
-// =======================
-// 📞 AUDIO CALL CORE
-// =======================
-
-async function startAudioCall(isCaller, offerData = null) {
-  const iceRes = await fetch("/ice");
-  const { iceServers } = await iceRes.json();
-
-  callPC = new RTCPeerConnection({ iceServers });
-
-  // 🎙️ lấy micro
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-  localStream.getTracks().forEach(track =>
-    callPC.addTrack(track, localStream)
-  );
-
-  // 🔊 audio từ người kia
-  remoteAudio = document.createElement("audio");
-  remoteAudio.autoplay = true;
-  remoteAudio.muted = false;
-  remoteAudio.volume = 1;
-
-document.body.appendChild(remoteAudio);
-
-
-  callPC.ontrack = e => {
-    remoteAudio.srcObject = e.streams[0];
-  };
-
-  // ❄️ ICE
-  callPC.onicecandidate = e => {
-    if (e.candidate && callingUID) {
-      socket.emit("call-ice", {
-        to: callingUID,
-        candidate: e.candidate
-      });
-    }
-  };
-
-  if (isCaller) {
-    const offer = await callPC.createOffer();
-    await callPC.setLocalDescription(offer);
-
-    socket.emit("call-offer", {
-      to: callingUID,
-      offer
-    });
-  } else {
-    await callPC.setRemoteDescription(offerData);
-
-    const answer = await callPC.createAnswer();
-    await callPC.setLocalDescription(answer);
-
-    socket.emit("call-answer", {
-      to: callingUID,
-      answer
-    });
-  }
-}
-
-function endCall() {
-  if (callPC) callPC.close();
-  callPC = null;
-
-  if (localStream) {
-    localStream.getTracks().forEach(t => t.stop());
-    localStream = null;
-  }
-
-  if (remoteAudio) {
-    remoteAudio.srcObject = null;
-    remoteAudio = null;
-  }
-}
-
-
 
 
 async function loadAllUsers(){
@@ -327,19 +241,6 @@ socket.on("active-users", ({ online }) => {
 });
 
 
-
-document.getElementById("btnCall").onclick = () => {
-  if (!currentTargetUID) return;
-
-  callingUID = currentTargetUID;
-
-  socket.emit("call-request", {
-    to: callingUID
-  });
-};
-
-
-
 document.getElementById("sendBtn").onclick = () => {
   const input = document.getElementById("msgInput");
   const txt = input.value.trim();
@@ -430,49 +331,6 @@ if (chatModal.classList.contains("hidden")) {
 }
 
 
-});
-
-
-
-socket.on("incoming-call", async ({ from, name }) => {
-  callingUID = from;
-
-  const ok = await showModal(
-    `${name} đang gọi cho bạn`,
-    "Nghe",
-    "Từ chối"
-  );
-
-  if (!ok) return;
-
-  // ✅ KHÔNG LÀM GÌ Ở ĐÂY
-  // chỉ chờ offer
-});
-
-
-
-// 📡 nhận offer
-socket.on("call-offer", async ({ from, offer }) => {
-  callingUID = from;
-
-  // ✅ CHỈ TẠO 1 LẦN
-  if (!callPC) {
-    await startAudioCall(false, offer);
-  }
-});
-
-// 📡 nhận answer
-socket.on("call-answer", async ({ answer }) => {
-  if (callPC) {
-    await callPC.setRemoteDescription(answer);
-  }
-});
-
-// ❄️ nhận ICE
-socket.on("call-ice", async candidate => {
-  if (callPC) {
-    await callPC.addIceCandidate(candidate);
-  }
 });
 
 
@@ -750,8 +608,6 @@ function closeChat(){
   document.body.style.overflow = ""; // mở lại
   chatModal.classList.add("hidden");
   currentTarget = null;
-
-  endCall(); // 📞 TẮT CUỘC GỌI
 }
 
 
@@ -1198,4 +1054,6 @@ socket.on("revoke-message", ({ msgId }) => {
 });
 
 
-
+document.getElementById("btnCallLobby")?.addEventListener("click", () => {
+  location.href = "/calls.html";
+});

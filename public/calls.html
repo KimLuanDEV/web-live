@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>📞 Sảnh gọi điện</title>
+
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body class="page-calls">
+<script src="/guard.js"></script>
+
+<div class="call-shell">
+
+  <!-- TOPBAR -->
+  <div class="call-topbar">
+    <button class="call-back" onclick="location.href='/messages.html'">‹</button>
+    <div class="call-title">📞 Sảnh gọi điện</div>
+  </div>
+
+  <!-- LIST -->
+  <div id="callList" class="call-list"></div>
+
+</div>
+
+<!-- GLOBAL MODAL -->
+<div id="sysModal" class="sys-modal hidden">
+  <div class="sys-box">
+    <div id="sysText" class="sys-text">...</div>
+    <div class="sys-actions">
+      <button id="sysCancel" class="sys-btn ghost">Huỷ</button>
+      <button id="sysOk" class="sys-btn primary">OK</button>
+    </div>
+  </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/calls.js"></script>
+</body>
+</html>
