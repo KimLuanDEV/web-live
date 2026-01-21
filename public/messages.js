@@ -289,20 +289,15 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
-
 let content = "";
 
 if (text?.startsWith("/img ")) {
   content = `
-    <img
-      src="${text.slice(5)}"
-      class="chat-img"
-      loading="lazy"
-    >
+    <div class="chat-img-wrap">
+      <img src="${text.slice(5)}" class="chat-img">
+    </div>
   `;
-}
-
-
+} 
 else if (text?.startsWith("/video ")) {
   content = `
     <video src="${text.slice(7)}"
@@ -316,29 +311,13 @@ else {
 }
 
 
-const isImage = text?.startsWith("/img ");
-const isVideo = text?.startsWith("/video ");
-
-div.innerHTML = `
-  ${isImage || isVideo
-    ? `
-      <div class="chat-media ${isMe ? "me" : "other"}">
-        ${content}
-      </div>
-    `
-    : `
-      <div class="msg-bubble ${isMe ? "me" : "other"}">
-        ${content}
-      </div>
-    `
-  }
-
-  <div class="chat-time">
-    ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
-    ${isMe ? `<span class="msg-status">${status}</span>` : ""}
-  </div>
-`;
-
+  div.innerHTML = `
+    <div class="msg-bubble ${isMe ? "me":"other"}">${content}</div>
+    <div class="chat-time">
+      ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
+      ${isMe ? `<span class="msg-status">${status}</span>` : ""}
+    </div>
+  `;
 
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
@@ -599,8 +578,6 @@ socket.on("msg-blocked", ({ reason }) => {
 
 
 
-
-
 async function uploadChatFile(file, type) {
   const fd = new FormData();
   fd.append(type, file);
@@ -651,6 +628,7 @@ document.getElementById("imgInput").onchange = async e => {
 };
 
 
+
 document.getElementById("videoInput").onchange = async e => {
   const file = e.target.files[0];
   if (!file || !currentTarget) return;
@@ -679,5 +657,3 @@ document.getElementById("videoInput").onchange = async e => {
     media: url
   });
 };
-
-

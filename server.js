@@ -47,6 +47,7 @@ if(!fs.existsSync(AVATAR_DIR)){
 
 
 
+
 const COVER_DIR = "/opt/render/project/data/covers";
 
 if (!fs.existsSync(COVER_DIR)) {
@@ -67,14 +68,6 @@ const coverUpload = multer({
 });
 
 
-const CHAT_IMAGE_DIR = "/opt/render/project/data/chat-images";
-const CHAT_VIDEO_DIR = "/opt/render/project/data/chat-videos";
-
-[CHAT_IMAGE_DIR, CHAT_VIDEO_DIR].forEach(d=>{
-  if(!fs.existsSync(d)) fs.mkdirSync(d,{recursive:true});
-});
-
-
 
 
 const INBOX_FILE = "/opt/render/project/data/inbox.json";
@@ -89,6 +82,14 @@ function saveInbox(db){
 }
 
 let userInbox = new Map(Object.entries(loadInbox()));
+
+
+const CHAT_IMAGE_DIR = "/opt/render/project/data/chat-images";
+const CHAT_VIDEO_DIR = "/opt/render/project/data/chat-videos";
+
+[CHAT_IMAGE_DIR, CHAT_VIDEO_DIR].forEach(d=>{
+  if(!fs.existsSync(d)) fs.mkdirSync(d,{recursive:true});
+});
 
 
 
@@ -143,7 +144,6 @@ function saveSocial(){
   }
 }
 
-
 const chatImgUpload = multer({
   storage: multer.diskStorage({
     destination: CHAT_IMAGE_DIR,
@@ -173,6 +173,15 @@ app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
 app.use("/avatars", express.static("/opt/render/project/data/avatars"));
 app.use("/covers", express.static(COVER_DIR));
+app.use("/chat-images", express.static(CHAT_IMAGE_DIR));
+app.use("/chat-videos", express.static(CHAT_VIDEO_DIR));
+app.post("/api/upload-chat-image", chatImgUpload.single("image"), (req,res)=>{
+  res.json({ url: "/chat-images/" + req.file.filename });
+});
+
+app.post("/api/upload-chat-video", chatVideoUpload.single("video"), (req,res)=>{
+  res.json({ url: "/chat-videos/" + req.file.filename });
+});
 
 app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "poster.html"));
@@ -183,8 +192,6 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
   res.json({ url: "/avatars/" + req.file.filename });
 });
 
-app.use("/chat-images", express.static(CHAT_IMAGE_DIR));
-app.use("/chat-videos", express.static(CHAT_VIDEO_DIR));
 
 const postUpload = multer({
   storage: multer.diskStorage({
@@ -207,17 +214,6 @@ app.post("/api/upload-post-image", postUpload.single("image"), (req,res)=>{
   if(!req.file) return res.status(400).json({error:"no file"});
   res.json({ url: "/post-images/" + req.file.filename });
 });
-
-
-
-app.post("/api/upload-chat-image", chatImgUpload.single("image"), (req,res)=>{
-  res.json({ url: "/chat-images/" + req.file.filename });
-});
-
-app.post("/api/upload-chat-video", chatVideoUpload.single("video"), (req,res)=>{
-  res.json({ url: "/chat-videos/" + req.file.filename });
-});
-
 
 
 const postVideoUpload = multer({
@@ -1438,8 +1434,7 @@ socket.on("private-message", async ({ to, text, type, media, msgId }) => {
 
 
   const fromUid = socket.data.uid;
-
- if (!fromUid || !to) return;
+if (!fromUid || !to) return;
 
 
 
@@ -1474,8 +1469,6 @@ if (!myFriends.includes(to)) {
   return;
 }
 
-
-
 // 🔥 CHUẨN HOÁ NỘI DUNG TIN NHẮN
 let payloadText = text || "";
 
@@ -1488,8 +1481,8 @@ if (type === "video" && media) {
 }
 
 
- const id = msgId || Date.now() + "_" + Math.random().toString(36).slice(2);
 
+ const id = msgId || Date.now() + "_" + Math.random().toString(36).slice(2);
 
 
   const msg = {
@@ -1542,9 +1535,10 @@ if (subs && subs.length) {
   const payload = JSON.stringify({
     title: "💬 Tin nhắn mới",
     body:
-    type === "image" ? "📷 Hình ảnh"
-    : type === "video" ? "🎥 Video"
-    : payloadText,
+  type === "image" ? "📷 Hình ảnh"
+: type === "video" ? "🎥 Video"
+: payloadText,
+
     url: "/messages.html"
   });
 
