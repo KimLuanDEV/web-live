@@ -10223,26 +10223,66 @@ body.page-profile{
 
 .chat-scroll-bottom {
   position: absolute;
-  right: 16px;
-  bottom: 90px; /* trên input chat */
-  width: 42px;
-  height: 42px;
+  right: 14px;
+  bottom: 96px; /* trên input chat */
+  width: 44px;
+  height: 44px;
   border-radius: 50%;
   border: none;
-  background: rgba(0,0,0,.8);
-  color: #fff;
-  font-size: 20px;
+
+  background: rgba(20, 20, 20, 0.85);
+  backdrop-filter: blur(8px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
   cursor: pointer;
   z-index: 60;
-  box-shadow: 0 0 14px rgba(255,59,107,.6);
-  transition: opacity .2s, transform .2s;
+
+  box-shadow:
+    0 8px 20px rgba(0,0,0,.45),
+    0 0 0 1px rgba(255,255,255,.08);
+
+  transition:
+    opacity .18s ease,
+    transform .18s ease,
+    box-shadow .18s ease;
+}
+
+.chat-scroll-bottom svg {
+  stroke: #fff;
+  stroke-width: 2.2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+  opacity: .95;
 }
 
 .chat-scroll-bottom:hover {
-  transform: scale(1.1);
+  transform: translateY(-2px) scale(1.06);
+  box-shadow:
+    0 12px 26px rgba(0,0,0,.55),
+    0 0 0 1px rgba(255,255,255,.12);
+}
+
+.chat-scroll-bottom:active {
+  transform: scale(.95);
 }
 
 .chat-scroll-bottom.hidden {
   opacity: 0;
   pointer-events: none;
+}
+
+
+.scroll-dot {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 8px;
+  height: 8px;
+  background: #ff3b6b;
+  border-radius: 50%;
+  box-shadow: 0 0 8px rgba(255,59,107,.8);
 }
