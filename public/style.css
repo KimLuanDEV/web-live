@@ -9912,38 +9912,6 @@ body.page-profile{
   opacity: .85;
 }
 
-/* ===== FIX ICON CHAT TOOL CENTER ===== */
-.chatform{
-  display: flex;
-  align-items: center;   /* 🔥 căn giữa toàn hàng */
-  gap: 8px;
-}
-
-.chat-tool{
-  width: 36px;
-  height: 36px;
-  border-radius: 50%;
-
-  display: inline-flex;   /* 🔥 inline-flex thay vì flex */
-  align-items: center;    /* 🔥 căn dọc */
-  justify-content: center;/* 🔥 căn ngang */
-
-  font-size: 18px;
-  line-height: 1;         /* 🔥 FIX LỆCH EMOJI */
-  padding: 0;             /* 🔥 bỏ padding thừa */
-
-  background: rgba(255,255,255,.12);
-  color: #fff;
-  cursor: pointer;
-  flex-shrink: 0;
-}
-
-.chat-tool > *{
-  display: block;         /* 🔥 tránh baseline inline */
-}
-
-
-
 /* 🚫 Chặn cuộn lan ra ngoài modal */
 #chatModal {
   overscroll-behavior: contain;
