@@ -445,19 +445,15 @@ else if (text?.startsWith("/album ")) {
   // 💬 TEXT → GIỮ BUBBLE
   else {
     html = `
-  <div class="bubble ${isMe ? "me" : "other"}">
-    <div class="bubble-text">${text}</div>
-
-    <div class="bubble-time ${isMe ? "me" : "other"}">
-      ${new Date().toLocaleTimeString("vi-VN", {
-        hour: "2-digit",
-        minute: "2-digit"
-      })}
+      <div>
+         <span class="bubble-text ${isMe ? "me" : "other"}">${text}</span>
+          ${html}
+    <div class="chat-time">
+      ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
     </div>
-  </div>
-`;
-
+      </div>
+    `;
   }
 
   div.innerHTML = `
