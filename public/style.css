@@ -9935,3 +9935,42 @@ body.page-profile{
   -webkit-overflow-scrolling: touch;
   touch-action: pan-y;
 }
+
+
+/* ===== FIX VERIFIED TICK INLINE ===== */
+.msg-uname{
+  display: inline-flex;     /* 🔥 cùng hàng */
+  align-items: center;      /* 🔥 căn giữa theo chiều dọc */
+  gap: 6px;                 /* 🔥 khoảng cách tên ↔ tick */
+}
+
+.tick-blue{
+  position: static !important;  /* ❌ bỏ absolute */
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 1;
+
+  background: #5FA8FF;
+  color: #fff;
+
+  box-shadow: 0 0 10px rgba(95,168,255,.65);
+}
+
+
+.chat-header-title{
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tick-chat{
+  transform: translateY(-1px); /* tinh chỉnh nhẹ */
+}
