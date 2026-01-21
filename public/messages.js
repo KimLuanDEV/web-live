@@ -71,10 +71,10 @@ function loadChat(){
     const isMe = m.from === auth.uid;
 
       const text = m.revoked ? "__REVOKED__" : m.text; // 🔥 FIX QUYẾT ĐỊNH
-      
+
     pushMsg(
       isMe ? "Bạn" : currentTarget.name,
-      m.text,
+      text,
       isMe,
       m.id,                  // 🔥 TRUYỀN msgId
       "",
