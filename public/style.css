@@ -9878,18 +9878,22 @@ body.page-profile{
 
 /* Bubble text */
 .msg-bubble{
-  display:inline-flex;              /* 🔥 đổi từ inline-block */
-  align-items:center;               /* 🔥 căn dọc */
-  justify-content:center;           /* 🔥 căn ngang */
-  text-align:center;                /* 🔥 chữ vào giữa */
-
+  display:inline-block;          /* 🔥 QUAY LẠI inline-block */
   max-width: 66%;
   padding: 5px 10px;
   border-radius: 16px;
+
   font-size: 13px;
-  line-height: 1;
+  line-height: 1.2;
   white-space: pre-wrap;
   word-break: break-word;
+
+  text-align: center;            /* ✅ căn chữ giữa */
+}
+
+.msg-bubble.me,
+.msg-bubble.other{
+  width: fit-content;            /* 🔥 bubble ôm chữ */
 }
 
 
