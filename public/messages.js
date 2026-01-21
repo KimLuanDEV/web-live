@@ -316,8 +316,8 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   // 💬 TEXT → GIỮ BUBBLE
   else {
    html = `
-  <div class="bubble-text" ${isMe ? "me" : "other"}">
-  ${text}
+  <div >
+    <span class="bubble-text" ${isMe ? "me" : "other"}" >${text}</span>
   </div>
 `;
   }
