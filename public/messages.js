@@ -23,6 +23,22 @@ const renderedMsgIds = new Set();
 
 // 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
 let offlineHandled = false;
+let audioCtx = null;
+
+
+
+function unlockAudio() {
+  try {
+    if (!audioCtx) {
+      audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    if (audioCtx.state !== "running") {
+      audioCtx.resume();
+    }
+  } catch (e) {
+    console.warn("Audio unlock failed", e);
+  }
+}
 
 
 async function getIceServers() {
@@ -33,7 +49,7 @@ async function getIceServers() {
 
 
 document.getElementById("btnVoiceCall").onclick = async () => {
-  if (!currentTargetUID) return;
+  unlockAudio(); // 🔥 FIX 5G
 
   callingUid = currentTargetUID;
 
@@ -54,12 +70,28 @@ document.getElementById("btnVoiceCall").onclick = async () => {
     }
   };
 
-  pc.ontrack = e => {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
+ pc.ontrack = e => {
+  let audio = document.getElementById("voiceAudio");
+
+  if (!audio) {
+    audio = document.createElement("audio");
+    audio.id = "voiceAudio";
     audio.autoplay = true;
     audio.playsInline = true;
-  };
+    audio.muted = false;
+    document.body.appendChild(audio);
+  }
+
+  audio.srcObject = e.streams[0];
+
+  const p = audio.play();
+  if (p && typeof p.catch === "function") {
+    p.catch(() => {
+      console.log("🔇 Autoplay blocked, waiting user gesture");
+    });
+  }
+};
+
 
   const offer = await pc.createOffer();
   await pc.setLocalDescription(offer);
@@ -74,6 +106,7 @@ document.getElementById("btnVoiceCall").onclick = async () => {
 
 
 socket.on("voice-offer", async ({ from, offer }) => {
+   unlockAudio(); // 🔥 FIX 5G
   callingUid = from.uid;
 
   const accept = confirm(`📞 ${from.name} đang gọi bạn`);
@@ -97,11 +130,28 @@ socket.on("voice-offer", async ({ from, offer }) => {
     }
   };
 
-  pc.ontrack = e => {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
+ pc.ontrack = e => {
+  let audio = document.getElementById("voiceAudio");
+
+  if (!audio) {
+    audio = document.createElement("audio");
+    audio.id = "voiceAudio";
     audio.autoplay = true;
-  };
+    audio.playsInline = true;
+    audio.muted = false;
+    document.body.appendChild(audio);
+  }
+
+  audio.srcObject = e.streams[0];
+
+  const p = audio.play();
+  if (p && typeof p.catch === "function") {
+    p.catch(() => {
+      console.log("🔇 Autoplay blocked, waiting user gesture");
+    });
+  }
+};
+
 
   await pc.setRemoteDescription(offer);
 
@@ -132,6 +182,15 @@ socket.on("voice-ice", async ({ candidate }) => {
 
 
 function endVoiceCall() {
+
+  const audio = document.getElementById("voiceAudio");
+if (audio) {
+  audio.srcObject = null;
+  audio.remove();
+}
+
+
+
   if (pc) {
     pc.close();
     pc = null;
