@@ -7058,12 +7058,13 @@ body.is-guest .reactions-layer{
   white-space: pre-wrap;
   word-break: break-word;
   text-align: left;
-
+  align-items: center;
+  justify-items: center;
   /* 🔥 FIX PADDING ẨN CỦA FONT */
   font-feature-settings: "kern";
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-
+ 
   backdrop-filter: blur(8px);
   border: 1px solid rgba(255,255,255,.18);
 }
