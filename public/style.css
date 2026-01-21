@@ -9997,3 +9997,20 @@ body.page-profile{
 
   outline: none;
 }
+
+
+/* ===== CHAT FORM STICKY + KEYBOARD FIX ===== */
+.chatform{
+  position: sticky;
+  bottom: 0;
+  padding-bottom: env(safe-area-inset-bottom);
+
+  transform: translateY(calc(-1 * var(--kb, 0px)));
+  transition: transform .2s ease;
+}
+
+
+#chatModal{
+  position: fixed;
+  inset: 0;
+}

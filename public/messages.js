@@ -456,23 +456,33 @@ function closeChat(){
 }
 
 
-let baseHeight = window.innerHeight;
+// ===== KEYBOARD FIX MOBILE (FINAL) =====
+const modal = document.getElementById("chatModal");
+const vv = window.visualViewport;
 
-window.addEventListener("resize", () => {
-  const h = window.innerHeight;
-  const diff = baseHeight - h;
+function updateKeyboardOffset(){
+  if(!vv) return;
 
-  // nếu bàn phím mở
-  if(diff > 150){
-    document
-      .getElementById("chatModal")
-      .style.setProperty("--kb", diff + "px");
-  }else{
-    document
-      .getElementById("chatModal")
-      .style.setProperty("--kb", "0px");
-  }
+  const kb = Math.max(0, window.innerHeight - vv.height - vv.offsetTop);
+  modal.style.setProperty("--kb", kb + "px");
+}
+
+// 🔥 keyboard open / close
+if(vv){
+  vv.addEventListener("resize", updateKeyboardOffset);
+  vv.addEventListener("scroll", updateKeyboardOffset);
+}
+
+// 🔥 focus vào input → ép update
+msgInput.addEventListener("focus", () => {
+  setTimeout(updateKeyboardOffset, 50);
 });
+
+// 🔥 blur → reset
+msgInput.addEventListener("blur", () => {
+  modal.style.setProperty("--kb", "0px");
+});
+
 
 
 
