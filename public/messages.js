@@ -77,13 +77,28 @@ function loadChat(){
   const key = chatKey();
   if(!key) return;
 
-  const arr = JSON.parse(localStorage.getItem(key) || "[]");
-  chatBox.innerHTML = "";
+let arr = JSON.parse(localStorage.getItem(key) || "[]");
 
-  arr.forEach(m => {
+// 🔥 DEDUPE THEO msgId (CỰC KỲ QUAN TRỌNG)
+const map = new Map();
+arr.forEach(m => {
+  if (!m?.id) return;
+
+  // ưu tiên bản revoked
+  if (!map.has(m.id) || m.revoked) {
+    map.set(m.id, m);
+  }
+});
+
+arr = [...map.values()];
+
+// 🔥 ghi ngược lại localStorage (dọn rác)
+localStorage.setItem(key, JSON.stringify(arr));
+
+chatBox.innerHTML = "";
+
+arr.forEach(m => {
   const isMe = m.from === auth.uid;
-
-  // 🔥 ƯU TIÊN REVOKE – BẤT KỂ text GÌ
   const text = m.revoked ? "__REVOKED__" : m.text;
 
   pushMsg(
