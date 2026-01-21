@@ -800,40 +800,67 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
+// =======================
+// 📞 AUDIO CALL SIGNALING
+// =======================
 
-socket.on("call-offer", ({ to, offer })=>{
+// A → yêu cầu gọi
+socket.on("call-request", ({ to }) => {
+  const from = socket.data.uid;
+  if (!from || !to) return;
+
   const sockets = activeUsers.get(to);
-  if(!sockets) return;
+  if (!sockets) return;
 
-  for(const sid of sockets){
-    io.to(sid).emit("call-offer", {
-      from: socket.data.uid,
-      offer
+  for (const sid of sockets) {
+    io.to(sid).emit("incoming-call", {
+      from,
+      name: socket.data.profile?.name,
+      avatar: socket.data.profile?.avatar
     });
   }
 });
 
-socket.on("call-answer", ({ to, answer })=>{
-  const sockets = activeUsers.get(to);
-  if(!sockets) return;
+// A → gửi offer
+socket.on("call-offer", ({ to, offer }) => {
+  const from = socket.data.uid;
+  if (!from || !to || !offer) return;
 
-  for(const sid of sockets){
-    io.to(sid).emit("call-answer", { answer });
+  const sockets = activeUsers.get(to);
+  if (!sockets) return;
+
+  for (const sid of sockets) {
+    io.to(sid).emit("call-offer", { from, offer });
   }
 });
 
-socket.on("call-end", ({ to })=>{
-  const sockets = activeUsers.get(to);
-  if(!sockets) return;
+// B → gửi answer
+socket.on("call-answer", ({ to, answer }) => {
+  const from = socket.data.uid;
+  if (!from || !to || !answer) return;
 
-  for(const sid of sockets){
-    io.to(sid).emit("call-end");
+  const sockets = activeUsers.get(to);
+  if (!sockets) return;
+
+  for (const sid of sockets) {
+    io.to(sid).emit("call-answer", { from, answer });
+  }
+});
+
+// ICE candidate
+socket.on("call-ice", ({ to, candidate }) => {
+  if (!to || !candidate) return;
+
+  const sockets = activeUsers.get(to);
+  if (!sockets) return;
+
+  for (const sid of sockets) {
+    io.to(sid).emit("call-ice", candidate);
   }
 });
 
 
-
-
+  
 
   // 🚫 THU HỒI TIN NHẮN
 socket.on("revoke-message", ({ msgId }) => {

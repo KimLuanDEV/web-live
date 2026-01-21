@@ -80,10 +80,10 @@
   <span id="chatTitle">Chat</span>
 </div>
 
- <!-- 📞 NÚT GỌI -->
-  <button class="chat-call-btn" onclick="openCallModal()">
-    📞
-  </button>
+<div class="chat-header-actions">
+  <button id="btnCall" title="Gọi thoại">📞</button>
+</div>
+
 
 
 </div>
@@ -170,27 +170,6 @@
   </div>
 </div>
 
-
-
-<!-- 📞 CALL MODAL -->
-<div id="callModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="endCall()"></div>
-
-  <div class="call-card">
-    <div class="call-header">
-      <img id="callAvatar" class="call-avatar" />
-      <div class="call-name" id="callName">Đang gọi…</div>
-      <div class="call-status" id="callStatus">Đang kết nối</div>
-    </div>
-
-    <div class="call-actions">
-      <button class="call-btn mute" onclick="toggleMute()">🔇</button>
-      <button class="call-btn end" onclick="endCall()">❌</button>
-    </div>
-
-    <audio id="callAudio" autoplay playsinline></audio>
-  </div>
-</div>
 
 
 
