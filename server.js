@@ -809,30 +809,28 @@ socket.on("revoke-message", ({ msgId }) => {
   const fromUid = socket.data.uid;
   if (!fromUid) return;
 
-  let deleted = false; // 🔥 BẮT BUỘC PHẢI CÓ
-
+  // 1️⃣ CẬP NHẬT INBOX SERVER (offline messages)
   for (const [uid, inbox] of userInbox.entries()) {
-    const next = inbox.filter(m => {
+    let changed = false;
+
+    for (const m of inbox) {
       if (m.id === msgId && m.from === fromUid) {
-        deleted = true;
-        return false; // xoá tin
+        m.text = "__REVOKED__";
+        m.revoked = true;
+        changed = true;
       }
-      return true;
-    });
+    }
 
-    userInbox.set(uid, next);
+    if (changed) {
+      userInbox.set(uid, inbox);
+    }
   }
-
-  if (!deleted) return; // 🔒 không phải tin của mình → không làm gì
 
   saveInbox(Object.fromEntries(userInbox));
 
-  // 🔥 báo cho cả 2 phía xoá UI + local
-  socket.emit("delete-message", { msgId });
-  socket.broadcast.emit("delete-message", { msgId });
+  // 2️⃣ BẮN REALTIME CHO TẤT CẢ SOCKET KHÁC
+  socket.broadcast.emit("revoke-message", { msgId });
 });
-
-
 
 
 socket.on("user-block", ({ uid }) => {
@@ -1792,10 +1790,7 @@ const inbox = userInbox.get(uid);
 if (inbox && inbox.length) {
 
   // 👉 CHỈ LẤY TIN CHƯA GỬI
-  const toSend = inbox.filter(
-  m => !m.delivered || m.revoked === true
-);
-
+  const toSend = inbox.filter(m => !m.delivered);
 
   if (toSend.length) {
 
