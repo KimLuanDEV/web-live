@@ -7048,10 +7048,10 @@ body.is-guest .reactions-layer{
 
   /* 🔥 ÔM CHỮ THẬT */
   display: inline-block;
-  padding: 5px 9px;          /* top/bottom nhỏ hơn left/right */
+  padding: 3px 3px;          /* top/bottom nhỏ hơn left/right */
   border-radius: 14px;
 
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.15;         /* 🔥 QUAN TRỌNG */
   letter-spacing: .1px;
 
