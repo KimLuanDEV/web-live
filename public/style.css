@@ -9874,60 +9874,41 @@ body.page-profile{
 }
 
 
-/* ===== LIVESTREAM PRO – CHAT ICON SVG ===== */
 .chat-tool{
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
 
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  display: inline-flex;   /* 🔥 inline-flex thay vì flex */
+  align-items: center;    /* 🔥 căn dọc */
+  justify-content: center;/* 🔥 căn ngang */
 
-  background: rgba(255,255,255,.10);
-  border: 1px solid rgba(255,255,255,.16);
-  backdrop-filter: blur(6px);
+  font-size: 18px;
+  line-height: 1;         /* 🔥 FIX LỆCH EMOJI */
+  padding: 0;             /* 🔥 bỏ padding thừa */
 
+  background: rgba(255,255,255,.12);
+  color: #fff;
   cursor: pointer;
   flex-shrink: 0;
-  transition: transform .12s ease, box-shadow .12s ease, background .12s ease;
+}
+
+.chat-tool > *{
+  display: block;         /* 🔥 tránh baseline inline */
 }
 
 .chat-tool:active{
-  transform: scale(.92);
-}
-
-.chat-icon{
-  width: 18px;
-  height: 18px;
-  fill: #eaf0ff;
-
-  filter:
-    drop-shadow(0 0 6px rgba(95,168,255,.45))
-    drop-shadow(0 0 12px rgba(37,240,154,.25));
-}
-
-/* hover / active neon */
-.chat-tool:hover .chat-icon{
-  fill: #5fa8ff;
-}
-
-.chat-tool:hover{
-  box-shadow:
-    0 0 14px rgba(95,168,255,.35),
-    inset 0 0 10px rgba(255,255,255,.06);
+  transform: scale(0.9);
+  background: rgba(255,255,255,.2);
 }
 
 
 .send-arrow{
-  width: 38px;
-  height: 38px;
+  width: 36px;
+  height: 36px;
   border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
+  flex-shrink: 0;
 }
-
 
 
 #msgInput:not(:focus){

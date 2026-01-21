@@ -84,23 +84,15 @@
     <div id="chatBox" class="chatbox"></div>
 
    <div class="chatform">
- <label class="chat-tool">
-  <!-- IMAGE ICON -->
-  <svg viewBox="0 0 24 24" class="chat-icon">
-    <path d="M21 19V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14l4-4h12a2 2 0 0 0 2-2z"/>
-    <circle cx="9" cy="9" r="2.5"/>
-  </svg>
-  <input type="file" id="imgInput" accept="image/*" hidden>
-</label>
+  <label class="chat-tool">
+    📷
+    <input type="file" id="imgInput" accept="image/*" hidden>
+  </label>
 
-<label class="chat-tool">
-  <!-- VIDEO ICON -->
-  <svg viewBox="0 0 24 24" class="chat-icon">
-    <path d="M3 5h13a2 2 0 0 1 2 2v3l3-2v8l-3-2v3a2 2 0 0 1-2 2H3z"/>
-  </svg>
-  <input type="file" id="videoInput" accept="video/*" hidden>
-</label>
-
+  <label class="chat-tool">
+    🎥
+    <input type="file" id="videoInput" accept="video/*" hidden>
+  </label>
 
   <input id="msgInput" placeholder="Nhập tin nhắn..." />
   <button id="sendBtn" class="send-arrow">
