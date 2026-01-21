@@ -241,19 +241,32 @@ socket.on("private-message", ({ from, text, msgId }) => {
   if (!chatModal.classList.contains("hidden")) {
     const curKey = chatKey();
 
-    if (curKey === key) {
-      pushMsg(
-        from.name,
-        text,
-        false,
-        msgId,
-        "",
-        from.avatar
-      );
+ if (curKey === key) {
 
-      socket.emit("msg-seen", { to: peer, msgId });
-      return;
-    }
+  // 🔥 BẮT BUỘC: LƯU LOCAL CHO NGƯỜI NHẬN
+  saveChat({
+    id: msgId,
+    from: peer,
+    to: auth.uid,
+    text,
+    time: Date.now(),
+    peer,
+    seen: true
+  });
+
+  pushMsg(
+    from.name,
+    text,
+    false,
+    msgId,
+    "",
+    from.avatar
+  );
+
+  socket.emit("msg-seen", { to: peer, msgId });
+  return;
+}
+
   }
 
   // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
