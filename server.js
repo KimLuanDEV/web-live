@@ -805,32 +805,33 @@ io.on("connection", (socket) => {
   // 🚫 THU HỒI TIN NHẮN
 socket.on("revoke-message", ({ msgId }) => {
   if (!msgId) return;
-
   const fromUid = socket.data.uid;
   if (!fromUid) return;
 
-  // 1️⃣ CẬP NHẬT INBOX SERVER (offline messages)
+  // 🔥 XOÁ VĨNH VIỄN KHỎI INBOX
   for (const [uid, inbox] of userInbox.entries()) {
-    let changed = false;
+    const before = inbox.length;
 
-    for (const m of inbox) {
-      if (m.id === msgId && m.from === fromUid) {
-        m.text = "__REVOKED__";
-        m.revoked = true;
-        changed = true;
-      }
-    }
+    userInbox.set(
+      uid,
+      inbox.filter(m => !(m.id === msgId && m.from === fromUid))
+    );
 
-    if (changed) {
-      userInbox.set(uid, inbox);
+    if (inbox.length !== before) {
+      // changed
     }
   }
 
+
+    if (!deleted) return; // 🔒 không phải tin của mình → bỏ
+    
   saveInbox(Object.fromEntries(userInbox));
 
-  // 2️⃣ BẮN REALTIME CHO TẤT CẢ SOCKET KHÁC
-  socket.broadcast.emit("revoke-message", { msgId });
+  // 🔥 BÁO REALTIME CHO CLIENT XOÁ UI
+  socket.broadcast.emit("delete-message", { msgId });
+  socket.emit("delete-message", { msgId }); // xoá cả bên gửi
 });
+
 
 
 socket.on("user-block", ({ uid }) => {

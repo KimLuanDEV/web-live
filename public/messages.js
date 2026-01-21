@@ -48,6 +48,7 @@ function chatKey(){
 
 
 function saveChat(msg){
+   if (localStorage.getItem("lastDeletedMsg") === msg.id) return;
   const key = chatKey();
   if(!key) return;
 
@@ -67,20 +68,19 @@ function loadChat(){
   const arr = JSON.parse(localStorage.getItem(key) || "[]");
   chatBox.innerHTML = "";
 
-  arr.forEach(m=>{
-    const isMe = m.from === auth.uid;
+arr.forEach(m=>{
+  const isMe = m.from === auth.uid;
 
-      const text = m.revoked ? "__REVOKED__" : m.text; // 🔥 FIX QUYẾT ĐỊNH
+  pushMsg(
+    isMe ? "Bạn" : currentTarget.name,
+    m.text,      // ✅ ĐÚNG
+    isMe,
+    m.id,
+    "",
+    isMe ? auth.avatar : currentTarget.avatar
+  );
+});
 
-    pushMsg(
-      isMe ? "Bạn" : currentTarget.name,
-      text,
-      isMe,
-      m.id,                  // 🔥 TRUYỀN msgId
-      "",
-      isMe ? auth.avatar : currentTarget.avatar
-    );
-  });
 }
 
 
@@ -152,16 +152,8 @@ if (!exist) {
     text: m.text,
     time: m.time,
     peer,
-    revoked: m.text === "__REVOKED__"
   });
-} else {
-  // 🔥 ĐÃ CÓ → SYNC TRẠNG THÁI THU HỒI
-  if (m.text === "__REVOKED__" && exist.text !== "__REVOKED__") {
-    exist.text = "__REVOKED__";
-    exist.revoked = true;
-  }
 }
-
 localStorage.setItem(key, JSON.stringify(arr));
 
     
@@ -293,24 +285,6 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   const div = document.createElement("div");
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
-
-
-if (text === "__REVOKED__") {
-  div.innerHTML = `
-    <div class="msg-revoked">
-      🚫 Tin nhắn đã được thu hồi
-    </div>
-  `;
-
-
-
-
-
-
-  chatBox.appendChild(div);
-  chatBox.scrollTop = chatBox.scrollHeight;
-  return;
-}
 
 
   let html = "";
@@ -893,87 +867,45 @@ function closeImgZoom() {
 }
 
 
+
+
+
+
+
+
+
+
+// 🔥 XOÁ TIN NHẮN VĨNH VIỄN
+socket.on("delete-message", ({ msgId }) => {
+  if (!msgId) return;
+
+  // 1️⃣ XOÁ UI
+  const el = document.querySelector(`[data-msg-id="${msgId}"]`);
+  if (el) el.remove();
+
+  // 2️⃣ XOÁ LOCALSTORAGE
+  Object.keys(localStorage)
+    .filter(k => k.startsWith("chat_"))
+    .forEach(key => {
+      const arr = JSON.parse(localStorage.getItem(key) || "[]");
+      const next = arr.filter(m => m.id !== msgId);
+      localStorage.setItem(key, JSON.stringify(next));
+    });
+
+  // 3️⃣ XÓA ID ĐÃ RENDER (CHỐNG BUG)
+  renderedMsgIds.delete(msgId);
+    // 🔥 THÊM DÒNG NÀY
+  localStorage.setItem("lastDeletedMsg", msgId);
+});
+
+
 async function confirmRevoke(msgId) {
   const ok = await showModal(
-    "Thu hồi tin nhắn này?",
-    "Thu hồi",
+    "Xoá vĩnh viễn tin nhắn này?",
+    "Xoá",
     "Huỷ"
   );
   if (!ok) return;
 
-  revokeMessage(msgId);
-}
-
-
-function revokeMessage(msgId) {
-  // 1️⃣ cập nhật localStorage
-  Object.keys(localStorage)
-    .filter(k => k.startsWith("chat_"))
-    .forEach(key => {
-      const arr = JSON.parse(localStorage.getItem(key) || "[]");
-      let changed = false;
-
-      arr.forEach(m => {
-        if (m.id === msgId && m.from === auth.uid) {
-          m.text = "__REVOKED__";
-          m.revoked = true;
-          changed = true;
-        }
-      });
-
-      if (changed) {
-        localStorage.setItem(key, JSON.stringify(arr));
-      }
-    });
-
-  // 2️⃣ update UI ngay
-  const el = document.querySelector(
-    `[data-msg-id="${msgId}"]`
-  );
-  if (el) {
-    el.innerHTML = `
-      <div class="msg-revoked">
-        🚫 Tin nhắn đã được thu hồi
-      </div>
-    `;
-  }
-
-  // 3️⃣ báo cho người kia
   socket.emit("revoke-message", { msgId });
 }
-
-
-// 🔥 NHẬN TIN THU HỒI TỪ NGƯỜI KHÁC
-socket.on("revoke-message", ({ msgId }) => {
-  if (!msgId) return;
-
-  // 1️⃣ update UI nếu đang hiển thị
-  const el = document.querySelector(`[data-msg-id="${msgId}"]`);
-  if (el) {
-    el.innerHTML = `
-      <div class="msg-revoked">
-        🚫 Tin nhắn đã được thu hồi
-      </div>
-    `;
-  }
-
-  // 2️⃣ update localStorage (KHÔNG CHECK auth.uid)
-  Object.keys(localStorage)
-    .filter(k => k.startsWith("chat_"))
-    .forEach(key => {
-      const arr = JSON.parse(localStorage.getItem(key) || "[]");
-      let changed = false;
-
-      arr.forEach(m => {
-        if (m.id === msgId) {
-          m.text = "__REVOKED__";
-          m.revoked = true;
-          changed = true;
-        }
-      });
-
-      if (changed) {
-        localStorage.setItem(key, JSON.stringify(arr));
-      }
-    });
-});
