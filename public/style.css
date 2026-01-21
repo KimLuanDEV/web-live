@@ -7072,6 +7072,9 @@ body.is-guest .reactions-layer{
 .bubble-text{
   display: inline-block;
   line-height: 1.15;
+  padding: 3px;
+  border-radius: 14px;
+  font-size: 14px;
 }
 
 
