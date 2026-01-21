@@ -52,6 +52,8 @@ async function startAudioCall(isCaller, offerData = null) {
   remoteAudio.muted = false;
   remoteAudio.volume = 1;
 
+document.body.appendChild(remoteAudio);
+
 
   callPC.ontrack = e => {
     remoteAudio.srcObject = e.streams[0];
@@ -432,7 +434,6 @@ if (chatModal.classList.contains("hidden")) {
 
 
 
-// 📞 có cuộc gọi đến
 socket.on("incoming-call", async ({ from, name }) => {
   callingUID = from;
 
@@ -444,15 +445,20 @@ socket.on("incoming-call", async ({ from, name }) => {
 
   if (!ok) return;
 
-  // ✅ BẮT BUỘC: khởi tạo WebRTC phía người nghe
-  await startAudioCall(false);
+  // ✅ KHÔNG LÀM GÌ Ở ĐÂY
+  // chỉ chờ offer
 });
+
 
 
 // 📡 nhận offer
 socket.on("call-offer", async ({ from, offer }) => {
   callingUID = from;
-  await startAudioCall(false, offer);
+
+  // ✅ CHỈ TẠO 1 LẦN
+  if (!callPC) {
+    await startAudioCall(false, offer);
+  }
 });
 
 // 📡 nhận answer
