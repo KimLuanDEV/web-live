@@ -832,3 +832,8 @@ imgZoomBackdrop.addEventListener("click", () => {
 imgZoomInner.addEventListener("click", e => {
   e.stopPropagation();
 });
+
+
+function closeImgZoom() {
+  document.getElementById("imgZoom").classList.add("hidden");
+}
