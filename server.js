@@ -201,14 +201,12 @@ app.post("/api/upload-post-video", postVideoUpload.single("video"), (req,res)=>{
 
 
 const rooms = new Map();
-
 // ===== LIVESTREAM PRO SOCIAL =====
 const lpPosts = loadSocial();
-
-
-
 const activeUsers = new Map();   // uid -> Set(socketId)
 
+// ===== CALL LOBBY =====
+const calls = new Map();   // callId -> callRoom
 
 
 function getPost(id){
@@ -763,7 +761,165 @@ function closeRoom(roomId, reason = "host_left") {
 }
 
 
+function getCallLobby(){
+  const list = [];
+  for (const call of calls.values()) {
+    list.push({
+      callId: call.callId,
+      ownerUid: call.ownerUid,
+      members: call.members.size,
+      type: call.type,
+      createdAt: call.createdAt
+    });
+  }
+  return list;
+}
+
+
+
+
+
+
 io.on("connection", (socket) => {
+  
+
+// Call Voice
+
+function leaveCall(socket){
+  const callId = socket.data.callId;
+  if (!callId) return;
+
+  const call = calls.get(callId);
+  if (!call) return;
+
+  call.members.delete(socket.id);
+
+  for (const [uid, p] of call.profiles.entries()) {
+    if (p.socketId === socket.id) {
+      call.profiles.delete(uid);
+      break;
+    }
+  }
+
+  socket.leave(callId);
+  socket.data.callId = null;
+
+  if (call.members.size === 0) {
+    calls.delete(callId);
+  } else {
+    io.to(callId).emit("call-members", {
+      members: Array.from(call.profiles.values())
+    });
+  }
+
+  io.emit("call-lobby-update", {
+    rooms: getCallLobby()
+  });
+}
+
+socket.on("call-create", ({ type, profile }) => {
+  const uid = socket.data.uid;
+  if (!uid) return;
+
+  const callId =
+    "call_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+
+  const call = {
+    callId,
+    ownerUid: uid,
+    type: type === "video" ? "video" : "audio",
+    members: new Set([socket.id]),
+    profiles: new Map(),
+    createdAt: Date.now()
+  };
+
+  call.profiles.set(uid, {
+    uid,
+    socketId: socket.id,
+    name: profile?.name || "User",
+    avatar: profile?.avatar || ""
+  });
+
+  calls.set(callId, call);
+
+  socket.join(callId);
+  socket.data.callId = callId;
+
+  socket.emit("call-created", {
+    callId,
+    type: call.type
+  });
+
+  io.emit("call-lobby-update", {
+    rooms: getCallLobby()
+  });
+});
+
+socket.on("call-join", ({ callId, profile }) => {
+  const uid = socket.data.uid;
+  if (!uid) return;
+
+  const call = calls.get(callId);
+  if (!call) {
+    socket.emit("call-not-found");
+    return;
+  }
+
+  call.members.add(socket.id);
+  call.profiles.set(uid, {
+    uid,
+    socketId: socket.id,
+    name: profile?.name || "User",
+    avatar: profile?.avatar || ""
+  });
+
+  socket.join(callId);
+  socket.data.callId = callId;
+
+  io.to(callId).emit("call-members", {
+    members: Array.from(call.profiles.values())
+  });
+
+  io.emit("call-lobby-update", {
+    rooms: getCallLobby()
+  });
+});
+
+socket.on("call-leave", () => {
+  leaveCall(socket);
+});
+
+socket.on("call-offer", ({ to, sdp }) => {
+  io.to(to).emit("call-offer", {
+    from: socket.id,
+    sdp
+  });
+});
+
+socket.on("call-answer", ({ to, sdp }) => {
+  io.to(to).emit("call-answer", {
+    from: socket.id,
+    sdp
+  });
+});
+
+socket.on("call-ice", ({ to, candidate }) => {
+  io.to(to).emit("call-ice", {
+    from: socket.id,
+    candidate
+  });
+});
+
+
+
+socket.on("call-lobby-get", () => {
+  socket.emit("call-lobby-update", {
+    rooms: getCallLobby()
+  });
+});
+
+// End Call Voice
+
 
 socket.on("user-block", ({ uid }) => {
   const me = socket.data.uid;
@@ -1401,53 +1557,7 @@ socket.on("private-message", async ({ to, text, msgId }) => {
   if (!fromUid || !to || !text) return;
 
 
-//Call Voice
-socket.on("call-offer", ({ to, offer })=>{
-  const targets = activeUsers.get(to);
-  if(targets){
-    targets.forEach(sid=>{
-      io.to(sid).emit("call-offer", {
-        from:{
-          uid: socket.data.uid,
-          name: socket.data.profile?.name,
-          avatar: socket.data.profile?.avatar
-        },
-        offer
-      });
-    });
-  }
-});
 
-socket.on("call-answer", ({ to, answer })=>{
-  const targets = activeUsers.get(to);
-  targets?.forEach(sid=>{
-    io.to(sid).emit("call-answer", { answer });
-  });
-});
-
-socket.on("call-ice", ({ to, candidate })=>{
-  const targets = activeUsers.get(to);
-  targets?.forEach(sid=>{
-    io.to(sid).emit("call-ice", { candidate });
-  });
-});
-
-socket.on("call-reject", ({ to })=>{
-  const targets = activeUsers.get(to);
-  targets?.forEach(sid=>{
-    io.to(sid).emit("call-reject");
-  });
-});
-
-socket.on("call-end", ({ to })=>{
-  const targets = activeUsers.get(to);
-  if(targets){
-    targets.forEach(sid=>{
-      io.to(sid).emit("call-end");
-    });
-  }
-});
-// End Call Voice
 
 
 // 🔒 CHỈ CHO PHÉP NHẮN TIN VỚI BẠN BÈ

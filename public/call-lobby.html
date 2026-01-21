@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>📞 Sảnh gọi điện</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <script src="/socket.io/socket.io.js"></script>
+
+  <style>
+    body {
+      margin: 0;
+      background: #0b0b0b;
+      color: #fff;
+      font-family: system-ui, sans-serif;
+    }
+
+    header {
+      padding: 12px 16px;
+      background: #111;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    header h1 {
+      font-size: 18px;
+      margin: 0;
+    }
+
+    .btn {
+      background: #00e0ff;
+      color: #000;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .btn.secondary {
+      background: #333;
+      color: #fff;
+    }
+
+    .lobby {
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 12px;
+    }
+
+    .call-card {
+      background: #141414;
+      border-radius: 14px;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      border: 1px solid #222;
+    }
+
+    .call-type {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    .call-count {
+      font-size: 14px;
+    }
+
+    .call-card button {
+      margin-top: auto;
+    }
+
+    /* ===== CALL MODAL ===== */
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.85);
+      display: none;
+      flex-direction: column;
+      z-index: 999;
+    }
+
+    .modal.active {
+      display: flex;
+    }
+
+    .call-header {
+      padding: 10px;
+      background: #111;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .call-members {
+      flex: 1;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+      gap: 12px;
+    }
+
+    .member {
+      text-align: center;
+      font-size: 13px;
+    }
+
+    .member img {
+      width: 64px;
+      height: 64px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 2px solid #00e0ff;
+    }
+
+    .call-footer {
+      padding: 10px;
+      background: #111;
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .danger {
+      background: #ff3b3b;
+      color: #fff;
+    }
+  </style>
+</head>
+
+<body>
+
+<header>
+  <h1>📞 Sảnh gọi điện</h1>
+  <div>
+    <button class="btn secondary" onclick="createCall('audio')">🎧 Audio</button>
+    <button class="btn" onclick="createCall('video')">🎥 Video</button>
+  </div>
+</header>
+
+<div id="lobby" class="lobby"></div>
+
+<!-- ===== CALL MODAL ===== -->
+<div id="callModal" class="modal">
+  <div class="call-header">
+    <div id="callTitle">📞 Đang gọi...</div>
+    <button class="btn danger" onclick="leaveCall()">❌ Rời</button>
+  </div>
+
+  <div id="callMembers" class="call-members"></div>
+
+  <div class="call-footer">
+    <button class="btn secondary" onclick="toggleMute()">🎙 Mute</button>
+  </div>
+</div>
+
+<script src="/call-lobby.js"></script>
+</body>
+</html>
