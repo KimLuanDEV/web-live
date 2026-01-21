@@ -289,7 +289,7 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
-  
+
 let content = "";
 
 if (text?.startsWith("/img ")) {
@@ -602,10 +602,26 @@ document.getElementById("imgInput").onchange = async e => {
 
   const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-  pushMsg("Bạn", "🖼️ Đang gửi ảnh...", true, msgId, "⏳");
-
+  // 1️⃣ upload ảnh
   const { url } = await uploadChatFile(file, "image");
 
+  const text = "/img " + url;
+
+  // 2️⃣ HIỂN THỊ NGAY BÊN NGƯỜI GỬI ✅
+  pushMsg("Bạn", text, true, msgId, "✓");
+
+  // 3️⃣ LƯU LOCAL (để reload vẫn thấy)
+  saveChat({
+    id: msgId,
+    from: auth.uid,
+    to: currentTarget.uid,
+    text,
+    time: Date.now(),
+    peer: currentTarget.uid,
+    seen: true
+  });
+
+  // 4️⃣ GỬI SOCKET
   socket.emit("private-message", {
     to: currentTarget.uid,
     msgId,
@@ -614,15 +630,27 @@ document.getElementById("imgInput").onchange = async e => {
   });
 };
 
+
 document.getElementById("videoInput").onchange = async e => {
   const file = e.target.files[0];
   if (!file || !currentTarget) return;
 
   const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-  pushMsg("Bạn", "🎥 Đang gửi video...", true, msgId, "⏳");
-
   const { url } = await uploadChatFile(file, "video");
+  const text = "/video " + url;
+
+  pushMsg("Bạn", text, true, msgId, "✓");
+
+  saveChat({
+    id: msgId,
+    from: auth.uid,
+    to: currentTarget.uid,
+    text,
+    time: Date.now(),
+    peer: currentTarget.uid,
+    seen: true
+  });
 
   socket.emit("private-message", {
     to: currentTarget.uid,
@@ -631,4 +659,5 @@ document.getElementById("videoInput").onchange = async e => {
     media: url
   });
 };
+
 
