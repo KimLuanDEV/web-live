@@ -10209,3 +10209,13 @@ body.page-profile{
 .img-close:active {
   transform: scale(.92);
 }
+
+
+
+.msg-revoked {
+  font-size: 13px;
+  color: #aaa;
+  text-align: center;
+  margin: 8px 0;
+  font-style: italic;
+}

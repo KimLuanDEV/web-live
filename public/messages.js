@@ -282,6 +282,9 @@ socket.on("msg-status", ({ msgId, status }) => {
 
 
 function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
+
+
+
   if (msgId && renderedMsgIds.has(msgId)) return;
   if (msgId) renderedMsgIds.add(msgId);
 
@@ -289,7 +292,30 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
+
+if (text === "__REVOKED__") {
+  div.innerHTML = `
+    <div class="msg-revoked">
+      🚫 Tin nhắn đã được thu hồi
+    </div>
+  `;
+
+
+
+
+
+
+  chatBox.appendChild(div);
+  chatBox.scrollTop = chatBox.scrollHeight;
+  return;
+}
+
+
   let html = "";
+
+
+
+
 
   // 🖼️ IMAGE → KHÔNG BUBBLE
   if (text?.startsWith("/img ")) {
@@ -355,6 +381,30 @@ else if (text?.startsWith("/album ")) {
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
     </div>
   `;
+
+
+
+// 🗑️ THU HỒI – chỉ cho tin của mình
+if (isMe && msgId) {
+  // PC: click phải
+  div.oncontextmenu = e => {
+    e.preventDefault();
+    confirmRevoke(msgId);
+  };
+
+  // Mobile: giữ lâu
+  let pressTimer;
+  div.addEventListener("touchstart", () => {
+    pressTimer = setTimeout(() => {
+      confirmRevoke(msgId);
+    }, 500);
+  });
+
+  div.addEventListener("touchend", () => {
+    clearTimeout(pressTimer);
+  });
+}
+
 
   chatBox.appendChild(div);
   chatBox.scrollTop = chatBox.scrollHeight;
@@ -839,3 +889,58 @@ imgZoomInner.addEventListener("click", e => {
 function closeImgZoom() {
   document.getElementById("imgZoom").classList.add("hidden");
 }
+
+
+async function confirmRevoke(msgId) {
+  const ok = await showModal(
+    "Thu hồi tin nhắn này?",
+    "Thu hồi",
+    "Huỷ"
+  );
+  if (!ok) return;
+
+  revokeMessage(msgId);
+}
+
+
+function revokeMessage(msgId) {
+  // 1️⃣ cập nhật localStorage
+  Object.keys(localStorage)
+    .filter(k => k.startsWith("chat_"))
+    .forEach(key => {
+      const arr = JSON.parse(localStorage.getItem(key) || "[]");
+      let changed = false;
+
+      arr.forEach(m => {
+        if (m.id === msgId && m.from === auth.uid) {
+          m.text = "__REVOKED__";
+          m.revoked = true;
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        localStorage.setItem(key, JSON.stringify(arr));
+      }
+    });
+
+  // 2️⃣ update UI ngay
+  const el = document.querySelector(
+    `[data-msg-id="${msgId}"]`
+  );
+  if (el) {
+    el.innerHTML = `
+      <div class="msg-revoked">
+        🚫 Tin nhắn đã được thu hồi
+      </div>
+    `;
+  }
+
+  // 3️⃣ báo cho người kia
+  socket.emit("revoke-message", { msgId });
+}
+
+
+socket.on("revoke-message", ({ msgId }) => {
+  revokeMessage(msgId);
+});

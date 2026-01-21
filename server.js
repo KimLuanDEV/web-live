@@ -800,6 +800,39 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
+
+
+  // 🚫 THU HỒI TIN NHẮN
+socket.on("revoke-message", ({ msgId }) => {
+  if (!msgId) return;
+
+  const fromUid = socket.data.uid;
+  if (!fromUid) return;
+
+  // 1️⃣ CẬP NHẬT INBOX SERVER (offline messages)
+  for (const [uid, inbox] of userInbox.entries()) {
+    let changed = false;
+
+    for (const m of inbox) {
+      if (m.id === msgId && m.from === fromUid) {
+        m.text = "__REVOKED__";
+        m.revoked = true;
+        changed = true;
+      }
+    }
+
+    if (changed) {
+      userInbox.set(uid, inbox);
+    }
+  }
+
+  saveInbox(Object.fromEntries(userInbox));
+
+  // 2️⃣ BẮN REALTIME CHO TẤT CẢ SOCKET KHÁC
+  socket.broadcast.emit("revoke-message", { msgId });
+});
+
+
 socket.on("user-block", ({ uid }) => {
   const me = socket.data.uid;
   if (!me || !uid || me === uid) return;
