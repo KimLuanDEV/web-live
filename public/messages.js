@@ -736,10 +736,6 @@ function openImgZoom(url) {
   modal.classList.remove("hidden");
 }
 
-document.querySelector("#imgZoom .img-zoom-backdrop")
-  .onclick = () => {
-    document.getElementById("imgZoom").classList.add("hidden");
-  };
 
 
 
@@ -782,10 +778,6 @@ function prevImg() {
   }
 }
 
-// đóng modal
-document.querySelector(".img-zoom-backdrop").onclick = () => {
-  document.getElementById("imgZoom").classList.add("hidden");
-};
 
 // phím ← →
 window.addEventListener("keydown", e => {
@@ -824,3 +816,19 @@ document
     chatBox.scrollTop = chatBox.scrollHeight;
   });
 }
+
+
+
+const imgZoom = document.getElementById("imgZoom");
+const imgZoomBackdrop = imgZoom.querySelector(".img-zoom-backdrop");
+const imgZoomInner = imgZoom.querySelector(".img-zoom-inner");
+
+// 👉 Click RA NGOÀI → đóng
+imgZoomBackdrop.addEventListener("click", () => {
+  imgZoom.classList.add("hidden");
+});
+
+// 👉 Click BÊN TRONG (ảnh, nút) → KHÔNG đóng
+imgZoomInner.addEventListener("click", e => {
+  e.stopPropagation();
+});
