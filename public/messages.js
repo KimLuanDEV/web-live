@@ -294,11 +294,15 @@ let content = "";
 
 if (text?.startsWith("/img ")) {
   content = `
-    <div class="chat-img-wrap">
-      <img src="${text.slice(5)}" class="chat-img">
-    </div>
+    <img
+      src="${text.slice(5)}"
+      class="chat-img"
+      loading="lazy"
+    >
   `;
-} 
+}
+
+
 else if (text?.startsWith("/video ")) {
   content = `
     <video src="${text.slice(7)}"

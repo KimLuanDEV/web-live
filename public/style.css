@@ -9749,3 +9749,28 @@ body.page-profile{
   height: 100%;
   object-fit: cover;   /* fill đẹp như Messenger */
 }
+
+
+.chat-img {
+  display: block;
+  max-width: min(72%, 360px);   /* gọn như Messenger */
+  max-height: 420px;            /* không quá cao */
+  width: auto;
+  height: auto;
+  border-radius: 14px;
+  object-fit: contain;          /* GIỮ TỈ LỆ */
+  background: transparent;
+}
+
+/* Tin nhắn của mình → sát phải */
+.chat-line.me .chat-img {
+  margin-left: auto;
+}
+
+/* Mobile gọn hơn */
+@media (max-width: 520px) {
+  .chat-img {
+    max-width: 78%;
+    max-height: 300px;
+  }
+}
