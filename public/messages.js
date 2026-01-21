@@ -123,14 +123,14 @@ socket.on("connect", async () => {
 
 
 
-socket.on("offline-messages", (list)=>{
+socket.on("offline-messages", (list) => {
   // 🔥 CHỈ XỬ LÝ 1 LẦN / LOAD
   if (offlineHandled) return;
   offlineHandled = true;
 
   console.log("📥 Offline messages:", list);
 
-  list.forEach(m=>{
+  list.forEach(m => {
     const peer = m.from === auth.uid ? m.to : m.from;
     const key =
       auth.uid < peer
@@ -139,25 +139,39 @@ socket.on("offline-messages", (list)=>{
 
     const arr = JSON.parse(localStorage.getItem(key) || "[]");
 
-    if(!arr.find(x => x.id === m.id)){
+    const exist = arr.find(x => x.id === m.id);
+
+    // 🆕 CHƯA CÓ → THÊM MỚI
+    if (!exist) {
       arr.push({
         id: m.id,
         from: m.from,
         to: m.to,
-        text: m.text,
+        text: m.text === "__REVOKED__" ? "__REVOKED__" : m.text,
         time: m.time,
-        peer
+        peer,
+        revoked: m.text === "__REVOKED__"
       });
-      localStorage.setItem(key, JSON.stringify(arr));
+    } 
+    // ♻️ ĐÃ CÓ → TUYỆT ĐỐI KHÔNG GHI ĐÈ REVOKE
+    else {
+      // nếu local đã revoke → bỏ qua server
+      if (exist.revoked) return;
+
+      // nếu server báo revoke → cập nhật
+      if (m.text === "__REVOKED__") {
+        exist.text = "__REVOKED__";
+        exist.revoked = true;
+      }
     }
+
+    localStorage.setItem(key, JSON.stringify(arr));
   });
 
-  if(list.length){
-  showInboxDot(list.length); // 🔔 hiện badge
-  renderUserList();          // 🔄 refresh danh sách
-}
-
-
+  if (list.length) {
+    showInboxDot(list.length);
+    renderUserList();
+  }
 });
 
 
