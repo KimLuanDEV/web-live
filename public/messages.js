@@ -70,6 +70,8 @@ function loadChat(){
   arr.forEach(m=>{
     const isMe = m.from === auth.uid;
 
+      const text = m.revoked ? "__REVOKED__" : m.text; // 🔥 FIX QUYẾT ĐỊNH
+      
     pushMsg(
       isMe ? "Bạn" : currentTarget.name,
       m.text,
