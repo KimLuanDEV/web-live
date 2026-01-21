@@ -7048,8 +7048,18 @@ body.is-guest .reactions-layer{
   padding:10px 14px;
   border-radius:16px;
   font-size:14px;
+
   backdrop-filter: blur(8px);
   border:1px solid rgba(255,255,255,.18);
+
+  /* 🔥 FIX CĂN CHỮ */
+  display: inline-flex;
+  align-items: center;      /* căn dọc */
+  justify-content: center;  /* căn ngang */
+  text-align: center;       /* căn text */
+
+  line-height: 1.35;
+  word-break: break-word;
 }
 
 .chat-line.me{ justify-content:flex-end; }
