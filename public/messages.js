@@ -49,6 +49,9 @@ async function startAudioCall(isCaller, offerData = null) {
   // 🔊 audio từ người kia
   remoteAudio = document.createElement("audio");
   remoteAudio.autoplay = true;
+  remoteAudio.muted = false;
+  remoteAudio.volume = 1;
+
 
   callPC.ontrack = e => {
     remoteAudio.srcObject = e.streams[0];
@@ -440,7 +443,11 @@ socket.on("incoming-call", async ({ from, name }) => {
   );
 
   if (!ok) return;
+
+  // ✅ BẮT BUỘC: khởi tạo WebRTC phía người nghe
+  await startAudioCall(false);
 });
+
 
 // 📡 nhận offer
 socket.on("call-offer", async ({ from, offer }) => {
