@@ -421,6 +421,8 @@ document.getElementById("chatHeaderAvatar").src = u.avatar || "";
 
       loadChat();
       openChat();
+      scrollChatToBottom(true); // 🔥 CHÈN DÒNG NÀY
+   
     };
 
     userList.appendChild(div);
@@ -577,6 +579,7 @@ function showMessageToast({ name, text, avatar, uid }) {
       currentTargetUID = u.uid;
       loadChat();
       openChat();
+      scrollChatToBottom(true); // ✅
     }
     div.remove();
   };
@@ -811,3 +814,13 @@ document
     if (dx > 50) prevImg();
     if (dx < -50) nextImg();
   });
+
+
+  function scrollChatToBottom(force = false) {
+  if (!chatBox) return;
+
+  // đợi DOM render xong (rất quan trọng)
+  requestAnimationFrame(() => {
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
