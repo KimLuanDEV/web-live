@@ -13,9 +13,6 @@ let currentTargetUID = null;
 let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
-let callPC = null;
-let localStream = null;
-let callingPeer = null;
 
 // 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
 const renderedMsgIds = new Set();
@@ -284,8 +281,7 @@ socket.on("msg-status", ({ msgId, status }) => {
 
 
 
-function pushMsg(name, text, isMe=false, msgId=null, status=""){
-  // 🔒 CHẶN RENDER TRÙNG
+function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
   if (msgId && renderedMsgIds.has(msgId)) return;
   if (msgId) renderedMsgIds.add(msgId);
 
@@ -293,24 +289,30 @@ function pushMsg(name, text, isMe=false, msgId=null, status=""){
   div.className = "chat-line " + (isMe ? "me" : "other");
   div.dataset.msgId = msgId || "";
 
-  const time = new Date().toLocaleTimeString("vi-VN",{
-    hour:"2-digit",
-    minute:"2-digit"
-  });
+  let content = "";
+
+  if (text?.startsWith("/img ")) {
+    content = `<img src="${text.slice(5)}" class="chat-img">`;
+  } else if (text?.startsWith("/video ")) {
+    content = `
+      <video src="${text.slice(7)}"
+             controls
+             playsinline
+             class="chat-video"></video>`;
+  } else {
+    content = text;
+  }
 
   div.innerHTML = `
-    <div class="msg-bubble ${isMe ? "me":"other"}">${text}</div>
+    <div class="msg-bubble ${isMe ? "me":"other"}">${content}</div>
     <div class="chat-time">
-      ${time}
+      ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
     </div>
   `;
 
   chatBox.appendChild(div);
-
-  requestAnimationFrame(() => {
-    chatBox.scrollTop = chatBox.scrollHeight;
-  });
+  chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 
@@ -568,109 +570,56 @@ socket.on("msg-blocked", ({ reason }) => {
 
 
 
-//Call voice
 
-document.getElementById("btnCall").onclick = async () => {
-  if(!currentTargetUID) return;
 
-  socket.emit("call-offer", {
-    to: currentTargetUID
+async function uploadChatFile(file, type) {
+  const fd = new FormData();
+  fd.append(type, file);
+
+  const res = await fetch(
+    type === "image"
+      ? "/api/upload-chat-image"
+      : "/api/upload-chat-video",
+    { method: "POST", body: fd }
+  );
+
+  return res.json(); // { url }
+}
+
+
+document.getElementById("imgInput").onchange = async e => {
+  const file = e.target.files[0];
+  if (!file || !currentTarget) return;
+
+  const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+
+  pushMsg("Bạn", "🖼️ Đang gửi ảnh...", true, msgId, "⏳");
+
+  const { url } = await uploadChatFile(file, "image");
+
+  socket.emit("private-message", {
+    to: currentTarget.uid,
+    msgId,
+    type: "image",
+    media: url
   });
 };
 
+document.getElementById("videoInput").onchange = async e => {
+  const file = e.target.files[0];
+  if (!file || !currentTarget) return;
 
-socket.on("call-incoming", async ({ from, name }) => {
-  const ok = await showModal(
-    `${name} đang gọi voice`,
-    "Nhận",
-    "Từ chối"
-  );
+  const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-  if (!ok) {
-    socket.emit("call-reject", { to: from });
-    return;
-  }
+  pushMsg("Bạn", "🎥 Đang gửi video...", true, msgId, "⏳");
 
-  startVoiceCall(from, true);
-});
+  const { url } = await uploadChatFile(file, "video");
 
-
-async function startVoiceCall(peerUid, isAnswer=false){
-  callingPeer = peerUid;
-
-  localStream = await navigator.mediaDevices.getUserMedia({
-    audio:true,
-    video:false
+  socket.emit("private-message", {
+    to: currentTarget.uid,
+    msgId,
+    type: "video",
+    media: url
   });
+};
 
-  const ice = await fetch("/ice").then(r=>r.json());
-
-  callPC = new RTCPeerConnection({
-    iceServers: ice.iceServers
-  });
-
-  localStream.getTracks().forEach(t=>callPC.addTrack(t, localStream));
-
-  callPC.ontrack = e=>{
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    document.body.appendChild(audio);
-  };
-
-  callPC.onicecandidate = e=>{
-    if(e.candidate){
-      socket.emit("call-ice", {
-        to: callingPeer,
-        candidate: e.candidate
-      });
-    }
-  };
-
-  if(!isAnswer){
-    const offer = await callPC.createOffer();
-    await callPC.setLocalDescription(offer);
-
-    socket.emit("call-sdp", {
-      to: peerUid,
-      sdp: offer
-    });
-  }
-}
-
-
-socket.on("call-sdp", async ({ from, sdp }) => {
-  if(!callPC){
-    await startVoiceCall(from, true);
-  }
-
-  await callPC.setRemoteDescription(sdp);
-
-  if(sdp.type === "offer"){
-    const ans = await callPC.createAnswer();
-    await callPC.setLocalDescription(ans);
-
-    socket.emit("call-sdp", {
-      to: from,
-      sdp: ans
-    });
-  }
-});
-
-socket.on("call-ice", ({ candidate })=>{
-  callPC?.addIceCandidate(candidate);
-});
-
-
-function endCall(){
-  callPC?.close();
-  callPC = null;
-  localStream?.getTracks().forEach(t=>t.stop());
-  localStream = null;
-
-  socket.emit("call-end", { to: callingPeer });
-  callingPeer = null;
-}
-
-socket.on("call-end", endCall);
-socket.on("call-reject", endCall);

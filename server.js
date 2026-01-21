@@ -67,6 +67,14 @@ const coverUpload = multer({
 });
 
 
+const CHAT_IMAGE_DIR = "/opt/render/project/data/chat-images";
+const CHAT_VIDEO_DIR = "/opt/render/project/data/chat-videos";
+
+[CHAT_IMAGE_DIR, CHAT_VIDEO_DIR].forEach(d=>{
+  if(!fs.existsSync(d)) fs.mkdirSync(d,{recursive:true});
+});
+
+
 
 
 const INBOX_FILE = "/opt/render/project/data/inbox.json";
@@ -136,6 +144,24 @@ function saveSocial(){
 }
 
 
+const chatImgUpload = multer({
+  storage: multer.diskStorage({
+    destination: CHAT_IMAGE_DIR,
+    filename: (_, f, cb) =>
+      cb(null, Date.now()+"_"+Math.random().toString(36).slice(2)+path.extname(f.originalname))
+  })
+});
+
+const chatVideoUpload = multer({
+  storage: multer.diskStorage({
+    destination: CHAT_VIDEO_DIR,
+    filename: (_, f, cb) =>
+      cb(null, Date.now()+"_"+Math.random().toString(36).slice(2)+path.extname(f.originalname))
+  }),
+  limits:{ fileSize: 300 * 1024 * 1024 }
+});
+
+
 
 
 const app = express();
@@ -157,6 +183,8 @@ app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
   res.json({ url: "/avatars/" + req.file.filename });
 });
 
+app.use("/chat-images", express.static(CHAT_IMAGE_DIR));
+app.use("/chat-videos", express.static(CHAT_VIDEO_DIR));
 
 const postUpload = multer({
   storage: multer.diskStorage({
@@ -179,6 +207,17 @@ app.post("/api/upload-post-image", postUpload.single("image"), (req,res)=>{
   if(!req.file) return res.status(400).json({error:"no file"});
   res.json({ url: "/post-images/" + req.file.filename });
 });
+
+
+
+app.post("/api/upload-chat-image", chatImgUpload.single("image"), (req,res)=>{
+  res.json({ url: "/chat-images/" + req.file.filename });
+});
+
+app.post("/api/upload-chat-video", chatVideoUpload.single("video"), (req,res)=>{
+  res.json({ url: "/chat-videos/" + req.file.filename });
+});
+
 
 
 const postVideoUpload = multer({
@@ -1395,100 +1434,15 @@ socket.on("lp-like-reply-child", async ({ postId, commentIndex, replyId, childId
 
 
 
-socket.on("private-message", async ({ to, text, msgId }) => {
+socket.on("private-message", async ({ to, text, type, media, msgId }) => {
+
 
   const fromUid = socket.data.uid;
-  if (!fromUid || !to || !text) return;
+
+ if (!fromUid || !to) return;
 
 
 
-
-
-// =====================
-// 📞 VOICE CALL 1-1
-// =====================
-
-// kiểm tra có được phép gọi không
-function canCall(from, to){
-  const db = loadUsers();
-  const a = db[from];
-  const b = db[to];
-  if(!a || !b) return false;
-
-  // 🚫 block 2 chiều
-  if ((a.profile.blocked || []).includes(to)) return false;
-  if ((b.profile.blocked || []).includes(from)) return false;
-
-  // ✅ chỉ cho gọi bạn bè
-  return (a.profile.friends || []).includes(to);
-}
-
-// 📤 gửi yêu cầu gọi
-socket.on("call-offer", ({ to }) => {
-  const from = socket.data.uid;
-  if (!from || !to) return;
-  if (!canCall(from, to)) return;
-
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  const db = loadUsers();
-  const name = db[from]?.profile?.name || from;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("call-incoming", {
-      from,
-      name
-    });
-  }
-});
-
-// 📡 SDP (offer / answer)
-socket.on("call-sdp", ({ to, sdp }) => {
-  const from = socket.data.uid;
-  if (!from || !to || !sdp) return;
-
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("call-sdp", { from, sdp });
-  }
-});
-
-// 🧊 ICE candidate
-socket.on("call-ice", ({ to, candidate }) => {
-  if (!to || !candidate) return;
-
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("call-ice", { candidate });
-  }
-});
-
-// ❌ từ chối cuộc gọi
-socket.on("call-reject", ({ to }) => {
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("call-reject");
-  }
-});
-
-// 🔚 kết thúc cuộc gọi
-socket.on("call-end", ({ to }) => {
-  const sockets = activeUsers.get(to);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    io.to(sid).emit("call-end");
-  }
-});
-
-// End Call Voice
 
 
 // 🔒 CHỈ CHO PHÉP NHẮN TIN VỚI BẠN BÈ
@@ -1520,13 +1474,29 @@ if (!myFriends.includes(to)) {
   return;
 }
 
-  const id = msgId || Date.now() + "_" + Math.random();
+
+
+// 🔥 CHUẨN HOÁ NỘI DUNG TIN NHẮN
+let payloadText = text || "";
+
+if (type === "image" && media) {
+  payloadText = "/img " + media;
+}
+
+if (type === "video" && media) {
+  payloadText = "/video " + media;
+}
+
+
+ const id = msgId || Date.now() + "_" + Math.random().toString(36).slice(2);
+
+
 
   const msg = {
     id,
     from: fromUid,
     to,
-    text,
+    text: payloadText,
     time: Date.now(),
     seen: false,
     delivered: false
@@ -1553,7 +1523,7 @@ if (!myFriends.includes(to)) {
     for (const sid of sockets) {
       io.to(sid).emit("private-message", {
         from: fromProfile,
-        text,
+        text: payloadText,
         msgId: id
       });
       io.to(sid).emit("inbox-new");
@@ -1571,7 +1541,10 @@ if (subs && subs.length) {
 
   const payload = JSON.stringify({
     title: "💬 Tin nhắn mới",
-    body: `${fromUser?.profile?.name || fromUid}: ${text}`,
+    body:
+    type === "image" ? "📷 Hình ảnh"
+    : type === "video" ? "🎥 Video"
+    : payloadText,
     url: "/messages.html"
   });
 
