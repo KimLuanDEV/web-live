@@ -1790,7 +1790,10 @@ const inbox = userInbox.get(uid);
 if (inbox && inbox.length) {
 
   // 👉 CHỈ LẤY TIN CHƯA GỬI
-  const toSend = inbox.filter(m => !m.delivered);
+  const toSend = inbox.filter(
+  m => !m.delivered || m.revoked === true
+);
+
 
   if (toSend.length) {
 
