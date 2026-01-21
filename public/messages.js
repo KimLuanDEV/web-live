@@ -941,37 +941,6 @@ function revokeMessage(msgId) {
 }
 
 
-// 🔥 NHẬN TIN THU HỒI TỪ NGƯỜI KHÁC
 socket.on("revoke-message", ({ msgId }) => {
-  if (!msgId) return;
-
-  // 1️⃣ update UI nếu đang hiển thị
-  const el = document.querySelector(`[data-msg-id="${msgId}"]`);
-  if (el) {
-    el.innerHTML = `
-      <div class="msg-revoked">
-        🚫 Tin nhắn đã được thu hồi
-      </div>
-    `;
-  }
-
-  // 2️⃣ update localStorage (KHÔNG CHECK auth.uid)
-  Object.keys(localStorage)
-    .filter(k => k.startsWith("chat_"))
-    .forEach(key => {
-      const arr = JSON.parse(localStorage.getItem(key) || "[]");
-      let changed = false;
-
-      arr.forEach(m => {
-        if (m.id === msgId) {
-          m.text = "__REVOKED__";
-          m.revoked = true;
-          changed = true;
-        }
-      });
-
-      if (changed) {
-        localStorage.setItem(key, JSON.stringify(arr));
-      }
-    });
+  revokeMessage(msgId);
 });
