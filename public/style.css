@@ -7044,25 +7044,48 @@ body.is-guest .reactions-layer{
 
 
 .msg-bubble{
-  max-width:75%;
-  padding:10px 14px;
-  border-radius:16px;
-  font-size:14px;
+  /* KÍCH THƯỚC */
+  max-width: 70%;
+  padding: 6px 10px;          /* 🔥 trên/dưới < trái/phải */
+  border-radius: 14px;
 
-  backdrop-filter: blur(8px);
-  border:1px solid rgba(255,255,255,.18);
+  /* CHỮ */
+  font-size: 14px;
+  line-height: 1.28;          /* 🔥 gọn, cân */
+  letter-spacing: .1px;
 
-  /* 🔥 FIX CĂN CHỮ */
-  display: inline-flex;
-  align-items: center;      /* căn dọc */
-  justify-content: center;  /* căn ngang */
-  text-align: center;       /* căn text */
-
-  line-height: 1.35;
+  /* CĂN CHỮ */
+  text-align: left;           /* giống Messenger */
+  white-space: pre-wrap;
   word-break: break-word;
+
+  /* HIỂN THỊ */
+  display: inline-block;      /* 🔥 bubble co theo text */
+  
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255,255,255,.18);
 }
 
-.chat-line.me{ justify-content:center }
+.msg-bubble{
+  text-align: center;
+}
+
+.msg-bubble:has(br),
+.msg-bubble:has(span){
+  text-align: left;
+}
+
+.msg-bubble.me{
+  background: rgba(95,168,255,.18);
+}
+
+.msg-bubble.other{
+  background: rgba(255,255,255,.08);
+}
+
+
+
+.chat-line.me{ justify-content:flex-end; }
 .msg-bubble.me{
   background: linear-gradient(135deg,#ff3b6b,#ff7aa5);
   color:#fff;
