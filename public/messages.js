@@ -447,11 +447,6 @@ else if (text?.startsWith("/album ")) {
     html = `
       <div>
          <span class="bubble-text ${isMe ? "me" : "other"}">${text}</span>
-          ${html}
-    <div class="chat-time">
-      ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
-      ${isMe ? `<span class="msg-status">${status}</span>` : ""}
-    </div>
       </div>
     `;
   }
