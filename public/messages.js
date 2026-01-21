@@ -1054,6 +1054,83 @@ socket.on("revoke-message", ({ msgId }) => {
 });
 
 
-document.getElementById("btnCallLobby")?.addEventListener("click", () => {
-  location.href = "/calls.html";
+let pc, localStream;
+const iceServers = await fetch("/ice").then(r => r.json());
+
+async function startVoiceCall(toUid) {
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  pc = new RTCPeerConnection(iceServers);
+
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+  pc.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("webrtc-ice", {
+        to: toUid,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  pc.ontrack = e => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    document.body.appendChild(audio);
+  };
+
+  const offer = await pc.createOffer();
+  await pc.setLocalDescription(offer);
+
+  socket.emit("webrtc-offer", {
+    to: toUid,
+    sdp: offer
+  });
+}
+
+
+socket.on("incoming-call", ({ from }) => {
+  showCallPopup(from); // UI đổ chuông
+});
+
+
+socket.on("webrtc-offer", async ({ from, sdp }) => {
+  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+
+  pc = new RTCPeerConnection(iceServers);
+  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+
+  pc.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("webrtc-ice", {
+        to: from,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  pc.ontrack = e => {
+    const audio = document.createElement("audio");
+    audio.srcObject = e.streams[0];
+    audio.autoplay = true;
+    document.body.appendChild(audio);
+  };
+
+  await pc.setRemoteDescription(new RTCSessionDescription(sdp));
+
+  const answer = await pc.createAnswer();
+  await pc.setLocalDescription(answer);
+
+  socket.emit("webrtc-answer", {
+    to: from,
+    sdp: answer
+  });
+});
+
+
+socket.on("webrtc-ice", ({ candidate }) => {
+  if (pc && candidate) {
+    pc.addIceCandidate(new RTCIceCandidate(candidate));
+  }
 });
