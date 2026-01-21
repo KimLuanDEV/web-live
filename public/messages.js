@@ -684,7 +684,7 @@ const sendBtn = document.getElementById("sendBtn");
 // 🔥 AUTO GROW TEXTAREA
 msgInput.addEventListener("input", () => {
   msgInput.style.height = "auto";
-  
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + "px";
 
   // giữ logic mờ / hiện nút gửi
   sendBtn.style.opacity = msgInput.value.trim() ? "1" : "0.4";
