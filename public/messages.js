@@ -67,18 +67,22 @@ function loadChat(){
   const arr = JSON.parse(localStorage.getItem(key) || "[]");
   chatBox.innerHTML = "";
 
-  arr.forEach(m=>{
-    const isMe = m.from === auth.uid;
+  arr.forEach(m => {
+  const isMe = m.from === auth.uid;
 
-    pushMsg(
-      isMe ? "Bạn" : currentTarget.name,
-      m.text,
-      isMe,
-      m.id,                  // 🔥 TRUYỀN msgId
-      "",
-      isMe ? auth.avatar : currentTarget.avatar
-    );
-  });
+  // 🔥 ƯU TIÊN REVOKE – BẤT KỂ text GÌ
+  const text = m.revoked ? "__REVOKED__" : m.text;
+
+  pushMsg(
+    isMe ? "Bạn" : currentTarget.name,
+    text,
+    isMe,
+    m.id,
+    "",
+    isMe ? auth.avatar : currentTarget.avatar
+  );
+});
+
 }
 
 
