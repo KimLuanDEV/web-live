@@ -7075,6 +7075,7 @@ body.is-guest .reactions-layer{
   padding: 3px;
   border-radius: 14px;
   font-size: 14px;
+  background: pink;
 }
 
 
