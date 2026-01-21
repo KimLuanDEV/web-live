@@ -9865,29 +9865,40 @@ body.page-profile{
 
 
 /* =========================
-   CHAT TEXT BUBBLE – COMPACT
+   CHAT TEXT BUBBLE – FIX THÔ
    ========================= */
 
+/* Dòng chat */
+.chat-line{
+  display:flex;
+  flex-direction:column;
+  gap:2px;                 /* 🔥 gọn hơn */
+  padding: 1px 0;          /* 🔥 bỏ khoảng trống thừa */
+}
+
+/* Bubble text */
 .msg-bubble{
-  display: inline-block;
-  max-width: 72%;              /* gọn hơn */
-  padding: 6px 10px;           /* 🔥 GIẢM PADDING */
-  border-radius: 14px;
+  display:inline-block;
+  align-self:flex-start;
+  max-width: 66%;          /* 🔥 hẹp lại – giống Messenger */
+  padding: 5px 9px;        /* 🔥 padding nhỏ hơn */
+  border-radius: 16px;     /* 🔥 bo mềm */
   font-size: 13px;
-  line-height: 1.3;            /* 🔥 GỌN DÒNG */
+  line-height: 1.25;       /* 🔥 gọn dòng */
   white-space: pre-wrap;
   word-break: break-word;
-  background: rgba(255,255,255,.10);
-  border: 1px solid rgba(255,255,255,.18);
+
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.14);
   backdrop-filter: blur(6px);
 }
 
 /* Bubble của mình */
 .msg-bubble.me{
-  margin-left: auto;
+  align-self:flex-end;
   background: linear-gradient(
     135deg,
-    rgba(95,168,255,.30),
+    rgba(95,168,255,.28),
     rgba(37,240,154,.22)
   );
   border-color: rgba(95,168,255,.45);
@@ -9895,18 +9906,21 @@ body.page-profile{
 
 /* Bubble người khác */
 .msg-bubble.other{
-  margin-right: auto;
-  background: rgba(255,255,255,.08);
+  align-self:flex-start;
 }
 
-/* Dòng chat gọn hơn */
-.chat-line{
-  padding: 1px 0;              /* 🔥 GIẢM KHOẢNG TRỐNG */
-}
-
-/* Thời gian nhỏ gọn */
+/* Thời gian nhỏ & sát */
 .chat-time{
-  margin-top: 2px;
-  font-size: 11px;
-  opacity: .6;
+  margin-top: 1px;
+  font-size: 10px;
+  opacity: .55;
+}
+
+/* Mobile tối ưu hơn */
+@media (max-width: 520px){
+  .msg-bubble{
+    max-width: 72%;
+    font-size: 13px;
+    padding: 5px 8px;
+  }
 }
