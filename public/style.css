@@ -7077,14 +7077,12 @@ body.is-guest .reactions-layer{
   font-size: 14px;
   border: 1px solid rgba(255,255,255,.18);
   color: black;
-}
-
-.bubble-text.me{
-  background: rgba(95,168,255,.18);
+  text-align: center;
 }
 
 .bubble-text.other{
   background: rgba(255,255,255,.08);
+  color: white;
 }
 
 .chat-line.me{ justify-content:flex-end; }
@@ -7094,12 +7092,11 @@ body.is-guest .reactions-layer{
   box-shadow:0 0 18px rgba(255,59,107,.45);
 }
 
+.chat-line.other{ justify-content:flex-end; }
 .bubble-text.other{
-  background: rgba(0,0,0,.45);
-}
-
-.bubble-text{
-  text-align: center;
+  background: black;
+  color: #fff;
+  box-shadow:0 0 18px rgba(255,59,107,.45);
 }
 
 .msg-bubble:has(br),
