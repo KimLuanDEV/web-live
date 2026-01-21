@@ -313,19 +313,26 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
     `;
   }
 
-  // 🖼️ ALBUM
+// 🖼️ ALBUM + INDICATOR
 else if (text?.startsWith("/album ")) {
   const urls = text.slice(7).split("|");
+  const total = urls.length;
+
+  const showUrls = total > 4 ? urls.slice(0, 4) : urls;
 
   html = `
     <div class="chat-album ${isMe ? "me" : "other"}">
-      ${urls.map((u, i) => `
-        <img
-          src="${u}"
-          class="album-img"
-          onclick="openImgZoom('${u}')"
-        >
-      `).join("")}
+      ${showUrls.map((u, i) => {
+        const isLast = i === 3 && total > 4;
+        const more = total - 3;
+
+        return `
+          <div class="album-item" onclick="openImgZoom('${u}')">
+            <img src="${u}" class="album-img">
+            ${isLast ? `<div class="album-more">+${more}</div>` : ""}
+          </div>
+        `;
+      }).join("")}
     </div>
   `;
 }
