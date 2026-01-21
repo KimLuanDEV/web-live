@@ -216,7 +216,20 @@ socket.on("private-message", ({ from, text, msgId }) => {
       ? "chat_" + auth.uid + "_" + peer
       : "chat_" + peer + "_" + auth.uid;
 
-
+  // 1️⃣ LƯU VÀO LOCALSTORAGE (CHỐNG TRÙNG)
+  const arr = JSON.parse(localStorage.getItem(key) || "[]");
+  if (!arr.find(x => x.id === msgId)) {
+    arr.push({
+      id: msgId,
+      from: peer,
+      to: auth.uid,
+      text,
+      time: Date.now(),
+      peer,
+      seen: false        // 🔥 QUAN TRỌNG
+    });
+    localStorage.setItem(key, JSON.stringify(arr));
+  }
 
   // 2️⃣ NẾU MODAL ĐANG MỞ & ĐÚNG CHAT → RENDER
   if (!chatModal.classList.contains("hidden")) {
@@ -928,6 +941,37 @@ function revokeMessage(msgId) {
 }
 
 
+// 🔥 NHẬN TIN THU HỒI TỪ NGƯỜI KHÁC
 socket.on("revoke-message", ({ msgId }) => {
-  revokeMessage(msgId);
+  if (!msgId) return;
+
+  // 1️⃣ update UI nếu đang hiển thị
+  const el = document.querySelector(`[data-msg-id="${msgId}"]`);
+  if (el) {
+    el.innerHTML = `
+      <div class="msg-revoked">
+        🚫 Tin nhắn đã được thu hồi
+      </div>
+    `;
+  }
+
+  // 2️⃣ update localStorage (KHÔNG CHECK auth.uid)
+  Object.keys(localStorage)
+    .filter(k => k.startsWith("chat_"))
+    .forEach(key => {
+      const arr = JSON.parse(localStorage.getItem(key) || "[]");
+      let changed = false;
+
+      arr.forEach(m => {
+        if (m.id === msgId) {
+          m.text = "__REVOKED__";
+          m.revoked = true;
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        localStorage.setItem(key, JSON.stringify(arr));
+      }
+    });
 });
