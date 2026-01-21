@@ -9878,20 +9878,20 @@ body.page-profile{
 
 /* Bubble text */
 .msg-bubble{
-  display:inline-block;
-  align-self:flex-start;
-  max-width: 66%;          /* 🔥 hẹp lại – giống Messenger */
-  padding: 1px;        /* 🔥 padding nhỏ hơn */
-  border-radius: 16px;     /* 🔥 bo mềm */
+  display:inline-flex;              /* 🔥 đổi từ inline-block */
+  align-items:center;               /* 🔥 căn dọc */
+  justify-content:center;           /* 🔥 căn ngang */
+  text-align:center;                /* 🔥 chữ vào giữa */
+
+  max-width: 66%;
+  padding: 5px 10px;
+  border-radius: 16px;
   font-size: 13px;
-  line-height: 1.25;       /* 🔥 gọn dòng */
+  line-height: 1.25;
   white-space: pre-wrap;
   word-break: break-word;
-
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.14);
-  backdrop-filter: blur(6px);
 }
+
 
 /* Bubble của mình */
 .msg-bubble.me{
