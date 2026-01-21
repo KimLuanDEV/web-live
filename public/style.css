@@ -7080,8 +7080,26 @@ body.is-guest .reactions-layer{
   color: black;
 }
 
+.bubble-text.me{
+  background: rgba(95,168,255,.18);
+}
 
-.msg-bubble{
+.bubble-text.other{
+  background: rgba(255,255,255,.08);
+}
+
+.chat-line.me{ justify-content:flex-end; }
+.bubble-text.me{
+  background: linear-gradient(135deg,#ff3b6b,#ff7aa5);
+  color:#fff;
+  box-shadow:0 0 18px rgba(255,59,107,.45);
+}
+
+.bubble-text.other{
+  background: rgba(0,0,0,.45);
+}
+
+.bubble-text{
   text-align: center;
 }
 
@@ -7090,26 +7108,9 @@ body.is-guest .reactions-layer{
   text-align: left;
 }
 
-.msg-bubble.me{
-  background: rgba(95,168,255,.18);
-}
-
-.msg-bubble.other{
-  background: rgba(255,255,255,.08);
-}
 
 
 
-.chat-line.me{ justify-content:flex-end; }
-.msg-bubble.me{
-  background: linear-gradient(135deg,#ff3b6b,#ff7aa5);
-  color:#fff;
-  box-shadow:0 0 18px rgba(255,59,107,.45);
-}
-
-.msg-bubble.other{
-  background: rgba(0,0,0,.45);
-}
 
 
 /* ===============================
