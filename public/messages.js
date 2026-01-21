@@ -14,6 +14,12 @@ let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
 
+// ===== VOICE CALL =====
+let voicePC = null;
+let voiceStream = null;
+let currentCallUid = null;
+
+
 // 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
 const renderedMsgIds = new Set();
 
@@ -214,6 +220,16 @@ const chatTitle = document.getElementById("chatTitle");
 // 🔽 NÚT KÉO XUỐNG CUỐI CHAT
 const btnScrollBottom = document.getElementById("btnScrollBottom");
 
+
+// 🎤 NÚT GỌI VOICE
+document.querySelector(".btn-call-voice").onclick = () => {
+  if (!currentTargetUID) return;
+  startVoiceCall(currentTargetUID);
+};
+
+
+
+
 // bấm nút → về cuối
 btnScrollBottom.onclick = () => {
   scrollChatToBottom(true);
@@ -334,6 +350,66 @@ if (chatModal.classList.contains("hidden")) {
 });
 
 
+// 📥 NHẬN OFFER (BÊN ĐƯỢC GỌI)
+socket.on("webrtc-offer", async ({ from, sdp }) => {
+  currentCallUid = from;
+
+  voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  const ice = await fetch("/ice").then(r => r.json());
+
+  voicePC = new RTCPeerConnection(ice);
+
+  voiceStream.getTracks().forEach(t => {
+    voicePC.addTrack(t, voiceStream);
+  });
+
+  voicePC.ontrack = e => {
+    let audio = document.getElementById("remoteVoice");
+    if (!audio) {
+      audio = document.createElement("audio");
+      audio.id = "remoteVoice";
+      audio.autoplay = true;
+      document.body.appendChild(audio);
+    }
+    audio.srcObject = e.streams[0];
+  };
+
+  voicePC.onicecandidate = e => {
+    if (e.candidate) {
+      socket.emit("webrtc-ice", {
+        to: from,
+        candidate: e.candidate
+      });
+    }
+  };
+
+  await voicePC.setRemoteDescription(new RTCSessionDescription(sdp));
+
+  const answer = await voicePC.createAnswer();
+  await voicePC.setLocalDescription(answer);
+
+  socket.emit("webrtc-answer", {
+    to: from,
+    sdp: answer
+  });
+
+  console.log("✅ Voice call accepted");
+});
+
+// 📤 NHẬN ANSWER (BÊN GỌI)
+socket.on("webrtc-answer", async ({ sdp }) => {
+  if (!voicePC) return;
+  await voicePC.setRemoteDescription(
+    new RTCSessionDescription(sdp)
+  );
+});
+
+// 🔁 ICE
+socket.on("webrtc-ice", ({ candidate }) => {
+  if (voicePC && candidate) {
+    voicePC.addIceCandidate(new RTCIceCandidate(candidate));
+  }
+});
 
 
 
@@ -1053,84 +1129,59 @@ socket.on("revoke-message", ({ msgId }) => {
     });
 });
 
-
-let pc, localStream;
-const iceServers = await fetch("/ice").then(r => r.json());
-
+// ===== START VOICE CALL =====
 async function startVoiceCall(toUid) {
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  try {
+    currentCallUid = toUid;
 
-  pc = new RTCPeerConnection(iceServers);
+    // 1️⃣ Lấy mic
+    voiceStream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
-  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
+    // 2️⃣ Lấy ICE server (Twilio TURN)
+    const ice = await fetch("/ice").then(r => r.json());
 
-  pc.onicecandidate = e => {
-    if (e.candidate) {
-      socket.emit("webrtc-ice", {
-        to: toUid,
-        candidate: e.candidate
-      });
-    }
-  };
+    // 3️⃣ Tạo PeerConnection
+    voicePC = new RTCPeerConnection(ice);
 
-  pc.ontrack = e => {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    document.body.appendChild(audio);
-  };
+    // 4️⃣ Add mic track
+    voiceStream.getTracks().forEach(t => {
+      voicePC.addTrack(t, voiceStream);
+    });
 
-  const offer = await pc.createOffer();
-  await pc.setLocalDescription(offer);
+    // 5️⃣ Nhận audio từ người kia
+    voicePC.ontrack = e => {
+      let audio = document.getElementById("remoteVoice");
+      if (!audio) {
+        audio = document.createElement("audio");
+        audio.id = "remoteVoice";
+        audio.autoplay = true;
+        document.body.appendChild(audio);
+      }
+      audio.srcObject = e.streams[0];
+    };
 
-  socket.emit("webrtc-offer", {
-    to: toUid,
-    sdp: offer
-  });
-}
+    // 6️⃣ ICE candidate
+    voicePC.onicecandidate = e => {
+      if (e.candidate) {
+        socket.emit("webrtc-ice", {
+          to: toUid,
+          candidate: e.candidate
+        });
+      }
+    };
 
+    // 7️⃣ Tạo OFFER
+    const offer = await voicePC.createOffer();
+    await voicePC.setLocalDescription(offer);
 
-socket.on("incoming-call", ({ from }) => {
-  showCallPopup(from); // UI đổ chuông
-});
+    socket.emit("webrtc-offer", {
+      to: toUid,
+      sdp: offer
+    });
 
-
-socket.on("webrtc-offer", async ({ from, sdp }) => {
-  localStream = await navigator.mediaDevices.getUserMedia({ audio: true });
-
-  pc = new RTCPeerConnection(iceServers);
-  localStream.getTracks().forEach(t => pc.addTrack(t, localStream));
-
-  pc.onicecandidate = e => {
-    if (e.candidate) {
-      socket.emit("webrtc-ice", {
-        to: from,
-        candidate: e.candidate
-      });
-    }
-  };
-
-  pc.ontrack = e => {
-    const audio = document.createElement("audio");
-    audio.srcObject = e.streams[0];
-    audio.autoplay = true;
-    document.body.appendChild(audio);
-  };
-
-  await pc.setRemoteDescription(new RTCSessionDescription(sdp));
-
-  const answer = await pc.createAnswer();
-  await pc.setLocalDescription(answer);
-
-  socket.emit("webrtc-answer", {
-    to: from,
-    sdp: answer
-  });
-});
-
-
-socket.on("webrtc-ice", ({ candidate }) => {
-  if (pc && candidate) {
-    pc.addIceCandidate(new RTCIceCandidate(candidate));
+    console.log("📞 Calling", toUid);
+  } catch (err) {
+    alert("❌ Không thể bật micro");
+    console.error(err);
   }
-});
+}
