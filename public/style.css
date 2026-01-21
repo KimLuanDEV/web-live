@@ -9920,7 +9920,7 @@ body.page-profile{
 @media (max-width: 520px){
   .msg-bubble{
     max-width: 72%;
-    font-size: 13px;
-    padding: 1px 1px;
+    font-size: 15px;
+    padding: auto;
   }
 }
