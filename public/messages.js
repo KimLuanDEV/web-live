@@ -786,25 +786,18 @@ function uploadChatFileWithProgress(file, type, onProgress) {
         : "/api/upload-chat-video"
     );
 
-    // 🔥 PROGRESS: CHỈ CHO TỚI 95%
     xhr.upload.onprogress = e => {
       if (e.lengthComputable && onProgress) {
-        let percent = Math.round((e.loaded / e.total) * 100);
-        if (percent > 95) percent = 95; // 🧠 giữ 95%
+        const percent = Math.round((e.loaded / e.total) * 100);
         onProgress(percent);
       }
     };
 
     xhr.onload = () => {
       try {
-        const res = JSON.parse(xhr.responseText);
-
-        // ✅ SERVER XONG → NHẢY 100%
-        onProgress && onProgress(100);
-
-        resolve(res);
-      } catch (err) {
-        reject(err);
+        resolve(JSON.parse(xhr.responseText));
+      } catch {
+        reject();
       }
     };
 
@@ -812,7 +805,6 @@ function uploadChatFileWithProgress(file, type, onProgress) {
     xhr.send(fd);
   });
 }
-
 
 
 

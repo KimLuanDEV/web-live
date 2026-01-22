@@ -8,10 +8,8 @@
     "dev": "node server.js"
   },
   "dependencies": {
-    "@aws-sdk/client-s3": "^3.972.0",
     "bcrypt": "^6.0.0",
     "express": "^4.19.2",
-    "firebase-admin": "^13.6.0",
     "multer": "^2.0.2",
     "socket.io": "^4.7.5",
     "twilio": "^5.11.1",
