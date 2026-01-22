@@ -1395,25 +1395,43 @@ function updateToolProgress(btn, percent, type, stats = {}) {
   if (!btn) return;
 
   btn.classList.add("uploading", type);
-
-  const ring = btn.querySelector(".tool-ring");
-  const icon = btn.querySelector(".tool-icon");
-
   btn.style.setProperty("--deg", percent * 3.6 + "deg");
 
-  // text chính
-  icon.innerHTML = `
-    <div>${percent}%</div>
-    ${stats.speedMB ? `<div class="tool-sub">${stats.speedMB} MB/s • ~${stats.etaSec}s</div>` : ""}
-  `;
+  const icon = btn.querySelector(".tool-icon");
 
+  // 🟡 95% → đang xử lý server
+  if (percent === 95) {
+    icon.innerHTML = `
+      <div>95%</div>
+      <div class="tool-sub">Đang xử lý…</div>
+    `;
+    return;
+  }
+
+  // ⏱ Đang upload bình thường
+  if (percent < 95) {
+    icon.innerHTML = `
+      <div>${percent}%</div>
+      ${
+        stats.speedMB
+          ? `<div class="tool-sub">${stats.speedMB} MB/s • ~${stats.etaSec}s</div>`
+          : ""
+      }
+    `;
+    return;
+  }
+
+  // ✅ 100% → hoàn tất
   if (percent >= 100) {
+    icon.textContent = "100%";
+
     setTimeout(() => {
       btn.classList.remove("uploading", "image", "video");
       icon.textContent = btn.id === "btnImage" ? "📷" : "🎥";
     }, 600);
   }
 }
+
 
 
 
