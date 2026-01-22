@@ -14,6 +14,10 @@ let currentTarget = null;
 let allUsers = [];
 let onlineSet = new Set();
 
+// ❌ HUỶ UPLOAD
+let currentUploadXHR = null;
+let currentUploadMsgId = null;
+
 // 🔒 CHỐNG RENDER TRÙNG TIN NHẮN
 const renderedMsgIds = new Set();
 
@@ -776,6 +780,8 @@ socket.on("msg-blocked", ({ reason }) => {
 function uploadChatFileWithProgress(file, type, onProgress) {
   return new Promise((resolve, reject) => {
     const xhr = new XMLHttpRequest();
+    currentUploadXHR = xhr; // 🔥 lưu để huỷ
+
     const fd = new FormData();
     fd.append(type, file);
 
@@ -788,23 +794,40 @@ function uploadChatFileWithProgress(file, type, onProgress) {
 
     xhr.upload.onprogress = e => {
       if (e.lengthComputable && onProgress) {
-        const percent = Math.round((e.loaded / e.total) * 100);
+        let percent = Math.round((e.loaded / e.total) * 100);
+        if (percent > 95) percent = 95; // 🧠 giữ 95%
         onProgress(percent);
       }
     };
 
     xhr.onload = () => {
       try {
+        onProgress && onProgress(100); // ✅ server xong
         resolve(JSON.parse(xhr.responseText));
       } catch {
         reject();
+      } finally {
+        currentUploadXHR = null;
+        currentUploadMsgId = null;
       }
     };
 
-    xhr.onerror = reject;
+    xhr.onerror = () => {
+      reject();
+      currentUploadXHR = null;
+      currentUploadMsgId = null;
+    };
+
+    xhr.onabort = () => {
+      reject("aborted");
+      currentUploadXHR = null;
+      currentUploadMsgId = null;
+    };
+
     xhr.send(fd);
   });
 }
+
 
 
 
@@ -1189,7 +1212,26 @@ function setToolLoading(btn, loading=true){
 const btnImage = document.getElementById("btnImage");
 const imgInput = document.getElementById("imgInput");
 
-btnImage.onclick = () => imgInput.click();
+btnImage.onclick = () => {
+  if (currentUploadXHR) {
+    currentUploadXHR.abort(); // ❌ huỷ upload
+
+    // xoá progress UI
+    if (currentUploadMsgId) {
+      document
+        .querySelector(`[data-msg-id="${currentUploadMsgId}"]`)
+        ?.remove();
+    }
+
+    // reset nút
+    btnImage.classList.remove("uploading", "image");
+    btnImage.querySelector(".tool-icon").textContent = "📷";
+    return;
+  }
+
+  imgInput.click();
+};
+
 
 imgInput.onchange = async e => {
   if (!currentTarget) return;
@@ -1198,6 +1240,7 @@ imgInput.onchange = async e => {
   if (!files.length) return;
 
   const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+  currentUploadMsgId = msgId;
   pushUploadProgress(msgId);
 
   const urls = [];
@@ -1246,7 +1289,24 @@ p => {
 const btnVideo = document.getElementById("btnVideo");
 const videoInput = document.getElementById("videoInput");
 
-btnVideo.onclick = () => videoInput.click();
+btnVideo.onclick = () => {
+  if (currentUploadXHR) {
+    currentUploadXHR.abort(); // ❌ huỷ upload
+
+    if (currentUploadMsgId) {
+      document
+        .querySelector(`[data-msg-id="${currentUploadMsgId}"]`)
+        ?.remove();
+    }
+
+    btnVideo.classList.remove("uploading", "video");
+    btnVideo.querySelector(".tool-icon").textContent = "🎥";
+    return;
+  }
+
+  videoInput.click();
+};
+
 
 videoInput.onchange = async e => {
   if (!currentTarget) return;
@@ -1255,6 +1315,8 @@ videoInput.onchange = async e => {
   if (!file) return;
 
   const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+  currentUploadMsgId = msgId;
+
 
   // 1️⃣ Hiện progress ring
   pushUploadProgress(msgId);
