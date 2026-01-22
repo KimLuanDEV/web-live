@@ -10451,10 +10451,23 @@ body.page-profile{
   animation: spin 0.9s linear infinite;
 }
 
+.tool-percent{
+  position:absolute;
+  font-size:10px;
+  font-weight:600;
+  color:currentColor;
+  opacity:0;
+}
+
 /* khi loading */
 .chat-tool.is-loading{
   pointer-events:none;
   filter: brightness(.9);
+}
+
+.chat-tool.is-loading .tool-ring,
+.chat-tool.is-loading .tool-percent{
+  opacity:1;
 }
 
 .chat-tool.is-loading .tool-ring{
