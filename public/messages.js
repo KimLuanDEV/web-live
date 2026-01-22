@@ -1098,33 +1098,23 @@ function clearMyMessages(peer){
   const key =
     me < peer ? `chat_${me}_${peer}` : `chat_${peer}_${me}`;
 
-  // 1️⃣ XÓA LOCAL: chỉ tin do mình gửi
-  let arr = JSON.parse(localStorage.getItem(key) || "[]");
-  arr = arr.filter(m => m.from !== me);
-  localStorage.setItem(key, JSON.stringify(arr));
+  // 1️⃣ XÓA TOÀN BỘ LOCAL CHAT
+  localStorage.removeItem(key);
 
-  // 2️⃣ CLEAR UI
+  // 2️⃣ RESET UI + STATE
   renderedMsgIds.clear();
   chatBox.innerHTML = "";
 
-  arr.forEach(m => {
-    const isMe = m.from === me;
-    pushMsg(
-      isMe ? "Bạn" : currentTarget.name,
-      m.revoked ? "__REVOKED__" : m.text,
-      isMe,
-      m.id,
-      "",
-      isMe ? auth.avatar : currentTarget.avatar
-    );
-  });
-
-  // 3️⃣ BÁO SERVER XÓA 2 CHIỀU
+  // 3️⃣ BÁO SERVER (chỉ để dọn inbox offline)
   socket.emit("clear-my-messages", { peer });
 }
 
 
+
 socket.on("peer-cleared-my-messages", ({ by }) => {
+  // 🔥 NẾU CHÍNH MÌNH LÀ NGƯỜI BẤM CLEAR → BỎ QUA
+  if (by === auth.uid) return;
+
   const me = auth.uid;
   if(!me || !by) return;
 
@@ -1133,11 +1123,11 @@ socket.on("peer-cleared-my-messages", ({ by }) => {
 
   let arr = JSON.parse(localStorage.getItem(key) || "[]");
 
-  // ❌ XÓA CHỈ TIN DO NGƯỜI KIA GỬI
+  // ❌ xóa tin của người kia
   arr = arr.filter(m => m.from !== by);
   localStorage.setItem(key, JSON.stringify(arr));
 
-  // ❌ NẾU ĐANG MỞ CHAT → UPDATE UI
+  // ❌ chỉ render nếu đang mở chat
   if (currentTargetUID === by) {
     renderedMsgIds.clear();
     chatBox.innerHTML = "";
@@ -1157,6 +1147,7 @@ socket.on("peer-cleared-my-messages", ({ by }) => {
 
   renderUserList();
 });
+
 
 
 
