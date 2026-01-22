@@ -1055,47 +1055,84 @@ socket.on("revoke-message", ({ msgId }) => {
 
 
 
-async function confirmClearChat(){
+async function confirmClearMyMessages(){
   if(!currentTargetUID) return;
 
   const ok = await showModal(
-    "Bạn có chắc muốn xóa toàn bộ lịch sử tin nhắn?\nHành động này không thể hoàn tác.",
-    "Xóa",
+    "Xóa toàn bộ tin nhắn bạn đã gửi?\nTin nhắn của đối phương sẽ được giữ nguyên.",
+    "Xóa tin của tôi",
     "Huỷ"
   );
 
   if(!ok) return;
 
-  clearChatHistory(currentTargetUID);
+  clearMyMessages(currentTargetUID);
 }
 
-function clearChatHistory(peer){
-  if(!auth?.uid || !peer) return;
 
-  // 🔑 xác định đúng chat key
+function clearMyMessages(peer){
+  const me = auth.uid;
+  if(!me || !peer) return;
+
   const key =
-    auth.uid < peer
-      ? "chat_" + auth.uid + "_" + peer
-      : "chat_" + peer + "_" + auth.uid;
+    me < peer ? `chat_${me}_${peer}` : `chat_${peer}_${me}`;
 
-  console.log("🗑️ Clear chat key:", key);
+  // 1️⃣ XÓA LOCAL: chỉ tin do mình gửi
+  let arr = JSON.parse(localStorage.getItem(key) || "[]");
+  arr = arr.filter(m => m.from !== me);
+  localStorage.setItem(key, JSON.stringify(arr));
 
-  // ❌ XÓA LOCAL STORAGE
-  localStorage.removeItem(key);
-
-  // ❌ RESET STATE
+  // 2️⃣ CLEAR UI
   renderedMsgIds.clear();
+  chatBox.innerHTML = "";
 
-  // ❌ CLEAR UI
-  chatBox.innerHTML = `
-    <div class="msg-cleared">
-      🗑️ Lịch sử tin nhắn đã được xóa
-    </div>
-  `;
+  arr.forEach(m => {
+    const isMe = m.from === me;
+    pushMsg(
+      isMe ? "Bạn" : currentTarget.name,
+      m.revoked ? "__REVOKED__" : m.text,
+      isMe,
+      m.id,
+      "",
+      isMe ? auth.avatar : currentTarget.avatar
+    );
+  });
 
-  // ❌ RESET UNREAD
-  renderUserList();
-
-  // (tuỳ chọn) báo server dọn inbox offline
-  socket.emit("chat-cleared", { peer });
+  // 3️⃣ BÁO SERVER XÓA 2 CHIỀU
+  socket.emit("clear-my-messages", { peer });
 }
+
+
+socket.on("peer-cleared-my-messages", ({ by }) => {
+  const me = auth.uid;
+  if(!me || !by) return;
+
+  const key =
+    me < by ? `chat_${me}_${by}` : `chat_${by}_${me}`;
+
+  let arr = JSON.parse(localStorage.getItem(key) || "[]");
+
+  // ❌ XÓA CHỈ TIN DO NGƯỜI KIA GỬI
+  arr = arr.filter(m => m.from !== by);
+  localStorage.setItem(key, JSON.stringify(arr));
+
+  // ❌ NẾU ĐANG MỞ CHAT → UPDATE UI
+  if (currentTargetUID === by) {
+    renderedMsgIds.clear();
+    chatBox.innerHTML = "";
+
+    arr.forEach(m => {
+      const isMe = m.from === me;
+      pushMsg(
+        isMe ? "Bạn" : currentTarget.name,
+        m.revoked ? "__REVOKED__" : m.text,
+        isMe,
+        m.id,
+        "",
+        isMe ? auth.avatar : currentTarget.avatar
+      );
+    });
+  }
+
+  renderUserList();
+});

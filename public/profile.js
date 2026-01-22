@@ -1236,3 +1236,43 @@ document.querySelectorAll(".avatar-camera").forEach(el=>{
 });
 
 
+async function confirmClearChat(){
+  if(!currentTargetUID) return;
+
+  const ok = await showModal(
+    "Bạn có chắc muốn xóa toàn bộ lịch sử tin nhắn?\nHành động này không thể hoàn tác.",
+    "Xóa",
+    "Huỷ"
+  );
+
+  if(!ok) return;
+
+  clearChatHistory(currentTargetUID);
+}
+
+
+function clearChatHistory(peer){
+  if(!auth?.uid || !peer) return;
+
+  const key =
+    auth.uid < peer
+      ? "chat_" + auth.uid + "_" + peer
+      : "chat_" + peer + "_" + auth.uid;
+
+  // ❌ XÓA TOÀN BỘ LOCAL CHAT
+  localStorage.removeItem(key);
+
+  // ❌ reset UI
+  renderedMsgIds.clear();
+  chatBox.innerHTML = `
+    <div class="msg-cleared">
+      🗑️ Lịch sử tin nhắn đã được xóa
+    </div>
+  `;
+
+  // ❌ reset badge
+  renderUserList();
+
+  // (tuỳ chọn) báo server
+  socket.emit("chat-cleared", { peer });
+}

@@ -801,22 +801,39 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
-  
-socket.on("chat-cleared", ({ peer }) => {
+
+socket.on("clear-my-messages", ({ peer }) => {
   const me = socket.data.uid;
   if(!me || !peer) return;
 
-  const inbox = userInbox.get(me);
-  if(!inbox) return;
+  console.log("🧹 Clear my messages:", me, "→", peer);
 
-  // ❌ XÓA TOÀN BỘ TIN LIÊN QUAN peer
-  const filtered = inbox.filter(
-    m => m.from !== peer && m.to !== peer
-  );
+  // 1️⃣ XÓA OFFLINE INBOX (CẢ 2 USER)
+  [me, peer].forEach(uid => {
+    const inbox = userInbox.get(uid);
+    if(!inbox) return;
 
-  userInbox.set(me, filtered);
+    const filtered = inbox.filter(
+      m => !(m.from === me && m.to === peer)
+    );
+
+    userInbox.set(uid, filtered);
+  });
+
   saveInbox(Object.fromEntries(userInbox));
+
+  // 2️⃣ REALTIME: báo B để xóa local
+  const sockets = activeUsers.get(peer);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("peer-cleared-my-messages", {
+        by: me
+      });
+    }
+  }
 });
+
+
 
 
 
@@ -2710,6 +2727,9 @@ socket.on("host-stream-ready", ({ roomId }) => {
 
 
     
+
+
+
 const uid = socket.data.uid;
 if (uid && activeUsers.has(uid)) {
   const set = activeUsers.get(uid);
