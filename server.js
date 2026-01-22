@@ -43,6 +43,16 @@ const uploadR2 = multer({              // ✅ đặt sau
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
 const SOCIAL_FILE = path.join("/opt/render/project/data", "social_posts.json");
 
+const R2_PUBLIC_BASE = process.env.R2_ENDPOINT.replace(
+  "https://", 
+  "https://pub-"
+);
+
+
+
+let usersDB = loadUsers();
+
+
 /*
 const MEDIA_DIRS = [
   "/opt/render/project/data/post-images",
@@ -199,7 +209,9 @@ app.post("/api/upload-chat-image", uploadR2.single("image"), async (req, res) =>
       ContentType: req.file.mimetype
     }));
 
+
     const url = `${process.env.R2_ENDPOINT}/${key}`;
+
     res.json({ url });
 
   } catch (e) {
@@ -220,7 +232,9 @@ app.post("/api/upload-chat-video", uploadR2.single("video"), async (req, res) =>
       ContentType: req.file.mimetype
     }));
 
-    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+   res.json({ url: `${R2_PUBLIC_BASE}/${key}` });
+
+
   } catch (e) {
     console.error("❌ R2 chat video upload failed", e);
     res.status(500).json({ error: "upload_failed" });
@@ -243,7 +257,9 @@ app.post("/api/upload-avatar", uploadR2.single("avatar"), async (req, res) => {
       ContentType: req.file.mimetype
     }));
 
-    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+   res.json({ url: `${R2_PUBLIC_BASE}/${key}` });
+
+
   } catch (e) {
     console.error("❌ R2 avatar upload failed", e);
     res.status(500).json({ error: "upload_failed" });
@@ -400,7 +416,8 @@ function emitActiveUsers(){
 
 
 function emitAllUsers(){
-  const db = loadUsers();
+  const db = usersDB;
+
   const list = [];
 
   for(const uid in db){
@@ -423,11 +440,19 @@ function emitAllUsers(){
 function pushNotify(uid, payload){
   if(!uid) return;
   if(!userInbox.has(uid)) userInbox.set(uid, []);
-  userInbox.get(uid).unshift({
+
+  const arr = userInbox.get(uid);
+
+  arr.unshift({
     ...payload,
     ts: Date.now(),
     read:false
   });
+
+  // 🔒 GIỚI HẠN RAM (QUAN TRỌNG)
+  if (arr.length > 100) {
+    arr.length = 100;
+  }
 }
 
 
@@ -437,14 +462,15 @@ const USERS_FILE = path.join("/opt/render/project/data", "users.json");
 
 
 function loadUsers(){
-  if(!fs.existsSync(USERS_FILE)) return {};
-  return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
+  return {};
 }
+
 
 
 function saveUsers(db){
-  return; // 🚫 TẠM THỜI KHÔNG GHI DISK
+  usersDB = db;   // 🔥 CHỈ CẬP NHẬT RAM
 }
+
 
 
 app.use(express.json());
@@ -468,7 +494,8 @@ app.post("/api/register", async (req,res)=>{
   if(!username || !password || !name || !securityCode)
     return res.json({ error:"missing" });
 
-  const db = loadUsers();
+  const db = usersDB;
+
   if(db[username]) return res.json({error:"exists"});
 
   const hash = await bcrypt.hash(password,10);
@@ -497,7 +524,8 @@ app.post("/api/register", async (req,res)=>{
 
 app.post("/api/prelogin", async (req,res)=>{
   const { username, password } = req.body;
-  const db = loadUsers();
+  const db = usersDB;
+
 
   const acc = db[username];
   if(!acc) return res.json({ ok:false });
@@ -513,7 +541,8 @@ app.post("/api/prelogin", async (req,res)=>{
 
 app.post("/api/login", async (req,res)=>{
   const { username, password, securityCode } = req.body;
-  const db = loadUsers();
+  const db = usersDB;
+
 
   const acc = db[username];
   if(!acc) return res.json({ error:"invalid" });
@@ -549,7 +578,8 @@ res.json({
 
 app.post("/api/check-trusted", (req,res)=>{
   const { username, trustedToken } = req.body;
-  const db = loadUsers();
+ const db = usersDB;
+
   const acc = db[username];
 
   if(!acc || !acc.trusted) return res.json({ ok:false });
@@ -570,7 +600,8 @@ app.get("/api/me/:uid", (req, res) => {
   const targetUid = req.params.uid;
   const viewerUid = req.headers["x-uid"]; // uid người đang xem
 
-  const db = loadUsers();
+  const db = usersDB;
+
   const target = db[targetUid];
   if (!target || !target.profile) {
     return res.status(404).json({ error: "User not found" });
@@ -601,7 +632,8 @@ app.get("/api/me/:uid", (req, res) => {
 
 
 app.get("/api/all-users", (req,res)=>{
-  const db = loadUsers();
+  const db = usersDB;
+
   const list = [];
 
   for(const uid in db){
@@ -629,7 +661,8 @@ app.post("/api/change-password", async (req,res)=>{
   if(!username || !securityCode || !newPassword)
     return res.json({ error:"missing" });
 
-  const db = loadUsers();
+  const db = usersDB;
+
 
   const acc = db[username];
 if(!acc) return res.json({ error:"notfound" });
@@ -974,7 +1007,8 @@ socket.on("user-block", ({ uid }) => {
   const me = socket.data.uid;
   if (!me || !uid || me === uid) return;
 
-  const db = loadUsers();
+  const db = usersDB;
+
   const uMe = db[me];
   if (!uMe) return;
 
@@ -1020,7 +1054,8 @@ socket.on("user-unblock", ({ uid }) => {
   const me = socket.data.uid;
   if (!me || !uid) return;
 
-  const db = loadUsers();
+ const db = usersDB;
+
   const uMe = db[me];
   if (!uMe) return;
 
@@ -1052,7 +1087,8 @@ socket.on("friend-request", ({ to }) => {
   const from = socket.data.uid;
   if (!from || !to || from === to) return;
 
-  const db = loadUsers();
+const db = usersDB;
+
   const uFrom = db[from];
   const uTo = db[to];
   if (!uFrom || !uTo) return;
@@ -1096,7 +1132,8 @@ socket.on("friend-respond", ({ from, accept }) => {
   const to = socket.data.uid;
   if (!from || !to) return;
 
-  const db = loadUsers();
+ const db = usersDB;
+
   const uFrom = db[from];
   const uTo = db[to];
   if (!uFrom || !uTo) return;
@@ -1154,7 +1191,8 @@ socket.on("friend-cancel", ({ uid }) => {
   const meUid = socket.data.uid;
   if (!meUid || !uid) return;
 
-  const db = loadUsers();
+  const db = usersDB;
+
   const me = db[meUid];
   const other = db[uid];
 
@@ -1178,7 +1216,8 @@ socket.on("friend-remove", ({ uid }) => {
   const me = socket.data.uid;
   if (!me || !uid) return;
 
-  const db = loadUsers();
+  const db = usersDB;
+
   const uMe = db[me];
   const uYou = db[uid];
   if (!uMe || !uYou) return;
@@ -1611,7 +1650,8 @@ if (!fromUid || !to) return;
 
 
 // 🔒 CHỈ CHO PHÉP NHẮN TIN VỚI BẠN BÈ
-const db = loadUsers();
+const db = usersDB;
+
 const me = db[fromUid];
 const you = db[to];
 
@@ -1666,15 +1706,26 @@ if (type === "video" && media) {
   };
 
   // 1️⃣ LƯU VÀO INBOX NGƯỜI NHẬN
-  if (!userInbox.has(to)) userInbox.set(to, []);
-  userInbox.get(to).push(msg);
+
+if (!userInbox.has(to)) userInbox.set(to, []);
+const arr = userInbox.get(to);
+
+arr.push(msg);
+
+// 🔒 GIỚI HẠN RAM
+if (arr.length > 100) {
+  arr.splice(0, arr.length - 100);
+}
+
+
   saveInbox(Object.fromEntries(userInbox));
 
   // 2️⃣ GỬI REALTIME NẾU ONLINE
   const sockets = activeUsers.get(to);
 
   if (sockets) {
-    const db = loadUsers();
+    const db = usersDB;
+
     const user = db[fromUid];
 
     const fromProfile = {
@@ -1699,7 +1750,8 @@ if (type === "video" && media) {
 const subs = pushSubs.get(to);
 
 if (subs && subs.length) {
-  const db = loadUsers();
+  const db = usersDB;
+
   const fromUser = db[fromUid];
 
   const payload = JSON.stringify({
@@ -1740,7 +1792,8 @@ if (subs && subs.length) {
 
 app.get("/api/friends/:uid", (req, res) => {
   const uid = req.params.uid;
-  const db = loadUsers();
+  const db = usersDB;
+
   const me = db[uid];
   if (!me) return res.json({ friends: [], requests: [] });
 
@@ -1773,7 +1826,8 @@ app.get("/api/friends/:uid", (req, res) => {
 
 app.get("/api/blocked/:uid", (req, res) => {
   const uid = req.params.uid;
-  const db = loadUsers();
+  const db = usersDB;
+
   const me = db[uid];
   if (!me) return res.json({ blocked: [] });
 
@@ -1907,7 +1961,8 @@ socket.on("auth-ping", ({ uid }) => {
     return;
   }
 
-  const db = loadUsers();
+  const db = usersDB;
+
   if (db[uid]) {
     socket.data.profile = {
       ...db[uid].profile,
@@ -2015,7 +2070,8 @@ socket.on("profile-update", ({ name, avatar, level, cover, bio }) => {
   // ===== 2. Lưu vĩnh viễn vào users.json =====
   const uid = socket.data.uid;
   if (uid) {
-    const db = loadUsers();
+    const db = usersDB;
+
     for (const k in db) {
       if (db[k].profile?.uid === uid) {
         if (name)   db[k].profile.name   = safeName(name);
@@ -2914,6 +2970,24 @@ for (const v of list) {
   rooms.delete(roomId);
 }
 */
+});
+
+
+
+
+socket.on("disconnect", () => {
+  const uid = socket.data.uid;
+  if (!uid) return;
+
+  const set = activeUsers.get(uid);
+  if (set) {
+    set.delete(socket.id);
+    if (set.size === 0) {
+      activeUsers.delete(uid);
+    }
+  }
+
+  emitActiveUsers();
 });
 
 
