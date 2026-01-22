@@ -771,7 +771,8 @@ if(p.comments && p.comments.length){
 
 
      rdiv.innerHTML=`
-<img src="${fixMedia(reply.avatar)}">
+<img src="${fixMedia(r.avatar)}">
+
   <div>
     <b>${r.name}</b> ${r.text}
 
