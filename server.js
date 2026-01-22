@@ -22,6 +22,16 @@ const fs = require("fs");
 
 const webpush = require("web-push");
 
+const { uploadToR2 } = require("./r2");
+
+const chatUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 500 * 1024 * 1024 }
+});
+
+
+
+
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
 const SOCIAL_FILE = path.join("/opt/render/project/data", "social_posts.json");
 const MEDIA_DIRS = [
@@ -92,17 +102,9 @@ function saveInbox(db){
 let userInbox = new Map(Object.entries(loadInbox()));
 
 
-const CHAT_IMAGE_DIR = "/opt/render/project/data/chat-images";
-const CHAT_VIDEO_DIR = "/opt/render/project/data/chat-videos";
-
-[CHAT_IMAGE_DIR, CHAT_VIDEO_DIR].forEach(d=>{
-  if(!fs.existsSync(d)) fs.mkdirSync(d,{recursive:true});
-});
 
 
-
-
-const upload = multer({
+const avatarUpload = multer({
   storage: multer.diskStorage({
     destination: "/opt/render/project/data/avatars",
     filename: (_, file, cb) => {
@@ -152,23 +154,6 @@ function saveSocial(){
   }
 }
 
-const chatImgUpload = multer({
-  storage: multer.diskStorage({
-    destination: CHAT_IMAGE_DIR,
-    filename: (_, f, cb) =>
-      cb(null, Date.now()+"_"+Math.random().toString(36).slice(2)+path.extname(f.originalname))
-  })
-});
-
-const chatVideoUpload = multer({
-  storage: multer.diskStorage({
-    destination: CHAT_VIDEO_DIR,
-    filename: (_, f, cb) =>
-      cb(null, Date.now()+"_"+Math.random().toString(36).slice(2)+path.extname(f.originalname))
-  }),
-  limits:{ fileSize: 300 * 1024 * 1024 }
-});
-
 
 
 
@@ -181,21 +166,40 @@ app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
 app.use("/avatars", express.static("/opt/render/project/data/avatars"));
 app.use("/covers", express.static(COVER_DIR));
-app.use("/chat-images", express.static(CHAT_IMAGE_DIR));
-app.use("/chat-videos", express.static(CHAT_VIDEO_DIR));
-app.post("/api/upload-chat-image", chatImgUpload.single("image"), (req,res)=>{
-  res.json({ url: "/chat-images/" + req.file.filename });
+
+app.post("/api/upload-chat-image", chatUpload.single("image"), async (req, res) => {
+
+  if (!req.file) return res.status(400).json({ error: "No file" });
+
+  const key = `chat/images/${Date.now()}_${req.file.originalname}`;
+  const url = await uploadToR2(
+    req.file.buffer,
+    key,
+    req.file.mimetype
+  );
+
+  res.json({ url });
 });
 
-app.post("/api/upload-chat-video", chatVideoUpload.single("video"), (req,res)=>{
-  res.json({ url: "/chat-videos/" + req.file.filename });
+app.post("/api/upload-chat-video", chatUpload.single("video"), async (req, res) => {
+
+  if (!req.file) return res.status(400).json({ error: "No file" });
+
+  const key = `chat/videos/${Date.now()}_${req.file.originalname}`;
+  const url = await uploadToR2(
+    req.file.buffer,
+    key,
+    req.file.mimetype
+  );
+
+  res.json({ url });
 });
 
 app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "poster.html"));
 });
 
-app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
+app.post("/api/upload-avatar", avatarUpload.single("avatar"), (req, res) => {
   if (!req.file) return res.status(400).json({ error: "No file" });
   res.json({ url: "/avatars/" + req.file.filename });
 });
