@@ -10514,3 +10514,22 @@ body.page-profile{
   font-weight: 600;
   z-index: 1;
 }
+
+.chat-tool {
+  position: relative;
+}
+
+.chat-tool.uploading .tool-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1.1;
+}
+
+.tool-sub {
+  font-size: 9px;
+  opacity: .85;
+  margin-top: 1px;
+  white-space: nowrap;
+}
+

@@ -1202,15 +1202,22 @@ imgInput.onchange = async e => {
 
   const urls = [];
 
+  let imgStartTime = Date.now();
+
   for (const file of files) {
     const { url } = await uploadChatFileWithProgress(
   file,
   "image",
-  p => {
-    updateUploadProgress(msgId, p);   // progress trong chat (nếu muốn giữ)
-    updateToolProgress(btnImage, p, "image");
+p => {
+  const { speedMB, etaSec } = calcSpeedETA(
+    imgStartTime,
+    file.size * (p / 100),
+    file.size
+  );
 
-  }
+  updateUploadProgress(msgId, p);
+  updateToolProgress(btnImage, p, "image", { speedMB, etaSec });
+}
 );
     urls.push(url);
   }
@@ -1252,15 +1259,23 @@ videoInput.onchange = async e => {
   // 1️⃣ Hiện progress ring
   pushUploadProgress(msgId);
 
+const videoStartTime = Date.now();
+
   // 2️⃣ Upload video + %
   const { url } = await uploadChatFileWithProgress(
   file,
   "video",
-  p => {
-    updateUploadProgress(msgId, p);
-    updateToolProgress(btnVideo, p, "video");
+p => {
+  const { speedMB, etaSec } = calcSpeedETA(
+    videoStartTime,
+    file.size * (p / 100),
+    file.size
+  );
 
-  }
+  updateUploadProgress(msgId, p);
+  updateToolProgress(btnVideo, p, "video", { speedMB, etaSec });
+}
+
 );
 
 
@@ -1314,23 +1329,44 @@ btnLocation.onclick = () => {
 };
 
 
-function updateToolProgress(btn, percent, type) {
+function updateToolProgress(btn, percent, type, stats = {}) {
   if (!btn) return;
 
-  // type = "image" | "video"
   btn.classList.add("uploading", type);
 
   const ring = btn.querySelector(".tool-ring");
   const icon = btn.querySelector(".tool-icon");
 
   btn.style.setProperty("--deg", percent * 3.6 + "deg");
-  icon.textContent = percent + "%";
+
+  // text chính
+  icon.innerHTML = `
+    <div>${percent}%</div>
+    ${stats.speedMB ? `<div class="tool-sub">${stats.speedMB} MB/s • ~${stats.etaSec}s</div>` : ""}
+  `;
 
   if (percent >= 100) {
     setTimeout(() => {
       btn.classList.remove("uploading", "image", "video");
       icon.textContent = btn.id === "btnImage" ? "📷" : "🎥";
-    }, 500);
+    }, 600);
   }
 }
 
+
+
+
+function calcSpeedETA(startTime, loaded, total) {
+  const now = Date.now();
+  const elapsed = (now - startTime) / 1000; // giây
+  if (elapsed <= 0) return { speed: 0, eta: 0 };
+
+  const speed = loaded / elapsed; // bytes/s
+  const remaining = total - loaded;
+  const eta = remaining / speed;
+
+  return {
+    speedMB: (speed / 1024 / 1024).toFixed(1),
+    etaSec: Math.max(0, Math.ceil(eta))
+  };
+}
