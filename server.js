@@ -171,9 +171,11 @@ app.post("/api/upload-chat-image", chatUpload.single("image"), async (req, res) 
 
   if (!req.file) return res.status(400).json({ error: "No file" });
 
- const safeName = encodeURIComponent(
-  req.file.originalname.replace(/\s+/g, "_")
-);
+const safeName = req.file.originalname
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "") // bỏ dấu tiếng Việt
+  .replace(/[^a-zA-Z0-9._-]/g, "_");
+
 
 const key = `chat/images/${Date.now()}_${safeName}`;
 
@@ -191,9 +193,11 @@ app.post("/api/upload-chat-video", chatUpload.single("video"), async (req, res) 
 
   if (!req.file) return res.status(400).json({ error: "No file" });
 
-  const safeName = encodeURIComponent(
-  req.file.originalname.replace(/\s+/g, "_")
-);
+const safeName = req.file.originalname
+  .normalize("NFD")
+  .replace(/[\u0300-\u036f]/g, "") // bỏ dấu tiếng Việt
+  .replace(/[^a-zA-Z0-9._-]/g, "_");
+
 
 const key = `chat/videos/${Date.now()}_${safeName}`;
 

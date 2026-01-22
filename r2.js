@@ -15,9 +15,11 @@ async function uploadToR2(buffer, key, mime) {
     Key: key,
     Body: buffer,
     ContentType: mime,
-    ContentDisposition: "inline" // 🔥 thêm dòng này
+    ContentDisposition: "inline", // 🔥 CỰC QUAN TRỌNG
+    CacheControl: "public, max-age=31536000"
   }));
 
+  // 🔥 TRẢ URL PUBLIC CHUẨN
   return `${process.env.R2_PUBLIC_URL}/${key}`;
 }
 
