@@ -15,6 +15,7 @@ const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
 
+
 // 👥 / 💬 PROFILE ACTION VISIBILITY (FIX DỨT ĐIỂM)
 const btnProfileFriends = document.querySelector(".btn-profile-friends");
 const profileFriendActions = document.getElementById("profileFriendActions");
@@ -24,6 +25,20 @@ const btnAddFriend      = document.getElementById("btnAddFriend");
 const btnFriendPending  = document.getElementById("btnFriendPending");
 const btnUnfriend       = document.getElementById("btnUnfriend");
 const btnBlock          = document.getElementById("btnBlock");
+
+
+// 🔧 FIX LEGACY AVATAR (/avatars -> R2)
+const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
+
+function fixAvatar(url){
+  if (!url) return "";
+  if (url.startsWith("/avatars/")) {
+    return R2_PUBLIC_URL + url;
+  }
+  return url;
+}
+
+
 
 // RESET CỨNG
 if (profileFriendActions) profileFriendActions.style.display = "none";
@@ -547,7 +562,9 @@ function loadProfile(){
 
   nameInput.value = p.name;
   displayName.textContent = p.name;
-  avatarPreview.src = p.avatar;
+  
+ avatarPreview.src = fixAvatar(p.avatar);
+
 
   const bioInput = document.getElementById("bioInput");
 if(bioInput) bioInput.value = p.bio || "";
@@ -678,7 +695,8 @@ document.getElementById("btnSave").onclick = () => {
   const profile = {
     uid,
     name: nameInput.value.trim() || "Guest",
-    avatar: current.avatar || defaultProfile.avatar,   // ✅ GIỮ AVATAR MỚI
+    avatar: fixAvatar(current.avatar) || defaultProfile.avatar,
+
     coins: Number(coinVal.textContent) || 0,
     level: Number(levelVal.textContent) || 1,
     exp: current.exp || 0,
@@ -1207,7 +1225,8 @@ async function loadFriendRequestCount(){
 
 function renderProfileViewOnly(p){
   // avatar + name
-  avatarPreview.src = p.avatar || defaultProfile.avatar;
+  avatarPreview.src = fixAvatar(p.avatar) || defaultProfile.avatar;
+
   displayName.textContent = p.name || "User";
 
   // bio (chỉ xem)
