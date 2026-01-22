@@ -17,7 +17,21 @@ if (auth.uid) {
 }
 
 
-document.getElementById("meAvatar").src = auth.avatar;
+const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
+
+function fixMedia(url){
+  if (!url) return "";
+  if (url.startsWith("/avatars/") || url.startsWith("/covers/")) {
+    return R2_PUBLIC_URL + url;
+  }
+  return url;
+}
+
+
+
+
+document.getElementById("meAvatar").src = fixMedia(auth.avatar);
+
 
 
 
@@ -306,20 +320,20 @@ socket.on("social-avatar-sync", ({ uid, avatar }) => {
   document.querySelectorAll(".lp-post").forEach(post => {
     if (post.dataset.uid === uid) {
       const img = post.querySelector(".lp-ava");
-      if (img) img.src = avatar;
+      if (img) img.src = fixMedia(avatar);
     }
 
     post.querySelectorAll(".lp-comment").forEach(c => {
       if (c.dataset.uid === uid) {
         const img = c.querySelector(".lp-cm-ava");
-        if (img) img.src = avatar;
+        if (img) img.src = fixMedia(avatar);
       }
     });
 
     post.querySelectorAll(".lp-reply").forEach(r => {
       if (r.dataset.uid === uid) {
         const img = r.querySelector("img");
-        if (img) img.src = avatar;
+        if (img) img.src = fixMedia(avatar);
       }
     });
   });
@@ -398,7 +412,7 @@ socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
 div.innerHTML=`
 
 
-<img src="${reply.avatar}"
+<img src="${fixMedia(reply.avatar)}">
      onclick="openUserProfile('${reply.uid}')"
      style="cursor:pointer">
   <div>
@@ -445,8 +459,7 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
 
   div.innerHTML = `
 
-   <img class="lp-cm-ava"
-     src="${comment.avatar}"
+<img class="lp-cm-ava" src="${fixMedia(comment.avatar)}">
      onclick="openUserProfile('${comment.uid}')"
      style="cursor:pointer">
 
@@ -622,8 +635,8 @@ function renderPost(p, top=false){
 
 <div class="lp-post-head">
 
-<img class="lp-ava"
-     src="${p.avatar}"
+<img class="lp-ava" src="${fixMedia(p.avatar)}">
+
      onclick="openUserProfile('${p.uid}')"
      style="cursor:pointer">
 
@@ -719,8 +732,7 @@ if(p.comments && p.comments.length){
     c.dataset.uid = comment.uid;
 
     c.innerHTML = `
-      <img class="lp-cm-ava"
-     src="${comment.avatar}"
+<img class="lp-cm-ava" src="${fixMedia(comment.avatar)}">
      onclick="openUserProfile('${comment.uid}')"
      style="cursor:pointer">
 
@@ -759,7 +771,7 @@ if(p.comments && p.comments.length){
 
 
      rdiv.innerHTML=`
-  <img src="${r.avatar}">
+<img src="${fixMedia(reply.avatar)}">
   <div>
     <b>${r.name}</b> ${r.text}
 
