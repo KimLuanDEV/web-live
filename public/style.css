@@ -10469,3 +10469,36 @@ body.page-profile{
 @keyframes spin{
   to{ transform: rotate(360deg); }
 }
+
+
+
+.chat-tool{ position:relative; }
+
+.tool-ring{
+  position:absolute;
+  inset:-4px;
+  border-radius:50%;
+  border:3px solid transparent;
+  border-top-color: currentColor;
+  opacity:0;
+  animation: spin 1s linear infinite;
+}
+
+.tool-percent{
+  position:absolute;
+  font-size:10px;
+  font-weight:600;
+  color:currentColor;
+  opacity:0;
+}
+
+.chat-tool.is-loading .tool-ring,
+.chat-tool.is-loading .tool-percent{
+  opacity:1;
+}
+
+.chat-tool.is-loading .tool-icon{
+  opacity:.2;
+}
+
+@keyframes spin{ to{ transform:rotate(360deg); } }
