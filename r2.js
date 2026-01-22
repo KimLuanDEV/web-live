@@ -14,7 +14,8 @@ async function uploadToR2(buffer, key, mime) {
     Bucket: process.env.R2_BUCKET,
     Key: key,
     Body: buffer,
-    ContentType: mime
+    ContentType: mime,
+    ContentDisposition: "inline" // 🔥 thêm dòng này
   }));
 
   return `${process.env.R2_PUBLIC_URL}/${key}`;

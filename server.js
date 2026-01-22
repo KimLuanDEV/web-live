@@ -171,7 +171,13 @@ app.post("/api/upload-chat-image", chatUpload.single("image"), async (req, res) 
 
   if (!req.file) return res.status(400).json({ error: "No file" });
 
-  const key = `chat/images/${Date.now()}_${req.file.originalname}`;
+ const safeName = encodeURIComponent(
+  req.file.originalname.replace(/\s+/g, "_")
+);
+
+const key = `chat/images/${Date.now()}_${safeName}`;
+
+
   const url = await uploadToR2(
     req.file.buffer,
     key,
@@ -185,7 +191,12 @@ app.post("/api/upload-chat-video", chatUpload.single("video"), async (req, res) 
 
   if (!req.file) return res.status(400).json({ error: "No file" });
 
-  const key = `chat/videos/${Date.now()}_${req.file.originalname}`;
+  const safeName = encodeURIComponent(
+  req.file.originalname.replace(/\s+/g, "_")
+);
+
+const key = `chat/videos/${Date.now()}_${safeName}`;
+
   const url = await uploadToR2(
     req.file.buffer,
     key,
