@@ -42,39 +42,35 @@ const uploadR2 = multer({              // ✅ đặt sau
 
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
 const SOCIAL_FILE = path.join("/opt/render/project/data", "social_posts.json");
+
+/*
 const MEDIA_DIRS = [
   "/opt/render/project/data/post-images",
   "/opt/render/project/data/post-videos"
 ];
-
-MEDIA_DIRS.forEach(dir=>{
-  if(!fs.existsSync(dir)){
-    fs.mkdirSync(dir,{ recursive:true });
-    console.log("📁 Created", dir);
-  }
-});
+*/
 
 
+
+/*
 const AVATAR_DIR = "/opt/render/project/data/avatars";
 
 if(!fs.existsSync(AVATAR_DIR)){
   fs.mkdirSync(AVATAR_DIR, { recursive:true });
   console.log("📁 Created", AVATAR_DIR);
 }
+*/
 
-
-
-
-
+/*
 const COVER_DIR = "/opt/render/project/data/covers";
 
 if (!fs.existsSync(COVER_DIR)) {
   fs.mkdirSync(COVER_DIR, { recursive: true });
   console.log("📁 Created", COVER_DIR);
 }
+*/
 
-
-
+/*
 const coverUpload = multer({
   storage: multer.diskStorage({
     destination: COVER_DIR,
@@ -84,7 +80,7 @@ const coverUpload = multer({
     }
   })
 });
-
+*/
 
 
 
@@ -104,38 +100,22 @@ function loadInbox(){
 
 
 function saveInbox(db){
-  try{
-    const tmp = INBOX_FILE + ".tmp";
-    fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
-    fs.renameSync(tmp, INBOX_FILE);   // atomic replace
-  }catch(e){
-    console.error("❌ Save inbox failed", e.message);
-  }
+  return; // 🚫 KHÔNG GHI DISK NỮA
 }
+
 
 
 let userInbox = new Map(Object.entries(loadInbox()));
 
 
+/*
 const CHAT_IMAGE_DIR = "/opt/render/project/data/chat-images";
 const CHAT_VIDEO_DIR = "/opt/render/project/data/chat-videos";
 
 [CHAT_IMAGE_DIR, CHAT_VIDEO_DIR].forEach(d=>{
   if(!fs.existsSync(d)) fs.mkdirSync(d,{recursive:true});
 });
-
-
-
-
-const upload = multer({
-  storage: multer.diskStorage({
-    destination: "/opt/render/project/data/avatars",
-    filename: (_, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
-    }
-  })
-});
+*/
 
 
 
@@ -151,13 +131,11 @@ function loadLiveState() {
   }
 }
 
-function saveLiveState(state) {
-  try {
-    fs.writeFileSync(LIVE_STATE_FILE, JSON.stringify(state, null, 2));
-  } catch (e) {
-    console.error("Save live state failed:", e);
-  }
+function saveLiveState(state){
+  return; // 🚫 KHÔNG GHI DISK
 }
+
+
 
 function loadSocial(){
   try{
@@ -170,12 +148,10 @@ function loadSocial(){
 }
 
 function saveSocial(){
-  try{
-    fs.writeFileSync(SOCIAL_FILE, JSON.stringify(lpPosts,null,2));
-  }catch(e){
-    console.error("Save social failed",e);
-  }
+  return; // 🚫 KHÔNG GHI DISK
 }
+
+/*
 
 const chatImgUpload = multer({
   storage: multer.diskStorage({
@@ -194,7 +170,7 @@ const chatVideoUpload = multer({
   limits:{ fileSize: 300 * 1024 * 1024 }
 });
 
-
+*/
 
 
 const app = express();
@@ -202,12 +178,15 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.static(path.join(__dirname, "public")));
+
+/*
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
 app.use("/avatars", express.static("/opt/render/project/data/avatars"));
 app.use("/covers", express.static(COVER_DIR));
 app.use("/chat-images", express.static(CHAT_IMAGE_DIR));
 app.use("/chat-videos", express.static(CHAT_VIDEO_DIR));
+*/
 
 app.post("/api/upload-chat-image", uploadR2.single("image"), async (req, res) => {
   try {
@@ -271,7 +250,7 @@ app.post("/api/upload-avatar", uploadR2.single("avatar"), async (req, res) => {
   }
 });
 
-
+/*
 const postUpload = multer({
   storage: multer.diskStorage({
     destination: "/opt/render/project/data/post-images",
@@ -281,7 +260,7 @@ const postUpload = multer({
     }
   })
 });
-
+*/
 
 app.post("/api/upload-cover", uploadR2.single("cover"), async (req, res) => {
   try {
@@ -322,7 +301,7 @@ app.post("/api/upload-post-image", uploadR2.single("image"), async (req, res) =>
 });
 
 
-
+/*
 const postVideoUpload = multer({
   storage: multer.diskStorage({
     destination: "/opt/render/project/data/post-videos",
@@ -335,6 +314,7 @@ const postVideoUpload = multer({
   limits: { fileSize: 200 * 1024 * 1024 } // 200MB (tối đa nên dùng)
 
 });
+*/
 
 app.post("/api/upload-post-video", uploadR2.single("video"), async (req, res) => {
   try {
@@ -460,8 +440,10 @@ function loadUsers(){
   if(!fs.existsSync(USERS_FILE)) return {};
   return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
 }
+
+
 function saveUsers(db){
-  fs.writeFileSync(USERS_FILE, JSON.stringify(db,null,2));
+  return; // 🚫 TẠM THỜI KHÔNG GHI DISK
 }
 
 
