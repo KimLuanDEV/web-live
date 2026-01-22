@@ -401,7 +401,17 @@ if (nearBottom) {
 
   // 🖼️ IMAGE → KHÔNG BUBBLE
   if (text?.startsWith("/img ")) {
-    const url = text.slice(5);
+
+   let url = text.slice(5);
+
+// 🔥 FIX LEGACY PATH (/chat-images)
+if (url.startsWith("/chat-images/")) {
+  url = url.replace(
+    "/chat-images/",
+    process.env.R2_PUBLIC_URL + "/chat/images/"
+  );
+}
+
 
     html = `
       <div class="chat-media ${isMe ? "me" : "other"}">
