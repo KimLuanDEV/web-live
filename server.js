@@ -1,3 +1,21 @@
+const { S3Client, PutObjectCommand } = require("@aws-sdk/client-s3");
+
+const r2 = new S3Client({
+  region: "auto",
+  endpoint: process.env.R2_ENDPOINT,
+  credentials: {
+    accessKeyId: process.env.R2_ACCESS_KEY,
+    secretAccessKey: process.env.R2_SECRET_KEY
+  }
+});
+
+const R2_BUCKET = process.env.R2_BUCKET;
+
+
+const uploadR2 = multer({
+  storage: multer.memoryStorage()
+});
+
 
 
 const MAX_VIEWERS = 40;        // Render safe
@@ -175,9 +193,27 @@ app.use("/avatars", express.static("/opt/render/project/data/avatars"));
 app.use("/covers", express.static(COVER_DIR));
 app.use("/chat-images", express.static(CHAT_IMAGE_DIR));
 app.use("/chat-videos", express.static(CHAT_VIDEO_DIR));
-app.post("/api/upload-chat-image", chatImgUpload.single("image"), (req,res)=>{
-  res.json({ url: "/chat-images/" + req.file.filename });
+
+app.post("/api/upload-chat-image", uploadR2.single("image"), async (req, res) => {
+  try {
+    const key = `chat-images/${Date.now()}_${req.file.originalname}`;
+
+    await r2.send(new PutObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype
+    }));
+
+    const url = `${process.env.R2_ENDPOINT}/${key}`;
+    res.json({ url });
+
+  } catch (e) {
+    console.error("❌ R2 upload failed", e);
+    res.status(500).json({ error: "upload_failed" });
+  }
 });
+
 
 app.post("/api/upload-chat-video", chatVideoUpload.single("video"), (req,res)=>{
   res.json({ url: "/chat-videos/" + req.file.filename });
