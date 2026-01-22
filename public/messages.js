@@ -1199,3 +1199,14 @@ document.getElementById("btnLocation").onclick = async () => {
     }
   );
 };
+
+
+// 📷 click nút → mở chọn ảnh
+document.getElementById("btnImage").onclick = () => {
+  document.getElementById("imgInput").click();
+};
+
+// 🎥 click nút → mở chọn video
+document.getElementById("btnVideo").onclick = () => {
+  document.getElementById("videoInput").click();
+};
