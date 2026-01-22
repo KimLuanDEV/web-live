@@ -246,6 +246,7 @@ socket.on("active-users", ({ online }) => {
 
 
 document.getElementById("sendBtn").onclick = () => {
+  if (currentUploadXHR) return; // ⛔ đang upload → không gửi
   const input = document.getElementById("msgInput");
   const txt = input.value.trim();
   if(!txt || !currentTarget) return;
@@ -1202,6 +1203,22 @@ document.getElementById("btnLocation").onclick = async () => {
 };
 
 
+function setTextSendingDisabled(disabled) {
+  msgInput.disabled = disabled;
+  sendBtn.disabled = disabled;
+
+  msgInput.style.opacity = disabled ? "0.5" : "1";
+  sendBtn.style.opacity = disabled ? "0.4" : "1";
+
+  if (disabled) {
+    msgInput.placeholder = "Đang upload… vui lòng chờ";
+  } else {
+    msgInput.placeholder = "Nhập tin nhắn...";
+  }
+}
+
+
+
 
 
 function setToolLoading(btn, loading=true){
@@ -1216,21 +1233,21 @@ btnImage.onclick = () => {
   if (currentUploadXHR) {
     currentUploadXHR.abort(); // ❌ huỷ upload
 
-    // xoá progress UI
     if (currentUploadMsgId) {
       document
         .querySelector(`[data-msg-id="${currentUploadMsgId}"]`)
         ?.remove();
     }
 
-    // reset nút
-    btnImage.classList.remove("uploading", "image");
-    btnImage.querySelector(".tool-icon").textContent = "📷";
+    showToolCancelled(btnImage); // 🔥 HIỆN “Đã huỷ”
     return;
   }
 
   imgInput.click();
+  setTextSendingDisabled(false); // 🔓 mở gửi text khi huỷ
+
 };
+
 
 
 imgInput.onchange = async e => {
@@ -1242,6 +1259,7 @@ imgInput.onchange = async e => {
   const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
   currentUploadMsgId = msgId;
   pushUploadProgress(msgId);
+  setTextSendingDisabled(true); // ⛔ khoá gửi text
 
   const urls = [];
 
@@ -1267,7 +1285,7 @@ p => {
 
   // 🔥 XÓA PROGRESS
   document.querySelector(`[data-msg-id="${msgId}"]`)?.remove();
-
+  setTextSendingDisabled(false); // 🔓 mở gửi text
   const text = "/album " + urls.join("|");
 
   pushMsg("Bạn", text, true, msgId, "✓");
@@ -1299,13 +1317,15 @@ btnVideo.onclick = () => {
         ?.remove();
     }
 
-    btnVideo.classList.remove("uploading", "video");
-    btnVideo.querySelector(".tool-icon").textContent = "🎥";
+    showToolCancelled(btnVideo); // 🔥 HIỆN “Đã huỷ”
     return;
   }
 
   videoInput.click();
+  setTextSendingDisabled(false); // 🔓 mở gửi text khi huỷ
+
 };
+
 
 
 videoInput.onchange = async e => {
@@ -1320,6 +1340,7 @@ videoInput.onchange = async e => {
 
   // 1️⃣ Hiện progress ring
   pushUploadProgress(msgId);
+  setTextSendingDisabled(true); // ⛔ khoá gửi text
 
 const videoStartTime = Date.now();
 
@@ -1343,7 +1364,7 @@ p => {
 
   // 3️⃣ Xóa progress
   document.querySelector(`[data-msg-id="${msgId}"]`)?.remove();
-
+  setTextSendingDisabled(false); // 🔓 mở gửi text
   const text = "/video " + url;
 
   pushMsg("Bạn", text, true, msgId, "✓");
@@ -1389,6 +1410,32 @@ btnLocation.onclick = () => {
 
   setTimeout(()=>setToolLoading(btnLocation,false),1200);
 };
+
+
+
+function showToolCancelled(btn) {
+  if (!btn) return;
+
+  const icon = btn.querySelector(".tool-icon");
+
+  btn.classList.add("uploading");
+  btn.style.setProperty("--deg", "360deg");
+
+  icon.innerHTML = `
+    <div style="color:#ff5a5a;font-size:16px;text-shadow:0 0 8px #ff5a5a">
+      ✕
+    </div>
+    <div class="tool-sub">Đã huỷ</div>
+  `;
+
+  setTimeout(() => {
+    btn.classList.remove("uploading", "image", "video");
+    icon.textContent = btn.id === "btnImage" ? "📷" : "🎥";
+  }, 700);
+}
+
+
+
 
 
 function updateToolProgress(btn, percent, type, stats = {}) {
