@@ -1421,7 +1421,8 @@ function editPost(postId){
 
 
   const oldImages = [...postEl.querySelectorAll(".lp-post-images img")]
-  .map(img => img.src);
+  .map(img => fixMedia(img.src.replace(location.origin, "")));
+
 
   const textEl = postEl.querySelector(".lp-post-text");
   const oldText = textEl?.innerText || "";
