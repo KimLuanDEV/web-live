@@ -21,9 +21,15 @@ const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 
 function fixMedia(url){
   if (!url) return "";
-  if (url.startsWith("/avatars/") || url.startsWith("/covers/")) {
+
+  if (
+    url.startsWith("/avatars/") ||
+    url.startsWith("/covers/") ||
+    url.startsWith("/post-images/")
+  ) {
     return R2_PUBLIC_URL + url;
   }
+
   return url;
 }
 
@@ -674,7 +680,8 @@ ${(p.images && p.images.length) ? `
   ${p.images.slice(0,5).map((url, index) => `
     <div class="fb-img img-${index}"
          onclick='openFeedLightbox(${JSON.stringify(p.images)}, ${index})'>
-      <img src="${url}">
+      <img src="${fixMedia(url)}">
+
       ${
         index === 4 && p.images.length > 5
           ? `<div class="fb-more">+${p.images.length - 5}</div>`
