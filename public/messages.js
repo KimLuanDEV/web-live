@@ -1068,3 +1068,34 @@ async function confirmClearChat(){
 
   clearChatHistory(currentTargetUID);
 }
+
+function clearChatHistory(peer){
+  if(!auth?.uid || !peer) return;
+
+  // 🔑 xác định đúng chat key
+  const key =
+    auth.uid < peer
+      ? "chat_" + auth.uid + "_" + peer
+      : "chat_" + peer + "_" + auth.uid;
+
+  console.log("🗑️ Clear chat key:", key);
+
+  // ❌ XÓA LOCAL STORAGE
+  localStorage.removeItem(key);
+
+  // ❌ RESET STATE
+  renderedMsgIds.clear();
+
+  // ❌ CLEAR UI
+  chatBox.innerHTML = `
+    <div class="msg-cleared">
+      🗑️ Lịch sử tin nhắn đã được xóa
+    </div>
+  `;
+
+  // ❌ RESET UNREAD
+  renderUserList();
+
+  // (tuỳ chọn) báo server dọn inbox offline
+  socket.emit("chat-cleared", { peer });
+}
