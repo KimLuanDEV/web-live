@@ -10305,3 +10305,47 @@ body.page-profile{
   color:#aaa;
   font-size:14px;
 }
+
+
+.chat-location {
+  display: flex;
+  justify-content: flex-start;
+  margin: 6px 0;
+}
+
+.chat-location.me {
+  justify-content: flex-end;
+}
+
+.location-card {
+  max-width: 260px;
+  background: linear-gradient(135deg,#1e1e1e,#2a2a2a);
+  border-radius: 14px;
+  padding: 10px 12px;
+  color: #fff;
+  box-shadow: 0 0 12px rgba(0,255,255,.35);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.location-icon {
+  font-size: 22px;
+}
+
+.location-title {
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.location-coords {
+  font-size: 11px;
+  opacity: .7;
+}
+
+.location-open {
+  margin-left: auto;
+  font-size: 12px;
+  color: #00e5ff;
+  text-decoration: none;
+}

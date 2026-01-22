@@ -438,7 +438,28 @@ else if (text?.startsWith("/album ")) {
       }).join("")}
     </div>
   `;
+  
+}// 📍 LOCATION
+else if (text?.startsWith("/location ")) {
+  const raw = text.slice(10);
+  const [coords, url] = raw.split("|");
+
+  html = `
+    <div class="chat-location ${isMe ? "me" : "other"}">
+      <div class="location-card">
+        <div class="location-icon">📍</div>
+        <div class="location-text">
+          <div class="location-title">Vị trí hiện tại</div>
+          <div class="location-coords">${coords}</div>
+        </div>
+        <a href="${url}" target="_blank" class="location-open">
+          Mở bản đồ
+        </a>
+      </div>
+    </div>
+  `;
 }
+
 
 
 
@@ -1136,3 +1157,54 @@ socket.on("peer-cleared-my-messages", ({ by }) => {
 
   renderUserList();
 });
+
+
+
+
+document.getElementById("btnLocation").onclick = async () => {
+  if (!currentTarget) return;
+
+  if (!navigator.geolocation) {
+    alert("Thiết bị không hỗ trợ GPS");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+
+      const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+      const text = `/location ${lat},${lng}|${mapUrl}`;
+
+      const msgId =
+        Date.now() + "_" + Math.random().toString(36).slice(2);
+
+      socket.emit("private-message", {
+        to: currentTarget.uid,
+        text,
+        msgId
+      });
+
+      pushMsg("Bạn", text, true, msgId, "✓");
+
+      saveChat({
+        id: msgId,
+        from: auth.uid,
+        to: currentTarget.uid,
+        text,
+        time: Date.now(),
+        peer: currentTarget.uid,
+        seen: true
+      });
+    },
+    err => {
+      alert("❌ Không lấy được vị trí");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000
+    }
+  );
+};
