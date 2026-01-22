@@ -1179,15 +1179,6 @@ document.getElementById("btnLocation").onclick = async () => {
 };
 
 
-// 📷 click nút → mở chọn ảnh
-document.getElementById("btnImage").onclick = () => {
-  document.getElementById("imgInput").click();
-};
-
-// 🎥 click nút → mở chọn video
-document.getElementById("btnVideo").onclick = () => {
-  document.getElementById("videoInput").click();
-};
 
 
 function setToolLoading(btn, loading=true){
@@ -1217,7 +1208,8 @@ imgInput.onchange = async e => {
   "image",
   p => {
     updateUploadProgress(msgId, p);   // progress trong chat (nếu muốn giữ)
-    updateToolProgress(btnImage, p);  // 🔥 progress ngay nút 📷
+    updateToolProgress(btnImage, p, "image");
+
   }
 );
     urls.push(url);
@@ -1266,7 +1258,8 @@ videoInput.onchange = async e => {
   "video",
   p => {
     updateUploadProgress(msgId, p);
-    updateToolProgress(btnVideo, p);  // 🔥 progress ngay nút 🎥
+    updateToolProgress(btnVideo, p, "video");
+
   }
 );
 
@@ -1321,25 +1314,23 @@ btnLocation.onclick = () => {
 };
 
 
-
-function updateToolProgress(btn, percent) {
+function updateToolProgress(btn, percent, type) {
   if (!btn) return;
 
-  btn.classList.add("uploading");
+  // type = "image" | "video"
+  btn.classList.add("uploading", type);
 
   const ring = btn.querySelector(".tool-ring");
   const icon = btn.querySelector(".tool-icon");
 
-  ring.style.background =
-    `conic-gradient(#00eaff ${percent * 3.6}deg, rgba(255,255,255,.15) 0deg)`;
-
+  btn.style.setProperty("--deg", percent * 3.6 + "deg");
   icon.textContent = percent + "%";
 
   if (percent >= 100) {
     setTimeout(() => {
-      btn.classList.remove("uploading");
+      btn.classList.remove("uploading", "image", "video");
       icon.textContent = btn.id === "btnImage" ? "📷" : "🎥";
-    }, 400);
+    }, 500);
   }
 }
 
