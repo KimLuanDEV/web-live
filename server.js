@@ -48,9 +48,24 @@ const R2_PUBLIC_BASE = process.env.R2_ENDPOINT.replace(
   "https://pub-"
 );
 
+const admin = require("firebase-admin");
+
+admin.initializeApp({
+  credential: admin.credential.cert(
+    JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT)
+  )
+});
+
+const firestore = admin.firestore();
 
 
-let usersDB = loadUsers();
+let usersDB = {};
+
+(async ()=>{
+  usersDB = await loadUsers();
+  console.log("🔥 Users loaded from Firestore:", Object.keys(usersDB).length);
+})();
+
 
 
 /*
@@ -94,19 +109,7 @@ const coverUpload = multer({
 
 
 
-const INBOX_FILE = "/opt/render/project/data/inbox.json";
 
-function loadInbox(){
-  if(!fs.existsSync(INBOX_FILE)) return {};
-
-  try{
-    const raw = fs.readFileSync(INBOX_FILE, "utf8");
-    return JSON.parse(raw);
-  }catch(e){
-    console.error("❌ inbox.json corrupted → auto reset", e.message);
-    return {};   // ⛑️ không cho server chết
-  }
-}
 
 
 function saveInbox(db){
@@ -115,7 +118,7 @@ function saveInbox(db){
 
 
 
-let userInbox = new Map(Object.entries(loadInbox()));
+let userInbox = new Map(); // RAM ONLY
 
 
 /*
@@ -133,13 +136,9 @@ const CHAT_VIDEO_DIR = "/opt/render/project/data/chat-videos";
 
 
 function loadLiveState() {
-  try {
-    if (!fs.existsSync(LIVE_STATE_FILE)) return {};
-    return JSON.parse(fs.readFileSync(LIVE_STATE_FILE, "utf8"));
-  } catch {
-    return {};
-  }
+  return {};
 }
+
 
 function saveLiveState(state){
   return; // 🚫 KHÔNG GHI DISK
@@ -148,14 +147,9 @@ function saveLiveState(state){
 
 
 function loadSocial(){
-  try{
-    if(!fs.existsSync(SOCIAL_FILE)) return [];
-    return JSON.parse(fs.readFileSync(SOCIAL_FILE,"utf8"));
-  }catch(e){
-    console.error("Load social failed",e);
-    return [];
-  }
+  return [];
 }
+
 
 function saveSocial(){
   return; // 🚫 KHÔNG GHI DISK
@@ -210,7 +204,7 @@ app.post("/api/upload-chat-image", uploadR2.single("image"), async (req, res) =>
     }));
 
 
-    const url = `${process.env.R2_ENDPOINT}/${key}`;
+    const url = `${R2_PUBLIC_BASE}/${key}`
 
     res.json({ url });
 
@@ -289,7 +283,8 @@ app.post("/api/upload-cover", uploadR2.single("cover"), async (req, res) => {
       ContentType: req.file.mimetype
     }));
 
-    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+    res.json({ url: `${R2_PUBLIC_BASE}/${key}` });
+
   } catch (e) {
     console.error("❌ R2 cover upload failed", e);
     res.status(500).json({ error: "upload_failed" });
@@ -309,7 +304,8 @@ app.post("/api/upload-post-image", uploadR2.single("image"), async (req, res) =>
       ContentType: req.file.mimetype
     }));
 
-    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+   res.json({ url: `${R2_PUBLIC_BASE}/${key}` });
+
   } catch (e) {
     console.error("❌ R2 post image upload failed", e);
     res.status(500).json({ error: "upload_failed" });
@@ -343,7 +339,8 @@ app.post("/api/upload-post-video", uploadR2.single("video"), async (req, res) =>
       ContentType: req.file.mimetype
     }));
 
-    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+   res.json({ url: `${R2_PUBLIC_BASE}/${key}` });
+
   } catch (e) {
     console.error("❌ R2 post video upload failed", e);
     res.status(500).json({ error: "upload_failed" });
@@ -457,12 +454,19 @@ function pushNotify(uid, payload){
 
 
 
-const USERS_FILE = path.join("/opt/render/project/data", "users.json");
 
 
 
-function loadUsers(){
-  return {};
+
+async function loadUsers(){
+  const snap = await firestore.collection("users").get();
+  const db = {};
+
+  snap.forEach(doc => {
+    db[doc.id] = doc.data();
+  });
+
+  return db;
 }
 
 
@@ -470,6 +474,21 @@ function loadUsers(){
 function saveUsers(db){
   usersDB = db;   // 🔥 CHỈ CẬP NHẬT RAM
 }
+
+
+async function saveUserToFirestore(uid){
+  if(!uid || !usersDB[uid]) return;
+
+  try{
+    await firestore
+      .collection("users")
+      .doc(uid)
+      .set(usersDB[uid], { merge:true });
+  }catch(e){
+    console.error("❌ Firestore save user failed:", uid, e.message);
+  }
+}
+
 
 
 
@@ -481,8 +500,6 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE
 );
 
-// uid -> Set<subscription>
-const pushSubs = new Map();
 
 
 
@@ -518,6 +535,7 @@ app.post("/api/register", async (req,res)=>{
   };
 
   saveUsers(db);
+  await saveUserToFirestore(username);   // 🔥 THÊM DÒNG NÀY
   res.json({ok:true});
 });
 
@@ -567,7 +585,7 @@ acc.trusted = acc.trusted || {};
 acc.trusted[trusted] = Date.now() + 30*24*60*60*1000; // 30 ngày
 
 saveUsers(db);
-
+await saveUserToFirestore(username);
 res.json({
   ok:true,
   profile: acc.profile,
@@ -576,7 +594,7 @@ res.json({
 
 });
 
-app.post("/api/check-trusted", (req,res)=>{
+app.post("/api/check-trusted",async (req,res)=>{
   const { username, trustedToken } = req.body;
  const db = usersDB;
 
@@ -588,6 +606,8 @@ app.post("/api/check-trusted", (req,res)=>{
   if(!exp || exp < Date.now()){
     delete acc.trusted[trustedToken];
     saveUsers(db);
+    await saveUserToFirestore(username);
+
     return res.json({ ok:false });
   }
 
@@ -955,7 +975,7 @@ socket.on("clear-my-messages", ({ peer }) => {
     userInbox.set(uid, filtered);
   });
 
-  saveInbox(Object.fromEntries(userInbox));
+
 
   // 2️⃣ REALTIME: báo B để xóa local
   const sockets = activeUsers.get(peer);
@@ -996,7 +1016,7 @@ socket.on("revoke-message", ({ msgId }) => {
     }
   }
 
-  saveInbox(Object.fromEntries(userInbox));
+
 
   // 2️⃣ BẮN REALTIME CHO TẤT CẢ SOCKET KHÁC
   socket.broadcast.emit("revoke-message", { msgId });
@@ -1032,6 +1052,9 @@ socket.on("user-block", ({ uid }) => {
 
   saveUsers(db);
 
+saveUserToFirestore(me);    // hoặc uid / from / to tương ứng
+saveUserToFirestore(uid);   // nếu cập nhật 2 chiều
+
 
   // 🔔 REALTIME: BLOCK (BÁO CHO NGƯỜI BỊ BLOCK)
 const sockets = activeUsers.get(uid);
@@ -1063,6 +1086,8 @@ socket.on("user-unblock", ({ uid }) => {
     (uMe.profile.blocked || []).filter(x => x !== uid);
 
   saveUsers(db);
+saveUserToFirestore(me);    // hoặc uid / from / to tương ứng
+saveUserToFirestore(uid);   // nếu cập nhật 2 chiều
 
   // 🔔 realtime cho chính mình
   socket.emit("user-unblocked", { uid });
@@ -1113,7 +1138,10 @@ if (
   if (uTo.profile.friendRequests.includes(from)) return;
 
   uTo.profile.friendRequests.push(from);
-  saveUsers(db);
+
+saveUsers(db);
+saveUserToFirestore(from);
+saveUserToFirestore(to);
 
   // realtime nếu online
   const sockets = activeUsers.get(to);
@@ -1128,7 +1156,7 @@ if (
   }
 });
 
-socket.on("friend-respond", ({ from, accept }) => {
+socket.on("friend-respond", async ({ from, accept }) => {
   const to = socket.data.uid;
   if (!from || !to) return;
 
@@ -1154,7 +1182,9 @@ socket.on("friend-respond", ({ from, accept }) => {
       uTo.profile.friends.push(from);
   }
 
-  saveUsers(db);
+saveUsers(db);
+await saveUserToFirestore(from);
+await saveUserToFirestore(to);
 
   // báo realtime cho người gửi
   const sockets = activeUsers.get(from);
@@ -1195,18 +1225,19 @@ socket.on("friend-cancel", ({ uid }) => {
 
   const me = db[meUid];
   const other = db[uid];
-
   if (!me || !other) return;
 
-  // me.sent = lời mời đã gửi
-  me.friends ||= {};
-  other.friends ||= {};
+  me.profile.friendRequests =
+    (me.profile.friendRequests || []).filter(u => u !== uid);
 
-  me.friends.sent = (me.friends.sent || []).filter(u => u !== uid);
-  other.friends.requests = (other.friends.requests || []).filter(u => u !== meUid);
+  other.profile.friendRequests =
+    (other.profile.friendRequests || []).filter(u => u !== meUid);
 
   saveUsers(db);
+  saveUserToFirestore(meUid);
+  saveUserToFirestore(uid);
 });
+
 
 
 
@@ -1230,6 +1261,8 @@ socket.on("friend-remove", ({ uid }) => {
   uYou.profile.friends = uYou.profile.friends.filter(x => x !== me);
 
   saveUsers(db);
+saveUserToFirestore(me);    // hoặc uid / from / to tương ứng
+saveUserToFirestore(uid);   // nếu cập nhật 2 chiều
 
   // 🔁 realtime nếu người kia online
   const sockets = activeUsers.get(uid);
@@ -1718,7 +1751,7 @@ if (arr.length > 100) {
 }
 
 
-  saveInbox(Object.fromEntries(userInbox));
+
 
   // 2️⃣ GỬI REALTIME NẾU ONLINE
   const sockets = activeUsers.get(to);
@@ -2000,7 +2033,7 @@ if (inbox && inbox.length) {
     }
 
 
-    saveInbox(Object.fromEntries(userInbox)); // ✅ FIX QUAN TRỌNG
+
 
     // 🔴 badge chỉ khi còn tin CHƯA XEM
     const unread = inbox.filter(m => !m.seen).length;
@@ -2067,24 +2100,26 @@ socket.on("profile-update", ({ name, avatar, level, cover, bio }) => {
   if (level)  socket.data.profile.level  = Number(level) || socket.data.profile.level;
   if (cover) socket.data.profile.cover = cover;
 
-  // ===== 2. Lưu vĩnh viễn vào users.json =====
+// ===== 2. Lưu vĩnh viễn vào Firestore =====
+
   const uid = socket.data.uid;
-  if (uid) {
-    const db = usersDB;
+ if (!uid || !usersDB[uid]) return;
 
-    for (const k in db) {
-      if (db[k].profile?.uid === uid) {
-        if (name)   db[k].profile.name   = safeName(name);
-        if (avatar) db[k].profile.avatar = avatar;
-        if (level)  db[k].profile.level  = Number(level) || db[k].profile.level;
-        if (cover) db[k].profile.cover = cover;
-        if (bio !== undefined) {db[k].profile.bio = String(bio).slice(0, 500);}
+const acc = usersDB[uid];
+if (!acc) return;
 
-        saveUsers(db);
-        break;
-      }
-    }
-  }
+if (name)   acc.profile.name = safeName(name);
+if (avatar) acc.profile.avatar = avatar;
+if (level)  acc.profile.level = Number(level) || acc.profile.level;
+if (cover)  acc.profile.cover = cover;
+if (bio !== undefined) acc.profile.bio = String(bio).slice(0, 500);
+
+saveUsers(usersDB);
+saveUserToFirestore(uid);
+
+
+
+  
 
     // ===== SYNC AVATAR VÀO TOÀN BỘ SOCIAL POSTS =====
   if (uid && avatar) {
