@@ -412,7 +412,7 @@ socket.on("lp-reply", ({ postId, commentIndex, reply })=>{
 div.innerHTML=`
 
 
-<img src="${fixMedia(reply.avatar)}">
+<img src="${fixMedia(reply.avatar)}"
      onclick="openUserProfile('${reply.uid}')"
      style="cursor:pointer">
   <div>
@@ -459,7 +459,7 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
 
   div.innerHTML = `
 
-<img class="lp-cm-ava" src="${fixMedia(comment.avatar)}">
+<img class="lp-cm-ava" src="${fixMedia(comment.avatar)}"
      onclick="openUserProfile('${comment.uid}')"
      style="cursor:pointer">
 
@@ -635,7 +635,7 @@ function renderPost(p, top=false){
 
 <div class="lp-post-head">
 
-<img class="lp-ava" src="${fixMedia(p.avatar)}">
+<img class="lp-ava" src="${fixMedia(p.avatar)}"
 
      onclick="openUserProfile('${p.uid}')"
      style="cursor:pointer">
@@ -732,7 +732,7 @@ if(p.comments && p.comments.length){
     c.dataset.uid = comment.uid;
 
     c.innerHTML = `
-<img class="lp-cm-ava" src="${fixMedia(comment.avatar)}">
+<img class="lp-cm-ava" src="${fixMedia(comment.avatar)}"
      onclick="openUserProfile('${comment.uid}')"
      style="cursor:pointer">
 
