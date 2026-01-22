@@ -22,6 +22,11 @@ const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 function fixMedia(url){
   if (!url) return "";
 
+  // nếu là absolute URL từ site cũ
+  if (url.startsWith(location.origin + "/post-images/")) {
+    return R2_PUBLIC_URL + url.replace(location.origin, "");
+  }
+
   if (
     url.startsWith("/avatars/") ||
     url.startsWith("/covers/") ||
@@ -32,6 +37,7 @@ function fixMedia(url){
 
   return url;
 }
+
 
 
 
