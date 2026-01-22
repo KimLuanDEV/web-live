@@ -73,9 +73,17 @@ const coverUpload = multer({
 const INBOX_FILE = "/opt/render/project/data/inbox.json";
 
 function loadInbox(){
-  if(!fs.existsSync(INBOX_FILE)) return {};
-  return JSON.parse(fs.readFileSync(INBOX_FILE,"utf8"));
+  try{
+    if(!fs.existsSync(INBOX_FILE)) return {};
+    const raw = fs.readFileSync(INBOX_FILE,"utf8");
+    if(!raw.trim()) return {};
+    return JSON.parse(raw);
+  }catch(e){
+    console.error("❌ Inbox JSON corrupted → reset", e.message);
+    return {};
+  }
 }
+
 
 function saveInbox(db){
   fs.writeFileSync(INBOX_FILE, JSON.stringify(db,null,2));
