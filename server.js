@@ -490,6 +490,39 @@ async function saveUserToFirestore(uid){
 }
 
 
+async function saveInboxMessage(uid, msg){
+  if(!uid || !msg || !msg.id) return;
+
+  try{
+    await firestore
+      .collection("inboxes")
+      .doc(uid)
+      .collection("messages")
+      .doc(msg.id)
+      .set(msg, { merge:true });
+  }catch(e){
+    console.error("❌ Firestore inbox save failed:", uid, e.message);
+  }
+}
+
+async function loadInboxFromFirestore(uid, limit = 100){
+  try{
+    const snap = await firestore
+      .collection("inboxes")
+      .doc(uid)
+      .collection("messages")
+      .orderBy("time", "desc")
+      .limit(limit)
+      .get();
+
+    return snap.docs.map(d => d.data()).reverse();
+  }catch(e){
+    console.error("❌ Firestore inbox load failed:", uid, e.message);
+    return [];
+  }
+}
+
+
 
 
 app.use(express.json());
@@ -986,6 +1019,20 @@ socket.on("clear-my-messages", ({ peer }) => {
       });
     }
   }
+// 🔥 XOÁ OFFLINE TRONG FIRESTORE
+firestore
+  .collection("inboxes")
+  .doc(me)
+  .collection("messages")
+  .where("from", "==", me)
+  .where("to", "==", peer)
+  .get()
+  .then(snap => {
+    snap.forEach(d => d.ref.delete());
+  });
+
+
+
 });
 
 
@@ -1750,6 +1797,8 @@ if (arr.length > 100) {
   arr.splice(0, arr.length - 100);
 }
 
+// 🔥 LƯU OFFLINE VÀO FIRESTORE
+saveInboxMessage(to, msg);
 
 
 
@@ -1912,6 +1961,16 @@ if(inbox){
     socket.emit("inbox-clear");
   }
 }
+
+firestore
+  .collection("inboxes")
+  .doc(socket.data.uid)
+  .collection("messages")
+  .doc(msgId)
+  .update({ seen: true })
+  .catch(()=>{});
+
+
 
 });
 
