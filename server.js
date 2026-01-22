@@ -92,12 +92,27 @@ const INBOX_FILE = "/opt/render/project/data/inbox.json";
 
 function loadInbox(){
   if(!fs.existsSync(INBOX_FILE)) return {};
-  return JSON.parse(fs.readFileSync(INBOX_FILE,"utf8"));
+
+  try{
+    const raw = fs.readFileSync(INBOX_FILE, "utf8");
+    return JSON.parse(raw);
+  }catch(e){
+    console.error("❌ inbox.json corrupted → auto reset", e.message);
+    return {};   // ⛑️ không cho server chết
+  }
 }
 
+
 function saveInbox(db){
-  fs.writeFileSync(INBOX_FILE, JSON.stringify(db,null,2));
+  try{
+    const tmp = INBOX_FILE + ".tmp";
+    fs.writeFileSync(tmp, JSON.stringify(db, null, 2));
+    fs.renameSync(tmp, INBOX_FILE);   // atomic replace
+  }catch(e){
+    console.error("❌ Save inbox failed", e.message);
+  }
 }
+
 
 let userInbox = new Map(Object.entries(loadInbox()));
 
