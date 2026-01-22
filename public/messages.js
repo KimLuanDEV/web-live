@@ -1213,10 +1213,13 @@ imgInput.onchange = async e => {
 
   for (const file of files) {
     const { url } = await uploadChatFileWithProgress(
-      file,
-      "image",
-      p => updateUploadProgress(msgId, p)
-    );
+  file,
+  "image",
+  p => {
+    updateUploadProgress(msgId, p);   // progress trong chat (nếu muốn giữ)
+    updateToolProgress(btnImage, p);  // 🔥 progress ngay nút 📷
+  }
+);
     urls.push(url);
   }
 
@@ -1259,10 +1262,14 @@ videoInput.onchange = async e => {
 
   // 2️⃣ Upload video + %
   const { url } = await uploadChatFileWithProgress(
-    file,
-    "video",
-    p => updateUploadProgress(msgId, p)
-  );
+  file,
+  "video",
+  p => {
+    updateUploadProgress(msgId, p);
+    updateToolProgress(btnVideo, p);  // 🔥 progress ngay nút 🎥
+  }
+);
+
 
   // 3️⃣ Xóa progress
   document.querySelector(`[data-msg-id="${msgId}"]`)?.remove();
@@ -1312,3 +1319,27 @@ btnLocation.onclick = () => {
 
   setTimeout(()=>setToolLoading(btnLocation,false),1200);
 };
+
+
+
+function updateToolProgress(btn, percent) {
+  if (!btn) return;
+
+  btn.classList.add("uploading");
+
+  const ring = btn.querySelector(".tool-ring");
+  const icon = btn.querySelector(".tool-icon");
+
+  ring.style.background =
+    `conic-gradient(#00eaff ${percent * 3.6}deg, rgba(255,255,255,.15) 0deg)`;
+
+  icon.textContent = percent + "%";
+
+  if (percent >= 100) {
+    setTimeout(() => {
+      btn.classList.remove("uploading");
+      icon.textContent = btn.id === "btnImage" ? "📷" : "🎥";
+    }, 400);
+  }
+}
+

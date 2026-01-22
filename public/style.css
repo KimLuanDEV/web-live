@@ -10488,3 +10488,29 @@ body.page-profile{
 .upload-ring span {
   position: absolute;
 }
+
+
+.chat-tool {
+  position: relative;
+}
+
+.tool-ring {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.chat-tool.uploading .tool-ring {
+  opacity: 1;
+  background:
+    conic-gradient(#00eaff 0deg, rgba(255,255,255,.15) 0deg);
+}
+
+.chat-tool.uploading .tool-icon {
+  font-size: 11px;
+  font-weight: 600;
+  z-index: 1;
+}
