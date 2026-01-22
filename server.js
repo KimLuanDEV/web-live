@@ -12,10 +12,6 @@ const r2 = new S3Client({
 const R2_BUCKET = process.env.R2_BUCKET;
 
 
-const uploadR2 = multer({
-  storage: multer.memoryStorage()
-});
-
 
 
 const MAX_VIEWERS = 40;        // Render safe
@@ -39,6 +35,10 @@ const fs = require("fs");
 
 
 const webpush = require("web-push");
+
+const uploadR2 = multer({              // ✅ đặt sau
+  storage: multer.memoryStorage()
+});
 
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
 const SOCIAL_FILE = path.join("/opt/render/project/data", "social_posts.json");
