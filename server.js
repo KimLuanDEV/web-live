@@ -801,6 +801,24 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+  
+socket.on("chat-cleared", ({ peer }) => {
+  const me = socket.data.uid;
+  if(!me || !peer) return;
+
+  const inbox = userInbox.get(me);
+  if(!inbox) return;
+
+  // ❌ XÓA TOÀN BỘ TIN LIÊN QUAN peer
+  const filtered = inbox.filter(
+    m => m.from !== peer && m.to !== peer
+  );
+
+  userInbox.set(me, filtered);
+  saveInbox(Object.fromEntries(userInbox));
+});
+
+
 
   // 🚫 THU HỒI TIN NHẮN
 socket.on("revoke-message", ({ msgId }) => {

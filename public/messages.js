@@ -1052,3 +1052,19 @@ socket.on("revoke-message", ({ msgId }) => {
       }
     });
 });
+
+
+
+async function confirmClearChat(){
+  if(!currentTargetUID) return;
+
+  const ok = await showModal(
+    "Bạn có chắc muốn xóa toàn bộ lịch sử tin nhắn?\nHành động này không thể hoàn tác.",
+    "Xóa",
+    "Huỷ"
+  );
+
+  if(!ok) return;
+
+  clearChatHistory(currentTargetUID);
+}
