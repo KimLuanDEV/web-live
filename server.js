@@ -215,17 +215,45 @@ app.post("/api/upload-chat-image", uploadR2.single("image"), async (req, res) =>
 });
 
 
-app.post("/api/upload-chat-video", chatVideoUpload.single("video"), (req,res)=>{
-  res.json({ url: "/chat-videos/" + req.file.filename });
+app.post("/api/upload-chat-video", uploadR2.single("video"), async (req, res) => {
+  try {
+    const key = `chat-videos/${Date.now()}_${req.file.originalname}`;
+
+    await r2.send(new PutObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype
+    }));
+
+    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+  } catch (e) {
+    console.error("❌ R2 chat video upload failed", e);
+    res.status(500).json({ error: "upload_failed" });
+  }
 });
+
 
 app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "poster.html"));
 });
 
-app.post("/api/upload-avatar", upload.single("avatar"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file" });
-  res.json({ url: "/avatars/" + req.file.filename });
+app.post("/api/upload-avatar", uploadR2.single("avatar"), async (req, res) => {
+  try {
+    const key = `avatars/${Date.now()}_${req.file.originalname}`;
+
+    await r2.send(new PutObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype
+    }));
+
+    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+  } catch (e) {
+    console.error("❌ R2 avatar upload failed", e);
+    res.status(500).json({ error: "upload_failed" });
+  }
 });
 
 
@@ -240,16 +268,44 @@ const postUpload = multer({
 });
 
 
-app.post("/api/upload-cover", coverUpload.single("cover"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file" });
-  res.json({ url: "/covers/" + req.file.filename });
+app.post("/api/upload-cover", uploadR2.single("cover"), async (req, res) => {
+  try {
+    const key = `covers/${Date.now()}_${req.file.originalname}`;
+
+    await r2.send(new PutObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype
+    }));
+
+    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+  } catch (e) {
+    console.error("❌ R2 cover upload failed", e);
+    res.status(500).json({ error: "upload_failed" });
+  }
 });
 
 
-app.post("/api/upload-post-image", postUpload.single("image"), (req,res)=>{
-  if(!req.file) return res.status(400).json({error:"no file"});
-  res.json({ url: "/post-images/" + req.file.filename });
+
+app.post("/api/upload-post-image", uploadR2.single("image"), async (req, res) => {
+  try {
+    const key = `post-images/${Date.now()}_${req.file.originalname}`;
+
+    await r2.send(new PutObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype
+    }));
+
+    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+  } catch (e) {
+    console.error("❌ R2 post image upload failed", e);
+    res.status(500).json({ error: "upload_failed" });
+  }
 });
+
 
 
 const postVideoUpload = multer({
@@ -265,9 +321,22 @@ const postVideoUpload = multer({
 
 });
 
-app.post("/api/upload-post-video", postVideoUpload.single("video"), (req,res)=>{
-  if(!req.file) return res.status(400).json({error:"no file"});
-  res.json({ url: "/post-videos/" + req.file.filename });
+app.post("/api/upload-post-video", uploadR2.single("video"), async (req, res) => {
+  try {
+    const key = `post-videos/${Date.now()}_${req.file.originalname}`;
+
+    await r2.send(new PutObjectCommand({
+      Bucket: R2_BUCKET,
+      Key: key,
+      Body: req.file.buffer,
+      ContentType: req.file.mimetype
+    }));
+
+    res.json({ url: `${process.env.R2_ENDPOINT}/${key}` });
+  } catch (e) {
+    console.error("❌ R2 post video upload failed", e);
+    res.status(500).json({ error: "upload_failed" });
+  }
 });
 
 
