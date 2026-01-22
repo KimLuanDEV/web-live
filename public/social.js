@@ -1346,7 +1346,8 @@ function openFeedLightbox(images, index){
   feedImages = images;
   feedLightboxIndex = index;
 
-  imgLightboxView.src = feedImages[feedLightboxIndex];
+  imgLightboxView.src = fixMedia(feedImages[feedLightboxIndex]);
+
   imgLightbox.classList.remove("hidden");
   document.body.style.overflow = "hidden";
 
@@ -1358,7 +1359,8 @@ function nextFeedImage(){
   if(!feedImages.length) return;
 
   feedLightboxIndex = (feedLightboxIndex + 1) % feedImages.length;
-  imgLightboxView.src = feedImages[feedLightboxIndex];
+ imgLightboxView.src = fixMedia(feedImages[feedLightboxIndex]);
+
 
   updateIndicator(feedLightboxIndex + 1, feedImages.length);
 }
@@ -1370,7 +1372,8 @@ function prevFeedImage(){
   feedLightboxIndex =
     (feedLightboxIndex - 1 + feedImages.length) % feedImages.length;
 
-  imgLightboxView.src = feedImages[feedLightboxIndex];
+  imgLightboxView.src = fixMedia(feedImages[feedLightboxIndex]);
+
   updateIndicator(feedLightboxIndex + 1, feedImages.length);
 }
 
