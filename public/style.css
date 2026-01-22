@@ -10349,3 +10349,47 @@ body.page-profile{
   color: #00e5ff;
   text-decoration: none;
 }
+
+
+/* ===== CHAT TOOLS BAR ===== */
+.chat-tools{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+/* nút tool chung */
+.chat-tool{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border:1px solid rgba(255,255,255,.18);
+  background: rgba(0,0,0,.35);
+  backdrop-filter: blur(8px);
+  cursor:pointer;
+  padding:0;
+  box-shadow: 0 0 14px rgba(0,0,0,.4);
+  transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+}
+
+.chat-tool:hover{
+  transform: scale(1.08);
+  filter: brightness(1.15);
+  box-shadow: 0 0 22px rgba(95,168,255,.45);
+}
+
+/* icon bên trong */
+.chat-tool .tool-icon{
+  font-size:18px;
+  line-height:1;
+  user-select:none;
+  pointer-events:none;
+}
+
+/* mobile tap feel */
+.chat-tool:active{
+  transform: scale(.95);
+}

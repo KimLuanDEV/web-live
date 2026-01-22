@@ -100,17 +100,31 @@
 
 
    <div class="chatform">
-  <label class="chat-tool">
-    📷
-    <input type="file" id="imgInput" accept="image/*"  multiple hidden>
+
+    
+<div class="chat-tools">
+  <!-- 📷 IMAGE -->
+  <label class="chat-tool" title="Gửi ảnh">
+    <span class="tool-icon">📷</span>
+    <input type="file" id="imgInput" accept="image/*" multiple hidden>
   </label>
 
-  <label class="chat-tool">
-    🎥
+  <!-- 🎥 VIDEO -->
+  <label class="chat-tool" title="Gửi video">
+    <span class="tool-icon">🎥</span>
     <input type="file" id="videoInput" accept="video/*" hidden>
   </label>
 
-<button id="btnLocation" class="chat-tool">📍</button>
+  <!-- 📍 LOCATION -->
+  <button
+    id="btnLocation"
+    class="chat-tool"
+    type="button"
+    title="Chia sẻ vị trí"
+  >
+    <span class="tool-icon">📍</span>
+  </button>
+</div>
 
 
 
