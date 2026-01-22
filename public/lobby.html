@@ -398,6 +398,16 @@ body.lobby-page{
 const socket = io();
 
 
+const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
+
+function fixAvatar(url){
+  if (!url) return "";
+  if (url.startsWith("/avatars/")) {
+    return R2_PUBLIC_URL + url;
+  }
+  return url;
+}
+
 
 let ALL_USERS = [];
 let ONLINE_UIDS = [];
@@ -890,7 +900,7 @@ function render(list){
     const hostName   = r.host?.name   || (r.__virtual ? "Room Ảo" : "Host");
     const verified = r.host?.verified;
 
-    const hostAvatar = r.host?.avatar || `https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg`;
+    const hostAvatar = fixAvatar(r.host?.avatar) || `https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg`;
 
     const liveFor = (typeof r.liveStartTs === "number") ? (Date.now() - r.liveStartTs) : 0;
 
@@ -1255,7 +1265,10 @@ if (MY_BLOCKED.includes(u.uid)) return "";
      <div class="pava"
      ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
      style="${!isMe ? "cursor:pointer" : ""}">
-  <img src="${u.avatar}">
+
+  <img src="${fixAvatar(u.avatar)}">
+
+
   <span class="dot ${isOn ? "on":"off"}"></span>
 </div>
 

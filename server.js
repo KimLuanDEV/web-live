@@ -24,6 +24,21 @@ const webpush = require("web-push");
 
 const { uploadToR2 } = require("./r2");
 
+
+const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || "";
+
+function normalizeAvatar(url) {
+  if (!url) return "";
+
+  // avatar legacy dạng /avatars/xxx.jpg
+  if (url.startsWith("/avatars/")) {
+    return R2_PUBLIC_URL + url;
+  }
+
+  return url;
+}
+
+
 const chatUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 500 * 1024 * 1024 }
@@ -301,11 +316,14 @@ for (const [uid, sockets] of activeUsers.entries()) {
     list.push({
       socketId,
       uid,   
-      name: displayName,        // ✅ Tên hiển thị
-      avatar:
-        profile.avatar ||
-        "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
-        encodeURIComponent(displayName),
+      name: displayName,  
+         
+avatar:
+  normalizeAvatar(profile.avatar) ||
+  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+  encodeURIComponent(displayName),
+
+
       level: Number(profile.level || 1),
       role: s.data.role || "user",
       roomId: s.data.roomId || null
@@ -336,7 +354,7 @@ function emitAllUsers(){
     list.push({
       uid,
       name: p.name || uid,
-      avatar: p.avatar || "",
+      avatar: normalizeAvatar(p.avatar) || "",
       cover: p.cover || "",
       level: p.level || 1
     });
@@ -1676,7 +1694,7 @@ app.get("/api/friends/:uid", (req, res) => {
     return {
       uid: fid,
       name: u.profile.name,
-      avatar: u.profile.avatar,
+      avatar: normalizeAvatar(u.profile.avatar),
       level: u.profile.level || 1,
       verified: !!u.profile.verified
     };
@@ -1709,7 +1727,7 @@ app.get("/api/blocked/:uid", (req, res) => {
     return {
       uid: bid,
       name: u.profile.name,
-      avatar: u.profile.avatar,
+      avatar: normalizeAvatar(u.profile.avatar),
       level: u.profile.level || 1,
       verified: !!u.profile.verified
     };
