@@ -26,7 +26,7 @@ const renderedMsgIds = new Set();
 let offlineHandled = false;
 
 
-const R2_PUBLIC_URL = "https://<bucket>.<account-id>.r2.cloudflarestorage.com";
+const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 
 function fixMedia(url){
   if (!url) return "";
@@ -417,37 +417,41 @@ if (nearBottom) {
 
 
 
-  // 🖼️ IMAGE → KHÔNG BUBBLE
-  if (text?.startsWith("/img ")) {
+if (text?.startsWith("/img ")) {
 
-   let url = text.slice(5);
+  let url = text.slice(5);
 
-// 🔥 FIX LEGACY PATH (/chat-images)
-if (url.startsWith("/chat-images/")) {
-  url = url.replace(
-    "/chat-images/",
-    process.env.R2_PUBLIC_URL + "/chat/images/"
-  );
+  // 🔥 FIX CHAT IMAGE LEGACY → R2
+  if (url.startsWith("/chat-images/")) {
+    url = R2_PUBLIC_URL + url.replace("/chat-images/", "/chat/images/");
+  }
+
+  html = `
+    <div class="chat-media ${isMe ? "me" : "other"}">
+      <img src="${url}" class="chat-img">
+    </div>
+  `;
 }
 
 
-    html = `
-      <div class="chat-media ${isMe ? "me" : "other"}">
-        <img src="${url}" class="chat-img">
-      </div>
-    `;
-  }
-
-  // 🎥 VIDEO → KHÔNG BUBBLE
   else if (text?.startsWith("/video ")) {
-    const url = text.slice(7);
 
-    html = `
-      <div class="chat-media ${isMe ? "me" : "other"}">
-        <video src="${url}" controls playsinline class="chat-video"></video>
-      </div>
-    `;
+  let url = text.slice(7);
+
+  // 🔥 FIX CHAT VIDEO LEGACY → R2
+  if (url.startsWith("/chat-videos/")) {
+    url = R2_PUBLIC_URL + url.replace("/chat-videos/", "/chat/videos/");
   }
+
+  html = `
+    <div class="chat-media ${isMe ? "me" : "other"}">
+      <video src="${url}" controls playsinline class="chat-video"></video>
+    </div>
+  `;
+}
+
+
+
 
 // 🖼️ ALBUM + INDICATOR
 else if (text?.startsWith("/album ")) {
