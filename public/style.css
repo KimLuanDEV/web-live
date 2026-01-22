@@ -10431,3 +10431,41 @@ body.page-profile{
 .chat-tool .tool-icon{
   filter: drop-shadow(0 0 6px rgba(255,255,255,.35));
 }
+
+
+/* ===== TOOL LOADING RING ===== */
+
+.chat-tool{
+  position: relative;
+}
+
+/* vòng xoay */
+.tool-ring{
+  position:absolute;
+  inset:-3px;
+  border-radius:50%;
+  border:2px solid transparent;
+  border-top-color: currentColor;
+  opacity:0;
+  pointer-events:none;
+  animation: spin 0.9s linear infinite;
+}
+
+/* khi loading */
+.chat-tool.is-loading{
+  pointer-events:none;
+  filter: brightness(.9);
+}
+
+.chat-tool.is-loading .tool-ring{
+  opacity:1;
+}
+
+/* màu vòng theo nút */
+.tool-image{ color:#5FA8FF; }
+.tool-video{ color:#A85FFF; }
+.tool-location{ color:#FF3B6B; }
+
+@keyframes spin{
+  to{ transform: rotate(360deg); }
+}

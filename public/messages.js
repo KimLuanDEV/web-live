@@ -1210,3 +1210,98 @@ document.getElementById("btnImage").onclick = () => {
 document.getElementById("btnVideo").onclick = () => {
   document.getElementById("videoInput").click();
 };
+
+
+function setToolLoading(btn, loading=true){
+  if(!btn) return;
+  btn.classList.toggle("is-loading", loading);
+}
+
+const btnImage = document.getElementById("btnImage");
+const imgInput = document.getElementById("imgInput");
+
+btnImage.onclick = () => imgInput.click();
+
+imgInput.onchange = async e => {
+  if (!currentTarget) return;
+  setToolLoading(btnImage, true);
+
+  try {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
+
+    const urls = [];
+    for (const file of files) {
+      const { url } = await uploadChatFile(file, "image");
+      urls.push(url);
+    }
+
+    const text = "/album " + urls.join("|");
+    const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+
+    pushMsg("Bạn", text, true, msgId, "✓");
+    saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
+
+    socket.emit("private-message", { to: currentTarget.uid, msgId, text });
+  }
+  finally{
+    setToolLoading(btnImage, false);
+    imgInput.value = "";
+  }
+};
+
+
+const btnVideo = document.getElementById("btnVideo");
+const videoInput = document.getElementById("videoInput");
+
+btnVideo.onclick = () => videoInput.click();
+
+videoInput.onchange = async e => {
+  if (!currentTarget) return;
+  setToolLoading(btnVideo, true);
+
+  try{
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+    const { url } = await uploadChatFile(file, "video");
+    const text = "/video " + url;
+
+    pushMsg("Bạn", text, true, msgId, "✓");
+    saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
+
+    socket.emit("private-message", { to: currentTarget.uid, msgId, text });
+  }
+  finally{
+    setToolLoading(btnVideo, false);
+    videoInput.value = "";
+  }
+};
+
+
+const btnLocation = document.getElementById("btnLocation");
+
+btnLocation.onclick = () => {
+  if (!currentTarget) return;
+
+  setToolLoading(btnLocation, true);
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      const url = `https://www.google.com/maps?q=${lat},${lng}`;
+      const text = `/location ${lat},${lng}|${url}`;
+      const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+
+      pushMsg("Bạn", text, true, msgId, "✓");
+      saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
+      socket.emit("private-message", { to: currentTarget.uid, msgId, text });
+    },
+    () => alert("❌ Không lấy được vị trí"),
+    { enableHighAccuracy:true, timeout:10000 }
+  );
+
+  setTimeout(()=>setToolLoading(btnLocation,false),1200);
+};
