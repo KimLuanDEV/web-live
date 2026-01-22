@@ -1408,7 +1408,7 @@ function updateToolProgress(btn, percent, type, stats = {}) {
     return;
   }
 
-  // ⏱ Đang upload bình thường
+  // ⏱ Upload bình thường
   if (percent < 95) {
     icon.innerHTML = `
       <div>${percent}%</div>
@@ -1421,16 +1421,22 @@ function updateToolProgress(btn, percent, type, stats = {}) {
     return;
   }
 
-  // ✅ 100% → hoàn tất
+  // 🟢 100% → tick ✓
   if (percent >= 100) {
-    icon.textContent = "100%";
+    icon.innerHTML = `
+      <div style="color:#2dff7a;font-size:16px;text-shadow:0 0 8px #2dff7a">
+        ✓
+      </div>
+    `;
 
+    // giữ tick 600ms rồi reset
     setTimeout(() => {
       btn.classList.remove("uploading", "image", "video");
       icon.textContent = btn.id === "btnImage" ? "📷" : "🎥";
     }, 600);
   }
 }
+
 
 
 
