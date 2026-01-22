@@ -1599,7 +1599,8 @@ if (images) {
         ${images.slice(0,5).map((url, index) => `
           <div class="fb-img img-${index}"
             onclick='openFeedLightbox(${JSON.stringify(images)}, ${index})'>
-            <img src="${url}">
+           <img src="${fixMedia(url)}">
+
             ${index === 4 && images.length > 5
               ? `<div class="fb-more">+${images.length - 5}</div>`
               : ``}
