@@ -30,13 +30,14 @@ const btnBlock          = document.getElementById("btnBlock");
 // 🔧 FIX LEGACY AVATAR (/avatars -> R2)
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 
-function fixAvatar(url){
+function fixMedia(url){
   if (!url) return "";
-  if (url.startsWith("/avatars/")) {
+  if (url.startsWith("/avatars/") || url.startsWith("/covers/")) {
     return R2_PUBLIC_URL + url;
   }
   return url;
 }
+
 
 
 
@@ -563,7 +564,8 @@ function loadProfile(){
   nameInput.value = p.name;
   displayName.textContent = p.name;
   
- avatarPreview.src = fixAvatar(p.avatar);
+avatarPreview.src = fixMedia(p.avatar);
+
 
 
   const bioInput = document.getElementById("bioInput");
@@ -630,7 +632,7 @@ if (vipBadgeBox){
 }
 
 if (p.cover && coverPreview) {
-  coverPreview.src = p.cover;
+ coverPreview.src = fixMedia(p.cover);
 }
 
 
@@ -1225,7 +1227,8 @@ async function loadFriendRequestCount(){
 
 function renderProfileViewOnly(p){
   // avatar + name
-  avatarPreview.src = fixAvatar(p.avatar) || defaultProfile.avatar;
+ avatarPreview.src = fixMedia(p.avatar) || defaultProfile.avatar;
+
 
   displayName.textContent = p.name || "User";
 
@@ -1238,7 +1241,8 @@ function renderProfileViewOnly(p){
 
   // cover
   if (p.cover && coverPreview){
-    coverPreview.src = p.cover;
+   coverPreview.src = fixMedia(p.cover);
+
   }
 
   // level / stats
