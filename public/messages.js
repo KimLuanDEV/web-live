@@ -26,6 +26,24 @@ const renderedMsgIds = new Set();
 let offlineHandled = false;
 
 
+const R2_PUBLIC_URL = "https://<bucket>.<account-id>.r2.cloudflarestorage.com";
+
+function fixMedia(url){
+  if (!url) return "";
+
+  // legacy absolute URL
+  if (url.startsWith(location.origin + "/avatars/")) {
+    return R2_PUBLIC_URL + url.replace(location.origin, "");
+  }
+
+  if (url.startsWith("/avatars/")) {
+    return R2_PUBLIC_URL + url;
+  }
+
+  return url;
+}
+
+
 async function loadAllUsers(){
   const res = await fetch("/api/all-users");
   allUsers = await res.json();
@@ -545,7 +563,7 @@ allUsers.forEach(u=>{
 
 
 div.innerHTML = `
-  <img class="msg-ava" src="${u.avatar}">
+<img class="msg-ava" src="${fixMedia(u.avatar)}">
 
   <div class="msg-uinfo">
   <div class="msg-uname">
@@ -579,7 +597,8 @@ div.innerHTML = `
 ` : ``}
 `;
 
-document.getElementById("chatHeaderAvatar").src = u.avatar || "";
+document.getElementById("chatHeaderAvatar").src = fixMedia(u.avatar) || "";
+
 
 
       loadChat();
@@ -705,7 +724,8 @@ function showMessageToast({ name, text, avatar, uid }) {
   div.className = "msg-toast";
 
   div.innerHTML = `
-    <img src="${avatar || '/icons/icon-192.png'}" class="toast-ava">
+    <img src="${fixMedia(avatar) || '/icons/icon-192.png'}" class="toast-ava">
+
     <div class="toast-body">
       <div class="toast-name">${name}</div>
       <div class="toast-text">${text}</div>
