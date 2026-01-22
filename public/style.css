@@ -10393,3 +10393,41 @@ body.page-profile{
 .chat-tool:active{
   transform: scale(.95);
 }
+
+
+/* ===== CHAT TOOL COLORS ===== */
+
+/* 📷 IMAGE – xanh dương */
+.chat-tool.tool-image{
+  border-color: rgba(95,168,255,.45);
+  background: rgba(95,168,255,.14);
+  box-shadow: 0 0 14px rgba(95,168,255,.35);
+}
+.chat-tool.tool-image:hover{
+  box-shadow: 0 0 26px rgba(95,168,255,.65);
+}
+
+/* 🎥 VIDEO – tím */
+.chat-tool.tool-video{
+  border-color: rgba(168,95,255,.45);
+  background: rgba(168,95,255,.14);
+  box-shadow: 0 0 14px rgba(168,95,255,.35);
+}
+.chat-tool.tool-video:hover{
+  box-shadow: 0 0 26px rgba(168,95,255,.65);
+}
+
+/* 📍 LOCATION – đỏ */
+.chat-tool.tool-location{
+  border-color: rgba(255,59,107,.45);
+  background: rgba(255,59,107,.14);
+  box-shadow: 0 0 14px rgba(255,59,107,.35);
+}
+.chat-tool.tool-location:hover{
+  box-shadow: 0 0 26px rgba(255,59,107,.7);
+}
+
+/* icon sáng hơn chút */
+.chat-tool .tool-icon{
+  filter: drop-shadow(0 0 6px rgba(255,255,255,.35));
+}

@@ -106,7 +106,7 @@
   <!-- 📷 IMAGE -->
   <button
     type="button"
-    class="chat-tool"
+    class="chat-tool tool-image"
     id="btnImage"
     title="Gửi ảnh"
   >
@@ -116,7 +116,7 @@
   <!-- 🎥 VIDEO -->
   <button
     type="button"
-    class="chat-tool"
+    class="chat-tool tool-video"
     id="btnVideo"
     title="Gửi video"
   >
@@ -126,29 +126,17 @@
   <!-- 📍 LOCATION -->
   <button
     id="btnLocation"
-    class="chat-tool"
+    class="chat-tool tool-location"
     type="button"
     title="Chia sẻ vị trí"
   >
     <span class="tool-icon">📍</span>
   </button>
 
-  <!-- input ẩn -->
-  <input
-    type="file"
-    id="imgInput"
-    accept="image/*"
-    multiple
-    hidden
-  />
-
-  <input
-    type="file"
-    id="videoInput"
-    accept="video/*"
-    hidden
-  />
+  <input type="file" id="imgInput" accept="image/*" multiple hidden />
+  <input type="file" id="videoInput" accept="video/*" hidden />
 </div>
+
 
 
 
