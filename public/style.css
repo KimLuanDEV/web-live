@@ -10533,3 +10533,13 @@ body.page-profile{
   white-space: nowrap;
 }
 
+
+.chat-tool.uploading .tool-ring {
+  animation: pulseGlow 1.2s infinite ease-in-out;
+}
+
+@keyframes pulseGlow {
+  0%   { filter: brightness(1); }
+  50%  { filter: brightness(1.25); }
+  100% { filter: brightness(1); }
+}
