@@ -731,9 +731,11 @@ avatarInput.onchange = async () => {
   fd.append("avatar", file);
 
   const res = await fetch("/api/upload-avatar", {
-    method: "POST",
-    body: fd
-  });
+  method: "POST",
+  headers: { "x-uid": __profileAuth.uid || "" },
+  body: fd
+});
+
 
   const data = await res.json();
   if (!data.url) {
@@ -1069,10 +1071,12 @@ if (coverInput) {
       const resized = await resizeCoverImage(file);
       fd.append("cover", resized, "cover.jpg");
 
-      const res = await fetch("/api/upload-cover", {
-        method: "POST",
-        body: fd
-      });
+const res = await fetch("/api/upload-cover", {
+  method: "POST",
+  headers: { "x-uid": __profileAuth.uid || "" },
+  body: fd
+});
+
 
       const data = await res.json();
       if (!data.url) {

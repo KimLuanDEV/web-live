@@ -29,6 +29,10 @@ const chatUpload = multer({
   limits: { fileSize: 500 * 1024 * 1024 }
 });
 
+const avatarCoverUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 10 * 1024 * 1024 } // 10MB
+});
 
 
 
@@ -45,39 +49,6 @@ MEDIA_DIRS.forEach(dir=>{
     console.log("📁 Created", dir);
   }
 });
-
-
-const AVATAR_DIR = "/opt/render/project/data/avatars";
-
-if(!fs.existsSync(AVATAR_DIR)){
-  fs.mkdirSync(AVATAR_DIR, { recursive:true });
-  console.log("📁 Created", AVATAR_DIR);
-}
-
-
-
-
-
-const COVER_DIR = "/opt/render/project/data/covers";
-
-if (!fs.existsSync(COVER_DIR)) {
-  fs.mkdirSync(COVER_DIR, { recursive: true });
-  console.log("📁 Created", COVER_DIR);
-}
-
-
-
-const coverUpload = multer({
-  storage: multer.diskStorage({
-    destination: COVER_DIR,
-    filename: (_, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
-    }
-  })
-});
-
-
 
 
 const INBOX_FILE = "/opt/render/project/data/inbox.json";
@@ -104,15 +75,6 @@ let userInbox = new Map(Object.entries(loadInbox()));
 
 
 
-const avatarUpload = multer({
-  storage: multer.diskStorage({
-    destination: "/opt/render/project/data/avatars",
-    filename: (_, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
-    }
-  })
-});
 
 
 
@@ -164,8 +126,7 @@ const io = new Server(server, { cors: { origin: "*" } });
 app.use(express.static(path.join(__dirname, "public")));
 app.use("/post-images", express.static("/opt/render/project/data/post-images"));
 app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
-app.use("/avatars", express.static("/opt/render/project/data/avatars"));
-app.use("/covers", express.static(COVER_DIR));
+
 
 app.post("/api/upload-chat-image", chatUpload.single("image"), async (req, res) => {
 
@@ -214,10 +175,31 @@ app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "poster.html"));
 });
 
-app.post("/api/upload-avatar", avatarUpload.single("avatar"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file" });
-  res.json({ url: "/avatars/" + req.file.filename });
-});
+
+
+app.post("/api/upload-avatar", avatarCoverUpload.single("avatar"), async (req, res) => {
+
+    if (!req.file) return res.status(400).json({ error: "No file" });
+
+    const safeName = req.file.originalname
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const uid = req.headers["x-uid"] || "guest";
+
+    const key = `avatars/${uid}_${Date.now()}_${safeName}`;
+
+    const url = await uploadToR2(
+      req.file.buffer,
+      key,
+      req.file.mimetype
+    );
+
+    res.json({ url });
+  }
+);
+
 
 
 const postUpload = multer({
@@ -231,10 +213,29 @@ const postUpload = multer({
 });
 
 
-app.post("/api/upload-cover", coverUpload.single("cover"), (req, res) => {
-  if (!req.file) return res.status(400).json({ error: "No file" });
-  res.json({ url: "/covers/" + req.file.filename });
-});
+app.post("/api/upload-cover", avatarCoverUpload.single("cover"), async (req, res) => {
+
+    if (!req.file) return res.status(400).json({ error: "No file" });
+
+    const safeName = req.file.originalname
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const uid = req.headers["x-uid"] || "guest";
+
+    const key = `covers/${uid}_${Date.now()}_${safeName}`;
+
+    const url = await uploadToR2(
+      req.file.buffer,
+      key,
+      req.file.mimetype
+    );
+
+    res.json({ url });
+  }
+);
+
 
 
 app.post("/api/upload-post-image", postUpload.single("image"), (req,res)=>{
