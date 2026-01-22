@@ -49,6 +49,11 @@ const avatarCoverUpload = multer({
   limits: { fileSize: 10 * 1024 * 1024 } // 10MB
 });
 
+const postMediaUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 500 * 1024 * 1024 } // 500MB (video)
+});
+
 
 
 const LIVE_STATE_FILE = path.join("/opt/render/project/data", "live_state.json");
@@ -139,8 +144,7 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/post-images", express.static("/opt/render/project/data/post-images"));
-app.use("/post-videos", express.static("/opt/render/project/data/post-videos"));
+
 
 
 app.post("/api/upload-chat-image", chatUpload.single("image"), async (req, res) => {
@@ -190,8 +194,6 @@ app.get("/", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "poster.html"));
 });
 
-
-
 app.post("/api/upload-avatar", avatarCoverUpload.single("avatar"), async (req, res) => {
 
     if (!req.file) return res.status(400).json({ error: "No file" });
@@ -214,19 +216,6 @@ app.post("/api/upload-avatar", avatarCoverUpload.single("avatar"), async (req, r
     res.json({ url });
   }
 );
-
-
-
-const postUpload = multer({
-  storage: multer.diskStorage({
-    destination: "/opt/render/project/data/post-images",
-    filename: (_, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
-    }
-  })
-});
-
 
 app.post("/api/upload-cover", avatarCoverUpload.single("cover"), async (req, res) => {
 
@@ -251,31 +240,50 @@ app.post("/api/upload-cover", avatarCoverUpload.single("cover"), async (req, res
   }
 );
 
+app.post("/api/upload-post-image",
+  postMediaUpload.single("image"),
+  async (req, res) => {
 
+  if (!req.file) return res.status(400).json({ error: "No file" });
 
-app.post("/api/upload-post-image", postUpload.single("image"), (req,res)=>{
-  if(!req.file) return res.status(400).json({error:"no file"});
-  res.json({ url: "/post-images/" + req.file.filename });
+  const safeName = req.file.originalname
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+  const key = `posts/images/${Date.now()}_${safeName}`;
+
+  const url = await uploadToR2(
+    req.file.buffer,
+    key,
+    req.file.mimetype
+  );
+
+  res.json({ url });
 });
 
+app.post("/api/upload-post-video",
+  postMediaUpload.single("video"),
+  async (req, res) => {
 
-const postVideoUpload = multer({
-  storage: multer.diskStorage({
-    destination: "/opt/render/project/data/post-videos",
+  if (!req.file) return res.status(400).json({ error: "No file" });
 
-    filename: (_, file, cb) => {
-      const ext = path.extname(file.originalname);
-      cb(null, Date.now() + "_" + Math.random().toString(36).slice(2) + ext);
-    }
-  }),
-  limits: { fileSize: 200 * 1024 * 1024 } // 200MB (tối đa nên dùng)
+  const safeName = req.file.originalname
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
 
+  const key = `posts/videos/${Date.now()}_${safeName}`;
+
+  const url = await uploadToR2(
+    req.file.buffer,
+    key,
+    req.file.mimetype
+  );
+
+  res.json({ url });
 });
 
-app.post("/api/upload-post-video", postVideoUpload.single("video"), (req,res)=>{
-  if(!req.file) return res.status(400).json({error:"no file"});
-  res.json({ url: "/post-videos/" + req.file.filename });
-});
 
 
 const rooms = new Map();

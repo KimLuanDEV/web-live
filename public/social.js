@@ -45,7 +45,9 @@ socket.on("profile-update", data => {
 
     // update avatar góc đăng bài
     const me = document.getElementById("meAvatar");
-    if (me) me.src = data.avatar;
+
+ if (me) me.src = fixMedia(data.avatar);
+
 
     // 🔥 UPDATE TOÀN BỘ FEED CŨ
     document.querySelectorAll(".lp-post").forEach(post => {
@@ -529,15 +531,16 @@ async function submitPost(){
 
   const cur = JSON.parse(localStorage.getItem("user_profile"));
 
-  socket.emit("lp-post", {
-    uid: cur.uid,
-    name: cur.name,
-    avatar: cur.avatar,
-    text,
-    images: imageUrls,   // 🔥 MẢNG ẢNH
-    video: videoUrl,
-    time: Date.now()
-  });
+socket.emit("lp-post", {
+  uid: cur.uid,
+  name: cur.name,
+  avatar: fixMedia(cur.avatar),
+  text,
+  images: imageUrls,
+  video: videoUrl,
+  time: Date.now()
+});
+
 
   // reset
   postText.value="";
@@ -573,9 +576,10 @@ div.dataset.id = child.id;   // 🔥 bắt buộc
 div.style.marginLeft="16px";
 
 div.innerHTML = `
-<img src="${child.avatar}"
+<img src="${fixMedia(child.avatar)}"
      onclick="openUserProfile('${child.uid}')"
      style="cursor:pointer">
+
 
   <div>
    <b onclick="openUserProfile('${child.uid}')"
@@ -680,11 +684,7 @@ ${(p.images && p.images.length) ? `
   `).join("")}
 
 </div>
-
-
-
-  ` :
-  (p.image ? `<img class="lp-post-img" src="${p.image}">` : "")
+  ` : ""
 }
 
 
@@ -806,9 +806,11 @@ if(r.replies){
   c2.style.marginLeft="16px";
 
   c2.innerHTML = `
-  <img src="${child.avatar}"
+<img src="${fixMedia(child.avatar)}"
      onclick="openUserProfile('${child.uid}')"
      style="cursor:pointer">
+
+
   <div>
     <b onclick="openUserProfile('${child.uid}')"
    style="cursor:pointer">
