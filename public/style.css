@@ -10469,3 +10469,22 @@ body.page-profile{
 @keyframes spin{
   to{ transform: rotate(360deg); }
 }
+
+
+.upload-ring {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background:
+    conic-gradient(#00eaff 0deg, rgba(255,255,255,.15) 0deg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: white;
+}
+
+.upload-ring span {
+  position: absolute;
+}

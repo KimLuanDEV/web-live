@@ -773,94 +773,72 @@ socket.on("msg-blocked", ({ reason }) => {
 
 
 
-async function uploadChatFile(file, type) {
-  const fd = new FormData();
-  fd.append(type, file);
+function uploadChatFileWithProgress(file, type, onProgress) {
+  return new Promise((resolve, reject) => {
+    const xhr = new XMLHttpRequest();
+    const fd = new FormData();
+    fd.append(type, file);
 
-  const res = await fetch(
-    type === "image"
-      ? "/api/upload-chat-image"
-      : "/api/upload-chat-video",
-    { method: "POST", body: fd }
-  );
+    xhr.open(
+      "POST",
+      type === "image"
+        ? "/api/upload-chat-image"
+        : "/api/upload-chat-video"
+    );
 
-  return res.json(); // { url }
+    xhr.upload.onprogress = e => {
+      if (e.lengthComputable && onProgress) {
+        const percent = Math.round((e.loaded / e.total) * 100);
+        onProgress(percent);
+      }
+    };
+
+    xhr.onload = () => {
+      try {
+        resolve(JSON.parse(xhr.responseText));
+      } catch {
+        reject();
+      }
+    };
+
+    xhr.onerror = reject;
+    xhr.send(fd);
+  });
 }
 
 
-document.getElementById("imgInput").onchange = async e => {
-  const files = Array.from(e.target.files);
-  if (!files.length || !currentTarget) return;
 
-  const urls = [];
+function pushUploadProgress(msgId) {
+  const div = document.createElement("div");
+  div.className = "chat-line me";
+  div.dataset.msgId = msgId;
 
-  // 1️⃣ upload lần lượt
-  for (const file of files) {
-    const { url } = await uploadChatFile(file, "image");
-    urls.push(url);
-  }
+  div.innerHTML = `
+    <div class="upload-ring" id="ring-${msgId}">
+      <span id="ring-text-${msgId}">0%</span>
+    </div>
+  `;
 
-  // 2️⃣ tạo album text
-  const text = "/album " + urls.join("|");
-  const msgId =
-    Date.now() + "_" + Math.random().toString(36).slice(2);
-
-  // 3️⃣ hiển thị ngay
-  pushMsg("Bạn", text, true, msgId, "✓");
-
-  // 4️⃣ lưu local
-  saveChat({
-    id: msgId,
-    from: auth.uid,
-    to: currentTarget.uid,
-    text,
-    time: Date.now(),
-    peer: currentTarget.uid,
-    seen: true
-  });
-
-  // 5️⃣ gửi socket
- socket.emit("private-message", {
-  to: currentTarget.uid,
-  msgId,
-  text   // 🔥 GỬI TEXT "/album ..."
-});
+  chatBox.appendChild(div);
+  scrollChatToBottom(true);
+}
 
 
-  e.target.value = "";
-};
+function updateUploadProgress(msgId, percent) {
+  const ring = document.getElementById(`ring-${msgId}`);
+  const text = document.getElementById(`ring-text-${msgId}`);
+  if (!ring || !text) return;
+
+  ring.style.background =
+    `conic-gradient(#00eaff ${percent * 3.6}deg, rgba(255,255,255,.15) 0deg)`;
+
+  text.textContent = percent + "%";
+}
 
 
 
 
-document.getElementById("videoInput").onchange = async e => {
-  const file = e.target.files[0];
-  if (!file || !currentTarget) return;
 
-  const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
-
-  const { url } = await uploadChatFile(file, "video");
-  const text = "/video " + url;
-
-  pushMsg("Bạn", text, true, msgId, "✓");
-
-  saveChat({
-    id: msgId,
-    from: auth.uid,
-    to: currentTarget.uid,
-    text,
-    time: Date.now(),
-    peer: currentTarget.uid,
-    seen: true
-  });
-
-  socket.emit("private-message", {
-    to: currentTarget.uid,
-    msgId,
-    type: "video",
-    media: url
-  });
-};
 
 
 const msgInput = document.getElementById("msgInput");
@@ -1224,30 +1202,42 @@ btnImage.onclick = () => imgInput.click();
 
 imgInput.onchange = async e => {
   if (!currentTarget) return;
-  setToolLoading(btnImage, true);
 
-  try {
-    const files = Array.from(e.target.files);
-    if (!files.length) return;
+  const files = Array.from(e.target.files);
+  if (!files.length) return;
 
-    const urls = [];
-    for (const file of files) {
-      const { url } = await uploadChatFile(file, "image");
-      urls.push(url);
-    }
+  const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+  pushUploadProgress(msgId);
 
-    const text = "/album " + urls.join("|");
-    const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+  const urls = [];
 
-    pushMsg("Bạn", text, true, msgId, "✓");
-    saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
-
-    socket.emit("private-message", { to: currentTarget.uid, msgId, text });
+  for (const file of files) {
+    const { url } = await uploadChatFileWithProgress(
+      file,
+      "image",
+      p => updateUploadProgress(msgId, p)
+    );
+    urls.push(url);
   }
-  finally{
-    setToolLoading(btnImage, false);
-    imgInput.value = "";
-  }
+
+  // 🔥 XÓA PROGRESS
+  document.querySelector(`[data-msg-id="${msgId}"]`)?.remove();
+
+  const text = "/album " + urls.join("|");
+
+  pushMsg("Bạn", text, true, msgId, "✓");
+  saveChat({
+    id: msgId,
+    from: auth.uid,
+    to: currentTarget.uid,
+    text,
+    time: Date.now(),
+    peer: currentTarget.uid,
+    seen: true
+  });
+
+  socket.emit("private-message", { to: currentTarget.uid, msgId, text });
+  e.target.value = "";
 };
 
 
@@ -1258,26 +1248,43 @@ btnVideo.onclick = () => videoInput.click();
 
 videoInput.onchange = async e => {
   if (!currentTarget) return;
-  setToolLoading(btnVideo, true);
 
-  try{
-    const file = e.target.files[0];
-    if (!file) return;
+  const file = e.target.files[0];
+  if (!file) return;
 
-    const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
-    const { url } = await uploadChatFile(file, "video");
-    const text = "/video " + url;
+  const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-    pushMsg("Bạn", text, true, msgId, "✓");
-    saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
+  // 1️⃣ Hiện progress ring
+  pushUploadProgress(msgId);
 
-    socket.emit("private-message", { to: currentTarget.uid, msgId, text });
-  }
-  finally{
-    setToolLoading(btnVideo, false);
-    videoInput.value = "";
-  }
+  // 2️⃣ Upload video + %
+  const { url } = await uploadChatFileWithProgress(
+    file,
+    "video",
+    p => updateUploadProgress(msgId, p)
+  );
+
+  // 3️⃣ Xóa progress
+  document.querySelector(`[data-msg-id="${msgId}"]`)?.remove();
+
+  const text = "/video " + url;
+
+  pushMsg("Bạn", text, true, msgId, "✓");
+
+  saveChat({
+    id: msgId,
+    from: auth.uid,
+    to: currentTarget.uid,
+    text,
+    time: Date.now(),
+    peer: currentTarget.uid,
+    seen: true
+  });
+
+  socket.emit("private-message", { to: currentTarget.uid, msgId, text });
+  e.target.value = "";
 };
+
 
 
 const btnLocation = document.getElementById("btnLocation");
