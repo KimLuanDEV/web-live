@@ -773,6 +773,95 @@ socket.on("msg-blocked", ({ reason }) => {
 
 
 
+async function uploadChatFile(file, type) {
+  const fd = new FormData();
+  fd.append(type, file);
+
+  const res = await fetch(
+    type === "image"
+      ? "/api/upload-chat-image"
+      : "/api/upload-chat-video",
+    { method: "POST", body: fd }
+  );
+
+  return res.json(); // { url }
+}
+
+
+document.getElementById("imgInput").onchange = async e => {
+  const files = Array.from(e.target.files);
+  if (!files.length || !currentTarget) return;
+
+  const urls = [];
+
+  // 1️⃣ upload lần lượt
+  for (const file of files) {
+    const { url } = await uploadChatFile(file, "image");
+    urls.push(url);
+  }
+
+  // 2️⃣ tạo album text
+  const text = "/album " + urls.join("|");
+  const msgId =
+    Date.now() + "_" + Math.random().toString(36).slice(2);
+
+  // 3️⃣ hiển thị ngay
+  pushMsg("Bạn", text, true, msgId, "✓");
+
+  // 4️⃣ lưu local
+  saveChat({
+    id: msgId,
+    from: auth.uid,
+    to: currentTarget.uid,
+    text,
+    time: Date.now(),
+    peer: currentTarget.uid,
+    seen: true
+  });
+
+  // 5️⃣ gửi socket
+ socket.emit("private-message", {
+  to: currentTarget.uid,
+  msgId,
+  text   // 🔥 GỬI TEXT "/album ..."
+});
+
+
+  e.target.value = "";
+};
+
+
+
+
+document.getElementById("videoInput").onchange = async e => {
+  const file = e.target.files[0];
+  if (!file || !currentTarget) return;
+
+  const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+
+  const { url } = await uploadChatFile(file, "video");
+  const text = "/video " + url;
+
+  pushMsg("Bạn", text, true, msgId, "✓");
+
+  saveChat({
+    id: msgId,
+    from: auth.uid,
+    to: currentTarget.uid,
+    text,
+    time: Date.now(),
+    peer: currentTarget.uid,
+    seen: true
+  });
+
+  socket.emit("private-message", {
+    to: currentTarget.uid,
+    msgId,
+    type: "video",
+    media: url
+  });
+};
+
 
 const msgInput = document.getElementById("msgInput");
 const sendBtn = document.getElementById("sendBtn");
@@ -1062,6 +1151,67 @@ socket.on("peer-cleared-my-messages", ({ by }) => {
 
 
 
+
+document.getElementById("btnLocation").onclick = async () => {
+  if (!currentTarget) return;
+
+  if (!navigator.geolocation) {
+    alert("Thiết bị không hỗ trợ GPS");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+
+      const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+      const text = `/location ${lat},${lng}|${mapUrl}`;
+
+      const msgId =
+        Date.now() + "_" + Math.random().toString(36).slice(2);
+
+      socket.emit("private-message", {
+        to: currentTarget.uid,
+        text,
+        msgId
+      });
+
+      pushMsg("Bạn", text, true, msgId, "✓");
+
+      saveChat({
+        id: msgId,
+        from: auth.uid,
+        to: currentTarget.uid,
+        text,
+        time: Date.now(),
+        peer: currentTarget.uid,
+        seen: true
+      });
+    },
+    err => {
+      alert("❌ Không lấy được vị trí");
+    },
+    {
+      enableHighAccuracy: true,
+      timeout: 10000
+    }
+  );
+};
+
+
+// 📷 click nút → mở chọn ảnh
+document.getElementById("btnImage").onclick = () => {
+  document.getElementById("imgInput").click();
+};
+
+// 🎥 click nút → mở chọn video
+document.getElementById("btnVideo").onclick = () => {
+  document.getElementById("videoInput").click();
+};
+
+
 function setToolLoading(btn, loading=true){
   if(!btn) return;
   btn.classList.toggle("is-loading", loading);
@@ -1074,37 +1224,31 @@ btnImage.onclick = () => imgInput.click();
 
 imgInput.onchange = async e => {
   if (!currentTarget) return;
+  setToolLoading(btnImage, true);
 
-  setToolLoading(btnImage,true);
-  setToolProgress(btnImage,0);
+  try {
+    const files = Array.from(e.target.files);
+    if (!files.length) return;
 
-  try{
-    const files = [...e.target.files];
     const urls = [];
-
-    for(const f of files){
-      const { url } = await uploadWithProgress({
-        url: "/api/upload-chat-image",
-        file: f,
-        onProgress:p=>setToolProgress(btnImage,p)
-      });
+    for (const file of files) {
+      const { url } = await uploadChatFile(file, "image");
       urls.push(url);
     }
 
     const text = "/album " + urls.join("|");
-    const msgId = Date.now()+"_"+Math.random().toString(36).slice(2);
+    const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-    pushMsg("Bạn",text,true,msgId,"✓");
-    saveChat({id:msgId,from:auth.uid,to:currentTarget.uid,text,time:Date.now(),peer:currentTarget.uid,seen:true});
-    socket.emit("private-message",{to:currentTarget.uid,msgId,text});
+    pushMsg("Bạn", text, true, msgId, "✓");
+    saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
+
+    socket.emit("private-message", { to: currentTarget.uid, msgId, text });
   }
   finally{
-    setToolLoading(btnImage,false);
-    setToolProgress(btnImage,0);
-    imgInput.value="";
+    setToolLoading(btnImage, false);
+    imgInput.value = "";
   }
 };
-
 
 
 const btnVideo = document.getElementById("btnVideo");
@@ -1114,81 +1258,50 @@ btnVideo.onclick = () => videoInput.click();
 
 videoInput.onchange = async e => {
   if (!currentTarget) return;
-
-  setToolLoading(btnVideo,true);
-  setToolProgress(btnVideo,0);
+  setToolLoading(btnVideo, true);
 
   try{
-    const f = e.target.files[0];
-    const { url } = await uploadWithProgress({
-      url:"/api/upload-chat-video",
-      file:f,
-      onProgress:p=>setToolProgress(btnVideo,p)
-    });
+    const file = e.target.files[0];
+    if (!file) return;
 
-    const text="/video "+url;
-    const msgId=Date.now()+"_"+Math.random().toString(36).slice(2);
+    const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+    const { url } = await uploadChatFile(file, "video");
+    const text = "/video " + url;
 
-    pushMsg("Bạn",text,true,msgId,"✓");
-    saveChat({id:msgId,from:auth.uid,to:currentTarget.uid,text,time:Date.now(),peer:currentTarget.uid,seen:true});
-    socket.emit("private-message",{to:currentTarget.uid,msgId,text});
+    pushMsg("Bạn", text, true, msgId, "✓");
+    saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
+
+    socket.emit("private-message", { to: currentTarget.uid, msgId, text });
   }
   finally{
-    setToolLoading(btnVideo,false);
-    setToolProgress(btnVideo,0);
-    videoInput.value="";
+    setToolLoading(btnVideo, false);
+    videoInput.value = "";
   }
 };
-
 
 
 const btnLocation = document.getElementById("btnLocation");
 
 btnLocation.onclick = () => {
   if (!currentTarget) return;
-  setToolLoading(btnLocation,true);
 
-  navigator.geolocation.getCurrentPosition(pos=>{
-    const lat=pos.coords.latitude.toFixed(6);
-    const lng=pos.coords.longitude.toFixed(6);
-    const url=`https://www.google.com/maps?q=${lat},${lng}`;
-    const text=`/location ${lat},${lng}|${url}`;
-    const msgId=Date.now()+"_"+Math.random().toString(36).slice(2);
+  setToolLoading(btnLocation, true);
 
-    pushMsg("Bạn",text,true,msgId,"✓");
-    saveChat({id:msgId,from:auth.uid,to:currentTarget.uid,text,time:Date.now(),peer:currentTarget.uid,seen:true});
-    socket.emit("private-message",{to:currentTarget.uid,msgId,text});
-    setToolLoading(btnLocation,false);
-  });
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      const lat = pos.coords.latitude.toFixed(6);
+      const lng = pos.coords.longitude.toFixed(6);
+      const url = `https://www.google.com/maps?q=${lat},${lng}`;
+      const text = `/location ${lat},${lng}|${url}`;
+      const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
+
+      pushMsg("Bạn", text, true, msgId, "✓");
+      saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
+      socket.emit("private-message", { to: currentTarget.uid, msgId, text });
+    },
+    () => alert("❌ Không lấy được vị trí"),
+    { enableHighAccuracy:true, timeout:10000 }
+  );
+
+  setTimeout(()=>setToolLoading(btnLocation,false),1200);
 };
-
-
-
-function uploadWithProgress({ url, file, onProgress }) {
-  return new Promise((resolve, reject) => {
-    const xhr = new XMLHttpRequest();
-    const fd = new FormData();
-    fd.append("file", file);
-
-    xhr.open("POST", url);
-
-    xhr.upload.onprogress = e => {
-      if (e.lengthComputable) {
-        const p = Math.round(e.loaded / e.total * 100);
-        onProgress?.(p);
-      }
-    };
-
-    xhr.onload = () => resolve(JSON.parse(xhr.responseText));
-    xhr.onerror = reject;
-    xhr.send(fd);
-  });
-}
-
-function setToolLoading(btn, v=true){
-  btn.classList.toggle("is-loading", v);
-}
-function setToolProgress(btn, p){
-  const el = btn.querySelector(".tool-percent");
-  if(el) el.textContent = p + "%";
-}
