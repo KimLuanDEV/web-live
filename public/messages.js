@@ -1542,6 +1542,6 @@ function calcSpeedETA(startTime, loaded, total) {
 socket.on("system-notify", data => {
   if (!data?.text) return;
 
-  showToast(data.text, data.type === "blocked" ? "error" : "success");
-
+  alert(data.text); // 🔥 tạm thời
+  // hoặc toast đẹp hơn
 });
