@@ -253,6 +253,30 @@ if (lock) {
 }
 
 
+// 🔓 PUSH NOTIFY KHI MỞ KHOÁ USER
+if (!lock) {
+  const msg = "🔓 Tài khoản của bạn đã được mở khoá. Bạn có thể sử dụng lại dịch vụ.";
+
+  // 1️⃣ realtime nếu online
+  const sockets = activeUsers.get(targetUid);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("system-notify", {
+        type: "unblocked",
+        text: msg
+      });
+    }
+  }
+
+  // 2️⃣ push notification (offline)
+  sendPushToUser(targetUid, {
+    title: "Tài khoản đã được mở khoá 🔓",
+    body: msg,
+    tag: "account-unblocked"
+  });
+}
+
+
 
   res.json({
     ok: true,
