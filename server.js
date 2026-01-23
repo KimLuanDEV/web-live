@@ -244,7 +244,9 @@ user.profile.blockLogs.unshift({
 
 // 🔔 PUSH NOTIFY KHI KHOÁ USER
 if (lock) {
-  const msg = "🚫 Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.";
+  const msg = reason
+  ? `🚫 Tài khoản của bạn đã bị khoá.\nLý do: ${reason}`
+  : "🚫 Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.";
 
   // 1️⃣ realtime nếu online
   const sockets = activeUsers.get(targetUid);
@@ -268,7 +270,9 @@ if (lock) {
 
 // 🔓 PUSH NOTIFY KHI MỞ KHOÁ USER
 if (!lock) {
-  const msg = "🔓 Tài khoản của bạn đã được mở khoá. Bạn có thể sử dụng lại dịch vụ.";
+ const msg = reason
+  ? `🔓 Tài khoản của bạn đã được mở khoá.\nGhi chú: ${reason}`
+  : "🔓 Tài khoản của bạn đã được mở khoá. Bạn có thể sử dụng lại dịch vụ.";
 
   // 1️⃣ realtime nếu online
   const sockets = activeUsers.get(targetUid);

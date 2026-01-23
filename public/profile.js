@@ -1438,6 +1438,6 @@ function clearChatHistory(peer){
 socket.on("system-notify", data => {
   if (!data?.text) return;
 
-  alert(data.text); // 🔥 tạm thời
-  // hoặc toast đẹp hơn
+ showToast(data.text, data.type === "blocked" ? "error" : "success");
+
 });
