@@ -101,15 +101,20 @@ if (u.blocked) {
 </td>
 
  <td>
-  <button class="action-btn" onclick="quickTopup('${u.uid}')">➕</button>
-
   <button
-    class="action-btn"
-    style="color:${u.blocked ? '#ff6b6b' : '#00e5ff'}"
-    onclick="toggleLock('${u.uid}', ${u.blocked})"
-  >
-    ${u.blocked ? "🔓" : "🚫"}
-  </button>
+  class="action-btn"
+  onclick="event.stopPropagation(); quickTopup('${u.uid}')"
+>
+  ➕
+</button>
+
+<button
+  class="action-btn"
+  style="color:${u.blocked ? '#ff6b6b' : '#00e5ff'}"
+  onclick="event.stopPropagation(); toggleLock('${u.uid}', ${u.blocked})"
+>
+  ${u.blocked ? "🔓" : "🚫"}
+</button>
 </td>
 
 
