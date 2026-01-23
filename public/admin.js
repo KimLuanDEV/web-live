@@ -6,13 +6,21 @@ const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const PAGE_SIZE = 20;
 let userPage = 1;
 
+
+let currentAdminTab = "users";
+
+
+
 function renderUserPage(){
   const start = (userPage - 1) * PAGE_SIZE;
   const end = start + PAGE_SIZE;
   const slice = USERS.slice(start, end);
 
-  renderUsers(slice);     // desktop
-  renderUserCards(slice); // mobile
+if (currentAdminTab === "users") {
+  renderUsers(slice);      // desktop
+  renderUserCards(slice);  // mobile
+}
+
 
   const info = document.getElementById("userPageInfo");
   if (info) {
@@ -584,12 +592,22 @@ document.querySelectorAll(".admin-tabs .tab").forEach(tab=>{
     tab.classList.add("active");
 
     const key = tab.dataset.tab;
+    currentAdminTab = key;
+
     document.querySelectorAll(".admin-section")
       .forEach(sec=>{
         sec.classList.toggle("hidden", sec.dataset.section !== key);
       });
+
+    // 🔥 QUAN TRỌNG: ẨN / HIỆN USER CARD LIST
+    const userCardList = document.getElementById("userCardList");
+    if (userCardList) {
+      userCardList.style.display =
+        key === "users" ? "" : "none";
+    }
   };
 });
+
 
 
 
