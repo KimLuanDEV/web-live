@@ -1881,8 +1881,8 @@ const yourFriends = Array.isArray(you.profile.friends)
   ? you.profile.friends
   : [];
 
-const isAdmin =
-  me.role === "admin" || socket.data.role === "admin";
+const isAdmin = me.role === "admin";
+
 
 
 
@@ -2477,7 +2477,11 @@ if(vc >= MAX_VIEWERS){
   // ✅ BẮT BUỘC: join phòng + set data để disconnect cleanup chạy đúng
   socket.join(roomId);
   socket.data.roomId = roomId;
+  // 🔥 KHÔNG GHI ĐÈ ROLE ADMIN
+if (socket.data.role !== "admin") {
   socket.data.role = "viewer";
+}
+
 
   // ✅ UID ổn định (ưu tiên profile.uid)
   const uid = String(profile?.uid || "").trim() || safeName(profile?.name);
