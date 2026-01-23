@@ -1872,18 +1872,32 @@ if (blockedMe || blockedByYou) {
   return;
 }
 
-const myFriends = me.profile.friends || [];
-const isAdmin = me.role === "admin" || socket.data.role === "admin";
+// 🔧 NORMALIZE FRIEND LIST (FIX BUG)
+const myFriends = Array.isArray(me.profile.friends)
+  ? me.profile.friends
+  : [];
+
+const yourFriends = Array.isArray(you.profile.friends)
+  ? you.profile.friends
+  : [];
+
+const isAdmin =
+  me.role === "admin" || socket.data.role === "admin";
 
 
-// 🔓 ADMIN ĐƯỢC NHẮN TIN VỚI BẤT KỲ AI
-if (!isAdmin && !myFriends.includes(to)) {
+
+// 🔒 USER THƯỜNG → BẮT BUỘC LÀ BẠN 2 CHIỀU
+if (
+  !isAdmin &&
+  (!myFriends.includes(to) || !yourFriends.includes(fromUid))
+) {
   socket.emit("msg-blocked", {
     reason: "not_friend",
     to
   });
   return;
 }
+
 
 
 // 🔥 CHUẨN HOÁ NỘI DUNG TIN NHẮN
