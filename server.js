@@ -143,6 +143,11 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 
+
+// 🔧 Parse JSON body (BẮT BUỘC cho admin API)
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 app.use(express.static(path.join(__dirname, "public")));
 
 
@@ -192,7 +197,12 @@ app.get("/api/admin/users", (req, res) => {
 
 // ===== ADMIN LOCK / UNLOCK USER =====
 app.post("/api/admin/lock-user", (req, res) => {
-  const { adminUid, targetUid, lock } = req.body;
+
+ const body = req.body || {};
+const { adminUid, targetUid, lock } = body;
+
+
+
   if (!adminUid || !targetUid) {
     return res.status(400).json({ error: "missing" });
   }
@@ -506,7 +516,7 @@ function emitCoinUpdate(uid) {
 
 
 
-app.use(express.json());
+
 
 webpush.setVapidDetails(
   "mailto:admin@livestream.pro",
