@@ -1,20 +1,10 @@
 const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
+document.getElementById("adminUid").textContent = admin.uid;
 
 if (!admin.uid) {
   alert("❌ Chưa đăng nhập");
   location.href = "/login.html";
 }
-
-// ===== TOAST (GIỐNG SOCIAL) =====
-function showToast(text){
-  const el = document.getElementById("adminToast");
-  if(!el) return;
-  el.textContent = text;
-  el.classList.add("show");
-  clearTimeout(el._t);
-  el._t = setTimeout(()=> el.classList.remove("show"), 2000);
-}
-
 
 async function topup(){
   const uid = document.getElementById("uid").value.trim();
@@ -35,15 +25,6 @@ async function topup(){
   const data = await res.json();
   document.getElementById("log").textContent =
     JSON.stringify(data, null, 2);
-
-if (data?.ok) {
-  showToast("✅ Nạp coin thành công");
-  loadUsers();
-} else {
-  showToast("❌ Nạp coin thất bại");
-}
-
-
 }
 
 
@@ -59,6 +40,17 @@ async function loadUsers(){
   if (!data.ok) return;
 
   USERS = data.users;
+
+
+document.getElementById("statUsers").textContent = USERS.length;
+document.getElementById("statCoins").textContent =
+  USERS.reduce((s,u)=>s+(u.coins||0),0).toLocaleString();
+document.getElementById("statBlocked").textContent =
+  USERS.filter(u=>u.blocked).length;
+document.getElementById("statAdmins").textContent =
+  USERS.filter(u=>u.role==="admin").length;
+
+
   renderUsers(USERS);
 }
 
@@ -68,14 +60,28 @@ function renderUsers(list){
 
   list.forEach(u => {
     const tr = document.createElement("tr");
+    
 if (u.blocked) {
   tr.style.opacity = "0.45";
   tr.style.filter = "grayscale(1)";
+  tr.style.background = "rgba(255,80,80,.06)";
 }
 
+
+
+
     tr.innerHTML = `
-      <td>${u.uid}</td>
-      <td class="admin-name-link" onclick="openProfile('${u.uid}')">${u.name}</td>
+  <td>
+  <div class="user-cell">
+    <img src="${u.avatar || '/avatar-default.png'}">
+    <div>
+      <b>${u.name}</b><br>
+      <small>${u.uid}</small>
+    </div>
+  </div>
+</td>
+
+
       <td>${u.coins}</td>
       <td>${u.level}</td>
       <td>${u.exp}</td>
@@ -86,26 +92,20 @@ if (u.blocked) {
   ${u.role}
 </td>
 
-      <td>
-  <button onclick="quickTopup('${u.uid}')">➕ Nạp</button>
-
-  <button onclick="toggleLock('${u.uid}', ${u.blocked})">
-  ${u.blocked ? "🔓 Mở khoá" : "🚫 Khoá"}
-</button>
-
+<td>
+  <button class="action-btn" onclick="quickTopup('${u.uid}')">➕</button>
+  <button class="action-btn"
+    style="color:${u.blocked?'#ff6b6b':'#00e5ff'}"
+    onclick="toggleLock('${u.uid}', ${u.blocked})">
+    ${u.blocked ? '🔓' : '🚫'}
+  </button>
 </td>
+
 
     `;
     tbody.appendChild(tr);
   });
 }
-
-
-function openProfile(uid){
-  // nếu profile bạn dùng query uid
-  location.href = `/profile.html?uid=${encodeURIComponent(uid)}`;
-}
-
 
 // 🔍 SEARCH
 document.getElementById("searchUser").addEventListener("input", e => {
@@ -133,7 +133,7 @@ async function quickTopup(uid){
       amount: Number(amount)
     })
   });
-  showToast("✅ Đã nạp coin");
+
   loadUsers(); // refresh list
 }
 
@@ -172,7 +172,7 @@ await fetch("/api/admin/lock-user", {
     reason: reason || ""
   })
 });
-  showToast(isBlocked ? "✅ Đã mở khoá" : "🚫 Đã khoá tài khoản");
+
   loadUsers();
 }
 
