@@ -2,6 +2,18 @@
 
 const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
+
+const PAGE_SIZE = 20;
+let userPage = 1;
+
+function renderUserPage(){
+  const start = (userPage - 1) * PAGE_SIZE;
+  const end = start + PAGE_SIZE;
+  renderUsers(USERS.slice(start, end));
+}
+
+
+
 if (!admin.uid) {
   alert("❌ Chưa đăng nhập");
   location.href = "/login.html";
@@ -65,7 +77,8 @@ document.getElementById("statAdmins").textContent =
   USERS.filter(u=>u.role==="admin").length;
 
 
-  renderUsers(USERS);
+  renderUserPage();
+
 }
 
 function renderUsers(list){
@@ -515,3 +528,22 @@ function initWithdrawRealtime(){
 }
 
 initWithdrawRealtime();
+
+
+document.querySelectorAll(".admin-tabs .tab").forEach(tab=>{
+  tab.onclick = ()=>{
+    document.querySelectorAll(".admin-tabs .tab")
+      .forEach(t=>t.classList.remove("active"));
+    tab.classList.add("active");
+
+    const key = tab.dataset.tab;
+    document.querySelectorAll(".admin-section")
+      .forEach(sec=>{
+        sec.classList.toggle("hidden", sec.dataset.section !== key);
+      });
+  };
+});
+
+
+document.getElementById("userPageInfo").textContent =
+  `Trang ${userPage} / ${Math.ceil(USERS.length / PAGE_SIZE)}`;

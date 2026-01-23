@@ -269,6 +269,26 @@
 }
 
 
+.admin-tabs{
+  display:flex;
+  gap:10px;
+  margin:20px 0;
+}
+.admin-tabs .tab{
+  padding:10px 16px;
+  border-radius:12px;
+  background:#0f152a;
+  border:1px solid var(--line);
+  color:var(--muted);
+  cursor:pointer;
+}
+.admin-tabs .tab.active{
+  background:linear-gradient(135deg,#00e5ff,#00bcd4);
+  color:#000;
+  font-weight:600;
+}
+
+
   </style>
 </head>
 <body>
@@ -283,6 +303,13 @@
     👤 <span id="adminUid"></span>
   </div>
 </div>
+
+<div class="admin-tabs">
+  <button class="tab active" data-tab="users">👥 Users</button>
+  <button class="tab" data-tab="withdraws">💎 Rút tiền</button>
+  <button class="tab" data-tab="lives">🔴 Live rooms</button>
+</div>
+
 
 <div class="stats-grid">
   <div class="stat-card">👥 Tổng user<br><b id="statUsers">0</b></div>
@@ -305,7 +332,6 @@
 
     <pre id="log"></pre>
   </div>
-
 <!-- ===== WITHDRAW COIN ===== -->
 <div class="card" style="display: none;">
   <div class="card-title">➖ Rút coin người dùng</div>
@@ -323,7 +349,10 @@
 </div>
 
 
+
+
   <!-- ===== USER LIST ===== -->
+  <div class="admin-section" data-section="users">
   <div class="card">
     <div class="card-title">👥 Danh sách người dùng</div>
 
@@ -349,9 +378,11 @@
       </table>
     </div>
   </div>
+</div> 
 
 
   <!-- ===== LIVE ROOMS ===== -->
+  <div class="admin-section" data-section="users">
 <div class="card">
   <div class="card-title">🔴 Live Rooms</div>
 
@@ -378,6 +409,7 @@
 
   <pre id="liveLog"></pre>
 </div>
+</div>
 
 
 <div class="card" style="display: none;">
@@ -396,7 +428,7 @@
 
 </div>
 
-
+<div class="admin-section" data-section="users">
 <h2>
   💎 Yêu cầu rút tiền
   <span id="withdrawPing" class="ping hidden">●</span>
@@ -415,6 +447,14 @@
   </thead>
   <tbody></tbody>
 </table>
+</div>
+
+
+<div class="pager">
+  <button onclick="userPage--; renderUserPage()">◀</button>
+  <span id="userPageInfo"></span>
+  <button onclick="userPage++; renderUserPage()">▶</button>
+</div>
 
 
 
