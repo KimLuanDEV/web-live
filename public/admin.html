@@ -306,6 +306,21 @@
     <pre id="log"></pre>
   </div>
 
+<!-- ===== WITHDRAW COIN ===== -->
+<div class="card" style="display: none;">
+  <div class="card-title">➖ Rút coin người dùng</div>
+
+  <div class="topup-grid">
+    <input id="w_uid" placeholder="UID người bị trừ" />
+    <input id="w_amount" type="number" placeholder="Số coin rút" />
+    <input id="w_note" placeholder="Lý do (bắt buộc)" />
+    <button class="btn btn-primary" onclick="withdrawCoin()">
+      ➖ Rút coin
+    </button>
+  </div>
+
+  <pre id="w_log"></pre>
+</div>
 
 
   <!-- ===== USER LIST ===== -->

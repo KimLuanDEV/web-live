@@ -756,6 +756,100 @@ sendPushToUser(targetUid, {
   });
 });
 
+// ===== ADMIN WITHDRAW COIN =====
+app.post("/api/admin/withdraw", (req, res) => {
+  const { adminUid, targetUid, amount, note } = req.body || {};
+
+  if (!adminUid || !targetUid || !amount) {
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+  const user  = db[targetUid];
+
+  // 🔐 chỉ admin
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  if (!user || !user.profile) {
+    return res.status(404).json({ error: "user_not_found" });
+  }
+
+  const sub = Math.max(0, Number(amount) || 0);
+  const cur = Number(user.profile.coins || 0);
+
+  if (sub <= 0) {
+    return res.status(400).json({ error: "invalid_amount" });
+  }
+
+  if (cur < sub) {
+    return res.status(400).json({ error: "not_enough_coin" });
+  }
+
+  // ➖ TRỪ COIN
+  user.profile.coins = cur - sub;
+
+  // 🧾 LOG ADMIN
+  user.profile.adminLogs ||= [];
+  user.profile.adminLogs.unshift({
+    type: "withdraw",
+    by: adminUid,
+    amount: sub,
+    note: note || "",
+    before: cur,
+    after: user.profile.coins,
+    ts: Date.now()
+  });
+
+  saveUsers(db);
+
+  // 🔁 realtime sync
+  emitCoinUpdate(targetUid);
+
+  const notifyText =
+    `➖ ${sub.toLocaleString()} coin đã bị trừ` +
+    (note ? `\n📝 Lý do: ${note}` : "");
+
+  // 1️⃣ inbox
+  if (!userInbox.has(targetUid)) userInbox.set(targetUid, []);
+  userInbox.get(targetUid).unshift({
+    type: "withdraw",
+    from: adminUid,
+    text: notifyText,
+    amount: sub,
+    time: Date.now(),
+    read: false
+  });
+  saveInbox(Object.fromEntries(userInbox));
+
+  // 2️⃣ realtime nếu online
+  const sockets = activeUsers.get(targetUid);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("system-notify", {
+        type: "withdraw",
+        text: notifyText,
+        amount: sub
+      });
+    }
+  }
+
+  // 3️⃣ push offline
+  sendPushToUser(targetUid, {
+    title: "➖ Bị trừ coin",
+    body: `Tài khoản của bạn bị trừ ${sub.toLocaleString()} coin`,
+    tag: "admin-withdraw"
+  });
+
+  res.json({
+    ok: true,
+    uid: targetUid,
+    coins: user.profile.coins
+  });
+});
+
 
 
 app.post("/api/register", async (req,res)=>{

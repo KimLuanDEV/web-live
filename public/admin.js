@@ -110,6 +110,15 @@ if (u.blocked) {
   ➕
 </button>
 
+
+<button
+  class="action-btn"
+  style="color:#ff6b6b"
+  onclick="event.stopPropagation(); quickWithdraw('${u.uid}')"
+>
+  ➖
+</button>
+
 <button
   class="action-btn"
   style="color:${u.blocked ? '#ff6b6b' : '#00e5ff'}"
@@ -385,4 +394,26 @@ async function closeLiveRoom(){
     data.ok
       ? `✅ Đã đóng room ${roomId}`
       : `❌ Lỗi: ${data.error || "fail"}`;
+}
+
+
+async function quickWithdraw(uid){
+  const amount = Number(prompt("Rút bao nhiêu coin?"));
+  if(!amount) return;
+
+  const note = prompt("Lý do rút coin:");
+  if(!note) return;
+
+  await fetch("/api/admin/withdraw", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      adminUid: admin.uid,
+      targetUid: uid,
+      amount,
+      note
+    })
+  });
+
+  loadUsers();
 }
