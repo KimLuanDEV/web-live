@@ -1873,14 +1873,17 @@ if (blockedMe || blockedByYou) {
 }
 
 const myFriends = me.profile.friends || [];
+const isAdmin = me.role === "admin";
 
-if (!myFriends.includes(to)) {
+// 🔓 ADMIN ĐƯỢC NHẮN TIN VỚI BẤT KỲ AI
+if (!isAdmin && !myFriends.includes(to)) {
   socket.emit("msg-blocked", {
     reason: "not_friend",
     to
   });
   return;
 }
+
 
 // 🔥 CHUẨN HOÁ NỘI DUNG TIN NHẮN
 let payloadText = text || "";
