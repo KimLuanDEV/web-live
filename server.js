@@ -793,8 +793,9 @@ app.get("/api/me/:uid", (req, res) => {
     const me = db[viewerUid].profile;
     const you = target.profile;
 
-    const blockedByMe   = (me.blocked || []).includes(targetUid);
-    const blockedByYou  = (you.blocked || []).includes(viewerUid);
+const blockedByMe  = (me.blockedUsers || []).includes(targetUid);
+const blockedByYou = (you.blockedUsers || []).includes(viewerUid);
+
 
     if (blockedByMe || blockedByYou) {
       return res.status(403).json({
