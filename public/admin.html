@@ -372,6 +372,11 @@
 }
 
 
+.admin-section:not([data-section="users"]) .user-card-list{
+  display:none !important;
+}
+
+
   </style>
 </head>
 <body>
@@ -462,11 +467,13 @@
   <button onclick="userPage++; renderUserPage()">▶</button>
 </div>
 
+<!-- 📱 USER CARD LIST (MOBILE) -->
+<div id="userCardList" class="user-card-list"></div>
+
 </div> 
 
 
-<!-- 📱 USER CARD LIST (MOBILE) -->
-<div id="userCardList" class="user-card-list"></div>
+
 
 
 
