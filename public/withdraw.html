@@ -69,14 +69,6 @@
   placeholder="Tên chủ tài khoản"
 >
 
-<label>🔐 Mã bảo mật</label>
-<input
-  type="password"
-  id="securityCodeInput"
-  placeholder="Nhập mã bảo mật"
-  autocomplete="off"
-/>
-
 
   <button id="btnSubmitWithdraw" class="btn-primary">
     📤 Gửi yêu cầu rút
@@ -136,6 +128,37 @@
       </button>
       <button class="btn-primary" onclick="goBack()" style="display: none;">
         Quay lại
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- 🔐 MODAL NHẬP MÃ BẢO MẬT -->
+<div id="securityCodeModal" class="lp-modal hidden">
+  <div class="lp-modal-backdrop"></div>
+
+  <div class="lp-modal-box">
+    <div class="lp-modal-icon">🔐</div>
+    <h3>Xác nhận rút tiền</h3>
+
+    <p>Vui lòng nhập <b>mã bảo mật</b> để tiếp tục</p>
+
+    <input
+      type="password"
+      id="securityCodeModalInput"
+      placeholder="Nhập mã bảo mật"
+      autocomplete="off"
+      style="width:100%;margin-top:12px"
+    >
+
+    <div class="lp-modal-actions">
+      <button class="btn-secondary" onclick="closeSecurityModal()">
+        Huỷ
+      </button>
+      <button class="btn-primary" onclick="confirmWithdraw()">
+        Xác nhận
       </button>
     </div>
   </div>

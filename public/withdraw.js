@@ -71,41 +71,30 @@ function updateMoney(){
 withdrawInput.oninput = updateMoney;
 updateMoney();
 
-btnSubmit.onclick = async () => {
 
-      const securityCode =
-    document.getElementById("securityCodeInput")?.value.trim();
-
-  if (!securityCode) {
-    alert("❌ Vui lòng nhập mã bảo mật");
-    return;
-  }
+btnSubmit.onclick = () => {
+  openSecurityModal();
+};
 
 
+async function submitWithdraw(securityCode){
   const amount = Number(withdrawInput.value || 0);
-  
+
   const bankName = document.getElementById("bankName").value;
-const bankAccount = document.getElementById("bankAccount").value.trim();
-const bankOwner = document.getElementById("bankOwner").value.trim();
+  const bankAccount = document.getElementById("bankAccount").value.trim();
+  const bankOwner = document.getElementById("bankOwner").value.trim();
 
-if (!bankName || !bankAccount || !bankOwner) {
-  alert("❌ Vui lòng nhập đầy đủ thông tin ngân hàng");
-  return;
-}
-
-// 🔗 GỘP THÀNH 1 LIÊN KẾT DUY NHẤT
-const bank = `${bankName} | STK: ${bankAccount} | ${bankOwner}`;
-
-
-if (amount < MIN_WITHDRAW) {
-  alert(`⛔ Số kim cương rút tối thiểu là ${MIN_WITHDRAW.toLocaleString()} 💎`);
-  return;
-}
-
-  if (!bank) {
-    alert("❌ Vui lòng nhập thông tin thanh toán");
+  if (!bankName || !bankAccount || !bankOwner) {
+    alert("❌ Vui lòng nhập đầy đủ thông tin ngân hàng");
     return;
   }
+
+  if (amount < MIN_WITHDRAW) {
+    alert(`⛔ Số kim cương rút tối thiểu là ${MIN_WITHDRAW.toLocaleString()} 💎`);
+    return;
+  }
+
+  const bank = `${bankName} | STK: ${bankAccount} | ${bankOwner}`;
 
   const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
   if (!me.uid) {
@@ -113,7 +102,6 @@ if (amount < MIN_WITHDRAW) {
     return;
   }
 
-  // 👉 GỬI YÊU CẦU RÚT (admin duyệt)
   const res = await fetch("/api/withdraw-request", {
     method: "POST",
     headers: {
@@ -121,37 +109,20 @@ if (amount < MIN_WITHDRAW) {
       "x-uid": me.uid
     },
     body: JSON.stringify({
-  amount,
-  bank,
-  securityCode   // 🔐 mã bảo mật
-})
-
+      amount,
+      bank,
+      securityCode
+    })
   });
 
   const data = await res.json();
   if (data.ok) {
-
-    // 🔐 LƯU NGÂN HÀNG MẶC ĐỊNH (SAU KHI RÚT OK)
-  fetch("/api/profile/bank-default", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "x-uid": me.uid
-    },
-    body: JSON.stringify({
-      name: bankName,
-      account: bankAccount,
-      owner: bankOwner
-    })
-  });
-
-openWithdrawModal();
-
-
+    openWithdrawModal();
   } else {
     alert("❌ " + (data.error || "Có lỗi xảy ra"));
   }
-};
+}
+
 
 
 async function loadBankDefault(){
@@ -354,4 +325,36 @@ function openWithdrawModal(){
 function closeWithdrawModal(){
   const modal = document.getElementById("withdrawSuccessModal");
   modal && modal.classList.add("hidden");
+}
+
+
+function openSecurityModal(){
+  const modal = document.getElementById("securityCodeModal");
+  const input = document.getElementById("securityCodeModalInput");
+  if (!modal || !input) return;
+
+  input.value = "";
+  modal.classList.remove("hidden");
+  setTimeout(() => input.focus(), 100);
+}
+
+function closeSecurityModal(){
+  const modal = document.getElementById("securityCodeModal");
+  modal && modal.classList.add("hidden");
+}
+
+
+async function confirmWithdraw(){
+  const securityCode =
+    document.getElementById("securityCodeModalInput").value.trim();
+
+  if (!securityCode) {
+    alert("❌ Vui lòng nhập mã bảo mật");
+    return;
+  }
+
+  closeSecurityModal();
+
+  // 🔁 GỌI LẠI LOGIC RÚT CŨ
+  await submitWithdraw(securityCode);
 }
