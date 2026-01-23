@@ -195,6 +195,26 @@ app.get("/api/admin/users", (req, res) => {
   res.json({ ok: true, users });
 });
 
+// ===== ADMIN: LIVE ROOMS =====
+app.get("/api/admin/live-rooms", (req, res) => {
+  const adminUid = req.headers["x-uid"];
+  if (!adminUid) return res.status(403).json({ error: "no_auth" });
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  res.json({
+    ok: true,
+    rooms: getLobbyList(),
+    ts: Date.now()
+  });
+});
+
+
 
 app.post("/api/admin/close-room", (req, res) => {
   const { adminUid, roomId, reason } = req.body || {};

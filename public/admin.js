@@ -194,8 +194,165 @@ await fetch("/api/admin/lock-user", {
   loadUsers();
 }
 
+
+
+
+
 loadUsers();
 
+// ===== LIVE ROOMS (Realtime) =====
+let LIVE_ROOMS = [];
+let liveSocket = null;
+
+function fmtTime(ts){
+  try{
+    return new Date(ts).toLocaleString("vi-VN");
+  }catch{
+    return "";
+  }
+}
+function fmtDuration(ms){
+  ms = Math.max(0, ms|0);
+  const s = Math.floor(ms/1000);
+  const m = Math.floor(s/60);
+  const h = Math.floor(m/60);
+  const mm = String(m%60).padStart(2,"0");
+  const ss = String(s%60).padStart(2,"0");
+  return h>0 ? `${h}:${mm}:${ss}` : `${m}:${ss}`;
+}
+
+function renderLiveRooms(list){
+  const tbody = document.querySelector("#liveTable tbody");
+  if(!tbody) return;
+
+  tbody.innerHTML = "";
+  const now = Date.now();
+
+  list.forEach(r=>{
+    const tr = document.createElement("tr");
+
+    const host = r.host || {};
+    const hostName = host.name || "Host";
+    const hostUid  = host.uid || "";
+    const hostAva  = host.avatar || "/avatar-default.png";
+
+    tr.innerHTML = `
+      <td><b>${r.roomId}</b></td>
+
+      <td>
+        <div class="user-cell">
+          <img src="${hostAva}" onerror="this.src='/avatar-default.png'">
+          <div>
+            <b>${hostName}</b><br>
+            <small>${hostUid}</small>
+          </div>
+        </div>
+      </td>
+
+      <td><b style="color:#00e5ff">${r.viewers || 0}</b></td>
+      <td>${fmtTime(r.liveStartTs)}</td>
+      <td>${fmtDuration(now - (r.liveStartTs || now))}</td>
+
+      <td>
+        <button class="btn-mini"
+          onclick="event.stopPropagation(); adminCloseRoom('${r.roomId}')">
+          🚫 Đóng
+        </button>
+      </td>
+    `;
+
+    tbody.appendChild(tr);
+  });
+}
+
+function filterLiveRooms(){
+  const q = (document.getElementById("searchRoom")?.value || "").toLowerCase().trim();
+  if(!q) return LIVE_ROOMS;
+
+  return LIVE_ROOMS.filter(r=>{
+    const rid = String(r.roomId||"").toLowerCase();
+    const hostName = String(r.host?.name||"").toLowerCase();
+    const hostUid  = String(r.host?.uid||"").toLowerCase();
+    return rid.includes(q) || hostName.includes(q) || hostUid.includes(q);
+  });
+}
+
+async function refreshLiveRooms(){
+  const elLog = document.getElementById("liveLog");
+  if(elLog) elLog.textContent = "⏳ Đang tải live rooms...";
+
+  const res = await fetch("/api/admin/live-rooms", {
+    headers: { "x-uid": admin.uid }
+  });
+
+  const data = await res.json();
+  if(!data.ok){
+    if(elLog) elLog.textContent = "❌ Không tải được live rooms";
+    return;
+  }
+
+  LIVE_ROOMS = data.rooms || [];
+  renderLiveRooms(filterLiveRooms());
+
+  if(elLog) elLog.textContent =
+    `✅ Live rooms: ${LIVE_ROOMS.length} (ts: ${fmtTime(data.ts)})`;
+}
+
+// realtime from server: io.emit("lobby-update", { rooms, ts })
+function initLiveRoomsRealtime(){
+  if(typeof io !== "function") return;
+
+  liveSocket = io();
+
+  liveSocket.on("connect", ()=>{
+    // load lần đầu ngay khi connect
+    refreshLiveRooms();
+  });
+
+  liveSocket.on("lobby-update", ({ rooms })=>{
+    LIVE_ROOMS = rooms || [];
+    renderLiveRooms(filterLiveRooms());
+  });
+}
+
+// nút đóng ngay trong bảng
+async function adminCloseRoom(roomId){
+  const reason = prompt("🚫 Lý do đóng room (tuỳ chọn):") || "";
+
+  const ok = confirm(`Xác nhận đóng room "${roomId}" ?`);
+  if(!ok) return;
+
+  const res = await fetch("/api/admin/close-room", {
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      adminUid: admin.uid,
+      roomId,
+      reason
+    })
+  });
+
+  const data = await res.json();
+  const elLog = document.getElementById("liveLog");
+
+  if(data.ok){
+    if(elLog) elLog.textContent = `✅ Đã đóng room ${roomId}`;
+    // server sẽ tự emitLobbyUpdate() nên bảng tự cập nhật
+  }else{
+    if(elLog) elLog.textContent = `❌ Đóng thất bại: ${data.error || "fail"}`;
+  }
+}
+
+// search live rooms
+const roomSearch = document.getElementById("searchRoom");
+if(roomSearch){
+  roomSearch.addEventListener("input", ()=>{
+    renderLiveRooms(filterLiveRooms());
+  });
+}
+
+// start realtime
+initLiveRoomsRealtime();
 
 
 async function closeLiveRoom(){

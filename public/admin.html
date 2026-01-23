@@ -336,6 +336,34 @@
   </div>
 
 
+  <!-- ===== LIVE ROOMS ===== -->
+<div class="card">
+  <div class="card-title">🔴 Live Rooms</div>
+
+  <div class="search-row">
+    <input id="searchRoom" placeholder="🔍 Tìm roomId hoặc tên host" />
+    <button class="btn btn-primary" onclick="refreshLiveRooms()">↻ Refresh</button>
+  </div>
+
+  <div class="table-wrap">
+    <table id="liveTable" style="min-width:900px">
+      <thead>
+        <tr>
+          <th>Room</th>
+          <th>Host</th>
+          <th>Viewers</th>
+          <th>Bắt đầu</th>
+          <th>Thời lượng</th>
+          <th>Hành động</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <pre id="liveLog"></pre>
+</div>
+
 
 <div class="card">
   <div class="card-title">📡 Quản lý phòng đang live</div>
@@ -355,6 +383,8 @@
 
 </div>
 
+<script src="/socket.io/socket.io.js"></script>
 <script src="/admin.js"></script>
+
 </body>
 </html>
