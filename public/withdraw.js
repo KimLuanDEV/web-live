@@ -82,27 +82,62 @@ async function loadWithdrawHistory() {
 
   body.innerHTML = "";
 
+  let hasPending = false;
+
   if (!data.list.length) {
     empty.style.display = "block";
-    return;
+  } else {
+    empty.style.display = "none";
+
+    data.list.forEach(w => {
+      if (w.status === "pending") hasPending = true;
+
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
+        <td>${w.amount.toLocaleString()}</td>
+        <td>${w.bank}</td>
+        <td class="st-${w.status}">
+          ${statusText(w.status)}
+        </td>
+        <td>${w.note || "-"}</td>
+      `;
+      body.appendChild(tr);
+    });
   }
 
-  empty.style.display = "none";
-
-  data.list.forEach(w => {
-    const tr = document.createElement("tr");
-    tr.innerHTML = `
-      <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
-      <td>${w.amount.toLocaleString()}</td>
-      <td>${w.bank}</td>
-      <td class="st-${w.status}">
-        ${statusText(w.status)}
-      </td>
-      <td>${w.note || "-"}</td>
-    `;
-    body.appendChild(tr);
-  });
+  // ⛔ DISABLE FORM NẾU CÒN PENDING
+  toggleWithdrawForm(!hasPending);
 }
+
+
+
+function toggleWithdrawForm(enable){
+  const warnId = "withdrawPendingWarn";
+  let warn = document.getElementById(warnId);
+
+  if (!enable) {
+    withdrawInput.disabled = true;
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = "⏳ Đang chờ duyệt";
+
+    if (!warn) {
+      warn = document.createElement("div");
+      warn.id = warnId;
+      warn.className = "withdraw-warn";
+      warn.textContent = "⛔ Bạn đang có yêu cầu rút đang chờ admin duyệt";
+      btnSubmit.parentNode.insertBefore(warn, btnSubmit);
+    }
+  } else {
+    withdrawInput.disabled = false;
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = "📤 Gửi yêu cầu rút";
+    warn && warn.remove();
+  }
+}
+
+
+
 
 function statusText(s){
   if (s === "pending") return "⏳ Đang chờ";
@@ -122,7 +157,6 @@ if (typeof io === "function") {
 socket.on("withdraw-update", () => {
   loadWithdrawHistory();
 });
-
 
 }
 
