@@ -112,8 +112,9 @@ const bank = `${bankName} | STK: ${bankAccount} | ${bankOwner}`;
     })
   });
 
-    alert("✅ Đã gửi yêu cầu rút tiền");
-    history.back();
+openWithdrawModal();
+
+
   } else {
     alert("❌ " + (data.error || "Có lỗi xảy ra"));
   }
@@ -269,3 +270,14 @@ function goBack(){
 document.getElementById("bankName").addEventListener("change", e => {
   updateBankLogo(e.target.value);
 });
+
+
+function openWithdrawModal(){
+  const modal = document.getElementById("withdrawSuccessModal");
+  modal && modal.classList.remove("hidden");
+}
+
+function closeWithdrawModal(){
+  const modal = document.getElementById("withdrawSuccessModal");
+  modal && modal.classList.add("hidden");
+}

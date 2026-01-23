@@ -100,6 +100,30 @@
 
 
 
+<!-- ✅ MODAL THÔNG BÁO RÚT TIỀN -->
+<div id="withdrawSuccessModal" class="lp-modal hidden">
+  <div class="lp-modal-backdrop"></div>
+
+  <div class="lp-modal-box">
+    <div class="lp-modal-icon">✅</div>
+    <h3>Gửi yêu cầu thành công</h3>
+    <p>
+      Yêu cầu rút tiền của bạn đã được gửi<br>
+      ⏳ Vui lòng chờ phê duyệt trong vòng 30 ngày.
+    </p>
+
+    <div class="lp-modal-actions">
+      <button class="btn-secondary" onclick="closeWithdrawModal()">
+        Ở lại trang
+      </button>
+      <button class="btn-primary" onclick="goBack()">
+        Quay lại
+      </button>
+    </div>
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/withdraw.js"></script>
 </body>
