@@ -197,10 +197,20 @@ function toggleWithdrawForm(enable){
   const warnId = "withdrawPendingWarn";
   let warn = document.getElementById(warnId);
 
+  const bankNameEl = document.getElementById("bankName");
+  const bankAccountEl = document.getElementById("bankAccount");
+  const bankOwnerEl = document.getElementById("bankOwner");
+
   if (!enable) {
+    // ⛔ khoá form rút
     withdrawInput.disabled = true;
     btnSubmit.disabled = true;
     btnSubmit.textContent = "⏳ Đang chờ duyệt";
+
+    // ⛔ khoá ngân hàng
+    bankNameEl.disabled = true;
+    bankAccountEl.disabled = true;
+    bankOwnerEl.disabled = true;
 
     if (!warn) {
       warn = document.createElement("div");
@@ -210,9 +220,15 @@ function toggleWithdrawForm(enable){
       btnSubmit.parentNode.insertBefore(warn, btnSubmit);
     }
   } else {
+    // 🔓 mở lại
     withdrawInput.disabled = false;
     btnSubmit.disabled = false;
     btnSubmit.textContent = "📤 Gửi yêu cầu rút";
+
+    bankNameEl.disabled = false;
+    bankAccountEl.disabled = false;
+    bankOwnerEl.disabled = false;
+
     warn && warn.remove();
   }
 }

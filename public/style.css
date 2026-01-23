@@ -10938,3 +10938,11 @@ button:disabled{
 .bank-logo.hidden{
   display:none;
 }
+
+
+.withdraw-section select:disabled,
+.withdraw-section input:disabled{
+  background:#020617;
+  opacity:.6;
+  cursor:not-allowed;
+}
