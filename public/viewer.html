@@ -3322,6 +3322,15 @@ function showToast(text, type = "info", timeout = 3500){
   setTimeout(()=>div.remove(), timeout);
 }
 
+
+
+socket.on("room-closed", ({ reason }) => {
+  alert("🚫 Phòng live đã kết thúc");
+  location.href = "/lobby.html";
+});
+
+
+
   </script>
 
 <!-- VIP TICKER (donation banner) -->

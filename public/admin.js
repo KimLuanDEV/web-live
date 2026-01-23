@@ -198,3 +198,34 @@ loadUsers();
 
 
 
+async function closeLiveRoom(){
+  const roomId = document.getElementById("closeRoomId").value.trim();
+  const reason = document.getElementById("closeReason").value.trim();
+
+  if(!roomId){
+    alert("⚠️ Nhập roomId");
+    return;
+  }
+
+  const ok = confirm(`Xác nhận đóng room "${roomId}" ?`);
+  if(!ok) return;
+
+  const res = await fetch("/api/admin/close-room", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      adminUid: admin.uid,
+      roomId,
+      reason
+    })
+  });
+
+  const data = await res.json();
+
+  document.getElementById("closeLog").textContent =
+    data.ok
+      ? `✅ Đã đóng room ${roomId}`
+      : `❌ Lỗi: ${data.error || "fail"}`;
+}

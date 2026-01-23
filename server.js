@@ -196,6 +196,58 @@ app.get("/api/admin/users", (req, res) => {
 });
 
 
+app.post("/api/admin/close-room", (req, res) => {
+  const { adminUid, roomId, reason } = req.body || {};
+
+  if(!adminUid || !roomId){
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+
+  if(!admin || admin.role !== "admin"){
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  const rid = String(roomId).trim().toLowerCase();
+  const room = rooms.get(rid);
+
+  if(!room || !room.broadcasterId){
+    return res.status(404).json({ error: "room_not_live" });
+  }
+
+  // 🚨 ĐÓNG ROOM
+  closeRoom(rid, "admin_closed");
+
+  // 🔔 notify host nếu có
+  if(room.hostProfile?.uid){
+    const uid = room.hostProfile.uid;
+
+    // realtime
+    const sockets = activeUsers.get(uid);
+    if(sockets){
+      for(const sid of sockets){
+        io.to(sid).emit("system-notify", {
+          type: "room-closed",
+          text: "🚫 Phòng live của bạn đã bị Admin đóng"
+        });
+      }
+    }
+
+    // push offline
+    sendPushToUser(uid, {
+      title: "🚫 Phòng live bị đóng",
+      body: reason || "Phòng live của bạn đã bị Admin đóng",
+      tag: "admin-close-room"
+    });
+  }
+
+  res.json({ ok:true });
+});
+
+
+
 // ===== ADMIN LOCK / UNLOCK USER =====
 app.post("/api/admin/lock-user", (req, res) => {
 
