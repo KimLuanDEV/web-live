@@ -461,6 +461,29 @@ const vipBadgeBox = document.getElementById("vipBadgeBox");
 const coverPreview = document.getElementById("coverPreview");
 const coverInput   = document.getElementById("coverInput");
 const btnChangeCover = document.getElementById("btnChangeCover");
+const btnWithdraw = document.getElementById("btnWithdraw");
+
+
+
+if (btnWithdraw) {
+  btnWithdraw.onclick = () => {
+    // 🚫 chỉ cho rút profile của chính mình
+    if (viewUid && viewUid !== __profileAuth.uid) {
+      showMsg("🚫 Bạn không thể rút tiền từ tài khoản này");
+      return;
+    }
+
+    const received = Number(coinReceivedVal.textContent || 0);
+
+    if (received <= 0) {
+      showMsg("💎 Bạn chưa có kim cương để rút");
+      return;
+    }
+
+    // 👉 mở trang rút tiền
+    location.href = `/withdraw.html?received=${received}`;
+  };
+}
 
 
 

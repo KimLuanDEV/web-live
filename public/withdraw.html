@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>💎 Rút tiền</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="page-withdraw">
+
+<div class="withdraw-card">
+  <h2>💎 Rút tiền</h2>
+
+  <div class="withdraw-info">
+    <div>💎 Kim cương đã nhận:</div>
+    <b id="receivedVal">0</b>
+  </div>
+
+  <div class="withdraw-info">
+    <div>💵 Số tiền có thể rút:</div>
+    <b id="moneyVal">0 ₫</b>
+  </div>
+
+  <label>Số kim cương muốn rút</label>
+  <input type="number" id="withdrawInput" min="0">
+
+  <label>Thông tin thanh toán</label>
+  <input type="text" id="bankInput" placeholder="Ngân hàng / Momo / ZaloPay">
+
+  <button id="btnSubmitWithdraw">📤 Gửi yêu cầu rút</button>
+
+  <p class="note">
+    ⏳ Yêu cầu sẽ được admin duyệt thủ công
+  </p>
+</div>
+
+<script src="/withdraw.js"></script>
+</body>
+</html>
