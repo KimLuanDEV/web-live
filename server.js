@@ -242,20 +242,30 @@ user.profile.blockLogs.unshift({
 
   saveUsers(db);
 
-// 🔔 PUSH NOTIFY KHI KHOÁ USER (CHỈ OFFLINE)
+// 🔔 PUSH NOTIFY KHI KHOÁ USER
 if (lock) {
   const msg = reason
-    ? `🚫 Tài khoản của bạn đã bị khoá.\nLý do: ${reason}`
-    : "🚫 Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.";
+  ? `🚫 Tài khoản của bạn đã bị khoá.\nLý do: ${reason}`
+  : "🚫 Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.";
 
-  // ❗ CHỈ PUSH (offline)
+  // 1️⃣ realtime nếu online
+  const sockets = activeUsers.get(targetUid);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("system-notify", {
+        type: "blocked",
+        text: msg
+      });
+    }
+  }
+
+  // 2️⃣ push notification (offline)
   sendPushToUser(targetUid, {
     title: "Tài khoản bị khoá 🚫",
     body: msg,
     tag: "account-blocked"
   });
 }
-
 
 // 🚨 FORCE LOGOUT NGAY KHI KHOÁ (USER ĐANG ONLINE)
 if (lock) {
@@ -793,9 +803,8 @@ app.get("/api/me/:uid", (req, res) => {
     const me = db[viewerUid].profile;
     const you = target.profile;
 
-const blockedByMe  = (me.blockedUsers || []).includes(targetUid);
-const blockedByYou = (you.blockedUsers || []).includes(viewerUid);
-
+    const blockedByMe   = (me.blocked || []).includes(targetUid);
+    const blockedByYou  = (you.blocked || []).includes(viewerUid);
 
     if (blockedByMe || blockedByYou) {
       return res.status(403).json({
