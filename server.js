@@ -268,6 +268,30 @@ if (lock) {
 }
 
 
+// 🚨 FORCE LOGOUT NGAY KHI KHOÁ (USER ĐANG ONLINE)
+if (lock) {
+  const sockets = activeUsers.get(targetUid);
+  if (sockets) {
+    for (const sid of sockets) {
+      // báo client logout
+      io.to(sid).emit("force-logout", {
+        reason: reason || "Tài khoản của bạn đã bị khoá"
+      });
+
+      // disconnect cứng socket
+      const s = io.sockets.sockets.get(sid);
+      if (s) s.disconnect(true);
+    }
+  }
+
+  // xoá khỏi activeUsers
+  activeUsers.delete(targetUid);
+}
+
+
+
+
+
 // 🔓 PUSH NOTIFY KHI MỞ KHOÁ USER
 if (!lock) {
  const msg = reason

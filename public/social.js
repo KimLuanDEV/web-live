@@ -1742,3 +1742,11 @@ socket.on("system-notify", data => {
   alert(data.text); // 🔥 tạm thời
   // hoặc toast đẹp hơn
 });
+
+
+socket.on("force-logout", data => {
+  alert(data?.reason || "Tài khoản của bạn đã bị khoá");
+
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});

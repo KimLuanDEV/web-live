@@ -440,6 +440,15 @@ socket.on("system-notify", data => {
 });
 
 
+socket.on("force-logout", data => {
+  alert(data?.reason || "Tài khoản của bạn đã bị khoá");
+
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
+
+
+
 </script>
 </body>
 </html>
