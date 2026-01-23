@@ -462,6 +462,31 @@ const coverPreview = document.getElementById("coverPreview");
 const coverInput   = document.getElementById("coverInput");
 const btnChangeCover = document.getElementById("btnChangeCover");
 const btnWithdraw = document.getElementById("btnWithdraw");
+const btnWithdrawFromSheet =
+  document.getElementById("btnWithdrawFromSheet");
+
+if (btnWithdrawFromSheet) {
+  btnWithdrawFromSheet.onclick = () => {
+    closeProfileSheet();
+
+    // 🚫 chỉ cho rút tiền của chính mình
+    if (viewUid && viewUid !== __profileAuth.uid) {
+      showMsg("🚫 Bạn không thể rút tiền từ tài khoản này");
+      return;
+    }
+
+    const received =
+      Number(document.getElementById("coinReceivedVal")?.textContent || 0);
+
+    if (received <= 0) {
+      showMsg("💎 Bạn chưa có kim cương để rút");
+      return;
+    }
+
+    // 👉 chuyển sang trang rút tiền
+    location.href = `/withdraw.html?received=${received}`;
+  };
+}
 
 
 
@@ -484,6 +509,8 @@ if (btnWithdraw) {
     location.href = `/withdraw.html?received=${received}`;
   };
 }
+
+
 
 
 
