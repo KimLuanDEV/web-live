@@ -3297,7 +3297,13 @@ socket.on("system-notify", data => {
     showToast(data.text || "💰 Bạn vừa được nạp coin", "success");
     return;
   }
+  
+   // ➖ TRỪ COIN
+  if (data.type === "withdraw") {
+    showWithdrawNotify(data);
+  }
 
+  
   // 🚫 KHOÁ TÀI KHOẢN
   if (data.type === "lock") {
     showToast(
@@ -3366,6 +3372,16 @@ function closeSysModal(){
   location.href = "/lobby.html";
 }
 
+
+
+
+function showWithdrawNotify(data){
+  const text =
+    data.text ||
+    "Tài khoản của bạn vừa bị trừ coin";
+
+  openSysModal(text);
+}
 
 
   </script>

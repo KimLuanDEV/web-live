@@ -3192,6 +3192,11 @@ socket.on("system-notify", data => {
     return;
   }
 
+   // ➖ TRỪ COIN
+  if (data.type === "withdraw") {
+    showWithdrawNotify(data);
+  }
+
   // 🚫 KHOÁ TÀI KHOẢN
   if (data.type === "lock") {
     showToast(
@@ -3259,6 +3264,18 @@ function closeSysModal(){
   document.getElementById("sysModal").classList.add("hidden");
   location.href = "/lobby.html";
 }
+
+
+
+
+function showWithdrawNotify(data){
+  const text =
+    data.text ||
+    "Tài khoản của bạn vừa bị trừ coin";
+
+  openSysModal(text);
+}
+
 
 
   </script>
