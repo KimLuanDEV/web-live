@@ -1149,40 +1149,6 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 
-// ===== MIGRATE BLOCKED FIELD (RUN ONCE) =====
-(function migrateBlockedFields(){
-  const db = loadUsers();
-  let changed = false;
-
-  for (const uid in db) {
-    const p = db[uid].profile || (db[uid].profile = {});
-
-    // boolean blocked → accountBlocked
-    if (typeof p.blocked === "boolean") {
-      p.accountBlocked = p.blocked;
-      delete p.blocked;
-      changed = true;
-    }
-
-    // array blocked → blockedUsers
-    if (Array.isArray(p.blocked)) {
-      p.blockedUsers = p.blocked;
-      delete p.blocked;
-      changed = true;
-    }
-
-    // ensure array
-    if (!Array.isArray(p.blockedUsers)) {
-      p.blockedUsers = [];
-      changed = true;
-    }
-  }
-
-  if (changed) {
-    saveUsers(db);
-    console.log("✅ Migrated blocked → accountBlocked / blockedUsers");
-  }
-})();
 
 
 
