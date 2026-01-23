@@ -242,24 +242,13 @@ user.profile.blockLogs.unshift({
 
   saveUsers(db);
 
-// 🔔 PUSH NOTIFY KHI KHOÁ USER
+// 🔔 PUSH NOTIFY KHI KHOÁ USER (CHỈ OFFLINE)
 if (lock) {
   const msg = reason
-  ? `🚫 Tài khoản của bạn đã bị khoá.\nLý do: ${reason}`
-  : "🚫 Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.";
+    ? `🚫 Tài khoản của bạn đã bị khoá.\nLý do: ${reason}`
+    : "🚫 Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.";
 
-  // 1️⃣ realtime nếu online
-  const sockets = activeUsers.get(targetUid);
-  if (sockets) {
-    for (const sid of sockets) {
-      io.to(sid).emit("system-notify", {
-        type: "blocked",
-        text: msg
-      });
-    }
-  }
-
-  // 2️⃣ push notification (offline)
+  // ❗ CHỈ PUSH (offline)
   sendPushToUser(targetUid, {
     title: "Tài khoản bị khoá 🚫",
     body: msg,
