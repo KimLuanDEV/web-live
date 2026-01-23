@@ -9,14 +9,59 @@ let userPage = 1;
 function renderUserPage(){
   const start = (userPage - 1) * PAGE_SIZE;
   const end = start + PAGE_SIZE;
+  const slice = USERS.slice(start, end);
 
-  renderUsers(USERS.slice(start, end));
+  renderUsers(slice);     // desktop
+  renderUserCards(slice); // mobile
 
   const info = document.getElementById("userPageInfo");
   if (info) {
     info.textContent =
       `Trang ${userPage} / ${Math.ceil(USERS.length / PAGE_SIZE)}`;
   }
+}
+
+
+
+function renderUserCards(list){
+  const wrap = document.getElementById("userCardList");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+
+  list.forEach(u=>{
+    const card = document.createElement("div");
+    card.className = "user-card";
+
+    card.innerHTML = `
+      <div class="user-card-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
+        <img src="${u.avatar || '/avatar-default.png'}">
+        <div>
+          <b>${u.name}</b><br>
+          <small>${u.uid}</small>
+        </div>
+      </div>
+
+      <div class="user-card-detail hidden">
+        💰 Coin: <b>${u.coins}</b><br>
+        ⭐ Level: <b>${u.level}</b><br>
+        📈 EXP: <b>${u.exp}</b><br>
+        🎁 Đã tặng: <b>${u.coinSent}</b> |
+        💎 Đã nhận: <b>${u.coinReceived}</b><br><br>
+
+        <button class="action-btn"
+          onclick="quickTopup('${u.uid}')">➕</button>
+        <button class="action-btn"
+          onclick="quickWithdraw('${u.uid}')">➖</button>
+        <button class="action-btn"
+          onclick="toggleLock('${u.uid}', ${u.blocked})">
+          ${u.blocked ? "🔓" : "🚫"}
+        </button>
+      </div>
+    `;
+
+    wrap.appendChild(card);
+  });
 }
 
 

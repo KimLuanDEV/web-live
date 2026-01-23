@@ -319,6 +319,59 @@
 }
 
 
+
+/* ===== MOBILE CARD LIST ===== */
+.user-card-list{
+  display:none;
+}
+
+@media (max-width: 768px){
+  .table-wrap{
+    display:none; /* ẩn table */
+  }
+
+  .user-card-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
+  .user-card{
+    background:linear-gradient(180deg,#12182a,#0e1320);
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:14px;
+  }
+
+  .user-card-header{
+    display:flex;
+    gap:12px;
+    align-items:center;
+    cursor:pointer;
+  }
+
+  .user-card-header img{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    object-fit:cover;
+  }
+
+  .user-card-header small{
+    color:#7c86ff;
+    font-size:12px;
+  }
+
+  .user-card-detail{
+    margin-top:12px;
+    padding-top:12px;
+    border-top:1px dashed var(--line);
+    font-size:13px;
+    line-height:1.6;
+  }
+}
+
+
   </style>
 </head>
 <body>
@@ -410,6 +463,11 @@
 </div>
 
 </div> 
+
+
+<!-- 📱 USER CARD LIST (MOBILE) -->
+<div id="userCardList" class="user-card-list"></div>
+
 
 
   <!-- ===== LIVE ROOMS ===== -->
