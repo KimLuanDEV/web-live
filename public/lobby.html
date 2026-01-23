@@ -1629,12 +1629,78 @@ function openUserProfile(uid){
 })();
 
 
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - base64String.length % 4) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const raw = window.atob(base64);
+  const arr = new Uint8Array(raw.length);
+
+  for (let i = 0; i < raw.length; ++i) {
+    arr[i] = raw.charCodeAt(i);
+  }
+  return arr;
+}
+
+
+async function requestPushPermissionFromLobby() {
+  if (!("Notification" in window)) return;
+  if (!("serviceWorker" in navigator)) return;
+  if (Notification.permission === "denied") return;
+
+  const reg = await navigator.serviceWorker.ready;
+
+  const existingSub = await reg.pushManager.getSubscription();
+  if (existingSub) {
+    console.log("🔁 Push already subscribed");
+    return;
+  }
+
+  if (Notification.permission !== "granted") {
+    const ok = confirm("🔔 Cho phép Livestream Pro gửi thông báo?");
+    if (!ok) return;
+
+    const permission = await Notification.requestPermission();
+    if (permission !== "granted") return;
+  }
+
+  const sub = await reg.pushManager.subscribe({
+    userVisibleOnly: true,
+    applicationServerKey: urlBase64ToUint8Array("BPG9kTxtU0Fso5VZqUFhqn_ZZLvTeKM32km3pLDnH2UCdKce-owuTMZ5PLzrKyrw_patHMVavHdDM4axJ7L9N7E")
+  });
+
+  const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  if (!profile.uid) return;
+
+  await fetch("/api/push-subscribe", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ uid: profile.uid, sub })
+  });
+
+  console.log("✅ Push enabled from lobby");
+}
+
+
+
+
+document.addEventListener("DOMContentLoaded", () => {
+  const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  const isGuest = localStorage.getItem("isGuest") === "1";
+
+  if (!profile.uid || isGuest) return;
+
+  setTimeout(() => {
+    requestPushPermissionFromLobby();
+  }, 1200);
+});
+
+
 
 
 </script>
-
-
-
 
 
 
