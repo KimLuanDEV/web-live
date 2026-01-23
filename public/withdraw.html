@@ -165,6 +165,25 @@
 </div>
 
 
+
+<!-- 🔔 MODAL THÔNG BÁO CHUNG -->
+<div id="notifyModal" class="lp-modal hidden">
+  <div class="lp-modal-backdrop"></div>
+
+  <div class="lp-modal-box">
+    <div id="notifyIcon" class="lp-modal-icon">⚠️</div>
+    <h3 id="notifyTitle">Thông báo</h3>
+    <p id="notifyMessage"></p>
+
+    <div class="lp-modal-actions">
+      <button class="btn-primary" onclick="closeNotifyModal()">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/withdraw.js"></script>
 </body>

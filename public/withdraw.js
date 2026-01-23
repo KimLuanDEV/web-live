@@ -85,12 +85,20 @@ async function submitWithdraw(securityCode){
   const bankOwner = document.getElementById("bankOwner").value.trim();
 
   if (!bankName || !bankAccount || !bankOwner) {
-    alert("❌ Vui lòng nhập đầy đủ thông tin ngân hàng");
+    showNotifyModal(
+  "Vui lòng nhập đầy đủ thông tin ngân hàng",
+  "error"
+);
     return;
   }
 
   if (amount < MIN_WITHDRAW) {
-    alert(`⛔ Số kim cương rút tối thiểu là ${MIN_WITHDRAW.toLocaleString()} 💎`);
+    showNotifyModal(
+  `Số kim cương rút tối thiểu là ${MIN_WITHDRAW.toLocaleString()} 💎`,
+  "warn",
+  "Không đủ điều kiện"
+);
+
     return;
   }
 
@@ -98,7 +106,11 @@ async function submitWithdraw(securityCode){
 
   const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
   if (!me.uid) {
-    alert("❌ Chưa đăng nhập");
+    showNotifyModal(
+  "Bạn chưa đăng nhập, vui lòng đăng nhập lại",
+  "error"
+);
+
     return;
   }
 
@@ -119,7 +131,11 @@ async function submitWithdraw(securityCode){
   if (data.ok) {
     openWithdrawModal();
   } else {
-    alert("❌ " + (data.error || "Có lỗi xảy ra"));
+    showNotifyModal(
+  data.error || "Có lỗi xảy ra, vui lòng thử lại",
+  "error"
+);
+
   }
 }
 
@@ -349,7 +365,11 @@ async function confirmWithdraw(){
     document.getElementById("securityCodeModalInput").value.trim();
 
   if (!securityCode) {
-    alert("❌ Vui lòng nhập mã bảo mật");
+    showNotifyModal(
+  "Vui lòng nhập mã bảo mật để xác nhận rút tiền",
+  "warn",
+  "Thiếu mã bảo mật"
+);
     return;
   }
 
@@ -357,4 +377,35 @@ async function confirmWithdraw(){
 
   // 🔁 GỌI LẠI LOGIC RÚT CŨ
   await submitWithdraw(securityCode);
+}
+
+
+
+function showNotifyModal(message, type = "warn", title){
+  const modal = document.getElementById("notifyModal");
+  const msgEl = document.getElementById("notifyMessage");
+  const iconEl = document.getElementById("notifyIcon");
+  const titleEl = document.getElementById("notifyTitle");
+
+  if (!modal) return;
+
+  msgEl.textContent = message;
+
+  if (type === "error") {
+    iconEl.textContent = "❌";
+    titleEl.textContent = title || "Lỗi";
+  } else if (type === "success") {
+    iconEl.textContent = "✅";
+    titleEl.textContent = title || "Thành công";
+  } else {
+    iconEl.textContent = "⚠️";
+    titleEl.textContent = title || "Thông báo";
+  }
+
+  modal.classList.remove("hidden");
+}
+
+function closeNotifyModal(){
+  const modal = document.getElementById("notifyModal");
+  modal && modal.classList.add("hidden");
 }
