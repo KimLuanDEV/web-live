@@ -125,7 +125,7 @@ function toggleWithdrawForm(enable){
       warn = document.createElement("div");
       warn.id = warnId;
       warn.className = "withdraw-warn";
-      warn.textContent = "⛔ Bạn đang có yêu cầu rút đang chờ admin duyệt";
+      warn.textContent = "⛔ Bạn đang có yêu cầu rút đang chờ phê duyệt";
       btnSubmit.parentNode.insertBefore(warn, btnSubmit);
     }
   } else {
