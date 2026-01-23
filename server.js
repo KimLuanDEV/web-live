@@ -198,8 +198,9 @@ app.get("/api/admin/users", (req, res) => {
 // ===== ADMIN LOCK / UNLOCK USER =====
 app.post("/api/admin/lock-user", (req, res) => {
 
- const body = req.body || {};
-const { adminUid, targetUid, lock } = body;
+const body = req.body || {};
+const { adminUid, targetUid, lock, reason } = body;
+
 
 
 
@@ -226,6 +227,18 @@ const { adminUid, targetUid, lock } = body;
 
   user.profile.blocked = !!lock;
   user.profile.blockedAt = lock ? Date.now() : null;
+
+// 🧾 LOG LÝ DO KHOÁ / MỞ KHOÁ
+user.profile.blockLogs ||= [];
+user.profile.blockLogs.unshift({
+  by: adminUid,
+  action: lock ? "lock" : "unlock",
+  reason: reason || "",
+  ts: Date.now()
+});
+
+
+
 
   saveUsers(db);
 

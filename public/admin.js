@@ -124,22 +124,36 @@ async function quickTopup(uid){
 
 // 🚫 KHOÁ / MỞ KHOÁ USER
 async function toggleLock(uid, isBlocked){
+  const reason = prompt(
+    isBlocked
+      ? "🔓 Lý do mở khoá (tuỳ chọn):"
+      : "🚫 Lý do khoá tài khoản:"
+  );
+
+  // khi khoá → bắt buộc có lý do
+  if (!isBlocked && (!reason || !reason.trim())) {
+    alert("⚠️ Vui lòng nhập lý do khoá");
+    return;
+  }
+
   const ok = confirm(
     isBlocked
-      ? "Mở khoá tài khoản này?"
-      : "Khoá tài khoản này?"
+      ? "Xác nhận MỞ KHOÁ tài khoản này?"
+      : "Xác nhận KHOÁ tài khoản này?"
   );
   if (!ok) return;
 
-  await fetch("/api/admin/lock-user", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      adminUid: admin.uid,
-      targetUid: uid,
-      lock: !isBlocked
-    })
-  });
+
+await fetch("/api/admin/lock-user", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({
+    adminUid: admin.uid,
+    targetUid: uid,
+    lock: !isBlocked,
+    reason: reason || ""
+  })
+});
 
   loadUsers();
 }
