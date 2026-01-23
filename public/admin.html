@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <title>Admin – Nạp Coin</title>
+  <style>
+    body { background:#0b0b0b; color:#fff; font-family:sans-serif; padding:30px }
+    input, button { padding:10px; margin:6px 0; width:260px }
+    button { background:#00e5ff; border:none; cursor:pointer }
+  </style>
+</head>
+<body>
+
+<h2>🛠 ADMIN – NẠP COIN</h2>
+
+<input id="uid" placeholder="UID người nhận" />
+<input id="amount" type="number" placeholder="Số coin nạp" />
+<input id="note" placeholder="Ghi chú (tuỳ chọn)" />
+
+<button onclick="topup()">➕ Nạp coin</button>
+
+<pre id="log"></pre>
+
+<script src="/admin.js"></script>
+</body>
+</html>

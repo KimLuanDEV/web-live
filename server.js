@@ -437,6 +437,54 @@ const pushSubs = new Map();
 
 
 
+// ===== ADMIN TOPUP COIN =====
+app.post("/api/admin/topup", (req, res) => {
+  const { adminUid, targetUid, amount, note } = req.body;
+
+  if (!adminUid || !targetUid || !amount) {
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+  const user  = db[targetUid];
+
+  // 🔐 check admin
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  if (!user || !user.profile) {
+    return res.status(404).json({ error: "user_not_found" });
+  }
+
+  const add = Math.max(0, Number(amount) || 0);
+
+  user.profile.coins = (user.profile.coins || 0) + add;
+
+  // 🧾 log (optional nhưng nên có)
+  user.profile.adminLogs ||= [];
+  user.profile.adminLogs.unshift({
+    type: "topup",
+    by: adminUid,
+    amount: add,
+    note: note || "",
+    ts: Date.now()
+  });
+
+  saveUsers(db);
+
+  // 🔁 realtime sync
+  emitCoinUpdate(targetUid);
+
+  res.json({
+    ok: true,
+    uid: targetUid,
+    coins: user.profile.coins
+  });
+});
+
+
 
 app.post("/api/register", async (req,res)=>{
 
