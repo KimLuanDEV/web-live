@@ -82,3 +82,39 @@ socket.on("offline-messages", msgs => {
 })();
 
 
+
+
+// 🔔 SYSTEM NOTIFY (ADMIN / SYSTEM)
+socket.on("system-notify", data => {
+  if (!data || !data.type) return;
+
+  console.log("🔔 system-notify:", data);
+
+  // ➖ BỊ TRỪ COIN
+  if (data.type === "withdraw") {
+    showSystemWithdraw(data);
+  }
+
+  // ➕ ĐƯỢC NẠP COIN (nếu chưa có)
+  if (data.type === "topup") {
+    showSystemTopup(data);
+  }
+});
+
+
+function showSystemWithdraw(data){
+  const text =
+    data.text ||
+    "➖ Tài khoản của bạn vừa bị trừ coin";
+
+  showMsg(text);
+}
+
+function showSystemTopup(data){
+  const text =
+    data.text ||
+    "💰 Tài khoản của bạn vừa được nạp coin";
+
+  showMsg(text);
+}
+

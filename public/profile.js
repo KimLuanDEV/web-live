@@ -1445,9 +1445,9 @@ socket.on("system-notify", data => {
 
    // ➖ TRỪ COIN
   if (data.type === "withdraw") {
-    showWithdrawNotify(data);
+     notifyWithdraw(data);
   }
-  
+
   // 🚫 KHOÁ TÀI KHOẢN
   if (data.type === "lock") {
     showToast(
@@ -1497,4 +1497,25 @@ function showWithdrawNotify(data){
     "Tài khoản của bạn vừa bị trừ coin";
 
   openSysModal(text);
+}
+
+function notifyWithdraw(data){
+  const text =
+    data?.text ||
+    "➖ Tài khoản của bạn vừa bị trừ coin";
+
+  // ưu tiên modal nếu tồn tại
+  if (typeof openSysModal === "function") {
+    openSysModal(text);
+    return;
+  }
+
+  // fallback toast
+  if (typeof showToast === "function") {
+    showToast(text, "error", 5000);
+    return;
+  }
+
+  // fallback cuối cùng
+  alert(text);
 }
