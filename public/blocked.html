@@ -174,21 +174,30 @@ function unblock(uid, name){
 
 
 
-
 socket.on("system-notify", data => {
-  if (!data?.text) return;
+  if (!data) return;
 
-   showToast(
-    data?.reason || "Tài khoản của bạn đã bị khoá",
-    "error"
-  );
+  // 💰 NẠP COIN
+  if (data.type === "topup") {
+    showToast(data.text || "💰 Bạn vừa được nạp coin", "success");
+    return;
+  }
 
-  localStorage.removeItem("user_profile");
+  // 🚫 KHOÁ TÀI KHOẢN
+  if (data.type === "lock") {
+    showToast(
+      data.reason || "🚫 Tài khoản của bạn đã bị khoá",
+      "error"
+    );
 
-  setTimeout(()=>{
-    location.href = "/login.html";
-  }, 2000);
- 
+    localStorage.removeItem("user_profile");
+    localStorage.removeItem("login_uid");
+    localStorage.removeItem("isGuest");
+
+    setTimeout(() => {
+      location.href = "/login.html";
+    }, 2000);
+  }
 });
 
 
