@@ -60,15 +60,11 @@ function renderUsers(list){
 
   list.forEach(u => {
     const tr = document.createElement("tr");
-    
 if (u.blocked) {
   tr.style.opacity = "0.45";
   tr.style.filter = "grayscale(1)";
   tr.style.background = "rgba(255,80,80,.06)";
 }
-
-
-
 
     tr.innerHTML = `
   <td>
@@ -92,7 +88,7 @@ if (u.blocked) {
   ${u.role}
 </td>
 
-<td>
+      <td>
   <button class="action-btn" onclick="quickTopup('${u.uid}')">➕</button>
   <button class="action-btn"
     style="color:${u.blocked?'#ff6b6b':'#00e5ff'}"
@@ -100,7 +96,6 @@ if (u.blocked) {
     ${u.blocked ? '🔓' : '🚫'}
   </button>
 </td>
-
 
     `;
     tbody.appendChild(tr);
