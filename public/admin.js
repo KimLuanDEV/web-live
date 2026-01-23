@@ -5,6 +5,17 @@ if (!admin.uid) {
   location.href = "/login.html";
 }
 
+// ===== TOAST (GIỐNG SOCIAL) =====
+function showToast(text){
+  const el = document.getElementById("adminToast");
+  if(!el) return;
+  el.textContent = text;
+  el.classList.add("show");
+  clearTimeout(el._t);
+  el._t = setTimeout(()=> el.classList.remove("show"), 2000);
+}
+
+
 async function topup(){
   const uid = document.getElementById("uid").value.trim();
   const amount = Number(document.getElementById("amount").value);
@@ -24,6 +35,15 @@ async function topup(){
   const data = await res.json();
   document.getElementById("log").textContent =
     JSON.stringify(data, null, 2);
+
+if (data?.ok) {
+  showToast("✅ Nạp coin thành công");
+  loadUsers();
+} else {
+  showToast("❌ Nạp coin thất bại");
+}
+
+
 }
 
 
@@ -55,7 +75,7 @@ if (u.blocked) {
 
     tr.innerHTML = `
       <td>${u.uid}</td>
-      <td>${u.name}</td>
+      <td class="admin-name-link" onclick="openProfile('${u.uid}')">${u.name}</td>
       <td>${u.coins}</td>
       <td>${u.level}</td>
       <td>${u.exp}</td>
@@ -69,25 +89,23 @@ if (u.blocked) {
       <td>
   <button onclick="quickTopup('${u.uid}')">➕ Nạp</button>
 
-  <button
-    style="
-      margin-left:6px;
-      color:${u.blocked ? '#ff6b6b' : '#00e5ff'};
-      border:1px solid #1e2536;
-      background:transparent;
-      border-radius:6px;
-      cursor:pointer;
-    "
-    onclick="toggleLock('${u.uid}', ${u.blocked})"
-  >
-    ${u.blocked ? "🔓 Mở khoá" : "🚫 Khoá"}
-  </button>
+  <button onclick="toggleLock('${u.uid}', ${u.blocked})">
+  ${u.blocked ? "🔓 Mở khoá" : "🚫 Khoá"}
+</button>
+
 </td>
 
     `;
     tbody.appendChild(tr);
   });
 }
+
+
+function openProfile(uid){
+  // nếu profile bạn dùng query uid
+  location.href = `/profile.html?uid=${encodeURIComponent(uid)}`;
+}
+
 
 // 🔍 SEARCH
 document.getElementById("searchUser").addEventListener("input", e => {
@@ -115,7 +133,7 @@ async function quickTopup(uid){
       amount: Number(amount)
     })
   });
-
+  showToast("✅ Đã nạp coin");
   loadUsers(); // refresh list
 }
 
@@ -154,7 +172,7 @@ await fetch("/api/admin/lock-user", {
     reason: reason || ""
   })
 });
-
+  showToast(isBlocked ? "✅ Đã mở khoá" : "🚫 Đã khoá tài khoản");
   loadUsers();
 }
 

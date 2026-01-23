@@ -30,11 +30,12 @@
 
     h1,h2,h3{margin:0 0 14px}
 
-    .admin-shell{
-      max-width:1200px;
-      margin:40px auto;
-      padding:0 20px 60px;
-    }
+   .admin-shell{
+  max-width: 720px;     /* giống feed */
+  margin: 0 auto;
+  padding: 0 10px 80px;
+}
+
 
     .admin-header{
       display:flex;
@@ -60,21 +61,20 @@
     }
 
     /* ===== CARDS ===== */
-    .card{
-      background:linear-gradient(180deg,#12182a,#0e1320);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:18px;
-      margin-bottom:26px;
-      box-shadow:0 0 0 1px rgba(255,255,255,.02),
-                 0 20px 40px rgba(0,0,0,.45);
-    }
+.card{
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  padding: 14px;
+  backdrop-filter: blur(10px);
+}
 
-    .card-title{
-      font-size:18px;
-      font-weight:600;
-      margin-bottom:14px;
-    }
+
+.card-title{
+  font-weight:900;
+  letter-spacing:.3px;
+}
+
 
     /* ===== TOPUP ===== */
     .topup-grid{
@@ -133,11 +133,13 @@
     }
 
     /* ===== TABLE ===== */
-    .table-wrap{
-      overflow:auto;
-      border-radius:14px;
-      border:1px solid var(--line);
-    }
+  .table-wrap{
+  border-radius:14px;
+  overflow:hidden;
+  background:rgba(0,0,0,.45);
+  backdrop-filter: blur(8px);
+}
+
 
     table{
       width:100%;
@@ -165,9 +167,9 @@
       color:var(--muted);
     }
 
-    tbody tr:hover{
-      background:rgba(0,229,255,.05);
-    }
+tbody tr:hover{
+  background:rgba(37,240,154,.08);
+}
 
     .role-admin{
       color:var(--gold);
@@ -197,18 +199,159 @@
       max-height:160px;
       overflow:auto;
     }
+
+
+    tr[style*="opacity"]{
+  position:relative;
+}
+tr[style*="opacity"]::after{
+  content:"🚫 BỊ KHOÁ";
+  position:absolute;
+  right:14px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:12px;
+  color:#ff6b6b;
+}
+
+button{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:999px;
+  color:#25F09A;
+  font-weight:700;
+}
+button:hover{
+  background:rgba(37,240,154,.18);
+}
+
+
+/* ===== SYNC ADMIN -> SOCIAL LOOK ===== */
+
+/* dùng layout giống feed */
+.admin-shell{
+  max-width:720px;
+  margin:0 auto;
+  padding:0 10px 90px;
+}
+
+/* bỏ header cũ nếu còn */
+.admin-header{ display:none; }
+
+/* topbar full width giống social */
+.lp-topbar{
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  z-index: 1000;
+}
+
+/* card giống post */
+.card{
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 14px;
+  padding: 14px;
+  backdrop-filter: blur(10px);
+  box-shadow: none;
+}
+
+/* title mạnh hơn */
+.card-title{
+  font-weight: 900;
+  letter-spacing: .3px;
+}
+
+/* input giống social */
+input{
+  background: rgba(0,0,0,.6);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 999px;
+}
+input:focus{
+  border-color:#25F09A;
+  box-shadow: 0 0 0 1px rgba(37,240,154,.35);
+}
+
+/* nút theo vibe social */
+.btn, button{
+  background: rgba(255,255,255,.08);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 999px;
+  color:#25F09A;
+  font-weight: 800;
+  cursor:pointer;
+}
+.btn-primary{
+  background: linear-gradient(135deg,#25F09A,#5FA8FF);
+  color:#000;
+  border:none;
+  box-shadow: 0 0 14px rgba(37,240,154,.35);
+}
+.btn-primary:hover{ filter: brightness(1.08); transform:none; }
+
+/* table soft + hover xanh */
+.table-wrap{
+  border-radius: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(255,255,255,.12);
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(8px);
+}
+table{ background: transparent; }
+thead{ background: rgba(255,255,255,.06); }
+th{ color: rgba(255,255,255,.6); }
+tbody tr:hover{ background: rgba(37,240,154,.08); }
+
+/* toast giống social */
+.lp-toast{
+  position:fixed;
+  bottom:90px;
+  left:50%;
+  transform:translateX(-50%) translateY(20px);
+  background:rgba(0,0,0,.85);
+  color:#fff;
+  padding:10px 16px;
+  border-radius:12px;
+  font-size:14px;
+  z-index:30000;
+  opacity:0;
+  transition:.25s;
+}
+.lp-toast.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+/* name click như social */
+.admin-name-link{
+  cursor:pointer;
+  font-weight:800;
+}
+.admin-name-link:hover{
+  color:#25F09A;
+  text-decoration: underline;
+}
+
+
   </style>
 </head>
 <body>
 
 <div class="admin-shell">
 
-  <div class="admin-header">
-    <div class="admin-title">
-      Livestream Pro
-      <span class="badge-admin">ADMIN</span>
-    </div>
+<div class="lp-topbar">
+  <button class="msg-back" onclick="location.href='/lobby.html'">‹</button>
+
+  <div class="lp-title">
+    <span class="lp-dot"></span>
+    Livestream Pro
+    <span class="badge-admin">ADMIN</span>
   </div>
+</div>
+
 
   <!-- ===== TOPUP CARD ===== -->
   <div class="card">
@@ -253,6 +396,10 @@
   </div>
 
 </div>
+
+
+<div id="adminToast" class="lp-toast">OK</div>
+
 
 <script src="/admin.js"></script>
 </body>

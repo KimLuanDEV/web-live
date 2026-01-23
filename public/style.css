@@ -10575,3 +10575,18 @@ body.page-profile{
 @keyframes toast-out{
   to{ opacity:0; transform: translateX(30px) }
 }
+
+
+
+.btn-support{
+  background: linear-gradient(135deg,#00e5ff,#00bcd4);
+  color:#000;
+  border:none;
+  padding:10px 14px;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+  box-shadow:0 8px 22px rgba(0,229,255,.25);
+}
+.btn-support:hover{ transform: translateY(-1px); }
+.hidden{ display:none !important; }

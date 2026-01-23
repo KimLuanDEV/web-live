@@ -326,10 +326,18 @@ body{
   <div class="modal-backdrop"></div>
   <div class="modal-card">
     <h3 id="msgTitle">Thông báo</h3>
-    <div id="msgText" style="margin:12px 0;opacity:.9"></div>
-    <button onclick="closeMsg()">OK</button>
+    <div id="msgText" style="margin:12px 0;opacity:.9; white-space:pre-line"></div>
+
+    <div style="display:flex; gap:10px; justify-content:center; margin-top:12px;">
+      <button id="btnSupport" class="btn-support hidden" type="button">
+        📞 Liên hệ hỗ trợ
+      </button>
+
+      <button type="button" onclick="closeMsg()">OK</button>
+    </div>
   </div>
 </div>
+
 
 
 <div id="secModal" class="modal hidden">
@@ -466,10 +474,11 @@ const data = await res.json();
 
 if (data.error === "blocked") {
   showMsg(
-    "🚫 Tài khoản của bạn đang bị cấm.\nVui lòng liên hệ hỗ trợ.",
-    "Tài khoản bị khoá"
-  );
-  return;
+  "🚫 Tài khoản của bạn đang bị cấm.\nVui lòng liên hệ hỗ trợ.",
+  "Tài khoản bị khoá",
+  true
+);
+return;
 }
 
 if(!data.ok){
@@ -509,10 +518,11 @@ async function submitSecurity(){
   const data = await res.json();
 
  if (data.error === "blocked") {
-  showMsg(
-    "🚫 Tài khoản của bạn đang bị cấm.\nVui lòng liên hệ hỗ trợ.",
-    "Tài khoản bị khoá"
-  );
+ showMsg(
+  "🚫 Tài khoản của bạn đang bị cấm.\nVui lòng liên hệ hỗ trợ.",
+  "Tài khoản bị khoá",
+  true
+);
   closeSec();
   return;
 }
@@ -565,11 +575,27 @@ function togglePass(id, el){
 
 
 
-function showMsg(text, title="Thông báo"){
+// ✅ Link hỗ trợ: bạn đổi sang Zalo / Hotline / Messenger tuỳ ý
+const SUPPORT_URL = "https://zalo.me"; // ví dụ: "https://zalo.me/0xxxxxxxxx" hoặc "tel:09xxxxxxxx" hoặc "mailto:support@..."
+
+function showMsg(text, title="Thông báo", showSupport=false){
   document.getElementById("msgTitle").textContent = title;
   document.getElementById("msgText").textContent = text;
+
+  const btn = document.getElementById("btnSupport");
+  if (btn){
+    if (showSupport) {
+      btn.classList.remove("hidden");
+      btn.onclick = () => window.open(SUPPORT_URL, "_blank");
+    } else {
+      btn.classList.add("hidden");
+      btn.onclick = null;
+    }
+  }
+
   document.getElementById("msgModal").classList.remove("hidden");
 }
+
 
 function closeMsg(){
   document.getElementById("msgModal").classList.add("hidden");
