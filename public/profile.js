@@ -389,7 +389,6 @@ fetch("/api/me/" + viewUid, {
   });
 
 
-
 } else if (__profileAuth.uid) {
   // 👤 PROFILE CỦA MÌNH
   fetch("/api/me/" + __profileAuth.uid)
@@ -397,25 +396,16 @@ fetch("/api/me/" + viewUid, {
     .then(data => {
       if (!data || !data.profile) return;
 
-     const local = JSON.parse(localStorage.getItem(KEY)) || {};
+      // ✅ LUÔN TIN SERVER (coin thật nằm ở đây)
+      const p = {
+        ...defaultProfile,
+        ...data.profile
+      };
 
-const p = {
-  ...defaultProfile,
-  ...data.profile,
-
-  // 🔒 KHÔNG cho API ghi đè coin realtime
-  coins: local.coins ?? data.profile.coins ?? 0,
-  coinSent: local.coinSent ?? data.profile.coinSent ?? 0,
-  coinReceived: local.coinReceived ?? data.profile.coinReceived ?? 0,
-  level: local.level ?? data.profile.level ?? 1,
-  exp: local.exp ?? data.profile.exp ?? 0
-};
-
-localStorage.setItem(KEY, JSON.stringify(p));
-loadProfile();
-
+      localStorage.setItem(KEY, JSON.stringify(p));
+      loadProfile();
     })
-    .catch(()=>{});
+    .catch(() => {});
 }
 
 

@@ -686,6 +686,8 @@ const GIFT_CATALOG = {
 };
 
 
+
+
 const START_COINS = 0; // coin mặc định cho mỗi người (demo)
 function clampInt(n, min, max){
   n = Number(n);
@@ -2634,6 +2636,7 @@ socket.on("pin-note-move", ({ roomId, x, y }) => {
 
 // ===== ANTI SPAM GIFT =====
 const GIFT_COOLDOWN_MS = 1500; // 1.5s / lần gửi
+
 const giftCooldown = new Map(); // key: socket.id
 
 function canSendGift(socket) {
@@ -2649,15 +2652,12 @@ function canSendGift(socket) {
 // ===== GIFT ENGINE (paid gifts) =====
 socket.on("send-gift", ({ roomId, gift, name }) => {
 
-
-
-  if(blockGuest(socket,"gift")) return;   // 🔒 GUEST KHÔNG ĐƯỢC TẶNG QUÀ
+  if (blockGuest(socket, "gift")) return;
 
   roomId = normRoomId(roomId);
   if (!roomId || !gift) return;
 
-
-   // 🚫 CHẶN SPAM
+  // 🚫 CHẶN SPAM
   if (!canSendGift(socket)) {
     socket.emit("gift-failed", {
       reason: "spam",
@@ -2666,9 +2666,8 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
     return;
   }
 
-  
   const room = getRoom(roomId);
-  if (!room.broadcasterId || !room.liveStartTs) return;
+  if (!room?.broadcasterId || !room.liveStartTs) return;
 
   const type = String(gift.type || "").toLowerCase();
   const catalog = GIFT_CATALOG[type];
@@ -2677,70 +2676,111 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   const qty = clampInt(gift.qty ?? 1, 1, 999);
   const cost = catalog.cost * qty;
 
-  // ===== WALLET CHECK =====
-  const cur = clampInt(socket.data.coins ?? START_COINS, 0, 1_000_000_000);
-  if (cur < cost) {
-    socket.emit("gift-failed", { reason: "no_coins", need: cost, coins: cur });
+  // ===== WALLET CHECK (PERSIST users.json) =====
+  const senderUid = socket.data.uid;
+  if (!senderUid) return;
+
+  const db = loadUsers();
+  const sender = db[senderUid];
+  if (!sender?.profile) return;
+
+  const curCoins = clampInt(sender.profile.coins ?? 0, 0, 1_000_000_000);
+  if (curCoins < cost) {
+    socket.emit("gift-failed", {
+      reason: "no_coins",
+      need: cost,
+      coins: curCoins
+    });
     return;
   }
 
-  socket.data.coins = cur - cost;
-  socket.emit("wallet-update", { coins: socket.data.coins });
+  // 🔥 TRỪ COIN THẬT
+  sender.profile.coins = curCoins - cost;
+  sender.profile.coinSent =
+    (sender.profile.coinSent || 0) + cost;
 
-  // ===== TÌM PROFILE THEO SOCKET.ID (CHUẨN) =====
- let donorProfile = null;
-for (const p of safeMap(room.viewerProfiles).values()) {
-  if (p.socketId === socket.id) {
-    donorProfile = p;
-    break;
+  const hostUid = room.hostProfile?.uid;
+  if (hostUid && db[hostUid]?.profile) {
+    db[hostUid].profile.coinReceived =
+      (db[hostUid].profile.coinReceived || 0) + cost;
   }
-}
+
+  saveUsers(db);
+
+  // 🔔 REALTIME WALLET
+  emitCoinUpdate(senderUid);
+  if (hostUid) emitCoinUpdate(hostUid);
+
+  socket.data.coins = sender.profile.coins;
+  socket.emit("wallet-update", { coins: sender.profile.coins });
 
 
-  const donorName = safeName(name || donorProfile?.name || socket.data.userName || "Ẩn danh");
-  const uid = donorProfile?.uid;
-
-// 🔔 Notify host khi nhận quà
-const hostUid = room.hostProfile?.uid;
-if(hostUid){
-  pushNotify(hostUid,{
-    type:"gift",
-    text:`${donorName} đã tặng ${cost} coin`
-  });
-
- const sockets = activeUsers.get(hostUid);
-if (sockets) {
-  for (const sid of sockets) {
-    io.to(sid).emit("inbox-new");
+  // ===== TÌM DONOR PROFILE =====
+  let donorProfile = null;
+  for (const p of safeMap(room.viewerProfiles).values()) {
+    if (p.socketId === socket.id) {
+      donorProfile = p;
+      break;
+    }
   }
+
+
+  // ✅ SYNC COIN VÀO VIEWER PROFILE (để viewer list/mini profile đúng)
+if (donorProfile) {
+  donorProfile.coins = sender.profile.coins;
+  donorProfile.coinSentRoom = (donorProfile.coinSentRoom || 0) + cost;
 }
 
-}
 
+  const donorName = safeName(
+    name || donorProfile?.name || socket.data.userName || "Ẩn danh"
+  );
 
+  // 🔒 SYNC DONOR PROFILE (RẤT QUAN TRỌNG)
+  if (donorProfile) {
+    donorProfile.coins = sender.profile.coins;
+    donorProfile.coinSentRoom =
+      (donorProfile.coinSentRoom || 0) + cost;
+  }
 
-  // ===== UPDATE DONOR PROFILE =====
-  if (donorProfile && uid) {
-    donorProfile.coinSentRoom = (donorProfile.coinSentRoom || 0) + cost;
+  // 🔔 Notify host
+  if (hostUid) {
+    pushNotify(hostUid, {
+      type: "gift",
+      text: `${donorName} đã tặng ${cost} coin`
+    });
 
-    // giftByUser LUÔN DÙNG UID
-    room.giftByUser.set(uid, (room.giftByUser.get(uid) || 0) + cost);
+    const sockets = activeUsers.get(hostUid);
+    if (sockets) {
+      for (const sid of sockets) {
+        io.to(sid).emit("inbox-new");
+      }
+    }
   }
 
   // ===== UPDATE ROOM STATS =====
-  room.giftTotal = clampInt((room.giftTotal || 0) + cost, 0, 1_000_000_000);
+  room.giftTotal = clampInt(
+    (room.giftTotal || 0) + cost,
+    0,
+    1_000_000_000
+  );
 
-  // ===== SYNC VIEWER LIST (mini profile / avatar) =====
- const list = Array.from(safeMap(room.viewerProfiles).values());
+  if (donorProfile?.uid) {
+    room.giftByUser.set(
+      donorProfile.uid,
+      (room.giftByUser.get(donorProfile.uid) || 0) + cost
+    );
+  }
 
-
-for (const v of list) {
-  if (v.mini) continue;   // ⛔ viewer thu nhỏ không nhận
-  io.to(v.socketId).emit("viewer-list", {
-    viewers: list.filter(x => !x.mini)
-  });
-}
-
+  // ===== SYNC VIEWER LIST =====
+  const list = Array.from(safeMap(room.viewerProfiles).values());
+  for (const v of list) {
+    if (!v.mini) {
+      io.to(v.socketId).emit("viewer-list", {
+        viewers: list.filter(x => !x.mini)
+      });
+    }
+  }
 
   // ===== EMIT GIFT EVENT =====
   const payload = {
@@ -2752,28 +2792,33 @@ for (const v of list) {
       coins: cost
     },
     donor: donorName,
-    uid, // 👈 thêm để client nếu cần
+    uid: donorProfile?.uid || senderUid,
     totalCoins: room.giftTotal,
-    ts: Date.now(),
+    ts: Date.now()
   };
 
- // gift
-for (const v of list) {
-  if (!v.mini) io.to(v.socketId).emit("gift", payload);
-}
-if (room.broadcasterId) io.to(room.broadcasterId).emit("gift", payload);
+  for (const v of list) {
+    if (!v.mini) io.to(v.socketId).emit("gift", payload);
+  }
+  if (room.broadcasterId) {
+    io.to(room.broadcasterId).emit("gift", payload);
+  }
 
   // stats
-for (const v of list) {
-  if (!v.mini) io.to(v.socketId).emit("gift-stats", {
-    totalCoins: room.giftTotal,
-    topDonors: roomGiftTop(room, 5)
-  });
-}
-if (room.broadcasterId) io.to(room.broadcasterId).emit("gift-stats", {
-  totalCoins: room.giftTotal,
-  topDonors: roomGiftTop(room, 5)
-});
+  for (const v of list) {
+    if (!v.mini) {
+      io.to(v.socketId).emit("gift-stats", {
+        totalCoins: room.giftTotal,
+        topDonors: roomGiftTop(room, 5)
+      });
+    }
+  }
+  if (room.broadcasterId) {
+    io.to(room.broadcasterId).emit("gift-stats", {
+      totalCoins: room.giftTotal,
+      topDonors: roomGiftTop(room, 5)
+    });
+  }
 
 });
 
