@@ -10922,3 +10922,19 @@ button:disabled{
   outline:none;
   border-color:#4f46e5;
 }
+
+
+.bank-logo-wrap{
+  margin:8px 0 12px;
+  height:32px;
+}
+
+.bank-logo{
+  height:32px;
+  max-width:120px;
+  object-fit:contain;
+}
+
+.bank-logo.hidden{
+  display:none;
+}

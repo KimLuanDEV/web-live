@@ -9,10 +9,38 @@ const moneyVal = document.getElementById("moneyVal");
 const withdrawInput = document.getElementById("withdrawInput");
 const btnSubmit = document.getElementById("btnSubmitWithdraw");
 
+
+const BANK_LOGOS = {
+  "Vietcombank": "/img/banks/vietcombank.png",
+  "Techcombank": "/img/banks/techcombank.png",
+  "BIDV": "/img/banks/bidv.png",
+  "VietinBank": "/img/banks/vietinbank.png",
+  "MB Bank": "/img/banks/mbbank.png",
+  "ACB": "/img/banks/acb.png"
+};
+
+
+
 receivedVal.textContent = received.toLocaleString();
 
 withdrawInput.max = received;
 withdrawInput.value = received;
+
+
+function updateBankLogo(bankName){
+  const img = document.getElementById("bankLogo");
+  if (!img) return;
+
+  const src = BANK_LOGOS[bankName];
+  if (src) {
+    img.src = src;
+    img.classList.remove("hidden");
+  } else {
+    img.classList.add("hidden");
+  }
+}
+
+
 
 function updateMoney(){
   const val = Math.min(received, Number(withdrawInput.value || 0));
@@ -106,6 +134,7 @@ async function loadBankDefault(){
   document.getElementById("bankName").value = data.bank.name || "";
   document.getElementById("bankAccount").value = data.bank.account || "";
   document.getElementById("bankOwner").value = data.bank.owner || "";
+  updateBankLogo(data.bank.name); // 🔥 THÊM DÒNG NÀY
 }
 
 
@@ -141,7 +170,14 @@ async function loadWithdrawHistory() {
       tr.innerHTML = `
         <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
         <td>${w.amount.toLocaleString()}</td>
-        <td>${w.bank}</td>
+        <td>
+        <img
+        src="${BANK_LOGOS[w.bank.split(" | ")[0]] || ""}"
+        style="height:18px;vertical-align:middle;margin-right:6px"
+        >
+        ${w.bank}
+        </td>
+
         <td class="st-${w.status}">
           ${statusText(w.status)}
         </td>
@@ -212,3 +248,8 @@ function goBack(){
     location.href = "/profile.html";
   }
 }
+
+
+document.getElementById("bankName").addEventListener("change", e => {
+  updateBankLogo(e.target.value);
+});
