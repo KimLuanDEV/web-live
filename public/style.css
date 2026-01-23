@@ -10675,3 +10675,8 @@ body.page-profile{
   transform: translateY(-2px);
   box-shadow: 0 6px 18px rgba(0,0,0,.25);
 }
+
+.st-pending { color: orange; }
+.st-approved { color: #4caf50; }
+.st-rejected { color: #f44336; }
+

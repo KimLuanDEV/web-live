@@ -586,7 +586,114 @@ app.post("/api/withdraw-request", (req, res) => {
   res.json({ ok: true });
 });
 
+app.get("/api/admin/withdraw-requests", (req, res) => {
+  const adminUid = req.headers["x-uid"];
+  if (!adminUid) return res.status(403).json({ error: "no_auth" });
 
+  const db = loadUsers();
+  const admin = db[adminUid];
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  const list = loadWithdraws();
+  res.json({ ok: true, list });
+});
+
+app.post("/api/admin/withdraw-action", (req, res) => {
+  const { adminUid, id, action, note } = req.body || {};
+
+  if (!adminUid || !id || !action) {
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  const list = loadWithdraws();
+  const reqItem = list.find(x => x.id === id);
+  if (!reqItem) return res.status(404).json({ error: "not_found" });
+
+  if (reqItem.status !== "pending") {
+    return res.status(400).json({ error: "already_processed" });
+  }
+
+  const user = db[reqItem.uid];
+  if (!user || !user.profile) {
+    return res.status(404).json({ error: "user_not_found" });
+  }
+
+  // ❌ TỪ CHỐI
+  if (action === "reject") {
+    reqItem.status = "rejected";
+    reqItem.note = note || "";
+    reqItem.handledBy = adminUid;
+    reqItem.handledAt = Date.now();
+
+    saveWithdraws(list);
+
+    // 🔔 notify user
+    const text = `❌ Yêu cầu rút ${reqItem.amount.toLocaleString()} 💎 bị từ chối`;
+
+    if (!userInbox.has(reqItem.uid)) userInbox.set(reqItem.uid, []);
+    userInbox.get(reqItem.uid).unshift({
+      type: "withdraw-reject",
+      text,
+      time: Date.now(),
+      read: false
+    });
+    saveInbox(Object.fromEntries(userInbox));
+
+    return res.json({ ok: true });
+  }
+
+  // ✅ DUYỆT
+  if (action === "approve") {
+    const amount = Number(reqItem.amount);
+
+    if ((user.profile.coinReceived || 0) < amount) {
+      return res.status(400).json({ error: "not_enough_received" });
+    }
+
+    // ➖ TRỪ COIN
+    user.profile.coinReceived -= amount;
+    user.profile.coins = Math.max(
+      0,
+      (user.profile.coins || 0) - amount
+    );
+
+    reqItem.status = "approved";
+    reqItem.note = note || "";
+    reqItem.handledBy = adminUid;
+    reqItem.handledAt = Date.now();
+
+    saveUsers(db);
+    saveWithdraws(list);
+
+    // 🔁 realtime coin
+    emitCoinUpdate(reqItem.uid);
+
+    // 🔔 notify user
+    const text =
+      `✅ Yêu cầu rút ${amount.toLocaleString()} 💎 đã được duyệt`;
+
+    if (!userInbox.has(reqItem.uid)) userInbox.set(reqItem.uid, []);
+    userInbox.get(reqItem.uid).unshift({
+      type: "withdraw-approve",
+      text,
+      time: Date.now(),
+      read: false
+    });
+    saveInbox(Object.fromEntries(userInbox));
+
+    return res.json({ ok: true });
+  }
+
+  res.status(400).json({ error: "invalid_action" });
+});
 
 
 

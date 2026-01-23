@@ -417,3 +417,71 @@ async function quickWithdraw(uid){
 
   loadUsers();
 }
+
+
+async function loadWithdraws() {
+  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+  const res = await fetch("/api/admin/withdraw-requests", {
+    headers: { "x-uid": me.uid }
+  });
+
+  const data = await res.json();
+  if (!data.ok) return;
+
+  const tbody = document.querySelector("#withdrawTable tbody");
+  tbody.innerHTML = "";
+
+  data.list.forEach(w => {
+    const tr = document.createElement("tr");
+
+    tr.innerHTML = `
+      <td>${w.name} (${w.uid})</td>
+      <td>${w.amount.toLocaleString()}</td>
+      <td>${w.bank}</td>
+      <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
+      <td>
+        <span class="st-${w.status}">${w.status}</span>
+      </td>
+      <td>
+        ${
+          w.status === "pending"
+            ? `
+          <button onclick="withdrawAction('${w.id}','approve')">✅</button>
+          <button onclick="withdrawAction('${w.id}','reject')">❌</button>
+          `
+            : "-"
+        }
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+async function withdrawAction(id, action) {
+  const note = prompt("Ghi chú (có thể bỏ trống)") || "";
+  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+  const res = await fetch("/api/admin/withdraw-action", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({
+      adminUid: me.uid,
+      id,
+      action,
+      note
+    })
+  });
+
+  const data = await res.json();
+  if (data.ok) {
+    loadWithdraws();
+  } else {
+    alert("❌ Lỗi: " + (data.error || "unknown"));
+  }
+}
+
+loadWithdraws();
