@@ -161,6 +161,33 @@ app.get("/admin.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
+// ===== ADMIN LIST USERS =====
+app.get("/api/admin/users", (req, res) => {
+  const adminUid = req.headers["x-uid"];
+  if (!adminUid) return res.status(403).json({ error: "no_auth" });
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  const users = Object.values(db).map(u => ({
+    uid: u.profile?.uid,
+    name: u.profile?.name || "",
+    coins: u.profile?.coins || 0,
+    level: u.profile?.level || 1,
+    exp: u.profile?.exp || 0,
+    coinSent: u.profile?.coinSent || 0,
+    coinReceived: u.profile?.coinReceived || 0,
+    role: u.role || "user"
+  }));
+
+  res.json({ ok: true, users });
+});
+
+
 
 
 app.post("/api/upload-chat-image", chatUpload.single("image"), async (req, res) => {
