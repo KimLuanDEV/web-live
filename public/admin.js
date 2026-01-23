@@ -92,66 +92,61 @@ function renderUsers(list){
   const tbody = document.querySelector("#userTable tbody");
   tbody.innerHTML = "";
 
-  list.forEach(u => {
-    const tr = document.createElement("tr");
-if (u.blocked) {
-  tr.style.opacity = "0.45";
-  tr.style.filter = "grayscale(1)";
-  tr.style.background = "rgba(255,80,80,.06)";
-}
+ list.forEach(u => {
+  const tr = document.createElement("tr");
 
-    tr.innerHTML = `
-  <td>
-  <div class="user-cell">
-    <img src="${u.avatar || '/avatar-default.png'}">
-    <div>
-      <b>${u.name}</b><br>
-      <small>${u.uid}</small>
-    </div>
-  </div>
-</td>
+  if (u.blocked) {
+    tr.style.opacity = "0.5";
+    tr.style.filter = "grayscale(1)";
+  }
 
+  tr.innerHTML = `
+    <td>
+      <div class="user-row" onclick="toggleUserDetail(this)">
+        <div class="user-cell">
+          <img src="${u.avatar || '/avatar-default.png'}">
+          <div>
+            <b>${u.name}</b><br>
+            <small>${u.uid}</small>
+          </div>
+        </div>
 
-      <td>${u.coins}</td>
-      <td>${u.level}</td>
-      <td>${u.exp}</td>
-      <td>${u.coinSent}</td>
-      <td>${u.coinReceived}</td>
+        <div class="user-detail hidden">
+          <div class="user-meta">
+            💰 Coin: <b>${u.coins}</b> |
+            ⭐ Level: <b>${u.level}</b> |
+            📈 EXP: <b>${u.exp}</b><br>
+            🎁 Đã tặng: <b>${u.coinSent}</b> |
+            💎 Đã nhận: <b>${u.coinReceived}</b><br>
+            🧩 Role:
+            <b class="${u.role === "admin" ? "role-admin" : ""}">
+              ${u.role}
+            </b>
+          </div>
 
-      <td class="${u.role === "admin" ? "role-admin" : ""}">
-  ${u.role}
-</td>
+          <div class="user-actions">
+            <button class="action-btn"
+              onclick="event.stopPropagation(); quickTopup('${u.uid}')">➕</button>
 
- <td>
-  <button
-  class="action-btn"
-  onclick="event.stopPropagation(); quickTopup('${u.uid}')"
->
-  ➕
-</button>
+            <button class="action-btn"
+              onclick="event.stopPropagation(); quickWithdraw('${u.uid}')">➖</button>
 
+            <button class="action-btn"
+              onclick="event.stopPropagation(); toggleLock('${u.uid}', ${u.blocked})">
+              ${u.blocked ? "🔓 Mở khoá" : "🚫 Khoá"}
+            </button>
+          </div>
+        </div>
+      </div>
+    </td>
+  `;
 
-<button
-  class="action-btn"
-  style="color:#ff6b6b"
-  onclick="event.stopPropagation(); quickWithdraw('${u.uid}')"
->
-  ➖
-</button>
-
-<button
-  class="action-btn"
-  style="color:${u.blocked ? '#ff6b6b' : '#00e5ff'}"
-  onclick="event.stopPropagation(); toggleLock('${u.uid}', ${u.blocked})"
->
-  ${u.blocked ? "🔓" : "🚫"}
-</button>
-</td>
+  tbody.appendChild(tr);
+});
 
 
-    `;
-    tbody.appendChild(tr);
-  });
+
+
 }
 
 // 🔍 SEARCH
@@ -552,3 +547,11 @@ document.querySelectorAll(".admin-tabs .tab").forEach(tab=>{
 });
 
 
+
+
+function toggleUserDetail(el){
+  const detail = el.querySelector(".user-detail");
+  if (!detail) return;
+
+  detail.classList.toggle("hidden");
+}
