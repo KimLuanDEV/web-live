@@ -13,7 +13,7 @@ setInterval(() => {
 // 🔐 AUTH ACCOUNT – bắt buộc
 const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-
+const KEY = "user_profile";
 
 
 // 👥 / 💬 PROFILE ACTION VISIBILITY (FIX DỨT ĐIỂM)
@@ -418,7 +418,7 @@ socket.on("force-logout", () => {
 });
 
 
-const KEY = "user_profile";
+
 
 
 
@@ -438,7 +438,62 @@ const coverInput   = document.getElementById("coverInput");
 const btnChangeCover = document.getElementById("btnChangeCover");
 
 
+
+
 let __coverUploading = false;
+
+
+
+// 🔥 REALTIME COIN UPDATE (PROFILE)
+socket.on("coin-update", data => {
+  if (!data) return;
+
+  // 🪙 COIN
+  if (coinVal) {
+    coinVal.textContent = data.coins ?? 0;
+  }
+
+  // 📤 COIN ĐÃ TẶNG
+  if (coinSentVal) {
+    coinSentVal.textContent = data.coinSent ?? 0;
+  }
+
+  // 📥 COIN ĐÃ NHẬN
+  if (coinReceivedVal) {
+    coinReceivedVal.textContent = data.coinReceived ?? 0;
+  }
+
+  // ⭐ LEVEL
+  if (levelVal) {
+    levelVal.textContent = data.level ?? 1;
+  }
+
+  // ⚡ EXP BAR
+  const level = data.level || 1;
+  const exp   = data.exp || 0;
+  const need  = level * 100;
+
+  if (expText) {
+    expText.textContent = `${exp} / ${need}`;
+  }
+
+  if (expFill) {
+    expFill.style.width =
+      Math.min(100, (exp / need) * 100) + "%";
+  }
+
+  // 💾 SYNC LOCALSTORAGE (reload vẫn đúng)
+  try {
+    const p = JSON.parse(localStorage.getItem(KEY)) || {};
+    p.coins = data.coins ?? p.coins ?? 0;
+    p.coinSent = data.coinSent ?? p.coinSent ?? 0;
+    p.coinReceived = data.coinReceived ?? p.coinReceived ?? 0;
+    p.level = data.level ?? p.level ?? 1;
+    p.exp = data.exp ?? p.exp ?? 0;
+    localStorage.setItem(KEY, JSON.stringify(p));
+  } catch (e) {}
+});
+
 
 // 🧯 WATCHDOG – chống treo UI vĩnh viễn
 setInterval(() => {

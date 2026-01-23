@@ -398,6 +398,31 @@ function saveUsers(db){
   fs.writeFileSync(USERS_FILE, JSON.stringify(db,null,2));
 }
 
+// 🔥 REALTIME COIN SYNC
+function emitCoinUpdate(uid) {
+  if (!uid) return;
+
+  const db = loadUsers();
+  const user = db[uid];
+  if (!user || !user.profile) return;
+
+  const payload = {
+    coins: user.profile.coins || 0,
+    coinSent: user.profile.coinSent || 0,
+    coinReceived: user.profile.coinReceived || 0,
+    level: user.profile.level || 1,
+    exp: user.profile.exp || 0
+  };
+
+  const sockets = activeUsers.get(uid);
+  if (!sockets) return;
+
+  for (const sid of sockets) {
+    io.to(sid).emit("coin-update", payload);
+  }
+}
+
+
 
 app.use(express.json());
 
@@ -1910,6 +1935,8 @@ if (inbox && inbox.length) {
 
   socket.data.uid = uid;
   emitActiveUsers();
+  emitCoinUpdate(uid);
+
 });
 
 
