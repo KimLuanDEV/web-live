@@ -1283,12 +1283,9 @@ async function loadFriendRequestCount(){
 }
 
 
-
 function renderProfileViewOnly(p){
   // avatar + name
- avatarPreview.src = fixMedia(p.avatar) || defaultProfile.avatar;
-
-
+  avatarPreview.src = fixMedia(p.avatar) || defaultProfile.avatar;
   displayName.textContent = p.name || "User";
 
   // bio (chỉ xem)
@@ -1300,21 +1297,68 @@ function renderProfileViewOnly(p){
 
   // cover
   if (p.cover && coverPreview){
-   coverPreview.src = fixMedia(p.cover);
-
+    coverPreview.src = fixMedia(p.cover);
   }
 
-  // level / stats
-  levelVal.textContent = p.level || 1;
+  // ===== BASIC STATS =====
+  const level = Number(p.level || 1);
+  const exp   = Number(p.exp || 0);
+  const need  = level * 100;
+
+  levelVal.textContent = level;
   coinVal.textContent = p.coins || 0;
   coinSentVal.textContent = p.coinSent || 0;
   coinReceivedVal.textContent = p.coinReceived || 0;
 
-  // ẨN CÁC CHỨC NĂNG CHỈ DÀNH CHO CHỦ TÀI KHOẢN
+  // ===== EXP BAR (FIX) =====
+  if (expText){
+    expText.textContent = `${exp} / ${need}`;
+  }
+  if (expFill){
+    expFill.style.width =
+      Math.min(100, (exp / need) * 100) + "%";
+  }
+
+  // ===== VIP BADGE (FIX) =====
+  if (vipBadgeBox){
+    vipBadgeBox.innerHTML = "";
+    const badge = getVipBadge(level);
+    if (badge){
+      vipBadgeBox.innerHTML = `
+        <span class="vip-badge vip-${badge.key}">
+          ${badge.text}
+        </span>
+      `;
+    }
+  }
+
+  // ===== AVATAR VIP EFFECT =====
+  const wrap = document.querySelector(".avatar-wrap");
+  if (wrap){
+    if (level >= 1) wrap.classList.add("halo-on");
+    else wrap.classList.remove("halo-on");
+  }
+
+  avatarPreview.classList.remove(
+    "avatar-lv1",
+    "avatar-lv10",
+    "avatar-lv50",
+    "avatar-lv100"
+  );
+  if (level >= 1) avatarPreview.classList.add("avatar-lv100");
+
+  const crown = document.getElementById("avatarCrown");
+  if (crown){
+    if (level >= 1) crown.classList.remove("hidden");
+    else crown.classList.add("hidden");
+  }
+
+  // ===== ẨN CHỨC NĂNG CHỈ DÀNH CHO CHỦ TÀI KHOẢN =====
   document.querySelectorAll(
     "#btnSave, #btnChangeAvatar, #btnChangeCover, #btnChangePass, .btn-logout"
   ).forEach(el => el && (el.style.display = "none"));
 }
+
 
 // 🔒 ẨN ICON CAMERA KHI XEM PROFILE NGƯỜI KHÁC
 document.querySelectorAll(".avatar-camera").forEach(el=>{
