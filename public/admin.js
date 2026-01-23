@@ -9,7 +9,14 @@ let userPage = 1;
 function renderUserPage(){
   const start = (userPage - 1) * PAGE_SIZE;
   const end = start + PAGE_SIZE;
+
   renderUsers(USERS.slice(start, end));
+
+  const info = document.getElementById("userPageInfo");
+  if (info) {
+    info.textContent =
+      `Trang ${userPage} / ${Math.ceil(USERS.length / PAGE_SIZE)}`;
+  }
 }
 
 
@@ -545,5 +552,3 @@ document.querySelectorAll(".admin-tabs .tab").forEach(tab=>{
 });
 
 
-document.getElementById("userPageInfo").textContent =
-  `Trang ${userPage} / ${Math.ceil(USERS.length / PAGE_SIZE)}`;

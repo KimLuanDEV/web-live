@@ -288,6 +288,10 @@
   font-weight:600;
 }
 
+.hidden{
+  display:none !important;
+}
+
 
   </style>
 </head>
@@ -378,11 +382,18 @@
       </table>
     </div>
   </div>
+
+  <div class="pager">
+  <button onclick="userPage--; renderUserPage()">◀</button>
+  <span id="userPageInfo"></span>
+  <button onclick="userPage++; renderUserPage()">▶</button>
+</div>
+
 </div> 
 
 
   <!-- ===== LIVE ROOMS ===== -->
-  <div class="admin-section" data-section="users">
+<div class="admin-section hidden" data-section="lives">
 <div class="card">
   <div class="card-title">🔴 Live Rooms</div>
 
@@ -428,7 +439,7 @@
 
 </div>
 
-<div class="admin-section" data-section="users">
+<div class="admin-section hidden" data-section="withdraws">
 <h2>
   💎 Yêu cầu rút tiền
   <span id="withdrawPing" class="ping hidden">●</span>
@@ -450,11 +461,6 @@
 </div>
 
 
-<div class="pager">
-  <button onclick="userPage--; renderUserPage()">◀</button>
-  <span id="userPageInfo"></span>
-  <button onclick="userPage++; renderUserPage()">▶</button>
-</div>
 
 
 
