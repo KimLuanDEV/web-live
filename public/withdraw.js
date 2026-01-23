@@ -135,6 +135,8 @@ if (amount < MIN_WITHDRAW) {
   });
 
 openWithdrawModal();
+// 🔁 sync lại profile local (để quay lại thấy đúng)
+localStorage.removeItem("user_profile");
 
 
   } else {

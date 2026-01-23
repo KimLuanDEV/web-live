@@ -568,11 +568,12 @@ app.post("/api/withdraw-request", (req, res) => {
     return res.status(404).json({ error: "user_not_found" });
   }
 
-  const canWithdraw = Number(user.profile.coinReceived || 0);
+ const balance = Number(user.profile.coins || 0);
 
-  if (amount > canWithdraw) {
-    return res.status(400).json({ error: "not_enough_received" });
-  }
+if (amount > balance) {
+  return res.status(400).json({ error: "not_enough_coin" });
+}
+
 
   if (amount < 100) {
   return res.status(400).json({ error: "min_withdraw" });
