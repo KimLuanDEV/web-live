@@ -584,7 +584,6 @@ app.post("/api/withdraw-request", (req, res) => {
  const amt = Number(amount);
 
 // ➖ TRỪ KIM CƯƠNG NGAY KHI GỬI
-user.profile.coinReceived -= amt;
 user.profile.coins = Math.max(0, (user.profile.coins || 0) - amt);
 
 // 🧾 LOG (rất nên có)
@@ -676,7 +675,7 @@ app.post("/api/admin/withdraw-action", (req, res) => {
 const amt = Number(reqItem.amount);
 
 // ➕ HOÀN LẠI KIM CƯƠNG
-user.profile.coinReceived += amt;
+
 user.profile.coins = (user.profile.coins || 0) + amt;
 
 saveUsers(db);
