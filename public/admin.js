@@ -1,6 +1,3 @@
-const socket = io();
-
-
 
 
 const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
@@ -201,33 +198,3 @@ loadUsers();
 
 
 
-socket.on("lobby-update", ({ rooms }) => {
-  const box = document.getElementById("liveRooms");
-  if (!box) return;
-
-  if (!rooms.length) {
-    box.innerHTML = "<i>Không có phòng đang live</i>";
-    return;
-  }
-
-  box.innerHTML = rooms.map(r => `
-    <div style="margin-bottom:8px">
-      🔴 <b>${r.roomId}</b>
-      (${r.viewers} viewers)
-      <button onclick="forceCloseRoom('${r.roomId}')">
-        🚫 Đóng room
-      </button>
-    </div>
-  `).join("");
-});
-
-
-function forceCloseRoom(roomId){
-  const ok = confirm("🚨 Đóng sập room này?");
-  if (!ok) return;
-
-  socket.emit("admin-close-room", {
-    roomId,
-    reason: "Vi phạm quy định"
-  });
-}

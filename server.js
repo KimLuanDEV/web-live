@@ -1157,23 +1157,6 @@ io.on("connection", (socket) => {
 
 
 
-  // 🚨 ADMIN FORCE CLOSE ROOM
-socket.on("admin-close-room", ({ roomId, reason }) => {
-  const uid = socket.data.uid;
-  if (!uid || !roomId) return;
-
-  const db = loadUsers();
-  const admin = db[uid];
-
-  // 🔐 chỉ admin mới được phép
-  if (!admin || admin.role !== "admin") {
-    return;
-  }
-
-  console.log("🚨 ADMIN đóng room:", roomId, "by", uid);
-
-  closeRoom(roomId, reason || "admin_closed");
-});
 
 
 
