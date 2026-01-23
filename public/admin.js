@@ -26,8 +26,17 @@ async function topup(){
   });
 
   const data = await res.json();
+
+if (data.ok) {
   document.getElementById("log").textContent =
-    JSON.stringify(data, null, 2);
+    `✅ Đã nạp ${amount.toLocaleString()} coin cho ${uid}`;
+  loadUsers(); // refresh bảng
+} else {
+  document.getElementById("log").textContent =
+    "❌ Nạp coin thất bại";
+}
+
+
 }
 
 

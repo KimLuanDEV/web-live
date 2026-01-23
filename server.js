@@ -635,6 +635,45 @@ app.post("/api/admin/topup", (req, res) => {
   // 🔁 realtime sync
   emitCoinUpdate(targetUid);
 
+
+// 🔔 THÔNG BÁO USER KHI ĐƯỢC NẠP COIN
+const notifyText =
+  `💰 Bạn vừa được nạp ${add.toLocaleString()} coin` +
+  (note ? `\n📝 Ghi chú: ${note}` : "");
+
+// 1️⃣ LƯU INBOX (xem lại được)
+if (!userInbox.has(targetUid)) userInbox.set(targetUid, []);
+userInbox.get(targetUid).unshift({
+  type: "topup",
+  from: adminUid,
+  text: notifyText,
+  amount: add,
+  time: Date.now(),
+  read: false
+});
+saveInbox(Object.fromEntries(userInbox));
+
+// 2️⃣ REALTIME NẾU USER ĐANG ONLINE
+const sockets = activeUsers.get(targetUid);
+if (sockets) {
+  for (const sid of sockets) {
+    io.to(sid).emit("system-notify", {
+      type: "topup",
+      text: notifyText,
+      amount: add
+    });
+  }
+}
+
+// 3️⃣ PUSH NOTIFICATION (KHI OFFLINE)
+sendPushToUser(targetUid, {
+  title: "💰 Nạp coin thành công",
+  body: `Bạn vừa được nạp ${add.toLocaleString()} coin`,
+  tag: "admin-topup"
+});
+
+
+
   res.json({
     ok: true,
     uid: targetUid,
