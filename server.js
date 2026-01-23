@@ -2732,6 +2732,23 @@ if (hostUid && db[hostUid]?.profile) {
   }
 }
 
+// ===== 💎 CỘNG EXP x2 CHO NGƯỜI TẶNG =====
+if (senderUid && db[senderUid]?.profile) {
+  const sp = db[senderUid].profile;
+
+  // 🎁 donor nhận EXP gấp đôi
+  sp.exp = (sp.exp || 0) + cost * 1.5;
+
+  // ⬆️ LEVEL UP donor
+  while (sp.exp >= (sp.level || 1) * 100) {
+    sp.exp -= (sp.level || 1) * 100;
+    sp.level = (sp.level || 1) + 1;
+  }
+
+  // 🔔 realtime sync cho donor
+  emitCoinUpdate(senderUid);
+}
+
 
   saveUsers(db);
 
