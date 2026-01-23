@@ -715,6 +715,45 @@ app.post("/api/admin/withdraw-action", (req, res) => {
   res.status(400).json({ error: "invalid_action" });
 });
 
+app.post("/api/profile/bank-default", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { name, account, owner } = req.body || {};
+
+  if (!uid || !name || !account || !owner) {
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const user = db[uid];
+  if (!user || !user.profile) {
+    return res.status(404).json({ error: "user_not_found" });
+  }
+
+  user.profile.bankDefault = {
+    name,
+    account,
+    owner
+  };
+
+  saveUsers(db);
+  res.json({ ok: true });
+});
+
+app.get("/api/profile/bank-default", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(403).json({ error: "no_auth" });
+
+  const db = loadUsers();
+  const user = db[uid];
+  if (!user || !user.profile) {
+    return res.json({ ok: true, bank: null });
+  }
+
+  res.json({
+    ok: true,
+    bank: user.profile.bankDefault || null
+  });
+});
 
 
 const rooms = new Map();

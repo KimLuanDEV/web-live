@@ -69,12 +69,45 @@ const bank = `${bankName} | STK: ${bankAccount} | ${bankOwner}`;
 
   const data = await res.json();
   if (data.ok) {
+
+    // 🔐 LƯU NGÂN HÀNG MẶC ĐỊNH (SAU KHI RÚT OK)
+  fetch("/api/profile/bank-default", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({
+      name: bankName,
+      account: bankAccount,
+      owner: bankOwner
+    })
+  });
+
     alert("✅ Đã gửi yêu cầu rút tiền");
     history.back();
   } else {
     alert("❌ " + (data.error || "Có lỗi xảy ra"));
   }
 };
+
+
+async function loadBankDefault(){
+  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  if (!me.uid) return;
+
+  const res = await fetch("/api/profile/bank-default", {
+    headers: { "x-uid": me.uid }
+  });
+
+  const data = await res.json();
+  if (!data.ok || !data.bank) return;
+
+  document.getElementById("bankName").value = data.bank.name || "";
+  document.getElementById("bankAccount").value = data.bank.account || "";
+  document.getElementById("bankOwner").value = data.bank.owner || "";
+}
+
 
 
 // ===== 📜 LỊCH SỬ RÚT TIỀN =====
@@ -149,8 +182,6 @@ function toggleWithdrawForm(enable){
 }
 
 
-
-
 function statusText(s){
   if (s === "pending") return "⏳ Đang chờ";
   if (s === "approved") return "✅ Đã duyệt";
@@ -160,6 +191,7 @@ function statusText(s){
 
 // load lần đầu
 loadWithdrawHistory();
+loadBankDefault();
 
 
 // 🔔 REALTIME UPDATE
