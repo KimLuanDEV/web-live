@@ -581,18 +581,35 @@ app.post("/api/withdraw-request", (req, res) => {
 
   const list = loadWithdraws();
 
-  list.unshift({
-    id: Date.now() + "_" + uid,
-    uid,
-    name: user.profile.name,
-    amount: Number(amount),
-    bank,
-    status: "pending", // pending | approved | rejected
-    createdAt: Date.now()
-  });
+ const amt = Number(amount);
 
-  saveWithdraws(list);
-  emitWithdrawUpdate(); // ✅ KHÔNG TRUYỀN uid
+// ➖ TRỪ KIM CƯƠNG NGAY KHI GỬI
+user.profile.coinReceived -= amt;
+user.profile.coins = Math.max(0, (user.profile.coins || 0) - amt);
+
+// 🧾 LOG (rất nên có)
+user.profile.withdrawHold ||= [];
+user.profile.withdrawHold.unshift({
+  amount: amt,
+  ts: Date.now(),
+  status: "pending"
+});
+
+list.unshift({
+  id: Date.now() + "_" + uid,
+  uid,
+  name: user.profile.name,
+  amount: amt,
+  bank,
+  status: "pending",
+  createdAt: Date.now()
+});
+
+saveUsers(db);          // 🔥 LƯU USER NGAY
+saveWithdraws(list);
+emitWithdrawUpdate();
+emitCoinUpdate(uid);    // 🔁 realtime coin
+
 
   // 🔔 thông báo cho user
   const text = `📤 Đã gửi yêu cầu rút ${Number(amount).toLocaleString()} 💎`;
@@ -656,6 +673,17 @@ app.post("/api/admin/withdraw-action", (req, res) => {
     reqItem.handledBy = adminUid;
     reqItem.handledAt = Date.now();
 
+const amt = Number(reqItem.amount);
+
+// ➕ HOÀN LẠI KIM CƯƠNG
+user.profile.coinReceived += amt;
+user.profile.coins = (user.profile.coins || 0) + amt;
+
+saveUsers(db);
+emitCoinUpdate(reqItem.uid); // 🔁 realtime coin
+
+
+
     saveWithdraws(list);
     emitWithdrawUpdate(); // ✅ KHÔNG TRUYỀN uid
 
@@ -681,13 +709,6 @@ app.post("/api/admin/withdraw-action", (req, res) => {
     if ((user.profile.coinReceived || 0) < amount) {
       return res.status(400).json({ error: "not_enough_received" });
     }
-
-    // ➖ TRỪ COIN
-    user.profile.coinReceived -= amount;
-    user.profile.coins = Math.max(
-      0,
-      (user.profile.coins || 0) - amount
-    );
 
     reqItem.status = "approved";
     reqItem.note = note || "";
