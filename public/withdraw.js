@@ -1,7 +1,5 @@
 const params = new URLSearchParams(location.search);
-let balance = Number(params.get("coins") || 0); // số dư có thể rút
-
-
+const received = Number(params.get("received") || 0);
 
 // 🔁 TỶ GIÁ (bạn chỉnh tùy ý)
 const RATE = 300; // 1 kim cương = 100đ
@@ -29,15 +27,15 @@ let withdrawPage = 1;
 let withdrawCache = [];
 
 
-receivedVal.textContent = balance.toLocaleString();
+receivedVal.textContent = received.toLocaleString();
 
 document.getElementById("minWithdrawVal").textContent =
   MIN_WITHDRAW.toLocaleString();
 
 
 
-withdrawInput.max = balance;
-withdrawInput.value = balance;
+withdrawInput.max = received;
+withdrawInput.value = received;
 
 
 function updateBankLogo(bankName){
@@ -56,7 +54,7 @@ function updateBankLogo(bankName){
 
 
 function updateMoney(){
-  const val = Math.min(balance, Number(withdrawInput.value || 0));
+  const val = Math.min(received, Number(withdrawInput.value || 0));
   moneyVal.textContent = (val * RATE).toLocaleString() + " ₫";
 
   // UX: chưa đủ tối thiểu thì disable nút
@@ -112,26 +110,15 @@ if (amount < MIN_WITHDRAW) {
       "Content-Type": "application/json",
       "x-uid": me.uid
     },
- body: JSON.stringify({
-  amount,
-  bank
-})
+    body: JSON.stringify({
+      amount,
+      bank,
+      received
+    })
   });
 
   const data = await res.json();
-
-
   if (data.ok) {
-
-
-      // 🔥 TRỪ COIN NGAY TRÊN UI
-  balance -= amount;
-  if (balance < 0) balance = 0;
-
-  receivedVal.textContent = balance.toLocaleString();
-  withdrawInput.max = balance;
-  withdrawInput.value = balance;
-  updateMoney();
 
     // 🔐 LƯU NGÂN HÀNG MẶC ĐỊNH (SAU KHI RÚT OK)
   fetch("/api/profile/bank-default", {
@@ -148,8 +135,6 @@ if (amount < MIN_WITHDRAW) {
   });
 
 openWithdrawModal();
-// 🔁 sync lại profile local (để quay lại thấy đúng)
-localStorage.removeItem("user_profile");
 
 
   } else {

@@ -568,12 +568,11 @@ app.post("/api/withdraw-request", (req, res) => {
     return res.status(404).json({ error: "user_not_found" });
   }
 
- const balance = Number(user.profile.coins || 0);
+  const canWithdraw = Number(user.profile.coinReceived || 0);
 
-if (amount > balance) {
-  return res.status(400).json({ error: "not_enough_coin" });
-}
-
+  if (amount > canWithdraw) {
+    return res.status(400).json({ error: "not_enough_received" });
+  }
 
   if (amount < 100) {
   return res.status(400).json({ error: "min_withdraw" });
@@ -585,6 +584,7 @@ if (amount > balance) {
  const amt = Number(amount);
 
 // ➖ TRỪ KIM CƯƠNG NGAY KHI GỬI
+user.profile.coinReceived -= amt;
 user.profile.coins = Math.max(0, (user.profile.coins || 0) - amt);
 
 // 🧾 LOG (rất nên có)
@@ -676,7 +676,7 @@ app.post("/api/admin/withdraw-action", (req, res) => {
 const amt = Number(reqItem.amount);
 
 // ➕ HOÀN LẠI KIM CƯƠNG
-
+user.profile.coinReceived += amt;
 user.profile.coins = (user.profile.coins || 0) + amt;
 
 saveUsers(db);
