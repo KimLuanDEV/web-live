@@ -587,7 +587,8 @@ app.post("/api/withdraw-request", (req, res) => {
   });
 
   saveWithdraws(list);
-  emitWithdrawUpdate(uid); // 🔥 realtime cho admin + user
+  emitWithdrawUpdate(); // ✅ KHÔNG TRUYỀN uid
+
   // 🔔 thông báo cho user
   const text = `📤 Đã gửi yêu cầu rút ${Number(amount).toLocaleString()} 💎`;
 
@@ -651,7 +652,8 @@ app.post("/api/admin/withdraw-action", (req, res) => {
     reqItem.handledAt = Date.now();
 
     saveWithdraws(list);
-    emitWithdrawUpdate(uid); // 🔥 realtime cho admin + user
+    emitWithdrawUpdate(); // ✅ KHÔNG TRUYỀN uid
+
     // 🔔 notify user
     const text = `❌ Yêu cầu rút ${reqItem.amount.toLocaleString()} 💎 bị từ chối`;
 
@@ -689,7 +691,8 @@ app.post("/api/admin/withdraw-action", (req, res) => {
 
     saveUsers(db);
     saveWithdraws(list);
-    emitWithdrawUpdate(uid); // 🔥 realtime cho admin + user
+    emitWithdrawUpdate(); // ✅ KHÔNG TRUYỀN uid
+
     // 🔁 realtime coin
     emitCoinUpdate(reqItem.uid);
 
@@ -827,13 +830,12 @@ function saveUsers(db){
 }
 
 
-// 🔔 REALTIME WITHDRAW UPDATE
-function emitWithdrawUpdate(uid) {
+function emitWithdrawUpdate() {
   io.emit("withdraw-update", {
-    uid,
     ts: Date.now()
   });
 }
+
 
 
 
