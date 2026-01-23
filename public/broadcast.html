@@ -450,6 +450,26 @@
 <div id="toast-container"></div>
 
 
+
+<div id="sysModal" class="sys-modal hidden">
+  <div class="sys-backdrop"></div>
+
+  <div class="sys-box">
+    <div class="sys-icon">🚫</div>
+    <div class="sys-title">Phòng live đã kết thúc</div>
+    <div class="sys-text" id="sysModalText">
+      Phòng livestream vi phạm quy ước cộng đồng.
+    </div>
+
+    <button class="sys-btn" onclick="closeSysModal()">
+      Quay về sảnh
+    </button>
+  </div>
+</div>
+
+
+
+
   <script src="/socket.io/socket.io.js"></script>
   <script src="/chat-global.js"></script>
 
@@ -3217,10 +3237,29 @@ function showToast(text, type = "info", timeout = 3500){
 
 
 
+
 socket.on("room-closed", ({ reason }) => {
-  alert("🚫 Phòng live đã kết thúc");
-  location.href = "/lobby.html";
+  const msg =
+    reason === "admin_closed"
+      ? "Phòng live vi phạm quy ước cộng đồng."
+      : "Host đã kết thúc phiên livestream.";
+
+  openSysModal(msg);
 });
+
+
+
+function openSysModal(text){
+  const m = document.getElementById("sysModal");
+  document.getElementById("sysModalText").textContent = text || "";
+  m.classList.remove("hidden");
+}
+
+function closeSysModal(){
+  document.getElementById("sysModal").classList.add("hidden");
+  location.href = "/lobby.html";
+}
+
 
   </script>
 
