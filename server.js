@@ -86,6 +86,25 @@ function loadInbox(){
 }
 
 
+const WITHDRAW_FILE = "/opt/render/project/data/withdraw_requests.json";
+
+function loadWithdraws(){
+  if(!fs.existsSync(WITHDRAW_FILE)) return [];
+  try {
+    return JSON.parse(fs.readFileSync(WITHDRAW_FILE, "utf8"));
+  } catch {
+    return [];
+  }
+}
+
+function saveWithdraws(list){
+  fs.writeFileSync(WITHDRAW_FILE, JSON.stringify(list, null, 2));
+}
+
+
+
+
+
 function saveInbox(db){
   fs.writeFileSync(INBOX_FILE, JSON.stringify(db,null,2));
 }
@@ -516,6 +535,58 @@ app.post("/api/upload-post-video",
 
   res.json({ url });
 });
+
+app.post("/api/withdraw-request", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { amount, bank, received } = req.body || {};
+
+  if (!uid || !amount || !bank) {
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const user = db[uid];
+
+  if (!user || !user.profile) {
+    return res.status(404).json({ error: "user_not_found" });
+  }
+
+  const canWithdraw = Number(user.profile.coinReceived || 0);
+
+  if (amount > canWithdraw) {
+    return res.status(400).json({ error: "not_enough_received" });
+  }
+
+  const list = loadWithdraws();
+
+  list.unshift({
+    id: Date.now() + "_" + uid,
+    uid,
+    name: user.profile.name,
+    amount: Number(amount),
+    bank,
+    status: "pending", // pending | approved | rejected
+    createdAt: Date.now()
+  });
+
+  saveWithdraws(list);
+
+  // 🔔 thông báo cho user
+  const text = `📤 Đã gửi yêu cầu rút ${Number(amount).toLocaleString()} 💎`;
+
+  if (!userInbox.has(uid)) userInbox.set(uid, []);
+  userInbox.get(uid).unshift({
+    type: "withdraw-request",
+    text,
+    time: Date.now(),
+    read: false
+  });
+  saveInbox(Object.fromEntries(userInbox));
+
+  res.json({ ok: true });
+});
+
+
 
 
 
