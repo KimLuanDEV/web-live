@@ -19,6 +19,9 @@ const BANK_LOGOS = {
   "ACB": "/img/banks/acb.png"
 };
 
+const WITHDRAW_PAGE_SIZE = 5;
+let withdrawPage = 1;
+let withdrawCache = [];
 
 
 receivedVal.textContent = received.toLocaleString();
@@ -141,9 +144,11 @@ async function loadBankDefault(){
 
 
 // ===== 📜 LỊCH SỬ RÚT TIỀN =====
-async function loadWithdrawHistory() {
+async function loadWithdrawHistory(page = 1) {
   const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
   if (!me.uid) return;
+
+  withdrawPage = page;
 
   const res = await fetch("/api/withdraw-history", {
     headers: { "x-uid": me.uid }
@@ -152,46 +157,69 @@ async function loadWithdrawHistory() {
   const data = await res.json();
   if (!data.ok) return;
 
-  const body = document.getElementById("withdrawHistoryBody");
-  const empty = document.getElementById("withdrawEmpty");
+  withdrawCache = data.list || [];
 
-  body.innerHTML = "";
-
-  let hasPending = false;
-
-  if (!data.list.length) {
-    empty.style.display = "block";
-  } else {
-    empty.style.display = "none";
-
-    data.list.forEach(w => {
-      if (w.status === "pending") hasPending = true;
-
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
-        <td>${w.amount.toLocaleString()}</td>
-        <td>
-        <img
-        src="${BANK_LOGOS[w.bank.split(" | ")[0]] || ""}"
-        style="height:18px;vertical-align:middle;margin-right:6px"
-        >
-        ${w.bank}
-        </td>
-
-        <td class="st-${w.status}">
-          ${statusText(w.status)}
-        </td>
-        <td>${w.note || "-"}</td>
-      `;
-      body.appendChild(tr);
-    });
-  }
-
-  // ⛔ DISABLE FORM NẾU CÒN PENDING
-  toggleWithdrawForm(!hasPending);
+  renderWithdrawPage();
 }
 
+function renderWithdrawPage(){
+  const body = document.getElementById("withdrawHistoryBody");
+  const empty = document.getElementById("withdrawEmpty");
+  const pager = document.getElementById("withdrawPagination");
+
+  body.innerHTML = "";
+  pager.innerHTML = "";
+
+  if (!withdrawCache.length) {
+    empty.style.display = "block";
+    toggleWithdrawForm(true);
+    return;
+  }
+
+  empty.style.display = "none";
+
+  // kiểm tra pending
+  const hasPending = withdrawCache.some(w => w.status === "pending");
+  toggleWithdrawForm(!hasPending);
+
+  const totalPages = Math.ceil(withdrawCache.length / WITHDRAW_PAGE_SIZE);
+  const start = (withdrawPage - 1) * WITHDRAW_PAGE_SIZE;
+  const end = start + WITHDRAW_PAGE_SIZE;
+
+  withdrawCache.slice(start, end).forEach(w => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
+      <td>${w.amount.toLocaleString()}</td>
+      <td>
+        <img
+          src="${BANK_LOGOS[w.bank.split(" | ")[0]] || ""}"
+          style="height:18px;vertical-align:middle;margin-right:6px"
+        >
+        ${w.bank}
+      </td>
+      <td class="st-${w.status}">
+        ${statusText(w.status)}
+      </td>
+      <td>${w.note || "-"}</td>
+    `;
+    body.appendChild(tr);
+  });
+
+  // render pagination
+  if (totalPages > 1) {
+    for (let i = 1; i <= totalPages; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      btn.className = "page-btn" + (i === withdrawPage ? " active" : "");
+      btn.onclick = () => {
+        withdrawPage = i;
+        renderWithdrawPage();
+      };
+      pager.appendChild(btn);
+    }
+  }
+}
 
 
 function toggleWithdrawForm(enable){
