@@ -125,3 +125,12 @@ socket.on("withdraw-update", () => {
 
 
 }
+
+
+function goBack(){
+  if (history.length > 1) {
+    history.back();
+  } else {
+    location.href = "/profile.html";
+  }
+}

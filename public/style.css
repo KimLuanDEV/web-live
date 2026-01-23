@@ -10710,3 +10710,52 @@ body.page-profile{
 .st-pending{ color:#ffb300 }
 .st-approved{ color:#4caf50 }
 .st-rejected{ color:#ff5252 }
+
+
+/* ===== Withdraw Header ===== */
+.lp-header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  width:100%;
+  height:54px;
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+
+  padding:0 14px;
+  background:linear-gradient(90deg,#0f172a,#111827);
+  border-bottom:1px solid #1e2536;
+}
+
+.lp-header-title{
+  font-size:16px;
+  font-weight:600;
+  color:#fff;
+}
+
+.btn-back{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  border:none;
+  background:#1e2536;
+  color:#fff;
+  font-size:18px;
+  cursor:pointer;
+}
+
+.btn-back:hover{
+  background:#2b3550;
+}
+
+/* đẩy card xuống dưới header */
+.page-withdraw .withdraw-card{
+  margin-top:16px;
+}
+
+/* ẩn tiêu đề cũ trong card */
+.withdraw-card h2{
+  display:none;
+}
