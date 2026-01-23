@@ -56,7 +56,11 @@ function renderUsers(list){
       <td>${u.exp}</td>
       <td>${u.coinSent}</td>
       <td>${u.coinReceived}</td>
-      <td>${u.role}</td>
+
+      <td class="${u.role === "admin" ? "role-admin" : ""}">
+  ${u.role}
+</td>
+
       <td>
         <button onclick="quickTopup('${u.uid}')">➕ Nạp</button>
       </td>
