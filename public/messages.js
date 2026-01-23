@@ -1542,14 +1542,38 @@ function calcSpeedETA(startTime, loaded, total) {
 socket.on("system-notify", data => {
   if (!data?.text) return;
 
-  alert(data.text); // 🔥 tạm thời
-  // hoặc toast đẹp hơn
-});
-
-
-socket.on("force-logout", data => {
-  alert(data?.reason || "Tài khoản của bạn đã bị khoá");
+   showToast(
+    data?.reason || "Tài khoản của bạn đã bị khoá",
+    "error"
+  );
 
   localStorage.removeItem("user_profile");
-  location.href = "/login.html";
+
+  setTimeout(()=>{
+    location.href = "/login.html";
+  }, 2000);
+ 
 });
+
+function showToast(text, type = "info", timeout = 3500){
+  const box = document.getElementById("toast-container");
+  if(!box) return;
+
+  const icons = {
+    info:"ℹ️",
+    success:"✅",
+    error:"❌",
+    warn:"⚠️"
+  };
+
+  const div = document.createElement("div");
+  div.className = `toast ${type}`;
+  div.innerHTML = `
+    <span class="icon">${icons[type] || "🔔"}</span>
+    <span class="msg">${text}</span>
+  `;
+
+  box.appendChild(div);
+
+  setTimeout(()=>div.remove(), timeout);
+}

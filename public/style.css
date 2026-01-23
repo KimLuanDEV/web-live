@@ -10533,3 +10533,45 @@ body.page-profile{
   white-space: nowrap;
 }
 
+
+
+#toast-container{
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 99999;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.toast{
+  min-width: 260px;
+  max-width: 360px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  color: #fff;
+  font-size: 14px;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  box-shadow: 0 10px 30px rgba(0,0,0,.25);
+  animation: toast-in .25s ease, toast-out .25s ease 3s forwards;
+}
+
+.toast .icon{
+  font-size: 18px;
+}
+
+.toast.info{ background: linear-gradient(135deg,#3b82f6,#2563eb); }
+.toast.success{ background: linear-gradient(135deg,#22c55e,#16a34a); }
+.toast.error{ background: linear-gradient(135deg,#ef4444,#dc2626); }
+.toast.warn{ background: linear-gradient(135deg,#f59e0b,#d97706); }
+
+@keyframes toast-in{
+  from{ transform: translateX(30px); opacity:0 }
+  to{ transform: translateX(0); opacity:1 }
+}
+@keyframes toast-out{
+  to{ opacity:0; transform: translateX(30px) }
+}
