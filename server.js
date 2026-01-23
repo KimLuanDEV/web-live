@@ -229,6 +229,31 @@ const { adminUid, targetUid, lock } = body;
 
   saveUsers(db);
 
+// 🔔 PUSH NOTIFY KHI KHOÁ USER
+if (lock) {
+  const msg = "🚫 Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.";
+
+  // 1️⃣ realtime nếu online
+  const sockets = activeUsers.get(targetUid);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("system-notify", {
+        type: "blocked",
+        text: msg
+      });
+    }
+  }
+
+  // 2️⃣ push notification (offline)
+  sendPushToUser(targetUid, {
+    title: "Tài khoản bị khoá 🚫",
+    body: msg,
+    tag: "account-blocked"
+  });
+}
+
+
+
   res.json({
     ok: true,
     uid: targetUid,
