@@ -119,7 +119,10 @@ loadWithdrawHistory();
 if (typeof io === "function") {
   const socket = io();
 
-  socket.on("withdraw-update", () => {
-    loadWithdrawHistory(); // 🔥 tự update bảng
-  });
+socket.on("withdraw-update", ({ uid }) => {
+  const me = JSON.parse(localStorage.getItem("user_profile") || {});
+  if (uid && me.uid !== uid) return; // 🔒 chỉ reload của mình
+  loadWithdrawHistory();
+});
+
 }
