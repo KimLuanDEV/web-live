@@ -8,7 +8,7 @@
 </head>
 <body class="page-withdraw">
 
-    
+
 <header class="lp-header">
   <button class="btn-back" onclick="goBack()">←</button>
   <div class="lp-header-title">💎 Rút tiền</div>
@@ -16,16 +16,20 @@
 
 
 <div class="withdraw-card">
-  <h2>💎 Rút tiền</h2>
 
   <div class="withdraw-info">
-    <div>💎 Kim cương đã nhận:</div>
-    <b id="receivedVal">0</b>
-  </div>
 
-  <div class="withdraw-info">
-    <div>💵 Số tiền có thể rút:</div>
-    <b id="moneyVal">0 ₫</b>
+
+<div class="withdraw-section">
+  <div class="withdraw-summary">
+    <div class="sum-box">
+      <span>💎 Đã nhận</span>
+      <b id="receivedVal">0</b>
+    </div>
+    <div class="sum-box highlight">
+      <span>💵 Có thể rút</span>
+      <b id="moneyVal">0 ₫</b>
+    </div>
   </div>
 
   <label>Số kim cương muốn rút</label>
@@ -34,15 +38,19 @@
   <label>Thông tin thanh toán</label>
   <input type="text" id="bankInput" placeholder="Ngân hàng / Momo / ZaloPay">
 
-  <button id="btnSubmitWithdraw">📤 Gửi yêu cầu rút</button>
+  <button id="btnSubmitWithdraw" class="btn-primary">
+    📤 Gửi yêu cầu rút
+  </button>
 
   <p class="note">
-    ⏳ Yêu cầu sẽ được phê duyệt trong vòng 30 ngày.
+    ⏳ Yêu cầu sẽ được admin phê duyệt
   </p>
+</div>
 
 
+
+<div class="withdraw-section">
 <hr style="margin:24px 0;border-color:#1e2536">
-
 <h3>📜 Lịch sử rút tiền</h3>
 
 <table class="withdraw-table">
@@ -61,6 +69,8 @@
 <p id="withdrawEmpty" class="note" style="display:none">
   Chưa có yêu cầu rút nào
 </p>
+</div>
+
 
 
 </div>

@@ -10759,3 +10759,133 @@ body.page-profile{
 .withdraw-card h2{
   display:none;
 }
+
+
+/* ===== Withdraw Layout ===== */
+.page-withdraw{
+  background:#0b0f1a;
+  color:#e5e7eb;
+}
+
+/* card chung */
+.withdraw-card{
+  max-width:720px;
+  margin:16px auto 40px;
+  padding:0;
+  background:transparent;
+  border:none;
+}
+
+/* từng section */
+.withdraw-section{
+  background:#111827;
+  border:1px solid #1e2536;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:16px;
+}
+
+/* ===== SUMMARY ===== */
+.withdraw-summary{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.sum-box{
+  background:#0b1220;
+  border:1px solid #1e2536;
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+}
+
+.sum-box span{
+  font-size:12px;
+  color:#9ca3af;
+}
+
+.sum-box b{
+  display:block;
+  margin-top:6px;
+  font-size:18px;
+  color:#fff;
+}
+
+.sum-box.highlight{
+  border-color:#22c55e;
+  background:linear-gradient(135deg,#052e1a,#064e3b);
+}
+
+/* ===== FORM ===== */
+.withdraw-section label{
+  display:block;
+  margin:10px 0 6px;
+  font-size:13px;
+  color:#cbd5f5;
+}
+
+.withdraw-section input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #1e2536;
+  background:#020617;
+  color:#fff;
+  font-size:14px;
+}
+
+.withdraw-section input:focus{
+  outline:none;
+  border-color:#4f46e5;
+}
+
+/* button */
+.btn-primary{
+  width:100%;
+  margin-top:14px;
+  padding:12px;
+  border-radius:14px;
+  border:none;
+  background:linear-gradient(90deg,#4f46e5,#22c55e);
+  color:#fff;
+  font-size:15px;
+  font-weight:600;
+  cursor:pointer;
+}
+
+.btn-primary:hover{
+  opacity:.9;
+}
+
+/* ===== TABLE ===== */
+.withdraw-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:13px;
+}
+
+.withdraw-table th{
+  color:#9ca3af;
+  font-weight:500;
+  text-align:left;
+  padding:8px;
+}
+
+.withdraw-table td{
+  padding:10px 8px;
+  border-bottom:1px solid #1e2536;
+}
+
+/* trạng thái */
+.st-pending{ color:#fbbf24 }
+.st-approved{ color:#22c55e }
+.st-rejected{ color:#ef4444 }
+
+/* note */
+.note{
+  margin-top:10px;
+  font-size:12px;
+  color:#9ca3af;
+}
