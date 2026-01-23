@@ -1,10 +1,13 @@
 const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
-document.getElementById("adminUid").textContent = admin.uid;
 
 if (!admin.uid) {
   alert("❌ Chưa đăng nhập");
   location.href = "/login.html";
+} else {
+  const el = document.getElementById("adminUid");
+  if (el) el.textContent = admin.uid;
 }
+
 
 async function topup(){
   const uid = document.getElementById("uid").value.trim();
@@ -88,14 +91,18 @@ if (u.blocked) {
   ${u.role}
 </td>
 
-      <td>
+ <td>
   <button class="action-btn" onclick="quickTopup('${u.uid}')">➕</button>
-  <button class="action-btn"
-    style="color:${u.blocked?'#ff6b6b':'#00e5ff'}"
-    onclick="toggleLock('${u.uid}', ${u.blocked})">
-    ${u.blocked ? '🔓' : '🚫'}
+
+  <button
+    class="action-btn"
+    style="color:${u.blocked ? '#ff6b6b' : '#00e5ff'}"
+    onclick="toggleLock('${u.uid}', ${u.blocked})"
+  >
+    ${u.blocked ? "🔓" : "🚫"}
   </button>
 </td>
+
 
     `;
     tbody.appendChild(tr);
