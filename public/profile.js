@@ -397,13 +397,23 @@ fetch("/api/me/" + viewUid, {
     .then(data => {
       if (!data || !data.profile) return;
 
-      const p = {
-        ...defaultProfile,
-        ...data.profile
-      };
+     const local = JSON.parse(localStorage.getItem(KEY)) || {};
 
-      localStorage.setItem(KEY, JSON.stringify(p));
-      loadProfile();
+const p = {
+  ...defaultProfile,
+  ...data.profile,
+
+  // 🔒 KHÔNG cho API ghi đè coin realtime
+  coins: local.coins ?? data.profile.coins ?? 0,
+  coinSent: local.coinSent ?? data.profile.coinSent ?? 0,
+  coinReceived: local.coinReceived ?? data.profile.coinReceived ?? 0,
+  level: local.level ?? data.profile.level ?? 1,
+  exp: local.exp ?? data.profile.exp ?? 0
+};
+
+localStorage.setItem(KEY, JSON.stringify(p));
+loadProfile();
+
     })
     .catch(()=>{});
 }
