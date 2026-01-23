@@ -207,18 +207,34 @@ function renderWithdrawPage(){
   });
 
   // render pagination
-  if (totalPages > 1) {
-    for (let i = 1; i <= totalPages; i++) {
-      const btn = document.createElement("button");
-      btn.textContent = i;
-      btn.className = "page-btn" + (i === withdrawPage ? " active" : "");
-      btn.onclick = () => {
-        withdrawPage = i;
-        renderWithdrawPage();
-      };
-      pager.appendChild(btn);
-    }
-  }
+if (totalPages > 1) {
+  const prev = document.createElement("button");
+  prev.className = "pg-btn";
+  prev.textContent = "◀";
+  prev.disabled = withdrawPage === 1;
+  prev.onclick = () => {
+    withdrawPage--;
+    renderWithdrawPage();
+  };
+
+  const info = document.createElement("div");
+  info.className = "pg-info";
+  info.textContent = `Trang ${withdrawPage} / ${totalPages}`;
+
+  const next = document.createElement("button");
+  next.className = "pg-btn";
+  next.textContent = "▶";
+  next.disabled = withdrawPage === totalPages;
+  next.onclick = () => {
+    withdrawPage++;
+    renderWithdrawPage();
+  };
+
+  pager.appendChild(prev);
+  pager.appendChild(info);
+  pager.appendChild(next);
+}
+
 }
 
 
