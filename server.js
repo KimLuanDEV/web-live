@@ -1873,7 +1873,8 @@ if (blockedMe || blockedByYou) {
 }
 
 const myFriends = me.profile.friends || [];
-const isAdmin = me.role === "admin";
+const isAdmin = me.role === "admin" || socket.data.role === "admin";
+
 
 // 🔓 ADMIN ĐƯỢC NHẮN TIN VỚI BẤT KỲ AI
 if (!isAdmin && !myFriends.includes(to)) {
@@ -2176,6 +2177,10 @@ socket.on("auth-ping", ({ uid }) => {
       ...socket.data.profile
     };
   }
+
+    // 🔥 GẮN ROLE CHUẨN VÀO SOCKET (FIX ADMIN CHAT)
+  socket.data.role = db[uid]?.role || "user";
+
 
   // ✅ KHÔNG ĐÁ – CHỈ GHI ĐÈ SOCKET MỚI
  if (!activeUsers.has(uid)) {
