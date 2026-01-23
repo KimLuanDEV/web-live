@@ -446,6 +446,10 @@ let __coverUploading = false;
 
 // 🔥 REALTIME COIN UPDATE (PROFILE)
 socket.on("coin-update", data => {
+
+  // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG UPDATE COIN
+  if (viewUid && viewUid !== __profileAuth.uid) return;
+
   if (!data) return;
 
   // 🪙 COIN
