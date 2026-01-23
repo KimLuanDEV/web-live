@@ -72,6 +72,16 @@ withdrawInput.oninput = updateMoney;
 updateMoney();
 
 btnSubmit.onclick = async () => {
+
+      const securityCode =
+    document.getElementById("securityCodeInput")?.value.trim();
+
+  if (!securityCode) {
+    alert("❌ Vui lòng nhập mã bảo mật");
+    return;
+  }
+
+
   const amount = Number(withdrawInput.value || 0);
   
   const bankName = document.getElementById("bankName").value;
@@ -111,10 +121,11 @@ if (amount < MIN_WITHDRAW) {
       "x-uid": me.uid
     },
     body: JSON.stringify({
-      amount,
-      bank,
-      received
-    })
+  amount,
+  bank,
+  securityCode   // 🔐 mã bảo mật
+})
+
   });
 
   const data = await res.json();

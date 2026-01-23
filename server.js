@@ -553,20 +553,51 @@ app.post("/api/upload-post-video",
   res.json({ url });
 });
 
-app.post("/api/withdraw-request", (req, res) => {
+app.post("/api/withdraw-request", async (req, res) => {
   const uid = req.headers["x-uid"];
-  const { amount, bank, received } = req.body || {};
+  const { amount, bank, securityCode } = req.body || {};
 
-  if (!uid || !amount || !bank) {
-    return res.status(400).json({ error: "missing" });
-  }
+
+  if (!securityCode) {
+  return res.status(400).json({
+    error: "missing_security_code"
+  });
+}
+
+
+if (!uid || !bank || amount == null) {
+  return res.status(400).json({ error: "missing" });
+}
+
+const amt = Number(amount);
+if (!Number.isFinite(amt) || amt <= 0) {
+  return res.status(400).json({ error: "invalid_amount" });
+}
+
 
   const db = loadUsers();
+
+
   const user = db[uid];
 
   if (!user || !user.profile) {
     return res.status(404).json({ error: "user_not_found" });
   }
+
+
+// 🔐 KIỂM TRA MÃ BẢO MẬT
+const okSec = await bcrypt.compare(
+  String(securityCode),
+  user.securityCode
+);
+
+if (!okSec) {
+  return res.status(403).json({
+    error: "invalid_security_code"
+  });
+}
+
+
 
   const canWithdraw = Number(user.profile.coinReceived || 0);
 
@@ -581,7 +612,7 @@ app.post("/api/withdraw-request", (req, res) => {
 
   const list = loadWithdraws();
 
- const amt = Number(amount);
+
 
 // ➖ TRỪ KIM CƯƠNG NGAY KHI GỬI
 user.profile.coinReceived -= amt;
