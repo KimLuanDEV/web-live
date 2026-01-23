@@ -10905,3 +10905,20 @@ button:disabled{
   opacity:.6;
   cursor:not-allowed;
 }
+
+
+.withdraw-section select{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:1px solid #1e2536;
+  background:#020617;
+  color:#fff;
+  font-size:14px;
+  margin-bottom:8px;
+}
+
+.withdraw-section select:focus{
+  outline:none;
+  border-color:#4f46e5;
+}

@@ -24,7 +24,19 @@ updateMoney();
 
 btnSubmit.onclick = async () => {
   const amount = Number(withdrawInput.value || 0);
-  const bank = document.getElementById("bankInput").value.trim();
+  
+  const bankName = document.getElementById("bankName").value;
+const bankAccount = document.getElementById("bankAccount").value.trim();
+const bankOwner = document.getElementById("bankOwner").value.trim();
+
+if (!bankName || !bankAccount || !bankOwner) {
+  alert("❌ Vui lòng nhập đầy đủ thông tin ngân hàng");
+  return;
+}
+
+// 🔗 GỘP THÀNH 1 LIÊN KẾT DUY NHẤT
+const bank = `${bankName} | STK: ${bankAccount} | ${bankOwner}`;
+
 
   if (amount <= 0) {
     alert("❌ Số kim cương không hợp lệ");

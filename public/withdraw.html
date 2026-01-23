@@ -35,8 +35,29 @@
   <label>Số kim cương muốn rút</label>
   <input type="number" id="withdrawInput" min="0">
 
-  <label>Thông tin thanh toán</label>
-  <input type="text" id="bankInput" placeholder="Ngân hàng / Momo / ZaloPay">
+<label>Liên kết tài khoản ngân hàng</label>
+
+<select id="bankName">
+  <option value="">-- Chọn ngân hàng --</option>
+  <option value="Vietcombank">Vietcombank</option>
+  <option value="Techcombank">Techcombank</option>
+  <option value="BIDV">BIDV</option>
+  <option value="VietinBank">VietinBank</option>
+  <option value="MB Bank">MB Bank</option>
+  <option value="ACB">ACB</option>
+</select>
+
+<input
+  type="text"
+  id="bankAccount"
+  placeholder="Số tài khoản ngân hàng"
+>
+
+<input
+  type="text"
+  id="bankOwner"
+  placeholder="Tên chủ tài khoản"
+>
 
   <button id="btnSubmitWithdraw" class="btn-primary">
     📤 Gửi yêu cầu rút
