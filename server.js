@@ -187,7 +187,8 @@ app.get("/api/admin/users", (req, res) => {
     coinSent: u.profile?.coinSent || 0,
     coinReceived: u.profile?.coinReceived || 0,
     role: u.role || "user",
-    blocked: !!u.profile?.blocked
+    blocked: !!u.profile?.accountBlocked
+
 
   }));
 
@@ -221,11 +222,13 @@ const { adminUid, targetUid, lock, reason } = body;
   }
 
   // 🚫 KHÔNG CHO KHOÁ ADMIN
-  if (user.role === "admin") {
-    return res.status(403).json({ error: "cannot_lock_admin" });
-  }
+if (user.role === "admin" || targetUid === adminUid) {
+  return res.status(403).json({ error: "cannot_lock_admin" });
+}
 
-  user.profile.blocked = !!lock;
+
+  user.profile.accountBlocked = !!lock;
+
   user.profile.blockedAt = lock ? Date.now() : null;
 
 // 🧾 LOG LÝ DO KHOÁ / MỞ KHOÁ
@@ -740,7 +743,8 @@ app.post("/api/login", async (req,res)=>{
   const acc = db[username];
 
   // 🚫 USER BỊ KHOÁ → KHÔNG CHO LOGIN
-if (acc.profile?.blocked) {
+if (acc.profile?.accountBlocked) {
+
   return res.status(403).json({
     error: "blocked",
     message: "Tài khoản của bạn đã bị khoá"
@@ -819,8 +823,11 @@ app.get("/api/me/:uid", (req, res) => {
     const me = db[viewerUid].profile;
     const you = target.profile;
 
-    const blockedByMe   = (me.blocked || []).includes(targetUid);
-    const blockedByYou  = (you.blocked || []).includes(viewerUid);
+const blockedByMe =
+  (me.blockedUsers || []).includes(targetUid);
+const blockedByYou =
+  (you.blockedUsers || []).includes(viewerUid);
+
 
     if (blockedByMe || blockedByYou) {
       return res.status(403).json({
@@ -1140,6 +1147,46 @@ function closeRoom(roomId, reason = "host_left") {
 }
 
 
+
+
+// ===== MIGRATE BLOCKED FIELD (RUN ONCE) =====
+(function migrateBlockedFields(){
+  const db = loadUsers();
+  let changed = false;
+
+  for (const uid in db) {
+    const p = db[uid].profile || (db[uid].profile = {});
+
+    // boolean blocked → accountBlocked
+    if (typeof p.blocked === "boolean") {
+      p.accountBlocked = p.blocked;
+      delete p.blocked;
+      changed = true;
+    }
+
+    // array blocked → blockedUsers
+    if (Array.isArray(p.blocked)) {
+      p.blockedUsers = p.blocked;
+      delete p.blocked;
+      changed = true;
+    }
+
+    // ensure array
+    if (!Array.isArray(p.blockedUsers)) {
+      p.blockedUsers = [];
+      changed = true;
+    }
+  }
+
+  if (changed) {
+    saveUsers(db);
+    console.log("✅ Migrated blocked → accountBlocked / blockedUsers");
+  }
+})();
+
+
+
+
 io.on("connection", (socket) => {
 
 
@@ -1218,10 +1265,10 @@ socket.on("user-block", ({ uid }) => {
   const uMe = db[me];
   if (!uMe) return;
 
-  uMe.profile.blocked ||= [];
+uMe.profile.blockedUsers ||= [];
 
-  if (!uMe.profile.blocked.includes(uid)) {
-    uMe.profile.blocked.push(uid);
+  if (!uMe.profile.blockedUsers.includes(uid)) {
+  uMe.profile.blockedUsers.push(uid);
   }
 
   // 🔥 BLOCK → TỰ HUỶ KẾT BẠN NẾU CÓ
@@ -1264,8 +1311,9 @@ socket.on("user-unblock", ({ uid }) => {
   const uMe = db[me];
   if (!uMe) return;
 
-  uMe.profile.blocked =
-    (uMe.profile.blocked || []).filter(x => x !== uid);
+uMe.profile.blockedUsers =
+  (uMe.profile.blockedUsers || []).filter(x => x !== uid);
+
 
   saveUsers(db);
 
@@ -1300,10 +1348,10 @@ socket.on("friend-request", ({ to }) => {
 
 // 🚫 BLOCK CHECK
 if (
-  (uFrom.profile.blocked || []).includes(to) ||
-  (uTo.profile.blocked || []).includes(from)
+  (uFrom.profile.blockedUsers || []).includes(to) ||
+  (uTo.profile.blockedUsers || []).includes(from)
 ) {
-  return; // âm thầm bỏ qua
+  return;
 }
 
   uFrom.profile.friends ||= [];
@@ -1861,8 +1909,12 @@ const you = db[to];
 if (!me || !you) return;
 
 // 🚫 BLOCK CHECK (2 chiều)
-const blockedMe = (me.profile.blocked || []).includes(to);
-const blockedByYou = (you.profile.blocked || []).includes(fromUid);
+me.profile.blockedUsers ||= [];
+you.profile.blockedUsers ||= [];
+
+const blockedMe = me.profile.blockedUsers.includes(to);
+const blockedByYou = you.profile.blockedUsers.includes(fromUid);
+
 
 if (blockedMe || blockedByYou) {
   socket.emit("msg-blocked", {
@@ -2038,7 +2090,8 @@ app.get("/api/blocked/:uid", (req, res) => {
   const me = db[uid];
   if (!me) return res.json({ blocked: [] });
 
-  const blocked = (me.profile.blocked || []).map(bid => {
+const blocked = (me.profile.blockedUsers || []).map(bid => {
+
     const u = db[bid];
     if (!u) return null;
     return {
@@ -2109,7 +2162,8 @@ function blockIfLocked(socket){
   if (!uid) return false;
 
   const db = loadUsers();
-  if (db[uid]?.profile?.blocked) {
+ if (db[uid]?.profile?.accountBlocked) {
+
     socket.emit("account-blocked", {
       message: "Tài khoản của bạn đã bị khoá"
     });
