@@ -2,7 +2,10 @@ const params = new URLSearchParams(location.search);
 const received = Number(params.get("received") || 0);
 
 // 🔁 TỶ GIÁ (bạn chỉnh tùy ý)
-const RATE = 100; // 1 kim cương = 100đ
+const RATE = 30; // 1 kim cương = 100đ
+// ⛔ RÚT TỐI THIỂU
+const MIN_WITHDRAW = 5000; // 💎 tối thiểu để được rút
+
 
 const receivedVal = document.getElementById("receivedVal");
 const moneyVal = document.getElementById("moneyVal");
@@ -26,6 +29,11 @@ let withdrawCache = [];
 
 receivedVal.textContent = received.toLocaleString();
 
+document.getElementById("minWithdrawVal").textContent =
+  MIN_WITHDRAW.toLocaleString();
+
+
+
 withdrawInput.max = received;
 withdrawInput.value = received;
 
@@ -48,7 +56,17 @@ function updateBankLogo(bankName){
 function updateMoney(){
   const val = Math.min(received, Number(withdrawInput.value || 0));
   moneyVal.textContent = (val * RATE).toLocaleString() + " ₫";
+
+  // UX: chưa đủ tối thiểu thì disable nút
+  if (val < MIN_WITHDRAW) {
+    btnSubmit.disabled = true;
+    btnSubmit.textContent = `⛔ Rút tối thiểu ${MIN_WITHDRAW} 💎`;
+  } else {
+    btnSubmit.disabled = false;
+    btnSubmit.textContent = "📤 Gửi yêu cầu rút";
+  }
 }
+
 
 withdrawInput.oninput = updateMoney;
 updateMoney();
@@ -69,10 +87,11 @@ if (!bankName || !bankAccount || !bankOwner) {
 const bank = `${bankName} | STK: ${bankAccount} | ${bankOwner}`;
 
 
-  if (amount <= 0) {
-    alert("❌ Số kim cương không hợp lệ");
-    return;
-  }
+if (amount < MIN_WITHDRAW) {
+  alert(`⛔ Số kim cương rút tối thiểu là ${MIN_WITHDRAW.toLocaleString()} 💎`);
+  return;
+}
+
   if (!bank) {
     alert("❌ Vui lòng nhập thông tin thanh toán");
     return;

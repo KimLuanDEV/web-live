@@ -574,6 +574,11 @@ app.post("/api/withdraw-request", (req, res) => {
     return res.status(400).json({ error: "not_enough_received" });
   }
 
+  if (amount < 100) {
+  return res.status(400).json({ error: "min_withdraw" });
+}
+
+
   const list = loadWithdraws();
 
   list.unshift({
