@@ -485,3 +485,33 @@ async function withdrawAction(id, action) {
 }
 
 loadWithdraws();
+
+
+let withdrawSocket = null;
+
+function initWithdrawRealtime(){
+  if (typeof io !== "function") return;
+
+  withdrawSocket = io();
+
+  withdrawSocket.on("connect", () => {
+    console.log("🔔 Withdraw realtime connected");
+  });
+
+  withdrawSocket.on("withdraw-update", ({ ts }) => {
+  const ping = document.getElementById("withdrawPing");
+  if (ping) ping.classList.remove("hidden");
+
+  loadWithdraws();
+
+  // tự tắt ping sau 2s
+  setTimeout(() => {
+    ping && ping.classList.add("hidden");
+  }, 2000);
+});
+
+
+
+}
+
+initWithdrawRealtime();

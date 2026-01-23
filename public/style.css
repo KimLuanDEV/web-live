@@ -10680,3 +10680,15 @@ body.page-profile{
 .st-approved { color: #4caf50; }
 .st-rejected { color: #f44336; }
 
+
+.ping{
+  color:#ff5252;
+  margin-left:6px;
+  animation:pulse 1s infinite;
+}
+@keyframes pulse{
+  0%{opacity:.2}
+  50%{opacity:1}
+  100%{opacity:.2}
+}
+.hidden{display:none}
