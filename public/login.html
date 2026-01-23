@@ -506,6 +506,8 @@ async function submitSecurity(){
     })
   });
 
+  const data = await res.json();
+
  if (data.error === "blocked") {
   showMsg(
     "🚫 Tài khoản của bạn đang bị cấm.\nVui lòng liên hệ hỗ trợ.",
@@ -519,7 +521,6 @@ if(data.error){
   showMsg("❌ Sai thông tin bảo mật");
   return;
 }
-
 
   // login thành công
   localStorage.setItem("user_profile", JSON.stringify(data.profile));
