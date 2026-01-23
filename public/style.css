@@ -10692,3 +10692,21 @@ body.page-profile{
   100%{opacity:.2}
 }
 .hidden{display:none}
+
+
+.withdraw-table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:14px;
+}
+
+.withdraw-table th,
+.withdraw-table td{
+  padding:10px 12px;
+  border-bottom:1px solid #1e2536;
+  text-align:left;
+}
+
+.st-pending{ color:#ffb300 }
+.st-approved{ color:#4caf50 }
+.st-rejected{ color:#ff5252 }

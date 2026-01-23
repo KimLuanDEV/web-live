@@ -170,6 +170,23 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
+
+app.get("/api/withdraw-history", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(403).json({ error: "no_auth" });
+
+  const list = loadWithdraws();
+
+  // 🔒 chỉ trả về của chính user
+  const mine = list.filter(w => w.uid === uid);
+
+  res.json({
+    ok: true,
+    list: mine
+  });
+});
+
+
 // 🔐 BẢO VỆ TRANG ADMIN
 app.get("/admin.html", (req, res) => {
   const uid = req.headers["x-uid"];

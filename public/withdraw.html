@@ -30,9 +30,36 @@
   <button id="btnSubmitWithdraw">📤 Gửi yêu cầu rút</button>
 
   <p class="note">
-    ⏳ Yêu cầu sẽ được admin duyệt thủ công
+    ⏳ Yêu cầu sẽ được phê duyệt trong vòng 30 ngày.
   </p>
+
+
+<hr style="margin:24px 0;border-color:#1e2536">
+
+<h3>📜 Lịch sử rút tiền</h3>
+
+<table class="withdraw-table">
+  <thead>
+    <tr>
+      <th>Thời gian</th>
+      <th>💎 Kim cương</th>
+      <th>Thanh toán</th>
+      <th>Trạng thái</th>
+      <th>Ghi chú</th>
+    </tr>
+  </thead>
+  <tbody id="withdrawHistoryBody"></tbody>
+</table>
+
+<p id="withdrawEmpty" class="note" style="display:none">
+  Chưa có yêu cầu rút nào
+</p>
+
+
 </div>
+
+
+
 
 <script src="/withdraw.js"></script>
 </body>

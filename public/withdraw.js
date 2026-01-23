@@ -63,3 +63,63 @@ btnSubmit.onclick = async () => {
     alert("❌ " + (data.error || "Có lỗi xảy ra"));
   }
 };
+
+
+// ===== 📜 LỊCH SỬ RÚT TIỀN =====
+async function loadWithdrawHistory() {
+  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  if (!me.uid) return;
+
+  const res = await fetch("/api/withdraw-history", {
+    headers: { "x-uid": me.uid }
+  });
+
+  const data = await res.json();
+  if (!data.ok) return;
+
+  const body = document.getElementById("withdrawHistoryBody");
+  const empty = document.getElementById("withdrawEmpty");
+
+  body.innerHTML = "";
+
+  if (!data.list.length) {
+    empty.style.display = "block";
+    return;
+  }
+
+  empty.style.display = "none";
+
+  data.list.forEach(w => {
+    const tr = document.createElement("tr");
+    tr.innerHTML = `
+      <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
+      <td>${w.amount.toLocaleString()}</td>
+      <td>${w.bank}</td>
+      <td class="st-${w.status}">
+        ${statusText(w.status)}
+      </td>
+      <td>${w.note || "-"}</td>
+    `;
+    body.appendChild(tr);
+  });
+}
+
+function statusText(s){
+  if (s === "pending") return "⏳ Đang chờ";
+  if (s === "approved") return "✅ Đã duyệt";
+  if (s === "rejected") return "❌ Từ chối";
+  return s;
+}
+
+// load lần đầu
+loadWithdrawHistory();
+
+
+// 🔔 REALTIME UPDATE
+if (typeof io === "function") {
+  const socket = io();
+
+  socket.on("withdraw-update", () => {
+    loadWithdrawHistory(); // 🔥 tự update bảng
+  });
+}
