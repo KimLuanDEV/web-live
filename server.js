@@ -2705,6 +2705,34 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
       (db[hostUid].profile.coinReceived || 0) + cost;
   }
 
+  // ===== 🎯 CỘNG EXP + LEVEL CHO NGƯỜI NHẬN QUÀ =====
+if (hostUid && db[hostUid]?.profile) {
+  const hp = db[hostUid].profile;
+
+  // + EXP (1 coin = 1 exp)
+  hp.exp = (hp.exp || 0) + cost;
+
+  // ⬆️ LEVEL UP (loop để tránh miss nhiều level)
+  let leveledUp = false;
+  while (hp.exp >= (hp.level || 1) * 100) {
+    hp.exp -= (hp.level || 1) * 100;
+    hp.level = (hp.level || 1) + 1;
+    leveledUp = true;
+  }
+
+  // 🔔 realtime sync cho host
+  emitCoinUpdate(hostUid);
+
+  // (optional) notify level up
+  if (leveledUp) {
+    pushNotify(hostUid, {
+      type: "level-up",
+      text: `🎉 Bạn đã lên cấp ${hp.level}!`
+    });
+  }
+}
+
+
   saveUsers(db);
 
   // 🔔 REALTIME WALLET
