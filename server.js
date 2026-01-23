@@ -181,10 +181,49 @@ app.get("/api/admin/users", (req, res) => {
     exp: u.profile?.exp || 0,
     coinSent: u.profile?.coinSent || 0,
     coinReceived: u.profile?.coinReceived || 0,
-    role: u.role || "user"
+    role: u.role || "user",
+    blocked: !!u.profile?.blocked
+
   }));
 
   res.json({ ok: true, users });
+});
+
+
+// ===== ADMIN LOCK / UNLOCK USER =====
+app.post("/api/admin/lock-user", (req, res) => {
+  const { adminUid, targetUid, lock } = req.body;
+  if (!adminUid || !targetUid) {
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+  const user = db[targetUid];
+
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  if (!user || !user.profile) {
+    return res.status(404).json({ error: "user_not_found" });
+  }
+
+  // 🚫 KHÔNG CHO KHOÁ ADMIN
+  if (user.role === "admin") {
+    return res.status(403).json({ error: "cannot_lock_admin" });
+  }
+
+  user.profile.blocked = !!lock;
+  user.profile.blockedAt = lock ? Date.now() : null;
+
+  saveUsers(db);
+
+  res.json({
+    ok: true,
+    uid: targetUid,
+    blocked: user.profile.blocked
+  });
 });
 
 
@@ -584,6 +623,16 @@ app.post("/api/login", async (req,res)=>{
   const db = loadUsers();
 
   const acc = db[username];
+
+  // 🚫 USER BỊ KHOÁ → KHÔNG CHO LOGIN
+if (acc.profile?.blocked) {
+  return res.status(403).json({
+    error: "blocked",
+    message: "Tài khoản của bạn đã bị khoá"
+  });
+}
+
+
   if(!acc) return res.json({ error:"invalid" });
 
  const okPass = await bcrypt.compare(String(password), acc.password);
@@ -623,6 +672,8 @@ app.post("/api/check-trusted", (req,res)=>{
   const { username, trustedToken } = req.body;
   const db = loadUsers();
   const acc = db[username];
+
+
 
   if(!acc || !acc.trusted) return res.json({ ok:false });
 
@@ -1677,6 +1728,9 @@ socket.on("lp-like-reply-child", async ({ postId, commentIndex, replyId, childId
 socket.on("private-message", async ({ to, text, type, media, msgId }) => {
 
 
+  if (blockIfLocked(socket)) return;
+
+
   const fromUid = socket.data.uid;
 if (!fromUid || !to) return;
 
@@ -1915,6 +1969,22 @@ function blockGuest(socket, feature){
   }
   return false;
 }
+
+
+function blockIfLocked(socket){
+  const uid = socket.data.uid;
+  if (!uid) return false;
+
+  const db = loadUsers();
+  if (db[uid]?.profile?.blocked) {
+    socket.emit("account-blocked", {
+      message: "Tài khoản của bạn đã bị khoá"
+    });
+    return true;
+  }
+  return false;
+}
+
 
 
 if(socket.data.uid?.startsWith("guest_")){
@@ -2469,6 +2539,9 @@ saveLiveState(state);
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
 
+    if (blockIfLocked(socket)) return;
+
+
     // 🔒 Guest chỉ được join với role=viewer
 if(isGuest(socket) && role !== "viewer"){
   socket.emit("need-login", { feature:"join-as-host" });
@@ -2592,6 +2665,9 @@ if (room.liveStartTs) {
 });
 
  socket.on("chat", ({ roomId, text }) => {
+
+  if (blockIfLocked(socket)) return;
+
   if (!roomId || !text) return;
 
   const room = getRoom(roomId);
@@ -2746,6 +2822,8 @@ function canSendGift(socket) {
 
 // ===== GIFT ENGINE (paid gifts) =====
 socket.on("send-gift", ({ roomId, gift, name }) => {
+
+  if (blockIfLocked(socket)) return;   // 🚫 THÊM DÒNG NÀY
 
   if (blockGuest(socket, "gift")) return;
 

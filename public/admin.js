@@ -48,6 +48,11 @@ function renderUsers(list){
 
   list.forEach(u => {
     const tr = document.createElement("tr");
+if (u.blocked) {
+  tr.style.opacity = "0.45";
+  tr.style.filter = "grayscale(1)";
+}
+
     tr.innerHTML = `
       <td>${u.uid}</td>
       <td>${u.name}</td>
@@ -62,8 +67,23 @@ function renderUsers(list){
 </td>
 
       <td>
-        <button onclick="quickTopup('${u.uid}')">➕ Nạp</button>
-      </td>
+  <button onclick="quickTopup('${u.uid}')">➕ Nạp</button>
+
+  <button
+    style="
+      margin-left:6px;
+      color:${u.blocked ? '#ff6b6b' : '#00e5ff'};
+      border:1px solid #1e2536;
+      background:transparent;
+      border-radius:6px;
+      cursor:pointer;
+    "
+    onclick="toggleLock('${u.uid}', ${u.blocked})"
+  >
+    ${u.blocked ? "🔓 Mở khoá" : "🚫 Khoá"}
+  </button>
+</td>
+
     `;
     tbody.appendChild(tr);
   });
@@ -98,5 +118,32 @@ async function quickTopup(uid){
 
   loadUsers(); // refresh list
 }
+
+
+
+
+// 🚫 KHOÁ / MỞ KHOÁ USER
+async function toggleLock(uid, isBlocked){
+  const ok = confirm(
+    isBlocked
+      ? "Mở khoá tài khoản này?"
+      : "Khoá tài khoản này?"
+  );
+  if (!ok) return;
+
+  await fetch("/api/admin/lock-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      adminUid: admin.uid,
+      targetUid: uid,
+      lock: !isBlocked
+    })
+  });
+
+  loadUsers();
+}
+
+
 
 loadUsers();
