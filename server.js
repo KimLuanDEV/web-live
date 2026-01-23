@@ -146,6 +146,22 @@ const io = new Server(server, { cors: { origin: "*" } });
 app.use(express.static(path.join(__dirname, "public")));
 
 
+// 🔐 BẢO VỆ TRANG ADMIN
+app.get("/admin.html", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(403).send("Forbidden");
+
+  const db = loadUsers();
+  const acc = db[uid];
+
+  if (!acc || acc.role !== "admin") {
+    return res.status(403).send("Not allowed");
+  }
+
+  res.sendFile(path.join(__dirname, "public", "admin.html"));
+});
+
+
 
 app.post("/api/upload-chat-image", chatUpload.single("image"), async (req, res) => {
 
@@ -566,9 +582,13 @@ saveUsers(db);
 
 res.json({
   ok:true,
-  profile: acc.profile,
+  profile: {
+    ...acc.profile,
+    role: acc.role || "user"   // 🔥 THÊM
+  },
   trustedToken: trusted
 });
+
 
 });
 

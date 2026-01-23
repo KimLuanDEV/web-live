@@ -1,4 +1,8 @@
-const socket = io();
+
+
+// 🔐 UID ADMIN ĐƯỢC PHÉP VÀO TRANG ADMIN
+const ADMIN_UIDS = ["admin", "KimDogCat", "superuser"];
+
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
 
@@ -14,6 +18,27 @@ setInterval(() => {
 const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const KEY = "user_profile";
+
+const btnAdmin = document.getElementById("btnAdmin");
+
+if (btnAdmin) {
+  const myUid = __profileAuth.uid;
+
+  if (
+    myUid &&
+    (!viewUid || viewUid === myUid) &&
+    ADMIN_UIDS.includes(myUid)
+  ) {
+    btnAdmin.classList.remove("hidden");
+  } else {
+    btnAdmin.classList.add("hidden");
+  }
+
+  btnAdmin.onclick = () => {
+    location.href = "/admin.html";
+  };
+}
+
 
 
 // 👥 / 💬 PROFILE ACTION VISIBILITY (FIX DỨT ĐIỂM)
@@ -1406,3 +1431,5 @@ function clearChatHistory(peer){
   // (tuỳ chọn) báo server
   socket.emit("chat-cleared", { peer });
 }
+
+
