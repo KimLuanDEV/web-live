@@ -593,7 +593,7 @@ const okSec = await bcrypt.compare(
 
 if (!okSec) {
   return res.status(403).json({
-    error: "Mã bảo mật không đúng!"
+    error: "invalid_security_code"
   });
 }
 
