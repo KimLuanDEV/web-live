@@ -652,6 +652,12 @@ socket.on("lp-delete", ({ postId })=>{
 
 
 function renderPost(p, top=false){
+
+window.lpPostMap ||= {};
+window.lpPostMap[p.id] = p;
+
+
+
   const div = document.createElement("div");
   div.className="lp-post";
   div.dataset.id = p.id;
@@ -739,6 +745,20 @@ ${p.video ? `
     </span>
   </div>
 </div>
+
+
+${p.gifts?.byUser ? `
+<div class="lp-gift-users"
+     onclick="openGiftUsers('${p.id}')">
+  🎁 Tặng bởi:
+  ${Object.entries(p.gifts.byUser)
+    .slice(0,3)
+    .map(([uid,amt]) => `
+      <span class="gift-user">${amt}💎</span>
+    `).join(" ")}
+  ${Object.keys(p.gifts.byUser).length > 3 ? "…" : ""}
+</div>
+` : ``}
 
 
 
@@ -1798,11 +1818,42 @@ function sendGift(giftId, coin){
   closeGift();
 }
 
-// realtime update tổng quà
-socket.on("lp-gift-post", ({ postId, total })=>{
+// 🔁 REALTIME UPDATE QUÀ + NGƯỜI TẶNG
+socket.on("lp-gift-post", ({ postId, total, fromUid, amount }) => {
+
+  // 1️⃣ cập nhật tổng quà
   const el = document.getElementById("g_" + postId);
-  if(el) el.textContent = total;
+  if (el) el.textContent = total;
+
+  // 2️⃣ cập nhật cache post
+  const post = window.lpPostMap?.[postId];
+  if (!post) return;
+
+  post.gifts ||= { total: 0, byUser: {} };
+  post.gifts.total = total;
+
+  // 3️⃣ cập nhật người tặng (realtime)
+  if (fromUid && amount) {
+    post.gifts.byUser[fromUid] =
+      (post.gifts.byUser[fromUid] || 0) + amount;
+  }
+
+  // 4️⃣ update UI danh sách người tặng nếu đang mở
+  const box = document.querySelector(
+    `.lp-post[data-id="${postId}"] .lp-gift-users`
+  );
+  if (box) {
+    box.innerHTML = `
+      🎁 Tặng bởi:
+      ${Object.entries(post.gifts.byUser)
+        .slice(0,3)
+        .map(([uid,amt]) => `<span class="gift-user">${amt}💎</span>`)
+        .join(" ")}
+      ${Object.keys(post.gifts.byUser).length > 3 ? "…" : ""}
+    `;
+  }
 });
+
 
 
 
@@ -1899,4 +1950,29 @@ function notifyWithdraw(data){
 
   // fallback cuối cùng
   alert(text);
+}
+
+
+function openGiftUsers(postId){
+  const post = window.lpPostMap?.[postId];
+  if(!post || !post.gifts?.byUser) return;
+
+  const box = document.getElementById("giftUserList");
+  box.innerHTML = "";
+
+  Object.entries(post.gifts.byUser)
+    .sort((a,b)=>b[1]-a[1])
+    .forEach(([uid, amt])=>{
+      const div = document.createElement("div");
+      div.className = "lp-action";
+      div.style.padding = "10px";
+      div.innerHTML = `👤 ${uid} — <b>${amt} 💎</b>`;
+      box.appendChild(div);
+    });
+
+  document.getElementById("giftUserModal").classList.remove("hidden");
+}
+
+function closeGiftUsers(){
+  document.getElementById("giftUserModal").classList.add("hidden");
 }

@@ -1085,6 +1085,20 @@
 
 
 
+.lp-gift-users{
+  margin-top:6px;
+  font-size:13px;
+  opacity:.8;
+  cursor:pointer;
+}
+.lp-gift-users:hover{
+  color:#25F09A;
+}
+.gift-user{
+  margin-right:6px;
+  font-weight:700;
+}
+
 
 </style>
 
@@ -1248,6 +1262,19 @@
   </div>
 </div>
 
+
+
+
+<div id="giftUserModal" class="lp-compose-modal hidden">
+  <div class="lp-compose-sheet" style="height:auto">
+    <div class="lp-compose-header">
+      <button class="lp-close" onclick="closeGiftUsers()">✕</button>
+      <div class="lp-header-title">🎁 Người tặng quà</div>
+    </div>
+
+    <div class="lp-compose-body" id="giftUserList"></div>
+  </div>
+</div>
 
 
 

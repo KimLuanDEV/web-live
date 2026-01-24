@@ -1677,10 +1677,15 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
   saveSocial();
 
   // ===== REALTIME UPDATE =====
-  io.emit("lp-gift-post", {
-    postId,
-    total: post.gifts.total
-  });
+  iio.emit("lp-gift-post", {
+  postId,
+  total: post.gifts.total,
+  fromUid,
+  amount: cost
+});
+
+
+
 
   emitCoinUpdate(fromUid);
   emitCoinUpdate(toUid);
