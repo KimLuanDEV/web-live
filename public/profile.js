@@ -1408,6 +1408,10 @@ function renderProfileViewOnly(p){
   avatarPreview.src = fixMedia(p.avatar) || defaultProfile.avatar;
   displayName.textContent = p.name || "User";
 
+  
+  // 🔥 FIX: GẮN TÍCH XANH CHO PROFILE NGƯỜI KHÁC
+  renderProfileVerified(p.uid);
+  
   // bio (chỉ xem)
   const bioInput = document.getElementById("bioInput");
   if (bioInput){
