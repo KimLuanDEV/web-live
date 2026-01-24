@@ -22,6 +22,11 @@ let isPosting = false;
 
 window.allUsers = {};
 
+function isAdminUser(uid){
+  return window.allUsers?.[uid]?.role === "admin";
+}
+
+
 function verifiedBadge(uid){
   const u = window.allUsers?.[uid];
   if (!u) return "";
@@ -860,7 +865,7 @@ window.lpPostMap[p.id] = p;
 
 
 ${
-  p.uid === auth.uid || auth.role === "admin"
+  p.uid === auth.uid || isAdminUser(auth.uid)
   ? `
   <div class="lp-post-tools">
 
@@ -870,7 +875,7 @@ ${
 
     <span class="lp-del"
       onclick="${
-        auth.role === 'admin' && p.uid !== auth.uid
+        isAdminUser(auth.uid) && p.uid !== auth.uid
           ? `adminDeletePost('${p.id}')`
           : `deletePost('${p.id}')`
       }"
@@ -878,6 +883,7 @@ ${
 
   </div>
 ` : ``}
+
 
 
 
