@@ -405,6 +405,11 @@
 </div>
 
 
+  <!-- ===== USER LIST ===== -->
+  <div class="admin-section" data-section="users">
+
+
+
 <div class="stats-grid">
   <div class="stat-card">👥 Tổng user<br><b id="statUsers">0</b></div>
   <div class="stat-card">💰 Tổng coin<br><b id="statCoins">0</b></div>
@@ -412,41 +417,6 @@
   <div class="stat-card">⭐ Admin<br><b id="statAdmins">0</b></div>
 </div>
 
-
-  <!-- ===== TOPUP CARD ===== -->
-  <div class="card" style="display: none;">
-    <div class="card-title">➕ Nạp coin cho người dùng</div>
-
-    <div class="topup-grid">
-      <input id="uid" placeholder="UID người nhận" />
-      <input id="amount" type="number" placeholder="Số coin nạp" />
-      <input id="note" placeholder="Ghi chú (tuỳ chọn)" />
-      <button class="btn btn-primary" onclick="topup()">Nạp coin</button>
-    </div>
-
-    <pre id="log"></pre>
-  </div>
-<!-- ===== WITHDRAW COIN ===== -->
-<div class="card" style="display: none;">
-  <div class="card-title">➖ Rút coin người dùng</div>
-
-  <div class="topup-grid">
-    <input id="w_uid" placeholder="UID người bị trừ" />
-    <input id="w_amount" type="number" placeholder="Số coin rút" />
-    <input id="w_note" placeholder="Lý do (bắt buộc)" />
-    <button class="btn btn-primary" onclick="withdrawCoin()">
-      ➖ Rút coin
-    </button>
-  </div>
-
-  <pre id="w_log"></pre>
-</div>
-
-
-
-
-  <!-- ===== USER LIST ===== -->
-  <div class="admin-section" data-section="users">
   <div class="card">
     <div class="card-title">👥 Danh sách người dùng</div>
 
@@ -456,18 +426,12 @@
 
     <div class="table-wrap">
       <table id="userTable">
-        <thead>
+   <thead>
   <tr>
-     <th>Người dùng</th>
-      <th>Coin</th>
-      <th>Level</th>
-      <th>EXP</th>
-      <th>Đã tặng</th>
-      <th>Đã nhận</th>
-      <th>Role</th>
-      <th>Hành động</th>
+    <th>Người dùng</th>
   </tr>
 </thead>
+
 
         <tbody></tbody>
       </table>
@@ -497,6 +461,8 @@
 
   <!-- ===== LIVE ROOMS ===== -->
 <div class="admin-section hidden" data-section="lives">
+
+
 <div class="card">
   <div class="card-title">🔴 Live Rooms</div>
 
@@ -520,11 +486,7 @@
       <tbody></tbody>
     </table>
   </div>
-
   <pre id="liveLog"></pre>
-</div>
-</div>
-
 
 <div class="card" style="display: none;">
   <div class="card-title">📡 Quản lý phòng đang live</div>
@@ -540,9 +502,13 @@
   <pre id="closeLog"></pre>
 </div>
 
+
+</div>
+</div>
 </div>
 
 <div class="admin-section hidden" data-section="withdraws">
+
 <h2>
   💎 Yêu cầu rút tiền
   <span id="withdrawPing" class="ping hidden">●</span>
