@@ -611,6 +611,47 @@ window.addEventListener("pageshow", () => {
 
 const displayName = document.getElementById("displayName");
 
+// 🔁 NHẬN DANH SÁCH USER → FIX MẤT TÍCH XANH KHI RELOAD
+window.allUsers = window.allUsers || {};
+
+socket.on("all-users", list => {
+  list.forEach(u => {
+    window.allUsers[u.uid] = u;
+  });
+
+  // 👉 render lại badge cho profile đang xem
+  const uid = viewUid || __profileAuth.uid;
+  if (uid) {
+    renderProfileVerified(uid);
+  }
+});
+
+
+
+// ✅ VERIFIED BADGE FOR PROFILE (ADMIN)
+function renderProfileVerified(uid){
+  if(!uid) return;
+
+  const box = document.getElementById("displayName");
+  const nameText = document.getElementById("profileNameText");
+  if(!box || !nameText) return;
+
+  // xoá badge cũ (tránh trùng)
+  const old = box.querySelector(".lp-verified");
+  if(old) old.remove();
+
+  const u = window.allUsers?.[uid];
+  if(u && u.role === "admin"){
+    box.insertAdjacentHTML(
+      "beforeend",
+      `<span class="lp-verified" title="Admin Livestream Pro">✔︎</span>`
+    );
+  }
+}
+
+
+
+
 displayName.onclick = ()=>{
 
   // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG CHO SỬA TÊN
@@ -696,8 +737,12 @@ function loadProfile(){
   const p = JSON.parse(localStorage.getItem(KEY)) || defaultProfile;
 
   nameInput.value = p.name;
-  displayName.textContent = p.name;
+
+ profileNameText.textContent = p.name;
+renderProfileVerified(__profileAuth.uid);
+
   
+
 avatarPreview.src = fixMedia(p.avatar);
 
 
