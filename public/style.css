@@ -11221,3 +11221,60 @@ button:disabled{
 
 
 
+
+/* ===== CHAT HEADER ===== */
+.chat-header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 48px 10px 10px; /* 👈 chừa chỗ bên phải cho 🗑️ */
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* nút back */
+.chat-back {
+  flex: 0 0 auto;
+}
+
+/* avatar */
+.chat-header-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+/* ===== TITLE ===== */
+.chat-header-title {
+  flex: 1;              /* 🔥 ăn hết phần còn lại */
+  min-width: 0;         /* 🔥 BẮT BUỘC để không bị tràn */
+}
+
+#chatTitle {
+  display: block;
+  font-weight: 600;
+  font-size: 15px;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis; /* … khi tên dài */
+}
+
+/* ===== NÚT XÓA ===== */
+.chat-clear {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  cursor: pointer;
+  opacity: .75;
+}
+
+.chat-clear:hover {
+  opacity: 1;
+}
