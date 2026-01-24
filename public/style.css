@@ -11137,7 +11137,7 @@ button:disabled{
 }
 
 
-/* ===== FIX CHAT HEADER TITLE NOT SHOWING ===== */
+/* ===== CHAT HEADER FIX WIDTH = 0 ===== */
 
 .chat-header {
   display: flex;
@@ -11145,6 +11145,12 @@ button:disabled{
   gap: 10px;
 }
 
+/* nút back */
+.chat-back {
+  flex-shrink: 0;
+}
+
+/* avatar */
 .chat-header-avatar {
   width: 36px;
   height: 36px;
@@ -11153,20 +11159,28 @@ button:disabled{
   flex-shrink: 0;
 }
 
-/* 🔥 CHÌA KHOÁ NẰM Ở ĐÂY */
+/* 🔥 CHÌA KHOÁ */
 .chat-header-title {
-  flex: 1 !important;
-  min-width: 0 !important;
-  overflow: hidden !important;
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 1px !important;   /* ← CỰC KỲ QUAN TRỌNG */
+  overflow: hidden;
 }
 
+/* text */
 #chatTitle {
-  display: block !important;
+  display: block;
   font-size: 15px;
   font-weight: 700;
   color: #fff;
-
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* 🗑️ FIX NÚT XOÁ KHÔNG ĐÈ LAYOUT */
+.chat-clear {
+  flex-shrink: 0;
+  margin-left: auto;   /* ← ĐẨY SANG PHẢI, KHÔNG ĐÈ TITLE */
+}
+
