@@ -26,7 +26,17 @@ socket.on("all-users", list=>{
   list.forEach(u=>{
     window.allUsers[u.uid] = u;
   });
+
+  // 🔁 refresh avatar người tặng
+  document.querySelectorAll(".lp-post").forEach(p=>{
+    const id = p.dataset.id;
+    if(window.lpPostMap?.[id]){
+      p.querySelector(".lp-gift-users")?.remove();
+      renderPost(window.lpPostMap[id], false);
+    }
+  });
 });
+
 
 
 
@@ -763,18 +773,30 @@ ${p.gifts?.byUser ? `
   ${Object.entries(p.gifts.byUser)
     .slice(0,3)
     .map(([uid,amt]) => {
-      const u = window.allUsers?.[uid] || {};
+
+      const u = window.allUsers?.[uid];
+
+      const name = u?.name || uid;
+      const avatar = u?.avatar
+        ? fixMedia(u.avatar)
+        : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+          encodeURIComponent(name);
+
       return `
         <span class="gift-user">
-          <img src="${fixMedia(u.avatar)}">
-          <b>${u.name || uid}</b>
+          <img src="${avatar}" />
+          <b>${name}</b>
           <i>${amt}💎</i>
         </span>
       `;
     }).join("")}
-  ${Object.keys(p.gifts.byUser).length > 3 ? "<span class='gift-more'>…</span>" : ""}
+
+  ${Object.keys(p.gifts.byUser).length > 3
+    ? "<span class='gift-more'>…</span>"
+    : ""}
 </div>
 ` : ``}
+
 
 
 
