@@ -2562,15 +2562,26 @@ if (subs && subs.length) {
   const db = loadUsers();
   const fromUser = db[fromUid];
 
-  const payload = JSON.stringify({
-    title: "💬 Tin nhắn mới",
-    body:
-  type === "image" ? "📷 Hình ảnh"
-: type === "video" ? "🎥 Video"
-: payloadText,
+ const payload = JSON.stringify({
+  title: `💬 ${fromUser.profile.name}`,
+  body:
+    type === "image" ? "📷 Hình ảnh"
+  : type === "video" ? "🎥 Video"
+  : payloadText,
 
-    url: "/messages.html"
-  });
+  tag: "chat",
+
+  // 🔥 DATA QUAN TRỌNG NHẤT
+  data: {
+    type: "chat",
+    fromUid
+  },
+
+  // fallback nếu browser không support postMessage
+  url: `/messages.html?openChat=${fromUid}`
+});
+
+
 
   for (let i = subs.length - 1; i >= 0; i--) {
     try {

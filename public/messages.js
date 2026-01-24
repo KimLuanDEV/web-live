@@ -53,6 +53,17 @@ loadAllUsers();
 
 
 
+// 🔔 NHẬN YÊU CẦU MỞ CHAT TỪ PUSH (SERVICE WORKER)
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.addEventListener("message", async e => {
+    if (e.data?.type === "open-chat" && e.data.fromUid) {
+      await openChatByUid(e.data.fromUid);
+    }
+  });
+}
+
+
+
 
 function chatKey(){
   if(!auth?.uid || !currentTargetUID) return null;
@@ -612,6 +623,33 @@ openChat(); // openChat đã xử lý tất cả
   });
 }
 
+
+
+// 🔥 MỞ MODAL CHAT THEO UID (DÙ TỪ PUSH / URL)
+async function openChatByUid(uid) {
+  if (!uid) return;
+
+  // đợi load user list
+  if (!allUsers.length) {
+    await loadAllUsers();
+  }
+
+  const u = allUsers.find(x => x.uid === uid);
+  if (!u) return;
+
+  currentTarget = u;
+  currentTargetUID = u.uid;
+
+  chatTitle.innerHTML = `
+    ${u.name}
+    ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
+  `;
+
+  document.getElementById("chatHeaderAvatar").src =
+    fixMedia(u.avatar) || "";
+
+  await openChat(); // 🔥 openChat đã sync + load + seen
+}
 
 
 async function openChat(){
@@ -1631,4 +1669,16 @@ function notifyWithdraw(data){
 
   // fallback cuối cùng
   alert(text);
+}
+
+
+
+// 🔁 MỞ CHAT TỰ ĐỘNG NẾU LOAD TỪ PUSH (URL)
+const qs = new URLSearchParams(location.search);
+const openUid = qs.get("openChat");
+
+if (openUid) {
+  setTimeout(() => {
+    openChatByUid(openUid);
+  }, 500);
 }
