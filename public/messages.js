@@ -640,10 +640,14 @@ async function openChatByUid(uid) {
   currentTarget = u;
   currentTargetUID = u.uid;
 
-  chatTitle.innerHTML = `
+  const chatNameEl = document.getElementById("chatHeaderName");
+if (chatNameEl) {
+  chatNameEl.innerHTML = `
     ${u.name}
     ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
   `;
+}
+
 
   document.getElementById("chatHeaderAvatar").src =
     fixMedia(u.avatar) || "";
