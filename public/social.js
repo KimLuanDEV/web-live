@@ -23,6 +23,9 @@ let isPosting = false;
 window.allUsers = {};
 
 function isAdminUser(uid){
+  // fallback cực quan trọng
+  if (auth?.role === "admin") return true;
+
   return window.allUsers?.[uid]?.role === "admin";
 }
 
@@ -124,6 +127,35 @@ document.querySelectorAll(".lp-post").forEach(p=>{
     `;
   }
 });
+
+
+// ===== 🔥 FIX: ADMIN HIỆN NÚT XOÁ SAU KHI LOAD all-users =====
+if (isAdminUser(auth.uid)) {
+  document.querySelectorAll(".lp-post").forEach(post => {
+    const postUid = post.dataset.uid;
+    const postId  = post.dataset.id;
+
+    // chỉ thêm cho bài của người khác
+    if (!postUid || postUid === auth.uid) return;
+
+    // đã có tools thì bỏ qua
+    if (post.querySelector(".lp-post-tools")) return;
+
+    const head = post.querySelector(".lp-post-head");
+    if (!head) return;
+
+    const tools = document.createElement("div");
+    tools.className = "lp-post-tools";
+    tools.innerHTML = `
+      <span class="lp-del"
+        onclick="adminDeletePost('${postId}')">🗑</span>
+    `;
+
+    head.appendChild(tools);
+  });
+}
+
+
 
 });
 
