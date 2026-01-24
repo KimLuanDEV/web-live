@@ -11056,7 +11056,7 @@ button:disabled{
 }
 
 
-/* ===== HEADER RÚT TIỀN ===== */
+/* ===== HEADER RÚT TIỀN – NỀN ĐEN ===== */
 .lp-header{
   position: sticky;
   top: 0;
@@ -11067,9 +11067,8 @@ button:disabled{
   align-items: center;
   justify-content: center;
 
-  background: rgba(0,0,0,.45);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255,255,255,.12);
+  background: #000;              /* ✅ NỀN ĐEN */
+  border-bottom: 1px solid #111; /* viền nhẹ */
 }
 
 /* Nút quay lại */
@@ -11089,20 +11088,21 @@ button:disabled{
   font-weight: 700;
   line-height: 1;
 
-  background: rgba(255,255,255,.08);
-  border: 1px solid rgba(255,255,255,.18);
+  background: #000;              /* ✅ nền đen */
+  border: 1px solid #222;
   color: #fff;
 
   cursor: pointer;
 }
 
 .btn-back:hover{
-  filter: brightness(1.15);
+  background: #111;
   transform: scale(1.05);
 }
 
 /* Title giữa header */
 .lp-header-title{
+  color: #fff;
   font-size: 16px;
   font-weight: 800;
   letter-spacing: .3px;
