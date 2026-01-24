@@ -545,6 +545,62 @@ async function quickWithdraw(uid){
 }
 
 
+
+function renderWithdrawCards(list){
+  const wrap = document.getElementById("withdrawCardList");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+
+  if (!Array.isArray(list) || list.length === 0) {
+    wrap.innerHTML = `<div class="muted">Chưa có yêu cầu rút tiền.</div>`;
+    return;
+  }
+
+  list.forEach(w=>{
+    const card = document.createElement("div");
+    card.className = "withdraw-card";
+
+    const status = (w.status || "pending").toLowerCase();
+    const chipClass = status === "approved" ? "w-approved" : status === "rejected" ? "w-rejected" : "w-pending";
+    const time = w.createdAt ? new Date(w.createdAt).toLocaleString("vi-VN") : "-";
+    const bank = w.bank || "-";
+    const amountText = (Number(w.amount) || 0).toLocaleString();
+
+    card.innerHTML = `
+      <div class="withdraw-card-head">
+        <img src="${w.avatar || "/avatar-default.png"}" onerror="this.src='/avatar-default.png'">
+        <div style="flex:1">
+          <b>${w.name || "Unknown"}</b><br>
+          <small>${w.uid || ""}</small>
+        </div>
+
+        <span class="w-chip ${chipClass}">${status}</span>
+      </div>
+
+      <div class="withdraw-card-meta">
+        💎 Số tiền: <b>${amountText}</b><br>
+        🏦 ${bank}<br>
+        🕒 ${time}
+      </div>
+
+      <div class="withdraw-card-actions">
+        ${
+          status === "pending"
+            ? `
+              <button onclick="withdrawAction('${w.id}','approve')">✅ Duyệt</button>
+              <button onclick="withdrawAction('${w.id}','reject')">❌ Từ chối</button>
+            `
+            : `<span class="muted">Đã xử lý</span>`
+        }
+      </div>
+    `;
+
+    wrap.appendChild(card);
+  });
+}
+
+
 async function loadWithdraws() {
   const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
@@ -596,11 +652,12 @@ tr.innerHTML = `
   </td>
 `;
 
-
-
-
     tbody.appendChild(tr);
   });
+
+  // ✅ render cards (mobile)
+  renderWithdrawCards(list);
+
 }
 
 async function withdrawAction(id, action) {

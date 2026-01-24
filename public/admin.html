@@ -454,6 +454,87 @@
 }
 
 
+
+/* ===== WITHDRAW CARD LIST (MOBILE) ===== */
+.withdraw-card-list{ display:none; }
+
+.withdraw-card{
+  background:linear-gradient(180deg,#12182a,#0e1320);
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:14px;
+}
+
+.withdraw-card-head{
+  display:flex;
+  gap:12px;
+  align-items:center;
+}
+
+.withdraw-card-head img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.withdraw-card-head small{
+  color:#7c86ff;
+  font-size:12px;
+}
+
+.withdraw-card-meta{
+  margin-top:10px;
+  font-size:13px;
+  line-height:1.6;
+  color:#cfd6ff;
+}
+
+.withdraw-card-actions{
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.withdraw-card-actions button{
+  border:none;
+  background:#0f152a;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:8px 10px;
+  cursor:pointer;
+}
+.withdraw-card-actions button:hover{
+  background:rgba(0,229,255,.15);
+}
+
+/* status chip */
+.w-chip{
+  display:inline-block;
+  padding:4px 8px;
+  border-radius:999px;
+  font-size:12px;
+  border:1px solid var(--line);
+}
+.w-pending{ color:#ffd166; }
+.w-approved{ color:#00e5ff; }
+.w-rejected{ color:#ff6b6b; }
+
+/* ✅ Mobile rule: ONLY withdraw tab uses card list */
+@media (max-width: 768px){
+  .admin-section[data-section="withdraws"] .table-wrap{
+    display:none;
+  }
+  .admin-section[data-section="withdraws"] .withdraw-card-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+}
+
+
+
   </style>
 </head>
 <body>
@@ -603,6 +684,11 @@
         <tbody></tbody>
       </table>
     </div>
+
+
+<!-- 📱 MOBILE: WITHDRAW CARD LIST -->
+<div id="withdrawCardList" class="withdraw-card-list"></div>
+
 
   </div>
 
