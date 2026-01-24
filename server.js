@@ -885,13 +885,16 @@ function emitAllUsers(){
   const list = [];
 
   for(const uid in db){
-    const p = db[uid].profile || {};
+    const acc = db[uid];
+    const p = acc.profile || {};
+
     list.push({
       uid,
       name: p.name || uid,
       avatar: normalizeAvatar(p.avatar) || "",
       cover: p.cover || "",
-      level: p.level || 1
+      level: p.level || 1,
+      role: acc.role || "user"   // 🔥 QUAN TRỌNG
     });
   }
 
@@ -2823,7 +2826,7 @@ if (inbox && inbox.length) {
   socket.data.uid = uid;
   emitActiveUsers();
   emitCoinUpdate(uid);
-
+  emitAllUsers(); // 🔁 đảm bảo FE luôn có role
 });
 
 
