@@ -683,6 +683,8 @@ window.lpPostMap[p.id] = p;
   div.dataset.uid = p.uid;   // 🔥 rất quan trọng
 
   const time = new Date(p.time).toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
+  
+  const isAdmin = window.allUsers?.[p.uid]?.role === "admin";
 
  div.innerHTML=`
 
@@ -696,11 +698,16 @@ window.lpPostMap[p.id] = p;
      style="cursor:pointer">
 
 <div>
-  <div class="lp-post-name"
-       onclick="openUserProfile('${p.uid}')"
-       style="cursor:pointer">
-    ${p.name}
-  </div>
+
+
+<div class="lp-post-name"
+     onclick="openUserProfile('${p.uid}')"
+     style="cursor:pointer">
+  ${p.name}
+  ${isAdmin ? `<span class="lp-verified" title="Admin đã xác minh">✔︎</span>` : ``}
+</div>
+
+
   <div class="lp-post-time">${time}</div>
 </div>
 
