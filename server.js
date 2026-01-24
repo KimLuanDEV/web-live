@@ -1912,6 +1912,55 @@ if (
   uTo.profile.friendRequests.push(from);
   saveUsers(db);
 
+// ===== 🔔 THÔNG BÁO LỜI MỜI KẾT BẠN =====
+const notifyText = `👤 ${uFrom.profile.name} đã gửi cho bạn lời mời kết bạn`;
+
+// 1️⃣ LƯU INBOX (xem lại được)
+if (!userInbox.has(to)) userInbox.set(to, []);
+userInbox.get(to).unshift({
+  type: "friend-request",
+  from,
+  name: uFrom.profile.name,
+  avatar: uFrom.profile.avatar,
+  text: notifyText,
+  time: Date.now(),
+  read: false
+});
+saveInbox(Object.fromEntries(userInbox));
+
+// 2️⃣ REALTIME NẾU ONLINE
+const sockets = activeUsers.get(to);
+if (sockets) {
+  for (const sid of sockets) {
+    io.to(sid).emit("system-notify", {
+      type: "friend-request",
+      text: notifyText,
+      from
+    });
+
+    // event riêng cho UI friend list
+    io.to(sid).emit("friend-request", {
+      from,
+      name: uFrom.profile.name,
+      avatar: uFrom.profile.avatar
+    });
+  }
+}
+
+// 3️⃣ PUSH NOTIFICATION (KHI OFFLINE)
+sendPushToUser(to, {
+  title: "👤 Lời mời kết bạn",
+  body: notifyText,
+  tag: "friend-request",
+  data: {
+    type: "friend-request",
+    from
+  },
+  url: "/friends.html"
+});
+
+
+
   // realtime nếu online
   const sockets = activeUsers.get(to);
   if (sockets) {
