@@ -870,3 +870,30 @@ function adminGoBack(){
     location.href = "/"; // fallback
   }
 }
+
+
+async function adminDeletePost(postId) {
+  const reason = prompt("🗑️ Lý do xoá bài (tuỳ chọn):") || "";
+
+  const ok = confirm("Xác nhận xoá bài đăng này?");
+  if (!ok) return;
+
+  const res = await fetch("/api/admin/delete-post", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      adminUid: admin.uid,
+      postId,
+      reason
+    })
+  });
+
+  const data = await res.json();
+  if (data.ok) {
+    alert("✅ Đã xoá bài đăng");
+  } else {
+    alert("❌ Xoá thất bại");
+  }
+}

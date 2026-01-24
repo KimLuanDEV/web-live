@@ -170,6 +170,12 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
+
+
+
+
+
+
 // ===== GET INBOX (SYNC KHI MỞ MESSAGES) =====
 app.get("/api/inbox", (req, res) => {
   const uid = req.headers["x-uid"];
@@ -264,6 +270,60 @@ app.get("/api/admin/live-rooms", (req, res) => {
   });
 });
 
+
+
+// ===== ADMIN DELETE POST =====
+app.post("/api/admin/delete-post", (req, res) => {
+  const { adminUid, postId, reason } = req.body || {};
+
+  if (!adminUid || !postId) {
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+
+  // 🔒 chỉ admin
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  const idx = lpPosts.findIndex(p => p.id === postId);
+  if (idx === -1) {
+    return res.status(404).json({ error: "post_not_found" });
+  }
+
+  const post = lpPosts[idx];
+
+  // 🧾 log admin action (nên có)
+  post.adminDeleted = {
+    by: adminUid,
+    reason: reason || "",
+    ts: Date.now()
+  };
+
+  // ❌ xoá khỏi danh sách hiển thị
+  lpPosts.splice(idx, 1);
+  saveSocial();
+
+  // 🔔 thông báo cho chủ bài đăng (nếu còn tồn tại)
+  const ownerUid = post.uid;
+  if (ownerUid) {
+    if (!userInbox.has(ownerUid)) userInbox.set(ownerUid, []);
+    userInbox.get(ownerUid).unshift({
+      type: "post-deleted",
+      text: `🗑️ Bài đăng của bạn đã bị Admin xoá${reason ? `\nLý do: ${reason}` : ""}`,
+      time: Date.now(),
+      read: false
+    });
+    saveInbox(Object.fromEntries(userInbox));
+  }
+
+  // 🔁 realtime cập nhật feed
+  io.emit("social-update", { type: "post-deleted", postId });
+
+  res.json({ ok: true });
+});
 
 
 app.post("/api/admin/close-room", (req, res) => {

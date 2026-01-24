@@ -478,6 +478,15 @@ socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, like
 });
 
 
+// ===== ADMIN DELETE POST REALTIME =====
+socket.on("social-update", ({ type, postId }) => {
+  if(type === "post-deleted"){
+    const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
+    if(el) el.remove();
+  }
+});
+
+
 
 socket.on("lp-delete-reply-child", ({ replyId, childId })=>{
   const el = document.querySelector(`#rp2_${replyId} .lp-reply[data-id="${childId}"]`);
@@ -759,6 +768,35 @@ ${child.text}
 });
 
 
+
+// ===== ADMIN DELETE POST =====
+async function adminDeletePost(postId){
+  const reason = prompt("🗑️ Lý do xoá bài (tuỳ chọn):") || "";
+
+  if(!confirm("Admin xác nhận xoá bài đăng này?")) return;
+
+  const res = await fetch("/api/admin/delete-post", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      adminUid: auth.uid,
+      postId,
+      reason
+    })
+  });
+
+  const data = await res.json();
+
+  if(data.ok){
+    showToast("✅ Admin đã xoá bài");
+  }else{
+    showToast("❌ Không xoá được bài");
+  }
+}
+
+
 function deletePost(id){
   if(!confirm("Xóa bài viết này?")) return;
 
@@ -821,12 +859,26 @@ window.lpPostMap[p.id] = p;
 </div>
 
 
- ${p.uid === auth.uid ? `
+${
+  p.uid === auth.uid || auth.role === "admin"
+  ? `
   <div class="lp-post-tools">
-    <span class="lp-edit" onclick="editPost('${p.id}')">✏️</span>
-    <span class="lp-del" onclick="deletePost('${p.id}')">🗑</span>
+
+    ${p.uid === auth.uid ? `
+      <span class="lp-edit" onclick="editPost('${p.id}')">✏️</span>
+    ` : ``}
+
+    <span class="lp-del"
+      onclick="${
+        auth.role === 'admin' && p.uid !== auth.uid
+          ? `adminDeletePost('${p.id}')`
+          : `deletePost('${p.id}')`
+      }"
+    >🗑</span>
+
   </div>
 ` : ``}
+
 
 
 </div>
