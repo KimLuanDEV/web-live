@@ -32,11 +32,34 @@ function verifiedBadge(uid){
 }
 
 
+function refreshPostBadges(){
+  document.querySelectorAll(".lp-post").forEach(post=>{
+    const uid = post.dataset.uid;
+    const nameEl = post.querySelector(".lp-post-name");
+    if(!uid || !nameEl) return;
+
+    const badge = verifiedBadge(uid);
+
+    // xoá badge cũ nếu có
+    const old = nameEl.querySelector(".lp-verified");
+    if(old) old.remove();
+
+    if(badge){
+      nameEl.insertAdjacentHTML("beforeend", badge);
+    }
+  });
+}
+
+
 socket.on("all-users", list=>{
   list.forEach(u=>{
     window.allUsers[u.uid] = u;
   });
 
+
+   // 🔥 FIX TÍCH XANH MẤT KHI RELOAD
+  refreshPostBadges();
+  
   // 🔁 refresh avatar người tặng
   document.querySelectorAll(".lp-post").forEach(p=>{
     const id = p.dataset.id;
