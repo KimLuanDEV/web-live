@@ -656,7 +656,8 @@ tr.innerHTML = `
   });
 
   // ✅ render cards (mobile)
-  renderWithdrawCards(list);
+ renderWithdrawCards(data.list);
+
 
 }
 
