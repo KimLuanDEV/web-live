@@ -11107,3 +11107,32 @@ button:disabled{
   font-weight: 800;
   letter-spacing: .3px;
 }
+
+.lp-verified{
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+
+  border-radius: 50%;
+  background: #1d9bf0;        /* nền xanh */
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+/* 🔵 VÒNG BỌC BÊN NGOÀI */
+.lp-verified::after{
+  content: "";
+  position: absolute;
+  inset: -3px;               /* độ dày vòng */
+  border-radius: 50%;
+  border: 1.6px solid #1d9bf0;
+  opacity: .65;
+}
+
