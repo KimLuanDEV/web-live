@@ -1954,8 +1954,11 @@ sendPushToUser(to, {
   body: notifyText,
   tag: "friend-request",
   data: {
-    type: "friend-request",
-    from
+   data: {
+   type: "friend-request",
+  fromUid: from
+}
+
   },
   url: "/friends.html"
 });
