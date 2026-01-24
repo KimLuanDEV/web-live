@@ -512,25 +512,11 @@ else if (text?.startsWith("/location ")) {
 
   // 💬 TEXT → GIỮ BUBBLE
   else {
-
-
-  const timeStr = new Date().toLocaleTimeString("vi-VN", {
-  hour: "2-digit",
-  minute: "2-digit"
-});
-
-html = `
-  <div class="bubble ${isMe ? "me" : "other"}">
-    <div class="bubble-content">${text}</div>
-    <div class="bubble-time">
-      ${timeStr}
-      ${isMe ? `<span class="msg-status">${status}</span>` : ""}
-    </div>
-  </div>
-`;
-
-
-
+    html = `
+      <div>
+         <span class="bubble-text ${isMe ? "me" : "other"}">${text}</span>
+      </div>
+    `;
   }
 
   div.innerHTML = `
