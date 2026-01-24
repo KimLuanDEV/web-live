@@ -1628,19 +1628,16 @@ io.on("connection", (socket) => {
 
 
 
-// 🎁 TẶNG QUÀ BÀI POST
 socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
 
+  // 🔒 CHẶN USER BỊ KHOÁ
+  if (blockIfLocked(socket)) return;
 
-// 🔒 CHẶN USER BỊ KHOÁ
-    if (blockIfLocked(socket)) return;
-
-    // 🚫 CHẶN GUEST
-    if (String(socket.data.uid || "").startsWith("guest_")) {
-      socket.emit("need-login", { feature: "gift" });
-      return;
-    }
-
+  // 🚫 CHẶN GUEST
+  if (String(socket.data.uid || "").startsWith("guest_")) {
+    socket.emit("need-login", { feature: "gift" });
+    return;
+  }
 
   if (!postId || !toUid || !fromUid || !coin) return;
 
@@ -1657,22 +1654,21 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
   const cost = Number(coin);
   if (!Number.isFinite(cost) || cost <= 0) return;
 
-  // 🚫 không đủ coin
+  // 🚫 không đủ kim cương
   if ((from.profile.coins || 0) < cost) {
     socket.emit("gift-failed", { reason: "not_enough_coin" });
     return;
   }
 
-  // ===== TRỪ / CỘNG COIN =====
+  // ===== TRỪ / CỘNG ĐÚNG NGHIỆP VỤ =====
   from.profile.coins -= cost;
   from.profile.coinSent = (from.profile.coinSent || 0) + cost;
 
-  to.profile.coins = (to.profile.coins || 0) + cost;
-  to.profile.coinReceived = (to.profile.coinReceived || 0) + cost;
+  to.profile.coinReceived =
+    (to.profile.coinReceived || 0) + cost;
 
   // ===== LƯU GIFT VÀO POST =====
   post.gifts ||= { total: 0, byUser: {} };
-
   post.gifts.total += cost;
   post.gifts.byUser[fromUid] =
     (post.gifts.byUser[fromUid] || 0) + cost;
@@ -1686,11 +1682,10 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
     total: post.gifts.total
   });
 
-  // 🔁 realtime coin sync
   emitCoinUpdate(fromUid);
   emitCoinUpdate(toUid);
 
-  // ===== INBOX + PUSH CHO CHỦ BÀI =====
+  // ===== INBOX + PUSH =====
   const giftText =
     `🎁 ${from.profile.name} đã tặng bạn ${cost.toLocaleString()} 💎`;
 
@@ -1714,6 +1709,7 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
     tag: "post-gift"
   });
 });
+
 
 
 
