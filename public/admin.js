@@ -603,12 +603,6 @@ initWithdrawRealtime();
 document.querySelectorAll(".admin-tabs .tab").forEach(tab=>{
   tab.onclick = ()=>{
 
-    if (key !== "users") {
-  userSearchKey = "";
-  const si = document.getElementById("searchUser");
-  if (si) si.value = "";
-}
-
 
     document.querySelectorAll(".admin-tabs .tab")
       .forEach(t=>t.classList.remove("active"));
