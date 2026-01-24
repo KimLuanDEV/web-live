@@ -51,6 +51,46 @@ function refreshPostBadges(){
 }
 
 
+
+function refreshCommentBadges(){
+  // COMMENT
+  document.querySelectorAll(".lp-comment").forEach(c=>{
+    const uid = c.dataset.uid;
+    if(!uid) return;
+
+    const nameEl = c.querySelector(".lp-cm-name");
+    if(!nameEl) return;
+
+    const badge = verifiedBadge(uid);
+
+    const old = nameEl.querySelector(".lp-verified");
+    if(old) old.remove();
+
+    if(badge){
+      nameEl.insertAdjacentHTML("beforeend", badge);
+    }
+  });
+
+  // REPLY + REPLY CHILD
+  document.querySelectorAll(".lp-reply").forEach(r=>{
+    const uid = r.dataset.uid;
+    if(!uid) return;
+
+    const nameEl = r.querySelector("b");
+    if(!nameEl) return;
+
+    const badge = verifiedBadge(uid);
+
+    const old = nameEl.querySelector(".lp-verified");
+    if(old) old.remove();
+
+    if(badge){
+      nameEl.insertAdjacentHTML("beforeend", badge);
+    }
+  });
+}
+
+
 socket.on("all-users", list=>{
   list.forEach(u=>{
     window.allUsers[u.uid] = u;
@@ -59,6 +99,7 @@ socket.on("all-users", list=>{
 
    // 🔥 FIX TÍCH XANH MẤT KHI RELOAD
   refreshPostBadges();
+  refreshCommentBadges();   // ✔️ comment + reply
   
 document.querySelectorAll(".lp-post").forEach(p=>{
   const id = p.dataset.id;

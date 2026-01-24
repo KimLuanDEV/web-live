@@ -11324,3 +11324,8 @@ button:disabled{
 }
 
 
+.lp-verified{
+  margin-left:4px;
+  color:#00eaff;
+  text-shadow:0 0 6px rgba(0,234,255,.8);
+}
