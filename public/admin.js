@@ -861,3 +861,12 @@ if (wNext) {
     renderWithdrawPage();
   };
 }
+
+
+function adminGoBack(){
+  if (history.length > 1) {
+    history.back();
+  } else {
+    location.href = "/"; // fallback
+  }
+}
