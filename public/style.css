@@ -11137,24 +11137,35 @@ button:disabled{
 }
 
 
+/* ===== FIX CHAT HEADER TITLE NOT SHOWING ===== */
+
 .chat-header {
   display: flex;
   align-items: center;
   gap: 10px;
 }
 
-/* 🔥 QUAN TRỌNG NHẤT */
+.chat-header-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+/* 🔥 CHÌA KHOÁ NẰM Ở ĐÂY */
 .chat-header-title {
-  flex: 1;                 /* ← CHÌA KHOÁ */
-  min-width: 0;            /* ← cho phép co text */
-  overflow: hidden;
+  flex: 1 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
 }
 
 #chatTitle {
-  display: block;
-  font-weight: 600;
+  display: block !important;
   font-size: 15px;
+  font-weight: 700;
   color: #fff;
+
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
