@@ -626,10 +626,10 @@ openChat(); // openChat đã xử lý tất cả
 
 
 // 🔥 MỞ MODAL CHAT THEO UID (DÙ TỪ PUSH / URL)
+
 async function openChatByUid(uid) {
   if (!uid) return;
 
-  // đợi load user list
   if (!allUsers.length) {
     await loadAllUsers();
   }
@@ -640,20 +640,25 @@ async function openChatByUid(uid) {
   currentTarget = u;
   currentTargetUID = u.uid;
 
-  const chatNameEl = document.getElementById("chatHeaderName");
-if (chatNameEl) {
-  chatNameEl.innerHTML = `
+  // ✅ SET TÊN ĐÚNG THEO HTML
+  chatTitle.innerHTML = `
     ${u.name}
-    ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
+    ${u.verified ? `
+      <span class="tick-blue">
+        <svg viewBox="0 0 24 24" width="10" height="10" fill="white">
+          <path d="M9 16.2l-3.5-3.5L4 14.2l5 5 12-12-1.4-1.4z"/>
+        </svg>
+      </span>
+    ` : ``}
   `;
-}
 
-
+  // ✅ SET AVATAR
   document.getElementById("chatHeaderAvatar").src =
     fixMedia(u.avatar) || "";
 
-  await openChat(); // 🔥 openChat đã sync + load + seen
+  await openChat(); // sync + load + seen
 }
+
 
 
 async function openChat(){
