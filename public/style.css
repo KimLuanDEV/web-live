@@ -11278,3 +11278,29 @@ button:disabled{
 .chat-clear:hover {
   opacity: 1;
 }
+
+
+.chat-header{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-header-title{
+  flex: 1;
+}
+
+.chat-clear{
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 1px solid rgba(255,59,107,.35);
+  background: rgba(255,59,107,.15);
+  color: #ff5a6b;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+.chat-clear:hover{
+  background: rgba(255,59,107,.28);
+}
