@@ -2505,6 +2505,7 @@ if (type === "video" && media) {
     from: fromUid,
     to,
     text: payloadText,
+    peer: fromUid, 
     time: Date.now(),
     seen: false,
     delivered: false
@@ -2664,7 +2665,8 @@ if(inbox){
       break;
     }
   }
-
+  
+saveInbox(Object.fromEntries(userInbox));
   // nếu hết tin chưa đọc → tắt badge
   const unread = inbox.filter(m=>!m.seen).length;
   if(unread === 0){

@@ -340,17 +340,30 @@ socket.on("private-message", ({ from, text, msgId }) => {
 
   }
 
-  // 🔔 3️⃣ MODAL ĐANG ĐÓNG → BẬT DOT ĐỎ (FIX QUAN TRỌNG)
+// 🔔 3️⃣ MODAL ĐANG ĐÓNG
+if (chatModal.classList.contains("hidden")) {
+
+  // 🔥 BẮT BUỘC: LƯU TIN NHẮN VÀO LOCAL
+  saveChat({
+    id: msgId,
+    from: peer,
+    to: auth.uid,
+    text,
+    time: Date.now(),
+    peer,
+    seen: false
+  });
+
   showInboxDot(1);
 
-// 🔔 HIỆN TOAST KHI MODAL ĐANG ĐÓNG
-if (chatModal.classList.contains("hidden")) {
   showMessageToast({
     name: from.name,
     text,
     avatar: from.avatar,
     uid: from.uid
   });
+
+  return;
 }
 
 
