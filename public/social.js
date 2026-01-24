@@ -22,6 +22,16 @@ let isPosting = false;
 
 window.allUsers = {};
 
+function verifiedBadge(uid){
+  const u = window.allUsers?.[uid];
+  if (!u) return "";
+  if (u.role === "admin") {
+    return `<span class="lp-verified" title="Admin đã xác minh">✔︎</span>`;
+  }
+  return "";
+}
+
+
 socket.on("all-users", list=>{
   list.forEach(u=>{
     window.allUsers[u.uid] = u;
@@ -464,10 +474,14 @@ div.innerHTML=`
      style="cursor:pointer">
   <div>
 
-  <b onclick="openUserProfile('${reply.uid}')"
+ <b onclick="openUserProfile('${reply.uid}')"
    style="cursor:pointer">
   ${reply.name}
-</b> ${reply.text}
+  ${verifiedBadge(reply.uid)}
+</b>
+
+
+${reply.text}
 
    <div class="lp-cm-actions">
   <span class="cm-like" onclick="likeReply('${postId}',${commentIndex},'${reply.id}')">
@@ -511,11 +525,15 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
      style="cursor:pointer">
 
     <div class="lp-cm-body">
-      <div class="lp-cm-name"
+
+     <div class="lp-cm-name"
      onclick="openUserProfile('${comment.uid}')"
      style="cursor:pointer">
   ${comment.name}
+  ${verifiedBadge(comment.uid)}
 </div>
+
+
       <div class="lp-cm-text">${comment.text}</div>
 
 <div class="lp-cm-actions">
@@ -627,10 +645,15 @@ div.innerHTML = `
 
 
   <div>
+
    <b onclick="openUserProfile('${child.uid}')"
    style="cursor:pointer">
   ${child.name}
-</b> ${child.text}
+  ${verifiedBadge(child.uid)}
+</b>
+ 
+
+${child.text}
 
     <div class="lp-cm-actions">
       <span class="cm-like"
@@ -841,11 +864,15 @@ if(p.comments && p.comments.length){
      style="cursor:pointer">
 
       <div class="lp-cm-body">
+
      <div class="lp-cm-name"
      onclick="openUserProfile('${comment.uid}')"
      style="cursor:pointer">
   ${comment.name}
+  ${verifiedBadge(comment.uid)}
 </div>
+
+
         <div class="lp-cm-text">${comment.text}</div>
 
 <div class="lp-cm-actions">
@@ -916,10 +943,14 @@ if(r.replies){
 
 
   <div>
-    <b onclick="openUserProfile('${child.uid}')"
+
+   <b onclick="openUserProfile('${child.uid}')"
    style="cursor:pointer">
   ${child.name}
-</b> ${child.text}
+  ${verifiedBadge(child.uid)}
+</b>
+
+${child.text}
 
     <div class="lp-cm-actions">
       <span class="cm-like"
