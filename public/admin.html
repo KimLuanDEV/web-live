@@ -383,6 +383,65 @@
   cursor:not-allowed;
 }
 
+
+/* ===== WITHDRAW COMPACT TABLE ===== */
+.admin-table.compact th,
+.admin-table.compact td{
+  padding:10px 12px;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.admin-table.compact td:first-child{
+  white-space:normal;
+}
+
+.withdraw-user{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+
+.withdraw-user img{
+  width:32px;
+  height:32px;
+  border-radius:50%;
+  object-fit:cover;
+}
+
+.withdraw-user small{
+  color:#7c86ff;
+  font-size:12px;
+}
+
+/* trạng thái */
+.st-pending{
+  color:#ffd166;
+  font-weight:600;
+}
+.st-approved{
+  color:#00e5ff;
+  font-weight:600;
+}
+.st-rejected{
+  color:#ff6b6b;
+  font-weight:600;
+}
+
+/* nút duyệt */
+.withdraw-actions button{
+  border:none;
+  background:#0f152a;
+  border:1px solid var(--line);
+  border-radius:8px;
+  padding:6px 8px;
+  cursor:pointer;
+}
+.withdraw-actions button:hover{
+  background:rgba(0,229,255,.15);
+}
+
+
   </style>
 </head>
 <body>
@@ -507,23 +566,38 @@
 </div>
 </div>
 
+
+
 <div class="admin-section hidden" data-section="withdraws">
 
-<h2>
-  💎 Yêu cầu rút tiền
-  <span id="withdrawPing" class="ping hidden">●</span>
-</h2>
+  <div class="card">
+    <div class="card-title">
+      💎 Yêu cầu rút tiền
+      <span id="withdrawPing" class="ping hidden">●</span>
+    </div>
 
-<table class="admin-table" id="withdrawTable">
- <thead>
-  <tr>
-    <th>Người dùng</th>
-  </tr>
-</thead>
+    <div class="table-wrap">
+      <table class="admin-table compact" id="withdrawTable">
+        <thead>
+          <tr>
+            <th>Người dùng</th>
+            <th>Số tiền</th>
+            <th>Ngân hàng</th>
+            <th>Thời gian</th>
+            <th>Trạng thái</th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
 
-  <tbody></tbody>
-</table>
+  </div>
+
 </div>
+
+
+
 
 
 

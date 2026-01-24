@@ -561,25 +561,44 @@ async function loadWithdraws() {
   data.list.forEach(w => {
     const tr = document.createElement("tr");
 
-    tr.innerHTML = `
-      <td>${w.name} (${w.uid})</td>
-      <td>${w.amount.toLocaleString()}</td>
-      <td>${w.bank}</td>
-      <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
-      <td>
-        <span class="st-${w.status}">${w.status}</span>
-      </td>
-      <td>
-        ${
-          w.status === "pending"
-            ? `
-          <button onclick="withdrawAction('${w.id}','approve')">✅</button>
-          <button onclick="withdrawAction('${w.id}','reject')">❌</button>
-          `
-            : "-"
-        }
-      </td>
-    `;
+    
+tr.innerHTML = `
+  <td>
+    <div class="withdraw-user">
+      <img src="${w.avatar || '/avatar-default.png'}"
+           onerror="this.src='/avatar-default.png'">
+      <div>
+        <b>${w.name}</b><br>
+        <small>${w.uid}</small>
+      </div>
+    </div>
+  </td>
+
+  <td><b>${w.amount.toLocaleString()}</b></td>
+  <td>${w.bank || "-"}</td>
+  <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
+
+  <td>
+    <span class="st-${w.status}">
+      ${w.status}
+    </span>
+  </td>
+
+  <td class="withdraw-actions">
+    ${
+      w.status === "pending"
+        ? `
+        <button onclick="withdrawAction('${w.id}','approve')">✅</button>
+        <button onclick="withdrawAction('${w.id}','reject')">❌</button>
+        `
+        : "-"
+    }
+  </td>
+`;
+
+
+
+
     tbody.appendChild(tr);
   });
 }
