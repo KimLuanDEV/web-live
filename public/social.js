@@ -2005,7 +2005,38 @@ function openGiftUsers(postId){
       const div = document.createElement("div");
       div.className = "lp-action";
       div.style.padding = "10px";
-      div.innerHTML = `👤 ${uid} — <b>${amt} 💎</b>`;
+
+      const u = window.allUsers?.[uid];
+
+const name = u?.name || uid;
+const avatar = u?.avatar
+  ? fixMedia(u.avatar)
+  : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+    encodeURIComponent(name);
+
+div.innerHTML = `
+  <div style="display:flex;align-items:center;gap:10px">
+    <img src="${avatar}"
+         style="width:36px;height:36px;
+                border-radius:50%;
+                object-fit:cover;
+                cursor:pointer"
+         onclick="openUserProfile('${uid}')">
+
+    <div style="flex:1">
+      <div style="font-weight:700;cursor:pointer"
+           onclick="openUserProfile('${uid}')">
+        ${name}
+      </div>
+      <div style="opacity:.8;font-size:13px">
+        ${amt} 💎
+      </div>
+    </div>
+  </div>
+`;
+
+
+
       box.appendChild(div);
     });
 
