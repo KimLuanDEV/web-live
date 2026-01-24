@@ -11136,3 +11136,26 @@ button:disabled{
   opacity: .65;
 }
 
+
+.chat-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+/* 🔥 QUAN TRỌNG NHẤT */
+.chat-header-title {
+  flex: 1;                 /* ← CHÌA KHOÁ */
+  min-width: 0;            /* ← cho phép co text */
+  overflow: hidden;
+}
+
+#chatTitle {
+  display: block;
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
