@@ -377,6 +377,12 @@
 }
 
 
+
+.pager button:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
   </style>
 </head>
 <body>
@@ -474,9 +480,10 @@
 
 
   <div class="pager">
-  <button onclick="userPage--; renderUserPage()">◀</button>
-  <span id="userPageInfo"></span>
-  <button onclick="userPage++; renderUserPage()">▶</button>
+<button onclick="gotoUserPage(userPage - 1)">◀</button>
+<span id="userPageInfo"></span>
+<button onclick="gotoUserPage(userPage + 1)">▶</button>
+
 </div>
 
 

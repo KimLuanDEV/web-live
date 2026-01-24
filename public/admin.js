@@ -9,6 +9,25 @@ let userSearchKey = "";
 
 let currentAdminTab = "users";
 
+function gotoUserPage(page){
+  let list = USERS;
+
+  if (userSearchKey) {
+    list = USERS.filter(u =>
+      u.uid.toLowerCase().includes(userSearchKey) ||
+      u.name.toLowerCase().includes(userSearchKey)
+    );
+  }
+
+  const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
+
+  // 🔒 chặn vượt biên
+  if (page < 1) page = 1;
+  if (page > totalPages) page = totalPages;
+
+  userPage = page;
+  renderUserPage();
+}
 
 
 function renderUserPage(){
@@ -36,6 +55,30 @@ function renderUserPage(){
     info.textContent =
       `Trang ${userPage} / ${Math.max(1, Math.ceil(list.length / PAGE_SIZE))}`;
   }
+
+  // 🔒 DISABLE PAGER BUTTON
+  const pager = document.querySelector(".pager");
+  if (pager) {
+    const btnPrev = pager.querySelector("button:first-child");
+    const btnNext = pager.querySelector("button:last-child");
+
+    let totalList = USERS;
+    if (userSearchKey) {
+      totalList = USERS.filter(u =>
+        u.uid.toLowerCase().includes(userSearchKey) ||
+        u.name.toLowerCase().includes(userSearchKey)
+      );
+    }
+
+    const totalPages = Math.max(1, Math.ceil(totalList.length / PAGE_SIZE));
+
+    if (btnPrev) btnPrev.disabled = userPage <= 1;
+    if (btnNext) btnNext.disabled = userPage >= totalPages;
+  }
+
+
+
+
 }
 
 
