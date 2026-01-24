@@ -3,6 +3,20 @@ const feed = document.getElementById("lpFeed");
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
+
+// ===== POST GIFTS CONFIG =====
+const POST_GIFTS = [
+  { id: "rose",    icon: "🌹", coin: 10 },
+  { id: "beer",    icon: "🍺", coin: 20 },
+  { id: "cake",    icon: "🎂", coin: 50 },
+  { id: "diamond", icon: "💎", coin: 100 }
+];
+
+let giftPostId = null;
+let giftPostOwner = null;
+
+
+
 let composeImages = []; // 🔥 danh sách ảnh đang preview
 let isPosting = false;
 
@@ -713,10 +727,21 @@ ${p.video ? `
   <div class="lp-action like" onclick="likePost('${p.id}')">
     ❤️ <span id="like_${p.id}">${p.likes?.length||0}</span>
   </div>
+
   <div class="lp-action" onclick="toggleComments('${p.id}')">
     💬 <span id="c_${p.id}">${p.comments?.length||0}</span>
   </div>
+
+  <div class="lp-action gift"
+       onclick="openGift('${p.id}', '${p.uid}')">
+    🎁 <span id="g_${p.id}">
+      ${p.gifts?.total || 0}
+    </span>
+  </div>
 </div>
+
+
+
 
 <div class="lp-comments hidden" id="cm_${p.id}">
   <div class="lp-comment-list"></div>
@@ -1727,6 +1752,58 @@ function clearMessageBadge(){
   const badge = tab?.querySelector(".badge");
   if(badge) badge.remove();
 }
+
+
+
+
+// ===== POST GIFT =====
+function openGift(postId, ownerUid){
+  giftPostId = postId;
+  giftPostOwner = ownerUid;
+
+  const box = document.getElementById("giftList");
+  if(!box) return;
+
+  box.innerHTML = POST_GIFTS.map(g => `
+    <div class="lp-action"
+      style="display:flex;
+             justify-content:space-between;
+             align-items:center;
+             padding:14px;
+             border-bottom:1px solid rgba(255,255,255,.08)"
+      onclick="sendGift('${g.id}', ${g.coin})">
+      <span>${g.icon} ${g.id}</span>
+      <b>${g.coin} 💰</b>
+    </div>
+  `).join("");
+
+  document.getElementById("giftModal")?.classList.remove("hidden");
+}
+
+function closeGift(){
+  document.getElementById("giftModal")?.classList.add("hidden");
+}
+
+function sendGift(giftId, coin){
+  if(!giftPostId || !giftPostOwner) return;
+
+  socket.emit("lp-gift-post",{
+    postId: giftPostId,
+    toUid: giftPostOwner,
+    fromUid: auth.uid,
+    giftId,
+    coin
+  });
+
+  closeGift();
+}
+
+// realtime update tổng quà
+socket.on("lp-gift-post", ({ postId, total })=>{
+  const el = document.getElementById("g_" + postId);
+  if(el) el.textContent = total;
+});
+
 
 
 
