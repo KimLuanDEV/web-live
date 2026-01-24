@@ -1406,12 +1406,10 @@ async function loadFriendRequestCount(){
 function renderProfileViewOnly(p){
   // avatar + name
   avatarPreview.src = fixMedia(p.avatar) || defaultProfile.avatar;
-  displayName.textContent = p.name || "User";
+  profileNameText.textContent = p.name || "User";
+  renderProfileVerified(p.uid);   // 🔥 BẮT BUỘC
 
-  
-  // 🔥 FIX: GẮN TÍCH XANH CHO PROFILE NGƯỜI KHÁC
-  renderProfileVerified(p.uid);
-  
+
   // bio (chỉ xem)
   const bioInput = document.getElementById("bioInput");
   if (bioInput){
