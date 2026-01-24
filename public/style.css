@@ -11221,30 +11221,3 @@ button:disabled{
 
 
 
-.chat-header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding-right: 44px; /* 👈 chừa chỗ cho nút 🗑️ */
-}
-
-.chat-header-title {
-  flex: 1;
-  min-width: 0; /* 🔥 bắt buộc để ellipsis hoạt động */
-}
-
-.chat-header-title span,
-#chatTitle {
-  display: block;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis; /* … nếu tên dài */
-}
-
-.chat-clear {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 3;
-}
