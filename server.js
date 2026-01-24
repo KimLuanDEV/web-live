@@ -1669,7 +1669,19 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
 
   // ===== LƯU GIFT VÀO POST =====
   post.gifts ||= { total: 0, byUser: {} };
-  post.gifts.total += cost;
+
+const senderProfile = from.profile || {};
+
+post.gifts.byUser[fromUid] ||= {
+  uid: fromUid,
+  name: senderProfile.name || fromUid,
+  avatar: senderProfile.avatar || "",
+  amount: 0
+};
+
+post.gifts.byUser[fromUid].amount += cost;
+
+
   post.gifts.byUser[fromUid] =
     (post.gifts.byUser[fromUid] || 0) + cost;
 
@@ -1677,12 +1689,12 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
   saveSocial();
 
   // ===== REALTIME UPDATE =====
-  io.emit("lp-gift-post", {
+io.emit("lp-gift-post", {
   postId,
   total: post.gifts.total,
-  fromUid,
-  amount: cost
+  giftUser: post.gifts.byUser[fromUid]
 });
+
 
 
 
@@ -2823,7 +2835,7 @@ if (inbox && inbox.length) {
   socket.data.uid = uid;
   emitActiveUsers();
   emitCoinUpdate(uid);
-
+  emitAllUsers();
 });
 
 

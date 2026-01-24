@@ -770,25 +770,27 @@ ${p.gifts?.byUser ? `
 <div class="lp-gift-users"
      onclick="openGiftUsers('${p.id}')">
   🎁 Tặng bởi:
-  ${Object.entries(p.gifts.byUser)
-    .slice(0,3)
-    .map(([uid,amt]) => {
+  ${Object.values(p.gifts.byUser)
+  .slice(0,3)
+  .map(u => {
 
       const u = window.allUsers?.[uid];
 
       const name = u?.name || uid;
-      const avatar = u?.avatar
-        ? fixMedia(u.avatar)
-        : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
-          encodeURIComponent(name);
 
-      return `
-        <span class="gift-user">
-          <img src="${avatar}" />
-          <b>${name}</b>
-          <i>${amt}💎</i>
-        </span>
-      `;
+     const avatar = u.avatar
+  ? fixMedia(u.avatar)
+  : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+    encodeURIComponent(u.name);
+
+return `
+  <span class="gift-user">
+    <img src="${avatar}">
+    <b>${u.name}</b>
+    <i>${u.amount}💎</i>
+  </span>
+`;
+
     }).join("")}
 
   ${Object.keys(p.gifts.byUser).length > 3
@@ -1858,24 +1860,15 @@ function sendGift(giftId, coin){
 }
 
 // 🔁 REALTIME UPDATE QUÀ + NGƯỜI TẶNG
-socket.on("lp-gift-post", ({ postId, total, fromUid, amount }) => {
-
-  // 1️⃣ cập nhật tổng quà
-  const el = document.getElementById("g_" + postId);
-  if (el) el.textContent = total;
-
-  // 2️⃣ cập nhật cache post
+socket.on("lp-gift-post", ({ postId, total, giftUser }) => {
   const post = window.lpPostMap?.[postId];
   if (!post) return;
 
   post.gifts ||= { total: 0, byUser: {} };
   post.gifts.total = total;
+  post.gifts.byUser[giftUser.uid] = giftUser;
 
-  // 3️⃣ cập nhật người tặng (realtime)
-  if (fromUid && amount) {
-    post.gifts.byUser[fromUid] =
-      (post.gifts.byUser[fromUid] || 0) + amount;
-  }
+  renderPost(post, false);
 
   // 4️⃣ update UI danh sách người tặng nếu đang mở
   const box = document.querySelector(
@@ -1999,46 +1992,39 @@ function openGiftUsers(postId){
   const box = document.getElementById("giftUserList");
   box.innerHTML = "";
 
-  Object.entries(post.gifts.byUser)
-    .sort((a,b)=>b[1]-a[1])
-    .forEach(([uid, amt])=>{
-      const div = document.createElement("div");
-      div.className = "lp-action";
-      div.style.padding = "10px";
+ Object.values(post.gifts.byUser)
+  .sort((a,b)=>b.amount - a.amount)
+  .forEach(u=>{
+    const div = document.createElement("div");
+    div.className = "lp-action";
+    div.style.padding = "10px";
 
-      const u = window.allUsers?.[uid];
+    const avatar = u.avatar
+      ? fixMedia(u.avatar)
+      : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+        encodeURIComponent(u.name);
 
-const name = u?.name || uid;
-const avatar = u?.avatar
-  ? fixMedia(u.avatar)
-  : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
-    encodeURIComponent(name);
+    div.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px">
+        <img src="${avatar}"
+             style="width:36px;height:36px;
+                    border-radius:50%;object-fit:cover;cursor:pointer"
+             onclick="openUserProfile('${u.uid}')">
 
-div.innerHTML = `
-  <div style="display:flex;align-items:center;gap:10px">
-    <img src="${avatar}"
-         style="width:36px;height:36px;
-                border-radius:50%;
-                object-fit:cover;
-                cursor:pointer"
-         onclick="openUserProfile('${uid}')">
-
-    <div style="flex:1">
-      <div style="font-weight:700;cursor:pointer"
-           onclick="openUserProfile('${uid}')">
-        ${name}
+        <div style="flex:1">
+          <div style="font-weight:700;cursor:pointer"
+               onclick="openUserProfile('${u.uid}')">
+            ${u.name}
+          </div>
+          <div style="opacity:.8;font-size:13px">
+            ${u.amount} 💎
+          </div>
+        </div>
       </div>
-      <div style="opacity:.8;font-size:13px">
-        ${amt} 💎
-      </div>
-    </div>
-  </div>
-`;
+    `;
+    box.appendChild(div);
+  });
 
-
-
-      box.appendChild(div);
-    });
 
   document.getElementById("giftUserModal").classList.remove("hidden");
 }
