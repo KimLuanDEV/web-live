@@ -7,6 +7,12 @@ const PAGE_SIZE = 5;
 let userPage = 1;
 let userSearchKey = "";
 
+// ===== WITHDRAW PAGINATION =====
+const WITHDRAW_PAGE_SIZE = 5;
+let withdrawPage = 1;
+let WITHDRAWS = [];
+
+
 let currentAdminTab = "users";
 
 function gotoUserPage(page){
@@ -655,11 +661,86 @@ tr.innerHTML = `
     tbody.appendChild(tr);
   });
 
-  // ✅ render cards (mobile)
- renderWithdrawCards(data.list);
+
+WITHDRAWS = data.list || [];
+withdrawPage = 1;
+renderWithdrawPage();
+
 
 
 }
+
+
+
+function renderWithdrawPage(){
+  const totalPages = Math.max(1, Math.ceil(WITHDRAWS.length / WITHDRAW_PAGE_SIZE));
+  if (withdrawPage < 1) withdrawPage = 1;
+  if (withdrawPage > totalPages) withdrawPage = totalPages;
+
+  const start = (withdrawPage - 1) * WITHDRAW_PAGE_SIZE;
+  const slice = WITHDRAWS.slice(start, start + WITHDRAW_PAGE_SIZE);
+
+  // 🖥 render TABLE
+  const tbody = document.querySelector("#withdrawTable tbody");
+  if (tbody) {
+    tbody.innerHTML = "";
+    slice.forEach(w=>{
+      const tr = document.createElement("tr");
+
+      tr.innerHTML = `
+        <td>
+          <div class="withdraw-user">
+            <img src="${w.avatar || '/avatar-default.png'}"
+                 onerror="this.src='/avatar-default.png'">
+            <div>
+              <b>${w.name}</b><br>
+              <small>${w.uid}</small>
+            </div>
+          </div>
+        </td>
+
+        <td><b>${Number(w.amount).toLocaleString()}</b></td>
+        <td>${w.bank || "-"}</td>
+        <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
+
+        <td>
+          <span class="st-${w.status}">
+            ${w.status}
+          </span>
+        </td>
+
+        <td class="withdraw-actions">
+          ${
+            w.status === "pending"
+              ? `
+              <button onclick="withdrawAction('${w.id}','approve')">✅</button>
+              <button onclick="withdrawAction('${w.id}','reject')">❌</button>
+              `
+              : "-"
+          }
+        </td>
+      `;
+      tbody.appendChild(tr);
+    });
+  }
+
+  // 📱 render CARD LIST
+  renderWithdrawCards(slice);
+
+  // 🔢 update pager
+  const info = document.getElementById("withdrawPageInfo");
+  if (info) {
+    info.textContent = `Trang ${withdrawPage} / ${totalPages}`;
+  }
+
+  const btnPrev = document.getElementById("withdrawPrev");
+  const btnNext = document.getElementById("withdrawNext");
+
+  if (btnPrev) btnPrev.disabled = withdrawPage <= 1;
+  if (btnNext) btnNext.disabled = withdrawPage >= totalPages;
+}
+
+
 
 async function withdrawAction(id, action) {
   const note = prompt("Ghi chú (có thể bỏ trống)") || "";
@@ -760,4 +841,23 @@ function toggleUserDetail(el){
   if (!detail) return;
 
   detail.classList.toggle("hidden");
+}
+
+
+
+const wPrev = document.getElementById("withdrawPrev");
+const wNext = document.getElementById("withdrawNext");
+
+if (wPrev) {
+  wPrev.onclick = () => {
+    withdrawPage--;
+    renderWithdrawPage();
+  };
+}
+
+if (wNext) {
+  wNext.onclick = () => {
+    withdrawPage++;
+    renderWithdrawPage();
+  };
 }
