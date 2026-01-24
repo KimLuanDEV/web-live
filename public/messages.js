@@ -68,17 +68,23 @@ function chatKey(){
 
 
 
+function getChatKeyByUID(peer){
+  if(!auth?.uid || !peer) return null;
+  return auth.uid < peer
+    ? "chat_" + auth.uid + "_" + peer
+    : "chat_" + peer + "_" + auth.uid;
+}
 
 function saveChat(msg){
-  const key = chatKey();
-  if(!key || !msg?.id) return;
+  if(!msg?.id || !msg.peer) return;
+
+  const key = getChatKeyByUID(msg.peer);
+  if(!key) return;
 
   const arr = JSON.parse(localStorage.getItem(key) || "[]");
 
-  // 🔥 CHỐNG TRÙNG msgId
   const exist = arr.find(m => m.id === msg.id);
   if (exist) {
-    // nếu bản mới là revoke → ghi đè
     if (msg.revoked || msg.text === "__REVOKED__") {
       exist.text = "__REVOKED__";
       exist.revoked = true;
@@ -89,6 +95,7 @@ function saveChat(msg){
   arr.push(msg);
   localStorage.setItem(key, JSON.stringify(arr));
 }
+
 
 
 
