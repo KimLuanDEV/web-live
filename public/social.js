@@ -60,14 +60,25 @@ socket.on("all-users", list=>{
    // 🔥 FIX TÍCH XANH MẤT KHI RELOAD
   refreshPostBadges();
   
-  // 🔁 refresh avatar người tặng
-  document.querySelectorAll(".lp-post").forEach(p=>{
-    const id = p.dataset.id;
-    if(window.lpPostMap?.[id]){
-      p.querySelector(".lp-gift-users")?.remove();
-      renderPost(window.lpPostMap[id], false);
-    }
-  });
+document.querySelectorAll(".lp-post").forEach(p=>{
+  const id = p.dataset.id;
+  const data = window.lpPostMap?.[id];
+  if(!data) return;
+
+  // 🔄 chỉ refresh badge + avatar người tặng
+  const giftBox = p.querySelector(".lp-gift-users");
+  if (giftBox && data.gifts?.byUser) {
+    giftBox.innerHTML = `
+      🎁 Tặng bởi:
+      ${Object.entries(data.gifts.byUser)
+        .slice(0,3)
+        .map(([uid,amt]) => `<span class="gift-user">${amt}💎</span>`)
+        .join(" ")}
+      ${Object.keys(data.gifts.byUser).length > 3 ? "…" : ""}
+    `;
+  }
+});
+
 });
 
 
@@ -642,9 +653,15 @@ socket.emit("lp-post", {
 
 
 
-socket.on("lp-init", list=>{
-  list.forEach(p=>renderPost(p,false));
+let lpInited = false;
+
+socket.on("lp-init", list => {
+  if (lpInited) return;   // ⛔ không init lại
+  lpInited = true;
+
+  list.forEach(p => renderPost(p, false));
 });
+
 
 
 socket.on("lp-post", post=>{
@@ -717,6 +734,11 @@ socket.on("lp-delete", ({ postId })=>{
 
 
 function renderPost(p, top=false){
+
+    // ⛔⛔⛔ CHẶN RENDER TRÙNG BÀI VIẾT
+  if (document.querySelector(`.lp-post[data-id="${p.id}"]`)) {
+    return;
+  }
 
 window.lpPostMap ||= {};
 window.lpPostMap[p.id] = p;
