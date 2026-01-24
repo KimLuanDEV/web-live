@@ -2,7 +2,7 @@ const params = new URLSearchParams(location.search);
 const received = Number(params.get("received") || 0);
 
 // 🔁 TỶ GIÁ (bạn chỉnh tùy ý)
-const RATE = 300; // 1 kim cương = 100đ
+const RATE = 133; // 1 kim cương = 100đ / giá đô $
 // ⛔ RÚT TỐI THIỂU
 const MIN_WITHDRAW = 5000; // 💎 tối thiểu để được rút
 
