@@ -592,6 +592,51 @@
 }
 
 
+/* ===== FORCE BLACK BACKGROUND – ADMIN ===== */
+body{
+  background: #000 !important;
+  background-image: none !important;
+}
+
+
+/* ===== FIX BACK BUTTON ALIGN ===== */
+.btn-back{
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+
+  display: grid;
+  place-items: center;   /* ✅ căn giữa tuyệt đối */
+
+  padding: 0;
+  line-height: 1;        /* ✅ bỏ lệch do font */
+
+  font-size: 20px;
+  font-weight: 700;
+
+  border-radius: 50%;
+  background: #0f152a;
+  border: 1px solid var(--line);
+  color: var(--text);
+
+  cursor: pointer;
+}
+
+.btn-back::before{
+  content: "‹";          /* ✅ ép icon */
+  display: block;
+  transform: translateY(-1px); /* 🔥 chỉnh vi mô cho mắt */
+}
+
+.btn-back{
+  color: transparent;    /* ẩn chữ gốc */
+}
+
+.btn-back:hover{
+  background: rgba(0,229,255,.15);
+}
+
+
 
   </style>
 </head>
