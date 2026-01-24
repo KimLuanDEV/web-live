@@ -2135,7 +2135,7 @@ socket.on("lp-delete", ({ postId, uid })=>{
 
 // gửi feed khi user vừa kết nối
 socket.emit("lp-init", lpPosts.slice(0, 50));
-emitAllUsers();
+
 
 
 socket.on("lp-edit-post", ({ postId, uid, text, images })=>{
