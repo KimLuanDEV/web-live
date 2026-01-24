@@ -3,31 +3,41 @@
 const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
-const PAGE_SIZE = 20;
+const PAGE_SIZE = 5;
 let userPage = 1;
-
+let userSearchKey = "";
 
 let currentAdminTab = "users";
 
 
 
 function renderUserPage(){
+  let list = USERS;
+
+  // 🔍 áp dụng search nếu có
+  if (userSearchKey) {
+    list = USERS.filter(u =>
+      u.uid.toLowerCase().includes(userSearchKey) ||
+      u.name.toLowerCase().includes(userSearchKey)
+    );
+  }
+
   const start = (userPage - 1) * PAGE_SIZE;
   const end = start + PAGE_SIZE;
-  const slice = USERS.slice(start, end);
+  const slice = list.slice(start, end);
 
-if (currentAdminTab === "users") {
-  renderUsers(slice);      // desktop
-  renderUserCards(slice);  // mobile
-}
-
+  if (currentAdminTab === "users") {
+    renderUsers(slice);      // desktop
+    renderUserCards(slice);  // mobile
+  }
 
   const info = document.getElementById("userPageInfo");
   if (info) {
     info.textContent =
-      `Trang ${userPage} / ${Math.ceil(USERS.length / PAGE_SIZE)}`;
+      `Trang ${userPage} / ${Math.max(1, Math.ceil(list.length / PAGE_SIZE))}`;
   }
 }
+
 
 
 
@@ -202,15 +212,9 @@ function renderUsers(list){
 
 }
 
-// 🔍 SEARCH
-document.getElementById("searchUser").addEventListener("input", e => {
-  const q = e.target.value.toLowerCase();
-  const filtered = USERS.filter(u =>
-    u.uid.toLowerCase().includes(q) ||
-    u.name.toLowerCase().includes(q)
-  );
-  renderUsers(filtered);
-});
+
+
+
 
 // ➕ NẠP NHANH
 async function quickTopup(uid){
@@ -271,6 +275,17 @@ await fetch("/api/admin/lock-user", {
   loadUsers();
 }
 
+
+
+const searchInput = document.getElementById("searchUser");
+
+if (searchInput) {
+  searchInput.addEventListener("input", e => {
+    userSearchKey = e.target.value.trim().toLowerCase();
+    userPage = 1;          // 🔁 reset về trang đầu
+    renderUserPage();      // 🔥 render đúng flow
+  });
+}
 
 
 
@@ -587,6 +602,14 @@ initWithdrawRealtime();
 
 document.querySelectorAll(".admin-tabs .tab").forEach(tab=>{
   tab.onclick = ()=>{
+
+    if (key !== "users") {
+  userSearchKey = "";
+  const si = document.getElementById("searchUser");
+  if (si) si.value = "";
+}
+
+
     document.querySelectorAll(".admin-tabs .tab")
       .forEach(t=>t.classList.remove("active"));
     tab.classList.add("active");
