@@ -1,7 +1,7 @@
 
 
 // 🔐 UID ADMIN ĐƯỢC PHÉP VÀO TRANG ADMIN
-const ADMIN_UIDS = ["admin", "KimDogCat", "superuser"];
+const ADMIN_UIDS = ["LivestreamPro", "KimDogCat"];
 
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
