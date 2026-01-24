@@ -326,9 +326,17 @@
 }
 
 @media (max-width: 768px){
-  .table-wrap{
-    display:none; /* ẩn table */
+  /* ❗ CHỈ ẨN TABLE CỦA TAB USERS */
+  .admin-section[data-section="users"] .table-wrap{
+    display:none;
   }
+
+  .user-card-list{
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+
 
   .user-card-list{
     display:flex;
@@ -439,6 +447,10 @@
 }
 .withdraw-actions button:hover{
   background:rgba(0,229,255,.15);
+}
+
+.admin-section[data-section="withdraws"] .table-wrap{
+  min-height:120px;
 }
 
 

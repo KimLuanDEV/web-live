@@ -561,7 +561,7 @@ async function loadWithdraws() {
   data.list.forEach(w => {
     const tr = document.createElement("tr");
 
-    
+
 tr.innerHTML = `
   <td>
     <div class="withdraw-user">
@@ -672,6 +672,12 @@ document.querySelectorAll(".admin-tabs .tab").forEach(tab=>{
 
     const key = tab.dataset.tab;
     currentAdminTab = key;
+
+if (key === "withdraws") {
+  loadWithdraws();   // 🔥 BẮT BUỘC
+}
+
+
 
     document.querySelectorAll(".admin-section")
       .forEach(sec=>{
