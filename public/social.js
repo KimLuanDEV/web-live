@@ -59,7 +59,7 @@ socket.on("all-users", list=>{
 
    // 🔥 FIX TÍCH XANH MẤT KHI RELOAD
   refreshPostBadges();
-
+  
   // 🔁 refresh avatar người tặng
   document.querySelectorAll(".lp-post").forEach(p=>{
     const id = p.dataset.id;
@@ -758,15 +758,12 @@ window.lpPostMap[p.id] = p;
 </div>
 
 
-${(p.uid === auth.uid || auth.role === "admin") ? `
+ ${p.uid === auth.uid ? `
   <div class="lp-post-tools">
-    ${p.uid === auth.uid ? `
-      <span class="lp-edit" onclick="editPost('${p.id}')">✏️</span>
-    ` : ``}
+    <span class="lp-edit" onclick="editPost('${p.id}')">✏️</span>
     <span class="lp-del" onclick="deletePost('${p.id}')">🗑</span>
   </div>
 ` : ``}
-
 
 
 </div>

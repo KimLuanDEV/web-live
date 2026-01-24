@@ -2137,44 +2137,15 @@ socket.on("lp-like-comment", async ({ postId, index, uid }) => {
   }
 });
 
-socket.on("lp-delete", ({ postId, uid }) => {
-  if (!postId || !uid) return;
+socket.on("lp-delete", ({ postId, uid })=>{
+  const idx = lpPosts.findIndex(p => p.id === postId && p.uid === uid);
+  if(idx < 0) return;  // không phải chủ bài → không cho
 
-  const db = loadUsers();
-  const user = db[uid];
-  if (!user) return;
-
-  const index = lpPosts.findIndex(p => p.id === postId);
-  if (index < 0) return;
-
-  const post = lpPosts[index];
-
-  const isOwner = post.uid === uid;
-  const isAdmin = user.role === "admin";
-
-  // 🚫 không phải chủ bài và cũng không phải admin → chặn
-  if (!isOwner && !isAdmin) return;
-
-  // 🧹 XOÁ BÀI
-  lpPosts.splice(index, 1);
+  lpPosts.splice(idx,1);
   saveSocial();
 
-  // 🔁 realtime xoá cho tất cả client
   io.emit("lp-delete", { postId });
-
-  // 🧾 log nếu admin xoá bài người khác (khuyến nghị)
-  if (isAdmin && !isOwner) {
-    user.profile.adminLogs ||= [];
-    user.profile.adminLogs.unshift({
-      type: "delete-post",
-      postId,
-      targetUid: post.uid,
-      ts: Date.now()
-    });
-    saveUsers(db);
-  }
 });
-
 
 
   // ===== LIVESTREAM PRO SOCIAL =====
