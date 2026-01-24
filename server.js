@@ -170,6 +170,20 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
+// ===== GET INBOX (SYNC KHI MỞ MESSAGES) =====
+app.get("/api/inbox", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(403).json({ error: "no_auth" });
+
+  const list = userInbox.get(uid) || [];
+
+  res.json({
+    ok: true,
+    list
+  });
+});
+
+
 
 app.get("/api/withdraw-history", (req, res) => {
   const uid = req.headers["x-uid"];
@@ -2665,7 +2679,7 @@ if(inbox){
       break;
     }
   }
-  
+
 saveInbox(Object.fromEntries(userInbox));
   // nếu hết tin chưa đọc → tắt badge
   const unread = inbox.filter(m=>!m.seen).length;

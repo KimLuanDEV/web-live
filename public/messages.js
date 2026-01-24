@@ -22,8 +22,7 @@ let currentUploadMsgId = null;
 const renderedMsgIds = new Set();
 
 
-// 🔒 CHỐNG XỬ LÝ OFFLINE-MESSAGES NHIỀU LẦN
-let offlineHandled = false;
+
 
 
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
@@ -75,6 +74,8 @@ function getChatKeyByUID(peer){
     : "chat_" + peer + "_" + auth.uid;
 }
 
+
+
 function saveChat(msg){
   if(!msg?.id || !msg.peer) return;
 
@@ -96,6 +97,36 @@ function saveChat(msg){
   localStorage.setItem(key, JSON.stringify(arr));
 }
 
+
+
+// 🔄 SYNC INBOX TỪ SERVER (CHỐNG MẤT TIN)
+async function syncInboxFromServer() {
+  if (!auth?.uid) return;
+
+  const res = await fetch("/api/inbox", {
+    headers: { "x-uid": auth.uid }
+  });
+
+  const data = await res.json();
+  if (!data.ok || !Array.isArray(data.list)) return;
+
+  data.list.forEach(m => {
+    if (!m.id || !m.from || !m.to) return;
+
+    const peer = m.from === auth.uid ? m.to : m.from;
+
+    saveChat({
+      id: m.id,
+      from: m.from,
+      to: m.to,
+      text: m.text,
+      time: m.time,
+      peer,
+      seen: false,
+      revoked: m.text === "__REVOKED__"
+    });
+  });
+}
 
 
 
@@ -184,56 +215,6 @@ socket.on("connect", async () => {
 
 
 
-socket.on("offline-messages", (list) => {
-  // 🔥 CHỈ XỬ LÝ 1 LẦN / LOAD
-  if (offlineHandled) return;
-  offlineHandled = true;
-
-  console.log("📥 Offline messages:", list);
-
-  list.forEach(m => {
-    const peer = m.from === auth.uid ? m.to : m.from;
-    const key =
-      auth.uid < peer
-        ? "chat_" + auth.uid + "_" + peer
-        : "chat_" + peer + "_" + auth.uid;
-
-    const arr = JSON.parse(localStorage.getItem(key) || "[]");
-
-    const exist = arr.find(x => x.id === m.id);
-
-    // 🆕 CHƯA CÓ → THÊM MỚI
-    if (!exist) {
-      arr.push({
-        id: m.id,
-        from: m.from,
-        to: m.to,
-        text: m.text === "__REVOKED__" ? "__REVOKED__" : m.text,
-        time: m.time,
-        peer,
-        revoked: m.text === "__REVOKED__"
-      });
-    } 
-    // ♻️ ĐÃ CÓ → TUYỆT ĐỐI KHÔNG GHI ĐÈ REVOKE
-    else {
-      // nếu local đã revoke → bỏ qua server
-      if (exist.revoked) return;
-
-      // nếu server báo revoke → cập nhật
-      if (m.text === "__REVOKED__") {
-        exist.text = "__REVOKED__";
-        exist.revoked = true;
-      }
-    }
-
-    localStorage.setItem(key, JSON.stringify(arr));
-  });
-
-  if (list.length) {
-    showInboxDot(list.length);
-    renderUserList();
-  }
-});
 
 
 
@@ -623,28 +604,36 @@ document.getElementById("chatHeaderAvatar").src = fixMedia(u.avatar) || "";
 
 
 
-      loadChat();
-      openChat();
-      scrollChatToBottom(true); // 🔥 CHÈN DÒNG NÀY
-   
+openChat(); // openChat đã xử lý tất cả
+
     };
 
     userList.appendChild(div);
   });
 }
 
-function openChat(){
+
+
+async function openChat(){
   document.body.style.overflow = "hidden";
   chatModal.classList.remove("hidden");
 
-  clearInboxDot(); // 🔥 THÊM DÒNG NÀY
+  // 🔥 BẮT BUỘC: sync inbox từ server
+  await syncInboxFromServer();
 
-if (currentTargetUID) {
-  markPeerSeen(currentTargetUID);   // 🔥 local
-  socket.emit("msg-seen-all", { peer: currentTargetUID });
+  // render lại chat sau khi sync
+  loadChat();
+  scrollChatToBottom(true);
+
+  // ✅ chỉ mark seen SAU KHI ĐÃ LOAD
+  if (currentTargetUID) {
+    markPeerSeen(currentTargetUID);
+    socket.emit("msg-seen-all", { peer: currentTargetUID });
+  }
+
+  clearInboxDot();
 }
 
-}
 
 
 function markPeerSeen(peer){
@@ -776,18 +765,16 @@ function showMessageToast({ name, text, avatar, uid }) {
     width:36px;height:36px;border-radius:50%;object-fit:cover
   `;
 
-  div.onclick = () => {
-    // 👉 mở chat ngay khi click toast
-    const u = allUsers.find(x => x.uid === uid);
-    if (u) {
-      currentTarget = u;
-      currentTargetUID = u.uid;
-      loadChat();
-      openChat();
-      scrollChatToBottom(true); // ✅
-    }
-    div.remove();
-  };
+div.onclick = async () => {
+  const u = allUsers.find(x => x.uid === uid);
+  if (u) {
+    currentTarget = u;
+    currentTargetUID = u.uid;
+    await openChat(); // 🔥 openChat đã tự sync + load
+  }
+  div.remove();
+};
+
 
   document.body.appendChild(div);
 
