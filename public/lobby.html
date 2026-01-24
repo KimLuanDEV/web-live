@@ -419,6 +419,13 @@ let MY_FRIENDS = [];
 let MY_REQUESTS = [];
 let MY_BLOCKED = [];
 
+function lobbyVerifiedBadge(uid){
+  const u = ALL_USERS.find(x => x.uid === uid);
+  if (u && u.role === "admin") {
+    return `<span class="lp-verified" title="Admin Livestream Pro">✔︎</span>`;
+  }
+  return "";
+}
 
 
 // load tất cả tài khoản
@@ -1282,12 +1289,15 @@ if (MY_BLOCKED.includes(u.uid)) return "";
 
         <div class="pinfo">
 
-         <div class="pname"
-     ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
-     style="${!isMe ? "cursor:pointer" : ""}">
+   <div class="pname"
+  ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
+  style="${!isMe ? "cursor:pointer" : ""}">
   ${u.name}
-  ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
+  ${u.role === "admin"
+    ? `<span class="lp-verified" title="Admin Livestream Pro">✔︎</span>`
+    : ``}
 </div>
+
 
 
 
