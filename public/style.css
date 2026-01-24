@@ -11304,3 +11304,21 @@ button:disabled{
 .chat-clear:hover{
   background: rgba(255,59,107,.28);
 }
+
+
+.chat-clear.icon-btn{
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  background: rgba(255,59,107,.12);
+  border:1px solid rgba(255,59,107,.35);
+  color:#ff5a6b;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+}
+
+.chat-clear.icon-btn:hover{
+  background: rgba(255,59,107,.28);
+}
