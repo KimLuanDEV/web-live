@@ -20,6 +20,15 @@ let giftPostOwner = null;
 let composeImages = []; // 🔥 danh sách ảnh đang preview
 let isPosting = false;
 
+window.allUsers = {};
+
+socket.on("all-users", list=>{
+  list.forEach(u=>{
+    window.allUsers[u.uid] = u;
+  });
+});
+
+
 
 if (auth.uid) {
   socket.emit("auth-login", { uid: auth.uid });
@@ -753,12 +762,20 @@ ${p.gifts?.byUser ? `
   🎁 Tặng bởi:
   ${Object.entries(p.gifts.byUser)
     .slice(0,3)
-    .map(([uid,amt]) => `
-      <span class="gift-user">${amt}💎</span>
-    `).join(" ")}
-  ${Object.keys(p.gifts.byUser).length > 3 ? "…" : ""}
+    .map(([uid,amt]) => {
+      const u = window.allUsers?.[uid] || {};
+      return `
+        <span class="gift-user">
+          <img src="${fixMedia(u.avatar)}">
+          <b>${u.name || uid}</b>
+          <i>${amt}💎</i>
+        </span>
+      `;
+    }).join("")}
+  ${Object.keys(p.gifts.byUser).length > 3 ? "<span class='gift-more'>…</span>" : ""}
 </div>
 ` : ``}
+
 
 
 
