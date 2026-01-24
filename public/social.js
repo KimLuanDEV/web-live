@@ -1793,7 +1793,7 @@ function openGift(postId, ownerUid){
              border-bottom:1px solid rgba(255,255,255,.08)"
       onclick="sendGift('${g.id}', ${g.coin})">
       <span>${g.icon} ${g.id}</span>
-      <b>${g.coin} 💰</b>
+      <b>${g.coin} 💎</b>
     </div>
   `).join("");
 
