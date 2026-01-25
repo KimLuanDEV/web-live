@@ -406,8 +406,12 @@ if(box){
 }
 
 
-function deleteComment(postId, index){
-  if(!confirm("Xóa bình luận này?")) return;
+async function deleteComment(postId, index){
+  const ok = await showConfirmModal({
+    title:"🗑️ Xoá bình luận",
+    body:"Bạn chắc chắn muốn xoá bình luận này?"
+  });
+  if(!ok) return;
 
   socket.emit("lp-delete-comment", {
     postId,
@@ -415,6 +419,7 @@ function deleteComment(postId, index){
     uid: auth.uid
   });
 }
+
 
 function likeComment(postId, index){
   socket.emit("lp-like-comment",{
@@ -425,8 +430,12 @@ function likeComment(postId, index){
 }
 
 
-function deleteReply(postId, cIndex, replyId){
-  if(!confirm("Xóa trả lời này?")) return;
+async function deleteReply(postId, cIndex, replyId){
+  const ok = await showConfirmModal({
+    title:"🗑️ Xoá trả lời",
+    body:"Bạn chắc chắn muốn xoá trả lời này?"
+  });
+  if(!ok) return;
 
   socket.emit("lp-delete-reply",{
     postId,
@@ -437,8 +446,13 @@ function deleteReply(postId, cIndex, replyId){
 }
 
 
-function deleteReplyChild(postId, cIndex, replyId, childId){
-  if(!confirm("Xóa trả lời này?")) return;
+
+async function deleteReplyChild(postId, cIndex, replyId, childId){
+  const ok = await showConfirmModal({
+    title:"🗑️ Xoá trả lời",
+    body:"Bạn chắc chắn muốn xoá trả lời này?"
+  });
+  if(!ok) return;
 
   socket.emit("lp-delete-reply-child",{
     postId,
@@ -448,6 +462,7 @@ function deleteReplyChild(postId, cIndex, replyId, childId){
     uid: auth.uid
   });
 }
+
 
 
 function likeReplyChild(postId, cIndex, replyId, childId){
@@ -614,7 +629,7 @@ ${reply.text}
   ? `<span class="cm-del"
       onclick="${
         isAdminUser(auth.uid) && reply.uid !== auth.uid
-          ? `adminDeleteReply('${postId}','${comment.id}','${reply.id}')`
+          ? `adminDeleteReply('${postId}','${commentIndex}','${reply.id}')`
           : `deleteReply('${postId}',${commentIndex},'${reply.id}')`
       }"
     >🗑</span>`
@@ -827,14 +842,63 @@ ${child.text}
 });
 
 
-// ===== ADMIN DELETE COMMENT =====
+// ===== SOCIAL CONFIRM MODAL =====
+function showConfirmModal({ title, body, input=false }) {
+  return new Promise(resolve => {
+    let modal = document.getElementById("socialConfirmModal");
+    if (!modal) {
+      modal = document.createElement("div");
+      modal.id = "socialConfirmModal";
+      modal.innerHTML = `
+        <div class="scm-backdrop"></div>
+        <div class="scm-box">
+          <h3 id="scmTitle"></h3>
+          <div id="scmBody"></div>
+          <input id="scmInput" class="scm-input hidden" />
+          <div class="scm-actions">
+            <button id="scmCancel">Huỷ</button>
+            <button id="scmOk">OK</button>
+          </div>
+        </div>
+      `;
+      document.body.appendChild(modal);
+    }
+
+    const titleEl = modal.querySelector("#scmTitle");
+    const bodyEl  = modal.querySelector("#scmBody");
+    const inputEl = modal.querySelector("#scmInput");
+
+    titleEl.textContent = title || "Xác nhận";
+    bodyEl.innerHTML = body || "";
+    inputEl.classList.toggle("hidden", !input);
+    inputEl.value = "";
+
+    modal.classList.add("show");
+
+    modal.querySelector("#scmOk").onclick = () => {
+      modal.classList.remove("show");
+      resolve(input ? inputEl.value : true);
+    };
+    modal.querySelector("#scmCancel").onclick = () => {
+      modal.classList.remove("show");
+      resolve(false);
+    };
+  });
+}
+
+
+
 async function adminDeleteComment(postId, commentId) {
-  const reason = prompt("🗑️ Lý do xoá comment (tuỳ chọn):") || "";
-  if (!confirm("Admin xác nhận xoá comment?")) return;
+  const reason = await showConfirmModal({
+    title:"🗑️ Admin xoá bình luận",
+    body:"Nhập lý do (tuỳ chọn):",
+    input:true
+  });
+  if(reason === false) return;
 
   await fetch("/api/admin/delete-comment", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
       adminUid: auth.uid,
       postId,
@@ -844,14 +908,17 @@ async function adminDeleteComment(postId, commentId) {
   });
 }
 
-// ===== ADMIN DELETE REPLY =====
 async function adminDeleteReply(postId, commentId, replyId) {
-  const reason = prompt("🗑️ Lý do xoá reply (tuỳ chọn):") || "";
-  if (!confirm("Admin xác nhận xoá reply?")) return;
+  const reason = await showConfirmModal({
+    title:"🗑️ Admin xoá trả lời",
+    body:"Nhập lý do (tuỳ chọn):",
+    input:true
+  });
+  if(reason === false) return;
 
   await fetch("/api/admin/delete-comment", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
       adminUid: auth.uid,
       postId,
@@ -864,17 +931,24 @@ async function adminDeleteReply(postId, commentId, replyId) {
 
 
 
-// ===== ADMIN DELETE POST =====
-async function adminDeletePost(postId){
-  const reason = prompt("🗑️ Lý do xoá bài (tuỳ chọn):") || "";
 
-  if(!confirm("Admin xác nhận xoá bài đăng này?")) return;
+async function adminDeletePost(postId){
+  const reason = await showConfirmModal({
+    title:"🗑️ Admin xoá bài đăng",
+    body:"Nhập lý do xoá (tuỳ chọn):",
+    input:true
+  });
+  if(reason === false) return;
+
+  const ok = await showConfirmModal({
+    title:"Xác nhận",
+    body:"Bạn chắc chắn muốn xoá bài đăng này?"
+  });
+  if(!ok) return;
 
   const res = await fetch("/api/admin/delete-post", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       adminUid: auth.uid,
       postId,
@@ -884,22 +958,27 @@ async function adminDeletePost(postId){
 
   const data = await res.json();
 
-  if(data.ok){
-    showToast("✅ Admin đã xoá bài");
-  }else{
-    showToast("❌ Không xoá được bài");
-  }
+  showToast(
+    data.ok ? "✅ Admin đã xoá bài" : "❌ Không xoá được bài",
+    data.ok ? "success" : "error"
+  );
 }
 
 
-function deletePost(id){
-  if(!confirm("Xóa bài viết này?")) return;
+
+async function deletePost(id){
+  const ok = await showConfirmModal({
+    title:"🗑️ Xoá bài viết",
+    body:"Bạn chắc chắn muốn xoá bài viết này?"
+  });
+  if(!ok) return;
 
   socket.emit("lp-delete", {
     postId: id,
     uid: auth.uid
   });
 }
+
 
 socket.on("lp-delete", ({ postId })=>{
   const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
@@ -2280,7 +2359,8 @@ function notifyWithdraw(data){
   }
 
   // fallback cuối cùng
-  alert(text);
+  showToast(text, "error", 5000);
+
 }
 
 

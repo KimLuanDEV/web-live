@@ -132,11 +132,16 @@ function renderUserCards(list){
 }
 
 
-
 if (!admin.uid) {
-  alert("❌ Chưa đăng nhập");
-  location.href = "/login.html";
-} else {
+  showModal({
+    title: "❌ Chưa đăng nhập",
+    body: "Vui lòng đăng nhập lại"
+  }).then(() => {
+    location.href = "/login.html";
+  });
+}
+
+else {
   const el = document.getElementById("adminUid");
   if (el) el.textContent = admin.uid;
 }
@@ -548,11 +553,21 @@ async function closeLiveRoom(){
 
 
 async function quickWithdraw(uid){
-  const amount = Number(prompt("Rút bao nhiêu coin?"));
-  if(!amount) return;
+  const amount = await showModal({
+    title: "➖ Rút coin",
+    body: "Nhập số coin cần rút:",
+    input: true,
+    confirm: true
+  });
+  if (!amount) return;
 
-  const note = prompt("Lý do rút coin:");
-  if(!note) return;
+  const note = await showModal({
+    title: "📝 Ghi chú",
+    body: "Nhập lý do rút coin:",
+    input: true,
+    confirm: true
+  });
+  if (note === false) return;
 
   await fetch("/api/admin/withdraw", {
     method:"POST",
@@ -560,13 +575,14 @@ async function quickWithdraw(uid){
     body: JSON.stringify({
       adminUid: admin.uid,
       targetUid: uid,
-      amount,
+      amount: Number(amount),
       note
     })
   });
 
   loadUsers();
 }
+
 
 
 
@@ -761,17 +777,22 @@ function renderWithdrawPage(){
 
 
 async function withdrawAction(id, action) {
-  const note = prompt("Ghi chú (có thể bỏ trống)") || "";
-  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  const note = await showModal({
+    title: action === "approve" ? "✅ Duyệt rút tiền" : "❌ Từ chối rút tiền",
+    body: "Nhập ghi chú (tuỳ chọn):",
+    input: true,
+    confirm: true
+  });
+  if (note === false) return;
 
   const res = await fetch("/api/admin/withdraw-action", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "x-uid": me.uid
+      "x-uid": admin.uid
     },
     body: JSON.stringify({
-      adminUid: me.uid,
+      adminUid: admin.uid,
       id,
       action,
       note
@@ -779,12 +800,17 @@ async function withdrawAction(id, action) {
   });
 
   const data = await res.json();
-  if (data.ok) {
-    loadWithdraws();
-  } else {
-    alert("❌ Lỗi: " + (data.error || "unknown"));
-  }
+
+  await showModal({
+    title: data.ok ? "✅ Thành công" : "❌ Thất bại",
+    body: data.ok
+      ? "Đã xử lý yêu cầu rút tiền"
+      : ("Lỗi: " + (data.error || "unknown"))
+  });
+
+  if (data.ok) loadWithdraws();
 }
+
 
 loadWithdraws();
 
