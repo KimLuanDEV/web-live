@@ -1,34 +1,72 @@
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+if (!auth.uid) location.href = "/login.html";
+
 const myCoinEl = document.getElementById("myCoin");
+const agentList = document.getElementById("agentList");
 const qrBox = document.getElementById("qrBox");
 const bankInfo = document.getElementById("bankInfo");
+const agentQr = document.getElementById("agentQr");
 
-if (!auth.uid) {
-  location.href = "/login.html";
-}
-
-// hiển thị coin hiện tại
 myCoinEl.textContent = `💰 Coin hiện tại: ${auth.coins || 0}`;
 
-// click gói coin
-document.querySelectorAll(".coin-pack").forEach(pack => {
-  pack.onclick = () => {
-    const coin = pack.dataset.coin;
-    const money = pack.dataset.money;
+// 🧑‍💼 DANH SÁCH ĐẠI LÝ (tạm thời hardcode)
+const AGENTS = [
+  {
+    name: "Đại lý Livestream Pro",
+    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=livestream",
+    bank: "Techcombank",
+    account: "9919891995",
+    owner: "ĐẠI LÝ LIVESTREAM",
+    qr: "/images/qr-demo.png",
+    online: true
+  },
+  {
+    name: "Đại lý Hỗ Trợ VIP",
+    avatar: "https://api.dicebear.com/7.x/thumbs/svg?seed=vip",
+    bank: "Vietcombank",
+    account: "0021000313522",
+    owner: "VIP SUPPORT",
+    qr: "/images/qr-demo.png",
+    online: false
+  }
+];
 
-    const content = `NAP ${auth.uid} ${coin}`;
+// render đại lý
+AGENTS.forEach(agent => {
+  const div = document.createElement("div");
+  div.className = "agent-card";
 
-    bankInfo.innerHTML = `
-      <b>Ngân hàng:</b> Techcombank<br>
-      <b>STK:</b> 9919891995<br>
-      <b>Chủ TK:</b> Đại lý nạp LivestreamPro<br>
-      <b>Số tiền:</b> ${Number(money).toLocaleString()}đ<br>
-      <b>Nội dung:</b> <code id="transferText">${content}</code>
-    `;
+  div.innerHTML = `
+    <img class="agent-avatar" src="${agent.avatar}">
+    <div class="agent-info">
+      <div class="agent-name">${agent.name}</div>
+      <div class="agent-bank">${agent.bank} • ${agent.account}</div>
+      <div class="agent-status ${agent.online ? "" : "offline"}">
+        ${agent.online ? "🟢 Đang online" : "⚪ Offline"}
+      </div>
+    </div>
+    <div>➕</div>
+  `;
 
-    qrBox.classList.remove("hidden");
-  };
+  div.onclick = () => openAgent(agent);
+  agentList.appendChild(div);
 });
+
+function openAgent(agent) {
+  const content = `NAP ${auth.uid}`;
+
+  agentQr.src = agent.qr;
+
+  bankInfo.innerHTML = `
+    <b>Đại lý:</b> ${agent.name}<br>
+    <b>Ngân hàng:</b> ${agent.bank}<br>
+    <b>STK:</b> ${agent.account}<br>
+    <b>Chủ TK:</b> ${agent.owner}<br>
+    <b>Nội dung:</b> <code id="transferText">${content}</code>
+  `;
+
+  qrBox.classList.remove("hidden");
+}
 
 function copyTransfer() {
   const text = document.getElementById("transferText")?.textContent;
