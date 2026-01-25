@@ -498,35 +498,6 @@ html, body {
 }
 
 
-
-/* title giữa tuyệt đối */
-.header-title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  text-align: center;
-}
-
-.header-title h2 {
-  margin: 0;
-  font-size: 17px;
-  font-weight: 600;
-  color: #fff;
-}
-
-/* balance bên phải */
-.header-balance {
-  font-size: 13px;
-  color: #aaa;
-  white-space: nowrap;
-}
-
-.header-balance b {
-  color: #fff;
-  font-weight: 600;
-}
-
-
   </style>
 </head>
 
@@ -537,30 +508,29 @@ html, body {
 <div class="topup-header">
 
   <button class="btn-back" onclick="history.back()" aria-label="Back">
-    <svg viewBox="0 0 24 24" width="20" height="20">
-      <path
-        d="M15 18l-6-6 6-6"
-        fill="none"
-        stroke="currentColor"
-        stroke-width="2.5"
-        stroke-linecap="round"
-        stroke-linejoin="round"
-      />
-    </svg>
-  </button>
+  <svg viewBox="0 0 24 24" width="20" height="20">
+    <path
+      d="M15 18l-6-6 6-6"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</button>
 
-  <!-- TITLE GIỮA -->
-  <div class="header-title">
-    <h2>Purchase</h2>
-  </div>
 
-  <!-- SỐ DƯ BÊN PHẢI -->
-  <div id="myCoin" class="header-balance">
-    <b>0</b> 💎
-  </div>
+  <div class="header-center">
+  <h2>Purchase</h2>
+  <div id="myCoin">
+  Số dư khả dụng · <b>12,500</b> 💎
+</div>
 
 </div>
 
+  <div class="header-spacer"></div>
+</div>
 
 
 
