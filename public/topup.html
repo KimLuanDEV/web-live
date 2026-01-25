@@ -477,6 +477,27 @@ html, body {
 }
 
 
+.option-logos {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 6px;
+}
+
+.option-logos img {
+  height: 18px;
+  width: auto;
+  opacity: .85;
+  filter: brightness(1.1);
+}
+
+
+.option-logos img {
+  height: 16px;
+  opacity: .75;
+}
+
+
   </style>
 </head>
 
@@ -537,12 +558,21 @@ html, body {
 <div class="topup-option" id="cardOption">
 
   <div class="option-header">
-    <div class="option-left">
-      <div class="option-title">💳 Nạp qua thẻ</div>
-      <div class="option-desc">ATM · Visa · Mastercard</div>
-    </div>
-    <div class="option-arrow">›</div>
+  <div class="option-left">
+    <div class="option-title">💳 Nạp qua thẻ</div>
+    <div class="option-desc">ATM · Visa · Mastercard</div>
   </div>
+
+  <!-- LOGO THẺ -->
+  <div class="option-logos">
+    <img src="/images/payments/atm.png" alt="ATM">
+    <img src="/images/payments/visa.png" alt="Visa">
+    <img src="/images/payments/mastercard.png" alt="Mastercard">
+  </div>
+
+  <div class="option-arrow">›</div>
+</div>
+
 
   <!-- 📋 NỘI DUNG (ẨN / SẮP MỞ) -->
   <div class="option-content hidden">
