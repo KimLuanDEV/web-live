@@ -1,6 +1,9 @@
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 if (!auth.uid) location.href = "/login.html";
 
+// ✅ KHỞI TẠO SOCKET (BẮT BUỘC)
+const socket = io();
+
 const myCoinEl  = document.getElementById("myCoin");
 const agentList = document.getElementById("agentList");
 const qrBox     = document.getElementById("qrBox");
@@ -117,6 +120,8 @@ socket.on("agent-status", ({ uid, online }) => {
 });
 
 
-socket.emit("socket-login", {
-  uid: auth.uid
+socket.on("connect", () => {
+  socket.emit("socket-login", {
+    uid: auth.uid
+  });
 });
