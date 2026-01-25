@@ -14,13 +14,50 @@ const POST_GIFTS = [
 
 let giftPostId = null;
 let giftPostOwner = null;
-
-
-
 let composeImages = []; // 🔥 danh sách ảnh đang preview
 let isPosting = false;
 
 window.allUsers = {};
+
+// ===== 🔥 DAILY SYSTEM POSTS (BÀI ĐĂNG ẢO THEO NGÀY) =====
+const DAILY_POSTS = [
+  "🔥 Hôm nay bạn đã livestream chưa?",
+  "🎁 Đừng quên tặng quà cho streamer bạn yêu thích nhé!",
+  "💬 Một bình luận tích cực có thể tạo ra động lực lớn 💙",
+  "🚀 Livestream Pro đang phát triển từng ngày cùng bạn!",
+  "👑 Ai sẽ là streamer nổi bật nhất hôm nay?",
+  "📢 Tip: Stream buổi tối thường dễ lên view hơn!",
+  "✨ Cộng đồng văn minh – Livestream vui hơn!"
+];
+
+
+
+function renderDailyFakePost(){
+  const today = new Date().toISOString().slice(0,10); // yyyy-mm-dd
+  const seed = today.split("-").join("");
+  const index = Number(seed) % DAILY_POSTS.length;
+
+  const fakePost = {
+    id: "daily_" + today,
+    uid: "__system__",
+    name: "Livestream Pro",
+    avatar: "/icons/icon-192.png",
+    text: DAILY_POSTS[index],
+    images: [],
+    video: "",
+    time: Date.now() - 1000 * 60 * 30, // 30 phút trước
+    likes: [],
+    comments: [],
+    gifts: null
+  };
+
+  // ⛔ tránh render trùng
+  if (document.querySelector(`.lp-post[data-id="${fakePost.id}"]`)) return;
+
+  renderPost(fakePost, true); // pin lên đầu feed
+}
+
+
 
 function isAdminUser(uid){
   // fallback cực quan trọng
@@ -780,11 +817,13 @@ socket.emit("lp-post", {
 let lpInited = false;
 
 socket.on("lp-init", list => {
-  if (lpInited) return;   // ⛔ không init lại
+  if (lpInited) return;
   lpInited = true;
 
+  renderDailyFakePost();   // 🔥 BÀI ĐĂNG ẢO MỖI NGÀY
   list.forEach(p => renderPost(p, false));
 });
+
 
 
 
