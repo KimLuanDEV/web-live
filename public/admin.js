@@ -265,16 +265,18 @@ function renderUsers(list){
 
 
 
-// ➕ NẠP NHANH
 async function quickTopup(uid){
-  const amount = prompt("Nạp bao nhiêu coin?");
+  const amount = await showModal({
+    title: "➕ Nạp coin",
+    body: "Nhập số coin:",
+    input: true,
+    confirm: true
+  });
   if (!amount) return;
 
   await fetch("/api/admin/topup", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       adminUid: admin.uid,
       targetUid: uid,
@@ -282,47 +284,54 @@ async function quickTopup(uid){
     })
   });
 
-  loadUsers(); // refresh list
+  loadUsers();
 }
 
 
 
 
-// 🚫 KHOÁ / MỞ KHOÁ USER
-async function toggleLock(uid, isBlocked){
-  const reason = prompt(
-    isBlocked
-      ? "🔓 Lý do mở khoá (tuỳ chọn):"
-      : "🚫 Lý do khoá tài khoản:"
-  );
 
-  // khi khoá → bắt buộc có lý do
-  if (!isBlocked && (!reason || !reason.trim())) {
-    alert("⚠️ Vui lòng nhập lý do khoá");
+async function toggleLock(uid, isBlocked){
+  const reason = await showModal({
+    title: isBlocked ? "🔓 Mở khoá tài khoản" : "🚫 Khoá tài khoản",
+    body: "Nhập lý do:",
+    input: true,
+    confirm: true
+  });
+
+  if (reason === false) return;
+
+  if (!isBlocked && !reason.trim()) {
+    await showModal({
+      title: "⚠️ Thiếu lý do",
+      body: "Vui lòng nhập lý do khoá tài khoản"
+    });
     return;
   }
 
-  const ok = confirm(
-    isBlocked
-      ? "Xác nhận MỞ KHOÁ tài khoản này?"
-      : "Xác nhận KHOÁ tài khoản này?"
-  );
+  const ok = await showModal({
+    title: "Xác nhận",
+    body: isBlocked
+      ? "Bạn chắc chắn muốn MỞ KHOÁ tài khoản này?"
+      : "Bạn chắc chắn muốn KHOÁ tài khoản này?",
+    confirm: true
+  });
   if (!ok) return;
 
-
-await fetch("/api/admin/lock-user", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({
-    adminUid: admin.uid,
-    targetUid: uid,
-    lock: !isBlocked,
-    reason: reason || ""
-  })
-});
+  await fetch("/api/admin/lock-user", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      adminUid: admin.uid,
+      targetUid: uid,
+      lock: !isBlocked,
+      reason
+    })
+  });
 
   loadUsers();
 }
+
 
 
 
@@ -456,12 +465,21 @@ function initLiveRoomsRealtime(){
   });
 }
 
-// nút đóng ngay trong bảng
 async function adminCloseRoom(roomId){
-  const reason = prompt("🚫 Lý do đóng room (tuỳ chọn):") || "";
+  const reason = await showModal({
+    title: "🚫 Đóng room live",
+    body: "Nhập lý do (tuỳ chọn):",
+    input: true,
+    confirm: true
+  });
+  if (reason === false) return;
 
-  const ok = confirm(`Xác nhận đóng room "${roomId}" ?`);
-  if(!ok) return;
+  const ok = await showModal({
+    title: "Xác nhận",
+    body: `Bạn chắc chắn muốn đóng room "${roomId}" ?`,
+    confirm: true
+  });
+  if (!ok) return;
 
   const res = await fetch("/api/admin/close-room", {
     method:"POST",
@@ -474,15 +492,15 @@ async function adminCloseRoom(roomId){
   });
 
   const data = await res.json();
-  const elLog = document.getElementById("liveLog");
 
-  if(data.ok){
-    if(elLog) elLog.textContent = `✅ Đã đóng room ${roomId}`;
-    // server sẽ tự emitLobbyUpdate() nên bảng tự cập nhật
-  }else{
-    if(elLog) elLog.textContent = `❌ Đóng thất bại: ${data.error || "fail"}`;
-  }
+  await showModal({
+    title: data.ok ? "✅ Thành công" : "❌ Thất bại",
+    body: data.ok ? `Đã đóng room ${roomId}` : "Không đóng được room"
+  });
 }
+
+
+
 
 // search live rooms
 const roomSearch = document.getElementById("searchRoom");
@@ -872,17 +890,25 @@ function adminGoBack(){
 }
 
 
-async function adminDeletePost(postId) {
-  const reason = prompt("🗑️ Lý do xoá bài (tuỳ chọn):") || "";
+async function adminDeletePost(postId){
+  const reason = await showModal({
+    title: "🗑️ Xoá bài đăng",
+    body: "Nhập lý do xoá (tuỳ chọn):",
+    input: true,
+    confirm: true
+  });
+  if (reason === false) return;
 
-  const ok = confirm("Xác nhận xoá bài đăng này?");
+  const ok = await showModal({
+    title: "Xác nhận",
+    body: "Bạn chắc chắn muốn xoá bài đăng này?",
+    confirm: true
+  });
   if (!ok) return;
 
   const res = await fetch("/api/admin/delete-post", {
     method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       adminUid: admin.uid,
       postId,
@@ -891,9 +917,44 @@ async function adminDeletePost(postId) {
   });
 
   const data = await res.json();
-  if (data.ok) {
-    alert("✅ Đã xoá bài đăng");
-  } else {
-    alert("❌ Xoá thất bại");
-  }
+
+  await showModal({
+    title: data.ok ? "✅ Thành công" : "❌ Thất bại",
+    body: data.ok ? "Đã xoá bài đăng" : "Không xoá được bài"
+  });
+}
+
+
+
+
+
+
+function showModal({ title, body, input=false, confirm=false }) {
+  return new Promise(resolve => {
+    const modal = document.getElementById("adminModal");
+    const titleEl = document.getElementById("modalTitle");
+    const bodyEl  = document.getElementById("modalBody");
+    const inputEl = document.getElementById("modalInput");
+    const btnOk   = document.getElementById("modalOk");
+    const btnCancel = document.getElementById("modalCancel");
+
+    titleEl.textContent = title || "Thông báo";
+    bodyEl.innerHTML = body || "";
+    modal.classList.remove("hidden");
+
+    inputEl.classList.toggle("hidden", !input);
+    inputEl.value = "";
+
+    btnCancel.classList.toggle("hidden", !confirm);
+
+    btnOk.onclick = () => {
+      modal.classList.add("hidden");
+      resolve(input ? inputEl.value : true);
+    };
+
+    btnCancel.onclick = () => {
+      modal.classList.add("hidden");
+      resolve(false);
+    };
+  });
 }

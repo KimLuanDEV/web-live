@@ -662,6 +662,53 @@ body{
 }
 
 
+.modal.hidden{display:none}
+.modal{
+  position:fixed; inset:0; z-index:9999;
+}
+.modal-backdrop{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.5);
+}
+.modal-box{
+  position:relative;
+  background:#111;
+  color:#fff;
+  width:360px;
+  max-width:90%;
+  margin:12vh auto;
+  padding:16px;
+  border-radius:12px;
+}
+.modal-box h3{
+  margin:0 0 10px;
+}
+.modal-input{
+  width:100%;
+  padding:8px;
+  border-radius:8px;
+  border:none;
+  margin:10px 0;
+}
+.modal-actions{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+}
+.btn-ok{
+  background:#00e5ff;
+  border:none;
+  padding:6px 14px;
+  border-radius:8px;
+}
+.btn-cancel{
+  background:#333;
+  border:none;
+  padding:6px 14px;
+  border-radius:8px;
+}
+
+
   </style>
 </head>
 <body>
@@ -834,6 +881,21 @@ body{
 
 
 
+<!-- 🔔 ADMIN MODAL -->
+<div id="adminModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-box">
+    <h3 id="modalTitle">Thông báo</h3>
+    <div id="modalBody"></div>
+
+    <input id="modalInput" class="modal-input hidden" placeholder="Nhập nội dung..." />
+
+    <div class="modal-actions">
+      <button id="modalCancel" class="btn-cancel hidden">Huỷ</button>
+      <button id="modalOk" class="btn-ok">OK</button>
+    </div>
+  </div>
+</div>
 
 
 
