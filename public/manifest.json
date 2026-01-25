@@ -1,7 +1,7 @@
 {
   "name": "Livestream Pro",
   "short_name": "LivePro",
-  "start_url": "/lobby.html",
+  "start_url": "/social.html",
   "display": "standalone",
   "background_color": "#070A14",
   "theme_color": "#070A14",

@@ -17,7 +17,7 @@
 
   // nếu đã login mà còn ở login page → về lobby
   if (isLoginPage) {
-    location.replace("/lobby.html");
+    location.replace("/social.html");
     return;
   }
 
