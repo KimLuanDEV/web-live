@@ -24,11 +24,14 @@ const btnAdmin = document.getElementById("btnAdmin");
 if (btnAdmin) {
   const myUid = __profileAuth.uid;
 
+  const isAdmin =
+    __profileAuth.role === "admin" ||
+    (__profileAuth.roles || []).includes("admin"); // dự phòng sau này
+
   if (
     myUid &&
     (!viewUid || viewUid === myUid) &&
-    (__profileAuth.roles || []).includes("admin")
-
+    isAdmin
   ) {
     btnAdmin.classList.remove("hidden");
   } else {
