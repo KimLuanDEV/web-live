@@ -563,19 +563,19 @@ socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, like
 });
 
 
-// ===== ADMIN DELETE POST REALTIME =====
 socket.on("social-update", ({ type, postId }) => {
-  if(type === "post-deleted"){
+  if (type === "post-deleted") {
     const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
-    if(el) el.remove();
-  }
-});
+    if (el) el.remove();
 
     // 🧹 xoá fake like của post đã bị xoá
-    if (window.fakeLikes.values[postId] != null) {
+    if (window.fakeLikes.values?.[postId] != null) {
       delete window.fakeLikes.values[postId];
       saveFakeLikes();
     }
+  }
+});
+
 
 
 
