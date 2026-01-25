@@ -614,7 +614,11 @@ div.innerHTML = `
   <div class="msg-uinfo">
   <div class="msg-uname">
     ${u.name}
-    ${u.verified ? `<span class="tick-blue">✔</span>` : ""}
+    ${u.role === "admin"
+  ? `<span class="tick-blue" title="Admin đã xác minh">✔︎</span>`
+  : ""
+}
+
     ${countUnread(u.uid) > 0
       ? `<span class="msg-badge">${countUnread(u.uid) > 9 ? "9+" : countUnread(u.uid)}</span>`
       : ""}
@@ -635,12 +639,14 @@ div.innerHTML = `
 
       chatTitle.innerHTML = `
   ${u.name}
-  ${u.verified ? `<span class="tick-blue">
-  <svg viewBox="0 0 24 24" width="10" height="10" fill="white">
-    <path d="M9 16.2l-3.5-3.5L4 14.2l5 5 12-12-1.4-1.4z"/>
-  </svg>
-</span>
+${u.role === "admin" ? `
+  <span class="tick-blue" title="Admin đã xác minh">
+    <svg viewBox="0 0 24 24" width="10" height="10" fill="white">
+      <path d="M9 16.2l-3.5-3.5L4 14.2l5 5 12-12-1.4-1.4z"/>
+    </svg>
+  </span>
 ` : ``}
+
 `;
 
 document.getElementById("chatHeaderAvatar").src = fixMedia(u.avatar) || "";
