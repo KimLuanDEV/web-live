@@ -5,6 +5,8 @@ const ADMIN_UIDS = ["admin", "LivestreamPro", "KimDogCat", "superuser"];
 
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
+const profilePostList = document.getElementById("profilePostList");
+
 
 // 🔁 giữ socket sống để server không mất uid
 setInterval(() => {
@@ -407,6 +409,7 @@ fetch("/api/me/" + viewUid, {
   .then(data => {
     if (!data || !data.profile) return;
     renderProfileViewOnly(data.profile);
+    loadProfilePosts(viewUid);
   })
   .catch(err => {
     if (err.message !== "blocked") {
@@ -442,7 +445,9 @@ fetch("/api/me/" + viewUid, {
   .then(data => {
     if (!data || !data.profile) return;
     renderProfileViewOnly(data.profile);
+    
   })
+  
   .catch(err => {
     if (err.message !== "blocked") {
       console.warn("Load profile failed", err);
@@ -471,6 +476,9 @@ const p = {
 
       localStorage.setItem(KEY, JSON.stringify(p));
       loadProfile();
+
+      // 🔥 LOAD BÀI ĐĂNG SOCIAL CỦA CHÍNH MÌNH
+      loadProfilePosts(__profileAuth.uid);
     })
     .catch(() => {});
 }
@@ -1644,6 +1652,95 @@ socket.on("system-notify", data => {
     }, 2000);
   }
 });
+
+
+// ===== LOAD & RENDER SOCIAL POSTS (PROFILE) =====
+async function loadProfilePosts(uid) {
+  if (!profilePostList || !uid) return;
+
+  profilePostList.innerHTML =
+    `<div class="lp-loading">⏳ Đang tải bài đăng...</div>`;
+
+  try {
+    const res = await fetch("/api/social/user/" + uid);
+    const data = await res.json();
+    const list = data.list || [];
+
+    profilePostList.innerHTML = "";
+
+    if (!list.length) {
+      profilePostList.innerHTML =
+        `<div class="lp-empty">📭 Chưa có bài đăng nào</div>`;
+      return;
+    }
+
+    list.forEach(p => {
+      const div = document.createElement("div");
+      div.className = "lp-post";
+      div.id = "post-" + p.id;
+
+      div.innerHTML = window.renderSocialPostHTML(p, { profile: true });
+
+      profilePostList.appendChild(div);
+    });
+
+  } catch (e) {
+    console.warn("Load profile posts failed", e);
+    profilePostList.innerHTML =
+      `<div class="lp-empty">❌ Không tải được bài đăng</div>`;
+  }
+}
+
+
+function renderProfilePostHTML(p) {
+  return `
+  <div class="lp-post-head">
+    <img class="lp-ava"
+         src="${fixMedia(p.avatar)}"
+         onclick="location.href='/profile.html?uid=${p.uid}'">
+    <div class="lp-post-meta">
+      <div class="lp-post-name">
+        ${p.name}
+        ${renderVerifiedInline(p.uid)}
+      </div>
+      <div class="lp-post-time">
+        ${new Date(p.time).toLocaleString()}
+      </div>
+    </div>
+  </div>
+
+  <div class="lp-post-body">
+    ${p.text ? `<div class="lp-post-text">${p.text}</div>` : ""}
+    ${(p.images || []).map(img =>
+      `<img class="lp-post-img" src="${fixMedia(img)}">`
+    ).join("")}
+    ${p.video ? `
+      <video class="lp-post-video" src="${fixMedia(p.video)}" controls></video>
+    ` : ""}
+  </div>
+
+  <div class="lp-post-actions">
+    ❤️ <b>${p.likes?.length || 0}</b>
+    💬 <b>${p.comments?.length || 0}</b>
+  </div>
+`;
+}
+
+
+function renderVerifiedInline(uid){
+  const u = window.allUsers?.[uid];
+  if (!u) return "";
+
+  const isAdmin =
+    u.role === "admin" ||
+    (Array.isArray(u.roles) && u.roles.includes("admin"));
+
+  return isAdmin
+    ? `<span class="lp-verified inline">✔︎</span>`
+    : "";
+}
+
+
 
 
 function showToast(text, type = "info", timeout = 3500){
