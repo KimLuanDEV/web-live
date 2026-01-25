@@ -14,15 +14,13 @@ const POST_GIFTS = [
 
 let giftPostId = null;
 let giftPostOwner = null;
+
+
+
 let composeImages = []; // 🔥 danh sách ảnh đang preview
 let isPosting = false;
 
 window.allUsers = {};
-
-
-
-
-
 
 function isAdminUser(uid){
   // fallback cực quan trọng
@@ -782,12 +780,11 @@ socket.emit("lp-post", {
 let lpInited = false;
 
 socket.on("lp-init", list => {
-  if (lpInited) return;
+  if (lpInited) return;   // ⛔ không init lại
   lpInited = true;
 
   list.forEach(p => renderPost(p, false));
 });
-
 
 
 
