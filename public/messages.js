@@ -261,6 +261,25 @@ socket.on("active-users", ({ online }) => {
   }
 });
 
+// 💸 THÔNG BÁO NẠP COIN TỪ USER (CHO ĐẠI LÝ)
+socket.on("topup-user-waiting", ({ fromUid, time }) => {
+  if (!fromUid) return;
+
+  showToast(
+    `💸 ${fromUid} đã chuyển khoản – vui lòng kiểm tra`,
+    "success",
+    5000
+  );
+
+  // 🔔 hiện chấm đỏ inbox
+  showInboxDot(1);
+
+  // 👉 (TUỲ CHỌN) click toast để mở chat luôn
+  // openChatByUid(fromUid);
+});
+
+
+
 
 document.getElementById("sendBtn").onclick = () => {
   if (currentUploadXHR) return; // ⛔ đang upload → không gửi
