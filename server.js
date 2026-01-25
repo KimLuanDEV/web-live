@@ -1485,8 +1485,15 @@ app.get("/api/topup-agents", (req, res) => {
 
   for (const uid in db) {
     const acc = db[uid];
-   const roles = acc.roles || [];
-if (!roles.includes("agent")) continue;
+
+const roles = acc.roles || [];
+const role  = acc.role;
+
+if (
+  !roles.includes("agent") &&
+  role !== "agent"
+) continue;
+
 
 
     const p = acc.profile || {};

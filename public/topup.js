@@ -2,24 +2,21 @@ const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 if (!auth.uid) location.href = "/login.html";
 
 const myCoinEl  = document.getElementById("myCoin");
-
-if (!agentList) {
-  console.warn("agentList not found");
-  return;
-}
-
-
+const agentList = document.getElementById("agentList");
 const qrBox     = document.getElementById("qrBox");
 const bankInfo  = document.getElementById("bankInfo");
 const agentQr   = document.getElementById("agentQr");
 
 // hiển thị coin hiện tại
-myCoinEl.textContent = `Kim cương hiện tại: ${auth.coins || 0}💰`;
+if (myCoinEl) {
+  myCoinEl.textContent = `Kim cương hiện tại: ${auth.coins || 0} 💰`;
+}
 
 // 🔄 LOAD DANH SÁCH ĐẠI LÝ TỪ SERVER
 fetch("/api/topup-agents")
   .then(r => r.json())
   .then(res => {
+    console.log("TOPUP AGENTS:", res); // 🔍 DEBUG
     if (!res || !res.ok) {
       showToast("❌ Không tải được danh sách đại lý");
       return;
@@ -33,7 +30,8 @@ fetch("/api/topup-agents")
 
 // render danh sách đại lý
 function renderAgents(list) {
-    if (!agentList) return;
+  if (!agentList) return;
+
   agentList.innerHTML = "";
 
   if (!list.length) {
@@ -46,7 +44,10 @@ function renderAgents(list) {
   }
 
   list.forEach(agent => {
-    if (!agent.account || !agent.bank) return; // skip agent lỗi
+    if (!agent.account || !agent.bank) {
+      console.warn("Agent thiếu bank/account:", agent);
+    }
+
     const div = document.createElement("div");
     div.className = "agent-card";
 
@@ -54,7 +55,7 @@ function renderAgents(list) {
       <img class="agent-avatar" src="${agent.avatar}">
       <div class="agent-info">
         <div class="agent-name">${agent.name}</div>
-        <div class="agent-bank">${agent.bank} • ${agent.account}</div>
+        <div class="agent-bank">${agent.bank || "?"} • ${agent.account || "?"}</div>
         <div class="agent-status ${agent.online ? "" : "offline"}">
           ${agent.online ? "🟢 Đang online" : "⚪ Offline"}
         </div>
@@ -69,25 +70,28 @@ function renderAgents(list) {
 
 // mở chi tiết đại lý + QR
 function openAgent(agent) {
-  qrBox.classList.add("hidden"); // reset trước
+  if (!qrBox) return;
+
+  qrBox.classList.add("hidden");
 
   const content = `NAP ${auth.uid}`;
 
-  agentQr.src = agent.qr || "/images/qr-demo.png";
+  if (agentQr) {
+    agentQr.src = agent.qr || "/images/qr-demo.png";
+  }
 
-  bankInfo.innerHTML = `
-    <b>Đại lý:</b> ${agent.name}<br>
-    <b>Ngân hàng:</b> ${agent.bank}<br>
-    <b>STK:</b> ${agent.account}<br>
-    <b>Chủ TK:</b> ${agent.owner}<br>
-    <b>Nội dung:</b> <code id="transferText">${content}</code>
-  `;
+  if (bankInfo) {
+    bankInfo.innerHTML = `
+      <b>Đại lý:</b> ${agent.name}<br>
+      <b>Ngân hàng:</b> ${agent.bank}<br>
+      <b>STK:</b> ${agent.account}<br>
+      <b>Chủ TK:</b> ${agent.owner || ""}<br>
+      <b>Nội dung:</b> <code id="transferText">${content}</code>
+    `;
+  }
 
   qrBox.classList.remove("hidden");
 }
-
-
-
 
 // copy nội dung chuyển khoản
 function copyTransfer() {
