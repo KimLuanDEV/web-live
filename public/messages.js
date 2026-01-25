@@ -27,6 +27,12 @@ const renderedMsgIds = new Set();
 
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 
+
+function isMyFriend(uid){
+  return Array.isArray(auth?.friends) && auth.friends.includes(uid);
+}
+
+
 function fixMedia(url){
   if (!url) return "";
 
@@ -594,72 +600,93 @@ if (isMe && msgId) {
 
 const chatModal = document.getElementById("chatModal");
 
-
 function renderUserList(){
   userList.innerHTML = "";
 
-allUsers.forEach(u=>{
-  if(!u || !u.uid || !u.name) return;
-  if(u.uid === auth.uid) return;
+  // 1️⃣ CHƯA CÓ BẠN BÈ → HIỆN TEXT
+  if (!Array.isArray(auth.friends) || auth.friends.length === 0) {
+    userList.innerHTML = `
+      <div class="empty">
+        🤝 Bạn chưa có bạn bè nào<br>
+        <small>Hãy kết bạn để bắt đầu trò chuyện</small>
+      </div>
+    `;
+    return;
+  }
 
+  // 2️⃣ LỌC BẠN BÈ
+  const friends = allUsers.filter(u =>
+    u &&
+    u.uid &&
+    u.name &&
+    u.uid !== auth.uid &&
+    isMyFriend(u.uid)
+  );
+
+  // 3️⃣ SORT: ONLINE → OFFLINE
+  friends.sort((a, b) => {
+    const ao = onlineSet.has(a.uid);
+    const bo = onlineSet.has(b.uid);
+    return bo - ao; // online trước
+  });
+
+  // 4️⃣ RENDER
+  friends.forEach(u => {
     const isOnline = onlineSet.has(u.uid);
 
     const div = document.createElement("div");
     div.className = "msg-user " + (isOnline ? "online" : "offline");
 
+    div.innerHTML = `
+      <img class="msg-ava" src="${fixMedia(u.avatar)}">
 
-div.innerHTML = `
-<img class="msg-ava" src="${fixMedia(u.avatar)}">
+      <div class="msg-uinfo">
+        <div class="msg-uname">
+          ${u.name}
+          ${u.role === "admin"
+            ? `<span class="tick-blue" title="Admin đã xác minh">✔︎</span>`
+            : ""
+          }
 
-  <div class="msg-uinfo">
-  <div class="msg-uname">
-    ${u.name}
-    ${u.role === "admin"
-  ? `<span class="tick-blue" title="Admin đã xác minh">✔︎</span>`
-  : ""
-}
+          ${countUnread(u.uid) > 0
+            ? `<span class="msg-badge">
+                ${countUnread(u.uid) > 9 ? "9+" : countUnread(u.uid)}
+              </span>`
+            : ""
+          }
+        </div>
 
-    ${countUnread(u.uid) > 0
-      ? `<span class="msg-badge">${countUnread(u.uid) > 9 ? "9+" : countUnread(u.uid)}</span>`
-      : ""}
-  </div>
+        <div class="msg-ustatus ${isOnline ? "on" : "off"}">
+          ${isOnline ? "Online" : "Offline"}
+        </div>
+      </div>
+    `;
 
-
-    <div class="msg-ustatus ${isOnline ? "on":"off"}">
-      ${isOnline ? "Online" : "Offline"}
-    </div>
-  </div>
-`;
-
-
-
-    div.onclick = ()=>{
+    div.onclick = () => {
       currentTarget = u;
       currentTargetUID = u.uid;
 
       chatTitle.innerHTML = `
-  ${u.name}
-${u.role === "admin" ? `
-  <span class="tick-blue" title="Admin đã xác minh">
-    <svg viewBox="0 0 24 24" width="10" height="10" fill="white">
-      <path d="M9 16.2l-3.5-3.5L4 14.2l5 5 12-12-1.4-1.4z"/>
-    </svg>
-  </span>
-` : ``}
+        ${u.name}
+        ${u.role === "admin" ? `
+          <span class="tick-blue" title="Admin đã xác minh">
+            <svg viewBox="0 0 24 24" width="10" height="10" fill="white">
+              <path d="M9 16.2l-3.5-3.5L4 14.2l5 5 12-12-1.4-1.4z"/>
+            </svg>
+          </span>
+        ` : ``}
+      `;
 
-`;
+      document.getElementById("chatHeaderAvatar").src =
+        fixMedia(u.avatar) || "";
 
-document.getElementById("chatHeaderAvatar").src = fixMedia(u.avatar) || "";
-
-
-
-openChat(); // openChat đã xử lý tất cả
-
+      openChat();
     };
 
     userList.appendChild(div);
   });
 }
+
 
 
 
