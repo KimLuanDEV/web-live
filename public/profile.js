@@ -61,6 +61,12 @@ function fixMedia(url){
   return url;
 }
 
+function isAdminUser(u) {
+  return (
+    u?.role === "admin" ||
+    (Array.isArray(u?.roles) && u.roles.includes("admin"))
+  );
+}
 
 
 
@@ -94,6 +100,7 @@ fetch("/api/me/" + viewUid, {
     "x-uid": __profileAuth.uid
   }
 })
+
 .then(r => {
   if (r.status === 403) {
     // 👉 BỊ BLOCK → KHÔNG CHO KẾT BẠN
@@ -114,41 +121,70 @@ fetch("/api/me/" + viewUid, {
   // 🔍 LẤY TRẠNG THÁI BẠN BÈ
   fetch("/api/friends/" + __profileAuth.uid)
     .then(r => r.json())
+
     .then(data => {
       const friends = data.friends || [];
       const requests = data.requests || []; // lời mời nhận được
       const sent = data.sent || [];          // 🔥 lời mời đã gửi
 
-      const isFriend = friends.some(u => u.uid === viewUid);
-      const isPendingSent = sent.some(u => u.uid === viewUid);
+const isFriend = friends.some(u => u.uid === viewUid);
+const isPendingSent = sent.some(u => u.uid === viewUid);
 
-if (isFriend) {
-  // 👥 ĐÃ LÀ BẠN
-  if (btnUnfriend) btnUnfriend.style.display = "block";
+// 🔥 ADMIN CHECK
+const meIsAdmin =
+  __profileAuth.role === "admin" ||
+  (__profileAuth.roles || []).includes("admin");
+
+const targetIsAdmin =
+  window.allUsers?.[viewUid] &&
+  (
+    window.allUsers[viewUid].role === "admin" ||
+    (window.allUsers[viewUid].roles || []).includes("admin")
+  );
+
+// ===============================
+// 👥 / 💬 LOGIC HIỂN THỊ ACTION
+// ===============================
+
+// ✅ CHO NHẮN TIN NẾU:
+// - đã là bạn
+// - HOẶC mình là admin
+// - HOẶC người kia là admin
+if (isFriend || meIsAdmin || targetIsAdmin) {
+
+  // 👥 nếu là bạn thì cho huỷ bạn
+  if (isFriend && btnUnfriend) {
+    btnUnfriend.style.display = "block";
+  }
 
   // 💬 CHO PHÉP NHẮN TIN
   if (btnMsgFriend) {
     btnMsgFriend.style.display = "block";
     btnMsgFriend.disabled = false;
   }
-}
 
+}
 else if (isPendingSent) {
+
   if (btnFriendPending) btnFriendPending.style.display = "block";
 
   if (btnMsgFriend) {
     btnMsgFriend.style.display = "none";
     btnMsgFriend.disabled = true;
   }
+
 }
 else {
+
   if (btnAddFriend) btnAddFriend.style.display = "block";
 
   if (btnMsgFriend) {
     btnMsgFriend.style.display = "none";
     btnMsgFriend.disabled = true;
   }
+
 }
+
     });
 
   // ➕ KẾT BẠN
