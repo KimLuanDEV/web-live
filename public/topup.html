@@ -350,6 +350,11 @@ html, body {
 }
 
 
+.btn-back svg {
+  display: block;
+}
+
+
   </style>
 </head>
 
@@ -358,8 +363,22 @@ html, body {
 
 
 <div class="topup-header">
+
+  <button class="btn-back" onclick="history.back()" aria-label="Back">
+  <svg viewBox="0 0 24 24" width="20" height="20">
+    <path
+      d="M15 18l-6-6 6-6"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="2.5"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+    />
+  </svg>
+</button>
+
+
   <div class="header-center">
-    <button class="btn-back" onclick="history.back()">‹</button>
     <h2>💎 Nạp coin</h2>
     <div id="myCoin">Đang tải coin...</div>
   </div>
