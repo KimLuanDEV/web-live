@@ -1008,6 +1008,71 @@ const rooms = new Map();
 // ===== LIVESTREAM PRO SOCIAL =====
 const lpPosts = loadSocial();
 
+// ===== 🤖 BOT AUTO POST =====
+const BOT_POST_TEXTS = [
+  "Tối nay ai livestream không nhỉ 😍",
+  "Vừa xem live xong thấy cuốn ghê",
+  "Mọi người hay xem live giờ nào?",
+  "Có ai giống mình không, tối là vô xem live 😂",
+  "Hôm nay nhiều phòng live vui ghê"
+];
+
+const BOT_IMAGES = [
+  "/bot-posts/1.jpg",
+  "/bot-posts/2.jpg",
+  "/bot-posts/3.jpg",
+  "/bot-posts/4.jpg"
+];
+
+function botCreatePost(){
+  const db = loadUsers();
+  const bots = Object.values(db).filter(u => u.role === "bot");
+  if(!bots.length) return;
+
+  const bot = bots[Math.floor(Math.random() * bots.length)];
+  const text = BOT_POST_TEXTS[Math.floor(Math.random() * BOT_POST_TEXTS.length)];
+  const image = BOT_IMAGES[Math.floor(Math.random() * BOT_IMAGES.length)];
+
+  const post = {
+    id: "bot_" + Date.now(),
+    uid: bot.profile.uid,
+    name: bot.profile.name,
+    avatar: bot.profile.avatar,
+    text,
+    images: [image],
+    video: "",
+    likes: [],
+    comments: [],
+    time: Date.now()
+  };
+
+  lpPosts.unshift(post);
+  saveSocial();
+
+  io.emit("lp-post", post); // 🔥 realtime như user thật
+}
+
+
+// ===== ⏰ BOT SCHEDULER =====
+function scheduleBotPost(){
+  const now = new Date();
+  const hour = now.getHours();
+
+  // chỉ đăng trong khung giờ hợp lý
+  if(hour >= 9 && hour <= 23){
+    botCreatePost();
+  }
+
+  const delay =
+    (Math.floor(Math.random() * 60) + 30) * 60 * 1000; // 30–90 phút
+
+  setTimeout(scheduleBotPost, delay);
+}
+
+scheduleBotPost();
+
+
+
 
 
 // 🔴🟢 EMIT REALTIME ONLINE / OFFLINE ĐẠI LÝ
@@ -1138,9 +1203,49 @@ function loadUsers(){
   if(!fs.existsSync(USERS_FILE)) return {};
   return JSON.parse(fs.readFileSync(USERS_FILE,"utf8"));
 }
+
+
 function saveUsers(db){
   fs.writeFileSync(USERS_FILE, JSON.stringify(db,null,2));
 }
+
+
+// ===== 🤖 INIT BOT USERS (CHẠY 1 LẦN) =====
+(function initBotUsers(){
+  const db = loadUsers();
+  let changed = false;
+
+  const BOTS = [
+    { uid:"bot_linh", name:"Linh Cute", avatar:"/avatars/bot/linh.jpg" },
+    { uid:"bot_my",   name:"Trà My",    avatar:"/avatars/bot/my.jpg" },
+    { uid:"bot_ngoc", name:"Ngọc Anh",  avatar:"/avatars/bot/ngoc.jpg" },
+    { uid:"bot_mai",  name:"Mai Anh",   avatar:"/avatars/bot/mai.jpg" }
+  ];
+
+  BOTS.forEach(b=>{
+    if(!db[b.uid]){
+      db[b.uid] = {
+        role: "bot",
+        profile:{
+          uid: b.uid,
+          name: b.name,
+          avatar: b.avatar,
+          coins: 0,
+          level: 1,
+          exp: 0,
+          coinSent: 0,
+          coinReceived: 0
+        }
+      };
+      changed = true;
+    }
+  });
+
+  if(changed){
+    saveUsers(db);
+    console.log("🤖 Bot users created");
+  }
+})();
 
 
 function emitWithdrawUpdate() {

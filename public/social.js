@@ -19,68 +19,7 @@ let isPosting = false;
 
 window.allUsers = {};
 
-// ===== 🔀 RANDOM USER FOR SYSTEM POSTS =====
-const FAKE_USERS = [
-  { name: "Linh Cute", avatar: "https://kenh76.vn/wp-content/uploads/2026/01/Tai-anh-anh-gai-xinh-tap-gym-doc-quyen-771x1024.jpg" },
-  { name: "Ngọc Trinh", avatar: "https://www.anhnghethuatdulich.com/wp-content/uploads/2025/08/anh-gai-xinh-2k7.jpg" },
-  { name: "Mai Anh", avatar: "https://img2.thuthuatphanmem.vn/uploads/2019/01/04/anh-girl-xinh_025102020.jpeg" },
-  { name: "Thuỷ Tiên", avatar: "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-24-576x1024.jpg" },
-  { name: "Bảo Ngọc", avatar: "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-32-576x1024.jpg" },
-  { name: "Trà My", avatar: "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-4-597x1024.jpg" }
-];
 
-
-// ===== 🔥 DAILY SYSTEM POSTS + GÁI XINH =====
-const DAILY_POSTS = [
-  "🔥 Chào buổi tối anh em Livestream Pro 😍",
-  "💖 Gửi chút năng lượng tích cực cho cả nhà!",
-  "✨ Hôm nay bạn thấy ai livestream cuốn nhất?",
-  "💬 Comment nhẹ cho page thêm xôm nào!",
-  "👑 Ai là fan cứng của Livestream Pro điểm danh!",
-  "📸 Một chút visual cho ngày thêm vui 😘"
-];
-
-// 👉 link ảnh gái xinh (có thể thêm bao nhiêu cũng được)
-const DAILY_GIRL_IMAGES = [
-  "https://kenh76.vn/wp-content/uploads/2026/01/Tai-anh-anh-gai-xinh-tap-gym-doc-quyen-771x1024.jpg",
-  "https://www.anhnghethuatdulich.com/wp-content/uploads/2025/08/anh-gai-xinh-2k7.jpg",
-  "https://img2.thuthuatphanmem.vn/uploads/2019/01/04/anh-girl-xinh_025102020.jpeg",
-  "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-24-576x1024.jpg",
-  "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-32-576x1024.jpg",
-  "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-4-597x1024.jpg"
-];
-
-
-
-function renderDailyFakePost(){
-  const today = new Date().toISOString().slice(0,10); // yyyy-mm-dd
-  const seed = Number(today.replace(/-/g,""));
-
-  const textIndex = seed % DAILY_POSTS.length;
-  const userIndex = seed % FAKE_USERS.length;
-  const imageIndex = seed % DAILY_GIRL_IMAGES.length;
-
-  const fakeUser = FAKE_USERS[userIndex];
-
-  const fakePost = {
-    id: "daily_" + today,
-    uid: "__fake_" + userIndex,        // uid giả
-    name: fakeUser.name,               // 🔥 tên random
-    avatar: fakeUser.avatar,           // 🔥 avatar theo tên
-    text: DAILY_POSTS[textIndex],
-    images: [ DAILY_GIRL_IMAGES[imageIndex] ],
-    video: "",
-    time: Date.now() - 1000 * 60 * 30,
-    likes: new Array((seed % 20) + 8),  // 8–28 like
-    comments: [],
-    gifts: null
-  };
-
-  // ⛔ tránh render trùng
-  if (document.querySelector(`.lp-post[data-id="${fakePost.id}"]`)) return;
-
-  renderPost(fakePost, true);
-}
 
 
 
@@ -846,7 +785,6 @@ socket.on("lp-init", list => {
   if (lpInited) return;
   lpInited = true;
 
-  renderDailyFakePost();   // 🔥 BÀI ĐĂNG ẢO MỖI NGÀY
   list.forEach(p => renderPost(p, false));
 });
 
