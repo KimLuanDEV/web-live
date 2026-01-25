@@ -206,6 +206,61 @@ app.get("/api/withdraw-history", (req, res) => {
   });
 });
 
+// ===== USER TOPUP HISTORY =====
+app.get("/api/topup-history", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) {
+    return res.status(403).json({ ok: false, error: "no_auth" });
+  }
+
+  const db = loadUsers();
+  const user = db[uid];
+
+  if (!user || !user.profile) {
+    return res.status(404).json({ ok: false, error: "user_not_found" });
+  }
+
+  const list = [];
+
+  // 1️⃣ LỊCH SỬ NẠP TỪ ADMIN (adminLogs)
+  const adminLogs = user.profile.adminLogs || [];
+  for (const log of adminLogs) {
+    if (log.type === "topup") {
+      list.push({
+        method: "Admin nạp",
+        coin: Number(log.amount || 0),
+        status: "done",
+        time: log.ts || Date.now(),
+        note: log.note || "",
+        by: log.by || "admin"
+      });
+    }
+  }
+
+  // 2️⃣ LỊCH SỬ NẠP TỪ INBOX (phòng hờ, realtime)
+  const inbox = userInbox.get(uid) || [];
+  for (const msg of inbox) {
+    if (msg.type === "topup") {
+      list.push({
+        method: "Nạp coin",
+        coin: Number(msg.amount || 0),
+        status: "done",
+        time: msg.time || Date.now(),
+        note: msg.text || "",
+        by: msg.from || "admin"
+      });
+    }
+  }
+
+  // ⏱ sort mới → cũ
+  list.sort((a, b) => b.time - a.time);
+
+  res.json({
+    ok: true,
+    list
+  });
+});
+
 
 // 🔐 BẢO VỆ TRANG ADMIN
 app.get("/admin.html", (req, res) => {

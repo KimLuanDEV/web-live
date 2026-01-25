@@ -498,6 +498,58 @@ html, body {
 }
 
 
+.btn-history {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,.08);
+  color: #0a84ff;
+  font-size: 20px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.btn-history:active {
+  transform: scale(.92);
+  background: rgba(255,255,255,.14);
+}
+
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.history-item {
+  background: #161616;
+  border: 1px solid rgba(255,255,255,.06);
+  border-radius: 12px;
+  padding: 12px;
+  font-size: 14px;
+}
+
+.history-item .row {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 4px;
+}
+
+.history-amount {
+  color: #34c759;
+  font-weight: 600;
+}
+
+.history-status.pending { color: #ff9f0a; }
+.history-status.done { color: #34c759; }
+.history-status.fail { color: #ff453a; }
+
+
+
   </style>
 </head>
 
@@ -507,30 +559,35 @@ html, body {
 
 <div class="topup-header">
 
+  <!-- ⬅️ BACK -->
   <button class="btn-back" onclick="history.back()" aria-label="Back">
-  <svg viewBox="0 0 24 24" width="20" height="20">
-    <path
-      d="M15 18l-6-6 6-6"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2.5"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    />
-  </svg>
-</button>
+    <svg viewBox="0 0 24 24" width="20" height="20">
+      <path
+        d="M15 18l-6-6 6-6"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </button>
 
-
+  <!-- 🔹 CENTER -->
   <div class="header-center">
-  <h2>Purchase</h2>
-  <div id="myCoin">
-  Số dư khả dụng · <b>12,500</b> 💎
-</div>
+    <h2>Purchase</h2>
+    <div id="myCoin">
+      Số dư khả dụng · <b>12,500</b> 💎
+    </div>
+  </div>
+
+  <!-- 🆕 LỊCH SỬ NẠP -->
+  <button class="btn-history" id="btnTopupHistory" title="Lịch sử nạp">
+    📜
+  </button>
 
 </div>
 
-  <div class="header-spacer"></div>
-</div>
 
 
 
@@ -614,6 +671,20 @@ html, body {
 
   <button class="btn-copy" onclick="copyTransfer()">📋 Copy nội dung CK</button>
 </div>
+
+
+<!-- 📜 BOTTOM SHEET: LỊCH SỬ NẠP -->
+<div id="historySheet" class="bottom-sheet">
+  <div class="sheet-handle"></div>
+  <h3>📜 Lịch sử nạp tiền</h3>
+
+  <div id="topupHistoryList" class="history-list">
+    <div style="opacity:.6;text-align:center;padding:12px">
+      Đang tải lịch sử…
+    </div>
+  </div>
+</div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>

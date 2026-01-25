@@ -163,3 +163,59 @@ if (cardOption) {
     content.classList.toggle("hidden");
   };
 }
+
+
+
+// 📜 LỊCH SỬ NẠP
+const btnTopupHistory = document.getElementById("btnTopupHistory");
+const historySheet = document.getElementById("historySheet");
+const historyList = document.getElementById("topupHistoryList");
+
+if (btnTopupHistory) {
+  btnTopupHistory.onclick = () => {
+    sheetOverlay.classList.remove("hidden");
+    historySheet.classList.add("show");
+    qrSheet.classList.remove("show");
+
+    document.body.style.overflow = "hidden";
+    loadTopupHistory();
+  };
+}
+
+function loadTopupHistory() {
+  fetch("/api/topup-history")
+    .then(r => r.json())
+    .then(res => {
+      if (!res || !res.ok) {
+        historyList.innerHTML = `<div style="opacity:.6">Không tải được lịch sử</div>`;
+        return;
+      }
+
+      if (!res.list.length) {
+        historyList.innerHTML = `<div style="opacity:.6;text-align:center">Chưa có giao dịch</div>`;
+        return;
+      }
+
+      historyList.innerHTML = "";
+      res.list.forEach(item => {
+        const div = document.createElement("div");
+        div.className = "history-item";
+        div.innerHTML = `
+          <div class="row">
+            <b>${item.method || "Nạp coin"}</b>
+            <span class="history-amount">+${item.coin} 💎</span>
+          </div>
+          <div class="row">
+            <span>${new Date(item.time).toLocaleString()}</span>
+            <span class="history-status ${item.status}">
+              ${item.status}
+            </span>
+          </div>
+        `;
+        historyList.appendChild(div);
+      });
+    })
+    .catch(() => {
+      historyList.innerHTML = `<div style="opacity:.6">Lỗi kết nối server</div>`;
+    });
+}
