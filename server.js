@@ -18,7 +18,7 @@ const twilio = require("twilio");
 
 
 const fs = require("fs");
-
+const USERS_FILE = path.join("/opt/render/project/data", "users.json");
 
 const webpush = require("web-push");
 
@@ -1195,7 +1195,7 @@ function pushNotify(uid, payload){
 
 
 
-const USERS_FILE = path.join("/opt/render/project/data", "users.json");
+
 
 
 
