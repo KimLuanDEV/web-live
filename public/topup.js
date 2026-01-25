@@ -213,3 +213,37 @@ if (btnTransferred) {
 
 
 
+
+
+function showToast(text, type = "info", duration = 3000) {
+  const toast = document.createElement("div");
+  toast.className = `toast toast-${type}`;
+  toast.textContent = text;
+
+  document.body.appendChild(toast);
+
+  requestAnimationFrame(() => {
+    toast.classList.add("show");
+  });
+
+  setTimeout(() => {
+    toast.classList.remove("show");
+    setTimeout(() => toast.remove(), 300);
+  }, duration);
+}
+
+
+
+
+socket.on("connect", async () => {
+  offlineHandled = false;
+
+  if (auth?.uid) {
+    socket.emit("auth-login", { uid: auth.uid });
+
+    // 🔔 ĐĂNG KÝ PUSH
+    setTimeout(() => {
+      enablePush().catch(console.error);
+    }, 1000);
+  }
+});

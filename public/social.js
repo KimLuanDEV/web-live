@@ -2418,3 +2418,19 @@ div.innerHTML = `
 function closeGiftUsers(){
   document.getElementById("giftUserModal").classList.add("hidden");
 }
+
+
+
+
+socket.on("connect", async () => {
+  offlineHandled = false;
+
+  if (auth?.uid) {
+    socket.emit("auth-login", { uid: auth.uid });
+
+    // 🔔 ĐĂNG KÝ PUSH
+    setTimeout(() => {
+      enablePush().catch(console.error);
+    }, 1000);
+  }
+});
