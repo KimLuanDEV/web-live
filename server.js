@@ -1210,43 +1210,6 @@ function saveUsers(db){
 }
 
 
-// ===== 🤖 INIT BOT USERS (CHẠY 1 LẦN) =====
-(function initBotUsers(){
-  const db = loadUsers();
-  let changed = false;
-
-  const BOTS = [
-    { uid:"bot_linh", name:"Linh Cute", avatar:"/avatars/bot/linh.jpg" },
-    { uid:"bot_my",   name:"Trà My",    avatar:"/avatars/bot/my.jpg" },
-    { uid:"bot_ngoc", name:"Ngọc Anh",  avatar:"/avatars/bot/ngoc.jpg" },
-    { uid:"bot_mai",  name:"Mai Anh",   avatar:"/avatars/bot/mai.jpg" }
-  ];
-
-  BOTS.forEach(b=>{
-    if(!db[b.uid]){
-      db[b.uid] = {
-        role: "bot",
-        profile:{
-          uid: b.uid,
-          name: b.name,
-          avatar: b.avatar,
-          coins: 0,
-          level: 1,
-          exp: 0,
-          coinSent: 0,
-          coinReceived: 0
-        }
-      };
-      changed = true;
-    }
-  });
-
-  if(changed){
-    saveUsers(db);
-    console.log("🤖 Bot users created");
-  }
-})();
-
 
 function emitWithdrawUpdate() {
   io.emit("withdraw-update", {
