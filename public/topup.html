@@ -335,6 +335,20 @@ html, body {
   background: #fff;
 }
 
+/* spacer cân đối bên phải */
+.header-spacer {
+  width: 40px;
+  height: 40px;
+}
+
+.topup-header .btn-back {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
 
   </style>
 </head>
@@ -343,13 +357,15 @@ html, body {
 <script src="/guard.js"></script>
 
 
- <div class="topup-header">
+<div class="topup-header">
   <button class="btn-back" onclick="history.back()">‹</button>
 
   <div class="header-center">
     <h2>💎 Nạp coin</h2>
     <div id="myCoin">Đang tải coin...</div>
   </div>
+
+  <div class="header-spacer"></div>
 </div>
 
 <div class="topup-page">
