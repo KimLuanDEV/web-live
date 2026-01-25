@@ -1873,27 +1873,32 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
-
-  // ================================
+// ================================
 // 🔔 USER ĐÃ CHUYỂN KHOẢN (TOPUP)
 // ================================
-socket.on("topup-transferred", ({ fromUid, agentUid, time }) => {
+socket.on("topup-transferred", async ({ fromUid, agentUid, time }) => {
   if (!fromUid || !agentUid) return;
 
   console.log("💸 TOPUP TRANSFER:", fromUid, "→", agentUid);
 
-  // 🔔 realtime cho đại lý nếu online
+  const ts = time || Date.now();
+
+  // =====================
+  // 1️⃣ REALTIME cho đại lý (nếu online)
+  // =====================
   const sockets = activeUsers.get(agentUid);
   if (sockets) {
     for (const sid of sockets) {
       io.to(sid).emit("topup-user-waiting", {
         fromUid,
-        time
+        time: ts
       });
     }
   }
 
-  // 📥 lưu inbox cho đại lý (xem lại nếu offline)
+  // =====================
+  // 2️⃣ LƯU INBOX cho đại lý (offline vẫn thấy)
+  // =====================
   if (!userInbox.has(agentUid)) {
     userInbox.set(agentUid, []);
   }
@@ -1902,11 +1907,38 @@ socket.on("topup-transferred", ({ fromUid, agentUid, time }) => {
     type: "topup-waiting",
     from: fromUid,
     text: `💸 ${fromUid} đã chuyển khoản – vui lòng kiểm tra`,
-    time: time || Date.now(),
+    time: ts,
     read: false
   });
 
   saveInbox(Object.fromEntries(userInbox));
+
+  // =====================
+  // 3️⃣ PUSH NOTIFICATION cho đại lý (khi offline)
+  // =====================
+  await sendPushToUser(agentUid, {
+    title: "💳 Yêu cầu nạp coin",
+    body: `${fromUid} đã chuyển khoản`,
+    url: "/admin.html#topup",
+    tag: "topup-waiting"
+  });
+
+  // =====================
+  // 4️⃣ THÔNG BÁO CHO ADMIN (realtime)
+  // =====================
+  for (const [uid, sockets] of activeUsers.entries()) {
+    const db = loadUsers();
+    if (db[uid]?.role !== "admin") continue;
+
+    for (const sid of sockets) {
+      io.to(sid).emit("topup-admin-notify", {
+        fromUid,
+        agentUid,
+        time: ts
+      });
+    }
+  }
+
 });
 
 
