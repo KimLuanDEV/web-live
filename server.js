@@ -163,6 +163,24 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
 
+
+// 🔗 GÁN SOCKET ↔ UID (DÙNG CHUNG)
+function bindSocketToUser(uid, socket) {
+  if (!uid) return;
+
+  let set = activeUsers.get(uid);
+  if (!set) {
+    set = new Set();
+    activeUsers.set(uid, set);
+  }
+
+  set.add(socket.id);
+  socket.data.uid = uid;
+
+  console.log("🔗 SOCKET LOGIN:", uid, socket.id);
+}
+
+
 // 🔧 Parse JSON body (BẮT BUỘC cho admin API)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -1894,30 +1912,34 @@ socket.on("topup-transferred", ({ fromUid, agentUid, time }) => {
 
 
 
+// 🔐 LOGIN SOCKET (CHUẨN HOÁ)
 socket.on("socket-login", ({ uid }) => {
-  console.log("🧪 SOCKET-LOGIN:", uid);
+  bindSocketToUser(uid, socket);
+  emitAgentStatus(uid, true);
+});
 
-  if (!uid) return;
-
-  socket.data.uid = uid;
-
-  // check trước đó user đã online chưa
-  const wasOffline = !activeUsers.has(uid);
-
-  let set = activeUsers.get(uid);
-  if (!set) {
-    set = new Set();
-    activeUsers.set(uid, set);
-  }
-  set.add(socket.id);
-
-  // 🟢 CHỈ EMIT KHI SOCKET ĐẦU TIÊN
-  if (wasOffline) {
-    emitAgentStatus(uid, true);
-  }
+socket.on("auth-login", ({ uid }) => {
+  bindSocketToUser(uid, socket);
+  emitAgentStatus(uid, true);
 });
 
 
+// ❌ HANDLE DISCONNECT (BẮT BUỘC)
+socket.on("disconnect", () => {
+  const uid = socket.data.uid;
+  if (!uid) return;
+
+  const set = activeUsers.get(uid);
+  if (set) {
+    set.delete(socket.id);
+    if (set.size === 0) {
+      activeUsers.delete(uid);
+      emitAgentStatus(uid, false);
+    }
+  }
+
+  console.log("❌ SOCKET OFFLINE:", uid, socket.id);
+});
 
 
 socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
