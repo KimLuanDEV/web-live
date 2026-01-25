@@ -98,17 +98,17 @@
   display: flex;
   gap: 12px;
   align-items: center;
-  padding: 14px;
-  border-radius: 16px;
-  background: linear-gradient(145deg,#ffffff,#f2f5ff);
-  box-shadow: 0 6px 18px rgba(79,109,245,.15);
-  border: none;
+  padding: 12px;
+  border-radius: 12px;
+  border: 1px solid #eee;
+  cursor: pointer;
+  transition: .15s;
 }
 
 .agent-card:hover {
-  transform: translateY(-2px) scale(1.01);
+  background: #f7f9ff;
+  transform: translateY(-1px);
 }
-
 
 .agent-avatar {
   width: 48px;
@@ -132,34 +132,13 @@
 
 .agent-status {
   font-size: 12px;
-  font-weight: 600;
-  margin-top: 4px;
+  color: #28a745;
 }
 
-.agent-status::before {
-  content: "";
-  width: 8px;
-  height: 8px;
-  display: inline-block;
-  border-radius: 50%;
-  background: #28a745;
-  margin-right: 6px;
+.agent-status.offline {
+  color: #aaa;
 }
 
-.agent-status.offline::before {
-  background: #aaa;
-}
-
-
-
-.qr-box {
-  animation: slideUp .25s ease;
-}
-
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
 
 
   </style>
@@ -174,10 +153,6 @@
 <div class="topup-page">
 
  <button class="btn-back" onclick="history.back()">⬅ Quay lại</button>
-
-
-
-
 
   <div class="topup-header">
     <h2>💎 Nạp coin</h2>
