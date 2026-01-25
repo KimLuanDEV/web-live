@@ -22,6 +22,14 @@ let isPosting = false;
 
 window.allUsers = {};
 
+// ===== LIKE FAKE STATE (GLOBAL) =====
+window.fakeLikes = {
+  values: {},   // số like fake của từng post
+  started: {}   // đánh dấu post đã chạy interval
+};
+
+
+
 function isAdminUser(uid){
   // fallback cực quan trọng
   if (auth?.role === "admin") return true;
@@ -1004,7 +1012,6 @@ if (window.fakeLikes[p.id] == null) {
 window.lpPostMap ||= {};
 window.lpPostMap[p.id] = p;
 // ===== LIKE ẢO (CLIENT ONLY) =====
-window.fakeLikes = {};   // { postId: number }
 
 
 
@@ -2446,49 +2453,45 @@ function getTotalUserCount(){
 
 
 
-
-// ===== AUTO LIKE ẢO (CÓ GIỚI HẠN USER) =====
+// ===== AUTO LIKE FAKE (CÓ GIỚI HẠN USER) =====
 function startFakeLike(postId){
+  postId = String(postId);
 
-postId = String(postId);
-window.fakeLikes ||= {};
-window.fakeLikes[postId] = Number(window.fakeLikes[postId] || 0);
+  // ⛔ mỗi post chỉ chạy 1 interval
+  if (window.fakeLikes.started[postId]) return;
+  window.fakeLikes.started[postId] = true;
 
-
-  if(window.fakeLikes[postId] != null) return;
-
-  window.fakeLikes[postId] = 0;
+  // init value
+  window.fakeLikes.values[postId] ||= 0;
 
   const delay = 3000 + Math.random() * 5000;
 
   setInterval(() => {
     const post = window.lpPostMap?.[postId];
     const el   = document.getElementById("like_" + postId);
-    if(!post || !el) return;
+    if (!post || !el) return;
 
-    const realLikes = post.likes?.length || 0;
+    const realLikes =
+      Array.isArray(post.likes) ? post.likes.length : 0;
+
     const totalUsers = getTotalUserCount();
 
-    // 🔒 CHẶN VƯỢT SỐ USER
+    // 🔒 giới hạn: tổng like ≤ số user
     const maxFake = Math.max(0, totalUsers - realLikes);
-    if (window.fakeLikes[postId] >= maxFake) {
-      // đã chạm trần → khóa luôn
-      window.fakeLikes[postId] = maxFake;
-      el.textContent = realLikes + maxFake;
-      return;
+    if (window.fakeLikes.values[postId] >= maxFake) return;
+
+    // random xác suất tăng
+    if (Math.random() < 0.55) return;
+
+    // tăng nhẹ cho tự nhiên
+    window.fakeLikes.values[postId] += 1;
+
+    // clamp cho chắc
+    if (window.fakeLikes.values[postId] > maxFake) {
+      window.fakeLikes.values[postId] = maxFake;
     }
 
-    // random xác suất
-    if(Math.random() < 0.55) return;
-
-    // mỗi lần chỉ +1 cho tự nhiên
-    window.fakeLikes[postId] += 1;
-
-    // clamp lần cuối cho chắc
-    if (window.fakeLikes[postId] > maxFake) {
-      window.fakeLikes[postId] = maxFake;
-    }
-
-    el.textContent = realLikes + window.fakeLikes[postId];
+    el.textContent =
+      realLikes + window.fakeLikes.values[postId];
   }, delay);
 }
