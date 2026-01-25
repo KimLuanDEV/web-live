@@ -608,6 +608,32 @@ if (!lock) {
 
 
 
+app.post("/api/fake-like", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  const { postId, value } = req.body || {};
+
+  if(!uid || !postId || value == null){
+    return res.status(400).json({ error:"missing" });
+  }
+
+  saveUserFakeLike(uid, postId, Number(value));
+
+  // 🔁 realtime sync tất cả thiết bị user
+  const sockets = activeUsers.get(uid);
+  if(sockets){
+    for(const sid of sockets){
+      io.to(sid).emit("fake-like-sync", {
+        postId,
+        value
+      });
+    }
+  }
+
+  res.json({ ok:true });
+});
+
+
+
 
 app.post("/api/upload-chat-image", chatUpload.single("image"), async (req, res) => {
 
@@ -1134,6 +1160,24 @@ function pushNotify(uid, payload){
 
 
 const USERS_FILE = path.join("/opt/render/project/data", "users.json");
+
+
+function getUserFakeLikes(uid){
+  const db = loadUsers();
+  return db[uid]?.profile?.fakeLikes || {};
+}
+
+function saveUserFakeLike(uid, postId, value){
+  const db = loadUsers();
+  if(!db[uid] || !db[uid].profile) return;
+
+db[uid].profile.fakeLikes = db[uid].profile.fakeLikes || {};
+db[uid].profile.fakeLikes[String(postId)] = Number(value) || 0;
+
+
+  saveUsers(db);
+}
+
 
 
 
@@ -2048,6 +2092,10 @@ socket.on("socket-login", ({ uid }) => {
 socket.on("auth-login", ({ uid }) => {
   bindSocketToUser(uid, socket);
   emitAgentStatus(uid, true);
+  const fakeLikes = getUserFakeLikes(uid);
+socket.emit("fake-like-init", fakeLikes);
+
+
 });
 
 

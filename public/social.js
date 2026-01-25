@@ -28,30 +28,12 @@ window.fakeLikes = {
   started: {}   // đánh dấu post đã chạy interval
 };
 
-// 💾 FAKE LIKE LOCAL STORAGE
-const FAKE_LIKE_KEY = "lp_fake_likes";
+// nhận fakeLike khi user login / reload
+socket.on("fake-like-init", data => {
+  window.fakeLikes.values = data || {};
+});
 
-// 🔄 restore fake like khi load trang
-try {
-  const saved = JSON.parse(localStorage.getItem(FAKE_LIKE_KEY) || "{}");
-  if (saved && typeof saved === "object") {
-    window.fakeLikes.values = saved;
-  }
-} catch (e) {
-  console.warn("FakeLike restore failed", e);
-}
 
-// 💾 lưu fake like vào localStorage
-function saveFakeLikes(){
-  try {
-    localStorage.setItem(
-      FAKE_LIKE_KEY,
-      JSON.stringify(window.fakeLikes.values)
-    );
-  } catch (e) {
-    console.warn("FakeLike save failed", e);
-  }
-}
 
 
 
@@ -233,6 +215,21 @@ function fixMedia(url){
 document.getElementById("meAvatar").src = fixMedia(auth.avatar);
 
 
+
+
+// 🔄 realtime sync fakeLike multi-device
+socket.on("fake-like-sync", ({ postId, value }) => {
+  postId = String(postId);
+  window.fakeLikes.values[postId] = Number(value) || 0;
+
+  const el = document.getElementById("like_" + postId);
+  const post = window.lpPostMap?.[postId];
+  if (el && post) {
+    const real =
+      Array.isArray(post.likes) ? post.likes.length : 0;
+    el.textContent = real + window.fakeLikes.values[postId];
+  }
+});
 
 
 
@@ -2519,8 +2516,19 @@ function startFakeLike(postId){
     // tăng nhẹ cho tự nhiên
     window.fakeLikes.values[postId] += 1;
 
-    // 💾 lưu lại sau mỗi lần tăng
-saveFakeLikes();
+// ☁️ sync fakeLike lên server
+fetch("/api/fake-like", {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "x-uid": auth.uid
+  },
+  body: JSON.stringify({
+    postId,
+    value: window.fakeLikes.values[postId]
+  })
+});
+
 
     // clamp cho chắc
     if (window.fakeLikes.values[postId] > maxFake) {
