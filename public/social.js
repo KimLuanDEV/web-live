@@ -988,6 +988,14 @@ socket.on("lp-delete", ({ postId })=>{
 
 function renderPost(p, top=false){
 
+// 🧯 SAFETY INIT (chống NaN)
+window.fakeLikes ||= {};
+if (window.fakeLikes[p.id] == null) {
+  window.fakeLikes[p.id] = 0;
+}
+
+
+
     // ⛔⛔⛔ CHẶN RENDER TRÙNG BÀI VIẾT
   if (document.querySelector(`.lp-post[data-id="${p.id}"]`)) {
     return;
@@ -1097,7 +1105,9 @@ ${p.video ? `
 
 <div class="lp-action like" onclick="likePost('${p.id}')">
   ❤️ <span id="like_${p.id}">
-    ${(p.likes?.length||0) + (window.fakeLikes[p.id]||0)}
+    ${Number(Array.isArray(p.likes) ? p.likes.length : 0)
+ + Number(window.fakeLikes?.[p.id] || 0)}
+
   </span>
 </div>
 
@@ -2439,6 +2449,12 @@ function getTotalUserCount(){
 
 // ===== AUTO LIKE ẢO (CÓ GIỚI HẠN USER) =====
 function startFakeLike(postId){
+
+postId = String(postId);
+window.fakeLikes ||= {};
+window.fakeLikes[postId] = Number(window.fakeLikes[postId] || 0);
+
+
   if(window.fakeLikes[postId] != null) return;
 
   window.fakeLikes[postId] = 0;
