@@ -11372,3 +11372,48 @@ button:disabled{
 .badge-withdraw .stat-badge {
   background: linear-gradient(135deg, #4caf50, #2e7d32);
 }
+
+
+/* ===============================
+   PROFILE – FIX POST IMAGE OVERFLOW
+================================ */
+
+.page-profile .lp-post {
+  overflow: hidden;
+}
+
+.page-profile .lp-post-images,
+.page-profile .lp-post-body {
+  max-width: 100%;
+}
+
+.page-profile .lp-post img,
+.page-profile .lp-post video {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 12px;
+  object-fit: cover;
+}
+
+/* Grid ảnh (nhiều ảnh) */
+.page-profile .lp-post-images {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.page-profile .lp-post-images img {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+}
+
+/* 1 ảnh → full width */
+.page-profile .lp-post-images:has(img:only-child) {
+  grid-template-columns: 1fr;
+}
+
+.page-profile .lp-post-images img {
+  max-height: 420px;
+}
