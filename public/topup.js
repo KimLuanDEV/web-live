@@ -143,10 +143,7 @@ let startY = 0;
 let currentY = 0;
 let dragging = false;
 
-
-const sheetHandle = qrSheet.querySelector(".sheet-handle");
-
-sheetHandle.addEventListener("touchstart", e => {
+qrSheet.addEventListener("touchstart", e => {
   if (!qrSheet.classList.contains("show")) return;
 
   startY = e.touches[0].clientY;
