@@ -1857,6 +1857,8 @@ io.on("connection", (socket) => {
 
 
 socket.on("socket-login", ({ uid }) => {
+  console.log("🧪 SOCKET-LOGIN:", uid);
+
   if (!uid) return;
 
   socket.data.uid = uid;
