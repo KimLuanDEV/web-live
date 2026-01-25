@@ -1018,11 +1018,12 @@ const BOT_POST_TEXTS = [
 ];
 
 const BOT_IMAGES = [
-  "/bot-posts/1.jpg",
-  "/bot-posts/2.jpg",
-  "/bot-posts/3.jpg",
-  "/bot-posts/4.jpg"
+  "bot-posts/1.jpg",
+  "bot-posts/2.jpg",
+  "bot-posts/3.jpg",
+  "bot-posts/4.jpg"
 ];
+
 
 function botCreatePost(){
   const db = loadUsers();
@@ -1033,18 +1034,19 @@ function botCreatePost(){
   const text = BOT_POST_TEXTS[Math.floor(Math.random() * BOT_POST_TEXTS.length)];
   const image = BOT_IMAGES[Math.floor(Math.random() * BOT_IMAGES.length)];
 
-  const post = {
-    id: "bot_" + Date.now(),
-    uid: bot.profile.uid,
-    name: bot.profile.name,
-    avatar: bot.profile.avatar,
-    text,
-    images: [image],
-    video: "",
-    likes: [],
-    comments: [],
-    time: Date.now()
-  };
+ const post = {
+  id: "bot_" + Date.now(),
+  uid: bot.profile.uid,
+  name: bot.profile.name,
+  avatar: normalizeAvatar(bot.profile.avatar), // ✅ FIX
+  text,
+  images: [normalizeAvatar(image)],             // ✅ FIX LUÔN ẢNH BÀI
+  video: "",
+  likes: [],
+  comments: [],
+  time: Date.now()
+};
+
 
   lpPosts.unshift(post);
   saveSocial();
