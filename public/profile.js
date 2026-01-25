@@ -52,7 +52,8 @@ const btnUnfriend       = document.getElementById("btnUnfriend");
 const btnBlock          = document.getElementById("btnBlock");
 
 
-
+// 🔧 FIX LEGACY AVATAR (/avatars -> R2)
+const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 
 function fixMedia(url){
   if (!url) return "";
@@ -1678,8 +1679,7 @@ async function loadProfilePosts(uid) {
       div.className = "lp-post";
       div.id = "post-" + p.id;
 
-      div.innerHTML = window.renderSocialPostHTML(p, { profile: true });
-
+      div.innerHTML = renderProfilePostHTML(p);
       profilePostList.appendChild(div);
     });
 
