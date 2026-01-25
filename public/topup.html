@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>💎 Nạp coin</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .topup-page {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 16px;
+    }
+
+    .topup-header {
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .topup-header h2 {
+      margin: 0;
+    }
+
+    .coin-pack {
+      border: 1px solid #eee;
+      border-radius: 12px;
+      padding: 14px;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: .15s;
+    }
+
+    .coin-pack:hover {
+      background: #f7f9ff;
+      transform: translateY(-1px);
+    }
+
+    .coin-pack b {
+      font-size: 18px;
+    }
+
+    .coin-pack span {
+      opacity: .7;
+      font-size: 14px;
+    }
+
+    .qr-box {
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 12px;
+      background: #fafafa;
+      text-align: center;
+    }
+
+    .qr-box img {
+      max-width: 220px;
+      margin: 12px auto;
+      display: block;
+    }
+
+    .bank-info {
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .btn-copy {
+      margin-top: 10px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: none;
+      background: #4f6df5;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .btn-back {
+      margin-top: 18px;
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: #ddd;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+<script src="/guard.js"></script>
+
+<div class="topup-page">
+
+  <div class="topup-header">
+    <h2>💎 Nạp coin</h2>
+    <div id="myCoin">Đang tải coin...</div>
+  </div>
+
+  <!-- GÓI COIN -->
+  <div class="coin-pack" data-coin="100" data-money="50000">
+    <div>
+      <b>100 💎</b><br>
+      <span>50.000đ</span>
+    </div>
+    <div>➕</div>
+  </div>
+
+  <div class="coin-pack" data-coin="250" data-money="100000">
+    <div>
+      <b>250 💎</b><br>
+      <span>100.000đ</span>
+    </div>
+    <div>➕</div>
+  </div>
+
+  <div class="coin-pack" data-coin="700" data-money="250000">
+    <div>
+      <b>700 💎</b><br>
+      <span>250.000đ</span>
+    </div>
+    <div>➕</div>
+  </div>
+
+  <!-- QR / BANK -->
+  <div class="qr-box hidden" id="qrBox">
+    <h3>📲 Quét QR để thanh toán</h3>
+
+    <!-- ⚠️ thay link QR thật -->
+    <img src="/images/qr-demo.png" alt="QR">
+
+    <div class="bank-info" id="bankInfo"></div>
+
+    <button class="btn-copy" onclick="copyTransfer()">📋 Copy nội dung CK</button>
+  </div>
+
+  <button class="btn-back" onclick="history.back()">⬅ Quay lại</button>
+
+</div>
+
+<div id="toast-container"></div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/topup.js"></script>
+</body>
+</html>

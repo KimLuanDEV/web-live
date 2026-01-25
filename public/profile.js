@@ -513,6 +513,26 @@ if (btnWithdraw) {
 
 
 
+const btnTopupCoin = document.getElementById("btnTopupCoin");
+
+if (btnTopupCoin) {
+  btnTopupCoin.onclick = () => {
+
+    // 🚫 đang xem profile người khác → không cho nạp
+    if (viewUid && viewUid !== __profileAuth.uid) {
+      showMsg("🚫 Bạn không thể nạp coin cho tài khoản này");
+      return;
+    }
+
+    // 👉 chuyển sang trang nạp coin
+    location.href = "/topup.html"; 
+    // ⬆️ đổi path nếu bạn dùng tên khác
+  };
+}
+
+
+
+
 
 
 let __coverUploading = false;
