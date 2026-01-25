@@ -1478,6 +1478,39 @@ const blockedByYou =
 
 
 
+// ===== API: DANH SÁCH ĐẠI LÝ NẠP COIN =====
+app.get("/api/topup-agents", (req, res) => {
+  const db = loadUsers();
+  const list = [];
+
+  for (const uid in db) {
+    const acc = db[uid];
+    if (acc.role !== "agent") continue;
+
+    const p = acc.profile || {};
+    const bank = p.bank || {};
+
+    list.push({
+      uid,
+      name: p.name || uid,
+      avatar: normalizeAvatar(p.avatar) ||
+        "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
+      bank: bank.name || "",
+      account: bank.account || "",
+      owner: bank.owner || "",
+      qr: bank.qr || "",
+      online: !!p.online
+    });
+  }
+
+  res.json({
+    ok: true,
+    agents: list
+  });
+});
+
+
+
 
 app.get("/api/all-users", (req,res)=>{
   const db = loadUsers();
@@ -1492,6 +1525,7 @@ app.get("/api/all-users", (req,res)=>{
       cover: p.cover || "",
       bio: p.bio || "",
       level: p.level || 1,
+      role: db[uid].role || "user",
       verified: !!p.verified   // ⭐ thêm
     });
   }
