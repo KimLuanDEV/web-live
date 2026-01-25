@@ -28,6 +28,31 @@ window.fakeLikes = {
   started: {}   // đánh dấu post đã chạy interval
 };
 
+// 💾 FAKE LIKE LOCAL STORAGE
+const FAKE_LIKE_KEY = "lp_fake_likes";
+
+// 🔄 restore fake like khi load trang
+try {
+  const saved = JSON.parse(localStorage.getItem(FAKE_LIKE_KEY) || "{}");
+  if (saved && typeof saved === "object") {
+    window.fakeLikes.values = saved;
+  }
+} catch (e) {
+  console.warn("FakeLike restore failed", e);
+}
+
+// 💾 lưu fake like vào localStorage
+function saveFakeLikes(){
+  try {
+    localStorage.setItem(
+      FAKE_LIKE_KEY,
+      JSON.stringify(window.fakeLikes.values)
+    );
+  } catch (e) {
+    console.warn("FakeLike save failed", e);
+  }
+}
+
 
 
 function isAdminUser(uid){
@@ -545,6 +570,12 @@ socket.on("social-update", ({ type, postId }) => {
     if(el) el.remove();
   }
 });
+
+    // 🧹 xoá fake like của post đã bị xoá
+    if (window.fakeLikes.values[postId] != null) {
+      delete window.fakeLikes.values[postId];
+      saveFakeLikes();
+    }
 
 
 
@@ -2485,6 +2516,9 @@ function startFakeLike(postId){
 
     // tăng nhẹ cho tự nhiên
     window.fakeLikes.values[postId] += 1;
+
+    // 💾 lưu lại sau mỗi lần tăng
+saveFakeLikes();
 
     // clamp cho chắc
     if (window.fakeLikes.values[postId] > maxFake) {
