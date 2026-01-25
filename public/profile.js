@@ -15,35 +15,27 @@ setInterval(() => {
 
 
 // 🔐 AUTH ACCOUNT – bắt buộc
-const __profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+window.__profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
 
 const KEY = "user_profile";
 
 const btnAdmin = document.getElementById("btnAdmin");
 
-if (btnAdmin) {
-  const myUid = __profileAuth.uid;
+if (btnAdmin && window.__profileAuth) {
+  const isAdmin =
+    ADMIN_UIDS.includes(window.__profileAuth.uid) ||
+    window.__profileAuth.role === "admin" ||
+    (window.__profileAuth.roles || []).includes("admin");
 
-const isAdmin =
-  ADMIN_UIDS.includes(__profileAuth.uid) ||
-  __profileAuth.role === "admin" ||
-  (__profileAuth.roles || []).includes("admin");
-
-
-  if (
-    myUid &&
-    (!viewUid || viewUid === myUid) &&
-    isAdmin
-  ) {
-    btnAdmin.classList.remove("hidden");
-  } else {
-    btnAdmin.classList.add("hidden");
-  }
+  // 🔥 ADMIN LUÔN THẤY NÚT
+  btnAdmin.classList.toggle("hidden", !isAdmin);
 
   btnAdmin.onclick = () => {
     location.href = "/admin.html";
   };
 }
+
 
 
 
