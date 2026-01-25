@@ -19,34 +19,59 @@ let isPosting = false;
 
 window.allUsers = {};
 
-// ===== 🔥 DAILY SYSTEM POSTS (BÀI ĐĂNG ẢO THEO NGÀY) =====
+// ===== 🔀 RANDOM USER FOR SYSTEM POSTS =====
+const FAKE_USERS = [
+  { name: "Linh Cute", avatar: "https://i.imgur.com/9XqZ6ZP.jpg" },
+  { name: "Ngọc Trinh", avatar: "https://i.imgur.com/YqZ1KZk.jpg" },
+  { name: "Mai Anh", avatar: "https://i.imgur.com/7YQp7kU.jpg" },
+  { name: "Thuỷ Tiên", avatar: "https://i.imgur.com/R3pYz0D.jpg" },
+  { name: "Bảo Ngọc", avatar: "https://i.imgur.com/tzX7fXG.jpg" },
+  { name: "Trà My", avatar: "https://i.imgur.com/6ZxqKXK.jpg" }
+];
+
+
+// ===== 🔥 DAILY SYSTEM POSTS + GÁI XINH =====
 const DAILY_POSTS = [
-  "🔥 Hôm nay bạn đã livestream chưa?",
-  "🎁 Đừng quên tặng quà cho streamer bạn yêu thích nhé!",
-  "💬 Một bình luận tích cực có thể tạo ra động lực lớn 💙",
-  "🚀 Livestream Pro đang phát triển từng ngày cùng bạn!",
-  "👑 Ai sẽ là streamer nổi bật nhất hôm nay?",
-  "📢 Tip: Stream buổi tối thường dễ lên view hơn!",
-  "✨ Cộng đồng văn minh – Livestream vui hơn!"
+  "🔥 Chào buổi tối anh em Livestream Pro 😍",
+  "💖 Gửi chút năng lượng tích cực cho cả nhà!",
+  "✨ Hôm nay bạn thấy ai livestream cuốn nhất?",
+  "💬 Comment nhẹ cho page thêm xôm nào!",
+  "👑 Ai là fan cứng của Livestream Pro điểm danh!",
+  "📸 Một chút visual cho ngày thêm vui 😘"
+];
+
+// 👉 link ảnh gái xinh (có thể thêm bao nhiêu cũng được)
+const DAILY_GIRL_IMAGES = [
+  "https://i.imgur.com/9XqZ6ZP.jpg",
+  "https://i.imgur.com/YqZ1KZk.jpg",
+  "https://i.imgur.com/7YQp7kU.jpg",
+  "https://i.imgur.com/R3pYz0D.jpg",
+  "https://i.imgur.com/tzX7fXG.jpg",
+  "https://i.imgur.com/6ZxqKXK.jpg"
 ];
 
 
 
 function renderDailyFakePost(){
   const today = new Date().toISOString().slice(0,10); // yyyy-mm-dd
-  const seed = today.split("-").join("");
-  const index = Number(seed) % DAILY_POSTS.length;
+  const seed = Number(today.replace(/-/g,""));
+
+  const textIndex = seed % DAILY_POSTS.length;
+  const userIndex = seed % FAKE_USERS.length;
+  const imageIndex = seed % DAILY_GIRL_IMAGES.length;
+
+  const fakeUser = FAKE_USERS[userIndex];
 
   const fakePost = {
     id: "daily_" + today,
-    uid: "__system__",
-    name: "Livestream Pro",
-    avatar: "/icons/icon-192.png",
-    text: DAILY_POSTS[index],
-    images: [],
+    uid: "__fake_" + userIndex,        // uid giả
+    name: fakeUser.name,               // 🔥 tên random
+    avatar: fakeUser.avatar,           // 🔥 avatar theo tên
+    text: DAILY_POSTS[textIndex],
+    images: [ DAILY_GIRL_IMAGES[imageIndex] ],
     video: "",
-    time: Date.now() - 1000 * 60 * 30, // 30 phút trước
-    likes: [],
+    time: Date.now() - 1000 * 60 * 30,
+    likes: new Array((seed % 20) + 8),  // 8–28 like
     comments: [],
     gifts: null
   };
@@ -54,8 +79,9 @@ function renderDailyFakePost(){
   // ⛔ tránh render trùng
   if (document.querySelector(`.lp-post[data-id="${fakePost.id}"]`)) return;
 
-  renderPost(fakePost, true); // pin lên đầu feed
+  renderPost(fakePost, true);
 }
+
 
 
 
