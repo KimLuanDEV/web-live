@@ -13,8 +13,6 @@ const sheetOverlay = document.getElementById("sheetOverlay");
 const qrSheet = document.getElementById("qrSheet");
 const sheetQr = document.getElementById("sheetQr");
 const sheetBankInfo = document.getElementById("sheetBankInfo");
-const agentSheet = document.getElementById("agentSheet");
-const agentSheetList = document.getElementById("agentSheetList");
 
 // hiển thị coin hiện tại
 if (myCoinEl) {
@@ -39,13 +37,6 @@ fetch("/api/topup-agents")
 
 // render danh sách đại lý
 function renderAgents(list) {
-  const target = agentSheetList || agentList;
-  if (!target) return;
-
-  target.innerHTML = "";
-
-
-
   if (!agentList) return;
 
   agentList.innerHTML = "";
@@ -80,19 +71,18 @@ function renderAgents(list) {
     `;
 
     div.onclick = () => openAgent(agent);
-    target.appendChild(div);
+    agentList.appendChild(div);
   });
 }
 
 // mở chi tiết đại lý + QR
 function openAgent(agent) {
-  // đóng sheet chọn đại lý
-  agentSheet.classList.remove("show");
-
   const content = `NAP ${auth.uid}`;
 
+  // set QR
   sheetQr.src = agent.qr || "/images/qr-demo.png";
 
+  // set info
   sheetBankInfo.innerHTML = `
     <b>Đại lý:</b> ${agent.name}<br>
     <b>Ngân hàng:</b> ${agent.bank}<br>
@@ -101,10 +91,13 @@ function openAgent(agent) {
     <b>Nội dung:</b> <code id="transferText">${content}</code>
   `;
 
-  // mở sheet QR
+  // mở sheet
+  sheetOverlay.classList.remove("hidden");
   qrSheet.classList.add("show");
-}
 
+  // khóa scroll nền
+  document.body.style.overflow = "hidden";
+}
 
 
 // copy nội dung chuyển khoản
@@ -140,49 +133,33 @@ socket.on("connect", () => {
 
 sheetOverlay.onclick = () => {
   qrSheet.classList.remove("show");
-  cardSheet.classList.remove("show");
-  agentSheet.classList.remove("show");
-
   sheetOverlay.classList.add("hidden");
   document.body.style.overflow = "";
 };
-
 
 myCoinEl.innerHTML = `Số dư khả dụng · <b>${auth.coins || 0}</b> 💎`;
 
 const agentOption = document.getElementById("agentOption");
 
-if (agentOption && agentSheet) {
+if (agentOption) {
   const header = agentOption.querySelector(".option-header");
+  const content = agentOption.querySelector(".option-content");
 
   header.onclick = () => {
-    // mở bottom sheet đại lý
-    sheetOverlay.classList.remove("hidden");
-    agentSheet.classList.add("show");
-
-    document.body.style.overflow = "hidden";
+    agentOption.classList.toggle("open");
+    content.classList.toggle("hidden");
   };
 }
-
-
 
 
 const cardOption = document.getElementById("cardOption");
-const cardSheet = document.getElementById("cardSheet");
 
-if (cardOption && cardSheet) {
+if (cardOption) {
   const header = cardOption.querySelector(".option-header");
+  const content = cardOption.querySelector(".option-content");
 
   header.onclick = () => {
-    // đóng option nếu đang mở
-    cardOption.classList.remove("open");
-
-    // mở bottom sheet
-    sheetOverlay.classList.remove("hidden");
-    cardSheet.classList.add("show");
-
-    document.body.style.overflow = "hidden";
+    cardOption.classList.toggle("open");
+    content.classList.toggle("hidden");
   };
 }
-
-

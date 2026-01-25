@@ -498,24 +498,6 @@ html, body {
 }
 
 
-.card-sheet-content {
-  text-align: center;
-}
-
-.card-logos {
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 12px 0 16px;
-}
-
-.card-logos img {
-  height: 26px;
-  opacity: .85;
-}
-
-
-
   </style>
 </head>
 
@@ -604,15 +586,6 @@ html, body {
 
 
 
-<!-- 🧑‍💼 BOTTOM SHEET CHỌN ĐẠI LÝ -->
-<div id="agentSheet" class="bottom-sheet">
-  <div class="sheet-handle"></div>
-
-  <h3>🧑‍💼 Chọn đại lý nạp</h3>
-
-  <div id="agentSheetList" class="agent-list"></div>
-</div>
-
 
 </div>
 
@@ -640,27 +613,6 @@ html, body {
 
   <button class="btn-copy" onclick="copyTransfer()">📋 Copy nội dung CK</button>
 </div>
-
-<!-- 💳 BOTTOM SHEET NẠP QUA THẺ -->
-<div id="cardSheet" class="bottom-sheet">
-  <div class="sheet-handle"></div>
-
-  <h3>💳 Nạp qua thẻ</h3>
-
-  <div class="card-sheet-content">
-    <div class="card-logos">
-      <img src="/images/payments/atm.png">
-      <img src="/images/payments/visa.png">
-      <img src="/images/payments/mastercard.png">
-    </div>
-
-    <div class="card-coming">
-      🚧 Tính năng đang được phát triển<br>
-      <small>Hiện tại vui lòng sử dụng nạp qua đại lý</small>
-    </div>
-  </div>
-</div>
-
 
 
 <script src="/socket.io/socket.io.js"></script>
