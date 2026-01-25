@@ -1736,4 +1736,4 @@ function loadProfilePosts(uid) {
 
 
 // gọi sau
-loadProfilePosts(viewUid);
+loadProfilePosts(viewUid || __profileAuth.uid);
