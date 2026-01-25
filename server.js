@@ -1014,26 +1014,6 @@ const rooms = new Map();
 const lpPosts = loadSocial();
 
 
-// ===== API: GET SOCIAL POSTS BY USER =====
-app.get("/api/social/user/:uid", (req, res) => {
-  const uid = req.params.uid;
-  if (!uid) {
-    return res.json({ ok: true, list: [] });
-  }
-
-  // lọc bài đăng theo uid
-  const list = lpPosts
-    .filter(p => p.uid === uid)
-    .sort((a, b) => b.time - a.time); // mới nhất lên trước
-
-  res.json({
-    ok: true,
-    list
-  });
-});
-
-
-
 
 // 🔴🟢 EMIT REALTIME ONLINE / OFFLINE ĐẠI LÝ
 function emitAgentStatus(uid, online) {

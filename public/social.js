@@ -986,99 +986,6 @@ socket.on("lp-delete", ({ postId })=>{
 });
 
 
-
-
-// ===== SHARED POST HTML (SOCIAL + PROFILE) =====
-function renderPostHTML(p, options = {}) {
-  const isProfile = options.profile === true;
-  const isAdmin = window.allUsers?.[p.uid]?.role === "admin";
-
-  const d = new Date(p.time);
-  const time = `
-    ${d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
-    ·
-    ${d.toLocaleDateString("vi-VN")}
-  `;
-
-  return `
-<div class="lp-post-inner">
-
-  <div class="lp-post-head">
-
-    <img class="lp-ava"
-         src="${fixMedia(p.avatar)}"
-         onclick="openUserProfile('${p.uid}')"
-         style="cursor:pointer">
-
-    <div>
-      <div class="lp-post-name"
-           onclick="openUserProfile('${p.uid}')"
-           style="cursor:pointer">
-        ${p.name}
-        ${isAdmin ? `<span class="lp-verified">✔︎</span>` : ``}
-      </div>
-
-      <div class="lp-post-time">${time}</div>
-    </div>
-
-    ${
-      !isProfile && (p.uid === auth.uid || isAdminUser(auth.uid))
-      ? `
-      <div class="lp-post-tools">
-        ${p.uid === auth.uid
-          ? `<span class="lp-edit" onclick="editPost('${p.id}')">✏️</span>`
-          : ``}
-        <span class="lp-del"
-          onclick="${
-            isAdminUser(auth.uid) && p.uid !== auth.uid
-              ? `adminDeletePost('${p.id}')`
-              : `deletePost('${p.id}')`
-          }">🗑</span>
-      </div>
-      `
-      : ``
-    }
-
-  </div>
-
-  <div class="lp-post-text">${(p.text || "").replace(/\n/g,"<br>")}</div>
-
-  ${(p.images && p.images.length) ? `
-    <div class="lp-post-images fb-${Math.min(p.images.length,5)}">
-      ${p.images.slice(0,5).map((url,i)=>`
-        <div class="fb-img img-${i}"
-             onclick='openFeedLightbox(${JSON.stringify(p.images)},${i})'>
-          <img src="${fixMedia(url)}">
-        </div>
-      `).join("")}
-    </div>
-  ` : ``}
-
-  ${p.video ? `
-    <video class="lp-post-video" controls playsinline>
-      <source src="${p.video}" type="video/mp4">
-    </video>
-  ` : ``}
-
-  <div class="lp-actions">
-    <div class="lp-action like" onclick="likePost('${p.id}')">
-      ❤️ <span id="like_${p.id}">${p.likes?.length || 0}</span>
-    </div>
-    <div class="lp-action" onclick="toggleComments('${p.id}')">
-      💬 <span id="c_${p.id}">${p.comments?.length || 0}</span>
-    </div>
-    <div class="lp-action gift"
-         onclick="openGift('${p.id}','${p.uid}')">
-      🎁 <span id="g_${p.id}">${p.gifts?.total || 0}</span>
-    </div>
-  </div>
-
-</div>
-`;
-}
-
-
-
 function renderPost(p, top=false){
 
     // ⛔⛔⛔ CHẶN RENDER TRÙNG BÀI VIẾT
@@ -1108,8 +1015,155 @@ const time = `
   
   const isAdmin = window.allUsers?.[p.uid]?.role === "admin";
 
-div.innerHTML = renderPostHTML(p, { profile:false });
+ div.innerHTML=`
 
+ <div class="lp-post-inner">
+
+<div class="lp-post-head">
+
+<img class="lp-ava" src="${fixMedia(p.avatar)}"
+
+     onclick="openUserProfile('${p.uid}')"
+     style="cursor:pointer">
+
+<div>
+
+
+<div class="lp-post-name"
+     onclick="openUserProfile('${p.uid}')"
+     style="cursor:pointer">
+  ${p.name}
+  ${isAdmin ? `<span class="lp-verified" title="Admin đã xác minh">✔︎</span>` : ``}
+</div>
+
+
+  <div class="lp-post-time">${time}</div>
+</div>
+
+
+${
+  p.uid === auth.uid || isAdminUser(auth.uid)
+  ? `
+  <div class="lp-post-tools">
+
+    ${p.uid === auth.uid ? `
+      <span class="lp-edit" onclick="editPost('${p.id}')">✏️</span>
+    ` : ``}
+
+    <span class="lp-del"
+      onclick="${
+        isAdminUser(auth.uid) && p.uid !== auth.uid
+          ? `adminDeletePost('${p.id}')`
+          : `deletePost('${p.id}')`
+      }"
+    >🗑</span>
+
+  </div>
+` : ``}
+
+
+
+
+</div>
+
+
+<div class="lp-post-text">${p.text.replace(/\n/g, "<br>")}</div>
+
+
+${(p.images && p.images.length) ? `
+<div class="lp-post-images fb-${Math.min(p.images.length, 5)}">
+
+  ${p.images.slice(0,5).map((url, index) => `
+    <div class="fb-img img-${index}"
+         onclick='openFeedLightbox(${JSON.stringify(p.images)}, ${index})'>
+      <img src="${fixMedia(url)}">
+
+      ${
+        index === 4 && p.images.length > 5
+          ? `<div class="fb-more">+${p.images.length - 5}</div>`
+          : ``
+      }
+    </div>
+  `).join("")}
+
+</div>
+  ` : ""
+}
+
+
+
+${p.video ? `
+<video class="lp-post-video" controls playsinline>
+  <source src="${p.video}" type="video/mp4">
+</video>` : ""}
+
+
+
+<div class="lp-actions">
+  <div class="lp-action like" onclick="likePost('${p.id}')">
+    ❤️ <span id="like_${p.id}">${p.likes?.length||0}</span>
+  </div>
+
+  <div class="lp-action" onclick="toggleComments('${p.id}')">
+    💬 <span id="c_${p.id}">${p.comments?.length||0}</span>
+  </div>
+
+  <div class="lp-action gift"
+       onclick="openGift('${p.id}', '${p.uid}')">
+    🎁 <span id="g_${p.id}">
+      ${p.gifts?.total || 0}
+    </span>
+  </div>
+</div>
+
+
+${p.gifts?.byUser ? `
+<div class="lp-gift-users"
+     onclick="openGiftUsers('${p.id}')">
+  🎁 Tặng bởi:
+  ${Object.entries(p.gifts.byUser)
+    .slice(0,3)
+    .map(([uid,amt]) => {
+
+      const u = window.allUsers?.[uid];
+
+      const name = u?.name || uid;
+      const avatar = u?.avatar
+        ? fixMedia(u.avatar)
+        : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+          encodeURIComponent(name);
+
+      return `
+        <span class="gift-user">
+          <img src="${avatar}" />
+          <b>${name}</b>
+          <i>${amt}💎</i>
+        </span>
+      `;
+    }).join("")}
+
+  ${Object.keys(p.gifts.byUser).length > 3
+    ? "<span class='gift-more'>…</span>"
+    : ""}
+</div>
+` : ``}
+
+
+
+
+
+
+<div class="lp-comments hidden" id="cm_${p.id}">
+  <div class="lp-comment-list"></div>
+
+  <div class="lp-comment-box">
+  <input id="ci_${p.id}" class="lp-comment-input" placeholder="Viết bình luận...">
+  <button class="lp-comment-send" onclick="sendComment('${p.id}')">➤</button>
+</div>
+</div>
+
+ </div>
+`;
 
 
   if(top) feed.prepend(div);
@@ -2377,5 +2431,3 @@ function closeGiftUsers(){
 
 
 
-// ===== EXPORT FOR PROFILE =====
-window.renderSocialPostHTML = renderPostHTML;
