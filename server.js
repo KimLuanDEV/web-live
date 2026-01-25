@@ -1107,7 +1107,8 @@ function emitAllUsers(){
       avatar: normalizeAvatar(p.avatar) || "",
       cover: p.cover || "",
       level: p.level || 1,
-      role: acc.role || "user"   // 🔥 QUAN TRỌNG
+      role: acc.role || "user" ,  // 🔥 QUAN TRỌNG
+      roles: acc.roles || []   // 🔥 THÊM DÒNG NÀY
     });
   }
 

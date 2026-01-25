@@ -661,24 +661,30 @@ socket.on("all-users", list => {
 
 // ✅ VERIFIED BADGE FOR PROFILE (ADMIN)
 function renderProfileVerified(uid){
-  if(!uid) return;
+  if (!uid) return;
 
   const box = document.getElementById("displayName");
   const nameText = document.getElementById("profileNameText");
-  if(!box || !nameText) return;
+  if (!box || !nameText) return;
 
-  // xoá badge cũ (tránh trùng)
-  const old = box.querySelector(".lp-verified");
-  if(old) old.remove();
+  // xoá badge cũ
+  box.querySelector(".lp-verified")?.remove();
 
   const u = window.allUsers?.[uid];
-  if(u && u.role === "admin"){
+  if (!u) return;
+
+  const isAdmin =
+    u.role === "admin" ||
+    (Array.isArray(u.roles) && u.roles.includes("admin"));
+
+  if (isAdmin) {
     box.insertAdjacentHTML(
       "beforeend",
       `<span class="lp-verified" title="Admin Livestream Pro">✔︎</span>`
     );
   }
 }
+
 
 
 
