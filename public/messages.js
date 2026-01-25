@@ -261,20 +261,33 @@ socket.on("active-users", ({ online }) => {
   }
 });
 
-// 💸 THÔNG BÁO NẠP COIN TỪ USER (CHO ĐẠI LÝ)
+// 💸 THÔNG BÁO USER ĐÃ CHUYỂN KHOẢN (CHO ĐẠI LÝ)
 socket.on("topup-user-waiting", ({ fromUid, time }) => {
   if (!fromUid) return;
 
+  // 🔔 toast realtime
   showToast(
     `💸 ${fromUid} đã chuyển khoản – vui lòng kiểm tra`,
     "success",
-    5000
+    6000
   );
 
-  // 🔔 hiện chấm đỏ inbox
-  showInboxDot(1);
+  // 🔴 hiện chấm đỏ inbox
+  if (typeof showInboxDot === "function") {
+    showInboxDot(1);
+  }
 
-  // 👉 (TUỲ CHỌN) click toast để mở chat luôn
+  // 📥 thêm system message vào khung chat (nếu đang mở)
+  const box = document.getElementById("chatBox");
+  if (box) {
+    const div = document.createElement("div");
+    div.className = "chat-system";
+    div.textContent = `💸 ${fromUid} đã chuyển khoản`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+  }
+
+  // 👉 (tuỳ chọn) mở chat user luôn
   // openChatByUid(fromUid);
 });
 
