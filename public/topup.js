@@ -9,6 +9,10 @@ const agentList = document.getElementById("agentList");
 const qrBox     = document.getElementById("qrBox");
 const bankInfo  = document.getElementById("bankInfo");
 const agentQr   = document.getElementById("agentQr");
+const sheetOverlay = document.getElementById("sheetOverlay");
+const qrSheet = document.getElementById("qrSheet");
+const sheetQr = document.getElementById("sheetQr");
+const sheetBankInfo = document.getElementById("sheetBankInfo");
 
 // hiển thị coin hiện tại
 if (myCoinEl) {
@@ -73,28 +77,28 @@ function renderAgents(list) {
 
 // mở chi tiết đại lý + QR
 function openAgent(agent) {
-  if (!qrBox) return;
-
-  qrBox.classList.add("hidden");
-
   const content = `NAP ${auth.uid}`;
 
-  if (agentQr) {
-    agentQr.src = agent.qr || "/images/qr-demo.png";
-  }
+  // set QR
+  sheetQr.src = agent.qr || "/images/qr-demo.png";
 
-  if (bankInfo) {
-    bankInfo.innerHTML = `
-      <b>Đại lý:</b> ${agent.name}<br>
-      <b>Ngân hàng:</b> ${agent.bank}<br>
-      <b>STK:</b> ${agent.account}<br>
-      <b>Chủ TK:</b> ${agent.owner || ""}<br>
-      <b>Nội dung:</b> <code id="transferText">${content}</code>
-    `;
-  }
+  // set info
+  sheetBankInfo.innerHTML = `
+    <b>Đại lý:</b> ${agent.name}<br>
+    <b>Ngân hàng:</b> ${agent.bank}<br>
+    <b>STK:</b> ${agent.account}<br>
+    <b>Chủ TK:</b> ${agent.owner || ""}<br>
+    <b>Nội dung:</b> <code id="transferText">${content}</code>
+  `;
 
-  qrBox.classList.remove("hidden");
+  // mở sheet
+  sheetOverlay.classList.remove("hidden");
+  qrSheet.classList.add("show");
+
+  // khóa scroll nền
+  document.body.style.overflow = "hidden";
 }
+
 
 // copy nội dung chuyển khoản
 function copyTransfer() {
@@ -125,3 +129,10 @@ socket.on("connect", () => {
     uid: auth.uid
   });
 });
+
+
+sheetOverlay.onclick = () => {
+  qrSheet.classList.remove("show");
+  sheetOverlay.classList.add("hidden");
+  document.body.style.overflow = "";
+};
