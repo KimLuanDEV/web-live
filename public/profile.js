@@ -6,8 +6,7 @@ const ADMIN_UIDS = ["admin", "LivestreamPro", "KimDogCat", "superuser"];
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
 
-// sau khi profile đã render xong
-loadProfilePosts(viewUid);
+
 
 // 🔁 giữ socket sống để server không mất uid
 setInterval(() => {
@@ -1734,3 +1733,7 @@ function loadProfilePosts(uid) {
       }
     });
 }
+
+
+// gọi sau
+loadProfilePosts(viewUid);
