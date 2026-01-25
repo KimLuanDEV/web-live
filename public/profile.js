@@ -433,9 +433,10 @@ fetch("/api/me/" + viewUid, {
 const p = {
   ...defaultProfile,
   ...data.profile,
-  role: old.role,        // ✅ GIỮ ROLE
-  roles: old.roles       // (nếu sau này có)
+  role: __profileAuth.role,      // 🔥 LẤY TỪ LOGIN
+  roles: __profileAuth.roles || []
 };
+
 
 
       localStorage.setItem(KEY, JSON.stringify(p));
@@ -850,6 +851,21 @@ if (vipBadgeBox){
 if (p.cover && coverPreview) {
  coverPreview.src = fixMedia(p.cover);
 }
+
+
+// 🔥 FORCE RENDER ADMIN BADGE & BUTTON
+setTimeout(() => {
+  renderProfileVerified(__profileAuth.uid);
+
+  if (btnAdmin) {
+    const isAdmin =
+      __profileAuth.role === "admin" ||
+      (__profileAuth.roles || []).includes("admin");
+
+    btnAdmin.classList.toggle("hidden", !isAdmin);
+  }
+}, 100);
+
 
 
 }
