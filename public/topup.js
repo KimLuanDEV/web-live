@@ -2,7 +2,13 @@ const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 if (!auth.uid) location.href = "/login.html";
 
 const myCoinEl  = document.getElementById("myCoin");
-const agentList = document.getElementById("agentList");
+
+if (!agentList) {
+  console.warn("agentList not found");
+  return;
+}
+
+
 const qrBox     = document.getElementById("qrBox");
 const bankInfo  = document.getElementById("bankInfo");
 const agentQr   = document.getElementById("agentQr");
@@ -27,6 +33,7 @@ fetch("/api/topup-agents")
 
 // render danh sách đại lý
 function renderAgents(list) {
+    if (!agentList) return;
   agentList.innerHTML = "";
 
   if (!list.length) {
@@ -39,13 +46,18 @@ function renderAgents(list) {
   }
 
   list.forEach(agent => {
+    if (!agent.account || !agent.bank) return; // skip agent lỗi
     const div = document.createElement("div");
     div.className = "agent-card";
 
     div.innerHTML = `
       <img class="agent-avatar" src="${agent.avatar}">
       <div class="agent-info">
-        <div class="agent-name">${agent.name}</div>
+        <div class="agent-name">
+  ${agent.name}
+  ${agent.roles?.includes("admin") ? " <span class='badge'>ADMIN</span>" : ""}
+        </div>
+
         <div class="agent-bank">${agent.bank} • ${agent.account}</div>
         <div class="agent-status ${agent.online ? "" : "offline"}">
           ${agent.online ? "🟢 Đang online" : "⚪ Offline"}
@@ -61,6 +73,8 @@ function renderAgents(list) {
 
 // mở chi tiết đại lý + QR
 function openAgent(agent) {
+  qrBox.classList.add("hidden"); // reset trước
+
   const content = `NAP ${auth.uid}`;
 
   agentQr.src = agent.qr || "/images/qr-demo.png";
@@ -75,6 +89,9 @@ function openAgent(agent) {
 
   qrBox.classList.remove("hidden");
 }
+
+
+
 
 // copy nội dung chuyển khoản
 function copyTransfer() {
