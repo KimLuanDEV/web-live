@@ -528,6 +528,28 @@ html, body {
 }
 
 
+.toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) scale(.95);
+  background: rgba(0,0,0,.85);
+  color: #fff;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all .25s ease;
+  z-index: 9999;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) scale(1);
+}
+.toast-success { background: #22c55e; color:#000; }
+.toast-error { background: #ef4444; }
+
+
   </style>
 </head>
 
