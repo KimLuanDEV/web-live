@@ -11476,3 +11476,78 @@ button:disabled{
   align-items: center;
   justify-content: center;
 }
+
+/* ===============================
+   PROFILE – COMPACT IMAGE ALBUM
+   Thu gọn ảnh vào 1 khung
+================================ */
+
+/* khung album */
+.page-profile .lp-post-images {
+  max-height: 260px;        /* 👈 chiều cao cố định */
+  overflow: hidden;         /* 👈 KHÓA tràn */
+  border-radius: 12px;
+}
+
+/* grid vẫn giữ */
+.page-profile .lp-post-images {
+  display: grid;
+  gap: 4px;
+}
+
+/* mỗi ô ảnh */
+.page-profile .album-img {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+/* ảnh bên trong */
+.page-profile .album-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;        /* 👈 CROP, KHÔNG MÉO */
+  display: block;
+}
+
+/* 1 ảnh */
+.page-profile .album-1 {
+  grid-template-columns: 1fr;
+  max-height: 260px;
+}
+.page-profile .album-1 .album-img {
+  height: 260px;
+}
+
+/* 2–4 ảnh */
+.page-profile .album-2,
+.page-profile .album-3,
+.page-profile .album-4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.page-profile .album-2 .album-img,
+.page-profile .album-3 .album-img,
+.page-profile .album-4 .album-img {
+  height: 128px;
+}
+
+/* 5 ảnh */
+.page-profile .album-5 {
+  grid-template-columns: repeat(3, 1fr);
+}
+.page-profile .album-5 .album-img {
+  height: 84px;
+}
+
+/* +N overlay */
+.page-profile .album-more {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  font-size: 26px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
