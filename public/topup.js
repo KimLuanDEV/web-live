@@ -234,16 +234,3 @@ function showToast(text, type = "info", duration = 3000) {
 
 
 
-
-socket.on("connect", async () => {
-  offlineHandled = false;
-
-  if (auth?.uid) {
-    socket.emit("auth-login", { uid: auth.uid });
-
-    // 🔔 ĐĂNG KÝ PUSH
-    setTimeout(() => {
-      enablePush().catch(console.error);
-    }, 1000);
-  }
-});
