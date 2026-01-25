@@ -197,7 +197,11 @@ function fixMedia(url){
 
 
 
-document.getElementById("meAvatar").src = fixMedia(auth.avatar);
+const meAva = document.getElementById("meAvatar");
+if (meAva) {
+  meAva.src = fixMedia(auth.avatar);
+}
+
 
 
 
