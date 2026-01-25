@@ -39,6 +39,39 @@ function normalizeAvatar(url) {
 }
 
 
+
+// ===== 🧹 REMOVE BOT USERS (CHẠY 1 LẦN) =====
+(function removeBotUsers(){
+  const users = loadUsers();
+  const posts = loadSocial();
+
+  const BOT_PREFIX = "bot_";
+
+  let userChanged = false;
+  let postChanged = false;
+
+  // ❌ Xoá user bot
+  Object.keys(users).forEach(uid => {
+    if (uid.startsWith(BOT_PREFIX) || users[uid]?.role === "bot") {
+      delete users[uid];
+      userChanged = true;
+      console.log("❌ Removed bot user:", uid);
+    }
+  });
+
+  // ❌ Xoá post của bot
+  const filteredPosts = posts.filter(p => !p.uid?.startsWith(BOT_PREFIX));
+  if (filteredPosts.length !== posts.length) {
+    postChanged = true;
+  }
+
+  if (userChanged) saveUsers(users);
+  if (postChanged) saveSocial(filteredPosts);
+
+  console.log("🧹 Bot cleanup done");
+})();
+
+
 const chatUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 500 * 1024 * 1024 }
@@ -113,37 +146,6 @@ let userInbox = new Map(Object.entries(loadInbox()));
 
 
 
-
-// ===== 🧹 REMOVE BOT USERS (CHẠY 1 LẦN) =====
-(function removeBotUsers(){
-  const users = loadUsers();
-  const posts = loadSocial();
-
-  const BOT_PREFIX = "bot_";
-
-  let userChanged = false;
-  let postChanged = false;
-
-  // ❌ Xoá user bot
-  Object.keys(users).forEach(uid => {
-    if (uid.startsWith(BOT_PREFIX) || users[uid]?.role === "bot") {
-      delete users[uid];
-      userChanged = true;
-      console.log("❌ Removed bot user:", uid);
-    }
-  });
-
-  // ❌ Xoá post của bot
-  const filteredPosts = posts.filter(p => !p.uid?.startsWith(BOT_PREFIX));
-  if (filteredPosts.length !== posts.length) {
-    postChanged = true;
-  }
-
-  if (userChanged) saveUsers(users);
-  if (postChanged) saveSocial(filteredPosts);
-
-  console.log("🧹 Bot cleanup done");
-})();
 
 
 
