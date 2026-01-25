@@ -428,10 +428,15 @@ fetch("/api/me/" + viewUid, {
       if (!data || !data.profile) return;
 
       // ✅ LUÔN TIN SERVER (coin thật nằm ở đây)
-      const p = {
-        ...defaultProfile,
-        ...data.profile
-      };
+   const old = JSON.parse(localStorage.getItem(KEY)) || {};
+
+const p = {
+  ...defaultProfile,
+  ...data.profile,
+  role: old.role,        // ✅ GIỮ ROLE
+  roles: old.roles       // (nếu sau này có)
+};
+
 
       localStorage.setItem(KEY, JSON.stringify(p));
       loadProfile();
