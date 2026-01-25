@@ -609,8 +609,18 @@ ${reply.text}
     ❤️ <b id="rl_${postId}_${commentIndex}_${reply.id}">${reply.likes?.length||0}</b>
   </span>
   <span onclick="openReplyChild('${postId}',${commentIndex},'${reply.id}')">💬</span>
-  ${(reply.uid === auth.uid || isPostOwner('${postId}')) ? 
-    `<span class="cm-del" onclick="deleteReply('${postId}',${commentIndex},'${reply.id}')">🗑</span>` : ``}
+ ${
+  reply.uid === auth.uid || isAdminUser(auth.uid)
+  ? `<span class="cm-del"
+      onclick="${
+        isAdminUser(auth.uid) && reply.uid !== auth.uid
+          ? `adminDeleteReply('${postId}','${comment.id}','${reply.id}')`
+          : `deleteReply('${postId}',${commentIndex},'${reply.id}')`
+      }"
+    >🗑</span>`
+  : ``
+}
+
 </div>
 
 
@@ -662,7 +672,19 @@ socket.on("lp-comment", ({ postId, postOwnerUid, comment, count })=>{
     ❤️ <b id="cl_${postId}_${idx}">${comment.likes?.length || 0}</b>
   </span>
   <span onclick="openReply('${postId}',${idx})">💬</span>
-  ${(comment.uid === auth.uid || postOwnerUid === auth.uid) ? `<span class="cm-del" onclick="deleteComment('${postId}',${idx})">🗑</span>` : ``}
+
+  ${
+  comment.uid === auth.uid || isAdminUser(auth.uid)
+  ? `<span class="cm-del"
+      onclick="${
+        isAdminUser(auth.uid) && comment.uid !== auth.uid
+          ? `adminDeleteComment('${postId}','${comment.id}')`
+          : `deleteComment('${postId}',${idx})`
+      }"
+    >🗑</span>`
+  : ``
+}
+
 </div>
 
 
@@ -803,6 +825,42 @@ ${child.text}
 
   box.appendChild(div);
 });
+
+
+// ===== ADMIN DELETE COMMENT =====
+async function adminDeleteComment(postId, commentId) {
+  const reason = prompt("🗑️ Lý do xoá comment (tuỳ chọn):") || "";
+  if (!confirm("Admin xác nhận xoá comment?")) return;
+
+  await fetch("/api/admin/delete-comment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      adminUid: auth.uid,
+      postId,
+      commentId,
+      reason
+    })
+  });
+}
+
+// ===== ADMIN DELETE REPLY =====
+async function adminDeleteReply(postId, commentId, replyId) {
+  const reason = prompt("🗑️ Lý do xoá reply (tuỳ chọn):") || "";
+  if (!confirm("Admin xác nhận xoá reply?")) return;
+
+  await fetch("/api/admin/delete-comment", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      adminUid: auth.uid,
+      postId,
+      commentId,
+      replyId,
+      reason
+    })
+  });
+}
 
 
 
@@ -1056,7 +1114,19 @@ if(p.comments && p.comments.length){
     ❤️ <b id="cl_${p.id}_${idx}">${comment.likes?.length || 0}</b>
   </span>
   <span onclick="openReply('${p.id}',${idx})">💬</span>
-  ${(comment.uid === auth.uid || p.uid === auth.uid) ? `<span class="cm-del" onclick="deleteComment('${p.id}',${idx})">🗑</span>` : ``}
+
+ ${
+  comment.uid === auth.uid || isAdminUser(auth.uid)
+  ? `<span class="cm-del"
+      onclick="${
+        isAdminUser(auth.uid) && comment.uid !== auth.uid
+          ? `adminDeleteComment('${p.id}','${comment.id}')`
+          : `deleteComment('${p.id}',${idx})`
+      }"
+    >🗑</span>`
+  : ``
+}
+
 </div>
 
 
@@ -1136,9 +1206,17 @@ ${child.text}
         </b>
       </span>
 
-      ${(child.uid === auth.uid || p.uid === auth.uid) ?
-        `<span class="cm-del"
-          onclick="deleteReplyChild('${p.id}',${idx},'${r.id}','${child.id}')">🗑</span>` : ``}
+     ${
+  child.uid === auth.uid || isAdminUser(auth.uid)
+  ? `<span class="cm-del"
+      onclick="${
+        isAdminUser(auth.uid) && child.uid !== auth.uid
+          ? `adminDeleteReply('${p.id}','${idx}','${child.id}')`
+          : `deleteReplyChild('${p.id}',${idx},'${r.id}','${child.id}')`
+      }"
+    >🗑</span>`
+  : ``
+}
     </div>
   </div>
 `;

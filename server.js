@@ -271,6 +271,92 @@ app.get("/api/admin/live-rooms", (req, res) => {
 });
 
 
+// ===== ADMIN DELETE COMMENT / REPLY =====
+app.post("/api/admin/delete-comment", (req, res) => {
+  const { adminUid, postId, commentId, replyId, reason } = req.body || {};
+
+  if (!adminUid || !postId || !commentId) {
+    return res.status(400).json({ error: "missing" });
+  }
+
+  const db = loadUsers();
+  const admin = db[adminUid];
+
+  if (!admin || admin.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+
+  const post = lpPosts.find(p => p.id === postId);
+  if (!post || !Array.isArray(post.comments)) {
+    return res.status(404).json({ error: "post_not_found" });
+  }
+
+  const cmt = post.comments.find(c => c.id === commentId);
+  if (!cmt) {
+    return res.status(404).json({ error: "comment_not_found" });
+  }
+
+  // 🔹 XOÁ REPLY
+  if (replyId) {
+    const idx = (cmt.replies || []).findIndex(r => r.id === replyId);
+    if (idx === -1) {
+      return res.status(404).json({ error: "reply_not_found" });
+    }
+
+    const reply = cmt.replies[idx];
+    cmt.replies.splice(idx, 1);
+
+    saveSocial();
+
+    // 🔔 inbox user bị xoá reply
+    if (reply.uid) {
+      userInbox.set(reply.uid, userInbox.get(reply.uid) || []);
+      userInbox.get(reply.uid).unshift({
+        type: "reply-deleted",
+        text: `🗑️ Reply của bạn đã bị Admin xoá${reason ? `\nLý do: ${reason}` : ""}`,
+        time: Date.now(),
+        read: false
+      });
+      saveInbox(Object.fromEntries(userInbox));
+    }
+
+    io.emit("social-update", {
+      type: "reply-deleted",
+      postId,
+      commentId,
+      replyId
+    });
+
+    return res.json({ ok: true });
+  }
+
+  // 🔸 XOÁ COMMENT
+  const idx = post.comments.findIndex(c => c.id === commentId);
+  const removed = post.comments[idx];
+  post.comments.splice(idx, 1);
+  saveSocial();
+
+  // 🔔 inbox user bị xoá comment
+  if (removed.uid) {
+    userInbox.set(removed.uid, userInbox.get(removed.uid) || []);
+    userInbox.get(removed.uid).unshift({
+      type: "comment-deleted",
+      text: `🗑️ Comment của bạn đã bị Admin xoá${reason ? `\nLý do: ${reason}` : ""}`,
+      time: Date.now(),
+      read: false
+    });
+    saveInbox(Object.fromEntries(userInbox));
+  }
+
+  io.emit("social-update", {
+    type: "comment-deleted",
+    postId,
+    commentId
+  });
+
+  res.json({ ok: true });
+});
+
 
 // ===== ADMIN DELETE POST =====
 app.post("/api/admin/delete-post", (req, res) => {
