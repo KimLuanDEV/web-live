@@ -21,12 +21,12 @@ window.allUsers = {};
 
 // ===== 🔀 RANDOM USER FOR SYSTEM POSTS =====
 const FAKE_USERS = [
-  { name: "Linh Cute", avatar: "https://i.imgur.com/9XqZ6ZP.jpg" },
-  { name: "Ngọc Trinh", avatar: "https://i.imgur.com/YqZ1KZk.jpg" },
-  { name: "Mai Anh", avatar: "https://i.imgur.com/7YQp7kU.jpg" },
-  { name: "Thuỷ Tiên", avatar: "https://i.imgur.com/R3pYz0D.jpg" },
-  { name: "Bảo Ngọc", avatar: "https://i.imgur.com/tzX7fXG.jpg" },
-  { name: "Trà My", avatar: "https://i.imgur.com/6ZxqKXK.jpg" }
+  { name: "Linh Cute", avatar: "https://kenh76.vn/wp-content/uploads/2026/01/Tai-anh-anh-gai-xinh-tap-gym-doc-quyen-771x1024.jpg" },
+  { name: "Ngọc Trinh", avatar: "https://www.anhnghethuatdulich.com/wp-content/uploads/2025/08/anh-gai-xinh-2k7.jpg" },
+  { name: "Mai Anh", avatar: "https://img2.thuthuatphanmem.vn/uploads/2019/01/04/anh-girl-xinh_025102020.jpeg" },
+  { name: "Thuỷ Tiên", avatar: "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-24-576x1024.jpg" },
+  { name: "Bảo Ngọc", avatar: "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-32-576x1024.jpg" },
+  { name: "Trà My", avatar: "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-4-597x1024.jpg" }
 ];
 
 
@@ -42,12 +42,12 @@ const DAILY_POSTS = [
 
 // 👉 link ảnh gái xinh (có thể thêm bao nhiêu cũng được)
 const DAILY_GIRL_IMAGES = [
-  "https://i.imgur.com/9XqZ6ZP.jpg",
-  "https://i.imgur.com/YqZ1KZk.jpg",
-  "https://i.imgur.com/7YQp7kU.jpg",
-  "https://i.imgur.com/R3pYz0D.jpg",
-  "https://i.imgur.com/tzX7fXG.jpg",
-  "https://i.imgur.com/6ZxqKXK.jpg"
+  "https://kenh76.vn/wp-content/uploads/2026/01/Tai-anh-anh-gai-xinh-tap-gym-doc-quyen-771x1024.jpg",
+  "https://www.anhnghethuatdulich.com/wp-content/uploads/2025/08/anh-gai-xinh-2k7.jpg",
+  "https://img2.thuthuatphanmem.vn/uploads/2019/01/04/anh-girl-xinh_025102020.jpeg",
+  "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-24-576x1024.jpg",
+  "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-32-576x1024.jpg",
+  "https://chimviet360.com/wp-content/uploads/2026/01/anh-gai-douyin-4-597x1024.jpg"
 ];
 
 
