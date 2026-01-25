@@ -150,3 +150,16 @@ if (agentOption) {
     content.classList.toggle("hidden");
   };
 }
+
+
+const cardOption = document.getElementById("cardOption");
+
+if (cardOption) {
+  const header = cardOption.querySelector(".option-header");
+  const content = cardOption.querySelector(".option-content");
+
+  header.onclick = () => {
+    cardOption.classList.toggle("open");
+    content.classList.toggle("hidden");
+  };
+}
