@@ -27,7 +27,8 @@ if (btnAdmin) {
   if (
     myUid &&
     (!viewUid || viewUid === myUid) &&
-    ADMIN_UIDS.includes(myUid)
+    (__profileAuth.roles || []).includes("admin")
+
   ) {
     btnAdmin.classList.remove("hidden");
   } else {
