@@ -22,21 +22,6 @@ let isPosting = false;
 
 window.allUsers = {};
 
-// ===== LIKE FAKE STATE (GLOBAL) =====
-window.fakeLikes = {
-  values: {},   // số like fake của từng post
-  started: {}   // đánh dấu post đã chạy interval
-};
-
-// nhận fakeLike khi user login / reload
-socket.on("fake-like-init", data => {
-  window.fakeLikes.values = data || {};
-});
-
-
-
-
-
 function isAdminUser(uid){
   // fallback cực quan trọng
   if (auth?.role === "admin") return true;
@@ -215,21 +200,6 @@ function fixMedia(url){
 document.getElementById("meAvatar").src = fixMedia(auth.avatar);
 
 
-
-
-// 🔄 realtime sync fakeLike multi-device
-socket.on("fake-like-sync", ({ postId, value }) => {
-  postId = String(postId);
-  window.fakeLikes.values[postId] = Number(value) || 0;
-
-  const el = document.getElementById("like_" + postId);
-  const post = window.lpPostMap?.[postId];
-  if (el && post) {
-    const real =
-      Array.isArray(post.likes) ? post.likes.length : 0;
-    el.textContent = real + window.fakeLikes.values[postId];
-  }
-});
 
 
 
@@ -560,19 +530,13 @@ socket.on("lp-like-reply-child", ({ postId, commentIndex, replyId, childId, like
 });
 
 
+// ===== ADMIN DELETE POST REALTIME =====
 socket.on("social-update", ({ type, postId }) => {
-  if (type === "post-deleted") {
+  if(type === "post-deleted"){
     const el = document.querySelector(`.lp-post[data-id="${postId}"]`);
-    if (el) el.remove();
-
-    // 🧹 xoá fake like của post đã bị xoá
-    if (window.fakeLikes.values?.[postId] != null) {
-      delete window.fakeLikes.values[postId];
-      saveFakeLikes();
-    }
+    if(el) el.remove();
   }
 });
-
 
 
 
@@ -1024,15 +988,6 @@ socket.on("lp-delete", ({ postId })=>{
 
 function renderPost(p, top=false){
 
-// 🧯 SAFETY INIT (chống NaN)
-window.fakeLikes.values ||= {};
-if (window.fakeLikes.values[p.id] == null) {
-  window.fakeLikes.values[p.id] = 0;
-}
-
-
-
-
     // ⛔⛔⛔ CHẶN RENDER TRÙNG BÀI VIẾT
   if (document.querySelector(`.lp-post[data-id="${p.id}"]`)) {
     return;
@@ -1040,7 +995,6 @@ if (window.fakeLikes.values[p.id] == null) {
 
 window.lpPostMap ||= {};
 window.lpPostMap[p.id] = p;
-// ===== LIKE ẢO (CLIENT ONLY) =====
 
 
 
@@ -1138,16 +1092,9 @@ ${p.video ? `
 
 
 <div class="lp-actions">
-
-<div class="lp-action like" onclick="likePost('${p.id}')">
-  ❤️ <span id="like_${p.id}">
-    ${Number(Array.isArray(p.likes) ? p.likes.length : 0)
- + Number(window.fakeLikes.values?.[p.id] || 0)
-}
-
-  </span>
-</div>
-
+  <div class="lp-action like" onclick="likePost('${p.id}')">
+    ❤️ <span id="like_${p.id}">${p.likes?.length||0}</span>
+  </div>
 
   <div class="lp-action" onclick="toggleComments('${p.id}')">
     💬 <span id="c_${p.id}">${p.comments?.length||0}</span>
@@ -1214,8 +1161,6 @@ ${p.gifts?.byUser ? `
   if(top) feed.prepend(div);
   else feed.appendChild(div);
 
-// 🔥 bắt đầu like ảo cho bài
-startFakeLike(p.id);
   // 🔥 Render lại comment đã có (khi reload)
 if(p.comments && p.comments.length){
   const list = div.querySelector(".lp-comment-list");
@@ -2476,66 +2421,5 @@ function closeGiftUsers(){
 
 
 
-// ===== TỔNG USER TRONG APP =====
-function getTotalUserCount(){
-  return Object.keys(window.allUsers || {}).length || 0;
-}
 
 
-
-// ===== AUTO LIKE FAKE (CÓ GIỚI HẠN USER) =====
-function startFakeLike(postId){
-  postId = String(postId);
-
-  // ⛔ mỗi post chỉ chạy 1 interval
-  if (window.fakeLikes.started[postId]) return;
-  window.fakeLikes.started[postId] = true;
-
-  // init value
-  window.fakeLikes.values[postId] ||= 0;
-
-  const delay = 3000 + Math.random() * 5000;
-
-  setInterval(() => {
-    const post = window.lpPostMap?.[postId];
-    const el   = document.getElementById("like_" + postId);
-    if (!post || !el) return;
-
-    const realLikes =
-      Array.isArray(post.likes) ? post.likes.length : 0;
-
-    const totalUsers = getTotalUserCount();
-
-    // 🔒 giới hạn: tổng like ≤ số user
-    const maxFake = Math.max(0, totalUsers - realLikes);
-    if (window.fakeLikes.values[postId] >= maxFake) return;
-
-    // random xác suất tăng
-    if (Math.random() < 0.55) return;
-
-    // tăng nhẹ cho tự nhiên
-    window.fakeLikes.values[postId] += 1;
-
-// ☁️ sync fakeLike lên server
-fetch("/api/fake-like", {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    "x-uid": auth.uid
-  },
-  body: JSON.stringify({
-    postId,
-    value: window.fakeLikes.values[postId]
-  })
-});
-
-
-    // clamp cho chắc
-    if (window.fakeLikes.values[postId] > maxFake) {
-      window.fakeLikes.values[postId] = maxFake;
-    }
-
-    el.textContent =
-      realLikes + window.fakeLikes.values[postId];
-  }, delay);
-}
