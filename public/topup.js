@@ -138,3 +138,15 @@ sheetOverlay.onclick = () => {
 };
 
 myCoinEl.innerHTML = `Số dư khả dụng · <b>${auth.coins || 0}</b> 💎`;
+
+const agentOption = document.getElementById("agentOption");
+
+if (agentOption) {
+  const header = agentOption.querySelector(".option-header");
+  const content = agentOption.querySelector(".option-content");
+
+  header.onclick = () => {
+    agentOption.classList.toggle("open");
+    content.classList.toggle("hidden");
+  };
+}

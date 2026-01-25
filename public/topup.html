@@ -408,6 +408,56 @@ html, body {
   border-bottom: 1px solid rgba(255,255,255,.06);
 }
 
+/* ===== OPTION NẠP ===== */
+.topup-option {
+  background: #111;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.08);
+  overflow: hidden;
+}
+
+/* header option */
+.option-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  cursor: pointer;
+}
+
+.option-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.option-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.option-desc {
+  font-size: 12px;
+  color: #888;
+  margin-top: 2px;
+}
+
+.option-arrow {
+  font-size: 22px;
+  color: #666;
+  transition: .25s;
+}
+
+/* khi mở */
+.topup-option.open .option-arrow {
+  transform: rotate(90deg);
+}
+
+/* nội dung */
+.option-content {
+  padding: 8px 12px 12px;
+  border-top: 1px solid rgba(255,255,255,.06);
+}
 
 
   </style>
@@ -444,15 +494,28 @@ html, body {
 </div>
 
 
+
 <div class="topup-page">
 
-  <div class="section-header">
-    <span>🧑‍💼 Đại lý nạp coin</span>
-    <small>Chọn 1 đại lý để nạp</small>
-  </div>
+  <!-- 🔘 PHƯƠNG THỨC NẠP -->
+  <div class="topup-option" id="agentOption">
 
-  <div id="agentList" class="agent-list"></div>
+    <div class="option-header">
+      <div class="option-left">
+        <div class="option-title">🧑‍💼 Nạp qua đại lý</div>
+        <div class="option-desc">Chuyển khoản · QR · An toàn</div>
+      </div>
+      <div class="option-arrow">›</div>
+    </div>
+
+    <!-- 📋 DANH SÁCH ĐẠI LÝ (ẨN BAN ĐẦU) -->
+    <div class="option-content hidden">
+      <div id="agentList" class="agent-list"></div>
+    </div>
+
+  </div>
 </div>
+
 
 
 
