@@ -1028,10 +1028,11 @@ socket.on("lp-delete", ({ postId })=>{
 function renderPost(p, top=false){
 
 // 🧯 SAFETY INIT (chống NaN)
-window.fakeLikes ||= {};
-if (window.fakeLikes[p.id] == null) {
-  window.fakeLikes[p.id] = 0;
+window.fakeLikes.values ||= {};
+if (window.fakeLikes.values[p.id] == null) {
+  window.fakeLikes.values[p.id] = 0;
 }
+
 
 
 
