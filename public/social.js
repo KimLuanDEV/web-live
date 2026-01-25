@@ -1145,7 +1145,8 @@ ${p.video ? `
 <div class="lp-action like" onclick="likePost('${p.id}')">
   ❤️ <span id="like_${p.id}">
     ${Number(Array.isArray(p.likes) ? p.likes.length : 0)
- + Number(window.fakeLikes?.[p.id] || 0)}
+ + Number(window.fakeLikes.values?.[p.id] || 0)
+}
 
   </span>
 </div>
