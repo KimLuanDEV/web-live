@@ -204,6 +204,19 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 
+app.get("/api/social/by-user/:uid", (req, res) => {
+  const uid = req.params.uid;
+  if (!uid) return res.json({ ok: true, list: [] });
+
+  const posts = loadSocial()
+    .filter(p => p.uid === uid)
+    .sort((a, b) => b.ts - a.ts); // mới → cũ
+
+  res.json({
+    ok: true,
+    list: posts
+  });
+});
 
 
 
