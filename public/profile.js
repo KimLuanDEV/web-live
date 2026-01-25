@@ -1710,9 +1710,23 @@ function renderProfilePostHTML(p) {
 
   <div class="lp-post-body">
     ${p.text ? `<div class="lp-post-text">${p.text}</div>` : ""}
-    ${(p.images || []).map(img =>
-      `<img class="lp-post-img" src="${fixMedia(img)}">`
-    ).join("")}
+    
+  ${(p.images && p.images.length) ? `
+  <div class="lp-post-images album-${Math.min(p.images.length,5)}">
+    ${p.images.slice(0,5).map((img, i) => `
+      <div class="album-img img-${i}"
+           onclick="openFeedLightbox(${JSON.stringify(p.images)}, ${i})">
+        <img src="${fixMedia(img)}">
+        ${
+          i === 4 && p.images.length > 5
+            ? `<span class="album-more">+${p.images.length - 5}</span>`
+            : ``
+        }
+      </div>
+    `).join("")}
+  </div>
+` : ``}
+
     ${p.video ? `
       <video class="lp-post-video" src="${fixMedia(p.video)}" controls></video>
     ` : ""}

@@ -11417,3 +11417,62 @@ button:disabled{
 .page-profile .lp-post-images img {
   max-height: 420px;
 }
+
+
+/* ===============================
+   PROFILE – POST IMAGE ALBUM
+================================ */
+
+.page-profile .lp-post-images {
+  display: grid;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+/* 1 ảnh */
+.page-profile .album-1 {
+  grid-template-columns: 1fr;
+}
+
+/* 2 ảnh */
+.page-profile .album-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* 3–4 ảnh */
+.page-profile .album-3,
+.page-profile .album-4 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* 5 ảnh */
+.page-profile .album-5 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.page-profile .album-img {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.page-profile .album-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* +N overlay */
+.page-profile .album-more {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  color: #fff;
+  font-size: 26px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
