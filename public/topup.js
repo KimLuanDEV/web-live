@@ -136,3 +136,47 @@ sheetOverlay.onclick = () => {
   sheetOverlay.classList.add("hidden");
   document.body.style.overflow = "";
 };
+
+
+
+let startY = 0;
+let currentY = 0;
+let dragging = false;
+
+
+const sheetHandle = qrSheet.querySelector(".sheet-handle");
+
+sheetHandle.addEventListener("touchstart", e => {
+  if (!qrSheet.classList.contains("show")) return;
+
+  startY = e.touches[0].clientY;
+  dragging = true;
+  qrSheet.style.transition = "none";
+});
+
+qrSheet.addEventListener("touchmove", e => {
+  if (!dragging) return;
+
+  currentY = e.touches[0].clientY;
+  const delta = currentY - startY;
+
+  if (delta > 0) {
+    qrSheet.style.transform = `translateY(${delta}px)`;
+  }
+});
+
+qrSheet.addEventListener("touchend", () => {
+  dragging = false;
+
+  qrSheet.style.transition = ".35s cubic-bezier(.2,.8,.2,1)";
+
+  if (currentY - startY > 120) {
+    // ĐÓNG
+    qrSheet.classList.remove("show");
+    sheetOverlay.classList.add("hidden");
+    document.body.style.overflow = "";
+  } else {
+    // BẬT LẠI
+    qrSheet.style.transform = "translateY(0)";
+  }
+});
