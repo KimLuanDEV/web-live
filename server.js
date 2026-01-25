@@ -983,6 +983,31 @@ const lpPosts = loadSocial();
 const activeUsers = new Map();   // uid -> Set(socketId)
 
 
+// 🔴🟢 EMIT REALTIME ONLINE / OFFLINE ĐẠI LÝ
+function emitAgentStatus(uid, online) {
+  if (!uid) return;
+
+  const db = loadUsers();
+  const acc = db[uid];
+  if (!acc) return;
+
+  const roles = acc.roles || [];
+  const role  = acc.role;
+
+  // chỉ agent mới emit
+  if (
+    !roles.includes("agent") &&
+    role !== "agent"
+  ) return;
+
+  io.emit("agent-status", {
+    uid,
+    online,
+    ts: Date.now()
+  });
+}
+
+
 
 function getPost(id){
   return lpPosts.find(p=>p.id===id);
@@ -1508,7 +1533,8 @@ if (
       account: bank.account || "",
       owner: bank.owner || "",
       qr: bank.qr || "",
-      online: !!p.online
+      online: activeUsers.has(uid)
+
     });
   }
 
@@ -1831,6 +1857,29 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+
+
+socket.on("socket-login", ({ uid }) => {
+  if (!uid) return;
+
+  socket.data.uid = uid;
+
+  // check trước đó user đã online chưa
+  const wasOffline = !activeUsers.has(uid);
+
+  let set = activeUsers.get(uid);
+  if (!set) {
+    set = new Set();
+    activeUsers.set(uid, set);
+  }
+  set.add(socket.id);
+
+  // 🟢 CHỈ EMIT KHI SOCKET ĐẦU TIÊN
+  if (wasOffline) {
+    emitAgentStatus(uid, true);
+  }
+});
+
 
 
 
@@ -3047,6 +3096,9 @@ if (inbox && inbox.length) {
 
 
 
+
+
+
 socket.on("host-reconnect", ({ roomId }) => {
   const room = getRoom(roomId);
   if (!room) return;
@@ -4092,6 +4144,25 @@ for (const v of list) {
   
 
   }
+
+
+
+// ===== SOCKET DISCONNECT TRACK =====
+
+if (uid) {
+  const set = activeUsers.get(uid);
+  if (set) {
+    set.delete(socket.id);
+    if (set.size === 0) {
+      activeUsers.delete(uid);
+
+      // ⚪ AGENT OFFLINE REALTIME
+      emitAgentStatus(uid, false);
+    }
+  }
+}
+
+  
 
   /* ========= CLEAN ROOM ========= */
 /*

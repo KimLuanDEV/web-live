@@ -50,7 +50,7 @@ function renderAgents(list) {
 
     const div = document.createElement("div");
     div.className = "agent-card";
-
+    div.dataset.uid = agent.uid; // 🔥 QUAN TRỌNG
     div.innerHTML = `
       <img class="agent-avatar" src="${agent.avatar}">
       <div class="agent-info">
@@ -101,3 +101,22 @@ function copyTransfer() {
   navigator.clipboard.writeText(text);
   showToast("📋 Đã copy nội dung chuyển khoản");
 }
+
+
+socket.on("agent-status", ({ uid, online }) => {
+  const card = document.querySelector(
+    `.agent-card[data-uid="${uid}"]`
+  );
+  if (!card) return;
+
+  const statusEl = card.querySelector(".agent-status");
+  if (!statusEl) return;
+
+  statusEl.textContent = online ? "🟢 Đang online" : "⚪ Offline";
+  statusEl.classList.toggle("offline", !online);
+});
+
+
+socket.emit("socket-login", {
+  uid: auth.uid
+});
