@@ -1003,7 +1003,15 @@ window.lpPostMap[p.id] = p;
   div.dataset.id = p.id;
   div.dataset.uid = p.uid;   // 🔥 rất quan trọng
 
-  const time = new Date(p.time).toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"});
+const d = new Date(p.time);
+
+const time = `
+  ${d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
+  ·
+  ${d.toLocaleDateString("vi-VN")}
+`;
+
+
   
   const isAdmin = window.allUsers?.[p.uid]?.role === "admin";
 
