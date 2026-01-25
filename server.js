@@ -164,9 +164,11 @@ const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
 
 
-// 🔗 GÁN SOCKET ↔ UID (DÙNG CHUNG)
 function bindSocketToUser(uid, socket) {
   if (!uid) return;
+
+  const db = loadUsers();
+  const acc = db[uid];
 
   let set = activeUsers.get(uid);
   if (!set) {
@@ -175,10 +177,20 @@ function bindSocketToUser(uid, socket) {
   }
 
   set.add(socket.id);
-  socket.data.uid = uid;
 
-  console.log("🔗 SOCKET LOGIN:", uid, socket.id);
+  socket.data.uid   = uid;
+  socket.data.role  = acc?.role || "user";
+  socket.data.roles = acc?.roles || [];   // 🔥 QUAN TRỌNG
+
+  console.log(
+    "🔗 SOCKET LOGIN:",
+    uid,
+    socket.id,
+    socket.data.role,
+    socket.data.roles
+  );
 }
+
 
 
 // 🔧 Parse JSON body (BẮT BUỘC cho admin API)
@@ -1007,13 +1019,14 @@ function emitAgentStatus(uid, online) {
   if (!acc) return;
 
   const roles = acc.roles || [];
-  const role  = acc.role;
+const role  = acc.role;
 
-  // chỉ agent mới emit
-  if (
-    !roles.includes("agent") &&
-    role !== "agent"
-  ) return;
+const isAgent =
+  role === "agent" ||
+  roles.includes("agent");
+
+if (!isAgent) return;
+
 
   io.emit("agent-status", {
     uid,
@@ -1453,7 +1466,8 @@ res.json({
   ok:true,
   profile: {
     ...acc.profile,
-    role: acc.role || "user"   // 🔥 THÊM
+    role: acc.role || "user" ,  // 🔥 THÊM
+    roles: acc.roles || []     // 🔥 THÊM DÒNG NÀY
   },
   trustedToken: trusted
 });
