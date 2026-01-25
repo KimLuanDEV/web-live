@@ -161,7 +161,7 @@ function saveSocial(){
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-
+const activeUsers = new Map(); 
 
 // 🔧 Parse JSON body (BẮT BUỘC cho admin API)
 app.use(express.json());
@@ -978,9 +978,6 @@ const rooms = new Map();
 // ===== LIVESTREAM PRO SOCIAL =====
 const lpPosts = loadSocial();
 
-
-
-const activeUsers = new Map();   // uid -> Set(socketId)
 
 
 // 🔴🟢 EMIT REALTIME ONLINE / OFFLINE ĐẠI LÝ

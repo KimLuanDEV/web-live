@@ -253,7 +253,9 @@ if (__profileAuth.uid) {
 }
 
 if (__profileAuth.uid) {
-  socket.emit("auth-login", { uid: __profileAuth.uid });
+  socket.emit("socket-login", {
+  uid: __profileAuth.uid
+});
 }
 
 
