@@ -133,9 +133,11 @@ socket.on("connect", () => {
 
 sheetOverlay.onclick = () => {
   qrSheet.classList.remove("show");
+  cardSheet.classList.remove("show");
   sheetOverlay.classList.add("hidden");
   document.body.style.overflow = "";
 };
+
 
 myCoinEl.innerHTML = `Số dư khả dụng · <b>${auth.coins || 0}</b> 💎`;
 
@@ -152,14 +154,23 @@ if (agentOption) {
 }
 
 
-const cardOption = document.getElementById("cardOption");
 
-if (cardOption) {
+const cardOption = document.getElementById("cardOption");
+const cardSheet = document.getElementById("cardSheet");
+
+if (cardOption && cardSheet) {
   const header = cardOption.querySelector(".option-header");
-  const content = cardOption.querySelector(".option-content");
 
   header.onclick = () => {
-    cardOption.classList.toggle("open");
-    content.classList.toggle("hidden");
+    // đóng option nếu đang mở
+    cardOption.classList.remove("open");
+
+    // mở bottom sheet
+    sheetOverlay.classList.remove("hidden");
+    cardSheet.classList.add("show");
+
+    document.body.style.overflow = "hidden";
   };
 }
+
+
