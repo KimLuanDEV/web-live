@@ -188,6 +188,98 @@
   opacity: .9;
 }
 
+.topup-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  padding: 10px 14px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  backdrop-filter: blur(16px);
+  background: rgba(18,18,18,.75);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+
+.topup-header .btn-back {
+  width: 40px;
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  background: rgba(255,255,255,.08);
+  color: #0a84ff; /* xanh iOS */
+  font-size: 26px;
+  cursor: pointer;
+}
+
+
+
+.header-center h2 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  color: #fff;
+}
+
+#myCoin {
+  font-size: 13px;
+  color: #aaa;
+}
+
+
+.topup-page {
+  max-width: 520px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+
+
+.agent-card {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 14px;
+
+  border-radius: 16px;
+  background: #111;
+  border: 1px solid rgba(255,255,255,.08);
+
+  cursor: pointer;
+  transition: .2s;
+}
+
+.agent-card:hover {
+  background: #161616;
+  transform: translateY(-2px);
+}
+
+.agent-name { color: #fff; }
+.agent-bank { color: #888; }
+.agent-status { color: #34c759; } /* iOS green */
+.agent-status.offline { color: #666; }
+
+
+
+.qr-box {
+  background: #111;
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,.08);
+  color: #eee;
+}
+
+
+html, body {
+  background: #000;
+  color: #fff;
+}
+
 
   </style>
 </head>
