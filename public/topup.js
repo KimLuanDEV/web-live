@@ -13,6 +13,11 @@ const sheetOverlay = document.getElementById("sheetOverlay");
 const qrSheet = document.getElementById("qrSheet");
 const sheetQr = document.getElementById("sheetQr");
 const sheetBankInfo = document.getElementById("sheetBankInfo");
+const btnTransferred = document.getElementById("btnTransferred");
+const transferStatus = document.getElementById("transferStatus");
+
+let currentAgent = null;
+
 
 // hiển thị coin hiện tại
 if (myCoinEl) {
@@ -77,6 +82,9 @@ function renderAgents(list) {
 
 // mở chi tiết đại lý + QR
 function openAgent(agent) {
+
+    currentAgent = agent; // 👈 THÊM DÒNG NÀY
+
   const content = `NAP ${auth.uid}`;
 
   // set QR
@@ -97,6 +105,18 @@ function openAgent(agent) {
 
   // khóa scroll nền
   document.body.style.overflow = "hidden";
+
+
+if (btnTransferred) {
+  btnTransferred.disabled = false;
+  btnTransferred.textContent = "✅ Tôi đã chuyển khoản";
+}
+
+if (transferStatus) {
+  transferStatus.classList.add("hidden");
+}
+
+
 }
 
 
@@ -166,56 +186,30 @@ if (cardOption) {
 
 
 
-// 📜 LỊCH SỬ NẠP
-const btnTopupHistory = document.getElementById("btnTopupHistory");
-const historySheet = document.getElementById("historySheet");
-const historyList = document.getElementById("topupHistoryList");
+// ✅ USER XÁC NHẬN ĐÃ CHUYỂN KHOẢN
+if (btnTransferred) {
+  btnTransferred.addEventListener("click", () => {
+    if (!currentAgent) {
+      showToast("⚠️ Vui lòng chọn đại lý trước");
+      return;
+    }
 
-if (btnTopupHistory) {
-  btnTopupHistory.onclick = () => {
-    sheetOverlay.classList.remove("hidden");
-    historySheet.classList.add("show");
-    qrSheet.classList.remove("show");
-
-    document.body.style.overflow = "hidden";
-    loadTopupHistory();
-  };
-}
-
-function loadTopupHistory() {
-  fetch("/api/topup-history")
-    .then(r => r.json())
-    .then(res => {
-      if (!res || !res.ok) {
-        historyList.innerHTML = `<div style="opacity:.6">Không tải được lịch sử</div>`;
-        return;
-      }
-
-      if (!res.list.length) {
-        historyList.innerHTML = `<div style="opacity:.6;text-align:center">Chưa có giao dịch</div>`;
-        return;
-      }
-
-      historyList.innerHTML = "";
-      res.list.forEach(item => {
-        const div = document.createElement("div");
-        div.className = "history-item";
-        div.innerHTML = `
-          <div class="row">
-            <b>${item.method || "Nạp coin"}</b>
-            <span class="history-amount">+${item.coin} 💎</span>
-          </div>
-          <div class="row">
-            <span>${new Date(item.time).toLocaleString()}</span>
-            <span class="history-status ${item.status}">
-              ${item.status}
-            </span>
-          </div>
-        `;
-        historyList.appendChild(div);
-      });
-    })
-    .catch(() => {
-      historyList.innerHTML = `<div style="opacity:.6">Lỗi kết nối server</div>`;
+    socket.emit("topup-transferred", {
+      fromUid: auth.uid,
+      agentUid: currentAgent.uid,
+      time: Date.now()
     });
+
+    btnTransferred.disabled = true;
+    btnTransferred.textContent = "⏳ Đã gửi yêu cầu";
+
+    if (transferStatus) {
+      transferStatus.classList.remove("hidden");
+    }
+
+    showToast("📨 Đã thông báo cho đại lý, vui lòng chờ xác nhận");
+  });
 }
+
+
+
