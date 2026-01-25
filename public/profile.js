@@ -6,8 +6,6 @@ const ADMIN_UIDS = ["admin", "LivestreamPro", "KimDogCat", "superuser"];
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
 
-
-
 // 🔁 giữ socket sống để server không mất uid
 setInterval(() => {
   if (socket.connected && __profileAuth.uid) {
@@ -1705,35 +1703,4 @@ function notifyWithdraw(data){
 
 
 
-const postWrap = document.getElementById("profilePostList");
 
-function loadProfilePosts(uid) {
-  if (!postWrap) return;
-
-  fetch(`/api/social/by-user/${uid}`)
-    .then(r => r.json())
-    .then(data => {
-      postWrap.innerHTML = "";
-
-      if (!data.list || data.list.length === 0) {
-        postWrap.innerHTML = `
-          <div class="empty">Chưa có bài đăng nào</div>
-        `;
-        return;
-      }
-
-      data.list.forEach(post => {
-        const el = renderPost(post); // 🔥 dùng lại social.js
-        postWrap.appendChild(el);
-      });
-
-      // 🔁 refresh tick xanh / badge admin
-      if (window.refreshPostBadges) {
-        refreshPostBadges();
-      }
-    });
-}
-
-
-// gọi sau
-loadProfilePosts(viewUid || __profileAuth.uid);
