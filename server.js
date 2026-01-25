@@ -653,8 +653,10 @@ const key = `chat/videos/${Date.now()}_${safeName}`;
 });
 
 app.get("/", (_, res) => {
-  res.sendFile(path.join(__dirname, "public", "poster.html"));
+  res.redirect("/social.html");
 });
+
+
 
 app.post("/api/upload-avatar", avatarCoverUpload.single("avatar"), async (req, res) => {
 
