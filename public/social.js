@@ -995,6 +995,8 @@ function renderPost(p, top=false){
 
 window.lpPostMap ||= {};
 window.lpPostMap[p.id] = p;
+// ===== LIKE ẢO (CLIENT ONLY) =====
+window.fakeLikes = {};   // { postId: number }
 
 
 
@@ -1092,9 +1094,13 @@ ${p.video ? `
 
 
 <div class="lp-actions">
-  <div class="lp-action like" onclick="likePost('${p.id}')">
-    ❤️ <span id="like_${p.id}">${p.likes?.length||0}</span>
-  </div>
+
+<div class="lp-action like" onclick="likePost('${p.id}')">
+  ❤️ <span id="like_${p.id}">
+    ${(p.likes?.length||0) + (window.fakeLikes[p.id]||0)}
+  </span>
+</div>
+
 
   <div class="lp-action" onclick="toggleComments('${p.id}')">
     💬 <span id="c_${p.id}">${p.comments?.length||0}</span>
@@ -1161,6 +1167,8 @@ ${p.gifts?.byUser ? `
   if(top) feed.prepend(div);
   else feed.appendChild(div);
 
+// 🔥 bắt đầu like ảo cho bài
+startFakeLike(p.id);
   // 🔥 Render lại comment đã có (khi reload)
 if(p.comments && p.comments.length){
   const list = div.querySelector(".lp-comment-list");
@@ -2421,5 +2429,50 @@ function closeGiftUsers(){
 
 
 
+// ===== TỔNG USER TRONG APP =====
+function getTotalUserCount(){
+  return Object.keys(window.allUsers || {}).length || 0;
+}
 
 
+
+
+// ===== AUTO LIKE ẢO (CÓ GIỚI HẠN USER) =====
+function startFakeLike(postId){
+  if(window.fakeLikes[postId] != null) return;
+
+  window.fakeLikes[postId] = 0;
+
+  const delay = 3000 + Math.random() * 5000;
+
+  setInterval(() => {
+    const post = window.lpPostMap?.[postId];
+    const el   = document.getElementById("like_" + postId);
+    if(!post || !el) return;
+
+    const realLikes = post.likes?.length || 0;
+    const totalUsers = getTotalUserCount();
+
+    // 🔒 CHẶN VƯỢT SỐ USER
+    const maxFake = Math.max(0, totalUsers - realLikes);
+    if (window.fakeLikes[postId] >= maxFake) {
+      // đã chạm trần → khóa luôn
+      window.fakeLikes[postId] = maxFake;
+      el.textContent = realLikes + maxFake;
+      return;
+    }
+
+    // random xác suất
+    if(Math.random() < 0.55) return;
+
+    // mỗi lần chỉ +1 cho tự nhiên
+    window.fakeLikes[postId] += 1;
+
+    // clamp lần cuối cho chắc
+    if (window.fakeLikes[postId] > maxFake) {
+      window.fakeLikes[postId] = maxFake;
+    }
+
+    el.textContent = realLikes + window.fakeLikes[postId];
+  }, delay);
+}
