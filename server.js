@@ -1595,9 +1595,18 @@ const blockedByYou =
     }
   }
 
-  res.json({
-    profile: target.profile
-  });
+  
+const p = target.profile || {};
+
+res.json({
+  profile: {
+    ...p,
+    avatar: normalizeAvatar(p.avatar),   // 🔥 FIX Ở ĐÂY
+    cover: normalizeAvatar(p.cover)       // (bonus – cover bot sau này)
+  }
+});
+
+
 });
 
 
