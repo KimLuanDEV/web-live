@@ -53,11 +53,7 @@ function renderAgents(list) {
     div.innerHTML = `
       <img class="agent-avatar" src="${agent.avatar}">
       <div class="agent-info">
-        <div class="agent-name">
-  ${agent.name}
-  ${agent.roles?.includes("admin") ? " <span class='badge'>ADMIN</span>" : ""}
-        </div>
-
+        <div class="agent-name">${agent.name}</div>
         <div class="agent-bank">${agent.bank} • ${agent.account}</div>
         <div class="agent-status ${agent.online ? "" : "offline"}">
           ${agent.online ? "🟢 Đang online" : "⚪ Offline"}
