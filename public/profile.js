@@ -7,6 +7,23 @@ const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
 
 
+
+
+
+
+// 🔁 giữ socket sống để server không mất uid
+setInterval(() => {
+  if (socket.connected && __profileAuth.uid) {
+    socket.emit("auth-ping", { uid: __profileAuth.uid });
+  }
+}, 4000);
+
+
+// 🔐 AUTH ACCOUNT – bắt buộc
+window.__profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+
+
 // ================================
 // 📰 PROFILE SOCIAL FEED
 // ================================
@@ -50,20 +67,6 @@ socket.on("lp-post", post => {
 
   renderPost(post, true);
 });
-
-
-
-// 🔁 giữ socket sống để server không mất uid
-setInterval(() => {
-  if (socket.connected && __profileAuth.uid) {
-    socket.emit("auth-ping", { uid: __profileAuth.uid });
-  }
-}, 4000);
-
-
-// 🔐 AUTH ACCOUNT – bắt buộc
-window.__profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
-
 
 const KEY = "user_profile";
 
