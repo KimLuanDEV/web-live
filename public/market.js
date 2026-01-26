@@ -116,6 +116,15 @@ function checkRentAffordable(){
   const btn = document.getElementById("confirmRent");
   if(!btn) return;
 
+  // 🔴 giá hiển thị
+  if(priceVal){
+    if(selectedPlan.price > coin){
+      priceVal.classList.add("rent-price-over");
+    }else{
+      priceVal.classList.remove("rent-price-over");
+    }
+  }
+
   if(selectedPlan.price > coin){
     btn.disabled = true;
     btn.classList.add("disabled");
@@ -126,6 +135,7 @@ function checkRentAffordable(){
     btn.textContent = "Thuê gian hàng";
   }
 }
+
 
 
 
