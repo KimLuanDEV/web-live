@@ -109,6 +109,25 @@ function updateRentCoin(){
 }
 
 
+function checkRentAffordable(){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  const coin = me?.coins ?? 0;
+
+  const btn = document.getElementById("confirmRent");
+  if(!btn) return;
+
+  if(selectedPlan.price > coin){
+    btn.disabled = true;
+    btn.classList.add("disabled");
+    btn.textContent = "❌ Không đủ kim cương";
+  }else{
+    btn.disabled = false;
+    btn.classList.remove("disabled");
+    btn.textContent = "Thuê gian hàng";
+  }
+}
+
+
 
 
 async function loadMarketFromServer(){
@@ -397,6 +416,9 @@ function rentBooth(id){
 
   // 💎 cập nhật số dư kim cương trong modal
   updateRentCoin();
+  checkRentAffordable();
+
+
 // reset gói mặc định
 selectedPlan = { days: 7, price: 1000 };
 
@@ -442,6 +464,8 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
       daysVal.textContent = days;
       priceVal.textContent = price.toLocaleString();
     }
+
+    checkRentAffordable(); // 👈 thêm dòng này
   };
 });
 
@@ -463,6 +487,8 @@ if(range){
     // bỏ active quick plan
     document.querySelectorAll(".rent-option")
       .forEach(o=>o.classList.remove("active"));
+
+      checkRentAffordable(); // 👈 thêm dòng này
   };
 }
 
