@@ -1,3 +1,5 @@
+const socket = io();
+
 const floor = document.getElementById("marketFloor");
 
 let booths = []; // sẽ load từ server
@@ -408,4 +410,13 @@ document.addEventListener("visibilitychange", ()=>{
   }else{
     startMarketAutoRefresh();
   }
+});
+
+
+/* ===== REALTIME MARKET UPDATE ===== */
+socket.on("market-update", data=>{
+  console.log("🟢 Market realtime update:", data);
+
+  // refresh ngay lập tức
+  loadMarketFromServer();
 });

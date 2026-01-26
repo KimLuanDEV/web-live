@@ -381,6 +381,7 @@ app.post("/api/market/extend", (req, res) => {
   saveUsers(users);
   saveMarket(market);
   emitCoinUpdate(uid);
+  emitMarketUpdate("extend", boothId);
 
   res.json({
     ok: true,
@@ -402,10 +403,15 @@ app.post("/api/admin/market/lock", (req,res)=>{
   if(!market[boothId])
     return res.status(404).json({ error:"not_found" });
 
+
   market[boothId].locked = !!lock;
   saveMarket(market);
 
+  emitMarketUpdate(lock ? "lock" : "unlock", boothId); // 🔥 REALTIME
+
   res.json({ ok:true });
+
+
 });
 
 
@@ -421,10 +427,14 @@ app.post("/api/admin/market/revoke", (req,res)=>{
   if(!market[boothId])
     return res.status(404).json({ error:"not_found" });
 
-  market[boothId] = null; // 💥 thu hồi
-  saveMarket(market);
+market[boothId] = null;
+saveMarket(market);
 
-  res.json({ ok:true });
+emitMarketUpdate("revoke", boothId); // 🔥 REALTIME
+
+res.json({ ok:true });
+
+
 });
 
 
@@ -478,6 +488,7 @@ app.post("/api/market/rent", (req,res)=>{
   saveMarket(market);
 
   emitCoinUpdate(uid); // 🔁 realtime coin
+  emitMarketUpdate("rent", boothId);
 
   res.json({
     ok:true,
@@ -1338,6 +1349,15 @@ function emitWithdrawUpdate() {
   });
 }
 
+
+
+function emitMarketUpdate(action, boothId){
+  io.emit("market-update", {
+    action,      // "lock" | "unlock" | "revoke" | "rent" | "extend"
+    boothId,
+    ts: Date.now()
+  });
+}
 
 
 
