@@ -159,6 +159,103 @@ html, body{
 }
 
 
+/* ===== RENT MODAL ===== */
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:10000;
+}
+
+.modal-backdrop.hidden{
+  display:none;
+}
+
+.rent-modal{
+  width:90%;
+  max-width:360px;
+  background:#000;
+  border-radius:16px;
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:0 0 30px rgba(37,240,154,.25);
+  overflow:hidden;
+}
+
+.rent-header{
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:900;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.rent-close{
+  cursor:pointer;
+  font-size:18px;
+  opacity:.7;
+}
+
+.rent-body{
+  padding:16px;
+}
+
+.rent-slot{
+  text-align:center;
+  font-size:14px;
+  margin-bottom:14px;
+  opacity:.85;
+}
+
+/* OPTIONS */
+.rent-options{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+
+.rent-option{
+  border:1.5px solid rgba(255,255,255,.25);
+  border-radius:12px;
+  padding:10px 6px;
+  text-align:center;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.rent-option .days{
+  font-weight:900;
+}
+
+.rent-option .price{
+  font-size:12px;
+  opacity:.8;
+  margin-top:4px;
+}
+
+.rent-option.active{
+  border-color:#25F09A;
+  box-shadow:0 0 14px rgba(37,240,154,.35);
+  color:#25F09A;
+}
+
+/* CONFIRM */
+.rent-confirm{
+  width:100%;
+  border:none;
+  border-radius:999px;
+  padding:12px;
+  font-weight:900;
+  background:linear-gradient(135deg,#25F09A,#5FA8FF);
+  color:#000;
+  cursor:pointer;
+}
+
+
 
 </style>
 </head>
@@ -182,6 +279,48 @@ html, body{
   <div class="lp-tab" data-tab="messages"><div class="icon">💬</div><div>Chat</div></div>
   <div class="lp-tab" data-tab="profile"><div class="icon">👤</div><div>Profile</div></div>
 </div>
+
+
+
+
+
+<!-- RENT BOOTH MODAL -->
+<div class="modal-backdrop hidden" id="rentBackdrop">
+  <div class="rent-modal">
+    <div class="rent-header">
+      <div>💎 Thuê gian hàng</div>
+      <span class="rent-close" id="closeRent">✕</span>
+    </div>
+
+    <div class="rent-body">
+      <div class="rent-slot">Gian hàng số <b id="rentBoothId">#</b></div>
+
+      <div class="rent-options">
+        <div class="rent-option active" data-days="7" data-price="1000">
+          <div class="days">7 ngày</div>
+          <div class="price">💎 1,000</div>
+        </div>
+
+        <div class="rent-option" data-days="30" data-price="3500">
+          <div class="days">30 ngày</div>
+          <div class="price">💎 3,500</div>
+        </div>
+
+        <div class="rent-option" data-days="90" data-price="9000">
+          <div class="days">90 ngày</div>
+          <div class="price">💎 9,000</div>
+        </div>
+      </div>
+
+      <button class="rent-confirm" id="confirmRent">
+        Thuê gian hàng
+      </button>
+    </div>
+  </div>
+</div>
+
+
+
 
 <script src="/market.js"></script>
 </body>
