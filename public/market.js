@@ -305,3 +305,39 @@ loadMarketFromServer();
 
 
 
+/* ===== AUTO REFRESH MARKET ===== */
+let marketAutoTimer = null;
+
+function startMarketAutoRefresh(){
+  if(marketAutoTimer) clearInterval(marketAutoTimer);
+
+  marketAutoTimer = setInterval(()=>{
+    // không refresh khi đang mở modal thuê
+    const modalOpen = !document
+      .getElementById("rentBackdrop")
+      .classList.contains("hidden");
+
+    if(modalOpen) return;
+
+    // chỉ refresh khi tab đang active
+    if(document.hidden) return;
+
+    loadMarketFromServer();
+  }, 30000); // ⏱ 30s (có thể đổi 60000)
+}
+
+// start auto refresh
+startMarketAutoRefresh();
+
+
+// pause / resume khi user chuyển tab
+document.addEventListener("visibilitychange", ()=>{
+  if(document.hidden){
+    if(marketAutoTimer){
+      clearInterval(marketAutoTimer);
+      marketAutoTimer = null;
+    }
+  }else{
+    startMarketAutoRefresh();
+  }
+});
