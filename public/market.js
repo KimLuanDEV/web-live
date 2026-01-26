@@ -1,14 +1,10 @@
-/* ===== DỮ LIỆU MẶT BẰNG ===== */
-const booths = [
-  { id:1, owner:null },
-  { id:2, owner:{ name:"Shop A", logo:"https://i.pravatar.cc/100?1" } },
-  { id:3, owner:null },
-  { id:4, owner:{ name:"Shop B", logo:"https://i.pravatar.cc/100?2" } },
-  { id:5, owner:null },
-  { id:6, owner:{ name:"Shop C", logo:"https://i.pravatar.cc/100?3" } }
-];
-
 const floor = document.getElementById("marketFloor");
+/* ===== SLOT GIAN HÀNG (TẠM THỜI TOÀN TRỐNG) ===== */
+const booths = Array.from({ length: 12 }, (_, i) => ({
+  id: i + 1,
+  owner: null
+}));
+
 
 /* RENDER */
 function renderMarket(){
