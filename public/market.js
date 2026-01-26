@@ -50,11 +50,24 @@ let touchEndX = 0;
 
 function goToTab(tabIndex){
   const totalTabs = Math.ceil(booths.length / BOOTHS_PER_TAB);
-  if(tabIndex < 0 || tabIndex >= totalTabs) return;
+  if(totalTabs === 0) return;
 
-  const direction = tabIndex > currentTab ? "left" : "right";
+  let target = tabIndex;
 
-  // add animation class
+  // 🔁 VÒNG TRÒN
+  if(tabIndex < 0) target = totalTabs - 1;
+  if(tabIndex >= totalTabs) target = 0;
+
+  const direction =
+    target === 0 && currentTab === totalTabs - 1
+      ? "left"   // cuối → đầu
+      : target === totalTabs - 1 && currentTab === 0
+        ? "right" // đầu → cuối
+        : target > currentTab
+          ? "left"
+          : "right";
+
+  // 🎞 animation
   floor.classList.add(
     direction === "left"
       ? "market-slide-left"
@@ -62,10 +75,9 @@ function goToTab(tabIndex){
   );
 
   setTimeout(()=>{
-    currentTab = tabIndex;
+    currentTab = target;
     renderMarket();
 
-    // reset animation
     floor.classList.remove("market-slide-left", "market-slide-right");
   }, 200);
 }
