@@ -409,6 +409,16 @@ app.post("/api/market/rent", (req,res)=>{
 
   const market = loadMarket();
 
+// 🔒 KHOÁ 1 USER CHỈ 1 GIAN
+  const alreadyHaveBooth = Object.values(market).some(
+  b => b && b.ownerUid === uid
+  );
+
+  if (alreadyHaveBooth) {
+  return res.status(400).json({ error: "already_have_booth" });
+  }
+
+
   if(market[boothId])
     return res.status(400).json({ error:"already_rented" });
 

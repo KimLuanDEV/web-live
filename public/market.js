@@ -111,11 +111,28 @@ function updateMarketStats(){
 
 /* ===== OPEN RENT MODAL ===== */
 function rentBooth(id){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me || !me.uid){
+    alert("🔐 Vui lòng đăng nhập");
+    return;
+  }
+
+  // 🔒 đã có gian thì không cho thuê thêm
+  const alreadyHaveBooth = booths.some(
+    b => b.owner && b.owner.uid === me.uid
+  );
+
+  if(alreadyHaveBooth){
+    alert("⚠️ Bạn đã có gian hàng rồi");
+    return;
+  }
+
   rentMode = "rent";
   currentBoothId = id;
   document.getElementById("rentBoothId").textContent = id;
   document.getElementById("rentBackdrop").classList.remove("hidden");
 }
+
 
 
 function openExtendModal(id){
@@ -149,11 +166,18 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
 /* ===== CONFIRM RENT ===== */
 document.getElementById("confirmRent").onclick = async ()=>{
 
+
+if(data.error === "already_have_booth")
+return alert("⚠️ Bạn chỉ được thuê 1 gian hàng");
+
+
 const me = JSON.parse(localStorage.getItem("user_profile"));
 if(!me || !me.uid){
   alert("🔐 Vui lòng đăng nhập");
   return;
 }
+
+
 const uid = me.uid;
 
 

@@ -75,7 +75,7 @@ loadBooth();
 btnBack.onclick = ()=> history.back();
 
 btnAddProduct.onclick = ()=>{
-  alert("➕ Mở giao diện đăng sản phẩm (làm tiếp)");
+  alert("➕ Gian hàng đang nâng cấp!");
 };
 
 /* ===== GIA HẠN ===== */
