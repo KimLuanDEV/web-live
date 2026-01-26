@@ -6,11 +6,6 @@ const ADMIN_UIDS = ["admin", "LivestreamPro", "KimDogCat", "superuser"];
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
 
-
-
-
-
-
 // 🔁 giữ socket sống để server không mất uid
 setInterval(() => {
   if (socket.connected && __profileAuth.uid) {
@@ -22,59 +17,6 @@ setInterval(() => {
 // 🔐 AUTH ACCOUNT – bắt buộc
 window.__profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-
-
-// ================================
-// 📰 PROFILE SOCIAL FEED
-// ================================
-
-// uid profile đang xem (của mình hoặc người khác)
-const profileUid = viewUid || __profileAuth.uid;
-
-
-// ================================
-// 📰 PROFILE FEED – FIX MISS lp-init
-// ================================
-
-function renderProfileFeed() {
-  const feed = document.getElementById("lpFeed");
-  if (!feed) return;
-
-  feed.innerHTML = "";
-
-  const map = window.lpPostMap || {};
-  const posts = Object.values(map)
-    .filter(p => p.uid === profileUid)
-    .sort((a, b) => b.time - a.time); // mới lên trước
-
-  if (!posts.length) {
-    feed.innerHTML = `
-      <div class="lp-empty">
-        📝 Người dùng chưa có bài đăng nào
-      </div>
-    `;
-    return;
-  }
-
-  posts.forEach(p => renderPost(p, false));
-}
-
-// ⏳ đợi social.js init xong
-setTimeout(renderProfileFeed, 300);
-
-// 🔥 realtime: có bài mới của user này
-socket.on("lp-post", post => {
-  if (post.uid !== profileUid) return;
-
-  const feed = document.getElementById("lpFeed");
-  if (!feed) return;
-
-  renderPost(post, true);
-});
-
-
-// chống init trùng
-let profileFeedInited = false;
 
 const KEY = "user_profile";
 

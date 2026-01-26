@@ -11372,11 +11372,3 @@ button:disabled{
 .badge-withdraw .stat-badge {
   background: linear-gradient(135deg, #4caf50, #2e7d32);
 }
-
-
-.lp-empty{
-  padding:16px;
-  text-align:center;
-  color:#888;
-  font-size:14px;
-}
