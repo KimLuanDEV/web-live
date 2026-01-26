@@ -43,6 +43,18 @@ let selectedPlan = { days: 7, price: 1000 };
 let rentMode = "rent"; // "rent" | "extend"
 const BOOTHS_PER_TAB = 8;
 let currentTab = 0;
+// ===== MOBILE SWIPE TAB =====
+let touchStartX = 0;
+let touchEndX = 0;
+
+function goToTab(tabIndex){
+  const totalTabs = Math.ceil(booths.length / BOOTHS_PER_TAB);
+  if(tabIndex < 0 || tabIndex >= totalTabs) return;
+  currentTab = tabIndex;
+  renderMarket();
+}
+
+
 
 
 
@@ -158,6 +170,8 @@ function renderMarketTabs(totalBooths){
 
 
 
+
+
 /* ===== RENDER ===== */
 function renderMarket(){
   floor.innerHTML = "";
@@ -254,6 +268,44 @@ if (!b.owner.locked || isAdmin()) {
 
    updateMarketStats();
 }
+
+
+function enableMarketSwipe(){
+  // chỉ bật cho thiết bị cảm ứng
+  if(!("ontouchstart" in window)) return;
+
+  floor.addEventListener("touchstart", e=>{
+    // ❌ không swipe khi đang mở modal
+    if(!document.getElementById("rentBackdrop").classList.contains("hidden")) return;
+    if(!document.getElementById("lpModal").classList.contains("hidden")) return;
+
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive:true });
+
+  floor.addEventListener("touchend", e=>{
+    touchEndX = e.changedTouches[0].screenX;
+    handleMarketSwipe();
+  }, { passive:true });
+}
+
+function handleMarketSwipe(){
+  const delta = touchEndX - touchStartX;
+
+  // cần vuốt đủ xa để tránh chạm nhầm
+  if(Math.abs(delta) < 60) return;
+
+  if(delta < 0){
+    // 👉 vuốt trái → tab kế
+    goToTab(currentTab + 1);
+  }else{
+    // 👈 vuốt phải → tab trước
+    goToTab(currentTab - 1);
+  }
+}
+
+
+
+
 
 
 
@@ -472,7 +524,7 @@ document.querySelectorAll(".lp-tab").forEach(tab=>{
 
 /* INIT */
 loadMarketFromServer();
-
+enableMarketSwipe();
 
 
 /* ===== AUTO REFRESH MARKET ===== */
