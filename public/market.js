@@ -1,85 +1,80 @@
-/* ===== MARKET DATA (DEMO) ===== */
-const marketItems = [
+/* ===== BOOTH DATA (DEMO) ===== */
+const booths = [
   {
-    id:1,
-    type:"service",
-    title:"VIP Livestream Pro – 30 ngày",
-    price:5000,
-    img:"https://picsum.photos/400?1",
-    seller:{
+    id:"booth1",
+    name:"Livestream Pro Official",
+    banner:"https://picsum.photos/600/300?1",
+    owner:{
       name:"Livestream Pro",
       avatar:"https://i.pravatar.cc/100?1",
       verified:true
-    }
+    },
+    active:true,
+    expire:"2026-03-01"
   },
   {
-    id:2,
-    type:"account",
-    title:"Tài khoản VIP Legend",
-    price:12000,
-    img:"https://picsum.photos/400?2",
-    seller:{
+    id:"booth2",
+    name:"KimDogCat Shop",
+    banner:"https://picsum.photos/600/300?2",
+    owner:{
       name:"KimDogCat",
       avatar:"https://i.pravatar.cc/100?2",
       verified:false
-    }
+    },
+    active:false
   }
 ];
 
-const grid = document.getElementById("marketGrid");
+const grid = document.getElementById("boothGrid");
 
-/* ===== RENDER ===== */
-function renderMarket(list){
+/* ===== RENDER BOOTH ===== */
+function renderBooths(){
   grid.innerHTML = "";
-  list.forEach(item=>{
+  booths.forEach(b=>{
     const div = document.createElement("div");
-    div.className = "market-card";
-    div.innerHTML = `
-      <img class="market-img" src="${item.img}">
-      <div class="market-body">
-        <div class="market-title">${item.title}</div>
-        <div class="market-price">💎 ${item.price.toLocaleString()}</div>
+    div.className = "booth-card";
 
-        <div class="market-seller">
-          <img src="${item.seller.avatar}">
-          ${item.seller.name}
-          ${item.seller.verified ? `<span class="market-verified">✔</span>` : ""}
+    div.innerHTML = `
+      <img class="booth-banner" src="${b.banner}">
+      <div class="booth-body">
+        <div class="booth-name">${b.name}</div>
+
+        <div class="booth-owner">
+          <img src="${b.owner.avatar}">
+          ${b.owner.name}
+          ${b.owner.verified ? `<span class="booth-verified">✔</span>` : ""}
         </div>
 
-        <button class="market-buy" onclick="buyMarket(${item.id})">
-          Mua ngay
-        </button>
+        <div class="booth-status ${b.active ? "active" : "expired"}">
+          ${b.active ? "🟢 Đang hoạt động" : "🔒 Chưa thuê gian hàng"}
+        </div>
+
+        ${
+          b.active
+          ? `<button class="booth-btn enter" onclick="enterBooth('${b.id}')">Vào gian hàng</button>`
+          : `<button class="booth-btn rent" onclick="rentBooth('${b.id}')">Thuê gian hàng</button>`
+        }
       </div>
     `;
+
     grid.appendChild(div);
   });
 }
 
-/* ===== FILTER ===== */
-document.querySelectorAll(".market-tab").forEach(tab=>{
-  tab.onclick = ()=>{
-    document.querySelectorAll(".market-tab")
-      .forEach(t=>t.classList.remove("active"));
-    tab.classList.add("active");
-
-    const type = tab.dataset.type;
-    renderMarket(
-      type==="all"
-        ? marketItems
-        : marketItems.filter(i=>i.type===type)
-    );
-  };
-});
-
-/* ===== BUY ===== */
-function buyMarket(id){
-  const item = marketItems.find(i=>i.id===id);
-  alert(`🛒 Mua: ${item.title}\n💎 ${item.price}`);
+/* ===== ACTIONS ===== */
+function enterBooth(id){
+  alert("🏪 Vào gian hàng: " + id);
+  // location.href = `/booth.html?id=${id}`;
 }
 
-/* ===== ADD SELL ===== */
-document.getElementById("btnAddMarket").onclick = ()=>{
-  alert("➕ Mở modal đăng bán (sẽ làm tiếp)");
+function rentBooth(id){
+  alert("💎 Thuê gian hàng: " + id);
+  // mở modal thuê gian hàng
+}
+
+/* ===== ADD BOOTH ===== */
+document.getElementById("btnRentBooth").onclick = ()=>{
+  alert("➕ Thuê gian hàng mới (modal)");
 };
 
 /* ===== TAB BAR ===== */
@@ -95,4 +90,4 @@ document.querySelectorAll(".lp-tab").forEach(tab=>{
 });
 
 /* INIT */
-renderMarket(marketItems);
+renderBooths();
