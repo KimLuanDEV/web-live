@@ -86,11 +86,14 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
 
 /* ===== CONFIRM RENT ===== */
 document.getElementById("confirmRent").onclick = async ()=>{
-  const uid = localStorage.getItem("uid");
-  if(!uid){
-    alert("🔐 Vui lòng đăng nhập");
-    return;
-  }
+    
+const me = JSON.parse(localStorage.getItem("user_profile"));
+if(!me || !me.uid){
+  alert("🔐 Vui lòng đăng nhập");
+  return;
+}
+const uid = me.uid;
+
 
   try{
     const res = await fetch("/api/market/rent",{
