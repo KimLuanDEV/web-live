@@ -9,6 +9,9 @@ const btnBack = document.getElementById("btnBack");
 const btnAddProduct = document.getElementById("btnAddProduct");
 const btnExtend = document.getElementById("btnExtendBooth");
 const expireBox = document.getElementById("boothExpireBox");
+let currentBoothOwnerUid = null;
+
+
 
 /* ===== HELPERS ===== */
 function formatDate(ts){
@@ -29,6 +32,7 @@ async function loadBooth(){
 
     const booth = data.market[boothId];
     if(!booth) return;
+    currentBoothOwnerUid = booth.ownerUid;
 
     // info
     boothNameEl.textContent = booth.name;
@@ -75,8 +79,21 @@ loadBooth();
 btnBack.onclick = ()=> history.back();
 
 btnAddProduct.onclick = ()=>{
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me || !me.uid){
+    alert("🔐 Vui lòng đăng nhập");
+    return;
+  }
+
+  // chỉ chủ gian mới được đăng
+  if(me.uid !== currentBoothOwnerUid){
+    alert("⛔ Bạn không phải chủ gian hàng");
+    return;
+  }
+
   alert("➕ Gian hàng đang nâng cấp!");
 };
+
 
 /* ===== GIA HẠN ===== */
 btnExtend?.addEventListener("click", ()=>{
