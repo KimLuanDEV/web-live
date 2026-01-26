@@ -47,12 +47,29 @@ let currentTab = 0;
 let touchStartX = 0;
 let touchEndX = 0;
 
+
 function goToTab(tabIndex){
   const totalTabs = Math.ceil(booths.length / BOOTHS_PER_TAB);
   if(tabIndex < 0 || tabIndex >= totalTabs) return;
-  currentTab = tabIndex;
-  renderMarket();
+
+  const direction = tabIndex > currentTab ? "left" : "right";
+
+  // add animation class
+  floor.classList.add(
+    direction === "left"
+      ? "market-slide-left"
+      : "market-slide-right"
+  );
+
+  setTimeout(()=>{
+    currentTab = tabIndex;
+    renderMarket();
+
+    // reset animation
+    floor.classList.remove("market-slide-left", "market-slide-right");
+  }, 200);
 }
+
 
 
 

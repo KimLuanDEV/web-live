@@ -447,6 +447,26 @@ html, body{
 }
 
 
+/* ===== SLIDE ANIMATION ===== */
+#marketFloor {
+  transition: transform .25s ease, opacity .25s ease;
+}
+
+.market-slide-left {
+  transform: translateX(-40px);
+  opacity: 0;
+}
+
+.market-slide-right {
+  transform: translateX(40px);
+  opacity: 0;
+}
+
+#marketFloor {
+  will-change: transform;
+}
+
+
 </style>
 </head>
 
