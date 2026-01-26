@@ -78,14 +78,20 @@ function renderMarket(){
       `;
       div.onclick = ()=> rentBooth(b.id);
     }else{
-      div.className = "booth active";
-      div.innerHTML = `
-        <div>
-          <img class="booth-logo" src="${b.owner.logo}">
-          <div class="booth-name">${b.owner.name}</div>
-        </div>
-      `;
-      div.onclick = ()=> openBooth(b.id);
+
+     const me = JSON.parse(localStorage.getItem("user_profile"));
+const isMine = me && b.owner.uid === me.uid;
+
+div.className = "booth active";
+div.innerHTML = `
+  ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
+  <div>
+    <img class="booth-logo" src="${b.owner.logo}">
+    <div class="booth-name">${b.owner.name}</div>
+  </div>
+`;
+div.onclick = ()=> openBooth(b.id);
+
 
     }
 
