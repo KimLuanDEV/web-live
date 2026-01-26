@@ -409,6 +409,55 @@ app.post("/api/admin/market/lock", (req,res)=>{
 
   emitMarketUpdate(lock ? "lock" : "unlock", boothId); // 🔥 REALTIME
 
+
+
+// 🔔 NOTIFY CHỦ GIAN
+const booth = market[boothId];
+const ownerUid = booth.ownerUid;
+
+if (ownerUid) {
+  const msg = lock
+    ? `🔒 Gian hàng #${boothId} của bạn đã bị Admin khoá`
+    : `🔓 Gian hàng #${boothId} của bạn đã được Admin mở khoá`;
+
+  // 1️⃣ LƯU INBOX (offline vẫn thấy)
+  if (!userInbox.has(ownerUid)) userInbox.set(ownerUid, []);
+  userInbox.get(ownerUid).unshift({
+    type: "market-booth",
+    boothId,
+    action: lock ? "lock" : "unlock",
+    text: msg,
+    time: Date.now(),
+    read: false
+  });
+  saveInbox(Object.fromEntries(userInbox));
+
+  // 2️⃣ REALTIME NẾU ONLINE
+  const sockets = activeUsers.get(ownerUid);
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("system-notify", {
+        type: "market-booth",
+        boothId,
+        action: lock ? "lock" : "unlock",
+        text: msg
+      });
+    }
+  }
+
+  // 3️⃣ PUSH NOTIFICATION (KHI OFFLINE)
+  sendPushToUser(ownerUid, {
+    title: lock ? "🔒 Gian hàng bị khoá" : "🔓 Gian hàng được mở khoá",
+    body: msg,
+    tag: "market-booth"
+  });
+}
+
+
+
+
+
+
   res.json({ ok:true });
 
 

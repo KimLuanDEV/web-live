@@ -1,4 +1,7 @@
-const socket = io();
+let socket = null;
+if (typeof io !== "undefined") {
+  socket = io();
+}
 
 const floor = document.getElementById("marketFloor");
 
@@ -56,21 +59,6 @@ async function loadMarketFromServer(){
   }
 }
 
-
-function handleActiveBooth(booth){
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  if (!me || !me.uid) {
-    openBooth(booth.id);
-    return;
-  }
-
-  // nếu là gian của tôi → gia hạn
-  if (booth.owner.uid === me.uid) {
-    openExtendModal(booth.id);
-  } else {
-    openBooth(booth.id);
-  }
-}
 
 
 
@@ -224,13 +212,6 @@ function rentBooth(id){
 
 
 
-function openExtendModal(id){
-  rentMode = "extend";
-  currentBoothId = id;
-  document.getElementById("rentBoothId").textContent = id;
-  document.getElementById("rentBackdrop").classList.remove("hidden");
-}
-
 
 
 /* ===== CLOSE MODAL ===== */
@@ -269,9 +250,7 @@ const uid = me.uid;
 
 
 try{
-  const api = rentMode === "extend"
-    ? "/api/market/extend"
-    : "/api/market/rent";
+  const api = "/api/market/rent";
 
   const res = await fetch(api,{
     method:"POST",
@@ -288,11 +267,13 @@ try{
 
   const data = await res.json();
 
-  if(data.error === "already_have_booth")
-  return alert("⚠️ Bạn chỉ được thuê 1 gian hàng");
-
+ 
 
   if(!data.ok){
+
+     if(data.error === "already_have_booth")
+     return alert("⚠️ Bạn chỉ được thuê 1 gian hàng");
+
     if(data.error==="not_enough_coin")
       return alert("❌ Không đủ kim cương");
     if(data.error==="not_owner")
@@ -336,7 +317,7 @@ async function toggleLock(id, lock){
     body: JSON.stringify({ boothId:id, lock })
   });
 
-  loadMarketFromServer();
+  
 }
 
 async function revokeBooth(id){
@@ -352,7 +333,7 @@ async function revokeBooth(id){
     body: JSON.stringify({ boothId:id })
   });
 
-  loadMarketFromServer();
+  
 }
 
 
@@ -414,9 +395,9 @@ document.addEventListener("visibilitychange", ()=>{
 
 
 /* ===== REALTIME MARKET UPDATE ===== */
-socket.on("market-update", data=>{
-  console.log("🟢 Market realtime update:", data);
+if (socket) {
+  socket.on("market-update", data=>{
+    loadMarketFromServer();
+  });
+}
 
-  // refresh ngay lập tức
-  loadMarketFromServer();
-});
