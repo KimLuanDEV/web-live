@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Gian hàng</title>
+<link rel="stylesheet" href="/style.css">
+
+<style>
+html,body{
+  background:#000;
+  color:#fff;
+  margin:0;
+}
+
+/* HEADER */
+.booth-header{
+  padding:16px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.booth-back{
+  font-size:22px;
+  cursor:pointer;
+}
+
+.booth-info{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.booth-logo{
+  width:44px;
+  height:44px;
+  border-radius:12px;
+  object-fit:cover;
+  box-shadow:0 0 12px rgba(37,240,154,.6);
+}
+
+.booth-name{
+  font-weight:900;
+  font-size:16px;
+}
+
+/* BODY */
+.booth-body{
+  padding:16px;
+}
+
+.empty-text{
+  opacity:.6;
+  font-size:14px;
+  text-align:center;
+  margin-top:60px;
+}
+
+/* ADD PRODUCT */
+.add-product{
+  position:fixed;
+  right:16px;
+  bottom:20px;
+  width:56px;
+  height:56px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#25F09A,#5FA8FF);
+  color:#000;
+  font-size:28px;
+  font-weight:900;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 0 20px rgba(37,240,154,.6);
+  cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<!-- HEADER -->
+<div class="booth-header">
+  <div class="booth-back" id="btnBack">‹</div>
+
+  <div class="booth-info">
+    <img id="boothLogo" class="booth-logo">
+    <div id="boothName" class="booth-name">Gian hàng</div>
+  </div>
+</div>
+
+<!-- BODY -->
+<div class="booth-body">
+  <div class="empty-text" id="emptyText">
+    Gian hàng chưa có sản phẩm nào.<br>
+    Nhấn “＋” để đăng bán.
+  </div>
+</div>
+
+<!-- ADD -->
+<div class="add-product" id="btnAddProduct">＋</div>
+
+<script src="/booth.js"></script>
+</body>
+</html>

@@ -97,11 +97,10 @@ document.getElementById("confirmRent").onclick = ()=>{
 };
 
 
-/* ===== OPEN BOOTH (SAU NÀY) ===== */
 function openBooth(id){
-  alert("🏪 Mở gian hàng #" + id);
-  // location.href = `/booth.html?id=${id}`;
+  location.href = `/booth.html?booth=${id}`;
 }
+
 
 /* ===== TAB BAR ===== */
 document.querySelectorAll(".lp-tab").forEach(tab=>{
