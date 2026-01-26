@@ -295,6 +295,37 @@ html, body{
 }
 
 
+/* ===== GIAN CỦA TÔI – GLOW RIÊNG ===== */
+.booth.booth-mine{
+  border:2px solid #25F09A;
+  box-shadow:
+    0 0 12px rgba(37,240,154,.9),
+    0 0 28px rgba(37,240,154,.6),
+    inset 0 0 10px rgba(37,240,154,.25);
+  animation: boothMineGlow 2.4s ease-in-out infinite;
+}
+
+@keyframes boothMineGlow{
+  0%{
+    box-shadow:
+      0 0 10px rgba(37,240,154,.6),
+      0 0 20px rgba(37,240,154,.4),
+      inset 0 0 8px rgba(37,240,154,.2);
+  }
+  50%{
+    box-shadow:
+      0 0 16px rgba(37,240,154,1),
+      0 0 36px rgba(37,240,154,.8),
+      inset 0 0 12px rgba(37,240,154,.35);
+  }
+  100%{
+    box-shadow:
+      0 0 10px rgba(37,240,154,.6),
+      0 0 20px rgba(37,240,154,.4),
+      inset 0 0 8px rgba(37,240,154,.2);
+  }
+}
+
 
 </style>
 </head>

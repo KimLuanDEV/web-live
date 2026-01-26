@@ -130,7 +130,9 @@ function renderMarket(){
     }
   }
 
-  div.className = "booth active";
+  div.className = "booth active" + (isMine ? " booth-mine" : "");
+
+
   div.innerHTML = `
     ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
     ${expireBadge}
