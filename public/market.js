@@ -1,14 +1,49 @@
 const floor = document.getElementById("marketFloor");
 
-/* ===== SLOT GIAN HÀNG (TẠM THỜI TOÀN TRỐNG) ===== */
-const booths = Array.from({ length: 12 }, (_, i) => ({
-  id: i + 1,
-  owner: null
-}));
-
+let booths = []; // sẽ load từ server
 /* ===== STATE MODAL ===== */
 let currentBoothId = null;
 let selectedPlan = { days: 7, price: 1000 };
+
+
+
+async function loadMarketFromServer(){
+  try{
+    const res = await fetch("/api/market");
+    const data = await res.json();
+    if(!data.ok) return;
+
+    const market = data.market || {};
+
+    // xác định số gian (tối thiểu 12)
+    const totalSlots = Math.max(12, Object.keys(market).length);
+
+    booths = Array.from({ length: totalSlots }, (_, i)=>{
+      const id = i + 1;
+      const booth = market[id];
+
+      if(!booth){
+        return { id, owner: null };
+      }
+
+      return {
+        id,
+        owner: {
+          uid: booth.ownerUid,
+          name: booth.name,
+          logo: booth.logo,
+          expireAt: booth.expireAt
+        }
+      };
+    });
+
+    renderMarket();
+  }catch(e){
+    console.error("Load market failed", e);
+  }
+}
+
+
 
 /* ===== RENDER ===== */
 function renderMarket(){
@@ -86,7 +121,7 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
 
 /* ===== CONFIRM RENT ===== */
 document.getElementById("confirmRent").onclick = async ()=>{
-    
+
 const me = JSON.parse(localStorage.getItem("user_profile"));
 if(!me || !me.uid){
   alert("🔐 Vui lòng đăng nhập");
@@ -117,14 +152,9 @@ const uid = me.uid;
     }
 
     // 👉 cập nhật booth local
-    const booth = booths.find(b=>b.id===currentBoothId);
-    booth.owner = {
-      name: data.booth.name,
-      logo: data.booth.logo
-    };
-
     document.getElementById("rentBackdrop").classList.add("hidden");
-    renderMarket();
+    loadMarketFromServer();
+
 
     alert("🎉 Thuê gian thành công!");
   }catch(e){
@@ -152,4 +182,4 @@ document.querySelectorAll(".lp-tab").forEach(tab=>{
 });
 
 /* INIT */
-renderMarket();
+loadMarketFromServer();
