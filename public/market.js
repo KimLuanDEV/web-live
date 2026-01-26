@@ -38,7 +38,23 @@ function renderMarket(){
 
     floor.appendChild(div);
   });
+
+   updateMarketStats();
 }
+
+
+
+function updateMarketStats(){
+  const total = booths.length;
+  const active = booths.filter(b => b.owner).length;
+  const empty = total - active;
+
+  const el = document.getElementById("marketStats");
+  if(el){
+    el.textContent = `${total} gian • ${active} đang thuê • ${empty} trống`;
+  }
+}
+
 
 /* ===== OPEN RENT MODAL ===== */
 function rentBooth(id){
@@ -46,6 +62,8 @@ function rentBooth(id){
   document.getElementById("rentBoothId").textContent = id;
   document.getElementById("rentBackdrop").classList.remove("hidden");
 }
+
+
 
 /* ===== CLOSE MODAL ===== */
 document.getElementById("closeRent").onclick = ()=>{
