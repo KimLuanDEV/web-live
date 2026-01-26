@@ -6,6 +6,53 @@ const ADMIN_UIDS = ["admin", "LivestreamPro", "KimDogCat", "superuser"];
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
 
+
+// ================================
+// 📰 PROFILE SOCIAL FEED
+// ================================
+
+// uid profile đang xem (của mình hoặc người khác)
+const profileUid = viewUid || __profileAuth.uid;
+
+// chống init trùng
+let profileFeedInited = false;
+
+// INIT FEED (chỉ bài của user này)
+socket.on("lp-init", list => {
+  if (profileFeedInited) return;
+  profileFeedInited = true;
+
+  const feed = document.getElementById("lpFeed");
+  if (!feed) return;
+
+  feed.innerHTML = "";
+
+  const posts = list.filter(p => p.uid === profileUid);
+
+  if (posts.length === 0) {
+    feed.innerHTML = `
+      <div class="lp-empty">
+        📝 Người dùng chưa có bài đăng nào
+      </div>
+    `;
+    return;
+  }
+
+  posts.forEach(p => renderPost(p, false));
+});
+
+// REALTIME: có bài mới → chỉ thêm nếu đúng user
+socket.on("lp-post", post => {
+  const feed = document.getElementById("lpFeed");
+  if (!feed) return;
+
+  if (post.uid !== profileUid) return;
+
+  renderPost(post, true);
+});
+
+
+
 // 🔁 giữ socket sống để server không mất uid
 setInterval(() => {
   if (socket.connected && __profileAuth.uid) {
