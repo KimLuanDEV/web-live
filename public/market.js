@@ -98,6 +98,16 @@ function isAdmin(){
   return me && me.role === "admin";
 }
 
+function updateRentCoin(){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  const coin = me?.coins ?? 0;
+
+  const el = document.getElementById("rentCoinVal");
+  if(el){
+    el.textContent = coin.toLocaleString();
+  }
+}
+
 
 
 
@@ -385,7 +395,8 @@ function rentBooth(id){
   document.getElementById("rentBoothId").textContent = id;
   document.getElementById("rentBackdrop").classList.remove("hidden");
 
-
+  // 💎 cập nhật số dư kim cương trong modal
+  updateRentCoin();
 // reset gói mặc định
 selectedPlan = { days: 7, price: 1000 };
 
