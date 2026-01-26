@@ -48,20 +48,6 @@ html, body{
   }
 }
 
-/* ===== BOOTH (GIAN HÀNG) ===== */
-.booth{
-  aspect-ratio:1/1;
-  border-radius:16px;
-  border:1.5px dashed rgba(255,255,255,.25);
-  background:transparent;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  text-align:center;
-  cursor:pointer;
-  transition:.25s;
-}
-
 /* Gian trống */
 .booth.empty:hover{
   border-color:#25F09A;
@@ -80,12 +66,6 @@ html, body{
   font-weight:800;
 }
 
-/* Gian active (để sau này dùng) */
-.booth.active{
-  border-style:solid;
-  border-color:#25F09A;
-  box-shadow:0 0 22px rgba(37,240,154,.25);
-}
 
 .booth-logo{
   width:56px;
@@ -345,9 +325,9 @@ html, body{
 }
 
 .booth-locked{
-  opacity:.4;
-  pointer-events:none;
+  opacity:.45;
 }
+
 
 
 
@@ -570,6 +550,43 @@ html, body{
   backdrop-filter: blur(6px);
 }
 
+
+.rent-section-title{
+  margin:10px 0 8px;
+  font-size:13px;
+  font-weight:900;
+  opacity:.85;
+}
+
+.rent-save{
+  margin-top:4px;
+  font-size:10px;
+  color:#25F09A;
+}
+
+.rent-save.hot{
+  color:#ffb347;
+  text-shadow:0 0 10px rgba(255,179,71,.9);
+}
+
+/* CUSTOM */
+.rent-custom{
+  margin-bottom:16px;
+}
+
+.rent-custom input[type=range]{
+  width:100%;
+}
+
+.rent-custom-info{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+  margin-top:6px;
+  font-weight:800;
+}
+
+
 </style>
 </head>
 
@@ -608,30 +625,58 @@ html, body{
       <span class="rent-close" id="closeRent">✕</span>
     </div>
 
-    <div class="rent-body">
-      <div class="rent-slot">Gian hàng số <b id="rentBoothId">#</b></div>
+<div class="rent-body">
 
-      <div class="rent-options">
-        <div class="rent-option active" data-days="7" data-price="1000">
-          <div class="days">7 ngày</div>
-          <div class="price">💎 1,000</div>
-        </div>
+  <div class="rent-slot">
+    Gian hàng số <b id="rentBoothId">#</b>
+  </div>
 
-        <div class="rent-option" data-days="30" data-price="3500">
-          <div class="days">30 ngày</div>
-          <div class="price">💎 3,500</div>
-        </div>
-
-        <div class="rent-option" data-days="90" data-price="9000">
-          <div class="days">90 ngày</div>
-          <div class="price">💎 9,000</div>
-        </div>
-      </div>
-
-      <button class="rent-confirm" id="confirmRent">
-        Thuê gian hàng
-      </button>
+  <!-- ===== QUICK PLANS ===== -->
+  <div class="rent-section-title">⚡ Gói nhanh</div>
+  <div class="rent-options">
+    <div class="rent-option active" data-days="7" data-price="1000">
+      <div class="days">7 ngày</div>
+      <div class="price">💎 1,000</div>
     </div>
+
+    <div class="rent-option" data-days="30" data-price="3500">
+      <div class="days">30 ngày</div>
+      <div class="price">💎 3,500</div>
+      <div class="rent-save">Tiết kiệm</div>
+    </div>
+
+    <div class="rent-option" data-days="90" data-price="9000">
+      <div class="days">90 ngày</div>
+      <div class="price">💎 9,000</div>
+      <div class="rent-save hot">🔥 Best</div>
+    </div>
+  </div>
+
+  <!-- ===== CUSTOM DAYS ===== -->
+  <div class="rent-section-title">🛠 Tuỳ chỉnh</div>
+  <div class="rent-custom">
+    <input
+      type="range"
+      id="rentDaysRange"
+      min="1"
+      max="180"
+      value="7"
+    />
+    <div class="rent-custom-info">
+      <span><b id="rentDaysVal">7</b> ngày</span>
+      <span>💎 <b id="rentPriceVal">1,000</b></span>
+    </div>
+  </div>
+
+  <!-- ===== CONFIRM ===== -->
+  <button class="rent-confirm" id="confirmRent">
+    Thuê gian hàng
+  </button>
+
+</div>
+
+
+
   </div>
 </div>
 

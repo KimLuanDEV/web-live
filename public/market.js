@@ -47,6 +47,8 @@ let currentTab = 0;
 let touchStartX = 0;
 let touchEndX = 0;
 
+const PRICE_PER_DAY = 150; // 💎 / ngày (tuỳ bạn chỉnh)
+
 
 function goToTab(tabIndex){
   const totalTabs = Math.ceil(booths.length / BOOTHS_PER_TAB);
@@ -260,9 +262,10 @@ if(admin){
 }
 
 div.className =
-  "booth active" +
+  "booth" +
   (isMine ? " booth-mine" : "") +
   (b.owner.locked && !isAdmin() ? " booth-locked" : "");
+
 
 
 div.innerHTML = `
@@ -381,6 +384,25 @@ function rentBooth(id){
   currentBoothId = id;
   document.getElementById("rentBoothId").textContent = id;
   document.getElementById("rentBackdrop").classList.remove("hidden");
+
+
+// reset gói mặc định
+selectedPlan = { days: 7, price: 1000 };
+
+if(range){
+  range.value = 7;
+  daysVal.textContent = 7;
+  priceVal.textContent = "1,000";
+}
+
+document.querySelectorAll(".rent-option")
+  .forEach(o=>o.classList.remove("active"));
+document
+  .querySelector('.rent-option[data-days="7"]')
+  ?.classList.add("active");
+
+
+
 }
 
 
@@ -399,12 +421,40 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
       .forEach(o=>o.classList.remove("active"));
     opt.classList.add("active");
 
-    selectedPlan = {
-      days: +opt.dataset.days,
-      price: +opt.dataset.price
-    };
+    const days = +opt.dataset.days;
+    const price = +opt.dataset.price;
+
+    selectedPlan = { days, price };
+
+    if(range){
+      range.value = days;
+      daysVal.textContent = days;
+      priceVal.textContent = price.toLocaleString();
+    }
   };
 });
+
+
+const range = document.getElementById("rentDaysRange");
+const daysVal = document.getElementById("rentDaysVal");
+const priceVal = document.getElementById("rentPriceVal");
+
+if(range){
+  range.oninput = ()=>{
+    const days = +range.value;
+    const price = days * PRICE_PER_DAY;
+
+    daysVal.textContent = days;
+    priceVal.textContent = price.toLocaleString();
+
+    selectedPlan = { days, price };
+
+    // bỏ active quick plan
+    document.querySelectorAll(".rent-option")
+      .forEach(o=>o.classList.remove("active"));
+  };
+}
+
 
 /* ===== CONFIRM RENT ===== */
 document.getElementById("confirmRent").onclick = async ()=>{
@@ -477,8 +527,12 @@ if(!data.ok){
 
 
 }catch(e){
-  alert("⚠️ Lỗi kết nối server");
+  await showModal({
+    title: "⚠️ Lỗi",
+    content: "Không thể kết nối tới server. Vui lòng thử lại."
+  });
 }
+
 
 };
 
