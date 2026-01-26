@@ -31,22 +31,23 @@ window.__profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 // uid profile đang xem (của mình hoặc người khác)
 const profileUid = viewUid || __profileAuth.uid;
 
-// chống init trùng
-let profileFeedInited = false;
 
-// INIT FEED (chỉ bài của user này)
-socket.on("lp-init", list => {
-  if (profileFeedInited) return;
-  profileFeedInited = true;
+// ================================
+// 📰 PROFILE FEED – FIX MISS lp-init
+// ================================
 
+function renderProfileFeed() {
   const feed = document.getElementById("lpFeed");
   if (!feed) return;
 
   feed.innerHTML = "";
 
-  const posts = list.filter(p => p.uid === profileUid);
+  const map = window.lpPostMap || {};
+  const posts = Object.values(map)
+    .filter(p => p.uid === profileUid)
+    .sort((a, b) => b.time - a.time); // mới lên trước
 
-  if (posts.length === 0) {
+  if (!posts.length) {
     feed.innerHTML = `
       <div class="lp-empty">
         📝 Người dùng chưa có bài đăng nào
@@ -56,17 +57,24 @@ socket.on("lp-init", list => {
   }
 
   posts.forEach(p => renderPost(p, false));
-});
+}
 
-// REALTIME: có bài mới → chỉ thêm nếu đúng user
+// ⏳ đợi social.js init xong
+setTimeout(renderProfileFeed, 300);
+
+// 🔥 realtime: có bài mới của user này
 socket.on("lp-post", post => {
+  if (post.uid !== profileUid) return;
+
   const feed = document.getElementById("lpFeed");
   if (!feed) return;
 
-  if (post.uid !== profileUid) return;
-
   renderPost(post, true);
 });
+
+
+// chống init trùng
+let profileFeedInited = false;
 
 const KEY = "user_profile";
 
