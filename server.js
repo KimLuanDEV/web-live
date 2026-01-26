@@ -390,6 +390,44 @@ app.post("/api/market/extend", (req, res) => {
 });
 
 
+app.post("/api/admin/market/lock", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  const { boothId, lock } = req.body || {};
+
+  const users = loadUsers();
+  if(!users[uid] || users[uid].role !== "admin")
+    return res.status(403).json({ error:"no_permission" });
+
+  const market = loadMarket();
+  if(!market[boothId])
+    return res.status(404).json({ error:"not_found" });
+
+  market[boothId].locked = !!lock;
+  saveMarket(market);
+
+  res.json({ ok:true });
+});
+
+
+app.post("/api/admin/market/revoke", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  const { boothId } = req.body || {};
+
+  const users = loadUsers();
+  if(!users[uid] || users[uid].role !== "admin")
+    return res.status(403).json({ error:"no_permission" });
+
+  const market = loadMarket();
+  if(!market[boothId])
+    return res.status(404).json({ error:"not_found" });
+
+  market[boothId] = null; // 💥 thu hồi
+  saveMarket(market);
+
+  res.json({ ok:true });
+});
+
+
 
 app.post("/api/market/rent", (req,res)=>{
   const uid = req.headers["x-uid"];

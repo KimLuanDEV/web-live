@@ -10,6 +10,10 @@ function daysLeft(ts){
   return Math.ceil((ts - Date.now()) / (24*60*60*1000));
 }
 
+function isAdmin(){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  return me && me.role === "admin";
+}
 
 
 
@@ -38,7 +42,8 @@ async function loadMarketFromServer(){
           uid: booth.ownerUid,
           name: booth.name,
           logo: booth.logo,
-          expireAt: booth.expireAt
+          expireAt: booth.expireAt,
+          locked: booth.locked
         }
       };
     });
@@ -130,18 +135,40 @@ function renderMarket(){
     }
   }
 
-  div.className = "booth active" + (isMine ? " booth-mine" : "");
+const admin = isAdmin();
 
-
-  div.innerHTML = `
-    ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
-    ${expireBadge}
-    <div>
-      <img class="booth-logo" src="${b.owner.logo}">
-      <div class="booth-name">${b.owner.name}</div>
+let adminControls = "";
+if(admin){
+  adminControls = `
+    <div class="booth-admin">
+      <button onclick="toggleLock(${b.id}, ${b.owner.locked ? 'false' : 'true'})">
+        ${b.owner.locked ? "🔓 Mở khoá" : "🔒 Khoá"}
+      </button>
+      <button onclick="revokeBooth(${b.id})">🧹 Thu hồi</button>
     </div>
   `;
+}
+
+div.className =
+  "booth active" +
+  (isMine ? " booth-mine" : "") +
+  (b.owner.locked ? " booth-locked" : "");
+
+div.innerHTML = `
+  ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
+  ${expireBadge}
+  ${adminControls}
+  <div>
+    <img class="booth-logo" src="${b.owner.logo}">
+    <div class="booth-name">${b.owner.name}</div>
+  </div>
+`;
+
+// nếu bị khoá → không cho click
+if(!b.owner.locked){
   div.onclick = ()=> openBooth(b.id);
+}
+
 
 }
 
@@ -288,6 +315,42 @@ try{
 function openBooth(id){
   location.href = `/booth.html?booth=${id}`;
 }
+
+
+
+async function toggleLock(id, lock){
+  if(!confirm(lock ? "Khoá gian này?" : "Mở khoá gian này?")) return;
+
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  await fetch("/api/admin/market/lock",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({ boothId:id, lock })
+  });
+
+  loadMarketFromServer();
+}
+
+async function revokeBooth(id){
+  if(!confirm("Thu hồi gian này?")) return;
+
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  await fetch("/api/admin/market/revoke",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({ boothId:id })
+  });
+
+  loadMarketFromServer();
+}
+
+
 
 
 /* ===== TAB BAR ===== */
