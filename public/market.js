@@ -41,6 +41,10 @@ let booths = []; // sẽ load từ server
 let currentBoothId = null;
 let selectedPlan = { days: 7, price: 1000 };
 let rentMode = "rent"; // "rent" | "extend"
+const BOOTHS_PER_TAB = 8;
+let currentTab = 0;
+
+
 
 function daysLeft(ts){
   return Math.ceil((ts - Date.now()) / (24*60*60*1000));
@@ -123,13 +127,53 @@ function sortBoothsSmart(list){
 }
 
 
+function renderMarketTabs(totalBooths){
+  const tabWrapId = "marketTabs";
+  let wrap = document.getElementById(tabWrapId);
+
+  if(!wrap){
+    wrap = document.createElement("div");
+    wrap.id = tabWrapId;
+    wrap.className = "market-tabs";
+    floor.parentNode.insertBefore(wrap, floor);
+  }
+
+  wrap.innerHTML = "";
+
+  const totalTabs = Math.ceil(totalBooths / BOOTHS_PER_TAB);
+
+  for(let i = 0; i < totalTabs; i++){
+    const btn = document.createElement("button");
+    btn.className = "market-tab" + (i === currentTab ? " active" : "");
+    btn.textContent = `Gian ${i*BOOTHS_PER_TAB + 1}–${Math.min((i+1)*BOOTHS_PER_TAB, totalBooths)}`;
+
+    btn.onclick = ()=>{
+      currentTab = i;
+      renderMarket();
+    };
+
+    wrap.appendChild(btn);
+  }
+}
+
+
 
 /* ===== RENDER ===== */
 function renderMarket(){
   floor.innerHTML = "";
 
   const sorted = sortBoothsSmart(booths);
-    sorted.forEach(b=>{
+
+  // 🔹 render tab bar
+  renderMarketTabs(sorted.length);
+
+  // 🔹 cắt danh sách theo tab
+  const start = currentTab * BOOTHS_PER_TAB;
+  const end = start + BOOTHS_PER_TAB;
+  const pageBooths = sorted.slice(start, end);
+
+  pageBooths.forEach(b=>{
+
 
     const div = document.createElement("div");
 
