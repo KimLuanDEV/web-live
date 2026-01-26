@@ -114,9 +114,10 @@ function checkRentAffordable(){
   const coin = me?.coins ?? 0;
 
   const btn = document.getElementById("confirmRent");
+  const topupBtn = document.getElementById("btnTopupCoin");
   if(!btn) return;
 
-  // 🔴 giá hiển thị
+  // 🔴 tô đỏ giá nếu thiếu
   if(priceVal){
     if(selectedPlan.price > coin){
       priceVal.classList.add("rent-price-over");
@@ -129,10 +130,19 @@ function checkRentAffordable(){
     btn.disabled = true;
     btn.classList.add("disabled");
     btn.textContent = "❌ Không đủ kim cương";
+
+    if(topupBtn){
+      topupBtn.classList.remove("hidden");
+    }
+
   }else{
     btn.disabled = false;
     btn.classList.remove("disabled");
     btn.textContent = "Thuê gian hàng";
+
+    if(topupBtn){
+      topupBtn.classList.add("hidden");
+    }
   }
 }
 
@@ -702,3 +712,11 @@ if (socket) {
   });
 }
 
+
+
+const topupBtn = document.getElementById("btnTopupCoin");
+if(topupBtn){
+  topupBtn.onclick = ()=>{
+    location.href = "/topup.html";
+  };
+}
