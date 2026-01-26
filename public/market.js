@@ -6,6 +6,9 @@ let currentBoothId = null;
 let selectedPlan = { days: 7, price: 1000 };
 let rentMode = "rent"; // "rent" | "extend"
 
+function daysLeft(ts){
+  return Math.ceil((ts - Date.now()) / (24*60*60*1000));
+}
 
 
 async function loadMarketFromServer(){
@@ -79,21 +82,32 @@ function renderMarket(){
       div.onclick = ()=> rentBooth(b.id);
     }else{
 
-     const me = JSON.parse(localStorage.getItem("user_profile"));
-const isMine = me && b.owner.uid === me.uid;
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  const isMine = me && b.owner.uid === me.uid;
 
-div.className = "booth active";
-div.innerHTML = `
-  ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
-  <div>
-    <img class="booth-logo" src="${b.owner.logo}">
-    <div class="booth-name">${b.owner.name}</div>
-  </div>
-`;
-div.onclick = ()=> openBooth(b.id);
-
-
+  let expireBadge = "";
+  if(b.owner.expireAt){
+    const d = daysLeft(b.owner.expireAt);
+    if(d <= 1){
+      expireBadge = `<div class="booth-expire-badge danger">HẾT HẠN SỚM</div>`;
+    }else if(d <= 3){
+      expireBadge = `<div class="booth-expire-badge">SẮP HẾT HẠN</div>`;
     }
+  }
+
+  div.className = "booth active";
+  div.innerHTML = `
+    ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
+    ${expireBadge}
+    <div>
+      <img class="booth-logo" src="${b.owner.logo}">
+      <div class="booth-name">${b.owner.name}</div>
+    </div>
+  `;
+  div.onclick = ()=> openBooth(b.id);
+
+}
+
 
     floor.appendChild(div);
   });
@@ -173,8 +187,6 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
 document.getElementById("confirmRent").onclick = async ()=>{
 
 
-if(data.error === "already_have_booth")
-return alert("⚠️ Bạn chỉ được thuê 1 gian hàng");
 
 
 const me = JSON.parse(localStorage.getItem("user_profile"));
@@ -206,6 +218,11 @@ try{
   });
 
   const data = await res.json();
+
+  if(data.error === "already_have_booth")
+  return alert("⚠️ Bạn chỉ được thuê 1 gian hàng");
+
+
   if(!data.ok){
     if(data.error==="not_enough_coin")
       return alert("❌ Không đủ kim cương");
