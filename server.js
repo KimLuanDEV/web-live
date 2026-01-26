@@ -102,6 +102,27 @@ function saveMarket(db){
 
 
 
+function cleanupExpiredBooths(){
+  const market = loadMarket();
+  let changed = false;
+  const now = Date.now();
+
+  Object.keys(market).forEach(id=>{
+    const booth = market[id];
+    if(!booth) return;
+
+    if(booth.expireAt && booth.expireAt < now){
+      console.log("⏱ Booth expired:", id);
+      market[id] = null;
+      changed = true;
+    }
+  });
+
+  if(changed){
+    saveMarket(market);
+  }
+}
+
 
 
 const WITHDRAW_FILE = "/opt/render/project/data/withdraw_requests.json";
@@ -4441,3 +4462,13 @@ app.get("/lobby", (_, res) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
+
+
+// ⏱ kiểm tra gian hết hạn mỗi 60 giây
+setInterval(()=>{
+  try{
+    cleanupExpiredBooths();
+  }catch(e){
+    console.error("cleanupExpiredBooths error", e);
+  }
+}, 60 * 1000);
