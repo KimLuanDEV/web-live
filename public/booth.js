@@ -142,3 +142,64 @@ async function confirmExtendBooth(days, price){
     alert("⚠️ Lỗi kết nối server");
   }
 }
+
+
+
+async function guardBoothAccess() {
+  const params = new URLSearchParams(location.search);
+  const boothId = params.get("booth");
+  if (!boothId) return;
+
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  const uid = me?.uid;
+
+  const res = await fetch(`/api/market/booth/${boothId}`, {
+    headers: uid ? { "x-uid": uid } : {}
+  });
+
+  const data = await res.json();
+
+  if (!data.ok) {
+    document.body.innerHTML = `
+      <div style="
+        height:100vh;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        background:#000;
+        color:#fff;
+        text-align:center;
+      ">
+        <h2>🚫 Gian hàng đang bị khoá</h2>
+        <p>${data.message || "Vui lòng liên hệ Admin"}</p>
+        <button onclick="location.href='/market.html'"
+          style="
+            margin-top:16px;
+            padding:10px 18px;
+            border-radius:999px;
+            border:none;
+            background:#25F09A;
+            font-weight:900;
+            cursor:pointer;
+          ">
+          ⬅ Quay lại Market
+        </button>
+      </div>
+    `;
+    return;
+  }
+
+  // ✅ OK → tiếp tục load booth bình thường
+}
+
+guardBoothAccess();
+
+
+socket.on("booth-force-locked", ({ boothId }) => {
+  const cur = new URLSearchParams(location.search).get("booth");
+  if (String(cur) === String(boothId)) {
+    alert("🚫 Gian hàng đã bị Admin khoá");
+    location.href = "/market.html";
+  }
+});

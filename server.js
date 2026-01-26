@@ -101,6 +101,37 @@ function saveMarket(db){
 }
 
 
+// 🔒 HELPER: CHẶN MỌI HÀNH ĐỘNG KHI BOOTH BỊ KHOÁ
+function blockIfBoothLockedById(boothId, uid) {
+  if (!boothId || !uid) return false;
+
+  const market = loadMarket();
+  const booth = market[boothId];
+  if (!booth) return false;
+
+  const users = loadUsers();
+  const me = users[uid];
+  const isAdmin = me?.role === "admin";
+
+  return booth.locked && !isAdmin;
+}
+
+
+function blockSocketIfBoothLocked(socket, boothId) {
+  const uid = socket.data.uid;
+  if (!uid || !boothId) return false;
+
+  if (blockIfBoothLockedById(boothId, uid)) {
+    socket.emit("booth-locked", {
+      boothId,
+      message: "🚫 Gian hàng đang bị Admin khoá"
+    });
+    return true;
+  }
+  return false;
+}
+
+
 
 function cleanupExpiredBooths(){
   const market = loadMarket();
@@ -370,6 +401,13 @@ app.post("/api/market/extend", (req, res) => {
   if (booth.ownerUid !== uid)
     return res.status(403).json({ error: "not_owner" });
 
+// 🔒 BOOTH BỊ KHOÁ → KHÔNG CHO GIA HẠN
+if (blockIfBoothLockedById(boothId, uid)) {
+  return res.status(403).json({ error: "booth_locked" });
+}
+
+
+  
   // ➕ GIA HẠN
   booth.expireAt = Math.max(booth.expireAt, Date.now())
     + days * 24 * 60 * 60 * 1000;
@@ -391,6 +429,43 @@ app.post("/api/market/extend", (req, res) => {
 });
 
 
+
+app.get("/api/market/booth/:id", (req, res) => {
+  const boothId = req.params.id;
+  const uid = req.headers["x-uid"];
+
+  const users = loadUsers();
+  const me = uid ? users[uid] : null;
+  const isAdmin = me?.role === "admin";
+
+  const market = loadMarket();
+  const booth = market[boothId];
+
+  if (!booth) {
+    return res.status(404).json({
+      ok: false,
+      message: "Gian hàng không tồn tại"
+    });
+  }
+
+  // 🔒 Booth bị khoá
+  if (booth.locked && !isAdmin) {
+    return res.status(403).json({
+      ok: false,
+      locked: true,
+      message: "Gian hàng này đang bị Admin khoá"
+    });
+  }
+
+  res.json({
+    ok: true,
+    booth
+  });
+});
+
+
+
+
 app.post("/api/admin/market/lock", (req,res)=>{
   const uid = req.headers["x-uid"];
   const { boothId, lock } = req.body || {};
@@ -408,6 +483,15 @@ app.post("/api/admin/market/lock", (req,res)=>{
   saveMarket(market);
 
   emitMarketUpdate(lock ? "lock" : "unlock", boothId); // 🔥 REALTIME
+
+
+// 🚨 KICK REALTIME TOÀN BỘ USER ĐANG TRONG BOOTH
+io.emit("booth-force-locked", {
+  boothId,
+  locked: !!lock,
+  ts: Date.now()
+});
+
 
 
 

@@ -157,9 +157,12 @@ div.innerHTML = `
 `;
 
 // nếu bị khoá → không cho click
-if(!b.owner.locked || isAdmin()){
+if (!b.owner.locked || isAdmin()) {
   div.onclick = ()=> openBooth(b.id);
+} else {
+  div.onclick = ()=> alert("🚫 Gian hàng đang bị khoá");
 }
+
 
 
 
