@@ -470,7 +470,8 @@ app.post("/api/market/rent", (req,res)=>{
     ownerUid: uid,
     name: user.profile.name,
     logo: user.profile.avatar,
-    expireAt: Date.now() + days*24*60*60*1000
+    expireAt: Date.now() + days*24*60*60*1000,
+    locked: false
   };
 
   saveUsers(db);

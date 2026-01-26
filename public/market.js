@@ -141,10 +141,11 @@ let adminControls = "";
 if(admin){
   adminControls = `
     <div class="booth-admin">
-      <button onclick="toggleLock(${b.id}, ${b.owner.locked ? 'false' : 'true'})">
+
+      <button onclick="event.stopPropagation(); toggleLock(${b.id}, ${b.owner.locked ? 'false' : 'true'})">
         ${b.owner.locked ? "🔓 Mở khoá" : "🔒 Khoá"}
       </button>
-      <button onclick="revokeBooth(${b.id})">🧹 Thu hồi</button>
+      <button onclick="event.stopPropagation(); revokeBooth(${b.id})">🧹 Thu hồi</button>
     </div>
   `;
 }
