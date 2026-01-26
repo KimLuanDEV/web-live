@@ -68,20 +68,34 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
 
 /* ===== CONFIRM RENT ===== */
 document.getElementById("confirmRent").onclick = ()=>{
+  // fake owner tạm thời (sau này lấy từ user đang đăng nhập)
+  const myShop = {
+    name: "Shop của tôi",
+    logo: "https://i.pravatar.cc/100?u=" + currentBoothId
+  };
+
+  // tìm gian hàng tương ứng
+  const booth = booths.find(b => b.id === currentBoothId);
+  if (!booth) return;
+
+  // gán owner → biến thành gian active
+  booth.owner = myShop;
+
+  // đóng modal
+  document.getElementById("rentBackdrop").classList.add("hidden");
+
+  // render lại market
+  renderMarket();
+
+  // thông báo
   alert(
-    `✅ Thuê gian #${currentBoothId}\n` +
+    `🎉 Thuê gian thành công!\n` +
+    `Gian #${currentBoothId}\n` +
     `⏱ ${selectedPlan.days} ngày\n` +
     `💎 ${selectedPlan.price.toLocaleString()}`
   );
-
-  // TODO (bạn làm sau):
-  // - trừ coin
-  // - lưu gian hàng
-  // - set booths[index].owner = {...}
-  // - renderMarket()
-
-  document.getElementById("rentBackdrop").classList.add("hidden");
 };
+
 
 /* ===== OPEN BOOTH (SAU NÀY) ===== */
 function openBooth(id){
