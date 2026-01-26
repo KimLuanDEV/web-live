@@ -90,6 +90,20 @@ function loadInbox(){
 }
 
 
+const MARKET_FILE = "/opt/render/project/data/market_booths.json";
+
+function loadMarket(){
+  if(!fs.existsSync(MARKET_FILE)) return {};
+  return JSON.parse(fs.readFileSync(MARKET_FILE,"utf8"));
+}
+function saveMarket(db){
+  fs.writeFileSync(MARKET_FILE, JSON.stringify(db,null,2));
+}
+
+
+
+
+
 const WITHDRAW_FILE = "/opt/render/project/data/withdraw_requests.json";
 
 function loadWithdraws(){
@@ -100,6 +114,7 @@ function loadWithdraws(){
     return [];
   }
 }
+
 
 function saveWithdraws(list){
   fs.writeFileSync(WITHDRAW_FILE, JSON.stringify(list, null, 2));
@@ -302,6 +317,54 @@ app.get("/api/admin/live-rooms", (req, res) => {
     ts: Date.now()
   });
 });
+
+
+app.post("/api/market/rent", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  const { boothId, days, price } = req.body || {};
+
+  if(!uid || !boothId || !price)
+    return res.status(400).json({ error:"missing" });
+
+  const db = loadUsers();
+  const user = db[uid];
+  if(!user || !user.profile)
+    return res.status(403).json({ error:"no_auth" });
+
+  const coins = Number(user.profile.coins || 0);
+  if(coins < price)
+    return res.status(400).json({ error:"not_enough_coin" });
+
+  const market = loadMarket();
+
+  if(market[boothId])
+    return res.status(400).json({ error:"already_rented" });
+
+  // ➖ TRỪ COIN
+  user.profile.coins -= price;
+  user.profile.coinSent = (user.profile.coinSent || 0) + price;
+
+  // 💾 LƯU GIAN
+  market[boothId] = {
+    boothId,
+    ownerUid: uid,
+    name: user.profile.name,
+    logo: user.profile.avatar,
+    expireAt: Date.now() + days*24*60*60*1000
+  };
+
+  saveUsers(db);
+  saveMarket(market);
+
+  emitCoinUpdate(uid); // 🔁 realtime coin
+
+  res.json({
+    ok:true,
+    booth: market[boothId],
+    coins: user.profile.coins
+  });
+});
+
 
 
 // ===== ADMIN DELETE COMMENT / REPLY =====

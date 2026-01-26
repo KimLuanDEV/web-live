@@ -85,34 +85,50 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
 });
 
 /* ===== CONFIRM RENT ===== */
-document.getElementById("confirmRent").onclick = ()=>{
-  // fake owner tạm thời (sau này lấy từ user đang đăng nhập)
-  const myShop = {
-    name: "Shop của tôi",
-    logo: "https://i.pravatar.cc/100?u=" + currentBoothId
-  };
+document.getElementById("confirmRent").onclick = async ()=>{
+  const uid = localStorage.getItem("uid");
+  if(!uid){
+    alert("🔐 Vui lòng đăng nhập");
+    return;
+  }
 
-  // tìm gian hàng tương ứng
-  const booth = booths.find(b => b.id === currentBoothId);
-  if (!booth) return;
+  try{
+    const res = await fetch("/api/market/rent",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-uid": uid
+      },
+      body: JSON.stringify({
+        boothId: currentBoothId,
+        days: selectedPlan.days,
+        price: selectedPlan.price
+      })
+    });
 
-  // gán owner → biến thành gian active
-  booth.owner = myShop;
+    const data = await res.json();
+    if(!data.ok){
+      if(data.error==="not_enough_coin")
+        return alert("❌ Không đủ kim cương");
+      return alert("❌ Thuê gian thất bại");
+    }
 
-  // đóng modal
-  document.getElementById("rentBackdrop").classList.add("hidden");
+    // 👉 cập nhật booth local
+    const booth = booths.find(b=>b.id===currentBoothId);
+    booth.owner = {
+      name: data.booth.name,
+      logo: data.booth.logo
+    };
 
-  // render lại market
-  renderMarket();
+    document.getElementById("rentBackdrop").classList.add("hidden");
+    renderMarket();
 
-  // thông báo
-  alert(
-    `🎉 Thuê gian thành công!\n` +
-    `Gian #${currentBoothId}\n` +
-    `⏱ ${selectedPlan.days} ngày\n` +
-    `💎 ${selectedPlan.price.toLocaleString()}`
-  );
+    alert("🎉 Thuê gian thành công!");
+  }catch(e){
+    alert("⚠️ Lỗi kết nối server");
+  }
 };
+
 
 
 function openBooth(id){
