@@ -153,7 +153,8 @@ if(admin){
 div.className =
   "booth active" +
   (isMine ? " booth-mine" : "") +
-  (b.owner.locked ? " booth-locked" : "");
+  (b.owner.locked && !isAdmin() ? " booth-locked" : "");
+
 
 div.innerHTML = `
   ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
