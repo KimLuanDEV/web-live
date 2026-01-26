@@ -116,7 +116,7 @@ function renderMarket(){
       div.innerHTML = `
         <div>
           <div class="booth-plus">＋</div>
-          <div class="booth-text">Thuê gian</div>
+          <div class="booth-text">Thuê gian hàng</div>
         </div>
       `;
       div.onclick = ()=> rentBooth(b.id);
