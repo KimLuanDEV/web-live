@@ -11,6 +11,8 @@ function daysLeft(ts){
 }
 
 
+
+
 async function loadMarketFromServer(){
   try{
     const res = await fetch("/api/market");
@@ -65,10 +67,43 @@ function handleActiveBooth(booth){
 
 
 
+function sortBoothsSmart(list){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  const myUid = me?.uid;
+
+  return [...list].sort((a,b)=>{
+    // Gian trống luôn xuống cuối
+    if(!a.owner && b.owner) return 1;
+    if(a.owner && !b.owner) return -1;
+    if(!a.owner && !b.owner) return 0;
+
+    // 1) Gian của tôi lên đầu
+    const aMine = a.owner.uid === myUid;
+    const bMine = b.owner.uid === myUid;
+    if(aMine !== bMine) return aMine ? -1 : 1;
+
+    // 2) Sắp hết hạn lên trước
+    const aDL = a.owner.expireAt ? daysLeft(a.owner.expireAt) : Infinity;
+    const bDL = b.owner.expireAt ? daysLeft(b.owner.expireAt) : Infinity;
+
+    const aUrgent = aDL <= 3;
+    const bUrgent = bDL <= 3;
+    if(aUrgent !== bUrgent) return aUrgent ? -1 : 1;
+
+    // 3) Càng gần hết hạn càng lên trước
+    return aDL - bDL;
+  });
+}
+
+
+
 /* ===== RENDER ===== */
 function renderMarket(){
   floor.innerHTML = "";
-  booths.forEach(b=>{
+
+  const sorted = sortBoothsSmart(booths);
+    sorted.forEach(b=>{
+
     const div = document.createElement("div");
 
     if(!b.owner){
