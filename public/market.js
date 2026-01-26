@@ -85,7 +85,7 @@ function renderMarket(){
           <div class="booth-name">${b.owner.name}</div>
         </div>
       `;
-      div.onclick = ()=> handleActiveBooth(b);
+      div.onclick = ()=> openBooth(b.id);
 
     }
 
