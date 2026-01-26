@@ -319,7 +319,8 @@ app.get("/api/admin/live-rooms", (req, res) => {
 });
 
 app.get("/api/market", (req,res)=>{
-  const market = loadMarket(); // dùng hàm bạn đã tạo
+  cleanupExpiredBooths();
+  const market = loadMarket();
   res.json({ ok:true, market });
 });
 

@@ -45,6 +45,30 @@ async function loadMarketFromServer(){
 
 
 
+function cleanupExpiredBooths(){
+  const market = loadMarket();
+  let changed = false;
+  const now = Date.now();
+
+  Object.keys(market).forEach(id=>{
+    const booth = market[id];
+    if(!booth) return;
+
+    if(booth.expireAt && booth.expireAt < now){
+      console.log("⏱ Booth expired:", id);
+      market[id] = null;
+      changed = true;
+    }
+  });
+
+  if(changed){
+    saveMarket(market);
+  }
+}
+
+
+
+
 /* ===== RENDER ===== */
 function renderMarket(){
   floor.innerHTML = "";
@@ -183,3 +207,14 @@ document.querySelectorAll(".lp-tab").forEach(tab=>{
 
 /* INIT */
 loadMarketFromServer();
+
+
+
+// ⏱ kiểm tra gian hết hạn mỗi 60 giây
+setInterval(()=>{
+  try{
+    cleanupExpiredBooths();
+  }catch(e){
+    console.error("cleanupExpiredBooths error", e);
+  }
+}, 60 * 1000);
