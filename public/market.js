@@ -5,6 +5,37 @@ if (typeof io !== "undefined") {
 
 const floor = document.getElementById("marketFloor");
 
+
+function showModal({ title="Thông báo", content="", confirm=false }) {
+  return new Promise(resolve => {
+    const modal = document.getElementById("lpModal");
+    const titleEl = document.getElementById("lpModalTitle");
+    const contentEl = document.getElementById("lpModalContent");
+    const okBtn = document.getElementById("lpModalOk");
+    const cancelBtn = document.getElementById("lpModalCancel");
+
+    titleEl.textContent = title;
+    contentEl.innerHTML = content;
+
+    cancelBtn.classList.toggle("hidden", !confirm);
+
+    modal.classList.remove("hidden");
+
+    okBtn.onclick = () => {
+      modal.classList.add("hidden");
+      resolve(true);
+    };
+
+    cancelBtn.onclick = () => {
+      modal.classList.add("hidden");
+      resolve(false);
+    };
+  });
+}
+
+
+
+
 let booths = []; // sẽ load từ server
 /* ===== STATE MODAL ===== */
 let currentBoothId = null;
@@ -19,6 +50,7 @@ function isAdmin(){
   const me = JSON.parse(localStorage.getItem("user_profile"));
   return me && me.role === "admin";
 }
+
 
 
 
@@ -160,7 +192,11 @@ div.innerHTML = `
 if (!b.owner.locked || isAdmin()) {
   div.onclick = ()=> openBooth(b.id);
 } else {
-  div.onclick = ()=> alert("🚫 Gian hàng đang bị khoá");
+  div.onclick = ()=> showModal({
+  title: "🚫 Gian hàng bị khoá",
+  content: "Gian hàng này hiện đang bị Admin khoá."
+});
+
 }
 
 
@@ -193,7 +229,11 @@ function updateMarketStats(){
 function rentBooth(id){
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me || !me.uid){
-    alert("🔐 Vui lòng đăng nhập");
+  showModal({
+  title: "🔐 Chưa đăng nhập",
+  content: "Vui lòng đăng nhập để sử dụng chức năng này."
+});
+
     return;
   }
 
@@ -202,10 +242,15 @@ function rentBooth(id){
     b => b.owner && b.owner.uid === me.uid
   );
 
-  if(alreadyHaveBooth){
-    alert("⚠️ Bạn đã có gian hàng rồi");
-    return;
-  }
+
+ if(alreadyHaveBooth){
+  showModal({
+    title: "⚠️ Không thể thuê",
+    content: "Bạn chỉ được thuê 1 gian hàng."
+  });
+  return;
+}
+
 
   rentMode = "rent";
   currentBoothId = id;
@@ -244,7 +289,11 @@ document.getElementById("confirmRent").onclick = async ()=>{
 
 const me = JSON.parse(localStorage.getItem("user_profile"));
 if(!me || !me.uid){
-  alert("🔐 Vui lòng đăng nhập");
+showModal({
+  title: "🔐 Chưa đăng nhập",
+  content: "Vui lòng đăng nhập để sử dụng chức năng này."
+});
+
   return;
 }
 
@@ -272,26 +321,35 @@ try{
 
  
 
-  if(!data.ok){
+if(!data.ok){
+  let msg = "❌ Thao tác thất bại";
 
-     if(data.error === "already_have_booth")
-     return alert("⚠️ Bạn chỉ được thuê 1 gian hàng");
+  if(data.error === "already_have_booth")
+    msg = "Bạn chỉ được thuê 1 gian hàng";
+  else if(data.error === "not_enough_coin")
+    msg = "Không đủ kim cương";
+  else if(data.error === "not_owner")
+    msg = "Bạn không phải chủ gian hàng";
 
-    if(data.error==="not_enough_coin")
-      return alert("❌ Không đủ kim cương");
-    if(data.error==="not_owner")
-      return alert("❌ Bạn không phải chủ gian hàng");
-    return alert("❌ Thao tác thất bại");
-  }
+  await showModal({
+    title: "⚠️ Không thể thực hiện",
+    content: msg
+  });
+  return;
+}
+
 
   document.getElementById("rentBackdrop").classList.add("hidden");
   loadMarketFromServer();
 
-  alert(
+ await showModal({
+  title: "🎉 Thành công",
+  content:
     rentMode === "extend"
-      ? "⏳ Gia hạn gian hàng thành công!"
-      : "🎉 Thuê gian thành công!"
-  );
+      ? "Gia hạn gian hàng thành công!"
+      : "Thuê gian hàng thành công!"
+});
+
 
 }catch(e){
   alert("⚠️ Lỗi kết nối server");
@@ -308,7 +366,15 @@ function openBooth(id){
 
 
 async function toggleLock(id, lock){
-  if(!confirm(lock ? "Khoá gian này?" : "Mở khoá gian này?")) return;
+  const ok = await showModal({
+  title: lock ? "🔒 Khoá gian hàng" : "🔓 Mở khoá gian hàng",
+  content: lock
+    ? "Bạn có chắc muốn khoá gian hàng này?"
+    : "Bạn có chắc muốn mở khoá gian hàng này?",
+  confirm: true
+});
+if(!ok) return;
+
 
   const me = JSON.parse(localStorage.getItem("user_profile"));
   await fetch("/api/admin/market/lock",{
@@ -324,7 +390,13 @@ async function toggleLock(id, lock){
 }
 
 async function revokeBooth(id){
-  if(!confirm("Thu hồi gian này?")) return;
+  const ok = await showModal({
+  title: "🧹 Thu hồi gian hàng",
+  content: "Bạn có chắc muốn thu hồi gian hàng này?",
+  confirm: true
+});
+if(!ok) return;
+
 
   const me = JSON.parse(localStorage.getItem("user_profile"));
   await fetch("/api/admin/market/revoke",{

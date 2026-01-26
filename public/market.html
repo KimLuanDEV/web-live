@@ -351,6 +351,72 @@ html, body{
 
 
 
+.lp-modal.hidden { display: none; }
+
+.lp-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+.lp-modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+}
+
+.lp-modal-box {
+  position: relative;
+  max-width: 360px;
+  margin: 20vh auto;
+  background: #111;
+  border-radius: 16px;
+  padding: 16px;
+  color: #fff;
+  animation: pop .2s ease;
+}
+
+.lp-modal-title {
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.lp-modal-content {
+  font-size: 14px;
+  opacity: .9;
+  margin-bottom: 16px;
+}
+
+.lp-modal-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.btn {
+  padding: 8px 16px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn.primary {
+  background: #25f09a;
+  color: #000;
+  font-weight: 700;
+}
+
+.btn.ghost {
+  background: transparent;
+  color: #aaa;
+}
+
+@keyframes pop {
+  from { transform: scale(.95); opacity: 0; }
+  to   { transform: scale(1); opacity: 1; }
+}
+
+
 </style>
 </head>
 
@@ -417,6 +483,20 @@ html, body{
 </div>
 
 
+
+<!-- 🔔 MODAL THÔNG BÁO / XÁC NHẬN -->
+<div id="lpModal" class="lp-modal hidden">
+  <div class="lp-modal-backdrop"></div>
+  <div class="lp-modal-box">
+    <div class="lp-modal-title" id="lpModalTitle">Thông báo</div>
+    <div class="lp-modal-content" id="lpModalContent"></div>
+
+    <div class="lp-modal-actions">
+      <button id="lpModalCancel" class="btn ghost hidden">Huỷ</button>
+      <button id="lpModalOk" class="btn primary">OK</button>
+    </div>
+  </div>
+</div>
 
 
 <script src="/socket.io/socket.io.js"></script>
