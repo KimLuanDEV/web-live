@@ -4,6 +4,7 @@ let booths = []; // sẽ load từ server
 /* ===== STATE MODAL ===== */
 let currentBoothId = null;
 let selectedPlan = { days: 7, price: 1000 };
+let rentMode = "rent"; // "rent" | "extend"
 
 
 
@@ -44,6 +45,20 @@ async function loadMarketFromServer(){
 }
 
 
+function handleActiveBooth(booth){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if (!me || !me.uid) {
+    openBooth(booth.id);
+    return;
+  }
+
+  // nếu là gian của tôi → gia hạn
+  if (booth.owner.uid === me.uid) {
+    openExtendModal(booth.id);
+  } else {
+    openBooth(booth.id);
+  }
+}
 
 
 
@@ -70,7 +85,8 @@ function renderMarket(){
           <div class="booth-name">${b.owner.name}</div>
         </div>
       `;
-      div.onclick = ()=> openBooth(b.id);
+      div.onclick = ()=> handleActiveBooth(b);
+
     }
 
     floor.appendChild(div);
@@ -95,6 +111,15 @@ function updateMarketStats(){
 
 /* ===== OPEN RENT MODAL ===== */
 function rentBooth(id){
+  rentMode = "rent";
+  currentBoothId = id;
+  document.getElementById("rentBoothId").textContent = id;
+  document.getElementById("rentBackdrop").classList.remove("hidden");
+}
+
+
+function openExtendModal(id){
+  rentMode = "extend";
   currentBoothId = id;
   document.getElementById("rentBoothId").textContent = id;
   document.getElementById("rentBackdrop").classList.remove("hidden");
@@ -132,36 +157,46 @@ if(!me || !me.uid){
 const uid = me.uid;
 
 
-  try{
-    const res = await fetch("/api/market/rent",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "x-uid": uid
-      },
-      body: JSON.stringify({
-        boothId: currentBoothId,
-        days: selectedPlan.days,
-        price: selectedPlan.price
-      })
-    });
+try{
+  const api = rentMode === "extend"
+    ? "/api/market/extend"
+    : "/api/market/rent";
 
-    const data = await res.json();
-    if(!data.ok){
-      if(data.error==="not_enough_coin")
-        return alert("❌ Không đủ kim cương");
-      return alert("❌ Thuê gian thất bại");
-    }
+  const res = await fetch(api,{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": uid
+    },
+    body: JSON.stringify({
+      boothId: currentBoothId,
+      days: selectedPlan.days,
+      price: selectedPlan.price
+    })
+  });
 
-    // 👉 cập nhật booth local
-    document.getElementById("rentBackdrop").classList.add("hidden");
-    loadMarketFromServer();
-
-
-    alert("🎉 Thuê gian thành công!");
-  }catch(e){
-    alert("⚠️ Lỗi kết nối server");
+  const data = await res.json();
+  if(!data.ok){
+    if(data.error==="not_enough_coin")
+      return alert("❌ Không đủ kim cương");
+    if(data.error==="not_owner")
+      return alert("❌ Bạn không phải chủ gian hàng");
+    return alert("❌ Thao tác thất bại");
   }
+
+  document.getElementById("rentBackdrop").classList.add("hidden");
+  loadMarketFromServer();
+
+  alert(
+    rentMode === "extend"
+      ? "⏳ Gia hạn gian hàng thành công!"
+      : "🎉 Thuê gian thành công!"
+  );
+
+}catch(e){
+  alert("⚠️ Lỗi kết nối server");
+}
+
 };
 
 

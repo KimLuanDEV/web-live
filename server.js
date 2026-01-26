@@ -346,6 +346,51 @@ app.get("/api/market", (req,res)=>{
 });
 
 
+app.post("/api/market/extend", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { boothId, days, price } = req.body || {};
+
+  if (!uid || !boothId || !days || !price)
+    return res.status(400).json({ error: "missing" });
+
+  const users = loadUsers();
+  const user = users[uid];
+  if (!user || !user.profile)
+    return res.status(403).json({ error: "no_auth" });
+
+  if ((user.profile.coins || 0) < price)
+    return res.status(400).json({ error: "not_enough_coin" });
+
+  const market = loadMarket();
+  const booth = market[boothId];
+
+  if (!booth)
+    return res.status(404).json({ error: "booth_not_found" });
+
+  if (booth.ownerUid !== uid)
+    return res.status(403).json({ error: "not_owner" });
+
+  // ➕ GIA HẠN
+  booth.expireAt = Math.max(booth.expireAt, Date.now())
+    + days * 24 * 60 * 60 * 1000;
+
+  // ➖ TRỪ COIN
+  user.profile.coins -= price;
+  user.profile.coinSent = (user.profile.coinSent || 0) + price;
+
+  saveUsers(users);
+  saveMarket(market);
+  emitCoinUpdate(uid);
+
+  res.json({
+    ok: true,
+    expireAt: booth.expireAt,
+    coins: user.profile.coins
+  });
+});
+
+
+
 app.post("/api/market/rent", (req,res)=>{
   const uid = req.headers["x-uid"];
   const { boothId, days, price } = req.body || {};
