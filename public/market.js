@@ -166,9 +166,10 @@ div.innerHTML = `
 `;
 
 // nếu bị khoá → không cho click
-if(!b.owner.locked){
+if(!b.owner.locked || isAdmin()){
   div.onclick = ()=> openBooth(b.id);
 }
+
 
 
 }
