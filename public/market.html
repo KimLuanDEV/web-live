@@ -7,158 +7,112 @@
 <link rel="stylesheet" href="/style.css">
 
 <style>
-/* ===== MARKET BOOTH ===== */
+/* ===== MARKET LAYOUT ===== */
 
-.market-shell{
-  max-width:720px;
-  margin:0 auto;
-  padding:12px;
+.market-header{
+  padding:18px 16px;
+  background:linear-gradient(135deg,#101010,#000);
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+.market-title{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:.6px;
+}
+.market-sub{
+  margin-top:4px;
+  font-size:13px;
+  opacity:.7;
+}
+
+/* GRID GIAN HÀNG */
+.market-floor{
+  padding:14px;
   padding-bottom:90px;
-}
-
-/* BOOTH GRID */
-.booth-grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:14px;
-}
-@media(max-width:420px){
-  .booth-grid{ grid-template-columns:1fr; }
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
 }
 
-/* BOOTH CARD */
-.booth-card{
-  background:rgba(0,0,0,.55);
-  border:1px solid rgba(255,255,255,.14);
-  border-radius:18px;
-  overflow:hidden;
+@media(max-width:600px){
+  .market-floor{
+    grid-template-columns:repeat(2,1fr);
+  }
+}
+
+/* GIAN HÀNG */
+.booth{
+  aspect-ratio:1/1;
+  border-radius:16px;
+  border:1.5px dashed rgba(255,255,255,.25);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
   cursor:pointer;
   transition:.25s;
-}
-.booth-card:hover{
-  transform:translateY(-3px);
-  box-shadow:0 0 22px rgba(37,240,154,.25);
+  background:rgba(0,0,0,.35);
 }
 
-/* BANNER */
-.booth-banner{
-  width:100%;
-  height:96px;
-  object-fit:cover;
-  background:#000;
+/* GIAN TRỐNG */
+.booth.empty:hover{
+  background:rgba(37,240,154,.08);
+  border-color:#25F09A;
 }
-
-/* BODY */
-.booth-body{
-  padding:10px;
-}
-
-/* SHOP NAME */
-.booth-name{
+.booth-plus{
+  font-size:32px;
   font-weight:900;
-  font-size:15px;
-  line-height:1.3;
+  color:#25F09A;
 }
-
-/* OWNER */
-.booth-owner{
-  display:flex;
-  align-items:center;
-  gap:8px;
+.booth-text{
   margin-top:6px;
-  font-size:12px;
-  opacity:.85;
-}
-.booth-owner img{
-  width:26px;
-  height:26px;
-  border-radius:50%;
-  object-fit:cover;
-}
-.booth-verified{
-  width:12px;
-  height:12px;
-  border-radius:50%;
-  background:#1d9bf0;
-  color:#fff;
-  font-size:9px;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-}
-
-/* STATUS */
-.booth-status{
-  margin-top:8px;
-  font-size:12px;
+  font-size:13px;
   font-weight:800;
 }
-.booth-status.active{ color:#25F09A }
-.booth-status.expired{ color:#ff6b6b }
 
-/* BUTTON */
-.booth-btn{
-  margin-top:10px;
-  width:100%;
-  border:none;
-  border-radius:999px;
-  padding:8px;
-  font-weight:900;
-  cursor:pointer;
+/* GIAN ĐÃ THUÊ */
+.booth.active{
+  border-style:solid;
+  border-color:rgba(37,240,154,.5);
+  background:linear-gradient(135deg,rgba(37,240,154,.15),rgba(95,168,255,.15));
 }
-.booth-btn.enter{
-  background:linear-gradient(135deg,#25F09A,#5FA8FF);
-  color:#000;
-}
-.booth-btn.rent{
-  background:linear-gradient(135deg,#ffb347,#ff5f6d);
-  color:#000;
-}
-
-/* ADD BOOTH */
-.market-add{
-  position:fixed;
-  right:16px;
-  bottom:90px;
+.booth-logo{
   width:56px;
   height:56px;
-  border-radius:50%;
-  background:linear-gradient(135deg,#25F09A,#5FA8FF);
-  color:#000;
-  font-size:28px;
+  border-radius:14px;
+  object-fit:cover;
+  box-shadow:0 0 14px rgba(37,240,154,.6);
+}
+.booth-name{
+  margin-top:8px;
   font-weight:900;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  box-shadow:0 0 20px rgba(37,240,154,.6);
-  cursor:pointer;
-  z-index:9999;
+  font-size:14px;
+}
+
+/* TAB BAR */
+.lp-tabbar{
+  position:fixed;
+  bottom:0;left:0;
+  width:100%;
 }
 </style>
 </head>
 
 <body>
 
-<!-- TOPBAR -->
-<div class="lp-topbar">
-  <div class="lp-title">
-    <div class="lp-dot"></div>
-    MARKET
-  </div>
+<!-- HEADER -->
+<div class="market-header">
+  <div class="market-title">🏬 MARKET</div>
+  <div class="market-sub">Khu gian hàng giao dịch Livestream Pro</div>
 </div>
 
-<div class="market-shell">
-  <div class="booth-grid" id="boothGrid"></div>
-</div>
-
-<!-- ADD BOOTH -->
-<div class="market-add" id="btnRentBooth">＋</div>
+<!-- FLOOR -->
+<div class="market-floor" id="marketFloor"></div>
 
 <!-- TAB BAR -->
 <div class="lp-tabbar">
   <div class="lp-tab" data-tab="lobby"><div class="icon">🎥</div><div>Lobby</div></div>
-  <div class="lp-tab active" data-tab="market"><div class="icon">🏪</div><div>Chợ</div></div>
+  <div class="lp-tab active" data-tab="market"><div class="icon">🏬</div><div>Chợ</div></div>
   <div class="lp-tab" data-tab="social"><div class="icon">🏠</div><div>Social</div></div>
   <div class="lp-tab" data-tab="messages"><div class="icon">💬</div><div>Tin nhắn</div></div>
   <div class="lp-tab" data-tab="profile"><div class="icon">👤</div><div>Tôi</div></div>
