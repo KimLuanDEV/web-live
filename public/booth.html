@@ -89,6 +89,29 @@ html,body{
   cursor:pointer;
 }
 
+.booth-expire{
+  margin:12px 16px;
+  padding:10px 14px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:700;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.15);
+}
+
+.booth-expire.warn{
+  border-color:#ffb347;
+  color:#ffb347;
+  box-shadow:0 0 12px rgba(255,179,71,.4);
+}
+
+.booth-expire.danger{
+  border-color:#ff5f6d;
+  color:#ff5f6d;
+  box-shadow:0 0 14px rgba(255,95,109,.45);
+}
+
+.hidden{ display:none; }
 
 
 </style>
@@ -111,6 +134,10 @@ html,body{
 
 
 </div>
+
+<div id="boothExpireBox" class="booth-expire hidden"></div>
+
+
 
 <!-- BODY -->
 <div class="booth-body">
