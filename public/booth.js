@@ -1,3 +1,12 @@
+const socket = io();
+
+// 🔐 bind socket với user (bắt buộc)
+const __me = JSON.parse(localStorage.getItem("user_profile"));
+if (__me?.uid) {
+  socket.emit("socket-login", { uid: __me.uid });
+}
+
+
 /* ===== GET BOOTH ID ===== */
 const params = new URLSearchParams(location.search);
 const boothId = params.get("booth");
@@ -13,7 +22,6 @@ let currentBoothOwnerUid = null;
 
 const pName  = document.getElementById("pName");
 const pPrice = document.getElementById("pPrice");
-const pImage = document.getElementById("pImage");
 const pDesc  = document.getElementById("pDesc");
 const pStock = document.getElementById("pStock");
 
@@ -259,7 +267,15 @@ async function submitProduct(){
 
 function closeAddProduct(){
   document.getElementById("addProductModal").classList.add("hidden");
+
+  pName.value = "";
+  pPrice.value = "";
+  pDesc.value = "";
+  pStock.value = "";
+  pImageFile.value = "";
+  pImagePreview.style.display = "none";
 }
+
 
 
 async function guardBoothAccess() {
@@ -313,10 +329,13 @@ async function guardBoothAccess() {
 guardBoothAccess();
 
 
-socket.on("booth-force-locked", ({ boothId }) => {
-  const cur = new URLSearchParams(location.search).get("booth");
-  if (String(cur) === String(boothId)) {
-    alert("🚫 Gian hàng đã bị Admin khoá");
-    location.href = "/market.html";
-  }
-});
+if (typeof socket !== "undefined") {
+  socket.on("booth-force-locked", ({ boothId }) => {
+    const cur = new URLSearchParams(location.search).get("booth");
+    if (String(cur) === String(boothId)) {
+      alert("🚫 Gian hàng đã bị Admin khoá");
+      location.href = "/market.html";
+    }
+  });
+}
+
