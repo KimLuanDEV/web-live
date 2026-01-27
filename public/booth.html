@@ -195,7 +195,7 @@ html,body{
 <div id="addProductModal" class="modal-backdrop hidden">
   <div class="rent-modal">
     <div class="rent-header">
-      <b>➕ Thêm sản phẩm</b>
+      <b id="productModalTitle">➕ Thêm sản phẩm</b>
       <span onclick="closeAddProduct()">✕</span>
     </div>
 
@@ -217,9 +217,11 @@ html,body{
       <textarea id="pDesc" placeholder="Mô tả"></textarea>
       <input id="pStock" type="number" placeholder="Số lượng">
 
-      <button class="rent-confirm" onclick="submitProduct()">
-        Đăng bán
-      </button>
+<button class="rent-confirm" id="btnSubmitProduct">
+  Đăng bán
+</button>
+
+
     </div>
   </div>
 </div>

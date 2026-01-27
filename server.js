@@ -455,6 +455,65 @@ app.post("/api/market/product/add", (req, res) => {
 });
 
 
+// ===== UPDATE PRODUCT =====
+app.post("/api/market/product/update", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { boothId, productId, product } = req.body || {};
+
+  if (!uid || !boothId || !productId || !product)
+    return res.status(400).json({ error: "missing" });
+
+  if (blockIfBoothLockedById(boothId, uid))
+    return res.status(403).json({ error: "booth_locked" });
+
+  const market = loadMarket();
+  const booth = market[boothId];
+  if (!booth) return res.status(404).json({ error: "booth_not_found" });
+
+  if (booth.ownerUid !== uid)
+    return res.status(403).json({ error: "not_owner" });
+
+  const p = (booth.products || []).find(x => x.id === productId);
+  if (!p) return res.status(404).json({ error: "product_not_found" });
+
+  // ✏️ update fields
+  p.name  = String(product.name || p.name).trim();
+  p.price = Number(product.price ?? p.price);
+  p.desc  = product.desc ?? p.desc;
+  p.stock = Number(product.stock ?? p.stock);
+
+  saveMarket(market);
+  emitMarketUpdate("product-update", boothId);
+
+  res.json({ ok: true });
+});
+
+
+// ===== DELETE PRODUCT =====
+app.post("/api/market/product/delete", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { boothId, productId } = req.body || {};
+
+  if (!uid || !boothId || !productId)
+    return res.status(400).json({ error: "missing" });
+
+  if (blockIfBoothLockedById(boothId, uid))
+    return res.status(403).json({ error: "booth_locked" });
+
+  const market = loadMarket();
+  const booth = market[boothId];
+  if (!booth) return res.status(404).json({ error: "booth_not_found" });
+
+  if (booth.ownerUid !== uid)
+    return res.status(403).json({ error: "not_owner" });
+
+  booth.products = (booth.products || []).filter(p => p.id !== productId);
+
+  saveMarket(market);
+  emitMarketUpdate("product-delete", boothId);
+
+  res.json({ ok: true });
+});
 
 
 app.post("/api/market/extend", (req, res) => {

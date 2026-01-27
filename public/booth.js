@@ -28,6 +28,8 @@ const pStock = document.getElementById("pStock");
 const pImageFile = document.getElementById("pImageFile");
 const pImagePreview = document.getElementById("pImagePreview");
 
+let editingProductId = null;
+
 
 pImageFile.onchange = () => {
   const file = pImageFile.files[0];
@@ -58,6 +60,9 @@ function renderProducts(products){
   const list = document.getElementById("productList");
   const empty = document.getElementById("emptyText");
 
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  const isOwner = me?.uid === currentBoothOwnerUid;
+
   if(!products.length){
     empty.classList.remove("hidden");
     list.innerHTML = "";
@@ -71,20 +76,26 @@ function renderProducts(products){
     const div = document.createElement("div");
     div.className = "product-card";
 
-div.innerHTML = `
-  <img src="${p.image}">
-  <div class="product-name">${p.name}</div>
-  <div class="product-price">💎 ${p.price.toLocaleString()}</div>
-  <div style="opacity:.7;font-size:13px;margin-top:4px">
-    ${p.desc || ""}
-  </div>
-`;
+    div.innerHTML = `
+      <img src="${p.image}">
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">💎 ${p.price.toLocaleString()}</div>
+      <div style="opacity:.7;font-size:13px;margin-top:4px">
+        ${p.desc || ""}
+      </div>
 
-
+      ${isOwner ? `
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button onclick="openEditProduct('${p.id}')" style="flex:1">✏️ Sửa</button>
+        <button onclick="deleteProduct('${p.id}')" style="flex:1;color:#ff5f6d">🗑 Xoá</button>
+      </div>
+      ` : ""}
+    `;
 
     list.appendChild(div);
   });
 }
+
 
 
 
@@ -97,6 +108,8 @@ async function loadBooth(){
 
     const booth = data.market[boothId];
     if(!booth) return;
+
+    window.__lastBooth = booth;
     currentBoothOwnerUid = booth.ownerUid;
 
     // info
@@ -339,3 +352,96 @@ if (typeof socket !== "undefined") {
   });
 }
 
+
+function openEditProduct(productId){
+  const boothProducts = document.querySelectorAll(".product-card");
+  const booth = window.__lastBooth; // ta sẽ set ở loadBooth
+  const p = booth.products.find(x => x.id === productId);
+  if(!p) return;
+
+  editingProductId = productId;
+
+  productModalTitle.textContent = "✏️ Sửa sản phẩm";
+  btnSubmitProduct.textContent = "Lưu thay đổi";
+
+  pName.value = p.name;
+  pPrice.value = p.price;
+  pDesc.value = p.desc;
+  pStock.value = p.stock;
+  pImagePreview.src = p.image;
+  pImagePreview.style.display = "block";
+
+  document.getElementById("addProductModal").classList.remove("hidden");
+}
+
+
+const btnSubmitProduct = document.getElementById("btnSubmitProduct");
+const productModalTitle = document.getElementById("productModalTitle");
+
+btnSubmitProduct.onclick = () => {
+  if (editingProductId) {
+    submitEditProduct();
+  } else {
+    submitProduct();
+  }
+};
+
+
+async function submitEditProduct(){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+
+  const product = {
+    name: pName.value.trim(),
+    price: +pPrice.value,
+    desc: pDesc.value.trim(),
+    stock: +pStock.value
+  };
+
+  const res = await fetch("/api/market/product/update",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({
+      boothId,
+      productId: editingProductId,
+      product
+    })
+  });
+
+  const data = await res.json();
+  if(!data.ok){
+    alert("❌ Không thể sửa sản phẩm");
+    return;
+  }
+
+  editingProductId = null;
+  closeAddProduct();
+  loadBooth();
+}
+
+
+
+async function deleteProduct(productId){
+  if(!confirm("🗑️ Xoá sản phẩm này?")) return;
+
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+
+  const res = await fetch("/api/market/product/delete",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({ boothId, productId })
+  });
+
+  const data = await res.json();
+  if(!data.ok){
+    alert("❌ Không thể xoá");
+    return;
+  }
+
+  loadBooth();
+}
