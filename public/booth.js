@@ -86,10 +86,24 @@ function renderProducts(products){
 div.innerHTML = `
   <img src="${p.image}">
   <div class="product-name">${p.name}</div>
+
   <div class="product-price">💎 ${p.price.toLocaleString()}</div>
   <div style="opacity:.7;font-size:13px;margin-top:4px">
     ${p.desc || ""}
   </div>
+
+  <div
+  class="product-stock"
+  style="
+    margin-top:4px;
+    font-size:13px;
+    font-weight:700;
+    color:${p.stock <= 0 ? '#ff5f6d' : '#25F09A'};
+  "
+>
+  ${p.stock <= 0 ? "📦 Hết hàng" : `📦 Còn ${p.stock} sản phẩm`}
+</div>
+
 
   ${isOwner ? `
     <div style="display:flex;gap:8px;margin-top:8px">
