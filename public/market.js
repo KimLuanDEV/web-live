@@ -595,10 +595,20 @@ if(!data.ok){
   else if(data.error === "trial_used")
     msg = "🎁 Bạn đã sử dụng gói dùng thử trước đó";
 
+
+  // ⛔ Ẩn modal thuê trước
+document.getElementById("rentBackdrop")
+  ?.classList.add("hidden");
+
   await showModal({
     title: "⚠️ Không thể thực hiện",
     content: msg
   });
+
+  // 🔄 Mở lại modal thuê nếu cần
+document.getElementById("rentBackdrop")
+  ?.classList.remove("hidden");
+  
   return;
 }
 
