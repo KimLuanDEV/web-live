@@ -30,8 +30,15 @@ const pStock = document.getElementById("pStock");
 const pImageFile = document.getElementById("pImageFile");
 const pImagePreview = document.getElementById("pImagePreview");
 
-let editingProductId = null;
+const buyName = document.getElementById("buyName");
+const buyPhone = document.getElementById("buyPhone");
+const buyAddress = document.getElementById("buyAddress");
+const buyQty = document.getElementById("buyQty");
+const buyNote = document.getElementById("buyNote");
 
+
+let editingProductId = null;
+let buyingProductId = null;
 
 if (pImageFile) {
   pImageFile.onchange = () => {
@@ -581,7 +588,19 @@ return;
 }
 
 
-async function buyProductConfirmed(productId){
+
+function buyProduct(productId){
+  const booth = window.__lastBooth;
+  const p = booth?.products?.find(x => x.id === productId);
+
+  if (!p || p.stock <= 0) {
+    showModal({
+      title:"📦 Hết hàng",
+      message:"Sản phẩm đã hết hàng."
+    });
+    return;
+  }
+
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
     showModal({
@@ -591,65 +610,14 @@ async function buyProductConfirmed(productId){
     return;
   }
 
-  const res = await fetch("/api/market/product/buy",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": me.uid
-    },
-    body: JSON.stringify({ boothId, productId })
-  });
+  buyingProductId = productId;
+  document.getElementById("buyFormModal").classList.remove("hidden");
 
-  const data = await res.json();
-  if(!data.ok){
-    showModal({
-      title:"❌ Thất bại",
-      message:
-        data.error==="not_enough_coin" ? "Không đủ kim cương" :
-        data.error==="out_of_stock" ? "Sản phẩm đã hết hàng" :
-        "Giao dịch thất bại"
-    });
-    return;
-  }
+  if (me?.name) buyName.value = me.name;
+if (me?.phone) buyPhone.value = me.phone;
 
-  showModal({
-    title:"✅ Thành công",
-    message:"Mua sản phẩm thành công!"
-  });
-
-  syncMyCoin();
-  loadBooth();
 }
 
-
-async function buyProduct(productId){
-  const booth = window.__lastBooth;
-  const p = booth?.products?.find(x => x.id === productId);
-
-  if (p && p.stock <= 0) {
-    showModal({
-      title:"📦 Hết hàng",
-      message:"Sản phẩm này đã hết hàng."
-    });
-    return;
-  }
-
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  if(!me?.uid){
-    showModal({
-      title:"🔐 Chưa đăng nhập",
-      message:"Vui lòng đăng nhập để mua sản phẩm."
-    });
-    return;
-  }
-
-  showModal({
-    title: "🛒 Xác nhận mua",
-    message: "Bạn có chắc chắn muốn mua sản phẩm này?",
-    confirm: true,
-    onOk: () => buyProductConfirmed(productId)
-  });
-}
 
 
 async function syncMyCoin(){
@@ -701,4 +669,69 @@ function showModal({
 
 function closeGlobalModal() {
   document.getElementById("globalModal").classList.add("hidden");
+}
+
+
+
+function closeBuyForm(){
+  document.getElementById("buyFormModal").classList.add("hidden");
+}
+
+async function submitBuyForm(){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+
+  const info = {
+    name: buyName.value.trim(),
+    phone: buyPhone.value.trim(),
+    address: buyAddress.value.trim(),
+    qty: +buyQty.value,
+    note: buyNote.value.trim()
+  };
+
+  if(!info.name || !info.phone || !info.address || info.qty <= 0){
+    showModal({
+      title:"⚠️ Thiếu thông tin",
+      message:"Vui lòng điền đầy đủ thông tin mua hàng."
+    });
+    return;
+  }
+
+  const res = await fetch("/api/market/product/buy",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({
+      boothId,
+      productId: buyingProductId,
+      buyerInfo: info
+    })
+  });
+
+  const data = await res.json();
+  if(!data.ok){
+    showModal({
+      title:"❌ Thất bại",
+      message:"Không thể mua sản phẩm."
+    });
+    return;
+  }
+
+  closeBuyForm();
+
+buyName.value = "";
+buyPhone.value = "";
+buyAddress.value = "";
+buyQty.value = 1;
+buyNote.value = "";
+
+
+  showModal({
+    title:"✅ Đặt hàng thành công",
+    message:"Shop sẽ liên hệ với bạn sớm nhất."
+  });
+
+  syncMyCoin();
+  loadBooth();
 }

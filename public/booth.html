@@ -271,6 +271,31 @@ html,body{
 </div>
 
 
+
+
+<!-- 🛒 BUY FORM MODAL -->
+<div id="buyFormModal" class="modal-backdrop hidden">
+  <div class="rent-modal">
+    <div class="rent-header">
+      <b>🛒 Thông tin mua hàng</b>
+      <span onclick="closeBuyForm()">✕</span>
+    </div>
+
+    <div class="rent-body" style="display:flex;flex-direction:column;gap:10px">
+      <input id="buyName" placeholder="👤 Họ và tên">
+      <input id="buyPhone" placeholder="📞 Số điện thoại">
+      <input id="buyAddress" placeholder="📍 Địa chỉ nhận hàng">
+      <input id="buyQty" type="number" min="1" value="1" placeholder="🔢 Số lượng">
+      <textarea id="buyNote" placeholder="📝 Ghi chú cho shop (tuỳ chọn)"></textarea>
+
+      <button class="rent-confirm" onclick="submitBuyForm()">
+        ✅ Xác nhận mua
+      </button>
+    </div>
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/booth.js"></script>
 <script src="/push-init.js"></script>

@@ -491,12 +491,15 @@ app.post("/api/market/product/update", (req, res) => {
 
 // ===== BUY PRODUCT =====
 // ===== BUY PRODUCT =====
+// ===== BUY PRODUCT (FIXED) =====
 app.post("/api/market/product/buy", (req, res) => {
   const buyerUid = req.headers["x-uid"];
-  const { boothId, productId } = req.body || {};
+  const { boothId, productId, buyerInfo } = req.body || {};
 
-  if (!buyerUid || !boothId || !productId)
+  if (!buyerUid || !boothId || !productId || !buyerInfo)
     return res.status(400).json({ error: "missing" });
+
+  const qty = Math.max(1, Number(buyerInfo.qty || 1));
 
   const users = loadUsers();
   const buyer = users[buyerUid];
@@ -504,36 +507,63 @@ app.post("/api/market/product/buy", (req, res) => {
     return res.status(403).json({ error: "no_auth" });
 
   const market = loadMarket();
+
   const booth = market[boothId];
   if (!booth)
     return res.status(404).json({ error: "booth_not_found" });
+
+  // 🔒 BOOTH BỊ KHOÁ → KHÔNG CHO MUA
+if (blockIfBoothLockedById(boothId, buyerUid)) {
+  return res.status(403).json({
+    ok: false,
+    error: "booth_locked"
+  });
+}
+
 
   const product = (booth.products || []).find(p => p.id === productId);
   if (!product)
     return res.status(404).json({ error: "product_not_found" });
 
-  if (product.stock <= 0)
-    return res.json({ ok:false, error:"out_of_stock" });
+  if (product.stock < qty)
+    return res.json({ ok: false, error: "out_of_stock" });
 
   const price = Number(product.price || 0);
+  const totalPrice = price * qty;
   const buyerCoins = Number(buyer.profile.coins || 0);
 
-  if (buyerCoins < price)
-    return res.json({ ok:false, error:"not_enough_coin" });
+  if (buyerCoins < totalPrice)
+    return res.json({ ok: false, error: "not_enough_coin" });
 
   // 💎 TRỪ COIN NGƯỜI MUA
-  buyer.profile.coins = buyerCoins - price;
-  buyer.profile.coinSent = (buyer.profile.coinSent || 0) + price;
+  buyer.profile.coins -= totalPrice;
+  buyer.profile.coinSent =
+    (buyer.profile.coinSent || 0) + totalPrice;
 
   // 💎 CỘNG COIN CHO CHỦ GIAN
   const owner = users[booth.ownerUid];
   if (owner && owner.profile) {
     owner.profile.coinReceived =
-      (owner.profile.coinReceived || 0) + price;
+      (owner.profile.coinReceived || 0) + totalPrice;
   }
 
   // 📦 TRỪ STOCK
-  product.stock -= 1;
+  product.stock -= qty;
+
+  // 🧾 LƯU ĐƠN HÀNG
+  booth.orders ||= [];
+  booth.orders.unshift({
+    id: "o_" + Date.now(),
+    productId,
+    productName: product.name,
+    price,
+    qty,
+    totalPrice,
+    buyerUid,
+    buyerInfo,
+    status: "pending", // pending | contacted | done
+    createdAt: Date.now()
+  });
 
   saveUsers(users);
   saveMarket(market);
@@ -542,8 +572,23 @@ app.post("/api/market/product/buy", (req, res) => {
   emitCoinUpdate(buyerUid);
   emitCoinUpdate(booth.ownerUid);
 
-  res.json({ ok:true });
+  // 🔔 INBOX CHO CHỦ SHOP
+  if (!userInbox.has(booth.ownerUid))
+    userInbox.set(booth.ownerUid, []);
+
+  userInbox.get(booth.ownerUid).unshift({
+    type: "market-order",
+    boothId,
+    text: `🛒 Đơn hàng mới: ${product.name} ×${qty}`,
+    time: Date.now(),
+    read: false
+  });
+
+  saveInbox(Object.fromEntries(userInbox));
+
+  res.json({ ok: true });
 });
+
 
 
 
