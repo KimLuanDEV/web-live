@@ -528,7 +528,6 @@ app.post("/api/market/product/buy", (req, res) => {
   // 💎 CỘNG COIN CHO CHỦ GIAN
   const owner = users[booth.ownerUid];
   if (owner && owner.profile) {
-    owner.profile.coins = (owner.profile.coins || 0) + price;
     owner.profile.coinReceived =
       (owner.profile.coinReceived || 0) + price;
   }
