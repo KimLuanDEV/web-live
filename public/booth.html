@@ -189,6 +189,36 @@ html,body{
 }
 
 
+.pagination{
+  display:flex;
+  justify-content:center;
+  gap:8px;
+  margin-top:16px;
+}
+
+.pagination button{
+  min-width:36px;
+  height:36px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.2);
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.pagination button.active{
+  background:linear-gradient(135deg,#25F09A,#5FA8FF);
+  color:#000;
+  box-shadow:0 0 10px rgba(37,240,154,.6);
+}
+
+.pagination button:disabled{
+  opacity:.4;
+  cursor:default;
+}
+
+
 </style>
 </head>
 
@@ -224,11 +254,11 @@ html,body{
   </button>
 
   <button class="tab hidden" data-tab="orders" id="tabOrders">
-    📦 <span>Shop</span>
+    📦 <span>Đơn hàng</span>
   </button>
 
   <button class="tab hidden" data-tab="myOrders" id="tabMyOrders">
-    🧾 <span>Của tôi</span>
+    🧾 <span>Đơn hàng</span>
   </button>
 </div>
 
@@ -236,6 +266,9 @@ html,body{
 
   <!-- PRODUCTS -->
   <div id="productList" class="product-list"></div>
+
+  <div id="productPagination" class="pagination hidden"></div>
+
 
   <!-- ORDERS -->
   <div id="orderSection" class="hidden">

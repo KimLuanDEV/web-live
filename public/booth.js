@@ -39,6 +39,9 @@ const buyNote = document.getElementById("buyNote");
 
 let editingProductId = null;
 let buyingProductId = null;
+let currentProductPage = 1;
+const PRODUCTS_PER_PAGE = 4;
+
 
 if (pImageFile) {
   pImageFile.onchange = () => {
@@ -70,69 +73,85 @@ function diffDays(ts){
 function renderProducts(products){
   const list = document.getElementById("productList");
   const empty = document.getElementById("emptyText");
+  const pager = document.getElementById("productPagination");
 
   const me = JSON.parse(localStorage.getItem("user_profile"));
   const isOwner = me?.uid === currentBoothOwnerUid;
-  
 
-  if(!products.length){
+  if(!products || products.length === 0){
     empty.classList.remove("hidden");
     list.innerHTML = "";
+    pager.classList.add("hidden");
     return;
   }
 
   empty.classList.add("hidden");
+
+  const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
+  if(currentProductPage > totalPages) currentProductPage = 1;
+
+  const start = (currentProductPage - 1) * PRODUCTS_PER_PAGE;
+  const pageItems = products.slice(start, start + PRODUCTS_PER_PAGE);
+
   list.innerHTML = "";
 
-  products.forEach(p=>{
-
+  pageItems.forEach(p=>{
     const out = p.stock <= 0;
     const div = document.createElement("div");
     div.className = "product-card";
 
-div.innerHTML = `
-  <img src="${p.image}">
-  <div class="product-name">${p.name}</div>
+    div.innerHTML = `
+      <img src="${p.image}">
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">💎 ${p.price.toLocaleString()}</div>
+      <div style="opacity:.7;font-size:13px;margin-top:4px">
+        ${p.desc || ""}
+      </div>
 
-  <div class="product-price">💎 ${p.price.toLocaleString()}</div>
-  <div style="opacity:.7;font-size:13px;margin-top:4px">
-    ${p.desc || ""}
-  </div>
+      <div class="product-stock"
+        style="color:${out ? '#ff5f6d' : '#25F09A'}">
+        ${out ? "📦 Hết hàng" : `📦 Còn ${p.stock} sản phẩm`}
+      </div>
 
-  <div
-  class="product-stock"
-  style="
-    margin-top:4px;
-    font-size:13px;
-    font-weight:700;
-    color:${p.stock <= 0 ? '#ff5f6d' : '#25F09A'};
-  "
->
-  ${p.stock <= 0 ? "📦 Hết hàng" : `📦 Còn ${p.stock} sản phẩm`}
-</div>
-
-
-  ${isOwner ? `
-    <div style="display:flex;gap:8px;margin-top:8px">
-      <button onclick="openEditProduct('${p.id}')" style="flex:1">✏️ Sửa</button>
-      <button onclick="deleteProduct('${p.id}')" style="flex:1;color:#ff5f6d">🗑 Xoá</button>
-    </div>
-  ` : `
-
- 
-<button
-  style="margin-top:8px;width:100%"
-  ${out ? "disabled style='opacity:.5'" : ""}
-  onclick="buyProduct('${p.id}')">
-  ${out ? "Hết hàng" : "🛒 Mua"}
-</button>
-
-  `}
-`;
+      ${isOwner ? `
+        <div style="display:flex;gap:8px;margin-top:8px">
+          <button onclick="openEditProduct('${p.id}')" style="flex:1">✏️ Sửa</button>
+          <button onclick="deleteProduct('${p.id}')" style="flex:1;color:#ff5f6d">🗑 Xoá</button>
+        </div>
+      ` : `
+        <button style="margin-top:8px;width:100%"
+          ${out ? "disabled style='opacity:.5'" : ""}
+          onclick="buyProduct('${p.id}')">
+          ${out ? "Hết hàng" : "🛒 Mua"}
+        </button>
+      `}
+    `;
 
     list.appendChild(div);
   });
+
+  // ===== RENDER PAGINATION =====
+  if(totalPages <= 1){
+    pager.classList.add("hidden");
+    return;
+  }
+
+  pager.classList.remove("hidden");
+  pager.innerHTML = "";
+
+  for(let i=1;i<=totalPages;i++){
+    const btn = document.createElement("button");
+    btn.textContent = i;
+    if(i === currentProductPage) btn.classList.add("active");
+    btn.onclick = ()=>{
+      currentProductPage = i;
+      renderProducts(products);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    };
+    pager.appendChild(btn);
+  }
 }
+
 
 
 
