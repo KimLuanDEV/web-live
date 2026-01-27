@@ -261,22 +261,35 @@ btnAddProduct.onclick = ()=>{
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
     showModal({
-  title: "🔐 Yêu cầu đăng nhập",
-  message: "Vui lòng đăng nhập để tiếp tục."
-});
-
+      title: "🔐 Yêu cầu đăng nhập",
+      message: "Vui lòng đăng nhập để tiếp tục."
+    });
     return;
   }
   if(me.uid !== currentBoothOwnerUid){
     showModal({
-  title: "⛔ Truy cập bị từ chối",
-  message: "Bạn không phải chủ của gian hàng này."
-});
-
+      title: "⛔ Truy cập bị từ chối",
+      message: "Bạn không phải chủ của gian hàng này."
+    });
     return;
   }
+
+  // ✅ RESET MODE
+  editingProductId = null;
+  productModalTitle.textContent = "➕ Thêm sản phẩm";
+  btnSubmitProduct.textContent = "Đăng bán";
+
+  // reset form
+  pName.value = "";
+  pPrice.value = "";
+  pDesc.value = "";
+  pStock.value = "";
+  pImageFile.value = "";
+  pImagePreview.style.display = "none";
+
   document.getElementById("addProductModal").classList.remove("hidden");
 };
+
 
 
 
@@ -436,6 +449,12 @@ async function submitProduct(){
 function closeAddProduct(){
   document.getElementById("addProductModal").classList.add("hidden");
 
+  // ✅ RESET STATE
+  editingProductId = null;
+  productModalTitle.textContent = "➕ Thêm sản phẩm";
+  btnSubmitProduct.textContent = "Đăng bán";
+
+  // reset form
   pName.value = "";
   pPrice.value = "";
   pDesc.value = "";
@@ -443,6 +462,7 @@ function closeAddProduct(){
   pImageFile.value = "";
   pImagePreview.style.display = "none";
 }
+
 
 
 
