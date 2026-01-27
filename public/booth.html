@@ -114,45 +114,6 @@ html,body{
 .hidden{ display:none; }
 
 
-
-.product-list{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:12px;
-}
-
-.product-card{
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:14px;
-  padding:10px;
-}
-
-.product-card img{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
-  border-radius:10px;
-}
-
-.product-name{
-  font-weight:900;
-  font-size:14px;
-  margin-top:6px;
-}
-
-.product-price{
-  color:#25F09A;
-  font-weight:900;
-  margin-top:4px;
-}
-
-
-.product-stock{
-  margin-top:4px;
-  font-size:13px;
-  font-weight:800;
-}
 .product-stock.out{
   color:#ff5f6d;
 }
@@ -220,59 +181,27 @@ html,body{
 
 
 
-.product-list{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:8px; /* ⬅️ giảm từ 12px */
-}
-
-.product-card{
-  background:rgba(255,255,255,.06);
-  border:1px solid rgba(255,255,255,.15);
-  border-radius:12px;   /* ⬅️ nhỏ hơn */
-  padding:8px;          /* ⬅️ nhỏ hơn */
-}
 
 
-.product-card img{
-  width:100%;
-  aspect-ratio:1/1;
-  object-fit:cover;
-  border-radius:8px;   /* ⬅️ nhỏ hơn */
-}
-
-.product-name{
-  font-weight:800;
-  font-size:13px;      /* ⬅️ từ 14px */
-  margin-top:4px;
-}
-
-.product-price{
-  font-size:13px;
-  margin-top:2px;
-}
-
-.product-stock{
-  font-size:12px;
-  margin-top:2px;
-}
-
+/* =========================
+   PRODUCT GRID – 2x2 CHUẨN
+========================= */
 
 .product-list{
   display:grid;
-  grid-template-columns:repeat(2, 1fr); /* 2 cột */
-  gap:8px;                              /* gọn hơn */
+  grid-template-columns:repeat(2, minmax(0, 1fr));
+  gap:6px;
 }
 
-
+/* CARD GỌN */
 .product-card{
-  background:rgba(255,255,255,.06);
+  background:rgba(255,255,255,.05);
   border:1px solid rgba(255,255,255,.12);
-  border-radius:12px;
-  padding:8px;
+  border-radius:10px;
+  padding:6px;
 }
 
-
+/* ẢNH NHỎ – KHÔNG PHÌNH */
 .product-card img{
   width:100%;
   aspect-ratio:1/1;
@@ -280,24 +209,41 @@ html,body{
   border-radius:8px;
 }
 
-
+/* TEXT GỌN */
 .product-name{
-  font-size:13px;
-  font-weight:800;
+  font-size:12px;
+  font-weight:700;
   margin-top:4px;
-  line-height:1.25;
+  line-height:1.2;
 }
 
 .product-price{
-  font-size:13px;
-  font-weight:900;
+  font-size:12px;
+  font-weight:800;
+  color:#25F09A;
   margin-top:2px;
 }
 
 .product-stock{
-  font-size:12px;
+  font-size:11px;
   margin-top:2px;
 }
+
+/* NÚT MUA / SỬA */
+.product-card button{
+  margin-top:6px;
+  padding:6px 0;
+  font-size:12px;
+  border-radius:8px;
+}
+
+
+
+
+
+
+
+
 
 
 </style>
