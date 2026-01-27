@@ -613,7 +613,41 @@ if (blockIfBoothLockedById(boothId, buyerUid)) {
 
   saveInbox(Object.fromEntries(userInbox));
 
+
+
+// ===============================
+// 🔔 REALTIME + PUSH NOTIFY CHỦ GIAN
+// ===============================
+const notifyText = `🛒 Đơn hàng mới: ${product.name} ×${qty}`;
+
+// 1️⃣ REALTIME NẾU CHỦ GIAN ĐANG ONLINE
+const sockets = activeUsers.get(booth.ownerUid);
+if (sockets) {
+  for (const sid of sockets) {
+    io.to(sid).emit("system-notify", {
+      type: "market-order",
+      boothId,
+      productId,
+      text: notifyText,
+      ts: Date.now()
+    });
+  }
+}
+
+// 2️⃣ PUSH NOTIFICATION (KHI OFFLINE / TAB KHÁC)
+sendPushToUser(booth.ownerUid, {
+  title: "🛒 Đơn hàng mới",
+  body: `${product.name} ×${qty} — ${totalPrice.toLocaleString()} 💎`,
+  tag: "market-order"
+});
+
+
+
   res.json({ ok: true });
+
+
+
+  
 });
 
 

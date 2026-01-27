@@ -1299,3 +1299,19 @@ function resetUploadProgress(){
   if(bar) bar.style.width = "0%";
   if(text) text.textContent = "";
 }
+
+
+
+if (socket) {
+  socket.on("system-notify", data => {
+    if (data.type === "market-order") {
+      showModal({
+        title: "🛒 Đơn hàng mới",
+        message: data.text
+      });
+
+      // 🔔 reload booth để thấy đơn hàng mới
+      loadBooth();
+    }
+  });
+}
