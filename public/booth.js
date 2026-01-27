@@ -161,6 +161,8 @@ async function loadBooth(){
 }
 
 loadBooth();
+syncMyCoin();
+
 
 /* ===== ACTIONS ===== */
 btnBack.onclick = ()=> history.back();
@@ -217,6 +219,7 @@ async function confirmExtendBooth(days, price){
     }
 
     alert("⏳ Gia hạn gian hàng thành công!");
+    syncMyCoin();
     loadBooth();
 
   }catch(e){
@@ -495,5 +498,22 @@ async function buyProduct(productId){
   }
 
   alert("✅ Mua thành công!");
+  syncMyCoin();
   loadBooth();
+}
+
+
+
+async function syncMyCoin(){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me?.uid) return;
+
+  const res = await fetch("/api/me/coin", {
+    headers: { "x-uid": me.uid }
+  });
+  const data = await res.json();
+  if(!data.ok) return;
+
+  me.coins = data.coins;
+  localStorage.setItem("user_profile", JSON.stringify(me));
 }

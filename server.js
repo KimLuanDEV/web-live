@@ -534,6 +534,18 @@ app.post("/api/market/product/buy", (req, res) => {
 });
 
 
+app.get("/api/me/coin", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+  if (!me) return res.json({ ok:false });
+
+  res.json({ ok:true, coins: me.coins });
+});
+
+
 // ===== DELETE PRODUCT =====
 app.post("/api/market/product/delete", (req, res) => {
   const uid = req.headers["x-uid"];
