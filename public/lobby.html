@@ -203,15 +203,6 @@ body.lobby-page{
     <label>Tên Host</label>
     <input id="hostNameInput" placeholder="Tên hiển thị" />
 
-<label>Mật khẩu phòng (tuỳ chọn)</label>
-<input
-  id="roomPasswordInput"
-  type="password"
-  placeholder="Để trống nếu phòng công khai"
-  autocomplete="off"
-/>
-
-
     <div class="modal-actions">
       <button id="btnCancelRoom" type="button">Hủy</button>
       <button id="btnConfirmRoom" type="button">🚀 Vào phòng</button>
@@ -662,9 +653,6 @@ const btnConfirmRoom = document.getElementById("btnConfirmRoom");
 
 const roomInput = document.getElementById("roomInput");
 const hostNameInput = document.getElementById("hostNameInput");
-const roomPasswordInput = document.getElementById("roomPasswordInput");
-
-
 
 function openCreateRoom(){
   if(isGuest){
@@ -743,8 +731,6 @@ function hideCountdownOverlay(){
 btnConfirmRoom?.addEventListener("click", ()=>{
   const roomRaw = (roomInput.value || "").trim();
   const name = (hostNameInput.value || "").trim();
-  const password = roomPasswordInput?.value?.trim() || "";
-
 
   if(!roomRaw){
     openErr("Vui lòng nhập Room ID.");
@@ -783,11 +769,7 @@ btnConfirmRoom?.addEventListener("click", ()=>{
     }
 
     // OK => bật overlay + countdown rồi chuyển trang
-    const url =
-  `/broadcast.html?room=${encodeURIComponent(room)}` +
-  `&name=${encodeURIComponent(name || "Host")}` +
-  (password ? `&password=${encodeURIComponent(password)}` : "");
-
+    const url = `/broadcast.html?room=${encodeURIComponent(room)}&name=${encodeURIComponent(name || "Host")}`;
 
     showCountdownOverlay(room);
 
@@ -963,12 +945,9 @@ function render(list){
 
   <!-- TOP OVERLAY -->
   <div class="lobby-cardOverlay top">
-
-<div class="lobby-room">
-  🎥 ${escapeHtml(r.roomId)}
-  ${(!r.__virtual && r.locked) ? `<span title="Phòng có mật khẩu">🔒</span>` : ``}
-</div>
-
+    <div class="lobby-room">
+      🎥 ${escapeHtml(r.roomId)}
+    </div>
 
     <div class="lobby-badges">
       ${

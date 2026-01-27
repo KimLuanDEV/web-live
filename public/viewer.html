@@ -554,8 +554,6 @@
     const roomId = params.get("room") || "abc123";
 
 
-let __roomUnlocked = false;
-let __waitingPassword = false;
 
 const giftVideoQueue = [];
 let playingGiftVideo = false;
@@ -801,86 +799,6 @@ setInterval(checkHDQuality, 2500);
 
 
     const socket = io();
-
-
-socket.emit("check-room-lock", { roomId });
-
-
-socket.on("room-unlocked", () => {
-  __roomUnlocked = true;
-  join();
-});
-
-
-
-
-
-socket.on("need-room-password", () => {
-  __waitingPassword = true;
-
-  const overlay = document.getElementById("joinOverlayViewer");
-  if (!overlay) return;
-
-  overlay.innerHTML = `
-    <div class="join-card">
-      <h3>🔒 Phòng có mật khẩu</h3>
-      <input
-        id="roomPasswordInput"
-        type="password"
-        placeholder="Nhập mật khẩu phòng"
-        autocomplete="off"
-      />
-      <button id="btnSubmitRoomPassword">🔓 Vào xem</button>
-      <div id="roomPasswordError" class="join-error"></div>
-    </div>
-  `;
-
-  overlay.classList.remove("hidden");
-
-  const btn = document.getElementById("btnSubmitRoomPassword");
-  const input = document.getElementById("roomPasswordInput");
-  const err = document.getElementById("roomPasswordError");
-
-  btn.onclick = () => {
-    const password = input.value.trim();
-    if (!password) {
-      err.textContent = "⚠️ Vui lòng nhập mật khẩu";
-      return;
-    }
-
-    err.textContent = "⏳ Đang xác thực…";
-
-    socket.emit("join-room-with-password", {
-      roomId,
-      password
-    });
-  };
-});
-
-
-socket.on("room-password-ok", () => {
-  __waitingPassword = false;
-  __roomUnlocked = true;
-
-  const overlay = document.getElementById("joinOverlayViewer");
-  if (overlay) {
-    overlay.classList.add("hidden");
-    overlay.innerHTML = "";
-  }
-
-  join(); // ✅ CHỈ GỌI QUA 1 CỔNG
-});
-
-
-
-socket.on("room-password-wrong", () => {
-  const err = document.getElementById("roomPasswordError");
-  if (err) {
-    err.textContent = "❌ Mật khẩu không đúng";
-  }
-});
-
-
 
 
 let __waitingHostStream = false;
@@ -1178,6 +1096,10 @@ const sendProfile = isGuest ? {
   coins: profile.coins || 0
 };
 
+socket.emit("viewer-join", {
+  roomId,
+  profile: sendProfile
+});
 
 
 
@@ -1887,24 +1809,22 @@ function getCurrentPC(){
     });
 
 
-async function join() {
-  if (!__roomUnlocked) {
-    console.warn("🔒 Room chưa unlock → chặn join()");
-    return;
-  }
-
+  async function join() {
   if (joined || __waitingHostStream) return;
 
   joined = true;
 
-  socket.emit("viewer-join", {
+  try { btnJoin.style.display = "none"; } catch {}
+
+  socket.emit("join-room", {
     roomId,
+    role: "viewer",
     profile: sendProfile
   });
 
   setStatus("⏳ Đang kết nối livestream…");
+  log("Viewer join room");
 }
-
 
 
     function cleanupPeer(peerKey) {
@@ -2138,8 +2058,22 @@ __viewerGotAnyTrack = true;
       join().catch(err => log("Join lỗi: " + err.message));
     };
 
-
-
+    // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
+    (function autoJoinViewer(){
+      try {
+        btnJoin.disabled = true;
+        btnJoin.textContent = "⏳ Đang tham gia...";
+        // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
+        setTimeout(() => {
+          join().catch(err => {
+            // nếu lỗi, mở lại nút cho user bấm thử
+            btnJoin.disabled = false;
+            btnJoin.textContent = "Tham gia xem Livestream";
+            log("Auto-join lỗi: " + (err?.message || err));
+          });
+        }, 120);
+      } catch {}
+    })();
 
 
     // ===== CHAT (VIEWER) =====
