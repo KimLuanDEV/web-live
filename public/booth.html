@@ -162,6 +162,33 @@ html,body{
 
 
 
+.booth-tabs.compact{
+  display:flex;
+  gap:8px;
+  margin-bottom:12px;
+}
+
+.booth-tabs.compact .tab{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:8px 0;
+  border-radius:999px;
+  font-weight:800;
+  font-size:13px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.booth-tabs.compact .tab.active{
+  background:linear-gradient(135deg,#25F09A,#5FA8FF);
+  color:#000;
+  box-shadow:0 0 12px rgba(37,240,154,.6);
+}
+
+
 </style>
 </head>
 
@@ -191,11 +218,20 @@ html,body{
 <div class="booth-body">
 
   <!-- TABS -->
- <div class="booth-tabs">
-  <button class="tab active" data-tab="products">🛒 Sản phẩm</button>
-  <button class="tab hidden" data-tab="orders" id="tabOrders">📦 Đơn hàng</button>
-  <button class="tab hidden" data-tab="myOrders" id="tabMyOrders">🧾 Đơn của tôi</button>
+<div class="booth-tabs compact">
+  <button class="tab active" data-tab="products">
+    🛒 <span>Sản phẩm</span>
+  </button>
+
+  <button class="tab hidden" data-tab="orders" id="tabOrders">
+    📦 <span>Shop</span>
+  </button>
+
+  <button class="tab hidden" data-tab="myOrders" id="tabMyOrders">
+    🧾 <span>Của tôi</span>
+  </button>
 </div>
+
 
 
   <!-- PRODUCTS -->
