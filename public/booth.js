@@ -190,6 +190,18 @@ async function loadBooth(){
   }catch(e){
     console.error("loadBooth error", e);
   }
+
+const me = JSON.parse(localStorage.getItem("user_profile"));
+const isOwner = me?.uid === booth.ownerUid;
+
+if(isOwner){
+  document.getElementById("tabOrders")?.classList.remove("hidden");
+  renderOrders(booth.orders || []);
+}
+
+
+
+
 }
 
 loadBooth();
@@ -734,4 +746,71 @@ buyNote.value = "";
 
   syncMyCoin();
   loadBooth();
+}
+
+
+
+document.querySelectorAll(".booth-tabs .tab").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".booth-tabs .tab")
+      .forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const tab = btn.dataset.tab;
+    document.getElementById("productList").style.display =
+      tab === "products" ? "block" : "none";
+
+    document.getElementById("orderSection").classList.toggle(
+      "hidden", tab !== "orders"
+    );
+  };
+});
+
+
+function renderOrders(orders){
+  const list = document.getElementById("orderList");
+  const empty = document.getElementById("orderEmpty");
+
+  if(!orders || orders.length === 0){
+    empty.classList.remove("hidden");
+    list.innerHTML = "";
+    return;
+  }
+
+  empty.classList.add("hidden");
+  list.innerHTML = "";
+
+  orders.forEach(o=>{
+    const div = document.createElement("div");
+    div.className = "order-card";
+
+    div.innerHTML = `
+      <div class="order-title">
+        🛒 ${o.productName} × ${o.qty}
+      </div>
+
+      <div class="order-meta">
+        💎 ${o.totalPrice.toLocaleString()} ·
+        🕒 ${new Date(o.createdAt).toLocaleString("vi-VN")}
+      </div>
+
+      <div class="order-buyer">
+        👤 <b>${o.buyerInfo.name}</b><br>
+        📞 ${o.buyerInfo.phone}<br>
+        📍 ${o.buyerInfo.address || "—"}<br>
+        📝 ${o.buyerInfo.note || "—"}
+      </div>
+
+      <div class="order-actions">
+        <button onclick="markOrder('${o.id}','contacted')">
+          📞 Đã liên hệ
+        </button>
+        <button onclick="markOrder('${o.id}','done')" style="color:#25F09A">
+          ✅ Hoàn tất
+        </button>
+      </div>
+    `;
+
+    list.appendChild(div);
+  });
 }
