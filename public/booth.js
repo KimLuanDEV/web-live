@@ -945,3 +945,15 @@ function markOrder(orderId, status){
     message: "Chức năng cập nhật trạng thái đơn sẽ được mở sau."
   });
 }
+
+
+
+// 👉 click nền để đóng bottom-sheet thêm sản phẩm
+const addModal = document.getElementById("addProductModal");
+if(addModal){
+  addModal.addEventListener("click", e=>{
+    if(e.target === addModal){
+      closeAddProduct();
+    }
+  });
+}
