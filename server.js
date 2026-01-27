@@ -743,10 +743,18 @@ app.get("/api/market/booth/:id", (req, res) => {
     });
   }
 
-  res.json({
-    ok: true,
-    booth
-  });
+// 🔧 đảm bảo product nào cũng có images[]
+(booth.products || []).forEach(p=>{
+  if (!Array.isArray(p.images) || p.images.length === 0) {
+    p.images = p.image ? [p.image] : [];
+  }
+});
+
+res.json({
+  ok: true,
+  booth
+});
+
 });
 
 
