@@ -507,7 +507,7 @@ html,body{
     <div class="rent-body">
       <input id="pName" placeholder="Tên sản phẩm">
       <input id="pPrice" type="number" placeholder="Giá (💎)">
-      <input type="file" id="pImageFile" accept="image/*">
+      <input type="file" id="pImageFile" accept="image/*" multiple>
 
 <img id="pImagePreview"
      style="
@@ -518,6 +518,14 @@ html,body{
        object-fit:cover;
        aspect-ratio:1/1;
      ">
+
+<div id="pGalleryPreview"
+     style="display:grid;
+            grid-template-columns:repeat(4,1fr);
+            gap:6px;
+            margin-top:8px">
+</div>
+
 
       <textarea id="pDesc" placeholder="Mô tả"></textarea>
       <input id="pStock" type="number" placeholder="Số lượng">

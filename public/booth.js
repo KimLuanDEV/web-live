@@ -44,16 +44,29 @@ const PRODUCTS_PER_PAGE = 4;
 
 
 if (pImageFile) {
-  pImageFile.onchange = () => {
-    const file = pImageFile.files[0];
-    if (!file) return;
+
+ pImageFile.onchange = () => {
+  const files = Array.from(pImageFile.files);
+  if (!files.length) return;
+
+  pGalleryPreview.innerHTML = "";
+  pImagePreview.style.display = "none";
+
+  files.forEach(file=>{
     const reader = new FileReader();
-    reader.onload = e => {
-      pImagePreview.src = e.target.result;
-      pImagePreview.style.display = "block";
+    reader.onload = e=>{
+      const img = document.createElement("img");
+      img.src = e.target.result;
+      img.style.width = "100%";
+      img.style.aspectRatio = "1/1";
+      img.style.objectFit = "cover";
+      img.style.borderRadius = "6px";
+      pGalleryPreview.appendChild(img);
     };
     reader.readAsDataURL(file);
-  };
+  });
+};
+
 }
 
 
@@ -385,22 +398,19 @@ async function submitProduct(){
     return;
   }
 
-  const file = pImageFile.files[0];
-  if(!file){
+  const files = Array.from(pImageFile.files);
+  if(files.length === 0){
     showModal({
       title:"🖼️ Thiếu ảnh",
-      message:"Vui lòng chọn ảnh cho sản phẩm."
+      message:"Vui lòng chọn ít nhất 1 ảnh cho sản phẩm."
     });
     setProductSubmitting(false);
     return;
   }
 
   // =========================
-  // 1️⃣ UPLOAD ẢNH (CÓ PROGRESS %)
+  // 1️⃣ UPLOAD NHIỀU ẢNH (CÓ PROGRESS)
   // =========================
-  const form = new FormData();
-  form.append("image", file);
-
   const wrap = document.getElementById("uploadProgressWrap");
   const bar  = document.getElementById("uploadProgressBar");
   const text = document.getElementById("uploadProgressText");
@@ -408,47 +418,52 @@ async function submitProduct(){
   if(wrap){
     wrap.classList.remove("hidden");
     bar.style.width = "0%";
-    text.textContent = "⏳ Đang tải ảnh... 0%";
+    text.textContent = `⏳ Đang tải ảnh 1/${files.length}... 0%`;
   }
 
-  let upData;
+  const imageUrls = [];
+
   try{
-    upData = await new Promise((resolve, reject)=>{
-      const xhr = new XMLHttpRequest();
-      xhr.open("POST", "/api/upload-product-image");
-      xhr.setRequestHeader("x-uid", me.uid);
+    for(let i = 0; i < files.length; i++){
+      const form = new FormData();
+      form.append("image", files[i]);
 
-      xhr.upload.onprogress = e=>{
-        if(e.lengthComputable){
-          const percent = Math.round((e.loaded / e.total) * 100);
-          if(bar) bar.style.width = percent + "%";
-          if(text) text.textContent = `⏳ Đang tải ảnh... ${percent}%`;
-        }
-      };
+      text.textContent = `⏳ Đang tải ảnh ${i+1}/${files.length}... 0%`;
+      bar.style.width = "0%";
 
-      xhr.onload = ()=>{
-        try{
-          resolve(JSON.parse(xhr.responseText));
-        }catch(e){
-          reject(e);
-        }
-      };
+      const upData = await new Promise((resolve, reject)=>{
+        const xhr = new XMLHttpRequest();
+        xhr.open("POST", "/api/upload-product-image");
+        xhr.setRequestHeader("x-uid", me.uid);
 
-      xhr.onerror = ()=> reject();
+        xhr.upload.onprogress = e=>{
+          if(e.lengthComputable){
+            const percent = Math.round((e.loaded / e.total) * 100);
+            bar.style.width = percent + "%";
+            text.textContent =
+              `⏳ Đang tải ảnh ${i+1}/${files.length}... ${percent}%`;
+          }
+        };
 
-      xhr.send(form);
-    });
+        xhr.onload = ()=>{
+          try{
+            resolve(JSON.parse(xhr.responseText));
+          }catch(e){
+            reject(e);
+          }
+        };
+
+        xhr.onerror = ()=> reject();
+        xhr.send(form);
+      });
+
+      if(!upData?.url){
+        throw new Error("upload_failed");
+      }
+
+      imageUrls.push(upData.url);
+    }
   }catch(err){
-    showModal({
-      title:"❌ Upload thất bại",
-      message:"Không thể tải ảnh lên, vui lòng thử lại."
-    });
-    setProductSubmitting(false);
-    resetUploadProgress();
-    return;
-  }
-
-  if(!upData?.url){
     showModal({
       title:"❌ Upload thất bại",
       message:"Không thể tải ảnh lên, vui lòng thử lại."
@@ -464,7 +479,8 @@ async function submitProduct(){
   const product = {
     name: pName.value.trim(),
     price: +pPrice.value,
-    image: upData.url,
+    images: imageUrls,          // 🔥 nhiều ảnh
+    image: imageUrls[0],        // 🔥 ảnh đại diện
     desc: pDesc.value.trim(),
     stock: +pStock.value
   };
@@ -498,6 +514,7 @@ async function submitProduct(){
   closeAddProduct();
   loadBooth();
 }
+
 
 
 
