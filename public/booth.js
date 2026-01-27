@@ -76,21 +76,27 @@ function renderProducts(products){
     const div = document.createElement("div");
     div.className = "product-card";
 
-    div.innerHTML = `
-      <img src="${p.image}">
-      <div class="product-name">${p.name}</div>
-      <div class="product-price">💎 ${p.price.toLocaleString()}</div>
-      <div style="opacity:.7;font-size:13px;margin-top:4px">
-        ${p.desc || ""}
-      </div>
+div.innerHTML = `
+  <img src="${p.image}">
+  <div class="product-name">${p.name}</div>
+  <div class="product-price">💎 ${p.price.toLocaleString()}</div>
+  <div style="opacity:.7;font-size:13px;margin-top:4px">
+    ${p.desc || ""}
+  </div>
 
-      ${isOwner ? `
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button onclick="openEditProduct('${p.id}')" style="flex:1">✏️ Sửa</button>
-        <button onclick="deleteProduct('${p.id}')" style="flex:1;color:#ff5f6d">🗑 Xoá</button>
-      </div>
-      ` : ""}
-    `;
+  ${isOwner ? `
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <button onclick="openEditProduct('${p.id}')" style="flex:1">✏️ Sửa</button>
+      <button onclick="deleteProduct('${p.id}')" style="flex:1;color:#ff5f6d">🗑 Xoá</button>
+    </div>
+  ` : `
+    <button
+      style="margin-top:8px;width:100%"
+      onclick="buyProduct('${p.id}')">
+      🛒 Mua
+    </button>
+  `}
+`;
 
     list.appendChild(div);
   });
@@ -353,6 +359,16 @@ if (typeof socket !== "undefined") {
 }
 
 
+// 🔁 realtime update khi market thay đổi (mua / thêm / sửa / xoá sản phẩm)
+if (typeof socket !== "undefined") {
+  socket.on("market-update", ({ boothId: bId }) => {
+    if (String(bId) === String(boothId)) {
+      loadBooth();
+    }
+  });
+}
+
+
 function openEditProduct(productId){
   const boothProducts = document.querySelectorAll(".product-card");
   const booth = window.__lastBooth; // ta sẽ set ở loadBooth
@@ -443,5 +459,41 @@ async function deleteProduct(productId){
     return;
   }
 
+  loadBooth();
+}
+
+
+async function buyProduct(productId){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me?.uid){
+    alert("🔐 Vui lòng đăng nhập để mua");
+    return;
+  }
+
+  if(!confirm("🛒 Xác nhận mua sản phẩm này?")) return;
+
+  const res = await fetch("/api/market/product/buy",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({
+      boothId,
+      productId
+    })
+  });
+
+  const data = await res.json();
+
+  if(!data.ok){
+    if(data.error==="not_enough_coin")
+      return alert("❌ Không đủ kim cương");
+    if(data.error==="out_of_stock")
+      return alert("📦 Sản phẩm đã hết hàng");
+    return alert("❌ Mua thất bại");
+  }
+
+  alert("✅ Mua thành công!");
   loadBooth();
 }

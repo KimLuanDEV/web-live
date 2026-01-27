@@ -489,6 +489,51 @@ app.post("/api/market/product/update", (req, res) => {
 });
 
 
+// ===== BUY PRODUCT =====
+app.post("/api/market/product/buy", (req, res) => {
+  const buyerUid = req.headers["x-uid"];
+  const { boothId, productId } = req.body || {};
+
+  if (!buyerUid || !boothId || !productId)
+    return res.status(400).json({ error: "missing" });
+
+  const users = loadUsers();
+  const buyer = users[buyerUid];
+  if (!buyer) return res.status(403).json({ error: "no_auth" });
+
+  const market = loadMarket();
+  const booth = market[boothId];
+  if (!booth) return res.status(404).json({ error: "booth_not_found" });
+
+  const product = (booth.products || []).find(p => p.id === productId);
+  if (!product) return res.status(404).json({ error: "product_not_found" });
+
+  if (product.stock <= 0)
+    return res.json({ ok:false, error:"out_of_stock" });
+
+  const price = Number(product.price);
+  if (buyer.coins < price)
+    return res.json({ ok:false, error:"not_enough_coin" });
+
+  // 💎 TRỪ COIN NGƯỜI MUA
+  buyer.coins -= price;
+
+  // 💎 CỘNG COIN CHO CHỦ GIAN
+  const owner = users[booth.ownerUid];
+  if (owner) owner.coins += price;
+
+  // 📦 TRỪ STOCK
+  product.stock -= 1;
+
+  saveUsers(users);
+  saveMarket(market);
+
+  emitMarketUpdate("product-buy", boothId);
+
+  res.json({ ok:true });
+});
+
+
 // ===== DELETE PRODUCT =====
 app.post("/api/market/product/delete", (req, res) => {
   const uid = req.headers["x-uid"];
