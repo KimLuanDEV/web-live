@@ -240,6 +240,92 @@ html,body{
 
 
 
+/* =========================
+   MODAL FIX – KHÔNG MỜ, KHÔNG LỆCH
+========================= */
+
+.modal-backdrop{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65); /* nền tối, KHÔNG làm mờ modal */
+  display:flex;
+  align-items:center;        /* căn giữa dọc */
+  justify-content:center;    /* căn giữa ngang */
+  z-index:9999;
+}
+
+/* MODAL BOX */
+.rent-modal{
+  width:92%;
+  max-width:420px;
+  background:#0f0f0f;
+  border-radius:16px;
+  box-shadow:0 20px 40px rgba(0,0,0,.6);
+  animation:modalPop .25s ease;
+}
+
+/* HEADER */
+.rent-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:14px 16px;
+  font-weight:900;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+
+.rent-header span{
+  cursor:pointer;
+  font-size:18px;
+}
+
+/* BODY */
+.rent-body{
+  padding:14px 16px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* INPUT */
+.rent-body input,
+.rent-body textarea{
+  background:#111;
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:10px;
+  padding:10px 12px;
+  color:#fff;
+  font-size:14px;
+}
+
+.rent-body textarea{
+  resize:none;
+  min-height:70px;
+}
+
+/* BUTTON */
+.rent-confirm{
+  margin-top:8px;
+  padding:12px;
+  border-radius:12px;
+  font-weight:900;
+  border:none;
+  background:linear-gradient(135deg,#25F09A,#5FA8FF);
+  color:#000;
+  cursor:pointer;
+}
+
+/* ANIMATION */
+@keyframes modalPop{
+  from{
+    transform:scale(.96) translateY(10px);
+    opacity:0;
+  }
+  to{
+    transform:none;
+    opacity:1;
+  }
+}
 
 
 
