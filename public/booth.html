@@ -219,6 +219,44 @@ html,body{
 }
 
 
+
+.product-list{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px; /* ⬅️ giảm từ 12px */
+}
+
+.product-card{
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.15);
+  border-radius:12px;   /* ⬅️ nhỏ hơn */
+  padding:8px;          /* ⬅️ nhỏ hơn */
+}
+
+
+.product-card img{
+  width:100%;
+  aspect-ratio:1/1;
+  object-fit:cover;
+  border-radius:8px;   /* ⬅️ nhỏ hơn */
+}
+
+.product-name{
+  font-weight:800;
+  font-size:13px;      /* ⬅️ từ 14px */
+  margin-top:4px;
+}
+
+.product-price{
+  font-size:13px;
+  margin-top:2px;
+}
+
+.product-stock{
+  font-size:12px;
+  margin-top:2px;
+}
+
 </style>
 </head>
 
