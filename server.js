@@ -490,6 +490,7 @@ app.post("/api/market/product/update", (req, res) => {
 
 
 // ===== BUY PRODUCT =====
+// ===== BUY PRODUCT =====
 app.post("/api/market/product/buy", (req, res) => {
   const buyerUid = req.headers["x-uid"];
   const { boothId, productId } = req.body || {};
@@ -499,28 +500,38 @@ app.post("/api/market/product/buy", (req, res) => {
 
   const users = loadUsers();
   const buyer = users[buyerUid];
-  if (!buyer) return res.status(403).json({ error: "no_auth" });
+  if (!buyer || !buyer.profile)
+    return res.status(403).json({ error: "no_auth" });
 
   const market = loadMarket();
   const booth = market[boothId];
-  if (!booth) return res.status(404).json({ error: "booth_not_found" });
+  if (!booth)
+    return res.status(404).json({ error: "booth_not_found" });
 
   const product = (booth.products || []).find(p => p.id === productId);
-  if (!product) return res.status(404).json({ error: "product_not_found" });
+  if (!product)
+    return res.status(404).json({ error: "product_not_found" });
 
   if (product.stock <= 0)
     return res.json({ ok:false, error:"out_of_stock" });
 
-  const price = Number(product.price);
-  if (buyer.coins < price)
+  const price = Number(product.price || 0);
+  const buyerCoins = Number(buyer.profile.coins || 0);
+
+  if (buyerCoins < price)
     return res.json({ ok:false, error:"not_enough_coin" });
 
   // 💎 TRỪ COIN NGƯỜI MUA
-  buyer.coins -= price;
+  buyer.profile.coins = buyerCoins - price;
+  buyer.profile.coinSent = (buyer.profile.coinSent || 0) + price;
 
   // 💎 CỘNG COIN CHO CHỦ GIAN
   const owner = users[booth.ownerUid];
-  if (owner) owner.coins += price;
+  if (owner && owner.profile) {
+    owner.profile.coins = (owner.profile.coins || 0) + price;
+    owner.profile.coinReceived =
+      (owner.profile.coinReceived || 0) + price;
+  }
 
   // 📦 TRỪ STOCK
   product.stock -= 1;
@@ -529,9 +540,12 @@ app.post("/api/market/product/buy", (req, res) => {
   saveMarket(market);
 
   emitMarketUpdate("product-buy", boothId);
+  emitCoinUpdate(buyerUid);
+  emitCoinUpdate(booth.ownerUid);
 
   res.json({ ok:true });
 });
+
 
 
 app.get("/api/me/coin", (req, res) => {
@@ -540,10 +554,15 @@ app.get("/api/me/coin", (req, res) => {
 
   const users = loadUsers();
   const me = users[uid];
-  if (!me) return res.json({ ok:false });
+  if (!me || !me.profile) return res.json({ ok:false });
 
-  res.json({ ok:true, coins: me.coins });
+  res.json({
+    ok: true,
+    coins: Number(me.profile.coins) || 0
+  });
 });
+
+
 
 
 // ===== DELETE PRODUCT =====

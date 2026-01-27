@@ -1,10 +1,12 @@
-const socket = io();
+const socket = typeof io !== "undefined" ? io() : null;
+
 
 // 🔐 bind socket với user (bắt buộc)
 const __me = JSON.parse(localStorage.getItem("user_profile"));
-if (__me?.uid) {
+if (socket && __me?.uid) {
   socket.emit("socket-login", { uid: __me.uid });
 }
+
 
 
 /* ===== GET BOOTH ID ===== */
@@ -31,17 +33,19 @@ const pImagePreview = document.getElementById("pImagePreview");
 let editingProductId = null;
 
 
-pImageFile.onchange = () => {
-  const file = pImageFile.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onload = e => {
-    pImagePreview.src = e.target.result;
-    pImagePreview.style.display = "block";
+if (pImageFile) {
+  pImageFile.onchange = () => {
+    const file = pImageFile.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = e => {
+      pImagePreview.src = e.target.result;
+      pImagePreview.style.display = "block";
+    };
+    reader.readAsDataURL(file);
   };
-  reader.readAsDataURL(file);
-};
+}
+
 
 
 
@@ -62,6 +66,7 @@ function renderProducts(products){
 
   const me = JSON.parse(localStorage.getItem("user_profile"));
   const isOwner = me?.uid === currentBoothOwnerUid;
+  
 
   if(!products.length){
     empty.classList.remove("hidden");
@@ -73,6 +78,8 @@ function renderProducts(products){
   list.innerHTML = "";
 
   products.forEach(p=>{
+
+    const out = p.stock <= 0;
     const div = document.createElement("div");
     div.className = "product-card";
 
@@ -90,11 +97,15 @@ div.innerHTML = `
       <button onclick="deleteProduct('${p.id}')" style="flex:1;color:#ff5f6d">🗑 Xoá</button>
     </div>
   ` : `
-    <button
-      style="margin-top:8px;width:100%"
-      onclick="buyProduct('${p.id}')">
-      🛒 Mua
-    </button>
+
+ 
+<button
+  style="margin-top:8px;width:100%"
+  ${out ? "disabled style='opacity:.5'" : ""}
+  onclick="buyProduct('${p.id}')">
+  ${out ? "Hết hàng" : "🛒 Mua"}
+</button>
+
   `}
 `;
 
@@ -169,12 +180,17 @@ btnBack.onclick = ()=> history.back();
 
 btnAddProduct.onclick = ()=>{
   const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me?.uid){
+    alert("🔐 Vui lòng đăng nhập");
+    return;
+  }
   if(me.uid !== currentBoothOwnerUid){
     alert("⛔ Bạn không phải chủ gian hàng");
     return;
   }
   document.getElementById("addProductModal").classList.remove("hidden");
 };
+
 
 
 
@@ -281,6 +297,7 @@ async function submitProduct(){
     return;
   }
 
+  editingProductId = null;
   closeAddProduct();
   loadBooth();
 }
@@ -351,7 +368,7 @@ async function guardBoothAccess() {
 guardBoothAccess();
 
 
-if (typeof socket !== "undefined") {
+if (socket) {
   socket.on("booth-force-locked", ({ boothId }) => {
     const cur = new URLSearchParams(location.search).get("booth");
     if (String(cur) === String(boothId)) {
@@ -362,21 +379,34 @@ if (typeof socket !== "undefined") {
 }
 
 
-// 🔁 realtime update khi market thay đổi (mua / thêm / sửa / xoá sản phẩm)
-if (typeof socket !== "undefined") {
+
+// 🔁 realtime update khi market thay đổi (debounce tránh reload dồn)
+let reloadTimer;
+if (socket) {
   socket.on("market-update", ({ boothId: bId }) => {
     if (String(bId) === String(boothId)) {
-      loadBooth();
+      clearTimeout(reloadTimer);
+      reloadTimer = setTimeout(loadBooth, 300);
     }
   });
 }
 
 
+
+
 function openEditProduct(productId){
-  const boothProducts = document.querySelectorAll(".product-card");
+  
   const booth = window.__lastBooth; // ta sẽ set ở loadBooth
+
+  if (!window.__lastBooth || window.__lastBooth.locked) {
+  alert("🚫 Gian hàng đang bị khoá");
+  return;
+}
+
   const p = booth.products.find(x => x.id === productId);
   if(!p) return;
+
+
 
   editingProductId = productId;
 
@@ -397,13 +427,13 @@ function openEditProduct(productId){
 const btnSubmitProduct = document.getElementById("btnSubmitProduct");
 const productModalTitle = document.getElementById("productModalTitle");
 
-btnSubmitProduct.onclick = () => {
-  if (editingProductId) {
-    submitEditProduct();
-  } else {
-    submitProduct();
-  }
-};
+if (btnSubmitProduct) {
+  btnSubmitProduct.onclick = () => {
+    if (editingProductId) submitEditProduct();
+    else submitProduct();
+  };
+}
+
 
 
 async function submitEditProduct(){
@@ -467,6 +497,15 @@ async function deleteProduct(productId){
 
 
 async function buyProduct(productId){
+
+  const booth = window.__lastBooth;
+const p = booth?.products?.find(x => x.id === productId);
+if (p && p.stock <= 0) {
+  alert("📦 Sản phẩm đã hết hàng");
+  return;
+}
+
+
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
     alert("🔐 Vui lòng đăng nhập để mua");
