@@ -150,22 +150,6 @@ if(!Array.isArray(p.images) || p.images.length === 0){
      onclick='openGallery(${JSON.stringify(p.images)}, 0)'
 >
 
-${p.images.length > 1 ? `
-  <div style="
-    position:absolute;
-    top:6px;
-    right:6px;
-    background:rgba(0,0,0,.6);
-    color:#fff;
-    font-size:11px;
-    padding:2px 6px;
-    border-radius:999px;
-  ">
-    🖼 ${p.images.length}
-  </div>
-` : ""}
-
-
       <div class="product-name">${p.name}</div>
       <div class="product-price">💎 ${p.price.toLocaleString()}</div>
       <div style="opacity:.7;font-size:13px;margin-top:4px">
