@@ -377,6 +377,60 @@ app.get("/api/market", (req,res)=>{
 });
 
 
+// ===== ADD PRODUCT TO BOOTH =====
+app.post("/api/market/product/add", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { boothId, product } = req.body || {};
+
+  if (!uid || !boothId || !product)
+    return res.status(400).json({ error: "missing" });
+
+  // 🔒 booth bị khoá thì chặn
+  if (blockIfBoothLockedById(boothId, uid)) {
+    return res.status(403).json({ error: "booth_locked" });
+  }
+
+  const users = loadUsers();
+  const me = users[uid];
+  if (!me || !me.profile)
+    return res.status(403).json({ error: "no_auth" });
+
+  const market = loadMarket();
+  const booth = market[boothId];
+
+  if (!booth)
+    return res.status(404).json({ error: "booth_not_found" });
+
+  if (booth.ownerUid !== uid)
+    return res.status(403).json({ error: "not_owner" });
+
+  // ✅ đảm bảo có mảng products
+  booth.products ||= [];
+
+  const newProduct = {
+    id: "p_" + Date.now(),
+    name: String(product.name || "").trim(),
+    price: Number(product.price || 0),
+    image: product.image || "",
+    desc: product.desc || "",
+    stock: Number(product.stock || 0),
+    createdAt: Date.now()
+  };
+
+  booth.products.unshift(newProduct);
+
+  saveMarket(market);
+  emitMarketUpdate("product-add", boothId);
+
+  res.json({
+    ok: true,
+    product: newProduct
+  });
+});
+
+
+
+
 app.post("/api/market/extend", (req, res) => {
   const uid = req.headers["x-uid"];
   const { boothId, days, price } = req.body || {};
@@ -613,7 +667,8 @@ app.post("/api/market/rent", (req,res)=>{
       logo: user.profile.avatar,
       expireAt: Date.now() + 30*24*60*60*1000,
       locked: false,
-      trial: true
+      trial: true,
+      products: []
     };
 
     user.profile.hasUsedTrial = true;
@@ -652,7 +707,8 @@ app.post("/api/market/rent", (req,res)=>{
     name: user.profile.name,
     logo: user.profile.avatar,
     expireAt: Date.now() + days*24*60*60*1000,
-    locked: false
+    locked: false,
+    products: []
   };
 
   saveUsers(db);

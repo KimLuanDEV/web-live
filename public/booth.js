@@ -11,6 +11,12 @@ const btnExtend = document.getElementById("btnExtendBooth");
 const expireBox = document.getElementById("boothExpireBox");
 let currentBoothOwnerUid = null;
 
+const pName  = document.getElementById("pName");
+const pPrice = document.getElementById("pPrice");
+const pImage = document.getElementById("pImage");
+const pDesc  = document.getElementById("pDesc");
+const pStock = document.getElementById("pStock");
+
 
 
 /* ===== HELPERS ===== */
@@ -22,6 +28,34 @@ function formatDate(ts){
 function diffDays(ts){
   return Math.ceil((ts - Date.now()) / (24*60*60*1000));
 }
+
+
+function renderProducts(products){
+  const list = document.getElementById("productList");
+  const empty = document.getElementById("emptyText");
+
+  if(!products.length){
+    empty.classList.remove("hidden");
+    list.innerHTML = "";
+    return;
+  }
+
+  empty.classList.add("hidden");
+  list.innerHTML = "";
+
+  products.forEach(p=>{
+    const div = document.createElement("div");
+    div.className = "product-card";
+    div.innerHTML = `
+      <img src="${p.image}">
+      <div class="product-name">${p.name}</div>
+      <div class="product-price">💎 ${p.price.toLocaleString()}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+
 
 /* ===== LOAD BOOTH INFO FROM SERVER ===== */
 async function loadBooth(){
@@ -37,6 +71,9 @@ async function loadBooth(){
     // info
     boothNameEl.textContent = booth.name;
     boothLogoEl.src = booth.logo;
+
+
+    renderProducts(booth.products || []);
 
     const me = JSON.parse(localStorage.getItem("user_profile"));
     const isOwner = me && me.uid === booth.ownerUid;
@@ -80,19 +117,13 @@ btnBack.onclick = ()=> history.back();
 
 btnAddProduct.onclick = ()=>{
   const me = JSON.parse(localStorage.getItem("user_profile"));
-  if(!me || !me.uid){
-    alert("🔐 Vui lòng đăng nhập");
-    return;
-  }
-
-  // chỉ chủ gian mới được đăng
   if(me.uid !== currentBoothOwnerUid){
     alert("⛔ Bạn không phải chủ gian hàng");
     return;
   }
-
-  alert("➕ Gian hàng đang nâng cấp!");
+  document.getElementById("addProductModal").classList.remove("hidden");
 };
+
 
 
 /* ===== GIA HẠN ===== */
@@ -143,6 +174,41 @@ async function confirmExtendBooth(days, price){
   }
 }
 
+
+async function submitProduct(){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+
+  const product = {
+    name: pName.value.trim(),
+    price: +pPrice.value,
+    image: pImage.value.trim(),
+    desc: pDesc.value.trim(),
+    stock: +pStock.value
+  };
+
+  const res = await fetch("/api/market/product/add",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({ boothId, product })
+  });
+
+  const data = await res.json();
+  if(!data.ok){
+    alert("❌ Không thể đăng sản phẩm");
+    return;
+  }
+
+  closeAddProduct();
+  loadBooth(); // reload gian
+}
+
+
+function closeAddProduct(){
+  document.getElementById("addProductModal").classList.add("hidden");
+}
 
 
 async function guardBoothAccess() {
