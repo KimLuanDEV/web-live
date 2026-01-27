@@ -378,48 +378,93 @@ async function submitProduct(){
 
   if(!me?.uid){
     showModal({
-  title: "🔐 Yêu cầu đăng nhập",
-  message: "Vui lòng đăng nhập để tiếp tục."
-});
-
+      title: "🔐 Yêu cầu đăng nhập",
+      message: "Vui lòng đăng nhập để tiếp tục."
+    });
+    setProductSubmitting(false);
     return;
   }
 
   const file = pImageFile.files[0];
   if(!file){
     showModal({
-  title:"🖼️ Thiếu ảnh",
-  message:"Vui lòng chọn ảnh cho sản phẩm."
-});
+      title:"🖼️ Thiếu ảnh",
+      message:"Vui lòng chọn ảnh cho sản phẩm."
+    });
     setProductSubmitting(false);
     return;
   }
 
-  // 1️⃣ UPLOAD ẢNH
+  // =========================
+  // 1️⃣ UPLOAD ẢNH (CÓ PROGRESS %)
+  // =========================
   const form = new FormData();
   form.append("image", file);
 
-  const up = await fetch("/api/upload-product-image", {
-    method: "POST",
-    headers: { "x-uid": me.uid },
-    body: form
-  });
+  const wrap = document.getElementById("uploadProgressWrap");
+  const bar  = document.getElementById("uploadProgressBar");
+  const text = document.getElementById("uploadProgressText");
 
-  const upData = await up.json();
-  if(!upData.url){
-   showModal({
-  title:"❌ Upload thất bại",
-  message:"Không thể tải ảnh lên, vui lòng thử lại."
-});
+  if(wrap){
+    wrap.classList.remove("hidden");
+    bar.style.width = "0%";
+    text.textContent = "⏳ Đang tải ảnh... 0%";
+  }
+
+  let upData;
+  try{
+    upData = await new Promise((resolve, reject)=>{
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/upload-product-image");
+      xhr.setRequestHeader("x-uid", me.uid);
+
+      xhr.upload.onprogress = e=>{
+        if(e.lengthComputable){
+          const percent = Math.round((e.loaded / e.total) * 100);
+          if(bar) bar.style.width = percent + "%";
+          if(text) text.textContent = `⏳ Đang tải ảnh... ${percent}%`;
+        }
+      };
+
+      xhr.onload = ()=>{
+        try{
+          resolve(JSON.parse(xhr.responseText));
+        }catch(e){
+          reject(e);
+        }
+      };
+
+      xhr.onerror = ()=> reject();
+
+      xhr.send(form);
+    });
+  }catch(err){
+    showModal({
+      title:"❌ Upload thất bại",
+      message:"Không thể tải ảnh lên, vui lòng thử lại."
+    });
     setProductSubmitting(false);
+    resetUploadProgress();
     return;
   }
 
+  if(!upData?.url){
+    showModal({
+      title:"❌ Upload thất bại",
+      message:"Không thể tải ảnh lên, vui lòng thử lại."
+    });
+    setProductSubmitting(false);
+    resetUploadProgress();
+    return;
+  }
+
+  // =========================
   // 2️⃣ TẠO PRODUCT
+  // =========================
   const product = {
     name: pName.value.trim(),
     price: +pPrice.value,
-    image: upData.url,      // ✅ URL từ server
+    image: upData.url,
     desc: pDesc.value.trim(),
     stock: +pStock.value
   };
@@ -436,22 +481,30 @@ async function submitProduct(){
   const data = await res.json();
   if(!data.ok){
     showModal({
-  title:"❌ Thất bại",
-  message:"Không thể đăng sản phẩm."
-});
+      title:"❌ Thất bại",
+      message:"Không thể đăng sản phẩm."
+    });
     setProductSubmitting(false);
+    resetUploadProgress();
     return;
   }
 
+  // =========================
+  // ✅ THÀNH CÔNG
+  // =========================
   editingProductId = null;
+  setProductSubmitting(false);
+  resetUploadProgress();
   closeAddProduct();
   loadBooth();
 }
 
 
 
+
 function closeAddProduct(){
   setProductSubmitting(false); // 🔥 reset an toàn
+  resetUploadProgress();
   document.getElementById("addProductModal").classList.add("hidden");
 
   // ✅ RESET STATE
@@ -1016,4 +1069,17 @@ function setProductSubmitting(loading){
       btnSubmitProduct.dataset._text || "Đăng bán";
     btnSubmitProduct.style.opacity = "1";
   }
+}
+
+
+function resetUploadProgress(){
+  const wrap = document.getElementById("uploadProgressWrap");
+  const bar = document.getElementById("uploadProgressBar");
+  const text = document.getElementById("uploadProgressText");
+
+  if(!wrap) return;
+
+  wrap.classList.add("hidden");
+  bar.style.width = "0%";
+  text.textContent = "⏳ Đang tải ảnh... 0%";
 }
