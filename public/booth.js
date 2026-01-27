@@ -1141,3 +1141,9 @@ function prevGallery(){
     (galleryPos - 1 + galleryImages.length) % galleryImages.length;
   renderGallery();
 }
+
+
+const galleryImg = document.getElementById("galleryImage");
+if(galleryImg){
+  galleryImg.onclick = () => nextGallery();
+}

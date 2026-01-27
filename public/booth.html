@@ -623,17 +623,44 @@ html,body{
       overflow:hidden;
     ">
       <img id="galleryImage"
-           style="max-width:100%;max-height:100%;object-fit:contain">
+     style="
+       max-width:100%;
+       max-height:100%;
+       object-fit:contain;
+       z-index:1;
+     ">
 
-      <button onclick="prevGallery()"
-        style="position:absolute;left:10px;font-size:26px;background:none;border:none;color:#fff">
-        ‹
-      </button>
 
-      <button onclick="nextGallery()"
-        style="position:absolute;right:10px;font-size:26px;background:none;border:none;color:#fff">
-        ›
-      </button>
+     <button onclick="prevGallery()"
+  style="
+    position:absolute;
+    left:10px;
+    font-size:30px;
+    background:rgba(0,0,0,.4);
+    border:none;
+    color:#fff;
+    z-index:2;
+    padding:8px 14px;
+    border-radius:50%;
+  ">
+  ‹
+</button>
+
+<button onclick="nextGallery()"
+  style="
+    position:absolute;
+    right:10px;
+    font-size:30px;
+    background:rgba(0,0,0,.4);
+    border:none;
+    color:#fff;
+    z-index:2;
+    padding:8px 14px;
+    border-radius:50%;
+  ">
+  ›
+</button>
+
     </div>
 
     <div style="text-align:center;padding:10px;font-size:13px;opacity:.7">
