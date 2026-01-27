@@ -418,6 +418,25 @@ html,body{
 }
 
 
+
+#galleryThumbs img{
+  width:54px;
+  height:54px;
+  object-fit:cover;
+  border-radius:8px;
+  opacity:.6;
+  cursor:pointer;
+  border:2px solid transparent;
+  transition:.15s;
+}
+
+#galleryThumbs img.active{
+  opacity:1;
+  border-color:#25F09A;
+  box-shadow:0 0 8px rgba(37,240,154,.8);
+}
+
+
 </style>
 </head>
 
@@ -684,6 +703,19 @@ html,body{
     <div style="text-align:center;padding:10px;font-size:13px;opacity:.7">
       <span id="galleryIndex">1 / 1</span>
     </div>
+
+<!-- 🖼️ THUMBNAIL STRIP -->
+<div id="galleryThumbs"
+     style="
+       display:flex;
+       gap:8px;
+       padding:8px 12px 14px;
+       overflow-x:auto;
+       justify-content:center;
+     ">
+</div>
+
+
   </div>
 </div>
 

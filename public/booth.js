@@ -1139,10 +1139,30 @@ function closeGallery(){
 function renderGallery(){
   const img = document.getElementById("galleryImage");
   const idx = document.getElementById("galleryIndex");
+  const thumbs = document.getElementById("galleryThumbs");
 
   img.src = galleryImages[galleryPos];
   idx.textContent = `${galleryPos + 1} / ${galleryImages.length}`;
+
+  // render thumbnails
+  if(thumbs){
+    thumbs.innerHTML = "";
+
+    galleryImages.forEach((url, i)=>{
+      const t = document.createElement("img");
+      t.src = url;
+      if(i === galleryPos) t.classList.add("active");
+
+      t.onclick = ()=>{
+        galleryPos = i;
+        renderGallery();
+      };
+
+      thumbs.appendChild(t);
+    });
+  }
 }
+
 
 function nextGallery(){
   galleryPos = (galleryPos + 1) % galleryImages.length;
