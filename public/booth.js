@@ -121,13 +121,27 @@ if(!Array.isArray(p.images) || p.images.length === 0){
     div.className = "product-card";
 
     div.innerHTML = `
-      <img src="${p.image}"
-     style="cursor:zoom-in"
 
-     onclick='openGallery(${JSON.stringify(
-  Array.isArray(p.images) && p.images.length ? p.images : [p.image]
-)}, 0)'
+   <img src="${p.images[0]}"
+     style="cursor:zoom-in"
+     onclick='openGallery(${JSON.stringify(p.images)}, 0)'
 >
+
+${p.images.length > 1 ? `
+  <div style="
+    position:absolute;
+    top:6px;
+    right:6px;
+    background:rgba(0,0,0,.6);
+    color:#fff;
+    font-size:11px;
+    padding:2px 6px;
+    border-radius:999px;
+  ">
+    🖼 ${p.images.length}
+  </div>
+` : ""}
+
 
       <div class="product-name">${p.name}</div>
       <div class="product-price">💎 ${p.price.toLocaleString()}</div>
