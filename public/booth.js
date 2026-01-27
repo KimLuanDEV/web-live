@@ -114,7 +114,10 @@ function renderProducts(products){
     div.className = "product-card";
 
     div.innerHTML = `
-      <img src="${p.image}">
+      <img src="${p.image}"
+     style="cursor:zoom-in"
+     onclick='openGallery(${JSON.stringify(p.images || [p.image])}, 0)'>
+
       <div class="product-name">${p.name}</div>
       <div class="product-price">💎 ${p.price.toLocaleString()}</div>
       <div style="opacity:.7;font-size:13px;margin-top:4px">
@@ -1099,4 +1102,42 @@ function resetUploadProgress(){
   wrap.classList.add("hidden");
   bar.style.width = "0%";
   text.textContent = "⏳ Đang tải ảnh... 0%";
+}
+
+
+
+let galleryImages = [];
+let galleryPos = 0;
+
+function openGallery(images, startIndex = 0){
+  if(!images || images.length === 0) return;
+
+  galleryImages = images;
+  galleryPos = startIndex;
+
+  document.getElementById("galleryModal").classList.remove("hidden");
+  renderGallery();
+}
+
+function closeGallery(){
+  document.getElementById("galleryModal").classList.add("hidden");
+}
+
+function renderGallery(){
+  const img = document.getElementById("galleryImage");
+  const idx = document.getElementById("galleryIndex");
+
+  img.src = galleryImages[galleryPos];
+  idx.textContent = `${galleryPos + 1} / ${galleryImages.length}`;
+}
+
+function nextGallery(){
+  galleryPos = (galleryPos + 1) % galleryImages.length;
+  renderGallery();
+}
+
+function prevGallery(){
+  galleryPos =
+    (galleryPos - 1 + galleryImages.length) % galleryImages.length;
+  renderGallery();
 }
