@@ -816,8 +816,9 @@ document.querySelectorAll(".booth-tabs .tab").forEach(btn=>{
 
     const tab = btn.dataset.tab;
 
-    document.getElementById("productList").style.display =
-      tab === "products" ? "block" : "none";
+   document.getElementById("productList").style.display =
+    tab === "products" ? "grid" : "none";
+
 
     document.getElementById("orderSection").classList.toggle(
       "hidden", tab !== "orders"
