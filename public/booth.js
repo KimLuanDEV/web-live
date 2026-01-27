@@ -419,8 +419,8 @@ async function submitProduct(){
 
   if(!me?.uid){
     showModal({
-      title: "🔐 Yêu cầu đăng nhập",
-      message: "Vui lòng đăng nhập để tiếp tục."
+      title:"🔐 Yêu cầu đăng nhập",
+      message:"Vui lòng đăng nhập để tiếp tục."
     });
     setProductSubmitting(false);
     return;
@@ -436,17 +436,14 @@ async function submitProduct(){
     return;
   }
 
-  // =========================
-  // 1️⃣ UPLOAD NHIỀU ẢNH (CÓ PROGRESS)
-  // =========================
   const wrap = document.getElementById("uploadProgressWrap");
   const bar  = document.getElementById("uploadProgressBar");
   const text = document.getElementById("uploadProgressText");
 
   if(wrap){
     wrap.classList.remove("hidden");
-    bar.style.width = "0%";
-    text.textContent = `⏳ Đang tải ảnh 1/${files.length}... 0%`;
+    if(bar) bar.style.width = "0%";
+    if(text) text.textContent = `⏳ Đang tải ảnh 1/${files.length}... 0%`;
   }
 
   const imageUrls = [];
@@ -456,8 +453,8 @@ async function submitProduct(){
       const form = new FormData();
       form.append("image", files[i]);
 
-      text.textContent = `⏳ Đang tải ảnh ${i+1}/${files.length}... 0%`;
-      bar.style.width = "0%";
+      if(text) text.textContent = `⏳ Đang tải ảnh ${i+1}/${files.length}... 0%`;
+      if(bar) bar.style.width = "0%";
 
       const upData = await new Promise((resolve, reject)=>{
         const xhr = new XMLHttpRequest();
@@ -467,8 +464,8 @@ async function submitProduct(){
         xhr.upload.onprogress = e=>{
           if(e.lengthComputable){
             const percent = Math.round((e.loaded / e.total) * 100);
-            bar.style.width = percent + "%";
-            text.textContent =
+            if(bar) bar.style.width = percent + "%";
+            if(text) text.textContent =
               `⏳ Đang tải ảnh ${i+1}/${files.length}... ${percent}%`;
           }
         };
@@ -481,14 +478,11 @@ async function submitProduct(){
           }
         };
 
-        xhr.onerror = ()=> reject();
+        xhr.onerror = reject;
         xhr.send(form);
       });
 
-      if(!upData?.url){
-        throw new Error("upload_failed");
-      }
-
+      if(!upData?.url) throw new Error("upload_failed");
       imageUrls.push(upData.url);
     }
   }catch(err){
@@ -501,14 +495,11 @@ async function submitProduct(){
     return;
   }
 
-  // =========================
-  // 2️⃣ TẠO PRODUCT
-  // =========================
   const product = {
     name: pName.value.trim(),
     price: +pPrice.value,
-    images: imageUrls,          // 🔥 nhiều ảnh
-    image: imageUrls[0],        // 🔥 ảnh đại diện
+    images: imageUrls,
+    image: imageUrls[0],
     desc: pDesc.value.trim(),
     stock: +pStock.value
   };
@@ -522,8 +513,7 @@ async function submitProduct(){
     body: JSON.stringify({ boothId, product })
   });
 
-  const data = await res.json();
-  if(!data.ok){
+  if(!res.ok){
     showModal({
       title:"❌ Thất bại",
       message:"Không thể đăng sản phẩm."
@@ -533,15 +523,13 @@ async function submitProduct(){
     return;
   }
 
-  // =========================
-  // ✅ THÀNH CÔNG
-  // =========================
   editingProductId = null;
   setProductSubmitting(false);
   resetUploadProgress();
   closeAddProduct();
   loadBooth();
 }
+
 
 
 
@@ -1223,4 +1211,15 @@ if(galleryImg){
     touchEndX = e.changedTouches[0].screenX;
     handleGallerySwipe();
   });
+}
+
+
+function resetUploadProgress(){
+  const wrap = document.getElementById("uploadProgressWrap");
+  const bar  = document.getElementById("uploadProgressBar");
+  const text = document.getElementById("uploadProgressText");
+
+  if(wrap) wrap.classList.add("hidden");
+  if(bar) bar.style.width = "0%";
+  if(text) text.textContent = "";
 }
