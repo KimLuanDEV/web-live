@@ -37,6 +37,7 @@ const buyAddress = document.getElementById("buyAddress");
 const buyQty = document.getElementById("buyQty");
 const buyNote = document.getElementById("buyNote");
 
+let editingImages = [];
 let isSubmittingProduct = false;
 let editingProductId = null;
 let buyingProductId = null;
@@ -46,13 +47,33 @@ const PRODUCTS_PER_PAGE = 4;
 
 if (pImageFile) {
 
- pImageFile.onchange = () => {
+pImageFile.onchange = () => {
   const files = Array.from(pImageFile.files);
   if (!files.length) return;
 
-  pGalleryPreview.innerHTML = "";
-  pImagePreview.style.display = "none";
+  // 👉 ADD MODE
+  if (!editingProductId) {
+    pGalleryPreview.innerHTML = "";
+    pImagePreview.style.display = "none";
 
+    files.forEach(file=>{
+      const reader = new FileReader();
+      reader.onload = e=>{
+        const img = document.createElement("img");
+        img.src = e.target.result;
+        img.style.width = "100%";
+        img.style.aspectRatio = "1/1";
+        img.style.objectFit = "cover";
+        img.style.borderRadius = "6px";
+        pGalleryPreview.appendChild(img);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    return;
+  }
+
+  // 👉 EDIT MODE: CHỈ PREVIEW ẢNH MỚI, KHÔNG XOÁ ẢNH CŨ
   files.forEach(file=>{
     const reader = new FileReader();
     reader.onload = e=>{
@@ -62,11 +83,13 @@ if (pImageFile) {
       img.style.aspectRatio = "1/1";
       img.style.objectFit = "cover";
       img.style.borderRadius = "6px";
+      img.style.opacity = ".6"; // phân biệt ảnh mới
       pGalleryPreview.appendChild(img);
     };
     reader.readAsDataURL(file);
   });
 };
+
 
 }
 
@@ -317,6 +340,9 @@ btnAddProduct.onclick = ()=>{
 
   // ✅ RESET MODE
   editingProductId = null;
+  editingImages = [];
+  pGalleryPreview.innerHTML = "";
+
   productModalTitle.textContent = "➕ Thêm sản phẩm";
   btnSubmitProduct.textContent = "Đăng bán";
 
@@ -639,37 +665,81 @@ if (socket) {
 
 
 function openEditProduct(productId){
-  
-  const booth = window.__lastBooth; // ta sẽ set ở loadBooth
+  const booth = window.__lastBooth;
 
-  if (!window.__lastBooth || window.__lastBooth.locked) {
-  showModal({
-  title:"🚫 Gian hàng bị khoá",
-  message:"Gian hàng hiện đang bị khoá, không thể chỉnh sửa sản phẩm."
-});
-
-  return;
-}
+  if (!booth || booth.locked) {
+    showModal({
+      title:"🚫 Gian hàng bị khoá",
+      message:"Gian hàng hiện đang bị khoá, không thể chỉnh sửa sản phẩm."
+    });
+    return;
+  }
 
   const p = booth.products.find(x => x.id === productId);
   if(!p) return;
-
-
 
   editingProductId = productId;
 
   productModalTitle.textContent = "✏️ Sửa sản phẩm";
   btnSubmitProduct.textContent = "Lưu thay đổi";
 
-  pName.value = p.name;
+  pName.value  = p.name;
   pPrice.value = p.price;
-  pDesc.value = p.desc;
+  pDesc.value  = p.desc;
   pStock.value = p.stock;
-  pImagePreview.src = p.image;
-  pImagePreview.style.display = "block";
+
+  // 🔥 SET ẢNH EDIT
+  editingImages = [...(p.images || [p.image])];
+
+  // reset input file
+  pImageFile.value = "";
+  pImagePreview.style.display = "none";
+  pGalleryPreview.innerHTML = "";
+
+  renderEditGallery();
 
   document.getElementById("addProductModal").classList.remove("hidden");
 }
+
+
+function renderEditGallery(){
+  pGalleryPreview.innerHTML = "";
+
+  editingImages.forEach((url, index)=>{
+    const wrap = document.createElement("div");
+    wrap.style.position = "relative";
+
+    const img = document.createElement("img");
+    img.src = url;
+    img.style.width = "100%";
+    img.style.aspectRatio = "1/1";
+    img.style.objectFit = "cover";
+    img.style.borderRadius = "6px";
+
+    const del = document.createElement("button");
+    del.textContent = "✕";
+    del.style.position = "absolute";
+    del.style.top = "6px";
+    del.style.right = "6px";
+    del.style.width = "22px";
+    del.style.height = "22px";
+    del.style.borderRadius = "50%";
+    del.style.border = "none";
+    del.style.background = "rgba(0,0,0,.6)";
+    del.style.color = "#fff";
+    del.style.cursor = "pointer";
+
+    del.onclick = ()=>{
+      editingImages.splice(index, 1);
+      renderEditGallery();
+    };
+
+    wrap.appendChild(img);
+    wrap.appendChild(del);
+    pGalleryPreview.appendChild(wrap);
+  });
+}
+
 
 
 const btnSubmitProduct = document.getElementById("btnSubmitProduct");
@@ -690,17 +760,41 @@ btnSubmitProduct.onclick = () => {
 
 
 async function submitEditProduct(){
-  // 🚫 chặn double click
   if(isSubmittingProduct) return;
   setProductSubmitting(true);
 
   const me = JSON.parse(localStorage.getItem("user_profile"));
+  const booth = window.__lastBooth;
+  const oldProduct = booth.products.find(p => p.id === editingProductId);
+
+  let images = [...editingImages]; // 🔥 lấy từ state đã xoá
+
+
+  // 👉 upload ảnh mới nếu có
+  const files = Array.from(pImageFile.files || []);
+  for(const file of files){
+    const form = new FormData();
+    form.append("image", file);
+
+    const upData = await new Promise((resolve, reject)=>{
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/upload-product-image");
+      xhr.setRequestHeader("x-uid", me.uid);
+      xhr.onload = ()=> resolve(JSON.parse(xhr.responseText));
+      xhr.onerror = reject;
+      xhr.send(form);
+    });
+
+    if(upData?.url) images.push(upData.url);
+  }
 
   const product = {
     name: pName.value.trim(),
     price: +pPrice.value,
     desc: pDesc.value.trim(),
-    stock: +pStock.value
+    stock: +pStock.value,
+    images,          // 🔥 gửi full gallery
+    image: images[0]
   };
 
   const res = await fetch("/api/market/product/update",{
@@ -717,23 +811,21 @@ async function submitEditProduct(){
   });
 
   const data = await res.json();
-
-  // ❌ LỖI → MỞ LẠI NÚT
   if(!data.ok){
     showModal({
       title:"❌ Thất bại",
       message:"Không thể sửa sản phẩm."
     });
-    setProductSubmitting(false); // ⭐ BẮT BUỘC
+    setProductSubmitting(false);
     return;
   }
 
-  // ✅ THÀNH CÔNG
   editingProductId = null;
-  setProductSubmitting(false);   // ⭐ MỞ LẠI NÚT
+  setProductSubmitting(false);
   closeAddProduct();
   loadBooth();
 }
+
 
 
 
