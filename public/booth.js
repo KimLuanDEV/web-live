@@ -109,6 +109,12 @@ function renderProducts(products){
   list.innerHTML = "";
 
   pageItems.forEach(p=>{
+    // 🔧 đảm bảo sản phẩm nào cũng có images[]
+if(!Array.isArray(p.images) || p.images.length === 0){
+  p.images = [p.image];
+}
+
+
     const out = p.stock <= 0;
     const div = document.createElement("div");
     div.className = "product-card";
@@ -1112,8 +1118,10 @@ let galleryPos = 0;
 function openGallery(images, startIndex = 0){
   if(!images || images.length === 0) return;
 
-  galleryImages = images;
-  galleryPos = startIndex;
+  galleryImages = [...images];
+
+  galleryPos = Math.max(0, Math.min(startIndex, images.length - 1));
+
 
   document.getElementById("galleryModal").classList.remove("hidden");
   renderGallery();
@@ -1144,11 +1152,6 @@ function prevGallery(){
 
 
 const galleryImg = document.getElementById("galleryImage");
-if(galleryImg){
-  galleryImg.onclick = () => nextGallery();
-}
-
-
 if(galleryImg){
   galleryImg.onclick = () => nextGallery();
 }
