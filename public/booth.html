@@ -162,46 +162,6 @@ html,body{
 
 
 
-/* ===== ORDERS ===== */
-.order-card{
-  background:#111;
-  border:1px solid #222;
-  border-radius:12px;
-  padding:12px;
-  margin-bottom:12px;
-}
-
-.order-title{
-  font-weight:800;
-  color:#25F09A;
-}
-
-.order-meta{
-  font-size:13px;
-  opacity:.8;
-  margin-top:4px;
-}
-
-.order-buyer{
-  margin-top:8px;
-  font-size:14px;
-}
-
-.order-actions{
-  display:flex;
-  gap:8px;
-  margin-top:10px;
-}
-
-.order-actions button{
-  flex:1;
-  border-radius:8px;
-  padding:6px;
-  font-weight:700;
-}
-
-
-
 </style>
 </head>
 
@@ -225,15 +185,15 @@ html,body{
 
 <div id="boothExpireBox" class="booth-expire hidden"></div>
 
+
+
 <!-- BODY -->
 <div class="booth-body">
 
   <!-- TABS -->
-  <div class="booth-tabs" style="display:flex;gap:8px;margin-bottom:12px">
+  <div class="booth-tabs">
     <button class="tab active" data-tab="products">🛒 Sản phẩm</button>
-    <button class="tab hidden" data-tab="orders" id="tabOrders">
-      📦 Đơn hàng
-    </button>
+    <button class="tab hidden" data-tab="orders" id="tabOrders">📦 Đơn hàng</button>
   </div>
 
   <!-- PRODUCTS -->
@@ -241,10 +201,12 @@ html,body{
 
   <!-- ORDERS -->
   <div id="orderSection" class="hidden">
-    <div id="orderList"></div>
-    <div id="orderEmpty" class="empty-text hidden">
-      📭 Chưa có đơn hàng nào
-    </div>
+    <div id="orderList" class="order-list"></div>
+
+ <div id="orderEmpty" class="empty-text hidden">
+  📭 Chưa có đơn hàng nào
+</div>
+
   </div>
 
   <div class="empty-text" id="emptyText">
