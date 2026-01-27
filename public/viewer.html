@@ -554,6 +554,8 @@
     const roomId = params.get("room") || "abc123";
 
 
+let __roomUnlocked = false;
+let __waitingPassword = false;
 
 const giftVideoQueue = [];
 let playingGiftVideo = false;
@@ -805,14 +807,13 @@ socket.emit("check-room-lock", { roomId });
 
 
 socket.on("room-unlocked", () => {
-  socket.emit("viewer-join", {
-    roomId,
-    profile: sendProfile
-  });
+  __roomUnlocked = true;
+  join();
 });
 
 
-let __waitingPassword = false;
+
+
 
 socket.on("need-room-password", () => {
   __waitingPassword = true;
@@ -859,6 +860,7 @@ socket.on("need-room-password", () => {
 
 socket.on("room-password-ok", () => {
   __waitingPassword = false;
+  __roomUnlocked = true;
 
   const overlay = document.getElementById("joinOverlayViewer");
   if (overlay) {
@@ -866,11 +868,9 @@ socket.on("room-password-ok", () => {
     overlay.innerHTML = "";
   }
 
-  socket.emit("viewer-join", {
-    roomId,
-    profile: sendProfile
-  });
+  join(); // ✅ CHỈ GỌI QUA 1 CỔNG
 });
+
 
 
 socket.on("room-password-wrong", () => {
@@ -1887,22 +1887,24 @@ function getCurrentPC(){
     });
 
 
-  async function join() {
+async function join() {
+  if (!__roomUnlocked) {
+    console.warn("🔒 Room chưa unlock → chặn join()");
+    return;
+  }
+
   if (joined || __waitingHostStream) return;
 
   joined = true;
 
-  try { btnJoin.style.display = "none"; } catch {}
-
-  socket.emit("join-room", {
+  socket.emit("viewer-join", {
     roomId,
-    role: "viewer",
     profile: sendProfile
   });
 
   setStatus("⏳ Đang kết nối livestream…");
-  log("Viewer join room");
 }
+
 
 
     function cleanupPeer(peerKey) {
@@ -2136,20 +2138,7 @@ __viewerGotAnyTrack = true;
       join().catch(err => log("Join lỗi: " + err.message));
     };
 
-    // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
- (function autoJoinViewer(){
-  try {
-    btnJoin.disabled = true;
-    btnJoin.textContent = "⏳ Đang tham gia...";
-    setTimeout(() => {
-      if (__waitingPassword) return; // ⛔ chờ nhập mật khẩu
-      join().catch(err => {
-        btnJoin.disabled = false;
-        btnJoin.textContent = "Tham gia xem Livestream";
-      });
-    }, 120);
-  } catch {}
-})();
+
 
 
 
