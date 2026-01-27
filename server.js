@@ -574,9 +574,9 @@ res.json({ ok:true });
 
 app.post("/api/market/rent", (req,res)=>{
   const uid = req.headers["x-uid"];
-  const { boothId, days, price } = req.body || {};
+  const { boothId, days, price, trial } = req.body || {};
 
-  if(!uid || !boothId || !price)
+  if(!uid || !boothId || !days)
     return res.status(400).json({ error:"missing" });
 
   const db = loadUsers();
@@ -584,30 +584,68 @@ app.post("/api/market/rent", (req,res)=>{
   if(!user || !user.profile)
     return res.status(403).json({ error:"no_auth" });
 
-  const coins = Number(user.profile.coins || 0);
-  if(coins < price)
-    return res.status(400).json({ error:"not_enough_coin" });
-
   const market = loadMarket();
 
-// 🔒 KHOÁ 1 USER CHỈ 1 GIAN
+  // 🔒 MỖI USER CHỈ ĐƯỢC 1 GIAN
   const alreadyHaveBooth = Object.values(market).some(
-  b => b && b.ownerUid === uid
+    b => b && b.ownerUid === uid
   );
-
   if (alreadyHaveBooth) {
-  return res.status(400).json({ error: "already_have_booth" });
+    return res.status(400).json({ error: "already_have_booth" });
   }
-
 
   if(market[boothId])
     return res.status(400).json({ error:"already_rented" });
 
-  // ➖ TRỪ COIN
-  user.profile.coins -= price;
-  user.profile.coinSent = (user.profile.coinSent || 0) + price;
+  // =================================================
+  // 🎁 TRIAL MODE – DÙNG THỬ MIỄN PHÍ 30 NGÀY
+  // =================================================
+  if(trial === true){
 
-  // 💾 LƯU GIAN
+    if(user.profile.hasUsedTrial){
+      return res.status(400).json({ error:"trial_used" });
+    }
+
+    market[boothId] = {
+      boothId,
+      ownerUid: uid,
+      name: user.profile.name,
+      logo: user.profile.avatar,
+      expireAt: Date.now() + 30*24*60*60*1000,
+      locked: false,
+      trial: true
+    };
+
+    user.profile.hasUsedTrial = true;
+
+    saveUsers(db);
+    saveMarket(market);
+
+    emitMarketUpdate("rent", boothId);
+
+    return res.json({
+      ok: true,
+      trial: true,
+      booth: market[boothId]
+    });
+  }
+
+  // =================================================
+  // 💎 RENT THƯỜNG – TRỪ COIN
+  // =================================================
+  const cost = Number(price || 0);
+  const coins = Number(user.profile.coins || 0);
+
+  if(cost <= 0)
+    return res.status(400).json({ error:"invalid_price" });
+
+  if(coins < cost)
+    return res.status(400).json({ error:"not_enough_coin" });
+
+  // ➖ TRỪ COIN
+  user.profile.coins -= cost;
+  user.profile.coinSent = (user.profile.coinSent || 0) + cost;
+
   market[boothId] = {
     boothId,
     ownerUid: uid,
@@ -620,7 +658,7 @@ app.post("/api/market/rent", (req,res)=>{
   saveUsers(db);
   saveMarket(market);
 
-  emitCoinUpdate(uid); // 🔁 realtime coin
+  emitCoinUpdate(uid);
   emitMarketUpdate("rent", boothId);
 
   res.json({
@@ -629,6 +667,7 @@ app.post("/api/market/rent", (req,res)=>{
     coins: user.profile.coins
   });
 });
+
 
 
 

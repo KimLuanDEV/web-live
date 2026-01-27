@@ -415,6 +415,19 @@ function updateMarketStats(){
 /* ===== OPEN RENT MODAL ===== */
 function rentBooth(id){
   const me = JSON.parse(localStorage.getItem("user_profile"));
+
+  // 🔒 Ẩn gói dùng thử nếu đã sử dụng
+  const trialOpt = document.querySelector('.rent-option[data-trial="true"]');
+  if(trialOpt){
+  if(me.hasUsedTrial === true){
+    trialOpt.style.display = "none";
+  }else{
+    trialOpt.style.display = "";
+  }
+}
+
+
+
   if(!me || !me.uid){
   showModal({
   title: "🔐 Chưa đăng nhập",
@@ -579,6 +592,8 @@ if(!data.ok){
     msg = "Không đủ kim cương";
   else if(data.error === "not_owner")
     msg = "Bạn không phải chủ gian hàng";
+  else if(data.error === "trial_used")
+    msg = "🎁 Bạn đã sử dụng gói dùng thử trước đó";
 
   await showModal({
     title: "⚠️ Không thể thực hiện",
