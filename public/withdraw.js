@@ -2,7 +2,7 @@ const params = new URLSearchParams(location.search);
 const received = Number(params.get("received") || 0);
 
 // 🔁 TỶ GIÁ (bạn chỉnh tùy ý)
-const RATE = 0.0133; // 1 kim cương = 100đ / giá đô $
+const RATE = 0.95; // 1 kim cương = 100đ / giá đô $
 // ⛔ RÚT TỐI THIỂU
 const MIN_WITHDRAW = 5000; // 💎 tối thiểu để được rút
 
@@ -55,7 +55,7 @@ function updateBankLogo(bankName){
 
 function updateMoney(){
   const val = Math.min(received, Number(withdrawInput.value || 0));
-  moneyVal.textContent = (val * RATE).toLocaleString() + " $";
+  moneyVal.textContent = (val * RATE).toLocaleString() + " ₫";
 
   // UX: chưa đủ tối thiểu thì disable nút
   if (val < MIN_WITHDRAW) {
