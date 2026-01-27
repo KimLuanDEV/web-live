@@ -154,17 +154,27 @@ async function loadBooth(){
     boothNameEl.textContent = booth.name;
     boothLogoEl.src = booth.logo;
 
-
+    // render products
     renderProducts(booth.products || []);
 
     const me = JSON.parse(localStorage.getItem("user_profile"));
     const isOwner = me && me.uid === booth.ownerUid;
 
-    // chỉ chủ gian mới thấy gia hạn + expiry
+    /* =========================
+       CHỦ GIAN
+    ========================= */
     if(isOwner){
+      // hiện nút
       btnExtend?.classList.remove("hidden");
       btnAddProduct?.classList.remove("hidden");
 
+      // 👉 HIỆN TAB ĐƠN HÀNG
+      document.getElementById("tabOrders")?.classList.remove("hidden");
+
+      // 👉 RENDER ĐƠN HÀNG
+      renderOrders(booth.orders || []);
+
+      // expire info
       if(booth.expireAt){
         const daysLeft = diffDays(booth.expireAt);
         expireBox.classList.remove("hidden");
@@ -187,22 +197,23 @@ async function loadBooth(){
       }
     }
 
+    /* =========================
+       KHÁCH / NGƯỜI MUA
+    ========================= */
+    else{
+      // ẩn tab đơn hàng nếu không phải chủ
+      document.getElementById("tabOrders")?.classList.add("hidden");
+    }
+
   }catch(e){
     console.error("loadBooth error", e);
   }
 
-const me = JSON.parse(localStorage.getItem("user_profile"));
-const isOwner = me?.uid === booth.ownerUid;
 
-if(isOwner){
-  document.getElementById("tabOrders")?.classList.remove("hidden");
-  renderOrders(booth.orders || []);
-}
-
-
-
+  document.querySelector('[data-tab="products"]')?.click();
 
 }
+
 
 loadBooth();
 syncMyCoin();
@@ -602,6 +613,17 @@ return;
 
 
 function buyProduct(productId){
+
+  if(!window.__lastBooth) return;
+
+    if (window.__lastBooth?.locked) {
+  showModal({
+    title:"🚫 Gian hàng bị khoá",
+    message:"Không thể mua lúc này."
+  });
+  return;
+}
+
   const booth = window.__lastBooth;
   const p = booth?.products?.find(x => x.id === productId);
 
@@ -696,7 +718,8 @@ async function submitBuyForm(){
     name: buyName.value.trim(),
     phone: buyPhone.value.trim(),
     address: buyAddress.value.trim(),
-    qty: +buyQty.value,
+    qty: Math.max(1, Number(buyQty.value) || 1),
+
     note: buyNote.value.trim()
   };
 
@@ -757,14 +780,20 @@ document.querySelectorAll(".booth-tabs .tab").forEach(btn=>{
     btn.classList.add("active");
 
     const tab = btn.dataset.tab;
+
     document.getElementById("productList").style.display =
       tab === "products" ? "block" : "none";
 
     document.getElementById("orderSection").classList.toggle(
       "hidden", tab !== "orders"
     );
+
+    // 👉 FIX: ẩn emptyText khi xem đơn hàng
+    document.getElementById("emptyText").style.display =
+      tab === "products" ? "block" : "none";
   };
 });
+
 
 
 function renderOrders(orders){
@@ -802,7 +831,7 @@ function renderOrders(orders){
       </div>
 
       <div class="order-actions">
-        <button onclick="markOrder('${o.id}','contacted')">
+      <button onclick="markOrder('${o.id}','contacted')"> 
           📞 Đã liên hệ
         </button>
         <button onclick="markOrder('${o.id}','done')" style="color:#25F09A">
@@ -812,5 +841,15 @@ function renderOrders(orders){
     `;
 
     list.appendChild(div);
+  });
+}
+
+
+
+
+function markOrder(orderId, status){
+  showModal({
+    title: "ℹ️ Thông báo",
+    message: "Chức năng cập nhật trạng thái đơn sẽ được mở sau."
   });
 }
