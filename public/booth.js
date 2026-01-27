@@ -29,6 +29,7 @@ const pStock = document.getElementById("pStock");
 
 const pImageFile = document.getElementById("pImageFile");
 const pImagePreview = document.getElementById("pImagePreview");
+const pGalleryPreview = document.getElementById("pGalleryPreview");
 
 const buyName = document.getElementById("buyName");
 const buyPhone = document.getElementById("buyPhone");
@@ -122,7 +123,11 @@ if(!Array.isArray(p.images) || p.images.length === 0){
     div.innerHTML = `
       <img src="${p.image}"
      style="cursor:zoom-in"
-     onclick='openGallery(${JSON.stringify(p.images || [p.image])}, 0)'>
+
+     onclick='openGallery(${JSON.stringify(
+  Array.isArray(p.images) && p.images.length ? p.images : [p.image]
+)}, 0)'
+>
 
       <div class="product-name">${p.name}</div>
       <div class="product-price">💎 ${p.price.toLocaleString()}</div>

@@ -373,8 +373,19 @@ app.get("/api/admin/live-rooms", (req, res) => {
 app.get("/api/market", (req,res)=>{
   cleanupExpiredBooths();
   const market = loadMarket();
+
+  // 🔧 đảm bảo product nào cũng có images[]
+  Object.values(market).forEach(booth=>{
+    (booth?.products || []).forEach(p=>{
+      if (!Array.isArray(p.images) || p.images.length === 0) {
+        p.images = p.image ? [p.image] : [];
+      }
+    });
+  });
+
   res.json({ ok:true, market });
 });
+
 
 app.post("/api/upload-product-image",
   postMediaUpload.single("image"),
@@ -433,15 +444,24 @@ app.post("/api/market/product/add", (req, res) => {
   // ✅ đảm bảo có mảng products
   booth.products ||= [];
 
-  const newProduct = {
-    id: "p_" + Date.now(),
-    name: String(product.name || "").trim(),
-    price: Number(product.price || 0),
-    image: product.image || "",
-    desc: product.desc || "",
-    stock: Number(product.stock || 0),
-    createdAt: Date.now()
-  };
+const images =
+  Array.isArray(product.images) && product.images.length
+    ? product.images
+    : (product.image ? [product.image] : []);
+
+const newProduct = {
+  id: "p_" + Date.now(),
+  name: String(product.name || "").trim(),
+  price: Number(product.price || 0),
+
+  image: images[0] || "",   // ảnh đại diện
+  images: images,           // ✅ LƯU TẤT CẢ ẢNH
+
+  desc: product.desc || "",
+  stock: Number(product.stock || 0),
+  createdAt: Date.now()
+};
+
 
   booth.products.unshift(newProduct);
 
@@ -481,6 +501,13 @@ app.post("/api/market/product/update", (req, res) => {
   p.price = Number(product.price ?? p.price);
   p.desc  = product.desc ?? p.desc;
   p.stock = Number(product.stock ?? p.stock);
+
+  // 🖼️ update gallery nếu có gửi lên
+if (Array.isArray(product.images) && product.images.length) {
+  p.images = product.images;
+  p.image  = product.images[0];
+}
+
 
   saveMarket(market);
   emitMarketUpdate("product-update", boothId);
