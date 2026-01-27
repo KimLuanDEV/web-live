@@ -1147,3 +1147,38 @@ const galleryImg = document.getElementById("galleryImage");
 if(galleryImg){
   galleryImg.onclick = () => nextGallery();
 }
+
+
+if(galleryImg){
+  galleryImg.onclick = () => nextGallery();
+}
+
+
+let touchStartX = 0;
+let touchEndX = 0;
+
+function handleGallerySwipe(){
+  const delta = touchEndX - touchStartX;
+
+  // swipe tối thiểu 50px mới tính
+  if(Math.abs(delta) < 50) return;
+
+  if(delta < 0){
+    // vuốt trái → ảnh tiếp
+    nextGallery();
+  }else{
+    // vuốt phải → ảnh trước
+    prevGallery();
+  }
+}
+
+if(galleryImg){
+  galleryImg.addEventListener("touchstart", e=>{
+    touchStartX = e.changedTouches[0].screenX;
+  }, { passive:true });
+
+  galleryImg.addEventListener("touchend", e=>{
+    touchEndX = e.changedTouches[0].screenX;
+    handleGallerySwipe();
+  });
+}
