@@ -126,6 +126,16 @@ function checkRentAffordable(){
     }
   }
 
+  if(selectedPlan.trial){
+  btn.disabled = false;
+  btn.classList.remove("disabled");
+  btn.textContent = "🎁 Dùng thử miễn phí";
+  if(topupBtn) topupBtn.classList.add("hidden");
+  priceVal.classList.remove("rent-price-over");
+  return;
+}
+
+
   if(selectedPlan.price > coin){
     btn.disabled = true;
     btn.classList.add("disabled");
@@ -476,8 +486,13 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
 
     const days = +opt.dataset.days;
     const price = +opt.dataset.price;
+    const isTrial = opt.dataset.trial === "true";
 
-    selectedPlan = { days, price };
+    selectedPlan = {
+  days,
+  price,
+  trial: isTrial
+};
 
     if(range){
       range.value = days;
@@ -542,11 +557,13 @@ try{
       "Content-Type":"application/json",
       "x-uid": uid
     },
+
     body: JSON.stringify({
-      boothId: currentBoothId,
-      days: selectedPlan.days,
-      price: selectedPlan.price
-    })
+  boothId: currentBoothId,
+  days: selectedPlan.days,
+  price: selectedPlan.price,
+  trial: selectedPlan.trial === true
+})
   });
 
   const data = await res.json();

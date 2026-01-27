@@ -621,6 +621,22 @@ html, body{
 }
 
 
+.rent-option.trial{
+  border:1.5px dashed #5FA8FF;
+  background:linear-gradient(
+    180deg,
+    rgba(95,168,255,.18),
+    rgba(0,0,0,0)
+  );
+}
+
+.rent-option.trial.active{
+  border-color:#5FA8FF;
+  color:#5FA8FF;
+  box-shadow:0 0 16px rgba(95,168,255,.45);
+}
+
+
 </style>
 </head>
 
@@ -668,6 +684,14 @@ html, body{
   <!-- ===== QUICK PLANS ===== -->
   <div class="rent-section-title">⚡ Gói nhanh</div>
   <div class="rent-options">
+
+    <div class="rent-option trial" data-days="30" data-price="0" data-trial="true">
+  <div class="days">🎁 Dùng thử</div>
+  <div class="price">30 ngày · Miễn phí</div>
+  <div class="rent-save hot">FREE</div>
+</div>
+
+
     <div class="rent-option active" data-days="7" data-price="1000">
       <div class="days">7 ngày</div>
       <div class="price">💎 1,000</div>
