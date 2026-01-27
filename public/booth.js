@@ -160,6 +160,13 @@ async function loadBooth(){
     const me = JSON.parse(localStorage.getItem("user_profile"));
     const isOwner = me && me.uid === booth.ownerUid;
 
+// 🔐 Chưa đăng nhập → ẩn tab "Đơn của tôi"
+if(!me?.uid){
+  document.getElementById("tabMyOrders")?.classList.add("hidden");
+}
+
+
+
     /* =========================
        CHỦ GIAN
     ========================= */
@@ -205,12 +212,21 @@ async function loadBooth(){
       document.getElementById("tabOrders")?.classList.add("hidden");
     }
 
+    document.querySelector('[data-tab="products"]')?.click();
+
+// 👉 NGƯỜI MUA: hiện tab Đơn của tôi
+if(!isOwner){
+  document.getElementById("tabMyOrders")?.classList.remove("hidden");
+  renderMyOrders(booth.orders || []);
+}
+  
   }catch(e){
     console.error("loadBooth error", e);
   }
 
 
-  document.querySelector('[data-tab="products"]')?.click();
+
+
 
 }
 
@@ -788,11 +804,67 @@ document.querySelectorAll(".booth-tabs .tab").forEach(btn=>{
       "hidden", tab !== "orders"
     );
 
-    // 👉 FIX: ẩn emptyText khi xem đơn hàng
+    document.getElementById("myOrderSection").classList.toggle(
+      "hidden", tab !== "myOrders"
+    );
+
     document.getElementById("emptyText").style.display =
       tab === "products" ? "block" : "none";
   };
 });
+
+
+
+function renderMyOrders(orders){
+  const list = document.getElementById("myOrderList");
+  const empty = document.getElementById("myOrderEmpty");
+
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me?.uid){
+    empty.classList.remove("hidden");
+    empty.textContent = "Vui lòng đăng nhập để xem đơn hàng.";
+    return;
+  }
+
+  const myOrders = (orders || []).filter(o => o.buyerUid === me.uid);
+
+  if(myOrders.length === 0){
+    empty.classList.remove("hidden");
+    list.innerHTML = "";
+    return;
+  }
+
+  empty.classList.add("hidden");
+  list.innerHTML = "";
+
+  myOrders.forEach(o=>{
+    const div = document.createElement("div");
+    div.className = "order-card";
+
+    const statusText = {
+      pending: "⏳ Đang chờ shop",
+      contacted: "📞 Shop đã liên hệ",
+      done: "✅ Hoàn tất"
+    }[o.status] || "⏳ Đang xử lý";
+
+    div.innerHTML = `
+      <div class="order-title">
+        🛒 ${o.productName} × ${o.qty}
+      </div>
+
+      <div class="order-meta">
+        💎 ${o.totalPrice.toLocaleString()} ·
+        🕒 ${new Date(o.createdAt).toLocaleString("vi-VN")}
+      </div>
+
+      <div style="margin-top:6px;font-weight:800">
+        ${statusText}
+      </div>
+    `;
+
+    list.appendChild(div);
+  });
+}
 
 
 

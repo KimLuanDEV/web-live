@@ -191,10 +191,12 @@ html,body{
 <div class="booth-body">
 
   <!-- TABS -->
-  <div class="booth-tabs">
-    <button class="tab active" data-tab="products">🛒 Sản phẩm</button>
-    <button class="tab hidden" data-tab="orders" id="tabOrders">📦 Đơn hàng</button>
-  </div>
+ <div class="booth-tabs">
+  <button class="tab active" data-tab="products">🛒 Sản phẩm</button>
+  <button class="tab hidden" data-tab="orders" id="tabOrders">📦 Đơn hàng</button>
+  <button class="tab hidden" data-tab="myOrders" id="tabMyOrders">🧾 Đơn của tôi</button>
+</div>
+
 
   <!-- PRODUCTS -->
   <div id="productList" class="product-list"></div>
@@ -208,6 +210,15 @@ html,body{
 </div>
 
   </div>
+
+<!-- MY ORDERS -->
+<div id="myOrderSection" class="hidden">
+  <div id="myOrderList"></div>
+  <div id="myOrderEmpty" class="empty-text hidden">
+    🧾 Bạn chưa có đơn hàng nào
+  </div>
+</div>
+
 
   <div class="empty-text" id="emptyText">
     Gian hàng chưa có sản phẩm nào.<br>
