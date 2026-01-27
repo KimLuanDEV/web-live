@@ -801,6 +801,17 @@ setInterval(checkHDQuality, 2500);
     const socket = io();
 
 
+socket.emit("check-room-lock", { roomId });
+
+
+socket.on("room-unlocked", () => {
+  socket.emit("viewer-join", {
+    roomId,
+    profile: sendProfile
+  });
+});
+
+
 let __waitingPassword = false;
 
 socket.on("need-room-password", () => {
@@ -845,6 +856,7 @@ socket.on("need-room-password", () => {
   };
 });
 
+
 socket.on("room-password-ok", () => {
   __waitingPassword = false;
 
@@ -854,10 +866,12 @@ socket.on("room-password-ok", () => {
     overlay.innerHTML = "";
   }
 
-  // 👉 join lại viewer (server sẽ cho qua)
-  joined = false;
-  join().catch(()=>{});
+  socket.emit("viewer-join", {
+    roomId,
+    profile: sendProfile
+  });
 });
+
 
 socket.on("room-password-wrong", () => {
   const err = document.getElementById("roomPasswordError");
@@ -1164,10 +1178,6 @@ const sendProfile = isGuest ? {
   coins: profile.coins || 0
 };
 
-socket.emit("viewer-join", {
-  roomId,
-  profile: sendProfile
-});
 
 
 
