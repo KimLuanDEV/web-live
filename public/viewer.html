@@ -801,6 +801,74 @@ setInterval(checkHDQuality, 2500);
     const socket = io();
 
 
+let __waitingPassword = false;
+
+socket.on("need-room-password", () => {
+  __waitingPassword = true;
+
+  const overlay = document.getElementById("joinOverlayViewer");
+  if (!overlay) return;
+
+  overlay.innerHTML = `
+    <div class="join-card">
+      <h3>🔒 Phòng có mật khẩu</h3>
+      <input
+        id="roomPasswordInput"
+        type="password"
+        placeholder="Nhập mật khẩu phòng"
+        autocomplete="off"
+      />
+      <button id="btnSubmitRoomPassword">🔓 Vào xem</button>
+      <div id="roomPasswordError" class="join-error"></div>
+    </div>
+  `;
+
+  overlay.classList.remove("hidden");
+
+  const btn = document.getElementById("btnSubmitRoomPassword");
+  const input = document.getElementById("roomPasswordInput");
+  const err = document.getElementById("roomPasswordError");
+
+  btn.onclick = () => {
+    const password = input.value.trim();
+    if (!password) {
+      err.textContent = "⚠️ Vui lòng nhập mật khẩu";
+      return;
+    }
+
+    err.textContent = "⏳ Đang xác thực…";
+
+    socket.emit("join-room-with-password", {
+      roomId,
+      password
+    });
+  };
+});
+
+socket.on("room-password-ok", () => {
+  __waitingPassword = false;
+
+  const overlay = document.getElementById("joinOverlayViewer");
+  if (overlay) {
+    overlay.classList.add("hidden");
+    overlay.innerHTML = "";
+  }
+
+  // 👉 join lại viewer (server sẽ cho qua)
+  joined = false;
+  join().catch(()=>{});
+});
+
+socket.on("room-password-wrong", () => {
+  const err = document.getElementById("roomPasswordError");
+  if (err) {
+    err.textContent = "❌ Mật khẩu không đúng";
+  }
+});
+
+
+
+
 let __waitingHostStream = false;
 
 socket.on("wait-host-stream", () => {
@@ -2059,21 +2127,20 @@ __viewerGotAnyTrack = true;
     };
 
     // ✅ Auto-join on load (viewer sẽ tự tham gia xem, không cần bấm nút)
-    (function autoJoinViewer(){
-      try {
-        btnJoin.disabled = true;
-        btnJoin.textContent = "⏳ Đang tham gia...";
-        // delay nhẹ để đảm bảo socket và UI đã sẵn sàng
-        setTimeout(() => {
-          join().catch(err => {
-            // nếu lỗi, mở lại nút cho user bấm thử
-            btnJoin.disabled = false;
-            btnJoin.textContent = "Tham gia xem Livestream";
-            log("Auto-join lỗi: " + (err?.message || err));
-          });
-        }, 120);
-      } catch {}
-    })();
+ (function autoJoinViewer(){
+  try {
+    btnJoin.disabled = true;
+    btnJoin.textContent = "⏳ Đang tham gia...";
+    setTimeout(() => {
+      if (__waitingPassword) return; // ⛔ chờ nhập mật khẩu
+      join().catch(err => {
+        btnJoin.disabled = false;
+        btnJoin.textContent = "Tham gia xem Livestream";
+      });
+    }, 120);
+  } catch {}
+})();
+
 
 
     // ===== CHAT (VIEWER) =====

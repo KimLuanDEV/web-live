@@ -185,6 +185,15 @@ let userInbox = new Map(Object.entries(loadInbox()));
 
 
 
+async function hashRoomPassword(password) {
+  if (!password) return null;
+  return await bcrypt.hash(password, 10);
+}
+
+async function compareRoomPassword(password, hash) {
+  if (!hash) return true;
+  return await bcrypt.compare(password, hash);
+}
 
 
 
@@ -2161,12 +2170,18 @@ function getLobbyList() {
   for (const [roomId, room] of rooms.entries()) {
     // điều kiện "đang live": có host + đã live-start
     if (room.broadcasterId && room.liveStartTs) {
-      list.push({
+
+const liveState = loadLiveState();
+const hasPassword = !!liveState[roomId]?.passwordHash;
+
+list.push({
   roomId,
   viewers: safeSet(room.viewers).size,
   liveStartTs: room.liveStartTs,
-  host: room.hostProfile || null, // 👈 thêm
+  host: room.hostProfile || null,
+  locked: hasPassword // 🔒 thêm
 });
+
 
     }
   }
@@ -2237,6 +2252,14 @@ function closeRoom(roomId, reason = "host_left") {
   // 💾 xóa live_state
   const state = loadLiveState();
   delete state[roomId];
+
+  for (const s of io.sockets.sockets.values()) {
+  if (s.data.roomPasswordOK) {
+    delete s.data.roomPasswordOK[roomId];
+  }
+}
+
+
   saveLiveState(state);
 
   // 🚨 báo cho toàn bộ viewer + guest
@@ -2268,6 +2291,53 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+
+
+socket.on("check-room-lock", ({ roomId }) => {
+  const state = loadLiveState();
+  const room = state[roomId];
+
+  if (!room) {
+    socket.emit("room-not-found");
+    return;
+  }
+
+  if (room.passwordHash) {
+    socket.emit("room-locked");
+  } else {
+    socket.emit("room-unlocked");
+  }
+});
+
+
+socket.on("join-room-with-password", async ({ roomId, password }) => {
+  const state = loadLiveState();
+  const roomState = state[roomId];
+
+  if (!roomState) {
+    socket.emit("password-error", "Phòng không tồn tại");
+    return;
+  }
+
+  const ok = await compareRoomPassword(
+    password,
+    roomState.passwordHash
+  );
+
+  if (!ok) {
+    socket.emit("password-error", "❌ Sai mật khẩu phòng");
+    return;
+  }
+
+socket.data.roomPasswordOK ||= {};
+socket.data.roomPasswordOK[roomId] = true;
+
+socket.emit("password-ok");
+
+});
+
+
+
 
 
 // ================================
@@ -3858,6 +3928,32 @@ if (uid && name) {
 
 
 socket.on("viewer-join", ({ roomId, profile }) => {
+
+
+  roomId = normRoomId(roomId);
+  if (!roomId) return;
+
+  const state = loadLiveState();
+const roomState = state[roomId];
+
+// 🔒 PHÒNG CÓ MẬT KHẨU
+if (roomState?.passwordHash) {
+
+  // host luôn được vào
+  if (socket.data.uid !== roomState.hostUid) {
+
+    const ok =
+      socket.data.roomPasswordOK &&
+      socket.data.roomPasswordOK[roomId] === true;
+
+    if (!ok) {
+      socket.emit("need-room-password");
+      return; // 🚫 CHẶN JOIN
+    }
+  }
+}
+
+
   // ✅ lưu profile cho Player Lobby
 socket.data.profile = profile;
 
@@ -3874,8 +3970,6 @@ if(isGuest(socket)){
 }
 
 
-  roomId = normRoomId(roomId);
-  if (!roomId) return;
 
   const room = getRoom(roomId);
 
@@ -4097,6 +4191,27 @@ saveLiveState(state);
 
   // Join room with role: broadcaster | viewer | guest
   socket.on("join-room", ({ roomId, role, profile }) => {
+
+  const state = loadLiveState();
+const roomState = state[roomId];
+
+// 🔒 PHÒNG CÓ MẬT KHẨU
+if (roomState?.passwordHash) {
+
+  // host luôn được vào
+  if (socket.data.uid !== roomState.hostUid) {
+
+    const ok =
+      socket.data.roomPasswordOK &&
+      socket.data.roomPasswordOK[roomId] === true;
+
+    if (!ok) {
+      socket.emit("need-room-password");
+      return; // 🚫 CHẶN JOIN
+    }
+  }
+}
+  
 
     if (blockIfLocked(socket)) return;
 
