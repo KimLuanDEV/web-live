@@ -36,7 +36,7 @@ const buyAddress = document.getElementById("buyAddress");
 const buyQty = document.getElementById("buyQty");
 const buyNote = document.getElementById("buyNote");
 
-
+let isSubmittingProduct = false;
 let editingProductId = null;
 let buyingProductId = null;
 let currentProductPage = 1;
@@ -371,7 +371,11 @@ async function confirmExtendBooth(days, price){
 
 
 async function submitProduct(){
+  if(isSubmittingProduct) return;
+  setProductSubmitting(true);
+
   const me = JSON.parse(localStorage.getItem("user_profile"));
+
   if(!me?.uid){
     showModal({
   title: "🔐 Yêu cầu đăng nhập",
@@ -387,7 +391,7 @@ async function submitProduct(){
   title:"🖼️ Thiếu ảnh",
   message:"Vui lòng chọn ảnh cho sản phẩm."
 });
-
+    setProductSubmitting(false);
     return;
   }
 
@@ -407,7 +411,7 @@ async function submitProduct(){
   title:"❌ Upload thất bại",
   message:"Không thể tải ảnh lên, vui lòng thử lại."
 });
-
+    setProductSubmitting(false);
     return;
   }
 
@@ -435,7 +439,7 @@ async function submitProduct(){
   title:"❌ Thất bại",
   message:"Không thể đăng sản phẩm."
 });
-
+    setProductSubmitting(false);
     return;
   }
 
@@ -447,6 +451,7 @@ async function submitProduct(){
 
 
 function closeAddProduct(){
+  setProductSubmitting(false); // 🔥 reset an toàn
   document.getElementById("addProductModal").classList.add("hidden");
 
   // ✅ RESET STATE
@@ -585,15 +590,24 @@ const btnSubmitProduct = document.getElementById("btnSubmitProduct");
 const productModalTitle = document.getElementById("productModalTitle");
 
 if (btnSubmitProduct) {
-  btnSubmitProduct.onclick = () => {
-    if (editingProductId) submitEditProduct();
-    else submitProduct();
-  };
+
+btnSubmitProduct.onclick = () => {
+  if(isSubmittingProduct) return; // 🚫 chặn double click
+
+  if (editingProductId) submitEditProduct();
+  else submitProduct();
+};
+
+
 }
 
 
 
 async function submitEditProduct(){
+  // 🚫 chặn double click
+  if(isSubmittingProduct) return;
+  setProductSubmitting(true);
+
   const me = JSON.parse(localStorage.getItem("user_profile"));
 
   const product = {
@@ -617,19 +631,24 @@ async function submitEditProduct(){
   });
 
   const data = await res.json();
-  if(!data.ok){
- showModal({
-  title:"❌ Thất bại",
-  message:"Không thể sửa sản phẩm."
-});
 
+  // ❌ LỖI → MỞ LẠI NÚT
+  if(!data.ok){
+    showModal({
+      title:"❌ Thất bại",
+      message:"Không thể sửa sản phẩm."
+    });
+    setProductSubmitting(false); // ⭐ BẮT BUỘC
     return;
   }
 
+  // ✅ THÀNH CÔNG
   editingProductId = null;
+  setProductSubmitting(false);   // ⭐ MỞ LẠI NÚT
   closeAddProduct();
   loadBooth();
 }
+
 
 
 async function deleteProductConfirmed(productId) {
@@ -976,4 +995,25 @@ if(addModal){
       closeAddProduct();
     }
   });
+}
+
+
+
+function setProductSubmitting(loading){
+  isSubmittingProduct = loading;
+
+  if(!btnSubmitProduct) return;
+
+  if(loading){
+    btnSubmitProduct.disabled = true;
+    btnSubmitProduct.dataset._text =
+      btnSubmitProduct.textContent;
+    btnSubmitProduct.textContent = "⏳ Đang đăng...";
+    btnSubmitProduct.style.opacity = ".6";
+  }else{
+    btnSubmitProduct.disabled = false;
+    btnSubmitProduct.textContent =
+      btnSubmitProduct.dataset._text || "Đăng bán";
+    btnSubmitProduct.style.opacity = "1";
+  }
 }
