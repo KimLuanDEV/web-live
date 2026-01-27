@@ -376,6 +376,32 @@ app.get("/api/market", (req,res)=>{
   res.json({ ok:true, market });
 });
 
+app.post("/api/upload-product-image",
+  postMediaUpload.single("image"),
+  async (req, res) => {
+
+  if (!req.file)
+    return res.status(400).json({ error: "No file" });
+
+  const safeName = req.file.originalname
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+  const key = `products/${Date.now()}_${safeName}`;
+
+  const url = await uploadToR2(
+    req.file.buffer,
+    key,
+    req.file.mimetype
+  );
+
+  res.json({ url });
+});
+
+
+
+
 
 // ===== ADD PRODUCT TO BOOTH =====
 app.post("/api/market/product/add", (req, res) => {

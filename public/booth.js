@@ -17,6 +17,22 @@ const pImage = document.getElementById("pImage");
 const pDesc  = document.getElementById("pDesc");
 const pStock = document.getElementById("pStock");
 
+const pImageFile = document.getElementById("pImageFile");
+const pImagePreview = document.getElementById("pImagePreview");
+
+
+pImageFile.onchange = () => {
+  const file = pImageFile.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = e => {
+    pImagePreview.src = e.target.result;
+    pImagePreview.style.display = "block";
+  };
+  reader.readAsDataURL(file);
+};
+
 
 
 /* ===== HELPERS ===== */
@@ -46,11 +62,18 @@ function renderProducts(products){
   products.forEach(p=>{
     const div = document.createElement("div");
     div.className = "product-card";
-    div.innerHTML = `
-      <img src="${p.image}">
-      <div class="product-name">${p.name}</div>
-      <div class="product-price">💎 ${p.price.toLocaleString()}</div>
-    `;
+
+div.innerHTML = `
+  <img src="${p.image}">
+  <div class="product-name">${p.name}</div>
+  <div class="product-price">💎 ${p.price.toLocaleString()}</div>
+  <div style="opacity:.7;font-size:13px;margin-top:4px">
+    ${p.desc || ""}
+  </div>
+`;
+
+
+
     list.appendChild(div);
   });
 }
@@ -177,11 +200,38 @@ async function confirmExtendBooth(days, price){
 
 async function submitProduct(){
   const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me?.uid){
+    alert("🔐 Vui lòng đăng nhập");
+    return;
+  }
 
+  const file = pImageFile.files[0];
+  if(!file){
+    alert("🖼️ Vui lòng chọn ảnh sản phẩm");
+    return;
+  }
+
+  // 1️⃣ UPLOAD ẢNH
+  const form = new FormData();
+  form.append("image", file);
+
+  const up = await fetch("/api/upload-product-image", {
+    method: "POST",
+    headers: { "x-uid": me.uid },
+    body: form
+  });
+
+  const upData = await up.json();
+  if(!upData.url){
+    alert("❌ Upload ảnh thất bại");
+    return;
+  }
+
+  // 2️⃣ TẠO PRODUCT
   const product = {
     name: pName.value.trim(),
     price: +pPrice.value,
-    image: pImage.value.trim(),
+    image: upData.url,      // ✅ URL từ server
     desc: pDesc.value.trim(),
     stock: +pStock.value
   };
@@ -202,8 +252,9 @@ async function submitProduct(){
   }
 
   closeAddProduct();
-  loadBooth(); // reload gian
+  loadBooth();
 }
+
 
 
 function closeAddProduct(){

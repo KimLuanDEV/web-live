@@ -202,7 +202,18 @@ html,body{
     <div class="rent-body">
       <input id="pName" placeholder="Tên sản phẩm">
       <input id="pPrice" type="number" placeholder="Giá (💎)">
-      <input id="pImage" placeholder="Link ảnh">
+      <input type="file" id="pImageFile" accept="image/*">
+
+<img id="pImagePreview"
+     style="
+       width:100%;
+       margin-top:8px;
+       border-radius:10px;
+       display:none;
+       object-fit:cover;
+       aspect-ratio:1/1;
+     ">
+
       <textarea id="pDesc" placeholder="Mô tả"></textarea>
       <input id="pStock" type="number" placeholder="Số lượng">
 
