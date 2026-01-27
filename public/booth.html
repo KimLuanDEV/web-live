@@ -240,6 +240,37 @@ html,body{
   </div>
 </div>
 
+
+
+
+<!-- 🔔 GLOBAL MODAL -->
+<div id="globalModal" class="modal-backdrop hidden">
+  <div class="rent-modal">
+    <div class="rent-header">
+      <b id="globalModalTitle">Thông báo</b>
+      <span onclick="closeGlobalModal()">✕</span>
+    </div>
+
+    <div class="rent-body" id="globalModalContent"
+      style="font-size:14px;line-height:1.5">
+    </div>
+
+    <div class="rent-actions" style="display:flex;gap:10px;margin-top:14px">
+      <button id="globalCancelBtn"
+        class="rent-confirm"
+        style="flex:1;background:#333;display:none">
+        Huỷ
+      </button>
+      <button id="globalOkBtn"
+        class="rent-confirm"
+        style="flex:1">
+        OK
+      </button>
+    </div>
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/booth.js"></script>
 <script src="/push-init.js"></script>

@@ -195,11 +195,19 @@ btnBack.onclick = ()=> history.back();
 btnAddProduct.onclick = ()=>{
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
-    alert("🔐 Vui lòng đăng nhập");
+    showModal({
+  title: "🔐 Yêu cầu đăng nhập",
+  message: "Vui lòng đăng nhập để tiếp tục."
+});
+
     return;
   }
   if(me.uid !== currentBoothOwnerUid){
-    alert("⛔ Bạn không phải chủ gian hàng");
+    showModal({
+  title: "⛔ Truy cập bị từ chối",
+  message: "Bạn không phải chủ của gian hàng này."
+});
+
     return;
   }
   document.getElementById("addProductModal").classList.remove("hidden");
@@ -214,20 +222,27 @@ btnExtend?.addEventListener("click", ()=>{
 });
 
 function openExtendModalInBooth(){
-  const days = prompt("Gia hạn gian hàng (7 / 30 / 90 ngày):", "30");
-  if(!days) return;
-
-  const priceMap = { 7:1000, 30:3500, 90:9000 };
-  const price = priceMap[days];
-  if(!price) return alert("Gói không hợp lệ");
-
-  confirmExtendBooth(+days, price);
+  showModal({
+    title: "⏳ Gia hạn gian hàng",
+    message: `
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <button onclick="confirmExtendBooth(7,1000)">7 ngày – 1,000 💎</button>
+        <button onclick="confirmExtendBooth(30,3500)">30 ngày – 3,500 💎</button>
+        <button onclick="confirmExtendBooth(90,9000)">90 ngày – 9,000 💎</button>
+      </div>
+    `
+  });
 }
+
 
 async function confirmExtendBooth(days, price){
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me || !me.uid){
-    alert("🔐 Vui lòng đăng nhập");
+    showModal({
+  title: "🔐 Yêu cầu đăng nhập",
+  message: "Vui lòng đăng nhập để tiếp tục."
+});
+
     return;
   }
 
@@ -243,17 +258,36 @@ async function confirmExtendBooth(days, price){
 
     const data = await res.json();
     if(!data.ok){
-      if(data.error==="not_enough_coin")
-        return alert("❌ Không đủ kim cương");
-      return alert("❌ Gia hạn thất bại");
+      
+     if(data.error==="not_enough_coin"){
+  showModal({
+    title:"❌ Không đủ kim cương",
+    message:"Số dư kim cương của bạn không đủ."
+  });
+  return;
+}
+
+      showModal({
+  title:"❌ Gia hạn thất bại",
+  message:"Không thể gia hạn gian hàng, vui lòng thử lại."
+});
+
     }
 
-    alert("⏳ Gia hạn gian hàng thành công!");
+   showModal({
+  title:"✅ Thành công",
+  message:"Gia hạn gian hàng thành công!"
+});
+
     syncMyCoin();
     loadBooth();
 
   }catch(e){
-    alert("⚠️ Lỗi kết nối server");
+    showModal({
+  title:"⚠️ Lỗi kết nối",
+  message:"Không thể kết nối máy chủ, vui lòng thử lại."
+});
+
   }
 }
 
@@ -261,13 +295,21 @@ async function confirmExtendBooth(days, price){
 async function submitProduct(){
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
-    alert("🔐 Vui lòng đăng nhập");
+    showModal({
+  title: "🔐 Yêu cầu đăng nhập",
+  message: "Vui lòng đăng nhập để tiếp tục."
+});
+
     return;
   }
 
   const file = pImageFile.files[0];
   if(!file){
-    alert("🖼️ Vui lòng chọn ảnh sản phẩm");
+    showModal({
+  title:"🖼️ Thiếu ảnh",
+  message:"Vui lòng chọn ảnh cho sản phẩm."
+});
+
     return;
   }
 
@@ -283,7 +325,11 @@ async function submitProduct(){
 
   const upData = await up.json();
   if(!upData.url){
-    alert("❌ Upload ảnh thất bại");
+   showModal({
+  title:"❌ Upload thất bại",
+  message:"Không thể tải ảnh lên, vui lòng thử lại."
+});
+
     return;
   }
 
@@ -307,7 +353,11 @@ async function submitProduct(){
 
   const data = await res.json();
   if(!data.ok){
-    alert("❌ Không thể đăng sản phẩm");
+    showModal({
+  title:"❌ Thất bại",
+  message:"Không thể đăng sản phẩm."
+});
+
     return;
   }
 
@@ -386,8 +436,12 @@ if (socket) {
   socket.on("booth-force-locked", ({ boothId }) => {
     const cur = new URLSearchParams(location.search).get("booth");
     if (String(cur) === String(boothId)) {
-      alert("🚫 Gian hàng đã bị Admin khoá");
-      location.href = "/market.html";
+      showModal({
+  title: "🚫 Gian hàng bị khoá",
+  message: "Gian hàng này đã bị Admin khoá.",
+  onOk: () => location.href = "/market.html"
+});
+
     }
   });
 }
@@ -413,7 +467,11 @@ function openEditProduct(productId){
   const booth = window.__lastBooth; // ta sẽ set ở loadBooth
 
   if (!window.__lastBooth || window.__lastBooth.locked) {
-  alert("🚫 Gian hàng đang bị khoá");
+  showModal({
+  title:"🚫 Gian hàng bị khoá",
+  message:"Gian hàng hiện đang bị khoá, không thể chỉnh sửa sản phẩm."
+});
+
   return;
 }
 
@@ -475,7 +533,11 @@ async function submitEditProduct(){
 
   const data = await res.json();
   if(!data.ok){
-    alert("❌ Không thể sửa sản phẩm");
+ showModal({
+  title:"❌ Thất bại",
+  message:"Không thể sửa sản phẩm."
+});
+
     return;
   }
 
@@ -485,12 +547,8 @@ async function submitEditProduct(){
 }
 
 
-
-async function deleteProduct(productId){
-  if(!confirm("🗑️ Xoá sản phẩm này?")) return;
-
+async function deleteProductConfirmed(productId) {
   const me = JSON.parse(localStorage.getItem("user_profile"));
-
   const res = await fetch("/api/market/product/delete",{
     method:"POST",
     headers:{
@@ -502,31 +560,36 @@ async function deleteProduct(productId){
 
   const data = await res.json();
   if(!data.ok){
-    alert("❌ Không thể xoá");
+    showModal({
+      title:"❌ Thất bại",
+      message:"Không thể xoá sản phẩm"
+    });
     return;
   }
-
   loadBooth();
 }
 
 
-async function buyProduct(productId){
-
-  const booth = window.__lastBooth;
-const p = booth?.products?.find(x => x.id === productId);
-if (p && p.stock <= 0) {
-  alert("📦 Sản phẩm đã hết hàng");
-  return;
+async function deleteProduct(productId){
+  showModal({
+  title: "🗑️ Xoá sản phẩm",
+  message: "Bạn có chắc chắn muốn xoá sản phẩm này?",
+  confirm: true,
+  onOk: () => deleteProductConfirmed(productId)
+});
+return;
 }
 
 
+async function buyProductConfirmed(productId){
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
-    alert("🔐 Vui lòng đăng nhập để mua");
+    showModal({
+      title:"🔐 Chưa đăng nhập",
+      message:"Vui lòng đăng nhập để mua."
+    });
     return;
   }
-
-  if(!confirm("🛒 Xác nhận mua sản phẩm này?")) return;
 
   const res = await fetch("/api/market/product/buy",{
     method:"POST",
@@ -534,27 +597,59 @@ if (p && p.stock <= 0) {
       "Content-Type":"application/json",
       "x-uid": me.uid
     },
-    body: JSON.stringify({
-      boothId,
-      productId
-    })
+    body: JSON.stringify({ boothId, productId })
   });
 
   const data = await res.json();
-
   if(!data.ok){
-    if(data.error==="not_enough_coin")
-      return alert("❌ Không đủ kim cương");
-    if(data.error==="out_of_stock")
-      return alert("📦 Sản phẩm đã hết hàng");
-    return alert("❌ Mua thất bại");
+    showModal({
+      title:"❌ Thất bại",
+      message:
+        data.error==="not_enough_coin" ? "Không đủ kim cương" :
+        data.error==="out_of_stock" ? "Sản phẩm đã hết hàng" :
+        "Giao dịch thất bại"
+    });
+    return;
   }
 
-  alert("✅ Mua thành công!");
+  showModal({
+    title:"✅ Thành công",
+    message:"Mua sản phẩm thành công!"
+  });
+
   syncMyCoin();
   loadBooth();
 }
 
+
+async function buyProduct(productId){
+  const booth = window.__lastBooth;
+  const p = booth?.products?.find(x => x.id === productId);
+
+  if (p && p.stock <= 0) {
+    showModal({
+      title:"📦 Hết hàng",
+      message:"Sản phẩm này đã hết hàng."
+    });
+    return;
+  }
+
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me?.uid){
+    showModal({
+      title:"🔐 Chưa đăng nhập",
+      message:"Vui lòng đăng nhập để mua sản phẩm."
+    });
+    return;
+  }
+
+  showModal({
+    title: "🛒 Xác nhận mua",
+    message: "Bạn có chắc chắn muốn mua sản phẩm này?",
+    confirm: true,
+    onOk: () => buyProductConfirmed(productId)
+  });
+}
 
 
 async function syncMyCoin(){
@@ -569,4 +664,41 @@ async function syncMyCoin(){
 
   me.coins = data.coins;
   localStorage.setItem("user_profile", JSON.stringify(me));
+}
+
+
+
+function showModal({
+  title = "Thông báo",
+  message = "",
+  confirm = false,
+  onOk = null,
+  onCancel = null
+}) {
+  const modal = document.getElementById("globalModal");
+  const titleEl = document.getElementById("globalModalTitle");
+  const contentEl = document.getElementById("globalModalContent");
+  const okBtn = document.getElementById("globalOkBtn");
+  const cancelBtn = document.getElementById("globalCancelBtn");
+
+  titleEl.textContent = title;
+  contentEl.innerHTML = message;
+
+  cancelBtn.style.display = confirm ? "block" : "none";
+
+  okBtn.onclick = () => {
+    closeGlobalModal();
+    onOk && onOk();
+  };
+
+  cancelBtn.onclick = () => {
+    closeGlobalModal();
+    onCancel && onCancel();
+  };
+
+  modal.classList.remove("hidden");
+}
+
+function closeGlobalModal() {
+  document.getElementById("globalModal").classList.add("hidden");
 }
