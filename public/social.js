@@ -1,4 +1,8 @@
-const socket = io();
+const socket = io({
+  transports: ["websocket"],   // 🔥 QUAN TRỌNG
+  upgrade: false
+});
+
 const feed = document.getElementById("lpFeed");
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
@@ -2433,9 +2437,12 @@ function closeGiftUsers(){
 
 
 
-socket.on("force-logout", (data) => {
-  alert(data.message || "Bạn đã bị đăng xuất");
+socket.on("force-logout", data => {
+  console.warn("FORCE LOGOUT:", data);
 
   localStorage.removeItem("user_profile");
+
+  alert(data.message || "Tài khoản đã đăng nhập nơi khác");
   location.href = "/login.html";
 });
+

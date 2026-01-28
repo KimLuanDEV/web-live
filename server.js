@@ -3273,13 +3273,11 @@ socket.on("disconnect", () => {
   if (!set) return;
 
   set.delete(socket.id);
-
-  if (set.size === 0) {
-    activeUsers.delete(uid);
-  }
+  if (set.size === 0) activeUsers.delete(uid);
 
   console.log("🔌 SOCKET DISCONNECT:", uid, socket.id);
 });
+
 
 
 
