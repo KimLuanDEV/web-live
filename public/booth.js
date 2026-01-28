@@ -1129,12 +1129,14 @@ div.innerHTML = `
       onclick="cancelMyOrder('${o.id}')">
       ❌ Huỷ đơn
     </button>
-  ` : o.status === "done" ? `
-    <button style="color:#ff6b6b"
-      onclick="hideOrder('${o.id}', 'buyer')">
-      🗑 Xoá lịch sử
-    </button>
-  ` : `
+
+  ` : ["done", "cancelled"].includes(o.status) ? `
+  <button style="color:#ff6b6b"
+    onclick="hideOrder('${o.id}', 'buyer')">
+    🗑 Xoá lịch sử
+  </button>
+`
+ : `
     <span style="opacity:.5;font-size:12px">
       🔒 Chỉ xoá khi hoàn tất
     </span>
@@ -1219,12 +1221,13 @@ function renderOrders(orders){
     </button>
   ` : ""}
 
-${o.status === "done" ? `
+${["done", "cancelled"].includes(o.status) ? `
   <button style="color:#ff6b6b"
     onclick="hideOrder('${o.id}', 'seller')">
     🗑 Xoá lịch sử
   </button>
-` : `
+`
+ : `
   <span style="opacity:.5;font-size:12px">
     🔒 Chỉ xoá khi hoàn tất
   </span>
