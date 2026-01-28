@@ -387,6 +387,74 @@ app.get("/api/market", (req,res)=>{
 });
 
 
+app.post("/api/market/order/cancel", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  const { orderId } = req.body;
+
+  if(!uid) return res.json({ ok:false, error:"NOT_LOGIN" });
+
+  const market = loadMarket();
+  let found, booth, product;
+
+  for(const b of Object.values(market)){
+    const o = (b.orders || []).find(x => x.id === orderId);
+    if(o){
+      found = o;
+      booth = b;
+      product = (b.products || []).find(p => p.id === o.productId);
+      break;
+    }
+  }
+
+  if(!found) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
+
+  if(found.buyerUid !== uid)
+    return res.json({ ok:false, error:"NO_PERMISSION" });
+
+  if(found.status !== "pending")
+    return res.json({ ok:false, error:"CANNOT_CANCEL" });
+
+  // 1️⃣ cập nhật trạng thái
+  found.status = "cancelled";
+  found.cancelledAt = Date.now();
+
+  // 2️⃣ hoàn stock
+  if(product) product.stock += found.qty;
+
+  // 3️⃣ hoàn coin cho buyer
+  const users = loadUsers();
+  if(users[uid]) users[uid].coins += found.totalPrice;
+  saveUsers(users);
+
+  saveMarket(market);
+
+  // 4️⃣ notify chủ gian
+  const notifyText = `❌ Đơn hàng bị huỷ: ${found.productName} ×${found.qty}`;
+
+  const sockets = activeUsers.get(booth.ownerUid);
+  if(sockets){
+    for(const sid of sockets){
+      io.to(sid).emit("system-notify",{
+        type:"order-cancel",
+        boothId: booth.id,
+        text: notifyText,
+        ts: Date.now()
+      });
+    }
+  }
+
+  sendPushToUser(booth.ownerUid,{
+    title:"❌ Đơn hàng bị huỷ",
+    body: notifyText,
+    tag:"order-cancel"
+  });
+
+  res.json({ ok:true });
+});
+
+
+
+
 app.post("/api/upload-product-image",
   postMediaUpload.single("image"),
   async (req, res) => {

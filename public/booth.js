@@ -1064,31 +1064,42 @@ function renderMyOrders(orders){
     const statusText = {
       pending: "⏳ Đang chờ shop",
       contacted: "📞 Shop đã liên hệ",
-      done: "✅ Hoàn tất"
+      done: "✅ Hoàn tất",
+      cancelled: "❌ Đã huỷ"
     }[o.status] || "⏳ Đang xử lý";
 
     const div = document.createElement("div");
     div.className = "my-order-card";
 
-    div.innerHTML = `
-      <div class="my-order-top">
-        <div>
-          🛒 ${o.productName}
-          <span style="opacity:.7">× ${o.qty}</span>
-        </div>
-        <div class="my-order-price">
-          💎 ${o.totalPrice.toLocaleString()}
-        </div>
-      </div>
+div.innerHTML = `
+  <div class="my-order-top">
+    <div>
+      🛒 ${o.productName}
+      <span style="opacity:.7">× ${o.qty}</span>
+    </div>
+    <div class="my-order-price">
+      💎 ${o.totalPrice.toLocaleString()}
+    </div>
+  </div>
 
-      <div class="my-order-meta">
-        🕒 ${new Date(o.createdAt).toLocaleString("vi-VN")}
-      </div>
+  <div class="my-order-meta">
+    🕒 ${new Date(o.createdAt).toLocaleString("vi-VN")}
+  </div>
 
-      <div class="my-order-status ${o.status}">
-        ${statusText}
-      </div>
-    `;
+  <div class="my-order-status ${o.status}">
+    ${statusText}
+  </div>
+
+  ${o.status === "pending" ? `
+    <div class="order-actions">
+      <button style="color:#ff6b6b"
+        onclick="cancelMyOrder('${o.id}')">
+        ❌ Huỷ đơn
+      </button>
+    </div>
+  ` : ""}
+`;
+
 
     list.appendChild(div);
   });
@@ -1338,4 +1349,47 @@ if (socket) {
       loadBooth();
     }
   });
+}
+
+
+
+
+async function cancelMyOrder(orderId){
+  const ok = confirm("❌ Bạn có chắc muốn huỷ đơn hàng này?");
+  if(!ok) return;
+
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me?.uid) return;
+
+  try{
+    const res = await fetch("/api/market/order/cancel",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-uid": me.uid
+      },
+      body: JSON.stringify({ orderId })
+    });
+
+    const data = await res.json();
+    if(!data.ok){
+      showModal({
+        title:"❌ Không thể huỷ",
+        message:data.error || "Không thể huỷ đơn hàng."
+      });
+      return;
+    }
+
+    showModal({
+      title:"✅ Đã huỷ đơn",
+      message:"Đơn hàng đã được huỷ và hoàn tiền."
+    });
+
+    loadBooth(); // reload orders
+  }catch(err){
+    showModal({
+      title:"❌ Lỗi",
+      message:"Có lỗi xảy ra, vui lòng thử lại."
+    });
+  }
 }
