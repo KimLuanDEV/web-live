@@ -411,18 +411,6 @@ app.post("/api/market/order/hide", (req, res) => {
 
   if (!order) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
 
-
-// 🔒 KHÔNG CHO XOÁ KHI ĐƠN ĐANG PENDING
-if (order.status === "pending") {
-  return res.json({
-    ok: false,
-    error: "ORDER_PENDING",
-    message: "⏳ Đơn hàng đang xử lý, không thể xoá lịch sử."
-  });
-}
-
-
-
   if (role === "buyer") {
     if (order.buyerUid !== uid)
       return res.json({ ok:false, error:"NO_PERMISSION" });

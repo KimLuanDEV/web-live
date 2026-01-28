@@ -1123,12 +1123,12 @@ div.innerHTML = `
     ${statusText}
   </div>
 
-
 <div class="order-actions">
   ${o.status === "pending" ? `
-    <span style="opacity:.6;font-size:12px">
-      ⏳ Đơn đang xử lý
-    </span>
+    <button style="color:#ff6b6b"
+      onclick="cancelMyOrder('${o.id}')">
+      ❌ Huỷ đơn
+    </button>
   ` : `
     <button style="color:#ff6b6b"
       onclick="hideOrder('${o.id}', 'buyer')">
@@ -1136,7 +1136,6 @@ div.innerHTML = `
     </button>
   `}
 </div>
-
 
 `;
 
@@ -1152,7 +1151,7 @@ function renderOrders(orders){
 
   orders = (orders || []).filter(o => !o.hiddenBySeller);
 
-
+  
   const list = document.getElementById("orderList");
   const empty = document.getElementById("orderEmpty");
 
@@ -1215,17 +1214,12 @@ function renderOrders(orders){
     </button>
   ` : ""}
 
-${o.status !== "pending" ? `
-  <button style="color:#ff6b6b"
-    onclick="hideOrder('${o.id}', 'seller')">
-    🗑 Xoá lịch sử
-  </button>
-` : `
-  <span style="opacity:.6;font-size:12px">
-    ⏳ Đơn đang xử lý
-  </span>
-`}
-
+  ${o.status !== "pending" ? `
+    <button style="color:#ff6b6b"
+      onclick="hideOrder('${o.id}', 'seller')">
+      🗑 Xoá lịch sử
+    </button>
+  ` : ""}
 </div>
 
 
@@ -1583,19 +1577,6 @@ async function hideOrder(orderId, role){
     onOk: async ()=>{
       const me = JSON.parse(localStorage.getItem("user_profile"));
       if(!me?.uid) return;
-
-
-// 🔒 chặn xoá pending ở frontend (phòng gọi tay)
-const booth = window.__lastBooth;
-const o = booth?.orders?.find(x => x.id === orderId);
-if(o?.status === "pending"){
-  showModal({
-    title: "⏳ Không thể xoá",
-    message: "Đơn hàng đang xử lý, không thể xoá lịch sử."
-  });
-  return;
-}
-
 
       const res = await fetch("/api/market/order/hide",{
         method:"POST",
