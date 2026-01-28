@@ -418,12 +418,42 @@ app.post("/api/market/order/received", (req,res)=>{
     });
   }
 
+
   found.status = "buyer_received";
   found.receivedAt = Date.now();
 
   saveMarket(market);
 
   io.emit("order-updated",{ boothId, order: found });
+
+
+// =========================
+// 🔔 NOTIFY SELLER: BUYER ĐÃ NHẬN HÀNG
+// =========================
+const notifyText =
+  `📦 Người mua đã xác nhận nhận hàng: ${found.productName} ×${found.qty}`;
+
+// 1️⃣ REALTIME (nếu seller đang online)
+const sockets = activeUsers.get(booth.ownerUid);
+if (sockets) {
+  for (const sid of sockets) {
+    io.to(sid).emit("system-notify", {
+      type: "order-received",
+      boothId,
+      orderId: found.id,
+      text: notifyText,
+      ts: Date.now()
+    });
+  }
+}
+
+// 2️⃣ PUSH NOTIFICATION (offline / tab khác)
+sendPushToUser(booth.ownerUid, {
+  title: "📦 Người mua đã nhận hàng",
+  body: notifyText,
+  tag: "order-received"
+});
+
   res.json({ ok:true });
 });
 
