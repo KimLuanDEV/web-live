@@ -40,6 +40,17 @@ function normalizeAvatar(url) {
 }
 
 
+function kickUser(uid, exceptSocketId = null, reason = "force-logout") {
+  const sockets = activeUsers.get(uid);
+  if (!sockets) return;
+
+  for (const sid of sockets) {
+    if (sid === exceptSocketId) continue;
+
+    io.to(sid).emit("force-logout", { reason });
+    io.sockets.sockets.get(sid)?.disconnect(true);
+  }
+}
 
 
 
@@ -232,33 +243,6 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
-
-
-function bindSocketToUser(uid, socket) {
-  if (!uid) return;
-
-  const oldSockets = activeUsers.get(uid);
-
-  if (oldSockets) {
-    for (const sid of oldSockets) {
-      // ⛔ KHÔNG ĐÁ CHÍNH SOCKET NÀY
-      if (sid === socket.id) continue;
-
-      io.to(sid).emit("force-logout", {
-        reason: "Tài khoản đã đăng nhập ở thiết bị khác"
-      });
-
-      io.sockets.sockets.get(sid)?.disconnect(true);
-    }
-  }
-
-  // ✅ CHỈ GIỮ 1 SOCKET DUY NHẤT
-  activeUsers.set(uid, new Set([socket.id]));
-
-  console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
-}
-
-
 
 
 
@@ -3247,20 +3231,42 @@ io.on("connection", (socket) => {
 
 
 
-  socket.on("disconnect", () => {
-    const uid = socket.data.uid;
-    if (!uid) return;
+socket.once("auth-login", ({ uid }) => {
+  if (!uid) return;
 
-    const set = activeUsers.get(uid);
-    if (!set) return;
+  // 🔐 SINGLE LOGIN – ĐÁ SOCKET CŨ
+  kickUser(uid, socket.id, "Tài khoản đã đăng nhập ở thiết bị khác");
 
-    set.delete(socket.id);
-    if (set.size === 0) {
-      activeUsers.delete(uid);
-    }
+  // ✅ ĐẾN LÚC NÀY MỚI SET activeUsers
+  activeUsers.set(uid, new Set([socket.id]));
 
-    console.log("🔌 DISCONNECT:", uid, socket.id);
-  });
+  console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
+
+  emitActiveUsers();
+  emitAgentStatus(uid, true);
+  emitCoinUpdate(uid);
+  emitAllUsers();
+});
+
+
+
+
+socket.on("disconnect", () => {
+  const uid = socket.data.uid;
+  if (!uid) return;
+
+  const set = activeUsers.get(uid);
+  if (!set) return;
+
+  set.delete(socket.id);
+  if (set.size === 0) {
+    activeUsers.delete(uid);
+    emitAgentStatus(uid, false);
+  }
+
+  emitActiveUsers();
+});
+
 
 
 
@@ -4591,12 +4597,12 @@ socket.on("auth-ping", ({ uid }) => {
 
 
 
-socket.on("auth-login", ({ uid }) => {
+socket.once("auth-login", ({ uid }) => {
   uid = String(uid || "").trim();
   if (!uid) return;
 
-  // 🔒 CHẶN LOGIN LẶP TRÊN CÙNG SOCKET
-  if (socket.data._logged === true) return;
+  // 🔒 CHẶN LOGIN LẶP
+  if (socket.data._logged) return;
   socket.data._logged = true;
 
   // 🚫 GUEST
@@ -4610,57 +4616,62 @@ socket.on("auth-login", ({ uid }) => {
   const db = loadUsers();
   if (!db[uid]) return;
 
-  // ✅ GẮN UID NGAY TỪ ĐẦU (QUAN TRỌNG)
+  // ✅ GẮN UID NGAY
   socket.data.uid = uid;
-
   socket.data.profile = {
     ...db[uid].profile,
     ...socket.data.profile
   };
-
   socket.data.role = db[uid].role || "user";
 
-  // 🔐 SINGLE LOGIN: ĐÁ SOCKET CŨ
-  const oldSockets = activeUsers.get(uid);
-  if (oldSockets) {
-    for (const sid of oldSockets) {
-      if (sid === socket.id) continue;
-      io.to(sid).emit("force-logout", {
-        reason: "Tài khoản đã đăng nhập ở thiết bị khác"
-      });
-      io.sockets.sockets.get(sid)?.disconnect(true);
-    }
-  }
+  // ⏳ DELAY 1 TICK → TRÁNH TỰ ĐÁ
+  setTimeout(() => {
 
-  // ✅ CHỈ GIỮ 1 SOCKET
-  activeUsers.set(uid, new Set([socket.id]));
-
-  // 📩 GỬI TIN OFFLINE (1 LẦN DUY NHẤT)
-  const inbox = userInbox.get(uid);
-  if (inbox && inbox.length) {
-    const toSend = inbox.filter(m => !m.delivered);
-
-    if (toSend.length) {
-      for (const m of toSend) {
-        const u = db[m.from];
-        m.verified = !!u?.profile?.verified;
-        m.delivered = true;
-      }
-
-      socket.emit("offline-messages", toSend);
-      saveInbox(Object.fromEntries(userInbox));
-
-      const unread = inbox.filter(m => !m.seen).length;
-      if (unread > 0) {
-        socket.emit("inbox-new", { count: unread });
+    const oldSockets = activeUsers.get(uid);
+    if (oldSockets) {
+      for (const sid of oldSockets) {
+        if (sid === socket.id) continue;
+        io.to(sid).emit("force-logout", {
+          reason: "Tài khoản đã đăng nhập ở thiết bị khác"
+        });
+        io.sockets.sockets.get(sid)?.disconnect(true);
       }
     }
-  }
 
-  emitActiveUsers();
-  emitCoinUpdate(uid);
-  emitAllUsers();
+    // ✅ GIỜ MỚI SET activeUsers
+    activeUsers.set(uid, new Set([socket.id]));
+
+    // 📩 OFFLINE MESSAGES (CHỈ 1 LẦN)
+    const inbox = userInbox.get(uid);
+    if (inbox && inbox.length) {
+      const toSend = inbox.filter(m => !m.delivered);
+
+      if (toSend.length) {
+        for (const m of toSend) {
+          const u = db[m.from];
+          m.verified = !!u?.profile?.verified;
+          m.delivered = true;
+        }
+
+        socket.emit("offline-messages", toSend);
+        saveInbox(Object.fromEntries(userInbox));
+
+        const unread = inbox.filter(m => !m.seen).length;
+        if (unread > 0) {
+          socket.emit("inbox-new", { count: unread });
+        }
+      }
+    }
+
+    emitActiveUsers();
+    emitCoinUpdate(uid);
+    emitAllUsers();
+
+    console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
+
+  }, 0); // 🔥 CHÌA KHOÁ
 });
+
 
 
 
