@@ -323,6 +323,67 @@ app.get("/admin.html", (req, res) => {
 });
 
 
+app.post("/api/admin/market/approve-dispute", (req,res)=>{
+  const { adminUid, orderId } = req.body;
+
+  const users = loadUsers();
+  if(!users[adminUid] || users[adminUid].role !== "admin")
+    return res.status(403).json({ error:"not_admin" });
+
+  const market = loadMarket();
+  let found, booth, boothId;
+
+  for(const [id,b] of Object.entries(market)){
+    const o = (b.orders||[]).find(x=>x.id===orderId);
+    if(o){
+      found=o; booth=b; boothId=id;
+      break;
+    }
+  }
+
+  if(!found || found.status !== "dispute"){
+    return res.json({ ok:false, error:"NOT_DISPUTE" });
+  }
+
+  // ✅ set done
+  found.status = "done";
+  found.doneAt = Date.now();
+
+  // 💰 trả tiền cho seller
+  const seller = users[booth.ownerUid];
+  const amount = Number(found.escrow || 0);
+
+  if(seller?.profile && amount > 0){
+    seller.profile.coinReceived =
+      (seller.profile.coinReceived || 0) + amount;
+    found.escrow = 0;
+  }
+
+  saveUsers(users);
+  saveMarket(market);
+
+  emitCoinUpdate(booth.ownerUid);
+
+  io.emit("order-updated",{ boothId, order: found });
+
+  // 🔔 notify buyer + seller
+  sendPushToUser(found.buyerUid,{
+    title:"🧑‍⚖️ Khiếu nại đã được xử lý",
+    body:"Admin đã chấp nhận đơn hàng.",
+    tag:"dispute-approved"
+  });
+
+  sendPushToUser(booth.ownerUid,{
+    title:"💰 Đơn hàng được duyệt",
+    body:`Admin đã chấp nhận đơn ${found.productName}`,
+    tag:"dispute-approved"
+  });
+
+  res.json({ ok:true });
+});
+
+
+
 app.get("/api/admin/market/disputes", (req,res)=>{
   const adminUid = req.headers["x-uid"];
   const users = loadUsers();

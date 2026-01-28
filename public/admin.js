@@ -1072,28 +1072,33 @@ async function adminApprove(orderId){
   const me = JSON.parse(localStorage.getItem("user_profile"));
 
   const ok = await showModal({
-    title:"✅ Chấp nhận đơn",
+    title:"✅ Chấp nhận đơn khiếu nại",
     body:"Xác nhận cho shop nhận tiền?",
     confirm:true
   });
   if(!ok) return;
 
-  const res = await fetch("/api/market/order/done",{
+  const res = await fetch("/api/admin/market/approve-dispute",{
     method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": me.uid
-    },
-    body: JSON.stringify({ orderId })
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      adminUid: me.uid,
+      orderId
+    })
   });
 
   const data = await res.json();
   if(data.ok){
     await showModal({
       title:"✅ Thành công",
-      body:"Đơn đã hoàn tất."
+      body:"Đơn hàng đã được chấp nhận."
     });
     loadDisputes();
+  }else{
+    showModal({
+      title:"❌ Lỗi",
+      body:data.error || "Không xử lý được"
+    });
   }
 }
 
