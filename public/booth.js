@@ -1741,11 +1741,29 @@ async function markOrderReceived(orderId){
 function openDispute(orderId){
   showModal({
     title:"⚠️ Khiếu nại đơn hàng",
-    message:`
-      <textarea id="disputeReason"
-        placeholder="Mô tả vấn đề..."
-        style="width:100%;height:80px"></textarea>
-    `,
+
+  message: `
+  <textarea id="disputeReason"
+    placeholder="Mô tả vấn đề..."
+    style="width:100%;height:80px;margin-bottom:8px"></textarea>
+
+  <input type="file"
+    id="disputeFiles"
+    accept="image/*,video/*"
+    multiple
+  >
+
+  <div id="disputePreview"
+    style="
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:6px;
+      margin-top:8px
+    ">
+  </div>
+`,
+
+
     confirm:true,
     onOk: async ()=>{
       const reason =
@@ -1758,14 +1776,46 @@ function openDispute(orderId){
 
       const me = JSON.parse(localStorage.getItem("user_profile"));
 
-      const res = await fetch("/api/market/order/dispute",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-uid": me.uid
-        },
-        body: JSON.stringify({ orderId, reason })
-      });
+const files =
+  document.getElementById("disputeFiles")?.files || [];
+
+const evidences = [];
+
+// 📎 upload ảnh / video bằng chứng
+for(const f of files){
+  const form = new FormData();
+  form.append("file", f);
+
+  const upRes = await fetch("/api/upload-dispute-media",{
+    method:"POST",
+    headers:{ "x-uid": me.uid },
+    body: form
+  });
+
+  const upData = await upRes.json();
+  if(upData.ok){
+    evidences.push({
+      url: upData.url,
+      type: upData.type
+    });
+  }
+}
+
+// 📤 gửi khiếu nại kèm bằng chứng
+const res = await fetch("/api/market/order/dispute",{
+  method:"POST",
+  headers:{
+    "Content-Type":"application/json",
+    "x-uid": me.uid
+  },
+  body: JSON.stringify({
+    orderId,
+    reason,
+    evidences
+  })
+});
+
+
 
       const data = await res.json();
       if(!data.ok){
@@ -1779,4 +1829,26 @@ function openDispute(orderId){
       });
     }
   });
+
+setTimeout(()=>{
+  const input = document.getElementById("disputeFiles");
+  const preview = document.getElementById("disputePreview");
+  if(!input || !preview) return;
+
+  input.onchange = ()=>{
+    preview.innerHTML = "";
+    Array.from(input.files).forEach(f=>{
+      const el = document.createElement(
+        f.type.startsWith("video") ? "video" : "img"
+      );
+      el.src = URL.createObjectURL(f);
+      el.style.width = "100%";
+      el.style.borderRadius = "6px";
+      if(f.type.startsWith("video")) el.controls = true;
+      preview.appendChild(el);
+    });
+  };
+}, 50);
+
+
 }

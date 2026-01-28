@@ -1010,26 +1010,65 @@ async function loadDisputes(){
     const div = document.createElement("div");
     div.className = "admin-card";
 
-    div.innerHTML = `
-      <b>📦 ${o.productName} ×${o.qty}</b>
-      <div>🏪 Gian hàng: ${item.boothName}</div>
-      <div>👤 Buyer: ${o.buyerUid}</div>
-      <div style="color:#ff9800">
-        ⚠️ Lý do: ${o.dispute?.reason || ""}
-      </div>
+const evidences = o.dispute?.evidences || [];
 
-      <div style="display:flex;gap:8px;margin-top:8px">
-        <button style="color:#ff5f6d"
-          onclick="adminRefund('${o.id}')">
-          ❌ Hoàn tiền
-        </button>
+div.innerHTML = `
+  <b>📦 ${o.productName} ×${o.qty}</b>
+  <div>🏪 Gian hàng: ${item.boothName}</div>
+  <div>👤 Buyer: ${o.buyerUid}</div>
 
-        <button style="color:#25F09A"
-          onclick="adminApprove('${o.id}')">
-          ✅ Chấp nhận đơn
-        </button>
+  <div style="color:#ff9800;margin-top:4px">
+    ⚠️ Lý do: ${o.dispute?.reason || ""}
+  </div>
+
+  ${
+    evidences.length
+      ? `
+      <div style="
+        margin-top:8px;
+        display:grid;
+        grid-template-columns:repeat(3,1fr);
+        gap:6px
+      ">
+        ${evidences.map(m =>
+          m.type === "video"
+            ? `
+              <video
+                src="${m.url}"
+                controls
+                style="width:100%;border-radius:8px">
+              </video>
+            `
+            : `
+              <img
+                src="${m.url}"
+                style="
+                  width:100%;
+                  border-radius:8px;
+                  cursor:zoom-in
+                "
+                onclick="openAdminImage('${m.url}')"
+              >
+            `
+        ).join("")}
       </div>
-    `;
+      `
+      : `<div class="muted" style="margin-top:6px">Không có bằng chứng đính kèm</div>`
+  }
+
+  <div style="display:flex;gap:8px;margin-top:10px">
+    <button style="color:#ff5f6d"
+      onclick="adminRefund('${o.id}')">
+      ❌ Hoàn tiền
+    </button>
+
+    <button style="color:#25F09A"
+      onclick="adminApprove('${o.id}')">
+      ✅ Chấp nhận đơn
+    </button>
+  </div>
+`;
+
 
     wrap.appendChild(div);
   });
@@ -1107,3 +1146,14 @@ async function adminApprove(orderId){
 document.querySelector('[data-tab="disputes"]')?.addEventListener("click",()=>{
   loadDisputes();
 });
+
+
+function openAdminImage(url){
+  showModal({
+    title: "📎 Bằng chứng",
+    body: `
+      <img src="${url}"
+        style="max-width:100%;border-radius:10px">
+    `
+  });
+}

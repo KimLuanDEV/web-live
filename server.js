@@ -584,10 +584,15 @@ app.post("/api/market/order/dispute", (req,res)=>{
 
   // 🔒 gắn dispute
   found.status = "dispute";
-  found.dispute = {
-    reason,
-    ts: Date.now()
-  };
+
+found.dispute = {
+  reason,
+  evidences: Array.isArray(req.body.evidences)
+    ? req.body.evidences
+    : [],
+  ts: Date.now()
+};
+
 
   saveMarket(market);
 
@@ -704,6 +709,36 @@ if (!["done", "cancelled", "refunded"].includes(order.status)) {
 
   res.json({ ok:true });
 });
+
+
+// 📎 UPLOAD BẰNG CHỨNG KHIẾU NẠI (ảnh / video)
+app.post("/api/upload-dispute-media", postMediaUpload.single("file"), async (req, res) => {
+
+    if (!req.file)
+      return res.status(400).json({ error: "NO_FILE" });
+
+    const safeName = req.file.originalname
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-zA-Z0-9._-]/g, "_");
+
+    const key = `disputes/${Date.now()}_${safeName}`;
+
+    const url = await uploadToR2(
+      req.file.buffer,
+      key,
+      req.file.mimetype
+    );
+
+    res.json({
+      ok: true,
+      url,
+      type: req.file.mimetype.startsWith("video")
+        ? "video"
+        : "image"
+    });
+  }
+);
 
 
 
