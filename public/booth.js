@@ -1410,40 +1410,57 @@ if(!data.ok){
 
 async function contactOrder(orderId){
   showModal({
-    title:"📞 Xác nhận đơn hàng",
-    message:"Bạn đã liên hệ với khách hàng?",
-    confirmText:"Đã liên hệ",
+    title: "📞 Xác nhận đơn hàng",
+    message: "Bạn đã liên hệ với khách hàng cho đơn này?",
+    confirmText: "Đã liên hệ",
     onConfirm: async ()=>{
       const me = JSON.parse(localStorage.getItem("user_profile"));
-      if(!me?.uid) return;
-
-      const res = await fetch("/api/market/order/contact",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-uid": me.uid
-        },
-        body: JSON.stringify({ orderId })
-      });
-
-      const data = await res.json();
-      if(!data.ok){
+      if(!me?.uid){
         showModal({
-          title:"❌ Không thể xác nhận",
-          message: data.message || "Thao tác thất bại."
+          title:"🔐 Yêu cầu đăng nhập",
+          message:"Vui lòng đăng nhập để tiếp tục."
         });
         return;
       }
 
-      showModal({
-        title:"✅ Thành công",
-        message:"Đơn hàng đã chuyển sang trạng thái đã liên hệ."
-      });
+      try{
+        const res = await fetch("/api/market/order/contact",{
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-uid": me.uid
+          },
+          body: JSON.stringify({ orderId })
+        });
 
-      loadBooth();
+        const data = await res.json();
+
+        if(!data.ok){
+          showModal({
+            title:"❌ Không thể xác nhận",
+            message: data.message || "Thao tác thất bại."
+          });
+          return;
+        }
+
+        showModal({
+          title:"✅ Thành công",
+          message:"Đơn hàng đã chuyển sang trạng thái đã liên hệ."
+        });
+
+        // 🔥 reload booth để thấy status đổi
+        loadBooth();
+
+      }catch(err){
+        showModal({
+          title:"⚠️ Lỗi kết nối",
+          message:"Không thể kết nối máy chủ."
+        });
+      }
     }
   });
 }
+
 
 
 async function completeOrder(orderId){
