@@ -160,33 +160,16 @@ if (isAdminUser(auth.uid)) {
 });
 
 
-// 🔐 FORCE LOGOUT – BỊ ĐĂNG NHẬP Ở NƠI KHÁC
-socket.on("force-logout", ({ reason }) => {
-  console.warn("🔐 FORCE LOGOUT:", reason);
-
-  alert(reason || "🚨 Tài khoản đã đăng nhập ở thiết bị khác");
-
-  // ❌ xoá phiên local
-  localStorage.removeItem("user_profile");
-  localStorage.removeItem("login_uid");
-  localStorage.removeItem("isGuest");
-
-  // 🔁 về trang login
-  location.href = "/login.html";
-});
 
 
 if (auth.uid) {
-  socket.on("connect", () => {
-    socket.emit("auth-login", { uid: auth.uid });
-  });
+  socket.emit("auth-login", { uid: auth.uid });
 
-  // keep-alive mỗi 20s
+  // keep-alive mỗi 20s để không bị rớt online
   setInterval(() => {
     socket.emit("auth-ping", { uid: auth.uid });
   }, 20000);
 }
-
 
 
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
@@ -2450,3 +2433,12 @@ function closeGiftUsers(){
 
 
 
+socket.on("force-logout", data => {
+  console.warn("🚫 Force logout:", data.reason);
+
+  localStorage.clear();
+
+  alert("⚠️ Tài khoản của bạn vừa đăng nhập ở thiết bị khác.");
+
+  location.href = "/login.html";
+});

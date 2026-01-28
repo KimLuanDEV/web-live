@@ -40,17 +40,6 @@ function normalizeAvatar(url) {
 }
 
 
-function kickUser(uid, exceptSocketId = null, reason = "force-logout") {
-  const sockets = activeUsers.get(uid);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    if (sid === exceptSocketId) continue;
-
-    io.to(sid).emit("force-logout", { reason });
-    io.sockets.sockets.get(sid)?.disconnect(true);
-  }
-}
 
 
 
@@ -141,6 +130,8 @@ function blockSocketIfBoothLocked(socket, boothId) {
   }
   return false;
 }
+
+
 
 
 
@@ -243,6 +234,56 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
+
+
+// 🚨 KICK TẤT CẢ SESSION CŨ KHI LOGIN MỚI
+function kickOtherSessions(uid, exceptSocketId = null) {
+  const sockets = activeUsers.get(uid);
+  if (!sockets) return;
+
+  for (const sid of sockets) {
+    if (sid !== exceptSocketId) {
+      io.to(sid).emit("force-logout", {
+        reason: "LOGIN_FROM_ANOTHER_DEVICE"
+      });
+
+      const s = io.sockets.sockets.get(sid);
+      if (s) s.disconnect(true);
+    }
+  }
+
+  // reset chỉ giữ socket mới
+  activeUsers.set(
+    uid,
+    exceptSocketId ? new Set([exceptSocketId]) : new Set()
+  );
+}
+
+
+
+function bindSocketToUser(uid, socket) {
+  if (!uid) return;
+
+  // 🚨 kick toàn bộ session cũ, giữ socket này
+  kickOtherSessions(uid, socket.id);
+
+  const db = loadUsers();
+  const acc = db[uid];
+
+  let set = activeUsers.get(uid);
+  if (!set) {
+    set = new Set();
+    activeUsers.set(uid, set);
+  }
+
+  set.add(socket.id);
+
+  socket.data.uid   = uid;
+  socket.data.role  = acc?.role || "user";
+  socket.data.roles = acc?.roles || [];
+
+  console.log("🔗 SOCKET LOGIN:", uid, socket.id);
+}
 
 
 
@@ -2804,6 +2845,10 @@ acc.trusted[trusted] = Date.now() + 30*24*60*60*1000; // 30 ngày
 
 saveUsers(db);
 
+// 🚨 LOGIN MỚI → KICK MỌI PHIÊN CŨ
+kickOtherSessions(user.profile.uid);
+
+
 res.json({
   ok:true,
   profile: {
@@ -3230,28 +3275,6 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
-
-
-socket.on("disconnect", () => {
-  const uid = socket.data.uid;
-  if (!uid) return;
-
-  const set = activeUsers.get(uid);
-  if (!set) return;
-
-  set.delete(socket.id);
-  if (set.size === 0) {
-    activeUsers.delete(uid);
-    emitAgentStatus(uid, false);
-  }
-
-  emitActiveUsers();
-});
-
-
-
-
-
 // ================================
 // 💬 CHAT 1–1 (ADMIN BYPASS FRIEND)
 // ================================
@@ -3399,8 +3422,19 @@ socket.on("topup-transferred", async ({ fromUid, agentUid, time }) => {
 
 
 
+// 🔐 LOGIN SOCKET (CHUẨN HOÁ)
+socket.on("socket-login", ({ uid }) => {
+  bindSocketToUser(uid, socket);
+  emitAgentStatus(uid, true);
+});
+
+socket.on("auth-login", ({ uid }) => {
+  bindSocketToUser(uid, socket);
+  emitAgentStatus(uid, true);
+});
 
 
+// ❌ HANDLE DISCONNECT (BẮT BUỘC)
 socket.on("disconnect", () => {
   const uid = socket.data.uid;
   if (!uid) return;
@@ -3413,8 +3447,6 @@ socket.on("disconnect", () => {
       emitAgentStatus(uid, false);
     }
   }
-
-  emitActiveUsers(); // 🔥 BẮT BUỘC
 
   console.log("❌ SOCKET OFFLINE:", uid, socket.id);
 });
@@ -4561,78 +4593,75 @@ socket.on("auth-ping", ({ uid }) => {
 
 
 
-socket.on("auth-login", ({ uid }) => {
+ socket.on("auth-login", ({ uid }) => {
   uid = String(uid || "").trim();
   if (!uid) return;
 
-  // 🚫 GUEST
+  // 🚫 BỎ QUA GUEST
   if (uid.startsWith("guest_")) {
     socket.data.uid = uid;
     socket.data.role = "guest";
-    emitActiveUsers();
     return;
   }
 
   const db = loadUsers();
-  if (!db[uid]) return;
+  if (db[uid]) {
+    socket.data.profile = {
+      ...db[uid].profile,
+      ...socket.data.profile
+    };
+  }
 
-  // ✅ GẮN UID + ROLE NGAY
+    // 🔥 GẮN ROLE CHUẨN VÀO SOCKET (FIX ADMIN CHAT)
+  socket.data.role = db[uid]?.role || "user";
+
+
+  // ✅ KHÔNG ĐÁ – CHỈ GHI ĐÈ SOCKET MỚI
+ if (!activeUsers.has(uid)) {
+  activeUsers.set(uid, new Set());
+}
+activeUsers.get(uid).add(socket.id);
+
+
+ // 🔥 GỬI TIN OFFLINE – CHỈ 1 LẦN
+const inbox = userInbox.get(uid);
+if (inbox && inbox.length) {
+
+  // 👉 CHỈ LẤY TIN CHƯA GỬI
+  const toSend = inbox.filter(m => !m.delivered);
+
+  if (toSend.length) {
+
+    // gắn verified cho sender
+    for (const m of toSend) {
+      const u = db[m.from];
+      m.verified = !!u?.profile?.verified;
+    }
+
+    socket.emit("offline-messages", toSend);
+
+    // ✅ ĐÁNH DẤU ĐÃ GỬI
+    for (const m of toSend) {
+      m.delivered = true;
+    }
+
+
+    saveInbox(Object.fromEntries(userInbox)); // ✅ FIX QUAN TRỌNG
+
+    // 🔴 badge chỉ khi còn tin CHƯA XEM
+    const unread = inbox.filter(m => !m.seen).length;
+    if (unread > 0) {
+      socket.emit("inbox-new", { count: unread });
+    }
+  }
+
+  }
+
   socket.data.uid = uid;
-  socket.data.profile = {
-    ...db[uid].profile,
-    ...socket.data.profile
-  };
-  socket.data.role = db[uid].role || "user";
-
-  // 🔐 SINGLE LOGIN – KICK SOCKET CŨ (TRỪ SOCKET HIỆN TẠI)
-  const oldSockets = activeUsers.get(uid);
-  if (oldSockets) {
-    for (const sid of oldSockets) {
-      if (sid === socket.id) continue;
-
-      io.to(sid).emit("force-logout", {
-        reason: "🚨 Tài khoản đã đăng nhập ở thiết bị khác"
-      });
-
-      io.sockets.sockets.get(sid)?.disconnect(true);
-    }
-  }
-
-  // ✅ CHỈ SAU KHI KICK XONG → SET SOCKET MỚI
-  activeUsers.set(uid, new Set([socket.id]));
-
-  // 📩 OFFLINE MESSAGES (1 LẦN)
-  const inbox = userInbox.get(uid);
-  if (inbox && inbox.length) {
-    const toSend = inbox.filter(m => !m.delivered);
-
-    if (toSend.length) {
-      for (const m of toSend) {
-        const u = db[m.from];
-        m.verified = !!u?.profile?.verified;
-        m.delivered = true;
-      }
-
-      socket.emit("offline-messages", toSend);
-      saveInbox(Object.fromEntries(userInbox));
-
-      const unread = inbox.filter(m => !m.seen).length;
-      if (unread > 0) {
-        socket.emit("inbox-new", { count: unread });
-      }
-    }
-  }
-
   emitActiveUsers();
-  emitAgentStatus(uid, true);
   emitCoinUpdate(uid);
-  emitAllUsers();
-
-  console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
+  emitAllUsers(); // 🔁 đảm bảo FE luôn có role
 });
-
-
-
 
 
 
