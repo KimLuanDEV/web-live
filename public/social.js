@@ -2436,9 +2436,16 @@ function closeGiftUsers(){
 socket.on("force-logout", data => {
   console.warn("🚫 Force logout:", data.reason);
 
+  // ⛔ DỪNG SOCKET NGAY LẬP TỨC
+  socket.off();
+  socket.disconnect();
+
+  // 🧹 xoá session
   localStorage.clear();
 
+  // UX
   alert("⚠️ Tài khoản của bạn vừa đăng nhập ở thiết bị khác.");
 
+  // 🔁 chuyển về login
   location.href = "/login.html";
 });
