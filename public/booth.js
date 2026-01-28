@@ -1351,6 +1351,17 @@ function setProductSubmitting(loading){
 }
 
 
+function resetUploadProgress(){
+  const wrap = document.getElementById("uploadProgressWrap");
+  const bar = document.getElementById("uploadProgressBar");
+  const text = document.getElementById("uploadProgressText");
+
+  if(!wrap) return;
+
+  wrap.classList.add("hidden");
+  bar.style.width = "0%";
+  text.textContent = "⏳ Đang tải ảnh... 0%";
+}
 
 
 
@@ -1360,30 +1371,17 @@ let galleryPos = 0;
 function openGallery(images, startIndex = 0){
   if(!images || images.length === 0) return;
 
-  // ✅ chuẩn hoá dữ liệu gallery
-  galleryImages = images.map(x =>
-    typeof x === "string"
-      ? { url: x, type: "image" }
-      : x
-  );
+  galleryImages = [...images];
 
-  galleryPos = Math.max(0, Math.min(startIndex, galleryImages.length - 1));
+  galleryPos = Math.max(0, Math.min(startIndex, images.length - 1));
+
+
   document.getElementById("galleryModal").classList.remove("hidden");
   renderGallery();
 }
 
-
 function closeGallery(){
   document.getElementById("galleryModal").classList.add("hidden");
-
-  galleryImages.forEach(x=>{
-if(x.url && x.url.startsWith("blob:")){
-  URL.revokeObjectURL(x.url);
-}
-
-});
-galleryImages = [];
-
 }
 
 function renderGallery(){
@@ -1391,42 +1389,16 @@ function renderGallery(){
   const idx = document.getElementById("galleryIndex");
   const thumbs = document.getElementById("galleryThumbs");
 
- const item = galleryImages[galleryPos];
-img.replaceWith(img.cloneNode()); // reset event
-const container = img.parentElement;
-container.innerHTML = "";
-
-if(item.type === "video"){
-  const v = document.createElement("video");
-  v.src = item.url;
-  v.controls = true;
-  v.style.maxWidth = "100%";
-  v.style.maxHeight = "80vh";
-  container.appendChild(v);
-}else{
-  const i = document.createElement("img");
-  i.src = item.url;
-  i.id = "galleryImage";
-  i.style.maxWidth = "100%";
-  i.style.maxHeight = "80vh";
-  container.appendChild(i);
-}
-
-
-
-
+  img.src = galleryImages[galleryPos];
   idx.textContent = `${galleryPos + 1} / ${galleryImages.length}`;
 
   // render thumbnails
   if(thumbs){
     thumbs.innerHTML = "";
 
-  galleryImages.forEach((item, i)=>{
-  const t = document.createElement("img");
-  t.src = item.url;
-
-
-
+    galleryImages.forEach((url, i)=>{
+      const t = document.createElement("img");
+      t.src = url;
       if(i === galleryPos) t.classList.add("active");
 
       t.onclick = ()=>{
@@ -1863,39 +1835,19 @@ setTimeout(()=>{
   const preview = document.getElementById("disputePreview");
   if(!input || !preview) return;
 
-input.onchange = ()=>{
-  preview.innerHTML = "";
-
-  const files = Array.from(input.files);
-
-  // tạo danh sách gallery tạm (blob url)
-  const galleryItems = files.map(f => ({
-    url: URL.createObjectURL(f),
-    type: f.type.startsWith("video") ? "video" : "image"
-  }));
-
-  files.forEach((f, i)=>{
-    const el = document.createElement(
-      f.type.startsWith("video") ? "video" : "img"
-    );
-
-    el.src = galleryItems[i].url;
-    el.style.width = "100%";
-    el.style.borderRadius = "6px";
-    el.style.cursor = "zoom-in";
-
-    if(f.type.startsWith("video")) el.controls = true;
-
-    // 👉 CLICK → MỞ GALLERY SWIPE
-    el.onclick = ()=>{
-      openGallery(galleryItems, i);
-
-    };
-
-    preview.appendChild(el);
-  });
-};
-
+  input.onchange = ()=>{
+    preview.innerHTML = "";
+    Array.from(input.files).forEach(f=>{
+      const el = document.createElement(
+        f.type.startsWith("video") ? "video" : "img"
+      );
+      el.src = URL.createObjectURL(f);
+      el.style.width = "100%";
+      el.style.borderRadius = "6px";
+      if(f.type.startsWith("video")) el.controls = true;
+      preview.appendChild(el);
+    });
+  };
 }, 50);
 
 
