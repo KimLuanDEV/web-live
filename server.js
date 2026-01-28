@@ -231,7 +231,8 @@ function saveSocial(){
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-const activeUsers = new Map(); 
+const activeUsers = new Map(); // uid -> socketId
+
 
 
 function bindSocketToUser(uid, socket) {
@@ -240,25 +241,26 @@ function bindSocketToUser(uid, socket) {
   const db = loadUsers();
   const acc = db[uid];
 
-  let set = activeUsers.get(uid);
-  if (!set) {
-    set = new Set();
-    activeUsers.set(uid, set);
+  // 🔴 Nếu user đã online ở thiết bị khác → KICK
+  const oldSocketId = activeUsers.get(uid);
+  if (oldSocketId && oldSocketId !== socket.id) {
+    const oldSocket = io.sockets.sockets.get(oldSocketId);
+    if (oldSocket) {
+      oldSocket.emit("force-logout", {
+        reason: "login_other_device"
+      });
+      oldSocket.disconnect(true);
+    }
   }
 
-  set.add(socket.id);
+  // ✅ Gắn socket mới
+  activeUsers.set(uid, socket.id);
 
   socket.data.uid   = uid;
   socket.data.role  = acc?.role || "user";
-  socket.data.roles = acc?.roles || [];   // 🔥 QUAN TRỌNG
+  socket.data.roles = acc?.roles || [];
 
-  console.log(
-    "🔗 SOCKET LOGIN:",
-    uid,
-    socket.id,
-    socket.data.role,
-    socket.data.roles
-  );
+  console.log("🔐 LOGIN:", uid, "socket:", socket.id);
 }
 
 
@@ -3246,6 +3248,16 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+   socket.on("disconnect", () => {
+    const uid = socket.data.uid;
+    if (!uid) return;
+
+    if (activeUsers.get(uid) === socket.id) {
+      activeUsers.delete(uid);
+    }
+  });
+
+  
 // ================================
 // 💬 CHAT 1–1 (ADMIN BYPASS FRIEND)
 // ================================
