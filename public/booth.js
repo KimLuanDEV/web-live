@@ -1372,13 +1372,15 @@ async function cancelMyOrder(orderId){
     });
 
     const data = await res.json();
-    if(!data.ok){
-      showModal({
-        title:"❌ Không thể huỷ",
-        message:data.error || "Không thể huỷ đơn hàng."
-      });
-      return;
-    }
+
+if(!data.ok){
+  showModal({
+    title:"❌ Không thể huỷ",
+    message: data.message || "Không thể huỷ đơn hàng."
+  });
+  return;
+}
+
 
     showModal({
       title:"✅ Đã huỷ đơn",

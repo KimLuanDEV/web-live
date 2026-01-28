@@ -409,8 +409,23 @@ app.post("/api/market/order/cancel", (req,res)=>{
   if(!found) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
   if(found.buyerUid !== uid)
     return res.json({ ok:false, error:"NO_PERMISSION" });
-  if(found.status !== "pending")
-    return res.json({ ok:false, error:"CANNOT_CANCEL" });
+
+if(found.status === "contacted"){
+  return res.json({
+    ok:false,
+    error:"ORDER_CONTACTED",
+    message:"Shop đã liên hệ, không thể huỷ đơn hàng."
+  });
+}
+
+if(found.status !== "pending"){
+  return res.json({
+    ok:false,
+    error:"CANNOT_CANCEL",
+    message:"Đơn hàng không thể huỷ."
+  });
+}
+
 
   // =========================
   // 1️⃣ cập nhật trạng thái
