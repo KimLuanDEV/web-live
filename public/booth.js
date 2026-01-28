@@ -1412,8 +1412,8 @@ async function contactOrder(orderId){
   showModal({
     title: "📞 Xác nhận đơn hàng",
     message: "Bạn đã liên hệ với khách hàng cho đơn này?",
-    confirmText: "Đã liên hệ",
-    onConfirm: async ()=>{
+    confirm: true,          // ✅ BẮT BUỘC
+    onOk: async ()=>{       // ✅ ĐÚNG TÊN CALLBACK
       const me = JSON.parse(localStorage.getItem("user_profile"));
       if(!me?.uid){
         showModal({
@@ -1448,9 +1448,7 @@ async function contactOrder(orderId){
           message:"Đơn hàng đã chuyển sang trạng thái đã liên hệ."
         });
 
-        // 🔥 reload booth để thấy status đổi
-        loadBooth();
-
+        loadBooth(); // 🔥 GIỜ MỚI THỰC SỰ CHẠY
       }catch(err){
         showModal({
           title:"⚠️ Lỗi kết nối",
@@ -1460,6 +1458,7 @@ async function contactOrder(orderId){
     }
   });
 }
+
 
 
 
