@@ -1158,3 +1158,41 @@ function openAdminImage(url){
     `
   });
 }
+
+
+
+function openGallery(items, startIndex = 0){
+  if(!items || items.length === 0) return;
+
+  let index = startIndex;
+
+  const render = ()=>{
+    const item = items[index];
+    const box = document.getElementById("adminGalleryContent");
+
+    box.innerHTML = item.type === "video"
+      ? `<video src="${item.url}" controls style="max-width:100%;max-height:80vh"></video>`
+      : `<img src="${item.url}" style="max-width:100%;max-height:80vh">`;
+
+    document.getElementById("adminGalleryIndex").textContent =
+      `${index + 1} / ${items.length}`;
+  };
+
+  showModal({
+    title: "📎 Bằng chứng",
+    body: `
+      <div style="position:relative;text-align:center">
+        <button id="adminPrev" style="position:absolute;left:0">‹</button>
+        <div id="adminGalleryContent"></div>
+        <button id="adminNext" style="position:absolute;right:0">›</button>
+      </div>
+      <div id="adminGalleryIndex"
+        style="margin-top:6px;opacity:.7;text-align:center"></div>
+    `,
+    onShow: ()=>{
+      render();
+      adminPrev.onclick = ()=>{ index = (index - 1 + items.length) % items.length; render(); };
+      adminNext.onclick = ()=>{ index = (index + 1) % items.length; render(); };
+    }
+  });
+}
