@@ -1298,17 +1298,20 @@ ${o.status === "buyer_received" ? `
 ` : ""}
 
 
-${["done", "cancelled"].includes(o.status) ? `
-  <button style="color:#ff6b6b"
-    onclick="hideOrder('${o.id}', 'seller')">
+${(
+  o.status === "cancelled" ||
+  o.status === "refunded" ||
+  (o.status === "done" && o.adminApproved)
+) ? `
+  <button onclick="hideOrder('${o.id}', 'seller')">
     🗑 Xoá lịch sử
   </button>
-`
- : `
+` : `
   <span style="opacity:.5;font-size:12px">
-    🔒 Chỉ xoá khi hoàn tất
+    🔒 Chỉ xoá sau khi admin xử lý
   </span>
 `}
+
 
 </div>
 
@@ -1667,13 +1670,24 @@ async function hideOrder(orderId, role){
 
   if (!o) return;
 
-  if (!["done", "cancelled"].includes(o.status)) {
-    showModal({
-      title: "🔒 Không thể xoá",
-      message: "Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất hoặc đã huỷ."
-    });
-    return;
-  }
+// 🔒 chỉ cho xoá khi:
+// - cancelled
+// - refunded
+// - done do ADMIN phê duyệt
+if (
+  o.status === "cancelled" ||
+  o.status === "refunded" ||
+  (o.status === "done" && o.adminApproved)
+) {
+  // ✅ cho phép xoá
+} else {
+  showModal({
+    title: "🔒 Không thể xoá",
+    message: "Chỉ có thể xoá lịch sử sau khi admin đã xử lý xong đơn hàng."
+  });
+  return;
+}
+
 
   showModal({
     title: "🗑 Xoá lịch sử đơn hàng",
