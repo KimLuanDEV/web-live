@@ -517,6 +517,50 @@ html,body{
 }
 
 
+/* =========================
+   MY ORDER – NGƯỜI MUA
+========================= */
+.my-order-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.my-order-card{
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:14px;
+  padding:12px;
+  font-size:13px;
+}
+
+.my-order-top{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-weight:800;
+}
+
+.my-order-price{
+  color:#25F09A;
+  font-weight:900;
+}
+
+.my-order-meta{
+  margin-top:4px;
+  opacity:.65;
+  font-size:12px;
+}
+
+.my-order-status{
+  margin-top:8px;
+  font-weight:800;
+}
+
+.my-order-status.pending{ color:#ffb347; }
+.my-order-status.contacted{ color:#5FA8FF; }
+.my-order-status.done{ color:#25F09A; }
+
 
 </style>
 </head>

@@ -1044,6 +1044,7 @@ function renderMyOrders(orders){
   if(!me?.uid){
     empty.classList.remove("hidden");
     empty.textContent = "Vui lòng đăng nhập để xem đơn hàng.";
+    list.innerHTML = "";
     return;
   }
 
@@ -1056,29 +1057,35 @@ function renderMyOrders(orders){
   }
 
   empty.classList.add("hidden");
+  list.className = "my-order-list";
   list.innerHTML = "";
 
   myOrders.forEach(o=>{
-    const div = document.createElement("div");
-    div.className = "order-card";
-
     const statusText = {
       pending: "⏳ Đang chờ shop",
       contacted: "📞 Shop đã liên hệ",
       done: "✅ Hoàn tất"
     }[o.status] || "⏳ Đang xử lý";
 
+    const div = document.createElement("div");
+    div.className = "my-order-card";
+
     div.innerHTML = `
-      <div class="order-title">
-        🛒 ${o.productName} × ${o.qty}
+      <div class="my-order-top">
+        <div>
+          🛒 ${o.productName}
+          <span style="opacity:.7">× ${o.qty}</span>
+        </div>
+        <div class="my-order-price">
+          💎 ${o.totalPrice.toLocaleString()}
+        </div>
       </div>
 
-      <div class="order-meta">
-        💎 ${o.totalPrice.toLocaleString()} ·
+      <div class="my-order-meta">
         🕒 ${new Date(o.createdAt).toLocaleString("vi-VN")}
       </div>
 
-      <div style="margin-top:6px;font-weight:800">
+      <div class="my-order-status ${o.status}">
         ${statusText}
       </div>
     `;
@@ -1086,6 +1093,7 @@ function renderMyOrders(orders){
     list.appendChild(div);
   });
 }
+
 
 
 
