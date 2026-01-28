@@ -2443,9 +2443,3 @@ function closeGiftUsers(){
 
 
 
-
-socket.on("force-logout", (data) => {
-  alert("🚨 " + (data?.reason || "Bạn đã bị đăng xuất"));
-  localStorage.clear();
-  location.href = "/login.html";
-});
