@@ -231,37 +231,50 @@ function saveSocial(){
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-const activeUsers = new Map(); // uid -> socketId
+const activeUsers = new Map(); 
+
+
+function kickOldSessions(uid, exceptSocketId) {
+  const sockets = activeUsers.get(uid);
+  if (!sockets) return;
+
+  for (const sid of sockets) {
+    if (sid !== exceptSocketId) {
+      io.to(sid).emit("force-logout", {
+        reason: "logged_in_elsewhere",
+        message: "⚠️ Tài khoản đã đăng nhập trên thiết bị khác"
+      });
+
+      const s = io.sockets.sockets.get(sid);
+      if (s) s.disconnect(true);
+    }
+  }
+
+  // reset lại chỉ giữ socket mới
+  activeUsers.set(uid, new Set([exceptSocketId]));
+}
 
 
 
 function bindSocketToUser(uid, socket) {
   if (!uid) return;
 
-  const db = loadUsers();
-  const acc = db[uid];
+  // 🔥 KICK SESSION CŨ
+  kickOldSessions(uid, socket.id);
 
-  // 🔴 Nếu user đã online ở thiết bị khác → KICK
-  const oldSocketId = activeUsers.get(uid);
-  if (oldSocketId && oldSocketId !== socket.id) {
-    const oldSocket = io.sockets.sockets.get(oldSocketId);
-    if (oldSocket) {
-      oldSocket.emit("force-logout", {
-        reason: "login_other_device"
-      });
-      oldSocket.disconnect(true);
-    }
+  let set = activeUsers.get(uid);
+  if (!set) {
+    set = new Set();
+    activeUsers.set(uid, set);
   }
 
-  // ✅ Gắn socket mới
-  activeUsers.set(uid, socket.id);
+  set.add(socket.id);
 
-  socket.data.uid   = uid;
-  socket.data.role  = acc?.role || "user";
-  socket.data.roles = acc?.roles || [];
+  socket.data.uid = uid;
 
-  console.log("🔐 LOGIN:", uid, "socket:", socket.id);
+  console.log("🔐 LOGIN NEW SESSION:", uid, socket.id);
 }
+
 
 
 
@@ -3248,16 +3261,6 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
-   socket.on("disconnect", () => {
-    const uid = socket.data.uid;
-    if (!uid) return;
-
-    if (activeUsers.get(uid) === socket.id) {
-      activeUsers.delete(uid);
-    }
-  });
-
-  
 // ================================
 // 💬 CHAT 1–1 (ADMIN BYPASS FRIEND)
 // ================================

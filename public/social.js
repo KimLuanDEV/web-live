@@ -2434,7 +2434,8 @@ function closeGiftUsers(){
 
 
 socket.on("force-logout", (data) => {
-  alert("⚠️ Tài khoản của bạn đã được đăng nhập ở thiết bị khác.");
+  alert(data.message || "Bạn đã bị đăng xuất");
+
   localStorage.removeItem("user_profile");
   location.href = "/login.html";
 });
