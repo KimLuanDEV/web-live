@@ -4622,24 +4622,16 @@ socket.once("auth-login", ({ uid }) => {
   };
   socket.data.role = db[uid].role || "user";
 
-  // ⏳ DELAY 1 TICK → TRÁNH TỰ ĐÁ
+  // ⏳ DELAY 1 TICK → TRÁNH RACE
   setTimeout(() => {
 
-    const oldSockets = activeUsers.get(uid);
-    if (oldSockets) {
-      for (const sid of oldSockets) {
-        if (sid === socket.id) continue;
-        io.to(sid).emit("force-logout", {
-          reason: "Tài khoản đã đăng nhập ở thiết bị khác"
-        });
-        io.sockets.sockets.get(sid)?.disconnect(true);
-      }
-    }
+    // 🔐 SINGLE LOGIN – KICK SOCKET KHÁC
+    kickUser(uid, socket.id, "Tài khoản đã đăng nhập ở thiết bị khác");
 
-    // ✅ GIỜ MỚI SET activeUsers
+    // ✅ CHỈ SET 1 LẦN
     activeUsers.set(uid, new Set([socket.id]));
 
-    // 📩 OFFLINE MESSAGES (CHỈ 1 LẦN)
+    // 📩 OFFLINE MESSAGES
     const inbox = userInbox.get(uid);
     if (inbox && inbox.length) {
       const toSend = inbox.filter(m => !m.delivered);
@@ -4667,8 +4659,9 @@ socket.once("auth-login", ({ uid }) => {
 
     console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
 
-  }, 0); // 🔥 CHÌA KHOÁ
+  }, 0);
 });
+
 
 
 
