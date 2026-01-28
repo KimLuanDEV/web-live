@@ -407,28 +407,56 @@ app.post("/api/market/order/cancel", (req,res)=>{
   }
 
   if(!found) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
-
   if(found.buyerUid !== uid)
     return res.json({ ok:false, error:"NO_PERMISSION" });
-
   if(found.status !== "pending")
     return res.json({ ok:false, error:"CANNOT_CANCEL" });
 
+  // =========================
   // 1️⃣ cập nhật trạng thái
+  // =========================
   found.status = "cancelled";
   found.cancelledAt = Date.now();
 
+  // =========================
   // 2️⃣ hoàn stock
+  // =========================
   if(product) product.stock += found.qty;
 
-  // 3️⃣ hoàn coin cho buyer
+  // =========================
+  // 3️⃣ HOÀN / ĐIỀU CHỈNH COIN
+  // =========================
   const users = loadUsers();
-  if(users[uid]) users[uid].coins += found.totalPrice;
-  saveUsers(users);
 
+  // 👤 BUYER
+  const buyer = users[found.buyerUid];
+  if(buyer && buyer.profile){
+    buyer.profile.coins += found.totalPrice;
+    buyer.profile.coinSent = Math.max(
+      0,
+      (buyer.profile.coinSent || 0) - found.totalPrice
+    );
+  }
+
+  // 🏪 SELLER
+  const owner = users[booth.ownerUid];
+  if(owner && owner.profile){
+    owner.profile.coinReceived = Math.max(
+      0,
+      (owner.profile.coinReceived || 0) - found.totalPrice
+    );
+  }
+
+  saveUsers(users);
   saveMarket(market);
 
+  // 🔄 REALTIME UPDATE COIN
+  emitCoinUpdate(found.buyerUid);
+  emitCoinUpdate(booth.ownerUid);
+
+  // =========================
   // 4️⃣ notify chủ gian
+  // =========================
   const notifyText = `❌ Đơn hàng bị huỷ: ${found.productName} ×${found.qty}`;
 
   const sockets = activeUsers.get(booth.ownerUid);
@@ -451,6 +479,7 @@ app.post("/api/market/order/cancel", (req,res)=>{
 
   res.json({ ok:true });
 });
+
 
 
 
