@@ -1030,7 +1030,7 @@ div.innerHTML = `
         grid-template-columns:repeat(3,1fr);
         gap:6px
       ">
-        ${evidences.map(m =>
+        ${evidences.map((m, i) => 
           m.type === "video"
             ? `
               <video
