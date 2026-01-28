@@ -1165,11 +1165,12 @@ function renderOrders(orders){
   ` : ""}
 
   ${o.status === "contacted" ? `
-    <button onclick="markOrder('${o.id}','done')" style="color:#25F09A">
+    <button onclick="completeOrder('${o.id}')" style="color:#25F09A">
       ✅ Hoàn tất
     </button>
   ` : ""}
 </div>
+
 
     `;
 
