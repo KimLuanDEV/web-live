@@ -2846,7 +2846,8 @@ acc.trusted[trusted] = Date.now() + 30*24*60*60*1000; // 30 ngày
 saveUsers(db);
 
 // 🚨 LOGIN MỚI → KICK MỌI PHIÊN CŨ
-kickOtherSessions(user.profile.uid);
+kickOtherSessions(acc.profile.uid);
+
 
 
 res.json({
