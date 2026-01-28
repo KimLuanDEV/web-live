@@ -649,6 +649,35 @@ if (socket) {
 
 
 
+// =========================
+// 🔄 REALTIME ORDER (KHÔNG RELOAD)
+// =========================
+if (socket) {
+  socket.on("order-updated", ({ boothId: bId, order }) => {
+    if (String(bId) !== String(boothId)) return;
+
+    const booth = window.__lastBooth;
+    if (!booth) return;
+
+    if (!Array.isArray(booth.orders)) booth.orders = [];
+
+    const idx = booth.orders.findIndex(o => o.id === order.id);
+
+    if (idx !== -1) {
+      // 🔁 update order tại chỗ
+      booth.orders[idx] = order;
+    } else {
+      // ➕ order mới
+      booth.orders.unshift(order);
+    }
+
+    // 🔥 render lại UI – KHÔNG loadBooth
+    renderOrders(booth.orders);
+    renderMyOrders(booth.orders);
+  });
+}
+
+
 
 function openEditProduct(productId){
   const booth = window.__lastBooth;
@@ -1448,7 +1477,7 @@ async function contactOrder(orderId){
           message:"Đơn hàng đã chuyển sang trạng thái đã liên hệ."
         });
 
-        loadBooth(); // 🔥 GIỜ MỚI THỰC SỰ CHẠY
+        
       }catch(err){
         showModal({
           title:"⚠️ Lỗi kết nối",
@@ -1501,7 +1530,7 @@ async function completeOrder(orderId){
           message:"Đơn hàng đã được đánh dấu hoàn tất."
         });
 
-        loadBooth(); // 🔄 reload để thấy trạng thái mới
+        
       }catch(e){
         showModal({
           title:"⚠️ Lỗi kết nối",

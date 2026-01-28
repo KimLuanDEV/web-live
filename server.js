@@ -428,7 +428,11 @@ app.post("/api/market/order/done", (req,res)=>{
   saveMarket(market);
 
   // 🔄 realtime update
-  emitMarketUpdate("order-done", booth.id);
+  io.emit("order-updated", {
+  boothId: booth.id,
+  order: found
+});
+
 
   // 🔔 notify buyer
   const notifyText = `✅ Đơn hàng đã hoàn tất: ${found.productName} ×${found.qty}`;
@@ -497,7 +501,11 @@ app.post("/api/market/order/contact", (req, res) => {
   saveMarket(market);
 
   // 🔄 realtime update booth
-  emitMarketUpdate("order-contacted", booth.id);
+  io.emit("order-updated", {
+  boothId: booth.id,
+  order: found
+});
+
 
   // 🔔 notify buyer
   const notifyText = `📞 Shop đã liên hệ đơn hàng: ${found.productName}`;
@@ -629,6 +637,15 @@ if(found.status !== "pending"){
     body: notifyText,
     tag:"order-cancel"
   });
+
+
+// 🔄 REALTIME ORDER UPDATE (KHÔNG RELOAD)
+io.emit("order-updated", {
+  boothId: booth.id,
+  order: found
+});
+
+
 
   res.json({ ok:true });
 });
