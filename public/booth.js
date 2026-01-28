@@ -1148,6 +1148,10 @@ div.innerHTML = `
 
 
 function renderOrders(orders){
+
+  orders = (orders || []).filter(o => !o.hiddenBySeller);
+
+  
   const list = document.getElementById("orderList");
   const empty = document.getElementById("orderEmpty");
 

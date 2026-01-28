@@ -396,13 +396,15 @@ app.post("/api/market/order/hide", (req, res) => {
   if (!uid) return res.json({ ok: false, error: "NOT_LOGIN" });
 
   const market = loadMarket();
-  let order, booth;
+  let order, booth, boothId;
 
-  for (const b of Object.values(market)) {
+  // ✅ PHẢI LẤY boothId TỪ KEY
+  for (const [id, b] of Object.entries(market)) {
     const o = (b.orders || []).find(x => x.id === orderId);
     if (o) {
       order = o;
       booth = b;
+      boothId = id; // 🔥 CHÍNH LÀ CHỖ NÀY
       break;
     }
   }
@@ -421,17 +423,17 @@ app.post("/api/market/order/hide", (req, res) => {
     order.hiddenBySeller = true;
   }
 
- saveMarket(market);
+  saveMarket(market);
 
-// 🔄 realtime update để ẩn đơn ngay
-io.emit("order-updated", {
-  boothId: booth.boothId,
-  order
+  // 🔄 realtime update ĐÚNG boothId
+  io.emit("order-updated", {
+    boothId,
+    order
+  });
+
+  res.json({ ok:true });
 });
 
-res.json({ ok:true });
-
-});
 
 
 
