@@ -506,18 +506,6 @@ if (profile.uid) {
 
 
 
-
-socket.on("force-logout", () => {
-   showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
-  localStorage.removeItem("user_profile");
-localStorage.removeItem("login_uid");
-localStorage.removeItem("isGuest"); // 🔥
-
-  location.href = "/login.html";
-});
-
-
-
 const VIRTUAL_ROOMS = [
   /*
   {
@@ -1735,6 +1723,15 @@ function showWithdrawNotify(data){
   openSysModal(text);
 }
 
+
+
+
+socket.on("force-logout", (data) => {
+  alert(data.message || "Bạn đã bị đăng xuất");
+
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
 
 
 

@@ -234,45 +234,50 @@ const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
 
 
-function kickOldSessions(uid, exceptSocketId) {
+function kickOldSessions(uid, newSocket) {
   const sockets = activeUsers.get(uid);
   if (!sockets) return;
 
   for (const sid of sockets) {
-    if (sid !== exceptSocketId) {
-      io.to(sid).emit("force-logout", {
-        reason: "logged_in_elsewhere",
-        message: "⚠️ Tài khoản đã đăng nhập trên thiết bị khác"
-      });
+    const s = io.sockets.sockets.get(sid);
+    if (!s) continue;
 
-      const s = io.sockets.sockets.get(sid);
-      if (s) s.disconnect(true);
-    }
+    // 🛑 CÙNG THIẾT BỊ → KHÔNG KICK
+    if (
+  s.data.deviceId &&
+  newSocket.data.deviceId &&
+  s.data.deviceId === newSocket.data.deviceId
+) {
+  continue;
+}
+
+
+    // ❌ KHÁC THIẾT BỊ → KICK
+    s.emit("force-logout", {
+      reason: "logged_in_elsewhere",
+      message: "⚠️ Tài khoản đã đăng nhập trên thiết bị khác"
+    });
+    s.disconnect(true);
   }
-
-  // reset lại chỉ giữ socket mới
-  activeUsers.set(uid, new Set([exceptSocketId]));
 }
 
 
 
 function bindSocketToUser(uid, socket) {
-  if (!uid) return;
-
-  // 🔥 KICK SESSION CŨ
-  kickOldSessions(uid, socket.id);
-
   let set = activeUsers.get(uid);
   if (!set) {
     set = new Set();
     activeUsers.set(uid, set);
   }
 
+  // 🔥 chỉ kick khác device
+  kickOldSessions(uid, socket);
+
   set.add(socket.id);
 
   socket.data.uid = uid;
 
-  console.log("🔐 LOGIN NEW SESSION:", uid, socket.id);
+  console.log("🔐 SOCKET BIND:", uid, socket.id, socket.data.deviceId);
 }
 
 
@@ -3259,6 +3264,23 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+
+socket.on("disconnect", () => {
+  const uid = socket.data.uid;
+  if (!uid) return;
+
+  const set = activeUsers.get(uid);
+  if (!set) return;
+
+  set.delete(socket.id);
+
+  if (set.size === 0) {
+    activeUsers.delete(uid);
+  }
+
+  console.log("🔌 SOCKET DISCONNECT:", uid, socket.id);
+});
+
 
 
 // ================================
