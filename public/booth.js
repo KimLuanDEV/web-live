@@ -204,45 +204,54 @@ if(!Array.isArray(p.images) || p.images.length === 0){
 
 
 
-/* ===== LOAD BOOTH INFO FROM SERVER ===== */
 async function loadBooth(){
   try{
-    const res = await fetch("/api/market");
+    const me = JSON.parse(localStorage.getItem("user_profile"));
+    const headers = me?.uid ? { "x-uid": me.uid } : {};
+
+    // ✅ LOAD ĐÚNG API + CHỐNG CACHE
+    const res = await fetch(
+      `/api/market/booth/${boothId}?t=${Date.now()}`,
+      { headers }
+    );
     const data = await res.json();
     if(!data.ok) return;
 
-    const booth = data.market[boothId];
+    const booth = data.booth;
     if(!booth) return;
 
+    // =========================
+    // CACHE MỚI
+    // =========================
     window.__lastBooth = booth;
     currentBoothOwnerUid = booth.ownerUid;
 
-    // info
+    // =========================
+    // INFO
+    // =========================
     boothNameEl.textContent = booth.name;
     boothLogoEl.src = booth.logo;
 
-    // render products
+    // =========================
+    // PRODUCTS
+    // =========================
     renderProducts(booth.products || []);
 
-    const me = JSON.parse(localStorage.getItem("user_profile"));
     const isOwner = me && me.uid === booth.ownerUid;
 
-// 🔐 Chưa đăng nhập → ẩn tab "Đơn của tôi"
-if(!me?.uid){
-  document.getElementById("tabMyOrders")?.classList.add("hidden");
-}
-
-
+    // 🔐 Chưa đăng nhập → ẩn tab "Đơn của tôi"
+    if(!me?.uid){
+      document.getElementById("tabMyOrders")?.classList.add("hidden");
+    }
 
     /* =========================
        CHỦ GIAN
     ========================= */
     if(isOwner){
-      // hiện nút
       btnExtend?.classList.remove("hidden");
       btnAddProduct?.classList.remove("hidden");
 
-      // 👉 HIỆN TAB ĐƠN HÀNG
+      // 👉 TAB ĐƠN HÀNG (CHỦ SHOP)
       document.getElementById("tabOrders")?.classList.remove("hidden");
 
       // 👉 RENDER ĐƠN HÀNG
@@ -272,29 +281,22 @@ if(!me?.uid){
     }
 
     /* =========================
-       KHÁCH / NGƯỜI MUA
+       NGƯỜI MUA
     ========================= */
     else{
-      // ẩn tab đơn hàng nếu không phải chủ
       document.getElementById("tabOrders")?.classList.add("hidden");
+
+      // 👉 TAB ĐƠN CỦA TÔI
+      document.getElementById("tabMyOrders")?.classList.remove("hidden");
+      renderMyOrders(booth.orders || []);
     }
 
+    // mặc định mở tab sản phẩm
     document.querySelector('[data-tab="products"]')?.click();
 
-// 👉 NGƯỜI MUA: hiện tab Đơn của tôi
-if(!isOwner){
-  document.getElementById("tabMyOrders")?.classList.remove("hidden");
-  renderMyOrders(booth.orders || []);
-}
-  
   }catch(e){
     console.error("loadBooth error", e);
   }
-
-
-
-
-
 }
 
 
