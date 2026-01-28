@@ -411,6 +411,17 @@ app.post("/api/market/order/hide", (req, res) => {
 
   if (!order) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
 
+// 🔒 CHỈ CHO XOÁ KHI ĐƠN ĐÃ HOÀN TẤT
+if (order.status !== "done") {
+  return res.json({
+    ok: false,
+    error: "ORDER_NOT_DONE",
+    message: "🔒 Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất."
+  });
+}
+
+
+
   if (role === "buyer") {
     if (order.buyerUid !== uid)
       return res.json({ ok:false, error:"NO_PERMISSION" });

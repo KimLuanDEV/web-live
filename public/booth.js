@@ -1129,13 +1129,18 @@ div.innerHTML = `
       onclick="cancelMyOrder('${o.id}')">
       ❌ Huỷ đơn
     </button>
-  ` : `
+  ` : o.status === "done" ? `
     <button style="color:#ff6b6b"
       onclick="hideOrder('${o.id}', 'buyer')">
       🗑 Xoá lịch sử
     </button>
+  ` : `
+    <span style="opacity:.5;font-size:12px">
+      🔒 Chỉ xoá khi hoàn tất
+    </span>
   `}
 </div>
+
 
 `;
 
@@ -1214,12 +1219,17 @@ function renderOrders(orders){
     </button>
   ` : ""}
 
-  ${o.status !== "pending" ? `
-    <button style="color:#ff6b6b"
-      onclick="hideOrder('${o.id}', 'seller')">
-      🗑 Xoá lịch sử
-    </button>
-  ` : ""}
+${o.status === "done" ? `
+  <button style="color:#ff6b6b"
+    onclick="hideOrder('${o.id}', 'seller')">
+    🗑 Xoá lịch sử
+  </button>
+` : `
+  <span style="opacity:.5;font-size:12px">
+    🔒 Chỉ xoá khi hoàn tất
+  </span>
+`}
+
 </div>
 
 
@@ -1570,11 +1580,27 @@ async function completeOrder(orderId){
 
 
 async function hideOrder(orderId, role){
+
+  // 🔒 CHẶN TỪ FRONTEND: CHỈ XOÁ KHI ĐƠN DONE
+  const booth = window.__lastBooth;
+  const o = booth?.orders?.find(x => x.id === orderId);
+
+  if (!o) return;
+
+  if (o.status !== "done") {
+    showModal({
+      title: "🔒 Không thể xoá",
+      message: "Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất."
+    });
+    return;
+  }
+
   showModal({
     title: "🗑 Xoá lịch sử đơn hàng",
     message: "Bạn có chắc chắn muốn xoá đơn hàng này khỏi lịch sử không?",
     confirm: true,
     onOk: async ()=>{
+
       const me = JSON.parse(localStorage.getItem("user_profile"));
       if(!me?.uid) return;
 
@@ -1588,10 +1614,11 @@ async function hideOrder(orderId, role){
       });
 
       const data = await res.json();
+
       if(!data.ok){
         showModal({
-          title:"❌ Thất bại",
-          message:"Không thể xoá lịch sử đơn hàng."
+          title:"❌ Không thể xoá",
+          message: data.message || "Không thể xoá lịch sử đơn hàng."
         });
         return;
       }
@@ -1601,7 +1628,9 @@ async function hideOrder(orderId, role){
         message:"Đơn hàng đã được xoá khỏi lịch sử."
       });
 
-      loadBooth(); // refresh UI
+      // ❌ KHÔNG cần loadBooth
+      // socket order-updated sẽ tự update UI
     }
   });
 }
+
