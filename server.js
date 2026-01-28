@@ -670,7 +670,8 @@ app.post("/api/market/order/hide", (req, res) => {
   if (!order) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
 
 // 🔒 CHỈ CHO XOÁ KHI ĐƠN ĐÃ HOÀN TẤT HOẶC ĐÃ HUỶ
-if (!["done", "cancelled"].includes(order.status)) {
+if (!["done", "cancelled", "refunded"].includes(order.status)) {
+
   return res.json({
     ok: false,
     error: "ORDER_NOT_ALLOWED",
