@@ -1103,16 +1103,27 @@ function renderOrders(orders){
   list.innerHTML = "";
 
   orders.forEach(o=>{
+    const statusText = {
+      pending: "⏳ Chờ xử lý",
+      contacted: "📞 Đã liên hệ",
+      done: "✅ Hoàn tất"
+    }[o.status] || "⏳ Chờ xử lý";
+
     const div = document.createElement("div");
     div.className = "order-card";
 
     div.innerHTML = `
-      <div class="order-title">
-        🛒 ${o.productName} × ${o.qty}
+      <div class="order-top">
+        <div>
+          🛒 ${o.productName}
+          <span class="qty">× ${o.qty}</span>
+        </div>
+        <div class="order-price">
+          💎 ${o.totalPrice.toLocaleString()}
+        </div>
       </div>
 
       <div class="order-meta">
-        💎 ${o.totalPrice.toLocaleString()} ·
         🕒 ${new Date(o.createdAt).toLocaleString("vi-VN")}
       </div>
 
@@ -1120,11 +1131,15 @@ function renderOrders(orders){
         👤 <b>${o.buyerInfo.name}</b><br>
         📞 ${o.buyerInfo.phone}<br>
         📍 ${o.buyerInfo.address || "—"}<br>
-        📝 ${o.buyerInfo.note || "—"}
+        ${o.buyerInfo.note ? `📝 ${o.buyerInfo.note}` : ""}
+      </div>
+
+      <div class="order-status ${o.status}">
+        ${statusText}
       </div>
 
       <div class="order-actions">
-      <button onclick="markOrder('${o.id}','contacted')"> 
+        <button onclick="markOrder('${o.id}','contacted')">
           📞 Đã liên hệ
         </button>
         <button onclick="markOrder('${o.id}','done')" style="color:#25F09A">
@@ -1136,6 +1151,7 @@ function renderOrders(orders){
     list.appendChild(div);
   });
 }
+
 
 
 
