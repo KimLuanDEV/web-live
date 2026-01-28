@@ -1670,23 +1670,23 @@ async function hideOrder(orderId, role){
 
   if (!o) return;
 
-// 🔒 chỉ cho xoá khi:
-// - cancelled
-// - refunded
-// - done do ADMIN phê duyệt
+// 🔒 chỉ cho xoá khi đơn đã kết thúc
+// done = hoàn tất (kể cả admin phê duyệt)
+// cancelled / refunded = đã kết thúc
 if (
+  o.status === "done" ||
   o.status === "cancelled" ||
-  o.status === "refunded" ||
-  (o.status === "done" && o.adminApproved)
+  o.status === "refunded"
 ) {
   // ✅ cho phép xoá
 } else {
   showModal({
     title: "🔒 Không thể xoá",
-    message: "Chỉ có thể xoá lịch sử sau khi admin đã xử lý xong đơn hàng."
+    message: "Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất hoặc đã huỷ."
   });
   return;
 }
+
 
 
   showModal({
