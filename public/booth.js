@@ -1464,37 +1464,50 @@ async function contactOrder(orderId){
 
 async function completeOrder(orderId){
   showModal({
-    title:"✅ Hoàn tất đơn hàng",
-    message:"Xác nhận đã giao hàng / hoàn tất đơn này?",
-    confirmText:"Hoàn tất",
-    onConfirm: async ()=>{
+    title: "✅ Hoàn tất đơn hàng",
+    message: "Xác nhận đơn hàng này đã giao dịch xong?",
+    confirm: true,
+    onOk: async ()=>{
       const me = JSON.parse(localStorage.getItem("user_profile"));
-      if(!me?.uid) return;
-
-      const res = await fetch("/api/market/order/done",{
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-uid": me.uid
-        },
-        body: JSON.stringify({ orderId })
-      });
-
-      const data = await res.json();
-      if(!data.ok){
+      if(!me?.uid){
         showModal({
-          title:"❌ Không thể hoàn tất",
-          message: data.message || "Thao tác thất bại."
+          title:"🔐 Yêu cầu đăng nhập",
+          message:"Vui lòng đăng nhập để tiếp tục."
         });
         return;
       }
 
-      showModal({
-        title:"🎉 Thành công",
-        message:"Đơn hàng đã được hoàn tất."
-      });
+      try{
+        const res = await fetch("/api/market/order/done",{
+          method: "POST",
+          headers:{
+            "Content-Type":"application/json",
+            "x-uid": me.uid
+          },
+          body: JSON.stringify({ orderId })
+        });
 
-      loadBooth(); // reload đơn hàng
+        const data = await res.json();
+        if(!data.ok){
+          showModal({
+            title:"❌ Không thể hoàn tất",
+            message: data.message || "Thao tác thất bại."
+          });
+          return;
+        }
+
+        showModal({
+          title:"🎉 Thành công",
+          message:"Đơn hàng đã được đánh dấu hoàn tất."
+        });
+
+        loadBooth(); // 🔄 reload để thấy trạng thái mới
+      }catch(e){
+        showModal({
+          title:"⚠️ Lỗi kết nối",
+          message:"Không thể kết nối máy chủ."
+        });
+      }
     }
   });
 }
