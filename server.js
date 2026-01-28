@@ -411,14 +411,15 @@ app.post("/api/market/order/hide", (req, res) => {
 
   if (!order) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
 
-// 🔒 CHỈ CHO XOÁ KHI ĐƠN ĐÃ HOÀN TẤT
-if (order.status !== "done") {
+// 🔒 CHỈ CHO XOÁ KHI ĐƠN ĐÃ HOÀN TẤT HOẶC ĐÃ HUỶ
+if (!["done", "cancelled"].includes(order.status)) {
   return res.json({
     ok: false,
-    error: "ORDER_NOT_DONE",
-    message: "🔒 Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất."
+    error: "ORDER_NOT_ALLOWED",
+    message: "🔒 Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất hoặc đã huỷ."
   });
 }
+
 
 
 

@@ -1578,19 +1578,19 @@ async function completeOrder(orderId){
 }
 
 
-
 async function hideOrder(orderId, role){
 
-  // 🔒 CHẶN TỪ FRONTEND: CHỈ XOÁ KHI ĐƠN DONE
+  // 🔒 CHẶN TỪ FRONTEND:
+  // chỉ cho xoá khi done hoặc cancelled
   const booth = window.__lastBooth;
   const o = booth?.orders?.find(x => x.id === orderId);
 
   if (!o) return;
 
-  if (o.status !== "done") {
+  if (!["done", "cancelled"].includes(o.status)) {
     showModal({
       title: "🔒 Không thể xoá",
-      message: "Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất."
+      message: "Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất hoặc đã huỷ."
     });
     return;
   }
@@ -1628,9 +1628,8 @@ async function hideOrder(orderId, role){
         message:"Đơn hàng đã được xoá khỏi lịch sử."
       });
 
-      // ❌ KHÔNG cần loadBooth
-      // socket order-updated sẽ tự update UI
+      // ❌ không cần loadBooth
+      // realtime order-updated sẽ tự render
     }
   });
 }
-
