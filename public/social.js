@@ -162,14 +162,25 @@ if (isAdminUser(auth.uid)) {
 
 
 
-if (auth.uid) {
+// ❌ XÓA TOÀN BỘ block cũ
+// if (auth.uid) { ... }
+
+// ✅ THAY BẰNG
+socket.on("connect", () => {
+  if (!auth?.uid) return;
+
   socket.emit("auth-login", { uid: auth.uid });
 
-  // keep-alive mỗi 20s để không bị rớt online
-  setInterval(() => {
-    socket.emit("auth-ping", { uid: auth.uid });
-  }, 20000);
-}
+  // keep-alive sau khi login xong
+  if (!window.__authPingStarted) {
+    window.__authPingStarted = true;
+
+    setInterval(() => {
+      socket.emit("auth-ping", { uid: auth.uid });
+    }, 20000);
+  }
+});
+
 
 
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";

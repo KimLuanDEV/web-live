@@ -241,23 +241,23 @@ function bindSocketToUser(uid, socket) {
 
   if (oldSockets) {
     for (const sid of oldSockets) {
-      // ⛔ BỎ QUA SOCKET ĐANG LOGIN
+      // ⛔ KHÔNG ĐÁ CHÍNH SOCKET NÀY
       if (sid === socket.id) continue;
 
       io.to(sid).emit("force-logout", {
-        reason: "Tài khoản đã đăng nhập ở nơi khác"
+        reason: "Tài khoản đã đăng nhập ở thiết bị khác"
       });
 
       io.sockets.sockets.get(sid)?.disconnect(true);
     }
   }
 
-  // ✅ reset lại chỉ giữ socket hiện tại
+  // ✅ CHỈ GIỮ 1 SOCKET DUY NHẤT
   activeUsers.set(uid, new Set([socket.id]));
-  socket.data.uid = uid;
 
   console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
 }
+
 
 
 
@@ -3412,16 +3412,24 @@ socket.on("topup-transferred", async ({ fromUid, agentUid, time }) => {
 
 
 
-// 🔐 LOGIN SOCKET (CHUẨN HOÁ)
-socket.on("socket-login", ({ uid }) => {
+
+socket.on("auth-login", ({ uid }) => {
+  if (!uid) return;
+
+  // 🔒 socket này đã login rồi → bỏ qua
+  if (socket.data._logged === true) {
+    return;
+  }
+
+  // ✅ đánh dấu NGAY LẬP TỨC
+  socket.data._logged = true;
+  socket.data.uid = uid;
+
   bindSocketToUser(uid, socket);
   emitAgentStatus(uid, true);
 });
 
-socket.on("auth-login", ({ uid }) => {
-  bindSocketToUser(uid, socket);
-  emitAgentStatus(uid, true);
-});
+
 
 
 // ❌ HANDLE DISCONNECT (BẮT BUỘC)
@@ -4583,75 +4591,77 @@ socket.on("auth-ping", ({ uid }) => {
 
 
 
- socket.on("auth-login", ({ uid }) => {
+socket.on("auth-login", ({ uid }) => {
   uid = String(uid || "").trim();
   if (!uid) return;
 
-  // 🚫 BỎ QUA GUEST
+  // 🔒 CHẶN LOGIN LẶP TRÊN CÙNG SOCKET
+  if (socket.data._logged === true) return;
+  socket.data._logged = true;
+
+  // 🚫 GUEST
   if (uid.startsWith("guest_")) {
     socket.data.uid = uid;
     socket.data.role = "guest";
+    emitActiveUsers();
     return;
   }
 
   const db = loadUsers();
-  if (db[uid]) {
-    socket.data.profile = {
-      ...db[uid].profile,
-      ...socket.data.profile
-    };
-  }
+  if (!db[uid]) return;
 
-    // 🔥 GẮN ROLE CHUẨN VÀO SOCKET (FIX ADMIN CHAT)
-  socket.data.role = db[uid]?.role || "user";
-
-
-  // ✅ KHÔNG ĐÁ – CHỈ GHI ĐÈ SOCKET MỚI
- if (!activeUsers.has(uid)) {
-  activeUsers.set(uid, new Set());
-}
-activeUsers.get(uid).add(socket.id);
-
-
- // 🔥 GỬI TIN OFFLINE – CHỈ 1 LẦN
-const inbox = userInbox.get(uid);
-if (inbox && inbox.length) {
-
-  // 👉 CHỈ LẤY TIN CHƯA GỬI
-  const toSend = inbox.filter(m => !m.delivered);
-
-  if (toSend.length) {
-
-    // gắn verified cho sender
-    for (const m of toSend) {
-      const u = db[m.from];
-      m.verified = !!u?.profile?.verified;
-    }
-
-    socket.emit("offline-messages", toSend);
-
-    // ✅ ĐÁNH DẤU ĐÃ GỬI
-    for (const m of toSend) {
-      m.delivered = true;
-    }
-
-
-    saveInbox(Object.fromEntries(userInbox)); // ✅ FIX QUAN TRỌNG
-
-    // 🔴 badge chỉ khi còn tin CHƯA XEM
-    const unread = inbox.filter(m => !m.seen).length;
-    if (unread > 0) {
-      socket.emit("inbox-new", { count: unread });
-    }
-  }
-
-  }
-
+  // ✅ GẮN UID NGAY TỪ ĐẦU (QUAN TRỌNG)
   socket.data.uid = uid;
+
+  socket.data.profile = {
+    ...db[uid].profile,
+    ...socket.data.profile
+  };
+
+  socket.data.role = db[uid].role || "user";
+
+  // 🔐 SINGLE LOGIN: ĐÁ SOCKET CŨ
+  const oldSockets = activeUsers.get(uid);
+  if (oldSockets) {
+    for (const sid of oldSockets) {
+      if (sid === socket.id) continue;
+      io.to(sid).emit("force-logout", {
+        reason: "Tài khoản đã đăng nhập ở thiết bị khác"
+      });
+      io.sockets.sockets.get(sid)?.disconnect(true);
+    }
+  }
+
+  // ✅ CHỈ GIỮ 1 SOCKET
+  activeUsers.set(uid, new Set([socket.id]));
+
+  // 📩 GỬI TIN OFFLINE (1 LẦN DUY NHẤT)
+  const inbox = userInbox.get(uid);
+  if (inbox && inbox.length) {
+    const toSend = inbox.filter(m => !m.delivered);
+
+    if (toSend.length) {
+      for (const m of toSend) {
+        const u = db[m.from];
+        m.verified = !!u?.profile?.verified;
+        m.delivered = true;
+      }
+
+      socket.emit("offline-messages", toSend);
+      saveInbox(Object.fromEntries(userInbox));
+
+      const unread = inbox.filter(m => !m.seen).length;
+      if (unread > 0) {
+        socket.emit("inbox-new", { count: unread });
+      }
+    }
+  }
+
   emitActiveUsers();
   emitCoinUpdate(uid);
-  emitAllUsers(); // 🔁 đảm bảo FE luôn có role
+  emitAllUsers();
 });
+
 
 
 
