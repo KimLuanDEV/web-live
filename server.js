@@ -348,6 +348,9 @@ app.post("/api/admin/market/approve-dispute", (req,res)=>{
   // ✅ set done
   found.status = "done";
   found.doneAt = Date.now();
+  found.adminApproved = true;   // 🧑‍⚖️ ĐÁNH DẤU ADMIN DUYỆT
+  found.adminApprovedAt = Date.now();
+
 
   // 💰 trả tiền cho seller
   const seller = users[booth.ownerUid];

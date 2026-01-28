@@ -1123,6 +1123,19 @@ div.innerHTML = `
     ${statusText}
   </div>
 
+${o.status === "done" && o.adminApproved ? `
+  <div style="
+    margin-top:6px;
+    color:#ff9800;
+    font-size:13px;
+  ">
+    🧑‍⚖️ Khiếu nại đã được Admin phê duyệt
+  </div>
+` : ""}
+
+
+
+
 <div class="order-actions">
 
   ${o.status === "pending" ? `
@@ -1221,6 +1234,17 @@ function renderOrders(orders){
       <div class="order-status ${o.status}">
         ${statusText}
       </div>
+
+  ${o.status === "done" && o.adminApproved ? `
+  <div style="
+    margin-top:6px;
+    color:#ff9800;
+    font-size:13px;
+  ">
+    🧑‍⚖️ Đơn hàng được Admin phê duyệt
+  </div>
+` : ""}
+    
 
 <div class="order-actions">
   ${o.status === "pending" ? `
