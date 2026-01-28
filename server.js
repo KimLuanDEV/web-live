@@ -428,10 +428,11 @@ app.post("/api/market/order/done", (req,res)=>{
   saveMarket(market);
 
   // 🔄 realtime update
-  io.emit("order-updated", {
-  boothId: booth.id,
+io.emit("order-updated", {
+  boothId: booth.boothId,
   order: found
 });
+
 
 
   // 🔔 notify buyer
@@ -501,10 +502,11 @@ app.post("/api/market/order/contact", (req, res) => {
   saveMarket(market);
 
   // 🔄 realtime update booth
-  io.emit("order-updated", {
-  boothId: booth.id,
+io.emit("order-updated", {
+  boothId: booth.boothId,
   order: found
 });
+
 
 
   // 🔔 notify buyer
@@ -641,9 +643,10 @@ if(found.status !== "pending"){
 
 // 🔄 REALTIME ORDER UPDATE (KHÔNG RELOAD)
 io.emit("order-updated", {
-  boothId: booth.id,
+  boothId: booth.boothId,
   order: found
 });
+
 
 
 
