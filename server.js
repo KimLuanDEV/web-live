@@ -237,29 +237,25 @@ const activeUsers = new Map();
 function bindSocketToUser(uid, socket) {
   if (!uid) return;
 
-  const db = loadUsers();
-  const acc = db[uid];
-
-  let set = activeUsers.get(uid);
-  if (!set) {
-    set = new Set();
-    activeUsers.set(uid, set);
+  // ❌ nếu đã có phiên online → đá hết
+  const oldSockets = activeUsers.get(uid);
+  if (oldSockets) {
+    for (const sid of oldSockets) {
+      io.to(sid).emit("force-logout", {
+        reason: "Tài khoản đã được đăng nhập ở thiết bị khác"
+      });
+      io.sockets.sockets.get(sid)?.disconnect(true);
+    }
   }
 
-  set.add(socket.id);
+  // ✅ tạo phiên mới
+  activeUsers.set(uid, new Set([socket.id]));
 
-  socket.data.uid   = uid;
-  socket.data.role  = acc?.role || "user";
-  socket.data.roles = acc?.roles || [];   // 🔥 QUAN TRỌNG
+  socket.data.uid = uid;
 
-  console.log(
-    "🔗 SOCKET LOGIN:",
-    uid,
-    socket.id,
-    socket.data.role,
-    socket.data.roles
-  );
+  console.log("🔒 SINGLE LOGIN:", uid, socket.id);
 }
+
 
 
 
@@ -3244,6 +3240,25 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+
+
+
+  socket.on("disconnect", () => {
+    const uid = socket.data.uid;
+    if (!uid) return;
+
+    const set = activeUsers.get(uid);
+    if (!set) return;
+
+    set.delete(socket.id);
+    if (set.size === 0) {
+      activeUsers.delete(uid);
+    }
+
+    console.log("🔌 DISCONNECT:", uid, socket.id);
+  });
+
+
 
 
 // ================================

@@ -234,3 +234,8 @@ function showToast(text, type = "info", duration = 3000) {
 
 
 
+socket.on("force-logout", (data) => {
+  alert("🚨 " + (data?.reason || "Bạn đã bị đăng xuất"));
+  localStorage.clear();
+  location.href = "/login.html";
+});
