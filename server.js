@@ -237,24 +237,28 @@ const activeUsers = new Map();
 function bindSocketToUser(uid, socket) {
   if (!uid) return;
 
-  // ❌ nếu đã có phiên online → đá hết
   const oldSockets = activeUsers.get(uid);
+
   if (oldSockets) {
     for (const sid of oldSockets) {
+      // ⛔ BỎ QUA SOCKET ĐANG LOGIN
+      if (sid === socket.id) continue;
+
       io.to(sid).emit("force-logout", {
-        reason: "Tài khoản đã được đăng nhập ở thiết bị khác"
+        reason: "Tài khoản đã đăng nhập ở nơi khác"
       });
+
       io.sockets.sockets.get(sid)?.disconnect(true);
     }
   }
 
-  // ✅ tạo phiên mới
+  // ✅ reset lại chỉ giữ socket hiện tại
   activeUsers.set(uid, new Set([socket.id]));
-
   socket.data.uid = uid;
 
-  console.log("🔒 SINGLE LOGIN:", uid, socket.id);
+  console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
 }
+
 
 
 
