@@ -1,8 +1,4 @@
-const socket = io({
-  transports: ["websocket"],
-  upgrade: false
-});
-
+const socket = io();
 const feed = document.getElementById("lpFeed");
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
@@ -165,19 +161,15 @@ if (isAdminUser(auth.uid)) {
 
 
 
-let authPingTimer = null;
 
 if (auth.uid) {
   socket.emit("auth-login", { uid: auth.uid });
 
   // keep-alive mỗi 20s để không bị rớt online
-  authPingTimer = setInterval(() => {
-    if (socket.connected) {
-      socket.emit("auth-ping", { uid: auth.uid });
-    }
+  setInterval(() => {
+    socket.emit("auth-ping", { uid: auth.uid });
   }, 20000);
 }
-
 
 
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
@@ -2440,25 +2432,4 @@ function closeGiftUsers(){
 
 
 
-socket.on("force-logout", data => {
-  console.warn("🚫 Force logout:", data.reason);
 
-  // 🛑 DỪNG AUTH PING (CỰC KỲ QUAN TRỌNG)
-  if (authPingTimer) {
-    clearInterval(authPingTimer);
-    authPingTimer = null;
-  }
-
-  // ⛔ DỪNG SOCKET NGAY LẬP TỨC
-  socket.off();
-  socket.disconnect();
-
-  // 🧹 xoá session
-  localStorage.clear();
-
-  // UX
-  alert("⚠️ Tài khoản của bạn vừa đăng nhập ở thiết bị khác.");
-
-  // 🔁 chuyển về login
-  location.href = "/login.html";
-});

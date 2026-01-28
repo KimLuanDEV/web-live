@@ -133,8 +133,6 @@ function blockSocketIfBoothLocked(socket, boothId) {
 
 
 
-
-
 function cleanupExpiredBooths(){
   const market = loadMarket();
   let changed = false;
@@ -236,36 +234,8 @@ const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
 
 
-// 🚨 KICK TẤT CẢ SESSION CŨ KHI LOGIN MỚI
-function kickOtherSessions(uid, exceptSocketId = null) {
-  const sockets = activeUsers.get(uid);
-  if (!sockets) return;
-
-  for (const sid of sockets) {
-    if (sid !== exceptSocketId) {
-      io.to(sid).emit("force-logout", {
-        reason: "LOGIN_FROM_ANOTHER_DEVICE"
-      });
-
-      const s = io.sockets.sockets.get(sid);
-      if (s) s.disconnect(true);
-    }
-  }
-
-  // reset chỉ giữ socket mới
-  activeUsers.set(
-    uid,
-    exceptSocketId ? new Set([exceptSocketId]) : new Set()
-  );
-}
-
-
-
 function bindSocketToUser(uid, socket) {
   if (!uid) return;
-
-  // 🚨 kick toàn bộ session cũ, giữ socket này
-  kickOtherSessions(uid, socket.id);
 
   const db = loadUsers();
   const acc = db[uid];
@@ -280,11 +250,16 @@ function bindSocketToUser(uid, socket) {
 
   socket.data.uid   = uid;
   socket.data.role  = acc?.role || "user";
-  socket.data.roles = acc?.roles || [];
+  socket.data.roles = acc?.roles || [];   // 🔥 QUAN TRỌNG
 
-  console.log("🔗 SOCKET LOGIN:", uid, socket.id);
+  console.log(
+    "🔗 SOCKET LOGIN:",
+    uid,
+    socket.id,
+    socket.data.role,
+    socket.data.roles
+  );
 }
-
 
 
 
@@ -2844,11 +2819,6 @@ acc.trusted = acc.trusted || {};
 acc.trusted[trusted] = Date.now() + 30*24*60*60*1000; // 30 ngày
 
 saveUsers(db);
-
-// 🚨 LOGIN MỚI → KICK MỌI PHIÊN CŨ
-kickOtherSessions(acc.profile.uid);
-
-
 
 res.json({
   ok:true,
