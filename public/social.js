@@ -1,4 +1,8 @@
-const socket = io();
+const socket = io({
+  transports: ["websocket"],
+  upgrade: false
+});
+
 const feed = document.getElementById("lpFeed");
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
