@@ -3430,8 +3430,6 @@ socket.on("auth-login", ({ uid }) => {
   // ✅ đánh dấu NGAY LẬP TỨC
   socket.data._logged = true;
   socket.data.uid = uid;
-
-  bindSocketToUser(uid, socket);
   emitAgentStatus(uid, true);
 });
 
