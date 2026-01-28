@@ -1127,7 +1127,8 @@ function renderOrders(orders){
     const statusText = {
       pending: "⏳ Chờ xử lý",
       contacted: "📞 Đã liên hệ",
-      done: "✅ Hoàn tất"
+      done: "✅ Hoàn tất",
+      cancelled: "❌ Đã huỷ"
     }[o.status] || "⏳ Chờ xử lý";
 
     const div = document.createElement("div");
