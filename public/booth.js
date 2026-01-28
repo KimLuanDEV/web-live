@@ -1139,7 +1139,14 @@ div.innerHTML = `
     </button>
   ` : ""}
 
-  ${["done","cancelled"].includes(o.status) ? `
+  ${["contacted","buyer_received"].includes(o.status) ? `
+    <button style="color:#ff9800"
+      onclick="openDispute('${o.id}')">
+      ⚠️ Khiếu nại / Hoàn tiền
+    </button>
+  ` : ""}
+
+  ${["done","cancelled","refunded"].includes(o.status) ? `
     <button style="color:#ff6b6b"
       onclick="hideOrder('${o.id}', 'buyer')">
       🗑 Xoá lịch sử
@@ -1147,6 +1154,7 @@ div.innerHTML = `
   ` : ""}
 
 </div>
+
 
 
 
@@ -1670,6 +1678,51 @@ async function markOrderReceived(orderId){
       if(!data.ok){
         showModal({ title:"❌ Lỗi", message:data.message || "Không thể xác nhận." });
       }
+    }
+  });
+}
+
+
+
+function openDispute(orderId){
+  showModal({
+    title:"⚠️ Khiếu nại đơn hàng",
+    message:`
+      <textarea id="disputeReason"
+        placeholder="Mô tả vấn đề..."
+        style="width:100%;height:80px"></textarea>
+    `,
+    confirm:true,
+    onOk: async ()=>{
+      const reason =
+        document.getElementById("disputeReason").value.trim();
+
+      if(!reason){
+        showModal({ title:"❌ Lỗi", message:"Vui lòng nhập lý do." });
+        return;
+      }
+
+      const me = JSON.parse(localStorage.getItem("user_profile"));
+
+      const res = await fetch("/api/market/order/dispute",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-uid": me.uid
+        },
+        body: JSON.stringify({ orderId, reason })
+      });
+
+      const data = await res.json();
+      if(!data.ok){
+        showModal({ title:"❌ Lỗi", message:data.message });
+        return;
+      }
+
+      showModal({
+        title:"📨 Đã gửi",
+        message:"Khiếu nại đã được gửi, chờ admin xử lý."
+      });
     }
   });
 }

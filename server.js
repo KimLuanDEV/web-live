@@ -460,6 +460,98 @@ sendPushToUser(booth.ownerUid, {
 
 
 
+app.post("/api/market/order/dispute", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  const { orderId, reason } = req.body;
+
+  if(!uid) return res.json({ ok:false, error:"NOT_LOGIN" });
+
+  const market = loadMarket();
+  let found, booth, boothId;
+
+  for(const [id,b] of Object.entries(market)){
+    const o = (b.orders||[]).find(x=>x.id===orderId);
+    if(o){
+      found=o; booth=b; boothId=id;
+      break;
+    }
+  }
+
+  if(!found) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
+  if(found.buyerUid !== uid)
+    return res.json({ ok:false, error:"NO_PERMISSION" });
+
+  if(!["contacted","buyer_received"].includes(found.status)){
+    return res.json({
+      ok:false,
+      message:"Không thể khiếu nại ở trạng thái này."
+    });
+  }
+
+  // 🔒 gắn dispute
+  found.status = "dispute";
+  found.dispute = {
+    reason,
+    ts: Date.now()
+  };
+
+  saveMarket(market);
+
+  io.emit("order-updated",{ boothId, order: found });
+
+  // 🔔 notify seller
+  sendPushToUser(booth.ownerUid,{
+    title:"⚠️ Đơn hàng bị khiếu nại",
+    body:`${found.productName} ×${found.qty}`,
+    tag:"order-dispute"
+  });
+
+  res.json({ ok:true });
+});
+
+
+
+app.post("/api/admin/market/refund", (req,res)=>{
+  const { adminUid, orderId } = req.body;
+
+  const users = loadUsers();
+  if(!users[adminUid] || users[adminUid].role!=="admin")
+    return res.status(403).json({ error:"not_admin" });
+
+  const market = loadMarket();
+  let found, booth, boothId;
+
+  for(const [id,b] of Object.entries(market)){
+    const o=(b.orders||[]).find(x=>x.id===orderId);
+    if(o){
+      found=o; booth=b; boothId=id;
+      break;
+    }
+  }
+
+  if(!found || found.status!=="dispute")
+    return res.json({ ok:false, error:"NOT_DISPUTE" });
+
+  const buyer = users[found.buyerUid];
+  if(buyer?.profile){
+    buyer.profile.coins += found.escrow;
+  }
+
+  found.status = "refunded";
+  found.escrow = 0;
+  found.refundedAt = Date.now();
+
+  saveUsers(users);
+  saveMarket(market);
+
+  emitCoinUpdate(found.buyerUid);
+
+  io.emit("order-updated",{ boothId, order: found });
+
+  res.json({ ok:true });
+});
+
+
 app.post("/api/market/order/hide", (req, res) => {
   const uid = req.headers["x-uid"];
   const { orderId, role } = req.body; 
