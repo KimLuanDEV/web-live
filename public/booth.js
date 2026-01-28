@@ -1124,24 +1124,30 @@ div.innerHTML = `
   </div>
 
 <div class="order-actions">
+
   ${o.status === "pending" ? `
     <button style="color:#ff6b6b"
       onclick="cancelMyOrder('${o.id}')">
       ❌ Huỷ đơn
     </button>
+  ` : ""}
 
-  ` : ["done", "cancelled"].includes(o.status) ? `
-  <button style="color:#ff6b6b"
-    onclick="hideOrder('${o.id}', 'buyer')">
-    🗑 Xoá lịch sử
-  </button>
-`
- : `
-    <span style="opacity:.5;font-size:12px">
-      🔒 Chỉ xoá khi hoàn tất
-    </span>
-  `}
+  ${o.status === "contacted" ? `
+    <button style="color:#25F09A"
+      onclick="markOrderReceived('${o.id}')">
+      📦 Đã nhận được hàng
+    </button>
+  ` : ""}
+
+  ${["done","cancelled"].includes(o.status) ? `
+    <button style="color:#ff6b6b"
+      onclick="hideOrder('${o.id}', 'buyer')">
+      🗑 Xoá lịch sử
+    </button>
+  ` : ""}
+
 </div>
+
 
 
 `;
@@ -1215,11 +1221,17 @@ function renderOrders(orders){
     </button>
   ` : ""}
 
-  ${o.status === "contacted" ? `
-    <button onclick="completeOrder('${o.id}')" style="color:#25F09A">
-      ✅ Hoàn tất
-    </button>
-  ` : ""}
+${o.status === "buyer_received" ? `
+  <button style="color:#25F09A"
+    onclick="completeOrder('${o.id}')">
+    ✅ Xác nhận hoàn tất
+  </button>
+` : o.status === "contacted" ? `
+  <span style="opacity:.5;font-size:12px">
+    ⏳ Chờ người mua xác nhận
+  </span>
+` : ""}
+
 
 ${["done", "cancelled"].includes(o.status) ? `
   <button style="color:#ff6b6b"
@@ -1633,6 +1645,31 @@ async function hideOrder(orderId, role){
 
       // ❌ không cần loadBooth
       // realtime order-updated sẽ tự render
+    }
+  });
+}
+
+
+
+async function markOrderReceived(orderId){
+  showModal({
+    title:"📦 Xác nhận nhận hàng",
+    message:"Bạn chắc chắn đã nhận được hàng?",
+    confirm:true,
+    onOk: async ()=>{
+      const me = JSON.parse(localStorage.getItem("user_profile"));
+      const res = await fetch("/api/market/order/received",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-uid": me.uid
+        },
+        body: JSON.stringify({ orderId })
+      });
+      const data = await res.json();
+      if(!data.ok){
+        showModal({ title:"❌ Lỗi", message:data.message || "Không thể xác nhận." });
+      }
     }
   });
 }

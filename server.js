@@ -387,6 +387,48 @@ app.get("/api/market", (req,res)=>{
 });
 
 
+app.post("/api/market/order/received", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  const { orderId } = req.body;
+
+  if(!uid) return res.json({ ok:false, error:"NOT_LOGIN" });
+
+  const market = loadMarket();
+  let found, booth, boothId;
+
+  for(const [id,b] of Object.entries(market)){
+    const o = (b.orders || []).find(x=>x.id===orderId);
+    if(o){
+      found = o;
+      booth = b;
+      boothId = id;
+      break;
+    }
+  }
+
+  if(!found) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
+  if(found.buyerUid !== uid)
+    return res.json({ ok:false, error:"NO_PERMISSION" });
+
+  if(found.status !== "contacted"){
+    return res.json({
+      ok:false,
+      error:"INVALID_STATUS",
+      message:"Chỉ có thể xác nhận khi shop đã liên hệ."
+    });
+  }
+
+  found.status = "buyer_received";
+  found.receivedAt = Date.now();
+
+  saveMarket(market);
+
+  io.emit("order-updated",{ boothId, order: found });
+  res.json({ ok:true });
+});
+
+
+
 
 app.post("/api/market/order/hide", (req, res) => {
   const uid = req.headers["x-uid"];
@@ -474,14 +516,15 @@ app.post("/api/market/order/done", (req,res)=>{
   if(booth.ownerUid !== uid)
     return res.json({ ok:false, error:"NO_PERMISSION" });
 
-  // 🔒 chỉ khi contacted
-  if(found.status !== "contacted"){
-    return res.json({
-      ok:false,
-      error:"INVALID_STATUS",
-      message:"Chỉ có thể hoàn tất đơn đã liên hệ."
-    });
-  }
+// 🔒 chỉ khi người mua đã nhận hàng
+if(found.status !== "buyer_received"){
+  return res.json({
+    ok:false,
+    error:"WAIT_BUYER",
+    message:"Chờ người mua xác nhận đã nhận hàng."
+  });
+}
+
 
   // ✅ cập nhật trạng thái
   found.status = "done";
