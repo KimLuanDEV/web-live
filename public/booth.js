@@ -1128,26 +1128,18 @@ div.innerHTML = `
   </div>
 
 
-  ${o.status === "refunded" ? `
-  <div style="
-    margin-top:6px;
-    color:#25c2a0;
-    font-size:13px;
-  ">
-    💸 Khiếu nại thành công, tiền đã được hoàn lại ví.
-  </div>
-` : ""}
-
-
 ${o.status === "done" && o.adminApproved ? `
-  <div style="
-    margin-top:6px;
-    color:#ff9800;
-    font-size:13px;
-  ">
-    🧑‍⚖️ Khiếu nại bị từ chối.
+  <div style="margin-top:6px;color:#25F09A;font-size:13px;">
+    ✅ Admin đã xử lý xong – đơn hàng hoàn tất
   </div>
 ` : ""}
+
+${o.status === "refunded" ? `
+  <div style="margin-top:6px;color:#25c2a0;font-size:13px;">
+    ✅ Admin đã xử lý xong – tiền đã được hoàn lại
+  </div>
+` : ""}
+
 
 
 
@@ -1256,27 +1248,18 @@ const statusText = {
       </div>
 
 
-      ${o.status === "refunded" ? `
-  <div style="
-    margin-top:6px;
-    color:#ff5f6d;
-    font-size:13px;
-  ">
-    💸 Đơn hàng đã bị hoàn tiền
+${o.status === "done" && o.adminApproved ? `
+  <div style="margin-top:6px;color:#25F09A;font-size:13px;">
+    ✅ Admin đã xử lý xong – đơn hàng hoàn tất
   </div>
 ` : ""}
 
-
-
-  ${o.status === "done" && o.adminApproved ? `
-  <div style="
-    margin-top:6px;
-    color:#ff9800;
-    font-size:13px;
-  ">
-    🧑‍⚖️ Đơn hàng đã được phê duyệt.
+${o.status === "refunded" ? `
+  <div style="margin-top:6px;color:#ff5f6d;font-size:13px;">
+    ✅ Admin đã xử lý xong – đơn hàng bị hoàn tiền
   </div>
 ` : ""}
+
     
 
 <div class="order-actions">
