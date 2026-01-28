@@ -1047,7 +1047,8 @@ div.innerHTML = `
                   border-radius:8px;
                   cursor:zoom-in
                 "
-                onclick="openAdminImage('${m.url}')"
+               onclick='openGallery(${JSON.stringify(evidences)}, ${i})'
+
               >
             `
         ).join("")}
