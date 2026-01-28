@@ -3231,25 +3231,6 @@ io.on("connection", (socket) => {
 
 
 
-socket.once("auth-login", ({ uid }) => {
-  if (!uid) return;
-
-  // 🔐 SINGLE LOGIN – ĐÁ SOCKET CŨ
-  kickUser(uid, socket.id, "Tài khoản đã đăng nhập ở thiết bị khác");
-
-  // ✅ ĐẾN LÚC NÀY MỚI SET activeUsers
-  activeUsers.set(uid, new Set([socket.id]));
-
-  console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
-
-  emitActiveUsers();
-  emitAgentStatus(uid, true);
-  emitCoinUpdate(uid);
-  emitAllUsers();
-});
-
-
-
 
 socket.on("disconnect", () => {
   const uid = socket.data.uid;
