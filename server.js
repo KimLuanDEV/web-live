@@ -492,77 +492,101 @@ if (!["done", "cancelled"].includes(order.status)) {
 
 
 
-app.post("/api/market/order/done", (req,res)=>{
+app.post("/api/market/order/done", (req, res) => {
   const uid = req.headers["x-uid"];
   const { orderId } = req.body;
 
-  if(!uid) return res.json({ ok:false, error:"NOT_LOGIN" });
+  if (!uid) return res.json({ ok: false, error: "NOT_LOGIN" });
 
   const market = loadMarket();
-  let found, booth;
+  let found, booth, boothId;
 
-  for(const b of Object.values(market)){
+  // 🔍 tìm đơn + boothId ĐÚNG
+  for (const [id, b] of Object.entries(market)) {
     const o = (b.orders || []).find(x => x.id === orderId);
-    if(o){
+    if (o) {
       found = o;
       booth = b;
+      boothId = id;
       break;
     }
   }
 
-  if(!found) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
+  if (!found) return res.json({ ok: false, error: "ORDER_NOT_FOUND" });
 
   // 🔒 chỉ chủ shop
-  if(booth.ownerUid !== uid)
-    return res.json({ ok:false, error:"NO_PERMISSION" });
+  if (booth.ownerUid !== uid)
+    return res.json({ ok: false, error: "NO_PERMISSION" });
 
-// 🔒 chỉ khi người mua đã nhận hàng
-if(found.status !== "buyer_received"){
-  return res.json({
-    ok:false,
-    error:"WAIT_BUYER",
-    message:"Chờ người mua xác nhận đã nhận hàng."
-  });
-}
+  // 🔒 chỉ khi người mua đã nhận hàng
+  if (found.status !== "buyer_received") {
+    return res.json({
+      ok: false,
+      error: "WAIT_BUYER",
+      message: "Chờ người mua xác nhận đã nhận hàng."
+    });
+  }
 
-
-  // ✅ cập nhật trạng thái
+  // =========================
+  // ✅ 1️⃣ cập nhật trạng thái
+  // =========================
   found.status = "done";
   found.doneAt = Date.now();
 
+  // =========================
+  // 💰 2️⃣ TRẢ TIỀN CHO SELLER
+  // =========================
+  const users = loadUsers();
+  const seller = users[booth.ownerUid];
+
+  const amount = Number(found.escrow || found.totalPrice || 0);
+
+  if (seller && seller.profile && amount > 0) {
+    seller.profile.coinReceived =
+      (seller.profile.coinReceived || 0) + amount;
+
+    // 🔓 giải phóng escrow
+    found.escrow = 0;
+  }
+
+  saveUsers(users);
   saveMarket(market);
 
-  // 🔄 realtime update
-io.emit("order-updated", {
-  boothId: booth.boothId,
-  order: found
-});
+  // 🔄 realtime update ĐÚNG boothId
+  io.emit("order-updated", {
+    boothId,
+    order: found
+  });
 
+  // 🔄 realtime update coin cho seller
+  emitCoinUpdate(booth.ownerUid);
 
-
+  // =========================
   // 🔔 notify buyer
+  // =========================
   const notifyText = `✅ Đơn hàng đã hoàn tất: ${found.productName} ×${found.qty}`;
 
   const sockets = activeUsers.get(found.buyerUid);
-  if(sockets){
-    for(const sid of sockets){
-      io.to(sid).emit("system-notify",{
-        type:"order-done",
-        boothId: booth.id,
+  if (sockets) {
+    for (const sid of sockets) {
+      io.to(sid).emit("system-notify", {
+        type: "order-done",
+        boothId,
         text: notifyText,
         ts: Date.now()
       });
     }
   }
 
-  sendPushToUser(found.buyerUid,{
-    title:"✅ Đơn hàng hoàn tất",
+  sendPushToUser(found.buyerUid, {
+    title: "✅ Đơn hàng hoàn tất",
     body: notifyText,
-    tag:"order-done"
+    tag: "order-done"
   });
 
-  res.json({ ok:true });
+  res.json({ ok: true });
 });
+
 
 
 
@@ -942,12 +966,6 @@ if (blockIfBoothLockedById(boothId, buyerUid)) {
   buyer.profile.coinSent =
     (buyer.profile.coinSent || 0) + totalPrice;
 
-  // 💎 CỘNG COIN CHO CHỦ GIAN
-  const owner = users[booth.ownerUid];
-  if (owner && owner.profile) {
-    owner.profile.coinReceived =
-      (owner.profile.coinReceived || 0) + totalPrice;
-  }
 
   // 📦 TRỪ STOCK
   product.stock -= qty;
@@ -964,6 +982,7 @@ if (blockIfBoothLockedById(boothId, buyerUid)) {
     buyerUid,
     buyerInfo,
     status: "pending", // pending | contacted | done
+    escrow: totalPrice,
     createdAt: Date.now()
   });
 
