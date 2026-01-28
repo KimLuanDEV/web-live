@@ -322,6 +322,36 @@ app.get("/admin.html", (req, res) => {
   res.sendFile(path.join(__dirname, "public", "admin.html"));
 });
 
+
+app.get("/api/admin/market/disputes", (req,res)=>{
+  const adminUid = req.headers["x-uid"];
+  const users = loadUsers();
+
+  if(!users[adminUid] || users[adminUid].role !== "admin")
+    return res.status(403).json({ error:"not_admin" });
+
+  const market = loadMarket();
+  const list = [];
+
+  for(const [boothId, booth] of Object.entries(market)){
+    (booth?.orders || []).forEach(o=>{
+      if(o.status === "dispute"){
+        list.push({
+          boothId,
+          boothName: booth.name,
+          ownerUid: booth.ownerUid,
+          order: o
+        });
+      }
+    });
+  }
+
+  res.json({ ok:true, list });
+});
+
+
+
+
 // ===== ADMIN LIST USERS =====
 app.get("/api/admin/users", (req, res) => {
   const adminUid = req.headers["x-uid"];

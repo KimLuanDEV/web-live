@@ -709,6 +709,15 @@ body{
 }
 
 
+.admin-card{
+  background:linear-gradient(180deg,#12182a,#0e1320);
+  border:1px solid var(--line);
+  border-radius:14px;
+  padding:14px;
+  margin-bottom:12px;
+}
+
+
   </style>
 
 
@@ -738,11 +747,13 @@ body{
   <button class="tab active" data-tab="users">👥 Users</button>
   <button class="tab" data-tab="withdraws">💎 Rút tiền</button>
   <button class="tab" data-tab="lives">🔴 Live rooms</button>
+  <button class="tab-btn" data-tab="disputes">⚠️ Khiếu nại</button>
 </div>
 
 
   <!-- ===== USER LIST ===== -->
   <div class="admin-section" data-section="users">
+
 
 
 
@@ -900,6 +911,12 @@ body{
   </div>
 </div>
 
+
+
+<div class="admin-section hidden" data-section="disputes">
+  <h2>⚠️ Đơn hàng đang khiếu nại</h2>
+  <div id="disputeList" class="admin-list"></div>
+</div>
 
 
 

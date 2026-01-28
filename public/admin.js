@@ -984,3 +984,121 @@ function showModal({ title, body, input=false, confirm=false }) {
     };
   });
 }
+
+
+
+async function loadDisputes(){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+
+  const res = await fetch("/api/admin/market/disputes",{
+    headers:{ "x-uid": me.uid }
+  });
+  const data = await res.json();
+  if(!data.ok) return;
+
+  const wrap = document.getElementById("disputeList");
+  wrap.innerHTML = "";
+
+  if(data.list.length === 0){
+    wrap.innerHTML = `<div class="empty">Không có khiếu nại</div>`;
+    return;
+  }
+
+  data.list.forEach(item=>{
+    const o = item.order;
+
+    const div = document.createElement("div");
+    div.className = "admin-card";
+
+    div.innerHTML = `
+      <b>📦 ${o.productName} ×${o.qty}</b>
+      <div>🏪 Gian hàng: ${item.boothName}</div>
+      <div>👤 Buyer: ${o.buyerUid}</div>
+      <div style="color:#ff9800">
+        ⚠️ Lý do: ${o.dispute?.reason || ""}
+      </div>
+
+      <div style="display:flex;gap:8px;margin-top:8px">
+        <button style="color:#ff5f6d"
+          onclick="adminRefund('${o.id}')">
+          ❌ Hoàn tiền
+        </button>
+
+        <button style="color:#25F09A"
+          onclick="adminApprove('${o.id}')">
+          ✅ Chấp nhận đơn
+        </button>
+      </div>
+    `;
+
+    wrap.appendChild(div);
+  });
+}
+
+
+async function adminRefund(orderId){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+
+  const ok = await showModal({
+    title:"❌ Hoàn tiền",
+    body:"Xác nhận hoàn tiền cho người mua?",
+    confirm:true
+  });
+  if(!ok) return;
+
+  const res = await fetch("/api/admin/market/refund",{
+    method:"POST",
+    headers:{ "Content-Type":"application/json" },
+    body: JSON.stringify({
+      adminUid: me.uid,
+      orderId
+    })
+  });
+
+  const data = await res.json();
+  if(data.ok){
+    await showModal({
+      title:"✅ Đã hoàn tiền",
+      body:"Hoàn tiền thành công."
+    });
+    loadDisputes();
+  }
+}
+
+
+
+
+async function adminApprove(orderId){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+
+  const ok = await showModal({
+    title:"✅ Chấp nhận đơn",
+    body:"Xác nhận cho shop nhận tiền?",
+    confirm:true
+  });
+  if(!ok) return;
+
+  const res = await fetch("/api/market/order/done",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({ orderId })
+  });
+
+  const data = await res.json();
+  if(data.ok){
+    await showModal({
+      title:"✅ Thành công",
+      body:"Đơn đã hoàn tất."
+    });
+    loadDisputes();
+  }
+}
+
+
+
+document.querySelector('[data-tab="disputes"]')?.addEventListener("click",()=>{
+  loadDisputes();
+});
