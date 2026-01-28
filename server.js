@@ -388,6 +388,54 @@ app.get("/api/market", (req,res)=>{
 
 
 
+app.post("/api/market/order/hide", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { orderId, role } = req.body; 
+  // role = "buyer" | "seller"
+
+  if (!uid) return res.json({ ok: false, error: "NOT_LOGIN" });
+
+  const market = loadMarket();
+  let order, booth;
+
+  for (const b of Object.values(market)) {
+    const o = (b.orders || []).find(x => x.id === orderId);
+    if (o) {
+      order = o;
+      booth = b;
+      break;
+    }
+  }
+
+  if (!order) return res.json({ ok:false, error:"ORDER_NOT_FOUND" });
+
+  if (role === "buyer") {
+    if (order.buyerUid !== uid)
+      return res.json({ ok:false, error:"NO_PERMISSION" });
+    order.hiddenByBuyer = true;
+  }
+
+  if (role === "seller") {
+    if (booth.ownerUid !== uid)
+      return res.json({ ok:false, error:"NO_PERMISSION" });
+    order.hiddenBySeller = true;
+  }
+
+ saveMarket(market);
+
+// 🔄 realtime update để ẩn đơn ngay
+io.emit("order-updated", {
+  boothId: booth.boothId,
+  order
+});
+
+res.json({ ok:true });
+
+});
+
+
+
+
 app.post("/api/market/order/done", (req,res)=>{
   const uid = req.headers["x-uid"];
   const { orderId } = req.body;

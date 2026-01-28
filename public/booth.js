@@ -1079,7 +1079,9 @@ function renderMyOrders(orders){
     return;
   }
 
-  const myOrders = (orders || []).filter(o => o.buyerUid === me.uid);
+  const myOrders = (orders || []).filter(o =>
+  o.buyerUid === me.uid && !o.hiddenByBuyer
+);
 
   if(myOrders.length === 0){
     empty.classList.remove("hidden");
@@ -1121,14 +1123,20 @@ div.innerHTML = `
     ${statusText}
   </div>
 
+<div class="order-actions">
   ${o.status === "pending" ? `
-    <div class="order-actions">
-      <button style="color:#ff6b6b"
-        onclick="cancelMyOrder('${o.id}')">
-        ❌ Huỷ đơn
-      </button>
-    </div>
-  ` : ""}
+    <button style="color:#ff6b6b"
+      onclick="cancelMyOrder('${o.id}')">
+      ❌ Huỷ đơn
+    </button>
+  ` : `
+    <button style="color:#ff6b6b"
+      onclick="hideOrder('${o.id}', 'buyer')">
+      🗑 Xoá lịch sử
+    </button>
+  `}
+</div>
+
 `;
 
 
@@ -1201,7 +1209,15 @@ function renderOrders(orders){
       ✅ Hoàn tất
     </button>
   ` : ""}
+
+  ${o.status !== "pending" ? `
+    <button style="color:#ff6b6b"
+      onclick="hideOrder('${o.id}', 'seller')">
+      🗑 Xoá lịch sử
+    </button>
+  ` : ""}
 </div>
+
 
 
     `;
@@ -1543,6 +1559,45 @@ async function completeOrder(orderId){
           message:"Không thể kết nối máy chủ."
         });
       }
+    }
+  });
+}
+
+
+
+async function hideOrder(orderId, role){
+  showModal({
+    title: "🗑 Xoá lịch sử đơn hàng",
+    message: "Bạn có chắc chắn muốn xoá đơn hàng này khỏi lịch sử không?",
+    confirm: true,
+    onOk: async ()=>{
+      const me = JSON.parse(localStorage.getItem("user_profile"));
+      if(!me?.uid) return;
+
+      const res = await fetch("/api/market/order/hide",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-uid": me.uid
+        },
+        body: JSON.stringify({ orderId, role })
+      });
+
+      const data = await res.json();
+      if(!data.ok){
+        showModal({
+          title:"❌ Thất bại",
+          message:"Không thể xoá lịch sử đơn hàng."
+        });
+        return;
+      }
+
+      showModal({
+        title:"✅ Đã xoá",
+        message:"Đơn hàng đã được xoá khỏi lịch sử."
+      });
+
+      loadBooth(); // refresh UI
     }
   });
 }
