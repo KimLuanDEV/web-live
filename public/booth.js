@@ -1394,46 +1394,52 @@ if (socket) {
 
 
 async function cancelMyOrder(orderId){
-  const ok = confirm("❌ Bạn có chắc muốn huỷ đơn hàng này?");
-  if(!ok) return;
-
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  if(!me?.uid) return;
-
-  try{
-    const res = await fetch("/api/market/order/cancel",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "x-uid": me.uid
-      },
-      body: JSON.stringify({ orderId })
-    });
-
-    const data = await res.json();
-
-if(!data.ok){
   showModal({
-    title:"❌ Không thể huỷ",
-    message: data.message || "Không thể huỷ đơn hàng."
+    title: "❌ Huỷ đơn hàng",
+    message: "Bạn có chắc chắn muốn huỷ đơn hàng này không?<br><small style='opacity:.7'>Tiền sẽ được hoàn lại cho bạn.</small>",
+    confirm: true,
+    onOk: async ()=>{
+      const me = JSON.parse(localStorage.getItem("user_profile"));
+      if(!me?.uid) return;
+
+      try{
+        const res = await fetch("/api/market/order/cancel",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "x-uid": me.uid
+          },
+          body: JSON.stringify({ orderId })
+        });
+
+        const data = await res.json();
+
+        if(!data.ok){
+          showModal({
+            title:"❌ Không thể huỷ",
+            message: data.message || "Không thể huỷ đơn hàng."
+          });
+          return;
+        }
+
+        showModal({
+          title:"✅ Đã huỷ đơn",
+          message:"Đơn hàng đã được huỷ và hoàn tiền."
+        });
+
+        // ❌ KHÔNG cần loadBooth
+        // socket order-updated sẽ tự update UI
+
+      }catch(err){
+        showModal({
+          title:"❌ Lỗi",
+          message:"Có lỗi xảy ra, vui lòng thử lại."
+        });
+      }
+    }
   });
-  return;
 }
 
-
-    showModal({
-      title:"✅ Đã huỷ đơn",
-      message:"Đơn hàng đã được huỷ và hoàn tiền."
-    });
-
-    loadBooth(); // reload orders
-  }catch(err){
-    showModal({
-      title:"❌ Lỗi",
-      message:"Có lỗi xảy ra, vui lòng thử lại."
-    });
-  }
-}
 
 
 
