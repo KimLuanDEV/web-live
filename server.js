@@ -3401,7 +3401,6 @@ socket.on("topup-transferred", async ({ fromUid, agentUid, time }) => {
 
 
 
-// ❌ HANDLE DISCONNECT (BẮT BUỘC)
 socket.on("disconnect", () => {
   const uid = socket.data.uid;
   if (!uid) return;
@@ -3414,6 +3413,8 @@ socket.on("disconnect", () => {
       emitAgentStatus(uid, false);
     }
   }
+
+  emitActiveUsers(); // 🔥 BẮT BUỘC
 
   console.log("❌ SOCKET OFFLINE:", uid, socket.id);
 });
