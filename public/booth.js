@@ -1065,7 +1065,7 @@ function renderMyOrders(orders){
       pending: "⏳ Đang chờ shop",
       contacted: "📞 Shop đã liên hệ",
       done: "✅ Hoàn tất",
-      cancelled: "❌ Đã huỷ"
+      cancelled: "❌ Đã huỷ",
     }[o.status] || "⏳ Đang xử lý";
 
     const div = document.createElement("div");
@@ -1157,14 +1157,20 @@ function renderOrders(orders){
         ${statusText}
       </div>
 
-      <div class="order-actions">
-        <button onclick="markOrder('${o.id}','contacted')">
-          📞 Đã liên hệ
-        </button>
-        <button onclick="markOrder('${o.id}','done')" style="color:#25F09A">
-          ✅ Hoàn tất
-        </button>
-      </div>
+<div class="order-actions">
+  ${o.status === "pending" ? `
+    <button onclick="contactOrder('${o.id}')">
+      📞 Đã liên hệ
+    </button>
+  ` : ""}
+
+  ${o.status === "contacted" ? `
+    <button onclick="markOrder('${o.id}','done')" style="color:#25F09A">
+      ✅ Hoàn tất
+    </button>
+  ` : ""}
+</div>
+
     `;
 
     list.appendChild(div);
@@ -1394,4 +1400,81 @@ if(!data.ok){
       message:"Có lỗi xảy ra, vui lòng thử lại."
     });
   }
+}
+
+
+
+async function contactOrder(orderId){
+  showModal({
+    title:"📞 Xác nhận đơn hàng",
+    message:"Bạn đã liên hệ với khách hàng?",
+    confirmText:"Đã liên hệ",
+    onConfirm: async ()=>{
+      const me = JSON.parse(localStorage.getItem("user_profile"));
+      if(!me?.uid) return;
+
+      const res = await fetch("/api/market/order/contact",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-uid": me.uid
+        },
+        body: JSON.stringify({ orderId })
+      });
+
+      const data = await res.json();
+      if(!data.ok){
+        showModal({
+          title:"❌ Không thể xác nhận",
+          message: data.message || "Thao tác thất bại."
+        });
+        return;
+      }
+
+      showModal({
+        title:"✅ Thành công",
+        message:"Đơn hàng đã chuyển sang trạng thái đã liên hệ."
+      });
+
+      loadBooth();
+    }
+  });
+}
+
+
+async function completeOrder(orderId){
+  showModal({
+    title:"✅ Hoàn tất đơn hàng",
+    message:"Xác nhận đã giao hàng / hoàn tất đơn này?",
+    confirmText:"Hoàn tất",
+    onConfirm: async ()=>{
+      const me = JSON.parse(localStorage.getItem("user_profile"));
+      if(!me?.uid) return;
+
+      const res = await fetch("/api/market/order/done",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-uid": me.uid
+        },
+        body: JSON.stringify({ orderId })
+      });
+
+      const data = await res.json();
+      if(!data.ok){
+        showModal({
+          title:"❌ Không thể hoàn tất",
+          message: data.message || "Thao tác thất bại."
+        });
+        return;
+      }
+
+      showModal({
+        title:"🎉 Thành công",
+        message:"Đơn hàng đã được hoàn tất."
+      });
+
+      loadBooth(); // reload đơn hàng
+    }
+  });
 }
