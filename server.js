@@ -3400,22 +3400,6 @@ socket.on("topup-transferred", async ({ fromUid, agentUid, time }) => {
 
 
 
-socket.on("auth-login", ({ uid }) => {
-  if (!uid) return;
-
-  // 🔒 socket này đã login rồi → bỏ qua
-  if (socket.data._logged === true) {
-    return;
-  }
-
-  // ✅ đánh dấu NGAY LẬP TỨC
-  socket.data._logged = true;
-  socket.data.uid = uid;
-  emitAgentStatus(uid, true);
-});
-
-
-
 
 // ❌ HANDLE DISCONNECT (BẮT BUỘC)
 socket.on("disconnect", () => {
@@ -4576,13 +4560,9 @@ socket.on("auth-ping", ({ uid }) => {
 
 
 
-socket.once("auth-login", ({ uid }) => {
+socket.on("auth-login", ({ uid }) => {
   uid = String(uid || "").trim();
   if (!uid) return;
-
-  // 🔒 CHẶN LOGIN LẶP
-  if (socket.data._logged) return;
-  socket.data._logged = true;
 
   // 🚫 GUEST
   if (uid.startsWith("guest_")) {
@@ -4595,7 +4575,7 @@ socket.once("auth-login", ({ uid }) => {
   const db = loadUsers();
   if (!db[uid]) return;
 
-  // ✅ GẮN UID NGAY
+  // ✅ GẮN UID + ROLE NGAY
   socket.data.uid = uid;
   socket.data.profile = {
     ...db[uid].profile,
@@ -4603,44 +4583,51 @@ socket.once("auth-login", ({ uid }) => {
   };
   socket.data.role = db[uid].role || "user";
 
-  // ⏳ DELAY 1 TICK → TRÁNH RACE
-  setTimeout(() => {
+  // 🔐 SINGLE LOGIN – KICK SOCKET CŨ (TRỪ SOCKET HIỆN TẠI)
+  const oldSockets = activeUsers.get(uid);
+  if (oldSockets) {
+    for (const sid of oldSockets) {
+      if (sid === socket.id) continue;
 
-    // 🔐 SINGLE LOGIN – KICK SOCKET KHÁC
-    kickUser(uid, socket.id, "Tài khoản đã đăng nhập ở thiết bị khác");
+      io.to(sid).emit("force-logout", {
+        reason: "🚨 Tài khoản đã đăng nhập ở thiết bị khác"
+      });
 
-    // ✅ CHỈ SET 1 LẦN
-    activeUsers.set(uid, new Set([socket.id]));
+      io.sockets.sockets.get(sid)?.disconnect(true);
+    }
+  }
 
-    // 📩 OFFLINE MESSAGES
-    const inbox = userInbox.get(uid);
-    if (inbox && inbox.length) {
-      const toSend = inbox.filter(m => !m.delivered);
+  // ✅ CHỈ SAU KHI KICK XONG → SET SOCKET MỚI
+  activeUsers.set(uid, new Set([socket.id]));
 
-      if (toSend.length) {
-        for (const m of toSend) {
-          const u = db[m.from];
-          m.verified = !!u?.profile?.verified;
-          m.delivered = true;
-        }
+  // 📩 OFFLINE MESSAGES (1 LẦN)
+  const inbox = userInbox.get(uid);
+  if (inbox && inbox.length) {
+    const toSend = inbox.filter(m => !m.delivered);
 
-        socket.emit("offline-messages", toSend);
-        saveInbox(Object.fromEntries(userInbox));
+    if (toSend.length) {
+      for (const m of toSend) {
+        const u = db[m.from];
+        m.verified = !!u?.profile?.verified;
+        m.delivered = true;
+      }
 
-        const unread = inbox.filter(m => !m.seen).length;
-        if (unread > 0) {
-          socket.emit("inbox-new", { count: unread });
-        }
+      socket.emit("offline-messages", toSend);
+      saveInbox(Object.fromEntries(userInbox));
+
+      const unread = inbox.filter(m => !m.seen).length;
+      if (unread > 0) {
+        socket.emit("inbox-new", { count: unread });
       }
     }
+  }
 
-    emitActiveUsers();
-    emitCoinUpdate(uid);
-    emitAllUsers();
+  emitActiveUsers();
+  emitAgentStatus(uid, true);
+  emitCoinUpdate(uid);
+  emitAllUsers();
 
-    console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
-
-  }, 0);
+  console.log("🔐 SINGLE LOGIN OK:", uid, socket.id);
 });
 
 
