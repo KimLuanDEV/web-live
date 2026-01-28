@@ -1094,12 +1094,16 @@ function renderMyOrders(orders){
   list.innerHTML = "";
 
   myOrders.forEach(o=>{
-    const statusText = {
-      pending: "⏳ Đang chờ shop",
-      contacted: "📞 Shop đã liên hệ",
-      done: "✅ Hoàn tất",
-      cancelled: "❌ Đã huỷ",
-    }[o.status] || "⏳ Đang xử lý";
+const statusText = {
+  pending: "⏳ Đang chờ shop",
+  contacted: "📞 Shop đã liên hệ",
+  buyer_received: "📦 Đã nhận hàng",
+  dispute: "⚠️ Đang khiếu nại",
+  done: "✅ Hoàn tất",
+  refunded: "💸 Đã hoàn tiền",
+  cancelled: "❌ Đã huỷ",
+}[o.status] || "⏳ Đang xử lý";
+
 
     const div = document.createElement("div");
     div.className = "my-order-card";
@@ -1123,13 +1127,25 @@ div.innerHTML = `
     ${statusText}
   </div>
 
+
+  ${o.status === "refunded" ? `
+  <div style="
+    margin-top:6px;
+    color:#25c2a0;
+    font-size:13px;
+  ">
+    💸 Khiếu nại thành công, tiền đã được hoàn lại ví.
+  </div>
+` : ""}
+
+
 ${o.status === "done" && o.adminApproved ? `
   <div style="
     margin-top:6px;
     color:#ff9800;
     font-size:13px;
   ">
-    🧑‍⚖️ Khiếu nại đã được Admin phê duyệt
+    🧑‍⚖️ Khiếu nại bị từ chối.
   </div>
 ` : ""}
 
@@ -1199,12 +1215,16 @@ function renderOrders(orders){
   list.innerHTML = "";
 
   orders.forEach(o=>{
-    const statusText = {
-      pending: "⏳ Chờ xử lý",
-      contacted: "📞 Đã liên hệ",
-      done: "✅ Hoàn tất",
-      cancelled: "❌ Đã huỷ"
-    }[o.status] || "⏳ Chờ xử lý";
+const statusText = {
+  pending: "⏳ Chờ xử lý",
+  contacted: "📞 Đã liên hệ",
+  buyer_received: "📦 Buyer đã nhận hàng",
+  dispute: "⚠️ Đang bị khiếu nại",
+  done: "✅ Hoàn tất",
+  refunded: "💸 Đã hoàn tiền",
+  cancelled: "❌ Đã huỷ",
+}[o.status] || "⏳ Đang xử lý";
+
 
     const div = document.createElement("div");
     div.className = "order-card";
@@ -1235,13 +1255,26 @@ function renderOrders(orders){
         ${statusText}
       </div>
 
+
+      ${o.status === "refunded" ? `
+  <div style="
+    margin-top:6px;
+    color:#ff5f6d;
+    font-size:13px;
+  ">
+    💸 Đơn hàng đã bị hoàn tiền
+  </div>
+` : ""}
+
+
+
   ${o.status === "done" && o.adminApproved ? `
   <div style="
     margin-top:6px;
     color:#ff9800;
     font-size:13px;
   ">
-    🧑‍⚖️ Đơn hàng được Admin phê duyệt
+    🧑‍⚖️ Đơn hàng đã được phê duyệt.
   </div>
 ` : ""}
     
