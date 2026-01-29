@@ -167,38 +167,63 @@ async function loadMarketFromServer(){
     if(!data.ok) return;
 
     const market = data.market || {};
+    const list = [];
 
-    // xác định số gian (tối thiểu 12)
-    const totalSlots = Math.max(12, Object.keys(market).length);
+    /* ===============================
+       1️⃣ THÊM GIAN HÀNG HỆ THỐNG (sys)
+    =============================== */
+    if (market.sys) {
+      list.push({
+        id: "sys",
+        owner: {
+          uid: "system",
+          name: market.sys.name,
+          logo: market.sys.logo,
+          expireAt: null,
+          locked: market.sys.locked,
+          type: "system"
+        }
+      });
+    }
 
-    booths = Array.from({ length: totalSlots }, (_, i)=>{
-      const id = i + 1;
-      const booth = market[id];
+    /* ===============================
+       2️⃣ GIAN HÀNG NGƯỜI DÙNG (1 → n)
+    =============================== */
+    const userKeys = Object.keys(market)
+      .filter(k => k !== "sys")
+      .map(k => Number(k))
+      .filter(n => !isNaN(n));
+
+    const totalSlots = Math.max(12, userKeys.length);
+
+    for(let i = 1; i <= totalSlots; i++){
+      const booth = market[i];
 
       if(!booth){
-        return { id, owner: null };
+        list.push({ id: i, owner: null });
+      }else{
+        list.push({
+          id: i,
+          owner: {
+            uid: booth.ownerUid,
+            name: booth.name,
+            logo: booth.logo,
+            expireAt: booth.expireAt,
+            locked: booth.locked,
+            type: booth.type || "user"
+          }
+        });
       }
+    }
 
-return {
-  id,
-  owner: {
-    uid: booth.ownerUid,
-    name: booth.name,
-    logo: booth.logo,
-    expireAt: booth.expireAt,
-    locked: booth.locked,
-    type: booth.type || "user"   // 🔥 THÊM DÒNG NÀY
-  }
-};
-
-
-    });
-
+    booths = list;
     renderMarket();
+
   }catch(e){
     console.error("Load market failed", e);
   }
 }
+
 
 
 
