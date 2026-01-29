@@ -431,7 +431,7 @@ if (typeof io === "function" && me?.uid) {
 
     setTimeout(() => {
       location.href = "/login.html";
-    }, 1500);
+    }, 5000);
   });
 }
 
