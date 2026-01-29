@@ -203,13 +203,11 @@ if(!Array.isArray(p.images) || p.images.length === 0){
 
 
 
-
 async function loadBooth(){
   try{
     const me = JSON.parse(localStorage.getItem("user_profile"));
     const headers = me?.uid ? { "x-uid": me.uid } : {};
 
-    // ✅ LOAD ĐÚNG API + CHỐNG CACHE
     const res = await fetch(
       `/api/market/booth/${boothId}?t=${Date.now()}`,
       { headers }
@@ -221,15 +219,30 @@ async function loadBooth(){
     if(!booth) return;
 
     // =========================
-    // CACHE MỚI
+    // CACHE
     // =========================
     window.__lastBooth = booth;
     currentBoothOwnerUid = booth.ownerUid;
 
+    const isSystemBooth = booth.type === "system";
+    const isAdmin = me?.role === "admin";
+    const isOwner = me && me.uid === booth.ownerUid;
+
+    // =========================
+    // RESET UI (QUAN TRỌNG)
+    // =========================
+    btnAddProduct?.classList.add("hidden");
+    btnExtend?.classList.add("hidden");
+    document.getElementById("tabOrders")?.classList.add("hidden");
+    document.getElementById("tabMyOrders")?.classList.add("hidden");
+    expireBox?.classList.add("hidden");
+
     // =========================
     // INFO
     // =========================
-    boothNameEl.textContent = booth.name;
+    boothNameEl.textContent =
+      isSystemBooth ? "🏆 Gian hàng hệ thống" : booth.name;
+
     boothLogoEl.src = booth.logo;
 
     // =========================
@@ -237,24 +250,29 @@ async function loadBooth(){
     // =========================
     renderProducts(booth.products || []);
 
-    const isOwner = me && me.uid === booth.ownerUid;
-
-    // 🔐 Chưa đăng nhập → ẩn tab "Đơn của tôi"
+    // =========================
+    // 🔐 CHƯA LOGIN
+    // =========================
     if(!me?.uid){
       document.getElementById("tabMyOrders")?.classList.add("hidden");
     }
 
-    /* =========================
-       CHỦ GIAN
-    ========================= */
-    if(isOwner){
-      btnExtend?.classList.remove("hidden");
+    // =========================
+    // 🏆 GIAN HỆ THỐNG → ADMIN
+    // =========================
+    if(isSystemBooth && isAdmin){
       btnAddProduct?.classList.remove("hidden");
-
-      // 👉 TAB ĐƠN HÀNG (CHỦ SHOP)
       document.getElementById("tabOrders")?.classList.remove("hidden");
+      renderOrders(booth.orders || []);
+    }
 
-      // 👉 RENDER ĐƠN HÀNG
+    // =========================
+    // 🧑‍💼 GIAN USER → CHỦ GIAN
+    // =========================
+    if(!isSystemBooth && isOwner){
+      btnAddProduct?.classList.remove("hidden");
+      btnExtend?.classList.remove("hidden");
+      document.getElementById("tabOrders")?.classList.remove("hidden");
       renderOrders(booth.orders || []);
 
       // expire info
@@ -280,13 +298,14 @@ async function loadBooth(){
       }
     }
 
-    /* =========================
-       NGƯỜI MUA
-    ========================= */
-    else{
-      document.getElementById("tabOrders")?.classList.add("hidden");
-
-      // 👉 TAB ĐƠN CỦA TÔI
+    // =========================
+    // 👤 NGƯỜI MUA / USER KHÁC
+    // =========================
+    if(
+      !isOwner &&
+      !(isSystemBooth && isAdmin) &&
+      me?.uid
+    ){
       document.getElementById("tabMyOrders")?.classList.remove("hidden");
       renderMyOrders(booth.orders || []);
     }
@@ -299,7 +318,6 @@ async function loadBooth(){
   }
 }
 
-
 loadBooth();
 syncMyCoin();
 
@@ -308,7 +326,20 @@ syncMyCoin();
 btnBack.onclick = ()=> history.back();
 
 btnAddProduct.onclick = ()=>{
-  const me = JSON.parse(localStorage.getItem("user_profile"));
+
+const booth = window.__lastBooth;
+const me = JSON.parse(localStorage.getItem("user_profile"));
+
+if (booth?.type === "system" && me?.role !== "admin") {
+  showModal({
+    title: "⛔ Không có quyền",
+    message: "Chỉ Admin mới được thêm sản phẩm cho gian hàng hệ thống."
+  });
+  return;
+}
+
+  
+ 
   if(!me?.uid){
     showModal({
       title: "🔐 Yêu cầu đăng nhập",
