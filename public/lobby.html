@@ -1725,12 +1725,41 @@ function showWithdrawNotify(data){
 
 
 
-socket.on("force-logout", (data) => {
-  alert(data?.message || "Bạn đã bị đăng xuất");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
+function showForceLogoutModalLobby(message){
+  let modal = document.getElementById("forceLogoutModal");
+  if(!modal){
+    modal = document.createElement("div");
+    modal.id = "forceLogoutModal";
+    modal.innerHTML = `
+      <div class="fl-backdrop"></div>
+      <div class="fl-box">
+        <div class="fl-icon">🚪</div>
+        <div class="fl-title">Đã đăng xuất</div>
+        <div class="fl-msg"></div>
+      </div>
+    `;
+    document.body.appendChild(modal);
+  }
 
+  modal.querySelector(".fl-msg").textContent = message;
+  modal.classList.add("show");
+}
+
+
+
+socket.on("force-logout", (data) => {
+  const msg = data?.message || "Bạn đã bị đăng xuất";
+
+  showForceLogoutModalLobby(msg);
+
+  localStorage.removeItem("user_profile");
+  localStorage.removeItem("login_uid");
+  localStorage.removeItem("isGuest");
+
+  setTimeout(() => {
+    location.href = "/login.html";
+  }, 1500);
+});
 
 
 

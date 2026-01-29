@@ -11372,3 +11372,45 @@ button:disabled{
 .badge-withdraw .stat-badge {
   background: linear-gradient(135deg, #4caf50, #2e7d32);
 }
+
+
+
+#forceLogoutModal{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+  display:none;
+}
+#forceLogoutModal.show{ display:block; }
+
+.fl-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
+}
+
+.fl-box{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  width:88%;
+  max-width:340px;
+  background:#0f0f0f;
+  border-radius:16px;
+  padding:22px 18px;
+  text-align:center;
+  color:#fff;
+  box-shadow:0 0 30px rgba(255,0,80,.35);
+  animation:pop .25s ease;
+}
+
+@keyframes pop{
+  from{ opacity:0; transform:translate(-50%,-55%) scale(.95); }
+  to{ opacity:1; transform:translate(-50%,-50%) scale(1); }
+}
+
+.fl-icon{ font-size:36px; margin-bottom:6px; }
+.fl-title{ font-size:17px; font-weight:700; margin-bottom:6px; }
+.fl-msg{ font-size:14px; opacity:.85; }
