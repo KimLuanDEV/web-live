@@ -3273,13 +3273,21 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+ // lấy deviceId từ client
+  socket.data.deviceId = socket.handshake.auth?.deviceId;
 
+  // 🔐 ADMIN / USER REGISTER
   socket.on("register-admin", (uid) => {
-  if (!uid) return;
-  socket.join("admin:" + uid);
-  console.log("🔐 Admin socket joined:", uid);
-});
+    if (!uid) return;
+    bindSocketToUser(uid, socket);
+    console.log("🧑‍⚖️ ADMIN REGISTER:", uid, socket.id);
+  });
 
+  socket.on("register-user", (uid) => {
+    if (!uid) return;
+    bindSocketToUser(uid, socket);
+    console.log("👤 USER REGISTER:", uid, socket.id);
+  });
 
 
 
