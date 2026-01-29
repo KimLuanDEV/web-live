@@ -405,21 +405,30 @@ function closeNotifyModal(){
 }
 
 
-// 🔔 REALTIME UPDATE
-if (typeof io === "function") {
+// 🔔 SOCKET AUTH + FORCE LOGOUT (BẮT BUỘC)
+const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+if (typeof io === "function" && me?.uid) {
   socket = io();
 
+  // 🔐 báo cho server socket này thuộc user nào
+  socket.emit("auth", { uid: me.uid });
+
+  // 🔄 realtime lịch sử rút
   socket.on("withdraw-update", () => {
     loadWithdrawHistory();
   });
 
+  // ❌ bị kick khi đăng nhập nơi khác
   socket.on("force-logout", (data) => {
     showNotifyModal(
-      data?.message || "Bạn đã bị đăng xuất",
+      data?.message || "Tài khoản đã đăng nhập ở thiết bị khác",
       "error",
       "Đăng xuất"
     );
+
     localStorage.removeItem("user_profile");
+
     setTimeout(() => {
       location.href = "/login.html";
     }, 1500);
@@ -428,11 +437,5 @@ if (typeof io === "function") {
 
 
 
-if (typeof socket !== "undefined" && socket) {
-  socket.on("force-logout", (data) => {
-    alert(data?.message || "Bạn đã bị đăng xuất");
-    localStorage.removeItem("user_profile");
-    location.href = "/login.html";
-  });
-}
+
 
