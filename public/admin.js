@@ -4,11 +4,21 @@
 const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
+// ===== DEVICE ID (ADMIN) =====
+let deviceId = localStorage.getItem("device_id");
+if (!deviceId) {
+  deviceId = "admin_" + Math.random().toString(36).slice(2);
+  localStorage.setItem("device_id", deviceId);
+}
+
 // ===== SOCKET (ADMIN) =====
 let socket = null;
 if (typeof io === "function") {
-  socket = io();
+  socket = io({
+    auth: { deviceId }
+  });
 }
+
 
 
 if (socket && admin?.uid) {
