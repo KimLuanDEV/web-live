@@ -109,13 +109,15 @@ function openAnalysis(type) {
 
   document.getElementById("analysisModal")
     .classList.remove("hidden");
+    startFakeChart(type);
 }
 
-
 function closeAnalysis(){
+  stopFakeChart();
   document.getElementById("analysisModal")
     .classList.add("hidden");
 }
+
 
 
 function confirmInvest(){
@@ -149,4 +151,74 @@ function confirmInvest(){
     closeAnalysis();
     showResult(d.percent, d.profit, d.coins);
   });
+}
+
+
+let chartTimer = null;
+let chartData = [];
+
+
+function startFakeChart(type){
+  stopFakeChart();
+
+  const canvas = document.getElementById("priceChart");
+  if(!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width;
+  const H = canvas.height;
+
+  chartData = [];
+  let price = 100;
+
+  const volatility = {
+    gold: 1,
+    silver: 1.5,
+    diamond: 3
+  }[type] || 1;
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+
+    // grid
+    ctx.strokeStyle = "rgba(255,255,255,.05)";
+    for(let i=0;i<5;i++){
+      ctx.beginPath();
+      ctx.moveTo(0, i*H/5);
+      ctx.lineTo(W, i*H/5);
+      ctx.stroke();
+    }
+
+    // line
+    ctx.beginPath();
+    ctx.strokeStyle = "#00ffd5";
+    ctx.lineWidth = 2;
+
+    chartData.forEach((p,i)=>{
+      const x = i * (W / 30);
+      const y = H - (p - 80) * (H / 40);
+      if(i===0) ctx.moveTo(x,y);
+      else ctx.lineTo(x,y);
+    });
+
+    ctx.stroke();
+  }
+
+  chartTimer = setInterval(()=>{
+    price += (Math.random() - 0.5) * volatility;
+    price = Math.max(80, Math.min(120, price));
+
+    chartData.push(price);
+    if(chartData.length > 30) chartData.shift();
+
+    draw();
+  }, 1200);
+}
+
+
+function stopFakeChart(){
+  if(chartTimer){
+    clearInterval(chartTimer);
+    chartTimer = null;
+  }
 }
