@@ -410,15 +410,22 @@ if (!deviceId) {
 }
 
 
-const socket = io({
-  transports: ["websocket"],
-  upgrade: false,
-  auth: {
-    uid: profile.uid,
-    deviceId,
-    profile
-  }
-});
+let socket = null;
+
+if (profile && profile.uid) {
+  socket = io({
+    transports: ["websocket"],
+    upgrade: false,
+    auth: {
+      uid: profile.uid,
+      deviceId,
+      profile
+    }
+  });
+} else {
+  console.log("👤 Guest mode – socket not connected");
+}
+
 
 
 
@@ -480,33 +487,24 @@ fetch("/api/all-users")
   });
 
 // nhận realtime online
-socket.on("active-users", ({ users, online })=>{
+if (socket) {
+  socket.on("active-users", ({ users, online }) => {
+    if (Array.isArray(online)) {
+      ONLINE_UIDS = online;
+    } else if (Array.isArray(users)) {
+      ONLINE_UIDS = users.map(u => u.uid);
+    }
+    renderPlayerLobbyAll();
+  });
 
-  socket.on("all-users", list=>{
-  ALL_USERS = list || [];
-  renderPlayerLobbyAll();
-});
+  socket.on("all-users", list => {
+    ALL_USERS = list || [];
+    renderPlayerLobbyAll();
+  });
+}
 
-  // server cũ có thể gửi {users} hoặc {online}
-  if(Array.isArray(online)){
-    ONLINE_UIDS = online;
-  } else if(Array.isArray(users)){
-    // fallback: nếu server gửi full users online, map về uid
-    ONLINE_UIDS = users.map(u=>u.uid);
-  }
-  renderPlayerLobbyAll();
-});
-
-
-
-const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const isGuest = localStorage.getItem("isGuest") === "1";
-
-
-
-
-
 
 
 if (profile.uid) {
@@ -1029,20 +1027,31 @@ clearQ.addEventListener("click", ()=>{
 
 /* ===== socket ===== */
 function requestLobby(){
+  if (!socket || !socket.connected) return;
   renderSkeleton();
   socket.emit("lobby-get");
 }
 
+
+if (socket) {
 socket.on("lobby-update", d => {
   __rooms = (d && d.rooms) ? d.rooms : [];
   __ts = d && d.ts ? d.ts : Date.now();
   render(__rooms);
 });
-
+}
 
 // load
-requestLobby();
-setInterval(() => socket.emit("lobby-get"), 3000);
+if (socket) {
+  requestLobby();
+
+  setInterval(() => {
+    if (socket.connected) {
+      socket.emit("lobby-get");
+    }
+  }, 3000);
+}
+
 
 
 
