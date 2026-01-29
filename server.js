@@ -512,6 +512,38 @@ app.get("/api/admin/live-rooms", (req, res) => {
   });
 });
 
+// 📦 LẤY HÀNH LÝ NGƯỜI DÙNG (GIAN HỆ THỐNG)
+app.get("/api/market/inventory", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.json({ ok:false });
+
+  const market = loadMarket();
+  const sys = market.sys;
+  if (!sys || !Array.isArray(sys.orders))
+    return res.json({ ok:true, items: [] });
+
+  const items = [];
+
+  sys.orders
+    .filter(o =>
+      o.buyerUid === uid &&
+      ["done","contacted","received"].includes(o.status)
+    )
+    .forEach(o=>{
+      items.push({
+        id: o.productId,
+        name: o.productName,
+        image: o.productImage,
+        desc: o.productDesc,
+        qty: o.qty
+      });
+    });
+
+  res.json({ ok:true, items });
+});
+
+
+
 app.get("/api/market", (req,res)=>{
   cleanupExpiredBooths();
   const market = loadMarket();

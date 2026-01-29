@@ -546,6 +546,23 @@ if (btnWithdraw) {
 }
 
 
+const btnInventory = document.getElementById("btnInventory");
+
+if (btnInventory) {
+  btnInventory.onclick = () => {
+
+    // 🚫 đang xem profile người khác → không cho xem hành lý
+    if (viewUid && viewUid !== __profileAuth.uid) {
+      showMsg("🚫 Bạn không thể xem hành lý của người khác");
+      return;
+    }
+
+    location.href = "/inventory.html";
+  };
+}
+
+
+
 
 
 const btnTopupCoin = document.getElementById("btnTopupCoin");
