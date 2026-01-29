@@ -1,3 +1,5 @@
+let socket = null;
+
 const params = new URLSearchParams(location.search);
 const received = Number(params.get("received") || 0);
 
@@ -308,15 +310,7 @@ loadWithdrawHistory();
 loadBankDefault();
 
 
-// 🔔 REALTIME UPDATE
-if (typeof io === "function") {
-  const socket = io();
 
-socket.on("withdraw-update", () => {
-  loadWithdrawHistory();
-});
-
-}
 
 
 function goBack(){
@@ -411,8 +405,34 @@ function closeNotifyModal(){
 }
 
 
-socket.on("force-logout", (data) => {
-  alert(data?.message || "Bạn đã bị đăng xuất");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
+// 🔔 REALTIME UPDATE
+if (typeof io === "function") {
+  socket = io();
+
+  socket.on("withdraw-update", () => {
+    loadWithdrawHistory();
+  });
+
+  socket.on("force-logout", (data) => {
+    showNotifyModal(
+      data?.message || "Bạn đã bị đăng xuất",
+      "error",
+      "Đăng xuất"
+    );
+    localStorage.removeItem("user_profile");
+    setTimeout(() => {
+      location.href = "/login.html";
+    }, 1500);
+  });
+}
+
+
+
+if (typeof socket !== "undefined" && socket) {
+  socket.on("force-logout", (data) => {
+    alert(data?.message || "Bạn đã bị đăng xuất");
+    localStorage.removeItem("user_profile");
+    location.href = "/login.html";
+  });
+}
+
