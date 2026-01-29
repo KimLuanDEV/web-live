@@ -93,14 +93,19 @@ function openAnalysis(type) {
   document.getElementById("analysisTitle").textContent =
     `📊 Phân tích ${r.name}`;
 
-  document.getElementById("analysisContent").innerHTML = `
-    <ul>
-      <li>📉 Rủi ro tối đa: <b>${r.min}%</b></li>
-      <li>📈 Lợi nhuận kỳ vọng: <b>${r.max}%</b></li>
-      <li>⚠️ Biến động ngẫu nhiên theo thị trường</li>
-      <li>🧠 Phù hợp: ${type === "diamond" ? "Nhà đầu tư mạo hiểm" : "Đầu tư ổn định"}</li>
-    </ul>
-  `;
+document.getElementById("analysisText").innerHTML = `
+  <ul>
+    <li>📉 Rủi ro tối đa: <b>${r.min}%</b></li>
+    <li>📈 Lợi nhuận kỳ vọng: <b>${r.max}%</b></li>
+    <li>⚠️ Biến động ngẫu nhiên theo thị trường</li>
+    <li>🧠 Phù hợp: ${
+      type === "diamond"
+        ? "Nhà đầu tư mạo hiểm"
+        : "Đầu tư ổn định"
+    }</li>
+  </ul>
+`;
+
 
   document.getElementById("analysisCoin").textContent =
     me.coins || 0;
