@@ -3272,6 +3272,19 @@ function closeRoom(roomId, reason = "host_left") {
 
 io.on("connection", (socket) => {
 
+
+// 🔐 AUTH SOCKET (BẮT BUỘC – TOÀN APP)
+socket.on("auth", ({ uid, deviceId }) => {
+  if (!uid) return;
+
+  socket.data.uid = uid;
+  socket.data.deviceId = deviceId || null;
+
+  bindSocketToUser(uid, socket);
+});
+
+
+
 socket.on("disconnect", () => {
   const uid = socket.data.uid;
   if (!uid) return;

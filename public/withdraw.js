@@ -411,15 +411,15 @@ const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 if (typeof io === "function" && me?.uid) {
   socket = io();
 
-  // 🔐 báo cho server socket này thuộc user nào
-  socket.emit("auth", { uid: me.uid });
+  socket.emit("auth", {
+    uid: me.uid,
+    deviceId: localStorage.getItem("device_id") || null
+  });
 
-  // 🔄 realtime lịch sử rút
   socket.on("withdraw-update", () => {
     loadWithdrawHistory();
   });
 
-  // ❌ bị kick khi đăng nhập nơi khác
   socket.on("force-logout", (data) => {
     showNotifyModal(
       data?.message || "Tài khoản đã đăng nhập ở thiết bị khác",
@@ -434,6 +434,7 @@ if (typeof io === "function" && me?.uid) {
     }, 1500);
   });
 }
+
 
 
 
