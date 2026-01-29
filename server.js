@@ -299,6 +299,64 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 
+app.post("/api/invest", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { type, coin } = req.body;
+
+  if (!uid || !coin) {
+    return res.json({ ok:false });
+  }
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (!me || !me.profile) {
+    return res.json({ ok:false });
+  }
+
+  if (me.profile.coins < coin) {
+    return res.json({
+      ok:false,
+      message:"💎 Không đủ coin"
+    });
+  }
+
+  // % rủi ro theo loại
+  const ranges = {
+    gold:    [-5, 8],
+    silver:  [-3, 5],
+    diamond: [-10, 15]
+  };
+
+  const [min, max] = ranges[type] || [-5, 5];
+  const percent =
+    Math.floor(Math.random() * (max - min + 1)) + min;
+
+  const profit = Math.round(coin * percent / 100);
+
+  // trừ coin đầu tư
+  me.profile.coins -= coin;
+
+  // cộng lại coin + lãi/lỗ
+  me.profile.coins += (coin + profit);
+
+  me.profile.coinSent =
+    (me.profile.coinSent || 0) + coin;
+
+  saveUsers(users);
+
+  emitCoinUpdate(uid);
+
+  res.json({
+    ok: true,
+    percent,
+    profit,
+    coins: me.profile.coins
+  });
+});
+
+
+
 
 
 

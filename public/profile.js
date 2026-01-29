@@ -547,6 +547,21 @@ if (btnWithdraw) {
 
 
 
+const btnInvest = document.getElementById("btnInvest");
+
+if (btnInvest) {
+  btnInvest.onclick = () => {
+    // 🚫 không cho đầu tư khi xem profile người khác
+    if (viewUid && viewUid !== __profileAuth.uid) {
+      showMsg("🚫 Bạn không thể đầu tư bằng tài khoản này");
+      return;
+    }
+
+    location.href = "/invest.html";
+  };
+}
+
+
 
 const btnTopupCoin = document.getElementById("btnTopupCoin");
 

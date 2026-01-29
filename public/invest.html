@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>📈 Đầu tư vàng bạc kim cương</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="page-invest">
+
+<h2>📈 Thị trường đầu tư</h2>
+<p style="opacity:.8">
+  ⚠️ Đầu tư có rủi ro – có thể lãi hoặc lỗ
+</p>
+
+<div class="invest-list">
+
+  <div class="invest-card" onclick="invest('gold')">
+    🥇 Vàng <br>
+    <small>Lãi/lỗ: -5% → +8%</small>
+  </div>
+
+  <div class="invest-card" onclick="invest('silver')">
+    🥈 Bạc <br>
+    <small>Lãi/lỗ: -3% → +5%</small>
+  </div>
+
+  <div class="invest-card" onclick="invest('diamond')">
+    💎 Kim cương <br>
+    <small>Lãi/lỗ: -10% → +15%</small>
+  </div>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/chat-global.js"></script>
+<script src="/invest.js"></script>
+</body>
+</html>
