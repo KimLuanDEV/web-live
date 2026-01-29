@@ -244,22 +244,29 @@ function kickOldSessions(uid, newSocket) {
 
     // 🛑 CÙNG THIẾT BỊ → KHÔNG KICK
     if (
-  s.data.deviceId &&
-  newSocket.data.deviceId &&
-  s.data.deviceId === newSocket.data.deviceId
-) {
-  continue;
-}
+      s.data.deviceId &&
+      newSocket.data.deviceId &&
+      s.data.deviceId === newSocket.data.deviceId
+    ) {
+      continue;
+    }
 
+    // ⛔ ĐANG POLLING → KHÔNG KICK NGAY (TRÁNH 400)
+    if (s.conn?.transport?.name === "polling") {
+      console.log("⏳ Skip kick polling socket:", s.id);
+      continue;
+    }
 
     // ❌ KHÁC THIẾT BỊ → KICK
     s.emit("force-logout", {
       reason: "logged_in_elsewhere",
       message: "⚠️ Tài khoản đã đăng nhập trên thiết bị khác"
     });
+
     s.disconnect(true);
   }
 }
+
 
 
 
@@ -271,9 +278,9 @@ function bindSocketToUser(uid, socket) {
   }
 
   // 🔥 chỉ kick khác device
-  kickOldSessions(uid, socket);
+ set.add(socket.id);          // bind trước
+kickOldSessions(uid, socket); // kick sau
 
-  set.add(socket.id);
 
   socket.data.uid = uid;
 
