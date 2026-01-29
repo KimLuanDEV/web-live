@@ -1204,7 +1204,7 @@ function showForceLogoutModal(message){
 
 
 // ===== FORCE LOGOUT (ADMIN) =====
-if (socket) {
+
   socket.on("force-logout", (data) => {
     const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
 
@@ -1218,5 +1218,5 @@ if (socket) {
       location.href = "/login.html";
     }, 3000);
   });
-}
+
 
