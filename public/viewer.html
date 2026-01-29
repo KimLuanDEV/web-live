@@ -3436,31 +3436,6 @@ socket.on("force-logout", (data) => {
 
 
 
-let roomLK;
-
-async function joinLive() {
-  const res = await fetch(`/api/livekit/token?room=${roomId}&role=viewer`, {
-    headers: {
-      "x-uid": JSON.parse(localStorage.getItem("user_profile"))?.uid || "viewer"
-    }
-  });
-  const { token, url } = await res.json();
-
-  roomLK = new LiveKit.Room();
-
-  roomLK.on(
-    LiveKit.RoomEvent.TrackSubscribed,
-    (track) => {
-      if (track.kind === "video") {
-        track.attach(player);
-      }
-    }
-  );
-
-  await roomLK.connect(url, token);
-  console.log("👁 VIEWER JOINED:", roomId);
-}
-
 
 
   </script>
@@ -3468,7 +3443,6 @@ async function joinLive() {
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
 
-<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
 
 
 
