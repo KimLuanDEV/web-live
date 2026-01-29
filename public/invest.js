@@ -163,6 +163,20 @@ let chartTimer = null;
 let chartData = [];
 
 
+
+function getTrendColor(data){
+  if(data.length < 2) return "#888";
+
+  const first = data[0];
+  const last  = data[data.length - 1];
+
+  if (last > first + 0.5) return "#00ff99"; // 📈 tăng
+  if (last < first - 0.5) return "#ff5c5c"; // 📉 giảm
+  return "#aaa";                            // ➖ sideway
+}
+
+
+
 function startFakeChart(type){
   stopFakeChart();
 
@@ -196,8 +210,15 @@ function startFakeChart(type){
 
     // line
     ctx.beginPath();
-    ctx.strokeStyle = "#00ffd5";
+
+    const trendColor = getTrendColor(chartData);
+    ctx.strokeStyle = trendColor;
+
+
     ctx.lineWidth = 2;
+
+    ctx.shadowColor = trendColor;
+    ctx.shadowBlur = 10;
 
     chartData.forEach((p,i)=>{
       const x = i * (W / 30);
