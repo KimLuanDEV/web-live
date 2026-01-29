@@ -248,3 +248,9 @@ function stopFakeChart(){
     chartTimer = null;
   }
 }
+
+
+
+function goInvest(asset){
+  location.href = `/invest-detail.html?asset=${asset}`;
+}

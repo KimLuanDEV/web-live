@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Phân tích đầu tư</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body class="page-invest-detail">
+
+<header class="detail-header">
+  <button onclick="history.back()">⬅</button>
+  <h1 id="assetTitle">📊 Phân tích</h1>
+</header>
+
+<section class="detail-chart">
+  <canvas id="priceChart" height="220"></canvas>
+</section>
+
+<section class="detail-info">
+  <div id="trendText" class="trend neutral">➖ Sideway</div>
+
+  <ul id="analysisText"></ul>
+</section>
+
+<section class="detail-invest">
+  <div>💎 Số dư: <b id="myCoin">0</b></div>
+
+  <input id="investAmount" type="number"
+    placeholder="Nhập số coin đầu tư">
+
+  <button onclick="confirmInvest()">
+    🚀 XÁC NHẬN ĐẦU TƯ
+  </button>
+</section>
+
+<script src="/invest-detail.js"></script>
+</body>
+</html>

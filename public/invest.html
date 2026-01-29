@@ -19,21 +19,22 @@
 
 <div class="invest-grid">
 
- <div class="invest-card gold" onclick="openAnalysis('gold')">
+<div class="invest-card gold" onclick="goInvest('gold')">
+
   <div class="asset-icon">🥇</div>
   <h3>VÀNG</h3>
   <p class="risk">Biên độ: -5% → +8%</p>
   <div class="tap-hint">👆 Xem phân tích</div>
 </div>
 
-<div class="invest-card silver" onclick="openAnalysis('silver')">
+<div class="invest-card silver" onclick="goInvest('silver')">
   <div class="asset-icon">🥈</div>
   <h3>BẠC</h3>
   <p class="risk">Biên độ: -3% → +5%</p>
   <div class="tap-hint">👆 Xem phân tích</div>
 </div>
 
-<div class="invest-card diamond" onclick="openAnalysis('diamond')">
+<div class="invest-card diamond" onclick="goInvest('diamond')">
   <div class="asset-icon">💎</div>
   <h3>KIM CƯƠNG</h3>
   <p class="risk danger">Biên độ: -10% → +15%</p>
@@ -52,49 +53,6 @@
 
 
 <div id="investResult" class="invest-result hidden"></div>
-
-
-<div id="analysisModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeAnalysis()"></div>
-
-  <div class="modal-card invest-analysis">
-    <h2 id="analysisTitle">📊 Phân tích</h2>
-
-<div class="analysis-content">
-
-  <!-- 📊 BIỂU ĐỒ -->
-  <canvas
-    id="priceChart"
-    width="320"
-    height="120"
-    style="width:100%;margin:8px 0;border-radius:10px;background:#0a0a0a">
-  </canvas>
-
-  <!-- 🧠 PHÂN TÍCH -->
-  <div id="analysisText"></div>
-
-</div>
-
-
-    <div class="analysis-balance">
-      💎 Số dư: <b id="analysisCoin">0</b>
-    </div>
-
-    <input
-      type="number"
-      id="analysisAmount"
-      placeholder="Nhập số coin đầu tư"
-    >
-
-    <button class="btn-primary" onclick="confirmInvest()">
-      🚀 XÁC NHẬN ĐẦU TƯ
-    </button>
-
-    <button class="btn-ghost" onclick="closeAnalysis()">
-      ✖ Hủy
-    </button>
-  </div>
-</div>
 
 
 
