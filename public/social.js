@@ -2437,47 +2437,8 @@ function closeGiftUsers(){
 
 
 
-// 🚫 FORCE LOGOUT → DÙNG MODAL (KHÔNG ALERT)
-socket.on("force-logout", (data = {}) => {
-  console.warn("🚫 FORCE LOGOUT:", data);
-
-  let modal = document.getElementById("forceLogoutModal");
-
-  // 🔧 nếu chưa có modal thì tạo
-  if (!modal) {
-    modal = document.createElement("div");
-    modal.id = "forceLogoutModal";
-    modal.innerHTML = `
-      <div class="modal-backdrop"></div>
-      <div class="modal-box">
-        <h3>⚠️ Tài khoản bị đăng xuất</h3>
-        <p id="forceLogoutMsg"></p>
-        <button id="forceLogoutBtn" class="btn-danger">
-          Đăng nhập lại
-        </button>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  }
-
-  const msgEl = modal.querySelector("#forceLogoutMsg");
-  const btn   = modal.querySelector("#forceLogoutBtn");
-
-  msgEl.textContent =
-    data.message ||
-    "Tài khoản của bạn đã đăng nhập trên thiết bị khác.";
-
-  modal.classList.remove("hidden");
-
-  btn.onclick = () => {
-    try {
-      socket.disconnect();
-    } catch {}
-
-    localStorage.removeItem("user_profile");
-    localStorage.removeItem("login_uid");
-    localStorage.removeItem("isGuest");
-
-    location.href = "/login.html";
-  };
+socket.on("force-logout", (data) => {
+  alert(data?.message || "Bạn đã bị đăng xuất");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
 });
