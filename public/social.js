@@ -2471,5 +2471,5 @@ socket.on("force-logout", (data) => {
   // redirect sau 2s
   setTimeout(()=>{
     location.href = "/login.html";
-  }, 2000);
+  }, 3000);
 });
