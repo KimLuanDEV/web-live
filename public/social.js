@@ -2437,27 +2437,29 @@ function closeGiftUsers(){
 
 
 
-const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+socket.on("force-logout", async (data) => {
+  const msg = data?.message || "🚪 Bạn đã bị đăng xuất";
 
-if (typeof io === "function" && me?.uid) {
-  socket = io();
-
-  // 🔐 bind socket vào user (để kick khi login nơi khác)
-  socket.emit("auth", {
-    uid: me.uid,
-    deviceId: localStorage.getItem("device_id") || null
-  });
-
-  // ❌ bị kick khi đăng nhập nơi khác
-  socket.on("force-logout", (data) => {
-    showModal({
-      title: "🔐 Đăng xuất",
-      content:
-        data?.message ||
-        "Tài khoản đã được đăng nhập ở thiết bị khác."
-    }).then(() => {
-      localStorage.removeItem("user_profile");
-      location.href = "/login.html";
+  // ưu tiên modal hệ thống nếu có
+  if (typeof openSysModal === "function") {
+    openSysModal(msg);
+  } else if (typeof showConfirmModal === "function") {
+    await showConfirmModal({
+      title: "Thông báo",
+      body: msg
     });
-  });
-}
+  } else {
+    // fallback cuối cùng
+    showToast?.(msg, "error", 3000);
+  }
+
+  // clear auth
+  localStorage.removeItem("user_profile");
+  localStorage.removeItem("login_uid");
+  localStorage.removeItem("isGuest");
+
+  // redirect sau 1.5s cho user kịp đọc
+  setTimeout(() => {
+    location.href = "/login.html";
+  }, 1500);
+});
