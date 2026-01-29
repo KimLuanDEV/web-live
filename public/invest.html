@@ -2,32 +2,64 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8">
-  <title>📈 Đầu tư vàng bạc kim cương</title>
+  <title>Thị trường đầu tư</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
 </head>
 <body class="page-invest">
 
-<h2>📈 Thị trường đầu tư</h2>
-<p style="opacity:.8">
-  ⚠️ Đầu tư có rủi ro – có thể lãi hoặc lỗ
-</p>
+<div class="invest-header">
+  <h1>📈 Thị trường đầu tư</h1>
+  <p>⚠️ Đầu tư có rủi ro – Lợi nhuận không đảm bảo</p>
+</div>
 
-<div class="invest-list">
+<div class="invest-balance">
+  💎 Số dư: <span id="myCoin">0</span>
+</div>
 
-  <div class="invest-card" onclick="invest('gold')">
-    🥇 Vàng <br>
-    <small>Lãi/lỗ: -5% → +8%</small>
+<div class="invest-grid">
+
+  <!-- GOLD -->
+  <div class="invest-card gold">
+    <div class="asset-icon">🥇</div>
+    <h3>VÀNG</h3>
+    <p class="risk">Lãi / lỗ: <b>-5% → +8%</b></p>
+
+    <input type="number" placeholder="Nhập coin đầu tư"
+           id="goldAmount">
+
+    <button onclick="investUI('gold','goldAmount')">
+      🚀 ĐẦU TƯ
+    </button>
   </div>
 
-  <div class="invest-card" onclick="invest('silver')">
-    🥈 Bạc <br>
-    <small>Lãi/lỗ: -3% → +5%</small>
+  <!-- SILVER -->
+  <div class="invest-card silver">
+    <div class="asset-icon">🥈</div>
+    <h3>BẠC</h3>
+    <p class="risk">Lãi / lỗ: <b>-3% → +5%</b></p>
+
+    <input type="number" placeholder="Nhập coin đầu tư"
+           id="silverAmount">
+
+    <button onclick="investUI('silver','silverAmount')">
+      🚀 ĐẦU TƯ
+    </button>
   </div>
 
-  <div class="invest-card" onclick="invest('diamond')">
-    💎 Kim cương <br>
-    <small>Lãi/lỗ: -10% → +15%</small>
+  <!-- DIAMOND -->
+  <div class="invest-card diamond">
+    <div class="asset-icon">💎</div>
+    <h3>KIM CƯƠNG</h3>
+    <p class="risk danger">Lãi / lỗ: <b>-10% → +15%</b></p>
+
+    <input type="number" placeholder="Nhập coin đầu tư"
+           id="diamondAmount">
+
+    <button class="danger"
+            onclick="investUI('diamond','diamondAmount')">
+      ⚡ ĐẦU TƯ MẠNH
+    </button>
   </div>
 
 </div>
