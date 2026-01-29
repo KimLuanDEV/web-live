@@ -399,7 +399,27 @@ body.lobby-page{
 <script src="/app-entry-guard.js"></script>
 
 <script>
-const socket = io();
+
+
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+let deviceId = localStorage.getItem("deviceId");
+if (!deviceId) {
+  deviceId = crypto.randomUUID();
+  localStorage.setItem("deviceId", deviceId);
+}
+
+
+const socket = io({
+  transports: ["websocket"],
+  upgrade: false,
+  auth: {
+    uid: profile.uid,
+    deviceId,
+    profile
+  }
+});
+
 
 
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
@@ -488,9 +508,6 @@ const isGuest = localStorage.getItem("isGuest") === "1";
 
 
 
-if(profile.uid){
-  socket.emit("auth-login", { uid: profile.uid });
-}
 
 if (profile.uid) {
   fetch("/api/friends/" + profile.uid)
