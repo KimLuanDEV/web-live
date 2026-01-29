@@ -2436,13 +2436,3 @@ function closeGiftUsers(){
 
 
 
-
-socket.on("force-logout", data => {
-  console.warn("FORCE LOGOUT:", data);
-
-  localStorage.removeItem("user_profile");
-
-  alert(data.message || "Tài khoản đã đăng nhập nơi khác");
-  location.href = "/login.html";
-});
-

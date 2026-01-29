@@ -871,12 +871,6 @@ if(profile.uid){
   socket.emit("auth-login", { uid: profile.uid });
 }
 
-socket.on("force-logout", () => {
-  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
-
 
 function updateProfileOnSendGift(totalCoin){
   const KEY = "user_profile";
@@ -3145,12 +3139,6 @@ muteBtn.onclick = () => {
 };
 
 
-
-socket.on("force-logout", ({ reason }) => {
-  alert("Tài khoản của bạn đã đăng nhập ở thiết bị khác!");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
 
 
 

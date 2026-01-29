@@ -1695,12 +1695,3 @@ function notifyWithdraw(data){
 
 
 
-/*
-socket.on("force-logout", (data) => {
-  alert(data.message || "Bạn đã bị đăng xuất");
-
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
-*/
-

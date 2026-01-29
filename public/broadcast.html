@@ -709,11 +709,6 @@ if (profile.uid) {
 }
 
 
-socket.on("force-logout", () => {
-  alert("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
 
 
 function updateProfileOnReceiveGift(totalCoin){
@@ -3180,11 +3175,6 @@ miniProfile?.addEventListener("click", e => e.stopPropagation());
 
 
 
-socket.on("force-logout", ({ reason }) => {
-  alert("Tài khoản của bạn đã đăng nhập ở thiết bị khác!");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
 
 
 
