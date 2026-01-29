@@ -3440,6 +3440,57 @@ socket.on("force-logout", (data) => {
 
   </script>
 
+
+<script>
+let lkRoom;
+
+
+const uid =
+  JSON.parse(localStorage.getItem("user_profile") || "{}").uid ||
+  ("viewer_" + Math.random().toString(36).slice(2));
+
+async function joinLiveKitViewer() {
+  const res = await fetch(
+    `/api/livekit/token?room=${roomId}&uid=${uid}&role=viewer`
+  );
+  const data = await res.json();
+  if (!data.ok) throw "TOKEN_ERROR";
+
+  lkRoom = new LivekitClient.Room({
+    adaptiveStream: true,
+    dynacast: true
+  });
+
+  await lkRoom.connect(data.url, data.token);
+
+  lkRoom.on(
+    LivekitClient.RoomEvent.TrackSubscribed,
+    (track) => {
+      if (track.kind === "video") {
+        track.attach(player);
+        forceResumeAudio(player);
+      }
+    }
+  );
+}
+
+// iOS / mobile unlock audio
+function forceResumeAudio(video){
+  try{
+    video.muted = false;
+    video.play().catch(()=>{});
+  }catch{}
+}
+
+["click","touchstart"].forEach(e=>{
+  document.addEventListener(e, ()=>forceResumeAudio(player), { once:true });
+});
+
+joinLiveKitViewer();
+</script>
+
+
+
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
 
@@ -3448,6 +3499,7 @@ socket.on("force-logout", (data) => {
 
 
 
+<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.min.js"></script>
 
 </body>
 </html>

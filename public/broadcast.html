@@ -3339,12 +3339,80 @@ socket.on("force-logout", (data) => {
 
   </script>
 
+<script>
+let lkRoom;
+let lkTracks = [];
 
+
+const uid = profile.uid || ("host_" + Date.now());
+const btnStart = document.getElementById("btnStart");
+const btnStop  = document.getElementById("btnStop");
+const hostMicBtn = document.getElementById("hostMicBtn");
+const hostCamBtn = document.getElementById("hostCamBtn");
+
+async function startLiveKitHost() {
+  const res = await fetch(
+    `/api/livekit/token?room=${roomId}&uid=${uid}&role=host`
+  );
+  const data = await res.json();
+  if (!data.ok) throw "TOKEN_ERROR";
+
+  lkRoom = new LivekitClient.Room({
+    adaptiveStream: true,
+    dynacast: true
+  });
+
+  await lkRoom.connect(data.url, data.token);
+
+  const tracks = await LivekitClient.createLocalTracks({
+    audio: true,
+    video: { width: 1280, height: 720, frameRate: 24 }
+  });
+
+  tracks.forEach(t => {
+    lkRoom.localParticipant.publishTrack(t);
+    if (t.kind === "video") t.attach(preview);
+  });
+
+  lkTracks = tracks;
+
+  btnStart.disabled = true;
+  btnStop.disabled  = false;
+}
+
+btnStart.onclick = async () => {
+  await startLiveKitHost();
+};
+
+btnStop.onclick = async () => {
+  lkTracks.forEach(t => t.stop());
+  await lkRoom.disconnect();
+  btnStart.disabled = false;
+  btnStop.disabled  = true;
+};
+
+// 🎙 MIC
+hostMicBtn.onclick = () => {
+  lkRoom?.localParticipant?.setMicrophoneEnabled(
+    !lkRoom.localParticipant.isMicrophoneEnabled
+  );
+};
+
+// 📷 CAM
+hostCamBtn.onclick = () => {
+  lkRoom?.localParticipant?.setCameraEnabled(
+    !lkRoom.localParticipant.isCameraEnabled
+  );
+};
+</script>
 
 
 
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
+
+
+<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.min.js"></script>
 
 </body>
 </html>

@@ -14,16 +14,15 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
-const twilio = require("twilio");
-
-
 const fs = require("fs");
-
-
-
 const webpush = require("web-push");
-
 const { uploadToR2 } = require("./r2");
+const { AccessToken } = require("livekit-server-sdk");
+
+
+
+
+
 
 
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || "";
@@ -5793,6 +5792,50 @@ if (uid) {
 app.get("/lobby", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "lobby.html"));
 });
+
+
+
+// ===============================
+// 🎥 LIVEKIT TOKEN API
+// ===============================
+app.post("/api/livekit/token", (req, res) => {
+  const { roomId, uid, name, role } = req.body || {};
+
+  if (!roomId || !uid) {
+    return res.status(400).json({ ok: false, error: "missing_params" });
+  }
+
+  try {
+    const at = new AccessToken(
+      process.env.LIVEKIT_API_KEY,
+      process.env.LIVEKIT_API_SECRET,
+      {
+        identity: String(uid),
+        name: name || uid
+      }
+    );
+
+    at.addGrant({
+      room: String(roomId),
+      roomJoin: true,
+      canPublish: role !== "viewer", // host / guest
+      canSubscribe: true
+    });
+
+    res.json({
+      ok: true,
+      token: at.toJwt(),
+      url: process.env.LIVEKIT_URL
+    });
+  } catch (e) {
+    console.error("❌ LiveKit token error:", e);
+    res.status(500).json({ ok: false, error: "token_failed" });
+  }
+});
+
+
+
+
 
 
 const PORT = process.env.PORT || 3000;
