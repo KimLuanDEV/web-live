@@ -42,7 +42,6 @@ function normalizeAvatar(url) {
 
 
 
-
 const chatUpload = multer({
   storage: multer.memoryStorage(),
   limits: { fileSize: 500 * 1024 * 1024 }
@@ -234,6 +233,89 @@ const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
 
 
+
+
+// ================================
+// 📈 INVEST REALTIME ROUND (60s)
+// ================================
+let investRound = {
+  id: Date.now(),
+  endAt: Date.now() + 60000,
+  orders: [] // { uid, asset, coin }
+};
+
+
+
+setInterval(() => {
+  const round = investRound;
+
+  if (!round.orders.length) {
+    // vẫn reset round để đồng bộ thời gian
+    investRound = {
+      id: Date.now(),
+      endAt: Date.now() + 60000,
+      orders: []
+    };
+    io.emit("invest-round-new", {
+      roundId: investRound.id,
+      endAt: investRound.endAt
+    });
+    return;
+  }
+
+  const ranges = {
+    gold: [-5, 8],
+    silver: [-3, 5],
+    diamond: [-10, 15]
+  };
+
+  // 🎯 KẾT QUẢ CHUNG
+  const result = {};
+  for (const k in ranges) {
+    const [min, max] = ranges[k];
+    result[k] =
+      Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  const users = loadUsers();
+
+  round.orders.forEach(o => {
+    const me = users[o.uid];
+    if (!me?.profile) return;
+
+    const percent = result[o.asset] || 0;
+    const profit = Math.round(o.coin * percent / 100);
+
+    // ➕ HOÀN COIN + LÃI/LỖ
+    me.profile.coins += o.coin + profit;
+  });
+
+  saveUsers(users);
+
+  // 🔔 EMIT KẾT QUẢ PHIÊN
+  io.emit("invest-round-result", {
+    roundId: round.id,
+    result
+  });
+
+  // 🔄 TẠO PHIÊN MỚI
+  investRound = {
+    id: Date.now(),
+    endAt: Date.now() + 60000,
+    orders: []
+  };
+
+  io.emit("invest-round-new", {
+    roundId: investRound.id,
+    endAt: investRound.endAt
+  });
+
+}, 60000);
+
+
+
+
+
 function kickOldSessions(uid, newSocket) {
   const sockets = activeUsers.get(uid);
   if (!sockets) return;
@@ -303,16 +385,11 @@ app.post("/api/invest", (req, res) => {
   const uid = req.headers["x-uid"];
   const { type, coin } = req.body;
 
-  if (!uid || !coin) {
-    return res.json({ ok:false });
-  }
+  if (!uid || !coin) return res.json({ ok:false });
 
   const users = loadUsers();
   const me = users[uid];
-
-  if (!me || !me.profile) {
-    return res.json({ ok:false });
-  }
+  if (!me?.profile) return res.json({ ok:false });
 
   if (me.profile.coins < coin) {
     return res.json({
@@ -321,37 +398,22 @@ app.post("/api/invest", (req, res) => {
     });
   }
 
-  // % rủi ro theo loại
-  const ranges = {
-    gold:    [-5, 8],
-    silver:  [-3, 5],
-    diamond: [-10, 15]
-  };
-
-  const [min, max] = ranges[type] || [-5, 5];
-  const percent =
-    Math.floor(Math.random() * (max - min + 1)) + min;
-
-  const profit = Math.round(coin * percent / 100);
-
-  // trừ coin đầu tư
+  // ➖ trừ coin NGAY
   me.profile.coins -= coin;
-
-  // cộng lại coin + lãi/lỗ
-  me.profile.coins += (coin + profit);
-
-  me.profile.coinSent =
-    (me.profile.coinSent || 0) + coin;
-
   saveUsers(users);
-
   emitCoinUpdate(uid);
+
+  // 📥 lưu lệnh vào phiên hiện tại
+  investRound.orders.push({
+    uid,
+    asset: type,
+    coin
+  });
 
   res.json({
     ok: true,
-    percent,
-    profit,
-    coins: me.profile.coins
+    roundId: investRound.id,
+    endAt: investRound.endAt
   });
 });
 
@@ -5848,6 +5910,9 @@ if (uid) {
 });
 
 
+
+
+
 app.get("/lobby", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "lobby.html"));
 });
@@ -5865,3 +5930,8 @@ setInterval(()=>{
     console.error("cleanupExpiredBooths error", e);
   }
 }, 60 * 1000);
+
+
+
+
+

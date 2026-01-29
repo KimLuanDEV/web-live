@@ -1,43 +1,109 @@
-// invest-detail.js – BẢN HOÀN CHỈNH
+// invest-detail.js – REALTIME ROUND 60s
 
 const params = new URLSearchParams(location.search);
 const asset = params.get("asset") || "gold";
 
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
-document.getElementById("myCoin").textContent = me.coins || 0;
+const myCoinEl = document.getElementById("myCoin");
+if (myCoinEl) myCoinEl.textContent = me.coins || 0;
 
-// Cấu hình tài sản
+// ================== CONFIG ==================
+
 const config = {
-  gold:    { name:"🥇 Vàng", min:-5, max:8,  vol:1 },
-  silver:  { name:"🥈 Bạc", min:-3, max:5,  vol:1.5 },
+  gold:    { name:"🥇 Vàng", min:-5,  max:8,  vol:1 },
+  silver:  { name:"🥈 Bạc", min:-3,  max:5,  vol:1.5 },
   diamond: { name:"💎 Kim cương", min:-10, max:15, vol:3 }
 };
 
 const c = config[asset] || config.gold;
 
-// Tiêu đề + phân tích
 document.getElementById("assetTitle").textContent =
   `📈 Phân tích ${c.name}`;
 
 document.getElementById("analysisText").innerHTML = `
   <li>📉 Rủi ro tối đa: ${c.min}%</li>
   <li>📈 Lợi nhuận kỳ vọng: ${c.max}%</li>
-  <li>⚠️ Biến động thị trường ngẫu nhiên</li>
+  <li>⏱ Chốt mỗi 60 giây (phiên chung)</li>
 `;
 
-// ================== CHART ==================
+// ================== SOCKET + ROUND ==================
+
+const socket = io();
+
+let roundEndAt = 0;
+let timerInt = null;
+let joinedRound = false;
+
+const timerEl = document.getElementById("roundTimer");
+const investBtn = document.querySelector(".detail-invest button");
+
+function startRoundTimer(endAt){
+  roundEndAt = endAt;
+  clearInterval(timerInt);
+
+  timerInt = setInterval(() => {
+    const left = Math.max(
+      0,
+      Math.floor((roundEndAt - Date.now()) / 1000)
+    );
+
+    if (left > 0) {
+      timerEl.textContent = `⏳ Chốt sau ${left}s`;
+      investBtn.disabled = false;
+      investBtn.textContent = "🚀 VÀO LỆNH";
+    } else {
+      timerEl.textContent = "🔒 Đang chốt phiên...";
+      investBtn.disabled = true;
+    }
+  }, 500);
+}
+
+// nhận phiên mới
+socket.on("invest-round-new", d => {
+  joinedRound = false;
+  startRoundTimer(d.endAt);
+});
+
+// nhận kết quả phiên
+socket.on("invest-round-result", d => {
+  const p = d.result?.[asset];
+  if (p === undefined) return;
+
+  alert(
+    p >= 0
+      ? `🎉 Phiên chốt: +${p}%`
+      : `💥 Phiên chốt: ${p}%`
+  );
+
+  // sync coin lại từ server
+  fetch("/api/me/coin", {
+    headers: { "x-uid": me.uid }
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (d.ok) {
+      me.coins = d.coins;
+      myCoinEl.textContent = d.coins;
+      localStorage.setItem(
+        "user_profile",
+        JSON.stringify(me)
+      );
+    }
+  });
+});
+
+// ================== CHART (FAKE REALTIME) ==================
 
 let chartTimer = null;
 let chartData = [];
 
-// Xác định màu theo xu hướng
 function getTrendColor(data){
   if (data.length < 2) return "#888";
   const first = data[0];
   const last  = data[data.length - 1];
-  if (last > first + 0.5) return "#00ff99"; // tăng
-  if (last < first - 0.5) return "#ff5c5c"; // giảm
-  return "#aaa"; // sideway
+  if (last > first + 0.5) return "#00ff99";
+  if (last < first - 0.5) return "#ff5c5c";
+  return "#aaa";
 }
 
 function startFakeChart(){
@@ -112,10 +178,18 @@ function stopFakeChart(){
   }
 }
 
-// ================== ĐẦU TƯ ==================
+// ================== VÀO LỆNH ==================
 
 function confirmInvest(){
-  const coin = Number(document.getElementById("investAmount").value);
+  if (joinedRound) {
+    alert("⛔ Bạn đã vào lệnh phiên này");
+    return;
+  }
+
+  const coin = Number(
+    document.getElementById("investAmount").value
+  );
+
   if (!coin || coin <= 0) {
     alert("Nhập số coin hợp lệ");
     return;
@@ -132,21 +206,15 @@ function confirmInvest(){
   .then(r => r.json())
   .then(d => {
     if (!d.ok) {
-      alert(d.message || "Không thể đầu tư");
+      alert(d.message || "Không thể vào lệnh");
       return;
     }
 
-    // Update coin
-    document.getElementById("myCoin").textContent = d.coins;
-    me.coins = d.coins;
-    localStorage.setItem("user_profile", JSON.stringify(me));
-
-    alert(
-      (d.profit >= 0 ? "🎉 Lãi " : "💥 Lỗ ") +
-      d.profit + " coin"
-    );
+    joinedRound = true;
+    alert("✅ Đã vào lệnh, chờ chốt phiên");
   });
 }
 
-// Start chart khi vào trang
+// ================== START ==================
+
 startFakeChart();

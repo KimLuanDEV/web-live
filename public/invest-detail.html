@@ -6,6 +6,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
 </head>
+
 <body class="page-invest-detail">
 
 <header class="detail-header">
@@ -18,22 +19,39 @@
 </section>
 
 <section class="detail-info">
+
+  <!-- ⏱ THỜI GIAN PHIÊN -->
+  <div id="roundTimer" class="round-timer">
+    ⏳ Đang tải phiên...
+  </div>
+
+  <!-- 📈 XU HƯỚNG -->
   <div id="trendText" class="trend neutral">➖ Sideway</div>
 
+  <!-- 🧠 PHÂN TÍCH -->
   <ul id="analysisText"></ul>
+
 </section>
 
 <section class="detail-invest">
   <div>💎 Số dư: <b id="myCoin">0</b></div>
 
-  <input id="investAmount" type="number"
-    placeholder="Nhập số coin đầu tư">
+  <input
+    id="investAmount"
+    type="number"
+    placeholder="Nhập số coin đầu tư"
+  >
 
   <button onclick="confirmInvest()">
-    🚀 XÁC NHẬN ĐẦU TƯ
+    🚀 VÀO LỆNH
   </button>
 </section>
 
+<!-- ⚠️ BẮT BUỘC: socket.io -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- 📈 LOGIC ĐẦU TƯ -->
 <script src="/invest-detail.js"></script>
+
 </body>
 </html>
