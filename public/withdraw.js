@@ -409,3 +409,10 @@ function closeNotifyModal(){
   const modal = document.getElementById("notifyModal");
   modal && modal.classList.add("hidden");
 }
+
+
+socket.on("force-logout", (data) => {
+  alert(data?.message || "Bạn đã bị đăng xuất");
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
