@@ -19,6 +19,21 @@ if (typeof io === "function") {
   });
 }
 
+if (socket) {
+  socket.on("force-logout", (data) => {
+    console.warn("🚨 ADMIN FORCE LOGOUT:", data);
+
+    showModal({
+      title: "⚠️ Đăng nhập ở nơi khác",
+      body: data?.message || "Tài khoản admin đã đăng nhập trên thiết bị khác."
+    }).then(() => {
+      localStorage.removeItem("user_profile");
+      localStorage.removeItem("device_id");
+      location.href = "/login.html";
+    });
+  });
+}
+
 
 
 if (socket && admin?.uid) {
