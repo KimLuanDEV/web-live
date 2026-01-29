@@ -1202,7 +1202,6 @@ function showForceLogoutModal(message){
   modal.classList.add("show");
 }
 
-
 // ===== FORCE LOGOUT (ADMIN) =====
 
   socket.on("force-logout", (data) => {
