@@ -477,13 +477,6 @@ const p = {
 
 
 
-// nếu bị login nơi khác → đá
-socket.on("force-logout", () => {
-   showMsg("⚠️ Tài khoản của bạn đã đăng nhập trên thiết bị khác");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
-
 
 
 
@@ -1702,5 +1695,12 @@ function notifyWithdraw(data){
 
 
 
+
+socket.on("force-logout", (data) => {
+  alert(data.message || "Bạn đã bị đăng xuất");
+
+  localStorage.removeItem("user_profile");
+  location.href = "/login.html";
+});
 
 
