@@ -3273,6 +3273,16 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+
+  socket.on("register-admin", (uid) => {
+  if (!uid) return;
+  socket.join("admin:" + uid);
+  console.log("🔐 Admin socket joined:", uid);
+});
+
+
+
+
 // 🔐 AUTH SOCKET (BẮT BUỘC – TOÀN APP)
 socket.on("auth", ({ uid, deviceId }) => {
   if (!uid) return;

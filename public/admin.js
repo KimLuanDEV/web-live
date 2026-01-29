@@ -11,6 +11,10 @@ if (typeof io === "function") {
 }
 
 
+if (socket && admin?.uid) {
+  socket.emit("register-admin", admin.uid);
+}
+
 const PAGE_SIZE = 5;
 let userPage = 1;
 let userSearchKey = "";
