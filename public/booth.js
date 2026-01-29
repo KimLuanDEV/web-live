@@ -347,13 +347,29 @@ if (booth?.type === "system" && me?.role !== "admin") {
     });
     return;
   }
-  if(me.uid !== currentBoothOwnerUid){
+
+
+// 🔐 PHÂN QUYỀN THÊM SẢN PHẨM
+if (booth?.type === "system") {
+  // 👉 Gian hệ thống: CHỈ ADMIN
+  if (me?.role !== "admin") {
+    showModal({
+      title: "⛔ Không có quyền",
+      message: "Chỉ Admin mới được thêm sản phẩm cho gian hàng hệ thống."
+    });
+    return;
+  }
+} else {
+  // 👉 Gian user: CHỈ CHỦ GIAN
+  if (me.uid !== currentBoothOwnerUid) {
     showModal({
       title: "⛔ Truy cập bị từ chối",
       message: "Bạn không phải chủ của gian hàng này."
     });
     return;
   }
+}
+
 
   // ✅ RESET MODE
   editingProductId = null;
