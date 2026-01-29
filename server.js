@@ -1289,7 +1289,9 @@ app.post("/api/market/product/buy", (req, res) => {
 
 
 
-  const qty = Math.max(1, Number(buyerInfo.qty || 1));
+const safeBuyerInfo = buyerInfo || {};
+const qty = Math.max(1, Number(safeBuyerInfo.qty || 1));
+
 
   const users = loadUsers();
   const buyer = users[buyerUid];
@@ -1314,7 +1316,8 @@ if (isSystemBooth) {
     name: "SYSTEM_BUY",
     phone: "",
     address: "",
-    note: "AUTO_BUY"
+    note: "AUTO_BUY",
+    qty
   };
 }
 
