@@ -510,16 +510,13 @@ startLiveBigBtn?.addEventListener("click", () => {
 
 let __isLive = false;
 
-btnStart.addEventListener("click", () => {
-  if(__isLive) return;
-
+btnStart.addEventListener("click", async () => {
+  if (__isLive) return;
   __isLive = true;
-
-  // 🔥 PHẢI dùng event server đang nghe
+  await startLive();
   socket.emit("host-start-live", { roomId });
-
-  console.log("🔥 LIVE STARTED:", roomId);
 });
+
 
 
 
@@ -3335,6 +3332,32 @@ socket.on("force-logout", (data) => {
 });
 
 
+let roomLK;
+
+async function startLive() {
+  const res = await fetch(`/api/livekit/token?room=${roomId}&role=host`, {
+    headers: {
+      "x-uid": JSON.parse(localStorage.getItem("user_profile"))?.uid || "host"
+    }
+  });
+  const { token, url } = await res.json();
+
+  roomLK = new LiveKit.Room();
+  await roomLK.connect(url, token);
+
+  localStream = await LiveKit.createLocalTracks({
+    audio: true,
+    video: true
+  });
+
+  localStream.forEach(t => roomLK.localParticipant.publishTrack(t));
+
+  const videoTrack = localStream.find(t => t.kind === "video");
+  videoTrack.attach(preview);
+
+  console.log("✅ HOST LIVE:", roomId);
+}
+
 
 
   </script>
@@ -3346,5 +3369,7 @@ socket.on("force-logout", (data) => {
 <!-- VIP TICKER (donation banner) -->
 <div id="vipTicker" class="vip-ticker" aria-live="polite"></div>
 
+
+<script src="https://unpkg.com/livekit-client/dist/livekit-client.umd.js"></script>
 </body>
 </html>
