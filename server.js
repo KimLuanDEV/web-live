@@ -413,7 +413,10 @@ app.post("/api/admin/market/approve-dispute", (req,res)=>{
   saveUsers(users);
   saveMarket(market);
 
+  if (!isSystemBooth && booth.ownerUid) {
   emitCoinUpdate(booth.ownerUid);
+}
+
 
   io.emit("order-updated",{ boothId, order: found });
 
@@ -891,7 +894,10 @@ app.post("/api/market/order/done", (req, res) => {
   });
 
   // 🔄 realtime update coin cho seller
+  if (!isSystemBooth && booth.ownerUid) {
   emitCoinUpdate(booth.ownerUid);
+}
+
 
   // =========================
   // 🔔 notify buyer
@@ -1076,7 +1082,11 @@ if(found.status !== "pending"){
 
   // 🔄 REALTIME UPDATE COIN
   emitCoinUpdate(found.buyerUid);
+  
+ if (!isSystemBooth && booth.ownerUid) {
   emitCoinUpdate(booth.ownerUid);
+}
+
 
   // =========================
   // 4️⃣ notify chủ gian
@@ -1271,10 +1281,13 @@ if (Array.isArray(product.images) && product.images.length) {
 // ===== BUY PRODUCT (FIXED) =====
 app.post("/api/market/product/buy", (req, res) => {
   const buyerUid = req.headers["x-uid"];
-  const { boothId, productId, buyerInfo } = req.body || {};
+  const { boothId, productId, buyerInfo, systemBuy } = req.body || {};
 
-  if (!buyerUid || !boothId || !productId || !buyerInfo)
+  if (!buyerUid || !boothId || !productId)
     return res.status(400).json({ error: "missing" });
+
+
+
 
   const qty = Math.max(1, Number(buyerInfo.qty || 1));
 
@@ -1288,6 +1301,24 @@ app.post("/api/market/product/buy", (req, res) => {
   const booth = market[boothId];
   if (!booth)
     return res.status(404).json({ error: "booth_not_found" });
+
+
+// 🏆 GIAN HỆ THỐNG → MUA NGAY
+const isSystemBooth = booth.type === "system" || systemBuy === true;
+
+let finalBuyerInfo = buyerInfo;
+
+// 👉 nếu là gian hệ thống → KHÔNG cần info
+if (isSystemBooth) {
+  finalBuyerInfo = {
+    name: "SYSTEM_BUY",
+    phone: "",
+    address: "",
+    note: "AUTO_BUY"
+  };
+}
+
+
 
   // 🔒 BOOTH BỊ KHOÁ → KHÔNG CHO MUA
 if (blockIfBoothLockedById(boothId, buyerUid)) {
@@ -1323,26 +1354,40 @@ if (blockIfBoothLockedById(boothId, buyerUid)) {
 
   // 🧾 LƯU ĐƠN HÀNG
   booth.orders ||= [];
-  booth.orders.unshift({
-    id: "o_" + Date.now(),
-    productId,
-    productName: product.name,
-    price,
-    qty,
-    totalPrice,
-    buyerUid,
-    buyerInfo,
-    status: "pending", // pending | contacted | done
-    escrow: totalPrice,
-    createdAt: Date.now()
-  });
+booth.orders.unshift({
+  id: "o_" + Date.now(),
+  productId,
+  productName: product.name,
+  productImage: product.image,
+  productDesc: product.desc,
+  price,
+  qty,
+  totalPrice,
+  buyerUid,
+  buyerInfo: finalBuyerInfo,
+
+  // 🏆 GIAN HỆ THỐNG → DONE LUÔN
+  status: isSystemBooth ? "done" : "pending",
+
+  // 🏆 KHÔNG ESCROW VỚI SYSTEM
+  escrow: isSystemBooth ? 0 : totalPrice,
+
+  system: isSystemBooth === true,
+  createdAt: Date.now(),
+  doneAt: isSystemBooth ? Date.now() : null
+});
+
 
   saveUsers(users);
   saveMarket(market);
 
   emitMarketUpdate("product-buy", boothId);
   emitCoinUpdate(buyerUid);
+
+ if (!isSystemBooth && booth.ownerUid) {
   emitCoinUpdate(booth.ownerUid);
+}
+
 
   // 🔔 INBOX CHO CHỦ SHOP
   if (!userInbox.has(booth.ownerUid))

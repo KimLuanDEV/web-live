@@ -958,13 +958,81 @@ function buyProduct(productId){
     return;
   }
 
-  buyingProductId = productId;
-  document.getElementById("buyFormModal").classList.remove("hidden");
+buyingProductId = productId;
 
-  if (me?.name) buyName.value = me.name;
+// 🏆 GIAN HỆ THỐNG → MUA NGAY
+if (booth.type === "system") {
+  submitSystemBuy(productId);
+  return;
+}
+
+// 🧑‍💼 GIAN USER → MỞ FORM
+document.getElementById("buyFormModal").classList.remove("hidden");
+
+if (me?.name) buyName.value = me.name;
 if (me?.phone) buyPhone.value = me.phone;
 
+
+
 }
+
+
+async function submitSystemBuy(productId){
+  const me = JSON.parse(localStorage.getItem("user_profile"));
+  if(!me?.uid){
+    showModal({
+      title:"🔐 Chưa đăng nhập",
+      message:"Vui lòng đăng nhập để mua."
+    });
+    return;
+  }
+
+  showModal({
+    title:"🛒 Xác nhận mua",
+    message:"Bạn có chắc chắn muốn mua sản phẩm này không?",
+    confirm:true,
+    onOk: async ()=>{
+      try{
+        const res = await fetch("/api/market/product/buy",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json",
+            "x-uid": me.uid
+          },
+          body: JSON.stringify({
+            boothId,
+            productId,
+            systemBuy: true   // 🔥 FLAG QUAN TRỌNG
+          })
+        });
+
+        const data = await res.json();
+        if(!data.ok){
+          showModal({
+            title:"❌ Thất bại",
+            message: data.message || "Không thể mua sản phẩm."
+          });
+          return;
+        }
+
+        showModal({
+          title:"✅ Mua thành công",
+          message:"Sản phẩm đã được thêm vào hành lý của bạn."
+        });
+
+        syncMyCoin();
+        loadBooth();
+
+      }catch(e){
+        showModal({
+          title:"⚠️ Lỗi",
+          message:"Không thể kết nối máy chủ."
+        });
+      }
+    }
+  });
+}
+
 
 
 
