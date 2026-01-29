@@ -773,6 +773,7 @@ if (typeof io === "function" && me?.uid) {
     deviceId: localStorage.getItem("device_id") || null
   });
 
+
   // ❌ bị kick khi đăng nhập nơi khác
   socket.on("force-logout", (data) => {
     showModal({
