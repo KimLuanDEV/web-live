@@ -203,11 +203,13 @@ if(!Array.isArray(p.images) || p.images.length === 0){
 
 
 
+
 async function loadBooth(){
   try{
     const me = JSON.parse(localStorage.getItem("user_profile"));
     const headers = me?.uid ? { "x-uid": me.uid } : {};
 
+    // ✅ LOAD ĐÚNG API + CHỐNG CACHE
     const res = await fetch(
       `/api/market/booth/${boothId}?t=${Date.now()}`,
       { headers }
@@ -219,30 +221,15 @@ async function loadBooth(){
     if(!booth) return;
 
     // =========================
-    // CACHE
+    // CACHE MỚI
     // =========================
     window.__lastBooth = booth;
     currentBoothOwnerUid = booth.ownerUid;
 
-    const isSystemBooth = booth.type === "system";
-    const isAdmin = me?.role === "admin";
-    const isOwner = me && me.uid === booth.ownerUid;
-
-    // =========================
-    // RESET UI (QUAN TRỌNG)
-    // =========================
-    btnAddProduct?.classList.add("hidden");
-    btnExtend?.classList.add("hidden");
-    document.getElementById("tabOrders")?.classList.add("hidden");
-    document.getElementById("tabMyOrders")?.classList.add("hidden");
-    expireBox?.classList.add("hidden");
-
     // =========================
     // INFO
     // =========================
-    boothNameEl.textContent =
-      isSystemBooth ? "🏆 Gian hàng hệ thống" : booth.name;
-
+    boothNameEl.textContent = booth.name;
     boothLogoEl.src = booth.logo;
 
     // =========================
@@ -250,29 +237,24 @@ async function loadBooth(){
     // =========================
     renderProducts(booth.products || []);
 
-    // =========================
-    // 🔐 CHƯA LOGIN
-    // =========================
+    const isOwner = me && me.uid === booth.ownerUid;
+
+    // 🔐 Chưa đăng nhập → ẩn tab "Đơn của tôi"
     if(!me?.uid){
       document.getElementById("tabMyOrders")?.classList.add("hidden");
     }
 
-    // =========================
-    // 🏆 GIAN HỆ THỐNG → ADMIN
-    // =========================
-    if(isSystemBooth && isAdmin){
-      btnAddProduct?.classList.remove("hidden");
-      document.getElementById("tabOrders")?.classList.remove("hidden");
-      renderOrders(booth.orders || []);
-    }
-
-    // =========================
-    // 🧑‍💼 GIAN USER → CHỦ GIAN
-    // =========================
-    if(!isSystemBooth && isOwner){
-      btnAddProduct?.classList.remove("hidden");
+    /* =========================
+       CHỦ GIAN
+    ========================= */
+    if(isOwner){
       btnExtend?.classList.remove("hidden");
+      btnAddProduct?.classList.remove("hidden");
+
+      // 👉 TAB ĐƠN HÀNG (CHỦ SHOP)
       document.getElementById("tabOrders")?.classList.remove("hidden");
+
+      // 👉 RENDER ĐƠN HÀNG
       renderOrders(booth.orders || []);
 
       // expire info
@@ -298,14 +280,13 @@ async function loadBooth(){
       }
     }
 
-    // =========================
-    // 👤 NGƯỜI MUA / USER KHÁC
-    // =========================
-    if(
-      !isOwner &&
-      !(isSystemBooth && isAdmin) &&
-      me?.uid
-    ){
+    /* =========================
+       NGƯỜI MUA
+    ========================= */
+    else{
+      document.getElementById("tabOrders")?.classList.add("hidden");
+
+      // 👉 TAB ĐƠN CỦA TÔI
       document.getElementById("tabMyOrders")?.classList.remove("hidden");
       renderMyOrders(booth.orders || []);
     }
@@ -318,6 +299,7 @@ async function loadBooth(){
   }
 }
 
+
 loadBooth();
 syncMyCoin();
 
@@ -326,20 +308,7 @@ syncMyCoin();
 btnBack.onclick = ()=> history.back();
 
 btnAddProduct.onclick = ()=>{
-
-const booth = window.__lastBooth;
-const me = JSON.parse(localStorage.getItem("user_profile"));
-
-if (booth?.type === "system" && me?.role !== "admin") {
-  showModal({
-    title: "⛔ Không có quyền",
-    message: "Chỉ Admin mới được thêm sản phẩm cho gian hàng hệ thống."
-  });
-  return;
-}
-
-  
- 
+  const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
     showModal({
       title: "🔐 Yêu cầu đăng nhập",
@@ -347,29 +316,13 @@ if (booth?.type === "system" && me?.role !== "admin") {
     });
     return;
   }
-
-
-// 🔐 PHÂN QUYỀN THÊM SẢN PHẨM
-if (booth?.type === "system") {
-  // 👉 Gian hệ thống: CHỈ ADMIN
-  if (me?.role !== "admin") {
-    showModal({
-      title: "⛔ Không có quyền",
-      message: "Chỉ Admin mới được thêm sản phẩm cho gian hàng hệ thống."
-    });
-    return;
-  }
-} else {
-  // 👉 Gian user: CHỈ CHỦ GIAN
-  if (me.uid !== currentBoothOwnerUid) {
+  if(me.uid !== currentBoothOwnerUid){
     showModal({
       title: "⛔ Truy cập bị từ chối",
       message: "Bạn không phải chủ của gian hàng này."
     });
     return;
   }
-}
-
 
   // ✅ RESET MODE
   editingProductId = null;
@@ -926,86 +879,29 @@ return;
 
 
 
-async function buyProduct(productId) {
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  if (!me?.uid) {
+function buyProduct(productId){
+
+  if(!window.__lastBooth) return;
+
+    if (window.__lastBooth?.locked) {
+  showModal({
+    title:"🚫 Gian hàng bị khoá",
+    message:"Không thể mua lúc này."
+  });
+  return;
+}
+
+  const booth = window.__lastBooth;
+  const p = booth?.products?.find(x => x.id === productId);
+
+  if (!p || p.stock <= 0) {
     showModal({
-      title: "🔐 Yêu cầu đăng nhập",
-      message: "Vui lòng đăng nhập để mua sản phẩm."
+      title:"📦 Hết hàng",
+      message:"Sản phẩm đã hết hàng."
     });
     return;
   }
 
-  const booth = window.__lastBooth;
-  const isSystemBooth = booth?.type === "system";
-
-  const body = {
-    boothId,
-    productId
-  };
-
-  // 🏆 GIAN HỆ THỐNG → MUA NGAY
-  if (isSystemBooth) {
-    body.systemBuy = true;
-    body.buyerInfo = { qty: 1 };
-  } else {
-    // 👤 GIAN USER → CẦN THÔNG TIN
-    body.buyerInfo = {
-      name: buyName.value.trim(),
-      phone: buyPhone.value.trim(),
-      address: buyAddress.value.trim(),
-      note: buyNote.value.trim(),
-      qty: Number(buyQty.value || 1)
-    };
-  }
-
-  try {
-    const res = await fetch("/api/market/product/buy", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-uid": me.uid
-      },
-      body: JSON.stringify(body)
-    });
-
-    const data = await res.json();
-
-    if (!data.ok) {
-      if (data.error === "not_enough_coin") {
-        showModal({
-          title: "❌ Không đủ kim cương",
-          message: "Số dư kim cương của bạn không đủ."
-        });
-        return;
-      }
-
-      showModal({
-        title: "❌ Không thể mua",
-        message: data.message || "Mua sản phẩm thất bại."
-      });
-      return;
-    }
-
-    showModal({
-      title: "✅ Thành công",
-      message: isSystemBooth
-        ? "🎁 Bạn đã mua sản phẩm hệ thống thành công!"
-        : "🛒 Đơn hàng đã được tạo thành công!"
-    });
-
-    syncMyCoin();
-    loadBooth();
-
-  } catch (e) {
-    showModal({
-      title: "⚠️ Lỗi kết nối",
-      message: "Không thể kết nối máy chủ."
-    });
-  }
-}
-
-async function submitSystemBuy(productId){
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
     showModal({
@@ -1015,52 +911,13 @@ async function submitSystemBuy(productId){
     return;
   }
 
-  showModal({
-    title:"🛒 Xác nhận mua",
-    message:"Bạn có chắc chắn muốn mua sản phẩm này không?",
-    confirm:true,
-    onOk: async ()=>{
-      try{
-        const res = await fetch("/api/market/product/buy",{
-          method:"POST",
-          headers:{
-            "Content-Type":"application/json",
-            "x-uid": me.uid
-          },
-          body: JSON.stringify({
-            boothId,
-            productId,
-            systemBuy: true   // 🔥 FLAG QUAN TRỌNG
-          })
-        });
+  buyingProductId = productId;
+  document.getElementById("buyFormModal").classList.remove("hidden");
 
-        const data = await res.json();
-        if(!data.ok){
-          showModal({
-            title:"❌ Thất bại",
-            message: data.message || "Không thể mua sản phẩm."
-          });
-          return;
-        }
+  if (me?.name) buyName.value = me.name;
+if (me?.phone) buyPhone.value = me.phone;
 
-        showModal({
-          title:"✅ Mua thành công",
-          message:"Sản phẩm đã được thêm vào hành lý của bạn."
-        });
-
-        syncMyCoin();
-        loadBooth();
-
-      }catch(e){
-        showModal({
-          title:"⚠️ Lỗi",
-          message:"Không thể kết nối máy chủ."
-        });
-      }
-    }
-  });
 }
-
 
 
 

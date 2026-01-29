@@ -101,27 +101,6 @@ function saveMarket(db){
 }
 
 
-// ===== INIT SYSTEM BOOTH (RUN ONCE) =====
-const market = loadMarket();
-
-if (!market["sys"]) {
-  market["sys"] = {
-    boothId: "sys",
-    type: "system",
-    name: "🏆 Gian hàng hệ thống",
-    logo: "/images/system-shop.png",
-    locked: false,
-    products: [],
-    orders: []
-  };
-
-  saveMarket(market);
-  console.log("✅ System booth initialized");
-}
-
-
-
-
 // 🔒 HELPER: CHẶN MỌI HÀNH ĐỘNG KHI BOOTH BỊ KHOÁ
 function blockIfBoothLockedById(boothId, uid) {
   if (!boothId || !uid) return false;
@@ -413,10 +392,7 @@ app.post("/api/admin/market/approve-dispute", (req,res)=>{
   saveUsers(users);
   saveMarket(market);
 
-  if (!isSystemBooth && booth.ownerUid) {
   emitCoinUpdate(booth.ownerUid);
-}
-
 
   io.emit("order-updated",{ boothId, order: found });
 
@@ -514,38 +490,6 @@ app.get("/api/admin/live-rooms", (req, res) => {
     ts: Date.now()
   });
 });
-
-// 📦 LẤY HÀNH LÝ NGƯỜI DÙNG (GIAN HỆ THỐNG)
-app.get("/api/market/inventory", (req,res)=>{
-  const uid = req.headers["x-uid"];
-  if (!uid) return res.json({ ok:false });
-
-  const market = loadMarket();
-  const sys = market.sys;
-  if (!sys || !Array.isArray(sys.orders))
-    return res.json({ ok:true, items: [] });
-
-  const items = [];
-
-  sys.orders
-    .filter(o =>
-      o.buyerUid === uid &&
-      ["done","contacted","received"].includes(o.status)
-    )
-    .forEach(o=>{
-      items.push({
-        id: o.productId,
-        name: o.productName,
-        image: o.productImage,
-        desc: o.productDesc,
-        qty: o.qty
-      });
-    });
-
-  res.json({ ok:true, items });
-});
-
-
 
 app.get("/api/market", (req,res)=>{
   cleanupExpiredBooths();
@@ -894,10 +838,7 @@ app.post("/api/market/order/done", (req, res) => {
   });
 
   // 🔄 realtime update coin cho seller
-  if (!isSystemBooth && booth.ownerUid) {
   emitCoinUpdate(booth.ownerUid);
-}
-
 
   // =========================
   // 🔔 notify buyer
@@ -1082,11 +1023,7 @@ if(found.status !== "pending"){
 
   // 🔄 REALTIME UPDATE COIN
   emitCoinUpdate(found.buyerUid);
-  
- if (!isSystemBooth && booth.ownerUid) {
   emitCoinUpdate(booth.ownerUid);
-}
-
 
   // =========================
   // 4️⃣ notify chủ gian
@@ -1179,19 +1116,8 @@ app.post("/api/market/product/add", (req, res) => {
   if (!booth)
     return res.status(404).json({ error: "booth_not_found" });
 
-// 🔐 QUYỀN THÊM SẢN PHẨM
-if (booth.type === "system") {
-  // 👉 gian hệ thống: CHỈ ADMIN
-  if (me.role !== "admin") {
-    return res.status(403).json({ error: "not_admin" });
-  }
-} else {
-  // 👉 gian user: CHỈ CHỦ GIAN
-  if (booth.ownerUid !== uid) {
+  if (booth.ownerUid !== uid)
     return res.status(403).json({ error: "not_owner" });
-  }
-}
-
 
   // ✅ đảm bảo có mảng products
   booth.products ||= [];
@@ -1242,16 +1168,8 @@ app.post("/api/market/product/update", (req, res) => {
   const booth = market[boothId];
   if (!booth) return res.status(404).json({ error: "booth_not_found" });
 
-if (booth.type === "system") {
-  if (me.role !== "admin") {
-    return res.status(403).json({ error: "not_admin" });
-  }
-} else {
-  if (booth.ownerUid !== uid) {
+  if (booth.ownerUid !== uid)
     return res.status(403).json({ error: "not_owner" });
-  }
-}
-
 
   const p = (booth.products || []).find(x => x.id === productId);
   if (!p) return res.status(404).json({ error: "product_not_found" });
@@ -1281,17 +1199,12 @@ if (Array.isArray(product.images) && product.images.length) {
 // ===== BUY PRODUCT (FIXED) =====
 app.post("/api/market/product/buy", (req, res) => {
   const buyerUid = req.headers["x-uid"];
-  const { boothId, productId, buyerInfo, systemBuy } = req.body || {};
+  const { boothId, productId, buyerInfo } = req.body || {};
 
-  if (!buyerUid || !boothId || !productId)
+  if (!buyerUid || !boothId || !productId || !buyerInfo)
     return res.status(400).json({ error: "missing" });
 
-
-
-
-const safeBuyerInfo = buyerInfo || {};
-const qty = Math.max(1, Number(safeBuyerInfo.qty || 1));
-
+  const qty = Math.max(1, Number(buyerInfo.qty || 1));
 
   const users = loadUsers();
   const buyer = users[buyerUid];
@@ -1303,25 +1216,6 @@ const qty = Math.max(1, Number(safeBuyerInfo.qty || 1));
   const booth = market[boothId];
   if (!booth)
     return res.status(404).json({ error: "booth_not_found" });
-
-
-// 🏆 GIAN HỆ THỐNG → MUA NGAY
-const isSystemBooth = booth.type === "system" || systemBuy === true;
-
-let finalBuyerInfo = buyerInfo;
-
-// 👉 nếu là gian hệ thống → KHÔNG cần info
-if (isSystemBooth) {
-  finalBuyerInfo = {
-    name: "SYSTEM_BUY",
-    phone: "",
-    address: "",
-    note: "AUTO_BUY",
-    qty
-  };
-}
-
-
 
   // 🔒 BOOTH BỊ KHOÁ → KHÔNG CHO MUA
 if (blockIfBoothLockedById(boothId, buyerUid)) {
@@ -1357,40 +1251,26 @@ if (blockIfBoothLockedById(boothId, buyerUid)) {
 
   // 🧾 LƯU ĐƠN HÀNG
   booth.orders ||= [];
-booth.orders.unshift({
-  id: "o_" + Date.now(),
-  productId,
-  productName: product.name,
-  productImage: product.image,
-  productDesc: product.desc,
-  price,
-  qty,
-  totalPrice,
-  buyerUid,
-  buyerInfo: finalBuyerInfo,
-
-  // 🏆 GIAN HỆ THỐNG → DONE LUÔN
-  status: isSystemBooth ? "done" : "pending",
-
-  // 🏆 KHÔNG ESCROW VỚI SYSTEM
-  escrow: isSystemBooth ? 0 : totalPrice,
-
-  system: isSystemBooth === true,
-  createdAt: Date.now(),
-  doneAt: isSystemBooth ? Date.now() : null
-});
-
+  booth.orders.unshift({
+    id: "o_" + Date.now(),
+    productId,
+    productName: product.name,
+    price,
+    qty,
+    totalPrice,
+    buyerUid,
+    buyerInfo,
+    status: "pending", // pending | contacted | done
+    escrow: totalPrice,
+    createdAt: Date.now()
+  });
 
   saveUsers(users);
   saveMarket(market);
 
   emitMarketUpdate("product-buy", boothId);
   emitCoinUpdate(buyerUid);
-
- if (!isSystemBooth && booth.ownerUid) {
   emitCoinUpdate(booth.ownerUid);
-}
-
 
   // 🔔 INBOX CHO CHỦ SHOP
   if (!userInbox.has(booth.ownerUid))
@@ -1478,16 +1358,8 @@ app.post("/api/market/product/delete", (req, res) => {
   const booth = market[boothId];
   if (!booth) return res.status(404).json({ error: "booth_not_found" });
 
-if (booth.type === "system") {
-  if (me.role !== "admin") {
-    return res.status(403).json({ error: "not_admin" });
-  }
-} else {
-  if (booth.ownerUid !== uid) {
+  if (booth.ownerUid !== uid)
     return res.status(403).json({ error: "not_owner" });
-  }
-}
-
 
   booth.products = (booth.products || []).filter(p => p.id !== productId);
 
@@ -1714,17 +1586,6 @@ app.post("/api/market/rent", (req,res)=>{
     return res.status(403).json({ error:"no_auth" });
 
   const market = loadMarket();
-
-// ❌ KHÔNG CHO THUÊ GIAN HỆ THỐNG
-if (market[boothId]?.type === "system") {
-  return res.status(400).json({
-    error: "system_booth",
-    message: "Không thể thuê gian hàng hệ thống"
-  });
-}
-
-
-
 
   // 🔒 MỖI USER CHỈ ĐƯỢC 1 GIAN
   const alreadyHaveBooth = Object.values(market).some(
