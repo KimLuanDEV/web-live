@@ -1,4 +1,7 @@
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
+
+let currentAsset = null;
+
 document.getElementById("myCoin").textContent = me.coins || 0;
 
 function investUI(type,inputId){
@@ -73,4 +76,77 @@ function closeResult(){
   document.getElementById("investResult")
     .classList.add("hidden");
   location.reload();
+}
+
+
+function openAnalysis(type) {
+  currentAsset = type;
+
+  const ranges = {
+    gold:    { min:-5, max:8,  name:"🥇 Vàng" },
+    silver:  { min:-3, max:5,  name:"🥈 Bạc" },
+    diamond: { min:-10,max:15, name:"💎 Kim cương" }
+  };
+
+  const r = ranges[type];
+
+  document.getElementById("analysisTitle").textContent =
+    `📊 Phân tích ${r.name}`;
+
+  document.getElementById("analysisContent").innerHTML = `
+    <ul>
+      <li>📉 Rủi ro tối đa: <b>${r.min}%</b></li>
+      <li>📈 Lợi nhuận kỳ vọng: <b>${r.max}%</b></li>
+      <li>⚠️ Biến động ngẫu nhiên theo thị trường</li>
+      <li>🧠 Phù hợp: ${type === "diamond" ? "Nhà đầu tư mạo hiểm" : "Đầu tư ổn định"}</li>
+    </ul>
+  `;
+
+  document.getElementById("analysisCoin").textContent =
+    me.coins || 0;
+
+  document.getElementById("analysisAmount").value = "";
+
+  document.getElementById("analysisModal")
+    .classList.remove("hidden");
+}
+
+
+function closeAnalysis(){
+  document.getElementById("analysisModal")
+    .classList.add("hidden");
+}
+
+
+function confirmInvest(){
+  const coin = Number(
+    document.getElementById("analysisAmount").value
+  );
+
+  if(!coin || coin <= 0){
+    alert("Nhập số coin hợp lệ");
+    return;
+  }
+
+  fetch("/api/invest",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({
+      type: currentAsset,
+      coin
+    })
+  })
+  .then(r=>r.json())
+  .then(d=>{
+    if(!d.ok){
+      alert(d.message || "Không thể đầu tư");
+      return;
+    }
+
+    closeAnalysis();
+    showResult(d.percent, d.profit, d.coins);
+  });
 }

@@ -11540,3 +11540,24 @@ button:disabled{
   text-align: center;
   box-shadow: 0 0 40px rgba(0,255,255,.3);
 }
+
+
+
+.tap-hint {
+  margin-top: 8px;
+  font-size: 13px;
+  opacity: .7;
+}
+
+.invest-analysis ul {
+  text-align: left;
+  margin: 10px 0;
+  padding-left: 18px;
+}
+
+.invest-analysis input {
+  width: 100%;
+  padding: 12px;
+  margin: 12px 0;
+  border-radius: 10px;
+}

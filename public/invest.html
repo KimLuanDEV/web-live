@@ -19,48 +19,27 @@
 
 <div class="invest-grid">
 
-  <!-- GOLD -->
-  <div class="invest-card gold">
-    <div class="asset-icon">🥇</div>
-    <h3>VÀNG</h3>
-    <p class="risk">Lãi / lỗ: <b>-5% → +8%</b></p>
+ <div class="invest-card gold" onclick="openAnalysis('gold')">
+  <div class="asset-icon">🥇</div>
+  <h3>VÀNG</h3>
+  <p class="risk">Biên độ: -5% → +8%</p>
+  <div class="tap-hint">👆 Xem phân tích</div>
+</div>
 
-    <input type="number" placeholder="Nhập coin đầu tư"
-           id="goldAmount">
+<div class="invest-card silver" onclick="openAnalysis('silver')">
+  <div class="asset-icon">🥈</div>
+  <h3>BẠC</h3>
+  <p class="risk">Biên độ: -3% → +5%</p>
+  <div class="tap-hint">👆 Xem phân tích</div>
+</div>
 
-    <button onclick="investUI('gold','goldAmount')">
-      🚀 ĐẦU TƯ
-    </button>
-  </div>
+<div class="invest-card diamond" onclick="openAnalysis('diamond')">
+  <div class="asset-icon">💎</div>
+  <h3>KIM CƯƠNG</h3>
+  <p class="risk danger">Biên độ: -10% → +15%</p>
+  <div class="tap-hint">👆 Xem phân tích</div>
+</div>
 
-  <!-- SILVER -->
-  <div class="invest-card silver">
-    <div class="asset-icon">🥈</div>
-    <h3>BẠC</h3>
-    <p class="risk">Lãi / lỗ: <b>-3% → +5%</b></p>
-
-    <input type="number" placeholder="Nhập coin đầu tư"
-           id="silverAmount">
-
-    <button onclick="investUI('silver','silverAmount')">
-      🚀 ĐẦU TƯ
-    </button>
-  </div>
-
-  <!-- DIAMOND -->
-  <div class="invest-card diamond">
-    <div class="asset-icon">💎</div>
-    <h3>KIM CƯƠNG</h3>
-    <p class="risk danger">Lãi / lỗ: <b>-10% → +15%</b></p>
-
-    <input type="number" placeholder="Nhập coin đầu tư"
-           id="diamondAmount">
-
-    <button class="danger"
-            onclick="investUI('diamond','diamondAmount')">
-      ⚡ ĐẦU TƯ MẠNH
-    </button>
-  </div>
 
 </div>
 
@@ -73,6 +52,37 @@
 
 
 <div id="investResult" class="invest-result hidden"></div>
+
+
+<div id="analysisModal" class="modal hidden">
+  <div class="modal-backdrop" onclick="closeAnalysis()"></div>
+
+  <div class="modal-card invest-analysis">
+    <h2 id="analysisTitle">📊 Phân tích</h2>
+
+    <div id="analysisContent" class="analysis-content"></div>
+
+    <div class="analysis-balance">
+      💎 Số dư: <b id="analysisCoin">0</b>
+    </div>
+
+    <input
+      type="number"
+      id="analysisAmount"
+      placeholder="Nhập số coin đầu tư"
+    >
+
+    <button class="btn-primary" onclick="confirmInvest()">
+      🚀 XÁC NHẬN ĐẦU TƯ
+    </button>
+
+    <button class="btn-ghost" onclick="closeAnalysis()">
+      ✖ Hủy
+    </button>
+  </div>
+</div>
+
+
 
 </body>
 </html>
