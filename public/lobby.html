@@ -399,34 +399,7 @@ body.lobby-page{
 <script src="/app-entry-guard.js"></script>
 
 <script>
-
-
-const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
-
-let deviceId = localStorage.getItem("deviceId");
-if (!deviceId) {
-  deviceId = crypto.randomUUID();
-  localStorage.setItem("deviceId", deviceId);
-}
-
-
-let socket = null;
-
-if (profile && profile.uid) {
-  socket = io({
-    transports: ["websocket"],
-    upgrade: false,
-    auth: {
-      uid: profile.uid,
-      deviceId,
-      profile
-    }
-  });
-} else {
-  console.log("👤 Guest mode – socket not connected");
-}
-
-
+const socket = io();
 
 
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
@@ -487,25 +460,37 @@ fetch("/api/all-users")
   });
 
 // nhận realtime online
-if (socket) {
-  socket.on("active-users", ({ users, online }) => {
-    if (Array.isArray(online)) {
-      ONLINE_UIDS = online;
-    } else if (Array.isArray(users)) {
-      ONLINE_UIDS = users.map(u => u.uid);
-    }
-    renderPlayerLobbyAll();
-  });
+socket.on("active-users", ({ users, online })=>{
 
-  socket.on("all-users", list => {
-    ALL_USERS = list || [];
-    renderPlayerLobbyAll();
-  });
-}
+  socket.on("all-users", list=>{
+  ALL_USERS = list || [];
+  renderPlayerLobbyAll();
+});
 
+  // server cũ có thể gửi {users} hoặc {online}
+  if(Array.isArray(online)){
+    ONLINE_UIDS = online;
+  } else if(Array.isArray(users)){
+    // fallback: nếu server gửi full users online, map về uid
+    ONLINE_UIDS = users.map(u=>u.uid);
+  }
+  renderPlayerLobbyAll();
+});
+
+
+
+const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const isGuest = localStorage.getItem("isGuest") === "1";
 
+
+
+
+
+
+if(profile.uid){
+  socket.emit("auth-login", { uid: profile.uid });
+}
 
 if (profile.uid) {
   fetch("/api/friends/" + profile.uid)
@@ -1027,31 +1012,20 @@ clearQ.addEventListener("click", ()=>{
 
 /* ===== socket ===== */
 function requestLobby(){
-  if (!socket || !socket.connected) return;
   renderSkeleton();
   socket.emit("lobby-get");
 }
 
-
-if (socket) {
 socket.on("lobby-update", d => {
   __rooms = (d && d.rooms) ? d.rooms : [];
   __ts = d && d.ts ? d.ts : Date.now();
   render(__rooms);
 });
-}
+
 
 // load
-if (socket) {
-  requestLobby();
-
-  setInterval(() => {
-    if (socket.connected) {
-      socket.emit("lobby-get");
-    }
-  }, 3000);
-}
-
+requestLobby();
+setInterval(() => socket.emit("lobby-get"), 3000);
 
 
 
