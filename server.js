@@ -270,15 +270,35 @@ function bindSocketToUser(uid, socket) {
     activeUsers.set(uid, set);
   }
 
-  // 🔥 chỉ kick khác device
-  kickOldSessions(uid, socket);
+  socket.data.uid = uid;
 
+  // ✅ 1. GỠ SOCKET CŨ CÙNG DEVICE (reload)
+  for (const sid of Array.from(set)) {
+    const s = io.sockets.sockets.get(sid);
+    if (!s) {
+      set.delete(sid);
+      continue;
+    }
+
+    if (
+      s.data.deviceId &&
+      socket.data.deviceId &&
+      s.data.deviceId === socket.data.deviceId
+    ) {
+      // ⚠️ reload → remove socket cũ, KHÔNG kick
+      set.delete(sid);
+    }
+  }
+
+  // ✅ 2. ADD SOCKET MỚI
   set.add(socket.id);
 
-  socket.data.uid = uid;
+  // ✅ 3. KICK CHỈ CÁC THIẾT BỊ KHÁC
+  kickOldSessions(uid, socket);
 
   console.log("🔐 SOCKET BIND:", uid, socket.id, socket.data.deviceId);
 }
+
 
 
 
