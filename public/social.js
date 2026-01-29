@@ -1,7 +1,8 @@
 const socket = io({
-  transports: ["websocket"],   // 🔥 QUAN TRỌNG
-  upgrade: false
+  transports: ["polling", "websocket"], // ✅ cho phép fallback
+  upgrade: true                          // ✅ cho upgrade
 });
+
 
 const feed = document.getElementById("lpFeed");
 const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
