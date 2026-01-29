@@ -30,12 +30,28 @@ document.getElementById("analysisText").innerHTML = `
 
 const socket = io();
 
+
+// ⏱ LẤY THÔNG TIN PHIÊN HIỆN TẠI KHI VÀO TRANG
+fetch("/api/invest/round")
+  .then(r => r.json())
+  .then(d => {
+    if (d.ok && d.endAt) {
+      startRoundTimer(d.endAt);
+    }
+  });
+
+
+
+
 let roundEndAt = 0;
 let timerInt = null;
 let joinedRound = false;
 
 const timerEl = document.getElementById("roundTimer");
 const investBtn = document.querySelector(".detail-invest button");
+
+
+
 
 function startRoundTimer(endAt){
   roundEndAt = endAt;

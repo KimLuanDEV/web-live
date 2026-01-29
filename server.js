@@ -379,6 +379,18 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
+app.get("/api/invest/round", (req, res) => {
+  res.json({
+    ok: true,
+    roundId: investRound.id,
+    endAt: investRound.endAt
+  });
+});
+
+
+
+
+
 
 
 app.post("/api/invest", (req, res) => {
@@ -416,6 +428,7 @@ app.post("/api/invest", (req, res) => {
     endAt: investRound.endAt
   });
 });
+
 
 
 
