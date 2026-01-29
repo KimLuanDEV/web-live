@@ -15,15 +15,13 @@ const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
 const twilio = require("twilio");
-
-
 const fs = require("fs");
-
-
-
 const webpush = require("web-push");
-
 const { uploadToR2 } = require("./r2");
+const { AccessToken } = require("livekit-server-sdk");
+
+
+
 
 
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || "";
@@ -299,6 +297,97 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 
+// ===============================
+// 🎥 LIVEKIT TOKEN API (SFU)
+// ===============================
+app.get("/api/livekit/token", (req, res) => {
+  try {
+    const uid  = req.headers["x-uid"];      // login user
+    const room = String(req.query.room || "").trim().toLowerCase();
+    const role = String(req.query.role || "viewer"); 
+    // role = host | viewer | guest
+
+    if (!uid) {
+      return res.status(401).json({
+        ok: false,
+        error: "NOT_LOGIN"
+      });
+    }
+
+    if (!room) {
+      return res.status(400).json({
+        ok: false,
+        error: "MISSING_ROOM"
+      });
+    }
+
+    // 🔒 kiểm tra user
+    const users = loadUsers();
+    const me = users[uid];
+
+    if (!me || me.profile?.accountBlocked) {
+      return res.status(403).json({
+        ok: false,
+        error: "ACCOUNT_BLOCKED"
+      });
+    }
+
+    // ===============================
+    // 🎯 QUYỀN THEO ROLE
+    // ===============================
+    let canPublish = false;
+    let canSubscribe = true;
+
+    if (role === "host") {
+      canPublish = true;
+    }
+
+    if (role === "guest") {
+      canPublish = true;
+    }
+
+    if (role === "viewer") {
+      canPublish = false;
+    }
+
+    // ===============================
+    // 🔐 TẠO TOKEN LIVEKIT
+    // ===============================
+    const at = new AccessToken(
+      process.env.LIVEKIT_API_KEY,
+      process.env.LIVEKIT_API_SECRET,
+      {
+        identity: uid,                 // duy nhất mỗi user
+        name: me.profile?.name || uid, // hiển thị
+        ttl: 60 * 60 * 2               // 2 giờ
+      }
+    );
+
+    at.addGrant({
+      room,
+      roomJoin: true,
+      canPublish,
+      canSubscribe
+    });
+
+    const token = at.toJwt();
+
+    res.json({
+      ok: true,
+      token,
+      wsUrl: process.env.LIVEKIT_HOST,
+      room,
+      role
+    });
+
+  } catch (err) {
+    console.error("❌ LiveKit token error:", err);
+    res.status(500).json({
+      ok: false,
+      error: "LIVEKIT_TOKEN_FAILED"
+    });
+  }
+});
 
 
 
