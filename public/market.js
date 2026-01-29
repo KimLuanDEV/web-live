@@ -1,29 +1,5 @@
 // 🔔 SOCKET AUTH + FORCE LOGOUT (MARKET)
 let socket = null;
-const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
-
-if (typeof io === "function" && me?.uid) {
-  socket = io();
-
-  // 🔐 bind socket vào user (để kick khi login nơi khác)
-  socket.emit("auth", {
-    uid: me.uid,
-    deviceId: localStorage.getItem("device_id") || null
-  });
-
-  // ❌ bị kick khi đăng nhập nơi khác
-  socket.on("force-logout", (data) => {
-    showModal({
-      title: "🔐 Đăng xuất",
-      content:
-        data?.message ||
-        "Tài khoản đã được đăng nhập ở thiết bị khác."
-    }).then(() => {
-      localStorage.removeItem("user_profile");
-      location.href = "/login.html";
-    });
-  });
-}
 
 const floor = document.getElementById("marketFloor");
 
@@ -786,9 +762,28 @@ if(topupBtn){
 }
 
 
+const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-socket.on("force-logout", (data) => {
-  alert(data?.message || "Bạn đã bị đăng xuất");
-  localStorage.removeItem("user_profile");
-  location.href = "/login.html";
-});
+if (typeof io === "function" && me?.uid) {
+  socket = io();
+
+  // 🔐 bind socket vào user (để kick khi login nơi khác)
+  socket.emit("auth", {
+    uid: me.uid,
+    deviceId: localStorage.getItem("device_id") || null
+  });
+
+  // ❌ bị kick khi đăng nhập nơi khác
+  socket.on("force-logout", (data) => {
+    showModal({
+      title: "🔐 Đăng xuất",
+      content:
+        data?.message ||
+        "Tài khoản đã được đăng nhập ở thiết bị khác."
+    }).then(() => {
+      localStorage.removeItem("user_profile");
+      location.href = "/login.html";
+    });
+  });
+}
+
