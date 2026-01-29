@@ -1,6 +1,14 @@
 
 
+
 const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+
+// ===== SOCKET (ADMIN) =====
+let socket = null;
+if (typeof io === "function") {
+  socket = io();
+}
 
 
 const PAGE_SIZE = 5;
@@ -1181,18 +1189,20 @@ function showForceLogoutModal(message){
 }
 
 
-socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
+// ===== FORCE LOGOUT (ADMIN) =====
+if (socket) {
+  socket.on("force-logout", (data) => {
+    const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
 
-  showForceLogoutModal(msg);
+    showForceLogoutModal(msg);
 
-  // clear auth
-  localStorage.removeItem("user_profile");
-  localStorage.removeItem("login_uid");
-  localStorage.removeItem("isGuest");
+    localStorage.removeItem("user_profile");
+    localStorage.removeItem("login_uid");
+    localStorage.removeItem("isGuest");
 
-  // redirect sau 2s
-  setTimeout(()=>{
-    location.href = "/login.html";
-  }, 3000);
-});
+    setTimeout(() => {
+      location.href = "/login.html";
+    }, 3000);
+  });
+}
+
