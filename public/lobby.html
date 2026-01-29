@@ -1725,7 +1725,7 @@ function showWithdrawNotify(data){
 
 
 
-function showForceLogoutModalLobby(message){
+function showForceLogoutModal(message){
   let modal = document.getElementById("forceLogoutModal");
   if(!modal){
     modal = document.createElement("div");
@@ -1733,9 +1733,10 @@ function showForceLogoutModalLobby(message){
     modal.innerHTML = `
       <div class="fl-backdrop"></div>
       <div class="fl-box">
-        <div class="fl-icon">🚪</div>
-        <div class="fl-title">Đã đăng xuất</div>
+        <div class="fl-icon">🚫</div>
+        <div class="fl-title">Phiên đăng nhập kết thúc</div>
         <div class="fl-msg"></div>
+        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
       </div>
     `;
     document.body.appendChild(modal);
@@ -1746,20 +1747,22 @@ function showForceLogoutModalLobby(message){
 }
 
 
-
 socket.on("force-logout", (data) => {
-  const msg = data?.message || "Bạn đã bị đăng xuất";
+  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
 
-  showForceLogoutModalLobby(msg);
+  showForceLogoutModal(msg);
 
+  // clear auth
   localStorage.removeItem("user_profile");
   localStorage.removeItem("login_uid");
   localStorage.removeItem("isGuest");
 
-  setTimeout(() => {
+  // redirect sau 2s
+  setTimeout(()=>{
     location.href = "/login.html";
-  }, 1500);
+  }, 3000);
 });
+
 
 
 
