@@ -1,6 +1,8 @@
 // 🔔 SOCKET AUTH + FORCE LOGOUT (MARKET)
 let socket = null;
 
+let marketView = "user"; // "user" | "system"
+
 const floor = document.getElementById("marketFloor");
 
 
@@ -177,16 +179,19 @@ async function loadMarketFromServer(){
         return { id, owner: null };
       }
 
-      return {
-        id,
-        owner: {
-          uid: booth.ownerUid,
-          name: booth.name,
-          logo: booth.logo,
-          expireAt: booth.expireAt,
-          locked: booth.locked
-        }
-      };
+return {
+  id,
+  owner: {
+    uid: booth.ownerUid,
+    name: booth.name,
+    logo: booth.logo,
+    expireAt: booth.expireAt,
+    locked: booth.locked,
+    type: booth.type || "user"   // 🔥 THÊM DÒNG NÀY
+  }
+};
+
+
     });
 
     renderMarket();
@@ -264,7 +269,16 @@ function renderMarketTabs(totalBooths){
 function renderMarket(){
   floor.innerHTML = "";
 
-  const sorted = sortBoothsSmart(booths);
+  const filtered = booths.filter(b=>{
+  if(marketView === "system"){
+    return b.owner && b.owner.type === "system";
+  }
+  // user
+  return !b.owner || b.owner.type !== "system";
+});
+
+const sorted = sortBoothsSmart(filtered);
+
 
   // 🔹 render tab bar
   renderMarketTabs(sorted.length);
@@ -279,16 +293,23 @@ function renderMarket(){
 
     const div = document.createElement("div");
 
-    if(!b.owner){
-      div.className = "booth empty";
-      div.innerHTML = `
-        <div>
-          <div class="booth-plus">＋</div>
-          <div class="booth-text">Thuê gian hàng</div>
-        </div>
-      `;
-      div.onclick = ()=> rentBooth(b.id);
-    }else{
+if(!b.owner){
+
+  // ❌ TAB HỆ THỐNG → KHÔNG HIỆN GIAN TRỐNG
+  if(marketView === "system") return;
+
+  div.className = "booth empty";
+  div.innerHTML = `
+    <div>
+      <div class="booth-plus">＋</div>
+      <div class="booth-text">Thuê gian hàng</div>
+    </div>
+  `;
+  div.onclick = ()=> rentBooth(b.id);
+}
+
+
+    else{
 
   const me = JSON.parse(localStorage.getItem("user_profile"));
   const isMine = me && b.owner.uid === me.uid;
@@ -306,10 +327,9 @@ function renderMarket(){
 const admin = isAdmin();
 
 let adminControls = "";
-if(admin){
+if(admin && b.owner.type !== "system"){
   adminControls = `
     <div class="booth-admin">
-
       <button onclick="event.stopPropagation(); toggleLock(${b.id}, ${b.owner.locked ? 'false' : 'true'})">
         ${b.owner.locked ? "🔓 Mở khoá" : "🔒 Khoá"}
       </button>
@@ -317,6 +337,7 @@ if(admin){
     </div>
   `;
 }
+
 
 div.className =
   "booth" +
@@ -326,6 +347,14 @@ div.className =
 
 
 div.innerHTML = `
+
+${b.owner.type === "system"
+  ? `<div class="booth-mine-badge" style="left:8px;right:auto;background:gold">
+      HỆ THỐNG
+     </div>`
+  : ""
+}
+
   ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
   ${expireBadge}
   ${adminControls}
@@ -412,6 +441,19 @@ function updateMarketStats(){
 
 /* ===== OPEN RENT MODAL ===== */
 function rentBooth(id){
+
+  const booth = booths.find(b => b.id === id);
+
+// ❌ KHÔNG CHO THUÊ GIAN HỆ THỐNG
+if(booth?.owner?.type === "system"){
+  showModal({
+    title: "🚫 Không thể thuê",
+    content: "Đây là gian hàng hệ thống."
+  });
+  return;
+}
+
+
   const me = JSON.parse(localStorage.getItem("user_profile"));
 
   // 🔒 Ẩn gói dùng thử nếu đã sử dụng
@@ -797,6 +839,24 @@ if (typeof io === "function" && me?.uid) {
   });
 
 
+
+
+document.querySelectorAll(".market-main-tab").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".market-main-tab")
+      .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+    marketView = btn.dataset.tab;
+
+    currentTab = 0; // reset tab con
+    renderMarket();
+  };
+});
+
+
+
+
   // ❌ bị kick khi đăng nhập nơi khác
 
 socket.on("force-logout", (data) => {
@@ -814,7 +874,7 @@ socket.on("force-logout", (data) => {
     location.href = "/login.html";
   }, 3000);
 });
-
-
 }
+
+
 

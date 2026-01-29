@@ -101,6 +101,27 @@ function saveMarket(db){
 }
 
 
+// ===== INIT SYSTEM BOOTH (RUN ONCE) =====
+const market = loadMarket();
+
+if (!market["sys"]) {
+  market["sys"] = {
+    boothId: "sys",
+    type: "system",
+    name: "🏆 Gian hàng hệ thống",
+    logo: "/images/system-shop.png",
+    locked: false,
+    products: [],
+    orders: []
+  };
+
+  saveMarket(market);
+  console.log("✅ System booth initialized");
+}
+
+
+
+
 // 🔒 HELPER: CHẶN MỌI HÀNH ĐỘNG KHI BOOTH BỊ KHOÁ
 function blockIfBoothLockedById(boothId, uid) {
   if (!boothId || !uid) return false;
@@ -1116,8 +1137,19 @@ app.post("/api/market/product/add", (req, res) => {
   if (!booth)
     return res.status(404).json({ error: "booth_not_found" });
 
-  if (booth.ownerUid !== uid)
+// 🔐 QUYỀN THÊM SẢN PHẨM
+if (booth.type === "system") {
+  // 👉 gian hệ thống: CHỈ ADMIN
+  if (me.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+} else {
+  // 👉 gian user: CHỈ CHỦ GIAN
+  if (booth.ownerUid !== uid) {
     return res.status(403).json({ error: "not_owner" });
+  }
+}
+
 
   // ✅ đảm bảo có mảng products
   booth.products ||= [];
@@ -1168,8 +1200,16 @@ app.post("/api/market/product/update", (req, res) => {
   const booth = market[boothId];
   if (!booth) return res.status(404).json({ error: "booth_not_found" });
 
-  if (booth.ownerUid !== uid)
+if (booth.type === "system") {
+  if (me.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+} else {
+  if (booth.ownerUid !== uid) {
     return res.status(403).json({ error: "not_owner" });
+  }
+}
+
 
   const p = (booth.products || []).find(x => x.id === productId);
   if (!p) return res.status(404).json({ error: "product_not_found" });
@@ -1358,8 +1398,16 @@ app.post("/api/market/product/delete", (req, res) => {
   const booth = market[boothId];
   if (!booth) return res.status(404).json({ error: "booth_not_found" });
 
-  if (booth.ownerUid !== uid)
+if (booth.type === "system") {
+  if (me.role !== "admin") {
+    return res.status(403).json({ error: "not_admin" });
+  }
+} else {
+  if (booth.ownerUid !== uid) {
     return res.status(403).json({ error: "not_owner" });
+  }
+}
+
 
   booth.products = (booth.products || []).filter(p => p.id !== productId);
 
@@ -1586,6 +1634,17 @@ app.post("/api/market/rent", (req,res)=>{
     return res.status(403).json({ error:"no_auth" });
 
   const market = loadMarket();
+
+// ❌ KHÔNG CHO THUÊ GIAN HỆ THỐNG
+if (market[boothId]?.type === "system") {
+  return res.status(400).json({
+    error: "system_booth",
+    message: "Không thể thuê gian hàng hệ thống"
+  });
+}
+
+
+
 
   // 🔒 MỖI USER CHỈ ĐƯỢC 1 GIAN
   const alreadyHaveBooth = Object.values(market).some(
