@@ -20,19 +20,23 @@ if (typeof io === "function") {
 }
 
 if (socket) {
-  socket.on("force-logout", (data) => {
-    console.warn("🚨 ADMIN FORCE LOGOUT:", data);
+   socket.on("force-logout", (data) => {
+    const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
 
-    showModal({
-      title: "⚠️ Đăng nhập ở nơi khác",
-      body: data?.message || "Tài khoản admin đã đăng nhập trên thiết bị khác."
-    }).then(() => {
-      localStorage.removeItem("user_profile");
-      localStorage.removeItem("device_id");
+    showForceLogoutModal(msg);
+
+    localStorage.removeItem("user_profile");
+    localStorage.removeItem("login_uid");
+    localStorage.removeItem("isGuest");
+
+    setTimeout(() => {
       location.href = "/login.html";
-    });
+    }, 3000);
   });
 }
+
+// ===== FORCE LOGOUT (ADMIN) =====
+
 
 
 
@@ -1217,20 +1221,5 @@ function showForceLogoutModal(message){
   modal.classList.add("show");
 }
 
-// ===== FORCE LOGOUT (ADMIN) =====
-
-  socket.on("force-logout", (data) => {
-    const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
-
-    showForceLogoutModal(msg);
-
-    localStorage.removeItem("user_profile");
-    localStorage.removeItem("login_uid");
-    localStorage.removeItem("isGuest");
-
-    setTimeout(() => {
-      location.href = "/login.html";
-    }, 3000);
-  });
 
 
