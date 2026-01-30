@@ -74,6 +74,35 @@ MEDIA_DIRS.forEach(dir=>{
 });
 
 
+
+const INVEST_STATE_FILE =
+  "/opt/render/project/data/invest_state.json";
+
+
+  function loadInvestState(){
+  try{
+    if(!fs.existsSync(INVEST_STATE_FILE)) return null;
+    return JSON.parse(
+      fs.readFileSync(INVEST_STATE_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load invest state failed", e);
+    return null;
+  }
+}
+
+function saveInvestState(state){
+  try{
+    fs.writeFileSync(
+      INVEST_STATE_FILE,
+      JSON.stringify(state, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save invest state failed", e);
+  }
+}
+
+
 const INBOX_FILE = "/opt/render/project/data/inbox.json";
 
 function loadInbox(){
@@ -238,11 +267,24 @@ const activeUsers = new Map();
 // ================================
 // 📈 INVEST REALTIME ROUND (60s)
 // ================================
-let investRound = {
+let investRound = loadInvestState() || {
   id: Date.now(),
   endAt: Date.now() + 60000,
-  orders: [] // { uid, asset, coin }
+  orders: []
 };
+
+// ⛔ nếu restart mà phiên đã quá hạn → reset
+if (investRound.endAt <= Date.now()) {
+  investRound = {
+    id: Date.now(),
+    endAt: Date.now() + 60000,
+    orders: []
+  };
+}
+
+// 💾 lưu lại ngay
+saveInvestState(investRound);
+
 
 let investHistory = []; // [{ roundId, ts, result }]
 const MAX_HISTORY = 20;
@@ -317,6 +359,10 @@ setInterval(() => {
     endAt: Date.now() + 60000,
     orders: []
   };
+
+// 🔐 LƯU STATE
+saveInvestState(investRound);
+
 
   io.emit("invest-round-new", {
     roundId: investRound.id,
@@ -442,6 +488,10 @@ app.post("/api/invest", (req, res) => {
     asset: type,
     coin
   });
+
+
+  // 🔐 lưu ngay để chống restart
+saveInvestState(investRound);
 
   // 🔔 realtime: broadcast lệnh mới cho tất cả client
 io.emit("invest-order-new", {
