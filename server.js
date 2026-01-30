@@ -284,6 +284,30 @@ function saveSocial(){
 }
 
 
+
+function generateChart(roundId) {
+  const base = 100;
+  const vol = { gold:1, silver:1.5, diamond:3 };
+
+  const chart = {
+    gold: [],
+    silver: [],
+    diamond: []
+  };
+
+  for (let t = 0; t < 60; t++) {
+    for (const k in chart) {
+      const rng = seededRandom(roundId + ":" + k + ":" + t);
+      const prev = chart[k][t - 1] ?? base;
+      let next = prev + (rng() - 0.5) * vol[k];
+      chart[k][t] = Math.max(80, Math.min(120, next));
+    }
+  }
+  return chart;
+}
+
+
+
 function seededRandom(seed) {
   let h = 2166136261 >>> 0;
   for (let i = 0; i < seed.length; i++) {
@@ -315,11 +339,20 @@ let investPrice = {
 // ================================
 // 📈 INVEST REALTIME ROUND (60s)
 // ================================
-let investRound = loadInvestState() || {
-  id: Date.now(),
-  endAt: Date.now() + 60000,
-  orders: []
-};
+let investRound = loadInvestState();
+
+if (!investRound || investRound.endAt <= Date.now()) {
+  const id = Date.now();
+  investRound = {
+    id,
+    startAt: id,
+    endAt: id + 60000,
+    orders: [],
+    chart: generateChart(id)
+  };
+  saveInvestState(investRound);
+}
+
 
 // ⛔ nếu restart mà phiên đã quá hạn → reset
 if (investRound.endAt <= Date.now()) {
@@ -339,35 +372,23 @@ const MAX_HISTORY = 10;
 
 
 setInterval(() => {
-  const vol = {
-    gold: 1,
-    silver: 1.5,
-    diamond: 3
-  };
+  const sec = Math.floor(
+    (Date.now() - investRound.startAt) / 1000
+  );
 
-  const tick = Math.floor((Date.now() - investRound.id) / 1000);
-
-  for (const k in investPrice) {
-    const rng = seededRandom(
-      investRound.id + ":" + k + ":" + tick
-    );
-
-    const delta = (rng() - 0.5) * vol[k];
-    investPrice[k] += delta;
-
-    investPrice[k] = Math.max(
-      80,
-      Math.min(120, investPrice[k])
-    );
-  }
+  if (sec < 0 || sec >= 60) return;
 
   io.emit("invest-price", {
-    ts: Date.now(),
-    price: investPrice,
-    roundId: investRound.id
+    roundId: investRound.id,
+    second: sec,
+    price: {
+      gold: investRound.chart.gold[sec],
+      silver: investRound.chart.silver[sec],
+      diamond: investRound.chart.diamond[sec]
+    }
   });
-
 }, 1000);
+
 
 
 
@@ -440,14 +461,17 @@ saveInvestHistory(investHistory);
   // ================================
   // 🔄 TẠO PHIÊN MỚI
   // ================================
-  investRound = {
-    id: Date.now(),
-    endAt: Date.now() + 60000,
-    orders: []
-  };
+ const id = Date.now();
+investRound = {
+  id,
+  startAt: id,
+  endAt: id + 60000,
+  orders: [],
+  chart: generateChart(id)
+};
 
-// 🔐 LƯU STATE
 saveInvestState(investRound);
+
 
 
   io.emit("invest-round-new", {
@@ -524,6 +548,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
+
+
+
+app.get("/api/invest/chart", (req, res) => {
+  res.json({
+    ok: true,
+    roundId: investRound.id,
+    startAt: investRound.startAt,
+    chart: investRound.chart
+  });
+});
+
 
 
 app.get("/api/invest/round", (req, res) => {
