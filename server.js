@@ -514,47 +514,30 @@ const result = calcResultFromChart(round.chart);
   if (round.orders.length) {
     const users = loadUsers();
 
-round.orders.forEach(o => {
-  const me = users[o.uid];
-  if (!me?.profile) return;
+    round.orders.forEach(o => {
+      const me = users[o.uid];
+      if (!me?.profile) return;
 
-  const prices = round.chart[o.asset];
-  if (!prices) return;
+const prices = round.chart[o.asset];
+if (!prices) return;
 
-  const entry = o.entryPrice;
-  const end   = prices[prices.length - 1];
+const entry = o.entryPrice;
+const end   = prices[prices.length - 1];
 
-  let rawPercent =
-    Math.round((end - entry) / entry * 100);
+let percent =
+  Math.round((end - entry) / entry * 100);
 
-  let win = false;
+// 🔒 clamp an toàn
+percent = Math.max(-30, Math.min(30, percent));
 
-  // 📈 UP
-  if (o.direction === "up" && rawPercent > 0) win = true;
+const profit =
+  Math.round(o.coin * percent / 100);
 
-  // 📉 DOWN
-  if (o.direction === "down" && rawPercent < 0) win = true;
-
-  // ➖ SIDE (biên độ nhỏ)
-  if (o.direction === "side" && Math.abs(rawPercent) <= 1) win = true;
-
-  // % cuối cùng (ăn hoặc thua)
-  let percent = win
-    ? Math.abs(rawPercent)
-    : -Math.abs(rawPercent);
-
-  // 🔒 clamp an toàn
-  percent = Math.max(-30, Math.min(30, percent));
-
-  const profit =
-    Math.round(o.coin * percent / 100);
-
-  // ➕ hoàn coin + lời/lỗ
-  me.profile.coins += o.coin + profit;
-});
+// ➕ hoàn coin + lời/lỗ
+me.profile.coins += o.coin + profit;
 
 
-
+    });
 
     saveUsers(users);
   }
@@ -721,8 +704,7 @@ app.get("/api/invest/history", (req, res) => {
 
 app.post("/api/invest", (req, res) => {
   const uid = req.headers["x-uid"];
-  const { type, coin, direction } = req.body; // ✅ THÊM direction
-
+  const { type, coin } = req.body;
 
 
 // ⛔ CHẶN VÀO NHIỀU LỆNH TRONG 1 PHIÊN (FIX LỖI RELOAD)
@@ -783,8 +765,6 @@ investRound.orders.push({
   uid,
   asset: type,
   coin,
-
-  direction: direction || "up", // 🔥 LƯU HƯỚNG
 
   entrySec: nowSec,        // ⏱ giây vào lệnh
   entryPrice: entryPrice  // 📈 giá tại thời điểm vào
