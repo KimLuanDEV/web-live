@@ -307,6 +307,42 @@ function generateChart(roundId) {
 }
 
 
+// ================================
+// 📊 TÍNH KẾT QUẢ TỪ CHART (LEVEL 10)
+// ================================
+function calcResultFromChart(chart) {
+  const LIMITS = {
+    gold: [-8, 8],
+    silver: [-6, 6],
+    diamond: [-15, 15]
+  };
+
+  const result = {};
+
+  for (const asset in chart) {
+    const prices = chart[asset];
+    if (!prices || prices.length < 2) {
+      result[asset] = 0;
+      continue;
+    }
+
+    const start = prices[0];
+    const end   = prices[prices.length - 1];
+
+    let percent =
+      Math.round((end - start) / start * 100);
+
+    // 🔒 clamp theo từng asset
+    const [min, max] = LIMITS[asset] || [-20, 20];
+    percent = Math.max(min, Math.min(max, percent));
+
+    result[asset] = percent;
+  }
+
+  return result;
+}
+
+
 
 function seededRandom(seed) {
   let h = 2166136261 >>> 0;
@@ -397,21 +433,11 @@ setInterval(() => {
 setInterval(() => {
   const round = investRound;
 
-  // ================================
-  // 🎯 KẾT QUẢ PHIÊN (LUÔN SINH)
-  // ================================
-  const ranges = {
-    gold: [-5, 8],
-    silver: [-3, 5],
-    diamond: [-10, 15]
-  };
+// ================================
+// 🎯 KẾT QUẢ PHIÊN – LẤY TỪ CHART
+// ================================
+const result = calcResultFromChart(round.chart);
 
-  const result = {};
-  for (const k in ranges) {
-    const [min, max] = ranges[k];
-    result[k] =
-      Math.floor(Math.random() * (max - min + 1)) + min;
-  }
 
   // ================================
   // 💰 CHỈ XỬ LÝ COIN NẾU CÓ LỆNH
