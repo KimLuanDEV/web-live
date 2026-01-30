@@ -5,6 +5,82 @@
   <title>Phân tích đầu tư</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
+
+
+
+
+
+
+
+<style>
+
+html, body {
+  width: 100%;
+  max-width: 100vw;
+  overflow-x: hidden; /* ⛔ chặn xô ngang */
+}
+
+.page-invest-detail {
+  width: 100vw;
+  max-width: 100vw;
+  overflow-x: hidden;
+  background: #000; /* nền đen full */
+}
+
+
+.page-invest-detail section,
+.page-invest-detail .card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+
+
+.chart-wrap {
+  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
+}
+
+#priceChart {
+  display: block;
+  width: 100% !important;
+  max-width: 100%;
+}
+
+
+.history-table-wrap {
+  width: 100%;
+  overflow-x: auto;   /* chỉ table được scroll ngang */
+  -webkit-overflow-scrolling: touch;
+}
+
+.history-table {
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
+
+.page-invest-detail {
+  overscroll-behavior-x: none;
+  touch-action: pan-y;
+}
+
+
+.detail-header,
+.overlay-timer,
+.live-badge-fixed,
+.trend-overlay,
+.pnl-overlay {
+  max-width: 100vw;
+}
+
+
+</style>
+
+
 </head>
 
 <body class="page-invest-detail">
