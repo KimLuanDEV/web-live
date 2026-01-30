@@ -168,42 +168,43 @@ socket.on("invest-round-new", d => {
 
 // nhận kết quả phiên
 socket.on("invest-round-result", d => {
+
+  // 1️⃣ LUÔN UPDATE BẢNG LỊCH SỬ (AI CŨNG THẤY)
+  fetch("/api/invest/history")
+    .then(r => r.json())
+    .then(h => {
+      if (h.ok) renderHistory(h.list);
+    });
+
+  // 2️⃣ NẾU CÓ VÀO LỆNH → MỚI SHOW MODAL + UPDATE COIN
+  if (!joinedRound) return;
+
   const p = d.result?.[asset];
   if (p === undefined) return;
 
-showModal(
-  p >= 0 ? "🎉 KẾT QUẢ PHIÊN" : "💥 KẾT QUẢ PHIÊN",
-  p >= 0
-    ? `Bạn lời <b>+${p}%</b> trong phiên này.`
-    : `Bạn lỗ <b>${p}%</b> trong phiên này.`
-);
+  showModal(
+    p >= 0 ? "🎉 KẾT QUẢ PHIÊN" : "💥 KẾT QUẢ PHIÊN",
+    p >= 0
+      ? `Bạn lời <b>+${p}%</b> trong phiên này`
+      : `Bạn lỗ <b>${p}%</b> trong phiên này`
+  );
 
-
-  // sync coin lại từ server
   fetch("/api/me/coin", {
     headers: { "x-uid": me.uid }
   })
-  .then(r => r.json())
-  .then(d => {
-    if (d.ok) {
-      me.coins = d.coins;
-      myCoinEl.textContent = d.coins;
-      localStorage.setItem(
-        "user_profile",
-        JSON.stringify(me)
-      );
-    }
-  });
-
-
-fetch("/api/invest/history")
-  .then(r => r.json())
-  .then(d => d.ok && renderHistory(d.list));
-
-
-
-
+    .then(r => r.json())
+    .then(u => {
+      if (u.ok) {
+        me.coins = u.coins;
+        myCoinEl.textContent = u.coins;
+        localStorage.setItem(
+          "user_profile",
+          JSON.stringify(me)
+        );
+      }
+    });
 });
+
 
 // ================== CHART (FAKE REALTIME) ==================
 
