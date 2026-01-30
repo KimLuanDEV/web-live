@@ -12418,3 +12418,94 @@ button:disabled{
     font-size: 15px;
   }
 }
+
+
+/* ================= FIX HEADER FULL WIDTH (PAGE INVEST) ================= */
+
+/* body đang bị bó -> cho header bung full màn hình */
+.page-invest .invest-header {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+/* giữ layout header đẹp */
+.page-invest .invest-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+
+  height: 56px;
+  padding: 0 12px;
+
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+
+  background: linear-gradient(
+    180deg,
+    rgba(18,18,28,0.98),
+    rgba(10,10,18,0.98)
+  );
+
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  backdrop-filter: blur(10px);
+}
+
+/* LEFT / RIGHT */
+.page-invest .header-left,
+.page-invest .header-right {
+  display: flex;
+  align-items: center;
+}
+
+/* CENTER */
+.page-invest .header-center {
+  text-align: center;
+  pointer-events: none;
+}
+
+.page-invest .header-center h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* BACK BUTTON */
+.page-invest .back-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+
+  background: rgba(255,255,255,0.08);
+  color: #fff;
+  font-size: 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.page-invest .back-btn:active {
+  transform: scale(0.95);
+}
+
+/* BALANCE */
+.page-invest .balance-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  padding: 5px 10px;
+  border-radius: 999px;
+
+  background: rgba(255,255,255,0.1);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.page-invest .balance-pill img {
+  width: 16px;
+  height: 16px;
+}
