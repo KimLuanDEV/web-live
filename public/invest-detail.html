@@ -15,26 +15,36 @@
 <style>
 
 html, body {
+  margin: 0;              /* 🔥 cái này thường bị quên */
+  padding: 0;
   width: 100%;
-  max-width: 100vw;
-  overflow-x: hidden; /* ⛔ chặn xô ngang */
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
+
 .page-invest-detail {
-  width: 100vw;
-  max-width: 100vw;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;              /* 🔥 kéo nội dung sang trái */
+  padding: 0;
   overflow-x: hidden;
-  background: #000; /* nền đen full */
+  background: #000;
 }
 
 
 .page-invest-detail section,
 .page-invest-detail .card {
-  width: 100%;
-  max-width: 100%;
-  box-sizing: border-box;
+  padding-left: 8px;
+  padding-right: 8px;
 }
 
+
+.detail-header {
+  padding-left: 12px;
+  padding-right: 12px;
+  box-sizing: border-box;
+}
 
 
 .chart-wrap {
