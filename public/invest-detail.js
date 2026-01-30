@@ -504,8 +504,9 @@ if (joinedRound && typeof myEntryPrice === "number") {
 
     if (max > min) {
       // map giá → trục Y
-      const y =
-        H - ((myEntryPrice - min) / (max - min)) * H;
+  const y =
+  H - (myEntryPrice - 80) * (H / 40);
+
 
       ctx.save();
       ctx.setLineDash([6, 4]); // nét đứt
