@@ -677,6 +677,28 @@ app.post("/api/invest", (req, res) => {
   const uid = req.headers["x-uid"];
   const { type, coin } = req.body;
 
+
+// ⛔ CHẶN VÀO NHIỀU LỆNH TRONG 1 PHIÊN (FIX LỖI RELOAD)
+if (investRound.orders.some(o => o.uid === uid)) {
+  return res.json({
+    ok: false,
+    message: "⛔ Bạn đã vào lệnh trong phiên này"
+  });
+}
+
+
+// ⏳ CHẶN VÀO LỆNH KHI SẮP CHỐT
+const leftSec = Math.floor(
+  (investRound.endAt - Date.now()) / 1000
+);
+if (leftSec <= 5) {
+  return res.json({
+    ok: false,
+    message: "⏳ Phiên sắp kết thúc"
+  });
+}
+
+
   if (!uid || !coin) return res.json({ ok:false });
 
   const users = loadUsers();

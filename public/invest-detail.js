@@ -106,8 +106,20 @@ fetch("/api/invest/round")
 
     // 🧾 LOAD LẠI LỆNH ĐÃ VÀO (QUAN TRỌNG)
     if (Array.isArray(d.orders)) {
+
       roundOrders = d.orders.filter(o => o.asset === asset);
       renderOrderList();
+
+      // 🔒 nếu user đã vào lệnh → khoá luôn
+if (roundOrders.some(o => o.uid === me.uid)) {
+  joinedRound = true;
+
+  if (investBtn) {
+    investBtn.disabled = true;
+    investBtn.textContent = "⛔ ĐÃ VÀO LỆNH";
+  }
+}
+
 
       // 📍 phục hồi marker vào lệnh
       entryMarkers = roundOrders
