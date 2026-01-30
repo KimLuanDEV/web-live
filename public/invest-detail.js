@@ -58,6 +58,54 @@ if (!deviceId) {
   localStorage.setItem("device_id", deviceId);
 }
 
+
+
+const historyModalEl = document.getElementById("historyModal");
+const historyModalBody = document.getElementById("roundHistoryModal");
+const btnOpenHistory = document.getElementById("btnOpenHistory");
+const btnCloseHistory = document.getElementById("btnCloseHistory");
+const historyBackdrop = document.getElementById("historyBackdrop");
+
+function openHistory(){
+  if(!historyModalEl) return;
+  historyModalEl.classList.remove("hidden");
+  historyModalEl.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+}
+function closeHistory(){
+  if(!historyModalEl) return;
+  historyModalEl.classList.add("hidden");
+  historyModalEl.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
+
+if(btnOpenHistory){
+  btnOpenHistory.addEventListener("click", () => {
+    openHistory();
+    // mở ra là refresh lịch sử luôn cho chắc
+    fetch("/api/invest/history")
+      .then(r => r.json())
+      .then(d => d.ok && renderHistory(d.list));
+  });
+}
+if(btnCloseHistory) btnCloseHistory.addEventListener("click", closeHistory);
+if(historyBackdrop) historyBackdrop.addEventListener("click", closeHistory);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 // 🔥 CONNECT SOCKET CÓ AUTH
 const socket = io({
   auth: {
@@ -68,19 +116,29 @@ const socket = io({
 
 
 
-
 function renderHistory(list){
-  if (!historyEl || !list?.length) return;
+  if (!list?.length) return;
 
-  historyEl.innerHTML = list.map(r => `
+  const html = list.map(r => `
     <tr>
       <td>${new Date(r.ts).toLocaleTimeString()}</td>
-      ${renderCell(r.result.gold)}
       ${renderCell(r.result.silver)}
+      ${renderCell(r.result.gold)}
       ${renderCell(r.result.diamond)}
     </tr>
   `).join("");
+
+  // nếu còn section cũ thì vẫn render
+  if (historyEl) historyEl.innerHTML = html;
+
+  // render vào modal
+  if (historyModalBody) historyModalBody.innerHTML = html;
 }
+
+
+
+
+
 
 function renderCell(v){
   if (v > 0)
