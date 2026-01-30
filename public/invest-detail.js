@@ -33,15 +33,35 @@ if (myCoinEl) myCoinEl.textContent = me.coins || 0;
 
 
 const config = {
-  gold:    { name:"🥇 Vàng", min:-5,  max:8,  vol:1 },
-  silver:  { name:"🥈 Bạc", min:-3,  max:5,  vol:1.5 },
-  diamond: { name:"💎 Kim cương", min:-10, max:15, vol:3 }
+  gold: {
+    name: "Gold",
+    icon: `<img src="/assets/gold.png" class="asset-icon">`,
+    min: -5,
+    max: 8,
+    vol: 1
+  },
+  silver: {
+    name: "Silver",
+    icon: `<img src="/assets/silver.png" class="asset-icon">`,
+    min: -3,
+    max: 5,
+    vol: 1.5
+  },
+  diamond: {
+    name: "Diamond",
+    icon: `<img src="/assets/diamond.png" class="asset-icon">`,
+    min: -10,
+    max: 15,
+    vol: 3
+  }
 };
+
 
 const c = config[asset] || config.gold;
 
-document.getElementById("assetTitle").textContent =
-  `📈 Phân tích ${c.name}`;
+document.getElementById("assetTitle").innerHTML =
+  `${c.icon} ${c.name}`;
+
 
 document.getElementById("analysisText").innerHTML = `
   <li>📉 Rủi ro tối đa: ${c.min}%</li>
