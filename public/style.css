@@ -12150,3 +12150,31 @@ button:disabled{
   object-fit: contain;
   filter: drop-shadow(0 0 4px rgba(255,255,255,0.35));
 }
+
+
+.asset-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.asset-icon img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,0.35));
+}
+
+/* hiệu ứng riêng từng loại */
+.invest-card.gold .asset-icon img {
+  filter: drop-shadow(0 0 10px rgba(255,215,0,0.6));
+}
+
+.invest-card.silver .asset-icon img {
+  filter: drop-shadow(0 0 10px rgba(192,192,192,0.6));
+}
+
+.invest-card.diamond .asset-icon img {
+  filter: drop-shadow(0 0 12px rgba(79,220,255,0.8));
+}
