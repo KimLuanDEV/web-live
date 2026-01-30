@@ -537,6 +537,25 @@ const profit =
 me.profile.coins += o.coin + profit;
 
 
+me.investHistory = me.investHistory || [];
+
+me.investHistory.unshift({
+  ts: Date.now(),
+  asset: o.asset,
+  direction: o.direction,
+  coin: o.coin,
+  percent,
+  profit,
+  entryPrice: o.entryPrice,
+  endPrice: end
+});
+
+// giới hạn lịch sử (ví dụ 100 lệnh)
+if (me.investHistory.length > 100) {
+  me.investHistory.pop();
+}
+
+
     });
 
     saveUsers(users);
@@ -663,6 +682,21 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
+
+
+app.get("/api/invest/my-history", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.json({ ok: false });
+
+  const users = loadUsers();
+  const me = users[uid];
+  if (!me) return res.json({ ok: false });
+
+  res.json({
+    ok: true,
+    list: me.investHistory || []
+  });
+});
 
 
 

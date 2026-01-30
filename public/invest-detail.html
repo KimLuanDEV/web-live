@@ -345,36 +345,25 @@ html, body {
   align-items: center;
 }
 
-
-/* ===== ENTRY HISTORY FAB ===== */
-.entry-history-fab{
-  position: absolute;
-  right: 14px;
-  bottom: 14px;      /* nằm góc phải dưới chart */
-  z-index: 7;
-  width: 44px;
-  height: 44px;
-  border: 0;
-  border-radius: 14px;
-  cursor: pointer;
-
-  display: grid;
-  place-items: center;
-
-  background: rgba(15,15,15,.75);
-  box-shadow:
-    0 10px 26px rgba(0,0,0,.45),
-    inset 0 1px 0 rgba(255,255,255,.06);
-
-  backdrop-filter: blur(10px);
-  -webkit-backdrop-filter: blur(10px);
-
-  color: #fff;
-  font-size: 18px;
+.pnl-history-fab{
+  position:absolute;
+  right:14px;
+  top:64px;
+  z-index:7;
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:0;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  background:rgba(15,15,15,.75);
+  color:#fff;
+  font-size:18px;
+  box-shadow:0 10px 26px rgba(0,0,0,.45);
 }
-.entry-history-fab:active{
-  transform: scale(.96);
-}
+.pnl-history-fab:active{ transform:scale(.96); }
+
 
 
 
@@ -427,9 +416,9 @@ html, body {
   👤
 </button>
 
-<!-- 📜 ENTRY HISTORY BUTTON (ICON NỔI TRÊN CHART) -->
-<button id="btnOpenEntryHistory" class="entry-history-fab" title="Lịch sử vào lệnh">
-  🧾
+<!-- 💰 PNL HISTORY BUTTON -->
+<button id="btnOpenPnlHistory" class="pnl-history-fab" title="Lịch sử lãi / lỗ">
+  💰
 </button>
 
 
@@ -577,6 +566,24 @@ html, body {
   </div>
 </div>
 
+
+
+<div id="pnlHistoryModal" class="sheet hidden">
+  <div class="sheet-backdrop" id="pnlHistoryBackdrop"></div>
+
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <div class="sheet-title">💰 Lịch sử lãi / lỗ</div>
+      <button class="sheet-close" id="btnClosePnlHistory">✕</button>
+    </div>
+
+    <div class="sheet-body">
+      <ul id="pnlHistoryList" class="order-list">
+        <li class="empty">Chưa có dữ liệu</li>
+      </ul>
+    </div>
+  </div>
+</div>
 
 
 

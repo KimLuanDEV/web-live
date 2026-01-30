@@ -87,15 +87,58 @@ const btnCloseOrders = document.getElementById("btnCloseOrders");
 const ordersBackdrop = document.getElementById("ordersBackdrop");
 
 
-// 📜 ENTRY HISTORY (ICON TRÊN CHART)
-const btnOpenEntryHistory =
-  document.getElementById("btnOpenEntryHistory");
+const pnlHistoryModal = document.getElementById("pnlHistoryModal");
+const pnlHistoryList = document.getElementById("pnlHistoryList");
 
-if (btnOpenEntryHistory) {
-  btnOpenEntryHistory.addEventListener("click", () => {
-    // dùng luôn orders modal cho khỏi tạo modal mới
-    openOrders();
+document
+  .getElementById("btnOpenPnlHistory")
+  ?.addEventListener("click", () => {
+    pnlHistoryModal.classList.remove("hidden");
+    document.body.style.overflow = "hidden";
+
+    fetch("/api/invest/my-history", {
+      headers: { "x-uid": me.uid }
+    })
+    .then(r => r.json())
+    .then(d => d.ok && renderPnlHistory(d.list));
   });
+
+document
+  .getElementById("btnClosePnlHistory")
+  ?.addEventListener("click", closePnlHistory);
+
+document
+  .getElementById("pnlHistoryBackdrop")
+  ?.addEventListener("click", closePnlHistory);
+
+function closePnlHistory(){
+  pnlHistoryModal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
+
+function renderPnlHistory(list){
+  if (!list.length) {
+    pnlHistoryList.innerHTML =
+      `<li class="empty">Chưa có dữ liệu</li>`;
+    return;
+  }
+
+  pnlHistoryList.innerHTML = list.map(i => `
+    <li class="order-item ${i.percent >= 0 ? "up" : "down"}">
+      <div>
+        ${i.asset.toUpperCase()}
+        ${i.direction === "up" ? "📈" :
+          i.direction === "down" ? "📉" : "➖"}
+      </div>
+      <div>
+        ${i.coin} 💎 →
+        <b>${i.percent >= 0 ? "+" : ""}${i.percent}%</b>
+        (${i.profit >= 0 ? "+" : ""}${i.profit})
+      </div>
+      <small>${new Date(i.ts).toLocaleString()}</small>
+    </li>
+  `).join("");
 }
 
 
