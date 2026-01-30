@@ -12272,9 +12272,6 @@ button:disabled{
   justify-content: center;
 }
 
-.back-btn:active {
-  transform: scale(0.95);
-}
 
 /* CENTER */
 .header-center {
@@ -12384,9 +12381,6 @@ button:disabled{
   justify-content: center;
 }
 
-.back-btn:active {
-  transform: scale(0.95);
-}
 
 /* BALANCE */
 .balance-pill {
