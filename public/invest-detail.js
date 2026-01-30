@@ -587,18 +587,30 @@ if (joinedRound && typeof myEntryPrice === "number") {
 
   // cập nhật text xu hướng
   const trendText = document.getElementById("trendText");
- if (trendText) {
+
+const chartBox = document.querySelector(".detail-chart");
+
+if (trendText && chartBox) {
+  chartBox.classList.remove(
+    "trend-up",
+    "trend-down",
+    "trend-neutral"
+  );
+
   if (last > first) {
     trendText.textContent = "Xu hướng tăng";
     trendText.className = "trend-overlay up";
+    chartBox.classList.add("trend-up");
   } 
   else if (last < first) {
     trendText.textContent = "Xu hướng giảm";
     trendText.className = "trend-overlay down";
+    chartBox.classList.add("trend-down");
   } 
   else {
     trendText.textContent = "Sideway";
     trendText.className = "trend-overlay neutral";
+    chartBox.classList.add("trend-neutral");
   }
 }
 

@@ -138,6 +138,40 @@ html, body {
   border-radius: 20px;
 }
 
+/* ===== GRADIENT THEO XU HƯỚNG ===== */
+.detail-chart.chart-wrap {
+  transition: background 0.6s ease; /* mượt khi đổi màu */
+}
+
+/* 🟢 TĂNG */
+.detail-chart.trend-up {
+  background: linear-gradient(
+    180deg,
+    rgba(0, 255, 153, 0.18),
+    rgba(10, 10, 10, 1)
+  );
+}
+
+/* 🔴 GIẢM */
+.detail-chart.trend-down {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 92, 92, 0.18),
+    rgba(10, 10, 10, 1)
+  );
+}
+
+/* ➖ SIDEWAY */
+.detail-chart.trend-neutral {
+  background: linear-gradient(
+    180deg,
+    rgba(120, 120, 120, 0.12),
+    rgba(10, 10, 10, 1)
+  );
+}
+
+
+
 </style>
 
 
