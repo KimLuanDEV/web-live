@@ -185,8 +185,8 @@ fetch("/api/invest/chart")
       (Date.now() - d.startAt) / 1000
     );
 
-    chartData =
-      d.chart[asset].slice(0, nowSec + 1);
+ chartData = d.chart[asset].slice(0, 60);
+
 
     drawChart(chartData);
   });
@@ -497,11 +497,9 @@ function drawChart(data){
 // 📍 VẼ ĐƯỜNG ENTRY PRICE
 // ===============================
 if (joinedRound && typeof myEntryPrice === "number") {
-  const prices = data.filter(v => v !== undefined);
+  
   if (prices.length > 1) {
-    const min = Math.min(...prices);
-    const max = Math.max(...prices);
-
+  
     if (max > min) {
       // map giá → trục Y
   const y =
