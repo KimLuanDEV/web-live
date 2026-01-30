@@ -1,6 +1,19 @@
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-const socket = io();
+// 🔒 tạo deviceId cố định cho thiết bị
+let deviceId = localStorage.getItem("device_id");
+if (!deviceId) {
+  deviceId = "dev_" + Math.random().toString(36).slice(2);
+  localStorage.setItem("device_id", deviceId);
+}
+
+// 🔥 CONNECT SOCKET CÓ AUTH
+const socket = io({
+  auth: {
+    uid: me.uid,
+    deviceId
+  }
+});
 
 
 function goInvest(asset){
