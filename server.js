@@ -498,10 +498,6 @@ const end   = prices[prices.length - 1];
 let percent =
   Math.round((end - entry) / entry * 100);
 
-  if (o.direction === "down") {
-  percent = -percent;
-}
-
 // 🔒 clamp an toàn
 percent = Math.max(-30, Math.min(30, percent));
 
@@ -740,7 +736,7 @@ investRound.orders.push({
   uid,
   asset: type,
   coin,
-  direction,
+
   entrySec: nowSec,        // ⏱ giây vào lệnh
   entryPrice: entryPrice  // 📈 giá tại thời điểm vào
 });
