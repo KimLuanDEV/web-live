@@ -405,6 +405,35 @@ const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
 
 
+// ================================
+// 🔐 SOCKET AUTH & FORCE LOGOUT (FIX)
+// ================================
+io.on("connection", socket => {
+  const { uid, deviceId } = socket.handshake.auth || {};
+
+  socket.data.deviceId = deviceId;
+
+  if (uid) {
+    bindSocketToUser(uid, socket);
+  }
+
+  socket.on("disconnect", () => {
+    const uid = socket.data.uid;
+    if (!uid) return;
+
+    const set = activeUsers.get(uid);
+    if (set) {
+      set.delete(socket.id);
+      if (set.size === 0) {
+        activeUsers.delete(uid);
+      }
+    }
+  });
+});
+
+
+
+
 let investPrice = {
   gold: 100,
   silver: 100,
@@ -3739,6 +3768,11 @@ function closeRoom(roomId, reason = "host_left") {
 
 
 io.on("connection", (socket) => {
+
+
+
+
+
 
 
  // lấy deviceId từ client
