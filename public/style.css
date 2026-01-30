@@ -11955,3 +11955,30 @@ button:disabled{
       rgba(255,255,255,.15) 0
     );
 }
+
+
+/* ===== LIVE BADGE ===== */
+
+.live-badge {
+  position: absolute;
+  top: -6px;
+  right: -10px;
+
+  padding: 2px 6px;
+  font-size: 9px;
+  font-weight: 700;
+
+  color: #fff;
+  background: #ff3b3b;
+  border-radius: 6px;
+
+  box-shadow: 0 0 8px rgba(255,59,59,.9);
+
+  animation: livePulse 1.2s infinite;
+}
+
+@keyframes livePulse {
+  0%   { opacity: 1;   }
+  50%  { opacity: .5; }
+  100% { opacity: 1;  }
+}

@@ -172,6 +172,16 @@ if (timerEl && !timerEl.querySelector(".timer-text")) {
   `;
 }
 
+// 🔴 gắn badge LIVE
+if (timerEl && !timerEl.querySelector(".live-badge")) {
+  const badge = document.createElement("span");
+  badge.className = "live-badge";
+  badge.textContent = "LIVE";
+  timerEl.appendChild(badge);
+}
+
+
+
 const investBtn = document.querySelector(".detail-invest button");
 
 
@@ -210,6 +220,10 @@ function startRoundTimer(endAt){
       timerEl.className =
         "round-timer overlay-timer running";
 
+        const badge = timerEl.querySelector(".live-badge");
+        if (badge) badge.style.display = "block";
+
+
       investBtn.disabled = false;
       investBtn.textContent = "🚀 VÀO LỆNH";
     }
@@ -219,6 +233,9 @@ function startRoundTimer(endAt){
       timerEl.className =
         "round-timer overlay-timer locked";
 
+      const badge = timerEl.querySelector(".live-badge");
+      if (badge) badge.style.display = "none";
+
       investBtn.disabled = true;
       investBtn.textContent = "⛔ ĐÃ KHÓA";
     }
@@ -227,6 +244,10 @@ function startRoundTimer(endAt){
       textEl.textContent = "🔐";
       timerEl.className =
         "round-timer overlay-timer locked";
+
+      const badge = timerEl.querySelector(".live-badge");
+      if (badge) badge.style.display = "none";
+
 
       timerEl.style.setProperty("--progress", 0);
 
