@@ -163,6 +163,7 @@ socket.on("invest-round-new", d => {
   roundOrders = [];
   renderOrderList();
   startRoundTimer(d.endAt);
+  chartData = [];
 });
 
 
@@ -219,27 +220,21 @@ socket.on("invest-round-result", d => {
 
 
 
-// ================== CHART (FAKE REALTIME) ==================
+// ================== CHART REALTIME (SERVER SYNC) ==================
 
-let chartTimer = null;
 let chartData = [];
 
-function getTrendColor(data){
-  if (data.length < 2) return "#888";
-  const first = data[0];
-  const last  = data[data.length - 1];
-  if (last > first + 0.5) return "#00ff99";
-  if (last < first - 0.5) return "#ff5c5c";
-  return "#aaa";
-}
+socket.on("invest-price", d => {
+  const p = d.price?.[asset];
+  if (typeof p !== "number") return;
 
+  chartData.push(p);
+  if (chartData.length > 30) chartData.shift();
 
+  drawChart(chartData);
+});
 
-
-
-function startFakeChart(){
-  stopFakeChart();
-
+function drawChart(data){
   const canvas = document.getElementById("priceChart");
   if (!canvas) return;
 
@@ -247,67 +242,61 @@ function startFakeChart(){
   const W = canvas.width;
   const H = canvas.height;
 
-  chartData = [];
-  let price = 100;
+  ctx.clearRect(0, 0, W, H);
 
-  function draw(){
-    ctx.clearRect(0, 0, W, H);
+  // grid
+  ctx.strokeStyle = "rgba(255,255,255,.05)";
+  for (let i = 0; i < 5; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, i * H / 5);
+    ctx.lineTo(W, i * H / 5);
+    ctx.stroke();
+  }
 
-    // grid
-    ctx.strokeStyle = "rgba(255,255,255,.05)";
-    for (let i = 0; i < 5; i++) {
-      ctx.beginPath();
-      ctx.moveTo(0, i * H / 5);
-      ctx.lineTo(W, i * H / 5);
-      ctx.stroke();
-    }
+  if (data.length < 2) return;
 
-    const trendColor = getTrendColor(chartData);
-    const trendText = document.getElementById("trendText");
+  const first = data[0];
+  const last  = data[data.length - 1];
 
-    if (trendColor === "#00ff99") {
+  const color =
+    last > first ? "#00ff99" :
+    last < first ? "#ff5c5c" :
+    "#aaa";
+
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 10;
+
+  data.forEach((v, i) => {
+    const x = i * (W / 30);
+    const y = H - (v - 80) * (H / 40);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // cập nhật text xu hướng
+  const trendText = document.getElementById("trendText");
+  if (trendText) {
+    if (last > first) {
       trendText.textContent = "📈 Xu hướng tăng";
       trendText.className = "trend up";
-    } else if (trendColor === "#ff5c5c") {
+    } else if (last < first) {
       trendText.textContent = "📉 Xu hướng giảm";
       trendText.className = "trend down";
     } else {
       trendText.textContent = "➖ Sideway";
       trendText.className = "trend neutral";
     }
-
-    ctx.beginPath();
-    ctx.strokeStyle = trendColor;
-    ctx.lineWidth = 2;
-    ctx.shadowColor = trendColor;
-    ctx.shadowBlur = 10;
-
-    chartData.forEach((p, i) => {
-      const x = i * (W / 30);
-      const y = H - (p - 80) * (H / 40);
-      if (i === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    });
-
-    ctx.stroke();
-    ctx.shadowBlur = 0;
-  }
-
-  chartTimer = setInterval(() => {
-    price += (Math.random() - 0.5) * c.vol;
-    price = Math.max(80, Math.min(120, price));
-    chartData.push(price);
-    if (chartData.length > 30) chartData.shift();
-    draw();
-  }, 1200);
-}
-
-function stopFakeChart(){
-  if (chartTimer) {
-    clearInterval(chartTimer);
-    chartTimer = null;
   }
 }
+
+
+
 
 // ================== VÀO LỆNH ==================
 
@@ -391,7 +380,6 @@ fetch("/api/invest/history")
 
 
 
-startFakeChart();
 
 
 

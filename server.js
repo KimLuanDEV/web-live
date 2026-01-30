@@ -292,6 +292,11 @@ const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
 
 
+let investPrice = {
+  gold: 100,
+  silver: 100,
+  diamond: 100
+};
 
 
 // ================================
@@ -318,6 +323,27 @@ saveInvestState(investRound);
 
 let investHistory = loadInvestHistory();
 const MAX_HISTORY = 10;
+
+
+setInterval(() => {
+  const vol = {
+    gold: 1,
+    silver: 1.5,
+    diamond: 3
+  };
+
+  for (const k in investPrice) {
+    investPrice[k] += (Math.random() - 0.5) * vol[k];
+    investPrice[k] = Math.max(80, Math.min(120, investPrice[k]));
+  }
+
+  io.emit("invest-price", {
+    ts: Date.now(),
+    price: investPrice
+  });
+
+}, 1000);
+
 
 
 
