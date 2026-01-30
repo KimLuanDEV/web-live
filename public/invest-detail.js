@@ -412,24 +412,20 @@ entryMarkers.forEach(m => {
 
 function confirmInvest(){
 
-const left = Math.floor((roundEndAt - Date.now()) / 1000);
-if (left <= 5) {
-  showModal(
-  "⛔ Không thể vào lệnh",
-  "Phiên sắp chốt, vui lòng chờ phiên tiếp theo."
-);
-
-  return;
-}
-
-
+  const left = Math.floor((roundEndAt - Date.now()) / 1000);
+  if (left <= 5) {
+    showModal(
+      "⛔ Không thể vào lệnh",
+      "Phiên sắp chốt, vui lòng chờ phiên tiếp theo."
+    );
+    return;
+  }
 
   if (joinedRound) {
     showModal(
-  "⛔ Đã vào lệnh",
-  "Bạn đã vào lệnh trong phiên này."
-);
-
+      "⛔ Đã vào lệnh",
+      "Bạn đã vào lệnh trong phiên này."
+    );
     return;
   }
 
@@ -439,10 +435,9 @@ if (left <= 5) {
 
   if (!coin || coin <= 0) {
     showModal(
-  "⚠️ Lỗi nhập liệu",
-  "Vui lòng nhập số coin hợp lệ."
-);
-
+      "⚠️ Lỗi nhập liệu",
+      "Vui lòng nhập số coin hợp lệ."
+    );
     return;
   }
 
@@ -452,27 +447,52 @@ if (left <= 5) {
       "Content-Type": "application/json",
       "x-uid": me.uid
     },
-    body: JSON.stringify({ type: asset, coin })
+    body: JSON.stringify({
+      type: asset,
+      coin
+    })
   })
   .then(r => r.json())
   .then(d => {
     if (!d.ok) {
       showModal(
-  "❌ Thao tác thất bại",
-  d.message || "Không thể vào lệnh."
-);
-
+        "❌ Thao tác thất bại",
+        d.message || "Không thể vào lệnh."
+      );
       return;
     }
 
+    // =========================
+    // ✅ VÀO LỆNH THÀNH CÔNG
+    // =========================
+    joinedRound = true;
 
+    // 🔻 TRỪ COIN NGAY TRÊN UI
+    me.coins = Math.max(0, (me.coins || 0) - coin);
+    myCoinEl.textContent = me.coins;
 
-  joinedRound = true;
+    localStorage.setItem(
+      "user_profile",
+      JSON.stringify(me)
+    );
+
+    // 🔒 KHOÁ NÚT
+    const btn = document.querySelector(".detail-invest button");
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = "⛔ ĐÃ VÀO LỆNH";
+    }
+
     showModal(
-  "✅ Thành công",
-  "Đã vào lệnh, vui lòng chờ chốt phiên."
-);
-
+      "✅ Thành công",
+      "Đã vào lệnh, vui lòng chờ chốt phiên."
+    );
+  })
+  .catch(() => {
+    showModal(
+      "❌ Lỗi mạng",
+      "Không thể kết nối server."
+    );
   });
 }
 
@@ -510,3 +530,17 @@ resizeChartCanvas();
 
 // resize khi đổi kích thước màn hình
 window.addEventListener("resize", resizeChartCanvas);
+
+
+socket.on("coin-update", d => {
+  if (d.uid !== me.uid) return;
+
+  me.coins = d.coins;
+  myCoinEl.textContent = d.coins;
+
+  localStorage.setItem(
+    "user_profile",
+    JSON.stringify(me)
+  );
+});
+
