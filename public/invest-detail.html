@@ -345,6 +345,39 @@ html, body {
   align-items: center;
 }
 
+
+/* ===== ENTRY HISTORY FAB ===== */
+.entry-history-fab{
+  position: absolute;
+  right: 14px;
+  bottom: 14px;      /* nằm góc phải dưới chart */
+  z-index: 7;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(15,15,15,.75);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.06);
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: #fff;
+  font-size: 18px;
+}
+.entry-history-fab:active{
+  transform: scale(.96);
+}
+
+
+
 </style>
 
 
@@ -394,6 +427,10 @@ html, body {
   👤
 </button>
 
+<!-- 📜 ENTRY HISTORY BUTTON (ICON NỔI TRÊN CHART) -->
+<button id="btnOpenEntryHistory" class="entry-history-fab" title="Lịch sử vào lệnh">
+  🧾
+</button>
 
 
   <!-- 💰 PnL realtime -->

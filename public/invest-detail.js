@@ -87,6 +87,17 @@ const btnCloseOrders = document.getElementById("btnCloseOrders");
 const ordersBackdrop = document.getElementById("ordersBackdrop");
 
 
+// 📜 ENTRY HISTORY (ICON TRÊN CHART)
+const btnOpenEntryHistory =
+  document.getElementById("btnOpenEntryHistory");
+
+if (btnOpenEntryHistory) {
+  btnOpenEntryHistory.addEventListener("click", () => {
+    // dùng luôn orders modal cho khỏi tạo modal mới
+    openOrders();
+  });
+}
+
 
 function openOrders(){
   if(!ordersModal) return;
