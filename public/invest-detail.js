@@ -126,6 +126,7 @@ let roundEndAt = 0;
 let timerInt = null;
 let joinedRound = false;
 let roundOrders = [];
+let entryMarkers = []; // 📍 điểm vào lệnh
 
 const orderListEl = document.getElementById("orderList");
 const timerEl = document.getElementById("roundTimer");
@@ -169,8 +170,20 @@ function startRoundTimer(endAt){
 socket.on("invest-order-new", o => {
   if (o.asset !== asset) return;
 
-  roundOrders.push(o);
-  renderOrderList();
+roundOrders.push(o);
+
+// 📍 lưu marker nếu có dữ liệu entry
+if (typeof o.entrySec === "number" && typeof o.entryPrice === "number") {
+  entryMarkers.push({
+    sec: o.entrySec,
+    price: o.entryPrice,
+    mine: o.uid === me.uid
+  });
+}
+
+renderOrderList();
+drawChart(chartData);
+
 });
 
 
@@ -182,7 +195,7 @@ socket.on("invest-round-new", d => {
   startRoundTimer(d.endAt);
   chartData = [];
   resizeChartCanvas();
-
+  entryMarkers = [];
 });
 
 
@@ -333,6 +346,30 @@ function drawChart(data){
       trendText.className = "trend neutral";
     }
   }
+
+
+  // ============================
+// 📍 VẼ ĐIỂM VÀO LỆNH
+// ============================
+entryMarkers.forEach(m => {
+  const idx = m.sec;
+  const price = m.price;
+
+  if (idx < 0 || idx >= data.length) return;
+
+  const x = idx * (W / Math.max(data.length - 1, 1));
+  const y = H - (price - 80) * (H / 40);
+
+  ctx.beginPath();
+  ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 1;
+
+  ctx.arc(x, y, m.mine ? 6 : 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+});
+
 }
 
 

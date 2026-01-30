@@ -683,8 +683,11 @@ saveInvestState(investRound);
 io.emit("invest-order-new", {
   uid,
   asset: type,
-  coin
+  coin,
+  entrySec: nowSec,
+  entryPrice
 });
+
 
 
   res.json({
