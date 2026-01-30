@@ -175,21 +175,24 @@ if (myOrder) {
   });
 
 
+  
+socket.on("connect", () => {
+  console.log("🔌 socket reconnected → resync chart");
 
-fetch("/api/invest/chart")
-  .then(r => r.json())
-  .then(d => {
-    if (!d.ok) return;
+  fetch("/api/invest/chart")
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok) return;
 
-    const nowSec = Math.floor(
-      (Date.now() - d.startAt) / 1000
-    );
+      const nowSec = Math.floor(
+        (Date.now() - d.startAt) / 1000
+      );
 
- chartData = d.chart[asset].slice(0, 60);
+      chartData = d.chart[asset].slice(0, nowSec + 1);
+      drawChart(chartData);
+    });
+});
 
-
-    drawChart(chartData);
-  });
 
 
 
@@ -423,7 +426,9 @@ socket.on("invest-price", d => {
 
   if (typeof d.second !== "number") return;
 
-  if (chartData[d.second] !== undefined) return;
+chartData[d.second] = p;
+drawChart(chartData);
+
 
   chartData[d.second] = p;
 
