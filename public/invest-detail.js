@@ -50,12 +50,7 @@ document.getElementById("analysisText").innerHTML = `
 
 // ================== SOCKET + ROUND ==================
 
-const socket = io({
-  auth: {
-    uid: me.uid
-  }
-});
-
+const socket = io();
 
 
 function renderHistory(list){
@@ -646,18 +641,3 @@ socket.on("coin-update", d => {
   );
 });
 
-
-// 🔐 FORCE LOGOUT KHI ĐĂNG NHẬP NƠI KHÁC
-socket.on("force-logout", (data) => {
-  showModal(
-    "🔐 Đăng xuất",
-    data?.message ||
-      "Tài khoản đã được đăng nhập ở thiết bị khác."
-  );
-
-  localStorage.removeItem("user_profile");
-
-  setTimeout(() => {
-    location.href = "/login.html";
-  }, 5000);
-});
