@@ -11657,3 +11657,19 @@ button:disabled{
   padding: 20px;
   opacity: .6;
 }
+
+
+/* ================== FULL WIDTH CHART ================== */
+
+.detail-chart {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  background: #0d0f14;
+  padding: 12px 0;
+}
+
+.detail-chart canvas {
+  display: block;
+  width: 100%;
+  height: 220px;
+}

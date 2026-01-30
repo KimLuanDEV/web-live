@@ -181,6 +181,8 @@ socket.on("invest-round-new", d => {
   renderOrderList();
   startRoundTimer(d.endAt);
   chartData = [];
+  resizeChartCanvas();
+
 });
 
 
@@ -245,22 +247,28 @@ socket.on("invest-price", d => {
   const p = d.price?.[asset];
   if (typeof p !== "number") return;
 
-  // 🔐 chỉ thêm điểm nếu chưa tồn tại
-  if (typeof d.second === "number") {
-    if (chartData[d.second] !== undefined) return;
+  if (typeof d.second !== "number") return;
 
-    chartData[d.second] = p;
-  } else {
-    return;
-  }
+  // chỉ set đúng index second
+  if (chartData[d.second] !== undefined) return;
 
-  // giữ tối đa 30 điểm cuối
-  if (chartData.length > 30) {
-    chartData = chartData.slice(-30);
-  }
+  chartData[d.second] = p;
 
   drawChart(chartData);
 });
+
+
+
+
+function resizeChartCanvas(){
+  const canvas = document.getElementById("priceChart");
+  if (!canvas) return;
+
+  const rect = canvas.getBoundingClientRect();
+  canvas.width = rect.width;
+  canvas.height = 220;
+}
+
 
 
 function drawChart(data){
@@ -298,8 +306,11 @@ function drawChart(data){
   ctx.shadowColor = color;
   ctx.shadowBlur = 10;
 
-  data.forEach((v, i) => {
-    const x = i * (W / 30);
+   const points = data.filter(v => v !== undefined).slice(-30);
+
+  points.forEach((v, i) => {
+  const x = i * (W / Math.max(points.length - 1, 1));
+
     const y = H - (v - 80) * (H / 40);
     if (i === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
@@ -421,3 +432,11 @@ function setResult(id, val){
     val > 0 ? "up" :
     val < 0 ? "down" : "neutral";
 }
+
+
+
+// resize canvas khi load
+resizeChartCanvas();
+
+// resize khi đổi kích thước màn hình
+window.addEventListener("resize", resizeChartCanvas);
