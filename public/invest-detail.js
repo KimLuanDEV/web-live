@@ -9,6 +9,11 @@ const ROUND_DURATION = 60; // giây
 
 let currentRoundId = null;
 let myEntryPrice = null;
+let myDirection = "up"; // mặc định
+
+
+
+
 
 const liveBadge = document.getElementById("liveBadge");
 // 🔴 LIVE luôn hiển thị
@@ -28,6 +33,22 @@ function updateLiveRound(n){
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const myCoinEl = document.getElementById("myCoin");
 if (myCoinEl) myCoinEl.textContent = me.coins || 0;
+
+
+
+
+
+document.querySelectorAll(".dir-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+
+     if (joinedRound) return;
+    document.querySelectorAll(".dir-btn")
+      .forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    myDirection = btn.dataset.dir;
+  };
+});
+
 
 // ================== CONFIG ==================
 
@@ -488,36 +509,63 @@ socket.on("invest-round-result", d => {
     .then(r => r.json())
     .then(h => h.ok && renderHistory(h.list));
 
-  // ===============================
-  // 2️⃣ CHỈ USER ĐÃ VÀO LỆNH → TÍNH THEO ENTRY
-  // ===============================
-  if (!joinedRound) return;
+// ===============================
+// 2️⃣ CHỈ USER ĐÃ VÀO LỆNH → TÍNH THEO HƯỚNG
+// ===============================
+if (!joinedRound) return;
 
-  // 🔍 tìm lệnh của chính user
-  const myOrder = roundOrders.find(
-    o => o.uid === me.uid && o.asset === asset
-  );
+// 🔍 tìm lệnh của chính user
+const myOrder = roundOrders.find(
+  o => o.uid === me.uid && o.asset === asset
+);
+if (!myOrder) return;
 
-  if (!myOrder) return;
+// 🎯 giá vào & giá chốt
+const entry = myOrder.entryPrice;
+const end   = chartData[chartData.length - 1];
+if (!entry || !end) return;
 
-  // 🎯 tính % từ điểm vào lệnh → giá cuối
-  const entry = myOrder.entryPrice;
-  const end   = chartData[chartData.length - 1];
+// % raw từ chart
+let rawPercent =
+  Math.round((end - entry) / entry * 100);
 
-  if (!entry || !end) return;
+let win = false;
 
-  let percent =
-    Math.round((end - entry) / entry * 100);
+// 📈 UP
+if (myOrder.direction === "up" && rawPercent > 0) win = true;
 
-  // 🔒 clamp UI (chỉ để hiển thị)
-  percent = Math.max(-30, Math.min(30, percent));
+// 📉 DOWN
+if (myOrder.direction === "down" && rawPercent < 0) win = true;
 
-  showModal(
-    percent >= 0 ? "🎉 KẾT QUẢ LỆNH" : "💥 KẾT QUẢ LỆNH",
-    percent >= 0
-      ? `Bạn lời <b>+${percent}%</b> từ điểm vào lệnh`
-      : `Bạn lỗ <b>${percent}%</b> từ điểm vào lệnh`
-  );
+// ➖ SIDE (biên độ nhỏ)
+if (myOrder.direction === "side" && Math.abs(rawPercent) <= 1) win = true;
+
+// % cuối để hiển thị
+let percent = win
+  ? Math.abs(rawPercent)
+  : -Math.abs(rawPercent);
+
+// 🔒 clamp UI
+percent = Math.max(-30, Math.min(30, percent));
+
+const dirText =
+  myOrder.direction === "up" ? "📈 Tăng" :
+  myOrder.direction === "down" ? "📉 Giảm" :
+  "➖ Side";
+
+showModal(
+  percent >= 0 ? "🎉 KẾT QUẢ LỆNH" : "💥 KẾT QUẢ LỆNH",
+  `
+    Hướng: <b>${dirText}</b><br>
+    ${percent >= 0
+      ? `Bạn lời <b>+${percent}%</b>`
+      : `Bạn lỗ <b>${percent}%</b>`
+    }
+  `
+);
+
+
+
 
   // 🔄 sync lại coin từ server (nguồn sự thật)
   fetch("/api/me/coin", {
@@ -552,9 +600,6 @@ chartData[d.second] = p;
 drawChart(chartData);
 
 
-  chartData[d.second] = p;
-
-  drawChart(chartData);
 
   // ===============================
   // 💰 PnL REALTIME TỪ ENTRY
@@ -564,11 +609,26 @@ drawChart(chartData);
   if (joinedRound && myEntryPrice && pnlBox) {
     const last = p;
 
-    let pnl =
-      Math.round((last - myEntryPrice) / myEntryPrice * 100);
+    let raw =
+  Math.round((last - myEntryPrice) / myEntryPrice * 100);
 
-    // clamp UI
-    pnl = Math.max(-30, Math.min(30, pnl));
+let pnl = 0;
+
+// 📈 UP
+if (myDirection === "up") {
+  pnl = raw;
+}
+// 📉 DOWN
+else if (myDirection === "down") {
+  pnl = -raw;
+}
+// ➖ SIDE
+else if (myDirection === "side") {
+  pnl = Math.abs(raw) <= 1 ? Math.abs(raw) : -Math.abs(raw);
+}
+
+// clamp UI
+pnl = Math.max(-30, Math.min(30, pnl));
 
     pnlBox.textContent =
       pnl >= 0 ? `PnL: +${pnl}%` : `PnL: ${pnl}%`;
@@ -794,7 +854,8 @@ function confirmInvest(){
     },
     body: JSON.stringify({
       type: asset,
-      coin
+      coin,
+      direction: myDirection 
     })
   })
   .then(r => r.json())
