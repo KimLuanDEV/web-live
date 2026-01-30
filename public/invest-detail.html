@@ -88,6 +88,46 @@ html, body {
 }
 
 
+
+/* ===== FULL WIDTH CHART ===== */
+.detail-chart.chart-wrap {
+  width: 100vw;                 /* chiếm full viewport */
+  margin-left: calc(50% - 50vw);/* phá padding cha, kéo sát mép */
+  margin-right: calc(50% - 50vw);
+  padding: 0;                   /* bỏ padding card */
+  border-radius: 0;             /* vuông mép cho đã */
+  overflow: hidden;
+}
+
+
+.detail-chart #priceChart {
+  width: 100% !important;
+  display: block;
+}
+
+
+.detail-chart .overlay-timer {
+  left: 12px;
+  top: 12px;
+}
+
+.detail-chart .live-badge-fixed {
+  right: 12px;
+  top: 12px;
+}
+
+.detail-chart .trend-overlay {
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 12px;
+}
+
+.detail-chart .pnl-overlay {
+  right: 12px;
+  bottom: 12px;
+}
+
+
 </style>
 
 
@@ -130,8 +170,6 @@ html, body {
 <div id="pnlRealtime" class="pnl-overlay hidden">
   PnL: 0%
 </div>
-
-
 </section>
 
 
