@@ -8,6 +8,7 @@ const ROUND_DURATION = 60; // giây
 
 
 let currentRoundId = null;
+let myEntryPrice = null;
 
 const liveBadge = document.getElementById("liveBadge");
 // 🔴 LIVE luôn hiển thị
@@ -289,6 +290,12 @@ socket.on("invest-order-new", o => {
 
 roundOrders.push(o);
 
+// 🔥 LƯU ENTRY CHO PnL REALTIME
+if (o.uid === me.uid && typeof o.entryPrice === "number") {
+  myEntryPrice = o.entryPrice;
+}
+
+
 // 📍 lưu marker nếu có dữ liệu entry
 if (typeof o.entrySec === "number" && typeof o.entryPrice === "number") {
   entryMarkers.push({
@@ -306,6 +313,11 @@ drawChart(chartData);
 
 // nhận phiên mới
 socket.on("invest-round-new", d => {
+
+  myEntryPrice = null;
+const pnlBox = document.getElementById("pnlRealtime");
+if (pnlBox) pnlBox.classList.add("hidden");
+
 
 // 🔴 update LIVE • ROUND khi có phiên mới
 if (typeof d.roundIndex === "number") {
@@ -408,13 +420,36 @@ socket.on("invest-price", d => {
 
   if (typeof d.second !== "number") return;
 
-  // chỉ set đúng index second
   if (chartData[d.second] !== undefined) return;
 
   chartData[d.second] = p;
 
   drawChart(chartData);
+
+  // ===============================
+  // 💰 PnL REALTIME TỪ ENTRY
+  // ===============================
+  const pnlBox = document.getElementById("pnlRealtime");
+
+  if (joinedRound && myEntryPrice && pnlBox) {
+    const last = p;
+
+    let pnl =
+      Math.round((last - myEntryPrice) / myEntryPrice * 100);
+
+    // clamp UI
+    pnl = Math.max(-30, Math.min(30, pnl));
+
+    pnlBox.textContent =
+      pnl >= 0 ? `PnL: +${pnl}%` : `PnL: ${pnl}%`;
+
+    pnlBox.className =
+      "pnl-overlay " + (pnl >= 0 ? "up" : "down");
+
+    pnlBox.classList.remove("hidden");
+  }
 });
+
 
 
 

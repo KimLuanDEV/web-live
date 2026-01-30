@@ -12106,3 +12106,39 @@ button:disabled{
   content: "➖";
   margin-right: 6px;
 }
+
+
+/* 💰 PnL REALTIME */
+.pnl-overlay {
+  position: absolute;
+  bottom: 48px;
+  right: 12px;
+
+  padding: 6px 12px;
+  font-size: 13px;
+  font-weight: 700;
+
+  border-radius: 999px;
+  backdrop-filter: blur(6px);
+
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(255,255,255,.15);
+
+  box-shadow: 0 4px 12px rgba(0,0,0,.4);
+  pointer-events: none;
+  z-index: 5;
+}
+
+.pnl-overlay.up {
+  color: #00ff99;
+  border-color: rgba(0,255,153,.4);
+}
+
+.pnl-overlay.down {
+  color: #ff5c5c;
+  border-color: rgba(255,92,92,.4);
+}
+
+.pnl-overlay.hidden {
+  display: none;
+}
