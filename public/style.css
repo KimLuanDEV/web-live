@@ -11831,10 +11831,6 @@ button:disabled{
   cursor: pointer;
 }
 
-.back-btn:active {
-  transform: scale(0.95);
-}
-
 /* CENTER TITLE */
 .header-center {
   flex: 1;
