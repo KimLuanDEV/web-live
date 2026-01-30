@@ -318,12 +318,6 @@ if (left <= 5) {
 
 
   joinedRound = true;
-    roundOrders.push({
-  uid: me.uid,
-  coin
-});
-renderOrderList();
-
     showModal(
   "✅ Thành công",
   "Đã vào lệnh, vui lòng chờ chốt phiên."
