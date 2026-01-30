@@ -479,12 +479,15 @@ drawChart(chartData);
 
 function resizeChartCanvas(){
   const canvas = document.getElementById("priceChart");
-  if (!canvas) return;
+  const box = document.querySelector(".detail-chart");
+  if (!canvas || !box) return;
 
-  const rect = canvas.getBoundingClientRect();
-  canvas.width = rect.width;
-  canvas.height = 220;
+  const rect = box.getBoundingClientRect();
+
+  canvas.width  = rect.width;
+  canvas.height = rect.height; // 🔥 theo chiều cao cinematic
 }
+
 
 
 

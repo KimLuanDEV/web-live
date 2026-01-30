@@ -171,6 +171,46 @@ html, body {
 }
 
 
+/* ===== CINEMATIC HEIGHT ===== */
+.detail-chart.chart-wrap {
+  min-height: 42vh;          /* mobile cinematic */
+  max-height: 520px;         /* chặn quá cao desktop */
+  display: flex;
+  align-items: stretch;
+}
+
+/* canvas chiếm toàn bộ chiều cao chart */
+.detail-chart #priceChart {
+  height: 100% !important;
+}
+
+/* cinematic feel: vignette nhẹ */
+.detail-chart::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(0,0,0,0) 60%,
+      rgba(0,0,0,.35) 100%
+    );
+}
+
+
+
+.detail-chart .overlay-timer,
+.detail-chart .live-badge-fixed {
+  top: 18px;
+}
+
+.detail-chart .trend-overlay,
+.detail-chart .pnl-overlay {
+  bottom: 18px;
+}
+
+
 
 </style>
 
