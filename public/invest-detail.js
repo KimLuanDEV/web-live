@@ -60,6 +60,38 @@ if (!deviceId) {
 
 
 
+const ordersModal = document.getElementById("ordersModal");
+const ordersModalList = document.getElementById("orderListModal");
+const btnOpenOrders = document.getElementById("btnOpenOrders");
+const btnCloseOrders = document.getElementById("btnCloseOrders");
+const ordersBackdrop = document.getElementById("ordersBackdrop");
+
+function openOrders(){
+  if(!ordersModal) return;
+  ordersModal.classList.remove("hidden");
+  ordersModal.setAttribute("aria-hidden","false");
+  document.body.style.overflow = "hidden";
+
+  // sync list hiện tại
+  if (ordersModalList && orderListEl) {
+    ordersModalList.innerHTML = orderListEl.innerHTML;
+  }
+}
+
+function closeOrders(){
+  if(!ordersModal) return;
+  ordersModal.classList.add("hidden");
+  ordersModal.setAttribute("aria-hidden","true");
+  document.body.style.overflow = "";
+}
+
+if(btnOpenOrders) btnOpenOrders.addEventListener("click", openOrders);
+if(btnCloseOrders) btnCloseOrders.addEventListener("click", closeOrders);
+if(ordersBackdrop) ordersBackdrop.addEventListener("click", closeOrders);
+
+
+
+
 const historyModalEl = document.getElementById("historyModal");
 const historyModalBody = document.getElementById("roundHistoryModal");
 const btnOpenHistory = document.getElementById("btnOpenHistory");

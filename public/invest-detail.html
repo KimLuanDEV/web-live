@@ -301,6 +301,34 @@ html, body {
 .sheet-table{ overflow-x: auto; }
 
 
+
+/* ===== ORDERS FLOATING BUTTON ===== */
+.orders-fab{
+  position: absolute;
+  right: 14px;
+  bottom: 70px;              /* nằm trên icon lịch sử */
+  z-index: 6;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 14px;
+  cursor: pointer;
+
+  display: grid;
+  place-items: center;
+
+  background: rgba(15,15,15,.75);
+  box-shadow: 0 10px 26px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.06);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  color: #fff;
+  font-size: 18px;
+}
+.orders-fab:active{ transform: scale(.96); }
+
+
+
 </style>
 
 
@@ -345,6 +373,13 @@ html, body {
 </button>
 
 
+<!-- 🧾 ORDERS BUTTON (ICON NỔI) -->
+<button id="btnOpenOrders" class="orders-fab" title="Lệnh trong phiên">
+  👤
+</button>
+
+
+
   <!-- 💰 PnL realtime -->
 <div id="pnlRealtime" class="pnl-overlay hidden">
   PnL: 0%
@@ -365,14 +400,16 @@ html, body {
   <ul id="analysisText" class="analysis-list"></ul>
 </section>
 
-<!-- 🧾 LỆNH -->
+
+<!--
+-- 🧾 LỆNH --
 <section class="detail-orders card">
   <h3>🧾 Lệnh trong phiên</h3>
   <ul id="orderList" class="order-list">
     <li class="empty">Chưa có lệnh nào</li>
   </ul>
 </section>
-
+-->
 
 <!--
  -- LỊCH SỬ --
@@ -467,6 +504,27 @@ html, body {
     </div>
   </div>
 </div>
+
+
+<!-- 🧾 ORDERS MODAL -->
+<div id="ordersModal" class="sheet hidden" aria-hidden="true">
+  <div class="sheet-backdrop" id="ordersBackdrop"></div>
+
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <div class="sheet-title">🧾 Lệnh trong phiên</div>
+      <button class="sheet-close" id="btnCloseOrders">✕</button>
+    </div>
+
+    <div class="sheet-body">
+      <ul id="orderListModal" class="order-list">
+        <li class="empty">Chưa có lệnh nào</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+
 
 
 <script src="/socket.io/socket.io.js"></script>
