@@ -294,37 +294,6 @@ function pickTrend(rng) {
   return "SIDE";
 }
 
-// ================================
-// 💥 FAKE BREAKOUT ENGINE (LEVEL 12)
-// ================================
-function applyFakeSpike({
-  next,
-  prev,
-  trend,
-  t,
-  rng,
-  strength = 1
-}) {
-  // ⛔ chỉ spike cuối phiên
-  if (t < 40 || t > 55) return next;
-
-  // 🎯 40% khả năng có spike
-  if (rng() > 0.4) return next;
-
-  let spike = 0;
-
-  // ❗ spike NGƯỢC trend
-  if (trend === "UP") {
-    spike = -Math.abs(rng() * strength);
-  } else if (trend === "DOWN") {
-    spike = Math.abs(rng() * strength);
-  } else {
-    // SIDE → spike 2 chiều
-    spike = (rng() - 0.5) * strength * 2;
-  }
-
-  return next + spike;
-}
 
 
 
@@ -365,17 +334,6 @@ function generateChart(roundId) {
       const bias  = trendBias[trends[k]];
 
       let next = prev + noise + bias;
-
-// 💥 fake breakout / spike giả
-next = applyFakeSpike({
-  next,
-  prev,
-  trend: trends[k],
-  t,
-  rng,
-  strength: vol[k] * 2.5
-});
-
 
       chart[k][t] = Math.max(80, Math.min(120, next));
     }
