@@ -99,7 +99,10 @@ function renderOrderList(){
       <span>
         ${o.uid === me.uid ? "🧑 Bạn" : "👤 Người chơi"}
       </span>
-      <b>${o.coin} 💎</b>
+      <b>
+  ${o.direction === "up" ? "📈" : "📉"}
+  ${o.coin} 💎
+</b>
     </li>
   `).join("");
 }
@@ -613,36 +616,38 @@ entryMarkers.forEach(m => {
 
 // ================== VÀO LỆNH ==================
 
-function confirmInvest(){
+function confirmInvest(direction){
+  const amount =
+    Number(document.getElementById("investAmount").value);
 
-  const left = Math.floor((roundEndAt - Date.now()) / 1000);
-  if (left <= 5) {
-    showModal(
-      "⛔ Không thể vào lệnh",
-      "Phiên sắp chốt, vui lòng chờ phiên tiếp theo."
-    );
+  if (!amount || amount <= 0) {
+    showModal("⚠️ Lỗi", "Vui lòng nhập số coin hợp lệ");
     return;
   }
 
-  if (joinedRound) {
-    showModal(
-      "⛔ Đã vào lệnh",
-      "Bạn đã vào lệnh trong phiên này."
-    );
-    return;
-  }
+  showModal(
+    "🚀 Xác nhận vào lệnh",
+    `
+      <div style="text-align:center">
+        <p>Bạn chọn:</p>
+        <h2 style="margin:8px 0">
+          ${direction === "up" ? "📈 LÊN" : "📉 XUỐNG"}
+        </h2>
+        <p>Số coin: <b>${amount} 💎</b></p>
 
-  const coin = Number(
-    document.getElementById("investAmount").value
+        <button class="app-modal-btn"
+          onclick="submitInvest('${direction}', ${amount})">
+          ✅ Xác nhận
+        </button>
+      </div>
+    `
   );
+}
 
-  if (!coin || coin <= 0) {
-    showModal(
-      "⚠️ Lỗi nhập liệu",
-      "Vui lòng nhập số coin hợp lệ."
-    );
-    return;
-  }
+
+
+function submitInvest(direction, amount){
+  closeAppModal();
 
   fetch("/api/invest", {
     method: "POST",
@@ -652,52 +657,23 @@ function confirmInvest(){
     },
     body: JSON.stringify({
       type: asset,
-      coin
+      coin: amount,
+      direction // 🔥 UP / DOWN
     })
   })
-  .then(r => r.json())
-  .then(d => {
-    if (!d.ok) {
-      showModal(
-        "❌ Thao tác thất bại",
-        d.message || "Không thể vào lệnh."
-      );
-      return;
-    }
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok) {
+        showModal("❌ Không thể vào lệnh", d.message || "Thao tác thất bại");
+        return;
+      }
 
-    // =========================
-    // ✅ VÀO LỆNH THÀNH CÔNG
-    // =========================
-    joinedRound = true;
-
-    // 🔻 TRỪ COIN NGAY TRÊN UI
-    me.coins = Math.max(0, (me.coins || 0) - coin);
-    myCoinEl.textContent = me.coins;
-
-    localStorage.setItem(
-      "user_profile",
-      JSON.stringify(me)
-    );
-
-    // 🔒 KHOÁ NÚT
-    const btn = document.querySelector(".detail-invest button");
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "⛔ ĐÃ VÀO LỆNH";
-    }
-
-    showModal(
-      "✅ Thành công",
-      "Đã vào lệnh, vui lòng chờ chốt phiên."
-    );
-  })
-  .catch(() => {
-    showModal(
-      "❌ Lỗi mạng",
-      "Không thể kết nối server."
-    );
-  });
+      joinedRound = true;
+      investBtn.disabled = true;
+      investBtn.textContent = "⛔ ĐÃ VÀO LỆNH";
+    });
 }
+
 
 // ================== START ==================
 
