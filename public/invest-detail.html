@@ -47,6 +47,25 @@
   </button>
 </section>
 
+
+
+
+<!-- 🔔 MODAL THÔNG BÁO -->
+<div id="appModal" class="app-modal hidden">
+  <div class="app-modal-backdrop" onclick="closeAppModal()"></div>
+
+  <div class="app-modal-box">
+    <h3 id="appModalTitle">Thông báo</h3>
+    <div id="appModalContent"></div>
+
+    <button class="app-modal-btn" onclick="closeAppModal()">
+      OK
+    </button>
+  </div>
+</div>
+
+
+
 <!-- ⚠️ BẮT BUỘC: socket.io -->
 <script src="/socket.io/socket.io.js"></script>
 

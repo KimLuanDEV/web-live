@@ -31,6 +31,21 @@ document.getElementById("analysisText").innerHTML = `
 const socket = io();
 
 
+function showModal(title, content){
+  const modal = document.getElementById("appModal");
+  document.getElementById("appModalTitle").textContent = title;
+  document.getElementById("appModalContent").innerHTML = content;
+  modal.classList.remove("hidden");
+}
+
+function closeAppModal(){
+  document.getElementById("appModal")
+    .classList.add("hidden");
+}
+
+
+
+
 // ⏱ LẤY THÔNG TIN PHIÊN HIỆN TẠI KHI VÀO TRANG
 fetch("/api/invest/round")
   .then(r => r.json())
@@ -96,11 +111,13 @@ socket.on("invest-round-result", d => {
   const p = d.result?.[asset];
   if (p === undefined) return;
 
-  alert(
-    p >= 0
-      ? `🎉 Phiên chốt: +${p}%`
-      : `💥 Phiên chốt: ${p}%`
-  );
+showModal(
+  p >= 0 ? "🎉 KẾT QUẢ PHIÊN" : "💥 KẾT QUẢ PHIÊN",
+  p >= 0
+    ? `Bạn lời <b>+${p}%</b> trong phiên này.`
+    : `Bạn lỗ <b>${p}%</b> trong phiên này.`
+);
+
 
   // sync coin lại từ server
   fetch("/api/me/coin", {
@@ -211,14 +228,22 @@ function confirmInvest(){
 
 const left = Math.floor((roundEndAt - Date.now()) / 1000);
 if (left <= 5) {
-  alert("⛔ Phiên sắp chốt, không thể vào lệnh");
+  showModal(
+  "⛔ Không thể vào lệnh",
+  "Phiên sắp chốt, vui lòng chờ phiên tiếp theo."
+);
+
   return;
 }
 
 
 
   if (joinedRound) {
-    alert("⛔ Bạn đã vào lệnh phiên này");
+    showModal(
+  "⛔ Đã vào lệnh",
+  "Bạn đã vào lệnh trong phiên này."
+);
+
     return;
   }
 
@@ -227,7 +252,11 @@ if (left <= 5) {
   );
 
   if (!coin || coin <= 0) {
-    alert("Nhập số coin hợp lệ");
+    showModal(
+  "⚠️ Lỗi nhập liệu",
+  "Vui lòng nhập số coin hợp lệ."
+);
+
     return;
   }
 
@@ -242,12 +271,20 @@ if (left <= 5) {
   .then(r => r.json())
   .then(d => {
     if (!d.ok) {
-      alert(d.message || "Không thể vào lệnh");
+      showModal(
+  "❌ Thao tác thất bại",
+  d.message || "Không thể vào lệnh."
+);
+
       return;
     }
 
     joinedRound = true;
-    alert("✅ Đã vào lệnh, chờ chốt phiên");
+    showModal(
+  "✅ Thành công",
+  "Đã vào lệnh, vui lòng chờ chốt phiên."
+);
+
   });
 }
 
