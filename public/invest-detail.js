@@ -15,6 +15,15 @@ if (liveBadge) {
   liveBadge.classList.remove("hidden");
 }
 
+
+function updateLiveRound(n){
+  if (!liveBadge) return;
+  currentRoundId = n;
+  liveBadge.textContent = `LIVE • ROUND ${n}`;
+}
+
+
+
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const myCoinEl = document.getElementById("myCoin");
 if (myCoinEl) myCoinEl.textContent = me.coins || 0;
@@ -111,11 +120,19 @@ fetch("/api/invest/round")
   .then(d => {
     if (!d.ok) return;
 
-// 🔴 cập nhật LIVE • ROUND
-if (d.roundId && liveBadge) {
-  currentRoundId = d.roundId;
-  liveBadge.textContent = `LIVE • ROUND ${d.roundId}`;
+
+// 🔴 update LIVE • ROUND (ưu tiên server)
+if (typeof d.roundIndex === "number") {
+  updateLiveRound(d.roundIndex);
 }
+else if (typeof d.roundId === "number") {
+  updateLiveRound(d.roundId);
+}
+else {
+  // fallback
+  updateLiveRound((currentRoundId || 0) + 1);
+}
+
 
 
     // ⏱ timer
@@ -290,10 +307,15 @@ drawChart(chartData);
 // nhận phiên mới
 socket.on("invest-round-new", d => {
 
-  // 🔴 update LIVE • ROUND khi có phiên mới
-if (d.roundId && liveBadge) {
-  currentRoundId = d.roundId;
-  liveBadge.textContent = `LIVE • ROUND ${d.roundId}`;
+// 🔴 update LIVE • ROUND khi có phiên mới
+if (typeof d.roundIndex === "number") {
+  updateLiveRound(d.roundIndex);
+}
+else if (typeof d.roundId === "number") {
+  updateLiveRound(d.roundId);
+}
+else {
+  updateLiveRound((currentRoundId || 0) + 1);
 }
 
 
