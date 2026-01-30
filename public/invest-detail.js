@@ -148,14 +148,17 @@ else {
       renderOrderList();
 
       // 🔒 nếu user đã vào lệnh → khoá luôn
-if (roundOrders.some(o => o.uid === me.uid)) {
+const myOrder = roundOrders.find(o => o.uid === me.uid);
+if (myOrder) {
   joinedRound = true;
+  myEntryPrice = myOrder.entryPrice; // 🔥 PHỤC HỒI ENTRY
 
   if (investBtn) {
     investBtn.disabled = true;
     investBtn.textContent = "⛔ ĐÃ VÀO LỆNH";
   }
 }
+
 
 
       // 📍 phục hồi marker vào lệnh
@@ -488,6 +491,48 @@ function drawChart(data){
 
   const first = data[0];
   const last  = data[data.length - 1];
+
+
+// ===============================
+// 📍 VẼ ĐƯỜNG ENTRY PRICE
+// ===============================
+if (joinedRound && typeof myEntryPrice === "number") {
+  const prices = data.filter(v => v !== undefined);
+  if (prices.length > 1) {
+    const min = Math.min(...prices);
+    const max = Math.max(...prices);
+
+    if (max > min) {
+      // map giá → trục Y
+      const y =
+        H - ((myEntryPrice - min) / (max - min)) * H;
+
+      ctx.save();
+      ctx.setLineDash([6, 4]); // nét đứt
+      ctx.strokeStyle =
+        last >= myEntryPrice ? "#00ff99" : "#ff5c5c";
+      ctx.lineWidth = 1.5;
+
+      ctx.beginPath();
+      ctx.moveTo(0, y);
+      ctx.lineTo(W, y);
+      ctx.stroke();
+
+      // label ENTRY
+      ctx.setLineDash([]);
+      ctx.font = "12px sans-serif";
+      ctx.fillStyle = ctx.strokeStyle;
+      ctx.fillText(
+        "ENTRY",
+        6,
+        Math.max(12, y - 4)
+      );
+
+      ctx.restore();
+    }
+  }
+}
+
 
   const color =
     last > first ? "#00ff99" :
