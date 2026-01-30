@@ -175,7 +175,7 @@ if (myOrder) {
   });
 
 
-  
+
 socket.on("connect", () => {
   console.log("🔌 socket reconnected → resync chart");
 
@@ -752,3 +752,17 @@ socket.on("coin-update", d => {
   );
 });
 
+
+// ================= BACK BUTTON SAFE =================
+const btnBack = document.getElementById("btnBack");
+if (btnBack) {
+  btnBack.addEventListener("click", () => {
+    // có trang trước đó
+    if (window.history.length > 1) {
+      history.back();
+    } else {
+      // fallback an toàn
+      location.href = "/invest.html";
+    }
+  });
+}
