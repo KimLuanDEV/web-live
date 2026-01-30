@@ -464,18 +464,21 @@ function drawChart(data){
 
   // cập nhật text xu hướng
   const trendText = document.getElementById("trendText");
-  if (trendText) {
-    if (last > first) {
-      trendText.textContent = "📈 Xu hướng tăng";
-      trendText.className = "trend up";
-    } else if (last < first) {
-      trendText.textContent = "📉 Xu hướng giảm";
-      trendText.className = "trend down";
-    } else {
-      trendText.textContent = "➖ Sideway";
-      trendText.className = "trend neutral";
-    }
+ if (trendText) {
+  if (last > first) {
+    trendText.textContent = "Xu hướng tăng";
+    trendText.className = "trend-overlay up";
+  } 
+  else if (last < first) {
+    trendText.textContent = "Xu hướng giảm";
+    trendText.className = "trend-overlay down";
+  } 
+  else {
+    trendText.textContent = "Sideway";
+    trendText.className = "trend-overlay neutral";
   }
+}
+
 
 
   // ============================

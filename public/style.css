@@ -12068,3 +12068,41 @@ button:disabled{
   color: #aaa;
   border-color: rgba(255,255,255,.15);
 }
+
+
+/* ===== TREND ICON ANIMATION ===== */
+
+/* animation chung */
+@keyframes trendPulseUp {
+  0%   { transform: translateY(0);   opacity: 1; }
+  50%  { transform: translateY(-2px); opacity: .7; }
+  100% { transform: translateY(0);   opacity: 1; }
+}
+
+@keyframes trendPulseDown {
+  0%   { transform: translateY(0);   opacity: 1; }
+  50%  { transform: translateY(2px); opacity: .7; }
+  100% { transform: translateY(0);   opacity: 1; }
+}
+
+/* UP: mũi tên nhấp nháy đi lên */
+.trend-overlay.up::before {
+  content: "📈";
+  margin-right: 6px;
+  display: inline-block;
+  animation: trendPulseUp 1.2s infinite;
+}
+
+/* DOWN: mũi tên nhấp nháy đi xuống */
+.trend-overlay.down::before {
+  content: "📉";
+  margin-right: 6px;
+  display: inline-block;
+  animation: trendPulseDown 1.2s infinite;
+}
+
+/* SIDEWAY: không animation */
+.trend-overlay.neutral::before {
+  content: "➖";
+  margin-right: 6px;
+}
