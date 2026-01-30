@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>Phân tích đầu tư</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+</head>
+
+<body class="page-invest-detail">
+
+<header class="detail-header">
+  <button onclick="history.back()">⬅</button>
+  <h1 id="assetTitle">📊 Phân tích</h1>
+</header>
+
+<section class="detail-chart">
+  <canvas id="priceChart" height="220"></canvas>
+</section>
+
+<section class="detail-info">
+
+  <!-- ⏱ THỜI GIAN PHIÊN -->
+  <div id="roundTimer" class="round-timer">
+    ⏳ Đang tải phiên...
+  </div>
+
+  <!-- 📈 XU HƯỚNG -->
+  <div id="trendText" class="trend neutral">➖ Sideway</div>
+
+  <!-- 🧠 PHÂN TÍCH -->
+  <ul id="analysisText"></ul>
+
+</section>
+
+
+<!-- 🧾 DANH SÁCH LỆNH TRONG PHIÊN -->
+<section class="detail-orders">
+  <h3>🧾 Lệnh trong phiên</h3>
+  <ul id="orderList" class="order-list">
+    <li class="empty">Chưa có lệnh nào</li>
+  </ul>
+</section>
+
+
+<!-- 📊 THỐNG KÊ PHIÊN TRƯỚC -->
+<section class="detail-history">
+  <h3>📊 Lịch sử các phiên</h3>
+
+  <div class="history-table-wrap">
+    <table class="history-table">
+      <thead>
+        <tr>
+          <th>🕒 Phiên</th>
+          <th>🥈 Bạc</th>
+          <th>🥇 Vàng</th>
+          <th>💎 Kim cương</th>
+        </tr>
+      </thead>
+      <tbody id="roundHistory">
+        <tr>
+          <td colspan="4" class="empty">
+            Chưa có dữ liệu
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+
+
+
+<section class="detail-invest">
+  <div>💎 Số dư: <b id="myCoin">0</b></div>
+
+  <input
+    id="investAmount"
+    type="number"
+    placeholder="Nhập số coin đầu tư"
+  >
+
+  <button onclick="confirmInvest()">
+    🚀 VÀO LỆNH
+  </button>
+</section>
+
+
+
+
+<!-- 🔔 MODAL THÔNG BÁO -->
+<div id="appModal" class="app-modal hidden">
+  <div class="app-modal-backdrop" onclick="closeAppModal()"></div>
+
+  <div class="app-modal-box">
+    <h3 id="appModalTitle">Thông báo</h3>
+    <div id="appModalContent"></div>
+
+    <button class="app-modal-btn" onclick="closeAppModal()">
+      OK
+    </button>
+  </div>
+</div>
+
+
+
+<!-- ⚠️ BẮT BUỘC: socket.io -->
+<script src="/socket.io/socket.io.js"></script>
+
+<!-- 📈 LOGIC ĐẦU TƯ -->
+<script src="/invest-detail.js"></script>
+
+</body>
+</html>

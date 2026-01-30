@@ -75,6 +75,11 @@ MEDIA_DIRS.forEach(dir=>{
 
 
 
+const INVEST_HISTORY_FILE =
+  "/opt/render/project/data/invest_history.json";
+
+
+
 const INVEST_STATE_FILE =
   "/opt/render/project/data/invest_state.json";
 
@@ -91,6 +96,7 @@ const INVEST_STATE_FILE =
   }
 }
 
+
 function saveInvestState(state){
   try{
     fs.writeFileSync(
@@ -99,6 +105,30 @@ function saveInvestState(state){
     );
   }catch(e){
     console.error("❌ Save invest state failed", e);
+  }
+}
+
+
+function loadInvestHistory(){
+  try{
+    if(!fs.existsSync(INVEST_HISTORY_FILE)) return [];
+    return JSON.parse(
+      fs.readFileSync(INVEST_HISTORY_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load invest history failed", e);
+    return [];
+  }
+}
+
+function saveInvestHistory(list){
+  try{
+    fs.writeFileSync(
+      INVEST_HISTORY_FILE,
+      JSON.stringify(list, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save invest history failed", e);
   }
 }
 
@@ -286,8 +316,9 @@ if (investRound.endAt <= Date.now()) {
 saveInvestState(investRound);
 
 
-let investHistory = []; // [{ roundId, ts, result }]
-const MAX_HISTORY = 20;
+let investHistory = loadInvestHistory();
+const MAX_HISTORY = 10;
+
 
 
 
@@ -341,15 +372,19 @@ setInterval(() => {
   // ================================
   // 📜 LƯU LỊCH SỬ (DÙ CÓ LỆNH HAY KHÔNG)
   // ================================
-  investHistory.unshift({
-    roundId: round.id,
-    ts: Date.now(),
-    result
-  });
+investHistory.unshift({
+  roundId: round.id,
+  ts: Date.now(),
+  result
+});
 
-  if (investHistory.length > MAX_HISTORY) {
-    investHistory.pop();
-  }
+if (investHistory.length > MAX_HISTORY) {
+  investHistory.pop();
+}
+
+// 🔐 LƯU FILE → CHỐNG RESTART
+saveInvestHistory(investHistory);
+
 
   // ================================
   // 🔄 TẠO PHIÊN MỚI
