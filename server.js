@@ -652,9 +652,14 @@ app.get("/api/invest/round", (req, res) => {
   res.json({
     ok: true,
     roundId: investRound.id,
-    endAt: investRound.endAt
+    startAt: investRound.startAt,
+    endAt: investRound.endAt,
+
+    // 🔥 GỬI LUÔN LỆNH ĐÃ VÀO
+    orders: investRound.orders || []
   });
 });
+
 
 
 

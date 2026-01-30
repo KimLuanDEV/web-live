@@ -97,10 +97,31 @@ function closeAppModal(){
 fetch("/api/invest/round")
   .then(r => r.json())
   .then(d => {
-    if (d.ok && d.endAt) {
+    if (!d.ok) return;
+
+    // ⏱ timer
+    if (d.endAt) {
       startRoundTimer(d.endAt);
     }
+
+    // 🧾 LOAD LẠI LỆNH ĐÃ VÀO (QUAN TRỌNG)
+    if (Array.isArray(d.orders)) {
+      roundOrders = d.orders.filter(o => o.asset === asset);
+      renderOrderList();
+
+      // 📍 phục hồi marker vào lệnh
+      entryMarkers = roundOrders
+        .filter(o => typeof o.entrySec === "number")
+        .map(o => ({
+          sec: o.entrySec,
+          price: o.entryPrice,
+          mine: o.uid === me.uid
+        }));
+
+      drawChart(chartData);
+    }
   });
+
 
 
 fetch("/api/invest/chart")
