@@ -63,16 +63,27 @@ function startRoundTimer(endAt){
       Math.floor((roundEndAt - Date.now()) / 1000)
     );
 
-    if (left > 0) {
+    if (left > 5) {
+      // ✅ còn đủ thời gian → cho vào lệnh
       timerEl.textContent = `⏳ Chốt sau ${left}s`;
       investBtn.disabled = false;
       investBtn.textContent = "🚀 VÀO LỆNH";
-    } else {
-      timerEl.textContent = "🔒 Đang chốt phiên...";
+    }
+    else if (left > 0) {
+      // 🔒 còn <5s → khóa
+      timerEl.textContent = `🔒 Sắp chốt (${left}s)`;
       investBtn.disabled = true;
+      investBtn.textContent = "⛔ ĐÃ KHÓA";
+    }
+    else {
+      // 🔐 đang chốt
+      timerEl.textContent = "🔐 Đang chốt phiên...";
+      investBtn.disabled = true;
+      investBtn.textContent = "⛔ ĐÃ KHÓA";
     }
   }, 500);
 }
+
 
 // nhận phiên mới
 socket.on("invest-round-new", d => {
@@ -197,6 +208,15 @@ function stopFakeChart(){
 // ================== VÀO LỆNH ==================
 
 function confirmInvest(){
+
+const left = Math.floor((roundEndAt - Date.now()) / 1000);
+if (left <= 5) {
+  alert("⛔ Phiên sắp chốt, không thể vào lệnh");
+  return;
+}
+
+
+
   if (joinedRound) {
     alert("⛔ Bạn đã vào lệnh phiên này");
     return;
