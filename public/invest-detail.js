@@ -498,52 +498,45 @@ function drawChart(data){
 // ===============================
 if (joinedRound && typeof myEntryPrice === "number") {
   
-  if (prices.length > 1) {
-  
-    if (max > min) {
-      // map giá → trục Y
+// ===============================
+// 📍 VẼ ĐƯỜNG ENTRY PRICE
+// ===============================
+if (joinedRound && typeof myEntryPrice === "number") {
+
   const y =
-  H - (myEntryPrice - 80) * (H / 40);
+    H - (myEntryPrice - 80) * (H / 40);
+
+  ctx.save();
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle =
+    last >= myEntryPrice ? "#00ff99" : "#ff5c5c";
+  ctx.lineWidth = 1.5;
+
+  ctx.beginPath();
+  ctx.moveTo(0, y);
+  ctx.lineTo(W, y);
+  ctx.stroke();
+
+  // label ENTRY + giá
+  ctx.setLineDash([]);
+  ctx.font = "12px sans-serif";
+  ctx.fillStyle = ctx.strokeStyle;
+
+  ctx.fillText("ENTRY", 6, Math.max(12, y - 4));
+
+  const priceText = myEntryPrice.toFixed(2);
+  const textWidth = ctx.measureText(priceText).width;
+
+  ctx.fillText(
+    priceText,
+    W - textWidth - 8,
+    Math.max(12, y - 4)
+  );
+
+  ctx.restore();
+}
 
 
-      ctx.save();
-      ctx.setLineDash([6, 4]); // nét đứt
-      ctx.strokeStyle =
-        last >= myEntryPrice ? "#00ff99" : "#ff5c5c";
-      ctx.lineWidth = 1.5;
-
-      ctx.beginPath();
-      ctx.moveTo(0, y);
-      ctx.lineTo(W, y);
-      ctx.stroke();
-
-      // label ENTRY
-  // label ENTRY + GIÁ
-ctx.setLineDash([]);
-ctx.font = "12px sans-serif";
-ctx.fillStyle = ctx.strokeStyle;
-
-// bên trái (ENTRY)
-ctx.fillText(
-  "ENTRY",
-  6,
-  Math.max(12, y - 4)
-);
-
-// bên phải (GIÁ ENTRY)
-const priceText = myEntryPrice.toFixed(2);
-const textWidth = ctx.measureText(priceText).width;
-
-ctx.fillText(
-  priceText,
-  W - textWidth - 8,
-  Math.max(12, y - 4)
-);
-
-
-      ctx.restore();
-    }
-  }
 }
 
 
@@ -558,7 +551,8 @@ ctx.fillText(
   ctx.shadowColor = color;
   ctx.shadowBlur = 10;
 
-   const points = data.filter(v => v !== undefined).slice(-30);
+  const points = data.filter(v => v !== undefined);
+
 
   points.forEach((v, i) => {
   const x = i * (W / Math.max(points.length - 1, 1));
