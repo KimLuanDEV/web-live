@@ -519,14 +519,28 @@ if (joinedRound && typeof myEntryPrice === "number") {
       ctx.stroke();
 
       // label ENTRY
-      ctx.setLineDash([]);
-      ctx.font = "12px sans-serif";
-      ctx.fillStyle = ctx.strokeStyle;
-      ctx.fillText(
-        "ENTRY",
-        6,
-        Math.max(12, y - 4)
-      );
+  // label ENTRY + GIÁ
+ctx.setLineDash([]);
+ctx.font = "12px sans-serif";
+ctx.fillStyle = ctx.strokeStyle;
+
+// bên trái (ENTRY)
+ctx.fillText(
+  "ENTRY",
+  6,
+  Math.max(12, y - 4)
+);
+
+// bên phải (GIÁ ENTRY)
+const priceText = myEntryPrice.toFixed(2);
+const textWidth = ctx.measureText(priceText).width;
+
+ctx.fillText(
+  priceText,
+  W - textWidth - 8,
+  Math.max(12, y - 4)
+);
+
 
       ctx.restore();
     }
