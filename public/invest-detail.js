@@ -5,6 +5,11 @@ const asset = params.get("asset") || "gold";
 const historyEl = document.getElementById("roundHistory");
 
 const ROUND_DURATION = 60; // giây
+const liveBadge = document.getElementById("liveBadge");
+// 🔴 LIVE luôn hiển thị
+if (liveBadge) {
+  liveBadge.classList.remove("hidden");
+}
 
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const myCoinEl = document.getElementById("myCoin");
@@ -172,13 +177,6 @@ if (timerEl && !timerEl.querySelector(".timer-text")) {
   `;
 }
 
-// 🔴 gắn badge LIVE
-if (timerEl && !timerEl.querySelector(".live-badge")) {
-  const badge = document.createElement("span");
-  badge.className = "live-badge";
-  badge.textContent = "LIVE";
-  timerEl.appendChild(badge);
-}
 
 
 
@@ -220,8 +218,7 @@ function startRoundTimer(endAt){
       timerEl.className =
         "round-timer overlay-timer running";
 
-        const badge = timerEl.querySelector(".live-badge");
-        if (badge) badge.style.display = "block";
+  
 
 
       investBtn.disabled = false;
@@ -233,8 +230,7 @@ function startRoundTimer(endAt){
       timerEl.className =
         "round-timer overlay-timer locked";
 
-      const badge = timerEl.querySelector(".live-badge");
-      if (badge) badge.style.display = "none";
+
 
       investBtn.disabled = true;
       investBtn.textContent = "⛔ ĐÃ KHÓA";
@@ -245,8 +241,7 @@ function startRoundTimer(endAt){
       timerEl.className =
         "round-timer overlay-timer locked";
 
-      const badge = timerEl.querySelector(".live-badge");
-      if (badge) badge.style.display = "none";
+
 
 
       timerEl.style.setProperty("--progress", 0);
