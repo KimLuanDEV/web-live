@@ -169,14 +169,26 @@ socket.on("invest-round-new", d => {
 // nhận kết quả phiên
 socket.on("invest-round-result", d => {
 
-  // 1️⃣ LUÔN UPDATE BẢNG LỊCH SỬ (AI CŨNG THẤY)
+  // ===============================
+  // 1️⃣ HIỂN THỊ KẾT QUẢ PHIÊN (AI CŨNG THẤY)
+  // ===============================
+  const box = document.getElementById("lastRoundResult");
+  if (box && d.result) {
+    box.classList.remove("hidden");
+
+    setResult("resGold", d.result.gold);
+    setResult("resSilver", d.result.silver);
+    setResult("resDiamond", d.result.diamond);
+  }
+
+  // luôn update bảng lịch sử
   fetch("/api/invest/history")
     .then(r => r.json())
-    .then(h => {
-      if (h.ok) renderHistory(h.list);
-    });
+    .then(h => h.ok && renderHistory(h.list));
 
-  // 2️⃣ NẾU CÓ VÀO LỆNH → MỚI SHOW MODAL + UPDATE COIN
+  // ===============================
+  // 2️⃣ CHỈ USER VÀO LỆNH → MODAL + COIN
+  // ===============================
   if (!joinedRound) return;
 
   const p = d.result?.[asset];
@@ -204,6 +216,7 @@ socket.on("invest-round-result", d => {
       }
     });
 });
+
 
 
 // ================== CHART (FAKE REALTIME) ==================
@@ -379,3 +392,15 @@ fetch("/api/invest/history")
 
 
 startFakeChart();
+
+
+
+function setResult(id, val){
+  const el = document.getElementById(id);
+  if (!el) return;
+
+  el.textContent = (val > 0 ? "+" : "") + val + "%";
+  el.className =
+    val > 0 ? "up" :
+    val < 0 ? "down" : "neutral";
+}
