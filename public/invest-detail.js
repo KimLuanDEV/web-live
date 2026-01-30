@@ -4,6 +4,8 @@ const params = new URLSearchParams(location.search);
 const asset = params.get("asset") || "gold";
 const historyEl = document.getElementById("roundHistory");
 
+const ROUND_DURATION = 60; // giây
+
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const myCoinEl = document.getElementById("myCoin");
 if (myCoinEl) myCoinEl.textContent = me.coins || 0;
@@ -162,7 +164,14 @@ let roundOrders = [];
 let entryMarkers = []; // 📍 điểm vào lệnh
 
 const orderListEl = document.getElementById("orderList");
+
 const timerEl = document.getElementById("roundTimer");
+if (timerEl && !timerEl.querySelector(".timer-text")) {
+  timerEl.innerHTML = `
+    <span class="timer-text">⏳</span>
+  `;
+}
+
 const investBtn = document.querySelector(".detail-invest button");
 
 
@@ -180,9 +189,24 @@ function startRoundTimer(endAt){
 
     if (!timerEl) return;
 
+    // % tiến trình (0 → 1)
+    const progress = Math.max(
+      0,
+      Math.min(1, left / ROUND_DURATION)
+    );
+
+    // set CSS variable cho vòng tròn
+    timerEl.style.setProperty(
+      "--progress",
+      progress
+    );
+
+    const textEl =
+      timerEl.querySelector(".timer-text");
+
     if (left > 5) {
       // 🟢 ĐANG CHẠY
-      timerEl.textContent = `⏳ ${left}s`;
+      textEl.textContent = `⏳ ${left}s`;
       timerEl.className =
         "round-timer overlay-timer running";
 
@@ -191,7 +215,7 @@ function startRoundTimer(endAt){
     }
     else if (left > 0) {
       // 🔴 SẮP CHỐT
-      timerEl.textContent = `🔒 ${left}s`;
+      textEl.textContent = `🔒 ${left}s`;
       timerEl.className =
         "round-timer overlay-timer locked";
 
@@ -200,15 +224,18 @@ function startRoundTimer(endAt){
     }
     else {
       // 🔐 ĐANG CHỐT
-      timerEl.textContent = "🔐 ĐANG CHỐT";
+      textEl.textContent = "🔐";
       timerEl.className =
         "round-timer overlay-timer locked";
+
+      timerEl.style.setProperty("--progress", 0);
 
       investBtn.disabled = true;
       investBtn.textContent = "⛔ ĐÃ KHÓA";
     }
   }, 500);
 }
+
 
 
 

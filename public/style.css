@@ -11892,3 +11892,66 @@ button:disabled{
   background: rgba(255,92,92,.15);
   color: #ff5c5c;
 }
+
+
+/* ===== TIMER CIRCLE PROGRESS ===== */
+
+.overlay-timer {
+  --size: 44px;
+  --thick: 3px;
+  --progress: 1;
+
+  width: var(--size);
+  height: var(--size);
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+
+  background:
+    conic-gradient(
+      #00ff99 calc(var(--progress) * 360deg),
+      rgba(255,255,255,.15) 0
+    );
+
+  box-shadow: 0 4px 12px rgba(0,0,0,.6);
+}
+
+/* lớp trong */
+.overlay-timer::before {
+  content: "";
+  position: absolute;
+  inset: var(--thick);
+  background: rgba(0,0,0,.75);
+  border-radius: 50%;
+}
+
+/* text nằm trên */
+.timer-text {
+  position: relative;
+  z-index: 2;
+  color: #fff;
+  text-shadow: 0 0 6px rgba(0,0,0,.8);
+}
+
+/* màu theo trạng thái */
+.overlay-timer.running {
+  background:
+    conic-gradient(
+      #00ff99 calc(var(--progress) * 360deg),
+      rgba(255,255,255,.15) 0
+    );
+}
+
+.overlay-timer.locked {
+  background:
+    conic-gradient(
+      #ff5c5c calc(var(--progress) * 360deg),
+      rgba(255,255,255,.15) 0
+    );
+}
