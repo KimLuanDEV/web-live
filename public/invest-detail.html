@@ -89,44 +89,54 @@ html, body {
 
 
 
-/* ===== FULL WIDTH CHART ===== */
+/* ===== CHART CARD XỊN ===== */
 .detail-chart.chart-wrap {
-  width: 100vw;                 /* chiếm full viewport */
-  margin-left: calc(50% - 50vw);/* phá padding cha, kéo sát mép */
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
-  padding: 0;                   /* bỏ padding card */
-  border-radius: 0;             /* vuông mép cho đã */
+  padding: 0;
   overflow: hidden;
+
+  /* ✨ bo góc */
+  border-radius: 16px;
+
+  /* ✨ nền tối nhẹ */
+  background: linear-gradient(
+    180deg,
+    rgba(20,20,20,.95),
+    rgba(10,10,10,1)
+  );
+
+  /* ✨ shadow nhẹ, không bệt */
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.05);
 }
-
-
-.detail-chart #priceChart {
-  width: 100% !important;
-  display: block;
-}
-
 
 .detail-chart .overlay-timer {
-  left: 12px;
-  top: 12px;
+  left: 14px;
+  top: 14px;
 }
 
 .detail-chart .live-badge-fixed {
-  right: 12px;
-  top: 12px;
+  right: 14px;
+  top: 14px;
 }
 
 .detail-chart .trend-overlay {
   left: 50%;
   transform: translateX(-50%);
-  bottom: 12px;
+  bottom: 14px;
 }
 
 .detail-chart .pnl-overlay {
-  right: 12px;
-  bottom: 12px;
+  right: 14px;
+  bottom: 14px;
 }
 
+.detail-chart.chart-wrap {
+  border-radius: 20px;
+}
 
 </style>
 
