@@ -329,7 +329,6 @@ else {
 });
 
 
-// nhận kết quả phiên
 socket.on("invest-round-result", d => {
 
   // ===============================
@@ -350,20 +349,37 @@ socket.on("invest-round-result", d => {
     .then(h => h.ok && renderHistory(h.list));
 
   // ===============================
-  // 2️⃣ CHỈ USER VÀO LỆNH → MODAL + COIN
+  // 2️⃣ CHỈ USER ĐÃ VÀO LỆNH → TÍNH THEO ENTRY
   // ===============================
   if (!joinedRound) return;
 
-  const p = d.result?.[asset];
-  if (p === undefined) return;
-
-  showModal(
-    p >= 0 ? "🎉 KẾT QUẢ PHIÊN" : "💥 KẾT QUẢ PHIÊN",
-    p >= 0
-      ? `Bạn lời <b>+${p}%</b> trong phiên này`
-      : `Bạn lỗ <b>${p}%</b> trong phiên này`
+  // 🔍 tìm lệnh của chính user
+  const myOrder = roundOrders.find(
+    o => o.uid === me.uid && o.asset === asset
   );
 
+  if (!myOrder) return;
+
+  // 🎯 tính % từ điểm vào lệnh → giá cuối
+  const entry = myOrder.entryPrice;
+  const end   = chartData[chartData.length - 1];
+
+  if (!entry || !end) return;
+
+  let percent =
+    Math.round((end - entry) / entry * 100);
+
+  // 🔒 clamp UI (chỉ để hiển thị)
+  percent = Math.max(-30, Math.min(30, percent));
+
+  showModal(
+    percent >= 0 ? "🎉 KẾT QUẢ LỆNH" : "💥 KẾT QUẢ LỆNH",
+    percent >= 0
+      ? `Bạn lời <b>+${percent}%</b> từ điểm vào lệnh`
+      : `Bạn lỗ <b>${percent}%</b> từ điểm vào lệnh`
+  );
+
+  // 🔄 sync lại coin từ server (nguồn sự thật)
   fetch("/api/me/coin", {
     headers: { "x-uid": me.uid }
   })
