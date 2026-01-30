@@ -2,6 +2,7 @@
 
 const params = new URLSearchParams(location.search);
 const asset = params.get("asset") || "gold";
+const historyEl = document.getElementById("roundHistory");
 
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 const myCoinEl = document.getElementById("myCoin");
@@ -29,6 +30,29 @@ document.getElementById("analysisText").innerHTML = `
 // ================== SOCKET + ROUND ==================
 
 const socket = io();
+
+
+function renderHistory(list){
+  if (!historyEl || !list?.length) return;
+
+  historyEl.innerHTML = list.map(r => `
+    <tr>
+      <td>${new Date(r.ts).toLocaleTimeString()}</td>
+      ${renderCell(r.result.gold)}
+      ${renderCell(r.result.silver)}
+      ${renderCell(r.result.diamond)}
+    </tr>
+  `).join("");
+}
+
+function renderCell(v){
+  if (v > 0)
+    return `<td class="up">+${v}%</td>`;
+  if (v < 0)
+    return `<td class="down">${v}%</td>`;
+  return `<td class="neutral">0%</td>`;
+}
+
 
 
 function showModal(title, content){
@@ -170,6 +194,15 @@ showModal(
       );
     }
   });
+
+
+fetch("/api/invest/history")
+  .then(r => r.json())
+  .then(d => d.ok && renderHistory(d.list));
+
+
+
+
 });
 
 // ================== CHART (FAKE REALTIME) ==================
@@ -185,6 +218,10 @@ function getTrendColor(data){
   if (last < first - 0.5) return "#ff5c5c";
   return "#aaa";
 }
+
+
+
+
 
 function startFakeChart(){
   stopFakeChart();
@@ -327,5 +364,17 @@ if (left <= 5) {
 }
 
 // ================== START ==================
+
+
+
+fetch("/api/invest/history")
+  .then(r => r.json())
+  .then(d => {
+    if (d.ok) {
+      renderHistory(d.list);
+    }
+  });
+
+
 
 startFakeChart();

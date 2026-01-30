@@ -244,6 +244,9 @@ let investRound = {
   orders: [] // { uid, asset, coin }
 };
 
+let investHistory = []; // [{ roundId, ts, result }]
+const MAX_HISTORY = 20;
+
 
 
 setInterval(() => {
@@ -298,6 +301,18 @@ setInterval(() => {
     result
   });
 
+
+  investHistory.unshift({
+  roundId: round.id,
+  ts: Date.now(),
+  result
+});
+
+if (investHistory.length > MAX_HISTORY) {
+  investHistory.pop();
+}
+
+
   // 🔄 TẠO PHIÊN MỚI
   investRound = {
     id: Date.now(),
@@ -311,6 +326,8 @@ setInterval(() => {
   });
 
 }, 60000);
+
+
 
 
 
@@ -389,6 +406,12 @@ app.get("/api/invest/round", (req, res) => {
 
 
 
+app.get("/api/invest/history", (req, res) => {
+  res.json({
+    ok: true,
+    list: investHistory
+  });
+});
 
 
 
