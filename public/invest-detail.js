@@ -441,7 +441,7 @@ else {
 
   joinedRound = false;
   roundOrders = [];
-  renderOrderList();
+  renderOrdersModal();
   startRoundTimer(d.endAt);
   chartData = [];
   resizeChartCanvas();
