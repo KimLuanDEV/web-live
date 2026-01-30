@@ -284,6 +284,17 @@ function saveSocial(){
 }
 
 
+// ================================
+// 🧠 TREND ENGINE (LEVEL 11)
+// ================================
+function pickTrend(rng) {
+  const r = rng();
+  if (r < 0.45) return "UP";
+  if (r < 0.9)  return "DOWN";
+  return "SIDE";
+}
+
+
 
 function generateChart(roundId) {
   const base = 100;
@@ -295,16 +306,43 @@ function generateChart(roundId) {
     diamond: []
   };
 
+  // 🔥 1️⃣ RNG gốc cho cả phiên
+  const roundRng = seededRandom("trend:" + roundId);
+
+  // 🧠 2️⃣ Chọn trend cho từng asset
+  const trends = {
+    gold:    pickTrend(roundRng),
+    silver:  pickTrend(roundRng),
+    diamond: pickTrend(roundRng)
+  };
+
+  // 📈 3️⃣ Bias theo trend
+  const trendBias = {
+    UP:   0.04,
+    DOWN: -0.04,
+    SIDE: 0
+  };
+
   for (let t = 0; t < 60; t++) {
     for (const k in chart) {
       const rng = seededRandom(roundId + ":" + k + ":" + t);
       const prev = chart[k][t - 1] ?? base;
-      let next = prev + (rng() - 0.5) * vol[k];
+
+      const noise = (rng() - 0.5) * vol[k];
+      const bias  = trendBias[trends[k]];
+
+      let next = prev + noise + bias;
+
       chart[k][t] = Math.max(80, Math.min(120, next));
     }
   }
+
+  // 🔎 (optional) log debug
+  console.log("📊 Round", roundId, "trends:", trends);
+
   return chart;
 }
+
 
 
 // ================================
