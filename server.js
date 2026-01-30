@@ -252,27 +252,15 @@ const MAX_HISTORY = 20;
 setInterval(() => {
   const round = investRound;
 
-  if (!round.orders.length) {
-    // vẫn reset round để đồng bộ thời gian
-    investRound = {
-      id: Date.now(),
-      endAt: Date.now() + 60000,
-      orders: []
-    };
-    io.emit("invest-round-new", {
-      roundId: investRound.id,
-      endAt: investRound.endAt
-    });
-    return;
-  }
-
+  // ================================
+  // 🎯 KẾT QUẢ PHIÊN (LUÔN SINH)
+  // ================================
   const ranges = {
     gold: [-5, 8],
     silver: [-3, 5],
     diamond: [-10, 15]
   };
 
-  // 🎯 KẾT QUẢ CHUNG
   const result = {};
   for (const k in ranges) {
     const [min, max] = ranges[k];
@@ -280,40 +268,50 @@ setInterval(() => {
       Math.floor(Math.random() * (max - min + 1)) + min;
   }
 
-  const users = loadUsers();
+  // ================================
+  // 💰 CHỈ XỬ LÝ COIN NẾU CÓ LỆNH
+  // ================================
+  if (round.orders.length) {
+    const users = loadUsers();
 
-  round.orders.forEach(o => {
-    const me = users[o.uid];
-    if (!me?.profile) return;
+    round.orders.forEach(o => {
+      const me = users[o.uid];
+      if (!me?.profile) return;
 
-    const percent = result[o.asset] || 0;
-    const profit = Math.round(o.coin * percent / 100);
+      const percent = result[o.asset] || 0;
+      const profit = Math.round(o.coin * percent / 100);
 
-    // ➕ HOÀN COIN + LÃI/LỖ
-    me.profile.coins += o.coin + profit;
-  });
+      // ➕ hoàn coin + lãi/lỗ
+      me.profile.coins += o.coin + profit;
+    });
 
-  saveUsers(users);
+    saveUsers(users);
+  }
 
-  // 🔔 EMIT KẾT QUẢ PHIÊN
+  // ================================
+  // 🔔 EMIT KẾT QUẢ PHIÊN (AI CŨNG NHẬN)
+  // ================================
   io.emit("invest-round-result", {
     roundId: round.id,
     result
   });
 
-
+  // ================================
+  // 📜 LƯU LỊCH SỬ (DÙ CÓ LỆNH HAY KHÔNG)
+  // ================================
   investHistory.unshift({
-  roundId: round.id,
-  ts: Date.now(),
-  result
-});
+    roundId: round.id,
+    ts: Date.now(),
+    result
+  });
 
-if (investHistory.length > MAX_HISTORY) {
-  investHistory.pop();
-}
+  if (investHistory.length > MAX_HISTORY) {
+    investHistory.pop();
+  }
 
-
+  // ================================
   // 🔄 TẠO PHIÊN MỚI
+  // ================================
   investRound = {
     id: Date.now(),
     endAt: Date.now() + 60000,
