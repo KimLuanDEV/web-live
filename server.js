@@ -422,6 +422,14 @@ app.post("/api/invest", (req, res) => {
     coin
   });
 
+  // 🔔 realtime: broadcast lệnh mới cho tất cả client
+io.emit("invest-order-new", {
+  uid,
+  asset: type,
+  coin
+});
+
+
   res.json({
     ok: true,
     roundId: investRound.id,

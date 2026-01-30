@@ -38,6 +38,29 @@ function showModal(title, content){
   modal.classList.remove("hidden");
 }
 
+
+function renderOrderList(){
+  if (!orderListEl) return;
+
+  if (!roundOrders.length) {
+    orderListEl.innerHTML =
+      `<li class="empty">Chưa có lệnh nào</li>`;
+    return;
+  }
+
+  orderListEl.innerHTML = roundOrders.map(o => `
+    <li class="order-item ${o.uid === me.uid ? "me" : ""}">
+      <span>
+        ${o.uid === me.uid ? "🧑 Bạn" : "👤 Người chơi"}
+      </span>
+      <b>${o.coin} 💎</b>
+    </li>
+  `).join("");
+}
+
+
+
+
 function closeAppModal(){
   document.getElementById("appModal")
     .classList.add("hidden");
@@ -61,7 +84,9 @@ fetch("/api/invest/round")
 let roundEndAt = 0;
 let timerInt = null;
 let joinedRound = false;
+let roundOrders = [];
 
+const orderListEl = document.getElementById("orderList");
 const timerEl = document.getElementById("roundTimer");
 const investBtn = document.querySelector(".detail-invest button");
 
@@ -100,11 +125,22 @@ function startRoundTimer(endAt){
 }
 
 
+socket.on("invest-order-new", o => {
+  if (o.asset !== asset) return;
+
+  roundOrders.push(o);
+  renderOrderList();
+});
+
+
 // nhận phiên mới
 socket.on("invest-round-new", d => {
   joinedRound = false;
+  roundOrders = [];
+  renderOrderList();
   startRoundTimer(d.endAt);
 });
+
 
 // nhận kết quả phiên
 socket.on("invest-round-result", d => {
@@ -279,7 +315,15 @@ if (left <= 5) {
       return;
     }
 
-    joinedRound = true;
+
+
+  joinedRound = true;
+    roundOrders.push({
+  uid: me.uid,
+  coin
+});
+renderOrderList();
+
     showModal(
   "✅ Thành công",
   "Đã vào lệnh, vui lòng chờ chốt phiên."
