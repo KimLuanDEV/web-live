@@ -5,6 +5,10 @@ const asset = params.get("asset") || "gold";
 const historyEl = document.getElementById("roundHistory");
 
 const ROUND_DURATION = 60; // giây
+
+
+let currentRoundId = null;
+
 const liveBadge = document.getElementById("liveBadge");
 // 🔴 LIVE luôn hiển thị
 if (liveBadge) {
@@ -16,6 +20,7 @@ const myCoinEl = document.getElementById("myCoin");
 if (myCoinEl) myCoinEl.textContent = me.coins || 0;
 
 // ================== CONFIG ==================
+
 
 const config = {
   gold:    { name:"🥇 Vàng", min:-5,  max:8,  vol:1 },
@@ -105,6 +110,13 @@ fetch("/api/invest/round")
   .then(r => r.json())
   .then(d => {
     if (!d.ok) return;
+
+// 🔴 cập nhật LIVE • ROUND
+if (d.roundId && liveBadge) {
+  currentRoundId = d.roundId;
+  liveBadge.textContent = `LIVE • ROUND ${d.roundId}`;
+}
+
 
     // ⏱ timer
     if (d.endAt) {
@@ -277,6 +289,14 @@ drawChart(chartData);
 
 // nhận phiên mới
 socket.on("invest-round-new", d => {
+
+  // 🔴 update LIVE • ROUND khi có phiên mới
+if (d.roundId && liveBadge) {
+  currentRoundId = d.roundId;
+  liveBadge.textContent = `LIVE • ROUND ${d.roundId}`;
+}
+
+
   joinedRound = false;
   roundOrders = [];
   renderOrderList();

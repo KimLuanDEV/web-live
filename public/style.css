@@ -12020,3 +12020,10 @@ button:disabled{
   50%  { opacity: .5; }
   100% { opacity: 1; }
 }
+
+.live-badge-fixed {
+  padding: 4px 10px;
+  font-size: 10px;
+  letter-spacing: .6px;
+  text-transform: uppercase;
+}
