@@ -449,11 +449,25 @@ const result = calcResultFromChart(round.chart);
       const me = users[o.uid];
       if (!me?.profile) return;
 
-      const percent = result[o.asset] || 0;
-      const profit = Math.round(o.coin * percent / 100);
+const prices = round.chart[o.asset];
+if (!prices) return;
 
-      // ➕ hoàn coin + lãi/lỗ
-      me.profile.coins += o.coin + profit;
+const entry = o.entryPrice;
+const end   = prices[prices.length - 1];
+
+let percent =
+  Math.round((end - entry) / entry * 100);
+
+// 🔒 clamp an toàn
+percent = Math.max(-30, Math.min(30, percent));
+
+const profit =
+  Math.round(o.coin * percent / 100);
+
+// ➕ hoàn coin + lời/lỗ
+me.profile.coins += o.coin + profit;
+
+
     });
 
     saveUsers(users);
@@ -473,7 +487,13 @@ const result = calcResultFromChart(round.chart);
 investHistory.unshift({
   roundId: round.id,
   ts: Date.now(),
-  result
+  result,
+  orders: round.orders.map(o => ({
+    uid: o.uid,
+    asset: o.asset,
+    coin: o.coin,
+    entryPrice: o.entryPrice
+  }))
 });
 
 if (investHistory.length > MAX_HISTORY) {
@@ -631,11 +651,29 @@ app.post("/api/invest", (req, res) => {
   emitCoinUpdate(uid);
 
   // 📥 lưu lệnh vào phiên hiện tại
-  investRound.orders.push({
-    uid,
-    asset: type,
-    coin
+const nowSec = Math.floor(
+  (Date.now() - investRound.startAt) / 1000
+);
+
+const entryPrice =
+  investRound.chart[type]?.[nowSec];
+
+if (typeof entryPrice !== "number") {
+  return res.json({
+    ok:false,
+    message:"Không lấy được giá vào lệnh"
   });
+}
+
+investRound.orders.push({
+  uid,
+  asset: type,
+  coin,
+
+  entrySec: nowSec,        // ⏱ giây vào lệnh
+  entryPrice: entryPrice  // 📈 giá tại thời điểm vào
+});
+
 
 
   // 🔐 lưu ngay để chống restart
