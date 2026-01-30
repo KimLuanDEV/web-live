@@ -178,26 +178,38 @@ function startRoundTimer(endAt){
       Math.floor((roundEndAt - Date.now()) / 1000)
     );
 
+    if (!timerEl) return;
+
     if (left > 5) {
-      // ✅ còn đủ thời gian → cho vào lệnh
-      timerEl.textContent = `⏳ Chốt sau ${left}s`;
+      // 🟢 ĐANG CHẠY
+      timerEl.textContent = `⏳ ${left}s`;
+      timerEl.className =
+        "round-timer overlay-timer running";
+
       investBtn.disabled = false;
       investBtn.textContent = "🚀 VÀO LỆNH";
     }
     else if (left > 0) {
-      // 🔒 còn <5s → khóa
-      timerEl.textContent = `🔒 Sắp chốt (${left}s)`;
+      // 🔴 SẮP CHỐT
+      timerEl.textContent = `🔒 ${left}s`;
+      timerEl.className =
+        "round-timer overlay-timer locked";
+
       investBtn.disabled = true;
       investBtn.textContent = "⛔ ĐÃ KHÓA";
     }
     else {
-      // 🔐 đang chốt
-      timerEl.textContent = "🔐 Đang chốt phiên...";
+      // 🔐 ĐANG CHỐT
+      timerEl.textContent = "🔐 ĐANG CHỐT";
+      timerEl.className =
+        "round-timer overlay-timer locked";
+
       investBtn.disabled = true;
       investBtn.textContent = "⛔ ĐÃ KHÓA";
     }
   }, 500);
 }
+
 
 
 socket.on("invest-order-new", o => {
