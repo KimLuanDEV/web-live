@@ -66,17 +66,17 @@ const btnOpenOrders = document.getElementById("btnOpenOrders");
 const btnCloseOrders = document.getElementById("btnCloseOrders");
 const ordersBackdrop = document.getElementById("ordersBackdrop");
 
+
+
 function openOrders(){
   if(!ordersModal) return;
   ordersModal.classList.remove("hidden");
   ordersModal.setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
 
-  // sync list hiện tại
-  if (ordersModalList && orderListEl) {
-    ordersModalList.innerHTML = orderListEl.innerHTML;
-  }
+  renderOrdersModal(); // ✅ render trực tiếp từ roundOrders
 }
+
 
 function closeOrders(){
   if(!ordersModal) return;
@@ -168,6 +168,24 @@ function renderHistory(list){
 }
 
 
+function renderOrdersModal(){
+  if (!ordersModalList) return;
+
+  if (!roundOrders.length) {
+    ordersModalList.innerHTML =
+      `<li class="empty">Chưa có lệnh nào</li>`;
+    return;
+  }
+
+  ordersModalList.innerHTML = roundOrders.map(o => `
+    <li class="order-item ${o.uid === me.uid ? "me" : ""}">
+      <span>
+        ${o.uid === me.uid ? "🧑 Bạn" : "👤 Người chơi"}
+      </span>
+      <b>${o.coin} 💎</b>
+    </li>
+  `).join("");
+}
 
 
 
@@ -189,25 +207,6 @@ function showModal(title, content){
   modal.classList.remove("hidden");
 }
 
-
-function renderOrderList(){
-  if (!orderListEl) return;
-
-  if (!roundOrders.length) {
-    orderListEl.innerHTML =
-      `<li class="empty">Chưa có lệnh nào</li>`;
-    return;
-  }
-
-  orderListEl.innerHTML = roundOrders.map(o => `
-    <li class="order-item ${o.uid === me.uid ? "me" : ""}">
-      <span>
-        ${o.uid === me.uid ? "🧑 Bạn" : "👤 Người chơi"}
-      </span>
-      <b>${o.coin} 💎</b>
-    </li>
-  `).join("");
-}
 
 
 
@@ -249,8 +248,9 @@ else {
     // 🧾 LOAD LẠI LỆNH ĐÃ VÀO (QUAN TRỌNG)
     if (Array.isArray(d.orders)) {
 
-      roundOrders = d.orders.filter(o => o.asset === asset);
-      renderOrderList();
+roundOrders = d.orders.filter(o => o.asset === asset);
+renderOrdersModal(); // ✅
+
 
       // 🔒 nếu user đã vào lệnh → khoá luôn
 const myOrder = roundOrders.find(o => o.uid === me.uid);
@@ -309,7 +309,7 @@ let joinedRound = false;
 let roundOrders = [];
 let entryMarkers = []; // 📍 điểm vào lệnh
 
-const orderListEl = document.getElementById("orderList");
+
 
 const timerEl = document.getElementById("roundTimer");
 if (timerEl && !timerEl.querySelector(".timer-text")) {
@@ -399,27 +399,24 @@ function startRoundTimer(endAt){
 socket.on("invest-order-new", o => {
   if (o.asset !== asset) return;
 
-roundOrders.push(o);
+  roundOrders.push(o);
 
-// 🔥 LƯU ENTRY CHO PnL REALTIME
-if (o.uid === me.uid && typeof o.entryPrice === "number") {
-  myEntryPrice = o.entryPrice;
-}
+  if (o.uid === me.uid && typeof o.entryPrice === "number") {
+    myEntryPrice = o.entryPrice;
+  }
 
+  if (typeof o.entrySec === "number" && typeof o.entryPrice === "number") {
+    entryMarkers.push({
+      sec: o.entrySec,
+      price: o.entryPrice,
+      mine: o.uid === me.uid
+    });
+  }
 
-// 📍 lưu marker nếu có dữ liệu entry
-if (typeof o.entrySec === "number" && typeof o.entryPrice === "number") {
-  entryMarkers.push({
-    sec: o.entrySec,
-    price: o.entryPrice,
-    mine: o.uid === me.uid
-  });
-}
-
-renderOrderList();
-drawChart(chartData);
-
+  renderOrdersModal(); // ✅ QUAN TRỌNG
+  drawChart(chartData);
 });
+
 
 
 // nhận phiên mới
