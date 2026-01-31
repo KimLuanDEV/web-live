@@ -537,6 +537,38 @@ html, body {
 }
 
 
+.direction-picker{
+  display:grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap:8px;
+  margin-bottom:10px;
+}
+
+.dir-btn{
+  padding:12px 0;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.15);
+  background:rgba(255,255,255,.04);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.dir-btn.up.active{
+  background:rgba(0,255,153,.25);
+  border-color:#00ff99;
+}
+.dir-btn.down.active{
+  background:rgba(255,92,92,.25);
+  border-color:#ff5c5c;
+}
+.dir-btn.side.active{
+  background:rgba(180,180,180,.25);
+  border-color:#aaa;
+}
+
+
 </style>
 
 
@@ -660,9 +692,19 @@ html, body {
 
 <!-- 🚀 ACTION -->
 <section class="detail-invest card invest-action">
+
+
   <div class="coin-row">
     💎 Số dư: <b id="myCoin">0</b>
   </div>
+
+<!-- 🎯 CHỌN HƯỚNG -->
+<div class="direction-picker">
+  <button class="dir-btn up" data-dir="up">📈 TĂNG</button>
+  <button class="dir-btn down" data-dir="down">📉 GIẢM</button>
+  <button class="dir-btn side" data-dir="side">➖ SIDE</button>
+</div>
+
 
   <input
     id="investAmount"

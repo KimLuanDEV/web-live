@@ -9,6 +9,17 @@ const ROUND_DURATION = 60; // giây
 
 let currentRoundId = null;
 let myEntryPrice = null;
+let selectedDirection = null;
+
+document.querySelectorAll(".dir-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>{
+    document.querySelectorAll(".dir-btn")
+      .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+    selectedDirection = btn.dataset.dir;
+  });
+});
 
 const liveBadge = document.getElementById("liveBadge");
 // 🔴 LIVE luôn hiển thị
@@ -514,12 +525,30 @@ else {
 
 
   joinedRound = false;
+
+// 🔓 MỞ LẠI & RESET CHỌN HƯỚNG CHO PHIÊN MỚI
+document
+  .querySelectorAll(".dir-btn")
+  .forEach(b => {
+    b.disabled = false;
+    b.classList.remove("active");
+  });
+
+selectedDirection = null;
+
+
+
+
+
   roundOrders = [];
   renderOrdersModal();
   startRoundTimer(d.endAt);
   chartData = [];
   resizeChartCanvas();
   entryMarkers = [];
+
+
+
 });
 
 
@@ -624,10 +653,6 @@ chartData[d.second] = p;
 drawChart(chartData);
 
 
-  chartData[d.second] = p;
-
-  drawChart(chartData);
-
   // ===============================
   // 💰 PnL REALTIME TỪ ENTRY
   // ===============================
@@ -694,12 +719,6 @@ function drawChart(data){
   const first = data[0];
   const last  = data[data.length - 1];
 
-
-// ===============================
-// 📍 VẼ ĐƯỜNG ENTRY PRICE
-// ===============================
-if (joinedRound && typeof myEntryPrice === "number") {
-  
 // ===============================
 // 📍 VẼ ĐƯỜNG ENTRY PRICE
 // ===============================
@@ -739,7 +758,6 @@ if (joinedRound && typeof myEntryPrice === "number") {
 }
 
 
-}
 
 
   const color =
@@ -829,6 +847,16 @@ entryMarkers.forEach(m => {
 
 function confirmInvest(){
 
+
+  if (!selectedDirection) {
+  showModal(
+    "⚠️ Chưa chọn hướng",
+    "Vui lòng chọn 📈 Tăng / 📉 Giảm / ➖ Side trước khi vào lệnh."
+  );
+  return;
+}
+
+
   const left = Math.floor((roundEndAt - Date.now()) / 1000);
   if (left <= 5) {
     showModal(
@@ -864,10 +892,12 @@ function confirmInvest(){
       "Content-Type": "application/json",
       "x-uid": me.uid
     },
-    body: JSON.stringify({
-      type: asset,
-      coin
-    })
+body: JSON.stringify({
+  type: asset,
+  coin,
+  direction: selectedDirection
+})
+
   })
   .then(r => r.json())
   .then(d => {
@@ -883,6 +913,12 @@ function confirmInvest(){
     // ✅ VÀO LỆNH THÀNH CÔNG
     // =========================
     joinedRound = true;
+
+    // 🔒 KHÓA CHỌN HƯỚNG SAU KHI ĐÃ VÀO LỆNH
+document
+  .querySelectorAll(".dir-btn")
+  .forEach(b => b.disabled = true);
+
 
     // 🔻 TRỪ COIN NGAY TRÊN UI
     me.coins = Math.max(0, (me.coins || 0) - coin);
