@@ -703,89 +703,119 @@ app.use(express.static(path.join(__dirname, "public")));
 
 
 app.post("/api/invest/close-early", (req, res) => {
-  const uid = req.headers["x-uid"];
-  if (!uid) return res.json({ ok:false });
+  try {
+    const uid = req.headers["x-uid"];
+    if (!uid) {
+      return res.json({ ok:false, message:"NOT_LOGIN" });
+    }
 
-  const order = investRound.orders.find(o => o.uid === uid);
-  if (!order) {
-    return res.json({ ok:false, message:"Chưa vào lệnh" });
-  }
+    if (!investRound || !Array.isArray(investRound.orders)) {
+      return res.json({
+        ok:false,
+        message:"Phiên chưa sẵn sàng"
+      });
+    }
 
-  
- if (!order.entryTime || Date.now() - order.entryTime < 10_000) {
-  return res.json({
-    ok:false,
-    message:"⏳ Chỉ được chốt sau 10 giây"
-  });
-}
+    const order = investRound.orders.find(o => o.uid === uid);
+    if (!order) {
+      return res.json({
+        ok:false,
+        message:"Bạn chưa vào lệnh"
+      });
+    }
 
+    // ⏱ kiểm tra 10 giây
+    if (!order.entryTime || Date.now() - order.entryTime < 10_000) {
+      return res.json({
+        ok:false,
+        message:"⏳ Chỉ được chốt sau 10 giây"
+      });
+    }
 
+    const asset = order.asset;
+    const chart = investRound.chart?.[asset];
+    if (!Array.isArray(chart)) {
+      return res.json({
+        ok:false,
+        message:"Không có dữ liệu giá"
+      });
+    }
 
+    const nowSec = Math.min(
+      chart.length - 1,
+      Math.floor((Date.now() - investRound.startAt) / 1000)
+    );
 
-  // 📊 giá hiện tại
-  const priceNow =
-    investRound.chart[order.asset]?.[nowSec];
+    const priceNow = chart[nowSec];
+    if (typeof priceNow !== "number") {
+      return res.json({
+        ok:false,
+        message:"Không lấy được giá hiện tại"
+      });
+    }
 
-  if (typeof priceNow !== "number") {
-    return res.json({
-      ok:false,
-      message:"Không lấy được giá hiện tại"
-    });
-  }
+    // 📈 tính %
+    let rawPercent =
+      Math.round((priceNow - order.entryPrice) / order.entryPrice * 100);
 
-  // 📈 tính PnL
-  let rawPercent =
-    Math.round((priceNow - order.entryPrice) / order.entryPrice * 100);
+    let percent =
+      order.direction === "down" ? -rawPercent : rawPercent;
 
-  let percent =
-    order.direction === "down" ? -rawPercent : rawPercent;
+    percent = Math.max(-30, Math.min(30, percent));
 
-  percent = Math.max(-30, Math.min(30, percent));
+    const profit =
+      Math.round(order.coin * percent / 100);
 
-  const profit =
-    Math.round(order.coin * percent / 100);
+    // 💰 cộng coin
+    const users = loadUsers();
+    const me = users[uid];
+    if (!me?.profile) {
+      return res.json({ ok:false, message:"USER_INVALID" });
+    }
 
-  const users = loadUsers();
-  const me = users[uid];
-  if (!me?.profile) return res.json({ ok:false });
+    me.profile.coins += order.coin + profit;
 
-  // 💰 hoàn coin + lời/lỗ
-  me.profile.coins += order.coin + profit;
-
-  // 📜 lưu lịch sử
-  me.investHistory = me.investHistory || [];
-  me.investHistory.unshift({
-    ts: Date.now(),
-    asset: order.asset,
-    direction: order.direction,
-    coin: order.coin,
-    percent,
-    profit,
-    entryPrice: order.entryPrice,
-    endPrice: priceNow,
-    earlyClose: true // 🔥 đánh dấu chốt sớm
-  });
-
-  saveUsers(users);
-  emitCoinUpdate(uid);
-
-  // ❌ xoá lệnh khỏi phiên (không chờ chốt cuối)
-  investRound.orders =
-    investRound.orders.filter(o => o.uid !== uid);
-
-  saveInvestState(investRound);
-
-  // 🔔 báo realtime
-  io.to([...activeUsers.get(uid) || []])
-    .emit("invest-closed-early", {
+    me.investHistory = me.investHistory || [];
+    me.investHistory.unshift({
+      ts: Date.now(),
+      asset,
+      direction: order.direction,
+      coin: order.coin,
       percent,
       profit,
-      priceNow
+      entryPrice: order.entryPrice,
+      endPrice: priceNow,
+      earlyClose: true
     });
 
-  res.json({ ok:true });
-});
+    saveUsers(users);
+    emitCoinUpdate(uid);
 
+    // ❌ xoá lệnh khỏi round
+    investRound.orders =
+      investRound.orders.filter(o => o.uid !== uid);
+
+    saveInvestState(investRound);
+
+    // ✅ TRẢ KẾT QUẢ CHO CLIENT
+    return res.json({
+      ok:true,
+      percent,
+      profit,
+      coin: order.coin,
+      direction: order.direction,
+      entryPrice: order.entryPrice,
+      endPrice: priceNow
+    });
+
+  } catch (err) {
+    console.error("❌ close-early error:", err);
+    return res.status(500).json({
+      ok:false,
+      message:"SERVER_ERROR"
+    });
+  }
+});
 
 
 
