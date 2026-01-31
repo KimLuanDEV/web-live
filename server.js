@@ -701,6 +701,95 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
+
+app.post("/api/invest/close-early", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.json({ ok:false });
+
+  const order = investRound.orders.find(o => o.uid === uid);
+  if (!order) {
+    return res.json({ ok:false, message:"Chưa vào lệnh" });
+  }
+
+  // ⏱ chỉ cho chốt sau 10 giây
+  const nowSec = Math.floor(
+    (Date.now() - investRound.startAt) / 1000
+  );
+
+  if (nowSec - order.entrySec < 10) {
+    return res.json({
+      ok:false,
+      message:"⏳ Chỉ được chốt sau 10 giây"
+    });
+  }
+
+  // 📊 giá hiện tại
+  const priceNow =
+    investRound.chart[order.asset]?.[nowSec];
+
+  if (typeof priceNow !== "number") {
+    return res.json({
+      ok:false,
+      message:"Không lấy được giá hiện tại"
+    });
+  }
+
+  // 📈 tính PnL
+  let rawPercent =
+    Math.round((priceNow - order.entryPrice) / order.entryPrice * 100);
+
+  let percent =
+    order.direction === "down" ? -rawPercent : rawPercent;
+
+  percent = Math.max(-30, Math.min(30, percent));
+
+  const profit =
+    Math.round(order.coin * percent / 100);
+
+  const users = loadUsers();
+  const me = users[uid];
+  if (!me?.profile) return res.json({ ok:false });
+
+  // 💰 hoàn coin + lời/lỗ
+  me.profile.coins += order.coin + profit;
+
+  // 📜 lưu lịch sử
+  me.investHistory = me.investHistory || [];
+  me.investHistory.unshift({
+    ts: Date.now(),
+    asset: order.asset,
+    direction: order.direction,
+    coin: order.coin,
+    percent,
+    profit,
+    entryPrice: order.entryPrice,
+    endPrice: priceNow,
+    earlyClose: true // 🔥 đánh dấu chốt sớm
+  });
+
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  // ❌ xoá lệnh khỏi phiên (không chờ chốt cuối)
+  investRound.orders =
+    investRound.orders.filter(o => o.uid !== uid);
+
+  saveInvestState(investRound);
+
+  // 🔔 báo realtime
+  io.to([...activeUsers.get(uid) || []])
+    .emit("invest-closed-early", {
+      percent,
+      profit,
+      priceNow
+    });
+
+  res.json({ ok:true });
+});
+
+
+
+
 app.get("/api/invest/my-history", (req, res) => {
   const uid = req.headers["x-uid"];
   if (!uid) return res.json({ ok: false });

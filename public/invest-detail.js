@@ -11,6 +11,10 @@ let currentRoundId = null;
 let myEntryPrice = null;
 let myDirection = "up";
 let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
+let myEntryTime = null; // timestamp khi vào lệnh
+
+
+
 
 
 const btnUp = document.getElementById("btnUp");
@@ -941,7 +945,7 @@ body: JSON.stringify({
     // ✅ VÀO LỆNH THÀNH CÔNG
     // =========================
     joinedRound = true;
-
+myEntryTime = Date.now(); // 🔥 lưu thời điểm vào lệnh
 myOrderDirection = myDirection; // 🔥 lưu hướng lệnh
 
 
@@ -1127,3 +1131,43 @@ socket.on("force-logout", (data) => {
   }, 3000);
 });
 
+
+
+const btnCloseEarly = document.getElementById("btnCloseEarly");
+
+setInterval(() => {
+  if (!joinedRound || !myEntryTime || !btnCloseEarly) return;
+
+  const passed = Math.floor((Date.now() - myEntryTime) / 1000);
+
+  if (passed >= 10) {
+    btnCloseEarly.disabled = false;
+    btnCloseEarly.textContent = "💰 Chốt lệnh sớm";
+  } else {
+    btnCloseEarly.disabled = true;
+    btnCloseEarly.textContent =
+      `⏳ Chờ ${10 - passed}s để chốt`;
+  }
+
+  btnCloseEarly.classList.remove("hidden");
+}, 500);
+
+
+btnCloseEarly?.addEventListener("click", () => {
+  fetch("/api/invest/close-early", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "x-uid": me.uid
+    }
+  })
+  .then(r => r.json())
+  .then(d => {
+    if (!d.ok) {
+      showModal("⛔ Không thể chốt", d.message || "Thao tác thất bại");
+      return;
+    }
+
+    btnCloseEarly.classList.add("hidden");
+  });
+});
