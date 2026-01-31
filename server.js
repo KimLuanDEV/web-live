@@ -26,6 +26,41 @@ const webpush = require("web-push");
 const { uploadToR2 } = require("./r2");
 
 
+
+
+// ================================
+// 📊 INVEST ROUND STATE (GLOBAL)
+// ================================
+let investRound = null;
+
+
+// 🔄 Load invest round từ file
+investRound = loadInvestState();
+
+// nếu chưa có round hoặc round đã hết hạn → tạo mới
+if (!investRound || investRound.endAt <= Date.now()) {
+  const id = Date.now();
+  investRound = {
+    id,
+    startAt: id,
+    endAt: id + 60000,
+    orders: [],
+    chart: generateChart(id),
+    closedEarly: [] // 🔒 BẮT BUỘC
+  };
+  saveInvestState(investRound);
+}
+
+// 🛡️ phòng trường hợp file cũ thiếu field
+if (!Array.isArray(investRound.closedEarly)) {
+  investRound.closedEarly = [];
+}
+if (!Array.isArray(investRound.orders)) {
+  investRound.orders = [];
+}
+
+
+
 const R2_PUBLIC_URL = process.env.R2_PUBLIC_URL || "";
 
 function normalizeAvatar(url) {
@@ -440,38 +475,6 @@ let investPrice = {
   diamond: 100
 };
 
-
-// ================================
-// 📈 INVEST REALTIME ROUND (60s)
-// ================================
-if (!investRound || investRound.endAt <= Date.now()) {
-  const id = Date.now();
-  investRound = {
-    id,
-    startAt: id,
-    endAt: id + 60000,
-    orders: [],
-    chart: generateChart(id),
-    closedEarly: [] // ✅ FIX
-  };
-  saveInvestState(investRound);
-}
-
-
-
-// ⛔ nếu restart mà phiên đã quá hạn → reset (FIX ĐỦ FIELD)
-if (investRound.endAt <= Date.now()) {
-  const id = Date.now();
-  investRound = {
-    id,
-    startAt: id,
-    endAt: id + 60000,
-    orders: [],
-    chart: generateChart(id),
-    closedEarly: [] // 🔒 BẮT BUỘC
-  };
-  saveInvestState(investRound);
-}
 
 
 // 💾 lưu lại ngay
