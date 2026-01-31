@@ -1179,16 +1179,33 @@ btnCloseEarly?.addEventListener("click", () => {
 
     btnCloseEarly.classList.add("hidden");
 
-    // ✅ MỞ MODAL NGAY – KHÔNG CHỜ SOCKET
-    openResultModal({
-      percent: d.percent,
-      profit: d.profit,
-      asset,
-      dir: d.direction === "down" ? "📉 Giảm" : "📈 Tăng",
-      coin: d.coin,
-      entry: d.entryPrice,
-      end: d.endPrice
-    });
+// 🔄 SYNC LẠI COIN NGAY SAU KHI CHỐT SỚM
+fetch("/api/me/coin", {
+  headers: { "x-uid": me.uid }
+})
+.then(r => r.json())
+.then(u => {
+  if (u.ok) {
+    me.coins = u.coins;
+    myCoinEl.textContent = u.coins;
+    localStorage.setItem(
+      "user_profile",
+      JSON.stringify(me)
+    );
+  }
+});
+
+// 🔔 MỞ MODAL KẾT QUẢ
+openResultModal({
+  percent: d.percent,
+  profit: d.profit,
+  asset,
+  dir: d.direction === "down" ? "📉 Giảm" : "📈 Tăng",
+  coin: d.coin,
+  entry: d.entryPrice,
+  end: d.endPrice
+});
+
   })
   .catch(() => {
     showModal("❌ Lỗi mạng", "Không thể kết nối server.");
