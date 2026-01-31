@@ -555,6 +555,8 @@ else {
   resizeChartCanvas();
   entryMarkers = [];
 
+// 🔓 MỞ LẠI NÚT CHỌN HƯỚNG CHO PHIÊN MỚI
+document.getElementById("directionBox")?.classList.remove("hidden");
 
   
 });
@@ -961,6 +963,11 @@ body: JSON.stringify({
     joinedRound = true;
 myEntryTime = Date.now(); // 🔥 lưu thời điểm vào lệnh
 myOrderDirection = myDirection; // 🔥 lưu hướng lệnh
+
+
+// 🔒 ẨN NÚT CHỌN HƯỚNG
+document.getElementById("directionBox")?.classList.add("hidden");
+
 
 
     // 🔻 TRỪ COIN NGAY TRÊN UI
