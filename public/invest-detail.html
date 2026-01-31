@@ -436,6 +436,107 @@ html, body {
 }
 
 
+/* ===== RESULT FULLSCREEN MODAL ===== */
+.result-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 99999;
+  background: #000;
+}
+
+.result-modal.hidden { display: none; }
+
+.rm-box {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* HEADER */
+.rm-header {
+  padding: 24px 16px 20px;
+  text-align: center;
+  position: relative;
+}
+
+.result-modal.win .rm-header {
+  background: linear-gradient(180deg, rgba(0,255,153,.35), #000);
+}
+.result-modal.loss .rm-header {
+  background: linear-gradient(180deg, rgba(255,92,92,.35), #000);
+}
+
+.rm-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 0;
+  background: rgba(255,255,255,.12);
+  color: #fff;
+  font-size: 18px;
+}
+
+.rm-status {
+  font-size: 14px;
+  opacity: .85;
+  letter-spacing: 1px;
+}
+
+.rm-percent {
+  font-size: 48px;
+  font-weight: 900;
+  margin-top: 8px;
+}
+
+.rm-coin {
+  margin-top: 6px;
+  font-size: 16px;
+  opacity: .9;
+}
+
+/* BODY */
+.rm-body {
+  flex: 1;
+  padding: 16px;
+}
+
+.rm-card {
+  background: rgba(255,255,255,.05);
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 14px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.rm-card span {
+  font-size: 11px;
+  opacity: .6;
+}
+.rm-card b {
+  font-size: 15px;
+}
+
+/* FOOTER */
+.rm-footer {
+  padding: 14px;
+}
+.rm-footer button {
+  width: 100%;
+  padding: 14px;
+  border-radius: 14px;
+  border: 0;
+  font-size: 16px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00ff99, #00cc88);
+  color: #000;
+}
+
+
 </style>
 
 
@@ -651,6 +752,42 @@ html, body {
         <li class="empty">Chưa có dữ liệu</li>
       </ul>
     </div>
+  </div>
+</div>
+
+
+
+<!-- 📸 FULLSCREEN RESULT MODAL (BINANCE STYLE) -->
+<div id="resultModal" class="result-modal hidden">
+  <div class="rm-box">
+
+    <!-- HEADER -->
+    <div class="rm-header">
+      <button class="rm-close" onclick="closeResultModal()">✕</button>
+      <div class="rm-status" id="rmStatus">LỆNH THẮNG</div>
+      <div class="rm-percent" id="rmPercent">+12%</div>
+      <div class="rm-coin" id="rmCoin">+120 💎</div>
+    </div>
+
+    <!-- BODY -->
+    <div class="rm-body">
+      <div class="rm-card">
+        <div><span>Tài sản</span><b id="rmAsset">GOLD</b></div>
+        <div><span>Hướng</span><b id="rmDir">📈 Tăng</b></div>
+      </div>
+
+      <div class="rm-card">
+        <div><span>Vốn</span><b id="rmCapital">1000</b></div>
+        <div><span>Giá vào</span><b id="rmEntry">82.15</b></div>
+        <div><span>Giá chốt</span><b id="rmEnd">84.20</b></div>
+      </div>
+    </div>
+
+    <!-- FOOTER -->
+    <div class="rm-footer">
+      <button onclick="closeResultModal()">🚀 Giao dịch tiếp</button>
+    </div>
+
   </div>
 </div>
 

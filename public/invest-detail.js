@@ -579,56 +579,15 @@ const profitCoin = Math.round(coin * percent / 100);
 const isWin = percent >= 0;
 const pnlColor = isWin ? "#00ff99" : "#ff5c5c";
 
-showModal(
-  isWin ? "KẾT QUẢ GIAO DỊCH" : "KẾT QUẢ GIAO DỊCH",
-  `
-  <div class="trade-result ${isWin ? "win" : "loss"}">
-
-    <!-- HEADER -->
-    <div class="tr-header">
-      <div class="tr-status">
-        ${isWin ? "🎉 LỆNH THẮNG" : "💥 LỆNH THUA"}
-      </div>
-      <div class="tr-pnl" style="color:${pnlColor}">
-        ${isWin ? "+" : ""}${percent}%
-      </div>
-      <div class="tr-coin">
-        ${profitCoin >= 0 ? "+" : ""}${profitCoin} 💎
-      </div>
-    </div>
-
-    <!-- INFO GRID -->
-    <div class="tr-grid">
-      <div>
-        <span>Tài sản</span>
-        <b>${asset.toUpperCase()}</b>
-      </div>
-      <div>
-        <span>Hướng</span>
-        <b>${dirText}</b>
-      </div>
-      <div>
-        <span>Vốn</span>
-        <b>${coin} coin</b>
-      </div>
-      <div>
-        <span>Giá vào</span>
-        <b>${entry.toFixed(2)}</b>
-      </div>
-      <div>
-        <span>Giá chốt</span>
-        <b>${end.toFixed(2)}</b>
-      </div>
-    </div>
-
-    <!-- FOOT NOTE -->
-    <div class="tr-note">
-      Kết quả đã được chốt theo giá cuối phiên
-    </div>
-
-  </div>
-  `
-);
+openResultModal({
+  percent,
+  profit: profitCoin,
+  asset,
+  dir: dirText,
+  coin,
+  entry,
+  end
+});
 
 
 
@@ -1001,6 +960,46 @@ socket.on("coin-update", d => {
     JSON.stringify(me)
   );
 });
+
+
+// ================= RESULT FULLSCREEN MODAL =================
+
+function openResultModal({ percent, profit, asset, dir, coin, entry, end }) {
+  const modal = document.getElementById("resultModal");
+  if (!modal) return;
+
+  const isWin = percent >= 0;
+
+  modal.classList.remove("win", "loss");
+  modal.classList.add(isWin ? "win" : "loss");
+
+  document.getElementById("rmStatus").textContent =
+    isWin ? "🎉 LỆNH THẮNG" : "💥 LỆNH THUA";
+
+  document.getElementById("rmPercent").textContent =
+    (isWin ? "+" : "") + percent + "%";
+
+  document.getElementById("rmCoin").textContent =
+    (profit >= 0 ? "+" : "") + profit + " 💎";
+
+  document.getElementById("rmAsset").textContent = asset.toUpperCase();
+  document.getElementById("rmDir").textContent = dir;
+  document.getElementById("rmCapital").textContent = coin;
+  document.getElementById("rmEntry").textContent = entry.toFixed(2);
+  document.getElementById("rmEnd").textContent = end.toFixed(2);
+
+  modal.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+}
+
+function closeResultModal() {
+  const modal = document.getElementById("resultModal");
+  if (!modal) return;
+
+  modal.classList.add("hidden");
+  document.body.style.overflow = "";
+}
+
 
 
 // ================= BACK BUTTON SAFE =================
