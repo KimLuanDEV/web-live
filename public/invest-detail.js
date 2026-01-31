@@ -584,8 +584,21 @@ socket.on("invest-round-result", d => {
   if (!myOrder) return;
 
   // 🎯 tính % từ điểm vào lệnh → giá cuối
-  const entry = myOrder.entryPrice;
-  const end   = chartData[chartData.length - 1];
+const entry = myOrder.entryPrice;
+
+// ✅ ưu tiên giá chốt từ server (nếu server gửi)
+let end = d?.endPrice?.[asset];
+
+// ✅ fallback: lấy điểm cuối cùng có số trong chartData
+if (typeof end !== "number") {
+  for (let i = chartData.length - 1; i >= 0; i--) {
+    if (typeof chartData[i] === "number") {
+      end = chartData[i];
+      break;
+    }
+  }
+}
+
 
   if (!entry || !end) return;
 

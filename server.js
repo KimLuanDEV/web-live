@@ -507,6 +507,14 @@ setInterval(() => {
 // ================================
 const result = calcResultFromChart(round.chart);
 
+// 🔥 GIÁ CHỐT CUỐI PHIÊN (CHUẨN SERVER)
+const endPrice = {
+  gold: round.chart.gold[round.chart.gold.length - 1],
+  silver: round.chart.silver[round.chart.silver.length - 1],
+  diamond: round.chart.diamond[round.chart.diamond.length - 1]
+};
+
+
 
   // ================================
   // 💰 CHỈ XỬ LÝ COIN NẾU CÓ LỆNH
@@ -571,10 +579,12 @@ if (me.investHistory.length > 100) {
   // ================================
   // 🔔 EMIT KẾT QUẢ PHIÊN (AI CŨNG NHẬN)
   // ================================
-  io.emit("invest-round-result", {
-    roundId: round.id,
-    result
-  });
+io.emit("invest-round-result", {
+  roundId: round.id,
+  result,
+  endPrice // 🔥 GỬI GIÁ CHỐT CHUẨN
+});
+
 
   // ================================
   // 📜 LƯU LỊCH SỬ (DÙ CÓ LỆNH HAY KHÔNG)
@@ -834,9 +844,11 @@ io.emit("invest-order-new", {
   uid,
   asset: type,
   coin,
+  direction,      // 🔥 BẮT BUỘC
   entrySec: nowSec,
   entryPrice
 });
+
 
 
 
