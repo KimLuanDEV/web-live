@@ -117,46 +117,29 @@ function closePnlHistory(){
 }
 
 
-let __pnlHistoryCache = [];
-
 function renderPnlHistory(list){
-  __pnlHistoryCache = list;
-
   if (!list.length) {
     pnlHistoryList.innerHTML =
       `<li class="empty">Chưa có dữ liệu</li>`;
     return;
   }
 
-  pnlHistoryList.innerHTML = list.map((o, i) => `
-    <li class="order-item ${o.percent >= 0 ? "up" : "down"}"
-        data-i="${i}">
+  pnlHistoryList.innerHTML = list.map(i => `
+    <li class="order-item ${i.percent >= 0 ? "up" : "down"}">
       <div>
-        ${o.asset.toUpperCase()}
-        ${o.direction === "up" ? "📈" :
-          o.direction === "down" ? "📉" : "➖"}
+        ${i.asset.toUpperCase()}
+        ${i.direction === "up" ? "📈" :
+          i.direction === "down" ? "📉" : "➖"}
       </div>
-
       <div>
-        ${o.coin} 💎 →
-        <b>${o.percent >= 0 ? "+" : ""}${o.percent}%</b>
-        (${o.profit >= 0 ? "+" : ""}${o.profit})
+        ${i.coin} 💎 →
+        <b>${i.percent >= 0 ? "+" : ""}${i.percent}%</b>
+        (${i.profit >= 0 ? "+" : ""}${i.profit})
       </div>
-
-      <small>${new Date(o.ts).toLocaleString()}</small>
+      <small>${new Date(i.ts).toLocaleString()}</small>
     </li>
   `).join("");
-
-  pnlHistoryList.querySelectorAll(".order-item")
-    .forEach(el=>{
-      el.onclick = ()=>{
-        const i = Number(el.dataset.i);
-        const order = __pnlHistoryCache[i];
-        if (order) showInvestOrderDetail(order);
-      };
-    });
 }
-
 
 
 function openOrders(){
@@ -298,51 +281,6 @@ function showModal(title, content){
   modal.classList.remove("hidden");
 }
 
-function showInvestOrderDetail(o){
-  const dirText =
-    o.direction === "up" ? "📈 Tăng" :
-    o.direction === "down" ? "📉 Giảm" :
-    "➖ Side";
-
-  const profitCoin =
-    Math.round(o.coin * o.percent / 100);
-
-  showModal(
-    o.percent >= 0 ? "🎉 KẾT QUẢ LỆNH" : "💥 KẾT QUẢ LỆNH",
-    `
-    <div style="line-height:1.6">
-      <div>📊 Tài sản: <b>${o.asset.toUpperCase()}</b></div>
-      <div>🎯 Hướng: <b>${dirText}</b></div>
-      <div>💎 Vốn: <b>${o.coin}</b> coin</div>
-
-      <hr style="opacity:.15">
-
-      <div>📍 Giá vào: <b>${o.entryPrice.toFixed(2)}</b></div>
-      <div>🏁 Giá chốt: <b>${o.endPrice.toFixed(2)}</b></div>
-
-      <hr style="opacity:.15">
-
-      <div>
-        ${o.percent >= 0
-          ? `✅ Lãi: <b style="color:#00ff99">+${o.percent}%</b>`
-          : `❌ Lỗ: <b style="color:#ff5c5c">${o.percent}%</b>`
-        }
-      </div>
-
-      <div>
-        ${profitCoin >= 0
-          ? `💰 Nhận thêm: <b style="color:#00ff99">+${profitCoin}</b> coin`
-          : `💸 Mất: <b style="color:#ff5c5c">${profitCoin}</b> coin`
-        }
-      </div>
-
-      <div style="opacity:.6;font-size:12px;margin-top:6px">
-        ⏱ ${new Date(o.ts).toLocaleString()}
-      </div>
-    </div>
-    `
-  );
-}
 
 
 
@@ -638,15 +576,38 @@ const coin = myOrder.coin;
 // lãi / lỗ quy đổi coin (UI, server đã xử lý thật)
 const profitCoin = Math.round(coin * percent / 100);
 
-showInvestOrderDetail({
-  ts: Date.now(),
-  asset,
-  direction: myOrder.direction,
-  coin: myOrder.coin,
-  percent,
-  entryPrice: entry,
-  endPrice: end
-});
+showModal(
+  percent >= 0 ? "🎉 KẾT QUẢ LỆNH" : "💥 KẾT QUẢ LỆNH",
+  `
+  <div style="line-height:1.6">
+    <div>📊 Tài sản: <b>${asset.toUpperCase()}</b></div>
+    <div>🎯 Hướng: <b>${dirText}</b></div>
+    <div>💎 Vốn: <b>${coin}</b> coin</div>
+
+    <hr style="opacity:.15">
+
+    <div>📍 Giá vào: <b>${entry.toFixed(2)}</b></div>
+    <div>🏁 Giá chốt: <b>${end.toFixed(2)}</b></div>
+
+    <hr style="opacity:.15">
+
+    <div>
+      ${percent >= 0
+        ? `✅ Lãi: <b style="color:#00ff99">+${percent}%</b>`
+        : `❌ Lỗ: <b style="color:#ff5c5c">${percent}%</b>`
+      }
+    </div>
+
+    <div>
+      ${profitCoin >= 0
+        ? `💰 Nhận thêm: <b style="color:#00ff99">+${profitCoin}</b> coin`
+        : `💸 Mất: <b style="color:#ff5c5c">${profitCoin}</b> coin`
+      }
+    </div>
+  </div>
+  `
+);
+
 
   // 🔄 sync lại coin từ server (nguồn sự thật)
   fetch("/api/me/coin", {
@@ -680,6 +641,11 @@ socket.on("invest-price", d => {
 chartData[d.second] = p;
 drawChart(chartData);
 
+
+  chartData[d.second] = p;
+
+  drawChart(chartData);
+
   // ===============================
   // 💰 PnL REALTIME TỪ ENTRY
   // ===============================
@@ -688,17 +654,8 @@ drawChart(chartData);
   if (joinedRound && myEntryPrice && pnlBox) {
     const last = p;
 
-let raw =
-  Math.round((last - myEntryPrice) / myEntryPrice * 100);
-
-let pnl = 0;
-if (myOrder?.direction === "up") pnl = raw;
-else if (myOrder?.direction === "down") pnl = -raw;
-else if (myOrder?.direction === "side")
-  pnl = Math.abs(raw) <= 1 ? Math.abs(raw) : -Math.abs(raw);
-
-pnl = Math.max(-30, Math.min(30, pnl));
-
+    let pnl =
+      Math.round((last - myEntryPrice) / myEntryPrice * 100);
 
     // clamp UI
     pnl = Math.max(-30, Math.min(30, pnl));
@@ -925,13 +882,10 @@ function confirmInvest(){
       "Content-Type": "application/json",
       "x-uid": me.uid
     },
-
-   body: JSON.stringify({
-  type: asset,
-  coin,
-  direction: myDirection
-})
-
+    body: JSON.stringify({
+      type: asset,
+      coin
+    })
   })
   .then(r => r.json())
   .then(d => {
