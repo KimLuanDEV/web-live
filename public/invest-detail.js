@@ -669,30 +669,41 @@ drawChart(chartData);
 
 
 
-// 💰 PnL REALTIME – LUÔN ĐÚNG THEO HƯỚNG LỆNH
+// 💰 PnL REALTIME – % + COIN (THEO HƯỚNG THẬT)
 const pnlBox = document.getElementById("pnlRealtime");
 
 if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
   const last = p;
 
-  // raw theo UP
-  let pnl = Math.round((last - myEntryPrice) / myEntryPrice * 100);
+  // % gốc theo UP
+  let percent = Math.round(
+    (last - myEntryPrice) / myEntryPrice * 100
+  );
 
-  // 🔥 đảo chiều nếu DOWN
-  if (myOrderDirection === "down") pnl = -pnl;
+  // 🔁 đảo chiều nếu DOWN
+  if (myOrderDirection === "down") {
+    percent = -percent;
+  }
 
   // clamp UI
-  pnl = Math.max(-30, Math.min(30, pnl));
+  percent = Math.max(-30, Math.min(30, percent));
+
+  // 💎 quy đổi coin realtime
+  const myOrder = roundOrders.find(
+    o => o.uid === me.uid && o.asset === asset
+  );
+  const coin = myOrder?.coin || 0;
+  const pnlCoin = Math.round(coin * percent / 100);
 
   const dirIcon = myOrderDirection === "down" ? "📉" : "📈";
 
   pnlBox.textContent =
-    pnl >= 0
-      ? `${dirIcon} PnL: +${pnl}%`
-      : `${dirIcon} PnL: ${pnl}%`;
+    `${dirIcon} PnL: ` +
+    `${percent > 0 ? "+" : ""}${percent}% ` +
+    `(${pnlCoin > 0 ? "+" : ""}${pnlCoin} 💎)`;
 
   pnlBox.className =
-    "pnl-overlay " + (pnl >= 0 ? "up" : "down");
+    "pnl-overlay " + (percent >= 0 ? "up" : "down");
 
   pnlBox.classList.remove("hidden");
 }
