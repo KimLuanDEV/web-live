@@ -738,15 +738,8 @@ app.get("/api/invest/history", (req, res) => {
 
 app.post("/api/invest", (req, res) => {
   const uid = req.headers["x-uid"];
-  const { type, coin, direction } = req.body;
+  const { type, coin } = req.body;
 
-  // 🔒 BẮT BUỘC CHỌN HƯỚNG
-  if (!["up","down","side"].includes(direction)) {
-    return res.json({
-      ok: false,
-      message: "⚠️ Vui lòng chọn hướng đầu tư"
-    });
-  }
 
 
 
@@ -808,11 +801,11 @@ investRound.orders.push({
   uid,
   asset: type,
   coin,
-  direction,          // 🔥 LƯU HƯỚNG
 
   entrySec: nowSec,
   entryPrice: entryPrice
 });
+
 
 
 
@@ -825,7 +818,6 @@ io.emit("invest-order-new", {
   uid,
   asset: type,
   coin,
-  direction,      // 🔥 THÊM
   entrySec: nowSec,
   entryPrice
 });

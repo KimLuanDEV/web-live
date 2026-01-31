@@ -9,17 +9,7 @@ const ROUND_DURATION = 60; // giây
 
 let currentRoundId = null;
 let myEntryPrice = null;
-let selectedDirection = null;
 
-document.querySelectorAll(".dir-btn").forEach(btn=>{
-  btn.addEventListener("click", ()=>{
-    document.querySelectorAll(".dir-btn")
-      .forEach(b=>b.classList.remove("active"));
-
-    btn.classList.add("active");
-    selectedDirection = btn.dataset.dir;
-  });
-});
 
 const liveBadge = document.getElementById("liveBadge");
 // 🔴 LIVE luôn hiển thị
@@ -525,21 +515,6 @@ else {
 
 
   joinedRound = false;
-
-// 🔓 MỞ LẠI & RESET CHỌN HƯỚNG CHO PHIÊN MỚI
-document
-  .querySelectorAll(".dir-btn")
-  .forEach(b => {
-    b.disabled = false;
-    b.classList.remove("active");
-  });
-
-selectedDirection = null;
-
-
-
-
-
   roundOrders = [];
   renderOrdersModal();
   startRoundTimer(d.endAt);
@@ -548,7 +523,7 @@ selectedDirection = null;
   entryMarkers = [];
 
 
-
+  
 });
 
 
@@ -848,15 +823,6 @@ entryMarkers.forEach(m => {
 function confirmInvest(){
 
 
-  if (!selectedDirection) {
-  showModal(
-    "⚠️ Chưa chọn hướng",
-    "Vui lòng chọn 📈 Tăng / 📉 Giảm / ➖ Side trước khi vào lệnh."
-  );
-  return;
-}
-
-
   const left = Math.floor((roundEndAt - Date.now()) / 1000);
   if (left <= 5) {
     showModal(
@@ -894,9 +860,9 @@ function confirmInvest(){
     },
 body: JSON.stringify({
   type: asset,
-  coin,
-  direction: selectedDirection
+  coin
 })
+
 
   })
   .then(r => r.json())
@@ -914,10 +880,6 @@ body: JSON.stringify({
     // =========================
     joinedRound = true;
 
-    // 🔒 KHÓA CHỌN HƯỚNG SAU KHI ĐÃ VÀO LỆNH
-document
-  .querySelectorAll(".dir-btn")
-  .forEach(b => b.disabled = true);
 
 
     // 🔻 TRỪ COIN NGAY TRÊN UI
