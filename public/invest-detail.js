@@ -1166,7 +1166,7 @@ setInterval(() => {
   const leftRound = Math.floor((roundEndAt - now) / 1000);
 
   // ❌ còn ≤ 20s của phiên → ẨN nút
-  if (leftRound <= 20) {
+  if (leftRound <= 15) {
     btnCloseEarly.classList.add("hidden");
     return;
   }
