@@ -974,7 +974,7 @@ function openResultModal({ percent, profit, asset, dir, coin, entry, end }) {
   modal.classList.add(isWin ? "win" : "loss");
 
   document.getElementById("rmStatus").textContent =
-    isWin ? "🎉 LỆNH THẮNG" : "💥 LỆNH THUA";
+    isWin ? "LỆNH THẮNG" : "LỆNH THUA";
 
   document.getElementById("rmPercent").textContent =
     (isWin ? "+" : "") + percent + "%";
