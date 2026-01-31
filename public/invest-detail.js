@@ -434,6 +434,26 @@ if (timerEl && !timerEl.querySelector(".timer-text")) {
 const investBtn = document.querySelector(".detail-invest button");
 
 
+const btnCloseEarly = document.getElementById("btnCloseEarly");
+
+function showCloseEarlyButton(){
+  if (!investBtn || !btnCloseEarly) return;
+
+  investBtn.classList.add("hidden");   // ẨN nút vào lệnh
+  btnCloseEarly.classList.remove("hidden");
+}
+
+function hideCloseEarlyButton(){
+  if (!investBtn || !btnCloseEarly) return;
+
+  investBtn.classList.remove("hidden");
+  btnCloseEarly.classList.add("hidden");
+}
+
+
+
+
+
 
 
 function startRoundTimer(endAt){
@@ -471,9 +491,13 @@ function startRoundTimer(endAt){
 
   
 
+if (!joinedRound) {
+  investBtn.disabled = false;
+  investBtn.textContent = "VÀO LỆNH";
+}
 
-      investBtn.disabled = false;
-      investBtn.textContent = "VÀO LỆNH";
+
+
     }
     else if (left > 0) {
       // 🔴 SẮP CHỐT
@@ -483,8 +507,12 @@ function startRoundTimer(endAt){
 
 
 
-      investBtn.disabled = true;
-      investBtn.textContent = "⛔ ĐÃ KHÓA";
+if (!joinedRound) {
+  investBtn.disabled = true;
+  investBtn.textContent = "⛔ ĐÃ KHÓA";
+}
+
+
     }
     else {
       // 🔐 ĐANG CHỐT
@@ -564,6 +592,9 @@ else {
 document.getElementById("directionBox")?.classList.remove("hidden");
 
   
+hideCloseEarlyButton(); // 🔁 RESET UI
+
+
 });
 
 
@@ -969,6 +1000,9 @@ body: JSON.stringify({
 myEntryTime = Date.now(); // 🔥 lưu thời điểm vào lệnh
 myOrderDirection = myDirection; // 🔥 lưu hướng lệnh
 
+showCloseEarlyButton(); // 🔁 ĐỔI NÚT
+
+
 
 // 🔒 ẨN NÚT CHỌN HƯỚNG
 document.getElementById("directionBox")?.classList.add("hidden");
@@ -986,10 +1020,7 @@ document.getElementById("directionBox")?.classList.add("hidden");
 
     // 🔒 KHOÁ NÚT
     const btn = document.querySelector(".detail-invest button");
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = "⛔ ĐÃ VÀO LỆNH";
-    }
+
 
     showModal(
       "✅ Thành công",
@@ -1159,7 +1190,7 @@ socket.on("force-logout", (data) => {
 
 
 
-const btnCloseEarly = document.getElementById("btnCloseEarly");
+
 
 setInterval(() => {
   if (!btnCloseEarly) return;
@@ -1196,7 +1227,7 @@ if (leftRound <= 15 && !joinedRound) {
 
   // ✅ ĐỦ ĐIỀU KIỆN
   btnCloseEarly.disabled = false;
-  btnCloseEarly.textContent = "💰 Chốt lệnh sớm";
+  btnCloseEarly.textContent = "Chốt lệnh sớm";
   btnCloseEarly.classList.remove("hidden");
 
 }, 500);
