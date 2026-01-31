@@ -365,6 +365,7 @@ if (myOrder) {
     investBtn.disabled = true;
     investBtn.textContent = "⛔ ĐÃ VÀO LỆNH";
   }
+
 }
 
 
@@ -1148,20 +1149,42 @@ socket.on("force-logout", (data) => {
 const btnCloseEarly = document.getElementById("btnCloseEarly");
 
 setInterval(() => {
-  if (!joinedRound || !myEntryTime || !btnCloseEarly) return;
+  if (!btnCloseEarly) return;
 
-  const passed = Math.floor((Date.now() - myEntryTime) / 1000);
+  // ❌ chưa vào lệnh → ẩn
+  if (!joinedRound || !myEntryTime) {
+    btnCloseEarly.classList.add("hidden");
+    return;
+  }
 
-  if (passed >= 10) {
-    btnCloseEarly.disabled = false;
-    btnCloseEarly.textContent = "💰 Chốt lệnh sớm";
-  } else {
+  const now = Date.now();
+
+  // ⏱ đã qua bao lâu từ lúc vào lệnh
+  const passed = Math.floor((now - myEntryTime) / 1000);
+
+  // ⏳ còn bao nhiêu giây của phiên
+  const leftRound = Math.floor((roundEndAt - now) / 1000);
+
+  // ❌ còn ≤ 20s của phiên → ẨN nút
+  if (leftRound <= 20) {
+    btnCloseEarly.classList.add("hidden");
+    return;
+  }
+
+  // ⏳ chưa đủ 10s từ lúc vào → disable
+  if (passed < 10) {
     btnCloseEarly.disabled = true;
     btnCloseEarly.textContent =
       `⏳ Chờ ${10 - passed}s để chốt`;
+    btnCloseEarly.classList.remove("hidden");
+    return;
   }
 
+  // ✅ ĐỦ ĐIỀU KIỆN
+  btnCloseEarly.disabled = false;
+  btnCloseEarly.textContent = "💰 Chốt lệnh sớm";
   btnCloseEarly.classList.remove("hidden");
+
 }, 500);
 
 
