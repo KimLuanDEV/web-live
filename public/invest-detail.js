@@ -581,9 +581,11 @@ socket.on("invest-round-result", d => {
   const end   = chartData[chartData.length - 1];
 
   if (!entry || !end) return;
+  
+let percent =
+  Math.round((end - entry) / entry * 100);
 
-  let percent =
-    Math.round((end - entry) / entry * 100);
+if (myOrder.direction === "down") percent = -percent;
 
   // 🔒 clamp UI (chỉ để hiển thị)
   percent = Math.max(-30, Math.min(30, percent));
@@ -646,28 +648,37 @@ chartData[d.second] = p;
 drawChart(chartData);
 
 
-  // ===============================
-  // 💰 PnL REALTIME TỪ ENTRY
-  // ===============================
-  const pnlBox = document.getElementById("pnlRealtime");
 
-  if (joinedRound && myEntryPrice && pnlBox) {
-    const last = p;
+// 💰 PnL REALTIME TỪ ENTRY (TÍNH THEO HƯỚNG ĐÃ VÀO)
+const pnlBox = document.getElementById("pnlRealtime");
 
-    let pnl =
-      Math.round((last - myEntryPrice) / myEntryPrice * 100);
+if (joinedRound && myEntryPrice && pnlBox) {
+  const last = p;
 
-    // clamp UI
-    pnl = Math.max(-30, Math.min(30, pnl));
+  // raw theo UP
+  let pnl = Math.round((last - myEntryPrice) / myEntryPrice * 100);
 
-    pnlBox.textContent =
-      pnl >= 0 ? `PnL: +${pnl}%` : `PnL: ${pnl}%`;
+  // 🔥 đảo chiều nếu lệnh của bạn là DOWN
+  const myOrder = roundOrders.find(o => o.uid === me.uid && o.asset === asset);
+  const dir = myOrder?.direction || "up";
+  if (dir === "down") pnl = -pnl;
 
-    pnlBox.className =
-      "pnl-overlay " + (pnl >= 0 ? "up" : "down");
+  // clamp UI
+  pnl = Math.max(-30, Math.min(30, pnl));
 
-    pnlBox.classList.remove("hidden");
-  }
+  // hiển thị kèm hướng cho rõ
+  const dirIcon = dir === "down" ? "📉" : "📈";
+  pnlBox.textContent =
+    pnl >= 0 ? `${dirIcon} PnL: +${pnl}%` : `${dirIcon} PnL: ${pnl}%`;
+
+  pnlBox.className =
+    "pnl-overlay " + (pnl >= 0 ? "up" : "down");
+
+  pnlBox.classList.remove("hidden");
+}
+
+
+
 });
 
 
