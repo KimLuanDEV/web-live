@@ -618,6 +618,7 @@ openResultModal({
 
 let chartData = [];
 let chartOffsetSec = 0; // ⏱ tổng số giây đã vẽ (nối chart)
+const MAX_POINTS = 100; // 📏 giới hạn số điểm hiển thị
 
 
 
@@ -629,6 +630,19 @@ socket.on("invest-price", d => {
 
 const idx = chartOffsetSec + d.second;
 chartData[idx] = p;
+
+// 📏 GIỮ TỐI ĐA 100 ĐIỂM – SCROLL TRÁI
+if (chartData.length > MAX_POINTS) {
+  const cut = chartData.length - MAX_POINTS;
+  chartData = chartData.slice(cut);
+
+  // dịch lại offset & marker
+  chartOffsetSec -= cut;
+
+  entryMarkers = entryMarkers
+    .map(m => ({ ...m, sec: m.sec - cut }))
+    .filter(m => m.sec >= 0);
+}
 
 drawChart(chartData);
 
