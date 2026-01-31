@@ -133,6 +133,36 @@ html, body {
     0 12px 30px rgba(0,0,0,.7);
 }
 
+
+/* ===== INVEST GRID: 2 CỘT – MỖI HÀNG 2 ITEM ===== */
+.invest-grid{
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 cột cố định */
+  gap: 14px;
+  padding: 12px;
+}
+
+
+.invest-card{
+  min-height: 120px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+}
+
+
+@media (max-width: 480px){
+  .invest-grid{
+    gap: 12px;
+  }
+
+  .invest-card{
+    min-height: 110px;
+  }
+}
+
+
 </style>
 
 
