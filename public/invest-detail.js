@@ -762,19 +762,17 @@ const y = toY(myEntryPrice);
 
 }
 
+const color =
+  last > first ? "#00ff99" :
+  last < first ? "#ff5c5c" :
+  "#aaa";
 
-  const color =
-    last > first ? "#00ff99" :
-    last < first ? "#ff5c5c" :
-    "#aaa";
-
-  ctx.beginPath();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.shadowColor = color;
-  ctx.shadowBlur = 10;
-
+ctx.save();
 ctx.beginPath();
+ctx.strokeStyle = color;
+ctx.lineWidth = 2;
+ctx.shadowColor = color;
+ctx.shadowBlur = 4; // 🔥 giảm blur để nhìn rõ
 
 let started = false;
 
@@ -793,12 +791,11 @@ for (let i = 0; i < data.length; i++) {
   }
 }
 
-ctx.stroke();
+if (started) ctx.stroke();
+
+ctx.restore();
 
 
-
-  ctx.stroke();
-  ctx.shadowBlur = 0;
 
   // cập nhật text xu hướng
   const trendText = document.getElementById("trendText");
