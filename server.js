@@ -342,23 +342,36 @@ function pickTrend(rng) {
 
 function generateChart(roundId) {
   const base = 100;
-  const vol = { gold:1, silver:1.5, diamond:3 };
+  const vol = {
+  gold: 1,
+  silver: 1.5,
+  diamond: 3,
+  oil: 5,        // 🔥 rung mạnh
+  estate: 3.5
+};
 
-  const chart = {
-    gold: [],
-    silver: [],
-    diamond: []
-  };
+
+const chart = {
+  gold: [],
+  silver: [],
+  diamond: [],
+  oil: [],
+  estate: []
+};
+
 
   // 🔥 1️⃣ RNG gốc cho cả phiên
   const roundRng = seededRandom("trend:" + roundId);
 
   // 🧠 2️⃣ Chọn trend cho từng asset
-  const trends = {
-    gold:    pickTrend(roundRng),
-    silver:  pickTrend(roundRng),
-    diamond: pickTrend(roundRng)
-  };
+const trends = {
+  gold: pickTrend(roundRng),
+  silver: pickTrend(roundRng),
+  diamond: pickTrend(roundRng),
+  oil: pickTrend(roundRng),
+  estate: pickTrend(roundRng)
+};
+
 
   // 📈 3️⃣ Bias theo trend
   const trendBias = {
@@ -393,11 +406,14 @@ function generateChart(roundId) {
 // 📊 TÍNH KẾT QUẢ TỪ CHART (LEVEL 10)
 // ================================
 function calcResultFromChart(chart) {
-  const LIMITS = {
-    gold: [-8, 8],
-    silver: [-6, 6],
-    diamond: [-15, 15]
-  };
+const LIMITS = {
+  gold: [-8, 8],
+  silver: [-6, 6],
+  diamond: [-15, 15],
+  oil: [-25, 25],       // 🔥 rủi ro cao
+  estate: [-20, 20]
+};
+
 
   const result = {};
 
@@ -502,11 +518,14 @@ setInterval(() => {
   io.emit("invest-price", {
     roundId: investRound.id,
     second: sec,
-    price: {
-      gold: investRound.chart.gold[sec],
-      silver: investRound.chart.silver[sec],
-      diamond: investRound.chart.diamond[sec]
-    }
+price: {
+  gold: investRound.chart.gold[sec],
+  silver: investRound.chart.silver[sec],
+  diamond: investRound.chart.diamond[sec],
+  oil: investRound.chart.oil[sec],
+  estate: investRound.chart.estate[sec]
+}
+
   });
 }, 1000);
 

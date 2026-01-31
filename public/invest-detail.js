@@ -79,8 +79,25 @@ const config = {
     min: -10,
     max: 15,
     vol: 3
+  },
+
+  // 🔥 NEW
+  oil: {
+    name: "Oil",
+    icon: `<img src="/assets/oil.png" class="asset-icon">`,
+    min: -18,
+    max: 25,
+    vol: 5          // ⚠️ rất rung
+  },
+  estate: {
+    name: "Real Estate",
+    icon: `<img src="/assets/estate.png" class="asset-icon">`,
+    min: -12,
+    max: 20,
+    vol: 3.5
   }
 };
+
 
 
 const c = config[asset] || config.gold;
