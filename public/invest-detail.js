@@ -576,37 +576,60 @@ const coin = myOrder.coin;
 // lãi / lỗ quy đổi coin (UI, server đã xử lý thật)
 const profitCoin = Math.round(coin * percent / 100);
 
+const isWin = percent >= 0;
+const pnlColor = isWin ? "#00ff99" : "#ff5c5c";
+
 showModal(
-  percent >= 0 ? "🎉 KẾT QUẢ LỆNH" : "💥 KẾT QUẢ LỆNH",
+  isWin ? "KẾT QUẢ GIAO DỊCH" : "KẾT QUẢ GIAO DỊCH",
   `
-  <div style="line-height:1.6">
-    <div>📊 Tài sản: <b>${asset.toUpperCase()}</b></div>
-    <div>🎯 Hướng: <b>${dirText}</b></div>
-    <div>💎 Vốn: <b>${coin}</b> coin</div>
+  <div class="trade-result ${isWin ? "win" : "loss"}">
 
-    <hr style="opacity:.15">
-
-    <div>📍 Giá vào: <b>${entry.toFixed(2)}</b></div>
-    <div>🏁 Giá chốt: <b>${end.toFixed(2)}</b></div>
-
-    <hr style="opacity:.15">
-
-    <div>
-      ${percent >= 0
-        ? `✅ Lãi: <b style="color:#00ff99">+${percent}%</b>`
-        : `❌ Lỗ: <b style="color:#ff5c5c">${percent}%</b>`
-      }
+    <!-- HEADER -->
+    <div class="tr-header">
+      <div class="tr-status">
+        ${isWin ? "🎉 LỆNH THẮNG" : "💥 LỆNH THUA"}
+      </div>
+      <div class="tr-pnl" style="color:${pnlColor}">
+        ${isWin ? "+" : ""}${percent}%
+      </div>
+      <div class="tr-coin">
+        ${profitCoin >= 0 ? "+" : ""}${profitCoin} 💎
+      </div>
     </div>
 
-    <div>
-      ${profitCoin >= 0
-        ? `💰 Nhận thêm: <b style="color:#00ff99">+${profitCoin}</b> coin`
-        : `💸 Mất: <b style="color:#ff5c5c">${profitCoin}</b> coin`
-      }
+    <!-- INFO GRID -->
+    <div class="tr-grid">
+      <div>
+        <span>Tài sản</span>
+        <b>${asset.toUpperCase()}</b>
+      </div>
+      <div>
+        <span>Hướng</span>
+        <b>${dirText}</b>
+      </div>
+      <div>
+        <span>Vốn</span>
+        <b>${coin} coin</b>
+      </div>
+      <div>
+        <span>Giá vào</span>
+        <b>${entry.toFixed(2)}</b>
+      </div>
+      <div>
+        <span>Giá chốt</span>
+        <b>${end.toFixed(2)}</b>
+      </div>
     </div>
+
+    <!-- FOOT NOTE -->
+    <div class="tr-note">
+      Kết quả đã được chốt theo giá cuối phiên
+    </div>
+
   </div>
   `
 );
+
 
 
   // 🔄 sync lại coin từ server (nguồn sự thật)

@@ -365,6 +365,75 @@ html, body {
 .pnl-history-fab:active{ transform:scale(.96); }
 
 
+.trade-result {
+  font-family: system-ui, sans-serif;
+  padding: 6px;
+}
+
+.tr-header {
+  text-align: center;
+  padding: 14px 10px;
+  border-radius: 14px;
+  background: linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,.01));
+  margin-bottom: 14px;
+}
+
+.trade-result.win .tr-header {
+  box-shadow: 0 0 20px rgba(0,255,153,.25);
+}
+
+.trade-result.loss .tr-header {
+  box-shadow: 0 0 20px rgba(255,92,92,.25);
+}
+
+.tr-status {
+  font-size: 13px;
+  opacity: .85;
+  letter-spacing: .5px;
+}
+
+.tr-pnl {
+  font-size: 34px;
+  font-weight: 800;
+  margin: 6px 0;
+}
+
+.tr-coin {
+  font-size: 15px;
+  opacity: .9;
+}
+
+.tr-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.tr-grid div {
+  background: rgba(255,255,255,.04);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.tr-grid span {
+  display: block;
+  opacity: .6;
+  font-size: 11px;
+  margin-bottom: 2px;
+}
+
+.tr-grid b {
+  font-size: 14px;
+}
+
+.tr-note {
+  text-align: center;
+  margin-top: 12px;
+  font-size: 11px;
+  opacity: .5;
+}
 
 
 </style>
