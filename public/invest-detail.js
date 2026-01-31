@@ -698,7 +698,7 @@ if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
   const dirIcon = myOrderDirection === "down" ? "📉" : "📈";
 
   pnlBox.textContent =
-    `${dirIcon} PnL: ` +
+    `${dirIcon} Lợi nhuận: ` +
     `${percent > 0 ? "+" : ""}${percent}% ` +
     `(${pnlCoin > 0 ? "+" : ""}${pnlCoin} 💎)`;
 
