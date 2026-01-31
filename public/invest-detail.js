@@ -92,7 +92,8 @@ document.getElementById("assetTitle").innerHTML =
 document.getElementById("analysisText").innerHTML = `
   <li>📉 Rủi ro tối đa: ${c.min}%</li>
   <li>📈 Lợi nhuận kỳ vọng: ${c.max}%</li>
-  <li>⏱ Chốt mỗi 60 giây (phiên chung)</li>
+  <li>⏱ Chốt lệnh sớm trước khi kết thúc phiên</li>
+  <li>🛡️ Tối ưu kiểm soát vốn</li>
 `;
 
 // ================== SOCKET + ROUND ==================
