@@ -21,6 +21,44 @@ const fs = require("fs");
 
 
 
+
+const INVEST_HISTORY_FILE =
+  "/opt/render/project/data/invest_history.json";
+
+
+const INVEST_STATE_FILE =
+  "/opt/render/project/data/invest_state.json";
+
+
+  function loadInvestState(){
+  try{
+    if(!fs.existsSync(INVEST_STATE_FILE)) return null;
+    return JSON.parse(
+      fs.readFileSync(INVEST_STATE_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load invest state failed", e);
+    return null;
+  }
+}
+
+
+function saveInvestState(state){
+  if (!state || !INVEST_STATE_FILE) return;
+  try{
+    fs.writeFileSync(
+      INVEST_STATE_FILE,
+      JSON.stringify(state, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save invest state failed", e);
+  }
+}
+
+
+
+
+
 const webpush = require("web-push");
 
 const { uploadToR2 } = require("./r2");
@@ -110,38 +148,7 @@ MEDIA_DIRS.forEach(dir=>{
 
 
 
-const INVEST_HISTORY_FILE =
-  "/opt/render/project/data/invest_history.json";
 
-
-
-const INVEST_STATE_FILE =
-  "/opt/render/project/data/invest_state.json";
-
-
-  function loadInvestState(){
-  try{
-    if(!fs.existsSync(INVEST_STATE_FILE)) return null;
-    return JSON.parse(
-      fs.readFileSync(INVEST_STATE_FILE, "utf8")
-    );
-  }catch(e){
-    console.error("❌ Load invest state failed", e);
-    return null;
-  }
-}
-
-
-function saveInvestState(state){
-  try{
-    fs.writeFileSync(
-      INVEST_STATE_FILE,
-      JSON.stringify(state, null, 2)
-    );
-  }catch(e){
-    console.error("❌ Save invest state failed", e);
-  }
-}
 
 
 function loadInvestHistory(){
