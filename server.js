@@ -459,14 +459,20 @@ if (!investRound || investRound.endAt <= Date.now()) {
 }
 
 
-// ⛔ nếu restart mà phiên đã quá hạn → reset
+// ⛔ nếu restart mà phiên đã quá hạn → reset (FIX ĐỦ FIELD)
 if (investRound.endAt <= Date.now()) {
+  const id = Date.now();
   investRound = {
-    id: Date.now(),
-    endAt: Date.now() + 60000,
-    orders: []
+    id,
+    startAt: id,
+    endAt: id + 60000,
+    orders: [],
+    chart: generateChart(id),
+    closedEarly: [] // 🔒 BẮT BUỘC
   };
+  saveInvestState(investRound);
 }
+
 
 // 💾 lưu lại ngay
 saveInvestState(investRound);
@@ -613,13 +619,16 @@ saveInvestHistory(investHistory);
   // 🔄 TẠO PHIÊN MỚI
   // ================================
  const id = Date.now();
+
 investRound = {
   id,
   startAt: id,
   endAt: id + 60000,
   orders: [],
-  chart: generateChart(id)
+  chart: generateChart(id),
+  closedEarly: [] // 🔒 LƯU USER ĐÃ CHỐT SỚM
 };
+
 
 saveInvestState(investRound);
 
@@ -791,11 +800,19 @@ app.post("/api/invest/close-early", (req, res) => {
     saveUsers(users);
     emitCoinUpdate(uid);
 
-    // ❌ xoá lệnh khỏi round
-    investRound.orders =
-      investRound.orders.filter(o => o.uid !== uid);
 
-    saveInvestState(investRound);
+// 🔒 ĐÁNH DẤU ĐÃ CHỐT SỚM TRONG ROUND
+investRound.closedEarly ||= [];
+if (!investRound.closedEarly.includes(uid)) {
+  investRound.closedEarly.push(uid);
+}
+
+// ❌ xoá lệnh khỏi round
+investRound.orders =
+  investRound.orders.filter(o => o.uid !== uid);
+
+saveInvestState(investRound);
+
 
     // ✅ TRẢ KẾT QUẢ CHO CLIENT
     return res.json({
@@ -847,16 +864,18 @@ app.get("/api/invest/chart", (req, res) => {
 
 
 app.get("/api/invest/round", (req, res) => {
+  const uid = req.headers["x-uid"];
+
   res.json({
     ok: true,
     roundId: investRound.id,
     startAt: investRound.startAt,
     endAt: investRound.endAt,
-
-    // 🔥 GỬI LUÔN LỆNH ĐÃ VÀO
-    orders: investRound.orders || []
+    orders: investRound.orders || [],
+    closedEarly: investRound.closedEarly?.includes(uid) || false
   });
 });
+
 
 
 
@@ -872,8 +891,17 @@ app.get("/api/invest/history", (req, res) => {
 
 
 app.post("/api/invest", (req, res) => {
-  const uid = req.headers["x-uid"];
-  const { type, coin, direction } = req.body;
+const uid = req.headers["x-uid"];
+if (!uid) return res.json({ ok:false });
+
+if (investRound.closedEarly?.includes(uid)) {
+  return res.json({
+    ok:false,
+    message:"⛔ Bạn đã chốt lệnh sớm trong phiên này. Vui lòng chờ phiên tiếp theo."
+  });
+}
+
+
 
 
 if (!["up","down"].includes(direction)) {
