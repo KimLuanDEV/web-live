@@ -1171,3 +1171,26 @@ btnCloseEarly?.addEventListener("click", () => {
     btnCloseEarly.classList.add("hidden");
   });
 });
+
+
+socket.on("invest-closed-early", d => {
+  // reset trạng thái
+  joinedRound = false;
+  myEntryPrice = null;
+  myOrderDirection = null;
+  myEntryTime = null;
+
+  const pnlBox = document.getElementById("pnlRealtime");
+  if (pnlBox) pnlBox.classList.add("hidden");
+
+  // mở modal kết quả
+  openResultModal({
+    percent: d.percent,
+    profit: d.profit,
+    asset,
+    dir: d.percent >= 0 ? "📈" : "📉",
+    coin: d.profit,
+    entry: myEntryPrice,
+    end: d.priceNow
+  });
+});

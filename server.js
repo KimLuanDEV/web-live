@@ -711,17 +711,16 @@ app.post("/api/invest/close-early", (req, res) => {
     return res.json({ ok:false, message:"Chưa vào lệnh" });
   }
 
-  // ⏱ chỉ cho chốt sau 10 giây
-  const nowSec = Math.floor(
-    (Date.now() - investRound.startAt) / 1000
-  );
+  
+ if (!order.entryTime || Date.now() - order.entryTime < 10_000) {
+  return res.json({
+    ok:false,
+    message:"⏳ Chỉ được chốt sau 10 giây"
+  });
+}
 
-  if (nowSec - order.entrySec < 10) {
-    return res.json({
-      ok:false,
-      message:"⏳ Chỉ được chốt sau 10 giây"
-    });
-  }
+
+
 
   // 📊 giá hiện tại
   const priceNow =
@@ -915,10 +914,12 @@ investRound.orders.push({
   uid,
   asset: type,
   coin,
-  direction,          // 🔥 LƯU HƯỚNG
+  direction,
   entrySec: nowSec,
-  entryPrice
+  entryPrice,
+  entryTime: Date.now() // 🔥 THỜI GIAN THẬT
 });
+
 
 
 
