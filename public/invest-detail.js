@@ -696,6 +696,22 @@ function drawChart(data){
 
   if (data.length < 2) return;
 
+  // 🔥 AUTO SCALE Y (BINANCE STYLE)
+const min = Math.min(...data);
+const max = Math.max(...data);
+
+// padding 5% cho đẹp
+const pad = (max - min) * 0.05 || 1;
+
+const yMin = min - pad;
+const yMax = max + pad;
+
+// hàm convert price → Y
+function toY(price){
+  return H - (price - yMin) / (yMax - yMin) * H;
+}
+
+
   const first = data[0];
   const last  = data[data.length - 1];
 
@@ -710,8 +726,8 @@ if (joinedRound && typeof myEntryPrice === "number") {
 // ===============================
 if (joinedRound && typeof myEntryPrice === "number") {
 
-  const y =
-    H - (myEntryPrice - 80) * (H / 40);
+const y = toY(myEntryPrice);
+
 
   ctx.save();
   ctx.setLineDash([6, 4]);
@@ -758,16 +774,28 @@ if (joinedRound && typeof myEntryPrice === "number") {
   ctx.shadowColor = color;
   ctx.shadowBlur = 10;
 
-  const points = data.filter(v => v !== undefined);
+ctx.beginPath();
+
+let started = false;
+
+for (let i = 0; i < data.length; i++) {
+  const v = data[i];
+  if (v === undefined) continue;
+
+  const x = i * (W / Math.max(data.length - 1, 1));
+  const y = toY(v);
+
+  if (!started) {
+    ctx.moveTo(x, y);
+    started = true;
+  } else {
+    ctx.lineTo(x, y);
+  }
+}
+
+ctx.stroke();
 
 
-  points.forEach((v, i) => {
-  const x = i * (W / Math.max(points.length - 1, 1));
-
-    const y = H - (v - 80) * (H / 40);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
 
   ctx.stroke();
   ctx.shadowBlur = 0;
@@ -813,7 +841,7 @@ entryMarkers.forEach(m => {
   if (idx < 0 || idx >= data.length) return;
 
   const x = idx * (W / Math.max(data.length - 1, 1));
-  const y = H - (price - 80) * (H / 40);
+  const y = toY(price);
 
   ctx.beginPath();
   ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
