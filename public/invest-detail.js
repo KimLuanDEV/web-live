@@ -357,8 +357,8 @@ const myOrder = roundOrders.find(o => o.uid === me.uid);
 if (myOrder) {
   joinedRound = true;
   myEntryPrice = myOrder.entryPrice; // 🔥 PHỤC HỒI ENTRY
-
   myOrderDirection = myOrder.direction; // 🔥 PHỤC HỒI HƯỚNG
+  myEntryTime = myOrder.entryTime; // 🔥 PHỤC HỒI THỜI ĐIỂM VÀO LỆNH
 
 
   if (investBtn) {
