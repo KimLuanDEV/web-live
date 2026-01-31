@@ -536,7 +536,24 @@ html, body {
   color: #000;
 }
 
-
+.direction-box{
+  display:flex;
+  gap:10px;
+  margin:12px 0;
+}
+.dir{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:0;
+  font-weight:700;
+  background:#222;
+  color:#fff;
+}
+.dir.active{
+  background:linear-gradient(135deg,#00ff99,#00cc88);
+  color:#000;
+}
 
 
 </style>
@@ -675,6 +692,13 @@ html, body {
   >
 
   <button onclick="confirmInvest()">VÀO LỆNH</button>
+  
+  <div class="direction-box">
+  <button id="btnUp" class="dir active">📈 LÊN</button>
+  <button id="btnDown" class="dir">📉 XUỐNG</button>
+</div>
+
+
 </section>
 
 <!-- 🔔 MODAL -->

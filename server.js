@@ -524,11 +524,18 @@ if (!prices) return;
 const entry = o.entryPrice;
 const end   = prices[prices.length - 1];
 
-let percent =
+let rawPercent =
   Math.round((end - entry) / entry * 100);
+
+// 🔁 đảo chiều nếu chọn DOWN
+let percent =
+  o.direction === "down"
+    ? -rawPercent
+    : rawPercent;
 
 // 🔒 clamp an toàn
 percent = Math.max(-30, Math.min(30, percent));
+
 
 const profit =
   Math.round(o.coin * percent / 100);
@@ -738,7 +745,15 @@ app.get("/api/invest/history", (req, res) => {
 
 app.post("/api/invest", (req, res) => {
   const uid = req.headers["x-uid"];
-  const { type, coin } = req.body;
+  const { type, coin, direction } = req.body;
+
+
+if (!["up","down"].includes(direction)) {
+  return res.json({
+    ok:false,
+    message:"Hướng không hợp lệ"
+  });
+}
 
 
 
@@ -801,10 +816,11 @@ investRound.orders.push({
   uid,
   asset: type,
   coin,
-
+  direction,          // 🔥 LƯU HƯỚNG
   entrySec: nowSec,
-  entryPrice: entryPrice
+  entryPrice
 });
+
 
 
 

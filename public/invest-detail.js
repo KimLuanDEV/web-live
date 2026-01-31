@@ -9,6 +9,24 @@ const ROUND_DURATION = 60; // giây
 
 let currentRoundId = null;
 let myEntryPrice = null;
+let myDirection = "up";
+
+const btnUp = document.getElementById("btnUp");
+const btnDown = document.getElementById("btnDown");
+
+if (btnUp && btnDown) {
+  btnUp.onclick = () => {
+    myDirection = "up";
+    btnUp.classList.add("active");
+    btnDown.classList.remove("active");
+  };
+  btnDown.onclick = () => {
+    myDirection = "down";
+    btnDown.classList.add("active");
+    btnUp.classList.remove("active");
+  };
+}
+
 
 
 const liveBadge = document.getElementById("liveBadge");
@@ -860,8 +878,10 @@ function confirmInvest(){
     },
 body: JSON.stringify({
   type: asset,
-  coin
+  coin,
+  direction: myDirection   // 🔥 QUAN TRỌNG
 })
+
 
 
   })
