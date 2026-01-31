@@ -368,6 +368,10 @@ socket.on("connect", () => {
       );
 
       chartData = d.chart[asset].slice(0, nowSec + 1);
+      chartOffsetSec = chartData.length;
+
+
+
       drawChart(chartData);
     });
 });
@@ -496,31 +500,31 @@ socket.on("invest-order-new", o => {
 // nhận phiên mới
 socket.on("invest-round-new", d => {
 
+  // 👉 cập nhật offset = độ dài chart hiện tại
+  chartOffsetSec = chartData.length;
+
   myEntryPrice = null;
-const pnlBox = document.getElementById("pnlRealtime");
-if (pnlBox) pnlBox.classList.add("hidden");
 
+  const pnlBox = document.getElementById("pnlRealtime");
+  if (pnlBox) pnlBox.classList.add("hidden");
 
-// 🔴 update LIVE • ROUND khi có phiên mới
-if (typeof d.roundIndex === "number") {
-  updateLiveRound(d.roundIndex);
-}
-else if (typeof d.roundId === "number") {
-  updateLiveRound(d.roundId);
-}
-else {
-  updateLiveRound((currentRoundId || 0) + 1);
-}
-
+  // update LIVE
+  if (typeof d.roundIndex === "number") {
+    updateLiveRound(d.roundIndex);
+  } else {
+    updateLiveRound((currentRoundId || 0) + 1);
+  }
 
   joinedRound = false;
   roundOrders = [];
   renderOrdersModal();
   startRoundTimer(d.endAt);
-  chartData = [];
-  resizeChartCanvas();
-  entryMarkers = [];
+
+  // ❌ KHÔNG reset chartData
+  // ❌ KHÔNG reset canvas
+  entryMarkers = []; // chỉ reset marker lệnh
 });
+
 
 
 socket.on("invest-round-result", d => {
@@ -613,6 +617,9 @@ openResultModal({
 // ================== CHART REALTIME (SERVER SYNC) ==================
 
 let chartData = [];
+let chartOffsetSec = 0; // ⏱ tổng số giây đã vẽ (nối chart)
+
+
 
 socket.on("invest-price", d => {
   const p = d.price?.[asset];
@@ -620,13 +627,11 @@ socket.on("invest-price", d => {
 
   if (typeof d.second !== "number") return;
 
-chartData[d.second] = p;
+const idx = chartOffsetSec + d.second;
+chartData[idx] = p;
+
 drawChart(chartData);
 
-
-  chartData[d.second] = p;
-
-  drawChart(chartData);
 
   // ===============================
   // 💰 PnL REALTIME TỪ ENTRY
