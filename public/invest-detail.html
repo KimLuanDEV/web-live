@@ -629,9 +629,13 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 .header-coin{
-  position: relative;      /* 🔑 QUAN TRỌNG */
-  z-index: 2;              /* nằm trên nền header */
-  right: 14px;
+  position: absolute;     /* 🔑 NEO VỊ TRÍ */
+  top: 50%;
+  right: 12px;
+  transform: translateY(-50%);
+
+  z-index: 3;
+
   display:flex;
   align-items:center;
   gap:6px;
@@ -654,6 +658,7 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 
+
 </style>
 
 
@@ -667,14 +672,13 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <div class="header-center">
     <h1 id="assetTitle">📊 Phân tích</h1>
-    
-    <div class="header-coin">
-  💎<b id="myCoin">0</b>
-    </div>
-
+    <div class="header-sub">Realtime • 60s / phiên</div>
   </div>
 
   
+ <div class="header-coin">
+  💎<b id="myCoin">0</b>
+</div>
 
 
 
