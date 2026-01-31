@@ -711,8 +711,13 @@ function drawChart(data){
   if (data.length < 2) return;
 
   // 🔥 AUTO SCALE Y (BINANCE STYLE)
-const min = Math.min(...data);
-const max = Math.max(...data);
+// 🔥 lọc giá hợp lệ để scale (TRÁNH NaN)
+const validData = data.filter(v => typeof v === "number");
+if (validData.length < 2) return;
+
+const min = Math.min(...validData);
+const max = Math.max(...validData);
+
 
 // padding 5% cho đẹp
 const pad = (max - min) * 0.05 || 1;
