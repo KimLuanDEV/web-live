@@ -1168,9 +1168,33 @@ btnCloseEarly?.addEventListener("click", () => {
       return;
     }
 
+    // ✅ RESET TRẠNG THÁI NGAY
+    joinedRound = false;
+    myEntryPrice = null;
+    myOrderDirection = null;
+    myEntryTime = null;
+
+    const pnlBox = document.getElementById("pnlRealtime");
+    if (pnlBox) pnlBox.classList.add("hidden");
+
     btnCloseEarly.classList.add("hidden");
+
+    // ✅ MỞ MODAL NGAY – KHÔNG CHỜ SOCKET
+    openResultModal({
+      percent: d.percent,
+      profit: d.profit,
+      asset,
+      dir: d.direction === "down" ? "📉 Giảm" : "📈 Tăng",
+      coin: d.coin,
+      entry: d.entryPrice,
+      end: d.endPrice
+    });
+  })
+  .catch(() => {
+    showModal("❌ Lỗi mạng", "Không thể kết nối server.");
   });
 });
+
 
 
 socket.on("invest-closed-early", d => {
