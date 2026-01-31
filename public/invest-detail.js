@@ -368,10 +368,6 @@ socket.on("connect", () => {
       );
 
       chartData = d.chart[asset].slice(0, nowSec + 1);
-      chartOffsetSec = chartData.length;
-
-
-
       drawChart(chartData);
     });
 });
@@ -500,32 +496,31 @@ socket.on("invest-order-new", o => {
 // nhận phiên mới
 socket.on("invest-round-new", d => {
 
-
-  // 👉 cập nhật offset = độ dài chart hiện tại
-  chartOffsetSec = chartData.length;
-
   myEntryPrice = null;
+const pnlBox = document.getElementById("pnlRealtime");
+if (pnlBox) pnlBox.classList.add("hidden");
 
-  const pnlBox = document.getElementById("pnlRealtime");
-  if (pnlBox) pnlBox.classList.add("hidden");
 
-  // update LIVE
-  if (typeof d.roundIndex === "number") {
-    updateLiveRound(d.roundIndex);
-  } else {
-    updateLiveRound((currentRoundId || 0) + 1);
-  }
+// 🔴 update LIVE • ROUND khi có phiên mới
+if (typeof d.roundIndex === "number") {
+  updateLiveRound(d.roundIndex);
+}
+else if (typeof d.roundId === "number") {
+  updateLiveRound(d.roundId);
+}
+else {
+  updateLiveRound((currentRoundId || 0) + 1);
+}
+
 
   joinedRound = false;
   roundOrders = [];
   renderOrdersModal();
   startRoundTimer(d.endAt);
-
-  // ❌ KHÔNG reset chartData
-  // ❌ KHÔNG reset canvas
-  entryMarkers = []; // chỉ reset marker lệnh
+  chartData = [];
+  resizeChartCanvas();
+  entryMarkers = [];
 });
-
 
 
 socket.on("invest-round-result", d => {
@@ -618,11 +613,6 @@ openResultModal({
 // ================== CHART REALTIME (SERVER SYNC) ==================
 
 let chartData = [];
-let chartOffsetSec = 0; // ⏱ tổng số giây đã vẽ (nối chart)
-const MAX_POINTS = 100; // 📏 giới hạn số điểm hiển thị
-
-
-
 
 socket.on("invest-price", d => {
   const p = d.price?.[asset];
@@ -630,24 +620,13 @@ socket.on("invest-price", d => {
 
   if (typeof d.second !== "number") return;
 
-const idx = chartOffsetSec + d.second;
-chartData[idx] = p;
-
-// 📏 GIỮ TỐI ĐA 100 ĐIỂM – SCROLL TRÁI
-if (chartData.length > MAX_POINTS) {
-  const cut = chartData.length - MAX_POINTS;
-  chartData = chartData.slice(cut);
-
-  // dịch lại offset & marker
-  chartOffsetSec -= cut;
-
-  entryMarkers = entryMarkers
-    .map(m => ({ ...m, sec: m.sec - cut }))
-    .filter(m => m.sec >= 0);
-}
-
+chartData[d.second] = p;
 drawChart(chartData);
 
+
+  chartData[d.second] = p;
+
+  drawChart(chartData);
 
   // ===============================
   // 💰 PnL REALTIME TỪ ENTRY
@@ -712,27 +691,6 @@ function drawChart(data){
 
   if (data.length < 2) return;
 
-  // 🔥 AUTO SCALE Y (BINANCE STYLE)
-// 🔥 lọc giá hợp lệ để scale (TRÁNH NaN)
-const validData = data.filter(v => typeof v === "number");
-if (validData.length < 2) return;
-
-const min = Math.min(...validData);
-const max = Math.max(...validData);
-
-
-// padding 5% cho đẹp
-const pad = (max - min) * 0.05 || 1;
-
-const yMin = min - pad;
-const yMax = max + pad;
-
-// hàm convert price → Y
-function toY(price){
-  return H - (price - yMin) / (yMax - yMin) * H;
-}
-
-
   const first = data[0];
   const last  = data[data.length - 1];
 
@@ -747,8 +705,8 @@ if (joinedRound && typeof myEntryPrice === "number") {
 // ===============================
 if (joinedRound && typeof myEntryPrice === "number") {
 
-const y = toY(myEntryPrice);
-
+  const y =
+    H - (myEntryPrice - 80) * (H / 40);
 
   ctx.save();
   ctx.setLineDash([6, 4]);
@@ -783,40 +741,31 @@ const y = toY(myEntryPrice);
 
 }
 
-const color =
-  last > first ? "#00ff99" :
-  last < first ? "#ff5c5c" :
-  "#aaa";
 
-ctx.save();
-ctx.beginPath();
-ctx.strokeStyle = color;
-ctx.lineWidth = 2;
-ctx.shadowColor = color;
-ctx.shadowBlur = 4; // 🔥 giảm blur để nhìn rõ
+  const color =
+    last > first ? "#00ff99" :
+    last < first ? "#ff5c5c" :
+    "#aaa";
 
-let started = false;
+  ctx.beginPath();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.shadowColor = color;
+  ctx.shadowBlur = 10;
 
-for (let i = 0; i < data.length; i++) {
-  const v = data[i];
-  if (v === undefined) continue;
-
-  const x = i * (W / Math.max(data.length - 1, 1));
-  const y = toY(v);
-
-  if (!started) {
-    ctx.moveTo(x, y);
-    started = true;
-  } else {
-    ctx.lineTo(x, y);
-  }
-}
-
-if (started) ctx.stroke();
-
-ctx.restore();
+  const points = data.filter(v => v !== undefined);
 
 
+  points.forEach((v, i) => {
+  const x = i * (W / Math.max(points.length - 1, 1));
+
+    const y = H - (v - 80) * (H / 40);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  ctx.stroke();
+  ctx.shadowBlur = 0;
 
   // cập nhật text xu hướng
   const trendText = document.getElementById("trendText");
@@ -859,7 +808,7 @@ entryMarkers.forEach(m => {
   if (idx < 0 || idx >= data.length) return;
 
   const x = idx * (W / Math.max(data.length - 1, 1));
-  const y = toY(price);
+  const y = H - (price - 80) * (H / 40);
 
   ctx.beginPath();
   ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
