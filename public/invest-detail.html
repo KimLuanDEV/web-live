@@ -657,27 +657,6 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
-.history-fab img,
-.orders-fab img,
-.pnl-history-fab img{
-  width: 66px;
-  height: 66px;
-  object-fit: contain;
-  pointer-events: none; /* không cản click */
-}
-
-
-.history-fab:hover img,
-.orders-fab:hover img,
-.pnl-history-fab:hover img{
-  filter: drop-shadow(0 0 6px rgba(255,255,255,.35));
-}
-
-.history-fab:active img,
-.orders-fab:active img,
-.pnl-history-fab:active img{
-  transform: scale(.92);
-}
 
 
 </style>
@@ -727,19 +706,20 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   </div>
 
 
-<!-- 🧾 HISTORY BUTTON -->
+  <!-- 🧾 HISTORY BUTTON (ICON NỔI) -->
 <button id="btnOpenHistory" class="history-fab" title="Lịch sử phiên">
-  <img src="/assets/history.png" alt="History">
+  📊
 </button>
 
-<!-- 🧾 ORDERS BUTTON -->
+
+<!-- 🧾 ORDERS BUTTON (ICON NỔI) -->
 <button id="btnOpenOrders" class="orders-fab" title="Lệnh trong phiên">
-  <img src="/assets/orders.png" alt="Orders">
+  👤
 </button>
 
 <!-- 💰 PNL HISTORY BUTTON -->
 <button id="btnOpenPnlHistory" class="pnl-history-fab" title="Lịch sử lãi / lỗ">
-  <img src="/assets/pnl.png" alt="PnL">
+  💰
 </button>
 
 
