@@ -500,6 +500,9 @@ socket.on("invest-order-new", o => {
 // nhận phiên mới
 socket.on("invest-round-new", d => {
 
+   // 🧱 đánh dấu vị trí bắt đầu round mới
+  roundSplits.push(chartData.length);
+
   // 👉 cập nhật offset = độ dài chart hiện tại
   chartOffsetSec = chartData.length;
 
@@ -619,6 +622,7 @@ openResultModal({
 let chartData = [];
 let chartOffsetSec = 0; // ⏱ tổng số giây đã vẽ (nối chart)
 const MAX_POINTS = 100; // 📏 giới hạn số điểm hiển thị
+let roundSplits = []; // 🧱 lưu index bắt đầu mỗi round
 
 
 
@@ -636,13 +640,19 @@ if (chartData.length > MAX_POINTS) {
   const cut = chartData.length - MAX_POINTS;
   chartData = chartData.slice(cut);
 
-  // dịch lại offset & marker
   chartOffsetSec -= cut;
 
+  // 📍 dịch marker
   entryMarkers = entryMarkers
     .map(m => ({ ...m, sec: m.sec - cut }))
     .filter(m => m.sec >= 0);
+
+  // 🧱 dịch vạch round
+  roundSplits = roundSplits
+    .map(i => i - cut)
+    .filter(i => i >= 0);
 }
+
 
 drawChart(chartData);
 
@@ -707,6 +717,30 @@ function drawChart(data){
     ctx.lineTo(W, i * H / 5);
     ctx.stroke();
   }
+
+
+
+// ===============================
+// 🧱 VẼ VẠCH PHÂN CÁCH ROUND
+// ===============================
+ctx.save();
+ctx.strokeStyle = "rgba(255,255,255,.12)";
+ctx.setLineDash([4, 6]);
+
+roundSplits.forEach(i => {
+  if (i <= 0 || i >= data.length) return;
+
+  const x = i * (W / Math.max(data.length - 1, 1));
+
+  ctx.beginPath();
+  ctx.moveTo(x, 0);
+  ctx.lineTo(x, H);
+  ctx.stroke();
+});
+
+ctx.setLineDash([]);
+ctx.restore();
+
 
   if (data.length < 2) return;
 
