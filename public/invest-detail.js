@@ -10,6 +10,8 @@ const ROUND_DURATION = 60; // giây
 let currentRoundId = null;
 let myEntryPrice = null;
 let myDirection = "up";
+let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
+
 
 const btnUp = document.getElementById("btnUp");
 const btnDown = document.getElementById("btnDown");
@@ -351,6 +353,9 @@ if (myOrder) {
   joinedRound = true;
   myEntryPrice = myOrder.entryPrice; // 🔥 PHỤC HỒI ENTRY
 
+  myOrderDirection = myOrder.direction; // 🔥 PHỤC HỒI HƯỚNG
+
+
   if (investBtn) {
     investBtn.disabled = true;
     investBtn.textContent = "⛔ ĐÃ VÀO LỆNH";
@@ -494,9 +499,11 @@ socket.on("invest-order-new", o => {
 
   roundOrders.push(o);
 
-  if (o.uid === me.uid && typeof o.entryPrice === "number") {
-    myEntryPrice = o.entryPrice;
-  }
+if (o.uid === me.uid && typeof o.entryPrice === "number") {
+  myEntryPrice = o.entryPrice;
+  myOrderDirection = o.direction; // 🔥 LẤY HƯỚNG TỪ SERVER
+}
+
 
   if (typeof o.entrySec === "number" && typeof o.entryPrice === "number") {
     entryMarkers.push({
@@ -581,7 +588,7 @@ socket.on("invest-round-result", d => {
   const end   = chartData[chartData.length - 1];
 
   if (!entry || !end) return;
-  
+
 let percent =
   Math.round((end - entry) / entry * 100);
 
@@ -649,27 +656,27 @@ drawChart(chartData);
 
 
 
-// 💰 PnL REALTIME TỪ ENTRY (TÍNH THEO HƯỚNG ĐÃ VÀO)
+// 💰 PnL REALTIME – LUÔN ĐÚNG THEO HƯỚNG LỆNH
 const pnlBox = document.getElementById("pnlRealtime");
 
-if (joinedRound && myEntryPrice && pnlBox) {
+if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
   const last = p;
 
   // raw theo UP
   let pnl = Math.round((last - myEntryPrice) / myEntryPrice * 100);
 
-  // 🔥 đảo chiều nếu lệnh của bạn là DOWN
-  const myOrder = roundOrders.find(o => o.uid === me.uid && o.asset === asset);
-  const dir = myOrder?.direction || "up";
-  if (dir === "down") pnl = -pnl;
+  // 🔥 đảo chiều nếu DOWN
+  if (myOrderDirection === "down") pnl = -pnl;
 
   // clamp UI
   pnl = Math.max(-30, Math.min(30, pnl));
 
-  // hiển thị kèm hướng cho rõ
-  const dirIcon = dir === "down" ? "📉" : "📈";
+  const dirIcon = myOrderDirection === "down" ? "📉" : "📈";
+
   pnlBox.textContent =
-    pnl >= 0 ? `${dirIcon} PnL: +${pnl}%` : `${dirIcon} PnL: ${pnl}%`;
+    pnl >= 0
+      ? `${dirIcon} PnL: +${pnl}%`
+      : `${dirIcon} PnL: ${pnl}%`;
 
   pnlBox.className =
     "pnl-overlay " + (pnl >= 0 ? "up" : "down");
@@ -911,6 +918,7 @@ body: JSON.stringify({
     // =========================
     joinedRound = true;
 
+myOrderDirection = myDirection; // 🔥 lưu hướng lệnh
 
 
     // 🔻 TRỪ COIN NGAY TRÊN UI
