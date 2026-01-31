@@ -12,6 +12,7 @@ let myEntryPrice = null;
 let myDirection = "up";
 let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
 let myEntryTime = null; // timestamp khi vào lệnh
+let closedEarlyThisRound = false; // 🔒 đã chốt sớm trong round này
 
 
 
@@ -544,6 +545,7 @@ else {
 
 
   joinedRound = false;
+  closedEarlyThisRound = false; 
   roundOrders = [];
   renderOrdersModal();
   startRoundTimer(d.endAt);
@@ -887,6 +889,16 @@ entryMarkers.forEach(m => {
 function confirmInvest(){
 
 
+if (closedEarlyThisRound) {
+  showModal(
+    "⛔ Không thể vào lệnh",
+    "Bạn đã chốt lệnh sớm trong phiên này. Vui lòng chờ phiên tiếp theo."
+  );
+  return;
+}
+
+
+
   const left = Math.floor((roundEndAt - Date.now()) / 1000);
   if (left <= 5) {
     showModal(
@@ -1170,6 +1182,7 @@ btnCloseEarly?.addEventListener("click", () => {
 
     // ✅ RESET TRẠNG THÁI NGAY
     joinedRound = false;
+    closedEarlyThisRound = true;
     myEntryPrice = null;
     myOrderDirection = null;
     myEntryTime = null;
