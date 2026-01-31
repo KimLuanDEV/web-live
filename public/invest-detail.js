@@ -362,6 +362,11 @@ if (myOrder) {
   myEntryTime = myOrder.entryTime; // 🔥 PHỤC HỒI THỜI ĐIỂM VÀO LỆNH
 
 
+
+// 🔒 ẨN NÚT LÊN / XUỐNG (khi reload mà đã vào lệnh)
+document.getElementById("directionBox")?.classList.add("hidden");
+
+
   if (investBtn) {
     investBtn.disabled = true;
     investBtn.textContent = "⛔ ĐÃ VÀO LỆNH";
