@@ -355,23 +355,21 @@ renderOrdersModal(); // ✅
 
       // 🔒 nếu user đã vào lệnh → khoá luôn
 const myOrder = roundOrders.find(o => o.uid === me.uid);
+
+
 if (myOrder) {
   joinedRound = true;
-  myEntryPrice = myOrder.entryPrice; // 🔥 PHỤC HỒI ENTRY
-  myOrderDirection = myOrder.direction; // 🔥 PHỤC HỒI HƯỚNG
-  myEntryTime = myOrder.entryTime; // 🔥 PHỤC HỒI THỜI ĐIỂM VÀO LỆNH
 
+  // 🔥 PHỤC HỒI TRẠNG THÁI LỆNH
+  myEntryPrice = myOrder.entryPrice;
+  myOrderDirection = myOrder.direction;
+  myEntryTime = myOrder.entryTime;
 
+  // 🔒 ẨN NÚT LÊN / XUỐNG
+  document.getElementById("directionBox")?.classList.add("hidden");
 
-// 🔒 ẨN NÚT LÊN / XUỐNG (khi reload mà đã vào lệnh)
-document.getElementById("directionBox")?.classList.add("hidden");
-
-
-  if (investBtn) {
-    investBtn.disabled = true;
-    investBtn.textContent = "⛔ ĐÃ VÀO LỆNH";
-  }
-
+  // 🔁 ĐÚNG UI: ẨN VÀO LỆNH → HIỆN CHỐT SỚM
+  showCloseEarlyButton();
 }
 
 
