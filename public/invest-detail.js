@@ -1165,11 +1165,12 @@ setInterval(() => {
   // ⏳ còn bao nhiêu giây của phiên
   const leftRound = Math.floor((roundEndAt - now) / 1000);
 
-  // ❌ còn ≤ 20s của phiên → ẨN nút
-  if (leftRound <= 15) {
-    btnCloseEarly.classList.add("hidden");
-    return;
-  }
+// ❌ còn ≤ 15s của phiên
+// 👉 chỉ ẨN nếu CHƯA vào lệnh
+if (leftRound <= 15 && !joinedRound) {
+  btnCloseEarly.classList.add("hidden");
+  return;
+}
 
   // ⏳ chưa đủ 10s từ lúc vào → disable
   if (passed < 10) {
