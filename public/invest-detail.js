@@ -103,7 +103,7 @@ const config = {
 const c = config[asset] || config.gold;
 
 document.getElementById("assetTitle").innerHTML =
-  `${c.icon} ${c.name}`;
+  `${c.name}`;
 
 
 document.getElementById("analysisText").innerHTML = `
