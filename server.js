@@ -444,8 +444,6 @@ let investPrice = {
 // ================================
 // 📈 INVEST REALTIME ROUND (60s)
 // ================================
-let investRound = loadInvestState();
-
 if (!investRound || investRound.endAt <= Date.now()) {
   const id = Date.now();
   investRound = {
@@ -453,10 +451,12 @@ if (!investRound || investRound.endAt <= Date.now()) {
     startAt: id,
     endAt: id + 60000,
     orders: [],
-    chart: generateChart(id)
+    chart: generateChart(id),
+    closedEarly: [] // ✅ FIX
   };
   saveInvestState(investRound);
 }
+
 
 
 // ⛔ nếu restart mà phiên đã quá hạn → reset (FIX ĐỦ FIELD)
@@ -891,123 +891,122 @@ app.get("/api/invest/history", (req, res) => {
 
 
 app.post("/api/invest", (req, res) => {
-const uid = req.headers["x-uid"];
-if (!uid) return res.json({ ok:false });
+  try {
+    const uid = req.headers["x-uid"];
+    const { type, coin, direction } = req.body;
 
-if (investRound.closedEarly?.includes(uid)) {
-  return res.json({
-    ok:false,
-    message:"⛔ Bạn đã chốt lệnh sớm trong phiên này. Vui lòng chờ phiên tiếp theo."
-  });
-}
+    // 🔐 auth
+    if (!uid) {
+      return res.json({ ok:false, message:"NOT_LOGIN" });
+    }
 
+    // 🔒 chặn user đã chốt sớm
+    if (Array.isArray(investRound.closedEarly) &&
+        investRound.closedEarly.includes(uid)) {
+      return res.json({
+        ok:false,
+        message:"⛔ Bạn đã chốt lệnh sớm trong phiên này. Vui lòng chờ phiên tiếp theo."
+      });
+    }
 
+    // 🎯 validate body
+    if (!type || !coin || !["up","down"].includes(direction)) {
+      return res.json({
+        ok:false,
+        message:"Dữ liệu vào lệnh không hợp lệ"
+      });
+    }
 
+    // ⛔ chặn vào nhiều lệnh
+    if (investRound.orders.some(o => o.uid === uid)) {
+      return res.json({
+        ok:false,
+        message:"⛔ Bạn đã vào lệnh trong phiên này"
+      });
+    }
 
-if (!["up","down"].includes(direction)) {
-  return res.json({
-    ok:false,
-    message:"Hướng không hợp lệ"
-  });
-}
+    // ⏳ chặn sát giờ
+    const leftSec = Math.floor(
+      (investRound.endAt - Date.now()) / 1000
+    );
+    if (leftSec <= 5) {
+      return res.json({
+        ok:false,
+        message:"⏳ Phiên sắp kết thúc"
+      });
+    }
 
+    // 👤 user
+    const users = loadUsers();
+    const me = users[uid];
+    if (!me?.profile) {
+      return res.json({ ok:false, message:"USER_INVALID" });
+    }
 
+    if (me.profile.coins < coin) {
+      return res.json({
+        ok:false,
+        message:"💎 Không đủ coin"
+      });
+    }
 
+    // 📊 xác định entry price TRƯỚC
+    const nowSec = Math.floor(
+      (Date.now() - investRound.startAt) / 1000
+    );
 
-// ⛔ CHẶN VÀO NHIỀU LỆNH TRONG 1 PHIÊN (FIX LỖI RELOAD)
-if (investRound.orders.some(o => o.uid === uid)) {
-  return res.json({
-    ok: false,
-    message: "⛔ Bạn đã vào lệnh trong phiên này"
-  });
-}
+    const entryPrice =
+      investRound.chart?.[type]?.[nowSec];
 
+    if (typeof entryPrice !== "number") {
+      return res.json({
+        ok:false,
+        message:"Không lấy được giá vào lệnh"
+      });
+    }
 
-// ⏳ CHẶN VÀO LỆNH KHI SẮP CHỐT
-const leftSec = Math.floor(
-  (investRound.endAt - Date.now()) / 1000
-);
-if (leftSec <= 5) {
-  return res.json({
-    ok: false,
-    message: "⏳ Phiên sắp kết thúc"
-  });
-}
+    // ➖ trừ coin SAU KHI OK HẾT
+    me.profile.coins -= coin;
+    saveUsers(users);
+    emitCoinUpdate(uid);
 
+    // 📥 lưu lệnh
+    investRound.orders.push({
+      uid,
+      asset: type,
+      coin,
+      direction,
+      entrySec: nowSec,
+      entryPrice,
+      entryTime: Date.now()
+    });
 
-  if (!uid || !coin) return res.json({ ok:false });
+    saveInvestState(investRound);
 
-  const users = loadUsers();
-  const me = users[uid];
-  if (!me?.profile) return res.json({ ok:false });
+    // 🔔 realtime
+    io.emit("invest-order-new", {
+      uid,
+      asset: type,
+      coin,
+      direction,
+      entrySec: nowSec,
+      entryPrice
+    });
 
-  if (me.profile.coins < coin) {
     return res.json({
+      ok:true,
+      roundId: investRound.id,
+      endAt: investRound.endAt
+    });
+
+  } catch (err) {
+    console.error("❌ /api/invest error:", err);
+    return res.status(500).json({
       ok:false,
-      message:"💎 Không đủ coin"
+      message:"SERVER_ERROR"
     });
   }
-
-  // ➖ trừ coin NGAY
-  me.profile.coins -= coin;
-  saveUsers(users);
-  emitCoinUpdate(uid);
-
-  // 📥 lưu lệnh vào phiên hiện tại
-const nowSec = Math.floor(
-  (Date.now() - investRound.startAt) / 1000
-);
-
-const entryPrice =
-  investRound.chart[type]?.[nowSec];
-
-if (typeof entryPrice !== "number") {
-  return res.json({
-    ok:false,
-    message:"Không lấy được giá vào lệnh"
-  });
-}
-
-investRound.orders.push({
-  uid,
-  asset: type,
-  coin,
-  direction,
-  entrySec: nowSec,
-  entryPrice,
-  entryTime: Date.now() // 🔥 THỜI GIAN THẬT
 });
-
-
-
-
-
-
-
-  // 🔐 lưu ngay để chống restart
-saveInvestState(investRound);
-
-  // 🔔 realtime: broadcast lệnh mới cho tất cả client
-io.emit("invest-order-new", {
-  uid,
-  asset: type,
-  coin,
-  direction,      // 🔥 BẮT BUỘC
-  entrySec: nowSec,
-  entryPrice
-});
-
-
-
-
-
-  res.json({
-    ok: true,
-    roundId: investRound.id,
-    endAt: investRound.endAt
-  });
-});
-
 
 
 
