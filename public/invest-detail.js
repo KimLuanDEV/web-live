@@ -272,18 +272,18 @@ function renderHistory(list){
   const html = list.map(r => `
     <tr>
       <td>${new Date(r.ts).toLocaleTimeString()}</td>
-      ${renderCell(r.result.silver)}
-      ${renderCell(r.result.gold)}
-      ${renderCell(r.result.diamond)}
+      ${renderCell(r.result?.silver)}
+      ${renderCell(r.result?.gold)}
+      ${renderCell(r.result?.diamond)}
+      ${renderCell(r.result?.oil)}
+      ${renderCell(r.result?.estate)}
     </tr>
   `).join("");
 
-  // nếu còn section cũ thì vẫn render
   if (historyEl) historyEl.innerHTML = html;
-
-  // render vào modal
   if (historyModalBody) historyModalBody.innerHTML = html;
 }
+
 
 
 function renderOrdersModal(){
