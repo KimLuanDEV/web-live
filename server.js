@@ -347,7 +347,8 @@ function generateChart(roundId) {
   silver: 1.5,
   diamond: 3,
   oil: 5,        // 🔥 rung mạnh
-  estate: 3.5
+  estate: 3.5,
+  atomic: 8.5 
 };
 
 
@@ -356,7 +357,8 @@ const chart = {
   silver: [],
   diamond: [],
   oil: [],
-  estate: []
+  estate: [],
+  atomic: []
 };
 
 
@@ -369,7 +371,8 @@ const trends = {
   silver: pickTrend(roundRng),
   diamond: pickTrend(roundRng),
   oil: pickTrend(roundRng),
-  estate: pickTrend(roundRng)
+  estate: pickTrend(roundRng),
+   atomic: pickTrend(roundRng)
 };
 
 
@@ -411,7 +414,8 @@ const LIMITS = {
   silver: [-6, 6],
   diamond: [-15, 15],
   oil: [-25, 25],       // 🔥 rủi ro cao
-  estate: [-20, 20]
+  estate: [-20, 20],
+  atomic: [-30, 45]
 };
 
 
@@ -523,7 +527,8 @@ price: {
   silver: investRound.chart.silver[sec],
   diamond: investRound.chart.diamond[sec],
   oil: investRound.chart.oil[sec],
-  estate: investRound.chart.estate[sec]
+  estate: investRound.chart.estate[sec],
+  atomic: investRound.chart.atomic[sec]
 }
 
   });
@@ -544,10 +549,14 @@ const result = calcResultFromChart(round.chart);
 
 // 🔥 GIÁ CHỐT CUỐI PHIÊN (CHUẨN SERVER)
 const endPrice = {
-  gold: round.chart.gold[round.chart.gold.length - 1],
-  silver: round.chart.silver[round.chart.silver.length - 1],
-  diamond: round.chart.diamond[round.chart.diamond.length - 1]
+  gold: round.chart.gold.at(-1),
+  silver: round.chart.silver.at(-1),
+  diamond: round.chart.diamond.at(-1),
+  oil: round.chart.oil.at(-1),
+  estate: round.chart.estate.at(-1),
+  atomic: round.chart.atomic.at(-1)
 };
+
 
 
 

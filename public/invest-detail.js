@@ -95,7 +95,14 @@ const config = {
     min: -12,
     max: 20,
     vol: 3.5
-  }
+  },
+  atomic: {
+  name: "Nguyên Tử",
+  icon: `<img src="/assets/atomic.png" class="asset-icon">`,
+  min: -30,
+  max: 45,
+  vol: 8.5
+}
 };
 
 
@@ -277,6 +284,7 @@ function renderHistory(list){
       ${renderCell(r.result?.diamond)}
       ${renderCell(r.result?.oil)}
       ${renderCell(r.result?.estate)}
+      ${renderCell(r.result?.atomic)}
     </tr>
   `).join("");
 
