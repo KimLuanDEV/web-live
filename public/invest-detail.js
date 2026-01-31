@@ -437,7 +437,7 @@ function startRoundTimer(endAt){
 
 
       investBtn.disabled = false;
-      investBtn.textContent = "🚀 VÀO LỆNH";
+      investBtn.textContent = "VÀO LỆNH";
     }
     else if (left > 0) {
       // 🔴 SẮP CHỐT
