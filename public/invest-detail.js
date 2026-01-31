@@ -566,12 +566,48 @@ socket.on("invest-round-result", d => {
   // 🔒 clamp UI (chỉ để hiển thị)
   percent = Math.max(-30, Math.min(30, percent));
 
-  showModal(
-    percent >= 0 ? "🎉 KẾT QUẢ LỆNH" : "💥 KẾT QUẢ LỆNH",
-    percent >= 0
-      ? `Bạn lời <b>+${percent}%</b> từ điểm vào lệnh`
-      : `Bạn lỗ <b>${percent}%</b> từ điểm vào lệnh`
-  );
+const dirText =
+  myOrder.direction === "up" ? "📈 Tăng" :
+  myOrder.direction === "down" ? "📉 Giảm" :
+  "➖ Side";
+
+const coin = myOrder.coin;
+
+// lãi / lỗ quy đổi coin (UI, server đã xử lý thật)
+const profitCoin = Math.round(coin * percent / 100);
+
+showModal(
+  percent >= 0 ? "🎉 KẾT QUẢ LỆNH" : "💥 KẾT QUẢ LỆNH",
+  `
+  <div style="line-height:1.6">
+    <div>📊 Tài sản: <b>${asset.toUpperCase()}</b></div>
+    <div>🎯 Hướng: <b>${dirText}</b></div>
+    <div>💎 Vốn: <b>${coin}</b> coin</div>
+
+    <hr style="opacity:.15">
+
+    <div>📍 Giá vào: <b>${entry.toFixed(2)}</b></div>
+    <div>🏁 Giá chốt: <b>${end.toFixed(2)}</b></div>
+
+    <hr style="opacity:.15">
+
+    <div>
+      ${percent >= 0
+        ? `✅ Lãi: <b style="color:#00ff99">+${percent}%</b>`
+        : `❌ Lỗ: <b style="color:#ff5c5c">${percent}%</b>`
+      }
+    </div>
+
+    <div>
+      ${profitCoin >= 0
+        ? `💰 Nhận thêm: <b style="color:#00ff99">+${profitCoin}</b> coin`
+        : `💸 Mất: <b style="color:#ff5c5c">${profitCoin}</b> coin`
+      }
+    </div>
+  </div>
+  `
+);
+
 
   // 🔄 sync lại coin từ server (nguồn sự thật)
   fetch("/api/me/coin", {
