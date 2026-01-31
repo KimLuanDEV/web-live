@@ -340,9 +340,16 @@ html, body {
 }
 
 .header-center{
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
+
+  pointer-events: none; /* tránh đè click nút back */
 }
 
 .pnl-history-fab{
@@ -608,10 +615,13 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 .detail-header{
+  position: relative;
   display:flex;
   align-items:center;
   justify-content:space-between;
+  height: 56px; /* ổn định chiều cao */
 }
+
 
 /* 💎 coin balance trên header */
 .header-coin{
