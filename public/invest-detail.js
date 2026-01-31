@@ -1005,19 +1005,24 @@ function openResultModal({ percent, profit, asset, dir, coin, entry, end }) {
   const modal = document.getElementById("resultModal");
   if (!modal) return;
 
-  const isWin = percent >= 0;
+  // ✅ CHUẨN NHẤT: dựa vào profit
+  const isWin = profit > 0;
+  const isLose = profit < 0;
 
   modal.classList.remove("win", "loss");
-  modal.classList.add(isWin ? "win" : "loss");
+  if (isWin) modal.classList.add("win");
+  if (isLose) modal.classList.add("loss");
 
   document.getElementById("rmStatus").textContent =
-    isWin ? "LỆNH THẮNG" : "LỆNH THUA";
+    isWin ? "LỆNH THẮNG" :
+    isLose ? "LỆNH THUA" :
+    "HOÀ VỐN";
 
   document.getElementById("rmPercent").textContent =
-    (isWin ? "+" : "") + percent + "%";
+    (percent > 0 ? "+" : "") + percent + "%";
 
   document.getElementById("rmCoin").textContent =
-    (profit >= 0 ? "+" : "") + profit + " 💎";
+    (profit > 0 ? "+" : "") + profit + " 💎";
 
   document.getElementById("rmAsset").textContent = asset.toUpperCase();
   document.getElementById("rmDir").textContent = dir;
@@ -1028,6 +1033,8 @@ function openResultModal({ percent, profit, asset, dir, coin, entry, end }) {
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
 }
+
+
 
 function closeResultModal() {
   const modal = document.getElementById("resultModal");
