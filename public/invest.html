@@ -31,8 +31,9 @@ html, body {
 
   aspect-ratio: 3 / 4;   /* ✅ giữ tỉ lệ card đẹp */
 
-box-shadow: 0 12px 30px rgba(0,0,0,.65);
-
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.08);
 
   transition: transform .2s ease, box-shadow .2s ease;
 }
@@ -45,10 +46,7 @@ box-shadow: 0 12px 30px rgba(0,0,0,.65);
 .invest-card::before{
   content:"";
   position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  height:55%;
+  inset:0;
   background: linear-gradient(
     to top,
     rgba(0,0,0,.65),
