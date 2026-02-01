@@ -25,7 +25,7 @@ html, body {
   color: #fff;
 
   /* ✅ KHÔNG BÓP ẢNH */
-  background-size: contain;
+  background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
@@ -50,11 +50,12 @@ html, body {
   background:
     linear-gradient(
       180deg,
-      rgba(0,0,0,.25),
-      rgba(0,0,0,.85)
+      rgba(0,0,0,.08),
+      rgba(0,0,0,.45)
     );
   z-index:0;
 }
+
 
 /* nội dung nằm trên overlay */
 .invest-card > *{
@@ -157,6 +158,7 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
+   filter: contrast(1.1) brightness(1.05);
 }
 
 
