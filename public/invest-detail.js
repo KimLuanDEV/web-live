@@ -1131,7 +1131,13 @@ if (joinedRound && typeof myEntryPriceDraw === "number") {
 const myMarker = entryMarkers.find(m => m.mine);
 if (!myMarker) return;
 
-const y = toY(points[myMarker.index]);
+const entryDraw =
+  typeof myEntryPriceDraw === "number"
+    ? myEntryPriceDraw
+    : myEntryPrice;
+
+const y = toY(entryDraw);
+
 
 
   ctx.save();
@@ -1211,7 +1217,13 @@ if (m.index < 0 || m.index >= data.length) return;
 const x = m.index * (W / Math.max(data.length - 1, 1));
 
 
-const y = toY(points[m.index]);
+const price =
+  typeof m.priceDraw === "number"
+    ? m.priceDraw
+    : m.priceRaw;
+
+const y = toY(price);
+
 
 
 
