@@ -1211,8 +1211,7 @@ if (m.index < 0 || m.index >= data.length) return;
 const x = m.index * (W / Math.max(data.length - 1, 1));
 
 
-const y = toY(chartData[m.index]);
-
+const y = toY(points[m.index]);
 
 
 
