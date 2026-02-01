@@ -391,9 +391,12 @@ const trends = {
       const noise = (rng() - 0.5) * vol[k];
       const bias  = trendBias[trends[k]];
 
-      let next = prev + noise + bias;
+let next = prev + noise + bias;
 
-      chart[k][t] = Math.max(80, Math.min(120, next));
+// 🔥 KHÔNG CLAMP – GIÁ TỰ DO
+chart[k][t] = Number(next.toFixed(4));
+
+
     }
   }
 
@@ -409,21 +412,12 @@ const trends = {
 // 📊 TÍNH KẾT QUẢ TỪ CHART (LEVEL 10)
 // ================================
 function calcResultFromChart(chart) {
-const LIMITS = {
-  gold: [-8, 8],
-  silver: [-6, 6],
-  diamond: [-15, 15],
-  oil: [-25, 25],       // 🔥 rủi ro cao
-  estate: [-20, 20],
-  atomic: [-30, 45]
-};
-
-
   const result = {};
 
   for (const asset in chart) {
     const prices = chart[asset];
-    if (!prices || prices.length < 2) {
+
+    if (!Array.isArray(prices) || prices.length < 2) {
       result[asset] = 0;
       continue;
     }
@@ -431,12 +425,10 @@ const LIMITS = {
     const start = prices[0];
     const end   = prices[prices.length - 1];
 
-    let percent =
-      Math.round((end - start) / start * 100);
-
-    // 🔒 clamp theo từng asset
-    const [min, max] = LIMITS[asset] || [-20, 20];
-    percent = Math.max(min, Math.min(max, percent));
+    // % thay đổi THỰC, KHÔNG clamp
+    const percent = Math.round(
+      (end - start) / start * 100
+    );
 
     result[asset] = percent;
   }

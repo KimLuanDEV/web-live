@@ -91,48 +91,35 @@ const config = {
   gold: {
     name: "Gold",
     icon: `<img src="/assets/gold.png" class="asset-icon">`,
-    min: -5,
-    max: 8,
     vol: 1
   },
   silver: {
     name: "Silver",
     icon: `<img src="/assets/silver.png" class="asset-icon">`,
-    min: -3,
-    max: 5,
     vol: 1.5
   },
   diamond: {
     name: "Diamond",
     icon: `<img src="/assets/diamond.png" class="asset-icon">`,
-    min: -10,
-    max: 15,
     vol: 3
   },
-
-  // 🔥 NEW
   oil: {
     name: "Oil",
     icon: `<img src="/assets/oil.png" class="asset-icon">`,
-    min: -18,
-    max: 25,
-    vol: 5          // ⚠️ rất rung
+    vol: 5
   },
   estate: {
     name: "Real Estate",
     icon: `<img src="/assets/estate.png" class="asset-icon">`,
-    min: -12,
-    max: 20,
     vol: 3.5
   },
   atomic: {
-  name: "Nguyên Tử",
-  icon: `<img src="/assets/atomic.png" class="asset-icon">`,
-  min: -30,
-  max: 45,
-  vol: 8.5
-}
+    name: "Nguyên Tử",
+    icon: `<img src="/assets/atomic.png" class="asset-icon">`,
+    vol: 8.5
+  }
 };
+
 
 
 
@@ -143,11 +130,12 @@ document.getElementById("assetTitle").innerHTML =
 
 
 document.getElementById("analysisText").innerHTML = `
-  <li>📉 Rủi ro tối đa: ${c.min}%</li>
-  <li>📈 Lợi nhuận kỳ vọng: ${c.max}%</li>
-  <li>⏱ Chốt lệnh sớm trước khi kết thúc phiên</li>
-  <li>🛡️ Tối ưu kiểm soát vốn</li>
+  <li>🌊 Biến động: ${c.vol >= 6 ? "CỰC CAO" : c.vol >= 3 ? "CAO" : "TRUNG BÌNH"}</li>
+  <li>🎯 Biên độ giao động mở</li>
+  <li>⏱ Có thể chốt lệnh sớm trong phiên</li>
+  <li>🛡️ Lãi / lỗ được kiểm soát theo vốn</li>
 `;
+
 
 // ================== SOCKET + ROUND ==================
 
@@ -1147,7 +1135,11 @@ const entryY = toY(entryDraw);
 
   const bandHeight = 16; // 14–20px là đẹp
 
-const isProfit = last >= entryDraw;
+const isProfit =
+  myOrderDirection === "up"
+    ? last >= entryDraw
+    : last <= entryDraw;
+
 
 
   ctx.save();
