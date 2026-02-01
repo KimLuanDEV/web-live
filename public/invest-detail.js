@@ -1120,84 +1120,70 @@ if (roundMarkers.length) {
 
 
 // =========================
-// 🎯 ENTRY BAND (VÙNG MỜ)
+// 🎯 ENTRY BAND (VÙNG MỜ) — LẤY THEO INDEX THẬT
 // =========================
-if (joinedRound && typeof myEntryPrice === "number") {
+if (joinedRound) {
+  const myMarker = entryMarkers.find(m => m.mine);
+  if (myMarker && typeof data[myMarker.index] === "number") {
+    const entryDraw = data[myMarker.index];     // ✅ đúng hệ
+    const entryY = toY(entryDraw);
 
+    const bandHeight = 16;
 
-const myMarker = entryMarkers.find(m => m.mine);
-if (!myMarker) return;
+    const lastDraw = points[points.length - 1]; // last numeric để so màu
+    const isProfit =
+      myOrderDirection === "up"
+        ? lastDraw >= entryDraw
+        : lastDraw <= entryDraw;
 
-const entryDraw = points[myMarker.index];
-const entryY = toY(entryDraw);
-
-
-
-  const bandHeight = 16; // 14–20px là đẹp
-
-const lastDraw = points[points.length - 1];
-
-const isProfit =
-  myOrderDirection === "up"
-    ? lastDraw >= entryDraw
-    : lastDraw <= entryDraw;
-
-
-
-  ctx.save();
-  ctx.fillStyle = isProfit
-    ? "rgba(0,255,153,0.12)"   // 🟢 xanh mờ
-    : "rgba(255,92,92,0.12)"; // 🔴 đỏ mờ
-
-  ctx.fillRect(
-    0,
-    entryY - bandHeight / 2,
-    W,
-    bandHeight
-  );
-  ctx.restore();
+    ctx.save();
+    ctx.fillStyle = isProfit
+      ? "rgba(0,255,153,0.12)"
+      : "rgba(255,92,92,0.12)";
+    ctx.fillRect(0, entryY - bandHeight / 2, W, bandHeight);
+    ctx.restore();
+  }
 }
 
+
 // =========================
-// 📍 ENTRY LINE (DÙNG DRAW PRICE)
+// 📍 ENTRY LINE (THEO INDEX THẬT)
 // =========================
-if (joinedRound && typeof myEntryPriceDraw === "number") {
+if (joinedRound) {
+  const myMarker = entryMarkers.find(m => m.mine);
+  if (myMarker && typeof data[myMarker.index] === "number") {
+    const entryDraw = data[myMarker.index];
+    const y = toY(entryDraw);
 
-const myMarker = entryMarkers.find(m => m.mine);
-if (!myMarker) return;
+    ctx.save();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle =
+      (points[points.length - 1] >= entryDraw) ? "#00ff99" : "#ff5c5c";
+    ctx.lineWidth = 1.5;
 
-const y = toY(points[myMarker.index]);
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
 
+    ctx.setLineDash([]);
+    ctx.font = "12px sans-serif";
+    ctx.fillStyle = ctx.strokeStyle;
 
-  ctx.save();
-  ctx.setLineDash([6, 4]);
-  ctx.strokeStyle =
-    last >= myEntryPriceDraw ? "#00ff99" : "#ff5c5c";
-  ctx.lineWidth = 1.5;
+    const dirLabel =
+      myOrderDirection === "up" ? "ENTRY 📈" :
+      myOrderDirection === "down" ? "ENTRY 📉" : "ENTRY";
 
-  ctx.beginPath();
-  ctx.moveTo(0, y);
-  ctx.lineTo(W, y);
-  ctx.stroke();
+    ctx.fillText(dirLabel, 6, Math.max(12, y - 4));
 
-  ctx.setLineDash([]);
-  ctx.font = "12px sans-serif";
-  ctx.fillStyle = ctx.strokeStyle;
+    const txt = (typeof myEntryPrice === "number") ? myEntryPrice.toFixed(2) : "";
+    const tw = ctx.measureText(txt).width;
+    if (txt) ctx.fillText(txt, W - tw - 8, Math.max(12, y - 4));
 
-  const dirLabel =
-  myOrderDirection === "up" ? "ENTRY 📈" :
-  myOrderDirection === "down" ? "ENTRY 📉" :
-  "ENTRY";
-
-ctx.fillText(dirLabel, 6, Math.max(12, y - 4));
-
-
-  const txt = myEntryPrice.toFixed(2); // hiển thị GIÁ THẬT
-  const tw = ctx.measureText(txt).width;
-  ctx.fillText(txt, W - tw - 8, Math.max(12, y - 4));
-
-  ctx.restore();
+    ctx.restore();
+  }
 }
+
 
 
   // =========================
@@ -1292,7 +1278,10 @@ if (m.index < 0 || m.index >= data.length) return;
 const x = m.index * (W / Math.max(data.length - 1, 1));
 
 
-const y = toY(points[m.index]);
+const v = data[m.index];
+if (typeof v !== "number") return;
+const y = toY(v);
+
 
 
 
