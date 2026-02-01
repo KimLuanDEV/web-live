@@ -745,7 +745,7 @@ openResultModal({
 
 
 // ================== CHART REALTIME (SERVER SYNC) ==================
-
+const MAX_POINTS = 60;
 let chartData = [];
 let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
 
@@ -753,64 +753,75 @@ let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
 socket.on("invest-price", d => {
   const p = d.price?.[asset];
   if (typeof p !== "number") return;
-
   if (typeof d.second !== "number") return;
 
-
-
-// 🔥 nếu là giây đầu tiên của round mới → nối từ giá cũ
-if (d.second === 0 && typeof lastPriceOfPrevRound === "number") {
-  chartData.push(lastPriceOfPrevRound);
-}
-
-// 🔥 append giá mới (KHÔNG dùng index second nữa)
-chartData.push(p);
-
-drawChart(chartData);
-
-
-// 💰 PnL REALTIME – % + COIN (THEO HƯỚNG THẬT)
-const pnlBox = document.getElementById("pnlRealtime");
-
-if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
-  const last = p;
-
-  // % gốc theo UP
-  let percent = Math.round(
-    (last - myEntryPrice) / myEntryPrice * 100
-  );
-
-  // 🔁 đảo chiều nếu DOWN
-  if (myOrderDirection === "down") {
-    percent = -percent;
+  // 🔥 nối giá đầu round mới từ giá cuối round cũ
+  if (d.second === 0 && typeof lastPriceOfPrevRound === "number") {
+    chartData.push(lastPriceOfPrevRound);
   }
 
-  // clamp UI
-  percent = Math.max(-30, Math.min(30, percent));
+  // 🔥 thêm giá mới
+  chartData.push(p);
 
-  // 💎 quy đổi coin realtime
-  const myOrder = roundOrders.find(
-    o => o.uid === me.uid && o.asset === asset
-  );
-  const coin = myOrder?.coin || 0;
-  const pnlCoin = Math.round(coin * percent / 100);
+  // =========================
+  // 🔁 GIỮ TỐI ĐA 60 ĐIỂM
+  // =========================
+  if (chartData.length > MAX_POINTS) {
+    const removed = chartData.length - MAX_POINTS;
 
-  const dirIcon = myOrderDirection === "down" ? "📉" : "📈";
+    // ❌ bỏ điểm cũ
+    chartData.splice(0, removed);
 
-  pnlBox.textContent =
-    `${dirIcon} Lợi nhuận: ` +
-    `${percent > 0 ? "+" : ""}${percent}% ` +
-    `(${pnlCoin > 0 ? "+" : ""}${pnlCoin} 💎)`;
+    // 🔁 dời lại index marker
+    entryMarkers.forEach(m => {
+      m.index -= removed;
+    });
 
-  pnlBox.className =
-    "pnl-overlay " + (percent >= 0 ? "up" : "down");
+    // ❌ loại marker đã trôi khỏi chart
+    entryMarkers = entryMarkers.filter(
+      m => m.index >= 0
+    );
+  }
 
-  pnlBox.classList.remove("hidden");
-}
+  drawChart(chartData);
 
+  // =========================
+  // 💰 PnL realtime (GIỮ NGUYÊN)
+  // =========================
+  const pnlBox = document.getElementById("pnlRealtime");
+  if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
+    const last = p;
 
+    let percent = Math.round(
+      (last - myEntryPrice) / myEntryPrice * 100
+    );
 
+    if (myOrderDirection === "down") percent = -percent;
+
+    percent = Math.max(-30, Math.min(30, percent));
+
+    const myOrder = roundOrders.find(
+      o => o.uid === me.uid && o.asset === asset
+    );
+
+    const coin = myOrder?.coin || 0;
+    const pnlCoin = Math.round(coin * percent / 100);
+
+    const dirIcon =
+      myOrderDirection === "down" ? "📉" : "📈";
+
+    pnlBox.textContent =
+      `${dirIcon} Lợi nhuận: ` +
+      `${percent > 0 ? "+" : ""}${percent}% ` +
+      `(${pnlCoin > 0 ? "+" : ""}${pnlCoin} 💎)`;
+
+    pnlBox.className =
+      "pnl-overlay " + (percent >= 0 ? "up" : "down");
+
+    pnlBox.classList.remove("hidden");
+  }
 });
+
 
 
 
