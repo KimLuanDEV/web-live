@@ -13,6 +13,7 @@ let myDirection = "up";
 let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
 let myEntryTime = null; // timestamp khi vào lệnh
 let closedEarlyThisRound = false; // 🔒 đã chốt sớm trong round này
+let myEntryPriceDraw = null; // 🔥 giá entry theo hệ draw
 
 
 
@@ -573,7 +574,11 @@ socket.on("invest-order-new", o => {
   roundOrders.push(o);
 
 if (o.uid === me.uid && typeof o.entryPrice === "number") {
-  myEntryPrice = o.entryPrice;
+
+  myEntryPrice = o.entryPrice;                 // raw (tính PnL)
+myEntryPriceDraw = toDrawPrice(o.entryPrice); // 🔥 draw (vẽ)
+
+
   myOrderDirection = o.direction; // 🔥 LẤY HƯỚNG TỪ SERVER
 }
 
@@ -581,8 +586,9 @@ if (o.uid === me.uid && typeof o.entryPrice === "number") {
   if (typeof o.entrySec === "number" && typeof o.entryPrice === "number") {
 
 entryMarkers.push({
-  index: chartData.length - 1, // 🔥 index THỰC trên chart
-  price: o.entryPrice,
+  index: chartData.length - 1,     // vị trí thực trên chart
+  priceRaw: o.entryPrice,          // 🔹 giá thật (tính PnL)
+  priceDraw: toDrawPrice(o.entryPrice), // 🔥 giá đã offset để vẽ
   mine: o.uid === me.uid
 });
 
@@ -613,6 +619,8 @@ socket.on("invest-round-new", d => {
   // =========================
   roundBasePrice = lastPriceOfPrevRound; // neo round mới
   roundZeroPrice = null;                 // chờ tick đầu
+myEntryPriceDraw = null; // sẽ cập nhật khi có tick đầu
+
 
 // 🎞 bắt đầu fade round mới
 roundFadeStart = Date.now();
@@ -781,6 +789,19 @@ let roundFadeStart = 0;
 const ROUND_FADE_DURATION = 600; // ms
 
 
+function toDrawPrice(raw){
+  if (typeof raw !== "number") return raw;
+
+  if (
+    typeof roundBasePrice === "number" &&
+    typeof roundZeroPrice === "number"
+  ) {
+    return roundBasePrice + (raw - roundZeroPrice);
+  }
+  return raw;
+}
+
+
 
 
 
@@ -817,6 +838,12 @@ let drawPrice = p;
 // 🔥 tick đầu tiên của round mới
 if (d.second === 0) {
   roundZeroPrice = p;
+
+if (typeof myEntryPrice === "number") {
+  myEntryPriceDraw = toDrawPrice(myEntryPrice);
+}
+
+
 
   // neo round mới vào giá cuối round cũ
   if (typeof roundBasePrice === "number") {
@@ -1010,7 +1037,15 @@ if (roundMarkers.length) {
 // 🎯 ENTRY BAND (VÙNG MỜ)
 // =========================
 if (joinedRound && typeof myEntryPrice === "number") {
-  const entryY = toY(myEntryPrice);
+
+
+ const entryDraw =
+  typeof myEntryPriceDraw === "number"
+    ? myEntryPriceDraw
+    : myEntryPrice;
+
+const entryY = toY(entryDraw);
+
 
   const bandHeight = 16; // 14–20px là đẹp
 
@@ -1112,7 +1147,12 @@ if (m.index < 0 || m.index >= data.length) return;
 const x = m.index * (W / Math.max(data.length - 1, 1));
 
 
-    const y = toY(m.price);
+    const y = toY(
+  typeof m.priceDraw === "number"
+    ? m.priceDraw
+    : m.priceRaw
+);
+
 
     ctx.beginPath();
     ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
