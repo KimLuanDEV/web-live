@@ -400,13 +400,14 @@ if (myOrder) {
 
 
       // 📍 phục hồi marker vào lệnh
-      entryMarkers = roundOrders
-        .filter(o => typeof o.entrySec === "number")
-        .map(o => ({
-          sec: o.entrySec,
-          price: o.entryPrice,
-          mine: o.uid === me.uid
-        }));
+entryMarkers = roundOrders
+  .filter(o => typeof o.entrySec === "number")
+  .map(o => ({
+    index: chartData.length - 1, // 🔥 gắn tại điểm hiện tại
+    price: o.entryPrice,
+    mine: o.uid === me.uid
+  }));
+
 
       drawChart(chartData);
     }
