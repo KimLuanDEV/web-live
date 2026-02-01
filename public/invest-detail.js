@@ -1214,6 +1214,46 @@ ctx.fillText(dirLabel, 6, Math.max(12, y - 4));
     last < first ? "#ff5c5c" :
     "#aaa";
 
+// =========================
+// 🌊 AREA HIGHLIGHT DƯỚI ĐƯỜNG LINE
+// =========================
+ctx.save();
+
+ctx.beginPath();
+
+// bắt đầu từ đáy chart tại điểm đầu
+ctx.moveTo(0, H);
+
+points.forEach((v, i) => {
+  const x = i * (W / Math.max(data.length - 1, 1));
+  const y = toY(v);
+  ctx.lineTo(x, y);
+});
+
+// đóng shape về đáy chart
+ctx.lineTo(W, H);
+ctx.closePath();
+
+// gradient mờ từ line xuống đáy
+const grad = ctx.createLinearGradient(0, 0, 0, H);
+
+if (last > first) {
+  // 📈 xanh
+  grad.addColorStop(0, "rgba(0,255,153,0.35)");
+  grad.addColorStop(1, "rgba(0,255,153,0)");
+} else if (last < first) {
+  // 📉 đỏ
+  grad.addColorStop(0, "rgba(255,92,92,0.35)");
+  grad.addColorStop(1, "rgba(255,92,92,0)");
+} else {
+  grad.addColorStop(0, "rgba(180,180,180,0.25)");
+  grad.addColorStop(1, "rgba(180,180,180,0)");
+}
+
+ctx.fillStyle = grad;
+ctx.fill();
+
+ctx.restore();
 
 
 // =========================
