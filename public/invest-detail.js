@@ -415,7 +415,13 @@ if (myOrder) {
 
 
 socket.on("connect", () => {
-  console.log("🔌 socket reconnected → resync chart");
+  console.log("🔌 socket connected");
+
+  // ❌ nếu đã có chart từ cache → KHÔNG fetch đè
+  if (chartData.length) {
+    console.log("↪ dùng chart cache, bỏ qua fetch");
+    return;
+  }
 
   fetch("/api/invest/chart")
     .then(r => r.json())
@@ -426,7 +432,10 @@ socket.on("connect", () => {
         (Date.now() - d.startAt) / 1000
       );
 
-      chartData = d.chart[asset].slice(0, nowSec + 1);
+      chartData = d.chart[asset]
+        .slice(0, nowSec + 1)
+        .slice(-MAX_POINTS);
+
       drawChart(chartData);
     });
 });
@@ -757,6 +766,29 @@ let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
 
 let roundMarkers = [];
 
+
+// =========================
+// 🔁 KHÔI PHỤC CHART TỪ CACHE (RELOAD KHÔNG MẤT LINE)
+// =========================
+try {
+  const cache = JSON.parse(
+    localStorage.getItem("chart_cache_" + asset)
+  );
+
+  if (cache?.data?.length) {
+    chartData = cache.data.slice(-MAX_POINTS);
+    roundMarkers = cache.rounds || [];
+    lastPriceOfPrevRound = cache.lastPrice || null;
+
+    drawChart(chartData);
+    console.log("✅ chart restored from cache");
+  }
+} catch (e) {
+  console.warn("⚠️ chart cache invalid");
+}
+
+
+
 socket.on("invest-price", d => {
   const p = d.price?.[asset];
   if (typeof p !== "number") return;
@@ -799,6 +831,19 @@ if (chartData.length > MAX_POINTS) {
 
 
   drawChart(chartData);
+
+
+// 💾 cache chart để reload không mất line
+localStorage.setItem(
+  "chart_cache_" + asset,
+  JSON.stringify({
+    data: chartData,
+    rounds: roundMarkers,
+    lastPrice: lastPriceOfPrevRound
+  })
+);
+
+
 
   // =========================
   // 💰 PnL realtime (GIỮ NGUYÊN)
@@ -864,14 +909,18 @@ function drawChart(data){
 
   ctx.clearRect(0, 0, W, H);
 
-  // grid
-  ctx.strokeStyle = "rgba(255,255,255,.05)";
-  for (let i = 0; i < 5; i++) {
-    ctx.beginPath();
-    ctx.moveTo(0, i * H / 5);
-    ctx.lineTo(W, i * H / 5);
-    ctx.stroke();
-  }
+// grid (dày hơn)
+const GRID_Y = 8;
+
+ctx.strokeStyle = "rgba(255,255,255,.05)";
+for (let i = 0; i <= GRID_Y; i++) {
+  const y = i * H / GRID_Y;
+  ctx.beginPath();
+  ctx.moveTo(0, y);
+  ctx.lineTo(W, y);
+  ctx.stroke();
+}
+
 
 
 // =========================
