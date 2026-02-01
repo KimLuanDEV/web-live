@@ -665,6 +665,7 @@ roundFadeStart = Date.now();
   joinedRound = false;
   closedEarlyThisRound = false;
   updateBackButtonState();
+  hideReloadLock(); // 🔓 mở khóa reload
 
   roundOrders = [];
   renderOrdersModal();
@@ -1611,7 +1612,7 @@ btnCloseEarly?.addEventListener("click", () => {
     myOrderDirection = null;
     myEntryTime = null;
     updateBackButtonState();
-
+    hideReloadLock();
 
 
     const pnlBox = document.getElementById("pnlRealtime");
@@ -1661,6 +1662,7 @@ socket.on("invest-closed-early", d => {
   myOrderDirection = null;
   myEntryTime = null;
   updateBackButtonState();
+  hideReloadLock();
 
 
 
@@ -1684,37 +1686,43 @@ socket.on("invest-closed-early", d => {
 
 
 // ================= BLOCK RELOAD WHEN IN ORDER =================
+
+// 🔒 Browser reload (nút refresh / đóng tab)
 window.addEventListener("beforeunload", (e) => {
-  if (joinedRound) {
-    e.preventDefault();
-    e.returnValue = ""; // bắt buộc cho Chrome
-    return "";
-  }
+  if (!joinedRound) return;
+
+  showReloadLock();        // 👉 hiện overlay
+  e.preventDefault();
+  e.returnValue = "";      // bắt buộc cho Chrome
+  return "";
 });
 
-
-// 🔒 Block F5 / Ctrl+R / Cmd+R
+// 🔒 F5 / Ctrl+R / Cmd+R
 window.addEventListener("keydown", (e) => {
   if (!joinedRound) return;
 
   const key = e.key.toLowerCase();
 
-  // F5
-  if (key === "f5") {
+  if (
+    key === "f5" ||
+    ((e.ctrlKey || e.metaKey) && key === "r")
+  ) {
     e.preventDefault();
-    showModal(
-      "🔒 Không thể reload",
-      "Bạn đã vào lệnh. Vui lòng chờ kết thúc phiên."
-    );
-  }
-
-  // Ctrl+R / Cmd+R
-  if ((e.ctrlKey || e.metaKey) && key === "r") {
-    e.preventDefault();
-    showModal(
-      "🔒 Không thể reload",
-      "Bạn đã vào lệnh. Vui lòng chờ kết thúc phiên."
-    );
+    showReloadLock();      // 👉 hiện overlay
   }
 });
 
+
+
+// ================= RELOAD LOCK OVERLAY =================
+const reloadLock = document.getElementById("reloadLock");
+
+function showReloadLock() {
+  if (!reloadLock) return;
+  reloadLock.classList.remove("hidden");
+}
+
+function hideReloadLock() {
+  if (!reloadLock) return;
+  reloadLock.classList.add("hidden");
+}
