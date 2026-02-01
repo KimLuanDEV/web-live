@@ -420,7 +420,6 @@ entryMarkers = roundOrders
     return {
       index: idx,
       priceRaw: o.entryPrice,
-      priceDraw: toDrawPrice(o.entryPrice),
       mine: o.uid === me.uid
     };
   });
@@ -1128,7 +1127,12 @@ const isProfit = last >= entryDraw;
 // 📍 ENTRY LINE (DÙNG DRAW PRICE)
 // =========================
 if (joinedRound && typeof myEntryPriceDraw === "number") {
-  const y = toY(myEntryPriceDraw);
+
+const myMarker = entryMarkers.find(m => m.mine);
+if (!myMarker) return;
+
+const y = toY(points[myMarker.index]);
+
 
   ctx.save();
   ctx.setLineDash([6, 4]);
@@ -1207,11 +1211,8 @@ if (m.index < 0 || m.index >= data.length) return;
 const x = m.index * (W / Math.max(data.length - 1, 1));
 
 
-    const y = toY(
-  typeof m.priceDraw === "number"
-    ? m.priceDraw
-    : m.priceRaw
-);
+const y = toY(points[m.index]);
+
 
 
     ctx.beginPath();
