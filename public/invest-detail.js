@@ -1678,3 +1678,43 @@ socket.on("invest-closed-early", d => {
     end: d.priceNow
   });
 });
+
+
+
+
+
+// ================= BLOCK RELOAD WHEN IN ORDER =================
+window.addEventListener("beforeunload", (e) => {
+  if (joinedRound) {
+    e.preventDefault();
+    e.returnValue = ""; // bắt buộc cho Chrome
+    return "";
+  }
+});
+
+
+// 🔒 Block F5 / Ctrl+R / Cmd+R
+window.addEventListener("keydown", (e) => {
+  if (!joinedRound) return;
+
+  const key = e.key.toLowerCase();
+
+  // F5
+  if (key === "f5") {
+    e.preventDefault();
+    showModal(
+      "🔒 Không thể reload",
+      "Bạn đã vào lệnh. Vui lòng chờ kết thúc phiên."
+    );
+  }
+
+  // Ctrl+R / Cmd+R
+  if ((e.ctrlKey || e.metaKey) && key === "r") {
+    e.preventDefault();
+    showModal(
+      "🔒 Không thể reload",
+      "Bạn đã vào lệnh. Vui lòng chờ kết thúc phiên."
+    );
+  }
+});
+
