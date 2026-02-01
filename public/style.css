@@ -12606,17 +12606,3 @@ body.page-invest {
 }
 
 
-/* 🚫 Chặn swipe back / forward toàn project */
-html, body {
-  overscroll-behavior-x: none;
-}
-
-/* 🚫 Chặn vuốt ngang – chỉ cho vuốt dọc */
-body {
-  touch-action: pan-y;
-}
-
-/* Fix iOS Safari */
-* {
-  -webkit-overflow-scrolling: touch;
-}

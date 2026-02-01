@@ -1726,3 +1726,26 @@ function hideReloadLock() {
   if (!reloadLock) return;
   reloadLock.classList.add("hidden");
 }
+
+
+// ================= MOBILE BACK HISTORY LOCK =================
+(function lockMobileBack() {
+  // đẩy 1 state giả để chặn back
+  history.pushState({ locked: true }, "", location.href);
+
+  window.addEventListener("popstate", (e) => {
+    // 🔒 nếu đã vào lệnh → CHẶN
+    if (joinedRound) {
+      history.pushState({ locked: true }, "", location.href);
+
+      showModal(
+        "🔒 Không thể quay lại",
+        "Bạn đã vào lệnh. Vui lòng chờ kết thúc phiên để quay lại."
+      );
+      return;
+    }
+
+    // ✅ chưa vào lệnh → cho back bình thường
+    history.back();
+  });
+})();
