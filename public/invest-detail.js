@@ -407,13 +407,24 @@ if (myOrder) {
       // 📍 phục hồi marker vào lệnh
 entryMarkers = roundOrders
   .filter(o => typeof o.entrySec === "number")
-  .map(o => ({
+  .map(o => {
+    // 🔥 quy đổi giây vào lệnh → index hiện tại trong chartData
+    const idx = Math.max(
+      0,
+      Math.min(
+        chartData.length - 1,
+        chartData.length - (ROUND_DURATION - o.entrySec)
+      )
+    );
 
-    index: chartData.length - 1,
-    priceRaw: o.entryPrice,
-    priceDraw: toDrawPrice(o.entryPrice), // 🔥 QUAN TRỌNG
-    mine: o.uid === me.uid
-  }));
+    return {
+      index: idx,
+      priceRaw: o.entryPrice,
+      priceDraw: toDrawPrice(o.entryPrice),
+      mine: o.uid === me.uid
+    };
+  });
+
 
 
       drawChart(chartData);
