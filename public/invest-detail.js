@@ -745,7 +745,7 @@ openResultModal({
 
 
 // ================== CHART REALTIME (SERVER SYNC) ==================
-const MAX_POINTS = 60;
+const MAX_POINTS = 100;
 let chartData = [];
 let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
 
