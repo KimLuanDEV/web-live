@@ -406,23 +406,14 @@ if (myOrder) {
 
       // 📍 phục hồi marker vào lệnh
 entryMarkers = roundOrders
-  .filter(o => typeof o.entrySec === "number")
-  .map(o => {
-    // 🔥 quy đổi giây vào lệnh → index hiện tại trong chartData
-    const idx = Math.max(
-      0,
-      Math.min(
-        chartData.length - 1,
-        chartData.length - (ROUND_DURATION - o.entrySec)
-      )
-    );
+  .filter(o => typeof o.entryPrice === "number")
+  .map(o => ({
+    index: null,                 // ❌ bỏ index khi reload
+    priceRaw: o.entryPrice,      // giá thật
+    priceDraw: toDrawPrice(o.entryPrice), // giá vẽ
+    mine: o.uid === me.uid
+  }));
 
-    return {
-      index: idx,
-      priceRaw: o.entryPrice,
-      mine: o.uid === me.uid
-    };
-  });
 
 
 
@@ -1131,7 +1122,8 @@ if (joinedRound && typeof myEntryPriceDraw === "number") {
 const myMarker = entryMarkers.find(m => m.mine);
 if (!myMarker) return;
 
-const y = toY(points[myMarker.index]);
+const y = toY(myEntryPriceDraw);
+
 
 
   ctx.save();
@@ -1207,11 +1199,25 @@ ctx.shadowBlur = 10;
   // 📍 ENTRY MARKERS
   // =========================
   entryMarkers.forEach(m => {
-if (m.index < 0 || m.index >= data.length) return;
-const x = m.index * (W / Math.max(data.length - 1, 1));
+if (typeof m.priceDraw !== "number") return;
 
+// 🔍 tìm điểm gần nhất với giá entry
+let closestIndex = -1;
+let minDiff = Infinity;
 
-const y = toY(chartData[m.index]);
+chartData.forEach((v, i) => {
+  const diff = Math.abs(v - m.priceDraw);
+  if (diff < minDiff) {
+    minDiff = diff;
+    closestIndex = i;
+  }
+});
+
+if (closestIndex < 0) return;
+
+const x = closestIndex * (W / Math.max(chartData.length - 1, 1));
+const y = toY(chartData[closestIndex]);
+
 
 
 
