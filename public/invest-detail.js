@@ -613,6 +613,9 @@ socket.on("invest-round-new", d => {
   roundBasePrice = lastPriceOfPrevRound; // neo round mới
   roundZeroPrice = null;                 // chờ tick đầu
 
+// 🎞 bắt đầu fade round mới
+roundFadeStart = Date.now();
+
   // =========================
   // 🔄 RESET TRẠNG THÁI USER
   // =========================
@@ -771,6 +774,10 @@ let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
 let roundMarkers = [];
 let roundBasePrice = null;  // 🔥 neo giá round mới
 let roundZeroPrice = null;  // 🔥 giá server tại second = 0
+
+// 🎞 fade khi sang round mới
+let roundFadeStart = 0;
+const ROUND_FADE_DURATION = 600; // ms
 
 
 
@@ -1060,11 +1067,30 @@ if (joinedRound && typeof myEntryPrice === "number") {
     last < first ? "#ff5c5c" :
     "#aaa";
 
-  ctx.beginPath();
-  ctx.strokeStyle = color;
-  ctx.lineWidth = 2;
-  ctx.shadowColor = color;
-  ctx.shadowBlur = 10;
+
+
+// =========================
+// 📈 LINE CHART (FADE ROUND)
+// =========================
+let alpha = 1;
+
+// nếu đang trong giai đoạn fade
+if (roundFadeStart) {
+  const elapsed = Date.now() - roundFadeStart;
+  alpha = Math.min(1, elapsed / ROUND_FADE_DURATION);
+
+  if (alpha >= 1) {
+    roundFadeStart = 0; // kết thúc fade
+  }
+}
+
+ctx.beginPath();
+ctx.strokeStyle = color;
+ctx.globalAlpha = alpha;
+ctx.lineWidth = 2;
+ctx.shadowColor = color;
+ctx.shadowBlur = 10;
+
 
   points.forEach((v, i) => {
     const x = i * (W / Math.max(data.length - 1, 1));
@@ -1076,7 +1102,7 @@ if (joinedRound && typeof myEntryPrice === "number") {
 
   ctx.stroke();
   ctx.shadowBlur = 0;
-
+  ctx.globalAlpha = 1; // reset alpha
   // =========================
   // 📍 ENTRY MARKERS
   // =========================
