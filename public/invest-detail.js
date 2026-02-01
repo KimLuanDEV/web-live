@@ -1125,20 +1125,22 @@ if (roundMarkers.length) {
 if (joinedRound && typeof myEntryPrice === "number") {
 
 
- const entryDraw =
-  typeof myEntryPriceDraw === "number"
-    ? myEntryPriceDraw
-    : myEntryPrice;
+const myMarker = entryMarkers.find(m => m.mine);
+if (!myMarker) return;
 
+const entryDraw = points[myMarker.index];
 const entryY = toY(entryDraw);
+
 
 
   const bandHeight = 16; // 14–20px là đẹp
 
+const lastDraw = points[points.length - 1];
+
 const isProfit =
   myOrderDirection === "up"
-    ? last >= entryDraw
-    : last <= entryDraw;
+    ? lastDraw >= entryDraw
+    : lastDraw <= entryDraw;
 
 
 
