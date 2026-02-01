@@ -599,12 +599,19 @@ socket.on("invest-round-new", d => {
   // =========================
   // 🔥 LƯU GIÁ CUỐI ROUND TRƯỚC
   // =========================
+  lastPriceOfPrevRound = null;
   for (let i = chartData.length - 1; i >= 0; i--) {
     if (typeof chartData[i] === "number") {
       lastPriceOfPrevRound = chartData[i];
       break;
     }
   }
+
+  // =========================
+  // 🔁 CHUẨN BỊ OFFSET CHO ROUND MỚI (QUAN TRỌNG)
+  // =========================
+  roundBasePrice = lastPriceOfPrevRound; // neo round mới
+  roundZeroPrice = null;                 // chờ tick đầu
 
   // =========================
   // 🔄 RESET TRẠNG THÁI USER
@@ -633,7 +640,7 @@ socket.on("invest-round-new", d => {
   renderOrdersModal();
   startRoundTimer(d.endAt);
 
-  // ❌ KHÔNG RESET chartData NỮA
+  // ❌ KHÔNG RESET chartData
   // chartData = [];
 
   resizeChartCanvas();
@@ -641,11 +648,8 @@ socket.on("invest-round-new", d => {
   // marker chỉ áp dụng cho round hiện tại
   entryMarkers = [];
 
-
-// 🧱 lưu mốc bắt đầu round mới (vạch phân cách)
-roundMarkers.push(chartData.length);
-
-
+  // 🧱 lưu mốc bắt đầu round mới (vạch phân cách)
+  roundMarkers.push(chartData.length);
 
   // 🔓 MỞ LẠI NÚT CHỌN HƯỚNG
   document
@@ -765,6 +769,11 @@ let chartData = [];
 let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
 
 let roundMarkers = [];
+let roundBasePrice = null;  // 🔥 neo giá round mới
+let roundZeroPrice = null;  // 🔥 giá server tại second = 0
+
+
+
 
 
 // =========================
@@ -795,12 +804,29 @@ socket.on("invest-price", d => {
   if (typeof d.second !== "number") return;
 
   // 🔥 nối giá đầu round mới từ giá cuối round cũ
-  if (d.second === 0 && typeof lastPriceOfPrevRound === "number") {
-    chartData.push(lastPriceOfPrevRound);
-  }
+let drawPrice = p;
 
-  // 🔥 thêm giá mới
-  chartData.push(p);
+// 🔥 tick đầu tiên của round mới
+if (d.second === 0) {
+  roundZeroPrice = p;
+
+  // neo round mới vào giá cuối round cũ
+  if (typeof roundBasePrice === "number") {
+    drawPrice = roundBasePrice;
+  }
+}
+// 🔥 các tick tiếp theo: offset theo delta
+else if (
+  typeof roundBasePrice === "number" &&
+  typeof roundZeroPrice === "number"
+) {
+  drawPrice =
+    roundBasePrice + (p - roundZeroPrice);
+}
+
+// 👉 CHỈ PUSH GIÁ ĐÃ OFFSET
+chartData.push(drawPrice);
+
 
   // =========================
   // 🔁 GIỮ TỐI ĐA 100 ĐIỂM
