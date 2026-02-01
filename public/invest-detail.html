@@ -174,11 +174,19 @@ html, body {
 
 /* ===== CINEMATIC HEIGHT ===== */
 .detail-chart.chart-wrap {
-  min-height: 42vh;          /* mobile cinematic */
-  max-height: 520px;         /* chặn quá cao desktop */
+  min-height: 55vh;      /* mobile & laptop */
+  max-height: 680px;     /* desktop to */
   display: flex;
   align-items: stretch;
 }
+
+@media (min-width: 1024px) {
+  .detail-chart.chart-wrap {
+    min-height: 60vh;
+    max-height: 720px;
+  }
+}
+
 
 /* canvas chiếm toàn bộ chiều cao chart */
 .detail-chart #priceChart {
@@ -698,7 +706,8 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 <!-- 📈 CHART -->
 <section class="detail-chart card chart-wrap">
-  <canvas id="priceChart" height="220"></canvas>
+  <canvas id="priceChart"></canvas>
+
 
   <!-- ⏳ TIMER (GÓC TRÁI) -->
   <div id="roundTimer" class="round-timer overlay-timer">
