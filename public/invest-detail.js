@@ -569,11 +569,14 @@ if (o.uid === me.uid && typeof o.entryPrice === "number") {
 
 
   if (typeof o.entrySec === "number" && typeof o.entryPrice === "number") {
-    entryMarkers.push({
-      sec: o.entrySec,
-      price: o.entryPrice,
-      mine: o.uid === me.uid
-    });
+
+entryMarkers.push({
+  index: chartData.length - 1, // 🔥 index THỰC trên chart
+  price: o.entryPrice,
+  mine: o.uid === me.uid
+});
+
+
   }
 
   renderOrdersModal(); // ✅ QUAN TRỌNG
@@ -582,43 +585,61 @@ if (o.uid === me.uid && typeof o.entryPrice === "number") {
 
 
 
-// nhận phiên mới
 socket.on("invest-round-new", d => {
 
+  // =========================
+  // 🔥 LƯU GIÁ CUỐI ROUND TRƯỚC
+  // =========================
+  for (let i = chartData.length - 1; i >= 0; i--) {
+    if (typeof chartData[i] === "number") {
+      lastPriceOfPrevRound = chartData[i];
+      break;
+    }
+  }
+
+  // =========================
+  // 🔄 RESET TRẠNG THÁI USER
+  // =========================
   myEntryPrice = null;
-const pnlBox = document.getElementById("pnlRealtime");
-if (pnlBox) pnlBox.classList.add("hidden");
 
+  const pnlBox = document.getElementById("pnlRealtime");
+  if (pnlBox) pnlBox.classList.add("hidden");
 
-// 🔴 update LIVE • ROUND khi có phiên mới
-if (typeof d.roundIndex === "number") {
-  updateLiveRound(d.roundIndex);
-}
-else if (typeof d.roundId === "number") {
-  updateLiveRound(d.roundId);
-}
-else {
-  updateLiveRound((currentRoundId || 0) + 1);
-}
-
+  // =========================
+  // 🔴 UPDATE LIVE • ROUND
+  // =========================
+  if (typeof d.roundIndex === "number") {
+    updateLiveRound(d.roundIndex);
+  }
+  else if (typeof d.roundId === "number") {
+    updateLiveRound(d.roundId);
+  }
+  else {
+    updateLiveRound((currentRoundId || 0) + 1);
+  }
 
   joinedRound = false;
-  closedEarlyThisRound = false; 
+  closedEarlyThisRound = false;
   roundOrders = [];
   renderOrdersModal();
   startRoundTimer(d.endAt);
-  chartData = [];
+
+  // ❌ KHÔNG RESET chartData NỮA
+  // chartData = [];
+
   resizeChartCanvas();
+
+  // marker chỉ áp dụng cho round hiện tại
   entryMarkers = [];
 
-// 🔓 MỞ LẠI NÚT CHỌN HƯỚNG CHO PHIÊN MỚI
-document.getElementById("directionBox")?.classList.remove("hidden");
+  // 🔓 MỞ LẠI NÚT CHỌN HƯỚNG
+  document
+    .getElementById("directionBox")
+    ?.classList.remove("hidden");
 
-  
-hideCloseEarlyButton(); // 🔁 RESET UI
-
-
+  hideCloseEarlyButton(); // 🔁 RESET UI
 });
+
 
 
 socket.on("invest-round-result", d => {
@@ -726,6 +747,8 @@ openResultModal({
 // ================== CHART REALTIME (SERVER SYNC) ==================
 
 let chartData = [];
+let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
+
 
 socket.on("invest-price", d => {
   const p = d.price?.[asset];
@@ -733,9 +756,17 @@ socket.on("invest-price", d => {
 
   if (typeof d.second !== "number") return;
 
-chartData[d.second] = p;
-drawChart(chartData);
 
+
+// 🔥 nếu là giây đầu tiên của round mới → nối từ giá cũ
+if (d.second === 0 && typeof lastPriceOfPrevRound === "number") {
+  chartData.push(lastPriceOfPrevRound);
+}
+
+// 🔥 append giá mới (KHÔNG dùng index second nữa)
+chartData.push(p);
+
+drawChart(chartData);
 
 
 // 💰 PnL REALTIME – % + COIN (THEO HƯỚNG THẬT)
@@ -897,9 +928,10 @@ function drawChart(data){
   // 📍 ENTRY MARKERS
   // =========================
   entryMarkers.forEach(m => {
-    if (m.sec < 0 || m.sec >= data.length) return;
+if (m.index < 0 || m.index >= data.length) return;
+const x = m.index * (W / Math.max(data.length - 1, 1));
 
-    const x = m.sec * (W / Math.max(data.length - 1, 1));
+
     const y = toY(m.price);
 
     ctx.beginPath();
