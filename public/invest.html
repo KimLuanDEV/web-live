@@ -28,13 +28,14 @@ html, body {
   background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+
   aspect-ratio: 3 / 4;   /* ✅ giữ tỉ lệ card đẹp */
-  box-shadow: 0 12px 30px rgba(0,0,0,.65);
+
+  box-shadow:
+    0 10px 30px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.08);
+
   transition: transform .2s ease, box-shadow .2s ease;
-   filter:
-    contrast(1.15)
-    saturate(1.12)
-    brightness(1.05);
 }
 
 .invest-card:active{
@@ -45,14 +46,13 @@ html, body {
 .invest-card::before{
   content:"";
   position:absolute;
-  left:0;
-  right:0;
-  bottom:0;
-  background: linear-gradient(
-    to top,
-    rgba(0,0,0,.65),
-    rgba(0,0,0,0)
-  );
+  inset:0;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.08),
+      rgba(0,0,0,.45)
+    );
   z-index:0;
 }
 
@@ -67,22 +67,38 @@ html, body {
 /* ===== BACKGROUND THEO ASSET ===== */
 
 .invest-card.gold{
-  background-image: url("/assets/bg/gold.jpg");
+  background-image:
+    linear-gradient(180deg, rgba(255,200,80,.25), rgba(0,0,0,.9)),
+    url("/assets/bg/gold.jpg");
 }
+
 .invest-card.silver{
-  background-image: url("/assets/bg/silver.jpg");
+  background-image:
+    linear-gradient(180deg, rgba(180,200,220,.25), rgba(0,0,0,.9)),
+    url("/assets/bg/silver.jpg");
 }
+
 .invest-card.diamond{
-  background-image: url("/assets/bg/diamond.jpg");
+  background-image:
+    linear-gradient(180deg, rgba(0,255,255,.25), rgba(0,0,0,.9)),
+    url("/assets/bg/diamond.jpg");
 }
+
 .invest-card.oil{
-  background-image: url("/assets/bg/oil.jpg");
+  background-image:
+    linear-gradient(180deg, rgba(255,120,0,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/oil.jpg");
 }
+
 .invest-card.estate{
-  background-image: url("/assets/bg/estate.jpg");
+  background-image:
+    linear-gradient(180deg, rgba(255,200,120,.3), rgba(0,0,0,.9)),
+    url("/assets/bg/estate.jpg");
 }
 .invest-card.atomic{
-  background-image: url("/assets/bg/atomic.jpg");
+  background-image:
+    linear-gradient(180deg, rgba(180,0,255,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/atomic.jpg");
 }
 
 
@@ -142,7 +158,6 @@ html, body {
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-   filter: contrast(1.1) brightness(1.05);
 }
 
 
