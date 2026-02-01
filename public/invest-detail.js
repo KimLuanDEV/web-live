@@ -1749,3 +1749,33 @@ function hideReloadLock() {
     history.back();
   });
 })();
+
+
+// ================= BLOCK iOS SWIPE BACK =================
+(function blockSwipeBack() {
+  let startX = 0;
+  let startY = 0;
+
+  document.addEventListener("touchstart", e => {
+    const t = e.touches[0];
+    startX = t.clientX;
+    startY = t.clientY;
+  }, { passive: false });
+
+  document.addEventListener("touchmove", e => {
+    if (!joinedRound) return; // 🔓 chưa vào lệnh thì cho swipe
+
+    const t = e.touches[0];
+    const dx = t.clientX - startX;
+    const dy = Math.abs(t.clientY - startY);
+
+    // 👉 swipe từ mép trái + kéo ngang
+    if (startX < 20 && dx > 30 && dy < 30) {
+      e.preventDefault(); // ⛔ CHẶN BACK iOS
+      showModal(
+        "🔒 Không thể quay lại",
+        "Bạn đang trong phiên giao dịch."
+      );
+    }
+  }, { passive: false });
+})();
