@@ -332,14 +332,24 @@ function renderOrdersModal(){
     return;
   }
 
-  ordersModalList.innerHTML = roundOrders.map(o => `
+ordersModalList.innerHTML = roundOrders.map(o => {
+  const dirIcon =
+    o.direction === "up" ? "📈 LÊN" :
+    o.direction === "down" ? "📉 XUỐNG" :
+    "➖";
+
+  return `
     <li class="order-item ${o.uid === me.uid ? "me" : ""}">
-      <span>
+      <div>
         ${o.uid === me.uid ? "🧑 Bạn" : "👤 Người chơi"}
-      </span>
-      <b>${o.coin} 💎</b>
+      </div>
+      <div>
+        <b>${o.coin} 💎</b>
+        <span style="margin-left:8px;opacity:.85">${dirIcon}</span>
+      </div>
     </li>
-  `).join("");
+  `;
+}).join("");
 }
 
 
@@ -1180,7 +1190,13 @@ const y = toY(points[myMarker.index]);
   ctx.font = "12px sans-serif";
   ctx.fillStyle = ctx.strokeStyle;
 
-  ctx.fillText("ENTRY", 6, Math.max(12, y - 4));
+  const dirLabel =
+  myOrderDirection === "up" ? "ENTRY 📈" :
+  myOrderDirection === "down" ? "ENTRY 📉" :
+  "ENTRY";
+
+ctx.fillText(dirLabel, 6, Math.max(12, y - 4));
+
 
   const txt = myEntryPrice.toFixed(2); // hiển thị GIÁ THẬT
   const tw = ctx.measureText(txt).width;
@@ -1386,10 +1402,29 @@ document.getElementById("directionBox")?.classList.add("hidden");
     const btn = document.querySelector(".detail-invest button");
 
 
-    showModal(
-      "✅ Thành công",
-      "Đã vào lệnh, vui lòng chờ chốt phiên."
-    );
+const dirText =
+  myDirection === "up" ? "📈 LÊN" :
+  myDirection === "down" ? "📉 XUỐNG" :
+  "➖";
+
+showModal(
+  "✅ Đã vào lệnh",
+  `
+    <div style="text-align:center">
+      <div style="font-size:18px;font-weight:800">
+        ${dirText}
+      </div>
+      <div style="margin-top:6px">
+        Số coin: <b>${coin} 💎</b>
+      </div>
+      <div style="margin-top:8px;opacity:.7;font-size:13px">
+        Vui lòng chờ kết thúc phiên
+      </div>
+    </div>
+  `
+);
+
+
   })
   .catch(() => {
     showModal(
