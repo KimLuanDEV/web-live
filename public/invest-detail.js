@@ -1049,7 +1049,8 @@ const entryY = toY(entryDraw);
 
   const bandHeight = 16; // 14–20px là đẹp
 
-  const isProfit = last >= myEntryPrice;
+const isProfit = last >= entryDraw;
+
 
   ctx.save();
   ctx.fillStyle = isProfit
@@ -1065,35 +1066,36 @@ const entryY = toY(entryDraw);
   ctx.restore();
 }
 
-  // =========================
-  // 📍 ENTRY LINE
-  // =========================
-  if (joinedRound && typeof myEntryPrice === "number") {
-    const y = toY(myEntryPrice);
+// =========================
+// 📍 ENTRY LINE (DÙNG DRAW PRICE)
+// =========================
+if (joinedRound && typeof myEntryPriceDraw === "number") {
+  const y = toY(myEntryPriceDraw);
 
-    ctx.save();
-    ctx.setLineDash([6, 4]);
-    ctx.strokeStyle =
-      last >= myEntryPrice ? "#00ff99" : "#ff5c5c";
-    ctx.lineWidth = 1.5;
+  ctx.save();
+  ctx.setLineDash([6, 4]);
+  ctx.strokeStyle =
+    last >= myEntryPriceDraw ? "#00ff99" : "#ff5c5c";
+  ctx.lineWidth = 1.5;
 
-    ctx.beginPath();
-    ctx.moveTo(0, y);
-    ctx.lineTo(W, y);
-    ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(0, y);
+  ctx.lineTo(W, y);
+  ctx.stroke();
 
-    ctx.setLineDash([]);
-    ctx.font = "12px sans-serif";
-    ctx.fillStyle = ctx.strokeStyle;
+  ctx.setLineDash([]);
+  ctx.font = "12px sans-serif";
+  ctx.fillStyle = ctx.strokeStyle;
 
-    ctx.fillText("ENTRY", 6, Math.max(12, y - 4));
+  ctx.fillText("ENTRY", 6, Math.max(12, y - 4));
 
-    const txt = myEntryPrice.toFixed(2);
-    const tw = ctx.measureText(txt).width;
-    ctx.fillText(txt, W - tw - 8, Math.max(12, y - 4));
+  const txt = myEntryPrice.toFixed(2); // hiển thị GIÁ THẬT
+  const tw = ctx.measureText(txt).width;
+  ctx.fillText(txt, W - tw - 8, Math.max(12, y - 4));
 
-    ctx.restore();
-  }
+  ctx.restore();
+}
+
 
   // =========================
   // 📈 LINE CHART
