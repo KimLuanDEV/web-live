@@ -632,6 +632,12 @@ socket.on("invest-round-new", d => {
   // marker chỉ áp dụng cho round hiện tại
   entryMarkers = [];
 
+
+// 🧱 lưu mốc bắt đầu round mới (vạch phân cách)
+roundMarkers.push(chartData.length);
+
+
+
   // 🔓 MỞ LẠI NÚT CHỌN HƯỚNG
   document
     .getElementById("directionBox")
@@ -749,6 +755,7 @@ const MAX_POINTS = 100;
 let chartData = [];
 let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
 
+let roundMarkers = [];
 
 socket.on("invest-price", d => {
   const p = d.price?.[asset];
@@ -764,7 +771,7 @@ socket.on("invest-price", d => {
   chartData.push(p);
 
   // =========================
-  // 🔁 GIỮ TỐI ĐA 60 ĐIỂM
+  // 🔁 GIỮ TỐI ĐA 100 ĐIỂM
   // =========================
   if (chartData.length > MAX_POINTS) {
     const removed = chartData.length - MAX_POINTS;
@@ -782,6 +789,14 @@ socket.on("invest-price", d => {
       m => m.index >= 0
     );
   }
+
+
+  // 🔁 dời mốc round theo chart
+  roundMarkers = roundMarkers
+    .map(i => i - removed)
+    .filter(i => i >= 0);
+
+
 
   drawChart(chartData);
 
@@ -857,6 +872,32 @@ function drawChart(data){
     ctx.lineTo(W, i * H / 5);
     ctx.stroke();
   }
+
+
+// =========================
+// 🧱 VẠCH PHÂN CÁCH ROUND (MỜ)
+// =========================
+if (roundMarkers.length) {
+  ctx.save();
+  ctx.strokeStyle = "rgba(255,255,255,0.15)";
+  ctx.setLineDash([4, 6]);
+  ctx.lineWidth = 1;
+
+  roundMarkers.forEach(idx => {
+    if (idx <= 0 || idx >= data.length) return;
+
+    const x = idx * (W / Math.max(data.length - 1, 1));
+
+    ctx.beginPath();
+    ctx.moveTo(x, 0);
+    ctx.lineTo(x, H);
+    ctx.stroke();
+  });
+
+  ctx.restore();
+}
+
+
 
   // =========================
   // 🔥 FILTER DATA
