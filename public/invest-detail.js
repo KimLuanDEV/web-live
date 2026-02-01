@@ -773,28 +773,28 @@ socket.on("invest-price", d => {
   // =========================
   // 🔁 GIỮ TỐI ĐA 100 ĐIỂM
   // =========================
-  if (chartData.length > MAX_POINTS) {
-    const removed = chartData.length - MAX_POINTS;
+if (chartData.length > MAX_POINTS) {
+  const removed = chartData.length - MAX_POINTS;
 
-    // ❌ bỏ điểm cũ
-    chartData.splice(0, removed);
+  // ❌ bỏ điểm cũ
+  chartData.splice(0, removed);
 
-    // 🔁 dời lại index marker
-    entryMarkers.forEach(m => {
-      m.index -= removed;
-    });
+  // 🔁 dời lại index marker
+  entryMarkers.forEach(m => {
+    m.index -= removed;
+  });
 
-    // ❌ loại marker đã trôi khỏi chart
-    entryMarkers = entryMarkers.filter(
-      m => m.index >= 0
-    );
-  }
+  // ❌ loại marker đã trôi khỏi chart
+  entryMarkers = entryMarkers.filter(
+    m => m.index >= 0
+  );
 
-
-  // 🔁 dời mốc round theo chart
+  // 🔁 dời mốc round (⚠️ PHẢI NẰM TRONG IF)
   roundMarkers = roundMarkers
     .map(i => i - removed)
     .filter(i => i >= 0);
+}
+
 
 
 
