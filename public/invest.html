@@ -28,14 +28,13 @@ html, body {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
-
   aspect-ratio: 3 / 4;   /* ✅ giữ tỉ lệ card đẹp */
-
-  box-shadow:
-    0 10px 30px rgba(0,0,0,.55),
-    inset 0 1px 0 rgba(255,255,255,.08);
-
+  box-shadow: 0 12px 30px rgba(0,0,0,.65);
   transition: transform .2s ease, box-shadow .2s ease;
+  filter:
+    contrast(1.15)
+    saturate(1.12)
+    brightness(1.05);
 }
 
 .invest-card:active{
