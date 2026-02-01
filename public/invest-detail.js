@@ -391,6 +391,10 @@ if (myOrder) {
   myOrderDirection = myOrder.direction;
   myEntryTime = myOrder.entryTime;
 
+  // 🔥 PHỤC HỒI ENTRY DRAW (RELOAD)
+  myEntryPriceDraw = toDrawPrice(myEntryPrice);
+
+
   // 🔒 ẨN NÚT LÊN / XUỐNG
   document.getElementById("directionBox")?.classList.add("hidden");
 
@@ -404,8 +408,12 @@ if (myOrder) {
 entryMarkers = roundOrders
   .filter(o => typeof o.entrySec === "number")
   .map(o => ({
-    index: chartData.length - 1, // 🔥 gắn tại điểm hiện tại
-    price: o.entryPrice,
+    index: Math.min(
+      chartData.length - 1,
+      Math.max(0, o.entrySec)
+    ),
+    priceRaw: o.entryPrice,
+    priceDraw: toDrawPrice(o.entryPrice), // 🔥 QUAN TRỌNG
     mine: o.uid === me.uid
   }));
 
@@ -837,19 +845,28 @@ let drawPrice = p;
 
 // 🔥 tick đầu tiên của round mới
 if (d.second === 0) {
+  // lưu giá reset của server
   roundZeroPrice = p;
 
-if (typeof myEntryPrice === "number") {
-  myEntryPriceDraw = toDrawPrice(myEntryPrice);
-}
-
-
-
-  // neo round mới vào giá cuối round cũ
+  // 🔥 neo round mới vào giá cuối round cũ
   if (typeof roundBasePrice === "number") {
     drawPrice = roundBasePrice;
   }
+
+  // 🔥 cập nhật ENTRY DRAW (sau khi base đã ổn định)
+  if (typeof myEntryPrice === "number") {
+    myEntryPriceDraw = toDrawPrice(myEntryPrice);
+  }
+
+  // 🔥 cập nhật lại DRAW cho toàn bộ marker
+  entryMarkers.forEach(m => {
+    if (typeof m.priceRaw === "number") {
+      m.priceDraw = toDrawPrice(m.priceRaw);
+    }
+  });
 }
+
+
 // 🔥 các tick tiếp theo: offset theo delta
 else if (
   typeof roundBasePrice === "number" &&
