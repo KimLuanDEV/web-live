@@ -767,7 +767,7 @@ openResultModal({
 
 
 // ================== CHART REALTIME (SERVER SYNC) ==================
-const MAX_POINTS = 100;
+const MAX_POINTS = 60;
 let chartData = [];
 let lastPriceOfPrevRound = null; // 🔥 lưu giá cuối round trước
 
@@ -836,7 +836,7 @@ chartData.push(drawPrice);
 
 
   // =========================
-  // 🔁 GIỮ TỐI ĐA 100 ĐIỂM
+  // 🔁 GIỮ TỐI ĐA 60 ĐIỂM
   // =========================
 if (chartData.length > MAX_POINTS) {
   const removed = chartData.length - MAX_POINTS;
