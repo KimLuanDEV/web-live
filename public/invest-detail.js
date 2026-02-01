@@ -820,16 +820,18 @@ function drawChart(data){
 
   if (data.length < 2) return;
 
-  const first = data[0];
-  const last  = data[data.length - 1];
+const first = points[0];
+const last  = points[points.length - 1];
+
 
 // ===============================
 // 📍 VẼ ĐƯỜNG ENTRY PRICE
 // ===============================
 if (joinedRound && typeof myEntryPrice === "number") {
 
-  const y =
-    H - (myEntryPrice - 80) * (H / 40);
+const y = toY(myEntryPrice);
+
+
 
   ctx.save();
   ctx.setLineDash([6, 4]);
@@ -875,16 +877,34 @@ if (joinedRound && typeof myEntryPrice === "number") {
   ctx.shadowColor = color;
   ctx.shadowBlur = 10;
 
-  const points = data.filter(v => v !== undefined);
+
+  const points = data.filter(v => typeof v === "number");
+if (points.length < 2) return;
+
+// 🔥 AUTO SCALE TRỤC Y
+let min = Math.min(...points);
+let max = Math.max(...points);
+
+// nới biên cho đẹp (15%)
+const padding = (max - min) * 0.15 || 1;
+min -= padding;
+max += padding;
+
+// hàm map giá → Y
+const toY = (price) => {
+  return H - ((price - min) / (max - min)) * H;
+};
 
 
-  points.forEach((v, i) => {
-  const x = i * (W / Math.max(points.length - 1, 1));
 
-    const y = H - (v - 80) * (H / 40);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
+points.forEach((v, i) => {
+  const x = i * (W / Math.max(data.length - 1, 1));
+  const y = toY(v);
+
+  if (i === 0) ctx.moveTo(x, y);
+  else ctx.lineTo(x, y);
+});
+
 
   ctx.stroke();
   ctx.shadowBlur = 0;
@@ -930,7 +950,9 @@ entryMarkers.forEach(m => {
   if (idx < 0 || idx >= data.length) return;
 
   const x = idx * (W / Math.max(data.length - 1, 1));
-  const y = H - (price - 80) * (H / 40);
+
+  const y = toY(price);
+
 
   ctx.beginPath();
   ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
