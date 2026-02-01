@@ -829,10 +829,23 @@ try {
   }
 
   // 🔥 KHÔI PHỤC OFFSET STATE SAU RELOAD
+// 🔥 KHÔI PHỤC OFFSET STATE SAU RELOAD (CHUẨN)
 roundBasePrice = lastPriceOfPrevRound;
-roundZeroPrice = chartData.length
-  ? chartData[chartData.length - 1]
-  : null;
+
+// ⚠️ KHÔNG ĐƯỢC SUY RA roundZeroPrice TỪ chartData
+roundZeroPrice = null;
+
+// 🔁 entry + marker tạm thời dùng raw
+if (typeof myEntryPrice === "number") {
+  myEntryPriceDraw = myEntryPrice;
+}
+
+entryMarkers.forEach(m => {
+  if (typeof m.priceRaw === "number") {
+    m.priceDraw = m.priceRaw;
+  }
+});
+
 
 // 🔁 RECALC ENTRY DRAW + MARKER DRAW
 if (typeof myEntryPrice === "number") {
