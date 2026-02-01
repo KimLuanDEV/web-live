@@ -865,13 +865,22 @@ function drawChart(data){
   ctx.clearRect(0, 0, W, H);
 
   // grid
-  ctx.strokeStyle = "rgba(255,255,255,.05)";
-  for (let i = 0; i < 5; i++) {
-    ctx.beginPath();
-    ctx.moveTo(0, i * H / 5);
-    ctx.lineTo(W, i * H / 5);
-    ctx.stroke();
-  }
+const GRID_Y = 7;
+
+for (let i = 0; i <= GRID_Y; i++) {
+  const y = i * H / GRID_Y;
+
+  ctx.beginPath();
+  ctx.strokeStyle =
+    i === Math.floor(GRID_Y / 2)
+      ? "rgba(255,255,255,0.12)" // vạch giữa đậm hơn
+      : "rgba(255,255,255,0.05)";
+
+  ctx.moveTo(0, y);
+  ctx.lineTo(W, y);
+  ctx.stroke();
+}
+
 
 
 // =========================
@@ -920,6 +929,32 @@ if (roundMarkers.length) {
 
   const first = points[0];
   const last  = points[points.length - 1];
+
+
+
+// =========================
+// 🎯 ENTRY BAND (VÙNG MỜ)
+// =========================
+if (joinedRound && typeof myEntryPrice === "number") {
+  const entryY = toY(myEntryPrice);
+
+  const bandHeight = 16; // 14–20px là đẹp
+
+  const isProfit = last >= myEntryPrice;
+
+  ctx.save();
+  ctx.fillStyle = isProfit
+    ? "rgba(0,255,153,0.12)"   // 🟢 xanh mờ
+    : "rgba(255,92,92,0.12)"; // 🔴 đỏ mờ
+
+  ctx.fillRect(
+    0,
+    entryY - bandHeight / 2,
+    W,
+    bandHeight
+  );
+  ctx.restore();
+}
 
   // =========================
   // 📍 ENTRY LINE
