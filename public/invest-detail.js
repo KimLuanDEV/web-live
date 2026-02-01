@@ -406,23 +406,13 @@ if (myOrder) {
 
       // 📍 phục hồi marker vào lệnh
 entryMarkers = roundOrders
-  .filter(o => typeof o.entrySec === "number")
-  .map(o => {
-    // 🔥 quy đổi giây vào lệnh → index hiện tại trong chartData
-    const idx = Math.max(
-      0,
-      Math.min(
-        chartData.length - 1,
-        chartData.length - (ROUND_DURATION - o.entrySec)
-      )
-    );
+  .filter(o => typeof o.entryPrice === "number")
+  .map(o => ({
+    priceRaw: o.entryPrice,
+    priceDraw: toDrawPrice(o.entryPrice),
+    mine: o.uid === me.uid
+  }));
 
-    return {
-      index: idx,
-      priceRaw: o.entryPrice,
-      mine: o.uid === me.uid
-    };
-  });
 
 
 
@@ -1129,9 +1119,10 @@ const isProfit = last >= entryDraw;
 if (joinedRound && typeof myEntryPriceDraw === "number") {
 
 const myMarker = entryMarkers.find(m => m.mine);
-if (!myMarker) return;
+if (!myMarker || typeof myMarker.priceDraw !== "number") return;
 
-const y = toY(points[myMarker.index]);
+const y = toY(myMarker.priceDraw);
+
 
 
   ctx.save();
@@ -1206,23 +1197,24 @@ ctx.shadowBlur = 10;
   // =========================
   // 📍 ENTRY MARKERS
   // =========================
-  entryMarkers.forEach(m => {
-if (m.index < 0 || m.index >= data.length) return;
-const x = m.index * (W / Math.max(data.length - 1, 1));
+entryMarkers.forEach(m => {
+  if (typeof m.priceDraw !== "number") return;
+
+  const y = toY(m.priceDraw);
+  const x = W - 10; // chấm nằm sát mép phải (đẹp + dễ nhìn)
+
+  ctx.beginPath();
+  ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
+  ctx.strokeStyle = "#000";
+  ctx.lineWidth = 1;
+  ctx.arc(x, y, m.mine ? 6 : 4, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.stroke();
+});
 
 
-const y = toY(points[m.index]);
 
 
-
-    ctx.beginPath();
-    ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
-    ctx.strokeStyle = "#000";
-    ctx.lineWidth = 1;
-    ctx.arc(x, y, m.mine ? 6 : 4, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.stroke();
-  });
 
   // =========================
   // 📊 TREND
