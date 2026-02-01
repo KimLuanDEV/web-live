@@ -865,22 +865,13 @@ function drawChart(data){
   ctx.clearRect(0, 0, W, H);
 
   // grid
-const GRID_Y = 7;
-
-for (let i = 0; i <= GRID_Y; i++) {
-  const y = i * H / GRID_Y;
-
-  ctx.beginPath();
-  ctx.strokeStyle =
-    i === Math.floor(GRID_Y / 2)
-      ? "rgba(255,255,255,0.12)" // vạch giữa đậm hơn
-      : "rgba(255,255,255,0.05)";
-
-  ctx.moveTo(0, y);
-  ctx.lineTo(W, y);
-  ctx.stroke();
-}
-
+  ctx.strokeStyle = "rgba(255,255,255,.05)";
+  for (let i = 0; i < 5; i++) {
+    ctx.beginPath();
+    ctx.moveTo(0, i * H / 5);
+    ctx.lineTo(W, i * H / 5);
+    ctx.stroke();
+  }
 
 
 // =========================
