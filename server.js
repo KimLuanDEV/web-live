@@ -916,6 +916,55 @@ app.get("/api/invest/round", (req, res) => {
 
 
 
+// ================================
+// 🔒 CHECK USER CÓ ĐƯỢC VÀO INVEST KHÔNG
+// ================================
+app.get("/api/invest/can-enter", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) {
+    return res.json({ ok: false, reason: "NOT_LOGIN" });
+  }
+
+  // round hiện tại
+  if (!investRound) {
+    return res.json({ ok: true });
+  }
+
+  const now = Date.now();
+
+  // 🔍 user có lệnh đang mở không
+  const hasOrder =
+    Array.isArray(investRound.orders) &&
+    investRound.orders.some(o => o.uid === uid);
+
+  // 🔒 round chưa kết thúc + đã vào lệnh
+  if (hasOrder && investRound.endAt > now) {
+    return res.json({
+      ok: false,
+      locked: true,
+      roundId: investRound.id,
+      endAt: investRound.endAt
+    });
+  }
+
+  // 🔒 user đã chốt sớm trong round này
+  if (
+    Array.isArray(investRound.closedEarly) &&
+    investRound.closedEarly.includes(uid) &&
+    investRound.endAt > now
+  ) {
+    return res.json({
+      ok: false,
+      locked: true,
+      roundId: investRound.id,
+      endAt: investRound.endAt
+    });
+  }
+
+  // ✅ cho phép vào
+  return res.json({ ok: true });
+});
+
 
 
 app.get("/api/invest/history", (req, res) => {

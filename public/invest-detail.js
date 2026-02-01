@@ -1,3 +1,31 @@
+// ================== HARD GUARD: KHÓA VÀO LẠI KHI ĐANG TRONG PHIÊN ==================
+(async function guardInvestEntry(){
+  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  if (!me.uid) return;
+
+  try {
+    const res = await fetch("/api/invest/can-enter", {
+      headers: { "x-uid": me.uid }
+    }).then(r => r.json());
+
+    // 🔒 ĐANG BỊ KHÓA → KHÔNG CHO LOAD TRANG
+    if (res?.locked && res.endAt) {
+      showHardLock(res.endAt);
+
+      // ⛔ CHẶN TOÀN BỘ JS PHÍA DƯỚI
+      throw new Error("INVEST_LOCKED");
+    }
+  } catch (e) {
+    if (e.message === "INVEST_LOCKED") {
+      // dừng script
+      return;
+    }
+    console.warn("⚠️ can-enter check failed", e);
+  }
+})();
+
+
+
 // invest-detail.js – REALTIME ROUND 60s
 
 const params = new URLSearchParams(location.search);
@@ -1728,54 +1756,49 @@ function hideReloadLock() {
 }
 
 
-// ================= MOBILE BACK HISTORY LOCK =================
-(function lockMobileBack() {
-  // đẩy 1 state giả để chặn back
-  history.pushState({ locked: true }, "", location.href);
 
-  window.addEventListener("popstate", (e) => {
-    // 🔒 nếu đã vào lệnh → CHẶN
-    if (joinedRound) {
-      history.pushState({ locked: true }, "", location.href);
+function showHardLock(endAt){
+  // xoá sạch UI để không tương tác được
+  document.body.innerHTML = "";
 
-      showModal(
-        "🔒 Không thể quay lại",
-        "Bạn đã vào lệnh. Vui lòng chờ kết thúc phiên để quay lại."
-      );
-      return;
+  const wrap = document.createElement("div");
+  wrap.style.cssText = `
+    position:fixed;
+    inset:0;
+    background:#000;
+    z-index:999999;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#fff;
+    text-align:center;
+  `;
+
+  wrap.innerHTML = `
+    <div>
+      <div style="font-size:52px">🔒</div>
+      <h2>Phiên đang diễn ra</h2>
+      <p>Bạn đã vào lệnh ở phiên này.</p>
+      <p id="lockCountdown" style="font-size:18px;margin-top:8px"></p>
+      <p style="opacity:.6;font-size:12px;margin-top:12px">
+        Vui lòng chờ phiên kết thúc để tiếp tục
+      </p>
+    </div>
+  `;
+
+  document.body.appendChild(wrap);
+
+  const cd = document.getElementById("lockCountdown");
+
+  const tick = () => {
+    const left = Math.max(0, Math.floor((endAt - Date.now()) / 1000));
+    if (cd) cd.textContent = `⏳ Còn ${left}s`;
+
+    if (left <= 0) {
+      location.reload(); // 🔓 HẾT PHIÊN → LOAD LẠI TRANG
     }
+  };
 
-    // ✅ chưa vào lệnh → cho back bình thường
-    history.back();
-  });
-})();
-
-
-// ================= BLOCK iOS SWIPE BACK =================
-(function blockSwipeBack() {
-  let startX = 0;
-  let startY = 0;
-
-  document.addEventListener("touchstart", e => {
-    const t = e.touches[0];
-    startX = t.clientX;
-    startY = t.clientY;
-  }, { passive: false });
-
-  document.addEventListener("touchmove", e => {
-    if (!joinedRound) return; // 🔓 chưa vào lệnh thì cho swipe
-
-    const t = e.touches[0];
-    const dx = t.clientX - startX;
-    const dy = Math.abs(t.clientY - startY);
-
-    // 👉 swipe từ mép trái + kéo ngang
-    if (startX < 20 && dx > 30 && dy < 30) {
-      e.preventDefault(); // ⛔ CHẶN BACK iOS
-      showModal(
-        "🔒 Không thể quay lại",
-        "Bạn đang trong phiên giao dịch."
-      );
-    }
-  }, { passive: false });
-})();
+  tick();
+  setInterval(tick, 1000);
+}
