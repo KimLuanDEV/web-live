@@ -836,6 +836,30 @@ try {
 
     drawChart(chartData);
     console.log("✅ chart restored from cache");
+
+// 🔁 REBIND ENTRY MARKER SAU RELOAD (CHỐNG LỆCH)
+entryMarkers.forEach(m => {
+  if (typeof m.priceRaw !== "number") return;
+
+  const draw = toDrawPrice(m.priceRaw);
+
+  let bestIdx = 0;
+  let bestDiff = Infinity;
+
+  chartData.forEach((v, i) => {
+    if (typeof v !== "number") return;
+    const diff = Math.abs(v - draw);
+    if (diff < bestDiff) {
+      bestDiff = diff;
+      bestIdx = i;
+    }
+  });
+
+  m.index = bestIdx;
+  m.priceDraw = draw;
+});
+
+
   }
 
   // 🔥 KHÔI PHỤC OFFSET STATE SAU RELOAD
@@ -1217,12 +1241,7 @@ if (m.index < 0 || m.index >= data.length) return;
 const x = m.index * (W / Math.max(data.length - 1, 1));
 
 
-const price =
-  typeof m.priceDraw === "number"
-    ? m.priceDraw
-    : m.priceRaw;
-
-const y = toY(price);
+const y = toY(chartData[m.index]);
 
 
 
