@@ -797,8 +797,6 @@ function resizeChartCanvas(){
 }
 
 
-
-
 function drawChart(data){
   const canvas = document.getElementById("priceChart");
   if (!canvas) return;
@@ -818,54 +816,61 @@ function drawChart(data){
     ctx.stroke();
   }
 
-  if (data.length < 2) return;
+  // =========================
+  // 🔥 FILTER DATA
+  // =========================
+  const points = data.filter(v => typeof v === "number");
+  if (points.length < 2) return;
 
-const first = points[0];
-const last  = points[points.length - 1];
+  // =========================
+  // 🔥 AUTO SCALE
+  // =========================
+  let min = Math.min(...points);
+  let max = Math.max(...points);
 
+  const padding = (max - min) * 0.15 || 1;
+  min -= padding;
+  max += padding;
 
-// ===============================
-// 📍 VẼ ĐƯỜNG ENTRY PRICE
-// ===============================
-if (joinedRound && typeof myEntryPrice === "number") {
+  const toY = price =>
+    H - ((price - min) / (max - min)) * H;
 
-const y = toY(myEntryPrice);
+  const first = points[0];
+  const last  = points[points.length - 1];
 
+  // =========================
+  // 📍 ENTRY LINE
+  // =========================
+  if (joinedRound && typeof myEntryPrice === "number") {
+    const y = toY(myEntryPrice);
 
+    ctx.save();
+    ctx.setLineDash([6, 4]);
+    ctx.strokeStyle =
+      last >= myEntryPrice ? "#00ff99" : "#ff5c5c";
+    ctx.lineWidth = 1.5;
 
-  ctx.save();
-  ctx.setLineDash([6, 4]);
-  ctx.strokeStyle =
-    last >= myEntryPrice ? "#00ff99" : "#ff5c5c";
-  ctx.lineWidth = 1.5;
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
 
-  ctx.beginPath();
-  ctx.moveTo(0, y);
-  ctx.lineTo(W, y);
-  ctx.stroke();
+    ctx.setLineDash([]);
+    ctx.font = "12px sans-serif";
+    ctx.fillStyle = ctx.strokeStyle;
 
-  // label ENTRY + giá
-  ctx.setLineDash([]);
-  ctx.font = "12px sans-serif";
-  ctx.fillStyle = ctx.strokeStyle;
+    ctx.fillText("ENTRY", 6, Math.max(12, y - 4));
 
-  ctx.fillText("ENTRY", 6, Math.max(12, y - 4));
+    const txt = myEntryPrice.toFixed(2);
+    const tw = ctx.measureText(txt).width;
+    ctx.fillText(txt, W - tw - 8, Math.max(12, y - 4));
 
-  const priceText = myEntryPrice.toFixed(2);
-  const textWidth = ctx.measureText(priceText).width;
+    ctx.restore();
+  }
 
-  ctx.fillText(
-    priceText,
-    W - textWidth - 8,
-    Math.max(12, y - 4)
-  );
-
-  ctx.restore();
-}
-
-
-
-
+  // =========================
+  // 📈 LINE CHART
+  // =========================
   const color =
     last > first ? "#00ff99" :
     last < first ? "#ff5c5c" :
@@ -877,95 +882,63 @@ const y = toY(myEntryPrice);
   ctx.shadowColor = color;
   ctx.shadowBlur = 10;
 
+  points.forEach((v, i) => {
+    const x = i * (W / Math.max(data.length - 1, 1));
+    const y = toY(v);
 
-  const points = data.filter(v => typeof v === "number");
-if (points.length < 2) return;
-
-// 🔥 AUTO SCALE TRỤC Y
-let min = Math.min(...points);
-let max = Math.max(...points);
-
-// nới biên cho đẹp (15%)
-const padding = (max - min) * 0.15 || 1;
-min -= padding;
-max += padding;
-
-// hàm map giá → Y
-const toY = (price) => {
-  return H - ((price - min) / (max - min)) * H;
-};
-
-
-
-points.forEach((v, i) => {
-  const x = i * (W / Math.max(data.length - 1, 1));
-  const y = toY(v);
-
-  if (i === 0) ctx.moveTo(x, y);
-  else ctx.lineTo(x, y);
-});
-
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
 
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  // cập nhật text xu hướng
+  // =========================
+  // 📍 ENTRY MARKERS
+  // =========================
+  entryMarkers.forEach(m => {
+    if (m.sec < 0 || m.sec >= data.length) return;
+
+    const x = m.sec * (W / Math.max(data.length - 1, 1));
+    const y = toY(m.price);
+
+    ctx.beginPath();
+    ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
+    ctx.strokeStyle = "#000";
+    ctx.lineWidth = 1;
+    ctx.arc(x, y, m.mine ? 6 : 4, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.stroke();
+  });
+
+  // =========================
+  // 📊 TREND
+  // =========================
   const trendText = document.getElementById("trendText");
+  const chartBox = document.querySelector(".detail-chart");
 
-const chartBox = document.querySelector(".detail-chart");
+  if (trendText && chartBox) {
+    chartBox.classList.remove(
+      "trend-up",
+      "trend-down",
+      "trend-neutral"
+    );
 
-if (trendText && chartBox) {
-  chartBox.classList.remove(
-    "trend-up",
-    "trend-down",
-    "trend-neutral"
-  );
-
-  if (last > first) {
-    trendText.textContent = "Xu hướng tăng";
-    trendText.className = "trend-overlay up";
-    chartBox.classList.add("trend-up");
-  } 
-  else if (last < first) {
-    trendText.textContent = "Xu hướng giảm";
-    trendText.className = "trend-overlay down";
-    chartBox.classList.add("trend-down");
-  } 
-  else {
-    trendText.textContent = "Sideway";
-    trendText.className = "trend-overlay neutral";
-    chartBox.classList.add("trend-neutral");
+    if (last > first) {
+      trendText.textContent = "Xu hướng tăng";
+      trendText.className = "trend-overlay up";
+      chartBox.classList.add("trend-up");
+    } else if (last < first) {
+      trendText.textContent = "Xu hướng giảm";
+      trendText.className = "trend-overlay down";
+      chartBox.classList.add("trend-down");
+    } else {
+      trendText.textContent = "Sideway";
+      trendText.className = "trend-overlay neutral";
+      chartBox.classList.add("trend-neutral");
+    }
   }
 }
-
-
-
-  // ============================
-// 📍 VẼ ĐIỂM VÀO LỆNH
-// ============================
-entryMarkers.forEach(m => {
-  const idx = m.sec;
-  const price = m.price;
-
-  if (idx < 0 || idx >= data.length) return;
-
-  const x = idx * (W / Math.max(data.length - 1, 1));
-
-  const y = toY(price);
-
-
-  ctx.beginPath();
-  ctx.fillStyle = m.mine ? "#ffd700" : "#ff5c5c";
-  ctx.strokeStyle = "#000";
-  ctx.lineWidth = 1;
-
-  ctx.arc(x, y, m.mine ? 6 : 4, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.stroke();
-});
-
-}
-
 
 
 
