@@ -24,9 +24,12 @@ html, body {
   cursor: pointer;
   color: #fff;
 
-  background-size: cover;
+  /* ✅ KHÔNG BÓP ẢNH */
+  background-size: contain;
   background-position: center;
   background-repeat: no-repeat;
+
+  aspect-ratio: 3 / 4;   /* ✅ giữ tỉ lệ card đẹp */
 
   box-shadow:
     0 10px 30px rgba(0,0,0,.55),
@@ -150,7 +153,6 @@ html, body {
 
 
 .invest-card{
-  min-height: 420px;
   padding: 14px;
   display: flex;
   flex-direction: column;
@@ -158,15 +160,6 @@ html, body {
 }
 
 
-@media (max-width: 480px){
-  .invest-grid{
-    gap: 12px;
-  }
-
-  .invest-card{
-    min-height: 420px;
-  }
-}
 
 
 
