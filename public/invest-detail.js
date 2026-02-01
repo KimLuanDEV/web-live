@@ -664,6 +664,8 @@ roundFadeStart = Date.now();
 
   joinedRound = false;
   closedEarlyThisRound = false;
+  updateBackButtonState();
+
   roundOrders = [];
   renderOrdersModal();
   startRoundTimer(d.endAt);
@@ -1331,6 +1333,8 @@ body: JSON.stringify({
 myEntryTime = Date.now(); // 🔥 lưu thời điểm vào lệnh
 myOrderDirection = myDirection; // 🔥 lưu hướng lệnh
 
+updateBackButtonState();
+
 showCloseEarlyButton(); // 🔁 ĐỔI NÚT
 
 
@@ -1462,19 +1466,40 @@ function closeResultModal() {
 
 
 
-// ================= BACK BUTTON SAFE =================
+// ================= BACK BUTTON LOCK WHEN IN ORDER =================
 const btnBack = document.getElementById("btnBack");
+
 if (btnBack) {
   btnBack.addEventListener("click", () => {
-    // có trang trước đó
+
+    // 🔒 ĐÃ VÀO LỆNH → KHÔNG CHO THOÁT
+    if (joinedRound) {
+      showModal(
+        "🔒 Không thể quay lại",
+        "Bạn đã vào lệnh. Vui lòng chờ kết thúc phiên để quay lại."
+      );
+      return;
+    }
+
+    // ✅ CHƯA VÀO LỆNH → CHO QUAY LẠI
     if (window.history.length > 1) {
       history.back();
     } else {
-      // fallback an toàn
       location.href = "/invest.html";
     }
   });
 }
+
+// ===== UPDATE BACK BUTTON UI STATE =====
+function updateBackButtonState(){
+  if (!btnBack) return;
+  btnBack.style.opacity = joinedRound ? "0.4" : "1";
+  btnBack.style.pointerEvents = "auto"; // vẫn click để hiện modal
+}
+
+// chạy lần đầu khi load trang
+updateBackButtonState();
+
 
 
 
@@ -1585,6 +1610,9 @@ btnCloseEarly?.addEventListener("click", () => {
     myEntryPrice = null;
     myOrderDirection = null;
     myEntryTime = null;
+    updateBackButtonState();
+
+
 
     const pnlBox = document.getElementById("pnlRealtime");
     if (pnlBox) pnlBox.classList.add("hidden");
@@ -1632,6 +1660,9 @@ socket.on("invest-closed-early", d => {
   myEntryPrice = null;
   myOrderDirection = null;
   myEntryTime = null;
+  updateBackButtonState();
+
+
 
   const pnlBox = document.getElementById("pnlRealtime");
   if (pnlBox) pnlBox.classList.add("hidden");
