@@ -407,22 +407,11 @@ if (myOrder) {
       // 📍 phục hồi marker vào lệnh
 entryMarkers = roundOrders
   .filter(o => typeof o.entrySec === "number")
-  .map(o => {
-    // 🔥 quy đổi giây vào lệnh → index hiện tại trong chartData
-    const idx = Math.max(
-      0,
-      Math.min(
-        chartData.length - 1,
-        chartData.length - (ROUND_DURATION - o.entrySec)
-      )
-    );
-
-    return {
-      index: idx,
-      priceRaw: o.entryPrice,
-      mine: o.uid === me.uid
-    };
-  });
+  .map(o => ({
+    sec: o.entrySec,          // 🔥 CHỈ LƯU GIÂY
+    priceRaw: o.entryPrice,
+    mine: o.uid === me.uid
+  }));
 
 
 
@@ -602,11 +591,12 @@ myEntryPriceDraw = toDrawPrice(o.entryPrice); // 🔥 draw (vẽ)
   if (typeof o.entrySec === "number" && typeof o.entryPrice === "number") {
 
 entryMarkers.push({
-  index: chartData.length - 1,     // vị trí thực trên chart
-  priceRaw: o.entryPrice,          // 🔹 giá thật (tính PnL)
-  priceDraw: toDrawPrice(o.entryPrice), // 🔥 giá đã offset để vẽ
+  sec: o.entrySec,           // 🔥 GIÂY VÀO LỆNH
+  priceRaw: o.entryPrice,
+  priceDraw: toDrawPrice(o.entryPrice),
   mine: o.uid === me.uid
 });
+
 
 
   }
@@ -1071,6 +1061,22 @@ if (roundMarkers.length) {
   // =========================
   const points = data.filter(v => typeof v === "number");
   if (points.length < 2) return;
+
+
+
+// =========================
+// 🔥 SYNC ENTRY INDEX (FIX LỆCH SAU RELOAD)
+// =========================
+const currentSecond =
+  Math.max(0, chartData.length - 1);
+
+const startSec =
+  Math.max(0, currentSecond - data.length + 1);
+
+entryMarkers.forEach(m => {
+  m.index = m.sec - startSec;
+});
+
 
   // =========================
   // 🔥 AUTO SCALE
