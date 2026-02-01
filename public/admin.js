@@ -834,7 +834,7 @@ async function withdrawAction(id, action) {
     },
     body: JSON.stringify({
       adminUid: admin.uid,
-      id,
+      withdrawId: id, 
       action,
       note
     })

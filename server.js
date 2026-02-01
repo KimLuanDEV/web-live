@@ -2986,10 +2986,15 @@ app.get("/api/admin/withdraw-requests", (req, res) => {
 });
 
 app.post("/api/admin/withdraw-action", (req, res) => {
-  const { adminUid, id, action, note } = req.body || {};
+  const { adminUid, withdrawId, action, note } = req.body || {};
 
-  if (!adminUid || !id || !action) {
+  // 🔍 validate
+  if (!adminUid || !withdrawId || !action) {
     return res.status(400).json({ error: "missing" });
+  }
+
+  if (!["approve", "reject"].includes(action)) {
+    return res.status(400).json({ error: "invalid_action" });
   }
 
   const db = loadUsers();
@@ -2999,8 +3004,10 @@ app.post("/api/admin/withdraw-action", (req, res) => {
   }
 
   const list = loadWithdraws();
-  const reqItem = list.find(x => x.id === id);
-  if (!reqItem) return res.status(404).json({ error: "not_found" });
+  const reqItem = list.find(x => x.id === withdrawId);
+  if (!reqItem) {
+    return res.status(404).json({ error: "not_found" });
+  }
 
   if (reqItem.status !== "pending") {
     return res.status(400).json({ error: "already_processed" });
@@ -3011,70 +3018,31 @@ app.post("/api/admin/withdraw-action", (req, res) => {
     return res.status(404).json({ error: "user_not_found" });
   }
 
-  // ❌ TỪ CHỐI
+  const amount = Number(reqItem.amount) || 0;
+
+  // =========================
+  // ❌ REJECT
+  // =========================
   if (action === "reject") {
     reqItem.status = "rejected";
     reqItem.note = note || "";
     reqItem.handledBy = adminUid;
     reqItem.handledAt = Date.now();
 
-const amt = Number(reqItem.amount);
-
-// ➕ HOÀN LẠI KIM CƯƠNG
-user.profile.coinReceived += amt;
-user.profile.coins = (user.profile.coins || 0) + amt;
-
-saveUsers(db);
-emitCoinUpdate(reqItem.uid); // 🔁 realtime coin
-
-
-
-    saveWithdraws(list);
-    emitWithdrawUpdate(); // ✅ KHÔNG TRUYỀN uid
-
-    // 🔔 notify user
-    const text = `❌ Yêu cầu rút ${reqItem.amount.toLocaleString()} 💎 bị từ chối`;
-
-    if (!userInbox.has(reqItem.uid)) userInbox.set(reqItem.uid, []);
-    userInbox.get(reqItem.uid).unshift({
-      type: "withdraw-reject",
-      text,
-      time: Date.now(),
-      read: false
-    });
-    saveInbox(Object.fromEntries(userInbox));
-
-    return res.json({ ok: true });
-  }
-
-  // ✅ DUYỆT
-  if (action === "approve") {
-    const amount = Number(reqItem.amount);
-
-    if ((user.profile.coinReceived || 0) < amount) {
-      return res.status(400).json({ error: "not_enough_received" });
-    }
-
-    reqItem.status = "approved";
-    reqItem.note = note || "";
-    reqItem.handledBy = adminUid;
-    reqItem.handledAt = Date.now();
+    // 🔁 HOÀN COIN (CHỈ coins)
+    user.profile.coins = (user.profile.coins || 0) + amount;
 
     saveUsers(db);
     saveWithdraws(list);
-    emitWithdrawUpdate(); // ✅ KHÔNG TRUYỀN uid
 
-    // 🔁 realtime coin
     emitCoinUpdate(reqItem.uid);
+    io.emit("withdraw-update", { id: withdrawId, action });
 
-    // 🔔 notify user
-    const text =
-      `✅ Yêu cầu rút ${amount.toLocaleString()} 💎 đã được duyệt`;
-
+    // 🔔 inbox
     if (!userInbox.has(reqItem.uid)) userInbox.set(reqItem.uid, []);
     userInbox.get(reqItem.uid).unshift({
-      type: "withdraw-approve",
-      text,
+      type: "withdraw-reject",
+      text: `❌ Yêu cầu rút ${amount.toLocaleString()} 💎 bị từ chối`,
       time: Date.now(),
       read: false
     });
@@ -3083,7 +3051,38 @@ emitCoinUpdate(reqItem.uid); // 🔁 realtime coin
     return res.json({ ok: true });
   }
 
-  res.status(400).json({ error: "invalid_action" });
+  // =========================
+  // ✅ APPROVE
+  // =========================
+  if ((user.profile.coinReceived || 0) < amount) {
+    return res.status(400).json({ error: "not_enough_received" });
+  }
+
+  reqItem.status = "approved";
+  reqItem.note = note || "";
+  reqItem.handledBy = adminUid;
+  reqItem.handledAt = Date.now();
+
+  // ➖ TRỪ COIN RECEIVED
+  user.profile.coinReceived -= amount;
+
+  saveUsers(db);
+  saveWithdraws(list);
+
+  emitCoinUpdate(reqItem.uid);
+  io.emit("withdraw-update", { id: withdrawId, action });
+
+  // 🔔 inbox
+  if (!userInbox.has(reqItem.uid)) userInbox.set(reqItem.uid, []);
+  userInbox.get(reqItem.uid).unshift({
+    type: "withdraw-approve",
+    text: `✅ Yêu cầu rút ${amount.toLocaleString()} 💎 đã được duyệt`,
+    time: Date.now(),
+    read: false
+  });
+  saveInbox(Object.fromEntries(userInbox));
+
+  return res.json({ ok: true });
 });
 
 app.post("/api/profile/bank-default", (req, res) => {
