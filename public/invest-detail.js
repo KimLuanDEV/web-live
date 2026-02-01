@@ -408,10 +408,8 @@ if (myOrder) {
 entryMarkers = roundOrders
   .filter(o => typeof o.entrySec === "number")
   .map(o => ({
-    index: Math.min(
-      chartData.length - 1,
-      Math.max(0, o.entrySec)
-    ),
+
+    index: chartData.length - 1,
     priceRaw: o.entryPrice,
     priceDraw: toDrawPrice(o.entryPrice), // 🔥 QUAN TRỌNG
     mine: o.uid === me.uid
@@ -829,6 +827,25 @@ try {
     drawChart(chartData);
     console.log("✅ chart restored from cache");
   }
+
+  // 🔥 KHÔI PHỤC OFFSET STATE SAU RELOAD
+roundBasePrice = lastPriceOfPrevRound;
+roundZeroPrice = chartData.length
+  ? chartData[chartData.length - 1]
+  : null;
+
+// 🔁 RECALC ENTRY DRAW + MARKER DRAW
+if (typeof myEntryPrice === "number") {
+  myEntryPriceDraw = toDrawPrice(myEntryPrice);
+}
+
+entryMarkers.forEach(m => {
+  if (typeof m.priceRaw === "number") {
+    m.priceDraw = toDrawPrice(m.priceRaw);
+  }
+});
+
+
 } catch (e) {
   console.warn("⚠️ chart cache invalid");
 }
