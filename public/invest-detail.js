@@ -1519,6 +1519,15 @@ showModal(
     </div>
 
     <div class="es-body">
+      <!-- ENTRY PRICE -->
+      <div class="es-entry">
+        <span>ENTRY PRICE</span>
+        <b>${typeof myEntryPrice === "number"
+            ? myEntryPrice.toFixed(2)
+            : "--"}</b>
+      </div>
+
+      <!-- COIN -->
       <div class="es-card">
         <span>Vốn vào lệnh</span>
         <b>${coin} 💎</b>
@@ -1827,7 +1836,7 @@ openResultModal({
   percent: d.percent,
   profit: d.profit,
   asset,
-  dir: d.direction === "down" ? "📉 Giảm" : "📈 Tăng",
+  dir: d.direction === "down" ? "DOWN" : "UP",
   coin: d.coin,
   entry: d.entryPrice,
   end: d.endPrice
