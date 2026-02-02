@@ -284,7 +284,7 @@ pnlHistoryList.addEventListener("click", e => {
 
 function openRoundSnapshot(roundId, asset){
   showModal(
-    `📊 ROUND #${roundId}`,
+    `ROUND #${roundId}`,
     `
     <div class="round-snapshot">
       <canvas id="roundSnapshotChart" height="220"></canvas>
@@ -308,12 +308,11 @@ function openRoundSnapshot(roundId, asset){
       }
 
       // chart snapshot chỉ cần giá đầu → cuối
-   drawFullSnapshot(
+openSnapshotFS(
   round.chart?.[asset],
   round.orders,
   asset
 );
-
 
     });
 }
@@ -1817,6 +1816,104 @@ fetch("/api/invest/history")
 
 
 
+function openSnapshotFS(prices, orders, asset){
+  const fs = document.getElementById("snapshotFS");
+  const canvas = document.getElementById("snapshotFSCanvas");
+
+  fs.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+
+  // resize canvas theo màn hình
+  canvas.width  = window.innerHeight;
+  canvas.height = window.innerWidth;
+
+  // vẽ lại bằng full snapshot hiện có
+  drawFullSnapshotOnCanvas(
+    canvas,
+    prices,
+    orders,
+    asset
+  );
+}
+
+
+
+function drawFullSnapshotOnCanvas(canvas, prices, orders, asset){
+  if (!Array.isArray(prices) || prices.length < 2) return;
+
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.clearRect(0,0,W,H);
+
+  const pad = 40;
+  const usableW = W - pad*2;
+  const usableH = H - pad*2;
+
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+
+  const toX = i =>
+    pad + i * (usableW / (prices.length - 1));
+
+  const toY = p =>
+    pad + usableH - (p - min) / (max - min) * usableH;
+
+  // GRID
+  ctx.strokeStyle = "rgba(255,255,255,.06)";
+  for(let i=0;i<6;i++){
+    const y = pad + i * (usableH/5);
+    ctx.beginPath();
+    ctx.moveTo(pad,y);
+    ctx.lineTo(W-pad,y);
+    ctx.stroke();
+  }
+
+  // LINE
+  ctx.strokeStyle = "#00ff99";
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = "#00ff99";
+
+  ctx.beginPath();
+  prices.forEach((p,i)=>{
+    const x = toX(i);
+    const y = toY(p);
+    if(i===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // ENTRY
+  orders?.filter(o=>o.asset===asset).forEach(o=>{
+    const y = toY(o.entryPrice);
+    ctx.strokeStyle = "#ffd54f";
+    ctx.setLineDash([6,6]);
+    ctx.beginPath();
+    ctx.moveTo(pad,y);
+    ctx.lineTo(W-pad,y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  });
+
+  // CLOSE
+  const closeY = toY(prices.at(-1));
+  ctx.strokeStyle = "#ff5252";
+  ctx.beginPath();
+  ctx.moveTo(pad, closeY);
+  ctx.lineTo(W-pad, closeY);
+  ctx.stroke();
+}
+
+
+
+function closeSnapshotFS(){
+  const fs = document.getElementById("snapshotFS");
+  fs.classList.add("hidden");
+  document.body.style.overflow = "";
+}
 
 
 function setResult(id, val){

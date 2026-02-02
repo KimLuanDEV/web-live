@@ -1884,6 +1884,45 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+.snapshot-fs{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  background:#000;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.snapshot-fs.hidden{ display:none; }
+
+.fs-wrap{
+  width:100vh;
+  height:100vw;
+  transform:rotate(90deg);
+  transform-origin:center;
+  display:flex;
+}
+
+#snapshotFSCanvas{
+  width:100%;
+  height:100%;
+}
+
+.fs-close{
+  position:fixed;
+  top:12px;
+  right:12px;
+  z-index:10000;
+  background:rgba(0,0,0,.6);
+  color:#fff;
+  border:none;
+  border-radius:999px;
+  width:36px;
+  height:36px;
+  font-size:18px;
+}
+
 
 
 </style>
@@ -2253,6 +2292,16 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
     </div>
   </div>
 </div>
+
+
+<div id="snapshotFS" class="snapshot-fs hidden">
+  <button class="fs-close" onclick="closeSnapshotFS()">✕</button>
+  <div class="fs-wrap">
+    <canvas id="snapshotFSCanvas"></canvas>
+  </div>
+</div>
+
+
 
 
 <script src="/socket.io/socket.io.js"></script>
