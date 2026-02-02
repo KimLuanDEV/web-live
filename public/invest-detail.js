@@ -189,26 +189,38 @@ function closePnlHistory(){
 function renderPnlHistory(list){
   if (!list.length) {
     pnlHistoryList.innerHTML =
-      `<li class="empty">Chưa có dữ liệu</li>`;
+      `<li class="pnl-empty">Chưa có dữ liệu</li>`;
     return;
   }
 
-  pnlHistoryList.innerHTML = list.map(i => `
-    <li class="order-item ${i.percent >= 0 ? "up" : "down"}">
-      <div>
-        ${i.asset.toUpperCase()}
-        ${i.direction === "up" ? "📈" :
-          i.direction === "down" ? "📉" : "➖"}
-      </div>
-      <div>
-        ${i.coin} 💎 →
-        <b>${i.percent >= 0 ? "+" : ""}${i.percent}%</b>
-        (${i.profit >= 0 ? "+" : ""}${i.profit})
-      </div>
-      <small>${new Date(i.ts).toLocaleString()}</small>
-    </li>
-  `).join("");
+  pnlHistoryList.innerHTML = list.map(i => {
+    const isWin = i.percent >= 0;
+    return `
+      <li class="pnl-item ${isWin ? "win" : "loss"}">
+        <div class="pnl-left">
+          <div class="pnl-asset">${i.asset.toUpperCase()}</div>
+          <div class="pnl-dir">
+            ${i.direction === "up" ? "📈 LÊN" :
+              i.direction === "down" ? "📉 XUỐNG" : "➖"}
+          </div>
+          <div class="pnl-time">
+            ${new Date(i.ts).toLocaleTimeString()}
+          </div>
+        </div>
+
+        <div class="pnl-right">
+          <div class="pnl-percent">
+            ${isWin ? "+" : ""}${i.percent}%
+          </div>
+          <div class="pnl-coin">
+            ${isWin ? "+" : ""}${i.profit} 💎
+          </div>
+        </div>
+      </li>
+    `;
+  }).join("");
 }
+
 
 
 function openOrders(){
@@ -1604,7 +1616,7 @@ function openResultModal({ percent, profit, asset, dir, coin, entry, end }) {
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
 
-  
+
   // 📊 VẼ LỊCH SỬ CHART PHIÊN
 setTimeout(() => {
   drawResultChart(lastRoundChart, entry);
