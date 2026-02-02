@@ -1505,46 +1505,49 @@ updateCoin();
 
 
 const dirText =
-  myDirection === "up" ? "UP" :
-  myDirection === "down" ? "DOWN" :
-  "➖";
+  myOrder.direction === "up" ? "UP" : "DOWN";
 
 showModal(
   "",
   `
-  <div class="enter-sheet">
+  <div class="entry-sheet">
     <div class="es-header">
       <div class="es-status">ĐÃ VÀO LỆNH</div>
-      <div class="es-dir">${dirText}</div>
+      <div class="es-dir ${myOrder.direction}">
+        ${dirText}
+      </div>
     </div>
 
-    <div class="es-body">
-      <!-- ENTRY PRICE -->
-      <div class="es-entry">
+    <div class="es-main">
+      <div class="es-price">
         <span>ENTRY PRICE</span>
-        <b>${typeof myEntryPrice === "number"
-            ? myEntryPrice.toFixed(2)
-            : "--"}</b>
+        <b>${myOrder.entryPrice.toFixed(2)}</b>
       </div>
 
-      <!-- COIN -->
-      <div class="es-card">
-        <span>Vốn vào lệnh</span>
-        <b>${coin} 💎</b>
+      <div class="es-row">
+        <div>
+          <span>ROUND</span>
+          <b>#${currentRoundId}</b>
+        </div>
+        <div>
+          <span>TIME</span>
+          <b>${new Date(myOrder.entryTime).toLocaleTimeString()}</b>
+        </div>
       </div>
 
-      <div class="es-note">
-        ⏳ Lệnh đang được xử lý<br>
-        <small>Vui lòng chờ kết thúc phiên</small>
+      <div class="es-coin">
+        <span>VỐN</span>
+        <b>${myOrder.coin} 💎</b>
       </div>
     </div>
 
-    <div class="es-footer">
-      <button onclick="closeAppModal()">Đã hiểu</button>
+    <div class="es-note">
+      ⏳ Vui lòng chờ kết thúc phiên
     </div>
   </div>
   `
 );
+
 
 
 
