@@ -932,6 +932,52 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+.fab{
+  position:absolute;
+  bottom:14px;
+  width:44px;
+  height:44px;
+  border-radius:14px;
+  border:0;
+  cursor:pointer;
+  display:grid;
+  place-items:center;
+  z-index:7;
+}
+
+/* vị trí */
+#btnOpenHistory{ left:14px; }
+#btnOpenOrders{ left:64px; }
+#btnOpenPnlHistory{ left:114px; }
+
+.glass{
+  background: rgba(20,20,20,.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* SVG icon */
+.fab-icon{
+  width:20px;
+  height:20px;
+  stroke:#fff;
+  stroke-width:2;
+  fill:none;
+  opacity:.9;
+}
+
+/* interaction */
+.fab:active{
+  transform: scale(.95);
+}
+.fab:hover .fab-icon{
+  stroke:#00ff99;
+}
+
+
 
 </style>
 
@@ -981,21 +1027,30 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   </div>
 
 
-  <!-- 🧾 HISTORY BUTTON (ICON NỔI) -->
-<button id="btnOpenHistory" class="history-fab" title="Lịch sử phiên">
-  📊
+<!-- 📊 HISTORY -->
+<button id="btnOpenHistory" class="fab glass" title="Lịch sử phiên">
+  <svg viewBox="0 0 24 24" class="fab-icon">
+    <path d="M4 4v16h16" />
+    <path d="M7 15l3-3 3 2 4-5" />
+  </svg>
 </button>
 
-
-<!-- 🧾 ORDERS BUTTON (ICON NỔI) -->
-<button id="btnOpenOrders" class="orders-fab" title="Lệnh trong phiên">
-  👤
+<!-- 👤 ORDERS -->
+<button id="btnOpenOrders" class="fab glass" title="Lệnh trong phiên">
+  <svg viewBox="0 0 24 24" class="fab-icon">
+    <circle cx="12" cy="8" r="4"/>
+    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+  </svg>
 </button>
 
-<!-- 💰 PNL HISTORY BUTTON -->
-<button id="btnOpenPnlHistory" class="pnl-history-fab" title="Lịch sử lãi / lỗ">
-  🧾
+<!-- 💰 PNL -->
+<button id="btnOpenPnlHistory" class="fab glass" title="Lịch sử lãi / lỗ">
+  <svg viewBox="0 0 24 24" class="fab-icon">
+    <path d="M4 14l4-4 4 3 6-6"/>
+    <path d="M20 20H4"/>
+  </svg>
 </button>
+
 
 
   <!-- 💰 PnL realtime -->
