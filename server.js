@@ -629,6 +629,7 @@ investHistory.unshift({
   roundId: round.id,
   ts: Date.now(),
   result,
+  chart: round.chart, // 🔥 LƯU CHART CỦA ROUND
   orders: round.orders.map(o => ({
     uid: o.uid,
     asset: o.asset,
@@ -636,6 +637,7 @@ investHistory.unshift({
     entryPrice: o.entryPrice
   }))
 });
+
 
 if (investHistory.length > MAX_HISTORY) {
   investHistory.pop();
@@ -881,6 +883,27 @@ app.get("/api/invest/my-history", (req, res) => {
 });
 
 
+app.get("/api/invest/chart-history", (req, res) => {
+  const { roundId, asset } = req.query;
+
+  if (!roundId || !asset) {
+    return res.json({ ok:false });
+  }
+
+  const list = loadInvestHistory();
+  const item = list.find(
+    r => String(r.roundId) === String(roundId)
+  );
+
+  if (!item?.chart?.[asset]) {
+    return res.json({ ok:false });
+  }
+
+  res.json({
+    ok:true,
+    chart: item.chart[asset]
+  });
+});
 
 
 
