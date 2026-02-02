@@ -1117,43 +1117,110 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
-/* ===== CHART ACTION COMPACT ===== */
+/* ===== CHART ACTION OVERLAY ===== */
 .chart-action{
-  bottom: 8px;
-  padding: 0 10px;
-  gap: 6px;
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:12px;
+  z-index:6;
+
+  padding:0 12px;
+
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+
+  pointer-events:auto;
 }
 
-/* nền mờ thấp hơn */
+/* làm nền mờ nhẹ để đọc rõ */
 .chart-action::before{
-  height: 90px;
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-12px;
+  height:120px;
+  pointer-events:none;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,.55),
+    rgba(0,0,0,0)
+  );
 }
 
-/* ===== DIRECTION COMPACT ===== */
+/* đảm bảo nút nằm trên nền mờ */
+.chart-action > *{
+  position:relative;
+  z-index:1;
+}
+
+/* direction gọn hơn */
 .chart-action .direction-box{
-  gap: 6px;
+  margin:0;
+}
+
+/* nút vào lệnh full width, không quá to */
+.chart-action .btn-invest-main{
+  height:48px;
+  border-radius:16px;
+  font-size:15px;
+}
+
+/* chốt sớm nhỏ hơn, phụ */
+.chart-action .btn-close-early{
+  height:42px;
+  border-radius:14px;
+  font-size:14px;
+}
+
+
+/* ===== ULTRA COMPACT CHART ACTION ===== */
+.chart-action{
+  bottom: 6px;
+  padding: 0 8px;
+  gap: 4px;
+}
+
+/* nền mờ mỏng hơn nữa */
+.chart-action::before{
+  height: 68px;
+}
+
+/* ===== DIRECTION SIÊU GỌN ===== */
+.chart-action .direction-box{
+  gap: 4px;
 }
 
 .chart-action .dir{
-  padding: 8px 0;
-  font-size: 13px;
-  border-radius: 12px;
+  padding: 6px 0;
+  font-size: 12px;
+  border-radius: 10px;
 }
 
-/* ===== SUBMIT COMPACT ===== */
+/* ===== VÀO LỆNH SIÊU GỌN ===== */
 .chart-action .btn-invest-main{
-  height: 42px;
-  font-size: 14px;
-  border-radius: 14px;
-  box-shadow: 0 8px 18px rgba(0,255,153,.35);
-}
-
-/* ===== CLOSE EARLY COMPACT ===== */
-.chart-action .btn-close-early{
   height: 36px;
   font-size: 13px;
   border-radius: 12px;
+  box-shadow: 0 6px 14px rgba(0,255,153,.3);
 }
+
+/* ===== CHỐT SỚM MINI ===== */
+.chart-action .btn-close-early{
+  height: 30px;
+  font-size: 12px;
+  border-radius: 10px;
+}
+
+
+@media (max-width: 360px){
+  .chart-action .dir{
+    font-size: 11px;
+  }
+}
+
+
+
 
 </style>
 
@@ -1362,7 +1429,6 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   <div class="coin-reset">
     <button class="key-clear">⌫ Xóa</button>
   </div>
-
 </section>
 
 
