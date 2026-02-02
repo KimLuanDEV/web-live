@@ -1397,6 +1397,12 @@ document
 
 
 
+  function formatTime(ts){
+  if (!ts) return "--:--:--";
+  const d = new Date(ts);
+  return d.toLocaleTimeString("vi-VN");
+}
+
 
 
 // ================== VÀO LỆNH ==================
@@ -1513,35 +1519,53 @@ showModal(
   "",
   `
   <div class="enter-sheet">
+
+    <!-- HEADER -->
     <div class="es-header">
       <div class="es-status">ĐÃ VÀO LỆNH</div>
       <div class="es-dir">${dirText}</div>
     </div>
 
+    <!-- META -->
+    <div class="es-meta">
+      <div class="es-meta-item">
+        <span>ROUND</span>
+        <b>#${currentRoundId ?? "--"}</b>
+      </div>
+      <div class="es-meta-item">
+        <span>THỜI GIAN VÀO</span>
+        <b>${formatTime(myEntryTime)}</b>
+      </div>
+    </div>
+
+    <!-- BODY -->
     <div class="es-body">
-      <!-- ENTRY PRICE -->
+
       <div class="es-entry">
         <span>ENTRY PRICE</span>
-        <b>${typeof myEntryPrice === "number"
+        <b>${
+          typeof myEntryPrice === "number"
             ? myEntryPrice.toFixed(2)
-            : "--"}</b>
+            : "--"
+        }</b>
       </div>
 
-      <!-- COIN -->
       <div class="es-card">
         <span>Vốn vào lệnh</span>
         <b>${coin} 💎</b>
       </div>
 
       <div class="es-note">
-        ⏳ Lệnh đang được xử lý<br>
+        ⏳ Lệnh đang được xử lý
         <small>Vui lòng chờ kết thúc phiên</small>
       </div>
     </div>
 
+    <!-- FOOTER -->
     <div class="es-footer">
       <button onclick="closeAppModal()">Đã hiểu</button>
     </div>
+
   </div>
   `
 );
