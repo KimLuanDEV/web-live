@@ -1117,62 +1117,43 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
-/* ===== CHART ACTION OVERLAY ===== */
+/* ===== CHART ACTION COMPACT ===== */
 .chart-action{
-  position:absolute;
-  left:0;
-  right:0;
-  bottom:12px;
-  z-index:6;
-
-  padding:0 12px;
-
-  display:flex;
-  flex-direction:column;
-  gap:8px;
-
-  pointer-events:auto;
+  bottom: 8px;
+  padding: 0 10px;
+  gap: 6px;
 }
 
-/* làm nền mờ nhẹ để đọc rõ */
+/* nền mờ thấp hơn */
 .chart-action::before{
-  content:"";
-  position:absolute;
-  left:0; right:0; bottom:-12px;
-  height:120px;
-  pointer-events:none;
-  background:linear-gradient(
-    to top,
-    rgba(0,0,0,.55),
-    rgba(0,0,0,0)
-  );
+  height: 90px;
 }
 
-/* đảm bảo nút nằm trên nền mờ */
-.chart-action > *{
-  position:relative;
-  z-index:1;
-}
-
-/* direction gọn hơn */
+/* ===== DIRECTION COMPACT ===== */
 .chart-action .direction-box{
-  margin:0;
+  gap: 6px;
 }
 
-/* nút vào lệnh full width, không quá to */
+.chart-action .dir{
+  padding: 8px 0;
+  font-size: 13px;
+  border-radius: 12px;
+}
+
+/* ===== SUBMIT COMPACT ===== */
 .chart-action .btn-invest-main{
-  height:48px;
-  border-radius:16px;
-  font-size:15px;
+  height: 42px;
+  font-size: 14px;
+  border-radius: 14px;
+  box-shadow: 0 8px 18px rgba(0,255,153,.35);
 }
 
-/* chốt sớm nhỏ hơn, phụ */
+/* ===== CLOSE EARLY COMPACT ===== */
 .chart-action .btn-close-early{
-  height:42px;
-  border-radius:14px;
-  font-size:14px;
+  height: 36px;
+  font-size: 13px;
+  border-radius: 12px;
 }
-
 
 </style>
 
@@ -1381,22 +1362,6 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   <div class="coin-reset">
     <button class="key-clear">⌫ Xóa</button>
   </div>
-
-  <!-- 🔼🔽 DIRECTION -->
-  <div class="direction-box" id="directionBox">
-    <button id="btnUp" class="dir active">📈 LÊN</button>
-    <button id="btnDown" class="dir">📉 XUỐNG</button>
-  </div>
-
-  <!-- 🚀 SUBMIT -->
-  <button class="btn-invest-main" onclick="confirmInvest()">
-    🚀 VÀO LỆNH
-  </button>
-
-  <!-- ⏱ CLOSE EARLY -->
-  <button id="btnCloseEarly" class="btn-close-early hidden">
-    Chốt lệnh sớm
-  </button>
 
 </section>
 
