@@ -1112,8 +1112,13 @@ if (roundMarkers.length) {
 const rawPoints = chartRawData.filter(v => typeof v === "number");
 if (rawPoints.length < 2) return;
 
+// ✅ CHÈN NGAY DƯỚI DÒNG NÀY
+const points = data.filter(v => typeof v === "number");
+if (points.length < 2) return;
+
 let min = Math.min(...rawPoints);
 let max = Math.max(...rawPoints);
+
 
 
   const padding = (max - min) * 0.15 || 1;
