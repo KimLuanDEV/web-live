@@ -43,6 +43,13 @@ let myEntryTime = null; // timestamp khi vào lệnh
 let closedEarlyThisRound = false; // 🔒 đã chốt sớm trong round này
 let myEntryPriceDraw = null; // 🔥 giá entry theo hệ draw
 
+let smoothAnim = null;
+let smoothFrom = null;
+let smoothTo = null;
+let smoothStart = 0;
+const SMOOTH_DURATION = 120; // ms (100–150 là đẹp)
+
+
 
 
 
@@ -910,132 +917,148 @@ socket.on("invest-price", d => {
   if (typeof p !== "number") return;
   if (typeof d.second !== "number") return;
 
-  // 🔥 nối giá đầu round mới từ giá cuối round cũ
-let drawPrice = p;
+  // =========================
+  // 🔥 TÍNH DRAW PRICE (OFFSET)
+  // =========================
+  let drawPrice = p;
 
-// 🔥 tick đầu tiên của round mới
-if (d.second === 0) {
-  // lưu giá reset của server
-  roundZeroPrice = p;
+  // 🔥 tick đầu round mới
+  if (d.second === 0) {
+    roundZeroPrice = p;
 
-  // 🔥 neo round mới vào giá cuối round cũ
-  if (typeof roundBasePrice === "number") {
-    drawPrice = roundBasePrice;
-  }
-
-  // 🔥 cập nhật ENTRY DRAW (sau khi base đã ổn định)
-  if (typeof myEntryPrice === "number") {
-    myEntryPriceDraw = toDrawPrice(myEntryPrice);
-  }
-
-  // 🔥 cập nhật lại DRAW cho toàn bộ marker
-  entryMarkers.forEach(m => {
-    if (typeof m.priceRaw === "number") {
-      m.priceDraw = toDrawPrice(m.priceRaw);
+    if (typeof roundBasePrice === "number") {
+      drawPrice = roundBasePrice;
     }
-  });
-}
 
+    // cập nhật entry draw
+    if (typeof myEntryPrice === "number") {
+      myEntryPriceDraw = toDrawPrice(myEntryPrice);
+    }
 
-// 🔥 các tick tiếp theo: offset theo delta
-else if (
-  typeof roundBasePrice === "number" &&
-  typeof roundZeroPrice === "number"
-) {
-  drawPrice =
-    roundBasePrice + (p - roundZeroPrice);
-}
+    // cập nhật lại marker draw
+    entryMarkers.forEach(m => {
+      if (typeof m.priceRaw === "number") {
+        m.priceDraw = toDrawPrice(m.priceRaw);
+      }
+    });
+  }
 
-// 👉 CHỈ PUSH GIÁ ĐÃ OFFSET
-chartData.push(drawPrice);
-
+  // 🔥 các tick tiếp theo: offset theo delta
+  else if (
+    typeof roundBasePrice === "number" &&
+    typeof roundZeroPrice === "number"
+  ) {
+    drawPrice =
+      roundBasePrice + (p - roundZeroPrice);
+  }
 
   // =========================
-  // 🔁 GIỮ TỐI ĐA 60 ĐIỂM
+  // 🎞 SMOOTH LINE (LERP)
   // =========================
-if (chartData.length > MAX_POINTS) {
-  const removed = chartData.length - MAX_POINTS;
+  const lastDraw =
+    chartData.length
+      ? chartData[chartData.length - 1]
+      : drawPrice;
 
-  // ❌ bỏ điểm cũ
-  chartData.splice(0, removed);
+  smoothFrom = lastDraw;
+  smoothTo   = drawPrice;
+  smoothStart = performance.now();
 
-  // 🔁 dời lại index marker
-  entryMarkers.forEach(m => {
-    m.index -= removed;
-  });
+  if (smoothAnim) cancelAnimationFrame(smoothAnim);
 
-  // ❌ loại marker đã trôi khỏi chart
-  entryMarkers = entryMarkers.filter(
-    m => m.index >= 0
+  const animate = (now) => {
+    const t = Math.min(
+      1,
+      (now - smoothStart) / SMOOTH_DURATION
+    );
+
+    const ease = 1 - Math.pow(1 - t, 3);
+
+    const current =
+      smoothFrom + (smoothTo - smoothFrom) * ease;
+
+    drawChart([...chartData, current]);
+
+    if (t < 1) {
+      smoothAnim = requestAnimationFrame(animate);
+    } else {
+      // push giá thật
+      chartData.push(smoothTo);
+
+      // =========================
+      // 🔁 GIỮ TỐI ĐA MAX_POINTS
+      // =========================
+      if (chartData.length > MAX_POINTS) {
+        const removed = chartData.length - MAX_POINTS;
+
+        chartData.splice(0, removed);
+
+        entryMarkers.forEach(m => {
+          m.index -= removed;
+        });
+
+        entryMarkers = entryMarkers.filter(
+          m => m.index >= 0
+        );
+
+        roundMarkers = roundMarkers
+          .map(i => i - removed)
+          .filter(i => i >= 0);
+      }
+
+      drawChart(chartData);
+      smoothAnim = null;
+    }
+  };
+
+  smoothAnim = requestAnimationFrame(animate);
+
+  // =========================
+  // 💾 CACHE CHART (RELOAD)
+  // =========================
+  localStorage.setItem(
+    "chart_cache_" + asset,
+    JSON.stringify({
+      data: chartData,
+      rounds: roundMarkers,
+      lastPrice: lastPriceOfPrevRound
+    })
   );
 
-  // 🔁 dời mốc round (⚠️ PHẢI NẰM TRONG IF)
-  roundMarkers = roundMarkers
-    .map(i => i - removed)
-    .filter(i => i >= 0);
-}
+  // =========================
+  // 💰 PnL REALTIME (PILL)
+  // =========================
+  const pnlBox = document.getElementById("pnlRealtime");
+  if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
 
+    const arrowEl = pnlBox.querySelector(".pnl-arrow");
+    const valueEl = pnlBox.querySelector(".pnl-value");
+    if (!arrowEl || !valueEl) return;
 
+    let percent = Math.round(
+      (p - myEntryPrice) / myEntryPrice * 100
+    );
 
+    if (myOrderDirection === "down") percent = -percent;
 
-  drawChart(chartData);
+    percent = Math.max(-30, Math.min(30, percent));
 
+    pnlBox.classList.remove("up","down","neutral","hidden");
 
-// 💾 cache chart để reload không mất line
-localStorage.setItem(
-  "chart_cache_" + asset,
-  JSON.stringify({
-    data: chartData,
-    rounds: roundMarkers,
-    lastPrice: lastPriceOfPrevRound
-  })
-);
+    valueEl.textContent =
+      (percent > 0 ? "+" : "") + percent + "%";
 
-
-
-// =========================
-// 💰 PnL realtime (PILL GỌN)
-// =========================
-const pnlBox = document.getElementById("pnlRealtime");
-if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
-
-  const arrowEl = pnlBox.querySelector(".pnl-arrow");
-  const valueEl = pnlBox.querySelector(".pnl-value");
-  if (!arrowEl || !valueEl) return;
-
-  const last = p;
-
-  let percent = Math.round(
-    (last - myEntryPrice) / myEntryPrice * 100
-  );
-
-  if (myOrderDirection === "down") percent = -percent;
-
-  // clamp an toàn
-  percent = Math.max(-30, Math.min(30, percent));
-
-  // reset state
-  pnlBox.classList.remove("up","down","neutral");
-  pnlBox.classList.remove("hidden");
-
-  // hiển thị %
-  valueEl.textContent =
-    (percent > 0 ? "+" : "") + percent + "%";
-
-  if (percent > 0) {
-    pnlBox.classList.add("up");
-    arrowEl.textContent = "▲";
+    if (percent > 0) {
+      pnlBox.classList.add("up");
+      arrowEl.textContent = "▲";
+    } else if (percent < 0) {
+      pnlBox.classList.add("down");
+      arrowEl.textContent = "▼";
+    } else {
+      pnlBox.classList.add("neutral");
+      arrowEl.textContent = "●";
+    }
   }
-  else if (percent < 0) {
-    pnlBox.classList.add("down");
-    arrowEl.textContent = "▼";
-  }
-  else {
-    pnlBox.classList.add("neutral");
-    arrowEl.textContent = "●";
-  }
-}
-
 });
 
 
