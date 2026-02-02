@@ -1109,19 +1109,32 @@ if (roundMarkers.length) {
   // =========================
   // 🔥 FILTER DATA
   // =========================
-const rawPoints = chartRawData.filter(v => typeof v === "number");
-if (rawPoints.length < 2) return;
-
-// ✅ CHÈN NGAY DƯỚI DÒNG NÀY
 const points = data.filter(v => typeof v === "number");
 if (points.length < 2) return;
 
-let min = Math.min(...rawPoints);
-let max = Math.max(...rawPoints);
+const rawPoints = chartRawData.filter(v => typeof v === "number");
+
+// ✅ ƯU TIÊN RAW khi đủ dữ liệu
+const scaleSource =
+  rawPoints.length >= Math.min(10, points.length)
+    ? rawPoints
+    : points;
+
+let min = Math.min(...scaleSource);
+let max = Math.max(...scaleSource);
 
 
+// 🛡️ chống zoom quá to
+const MIN_RANGE = Math.abs(min) * 0.002 || 1; // ~0.2%
+if (max - min < MIN_RANGE) {
+  const mid = (max + min) / 2;
+  min = mid - MIN_RANGE / 2;
+  max = mid + MIN_RANGE / 2;
+}
 
-  const padding = (max - min) * 0.15 || 1;
+
+  const padding = (max - min) * 0.08 || 1;
+
   min -= padding;
   max += padding;
 
