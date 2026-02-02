@@ -1971,6 +1971,22 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   gap: 10px;
 }
 
+/* ===== APP MODAL MUST BE TOP ===== */
+#appModal{
+  position: fixed;
+  inset: 0;
+  z-index: 300000 !important; /* 🔥 cao hơn result/pnl/reload/snapshot */
+}
+
+#appModal .app-modal-backdrop{
+  position: absolute;
+  inset: 0;
+}
+
+#appModal .app-modal-box{
+  position: relative;
+  z-index: 300001 !important;
+}
 
 
 
