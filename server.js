@@ -883,23 +883,6 @@ app.get("/api/invest/my-history", (req, res) => {
 
 
 
-app.get("/api/invest/chart-history", (req, res) => {
-  const { asset } = req.query;
-
-  const history = loadChartHistory(); // nơi bạn lưu chart theo round
-  const chart = history?.[asset];
-
-  if (!chart) {
-    return res.json({ ok:false });
-  }
-
-  res.json({
-    ok:true,
-    chart
-  });
-});
-
-
 
 app.get("/api/invest/chart", (req, res) => {
   res.json({

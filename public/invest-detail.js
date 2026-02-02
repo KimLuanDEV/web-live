@@ -245,7 +245,6 @@ function bindPnlHistoryClick(){
 
 
 function openPnlHistoryItem(item){
-  // 1️⃣ đóng sheet
   closePnlHistory();
 
   const asset   = item.dataset.asset;
@@ -259,30 +258,24 @@ function openPnlHistoryItem(item){
     item.dataset.dir === "up" ? "📈 Tăng" :
     item.dataset.dir === "down" ? "📉 Giảm" : "➖ Side";
 
-  // 2️⃣ fetch chart snapshot của phiên đó
-  fetch(`/api/invest/chart-history?asset=${asset}&entry=${entry}&end=${end}`)
-    .then(r => r.json())
-    .then(d => {
-      if (!d.ok || !Array.isArray(d.chart)) {
-        console.warn("❌ không load được chart history");
-        return;
-      }
+  // ✅ LẤY CHART TỪ LOCAL CACHE
+  const cache = JSON.parse(
+    localStorage.getItem("chart_cache_" + asset) || "{}"
+  );
 
-      // 3️⃣ gán chart snapshot
-      lastRoundChart = d.chart;
+  lastRoundChart = cache.data || [];
 
-      // 4️⃣ mở lại Result Modal
-      openResultModal({
-        percent,
-        profit,
-        asset,
-        dir,
-        coin,
-        entry,
-        end
-      });
-    });
+  openResultModal({
+    percent,
+    profit,
+    asset,
+    dir,
+    coin,
+    entry,
+    end
+  });
 }
+
 
 
 
