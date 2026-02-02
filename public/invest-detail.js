@@ -602,7 +602,7 @@ if (!joinedRound) {
 
 if (!joinedRound) {
   investBtn.disabled = true;
-  investBtn.textContent = "⛔ ĐÃ KHÓA";
+  investBtn.textContent = "⛔ LOCKED";
 }
 
 
@@ -619,7 +619,7 @@ if (!joinedRound) {
       timerEl.style.setProperty("--progress", 0);
 
       investBtn.disabled = true;
-      investBtn.textContent = "⛔ ĐÃ KHÓA";
+      investBtn.textContent = "⛔ LOCKED";
     }
   }, 500);
 }
@@ -1505,8 +1505,8 @@ updateCoin();
 
 
 const dirText =
-  myDirection === "up" ? "📈 UP" :
-  myDirection === "down" ? "📉 DOWN" :
+  myDirection === "up" ? "UP" :
+  myDirection === "down" ? "DOWN" :
   "➖";
 
 showModal(
