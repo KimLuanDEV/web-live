@@ -1889,24 +1889,15 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   inset:0;
   z-index:9999;
   background:#000;
-  display:flex;
-  align-items:center;
-  justify-content:center;
 }
 
-.snapshot-fs.hidden{ display:none; }
-
-.fs-wrap{
-  width:100vh;
-  height:100vw;
-  transform:rotate(90deg);
-  transform-origin:center;
-  display:flex;
+.snapshot-fs.hidden{
+  display:none;
 }
 
 #snapshotFSCanvas{
-  width:100%;
-  height:100%;
+  width:100vw;
+  height:100vh;
 }
 
 .fs-close{

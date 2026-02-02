@@ -1815,7 +1815,6 @@ fetch("/api/invest/history")
 
 
 
-
 function openSnapshotFS(prices, orders, asset){
   const fs = document.getElementById("snapshotFS");
   const canvas = document.getElementById("snapshotFSCanvas");
@@ -1823,11 +1822,10 @@ function openSnapshotFS(prices, orders, asset){
   fs.classList.remove("hidden");
   document.body.style.overflow = "hidden";
 
-  // resize canvas theo màn hình
-  canvas.width  = window.innerHeight;
-  canvas.height = window.innerWidth;
+  // resize canvas đúng theo viewport
+  canvas.width  = window.innerWidth;
+  canvas.height = window.innerHeight;
 
-  // vẽ lại bằng full snapshot hiện có
   drawFullSnapshotOnCanvas(
     canvas,
     prices,
@@ -1835,7 +1833,6 @@ function openSnapshotFS(prices, orders, asset){
     asset
   );
 }
-
 
 
 function drawFullSnapshotOnCanvas(canvas, prices, orders, asset){
@@ -1847,33 +1844,34 @@ function drawFullSnapshotOnCanvas(canvas, prices, orders, asset){
 
   ctx.clearRect(0,0,W,H);
 
-  const pad = 40;
-  const usableW = W - pad*2;
-  const usableH = H - pad*2;
+  const padX = 20;
+  const padY = 40; // 👈 dư trên/dưới cho dọc
+  const usableW = W - padX*2;
+  const usableH = H - padY*2;
 
   const min = Math.min(...prices);
   const max = Math.max(...prices);
 
   const toX = i =>
-    pad + i * (usableW / (prices.length - 1));
+    padX + i * (usableW / (prices.length - 1));
 
   const toY = p =>
-    pad + usableH - (p - min) / (max - min) * usableH;
+    padY + usableH - (p - min) / (max - min) * usableH;
 
   // GRID
   ctx.strokeStyle = "rgba(255,255,255,.06)";
   for(let i=0;i<6;i++){
-    const y = pad + i * (usableH/5);
+    const y = padY + i * (usableH/5);
     ctx.beginPath();
-    ctx.moveTo(pad,y);
-    ctx.lineTo(W-pad,y);
+    ctx.moveTo(padX,y);
+    ctx.lineTo(W-padX,y);
     ctx.stroke();
   }
 
   // LINE
   ctx.strokeStyle = "#00ff99";
-  ctx.lineWidth = 3;
-  ctx.shadowBlur = 10;
+  ctx.lineWidth = 2;
+  ctx.shadowBlur = 8;
   ctx.shadowColor = "#00ff99";
 
   ctx.beginPath();
@@ -1892,8 +1890,8 @@ function drawFullSnapshotOnCanvas(canvas, prices, orders, asset){
     ctx.strokeStyle = "#ffd54f";
     ctx.setLineDash([6,6]);
     ctx.beginPath();
-    ctx.moveTo(pad,y);
-    ctx.lineTo(W-pad,y);
+    ctx.moveTo(padX,y);
+    ctx.lineTo(W-padX,y);
     ctx.stroke();
     ctx.setLineDash([]);
   });
@@ -1902,8 +1900,8 @@ function drawFullSnapshotOnCanvas(canvas, prices, orders, asset){
   const closeY = toY(prices.at(-1));
   ctx.strokeStyle = "#ff5252";
   ctx.beginPath();
-  ctx.moveTo(pad, closeY);
-  ctx.lineTo(W-pad, closeY);
+  ctx.moveTo(padX, closeY);
+  ctx.lineTo(W-padX, closeY);
   ctx.stroke();
 }
 
