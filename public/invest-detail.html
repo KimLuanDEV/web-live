@@ -1887,9 +1887,10 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 .snapshot-fs{
   position:fixed;
   inset:0;
-  z-index:9999;
+  z-index: 200000; /* 🔥 CAO HƠN TẤT CẢ */
   background:#000;
 }
+
 
 .snapshot-fs.hidden{
   display:none;
@@ -2344,9 +2345,7 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 <div id="snapshotFS" class="snapshot-fs hidden">
   <button class="fs-close" onclick="closeSnapshotFS()">✕</button>
-  <div class="fs-wrap">
-    <canvas id="snapshotFSCanvas"></canvas>
-  </div>
+  <canvas id="snapshotFSCanvas"></canvas>
 </div>
 
 
