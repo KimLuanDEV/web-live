@@ -1604,10 +1604,11 @@ function openResultModal({ percent, profit, asset, dir, coin, entry, end }) {
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
 
+  
   // 📊 VẼ LỊCH SỬ CHART PHIÊN
-  setTimeout(() => {
-    drawResultChart(lastRoundChart, entry);
-  }, 50);
+setTimeout(() => {
+  drawResultChart(lastRoundChart, entry);
+}, 80);
 
 
 }
@@ -1946,18 +1947,15 @@ if (fabToggle && fabGroup) {
 }
 
 
-
 function drawResultChart(data, entryPrice){
   const canvas = document.getElementById("rmChart");
   if (!canvas || !data || data.length < 2) return;
 
   const ctx = canvas.getContext("2d");
 
-  // auto resize
+  // resize canvas
   const W = canvas.width = canvas.offsetWidth;
   const H = canvas.height;
-
-  ctx.clearRect(0, 0, W, H);
 
   const points = data.filter(v => typeof v === "number");
   if (points.length < 2) return;
@@ -1971,34 +1969,66 @@ function drawResultChart(data, entryPrice){
   const toY = v =>
     H - ((v - min) / (max - min)) * H;
 
-  // ENTRY LINE
-  if (typeof entryPrice === "number") {
+  const first = points[0];
+  const last  = points[points.length - 1];
+
+  const color =
+    last > first ? "#00ff99" :
+    last < first ? "#ff5c5c" : "#aaa";
+
+  // ===== ENTRY LINE (vẽ tĩnh phía dưới) =====
+  function drawEntryLine(){
+    if (typeof entryPrice !== "number") return;
     const y = toY(entryPrice);
+
+    ctx.save();
     ctx.setLineDash([4,4]);
     ctx.strokeStyle = "#ffd700";
+    ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(0, y);
     ctx.lineTo(W, y);
     ctx.stroke();
-    ctx.setLineDash([]);
+    ctx.restore();
   }
 
-  // LINE
-  const first = points[0];
-  const last  = points[points.length - 1];
+  // ===== ANIMATE LINE =====
+  const duration = 600; // ms
+  const start = performance.now();
 
-  ctx.beginPath();
-  ctx.lineWidth = 2;
-  ctx.strokeStyle =
-    last > first ? "#00ff99" :
-    last < first ? "#ff5c5c" : "#aaa";
+  function animate(now){
+    const progress = Math.min(1, (now - start) / duration);
+    const count = Math.max(
+      2,
+      Math.floor(points.length * progress)
+    );
 
-  points.forEach((v, i) => {
-    const x = i * (W / (points.length - 1));
-    const y = toY(v);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
+    ctx.clearRect(0, 0, W, H);
 
-  ctx.stroke();
+    // entry line luôn ở dưới
+    drawEntryLine();
+
+    // line
+    ctx.beginPath();
+    ctx.lineWidth = 2;
+    ctx.strokeStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 12;
+
+    for (let i = 0; i < count; i++) {
+      const x = i * (W / (points.length - 1));
+      const y = toY(points[i]);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+
+    ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    if (progress < 1) {
+      requestAnimationFrame(animate);
+    }
+  }
+
+  requestAnimationFrame(animate);
 }
