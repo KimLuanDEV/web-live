@@ -19,6 +19,7 @@ const twilio = require("twilio");
 
 const fs = require("fs");
 
+const ONE_DAY = 24 * 60 * 60 * 1000; // 🔥 24h
 
 
 
@@ -591,7 +592,7 @@ me.profile.coins += o.coin + profit;
 me.investHistory = me.investHistory || [];
 
 me.investHistory.unshift({
-  roundId: round.id,     
+  roundId: round.id,
   ts: Date.now(),
   asset: o.asset,
   direction: o.direction,
@@ -602,10 +603,12 @@ me.investHistory.unshift({
   endPrice: end
 });
 
-// giới hạn lịch sử (ví dụ 100 lệnh)
-if (me.investHistory.length > 100) {
-  me.investHistory.pop();
-}
+// 🔥 CHỈ GIỮ LỊCH SỬ 24H
+const now = Date.now();
+me.investHistory = me.investHistory.filter(
+  h => now - h.ts <= ONE_DAY
+);
+
 
 
     });
@@ -639,9 +642,12 @@ investHistory.unshift({
   }))
 });
 
-if (investHistory.length > MAX_HISTORY) {
-  investHistory.pop();
-}
+// 🔥 CHỈ GIỮ ROUND TRONG 24H
+const now = Date.now();
+investHistory = investHistory.filter(
+  r => now - r.ts <= ONE_DAY
+);
+
 
 // 🔐 LƯU FILE → CHỐNG RESTART
 saveInvestHistory(investHistory);
@@ -829,6 +835,12 @@ app.post("/api/invest/close-early", (req, res) => {
       endPrice: priceNow,
       earlyClose: true
     });
+
+    const now = Date.now();
+me.investHistory = me.investHistory.filter(
+  h => now - h.ts <= ONE_DAY
+);
+
 
     saveUsers(users);
     emitCoinUpdate(uid);

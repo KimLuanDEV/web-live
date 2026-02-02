@@ -187,9 +187,22 @@ function closePnlHistory(){
 
 
 function renderPnlHistory(list){
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+  const now = Date.now();
+
+  // 🔥 chỉ lấy dữ liệu 24h
+  list = (list || []).filter(
+    i => i.ts && now - i.ts <= ONE_DAY
+  );
+
   if (!list.length) {
-    pnlHistoryList.innerHTML =
-      `<li class="pnl-empty">Chưa có dữ liệu</li>`;
+    pnlHistoryList.innerHTML = `
+      <li class="pnl-empty">
+        <div style="font-size:26px">🕒</div>
+        <div>Không có lịch sử trong 24 giờ</div>
+        <small>Dữ liệu cũ hơn sẽ tự động xoá</small>
+      </li>
+    `;
     return;
   }
 
@@ -285,6 +298,9 @@ pnlHistoryList.addEventListener("click", e => {
 function openRoundSnapshot(roundId, asset){
 
 
+  // 🔥 ĐÓNG PNL HISTORY TRƯỚC KHI MỞ SNAPSHOT
+  closePnlHistory();
+
   // fetch lịch sử round
   fetch("/api/invest/history")
     .then(r => r.json())
@@ -308,131 +324,6 @@ openSnapshotFS(
 }
 
 
-
-function drawFullSnapshot(prices, orders, asset){
-  if (!Array.isArray(prices) || prices.length < 2) {
-    const canvas = document.getElementById("roundSnapshotChart");
-    if (canvas) {
-      const ctx = canvas.getContext("2d");
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-      ctx.fillStyle = "#888";
-      ctx.font = "14px sans-serif";
-      ctx.fillText("Không có dữ liệu chart", 20, 40);
-    }
-    return;
-  }
-
-  // 👇 code cũ giữ nguyên
-
-
-
-  const canvas = document.getElementById("roundSnapshotChart");
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width = canvas.offsetWidth;
-  const H = canvas.height;
-
-  ctx.clearRect(0,0,W,H);
-
-  const pad = 24;
-  const usableW = W - pad*2;
-  const usableH = H - pad*2;
-
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-
-  const toX = i =>
-    pad + i * (usableW / (prices.length - 1));
-
-  const toY = p =>
-    pad + usableH - (p - min) / (max - min) * usableH;
-
-  // 🧱 GRID
-  ctx.strokeStyle = "rgba(255,255,255,.05)";
-  for(let i=0;i<5;i++){
-    const y = pad + i * (usableH/4);
-    ctx.beginPath();
-    ctx.moveTo(pad,y);
-    ctx.lineTo(W-pad,y);
-    ctx.stroke();
-  }
-
-  // 📈 LINE
-  ctx.strokeStyle = "#00ff99";
-  ctx.lineWidth = 2;
-  ctx.shadowBlur = 8;
-  ctx.shadowColor = "#00ff99";
-
-  ctx.beginPath();
-  prices.forEach((p,i)=>{
-    const x = toX(i);
-    const y = toY(p);
-    if(i===0) ctx.moveTo(x,y);
-    else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-
-  // 🎯 ENTRY / CLOSE
-  orders
-    ?.filter(o => o.asset === asset)
-    .forEach(o=>{
-      const entryY = toY(o.entryPrice);
-      ctx.strokeStyle = "#ffd54f";
-      ctx.setLineDash([4,4]);
-      ctx.beginPath();
-      ctx.moveTo(pad, entryY);
-      ctx.lineTo(W-pad, entryY);
-      ctx.stroke();
-      ctx.setLineDash([]);
-    });
-
-  // 🔴 CLOSE
-  const closeY = toY(prices.at(-1));
-  ctx.strokeStyle = "#ff5252";
-  ctx.beginPath();
-  ctx.moveTo(pad, closeY);
-  ctx.lineTo(W-pad, closeY);
-  ctx.stroke();
-}
-
-
-function drawRoundSnapshot(percent, roundId){
-  const canvas = document.getElementById("roundSnapshotChart");
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width = canvas.offsetWidth;
-  const H = canvas.height;
-
-  ctx.clearRect(0,0,W,H);
-
-  // mock line: start → end (snapshot)
-  const startY = H/2;
-  const endY   = startY - percent * 1.2;
-
-  ctx.strokeStyle = percent >= 0 ? "#00ff99" : "#ff5c5c";
-  ctx.lineWidth = 3;
-  ctx.shadowBlur = 10;
-  ctx.shadowColor = ctx.strokeStyle;
-
-  ctx.beginPath();
-  ctx.moveTo(20, startY);
-  ctx.lineTo(W-20, endY);
-  ctx.stroke();
-
-  ctx.shadowBlur = 0;
-
-  ctx.fillStyle = "#aaa";
-  ctx.font = "12px sans-serif";
-  ctx.fillText(`ROUND ${roundId}`, 10, 14);
-  ctx.fillText(
-    `${percent >= 0 ? "+" : ""}${percent}%`,
-    W - 60,
-    endY - 6
-  );
-}
 
 
 function openOrders(){
