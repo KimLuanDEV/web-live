@@ -283,39 +283,27 @@ pnlHistoryList.addEventListener("click", e => {
 
 
 function openRoundSnapshot(roundId, asset){
-  showModal(
-    `ROUND #${roundId}`,
-    `
-    <div class="round-snapshot">
-      <canvas id="roundSnapshotChart" height="220"></canvas>
-      <div class="rs-note">
-        Asset: <b>${asset.toUpperCase()}</b>
-      </div>
-    </div>
-    `
-  );
-
-  // fetch lịch sử round
   fetch("/api/invest/history")
     .then(r => r.json())
     .then(d => {
       if (!d.ok) return;
 
-      const round = d.list.find(r => String(r.roundId) === String(roundId));
-      if (!round) {
-        showModal("❌ Lỗi", "Không tìm thấy dữ liệu round.");
+      const round = d.list.find(
+        r => String(r.roundId) === String(roundId)
+      );
+      if (!round?.chart?.[asset]) {
+        alert("Không có dữ liệu chart");
         return;
       }
 
-      // chart snapshot chỉ cần giá đầu → cuối
-openSnapshotFS(
-  round.chart?.[asset],
-  round.orders,
-  asset
-);
-
+      openSnapshotFS(
+        round.chart[asset],
+        round.orders,
+        asset
+      );
     });
 }
+
 
 
 
@@ -405,43 +393,6 @@ function drawFullSnapshot(prices, orders, asset){
   ctx.moveTo(pad, closeY);
   ctx.lineTo(W-pad, closeY);
   ctx.stroke();
-}
-
-
-function drawRoundSnapshot(percent, roundId){
-  const canvas = document.getElementById("roundSnapshotChart");
-  if (!canvas) return;
-
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width = canvas.offsetWidth;
-  const H = canvas.height;
-
-  ctx.clearRect(0,0,W,H);
-
-  // mock line: start → end (snapshot)
-  const startY = H/2;
-  const endY   = startY - percent * 1.2;
-
-  ctx.strokeStyle = percent >= 0 ? "#00ff99" : "#ff5c5c";
-  ctx.lineWidth = 3;
-  ctx.shadowBlur = 10;
-  ctx.shadowColor = ctx.strokeStyle;
-
-  ctx.beginPath();
-  ctx.moveTo(20, startY);
-  ctx.lineTo(W-20, endY);
-  ctx.stroke();
-
-  ctx.shadowBlur = 0;
-
-  ctx.fillStyle = "#aaa";
-  ctx.font = "12px sans-serif";
-  ctx.fillText(`ROUND ${roundId}`, 10, 14);
-  ctx.fillText(
-    `${percent >= 0 ? "+" : ""}${percent}%`,
-    W - 60,
-    endY - 6
-  );
 }
 
 
@@ -1832,77 +1783,6 @@ function openSnapshotFS(prices, orders, asset){
     orders,
     asset
   );
-}
-
-
-function drawFullSnapshotOnCanvas(canvas, prices, orders, asset){
-  if (!Array.isArray(prices) || prices.length < 2) return;
-
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width;
-  const H = canvas.height;
-
-  ctx.clearRect(0,0,W,H);
-
-  const padX = 20;
-  const padY = 40; // 👈 dư trên/dưới cho dọc
-  const usableW = W - padX*2;
-  const usableH = H - padY*2;
-
-  const min = Math.min(...prices);
-  const max = Math.max(...prices);
-
-  const toX = i =>
-    padX + i * (usableW / (prices.length - 1));
-
-  const toY = p =>
-    padY + usableH - (p - min) / (max - min) * usableH;
-
-  // GRID
-  ctx.strokeStyle = "rgba(255,255,255,.06)";
-  for(let i=0;i<6;i++){
-    const y = padY + i * (usableH/5);
-    ctx.beginPath();
-    ctx.moveTo(padX,y);
-    ctx.lineTo(W-padX,y);
-    ctx.stroke();
-  }
-
-  // LINE
-  ctx.strokeStyle = "#00ff99";
-  ctx.lineWidth = 2;
-  ctx.shadowBlur = 8;
-  ctx.shadowColor = "#00ff99";
-
-  ctx.beginPath();
-  prices.forEach((p,i)=>{
-    const x = toX(i);
-    const y = toY(p);
-    if(i===0) ctx.moveTo(x,y);
-    else ctx.lineTo(x,y);
-  });
-  ctx.stroke();
-  ctx.shadowBlur = 0;
-
-  // ENTRY
-  orders?.filter(o=>o.asset===asset).forEach(o=>{
-    const y = toY(o.entryPrice);
-    ctx.strokeStyle = "#ffd54f";
-    ctx.setLineDash([6,6]);
-    ctx.beginPath();
-    ctx.moveTo(padX,y);
-    ctx.lineTo(W-padX,y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  });
-
-  // CLOSE
-  const closeY = toY(prices.at(-1));
-  ctx.strokeStyle = "#ff5252";
-  ctx.beginPath();
-  ctx.moveTo(padX, closeY);
-  ctx.lineTo(W-padX, closeY);
-  ctx.stroke();
 }
 
 
