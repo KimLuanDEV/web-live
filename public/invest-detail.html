@@ -481,18 +481,53 @@ html, body {
   background: linear-gradient(180deg, rgba(255,92,92,.35), #000);
 }
 
-.rm-close {
+.rm-close{
   position: absolute;
   top: 14px;
   right: 14px;
+
   width: 36px;
   height: 36px;
   border-radius: 50%;
   border: 0;
+
   background: rgba(255,255,255,.12);
-  color: #fff;
-  font-size: 18px;
+  cursor: pointer;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  backdrop-filter: blur(6px);
+  box-shadow:
+    0 4px 14px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.15);
 }
+
+/* SVG icon */
+.rm-close-icon{
+  width: 18px;
+  height: 18px;
+
+  stroke: #fff;
+  stroke-width: 2.4;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
+
+  opacity: .9;
+}
+
+/* hover / active cho đã tay */
+.rm-close:hover .rm-close-icon{
+  stroke: #00ff99;
+}
+
+.rm-close:active{
+  transform: scale(.95);
+}
+
+
 
 .rm-status {
   font-size: 14px;
@@ -1705,7 +1740,13 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
     <!-- HEADER -->
     <div class="rm-header">
-      <button class="rm-close" onclick="closeResultModal()">✕</button>
+      <button class="rm-close" onclick="closeResultModal()" aria-label="Close">
+  <svg class="rm-close-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <line x1="6" y1="6" x2="18" y2="18"/>
+    <line x1="18" y1="6" x2="6" y2="18"/>
+  </svg>
+</button>
+
       <div class="rm-status" id="rmStatus">LỆNH THẮNG</div>
       <div class="rm-percent" id="rmPercent">+12%</div>
       <div class="rm-coin" id="rmCoin">+120 💎</div>
@@ -1715,7 +1756,7 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
     <div class="rm-body">
       <div class="rm-card">
         <div><span>Loại hình đầu tư: </span><b id="rmAsset">GOLD</b></div>
-        <div><span>Hướng: </span><b id="rmDir">📈 Tăng</b></div>
+        <div><span>Hướng: </span><b id="rmDir">Tăng</b></div>
       </div>
 
       <div class="rm-card">
