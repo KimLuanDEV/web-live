@@ -1505,8 +1505,8 @@ updateCoin();
 
 
 const dirText =
-  myDirection === "up" ? "📈 LÊN" :
-  myDirection === "down" ? "📉 XUỐNG" :
+  myDirection === "up" ? "📈 UP" :
+  myDirection === "down" ? "📉 DOWN" :
   "➖";
 
 showModal(
