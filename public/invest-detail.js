@@ -42,6 +42,8 @@ let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
 let myEntryTime = null; // timestamp khi vào lệnh
 let closedEarlyThisRound = false; // 🔒 đã chốt sớm trong round này
 let myEntryPriceDraw = null; // 🔥 giá entry theo hệ draw
+let roundOpenPrice = null;
+let roundClosePrice = null;
 
 
 
@@ -768,6 +770,37 @@ if (typeof end !== "number") {
 
   if (!entry || !end) return;
 
+
+// =========================
+// 📟 PRICE BOARD – CLOSE
+// =========================
+roundClosePrice = end;
+
+if (typeof roundOpenPrice === "number") {
+  const delta = roundClosePrice - roundOpenPrice;
+  const percentBoard = Math.round(
+    delta / roundOpenPrice * 100
+  );
+
+  const closeEl = document.getElementById("closePrice");
+  const deltaEl = document.getElementById("deltaPrice");
+
+  if (closeEl)
+    closeEl.textContent = roundClosePrice.toFixed(2);
+
+  if (deltaEl) {
+    deltaEl.textContent =
+      `${delta >= 0 ? "+" : ""}${delta.toFixed(2)} (${percentBoard}%)`;
+
+    deltaEl.className =
+      percentBoard > 0 ? "up" :
+      percentBoard < 0 ? "down" :
+      "neutral";
+  }
+}
+
+
+
 let percent =
   Math.round((end - entry) / entry * 100);
 
@@ -933,7 +966,29 @@ if (d.second === 0) {
       m.priceDraw = toDrawPrice(m.priceRaw);
     }
   });
+
+  // =========================
+  // 📟 PRICE BOARD – OPEN
+  // =========================
+  roundOpenPrice = p;
+
+  const openEl  = document.getElementById("openPrice");
+  const closeEl = document.getElementById("closePrice");
+  const deltaEl = document.getElementById("deltaPrice");
+
+  if (openEl)  openEl.textContent  = p.toFixed(2);
+  if (closeEl) closeEl.textContent = "--";
+  if (deltaEl) {
+    deltaEl.textContent = "--";
+    deltaEl.className = "neutral";
+  }
+
+
+
+
 }
+
+
 
 
 // 🔥 các tick tiếp theo: offset theo delta
