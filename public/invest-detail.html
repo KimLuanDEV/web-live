@@ -1375,6 +1375,27 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+.rm-chart-wrap{
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(255,255,255,.04);
+}
+
+.rm-chart-title{
+  font-size: 12px;
+  font-weight: 700;
+  opacity: .75;
+  margin-bottom: 6px;
+  text-align: center;
+}
+
+#rmChart{
+  width: 100%;
+  display: block;
+}
+
+
 </style>
 
 
@@ -1704,10 +1725,18 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
       </div>
     </div>
 
+    <!-- 📊 ROUND CHART SNAPSHOT -->
+<div class="rm-chart-wrap">
+  <div class="rm-chart-title">📈 Diễn biến phiên vừa chơi</div>
+  <canvas id="rmChart" height="160"></canvas>
+</div>
+
+
     <!-- FOOTER -->
     <div class="rm-footer">
       <button onclick="closeResultModal()">Giao dịch tiếp</button>
     </div>
+
 
   </div>
 </div>

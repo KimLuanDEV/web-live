@@ -42,6 +42,7 @@ let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
 let myEntryTime = null; // timestamp khi vào lệnh
 let closedEarlyThisRound = false; // 🔒 đã chốt sớm trong round này
 let myEntryPriceDraw = null; // 🔥 giá entry theo hệ draw
+let lastRoundChart = [];
 
 
 
@@ -949,6 +950,7 @@ else if (
 // 👉 CHỈ PUSH GIÁ ĐÃ OFFSET
 chartData.push(drawPrice);
 
+lastRoundChart = chartData.slice();
 
   // =========================
   // 🔁 GIỮ TỐI ĐA 60 ĐIỂM
@@ -1601,6 +1603,13 @@ function openResultModal({ percent, profit, asset, dir, coin, entry, end }) {
 
   modal.classList.remove("hidden");
   document.body.style.overflow = "hidden";
+
+  // 📊 VẼ LỊCH SỬ CHART PHIÊN
+  setTimeout(() => {
+    drawResultChart(lastRoundChart, entry);
+  }, 50);
+
+
 }
 
 
@@ -1934,4 +1943,62 @@ if (fabToggle && fabGroup) {
     fabToggle.textContent =
       fabGroup.classList.contains("hidden") ? "⋮" : "✕";
   });
+}
+
+
+
+function drawResultChart(data, entryPrice){
+  const canvas = document.getElementById("rmChart");
+  if (!canvas || !data || data.length < 2) return;
+
+  const ctx = canvas.getContext("2d");
+
+  // auto resize
+  const W = canvas.width = canvas.offsetWidth;
+  const H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const points = data.filter(v => typeof v === "number");
+  if (points.length < 2) return;
+
+  let min = Math.min(...points);
+  let max = Math.max(...points);
+  const pad = (max - min) * 0.2 || 1;
+  min -= pad;
+  max += pad;
+
+  const toY = v =>
+    H - ((v - min) / (max - min)) * H;
+
+  // ENTRY LINE
+  if (typeof entryPrice === "number") {
+    const y = toY(entryPrice);
+    ctx.setLineDash([4,4]);
+    ctx.strokeStyle = "#ffd700";
+    ctx.beginPath();
+    ctx.moveTo(0, y);
+    ctx.lineTo(W, y);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // LINE
+  const first = points[0];
+  const last  = points[points.length - 1];
+
+  ctx.beginPath();
+  ctx.lineWidth = 2;
+  ctx.strokeStyle =
+    last > first ? "#00ff99" :
+    last < first ? "#ff5c5c" : "#aaa";
+
+  points.forEach((v, i) => {
+    const x = i * (W / (points.length - 1));
+    const y = toY(v);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  ctx.stroke();
 }
