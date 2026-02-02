@@ -195,8 +195,17 @@ function renderPnlHistory(list){
 
   pnlHistoryList.innerHTML = list.map(i => {
     const isWin = i.percent >= 0;
+
     return `
-      <li class="pnl-item ${isWin ? "win" : "loss"}">
+      <li class="pnl-item ${isWin ? "win" : "loss"}"
+          data-round="${i.roundId || ""}"
+          data-asset="${i.asset}"
+          data-entry="${i.entry}"
+          data-end="${i.end}"
+          data-percent="${i.percent}"
+          data-profit="${i.profit}"
+          data-coin="${i.coin}"
+          data-dir="${i.direction}">
         <div class="pnl-left">
           <div class="pnl-asset">${i.asset.toUpperCase()}</div>
           <div class="pnl-dir">
@@ -219,7 +228,63 @@ function renderPnlHistory(list){
       </li>
     `;
   }).join("");
+
+  bindPnlHistoryClick();
 }
+
+
+function bindPnlHistoryClick(){
+  pnlHistoryList
+    .querySelectorAll(".pnl-item")
+    .forEach(item => {
+      item.addEventListener("click", () => {
+        openPnlHistoryItem(item);
+      });
+    });
+}
+
+
+function openPnlHistoryItem(item){
+  // 1️⃣ đóng sheet
+  closePnlHistory();
+
+  const asset   = item.dataset.asset;
+  const entry   = Number(item.dataset.entry);
+  const end     = Number(item.dataset.end);
+  const percent = Number(item.dataset.percent);
+  const profit  = Number(item.dataset.profit);
+  const coin    = Number(item.dataset.coin);
+
+  const dir =
+    item.dataset.dir === "up" ? "📈 Tăng" :
+    item.dataset.dir === "down" ? "📉 Giảm" : "➖ Side";
+
+  // 2️⃣ fetch chart snapshot của phiên đó
+  fetch(`/api/invest/chart-history?asset=${asset}&entry=${entry}&end=${end}`)
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok || !Array.isArray(d.chart)) {
+        console.warn("❌ không load được chart history");
+        return;
+      }
+
+      // 3️⃣ gán chart snapshot
+      lastRoundChart = d.chart;
+
+      // 4️⃣ mở lại Result Modal
+      openResultModal({
+        percent,
+        profit,
+        asset,
+        dir,
+        coin,
+        entry,
+        end
+      });
+    });
+}
+
+
 
 
 
