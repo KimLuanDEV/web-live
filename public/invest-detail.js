@@ -206,12 +206,20 @@ function renderPnlHistory(list){
         ? i.endPrice.toFixed(2)
         : "--";
 
+    const roundId =
+      i.roundId !== undefined && i.roundId !== null
+        ? `#${i.roundId}`
+        : "#--";
+
     return `
       <li class="pnl-item ${win ? "win" : "loss"}">
         <!-- HÀNG TRÊN -->
         <div class="pnl-main">
           <div class="pnl-left">
-            <div class="pnl-asset">${i.asset.toUpperCase()}</div>
+            <div class="pnl-asset">
+              ${i.asset.toUpperCase()}
+              <span class="pnl-round">${roundId}</span>
+            </div>
             <div class="pnl-dir">
               ${i.direction === "up" ? "UP" :
                 i.direction === "down" ? "DOWN" : "➖"}

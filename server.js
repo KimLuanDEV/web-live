@@ -591,6 +591,7 @@ me.profile.coins += o.coin + profit;
 me.investHistory = me.investHistory || [];
 
 me.investHistory.unshift({
+  roundId: round.id,     
   ts: Date.now(),
   asset: o.asset,
   direction: o.direction,
@@ -816,6 +817,7 @@ app.post("/api/invest/close-early", (req, res) => {
 
     me.investHistory = me.investHistory || [];
     me.investHistory.unshift({
+      roundId: investRound.id, 
       ts: Date.now(),
       asset,
       direction: order.direction,
