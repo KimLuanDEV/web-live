@@ -794,8 +794,8 @@ if (myOrder.direction === "down") percent = -percent;
   percent = Math.max(-30, Math.min(30, percent));
 
 const dirText =
-  myOrder.direction === "up" ? "📈 Tăng" :
-  myOrder.direction === "down" ? "📉 Giảm" :
+  myOrder.direction === "up" ? "UP" :
+  myOrder.direction === "down" ? "DOWN" :
   "➖ Side";
 
 const coin = myOrder.coin;
