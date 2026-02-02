@@ -42,7 +42,6 @@ let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
 let myEntryTime = null; // timestamp khi vào lệnh
 let closedEarlyThisRound = false; // 🔒 đã chốt sớm trong round này
 let myEntryPriceDraw = null; // 🔥 giá entry theo hệ draw
-let chartRawData = []; // 🔥 giá thực từ server
 
 
 
@@ -947,9 +946,8 @@ else if (
     roundBasePrice + (p - roundZeroPrice);
 }
 
-
-chartRawData.push(p);        // 🔥 GIÁ THỰC
-chartData.push(drawPrice);  // 🔥 GIÁ VẼ
+// 👉 CHỈ PUSH GIÁ ĐÃ OFFSET
+chartData.push(drawPrice);
 
 
   // =========================
@@ -1109,88 +1107,21 @@ if (roundMarkers.length) {
   // =========================
   // 🔥 FILTER DATA
   // =========================
-const points = data.filter(v => typeof v === "number");
-if (points.length < 2) return;
+  const points = data.filter(v => typeof v === "number");
+  if (points.length < 2) return;
 
-const rawPoints = chartRawData.filter(v => typeof v === "number");
+  // =========================
+  // 🔥 AUTO SCALE
+  // =========================
+  let min = Math.min(...points);
+  let max = Math.max(...points);
 
-// ✅ ƯU TIÊN RAW khi đủ dữ liệu
-const scaleSource =
-  rawPoints.length >= Math.min(10, points.length)
-    ? rawPoints
-    : points;
-
-let min = Math.min(...scaleSource);
-let max = Math.max(...scaleSource);
-
-
-// 🛡️ chống zoom quá to
-const MIN_RANGE = Math.abs(min) * 0.002 || 1; // ~0.2%
-if (max - min < MIN_RANGE) {
-  const mid = (max + min) / 2;
-  min = mid - MIN_RANGE / 2;
-  max = mid + MIN_RANGE / 2;
-}
-
-
-  const padding = (max - min) * 0.08 || 1;
-
+  const padding = (max - min) * 0.15 || 1;
   min -= padding;
   max += padding;
 
-  const toY = drawPrice => {
-  let rawPrice = drawPrice;
-
-  // 🔁 chuyển DRAW → RAW
-  if (
-    typeof roundBasePrice === "number" &&
-    typeof roundZeroPrice === "number"
-  ) {
-    rawPrice =
-      roundZeroPrice + (drawPrice - roundBasePrice);
-  }
-
-  return H - ((rawPrice - min) / (max - min)) * H;
-};
-
-
-
-// =========================
-// 📐 PRICE SCALE (CỘT GIÁ BÊN PHẢI) — KHỚP GRID + LINE
-// =========================
-const PRICE_PAD_X = 8;
-const PRICE_FONT = "12px monospace";
-
-// dùng đúng số vạch grid đang vẽ
-const PRICE_TICKS = GRID_Y;
-
-ctx.save();
-ctx.font = PRICE_FONT;
-ctx.fillStyle = "rgba(255,255,255,.65)";
-ctx.textAlign = "right";
-ctx.textBaseline = "middle";
-
-for (let i = 0; i <= PRICE_TICKS; i++) {
-  // ✅ y đúng vị trí grid
-  const y = i * H / PRICE_TICKS;
-
-  // ✅ suy ngược giá theo scale hiện tại (khớp line)
-  const value = max - (i / PRICE_TICKS) * (max - min);
-  const label = value.toFixed(2);
-
-  // tick nhỏ bên phải
-  ctx.strokeStyle = "rgba(255,255,255,.15)";
-  ctx.beginPath();
-  ctx.moveTo(W - 6, y);
-  ctx.lineTo(W, y);
-  ctx.stroke();
-
-  // text giá
-  ctx.fillText(label, W - PRICE_PAD_X, y);
-}
-
-ctx.restore();
-
+  const toY = price =>
+    H - ((price - min) / (max - min)) * H;
 
   const first = points[0];
   const last  = points[points.length - 1];
