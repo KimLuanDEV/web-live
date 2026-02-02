@@ -308,16 +308,35 @@ function openRoundSnapshot(roundId, asset){
       }
 
       // chart snapshot chỉ cần giá đầu → cuối
-      drawRoundSnapshot(
-        round.result?.[asset],
-        roundId
-      );
+   drawFullSnapshot(
+  round.chart?.[asset],
+  round.orders,
+  asset
+);
+
+
     });
 }
 
 
 
 function drawFullSnapshot(prices, orders, asset){
+  if (!Array.isArray(prices) || prices.length < 2) {
+    const canvas = document.getElementById("roundSnapshotChart");
+    if (canvas) {
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      ctx.fillStyle = "#888";
+      ctx.font = "14px sans-serif";
+      ctx.fillText("Không có dữ liệu chart", 20, 40);
+    }
+    return;
+  }
+
+  // 👇 code cũ giữ nguyên
+
+
+
   const canvas = document.getElementById("roundSnapshotChart");
   if (!canvas) return;
 
