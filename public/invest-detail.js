@@ -1334,33 +1334,7 @@ function updateCoin(){
   }
 }
 
-// keypad số
-document
-  .querySelectorAll(".coin-keypad button[data-num]")
-  .forEach(btn => {
-    btn.addEventListener("click", () => {
-      investCoin = Number(String(investCoin) + btn.dataset.num);
-      updateCoin();
-    });
-  });
-
-// clear
-document
-  .querySelector(".key-clear")
-  ?.addEventListener("click", () => {
-    investCoin = 0;
-    updateCoin();
-  });
-
-// delete
-document
-  .querySelector(".key-del")
-  ?.addEventListener("click", () => {
-    investCoin = Math.floor(investCoin / 10);
-    updateCoin();
-  });
-
-// cộng nhanh
+// ⚡ coin quick
 document
   .querySelectorAll(".coin-quick button")
   .forEach(btn => {
@@ -1369,6 +1343,15 @@ document
       updateCoin();
     });
   });
+
+// 🔘 nút XÓA
+document
+  .querySelector(".key-clear")
+  ?.addEventListener("click", () => {
+    investCoin = 0;
+    updateCoin();
+  });
+
 
 
 
