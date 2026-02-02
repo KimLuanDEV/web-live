@@ -1065,15 +1065,6 @@ function drawChart(data){
 
   ctx.clearRect(0, 0, W, H);
 
-  // =========================
-  // 📐 CHỪA CHỖ GIÁ BÊN PHẢI
-  // =========================
-  const PRICE_PAD_R = 56; // độ rộng cột giá bên phải
-  const usableW = W - PRICE_PAD_R;
-
-
-
-
 // grid (dày hơn)
 const GRID_Y = 8;
 
@@ -1131,6 +1122,45 @@ if (roundMarkers.length) {
 
   const toY = price =>
     H - ((price - min) / (max - min)) * H;
+
+
+// =========================
+// 📐 PRICE SCALE (CỘT GIÁ BÊN PHẢI)
+// =========================
+const PRICE_TICKS = 6;       // số mốc giá
+const PRICE_PAD_X = 8;       // cách mép phải
+const PRICE_FONT = "12px monospace";
+
+ctx.save();
+ctx.font = PRICE_FONT;
+ctx.fillStyle = "rgba(255,255,255,.65)";
+ctx.textAlign = "right";
+ctx.textBaseline = "middle";
+
+for (let i = 0; i <= PRICE_TICKS; i++) {
+  const value =
+    min + (i / PRICE_TICKS) * (max - min);
+
+  const y = toY(value);
+
+  // tránh đè sát mép
+  if (y < 10 || y > H - 10) continue;
+
+  const label = value.toFixed(2);
+
+  // tick nhỏ bên phải
+  ctx.strokeStyle = "rgba(255,255,255,.15)";
+  ctx.beginPath();
+  ctx.moveTo(W - 6, y);
+  ctx.lineTo(W, y);
+  ctx.stroke();
+
+  // text giá
+  ctx.fillText(label, W - PRICE_PAD_X, y);
+}
+
+ctx.restore();
+
 
   const first = points[0];
   const last  = points[points.length - 1];
@@ -1223,8 +1253,7 @@ ctx.beginPath();
 ctx.moveTo(0, H);
 
 points.forEach((v, i) => {
-  const x = i * (usableW / Math.max(data.length - 1, 1));
-
+  const x = i * (W / Math.max(data.length - 1, 1));
   const y = toY(v);
   ctx.lineTo(x, y);
 });
@@ -1279,8 +1308,7 @@ ctx.shadowBlur = 10;
 
 
   points.forEach((v, i) => {
-    const x = i * (usableW / Math.max(data.length - 1, 1));
-
+    const x = i * (W / Math.max(data.length - 1, 1));
     const y = toY(v);
 
     if (i === 0) ctx.moveTo(x, y);
@@ -1341,78 +1369,6 @@ const y = toY(v);
       chartBox.classList.add("trend-neutral");
     }
   }
-
-
-
-// =========================
-// 💲 PRICE SCALE (RIGHT)
-// =========================
-ctx.save();
-
-// nền mờ cột giá
-ctx.fillStyle = "rgba(0,0,0,.35)";
-ctx.fillRect(usableW, 0, PRICE_PAD_R, H);
-
-ctx.font = "11px system-ui, sans-serif";
-ctx.textAlign = "right";
-ctx.textBaseline = "middle";
-
-// helper vẽ nhãn giá
-function drawPriceTag(price, y, fg, bg){
-  const text = price.toFixed(2);
-  const padX = 6;
-  const padY = 4;
-  const h = 18;
-  const w = ctx.measureText(text).width + padX * 2;
-
-  // background
-  ctx.fillStyle = bg;
-  ctx.fillRect(
-    W - w - 4,
-    Math.max(2, Math.min(H - h - 2, y - h / 2)),
-    w,
-    h
-  );
-
-  // text
-  ctx.fillStyle = fg;
-  ctx.fillText(text, W - 8, y);
-}
-
-// giá min / max / last
-drawPriceTag(min, toY(min), "#aaa", "rgba(255,255,255,.06)");
-drawPriceTag(max, toY(max), "#aaa", "rgba(255,255,255,.06)");
-
-// giá hiện tại (last) – nổi bật
-const lastColor = last > first ? "#00ff99" : last < first ? "#ff5c5c" : "#ccc";
-drawPriceTag(
-  last,
-  toY(last),
-  lastColor,
-  last > first
-    ? "rgba(0,255,153,.25)"
-    : last < first
-      ? "rgba(255,92,92,.25)"
-      : "rgba(180,180,180,.25)"
-);
-
-// ENTRY (nếu có)
-if (joinedRound) {
-  const myMarker = entryMarkers.find(m => m.mine);
-  if (myMarker && typeof data[myMarker.index] === "number") {
-    const entryDraw = data[myMarker.index];
-    drawPriceTag(
-      entryDraw,
-      toY(entryDraw),
-      "#ffd700",
-      "rgba(255,215,0,.25)"
-    );
-  }
-}
-
-ctx.restore();
-
-
 }
 
 
