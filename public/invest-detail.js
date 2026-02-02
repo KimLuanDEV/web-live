@@ -1512,19 +1512,33 @@ const dirText =
 showModal(
   "✅ Đã vào lệnh",
   `
-    <div style="text-align:center">
-      <div style="font-size:18px;font-weight:800">
-        ${dirText}
+  <div class="trade-confirm">
+
+    <div class="tc-icon">📊</div>
+
+    <div class="tc-dir">
+      ${dirText}
+    </div>
+
+    <div class="tc-card">
+      <div class="tc-row">
+        <span>Vốn vào lệnh</span>
+        <b>${coin} 💎</b>
       </div>
-      <div style="margin-top:6px">
-        Số coin: <b>${coin} 💎</b>
-      </div>
-      <div style="margin-top:8px;opacity:.7;font-size:13px">
-        Vui lòng chờ kết thúc phiên
+      <div class="tc-row sub">
+        <span>Trạng thái</span>
+        <b>Đang chạy</b>
       </div>
     </div>
+
+    <div class="tc-wait">
+      ⏳ Vui lòng chờ kết thúc phiên
+    </div>
+
+  </div>
   `
 );
+
 
 
   })
