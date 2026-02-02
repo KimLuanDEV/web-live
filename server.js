@@ -629,6 +629,7 @@ io.emit("invest-round-result", {
 investHistory.unshift({
   roundId: round.id,
   ts: Date.now(),
+  chart: round.chart,
   result,
   orders: round.orders.map(o => ({
     uid: o.uid,

@@ -316,6 +316,80 @@ function openRoundSnapshot(roundId, asset){
 }
 
 
+
+function drawFullSnapshot(prices, orders, asset){
+  const canvas = document.getElementById("roundSnapshotChart");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width = canvas.offsetWidth;
+  const H = canvas.height;
+
+  ctx.clearRect(0,0,W,H);
+
+  const pad = 24;
+  const usableW = W - pad*2;
+  const usableH = H - pad*2;
+
+  const min = Math.min(...prices);
+  const max = Math.max(...prices);
+
+  const toX = i =>
+    pad + i * (usableW / (prices.length - 1));
+
+  const toY = p =>
+    pad + usableH - (p - min) / (max - min) * usableH;
+
+  // 🧱 GRID
+  ctx.strokeStyle = "rgba(255,255,255,.05)";
+  for(let i=0;i<5;i++){
+    const y = pad + i * (usableH/4);
+    ctx.beginPath();
+    ctx.moveTo(pad,y);
+    ctx.lineTo(W-pad,y);
+    ctx.stroke();
+  }
+
+  // 📈 LINE
+  ctx.strokeStyle = "#00ff99";
+  ctx.lineWidth = 2;
+  ctx.shadowBlur = 8;
+  ctx.shadowColor = "#00ff99";
+
+  ctx.beginPath();
+  prices.forEach((p,i)=>{
+    const x = toX(i);
+    const y = toY(p);
+    if(i===0) ctx.moveTo(x,y);
+    else ctx.lineTo(x,y);
+  });
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+
+  // 🎯 ENTRY / CLOSE
+  orders
+    ?.filter(o => o.asset === asset)
+    .forEach(o=>{
+      const entryY = toY(o.entryPrice);
+      ctx.strokeStyle = "#ffd54f";
+      ctx.setLineDash([4,4]);
+      ctx.beginPath();
+      ctx.moveTo(pad, entryY);
+      ctx.lineTo(W-pad, entryY);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    });
+
+  // 🔴 CLOSE
+  const closeY = toY(prices.at(-1));
+  ctx.strokeStyle = "#ff5252";
+  ctx.beginPath();
+  ctx.moveTo(pad, closeY);
+  ctx.lineTo(W-pad, closeY);
+  ctx.stroke();
+}
+
+
 function drawRoundSnapshot(percent, roundId){
   const canvas = document.getElementById("roundSnapshotChart");
   if (!canvas) return;
