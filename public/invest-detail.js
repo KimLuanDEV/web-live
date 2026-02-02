@@ -42,6 +42,7 @@ let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
 let myEntryTime = null; // timestamp khi vào lệnh
 let closedEarlyThisRound = false; // 🔒 đã chốt sớm trong round này
 let myEntryPriceDraw = null; // 🔥 giá entry theo hệ draw
+let chartRawData = []; // 🔥 giá thực từ server
 
 
 
@@ -946,8 +947,9 @@ else if (
     roundBasePrice + (p - roundZeroPrice);
 }
 
-// 👉 CHỈ PUSH GIÁ ĐÃ OFFSET
-chartData.push(drawPrice);
+
+chartRawData.push(p);        // 🔥 GIÁ THỰC
+chartData.push(drawPrice);  // 🔥 GIÁ VẼ
 
 
   // =========================
@@ -1107,21 +1109,32 @@ if (roundMarkers.length) {
   // =========================
   // 🔥 FILTER DATA
   // =========================
-  const points = data.filter(v => typeof v === "number");
-  if (points.length < 2) return;
+const rawPoints = chartRawData.filter(v => typeof v === "number");
+if (rawPoints.length < 2) return;
 
-  // =========================
-  // 🔥 AUTO SCALE
-  // =========================
-  let min = Math.min(...points);
-  let max = Math.max(...points);
+let min = Math.min(...rawPoints);
+let max = Math.max(...rawPoints);
+
 
   const padding = (max - min) * 0.15 || 1;
   min -= padding;
   max += padding;
 
-  const toY = price =>
-    H - ((price - min) / (max - min)) * H;
+  const toY = drawPrice => {
+  let rawPrice = drawPrice;
+
+  // 🔁 chuyển DRAW → RAW
+  if (
+    typeof roundBasePrice === "number" &&
+    typeof roundZeroPrice === "number"
+  ) {
+    rawPrice =
+      roundZeroPrice + (drawPrice - roundBasePrice);
+  }
+
+  return H - ((rawPrice - min) / (max - min)) * H;
+};
+
 
 
 // =========================
