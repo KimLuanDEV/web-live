@@ -1046,6 +1046,77 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+
+/* ===== FAB WRAP ===== */
+.fab-wrap{
+  position:absolute;
+  left:14px;
+  bottom:14px;
+  z-index:9;
+}
+
+/* ===== TOGGLE BADGE ===== */
+.fab-toggle{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  border:0;
+  cursor:pointer;
+
+  display:grid;
+  place-items:center;
+
+  font-size:22px;
+  font-weight:900;
+  color:#fff;
+
+  background:rgba(20,20,20,.75);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 10px 26px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+.fab-toggle:active{
+  transform:scale(.94);
+}
+
+/* ===== GROUP ===== */
+.fab-group{
+  margin-top:10px;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+
+  padding:10px;
+  border-radius:18px;
+
+  background: rgba(15,15,15,.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 14px 40px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.06);
+
+  animation: fabIn .15s ease-out;
+}
+
+@keyframes fabIn{
+  from{
+    opacity:0;
+    transform: translateY(6px) scale(.96);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+
 </style>
 
 
@@ -1095,30 +1166,40 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 <!-- 📌 FLOATING ACTION GROUP (BINANCE STYLE) -->
-<div class="fab-group">
+<div class="fab-wrap">
 
-  <button id="btnOpenHistory" class="fab-item" title="Lịch sử phiên">
-    <svg viewBox="0 0 24 24">
-      <path d="M4 4v16h16" />
-      <path d="M7 15l3-3 3 2 4-5" />
-    </svg>
+  <!-- 🔘 TOGGLE BADGE -->
+  <button id="fabToggle" class="fab-toggle" title="Mở công cụ">
+    ⋮
   </button>
 
-  <button id="btnOpenOrders" class="fab-item" title="Lệnh trong phiên">
-    <svg viewBox="0 0 24 24">
-      <circle cx="12" cy="8" r="4"/>
-      <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-    </svg>
-  </button>
+  <!-- 🔽 GROUP -->
+  <div id="fabGroup" class="fab-group hidden">
 
-  <button id="btnOpenPnlHistory" class="fab-item" title="Lịch sử lãi / lỗ">
-    <svg viewBox="0 0 24 24">
-      <path d="M4 14l4-4 4 3 6-6"/>
-      <path d="M20 20H4"/>
-    </svg>
-  </button>
+    <button id="btnOpenHistory" class="fab-item" title="Lịch sử phiên">
+      <svg viewBox="0 0 24 24">
+        <path d="M4 4v16h16" />
+        <path d="M7 15l3-3 3 2 4-5" />
+      </svg>
+    </button>
 
+    <button id="btnOpenOrders" class="fab-item" title="Lệnh trong phiên">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="8" r="4"/>
+        <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+      </svg>
+    </button>
+
+    <button id="btnOpenPnlHistory" class="fab-item" title="Lịch sử lãi / lỗ">
+      <svg viewBox="0 0 24 24">
+        <path d="M4 14l4-4 4 3 6-6"/>
+        <path d="M20 20H4"/>
+      </svg>
+    </button>
+
+  </div>
 </div>
+
 
 
 

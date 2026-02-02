@@ -1914,3 +1914,16 @@ function showHardLock(endAt){
   tick();
   setInterval(tick, 1000);
 }
+
+
+
+const fabToggle = document.getElementById("fabToggle");
+const fabGroup  = document.getElementById("fabGroup");
+
+if (fabToggle && fabGroup) {
+  fabToggle.addEventListener("click", () => {
+    fabGroup.classList.toggle("hidden");
+    fabToggle.textContent =
+      fabGroup.classList.contains("hidden") ? "⋮" : "✕";
+  });
+}
