@@ -979,6 +979,73 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 
+/* ===== FLOATING FAB GROUP ===== */
+.fab-group{
+  position:absolute;
+  left:14px;
+  bottom:14px;
+  z-index:8;
+
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+
+  padding:10px;
+  border-radius:18px;
+
+  background: rgba(15,15,15,.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 14px 40px rgba(0,0,0,.55),
+    inset 0 1px 0 rgba(255,255,255,.06);
+}
+
+/* ===== FAB ITEM ===== */
+.fab-item{
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  border:0;
+  cursor:pointer;
+
+  display:grid;
+  place-items:center;
+
+  background: rgba(255,255,255,.06);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.08),
+    0 6px 18px rgba(0,0,0,.45);
+
+  transition:
+    transform .08s ease,
+    background .2s ease;
+}
+
+.fab-item:active{
+  transform: scale(.95);
+}
+
+.fab-item:hover{
+  background: rgba(0,255,153,.15);
+}
+
+/* ===== SVG ICON ===== */
+.fab-item svg{
+  width:20px;
+  height:20px;
+  stroke:#fff;
+  stroke-width:2;
+  fill:none;
+  opacity:.9;
+}
+
+.fab-item:hover svg{
+  stroke:#00ff99;
+}
+
+
 </style>
 
 
@@ -1027,29 +1094,32 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   </div>
 
 
-<!-- 📊 HISTORY -->
-<button id="btnOpenHistory" class="fab glass" title="Lịch sử phiên">
-  <svg viewBox="0 0 24 24" class="fab-icon">
-    <path d="M4 4v16h16" />
-    <path d="M7 15l3-3 3 2 4-5" />
-  </svg>
-</button>
+<!-- 📌 FLOATING ACTION GROUP (BINANCE STYLE) -->
+<div class="fab-group">
 
-<!-- 👤 ORDERS -->
-<button id="btnOpenOrders" class="fab glass" title="Lệnh trong phiên">
-  <svg viewBox="0 0 24 24" class="fab-icon">
-    <circle cx="12" cy="8" r="4"/>
-    <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
-  </svg>
-</button>
+  <button id="btnOpenHistory" class="fab-item" title="Lịch sử phiên">
+    <svg viewBox="0 0 24 24">
+      <path d="M4 4v16h16" />
+      <path d="M7 15l3-3 3 2 4-5" />
+    </svg>
+  </button>
 
-<!-- 💰 PNL -->
-<button id="btnOpenPnlHistory" class="fab glass" title="Lịch sử lãi / lỗ">
-  <svg viewBox="0 0 24 24" class="fab-icon">
-    <path d="M4 14l4-4 4 3 6-6"/>
-    <path d="M20 20H4"/>
-  </svg>
-</button>
+  <button id="btnOpenOrders" class="fab-item" title="Lệnh trong phiên">
+    <svg viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="4"/>
+      <path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>
+    </svg>
+  </button>
+
+  <button id="btnOpenPnlHistory" class="fab-item" title="Lịch sử lãi / lỗ">
+    <svg viewBox="0 0 24 24">
+      <path d="M4 14l4-4 4 3 6-6"/>
+      <path d="M20 20H4"/>
+    </svg>
+  </button>
+
+</div>
+
 
 
 
@@ -1124,7 +1194,7 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <!-- 💎 COIN DISPLAY -->
   <div class="coin-display">
-    <span class="coin-label">Số coin đầu tư</span>
+    <span class="coin-label">Vốn đầu tư</span>
     <div class="coin-value">
       <span id="coinDisplay">0</span><small>💎</small>
     </div>
@@ -1192,7 +1262,7 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <div class="sheet-box">
     <div class="sheet-head">
-      <div class="sheet-title">📊 Lịch sử các phiên</div>
+      <div class="sheet-title">Lịch sử các phiên</div>
       <button class="sheet-close" id="btnCloseHistory">✕</button>
     </div>
 
@@ -1229,7 +1299,7 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <div class="sheet-box">
     <div class="sheet-head">
-      <div class="sheet-title">🧾 Lệnh trong phiên</div>
+      <div class="sheet-title">Lệnh trong phiên</div>
       <button class="sheet-close" id="btnCloseOrders">✕</button>
     </div>
 
@@ -1248,7 +1318,7 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <div class="sheet-box">
     <div class="sheet-head">
-      <div class="sheet-title">💰 Lịch sử lãi / lỗ</div>
+      <div class="sheet-title">Lịch sử lãi / lỗ</div>
       <button class="sheet-close" id="btnClosePnlHistory">✕</button>
     </div>
 
