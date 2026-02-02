@@ -1117,6 +1117,63 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+/* ===== CHART ACTION OVERLAY ===== */
+.chart-action{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:12px;
+  z-index:6;
+
+  padding:0 12px;
+
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+
+  pointer-events:auto;
+}
+
+/* làm nền mờ nhẹ để đọc rõ */
+.chart-action::before{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:-12px;
+  height:120px;
+  pointer-events:none;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,.55),
+    rgba(0,0,0,0)
+  );
+}
+
+/* đảm bảo nút nằm trên nền mờ */
+.chart-action > *{
+  position:relative;
+  z-index:1;
+}
+
+/* direction gọn hơn */
+.chart-action .direction-box{
+  margin:0;
+}
+
+/* nút vào lệnh full width, không quá to */
+.chart-action .btn-invest-main{
+  height:48px;
+  border-radius:16px;
+  font-size:15px;
+}
+
+/* chốt sớm nhỏ hơn, phụ */
+.chart-action .btn-close-early{
+  height:42px;
+  border-radius:14px;
+  font-size:14px;
+}
+
+
 </style>
 
 
@@ -1209,6 +1266,28 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   PnL: 0%
 </div>
 
+
+
+<!-- 🎮 CHART ACTION OVERLAY -->
+<div class="chart-action">
+
+  <!-- 🔼🔽 DIRECTION -->
+  <div class="direction-box" id="directionBox">
+    <button id="btnUp" class="dir active">LÊN</button>
+    <button id="btnDown" class="dir">XUỐNG</button>
+  </div>
+
+  <!-- 🚀 SUBMIT -->
+  <button class="btn-invest-main" onclick="confirmInvest()">
+    VÀO LỆNH
+  </button>
+
+  <!-- ⏱ CLOSE EARLY -->
+  <button id="btnCloseEarly" class="btn-close-early hidden">
+    Chốt lệnh
+  </button>
+
+</div>
 
 
 
