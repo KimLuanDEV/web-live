@@ -1254,6 +1254,68 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+/* ===== PNL REALTIME (ULTRA COMPACT) ===== */
+.pnl-overlay{
+  position:absolute;
+  right: 14px;
+  bottom: 14px;
+  z-index: 6;
+
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  padding:6px 10px;
+  border-radius:999px;
+
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:.2px;
+
+  background: rgba(15,15,15,.75);
+  color:#fff;
+
+  box-shadow:
+    0 8px 22px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.06);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* mũi tên */
+.pnl-arrow{
+  font-size:11px;
+  line-height:1;
+}
+
+/* ===== STATE ===== */
+/* lời */
+.pnl-overlay.up{
+  color:#00ff99;
+  background: linear-gradient(
+    135deg,
+    rgba(0,255,153,.25),
+    rgba(15,15,15,.75)
+  );
+}
+
+/* lỗ */
+.pnl-overlay.down{
+  color:#ff5c5c;
+  background: linear-gradient(
+    135deg,
+    rgba(255,92,92,.25),
+    rgba(15,15,15,.75)
+  );
+}
+
+/* sideway */
+.pnl-overlay.neutral{
+  color:#ccc;
+}
+
+
 </style>
 
 
@@ -1343,8 +1405,10 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <!-- 💰 PnL realtime -->
 <div id="pnlRealtime" class="pnl-overlay hidden">
-  PnL: 0%
+  <span class="pnl-arrow">▲</span>
+  <span class="pnl-value">0%</span>
 </div>
+
 
 
 

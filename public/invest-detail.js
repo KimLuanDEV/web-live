@@ -993,41 +993,49 @@ localStorage.setItem(
 
 
 
-  // =========================
-  // 💰 PnL realtime (GIỮ NGUYÊN)
-  // =========================
-  const pnlBox = document.getElementById("pnlRealtime");
-  if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
-    const last = p;
+// =========================
+// 💰 PnL realtime (PILL GỌN)
+// =========================
+const pnlBox = document.getElementById("pnlRealtime");
+if (joinedRound && myEntryPrice && pnlBox && myOrderDirection) {
 
-    let percent = Math.round(
-      (last - myEntryPrice) / myEntryPrice * 100
-    );
+  const arrowEl = pnlBox.querySelector(".pnl-arrow");
+  const valueEl = pnlBox.querySelector(".pnl-value");
+  if (!arrowEl || !valueEl) return;
 
-    if (myOrderDirection === "down") percent = -percent;
+  const last = p;
 
-    percent = Math.max(-30, Math.min(30, percent));
+  let percent = Math.round(
+    (last - myEntryPrice) / myEntryPrice * 100
+  );
 
-    const myOrder = roundOrders.find(
-      o => o.uid === me.uid && o.asset === asset
-    );
+  if (myOrderDirection === "down") percent = -percent;
 
-    const coin = myOrder?.coin || 0;
-    const pnlCoin = Math.round(coin * percent / 100);
+  // clamp an toàn
+  percent = Math.max(-30, Math.min(30, percent));
 
-    const dirIcon =
-      myOrderDirection === "down" ? "📉" : "📈";
+  // reset state
+  pnlBox.classList.remove("up","down","neutral");
+  pnlBox.classList.remove("hidden");
 
-    pnlBox.textContent =
-      `${dirIcon} Lợi nhuận: ` +
-      `${percent > 0 ? "+" : ""}${percent}% ` +
-      `(${pnlCoin > 0 ? "+" : ""}${pnlCoin} 💎)`;
+  // hiển thị %
+  valueEl.textContent =
+    (percent > 0 ? "+" : "") + percent + "%";
 
-    pnlBox.className =
-      "pnl-overlay " + (percent >= 0 ? "up" : "down");
-
-    pnlBox.classList.remove("hidden");
+  if (percent > 0) {
+    pnlBox.classList.add("up");
+    arrowEl.textContent = "▲";
   }
+  else if (percent < 0) {
+    pnlBox.classList.add("down");
+    arrowEl.textContent = "▼";
+  }
+  else {
+    pnlBox.classList.add("neutral");
+    arrowEl.textContent = "●";
+  }
+}
+
 });
 
 
