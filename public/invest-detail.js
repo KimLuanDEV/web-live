@@ -195,8 +195,20 @@ function renderPnlHistory(list){
 
   pnlHistoryList.innerHTML = list.map(i => {
     const win = i.percent >= 0;
+
+    const entry =
+      typeof i.entryPrice === "number"
+        ? i.entryPrice.toFixed(2)
+        : "--";
+
+    const end =
+      typeof i.endPrice === "number"
+        ? i.endPrice.toFixed(2)
+        : "--";
+
     return `
       <li class="pnl-item ${win ? "win" : "loss"}">
+        <!-- HÀNG TRÊN -->
         <div class="pnl-main">
           <div class="pnl-left">
             <div class="pnl-asset">${i.asset.toUpperCase()}</div>
@@ -213,6 +225,19 @@ function renderPnlHistory(list){
           </div>
         </div>
 
+        <!-- GIÁ -->
+        <div class="pnl-price-row">
+          <div>
+            <span>ENTRY</span>
+            <b>${entry}</b>
+          </div>
+          <div>
+            <span>CLOSE</span>
+            <b>${end}</b>
+          </div>
+        </div>
+
+        <!-- FOOT -->
         <div class="pnl-sub">
           <span>${i.coin} 💎 → <b>${win ? "+" : ""}${i.profit}</b></span>
           <span class="pnl-time">
@@ -223,6 +248,7 @@ function renderPnlHistory(list){
     `;
   }).join("");
 }
+
 
 
 
