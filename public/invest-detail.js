@@ -739,6 +739,38 @@ socket.on("invest-round-result", d => {
     .then(r => r.json())
     .then(h => h.ok && renderHistory(h.list));
 
+
+
+// =========================
+// 📟 PRICE BOARD – CLOSE
+// =========================
+roundClosePrice = end;
+
+if (typeof roundOpenPrice === "number") {
+  const delta = roundClosePrice - roundOpenPrice;
+  const percentBoard = Math.round(
+    delta / roundOpenPrice * 100
+  );
+
+  const closeEl = document.getElementById("closePrice");
+  const deltaEl = document.getElementById("deltaPrice");
+
+  if (closeEl)
+    closeEl.textContent = roundClosePrice.toFixed(2);
+
+  if (deltaEl) {
+    deltaEl.textContent =
+      `${delta >= 0 ? "+" : ""}${delta.toFixed(2)} (${percentBoard}%)`;
+
+    deltaEl.className =
+      percentBoard > 0 ? "up" :
+      percentBoard < 0 ? "down" :
+      "neutral";
+  }
+}
+
+
+
   // ===============================
   // 2️⃣ CHỈ USER ĐÃ VÀO LỆNH → TÍNH THEO ENTRY
   // ===============================
@@ -770,34 +802,6 @@ if (typeof end !== "number") {
 
   if (!entry || !end) return;
 
-
-// =========================
-// 📟 PRICE BOARD – CLOSE
-// =========================
-roundClosePrice = end;
-
-if (typeof roundOpenPrice === "number") {
-  const delta = roundClosePrice - roundOpenPrice;
-  const percentBoard = Math.round(
-    delta / roundOpenPrice * 100
-  );
-
-  const closeEl = document.getElementById("closePrice");
-  const deltaEl = document.getElementById("deltaPrice");
-
-  if (closeEl)
-    closeEl.textContent = roundClosePrice.toFixed(2);
-
-  if (deltaEl) {
-    deltaEl.textContent =
-      `${delta >= 0 ? "+" : ""}${delta.toFixed(2)} (${percentBoard}%)`;
-
-    deltaEl.className =
-      percentBoard > 0 ? "up" :
-      percentBoard < 0 ? "down" :
-      "neutral";
-  }
-}
 
 
 
