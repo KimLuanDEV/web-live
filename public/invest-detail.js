@@ -114,7 +114,7 @@ const config = {
     vol: 3.5
   },
   atomic: {
-    name: "Nguyên Tử",
+    name: "Atomic",
     icon: `<img src="/assets/atomic.png" class="asset-icon">`,
     vol: 8.5
   }
@@ -570,7 +570,7 @@ function startRoundTimer(endAt){
 
 if (!joinedRound) {
   investBtn.disabled = false;
-  investBtn.textContent = "VÀO LỆNH";
+  investBtn.textContent = "START";
 }
 
 
@@ -1725,14 +1725,14 @@ if (leftRound <= 15 && !joinedRound) {
   if (passed < 10) {
     btnCloseEarly.disabled = true;
     btnCloseEarly.textContent =
-      `⏳ Chờ ${10 - passed}s để chốt`;
+      `⏳ Wait ${10 - passed}s to stop`;
     btnCloseEarly.classList.remove("hidden");
     return;
   }
 
   // ✅ ĐỦ ĐIỀU KIỆN
   btnCloseEarly.disabled = false;
-  btnCloseEarly.textContent = "Chốt lệnh sớm";
+  btnCloseEarly.textContent = "STOP";
   btnCloseEarly.classList.remove("hidden");
 
 }, 500);
