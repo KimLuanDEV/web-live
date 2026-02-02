@@ -1874,17 +1874,34 @@ function drawFullSnapshotOnCanvas(canvas, prices, orders, asset){
   ctx.stroke();
   ctx.shadowBlur = 0;
 
-  // ENTRY
-  orders?.filter(o=>o.asset===asset).forEach(o=>{
-    const y = toY(o.entryPrice);
-    ctx.strokeStyle = "#ffd54f";
-    ctx.setLineDash([6,6]);
-    ctx.beginPath();
-    ctx.moveTo(padX,y);
-    ctx.lineTo(W-padX,y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-  });
+// 🎯 ENTRY LINE – CHỈ CỦA USER HIỆN TẠI
+const myOrder = orders?.find(
+  o => o.uid === me.uid && o.asset === asset
+);
+
+if (myOrder && typeof myOrder.entryPrice === "number") {
+  const y = toY(myOrder.entryPrice);
+
+  ctx.save();
+  ctx.strokeStyle = "#ffd54f";
+  ctx.setLineDash([6,6]);
+  ctx.lineWidth = 2;
+
+  ctx.beginPath();
+  ctx.moveTo(padX, y);
+  ctx.lineTo(W - padX, y);
+  ctx.stroke();
+
+  ctx.setLineDash([]);
+
+  // label ENTRY
+  ctx.font = "14px sans-serif";
+  ctx.fillStyle = "#ffd54f";
+  ctx.fillText("ENTRY", padX + 6, Math.max(16, y - 6));
+
+  ctx.restore();
+}
+
 
   // CLOSE
   const closeY = toY(prices.at(-1));
