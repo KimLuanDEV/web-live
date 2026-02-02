@@ -1125,11 +1125,13 @@ if (roundMarkers.length) {
 
 
 // =========================
-// 📐 PRICE SCALE (CỘT GIÁ BÊN PHẢI)
+// 📐 PRICE SCALE (CỘT GIÁ BÊN PHẢI) — KHỚP GRID + LINE
 // =========================
-const PRICE_TICKS = 6;       // số mốc giá
-const PRICE_PAD_X = 8;       // cách mép phải
+const PRICE_PAD_X = 8;
 const PRICE_FONT = "12px monospace";
+
+// dùng đúng số vạch grid đang vẽ
+const PRICE_TICKS = GRID_Y;
 
 ctx.save();
 ctx.font = PRICE_FONT;
@@ -1138,14 +1140,11 @@ ctx.textAlign = "right";
 ctx.textBaseline = "middle";
 
 for (let i = 0; i <= PRICE_TICKS; i++) {
-  const value =
-    min + (i / PRICE_TICKS) * (max - min);
+  // ✅ y đúng vị trí grid
+  const y = i * H / PRICE_TICKS;
 
-  const y = toY(value);
-
-  // tránh đè sát mép
-  if (y < 10 || y > H - 10) continue;
-
+  // ✅ suy ngược giá theo scale hiện tại (khớp line)
+  const value = max - (i / PRICE_TICKS) * (max - min);
   const label = value.toFixed(2);
 
   // tick nhỏ bên phải
