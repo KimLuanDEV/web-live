@@ -1915,6 +1915,63 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+/* ===== PNL HISTORY FULLSCREEN ===== */
+#pnlHistoryModal{
+  z-index: 100000; /* cao hơn chart */
+}
+
+/* backdrop mờ nhẹ */
+#pnlHistoryModal .sheet-backdrop{
+  background: rgba(0,0,0,.75);
+}
+
+/* BOX → FULLSCREEN */
+#pnlHistoryModal .sheet-box{
+  position: absolute;
+  inset: 0;
+
+  max-height: none;
+  border-radius: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  background: #000;
+  animation: none; /* bỏ slide-up */
+}
+
+/* HEADER CỐ ĐỊNH */
+#pnlHistoryModal .sheet-head{
+  flex: 0 0 auto;
+  padding: 14px 16px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(20,20,20,.98),
+    rgba(10,10,10,.98)
+  );
+
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* BODY SCROLL */
+#pnlHistoryModal .sheet-body{
+  flex: 1 1 auto;
+  overflow-y: auto;
+  padding: 12px 12px 20px;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+/* LIST GIÃN DÒNG CHO FULLSCREEN */
+#pnlHistoryList{
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+
+
 
 </style>
 
