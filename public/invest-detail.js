@@ -181,9 +181,13 @@ document
   ?.addEventListener("click", closePnlHistory);
 
 function closePnlHistory(){
+  // 🔥 FIX aria-hidden warning
+  document.activeElement?.blur();
+
   pnlHistoryModal.classList.add("hidden");
   document.body.style.overflow = "";
 }
+
 
 
 function renderPnlHistory(list){
@@ -338,10 +342,15 @@ function openOrders(){
 
 function closeOrders(){
   if(!ordersModal) return;
+
+  // 🔥 FIX aria-hidden warning
+  document.activeElement?.blur();
+
   ordersModal.classList.add("hidden");
   ordersModal.setAttribute("aria-hidden","true");
   document.body.style.overflow = "";
 }
+
 
 if(btnOpenOrders) btnOpenOrders.addEventListener("click", openOrders);
 if(btnCloseOrders) btnCloseOrders.addEventListener("click", closeOrders);
@@ -362,8 +371,14 @@ function openHistory(){
   historyModalEl.setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
 }
+
+
 function closeHistory(){
   if(!historyModalEl) return;
+
+  // 🔥 FIX aria-hidden warning
+  document.activeElement?.blur();
+
   historyModalEl.classList.add("hidden");
   historyModalEl.setAttribute("aria-hidden","true");
   document.body.style.overflow = "";
@@ -479,8 +494,10 @@ function showModal(title, content){
 
 
 
-
 function closeAppModal(){
+  // 🔥 FIX aria-hidden warning
+  document.activeElement?.blur();
+
   document.getElementById("appModal")
     .classList.add("hidden");
 }
@@ -1804,8 +1821,10 @@ if (myOrder && typeof myOrder.entryPrice === "number") {
 }
 
 
-
 function closeSnapshotFS(){
+  // 🔥 FIX aria-hidden / focus
+  document.activeElement?.blur();
+
   const fs = document.getElementById("snapshotFS");
   fs.classList.add("hidden");
   document.body.style.overflow = "";
