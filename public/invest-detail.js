@@ -42,8 +42,6 @@ let myOrderDirection = null; // 🔥 HƯỚNG THẬT CỦA LỆNH
 let myEntryTime = null; // timestamp khi vào lệnh
 let closedEarlyThisRound = false; // 🔒 đã chốt sớm trong round này
 let myEntryPriceDraw = null; // 🔥 giá entry theo hệ draw
-let roundOpenPrice = null;
-let roundClosePrice = null;
 
 
 
@@ -509,7 +507,8 @@ if (timerEl && !timerEl.querySelector(".timer-text")) {
 
 
 
-const investBtn = document.querySelector(".detail-invest button");
+const investBtn = document.querySelector(".btn-invest-main");
+
 
 
 const btnCloseEarly = document.getElementById("btnCloseEarly");
@@ -739,38 +738,6 @@ socket.on("invest-round-result", d => {
     .then(r => r.json())
     .then(h => h.ok && renderHistory(h.list));
 
-
-
-// =========================
-// 📟 PRICE BOARD – CLOSE
-// =========================
-roundClosePrice = end;
-
-if (typeof roundOpenPrice === "number") {
-  const delta = roundClosePrice - roundOpenPrice;
-  const percentBoard = Math.round(
-    delta / roundOpenPrice * 100
-  );
-
-  const closeEl = document.getElementById("closePrice");
-  const deltaEl = document.getElementById("deltaPrice");
-
-  if (closeEl)
-    closeEl.textContent = roundClosePrice.toFixed(2);
-
-  if (deltaEl) {
-    deltaEl.textContent =
-      `${delta >= 0 ? "+" : ""}${delta.toFixed(2)} (${percentBoard}%)`;
-
-    deltaEl.className =
-      percentBoard > 0 ? "up" :
-      percentBoard < 0 ? "down" :
-      "neutral";
-  }
-}
-
-
-
   // ===============================
   // 2️⃣ CHỈ USER ĐÃ VÀO LỆNH → TÍNH THEO ENTRY
   // ===============================
@@ -801,9 +768,6 @@ if (typeof end !== "number") {
 
 
   if (!entry || !end) return;
-
-
-
 
 let percent =
   Math.round((end - entry) / entry * 100);
@@ -970,29 +934,7 @@ if (d.second === 0) {
       m.priceDraw = toDrawPrice(m.priceRaw);
     }
   });
-
-  // =========================
-  // 📟 PRICE BOARD – OPEN
-  // =========================
-  roundOpenPrice = p;
-
-  const openEl  = document.getElementById("openPrice");
-  const closeEl = document.getElementById("closePrice");
-  const deltaEl = document.getElementById("deltaPrice");
-
-  if (openEl)  openEl.textContent  = p.toFixed(2);
-  if (closeEl) closeEl.textContent = "--";
-  if (deltaEl) {
-    deltaEl.textContent = "--";
-    deltaEl.className = "neutral";
-  }
-
-
-
-
 }
-
-
 
 
 // 🔥 các tick tiếp theo: offset theo delta
@@ -1383,6 +1325,53 @@ const y = toY(v);
 }
 
 
+let investCoin = 0;
+const coinDisplay = document.getElementById("coinDisplay");
+
+function updateCoin(){
+  if (coinDisplay) {
+    coinDisplay.textContent = investCoin.toLocaleString();
+  }
+}
+
+// keypad số
+document
+  .querySelectorAll(".coin-keypad button[data-num]")
+  .forEach(btn => {
+    btn.addEventListener("click", () => {
+      investCoin = Number(String(investCoin) + btn.dataset.num);
+      updateCoin();
+    });
+  });
+
+// clear
+document
+  .querySelector(".key-clear")
+  ?.addEventListener("click", () => {
+    investCoin = 0;
+    updateCoin();
+  });
+
+// delete
+document
+  .querySelector(".key-del")
+  ?.addEventListener("click", () => {
+    investCoin = Math.floor(investCoin / 10);
+    updateCoin();
+  });
+
+// cộng nhanh
+document
+  .querySelectorAll(".coin-quick button")
+  .forEach(btn => {
+    btn.addEventListener("click", () => {
+      investCoin += Number(btn.dataset.add);
+      updateCoin();
+    });
+  });
+
+
+
 
 // ================== VÀO LỆNH ==================
 
@@ -1416,9 +1405,8 @@ if (closedEarlyThisRound) {
     return;
   }
 
-  const coin = Number(
-    document.getElementById("investAmount").value
-  );
+const coin = investCoin;
+
 
   if (!coin || coin <= 0) {
     showModal(
@@ -1479,6 +1467,12 @@ document.getElementById("directionBox")?.classList.add("hidden");
       "user_profile",
       JSON.stringify(me)
     );
+
+    // 🔄 reset keypad coin sau khi vào lệnh
+investCoin = 0;
+updateCoin();
+
+
 
     // 🔒 KHOÁ NÚT
     const btn = document.querySelector(".detail-invest button");
