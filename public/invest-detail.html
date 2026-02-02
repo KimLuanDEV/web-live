@@ -1433,6 +1433,90 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+
+/* ===== PNL HISTORY – CLEAN UI ===== */
+#pnlHistoryList{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.pnl-empty{
+  text-align:center;
+  padding:24px;
+  opacity:.6;
+  font-size:13px;
+}
+
+/* card */
+.pnl-item{
+  padding:12px 14px;
+  border-radius:14px;
+  background: rgba(255,255,255,.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.06),
+    0 6px 18px rgba(0,0,0,.4);
+}
+
+/* thắng / thua */
+.pnl-item.win{
+  background: linear-gradient(
+    135deg,
+    rgba(0,255,153,.18),
+    rgba(255,255,255,.03)
+  );
+}
+.pnl-item.loss{
+  background: linear-gradient(
+    135deg,
+    rgba(255,92,92,.18),
+    rgba(255,255,255,.03)
+  );
+}
+
+/* hàng trên */
+.pnl-main{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+/* trái */
+.pnl-left{
+  display:flex;
+  flex-direction:column;
+  gap:2px;
+}
+.pnl-asset{
+  font-weight:900;
+  letter-spacing:.5px;
+}
+.pnl-dir{
+  font-size:12px;
+  opacity:.75;
+}
+
+/* phải */
+.pnl-percent{
+  font-size:22px;
+  font-weight:900;
+}
+.pnl-item.win .pnl-percent{ color:#00ff99; }
+.pnl-item.loss .pnl-percent{ color:#ff5c5c; }
+
+/* hàng dưới */
+.pnl-sub{
+  display:flex;
+  justify-content:space-between;
+  margin-top:6px;
+  font-size:12px;
+  opacity:.8;
+}
+.pnl-time{
+  opacity:.6;
+}
+
+
 </style>
 
 

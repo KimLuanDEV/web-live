@@ -189,26 +189,41 @@ function closePnlHistory(){
 function renderPnlHistory(list){
   if (!list.length) {
     pnlHistoryList.innerHTML =
-      `<li class="empty">Chưa có dữ liệu</li>`;
+      `<li class="pnl-empty">Chưa có dữ liệu</li>`;
     return;
   }
 
-  pnlHistoryList.innerHTML = list.map(i => `
-    <li class="order-item ${i.percent >= 0 ? "up" : "down"}">
-      <div>
-        ${i.asset.toUpperCase()}
-        ${i.direction === "up" ? "📈" :
-          i.direction === "down" ? "📉" : "➖"}
-      </div>
-      <div>
-        ${i.coin} 💎 →
-        <b>${i.percent >= 0 ? "+" : ""}${i.percent}%</b>
-        (${i.profit >= 0 ? "+" : ""}${i.profit})
-      </div>
-      <small>${new Date(i.ts).toLocaleString()}</small>
-    </li>
-  `).join("");
+  pnlHistoryList.innerHTML = list.map(i => {
+    const win = i.percent >= 0;
+    return `
+      <li class="pnl-item ${win ? "win" : "loss"}">
+        <div class="pnl-main">
+          <div class="pnl-left">
+            <div class="pnl-asset">${i.asset.toUpperCase()}</div>
+            <div class="pnl-dir">
+              ${i.direction === "up" ? "LÊN" :
+                i.direction === "down" ? "XUỐNG" : "➖"}
+            </div>
+          </div>
+
+          <div class="pnl-right">
+            <div class="pnl-percent">
+              ${win ? "+" : ""}${i.percent}%
+            </div>
+          </div>
+        </div>
+
+        <div class="pnl-sub">
+          <span>${i.coin} 💎 → <b>${win ? "+" : ""}${i.profit}</b></span>
+          <span class="pnl-time">
+            ${new Date(i.ts).toLocaleString()}
+          </span>
+        </div>
+      </li>
+    `;
+  }).join("");
 }
+
 
 
 function openOrders(){
