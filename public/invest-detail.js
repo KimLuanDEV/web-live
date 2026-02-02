@@ -201,8 +201,8 @@ function renderPnlHistory(list){
           <div class="pnl-left">
             <div class="pnl-asset">${i.asset.toUpperCase()}</div>
             <div class="pnl-dir">
-              ${i.direction === "up" ? "LÊN" :
-                i.direction === "down" ? "XUỐNG" : "➖"}
+              ${i.direction === "up" ? "UP" :
+                i.direction === "down" ? "DOWN" : "➖"}
             </div>
           </div>
 
@@ -338,14 +338,14 @@ function renderOrdersModal(){
 
 ordersModalList.innerHTML = roundOrders.map(o => {
   const dirIcon =
-    o.direction === "up" ? "📈 LÊN" :
-    o.direction === "down" ? "📉 XUỐNG" :
+    o.direction === "up" ? "UP" :
+    o.direction === "down" ? "DOWN" :
     "➖";
 
   return `
     <li class="order-item ${o.uid === me.uid ? "me" : ""}">
       <div>
-        ${o.uid === me.uid ? "🧑 Bạn" : "👤 Người chơi"}
+        ${o.uid === me.uid ? "🧑 YOU" : "👤 PLAYER"}
       </div>
       <div>
         <b>${o.coin} 💎</b>
