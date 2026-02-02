@@ -1334,6 +1334,24 @@ function updateCoin(){
   }
 }
 
+
+// ⚡ ALL IN / 50% / 25%
+document
+  .querySelectorAll(".coin-ratio button")
+  .forEach(btn => {
+    btn.addEventListener("click", () => {
+      const ratio = Number(btn.dataset.ratio);
+      const maxCoin = Number(me.coins) || 0;
+
+      if (maxCoin <= 0) return;
+
+      investCoin = Math.floor(maxCoin * ratio);
+      updateCoin();
+    });
+  });
+
+
+
 // ⚡ coin quick
 document
   .querySelectorAll(".coin-quick button")
