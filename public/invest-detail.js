@@ -218,7 +218,13 @@ function renderPnlHistory(list){
           <div class="pnl-left">
             <div class="pnl-asset">
               ${i.asset.toUpperCase()}
-              <span class="pnl-round">${roundId}</span>
+
+              <span class="pnl-round"
+               data-round="${i.roundId}"
+               data-asset="${i.asset}">
+              ${roundId}
+              </span>
+
             </div>
             <div class="pnl-dir">
               ${i.direction === "up" ? "UP" :
@@ -258,6 +264,93 @@ function renderPnlHistory(list){
 }
 
 
+// 👉 click ROUND → mở chart snapshot
+pnlHistoryList.addEventListener("click", e => {
+  const el = e.target.closest(".pnl-round");
+  if (!el) return;
+
+  const roundId = el.dataset.round;
+  const asset   = el.dataset.asset;
+
+  if (!roundId || roundId === "--") {
+    showModal("⚠️ Không khả dụng", "Phiên này không có dữ liệu chart.");
+    return;
+  }
+
+  openRoundSnapshot(roundId, asset);
+});
+
+
+
+function openRoundSnapshot(roundId, asset){
+  showModal(
+    `📊 ROUND #${roundId}`,
+    `
+    <div class="round-snapshot">
+      <canvas id="roundSnapshotChart" height="220"></canvas>
+      <div class="rs-note">
+        Asset: <b>${asset.toUpperCase()}</b>
+      </div>
+    </div>
+    `
+  );
+
+  // fetch lịch sử round
+  fetch("/api/invest/history")
+    .then(r => r.json())
+    .then(d => {
+      if (!d.ok) return;
+
+      const round = d.list.find(r => String(r.roundId) === String(roundId));
+      if (!round) {
+        showModal("❌ Lỗi", "Không tìm thấy dữ liệu round.");
+        return;
+      }
+
+      // chart snapshot chỉ cần giá đầu → cuối
+      drawRoundSnapshot(
+        round.result?.[asset],
+        roundId
+      );
+    });
+}
+
+
+function drawRoundSnapshot(percent, roundId){
+  const canvas = document.getElementById("roundSnapshotChart");
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width = canvas.offsetWidth;
+  const H = canvas.height;
+
+  ctx.clearRect(0,0,W,H);
+
+  // mock line: start → end (snapshot)
+  const startY = H/2;
+  const endY   = startY - percent * 1.2;
+
+  ctx.strokeStyle = percent >= 0 ? "#00ff99" : "#ff5c5c";
+  ctx.lineWidth = 3;
+  ctx.shadowBlur = 10;
+  ctx.shadowColor = ctx.strokeStyle;
+
+  ctx.beginPath();
+  ctx.moveTo(20, startY);
+  ctx.lineTo(W-20, endY);
+  ctx.stroke();
+
+  ctx.shadowBlur = 0;
+
+  ctx.fillStyle = "#aaa";
+  ctx.font = "12px sans-serif";
+  ctx.fillText(`ROUND ${roundId}`, 10, 14);
+  ctx.fillText(
+    `${percent >= 0 ? "+" : ""}${percent}%`,
+    W - 60,
+    endY - 6
+  );
+}
 
 
 function openOrders(){
