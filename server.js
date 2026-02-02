@@ -817,17 +817,20 @@ app.post("/api/invest/close-early", (req, res) => {
     me.profile.coins += order.coin + profit;
 
     me.investHistory = me.investHistory || [];
-    me.investHistory.unshift({
-      ts: Date.now(),
-      asset,
-      direction: order.direction,
-      coin: order.coin,
-      percent,
-      profit,
-      entryPrice: order.entryPrice,
-      endPrice: priceNow,
-      earlyClose: true
-    });
+
+me.investHistory.unshift({
+  roundId: investRound.id, // 🔥 QUAN TRỌNG
+  ts: Date.now(),
+  asset,
+  direction: order.direction,
+  coin: order.coin,
+  percent,
+  profit,
+  entryPrice: order.entryPrice,
+  endPrice: priceNow,
+  earlyClose: true
+});
+
 
     saveUsers(users);
     emitCoinUpdate(uid);
