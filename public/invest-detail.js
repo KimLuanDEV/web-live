@@ -1518,21 +1518,13 @@ showModal(
       <div class="es-dir">${dirText}</div>
     </div>
 
-    <!-- 🔢 ROUND + TIME -->
-    <div class="es-meta">
-      <span>ROUND <b>#${currentRoundId ?? "--"}</b></span>
-      <span>${entryTimeText}</span>
-    </div>
-
     <div class="es-body">
       <!-- ENTRY PRICE -->
       <div class="es-entry">
         <span>ENTRY PRICE</span>
-        <b>${
-          typeof myEntryPrice === "number"
+        <b>${typeof myEntryPrice === "number"
             ? myEntryPrice.toFixed(2)
-            : "--"
-        }</b>
+            : "--"}</b>
       </div>
 
       <!-- COIN -->
@@ -1553,7 +1545,6 @@ showModal(
   </div>
   `
 );
-
 
 
 
