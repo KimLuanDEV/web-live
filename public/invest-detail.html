@@ -98,7 +98,7 @@ html, body {
   overflow: hidden;
 
   /* ✨ bo góc */
-  border-radius: 16px;
+  border-radius: 0 !important;
 
   /* ✨ nền tối nhẹ */
   background: linear-gradient(
@@ -2155,6 +2155,24 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 .detail-invest.invest-action {
   position: relative;
   top: -1px; /* ép sát tuyệt đối */
+}
+
+
+
+/* ===== CHART DÍNH SÁT HEADER ===== */
+.detail-chart.chart-wrap {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.page-invest-detail > .detail-chart:first-of-type {
+  margin-top: 0 !important;
+}
+
+
+.detail-chart.chart-wrap {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
 
