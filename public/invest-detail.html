@@ -2083,7 +2083,6 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 .history-table th,
 .history-table td{
   padding: 10px 8px;
-  text-align: center;
   font-size: 13px;
   border-bottom: 1px solid rgba(255,255,255,.05);
 }
@@ -2430,6 +2429,39 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 #historyModal th,
 #historyModal td{
   padding: 6px 4px !important;
+}
+
+
+/* ===== FIX CUỐI – CĂN CỘT CHUẨN NHƯ SÀN ===== */
+
+/* khóa layout bảng */
+#historyModal .history-table{
+  table-layout: fixed;
+}
+
+/* TIME */
+#historyModal th.th-time,
+#historyModal td:first-child{
+  text-align: left !important;
+}
+
+/* OPEN + CLOSE: header & body PHẢI giống nhau */
+#historyModal th.th-price,
+#historyModal td.price{
+  text-align: right !important;
+}
+
+/* % */
+#historyModal th.th-asset,
+#historyModal td:last-child{
+  text-align: right !important;
+}
+
+/* ép padding đồng nhất để không lệch */
+#historyModal th,
+#historyModal td{
+  padding: 6px 6px !important;
+  box-sizing: border-box;
 }
 
 
