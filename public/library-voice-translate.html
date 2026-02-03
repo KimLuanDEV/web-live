@@ -282,9 +282,10 @@
     🔁
   </div>
 
-  <div class="lang">🌍 EN / 中文</div>
+  <div class="lang" id="targetLangLabel" style="cursor:pointer">
+    🇺🇸 English
+  </div>
 </div>
-
 
 </div>
 
@@ -358,6 +359,27 @@ function updateSourceLang(){
     recognition.lang = "zh-CN";
   }
 }
+
+
+let targetLang = "en"; // en | zh-CN
+
+const targetLangLabel = document.getElementById("targetLangLabel");
+
+function updateTargetLang(){
+  if (targetLang === "en") {
+    targetLangLabel.textContent = "🇺🇸 English";
+  } else {
+    targetLangLabel.textContent = "🇨🇳 中文";
+  }
+}
+
+
+// 🔁 click đổi ngôn ngữ đích (EN ⇄ 中文)
+targetLangLabel.onclick = () => {
+  targetLang = targetLang === "en" ? "zh-CN" : "en";
+  updateTargetLang();
+};
+
 
 
 
@@ -543,25 +565,29 @@ btnTranslateText.onclick = async () => {
   div.appendChild(zh);
   historyList.prepend(div);
 
-// 🇺🇸 EN
-translateText(text, "en").then(result => {
+const out = document.createElement("div");
+out.className = targetLang === "en" ? "history-en" : "history-zh";
+out.textContent = "⏳ Translating...";
+
+div.appendChild(vn);
+div.appendChild(out);
+historyList.prepend(div);
+
+translateText(text, targetLang).then(result => {
   if (result) {
-    en.textContent = "🇺🇸 " + result;
-    en.onclick = () => speakEN(result);
+    out.textContent =
+      (targetLang === "en" ? "🇺🇸 " : "🇨🇳 ") + result;
+
+    out.onclick = () => {
+      targetLang === "en"
+        ? speakEN(result)
+        : speakZH(result);
+    };
   } else {
-    en.textContent = "⚠️ Không dịch được EN";
+    out.textContent = "⚠️ Không dịch được";
   }
 });
 
-// 🇨🇳 ZH
-translateText(text, "zh-CN").then(result => {
-  if (result) {
-    zh.textContent = "🇨🇳 " + result;
-    zh.onclick = () => speakZH(result);
-  } else {
-    zh.textContent = "⚠️ Không dịch được 中文";
-  }
-});
 
 };
 
@@ -601,30 +627,30 @@ div.className = "history-item";
 const vn = document.createElement("div");
 vn.textContent = finalText;
 
-// placeholder EN
-const en = document.createElement("div");
-en.className = "history-en";
-en.textContent = "⏳ Translating EN...";
-
-const zh = document.createElement("div");
-zh.className = "history-zh";
-zh.textContent = "⏳ Translating 中文...";
+// text dịch (1 bên duy nhất)
+const out = document.createElement("div");
+out.className = targetLang === "en" ? "history-en" : "history-zh";
+out.textContent = "⏳ Translating...";
 
 div.appendChild(vn);
-div.appendChild(en);
-div.appendChild(zh);
+div.appendChild(out);
 historyList.prepend(div);
 
-
-// 🇺🇸 ENGLISH
-translateText(finalText, "en").then(result => {
+translateText(finalText, targetLang).then(result => {
   if (result) {
-    en.textContent = "🇺🇸 " + result;
-    en.onclick = () => speakEN(result);
+    out.textContent =
+      (targetLang === "en" ? "🇺🇸 " : "🇨🇳 ") + result;
+
+    out.onclick = () => {
+      targetLang === "en"
+        ? speakEN(result)
+        : speakZH(result);
+    };
   } else {
-    en.textContent = "⚠️ Không dịch được EN";
+    out.textContent = "⚠️ Không dịch được";
   }
 });
+
 
 // 🇨🇳 CHINESE
 translateText(finalText, "zh-CN").then(result => {
