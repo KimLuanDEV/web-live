@@ -2406,6 +2406,33 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 #historyModal .th-asset{ width: 44px; }
 
 
+/* ===== FIX LỆCH OPEN / CLOSE HEADER ===== */
+
+/* TIME: left */
+#historyModal th.th-time,
+#historyModal td:first-child{
+  text-align: left !important;
+}
+
+/* OPEN + CLOSE: right (header + body đồng bộ) */
+#historyModal th.th-price,
+#historyModal td.price{
+  text-align: right !important;
+}
+
+/* % / ASSET: center */
+#historyModal th.th-asset,
+#historyModal td:last-child{
+  text-align: center !important;
+}
+
+/* đảm bảo padding giống nhau */
+#historyModal th,
+#historyModal td{
+  padding: 6px 4px !important;
+}
+
+
 </style>
 
 
