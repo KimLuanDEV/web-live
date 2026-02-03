@@ -396,8 +396,19 @@ for (let t = 1; t < 60; t++) {
     const rng = seededRandom(roundId + ":" + k + ":" + t);
 
     const prev = chart[k][t - 1];
-    const noise = (rng() - 0.5) * vol[k];
-    const bias  = trendBias[trends[k]];
+
+
+const open = chart[k][0];          // 🔥 OPEN hiện tại (close round trước)
+const BASE_OPEN = 100;             // 🔥 mốc chuẩn 100%
+
+const scale = open / BASE_OPEN;    // 🔥 tỉ lệ so với mốc chuẩn
+
+const noise =
+  (rng() - 0.5) * vol[k] * scale;
+
+const bias =
+  trendBias[trends[k]] * scale;
+
 
     chart[k][t] = Number((prev + noise + bias).toFixed(4));
   }
