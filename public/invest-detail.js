@@ -438,6 +438,14 @@ const socket = io({
 
 
 function renderHistory(list){
+
+// 🔒 CHỈ GIỮ 50 PHIÊN GẦN NHẤT (mới nhất ở trên)
+list = list
+  .slice()                     // tránh mutate list gốc
+  .sort((a,b) => b.ts - a.ts)  // mới → cũ
+  .slice(0, 50);
+
+
   if (!list?.length) {
     historyModalBody.innerHTML = `
       <tr>
