@@ -467,19 +467,28 @@ function renderHistory(list){
       close = chart[chart.length - 1]?.toFixed(2);
     }
 
-    return `
-      <tr>
-        <td>${new Date(r.ts).toLocaleTimeString([], {
-          hour: "2-digit",
-          minute: "2-digit"
-        })}</td>
+return `
+<tr class="history-row">
+  <td class="cell-time">
+    ${new Date(r.ts).toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit"
+    })}
+  </td>
 
-        <td class="price">${open}</td>
-        <td class="price">${close}</td>
+  <td class="cell-open">
+    <span>OPEN</span>
+    <b>${open}</b>
+  </td>
 
-        ${renderCell(v)}
-      </tr>
-    `;
+  <td class="cell-close">
+    <span>CLOSE</span>
+    <b>${close}</b>
+  </td>
+
+  ${renderCell(v)}
+</tr>
+`;
   }).join("");
 
   historyModalBody.innerHTML = html;
