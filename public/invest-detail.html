@@ -701,8 +701,25 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 .history-table{
-  min-width: 720px;
+  width: 100%;
+  min-width: 0;          /* 🔑 QUAN TRỌNG */
+  table-layout: fixed;  /* 🔑 khóa cột, không bung */
 }
+
+/* khóa độ rộng cột */
+.th-time{
+  width: 72px;
+}
+
+.th-asset{
+  width: calc(100% - 72px);
+}
+
+
+#historyModal .history-table-wrap{
+  overflow-x: hidden;
+}
+
 
 .asset-th img{
   width: 20px;
