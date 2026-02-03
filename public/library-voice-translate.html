@@ -5,6 +5,114 @@
   <title>🎙 Phiên dịch giọng nói</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
+
+
+
+
+  <style>
+
+    .voice-translate{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:22px;
+  margin-top:20px;
+}
+
+/* 🎧 Waveform */
+.wave-box{
+  width:100%;
+  max-width:320px;
+  padding:20px;
+  border-radius:16px;
+  background:#0f0f0f;
+  text-align:center;
+}
+
+.wave{
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  height:60px;
+  gap:6px;
+  margin-bottom:10px;
+}
+
+.wave span{
+  width:6px;
+  height:14px;
+  background:#4fa3ff;
+  border-radius:4px;
+  opacity:.4;
+}
+
+/* 🔥 active animation */
+.wave.active span{
+  animation: waveAnim 1s infinite ease-in-out;
+}
+.wave.active span:nth-child(odd){
+  animation-delay:.2s;
+}
+
+@keyframes waveAnim{
+  0%{height:10px;opacity:.3}
+  50%{height:52px;opacity:1}
+  100%{height:10px;opacity:.3}
+}
+
+.wave-text{
+  font-size:13px;
+  opacity:.6;
+}
+
+/* 🎙 Mic button */
+.mic-wrap{
+  display:flex;
+  justify-content:center;
+}
+
+.mic-btn{
+  width:86px;
+  height:86px;
+  border-radius:50%;
+  border:none;
+  font-size:34px;
+  background:linear-gradient(135deg,#ff4f4f,#ff8f4f);
+  color:#fff;
+  box-shadow:0 0 0 rgba(255,79,79,.6);
+}
+
+.mic-btn.recording{
+  animation: pulse 1.2s infinite;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 0 0 rgba(255,79,79,.6)}
+  70%{box-shadow:0 0 0 22px rgba(255,79,79,0)}
+  100%{box-shadow:0 0 0 0 rgba(255,79,79,0)}
+}
+
+/* 🌍 Language */
+.lang-box{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  opacity:.8;
+}
+
+.lang{
+  padding:6px 12px;
+  border-radius:10px;
+  background:#151515;
+  font-size:14px;
+}
+
+.lang-arrow{
+  opacity:.5;
+}
+
+
+  </style>
 </head>
 
 <body>
@@ -16,19 +124,64 @@
   <div class="page-title">🎙 Phiên dịch giọng nói</div>
 </div>
 
-<div class="container">
 
-  <div class="card" style="text-align:center;padding:20px">
-    🎧 Tính năng đang phát triển<br><br>
-    <small style="opacity:.6">
-      Sắp hỗ trợ:<br>
-      • Nhận giọng nói realtime<br>
-      • Dịch đa ngôn ngữ<br>
-      • Phát lại bằng giọng AI
-    </small>
+
+<div class="container voice-translate">
+
+  <!-- 🎧 WAVEFORM -->
+  <div class="wave-box" id="waveBox">
+    <div class="wave">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+    </div>
+    <div class="wave-text" id="waveText">Nhấn để bắt đầu thu âm</div>
+  </div>
+
+  <!-- 🎙 MIC BUTTON -->
+  <div class="mic-wrap">
+    <button class="mic-btn" id="micBtn">
+      🎙
+    </button>
+  </div>
+
+  <!-- 🌍 LANGUAGE (UI ONLY) -->
+  <div class="lang-box">
+    <div class="lang">🇻🇳 Tiếng Việt</div>
+    <div class="lang-arrow">→</div>
+    <div class="lang">🇺🇸 English</div>
   </div>
 
 </div>
+
+
+
+
+
+
+
+
+<script>
+const micBtn   = document.getElementById("micBtn");
+const wave     = document.querySelector(".wave");
+const waveText = document.getElementById("waveText");
+
+let recording = false;
+
+micBtn.onclick = () => {
+  recording = !recording;
+
+  if(recording){
+    micBtn.classList.add("recording");
+    wave.classList.add("active");
+    waveText.textContent = "🎧 Đang nghe giọng nói...";
+  }else{
+    micBtn.classList.remove("recording");
+    wave.classList.remove("active");
+    waveText.textContent = "⏹ Đã dừng thu âm";
+  }
+};
+</script>
+
 
 </body>
 </html>
