@@ -2340,6 +2340,45 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 
+/* ===== FORCE HIỂN THỊ ĐỦ 4 CỘT TRÊN MOBILE ===== */
+
+/* đảm bảo cell không bị ẩn */
+#historyModal th,
+#historyModal td{
+  display: table-cell !important;
+}
+
+/* ép OPEN / CLOSE hiện lại */
+#historyModal .th-price,
+#historyModal td.price{
+  display: table-cell !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
+/* khóa layout bảng */
+#historyModal .history-table{
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+/* width từng cột (mobile vẫn đủ) */
+#historyModal .th-time{ width: 52px; }
+#historyModal .th-price{ width: 60px; }
+#historyModal .th-asset{ width: 44px; }
+
+/* chữ gọn */
+#historyModal th,
+#historyModal td{
+  padding: 6px 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
 </style>
 
 
