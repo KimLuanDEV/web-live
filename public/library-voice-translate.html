@@ -180,6 +180,18 @@
 }
 
 
+.history-en{
+  cursor:pointer;
+  transition:.15s;
+}
+
+.history-en:active{
+  opacity:.6;
+  transform:scale(.98);
+}
+
+
+
   </style>
 </head>
 
@@ -324,6 +336,36 @@ async function translateToEN(text){
 
 
 
+function speakEN(text){
+  if (!window.speechSynthesis) {
+    alert("Trình duyệt không hỗ trợ phát giọng nói");
+    return;
+  }
+
+  // dừng giọng đang phát
+  speechSynthesis.cancel();
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "en-US";
+  utter.rate = 1;    // tốc độ
+  utter.pitch = 1;   // cao độ
+
+  // 🔍 chọn giọng EN tốt nhất
+  const voices = speechSynthesis.getVoices();
+  const enVoice =
+    voices.find(v => v.lang === "en-US" && /female|woman/i.test(v.name)) ||
+    voices.find(v => v.lang === "en-US") ||
+    voices[0];
+
+  if (enVoice) utter.voice = enVoice;
+
+  speechSynthesis.speak(utter);
+}
+
+
+
+
+
 recognition.onresult = (event) => {
   let interimText = "";
   let finalText = "";
@@ -371,10 +413,16 @@ historyList.prepend(div);
 translateToEN(finalText).then(result => {
   if (result) {
     en.textContent = "🇺🇸 " + result;
+
+    // 🎙 click để phát giọng AI
+    en.onclick = () => {
+      speakEN(result);
+    };
   } else {
     en.textContent = "⚠️ Không dịch được";
   }
 });
+
 
 
 if (isMobile && finalText) {
