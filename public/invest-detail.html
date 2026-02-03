@@ -60,6 +60,18 @@ html, body {
 }
 
 
+.history-table-wrap {
+  width: 100%;
+  overflow-x: auto;   /* chỉ table được scroll ngang */
+  -webkit-overflow-scrolling: touch;
+}
+
+.history-table {
+  width: 100%;
+  min-width: 100%;
+  border-collapse: collapse;
+}
+
 
 .page-invest-detail {
   overscroll-behavior-x: none;
@@ -86,7 +98,7 @@ html, body {
   overflow: hidden;
 
   /* ✨ bo góc */
-  border-radius: 0 !important;
+  border-radius: 16px;
 
   /* ✨ nền tối nhẹ */
   background: linear-gradient(
@@ -123,6 +135,9 @@ html, body {
   bottom: 6px;
 }
 
+.detail-chart.chart-wrap {
+  border-radius: 20px;
+}
 
 /* ===== GRADIENT THEO XU HƯỚNG ===== */
 .detail-chart.chart-wrap {
@@ -688,7 +703,9 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 
-
+.history-table{
+  min-width: 720px;
+}
 
 .asset-th img{
   width: 20px;
@@ -2038,200 +2055,49 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   overflow: hidden;
 }
 
-
-
-
-.round-timer {
-  min-width: 48px;
-  padding: 6px 10px;
-  border-radius: 999px;
-
-  font-size: 13px;
-  font-weight: 900;
-  letter-spacing: .3px;
-
-  background: rgba(15,15,15,.75);
-  color: #fff;
-
-  text-align: center;
-}
-.round-timer.locked {
-  color: #ffcc66;
-}
-
-
-/* ===== INVEST ACTION FULL WIDTH – DÍNH SÁT CHART ===== */
-.detail-invest.invest-action {
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-
-  /* ❌ bỏ khoảng hở */
-  margin-top: 0;
-  margin-bottom: 0;
-
-  /* padding gọn */
-  padding: 12px 12px 14px;
-
-  border-radius: 0 0 18px 18px;
-
-  background: linear-gradient(
-    180deg,
-    rgba(15,15,15,.95),
-    rgba(5,5,5,1)
-  );
-
-  box-shadow:
-    0 -8px 24px rgba(0,0,0,.45),
-    inset 0 1px 0 rgba(255,255,255,.04);
-}
-
-
-
-.detail-chart.chart-wrap {
-  margin-bottom: 0;
-}
-
-.detail-invest.invest-action {
-  position: relative;
-  top: -1px; /* ép sát tuyệt đối */
-}
-
-
-
-/* ===== CHART DÍNH SÁT HEADER ===== */
-.detail-chart.chart-wrap {
-  margin-top: 0 !important;
-  padding-top: 0 !important;
-}
-
-.page-invest-detail > .detail-chart:first-of-type {
-  margin-top: 0 !important;
-}
-
-
-.detail-chart.chart-wrap {
-  padding-left: 0 !important;
-  padding-right: 0 !important;
-}
-
-
-.detail-chart {
-  overflow: hidden !important;
-  border-radius: 0 !important;
-}
-
-.detail-chart::after,
-.detail-chart canvas {
-  border-radius: 0 !important;
-}
-
-
-
-
-/* ==================================================
-   HISTORY TABLE – CLEAN & PIXEL PERFECT
-   ================================================== */
-
-#historyModal .history-table-wrap{
-  width: 100%;
+/* TABLE WRAP */
+.history-table-wrap{
   height: 100%;
-  overflow-y: auto;
+  overflow: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-#historyModal .history-table{
+/* TABLE */
+.history-table{
   width: 100%;
+  min-width: 720px;
   border-collapse: collapse;
-  table-layout: fixed;       /* 🔑 khóa cột */
-  font-size: 13px;
 }
 
-/* ===== HEADER ===== */
-#historyModal thead th{
+.history-table th,
+.history-table td{
+  padding: 10px 8px;
+  text-align: center;
+  font-size: 13px;
+  border-bottom: 1px solid rgba(255,255,255,.05);
+}
+
+.history-table thead th{
   position: sticky;
   top: 0;
   z-index: 2;
-
-  background: #0d0d0d;
-  color: rgba(255,255,255,.6);
-
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: .8px;
-  text-transform: uppercase;
-
-  padding: 8px 6px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
+  background: #0e0e0e;
 }
 
-/* ===== BODY ===== */
-#historyModal tbody td{
-  padding: 8px 6px;
-  border-bottom: 1px solid rgba(255,255,255,.05);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ===== CỘT (CHUẨN NHẤT) ===== */
-#historyModal .th-time,
-#historyModal td.col-time{
-  width: 56px;
-  text-align: left;
-  font-size: 11px;
-  opacity: .7;
-}
-
-#historyModal .th-open,
-#historyModal td.col-open{
-  width: 72px;
-  text-align: right;
-  font-weight: 700;
-}
-
-#historyModal .th-close,
-#historyModal td.col-close{
-  width: 72px;
-  text-align: right;
-  font-weight: 700;
-}
-
-#historyModal .th-result,
-#historyModal td.col-result{
-  width: 56px;
-  text-align: right;
-  font-weight: 900;
-}
-
-/* ===== ICON ===== */
-#historyModal .th-result img{
-  width: 18px;
-  height: 18px;
+.history-table th img{
+  width: 20px;
+  height: 20px;
   object-fit: contain;
 }
 
-/* ===== MÀU KẾT QUẢ ===== */
-#historyModal td.col-result.up{ color:#00ff99; }
-#historyModal td.col-result.down{ color:#ff5c5c; }
-#historyModal td.col-result.neutral{ color:#aaa; }
+.history-table td.up{ color:#00ff99; font-weight:700; }
+.history-table td.down{ color:#ff5c5c; font-weight:700; }
+.history-table td.neutral{ color:#aaa; }
 
-/* ===== EMPTY ===== */
-#historyModal .empty{
-  text-align: center;
-  padding: 32px 0;
-  opacity: .5;
-}
-
-
-.fs-title small{
-  margin-left: 6px;
-  font-size: 11px;
-  font-weight: 600;
+.history-table .empty{
+  padding: 40px;
   opacity: .6;
-  letter-spacing: .3px;
 }
-
 
 
 
@@ -2268,10 +2134,9 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
   <!-- ⏳ TIMER (GÓC TRÁI) -->
-<div id="roundTimer" class="round-timer overlay-timer">
-  <span class="timer-text">60s</span>
-</div>
-
+  <div id="roundTimer" class="round-timer overlay-timer">
+    ⏳
+  </div>
 
   <!-- 🔴 LIVE BADGE (GÓC PHẢI) -->
   <div id="liveBadge" class="live-badge-fixed">
@@ -2433,9 +2298,6 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <!-- ⚡ QUICK ADD -->
   <div class="coin-quick">
-    <button data-add="10">+10</button>
-    <button data-add="20">+20</button>
-    <button data-add="50">+50</button>
     <button data-add="100">+100</button>
     <button data-add="500">+500</button>
     <button data-add="1000">+1K</button>
@@ -2472,9 +2334,7 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   <!-- HEADER -->
   <div class="fs-header">
     <button class="fs-close" id="btnCloseHistory">✕</button>
- <div class="fs-title">
-  Lịch sử các phiên <small>(50 phiên gần nhất)</small>
-</div>
+    <div class="fs-title">Lịch sử các phiên</div>
     <div class="fs-spacer"></div>
   </div>
 
@@ -2482,25 +2342,23 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   <div class="fs-body">
     <div class="history-table-wrap">
       <table class="history-table">
-<thead>
-  <tr>
-<th class="th-time">TIME</th>
-<th class="th-open">OPEN</th>
-<th class="th-close">CLOSE</th>
-<th class="th-result">
-  <img id="historyAssetIcon" alt="">
-</th>
+        <thead>
+          <tr>
+            <th>🕒</th>
+            <th><img src="/assets/silver.png"></th>
+            <th><img src="/assets/gold.png"></th>
+            <th><img src="/assets/diamond.png"></th>
+            <th><img src="/assets/oil.png"></th>
+            <th><img src="/assets/estate.png"></th>
+            <th><img src="/assets/atomic.png"></th>
+          </tr>
+        </thead>
 
-  </tr>
-</thead>
-
-<tbody id="roundHistoryModal">
-  <tr>
-    <td colspan="4" class="empty">Chưa có dữ liệu</td>
-  </tr>
-</tbody>
-
-
+        <tbody id="roundHistoryModal">
+          <tr>
+            <td colspan="7" class="empty">Chưa có dữ liệu</td>
+          </tr>
+        </tbody>
       </table>
     </div>
   </div>

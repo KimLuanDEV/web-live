@@ -341,79 +341,68 @@ function pickTrend(rng) {
 
 
 
-function generateChart(roundId, basePrice = {}) {
-  const fallbackBase = 100;
-
+function generateChart(roundId) {
+  const base = 100;
   const vol = {
-    gold: 1,
-    silver: 1.5,
-    diamond: 3,
-    oil: 5,
-    estate: 3.5,
-    atomic: 8.5
-  };
+  gold: 1,
+  silver: 1.5,
+  diamond: 3,
+  oil: 5,        // 🔥 rung mạnh
+  estate: 3.5,
+  atomic: 8.5 
+};
 
-  const chart = {
-    gold: [],
-    silver: [],
-    diamond: [],
-    oil: [],
-    estate: [],
-    atomic: []
-  };
 
-  // 🔥 RNG gốc cho cả phiên
+const chart = {
+  gold: [],
+  silver: [],
+  diamond: [],
+  oil: [],
+  estate: [],
+  atomic: []
+};
+
+
+  // 🔥 1️⃣ RNG gốc cho cả phiên
   const roundRng = seededRandom("trend:" + roundId);
 
-  const trends = {
-    gold: pickTrend(roundRng),
-    silver: pickTrend(roundRng),
-    diamond: pickTrend(roundRng),
-    oil: pickTrend(roundRng),
-    estate: pickTrend(roundRng),
-    atomic: pickTrend(roundRng)
-  };
+  // 🧠 2️⃣ Chọn trend cho từng asset
+const trends = {
+  gold: pickTrend(roundRng),
+  silver: pickTrend(roundRng),
+  diamond: pickTrend(roundRng),
+  oil: pickTrend(roundRng),
+  estate: pickTrend(roundRng),
+   atomic: pickTrend(roundRng)
+};
 
+
+  // 📈 3️⃣ Bias theo trend
   const trendBias = {
-    UP: 0.04,
+    UP:   0.04,
     DOWN: -0.04,
     SIDE: 0
   };
 
-// ✅ GIÂY 0 = GIÁ CHUẨN (KHỚP CLOSE ROUND TRƯỚC)
-for (const k in chart) {
-  const base0 =
-    typeof basePrice[k] === "number"
-      ? basePrice[k]
-      : fallbackBase;
+  for (let t = 0; t < 60; t++) {
+    for (const k in chart) {
+      const rng = seededRandom(roundId + ":" + k + ":" + t);
+      const prev = chart[k][t - 1] ?? base;
 
-  chart[k][0] = Number(base0.toFixed(4));
-}
+      const noise = (rng() - 0.5) * vol[k];
+      const bias  = trendBias[trends[k]];
 
-// ✅ RANDOM TỪ GIÂY 1 → 59
-for (let t = 1; t < 60; t++) {
-  for (const k in chart) {
-    const rng = seededRandom(roundId + ":" + k + ":" + t);
+let next = prev + noise + bias;
 
-    const prev = chart[k][t - 1];
+// 🔥 KHÔNG CLAMP – GIÁ TỰ DO
+chart[k][t] = Number(next.toFixed(4));
 
 
-const open = chart[k][0];          // 🔥 OPEN hiện tại (close round trước)
-const BASE_OPEN = 100;             // 🔥 mốc chuẩn 100%
-
-const scale = open / BASE_OPEN;    // 🔥 tỉ lệ so với mốc chuẩn
-
-const noise =
-  (rng() - 0.5) * vol[k] * scale;
-
-const bias =
-  trendBias[trends[k]] * scale;
-
-
-    chart[k][t] = Number((prev + noise + bias).toFixed(4));
+    }
   }
-}
 
+  // 🔎 (optional) log debug
+  console.log("📊 Round", roundId, "trends:", trends);
 
   return chart;
 }
@@ -643,11 +632,7 @@ io.emit("invest-round-result", {
 investHistory.unshift({
   roundId: round.id,
   ts: Date.now(),
-
-  // 🔥 LƯU GIÁ CHUẨN
-  openPrice: round.openPrice,
-  endPrice,
-
+  chart: round.chart,
   result,
   orders: round.orders.map(o => ({
     uid: o.uid,
@@ -656,7 +641,6 @@ investHistory.unshift({
     entryPrice: o.entryPrice
   }))
 });
-
 
 // 🔥 CHỈ GIỮ ROUND TRONG 24H
 const now = Date.now();
@@ -674,21 +658,15 @@ saveInvestHistory(investHistory);
   // ================================
  const id = Date.now();
 
-const chart = generateChart(id, endPrice);
-
-
 investRound = {
   id,
   startAt: id,
   endAt: id + 60000,
   orders: [],
-  chart,
-
-  // ✅ OPEN = CLOSE round trước (CHUẨN SÀN)
-  openPrice: { ...endPrice },
-
-  closedEarly: []
+  chart: generateChart(id),
+  closedEarly: [] // 🔒 LƯU USER ĐÃ CHỐT SỚM
 };
+
 
 saveInvestState(investRound);
 
@@ -1000,12 +978,8 @@ app.get("/api/invest/history", (req, res) => {
   res.json({
     ok: true,
     list: investHistory
-      .slice()
-      .sort((a,b) => b.ts - a.ts)
-      .slice(0, 50)
   });
 });
-
 
 
 

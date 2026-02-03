@@ -130,23 +130,6 @@ document.getElementById("assetTitle").innerHTML =
   `${c.name}`;
 
 
-// ===== HISTORY ICON THEO ASSET =====
-const iconMap = {
-  gold: "/assets/gold.png",
-  silver: "/assets/silver.png",
-  diamond: "/assets/diamond.png",
-  oil: "/assets/oil.png",
-  estate: "/assets/estate.png",
-  atomic: "/assets/atomic.png"
-};
-
-const iconEl = document.getElementById("historyAssetIcon");
-if (iconEl && iconMap[asset]) {
-  iconEl.src = iconMap[asset];
-}
-
-
-
 document.getElementById("analysisText").innerHTML = `
   <li>🌊 Biến động: ${c.vol >= 6 ? "CỰC CAO" : c.vol >= 3 ? "CAO" : "TRUNG BÌNH"}</li>
   <li>🎯 Biên độ giao động mở</li>
@@ -316,67 +299,33 @@ pnlHistoryList.addEventListener("click", e => {
 
 
 
-function openRoundSnapshot(roundId, asset) {
+function openRoundSnapshot(roundId, asset){
+
+
+  // 🔥 ĐÓNG PNL HISTORY TRƯỚC KHI MỞ SNAPSHOT
   closePnlHistory();
 
+  // fetch lịch sử round
   fetch("/api/invest/history")
     .then(r => r.json())
     .then(d => {
       if (!d.ok) return;
 
-      const round = d.list.find(
-        r => String(r.roundId) === String(roundId)
-      );
-
+      const round = d.list.find(r => String(r.roundId) === String(roundId));
       if (!round) {
         showModal("❌ Lỗi", "Không tìm thấy dữ liệu round.");
         return;
       }
 
-      // 🔥 CHUẨN HOÁ DATA CHART
-      const rawChart = round.chart?.[asset] || [];
-      const chartData = Array.isArray(rawChart)
-        ? rawChart.filter(v => typeof v === "number")
-        : [];
+      // chart snapshot chỉ cần giá đầu → cuối
+openSnapshotFS(
+  round.chart?.[asset],
+  round.orders,
+  asset
+);
 
-      if (chartData.length < 2) {
-        showModal("⚠️ Không khả dụng", "Phiên này không có dữ liệu chart.");
-        return;
-      }
-
-      openSnapshotFS(chartData, round.orders, asset);
     });
 }
-
-
-function drawSnapshotChart(canvas, data) {
-  const ctx = canvas.getContext("2d");
-  const W = canvas.width;
-  const H = canvas.height;
-
-  ctx.clearRect(0, 0, W, H);
-
-  const min = Math.min(...data);
-  const max = Math.max(...data);
-  const pad = (max - min) * 0.15 || 1;
-
-  const toY = v =>
-    H - ((v - (min - pad)) / ((max + pad) - (min - pad))) * H;
-
-  ctx.strokeStyle = "#00ff99";
-  ctx.lineWidth = 2;
-  ctx.beginPath();
-
-  data.forEach((v, i) => {
-    const x = i * (W / (data.length - 1));
-    const y = toY(v);
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  });
-
-  ctx.stroke();
-}
-
 
 
 
@@ -471,76 +420,25 @@ const socket = io({
 });
 
 
+
 function renderHistory(list){
+  if (!list?.length) return;
 
-// 🔒 CHỈ GIỮ 50 PHIÊN GẦN NHẤT (mới nhất ở trên)
-list = list
-  .slice()                     // tránh mutate list gốc
-  .sort((a,b) => b.ts - a.ts)  // mới → cũ
-  .slice(0, 50);
+  const html = list.map(r => `
+    <tr>
+      <td>${new Date(r.ts).toLocaleTimeString()}</td>
+      ${renderCell(r.result?.silver)}
+      ${renderCell(r.result?.gold)}
+      ${renderCell(r.result?.diamond)}
+      ${renderCell(r.result?.oil)}
+      ${renderCell(r.result?.estate)}
+      ${renderCell(r.result?.atomic)}
+    </tr>
+  `).join("");
 
-
-  if (!list?.length) {
-    historyModalBody.innerHTML = `
-      <tr>
-        <td colspan="4" class="empty">Chưa có dữ liệu</td>
-      </tr>
-    `;
-    return;
-  }
-
-  const html = list.map((r, idx) => {
-    const v = r.result?.[asset] ?? 0;
-
-    // =========================
-    // ✅ OPEN / CLOSE CHUẨN
-    // =========================
-
-    // 🔹 OPEN: ƯU TIÊN server
-    let open = "--";
-    if (typeof r.openPrice?.[asset] === "number") {
-      open = r.openPrice[asset].toFixed(2);
-    }
-
-    // 🔹 CLOSE: ƯU TIÊN server
-    let close = "--";
-    if (typeof r.endPrice?.[asset] === "number") {
-      close = r.endPrice[asset].toFixed(2);
-    }
-
-    // =========================
-    // ⚠️ FALLBACK CUỐI CÙNG (TẠM)
-    // =========================
-    if (open === "--" && idx > 0) {
-      const prev = list[idx - 1];
-      const prevClose = prev?.endPrice?.[asset];
-      if (typeof prevClose === "number") {
-        open = prevClose.toFixed(2);
-      }
-    }
-
-    return `
-      <tr class="history-row">
-        <td class="col-time">
-          ${new Date(r.ts).toLocaleTimeString([], {
-            hour: "2-digit",
-            minute: "2-digit"
-          })}
-        </td>
-
-        <td class="col-open">${open}</td>
-        <td class="col-close">${close}</td>
-
-        <td class="col-result ${v > 0 ? "up" : v < 0 ? "down" : "neutral"}">
-          ${v > 0 ? "+" : ""}${v}%
-        </td>
-      </tr>
-    `;
-  }).join("");
-
-  historyModalBody.innerHTML = html;
+  if (historyEl) historyEl.innerHTML = html;
+  if (historyModalBody) historyModalBody.innerHTML = html;
 }
-
 
 
 
@@ -576,6 +474,13 @@ ordersModalList.innerHTML = roundOrders.map(o => {
 
 
 
+function renderCell(v){
+  if (v > 0)
+    return `<td class="up">+${v}%</td>`;
+  if (v < 0)
+    return `<td class="down">${v}%</td>`;
+  return `<td class="neutral">0%</td>`;
+}
 
 
 
@@ -724,10 +629,11 @@ let roundOrders = [];
 let entryMarkers = []; // 📍 điểm vào lệnh
 
 
+
 const timerEl = document.getElementById("roundTimer");
 if (timerEl && !timerEl.querySelector(".timer-text")) {
   timerEl.innerHTML = `
-    <span class="timer-text">60s</span>
+    <span class="timer-text">⏳</span>
   `;
 }
 
@@ -787,41 +693,51 @@ function startRoundTimer(endAt){
     const textEl =
       timerEl.querySelector(".timer-text");
 
+    if (left > 5) {
+      // 🟢 ĐANG CHẠY
+      textEl.textContent = `⏳ ${left}s`;
+      timerEl.className =
+        "round-timer overlay-timer running";
 
-if (left > 5) {
-  // 🟢 ĐANG CHẠY
-  textEl.textContent = `${left}`;
-  timerEl.className =
-    "round-timer overlay-timer running";
+  
 
-  if (!joinedRound) {
-    investBtn.disabled = false;
-    investBtn.textContent = "START";
-  }
+if (!joinedRound) {
+  investBtn.disabled = false;
+  investBtn.textContent = "START";
 }
-else if (left > 0) {
-  // 🔴 SẮP CHỐT
-  textEl.textContent = `${left}`;
-  timerEl.className =
-    "round-timer overlay-timer locked";
 
-  if (!joinedRound) {
-    investBtn.disabled = true;
-    investBtn.textContent = "LOCKED";
-  }
-}
-else {
-  // 🔒 HẾT GIỜ
-  textEl.textContent = "0";
-  timerEl.className =
-    "round-timer overlay-timer locked";
 
-  timerEl.style.setProperty("--progress", 0);
 
+    }
+    else if (left > 0) {
+      // 🔴 SẮP CHỐT
+      textEl.textContent = `🔒 ${left}s`;
+      timerEl.className =
+        "round-timer overlay-timer locked";
+
+
+
+if (!joinedRound) {
   investBtn.disabled = true;
-  investBtn.textContent = "LOCKED";
+  investBtn.textContent = "⛔ LOCKED";
 }
 
+
+    }
+    else {
+      // 🔐 ĐANG CHỐT
+      textEl.textContent = "🔐";
+      timerEl.className =
+        "round-timer overlay-timer locked";
+
+
+
+
+      timerEl.style.setProperty("--progress", 0);
+
+      investBtn.disabled = true;
+      investBtn.textContent = "⛔ LOCKED";
+    }
   }, 500);
 }
 
