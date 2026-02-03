@@ -2183,6 +2183,82 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   100%{ box-shadow:0 0 0 0 rgba(255,204,102,0); }
 }
 
+/* ===== ROUND TIMER – MINIMAL TRADE STYLE ===== */
+.round-timer-min{
+  position:absolute;
+  top:16px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:6;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:6px;
+
+  padding:6px 10px;
+  border-radius:999px;
+
+  background:rgba(18,18,18,.65);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow:
+    0 6px 20px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.06);
+
+  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+}
+
+/* chữ */
+.round-timer-min .rt-text{
+  font-size:11px;
+  font-weight:700;
+  letter-spacing:.6px;
+  color:#ccc;
+}
+
+/* thanh progress */
+.round-timer-min .rt-bar{
+  width:64px;
+  height:2px;
+  background:rgba(255,255,255,.12);
+  border-radius:2px;
+  overflow:hidden;
+}
+
+/* thanh chạy */
+.round-timer-min .rt-bar i{
+  display:block;
+  height:100%;
+  width:100%;
+  background:#00ff99;
+  transform-origin:left;
+  transform:scaleX(var(--progress,1));
+  transition:transform .4s linear;
+}
+
+/* ===== STATE ===== */
+.round-timer-min.running .rt-text{
+  color:#9fffd6;
+}
+
+.round-timer-min.locked .rt-text{
+  color:#ffcc66;
+}
+
+.round-timer-min.locked .rt-bar i{
+  background:#ffcc66;
+}
+
+.round-timer-min.closed .rt-text{
+  color:#ff5c5c;
+}
+
+.round-timer-min.closed .rt-bar i{
+  background:#ff5c5c;
+}
+
 
 
 </style>
@@ -2218,10 +2294,13 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
   <!-- ⏳ TIMER (GÓC TRÁI) -->
-<div id="roundTimer" class="round-timer overlay-timer">
-  <span class="timer-ring"></span>
-  <span class="timer-text">⏳</span>
+<div id="roundTimer" class="round-timer-min">
+  <span class="rt-text">00s</span>
+  <span class="rt-bar">
+    <i></i>
+  </span>
 </div>
+
 
   <!-- 🔴 LIVE BADGE (GÓC PHẢI) -->
   <div id="liveBadge" class="live-badge-fixed">

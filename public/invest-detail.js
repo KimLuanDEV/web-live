@@ -631,13 +631,12 @@ let entryMarkers = []; // 📍 điểm vào lệnh
 
 
 const timerEl = document.getElementById("roundTimer");
-if (timerEl && !timerEl.querySelector(".timer-text")) {
+if (timerEl && !timerEl.querySelector(".rt-text")) {
   timerEl.innerHTML = `
-    <span class="timer-ring"></span>
-    <span class="timer-text">⏳</span>
+    <span class="rt-text">--</span>
+    <span class="rt-bar"><i></i></span>
   `;
 }
-
 
 
 
@@ -667,7 +666,6 @@ function hideCloseEarlyButton(){
 
 
 
-
 function startRoundTimer(endAt){
   roundEndAt = endAt;
   clearInterval(timerInt);
@@ -680,66 +678,55 @@ function startRoundTimer(endAt){
 
     if (!timerEl) return;
 
-    // % tiến trình (0 → 1)
+    // progress 1 → 0
     const progress = Math.max(
       0,
       Math.min(1, left / ROUND_DURATION)
     );
 
-    // set CSS variable cho vòng tròn
-    timerEl.style.setProperty(
-      "--progress",
-      progress
-    );
+    // set progress cho thanh ngang
+    timerEl.style.setProperty("--progress", progress);
 
-    const textEl =
-      timerEl.querySelector(".timer-text");
+    const textEl = timerEl.querySelector(".rt-text");
+    if (!textEl) return;
+
+    /* ======================
+       STATE TIMER
+    ====================== */
 
     if (left > 5) {
       // 🟢 ĐANG CHẠY
-      textEl.textContent = `⏳ ${left}s`;
-      timerEl.className =
-        "round-timer overlay-timer running";
+      textEl.textContent = `${left}s`;
+      timerEl.className = "round-timer-min running";
 
-  
-
-if (!joinedRound) {
-  investBtn.disabled = false;
-  investBtn.textContent = "START";
-}
-
-
+      if (!joinedRound) {
+        investBtn.disabled = false;
+        investBtn.textContent = "START";
+      }
 
     }
     else if (left > 0) {
-      // 🔴 SẮP CHỐT
-      textEl.textContent = `🔒 ${left}s`;
-      timerEl.className =
-        "round-timer overlay-timer locked";
+      // 🟠 SẮP KHÓA
+      textEl.textContent = `${left}s`;
+      timerEl.className = "round-timer-min locked";
 
-
-
-if (!joinedRound) {
-  investBtn.disabled = true;
-  investBtn.textContent = "⛔ LOCKED";
-}
-
+      if (!joinedRound) {
+        investBtn.disabled = true;
+        investBtn.textContent = "LOCKED";
+      }
 
     }
     else {
-      // 🔐 ĐANG CHỐT
-      textEl.textContent = "🔐";
-      timerEl.className =
-        "round-timer overlay-timer locked";
-
-
-
+      // 🔴 ĐÃ KHÓA
+      textEl.textContent = "LOCKED";
+      timerEl.className = "round-timer-min closed";
 
       timerEl.style.setProperty("--progress", 0);
 
       investBtn.disabled = true;
-      investBtn.textContent = "⛔ LOCKED";
+      investBtn.textContent = "LOCKED";
     }
+
   }, 500);
 }
 
