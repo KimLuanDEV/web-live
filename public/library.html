@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>📚 Thư viện</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/style.css">
+
+
+
+<style>
+
+    .page-library{
+  background:#0e0e12;
+  color:#fff;
+  min-height:100vh;
+}
+
+.simple-header{
+  height:52px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:0 12px;
+  background:#111;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.simple-header .title{
+  font-weight:700;
+  font-size:16px;
+}
+
+.back-btn{
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.library-container{
+  padding:20px;
+}
+
+.library-empty{
+  margin-top:60px;
+  text-align:center;
+  opacity:.85;
+}
+
+.library-empty .icon{
+  font-size:48px;
+  margin-bottom:12px;
+}
+
+
+</style>
+
+
+</head>
+<body class="page-library">
+
+<script src="/guard.js"></script>
+
+<header class="simple-header">
+  <button onclick="history.back()" class="back-btn">←</button>
+  <div class="title">📚 Thư viện</div>
+</header>
+
+<main class="library-container">
+
+  <div class="library-empty">
+    <div class="icon">🧩</div>
+    <h3>Thư viện đang phát triển</h3>
+    <p>
+      Nơi này sẽ dùng để mở rộng các module mới:<br>
+      🎮 Game mới · 📦 Tài nguyên · 📊 Dữ liệu · 🧠 Ý tưởng
+    </p>
+  </div>
+
+</main>
+
+</body>
+</html>
