@@ -56,6 +56,76 @@
 }
 
 
+
+.library-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+/* CARD */
+.lib-card{
+  position:relative;
+  background:#15151c;
+  border-radius:16px;
+  padding:16px 14px;
+  min-height:110px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+
+  border:1px solid rgba(255,255,255,.06);
+  transition:.2s;
+}
+
+/* ACTIVE */
+.lib-card.active{
+  cursor:pointer;
+}
+.lib-card.active:active{
+  transform:scale(.97);
+}
+
+/* LOCKED */
+.lib-card.locked{
+  opacity:.55;
+  filter:grayscale(1);
+}
+
+/* ICON */
+.lib-icon{
+  font-size:28px;
+  margin-bottom:8px;
+}
+
+/* TEXT */
+.lib-title{
+  font-weight:800;
+  font-size:15px;
+}
+.lib-desc{
+  font-size:12px;
+  opacity:.75;
+  margin-top:2px;
+}
+
+/* BADGE */
+.lib-lock{
+  position:absolute;
+  top:8px;
+  right:8px;
+  font-size:10px;
+  font-weight:800;
+  padding:4px 6px;
+  border-radius:8px;
+  background:#ff3b3b;
+  color:#fff;
+}
+
+
+
+
 </style>
 
 
@@ -71,14 +141,73 @@
 
 <main class="library-container">
 
-  <div class="library-empty">
-    <div class="icon">🧩</div>
-    <h3>Thư viện đang phát triển</h3>
-    <p>
-      Nơi này sẽ dùng để mở rộng các module mới:<br>
-      🎮 Game mới · 📦 Tài nguyên · 📊 Dữ liệu · 🧠 Ý tưởng
-    </p>
+
+
+
+<div class="library-grid">
+
+  <!-- 🎮 GAME -->
+  <div class="lib-card active" onclick="location.href='/invest.html'">
+    <div class="lib-icon">🎮</div>
+    <div class="lib-title">Game đầu tư</div>
+    <div class="lib-desc">Vàng · Bạc · Atomic</div>
   </div>
+
+  <!-- 🧠 AI / TOOL -->
+  <div class="lib-card locked">
+    <div class="lib-icon">🧠</div>
+    <div class="lib-title">AI Tool</div>
+    <div class="lib-desc">Phân tích & gợi ý</div>
+    <div class="lib-lock">COMING SOON</div>
+  </div>
+
+  <!-- 📦 MARKET -->
+  <div class="lib-card active" onclick="location.href='/market.html'">
+    <div class="lib-icon">📦</div>
+    <div class="lib-title">Market</div>
+    <div class="lib-desc">Booth · Sản phẩm</div>
+  </div>
+
+  <!-- 🎲 GAME KHÁC -->
+  <div class="lib-card locked">
+    <div class="lib-icon">🎲</div>
+    <div class="lib-title">Mini Game</div>
+    <div class="lib-desc">Wheel · Event</div>
+    <div class="lib-lock">LOCKED</div>
+  </div>
+
+  <!-- 📊 DATA -->
+  <div class="lib-card locked">
+    <div class="lib-icon">📊</div>
+    <div class="lib-title">Dữ liệu</div>
+    <div class="lib-desc">Lịch sử · Thống kê</div>
+    <div class="lib-lock">SOON</div>
+  </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 </main>
 
