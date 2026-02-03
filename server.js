@@ -380,24 +380,29 @@ function generateChart(roundId, basePrice = {}) {
     SIDE: 0
   };
 
-  for (let t = 0; t < 60; t++) {
-    for (const k in chart) {
-      const rng = seededRandom(roundId + ":" + k + ":" + t);
+// ✅ GIÂY 0 = GIÁ CHUẨN (KHỚP CLOSE ROUND TRƯỚC)
+for (const k in chart) {
+  const base0 =
+    typeof basePrice[k] === "number"
+      ? basePrice[k]
+      : fallbackBase;
 
-      // 🔥 GIÁ GỐC ĐÚNG
-      const prev =
-        t === 0
-          ? (typeof basePrice[k] === "number"
-              ? basePrice[k]
-              : fallbackBase)
-          : chart[k][t - 1];
+  chart[k][0] = Number(base0.toFixed(4));
+}
 
-      const noise = (rng() - 0.5) * vol[k];
-      const bias  = trendBias[trends[k]];
+// ✅ RANDOM TỪ GIÂY 1 → 59
+for (let t = 1; t < 60; t++) {
+  for (const k in chart) {
+    const rng = seededRandom(roundId + ":" + k + ":" + t);
 
-      chart[k][t] = Number((prev + noise + bias).toFixed(4));
-    }
+    const prev = chart[k][t - 1];
+    const noise = (rng() - 0.5) * vol[k];
+    const bias  = trendBias[trends[k]];
+
+    chart[k][t] = Number((prev + noise + bias).toFixed(4));
   }
+}
+
 
   return chart;
 }
@@ -668,20 +673,11 @@ investRound = {
   orders: [],
   chart,
 
-  // 🔥 OPEN PRICE CHUẨN – SERVER QUYẾT ĐỊNH
-  openPrice: {
-    gold: chart.gold[0],
-    silver: chart.silver[0],
-    diamond: chart.diamond[0],
-    oil: chart.oil[0],
-    estate: chart.estate[0],
-    atomic: chart.atomic[0]
-  },
+  // ✅ OPEN = CLOSE round trước (CHUẨN SÀN)
+  openPrice: { ...endPrice },
 
   closedEarly: []
 };
-
-
 
 saveInvestState(investRound);
 
