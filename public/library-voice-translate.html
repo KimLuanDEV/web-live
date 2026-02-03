@@ -208,6 +208,38 @@
 }
 
 
+.input-box{
+  width:100%;
+  max-width:360px;
+  background:#0f0f0f;
+  border-radius:14px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+#manualInput{
+  width:100%;
+  background:#151515;
+  border:none;
+  border-radius:10px;
+  padding:10px;
+  color:#fff;
+  font-size:14px;
+  resize:none;
+  outline:none;
+}
+
+#btnTranslateText{
+  padding:10px;
+  border-radius:10px;
+  border:none;
+  background:linear-gradient(135deg,#4fa3ff,#6a5cff);
+  color:#fff;
+  font-weight:600;
+}
+
 
 
   </style>
@@ -257,6 +289,20 @@
   <div class="live-label">🎧 Đang nhận giọng nói</div>
   <div class="live-text" id="liveText">...</div>
 </div>
+
+
+<!-- ✍️ MANUAL INPUT -->
+<div class="input-box">
+  <textarea id="manualInput"
+    placeholder="✍️ Nhập nội dung cần dịch..."
+    rows="3"></textarea>
+
+  <button id="btnTranslateText">
+    🌍 Dịch văn bản
+  </button>
+</div>
+
+
 
 <!-- 📜 HISTORY -->
 <div class="history-box">
@@ -423,6 +469,65 @@ function speakZH(text){
 
   speechSynthesis.speak(utter);
 }
+
+
+
+
+
+const manualInput = document.getElementById("manualInput");
+const btnTranslateText = document.getElementById("btnTranslateText");
+
+btnTranslateText.onclick = async () => {
+  const text = manualInput.value.trim();
+  if (!text) return;
+
+  manualInput.value = "";
+
+  // xoá placeholder
+  historyList.querySelector(".history-empty")?.remove();
+
+  const div = document.createElement("div");
+  div.className = "history-item";
+
+  // VN
+  const vn = document.createElement("div");
+  vn.textContent = text;
+
+  // EN
+  const en = document.createElement("div");
+  en.className = "history-en";
+  en.textContent = "⏳ Translating EN...";
+
+  // ZH
+  const zh = document.createElement("div");
+  zh.className = "history-zh";
+  zh.textContent = "⏳ Translating 中文...";
+
+  div.appendChild(vn);
+  div.appendChild(en);
+  div.appendChild(zh);
+  historyList.prepend(div);
+
+  // 🇺🇸 EN
+  translateToEN(text).then(result => {
+    if (result) {
+      en.textContent = "🇺🇸 " + result;
+      en.onclick = () => speakEN(result);
+    } else {
+      en.textContent = "⚠️ Không dịch được EN";
+    }
+  });
+
+  // 🇨🇳 ZH
+  translateToZH(text).then(result => {
+    if (result) {
+      zh.textContent = "🇨🇳 " + result;
+      zh.onclick = () => speakZH(result);
+    } else {
+      zh.textContent = "⚠️ Không dịch được 中文";
+    }
+  });
+};
 
 
 
