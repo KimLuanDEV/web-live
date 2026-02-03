@@ -275,11 +275,16 @@
   </div>
 
   <!-- 🌍 LANGUAGE (UI ONLY) -->
-  <div class="lang-box">
-    <div class="lang">🇻🇳 Tiếng Việt</div>
-    <div class="lang-arrow">→</div>
-    <div class="lang">🇺🇸 English</div>
+<div class="lang-box">
+  <div class="lang" id="srcLangLabel">🇻🇳 Tiếng Việt</div>
+
+  <div class="lang-arrow" id="btnSwapLang" style="cursor:pointer">
+    🔁
   </div>
+
+  <div class="lang">🌍 EN / 中文</div>
+</div>
+
 
 </div>
 
@@ -331,6 +336,31 @@ const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 let recognition;
 let recording = false;
 
+
+let sourceLang = "vi"; // vi | en | zh
+
+const srcLangLabel = document.getElementById("srcLangLabel");
+const btnSwapLang  = document.getElementById("btnSwapLang");
+
+function updateSourceLang(){
+  if (!recognition) return;
+
+  if (sourceLang === "vi") {
+    srcLangLabel.textContent = "🇻🇳 Tiếng Việt";
+    recognition.lang = "vi-VN";
+  }
+  else if (sourceLang === "en") {
+    srcLangLabel.textContent = "🇺🇸 English";
+    recognition.lang = "en-US";
+  }
+  else if (sourceLang === "zh") {
+    srcLangLabel.textContent = "🇨🇳 中文";
+    recognition.lang = "zh-CN";
+  }
+}
+
+
+
 // ✅ CHECK BROWSER SUPPORT
 const SpeechRecognition =
   window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -342,6 +372,29 @@ if (!SpeechRecognition) {
 
   recognition = new SpeechRecognition();
   recognition.lang = "vi-VN";      // 🌍 ngôn ngữ nguồn
+  updateSourceLang();
+
+
+btnSwapLang.onclick = () => {
+  // xoay vòng: vi → en → zh → vi
+  sourceLang =
+    sourceLang === "vi" ? "en" :
+    sourceLang === "en" ? "zh" :
+    "vi";
+
+  // nếu đang thu mic → restart để áp dụng ngôn ngữ mới
+  if (recording) {
+    try { recognition.stop(); } catch(e){}
+    setTimeout(() => {
+      updateSourceLang();
+      try { recognition.start(); } catch(e){}
+    }, 300);
+  } else {
+    updateSourceLang();
+  }
+};
+
+
 
 recognition.continuous = !isMobile;   // mobile: false, PC: true
 recognition.interimResults = true;
@@ -380,12 +433,11 @@ recognition.onend = () => {
 
 
 
-
-async function translateToEN(text){
+async function translateText(text, targetLang){
   try{
     const url =
       "https://translate.googleapis.com/translate_a/single" +
-      "?client=gtx&sl=vi&tl=en&dt=t&q=" +
+      `?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=` +
       encodeURIComponent(text);
 
     const res = await fetch(url);
@@ -399,23 +451,6 @@ async function translateToEN(text){
 }
 
 
-
-async function translateToZH(text){
-  try{
-    const url =
-      "https://translate.googleapis.com/translate_a/single" +
-      "?client=gtx&sl=vi&tl=zh-CN&dt=t&q=" +
-      encodeURIComponent(text);
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    return data[0].map(x => x[0]).join("");
-  }catch(e){
-    console.error("Translate ZH failed", e);
-    return "";
-  }
-}
 
 
 function speakEN(text){
@@ -508,25 +543,26 @@ btnTranslateText.onclick = async () => {
   div.appendChild(zh);
   historyList.prepend(div);
 
-  // 🇺🇸 EN
-  translateToEN(text).then(result => {
-    if (result) {
-      en.textContent = "🇺🇸 " + result;
-      en.onclick = () => speakEN(result);
-    } else {
-      en.textContent = "⚠️ Không dịch được EN";
-    }
-  });
+// 🇺🇸 EN
+translateText(text, "en").then(result => {
+  if (result) {
+    en.textContent = "🇺🇸 " + result;
+    en.onclick = () => speakEN(result);
+  } else {
+    en.textContent = "⚠️ Không dịch được EN";
+  }
+});
 
-  // 🇨🇳 ZH
-  translateToZH(text).then(result => {
-    if (result) {
-      zh.textContent = "🇨🇳 " + result;
-      zh.onclick = () => speakZH(result);
-    } else {
-      zh.textContent = "⚠️ Không dịch được 中文";
-    }
-  });
+// 🇨🇳 ZH
+translateText(text, "zh-CN").then(result => {
+  if (result) {
+    zh.textContent = "🇨🇳 " + result;
+    zh.onclick = () => speakZH(result);
+  } else {
+    zh.textContent = "⚠️ Không dịch được 中文";
+  }
+});
+
 };
 
 
@@ -581,7 +617,7 @@ historyList.prepend(div);
 
 
 // 🇺🇸 ENGLISH
-translateToEN(finalText).then(result => {
+translateText(finalText, "en").then(result => {
   if (result) {
     en.textContent = "🇺🇸 " + result;
     en.onclick = () => speakEN(result);
@@ -591,7 +627,7 @@ translateToEN(finalText).then(result => {
 });
 
 // 🇨🇳 CHINESE
-translateToZH(finalText).then(result => {
+translateText(finalText, "zh-CN").then(result => {
   if (result) {
     zh.textContent = "🇨🇳 " + result;
     zh.onclick = () => speakZH(result);
@@ -599,6 +635,7 @@ translateToZH(finalText).then(result => {
     zh.textContent = "⚠️ Không dịch được 中文";
   }
 });
+
 
 
 
