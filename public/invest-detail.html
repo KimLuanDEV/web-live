@@ -2100,6 +2100,55 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+/* ===== FIX INVEST ACTION FULL WIDTH – DÍNH SÁT CHART ===== */
+.detail-invest.invest-action{
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  margin-top: 0 !important;
+  padding: 12px 12px 14px;
+
+  background: rgba(12,12,12,.98);
+  border-radius: 0 0 18px 18px;
+
+  box-shadow:
+    0 -8px 24px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.05);
+}
+
+/* ❌ KHÔNG CHO CHART ĐẨY KHOẢNG CÁCH */
+.detail-chart{
+  margin-bottom: 0 !important;
+}
+
+/* ❌ CARD KHÔNG ĐƯỢC TẠO KHE */
+.detail-invest{
+  margin-top: 0 !important;
+}
+
+
+.page-invest-detail section,
+.page-invest-detail .card {
+  padding-left: 8px;
+  padding-right: 8px;
+}
+
+.detail-invest.invest-action{
+  padding-left: 12px !important;
+  padding-right: 12px !important;
+}
+
+
+.detail-chart{
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+.detail-invest.invest-action{
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
 
 </style>
 
@@ -2298,6 +2347,9 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <!-- ⚡ QUICK ADD -->
   <div class="coin-quick">
+    <button data-add="10">+10</button>
+    <button data-add="20">+20</button>
+    <button data-add="50">+50</button>
     <button data-add="100">+100</button>
     <button data-add="500">+500</button>
     <button data-add="1000">+1K</button>
