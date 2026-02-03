@@ -2120,6 +2120,44 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+/* ===== INVEST ACTION FULL WIDTH – DÍNH SÁT CHART ===== */
+.detail-invest.invest-action {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  /* ❌ bỏ khoảng hở */
+  margin-top: 0;
+  margin-bottom: 0;
+
+  /* padding gọn */
+  padding: 12px 12px 14px;
+
+  border-radius: 0 0 18px 18px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(15,15,15,.95),
+    rgba(5,5,5,1)
+  );
+
+  box-shadow:
+    0 -8px 24px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.04);
+}
+
+
+
+.detail-chart.chart-wrap {
+  margin-bottom: 0;
+}
+
+.detail-invest.invest-action {
+  position: relative;
+  top: -1px; /* ép sát tuyệt đối */
+}
+
+
 </style>
 
 
