@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>📖 Chi tiết truyện</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body{
+      background:#0e0e12;
+      color:#fff;
+      margin:0;
+    }
+
+    /* HEADER */
+    .detail-header{
+      height:52px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 12px;
+      background:#111;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+
+    .detail-header .title{
+      font-weight:700;
+      font-size:16px;
+    }
+
+    .back-btn{
+      background:none;
+      border:none;
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+    }
+
+    /* COVER */
+    .story-hero{
+      display:flex;
+      gap:14px;
+      padding:16px;
+    }
+
+    .story-hero img{
+      width:120px;
+      aspect-ratio:3/4;
+      object-fit:cover;
+      border-radius:12px;
+    }
+
+    .story-meta{
+      flex:1;
+    }
+
+    .story-meta h1{
+      font-size:18px;
+      margin:0 0 6px;
+      font-weight:800;
+    }
+
+    .story-meta .author{
+      font-size:13px;
+      opacity:.75;
+      margin-bottom:8px;
+    }
+
+    .story-meta .tags{
+      display:flex;
+      gap:6px;
+      flex-wrap:wrap;
+    }
+
+    .tag{
+      font-size:11px;
+      padding:4px 8px;
+      border-radius:999px;
+      background:#1c1c26;
+      opacity:.8;
+    }
+
+    /* DESCRIPTION */
+    .story-desc{
+      padding:0 16px 16px;
+      font-size:14px;
+      line-height:1.55;
+      opacity:.9;
+    }
+
+    .story-desc.collapsed{
+      display:-webkit-box;
+      -webkit-line-clamp:3;
+      -webkit-box-orient:vertical;
+      overflow:hidden;
+    }
+
+    .toggle-desc{
+      padding:0 16px;
+      font-size:13px;
+      color:#7da6ff;
+      cursor:pointer;
+      margin-bottom:12px;
+    }
+
+    /* CHAPTER LIST */
+    .chapter-section{
+      padding:12px 16px 30px;
+    }
+
+    .chapter-title{
+      font-weight:800;
+      margin-bottom:10px;
+    }
+
+    .chapter-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .chapter-item{
+      padding:12px;
+      border-radius:12px;
+      background:#15151c;
+      border:1px solid rgba(255,255,255,.06);
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      cursor:pointer;
+    }
+
+    .chapter-item:active{
+      transform:scale(.98);
+    }
+
+    .chapter-item .name{
+      font-size:14px;
+    }
+
+    .chapter-item .lock{
+      font-size:12px;
+      color:#ff6a6a;
+      font-weight:700;
+    }
+  </style>
+</head>
+
+<body>
+
+<script src="/guard.js"></script>
+
+<header class="detail-header">
+  <button onclick="history.back()" class="back-btn">←</button>
+  <div class="title">📖 Chi tiết truyện</div>
+</header>
+
+<!-- HERO -->
+<section class="story-hero">
+  <img src="https://i.ibb.co/3mY0H4Xh/Chat-GPT-Image-Jan-19-2026-09-44-27-AM.jpg">
+  <div class="story-meta">
+    <h1>Em Là Ánh Trăng Của Anh</h1>
+    <div class="author">✍️ Diệp Lạc Vô Tâm</div>
+
+    <div class="tags">
+      <div class="tag">Ngôn tình</div>
+      <div class="tag">Hiện đại</div>
+      <div class="tag">HE</div>
+    </div>
+  </div>
+</section>
+
+<!-- DESCRIPTION -->
+<div id="desc" class="story-desc collapsed">
+  Cô là ánh trăng sáng nhất trong cuộc đời anh.
+  Giữa những năm tháng thanh xuân đầy bão tố,
+  họ gặp nhau, yêu nhau và lạc mất nhau.
+  Liệu định mệnh có cho họ thêm một lần quay lại?
+</div>
+
+<div class="toggle-desc" onclick="toggleDesc()">Xem thêm</div>
+
+<!-- CHAPTER -->
+<section class="chapter-section">
+  <div class="chapter-title">📚 Danh sách chương</div>
+
+  <div class="chapter-list">
+
+    <div class="chapter-item" onclick="alert('Mở Chapter 1')">
+      <div class="name">Chương 1: Gặp gỡ</div>
+    </div>
+
+    <div class="chapter-item" onclick="alert('Mở Chapter 2')">
+      <div class="name">Chương 2: Ánh mắt đầu tiên</div>
+    </div>
+
+    <div class="chapter-item">
+      <div class="name">Chương 3: Lời hứa năm xưa</div>
+      <div class="lock">VIP</div>
+    </div>
+
+    <div class="chapter-item">
+      <div class="name">Chương 4: Biến cố</div>
+      <div class="lock">VIP</div>
+    </div>
+
+  </div>
+</section>
+
+<script>
+  function toggleDesc(){
+    const d = document.getElementById("desc");
+    d.classList.toggle("collapsed");
+    event.target.textContent =
+      d.classList.contains("collapsed") ? "Xem thêm" : "Thu gọn";
+  }
+</script>
+
+</body>
+</html>
