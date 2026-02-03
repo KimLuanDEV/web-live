@@ -469,24 +469,27 @@ function renderHistory(list){
 
 return `
 <tr class="history-row">
-  <td class="cell-time">
+  <td class="col-time">
     ${new Date(r.ts).toLocaleTimeString([], {
       hour: "2-digit",
       minute: "2-digit"
     })}
   </td>
 
-  <td class="cell-open">   
-    <b>${open}</b>
+  <td class="col-open">
+    ${open}
   </td>
 
-  <td class="cell-close">
-    <b>${close}</b>
+  <td class="col-close">
+    ${close}
   </td>
 
-  ${renderCell(v)}
+  <td class="col-result ${v > 0 ? "up" : v < 0 ? "down" : "neutral"}">
+    ${v > 0 ? "+" : ""}${v}%
+  </td>
 </tr>
 `;
+
   }).join("");
 
   historyModalBody.innerHTML = html;
@@ -527,13 +530,6 @@ ordersModalList.innerHTML = roundOrders.map(o => {
 
 
 
-function renderCell(v){
-  if (v > 0)
-    return `<td class="up">+${v}%</td>`;
-  if (v < 0)
-    return `<td class="down">${v}%</td>`;
-  return `<td class="neutral">0%</td>`;
-}
 
 
 

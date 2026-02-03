@@ -60,18 +60,6 @@ html, body {
 }
 
 
-.history-table-wrap {
-  width: 100%;
-  overflow-x: auto;   /* chỉ table được scroll ngang */
-  -webkit-overflow-scrolling: touch;
-}
-
-.history-table {
-  width: 100%;
-  min-width: 100%;
-  border-collapse: collapse;
-}
-
 
 .page-invest-detail {
   overscroll-behavior-x: none;
@@ -700,22 +688,6 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 
-.history-table{
-  width: 100%;
-  min-width: 0;          /* 🔑 QUAN TRỌNG */
-  table-layout: fixed;  /* 🔑 khóa cột, không bung */
-}
-
-/* khóa độ rộng cột */
-.th-time{
-  width: 72px;
-}
-
-
-
-#historyModal .history-table-wrap{
-  overflow-x: hidden;
-}
 
 
 .asset-th img{
@@ -2066,43 +2038,6 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   overflow: hidden;
 }
 
-/* TABLE WRAP */
-.history-table-wrap{
-  height: 100%;
-  overflow: auto;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* TABLE */
-.history-table{
-  width: 100%;
-  min-width: 0;          /* 🔑 BẮT BUỘC */
-  table-layout: fixed;  /* 🔑 BẮT BUỘC */
-}
-
-
-
-.history-table thead th{
-  position: sticky;
-  top: 0;
-  z-index: 2;
-  background: #0e0e0e;
-}
-
-.history-table th img{
-  width: 20px;
-  height: 20px;
-  object-fit: contain;
-}
-
-.history-table td.up{ color:#00ff99; font-weight:700; }
-.history-table td.down{ color:#ff5c5c; font-weight:700; }
-.history-table td.neutral{ color:#aaa; }
-
-.history-table .empty{
-  padding: 40px;
-  opacity: .6;
-}
 
 
 
@@ -2193,271 +2128,104 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 
-/* ===== HISTORY TABLE – CLEAN ===== */
-.history-table {
+
+/* ==================================================
+   HISTORY TABLE – CLEAN & PIXEL PERFECT
+   ================================================== */
+
+#historyModal .history-table-wrap{
+  width: 100%;
+  height: 100%;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+#historyModal .history-table{
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;       /* 🔑 khóa cột */
   font-size: 13px;
 }
 
-/* header */
-.history-table thead th {
-  padding: 8px 6px;
+/* ===== HEADER ===== */
+#historyModal thead th{
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  background: #0d0d0d;
+  color: rgba(255,255,255,.6);
+
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 800;
   letter-spacing: .8px;
   text-transform: uppercase;
-  opacity: .6;
+
+  padding: 8px 6px;
   border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
-.th-time {
-  width: 72px;
-  text-align: left;
-}
-
-.th-asset {
-  text-align: center;
-}
-
-.th-asset img {
-  width: 18px;
-  height: 18px;
-  object-fit: contain;
-  opacity: .9;
-}
-
-/* body */
-.history-table tbody td {
-  padding: 10px 6px;
+/* ===== BODY ===== */
+#historyModal tbody td{
+  padding: 8px 6px;
   border-bottom: 1px solid rgba(255,255,255,.05);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* time */
-.history-table td:first-child {
+/* ===== CỘT (CHUẨN NHẤT) ===== */
+#historyModal .th-time,
+#historyModal td.col-time{
+  width: 56px;
+  text-align: left;
   font-size: 11px;
-  opacity: .6;
+  opacity: .7;
 }
 
-/* result */
-.history-table td.up {
-  color: #00ff99;
-  font-weight: 800;
-}
-.history-table td.down {
-  color: #ff5c5c;
-  font-weight: 800;
-}
-.history-table td.neutral {
-  color: #aaa;
+#historyModal .th-open,
+#historyModal td.col-open{
+  width: 72px;
+  text-align: right;
   font-weight: 700;
 }
 
-/* empty */
-.history-table .empty {
+#historyModal .th-close,
+#historyModal td.col-close{
+  width: 72px;
+  text-align: right;
+  font-weight: 700;
+}
+
+#historyModal .th-result,
+#historyModal td.col-result{
+  width: 56px;
+  text-align: right;
+  font-weight: 900;
+}
+
+/* ===== ICON ===== */
+#historyModal .th-result img{
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+}
+
+/* ===== MÀU KẾT QUẢ ===== */
+#historyModal td.col-result.up{ color:#00ff99; }
+#historyModal td.col-result.down{ color:#ff5c5c; }
+#historyModal td.col-result.neutral{ color:#aaa; }
+
+/* ===== EMPTY ===== */
+#historyModal .empty{
   text-align: center;
-  padding: 22px 0;
-  font-size: 13px;
+  padding: 32px 0;
   opacity: .5;
 }
 
 
 
 
-.history-table{
-  width:100%;
-  table-layout: fixed;
-}
-
-.th-time{
-  width:64px;
-}
-
-.th-price{
-  width:70px;
-  text-align:right;
-  font-size:12px;
-  opacity:.75;
-}
-
-.th-asset{
-  width:64px;
-  text-align:center;
-}
-
-.history-table td{
-  padding:8px 6px;
-  font-size:13px;
-  white-space:nowrap;
-}
-
-.history-table td.price{
-  text-align:right;
-  font-weight:700;
-}
-
-.history-table td.up{ color:#00ff99; }
-.history-table td.down{ color:#ff5c5c; }
-.history-table td.neutral{ color:#aaa; }
-
-
-
-/* ===== FIX CUỐI: FORCE 4 CỘT TRÊN MOBILE ===== */
-#historyModal .history-table{
-  width: 100%;
-  min-width: 0;
-  table-layout: fixed;
-}
-
-#historyModal .th-time{
-  width: 52px;
-}
-
-#historyModal .th-price{
-  width: 60px;
-  text-align: right;
-}
-
-#historyModal .th-asset{
-  width: 44px;
-  text-align: right;
-}
-
-#historyModal .history-table th,
-#historyModal .history-table td{
-  padding: 6px 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-
-/* ===== FORCE HIỂN THỊ ĐỦ 4 CỘT TRÊN MOBILE ===== */
-
-/* đảm bảo cell không bị ẩn */
-#historyModal th,
-#historyModal td{
-  display: table-cell !important;
-}
-
-/* ép OPEN / CLOSE hiện lại */
-#historyModal .th-price,
-#historyModal td.price{
-  display: table-cell !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-}
-
-/* khóa layout bảng */
-#historyModal .history-table{
-  width: 100%;
-  min-width: 0;
-  table-layout: fixed;
-}
-
-/* width từng cột (mobile vẫn đủ) */
-#historyModal .th-time{ width: 52px; }
-#historyModal .th-price{ width: 60px; }
-#historyModal .th-asset{ width: 44px; }
-
-/* chữ gọn */
-#historyModal th,
-#historyModal td{
-  padding: 6px 4px;
-  font-size: 12px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-
-/* ===== FIX LỆCH HEADER / BODY ===== */
-
-/* OPEN / CLOSE: header + body cùng right */
-#historyModal th.th-price,
-#historyModal td.price{
-  text-align: right !important;
-}
-
-/* TIME: cùng left */
-#historyModal th.th-time,
-#historyModal td:first-child{
-  text-align: left !important;
-}
-
-/* % / ASSET: cùng center */
-#historyModal th.th-asset,
-#historyModal td:last-child{
-  text-align: center !important;
-}
-
-
-/* ===== CHỐT WIDTH DUY NHẤT CHO 4 CỘT ===== */
-#historyModal .th-time{ width: 52px; }
-#historyModal .th-price{ width: 60px; }
-#historyModal .th-asset{ width: 44px; }
-
-
-/* ===== FIX LỆCH OPEN / CLOSE HEADER ===== */
-
-/* TIME: left */
-#historyModal th.th-time,
-#historyModal td:first-child{
-  text-align: left !important;
-}
-
-/* OPEN + CLOSE: right (header + body đồng bộ) */
-#historyModal th.th-price,
-#historyModal td.price{
-  text-align: right !important;
-}
-
-/* % / ASSET: center */
-#historyModal th.th-asset,
-#historyModal td:last-child{
-  text-align: center !important;
-}
-
-/* đảm bảo padding giống nhau */
-#historyModal th,
-#historyModal td{
-  padding: 6px 4px !important;
-}
-
-
-/* ===== FIX CUỐI – CĂN CỘT CHUẨN NHƯ SÀN ===== */
-
-/* khóa layout bảng */
-#historyModal .history-table{
-  table-layout: fixed;
-}
-
-/* TIME */
-#historyModal th.th-time,
-#historyModal td:first-child{
-  text-align: left !important;
-}
-
-/* OPEN + CLOSE: header & body PHẢI giống nhau */
-#historyModal th.th-price,
-#historyModal td.price{
-  text-align: right !important;
-}
-
-/* % */
-#historyModal th.th-asset,
-#historyModal td:last-child{
-  text-align: right !important;
-}
-
-/* ép padding đồng nhất để không lệch */
-#historyModal th,
-#historyModal td{
-  padding: 6px 6px !important;
-  box-sizing: border-box;
-}
 
 
 </style>
@@ -2707,12 +2475,13 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
       <table class="history-table">
 <thead>
   <tr>
-    <th class="th-time">TIME</th>
-    <th class="th-price">OPEN</th>
-    <th class="th-price">CLOSE</th>
-    <th class="th-asset">
-      <img id="historyAssetIcon" alt="">
-    </th>
+<th class="th-time">TIME</th>
+<th class="th-open">OPEN</th>
+<th class="th-close">CLOSE</th>
+<th class="th-result">
+  <img id="historyAssetIcon" alt="">
+</th>
+
   </tr>
 </thead>
 
