@@ -424,21 +424,33 @@ const socket = io({
 function renderHistory(list){
   if (!list?.length) return;
 
+  // asset hiện tại từ URL
+  const currentAsset = asset; // gold / silver / atomic...
+
+  // === HEADER ===
+  const headEl = document.getElementById("historyHead");
+  if (headEl) {
+    headEl.innerHTML = `
+      <tr>
+        <th>🕒</th>
+        <th>
+          <img src="/assets/${currentAsset}.png" alt="${currentAsset}">
+        </th>
+      </tr>
+    `;
+  }
+
+  // === BODY ===
   const html = list.map(r => `
     <tr>
       <td>${new Date(r.ts).toLocaleTimeString()}</td>
-      ${renderCell(r.result?.silver)}
-      ${renderCell(r.result?.gold)}
-      ${renderCell(r.result?.diamond)}
-      ${renderCell(r.result?.oil)}
-      ${renderCell(r.result?.estate)}
-      ${renderCell(r.result?.atomic)}
+      ${renderCell(r.result?.[currentAsset])}
     </tr>
   `).join("");
 
-  if (historyEl) historyEl.innerHTML = html;
   if (historyModalBody) historyModalBody.innerHTML = html;
 }
+
 
 
 

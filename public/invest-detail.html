@@ -2223,6 +2223,12 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+#historyModal .history-table{
+  min-width: unset;
+  width: 100%;
+}
+
+
 
 </style>
 
@@ -2469,17 +2475,9 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   <div class="fs-body">
     <div class="history-table-wrap">
       <table class="history-table">
-        <thead>
-          <tr>
-            <th>🕒</th>
-            <th><img src="/assets/silver.png"></th>
-            <th><img src="/assets/gold.png"></th>
-            <th><img src="/assets/diamond.png"></th>
-            <th><img src="/assets/oil.png"></th>
-            <th><img src="/assets/estate.png"></th>
-            <th><img src="/assets/atomic.png"></th>
-          </tr>
-        </thead>
+
+<thead id="historyHead"></thead>
+
 
         <tbody id="roundHistoryModal">
           <tr>
