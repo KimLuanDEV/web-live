@@ -2033,15 +2033,32 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 .fs-close{
-  width: 36px;
-  height: 36px;
-  border-radius: 12px;
-  border: 0;
-  background: rgba(255,255,255,.08);
-  color: #fff;
-  font-size: 18px;
-  cursor: pointer;
+  width:36px;
+  height:36px;
+  border-radius:12px;
+  border:0;
+  background:rgba(255,255,255,.08);
+  display:grid;
+  place-items:center;
 }
+
+.fs-close-icon{
+  width:18px;
+  height:18px;
+  stroke:#fff;
+  stroke-width:2.4;
+  stroke-linecap:round;
+}
+
+
+.fs-close:active{
+  transform: scale(.95);
+}
+.fs-close:hover{
+  background: rgba(0,255,153,.15);
+}
+
+
 
 .fs-spacer{
   width: 36px;
@@ -2466,7 +2483,15 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <!-- HEADER -->
   <div class="fs-header">
-    <button class="fs-close" id="btnCloseHistory">✕</button>
+
+  <button class="fs-close" id="btnCloseHistory" aria-label="Close">
+  <svg viewBox="0 0 24 24" class="fs-close-icon">
+    <line x1="6" y1="6" x2="18" y2="18"/>
+    <line x1="18" y1="6" x2="6" y2="18"/>
+  </svg>
+</button>
+
+
     <div class="fs-title">Lịch sử các phiên</div>
     <div class="fs-spacer"></div>
   </div>
