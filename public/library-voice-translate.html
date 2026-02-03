@@ -247,6 +247,7 @@ const wave     = document.querySelector(".wave");
 const waveText = document.getElementById("waveText");
 const liveTextEl  = document.getElementById("liveText");
 const historyList = document.getElementById("historyList");
+const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
 
 
@@ -265,8 +266,11 @@ if (!SpeechRecognition) {
 
   recognition = new SpeechRecognition();
   recognition.lang = "vi-VN";      // 🌍 ngôn ngữ nguồn
-  recognition.continuous = true;   // nghe liên tục
-  recognition.interimResults = true; // text realtime
+
+recognition.continuous = !isMobile;   // mobile: false, PC: true
+recognition.interimResults = true;
+recognition.maxAlternatives = 1;      // 🔥 giảm nhiễu
+
 
   recognition.onstart = () => {
     recording = true;
@@ -275,12 +279,23 @@ if (!SpeechRecognition) {
     waveText.textContent = "🎧 Đang nghe giọng nói...";
   };
 
-  recognition.onend = () => {
-    recording = false;
-    micBtn.classList.remove("recording");
-    wave.classList.remove("active");
-    waveText.textContent = "⏹ Đã dừng thu âm";
-  };
+recognition.onend = () => {
+  micBtn.classList.remove("recording");
+  wave.classList.remove("active");
+  waveText.textContent = "⏹ Đã dừng thu âm";
+
+  // 🔁 MOBILE: tự restart để tăng độ chính xác
+  if (recording && isMobile) {
+    setTimeout(() => {
+      try {
+        recognition.start();
+      } catch (e) {}
+    }, 300);
+  }
+};
+
+
+
 
   recognition.onerror = (e) => {
     console.error("Speech error:", e);
@@ -324,9 +339,10 @@ recognition.onresult = (event) => {
   }
 
   // 🟢 TEXT ĐANG NÓI
-  if (interimText) {
-    liveTextEl.textContent = interimText;
-  }
+if (interimText && interimText.length > 3) {
+  liveTextEl.textContent = interimText;
+}
+
 
   // ✅ CÂU HOÀN CHỈNH → LƯU LỊCH SỬ
   if (finalText) {
@@ -361,6 +377,13 @@ translateToEN(finalText).then(result => {
 });
 
 
+if (isMobile && finalText) {
+  try {
+    recognition.stop();
+  } catch(e){}
+}
+
+
   }
 };
 
@@ -372,11 +395,15 @@ translateToEN(finalText).then(result => {
 micBtn.onclick = () => {
   if (!recognition) return;
 
-  if (!recording) {
-    recognition.start();
-  } else {
-    recognition.stop();
-  }
+if (!recording) {
+  recording = true;
+  recognition.start();
+} else {
+  recording = false;
+  recognition.stop();
+}
+
+
 };
 </script>
 
