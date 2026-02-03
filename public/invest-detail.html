@@ -2272,6 +2272,45 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
 
+
+.history-table{
+  width:100%;
+  table-layout: fixed;
+}
+
+.th-time{
+  width:64px;
+}
+
+.th-price{
+  width:70px;
+  text-align:right;
+  font-size:12px;
+  opacity:.75;
+}
+
+.th-asset{
+  width:64px;
+  text-align:center;
+}
+
+.history-table td{
+  padding:8px 6px;
+  font-size:13px;
+  white-space:nowrap;
+}
+
+.history-table td.price{
+  text-align:right;
+  font-weight:700;
+}
+
+.history-table td.up{ color:#00ff99; }
+.history-table td.down{ color:#ff5c5c; }
+.history-table td.neutral{ color:#aaa; }
+
+
+
 </style>
 
 
@@ -2520,6 +2559,8 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 <thead>
   <tr>
     <th class="th-time">TIME</th>
+    <th class="th-price">OPEN</th>
+    <th class="th-price">CLOSE</th>
     <th class="th-asset">
       <img id="historyAssetIcon" alt="">
     </th>
@@ -2528,9 +2569,10 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 <tbody id="roundHistoryModal">
   <tr>
-    <td colspan="2" class="empty">Chưa có dữ liệu</td>
+    <td colspan="4" class="empty">Chưa có dữ liệu</td>
   </tr>
 </tbody>
+
 
       </table>
     </div>

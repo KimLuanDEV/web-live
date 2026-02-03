@@ -442,7 +442,7 @@ function renderHistory(list){
   if (!list?.length) {
     historyModalBody.innerHTML = `
       <tr>
-        <td colspan="2" class="empty">Chưa có dữ liệu</td>
+        <td colspan="4" class="empty">Chưa có dữ liệu</td>
       </tr>
     `;
     return;
@@ -451,13 +451,32 @@ function renderHistory(list){
   const html = list.map(r => {
     const v = r.result?.[asset] ?? 0;
 
+    // ✅ GIÁ MỞ PHIÊN
+    let open = "--";
+    const chart = r.chart?.[asset];
+    if (Array.isArray(chart) && chart.length) {
+      open = chart[0]?.toFixed(2);
+    }
+
+    // ✅ GIÁ CHỐT PHIÊN
+    let close = "--";
+    if (typeof r.endPrice?.[asset] === "number") {
+      close = r.endPrice[asset].toFixed(2);
+    }
+    else if (Array.isArray(chart) && chart.length) {
+      close = chart[chart.length - 1]?.toFixed(2);
+    }
+
     return `
       <tr>
         <td>${new Date(r.ts).toLocaleTimeString([], {
-  hour: "2-digit",
-  minute: "2-digit"
-})
-}</td>
+          hour: "2-digit",
+          minute: "2-digit"
+        })}</td>
+
+        <td class="price">${open}</td>
+        <td class="price">${close}</td>
+
         ${renderCell(v)}
       </tr>
     `;
