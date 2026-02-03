@@ -453,7 +453,11 @@ function renderHistory(list){
 
     return `
       <tr>
-        <td>${new Date(r.ts).toLocaleTimeString()}</td>
+        <td>${new Date(r.ts).toLocaleTimeString([], {
+  hour: "2-digit",
+  minute: "2-digit"
+})
+}</td>
         ${renderCell(v)}
       </tr>
     `;
