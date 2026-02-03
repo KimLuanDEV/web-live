@@ -341,45 +341,41 @@ function pickTrend(rng) {
 
 
 
-function generateChart(roundId) {
-  const base = 100;
+function generateChart(roundId, basePrice = {}) {
+  const fallbackBase = 100;
+
   const vol = {
-  gold: 1,
-  silver: 1.5,
-  diamond: 3,
-  oil: 5,        // 🔥 rung mạnh
-  estate: 3.5,
-  atomic: 8.5 
-};
+    gold: 1,
+    silver: 1.5,
+    diamond: 3,
+    oil: 5,
+    estate: 3.5,
+    atomic: 8.5
+  };
 
+  const chart = {
+    gold: [],
+    silver: [],
+    diamond: [],
+    oil: [],
+    estate: [],
+    atomic: []
+  };
 
-const chart = {
-  gold: [],
-  silver: [],
-  diamond: [],
-  oil: [],
-  estate: [],
-  atomic: []
-};
-
-
-  // 🔥 1️⃣ RNG gốc cho cả phiên
+  // 🔥 RNG gốc cho cả phiên
   const roundRng = seededRandom("trend:" + roundId);
 
-  // 🧠 2️⃣ Chọn trend cho từng asset
-const trends = {
-  gold: pickTrend(roundRng),
-  silver: pickTrend(roundRng),
-  diamond: pickTrend(roundRng),
-  oil: pickTrend(roundRng),
-  estate: pickTrend(roundRng),
-   atomic: pickTrend(roundRng)
-};
+  const trends = {
+    gold: pickTrend(roundRng),
+    silver: pickTrend(roundRng),
+    diamond: pickTrend(roundRng),
+    oil: pickTrend(roundRng),
+    estate: pickTrend(roundRng),
+    atomic: pickTrend(roundRng)
+  };
 
-
-  // 📈 3️⃣ Bias theo trend
   const trendBias = {
-    UP:   0.04,
+    UP: 0.04,
     DOWN: -0.04,
     SIDE: 0
   };
@@ -387,22 +383,21 @@ const trends = {
   for (let t = 0; t < 60; t++) {
     for (const k in chart) {
       const rng = seededRandom(roundId + ":" + k + ":" + t);
-      const prev = chart[k][t - 1] ?? base;
+
+      // 🔥 GIÁ GỐC ĐÚNG
+      const prev =
+        t === 0
+          ? (typeof basePrice[k] === "number"
+              ? basePrice[k]
+              : fallbackBase)
+          : chart[k][t - 1];
 
       const noise = (rng() - 0.5) * vol[k];
       const bias  = trendBias[trends[k]];
 
-let next = prev + noise + bias;
-
-// 🔥 KHÔNG CLAMP – GIÁ TỰ DO
-chart[k][t] = Number(next.toFixed(4));
-
-
+      chart[k][t] = Number((prev + noise + bias).toFixed(4));
     }
   }
-
-  // 🔎 (optional) log debug
-  console.log("📊 Round", roundId, "trends:", trends);
 
   return chart;
 }
@@ -663,7 +658,8 @@ saveInvestHistory(investHistory);
   // ================================
  const id = Date.now();
 
-const chart = generateChart(id);
+const chart = generateChart(id, endPrice);
+
 
 investRound = {
   id,
