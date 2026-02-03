@@ -316,33 +316,67 @@ pnlHistoryList.addEventListener("click", e => {
 
 
 
-function openRoundSnapshot(roundId, asset){
-
-
-  // 🔥 ĐÓNG PNL HISTORY TRƯỚC KHI MỞ SNAPSHOT
+function openRoundSnapshot(roundId, asset) {
   closePnlHistory();
 
-  // fetch lịch sử round
   fetch("/api/invest/history")
     .then(r => r.json())
     .then(d => {
       if (!d.ok) return;
 
-      const round = d.list.find(r => String(r.roundId) === String(roundId));
+      const round = d.list.find(
+        r => String(r.roundId) === String(roundId)
+      );
+
       if (!round) {
         showModal("❌ Lỗi", "Không tìm thấy dữ liệu round.");
         return;
       }
 
-      // chart snapshot chỉ cần giá đầu → cuối
-openSnapshotFS(
-  round.chart?.[asset],
-  round.orders,
-  asset
-);
+      // 🔥 CHUẨN HOÁ DATA CHART
+      const rawChart = round.chart?.[asset] || [];
+      const chartData = Array.isArray(rawChart)
+        ? rawChart.filter(v => typeof v === "number")
+        : [];
 
+      if (chartData.length < 2) {
+        showModal("⚠️ Không khả dụng", "Phiên này không có dữ liệu chart.");
+        return;
+      }
+
+      openSnapshotFS(chartData, round.orders, asset);
     });
 }
+
+
+function drawSnapshotChart(canvas, data) {
+  const ctx = canvas.getContext("2d");
+  const W = canvas.width;
+  const H = canvas.height;
+
+  ctx.clearRect(0, 0, W, H);
+
+  const min = Math.min(...data);
+  const max = Math.max(...data);
+  const pad = (max - min) * 0.15 || 1;
+
+  const toY = v =>
+    H - ((v - (min - pad)) / ((max + pad) - (min - pad))) * H;
+
+  ctx.strokeStyle = "#00ff99";
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+
+  data.forEach((v, i) => {
+    const x = i * (W / (data.length - 1));
+    const y = toY(v);
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  });
+
+  ctx.stroke();
+}
+
 
 
 
