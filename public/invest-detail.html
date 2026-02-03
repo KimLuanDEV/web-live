@@ -711,9 +711,6 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
   width: 72px;
 }
 
-.th-asset{
-  width: calc(100% - 72px);
-}
 
 
 #historyModal .history-table-wrap{
@@ -2079,8 +2076,8 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 /* TABLE */
 .history-table{
   width: 100%;
-  min-width: 720px;
-  border-collapse: collapse;
+  min-width: 0;          /* 🔑 BẮT BUỘC */
+  table-layout: fixed;  /* 🔑 BẮT BUỘC */
 }
 
 .history-table th,
@@ -2309,6 +2306,37 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 .history-table td.down{ color:#ff5c5c; }
 .history-table td.neutral{ color:#aaa; }
 
+
+
+/* ===== FIX CUỐI: FORCE 4 CỘT TRÊN MOBILE ===== */
+#historyModal .history-table{
+  width: 100%;
+  min-width: 0;
+  table-layout: fixed;
+}
+
+#historyModal .th-time{
+  width: 52px;
+}
+
+#historyModal .th-price{
+  width: 60px;
+  text-align: right;
+}
+
+#historyModal .th-asset{
+  width: 44px;
+  text-align: right;
+}
+
+#historyModal .history-table th,
+#historyModal .history-table td{
+  padding: 6px 4px;
+  font-size: 12px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 
 
 
