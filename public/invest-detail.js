@@ -366,35 +366,28 @@ const btnCloseHistory = document.getElementById("btnCloseHistory");
 const historyBackdrop = document.getElementById("historyBackdrop");
 
 function openHistory(){
-  if(!historyModalEl) return;
   historyModalEl.classList.remove("hidden");
   historyModalEl.setAttribute("aria-hidden","false");
   document.body.style.overflow = "hidden";
 }
 
-
 function closeHistory(){
-  if(!historyModalEl) return;
-
-  // 🔥 FIX aria-hidden warning
-  document.activeElement?.blur();
-
+  document.activeElement?.blur(); // 🔥 FIX aria warning
   historyModalEl.classList.add("hidden");
   historyModalEl.setAttribute("aria-hidden","true");
   document.body.style.overflow = "";
 }
 
-if(btnOpenHistory){
-  btnOpenHistory.addEventListener("click", () => {
-    openHistory();
-    // mở ra là refresh lịch sử luôn cho chắc
-    fetch("/api/invest/history")
-      .then(r => r.json())
-      .then(d => d.ok && renderHistory(d.list));
-  });
-}
-if(btnCloseHistory) btnCloseHistory.addEventListener("click", closeHistory);
-if(historyBackdrop) historyBackdrop.addEventListener("click", closeHistory);
+btnOpenHistory?.addEventListener("click", () => {
+  openHistory();
+  fetch("/api/invest/history")
+    .then(r => r.json())
+    .then(d => d.ok && renderHistory(d.list));
+});
+
+btnCloseHistory?.addEventListener("click", closeHistory);
+historyBackdrop?.addEventListener("click", closeHistory);
+
 
 
 
@@ -422,33 +415,51 @@ const socket = io({
 
 
 function renderHistory(list){
-  if (!list?.length) return;
+  const body = document.getElementById("roundHistoryModal");
+  const head = document.getElementById("historyHead");
+  if (!body || !head) return;
 
-  // asset hiện tại từ URL
-  const currentAsset = asset; // gold / silver / atomic...
+  const ONE_DAY = 24 * 60 * 60 * 1000;
+  const now = Date.now();
 
-  // === HEADER ===
-  const headEl = document.getElementById("historyHead");
-  if (headEl) {
-    headEl.innerHTML = `
+  // 🔒 CHỐT CỨNG 24H
+  list = (list || []).filter(
+    r => r.ts && now - r.ts <= ONE_DAY
+  );
+
+  // ===== HEADER =====
+  head.innerHTML = `
+    <tr>
+      <th>🕒</th>
+      <th>
+        <img src="/assets/${asset}.png"
+             style="width:18px;height:18px">
+      </th>
+    </tr>
+  `;
+
+  // ===== EMPTY =====
+  if (!list.length) {
+    body.innerHTML = `
       <tr>
-        <th>🕒</th>
-        <th>
-          <img src="/assets/${currentAsset}.png" alt="${currentAsset}">
-        </th>
+        <td colspan="2" class="empty">
+          🕒 Không có lịch sử trong 24 giờ
+        </td>
       </tr>
     `;
+    return;
   }
 
-  // === BODY ===
-  const html = list.map(r => `
-    <tr>
-      <td>${new Date(r.ts).toLocaleTimeString()}</td>
-      ${renderCell(r.result?.[currentAsset])}
-    </tr>
-  `).join("");
-
-  if (historyModalBody) historyModalBody.innerHTML = html;
+  // ===== DATA =====
+  body.innerHTML = list
+    .sort((a,b) => b.ts - a.ts)
+    .map(r => `
+      <tr>
+        <td>${new Date(r.ts).toLocaleTimeString()}</td>
+        ${renderCell(r.result?.[asset] ?? 0)}
+      </tr>
+    `)
+    .join("");
 }
 
 

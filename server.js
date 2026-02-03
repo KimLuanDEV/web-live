@@ -502,8 +502,7 @@ saveInvestState(investRound);
 
 
 let investHistory = loadInvestHistory();
-const MAX_HISTORY = 50;
-
+const MAX_HISTORY = 10;
 
 
 setInterval(() => {
@@ -642,14 +641,6 @@ investHistory.unshift({
     entryPrice: o.entryPrice
   }))
 });
-
-
-// 🔒 CHỈ GIỮ TỐI ĐA 50 PHIÊN
-if (investHistory.length > MAX_HISTORY) {
-  investHistory.length = MAX_HISTORY;
-}
-
-
 
 // 🔥 CHỈ GIỮ ROUND TRONG 24H
 const now = Date.now();
@@ -983,12 +974,23 @@ app.get("/api/invest/can-enter", (req, res) => {
 
 
 
+// ================================
+// 📜 INVEST HISTORY – CHỈ 24H
+// ================================
 app.get("/api/invest/history", (req, res) => {
+  const now = Date.now();
+
+  // 🔥 lọc lại lần nữa cho chắc (kể cả file cũ)
+  const list24h = (investHistory || []).filter(
+    r => r.ts && now - r.ts <= ONE_DAY
+  );
+
   res.json({
     ok: true,
-    list: investHistory
+    list: list24h
   });
 });
+
 
 
 
