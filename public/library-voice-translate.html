@@ -159,28 +159,78 @@
 
 
 
-
 <script>
 const micBtn   = document.getElementById("micBtn");
 const wave     = document.querySelector(".wave");
 const waveText = document.getElementById("waveText");
 
+let recognition;
 let recording = false;
 
-micBtn.onclick = () => {
-  recording = !recording;
+// ✅ CHECK BROWSER SUPPORT
+const SpeechRecognition =
+  window.SpeechRecognition || window.webkitSpeechRecognition;
 
-  if(recording){
+if (!SpeechRecognition) {
+  waveText.textContent = "❌ Trình duyệt không hỗ trợ thu giọng nói";
+  micBtn.disabled = true;
+} else {
+
+  recognition = new SpeechRecognition();
+  recognition.lang = "vi-VN";      // 🌍 ngôn ngữ nguồn
+  recognition.continuous = true;   // nghe liên tục
+  recognition.interimResults = true; // text realtime
+
+  recognition.onstart = () => {
+    recording = true;
     micBtn.classList.add("recording");
     wave.classList.add("active");
     waveText.textContent = "🎧 Đang nghe giọng nói...";
-  }else{
+  };
+
+  recognition.onend = () => {
+    recording = false;
     micBtn.classList.remove("recording");
     wave.classList.remove("active");
     waveText.textContent = "⏹ Đã dừng thu âm";
+  };
+
+  recognition.onerror = (e) => {
+    console.error("Speech error:", e);
+    waveText.textContent = "⚠️ Lỗi microphone hoặc quyền truy cập";
+  };
+
+  recognition.onresult = (event) => {
+    let finalText = "";
+    let interimText = "";
+
+    for (let i = event.resultIndex; i < event.results.length; i++) {
+      const text = event.results[i][0].transcript;
+      if (event.results[i].isFinal) {
+        finalText += text + " ";
+      } else {
+        interimText += text;
+      }
+    }
+
+    // 📝 HIỂN THỊ TEXT REALTIME
+    waveText.textContent =
+      finalText || interimText || "🎧 Đang nghe...";
+  };
+}
+
+// 🎙 MIC BUTTON CLICK
+micBtn.onclick = () => {
+  if (!recognition) return;
+
+  if (!recording) {
+    recognition.start();
+  } else {
+    recognition.stop();
   }
 };
 </script>
+
 
 
 </body>
