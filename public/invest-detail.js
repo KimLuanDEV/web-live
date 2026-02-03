@@ -130,6 +130,23 @@ document.getElementById("assetTitle").innerHTML =
   `${c.name}`;
 
 
+// ===== HISTORY ICON THEO ASSET =====
+const iconMap = {
+  gold: "/assets/gold.png",
+  silver: "/assets/silver.png",
+  diamond: "/assets/diamond.png",
+  oil: "/assets/oil.png",
+  estate: "/assets/estate.png",
+  atomic: "/assets/atomic.png"
+};
+
+const iconEl = document.getElementById("historyAssetIcon");
+if (iconEl && iconMap[asset]) {
+  iconEl.src = iconMap[asset];
+}
+
+
+
 document.getElementById("analysisText").innerHTML = `
   <li>🌊 Biến động: ${c.vol >= 6 ? "CỰC CAO" : c.vol >= 3 ? "CAO" : "TRUNG BÌNH"}</li>
   <li>🎯 Biên độ giao động mở</li>
@@ -422,23 +439,29 @@ const socket = io({
 
 
 function renderHistory(list){
-  if (!list?.length) return;
+  if (!list?.length) {
+    historyModalBody.innerHTML = `
+      <tr>
+        <td colspan="2" class="empty">Chưa có dữ liệu</td>
+      </tr>
+    `;
+    return;
+  }
 
-  const html = list.map(r => `
-    <tr>
-      <td>${new Date(r.ts).toLocaleTimeString()}</td>
-      ${renderCell(r.result?.silver)}
-      ${renderCell(r.result?.gold)}
-      ${renderCell(r.result?.diamond)}
-      ${renderCell(r.result?.oil)}
-      ${renderCell(r.result?.estate)}
-      ${renderCell(r.result?.atomic)}
-    </tr>
-  `).join("");
+  const html = list.map(r => {
+    const v = r.result?.[asset] ?? 0;
 
-  if (historyEl) historyEl.innerHTML = html;
-  if (historyModalBody) historyModalBody.innerHTML = html;
+    return `
+      <tr>
+        <td>${new Date(r.ts).toLocaleTimeString()}</td>
+        ${renderCell(v)}
+      </tr>
+    `;
+  }).join("");
+
+  historyModalBody.innerHTML = html;
 }
+
 
 
 
