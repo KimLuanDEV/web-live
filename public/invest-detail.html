@@ -98,7 +98,7 @@ html, body {
   overflow: hidden;
 
   /* ✨ bo góc */
-  border-radius: 16px;
+ border-radius: 0 !important;
 
   /* ✨ nền tối nhẹ */
   background: linear-gradient(
@@ -135,9 +135,7 @@ html, body {
   bottom: 6px;
 }
 
-.detail-chart.chart-wrap {
-  border-radius: 20px;
-}
+
 
 /* ===== GRADIENT THEO XU HƯỚNG ===== */
 .detail-chart.chart-wrap {
@@ -2117,38 +2115,73 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
     inset 0 1px 0 rgba(255,255,255,.05);
 }
 
-/* ❌ KHÔNG CHO CHART ĐẨY KHOẢNG CÁCH */
-.detail-chart{
-  margin-bottom: 0 !important;
+/* ===== INVEST ACTION FULL WIDTH – DÍNH SÁT CHART ===== */
+.detail-invest.invest-action {
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+
+  /* ❌ bỏ khoảng hở */
+  margin-top: 0;
+  margin-bottom: 0;
+
+  /* padding gọn */
+  padding: 12px 12px 14px;
+
+  border-radius: 0 0 18px 18px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(15,15,15,.95),
+    rgba(5,5,5,1)
+  );
+
+  box-shadow:
+    0 -8px 24px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.04);
 }
 
-/* ❌ CARD KHÔNG ĐƯỢC TẠO KHE */
-.detail-invest{
+
+.detail-chart.chart-wrap {
+  margin-bottom: 0;
+}
+
+
+/* ===== CHART DÍNH SÁT HEADER ===== */
+.detail-chart.chart-wrap {
+  margin-top: 0 !important;
+  padding-top: 0 !important;
+}
+
+.page-invest-detail > .detail-chart:first-of-type {
   margin-top: 0 !important;
 }
 
 
-.page-invest-detail section,
-.page-invest-detail .card {
-  padding-left: 8px;
-  padding-right: 8px;
+.detail-chart.chart-wrap {
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 
-.detail-invest.invest-action{
-  padding-left: 12px !important;
-  padding-right: 12px !important;
+/* 🔥 FORCE CHART NO RADIUS – FINAL */
+.detail-chart.chart-wrap,
+.detail-chart.chart-wrap::before,
+.detail-chart.chart-wrap::after,
+.detail-chart canvas {
+  border-radius: 0 !important;
 }
 
 
-.detail-chart{
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
+.detail-chart {
+  overflow: hidden !important;
+  border-radius: 0 !important;
 }
 
-.detail-invest.invest-action{
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
+.detail-chart::after,
+.detail-chart canvas {
+  border-radius: 0 !important;
 }
+
 
 </style>
 
