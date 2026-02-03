@@ -476,13 +476,11 @@ return `
     })}
   </td>
 
-  <td class="cell-open">
-    <span>OPEN</span>
+  <td class="cell-open">   
     <b>${open}</b>
   </td>
 
   <td class="cell-close">
-    <span>CLOSE</span>
     <b>${close}</b>
   </td>
 
