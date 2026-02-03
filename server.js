@@ -997,14 +997,15 @@ app.get("/api/invest/can-enter", (req, res) => {
 
 
 app.get("/api/invest/history", (req, res) => {
-res.json({
-  ok: true,
-  list: history
-    .sort((a,b) => b.ts - a.ts)
-    .slice(0, 50)
+  res.json({
+    ok: true,
+    list: investHistory
+      .slice()
+      .sort((a,b) => b.ts - a.ts)
+      .slice(0, 50)
+  });
 });
 
-});
 
 
 
