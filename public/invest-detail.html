@@ -2183,6 +2183,26 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+
+.round-timer {
+  min-width: 48px;
+  padding: 6px 10px;
+  border-radius: 999px;
+
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: .3px;
+
+  background: rgba(15,15,15,.75);
+  color: #fff;
+
+  text-align: center;
+}
+.round-timer.locked {
+  color: #ffcc66;
+}
+
+
 </style>
 
 
@@ -2217,8 +2237,9 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
   <!-- ⏳ TIMER (GÓC TRÁI) -->
   <div id="roundTimer" class="round-timer overlay-timer">
-    ⏳
-  </div>
+  <span class="timer-text">60s</span>
+</div>
+
 
   <!-- 🔴 LIVE BADGE (GÓC PHẢI) -->
   <div id="liveBadge" class="live-badge-fixed">

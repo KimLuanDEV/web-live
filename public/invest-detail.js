@@ -633,7 +633,7 @@ let entryMarkers = []; // 📍 điểm vào lệnh
 const timerEl = document.getElementById("roundTimer");
 if (timerEl && !timerEl.querySelector(".timer-text")) {
   timerEl.innerHTML = `
-    <span class="timer-text">⏳</span>
+    <span class="timer-text">60s</span>
   `;
 }
 
@@ -693,51 +693,40 @@ function startRoundTimer(endAt){
     const textEl =
       timerEl.querySelector(".timer-text");
 
-    if (left > 5) {
-      // 🟢 ĐANG CHẠY
-      textEl.textContent = `⏳ ${left}s`;
-      timerEl.className =
-        "round-timer overlay-timer running";
+if (left > 5) {
+  // 🟢 ĐANG CHẠY
+  textEl.textContent = `${left}`;
+  timerEl.className =
+    "round-timer overlay-timer running";
 
-  
-
-if (!joinedRound) {
-  investBtn.disabled = false;
-  investBtn.textContent = "START";
+  if (!joinedRound) {
+    investBtn.disabled = false;
+    investBtn.textContent = "START";
+  }
 }
+else if (left > 0) {
+  // 🔴 SẮP CHỐT
+  textEl.textContent = `${left}`;
+  timerEl.className =
+    "round-timer overlay-timer locked";
 
+  if (!joinedRound) {
+    investBtn.disabled = true;
+    investBtn.textContent = "LOCKED";
+  }
+}
+else {
+  // 🔒 HẾT GIỜ
+  textEl.textContent = "0";
+  timerEl.className =
+    "round-timer overlay-timer locked";
 
+  timerEl.style.setProperty("--progress", 0);
 
-    }
-    else if (left > 0) {
-      // 🔴 SẮP CHỐT
-      textEl.textContent = `🔒 ${left}s`;
-      timerEl.className =
-        "round-timer overlay-timer locked";
-
-
-
-if (!joinedRound) {
   investBtn.disabled = true;
-  investBtn.textContent = "⛔ LOCKED";
+  investBtn.textContent = "LOCKED";
 }
 
-
-    }
-    else {
-      // 🔐 ĐANG CHỐT
-      textEl.textContent = "🔐";
-      timerEl.className =
-        "round-timer overlay-timer locked";
-
-
-
-
-      timerEl.style.setProperty("--progress", 0);
-
-      investBtn.disabled = true;
-      investBtn.textContent = "⛔ LOCKED";
-    }
   }, 500);
 }
 
