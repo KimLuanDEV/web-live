@@ -191,6 +191,24 @@
 }
 
 
+.history-zh{
+  margin-top:6px;
+  font-size:13px;
+  opacity:.75;
+  color:#ffd28a;
+  border-left:2px solid #ff9800;
+  padding-left:8px;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.history-zh:active{
+  opacity:.6;
+  transform:scale(.98);
+}
+
+
+
 
   </style>
 </head>
@@ -336,6 +354,24 @@ async function translateToEN(text){
 
 
 
+async function translateToZH(text){
+  try{
+    const url =
+      "https://translate.googleapis.com/translate_a/single" +
+      "?client=gtx&sl=vi&tl=zh-CN&dt=t&q=" +
+      encodeURIComponent(text);
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    return data[0].map(x => x[0]).join("");
+  }catch(e){
+    console.error("Translate ZH failed", e);
+    return "";
+  }
+}
+
+
 function speakEN(text){
   if (!window.speechSynthesis) {
     alert("Trình duyệt không hỗ trợ phát giọng nói");
@@ -363,6 +399,30 @@ function speakEN(text){
 }
 
 
+
+function speakZH(text){
+  if (!window.speechSynthesis) {
+    alert("Trình duyệt không hỗ trợ phát giọng nói");
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = "zh-CN";
+  utter.rate = 1;
+  utter.pitch = 1;
+
+  const voices = speechSynthesis.getVoices();
+  const zhVoice =
+    voices.find(v => v.lang === "zh-CN") ||
+    voices.find(v => v.lang.startsWith("zh")) ||
+    voices[0];
+
+  if (zhVoice) utter.voice = zhVoice;
+
+  speechSynthesis.speak(utter);
+}
 
 
 
@@ -403,25 +463,38 @@ vn.textContent = finalText;
 // placeholder EN
 const en = document.createElement("div");
 en.className = "history-en";
-en.textContent = "⏳ Translating...";
+en.textContent = "⏳ Translating EN...";
+
+const zh = document.createElement("div");
+zh.className = "history-zh";
+zh.textContent = "⏳ Translating 中文...";
 
 div.appendChild(vn);
 div.appendChild(en);
+div.appendChild(zh);
 historyList.prepend(div);
 
-// 🔁 DỊCH SANG ENGLISH
+
+// 🇺🇸 ENGLISH
 translateToEN(finalText).then(result => {
   if (result) {
     en.textContent = "🇺🇸 " + result;
-
-    // 🎙 click để phát giọng AI
-    en.onclick = () => {
-      speakEN(result);
-    };
+    en.onclick = () => speakEN(result);
   } else {
-    en.textContent = "⚠️ Không dịch được";
+    en.textContent = "⚠️ Không dịch được EN";
   }
 });
+
+// 🇨🇳 CHINESE
+translateToZH(finalText).then(result => {
+  if (result) {
+    zh.textContent = "🇨🇳 " + result;
+    zh.onclick = () => speakZH(result);
+  } else {
+    zh.textContent = "⚠️ Không dịch được 中文";
+  }
+});
+
 
 
 
