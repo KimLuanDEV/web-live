@@ -695,7 +695,7 @@ function startRoundTimer(endAt){
 
 if (left > 5) {
   // 🟢 ĐANG CHẠY
-  textEl.textContent = `${left}s`;
+  textEl.textContent = `${left}`;
   timerEl.className =
     "round-timer overlay-timer running";
 
@@ -706,7 +706,7 @@ if (left > 5) {
 }
 else if (left > 0) {
   // 🔴 SẮP CHỐT
-  textEl.textContent = `${left}s`;
+  textEl.textContent = `${left}`;
   timerEl.className =
     "round-timer overlay-timer locked";
 
@@ -717,7 +717,7 @@ else if (left > 0) {
 }
 else {
   // 🔒 HẾT GIỜ
-  textEl.textContent = "0s";
+  textEl.textContent = "0";
   timerEl.className =
     "round-timer overlay-timer locked";
 
