@@ -2379,6 +2379,33 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+/* ===== FIX LỆCH HEADER / BODY ===== */
+
+/* OPEN / CLOSE: header + body cùng right */
+#historyModal th.th-price,
+#historyModal td.price{
+  text-align: right !important;
+}
+
+/* TIME: cùng left */
+#historyModal th.th-time,
+#historyModal td:first-child{
+  text-align: left !important;
+}
+
+/* % / ASSET: cùng center */
+#historyModal th.th-asset,
+#historyModal td:last-child{
+  text-align: center !important;
+}
+
+
+/* ===== CHỐT WIDTH DUY NHẤT CHO 4 CỘT ===== */
+#historyModal .th-time{ width: 52px; }
+#historyModal .th-price{ width: 60px; }
+#historyModal .th-asset{ width: 44px; }
+
+
 </style>
 
 
