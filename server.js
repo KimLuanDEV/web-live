@@ -632,7 +632,11 @@ io.emit("invest-round-result", {
 investHistory.unshift({
   roundId: round.id,
   ts: Date.now(),
-  chart: round.chart,
+
+  // 🔥 LƯU GIÁ CHUẨN
+  openPrice: round.openPrice,
+  endPrice,
+
   result,
   orders: round.orders.map(o => ({
     uid: o.uid,
@@ -641,6 +645,7 @@ investHistory.unshift({
     entryPrice: o.entryPrice
   }))
 });
+
 
 // 🔥 CHỈ GIỮ ROUND TRONG 24H
 const now = Date.now();
@@ -658,14 +663,28 @@ saveInvestHistory(investHistory);
   // ================================
  const id = Date.now();
 
+const chart = generateChart(id);
+
 investRound = {
   id,
   startAt: id,
   endAt: id + 60000,
   orders: [],
-  chart: generateChart(id),
-  closedEarly: [] // 🔒 LƯU USER ĐÃ CHỐT SỚM
+  chart,
+
+  // 🔥 OPEN PRICE CHUẨN – SERVER QUYẾT ĐỊNH
+  openPrice: {
+    gold: chart.gold[0],
+    silver: chart.silver[0],
+    diamond: chart.diamond[0],
+    oil: chart.oil[0],
+    estate: chart.estate[0],
+    atomic: chart.atomic[0]
+  },
+
+  closedEarly: []
 };
+
 
 
 saveInvestState(investRound);

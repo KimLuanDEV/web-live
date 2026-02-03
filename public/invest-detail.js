@@ -437,7 +437,6 @@ const socket = io({
 });
 
 
-
 function renderHistory(list){
   if (!list?.length) {
     historyModalBody.innerHTML = `
@@ -448,48 +447,53 @@ function renderHistory(list){
     return;
   }
 
-  const html = list.map(r => {
+  const html = list.map((r, idx) => {
     const v = r.result?.[asset] ?? 0;
 
-    // ✅ GIÁ MỞ PHIÊN
+    // =========================
+    // ✅ OPEN / CLOSE CHUẨN
+    // =========================
+
+    // 🔹 OPEN: ƯU TIÊN server
     let open = "--";
-    const chart = r.chart?.[asset];
-    if (Array.isArray(chart) && chart.length) {
-      open = chart[0]?.toFixed(2);
+    if (typeof r.openPrice?.[asset] === "number") {
+      open = r.openPrice[asset].toFixed(2);
     }
 
-    // ✅ GIÁ CHỐT PHIÊN
+    // 🔹 CLOSE: ƯU TIÊN server
     let close = "--";
     if (typeof r.endPrice?.[asset] === "number") {
       close = r.endPrice[asset].toFixed(2);
     }
-    else if (Array.isArray(chart) && chart.length) {
-      close = chart[chart.length - 1]?.toFixed(2);
+
+    // =========================
+    // ⚠️ FALLBACK CUỐI CÙNG (TẠM)
+    // =========================
+    if (open === "--" && idx > 0) {
+      const prev = list[idx - 1];
+      const prevClose = prev?.endPrice?.[asset];
+      if (typeof prevClose === "number") {
+        open = prevClose.toFixed(2);
+      }
     }
 
-return `
-<tr class="history-row">
-  <td class="col-time">
-    ${new Date(r.ts).toLocaleTimeString([], {
-      hour: "2-digit",
-      minute: "2-digit"
-    })}
-  </td>
+    return `
+      <tr class="history-row">
+        <td class="col-time">
+          ${new Date(r.ts).toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+          })}
+        </td>
 
-  <td class="col-open">
-    ${open}
-  </td>
+        <td class="col-open">${open}</td>
+        <td class="col-close">${close}</td>
 
-  <td class="col-close">
-    ${close}
-  </td>
-
-  <td class="col-result ${v > 0 ? "up" : v < 0 ? "down" : "neutral"}">
-    ${v > 0 ? "+" : ""}${v}%
-  </td>
-</tr>
-`;
-
+        <td class="col-result ${v > 0 ? "up" : v < 0 ? "down" : "neutral"}">
+          ${v > 0 ? "+" : ""}${v}%
+        </td>
+      </tr>
+    `;
   }).join("");
 
   historyModalBody.innerHTML = html;
