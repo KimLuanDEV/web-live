@@ -633,9 +633,11 @@ let entryMarkers = []; // 📍 điểm vào lệnh
 const timerEl = document.getElementById("roundTimer");
 if (timerEl && !timerEl.querySelector(".timer-text")) {
   timerEl.innerHTML = `
+    <span class="timer-ring"></span>
     <span class="timer-text">⏳</span>
   `;
 }
+
 
 
 

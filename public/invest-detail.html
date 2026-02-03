@@ -2100,6 +2100,90 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 }
 
 
+/* ===== ROUND TIMER – PREMIUM ===== */
+.round-timer{
+  position:absolute;
+  top:14px;
+  left:14px;
+  z-index:6;
+
+  width:54px;
+  height:54px;
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(15,15,15,.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.45),
+    inset 0 1px 0 rgba(255,255,255,.08);
+
+  font-weight:900;
+  color:#fff;
+
+  --progress: 1; /* 1 → 0 */
+}
+
+/* vòng progress */
+.round-timer::before{
+  content:"";
+  position:absolute;
+  inset:3px;
+  border-radius:50%;
+
+  background:
+    conic-gradient(
+      #00ff99 calc(var(--progress) * 360deg),
+      rgba(255,255,255,.12) 0
+    );
+
+  mask:
+    radial-gradient(
+      farthest-side,
+      transparent 65%,
+      #000 66%
+    );
+}
+
+/* text */
+.round-timer .timer-text{
+  position:relative;
+  z-index:1;
+  font-size:12px;
+  letter-spacing:.3px;
+}
+
+/* ===== STATE ===== */
+
+/* đang chạy */
+.round-timer.running{
+  color:#00ff99;
+}
+
+/* sắp khóa */
+.round-timer.locked{
+  color:#ffcc66;
+  animation: pulseWarn 1s infinite;
+}
+
+/* đã khóa */
+.round-timer.closed{
+  color:#ff5c5c;
+}
+
+/* animation cảnh báo */
+@keyframes pulseWarn{
+  0%{ box-shadow:0 0 0 0 rgba(255,204,102,.45); }
+  70%{ box-shadow:0 0 0 10px rgba(255,204,102,0); }
+  100%{ box-shadow:0 0 0 0 rgba(255,204,102,0); }
+}
+
+
 
 </style>
 
@@ -2134,9 +2218,10 @@ background: linear-gradient(135deg,#ff5c5c,#ff2f2f);
 
 
   <!-- ⏳ TIMER (GÓC TRÁI) -->
-  <div id="roundTimer" class="round-timer overlay-timer">
-    ⏳
-  </div>
+<div id="roundTimer" class="round-timer overlay-timer">
+  <span class="timer-ring"></span>
+  <span class="timer-text">⏳</span>
+</div>
 
   <!-- 🔴 LIVE BADGE (GÓC PHẢI) -->
   <div id="liveBadge" class="live-badge-fixed">
