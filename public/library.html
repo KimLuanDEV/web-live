@@ -22,6 +22,57 @@
 }
 
 
+.library-grid{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.library-card{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  padding:14px;
+  border-radius:14px;
+  background:#111;
+  border:1px solid rgba(255,255,255,.06);
+  cursor:pointer;
+}
+
+.library-card:active{
+  transform:scale(.98);
+}
+
+.lib-icon{
+  font-size:28px;
+  width:44px;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  background:linear-gradient(135deg,#6a5cff,#4fa3ff);
+}
+
+.lib-info{
+  flex:1;
+}
+
+.lib-title{
+  font-weight:700;
+}
+
+.lib-desc{
+  font-size:13px;
+  opacity:.7;
+  margin-top:2px;
+}
+
+.lib-arrow{
+  font-size:22px;
+  opacity:.4;
+}
+
 
 
 </style>
@@ -41,16 +92,42 @@
   <div class="page-title">📚 Thư viện</div>
 </div>
 
-<!-- CONTENT -->
-<div class="container">
-  <div class="card" style="text-align:center;padding:24px;opacity:.7">
-    🚧 Thư viện đang được phát triển<br>
-    Nội dung sẽ được cập nhật sau
+
+
+
+<div class="container library-grid">
+
+  <!-- 🎙 VOICE TRANSLATION -->
+  <div class="library-card" onclick="openVoiceTranslate()">
+    <div class="lib-icon">🎙</div>
+    <div class="lib-info">
+      <div class="lib-title">Phiên dịch bằng giọng nói</div>
+      <div class="lib-desc">
+        Nghe – nhận diện – dịch – phát lại giọng nói
+      </div>
+    </div>
+    <div class="lib-arrow">›</div>
   </div>
+
 </div>
+
+
+
+
+
+
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="/app-entry-guard.js"></script>
+
+
+<script>
+function openVoiceTranslate(){
+  location.href = "/library-voice-translate.html";
+}
+</script>
+
 
 </body>
 </html>
