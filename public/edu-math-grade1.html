@@ -1,0 +1,481 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>① Toán lớp 1</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body{margin:0;background:#0e0e12;color:#fff;min-height:100vh}
+
+    /* HEADER (đồng bộ edu-math.html) */
+    .simple-header{
+      height:52px;display:flex;align-items:center;gap:12px;padding:0 12px;
+      background:#111;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .back-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+    .title{font-weight:800;font-size:16px}
+
+    /* CONTAINER */
+    .edu-container{padding:18px 14px 28px}
+
+    /* HERO */
+    .edu-hero{text-align:center;padding:14px 10px 18px}
+    .edu-hero-icon{font-size:44px;margin-bottom:6px}
+    .edu-hero-title{font-size:18px;font-weight:900;margin-bottom:6px}
+    .edu-hero-desc{font-size:12.5px;opacity:.7;max-width:360px;margin:0 auto}
+
+    /* TOP STATS */
+    .edu-stats{
+      display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .chip{
+      font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+      opacity:.92;
+    }
+    .chip.good{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* GRID */
+    .edu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+
+    /* CARD (đồng bộ) */
+    .edu-card{
+      position:relative;background:#15151c;border:1px solid rgba(255,255,255,.07);
+      border-radius:16px;padding:14px 12px;min-height:110px;
+      display:flex;flex-direction:column;justify-content:center;transition:.18s;
+    }
+    .edu-card.active{cursor:pointer}
+    .edu-card.active:active{transform:scale(.97)}
+    .edu-card.locked{opacity:.55;filter:grayscale(1)}
+    .edu-icon{font-size:26px;margin-bottom:6px}
+    .edu-title{font-weight:900;font-size:14.5px}
+    .edu-desc{font-size:12px;opacity:.72;margin-top:3px}
+
+    .edu-chip{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);color:#9fffe1;
+    }
+    .edu-lock{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(255,59,59,.18);
+      border:1px solid rgba(255,59,59,.28);color:#ffd0d0;
+    }
+
+    /* LIST LESSONS (inside sheet) */
+    .lesson-list{display:flex;flex-direction:column;gap:10px}
+    .lesson-item{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .lesson-item:active{transform:scale(.99)}
+    .lesson-left{display:flex;flex-direction:column}
+    .lesson-name{font-weight:900;font-size:13px}
+    .lesson-meta{font-size:11.5px;opacity:.7;margin-top:2px}
+    .lesson-tag{
+      font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;
+      background:rgba(0,255,160,.12);border:1px solid rgba(0,255,160,.2);
+      color:#9fffe1;white-space:nowrap;
+    }
+
+    /* SHEET MODAL */
+    .sheet{position:fixed;inset:0;display:none;z-index:999}
+    .sheet.show{display:block}
+    .sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+    .sheet-box{
+      position:absolute;left:0;right:0;bottom:0;
+      background:#12121a;border-top-left-radius:18px;border-top-right-radius:18px;
+      border-top:1px solid rgba(255,255,255,.10);
+      max-height:82vh;overflow:auto;
+      box-shadow:0 -10px 30px rgba(0,0,0,.45);
+    }
+    .sheet-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .sheet-title{font-weight:900}
+    .sheet-close{
+      background:none;border:none;color:#fff;font-size:20px;cursor:pointer;
+      width:36px;height:36px;border-radius:10px;
+    }
+    .sheet-close:active{transform:scale(.96)}
+    .sheet-body{padding:14px}
+    .sheet-sub{font-size:12px;opacity:.7;margin-top:2px}
+
+    /* lesson content */
+    .lesson-content{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      margin-top:12px;
+      line-height:1.5;
+      font-size:13px;
+      opacity:.95;
+    }
+    .cta-row{display:flex;gap:10px;margin-top:12px}
+    .btn{
+      flex:1;
+      padding:12px 10px;
+      border-radius:14px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      cursor:pointer;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn.primary{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* small */
+    @media (min-width:520px){
+      .edu-container{max-width:520px;margin:0 auto}
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="simple-header">
+  <button onclick="history.back()" class="back-btn">←</button>
+  <div class="title">① Toán lớp 1</div>
+</header>
+
+<main class="edu-container">
+
+  <div class="edu-hero">
+    <div class="edu-hero-icon">①</div>
+    <div class="edu-hero-title">Toán lớp 1</div>
+    <div class="edu-hero-desc">
+      Nền tảng số đếm, so sánh, cộng trừ trong phạm vi nhỏ. Học theo bài ngắn + luyện tập.
+    </div>
+
+    <div class="edu-stats">
+      <div class="chip" id="statTotal">Tổng bài: 0</div>
+      <div class="chip" id="statDone">Đã học: 0</div>
+      <div class="chip good" id="statPct">Tiến độ: 0%</div>
+    </div>
+  </div>
+
+  <!-- CHƯƠNG (12 card sample) -->
+  <div class="edu-grid" id="chapterGrid"></div>
+
+</main>
+
+<!-- 📌 SHEET: danh sách bài -->
+<div class="sheet" id="chapterSheet" aria-hidden="true">
+  <div class="sheet-backdrop" id="chapterBackdrop"></div>
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title" id="sheetTitle">Chương</div>
+        <div class="sheet-sub" id="sheetDesc">Mô tả</div>
+      </div>
+      <button class="sheet-close" id="btnCloseSheet">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="lesson-list" id="lessonList"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 📌 SHEET: nội dung bài -->
+<div class="sheet" id="lessonSheet" aria-hidden="true">
+  <div class="sheet-backdrop" id="lessonBackdrop"></div>
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <div>
+        <div class="sheet-title" id="lessonTitle">Bài học</div>
+        <div class="sheet-sub" id="lessonMeta">—</div>
+      </div>
+      <button class="sheet-close" id="btnCloseLesson">✕</button>
+    </div>
+    <div class="sheet-body">
+      <div class="lesson-content" id="lessonContent"></div>
+
+      <div class="cta-row">
+        <button class="btn" id="btnMarkDone">✅ Đánh dấu đã học</button>
+        <button class="btn primary" id="btnNextLesson">➡️ Bài tiếp</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // =========================
+  // DATA (bạn có thể tách ra JSON sau)
+  // =========================
+  const COURSE = {
+    key: "math-grade1",
+    title: "Toán lớp 1",
+    chapters: [
+      {
+        id: "c1",
+        icon: "🔢",
+        title: "Chương 1: Làm quen số",
+        desc: "Đếm 0–10, nhận biết số, viết số",
+        lessons: [
+          { id:"l1", name:"Đếm từ 0 đến 5", meta:"Cơ bản · 5 phút", content:"Học cách đếm 0–5. Nhận biết số qua hình ảnh (quả táo, ngôi sao...)."},
+          { id:"l2", name:"Đếm từ 6 đến 10", meta:"Cơ bản · 5 phút", content:"Học cách đếm 6–10, luyện tập nối số với số lượng."},
+          { id:"l3", name:"So sánh nhiều – ít", meta:"Cơ bản · 6 phút", content:"So sánh nhóm đồ vật: nhóm nào nhiều hơn, ít hơn, bằng nhau."}
+        ]
+      },
+      {
+        id: "c2",
+        icon: "↔️",
+        title: "Chương 2: So sánh",
+        desc: "Lớn hơn, bé hơn, bằng nhau",
+        lessons: [
+          { id:"l4", name:"Lớn hơn – bé hơn", meta:"Cơ bản · 6 phút", content:"Nhận biết dấu > và < bằng hình ảnh minh họa."},
+          { id:"l5", name:"Bằng nhau", meta:"Cơ bản · 5 phút", content:"Hiểu dấu = và cách kiểm tra hai nhóm bằng nhau."}
+        ]
+      },
+      {
+        id: "c3",
+        icon: "➕",
+        title: "Chương 3: Phép cộng",
+        desc: "Cộng trong phạm vi 10",
+        lessons: [
+          { id:"l6", name:"Cộng bằng hình", meta:"Cơ bản · 7 phút", content:"Cộng bằng cách gộp nhóm đồ vật: 2 quả + 3 quả = 5 quả."},
+          { id:"l7", name:"Cộng số đơn giản", meta:"Cơ bản · 8 phút", content:"Cộng các số trong phạm vi 10: 1+1, 2+3, 4+5..."}
+        ]
+      },
+      {
+        id: "c4",
+        icon: "➖",
+        title: "Chương 4: Phép trừ",
+        desc: "Trừ trong phạm vi 10",
+        lessons: [
+          { id:"l8", name:"Trừ bằng hình", meta:"Cơ bản · 7 phút", content:"Trừ bằng cách bớt đồ vật: 5 quả bớt 2 quả còn 3 quả."},
+          { id:"l9", name:"Trừ số đơn giản", meta:"Cơ bản · 8 phút", content:"Trừ các số trong phạm vi 10: 3-1, 7-2, 10-4..."}
+        ]
+      },
+      {
+        id: "c5",
+        icon: "🧱",
+        title: "Chương 5: Tách – gộp",
+        desc: "Tách số, gộp số để tính nhanh",
+        lessons: [
+          { id:"l10", name:"Tách số 5", meta:"Cơ bản · 6 phút", content:"Tách 5 thành 1+4, 2+3, 0+5..."},
+          { id:"l11", name:"Tách số 10", meta:"Cơ bản · 7 phút", content:"Tách 10 thành 6+4, 7+3, 8+2, 9+1..."}
+        ]
+      },
+      {
+        id: "c6",
+        icon: "📏",
+        title: "Chương 6: Hình & đo",
+        desc: "Hình cơ bản và đo lường đơn giản",
+        lessons: [
+          { id:"l12", name:"Hình tròn – vuông – tam giác", meta:"Cơ bản · 6 phút", content:"Nhận biết các hình cơ bản trong đời sống."},
+          { id:"l13", name:"Dài – ngắn", meta:"Cơ bản · 5 phút", content:"So sánh độ dài: cái nào dài hơn, ngắn hơn."}
+        ]
+      }
+    ]
+  };
+
+  // =========================
+  // PROGRESS (localStorage)
+  // =========================
+  const DONE_KEY = "edu_done_" + COURSE.key;
+  function loadDone(){
+    try { return JSON.parse(localStorage.getItem(DONE_KEY) || "[]"); }
+    catch(e){ return []; }
+  }
+  function saveDone(arr){
+    localStorage.setItem(DONE_KEY, JSON.stringify(arr));
+  }
+  function isDone(doneArr, lessonId){
+    return doneArr.includes(lessonId);
+  }
+
+  // =========================
+  // RENDER CHAPTER CARDS
+  // =========================
+  const chapterGrid = document.getElementById("chapterGrid");
+  const statTotal = document.getElementById("statTotal");
+  const statDone  = document.getElementById("statDone");
+  const statPct   = document.getElementById("statPct");
+
+  function calcStats(){
+    const done = loadDone();
+    const total = COURSE.chapters.reduce((s,c)=> s + (c.lessons?.length||0), 0);
+    const doneCount = done.length;
+    const pct = total ? Math.round(doneCount / total * 100) : 0;
+
+    statTotal.textContent = "Tổng bài: " + total;
+    statDone.textContent  = "Đã học: " + doneCount;
+    statPct.textContent   = "Tiến độ: " + pct + "%";
+  }
+
+  function renderChapters(){
+    const done = loadDone();
+    chapterGrid.innerHTML = "";
+
+    COURSE.chapters.forEach((ch, idx) => {
+      const total = ch.lessons.length;
+      const doneCount = ch.lessons.filter(l => isDone(done, l.id)).length;
+
+      const div = document.createElement("div");
+      div.className = "edu-card active";
+      div.onclick = () => openChapter(ch);
+
+      div.innerHTML = `
+        <div class="edu-icon">${ch.icon}</div>
+        <div class="edu-title">${ch.title}</div>
+        <div class="edu-desc">${doneCount}/${total} bài · ${ch.desc}</div>
+        <div class="edu-chip">Mở</div>
+      `;
+
+      chapterGrid.appendChild(div);
+    });
+
+    calcStats();
+  }
+
+  // =========================
+  // CHAPTER SHEET
+  // =========================
+  const chapterSheet = document.getElementById("chapterSheet");
+  const chapterBackdrop = document.getElementById("chapterBackdrop");
+  const btnCloseSheet = document.getElementById("btnCloseSheet");
+  const sheetTitle = document.getElementById("sheetTitle");
+  const sheetDesc  = document.getElementById("sheetDesc");
+  const lessonList = document.getElementById("lessonList");
+
+  let currentChapter = null;
+
+  function openChapter(ch){
+    currentChapter = ch;
+    sheetTitle.textContent = ch.title;
+    sheetDesc.textContent  = ch.desc;
+
+    const done = loadDone();
+    lessonList.innerHTML = "";
+
+    ch.lessons.forEach(ls => {
+      const item = document.createElement("div");
+      item.className = "lesson-item";
+      item.onclick = () => openLesson(ls);
+
+      const tagText = isDone(done, ls.id) ? "Đã học" : "Học";
+      const tagStyle = isDone(done, ls.id)
+        ? "background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.10);color:#fff;opacity:.85;"
+        : "";
+
+      item.innerHTML = `
+        <div class="lesson-left">
+          <div class="lesson-name">${ls.name}</div>
+          <div class="lesson-meta">${ls.meta}</div>
+        </div>
+        <div class="lesson-tag" style="${tagStyle}">${tagText}</div>
+      `;
+
+      lessonList.appendChild(item);
+    });
+
+    showSheet(chapterSheet);
+  }
+
+  function closeChapter(){
+    hideSheet(chapterSheet);
+  }
+
+  // =========================
+  // LESSON SHEET
+  // =========================
+  const lessonSheet = document.getElementById("lessonSheet");
+  const lessonBackdrop = document.getElementById("lessonBackdrop");
+  const btnCloseLesson = document.getElementById("btnCloseLesson");
+  const lessonTitle = document.getElementById("lessonTitle");
+  const lessonMeta  = document.getElementById("lessonMeta");
+  const lessonContent = document.getElementById("lessonContent");
+  const btnMarkDone = document.getElementById("btnMarkDone");
+  const btnNextLesson = document.getElementById("btnNextLesson");
+
+  let currentLesson = null;
+
+  function openLesson(ls){
+    currentLesson = ls;
+    lessonTitle.textContent = ls.name;
+    lessonMeta.textContent  = ls.meta;
+    lessonContent.textContent = ls.content || "Nội dung đang cập nhật...";
+
+    showSheet(lessonSheet);
+  }
+
+  function closeLesson(){
+    hideSheet(lessonSheet);
+  }
+
+  btnMarkDone.onclick = () => {
+    if (!currentLesson) return;
+    const done = loadDone();
+    if (!done.includes(currentLesson.id)){
+      done.push(currentLesson.id);
+      saveDone(done);
+    }
+    // refresh UI
+    renderChapters();
+    if (currentChapter) openChapter(currentChapter);
+    // đổi nút
+    btnMarkDone.textContent = "✅ Đã đánh dấu";
+    setTimeout(()=> btnMarkDone.textContent = "✅ Đánh dấu đã học", 900);
+  };
+
+  btnNextLesson.onclick = () => {
+    if (!currentChapter || !currentLesson) return;
+    const idx = currentChapter.lessons.findIndex(x => x.id === currentLesson.id);
+    const next = currentChapter.lessons[idx + 1];
+    if (next) openLesson(next);
+    else {
+      // hết chương
+      btnNextLesson.textContent = "🎉 Hết bài";
+      setTimeout(()=> btnNextLesson.textContent = "➡️ Bài tiếp", 900);
+    }
+  };
+
+  // =========================
+  // SHEET HELPERS
+  // =========================
+  function showSheet(el){
+    el.classList.add("show");
+    el.setAttribute("aria-hidden","false");
+  }
+  function hideSheet(el){
+    el.classList.remove("show");
+    el.setAttribute("aria-hidden","true");
+  }
+
+  // close events
+  chapterBackdrop.onclick = closeChapter;
+  btnCloseSheet.onclick = closeChapter;
+
+  lessonBackdrop.onclick = closeLesson;
+  btnCloseLesson.onclick = closeLesson;
+
+  // init
+  renderChapters();
+  calcStats();
+</script>
+
+</body>
+</html>
