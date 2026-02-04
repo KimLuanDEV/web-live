@@ -86,15 +86,204 @@
       font-size:18px;
       font-weight:700;
     }
+
+    /* ===== PAGE DARK ===== */
+body.page-library{
+  background:#000;
+  color:#fff;
+}
+
+/* ===== HEADER ===== */
+.cook-detail-header{
+  position:sticky;
+  top:0;
+  z-index:30;
+  height:58px;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  gap:12px;
+
+  background:rgba(0,0,0,.88);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.cd-back{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:18px;
+}
+
+.cd-center{
+  flex:1;
+  text-align:center;
+  line-height:1.1;
+}
+
+.cd-title{
+  font-size:16px;
+  font-weight:900;
+}
+
+.cd-sub{
+  font-size:11px;
+  opacity:.6;
+}
+
+.cd-right{
+  width:36px;
+  text-align:right;
+  opacity:.7;
+}
+
+/* ===== CONTENT ===== */
+.library-container{
+  padding:14px;
+}
+
+/* ===== HERO ===== */
+.recipe-hero{
+  position:relative;
+  margin:-14px -14px 16px;
+}
+
+.recipe-hero img{
+  width:100%;
+  height:260px;
+  object-fit:cover;
+}
+
+/* HERO OVERLAY */
+.recipe-hero::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to bottom,
+    rgba(0,0,0,.05),
+    rgba(0,0,0,.35),
+    rgba(0,0,0,.9)
+  );
+}
+
+/* ===== TEXT ===== */
+h2{
+  margin-top:-42px;
+  position:relative;
+  z-index:2;
+  font-size:22px;
+  font-weight:900;
+}
+
+.recipe-meta{
+  font-size:12px;
+  opacity:.7;
+  margin-top:6px;
+}
+
+/* ===== SECTION ===== */
+.recipe-section{
+  margin-top:22px;
+}
+
+.recipe-section h3{
+  font-size:15px;
+  margin-bottom:8px;
+}
+
+.recipe-section ul,
+.recipe-section ol{
+  padding-left:18px;
+  opacity:.9;
+  line-height:1.6;
+}
+
+/* ===== COOK MODE BUTTON ===== */
+.cook-mode-btn{
+  position:fixed;
+  left:16px;
+  right:16px;
+  bottom:16px;
+  height:54px;
+  border:none;
+  border-radius:18px;
+  background:#ffb703;
+  color:#000;
+  font-weight:900;
+  font-size:16px;
+  z-index:20;
+}
+
+/* ===== COOK MODE ===== */
+.cook-mode{
+  position:fixed;
+  inset:0;
+  background:#000;
+  color:#fff;
+  z-index:999;
+  display:flex;
+  flex-direction:column;
+  padding:24px;
+}
+
+.cook-mode.hidden{display:none}
+
+.cook-step{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  text-align:center;
+}
+
+.step-index{
+  opacity:.5;
+  margin-bottom:12px;
+}
+
+.step-text{
+  font-size:24px;
+  font-weight:900;
+  line-height:1.4;
+}
+
+.cook-controls{
+  display:flex;
+  gap:12px;
+}
+
+.cook-controls button{
+  flex:1;
+  height:52px;
+  border:none;
+  border-radius:16px;
+  font-size:18px;
+  font-weight:800;
+}
+
+
+
   </style>
 </head>
 
 <body class="page-library">
 
-<header class="simple-header">
-  <button onclick="history.back()" class="back-btn">←</button>
-  <div class="title" id="recipeTitle">🍳 Công thức</div>
+<header class="cook-detail-header">
+  <button class="cd-back" onclick="history.back()">←</button>
+
+  <div class="cd-center">
+    <div class="cd-title" id="recipeTitle">Công thức</div>
+    <div class="cd-sub">Nấu ăn</div>
+  </div>
+
+  <div class="cd-right">🍳</div>
 </header>
+
 
 <main class="library-container" id="recipeContent">
   Đang tải công thức...
