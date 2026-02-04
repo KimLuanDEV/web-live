@@ -682,9 +682,18 @@ function rand(n){
   return Math.floor(Math.random() * n);
 }
 
+function genOptions(correct){
+  const set = new Set([correct]);
+  while(set.size < 4){
+    set.add(rand(11));
+  }
+  return [...set].sort(()=>Math.random()-0.5);
+}
+
+
 function nextGameQuestion(){
 
-  // reset timer
+  // ===== TIMER =====
   clearInterval(timerInterval);
   timeLeft = 10;
   document.getElementById("timeLeft").innerText = timeLeft;
@@ -697,42 +706,100 @@ function nextGameQuestion(){
     if(timeLeft <= 3){
       document.getElementById("gameTimer").classList.add("timer-danger");
     }
-
     if(timeLeft <= 0){
       clearInterval(timerInterval);
       timeUp();
     }
   },1000);
 
-
-  const a = rand(6) + 1;
-  const b = rand(6) + 1;
-  const isAdd = Math.random() > 0.5;
-
+  // ===== RANDOM LOẠI CÂU =====
+  const type = rand(7); // 0 → 6
   let question = "";
-  if(isAdd){
+  let options = [];
+
+  // 1️⃣ PHÉP CỘNG
+  if(type === 0){
+    const a = rand(6)+1, b = rand(6)+1;
     correctAnswer = a + b;
     question = `${a} + ${b} = ?`;
-  }else{
-    const x = Math.max(a,b);
-    const y = Math.min(a,b);
-    correctAnswer = x - y;
-    question = `${x} − ${y} = ?`;
+    options = genOptions(correctAnswer);
   }
 
+  // 2️⃣ PHÉP TRỪ
+  else if(type === 1){
+    const a = rand(9)+1, b = rand(a);
+    correctAnswer = a - b;
+    question = `${a} − ${b} = ?`;
+    options = genOptions(correctAnswer);
+  }
+
+  // 3️⃣ SỐ LIỀN TRƯỚC / SAU
+  else if(type === 2){
+    const n = rand(8)+2;
+    const isBefore = Math.random()>0.5;
+    correctAnswer = isBefore ? n-1 : n+1;
+    question = `Số ${isBefore?"liền trước":"liền sau"} của ${n} là?`;
+    options = genOptions(correctAnswer);
+  }
+
+  // 4️⃣ SO SÁNH SỐ
+  else if(type === 3){
+    const a = rand(9)+1, b = rand(9)+1;
+    correctAnswer = a>b ? ">" : a<b ? "<" : "=";
+    question = `${a} ☐ ${b}`;
+    options = [">","<","="].sort(()=>Math.random()-0.5);
+  }
+
+  // 5️⃣ TÁCH – GỘP
+  else if(type === 4){
+    const sum = rand(7)+3;
+    const a = rand(sum-1)+1;
+    const b = sum - a;
+    correctAnswer = `${a} + ${b}`;
+    question = `Tách số ${sum}`;
+    options = [
+      `${a} + ${b}`,
+      `${sum} + 0`,
+      `${sum-1} + 0`,
+      `${a} + ${a}`
+    ].sort(()=>Math.random()-0.5);
+  }
+
+  // 6️⃣ HÌNH HỌC
+  else if(type === 5){
+    const shapes = [
+      {q:"Hình nào có 3 cạnh?",a:"Tam giác"},
+      {q:"Hình nào có 4 cạnh bằng nhau?",a:"Hình vuông"},
+      {q:"Hình nào không có cạnh?",a:"Hình tròn"}
+    ];
+    const pick = shapes[rand(shapes.length)];
+    correctAnswer = pick.a;
+    question = pick.q;
+    options = ["Tam giác","Hình vuông","Hình tròn","Hình chữ nhật"]
+      .sort(()=>Math.random()-0.5);
+  }
+
+  // 7️⃣ ĐO LƯỜNG
+  else{
+    const q = [
+      {q:"Cái nào dài hơn?",a:"Cái thước"},
+      {q:"Cái nào cao hơn?",a:"Cây"},
+      {q:"Hai vật giống nhau thì gọi là?",a:"Bằng nhau"}
+    ][rand(3)];
+    correctAnswer = q.a;
+    question = q.q;
+    options = ["Cái bút","Cái thước","Bằng nhau","Không biết"]
+      .sort(()=>Math.random()-0.5);
+  }
+
+  // ===== RENDER =====
   document.getElementById("gameQuestion").innerText = question;
   document.getElementById("gameResult").innerText = "";
 
-  const answers = new Set([correctAnswer]);
-  while(answers.size < 4){
-    answers.add(rand(11));
-  }
-
-  const list = [...answers].sort(()=>Math.random()-0.5);
   const box = document.getElementById("gameAnswers");
   box.innerHTML = "";
 
-  list.forEach(v=>{
+  options.forEach(v=>{
     const btn = document.createElement("button");
     btn.className = "game-btn";
     btn.innerText = v;
@@ -740,6 +807,7 @@ function nextGameQuestion(){
     box.appendChild(btn);
   });
 }
+
 
 function checkGameAnswer(btn,value){
   clearInterval(timerInterval);
