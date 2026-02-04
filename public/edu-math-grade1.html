@@ -130,6 +130,14 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 .tab-panel.show{display:block}
 
 
+.chapter.done{
+  opacity:1;
+  background:rgba(0,160,255,.18);
+  border:1px solid rgba(0,160,255,.35);
+  color:#9fdcff;
+}
+
+
 </style>
 </head>
 
@@ -151,6 +159,10 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
   <div class="chapter" data-target="ch5">🧱 Tách – gộp</div>
   <div class="chapter" data-target="ch6">📐 Hình học</div>
   <div class="chapter" data-target="ch7">📏 Đo lường</div>
+  <div class="chapter" data-target="ch8">📖 Toán có lời văn</div>
+  <div class="chapter" data-target="ch9">🔁 Ôn tập</div>
+
+
 </aside>
 
 <section class="edu-content">
@@ -433,6 +445,94 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </div>
 </div>
 
+
+<!-- CHƯƠNG 8 -->
+<div class="chapter-content" id="ch8">
+<div class="lesson-content">
+
+<h3>📖 CHƯƠNG 8: TOÁN CÓ LỜI VĂN</h3>
+
+<p><b>Toán có lời văn</b> là bài toán được viết bằng câu chữ.</p>
+
+<p><b>3 bước giải:</b></p>
+<ol>
+  <li>Đọc kỹ đề</li>
+  <li>Xác định phép tính (cộng hay trừ)</li>
+  <li>Viết phép tính và đáp án</li>
+</ol>
+
+<hr>
+
+<p><b>Ví dụ 1:</b></p>
+<p>Lan có 3 quả táo, mẹ cho thêm 2 quả. Hỏi Lan có tất cả bao nhiêu quả táo?</p>
+
+<p>➡️ Phép tính: 3 + 2 = 5</p>
+
+<hr>
+
+<p><b>Ví dụ 2:</b></p>
+<p>Có 6 con chim, bay đi 2 con. Hỏi còn lại bao nhiêu con chim?</p>
+
+<p>➡️ Phép tính: 6 − 2 = 4</p>
+
+<div class="exercise">
+  <h4>📝 Bài tập luyện tập</h4>
+
+  <div class="ex-item">
+    1️⃣ Minh có 4 cái kẹo, được cho thêm 3 cái. Hỏi Minh có bao nhiêu cái kẹo?
+  </div>
+
+  <div class="ex-item">
+    2️⃣ Có 7 con cá trong bể, bơi ra ngoài 2 con. Hỏi còn mấy con cá?
+  </div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans8')">Xem đáp án</button>
+  <div class="answer" id="ans8">
+    ✔ 4 + 3 = 7<br>
+    ✔ 7 − 2 = 5
+  </div>
+</div>
+
+</div>
+</div>
+
+
+<!-- CHƯƠNG 9 -->
+<div class="chapter-content" id="ch9">
+<div class="lesson-content">
+
+<h3>🔁 CHƯƠNG 9: ÔN TẬP TOÀN BỘ</h3>
+
+<ul>
+  <li>🔢 Đếm số từ 0–10</li>
+  <li>↔️ So sánh số</li>
+  <li>➕ Phép cộng</li>
+  <li>➖ Phép trừ</li>
+  <li>📐 Nhận dạng hình</li>
+</ul>
+
+<div class="exercise">
+  <h4>📝 Bài kiểm tra nhanh</h4>
+
+  <div class="ex-item">1️⃣ 3 + 4 = …</div>
+  <div class="ex-item">2️⃣ 9 − 5 = …</div>
+  <div class="ex-item">3️⃣ Số liền sau của 6 là …</div>
+  <div class="ex-item">4️⃣ Hình nào có 4 cạnh bằng nhau ?</div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans9')">Xem đáp án</button>
+  <div class="answer" id="ans9">
+    ✔ 7<br>
+    ✔ 4<br>
+    ✔ 7<br>
+    ✔ Hình vuông
+  </div>
+</div>
+
+</div>
+</div>
+
+
+
 </section>
 </main>
 
@@ -465,6 +565,22 @@ function switchTab(chapterId, tab){
   root.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add("active");
   root.querySelector(`.tab-panel[data-tab="${tab}"]`).classList.add("show");
 }
+
+
+
+const progress = JSON.parse(localStorage.getItem("math1-progress") || "{}");
+
+document.querySelectorAll(".chapter").forEach(btn=>{
+  const id = btn.dataset.target;
+  if(progress[id]) btn.classList.add("done");
+
+  btn.addEventListener("dblclick",()=>{
+    progress[id] = true;
+    localStorage.setItem("math1-progress", JSON.stringify(progress));
+    btn.classList.add("done");
+    alert("✅ Đã hoàn thành chương này");
+  });
+});
 
 
 
