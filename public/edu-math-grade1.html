@@ -164,6 +164,11 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 }
 
 
+.timer-danger{
+  color:#ff7b7b !important;
+}
+
+
 </style>
 </head>
 
@@ -574,6 +579,16 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
     margin-bottom:20px;
   ">?</div>
 
+<div id="gameTimer" style="
+  font-size:16px;
+  font-weight:800;
+  margin-bottom:14px;
+  color:#9fffe1;
+">
+  ⏱️ Thời gian: <span id="timeLeft">10</span>s
+</div>
+
+
   <div id="gameAnswers" style="
     display:grid;
     grid-template-columns:repeat(2,1fr);
@@ -605,6 +620,15 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </main>
 
 <script>
+
+const progress = JSON.parse(localStorage.getItem("math1-progress") || "{}");
+
+let timeLeft = 10;
+let timerInterval = null;
+let gameScore = 0;
+let correctAnswer = 0;
+
+
 document.querySelectorAll(".chapter").forEach(btn=>{
   btn.onclick=()=>{
     document.querySelectorAll(".chapter").forEach(b=>b.classList.remove("active"));
@@ -636,7 +660,7 @@ function switchTab(chapterId, tab){
 
 
 
-const progress = JSON.parse(localStorage.getItem("math1-progress") || "{}");
+
 
 document.querySelectorAll(".chapter").forEach(btn=>{
   const id = btn.dataset.target;
@@ -652,14 +676,35 @@ document.querySelectorAll(".chapter").forEach(btn=>{
 
 
 
-let gameScore = 0;
-let correctAnswer = 0;
+
 
 function rand(n){
   return Math.floor(Math.random() * n);
 }
 
 function nextGameQuestion(){
+
+  // reset timer
+  clearInterval(timerInterval);
+  timeLeft = 10;
+  document.getElementById("timeLeft").innerText = timeLeft;
+  document.getElementById("gameTimer").classList.remove("timer-danger");
+
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    document.getElementById("timeLeft").innerText = timeLeft;
+
+    if(timeLeft <= 3){
+      document.getElementById("gameTimer").classList.add("timer-danger");
+    }
+
+    if(timeLeft <= 0){
+      clearInterval(timerInterval);
+      timeUp();
+    }
+  },1000);
+
+
   const a = rand(6) + 1;
   const b = rand(6) + 1;
   const isAdd = Math.random() > 0.5;
@@ -697,6 +742,8 @@ function nextGameQuestion(){
 }
 
 function checkGameAnswer(btn,value){
+  clearInterval(timerInterval);
+
   document.querySelectorAll(".game-btn").forEach(b=>b.disabled=true);
 
   if(value === correctAnswer){
@@ -710,6 +757,20 @@ function checkGameAnswer(btn,value){
       `❌ SAI – Đáp án đúng là ${correctAnswer}`;
   }
 }
+
+
+function timeUp(){
+  document.querySelectorAll(".game-btn").forEach(b=>{
+    b.disabled = true;
+    if(Number(b.innerText) === correctAnswer){
+      b.classList.add("correct");
+    }
+  });
+
+  document.getElementById("gameResult").innerText =
+    "⏱️ HẾT GIỜ – Thử lại nhé!";
+}
+
 
 // tự chạy câu đầu
 setTimeout(()=>{
