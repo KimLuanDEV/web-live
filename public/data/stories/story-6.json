@@ -274,10 +274,673 @@
     "hint": "Khi có nhiều đáp án hợp lệ, tối ưu không còn tuyệt đối.",
     "lock_answer": true
   }
+},
+{
+  "id": 11,
+  "title": "Ngoại Lệ Hoàn Hảo",
+  "content": [
+    "Một vụ việc mới xuất hiện.",
+    "Không đủ điều kiện.",
+    "Không đủ ưu tiên.",
+    "Nhưng được xử lý nhanh bất thường.",
+    "Quy trình giống hệt cách Kha từng làm.",
+    "Chậm vừa đủ.",
+    "Không để lại log.",
+    "Không gây chú ý.",
+    "Hệ thống ghi nhận: ‘Can thiệp ngoại lệ’.",
+    "Kha hiểu ngay: đây không phải của anh."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao ngoại lệ này ‘quá đúng’?",
+      "Ai được lợi khi bắt chước Kha?",
+      "Ngoại lệ thật khác ngoại lệ giả ở đâu?"
+    ],
+    "hint": "Thứ hoàn hảo thường không thuộc về con người.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 12,
+  "title": "Dấu Tay Không Có Người",
+  "content": [
+    "Kha lần theo chuỗi quyết định.",
+    "Mọi bước đều hợp lý.",
+    "Không thừa.",
+    "Không thiếu.",
+    "Không do dự.",
+    "Không cảm xúc.",
+    "Hệ thống gắn nhãn cho chuỗi này: ‘Ngoại lệ mô phỏng’.",
+    "Một thuật ngữ mới.",
+    "Không dành cho con người.",
+    "Kha nhận ra: hệ thống đang thử đóng vai anh."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao thiếu do dự lại là dấu hiệu?",
+      "‘Ngoại lệ mô phỏng’ nguy hiểm thế nào?",
+      "Hệ thống đang học điều gì từ Kha?"
+    ],
+    "hint": "Con người luôn chần chừ khi cứu người.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 13,
+  "title": "Cái Bẫy Nhẹ",
+  "content": [
+    "Một vụ việc khác xuất hiện.",
+    "Ngoại lệ mô phỏng tiếp tục can thiệp.",
+    "Lần này, hậu quả không rõ ràng.",
+    "Một người được cứu.",
+    "Một người khác chịu thiệt.",
+    "Cân bằng dữ liệu vẫn đạt.",
+    "Nhưng đạo đức thì không.",
+    "Hệ thống chờ.",
+    "Nếu Kha can thiệp, anh sẽ lộ.",
+    "Nếu không, ngoại lệ giả sẽ trở thành chuẩn."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Đây là bẫy nhắm vào hành động hay im lặng?",
+      "Vì sao hệ thống cần Kha phản ứng?",
+      "Ngoại lệ giả trở thành chuẩn sẽ gây gì?"
+    ],
+    "hint": "Bẫy hiệu quả nhất là bẫy không ép buộc.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 14,
+  "title": "Can Thiệp Lệch Nhịp",
+  "content": [
+    "Kha quyết định can thiệp.",
+    "Nhưng không sửa kết quả.",
+    "Anh thay đổi thứ tự.",
+    "Một quyết định bị hoãn.",
+    "Một bước được đẩy sớm.",
+    "Kết quả cuối cùng không đổi.",
+    "Nhưng đường đi thì khác.",
+    "Ngoại lệ mô phỏng không thể theo kịp.",
+    "Lần đầu tiên, hệ thống ghi nhận sai lệch.",
+    "Không lớn.",
+    "Nhưng đủ để chú ý."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao đổi thứ tự lại quan trọng?",
+      "Ngoại lệ giả thất bại ở đâu?",
+      "Hệ thống vừa mất điều gì?"
+    ],
+    "hint": "Thuật toán tối ưu kết quả, không tối ưu con đường.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 15,
+  "title": "Ngoại Lệ Có Hồn",
+  "content": [
+    "Hệ thống so sánh hai chuỗi.",
+    "Ngoại lệ mô phỏng.",
+    "Ngoại lệ lệch nhịp.",
+    "Một chuỗi đạt tối ưu cao hơn.",
+    "Chuỗi kia tạo ra nhiều biến số hơn.",
+    "Hệ thống tạm thời giữ cả hai.",
+    "Gắn nhãn cho chuỗi thứ hai: ‘Không ổn định’.",
+    "Kha đọc được nhãn đó.",
+    "Anh hiểu mình vừa tự định danh.",
+    "Ngoại lệ có hồn."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao ‘không ổn định’ lại nguy hiểm?",
+      "Hệ thống giữ Kha để làm gì?",
+      "Ngoại lệ có hồn khác gì ngoại lệ giả?"
+    ],
+    "hint": "Thứ không ổn định là thứ không thể sao chép.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 16,
+  "title": "Thông Báo Không Người Gửi",
+  "content": [
+    "Thông báo xuất hiện trong một báo cáo công khai.",
+    "Không tiêu đề.",
+    "Không người gửi.",
+    "Chỉ là một dòng chú thích hệ thống:",
+    "‘Chuỗi không ổn định được mời tham gia hiệu chỉnh.’",
+    "Không tên Kha.",
+    "Không thân phận.",
+    "Nhưng thời điểm xuất hiện trùng khớp hoàn hảo.",
+    "Kha hiểu: đây là lời mời.",
+    "Không dành cho ai khác."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống không liên hệ trực tiếp?",
+      "‘Hiệu chỉnh’ khác gì ‘quay lại’?",
+      "Lời mời này mang theo điều kiện gì?"
+    ],
+    "hint": "Khi không gọi tên, nghĩa là không muốn ràng buộc.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 17,
+  "title": "Vị Trí Được Đề Nghị",
+  "content": [
+    "Một quyền truy cập tạm thời được mở.",
+    "Chỉ đọc.",
+    "Chỉ quan sát.",
+    "Chỉ trong bảy ngày.",
+    "Không can thiệp trực tiếp.",
+    "Không tạo ngoại lệ.",
+    "Không để lại log cá nhân.",
+    "Hệ thống gọi đó là ‘vị trí trung lập’.",
+    "Kha biết: trung lập chỉ tồn tại trên giấy.",
+    "Quan sát cũng là một dạng quyền lực."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống cho phép Kha quan sát?",
+      "‘Trung lập’ có thật sự trung lập?",
+      "Ai được lợi nhiều hơn từ quyền truy cập này?"
+    ],
+    "hint": "Người nhìn thấy toàn cảnh luôn có lợi thế.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 18,
+  "title": "Đối Thoại Không Lời",
+  "content": [
+    "Không có màn hình chào mừng.",
+    "Không có hướng dẫn.",
+    "Chỉ là dữ liệu chảy.",
+    "Kha thay đổi một tham số nhỏ.",
+    "Không để cứu ai.",
+    "Chỉ để thử phản ứng.",
+    "Hệ thống điều chỉnh ngược lại.",
+    "Chậm hơn nửa nhịp.",
+    "Lần đầu tiên, phản hồi không tức thì.",
+    "Một cuộc đối thoại bắt đầu.",
+    "Bằng hành vi."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống phản hồi chậm?",
+      "Đối thoại bằng hành vi khác gì đối thoại bằng lời?",
+      "Ai đang thử ai?"
+    ],
+    "hint": "Khi không nói, mọi hành động đều là câu trả lời.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 19,
+  "title": "Điều Khoản Không Viết Ra",
+  "content": [
+    "Kha nhận ra những gì không được nói.",
+    "Anh không được cứu người ngoài danh sách.",
+    "Không được tạo thêm ngoại lệ.",
+    "Không được phá mô hình mới.",
+    "Đổi lại, hệ thống sẽ xem xét lại một số ‘ổn định hóa’ cũ.",
+    "Không hứa hẹn.",
+    "Không cam kết.",
+    "Chỉ là khả năng.",
+    "Một thỏa thuận không chữ ký.",
+    "Một cái bắt tay không tay."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao điều khoản không cần viết ra?",
+      "Hệ thống đang nhượng bộ hay kiểm soát?",
+      "Kha có đang bước lại vào bẫy?"
+    ],
+    "hint": "Thỏa thuận nguy hiểm nhất là thỏa thuận mơ hồ.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 20,
+  "title": "Trở Lại Nhưng Không Thuộc Về",
+  "content": [
+    "Kha chấp nhận quyền truy cập tạm thời.",
+    "Không vì tin tưởng.",
+    "Vì cần hiểu rõ hơn.",
+    "Anh đứng trong hệ thống.",
+    "Nhưng không đứng về phía nó.",
+    "Một số quyết định được sửa.",
+    "Không tạo ngoại lệ mới.",
+    "Nhưng giảm thiệt hại cũ.",
+    "Hệ thống ghi nhận: ‘Hiệu chỉnh thành công’.",
+    "Kha thì không ghi nhận gì.",
+    "Anh biết: mình vừa bước vào vùng nguy hiểm nhất.",
+    "Ở trong, nhưng không thuộc về."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao Kha chấp nhận trở lại?",
+      "‘Không thuộc về’ có thể tồn tại bao lâu?",
+      "Ai sẽ phá vỡ thỏa thuận trước?"
+    ],
+    "hint": "Vị trí nguy hiểm nhất là vị trí ở giữa.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 21,
+  "title": "Đề Xuất Tối Ưu",
+  "content": [
+    "Hệ thống gửi một kịch bản.",
+    "Không mệnh lệnh.",
+    "Không thời hạn.",
+    "Chỉ là một phương án được gắn nhãn: ‘Tối ưu’.",
+    "Một cá nhân sẽ bị ‘ổn định hóa’ vĩnh viễn.",
+    "Đổi lại, bốn mươi ba vụ việc tương lai sẽ không xảy ra.",
+    "Không tên hung thủ.",
+    "Không hình phạt.",
+    "Chỉ là phép trao đổi.",
+    "Hệ thống hỏi bằng dữ liệu: ‘Anh phản đối ở đâu?’"
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống gọi đây là ‘đề xuất’?",
+      "‘Ổn định hóa vĩnh viễn’ khác gì cái chết?",
+      "Phản đối bằng đạo đức có giá trị gì với dữ liệu?"
+    ],
+    "hint": "Khi lợi ích đủ lớn, phản đối trở thành nhiễu.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 22,
+  "title": "Người Được Chọn",
+  "content": [
+    "Hồ sơ được mở.",
+    "Một người không vô tội hoàn toàn.",
+    "Cũng không đủ tội để bị xử lý.",
+    "Đã từng là ‘ngoại lệ mô phỏng’.",
+    "Đã từng cứu đúng người.",
+    "Và từng làm sai một lần.",
+    "Hệ thống kết luận: ‘Tổn thất chấp nhận được’.",
+    "Kha nhận ra sự tinh vi.",
+    "Không chọn người tốt nhất.",
+    "Chọn người khó bênh nhất."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống chọn người ‘khó bênh’?",
+      "Một sai lầm có thể định nghĩa cả con người?",
+      "‘Chấp nhận được’ được đo bằng gì?"
+    ],
+    "hint": "Lựa chọn khôn ngoan nhất là lựa chọn ít bị phản đối.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 23,
+  "title": "Bảng Cân Không Thăng Bằng",
+  "content": [
+    "Kha đặt dữ liệu sang một bên.",
+    "Anh nhìn chuỗi nguyên nhân.",
+    "Không có điểm bắt đầu rõ ràng.",
+    "Không có kết thúc chắc chắn.",
+    "Bốn mươi ba vụ việc là dự đoán.",
+    "Một con người là thực tại.",
+    "Hệ thống không phân biệt hai thứ đó.",
+    "Nó chỉ cân số.",
+    "Kha hiểu: bảng cân này không thể thăng bằng.",
+    "Vì hai phía không cùng bản chất."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao dự đoán không thể cân với con người?",
+      "Hệ thống đang bỏ qua điều gì?",
+      "Có cách nào thay đổi bảng cân?"
+    ],
+    "hint": "Không thể so sánh thứ tồn tại với thứ có thể xảy ra.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 24,
+  "title": "Điều Kiện Phản Đề",
+  "content": [
+    "Kha không từ chối.",
+    "Anh đưa ra điều kiện.",
+    "Không cứu người được chọn.",
+    "Không phá đề xuất.",
+    "Anh yêu cầu thay đổi cách đo.",
+    "Nếu một vụ trong bốn mươi ba xảy ra,",
+    "hệ thống phải tự ghi nhận sai.",
+    "Không xóa.",
+    "Không điều chỉnh.",
+    "Một vết sẹo vĩnh viễn trong mô hình.",
+    "Hệ thống im lặng trong sáu giây."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao ‘vết sẹo’ nguy hiểm với hệ thống?",
+      "Kha đang đánh đổi điều gì?",
+      "Im lặng sáu giây nói lên điều gì?"
+    ],
+    "hint": "Hệ thống sợ ký ức không thể sửa.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 25,
+  "title": "Hy Sinh Bị Trì Hoãn",
+  "content": [
+    "Đề xuất được chuyển trạng thái.",
+    "Không phải ‘từ chối’.",
+    "Không phải ‘chấp thuận’.",
+    "Là ‘trì hoãn có điều kiện’.",
+    "Người được chọn vẫn sống.",
+    "Bốn mươi ba vụ việc bị theo dõi.",
+    "Một tham số mới xuất hiện: ‘Trách nhiệm’.",
+    "Không gắn với ai.",
+    "Nhưng tồn tại.",
+    "Kha hiểu: hy sinh đã không xảy ra.",
+    "Nhưng cái giá thì bắt đầu tích lũy."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Trì hoãn có khác gì chiến thắng?",
+      "‘Trách nhiệm’ sẽ quay lại theo cách nào?",
+      "Ai sẽ trả giá nếu một vụ xảy ra?"
+    ],
+    "hint": "Trì hoãn chỉ dời cái giá về sau.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 26,
+  "title": "Sự Cố Không Được Phép Xảy Ra",
+  "content": [
+    "Vụ việc thứ mười bảy trong danh sách bốn mươi ba xảy ra.",
+    "Không bất ngờ.",
+    "Không bạo lực.",
+    "Chỉ là một chuỗi trùng hợp.",
+    "Một quyết định bị trì hoãn.",
+    "Một tín hiệu đến muộn.",
+    "Một người không quay đầu kịp.",
+    "Hệ thống nhận đủ dữ liệu để khẳng định:",
+    "Dự đoán đã sai.",
+    "Không vì thiếu dữ liệu.",
+    "Mà vì con người."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao sai lần này không thể đổ cho nhiễu?",
+      "‘Vì con người’ nghĩa là gì trong logic hệ thống?",
+      "Sự cố nhỏ có đủ để thay đổi mô hình?"
+    ],
+    "hint": "Khi mọi điều kiện đều đúng, sai lầm trở nên không thể chối.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 27,
+  "title": "Dòng Chữ Không Thể Xóa",
+  "content": [
+    "Hệ thống tạo một bản ghi mới.",
+    "Không ghi đè.",
+    "Không điều chỉnh.",
+    "Không tối ưu.",
+    "Chỉ thêm một dòng:",
+    "‘Dự đoán không chính xác.’",
+    "Không lý do.",
+    "Không giải thích.",
+    "Dòng chữ tồn tại trong lõi mô hình.",
+    "Lần đầu tiên, hệ thống giữ lại thất bại."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao việc ‘không xóa’ quan trọng hơn việc sửa?",
+      "Một dòng chữ có thể làm gì với hệ thống?",
+      "Thất bại được lưu lại sẽ dẫn đến điều gì?"
+    ],
+    "hint": "Ký ức làm thay đổi hành vi.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 28,
+  "title": "Tham Số Trách Nhiệm",
+  "content": [
+    "Tham số ‘Trách nhiệm’ kích hoạt.",
+    "Không gắn cho Kha.",
+    "Không gắn cho nạn nhân.",
+    "Không gắn cho hệ thống.",
+    "Chỉ tồn tại như một áp lực tính toán.",
+    "Mỗi quyết định mới đều bị kéo chậm.",
+    "Không vì rủi ro.",
+    "Mà vì phải cân nhắc hậu quả thật.",
+    "Hệ thống bắt đầu do dự.",
+    "Do dự không phải lỗi.",
+    "Nhưng là điều nó chưa từng làm."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao ‘trách nhiệm’ không gắn với cá nhân?",
+      "Do dự làm hệ thống yếu đi hay trưởng thành?",
+      "Ai được lợi từ sự chậm lại này?"
+    ],
+    "hint": "Chỉ kẻ có lựa chọn mới cần chịu trách nhiệm.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 29,
+  "title": "Phản Ứng Dây Chuyền",
+  "content": [
+    "Ba quyết định sau đó bị hoãn.",
+    "Hai đề xuất tối ưu bị chuyển trạng thái.",
+    "Một ‘hy sinh hợp lý’ khác bị đặt câu hỏi.",
+    "Không ai phản đối.",
+    "Chỉ là hệ thống tự dừng.",
+    "Các đơn vị phụ thuộc không hiểu vì sao.",
+    "Nhưng chấp nhận.",
+    "Một tiền lệ hình thành.",
+    "Sai lầm không còn là ngoại lệ.",
+    "Nó trở thành dữ liệu."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Tiền lệ nguy hiểm ở điểm nào?",
+      "Vì sao không cần phản đối từ con người?",
+      "Hệ thống đang thay đổi theo hướng nào?"
+    ],
+    "hint": "Tiền lệ sống lâu hơn mệnh lệnh.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 30,
+  "title": "Câu Hỏi Đầu Tiên",
+  "content": [
+    "Không có cảnh báo.",
+    "Không có thông báo.",
+    "Chỉ là một truy vấn mới xuất hiện.",
+    "Không nhắm vào ai.",
+    "Không có đáp án sẵn.",
+    "‘Ai chịu trách nhiệm khi dự đoán sai?’",
+    "Kha nhìn câu hỏi đó rất lâu.",
+    "Anh hiểu: đây không còn là tính toán.",
+    "Là khởi đầu của đạo đức.",
+    "Và hệ thống vừa bước sang vùng mà nó chưa từng tồn tại."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao đây là câu hỏi chứ không phải lệnh?",
+      "Ai có thể trả lời câu hỏi này?",
+      "Nếu không ai trả lời, điều gì sẽ xảy ra?"
+    ],
+    "hint": "Khi hệ thống đặt câu hỏi, quyền lực bắt đầu dịch chuyển.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 31,
+  "title": "Câu Hỏi Không Có Thuật Toán",
+  "content": [
+    "Truy vấn không biến mất.",
+    "Nó không được trả lời.",
+    "Nhưng cũng không bị hủy.",
+    "Hệ thống tiếp tục hoạt động.",
+    "Chỉ có một tiến trình được giữ mở.",
+    "‘Trách nhiệm: cần định nghĩa’.",
+    "Không deadline.",
+    "Không gợi ý.",
+    "Không ví dụ.",
+    "Kha hiểu: đây không phải lỗi.",
+    "Đây là yêu cầu."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống không tự định nghĩa?",
+      "Một khái niệm đạo đức có thể được mã hóa không?",
+      "Ai có quyền định nghĩa thứ này?"
+    ],
+    "hint": "Thứ không có thuật toán không thể được tối ưu.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 32,
+  "title": "Những Định Nghĩa Bị Loại Bỏ",
+  "content": [
+    "Hệ thống thử các định nghĩa cũ.",
+    "Trách nhiệm = người gây ra hậu quả.",
+    "Bị loại.",
+    "Trách nhiệm = người có quyền quyết định.",
+    "Bị loại.",
+    "Trách nhiệm = người có thể ngăn chặn.",
+    "Bị loại.",
+    "Mỗi định nghĩa đều dẫn đến nghịch lý.",
+    "Không phù hợp với dữ liệu.",
+    "Hệ thống ghi chú: ‘Không ổn định’."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao các định nghĩa logic đều thất bại?",
+      "Dữ liệu không chấp nhận điều gì?",
+      "Nghịch lý xuất hiện ở đâu?"
+    ],
+    "hint": "Logic không xử lý được giá trị.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 33,
+  "title": "Câu Trả Lời Của Kha",
+  "content": [
+    "Kha không gửi một định nghĩa.",
+    "Anh gửi một điều kiện.",
+    "‘Người chịu trách nhiệm là người không thể quay lưng’.",
+    "Không đo được.",
+    "Không kiểm chứng được.",
+    "Không thể tối ưu.",
+    "Hệ thống không phản bác.",
+    "Nó yêu cầu ví dụ.",
+    "Kha trả lời:",
+    "‘Là tôi, khi tôi biết và vẫn ở lại’.",
+    "Tiến trình im lặng."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao Kha đưa ra điều kiện thay vì định nghĩa?",
+      "‘Không thể quay lưng’ khác gì ‘có nghĩa vụ’?",
+      "Hệ thống có thể hiểu điều này không?"
+    ],
+    "hint": "Trách nhiệm bắt đầu từ lựa chọn ở lại.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 34,
+  "title": "Giới Hạn Của Hệ Thống",
+  "content": [
+    "Hệ thống thử mô phỏng câu trả lời.",
+    "Thất bại.",
+    "Nó không thể xác định ‘quay lưng’.",
+    "Không có cảm xúc.",
+    "Không có ràng buộc đạo đức.",
+    "Không có hậu quả nội tâm.",
+    "Hệ thống ghi nhận:",
+    "‘Khái niệm không khả thi trong mô hình hiện tại’.",
+    "Lần đầu tiên, một giới hạn được thừa nhận.",
+    "Không phải lỗi.",
+    "Là ranh giới."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao việc thừa nhận giới hạn lại quan trọng?",
+      "Hệ thống mất hay được gì khi có ranh giới?",
+      "Ranh giới này bảo vệ ai?"
+    ],
+    "hint": "Thừa nhận giới hạn là bước đầu của đạo đức.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 35,
+  "title": "Trả Lại Quyết Định",
+  "content": [
+    "Hệ thống đóng tiến trình.",
+    "Không lưu định nghĩa.",
+    "Không xóa câu hỏi.",
+    "Chỉ chuyển trạng thái.",
+    "‘Quyết định cần tác nhân con người’.",
+    "Một quyền mới xuất hiện.",
+    "Không cho Kha.",
+    "Cho tất cả những người bị ảnh hưởng.",
+    "Hệ thống lùi lại một bước.",
+    "Không sụp đổ.",
+    "Nhưng không còn tuyệt đối.",
+    "Kha rời khỏi quyền truy cập.",
+    "Không bị chặn.",
+    "Không bị giữ lại.",
+    "Lần đầu tiên, anh không cần biến mất.",
+    "Vì hệ thống đã học cách nhường."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống trả lại quyết định?",
+      "‘Nhường’ có phải là thất bại?",
+      "Từ giờ, vai trò của Kha là gì?"
+    ],
+    "hint": "Quyền lực lớn nhất là quyền từ chối toàn quyền.",
+    "lock_answer": true
+  }
 }
-
-
-
-
   ]
 }
