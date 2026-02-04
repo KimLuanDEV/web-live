@@ -7,148 +7,115 @@
   <link rel="stylesheet" href="/style.css">
 
   <style>
-    body{margin:0;background:#0e0e12;color:#fff;min-height:100vh}
+    body{
+      margin:0;
+      background:#0e0e12;
+      color:#fff;
+      min-height:100vh;
+      font-family:system-ui,-apple-system,BlinkMacSystemFont;
+    }
 
-    /* HEADER (đồng bộ edu-math.html) */
+    /* HEADER */
     .simple-header{
-      height:52px;display:flex;align-items:center;gap:12px;padding:0 12px;
-      background:#111;border-bottom:1px solid rgba(255,255,255,.08);
+      height:52px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 12px;
+      background:#111;
+      border-bottom:1px solid rgba(255,255,255,.08);
     }
-    .back-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
-    .title{font-weight:800;font-size:16px}
-
-    /* CONTAINER */
-    .edu-container{padding:18px 14px 28px}
-
-    /* HERO */
-    .edu-hero{text-align:center;padding:14px 10px 18px}
-    .edu-hero-icon{font-size:44px;margin-bottom:6px}
-    .edu-hero-title{font-size:18px;font-weight:900;margin-bottom:6px}
-    .edu-hero-desc{font-size:12.5px;opacity:.7;max-width:360px;margin:0 auto}
-
-    /* TOP STATS */
-    .edu-stats{
-      display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
-      margin-top:12px;
+    .back-btn{
+      background:none;
+      border:none;
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
     }
-    .chip{
-      font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;
-      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
-      opacity:.92;
+    .title{
+      font-weight:800;
+      font-size:16px;
     }
-    .chip.good{
+
+    /* LAYOUT */
+    .edu-layout{
+      display:flex;
+      gap:16px;
+      padding:14px;
+      max-width:1200px;
+      margin:0 auto;
+    }
+
+    /* SIDEBAR */
+    .edu-sidebar{
+      width:220px;
+      background:#12121a;
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:16px;
+      padding:12px;
+      flex-shrink:0;
+    }
+    .sidebar-title{
+      font-weight:900;
+      margin-bottom:10px;
+      font-size:14px;
+    }
+    .chapter{
+      padding:10px 12px;
+      border-radius:12px;
+      cursor:pointer;
+      opacity:.7;
+      font-size:13px;
+      margin-bottom:4px;
+    }
+    .chapter:hover{
+      background:rgba(255,255,255,.05);
+    }
+    .chapter.active{
       background:rgba(0,255,160,.14);
       border:1px solid rgba(0,255,160,.22);
       color:#9fffe1;
+      opacity:1;
     }
 
-    /* GRID */
-    .edu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
-
-    /* CARD (đồng bộ) */
-    .edu-card{
-      position:relative;background:#15151c;border:1px solid rgba(255,255,255,.07);
-      border-radius:16px;padding:14px 12px;min-height:110px;
-      display:flex;flex-direction:column;justify-content:center;transition:.18s;
+    /* CONTENT */
+    .edu-content{
+      flex:1;
     }
-    .edu-card.active{cursor:pointer}
-    .edu-card.active:active{transform:scale(.97)}
-    .edu-card.locked{opacity:.55;filter:grayscale(1)}
-    .edu-icon{font-size:26px;margin-bottom:6px}
-    .edu-title{font-weight:900;font-size:14.5px}
-    .edu-desc{font-size:12px;opacity:.72;margin-top:3px}
-
-    .edu-chip{
-      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
-      padding:4px 7px;border-radius:999px;background:rgba(0,255,160,.14);
-      border:1px solid rgba(0,255,160,.22);color:#9fffe1;
+    .chapter-content{
+      display:none;
     }
-    .edu-lock{
-      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
-      padding:4px 7px;border-radius:999px;background:rgba(255,59,59,.18);
-      border:1px solid rgba(255,59,59,.28);color:#ffd0d0;
+    .chapter-content.show{
+      display:block;
     }
 
-    /* LIST LESSONS (inside sheet) */
-    .lesson-list{display:flex;flex-direction:column;gap:10px}
-    .lesson-item{
-      background:rgba(255,255,255,.05);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:14px;
-      padding:12px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
-      cursor:pointer;
-      transition:.15s;
-    }
-    .lesson-item:active{transform:scale(.99)}
-    .lesson-left{display:flex;flex-direction:column}
-    .lesson-name{font-weight:900;font-size:13px}
-    .lesson-meta{font-size:11.5px;opacity:.7;margin-top:2px}
-    .lesson-tag{
-      font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;
-      background:rgba(0,255,160,.12);border:1px solid rgba(0,255,160,.2);
-      color:#9fffe1;white-space:nowrap;
-    }
-
-    /* SHEET MODAL */
-    .sheet{position:fixed;inset:0;display:none;z-index:999}
-    .sheet.show{display:block}
-    .sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
-    .sheet-box{
-      position:absolute;left:0;right:0;bottom:0;
-      background:#12121a;border-top-left-radius:18px;border-top-right-radius:18px;
-      border-top:1px solid rgba(255,255,255,.10);
-      max-height:82vh;overflow:auto;
-      box-shadow:0 -10px 30px rgba(0,0,0,.45);
-    }
-    .sheet-head{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .sheet-title{font-weight:900}
-    .sheet-close{
-      background:none;border:none;color:#fff;font-size:20px;cursor:pointer;
-      width:36px;height:36px;border-radius:10px;
-    }
-    .sheet-close:active{transform:scale(.96)}
-    .sheet-body{padding:14px}
-    .sheet-sub{font-size:12px;opacity:.7;margin-top:2px}
-
-    /* lesson content */
     .lesson-content{
       background:rgba(255,255,255,.04);
       border:1px solid rgba(255,255,255,.08);
       border-radius:14px;
-      padding:12px;
-      margin-top:12px;
-      line-height:1.5;
-      font-size:13px;
-      opacity:.95;
-    }
-    .cta-row{display:flex;gap:10px;margin-top:12px}
-    .btn{
-      flex:1;
-      padding:12px 10px;
-      border-radius:14px;
-      font-weight:900;
-      border:1px solid rgba(255,255,255,.10);
-      background:rgba(255,255,255,.06);
-      color:#fff;
-      cursor:pointer;
-    }
-    .btn:active{transform:scale(.99)}
-    .btn.primary{
-      background:rgba(0,255,160,.14);
-      border:1px solid rgba(0,255,160,.22);
-      color:#9fffe1;
+      padding:14px;
+      line-height:1.6;
+      font-size:14px;
     }
 
-    /* small */
-    @media (min-width:520px){
-      .edu-container{max-width:520px;margin:0 auto}
+    .lesson-content h3{
+      margin-top:0;
+    }
+
+    hr{
+      border:none;
+      border-top:1px solid rgba(255,255,255,.12);
+      margin:16px 0;
+    }
+
+    /* MOBILE */
+    @media (max-width:768px){
+      .edu-layout{
+        flex-direction:column;
+      }
+      .edu-sidebar{
+        width:100%;
+      }
     }
   </style>
 </head>
@@ -160,141 +127,135 @@
   <div class="title">① Toán lớp 1</div>
 </header>
 
+<main class="edu-layout">
 
-<main class="edu-container">
+  <!-- MENU TRÁI -->
+  <aside class="edu-sidebar">
+    <div class="sidebar-title">📘 Nội dung</div>
+    <div class="chapter active" data-target="ch1">🔢 Số & Đếm</div>
+    <div class="chapter" data-target="ch2">↔️ So sánh số</div>
+    <div class="chapter" data-target="ch3">➕ Phép cộng</div>
+    <div class="chapter" data-target="ch4">➖ Phép trừ</div>
+    <div class="chapter" data-target="ch5">🧱 Tách – gộp</div>
+    <div class="chapter" data-target="ch6">📐 Hình học</div>
+    <div class="chapter" data-target="ch7">📏 Đo lường</div>
+  </aside>
 
-  <div class="edu-hero">
-    <div class="edu-hero-icon">①</div>
-    <div class="edu-hero-title">Toán lớp 1</div>
-    <div class="edu-hero-desc">
-      Thống kê toàn bộ công thức và kiến thức nền tảng Toán lớp 1
+  <!-- NỘI DUNG -->
+  <section class="edu-content">
+
+    <!-- CHƯƠNG 1 -->
+    <div class="chapter-content show" id="ch1">
+      <div class="lesson-content">
+        <h3>🔢 1. SỐ VÀ ĐẾM</h3>
+        <p><b>Các số học trong lớp 1:</b></p>
+        <p>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</p>
+
+        <p><b>Số liền trước – số liền sau:</b></p>
+        <ul>
+          <li>Số liền trước của 5 là <b>4</b></li>
+          <li>Số liền sau của 5 là <b>6</b></li>
+        </ul>
+
+        <p><b>So sánh số lượng:</b></p>
+        <ul>
+          <li>Nhiều hơn</li>
+          <li>Ít hơn</li>
+          <li>Bằng nhau</li>
+        </ul>
+      </div>
     </div>
-  </div>
 
-<div class="lesson-content">
+    <!-- CHƯƠNG 2 -->
+    <div class="chapter-content" id="ch2">
+      <div class="lesson-content">
+        <h3>↔️ 2. SO SÁNH SỐ</h3>
+        <ul>
+          <li><b>&gt;</b> : lớn hơn</li>
+          <li><b>&lt;</b> : bé hơn</li>
+          <li><b>=</b> : bằng nhau</li>
+        </ul>
+        <p><i>Ghi nhớ: Miệng cá sấu quay về số lớn hơn</i></p>
+      </div>
+    </div>
 
-  <h3>🔢 1. SỐ VÀ ĐẾM</h3>
-  <p><b>Các số học trong lớp 1:</b></p>
-  <p>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</p>
+    <!-- CHƯƠNG 3 -->
+    <div class="chapter-content" id="ch3">
+      <div class="lesson-content">
+        <h3>➕ 3. PHÉP CỘNG</h3>
+        <p><b>a + b = c</b></p>
+        <ul>
+          <li>1 + 2 = 3</li>
+          <li>3 + 4 = 7</li>
+          <li>5 + 5 = 10</li>
+        </ul>
+      </div>
+    </div>
 
-  <p><b>Số liền trước – số liền sau:</b></p>
-  <ul>
-    <li>Số liền trước của 5 là <b>4</b></li>
-    <li>Số liền sau của 5 là <b>6</b></li>
-  </ul>
+    <!-- CHƯƠNG 4 -->
+    <div class="chapter-content" id="ch4">
+      <div class="lesson-content">
+        <h3>➖ 4. PHÉP TRỪ</h3>
+        <p><b>a − b = c</b></p>
+        <ul>
+          <li>5 − 2 = 3</li>
+          <li>9 − 4 = 5</li>
+        </ul>
+      </div>
+    </div>
 
-  <p><b>So sánh số lượng:</b></p>
-  <ul>
-    <li>Nhiều hơn: nhóm có số lượng lớn hơn</li>
-    <li>Ít hơn: nhóm có số lượng nhỏ hơn</li>
-    <li>Bằng nhau: hai nhóm có số lượng bằng nhau</li>
-  </ul>
+    <!-- CHƯƠNG 5 -->
+    <div class="chapter-content" id="ch5">
+      <div class="lesson-content">
+        <h3>🧱 5. TÁCH – GỘP SỐ</h3>
+        <ul>
+          <li>5 = 2 + 3</li>
+          <li>10 = 6 + 4</li>
+        </ul>
+      </div>
+    </div>
 
-  <hr>
+    <!-- CHƯƠNG 6 -->
+    <div class="chapter-content" id="ch6">
+      <div class="lesson-content">
+        <h3>📐 6. HÌNH HỌC</h3>
+        <ul>
+          <li>Hình tròn</li>
+          <li>Hình vuông</li>
+          <li>Hình tam giác</li>
+        </ul>
+      </div>
+    </div>
 
-  <h3>↔️ 2. SO SÁNH SỐ</h3>
-  <p><b>Các dấu so sánh:</b></p>
-  <ul>
-    <li><b>&gt;</b> : lớn hơn</li>
-    <li><b>&lt;</b> : bé hơn</li>
-    <li><b>=</b> : bằng nhau</li>
-  </ul>
+    <!-- CHƯƠNG 7 -->
+    <div class="chapter-content" id="ch7">
+      <div class="lesson-content">
+        <h3>📏 7. ĐO LƯỜNG</h3>
+        <ul>
+          <li>Dài hơn – ngắn hơn</li>
+          <li>Cao hơn – thấp hơn</li>
+          <li>Bằng nhau</li>
+        </ul>
+      </div>
+    </div>
 
-  <p><b>Ví dụ:</b></p>
-  <ul>
-    <li>5 &gt; 3 (5 lớn hơn 3)</li>
-    <li>2 &lt; 4 (2 bé hơn 4)</li>
-    <li>6 = 6 (6 bằng 6)</li>
-  </ul>
-
-  <p><i>Ghi nhớ:</i> Miệng cá sấu luôn quay về phía số lớn hơn.</p>
-
-  <hr>
-
-  <h3>➕ 3. PHÉP CỘNG (TRONG PHẠM VI 10)</h3>
-  <p><b>Khái niệm:</b> Phép cộng là gộp các nhóm lại với nhau.</p>
-
-  <p><b>Công thức:</b></p>
-  <p><b>a + b = c</b></p>
-
-  <p><b>Ví dụ:</b></p>
-  <ul>
-    <li>1 + 2 = 3</li>
-    <li>3 + 4 = 7</li>
-    <li>5 + 5 = 10</li>
-  </ul>
-
-  <p><i>Ghi nhớ:</i> Kết quả phép cộng luôn lớn hơn hoặc bằng các số đã cộng.</p>
-
-  <hr>
-
-  <h3>➖ 4. PHÉP TRỪ (TRONG PHẠM VI 10)</h3>
-  <p><b>Khái niệm:</b> Phép trừ là bớt đi một phần.</p>
-
-  <p><b>Công thức:</b></p>
-  <p><b>a − b = c</b></p>
-
-  <p><b>Ví dụ:</b></p>
-  <ul>
-    <li>5 − 2 = 3</li>
-    <li>9 − 4 = 5</li>
-    <li>10 − 6 = 4</li>
-  </ul>
-
-  <p><i>Ghi nhớ:</i> Trong phép trừ, số bị trừ luôn lớn hơn số trừ.</p>
-
-  <hr>
-
-  <h3>🧱 5. TÁCH – GỘP SỐ</h3>
-  <p><b>Tách số:</b> Một số có thể tách thành nhiều cách khác nhau.</p>
-
-  <ul>
-    <li>5 = 1 + 4</li>
-    <li>5 = 2 + 3</li>
-    <li>10 = 6 + 4</li>
-    <li>10 = 7 + 3</li>
-  </ul>
-
-  <p><b>Gộp số:</b> Cộng các số đã tách để được số ban đầu.</p>
-
-  <p><i>Ghi nhớ:</i> Tách – gộp giúp tính nhẩm nhanh.</p>
-
-  <hr>
-
-  <h3>📐 6. HÌNH HỌC CƠ BẢN</h3>
-  <ul>
-    <li><b>Hình tròn:</b> không có cạnh, không có góc</li>
-    <li><b>Hình vuông:</b> có 4 cạnh bằng nhau</li>
-    <li><b>Hình tam giác:</b> có 3 cạnh</li>
-  </ul>
-
-  <p><b>Ví dụ thực tế:</b></p>
-  <ul>
-    <li>Đồng xu → hình tròn</li>
-    <li>Viên gạch → hình vuông</li>
-    <li>Biển báo → hình tam giác</li>
-  </ul>
-
-  <hr>
-
-  <h3>📏 7. ĐO LƯỜNG ĐƠN GIẢN</h3>
-  <ul>
-    <li>Dài hơn – ngắn hơn</li>
-    <li>Cao hơn – thấp hơn</li>
-    <li>Bằng nhau</li>
-  </ul>
-
-  <p><b>Ví dụ:</b></p>
-  <ul>
-    <li>Cái thước dài hơn cái bút</li>
-    <li>Hai que tính dài bằng nhau</li>
-  </ul>
-
-</div>
-
+  </section>
 </main>
 
+<script>
+  const chapters = document.querySelectorAll(".chapter");
+  const contents = document.querySelectorAll(".chapter-content");
 
+  chapters.forEach(btn => {
+    btn.onclick = () => {
+      chapters.forEach(b => b.classList.remove("active"));
+      contents.forEach(c => c.classList.remove("show"));
+
+      btn.classList.add("active");
+      document.getElementById(btn.dataset.target).classList.add("show");
+    };
+  });
+</script>
 
 </body>
 </html>
