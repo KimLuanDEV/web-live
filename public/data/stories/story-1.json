@@ -5,33 +5,868 @@
   "desc": "Giữa những năm tháng thanh xuân đầy bão tố, cô và anh gặp nhau như một định mệnh. Tình yêu nhẹ nhàng nhưng sâu đậm, tựa ánh trăng soi sáng cả một đời người.",
   "tags": ["Ngôn tình", "Hiện đại", "HE"],
   "chapters": [
-    {
-      "id": 1,
-      "title": "Gặp gỡ",
-      "content": [
-        "Buổi chiều hôm đó, ánh nắng nghiêng nghiêng rơi xuống con phố nhỏ.",
-        "Cô bước đi giữa dòng người đông đúc, lòng mang theo những cảm xúc khó gọi thành tên.",
-        "Anh xuất hiện như một cơn gió lạ, không báo trước, không kịp đề phòng.",
-        "Chỉ một ánh nhìn thoáng qua, mọi thứ đã thay đổi."
-      ]
-    },
-    {
-      "id": 2,
-      "title": "Ánh mắt đầu tiên",
-      "content": [
-        "Ngày hôm sau, họ gặp lại nhau ở cùng một nơi.",
-        "Ánh mắt anh dừng lại rất lâu, đủ để trái tim cô rung động.",
-        "Có những cảm xúc không cần lời nói, vẫn tự khắc hiểu nhau."
-      ]
-    },
-    {
-      "id": 3,
-      "title": "Lời hứa năm xưa",
-      "vip": true,
-      "content": [
-        "Cơn mưa bất chợt kéo đến, cuốn trôi mọi ký ức cũ.",
-        "Lời hứa năm ấy, liệu còn ai nhớ?"
-      ]
-    }
+
+{
+  "id": 1,
+  "title": "Đêm mất điện",
+  "content": [
+    "Đêm đó, thành phố mất điện.",
+    "Lâm Vãn đứng ở trạm xe buýt, điện thoại chỉ còn ba phần trăm pin. Gió lạnh thổi qua, mang theo mùi mưa chưa kịp rơi. Cô kéo chặt áo khoác, nhìn con đường tối om phía trước, lòng trống rỗng một cách kỳ lạ.",
+    "Cô ghét bóng tối.",
+    "Không phải vì sợ, mà vì trong bóng tối, người ta dễ nghĩ quá nhiều.",
+    "“Cô ổn chứ?”",
+    "Giọng nói vang lên sau lưng, trầm và đều, không mang theo tò mò thừa thãi. Lâm Vãn quay lại. Người đàn ông trước mặt cao hơn cô một chút, áo blouse trắng khoác hờ, cổ tay còn vết hằn của găng tay y tế.",
+    "Cô gật đầu, rồi lại lắc đầu.",
+    "Anh không hỏi thêm. Chỉ đứng cách cô một khoảng vừa đủ, cùng nhìn lên bầu trời.",
+    "Trăng đêm ấy rất sáng, như thể cố gắng bù đắp cho cả thành phố đang chìm trong bóng tối.",
+    "“Đèn sẽ có lại sớm thôi.”",
+    "Anh nói, như đang trấn an chính mình.",
+    "Lâm Vãn không trả lời.",
+    "Nhưng lần đầu tiên trong nhiều ngày, cô thấy lòng mình dịu lại."
+  ]
+},
+{
+  "id": 2,
+  "title": "Ánh mắt đầu tiên",
+  "content": [
+    "Sáng hôm sau, thành phố đã có điện trở lại.",
+    "Lâm Vãn bước vào bệnh viện để bàn giao bản thiết kế cho phòng khám mới mở. Mùi thuốc sát trùng quen thuộc khiến cô hơi nhíu mày.",
+    "Khi thang máy mở ra, cô nhìn thấy anh đang đứng ở quầy trực, cúi đầu xem hồ sơ bệnh án.",
+    "Ánh nắng buổi sáng chiếu lên áo blouse trắng, khiến dáng người anh trông dịu đi rất nhiều.",
+    "Anh ngẩng đầu, bắt gặp ánh mắt cô.",
+    "“Chào buổi sáng.”",
+    "Cô hơi bất ngờ khi anh nhớ mình.",
+    "“Chào anh.”",
+    "Họ chỉ nói vậy, rồi lướt qua nhau.",
+    "Nhưng ánh mắt thoáng chạm ấy, lại khiến tim cô rung lên một nhịp rất khẽ."
+  ]
+},
+{
+  "id": 3,
+  "title": "Khoảng lặng",
+  "content": [
+    "Một tuần sau, họ gặp lại nhau ở tiệm cà phê gần bệnh viện.",
+    "Lâm Vãn ngồi cạnh cửa sổ, laptop mở nhưng ánh mắt lại trôi dạt ra ngoài phố.",
+    "“Cô hay ngồi chỗ này à?”",
+    "Giọng nói quen thuộc vang lên.",
+    "Cô ngẩng đầu, thấy anh đứng đó với một ly cà phê đen trên tay.",
+    "“Ở đây yên tĩnh.”",
+    "Anh kéo ghế ngồi đối diện, giữ một khoảng cách vừa đủ.",
+    "Họ bắt đầu nói chuyện, rất chậm, rất ít.",
+    "Anh nói mình tên là Trình Dạ.",
+    "Cô nói mình tên Lâm Vãn.",
+    "Không ai hỏi thêm điều gì khác.",
+    "Nhưng khoảng lặng giữa họ, lại không hề khó chịu."
+  ]
+},
+{
+  "id": 4,
+  "title": "Những điều không hỏi",
+  "content": [
+    "Từ đó, họ gặp nhau thường xuyên hơn.",
+    "Không hẹn trước, cũng không ràng buộc.",
+    "Trình Dạ không hỏi vì sao cô luôn ở một mình.",
+    "Lâm Vãn cũng không hỏi vì sao anh hay tan ca rất muộn.",
+    "Giữa họ tồn tại một sự im lặng kỳ lạ, nhưng dễ chịu.",
+    "Có những buổi tối, anh nhắn một tin rất ngắn: “Còn ở đó không?”",
+    "Nếu cô rảnh, cô trả lời: “Có.”",
+    "Nếu không, anh chỉ nhắn lại: “Ừ.”",
+    "Không ai trách ai.",
+    "Lâm Vãn bắt đầu quen với việc có một người đứng cạnh mình, nhưng không bước quá gần."
+  ]
+},
+{
+  "id": 5,
+  "title": "Vết nứt đầu tiên",
+  "content": [
+    "Một đêm mưa, Trình Dạ đến muộn hơn thường lệ.",
+    "Anh ngồi xuống, không gọi cà phê ngay.",
+    "Hai bàn tay anh đặt trên bàn, khẽ run.",
+    "“Anh ổn không?”",
+    "Lâm Vãn hỏi, lần đầu tiên vượt qua ranh giới an toàn.",
+    "Trình Dạ im lặng rất lâu.",
+    "“Có những người… dù cố gắng thế nào cũng không cứu được.”",
+    "Giọng anh trầm xuống.",
+    "Lâm Vãn không an ủi, cũng không hỏi thêm.",
+    "Cô chỉ đẩy ly cà phê về phía anh.",
+    "“Uống đi. Để nguội sẽ đắng.”",
+    "Trình Dạ bật cười rất nhẹ.",
+    "Lần đầu tiên, anh cảm thấy có người nhìn thấy vết nứt trong mình — và không cố vá nó lại."
+  ]
+},
+{
+  "id": 6,
+  "title": "Thói quen mới",
+  "content": [
+    "Sau đêm mưa đó, Trình Dạ không còn đến muộn nữa.",
+    "Nhưng anh cũng không đến sớm hơn.",
+    "Vẫn là khung giờ cũ, chiếc bàn cũ, hai ly cà phê quen thuộc.",
+    "Lâm Vãn nhận ra, có những thói quen hình thành rất lặng lẽ.",
+    "Cô bắt đầu để dành chỗ ngồi cho anh, ngay cả khi chưa biết anh có đến hay không.",
+    "Trình Dạ không nói gì về đêm hôm ấy.",
+    "Nhưng mỗi lần ánh mắt anh dừng lại trên cô, đều lâu hơn một chút.",
+    "Không ai gọi tên sự thay đổi đó.",
+    "Nhưng cả hai đều cảm nhận được."
+  ]
+},
+{
+  "id": 7,
+  "title": "Khoảng cách an toàn",
+  "content": [
+    "Lâm Vãn từng nghĩ, chỉ cần giữ khoảng cách, mọi thứ sẽ ổn.",
+    "Cô không hỏi về quá khứ của anh.",
+    "Cũng không kể quá nhiều về những điều đã qua của mình.",
+    "Họ đứng ở ranh giới rất mong manh, đủ gần để quan tâm, đủ xa để không bị tổn thương.",
+    "Một lần, Trình Dạ hỏi cô:",
+    "“Nếu có cơ hội rời khỏi thành phố này, cô có đi không?”",
+    "Lâm Vãn im lặng.",
+    "Câu hỏi ấy chạm vào một góc rất sâu trong lòng cô.",
+    "“Có lẽ.”",
+    "Cô trả lời.",
+    "Trình Dạ gật đầu.",
+    "Không nói gì thêm."
+  ]
+},
+{
+  "id": 8,
+  "title": "Người quen",
+  "content": [
+    "Một buổi chiều, Lâm Vãn nhìn thấy Trình Dạ đứng nói chuyện với một người phụ nữ trước cổng bệnh viện.",
+    "Người đó ăn mặc thanh lịch, nụ cười dịu dàng nhưng ánh mắt lại mang theo điều gì đó rất nặng.",
+    "Trình Dạ trông khác hẳn khi ở bên cô.",
+    "Anh nghiêm túc, dè dặt, và có chút xa cách.",
+    "Lâm Vãn không tiến lại gần.",
+    "Cô quay đi trước khi họ kịp nhìn thấy mình.",
+    "Tối hôm đó, Trình Dạ không đến quán cà phê.",
+    "Lần đầu tiên, Lâm Vãn nhận ra —",
+    "cô đang chờ anh."
+  ]
+},
+{
+  "id": 9,
+  "title": "Không phải vô tình",
+  "content": [
+    "Ngày hôm sau, Trình Dạ chủ động nhắn tin cho cô.",
+    "“Hôm qua tôi có việc.”",
+    "Chỉ một câu ngắn ngủi.",
+    "Lâm Vãn nhìn màn hình rất lâu mới trả lời.",
+    "“Ừ.”",
+    "Cô không hỏi thêm.",
+    "Nhưng trong lòng cô hiểu rõ.",
+    "Sự xuất hiện của anh trong cuộc sống cô —",
+    "đã không còn là vô tình nữa.",
+    "Và sự vắng mặt của anh —",
+    "cũng vậy."
+  ]
+},
+{
+  "id": 10,
+  "title": "Ánh trăng quen thuộc",
+  "content": [
+    "Đêm đó, họ lại ngồi cạnh nhau.",
+    "Không mưa, không mất điện.",
+    "Chỉ có ánh trăng treo lơ lửng ngoài cửa kính.",
+    "Trình Dạ đột nhiên nói:",
+    "“Tôi không giỏi bắt đầu một mối quan hệ.”",
+    "Lâm Vãn không nhìn anh.",
+    "“Em cũng không giỏi.”",
+    "Họ bật cười rất khẽ.",
+    "Giữa thành phố rộng lớn, hai con người không hoàn hảo —",
+    "lại tìm thấy nhau ở cùng một khoảng lặng.",
+    "Ánh trăng ngoài kia, vẫn lặng lẽ soi sáng."
+  ]
+},
+{
+  "id": 11,
+  "title": "Người ở lại",
+  "content": [
+    "Sau đêm đó, Trình Dạ vẫn xuất hiện đều đặn.",
+    "Nhưng anh không còn nói những câu lửng lơ nữa.",
+    "Khoảng cách giữa họ không xa hơn, cũng không gần thêm.",
+    "Lâm Vãn nhận ra, có những người chọn ở lại —",
+    "nhưng không cho phép mình tiến lên.",
+    "Một buổi tối, cô hỏi rất khẽ:",
+    "“Anh có từng nghĩ… nếu một ngày em biến mất thì sao không?”",
+    "Trình Dạ nhìn cô.",
+    "Ánh mắt anh sâu và tối.",
+    "“Tôi không quen giữ người.”",
+    "Câu nói ấy, khiến tim cô trùng xuống."
+  ]
+},
+{
+  "id": 12,
+  "title": "Tin nhắn chưa gửi",
+  "content": [
+    "Lâm Vãn nhận được một email mời làm việc từ thành phố khác.",
+    "Không gấp, nhưng đủ tốt để bắt đầu lại.",
+    "Cô mở khung chat với Trình Dạ.",
+    "Gõ rồi xóa.",
+    "Xóa rồi lại gõ.",
+    "Cuối cùng, cô không gửi gì cả.",
+    "Buổi tối hôm đó, Trình Dạ nhắn trước:",
+    "“Mai tôi trực đêm.”",
+    "Lâm Vãn nhìn dòng chữ rất lâu.",
+    "“Ừ.”",
+    "Cô trả lời.",
+    "Tin nhắn chưa gửi —",
+    "vẫn nằm yên trong điện thoại."
+  ]
+},
+{
+  "id": 13,
+  "title": "Khoảng trống",
+  "content": [
+    "Một tuần trôi qua, họ không gặp nhau.",
+    "Không ai chủ động.",
+    "Lâm Vãn vẫn đến quán cà phê cũ, ngồi đúng chỗ quen.",
+    "Chiếc ghế đối diện trống không.",
+    "Cô chợt nhận ra —",
+    "mình đã quen với sự hiện diện của anh hơn cô tưởng.",
+    "Ở bệnh viện, Trình Dạ trực liên tục.",
+    "Anh không mở tin nhắn.",
+    "Cũng không bước ra ngoài.",
+    "Khoảng trống giữa họ, ngày càng rõ ràng."
+  ]
+},
+{
+  "id": 14,
+  "title": "Lựa chọn im lặng",
+  "content": [
+    "Họ gặp lại nhau vào một buổi tối muộn.",
+    "Không hẹn trước.",
+    "Không chuẩn bị.",
+    "“Dạo này em bận?”",
+    "Trình Dạ hỏi.",
+    "Lâm Vãn gật đầu.",
+    "“Anh cũng vậy.”",
+    "Cả hai đều nói dối —",
+    "nhưng không ai vạch trần.",
+    "Có những câu hỏi, nếu hỏi ra —",
+    "sẽ không còn đường lui."
+  ]
+},
+{
+  "id": 15,
+  "title": "Vết cắt nhẹ",
+  "content": [
+    "Ngày Lâm Vãn ký hợp đồng mới, trời mưa.",
+    "Cô đứng trước cửa sổ, nhìn ánh đèn phản chiếu trên mặt kính.",
+    "Điện thoại rung lên.",
+    "Tin nhắn từ Trình Dạ:",
+    "“Nếu em rời đi… nhớ chăm sóc bản thân.”",
+    "Không hỏi.",
+    "Không giữ.",
+    "Lâm Vãn mỉm cười.",
+    "Nụ cười rất nhẹ, nhưng đau.",
+    "“Anh cũng vậy.”",
+    "Cô trả lời.",
+    "Có những vết cắt không chảy máu —",
+    "nhưng đau rất lâu."
+  ]
+},
+{
+  "id": 16,
+  "title": "Ngày rời thành phố",
+  "content": [
+    "Lâm Vãn rời thành phố vào một buổi sáng sớm.",
+    "Trời không mưa, nhưng mây thấp.",
+    "Cô kéo vali qua sảnh ga, bước chân chậm hơn mình tưởng.",
+    "Điện thoại im lặng.",
+    "Không có tin nhắn mới.",
+    "Cô biết, nếu mình quay đầu lại —",
+    "sẽ không đủ dũng khí để đi tiếp.",
+    "Lâm Vãn lên tàu.",
+    "Cánh cửa khép lại.",
+    "Thành phố cũ lùi dần phía sau."
+  ]
+},
+{
+  "id": 17,
+  "title": "Người không tiễn",
+  "content": [
+    "Trình Dạ trực đêm hôm đó.",
+    "Anh biết hôm nay cô rời đi.",
+    "Nhưng vẫn khoác áo blouse, bước vào phòng cấp cứu như mọi ngày.",
+    "Ca mổ kéo dài hơn dự kiến.",
+    "Khi anh bước ra ngoài, trời đã sáng.",
+    "Điện thoại sáng lên.",
+    "Tin nhắn cuối cùng của Lâm Vãn, gửi từ đêm qua:",
+    "“Em đi đây.”",
+    "Chỉ ba chữ.",
+    "Trình Dạ đứng rất lâu trong hành lang trắng toát.",
+    "Anh không đuổi theo.",
+    "Có những người, anh không dám tiễn —",
+    "vì sợ chính mình sẽ giữ lại."
+  ]
+},
+{
+  "id": 18,
+  "title": "Thành phố mới",
+  "content": [
+    "Thành phố mới ồn ào hơn.",
+    "Lâm Vãn bắt đầu công việc mới, gặp những gương mặt mới.",
+    "Mọi người đều thân thiện.",
+    "Chỉ là không ai biết cô đã từng ở đâu.",
+    "Những đêm muộn, cô mở cửa sổ.",
+    "Trăng ở thành phố này không giống trăng cũ.",
+    "Cô tự hỏi, liệu có ai đó —",
+    "đang nhìn cùng một vầng trăng với mình không.",
+    "Điện thoại vẫn im lặng.",
+    "Cô cũng không nhắn gì thêm."
+  ]
+},
+{
+  "id": 19,
+  "title": "Khoảng cách mang tên thời gian",
+  "content": [
+    "Thời gian trôi qua rất chậm.",
+    "Trình Dạ vẫn sống theo nhịp cũ.",
+    "Trực đêm, về nhà, ngủ ngắn.",
+    "Quán cà phê quen không còn ghế trống đối diện.",
+    "Anh ngồi một mình.",
+    "Ly cà phê nguội dần.",
+    "Có những lúc, anh mở khung chat —",
+    "rồi tắt đi.",
+    "Khoảng cách giữa họ không còn là không gian nữa.",
+    "Mà là thời gian."
+  ]
+},
+{
+  "id": 20,
+  "title": "Không còn ở cùng một bầu trời",
+  "content": [
+    "Một đêm, Lâm Vãn mơ thấy thành phố cũ.",
+    "Trạm xe buýt, con đường tối, ánh trăng rất sáng.",
+    "Nhưng lần này, không có ai đứng cạnh.",
+    "Cô tỉnh giấc.",
+    "Nước mắt rơi ướt gối.",
+    "Ở một nơi khác, Trình Dạ kết thúc ca trực.",
+    "Anh ngẩng đầu nhìn bầu trời.",
+    "Trăng vẫn sáng.",
+    "Chỉ là —",
+    "không còn ở cùng một bầu trời."
+  ]
+},
+{
+  "id": 21,
+  "title": "Người đã không cứu được",
+  "content": [
+    "Trình Dạ lần đầu tiên gặp cái chết khi còn là bác sĩ nội trú.",
+    "Ca cấp cứu đêm hôm đó kéo dài hơn bốn tiếng.",
+    "Bệnh nhân là một cô gái trẻ.",
+    "Tai nạn giao thông.",
+    "Chấn thương nội tạng nghiêm trọng.",
+    "Anh là người ký vào biên bản tử vong.",
+    "Cũng là người nhìn đồng hồ chạy qua thời điểm không thể cứu vãn.",
+    "Ngoài hành lang, người nhà cô gái khóc đến không còn thành tiếng.",
+    "Trình Dạ đứng đó rất lâu.",
+    "Từ đêm ấy, anh bắt đầu sợ một điều —",
+    "sợ mình trở thành người ở lại."
+  ]
+},
+{
+  "id": 22,
+  "title": "Lời hứa không hoàn thành",
+  "content": [
+    "Người con gái đó từng nói với anh:",
+    "“Khi em khỏe lại, anh dẫn em đi uống cà phê nhé.”",
+    "Anh đã gật đầu.",
+    "Anh luôn giữ lời hứa với bệnh nhân.",
+    "Chỉ có lần đó —",
+    "anh thất hứa.",
+    "Từ ngày ấy, Trình Dạ không còn cho phép mình hứa điều gì quá xa.",
+    "Không hứa ở lại.",
+    "Không hứa tương lai.",
+    "Vì anh hiểu rõ —",
+    "có những thứ, dù cố đến đâu cũng không giữ được."
+  ]
+},
+{
+  "id": 23,
+  "title": "Vì sao không giữ",
+  "content": [
+    "Khi Lâm Vãn hỏi: “Nếu một ngày em biến mất thì sao?”",
+    "Trình Dạ đã muốn nói rất nhiều.",
+    "Anh muốn nói rằng anh sợ.",
+    "Sợ mình sẽ lại bất lực.",
+    "Sợ một ngày nào đó, người anh yêu rời đi —",
+    "và anh không có quyền giữ.",
+    "Nhưng anh không nói.",
+    "Vì anh biết, nếu nói ra —",
+    "anh sẽ phải thừa nhận mình ích kỷ.",
+    "Giữ một người bên cạnh —",
+    "chỉ để tự trấn an nỗi sợ của bản thân."
+  ]
+},
+{
+  "id": 24,
+  "title": "Người đứng sau ánh trăng",
+  "content": [
+    "Đêm Lâm Vãn rời đi, Trình Dạ đứng trên ban công bệnh viện.",
+    "Trăng rất sáng.",
+    "Giống đêm họ gặp nhau lần đầu.",
+    "Anh nhớ rõ ánh mắt cô khi hỏi anh:",
+    "“Anh có từng nghĩ đến việc giữ em lại không?”",
+    "Anh đã nghĩ.",
+    "Nghĩ rất nhiều.",
+    "Nhưng cuối cùng, anh chọn đứng sau.",
+    "Vì anh tin —",
+    "nếu yêu một người đủ nhiều,",
+    "thì phải cho người đó rời đi khi cần."
+  ]
+},
+{
+  "id": 25,
+  "title": "Điều chưa từng nói",
+  "content": [
+    "Có một câu, Trình Dạ chưa từng nói với Lâm Vãn.",
+    "Anh đã viết nó rất nhiều lần.",
+    "Rồi xóa.",
+    "“Anh không giữ em —",
+    "không phải vì anh không yêu.”",
+    "“Mà vì anh sợ một ngày nào đó —",
+    "anh sẽ là người khiến em đau.”",
+    "Tin nhắn đó,",
+    "vẫn nằm trong điện thoại anh.",
+    "Chưa gửi.",
+    "Và có lẽ —",
+    "sẽ không bao giờ gửi."
+  ]
+},
+{
+  "id": 26,
+  "title": "Một mình cũng không tệ",
+  "content": [
+    "Thành phố mới dần trở nên quen thuộc.",
+    "Lâm Vãn học cách đi ăn một mình.",
+    "Uống cà phê một mình.",
+    "Đi dạo vào những buổi tối không hẹn trước.",
+    "Không còn cảm giác trống rỗng như những ngày đầu.",
+    "Có những lúc, cô chợt nhận ra —",
+    "mình đã thôi chờ tin nhắn.",
+    "Một mình, cũng không tệ như cô từng nghĩ."
+  ]
+},
+{
+  "id": 27,
+  "title": "Người mới, không phải thay thế",
+  "content": [
+    "Ở công ty mới, có người bắt đầu quan tâm đến cô.",
+    "Là một đồng nghiệp.",
+    "Chu đáo, đúng mực.",
+    "Không giống Trình Dạ.",
+    "Lâm Vãn không từ chối, nhưng cũng không tiến gần.",
+    "Cô hiểu rõ —",
+    "người mới không phải để thay thế người cũ.",
+    "Mà là để cô biết:",
+    "mình vẫn có thể được quan tâm,",
+    "ngay cả khi không yêu."
+  ]
+},
+{
+  "id": 28,
+  "title": "Không còn oán trách",
+  "content": [
+    "Có một buổi tối, Lâm Vãn chợt nhớ lại tất cả.",
+    "Những cuộc trò chuyện lặng lẽ.",
+    "Những lần chờ đợi không tên.",
+    "Cô nhận ra —",
+    "mình chưa từng oán trách Trình Dạ.",
+    "Chỉ là buồn.",
+    "Buồn vì cả hai đều đã rất cố gắng,",
+    "nhưng lại chọn sai thời điểm.",
+    "Khi không còn trách móc,",
+    "nỗi đau cũng nhẹ đi rất nhiều."
+  ]
+},
+{
+  "id": 29,
+  "title": "Đủ mạnh để không quay đầu",
+  "content": [
+    "Một lần, Lâm Vãn về thăm thành phố cũ vì công việc.",
+    "Cô đi ngang qua con phố quen.",
+    "Tiệm cà phê vẫn ở đó.",
+    "Nhưng cô không bước vào.",
+    "Không phải vì sợ gặp lại.",
+    "Mà vì cô biết —",
+    "mình đã đủ mạnh để không cần chứng minh điều gì.",
+    "Có những đoạn đường,",
+    "chỉ cần đi qua trong lòng là đủ."
+  ]
+},
+{
+  "id": 30,
+  "title": "Nếu một ngày gặp lại",
+  "content": [
+    "Đêm đó, Lâm Vãn đứng bên cửa sổ khách sạn.",
+    "Trăng ở thành phố cũ vẫn rất sáng.",
+    "Cô nghĩ:",
+    "nếu một ngày gặp lại Trình Dạ,",
+    "cô sẽ không hỏi vì sao anh không giữ.",
+    "Cũng không hỏi anh còn yêu hay không.",
+    "Cô chỉ muốn nói:",
+    "“Em sống ổn.”",
+    "Và mỉm cười.",
+    "Lần này,",
+    "là thật."
+  ]
+},
+{
+  "id": 31,
+  "title": "Gặp lại",
+  "content": [
+    "Họ gặp lại nhau vào một buổi chiều mưa nhẹ.",
+    "Không hẹn trước.",
+    "Không chuẩn bị.",
+    "Lâm Vãn bước ra khỏi thang máy thì nhìn thấy anh đứng đó.",
+    "Trình Dạ mặc áo sơ mi sẫm màu, không còn áo blouse.",
+    "Anh gầy hơn trước.",
+    "Nhưng ánh mắt vẫn quen.",
+    "Hai người đứng đối diện nhau vài giây.",
+    "Không ai lên tiếng trước.",
+    "Cuối cùng, Trình Dạ nói:",
+    "“Lâu rồi không gặp.”",
+    "Lâm Vãn gật đầu.",
+    "“Ừ. Lâu rồi.”"
+  ]
+},
+{
+  "id": 32,
+  "title": "Người chủ động",
+  "content": [
+    "Lần này, là Trình Dạ nhắn tin trước.",
+    "Không vòng vo.",
+    "“Em có thời gian uống cà phê không?”",
+    "Lâm Vãn nhìn tin nhắn rất lâu.",
+    "Cô không còn cảm giác tim đập mạnh như trước.",
+    "Chỉ là bình tĩnh.",
+    "“Có.”",
+    "Cô trả lời.",
+    "Tin nhắn gửi đi.",
+    "Vai thế đã khác.",
+    "Người chờ đợi, không còn là cô nữa."
+  ]
+},
+{
+  "id": 33,
+  "title": "Khoảng cách mới",
+  "content": [
+    "Họ ngồi đối diện nhau trong quán cà phê.",
+    "Vẫn là cà phê đen.",
+    "Nhưng không còn chiếc ghế trống quen thuộc.",
+    "Trình Dạ nói nhiều hơn trước.",
+    "Kể về công việc.",
+    "Về những năm tháng sau khi cô rời đi.",
+    "Lâm Vãn lắng nghe.",
+    "Không xen vào.",
+    "Không hỏi thêm.",
+    "Cô nhận ra —",
+    "khoảng cách giữa họ bây giờ,",
+    "không phải do im lặng,",
+    "mà do trưởng thành."
+  ]
+},
+{
+  "id": 34,
+  "title": "Lần này, anh giữ",
+  "content": [
+    "Khi đứng dậy ra về, Trình Dạ gọi cô lại.",
+    "“Lâm Vãn.”",
+    "Cô quay đầu.",
+    "“Ngày đó… anh đã sai.”",
+    "Giọng anh trầm, nhưng rõ.",
+    "“Anh không nên để em đi mà không nói gì.”",
+    "Lâm Vãn nhìn anh.",
+    "Rất lâu.",
+    "“Anh nói những điều này —”",
+    "“— không phải để em quay lại.”",
+    "Trình Dạ tiếp lời.",
+    "“Mà để lần này, nếu em muốn ở lại,”",
+    "“anh sẽ không đứng yên nữa.”"
+  ]
+},
+{
+  "id": 35,
+  "title": "Không trả lời vội",
+  "content": [
+    "Lâm Vãn không trả lời ngay.",
+    "Cô mỉm cười.",
+    "Nụ cười bình thản.",
+    "“Em cần thời gian.”",
+    "Trình Dạ gật đầu.",
+    "“Anh đợi.”",
+    "Không hứa hẹn.",
+    "Không ép buộc.",
+    "Lần này,",
+    "người sẵn sàng chờ —",
+    "là anh.",
+    "Ngoài cửa kính,",
+    "trời đã tạnh mưa."
+  ]
+},
+{
+  "id": 36,
+  "title": "Theo đuổi không vội",
+  "content": [
+    "Trình Dạ không nhắn tin mỗi ngày.",
+    "Anh chỉ xuất hiện đúng lúc.",
+    "Một buổi trưa gửi tin hỏi cô có ăn cơm chưa.",
+    "Một buổi tối nhắc cô trời trở lạnh.",
+    "Không hỏi cô đang ở đâu.",
+    "Không yêu cầu gặp mặt.",
+    "Lâm Vãn nhận ra —",
+    "lần này, anh theo đuổi rất chậm.",
+    "Chậm đến mức không làm cô thấy áp lực."
+  ]
+},
+{
+  "id": 37,
+  "title": "Giữ nhịp",
+  "content": [
+    "Lâm Vãn không né tránh.",
+    "Nhưng cũng không tiến nhanh.",
+    "Cô trả lời tin nhắn khi rảnh.",
+    "Nhận lời gặp khi thật sự muốn.",
+    "Có lúc, cô chủ động kết thúc buổi trò chuyện trước.",
+    "Trình Dạ không níu.",
+    "Chỉ nói:",
+    "“Ừ. Lần sau.”",
+    "Cô biết —",
+    "anh đang tôn trọng nhịp của cô."
+  ]
+},
+{
+  "id": 38,
+  "title": "Đi cạnh nhau",
+  "content": [
+    "Họ bắt đầu gặp nhau nhiều hơn.",
+    "Không gọi là hẹn hò.",
+    "Chỉ là cùng ăn tối.",
+    "Cùng đi bộ một đoạn ngắn sau giờ làm.",
+    "Không nắm tay.",
+    "Không chạm vào những giới hạn cũ.",
+    "Trình Dạ đi chậm hơn.",
+    "Để luôn đi cạnh cô,",
+    "không phải phía trước."
+  ]
+},
+{
+  "id": 39,
+  "title": "Điều khác biệt",
+  "content": [
+    "Một lần, Lâm Vãn hỏi:",
+    "“Nếu lần này em lại rời đi thì sao?”",
+    "Trình Dạ không im lặng.",
+    "Anh nói ngay:",
+    "“Anh sẽ hỏi em cần gì.”",
+    "“Nếu em cần đi — anh tiễn.”",
+    "“Nếu em cần ở — anh ở.”",
+    "Lâm Vãn nhìn anh rất lâu.",
+    "Cô nhận ra —",
+    "đây là điều khác biệt lớn nhất giữa anh của hiện tại",
+    "và anh của năm xưa."
+  ]
+},
+{
+  "id": 40,
+  "title": "Cho nhau cơ hội",
+  "content": [
+    "Buổi tối hôm đó, họ đứng dưới ánh đèn đường.",
+    "Không mưa.",
+    "Không trăng.",
+    "Lâm Vãn nói:",
+    "“Em chưa sẵn sàng quay lại.”",
+    "Trình Dạ gật đầu.",
+    "“Anh biết.”",
+    "Cô tiếp:",
+    "“Nhưng em cho anh một cơ hội.”",
+    "Không phải để yêu ngay.",
+    "Mà để đi tiếp cùng nhau.",
+    "Trình Dạ mỉm cười.",
+    "Lần này,",
+    "là thật."
+  ]
+},
+{
+  "id": 41,
+  "title": "Ở cạnh",
+  "content": [
+    "Từ đó, Trình Dạ xuất hiện trong cuộc sống của Lâm Vãn một cách rất tự nhiên.",
+    "Không danh phận.",
+    "Không lời hứa.",
+    "Chỉ là mỗi khi cô cần, anh đều có mặt.",
+    "Không hỏi lý do.",
+    "Không đòi lại gì.",
+    "Lâm Vãn nhận ra —",
+    "sự hiện diện ấy không còn khiến cô bất an.",
+    "Mà rất yên."
+  ]
+},
+{
+  "id": 42,
+  "title": "Không cần gọi tên",
+  "content": [
+    "Có người hỏi Lâm Vãn:",
+    "“Hai người là gì của nhau?”",
+    "Cô suy nghĩ một chút.",
+    "Rồi mỉm cười:",
+    "“Là người ở bên.”",
+    "Không phải yêu.",
+    "Cũng không phải bạn.",
+    "Nhưng đủ để không cô đơn.",
+    "Trình Dạ nghe thấy.",
+    "Anh không phản bác.",
+    "Chỉ gật đầu."
+  ]
+},
+{
+  "id": 43,
+  "title": "Giới hạn mới",
+  "content": [
+    "Họ đặt ra những giới hạn rất rõ ràng.",
+    "Không ở lại qua đêm.",
+    "Không chia sẻ những nỗi sợ sâu nhất.",
+    "Không hứa tương lai.",
+    "Nhưng cũng không biến mất.",
+    "Lâm Vãn hiểu —",
+    "những giới hạn ấy không phải để xa nhau.",
+    "Mà để bảo vệ cả hai."
+  ]
+},
+{
+  "id": 44,
+  "title": "Khoảnh khắc rất khẽ",
+  "content": [
+    "Một buổi tối, mất điện.",
+    "Căn phòng tối om.",
+    "Chỉ còn ánh đèn từ điện thoại.",
+    "Trình Dạ đứng cạnh cô.",
+    "Rất gần.",
+    "Gần đến mức cô nghe rõ nhịp thở của anh.",
+    "Anh không chạm vào cô.",
+    "Chỉ nói khẽ:",
+    "“Anh ở đây.”",
+    "Lâm Vãn nhắm mắt.",
+    "Tim cô khẽ rung lên."
+  ]
+},
+{
+  "id": 45,
+  "title": "Chưa cần câu trả lời",
+  "content": [
+    "Đêm đó, Lâm Vãn nằm rất lâu không ngủ.",
+    "Cô nghĩ về tất cả.",
+    "Những lần rời đi.",
+    "Những lần quay lại.",
+    "Cô nhận ra —",
+    "mình không còn sợ yêu.",
+    "Chỉ là chưa cần vội vàng.",
+    "Ở bên nhau thế này —",
+    "đã đủ tốt cho hiện tại.",
+    "Câu trả lời,",
+    "có thể đợi."
+  ]
+},
+{
+  "id": 46,
+  "title": "Một bước rất nhỏ",
+  "content": [
+    "Sáng hôm đó, Lâm Vãn chủ động nhắn tin trước.",
+    "“Tối nay anh có rảnh không?”",
+    "Trình Dạ trả lời gần như ngay lập tức.",
+    "“Có.”",
+    "Chỉ một chữ.",
+    "Nhưng đủ để tim anh chấn động.",
+    "Buổi tối, họ đi bộ rất chậm.",
+    "Không ai nói về quá khứ.",
+    "Chỉ là ở cạnh nhau.",
+    "Lần đầu tiên, Lâm Vãn không giữ khoảng cách thêm nữa."
+  ]
+},
+{
+  "id": 47,
+  "title": "Nắm tay",
+  "content": [
+    "Khi băng qua đường, Trình Dạ đưa tay ra theo phản xạ.",
+    "Rồi khựng lại.",
+    "Anh nhìn cô.",
+    "Như hỏi.",
+    "Lâm Vãn không nói gì.",
+    "Chỉ đặt tay mình vào tay anh.",
+    "Rất khẽ.",
+    "Không siết chặt.",
+    "Nhưng đủ để cả hai hiểu —",
+    "lần này, không ai buông trước."
+  ]
+},
+{
+  "id": 48,
+  "title": "Gọi tên",
+  "content": [
+    "Họ ngồi trong quán cà phê quen.",
+    "Ánh đèn vàng dịu.",
+    "Trình Dạ nhìn cô rất lâu.",
+    "“Lâm Vãn.”",
+    "Anh gọi tên cô, rất chậm.",
+    "“Lần này, anh không muốn đứng sau nữa.”",
+    "“Anh không hứa những điều quá xa.”",
+    "“Nhưng nếu là em —”",
+    "“— anh muốn gọi tên là yêu.”",
+    "Lâm Vãn im lặng.",
+    "Rồi gật đầu.",
+    "“Em cũng vậy.”"
+  ]
+},
+{
+  "id": 49,
+  "title": "Ở lại",
+  "content": [
+    "Họ không thông báo với ai.",
+    "Không cần xác nhận.",
+    "Chỉ là từ hôm đó,",
+    "Trình Dạ ở lại bên cạnh Lâm Vãn —",
+    "không phải vì sợ mất.",
+    "Mà vì muốn cùng đi.",
+    "Lâm Vãn cũng không nghĩ đến rời đi nữa.",
+    "Không phải vì bị giữ.",
+    "Mà vì đã tự chọn ở lại."
+  ]
+},
+{
+  "id": 50,
+  "title": "Ánh trăng của nhau",
+  "content": [
+    "Một đêm, thành phố lại mất điện.",
+    "Họ đứng bên ban công.",
+    "Trăng rất sáng.",
+    "Giống đêm đầu tiên gặp nhau.",
+    "Trình Dạ nói khẽ:",
+    "“Cảm ơn em vì đã quay lại.”",
+    "Lâm Vãn lắc đầu.",
+    "“Em không quay lại.”",
+    "“Em đi hết con đường của mình —",
+    "rồi gặp anh ở đây.”",
+    "Trình Dạ siết nhẹ tay cô.",
+    "Ánh trăng trên cao.",
+    "Không còn là ánh trăng sau lưng nữa.",
+    "Mà là ánh trăng —",
+    "của cả hai."
+  ]
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   ]
 }
