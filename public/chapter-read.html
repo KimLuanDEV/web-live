@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>📄 Đọc chương</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body{
+      margin:0;
+      background:#0e0e12;
+      color:#eaeaf0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont;
+    }
+
+    /* HEADER */
+    .reader-header{
+      height:52px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+      padding:0 12px;
+      background:#111;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      position:sticky;
+      top:0;
+      z-index:10;
+    }
+
+    .reader-header .title{
+      font-weight:700;
+      font-size:15px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .back-btn{
+      background:none;
+      border:none;
+      color:#fff;
+      font-size:20px;
+      cursor:pointer;
+    }
+
+    /* CONTENT */
+    .reader{
+      padding:18px 16px 40px;
+      max-width:720px;
+      margin:auto;
+      font-size:18px;        /* 🔥 font lớn */
+      line-height:1.75;     /* 🔥 dễ đọc */
+    }
+
+    .reader p{
+      margin:0 0 16px;
+    }
+
+    /* FOOTER */
+    .reader-footer{
+      text-align:center;
+      opacity:.6;
+      font-size:13px;
+      margin-top:30px;
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="reader-header">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <div class="title" id="chapterTitle">
+    Chương 1: Gặp gỡ
+  </div>
+</header>
+
+<main id="reader" class="reader">
+
+  <p>
+    Buổi chiều hôm đó, ánh nắng nghiêng nghiêng rơi xuống con phố nhỏ.
+    Cô bước đi giữa dòng người đông đúc, lòng mang theo những cảm xúc
+    khó gọi thành tên.
+  </p>
+
+  <p>
+    Anh xuất hiện như một cơn gió lạ, không báo trước,
+    không kịp đề phòng.
+    Chỉ một ánh nhìn thoáng qua, mọi thứ đã thay đổi.
+  </p>
+
+  <p>
+    Có những cuộc gặp gỡ,
+    tưởng chừng rất đỗi bình thường,
+    nhưng lại kéo theo cả một đời thương nhớ.
+  </p>
+
+  <div class="reader-footer">
+    — Hết chương —
+  </div>
+
+</main>
+
+<script>
+  // 🔑 KEY lưu vị trí đọc (theo chapter)
+  const params = new URLSearchParams(location.search);
+  const storyId   = params.get("story") || "1";
+  const chapterId = params.get("chapter") || "1";
+
+  const STORAGE_KEY = `read_pos_${storyId}_${chapterId}`;
+  const reader = document.getElementById("reader");
+
+  // 🔄 RESTORE SCROLL
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if(saved){
+    requestAnimationFrame(()=>{
+      window.scrollTo(0, Number(saved));
+    });
+  }
+
+  // 💾 SAVE SCROLL (debounce nhẹ)
+  let t;
+  window.addEventListener("scroll", ()=>{
+    clearTimeout(t);
+    t = setTimeout(()=>{
+      localStorage.setItem(STORAGE_KEY, window.scrollY);
+    }, 200);
+  });
+
+  // 🏷 TITLE
+  document.getElementById("chapterTitle").textContent =
+    `Chương ${chapterId}: Gặp gỡ`;
+</script>
+
+</body>
+</html>
