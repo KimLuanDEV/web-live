@@ -16,32 +16,74 @@
   gap:14px;
 }
 
+/* CARD */
 .cook-card{
-  background:#15151c;
-  border-radius:16px;
+  position:relative;
+  height:170px;
+  border-radius:18px;
   overflow:hidden;
   cursor:pointer;
+  background:#000;
+  box-shadow:0 6px 18px rgba(0,0,0,.35);
+  transition:transform .15s ease, box-shadow .15s ease;
 }
 
+.cook-card:active{
+  transform:scale(.97);
+}
+
+/* IMAGE */
 .cook-card img{
+  position:absolute;
+  inset:0;
   width:100%;
-  height:120px;
+  height:100%;
   object-fit:cover;
 }
 
+/* OVERLAY */
+.cook-card::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    to top,
+    rgba(0,0,0,.75),
+    rgba(0,0,0,.15),
+    transparent
+  );
+}
+
+/* INFO */
 .cook-card .info{
-  padding:10px;
+  position:absolute;
+  left:12px;
+  right:12px;
+  bottom:12px;
+  z-index:2;
+  color:#fff;
 }
 
 .cook-card .title{
   font-weight:800;
-  font-size:14px;
+  font-size:15px;
+  line-height:1.2;
 }
 
 .cook-card .meta{
-  font-size:12px;
-  opacity:.7;
-  margin-top:2px;
+  display:flex;
+  gap:6px;
+  margin-top:6px;
+  font-size:11px;
+}
+
+/* CHIP */
+.cook-chip{
+  padding:4px 8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.18);
+  backdrop-filter:blur(6px);
+  font-weight:700;
 }
 
 
