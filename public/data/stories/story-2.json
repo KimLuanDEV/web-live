@@ -1,0 +1,24 @@
+{
+  "id": 2,
+  "title": "Thiên Kim Trở Về",
+  "author": "Thanh Sam Lạc Thác",
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Ngày trở về",
+      "content": [
+        "Sau nhiều năm xa cách, cô quay trở lại thành phố cũ.",
+        "Mọi thứ vẫn còn đó, chỉ có lòng người đã đổi thay."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Bí mật gia tộc",
+      "vip": true,
+      "content": [
+        "Bí mật bị che giấu suốt nhiều năm dần dần lộ diện.",
+        "Không ai còn có thể quay đầu lại."
+      ]
+    }
+  ]
+}
