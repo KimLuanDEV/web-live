@@ -751,7 +751,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.post("/api/translate", async (req, res) => {
   try {
     const { text, from, to } = req.body;
-
     if (!text || !to) {
       return res.json({ ok: false, error: "INVALID_INPUT" });
     }
@@ -760,7 +759,6 @@ app.post("/api/translate", async (req, res) => {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Accept": "application/json",
         "User-Agent": "LivestreamPro/1.0"
       },
       body: JSON.stringify({
@@ -771,12 +769,22 @@ app.post("/api/translate", async (req, res) => {
       })
     });
 
-    const data = await resp.json();
+    // 🔥 đọc RAW trước
+    const rawText = await resp.text();
 
-    // 🔥 LOG DEBUG (rất quan trọng)
-    console.log("🌍 TRANSLATE RAW:", data);
+    // 🔎 nếu trả về HTML → bị chặn
+    if (rawText.trim().startsWith("<")) {
+      console.error("❌ TRANSLATE BLOCKED (HTML):", rawText.slice(0, 200));
+      return res.json({
+        ok: false,
+        error: "TRANSLATE_BLOCKED"
+      });
+    }
 
-    if (!data || !data.translatedText) {
+    // ✅ parse JSON an toàn
+    const data = JSON.parse(rawText);
+
+    if (!data.translatedText) {
       return res.json({
         ok: false,
         error: "NO_TRANSLATED_TEXT",
@@ -784,14 +792,14 @@ app.post("/api/translate", async (req, res) => {
       });
     }
 
-    return res.json({
+    res.json({
       ok: true,
       translatedText: data.translatedText
     });
 
   } catch (err) {
     console.error("❌ TRANSLATE ERROR:", err);
-    return res.status(500).json({
+    res.status(500).json({
       ok: false,
       error: "SERVER_ERROR"
     });
