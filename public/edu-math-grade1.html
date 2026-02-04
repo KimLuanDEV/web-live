@@ -1,123 +1,65 @@
 <!doctype html>
 <html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <title>① Toán lớp 1</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/style.css">
+<meta charset="utf-8">
+<title>① Toán lớp 1</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
 
-  <style>
-    body{
-      margin:0;
-      background:#0e0e12;
-      color:#fff;
-      min-height:100vh;
-      font-family:system-ui,-apple-system,BlinkMacSystemFont;
-    }
+<style>
+body{
+  margin:0;
+  background:#0e0e12;
+  color:#fff;
+  font-family:system-ui,-apple-system,BlinkMacSystemFont;
+}
+.simple-header{
+  height:52px;display:flex;align-items:center;gap:12px;
+  padding:0 12px;background:#111;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.back-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+.title{font-weight:800;font-size:16px}
 
-    /* HEADER */
-    .simple-header{
-      height:52px;
-      display:flex;
-      align-items:center;
-      gap:12px;
-      padding:0 12px;
-      background:#111;
-      border-bottom:1px solid rgba(255,255,255,.08);
-    }
-    .back-btn{
-      background:none;
-      border:none;
-      color:#fff;
-      font-size:20px;
-      cursor:pointer;
-    }
-    .title{
-      font-weight:800;
-      font-size:16px;
-    }
+.edu-layout{
+  display:flex;gap:16px;padding:14px;
+  max-width:1200px;margin:0 auto;
+}
+.edu-sidebar{
+  width:220px;background:#12121a;
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;padding:12px;flex-shrink:0;
+}
+.sidebar-title{font-weight:900;margin-bottom:10px}
+.chapter{
+  padding:10px 12px;border-radius:12px;
+  cursor:pointer;opacity:.7;font-size:13px;margin-bottom:4px;
+}
+.chapter:hover{background:rgba(255,255,255,.05)}
+.chapter.active{
+  background:rgba(0,255,160,.14);
+  border:1px solid rgba(0,255,160,.22);
+  color:#9fffe1;opacity:1;
+}
 
-    /* LAYOUT */
-    .edu-layout{
-      display:flex;
-      gap:16px;
-      padding:14px;
-      max-width:1200px;
-      margin:0 auto;
-    }
+.edu-content{flex:1}
+.chapter-content{display:none}
+.chapter-content.show{display:block}
 
-    /* SIDEBAR */
-    .edu-sidebar{
-      width:220px;
-      background:#12121a;
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:16px;
-      padding:12px;
-      flex-shrink:0;
-    }
-    .sidebar-title{
-      font-weight:900;
-      margin-bottom:10px;
-      font-size:14px;
-    }
-    .chapter{
-      padding:10px 12px;
-      border-radius:12px;
-      cursor:pointer;
-      opacity:.7;
-      font-size:13px;
-      margin-bottom:4px;
-    }
-    .chapter:hover{
-      background:rgba(255,255,255,.05);
-    }
-    .chapter.active{
-      background:rgba(0,255,160,.14);
-      border:1px solid rgba(0,255,160,.22);
-      color:#9fffe1;
-      opacity:1;
-    }
+.lesson-content{
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:14px;padding:16px;
+  line-height:1.65;font-size:14px;
+}
+.lesson-content h3{margin-top:0}
+hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 
-    /* CONTENT */
-    .edu-content{
-      flex:1;
-    }
-    .chapter-content{
-      display:none;
-    }
-    .chapter-content.show{
-      display:block;
-    }
-
-    .lesson-content{
-      background:rgba(255,255,255,.04);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:14px;
-      padding:14px;
-      line-height:1.6;
-      font-size:14px;
-    }
-
-    .lesson-content h3{
-      margin-top:0;
-    }
-
-    hr{
-      border:none;
-      border-top:1px solid rgba(255,255,255,.12);
-      margin:16px 0;
-    }
-
-    /* MOBILE */
-    @media (max-width:768px){
-      .edu-layout{
-        flex-direction:column;
-      }
-      .edu-sidebar{
-        width:100%;
-      }
-    }
-  </style>
+@media (max-width:768px){
+  .edu-layout{flex-direction:column}
+  .edu-sidebar{width:100%}
+}
+</style>
 </head>
 
 <body>
@@ -129,132 +71,197 @@
 
 <main class="edu-layout">
 
-  <!-- MENU TRÁI -->
-  <aside class="edu-sidebar">
-    <div class="sidebar-title">📘 Nội dung</div>
-    <div class="chapter active" data-target="ch1">🔢 Số & Đếm</div>
-    <div class="chapter" data-target="ch2">↔️ So sánh số</div>
-    <div class="chapter" data-target="ch3">➕ Phép cộng</div>
-    <div class="chapter" data-target="ch4">➖ Phép trừ</div>
-    <div class="chapter" data-target="ch5">🧱 Tách – gộp</div>
-    <div class="chapter" data-target="ch6">📐 Hình học</div>
-    <div class="chapter" data-target="ch7">📏 Đo lường</div>
-  </aside>
+<aside class="edu-sidebar">
+  <div class="sidebar-title">📘 Nội dung</div>
+  <div class="chapter active" data-target="ch1">🔢 Số & Đếm</div>
+  <div class="chapter" data-target="ch2">↔️ So sánh số</div>
+  <div class="chapter" data-target="ch3">➕ Phép cộng</div>
+  <div class="chapter" data-target="ch4">➖ Phép trừ</div>
+  <div class="chapter" data-target="ch5">🧱 Tách – gộp</div>
+  <div class="chapter" data-target="ch6">📐 Hình học</div>
+  <div class="chapter" data-target="ch7">📏 Đo lường</div>
+</aside>
 
-  <!-- NỘI DUNG -->
-  <section class="edu-content">
+<section class="edu-content">
 
-    <!-- CHƯƠNG 1 -->
-    <div class="chapter-content show" id="ch1">
-      <div class="lesson-content">
-        <h3>🔢 1. SỐ VÀ ĐẾM</h3>
-        <p><b>Các số học trong lớp 1:</b></p>
-        <p>0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</p>
+<!-- CHƯƠNG 1 -->
+<div class="chapter-content show" id="ch1">
+<div class="lesson-content">
+<h3>🔢 CHƯƠNG 1: SỐ VÀ ĐẾM</h3>
 
-        <p><b>Số liền trước – số liền sau:</b></p>
-        <ul>
-          <li>Số liền trước của 5 là <b>4</b></li>
-          <li>Số liền sau của 5 là <b>6</b></li>
-        </ul>
+<p><b>Các số trong Toán lớp 1</b></p>
+<p>Học sinh làm quen với các số từ <b>0 đến 10</b>.  
+Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 
-        <p><b>So sánh số lượng:</b></p>
-        <ul>
-          <li>Nhiều hơn</li>
-          <li>Ít hơn</li>
-          <li>Bằng nhau</li>
-        </ul>
-      </div>
-    </div>
+<p><b>Ví dụ:</b></p>
+<ul>
+<li>1 quả táo → số 1</li>
+<li>4 cái bút → số 4</li>
+</ul>
 
-    <!-- CHƯƠNG 2 -->
-    <div class="chapter-content" id="ch2">
-      <div class="lesson-content">
-        <h3>↔️ 2. SO SÁNH SỐ</h3>
-        <ul>
-          <li><b>&gt;</b> : lớn hơn</li>
-          <li><b>&lt;</b> : bé hơn</li>
-          <li><b>=</b> : bằng nhau</li>
-        </ul>
-        <p><i>Ghi nhớ: Miệng cá sấu quay về số lớn hơn</i></p>
-      </div>
-    </div>
+<hr>
 
-    <!-- CHƯƠNG 3 -->
-    <div class="chapter-content" id="ch3">
-      <div class="lesson-content">
-        <h3>➕ 3. PHÉP CỘNG</h3>
-        <p><b>a + b = c</b></p>
-        <ul>
-          <li>1 + 2 = 3</li>
-          <li>3 + 4 = 7</li>
-          <li>5 + 5 = 10</li>
-        </ul>
-      </div>
-    </div>
+<p><b>Đếm số</b></p>
+<p>Đếm là đọc các số theo thứ tự từ bé đến lớn.</p>
 
-    <!-- CHƯƠNG 4 -->
-    <div class="chapter-content" id="ch4">
-      <div class="lesson-content">
-        <h3>➖ 4. PHÉP TRỪ</h3>
-        <p><b>a − b = c</b></p>
-        <ul>
-          <li>5 − 2 = 3</li>
-          <li>9 − 4 = 5</li>
-        </ul>
-      </div>
-    </div>
+<ol>
+<li>Nhìn từng đồ vật</li>
+<li>Chỉ vào đồ vật</li>
+<li>Vừa chỉ vừa đọc: 1, 2, 3…</li>
+</ol>
 
-    <!-- CHƯƠNG 5 -->
-    <div class="chapter-content" id="ch5">
-      <div class="lesson-content">
-        <h3>🧱 5. TÁCH – GỘP SỐ</h3>
-        <ul>
-          <li>5 = 2 + 3</li>
-          <li>10 = 6 + 4</li>
-        </ul>
-      </div>
-    </div>
+<hr>
 
-    <!-- CHƯƠNG 6 -->
-    <div class="chapter-content" id="ch6">
-      <div class="lesson-content">
-        <h3>📐 6. HÌNH HỌC</h3>
-        <ul>
-          <li>Hình tròn</li>
-          <li>Hình vuông</li>
-          <li>Hình tam giác</li>
-        </ul>
-      </div>
-    </div>
+<p><b>Số liền trước – số liền sau</b></p>
+<ul>
+<li>Số liền trước của 5 là <b>4</b></li>
+<li>Số liền sau của 5 là <b>6</b></li>
+</ul>
 
-    <!-- CHƯƠNG 7 -->
-    <div class="chapter-content" id="ch7">
-      <div class="lesson-content">
-        <h3>📏 7. ĐO LƯỜNG</h3>
-        <ul>
-          <li>Dài hơn – ngắn hơn</li>
-          <li>Cao hơn – thấp hơn</li>
-          <li>Bằng nhau</li>
-        </ul>
-      </div>
-    </div>
+<p><i>Ghi nhớ:</i> Liền trước → bớt 1 | Liền sau → thêm 1</p>
+</div>
+</div>
 
-  </section>
+<!-- CHƯƠNG 2 -->
+<div class="chapter-content" id="ch2">
+<div class="lesson-content">
+<h3>↔️ CHƯƠNG 2: SO SÁNH SỐ</h3>
+
+<p>So sánh số là biết số nào lớn hơn, bé hơn hoặc bằng nhau.</p>
+
+<ul>
+<li><b>&gt;</b> : lớn hơn</li>
+<li><b>&lt;</b> : bé hơn</li>
+<li><b>=</b> : bằng nhau</li>
+</ul>
+
+<p><b>Cách làm:</b></p>
+<ol>
+<li>So sánh số lượng đồ vật</li>
+<li>Hoặc so sánh vị trí khi đếm</li>
+</ol>
+
+<p><b>Ví dụ:</b></p>
+<ul>
+<li>5 &gt; 3 vì 5 đứng sau 3</li>
+<li>2 &lt; 4 vì 2 đứng trước 4</li>
+</ul>
+
+<p><i>Mẹo nhớ:</i> Miệng cá sấu quay về số lớn hơn</p>
+</div>
+</div>
+
+<!-- CHƯƠNG 3 -->
+<div class="chapter-content" id="ch3">
+<div class="lesson-content">
+<h3>➕ CHƯƠNG 3: PHÉP CỘNG</h3>
+
+<p>Phép cộng dùng để <b>gộp</b> các nhóm đồ vật.</p>
+
+<p><b>Dạng:</b> a + b = c</p>
+
+<p><b>Cách làm:</b></p>
+<ol>
+<li>Đếm số thứ nhất</li>
+<li>Đếm thêm số thứ hai</li>
+<li>Số cuối cùng là kết quả</li>
+</ol>
+
+<p><b>Ví dụ:</b></p>
+<ul>
+<li>2 + 3 = 5</li>
+<li>5 + 5 = 10</li>
+</ul>
+
+<p><i>Ghi nhớ:</i> Kết quả không nhỏ hơn các số đã cộng</p>
+</div>
+</div>
+
+<!-- CHƯƠNG 4 -->
+<div class="chapter-content" id="ch4">
+<div class="lesson-content">
+<h3>➖ CHƯƠNG 4: PHÉP TRỪ</h3>
+
+<p>Phép trừ dùng để <b>bớt đi</b> một phần đồ vật.</p>
+
+<p><b>Dạng:</b> a − b = c</p>
+
+<p><b>Cách làm:</b></p>
+<ol>
+<li>Bắt đầu từ số lớn</li>
+<li>Bớt đi số cần trừ</li>
+<li>Số còn lại là kết quả</li>
+</ol>
+
+<p><b>Ví dụ:</b></p>
+<ul>
+<li>5 − 2 = 3</li>
+</ul>
+
+<p><i>Ghi nhớ:</i> Số bị trừ ≥ số trừ</p>
+</div>
+</div>
+
+<!-- CHƯƠNG 5 -->
+<div class="chapter-content" id="ch5">
+<div class="lesson-content">
+<h3>🧱 CHƯƠNG 5: TÁCH – GỘP SỐ</h3>
+
+<p>Một số có thể tách thành nhiều cặp số khác nhau.</p>
+
+<ul>
+<li>5 = 2 + 3</li>
+<li>5 = 1 + 4</li>
+</ul>
+
+<p>Khi cộng các số đã tách, ta gộp lại được số ban đầu.</p>
+
+<p><i>Ý nghĩa:</i> Giúp tính nhẩm nhanh</p>
+</div>
+</div>
+
+<!-- CHƯƠNG 6 -->
+<div class="chapter-content" id="ch6">
+<div class="lesson-content">
+<h3>📐 CHƯƠNG 6: HÌNH HỌC</h3>
+
+<ul>
+<li><b>Hình tròn:</b> không cạnh, không góc</li>
+<li><b>Hình vuông:</b> 4 cạnh bằng nhau</li>
+<li><b>Hình tam giác:</b> 3 cạnh</li>
+</ul>
+
+<p>Học sinh cần nhận dạng hình trong đời sống.</p>
+</div>
+</div>
+
+<!-- CHƯƠNG 7 -->
+<div class="chapter-content" id="ch7">
+<div class="lesson-content">
+<h3>📏 CHƯƠNG 7: ĐO LƯỜNG</h3>
+
+<ul>
+<li>Dài hơn – ngắn hơn</li>
+<li>Cao hơn – thấp hơn</li>
+<li>Bằng nhau</li>
+</ul>
+
+<p><i>Lưu ý:</i> Lớp 1 chỉ so sánh trực quan, chưa dùng đơn vị đo.</p>
+</div>
+</div>
+
+</section>
 </main>
 
 <script>
-  const chapters = document.querySelectorAll(".chapter");
-  const contents = document.querySelectorAll(".chapter-content");
-
-  chapters.forEach(btn => {
-    btn.onclick = () => {
-      chapters.forEach(b => b.classList.remove("active"));
-      contents.forEach(c => c.classList.remove("show"));
-
-      btn.classList.add("active");
-      document.getElementById(btn.dataset.target).classList.add("show");
-    };
-  });
+document.querySelectorAll(".chapter").forEach(btn=>{
+  btn.onclick=()=>{
+    document.querySelectorAll(".chapter").forEach(b=>b.classList.remove("active"));
+    document.querySelectorAll(".chapter-content").forEach(c=>c.classList.remove("show"));
+    btn.classList.add("active");
+    document.getElementById(btn.dataset.target).classList.add("show");
+  }
+});
 </script>
 
 </body>
