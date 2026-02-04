@@ -187,11 +187,11 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
   gap:10px;
 }
 
-/* từng đáp án */
+/* ===== TEST OPTION: RADIO SÁT MÉP PHẢI ===== */
+
 .test-option{
   display:flex;
   align-items:center;
-  gap:10px;
   padding:8px 10px;
   border-radius:10px;
   background:rgba(255,255,255,0.03);
@@ -204,11 +204,11 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
   word-break:break-word;
 }
 
-/* radio bên phải */
+/* radio đẩy sát phải */
 .test-option input[type="radio"]{
-  transform:scale(1.2);
-  margin:0;
-  flex-shrink:0;
+  margin-left:auto;        /* 🔥 QUAN TRỌNG */
+  transform:scale(1.25);
+  cursor:pointer;
 }
 
 
