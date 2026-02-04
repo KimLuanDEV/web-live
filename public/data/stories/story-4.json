@@ -1,0 +1,623 @@
+{
+  "id": 4,
+  "title": "Người Không Có Tên",
+  "subtitle": "Manh Mối Sau Cánh Cửa Khóa – Phần 2",
+  "author": "Livestream Pro Studio",
+  "desc": "Sau vụ án phòng kín, những cái chết mới xuất hiện. Không phải để che giấu, mà để dẫn dắt. Kẻ đứng sau không cần giết người — hắn chỉ quyết định ai sẽ chết.",
+  "tags": ["Phá án", "Trinh thám", "Tâm lý", "Suy luận", "Dark", "Series"],
+
+  "series": {
+    "series_id": "manh-moi-series",
+    "order": 2,
+    "prev_story": 3
+  },
+
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Cái Chết Không Nằm Trong Hồ Sơ",
+      "content": [
+        "Ba tuần sau vụ án phòng 912.",
+        "Lê Minh Kha nhận được một cuộc gọi từ nội bộ.",
+        "Một cái chết mới, giống nhưng không trùng.",
+        "Không đột nhập.",
+        "Không vết thương.",
+        "Thời gian tử vong bị xác định sai.",
+        "Trên bàn có một ly nước chưa uống hết.",
+        "Kha im lặng rất lâu.",
+        "Rồi anh hỏi: “Trong phòng có đồng hồ không?”"
+      ],
+      "logic_box": {
+        "title": "🧩 Suy luận",
+        "questions": [
+          "Chi tiết nào khiến vụ án này giống vụ phòng 912?",
+          "Sai lệch thời gian có thể dùng để làm gì?",
+          "Hung thủ đang thử nghiệm hay gửi thông điệp?"
+        ],
+        "lock_answer": true
+      }
+    },
+{
+  "id": 2,
+  "title": "Đồng Hồ Không Thuộc Về Nạn Nhân",
+  "content": [
+    "Kha kiểm tra lại chiếc đồng hồ treo tường trong văn phòng nạn nhân.",
+    "Nó không phải đồng hồ của công ty.",
+    "Mẫu đã ngừng sản xuất ba năm trước.",
+    "Gia đình nạn nhân khẳng định ông ta không mang theo đồng hồ khi chuyển văn phòng.",
+    "Không có hóa đơn mua sắm nào cho thiết bị này.",
+    "Kha tháo nắp sau đồng hồ.",
+    "Bên trong không có dấu hiệu sửa chữa.",
+    "Nhưng kim giây chạy chậm hơn mười hai phút so với giờ chuẩn.",
+    "Một sự sai lệch có chủ đích.",
+    "Ai đó đã quyết định thời điểm cái chết sẽ được nhìn thấy."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hung thủ cần đặt một chiếc đồng hồ không thuộc về nạn nhân?",
+      "Sai lệch thời gian giúp điều hướng kết luận điều tra như thế nào?",
+      "Ai là người đủ quyền hạn để thay đổi hiện trường mà không bị nghi ngờ?"
+    ],
+    "hint": "Thời gian là cách rẻ nhất để thao túng nhận thức.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 3,
+  "title": "Người Thứ Hai Trong Danh Sách",
+  "content": [
+    "Kha yêu cầu truy xuất hồ sơ tài chính sâu hơn.",
+    "Tên nạn nhân mới xuất hiện trong một bản ghi cũ.",
+    "Bản ghi đó không nằm trong hệ thống chính thức.",
+    "Nó được lưu trữ ngoại tuyến, với quyền truy cập giới hạn.",
+    "Danh sách chỉ có bảy cái tên.",
+    "Hai người đã chết.",
+    "Ba người đã mất tích.",
+    "Hai người còn sống, nhưng đang ở nước ngoài.",
+    "Dưới mỗi cái tên đều có cùng một ký hiệu.",
+    "Một ký hiệu không giải thích, nhưng được lặp lại chính xác."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Danh sách bảy người này đại diện cho điều gì?",
+      "Ký hiệu chung dưới mỗi tên dùng để làm gì?",
+      "Những người còn sống có thực sự an toàn?"
+    ],
+    "hint": "Danh sách kín hiếm khi được tạo ra để bảo vệ.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 4,
+  "title": "Người Không Có Trong Hệ Thống",
+  "content": [
+    "Kha thử lần theo nguồn gốc danh sách.",
+    "Người tạo danh sách không tồn tại trong hồ sơ nhân sự.",
+    "Không hợp đồng.",
+    "Không mã nhân viên.",
+    "Không chữ ký điện tử.",
+    "Nhưng mọi chỉnh sửa đều được phê duyệt.",
+    "Như thể hệ thống tự chấp nhận sự tồn tại đó.",
+    "Một kỹ thuật viên già nói nhỏ: “Có người từng có quyền cao hơn cả quy trình.”",
+    "Kha hỏi tên.",
+    "Ông ta lắc đầu: “Chúng tôi chỉ gọi là Người Không Có Tên.”"
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Làm thế nào một người không tồn tại lại có quyền phê duyệt?",
+      "Hệ thống đang bị điều khiển hay bị lợi dụng?",
+      "‘Người Không Có Tên’ là cá nhân hay một vai trò?"
+    ],
+    "hint": "Quyền lực cao nhất không cần danh tính.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 5,
+  "title": "Cái Chết Được Chọn Trước",
+  "content": [
+    "Kha quay lại hai vụ án đã xảy ra.",
+    "Cả hai nạn nhân đều không phải mục tiêu trực tiếp của điều tra hình sự.",
+    "Họ là người nắm thông tin.",
+    "Không phải người gây tội.",
+    "Thời điểm chết của họ đều rơi vào lúc họ chuẩn bị gặp ai đó.",
+    "Một cuộc gặp không bao giờ diễn ra.",
+    "Kha nhận ra: hung thủ không phản ứng.",
+    "Hắn lên lịch.",
+    "Không giết vì cần.",
+    "Giết vì đã đến lượt."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Tiêu chí nào để một người bị ‘chọn’?",
+      "Hung thủ đang loại bỏ người hay kiểm soát thông tin?",
+      "Nếu có danh sách, ai sẽ là người tiếp theo?"
+    ],
+    "hint": "Khi cái chết có thứ tự, đó không còn là ngẫu nhiên.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 6,
+  "title": "Dấu Hiệu Bị Quan Sát",
+  "content": [
+    "Kha bắt đầu nhận ra những chi tiết lặp lại.",
+    "Một chiếc xe đỗ cùng vị trí trước văn phòng mỗi sáng.",
+    "Một cuộc gọi nhỡ từ số không tồn tại.",
+    "Camera giao thông trước nhà anh mất tín hiệu đúng mười phút.",
+    "Không đủ để kết luận theo dõi.",
+    "Nhưng đủ để cảnh báo.",
+    "Kha không báo ai.",
+    "Anh chỉ đổi lộ trình về nhà.",
+    "Chiếc xe vẫn xuất hiện.",
+    "Như thể người kia biết anh sẽ đi đường nào."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Những dấu hiệu nào cho thấy Kha đang bị theo dõi?",
+      "Vì sao đối phương không che giấu hoàn toàn?",
+      "Mục đích của việc để Kha nhận ra là gì?"
+    ],
+    "hint": "Theo dõi không phải lúc nào cũng để ẩn mình.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 7,
+  "title": "Cuộc Gọi Không Có Âm Thanh",
+  "content": [
+    "Điện thoại Kha đổ chuông lúc 23:47.",
+    "Không hiển thị số gọi đến.",
+    "Khi bắt máy, chỉ có tiếng thở rất nhẹ.",
+    "Không lời đe dọa.",
+    "Không yêu cầu.",
+    "Cuộc gọi kết thúc sau đúng mười bảy giây.",
+    "Ngay sau đó, Kha nhận được email nặc danh.",
+    "Chỉ có một dòng: “Anh đang đi đúng hướng.”",
+    "Không chữ ký.",
+    "Không địa chỉ gửi."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Cuộc gọi im lặng nhằm mục đích gì?",
+      "Vì sao thời lượng cuộc gọi được tính chính xác?",
+      "Ai được lợi khi Kha tiếp tục điều tra?"
+    ],
+    "hint": "Đôi khi sự im lặng chính là câu trả lời.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 8,
+  "title": "Bẫy Ngược",
+  "content": [
+    "Kha quyết định thử phản ứng đối phương.",
+    "Anh cố tình để lộ một thông tin giả.",
+    "Một cuộc hẹn không tồn tại được tạo ra trong hệ thống.",
+    "Chỉ ba người có quyền truy cập lịch này.",
+    "Hai giờ trước thời điểm hẹn, một trong ba người biến mất khỏi hệ thống nội bộ.",
+    "Tài khoản bị khóa không lý do.",
+    "Camera tại khu vực hẹn gặp bị tắt trước mười phút.",
+    "Kha hiểu: bẫy đã khép.",
+    "Nhưng không phải theo cách anh dự đoán.",
+    "Có người thứ tư đã nhìn thấy thông tin đó."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Bẫy của Kha thất bại ở điểm nào?",
+      "Người thứ tư có thể là ai?",
+      "Vì sao hệ thống phản ứng trước cả con người?"
+    ],
+    "hint": "Khi bẫy không cần người giật dây, nó đã vượt khỏi tầm kiểm soát.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 9,
+  "title": "Tên Kha Trong Danh Sách",
+  "content": [
+    "Kha yêu cầu truy xuất lại danh sách bảy người.",
+    "Một thay đổi nhỏ xuất hiện.",
+    "Không có thông báo chỉnh sửa.",
+    "Không có log truy cập.",
+    "Tên thứ tám được thêm vào cuối danh sách.",
+    "Không chức danh.",
+    "Không ghi chú.",
+    "Chỉ có tên: Lê Minh Kha.",
+    "Dưới tên anh, ký hiệu quen thuộc xuất hiện.",
+    "Lần đầu tiên, Kha hiểu cảm giác của những nạn nhân trước đó."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao Kha bị đưa vào danh sách?",
+      "Ký hiệu dưới tên Kha mang ý nghĩa gì?",
+      "Danh sách này được dùng để theo dõi hay để xử lý?"
+    ],
+    "hint": "Khi tên xuất hiện, đồng hồ đã bắt đầu chạy.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 10,
+  "title": "Người Quan Sát Không Cần Xuất Hiện",
+  "content": [
+    "Kha không xóa tên mình khỏi danh sách.",
+    "Anh để nguyên.",
+    "Như một lời chấp nhận.",
+    "Đêm đó, anh quay lại văn phòng một mình.",
+    "Đèn tự bật khi anh bước vào.",
+    "Trên bàn có một chiếc phong bì.",
+    "Không dấu niêm phong.",
+    "Bên trong là ảnh chụp Kha rời nhà ba ngày trước.",
+    "Góc chụp từ trên cao.",
+    "Kèm một tờ giấy: “Anh còn mười ba ngày.”"
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Con số mười ba ngày tượng trưng cho điều gì?",
+      "Vì sao đối phương không hành động ngay?",
+      "Kha còn lựa chọn nào ngoài việc tiếp tục?"
+    ],
+    "hint": "Khi thời gian được báo trước, đó là một lời thách thức.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 11,
+  "title": "Ngày 1 – Thời Gian Bắt Đầu Chạy",
+  "content": [
+    "Kha ghi con số 13 lên bảng trắng.",
+    "Anh khoanh tròn nó, rồi gạch một đường dưới cùng.",
+    "Ngày đầu tiên trôi qua không có thêm cái chết nào.",
+    "Không tin nhắn.",
+    "Không cuộc gọi.",
+    "Không dấu hiệu theo dõi mới.",
+    "Sự im lặng kéo dài đến mức bất thường.",
+    "Kha hiểu: đối phương không cần vội.",
+    "Hắn đã đặt lịch.",
+    "Và hắn đang chờ Kha phản ứng."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao ngày đầu tiên lại hoàn toàn yên tĩnh?",
+      "Sự im lặng này gây áp lực theo cách nào?",
+      "Ai đang kiểm soát nhịp độ cuộc chơi?"
+    ],
+    "hint": "Áp lực lớn nhất đến từ việc không biết khi nào nó ập tới.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 12,
+  "title": "Ngày 2 – Người Quan Sát Gần Hơn",
+  "content": [
+    "Ngày thứ hai, Kha phát hiện camera an ninh trong thang máy tòa nhà nơi anh ở bị thay thế.",
+    "Mẫu camera mới hơn, góc quay rộng hơn.",
+    "Ban quản lý nói đó là nâng cấp định kỳ.",
+    "Nhưng lịch nâng cấp không có trong hồ sơ.",
+    "Kha đứng trước camera rất lâu.",
+    "Ống kính phản chiếu lại chính anh.",
+    "Lần đầu tiên, anh có cảm giác mình đang bị nhìn trực diện.",
+    "Không phải từ xa.",
+    "Mà từ ngay trong không gian anh sống.",
+    "Ngày thứ hai kết thúc bằng một câu hỏi không lời đáp."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Việc thay camera mang ý nghĩa giám sát hay cảnh cáo?",
+      "Ai có quyền thay đổi hạ tầng mà không để lại dấu vết?",
+      "Vì sao đối phương muốn Kha biết mình đang bị nhìn?"
+    ],
+    "hint": "Quyền lực thật sự không sợ bị nhận ra.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 13,
+  "title": "Ngày 3 – Manh Mối Giả",
+  "content": [
+    "Ngày thứ ba, một hồ sơ nặc danh được gửi tới văn phòng Kha.",
+    "Hồ sơ chứa thông tin chi tiết về một nạn nhân tiếp theo.",
+    "Thời gian.",
+    "Địa điểm.",
+    "Phương thức.",
+    "Mọi thứ đều quá hoàn hảo.",
+    "Kha kiểm tra chéo.",
+    "Ba dữ kiện trong hồ sơ là thật.",
+    "Hai dữ kiện còn lại đã bị chỉnh sửa.",
+    "Ai đó đang thử xem Kha tin vào dữ liệu đến mức nào."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao đối phương cố tình gửi manh mối giả?",
+      "Những chi tiết nào thường bị chỉnh sửa đầu tiên?",
+      "Nếu Kha làm theo hồ sơ này, điều gì sẽ xảy ra?"
+    ],
+    "hint": "Thông tin sai nguy hiểm hơn thông tin thiếu.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 14,
+  "title": "Ngày 4 – Người Đã Biết Quá Nhiều",
+  "content": [
+    "Ngày thứ tư, Kha gặp một người cũ.",
+    "Người này từng tham gia xử lý một vụ án trong danh sách.",
+    "Cuộc gặp chỉ kéo dài mười phút.",
+    "Người đó nói: “Nếu cậu còn tiếp tục, cậu sẽ chết trước người tiếp theo.”",
+    "Ông ta từ chối nói thêm.",
+    "Buổi tối cùng ngày, người đó nhập viện vì tai biến nhẹ.",
+    "Không chết.",
+    "Nhưng mất khả năng nói tạm thời.",
+    "Kha hiểu: cảnh báo vừa đủ để không trở thành án mạng.",
+    "Ngày thứ tư kết thúc bằng sự bất lực có kiểm soát."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao người này không bị giết?",
+      "Mục đích thật sự của ‘tai biến nhẹ’ là gì?",
+      "Đối phương đang bảo vệ ai?"
+    ],
+    "hint": "Không phải lúc nào im lặng cũng đến từ cái chết.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 15,
+  "title": "Ngày 5 – Nhịp Thở Bị Dẫn Dắt",
+  "content": [
+    "Ngày thứ năm, Kha nhận ra lịch sinh hoạt của mình bị dự đoán trước.",
+    "Quán cà phê anh thường ghé đóng cửa đúng hôm đó.",
+    "Một tuyến đường quen thuộc bị chặn vì sửa chữa.",
+    "Mọi lựa chọn đều bị thu hẹp.",
+    "Không ép buộc.",
+    "Chỉ là dẫn dắt.",
+    "Kha dừng lại giữa một ngã tư, lần đầu tiên không biết nên đi đâu.",
+    "Điện thoại rung lên.",
+    "Một tin nhắn không số: “Anh đang thở theo nhịp của chúng tôi.”",
+    "Ngày thứ năm khép lại khi Kha nhận ra: phản diện không cần chạm vào anh."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Việc điều khiển lựa chọn khác gì điều khiển hành động?",
+      "Kha đang mất lợi thế ở điểm nào?",
+      "Nếu tiếp tục bị dẫn dắt, kết cục sẽ ra sao?"
+    ],
+    "hint": "Khi lựa chọn biến mất, tự do chỉ còn là ảo giác.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 16,
+  "title": "Ngày 6 – Cắt Một Đường",
+  "content": [
+    "Ngày thứ sáu bắt đầu bằng một quyết định đơn giản.",
+    "Kha tắt điện thoại.",
+    "Không chế độ máy bay.",
+    "Không chuyển tiếp.",
+    "Tắt hoàn toàn.",
+    "Anh không để lại thông báo cho bất kỳ ai.",
+    "Lần đầu tiên sau nhiều ngày, lịch trình của anh trống rỗng.",
+    "Không cuộc hẹn.",
+    "Không điểm đến.",
+    "Một khoảng trống mà đối phương không được mời vào."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Việc Kha tắt điện thoại phá vỡ điều gì trong kế hoạch của đối phương?",
+      "Vì sao ‘khoảng trống’ lại nguy hiểm với kẻ kiểm soát?",
+      "Đối phương sẽ phản ứng hay chờ đợi?"
+    ],
+    "hint": "Khi không có dữ liệu, mọi thuật toán đều mù.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 17,
+  "title": "Ngày 7 – Thông Tin Bị Đứt",
+  "content": [
+    "Ngày thứ bảy, Kha không xuất hiện ở bất kỳ nơi quen thuộc nào.",
+    "Không văn phòng.",
+    "Không quán cà phê.",
+    "Không tuyến đường cũ.",
+    "Anh dành cả ngày trong một thư viện cũ không có camera.",
+    "Một nơi không có Wi-Fi.",
+    "Không ai theo dõi.",
+    "Không ai nhắn tin.",
+    "Buổi tối, Kha bật điện thoại.",
+    "Không có tin nhắn mới nào."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Việc mất dấu Kha gây khó khăn gì cho đối phương?",
+      "Vì sao đối phương không phản ứng ngay?",
+      "Sự im lặng lần này khác gì ngày 1?"
+    ],
+    "hint": "Im lặng chủ động khác im lặng bị áp đặt.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 18,
+  "title": "Ngày 8 – Dữ Liệu Giả",
+  "content": [
+    "Ngày thứ tám, Kha bật lại toàn bộ thiết bị.",
+    "Nhưng anh để lại dấu vết sai.",
+    "Một cuộc hẹn được tạo ở địa điểm anh không đến.",
+    "Một giao dịch nhỏ được thực hiện từ tài khoản phụ.",
+    "Một cuộc gọi ngắn được thực hiện rồi cúp ngay.",
+    "Mọi thứ đều hợp lý.",
+    "Nhưng không cái nào phản ánh hành động thật.",
+    "Kha muốn xem đối phương tin vào dữ liệu đến đâu.",
+    "Ba giờ sau, camera ở địa điểm giả bị tắt.",
+    "Kha mỉm cười: ‘Hắn đã cắn câu.’"
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Dữ liệu giả giúp Kha đo lường điều gì?",
+      "Phản ứng nào của đối phương xác nhận hắn đang theo dõi?",
+      "Ai hoặc thứ gì đang thực sự xử lý dữ liệu?"
+    ],
+    "hint": "Khi dữ liệu sai bị tin là thật, kẻ kiểm soát lộ mặt.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 19,
+  "title": "Ngày 9 – Bẫy Không Cần Mồi",
+  "content": [
+    "Ngày thứ chín, Kha không tạo thêm dữ liệu mới.",
+    "Anh giữ nguyên những dấu vết giả đã đặt.",
+    "Không chỉnh sửa.",
+    "Không cập nhật.",
+    "Như thể đó là sự thật.",
+    "Đối phương bắt đầu hành động.",
+    "Một nhân vật trong danh sách bị tiếp cận.",
+    "Không chết.",
+    "Nhưng bị yêu cầu biến mất.",
+    "Kha hiểu: hắn không chỉ giết, hắn còn dọn bàn cờ."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao đối phương phản ứng khi dữ liệu đứng yên?",
+      "‘Biến mất’ có giá trị gì hơn cái chết?",
+      "Ai là người thật sự sợ bị nhìn thấy?"
+    ],
+    "hint": "Khi quân cờ rời bàn, không phải lúc nào cũng vì bị ăn.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 20,
+  "title": "Ngày 10 – Đổi Vai",
+  "content": [
+    "Ngày thứ mười, Kha gửi một thông điệp.",
+    "Không gửi cho Người Không Có Tên.",
+    "Mà gửi cho hệ thống.",
+    "Một yêu cầu truy vấn hợp lệ, nhưng không nên tồn tại.",
+    "Hệ thống phản hồi.",
+    "Không lỗi.",
+    "Không từ chối.",
+    "Chỉ im lặng.",
+    "Vài giờ sau, một quy trình nội bộ bị treo.",
+    "Kha biết: lần đầu tiên, anh không còn chỉ là mục tiêu."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "‘Gửi thông điệp cho hệ thống’ nghĩa là gì?",
+      "Vì sao hệ thống im lặng lại là phản hồi?",
+      "Từ thời điểm này, Kha đang đứng ở vị trí nào trên bàn cờ?"
+    ],
+    "hint": "Khi hệ thống trả lời, nó thừa nhận bạn tồn tại.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 21,
+  "title": "Ngày 11 – Khi Kẻ Săn Lộ Dấu",
+  "content": [
+    "Ngày thứ mười một bắt đầu bằng một thay đổi nhỏ.",
+    "Một trong những hệ thống mà Kha từng gửi truy vấn phản hồi trở lại.",
+    "Không dữ liệu.",
+    "Không thông báo.",
+    "Chỉ là một thay đổi quyền truy cập.",
+    "Kha được cấp quyền đọc vào một khu vực không dành cho con người.",
+    "Trong log hệ thống, có một chuỗi hành động lặp lại.",
+    "Không tên người thực hiện.",
+    "Không địa chỉ máy.",
+    "Nhưng có nhịp thời gian đều đặn như nhịp tim.",
+    "Kha hiểu: kẻ săn không đứng ngoài. Hắn ở trong."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Quyền truy cập mới nói lên điều gì về đối phương?",
+      "Vì sao hệ thống tự mở cửa cho Kha?",
+      "‘Ở trong’ nghĩa là cá nhân hay cơ chế?"
+    ],
+    "hint": "Kẻ kiểm soát thường ẩn mình trong quy trình.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 22,
+  "title": "Ngày 12 – Cuộc Gặp Không Thể Ghi Lại",
+  "content": [
+    "Ngày thứ mười hai, Kha nhận được một chỉ dẫn.",
+    "Không gửi qua điện thoại.",
+    "Không qua email.",
+    "Nó xuất hiện như một cập nhật lịch trống.",
+    "Địa điểm là một tòa nhà cũ đã ngừng sử dụng.",
+    "Không camera.",
+    "Không sóng.",
+    "Kha đến một mình.",
+    "Người đối diện anh không xưng tên.",
+    "Chỉ nói: “Chúng tôi không giết người. Chúng tôi cân bằng.”",
+    "Cuộc gặp kết thúc sau năm phút.",
+    "Không bắt tay.",
+    "Không thỏa thuận.",
+    "Nhưng Kha biết: từ giây phút này, anh đã bị ghi nhận."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao cuộc gặp không được ghi lại?",
+      "‘Chúng tôi’ là một người hay một cấu trúc?",
+      "Kha đến cuộc gặp này với tư cách gì?"
+    ],
+    "hint": "Khi không có bằng chứng, chỉ còn vị thế.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 23,
+  "title": "Ngày 13 – Kết Thúc Không Khép Lại",
+  "content": [
+    "Ngày thứ mười ba.",
+    "Không có cái chết nào xảy ra.",
+    "Không cảnh báo.",
+    "Không đếm ngược.",
+    "Danh sách bảy người biến mất khỏi hệ thống.",
+    "Tên của Kha cũng vậy.",
+    "Mọi truy cập bị thu hồi.",
+    "Như thể tất cả chưa từng tồn tại.",
+    "Kha đứng trước bảng trắng, xóa con số 13.",
+    "Điện thoại rung lên.",
+    "Một tin nhắn duy nhất: “Anh đã học cách không thở theo nhịp của chúng tôi.”",
+    "Kha không trả lời.",
+    "Anh biết đây không phải chiến thắng.",
+    "Chỉ là việc anh được phép rời bàn cờ.",
+    "Tạm thời."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao ngày cuối cùng không có án mạng?",
+      "Việc xóa danh sách mang ý nghĩa kết thúc hay tái cấu trúc?",
+      "Kha thực sự thắng hay chỉ được hoãn lại?"
+    ],
+    "hint": "Không phải ai rời bàn cờ cũng là người chiến thắng.",
+    "lock_answer": true
+  }
+}
+  ]
+}

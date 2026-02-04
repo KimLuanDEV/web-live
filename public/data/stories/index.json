@@ -19,6 +19,13 @@
   "author": "Livestream Pro Studio",
   "cover": "/assets/covers/cover3.jpg",
   "tags": ["Phá án", "Trinh thám", "Tâm lý", "Suy luận", "Dark"]
-  }
+  },
+ {
+  "id": 4,
+  "title": "Người Không Có Tên",
+  "author": "Livestream Pro Studio",
+  "cover": "/assets/covers/cover4.jpg",
+  "tags": ["Phá án", "Trinh thám", "Dark", "Series"]
+}
 
 ]
