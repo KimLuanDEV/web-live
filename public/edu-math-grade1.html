@@ -101,6 +101,35 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 }
 
 
+.tab-bar{
+  display:flex;
+  gap:6px;
+  margin-bottom:14px;
+}
+
+.tab-btn{
+  flex:1;
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.12);
+  color:#fff;
+  font-size:13px;
+  cursor:pointer;
+  opacity:.7;
+}
+
+.tab-btn.active{
+  opacity:1;
+  background:rgba(0,255,160,.18);
+  border-color:rgba(0,255,160,.35);
+  color:#9fffe1;
+}
+
+.tab-panel{display:none}
+.tab-panel.show{display:block}
+
+
 </style>
 </head>
 
@@ -128,277 +157,297 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 
 <!-- CHƯƠNG 1 -->
 <div class="chapter-content show" id="ch1">
-<div class="lesson-content">
-<h3>🔢 CHƯƠNG 1: SỐ VÀ ĐẾM</h3>
+    
+<div class="lesson-content" id="tabs-ch1">
 
-<p><b>Các số trong Toán lớp 1</b></p>
-<p>Học sinh làm quen với các số từ <b>0 đến 10</b>.  
-Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
-
-<p><b>Ví dụ:</b></p>
-<ul>
-<li>1 quả táo → số 1</li>
-<li>4 cái bút → số 4</li>
-</ul>
-
-<hr>
-
-<p><b>Đếm số</b></p>
-<p>Đếm là đọc các số theo thứ tự từ bé đến lớn.</p>
-
-<ol>
-<li>Nhìn từng đồ vật</li>
-<li>Chỉ vào đồ vật</li>
-<li>Vừa chỉ vừa đọc: 1, 2, 3…</li>
-</ol>
-
-<hr>
-
-<p><b>Số liền trước – số liền sau</b></p>
-<ul>
-<li>Số liền trước của 5 là <b>4</b></li>
-<li>Số liền sau của 5 là <b>6</b></li>
-</ul>
-
-<p><i>Ghi nhớ:</i> Liền trước → bớt 1 | Liền sau → thêm 1</p>
-
-
-<div class="exercise">
-  <h4>📝 Bài tập luyện tập</h4>
-  <div class="ex-item">1️⃣ Viết các số từ 0 đến 5.</div>
-  <div class="ex-item">2️⃣ Số liền trước của 6 là …</div>
-  <div class="ex-item">3️⃣ Số liền sau của 3 là …</div>
-
-  <button class="btn-answer" onclick="toggleAnswer('ans1')">Xem đáp án</button>
-  <div class="answer" id="ans1">
-    ✔ 0, 1, 2, 3, 4, 5<br>
-    ✔ Số liền trước của 6 là 5<br>
-    ✔ Số liền sau của 3 là 4
+  <!-- TAB BUTTONS -->
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="theory"
+      onclick="switchTab('tabs-ch1','theory')">📖 Lý thuyết</button>
+    <button class="tab-btn" data-tab="exercise"
+      onclick="switchTab('tabs-ch1','exercise')">📝 Bài tập</button>
+    <button class="tab-btn" data-tab="answer"
+      onclick="switchTab('tabs-ch1','answer')">✅ Đáp án</button>
   </div>
-</div>
+
+  <!-- 📖 LÝ THUYẾT -->
+  <div class="tab-panel show" data-tab="theory">
+    <h3>🔢 CHƯƠNG 1: SỐ VÀ ĐẾM</h3>
+
+    <p><b>Các số trong Toán lớp 1</b></p>
+    <p>Học sinh làm quen với các số từ <b>0 đến 10</b>.
+    Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
+
+    <ul>
+      <li>1 quả táo → số 1</li>
+      <li>4 cái bút → số 4</li>
+    </ul>
+
+    <hr>
+
+    <p><b>Đếm số</b></p>
+    <ol>
+      <li>Nhìn từng đồ vật</li>
+      <li>Chỉ vào đồ vật</li>
+      <li>Vừa chỉ vừa đọc: 1, 2, 3…</li>
+    </ol>
+
+    <hr>
+
+    <p><b>Số liền trước – số liền sau</b></p>
+    <ul>
+      <li>Số liền trước của 5 là <b>4</b></li>
+      <li>Số liền sau của 5 là <b>6</b></li>
+    </ul>
+
+    <p><i>Ghi nhớ:</i> Liền trước → bớt 1 | Liền sau → thêm 1</p>
+  </div>
+
+  <!-- 📝 BÀI TẬP -->
+  <div class="tab-panel" data-tab="exercise">
+    <div class="exercise">
+      <div class="ex-item">1️⃣ Viết các số từ 0 đến 5.</div>
+      <div class="ex-item">2️⃣ Số liền trước của 6 là …</div>
+      <div class="ex-item">3️⃣ Số liền sau của 3 là …</div>
+    </div>
+  </div>
+
+  <!-- ✅ ĐÁP ÁN -->
+  <div class="tab-panel" data-tab="answer">
+    <div class="answer show">
+      ✔ 0, 1, 2, 3, 4, 5<br>
+      ✔ Số liền trước của 6 là 5<br>
+      ✔ Số liền sau của 3 là 4
+    </div>
+  </div>
 
 </div>
-</div>
+
 
 <!-- CHƯƠNG 2 -->
 <div class="chapter-content" id="ch2">
-<div class="lesson-content">
-<h3>↔️ CHƯƠNG 2: SO SÁNH SỐ</h3>
 
-<p>So sánh số là biết số nào lớn hơn, bé hơn hoặc bằng nhau.</p>
+<div class="lesson-content" id="tabs-ch2">
 
-<ul>
-<li><b>&gt;</b> : lớn hơn</li>
-<li><b>&lt;</b> : bé hơn</li>
-<li><b>=</b> : bằng nhau</li>
-</ul>
-
-<p><b>Cách làm:</b></p>
-<ol>
-<li>So sánh số lượng đồ vật</li>
-<li>Hoặc so sánh vị trí khi đếm</li>
-</ol>
-
-<p><b>Ví dụ:</b></p>
-<ul>
-<li>5 &gt; 3 vì 5 đứng sau 3</li>
-<li>2 &lt; 4 vì 2 đứng trước 4</li>
-</ul>
-
-<p><i>Mẹo nhớ:</i> Miệng cá sấu quay về số lớn hơn</p>
-
-<div class="exercise">
-  <h4>📝 Bài tập luyện tập</h4>
-  <div class="ex-item">1️⃣ 5 ☐ 3</div>
-  <div class="ex-item">2️⃣ 2 ☐ 7</div>
-  <div class="ex-item">3️⃣ 4 ☐ 4</div>
-
-  <button class="btn-answer" onclick="toggleAnswer('ans2')">Xem đáp án</button>
-  <div class="answer" id="ans2">
-    ✔ 5 &gt; 3<br>
-    ✔ 2 &lt; 7<br>
-    ✔ 4 = 4
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="theory"
+      onclick="switchTab('tabs-ch2','theory')">📖 Lý thuyết</button>
+    <button class="tab-btn" data-tab="exercise"
+      onclick="switchTab('tabs-ch2','exercise')">📝 Bài tập</button>
+    <button class="tab-btn" data-tab="answer"
+      onclick="switchTab('tabs-ch2','answer')">✅ Đáp án</button>
   </div>
-</div>
 
+  <div class="tab-panel show" data-tab="theory">
+    <h3>↔️ CHƯƠNG 2: SO SÁNH SỐ</h3>
+    <ul>
+      <li>&gt; : lớn hơn</li>
+      <li>&lt; : bé hơn</li>
+      <li>= : bằng nhau</li>
+    </ul>
+    <p><i>Mẹo:</i> Miệng cá sấu quay về số lớn hơn</p>
+  </div>
 
-</div>
+  <div class="tab-panel" data-tab="exercise">
+    <div class="exercise">
+      <div class="ex-item">1️⃣ 5 ☐ 3</div>
+      <div class="ex-item">2️⃣ 2 ☐ 7</div>
+      <div class="ex-item">3️⃣ 4 ☐ 4</div>
+    </div>
+  </div>
+
+  <div class="tab-panel" data-tab="answer">
+    <div class="answer show">
+      ✔ 5 &gt; 3<br>
+      ✔ 2 &lt; 7<br>
+      ✔ 4 = 4
+    </div>
+  </div>
+
 </div>
 
 <!-- CHƯƠNG 3 -->
 <div class="chapter-content" id="ch3">
-<div class="lesson-content">
-<h3>➕ CHƯƠNG 3: PHÉP CỘNG</h3>
 
-<p>Phép cộng dùng để <b>gộp</b> các nhóm đồ vật.</p>
+<div class="lesson-content" id="tabs-ch3">
 
-<p><b>Dạng:</b> a + b = c</p>
-
-<p><b>Cách làm:</b></p>
-<ol>
-<li>Đếm số thứ nhất</li>
-<li>Đếm thêm số thứ hai</li>
-<li>Số cuối cùng là kết quả</li>
-</ol>
-
-<p><b>Ví dụ:</b></p>
-<ul>
-<li>2 + 3 = 5</li>
-<li>5 + 5 = 10</li>
-</ul>
-
-<p><i>Ghi nhớ:</i> Kết quả không nhỏ hơn các số đã cộng</p>
-
-<div class="exercise">
-  <h4>📝 Bài tập luyện tập</h4>
-  <div class="ex-item">1️⃣ 2 + 3 = …</div>
-  <div class="ex-item">2️⃣ 4 + 1 = …</div>
-  <div class="ex-item">3️⃣ 5 + 5 = …</div>
-
-  <button class="btn-answer" onclick="toggleAnswer('ans3')">Xem đáp án</button>
-  <div class="answer" id="ans3">
-    ✔ 2 + 3 = 5<br>
-    ✔ 4 + 1 = 5<br>
-    ✔ 5 + 5 = 10
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="theory"
+      onclick="switchTab('tabs-ch3','theory')">📖 Lý thuyết</button>
+    <button class="tab-btn" data-tab="exercise"
+      onclick="switchTab('tabs-ch3','exercise')">📝 Bài tập</button>
+    <button class="tab-btn" data-tab="answer"
+      onclick="switchTab('tabs-ch3','answer')">✅ Đáp án</button>
   </div>
+
+  <div class="tab-panel show" data-tab="theory">
+    <h3>➕ CHƯƠNG 3: PHÉP CỘNG</h3>
+    <p>Dạng: <b>a + b = c</b></p>
+    <p>Cộng là gộp các nhóm đồ vật.</p>
+  </div>
+
+  <div class="tab-panel" data-tab="exercise">
+    <div class="exercise">
+      <div class="ex-item">1️⃣ 2 + 3 = …</div>
+      <div class="ex-item">2️⃣ 4 + 1 = …</div>
+      <div class="ex-item">3️⃣ 5 + 5 = …</div>
+    </div>
+  </div>
+
+  <div class="tab-panel" data-tab="answer">
+    <div class="answer show">
+      ✔ 5<br>✔ 5<br>✔ 10
+    </div>
+  </div>
+
 </div>
 
-
-</div>
-</div>
 
 <!-- CHƯƠNG 4 -->
 <div class="chapter-content" id="ch4">
-<div class="lesson-content">
-<h3>➖ CHƯƠNG 4: PHÉP TRỪ</h3>
 
-<p>Phép trừ dùng để <b>bớt đi</b> một phần đồ vật.</p>
+<div class="lesson-content" id="tabs-ch4">
 
-<p><b>Dạng:</b> a − b = c</p>
-
-<p><b>Cách làm:</b></p>
-<ol>
-<li>Bắt đầu từ số lớn</li>
-<li>Bớt đi số cần trừ</li>
-<li>Số còn lại là kết quả</li>
-</ol>
-
-<p><b>Ví dụ:</b></p>
-<ul>
-<li>5 − 2 = 3</li>
-</ul>
-
-<p><i>Ghi nhớ:</i> Số bị trừ ≥ số trừ</p>
-
-<div class="exercise">
-  <h4>📝 Bài tập luyện tập</h4>
-  <div class="ex-item">1️⃣ 5 − 2 = …</div>
-  <div class="ex-item">2️⃣ 8 − 3 = …</div>
-  <div class="ex-item">3️⃣ 10 − 4 = …</div>
-
-  <button class="btn-answer" onclick="toggleAnswer('ans4')">Xem đáp án</button>
-  <div class="answer" id="ans4">
-    ✔ 5 − 2 = 3<br>
-    ✔ 8 − 3 = 5<br>
-    ✔ 10 − 4 = 6
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="theory"
+      onclick="switchTab('tabs-ch4','theory')">📖 Lý thuyết</button>
+    <button class="tab-btn" data-tab="exercise"
+      onclick="switchTab('tabs-ch4','exercise')">📝 Bài tập</button>
+    <button class="tab-btn" data-tab="answer"
+      onclick="switchTab('tabs-ch4','answer')">✅ Đáp án</button>
   </div>
+
+  <div class="tab-panel show" data-tab="theory">
+    <h3>➖ CHƯƠNG 4: PHÉP TRỪ</h3>
+    <p>Dạng: <b>a − b = c</b></p>
+    <p>Trừ là bớt đi.</p>
+  </div>
+
+  <div class="tab-panel" data-tab="exercise">
+    <div class="exercise">
+      <div class="ex-item">1️⃣ 5 − 2 = …</div>
+      <div class="ex-item">2️⃣ 8 − 3 = …</div>
+      <div class="ex-item">3️⃣ 10 − 4 = …</div>
+    </div>
+  </div>
+
+  <div class="tab-panel" data-tab="answer">
+    <div class="answer show">
+      ✔ 3<br>✔ 5<br>✔ 6
+    </div>
+  </div>
+
 </div>
 
-
-</div>
-</div>
 
 <!-- CHƯƠNG 5 -->
 <div class="chapter-content" id="ch5">
-<div class="lesson-content">
-<h3>🧱 CHƯƠNG 5: TÁCH – GỘP SỐ</h3>
 
-<p>Một số có thể tách thành nhiều cặp số khác nhau.</p>
+<div class="lesson-content" id="tabs-ch5">
 
-<ul>
-<li>5 = 2 + 3</li>
-<li>5 = 1 + 4</li>
-</ul>
-
-<p>Khi cộng các số đã tách, ta gộp lại được số ban đầu.</p>
-
-<p><i>Ý nghĩa:</i> Giúp tính nhẩm nhanh</p>
-
-<div class="exercise">
-  <h4>📝 Bài tập luyện tập</h4>
-  <div class="ex-item">1️⃣ Tách số 5 thành 2 số.</div>
-  <div class="ex-item">2️⃣ Tách số 6 thành 2 số.</div>
-
-  <button class="btn-answer" onclick="toggleAnswer('ans5')">Xem đáp án</button>
-  <div class="answer" id="ans5">
-    ✔ 5 = 2 + 3 (hoặc 1 + 4)<br>
-    ✔ 6 = 3 + 3 (hoặc 2 + 4)
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="theory"
+      onclick="switchTab('tabs-ch5','theory')">📖 Lý thuyết</button>
+    <button class="tab-btn" data-tab="exercise"
+      onclick="switchTab('tabs-ch5','exercise')">📝 Bài tập</button>
+    <button class="tab-btn" data-tab="answer"
+      onclick="switchTab('tabs-ch5','answer')">✅ Đáp án</button>
   </div>
+
+  <div class="tab-panel show" data-tab="theory">
+    <h3>🧱 CHƯƠNG 5: TÁCH – GỘP</h3>
+    <p>Một số có thể tách thành nhiều cặp số.</p>
+  </div>
+
+  <div class="tab-panel" data-tab="exercise">
+    <div class="exercise">
+      <div class="ex-item">1️⃣ Tách số 5.</div>
+      <div class="ex-item">2️⃣ Tách số 6.</div>
+    </div>
+  </div>
+
+  <div class="tab-panel" data-tab="answer">
+    <div class="answer show">
+      ✔ 5 = 2 + 3<br>
+      ✔ 6 = 3 + 3
+    </div>
+  </div>
+
 </div>
 
-
-
-</div>
-</div>
 
 <!-- CHƯƠNG 6 -->
 <div class="chapter-content" id="ch6">
-<div class="lesson-content">
-<h3>📐 CHƯƠNG 6: HÌNH HỌC</h3>
 
-<ul>
-<li><b>Hình tròn:</b> không cạnh, không góc</li>
-<li><b>Hình vuông:</b> 4 cạnh bằng nhau</li>
-<li><b>Hình tam giác:</b> 3 cạnh</li>
-</ul>
+<div class="lesson-content" id="tabs-ch6">
 
-<p>Học sinh cần nhận dạng hình trong đời sống.</p>
-
-<div class="exercise">
-  <h4>📝 Bài tập luyện tập</h4>
-  <div class="ex-item">1️⃣ Hình nào có 3 cạnh?</div>
-  <div class="ex-item">2️⃣ Hình nào không có cạnh?</div>
-
-  <button class="btn-answer" onclick="toggleAnswer('ans6')">Xem đáp án</button>
-  <div class="answer" id="ans6">
-    ✔ Hình tam giác có 3 cạnh<br>
-    ✔ Hình tròn không có cạnh
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="theory"
+      onclick="switchTab('tabs-ch6','theory')">📖 Lý thuyết</button>
+    <button class="tab-btn" data-tab="exercise"
+      onclick="switchTab('tabs-ch6','exercise')">📝 Bài tập</button>
+    <button class="tab-btn" data-tab="answer"
+      onclick="switchTab('tabs-ch6','answer')">✅ Đáp án</button>
   </div>
-</div>
 
+  <div class="tab-panel show" data-tab="theory">
+    <h3>📐 CHƯƠNG 6: HÌNH HỌC</h3>
+    <ul>
+      <li>Hình tròn</li>
+      <li>Hình vuông</li>
+      <li>Hình tam giác</li>
+    </ul>
+  </div>
 
+  <div class="tab-panel" data-tab="exercise">
+    <div class="exercise">
+      <div class="ex-item">1️⃣ Hình nào có 3 cạnh?</div>
+      <div class="ex-item">2️⃣ Hình nào không có cạnh?</div>
+    </div>
+  </div>
 
-</div>
+  <div class="tab-panel" data-tab="answer">
+    <div class="answer show">
+      ✔ Hình tam giác<br>
+      ✔ Hình tròn
+    </div>
+  </div>
+
 </div>
 
 <!-- CHƯƠNG 7 -->
 <div class="chapter-content" id="ch7">
-<div class="lesson-content">
-<h3>📏 CHƯƠNG 7: ĐO LƯỜNG</h3>
 
-<ul>
-<li>Dài hơn – ngắn hơn</li>
-<li>Cao hơn – thấp hơn</li>
-<li>Bằng nhau</li>
-</ul>
+<div class="lesson-content" id="tabs-ch7">
 
-<p><i>Lưu ý:</i> Lớp 1 chỉ so sánh trực quan, chưa dùng đơn vị đo.</p>
-
-<div class="exercise">
-  <h4>📝 Bài tập luyện tập</h4>
-  <div class="ex-item">1️⃣ Cái thước và cái bút, cái nào dài hơn?</div>
-  <div class="ex-item">2️⃣ Hai que tính giống nhau thì gọi là gì?</div>
-
-  <button class="btn-answer" onclick="toggleAnswer('ans7')">Xem đáp án</button>
-  <div class="answer" id="ans7">
-    ✔ Cái thước dài hơn<br>
-    ✔ Hai que tính bằng nhau
+  <div class="tab-bar">
+    <button class="tab-btn active" data-tab="theory"
+      onclick="switchTab('tabs-ch7','theory')">📖 Lý thuyết</button>
+    <button class="tab-btn" data-tab="exercise"
+      onclick="switchTab('tabs-ch7','exercise')">📝 Bài tập</button>
+    <button class="tab-btn" data-tab="answer"
+      onclick="switchTab('tabs-ch7','answer')">✅ Đáp án</button>
   </div>
-</div>
 
+  <div class="tab-panel show" data-tab="theory">
+    <h3>📏 CHƯƠNG 7: ĐO LƯỜNG</h3>
+    <p>So sánh dài – ngắn, cao – thấp.</p>
+  </div>
 
+  <div class="tab-panel" data-tab="exercise">
+    <div class="exercise">
+      <div class="ex-item">1️⃣ Cái thước và cái bút, cái nào dài hơn?</div>
+      <div class="ex-item">2️⃣ Hai que tính giống nhau thì gọi là gì?</div>
+    </div>
+  </div>
 
-</div>
+  <div class="tab-panel" data-tab="answer">
+    <div class="answer show">
+      ✔ Cái thước dài hơn<br>
+      ✔ Bằng nhau
+    </div>
+  </div>
+
 </div>
 
 </section>
@@ -419,6 +468,21 @@ function toggleAnswer(id){
   const el = document.getElementById(id);
   el.style.display = el.style.display === "block" ? "none" : "block";
 }
+
+
+
+
+function switchTab(chapterId, tab){
+  const root = document.getElementById(chapterId);
+  if(!root) return;
+
+  root.querySelectorAll(".tab-btn").forEach(b=>b.classList.remove("active"));
+  root.querySelectorAll(".tab-panel").forEach(p=>p.classList.remove("show"));
+
+  root.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add("active");
+  root.querySelector(`.tab-panel[data-tab="${tab}"]`).classList.add("show");
+}
+
 
 
 </script>
