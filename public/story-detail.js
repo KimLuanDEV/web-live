@@ -19,28 +19,46 @@ const listEl   = document.getElementById("chapterList");
 const btnDesc  = document.getElementById("btnToggleDesc");
 
 let storyData = null;
+let indexCover = null;
 
 async function loadStoryDetail() {
   try {
+    // 1️⃣ load index.json để lấy cover
+    const indexRes = await fetch("/data/stories/index.json");
+    if (indexRes.ok) {
+      const indexList = await indexRes.json();
+      const found = indexList.find(s => String(s.id) === String(storyId));
+      if (found && found.cover) {
+        indexCover = found.cover;
+      }
+    }
+
+    // 2️⃣ load story detail
     const res = await fetch(`/data/stories/story-${storyId}.json`);
     if (!res.ok) throw new Error("Story not found");
 
     storyData = await res.json();
     renderStory();
+
   } catch (e) {
     alert("Không tải được truyện");
     console.error(e);
   }
 }
 
+
 function renderStory() {
   titleEl.textContent  = storyData.title;
   authorEl.textContent = "✍️ " + storyData.author;
 
-  // cover (nếu có trong index sau này)
-  coverEl.src =
-    storyData.cover ||
-    "https://i.ibb.co/3mY0H4Xh/Chat-GPT-Image-Jan-19-2026-09-44-27-AM.jpg";
+// 📚 cover lấy từ index.json
+if (indexCover) {
+  coverEl.src = indexCover;
+} else {
+  coverEl.src = "/assets/covers/default.jpg";
+}
+
+
 
   // mô tả (nếu có)
   descEl.textContent =
