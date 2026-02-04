@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>④ Toán lớp 4</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body{margin:0;background:#0e0e12;color:#fff;min-height:100vh}
+
+    /* HEADER (đồng bộ edu-math.html) */
+    .simple-header{
+      height:52px;display:flex;align-items:center;gap:12px;padding:0 12px;
+      background:#111;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .back-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+    .title{font-weight:800;font-size:16px}
+
+    /* CONTAINER */
+    .edu-container{padding:18px 14px 28px}
+
+    /* HERO */
+    .edu-hero{text-align:center;padding:14px 10px 18px}
+    .edu-hero-icon{font-size:44px;margin-bottom:6px}
+    .edu-hero-title{font-size:18px;font-weight:900;margin-bottom:6px}
+    .edu-hero-desc{font-size:12.5px;opacity:.7;max-width:360px;margin:0 auto}
+
+    /* TOP STATS */
+    .edu-stats{
+      display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .chip{
+      font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+      opacity:.92;
+    }
+    .chip.good{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* GRID */
+    .edu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+
+    /* CARD (đồng bộ) */
+    .edu-card{
+      position:relative;background:#15151c;border:1px solid rgba(255,255,255,.07);
+      border-radius:16px;padding:14px 12px;min-height:110px;
+      display:flex;flex-direction:column;justify-content:center;transition:.18s;
+    }
+    .edu-card.active{cursor:pointer}
+    .edu-card.active:active{transform:scale(.97)}
+    .edu-card.locked{opacity:.55;filter:grayscale(1)}
+    .edu-icon{font-size:26px;margin-bottom:6px}
+    .edu-title{font-weight:900;font-size:14.5px}
+    .edu-desc{font-size:12px;opacity:.72;margin-top:3px}
+
+    .edu-chip{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);color:#9fffe1;
+    }
+    .edu-lock{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(255,59,59,.18);
+      border:1px solid rgba(255,59,59,.28);color:#ffd0d0;
+    }
+
+    /* LIST LESSONS (inside sheet) */
+    .lesson-list{display:flex;flex-direction:column;gap:10px}
+    .lesson-item{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .lesson-item:active{transform:scale(.99)}
+    .lesson-left{display:flex;flex-direction:column}
+    .lesson-name{font-weight:900;font-size:13px}
+    .lesson-meta{font-size:11.5px;opacity:.7;margin-top:2px}
+    .lesson-tag{
+      font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;
+      background:rgba(0,255,160,.12);border:1px solid rgba(0,255,160,.2);
+      color:#9fffe1;white-space:nowrap;
+    }
+
+    /* SHEET MODAL */
+    .sheet{position:fixed;inset:0;display:none;z-index:999}
+    .sheet.show{display:block}
+    .sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+    .sheet-box{
+      position:absolute;left:0;right:0;bottom:0;
+      background:#12121a;border-top-left-radius:18px;border-top-right-radius:18px;
+      border-top:1px solid rgba(255,255,255,.10);
+      max-height:82vh;overflow:auto;
+      box-shadow:0 -10px 30px rgba(0,0,0,.45);
+    }
+    .sheet-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .sheet-title{font-weight:900}
+    .sheet-close{
+      background:none;border:none;color:#fff;font-size:20px;cursor:pointer;
+      width:36px;height:36px;border-radius:10px;
+    }
+    .sheet-close:active{transform:scale(.96)}
+    .sheet-body{padding:14px}
+    .sheet-sub{font-size:12px;opacity:.7;margin-top:2px}
+
+    /* lesson content */
+    .lesson-content{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      margin-top:12px;
+      line-height:1.5;
+      font-size:13px;
+      opacity:.95;
+    }
+    .cta-row{display:flex;gap:10px;margin-top:12px}
+    .btn{
+      flex:1;
+      padding:12px 10px;
+      border-radius:14px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      cursor:pointer;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn.primary{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* small */
+    @media (min-width:520px){
+      .edu-container{max-width:520px;margin:0 auto}
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="simple-header">
+  <button onclick="history.back()" class="back-btn">←</button>
+  <div class="title">④ Toán lớp 4</div>
+</header>
+
+
+<main class="edu-container">
+
+  <div class="edu-hero">
+    <div class="edu-hero-icon">④</div>
+    <div class="edu-hero-title">Toán lớp 4</div>
+    <div class="edu-hero-desc">
+      Thống kê toàn bộ công thức và kiến thức nền tảng Toán lớp 4
+    </div>
+  </div>
+
+<div class="lesson-content">
+
+  <h3>🔢 1. SỐ ĐẾN 100 000</h3>
+  <p><b>Phạm vi số:</b> Từ 0 đến 100 000</p>
+
+  <p><b>Các hàng trong số:</b></p>
+  <ul>
+    <li>Hàng đơn vị</li>
+    <li>Hàng chục</li>
+    <li>Hàng trăm</li>
+    <li>Hàng nghìn</li>
+    <li>Hàng chục nghìn</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>45 372 = 4 chục nghìn + 5 nghìn + 3 trăm + 7 chục + 2 đơn vị</li>
+    <li>80 105 = 8 chục nghìn + 1 trăm + 5 đơn vị</li>
+  </ul>
+
+  <hr>
+
+  <h3>↔️ 2. SO SÁNH SỐ LỚN</h3>
+  <p><b>Cách so sánh:</b></p>
+  <ul>
+    <li>So sánh số chữ số</li>
+    <li>Nếu bằng nhau → so sánh từ hàng cao nhất</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>52 410 &gt; 49 875</li>
+    <li>30 256 &lt; 30 652</li>
+  </ul>
+
+  <hr>
+
+  <h3>➕ 3. PHÉP CỘNG SỐ CÓ NHIỀU CHỮ SỐ</h3>
+  <p><b>Công thức:</b> <b>a + b = c</b></p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>3 457 + 2 689 = 6 146</li>
+    <li>18 256 + 7 834 = 26 090</li>
+  </ul>
+
+  <p><i>Ghi nhớ:</i> Có thể nhớ sang nhiều hàng.</p>
+
+  <hr>
+
+  <h3>➖ 4. PHÉP TRỪ SỐ CÓ NHIỀU CHỮ SỐ</h3>
+  <p><b>Công thức:</b> <b>a − b = c</b></p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>8 205 − 3 748 = 4 457</li>
+    <li>20 000 − 7 856 = 12 144</li>
+  </ul>
+
+  <p><i>Ghi nhớ:</i> Có thể mượn liên tiếp nhiều hàng.</p>
+
+  <hr>
+
+  <h3>✖️ 5. PHÉP NHÂN</h3>
+  <p><b>Nhân số có nhiều chữ số với số có 1 chữ số:</b></p>
+  <ul>
+    <li>345 × 4 = 1 380</li>
+    <li>2 406 × 3 = 7 218</li>
+  </ul>
+
+  <p><b>Nhân số có nhiều chữ số với số có 2 chữ số:</b></p>
+  <ul>
+    <li>124 × 23 = 2 852</li>
+  </ul>
+
+  <hr>
+
+  <h3>➗ 6. PHÉP CHIA</h3>
+  <p><b>Chia số có nhiều chữ số cho số có 1 chữ số:</b></p>
+  <ul>
+    <li>864 ÷ 3 = 288</li>
+    <li>1 248 ÷ 4 = 312</li>
+  </ul>
+
+  <p><b>Chia có dư:</b></p>
+  <ul>
+    <li>1 025 ÷ 6 = 170 dư 5</li>
+  </ul>
+
+  <p><i>Ghi nhớ:</i> Số dư luôn nhỏ hơn số chia.</p>
+
+  <hr>
+
+  <h3>📐 7. GÓC</h3>
+  <p><b>Các loại góc:</b></p>
+  <ul>
+    <li>Góc nhọn (&lt; 90°)</li>
+    <li>Góc vuông (= 90°)</li>
+    <li>Góc tù (&gt; 90°)</li>
+    <li>Góc bẹt (= 180°)</li>
+  </ul>
+
+  <p><b>Dụng cụ đo góc:</b> Thước đo độ</p>
+
+  <hr>
+
+  <h3>📏 8. CHU VI HÌNH</h3>
+  <p><b>Chu vi hình chữ nhật:</b></p>
+  <p><b>(dài + rộng) × 2</b></p>
+
+  <p><b>Chu vi hình vuông:</b></p>
+  <p><b>cạnh × 4</b></p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>Hình chữ nhật dài 12 cm, rộng 8 cm → chu vi = 40 cm</li>
+  </ul>
+
+  <hr>
+
+  <h3>📐 9. DIỆN TÍCH HÌNH</h3>
+  <p><b>Diện tích hình chữ nhật:</b></p>
+  <p><b>dài × rộng</b></p>
+
+  <p><b>Diện tích hình vuông:</b></p>
+  <p><b>cạnh × cạnh</b></p>
+
+  <p><b>Đơn vị diện tích:</b></p>
+  <ul>
+    <li>cm²</li>
+    <li>m²</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>Hình vuông cạnh 9 cm → diện tích = 81 cm²</li>
+    <li>Hình chữ nhật 15 cm × 6 cm → diện tích = 90 cm²</li>
+  </ul>
+
+</div>
+
+</main>
+
+
+
+</body>
+</html>
