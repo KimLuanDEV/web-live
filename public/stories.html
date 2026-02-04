@@ -45,7 +45,11 @@
   cursor:pointer;
   border:1px solid rgba(255,255,255,.06);
   transition:.2s;
+
+  display:flex;
+  flex-direction:column;
 }
+
 
 .story-card:active{
   transform:scale(.97);
@@ -54,15 +58,21 @@
 /* COVER */
 .story-cover{
   width:100%;
-  aspect-ratio:3/4;
+  aspect-ratio:3 / 4;   /* chuẩn cover truyện */
   object-fit:cover;
-  display:block;
+  flex-shrink:0;
 }
+
 
 /* INFO */
 .story-info{
   padding:8px 10px 10px;
+  min-height:78px;   /* 👈 quan trọng */
+  display:flex;
+  flex-direction:column;
+  justify-content:space-between;
 }
+
 
 .story-title{
   font-size:14px;
@@ -71,9 +81,11 @@
   margin-bottom:4px;
 
   display:-webkit-box;
+  -webkit-line-clamp:2;   /* 👈 thêm dòng này */
   -webkit-box-orient:vertical;
   overflow:hidden;
 }
+
 
 .story-author{
   font-size:12px;
@@ -219,6 +231,24 @@
   pointer-events:none;
 }
 
+
+.story-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+@media (min-width:768px){
+  .story-grid{
+    grid-template-columns:repeat(3,1fr);
+  }
+}
+
+@media (min-width:1100px){
+  .story-grid{
+    grid-template-columns:repeat(4,1fr);
+  }
+}
 
 
   </style>
