@@ -169,32 +169,29 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 }
 
 
-/* ===== TEST ANSWER ALIGN FIX ===== */
+/* ===== FIX TEST OPTION OVERFLOW ===== */
 .test-option{
-  display:flex;
+  display:grid;
+  grid-template-columns: 1fr auto;
   align-items:center;
-  justify-content:space-between;
   gap:8px;
   margin-top:8px;
   font-size:14px;
+  padding:6px 6px;
+  border-radius:8px;
 }
 
-
 .test-option span{
-  flex:1;
   line-height:1.4;
+  word-break:break-word;
 }
 
 .test-option input[type="radio"]{
-  margin-left:8px;
-  transform:scale(1.25);
+  transform:scale(1.2);
+  margin:0;
   cursor:pointer;
 }
 
-
-.test-option{
-  padding:6px 4px;
-}
 
 
 </style>
