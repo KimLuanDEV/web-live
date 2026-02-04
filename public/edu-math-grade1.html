@@ -213,6 +213,30 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 }
 
 
+/* ===== TEST RESULT HIGHLIGHT ===== */
+
+.test-question.correct{
+  border-left:4px solid #00ffae;
+  padding-left:10px;
+}
+
+.test-question.wrong{
+  border-left:4px solid #ff6b6b;
+  padding-left:10px;
+}
+
+/* đáp án đúng */
+.test-option.correct{
+  background:rgba(0,255,160,.18);
+  border:1px solid rgba(0,255,160,.4);
+}
+
+/* đáp án chọn sai */
+.test-option.wrong{
+  background:rgba(255,0,0,.18);
+  border:1px solid rgba(255,0,0,.4);
+}
+
 
 
 </style>
@@ -810,10 +834,55 @@ function submitTest(){
   let correct = 0;
 
   currentTest.forEach((q,i)=>{
-    const checked = document.querySelector(`input[name="q${i}"]:checked`);
-    if(checked && checked.value == q.answer){
+    const questionEl = document.querySelectorAll(".test-question")[i];
+    const options = questionEl.querySelectorAll(".test-option");
+
+    let picked = null;
+
+    options.forEach(opt=>{
+      const radio = opt.querySelector('input[type="radio"]');
+      if(radio.checked){
+        picked = radio.value;
+      }
+    });
+
+    // reset class cũ
+    questionEl.classList.remove("correct","wrong");
+    options.forEach(o=>o.classList.remove("correct","wrong"));
+
+    if(picked == q.answer){
       correct++;
+      questionEl.classList.add("correct");
+
+      // highlight đáp án đúng
+      options.forEach(opt=>{
+        const radio = opt.querySelector('input[type="radio"]');
+        if(radio.value == q.answer){
+          opt.classList.add("correct");
+        }
+      });
+    }else{
+      questionEl.classList.add("wrong");
+
+      options.forEach(opt=>{
+        const radio = opt.querySelector('input[type="radio"]');
+
+        // đáp án đúng
+        if(radio.value == q.answer){
+          opt.classList.add("correct");
+        }
+
+        // đáp án chọn sai
+        if(radio.checked && radio.value != q.answer){
+          opt.classList.add("wrong");
+        }
+      });
     }
+
+    // 🔒 khoá radio sau khi nộp
+    options.forEach(opt=>{
+      opt.querySelector('input[type="radio"]').disabled = true;
+    });
   });
 
   let rank = "";
@@ -827,6 +896,7 @@ function submitTest(){
     🏅 Đánh giá: <b>${rank}</b>
   `;
 }
+
 
 
 
