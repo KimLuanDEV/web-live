@@ -753,39 +753,51 @@ app.post("/api/translate", async (req, res) => {
     const { text, from, to } = req.body;
 
     if (!text || !to) {
-      return res.json({ ok:false, message:"INVALID_DATA" });
+      return res.json({ ok: false, error: "INVALID_INPUT" });
     }
 
-    const r = await fetch("https://libretranslate.com/translate", {
+    const resp = await fetch("https://libretranslate.de/translate", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json",
+        "User-Agent": "LivestreamPro/1.0"
+      },
       body: JSON.stringify({
         q: text,
-        source: from === "auto" ? "auto" : from,
+        source: from && from !== "auto" ? from : "auto",
         target: to,
         format: "text"
       })
     });
 
-    const data = await r.json();
+    const data = await resp.json();
 
-    if (!data.translatedText) {
-      return res.json({ ok:false, message:"TRANSLATE_FAILED" });
+    // 🔥 LOG DEBUG (rất quan trọng)
+    console.log("🌍 TRANSLATE RAW:", data);
+
+    if (!data || !data.translatedText) {
+      return res.json({
+        ok: false,
+        error: "NO_TRANSLATED_TEXT",
+        raw: data
+      });
     }
 
-    res.json({
+    return res.json({
       ok: true,
       translatedText: data.translatedText
     });
 
   } catch (err) {
-    console.error("❌ Translate error:", err);
-    res.status(500).json({
-      ok:false,
-      message:"SERVER_ERROR"
+    console.error("❌ TRANSLATE ERROR:", err);
+    return res.status(500).json({
+      ok: false,
+      error: "SERVER_ERROR"
     });
   }
 });
+
 
 
 app.post("/api/invest/close-early", (req, res) => {
