@@ -748,66 +748,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
-app.post("/api/translate", async (req, res) => {
-  try {
-    const { text, from, to } = req.body;
-    if (!text || !to) {
-      return res.json({ ok: false, error: "INVALID_INPUT" });
-    }
-
-    const resp = await fetch("https://libretranslate.de/translate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "User-Agent": "LivestreamPro/1.0"
-      },
-      body: JSON.stringify({
-        q: text,
-        source: from && from !== "auto" ? from : "auto",
-        target: to,
-        format: "text"
-      })
-    });
-
-    // 🔥 đọc RAW trước
-    const rawText = await resp.text();
-
-    // 🔎 nếu trả về HTML → bị chặn
-    if (rawText.trim().startsWith("<")) {
-      console.error("❌ TRANSLATE BLOCKED (HTML):", rawText.slice(0, 200));
-      return res.json({
-        ok: false,
-        error: "TRANSLATE_BLOCKED"
-      });
-    }
-
-    // ✅ parse JSON an toàn
-    const data = JSON.parse(rawText);
-
-    if (!data.translatedText) {
-      return res.json({
-        ok: false,
-        error: "NO_TRANSLATED_TEXT",
-        raw: data
-      });
-    }
-
-    res.json({
-      ok: true,
-      translatedText: data.translatedText
-    });
-
-  } catch (err) {
-    console.error("❌ TRANSLATE ERROR:", err);
-    res.status(500).json({
-      ok: false,
-      error: "SERVER_ERROR"
-    });
-  }
-});
-
-
-
 app.post("/api/invest/close-early", (req, res) => {
   try {
     const uid = req.headers["x-uid"];
