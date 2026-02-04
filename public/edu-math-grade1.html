@@ -138,6 +138,32 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 }
 
 
+.game-btn{
+  padding:14px;
+  border-radius:14px;
+  background:rgba(255,255,255,.06);
+  border:1px solid rgba(255,255,255,.15);
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.game-btn:hover{
+  background:rgba(0,255,160,.18);
+  border-color:rgba(0,255,160,.4);
+}
+
+.game-btn.wrong{
+  background:rgba(255,0,0,.18);
+  border-color:rgba(255,0,0,.4);
+}
+
+.game-btn.correct{
+  background:rgba(0,255,160,.22);
+  border-color:rgba(0,255,160,.45);
+}
+
+
 </style>
 </head>
 
@@ -161,6 +187,7 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
   <div class="chapter" data-target="ch7">📏 Đo lường</div>
   <div class="chapter" data-target="ch8">📖 Toán có lời văn</div>
   <div class="chapter" data-target="ch9">🔁 Ôn tập</div>
+  <div class="chapter" data-target="game1">🎮 Mini game</div>
 
 
 </aside>
@@ -532,6 +559,47 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </div>
 
 
+<!-- 🎮 MINI GAME -->
+<div class="chapter-content" id="game1">
+<div class="lesson-content">
+
+<h3>🎮 MINI GAME TOÁN LỚP 1</h3>
+<p>Chọn đáp án đúng nhé!</p>
+
+<div id="gameBox" style="text-align:center;margin-top:20px">
+
+  <div id="gameQuestion" style="
+    font-size:26px;
+    font-weight:900;
+    margin-bottom:20px;
+  ">?</div>
+
+  <div id="gameAnswers" style="
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+  "></div>
+
+  <div id="gameResult" style="
+    margin-top:16px;
+    font-size:15px;
+    font-weight:700;
+  "></div>
+
+  <div style="margin-top:14px;opacity:.8">
+    ⭐ Điểm: <span id="gameScore">0</span>
+  </div>
+
+  <button class="btn-answer" style="margin-top:16px"
+    onclick="nextGameQuestion()">
+    ▶️ Câu tiếp theo
+  </button>
+
+</div>
+
+</div>
+</div>
+
 
 </section>
 </main>
@@ -581,6 +649,74 @@ document.querySelectorAll(".chapter").forEach(btn=>{
     alert("✅ Đã hoàn thành chương này");
   });
 });
+
+
+
+let gameScore = 0;
+let correctAnswer = 0;
+
+function rand(n){
+  return Math.floor(Math.random() * n);
+}
+
+function nextGameQuestion(){
+  const a = rand(6) + 1;
+  const b = rand(6) + 1;
+  const isAdd = Math.random() > 0.5;
+
+  let question = "";
+  if(isAdd){
+    correctAnswer = a + b;
+    question = `${a} + ${b} = ?`;
+  }else{
+    const x = Math.max(a,b);
+    const y = Math.min(a,b);
+    correctAnswer = x - y;
+    question = `${x} − ${y} = ?`;
+  }
+
+  document.getElementById("gameQuestion").innerText = question;
+  document.getElementById("gameResult").innerText = "";
+
+  const answers = new Set([correctAnswer]);
+  while(answers.size < 4){
+    answers.add(rand(11));
+  }
+
+  const list = [...answers].sort(()=>Math.random()-0.5);
+  const box = document.getElementById("gameAnswers");
+  box.innerHTML = "";
+
+  list.forEach(v=>{
+    const btn = document.createElement("button");
+    btn.className = "game-btn";
+    btn.innerText = v;
+    btn.onclick = ()=>checkGameAnswer(btn,v);
+    box.appendChild(btn);
+  });
+}
+
+function checkGameAnswer(btn,value){
+  document.querySelectorAll(".game-btn").forEach(b=>b.disabled=true);
+
+  if(value === correctAnswer){
+    btn.classList.add("correct");
+    document.getElementById("gameResult").innerText = "✅ ĐÚNG RỒI!";
+    gameScore++;
+    document.getElementById("gameScore").innerText = gameScore;
+  }else{
+    btn.classList.add("wrong");
+    document.getElementById("gameResult").innerText =
+      `❌ SAI – Đáp án đúng là ${correctAnswer}`;
+  }
+}
+
+// tự chạy câu đầu
+setTimeout(()=>{
+  if(document.getElementById("game1")){
+    nextGameQuestion();
+  }
+},300);
 
 
 
