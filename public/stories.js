@@ -31,6 +31,8 @@ function tagClass(tag){
     "Trinh thám": "tag-trinh-tham",
     "Tâm lý": "tag-tam-ly",
     "Dark": "tag-dark",
+    "Kinh dị": "tag-kinh-di",
+
   };
   return map[tag] || "";
 }
