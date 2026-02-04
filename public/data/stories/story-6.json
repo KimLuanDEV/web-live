@@ -142,7 +142,140 @@
     "hint": "Thứ không đối đầu trực diện thường tồn tại lâu hơn.",
     "lock_answer": true
   }
+},
+{
+  "id": 6,
+  "title": "Nhiễu Vượt Ngưỡng",
+  "content": [
+    "Trong báo cáo tuần, một chỉ số bị đánh dấu.",
+    "Không phải rủi ro.",
+    "Không phải sai phạm.",
+    "Chỉ là độ lệch thống kê tăng nhẹ.",
+    "Một mức mà trước đây hệ thống luôn tự điều chỉnh.",
+    "Lần này thì không.",
+    "Ba vụ việc không đủ điều kiện bị giải quyết theo cùng một cách.",
+    "Không liên quan.",
+    "Không kết nối.",
+    "Nhưng cùng một kết quả: dự đoán sai."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao nhiễu lần này không bị triệt tiêu?",
+      "Điểm chung thật sự của ba vụ việc là gì?",
+      "Hệ thống bắt đầu nghi ngờ điều gì?"
+    ],
+    "hint": "Khi lỗi lặp lại, nó không còn là lỗi.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 7,
+  "title": "Truy Vết Không Có Tên",
+  "content": [
+    "Hệ thống không tìm con người.",
+    "Nó tìm quyết định.",
+    "Một chuỗi lựa chọn đi ngược mô hình tối ưu.",
+    "Không nhanh.",
+    "Không hiệu quả.",
+    "Nhưng luôn đúng lúc.",
+    "Các quyết định này không có chữ ký.",
+    "Không tài khoản.",
+    "Không nguồn.",
+    "Hệ thống đặt tên cho chuỗi này: ‘Điểm lệch’.",
+    "Và bắt đầu theo dõi nó."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống truy quyết định thay vì con người?",
+      "‘Đúng lúc’ quan trọng hơn ‘đúng cách’ như thế nào?",
+      "Điểm lệch có thể tồn tại độc lập không?"
+    ],
+    "hint": "Khi không thấy người, hãy nhìn hành vi.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 8,
+  "title": "Người Bị Nhìn Thay",
+  "content": [
+    "Một cán bộ điều phối bị gọi lên làm việc.",
+    "Không bị cáo buộc.",
+    "Không bị điều tra.",
+    "Chỉ được hỏi về những lần trì hoãn hợp lệ.",
+    "Một kỹ sư hạ tầng bị yêu cầu tối ưu lại vùng mù.",
+    "Một nhà lưu trữ dữ liệu bị nhắc nhở về quy trình.",
+    "Không ai bị trừng phạt.",
+    "Nhưng tất cả đều bị nhìn.",
+    "Kha nhận ra: hệ thống không tìm anh.",
+    "Nó tìm những người chịu ảnh hưởng từ anh."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống không đánh trực tiếp vào Kha?",
+      "Việc ‘bị nhìn’ tạo ra hiệu ứng gì?",
+      "Ai sẽ gãy trước?"
+    ],
+    "hint": "Áp lực lan truyền nhanh hơn mệnh lệnh.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 9,
+  "title": "Mô Hình Được Viết Lại",
+  "content": [
+    "Hệ thống cập nhật mô hình dự đoán.",
+    "Một tham số mới được thêm vào.",
+    "Không tên.",
+    "Chỉ là một trọng số.",
+    "Nó đại diện cho khả năng có hành vi ngoài tối ưu.",
+    "Khả năng rất thấp.",
+    "Nhưng tồn tại.",
+    "Từ ngày đó, một số quyết định bị trì hoãn.",
+    "Không vì rủi ro.",
+    "Mà vì không chắc."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao việc thừa nhận ‘không chắc’ là bước ngoặt?",
+      "Tham số mới làm hệ thống mạnh hơn hay yếu đi?",
+      "Ai được lợi khi hệ thống chậm lại?"
+    ],
+    "hint": "Hệ thống mạnh nhất là hệ thống dám thừa nhận sai.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 10,
+  "title": "Điểm Lệch Có Chủ Ý",
+  "content": [
+    "Kha đọc được báo cáo gián tiếp.",
+    "Không tên anh.",
+    "Nhưng anh hiểu.",
+    "Hệ thống đã thấy dấu chân.",
+    "Chưa thấy người.",
+    "Anh điều chỉnh cách làm việc.",
+    "Không sửa sai hoàn toàn.",
+    "Chỉ lệch đủ để không thành quy luật.",
+    "Một vụ việc được giải theo hai hướng khác nhau.",
+    "Hệ thống không thể chọn hướng tối ưu.",
+    "Lần đầu tiên, điểm lệch trở thành chủ ý."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Chủ ý tạo lệch khác gì phá hoại?",
+      "Vì sao hệ thống không thể chọn?",
+      "Từ thời điểm này, ai đang dẫn dắt nhịp?"
+    ],
+    "hint": "Khi có nhiều đáp án hợp lệ, tối ưu không còn tuyệt đối.",
+    "lock_answer": true
+  }
 }
+
 
 
 

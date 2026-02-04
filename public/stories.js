@@ -26,7 +26,11 @@ function tagClass(tag){
     "Nữ cường": "tag-nu-cuong",
     "Hiện đại": "tag-hien-dai",
     "HE": "tag-he",
-    "VIP": "tag-vip"
+    "VIP": "tag-vip",
+    "Phá án": "tag-pha-an",
+    "Trinh thám": "tag-trinh-tham",
+    "Tâm lý": "tag-tam-ly",
+    "Dark": "tag-dark",
   };
   return map[tag] || "";
 }
