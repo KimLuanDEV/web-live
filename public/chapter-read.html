@@ -110,6 +110,35 @@ body.theme-sepia button{
 }
 
 
+.chapter-nav{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
+  display:flex;
+  gap:10px;
+  padding:10px 12px;
+  background:rgba(15,15,20,.95);
+  border-top:1px solid rgba(255,255,255,.08);
+  z-index:20;
+}
+
+.chapter-nav button{
+  flex:1;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  background:#1c1c26;
+  color:#fff;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.chapter-nav button:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
 
   </style>
 </head>
@@ -128,7 +157,7 @@ body.theme-sepia button{
   <button onclick="changeFont(1)">A+</button>
 
   <button onclick="setTheme('dark')">🌙</button>
-  <button onclick="setTheme('sepia')">📜</button>
+  <button onclick="setTheme('sepia')">☀️</button>
 </div>
 
 
@@ -159,70 +188,18 @@ body.theme-sepia button{
 
 </main>
 
-<script>
-  // 🔑 KEY lưu vị trí đọc (theo chapter)
-  const params = new URLSearchParams(location.search);
-  const storyId   = params.get("story") || "1";
-  const chapterId = params.get("chapter") || "1";
-
-  const STORAGE_KEY = `read_pos_${storyId}_${chapterId}`;
-  const reader = document.getElementById("reader");
-
-  // 🔄 RESTORE SCROLL
-  const saved = localStorage.getItem(STORAGE_KEY);
-  if(saved){
-    requestAnimationFrame(()=>{
-      window.scrollTo(0, Number(saved));
-    });
-  }
-
-  // 💾 SAVE SCROLL (debounce nhẹ)
-  let t;
-  window.addEventListener("scroll", ()=>{
-    clearTimeout(t);
-    t = setTimeout(()=>{
-      localStorage.setItem(STORAGE_KEY, window.scrollY);
-    }, 200);
-  });
-
-  // 🏷 TITLE
-  document.getElementById("chapterTitle").textContent =
-    `Chương ${chapterId}: Gặp gỡ`;
 
 
-  /* ===== FONT SIZE ===== */
-  let fontSize =
-    Number(localStorage.getItem("reader_font")) || 18;
-
-  function applyFont(){
-    reader.style.fontSize = fontSize + "px";
-    localStorage.setItem("reader_font", fontSize);
-  }
-
-  function changeFont(step){
-    fontSize = Math.min(26, Math.max(14, fontSize + step));
-    applyFont();
-  }
-
-  applyFont();
-
-  /* ===== THEME ===== */
-  function setTheme(t){
-    document.body.classList.remove("theme-dark","theme-sepia");
-    document.body.classList.add("theme-" + t);
-    localStorage.setItem("reader_theme", t);
-  }
-
-  const savedTheme =
-    localStorage.getItem("reader_theme") || "dark";
-  setTheme(savedTheme);
+<!-- CHAPTER NAV -->
+<div class="chapter-nav">
+  <button id="btnPrev" onclick="goPrev()">⬅️ Chương trước</button>
+  <button id="btnNext" onclick="goNext()">Chương sau ➡️</button>
+</div>
 
 
 
-
-
-
-</script>
+ <!-- JS -->
+  <script src="/chapter-read.js"></script>
 
 </body>
 </html>
