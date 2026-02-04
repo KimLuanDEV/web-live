@@ -10,13 +10,6 @@
           "time": "15 phút",
           "level": "Dễ",
           "cover": "/assets/cooking/com-rang.jpg"
-        },
-        {
-          "id": "pho-bo",
-          "title": "Phở bò",
-          "time": "90 phút",
-          "level": "Khó",
-          "cover": "/assets/cooking/pho-bo.jpg"
         }
       ]
     }

@@ -1,24 +1,23 @@
 fetch("/data/cooking/index.json")
-  .then(r => r.json())
-  .then(data => {
-    const grid = document.getElementById("cookingGrid");
-    grid.innerHTML = "";
+.then(r=>r.json())
+.then(data=>{
+  const grid = document.getElementById("cookingGrid");
+  grid.innerHTML = "";
 
-    data.categories.forEach(cat => {
-      cat.items.forEach(item => {
-        const card = document.createElement("div");
-        card.className = "lib-card active";
-        card.onclick = () => {
-          location.href = `/cooking-detail.html?id=${item.id}`;
-        };
+  data.categories.forEach(c=>{
+    c.items.forEach(i=>{
+      const d = document.createElement("div");
+      d.className = "cook-card";
+      d.onclick = ()=>location.href=`/cooking-detail.html?id=${i.id}`;
 
-        card.innerHTML = `
-          <div class="lib-icon">🍽️</div>
-          <div class="lib-title">${item.title}</div>
-          <div class="lib-desc">${item.time} · ${item.level}</div>
-        `;
-
-        grid.appendChild(card);
-      });
+      d.innerHTML = `
+        <img src="${i.cover}">
+        <div class="info">
+          <div class="title">${i.title}</div>
+          <div class="meta">${i.time} · ${i.level}</div>
+        </div>
+      `;
+      grid.appendChild(d);
     });
   });
+});

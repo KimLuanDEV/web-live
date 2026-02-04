@@ -1,5 +1,8 @@
 {
   "title": "Cơm rang trứng",
+  "cover": "/assets/cooking/com-rang.jpg",
+  "time": "15 phút",
+  "level": "Dễ",
   "ingredients": [
     "Cơm nguội",
     "2 quả trứng",
@@ -7,9 +10,10 @@
     "Nước mắm"
   ],
   "steps": [
-    "Đánh trứng, làm nóng chảo",
-    "Phi hành cho thơm",
+    "Đánh trứng với chút muối",
+    "Làm nóng chảo, phi hành",
     "Cho cơm vào đảo đều",
-    "Đổ trứng, nêm gia vị"
+    "Đổ trứng, đảo nhanh tay",
+    "Nêm nước mắm, tắt bếp"
   ]
 }

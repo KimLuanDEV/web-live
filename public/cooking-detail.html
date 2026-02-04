@@ -5,6 +5,88 @@
   <title>🍳 Công thức</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
+
+  <!-- CSS riêng cho Cooking -->
+  <style>
+    .recipe-hero img{
+      width:100%;
+      height:220px;
+      object-fit:cover;
+      border-radius:16px;
+      margin-bottom:14px;
+    }
+
+    .recipe-meta{
+      font-size:13px;
+      opacity:.75;
+      margin-bottom:14px;
+    }
+
+    .recipe-section h3{
+      margin-top:20px;
+      margin-bottom:8px;
+    }
+
+    .cook-mode-btn{
+      position:fixed;
+      left:16px;
+      right:16px;
+      bottom:16px;
+      height:52px;
+      border:none;
+      border-radius:16px;
+      background:#ffb703;
+      font-weight:800;
+      font-size:16px;
+      z-index:10;
+    }
+
+    /* COOK MODE */
+    .cook-mode{
+      position:fixed;
+      inset:0;
+      background:#0e0e12;
+      color:#fff;
+      z-index:999;
+      display:flex;
+      flex-direction:column;
+      padding:24px;
+    }
+    .cook-mode.hidden{display:none}
+
+    .cook-step{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      text-align:center;
+    }
+
+    .step-index{
+      opacity:.6;
+      margin-bottom:12px;
+    }
+
+    .step-text{
+      font-size:22px;
+      font-weight:800;
+      line-height:1.4;
+    }
+
+    .cook-controls{
+      display:flex;
+      gap:12px;
+    }
+
+    .cook-controls button{
+      flex:1;
+      height:48px;
+      border:none;
+      border-radius:14px;
+      font-size:18px;
+      font-weight:700;
+    }
+  </style>
 </head>
 
 <body class="page-library">
@@ -17,6 +99,23 @@
 <main class="library-container" id="recipeContent">
   Đang tải công thức...
 </main>
+
+<!-- 🔥 NÚT COOK MODE -->
+<button class="cook-mode-btn" onclick="enterCookMode()">🍳 Cook Mode</button>
+
+<!-- 🔥 COOK MODE OVERLAY -->
+<div id="cookMode" class="cook-mode hidden">
+  <div class="cook-step">
+    <div class="step-index" id="stepIndex"></div>
+    <div class="step-text" id="stepText"></div>
+  </div>
+
+  <div class="cook-controls">
+    <button onclick="prevStep()">←</button>
+    <button onclick="nextStep()">→</button>
+    <button onclick="exitCookMode()">✕</button>
+  </div>
+</div>
 
 <script src="/cooking-detail.js"></script>
 </body>
