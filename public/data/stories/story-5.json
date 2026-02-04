@@ -1,0 +1,43 @@
+{
+  "id": 5,
+  "title": "Người Ở Trong Hệ Thống",
+  "subtitle": "Manh Mối Sau Cánh Cửa Khóa – Phần 3",
+  "author": "Livestream Pro Studio",
+  "desc": "Sau 13 ngày đếm ngược, Lê Minh Kha không bị tiêu diệt. Nhưng anh cũng không được tự do. Hệ thống đưa ra lựa chọn cuối cùng: làm việc cho nó, hoặc trở thành một cái tên tiếp theo trong danh sách.",
+  "tags": ["Phá án", "Trinh thám", "Tâm lý", "Suy luận", "Dark", "Series"],
+
+  "series": {
+    "series_id": "manh-moi-series",
+    "order": 3,
+    "prev_story": 4
+  },
+
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Lời Mời Không Có Chữ Ký",
+      "content": [
+        "Ba ngày sau khi danh sách biến mất.",
+        "Kha nhận được một tập hồ sơ giấy.",
+        "Không người gửi.",
+        "Không dấu niêm phong.",
+        "Không tiêu đề.",
+        "Bên trong là thông tin về một vụ án chưa từng được công bố.",
+        "Nạn nhân vẫn còn sống.",
+        "Nhưng đã được đánh dấu.",
+        "Trang cuối cùng chỉ có một dòng:",
+        "“Anh có 24 giờ để quyết định.”"
+      ],
+      "logic_box": {
+        "title": "🧩 Suy luận",
+        "questions": [
+          "Vì sao hệ thống không ép buộc ngay?",
+          "‘Nạn nhân còn sống nhưng đã được đánh dấu’ nghĩa là gì?",
+          "Lời mời này khác gì một mệnh lệnh?"
+        ],
+        "hint": "Lựa chọn giả luôn đi kèm thời hạn.",
+        "lock_answer": true
+      }
+    }
+  ]
+}
