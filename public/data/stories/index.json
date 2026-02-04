@@ -47,7 +47,23 @@
   "author": "Livestream Pro Studio",
   "cover": "/assets/covers/cover7.jpg",
   "tags": ["Kinh dị", "Tâm lý", "Đô thị", "Dark"]
+},
+{
+  "id": 8,
+  "title": "Tiếng Gõ Lúc 3 Giờ 17 – Tầng Dưới",
+  "author": "Livestream Pro Studio",
+  "cover": "/assets/covers/cover8.jpg",
+  "tags": ["Kinh dị", "Tâm lý", "Đô thị", "Dark", "Series"]
+},
+{
+  "id": 9,
+  "title": "Tiếng Gõ Lúc 3 Giờ 17 – Tầng Không Tồn Tại",
+  "author": "Livestream Pro Studio",
+  "cover": "/assets/covers/cover9.jpg",
+  "tags": ["Kinh dị", "Tâm lý", "Đô thị", "Dark", "Series"]
 }
+
+
 
 
 ]
