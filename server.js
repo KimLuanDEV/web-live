@@ -748,6 +748,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
+app.post("/api/ai/ask", async (req, res) => {
+  const { question } = req.body || {};
+  if(!question){
+    return res.json({ answer: "Bạn chưa nhập câu hỏi." });
+  }
+
+  // 🔹 DEMO trả lời giả (test trước)
+  // 👉 Bước sau mình nối OpenAI / AI thật cho bạn
+  const answer = `🤖 AI trả lời:\n\n"${question}"\n\nHiện mình có thể giúp bạn giải thích, hướng dẫn hoặc gợi ý chi tiết hơn.`;
+
+  res.json({ answer });
+});
+
 
 app.post("/api/invest/close-early", (req, res) => {
   try {
