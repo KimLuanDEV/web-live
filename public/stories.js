@@ -17,6 +17,22 @@ async function loadStories() {
   }
 }
 
+
+function tagClass(tag){
+  const map = {
+    "Ngôn tình": "tag-ngon-tinh",
+    "Hào môn": "tag-hao-mon",
+    "Trọng sinh": "tag-trong-sinh",
+    "Nữ cường": "tag-nu-cuong",
+    "Hiện đại": "tag-hien-dai",
+    "HE": "tag-he",
+    "VIP": "tag-vip"
+  };
+  return map[tag] || "";
+}
+
+
+
 function renderStories(stories) {
   grid.innerHTML = "";
 
@@ -24,11 +40,11 @@ function renderStories(stories) {
     const card = document.createElement("div");
     card.className = "story-card";
 
-    const tagsHTML = Array.isArray(story.tags)
-      ? story.tags.slice(0, 3).map(t =>
-          `<span class="story-tag">${t}</span>`
-        ).join("")
-      : "";
+const tagsHTML = Array.isArray(story.tags)
+  ? story.tags.slice(0, 3).map(t =>
+      `<span class="story-tag ${tagClass(t)}">${t}</span>`
+    ).join("")
+  : "";
 
     card.innerHTML = `
       <img class="story-cover" src="${story.cover}">
