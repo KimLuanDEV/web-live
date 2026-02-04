@@ -1,0 +1,329 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>⑧ Toán lớp 8</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body{margin:0;background:#0e0e12;color:#fff;min-height:100vh}
+
+    /* HEADER (đồng bộ edu-math.html) */
+    .simple-header{
+      height:52px;display:flex;align-items:center;gap:12px;padding:0 12px;
+      background:#111;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .back-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+    .title{font-weight:800;font-size:16px}
+
+    /* CONTAINER */
+    .edu-container{padding:18px 14px 28px}
+
+    /* HERO */
+    .edu-hero{text-align:center;padding:14px 10px 18px}
+    .edu-hero-icon{font-size:44px;margin-bottom:6px}
+    .edu-hero-title{font-size:18px;font-weight:900;margin-bottom:6px}
+    .edu-hero-desc{font-size:12.5px;opacity:.7;max-width:360px;margin:0 auto}
+
+    /* TOP STATS */
+    .edu-stats{
+      display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .chip{
+      font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+      opacity:.92;
+    }
+    .chip.good{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* GRID */
+    .edu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+
+    /* CARD (đồng bộ) */
+    .edu-card{
+      position:relative;background:#15151c;border:1px solid rgba(255,255,255,.07);
+      border-radius:16px;padding:14px 12px;min-height:110px;
+      display:flex;flex-direction:column;justify-content:center;transition:.18s;
+    }
+    .edu-card.active{cursor:pointer}
+    .edu-card.active:active{transform:scale(.97)}
+    .edu-card.locked{opacity:.55;filter:grayscale(1)}
+    .edu-icon{font-size:26px;margin-bottom:6px}
+    .edu-title{font-weight:900;font-size:14.5px}
+    .edu-desc{font-size:12px;opacity:.72;margin-top:3px}
+
+    .edu-chip{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);color:#9fffe1;
+    }
+    .edu-lock{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(255,59,59,.18);
+      border:1px solid rgba(255,59,59,.28);color:#ffd0d0;
+    }
+
+    /* LIST LESSONS (inside sheet) */
+    .lesson-list{display:flex;flex-direction:column;gap:10px}
+    .lesson-item{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .lesson-item:active{transform:scale(.99)}
+    .lesson-left{display:flex;flex-direction:column}
+    .lesson-name{font-weight:900;font-size:13px}
+    .lesson-meta{font-size:11.5px;opacity:.7;margin-top:2px}
+    .lesson-tag{
+      font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;
+      background:rgba(0,255,160,.12);border:1px solid rgba(0,255,160,.2);
+      color:#9fffe1;white-space:nowrap;
+    }
+
+    /* SHEET MODAL */
+    .sheet{position:fixed;inset:0;display:none;z-index:999}
+    .sheet.show{display:block}
+    .sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+    .sheet-box{
+      position:absolute;left:0;right:0;bottom:0;
+      background:#12121a;border-top-left-radius:18px;border-top-right-radius:18px;
+      border-top:1px solid rgba(255,255,255,.10);
+      max-height:82vh;overflow:auto;
+      box-shadow:0 -10px 30px rgba(0,0,0,.45);
+    }
+    .sheet-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .sheet-title{font-weight:900}
+    .sheet-close{
+      background:none;border:none;color:#fff;font-size:20px;cursor:pointer;
+      width:36px;height:36px;border-radius:10px;
+    }
+    .sheet-close:active{transform:scale(.96)}
+    .sheet-body{padding:14px}
+    .sheet-sub{font-size:12px;opacity:.7;margin-top:2px}
+
+    /* lesson content */
+    .lesson-content{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      margin-top:12px;
+      line-height:1.5;
+      font-size:13px;
+      opacity:.95;
+    }
+    .cta-row{display:flex;gap:10px;margin-top:12px}
+    .btn{
+      flex:1;
+      padding:12px 10px;
+      border-radius:14px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      cursor:pointer;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn.primary{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* small */
+    @media (min-width:520px){
+      .edu-container{max-width:520px;margin:0 auto}
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="simple-header">
+  <button onclick="history.back()" class="back-btn">←</button>
+  <div class="title">⑧ Toán lớp 8</div>
+</header>
+
+
+<main class="edu-container">
+
+  <div class="edu-hero">
+    <div class="edu-hero-icon">⑧</div>
+    <div class="edu-hero-title">Toán lớp 8</div>
+    <div class="edu-hero-desc">
+      Thống kê toàn bộ công thức và kiến thức nền tảng Toán lớp 8
+    </div>
+  </div>
+
+<div class="lesson-content">
+
+  <h3>📐 1. BIỂU THỨC ĐẠI SỐ</h3>
+  <p><b>Định nghĩa:</b> Biểu thức đại số là biểu thức có chứa chữ (biến).</p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>2x + 3</li>
+    <li>x² − 5x + 1</li>
+  </ul>
+
+  <p><b>Giá trị của biểu thức:</b> thay biến bằng số cụ thể.</p>
+
+  <hr>
+
+  <h3>➗ 2. ĐƠN THỨC – ĐA THỨC</h3>
+
+  <p><b>Đơn thức:</b> tích của một số với các biến.</p>
+  <ul>
+    <li>3x</li>
+    <li>−5x²y</li>
+  </ul>
+
+  <p><b>Đa thức:</b> tổng các đơn thức.</p>
+  <ul>
+    <li>2x + 3y − 5</li>
+    <li>x² − 4x + 4</li>
+  </ul>
+
+  <hr>
+
+  <h3>✖️ 3. NHÂN ĐƠN THỨC – ĐA THỨC</h3>
+
+  <p><b>Nhân đơn thức với đơn thức:</b></p>
+  <p>(axᵐ) × (bxⁿ) = abxᵐ⁺ⁿ</p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>2x × 3x² = 6x³</li>
+  </ul>
+
+  <p><b>Nhân đơn thức với đa thức:</b></p>
+  <p>a(b + c) = ab + ac</p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>2x(3x + 1) = 6x² + 2x</li>
+  </ul>
+
+  <hr>
+
+  <h3>🧮 4. HẰNG ĐẲNG THỨC ĐÁNG NHỚ</h3>
+
+  <ul>
+    <li>(a + b)² = a² + 2ab + b²</li>
+    <li>(a − b)² = a² − 2ab + b²</li>
+    <li>a² − b² = (a − b)(a + b)</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>(x + 3)² = x² + 6x + 9</li>
+    <li>x² − 9 = (x − 3)(x + 3)</li>
+  </ul>
+
+  <hr>
+
+  <h3>🧩 5. PHÂN THỨC ĐẠI SỐ</h3>
+
+  <p><b>Dạng:</b></p>
+  <p>A / B (B ≠ 0)</p>
+
+  <p><b>Rút gọn phân thức:</b></p>
+  <p>Chia cả tử và mẫu cho nhân tử chung.</p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>(2x²) / (4x) = x / 2</li>
+  </ul>
+
+  <hr>
+
+  <h3>📐 6. PHƯƠNG TRÌNH BẬC NHẤT MỘT ẨN</h3>
+
+  <p><b>Dạng:</b></p>
+  <p>ax + b = 0 (a ≠ 0)</p>
+
+  <p><b>Cách giải:</b></p>
+  <ul>
+    <li>Chuyển vế</li>
+    <li>Thu gọn</li>
+    <li>Chia hai vế cho hệ số của x</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>2x − 4 = 0 → x = 2</li>
+    <li>3x + 6 = 0 → x = −2</li>
+  </ul>
+
+  <hr>
+
+  <h3>🔺 7. TAM GIÁC ĐỒNG DẠNG</h3>
+
+  <p><b>Định nghĩa:</b> Hai tam giác đồng dạng nếu có các góc tương ứng bằng nhau và các cạnh tương ứng tỉ lệ.</p>
+
+  <p><b>Các trường hợp đồng dạng:</b></p>
+  <ul>
+    <li>Góc – góc (AA)</li>
+    <li>Cạnh – cạnh – cạnh (SSS)</li>
+    <li>Cạnh – góc – cạnh (SAS)</li>
+  </ul>
+
+  <hr>
+
+  <h3>📐 8. TỨ GIÁC</h3>
+
+  <p><b>Các loại tứ giác:</b></p>
+  <ul>
+    <li>Hình thang</li>
+    <li>Hình bình hành</li>
+    <li>Hình chữ nhật</li>
+    <li>Hình thoi</li>
+    <li>Hình vuông</li>
+  </ul>
+
+  <p><b>Tính chất hình bình hành:</b></p>
+  <ul>
+    <li>Các cạnh đối song song và bằng nhau</li>
+    <li>Các góc đối bằng nhau</li>
+  </ul>
+
+  <hr>
+
+  <h3>📏 9. DIỆN TÍCH MỘT SỐ HÌNH</h3>
+
+  <p><b>Hình thang:</b></p>
+  <p>S = ( (đáy lớn + đáy nhỏ) × chiều cao ) / 2</p>
+
+  <p><b>Hình bình hành:</b></p>
+  <p>S = đáy × chiều cao</p>
+
+  <hr>
+
+  <h3>🧠 10. TỔNG KẾT LỚP 8</h3>
+  <ul>
+    <li>Thuần thục biến đổi đại số</li>
+    <li>Nắm chắc phương trình bậc nhất</li>
+    <li>Hiểu sâ
+
+</main>
+
+
+
+</body>
+</html>
