@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>⑪ Toán lớp 11</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body{margin:0;background:#0e0e12;color:#fff;min-height:100vh}
+
+    /* HEADER (đồng bộ edu-math.html) */
+    .simple-header{
+      height:52px;display:flex;align-items:center;gap:12px;padding:0 12px;
+      background:#111;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .back-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+    .title{font-weight:800;font-size:16px}
+
+    /* CONTAINER */
+    .edu-container{padding:18px 14px 28px}
+
+    /* HERO */
+    .edu-hero{text-align:center;padding:14px 10px 18px}
+    .edu-hero-icon{font-size:44px;margin-bottom:6px}
+    .edu-hero-title{font-size:18px;font-weight:900;margin-bottom:6px}
+    .edu-hero-desc{font-size:12.5px;opacity:.7;max-width:360px;margin:0 auto}
+
+    /* TOP STATS */
+    .edu-stats{
+      display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .chip{
+      font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+      opacity:.92;
+    }
+    .chip.good{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* GRID */
+    .edu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+
+    /* CARD (đồng bộ) */
+    .edu-card{
+      position:relative;background:#15151c;border:1px solid rgba(255,255,255,.07);
+      border-radius:16px;padding:14px 12px;min-height:110px;
+      display:flex;flex-direction:column;justify-content:center;transition:.18s;
+    }
+    .edu-card.active{cursor:pointer}
+    .edu-card.active:active{transform:scale(.97)}
+    .edu-card.locked{opacity:.55;filter:grayscale(1)}
+    .edu-icon{font-size:26px;margin-bottom:6px}
+    .edu-title{font-weight:900;font-size:14.5px}
+    .edu-desc{font-size:12px;opacity:.72;margin-top:3px}
+
+    .edu-chip{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);color:#9fffe1;
+    }
+    .edu-lock{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(255,59,59,.18);
+      border:1px solid rgba(255,59,59,.28);color:#ffd0d0;
+    }
+
+    /* LIST LESSONS (inside sheet) */
+    .lesson-list{display:flex;flex-direction:column;gap:10px}
+    .lesson-item{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .lesson-item:active{transform:scale(.99)}
+    .lesson-left{display:flex;flex-direction:column}
+    .lesson-name{font-weight:900;font-size:13px}
+    .lesson-meta{font-size:11.5px;opacity:.7;margin-top:2px}
+    .lesson-tag{
+      font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;
+      background:rgba(0,255,160,.12);border:1px solid rgba(0,255,160,.2);
+      color:#9fffe1;white-space:nowrap;
+    }
+
+    /* SHEET MODAL */
+    .sheet{position:fixed;inset:0;display:none;z-index:999}
+    .sheet.show{display:block}
+    .sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+    .sheet-box{
+      position:absolute;left:0;right:0;bottom:0;
+      background:#12121a;border-top-left-radius:18px;border-top-right-radius:18px;
+      border-top:1px solid rgba(255,255,255,.10);
+      max-height:82vh;overflow:auto;
+      box-shadow:0 -10px 30px rgba(0,0,0,.45);
+    }
+    .sheet-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .sheet-title{font-weight:900}
+    .sheet-close{
+      background:none;border:none;color:#fff;font-size:20px;cursor:pointer;
+      width:36px;height:36px;border-radius:10px;
+    }
+    .sheet-close:active{transform:scale(.96)}
+    .sheet-body{padding:14px}
+    .sheet-sub{font-size:12px;opacity:.7;margin-top:2px}
+
+    /* lesson content */
+    .lesson-content{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      margin-top:12px;
+      line-height:1.5;
+      font-size:13px;
+      opacity:.95;
+    }
+    .cta-row{display:flex;gap:10px;margin-top:12px}
+    .btn{
+      flex:1;
+      padding:12px 10px;
+      border-radius:14px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      cursor:pointer;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn.primary{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* small */
+    @media (min-width:520px){
+      .edu-container{max-width:520px;margin:0 auto}
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="simple-header">
+  <button onclick="history.back()" class="back-btn">←</button>
+  <div class="title">⑪ Toán lớp 11 </div>
+</header>
+
+
+<main class="edu-container">
+
+  <div class="edu-hero">
+    <div class="edu-hero-icon">⑪</div>
+    <div class="edu-hero-title">Toán lớp 11</div>
+    <div class="edu-hero-desc">
+      Thống kê toàn bộ công thức và kiến thức nền tảng Toán lớp 11
+    </div>
+  </div>
+
+<div class="lesson-content">
+
+  <h3>📐 1. CUNG – GÓC LƯỢNG GIÁC</h3>
+  <p><b>Góc lượng giác:</b> là góc có hướng, đo theo chiều ngược kim đồng hồ.</p>
+
+  <p><b>Đơn vị đo:</b></p>
+  <ul>
+    <li>Độ (°)</li>
+    <li>Radian (rad)</li>
+  </ul>
+
+  <p><b>Quy đổi:</b></p>
+  <ul>
+    <li>180° = π rad</li>
+    <li>1 rad = 180° / π</li>
+  </ul>
+
+  <hr>
+
+  <h3>📊 2. GIÁ TRỊ LƯỢNG GIÁC</h3>
+  <p><b>Các tỉ số lượng giác:</b></p>
+  <ul>
+    <li>sin x</li>
+    <li>cos x</li>
+    <li>tan x</li>
+    <li>cot x</li>
+  </ul>
+
+  <p><b>Hệ thức cơ bản:</b></p>
+  <ul>
+    <li>sin²x + cos²x = 1</li>
+    <li>tan x = sin x / cos x</li>
+    <li>cot x = cos x / sin x</li>
+  </ul>
+
+  <hr>
+
+  <h3>📈 3. HÀM SỐ LƯỢNG GIÁC</h3>
+  <ul>
+    <li>y = sin x</li>
+    <li>y = cos x</li>
+    <li>y = tan x</li>
+    <li>y = cot x</li>
+  </ul>
+
+  <p><b>Tính chất:</b></p>
+  <ul>
+    <li>sin x, cos x: tuần hoàn chu kỳ 2π</li>
+    <li>tan x, cot x: tuần hoàn chu kỳ π</li>
+  </ul>
+
+  <hr>
+
+  <h3>🧮 4. PHƯƠNG TRÌNH LƯỢNG GIÁC CƠ BẢN</h3>
+  <p><b>Dạng thường gặp:</b></p>
+  <ul>
+    <li>sin x = a</li>
+    <li>cos x = a</li>
+    <li>tan x = a</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>sin x = 1/2</li>
+    <li>cos x = 0</li>
+  </ul>
+
+  <hr>
+
+  <h3>🧩 5. DÃY SỐ – CẤP SỐ CỘNG</h3>
+  <p><b>Dãy số:</b> tập hợp các số theo thứ tự.</p>
+
+  <p><b>Cấp số cộng:</b></p>
+  <ul>
+    <li>uₙ = u₁ + (n − 1)d</li>
+    <li>Sₙ = n(u₁ + uₙ) / 2</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>2, 5, 8, 11,… (d = 3)</li>
+  </ul>
+
+  <hr>
+
+  <h3>🎲 6. HOÁN VỊ – CHỈNH HỢP – TỔ HỢP</h3>
+
+  <p><b>Hoán vị:</b></p>
+  <p>Pₙ = n!</p>
+
+  <p><b>Chỉnh hợp:</b></p>
+  <p>Aₙᵏ = n! / (n − k)!</p>
+
+  <p><b>Tổ hợp:</b></p>
+  <p>Cₙᵏ = n! / (k!(n − k)!)</p>
+
+  <hr>
+
+  <h3>📊 7. NHỊ THỨC NEWTON</h3>
+  <p><b>Công thức:</b></p>
+  <p>(a + b)ⁿ = Σ Cₙᵏ aⁿ⁻ᵏ bᵏ</p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>(a + b)² = a² + 2ab + b²</li>
+  </ul>
+
+  <hr>
+
+  <h3>🎯 8. XÁC SUẤT</h3>
+  <p><b>Định nghĩa:</b></p>
+  <p>P(A) = số kết quả thuận lợi / tổng số kết quả</p>
+
+  <p><b>Tính chất:</b></p>
+  <ul>
+    <li>0 ≤ P(A) ≤ 1</li>
+    <li>P(A) + P(Ā) = 1</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>Xác suất tung đồng xu ra mặt ngửa = 1/2</li>
+  </ul>
+
+  <hr>
+
+  <h3>📐 9. HÌNH HỌC KHÔNG GIAN CƠ BẢN</h3>
+  <ul>
+    <li>Điểm – đường thẳng – mặt phẳng</li>
+    <li>Quan hệ song song</li>
+    <li>Quan hệ vuông góc</li>
+  </ul>
+
+  <p><b>Ghi nhớ:</b> Hình không gian cần vẽ hình rõ ràng.</p>
+
+  <hr>
+
+  <h3>🧠 10. TỔNG KẾT LỚP 11</h3>
+  <ul>
+    <li>Làm chủ lượng giác</li>
+    <li>Thuần thục tổ hợp – xác suất</li>
+    <li>Chuẩn bị cho giải tích lớp 12</li>
+  </ul>
+
+  <p><i>Ghi nhớ:</i> Toán lớp 11 là cầu nối lên thi tốt nghiệp.</p>
+
+</div>
+
+</main>
+
+
+
+</body>
+</html>
