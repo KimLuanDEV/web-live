@@ -1,0 +1,45 @@
+/* ===============================
+   STORIES GRID CONTROLLER
+================================ */
+
+const grid = document.getElementById("storyGrid");
+
+async function loadStories() {
+  try {
+    const res = await fetch("/data/stories/index.json");
+    if (!res.ok) throw new Error("Index not found");
+
+    const stories = await res.json();
+    renderStories(stories);
+  } catch (e) {
+    grid.innerHTML = "<p>❌ Không tải được danh sách truyện</p>";
+    console.error(e);
+  }
+}
+
+function renderStories(stories) {
+  grid.innerHTML = "";
+
+  stories.forEach(story => {
+    const card = document.createElement("div");
+    card.className = "story-card";
+
+    card.innerHTML = `
+      <img class="story-cover" src="${story.cover}">
+      <div class="story-info">
+        <div class="story-title">${story.title}</div>
+        <div class="story-author">✍️ ${story.author}</div>
+      </div>
+    `;
+
+    card.onclick = () => {
+      // vào trang chi tiết truyện
+      location.href = `/story-detail.html?story=${story.id}`;
+    };
+
+    grid.appendChild(card);
+  });
+}
+
+// INIT
+loadStories();
