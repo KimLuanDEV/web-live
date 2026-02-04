@@ -1,0 +1,330 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>⑤ Toán lớp 5</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body{margin:0;background:#0e0e12;color:#fff;min-height:100vh}
+
+    /* HEADER (đồng bộ edu-math.html) */
+    .simple-header{
+      height:52px;display:flex;align-items:center;gap:12px;padding:0 12px;
+      background:#111;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .back-btn{background:none;border:none;color:#fff;font-size:20px;cursor:pointer}
+    .title{font-weight:800;font-size:16px}
+
+    /* CONTAINER */
+    .edu-container{padding:18px 14px 28px}
+
+    /* HERO */
+    .edu-hero{text-align:center;padding:14px 10px 18px}
+    .edu-hero-icon{font-size:44px;margin-bottom:6px}
+    .edu-hero-title{font-size:18px;font-weight:900;margin-bottom:6px}
+    .edu-hero-desc{font-size:12.5px;opacity:.7;max-width:360px;margin:0 auto}
+
+    /* TOP STATS */
+    .edu-stats{
+      display:flex;gap:10px;justify-content:center;flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .chip{
+      font-size:11px;font-weight:900;padding:6px 10px;border-radius:999px;
+      background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.08);
+      opacity:.92;
+    }
+    .chip.good{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* GRID */
+    .edu-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:12px}
+
+    /* CARD (đồng bộ) */
+    .edu-card{
+      position:relative;background:#15151c;border:1px solid rgba(255,255,255,.07);
+      border-radius:16px;padding:14px 12px;min-height:110px;
+      display:flex;flex-direction:column;justify-content:center;transition:.18s;
+    }
+    .edu-card.active{cursor:pointer}
+    .edu-card.active:active{transform:scale(.97)}
+    .edu-card.locked{opacity:.55;filter:grayscale(1)}
+    .edu-icon{font-size:26px;margin-bottom:6px}
+    .edu-title{font-weight:900;font-size:14.5px}
+    .edu-desc{font-size:12px;opacity:.72;margin-top:3px}
+
+    .edu-chip{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);color:#9fffe1;
+    }
+    .edu-lock{
+      position:absolute;top:10px;right:10px;font-size:10px;font-weight:900;
+      padding:4px 7px;border-radius:999px;background:rgba(255,59,59,.18);
+      border:1px solid rgba(255,59,59,.28);color:#ffd0d0;
+    }
+
+    /* LIST LESSONS (inside sheet) */
+    .lesson-list{display:flex;flex-direction:column;gap:10px}
+    .lesson-item{
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      cursor:pointer;
+      transition:.15s;
+    }
+    .lesson-item:active{transform:scale(.99)}
+    .lesson-left{display:flex;flex-direction:column}
+    .lesson-name{font-weight:900;font-size:13px}
+    .lesson-meta{font-size:11.5px;opacity:.7;margin-top:2px}
+    .lesson-tag{
+      font-size:10px;font-weight:900;padding:4px 8px;border-radius:999px;
+      background:rgba(0,255,160,.12);border:1px solid rgba(0,255,160,.2);
+      color:#9fffe1;white-space:nowrap;
+    }
+
+    /* SHEET MODAL */
+    .sheet{position:fixed;inset:0;display:none;z-index:999}
+    .sheet.show{display:block}
+    .sheet-backdrop{position:absolute;inset:0;background:rgba(0,0,0,.55)}
+    .sheet-box{
+      position:absolute;left:0;right:0;bottom:0;
+      background:#12121a;border-top-left-radius:18px;border-top-right-radius:18px;
+      border-top:1px solid rgba(255,255,255,.10);
+      max-height:82vh;overflow:auto;
+      box-shadow:0 -10px 30px rgba(0,0,0,.45);
+    }
+    .sheet-head{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.08);
+    }
+    .sheet-title{font-weight:900}
+    .sheet-close{
+      background:none;border:none;color:#fff;font-size:20px;cursor:pointer;
+      width:36px;height:36px;border-radius:10px;
+    }
+    .sheet-close:active{transform:scale(.96)}
+    .sheet-body{padding:14px}
+    .sheet-sub{font-size:12px;opacity:.7;margin-top:2px}
+
+    /* lesson content */
+    .lesson-content{
+      background:rgba(255,255,255,.04);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:14px;
+      padding:12px;
+      margin-top:12px;
+      line-height:1.5;
+      font-size:13px;
+      opacity:.95;
+    }
+    .cta-row{display:flex;gap:10px;margin-top:12px}
+    .btn{
+      flex:1;
+      padding:12px 10px;
+      border-radius:14px;
+      font-weight:900;
+      border:1px solid rgba(255,255,255,.10);
+      background:rgba(255,255,255,.06);
+      color:#fff;
+      cursor:pointer;
+    }
+    .btn:active{transform:scale(.99)}
+    .btn.primary{
+      background:rgba(0,255,160,.14);
+      border:1px solid rgba(0,255,160,.22);
+      color:#9fffe1;
+    }
+
+    /* small */
+    @media (min-width:520px){
+      .edu-container{max-width:520px;margin:0 auto}
+    }
+  </style>
+</head>
+
+<body>
+
+<header class="simple-header">
+  <button onclick="history.back()" class="back-btn">←</button>
+  <div class="title">⑤ Toán lớp 5</div>
+</header>
+
+
+<main class="edu-container">
+
+  <div class="edu-hero">
+    <div class="edu-hero-icon">⑤</div>
+    <div class="edu-hero-title">Toán lớp 5</div>
+    <div class="edu-hero-desc">
+      Thống kê toàn bộ công thức và kiến thức nền tảng Toán lớp 5
+    </div>
+  </div>
+
+<div class="lesson-content">
+
+  <h3>🔢 1. SỐ ĐẾN HÀNG TRIỆU</h3>
+  <p><b>Phạm vi số:</b> Đến hàng triệu</p>
+
+  <p><b>Các hàng trong số:</b></p>
+  <ul>
+    <li>Hàng đơn vị – chục – trăm</li>
+    <li>Hàng nghìn – chục nghìn – trăm nghìn</li>
+    <li>Hàng triệu</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>1 245 306 = 1 triệu + 245 nghìn + 306</li>
+    <li>900 050 = 9 trăm nghìn + 50</li>
+  </ul>
+
+  <hr>
+
+  <h3>➕➖ 2. BỐN PHÉP TÍNH VỚI SỐ LỚN</h3>
+  <p><b>Phép cộng:</b> a + b = c</p>
+  <ul>
+    <li>345 672 + 128 459 = 474 131</li>
+  </ul>
+
+  <p><b>Phép trừ:</b> a − b = c</p>
+  <ul>
+    <li>500 000 − 236 478 = 263 522</li>
+  </ul>
+
+  <p><b>Phép nhân:</b> a × b = c</p>
+  <ul>
+    <li>2 345 × 24 = 56 280</li>
+  </ul>
+
+  <p><b>Phép chia:</b> a ÷ b = c</p>
+  <ul>
+    <li>8 640 ÷ 36 = 240</li>
+  </ul>
+
+  <hr>
+
+  <h3>🍰 3. PHÂN SỐ</h3>
+  <p><b>Dạng phân số:</b> a / b</p>
+
+  <ul>
+    <li>a: tử số</li>
+    <li>b: mẫu số</li>
+  </ul>
+
+  <p><b>So sánh phân số:</b></p>
+  <ul>
+    <li>Cùng mẫu: so sánh tử số</li>
+    <li>Khác mẫu: quy đồng mẫu số</li>
+  </ul>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>3/5 &gt; 2/5</li>
+    <li>1/2 = 2/4</li>
+  </ul>
+
+  <hr>
+
+  <h3>✖️➗ 4. CỘNG – TRỪ – NHÂN – CHIA PHÂN SỐ</h3>
+
+  <p><b>Cộng / Trừ phân số cùng mẫu:</b></p>
+  <p>(a ± b) / c</p>
+  <ul>
+    <li>2/7 + 3/7 = 5/7</li>
+  </ul>
+
+  <p><b>Nhân phân số:</b></p>
+  <p>(a × c) / (b × d)</p>
+  <ul>
+    <li>2/3 × 4/5 = 8/15</li>
+  </ul>
+
+  <p><b>Chia phân số:</b></p>
+  <p>a/b ÷ c/d = a/b × d/c</p>
+  <ul>
+    <li>3/4 ÷ 2/5 = 15/8</li>
+  </ul>
+
+  <hr>
+
+  <h3>📊 5. TỈ SỐ</h3>
+  <p><b>Khái niệm:</b> Tỉ số cho biết mối quan hệ giữa hai số.</p>
+
+  <p><b>Dạng:</b></p>
+  <p>a : b hoặc a/b</p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>Tỉ số của 8 và 4 là 8 : 4 = 2</li>
+    <li>Tỉ số của 15 và 5 là 3</li>
+  </ul>
+
+  <hr>
+
+  <h3>📈 6. TỈ SỐ PHẦN TRĂM</h3>
+  <p><b>Định nghĩa:</b> Phần trăm là phân số có mẫu số là 100.</p>
+
+  <p><b>Dạng:</b></p>
+  <p>a% = a/100</p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>25% = 25/100 = 1/4</li>
+    <li>50% = 1/2</li>
+  </ul>
+
+  <p><b>Tính phần trăm của một số:</b></p>
+  <ul>
+    <li>20% của 200 = 40</li>
+    <li>15% của 80 = 12</li>
+  </ul>
+
+  <hr>
+
+  <h3>📐 7. DIỆN TÍCH & THỂ TÍCH</h3>
+
+  <p><b>Diện tích hình chữ nhật:</b></p>
+  <p>dài × rộng</p>
+
+  <p><b>Diện tích hình vuông:</b></p>
+  <p>cạnh × cạnh</p>
+
+  <p><b>Thể tích hình hộp chữ nhật:</b></p>
+  <p>dài × rộng × cao</p>
+
+  <p><b>Ví dụ:</b></p>
+  <ul>
+    <li>Hình hộp 5 × 4 × 3 → thể tích = 60</li>
+  </ul>
+
+  <hr>
+
+  <h3>🧠 8. ÔN TẬP TỔNG HỢP TIỂU HỌC</h3>
+  <ul>
+    <li>So sánh số lớn</li>
+    <li>Bốn phép tính</li>
+    <li>Phân số – phần trăm</li>
+    <li>Chu vi – diện tích – thể tích</li>
+  </ul>
+
+  <p><i>Ghi nhớ:</i> Toán lớp 5 là nền tảng trực tiếp lên THCS.</p>
+
+</div>
+
+</main>
+
+
+
+</body>
+</html>
