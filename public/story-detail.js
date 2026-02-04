@@ -46,11 +46,18 @@ function renderStory() {
   descEl.textContent =
     storyData.desc || "Chưa có mô tả cho truyện này.";
 
-  // tags (tạm)
-  tagEl.innerHTML = `
-    <div class="tag">Truyện</div>
-    <div class="tag">Đang cập nhật</div>
-  `;
+// tags
+tagEl.innerHTML = "";
+
+if (Array.isArray(storyData.tags)) {
+  storyData.tags.forEach(t => {
+    const span = document.createElement("div");
+    span.className = "tag";
+    span.textContent = t;
+    tagEl.appendChild(span);
+  });
+}
+
 
   // chapters
   listEl.innerHTML = "";
