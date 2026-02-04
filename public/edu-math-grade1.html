@@ -169,28 +169,48 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
 }
 
 
-/* ===== FIX TEST OPTION OVERFLOW ===== */
-.test-option{
-  display:grid;
-  grid-template-columns: 1fr auto;
-  align-items:center;
-  gap:8px;
-  margin-top:8px;
-  font-size:14px;
-  padding:6px 6px;
-  border-radius:8px;
+/* ===== TEST LAYOUT FIX ===== */
+
+.test-question{
+  margin-bottom:20px;
 }
 
-.test-option span{
+.test-q{
+  font-weight:700;
+  margin-bottom:10px;
+}
+
+/* danh sách đáp án – 1 cột */
+.test-answers{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+/* từng đáp án */
+.test-option{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  border-radius:10px;
+  background:rgba(255,255,255,0.03);
+}
+
+/* chữ đáp án */
+.test-text{
+  flex:1;
   line-height:1.4;
   word-break:break-word;
 }
 
+/* radio bên phải */
 .test-option input[type="radio"]{
   transform:scale(1.2);
   margin:0;
-  cursor:pointer;
+  flex-shrink:0;
 }
+
 
 
 
@@ -698,29 +718,32 @@ function shuffle(arr){
 
 
 function renderTest(){
-
-    document.getElementById("testResult").innerHTML = ""; // 🔥 reset kết quả
+  document.getElementById("testResult").innerHTML = "";
 
   const box = document.getElementById("testBox");
   box.innerHTML = "";
 
-  shuffle(testQuestions).forEach((item,i)=>{
+  currentTest = shuffle([...testQuestions]);
 
+  currentTest.forEach((item,i)=>{
     const div = document.createElement("div");
-    div.style.marginBottom = "14px";
+    div.className = "test-question";
 
     div.innerHTML = `
-      <b>Câu ${i+1}:</b> ${item.q}<br>
+      <div class="test-q">
+        <b>Câu ${i+1}:</b> ${item.q}
+      </div>
 
-${item.options.map(opt=>`
-  <label class="test-option">
-    <input type="radio" name="q${i}" value="${opt}">
-    <span>${opt}</span>
-  </label>
-`).join("")}
-
-
+      <div class="test-answers">
+        ${item.options.map(opt=>`
+          <label class="test-option">
+            <span class="test-text">${opt}</span>
+            <input type="radio" name="q${i}" value="${opt}">
+          </label>
+        `).join("")}
+      </div>
     `;
+
     box.appendChild(div);
   });
 }
