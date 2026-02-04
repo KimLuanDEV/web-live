@@ -627,6 +627,7 @@ let timeLeft = 10;
 let timerInterval = null;
 let gameScore = 0;
 let correctAnswer = 0;
+let gameLevel = 1;
 
 
 document.querySelectorAll(".chapter").forEach(btn=>{
@@ -645,6 +646,11 @@ function toggleAnswer(id){
 }
 
 
+function updateGameLevel(){
+  if(gameScore >= 10) gameLevel = 3;
+  else if(gameScore >= 5) gameLevel = 2;
+  else gameLevel = 1;
+}
 
 
 function switchTab(chapterId, tab){
@@ -691,11 +697,18 @@ function genOptions(correct){
 }
 
 
+
 function nextGameQuestion(){
 
-  // ===== TIMER =====
+  // 🔥 cập nhật level theo điểm
+  updateGameLevel();
+
+  // 🔥 time theo level
   clearInterval(timerInterval);
-  timeLeft = 10;
+  timeLeft =
+    gameLevel === 1 ? 10 :
+    gameLevel === 2 ? 8  : 6;
+
   document.getElementById("timeLeft").innerText = timeLeft;
   document.getElementById("gameTimer").classList.remove("timer-danger");
 
@@ -712,14 +725,23 @@ function nextGameQuestion(){
     }
   },1000);
 
-  // ===== RANDOM LOẠI CÂU =====
-  const type = rand(7); // 0 → 6
+  // ===== ĐỘ KHÓ THEO LEVEL =====
+  const maxNum =
+    gameLevel === 1 ? 6 :
+    gameLevel === 2 ? 10 : 15;
+
+  const type =
+    gameLevel === 1 ? rand(3) :
+    gameLevel === 2 ? rand(5) :
+    rand(7);
+
   let question = "";
   let options = [];
 
   // 1️⃣ PHÉP CỘNG
   if(type === 0){
-    const a = rand(6)+1, b = rand(6)+1;
+    const a = rand(maxNum - 1) + 1;
+    const b = rand(maxNum - a) + 1;
     correctAnswer = a + b;
     question = `${a} + ${b} = ?`;
     options = genOptions(correctAnswer);
@@ -727,7 +749,8 @@ function nextGameQuestion(){
 
   // 2️⃣ PHÉP TRỪ
   else if(type === 1){
-    const a = rand(9)+1, b = rand(a);
+    const a = rand(maxNum - 1) + 1;
+    const b = rand(a);
     correctAnswer = a - b;
     question = `${a} − ${b} = ?`;
     options = genOptions(correctAnswer);
@@ -735,33 +758,34 @@ function nextGameQuestion(){
 
   // 3️⃣ SỐ LIỀN TRƯỚC / SAU
   else if(type === 2){
-    const n = rand(8)+2;
-    const isBefore = Math.random()>0.5;
-    correctAnswer = isBefore ? n-1 : n+1;
-    question = `Số ${isBefore?"liền trước":"liền sau"} của ${n} là?`;
+    const n = rand(maxNum - 2) + 2;
+    const isBefore = Math.random() > 0.5;
+    correctAnswer = isBefore ? n - 1 : n + 1;
+    question = `Số ${isBefore ? "liền trước" : "liền sau"} của ${n} là?`;
     options = genOptions(correctAnswer);
   }
 
   // 4️⃣ SO SÁNH SỐ
   else if(type === 3){
-    const a = rand(9)+1, b = rand(9)+1;
-    correctAnswer = a>b ? ">" : a<b ? "<" : "=";
+    const a = rand(maxNum) + 1;
+    const b = rand(maxNum) + 1;
+    correctAnswer = a > b ? ">" : a < b ? "<" : "=";
     question = `${a} ☐ ${b}`;
-    options = [">","<","="].sort(()=>Math.random()-0.5);
+    options = [">", "<", "="].sort(()=>Math.random()-0.5);
   }
 
   // 5️⃣ TÁCH – GỘP
   else if(type === 4){
-    const sum = rand(7)+3;
-    const a = rand(sum-1)+1;
+    const sum = rand(maxNum - 3) + 3;
+    const a = rand(sum - 1) + 1;
     const b = sum - a;
     correctAnswer = `${a} + ${b}`;
     question = `Tách số ${sum}`;
     options = [
       `${a} + ${b}`,
       `${sum} + 0`,
-      `${sum-1} + 0`,
-      `${a} + ${a}`
+      `${sum - 1} + 1`,
+      `${Math.floor(sum/2)} + ${Math.ceil(sum/2)}`
     ].sort(()=>Math.random()-0.5);
   }
 
@@ -781,13 +805,14 @@ function nextGameQuestion(){
 
   // 7️⃣ ĐO LƯỜNG
   else{
-    const q = [
+    const qs = [
       {q:"Cái nào dài hơn?",a:"Cái thước"},
       {q:"Cái nào ngắn hơn?",a:"Cái bút"},
       {q:"Hai vật giống nhau thì gọi là?",a:"Bằng nhau"}
-    ][rand(3)];
-    correctAnswer = q.a;
-    question = q.q;
+    ];
+    const pick = qs[rand(qs.length)];
+    correctAnswer = pick.a;
+    question = pick.q;
     options = ["Cái bút","Cái thước","Bằng nhau","Không biết"]
       .sort(()=>Math.random()-0.5);
   }
@@ -807,6 +832,7 @@ function nextGameQuestion(){
     box.appendChild(btn);
   });
 }
+
 
 
 function checkGameAnswer(btn,value){
@@ -830,7 +856,7 @@ function checkGameAnswer(btn,value){
 function timeUp(){
   document.querySelectorAll(".game-btn").forEach(b=>{
     b.disabled = true;
-    if(Number(b.innerText) === correctAnswer){
+    if(b.innerText === String(correctAnswer)){
       b.classList.add("correct");
     }
   });
