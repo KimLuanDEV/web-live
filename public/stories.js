@@ -24,22 +24,29 @@ function renderStories(stories) {
     const card = document.createElement("div");
     card.className = "story-card";
 
+    const tagsHTML = Array.isArray(story.tags)
+      ? story.tags.slice(0, 3).map(t =>
+          `<span class="story-tag">${t}</span>`
+        ).join("")
+      : "";
+
     card.innerHTML = `
       <img class="story-cover" src="${story.cover}">
       <div class="story-info">
         <div class="story-title">${story.title}</div>
         <div class="story-author">✍️ ${story.author}</div>
+        <div class="story-tags">${tagsHTML}</div>
       </div>
     `;
 
     card.onclick = () => {
-      // vào trang chi tiết truyện
       location.href = `/story-detail.html?story=${story.id}`;
     };
 
     grid.appendChild(card);
   });
 }
+
 
 // INIT
 loadStories();
