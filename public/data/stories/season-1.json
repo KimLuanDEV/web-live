@@ -1,0 +1,83 @@
+{
+  "season": 1,
+  "title": "HORROR 3:17",
+  "subtitle": "The Building That Exists Only at 3:17 AM",
+  "totalParts": 8,
+  "theme": "Urban Horror / Psychological",
+  "desc": "Mỗi phần là một cách tồn tại khác nhau của cùng một nơi. Đến cuối cùng, mọi thứ hợp lại thành một chung cư chỉ tồn tại trong đúng một phút: 03:17.",
+  "parts": [
+    {
+      "id": 7,
+      "part": 1,
+      "title": "Tiếng Gõ Lúc 3 Giờ 17",
+      "subtitle": "Outside the Door",
+      "cover": "/assets/covers/cover7.jpg",
+      "concept": "Người đứng ngoài cửa",
+      "file": "story-7.json"
+    },
+    {
+      "id": 8,
+      "part": 2,
+      "title": "Tiếng Gõ Lúc 3 Giờ 17 – Tầng Dưới",
+      "subtitle": "The Floor Below",
+      "cover": "/assets/covers/cover8.jpg",
+      "concept": "Người dưới ghế",
+      "file": "story-8.json"
+    },
+    {
+      "id": 9,
+      "part": 3,
+      "title": "Tiếng Gõ Lúc 3 Giờ 17 – Tầng Không Tồn Tại",
+      "subtitle": "Unknown Floor",
+      "cover": "/assets/covers/cover9.jpg",
+      "concept": "Người bước ra từ thang máy",
+      "file": "story-9.json"
+    },
+    {
+      "id": 10,
+      "part": 4,
+      "title": "Tiếng Gõ Lúc 3 Giờ 17 – Căn Hộ Không Có Số",
+      "subtitle": "Shifting Room Numbers",
+      "cover": "/assets/covers/cover10.jpg",
+      "concept": "Danh tính bị xóa",
+      "file": "story-10.json"
+    },
+    {
+      "id": 11,
+      "part": 5,
+      "title": "Tiếng Gõ Lúc 3 Giờ 17 – Căn Hộ Trong Gương",
+      "subtitle": "The Mirror Room",
+      "cover": "/assets/covers/cover11.jpg",
+      "concept": "Phản chiếu thay thế",
+      "file": "story-11.json"
+    },
+    {
+      "id": 12,
+      "part": 6,
+      "title": "Tiếng Gõ Lúc 3 Giờ 17 – Căn Hộ Trên Camera",
+      "subtitle": "The Camera Apartment",
+      "cover": "/assets/covers/cover12.jpg",
+      "concept": "Tồn tại khi bị quan sát",
+      "file": "story-12.json"
+    },
+    {
+      "id": 13,
+      "part": 7,
+      "title": "Tiếng Gõ Lúc 3 Giờ 17 – Căn Hộ Khi Có Người Ở",
+      "subtitle": "When Someone’s Inside",
+      "cover": "/assets/covers/cover13.jpg",
+      "concept": "Tồn tại nhờ sự hiện diện",
+      "file": "story-13.json"
+    },
+    {
+      "id": 14,
+      "part": 8,
+      "title": "Tiếng Gõ Lúc 3 Giờ 17 – Chung Cư 3:17",
+      "subtitle": "Home Only at 3:17",
+      "cover": "/assets/covers/cover14.jpg",
+      "concept": "Hợp nhất – vòng lặp",
+      "file": "story-14.json",
+      "finale": true
+    }
+  ]
+}
