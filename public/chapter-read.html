@@ -63,6 +63,54 @@
       font-size:13px;
       margin-top:30px;
     }
+
+
+    /* TOOLBAR */
+.reader-toolbar{
+  display:flex;
+  gap:8px;
+  padding:8px 12px;
+  background:#0f0f14;
+  border-bottom:1px solid rgba(255,255,255,.08);
+  position:sticky;
+  top:52px;
+  z-index:9;
+}
+
+.reader-toolbar button{
+  padding:6px 10px;
+  border-radius:8px;
+  background:#1c1c26;
+  border:none;
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* THEMES */
+body.theme-dark{
+  background:#0e0e12;
+  color:#eaeaf0;
+}
+
+body.theme-sepia{
+  background:#f4ecd8;
+  color:#3b2f1e;
+}
+
+body.theme-sepia .reader-header,
+body.theme-sepia .reader-toolbar{
+  background:#efe4c8;
+  border-color:rgba(0,0,0,.1);
+}
+
+body.theme-sepia button{
+  background:#e0d2b0;
+  color:#3b2f1e;
+}
+
+
+
   </style>
 </head>
 
@@ -74,6 +122,16 @@
     Chương 1: Gặp gỡ
   </div>
 </header>
+
+<div class="reader-toolbar">
+  <button onclick="changeFont(-1)">A−</button>
+  <button onclick="changeFont(1)">A+</button>
+
+  <button onclick="setTheme('dark')">🌙</button>
+  <button onclick="setTheme('sepia')">📜</button>
+</div>
+
+
 
 <main id="reader" class="reader">
 
@@ -130,6 +188,40 @@
   // 🏷 TITLE
   document.getElementById("chapterTitle").textContent =
     `Chương ${chapterId}: Gặp gỡ`;
+
+
+  /* ===== FONT SIZE ===== */
+  let fontSize =
+    Number(localStorage.getItem("reader_font")) || 18;
+
+  function applyFont(){
+    reader.style.fontSize = fontSize + "px";
+    localStorage.setItem("reader_font", fontSize);
+  }
+
+  function changeFont(step){
+    fontSize = Math.min(26, Math.max(14, fontSize + step));
+    applyFont();
+  }
+
+  applyFont();
+
+  /* ===== THEME ===== */
+  function setTheme(t){
+    document.body.classList.remove("theme-dark","theme-sepia");
+    document.body.classList.add("theme-" + t);
+    localStorage.setItem("reader_theme", t);
+  }
+
+  const savedTheme =
+    localStorage.getItem("reader_theme") || "dark";
+  setTheme(savedTheme);
+
+
+
+
+
+
 </script>
 
 </body>
