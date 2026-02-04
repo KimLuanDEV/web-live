@@ -585,7 +585,8 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
   margin-bottom:14px;
   color:#9fffe1;
 ">
-  ⏱️ Thời gian: <span id="timeLeft">10</span>s
+⏱️ Thời gian còn lại: <span id="timeLeft">60</span>s
+
 </div>
 
 
@@ -605,10 +606,13 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
     ⭐ Điểm: <span id="gameScore">0</span>
   </div>
 
-  <button class="btn-answer" style="margin-top:16px"
-    onclick="nextGameQuestion()">
-    ▶️ Câu tiếp theo
-  </button>
+
+<button class="btn-answer" id="btnStartGame"
+  style="margin-top:16px"
+  onclick="startGame()">
+  ▶️ Bắt đầu làm bài
+</button>
+
 
 </div>
 
@@ -623,11 +627,50 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 
 const progress = JSON.parse(localStorage.getItem("math1-progress") || "{}");
 
-let timeLeft = 10;
+let timeLeft = 60;
 let timerInterval = null;
 let gameScore = 0;
 let correctAnswer = 0;
 let gameLevel = 1;
+let totalTime = 60;
+let gameRunning = false;
+let correctCount = 0;
+
+
+
+function startGame(){
+  gameRunning = true;
+  correctCount = 0;
+  gameScore = 0;
+  gameLevel = 1;
+
+  totalTime = 60;
+  timeLeft = totalTime;
+
+  
+  document.getElementById("gameScore").innerText = 0;
+  document.getElementById("timeLeft").innerText = timeLeft;
+  document.getElementById("gameResult").innerText = "";
+
+  document.getElementById("btnStartGame").style.display = "none";
+
+  clearInterval(timerInterval);
+  timerInterval = setInterval(()=>{
+    timeLeft--;
+    document.getElementById("timeLeft").innerText = timeLeft;
+
+    if(timeLeft <= 10){
+      document.getElementById("gameTimer").classList.add("timer-danger");
+    }
+
+    if(timeLeft <= 0){
+      endGame();
+    }
+  },1000);
+
+  nextGameQuestion();
+}
+
 
 
 document.querySelectorAll(".chapter").forEach(btn=>{
@@ -691,7 +734,9 @@ function rand(n){
 function genOptions(correct){
   const set = new Set([correct]);
   while(set.size < 4){
-    set.add(rand(11));
+    const delta = rand(7) - 3; // -3 → +3
+    const v = Number(correct) + delta;
+   if(v >= 0 && v <= 20 && v !== correct) set.add(v);
   }
   return [...set].sort(()=>Math.random()-0.5);
 }
@@ -700,30 +745,12 @@ function genOptions(correct){
 
 function nextGameQuestion(){
 
+    if(!gameRunning) return;
+
+
   // 🔥 cập nhật level theo điểm
   updateGameLevel();
 
-  // 🔥 time theo level
-  clearInterval(timerInterval);
-  timeLeft =
-    gameLevel === 1 ? 10 :
-    gameLevel === 2 ? 8  : 6;
-
-  document.getElementById("timeLeft").innerText = timeLeft;
-  document.getElementById("gameTimer").classList.remove("timer-danger");
-
-  timerInterval = setInterval(()=>{
-    timeLeft--;
-    document.getElementById("timeLeft").innerText = timeLeft;
-
-    if(timeLeft <= 3){
-      document.getElementById("gameTimer").classList.add("timer-danger");
-    }
-    if(timeLeft <= 0){
-      clearInterval(timerInterval);
-      timeUp();
-    }
-  },1000);
 
   // ===== ĐỘ KHÓ THEO LEVEL =====
   const maxNum =
@@ -853,42 +880,54 @@ else if(type === 4){
 
 
 function checkGameAnswer(btn,value){
-  clearInterval(timerInterval);
+  if(!gameRunning) return;
 
   document.querySelectorAll(".game-btn").forEach(b=>b.disabled=true);
 
   if(value === correctAnswer){
     btn.classList.add("correct");
-    document.getElementById("gameResult").innerText = "✅ ĐÚNG RỒI!";
+    document.getElementById("gameResult").innerText = "✅ ĐÚNG!";
+    correctCount++;
     gameScore++;
-    document.getElementById("gameScore").innerText = gameScore;
   }else{
     btn.classList.add("wrong");
     document.getElementById("gameResult").innerText =
       `❌ SAI – Đáp án đúng là ${correctAnswer}`;
   }
-}
 
+  document.getElementById("gameScore").innerText = correctCount;
 
-function timeUp(){
-  document.querySelectorAll(".game-btn").forEach(b=>{
-    b.disabled = true;
-    if(b.innerText === String(correctAnswer)){
-      b.classList.add("correct");
-    }
-  });
-
-  document.getElementById("gameResult").innerText =
-    "⏱️ HẾT GIỜ – Thử lại nhé!";
-}
-
-
-// tự chạy câu đầu
+  // sang câu mới sau 500ms
 setTimeout(()=>{
-  if(document.getElementById("game1")){
-    nextGameQuestion();
-  }
-},300);
+  if(gameRunning) nextGameQuestion();
+},500);
+;
+}
+
+function endGame(){
+  clearInterval(timerInterval);
+  gameRunning = false;
+
+  document.getElementById("gameTimer").classList.remove("timer-danger");
+  document.getElementById("btnStartGame").style.display = "inline-block";
+
+  let rank = "";
+  if(correctCount >= 15) rank = "🌟 RẤT TỐT";
+  else if(correctCount >= 10) rank = "👍 TỐT";
+  else if(correctCount >= 5) rank = "🙂 ĐẠT";
+  else rank = "📘 CẦN LUYỆN THÊM";
+
+  document.getElementById("gameResult").innerHTML = `
+    ⏱️ HẾT GIỜ<br>
+    ✔ Số câu đúng: <b>${correctCount}</b><br>
+    🏅 Đánh giá: <b>${rank}</b>
+  `;
+
+  document.getElementById("gameAnswers").innerHTML = "";
+}
+
+
+
 
 
 
