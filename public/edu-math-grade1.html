@@ -187,28 +187,29 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
   gap:10px;
 }
 
-/* ===== TEST OPTION: RADIO SÁT MÉP PHẢI ===== */
+/* ===== FIX RADIO MOBILE: ÉP SANG PHẢI ===== */
 
 .test-option{
-  display:flex;
+  display:grid;
+  grid-template-columns: 1fr auto; /* chữ | radio */
   align-items:center;
   padding:8px 10px;
   border-radius:10px;
   background:rgba(255,255,255,0.03);
+  width:100%;
+  box-sizing:border-box;
 }
 
-/* chữ đáp án */
 .test-text{
-  flex:1;
   line-height:1.4;
   word-break:break-word;
 }
 
-/* radio đẩy sát phải */
+/* radio luôn nằm cột phải */
 .test-option input[type="radio"]{
-  margin-left:auto;        /* 🔥 QUAN TRỌNG */
+  justify-self:end;     /* 🔥 CHÌA KHÓA */
   transform:scale(1.25);
-  cursor:pointer;
+  margin:0;
 }
 
 
