@@ -153,27 +153,19 @@ body.theme-sepia button{
 </header>
 
 <div class="reader-toolbar">
-  <button onclick="changeFont(-1)">A−</button>
-  <button onclick="changeFont(1)">A+</button>
-
-  <button onclick="setTheme('dark')">🌙</button>
-  <button onclick="setTheme('sepia')">☀️</button>
+  <button id="btnFontMinus">A−</button>
+  <button id="btnFontPlus">A+</button>
+  <button id="btnThemeDark">🌙</button>
+  <button id="btnThemeSepia">☀️</button>
 </div>
 
+<main id="reader" class="reader"></main>
 
-
-<main id="reader" class="reader">
-  <!-- chapter content will be injected here -->
-</main>
-
-
-
-
-<!-- CHAPTER NAV -->
 <div class="chapter-nav">
-  <button id="btnPrev" onclick="goPrev()">⬅️ Chương trước</button>
-  <button id="btnNext" onclick="goNext()">Chương sau ➡️</button>
+  <button id="btnPrev">⬅️ Chương trước</button>
+  <button id="btnNext">Chương sau ➡️</button>
 </div>
+
 
 
 

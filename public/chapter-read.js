@@ -120,10 +120,10 @@ function applyFont() {
 }
 applyFont();
 
-document.querySelector(".reader-toolbar button:nth-child(1)")
+document.getElementById("btnFontMinus")
   ?.addEventListener("click", () => changeFont(-1));
 
-document.querySelector(".reader-toolbar button:nth-child(2)")
+document.getElementById("btnFontPlus")
   ?.addEventListener("click", () => changeFont(1));
 
 function changeFont(step) {
@@ -140,15 +140,16 @@ function setTheme(theme) {
   localStorage.setItem("reader_theme", theme);
 }
 
-document.querySelector(".reader-toolbar button:nth-child(3)")
+document.getElementById("btnThemeDark")
   ?.addEventListener("click", () => setTheme("dark"));
 
-document.querySelector(".reader-toolbar button:nth-child(4)")
+document.getElementById("btnThemeSepia")
   ?.addEventListener("click", () => setTheme("sepia"));
 
 const savedTheme =
   localStorage.getItem("reader_theme") || "dark";
 setTheme(savedTheme);
+
 
 // ===============================
 // 🚀 INIT
