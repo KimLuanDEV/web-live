@@ -145,6 +145,62 @@
 }
 
 
+/* ===============================
+   READER HEADER
+================================ */
+
+.reader-header{
+  position:sticky;
+  top:0;
+  z-index:100;
+  height:52px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(14,14,18,.85);
+  backdrop-filter: blur(8px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+/* BACK BUTTON */
+.reader-back{
+  position:absolute;
+  left:12px;
+
+  width:34px;
+  height:34px;
+  border-radius:50%;
+
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:18px;
+  font-weight:700;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+  transition:.2s;
+}
+
+.reader-back:active{
+  transform:scale(.9);
+  background:rgba(255,255,255,.15);
+}
+
+/* TITLE */
+.reader-title{
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.2px;
+  pointer-events:none;
+}
+
+
 
   </style>
 </head>
@@ -153,9 +209,9 @@
 
 <script src="/guard.js"></script>
 
-<header class="simple-header">
-  <button onclick="history.back()" class="back-btn">←</button>
-  <div class="title">📖 Đọc truyện</div>
+<header class="reader-header">
+  <button class="reader-back" onclick="history.back()">←</button>
+  <div class="reader-title">📖 Đọc truyện</div>
 </header>
 
 <main class="stories-container">
