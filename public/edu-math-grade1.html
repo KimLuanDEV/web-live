@@ -59,6 +59,48 @@ hr{border:none;border-top:1px solid rgba(255,255,255,.12);margin:18px 0}
   .edu-layout{flex-direction:column}
   .edu-sidebar{width:100%}
 }
+
+
+.exercise{
+  margin-top:18px;
+  padding:14px;
+  background:rgba(0,0,0,.25);
+  border:1px dashed rgba(255,255,255,.18);
+  border-radius:14px;
+}
+
+.exercise h4{
+  margin:0 0 10px;
+  font-size:14px;
+}
+
+.ex-item{
+  margin-bottom:8px;
+}
+
+.answer{
+  display:none;
+  margin-top:10px;
+  padding:10px;
+  background:rgba(0,255,160,.12);
+  border:1px solid rgba(0,255,160,.22);
+  border-radius:12px;
+  font-size:13px;
+  color:#9fffe1;
+}
+
+.btn-answer{
+  margin-top:10px;
+  padding:8px 12px;
+  border-radius:10px;
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+  color:#fff;
+  cursor:pointer;
+  font-size:12px;
+}
+
+
 </style>
 </head>
 
@@ -119,6 +161,22 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </ul>
 
 <p><i>Ghi nhớ:</i> Liền trước → bớt 1 | Liền sau → thêm 1</p>
+
+
+<div class="exercise">
+  <h4>📝 Bài tập luyện tập</h4>
+  <div class="ex-item">1️⃣ Viết các số từ 0 đến 5.</div>
+  <div class="ex-item">2️⃣ Số liền trước của 6 là …</div>
+  <div class="ex-item">3️⃣ Số liền sau của 3 là …</div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans1')">Xem đáp án</button>
+  <div class="answer" id="ans1">
+    ✔ 0, 1, 2, 3, 4, 5<br>
+    ✔ Số liền trước của 6 là 5<br>
+    ✔ Số liền sau của 3 là 4
+  </div>
+</div>
+
 </div>
 </div>
 
@@ -148,6 +206,22 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </ul>
 
 <p><i>Mẹo nhớ:</i> Miệng cá sấu quay về số lớn hơn</p>
+
+<div class="exercise">
+  <h4>📝 Bài tập luyện tập</h4>
+  <div class="ex-item">1️⃣ 5 ☐ 3</div>
+  <div class="ex-item">2️⃣ 2 ☐ 7</div>
+  <div class="ex-item">3️⃣ 4 ☐ 4</div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans2')">Xem đáp án</button>
+  <div class="answer" id="ans2">
+    ✔ 5 &gt; 3<br>
+    ✔ 2 &lt; 7<br>
+    ✔ 4 = 4
+  </div>
+</div>
+
+
 </div>
 </div>
 
@@ -174,6 +248,22 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </ul>
 
 <p><i>Ghi nhớ:</i> Kết quả không nhỏ hơn các số đã cộng</p>
+
+<div class="exercise">
+  <h4>📝 Bài tập luyện tập</h4>
+  <div class="ex-item">1️⃣ 2 + 3 = …</div>
+  <div class="ex-item">2️⃣ 4 + 1 = …</div>
+  <div class="ex-item">3️⃣ 5 + 5 = …</div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans3')">Xem đáp án</button>
+  <div class="answer" id="ans3">
+    ✔ 2 + 3 = 5<br>
+    ✔ 4 + 1 = 5<br>
+    ✔ 5 + 5 = 10
+  </div>
+</div>
+
+
 </div>
 </div>
 
@@ -199,6 +289,22 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </ul>
 
 <p><i>Ghi nhớ:</i> Số bị trừ ≥ số trừ</p>
+
+<div class="exercise">
+  <h4>📝 Bài tập luyện tập</h4>
+  <div class="ex-item">1️⃣ 5 − 2 = …</div>
+  <div class="ex-item">2️⃣ 8 − 3 = …</div>
+  <div class="ex-item">3️⃣ 10 − 4 = …</div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans4')">Xem đáp án</button>
+  <div class="answer" id="ans4">
+    ✔ 5 − 2 = 3<br>
+    ✔ 8 − 3 = 5<br>
+    ✔ 10 − 4 = 6
+  </div>
+</div>
+
+
 </div>
 </div>
 
@@ -217,6 +323,21 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 <p>Khi cộng các số đã tách, ta gộp lại được số ban đầu.</p>
 
 <p><i>Ý nghĩa:</i> Giúp tính nhẩm nhanh</p>
+
+<div class="exercise">
+  <h4>📝 Bài tập luyện tập</h4>
+  <div class="ex-item">1️⃣ Tách số 5 thành 2 số.</div>
+  <div class="ex-item">2️⃣ Tách số 6 thành 2 số.</div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans5')">Xem đáp án</button>
+  <div class="answer" id="ans5">
+    ✔ 5 = 2 + 3 (hoặc 1 + 4)<br>
+    ✔ 6 = 3 + 3 (hoặc 2 + 4)
+  </div>
+</div>
+
+
+
 </div>
 </div>
 
@@ -232,6 +353,21 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </ul>
 
 <p>Học sinh cần nhận dạng hình trong đời sống.</p>
+
+<div class="exercise">
+  <h4>📝 Bài tập luyện tập</h4>
+  <div class="ex-item">1️⃣ Hình nào có 3 cạnh?</div>
+  <div class="ex-item">2️⃣ Hình nào không có cạnh?</div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans6')">Xem đáp án</button>
+  <div class="answer" id="ans6">
+    ✔ Hình tam giác có 3 cạnh<br>
+    ✔ Hình tròn không có cạnh
+  </div>
+</div>
+
+
+
 </div>
 </div>
 
@@ -247,6 +383,21 @@ Mỗi số dùng để chỉ <b>số lượng đồ vật</b>.</p>
 </ul>
 
 <p><i>Lưu ý:</i> Lớp 1 chỉ so sánh trực quan, chưa dùng đơn vị đo.</p>
+
+<div class="exercise">
+  <h4>📝 Bài tập luyện tập</h4>
+  <div class="ex-item">1️⃣ Cái thước và cái bút, cái nào dài hơn?</div>
+  <div class="ex-item">2️⃣ Hai que tính giống nhau thì gọi là gì?</div>
+
+  <button class="btn-answer" onclick="toggleAnswer('ans7')">Xem đáp án</button>
+  <div class="answer" id="ans7">
+    ✔ Cái thước dài hơn<br>
+    ✔ Hai que tính bằng nhau
+  </div>
+</div>
+
+
+
 </div>
 </div>
 
@@ -262,6 +413,14 @@ document.querySelectorAll(".chapter").forEach(btn=>{
     document.getElementById(btn.dataset.target).classList.add("show");
   }
 });
+
+
+function toggleAnswer(id){
+  const el = document.getElementById(id);
+  el.style.display = el.style.display === "block" ? "none" : "block";
+}
+
+
 </script>
 
 </body>
