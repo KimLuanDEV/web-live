@@ -87,16 +87,96 @@
 }
 
 
+/* ===== PAGE DARK ===== */
+body.page-library{
+  background:#000;
+  color:#fff;
+}
+
+/* ===== HEADER ===== */
+.cook-header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  height:58px;
+  display:flex;
+  align-items:center;
+  padding:0 12px;
+  gap:12px;
+
+  background:rgba(0,0,0,.85);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.cook-back{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:18px;
+}
+
+.cook-header-center{
+  flex:1;
+  text-align:center;
+  line-height:1.1;
+}
+
+.cook-header-title{
+  font-size:16px;
+  font-weight:900;
+}
+
+.cook-header-sub{
+  font-size:11px;
+  opacity:.6;
+}
+
+.cook-header-right{
+  width:36px;
+  text-align:right;
+  opacity:.7;
+}
+
+/* ===== CONTENT ===== */
+.library-container{
+  padding:14px;
+}
+
+/* ===== CARD ADJUST DARK ===== */
+.cook-card{
+  background:#000;
+  box-shadow:0 10px 28px rgba(0,0,0,.6);
+}
+
+/* CHIP DARK */
+.cook-chip{
+  background:rgba(0,0,0,.45);
+  border:1px solid rgba(255,255,255,.18);
+}
+
+
+
 </style>
 
 </head>
 
 <body class="page-library">
 
-<header class="simple-header">
-  <button onclick="history.back()" class="back-btn">←</button>
-  <div class="title">🍳 Nấu ăn</div>
+<header class="cook-header">
+  <button class="cook-back" onclick="history.back()">←</button>
+
+  <div class="cook-header-center">
+    <div class="cook-header-title">Nấu ăn</div>
+    <div class="cook-header-sub">Công thức · Cook Mode</div>
+  </div>
+
+  <div class="cook-header-right">🍳</div>
 </header>
+
 
 
 
