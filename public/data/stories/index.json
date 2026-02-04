@@ -3,14 +3,14 @@
     "id": 1,
     "title": "Em Là Ánh Trăng Của Anh",
     "author": "Diệp Lạc Vô Tâm",
-    "cover": "https://i.ibb.co/3mY0H4Xh/Chat-GPT-Image-Jan-19-2026-09-44-27-AM.jpg",
+    "cover": "/assets/covers/cover1.jpg",
     "tags": ["Ngôn tình", "Hiện đại", "HE"]
   },
   {
     "id": 2,
     "title": "Thiên Kim Trở Về",
     "author": "Thanh Sam Lạc Thác",
-    "cover": "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
+    "cover": "/assets/covers/cover1.jpg",
     "tags": ["Trọng sinh", "Hào môn", "Nữ cường"]
   }
 ]
