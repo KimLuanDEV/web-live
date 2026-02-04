@@ -12,5 +12,13 @@
     "author": "Thanh Sam Lạc Thác",
     "cover": "/assets/covers/cover2.jpg",
     "tags": ["Trọng sinh", "Hào môn", "Nữ cường"]
+  },
+  {
+  "id": 3,
+  "title": "Manh Mối Sau Cánh Cửa Khóa",
+  "author": "Livestream Pro Studio",
+  "cover": "/assets/covers/cover3.jpg",
+  "tags": ["Phá án", "Trinh thám", "Tâm lý", "Suy luận", "Dark"]
   }
+
 ]

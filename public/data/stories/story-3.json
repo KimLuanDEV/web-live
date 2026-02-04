@@ -1,0 +1,692 @@
+{
+  "id": 3,
+  "title": "Manh Mối Sau Cánh Cửa Khóa",
+  "author": "Livestream Pro Studio",
+  "desc": "Một căn phòng khóa kín. Một cái chết không vết thương. Sáu người có mặt – không ai nói toàn bộ sự thật. Mỗi manh mối đều có thể là đáp án, hoặc là cái bẫy dẫn lạc hướng.",
+  "tags": ["Phá án", "Trinh thám", "Tâm lý", "Suy luận", "Dark"],
+
+  "chapters": [
+    {
+      "id": 1,
+      "title": "02:17 – Căn Phòng Khóa Trong",
+      "content": [
+        "Khách sạn Thiên Lam, tầng 9, phòng 912.",
+        "Cánh cửa gỗ sẫm màu bị khóa chốt từ bên trong, móc xích vẫn còn gài.",
+        "Trên thảm, người đàn ông trung niên nằm ngửa, mắt mở hé, khuôn mặt tím tái.",
+        "Đồng hồ treo tường đứng chết ở 02:17.",
+        "Trên bàn có một ly nước còn ấm, bốc hơi rất nhẹ.",
+        "Cửa sổ đóng kín, dải niêm phong khách sạn còn nguyên.",
+        "Phòng tắm khô ráo, không dấu hiệu vật lộn.",
+        "Điện thoại nạn nhân nằm bên cạnh, đã bị tắt nguồn.",
+        "Một chiếc hộp nhẫn đặt cạnh ly nước, nhưng bên trong trống rỗng.",
+        "Lê Minh Kha đứng yên rất lâu trước căn phòng, rồi nói: “Hung thủ không cần ở đây để giết người.”"
+      ],
+        "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Nếu cửa bị khóa từ bên trong, ai là người cuối cùng chạm vào ly nước?",
+      "Vì sao điện thoại bị tắt nguồn thay vì bị lấy đi?",
+      "Chi tiết nào trong căn phòng không thuộc về một cái chết tự nhiên?"
+    ],
+    "hint": "Hãy chú ý những thứ còn ấm hoặc còn mới.",
+    "lock_answer": true
+  }
+    },
+    {
+      "id": 2,
+      "title": "Camera Chết, Nhưng Tiếng Bước Còn Sống",
+      "content": [
+        "Camera hành lang tầng 9 bị mất tín hiệu từ 02:00 đến 03:00.",
+        "Bảo vệ ca đêm nói hệ thống tự động lỗi.",
+        "Trong sổ trực, có dòng ghi tay: “02:05 – reset hệ thống”.",
+        "Dòng chữ được viết vội, nhưng nét bút lại rất gọn.",
+        "Ngoài cửa phòng 912 có một vệt nước mờ, hình bán nguyệt.",
+        "Vệt nước nằm bên ngoài, không phải trong phòng.",
+        "Khách phòng 913 khai nghe tiếng “tách” vào khoảng 02:20.",
+        "Tiếng giống như công tắc điện hoặc đèn bật lên.",
+        "Tay nắm cửa phòng 912 bóng hơn các chỗ khác.",
+        "Ai đó đã lau nó rất kỹ."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Vệt nước ngoài cửa nói lên điều gì về vị trí hung thủ?",
+    "Ai có lợi nhất khi camera hành lang bị reset?",
+    "Tiếng “tách” thực sự đến từ đâu?"
+  ],
+  "hint": "Âm thanh có thể vọng, nhưng chuyển động thì không.",
+  "lock_answer": true
+}
+
+    },
+    {
+      "id": 3,
+      "title": "Những Người Có Mặt",
+      "content": [
+        "Sáu người bị giữ lại ở tầng 9.",
+        "Người vợ nói đêm đó bà ở nhà, không tới khách sạn.",
+        "Trợ lý khai rời phòng sếp lúc 01:40 theo lệnh.",
+        "Con gái riêng nói cô ở quán bar dưới sảnh đến 02:00.",
+        "Lễ tân khẳng định không ai lên tầng 9 sau 01:00.",
+        "Bảo vệ nói camera tự tắt, anh chỉ làm theo quy trình.",
+        "Không ai phủ nhận mình có chìa khóa hoặc quyền tiếp cận.",
+        "Mỗi lời khai đều hợp lý.",
+        "Nhưng không lời khai nào chạm tới thời điểm 02:17.",
+        "Lê Minh Kha nhận ra: tất cả đều né cùng một điểm."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Ai đang nói thật nhưng cố tình giấu chi tiết quan trọng?",
+    "Lời khai nào nghe hợp lý nhất nhưng lại đáng nghi nhất?",
+    "Tại sao tất cả đều né thời điểm 02:17?"
+  ],
+  "hint": "Người nói dối thường tránh một mốc chung.",
+  "lock_answer": true
+}
+
+    },
+    {
+      "id": 4,
+      "title": "Cái Chết Không Vết Thương",
+      "content": [
+        "Khám nghiệm sơ bộ không phát hiện vết đâm hay đánh.",
+        "Không bầm tím, không tụ máu.",
+        "Nguyên nhân tử vong là ngạt, nhưng không rõ do vật gì.",
+        "Ly nước được mang đi kiểm tra nhanh.",
+        "Nước trong ly không giống nước lọc thông thường.",
+        "Dưới đáy ly có vệt bột mỏng đã tan một phần.",
+        "Miệng ly có dấu son rất nhạt.",
+        "Không giống người uống, giống như chỉ chạm môi.",
+        "Trên chốt khóa bên trong có vết xước rất nhỏ.",
+        "Một vết xước không nên tồn tại."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Vết son trên ly có ý nghĩa gì nếu nạn nhân không uống?",
+    "Vết xước trên chốt khóa gợi tới thủ thuật nào?",
+    "Ngạt không vết thương thường liên quan đến điều gì?"
+  ],
+  "lock_answer": true
+}
+
+    },
+    {
+      "id": 5,
+      "title": "Chiếc Nhẫn Biến Mất",
+      "content": [
+        "Chiếc hộp nhẫn được đặt ngay ngắn trên bàn.",
+        "Bên trong không có gì.",
+        "Người vợ tránh né mọi câu hỏi liên quan đến chiếc nhẫn.",
+        "Trong tủ quần áo có một phong thư niêm phong đỏ.",
+        "Trên phong thư ghi: “Nếu tôi chết, đưa cho Lê Minh Kha.”",
+        "Bên trong chỉ có một dòng chữ.",
+        "“Hung thủ không ở trong phòng khi tôi chết.”",
+        "“Tìm thứ khiến tôi tự khóa mình lại.”",
+        "Không chữ ký, không ngày tháng.",
+        "Nạn nhân dường như đã biết trước kết cục."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Chiếc hộp nhẫn thực sự dùng để cất thứ gì?",
+    "Vì sao nạn nhân để lại thư cho Kha?",
+    "‘Tự khóa mình lại’ có thể bị thao túng như thế nào?"
+  ],
+  "lock_answer": true
+}
+
+    },
+    {
+      "id": 6,
+      "title": "Quán Bar Dưới Sảnh",
+      "content": [
+        "Quán bar vẫn mở khi Lê Minh Kha xuống kiểm tra.",
+        "Bartender xác nhận con gái nạn nhân có mặt đến khoảng 02:00.",
+        "Cô uống mojito, có bạc hà.",
+        "Một người khách nói thấy cô gọi điện thoại.",
+        "Cô phủ nhận việc gọi điện.",
+        "Camera bar được nói là cần thời gian mới trích xuất.",
+        "Một chứng cứ ngoại phạm quá hoàn chỉnh.",
+        "Hoàn chỉnh đến mức đáng nghi.",
+        "Bạc hà có thể giải thích mùi trong phòng.",
+        "Hoặc chỉ là một mồi nhử được đặt sẵn."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Ngoại phạm của Vy mạnh hay yếu?",
+    "Bạc hà là manh mối thật hay chỉ để đánh lạc hướng?",
+    "Nhân chứng ở quán bar đáng tin đến mức nào?"
+  ],
+  "hint": "Ngoại phạm hoàn hảo thường cần người dựng.",
+  "lock_answer": true
+}
+
+    },
+    {
+      "id": 7,
+      "title": "Cầu Thang Bộ",
+      "content": [
+        "Cầu thang bộ không có camera giám sát.",
+        "Đèn bật bằng cảm biến chuyển động.",
+        "Khi bước một bước, đèn phát ra tiếng “tách”.",
+        "Tiếng này có thể vọng tới phòng đối diện.",
+        "Trên tay vịn cầu thang có sợi vải màu be mắc lại.",
+        "Màu vải giống áo khoác nữ.",
+        "Con gái nạn nhân mặc váy đen.",
+        "Người vợ mặc áo khoác màu be.",
+        "Khi được hỏi, người vợ trả lời quá nhanh.",
+        "Phản xạ đó không phải ngẫu nhiên."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Ai có khả năng sử dụng cầu thang bộ mà không bị chú ý?",
+    "Sợi vải trên tay vịn thuộc về ai?",
+    "Phản xạ trả lời quá nhanh cho thấy điều gì?"
+  ],
+  "hint": "Cơ thể thường phản bội lời nói.",
+  "lock_answer": true
+}
+
+    },
+    {
+      "id": 8,
+      "title": "Sợi Dây Vô Hình",
+      "content": [
+        "Thợ khóa kiểm tra chốt cửa phòng 912.",
+        "Vết xước phù hợp với thao tác kéo bằng dây mảnh.",
+        "Có thể gài chốt từ bên ngoài nếu đủ khéo.",
+        "Một căn phòng khóa kín được tạo ra sau khi cửa đóng.",
+        "Hung thủ không cần quay lại phòng.",
+        "Chỉ cần nạn nhân ở đúng vị trí.",
+        "Tay nắm cửa được lau sạch.",
+        "Không chỉ để xóa dấu vân tay.",
+        "Mà để xóa dấu ma sát của sợi dây.",
+        "Căn phòng bắt đầu lộ cơ chế thật sự."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Gài chốt bằng dây cần điều kiện gì?",
+    "Vì sao hung thủ không cần quay lại phòng?",
+    "Ai đủ bình tĩnh để thực hiện thao tác này?"
+  ],
+  "hint": "Hung thủ cần thời gian hơn là sức mạnh.",
+  "lock_answer": true
+}
+
+    },
+    {
+      "id": 9,
+      "title": "Chiếc Điện Thoại Bị Tắt",
+      "content": [
+        "Điện thoại nạn nhân vẫn còn hơn nửa pin.",
+        "Không có cuộc gọi nào được ghi nhận trong khung giờ quan trọng.",
+        "Trợ lý nói nạn nhân đã gọi cho anh ta.",
+        "Nhưng không có log chứng minh.",
+        "Lễ tân phủ nhận việc gọi điện.",
+        "Chữ viết trong sổ trực trùng với chữ ghi phòng.",
+        "Điện thoại bị tắt để xóa một thứ.",
+        "Không phải nội dung.",
+        "Mà là thời điểm.",
+        "Thời điểm ai đó đứng rất gần căn phòng."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Điện thoại bị tắt để che điều gì?",
+    "Ai có khả năng tiếp cận điện thoại nạn nhân?",
+    "Chữ viết trong sổ trực gợi liên hệ gì?"
+  ],
+  "hint": "Thói quen khó che giấu nhất.",
+  "lock_answer": true
+}
+
+    },
+    {
+      "id": 10,
+      "title": "Người Thứ Bảy",
+      "content": [
+        "Vết son trên ly trùng màu son của người vợ.",
+        "Khi bị nhắc tới, bà vô thức lau môi.",
+        "Trợ lý bất ngờ nói nạn nhân đang bị tống tiền.",
+        "Anh ta chưa kịp nói tên người đó.",
+        "Đèn cầu thang bật sáng.",
+        "Có tiếng bước chân đi lên.",
+        "Nhưng tất cả đều đang ở hành lang.",
+        "Một bóng người dừng lại ở khúc cua cầu thang.",
+        "Rồi biến mất.",
+        "Ngoài sáu người, còn có một người khác đã xuất hiện đêm đó."
+      ],
+      "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Người thứ bảy xuất hiện để làm gì?",
+    "Vết son nude đang hướng nghi ngờ về ai?",
+    "Ai được lợi nếu mọi người nghi lẫn nhau?"
+  ],
+  "hint": "Người đứng sau thường không cần xuất hiện lâu.",
+  "lock_answer": true
+}
+
+    },
+{
+  "id": 11,
+  "title": "Camera Quán Bar",
+  "content": [
+    "Rạng sáng, quản lý cuối cùng cũng trích xuất được camera quán bar.",
+    "Màn hình cho thấy Vy ngồi ở quầy đến 01:58.",
+    "01:59, cô đứng dậy đi về phía nhà vệ sinh.",
+    "02:00–02:06, khu vực hành lang bên cạnh nhà vệ sinh bị che bởi một cột trang trí.",
+    "02:07, Vy xuất hiện trở lại, vẫn cầm ly mojito.",
+    "Nhưng có một chi tiết lạ: tay áo cô bị kéo nhẹ như vừa vướng vào thứ gì.",
+    "Bartender nói: “Cô ấy đi vệ sinh thôi.”",
+    "Kha phóng to góc phải màn hình.",
+    "Một người mặc đồng phục khách sạn lướt qua rất nhanh, không phải nhân viên bar.",
+    "Trên ngực áo có bảng tên, nhưng đã bị che bằng tay."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Khoảng thời gian 02:00–02:06 bị che khuất có ý nghĩa gì?",
+    "Người mặc đồng phục khách sạn xuất hiện trong camera là ai?",
+    "Chi tiết tay áo Vy bị kéo nhẹ gợi tới hành động nào?"
+  ],
+  "hint": "Camera không ghi hình không có nghĩa là không có chuyển động.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 12,
+  "title": "Nhân Chứng Quá Hoàn Hảo",
+  "content": [
+    "Kha tìm người khách đã khẳng định thấy Vy gọi điện.",
+    "Anh ta đổi giọng ngay khi bị hỏi chi tiết: “Tôi… nhớ nhầm.”",
+    "Kha đưa ra hình ảnh từ camera: người đó ngồi đúng vị trí có thể nhìn Vy rõ nhất.",
+    "Anh ta bắt đầu đổ mồ hôi.",
+    "Kha chỉ nói một câu: “Ai trả tiền cho anh?”",
+    "Im lặng kéo dài đúng mười giây.",
+    "Người đó thú nhận: có người nhắn tin cho anh ta, chuyển khoản để ‘xác nhận’ Vy có mặt ở bar.",
+    "Số điện thoại là sim rác.",
+    "Nhưng nội dung tin nhắn có một thói quen kỳ lạ: luôn gõ dấu ba chấm… trước khi kết thúc.",
+    "Kha nhớ ra: trong sổ trực, dòng ‘02:05 – reset hệ thống’ cũng có dấu ba chấm vô thức ở cuối nét bút."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Vì sao nhân chứng nhớ rất rõ Vy nhưng lại mơ hồ ở chi tiết khác?",
+    "Dấu ba chấm trong tin nhắn và sổ trực có liên hệ gì?",
+    "Ai đủ kiên nhẫn để dựng nên một nhân chứng?"
+  ],
+  "hint": "Người nói dối thường lặp lại thói quen rất nhỏ.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 13,
+  "title": "Log Thẻ Từ",
+  "content": [
+    "Khách sạn lưu log thẻ từ cho từng phòng.",
+    "Phòng 912 có ba lần quét đáng chú ý.",
+    "01:12: thẻ của nạn nhân.",
+    "01:38: một thẻ nhân viên.",
+    "01:41: thẻ của nạn nhân lần nữa, như thể ông ấy vừa ra rồi vào lại.",
+    "Sau đó không còn lần quét nào.",
+    "Quản lý nói thẻ 01:38 thuộc nhóm lễ tân và kỹ thuật.",
+    "Mai lập tức phản đối: “Tôi không lên tầng.”",
+    "Nhưng Kha không nhìn Mai, anh nhìn Phong.",
+    "Phong tránh ánh mắt, bàn tay siết lại như đang giữ một bí mật.",
+    "Nếu 01:38 là thẻ nhân viên, thì ‘người thứ bảy’ không phải ma."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Vì sao nạn nhân quét thẻ hai lần trong khoảng ngắn?",
+    "Lần quét thẻ nhân viên lúc 01:38 nói lên điều gì?",
+    "Ai được lợi khi ‘người thứ bảy’ bị hiểu lầm là ma?"
+  ],
+  "hint": "Hệ thống không biết nói dối.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 14,
+  "title": "Chiếc Nhẫn Thật Sự Là Gì",
+  "content": [
+    "Kha quay lại chiếc hộp nhẫn trống.",
+    "Bên trong lớp nhung có vết lõm, không giống vết nhẫn, mà giống vết của một vật mỏng hình chữ nhật.",
+    "Kha tháo lớp nhung lên.",
+    "Một khe rãnh hiện ra, vừa khít một thẻ nhớ microSD.",
+    "Chiếc nhẫn chỉ là vỏ bọc.",
+    "Nạn nhân đã cất bằng chứng trong thứ người ta ít nghi ngờ nhất.",
+    "Vấn đề là microSD đã bị lấy đi.",
+    "Ai đó vào phòng không phải để giết ngay.",
+    "Mà để lấy thứ trong hộp nhẫn.",
+    "Kha nhớ lại vệt nước ngoài cửa: có người từng cầm ly ra hành lang, thao tác nhanh, rồi quay vào."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Vì sao microSD được giấu trong hộp nhẫn?",
+    "Hung thủ vào phòng để giết hay để lấy thứ gì?",
+    "Vệt nước ngoài cửa liên quan gì đến chiếc nhẫn?"
+  ],
+  "hint": "Thứ quý giá nhất thường được giấu dưới lớp vỏ vô hại.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 15,
+  "title": "Sợi Dây Và Cánh Cửa",
+  "content": [
+    "Kha nhờ thợ khóa dựng lại tình huống gài chốt bằng dây.",
+    "Chỉ cần một sợi cước trong suốt, luồn qua khe cửa, móc vào chốt.",
+    "Kéo một lần, chốt gài.",
+    "Kéo lần nữa theo góc khác, dây tuột ra, không để lại gì ngoài vết xước mảnh.",
+    "Nhưng cần một điều kiện.",
+    "Người trong phòng phải đứng cách cửa đủ gần để không nhận ra thao tác bên ngoài.",
+    "Hoặc đang bận làm một việc khác.",
+    "Kha nhìn vào bàn: ly nước và hộp nhẫn nằm đúng vị trí khiến nạn nhân phải tiến lại gần.",
+    "Mọi thứ được sắp xếp như một bài toán.",
+    "Và người giải bài toán muốn Kha nhìn thấy bài toán đó."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Điều kiện quan trọng nhất để gài chốt bằng dây là gì?",
+    "Vì sao nạn nhân không phát hiện thao tác bên ngoài?",
+    "Ai đủ hiểu không gian phòng để sắp xếp mọi thứ chính xác?"
+  ],
+  "hint": "Không phải ai cũng nhìn căn phòng như một bản đồ.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 16,
+  "title": "Bạc Hà Che Một Mùi Khác",
+  "content": [
+    "Kết quả xét nghiệm nhanh của ly nước trả về.",
+    "Không đủ để gọi tên chất.",
+    "Nhưng bác sĩ pháp y nói: “Có dấu hiệu phản ứng với một loại muối độc.”",
+    "Kha nhớ lại: mùi bạc hà trong phòng rất nhẹ, đủ để người ta nghĩ tới mojito hoặc xịt miệng.",
+    "Bạc hà cũng đủ để che một mùi khác nếu nó chỉ xuất hiện thoáng qua.",
+    "Một mùi khiến người ta cảnh giác.",
+    "Kha nhìn Mai: cô không dùng son, không uống mojito, nhưng luôn là người xuất hiện đúng lúc mỗi khi manh mối bị ‘đứt’.",
+    "Mai nói: “Anh đang nghi tôi?”",
+    "Kha đáp: “Tôi đang nghi người điều khiển nhịp thở của cả tầng này.”",
+    "Mai cười: “Nhịp thở?”"
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Bạc hà đang che mùi gì?",
+    "Vì sao hung thủ không cần giấu mùi hoàn toàn?",
+    "Ai là người luôn xuất hiện đúng lúc khi manh mối bị đứt?"
+  ],
+  "hint": "Hung thủ chỉ cần che mùi trong một khoảnh khắc.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 17,
+  "title": "Phong Thừa Nhận Một Nửa",
+  "content": [
+    "Phong yêu cầu nói chuyện riêng.",
+    "Anh ta thừa nhận nạn nhân bị tống tiền thật.",
+    "Kẻ tống tiền có video và dữ liệu sao chép từ máy tính của ông Lâm.",
+    "Phong đã mang một phong bì lên phòng lúc 01:38 theo chỉ đạo của ‘ai đó’ trong khách sạn.",
+    "Phong nói: “Tôi tưởng chỉ là giao đồ… Tôi không biết sẽ chết người.”",
+    "Kha hỏi: “Ai bảo anh?”",
+    "Phong do dự, rồi nói: “Một giọng nữ. Cô ấy nói nếu tôi không làm, dữ liệu sẽ bị tung ra và tôi sẽ mất hết.”",
+    "Kha hỏi: “Giọng nữ nào?”",
+    "Phong nhìn xuống: “Tôi… không thể chắc.”",
+    "Nhưng khi Phong đứng dậy, Kha thấy trên cổ tay anh ta có vết hằn đỏ mảnh — như vừa bị quấn dây hoặc bị kéo mạnh."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Phong là đồng phạm hay chỉ là công cụ?",
+    "Vết hằn trên cổ tay Phong đến từ đâu?",
+    "Giọng nữ mà Phong nhắc tới có đặc điểm gì?"
+  ],
+  "hint": "Người bị điều khiển thường không biết toàn bộ kế hoạch.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 18,
+  "title": "Cái Bẫy Của Kha",
+  "content": [
+    "Kha không ép thêm.",
+    "Anh nhờ quản lý in một thông báo giả: ‘đã tìm thấy thẻ nhớ trong hộp nhẫn’.",
+    "Thông báo được cố tình để lộ trên quầy lễ tân.",
+    "Đêm xuống, tầng 9 yên như ngừng thở.",
+    "02:03, đèn cầu thang bật “tách”.",
+    "Một bóng người đi lên, bước rất nhẹ, biết đúng điểm mù camera.",
+    "Kha đứng trong bóng tối hành lang, nhìn bóng người dừng trước phòng 912.",
+    "Bóng người không vào phòng, chỉ cúi xuống gần ổ khóa, như kiểm tra một thứ.",
+    "Rồi bóng người quay đi rất nhanh, biến mất xuống cầu thang.",
+    "Kha biết: ‘người thứ bảy’ không chỉ xuất hiện đêm đó. Họ quay lại vì sợ bằng chứng còn tồn tại."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Vì sao người thứ bảy quay lại phòng 912?",
+    "Hành động cúi gần ổ khóa cho thấy điều gì?",
+    "Ai là người sợ microSD nhất?"
+  ],
+  "hint": "Kẻ quay lại hiện trường luôn để lộ nỗi sợ.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 19,
+  "title": "Lật Mặt",
+  "content": [
+    "Kha chặn Mai ở lối vào cầu thang bộ.",
+    "Mai không giật mình.",
+    "Cô chỉ thở ra: “Anh làm bẫy quá thô.”",
+    "Kha đáp: “Nhưng đủ để cô không chịu nổi.”",
+    "Mai cười: “Anh nghĩ tôi giết ông ta?”",
+    "Kha đưa ra ba mảnh ghép.",
+    "Một: log thẻ 01:38 thuộc nhóm lễ tân-kỹ thuật.",
+    "Hai: sổ trực ‘02:05 reset’ có thói quen dấu ba chấm giống tin nhắn thuê nhân chứng.",
+    "Ba: vết son nude trên ly không phải để uống, mà để đổ tội cho bà Thu.",
+    "Mai im lặng đúng một nhịp, rồi nói: “Đổ tội? Anh nhầm rồi. Tôi chỉ muốn mọi người nhìn nhầm hướng.”",
+    "Kha đáp: “Vì cô không giết trong phòng. Cô chỉ chuẩn bị thứ khiến ông ta chết đúng 02:17, rồi gài chốt bằng dây, tạo phòng kín.”"
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Ba manh mối nào buộc Mai không thể chối cãi?",
+    "Vì sao Mai không giết nạn nhân ngay khi vào phòng?",
+    "Kế hoạch của Mai dựa nhiều hơn vào thời gian hay hành động?"
+  ],
+  "hint": "Hung thủ thật sự không vội.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 20,
+  "title": "Hung Thủ Và Cách Giết Không Cần Ở Đó",
+  "content": [
+    "Mai thừa nhận cô đã vào phòng 912 lúc 01:38 với lý do ‘kiểm tra điều hòa’ theo yêu cầu nạn nhân.",
+    "Cô đặt ly nước, hòa một lượng bột tan nhanh vào đáy ly.",
+    "Bột đó không làm nạn nhân chết ngay, chỉ khiến hô hấp co thắt sau một khoảng thời gian.",
+    "Cô dùng bạc hà để che mùi thoáng qua khi bột phản ứng.",
+    "Cô chạm môi đã thoa son nude lên miệng ly để hướng nghi ngờ về bà Thu.",
+    "Cô lấy microSD trong hộp nhẫn trước khi nạn nhân kịp nhận ra.",
+    "Khi nạn nhân đứng gần cửa để nhận lại ‘bằng chứng’, cô luồn dây cước gài chốt từ ngoài.",
+    "Camera hành lang bị reset bởi Tuấn theo đúng lời cô hướng dẫn, đổi lại một khoản tiền.",
+    "Vy được dựng ngoại phạm bằng nhân chứng thuê, để tạo thêm lớp nhiễu bạc hà.",
+    "Mai nói khẽ: “Ông ta không chết vì tôi ghét ông ta. Ông ta chết vì ông ta giữ thứ không nên giữ.”",
+    "Kha đáp: “Và cô nghĩ mình xóa được mọi dấu vết. Nhưng cô quên một thứ: thói quen.”",
+    "Khi cảnh sát còng tay Mai, cô quay lại nhìn phòng 912 lần cuối.",
+    "Rồi mỉm cười như thể vẫn còn một quân bài chưa lật.",
+    "Kha hiểu: vụ án này kết thúc, nhưng câu hỏi về ‘thứ trong microSD’ mới chỉ bắt đầu."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Chất trong ly nước hoạt động theo cơ chế nào?",
+    "Vai trò của từng người trong kế hoạch của Mai là gì?",
+    "Nếu Mai sai một bước, kế hoạch sẽ sụp ở đâu?"
+  ],
+  "hint": "Mỗi mắt xích đều có thể phản chủ.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 21,
+  "title": "Thẻ Nhớ Được Mở",
+  "content": [
+    "MicroSD được tìm thấy trong túi áo khoác của Mai khi khám xét.",
+    "Nó nhỏ đến mức có thể lọt qua mọi kiểm tra vội vàng.",
+    "Kha không mở ngay.",
+    "Anh chờ tới khi về văn phòng, trong căn phòng chỉ có tiếng quạt và ánh đèn vàng.",
+    "Thẻ nhớ chứa ba thư mục.",
+    "Thư mục đầu là video.",
+    "Trong video, ông Lâm đang nói chuyện với một người phụ nữ, giọng run nhẹ.",
+    "Người phụ nữ không lộ mặt, chỉ thấy bóng phản chiếu trên kính.",
+    "Cô ta nói: “Ông không còn lựa chọn.”",
+    "Ông Lâm đáp: “Cô đang đẩy tôi vào chỗ chết.”"
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Người phụ nữ trong video có vai trò gì?",
+    "Vì sao cô ta không cần lộ mặt?",
+    "Ông Lâm sợ điều gì hơn cái chết?"
+  ],
+  "hint": "Quyền lực thật sự không cần xuất hiện.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 22,
+  "title": "Thứ Không Nên Giữ",
+  "content": [
+    "Thư mục thứ hai chứa bảng giao dịch tài chính.",
+    "Dòng tiền đi qua nhiều công ty ma.",
+    "Tên người nhận cuối cùng luôn bị mã hóa.",
+    "Nhưng có một điểm chung.",
+    "Tất cả giao dịch đều được thực hiện thông qua một ngân hàng trung gian duy nhất.",
+    "Ngân hàng đó từng bị điều tra, nhưng hồ sơ luôn bị đóng giữa chừng.",
+    "Thư mục thứ ba chỉ có một file âm thanh.",
+    "Giọng ông Lâm khàn đặc: “Nếu tôi chết, đừng tin người đầu tiên bị bắt.”",
+    "Ở cuối file, có tiếng gõ nhịp đều đặn, như ai đó đang đếm.",
+    "Kha nhận ra nhịp gõ trùng với thói quen gõ bút của một người anh từng gặp."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Ngân hàng trung gian giữ vai trò gì?",
+    "File âm thanh được ghi với mục đích gì?",
+    "Câu cảnh báo của ông Lâm nhắm tới ai?"
+  ],
+  "hint": "Có những thứ không được ghi bằng chữ.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 23,
+  "title": "Người Đứng Sau Mai",
+  "content": [
+    "Kha quay lại gặp Mai lần cuối trước khi hồ sơ chuyển sang viện kiểm sát.",
+    "Mai không còn cười.",
+    "Cô nói: “Tôi chỉ là người làm thuê.”",
+    "Kha hỏi: “Cho ai?”",
+    "Mai im lặng rất lâu.",
+    "Rồi cô nói: “Anh sẽ không chạm được tới bà ta đâu.”",
+    "Kha đưa microSD lên: “Bà ta biết ông Lâm sẽ chết?”",
+    "Mai đáp: “Bà ta cần ông ta im lặng, không cần ông ta chết tại chỗ.”",
+    "“Cái chết chỉ là cách nhanh nhất khi mọi thứ lệch nhịp.”",
+    "Lần đầu tiên, Mai tỏ ra sợ hãi khi nhắc đến người đó."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Mai sợ người đó ở điểm nào?",
+    "Người đứng sau có dự đoán trước cái chết không?",
+    "Mai là quân cờ hay đối tác?"
+  ],
+  "hint": "Người điều khiển hiếm khi trực tiếp ra tay.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 24,
+  "title": "Tên Không Có Trong Hồ Sơ",
+  "content": [
+    "Kha lần theo ngân hàng trung gian.",
+    "Hồ sơ người phụ trách bị xóa khỏi hệ thống nội bộ.",
+    "Nhưng trong dữ liệu cũ, có một cái tên xuất hiện rồi biến mất.",
+    "Một người phụ nữ từng là cố vấn pháp lý cấp cao.",
+    "Tên bà ta không còn trong bất kỳ danh sách hiện hành nào.",
+    "Nhưng ảnh cũ cho thấy bà ta từng đứng cạnh ông Lâm trong một sự kiện kín.",
+    "Bà ta cũng từng là người ký vào nhiều hợp đồng giúp ông Lâm tránh truy tố.",
+    "Kha nhận ra: bà ta không giết người.",
+    "Bà ta chỉ tạo ra những lựa chọn khiến người khác phải giết.",
+    "Và luôn rời đi trước khi máu đổ."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Vì sao cái tên này bị xóa khỏi mọi hệ thống?",
+    "Bà ta khác Mai ở điểm nào?",
+    "Tại sao bà ta luôn rời đi trước khi máu đổ?"
+  ],
+  "hint": "Quyền lực cao nhất là không để lại dấu vết.",
+  "lock_answer": true
+}
+
+},
+{
+  "id": 25,
+  "title": "Cánh Cửa Chưa Khóa",
+  "content": [
+    "Mai bị kết án với đầy đủ bằng chứng.",
+    "Tuấn và nhân chứng thuê đều bị xử lý.",
+    "Vụ án phòng kín được khép lại trên giấy tờ.",
+    "Nhưng Kha không ký vào dòng cuối cùng.",
+    "Anh đứng trước cánh cửa phòng 912 lần nữa.",
+    "Căn phòng đã được dọn sạch, đồng hồ mới treo trên tường.",
+    "Kim giây chạy đều, không dừng ở 02:17 nữa.",
+    "Kha mở điện thoại, nhận một tin nhắn lạ.",
+    "Chỉ có một câu: “Anh mở đúng cánh cửa rồi.”",
+    "Không có số gửi.",
+    "Kha khóa màn hình.",
+    "Anh biết, có những cánh cửa không cần khóa.",
+    "Vì người đứng sau chúng không bao giờ bước ra ánh sáng."
+  ],
+  "logic_box": {
+  "title": "🧩 Suy luận",
+  "questions": [
+    "Vụ án này thực sự đã kết thúc chưa?",
+    "Tin nhắn cuối cùng mang ý nghĩa cảnh báo hay khiêu khích?",
+    "Nếu có phần tiếp theo, ai sẽ là đối thủ của Kha?"
+  ],
+  "hint": "Có những cánh cửa chỉ mở một lần.",
+  "lock_answer": true
+}
+
+}
+
+  ]
+}
