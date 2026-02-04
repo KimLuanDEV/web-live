@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>📘 Từ điển</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+
+<style>
+.page-dict{
+  background:#0e0e12;
+  color:#fff;
+  min-height:100vh;
+}
+.dict-wrap{
+  padding:16px;
+}
+.dict-box{
+  background:#15151c;
+  border-radius:16px;
+  padding:14px;
+  border:1px solid rgba(255,255,255,.08);
+}
+.dict-box textarea{
+  width:100%;
+  min-height:120px;
+  background:#0e0e12;
+  color:#fff;
+  border:none;
+  resize:none;
+  font-size:14px;
+  padding:12px;
+  border-radius:12px;
+}
+.dict-actions{
+  display:flex;
+  gap:10px;
+  margin:12px 0;
+}
+.dict-actions select,
+.dict-actions button{
+  flex:1;
+  background:#222;
+  color:#fff;
+  border:none;
+  padding:10px;
+  border-radius:10px;
+  font-weight:600;
+}
+.dict-result{
+  margin-top:12px;
+  font-size:14px;
+  opacity:.9;
+  line-height:1.5;
+}
+</style>
+</head>
+
+<body class="page-dict">
+
+<header class="simple-header">
+  <button onclick="history.back()" class="back-btn">←</button>
+  <div class="title">📘 Từ điển</div>
+</header>
+
+<main class="dict-wrap">
+
+  <div class="dict-box">
+    <textarea id="inputText" placeholder="Nhập văn bản cần dịch..."></textarea>
+
+    <div class="dict-actions">
+      <select id="fromLang">
+        <option value="auto">Tự phát hiện</option>
+        <option value="vi">Việt</option>
+        <option value="en">English</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+      </select>
+
+      <select id="toLang">
+        <option value="en">English</option>
+        <option value="vi">Việt</option>
+        <option value="zh">中文</option>
+        <option value="ja">日本語</option>
+        <option value="ko">한국어</option>
+      </select>
+    </div>
+
+    <button onclick="translateText()" style="width:100%;margin-top:8px">
+      🔄 Dịch
+    </button>
+
+    <div id="result" class="dict-result"></div>
+  </div>
+
+</main>
+
+<script>
+async function translateText(){
+  const text = inputText.value.trim();
+  if(!text) return;
+
+  result.innerHTML = "⏳ Đang dịch...";
+
+  // Demo tạm (sau này nối API AI / Google / OpenAI)
+  setTimeout(()=>{
+    result.innerHTML =
+      "👉 (Kết quả dịch sẽ hiển thị tại đây)<br><br>" +
+      "<i>Bạn có thể nối API AI sau</i>";
+  },800);
+}
+</script>
+
+</body>
+</html>
