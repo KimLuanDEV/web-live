@@ -774,20 +774,37 @@ function nextGameQuestion(){
     options = [">", "<", "="].sort(()=>Math.random()-0.5);
   }
 
-  // 5️⃣ TÁCH – GỘP
-  else if(type === 4){
-    const sum = rand(maxNum - 3) + 3;
-    const a = rand(sum - 1) + 1;
-    const b = sum - a;
-    correctAnswer = `${a} + ${b}`;
-    question = `Tách số ${sum}`;
-    options = [
-      `${a} + ${b}`,
-      `${sum} + 0`,
-      `${sum - 1} + 1`,
-      `${Math.floor(sum/2)} + ${Math.ceil(sum/2)}`
-    ].sort(()=>Math.random()-0.5);
+// 5️⃣ TÁCH – GỘP (chỉ 1 đáp án đúng)
+else if(type === 4){
+  const sum = rand(maxNum - 3) + 3;
+
+  // tạo 1 cặp đúng (a + b = sum)
+  const a = rand(sum - 1) + 1;
+  const b = sum - a;
+
+  const correct = `${a} + ${b}`;
+  correctAnswer = correct;
+  question = `Tách số ${sum}`;
+
+  // tạo 3 đáp án sai (đảm bảo KHÔNG bằng sum)
+  const wrongSet = new Set();
+  while(wrongSet.size < 3){
+    let x = rand(sum + 3);         // phạm vi rộng chút cho đa dạng
+    let y = rand(sum + 3);
+
+    // ép sai chắc: nếu x+y == sum thì chỉnh y
+    if(x + y === sum){
+      y = (y + 1) % (sum + 3);
+    }
+
+    // loại trường hợp trùng cặp đúng
+    const s = `${x} + ${y}`;
+    if(s !== correct) wrongSet.add(s);
   }
+
+  options = [correct, ...wrongSet].sort(()=>Math.random()-0.5);
+}
+
 
   // 6️⃣ HÌNH HỌC
   else if(type === 5){
