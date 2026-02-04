@@ -16,16 +16,16 @@
   gap:14px;
 }
 
-/* CARD */
+/* CARD DỌC */
 .cook-card{
   position:relative;
-  height:170px;
+  aspect-ratio:3/4;       /* 🔥 TỶ LỆ DỌC */
   border-radius:18px;
   overflow:hidden;
   cursor:pointer;
   background:#000;
-  box-shadow:0 6px 18px rgba(0,0,0,.35);
-  transition:transform .15s ease, box-shadow .15s ease;
+  box-shadow:0 10px 28px rgba(0,0,0,.6);
+  transition:transform .15s ease;
 }
 
 .cook-card:active{
@@ -38,23 +38,24 @@
   inset:0;
   width:100%;
   height:100%;
-  object-fit:cover;
+  object-fit:contain;     /* 🔥 HIỂN THỊ ĐẦY ĐỦ ẢNH */
+  background:#000;        /* tránh viền trắng */
 }
 
-/* OVERLAY */
+
 .cook-card::after{
   content:"";
   position:absolute;
   inset:0;
   background:linear-gradient(
     to top,
-    rgba(0,0,0,.75),
-    rgba(0,0,0,.15),
-    transparent
+    rgba(0,0,0,.85),
+    rgba(0,0,0,.25),
+    transparent 55%
   );
 }
 
-/* INFO */
+
 .cook-card .info{
   position:absolute;
   left:12px;
@@ -66,9 +67,10 @@
 
 .cook-card .title{
   font-weight:800;
-  font-size:15px;
+  font-size:14px;
   line-height:1.2;
 }
+
 
 .cook-card .meta{
   display:flex;
