@@ -741,6 +741,67 @@ function genOptions(correct){
   return [...set].sort(()=>Math.random()-0.5);
 }
 
+const wordProblems = [
+  // ➕ CỘNG
+  {
+    gen: () => {
+      const a = rand(5)+1, b = rand(5)+1;
+      return {
+        text: `Lan có ${a} quả táo, mẹ cho thêm ${b} quả. Hỏi Lan có tất cả bao nhiêu quả táo?`,
+        answer: a + b
+      };
+    }
+  },
+  {
+    gen: () => {
+      const a = rand(5)+1, b = rand(5)+1;
+      return {
+        text: `Minh có ${a} cái kẹo, được cho thêm ${b} cái kẹo. Hỏi Minh có tất cả bao nhiêu cái kẹo?`,
+        answer: a + b
+      };
+    }
+  },
+  {
+    gen: () => {
+      const a = rand(6)+1, b = rand(6)+1;
+      return {
+        text: `Có ${a} con chim đậu trên cành, bay đến thêm ${b} con. Hỏi có tất cả bao nhiêu con chim?`,
+        answer: a + b
+      };
+    }
+  },
+
+  // ➖ TRỪ
+  {
+    gen: () => {
+      const a = rand(8)+3, b = rand(a-1)+1;
+      return {
+        text: `Trong bể có ${a} con cá, bơi ra ngoài ${b} con. Hỏi trong bể còn lại bao nhiêu con cá?`,
+        answer: a - b
+      };
+    }
+  },
+  {
+    gen: () => {
+      const a = rand(8)+3, b = rand(a-1)+1;
+      return {
+        text: `Nam có ${a} quả bóng, cho bạn ${b} quả. Hỏi Nam còn lại bao nhiêu quả bóng?`,
+        answer: a - b
+      };
+    }
+  },
+  {
+    gen: () => {
+      const a = rand(9)+1, b = rand(a);
+      return {
+        text: `Trên bàn có ${a} quyển sách, lấy đi ${b} quyển. Hỏi trên bàn còn lại bao nhiêu quyển sách?`,
+        answer: a - b
+      };
+    }
+  }
+];
+
+
 
 
 function nextGameQuestion(){
@@ -757,10 +818,11 @@ function nextGameQuestion(){
     gameLevel === 1 ? 6 :
     gameLevel === 2 ? 10 : 15;
 
-  const type =
-    gameLevel === 1 ? rand(3) :
-    gameLevel === 2 ? rand(5) :
-    rand(7);
+const type =
+  gameLevel === 1 ? rand(3) :     // số, cộng, trừ
+  gameLevel === 2 ? rand(6) :     // + tách, so sánh, lời văn
+  rand(8);                        // full
+
 
   let question = "";
   let options = [];
@@ -832,9 +894,19 @@ else if(type === 4){
   options = [correct, ...wrongSet].sort(()=>Math.random()-0.5);
 }
 
+// 6️⃣ TOÁN CÓ LỜI VĂN (TRẮC NGHIỆM – NHIỀU MẪU)
+else if(type === 5){
+  const p = wordProblems[rand(wordProblems.length)].gen();
+  correctAnswer = p.answer;
+  question = p.text;
+  options = genOptions(correctAnswer);
+}
+
+
+
 
   // 6️⃣ HÌNH HỌC
-  else if(type === 5){
+  else if(type === 6){
     const shapes = [
       {q:"Hình nào có 3 cạnh?",a:"Tam giác"},
       {q:"Hình nào có 4 cạnh bằng nhau?",a:"Hình vuông"},
