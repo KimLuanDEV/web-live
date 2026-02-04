@@ -1,0 +1,35 @@
+{
+  "id": 1,
+  "title": "Em Là Ánh Trăng Của Anh",
+  "author": "Diệp Lạc Vô Tâm",
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Gặp gỡ",
+      "content": [
+        "Buổi chiều hôm đó, ánh nắng nghiêng nghiêng rơi xuống con phố nhỏ.",
+        "Cô bước đi giữa dòng người đông đúc, lòng mang theo những cảm xúc khó gọi thành tên.",
+        "Anh xuất hiện như một cơn gió lạ, không báo trước, không kịp đề phòng.",
+        "Chỉ một ánh nhìn thoáng qua, mọi thứ đã thay đổi."
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Ánh mắt đầu tiên",
+      "content": [
+        "Ngày hôm sau, họ gặp lại nhau ở cùng một nơi.",
+        "Ánh mắt anh dừng lại rất lâu, đủ để trái tim cô rung động.",
+        "Có những cảm xúc không cần lời nói, vẫn tự khắc hiểu nhau."
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Lời hứa năm xưa",
+      "vip": true,
+      "content": [
+        "Cơn mưa bất chợt kéo đến, cuốn trôi mọi ký ức cũ.",
+        "Lời hứa năm ấy, liệu còn ai nhớ?"
+      ]
+    }
+  ]
+}
