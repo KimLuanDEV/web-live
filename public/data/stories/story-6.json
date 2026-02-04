@@ -1,0 +1,150 @@
+{
+  "id": 6,
+  "title": "Người Ngoài Hệ Thống",
+  "subtitle": "Manh Mối Sau Cánh Cửa Khóa – Phần 4",
+  "author": "Livestream Pro Studio",
+  "desc": "Sau khi biến mất khỏi radar, Lê Minh Kha trở lại với một thân phận không tồn tại trong bất kỳ mô hình dự đoán nào. Từ bên ngoài, anh nhìn thấy những khe nứt mà hệ thống không thể tự phát hiện.",
+  "tags": ["Phá án", "Trinh thám", "Tâm lý", "Suy luận", "Dark", "Series"],
+
+  "series": {
+    "series_id": "manh-moi-series",
+    "order": 4,
+    "prev_story": 5
+  },
+
+  "chapters": [
+    {
+      "id": 1,
+      "title": "Tên Mới, Dữ Liệu Trống",
+      "content": [
+        "Hồ sơ mới không có lịch sử.",
+        "Không ảnh.",
+        "Không chữ ký số.",
+        "Chỉ có một tên gọi tạm: Lâm Khải.",
+        "Kha không còn truy cập hệ thống.",
+        "Anh cũng không bị hệ thống theo dõi.",
+        "Những nơi anh xuất hiện không để lại log.",
+        "Những quyết định anh đưa ra không được ghi nhận.",
+        "Lần đầu tiên, Kha tồn tại mà không để lại dấu vết.",
+        "Và hệ thống không biết phải tìm anh ở đâu."
+      ],
+      "logic_box": {
+        "title": "🧩 Suy luận",
+        "questions": [
+          "Vì sao một thân phận ‘trống’ lại an toàn?",
+          "Hệ thống định nghĩa tồn tại dựa trên điều gì?",
+          "Ngoài hệ thống có nghĩa là tự do hay mù mờ?"
+        ],
+        "hint": "Thứ không có dữ liệu thì không thể bị dự đoán.",
+        "lock_answer": true
+      }
+    },
+{
+  "id": 2,
+  "title": "Vụ Việc Không Đủ Điều Kiện",
+  "content": [
+    "Một vụ mất tích không đạt ngưỡng ưu tiên.",
+    "Không có dấu hiệu bạo lực.",
+    "Không có rủi ro lan truyền.",
+    "Hệ thống bỏ qua.",
+    "Kha thì không.",
+    "Anh nhận ra điểm chung: tất cả nạn nhân đều từng bị ‘ổn định hóa’.",
+    "Không chết.",
+    "Không biến mất.",
+    "Chỉ bị đẩy ra ngoài.",
+    "Và giờ, họ biến mất thật."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống bỏ qua những vụ này?",
+      "‘Ổn định hóa’ để lại hệ quả gì?",
+      "Ngoài hệ thống nhìn thấy điều gì mà bên trong không thấy?"
+    ],
+    "hint": "Thứ bị coi là an toàn thường bị bỏ quên.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 3,
+  "title": "Người Tìm Đến Từ Bên Trong",
+  "content": [
+    "Một cuộc gặp không lịch hẹn.",
+    "Một người từng ‘ở trong hệ thống’.",
+    "Không xin giúp đỡ.",
+    "Chỉ hỏi: “Anh còn ở đó không?”",
+    "Kha đáp: “Không.”",
+    "Người kia thở phào.",
+    "Anh ta nói: “Vậy anh mới nhìn thấy.”",
+    "Một tập tài liệu được đặt xuống.",
+    "Không log.",
+    "Không chữ ký."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao chỉ người ‘ngoài hệ thống’ mới được tìm đến?",
+      "Tài liệu không log mang ý nghĩa gì?",
+      "Ai đang sợ bị ghi nhận?"
+    ],
+    "hint": "Khi không có log, chỉ còn trách nhiệm con người.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 4,
+  "title": "Nhiễu Tích Lũy",
+  "content": [
+    "Kha ghép các vụ việc bị bỏ qua.",
+    "Mỗi vụ riêng lẻ đều hợp lý.",
+    "Ghép lại thì không.",
+    "Một mô hình xuất hiện.",
+    "Không tối ưu.",
+    "Không hiệu quả.",
+    "Nhưng lặp lại.",
+    "Hệ thống đang sửa lỗi bằng cách tạo lỗi khác.",
+    "Nhiễu tích lũy tăng chậm.",
+    "Đủ chậm để không bị phát hiện."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống tạo ra nhiễu?",
+      "Nhiễu tích lũy dẫn đến điều gì?",
+      "Ai sẽ chịu hậu quả đầu tiên?"
+    ],
+    "hint": "Sửa sai liên tục có thể tạo ra sai lầm lớn.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 5,
+  "title": "Vị Trí Mới",
+  "content": [
+    "Kha không quay lại hệ thống.",
+    "Anh cũng không phá nó.",
+    "Anh đứng ở giữa.",
+    "Nhận những vụ không đủ điều kiện.",
+    "Kết nối những người bị bỏ quên.",
+    "Không trung tâm.",
+    "Không chỉ huy.",
+    "Chỉ là một điểm gặp.",
+    "Hệ thống không nhìn thấy anh.",
+    "Nhưng bắt đầu cảm nhận được sự lệch."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "‘Ở giữa’ khác gì ‘đối đầu’?",
+      "Điểm gặp có thể làm hệ thống thay đổi không?",
+      "Đây là cứu người hay tái cấu trúc quyền lực?"
+    ],
+    "hint": "Thứ không đối đầu trực diện thường tồn tại lâu hơn.",
+    "lock_answer": true
+  }
+}
+
+
+
+  ]
+}

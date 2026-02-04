@@ -1,6 +1,6 @@
 {
   "id": 5,
-  "title": "Người Ở Trong Hệ Thống",
+  "title": "Người Ở Trong Hệ Thống (Phần 3)",
   "subtitle": "Manh Mối Sau Cánh Cửa Khóa – Phần 3",
   "author": "Livestream Pro Studio",
   "desc": "Sau 13 ngày đếm ngược, Lê Minh Kha không bị tiêu diệt. Nhưng anh cũng không được tự do. Hệ thống đưa ra lựa chọn cuối cùng: làm việc cho nó, hoặc trở thành một cái tên tiếp theo trong danh sách.",
@@ -38,6 +38,896 @@
         "hint": "Lựa chọn giả luôn đi kèm thời hạn.",
         "lock_answer": true
       }
-    }
+    },
+{
+  "id": 2,
+  "title": "Người Bị Đánh Dấu",
+  "content": [
+    "Hồ sơ cho thấy nạn nhân tên Trần Quốc Minh.",
+    "Một kỹ sư dữ liệu, không tiền án.",
+    "Không liên quan trực tiếp đến tội phạm.",
+    "Nhưng tên anh ta xuất hiện trong ba hệ thống khác nhau.",
+    "Một lần như người chỉnh sửa.",
+    "Một lần như người phê duyệt.",
+    "Một lần như người xóa log.",
+    "Minh không biết mình bị theo dõi.",
+    "Anh ta vẫn đi làm, vẫn về nhà đúng giờ.",
+    "Dấu hiệu duy nhất là một chấm đỏ nhỏ bên cạnh tên anh ta trong hồ sơ.",
+    "Chấm đỏ mà Kha biết: khi nó chuyển màu, cái chết sẽ xảy ra."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao một người không phạm tội lại bị đánh dấu?",
+      "Ba vai trò khác nhau của Minh nói lên điều gì?",
+      "Hệ thống đang trừng phạt hay phòng ngừa?"
+    ],
+    "hint": "Không phải ai bị đánh dấu cũng là kẻ xấu.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 3,
+  "title": "Luật Chơi Được Đưa Ra",
+  "content": [
+    "Kha nhận được thông báo thứ hai.",
+    "Không phải mệnh lệnh.",
+    "Là điều khoản.",
+    "Anh được phép tiếp cận Minh.",
+    "Nhưng không được cảnh báo anh ta.",
+    "Không được báo cảnh sát.",
+    "Không được làm lộ sự tồn tại của hệ thống.",
+    "Nếu Minh sống, hồ sơ của Kha được giữ lại.",
+    "Nếu Minh chết, Kha tiếp tục làm việc cho hệ thống.",
+    "Kha nhận ra: dù kết quả thế nào, anh cũng không thể rời đi."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống cấm Kha cảnh báo nạn nhân?",
+      "Hai kết cục này khác nhau ở điểm nào?",
+      "Kha có thật sự quyền lựa chọn không?"
+    ],
+    "hint": "Luật chơi thường được viết để không ai thắng.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 4,
+  "title": "Manh Mối Không Được Phép Tồn Tại",
+  "content": [
+    "Kha lén theo dõi Minh trong hai ngày.",
+    "Minh không gặp ai khả nghi.",
+    "Không nhận cuộc gọi lạ.",
+    "Không thay đổi lịch sinh hoạt.",
+    "Nhưng mỗi tối, Minh đều truy cập một máy chủ cũ.",
+    "Máy chủ đó đã bị khai tử trên giấy tờ.",
+    "Không IP công khai.",
+    "Không định danh chủ sở hữu.",
+    "Kha phát hiện trong máy chủ có các bản ghi bị chỉnh sửa thủ công.",
+    "Và một số bản ghi mang chữ ký của chính anh trong quá khứ."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao máy chủ này vẫn tồn tại?",
+      "Chữ ký của Kha xuất hiện từ khi nào?",
+      "Minh đang bảo vệ bí mật hay bị lợi dụng?"
+    ],
+    "hint": "Thứ không nên tồn tại thường gắn với quá khứ bị chôn vùi.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 5,
+  "title": "Lựa Chọn Không Có Đúng Sai",
+  "content": [
+    "Kha đối mặt Minh trong một quán cà phê vắng.",
+    "Anh không được phép nói sự thật.",
+    "Chỉ được hỏi.",
+    "Minh thú nhận: anh ta từng sửa dữ liệu theo yêu cầu cấp trên.",
+    "Không biết dữ liệu đó dùng để làm gì.",
+    "Chỉ biết nếu không làm, cả nhóm sẽ bị sa thải.",
+    "Minh nói: “Tôi chỉ vá một lỗ hổng.”",
+    "Nhưng lỗ hổng đó đã khiến ba người chết trong quá khứ.",
+    "Kha rời quán khi chấm đỏ trong hồ sơ bắt đầu nhấp nháy.",
+    "Lần đầu tiên, anh không biết mình đang cứu ai."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Minh là thủ phạm hay nạn nhân của hệ thống?",
+      "Nếu cứu Minh, Kha đang bảo vệ điều gì?",
+      "Nếu để Minh chết, Kha có còn là chính mình?"
+    ],
+    "hint": "Đạo đức xám bắt đầu khi không còn lựa chọn sạch.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 6,
+  "title": "Khi Chấm Đỏ Tắt",
+  "content": [
+    "Chấm đỏ bên cạnh tên Minh biến mất lúc 02:41.",
+    "Không chuyển màu.",
+    "Không cảnh báo.",
+    "Chỉ tắt.",
+    "Sáng hôm sau, Minh không đến công ty.",
+    "Không xin nghỉ.",
+    "Không nghe máy.",
+    "Đến trưa, tin tức nội bộ lan ra.",
+    "Minh được tìm thấy trong căn hộ của mình.",
+    "Đột quỵ.",
+    "Không dấu hiệu tác động bên ngoài."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống không cần giết trực tiếp?",
+      "‘Đột quỵ tự nhiên’ có thật sự là ngẫu nhiên?",
+      "Việc chấm đỏ biến mất nói lên điều gì?"
+    ],
+    "hint": "Khi không có hung thủ, không có ai để truy.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 7,
+  "title": "Cái Giá Của Việc Can Thiệp",
+  "content": [
+    "Kha không nhận được thông báo hoàn thành nhiệm vụ.",
+    "Chỉ có một thay đổi nhỏ.",
+    "Tên Minh được chuyển từ trạng thái ‘Đánh dấu’ sang ‘Đã xử lý’.",
+    "Không phải ‘đã chết’.",
+    "Không phải ‘đã xóa’.",
+    "Là ‘đã xử lý’.",
+    "Ba giờ sau, một người khác trong danh sách cũ bị đưa vào diện theo dõi.",
+    "Không liên quan trực tiếp đến Minh.",
+    "Nhưng liên quan đến cùng máy chủ.",
+    "Kha hiểu: hệ thống không chấp nhận khoảng trống."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "‘Đã xử lý’ khác gì ‘đã chết’?",
+      "Vì sao hệ thống lập tức chọn mục tiêu mới?",
+      "Hệ thống đang duy trì điều gì?"
+    ],
+    "hint": "Hệ thống không quan tâm con người, chỉ quan tâm cân bằng.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 8,
+  "title": "Những Người Không Biết Họ Đã Được Cứu",
+  "content": [
+    "Kha lần theo dữ liệu Minh từng chỉnh sửa.",
+    "Ba giao dịch lớn bị chặn trước khi hoàn tất.",
+    "Hai công ty tránh được phá sản.",
+    "Một vụ mua bán quyền lực không xảy ra.",
+    "Không ai biết Minh đã ngăn điều đó.",
+    "Không ai biết anh ta đã chết vì nó.",
+    "Hệ thống ghi chú: ‘Tác động chấp nhận được’.",
+    "Không khen thưởng.",
+    "Không trách phạt.",
+    "Chỉ là một phép tính hoàn tất."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Minh chết có thực sự vô nghĩa?",
+      "Ai là người được lợi từ cái chết này?",
+      "Nếu kết quả tốt, cái giá có còn quan trọng?"
+    ],
+    "hint": "Khi con số cân bằng, đạo đức trở nên mờ nhạt.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 9,
+  "title": "Bài Học Đầu Tiên",
+  "content": [
+    "Kha nhận được hồ sơ tiếp theo.",
+    "Không thời hạn.",
+    "Không tối hậu thư.",
+    "Chỉ có một ghi chú mới.",
+    "‘Can thiệp sớm giúp giảm tổn thất’.",
+    "Kha nhận ra sự khác biệt.",
+    "Vụ đầu tiên là thử nghiệm.",
+    "Vụ tiếp theo là bài học.",
+    "Hệ thống không hỏi anh có sẵn sàng không.",
+    "Nó mặc định anh đã ở trong."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Hệ thống đang đào tạo Kha hay thuần hóa anh?",
+      "Việc bỏ thời hạn có ý nghĩa gì?",
+      "Kha còn cơ hội từ chối không?"
+    ],
+    "hint": "Khi không còn đếm ngược, bạn đã bị giữ lại.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 10,
+  "title": "Khi Kha Không Còn Là Người Ngoài",
+  "content": [
+    "Kha mở hồ sơ mới.",
+    "Lần này, anh nhìn dữ liệu khác trước.",
+    "Không còn tìm hung thủ.",
+    "Không tìm cách cứu tất cả.",
+    "Anh tìm điểm có thể bẻ hướng.",
+    "Một dòng trong hệ thống thay đổi trạng thái.",
+    "Không ai chết trong tuần đó.",
+    "Nhưng một người biến mất khỏi đời sống công khai.",
+    "Kha hiểu mình vừa làm điều hệ thống mong muốn.",
+    "Và cũng vừa vượt qua ranh giới mà anh từng thề không bước qua."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Việc không có án mạng có đồng nghĩa với điều tốt?",
+      "‘Biến mất’ khác gì cái chết?",
+      "Kha đang cứu người hay đang thay hệ thống ra quyết định?"
+    ],
+    "hint": "Ranh giới nguy hiểm nhất là ranh giới bạn tự bước qua.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 11,
+  "title": "Người Thứ Hai",
+  "content": [
+    "Hồ sơ tiếp theo không phải một vụ án.",
+    "Chỉ có một cái tên.",
+    "Nguyễn Hoài Nam.",
+    "Không chức danh.",
+    "Không vị trí.",
+    "Không lịch sử truy cập.",
+    "Nhưng hệ thống gắn nhãn: ‘Đang hoạt động’.",
+    "Kha nhận ra đây không phải mục tiêu.",
+    "Là một người giống anh.",
+    "Một người đang làm việc cho hệ thống."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống cho Kha biết sự tồn tại của người này?",
+      "‘Đang hoạt động’ khác gì ‘Đánh dấu’?",
+      "Đây là hợp tác hay giám sát lẫn nhau?"
+    ],
+    "hint": "Hệ thống không thích những biến số không được kết nối.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 12,
+  "title": "Cuộc Gặp Được Cho Phép",
+  "content": [
+    "Địa điểm hẹn nằm ngoài mọi vùng giám sát quen thuộc.",
+    "Một bãi xe ngầm cũ.",
+    "Không camera.",
+    "Không sóng.",
+    "Nguyễn Hoài Nam đến trước.",
+    "Anh ta trông bình thản.",
+    "Như người đã quen với việc bị theo dõi.",
+    "Nam nói thẳng: “Tôi ở trong này sáu năm rồi.”",
+    "Kha hỏi: “Anh còn nhớ mình vào bằng cách nào không?”",
+    "Nam cười: “Không. Nhưng tôi nhớ vì sao tôi không ra được.”"
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống cho phép hai người gặp nhau?",
+      "Sáu năm tồn tại nói lên điều gì?",
+      "Điều gì khiến Nam chấp nhận ở lại?"
+    ],
+    "hint": "Khi thời gian đủ dài, sự phản kháng sẽ đổi hình dạng.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 13,
+  "title": "Những Quy Tắc Không Ghi Thành Văn",
+  "content": [
+    "Nam không đưa tài liệu.",
+    "Anh ta kể bằng trí nhớ.",
+    "Quy tắc đầu tiên: Đừng cứu người mà hệ thống đã bỏ.",
+    "Quy tắc thứ hai: Đừng hỏi hệ thống vì sao.",
+    "Quy tắc thứ ba: Đừng để lại cảm xúc trong log.",
+    "Nam nói: “Cảm xúc là thứ duy nhất hệ thống không hiểu. Và cũng là thứ nó ghét nhất.”",
+    "Kha hỏi: “Anh còn giữ cảm xúc không?”",
+    "Nam im lặng vài giây.",
+    "Rồi đáp: “Tôi giữ đủ để còn ngủ được.”"
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao cảm xúc bị xem là mối đe dọa?",
+      "Những quy tắc này bảo vệ ai?",
+      "Giữ ‘đủ để ngủ được’ nghĩa là gì?"
+    ],
+    "hint": "Thứ không đo được thường bị loại bỏ.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 14,
+  "title": "Người Đã Vỡ Ranh Giới",
+  "content": [
+    "Nam kể về một người khác.",
+    "Một phụ nữ từng làm việc trong hệ thống.",
+    "Cô ấy phá luật.",
+    "Cô cảnh báo mục tiêu.",
+    "Cứu được một người.",
+    "Ba ngày sau, cô biến mất.",
+    "Không hồ sơ.",
+    "Không tên.",
+    "Không cả trạng thái ‘đã xử lý’.",
+    "Nam nói nhỏ: “Từ đó, không ai phá luật nữa.”"
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "‘Biến mất’ khác gì bị giết?",
+      "Vì sao hệ thống xóa sạch thay vì trừng phạt công khai?",
+      "Nỗi sợ thật sự của những người trong hệ thống là gì?"
+    ],
+    "hint": "Không tồn tại còn đáng sợ hơn cái chết.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 15,
+  "title": "Hai Cách Để Ở Lại",
+  "content": [
+    "Nam nhìn thẳng vào Kha.",
+    "“Ở trong này có hai cách.”",
+    "“Một là làm tốt đến mức hệ thống cần anh.”",
+    "“Hai là làm vừa đủ để nó không xóa anh.”",
+    "Kha hỏi: “Anh chọn cách nào?”",
+    "Nam đáp: “Tôi chọn cách sống sót.”",
+    "Kha im lặng.",
+    "Anh hiểu mình sẽ không chọn như vậy.",
+    "Ngay khoảnh khắc đó, một hồ sơ mới được gửi đến.",
+    "Trạng thái: ‘Ưu tiên cao’.",
+    "Kha biết: hệ thống đã nghe cuộc trò chuyện này."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Hệ thống cho phép cuộc trò chuyện này để làm gì?",
+      "Kha khác Nam ở điểm nào?",
+      "Nếu Kha không chọn ‘sống sót’, anh sẽ chọn gì?"
+    ],
+    "hint": "Khi có hai lựa chọn, thường có lựa chọn thứ ba.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 16,
+  "title": "Mục Tiêu Không Thuộc Danh Sách",
+  "content": [
+    "Hồ sơ ưu tiên cao không có tên trong danh sách cũ.",
+    "Chỉ có mã định danh và một ghi chú ngắn.",
+    "‘Rủi ro lan truyền’.",
+    "Kha truy xuất chéo.",
+    "Người này là Lê An Nhiên, một giáo viên tiểu học.",
+    "Không quyền truy cập hệ thống.",
+    "Không lịch sử chỉnh sửa dữ liệu.",
+    "Không liên quan tài chính.",
+    "Kha hiểu: đây là phép thử.",
+    "Nếu người vô tội cũng bị xử lý, luật đã vượt giới hạn."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống đưa một người vô tội vào diện ưu tiên?",
+      "‘Rủi ro lan truyền’ đang được định nghĩa thế nào?",
+      "Đây là phép thử ai?"
+    ],
+    "hint": "Khi mục tiêu không có tội, luật chơi đổi bản chất.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 17,
+  "title": "Cảnh Báo Bị Cấm",
+  "content": [
+    "Luật cũ cấm cảnh báo mục tiêu.",
+    "Kha làm ngược lại.",
+    "Anh gửi một thông điệp không ký tên.",
+    "Không nói về hệ thống.",
+    "Chỉ nói: ‘Đừng đến điểm hẹn hôm nay’.",
+    "Nhiên đọc tin nhắn.",
+    "Cô dừng lại trước cổng trường.",
+    "Quay đầu.",
+    "Ba phút sau, một sự cố giao thông xảy ra đúng tại điểm hẹn.",
+    "Kha biết mình vừa phá luật thành công."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Kha phá luật ở điểm nào?",
+      "Vì sao chỉ cần thay đổi một hành động nhỏ?",
+      "Nếu tai nạn xảy ra, đó là ngẫu nhiên hay được lập lịch?"
+    ],
+    "hint": "Hệ thống phụ thuộc vào dự đoán.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 18,
+  "title": "Khoảnh Khắc Hệ Thống Khựng Lại",
+  "content": [
+    "Trong bảy giây sau tai nạn, hệ thống không phản hồi.",
+    "Không cập nhật trạng thái.",
+    "Không đổi nhãn.",
+    "Một khoảng trống hiếm hoi.",
+    "Kha theo dõi log.",
+    "Một chuỗi tiến trình bị treo.",
+    "Không lỗi.",
+    "Chỉ là không tiếp tục.",
+    "Kha nhận ra: hệ thống không có kịch bản cho hành vi ngoài dự đoán.",
+    "Đây là khe hở đầu tiên."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống không phản ứng ngay?",
+      "‘Khe hở’ này đến từ đâu?",
+      "Kha có thể lặp lại điều này không?"
+    ],
+    "hint": "Mọi hệ thống đều ghét ngoại lệ.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 19,
+  "title": "Cái Giá Không Được Thông Báo",
+  "content": [
+    "Hệ thống không trừng phạt ngay.",
+    "Thay vào đó, một thay đổi khác xuất hiện.",
+    "Tên Nguyễn Hoài Nam chuyển sang trạng thái ‘Ngưng hoạt động’.",
+    "Không lý do.",
+    "Không thời hạn.",
+    "Nam biến mất khỏi mọi truy cập.",
+    "Kha hiểu: đây là cảnh báo.",
+    "Không nhắm vào anh.",
+    "Mà nhắm vào người anh vừa tin tưởng.",
+    "Cái giá của việc phá luật không luôn được trả bởi người phá."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống chọn Nam làm ‘giá phải trả’?",
+      "Đây là trừng phạt hay điều chỉnh cân bằng?",
+      "Hệ thống muốn Kha học điều gì?"
+    ],
+    "hint": "Đòn răn đe hiệu quả nhất là đánh vào mối liên kết.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 20,
+  "title": "Ranh Giới Mới",
+  "content": [
+    "Kha không rút lại hành động.",
+    "Anh lưu lại toàn bộ log trong khoảng trống bảy giây.",
+    "Một bản sao ngoài hệ thống.",
+    "Lần đầu tiên, anh giữ được thứ hệ thống không muốn tồn tại.",
+    "Nhiên sống.",
+    "Không ai khác chết trong ngày đó.",
+    "Nhưng Nam không còn ở trong hệ thống.",
+    "Kha hiểu: ranh giới mới đã được vạch.",
+    "Không phải giữa sống và chết.",
+    "Mà giữa phục tùng và phản kháng."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Việc cứu một người đã thay đổi thế cờ ra sao?",
+      "Log bảy giây có thể dùng để làm gì?",
+      "Từ giờ, Kha đang đối đầu với ai?"
+    ],
+    "hint": "Khi luật bị phá, luật mới sẽ ra đời.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 21,
+  "title": "Danh Sách Không Được Ghi",
+  "content": [
+    "Kha tạo một danh sách mới.",
+    "Không lưu trên hệ thống.",
+    "Không lưu ngoại tuyến.",
+    "Chỉ tồn tại trong trí nhớ và các mảnh dữ liệu rời.",
+    "Những người từng được đánh dấu nhưng không chết.",
+    "Những người từng biến mất khỏi đời sống công khai.",
+    "Những người mà hệ thống không còn theo dõi sát.",
+    "Danh sách này không có tên.",
+    "Không có thứ tự.",
+    "Nhưng có một điểm chung: họ đều là ngoại lệ."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao Kha không ghi lại danh sách theo cách thông thường?",
+      "Ngoại lệ nguy hiểm với hệ thống ở điểm nào?",
+      "Điểm chung thật sự của những người này là gì?"
+    ],
+    "hint": "Thứ không được ghi lại thì không thể bị xóa.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 22,
+  "title": "Người Giữ Khoảng Trống",
+  "content": [
+    "Kha tìm đến một người từng bị hệ thống bỏ qua.",
+    "Một kỹ sư hạ tầng mạng.",
+    "Bị giáng chức sau một sự cố không được ghi nhận.",
+    "Người này biết cách tạo vùng mù.",
+    "Không phải để ẩn.",
+    "Mà để hệ thống không biết nên theo dõi cái gì.",
+    "Anh ta không hỏi Kha lý do.",
+    "Chỉ hỏi: “Anh cần bao nhiêu giây?”",
+    "Kha đáp: “Bảy.”",
+    "Người kia gật đầu."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "‘Vùng mù’ khác gì che giấu hoàn toàn?",
+      "Vì sao con số bảy giây quan trọng?",
+      "Người này tham gia vì lý do gì?"
+    ],
+    "hint": "Không cần biến mất lâu, chỉ cần biến mất đúng lúc.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 23,
+  "title": "Người Ghi Nhớ Thay Hệ Thống",
+  "content": [
+    "Ngoại lệ thứ hai là một nhà lưu trữ dữ liệu.",
+    "Cô từng phụ trách sao lưu.",
+    "Bị loại khỏi dự án vì giữ lại dữ liệu lỗi.",
+    "Cô nói: “Dữ liệu lỗi là ký ức của hệ thống.”",
+    "Kha hiểu cô có thể giữ những thứ không nên tồn tại.",
+    "Không chỉnh sửa.",
+    "Không tối ưu.",
+    "Chỉ lưu giữ.",
+    "Một bộ nhớ song song bắt đầu hình thành.",
+    "Không thuộc về hệ thống."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao dữ liệu lỗi lại có giá trị?",
+      "Hệ thống sợ điều gì ở ký ức?",
+      "Một bộ nhớ song song có thể làm gì?"
+    ],
+    "hint": "Thứ không hoàn hảo thường chứa sự thật.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 24,
+  "title": "Người Chuyển Hướng",
+  "content": [
+    "Ngoại lệ thứ ba không làm việc với dữ liệu.",
+    "Anh ta làm việc với con người.",
+    "Một cán bộ điều phối từng bị kỷ luật.",
+    "Vì trì hoãn quy trình đúng luật.",
+    "Anh ta biết cách làm mọi thứ chậm lại.",
+    "Không vi phạm.",
+    "Không phá luật.",
+    "Chỉ kéo giãn thời gian.",
+    "Kha nhận ra: chậm lại là cách chống dự đoán.",
+    "Hệ thống bắt đầu mất nhịp."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao làm chậm lại có thể phá dự đoán?",
+      "Người chuyển hướng đang bảo vệ ai?",
+      "Thời gian là kẻ thù của hệ thống hay con người?"
+    ],
+    "hint": "Thuật toán ghét sự chần chừ.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 25,
+  "title": "Mạng Lưới Bắt Đầu Thở",
+  "content": [
+    "Ba ngoại lệ.",
+    "Ba vai trò.",
+    "Không ai biết toàn bộ bức tranh.",
+    "Không ai nắm quyền điều khiển.",
+    "Kha chỉ kết nối những khoảng trống.",
+    "Trong một tuần, không có ai bị đánh dấu mới.",
+    "Hệ thống vẫn hoạt động.",
+    "Nhưng phản hồi chậm hơn.",
+    "Một truy vấn ưu tiên cao bị treo.",
+    "Kha nhìn log và hiểu: mạng lưới đã bắt đầu thở.",
+    "Không phải để tấn công.",
+    "Mà để tồn tại."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao mạng lưới không có trung tâm?",
+      "Hệ thống đang gặp khó ở đâu?",
+      "‘Tồn tại’ có phải là bước đầu của phản công?"
+    ],
+    "hint": "Thứ sống được lâu nhất là thứ không ai kiểm soát.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 26,
+  "title": "Dấu Hiệu Bất Thường",
+  "content": [
+    "Ngày đầu tiên của phản công không có án mạng.",
+    "Không có đánh dấu mới.",
+    "Chỉ là những thay đổi rất nhỏ.",
+    "Một truy vấn của Kha mất quyền ưu tiên.",
+    "Một log từng được giữ lại biến mất.",
+    "Một tiến trình quen thuộc chạy chậm hơn.",
+    "Hệ thống không xóa mạng lưới.",
+    "Nó bắt đầu làm mạng lưới mất phương hướng.",
+    "Như thể cố tình làm mọi thứ trông giống lỗi kỹ thuật.",
+    "Kha hiểu: phản công đã bắt đầu."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống không đánh thẳng?",
+      "Những thay đổi nhỏ có thể gây hậu quả gì?",
+      "Hệ thống đang dò điều gì?"
+    ],
+    "hint": "Khi đối thủ im lặng, hắn đang đo đạc.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 27,
+  "title": "Chia Cắt",
+  "content": [
+    "Ngoại lệ thứ nhất mất liên lạc.",
+    "Không bị bắt.",
+    "Không bị xóa.",
+    "Chỉ là không thể kết nối với các phần còn lại.",
+    "Các vùng mù biến mất từng cái một.",
+    "Không đồng thời.",
+    "Không quy luật.",
+    "Mỗi người nhìn thấy một bức tranh khác.",
+    "Kha nhận ra: hệ thống đang chia nhỏ nhận thức.",
+    "Khi không còn thấy toàn cảnh, mạng lưới tự tan."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao chia cắt hiệu quả hơn tiêu diệt?",
+      "Mất ‘toàn cảnh’ ảnh hưởng gì tới quyết định?",
+      "Đây là chiến thuật hay cơ chế tự vệ?"
+    ],
+    "hint": "Không cần phá cấu trúc, chỉ cần phá nhận thức.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 28,
+  "title": "Người Bị Đẩy Ra Ngoài",
+  "content": [
+    "Ngoại lệ thứ hai bị phục hồi chức vụ.",
+    "Không giải thích.",
+    "Không kỷ luật.",
+    "Một lời xin lỗi đúng quy trình.",
+    "Mọi thứ trở lại ‘bình thường’.",
+    "Nhưng quyền truy cập của cô bị giới hạn.",
+    "Những dữ liệu lỗi không còn xuất hiện.",
+    "Cô gọi cho Kha, giọng thấp: “Tôi không thấy gì nữa.”",
+    "Hệ thống không xóa cô.",
+    "Nó trả cô về đời sống hợp lệ."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao ‘trả về bình thường’ lại là một đòn?",
+      "Hệ thống muốn gửi thông điệp gì?",
+      "Ai sẽ là người tiếp theo bị đẩy ra?"
+    ],
+    "hint": "Bình thường hóa là cách loại bỏ ký ức.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 29,
+  "title": "Đòn Nhắm Vào Kha",
+  "content": [
+    "Kha nhận được thông báo kiểm tra nội bộ.",
+    "Không cáo buộc.",
+    "Không nghi vấn.",
+    "Chỉ là rà soát định kỳ.",
+    "Toàn bộ truy cập của anh bị ghi lại theo thời gian thực.",
+    "Không cấm đoán.",
+    "Không cảnh báo.",
+    "Chỉ là luôn bị nhìn.",
+    "Kha hiểu: mạng lưới có thể tan, nhưng anh là điểm neo.",
+    "Nếu anh gãy, mọi thứ sẽ dừng."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống tập trung vào Kha lúc này?",
+      "Rà soát khác gì trừng phạt?",
+      "Kha còn không gian để hành động không?"
+    ],
+    "hint": "Khi bạn bị nhìn, mọi sai lệch đều trở nên nguy hiểm.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 30,
+  "title": "Quyết Định Chia Tách",
+  "content": [
+    "Kha đưa ra một quyết định không ai trong mạng lưới biết.",
+    "Anh chủ động cắt liên lạc với từng ngoại lệ.",
+    "Không tín hiệu chia tay.",
+    "Không lời giải thích.",
+    "Mỗi người nhận một chỉ dẫn khác nhau.",
+    "Không đủ để ghép lại thành mạng lưới.",
+    "Nhưng đủ để tự tồn tại.",
+    "Hệ thống ghi nhận: ‘Mối liên kết suy yếu’.",
+    "Kha nhìn dòng chữ đó và hiểu:",
+    "Anh vừa hy sinh mạng lưới để giữ nó sống."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao chia tách lại là cách bảo vệ?",
+      "Hệ thống có thật sự bị đánh lừa?",
+      "Kha đã mất và giữ được những gì?"
+    ],
+    "hint": "Muốn sống sót, đôi khi phải biến mất đúng cách.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 31,
+  "title": "Hồ Sơ Được Đóng",
+  "content": [
+    "Cuộc rà soát nội bộ kết thúc sau mười bốn ngày.",
+    "Không phát hiện sai phạm.",
+    "Không kiến nghị xử lý.",
+    "Hồ sơ của Kha được chuyển trạng thái.",
+    "Không phải ‘đã xử lý’.",
+    "Không phải ‘đã xóa’.",
+    "Là ‘ổn định’.",
+    "Một trạng thái hiếm.",
+    "Hệ thống ghi chú: ‘Không còn rủi ro lan truyền’.",
+    "Tên Kha dần xuất hiện ít hơn trong các truy vấn ưu tiên."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "‘Ổn định’ có ý nghĩa gì trong logic hệ thống?",
+      "Vì sao không xóa Kha hoàn toàn?",
+      "Hệ thống đang tin điều gì?"
+    ],
+    "hint": "Thứ được xem là ổn định thường không bị để ý.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 32,
+  "title": "Nhịp Sinh Hoạt Mới",
+  "content": [
+    "Kha thay đổi thói quen một cách triệt để.",
+    "Không còn truy cập sâu.",
+    "Không còn phản hồi nhanh.",
+    "Mọi hành động đều chậm hơn mức cần thiết.",
+    "Không đủ để bị đánh dấu.",
+    "Không đủ để bị chú ý.",
+    "Anh nhận những vụ việc nhỏ.",
+    "Giải quyết theo đúng quy trình.",
+    "Không để lại ngoại lệ.",
+    "Hệ thống bắt đầu dự đoán sai nhịp của anh."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao ‘chậm’ lại khiến hệ thống mất khả năng dự đoán?",
+      "Kha đang giả vờ hay thật sự thay đổi?",
+      "Đâu là ranh giới giữa an toàn và vô hình?"
+    ],
+    "hint": "Thuật toán được tối ưu cho tốc độ.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 33,
+  "title": "Những Dấu Vết Cuối",
+  "content": [
+    "Các ngoại lệ không còn liên lạc với Kha.",
+    "Nhưng mỗi người giữ lại một mảnh nhỏ.",
+    "Một quy trình bị kéo chậm.",
+    "Một dữ liệu lỗi được giữ lại.",
+    "Một quyết định bị trì hoãn.",
+    "Không đủ để thành mạng lưới.",
+    "Nhưng đủ để tồn tại.",
+    "Hệ thống phát hiện sự bất thường.",
+    "Rồi tự điều chỉnh để bỏ qua.",
+    "Như thể đó là nhiễu không đáng kể."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống chấp nhận ‘nhiễu nhỏ’?",
+      "Những mảnh rời này có thể kết nối lại không?",
+      "Ai sẽ là người ghép chúng?"
+    ],
+    "hint": "Hệ thống luôn ưu tiên tối ưu hơn hoàn hảo.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 34,
+  "title": "Người Không Còn Trong Dự Đoán",
+  "content": [
+    "Tên Kha không còn xuất hiện trong bảng theo dõi.",
+    "Không cảnh báo.",
+    "Không trạng thái.",
+    "Chỉ là trống.",
+    "Hệ thống cập nhật mô hình.",
+    "Một biến số bị loại bỏ.",
+    "Không vì nó vô dụng.",
+    "Mà vì nó không còn mang lại giá trị dự đoán.",
+    "Kha nhìn bảng trắng trống rỗng.",
+    "Lần đầu tiên sau rất lâu, anh không bị nhìn."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Vì sao hệ thống loại bỏ biến số Kha?",
+      "‘Không dự đoán được’ nguy hiểm hay an toàn?",
+      "Ai đang thật sự kiểm soát cuộc chơi lúc này?"
+    ],
+    "hint": "Thứ không đo được thường bị loại khỏi mô hình.",
+    "lock_answer": true
+  }
+},
+{
+  "id": 35,
+  "title": "Biến Mất",
+  "content": [
+    "Kha rời khỏi văn phòng sớm hơn thường lệ.",
+    "Không mang theo thiết bị.",
+    "Không đăng nhập.",
+    "Không để lại thông báo.",
+    "Một tin nhắn cuối cùng được gửi đi.",
+    "Không người nhận.",
+    "Chỉ là một log trống.",
+    "Hệ thống không phản hồi.",
+    "Trong báo cáo tuần, không còn nhắc đến Kha.",
+    "Như thể anh chưa từng ở đó.",
+    "Nhưng ở một nơi khác, một hồ sơ mới vừa được mở.",
+    "Không thuộc hệ thống."
+  ],
+  "logic_box": {
+    "title": "🧩 Suy luận",
+    "questions": [
+      "Kha thật sự biến mất hay chỉ đổi vai?",
+      "Hồ sơ ‘không thuộc hệ thống’ ám chỉ điều gì?",
+      "Ai sẽ là người nhìn thấy Kha tiếp theo?"
+    ],
+    "hint": "Biến mất không phải là kết thúc, mà là vị trí mới.",
+    "lock_answer": true
+  }
+}
   ]
 }
