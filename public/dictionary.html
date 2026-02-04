@@ -101,16 +101,33 @@ async function translateText(){
   const text = inputText.value.trim();
   if(!text) return;
 
+  const from = fromLang.value;
+  const to   = toLang.value;
+
   result.innerHTML = "⏳ Đang dịch...";
 
-  // Demo tạm (sau này nối API AI / Google / OpenAI)
-  setTimeout(()=>{
-    result.innerHTML =
-      "👉 (Kết quả dịch sẽ hiển thị tại đây)<br><br>" +
-      "<i>Bạn có thể nối API AI sau</i>";
-  },800);
+  try{
+    const r = await fetch("/api/translate",{
+      method:"POST",
+      headers:{ "Content-Type":"application/json" },
+      body: JSON.stringify({ text, from, to })
+    });
+
+    const data = await r.json();
+
+    if(!data.ok){
+      result.innerHTML = "❌ Không dịch được";
+      return;
+    }
+
+    result.innerText = data.translatedText;
+
+  }catch(e){
+    result.innerHTML = "❌ Lỗi kết nối server";
+  }
 }
 </script>
+
 
 </body>
 </html>

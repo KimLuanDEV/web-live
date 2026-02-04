@@ -748,6 +748,45 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "public")));
 
 
+app.post("/api/translate", async (req, res) => {
+  try {
+    const { text, from, to } = req.body;
+
+    if (!text || !to) {
+      return res.json({ ok:false, message:"INVALID_DATA" });
+    }
+
+    const r = await fetch("https://libretranslate.com/translate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        q: text,
+        source: from === "auto" ? "auto" : from,
+        target: to,
+        format: "text"
+      })
+    });
+
+    const data = await r.json();
+
+    if (!data.translatedText) {
+      return res.json({ ok:false, message:"TRANSLATE_FAILED" });
+    }
+
+    res.json({
+      ok: true,
+      translatedText: data.translatedText
+    });
+
+  } catch (err) {
+    console.error("❌ Translate error:", err);
+    res.status(500).json({
+      ok:false,
+      message:"SERVER_ERROR"
+    });
+  }
+});
+
 
 app.post("/api/invest/close-early", (req, res) => {
   try {
