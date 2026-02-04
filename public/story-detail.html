@@ -160,65 +160,31 @@
 
 <!-- HERO -->
 <section class="story-hero">
-  <img src="https://i.ibb.co/3mY0H4Xh/Chat-GPT-Image-Jan-19-2026-09-44-27-AM.jpg">
+  <img id="storyCover">
   <div class="story-meta">
-    <h1>Em Là Ánh Trăng Của Anh</h1>
-    <div class="author">✍️ Diệp Lạc Vô Tâm</div>
-
-    <div class="tags">
-      <div class="tag">Ngôn tình</div>
-      <div class="tag">Hiện đại</div>
-      <div class="tag">HE</div>
-    </div>
+    <h1 id="storyTitle"></h1>
+    <div id="storyAuthor" class="author"></div>
+    <div id="storyTags" class="tags"></div>
   </div>
 </section>
 
 <!-- DESCRIPTION -->
-<div id="desc" class="story-desc collapsed">
-  Cô là ánh trăng sáng nhất trong cuộc đời anh.
-  Giữa những năm tháng thanh xuân đầy bão tố,
-  họ gặp nhau, yêu nhau và lạc mất nhau.
-  Liệu định mệnh có cho họ thêm một lần quay lại?
-</div>
-
-<div class="toggle-desc" onclick="toggleDesc()">Xem thêm</div>
+<div id="storyDesc" class="story-desc collapsed"></div>
+<div id="btnToggleDesc" class="toggle-desc">Xem thêm</div>
 
 <!-- CHAPTER -->
 <section class="chapter-section">
   <div class="chapter-title">📚 Danh sách chương</div>
-
-  <div class="chapter-list">
-
-   <div class="chapter-item" onclick="location.href='/chapter-read.html?story=1&chapter=1'">
-
-      <div class="name">Chương 1: Gặp gỡ</div>
-    </div>
-
-    <div class="chapter-item" onclick="location.href='/chapter-read.html?story=1&chapter=2'">
-      <div class="name">Chương 2: Ánh mắt đầu tiên</div>
-    </div>
-
-    <div class="chapter-item">
-      <div class="name">Chương 3: Lời hứa năm xưa</div>
-      <div class="lock">VIP</div>
-    </div>
-
-    <div class="chapter-item">
-      <div class="name">Chương 4: Biến cố</div>
-      <div class="lock">VIP</div>
-    </div>
-
-  </div>
+  <div id="chapterList" class="chapter-list"></div>
 </section>
 
-<script>
-  function toggleDesc(){
-    const d = document.getElementById("desc");
-    d.classList.toggle("collapsed");
-    event.target.textContent =
-      d.classList.contains("collapsed") ? "Xem thêm" : "Thu gọn";
-  }
-</script>
+
+
+
+
+
+
+<script src="/story-detail.js"></script>
 
 </body>
 </html>
