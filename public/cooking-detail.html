@@ -322,6 +322,15 @@ h2{
 
 
 
+.step-timer{
+  margin-top:14px;
+  font-size:18px;
+  font-weight:900;
+  color:#ffd166;
+  letter-spacing:1px;
+}
+
+
   </style>
 </head>
 
@@ -356,10 +365,12 @@ h2{
 
 <!-- 🔥 COOK MODE OVERLAY -->
 <div id="cookMode" class="cook-mode hidden">
-  <div class="cook-step">
-    <div class="step-index" id="stepIndex"></div>
-    <div class="step-text" id="stepText"></div>
-  </div>
+<div class="cook-step">
+  <div class="step-index" id="stepIndex"></div>
+  <div class="step-text" id="stepText"></div>
+  <div class="step-timer" id="stepTimer"></div>
+</div>
+
 
   <div class="cook-controls">
     <button onclick="prevStep()">←</button>

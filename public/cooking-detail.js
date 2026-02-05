@@ -1,6 +1,8 @@
 let recipe = null;
 let step = 0;
 let wakeLock = null;
+let timerInterval = null;
+let remainingTime = 0;
 
 const id = new URLSearchParams(location.search).get("id");
 
@@ -113,7 +115,58 @@ function exitCookMode() {
     wakeLock.release();
     wakeLock = null;
   }
+
+stopTimer();
+updateTimerUI(null);
+
 }
+
+
+function stopTimer(){
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+}
+
+function startTimer(seconds){
+  stopTimer();
+  if (!seconds || seconds <= 0) {
+    updateTimerUI(null);
+    return;
+  }
+
+  remainingTime = seconds;
+  updateTimerUI(remainingTime);
+
+  timerInterval = setInterval(() => {
+    remainingTime--;
+    updateTimerUI(remainingTime);
+
+    if (remainingTime <= 0) {
+      stopTimer();
+      // 🔔 báo hết giờ (nhẹ)
+      navigator.vibrate && navigator.vibrate([200,100,200]);
+    }
+  }, 1000);
+}
+
+function updateTimerUI(sec){
+  const el = document.getElementById("stepTimer");
+  if (!el) return;
+
+  if (!sec || sec <= 0) {
+    el.textContent = "";
+    return;
+  }
+
+  const m = Math.floor(sec / 60);
+  const s = sec % 60;
+  el.textContent = `${m}:${s.toString().padStart(2,"0")}`;
+}
+
+
+
 
 function showStep() {
   const idx = document.getElementById("stepIndex");
@@ -126,7 +179,16 @@ function showStep() {
   const s = recipe.steps[step];
   txt.textContent =
     typeof s === "string" ? s : s.text;
+
+  // ⏱️ TIMER
+  if (typeof s === "object" && s.time) {
+    startTimer(s.time);
+  } else {
+    stopTimer();
+    updateTimerUI(null);
+  }
 }
+
 
 function nextStep() {
   if (!recipe) return;
