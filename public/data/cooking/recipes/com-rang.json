@@ -18,25 +18,4 @@
   ]
 }
 
-{
-  "title": "Thịt kho trứng",
-  "cover": "/assets/cooking/thit-kho.jpg",
-  "time": "60 phút",
-  "level": "Trung bình",
-  "ingredients": [
-    "500g thịt ba chỉ",
-    "4 quả trứng gà",
-    "Nước mắm",
-    "Đường",
-    "Hành tím, tỏi",
-    "Nước dừa"
-  ],
-  "steps": [
-    "Luộc trứng, bóc vỏ",
-    "Ướp thịt với nước mắm, đường, hành tỏi",
-    "Thắng nước màu",
-    "Cho thịt vào đảo săn",
-    "Thêm nước dừa và trứng, kho nhỏ lửa",
-    "Kho đến khi nước sệt, thịt mềm"
-  ]
-}
+
