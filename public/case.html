@@ -558,14 +558,16 @@ function showDecisionPoint() {
 
     if (!unlocked) return;
 
-    const percent = Math.min(100, suspicionState[s.id] || 0);
+const percent = Math.min(100, suspicionState[s.id] || 0);
+const level = getSuspicionLevel(percent);
 
-    const div = document.createElement("div");
-    div.className = "decision-item" + (chosenSuspect === s.id ? " active" : "");
-    div.innerHTML = `
-      <div class="decision-name">${s.name}</div>
-      <div class="decision-note">Độ nghi ngờ hiện tại: ${percent}%</div>
-    `;
+div.innerHTML = `
+  <div class="decision-name">${s.name}</div>
+<div class="decision-note">
+  Độ nghi ngờ: <b>Không ổn định</b>
+</div>
+
+`;
 
     div.onclick = () => selectDecision(s.id, div);
 
