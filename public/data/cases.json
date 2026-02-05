@@ -7,168 +7,146 @@
     "time": "Đêm",
     "clues": [
       {
-  "id": "c1",
-  "icon": "🩸",
-  "title": "Vết máu",
-  "status": "Đã phân tích",
-  "locked": false,
-  "content": "Vết máu khô được phát hiện gần cửa sổ. Phân tích cho thấy máu thuộc về nạn nhân."
+        "id": "c1",
+        "icon": "🩸",
+        "title": "Vết máu",
+        "status": "Đã phân tích",
+        "locked": false,
+        "content": "Vết máu khô được phát hiện gần cửa sổ. Phân tích cho thấy máu thuộc về nạn nhân."
       },
-{
-  "id": "c2",
-  "icon": "📱",
-  "title": "Điện thoại nạn nhân",
-  "status": "Chưa đọc",
-  "locked": false,
-  "content": "Điện thoại không có dấu hiệu bị phá. Tin nhắn cuối cùng được gửi lúc 3:12 sáng."
-},
-{
-  "id": "c3",
-  "icon": "📷",
-  "title": "Camera hành lang",
-  "status": "Chưa mở",
-  "locked": true,
-  "unlockAfter": ["c1", "c2"],
-  "content": "Camera ghi lại hình ảnh một người đội mũ lưỡi trai rời khỏi tầng 3 lúc 3:17 sáng."
-},
-{
-  "id": "c4",
-  "icon": "🗝️",
-  "title": "Chìa khóa dự phòng",
-  "status": "Chưa phân tích",
-  "locked": true,
-  "unlockAfter": ["c1"],
-  "content": "Chìa khóa dự phòng được treo trong phòng bảo vệ, nhưng không có nhật ký sử dụng đêm xảy ra án."
-},
-{
-  "id": "c5",
-  "icon": "🛗",
-  "title": "Lịch sử thang máy",
-  "status": "Chưa kiểm tra",
-  "locked": true,
-  "unlockAfter": ["c3"],
-  "content": "Thang máy dừng ở tầng 3 lúc 3:14 sáng, nhưng camera hành lang ghi nhận chuyển động lúc 3:17."
-},
-{
-  "id": "c6",
-  "icon": "💬",
-  "title": "Tin nhắn đã xóa",
-  "status": "Chưa khôi phục",
-  "locked": true,
-  "unlockAfter": ["c2"],
-  "content": "Một tin nhắn đã bị xóa giữa nạn nhân và một số liên lạc lưu tên 'A'. Nội dung không thể khôi phục hoàn toàn."
-},
-{
-  "id": "c7",
-  "icon": "👞",
-  "title": "Dấu vết giày",
-  "status": "Đang so sánh",
-  "locked": false,
-  "content": "Dấu giày dính máu nhẹ gần cửa ra vào. Kích cỡ khoảng 42–43."
-},
-{
-  "id": "c8",
-  "icon": "⏱️",
-  "title": "Sai lệch thời gian tử vong",
-  "status": "Chưa xác nhận",
-  "locked": true,
-  "unlockAfter": ["c1", "c5"],
-  "content": "Thời gian tử vong thực tế sớm hơn 10–15 phút so với báo cáo ban đầu."
-},
-{
-  "id": "c9",
-  "icon": "🧥",
-  "title": "Áo khoác dính máu",
-  "status": "Đã thu giữ",
-  "locked": true,
-  "unlockAfter": ["c1"],
-  "redHerring": true,
-  "content": "Một chiếc áo khoác có vết máu nhỏ được tìm thấy trong thùng rác tầng 3. Máu thuộc về nạn nhân."
-},
-{
-  "id": "c10",
-  "icon": "📞",
-  "title": "Cuộc gọi lỡ lúc 3:05",
-  "status": "Chưa xác minh",
-  "locked": true,
-  "unlockAfter": ["c2"],
-  "redHerring": true,
-  "content": "Một cuộc gọi nhỡ từ số lạ đến nạn nhân lúc 3:05 sáng. Số này sau đó không còn hoạt động."
-},
-{
-  "id": "c11",
-  "icon": "🚪",
-  "title": "Vết trầy trên cửa",
-  "status": "Đã ghi nhận",
-  "locked": false,
-  "redHerring": true,
-  "content": "Cửa căn hộ có vết trầy nhẹ gần ổ khóa, giống dấu hiệu cạy cửa nhưng không đủ lực để mở."
-}
-
-
-
-
-
-
-
-
-
+      {
+        "id": "c2",
+        "icon": "📱",
+        "title": "Điện thoại nạn nhân",
+        "status": "Chưa đọc",
+        "locked": false,
+        "content": "Điện thoại không có dấu hiệu bị phá. Tin nhắn cuối cùng được gửi lúc 3:12 sáng."
+      },
+      {
+        "id": "c3",
+        "icon": "📷",
+        "title": "Camera hành lang",
+        "status": "Chưa mở",
+        "locked": true,
+        "unlockAfter": ["c1", "c2"],
+        "content": "Camera ghi lại hình ảnh một người đội mũ lưỡi trai rời khỏi tầng 3 lúc 3:17 sáng."
+      },
+      {
+        "id": "c4",
+        "icon": "🗝️",
+        "title": "Chìa khóa dự phòng",
+        "status": "Chưa phân tích",
+        "locked": true,
+        "unlockAfter": ["c1"],
+        "content": "Chìa khóa dự phòng được treo trong phòng bảo vệ, nhưng không có nhật ký sử dụng đêm xảy ra án."
+      },
+      {
+        "id": "c5",
+        "icon": "🛗",
+        "title": "Lịch sử thang máy",
+        "status": "Chưa kiểm tra",
+        "locked": true,
+        "unlockAfter": ["c3"],
+        "content": "Thang máy dừng ở tầng 3 lúc 3:14 sáng, nhưng camera hành lang ghi nhận chuyển động lúc 3:17."
+      },
+      {
+        "id": "c6",
+        "icon": "💬",
+        "title": "Tin nhắn đã xóa",
+        "status": "Chưa khôi phục",
+        "locked": true,
+        "unlockAfter": ["c2"],
+        "content": "Một tin nhắn đã bị xóa giữa nạn nhân và một số liên lạc lưu tên 'A'. Nội dung không thể khôi phục hoàn toàn."
+      },
+      {
+        "id": "c7",
+        "icon": "👞",
+        "title": "Dấu vết giày",
+        "status": "Đang so sánh",
+        "locked": false,
+        "content": "Dấu giày dính máu nhẹ gần cửa ra vào. Kích cỡ khoảng 42–43."
+      },
+      {
+        "id": "c8",
+        "icon": "⏱️",
+        "title": "Sai lệch thời gian tử vong",
+        "status": "Chưa xác nhận",
+        "locked": true,
+        "unlockAfter": ["c1", "c5"],
+        "content": "Thời gian tử vong thực tế sớm hơn 10–15 phút so với báo cáo ban đầu."
+      },
+      {
+        "id": "c9",
+        "icon": "🧥",
+        "title": "Áo khoác dính máu",
+        "status": "Đã thu giữ",
+        "locked": true,
+        "unlockAfter": ["c1"],
+        "redHerring": true,
+        "content": "Một chiếc áo khoác có vết máu nhỏ được tìm thấy trong thùng rác tầng 3. Máu thuộc về nạn nhân."
+      },
+      {
+        "id": "c10",
+        "icon": "📞",
+        "title": "Cuộc gọi lỡ lúc 3:05",
+        "status": "Chưa xác minh",
+        "locked": true,
+        "unlockAfter": ["c2"],
+        "redHerring": true,
+        "content": "Một cuộc gọi nhỡ từ số lạ đến nạn nhân lúc 3:05 sáng. Số này sau đó không còn hoạt động."
+      },
+      {
+        "id": "c11",
+        "icon": "🚪",
+        "title": "Vết trầy trên cửa",
+        "status": "Đã ghi nhận",
+        "locked": false,
+        "redHerring": true,
+        "content": "Cửa căn hộ có vết trầy nhẹ gần ổ khóa, giống dấu hiệu cạy cửa nhưng không đủ lực để mở."
+      }
     ],
-"suspects": [
-  {
-    "id": "s1",
-    "name": "Người hàng xóm tầng 3",
-    "desc": "Sống cùng tầng với nạn nhân. Xuất hiện trong camera hành lang lúc 3:17.",
-    "alibi": "Khai rằng đang ngủ vào thời điểm xảy ra án",
-    "suspicion": 2
+    "suspects": [
+      {
+        "id": "s1",
+        "name": "Người hàng xóm tầng 3",
+        "desc": "Sống cùng tầng với nạn nhân. Xuất hiện trong camera hành lang lúc 3:17.",
+        "alibi": "Khai rằng đang ngủ vào thời điểm xảy ra án",
+        "suspicion": 2
+      },
+      {
+        "id": "s2",
+        "name": "Bạn thân của nạn nhân",
+        "desc": "Có nhiều cuộc gọi với nạn nhân trong đêm xảy ra án.",
+        "alibi": "Nói rằng đang ở nhà, nhưng không có ai xác nhận",
+        "suspicion": 3,
+        "unlockAfter": ["c3"]
+      },
+      {
+        "id": "s3",
+        "name": "Bảo vệ ca đêm",
+        "desc": "Người trực ca đêm tại tòa nhà. Có quyền truy cập camera.",
+        "alibi": "Khai đang kiểm tra tầng hầm lúc 3:00 – 3:30",
+        "suspicion": 4,
+        "unlockAfter": ["c3"]
+      },
+      {
+        "id": "s4",
+        "name": "Người yêu cũ",
+        "desc": "Vừa chia tay nạn nhân một tuần trước. Có tranh cãi gay gắt.",
+        "alibi": "Khai đã rời tòa nhà từ 2:45 sáng",
+        "suspicion": 3,
+        "unlockAfter": ["c2"]
+      },
+      {
+        "id": "s5",
+        "name": "Chủ căn hộ",
+        "desc": "Người cho nạn nhân thuê căn hộ. Có tranh chấp tiền thuê.",
+        "alibi": "Khai không có mặt trong tòa nhà đêm đó",
+        "suspicion": 2,
+        "unlockAfter": ["c1"]
+      }
+    ]
   },
-  {
-    "id": "s2",
-    "name": "Bạn thân của nạn nhân",
-    "desc": "Có nhiều cuộc gọi với nạn nhân trong đêm xảy ra án.",
-    "alibi": "Nói rằng đang ở nhà, nhưng không có ai xác nhận",
-    "suspicion": 3,
-    "unlockAfter": ["c3"]
-  },
-  {
-    "id": "s3",
-    "name": "Bảo vệ ca đêm",
-    "desc": "Người trực ca đêm tại tòa nhà. Có quyền truy cập camera.",
-    "alibi": "Khai đang kiểm tra tầng hầm lúc 3:00 – 3:30",
-    "suspicion": 4,
-    "unlockAfter": ["c3"]
-  },
-  {
-    "id": "s4",
-    "name": "Người yêu cũ",
-    "desc": "Vừa chia tay nạn nhân một tuần trước. Có tranh cãi gay gắt.",
-    "alibi": "Khai đã rời tòa nhà từ 2:45 sáng",
-    "suspicion": 3,
-    "unlockAfter": ["c2"]
-  },
-  {
-    "id": "s5",
-    "name": "Chủ căn hộ",
-    "desc": "Người cho nạn nhân thuê căn hộ. Có tranh chấp tiền thuê.",
-    "alibi": "Khai không có mặt trong tòa nhà đêm đó",
-    "suspicion": 2,
-    "unlockAfter": ["c1"]
-  }
-]
-
-
-
-
-
-
-
-
-
-
-
-
-  },
-
   "002": {
     "id": "002",
     "name": "Chiếc vali dưới sông",

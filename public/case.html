@@ -138,6 +138,33 @@
 }
 
 
+.suspicion-wrap {
+  margin-top: 8px;
+}
+
+.suspicion-bar {
+  height: 8px;
+  background: #222;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.suspicion-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #00ffd5, #ff5252);
+  transition: width .3s ease;
+}
+
+.suspicion-label {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+
+
+
   </style>
 </head>
 
@@ -224,6 +251,11 @@
   const caseId = params.get("id");
   const READ_KEY = "case_read_" + caseId;
   let readClues = JSON.parse(localStorage.getItem(READ_KEY) || "[]");
+  const SUSPICION_KEY = "case_suspicion_" + caseId;
+  let suspicionState = JSON.parse(
+  localStorage.getItem(SUSPICION_KEY) || "{}"
+);
+
 
   let data; // giữ data case dùng chung
 
@@ -236,6 +268,8 @@
       const cases = await res.json();
 
       data = cases[caseId];
+
+initSuspicion();
 
       if (!data) {
         document.body.innerHTML =
@@ -262,6 +296,21 @@ checkSuspects();
   }
 
   loadCase();
+
+
+
+
+function initSuspicion() {
+  data.suspects.forEach(s => {
+    if (suspicionState[s.id] == null) {
+      // base suspicion từ cases.json (0–5) → %
+      suspicionState[s.id] = Math.min(100, (s.suspicion || 1) * 15);
+    }
+  });
+  localStorage.setItem(SUSPICION_KEY, JSON.stringify(suspicionState));
+}
+
+
 
 
  function refreshClues() {
@@ -302,7 +351,6 @@ function checkSuspects() {
   const list = document.getElementById("suspectList");
 
   list.innerHTML = "";
-
   let hasVisible = false;
 
   data.suspects.forEach(s => {
@@ -314,18 +362,51 @@ function checkSuspects() {
 
     hasVisible = true;
 
+    const percent = Math.min(100, suspicionState[s.id] || 0);
+
     const div = document.createElement("div");
     div.innerHTML = `
       <div class="suspect-name">${s.name}</div>
       <div class="suspect-desc">${s.desc}</div>
       <div class="suspect-alibi">🕒 Alibi: ${s.alibi}</div>
+
+      <div class="suspicion-wrap">
+        <div class="suspicion-bar">
+          <div class="suspicion-fill" style="width:${percent}%"></div>
+        </div>
+        <div class="suspicion-label">Độ nghi ngờ: ${percent}%</div>
+      </div>
     `;
+
     list.appendChild(div);
   });
 
   section.style.display = hasVisible ? "block" : "none";
 }
 
+
+function applyClueEffect(clue) {
+  data.suspects.forEach(s => {
+    if (suspicionState[s.id] == null) return;
+
+    let delta = 0;
+
+    // 🔴 Manh mối GIẢ → tăng nghi ngờ sai
+    if (clue.redHerring) {
+      delta = 6;
+    } else {
+      // 🟢 Manh mối thật → giảm nghi ngờ nhẹ
+      delta = -4;
+    }
+
+    suspicionState[s.id] = Math.max(
+      0,
+      Math.min(100, suspicionState[s.id] + delta)
+    );
+  });
+
+  localStorage.setItem(SUSPICION_KEY, JSON.stringify(suspicionState));
+}
 
 
 
@@ -343,8 +424,10 @@ function openClue(clue) {
     localStorage.setItem(READ_KEY, JSON.stringify(readClues));
   }
 
-  refreshClues();
-  checkSuspects();
+applyClueEffect(clue);
+refreshClues();
+checkSuspects();
+
 }
 
 
