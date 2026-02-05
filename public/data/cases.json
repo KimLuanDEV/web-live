@@ -173,7 +173,14 @@
         "suspicion": 2,
         "unlockAfter": ["c1"]
       }
-    ]
+    ],
+    "truth": {
+  "killer": "s3",
+  "reason": "Có quyền chỉnh sửa camera và lợi dụng sai lệch thời gian tử vong để tạo chứng cứ giả.",
+  "keyClues": ["c5", "c8", "c12"]
+}
+
+
   },
   "002": {
     "id": "002",

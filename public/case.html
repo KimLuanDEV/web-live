@@ -303,6 +303,56 @@
 
 
 
+<!-- 🧠 VERDICT SCREEN -->
+<div id="verdictScreen" style="
+  position:fixed;
+  inset:0;
+  background:#000;
+  color:#fff;
+  display:none;
+  z-index:200;
+  padding:20px 16px;
+  overflow:auto;
+">
+
+  <h2 style="margin-top:10px">🧠 KẾT ÁN</h2>
+
+  <div id="verdictResult" style="
+    margin-top:14px;
+    font-size:16px;
+    font-weight:700;
+  "></div>
+
+  <div id="verdictReason" style="
+    margin-top:10px;
+    font-size:14px;
+    color:#ccc;
+    line-height:1.5;
+  "></div>
+
+  <div style="margin-top:20px">
+    <h3>📌 Tóm tắt vụ án</h3>
+    <ul id="verdictSummary" style="font-size:14px;color:#aaa;line-height:1.6"></ul>
+  </div>
+
+  <div style="margin-top:26px">
+    <button onclick="replayCase()" style="
+      width:100%;
+      padding:14px;
+      border-radius:14px;
+      border:none;
+      background:#00ffd5;
+      color:#000;
+      font-weight:800;
+      cursor:pointer;
+    ">
+      🔁 Điều tra lại vụ án
+    </button>
+  </div>
+
+</div>
+
+
 <script>
   const params = new URLSearchParams(location.search);
   const caseId = params.get("id");
@@ -316,9 +366,11 @@
 const DECISION_KEY = "case_decision_" + caseId;
 let chosenSuspect = localStorage.getItem(DECISION_KEY);
 let tempSelectedSuspect = null;
+const TRUTH_REVEALED_KEY = "case_truth_revealed_" + caseId;
+let truthRevealed = localStorage.getItem(TRUTH_REVEALED_KEY);
 
 
-  let data; // giữ data case dùng chung
+let data; // giữ data case dùng chung
 
 
 
@@ -615,11 +667,81 @@ applyClueEffect(clue);
 refreshClues();
 checkSuspects();
 
+if (
+  !truthRevealed &&
+  chosenSuspect &&
+  data.truth &&
+  data.truth.keyClues.every(id => readClues.includes(id))
+) {
+  localStorage.setItem(TRUTH_REVEALED_KEY, "1");
+  truthRevealed = true;
+  setTimeout(revealTruth, 300);
+}
+
+
+
+
 }
 
 
 function closeClue() {
   document.getElementById("clueModal").style.display = "none";
+}
+
+
+function revealTruth() {
+  if (!data.truth || !chosenSuspect) return;
+
+  const truth = data.truth;
+  const killer = data.suspects.find(s => s.id === truth.killer);
+  const chosen = data.suspects.find(s => s.id === chosenSuspect);
+  const correct = chosenSuspect === truth.killer;
+
+  // Ẩn decision
+  document.getElementById("decisionSection").style.display = "none";
+
+  // Hiện verdict screen
+  const screen = document.getElementById("verdictScreen");
+  screen.style.display = "block";
+
+  document.getElementById("verdictResult").innerText = correct
+    ? "🎯 BẠN ĐÃ KẾT ÁN ĐÚNG"
+    : "❌ BẠN ĐÃ KẾT ÁN SAI";
+
+  document.getElementById("verdictReason").innerHTML = `
+    Hung thủ thật sự là <b>${killer.name}</b>.<br><br>
+    ${truth.reason}
+    <br><br>
+    ${
+      correct
+        ? "Bạn đã không bị đánh lạc hướng bởi các manh mối giả."
+        : "Bạn đã bị thanh độ nghi ngờ và manh mối giả đánh lạc hướng."
+    }
+  `;
+
+  const summary = document.getElementById("verdictSummary");
+  summary.innerHTML = "";
+
+  truth.keyClues.forEach(id => {
+    const clue = data.clues.find(c => c.id === id);
+    if (clue) {
+      const li = document.createElement("li");
+      li.innerText = `🔑 ${clue.title}`;
+      summary.appendChild(li);
+    }
+  });
+}
+
+function replayCase() {
+  if (!confirm("Bạn muốn điều tra lại vụ án này từ đầu?")) return;
+
+  localStorage.removeItem("case_read_" + caseId);
+  localStorage.removeItem("case_suspicion_" + caseId);
+  localStorage.removeItem("case_decision_" + caseId);
+  localStorage.removeItem("case_locked_" + caseId);
+  localStorage.removeItem("case_truth_revealed_" + caseId);
+
+  location.reload();
 }
 
 
