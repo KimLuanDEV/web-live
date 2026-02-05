@@ -164,7 +164,11 @@ html, body {
 .invest-card.portfolio{
   background-image:
     linear-gradient(180deg, rgba(0,200,255,.35), rgba(0,0,0,.95)),
-    url("/assets/bg/market.jpg");
+    url("/assets/bg/portfolio.jpg");
+
+  background-size: cover;      /* ✅ FULL ẢNH */
+  background-position: center;
+  background-repeat: no-repeat;
 
   box-shadow:
     0 0 45px rgba(0,200,255,.25),
@@ -225,7 +229,7 @@ html, body {
 
   <div class="sheet-box">
     <div class="sheet-head">
-      <div class="sheet-title">📊 Các mảng đầu tư</div>
+      <div class="sheet-title">Các mảng đầu tư</div>
       <button class="sheet-close" onclick="closePortfolio()">✕</button>
     </div>
 
