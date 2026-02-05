@@ -11,10 +11,23 @@
     "Gia vị"
   ],
   "steps": [
-    "Chiên đậu hũ vàng đều",
-    "Phi hành tỏi",
-    "Cho cà chua vào xào nhuyễn",
-    "Nêm gia vị",
-    "Cho đậu hũ vào đảo nhẹ"
+    {
+      "text": "Chiên đậu hũ",
+      "detail": "Chiên đậu hũ vàng đều các mặt rồi vớt ra để ráo.",
+      "time": 300,
+      "tip": "Chiên lửa vừa để đậu không cháy."
+    },
+    {
+      "text": "Làm sốt cà",
+      "detail": "Phi hành tỏi, cho cà chua vào xào nhuyễn.",
+      "time": 300,
+      "tip": "Có thể dằm cà chua cho sốt mịn."
+    },
+    {
+      "text": "Hoàn thiện",
+      "detail": "Cho đậu hũ vào sốt, nêm gia vị và đảo nhẹ.",
+      "time": 240,
+      "tip": "Đảo nhẹ tay để đậu không nát."
+    }
   ]
 }

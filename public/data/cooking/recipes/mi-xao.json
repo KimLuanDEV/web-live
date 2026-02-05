@@ -1,5 +1,5 @@
 {
-  "title": "Mì xào bò",
+  "title": "Mì xào",
   "cover": "/assets/cooking/mi-xao.jpg",
   "time": "20 phút",
   "level": "Dễ",
@@ -8,13 +8,26 @@
     "Thịt bò",
     "Rau cải",
     "Tỏi",
-    "Dầu hào, nước tương"
+    "Dầu hào"
   ],
   "steps": [
-    "Trụng mì cho mềm",
-    "Xào bò với tỏi",
-    "Cho rau vào đảo nhanh",
-    "Thêm mì và gia vị",
-    "Xào đều tay rồi tắt bếp"
+    {
+      "text": "Trụng mì",
+      "detail": "Trụng mì trong nước sôi 1–2 phút, vớt ra để ráo.",
+      "time": 120,
+      "tip": "Không trụng quá mềm."
+    },
+    {
+      "text": "Xào nguyên liệu",
+      "detail": "Phi tỏi, cho bò vào xào nhanh, sau đó cho rau vào đảo đều.",
+      "time": 180,
+      "tip": "Xào lửa lớn để bò mềm."
+    },
+    {
+      "text": "Xào mì",
+      "detail": "Cho mì và gia vị vào chảo, đảo đều tay rồi tắt bếp.",
+      "time": 180,
+      "tip": "Nêm dầu hào vừa phải."
+    }
   ]
 }

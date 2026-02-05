@@ -7,15 +7,39 @@
     "Cơm nguội",
     "2 quả trứng",
     "Hành lá",
-    "Nước mắm"
+    "Nước mắm",
+    "Dầu ăn"
   ],
   "steps": [
-    "Đánh trứng với chút muối",
-    "Làm nóng chảo, phi hành",
-    "Cho cơm vào đảo đều",
-    "Đổ trứng, đảo nhanh tay",
-    "Nêm nước mắm, tắt bếp"
+    {
+      "text": "Phi hành tỏi cho thơm",
+      "detail": "Làm nóng chảo với 1 muỗng dầu ăn, cho hành tỏi băm vào phi lửa vừa đến khi dậy mùi thơm và hơi vàng.",
+      "time": 60,
+      "tip": "Không để lửa lớn kẻo hành bị cháy."
+    },
+    {
+      "text": "Xào trứng cho tơi",
+      "detail": "Đập trứng vào chảo, đảo nhanh tay để trứng chín vừa và tơi đều.",
+      "time": 60,
+      "tip": "Có thể nêm chút muối trực tiếp vào trứng."
+    },
+    {
+      "text": "Cho cơm vào đảo đều",
+      "detail": "Cho cơm nguội vào, dàn mỏng rồi đảo liên tục để hạt cơm tơi, không vón cục.",
+      "time": 180,
+      "tip": "Cơm nguội giúp rang không bị nhão."
+    },
+    {
+      "text": "Nêm gia vị",
+      "detail": "Cho nước mắm và tiêu vào, đảo đều thêm 2–3 phút cho cơm thấm vị.",
+      "time": 120,
+      "tip": "Nêm từ từ để tránh mặn."
+    },
+    {
+      "text": "Hoàn thiện món",
+      "detail": "Tắt bếp, cho hành lá vào đảo sơ rồi dọn ra đĩa.",
+      "time": 30,
+      "tip": "Ăn nóng sẽ ngon hơn."
+    }
   ]
 }
-
-

@@ -5,18 +5,30 @@
   "level": "Trung bình",
   "ingredients": [
     "500g thịt ba chỉ",
-    "4 quả trứng gà",
+    "4 trứng gà",
     "Nước mắm",
     "Đường",
-    "Hành tím, tỏi",
+    "Hành tỏi",
     "Nước dừa"
   ],
   "steps": [
-    "Luộc trứng, bóc vỏ",
-    "Ướp thịt với nước mắm, đường, hành tỏi",
-    "Thắng nước màu",
-    "Cho thịt vào đảo săn",
-    "Thêm nước dừa và trứng, kho nhỏ lửa",
-    "Kho đến khi nước sệt, thịt mềm"
+    {
+      "text": "Luộc trứng",
+      "detail": "Luộc trứng chín, bóc vỏ và để riêng.",
+      "time": 600,
+      "tip": "Có thể chiên sơ trứng để thấm màu."
+    },
+    {
+      "text": "Ướp thịt",
+      "detail": "Cắt thịt miếng vừa ăn, ướp với nước mắm, đường, hành tỏi trong 20 phút.",
+      "time": 1200,
+      "tip": "Ướp lâu giúp thịt đậm vị."
+    },
+    {
+      "text": "Kho thịt",
+      "detail": "Cho thịt vào nồi, thêm nước dừa và trứng, kho lửa nhỏ đến khi thịt mềm.",
+      "time": 2400,
+      "tip": "Kho lửa nhỏ để thịt không bị khô."
+    }
   ]
 }

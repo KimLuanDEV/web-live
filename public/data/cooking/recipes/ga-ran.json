@@ -11,11 +11,29 @@
     "Dầu ăn"
   ],
   "steps": [
-    "Ướp gà với muối tiêu",
-    "Lăn gà qua trứng",
-    "Áo đều bột chiên giòn",
-    "Đun nóng dầu",
-    "Chiên gà ngập dầu đến vàng giòn",
-    "Vớt ra để ráo dầu"
+    {
+      "text": "Ướp gà",
+      "detail": "Ướp gà với muối và tiêu trong 15 phút.",
+      "time": 900,
+      "tip": "Ướp lâu giúp gà đậm vị."
+    },
+    {
+      "text": "Áo bột",
+      "detail": "Lăn gà qua trứng rồi áo đều bột chiên giòn.",
+      "time": 300,
+      "tip": "Áo bột đều để gà giòn hơn."
+    },
+    {
+      "text": "Chiên gà",
+      "detail": "Đun dầu nóng, chiên gà ngập dầu đến khi vàng giòn.",
+      "time": 900,
+      "tip": "Giữ lửa vừa để gà chín trong."
+    },
+    {
+      "text": "Hoàn thiện",
+      "detail": "Vớt gà ra, để ráo dầu rồi thưởng thức.",
+      "time": 60,
+      "tip": "Ăn nóng sẽ giòn ngon nhất."
+    }
   ]
 }

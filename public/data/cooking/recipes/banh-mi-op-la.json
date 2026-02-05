@@ -4,16 +4,36 @@
   "time": "10 phút",
   "level": "Rất dễ",
   "ingredients": [
-    "Trứng gà",
+    "2 trứng gà",
     "Bánh mì",
     "Xúc xích",
     "Bơ",
     "Muối, tiêu"
   ],
   "steps": [
-    "Đun nóng chảo với bơ",
-    "Ốp trứng vừa chín tới",
-    "Chiên xúc xích",
-    "Dọn ra ăn kèm bánh mì"
+    {
+      "text": "Làm nóng chảo với bơ",
+      "detail": "Bắc chảo lên bếp, cho bơ vào đun lửa vừa đến khi bơ tan đều.",
+      "time": 60,
+      "tip": "Không để bơ cháy sẽ bị đắng."
+    },
+    {
+      "text": "Ốp trứng",
+      "detail": "Đập trứng vào chảo, giữ lửa vừa cho lòng trắng chín, lòng đỏ còn sệt.",
+      "time": 120,
+      "tip": "Có thể rắc chút muối trực tiếp lên trứng."
+    },
+    {
+      "text": "Chiên xúc xích",
+      "detail": "Cho xúc xích vào chảo, chiên đến khi xém nhẹ.",
+      "time": 90,
+      "tip": "Có thể chiên chung chảo sau khi trứng chín."
+    },
+    {
+      "text": "Hoàn thiện",
+      "detail": "Dọn trứng và xúc xích ra đĩa, ăn kèm bánh mì nóng.",
+      "time": 30,
+      "tip": "Ăn nóng sẽ ngon hơn."
+    }
   ]
 }

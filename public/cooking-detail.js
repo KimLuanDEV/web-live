@@ -4,7 +4,9 @@ let wakeLock = null;
 
 const id = new URLSearchParams(location.search).get("id");
 
+// ======================
 // 🔥 LOAD CÔNG THỨC
+// ======================
 fetch(`/data/cooking/recipes/${id}.json`)
   .then(r => {
     if (!r.ok) throw new Error("Không load được JSON");
@@ -41,10 +43,26 @@ fetch(`/data/cooking/recipes/${id}.json`)
       <div class="recipe-section">
         <h3>🔥 Các bước</h3>
         <ol>
-          ${(d.steps || []).map(s => `<li>${s}</li>`).join("")}
+          ${(d.steps || []).map(s => {
+            // hỗ trợ cả step dạng string & object
+            const text = typeof s === "string" ? s : s.text;
+            const detail = typeof s === "object" && s.detail ? s.detail : "";
+            const tip = typeof s === "object" && s.tip ? s.tip : "";
+
+            return `
+              <li style="margin-bottom:12px">
+                <div><b>${text}</b></div>
+                ${detail ? `<div style="opacity:.85">${detail}</div>` : ""}
+                ${tip ? `<small style="opacity:.6">💡 ${tip}</small>` : ""}
+              </li>
+            `;
+          }).join("")}
         </ol>
       </div>
     `;
+
+    // 🔥 READY
+    setCookReady();
   })
   .catch(err => {
     console.error("❌ Lỗi load công thức:", err);
@@ -58,7 +76,6 @@ fetch(`/data/cooking/recipes/${id}.json`)
 // ======================
 // 🍳 COOK MODE
 // ======================
-
 async function enterCookMode() {
   if (!recipe || !recipe.steps || recipe.steps.length === 0) {
     alert("⚠️ Công thức chưa sẵn sàng");
@@ -85,7 +102,6 @@ async function enterCookMode() {
   }
 }
 
-
 function exitCookMode() {
   const cm = document.getElementById("cookMode");
   if (cm) cm.classList.add("hidden");
@@ -99,7 +115,6 @@ function exitCookMode() {
   }
 }
 
-
 function showStep() {
   const idx = document.getElementById("stepIndex");
   const txt = document.getElementById("stepText");
@@ -107,7 +122,10 @@ function showStep() {
   if (!idx || !txt || !recipe) return;
 
   idx.textContent = `Bước ${step + 1}/${recipe.steps.length}`;
-  txt.textContent = recipe.steps[step];
+
+  const s = recipe.steps[step];
+  txt.textContent =
+    typeof s === "string" ? s : s.text;
 }
 
 function nextStep() {
@@ -126,14 +144,12 @@ function prevStep() {
 }
 
 
+// ======================
+// 🔘 BOTTOM BAR
+// ======================
 const cookDock = document.getElementById("cookDock");
 const cookText = document.getElementById("cookText");
 
-// trạng thái khi load xong recipe
-function setCookReady(){
+function setCookReady() {
   if (cookText) cookText.textContent = "Bắt đầu nấu";
 }
-
-// gọi sau khi load JSON thành công
-// 👉 chèn dòng này NGAY SAU `recipe = d;`
-setCookReady();

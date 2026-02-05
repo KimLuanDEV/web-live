@@ -10,9 +10,23 @@
     "Gia vị"
   ],
   "steps": [
-    "Đun sôi nước",
-    "Cho nấm vào nấu",
-    "Nêm gia vị vừa ăn",
-    "Cho hành lá vào, tắt bếp"
+    {
+      "text": "Đun sôi nước",
+      "detail": "Đun sôi nồi nước với lửa vừa.",
+      "time": 180,
+      "tip": "Có thể thêm ít muối ngay từ đầu."
+    },
+    {
+      "text": "Nấu nấm",
+      "detail": "Cho các loại nấm vào nấu chín.",
+      "time": 300,
+      "tip": "Không nấu quá lâu để nấm không nhũn."
+    },
+    {
+      "text": "Nêm và hoàn thiện",
+      "detail": "Nêm gia vị vừa ăn, cho hành lá vào rồi tắt bếp.",
+      "time": 120,
+      "tip": "Ăn nóng giúp canh thơm hơn."
+    }
   ]
 }

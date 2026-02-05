@@ -12,10 +12,29 @@
     "Gia vị"
   ],
   "steps": [
-    "Đun sôi nước với me",
-    "Cho cá vào nấu chín",
-    "Thêm cà chua, dứa",
-    "Nêm gia vị vừa ăn",
-    "Cho rau thơm vào, tắt bếp"
+    {
+      "text": "Nấu nước me",
+      "detail": "Đun sôi nước với me để tạo vị chua nhẹ.",
+      "time": 300,
+      "tip": "Lọc bỏ hạt me để nước trong."
+    },
+    {
+      "text": "Nấu cá",
+      "detail": "Cho cá vào nồi, nấu lửa vừa đến khi cá chín.",
+      "time": 420,
+      "tip": "Không đảo mạnh để cá không nát."
+    },
+    {
+      "text": "Thêm rau củ",
+      "detail": "Cho cà chua và dứa vào, đun thêm vài phút.",
+      "time": 300,
+      "tip": "Cho dứa sau cá để giữ vị ngọt."
+    },
+    {
+      "text": "Nêm và hoàn thiện",
+      "detail": "Nêm gia vị vừa ăn, cho rau thơm vào rồi tắt bếp.",
+      "time": 120,
+      "tip": "Ăn nóng sẽ ngon hơn."
+    }
   ]
 }
