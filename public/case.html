@@ -298,16 +298,22 @@ checkSuspects();
 function checkSuspects() {
   if (!data.suspects) return;
 
-  // chỉ hiện khi đã đọc Camera (c3)
-  if (!readClues.includes("c3")) return;
-
   const section = document.getElementById("suspectSection");
   const list = document.getElementById("suspectList");
 
-  section.style.display = "block";
   list.innerHTML = "";
 
+  let hasVisible = false;
+
   data.suspects.forEach(s => {
+    const unlocked =
+      !s.unlockAfter ||
+      s.unlockAfter.every(id => readClues.includes(id));
+
+    if (!unlocked) return;
+
+    hasVisible = true;
+
     const div = document.createElement("div");
     div.innerHTML = `
       <div class="suspect-name">${s.name}</div>
@@ -316,7 +322,10 @@ function checkSuspects() {
     `;
     list.appendChild(div);
   });
+
+  section.style.display = hasVisible ? "block" : "none";
 }
+
 
 
 

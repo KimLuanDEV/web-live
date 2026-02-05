@@ -40,6 +40,14 @@
     "desc": "Sống cùng tầng với nạn nhân. Xuất hiện trong camera hành lang lúc 3:17.",
     "alibi": "Khai rằng đang ngủ vào thời điểm xảy ra án",
     "suspicion": 2
+  },
+  {
+    "id": "s2",
+    "name": "Bạn thân của nạn nhân",
+    "desc": "Có nhiều cuộc gọi với nạn nhân trong đêm xảy ra án.",
+    "alibi": "Nói rằng đang ở nhà, nhưng không có ai xác nhận",
+    "suspicion": 3,
+    "unlockAfter": ["c3"]
   }
 ]
 
