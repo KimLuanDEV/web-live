@@ -79,3 +79,21 @@ function closePortfolio(){
     sheet.classList.add("hidden");
   }
 }
+
+
+
+function openNewGame(){
+  showModal(
+    "🚧 Game mới",
+    `
+      <div style="text-align:center">
+        <div style="font-size:16px;font-weight:700">
+          Tính năng đang được phát triển
+        </div>
+        <div style="margin-top:8px;opacity:.7;font-size:13px">
+          Sẽ ra mắt trong thời gian tới
+        </div>
+      </div>
+    `
+  );
+}

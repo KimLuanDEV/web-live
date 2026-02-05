@@ -277,6 +277,43 @@ html, body {
 }
 
 
+
+/* ===== NEW GAME CARD ===== */
+.invest-card.coming-soon{
+  background-image:
+    linear-gradient(180deg, rgba(120,120,120,.25), rgba(0,0,0,.95)),
+    url("/assets/bg/coming-soon.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 35px rgba(255,255,255,.08),
+    0 12px 30px rgba(0,0,0,.7);
+
+  opacity: .9;
+}
+
+/* hiệu ứng chờ */
+.invest-card.coming-soon::after{
+  content: "COMING SOON";
+  position: absolute;
+  top: 12px;
+  right: -28px;
+
+  transform: rotate(45deg);
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 4px 32px;
+  letter-spacing: 1px;
+
+  z-index: 2;
+}
+
+
 </style>
 
 
@@ -311,13 +348,22 @@ html, body {
 
 <div class="invest-grid">
 
+  <!-- CARD TRADE -->
   <div class="invest-card portfolio" onclick="openPortfolio()">
     <h3>Trade</h3>
     <div class="risk">6 mảng • Realtime</div>
     <div class="tap-hint">👆 Xem toàn bộ</div>
   </div>
 
+  <!-- CARD GAME MỚI -->
+  <div class="invest-card coming-soon" onclick="openNewGame()">
+    <h3>Game mới</h3>
+    <div class="risk">Sắp ra mắt</div>
+    <div class="tap-hint">🚧 Đang phát triển</div>
+  </div>
+
 </div>
+
 
 
 
