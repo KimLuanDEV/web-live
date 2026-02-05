@@ -22,14 +22,16 @@
   "locked": false,
   "content": "Điện thoại không có dấu hiệu bị phá. Tin nhắn cuối cùng được gửi lúc 3:12 sáng."
 },
+{
+  "id": "c3",
+  "icon": "📷",
+  "title": "Camera hành lang",
+  "status": "Chưa mở",
+  "locked": true,
+  "unlockAfter": ["c1", "c2"],
+  "content": "Camera ghi lại hình ảnh một người đội mũ lưỡi trai rời khỏi tầng 3 lúc 3:17 sáng."
+}
 
-      {
-        "id": "c3",
-        "icon": "📷",
-        "title": "Camera hành lang",
-        "status": "Chưa mở",
-        "locked": true
-      }
     ]
   },
 

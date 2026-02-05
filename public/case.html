@@ -189,13 +189,21 @@
 <script>
   const params = new URLSearchParams(location.search);
   const caseId = params.get("id");
+  const READ_KEY = "case_read_" + caseId;
+  let readClues = JSON.parse(localStorage.getItem(READ_KEY) || "[]");
+
+  let data; // giữ data case dùng chung
+
+
+
 
   async function loadCase() {
     try {
       const res = await fetch("/data/cases.json");
       const cases = await res.json();
 
-      const data = cases[caseId];
+      data = cases[caseId];
+
       if (!data) {
         document.body.innerHTML =
           "<p style='padding:20px'>❌ Không tìm thấy vụ án</p>";
@@ -212,21 +220,9 @@
       grid.innerHTML = "";
 
 
-data.clues.forEach(c => {
-  const div = document.createElement("div");
-  div.className = "clue-card" + (c.locked ? " locked" : "");
-  div.innerHTML = `
-    <div class="clue-icon">${c.icon}</div>
-    <div class="clue-title">${c.title}</div>
-    <div class="clue-status">${c.status}</div>
-  `;
+refreshClues();
 
-  if (!c.locked) {
-    div.onclick = () => openClue(c);
-  }
 
-  grid.appendChild(div);
-});
 
     } catch (err) {
       document.body.innerHTML =
@@ -238,6 +234,35 @@ data.clues.forEach(c => {
   loadCase();
 
 
+ function refreshClues() {
+  const grid = document.getElementById("clueGrid");
+  grid.innerHTML = "";
+
+  data.clues.forEach(c => {
+    const unlocked =
+      !c.locked ||
+      (c.unlockAfter &&
+        c.unlockAfter.every(id => readClues.includes(id)));
+
+    const div = document.createElement("div");
+    div.className = "clue-card" + (unlocked ? "" : " locked");
+
+    div.innerHTML = `
+      <div class="clue-icon">${c.icon}</div>
+      <div class="clue-title">${c.title}</div>
+      <div class="clue-status">
+        ${readClues.includes(c.id) ? "Đã đọc" : c.status}
+      </div>
+    `;
+
+    if (unlocked) {
+      div.onclick = () => openClue(c);
+    }
+
+    grid.appendChild(div);
+  });
+}
+ 
 
 function openClue(clue) {
   document.getElementById("modalIcon").innerText = clue.icon;
@@ -247,9 +272,14 @@ function openClue(clue) {
 
   document.getElementById("clueModal").style.display = "block";
 
-  // đánh dấu đã đọc (tạm thời – local)
-  clue.status = "Đã đọc";
+  if (!readClues.includes(clue.id)) {
+    readClues.push(clue.id);
+    localStorage.setItem(READ_KEY, JSON.stringify(readClues));
+  }
+
+  refreshClues();
 }
+
 
 function closeClue() {
   document.getElementById("clueModal").style.display = "none";
