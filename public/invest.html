@@ -177,6 +177,105 @@ html, body {
 
 
 
+/* ================= PORTFOLIO SHEET ================= */
+
+#portfolioSheet{
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+#portfolioSheet.hidden{
+  display: none;
+}
+
+/* backdrop */
+#portfolioSheet .sheet-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
+}
+
+/* box */
+#portfolioSheet .sheet-box{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  background: #050505;
+  border-radius: 22px 22px 0 0;
+  box-shadow: 0 -10px 40px rgba(0,0,0,.8);
+
+  max-height: 92%;
+  display: flex;
+  flex-direction: column;
+
+  animation: sheetUp .25s ease;
+}
+
+@keyframes sheetUp{
+  from{ transform: translateY(100%); }
+  to{ transform: translateY(0); }
+}
+
+/* header */
+#portfolioSheet .sheet-head{
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+#portfolioSheet .sheet-title{
+  font-size: 17px;
+  font-weight: 800;
+}
+
+#portfolioSheet .sheet-close{
+  background: none;
+  border: none;
+  color: #aaa;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* body */
+#portfolioSheet .sheet-body{
+  padding: 12px;
+  overflow-y: auto;
+}
+
+/* grid trong sheet */
+#portfolioSheet .invest-grid{
+  grid-template-columns: repeat(2, 1fr);
+}
+
+/* card trong sheet */
+#portfolioSheet .invest-card{
+  aspect-ratio: 1 / 1.15;
+}
+
+/* overlay đậm hơn */
+#portfolioSheet .invest-card::before{
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.15),
+    rgba(0,0,0,.75)
+  );
+}
+
+/* tên asset */
+.asset-name{
+  font-size: 16px;
+  font-weight: 800;
+  text-align: center;
+  padding: 10px 0;
+  text-shadow: 0 3px 12px rgba(0,0,0,.8);
+}
+
 
 </style>
 
@@ -237,27 +336,27 @@ html, body {
       <div class="invest-grid">
 
         <div class="invest-card silver" onclick="goInvest('silver')">
-          <div class="tap-hint">Bạc</div>
+           <div class="asset-name">Silver</div>
         </div>
 
         <div class="invest-card gold" onclick="goInvest('gold')">
-          <div class="tap-hint">Vàng</div>
+           <div class="asset-name">Gold</div>
         </div>
 
         <div class="invest-card diamond" onclick="goInvest('diamond')">
-          <div class="tap-hint">Kim cương</div>
+           <div class="asset-name">Diamond</div>
         </div>
 
         <div class="invest-card oil" onclick="goInvest('oil')">
-          <div class="tap-hint">Dầu mỏ</div>
+           <div class="asset-name">Oid</div>
         </div>
 
         <div class="invest-card estate" onclick="goInvest('estate')">
-          <div class="tap-hint">Bất động sản</div>
+           <div class="asset-name">Estate</div>
         </div>
 
         <div class="invest-card atomic" onclick="goInvest('atomic')">
-          <div class="tap-hint">Nguyên tử</div>
+           <div class="asset-name">Atomic</div>
         </div>
 
       </div>
