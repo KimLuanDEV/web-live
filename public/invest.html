@@ -384,6 +384,94 @@ html, body {
 }
 
 
+
+/* ===== INVESTIGATION UI ===== */
+
+.investigation-body{
+  padding: 14px;
+}
+
+.case-file{
+  background: linear-gradient(180deg, rgba(120,120,120,.2), rgba(0,0,0,.85));
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.case-file h3{
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.case-file p{
+  font-size: 14px;
+  opacity: .85;
+  line-height: 1.4;
+}
+
+.clue-section h3,
+.reason-section h3{
+  font-size: 16px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.clue-list{
+  display: grid;
+  gap: 10px;
+}
+
+.clue-card{
+  display: flex;
+  gap: 12px;
+  align-items: center;
+
+  background: #0c0c0c;
+  padding: 12px;
+  border-radius: 12px;
+
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.06);
+  cursor: pointer;
+}
+
+.clue-card.active{
+  box-shadow:
+    0 0 0 2px rgba(255,200,80,.6),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.clue-icon{
+  font-size: 22px;
+}
+
+.clue-title{
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.clue-desc{
+  font-size: 12px;
+  opacity: .7;
+}
+
+.reason-section{
+  margin-top: 18px;
+}
+
+.reason-btn{
+  width: 100%;
+  padding: 12px;
+  border-radius: 14px;
+  border: none;
+  font-size: 15px;
+  font-weight: 800;
+  color: #000;
+  background: linear-gradient(90deg, #ffd36a, #ff9f00);
+  cursor: pointer;
+}
+
+
 </style>
 
 
@@ -527,6 +615,74 @@ html, body {
     </div>
   </div>
 </div>
+
+
+<div id="investigationSheet" class="sheet hidden">
+  <div class="sheet-backdrop" onclick="closeInvestigation()"></div>
+
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <div class="sheet-title">🔍 Điều tra vụ án</div>
+      <button class="sheet-close" onclick="closeInvestigation()">✕</button>
+    </div>
+
+    <div class="sheet-body investigation-body">
+
+      <!-- CASE FILE -->
+      <div class="case-file">
+        <h3>📁 Hồ sơ vụ án</h3>
+        <p>
+          Nạn nhân được phát hiện tử vong trong căn hộ khóa kín.
+          Không có dấu hiệu cạy cửa hay xâm nhập từ bên ngoài.
+        </p>
+      </div>
+
+      <!-- CLUES -->
+      <div class="clue-section">
+        <h3>🔍 Manh mối thu thập</h3>
+
+        <div class="clue-list">
+
+          <div class="clue-card" onclick="selectClue(this)">
+            <div class="clue-icon">🩸</div>
+            <div>
+              <div class="clue-title">Vết máu trên tay nắm cửa</div>
+              <div class="clue-desc">Có dấu hiệu bị lau qua</div>
+            </div>
+          </div>
+
+          <div class="clue-card" onclick="selectClue(this)">
+            <div class="clue-icon">🕰️</div>
+            <div>
+              <div class="clue-title">Đồng hồ dừng lúc 23:17</div>
+              <div class="clue-desc">Thời điểm tử vong?</div>
+            </div>
+          </div>
+
+          <div class="clue-card" onclick="selectClue(this)">
+            <div class="clue-icon">🚪</div>
+            <div>
+              <div class="clue-title">Cửa khóa từ bên trong</div>
+              <div class="clue-desc">Không có dấu hiệu cạy phá</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- REASONING -->
+      <div class="reason-section">
+        <h3>🧩 Suy luận</h3>
+        <button class="reason-btn" onclick="makeDeduction()">
+          Đưa ra suy luận
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
 
 
 

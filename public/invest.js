@@ -107,3 +107,36 @@ function startCase(){
     `
   );
 }
+
+
+
+function startCase(){
+  closeDetectiveGame();
+  document.getElementById("investigationSheet")
+    ?.classList.remove("hidden");
+}
+
+function closeInvestigation(){
+  document.getElementById("investigationSheet")
+    ?.classList.add("hidden");
+}
+
+function selectClue(el){
+  el.classList.toggle("active");
+}
+
+function makeDeduction(){
+  showModal(
+    "🧩 Suy luận",
+    `
+      <div style="text-align:center">
+        <div style="font-weight:700">
+          Bạn tin rằng hung thủ không rời khỏi căn hộ
+        </div>
+        <div style="margin-top:8px;font-size:13px;opacity:.7">
+          Đây mới chỉ là giả thuyết ban đầu…
+        </div>
+      </div>
+    `
+  );
+}
