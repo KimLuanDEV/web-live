@@ -105,6 +105,16 @@
       font-size: 12px;
       color: #888;
     }
+
+
+ 
+@keyframes slideUp {
+  from { transform: translate(-50%, 100%); }
+  to { transform: translate(-50%, 0); }
+}
+
+
+
   </style>
 </head>
 
@@ -131,7 +141,51 @@
 
   </main>
 
-  
+
+
+  <!-- 🔍 CLUE MODAL -->
+<div id="clueModal" style="
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.6);
+  display: none;
+  z-index: 99;
+">
+
+  <div style="
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 480px;
+    background: #0f0f0f;
+    border-radius: 16px 16px 0 0;
+    padding: 16px;
+    animation: slideUp .2s ease;
+  ">
+
+    <div style="display:flex;align-items:center;margin-bottom:10px">
+      <div id="modalIcon" style="font-size:28px;margin-right:8px"></div>
+      <b id="modalTitle"></b>
+      <button onclick="closeClue()" style="
+        margin-left:auto;
+        background:none;
+        border:none;
+        color:#fff;
+        font-size:20px;
+        cursor:pointer;
+      ">✕</button>
+    </div>
+
+    <div id="modalContent" style="font-size:14px;color:#ccc;line-height:1.4"></div>
+
+  </div>
+</div>
+
+
+
+
 <script>
   const params = new URLSearchParams(location.search);
   const caseId = params.get("id");
@@ -157,16 +211,22 @@
       const grid = document.getElementById("clueGrid");
       grid.innerHTML = "";
 
-      data.clues.forEach(c => {
-        const div = document.createElement("div");
-        div.className = "clue-card" + (c.locked ? " locked" : "");
-        div.innerHTML = `
-          <div class="clue-icon">${c.icon}</div>
-          <div class="clue-title">${c.title}</div>
-          <div class="clue-status">${c.status}</div>
-        `;
-        grid.appendChild(div);
-      });
+
+data.clues.forEach(c => {
+  const div = document.createElement("div");
+  div.className = "clue-card" + (c.locked ? " locked" : "");
+  div.innerHTML = `
+    <div class="clue-icon">${c.icon}</div>
+    <div class="clue-title">${c.title}</div>
+    <div class="clue-status">${c.status}</div>
+  `;
+
+  if (!c.locked) {
+    div.onclick = () => openClue(c);
+  }
+
+  grid.appendChild(div);
+});
 
     } catch (err) {
       document.body.innerHTML =
@@ -176,6 +236,28 @@
   }
 
   loadCase();
+
+
+
+function openClue(clue) {
+  document.getElementById("modalIcon").innerText = clue.icon;
+  document.getElementById("modalTitle").innerText = clue.title;
+  document.getElementById("modalContent").innerText =
+    clue.content || "Chưa có thông tin.";
+
+  document.getElementById("clueModal").style.display = "block";
+
+  // đánh dấu đã đọc (tạm thời – local)
+  clue.status = "Đã đọc";
+}
+
+function closeClue() {
+  document.getElementById("clueModal").style.display = "none";
+}
+
+
+
+
 </script>
 
 

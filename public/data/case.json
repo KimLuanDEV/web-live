@@ -7,19 +7,22 @@
     "time": "Đêm",
     "clues": [
       {
-        "id": "c1",
-        "icon": "🩸",
-        "title": "Vết máu",
-        "status": "Đã phân tích",
-        "locked": false
+  "id": "c1",
+  "icon": "🩸",
+  "title": "Vết máu",
+  "status": "Đã phân tích",
+  "locked": false,
+  "content": "Vết máu khô được phát hiện gần cửa sổ. Phân tích cho thấy máu thuộc về nạn nhân."
       },
-      {
-        "id": "c2",
-        "icon": "📱",
-        "title": "Điện thoại nạn nhân",
-        "status": "Chưa đọc",
-        "locked": false
-      },
+{
+  "id": "c2",
+  "icon": "📱",
+  "title": "Điện thoại nạn nhân",
+  "status": "Chưa đọc",
+  "locked": false,
+  "content": "Điện thoại không có dấu hiệu bị phá. Tin nhắn cuối cùng được gửi lúc 3:12 sáng."
+},
+
       {
         "id": "c3",
         "icon": "📷",
