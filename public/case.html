@@ -558,16 +558,21 @@ function showDecisionPoint() {
 
     if (!unlocked) return;
 
-const percent = Math.min(100, suspicionState[s.id] || 0);
-const level = getSuspicionLevel(percent);
+    const percent = Math.min(100, suspicionState[s.id] || 0);
+    const level = getSuspicionLevel(percent);
 
-div.innerHTML = `
-  <div class="decision-name">${s.name}</div>
-<div class="decision-note">
-  Độ nghi ngờ: <b>Không ổn định</b>
-</div>
+    // ✅ TẠO div ĐÚNG CÁCH
+    const div = document.createElement("div");
+    div.className =
+      "decision-item" +
+      (chosenSuspect === s.id ? " active" : "");
 
-`;
+    div.innerHTML = `
+      <div class="decision-name">${s.name}</div>
+      <div class="decision-note">
+        Độ nghi ngờ: <b>Không ổn định</b>
+      </div>
+    `;
 
     div.onclick = () => selectDecision(s.id, div);
 
@@ -576,10 +581,10 @@ div.innerHTML = `
 
   // Nếu đã chọn trước đó → khóa nút
   if (chosenSuspect) {
-    document.getElementById("btnConfirmDecision").innerText =
-      "🔒 Đã chỉ định nghi phạm";
-    document.getElementById("btnConfirmDecision").disabled = true;
-    document.getElementById("btnConfirmDecision").style.opacity = .4;
+    const btn = document.getElementById("btnConfirmDecision");
+    btn.innerText = "🔒 Đã chỉ định nghi phạm";
+    btn.disabled = true;
+    btn.style.opacity = .4;
   }
 }
 
