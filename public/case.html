@@ -163,6 +163,34 @@
 }
 
 
+.decision-item {
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 12px;
+  margin-bottom: 10px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.decision-item:hover {
+  box-shadow: 0 0 0 1px #ff5252;
+}
+
+.decision-item.active {
+  box-shadow: 0 0 0 2px #ff5252;
+}
+
+.decision-name {
+  font-weight: 700;
+}
+
+.decision-note {
+  font-size: 12px;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+
 
 
   </style>
@@ -195,6 +223,35 @@
   <div id="suspectList"></div>
 </div>
 
+<!-- 🟥 DECISION POINT -->
+<div id="decisionSection" style="display:none;margin-top:20px">
+  <h3>🟥 Quyết định điều tra</h3>
+  <div style="font-size:13px;color:#aaa;margin-bottom:10px">
+    Dựa trên các manh mối hiện có, hãy chỉ định <b>nghi phạm chính</b>.
+    <br>⚠️ Quyết định này sẽ ảnh hưởng đến tiến trình vụ án.
+  </div>
+
+  <div id="decisionList"></div>
+
+  <button id="btnConfirmDecision"
+    style="
+      margin-top:12px;
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:none;
+      background:#ff5252;
+      color:#fff;
+      font-weight:700;
+      cursor:pointer;
+      opacity:.5;
+    "
+    disabled
+    onclick="confirmDecision()"
+  >
+    🔒 Xác nhận nghi phạm
+  </button>
+</div>
 
 
 
@@ -256,6 +313,10 @@
   localStorage.getItem(SUSPICION_KEY) || "{}"
 );
 
+const DECISION_KEY = "case_decision_" + caseId;
+let chosenSuspect = localStorage.getItem(DECISION_KEY);
+let tempSelectedSuspect = null;
+
 
   let data; // giữ data case dùng chung
 
@@ -288,6 +349,7 @@ initSuspicion();
 
 refreshClues();
 checkSuspects();
+
     } catch (err) {
       document.body.innerHTML =
         "<p style='padding:20px'>❌ Lỗi tải dữ liệu vụ án</p>";
@@ -382,6 +444,81 @@ function checkSuspects() {
   });
 
   section.style.display = hasVisible ? "block" : "none";
+
+  showDecisionPoint();
+}
+
+function showDecisionPoint() {
+  if (!data.suspects) return;
+
+  const box = document.getElementById("decisionList");
+  const section = document.getElementById("decisionSection");
+
+  box.innerHTML = "";
+
+  // Chỉ mở Decision khi đã đọc Camera
+  if (!readClues.includes("c3")) return;
+
+  section.style.display = "block";
+
+  data.suspects.forEach(s => {
+    const unlocked =
+      !s.unlockAfter ||
+      s.unlockAfter.every(id => readClues.includes(id));
+
+    if (!unlocked) return;
+
+    const percent = Math.min(100, suspicionState[s.id] || 0);
+
+    const div = document.createElement("div");
+    div.className = "decision-item" + (chosenSuspect === s.id ? " active" : "");
+    div.innerHTML = `
+      <div class="decision-name">${s.name}</div>
+      <div class="decision-note">Độ nghi ngờ hiện tại: ${percent}%</div>
+    `;
+
+    div.onclick = () => selectDecision(s.id, div);
+
+    box.appendChild(div);
+  });
+
+  // Nếu đã chọn trước đó → khóa nút
+  if (chosenSuspect) {
+    document.getElementById("btnConfirmDecision").innerText =
+      "🔒 Đã chỉ định nghi phạm";
+    document.getElementById("btnConfirmDecision").disabled = true;
+    document.getElementById("btnConfirmDecision").style.opacity = .4;
+  }
+}
+
+function selectDecision(id, el) {
+  if (chosenSuspect) return;
+
+  document.querySelectorAll(".decision-item")
+    .forEach(d => d.classList.remove("active"));
+
+  el.classList.add("active");
+
+  tempSelectedSuspect = id;
+  document.getElementById("btnConfirmDecision").disabled = false;
+  document.getElementById("btnConfirmDecision").style.opacity = 1;
+}
+
+
+
+
+function confirmDecision() {
+  if (!tempSelectedSuspect) return;
+
+  chosenSuspect = tempSelectedSuspect;
+  localStorage.setItem(DECISION_KEY, chosenSuspect);
+
+  alert("Bạn đã chỉ định nghi phạm chính.\n\nQuyết định này sẽ ảnh hưởng đến diễn biến tiếp theo.");
+
+  document.getElementById("btnConfirmDecision").innerText =
+    "🔒 Đã chỉ định nghi phạm";
+  document.getElementById("btnConfirmDecision").disabled = true;
+  document.getElementById("btnConfirmDecision").style.opacity = .4;
 }
 
 
