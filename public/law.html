@@ -104,20 +104,85 @@
 }
 
 
+/* ===== LAW HEADER ===== */
+.law-header{
+  position:sticky;
+  top:0;
+  z-index:10;
+
+  display:flex;
+  align-items:center;
+  height:64px;
+  padding:8px 12px;
+
+  background:linear-gradient(
+    180deg,
+    #15151c,
+    #0e0e12
+  );
+
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+/* BACK */
+.law-back{
+  width:36px;
+  height:36px;
+  border:none;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  border-radius:10px;
+  font-size:18px;
+  cursor:pointer;
+}
+
+/* CENTER */
+.law-head-center{
+  flex:1;
+  text-align:center;
+  line-height:1.2;
+}
+
+.law-head-icon{
+  font-size:20px;
+}
+
+.law-head-title{
+  font-weight:900;
+  font-size:15px;
+}
+
+.law-head-sub{
+  font-size:11px;
+  opacity:.65;
+  margin-top:2px;
+}
+
+/* RIGHT (placeholder) */
+.law-head-right{
+  width:36px;
+}
+
+
 
   </style>
 </head>
 
 <body class="page-library">
 
-<header class="simple-header law-header">
-  <button onclick="history.back()" class="back-btn">←</button>
+<header class="law-header">
+  <button class="law-back" onclick="history.back()">←</button>
 
-  <div class="law-header-center">
-    <div class="law-icon">⚖️</div>
-    <div class="law-title">Luật pháp</div>
-    <div class="law-sub">Quy định · Pháp lý · An toàn</div>
+  <div class="law-head-center">
+    <div class="law-head-icon">⚖️</div>
+    <div class="law-head-title">Luật pháp</div>
+    <div class="law-head-sub">
+      Quy định · Pháp lý · An toàn
+    </div>
   </div>
+
+  <!-- chừa sẵn slot sau này (search / info / admin) -->
+  <div class="law-head-right"></div>
 </header>
 
 
