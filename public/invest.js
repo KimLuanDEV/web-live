@@ -83,15 +83,25 @@ function closePortfolio(){
 
 
 function openNewGame(){
+  document.getElementById("detectiveGameSheet")
+    ?.classList.remove("hidden");
+}
+
+function closeDetectiveGame(){
+  document.getElementById("detectiveGameSheet")
+    ?.classList.add("hidden");
+}
+
+function startCase(){
   showModal(
-    "🚧 Game mới",
+    "📂 Bắt đầu điều tra",
     `
       <div style="text-align:center">
-        <div style="font-size:16px;font-weight:700">
-          Tính năng đang được phát triển
+        <div style="font-weight:700">
+          Bạn đã bước vào vụ án đầu tiên
         </div>
-        <div style="margin-top:8px;opacity:.7;font-size:13px">
-          Sẽ ra mắt trong thời gian tới
+        <div style="margin-top:8px;font-size:13px;opacity:.7">
+          Hãy phân tích thật kỹ từng manh mối
         </div>
       </div>
     `

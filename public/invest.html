@@ -314,6 +314,76 @@ html, body {
 }
 
 
+
+
+/* ===== DETECTIVE GAME ===== */
+
+.detective-body{
+  padding: 14px;
+}
+
+.detective-hero{
+  background: linear-gradient(180deg, rgba(80,80,80,.25), rgba(0,0,0,.85));
+  border-radius: 14px;
+  padding: 14px;
+  margin-bottom: 16px;
+}
+
+.detective-hero h2{
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 6px;
+}
+
+.detective-hero p{
+  font-size: 14px;
+  opacity: .85;
+  line-height: 1.4;
+}
+
+.detective-menu{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.detective-card{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 14px;
+  border-radius: 14px;
+  background: #0c0c0c;
+
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.05);
+  cursor: pointer;
+}
+
+.detective-card:active{
+  transform: scale(.98);
+}
+
+.detective-card.locked{
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.dc-icon{
+  font-size: 26px;
+}
+
+.dc-title{
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.dc-desc{
+  font-size: 13px;
+  opacity: .7;
+}
+
+
 </style>
 
 
@@ -356,11 +426,12 @@ html, body {
   </div>
 
   <!-- CARD GAME MỚI -->
-  <div class="invest-card coming-soon" onclick="openNewGame()">
-    <h3>Game mới</h3>
-    <div class="risk">Sắp ra mắt</div>
-    <div class="tap-hint">🚧 Đang phát triển</div>
-  </div>
+<div class="invest-card coming-soon" onclick="openNewGame()">
+  <h3>Thiên tài phá án</h3>
+  <div class="risk">Game suy luận</div>
+  <div class="tap-hint">🧠 Điều tra & phá án</div>
+</div>
+
 
 </div>
 
@@ -409,6 +480,54 @@ html, body {
     </div>
   </div>
 </div>
+
+
+
+<div id="detectiveGameSheet" class="sheet hidden">
+  <div class="sheet-backdrop" onclick="closeDetectiveGame()"></div>
+
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <div class="sheet-title">🧠 Thiên tài phá án</div>
+      <button class="sheet-close" onclick="closeDetectiveGame()">✕</button>
+    </div>
+
+    <div class="sheet-body detective-body">
+
+      <!-- HERO -->
+      <div class="detective-hero">
+        <h2>Vụ án đầu tiên</h2>
+        <p>Một căn hộ khóa trái từ bên trong.  
+        Không có dấu hiệu đột nhập.</p>
+      </div>
+
+      <!-- GAME MENU -->
+      <div class="detective-menu">
+
+        <div class="detective-card" onclick="startCase()">
+          <div class="dc-icon">📂</div>
+          <div class="dc-title">Bắt đầu điều tra</div>
+          <div class="dc-desc">Thu thập manh mối</div>
+        </div>
+
+        <div class="detective-card locked">
+          <div class="dc-icon">🔒</div>
+          <div class="dc-title">Vụ án nâng cao</div>
+          <div class="dc-desc">Mở sau</div>
+        </div>
+
+        <div class="detective-card locked">
+          <div class="dc-icon">🏆</div>
+          <div class="dc-title">Xếp hạng</div>
+          <div class="dc-desc">Thiên tài phá án</div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
 
 
 
