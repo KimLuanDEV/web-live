@@ -5,27 +5,167 @@
   <title>⚖️ Luật pháp</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
+
+
+
+  <style>
+
+    /* LAW HEADER */
+.law-header{
+  height:auto;
+  padding:14px 12px;
+  align-items:flex-start;
+}
+
+.law-header-center{
+  flex:1;
+  text-align:center;
+}
+
+.law-icon{
+  font-size:26px;
+  margin-bottom:2px;
+}
+
+.law-title{
+  font-weight:900;
+  font-size:16px;
+}
+
+.law-sub{
+  font-size:12px;
+  opacity:.7;
+}
+
+
+/* LAW GRID */
+.law-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:14px;
+}
+
+/* LAW CARD */
+.law-card{
+  position:relative;
+  background:#15151c;
+  border-radius:16px;
+  padding:16px 14px;
+  min-height:110px;
+
+  border:1px solid rgba(255,255,255,.06);
+  transition:.2s;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.law-card.active{
+  cursor:pointer;
+}
+.law-card.active:active{
+  transform:scale(.97);
+}
+
+.law-card.locked{
+  opacity:.55;
+  filter:grayscale(1);
+}
+
+/* CONTENT */
+.law-card-icon{
+  font-size:26px;
+  margin-bottom:8px;
+}
+
+.law-card-title{
+  font-weight:800;
+  font-size:14px;
+}
+
+.law-card-desc{
+  font-size:12px;
+  opacity:.7;
+  margin-top:2px;
+}
+
+/* BADGE */
+.law-badge{
+  position:absolute;
+  top:8px;
+  right:8px;
+  font-size:10px;
+  font-weight:800;
+  padding:4px 6px;
+  border-radius:8px;
+  background:#ff9800;
+  color:#000;
+}
+
+
+
+  </style>
 </head>
 
 <body class="page-library">
 
-<header class="simple-header">
+<header class="simple-header law-header">
   <button onclick="history.back()" class="back-btn">←</button>
-  <div class="title">⚖️ Luật pháp</div>
+
+  <div class="law-header-center">
+    <div class="law-icon">⚖️</div>
+    <div class="law-title">Luật pháp</div>
+    <div class="law-sub">Quy định · Pháp lý · An toàn</div>
+  </div>
 </header>
+
 
 <main class="library-container">
 
-  <div class="library-empty">
-    <div class="icon">📜</div>
-    <div><b>Chuyên mục Luật pháp</b></div>
-    <div style="margin-top:6px;font-size:13px;opacity:.7">
-      Quy định · Kiến thức · Nội dung pháp lý<br>
-      (Đang phát triển)
+  <div class="law-grid">
+
+    <!-- 📄 Điều khoản -->
+    <div class="law-card active">
+      <div class="law-card-icon">📄</div>
+      <div class="law-card-title">Điều khoản sử dụng</div>
+      <div class="law-card-desc">Quy định nền tảng</div>
     </div>
+
+    <!-- 🔐 Quyền riêng tư -->
+    <div class="law-card active">
+      <div class="law-card-icon">🔐</div>
+      <div class="law-card-title">Quyền riêng tư</div>
+      <div class="law-card-desc">Bảo mật dữ liệu</div>
+    </div>
+
+    <!-- ⚠️ Cảnh báo -->
+    <div class="law-card active">
+      <div class="law-card-icon">⚠️</div>
+      <div class="law-card-title">Cảnh báo & An toàn</div>
+      <div class="law-card-desc">Lừa đảo · Vi phạm</div>
+    </div>
+
+    <!-- 📚 Kiến thức -->
+    <div class="law-card locked">
+      <div class="law-card-icon">📚</div>
+      <div class="law-card-title">Kiến thức pháp lý</div>
+      <div class="law-card-desc">Cơ bản · Dễ hiểu</div>
+      <div class="law-badge">SOON</div>
+    </div>
+
+    <!-- 🧠 Hỏi đáp -->
+    <div class="law-card locked">
+      <div class="law-card-icon">🧠</div>
+      <div class="law-card-title">Hỏi đáp</div>
+      <div class="law-card-desc">Tình huống thực tế</div>
+      <div class="law-badge">SOON</div>
+    </div>
+
   </div>
 
 </main>
+
 
 </body>
 </html>
