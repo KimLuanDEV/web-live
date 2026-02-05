@@ -161,6 +161,15 @@ html, body {
 }
 
 
+.invest-card.portfolio{
+  background-image:
+    linear-gradient(180deg, rgba(0,200,255,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/market.jpg");
+
+  box-shadow:
+    0 0 45px rgba(0,200,255,.25),
+    0 12px 30px rgba(0,0,0,.7);
+}
 
 
 
@@ -199,35 +208,57 @@ html, body {
 
 <div class="invest-grid">
 
+  <div class="invest-card portfolio" onclick="openPortfolio()">
+    <h3>📊 Danh mục đầu tư</h3>
+    <div class="risk">6 mảng • Realtime</div>
+    <div class="tap-hint">👆 Xem toàn bộ thị trường</div>
+  </div>
 
-<div class="invest-card silver" onclick="goInvest('silver')">
-  <div class="tap-hint">👆 Xem phân tích</div>
 </div>
 
 
-<div class="invest-card gold" onclick="goInvest('gold')">
-  <div class="tap-hint">👆 Xem phân tích</div>
-</div>
-
-<div class="invest-card diamond" onclick="goInvest('diamond')">
-  <div class="tap-hint">👆 Xem phân tích</div>
-</div>
 
 
-<div class="invest-card oil" onclick="goInvest('oil')">
-  <div class="tap-hint">👆 Xem phân tích</div>
-</div>
 
-<div class="invest-card estate" onclick="goInvest('estate')">
-  <div class="tap-hint">👆 Xem phân tích</div>
-</div>
+<div id="portfolioSheet" class="sheet hidden">
+  <div class="sheet-backdrop" onclick="closePortfolio()"></div>
 
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <div class="sheet-title">📊 Các mảng đầu tư</div>
+      <button class="sheet-close" onclick="closePortfolio()">✕</button>
+    </div>
 
-<div class="invest-card atomic" onclick="goInvest('atomic')">
-  <div class="tap-hint">👆 Xem phân tích</div>
-</div>
+    <div class="sheet-body">
+      <div class="invest-grid">
 
+        <div class="invest-card silver" onclick="goInvest('silver')">
+          <div class="tap-hint">Bạc</div>
+        </div>
 
+        <div class="invest-card gold" onclick="goInvest('gold')">
+          <div class="tap-hint">Vàng</div>
+        </div>
+
+        <div class="invest-card diamond" onclick="goInvest('diamond')">
+          <div class="tap-hint">Kim cương</div>
+        </div>
+
+        <div class="invest-card oil" onclick="goInvest('oil')">
+          <div class="tap-hint">Dầu mỏ</div>
+        </div>
+
+        <div class="invest-card estate" onclick="goInvest('estate')">
+          <div class="tap-hint">Bất động sản</div>
+        </div>
+
+        <div class="invest-card atomic" onclick="goInvest('atomic')">
+          <div class="tap-hint">Nguyên tử</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
 </div>
 
 
