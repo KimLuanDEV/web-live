@@ -747,6 +747,10 @@ app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
 
+// 🔥 SERVE FILE DATA (CHO GAME PHÁ ÁN)
+app.use("/data", express.static(path.join(__dirname, "data")));
+
+
 
 app.post("/api/invest/close-early", (req, res) => {
   try {
