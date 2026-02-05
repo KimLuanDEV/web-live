@@ -289,6 +289,39 @@ h2{
 
 
 
+/* ===== COOK MODE BUTTON – POLISH ===== */
+.cook-mode-btn{
+  width:100%;
+  height:56px;
+  border:none;
+  border-radius:20px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+
+  background:linear-gradient(135deg,#ffd166,#ffb703);
+  color:#000;
+  font-weight:900;
+  font-size:16px;
+
+  box-shadow:
+    0 10px 28px rgba(0,0,0,.7),
+    inset 0 -2px 0 rgba(0,0,0,.15);
+
+  transition:transform .15s ease, box-shadow .15s ease, opacity .15s ease;
+}
+
+.cook-mode-btn:active{
+  transform:scale(.97);
+  box-shadow:
+    0 6px 16px rgba(0,0,0,.6),
+    inset 0 2px 0 rgba(255,255,255,.25);
+}
+
+
+
   </style>
 </head>
 
@@ -310,13 +343,15 @@ h2{
   Đang tải công thức...
 </main>
 
+
 <!-- 🔥 NÚT COOK MODE -->
-<div class="cook-mode-dock">
-  <button class="cook-mode-btn" onclick="enterCookMode()">
+<div class="cook-mode-dock" id="cookDock">
+  <button class="cook-mode-btn" id="cookBtn" onclick="enterCookMode()">
     <span class="cook-icon">🍳</span>
-    <span class="cook-text">Cook Mode</span>
+    <span class="cook-text" id="cookText">Bắt đầu nấu</span>
   </button>
 </div>
+
 
 
 <!-- 🔥 COOK MODE OVERLAY -->

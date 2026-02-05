@@ -68,8 +68,12 @@ async function enterCookMode() {
   step = 0;
   showStep();
 
+  // 🔥 HIỆN COOK MODE
   const cm = document.getElementById("cookMode");
   if (cm) cm.classList.remove("hidden");
+
+  // 🔥 ẨN BOTTOM BAR
+  if (cookDock) cookDock.style.display = "none";
 
   // 🔥 giữ màn hình sáng
   if ("wakeLock" in navigator) {
@@ -81,15 +85,20 @@ async function enterCookMode() {
   }
 }
 
+
 function exitCookMode() {
   const cm = document.getElementById("cookMode");
   if (cm) cm.classList.add("hidden");
+
+  // 🔥 HIỆN LẠI BOTTOM BAR
+  if (cookDock) cookDock.style.display = "";
 
   if (wakeLock) {
     wakeLock.release();
     wakeLock = null;
   }
 }
+
 
 function showStep() {
   const idx = document.getElementById("stepIndex");
@@ -115,3 +124,16 @@ function prevStep() {
     showStep();
   }
 }
+
+
+const cookDock = document.getElementById("cookDock");
+const cookText = document.getElementById("cookText");
+
+// trạng thái khi load xong recipe
+function setCookReady(){
+  if (cookText) cookText.textContent = "Bắt đầu nấu";
+}
+
+// gọi sau khi load JSON thành công
+// 👉 chèn dòng này NGAY SAU `recipe = d;`
+setCookReady();
