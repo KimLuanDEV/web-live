@@ -6,6 +6,24 @@ let remainingTime = 0;
 
 const id = new URLSearchParams(location.search).get("id");
 
+
+function calcTotalTime(steps){
+  if (!Array.isArray(steps)) return 0;
+  return steps.reduce((sum, s) => {
+    if (typeof s === "object" && s.time) {
+      return sum + s.time;
+    }
+    return sum;
+  }, 0);
+}
+
+function formatMinutes(sec){
+  const min = Math.round(sec / 60);
+  return min > 0 ? `${min} phút` : "--";
+}
+
+
+
 // ======================
 // 🔥 LOAD CÔNG THỨC
 // ======================
@@ -24,44 +42,47 @@ fetch(`/data/cooking/recipes/${id}.json`)
       return;
     }
 
-    container.innerHTML = `
-      <div class="recipe-hero">
-        <img src="${d.cover || ''}" alt="${d.title}">
-      </div>
+// 🔥 TÍNH THỜI GIAN TỔNG (ĐÚNG NGUỒN)
+const totalSec = calcTotalTime(d.steps);
 
-      <h2>${d.title || "Không có tiêu đề"}</h2>
+container.innerHTML = `
+  <div class="recipe-hero">
+    <img src="${d.cover || ''}" alt="${d.title}">
+  </div>
 
-      <div class="recipe-meta">
-        ⏱️ ${d.time || "--"} · ⭐ ${d.level || "--"}
-      </div>
+  <h2>${d.title || "Không có tiêu đề"}</h2>
 
-      <div class="recipe-section">
-        <h3>🧂 Nguyên liệu</h3>
-        <ul>
-          ${(d.ingredients || []).map(i => `<li>${i}</li>`).join("")}
-        </ul>
-      </div>
+  <div class="recipe-meta">
+    ⏱️ ${formatMinutes(totalSec)} · ⭐ ${d.level || "--"}
+  </div>
 
-      <div class="recipe-section">
-        <h3>🔥 Các bước</h3>
-        <ol>
-          ${(d.steps || []).map(s => {
-            // hỗ trợ cả step dạng string & object
-            const text = typeof s === "string" ? s : s.text;
-            const detail = typeof s === "object" && s.detail ? s.detail : "";
-            const tip = typeof s === "object" && s.tip ? s.tip : "";
+  <div class="recipe-section">
+    <h3>🧂 Nguyên liệu</h3>
+    <ul>
+      ${(d.ingredients || []).map(i => `<li>${i}</li>`).join("")}
+    </ul>
+  </div>
 
-            return `
-              <li style="margin-bottom:12px">
-                <div><b>${text}</b></div>
-                ${detail ? `<div style="opacity:.85">${detail}</div>` : ""}
-                ${tip ? `<small style="opacity:.6">💡 ${tip}</small>` : ""}
-              </li>
-            `;
-          }).join("")}
-        </ol>
-      </div>
-    `;
+  <div class="recipe-section">
+    <h3>🔥 Các bước</h3>
+    <ol>
+      ${(d.steps || []).map(s => {
+        const text = typeof s === "string" ? s : s.text;
+        const detail = typeof s === "object" && s.detail ? s.detail : "";
+        const tip = typeof s === "object" && s.tip ? s.tip : "";
+
+        return `
+          <li style="margin-bottom:12px">
+            <div><b>${text}</b></div>
+            ${detail ? `<div style="opacity:.85">${detail}</div>` : ""}
+            ${tip ? `<small style="opacity:.6">💡 ${tip}</small>` : ""}
+          </li>
+        `;
+      }).join("")}
+    </ol>
+  </div>
+`;
+
 
     // 🔥 READY
     setCookReady();
