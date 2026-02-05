@@ -4,7 +4,11 @@
   <meta charset="utf-8">
   <title>🎭 Nhập vai</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Global style -->
   <link rel="stylesheet" href="/style.css">
+  <!-- Roleplay style -->
+  <link rel="stylesheet" href="/css/roleplay.css">
 </head>
 
 <body class="page-library">
@@ -14,16 +18,58 @@
   <div class="title">🎭 Nhập vai</div>
 </header>
 
-<main class="library-container">
-  <div class="library-empty">
-    <div class="icon">🎭</div>
-    <h3>Nhập vai</h3>
-    <p>
-      Chế độ nhập vai – tạo nhân vật, kịch bản, tương tác<br>
-      <b>Đang phát triển</b>
-    </p>
+<main class="library-container role-create">
+
+  <div class="role-warning">
+    ⚠️ <b>LƯU Ý QUAN TRỌNG</b><br>
+    Nhân vật chỉ được tạo <b>1 lần duy nhất</b>.<br>
+    Không thể xóa, không thể tạo lại.
+  </div>
+
+  <div class="role-card">
+
+    <div class="role-title">🧍 Tạo nhân vật</div>
+    <div class="role-sub">Bắt đầu cuộc đời nhập vai của bạn</div>
+
+    <!-- NAME -->
+    <div class="field">
+      <label>Tên nhân vật</label>
+      <input id="rpName" type="text" placeholder="Nhập tên" />
+    </div>
+
+    <!-- GENDER -->
+    <div class="field">
+      <label>Giới tính</label>
+      <select id="rpGender">
+        <option value="">-- Chọn --</option>
+        <option value="male">Nam</option>
+        <option value="female">Nữ</option>
+        <option value="other">Khác</option>
+      </select>
+    </div>
+
+    <!-- BIRTH YEAR -->
+    <div class="field">
+      <label>Năm sinh</label>
+      <input id="rpBirth" type="number" placeholder="Ví dụ: 2006" />
+      <div class="hint" id="ageHint"></div>
+    </div>
+
+    <!-- CONFIRM -->
+    <div class="confirm">
+      <input type="checkbox" id="rpConfirm">
+      <label for="rpConfirm">
+        Tôi hiểu rằng nhân vật là <b>vĩnh viễn</b> và không thể tạo lại
+      </label>
+    </div>
+
+    <button id="btnCreateRole" disabled>
+      🔒 Khởi tạo nhân vật
+    </button>
+
   </div>
 </main>
 
+<script src="/js/roleplay.js"></script>
 </body>
 </html>

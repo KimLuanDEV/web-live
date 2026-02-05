@@ -1,0 +1,81 @@
+.role-create{
+  max-width:520px;
+  margin:0 auto;
+}
+
+.role-warning{
+  background:#2a0f0f;
+  border:1px solid #ff3b3b55;
+  color:#ffb3b3;
+  padding:14px;
+  border-radius:12px;
+  font-size:13px;
+  margin-bottom:18px;
+}
+
+.role-card{
+  background:#15151c;
+  border-radius:18px;
+  padding:20px;
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.role-title{
+  font-size:18px;
+  font-weight:800;
+}
+
+.role-sub{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:18px;
+}
+
+.field{
+  margin-bottom:14px;
+}
+
+.field label{
+  font-size:13px;
+  opacity:.8;
+}
+
+.field input,
+.field select{
+  width:100%;
+  margin-top:6px;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.12);
+  background:#0f0f14;
+  color:#fff;
+}
+
+.hint{
+  font-size:12px;
+  margin-top:4px;
+  opacity:.75;
+}
+
+.confirm{
+  display:flex;
+  gap:8px;
+  font-size:13px;
+  margin:16px 0;
+}
+
+#btnCreateRole{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  font-weight:800;
+  background:#444;
+  color:#aaa;
+}
+
+#btnCreateRole.active{
+  background:#ff3b3b;
+  color:#fff;
+  cursor:pointer;
+}
