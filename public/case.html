@@ -113,6 +113,29 @@
   to { transform: translate(-50%, 0); }
 }
 
+#suspectList > div {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 12px;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.suspect-name {
+  font-weight: 700;
+}
+
+.suspect-desc {
+  font-size: 13px;
+  color: #aaa;
+  margin-top: 4px;
+}
+
+.suspect-alibi {
+  font-size: 12px;
+  color: #888;
+  margin-top: 6px;
+}
 
 
   </style>
@@ -138,6 +161,16 @@
     <!-- CLUES -->
     <h3>🔍 Manh mối</h3>
     <div class="clue-grid" id="clueGrid"></div>
+
+<!-- 🧍 NGHI PHẠM -->
+<div id="suspectSection" style="display:none">
+  <h3>🧍 Nghi phạm</h3>
+  <div id="suspectList"></div>
+</div>
+
+
+
+
 
   </main>
 
@@ -219,11 +252,8 @@
       const grid = document.getElementById("clueGrid");
       grid.innerHTML = "";
 
-
 refreshClues();
-
-
-
+checkSuspects();
     } catch (err) {
       document.body.innerHTML =
         "<p style='padding:20px'>❌ Lỗi tải dữ liệu vụ án</p>";
@@ -264,6 +294,33 @@ refreshClues();
 }
  
 
+
+function checkSuspects() {
+  if (!data.suspects) return;
+
+  // chỉ hiện khi đã đọc Camera (c3)
+  if (!readClues.includes("c3")) return;
+
+  const section = document.getElementById("suspectSection");
+  const list = document.getElementById("suspectList");
+
+  section.style.display = "block";
+  list.innerHTML = "";
+
+  data.suspects.forEach(s => {
+    const div = document.createElement("div");
+    div.innerHTML = `
+      <div class="suspect-name">${s.name}</div>
+      <div class="suspect-desc">${s.desc}</div>
+      <div class="suspect-alibi">🕒 Alibi: ${s.alibi}</div>
+    `;
+    list.appendChild(div);
+  });
+}
+
+
+
+
 function openClue(clue) {
   document.getElementById("modalIcon").innerText = clue.icon;
   document.getElementById("modalTitle").innerText = clue.title;
@@ -278,6 +335,7 @@ function openClue(clue) {
   }
 
   refreshClues();
+  checkSuspects();
 }
 
 

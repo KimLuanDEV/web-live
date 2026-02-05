@@ -32,7 +32,27 @@
   "content": "Camera ghi lại hình ảnh một người đội mũ lưỡi trai rời khỏi tầng 3 lúc 3:17 sáng."
 }
 
-    ]
+    ],
+"suspects": [
+  {
+    "id": "s1",
+    "name": "Người hàng xóm tầng 3",
+    "desc": "Sống cùng tầng với nạn nhân. Xuất hiện trong camera hành lang lúc 3:17.",
+    "alibi": "Khai rằng đang ngủ vào thời điểm xảy ra án",
+    "suspicion": 2
+  }
+]
+
+
+
+
+
+
+
+
+
+
+
   },
 
   "002": {
