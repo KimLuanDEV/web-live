@@ -375,16 +375,39 @@ function initSuspicion() {
 
 
 
- function refreshClues() {
+function refreshClues() {
+  const LOCK_KEY = "case_locked_" + caseId;
+  const lockedByDecision =
+    JSON.parse(localStorage.getItem(LOCK_KEY) || "[]");
+
   const grid = document.getElementById("clueGrid");
   grid.innerHTML = "";
 
   data.clues.forEach(c => {
-    const unlocked =
-      !c.locked ||
-      (c.unlockAfter &&
-        c.unlockAfter.every(id => readClues.includes(id)));
 
+    // 1️⃣ Kiểm tra unlock cơ bản + khóa theo quyết định
+    let unlocked =
+      !lockedByDecision.includes(c.id) &&
+      (
+        !c.locked ||
+        (c.unlockAfter &&
+          c.unlockAfter.every(id => readClues.includes(id)))
+      );
+
+    // 2️⃣ Điều kiện nâng cao: nghi ngờ trung bình phải dưới ngưỡng
+    if (unlocked && c.unlockSuspicionBelow != null) {
+      const values = Object.values(suspicionState);
+      const avgSuspicion =
+        values.length
+          ? values.reduce((a, b) => a + b, 0) / values.length
+          : 0;
+
+      if (avgSuspicion >= c.unlockSuspicionBelow) {
+        unlocked = false;
+      }
+    }
+
+    // 3️⃣ Render card
     const div = document.createElement("div");
     div.className = "clue-card" + (unlocked ? "" : " locked");
 
@@ -396,14 +419,17 @@ function initSuspicion() {
       </div>
     `;
 
+    // 4️⃣ Chỉ cho click khi thật sự mở
     if (unlocked) {
       div.onclick = () => openClue(c);
+    } else {
+      div.onclick = null;
     }
 
     grid.appendChild(div);
   });
 }
- 
+
 
 
 function checkSuspects() {
@@ -512,6 +538,7 @@ function confirmDecision() {
 
   chosenSuspect = tempSelectedSuspect;
   localStorage.setItem(DECISION_KEY, chosenSuspect);
+  lockCluesByDecision();
 
   alert("Bạn đã chỉ định nghi phạm chính.\n\nQuyết định này sẽ ảnh hưởng đến diễn biến tiếp theo.");
 
@@ -519,7 +546,30 @@ function confirmDecision() {
     "🔒 Đã chỉ định nghi phạm";
   document.getElementById("btnConfirmDecision").disabled = true;
   document.getElementById("btnConfirmDecision").style.opacity = .4;
+
+  refreshClues();
+
 }
+
+
+function lockCluesByDecision() {
+  if (!chosenSuspect) return;
+
+  const LOCK_KEY = "case_locked_" + caseId;
+  let lockedClues = [];
+
+  data.clues.forEach(c => {
+    if (
+      c.lockedIfSuspect &&
+      c.lockedIfSuspect.includes(chosenSuspect)
+    ) {
+      lockedClues.push(c.id);
+    }
+  });
+
+  localStorage.setItem(LOCK_KEY, JSON.stringify(lockedClues));
+}
+
 
 
 function applyClueEffect(clue) {

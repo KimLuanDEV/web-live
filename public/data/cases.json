@@ -56,7 +56,7 @@
         "status": "Chưa khôi phục",
         "locked": true,
         "unlockAfter": ["c2"],
-        "content": "Một tin nhắn đã bị xóa giữa nạn nhân và một số liên lạc lưu tên 'A'. Nội dung không thể khôi phục hoàn toàn."
+        "content": "Một tin nhắn đã bị xóa giữa nạn nhân và một số liên lạc lưu tên \"A\". Nội dung không thể khôi phục hoàn toàn."
       },
       {
         "id": "c7",
@@ -105,35 +105,33 @@
         "content": "Cửa căn hộ có vết trầy nhẹ gần ổ khóa, giống dấu hiệu cạy cửa nhưng không đủ lực để mở."
       },
       {
-  "id": "c12",
-  "icon": "📑",
-  "title": "Biên bản chỉnh sửa camera",
-  "status": "Bị niêm phong",
-  "locked": true,
-  "unlockAfter": ["c3", "c5"],
-  "unlockSuspicionBelow": 40,
-  "content": "Camera hành lang đã bị chỉnh sửa trong khoảng 3:10–3:20 sáng."
-},
-{
-  "id": "c13",
-  "icon": "🧾",
-  "title": "Hóa đơn quán cà phê",
-  "status": "Đã xác nhận",
-  "locked": false,
-  "content": "Hóa đơn cho thấy một nghi phạm đang ở quán cà phê lúc 3:10 sáng."
-},
-{
-  "id": "c14",
-  "icon": "🧠",
-  "title": "Lời khai nhân chứng ẩn danh",
-  "status": "Chưa xác minh",
-  "locked": true,
-  "redHerring": true,
-  "content": "Một nhân chứng khẳng định thấy nghi phạm rời tòa nhà lúc 2:50."
-}
-
-
-
+        "id": "c12",
+        "icon": "📑",
+        "title": "Biên bản chỉnh sửa camera",
+        "status": "Bị niêm phong",
+        "locked": true,
+        "unlockAfter": ["c3", "c5"],
+        "unlockSuspicionBelow": 40,
+        "lockedIfSuspect": ["s1", "s2"],
+        "content": "Camera hành lang đã bị chỉnh sửa trong khoảng 3:10–3:20 sáng."
+      },
+      {
+        "id": "c13",
+        "icon": "🧾",
+        "title": "Hóa đơn quán cà phê",
+        "status": "Đã xác nhận",
+        "locked": false,
+        "content": "Hóa đơn cho thấy một nghi phạm đang ở quán cà phê lúc 3:10 sáng."
+      },
+      {
+        "id": "c14",
+        "icon": "🧠",
+        "title": "Lời khai nhân chứng ẩn danh",
+        "status": "Chưa xác minh",
+        "locked": true,
+        "redHerring": true,
+        "content": "Một nhân chứng khẳng định thấy nghi phạm rời tòa nhà lúc 2:50."
+      }
     ],
     "suspects": [
       {
