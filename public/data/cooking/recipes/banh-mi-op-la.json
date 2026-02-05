@@ -1,39 +1,32 @@
 {
   "title": "Bánh mì ốp la",
   "cover": "/assets/cooking/banh-mi-op-la.jpg",
-  "time": "10 phút",
+  "time": null,
   "level": "Rất dễ",
   "ingredients": [
     "2 trứng gà",
     "Bánh mì",
     "Xúc xích",
-    "Bơ",
-    "Muối, tiêu"
+    "Bơ"
   ],
   "steps": [
     {
       "text": "Làm nóng chảo với bơ",
-      "detail": "Bắc chảo lên bếp, cho bơ vào đun lửa vừa đến khi bơ tan đều.",
-      "time": 60,
-      "tip": "Không để bơ cháy sẽ bị đắng."
+      "detail": "Bắc chảo lên bếp, cho bơ tan đều.",
+      "time": 120,
+      "tip": "Bơ tan hoàn toàn mới cho trứng."
     },
     {
       "text": "Ốp trứng",
-      "detail": "Đập trứng vào chảo, giữ lửa vừa cho lòng trắng chín, lòng đỏ còn sệt.",
-      "time": 120,
-      "tip": "Có thể rắc chút muối trực tiếp lên trứng."
+      "detail": "Đập trứng vào chảo, giữ lửa vừa.",
+      "time": 180,
+      "tip": "Muốn lòng đào thì không đậy nắp."
     },
     {
       "text": "Chiên xúc xích",
-      "detail": "Cho xúc xích vào chảo, chiên đến khi xém nhẹ.",
-      "time": 90,
-      "tip": "Có thể chiên chung chảo sau khi trứng chín."
-    },
-    {
-      "text": "Hoàn thiện",
-      "detail": "Dọn trứng và xúc xích ra đĩa, ăn kèm bánh mì nóng.",
-      "time": 30,
-      "tip": "Ăn nóng sẽ ngon hơn."
+      "detail": "Cho xúc xích vào chiên xém.",
+      "time": 180,
+      "tip": "Có thể chiên chung chảo."
     }
   ]
 }

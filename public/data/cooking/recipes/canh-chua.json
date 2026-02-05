@@ -1,40 +1,39 @@
 {
   "title": "Canh chua cá",
   "cover": "/assets/cooking/canh-chua.jpg",
-  "time": "30 phút",
+  "time": null,
   "level": "Dễ",
   "ingredients": [
-    "Cá lóc",
+    "Cá",
     "Cà chua",
-    "Me chua",
+    "Me",
     "Dứa",
-    "Rau thơm",
-    "Gia vị"
+    "Rau thơm"
   ],
   "steps": [
     {
       "text": "Nấu nước me",
-      "detail": "Đun sôi nước với me để tạo vị chua nhẹ.",
-      "time": 300,
-      "tip": "Lọc bỏ hạt me để nước trong."
+      "detail": "Đun sôi nước với me.",
+      "time": 420,
+      "tip": "Lọc bỏ hạt me."
     },
     {
       "text": "Nấu cá",
-      "detail": "Cho cá vào nồi, nấu lửa vừa đến khi cá chín.",
-      "time": 420,
-      "tip": "Không đảo mạnh để cá không nát."
+      "detail": "Cho cá vào nấu chín kỹ.",
+      "time": 720,
+      "tip": "Không đảo mạnh."
     },
     {
       "text": "Thêm rau củ",
-      "detail": "Cho cà chua và dứa vào, đun thêm vài phút.",
+      "detail": "Cho cà chua, dứa vào.",
       "time": 300,
-      "tip": "Cho dứa sau cá để giữ vị ngọt."
+      "tip": "Cho dứa sau để không nát."
     },
     {
-      "text": "Nêm và hoàn thiện",
-      "detail": "Nêm gia vị vừa ăn, cho rau thơm vào rồi tắt bếp.",
+      "text": "Hoàn thiện",
+      "detail": "Nêm gia vị, cho rau thơm.",
       "time": 120,
-      "tip": "Ăn nóng sẽ ngon hơn."
+      "tip": "Ăn nóng sẽ ngon."
     }
   ]
 }

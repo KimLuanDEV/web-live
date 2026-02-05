@@ -1,32 +1,30 @@
 {
   "title": "Canh nấm",
   "cover": "/assets/cooking/canh-nam.jpg",
-  "time": "20 phút",
+  "time": null,
   "level": "Dễ",
   "ingredients": [
-    "Nấm rơm",
-    "Nấm kim châm",
-    "Hành lá",
-    "Gia vị"
+    "Nấm các loại",
+    "Hành lá"
   ],
   "steps": [
     {
-      "text": "Đun sôi nước",
-      "detail": "Đun sôi nồi nước với lửa vừa.",
-      "time": 180,
-      "tip": "Có thể thêm ít muối ngay từ đầu."
+      "text": "Đun nước sôi",
+      "detail": "Đun sôi nồi nước.",
+      "time": 360,
+      "tip": "Nước sôi già canh mới ngọt."
     },
     {
       "text": "Nấu nấm",
-      "detail": "Cho các loại nấm vào nấu chín.",
-      "time": 300,
-      "tip": "Không nấu quá lâu để nấm không nhũn."
+      "detail": "Cho nấm vào nấu chín.",
+      "time": 420,
+      "tip": "Không nấu quá lâu."
     },
     {
-      "text": "Nêm và hoàn thiện",
-      "detail": "Nêm gia vị vừa ăn, cho hành lá vào rồi tắt bếp.",
+      "text": "Hoàn thiện",
+      "detail": "Nêm gia vị, cho hành lá.",
       "time": 120,
-      "tip": "Ăn nóng giúp canh thơm hơn."
+      "tip": "Ăn nóng sẽ ngon hơn."
     }
   ]
 }

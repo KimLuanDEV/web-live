@@ -1,33 +1,32 @@
 {
   "title": "Mì xào",
   "cover": "/assets/cooking/mi-xao.jpg",
-  "time": "20 phút",
+  "time": null,
   "level": "Dễ",
   "ingredients": [
     "Mì trứng",
     "Thịt bò",
     "Rau cải",
-    "Tỏi",
-    "Dầu hào"
+    "Tỏi"
   ],
   "steps": [
     {
-      "text": "Trụng mì",
-      "detail": "Trụng mì trong nước sôi 1–2 phút, vớt ra để ráo.",
-      "time": 120,
+      "text": "Đun nước và trụng mì",
+      "detail": "Đun sôi nước, trụng mì rồi vớt ra để ráo.",
+      "time": 300,
       "tip": "Không trụng quá mềm."
     },
     {
-      "text": "Xào nguyên liệu",
-      "detail": "Phi tỏi, cho bò vào xào nhanh, sau đó cho rau vào đảo đều.",
-      "time": 180,
+      "text": "Xào bò và rau",
+      "detail": "Phi tỏi, xào bò nhanh tay rồi cho rau vào.",
+      "time": 300,
       "tip": "Xào lửa lớn để bò mềm."
     },
     {
       "text": "Xào mì",
-      "detail": "Cho mì và gia vị vào chảo, đảo đều tay rồi tắt bếp.",
-      "time": 180,
-      "tip": "Nêm dầu hào vừa phải."
+      "detail": "Cho mì vào, nêm gia vị và đảo đều.",
+      "time": 300,
+      "tip": "Đảo đều tay để mì không dính."
     }
   ]
 }

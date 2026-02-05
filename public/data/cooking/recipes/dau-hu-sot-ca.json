@@ -1,31 +1,29 @@
 {
   "title": "Đậu hũ sốt cà",
   "cover": "/assets/cooking/dau-hu-sot-ca.jpg",
-  "time": "25 phút",
+  "time": null,
   "level": "Dễ",
   "ingredients": [
     "Đậu hũ",
     "Cà chua",
-    "Hành tím",
-    "Tỏi",
-    "Gia vị"
+    "Hành tỏi"
   ],
   "steps": [
     {
       "text": "Chiên đậu hũ",
-      "detail": "Chiên đậu hũ vàng đều các mặt rồi vớt ra để ráo.",
-      "time": 300,
-      "tip": "Chiên lửa vừa để đậu không cháy."
+      "detail": "Chiên đậu vàng đều các mặt.",
+      "time": 420,
+      "tip": "Lửa vừa để đậu không cháy."
     },
     {
       "text": "Làm sốt cà",
-      "detail": "Phi hành tỏi, cho cà chua vào xào nhuyễn.",
-      "time": 300,
-      "tip": "Có thể dằm cà chua cho sốt mịn."
+      "detail": "Phi hành tỏi, xào cà chua cho mềm.",
+      "time": 360,
+      "tip": "Dằm cà chua cho sốt mịn."
     },
     {
       "text": "Hoàn thiện",
-      "detail": "Cho đậu hũ vào sốt, nêm gia vị và đảo nhẹ.",
+      "detail": "Cho đậu vào sốt, đảo nhẹ.",
       "time": 240,
       "tip": "Đảo nhẹ tay để đậu không nát."
     }
