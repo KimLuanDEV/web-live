@@ -49,6 +49,94 @@
       color: #aaa;
       font-size: 14px;
     }
+
+
+    .case-hub {
+  padding: 20px 16px 40px;
+}
+
+.hub-header {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.hub-icon {
+  font-size: 42px;
+}
+
+.hub-title {
+  font-size: 22px;
+  font-weight: 800;
+  margin-top: 6px;
+}
+
+.hub-desc {
+  font-size: 14px;
+  color: #aaa;
+  margin-top: 6px;
+}
+
+.case-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 14px;
+}
+
+.case-card {
+  background: #111;
+  border: 1px solid #222;
+  border-radius: 16px;
+  padding: 16px;
+  cursor: pointer;
+  transition: .2s;
+  position: relative;
+}
+
+.case-card:hover {
+  box-shadow: 0 0 0 1px #00ffd5;
+}
+
+.case-id {
+  font-size: 12px;
+  color: #888;
+}
+
+.case-name {
+  font-size: 17px;
+  font-weight: 700;
+  margin-top: 6px;
+}
+
+.case-meta {
+  margin-top: 8px;
+  display: flex;
+  gap: 10px;
+  font-size: 12px;
+  color: #aaa;
+}
+
+.case-status {
+  margin-top: 12px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.case-status.open {
+  color: #00ffd5;
+}
+
+.case-status.locked {
+  color: #666;
+}
+
+.case-card.locked {
+  opacity: .4;
+  pointer-events: none;
+}
+
+
+
+
   </style>
 </head>
 
@@ -59,14 +147,67 @@
     <b>Game phá án</b>
   </header>
 
-  <main>
-    <div class="icon">🕵️‍♂️</div>
-    <div class="title">Thiên tài phá án</div>
-    <div class="desc">
-      Khu vực đang phát triển.<br>
-      Sắp có điều tra · manh mối · suy luận logic.
+<main class="case-hub">
+
+  <section class="hub-header">
+    <div class="hub-icon">🗂️</div>
+    <div class="hub-title">Hồ sơ các vụ án</div>
+    <div class="hub-desc">
+      Chọn một vụ án để bắt đầu điều tra
     </div>
-  </main>
+  </section>
+
+  <section class="case-grid">
+
+    <!-- CASE 001 -->
+    <div class="case-card"
+         onclick="openCase('001')">
+      <div class="case-id">VỤ ÁN #001</div>
+      <div class="case-name">Cái chết trong căn hộ 317</div>
+      <div class="case-meta">
+        <span>📍 Chung cư</span>
+        <span>⏱️ Đêm</span>
+      </div>
+      <div class="case-status open">Đang mở</div>
+    </div>
+
+    <!-- CASE 002 -->
+    <div class="case-card locked">
+      <div class="case-id">VỤ ÁN #002</div>
+      <div class="case-name">Chiếc vali dưới sông</div>
+      <div class="case-meta">
+        <span>📍 Bến cảng</span>
+        <span>⏱️ Rạng sáng</span>
+      </div>
+      <div class="case-status locked">Chưa mở</div>
+    </div>
+
+    <!-- CASE 003 -->
+    <div class="case-card locked">
+      <div class="case-id">VỤ ÁN #003</div>
+      <div class="case-name">Cuộc gọi lúc 3:17</div>
+      <div class="case-meta">
+        <span>📍 Nhà riêng</span>
+        <span>⏱️ Rạng sáng</span>
+      </div>
+      <div class="case-status locked">Sắp ra mắt</div>
+    </div>
+
+  </section>
+
+</main>
+
+
+
+
+
+<script>
+  function openCase(id) {
+    location.href = "/case.html?id=" + id;
+  }
+</script>
+
+
 
 </body>
 </html>
