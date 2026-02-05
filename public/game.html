@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>🎮 Game</title>
+
+  <style>
+    :root {
+      --bg: #000;
+      --card: #111;
+      --border: #222;
+      --text: #fff;
+      --muted: #888;
+      --accent: #00ffd5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .page-header {
+      display: flex;
+      align-items: center;
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--border);
+      background: #000;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .back-btn {
+      font-size: 20px;
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .page-title {
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    /* HERO */
+    .game-hero {
+      padding: 24px 16px;
+      text-align: center;
+    }
+
+    .game-hero-icon {
+      font-size: 42px;
+      margin-bottom: 10px;
+    }
+
+    .game-hero-title {
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .game-hero-desc {
+      margin-top: 6px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    /* GRID */
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .game-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      padding: 16px;
+      text-align: center;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease;
+      position: relative;
+    }
+
+    .game-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 0 0 1px var(--accent);
+    }
+
+    .game-icon {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .game-title {
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .game-status {
+      margin-top: 6px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .coming-soon {
+      opacity: .6;
+      pointer-events: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header class="page-header">
+    <button class="back-btn" onclick="history.back()">←</button>
+    <div class="page-title">🎮 Game</div>
+  </header>
+
+  <!-- HERO -->
+  <section class="game-hero">
+    <div class="game-hero-icon">🕹️</div>
+    <div class="game-hero-title">Trung tâm trò chơi</div>
+    <div class="game-hero-desc">
+      Nơi tập hợp các mini game – sẽ được mở dần theo thời gian
+    </div>
+  </section>
+
+  <!-- GRID GAME -->
+  <section class="game-grid">
+
+    <!-- GAME SLOT (MẪU) -->
+    <div class="game-card coming-soon">
+      <div class="game-icon">🧩</div>
+      <div class="game-title">Game #1</div>
+      <div class="game-status">Sắp phát triển</div>
+    </div>
+
+    <div class="game-card coming-soon">
+      <div class="game-icon">🕵️‍♂️</div>
+      <div class="game-title">Game #2</div>
+      <div class="game-status">Đang thiết kế</div>
+    </div>
+
+    <div class="game-card coming-soon">
+      <div class="game-icon">🎯</div>
+      <div class="game-title">Game #3</div>
+      <div class="game-status">Coming soon</div>
+    </div>
+
+  </section>
+
+</body>
+</html>
