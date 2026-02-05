@@ -2339,11 +2339,3 @@ function drawResultChart(data, entryPrice){
 }
 
 
-function openPortfolio(){
-  document.getElementById("portfolioSheet").classList.remove("hidden");
-}
-
-function closePortfolio(){
-  document.getElementById("portfolioSheet").classList.add("hidden");
-}
-

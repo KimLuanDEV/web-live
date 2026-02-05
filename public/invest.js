@@ -62,3 +62,20 @@ socket.on("force-logout", (data) => {
   }, 3000);
 });
 
+
+// === PORTFOLIO SHEET ===
+function openPortfolio(){
+  const sheet = document.getElementById("portfolioSheet");
+  if(sheet){
+    sheet.classList.remove("hidden");
+  }else{
+    console.warn("❌ Không tìm thấy #portfolioSheet");
+  }
+}
+
+function closePortfolio(){
+  const sheet = document.getElementById("portfolioSheet");
+  if(sheet){
+    sheet.classList.add("hidden");
+  }
+}
