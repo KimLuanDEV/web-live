@@ -1,0 +1,56 @@
+{
+  "001": {
+    "id": "001",
+    "name": "Cái chết trong căn hộ 317",
+    "desc": "Một người đàn ông được phát hiện tử vong trong căn hộ khóa kín. Không có dấu hiệu đột nhập.",
+    "location": "Chung cư",
+    "time": "Đêm",
+    "clues": [
+      {
+        "id": "c1",
+        "icon": "🩸",
+        "title": "Vết máu",
+        "status": "Đã phân tích",
+        "locked": false
+      },
+      {
+        "id": "c2",
+        "icon": "📱",
+        "title": "Điện thoại nạn nhân",
+        "status": "Chưa đọc",
+        "locked": false
+      },
+      {
+        "id": "c3",
+        "icon": "📷",
+        "title": "Camera hành lang",
+        "status": "Chưa mở",
+        "locked": true
+      }
+    ]
+  },
+
+  "002": {
+    "id": "002",
+    "name": "Chiếc vali dưới sông",
+    "desc": "Một chiếc vali trôi dạt vào bờ sông, bên trong chứa bí mật đáng sợ.",
+    "location": "Bến sông",
+    "time": "Rạng sáng",
+    "clues": [
+      {
+        "id": "c1",
+        "icon": "🧳",
+        "title": "Chiếc vali",
+        "status": "Đã mở",
+        "locked": false
+      },
+      {
+        "id": "c2",
+        "icon": "🧤",
+        "title": "Găng tay",
+        "status": "Đang giám định",
+        "locked": false
+      }
+    ]
+  }
+}
