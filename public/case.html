@@ -483,6 +483,14 @@ function refreshClues() {
 }
 
 
+function getSuspicionLevel(p) {
+  if (p < 25) return "Thấp";
+  if (p < 50) return "Trung bình";
+  if (p < 75) return "Cao";
+  return "Rất cao";
+}
+
+
 
 function checkSuspects() {
   if (!data.suspects) return;
@@ -514,7 +522,11 @@ function checkSuspects() {
         <div class="suspicion-bar">
           <div class="suspicion-fill" style="width:${percent}%"></div>
         </div>
-        <div class="suspicion-label">Độ nghi ngờ: ${percent}%</div>
+       <div class="suspicion-label">
+  Độ nghi ngờ:
+  <b>${getSuspicionLevel(percent)}</b>
+</div>
+
       </div>
     `;
 
@@ -623,21 +635,23 @@ function lockCluesByDecision() {
 }
 
 
-
 function applyClueEffect(clue) {
   data.suspects.forEach(s => {
     if (suspicionState[s.id] == null) return;
 
-    let delta = 0;
+    // 1️⃣ Giá trị nền
+    let delta = clue.redHerring ? 6 : -4;
 
-    // 🔴 Manh mối GIẢ → tăng nghi ngờ sai
-    if (clue.redHerring) {
-      delta = 6;
-    } else {
-      // 🟢 Manh mối thật → giảm nghi ngờ nhẹ
-      delta = -4;
+    // 2️⃣ Manh mối đánh lạc hướng mạnh
+    if (clue.mislead) {
+      delta += 10; // cộng thêm, KHÔNG ghi đè
     }
 
+    // 3️⃣ Nhiễu nhẹ để không quá lộ
+    const noise = Math.floor(Math.random() * 7) - 3; // -3 → +3
+    delta += noise;
+
+    // 4️⃣ Áp dụng vào nghi ngờ
     suspicionState[s.id] = Math.max(
       0,
       Math.min(100, suspicionState[s.id] + delta)

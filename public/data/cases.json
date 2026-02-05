@@ -129,9 +129,12 @@
         "title": "Lời khai nhân chứng ẩn danh",
         "status": "Chưa xác minh",
         "locked": true,
+        "unlockAfter": ["c3"],
         "redHerring": true,
+        "mislead": true,
         "content": "Một nhân chứng khẳng định thấy nghi phạm rời tòa nhà lúc 2:50."
       }
+
     ],
     "suspects": [
       {
