@@ -1,0 +1,20 @@
+{
+  "title": "Mì xào bò",
+  "cover": "/assets/cooking/mi-xao.jpg",
+  "time": "20 phút",
+  "level": "Dễ",
+  "ingredients": [
+    "Mì trứng",
+    "Thịt bò",
+    "Rau cải",
+    "Tỏi",
+    "Dầu hào, nước tương"
+  ],
+  "steps": [
+    "Trụng mì cho mềm",
+    "Xào bò với tỏi",
+    "Cho rau vào đảo nhanh",
+    "Thêm mì và gia vị",
+    "Xào đều tay rồi tắt bếp"
+  ]
+}

@@ -1,24 +1,4 @@
 {
-  "title": "Cơm rang trứng",
-  "cover": "/assets/cooking/com-rang.jpg",
-  "time": "15 phút",
-  "level": "Dễ",
-  "ingredients": [
-    "Cơm nguội",
-    "2 quả trứng",
-    "Hành lá",
-    "Nước mắm"
-  ],
-  "steps": [
-    "Đánh trứng với chút muối",
-    "Làm nóng chảo, phi hành",
-    "Cho cơm vào đảo đều",
-    "Đổ trứng, đảo nhanh tay",
-    "Nêm nước mắm, tắt bếp"
-  ]
-}
-
-{
   "title": "Thịt kho trứng",
   "cover": "/assets/cooking/thit-kho.jpg",
   "time": "60 phút",

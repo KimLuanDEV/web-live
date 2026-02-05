@@ -10,6 +10,67 @@
           "time": "15 phút",
           "level": "Dễ",
           "cover": "/assets/cooking/com-rang.jpg"
+        },
+        {
+          "id": "thit-kho",
+          "title": "Thịt kho trứng",
+          "time": "60 phút",
+          "level": "Trung bình",
+          "cover": "/assets/cooking/thit-kho.jpg"
+        },
+        {
+          "id": "ga-ran",
+          "title": "Gà rán giòn",
+          "time": "45 phút",
+          "level": "Trung bình",
+          "cover": "/assets/cooking/ga-ran.jpg"
+        },
+        {
+          "id": "canh-chua",
+          "title": "Canh chua cá",
+          "time": "30 phút",
+          "level": "Dễ",
+          "cover": "/assets/cooking/canh-chua.jpg"
+        }
+      ]
+    },
+    {
+      "id": "mon-nhanh",
+      "title": "⚡ Món nhanh",
+      "items": [
+        {
+          "id": "mi-xao",
+          "title": "Mì xào bò",
+          "time": "20 phút",
+          "level": "Dễ",
+          "cover": "/assets/cooking/mi-xao.jpg"
+        },
+        {
+          "id": "banh-mi-op-la",
+          "title": "Bánh mì ốp la",
+          "time": "10 phút",
+          "level": "Rất dễ",
+          "cover": "/assets/cooking/banh-mi-op-la.jpg"
+        }
+      ]
+    },
+    {
+      "id": "mon-chay",
+      "title": "🥗 Món chay",
+      "items": [
+        {
+          "id": "dau-hu-sot-ca",
+          "title": "Đậu hũ sốt cà",
+          "time": "25 phút",
+          "level": "Dễ",
+          "cover": "/assets/cooking/dau-hu-sot-ca.jpg"
+        },
+        {
+          "id": "canh-nam",
+          "title": "Canh nấm",
+          "time": "20 phút",
+          "level": "Dễ",
+          "cover": "/assets/cooking/canh-nam.jpg"
         }
       ]
     }

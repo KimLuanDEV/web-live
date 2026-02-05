@@ -1,0 +1,18 @@
+{
+  "title": "Canh nấm",
+  "cover": "/assets/cooking/canh-nam.jpg",
+  "time": "20 phút",
+  "level": "Dễ",
+  "ingredients": [
+    "Nấm rơm",
+    "Nấm kim châm",
+    "Hành lá",
+    "Gia vị"
+  ],
+  "steps": [
+    "Đun sôi nước",
+    "Cho nấm vào nấu",
+    "Nêm gia vị vừa ăn",
+    "Cho hành lá vào, tắt bếp"
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "title": "Bánh mì ốp la",
+  "cover": "/assets/cooking/banh-mi-op-la.jpg",
+  "time": "10 phút",
+  "level": "Rất dễ",
+  "ingredients": [
+    "Trứng gà",
+    "Bánh mì",
+    "Xúc xích",
+    "Bơ",
+    "Muối, tiêu"
+  ],
+  "steps": [
+    "Đun nóng chảo với bơ",
+    "Ốp trứng vừa chín tới",
+    "Chiên xúc xích",
+    "Dọn ra ăn kèm bánh mì"
+  ]
+}

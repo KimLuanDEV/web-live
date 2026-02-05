@@ -1,0 +1,21 @@
+{
+  "title": "Gà rán giòn",
+  "cover": "/assets/cooking/ga-ran.jpg",
+  "time": "45 phút",
+  "level": "Trung bình",
+  "ingredients": [
+    "Đùi gà",
+    "Bột chiên giòn",
+    "Trứng gà",
+    "Muối, tiêu",
+    "Dầu ăn"
+  ],
+  "steps": [
+    "Ướp gà với muối tiêu",
+    "Lăn gà qua trứng",
+    "Áo đều bột chiên giòn",
+    "Đun nóng dầu",
+    "Chiên gà ngập dầu đến vàng giòn",
+    "Vớt ra để ráo dầu"
+  ]
+}
