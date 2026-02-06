@@ -629,7 +629,7 @@ function showRoundResult(multiplier){
 
     setTimeout(() => {
       hideRoundResultModal();
-    }, 2500);
+    }, 5000);
 
     return; // ⛔ DỪNG LUÔN
   }
