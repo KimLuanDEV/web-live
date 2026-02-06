@@ -579,13 +579,18 @@ wheelRound.bets.forEach(o => {
     });
   }
 
+
+
+});
+
+
+
 // 📜 LƯU LỊCH SỬ – 1 DÒNG / 1 ROUND
 wheelHistory.unshift({
   roundId: wheelRound.id,
   multiplier,
   ts: Date.now()
 });
-
 
 
 // 🟡 KHÔNG CÓ AI CƯỢC → VẪN LƯU LỊCH SỬ KẾT QUẢ
