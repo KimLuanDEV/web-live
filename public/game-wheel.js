@@ -39,6 +39,54 @@ let currentBet = 0;
 
 
 
+/**
+ * ✨ Chạy sáng từng ô như roulette rồi chốt
+ * @param {number} winIndex - index ô trúng
+ * @param {Function} done - callback sau khi dừng
+ */
+function runOrbRoulette(winIndex, done){
+  const slots = Array.from(document.querySelectorAll(".orb-slot"));
+  if (!slots.length) return;
+
+  let current = 0;
+  let loops = 0;
+  const totalLoops = 3;      // số vòng chạy đầy
+  let speed = 80;            // ms (ban đầu nhanh)
+  const slowDownAt = 2;      // bắt đầu chậm dần ở vòng cuối
+
+  function step(){
+    // clear
+    slots.forEach(s => s.classList.remove("running","active"));
+
+    // bật ô hiện tại
+    slots[current].classList.add("running");
+
+    // sang ô tiếp
+    current = (current + 1) % slots.length;
+
+    // hoàn thành 1 vòng
+    if (current === 0) loops++;
+
+    // giảm tốc ở vòng cuối
+    if (loops >= slowDownAt){
+      speed += 25; // chậm dần
+    }
+
+    // điều kiện dừng: đã đủ vòng & đúng ô trúng
+    if (loops >= totalLoops && current === winIndex){
+      slots.forEach(s => s.classList.remove("running"));
+      slots[winIndex].classList.add("active"); // 🎯 CHỐT
+      if (done) done();
+      return;
+    }
+
+    setTimeout(step, speed);
+  }
+
+  step();
+}
+
+
 
 // 🔁 KHÔI PHỤC SAU RELOAD → CHỈ ĐÁNH DẤU, KHÔNG CHO VÀO GAME
 (function restoreWheelLock(){
@@ -276,20 +324,13 @@ socket.on("wheel-round-result", data => {
   const { index, multiplier } = data;
   spinning = true;
 
-  const slots = document.querySelectorAll(".orb-slot");
-  slots.forEach(s => s.classList.remove("active"));
-
-  // delay cho cảm giác suspense
-  setTimeout(() => {
-    const winSlot = slots[index];
-    if (winSlot){
-      winSlot.classList.add("active");
-    }
-
+  runOrbRoulette(index, () => {
+    // sau khi chốt ô trúng
     showRoundResult(multiplier);
     spinning = false;
-  }, 1200);
+  });
 });
+
 
 
 
