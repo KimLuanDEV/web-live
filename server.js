@@ -581,10 +581,7 @@ socket.on("wheel-bet", data => {
 
 
 
-// ================================
-// 🔐 CHECK USER CÓ ĐƯỢC VÀO GAME WHEEL KHÔNG
-// ================================
-const uid = socket.data.uid;
+
 
 // user đã vào lệnh trong round hiện tại?
 const alreadyBet =
