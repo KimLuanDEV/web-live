@@ -132,7 +132,7 @@ socket.on("wheel-round-new", data => {
   hasBetThisRound = false; // 🔓 reset cho phiên mới
   hideBetConfirmModal();
   hideRoundResultModal();
-  
+
   console.log("🕒 Phiên mới:", data.roundId);
 
   currentBet = 0;
@@ -309,18 +309,49 @@ function showRoundResult(multiplier){
 
   modal.classList.remove("hidden");
 
+  // 💰 tính tiền trúng (dựa trên bet đã vào lệnh)
+  const winAmount = multiplier > 0
+    ? Math.floor(currentBet * multiplier)
+    : 0;
+
+
+  // 💎 hiệu ứng bay coin khi trúng
+  if (winAmount > 0){
+    spawnFlyDiamond(winAmount);
+  }
+
+
   if (multiplier === 0){
     icon.textContent  = "💥";
     title.textContent = "Trượt rồi!";
-    desc.textContent  = "Rất tiếc, bạn không trúng phiên này.";
+    desc.innerHTML    = `
+      Bạn không trúng phiên này 😢<br>
+      <small>Chúc bạn may mắn ở phiên sau</small>
+    `;
     desc.className    = "bet-modal-desc result-lose";
   } else {
-    icon.textContent  = "🎉";
+    // 🎯 icon theo mức trúng
+    if (multiplier >= 10) icon.textContent = "💎";
+    else if (multiplier >= 5) icon.textContent = "🔥";
+    else if (multiplier >= 2) icon.textContent = "✨";
+    else icon.textContent = "🎉";
+
     title.textContent = "Chúc mừng!";
-    desc.textContent  = `Bạn trúng x${multiplier} 💎`;
+    desc.innerHTML    = `
+      Bạn trúng <b>x${multiplier}</b><br>
+      <span style="font-size:18px;font-weight:900">
+        +${winAmount.toLocaleString()} 💎
+      </span>
+    `;
     desc.className    = "bet-modal-desc result-win";
   }
+
+  // ⏱️ tự đóng sau 3.5s
+  setTimeout(() => {
+    hideRoundResultModal();
+  }, 3500);
 }
+
 
 function hideRoundResultModal(){
   const modal = document.getElementById("roundResultModal");
