@@ -261,16 +261,15 @@ socket.on("wheel-round-result", data => {
   labels.forEach(el => el.classList.remove("active"));
 
   const sliceDeg = 360 / multipliers.length;
+  const pointerOffset = -90; // 🔥 KHỚP VỚI KIM 12h
 
-  // 🎯 GỐC = MŨI KIM (0deg)
-  // Tính góc để TÂM ô index về đúng mũi kim
   const target =
-    360 * 6 +                // quay cho đẹp
-    (index * sliceDeg) +     // vị trí ô
-    (sliceDeg / 2);          // tâm ô
+    360 * 6 +
+    (index * sliceDeg) +
+    (sliceDeg / 2) +
+    pointerOffset;
 
-  // 🔒 KHÔNG reset transform → không nhảy loạn
-  currentRotation = (currentRotation + target) % 360000;
+  currentRotation += target;
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(() => {
