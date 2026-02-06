@@ -468,10 +468,19 @@ io.on("connection", socket => {
 
   socket.data.deviceId = deviceId;
 
-  if (uid) {
-    bindSocketToUser(uid, socket);
-  }
+  if (!uid) return;
 
+  bindSocketToUser(uid, socket);
+
+  // 🔥 GỬI COIN NGAY KHI CONNECT (QUAN TRỌNG)
+  const users = loadUsers();
+  const me = users[uid];
+
+  const coins = Number(me?.profile?.coins || 0);
+
+  socket.emit("coin-update", { coins });
+
+  
   socket.on("disconnect", () => {
     const uid = socket.data.uid;
     if (!uid) return;
