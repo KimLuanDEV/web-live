@@ -16,10 +16,9 @@ const socket = io({
   }
 });
 
-// 💎 NHẬN COIN TỪ SERVER (NGUỒN DUY NHẤT)
+// 💎 nhận coin realtime từ server (nguồn duy nhất)
 socket.on("coin-update", (data) => {
   if (typeof data?.coins !== "number") return;
-
   serverDiamond = data.coins;
   updateDiamondUI();
 });
@@ -29,7 +28,7 @@ socket.on("coin-update", (data) => {
 
 function updateDiamondUI(){
   const el = document.getElementById("diamondValue");
-  if(el){
+  if (el){
     el.textContent = Number(serverDiamond).toLocaleString();
   }
 }
@@ -40,7 +39,7 @@ function updateDiamondUI(){
 const multipliers = [0, 0.5, 1, 2, 5, 10];
 
 
-/* ================= GAME LOGIC ================= */
+/* ================= GAME ACTION ================= */
 
 function spinWheel(){
   if (spinning) return;
@@ -53,20 +52,29 @@ function spinWheel(){
     return;
   }
 
-  // ❗ KIỂM TRA BẰNG COIN SERVER
+  // ❗ kiểm tra theo coin server đang có
   if (bet > serverDiamond){
-    alert("❌ Không đủ kim cương");
+    alert("💎 Không đủ kim cương");
     return;
   }
 
   spinning = true;
 
-  const wheel = document.getElementById("wheel");
+  // ⬆️ gửi yêu cầu quay lên server
+  socket.emit("wheel-spin", { bet });
+}
+
+
+/* ================= SERVER RESULT ================= */
+
+// 🔔 server trả kết quả quay
+socket.on("wheel-result", (data) => {
+  const { bet, multiplier, win, index } = data;
+
+  const wheel  = document.getElementById("wheel");
   const result = document.getElementById("result");
 
   const sliceDeg = 360 / multipliers.length;
-  const index = Math.floor(Math.random() * multipliers.length);
-  const multiplier = multipliers[index];
 
   const rotateDeg =
     360 * 6 +
@@ -82,10 +90,25 @@ function spinWheel(){
     if (multiplier === 0){
       result.textContent = `💥 Trượt! Bạn mất ${bet} 💎`;
     } else {
-      const win = bet * multiplier;
-      result.textContent = `🎉 Trúng x${multiplier} → +${win} 💎`;
+      result.textContent =
+        `🎉 Trúng x${multiplier} → +${win} 💎`;
     }
-
     spinning = false;
   }, 4200);
-}
+});
+
+
+/* ================= SERVER ERROR ================= */
+
+socket.on("wheel-error", (err) => {
+  spinning = false;
+
+  const map = {
+    NOT_LOGIN: "⚠️ Bạn chưa đăng nhập",
+    NOT_ENOUGH_COIN: "💎 Không đủ kim cương",
+    BET_INVALID: "❌ Mức cược không hợp lệ",
+    SERVER_ERROR: "❌ Lỗi hệ thống"
+  };
+
+  alert(map[err?.message] || "❌ Có lỗi xảy ra");
+});

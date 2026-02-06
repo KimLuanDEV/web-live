@@ -481,6 +481,67 @@ io.on("connection", socket => {
   socket.emit("coin-update", { coins });
 
   
+// ================================
+// 🎡 GAME WHEEL – SERVER SIDE
+// ================================
+socket.on("wheel-spin", (data) => {
+  try {
+    const uid = socket.data.uid;
+    if (!uid) {
+      return socket.emit("wheel-error", { message: "NOT_LOGIN" });
+    }
+
+    const bet = Math.floor(Number(data?.bet));
+    if (!bet || bet <= 0) {
+      return socket.emit("wheel-error", { message: "BET_INVALID" });
+    }
+
+    const users = loadUsers();
+    const me = users[uid];
+
+    if (!me?.profile) {
+      return socket.emit("wheel-error", { message: "USER_INVALID" });
+    }
+
+    if (me.profile.coins < bet) {
+      return socket.emit("wheel-error", { message: "NOT_ENOUGH_COIN" });
+    }
+
+    // 🎯 HỆ SỐ BÁNH XE (SERVER QUYẾT ĐỊNH)
+    const multipliers = [0, 0.5, 1, 2, 5, 10];
+    const index = Math.floor(Math.random() * multipliers.length);
+    const multiplier = multipliers[index];
+
+    // 🔻 TRỪ COIN TRƯỚC
+    me.profile.coins -= bet;
+
+    let win = 0;
+    if (multiplier > 0) {
+      win = Math.floor(bet * multiplier);
+      me.profile.coins += win;
+    }
+
+    saveUsers(users);
+
+    // 🔄 UPDATE COIN REALTIME (MỌI TAB)
+    emitCoinUpdate(uid);
+
+    // 🔔 TRẢ KẾT QUẢ CHO CLIENT
+    socket.emit("wheel-result", {
+      bet,
+      multiplier,
+      win,
+      index
+    });
+
+  } catch (err) {
+    console.error("❌ wheel-spin error:", err);
+    socket.emit("wheel-error", { message: "SERVER_ERROR" });
+  }
+});
+
+
+
   socket.on("disconnect", () => {
     const uid = socket.data.uid;
     if (!uid) return;
