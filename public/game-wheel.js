@@ -257,15 +257,20 @@ socket.on("wheel-round-result", data => {
   const { index, multiplier } = data;
   spinning = true;
 
-  const wheel = document.getElementById("wheel");
+  const wheel   = document.getElementById("wheel");
   const pointer = document.querySelector(".pointer");
+
+  const labels  = wheel.querySelectorAll(".wheel-label span");
+  labels.forEach(el => el.classList.remove("active")); // reset
 
   const sliceDeg = 360 / multipliers.length;
 
-  // 🔧 bù trừ vì kim chỉ nằm ở đỉnh (12h)
+  // 🎯 QUY ƯỚC CHUẨN:
+  // - Kim chỉ nằm ở 12h
+  // - Ô trúng = ô index server gửi
   const pointerOffset = -90;
 
-  // 🎯 quay nhiều vòng + dừng đúng TÂM ô
+  // quay nhiều vòng + dừng đúng TÂM ô trúng
   const rotateDeg =
     360 * 6 +
     index * sliceDeg +
@@ -275,7 +280,7 @@ socket.on("wheel-round-result", data => {
   currentRotation += rotateDeg;
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-  // 🔔 hiệu ứng chốt kim (rất quan trọng)
+  // 🔔 kim đập khi chốt
   setTimeout(() => {
     if (pointer){
       pointer.classList.add("hit");
@@ -284,6 +289,11 @@ socket.on("wheel-round-result", data => {
   }, 4000);
 
   setTimeout(() => {
+    // ✨ highlight ô TRÚNG (đóng nhận thức cho user)
+    if (labels[index]){
+      labels[index].classList.add("active");
+    }
+
     // ✨ hiệu ứng trúng lớn
     if (multiplier >= 5){
       wheel.classList.add("win");
@@ -294,6 +304,7 @@ socket.on("wheel-round-result", data => {
     spinning = false;
   }, 4200);
 });
+
 
 
 

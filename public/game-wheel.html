@@ -704,6 +704,40 @@ html, body {
 }
 
 
+/* ================= HƯỚNG TRÚNG THƯỞNG ================= */
+
+.win-line{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform: translateX(-50%);
+  width:4px;
+  height:26px;
+
+  background: linear-gradient(
+    180deg,
+    #ffffff,
+    #ffd700,
+    rgba(255,215,0,0)
+  );
+
+  border-radius: 0 0 4px 4px;
+  z-index:9;
+
+  box-shadow:
+    0 0 12px rgba(255,215,0,.9),
+    0 0 24px rgba(255,215,0,.6);
+}
+
+
+.wheel-label span.active{
+  color:#ffd700;
+  text-shadow:
+    0 0 6px rgba(255,215,0,.9),
+    0 0 14px rgba(255,215,0,.7);
+}
+
+
   </style>
 </head>
 
@@ -738,6 +772,9 @@ html, body {
 
 <div class="wheel-wrap">
   <div class="pointer"></div>
+  <!-- VẠCH TRÚNG THƯỞNG -->
+  <div class="win-line"></div>
+
 
   <div class="wheel-shell">
 <div id="wheel" class="wheel">
