@@ -6,8 +6,7 @@ let roundEndAt = 0;
 let roundTimerInterval = null;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 let lockedBet = 0; // 💰 bet đã chốt cho round
-let roundId = null;
-let currentRoundId = null;
+
 let serverDiamond = 0;   // 💎 coin từ server
 let lastDiamond = 0;
 
@@ -49,41 +48,6 @@ socket.on("coin-update", (data) => {
     updateBetUI();
   }
 });
-
-
-
-/* ================= ROUND STATE ON RELOAD ================= */
-
-socket.on("wheel-round-state", data => {
-  console.log("🔄 Sync round state:", data);
-
-  roundEndAt = data.endAt;
-  startRoundCountdown();
-
-  if (data.hasBet){
-    hasBetThisRound = true;
-
-    // 🔒 khóa UI
-    setBetUILocked(true);
-    setActionText("ĐÃ VÀO LỆNH");
-
-    // 💰 hiển thị lại vốn đã đặt
-    lockedBet  = data.betAmount;
-    currentBet = data.betAmount;
-    updateBetUI();
-
-  } else {
-    hasBetThisRound = false;
-    lockedBet = 0;
-    currentBet = 0;
-
-    setBetUILocked(false);
-    setActionText("VÀO LỆNH");
-    updateBetUI();
-  }
-});
-
-
 
 
 /* ================= UI ================= */
@@ -167,31 +131,26 @@ setActionText("ĐÃ VÀO LỆNH");
 }
 
 socket.on("wheel-round-new", data => {
+  setBetUILocked(false);
+  hasBetThisRound = false; // 🔓 reset cho phiên mới
+  hideBetConfirmModal();
+  hideRoundResultModal();
 
-  // 🔥 NẾU LÀ ROUND MỚI THẬT
-  if (currentRoundId !== data.roundId){
+  console.log("🕒 Phiên mới:", data.roundId);
 
-    hasBetThisRound = false;
-    lockedBet = 0;
-    currentBet = 0;
-    updateBetUI();
-
-    setBetUILocked(false);
-    setActionText("VÀO LỆNH");
-
-    hideBetConfirmModal();
-    hideRoundResultModal();
-  }
-
-  // 📌 cập nhật round hiện tại
-  currentRoundId = data.roundId;
+  currentBet = 0;
+  updateBetUI();
 
   spinning = false;
 
+  const btn = document.getElementById("btnSpin");
+  if (btn) btn.disabled = false;
+
+  // ⏳ START COUNTDOWN
   roundEndAt = data.endAt;
   startRoundCountdown();
+  setActionText("VÀO LỆNH");
 });
-
 
 
 
@@ -298,19 +257,14 @@ function spawnFlyDiamond(amount){
 
     el.textContent = `⏳ ${remain}s`;
 
-if (remain <= 3){
-  setBetUILocked(true);
-  setActionText("ĐÃ KHÓA");
-} else {
-  el.classList.remove("danger");
-
-  // 🔒 nếu đã bet → vẫn khóa
-  if (hasBetThisRound){
-    setBetUILocked(true);
-    setActionText("ĐÃ VÀO LỆNH");
-  }
-}
-
+    // 3s cuối → đỏ
+    if (remain <= 3){
+      el.classList.add("danger");
+      setBetUILocked(true);
+      setActionText("ĐÃ KHÓA");
+    } else {
+      el.classList.remove("danger");
+    }
 
     if (remain <= 0){
       clearInterval(roundTimerInterval);
@@ -362,8 +316,7 @@ function showRoundResult(multiplier){
 const winAmount =
   multiplier > 0
     ? Math.floor(lockedBet * (multiplier - 1))
-    : -lockedBet; // ✅ ĐÚNG
-
+    : -currentBet; // trượt = mất bet
 
 
 

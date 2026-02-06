@@ -528,9 +528,6 @@ setInterval(() => {
 io.on("connection", socket => {
   const { uid, deviceId } = socket.handshake.auth || {};
 
-
-
-
   socket.data.deviceId = deviceId;
 
   if (!uid) return;
@@ -544,20 +541,6 @@ io.on("connection", socket => {
   const coins = Number(me?.profile?.coins || 0);
 
   socket.emit("coin-update", { coins });
-
-
-// ================================
-// 🎡 SEND WHEEL ROUND STATE ON CONNECT
-// ================================
-const myBet = wheelRound.bets.find(b => b.uid === uid);
-
-socket.emit("wheel-round-state", {
-  roundId: wheelRound.id,
-  endAt: wheelRound.endAt,
-  hasBet: !!myBet,
-  betAmount: myBet ? myBet.bet : 0
-});
-
 
   
 // ================================
