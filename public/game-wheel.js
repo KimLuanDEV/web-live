@@ -6,7 +6,8 @@ let roundEndAt = 0;
 let roundTimerInterval = null;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 let lockedBet = 0; // 💰 bet đã chốt cho round
-
+let roundId = null;
+let currentRoundId = null;
 let serverDiamond = 0;   // 💎 coin từ server
 let lastDiamond = 0;
 
@@ -167,26 +168,30 @@ setActionText("ĐÃ VÀO LỆNH");
 
 socket.on("wheel-round-new", data => {
 
-  // ⚠️ CHỈ MỞ KHI CHƯA BET
-  if (!hasBetThisRound){
+  // 🔥 NẾU LÀ ROUND MỚI THẬT
+  if (currentRoundId !== data.roundId){
+
+    hasBetThisRound = false;
+    lockedBet = 0;
+    currentBet = 0;
+    updateBetUI();
+
     setBetUILocked(false);
     setActionText("VÀO LỆNH");
+
+    hideBetConfirmModal();
+    hideRoundResultModal();
   }
 
-  hasBetThisRound = false; // reset cho round MỚI
-  lockedBet = 0;
-
-  hideBetConfirmModal();
-  hideRoundResultModal();
-
-  currentBet = 0;
-  updateBetUI();
+  // 📌 cập nhật round hiện tại
+  currentRoundId = data.roundId;
 
   spinning = false;
 
   roundEndAt = data.endAt;
   startRoundCountdown();
 });
+
 
 
 
