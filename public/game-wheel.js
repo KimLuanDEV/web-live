@@ -387,12 +387,9 @@ setActionText("ĐÃ VÀO LỆNH");
 
 socket.on("wheel-round-new", data => {
 
-  // 🔄 reset trạng thái UI (KHÔNG reset bet logic)
+  // reset trạng thái UI (KHÔNG đụng vốn cược)
   waitingNextRound = false;
   hasBetThisRound  = false;
-
-  // ❌ KHÔNG reset didBetThisRound ở đây nữa
-  // ❌ KHÔNG reset lockedBet ở đây nữa
 
   setActionText("CHỜ KẾT QUẢ");
 
@@ -400,8 +397,8 @@ socket.on("wheel-round-new", data => {
   hideBetConfirmModal();
   hideRoundResultModal();
 
-  currentBet = 0;
-  updateBetUI();
+  // ❌ KHÔNG reset currentBet ở đây nữa
+  // ❌ KHÔNG updateBetUI ở đây nữa
 
   spinning = false;
 
@@ -642,14 +639,17 @@ function showRoundResult(multiplier){
     desc.className = "bet-modal-desc result-win";
   }
 
-  setTimeout(() => {
-    hideRoundResultModal();
+setTimeout(() => {
+  hideRoundResultModal();
 
-    // 🔥 RESET SẠCH TRẠNG THÁI SAU KHI SHOW
-    lockedBet       = 0;
-    didBetThisRound = false;
+  // 🔥 RESET VỐN SAU KHI ĐÃ CÔNG BỐ KẾT QUẢ
+  lockedBet       = 0;
+  didBetThisRound = false;
+  currentBet      = 0;
+  updateBetUI(); // 👈 betDisplay về 0 TẠI ĐÂY
 
-  }, 3500);
+}, 3500);
+
 }
 
 
