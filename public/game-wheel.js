@@ -38,6 +38,14 @@ let currentBet = 0;
 })();
 
 
+// 🔧 SETUP NAN NGAY KHI LOAD TRANG
+window.addEventListener("load", () => {
+  requestAnimationFrame(() => {
+    setupOrbSpokes();
+  });
+});
+
+
 function setupOrbSpokes(){
   const wheel  = document.querySelector(".orb-wheel");
   const core   = document.querySelector(".orb-core");
