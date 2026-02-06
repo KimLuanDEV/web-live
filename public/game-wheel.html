@@ -84,16 +84,48 @@
       font-size:15px;
       opacity:.9;
     }
+
+
+    .slice-label{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:
+    rotate(calc(var(--i) * 60deg))
+    translateY(-95px)
+    rotate(calc(var(--i) * -60deg));
+
+  transform-origin: center;
+  font-weight:800;
+  font-size:15px;
+  color:#fff;
+  text-shadow:
+    0 2px 6px rgba(0,0,0,.9);
+  pointer-events:none;
+}
+
+
+
+
   </style>
 </head>
 
 <body>
 
-  <div class="wheel-wrap">
-    <div class="pointer"></div>
-    <div id="wheel" class="wheel"></div>
-  </div>
+<div class="wheel-wrap">
+  <div class="pointer"></div>
 
+  <div id="wheel" class="wheel">
+
+    <span class="slice-label" style="--i:0">x0</span>
+    <span class="slice-label" style="--i:1">x0.5</span>
+    <span class="slice-label" style="--i:2">x1</span>
+    <span class="slice-label" style="--i:3">x2</span>
+    <span class="slice-label" style="--i:4">x5</span>
+    <span class="slice-label" style="--i:5">x10</span>
+
+  </div>
+</div>
 
 
 
