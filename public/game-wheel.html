@@ -648,25 +648,27 @@ html, body {
     inset 0 0 8px rgba(0,0,0,.8);
 }
 
-/* LABEL */
+/* CONTAINER TEXT */
 .wheel-label{
   position:absolute;
   inset:0;
+  border-radius:50%;
   pointer-events:none;
-  z-index:4;
 }
 
+/* MỖI TEXT = 1 Ô */
 .wheel-label span{
   position:absolute;
   left:50%;
-  top:10px;
-  transform-origin:0 130px;
+  top:50%;
 
+  transform-origin: 0 0;
   font-size:14px;
   font-weight:900;
   color:#fff;
   text-shadow:0 2px 6px rgba(0,0,0,.8);
 }
+
 
 /* KIM CHỈ */
 .pointer{
@@ -738,17 +740,20 @@ html, body {
   <div class="pointer"></div>
 
   <div class="wheel-shell">
-    <div id="wheel" class="wheel"></div>
+<div id="wheel" class="wheel">
 
-    <!-- LABEL HỆ SỐ -->
-    <div class="wheel-label">
-      <span style="transform:rotate(30deg)">x0</span>
-      <span style="transform:rotate(90deg)">x0.5</span>
-      <span style="transform:rotate(150deg)">x1</span>
-      <span style="transform:rotate(210deg)">x2</span>
-      <span style="transform:rotate(270deg)">x5</span>
-      <span style="transform:rotate(330deg)">x10</span>
-    </div>
+  <!-- TEXT GẮN TRỰC TIẾP VÀO BÁNH XE -->
+  <div class="wheel-label">
+    <span data-i="0">x0</span>
+    <span data-i="1">x0.5</span>
+    <span data-i="2">x1</span>
+    <span data-i="3">x2</span>
+    <span data-i="4">x5</span>
+    <span data-i="5">x10</span>
+  </div>
+
+</div>
+
 
     <!-- TRỤC GIỮA -->
     <div class="wheel-center"></div>

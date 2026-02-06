@@ -154,6 +154,35 @@ function resetBet(){
 const multipliers = [0, 0.5, 1, 2, 5, 10];
 
 
+
+
+/* ================= WHEEL LABEL SETUP ================= */
+
+// GẮN TEXT VÀO ĐÚNG Ô + XOAY THEO BÁNH XE
+(function setupWheelLabels(){
+  const wheel = document.getElementById("wheel");
+  if (!wheel) return;
+
+  const labels = wheel.querySelectorAll(".wheel-label span");
+  if (!labels.length) return;
+
+  const sliceDeg = 360 / labels.length;
+
+  labels.forEach((el, i) => {
+    // góc trung tâm của mỗi ô
+    const angle = i * sliceDeg + sliceDeg / 2;
+
+    // text:
+    // 1. xoay vào đúng ô
+    // 2. đẩy ra gần mép bánh
+    // 3. xoay ngược để chữ đứng thẳng
+    el.style.transform =
+      `rotate(${angle}deg) translate(0, -112px) rotate(90deg)`;
+  });
+})();
+
+
+
 /* ================= GAME ACTION ================= */
 
 function spinWheel(){
