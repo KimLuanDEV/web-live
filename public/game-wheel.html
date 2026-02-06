@@ -25,26 +25,18 @@
       height:260px;
     }
 
-    .wheel{
-      width:100%;
-      height:100%;
-      border-radius:50%;
-      background:
-        conic-gradient(
-          #ffd700 0deg 45deg,
-          #ff5252 45deg 90deg,
-          #4caf50 90deg 135deg,
-          #03a9f4 135deg 180deg,
-          #9c27b0 180deg 225deg,
-          #ff9800 225deg 270deg,
-          #00bcd4 270deg 315deg,
-          #e91e63 315deg 360deg
-        );
-      box-shadow:
-        0 0 40px rgba(255,215,0,.5),
-        inset 0 0 25px rgba(0,0,0,.6);
-      transition: transform 4s cubic-bezier(.17,.67,.14,1);
-    }
+ .wheel{
+  background:
+    conic-gradient(
+      #ff3d00 0deg 60deg,     /* x0 */
+      #9e9e9e 60deg 120deg,  /* x0.5 */
+      #4caf50 120deg 180deg, /* x1 */
+      #03a9f4 180deg 240deg, /* x2 */
+      #ffc107 240deg 300deg,/* x5 */
+      #e91e63 300deg 360deg /* x10 */
+    );
+}
+
 
     .pointer{
       position:absolute;
@@ -91,8 +83,38 @@
     <div id="wheel" class="wheel"></div>
   </div>
 
-  <button class="spin-btn" onclick="spinWheel()">🎡 Quay ngay</button>
+
+
+  
+<!-- 💎 BET PANEL -->
+<div style="margin-top:20px; text-align:center; width:260px">
+
+  <div style="margin-bottom:8px; font-size:14px; opacity:.85">
+    💎 Nhập kim cương cược
+  </div>
+
+  <input
+    id="betAmount"
+    type="number"
+    min="1"
+    value="10"
+    style="
+      width:100%;
+      padding:12px;
+      border-radius:12px;
+      border:none;
+      outline:none;
+      font-size:16px;
+      text-align:center;
+      margin-bottom:14px;
+    "
+  />
+
+  <button class="spin-btn" onclick="spinWheel()">🎡 Quay</button>
+
   <div id="result" class="result"></div>
+</div>
+
 
 <script src="/game-wheel.js"></script>
 </body>
