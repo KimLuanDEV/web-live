@@ -41,45 +41,34 @@ let currentBet = 0;
 (function setupOrbSpokes(){
   const wheel  = document.querySelector(".orb-wheel");
   const core   = document.querySelector(".orb-core");
-  const slots  = document.querySelectorAll(".orb-slot");
   const spokes = document.querySelectorAll(".orb-spoke");
+  const slots  = document.querySelectorAll(".orb-slot");
 
-  if (!wheel || !core || !slots.length || !spokes.length) return;
+  if (!wheel || !core || !spokes.length || !slots.length) return;
 
   const wheelRect = wheel.getBoundingClientRect();
+  const coreRect  = core.getBoundingClientRect();
 
-  // tâm trục (relative với wheel)
-  const coreRect = core.getBoundingClientRect();
+  // 🎯 TÂM TRỤC
   const cx = coreRect.left + coreRect.width / 2 - wheelRect.left;
   const cy = coreRect.top  + coreRect.height / 2 - wheelRect.top;
 
-  slots.forEach((slot, i) => {
-    const spoke = spokes[i];
-    if (!spoke) return;
+  // 🎯 BÁN KÍNH VÒNG (PHẢI KHỚP setupOrbSlots)
+  const wheelRadius = 110; // 👈 CHỐT
+  const gap = 6;          // hở nhẹ cho đẹp
 
-    const slotRect = slot.getBoundingClientRect();
+  spokes.forEach((spoke, i) => {
+    const angleDeg = (360 / spokes.length) * i - 90;
+    const angleRad = angleDeg * Math.PI / 180;
 
-    // tâm ô
-    const sx = slotRect.left + slotRect.width / 2 - wheelRect.left;
-    const sy = slotRect.top  + slotRect.height / 2 - wheelRect.top;
+    // 👉 độ dài nan CHỈ TỚI MÉP VÒNG
+    const length = wheelRadius - gap;
 
-    const dx = sx - cx;
-    const dy = sy - cy;
-
-const length = Math.sqrt(dx*dx + dy*dy);
-const angle  = Math.atan2(dy, dx) * 180 / Math.PI;
-
-// 🎯 CHỈ CHẠM MÉP Ô
-const slotRadius = slotRect.width / 2; // 64px / 2 = 32
-const gap = 3;                         // khoảng hở cho đẹp
-
-const finalLength = Math.max(0, length - slotRadius - gap);
-
-spoke.style.transform =
-  `rotate(${angle}deg) scaleX(${finalLength})`;
-
+    spoke.style.transform =
+      `rotate(${angleDeg}deg) scaleX(${length})`;
   });
 })();
+
 
 
 
