@@ -1,4 +1,11 @@
-/* ================= SOCKET COIN SYNC ================= */
+/* ================= GLOBAL STATE ================= */
+
+let spinning = false;
+let currentRotation = 0;
+let serverDiamond = 0; // 💎 CHỈ LẤY TỪ SERVER
+
+
+/* ================= SOCKET CONNECT ================= */
 
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
@@ -9,76 +16,48 @@ const socket = io({
   }
 });
 
-// nhận realtime từ server
+// 💎 NHẬN COIN TỪ SERVER (NGUỒN DUY NHẤT)
 socket.on("coin-update", (data) => {
   if (typeof data?.coins !== "number") return;
 
-  setDiamond(data.coins);
-  refreshDiamond();
+  serverDiamond = data.coins;
+  updateDiamondUI();
 });
 
 
+/* ================= UI ================= */
 
-
-
-let spinning = false;
-let currentRotation = 0;
-
-// 🎯 Các hệ số trên bánh xe
-const multipliers = [
-  0,    // x0
-  0.5,  // x0.5
-  1,    // x1
-  2,    // x2
-  5,    // x5
-  10    // x10
-];
-
-/* ================= DIAMOND (LOCAL CACHE) ================= */
-
-function getDiamond(){
-  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
-  return Number(me.diamond || me.diamonds || 0);
-}
-
-function setDiamond(val){
-  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
-  me.diamond = Math.max(0, Math.floor(val));
-  localStorage.setItem("user_profile", JSON.stringify(me));
-}
-
-function refreshDiamond(){
+function updateDiamondUI(){
   const el = document.getElementById("diamondValue");
   if(el){
-    el.textContent = getDiamond().toLocaleString();
+    el.textContent = Number(serverDiamond).toLocaleString();
   }
 }
 
-// load khi mở trang
-refreshDiamond();
+
+/* ================= GAME CONFIG ================= */
+
+const multipliers = [0, 0.5, 1, 2, 5, 10];
+
 
 /* ================= GAME LOGIC ================= */
 
 function spinWheel(){
-  if(spinning) return;
+  if (spinning) return;
 
   const betInput = document.getElementById("betAmount");
   const bet = Math.floor(Number(betInput.value));
 
-  if(!bet || bet <= 0){
+  if (!bet || bet <= 0){
     alert("❌ Nhập số kim cương hợp lệ");
     return;
   }
 
-  const myDiamond = getDiamond();
-  if(bet > myDiamond){
+  // ❗ KIỂM TRA BẰNG COIN SERVER
+  if (bet > serverDiamond){
     alert("❌ Không đủ kim cương");
     return;
   }
-
-  // 🔻 TRỪ KIM CƯƠNG NGAY KHI BẮT ĐẦU QUAY
-  setDiamond(myDiamond - bet);
-  refreshDiamond();
 
   spinning = true;
 
@@ -100,16 +79,10 @@ function spinWheel(){
   result.textContent = "⏳ Đang quay...";
 
   setTimeout(() => {
-
-    if(multiplier === 0){
+    if (multiplier === 0){
       result.textContent = `💥 Trượt! Bạn mất ${bet} 💎`;
-    }else{
+    } else {
       const win = bet * multiplier;
-
-      // 🔺 CỘNG KIM CƯƠNG KHI TRÚNG
-      setDiamond(getDiamond() + win);
-      refreshDiamond();
-
       result.textContent = `🎉 Trúng x${multiplier} → +${win} 💎`;
     }
 
