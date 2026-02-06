@@ -168,6 +168,23 @@
 
 
 
+/* ===== HEADER DIAMOND ===== */
+.gh-coin{
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  padding:6px 10px;
+  border-radius:999px;
+
+  font-size:14px;
+  font-weight:700;
+
+  background:rgba(255,255,255,.08);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+
   </style>
 </head>
 
@@ -181,15 +198,19 @@
 
   <!-- CENTER -->
   <div class="gh-center">
-    <div class="gh-title">🎮 Vòng quay may mắn</div>
+    <div class="gh-title">Vòng quay may mắn</div>
     <div class="gh-sub">Luck Wheel • Mini Game</div>
   </div>
 
   <!-- RIGHT -->
-  <div class="gh-right">
-    <!-- dùng sau: coin, help, setting -->
-    <!-- <button class="gh-icon">❔</button> -->
+<div class="gh-right">
+  <div class="gh-coin" id="diamondDisplay">
+    💎 <span id="diamondValue">0</span>
   </div>
+</div>
+
+
+
 </header>
 
 
