@@ -719,6 +719,75 @@ html, body {
 }
 
 
+
+
+/* ================= ORB WHEEL ================= */
+
+.orb-wheel{
+  position: relative;
+  width: 280px;
+  height: 280px;
+  margin: 90px auto 0;
+}
+
+/* CORE */
+.orb-core{
+  position:absolute;
+  inset: 38%;
+  border-radius:50%;
+  background: radial-gradient(circle,#fff,#aaa,#222);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  z-index:2;
+
+  box-shadow:
+    0 0 20px rgba(255,255,255,.6),
+    inset 0 0 12px rgba(0,0,0,.8);
+}
+
+/* SLOT CONTAINER */
+.orb-slots{
+  position:absolute;
+  inset:0;
+}
+
+/* SLOT */
+.orb-slot{
+  position:absolute;
+  width:64px;
+  height:64px;
+  border-radius:14px;
+
+  background: rgba(255,255,255,.08);
+  color:#fff;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-weight:900;
+  font-size:14px;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.1),
+    0 6px 18px rgba(0,0,0,.6);
+
+  transition: all .25s ease;
+}
+
+/* SLOT SÁNG (TRÚNG) */
+.orb-slot.active{
+  background: linear-gradient(180deg,#ffd700,#ff9800);
+  color:#000;
+  transform: scale(1.15);
+
+  box-shadow:
+    0 0 30px rgba(255,200,0,.9),
+    0 0 60px rgba(255,160,0,.6);
+}
+
   </style>
 </head>
 
@@ -751,32 +820,25 @@ html, body {
 </header>
 
 
-<div class="wheel-wrap">
-  <div class="pointer"></div>
-  <!-- VẠCH TRÚNG THƯỞNG -->
-  <div class="win-line"></div>
+<div class="orb-wheel">
 
+  <!-- TRỤC GIỮA -->
+  <div class="orb-core">🎡</div>
 
-  <div class="wheel-shell">
-<div id="wheel" class="wheel">
-
-  <!-- TEXT GẮN TRỰC TIẾP VÀO BÁNH XE -->
-  <div class="wheel-label">
-    <span data-i="0">x0</span>
-    <span data-i="1">x0.5</span>
-    <span data-i="2">x1</span>
-    <span data-i="3">x2</span>
-    <span data-i="4">x5</span>
-    <span data-i="5">x10</span>
+  <!-- 8 Ô XUNG QUANH -->
+  <div class="orb-slots">
+    <div class="orb-slot" data-i="0">x0</div>
+    <div class="orb-slot" data-i="1">x0.5</div>
+    <div class="orb-slot" data-i="2">x1</div>
+    <div class="orb-slot" data-i="3">x2</div>
+    <div class="orb-slot" data-i="4">x5</div>
+    <div class="orb-slot" data-i="5">x10</div>
+    <div class="orb-slot" data-i="6">x2</div>
+    <div class="orb-slot" data-i="7">x1</div>
   </div>
 
 </div>
 
-
-    <!-- TRỤC GIỮA -->
-    <div class="wheel-center"></div>
-  </div>
-</div>
 
 
 

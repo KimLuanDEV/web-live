@@ -17,6 +17,27 @@ let currentBet = 0;
 
 
 
+(function setupOrbSlots(){
+  const slots = document.querySelectorAll(".orb-slot");
+  if (!slots.length) return;
+
+  const radius = 110;
+  const cx = 140;
+  const cy = 140;
+
+  slots.forEach((el, i) => {
+    const angle = (360 / slots.length) * i - 90;
+    const rad = angle * Math.PI / 180;
+
+    const x = cx + Math.cos(rad) * radius - 32;
+    const y = cy + Math.sin(rad) * radius - 32;
+
+    el.style.left = x + "px";
+    el.style.top  = y + "px";
+  });
+})();
+
+
 
 
 // 🔁 KHÔI PHỤC SAU RELOAD → CHỈ ĐÁNH DẤU, KHÔNG CHO VÀO GAME
@@ -248,7 +269,6 @@ socket.on("wheel-round-new", data => {
 
 
 
-/* ================= SERVER RESULT ================= */
 socket.on("wheel-round-result", data => {
   hideBetConfirmModal();
   setActionText("ĐANG QUAY");
@@ -256,34 +276,21 @@ socket.on("wheel-round-result", data => {
   const { index, multiplier } = data;
   spinning = true;
 
-  const wheel  = document.getElementById("wheel");
-  const labels = wheel.querySelectorAll(".wheel-label span");
-  labels.forEach(el => el.classList.remove("active"));
+  const slots = document.querySelectorAll(".orb-slot");
+  slots.forEach(s => s.classList.remove("active"));
 
-  const sliceDeg = 360 / multipliers.length;
-  const pointerOffset = -90; // 🔥 KHỚP VỚI KIM 12h
-
-  const target =
-    360 * 6 +
-    (index * sliceDeg) +
-    (sliceDeg / 2) +
-    pointerOffset;
-
-  currentRotation += target;
-  wheel.style.transform = `rotate(${currentRotation}deg)`;
-
+  // delay cho cảm giác suspense
   setTimeout(() => {
-    if (labels[index]) labels[index].classList.add("active");
-
-    if (multiplier >= 5){
-      wheel.classList.add("win");
-      setTimeout(() => wheel.classList.remove("win"), 1000);
+    const winSlot = slots[index];
+    if (winSlot){
+      winSlot.classList.add("active");
     }
 
     showRoundResult(multiplier);
     spinning = false;
-  }, 4200);
+  }, 1200);
 });
+
 
 
 
