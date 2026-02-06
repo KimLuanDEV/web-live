@@ -86,21 +86,23 @@
     }
 
 
-    .slice-label{
+.slice-label{
   position:absolute;
   top:50%;
   left:50%;
+
+  /* 360 / 6 = 60deg */
   transform:
-    rotate(calc(var(--i) * 60deg))
-    translateY(-95px)
-    rotate(calc(var(--i) * -60deg));
+    rotate(calc(var(--i) * 60deg + 30deg))
+    translateY(-60px)
+    rotate(calc(-(var(--i) * 60deg + 30deg)));
 
   transform-origin: center;
+
   font-weight:800;
   font-size:15px;
   color:#fff;
-  text-shadow:
-    0 2px 6px rgba(0,0,0,.9);
+  text-shadow:0 2px 6px rgba(0,0,0,.9);
   pointer-events:none;
 }
 
