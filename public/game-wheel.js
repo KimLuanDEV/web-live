@@ -60,16 +60,28 @@ socket.on("wheel-round-state", data => {
   startRoundCountdown();
 
   if (data.hasBet){
-    // 🔒 đã vào lệnh → khóa cứng
     hasBetThisRound = true;
+
+    // 🔒 khóa UI
     setBetUILocked(true);
     setActionText("ĐÃ VÀO LỆNH");
+
+    // 💰 hiển thị lại vốn đã đặt
+    lockedBet  = data.betAmount;
+    currentBet = data.betAmount;
+    updateBetUI();
+
   } else {
     hasBetThisRound = false;
+    lockedBet = 0;
+    currentBet = 0;
+
     setBetUILocked(false);
     setActionText("VÀO LỆNH");
+    updateBetUI();
   }
 });
+
 
 
 

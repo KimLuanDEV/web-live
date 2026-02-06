@@ -549,10 +549,13 @@ io.on("connection", socket => {
 // ================================
 // 🎡 SEND WHEEL ROUND STATE ON CONNECT
 // ================================
+const myBet = wheelRound.bets.find(b => b.uid === uid);
+
 socket.emit("wheel-round-state", {
   roundId: wheelRound.id,
   endAt: wheelRound.endAt,
-  hasBet: wheelRound.bets.some(b => b.uid === uid)
+  hasBet: !!myBet,
+  betAmount: myBet ? myBet.bet : 0
 });
 
 
