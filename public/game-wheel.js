@@ -194,7 +194,7 @@ socket.on("wheel-round-new", data => {
   // 🔓 CHỈ LÚC NÀY MỚI ĐƯỢC VÀO LẠI
   waitingNextRound = false;
   hasBetThisRound = false;
-  lockedBet = 0;
+ 
 
   localStorage.removeItem("wheel_locked");
   localStorage.removeItem("wheel_locked_bet");
@@ -414,7 +414,10 @@ function showRoundResult(multiplier){
     desc.className    = "bet-modal-desc result-win";
   }
 
-  setTimeout(() => hideRoundResultModal(), 3500);
+ setTimeout(() => {
+  hideRoundResultModal();
+  lockedBet = 0; // ✅ RESET ĐÚNG THỜI ĐIỂM
+}, 3500);
 }
 
 
