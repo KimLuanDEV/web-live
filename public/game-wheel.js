@@ -870,7 +870,8 @@ function renderTopWinners(){
     div.innerHTML = `
       <div class="tw-rank">${["🥇","🥈","🥉"][i]}</div>
       <div class="tw-name">${u.name || "Người chơi"}</div>
-      <div class="tw-win">+${Number(u.totalWin || 0).toLocaleString()} 💎</div>
+      <div class="tw-win">+${Number(u.winAmount || 0).toLocaleString()} 💎</div>
+
     `;
 
     wrap.appendChild(div);
