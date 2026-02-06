@@ -16,7 +16,7 @@ let currentBet = 0;
 let didBetThisRound = false; // ✅ chỉ true nếu user thực sự bet
 // 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
 let wheelHistory = [];
-
+let pendingWheelHistory = null;
 
 (function setupOrbSlots(){
   const slots = document.querySelectorAll(".orb-slot");
@@ -227,6 +227,14 @@ socket.on("wheel-history", list => {
 // 🔔 realtime update sau mỗi vòng quay
 socket.on("wheel-history-update", list => {
   if (!Array.isArray(list)) return;
+
+  // ⏳ đang quay → giữ lại, CHƯA render
+  if (spinning){
+    pendingWheelHistory = list;
+    return;
+  }
+
+  // ✅ không quay → render ngay
   wheelHistory = list;
   renderQuickHistory();
 });
@@ -422,6 +430,14 @@ socket.on("wheel-round-result", data => {
     showRoundResult(multiplier);
 
 
+      // 📜 render history SAU KHI QUAY XONG (hồi hộp)
+  if (pendingWheelHistory){
+    wheelHistory = pendingWheelHistory;
+    pendingWheelHistory = null;
+    renderQuickHistory();
+  }
+
+  
     // 🔓 CHỈ LÚC NÀY MỚI MỞ BET BAR
     waitingNextRound = false;
     hasBetThisRound = false;
