@@ -79,3 +79,12 @@ function closePortfolio(){
     sheet.classList.add("hidden");
   }
 }
+
+
+function openGameHub(){
+  document.getElementById("gameHubSheet")?.classList.remove("hidden");
+}
+
+function closeGameHub(){
+  document.getElementById("gameHubSheet")?.classList.add("hidden");
+}

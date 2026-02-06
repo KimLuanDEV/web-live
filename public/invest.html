@@ -277,6 +277,47 @@ html, body {
 }
 
 
+
+.invest-card.games{
+  background-image:
+    linear-gradient(180deg, rgba(255,0,120,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/games.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 45px rgba(255,0,120,.25),
+    0 12px 30px rgba(0,0,0,.7);
+}
+
+
+
+.invest-card.detective{
+  background-image:
+    linear-gradient(180deg, rgba(0,180,255,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/detective.jpg");
+}
+
+.invest-card.roleplay{
+  background-image:
+    linear-gradient(180deg, rgba(255,100,180,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/roleplay.jpg");
+}
+
+.invest-card.locked{
+  filter: grayscale(1);
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+.invest-card.coming-soon{
+  background:
+    linear-gradient(180deg, rgba(120,120,120,.35), rgba(0,0,0,.95));
+}
+
+
 </style>
 
 
@@ -311,13 +352,22 @@ html, body {
 
 <div class="invest-grid">
 
+  <!-- TRADE -->
   <div class="invest-card portfolio" onclick="openPortfolio()">
     <h3>Trade</h3>
     <div class="risk">6 mảng • Realtime</div>
     <div class="tap-hint">👆 Xem toàn bộ</div>
   </div>
 
+  <!-- GAMES -->
+  <div class="invest-card games" onclick="openGameHub()">
+    <h3>Games</h3>
+    <div class="risk">Nhiều thể loại • Đang phát triển</div>
+    <div class="tap-hint">🎮 Xem tất cả</div>
+  </div>
+
 </div>
+
 
 
 
@@ -364,6 +414,39 @@ html, body {
   </div>
 </div>
 
+
+
+<div id="gameHubSheet" class="sheet hidden">
+  <div class="sheet-backdrop" onclick="closeGameHub()"></div>
+
+  <div class="sheet-box">
+    <div class="sheet-head">
+      <div class="sheet-title">Game Center</div>
+      <button class="sheet-close" onclick="closeGameHub()">✕</button>
+    </div>
+
+    <div class="sheet-body">
+      <div class="invest-grid">
+
+        <!-- 🕵️ GAME PHÁ ÁN -->
+        <div class="invest-card detective" onclick="location.href='/game-detective.html'">
+          <div class="asset-name">Thiên tài phá án</div>
+        </div>
+
+        <!-- ❤️ GAME NHẬP VAI -->
+        <div class="invest-card roleplay locked">
+          <div class="asset-name">Nhập vai</div>
+        </div>
+
+        <!-- ➕ GAME KHÁC -->
+        <div class="invest-card coming-soon">
+          <div class="asset-name">Coming soon</div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
 
 
 <script src="/socket.io/socket.io.js"></script>
