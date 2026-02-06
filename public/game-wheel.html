@@ -212,6 +212,66 @@
 }
 
 
+/* ================= BET PANEL ENHANCE ================= */
+
+.invest-action{
+  background: rgba(255,255,255,.04);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.06),
+    0 10px 30px rgba(0,0,0,.5);
+}
+
+/* QUICK ADD 3 CỘT */
+.coin-quick.grid-3{
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+}
+
+/* BUTTON STYLE */
+.coin-quick button,
+.coin-ratio button,
+.coin-reset-only button{
+  height: 38px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  background: rgba(255,255,255,.08);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.coin-quick button:active,
+.coin-ratio button:active,
+.spin-btn:active{
+  transform: scale(.96);
+}
+
+/* ALL IN nổi bật hơn */
+.coin-ratio .all-in{
+  background: linear-gradient(180deg,#ff5252,#ff1744);
+  box-shadow: 0 6px 18px rgba(255,80,80,.5);
+}
+
+/* RESET */
+.coin-reset-only{
+  margin-top: 10px;
+  text-align: center;
+}
+
+.coin-reset-only .key-clear{
+  background: rgba(255,80,80,.15);
+  color: #ff8080;
+}
+
+
 
   </style>
 </head>
@@ -269,15 +329,17 @@
     <button class="all-in" onclick="setBetRatio(1)">ALL IN</button>
   </div>
 
-  <!-- QUICK ADD -->
-  <div class="coin-quick">
-    <button onclick="addBet(10)">+10</button>
-    <button onclick="addBet(50)">+50</button>
-    <button onclick="addBet(100)">+100</button>
-    <button onclick="addBet(500)">+500</button>
-    <button onclick="addBet(1000)">+1K</button>
-    <button onclick="addBet(5000)">+5K</button>
-  </div>
+<!-- QUICK ADD (3 CỘT) -->
+<div class="coin-quick grid-3">
+  <button onclick="addBet(10)">+10</button>
+  <button onclick="addBet(50)">+50</button>
+  <button onclick="addBet(100)">+100</button>
+
+  <button onclick="addBet(500)">+500</button>
+  <button onclick="addBet(1000)">+1K</button>
+  <button onclick="addBet(5000)">+5K</button>
+</div>
+
 
   <!-- RESET -->
   <div class="coin-reset-only">
