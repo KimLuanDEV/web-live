@@ -25,22 +25,19 @@
       height:260px;
     }
 
-
-
 .wheel{
-  position:relative;
   width:100%;
   height:100%;
   border-radius:50%;
 
   background:
     conic-gradient(
-      #ff3d00 0deg 60deg,
-      #9e9e9e 60deg 120deg,
-      #4caf50 120deg 180deg,
-      #03a9f4 180deg 240deg,
-      #ffc107 240deg 300deg,
-      #e91e63 300deg 360deg
+      #ff3d00 0deg 60deg,      /* x0 */
+      #9e9e9e 60deg 120deg,   /* x0.5 */
+      #4caf50 120deg 180deg,  /* x1 */
+      #03a9f4 180deg 240deg,  /* x2 */
+      #ffc107 240deg 300deg, /* x5 */
+      #e91e63 300deg 360deg  /* x10 */
     );
 
   box-shadow:
@@ -49,34 +46,6 @@
 
   transition: transform 4s cubic-bezier(.17,.67,.14,1);
 }
-
-
-.wheel::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-repeat:no-repeat;
-  background-position:center;
-  background-size:contain;
-}
-
-/* mỗi lớp ảnh đặt riêng bằng pseudo layer */
-.wheel::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    url("/assets/wheel/x0.png") center 22% no-repeat,
-    url("/assets/wheel/x0_5.png") 78% center no-repeat,
-    url("/assets/wheel/x1.png") center 78% no-repeat,
-    url("/assets/wheel/x2.png") 22% center no-repeat,
-    url("/assets/wheel/x5.png") 65% 35% no-repeat,
-    url("/assets/wheel/x10.png") 35% 65% no-repeat;
-
-  background-size:80px;
-  pointer-events:none;
-}
-
 
 
 
@@ -115,42 +84,16 @@
       font-size:15px;
       opacity:.9;
     }
-
-
-.slice-label{
-  position:absolute;
-  top:50%;
-  left:50%;
-
-  /* canh đúng tâm chữ */
-  transform:
-    translate(-50%, -50%)
-    rotate(calc(var(--i) * 60deg + 30deg))
-    translate(0, -72px)
-    rotate(calc(-(var(--i) * 60deg + 30deg)));
-
-  font-weight:900;
-  font-size:15px;
-  color:#fff;
-  text-shadow:0 2px 8px rgba(0,0,0,.95);
-  pointer-events:none;
-  letter-spacing:.2px;
-}
-
-
-
-
   </style>
 </head>
 
 <body>
 
-<div class="wheel-wrap">
-  <div class="pointer"></div>
-
-  <div id="wheel" class="wheel">
+  <div class="wheel-wrap">
+    <div class="pointer"></div>
+    <div id="wheel" class="wheel"></div>
   </div>
-</div>
+
 
 
 
