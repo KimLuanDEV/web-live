@@ -634,8 +634,9 @@ wheelHistory = wheelHistory.slice(0, MAX_WHEEL_HISTORY);
 // 💾 lưu file (chống restart)
 saveWheelHistory(wheelHistory);
 
-// 🔔 realtime push cho TẤT CẢ client
-io.emit("wheel-history-update", wheelHistory);
+// 🔔 realtime push – CHỈ 1 LẦN / ROUND
+io.emit("wheel-history-update", wheelHistory.slice(0, MAX_WHEEL_HISTORY));
+
 
 
 
