@@ -336,7 +336,7 @@ function resetBet(){
 
 /* ================= GAME CONFIG ================= */
 
-const multipliers = [0, 0.5, 1, 2, 5, 10];
+const multipliers = [0.4, 0.7, 1, 2, 5, 10];
 
 
 
