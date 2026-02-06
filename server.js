@@ -44,28 +44,6 @@ function loadWheelHistory(){
 }
 
 
-function getTopWinners(history){
-  const map = {};
-
-  history.forEach(h => {
-    if (!h.uid || !h.winAmount || h.winAmount <= 0) return;
-
-    if (!map[h.uid]){
-      map[h.uid] = {
-        uid: h.uid,
-        name: h.name || "Người chơi",
-        totalWin: 0
-      };
-    }
-
-    map[h.uid].totalWin += h.winAmount;
-  });
-
-  return Object.values(map)
-    .sort((a,b) => b.totalWin - a.totalWin)
-    .slice(0,3);
-}
-
 
 
 function saveWheelHistory(list){
@@ -554,7 +532,10 @@ setInterval(() => {
     const index = Math.floor(Math.random() * multipliers.length);
     const multiplier = multipliers[index];
 
- wheelRound.bets.forEach(o => {
+// 🏆 TOP WINNERS CHO PHIÊN HIỆN TẠI
+const roundWinners = [];
+
+wheelRound.bets.forEach(o => {
   const me = users[o.uid];
   if (!me?.profile) return;
 
@@ -564,7 +545,7 @@ setInterval(() => {
     // 💰 cộng coin
     me.profile.coins += winAmount;
 
-    // 🏆 LƯU LỊCH SỬ NGƯỜI THẮNG
+    // 📜 lưu lịch sử (để hiển thị history)
     wheelHistory.unshift({
       roundId: wheelRound.id,
       uid: o.uid,
@@ -574,10 +555,24 @@ setInterval(() => {
       winAmount,
       ts: Date.now()
     });
+
+    // 🏆 lưu cho TOP PHIÊN NÀY
+    roundWinners.push({
+      uid: o.uid,
+      name: me.profile.name || "Người chơi",
+      winAmount
+    });
   }
 });
 
 
+// 🥇 TOP 3 THẮNG NHIỀU NHẤT TRONG PHIÊN NÀY
+const topRoundWinners = roundWinners
+  .sort((a, b) => b.winAmount - a.winAmount)
+  .slice(0, 3);
+
+// 🔔 gửi cho client
+io.emit("wheel-top-winners", topRoundWinners);
 
 
     saveUsers(users);
@@ -589,13 +584,6 @@ setInterval(() => {
       index,
       multiplier
     });
-
-
-const topWinners = getTopWinners(wheelHistory);
-
-io.emit("wheel-top-winners", topWinners);
-
-
 
 
 
