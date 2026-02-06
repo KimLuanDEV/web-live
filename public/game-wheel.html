@@ -506,6 +506,17 @@ html, body {
 
 
 
+/* TRÚNG */
+.result-win{
+  color: #ffd700;
+}
+
+/* TRƯỢT */
+.result-lose{
+  color: #ff5252;
+}
+
+
   </style>
 </head>
 
@@ -593,8 +604,6 @@ html, body {
 </button>
 
 
-    <div id="result" class="result"></div>
-
   </div>
 </div>
 
@@ -622,6 +631,26 @@ html, body {
 </div>
 
 
+
+
+
+<!-- 🎉 MODAL: KẾT QUẢ PHIÊN QUAY -->
+<div class="bet-modal hidden" id="roundResultModal">
+  <div class="bet-modal-backdrop" onclick="hideRoundResultModal()"></div>
+
+  <div class="bet-modal-box" onclick="event.stopPropagation()">
+    <div class="bet-modal-icon" id="roundResultIcon">🎡</div>
+    <div class="bet-modal-title" id="roundResultTitle">Kết quả</div>
+
+    <div class="bet-modal-desc" id="roundResultDesc">
+      --
+    </div>
+
+    <div class="bet-modal-note">
+      ⏳ Phiên mới sẽ bắt đầu ngay sau đó
+    </div>
+  </div>
+</div>
 
 
 <script src="/socket.io/socket.io.js"></script>

@@ -101,7 +101,7 @@ const multipliers = [0, 0.5, 1, 2, 5, 10];
 /* ================= GAME ACTION ================= */
 
 function spinWheel(){
-    
+
 if (hasBetThisRound) return;
 
 
@@ -131,7 +131,8 @@ setActionText("ĐÃ VÀO LỆNH");
 socket.on("wheel-round-new", data => {
   hasBetThisRound = false; // 🔓 reset cho phiên mới
   hideBetConfirmModal();
-
+  hideRoundResultModal();
+  
   console.log("🕒 Phiên mới:", data.roundId);
 
   currentBet = 0;
@@ -153,14 +154,13 @@ socket.on("wheel-round-new", data => {
 /* ================= SERVER RESULT ================= */
 
 socket.on("wheel-round-result", data => {
-hideBetConfirmModal();
-setActionText("ĐANG QUAY");
-  const { index, multiplier } = data;
+  hideBetConfirmModal();
+  setActionText("ĐANG QUAY");
 
+  const { index, multiplier } = data;
   spinning = true;
 
-  const wheel  = document.getElementById("wheel");
-  const result = document.getElementById("result");
+  const wheel = document.getElementById("wheel");
 
   const sliceDeg = 360 / multipliers.length;
   const rotateDeg =
@@ -171,17 +171,12 @@ setActionText("ĐANG QUAY");
   currentRotation += rotateDeg;
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
-  result.textContent = "⏳ Đang quay...";
-
   setTimeout(() => {
-    if (multiplier === 0){
-      result.textContent = "💥 Trượt!";
-    } else {
-      result.textContent = `🎉 Trúng x${multiplier}`;
-    }
+    showRoundResult(multiplier);
     spinning = false;
   }, 4200);
 });
+
 
 
 /* ================= SERVER ERROR ================= */
@@ -300,3 +295,34 @@ function hideBetConfirmModal(){
 document.addEventListener("keydown", e => {
   if (e.key === "Escape") hideBetConfirmModal();
 });
+
+
+
+
+function showRoundResult(multiplier){
+  const modal = document.getElementById("roundResultModal");
+  const icon  = document.getElementById("roundResultIcon");
+  const title = document.getElementById("roundResultTitle");
+  const desc  = document.getElementById("roundResultDesc");
+
+  if (!modal) return;
+
+  modal.classList.remove("hidden");
+
+  if (multiplier === 0){
+    icon.textContent  = "💥";
+    title.textContent = "Trượt rồi!";
+    desc.textContent  = "Rất tiếc, bạn không trúng phiên này.";
+    desc.className    = "bet-modal-desc result-lose";
+  } else {
+    icon.textContent  = "🎉";
+    title.textContent = "Chúc mừng!";
+    desc.textContent  = `Bạn trúng x${multiplier} 💎`;
+    desc.className    = "bet-modal-desc result-win";
+  }
+}
+
+function hideRoundResultModal(){
+  const modal = document.getElementById("roundResultModal");
+  if (modal) modal.classList.add("hidden");
+}
