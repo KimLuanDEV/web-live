@@ -88,9 +88,11 @@
     /* ================= GAME HEADER ================= */
 
 .game-header{
-  position: sticky;
+  position: fixed;        /* 🔒 CỐ ĐỊNH TRÊN CÙNG */
   top: 0;
-  z-index: 100;
+  left: 0;
+  right: 0;
+  z-index: 999;
 
   height: 64px;
   padding: 0 12px;
@@ -101,8 +103,8 @@
 
   background: linear-gradient(
     180deg,
-    rgba(0,0,0,.85),
-    rgba(0,0,0,.55)
+    rgba(0,0,0,.9),
+    rgba(0,0,0,.7)
   );
 
   backdrop-filter: blur(8px);
