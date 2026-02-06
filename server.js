@@ -579,16 +579,11 @@ wheelRound.bets.forEach(o => {
     });
   }
 
-  // 📜 LUÔN LƯU LỊCH SỬ – KỂ CẢ x0
-  wheelHistory.unshift({
-    roundId: wheelRound.id,
-    uid: o.uid,
-    name: me.profile.name || "Người chơi",
-    bet: o.bet,
-    multiplier,
-    winAmount,      // = 0 nếu x0
-    ts: Date.now()
-  });
+// 📜 LƯU LỊCH SỬ – 1 DÒNG / 1 ROUND
+wheelHistory.unshift({
+  roundId: wheelRound.id,
+  multiplier,
+  ts: Date.now()
 });
 
 
