@@ -602,9 +602,11 @@ html, body {
 
 <!-- ✅ MODAL: ĐÃ VÀO LỆNH -->
 <div class="bet-modal hidden" id="betConfirmModal">
-  <div class="bet-modal-backdrop"></div>
+ <div class="bet-modal-backdrop" onclick="hideBetConfirmModal()"></div>
 
-  <div class="bet-modal-box">
+
+<div class="bet-modal-box" onclick="event.stopPropagation()">
+
     <div class="bet-modal-icon">✅</div>
     <div class="bet-modal-title">Đã vào lệnh</div>
 

@@ -4,6 +4,7 @@ let spinning = false;
 let currentRotation = 0;
 let roundEndAt = 0;
 let roundTimerInterval = null;
+let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 
 let serverDiamond = 0;   // 💎 coin từ server
 let lastDiamond = 0;
@@ -100,6 +101,10 @@ const multipliers = [0, 0.5, 1, 2, 5, 10];
 /* ================= GAME ACTION ================= */
 
 function spinWheel(){
+    
+if (hasBetThisRound) return;
+
+
   if (currentBet <= 0){
     alert("❌ Chưa nhập vốn cược");
     return;
@@ -110,15 +115,21 @@ function spinWheel(){
     return;
   }
 
-  socket.emit("wheel-bet", {
-    bet: currentBet
-  });
+socket.emit("wheel-bet", { bet: currentBet });
+
+// 🔒 đánh dấu đã vào lệnh
+hasBetThisRound = true;
+
+const btn = document.getElementById("btnSpin");
+if (btn) btn.disabled = true;
 
 showBetConfirmModal(currentBet);
 setActionText("ĐÃ VÀO LỆNH");
+
 }
 
 socket.on("wheel-round-new", data => {
+  hasBetThisRound = false; // 🔓 reset cho phiên mới
   hideBetConfirmModal();
 
   console.log("🕒 Phiên mới:", data.roundId);
@@ -176,6 +187,7 @@ setActionText("ĐANG QUAY");
 /* ================= SERVER ERROR ================= */
 
 socket.on("wheel-error", (err) => {
+  hasBetThisRound = false;
   spinning = false;
 
   const btn = document.getElementById("btnSpin");
@@ -283,3 +295,8 @@ function hideBetConfirmModal(){
   const modal = document.getElementById("betConfirmModal");
   if (modal) modal.classList.add("hidden");
 }
+
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") hideBetConfirmModal();
+});
