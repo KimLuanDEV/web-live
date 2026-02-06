@@ -84,10 +84,113 @@
       font-size:15px;
       opacity:.9;
     }
+
+    /* ================= GAME HEADER ================= */
+
+.game-header{
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  height: 64px;
+  padding: 0 12px;
+
+  display: grid;
+  grid-template-columns: 48px 1fr 48px;
+  align-items: center;
+
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.85),
+    rgba(0,0,0,.55)
+  );
+
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(255,255,255,.08);
+}
+
+/* LEFT */
+.gh-left{
+  display:flex;
+  align-items:center;
+}
+
+.gh-back{
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.gh-back:active{
+  transform: scale(.92);
+}
+
+/* CENTER */
+.gh-center{
+  text-align:center;
+  pointer-events:none;
+}
+
+.gh-title{
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.3px;
+}
+
+.gh-sub{
+  font-size:12px;
+  opacity:.7;
+}
+
+/* RIGHT */
+.gh-right{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+}
+
+.gh-icon{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:16px;
+}
+
+
+
   </style>
 </head>
 
 <body>
+
+<header class="game-header">
+  <!-- LEFT -->
+  <div class="gh-left">
+    <button class="gh-back" onclick="history.back()">←</button>
+  </div>
+
+  <!-- CENTER -->
+  <div class="gh-center">
+    <div class="gh-title">🎮 Vòng quay may mắn</div>
+    <div class="gh-sub">Luck Wheel • Mini Game</div>
+  </div>
+
+  <!-- RIGHT -->
+  <div class="gh-right">
+    <!-- dùng sau: coin, help, setting -->
+    <!-- <button class="gh-icon">❔</button> -->
+  </div>
+</header>
+
+
 
   <div class="wheel-wrap">
     <div class="pointer"></div>
