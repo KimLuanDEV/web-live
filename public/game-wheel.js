@@ -71,7 +71,7 @@ const angle  = Math.atan2(dy, dx) * 180 / Math.PI;
 
 // 🎯 CHỈ CHẠM MÉP Ô
 const slotRadius = slotRect.width / 2; // 64px / 2 = 32
-const gap = 6;                         // khoảng hở cho đẹp
+const gap = 3;                         // khoảng hở cho đẹp
 
 const finalLength = Math.max(0, length - slotRadius - gap);
 
