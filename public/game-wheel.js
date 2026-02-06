@@ -449,3 +449,25 @@ window.addEventListener("beforeunload", (e) => {
     e.returnValue = "";
   }
 });
+
+
+// 🔒 CHẶN PHÍM RELOAD (F5 / CTRL+R)
+window.addEventListener("keydown", (e) => {
+  if (!hasBetThisRound) return;
+
+  // F5
+  if (e.key === "F5") {
+    e.preventDefault();
+    showLockedBackModal();
+    return;
+  }
+
+  // Ctrl + R / Cmd + R
+  if (
+    (e.ctrlKey || e.metaKey) &&
+    e.key.toLowerCase() === "r"
+  ) {
+    e.preventDefault();
+    showLockedBackModal();
+  }
+});
