@@ -23,6 +23,52 @@ const ONE_DAY = 24 * 60 * 60 * 1000; // 🔥 24h
 
 
 
+// ================================
+// 🎡 WHEEL HISTORY (REALTIME + PERSIST)
+// ================================
+const WHEEL_HISTORY_FILE =
+  "/opt/render/project/data/wheel_history.json";
+
+const MAX_WHEEL_HISTORY = 20;
+
+function loadWheelHistory(){
+  try{
+    if (!fs.existsSync(WHEEL_HISTORY_FILE)) return [];
+    return JSON.parse(
+      fs.readFileSync(WHEEL_HISTORY_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load wheel history failed", e);
+    return [];
+  }
+}
+
+function saveWheelHistory(list){
+  try{
+    fs.writeFileSync(
+      WHEEL_HISTORY_FILE,
+      JSON.stringify(list, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save wheel history failed", e);
+  }
+}
+
+// 📜 history global
+let wheelHistory = loadWheelHistory();
+
+
+// 🔥 chỉ giữ lịch sử vòng quay trong 24h
+const now = Date.now();
+wheelHistory = wheelHistory.filter(
+  h => h.ts && now - h.ts <= ONE_DAY
+);
+
+// 💾 lưu lại sau khi dọn rác
+saveWheelHistory(wheelHistory);
+
+
+
 const INVEST_HISTORY_FILE =
   "/opt/render/project/data/invest_history.json";
 
@@ -502,6 +548,26 @@ setInterval(() => {
       multiplier
     });
 
+
+// 📜 UPDATE WHEEL HISTORY
+wheelHistory.unshift({
+  roundId: wheelRound.id,
+  multiplier,
+  index,
+  ts: Date.now()
+});
+
+// 🔒 giữ tối đa N kết quả
+wheelHistory = wheelHistory.slice(0, MAX_WHEEL_HISTORY);
+
+// 💾 lưu file (chống restart)
+saveWheelHistory(wheelHistory);
+
+// 🔔 realtime push cho TẤT CẢ client
+io.emit("wheel-history-update", wheelHistory);
+
+
+
     const id = Date.now();
     wheelRound = {
       id,
@@ -541,6 +607,11 @@ io.on("connection", socket => {
   const coins = Number(me?.profile?.coins || 0);
 
   socket.emit("coin-update", { coins });
+
+
+// 📜 gửi lịch sử vòng quay cho user mới vào
+socket.emit("wheel-history", wheelHistory);
+
 
   
 // ================================

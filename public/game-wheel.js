@@ -14,10 +14,8 @@ let lastDiamond = 0;
 // 🎯 BET STATE (GIỐNG INVEST)
 let currentBet = 0;
 let didBetThisRound = false; // ✅ chỉ true nếu user thực sự bet
-
-const QUICK_HISTORY_KEY = "wheel_quick_history";
-const QUICK_HISTORY_MAX = 8;
-
+// 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
+let wheelHistory = [];
 
 
 (function setupOrbSlots(){
@@ -219,6 +217,23 @@ socket.on("coin-update", (data) => {
 });
 
 
+// 📜 nhận lịch sử khi mới vào / reload
+socket.on("wheel-history", list => {
+  if (!Array.isArray(list)) return;
+  wheelHistory = list;
+  renderQuickHistory();
+});
+
+// 🔔 realtime update sau mỗi vòng quay
+socket.on("wheel-history-update", list => {
+  if (!Array.isArray(list)) return;
+  wheelHistory = list;
+  renderQuickHistory();
+});
+
+
+
+
 /* ================= UI ================= */
 
 
@@ -406,23 +421,6 @@ socket.on("wheel-round-result", data => {
     // ✅ HIỂN THỊ KẾT QUẢ
     showRoundResult(multiplier);
 
-    // 📜 LƯU QUICK HISTORY (PHÍA TRÊN BET BAR)
-    const list = JSON.parse(
-      localStorage.getItem(QUICK_HISTORY_KEY) || "[]"
-    );
-
-    list.unshift({
-      multiplier,
-      time: Date.now()
-    });
-
-    localStorage.setItem(
-      QUICK_HISTORY_KEY,
-      JSON.stringify(list.slice(0, QUICK_HISTORY_MAX))
-    );
-
-    // 🔄 render lại khối lịch sử
-    renderQuickHistory();
 
     // 🔓 CHỈ LÚC NÀY MỚI MỞ BET BAR
     waitingNextRound = false;
@@ -756,22 +754,18 @@ function renderQuickHistory(){
   const wrap = document.getElementById("quickHistoryList");
   if (!wrap) return;
 
-  const list = JSON.parse(
-    localStorage.getItem(QUICK_HISTORY_KEY) || "[]"
-  );
-
   wrap.innerHTML = "";
 
-  if (!list.length){
+  if (!wheelHistory.length){
     wrap.innerHTML = `<span class="qh-empty">Chưa có dữ liệu</span>`;
     return;
   }
 
-  list.forEach((item, idx) => {
+  wheelHistory.forEach((item, idx) => {
     const span = document.createElement("span");
     span.className = "qh-item";
 
-    // 🔥 CHIP MỚI NHẤT
+    // 🔥 highlight chip mới nhất
     if (idx === 0){
       span.classList.add("latest");
     }
@@ -792,4 +786,3 @@ function renderQuickHistory(){
 }
 
 
-document.addEventListener("DOMContentLoaded", renderQuickHistory);
