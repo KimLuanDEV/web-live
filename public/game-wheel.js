@@ -13,6 +13,7 @@ let lastDiamond = 0;
 
 // 🎯 BET STATE (GIỐNG INVEST)
 let currentBet = 0;
+let didBetThisRound = false; // ✅ chỉ true nếu user thực sự bet
 
 const QUICK_HISTORY_KEY = "wheel_quick_history";
 const QUICK_HISTORY_MAX = 8;
@@ -345,6 +346,7 @@ socket.emit("wheel-bet", { bet: currentBet });
 
 hasBetThisRound = true;
 lockedBet = currentBet;
+didBetThisRound = true;
 
 // 🔒 LƯU TRẠNG THÁI LOCK
 localStorage.setItem("wheel_locked", "1");
@@ -362,24 +364,31 @@ setActionText("ĐÃ VÀO LỆNH");
 
 socket.on("wheel-round-new", data => {
 
+  // 🔄 RESET TRẠNG THÁI PHIÊN
   waitingNextRound = false;
-  hasBetThisRound = false;
+  hasBetThisRound  = false;
+  didBetThisRound  = false;   // 🔥 QUAN TRỌNG: reset cờ đã bet
+  lockedBet        = 0;       // 🔥 tránh rò thưởng phiên cũ
 
-  // ❌ KHÔNG mở bet bar ở đây nữa
+  // ❌ KHÔNG mở bet bar ngay
   setActionText("CHỜ KẾT QUẢ");
 
+  // Ẩn toàn bộ modal / overlay của phiên trước
   hideRoundLockOverlay();
   hideBetConfirmModal();
   hideRoundResultModal();
 
+  // Reset UI bet
   currentBet = 0;
   updateBetUI();
 
   spinning = false;
 
+  // ⏱️ BẮT ĐẦU COUNTDOWN PHIÊN MỚI
   roundEndAt = data.endAt;
   startRoundCountdown();
 });
+
 
 
 
@@ -570,13 +579,14 @@ function showRoundResult(multiplier){
 
   modal.classList.remove("hidden");
 
-  // 🚫 TRƯỜNG HỢP KHÔNG ĐẶT CƯỢC
-  if (!lockedBet || lockedBet <= 0){
+  // 🚫 KHÔNG BET PHIÊN NÀY → KHÔNG TRẢ THƯỞNG
+  if (!didBetThisRound){
     icon.textContent  = "👀";
     title.textContent = "Bạn không tham gia phiên này";
     desc.innerHTML    = `
       <span style="font-size:14px; opacity:.8">
-        Hãy vào lệnh ở phiên tiếp theo để có cơ hội trúng thưởng 💎
+        Phiên này bạn không đặt cược 💭<br>
+        Hãy vào lệnh ở vòng tiếp theo nhé 💎
       </span>
     `;
     desc.className = "bet-modal-desc result-neutral";
@@ -585,7 +595,7 @@ function showRoundResult(multiplier){
       hideRoundResultModal();
     }, 2500);
 
-    return; // ⛔ DỪNG TẠI ĐÂY
+    return; // ⛔ DỪNG LUÔN
   }
 
   // ✅ payout = tổng coin được cộng lại từ server
@@ -600,12 +610,13 @@ function showRoundResult(multiplier){
         -${lockedBet.toLocaleString()} 💎
       </span>
     `;
-    desc.className    = "bet-modal-desc result-lose";
-  } else {
-    if (multiplier >= 10) icon.textContent = "💎";
-    else if (multiplier >= 5) icon.textContent = "🔥";
-    else if (multiplier >= 2) icon.textContent = "✨";
-    else icon.textContent = "🎉";
+    desc.className = "bet-modal-desc result-lose";
+  } 
+  else {
+    if (multiplier >= 10)      icon.textContent = "💎";
+    else if (multiplier >= 5)  icon.textContent = "🔥";
+    else if (multiplier >= 2)  icon.textContent = "✨";
+    else                       icon.textContent = "🎉";
 
     title.textContent = multiplier === 1 ? "Hòa vốn!" : "Chúc mừng!";
     desc.innerHTML    = `
@@ -617,15 +628,18 @@ function showRoundResult(multiplier){
         (Lãi ròng: ${(payout - lockedBet).toLocaleString()} 💎)
       </div>
     `;
-    desc.className    = "bet-modal-desc result-win";
+    desc.className = "bet-modal-desc result-win";
   }
 
   setTimeout(() => {
     hideRoundResultModal();
-    lockedBet = 0; // reset sau khi show xong
+
+    // 🔥 RESET SẠCH TRẠNG THÁI SAU KHI SHOW
+    lockedBet       = 0;
+    didBetThisRound = false;
+
   }, 3500);
 }
-
 
 
 
