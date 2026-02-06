@@ -50,6 +50,29 @@ socket.on("coin-update", (data) => {
 });
 
 
+
+/* ================= ROUND STATE ON RELOAD ================= */
+
+socket.on("wheel-round-state", data => {
+  console.log("🔄 Sync round state:", data);
+
+  roundEndAt = data.endAt;
+  startRoundCountdown();
+
+  if (data.hasBet){
+    // 🔒 đã vào lệnh → khóa cứng
+    hasBetThisRound = true;
+    setBetUILocked(true);
+    setActionText("ĐÃ VÀO LỆNH");
+  } else {
+    hasBetThisRound = false;
+    setBetUILocked(false);
+    setActionText("VÀO LỆNH");
+  }
+});
+
+
+
 /* ================= UI ================= */
 
 function updateDiamondUI(){
@@ -316,7 +339,8 @@ function showRoundResult(multiplier){
 const winAmount =
   multiplier > 0
     ? Math.floor(lockedBet * (multiplier - 1))
-    : -currentBet; // trượt = mất bet
+    : -lockedBet; // ✅ ĐÚNG
+
 
 
 
