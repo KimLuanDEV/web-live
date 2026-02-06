@@ -113,6 +113,8 @@ function spinWheel(){
   socket.emit("wheel-bet", {
     bet: currentBet
   });
+
+setActionText("ĐÃ VÀO LỆNH");
 }
 
 socket.on("wheel-round-new", data => {
@@ -129,6 +131,7 @@ socket.on("wheel-round-new", data => {
   // ⏳ START COUNTDOWN
   roundEndAt = data.endAt;
   startRoundCountdown();
+  setActionText("VÀO LỆNH");
 });
 
 
@@ -136,6 +139,7 @@ socket.on("wheel-round-new", data => {
 /* ================= SERVER RESULT ================= */
 
 socket.on("wheel-round-result", data => {
+setActionText("ĐANG QUAY");
   const { index, multiplier } = data;
 
   spinning = true;
@@ -242,6 +246,8 @@ function spawnFlyDiamond(amount){
     // 3s cuối → đỏ
     if (remain <= 3){
       el.classList.add("danger");
+      document.getElementById("btnSpin").disabled = true;
+      setActionText("ĐÃ KHÓA");
     } else {
       el.classList.remove("danger");
     }
@@ -250,4 +256,10 @@ function spawnFlyDiamond(amount){
       clearInterval(roundTimerInterval);
     }
   }, 300);
+}
+
+
+function setActionText(text){
+  const btn = document.getElementById("btnSpin");
+  if (btn) btn.textContent = text;
 }
