@@ -74,9 +74,9 @@ let currentBet = 0;
     const slotRadius = Math.min(slotRect.width, slotRect.height) / 2;
 
     const fullLen = Math.sqrt(dx*dx + dy*dy);
-    const gap = 2; // khe cực nhỏ cho đẹp
+const visualInset = 2; // 👈 đâm vào ô 2px (để che khe shadow)
+const finalLen = Math.max(0, fullLen - slotRadius + visualInset);
 
-    const finalLen = Math.max(0, fullLen - slotRadius - gap);
 
     // SET
     spoke.style.width = finalLen + "px";
