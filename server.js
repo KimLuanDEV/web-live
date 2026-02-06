@@ -593,6 +593,20 @@ wheelRound.bets.forEach(o => {
 
 
 
+// 🟡 KHÔNG CÓ AI CƯỢC → VẪN LƯU LỊCH SỬ KẾT QUẢ
+if (!wheelRound.bets.length){
+  wheelHistory.unshift({
+    roundId: wheelRound.id,
+    uid: null,
+    name: "Hệ thống",
+    bet: 0,
+    multiplier,
+    winAmount: 0,
+    ts: Date.now()
+  });
+}
+
+
 // 🥇 TOP 3 THẮNG NHIỀU NHẤT TRONG PHIÊN NÀY
 const topRoundWinners = roundWinners
   .sort((a, b) => b.winAmount - a.winAmount)
