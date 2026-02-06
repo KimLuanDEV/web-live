@@ -418,6 +418,9 @@ socket.on("wheel-round-result", data => {
   const { index, multiplier } = data;
   spinning = true;
 
+
+ setOrbSpinning();
+
   runOrbRoulette(index, () => {
 
     // ✅ HIỂN THỊ KẾT QUẢ
@@ -523,7 +526,10 @@ function spawnFlyDiamond(amount){
   roundTimerInterval = setInterval(() => {
     const remain = Math.max(0, Math.ceil((roundEndAt - Date.now()) / 1000));
 
-    el.textContent = `⏳ ${remain}s`;
+    el.textContent = `${remain}`;
+
+      // 🔥 HIỆN SỐ NGAY TRONG ORB
+  updateOrbCountdown(remain);
 
 if (remain <= 3){
   el.classList.add("danger");
@@ -799,3 +805,22 @@ function renderQuickHistory(){
 }
 
 
+function updateOrbCountdown(sec){
+  const el = document.getElementById("orbCore");
+  if (!el) return;
+
+  el.classList.add("countdown");
+  el.classList.remove("spinning");
+
+  el.textContent = sec > 0 ? sec : "🎡";
+}
+
+function setOrbSpinning(){
+  const el = document.getElementById("orbCore");
+  if (!el) return;
+
+  el.classList.remove("countdown");
+  el.classList.add("spinning");
+
+  el.textContent = "⏳";
+}

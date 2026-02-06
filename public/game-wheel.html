@@ -974,6 +974,19 @@ html, body {
 }
 
 
+/* ⏳ COUNTDOWN TRONG ORB CORE */
+.orb-core.countdown{
+  font-size: 26px;
+  font-weight: 900;
+  color: #ffd700;
+  letter-spacing: .5px;
+}
+
+.orb-core.spinning{
+  font-size: 26px;
+  color: #fff;
+}
+
 
   </style>
 </head>
@@ -1010,7 +1023,8 @@ html, body {
 <div class="orb-wheel">
 
   <!-- TRỤC GIỮA -->
-  <div class="orb-core">🎡</div>
+  <div class="orb-core" id="orbCore">--</div>
+
 
 
   <!-- NAN NỐI TRỤC → Ô -->
