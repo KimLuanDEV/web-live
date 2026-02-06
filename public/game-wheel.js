@@ -98,9 +98,7 @@ const multipliers = [0, 0.5, 1, 2, 5, 10];
 /* ================= GAME ACTION ================= */
 
 function spinWheel(){
-  if (spinning) return;
-
-  if (!currentBet || currentBet <= 0){
+  if (currentBet <= 0){
     alert("❌ Chưa nhập vốn cược");
     return;
   }
@@ -110,29 +108,36 @@ function spinWheel(){
     return;
   }
 
-  spinning = true;
-
-  // 🔒 khoá nút quay
-  const btn = document.getElementById("btnSpin");
-  if (btn) btn.disabled = true;
-
-  // ⬆️ gửi cược lên server
-  socket.emit("wheel-spin", {
+  socket.emit("wheel-bet", {
     bet: currentBet
   });
 }
 
+socket.on("wheel-round-new", data => {
+  console.log("🕒 Phiên mới:", data.roundId);
+
+  // reset UI cho round mới
+  currentBet = 0;
+  updateBetUI();
+
+  spinning = false;
+
+  const btn = document.getElementById("btnSpin");
+  if (btn) btn.disabled = false;
+});
+
 
 /* ================= SERVER RESULT ================= */
 
-socket.on("wheel-result", (data) => {
-  const { bet, multiplier, win, index } = data;
+socket.on("wheel-round-result", data => {
+  const { index, multiplier } = data;
+
+  spinning = true;
 
   const wheel  = document.getElementById("wheel");
   const result = document.getElementById("result");
 
   const sliceDeg = 360 / multipliers.length;
-
   const rotateDeg =
     360 * 6 +
     index * sliceDeg +
@@ -145,21 +150,11 @@ socket.on("wheel-result", (data) => {
 
   setTimeout(() => {
     if (multiplier === 0){
-      result.textContent = `💥 Trượt! Bạn mất ${bet} 💎`;
+      result.textContent = "💥 Trượt!";
     } else {
-      result.textContent =
-        `🎉 Trúng x${multiplier} → +${win} 💎`;
+      result.textContent = `🎉 Trúng x${multiplier}`;
     }
-
-    // 🔁 reset bet sau khi quay xong
-    currentBet = 0;
-    updateBetUI();
-
     spinning = false;
-
-    const btn = document.getElementById("btnSpin");
-    if (btn) btn.disabled = false;
-
   }, 4200);
 });
 
