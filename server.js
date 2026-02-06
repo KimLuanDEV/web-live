@@ -528,9 +528,33 @@ setInterval(() => {
   try {
     const users = loadUsers();
 
-    const multipliers = [0, 0.5, 1, 2, 5, 10];
-    const index = Math.floor(Math.random() * multipliers.length);
-    const multiplier = multipliers[index];
+// 🎯 WEIGHTED MULTIPLIER (CÂN BẰNG GAME)
+const weightedMultipliers = [
+  { m: 0,   w: 45 },
+  { m: 0.5, w: 20 },
+  { m: 1,   w: 15 },
+  { m: 2,   w: 12 },
+  { m: 5,   w: 6  },
+  { m: 10,  w: 2  }
+];
+
+function pickMultiplierWeighted(){
+  const total = weightedMultipliers.reduce((s, x) => s + x.w, 0);
+  let r = Math.random() * total;
+
+  for (const item of weightedMultipliers){
+    if ((r -= item.w) <= 0){
+      return item.m;
+    }
+  }
+  return 0;
+}
+
+// 🎡 PICK KẾT QUẢ
+const multiplier = pickMultiplierWeighted();
+const multipliers = weightedMultipliers.map(x => x.m);
+const index = multipliers.indexOf(multiplier);
+
 
 // 🏆 TOP WINNERS CHO PHIÊN HIỆN TẠI
 const roundWinners = [];
