@@ -41,45 +41,39 @@ let currentBet = 0;
 (function setupOrbSpokes(){
   const wheel  = document.querySelector(".orb-wheel");
   const core   = document.querySelector(".orb-core");
-  const slots  = document.querySelectorAll(".orb-slot");
   const spokes = document.querySelectorAll(".orb-spoke");
 
-  if (!wheel || !core || !slots.length || !spokes.length) return;
+  if (!wheel || !core || !spokes.length) return;
 
   const wheelRect = wheel.getBoundingClientRect();
+  const coreRect  = core.getBoundingClientRect();
 
-  // tâm trục (relative với wheel)
-  const coreRect = core.getBoundingClientRect();
+  // 🎯 tâm trục
   const cx = coreRect.left + coreRect.width / 2 - wheelRect.left;
   const cy = coreRect.top  + coreRect.height / 2 - wheelRect.top;
 
-  slots.forEach((slot, i) => {
-    const spoke = spokes[i];
-    if (!spoke) return;
+  // 🎯 BÁN KÍNH VÒNG (PHẢI KHỚP setupOrbSlots)
+  const ringRadius = 110;
 
-    const slotRect = slot.getBoundingClientRect();
+  // 🎯 BÁN KÍNH Ô
+  const slotRadius = 32; // 64 / 2
 
-    // tâm ô
-    const sx = slotRect.left + slotRect.width / 2 - wheelRect.left;
-    const sy = slotRect.top  + slotRect.height / 2 - wheelRect.top;
+  // 🎯 khoảng hở để không chạm ô
+  const gap = 4;
 
-    const dx = sx - cx;
-    const dy = sy - cy;
+  const finalLength = ringRadius - slotRadius - gap;
 
-const length = Math.sqrt(dx*dx + dy*dy);
-const angle  = Math.atan2(dy, dx) * 180 / Math.PI;
+  spokes.forEach((spoke, i) => {
+    const angle = (360 / spokes.length) * i - 90;
 
-// 🎯 CHỈ CHẠM MÉP Ô
-const slotRadius = slotRect.width / 2; // 64px / 2 = 32
-const gap = 6;                         // khoảng hở cho đẹp
+    // set chiều dài thật
+    spoke.style.width = finalLength + "px";
 
-const finalLength = Math.max(0, length - slotRadius - gap);
-
-spoke.style.transform =
-  `rotate(${angle}deg) scaleX(${finalLength})`;
-
+    // chỉ xoay
+    spoke.style.transform = `rotate(${angle}deg)`;
   });
 })();
+
 
 
 
