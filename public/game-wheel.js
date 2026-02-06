@@ -382,7 +382,25 @@ function showRoundResult(multiplier){
 
   modal.classList.remove("hidden");
 
-  // ✅ payout = tổng coin được cộng lại từ server (bet * multiplier)
+  // 🚫 TRƯỜNG HỢP KHÔNG ĐẶT CƯỢC
+  if (!lockedBet || lockedBet <= 0){
+    icon.textContent  = "👀";
+    title.textContent = "Bạn không tham gia phiên này";
+    desc.innerHTML    = `
+      <span style="font-size:14px; opacity:.8">
+        Hãy vào lệnh ở phiên tiếp theo để có cơ hội trúng thưởng 💎
+      </span>
+    `;
+    desc.className = "bet-modal-desc result-neutral";
+
+    setTimeout(() => {
+      hideRoundResultModal();
+    }, 2500);
+
+    return; // ⛔ DỪNG TẠI ĐÂY
+  }
+
+  // ✅ payout = tổng coin được cộng lại từ server
   const payout = Math.floor(lockedBet * multiplier);
 
   if (multiplier === 0){
@@ -414,11 +432,12 @@ function showRoundResult(multiplier){
     desc.className    = "bet-modal-desc result-win";
   }
 
- setTimeout(() => {
-  hideRoundResultModal();
-  lockedBet = 0; // ✅ RESET ĐÚNG THỜI ĐIỂM
-}, 3500);
+  setTimeout(() => {
+    hideRoundResultModal();
+    lockedBet = 0; // reset sau khi show xong
+  }, 3500);
 }
+
 
 
 
