@@ -5,6 +5,7 @@ let currentRotation = 0;
 let roundEndAt = 0;
 let roundTimerInterval = null;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
+let lockedBet = 0; // 💰 bet đã chốt cho round
 
 let serverDiamond = 0;   // 💎 coin từ server
 let lastDiamond = 0;
@@ -119,6 +120,7 @@ socket.emit("wheel-bet", { bet: currentBet });
 
 // 🔒 đánh dấu đã vào lệnh
 hasBetThisRound = true;
+lockedBet = currentBet; // 🔒 chốt bet cho round
 
 const btn = document.getElementById("btnSpin");
 if (btn) btn.disabled = true;
@@ -310,15 +312,11 @@ function showRoundResult(multiplier){
   modal.classList.remove("hidden");
 
   // 💰 tính tiền trúng (dựa trên bet đã vào lệnh)
-  const winAmount = multiplier > 0
-    ? Math.floor(currentBet * multiplier)
-    : 0;
+const winAmount =
+  multiplier > 0
+    ? Math.floor(lockedBet * (multiplier - 1))
+    : -currentBet; // trượt = mất bet
 
-
-  // 💎 hiệu ứng bay coin khi trúng
-  if (winAmount > 0){
-    spawnFlyDiamond(winAmount);
-  }
 
 
   if (multiplier === 0){
