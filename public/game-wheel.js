@@ -261,16 +261,16 @@ socket.on("wheel-round-result", data => {
   labels.forEach(el => el.classList.remove("active"));
 
   const sliceDeg = 360 / multipliers.length;
+  const pointerOffset = -90; // 🔥 KHỚP VỚI KIM 12h
 
-  // 🎯 DỪNG Ở CHÍNH GIỮA Ô
-  const finalAngle =
+  const target =
     360 * 6 +
-    index * sliceDeg +
-    sliceDeg / 2 -
-    90;
+    (index * sliceDeg) +
+    (sliceDeg / 2) +
+    pointerOffset;
 
-  currentRotation = finalAngle;
-  wheel.style.transform = `rotate(${finalAngle}deg)`;
+  currentRotation += target;
+  wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(() => {
     if (labels[index]) labels[index].classList.add("active");
