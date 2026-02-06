@@ -154,25 +154,26 @@ setActionText("ĐÃ VÀO LỆNH");
 }
 
 socket.on("wheel-round-new", data => {
-  setBetUILocked(false);
-  hasBetThisRound = false; // 🔓 reset cho phiên mới
+
+  // ⚠️ CHỈ MỞ KHI CHƯA BET
+  if (!hasBetThisRound){
+    setBetUILocked(false);
+    setActionText("VÀO LỆNH");
+  }
+
+  hasBetThisRound = false; // reset cho round MỚI
+  lockedBet = 0;
+
   hideBetConfirmModal();
   hideRoundResultModal();
-
-  console.log("🕒 Phiên mới:", data.roundId);
 
   currentBet = 0;
   updateBetUI();
 
   spinning = false;
 
-  const btn = document.getElementById("btnSpin");
-  if (btn) btn.disabled = false;
-
-  // ⏳ START COUNTDOWN
   roundEndAt = data.endAt;
   startRoundCountdown();
-  setActionText("VÀO LỆNH");
 });
 
 
@@ -280,14 +281,19 @@ function spawnFlyDiamond(amount){
 
     el.textContent = `⏳ ${remain}s`;
 
-    // 3s cuối → đỏ
-    if (remain <= 3){
-      el.classList.add("danger");
-      setBetUILocked(true);
-      setActionText("ĐÃ KHÓA");
-    } else {
-      el.classList.remove("danger");
-    }
+if (remain <= 3){
+  setBetUILocked(true);
+  setActionText("ĐÃ KHÓA");
+} else {
+  el.classList.remove("danger");
+
+  // 🔒 nếu đã bet → vẫn khóa
+  if (hasBetThisRound){
+    setBetUILocked(true);
+    setActionText("ĐÃ VÀO LỆNH");
+  }
+}
+
 
     if (remain <= 0){
       clearInterval(roundTimerInterval);
