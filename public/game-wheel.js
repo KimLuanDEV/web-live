@@ -151,8 +151,7 @@ lockedBet = currentBet;
 // 🔒 LƯU TRẠNG THÁI LOCK
 localStorage.setItem("wheel_locked", "1");
 localStorage.setItem("wheel_locked_bet", lockedBet);
-// 🔥 HIỆN OVERLAY
-showRoundLockOverlay();
+
 setBetUILocked(true);
 
 const btn = document.getElementById("btnSpin");
@@ -446,33 +445,52 @@ function showLockedBackModal(){
 }
 
 
-// 🔒 CHẶN RELOAD KHI ĐÃ VÀO LỆNH
 window.addEventListener("beforeunload", (e) => {
-  if (hasBetThisRound) {
-    e.preventDefault();
-    e.returnValue = "";
+  if (!hasBetThisRound) return;
+
+  // 🔥 đánh dấu đây là reload thật
+  reloadAttempted = true;
+
+  // hiện overlay NGAY LẬP TỨC
+  showRoundLockOverlay();
+
+  e.preventDefault();
+  e.returnValue = "";
+});
+
+
+
+// 🧠 nếu user huỷ reload → ẩn overlay sau 1s
+window.addEventListener("focus", () => {
+  if (reloadAttempted && hasBetThisRound) {
+    setTimeout(() => {
+      hideRoundLockOverlay();
+      reloadAttempted = false;
+    }, 800);
   }
 });
 
 
-// 🔒 CHẶN PHÍM RELOAD (F5 / CTRL+R)
+// 🔒 FLAG: user đang cố reload
+let reloadAttempted = false;
+
+// 🔒 CHẶN F5 / CTRL+R / CMD+R
 window.addEventListener("keydown", (e) => {
   if (!hasBetThisRound) return;
 
   // F5
   if (e.key === "F5") {
     e.preventDefault();
-    showLockedBackModal();
+    reloadAttempted = true;
+    showRoundLockOverlay();
     return;
   }
 
   // Ctrl + R / Cmd + R
-  if (
-    (e.ctrlKey || e.metaKey) &&
-    e.key.toLowerCase() === "r"
-  ) {
+  if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "r") {
     e.preventDefault();
-    showLockedBackModal();
+    reloadAttempted = true;
+    showRoundLockOverlay();
   }
 });
 
