@@ -118,9 +118,9 @@ if (hasBetThisRound) return;
 
 socket.emit("wheel-bet", { bet: currentBet });
 
-// 🔒 đánh dấu đã vào lệnh
 hasBetThisRound = true;
-lockedBet = currentBet; // 🔒 chốt bet cho round
+lockedBet = currentBet;
+setBetUILocked(true);
 
 const btn = document.getElementById("btnSpin");
 if (btn) btn.disabled = true;
@@ -131,6 +131,7 @@ setActionText("ĐÃ VÀO LỆNH");
 }
 
 socket.on("wheel-round-new", data => {
+  setBetUILocked(false);
   hasBetThisRound = false; // 🔓 reset cho phiên mới
   hideBetConfirmModal();
   hideRoundResultModal();
@@ -259,7 +260,7 @@ function spawnFlyDiamond(amount){
     // 3s cuối → đỏ
     if (remain <= 3){
       el.classList.add("danger");
-      document.getElementById("btnSpin").disabled = true;
+      setBetUILocked(true);
       setActionText("ĐÃ KHÓA");
     } else {
       el.classList.remove("danger");
@@ -354,4 +355,21 @@ const winAmount =
 function hideRoundResultModal(){
   const modal = document.getElementById("roundResultModal");
   if (modal) modal.classList.add("hidden");
+}
+
+
+
+function setBetUILocked(locked){
+  // khóa / mở nút vào lệnh
+  const spinBtn = document.getElementById("btnSpin");
+  if (spinBtn) spinBtn.disabled = locked;
+
+  // khóa toàn bộ nút bet
+  document.querySelectorAll(
+    ".coin-ratio button, .coin-quick button, .coin-reset-only button"
+  ).forEach(btn => {
+    btn.disabled = locked;
+    btn.style.opacity = locked ? "0.5" : "1";
+    btn.style.pointerEvents = locked ? "none" : "auto";
+  });
 }
