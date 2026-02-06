@@ -988,6 +988,86 @@ html, body {
 }
 
 
+
+/* ================= RESULT BOTTOM SHEET ================= */
+
+.result-sheet{
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+}
+
+.result-sheet.hidden{
+  display: none;
+}
+
+.result-sheet-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.45);
+  backdrop-filter: blur(4px);
+}
+
+/* BOX */
+.result-sheet-box{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  padding: 20px 18px 26px;
+  text-align: center;
+
+  background: rgba(20,20,20,.97);
+  border-radius: 22px 22px 0 0;
+
+  box-shadow:
+    0 -20px 40px rgba(0,0,0,.7),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+
+  animation: sheetUp .35s ease-out;
+}
+
+/* HANDLE */
+.sheet-handle{
+  width: 42px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.35);
+  margin: 0 auto 14px;
+}
+
+@keyframes sheetUp{
+  from{
+    transform: translateY(100%);
+  }
+  to{
+    transform: translateY(0);
+  }
+}
+
+/* ICON */
+.result-sheet .bet-modal-icon{
+  font-size: 38px;
+  margin-bottom: 6px;
+}
+
+/* TITLE */
+.result-sheet .bet-modal-title{
+  font-size: 18px;
+  font-weight: 900;
+  margin-bottom: 6px;
+}
+
+/* DESC */
+.result-sheet .bet-modal-desc{
+  font-size: 15px;
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+
+
   </style>
 </head>
 
@@ -1143,18 +1223,17 @@ html, body {
 
 
 
+<!-- 🎉 RESULT BOTTOM SHEET -->
+<div class="result-sheet hidden" id="roundResultModal">
+  <div class="result-sheet-backdrop" onclick="hideRoundResultModal()"></div>
 
-<!-- 🎉 MODAL: KẾT QUẢ PHIÊN QUAY -->
-<div class="bet-modal hidden" id="roundResultModal">
-  <div class="bet-modal-backdrop" onclick="hideRoundResultModal()"></div>
+  <div class="result-sheet-box" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
 
-  <div class="bet-modal-box" onclick="event.stopPropagation()">
     <div class="bet-modal-icon" id="roundResultIcon">🎡</div>
     <div class="bet-modal-title" id="roundResultTitle">Kết quả</div>
 
-    <div class="bet-modal-desc" id="roundResultDesc">
-      --
-    </div>
+    <div class="bet-modal-desc" id="roundResultDesc">--</div>
 
     <div class="bet-modal-note">
       ⏳ Phiên mới sẽ bắt đầu ngay sau đó
