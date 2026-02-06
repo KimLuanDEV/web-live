@@ -273,6 +273,87 @@
 
 
 
+/* ================= BET BAR FIXED BOTTOM ================= */
+
+.bet-bar{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 998;
+
+  padding: 10px 12px env(safe-area-inset-bottom);
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0),
+    rgba(0,0,0,.85) 40%,
+    rgba(0,0,0,.95)
+  );
+}
+
+/* SHEET */
+.bet-sheet{
+  max-width: 520px;
+  margin: 0 auto;
+
+  background: rgba(20,20,20,.95);
+  border-radius: 20px 20px 0 0;
+  padding: 14px;
+
+  box-shadow:
+    0 -10px 30px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+/* ĐẨY BODY LÊN ĐỂ KHÔNG BỊ CHE */
+body{
+  padding-bottom: 260px;
+}
+
+/* COIN DISPLAY */
+.bet-sheet .coin-display{
+  margin-bottom: 10px;
+}
+
+/* RATIO */
+.bet-sheet .coin-ratio{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* QUICK ADD 3 CỘT */
+.coin-quick.grid-3{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* RESET */
+.coin-reset-only{
+  text-align: center;
+  margin-bottom: 10px;
+}
+
+/* SPIN BUTTON FULL WIDTH */
+.bet-sheet .spin-btn{
+  width: 100%;
+  margin-top: 6px;
+  height: 46px;
+  font-size: 16px;
+}
+
+/* RESULT */
+.bet-sheet .result{
+  text-align: center;
+  margin-top: 6px;
+  font-size: 14px;
+  opacity: .85;
+}
+
+
   </style>
 </head>
 
@@ -311,48 +392,52 @@
 
 
 
-<!-- 💎 BET PANEL (INVEST STYLE) -->
-<div class="invest-action" style="margin-top:20px; width:260px">
+<!-- 💎 BET BAR (FIXED BOTTOM – FULL WIDTH) -->
+<div class="bet-bar">
 
-  <!-- COIN DISPLAY -->
-  <div class="coin-display">
-    <div class="coin-label">Vốn cược</div>
-    <div class="coin-value">
-      <span id="betDisplay">0</span> 💎
+  <div class="bet-sheet">
+
+    <!-- COIN DISPLAY -->
+    <div class="coin-display">
+      <div class="coin-label">Vốn cược</div>
+      <div class="coin-value">
+        <span id="betDisplay">0</span> 💎
+      </div>
     </div>
+
+    <!-- RATIO -->
+    <div class="coin-ratio">
+      <button onclick="setBetRatio(0.25)">25%</button>
+      <button onclick="setBetRatio(0.5)">50%</button>
+      <button class="all-in" onclick="setBetRatio(1)">ALL IN</button>
+    </div>
+
+    <!-- QUICK ADD (3 CỘT) -->
+    <div class="coin-quick grid-3">
+      <button onclick="addBet(10)">+10</button>
+      <button onclick="addBet(50)">+50</button>
+      <button onclick="addBet(100)">+100</button>
+
+      <button onclick="addBet(500)">+500</button>
+      <button onclick="addBet(1000)">+1K</button>
+      <button onclick="addBet(5000)">+5K</button>
+    </div>
+
+    <!-- RESET -->
+    <div class="coin-reset-only">
+      <button class="key-clear" onclick="resetBet()">RESET</button>
+    </div>
+
+    <!-- ACTION -->
+    <button class="spin-btn" id="btnSpin" onclick="spinWheel()">
+      🎡 QUAY
+    </button>
+
+    <div id="result" class="result"></div>
+
   </div>
-
-  <!-- RATIO -->
-  <div class="coin-ratio">
-    <button onclick="setBetRatio(0.25)">25%</button>
-    <button onclick="setBetRatio(0.5)">50%</button>
-    <button class="all-in" onclick="setBetRatio(1)">ALL IN</button>
-  </div>
-
-<!-- QUICK ADD (3 CỘT) -->
-<div class="coin-quick grid-3">
-  <button onclick="addBet(10)">+10</button>
-  <button onclick="addBet(50)">+50</button>
-  <button onclick="addBet(100)">+100</button>
-
-  <button onclick="addBet(500)">+500</button>
-  <button onclick="addBet(1000)">+1K</button>
-  <button onclick="addBet(5000)">+5K</button>
 </div>
 
-
-  <!-- RESET -->
-  <div class="coin-reset-only">
-    <button class="key-clear" onclick="resetBet()">RESET</button>
-  </div>
-
-  <!-- ACTION -->
-  <button class="spin-btn" id="btnSpin" onclick="spinWheel()">
-    🎡 QUAY
-  </button>
-
-  <div id="result" class="result"></div>
-</div>
 
 
 
