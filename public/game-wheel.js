@@ -41,38 +41,49 @@ let currentBet = 0;
 (function setupOrbSpokes(){
   const wheel  = document.querySelector(".orb-wheel");
   const core   = document.querySelector(".orb-core");
+  const slots  = document.querySelectorAll(".orb-slot");
   const spokes = document.querySelectorAll(".orb-spoke");
 
-  if (!wheel || !core || !spokes.length) return;
+  if (!wheel || !core || !slots.length || !spokes.length) return;
 
   const wheelRect = wheel.getBoundingClientRect();
   const coreRect  = core.getBoundingClientRect();
 
-  // 🎯 tâm trục
+  // 🎯 TÂM TRỤC (local to wheel)
   const cx = coreRect.left + coreRect.width / 2 - wheelRect.left;
   const cy = coreRect.top  + coreRect.height / 2 - wheelRect.top;
 
-  // 🎯 BÁN KÍNH VÒNG (PHẢI KHỚP setupOrbSlots)
-  const ringRadius = 110;
+  slots.forEach((slot, i) => {
+    const spoke = spokes[i];
+    if (!spoke) return;
 
-  // 🎯 BÁN KÍNH Ô
-  const slotRadius = 32; // 64 / 2
+    const slotRect = slot.getBoundingClientRect();
 
-  // 🎯 khoảng hở để không chạm ô
-  const gap = 4;
+    // 🎯 TÂM SLOT (local)
+    const sx = slotRect.left + slotRect.width / 2 - wheelRect.left;
+    const sy = slotRect.top  + slotRect.height / 2 - wheelRect.top;
 
-  const finalLength = ringRadius - slotRadius - gap;
+    // Vector trục → slot
+    const dx = sx - cx;
+    const dy = sy - cy;
 
-  spokes.forEach((spoke, i) => {
-    const angle = (360 / spokes.length) * i - 90;
+    const angle = Math.atan2(dy, dx) * 180 / Math.PI;
 
-    // set chiều dài thật
-    spoke.style.width = finalLength + "px";
+    // 🎯 CẮT NAN TỚI MÉP SLOT THỰC
+    // Lấy nửa chiều nhỏ hơn (vì slot tròn)
+    const slotRadius = Math.min(slotRect.width, slotRect.height) / 2;
 
-    // chỉ xoay
+    const fullLen = Math.sqrt(dx*dx + dy*dy);
+    const gap = 2; // khe cực nhỏ cho đẹp
+
+    const finalLen = Math.max(0, fullLen - slotRadius - gap);
+
+    // SET
+    spoke.style.width = finalLen + "px";
     spoke.style.transform = `rotate(${angle}deg)`;
   });
-})();
+}
+)();
 
 
 
@@ -120,6 +131,12 @@ const spokes = Array.from(document.querySelectorAll(".orb-spoke"));
     if (loops >= totalLoops && current === winIndex){
       slots.forEach(s => s.classList.remove("running"));
       slots[winIndex].classList.add("active");
+
+// 🔥 cập nhật nan theo kích thước mới của slot
+requestAnimationFrame(() => {
+  setupOrbSpokes();
+});
+
       spokes[winIndex]?.classList.add("active");
 
       if (done) done();
