@@ -43,6 +43,31 @@ function loadWheelHistory(){
   }
 }
 
+
+function getTopWinners(history){
+  const map = {};
+
+  history.forEach(h => {
+    if (!h.uid || !h.winAmount || h.winAmount <= 0) return;
+
+    if (!map[h.uid]){
+      map[h.uid] = {
+        uid: h.uid,
+        name: h.name || "Người chơi",
+        totalWin: 0
+      };
+    }
+
+    map[h.uid].totalWin += h.winAmount;
+  });
+
+  return Object.values(map)
+    .sort((a,b) => b.totalWin - a.totalWin)
+    .slice(0,3);
+}
+
+
+
 function saveWheelHistory(list){
   try{
     fs.writeFileSync(
@@ -547,6 +572,12 @@ setInterval(() => {
       index,
       multiplier
     });
+
+
+const topWinners = getTopWinners(wheelHistory);
+
+io.emit("wheel-top-winners", topWinners);
+
 
 
 // 📜 UPDATE WHEEL HISTORY

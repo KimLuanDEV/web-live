@@ -17,6 +17,9 @@ let didBetThisRound = false; // ✅ chỉ true nếu user thực sự bet
 // 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
 let wheelHistory = [];
 let pendingWheelHistory = null;
+// 🏆 TOP WINNERS (từ server)
+let topWinners = [];
+
 
 (function setupOrbSlots(){
   const slots = document.querySelectorAll(".orb-slot");
@@ -244,6 +247,16 @@ socket.on("wheel-history-update", list => {
   wheelHistory = list;
   renderQuickHistory();
 });
+
+
+// 🏆 nhận TOP 3 người thắng nhiều nhất
+socket.on("wheel-top-winners", list => {
+  if (!Array.isArray(list)) return;
+  topWinners = list;
+  renderTopWinners();
+});
+
+
 
 
 
@@ -599,6 +612,9 @@ function showRoundResult(multiplier){
 
   modal.classList.remove("hidden");
 
+  renderTopWinners();
+
+
   // 🚫 KHÔNG BET PHIÊN NÀY → KHÔNG TRẢ THƯỞNG
   if (!didBetThisRound){
     icon.textContent  = "👀";
@@ -830,3 +846,34 @@ function setOrbSpinning(){
 
   el.textContent = "⏳";
 }
+
+
+function renderTopWinners(){
+  const wrap = document.getElementById("topWinnersList");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+
+  if (!topWinners.length){
+    wrap.innerHTML = `
+      <div class="tw-empty">
+        Chưa có người thắng lớn
+      </div>
+    `;
+    return;
+  }
+
+  topWinners.slice(0,3).forEach((u, i) => {
+    const div = document.createElement("div");
+    div.className = `tw-item rank-${i+1}`;
+
+    div.innerHTML = `
+      <div class="tw-rank">${["🥇","🥈","🥉"][i]}</div>
+      <div class="tw-name">${u.name || "Người chơi"}</div>
+      <div class="tw-win">+${Number(u.totalWin || 0).toLocaleString()} 💎</div>
+    `;
+
+    wrap.appendChild(div);
+  });
+}
+
