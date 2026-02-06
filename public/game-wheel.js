@@ -360,16 +360,11 @@ setActionText("ĐÃ VÀO LỆNH");
 
 socket.on("wheel-round-new", data => {
 
-  // 🔓 CHỈ LÚC NÀY MỚI ĐƯỢC VÀO LẠI
   waitingNextRound = false;
   hasBetThisRound = false;
- 
 
-  localStorage.removeItem("wheel_locked");
-  localStorage.removeItem("wheel_locked_bet");
-
-  setBetUILocked(false);
-  setActionText("VÀO LỆNH");
+  // ❌ KHÔNG mở bet bar ở đây nữa
+  setActionText("CHỜ KẾT QUẢ");
 
   hideRoundLockOverlay();
   hideBetConfirmModal();
@@ -388,6 +383,7 @@ socket.on("wheel-round-new", data => {
 
 
 
+
 socket.on("wheel-round-result", data => {
   hideBetConfirmModal();
   setActionText("ĐANG QUAY");
@@ -395,11 +391,20 @@ socket.on("wheel-round-result", data => {
   const { index, multiplier } = data;
   spinning = true;
 
-  runOrbRoulette(index, () => {
-    // sau khi chốt ô trúng
-    showRoundResult(multiplier);
-    spinning = false;
-  });
+ runOrbRoulette(index, () => {
+
+  showRoundResult(multiplier);
+
+  // 🔓 CHỈ LÚC NÀY MỚI MỞ BET BAR
+  waitingNextRound = false;
+  hasBetThisRound = false;
+
+  setBetUILocked(false);
+  setActionText("VÀO LỆNH");
+
+  spinning = false;
+});
+
 });
 
 
