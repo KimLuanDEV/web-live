@@ -2,8 +2,12 @@
 
 let spinning = false;
 let currentRotation = 0;
-let serverDiamond = 0; // 💎 CHỈ LẤY TỪ SERVER
+
+let serverDiamond = 0;   // 💎 coin từ server
 let lastDiamond = 0;
+
+// 🎯 BET STATE (GIỐNG INVEST)
+let currentBet = 0;
 
 
 /* ================= SOCKET CONNECT ================= */
@@ -17,23 +21,29 @@ const socket = io({
   }
 });
 
-// 💎 nhận coin realtime từ server (nguồn duy nhất)
+// 💎 nhận coin realtime từ server
 socket.on("coin-update", (data) => {
   if (typeof data?.coins !== "number") return;
 
   const newVal = data.coins;
   const diff = newVal - serverDiamond;
 
-  // nếu coin tăng → bay 💎
+  // ✨ nếu coin tăng → bay 💎
   if (diff > 0){
     spawnFlyDiamond(diff);
   }
 
   lastDiamond = serverDiamond;
   serverDiamond = newVal;
-  updateDiamondUI();
-});
 
+  updateDiamondUI();
+
+  // 🔥 nếu ALL IN đang bật → cập nhật lại bet
+  if (currentBet > serverDiamond){
+    currentBet = serverDiamond;
+    updateBetUI();
+  }
+});
 
 
 /* ================= UI ================= */
@@ -43,6 +53,40 @@ function updateDiamondUI(){
   if (el){
     el.textContent = Number(serverDiamond).toLocaleString();
   }
+}
+
+function updateBetUI(){
+  const el = document.getElementById("betDisplay");
+  if (el){
+    el.textContent = Number(currentBet).toLocaleString();
+  }
+}
+
+
+/* ================= BET CONTROLS (INVEST STYLE) ================= */
+
+function setBetRatio(ratio){
+  if (spinning) return;
+
+  currentBet = Math.floor(serverDiamond * ratio);
+  updateBetUI();
+}
+
+function addBet(amount){
+  if (spinning) return;
+
+  currentBet += amount;
+  if (currentBet > serverDiamond){
+    currentBet = serverDiamond;
+  }
+  updateBetUI();
+}
+
+function resetBet(){
+  if (spinning) return;
+
+  currentBet = 0;
+  updateBetUI();
 }
 
 
@@ -56,30 +100,31 @@ const multipliers = [0, 0.5, 1, 2, 5, 10];
 function spinWheel(){
   if (spinning) return;
 
-  const betInput = document.getElementById("betAmount");
-  const bet = Math.floor(Number(betInput.value));
-
-  if (!bet || bet <= 0){
-    alert("❌ Nhập số kim cương hợp lệ");
+  if (!currentBet || currentBet <= 0){
+    alert("❌ Chưa nhập vốn cược");
     return;
   }
 
-  // ❗ kiểm tra theo coin server đang có
-  if (bet > serverDiamond){
+  if (currentBet > serverDiamond){
     alert("💎 Không đủ kim cương");
     return;
   }
 
   spinning = true;
 
-  // ⬆️ gửi yêu cầu quay lên server
-  socket.emit("wheel-spin", { bet });
+  // 🔒 khoá nút quay
+  const btn = document.getElementById("btnSpin");
+  if (btn) btn.disabled = true;
+
+  // ⬆️ gửi cược lên server
+  socket.emit("wheel-spin", {
+    bet: currentBet
+  });
 }
 
 
 /* ================= SERVER RESULT ================= */
 
-// 🔔 server trả kết quả quay
 socket.on("wheel-result", (data) => {
   const { bet, multiplier, win, index } = data;
 
@@ -105,7 +150,16 @@ socket.on("wheel-result", (data) => {
       result.textContent =
         `🎉 Trúng x${multiplier} → +${win} 💎`;
     }
+
+    // 🔁 reset bet sau khi quay xong
+    currentBet = 0;
+    updateBetUI();
+
     spinning = false;
+
+    const btn = document.getElementById("btnSpin");
+    if (btn) btn.disabled = false;
+
   }, 4200);
 });
 
@@ -114,6 +168,9 @@ socket.on("wheel-result", (data) => {
 
 socket.on("wheel-error", (err) => {
   spinning = false;
+
+  const btn = document.getElementById("btnSpin");
+  if (btn) btn.disabled = false;
 
   const map = {
     NOT_LOGIN: "⚠️ Bạn chưa đăng nhập",
@@ -126,6 +183,7 @@ socket.on("wheel-error", (err) => {
 });
 
 
+/* ================= DIAMOND FLY EFFECT ================= */
 
 function spawnFlyDiamond(amount){
   const from = document.getElementById("wheel");
@@ -140,7 +198,7 @@ function spawnFlyDiamond(amount){
   el.textContent = "💎 +" + amount;
 
   el.style.left = f.left + f.width / 2 + "px";
-  el.style.top  = f.top + f.height / 2 + "px";
+  el.style.top  = f.top  + f.height / 2 + "px";
 
   const dx = t.left - f.left;
   const dy = t.top  - f.top;
@@ -150,7 +208,5 @@ function spawnFlyDiamond(amount){
 
   document.body.appendChild(el);
 
-  setTimeout(() => {
-    el.remove();
-  }, 1000);
+  setTimeout(() => el.remove(), 1000);
 }

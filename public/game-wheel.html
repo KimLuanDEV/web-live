@@ -1,288 +1,212 @@
-<!doctype html>
-<html lang="vi">
-<head>
-  <meta charset="utf-8">
-  <title>🎡 Vòng quay may mắn</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+/* ================= GLOBAL STATE ================= */
 
-  <link rel="stylesheet" href="/style.css">
+let spinning = false;
+let currentRotation = 0;
 
-  <style>
-    body{
-      margin:0;
-      background:#000;
-      color:#fff;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      min-height:100vh;
+let serverDiamond = 0;   // 💎 coin từ server
+let lastDiamond = 0;
+
+// 🎯 BET STATE (GIỐNG INVEST)
+let currentBet = 0;
+
+
+/* ================= SOCKET CONNECT ================= */
+
+const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+const socket = io({
+  auth: {
+    uid: me.uid,
+    deviceId: localStorage.getItem("device_id")
+  }
+});
+
+// 💎 nhận coin realtime từ server
+socket.on("coin-update", (data) => {
+  if (typeof data?.coins !== "number") return;
+
+  const newVal = data.coins;
+  const diff = newVal - serverDiamond;
+
+  // ✨ nếu coin tăng → bay 💎
+  if (diff > 0){
+    spawnFlyDiamond(diff);
+  }
+
+  lastDiamond = serverDiamond;
+  serverDiamond = newVal;
+
+  updateDiamondUI();
+
+  // 🔥 nếu ALL IN đang bật → cập nhật lại bet
+  if (currentBet > serverDiamond){
+    currentBet = serverDiamond;
+    updateBetUI();
+  }
+});
+
+
+/* ================= UI ================= */
+
+function updateDiamondUI(){
+  const el = document.getElementById("diamondValue");
+  if (el){
+    el.textContent = Number(serverDiamond).toLocaleString();
+  }
+}
+
+function updateBetUI(){
+  const el = document.getElementById("betDisplay");
+  if (el){
+    el.textContent = Number(currentBet).toLocaleString();
+  }
+}
+
+
+/* ================= BET CONTROLS (INVEST STYLE) ================= */
+
+function setBetRatio(ratio){
+  if (spinning) return;
+
+  currentBet = Math.floor(serverDiamond * ratio);
+  updateBetUI();
+}
+
+function addBet(amount){
+  if (spinning) return;
+
+  currentBet += amount;
+  if (currentBet > serverDiamond){
+    currentBet = serverDiamond;
+  }
+  updateBetUI();
+}
+
+function resetBet(){
+  if (spinning) return;
+
+  currentBet = 0;
+  updateBetUI();
+}
+
+
+/* ================= GAME CONFIG ================= */
+
+const multipliers = [0, 0.5, 1, 2, 5, 10];
+
+
+/* ================= GAME ACTION ================= */
+
+function spinWheel(){
+  if (spinning) return;
+
+  if (!currentBet || currentBet <= 0){
+    alert("❌ Chưa nhập vốn cược");
+    return;
+  }
+
+  if (currentBet > serverDiamond){
+    alert("💎 Không đủ kim cương");
+    return;
+  }
+
+  spinning = true;
+
+  // 🔒 khoá nút quay
+  const btn = document.getElementById("btnSpin");
+  if (btn) btn.disabled = true;
+
+  // ⬆️ gửi cược lên server
+  socket.emit("wheel-spin", {
+    bet: currentBet
+  });
+}
+
+
+/* ================= SERVER RESULT ================= */
+
+socket.on("wheel-result", (data) => {
+  const { bet, multiplier, win, index } = data;
+
+  const wheel  = document.getElementById("wheel");
+  const result = document.getElementById("result");
+
+  const sliceDeg = 360 / multipliers.length;
+
+  const rotateDeg =
+    360 * 6 +
+    index * sliceDeg +
+    sliceDeg / 2;
+
+  currentRotation += rotateDeg;
+  wheel.style.transform = `rotate(${currentRotation}deg)`;
+
+  result.textContent = "⏳ Đang quay...";
+
+  setTimeout(() => {
+    if (multiplier === 0){
+      result.textContent = `💥 Trượt! Bạn mất ${bet} 💎`;
+    } else {
+      result.textContent =
+        `🎉 Trúng x${multiplier} → +${win} 💎`;
     }
 
-    .wheel-wrap{
-      position:relative;
-      width:260px;
-      height:260px;
-    }
+    // 🔁 reset bet sau khi quay xong
+    currentBet = 0;
+    updateBetUI();
 
-.wheel{
-  width:100%;
-  height:100%;
-  border-radius:50%;
+    spinning = false;
 
-  background:
-    conic-gradient(
-      #ff3d00 0deg 60deg,      /* x0 */
-      #9e9e9e 60deg 120deg,   /* x0.5 */
-      #4caf50 120deg 180deg,  /* x1 */
-      #03a9f4 180deg 240deg,  /* x2 */
-      #ffc107 240deg 300deg, /* x5 */
-      #e91e63 300deg 360deg  /* x10 */
-    );
+    const btn = document.getElementById("btnSpin");
+    if (btn) btn.disabled = false;
 
-  box-shadow:
-    0 0 45px rgba(255,200,0,.45),
-    inset 0 0 25px rgba(0,0,0,.65);
-
-  transition: transform 4s cubic-bezier(.17,.67,.14,1);
-}
+  }, 4200);
+});
 
 
+/* ================= SERVER ERROR ================= */
 
-    .pointer{
-      position:absolute;
-      top:-18px;
-      left:50%;
-      transform:translateX(-50%);
-      width:0;
-      height:0;
-      border-left:14px solid transparent;
-      border-right:14px solid transparent;
-      border-bottom:26px solid #ffd700;
-      filter: drop-shadow(0 4px 6px rgba(0,0,0,.6));
-    }
+socket.on("wheel-error", (err) => {
+  spinning = false;
 
-    .spin-btn{
-      margin-top:24px;
-      padding:14px 28px;
-      font-size:16px;
-      font-weight:700;
-      border:none;
-      border-radius:999px;
-      cursor:pointer;
-      background:linear-gradient(180deg,#ffd700,#ff9800);
-      color:#000;
-      box-shadow:0 6px 20px rgba(255,200,0,.5);
-    }
+  const btn = document.getElementById("btnSpin");
+  if (btn) btn.disabled = false;
 
-    .spin-btn:active{
-      transform:scale(.95);
-    }
+  const map = {
+    NOT_LOGIN: "⚠️ Bạn chưa đăng nhập",
+    NOT_ENOUGH_COIN: "💎 Không đủ kim cương",
+    BET_INVALID: "❌ Mức cược không hợp lệ",
+    SERVER_ERROR: "❌ Lỗi hệ thống"
+  };
 
-    .result{
-      margin-top:16px;
-      font-size:15px;
-      opacity:.9;
-    }
-
-    /* ================= GAME HEADER ================= */
-
-.game-header{
-  position: fixed;        /* 🔒 CỐ ĐỊNH TRÊN CÙNG */
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 999;
-
-  height: 64px;
-  padding: 0 12px;
-
-  display: grid;
-  grid-template-columns: 48px 1fr 48px;
-  align-items: center;
-
-  background: linear-gradient(
-    180deg,
-    rgba(0,0,0,.9),
-    rgba(0,0,0,.7)
-  );
-
-  backdrop-filter: blur(8px);
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-
-/* LEFT */
-.gh-left{
-  display:flex;
-  align-items:center;
-}
-
-.gh-back{
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  border:none;
-  background:rgba(255,255,255,.08);
-  color:#fff;
-  font-size:20px;
-  cursor:pointer;
-}
-
-.gh-back:active{
-  transform: scale(.92);
-}
-
-/* CENTER */
-.gh-center{
-  text-align:center;
-  pointer-events:none;
-}
-
-.gh-title{
-  font-size:16px;
-  font-weight:800;
-  letter-spacing:.3px;
-}
-
-.gh-sub{
-  font-size:12px;
-  opacity:.7;
-}
-
-/* RIGHT */
-.gh-right{
-  display:flex;
-  justify-content:flex-end;
-  align-items:center;
-}
-
-.gh-icon{
-  width:36px;
-  height:36px;
-  border-radius:50%;
-  border:none;
-  background:rgba(255,255,255,.08);
-  color:#fff;
-  font-size:16px;
-}
-
-
-
-/* ===== HEADER DIAMOND ===== */
-.gh-coin{
-  display:flex;
-  align-items:center;
-  gap:6px;
-
-  padding:6px 10px;
-  border-radius:999px;
-
-  font-size:14px;
-  font-weight:700;
-
-  background:rgba(255,255,255,.08);
-  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
-}
+  alert(map[err?.message] || "❌ Có lỗi xảy ra");
+});
 
 
 /* ================= DIAMOND FLY EFFECT ================= */
 
-.fly-diamond{
-  position: fixed;
-  z-index: 2000;
-  font-size: 18px;
-  font-weight: 800;
-  pointer-events: none;
+function spawnFlyDiamond(amount){
+  const from = document.getElementById("wheel");
+  const to   = document.getElementById("diamondDisplay");
+  if (!from || !to) return;
 
-  animation: flyToHeader 0.9s ease-out forwards;
+  const f = from.getBoundingClientRect();
+  const t = to.getBoundingClientRect();
+
+  const el = document.createElement("div");
+  el.className = "fly-diamond";
+  el.textContent = "💎 +" + amount;
+
+  el.style.left = f.left + f.width / 2 + "px";
+  el.style.top  = f.top  + f.height / 2 + "px";
+
+  const dx = t.left - f.left;
+  const dy = t.top  - f.top;
+
+  el.style.setProperty("--dx", dx + "px");
+  el.style.setProperty("--dy", dy + "px");
+
+  document.body.appendChild(el);
+
+  setTimeout(() => el.remove(), 1000);
 }
-
-@keyframes flyToHeader{
-  0%{
-    transform: translate(0,0) scale(1);
-    opacity: 1;
-  }
-  80%{
-    opacity: 1;
-  }
-  100%{
-    transform: translate(var(--dx), var(--dy)) scale(0.4);
-    opacity: 0;
-  }
-}
-
-
-
-  </style>
-</head>
-
-<body>
-
-<header class="game-header">
-  <!-- LEFT -->
-  <div class="gh-left">
-    <button class="gh-back" onclick="history.back()">←</button>
-  </div>
-
-  <!-- CENTER -->
-  <div class="gh-center">
-    <div class="gh-title">Vòng quay may mắn</div>
-    <div class="gh-sub">Luck Wheel • Mini Game</div>
-  </div>
-
-  <!-- RIGHT -->
-<div class="gh-right">
-  <div class="gh-coin" id="diamondDisplay">
-    💎 <span id="diamondValue">0</span>
-  </div>
-</div>
-
-
-
-</header>
-
-
-
-  <div class="wheel-wrap">
-    <div class="pointer"></div>
-    <div id="wheel" class="wheel"></div>
-  </div>
-
-
-
-
-<!-- 💎 BET PANEL -->
-<div style="margin-top:20px; text-align:center; width:260px">
-
-  <div style="margin-bottom:8px; font-size:14px; opacity:.85">
-    💎 Nhập kim cương cược
-  </div>
-
-  <input
-    id="betAmount"
-    type="number"
-    min="1"
-    value="10"
-    style="
-      width:100%;
-      padding:12px;
-      border-radius:12px;
-      border:none;
-      outline:none;
-      font-size:16px;
-      text-align:center;
-      margin-bottom:14px;
-    "
-  />
-
-  <button class="spin-btn" onclick="spinWheel()">🎡 Quay</button>
-
-  <div id="result" class="result"></div>
-</div>
-
-
-<script src="/socket.io/socket.io.js"></script>
-<script src="/game-wheel.js"></script>
-
-</body>
-</html>
