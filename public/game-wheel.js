@@ -2,6 +2,8 @@
 
 let spinning = false;
 let currentRotation = 0;
+let roundEndAt = 0;
+let roundTimerInterval = null;
 
 let serverDiamond = 0;   // 💎 coin từ server
 let lastDiamond = 0;
@@ -116,7 +118,6 @@ function spinWheel(){
 socket.on("wheel-round-new", data => {
   console.log("🕒 Phiên mới:", data.roundId);
 
-  // reset UI cho round mới
   currentBet = 0;
   updateBetUI();
 
@@ -124,7 +125,12 @@ socket.on("wheel-round-new", data => {
 
   const btn = document.getElementById("btnSpin");
   if (btn) btn.disabled = false;
+
+  // ⏳ START COUNTDOWN
+  roundEndAt = data.endAt;
+  startRoundCountdown();
 });
+
 
 
 /* ================= SERVER RESULT ================= */
@@ -218,3 +224,30 @@ function spawnFlyDiamond(amount){
     if (e.ctrlKey) e.preventDefault();
   }, { passive: false });
 
+
+
+  function startRoundCountdown(){
+  const el = document.getElementById("roundTimer");
+  if (!el || !roundEndAt) return;
+
+  if (roundTimerInterval){
+    clearInterval(roundTimerInterval);
+  }
+
+  roundTimerInterval = setInterval(() => {
+    const remain = Math.max(0, Math.ceil((roundEndAt - Date.now()) / 1000));
+
+    el.textContent = `⏳ ${remain}s`;
+
+    // 3s cuối → đỏ
+    if (remain <= 3){
+      el.classList.add("danger");
+    } else {
+      el.classList.remove("danger");
+    }
+
+    if (remain <= 0){
+      clearInterval(roundTimerInterval);
+    }
+  }, 300);
+}
