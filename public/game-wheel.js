@@ -249,7 +249,6 @@ socket.on("wheel-round-new", data => {
 
 
 /* ================= SERVER RESULT ================= */
-
 socket.on("wheel-round-result", data => {
   hideBetConfirmModal();
   setActionText("ĐANG QUAY");
@@ -257,47 +256,25 @@ socket.on("wheel-round-result", data => {
   const { index, multiplier } = data;
   spinning = true;
 
-  const wheel   = document.getElementById("wheel");
-  const pointer = document.querySelector(".pointer");
-
-  const labels  = wheel.querySelectorAll(".wheel-label span");
+  const wheel  = document.getElementById("wheel");
+  const labels = wheel.querySelectorAll(".wheel-label span");
   labels.forEach(el => el.classList.remove("active"));
 
   const sliceDeg = 360 / multipliers.length;
 
-  // 🎯 GÓC TUYỆT ĐỐI – KHÔNG CỘNG DỒN
-  const fullSpins = 6 * 360;
+  // 🎯 GỐC = MŨI KIM (0deg)
+  // Tính góc để TÂM ô index về đúng mũi kim
+  const target =
+    360 * 6 +                // quay cho đẹp
+    (index * sliceDeg) +     // vị trí ô
+    (sliceDeg / 2);          // tâm ô
 
-  // vì CSS đã xoay -90deg → 12h là 0deg
-  const targetDeg =
-    fullSpins +
-    index * sliceDeg +
-    sliceDeg / 2;
-
-  // RESET transform trước khi quay (tránh trôi)
-  wheel.style.transition = "none";
-  wheel.style.transform = "rotate(0deg)";
-
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      wheel.style.transition =
-        "transform 4s cubic-bezier(.17,.67,.14,1)";
-      wheel.style.transform = `rotate(${targetDeg}deg)`;
-    });
-  });
-
-  // 🔔 kim đập
-  setTimeout(() => {
-    if (pointer){
-      pointer.classList.add("hit");
-      setTimeout(() => pointer.classList.remove("hit"), 200);
-    }
-  }, 4000);
+  // 🔒 KHÔNG reset transform → không nhảy loạn
+  currentRotation = (currentRotation + target) % 360000;
+  wheel.style.transform = `rotate(${currentRotation}deg)`;
 
   setTimeout(() => {
-    if (labels[index]){
-      labels[index].classList.add("active");
-    }
+    if (labels[index]) labels[index].classList.add("active");
 
     if (multiplier >= 5){
       wheel.classList.add("win");
@@ -308,6 +285,7 @@ socket.on("wheel-round-result", data => {
     spinning = false;
   }, 4200);
 });
+
 
 
 
