@@ -38,6 +38,17 @@ let currentBet = 0;
 })();
 
 
+(function setupOrbSpokes(){
+  const spokes = document.querySelectorAll(".orb-spoke");
+  if (!spokes.length) return;
+
+  spokes.forEach((el, i) => {
+    const angle = (360 / spokes.length) * i - 90;
+    el.style.transform = `rotate(${angle}deg) translateY(-95px)`;
+  });
+})();
+
+
 
 /**
  * ✨ Chạy sáng từng ô như roulette rồi chốt
@@ -45,7 +56,9 @@ let currentBet = 0;
  * @param {Function} done - callback sau khi dừng
  */
 function runOrbRoulette(winIndex, done){
-  const slots = Array.from(document.querySelectorAll(".orb-slot"));
+const slots  = Array.from(document.querySelectorAll(".orb-slot"));
+const spokes = Array.from(document.querySelectorAll(".orb-spoke"));
+
   if (!slots.length) return;
 
   let current = 0;
@@ -57,9 +70,13 @@ function runOrbRoulette(winIndex, done){
   function step(){
     // clear
     slots.forEach(s => s.classList.remove("running","active"));
+    spokes.forEach(s => s.classList.remove("running","active"));
+
 
     // bật ô hiện tại
     slots[current].classList.add("running");
+    spokes[current]?.classList.add("running");
+
 
     // sang ô tiếp
     current = (current + 1) % slots.length;
@@ -75,7 +92,9 @@ function runOrbRoulette(winIndex, done){
     // điều kiện dừng: đã đủ vòng & đúng ô trúng
     if (loops >= totalLoops && current === winIndex){
       slots.forEach(s => s.classList.remove("running"));
-      slots[winIndex].classList.add("active"); // 🎯 CHỐT
+      slots[winIndex].classList.add("active");
+      spokes[winIndex]?.classList.add("active");
+
       if (done) done();
       return;
     }

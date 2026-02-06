@@ -799,6 +799,64 @@ html, body {
 }
 
 
+/* ================= ORB SPOKES ================= */
+
+.orb-spokes{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:1; /* dưới slot, trên nền */
+}
+
+/* 1 NAN */
+.orb-spoke{
+  position:absolute;
+  left:50%;
+  top:50%;
+
+  width:2px;
+  height:95px;              /* độ dài nan */
+  transform-origin: 50% 100%;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,.0),
+    rgba(255,255,255,.35),
+    rgba(255,255,255,.0)
+  );
+
+  opacity:.35;
+  filter: blur(.2px);
+
+  transition: all .25s ease;
+}
+
+/* NAN SÁNG KHI CHẠY */
+.orb-spoke.running{
+  opacity:1;
+  background: linear-gradient(
+    180deg,
+    rgba(120,180,255,0),
+    rgba(120,180,255,.9),
+    rgba(120,180,255,0)
+  );
+  box-shadow: 0 0 14px rgba(120,180,255,.9);
+}
+
+/* NAN TRÚNG */
+.orb-spoke.active{
+  opacity:1;
+  background: linear-gradient(
+    180deg,
+    rgba(255,215,0,0),
+    rgba(255,215,0,1),
+    rgba(255,215,0,0)
+  );
+  box-shadow:
+    0 0 18px rgba(255,215,0,1),
+    0 0 36px rgba(255,160,0,.8);
+}
+
 
   </style>
 </head>
@@ -836,6 +894,20 @@ html, body {
 
   <!-- TRỤC GIỮA -->
   <div class="orb-core">🎡</div>
+
+
+  <!-- NAN NỐI TRỤC → Ô -->
+<div class="orb-spokes">
+  <div class="orb-spoke" data-i="0"></div>
+  <div class="orb-spoke" data-i="1"></div>
+  <div class="orb-spoke" data-i="2"></div>
+  <div class="orb-spoke" data-i="3"></div>
+  <div class="orb-spoke" data-i="4"></div>
+  <div class="orb-spoke" data-i="5"></div>
+  <div class="orb-spoke" data-i="6"></div>
+  <div class="orb-spoke" data-i="7"></div>
+</div>
+
 
   <!-- 8 Ô XUNG QUANH -->
   <div class="orb-slots">
