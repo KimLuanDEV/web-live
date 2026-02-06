@@ -14,6 +14,32 @@ let lastDiamond = 0;
 let currentBet = 0;
 
 
+
+
+
+// 🔁 KHÔI PHỤC LOCK SAU RELOAD (PHẢI ĐẶT SAU GLOBAL STATE)
+(function restoreWheelLock(){
+  if (localStorage.getItem("wheel_locked") === "1") {
+    hasBetThisRound = true;
+    lockedBet = Number(localStorage.getItem("wheel_locked_bet") || 0);
+
+    // ⚠️ UI lúc này DOM chưa sẵn sàng → đợi 1 frame
+    requestAnimationFrame(() => {
+      setBetUILocked(true);
+
+      const btn = document.getElementById("btnSpin");
+      if (btn) {
+        btn.disabled = true;
+        btn.textContent = "ĐÃ VÀO LỆNH";
+      }
+
+      // chặn back
+      history.pushState(null, "", location.href);
+    });
+  }
+})();
+
+
 /* ================= SOCKET CONNECT ================= */
 
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
@@ -120,6 +146,11 @@ socket.emit("wheel-bet", { bet: currentBet });
 
 hasBetThisRound = true;
 lockedBet = currentBet;
+
+// 🔒 LƯU TRẠNG THÁI LOCK
+localStorage.setItem("wheel_locked", "1");
+localStorage.setItem("wheel_locked_bet", lockedBet);
+
 setBetUILocked(true);
 
 const btn = document.getElementById("btnSpin");
@@ -137,6 +168,12 @@ socket.on("wheel-round-new", data => {
     setBetUILocked(false);
     setActionText("VÀO LỆNH");
   }
+
+
+  // 🔓 MỞ KHÓA KHI PHIÊN MỚI
+localStorage.removeItem("wheel_locked");
+localStorage.removeItem("wheel_locked_bet")
+
 
   hasBetThisRound = false; // reset cho round MỚI
   lockedBet = 0;
@@ -403,3 +440,12 @@ function showLockedBackModal(){
     m.classList.add("hidden");
   }, 2000);
 }
+
+
+// 🔒 CHẶN RELOAD KHI ĐÃ VÀO LỆNH
+window.addEventListener("beforeunload", (e) => {
+  if (hasBetThisRound) {
+    e.preventDefault();
+    e.returnValue = "";
+  }
+});
