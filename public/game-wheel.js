@@ -753,9 +753,14 @@ function renderQuickHistory(){
     return;
   }
 
-  list.forEach(item => {
+  list.forEach((item, idx) => {
     const span = document.createElement("span");
     span.className = "qh-item";
+
+    // 🔥 CHIP MỚI NHẤT
+    if (idx === 0){
+      span.classList.add("latest");
+    }
 
     if (item.multiplier === 0){
       span.classList.add("qh-lose");

@@ -943,6 +943,37 @@ html, body {
   opacity: .5;
 }
 
+/* 🔥 HIGHLIGHT CHIP MỚI NHẤT */
+.qh-item.latest{
+  animation: qhPulse 1.2s ease-in-out 2;
+  position: relative;
+}
+
+.qh-item.latest::after{
+  content:"";
+  position:absolute;
+  inset:-4px;
+  border-radius:999px;
+  box-shadow: 0 0 18px rgba(255,215,0,.9);
+  pointer-events:none;
+}
+
+@keyframes qhPulse{
+  0%{
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255,215,0,0);
+  }
+  50%{
+    transform: scale(1.15);
+    box-shadow: 0 0 24px rgba(255,215,0,.9);
+  }
+  100%{
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255,215,0,0);
+  }
+}
+
+
 
   </style>
 </head>
