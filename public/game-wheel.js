@@ -38,7 +38,7 @@ let currentBet = 0;
 })();
 
 
-(function setupOrbSpokes(){
+function setupOrbSpokes(){
   const wheel  = document.querySelector(".orb-wheel");
   const core   = document.querySelector(".orb-core");
   const slots  = document.querySelectorAll(".orb-slot");
@@ -83,7 +83,7 @@ const finalLen = Math.max(0, fullLen - slotRadius + visualInset);
     spoke.style.transform = `rotate(${angle}deg)`;
   });
 }
-)();
+
 
 
 
