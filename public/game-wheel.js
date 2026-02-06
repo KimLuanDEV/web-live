@@ -105,59 +105,64 @@ const finalLen = Math.max(0, fullLen - slotRadius + visualInset);
 function runOrbRoulette(winIndex, done){
   const slots  = Array.from(document.querySelectorAll(".orb-slot"));
   const spokes = Array.from(document.querySelectorAll(".orb-spoke"));
-
   if (!slots.length) return;
 
   let current = 0;
   let loops = 0;
 
-  const totalLoops = 6;   // 🔥 TĂNG: số vòng chạy đầy (3 → 6)
-  const slowDownAt = 4;   // 🔥 chỉ chậm ở 2 vòng cuối
-
-  let speed = 60;         // 🔥 nhanh hơn lúc đầu
-  const maxSpeed = 220;   // 🔥 tốc độ chậm nhất khi chốt
+  const totalLoops = 6;     // số vòng chạy
+  const slowDownAt = 4;     // bắt đầu chậm
+  let speed = 60;
+  const maxSpeed = 220;
 
   function step(){
     // clear
     slots.forEach(s => s.classList.remove("running","active"));
     spokes.forEach(s => s.classList.remove("running","active"));
 
-    // bật ô hiện tại
+    // 🔥 bật ô hiện tại (running)
     slots[current].classList.add("running");
     spokes[current]?.classList.add("running");
 
-    // sang ô tiếp
-    current = (current + 1) % slots.length;
+    // 👉 xác định ô tiếp theo
+    const next = (current + 1) % slots.length;
 
     // hoàn thành 1 vòng
-    if (current === 0) loops++;
+    if (next === 0) loops++;
 
-    // 🎯 chỉ giảm tốc ở giai đoạn cuối
+    // giảm tốc ở giai đoạn cuối
     if (loops >= slowDownAt){
       speed = Math.min(maxSpeed, speed + 18);
     }
 
-    // 🎯 điều kiện dừng: đủ vòng & đúng ô trúng
-    if (loops >= totalLoops && current === winIndex){
-      slots.forEach(s => s.classList.remove("running"));
-      slots[winIndex].classList.add("active");
+    // 🎯 ĐIỀU KIỆN DỪNG:
+    // đã đủ vòng & NEXT là ô trúng
+    if (loops >= totalLoops && next === winIndex){
 
-      // cập nhật nan theo slot cuối
-      requestAnimationFrame(() => {
-        setupOrbSpokes();
-      });
+      // ⏸️ dừng ở ô TRƯỚC ô trúng
+      setTimeout(() => {
+        slots.forEach(s => s.classList.remove("running"));
 
-      spokes[winIndex]?.classList.add("active");
+        // 💥 bật ô trúng SAU 1 NHỊP NGẮN
+        slots[winIndex].classList.add("active");
+        spokes[winIndex]?.classList.add("active");
 
-      if (done) done();
+        requestAnimationFrame(setupOrbSpokes);
+
+        if (done) done();
+      }, 200); // 👈 delay nhỏ tạo cảm giác "khựng"
+
       return;
     }
 
+    // ➡️ sang ô tiếp theo
+    current = next;
     setTimeout(step, speed);
   }
 
   step();
 }
+
 
 
 
