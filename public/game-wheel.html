@@ -737,9 +737,11 @@ html, body {
 
 <!-- 🔒 ROUND LOCK OVERLAY -->
 <div id="roundLockOverlay" class="round-lock hidden">
-  <div class="round-lock-bg"></div>
+  <!-- 👇 bấm ra ngoài để tắt -->
+  <div class="round-lock-bg" onclick="hideRoundLockOverlay()"></div>
 
-  <div class="round-lock-box">
+  <!-- 👇 chặn click bên trong box -->
+  <div class="round-lock-box" onclick="event.stopPropagation()">
     <div class="round-lock-icon">🔒</div>
     <div class="round-lock-title">ROUND LOCKED</div>
     <div class="round-lock-desc">

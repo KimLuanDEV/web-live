@@ -26,7 +26,7 @@ let currentBet = 0;
     // ⚠️ UI lúc này DOM chưa sẵn sàng → đợi 1 frame
     requestAnimationFrame(() => {
       setBetUILocked(true);
-    showRoundLockOverlay(); // 🔥 THÊM DÒNG NÀY
+
 
       const btn = document.getElementById("btnSpin");
       if (btn) {
@@ -164,22 +164,18 @@ setActionText("ĐÃ VÀO LỆNH");
 
 socket.on("wheel-round-new", data => {
 
-  // ⚠️ CHỈ MỞ KHI CHƯA BET
-  if (!hasBetThisRound){
-    setBetUILocked(false);
-    setActionText("VÀO LỆNH");
-  }
+  // 🔓 CLEAR LOCK TRƯỚC
+  localStorage.removeItem("wheel_locked");
+  localStorage.removeItem("wheel_locked_bet");
 
-
-  // 🔓 MỞ KHÓA KHI PHIÊN MỚI
-localStorage.removeItem("wheel_locked");
-localStorage.removeItem("wheel_locked_bet")
-
-
-  hasBetThisRound = false; // reset cho round MỚI
+  hasBetThisRound = false;   // ✅ reset TRƯỚC
   lockedBet = 0;
 
-  // 🔥 TẮT OVERLAY
+  // 🔓 MỞ BET BAR
+  setBetUILocked(false);
+  setActionText("VÀO LỆNH");
+
+  // 🔥 TẮT OVERLAY + MODAL
   hideRoundLockOverlay();
   hideBetConfirmModal();
   hideRoundResultModal();
@@ -192,6 +188,7 @@ localStorage.removeItem("wheel_locked_bet")
   roundEndAt = data.endAt;
   startRoundCountdown();
 });
+
 
 
 
