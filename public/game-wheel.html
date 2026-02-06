@@ -589,6 +589,119 @@ html, body {
 }
 
 
+
+/* ================= WHEEL UPGRADE ================= */
+
+.wheel-wrap{
+  position:relative;
+  width:280px;
+  height:280px;
+  margin-top:80px;
+}
+
+/* VỎ KIM LOẠI */
+.wheel-shell{
+  position:relative;
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  padding:10px;
+  background: radial-gradient(circle at top,#555,#111 70%);
+  box-shadow:
+    0 0 50px rgba(255,200,0,.35),
+    inset 0 0 25px rgba(0,0,0,.9);
+}
+
+/* BÁNH XE */
+.wheel{
+  width:100%;
+  height:100%;
+  border-radius:50%;
+  position:relative;
+
+  background:
+    conic-gradient(
+      #ff3d00 0deg 60deg,
+      #9e9e9e 60deg 120deg,
+      #4caf50 120deg 180deg,
+      #03a9f4 180deg 240deg,
+      #ffc107 240deg 300deg,
+      #e91e63 300deg 360deg
+    );
+
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,.7),
+    0 0 20px rgba(255,215,0,.25);
+
+  transition: transform 4s cubic-bezier(.17,.67,.14,1);
+}
+
+/* TRỤC GIỮA */
+.wheel-center{
+  position:absolute;
+  inset:42%;
+  border-radius:50%;
+  background: radial-gradient(circle,#eee,#999,#222);
+  z-index:5;
+  box-shadow:
+    0 0 10px rgba(255,255,255,.6),
+    inset 0 0 8px rgba(0,0,0,.8);
+}
+
+/* LABEL */
+.wheel-label{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:4;
+}
+
+.wheel-label span{
+  position:absolute;
+  left:50%;
+  top:10px;
+  transform-origin:0 130px;
+
+  font-size:14px;
+  font-weight:900;
+  color:#fff;
+  text-shadow:0 2px 6px rgba(0,0,0,.8);
+}
+
+/* KIM CHỈ */
+.pointer{
+  position:absolute;
+  top:-18px;
+  left:50%;
+  transform:translateX(-50%);
+  width:0;
+  height:0;
+  border-left:14px solid transparent;
+  border-right:14px solid transparent;
+  border-bottom:26px solid #ffd700;
+  filter: drop-shadow(0 4px 6px rgba(0,0,0,.7));
+  z-index:10;
+  animation: pointerIdle 1.6s ease-in-out infinite;
+}
+
+@keyframes pointerIdle{
+  0%,100%{ transform:translateX(-50%) rotate(0); }
+  50%{ transform:translateX(-50%) rotate(-6deg); }
+}
+
+
+
+.wheel.win{
+  animation: wheelGlow 1s ease-out;
+}
+
+@keyframes wheelGlow{
+  0%{ box-shadow:0 0 0 rgba(255,215,0,0); }
+  50%{ box-shadow:0 0 60px rgba(255,215,0,.9); }
+  100%{ box-shadow:0 0 0 rgba(255,215,0,0); }
+}
+
+
   </style>
 </head>
 
@@ -621,12 +734,26 @@ html, body {
 </header>
 
 
+<div class="wheel-wrap">
+  <div class="pointer"></div>
 
-  <div class="wheel-wrap">
-    <div class="pointer"></div>
+  <div class="wheel-shell">
     <div id="wheel" class="wheel"></div>
-  </div>
 
+    <!-- LABEL HỆ SỐ -->
+    <div class="wheel-label">
+      <span style="transform:rotate(30deg)">x0</span>
+      <span style="transform:rotate(90deg)">x0.5</span>
+      <span style="transform:rotate(150deg)">x1</span>
+      <span style="transform:rotate(210deg)">x2</span>
+      <span style="transform:rotate(270deg)">x5</span>
+      <span style="transform:rotate(330deg)">x10</span>
+    </div>
+
+    <!-- TRỤC GIỮA -->
+    <div class="wheel-center"></div>
+  </div>
+</div>
 
 
 

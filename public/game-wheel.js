@@ -229,17 +229,38 @@ socket.on("wheel-round-result", data => {
   spinning = true;
 
   const wheel = document.getElementById("wheel");
+  const pointer = document.querySelector(".pointer");
 
   const sliceDeg = 360 / multipliers.length;
+
+  // 🔧 bù trừ vì kim chỉ nằm ở đỉnh (12h)
+  const pointerOffset = -90;
+
+  // 🎯 quay nhiều vòng + dừng đúng TÂM ô
   const rotateDeg =
     360 * 6 +
     index * sliceDeg +
-    sliceDeg / 2;
+    sliceDeg / 2 +
+    pointerOffset;
 
   currentRotation += rotateDeg;
   wheel.style.transform = `rotate(${currentRotation}deg)`;
 
+  // 🔔 hiệu ứng chốt kim (rất quan trọng)
   setTimeout(() => {
+    if (pointer){
+      pointer.classList.add("hit");
+      setTimeout(() => pointer.classList.remove("hit"), 200);
+    }
+  }, 4000);
+
+  setTimeout(() => {
+    // ✨ hiệu ứng trúng lớn
+    if (multiplier >= 5){
+      wheel.classList.add("win");
+      setTimeout(() => wheel.classList.remove("win"), 1000);
+    }
+
     showRoundResult(multiplier);
     spinning = false;
   }, 4200);
@@ -323,9 +344,11 @@ function spawnFlyDiamond(amount){
     el.textContent = `⏳ ${remain}s`;
 
 if (remain <= 3){
+  el.classList.add("danger");
   setBetUILocked(true);
   setActionText("ĐÃ KHÓA");
-} else {
+}
+else {
   el.classList.remove("danger");
 
   // 🔒 nếu đã bet → vẫn khóa
