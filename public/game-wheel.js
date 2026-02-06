@@ -1,3 +1,26 @@
+/* ================= SOCKET COIN SYNC ================= */
+
+const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+const socket = io({
+  auth: {
+    uid: me.uid,
+    deviceId: localStorage.getItem("device_id")
+  }
+});
+
+// nhận realtime từ server
+socket.on("coin-update", (data) => {
+  if (typeof data?.coins !== "number") return;
+
+  setDiamond(data.coins);
+  refreshDiamond();
+});
+
+
+
+
+
 let spinning = false;
 let currentRotation = 0;
 
@@ -11,7 +34,7 @@ const multipliers = [
   10    // x10
 ];
 
-/* ================= DIAMOND ================= */
+/* ================= DIAMOND (LOCAL CACHE) ================= */
 
 function getDiamond(){
   const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
@@ -40,7 +63,7 @@ function spinWheel(){
   if(spinning) return;
 
   const betInput = document.getElementById("betAmount");
-  const bet = parseFloat(betInput.value);
+  const bet = Math.floor(Number(betInput.value));
 
   if(!bet || bet <= 0){
     alert("❌ Nhập số kim cương hợp lệ");
@@ -53,7 +76,7 @@ function spinWheel(){
     return;
   }
 
-  // 🔻 TRỪ KIM CƯƠNG NGAY KHI QUAY
+  // 🔻 TRỪ KIM CƯƠNG NGAY KHI BẮT ĐẦU QUAY
   setDiamond(myDiamond - bet);
   refreshDiamond();
 
