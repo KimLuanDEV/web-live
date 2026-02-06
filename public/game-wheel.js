@@ -261,7 +261,7 @@ socket.on("wheel-round-result", data => {
   labels.forEach(el => el.classList.remove("active"));
 
   const sliceDeg = 360 / multipliers.length;
-  const pointerOffset = -90; // 🔥 KHỚP VỚI KIM 12h
+  const pointerOffset = -67.5; // 🔥 KHỚP VỚI KIM 12h
 
   const target =
     360 * 6 +
