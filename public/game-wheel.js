@@ -26,6 +26,7 @@ let currentBet = 0;
     // ⚠️ UI lúc này DOM chưa sẵn sàng → đợi 1 frame
     requestAnimationFrame(() => {
       setBetUILocked(true);
+    showRoundLockOverlay(); // 🔥 THÊM DÒNG NÀY
 
       const btn = document.getElementById("btnSpin");
       if (btn) {
@@ -150,7 +151,8 @@ lockedBet = currentBet;
 // 🔒 LƯU TRẠNG THÁI LOCK
 localStorage.setItem("wheel_locked", "1");
 localStorage.setItem("wheel_locked_bet", lockedBet);
-
+// 🔥 HIỆN OVERLAY
+showRoundLockOverlay();
 setBetUILocked(true);
 
 const btn = document.getElementById("btnSpin");
@@ -178,6 +180,8 @@ localStorage.removeItem("wheel_locked_bet")
   hasBetThisRound = false; // reset cho round MỚI
   lockedBet = 0;
 
+  // 🔥 TẮT OVERLAY
+  hideRoundLockOverlay();
   hideBetConfirmModal();
   hideRoundResultModal();
 
@@ -471,3 +475,15 @@ window.addEventListener("keydown", (e) => {
     showLockedBackModal();
   }
 });
+
+
+
+function showRoundLockOverlay(){
+  const el = document.getElementById("roundLockOverlay");
+  if (el) el.classList.remove("hidden");
+}
+
+function hideRoundLockOverlay(){
+  const el = document.getElementById("roundLockOverlay");
+  if (el) el.classList.add("hidden");
+}

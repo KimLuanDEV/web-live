@@ -517,6 +517,72 @@ html, body {
 }
 
 
+/* ================= ROUND LOCK OVERLAY ================= */
+
+.round-lock{
+  position: fixed;
+  inset: 0;
+  z-index: 3000; /* CAO HƠN HEADER + BET BAR */
+}
+
+.round-lock.hidden{
+  display: none;
+}
+
+.round-lock-bg{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(6px);
+}
+
+.round-lock-box{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+
+  width: 300px;
+  padding: 26px 20px;
+  border-radius: 22px;
+
+  text-align: center;
+  background: rgba(20,20,20,.96);
+
+  box-shadow:
+    0 25px 60px rgba(0,0,0,.8),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+.round-lock-icon{
+  font-size: 42px;
+  margin-bottom: 12px;
+}
+
+.round-lock-title{
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: .6px;
+  margin-bottom: 8px;
+}
+
+.round-lock-desc{
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: .9;
+}
+
+.round-lock-desc b{
+  color: #ff6b6b;
+}
+
+.round-lock-sub{
+  margin-top: 12px;
+  font-size: 12px;
+  opacity: .6;
+}
+
+
   </style>
 </head>
 
@@ -662,6 +728,26 @@ html, body {
     <div class="bet-modal-desc">
       Bạn đã vào lệnh.<br>
       Vui lòng chờ <b>kết thúc phiên</b>.
+    </div>
+  </div>
+</div>
+
+
+
+
+<!-- 🔒 ROUND LOCK OVERLAY -->
+<div id="roundLockOverlay" class="round-lock hidden">
+  <div class="round-lock-bg"></div>
+
+  <div class="round-lock-box">
+    <div class="round-lock-icon">🔒</div>
+    <div class="round-lock-title">ROUND LOCKED</div>
+    <div class="round-lock-desc">
+      Bạn đã vào lệnh<br>
+      <b>KHÔNG ĐƯỢC RELOAD / THOÁT TRANG</b>
+    </div>
+    <div class="round-lock-sub">
+      ⏳ Vui lòng chờ phiên kết thúc
     </div>
   </div>
 </div>
