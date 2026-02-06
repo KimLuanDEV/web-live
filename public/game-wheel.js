@@ -39,12 +39,40 @@ let currentBet = 0;
 
 
 (function setupOrbSpokes(){
-  const spokes = document.querySelectorAll(".orb-spoke");
-  if (!spokes.length) return;
+  const wheel   = document.querySelector(".orb-wheel");
+  const core    = document.querySelector(".orb-core");
+  const slots   = document.querySelectorAll(".orb-slot");
+  const spokes  = document.querySelectorAll(".orb-spoke");
 
-  spokes.forEach((el, i) => {
-    const angle = (360 / spokes.length) * i - 90;
-    el.style.transform = `rotate(${angle}deg) translateY(-95px)`;
+  if (!wheel || !core || !slots.length || !spokes.length) return;
+
+  const wheelRect = wheel.getBoundingClientRect();
+  const coreRect  = core.getBoundingClientRect();
+
+  // TÂM TRỤC
+  const cx = coreRect.left + coreRect.width / 2 - wheelRect.left;
+  const cy = coreRect.top  + coreRect.height / 2 - wheelRect.top;
+
+  slots.forEach((slot, i) => {
+    const spoke = spokes[i];
+    if (!spoke) return;
+
+    const slotRect = slot.getBoundingClientRect();
+
+    // TÂM Ô
+    const sx = slotRect.left + slotRect.width / 2 - wheelRect.left;
+    const sy = slotRect.top  + slotRect.height / 2 - wheelRect.top;
+
+    // VECTOR TRỤC → Ô
+    const dx = sx - cx;
+    const dy = sy - cy;
+
+    const length = Math.sqrt(dx*dx + dy*dy);
+    const angle  = Math.atan2(dy, dx) * 180 / Math.PI;
+
+    // ĐẶT NAN
+    spoke.style.transform =
+      `translate(${cx}px, ${cy}px) rotate(${angle}deg) scaleX(${length})`;
   });
 })();
 
