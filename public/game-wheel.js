@@ -114,10 +114,13 @@ function spinWheel(){
     bet: currentBet
   });
 
+showBetConfirmModal(currentBet);
 setActionText("ĐÃ VÀO LỆNH");
 }
 
 socket.on("wheel-round-new", data => {
+  hideBetConfirmModal();
+
   console.log("🕒 Phiên mới:", data.roundId);
 
   currentBet = 0;
@@ -139,6 +142,7 @@ socket.on("wheel-round-new", data => {
 /* ================= SERVER RESULT ================= */
 
 socket.on("wheel-round-result", data => {
+hideBetConfirmModal();
 setActionText("ĐANG QUAY");
   const { index, multiplier } = data;
 
@@ -262,4 +266,20 @@ function spawnFlyDiamond(amount){
 function setActionText(text){
   const btn = document.getElementById("btnSpin");
   if (btn) btn.textContent = text;
+}
+
+
+
+function showBetConfirmModal(bet){
+  const modal = document.getElementById("betConfirmModal");
+  const val   = document.getElementById("betConfirmValue");
+  if (!modal || !val) return;
+
+  val.textContent = Number(bet).toLocaleString();
+  modal.classList.remove("hidden");
+}
+
+function hideBetConfirmModal(){
+  const modal = document.getElementById("betConfirmModal");
+  if (modal) modal.classList.add("hidden");
 }

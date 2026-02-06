@@ -439,6 +439,73 @@ html, body {
 }
 
 
+
+/* ================= BET CONFIRM MODAL ================= */
+
+.bet-modal{
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+}
+
+.bet-modal.hidden{
+  display: none;
+}
+
+.bet-modal-backdrop{
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(4px);
+}
+
+.bet-modal-box{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%,-50%);
+
+  width: 280px;
+  padding: 22px 18px;
+  border-radius: 20px;
+
+  background: rgba(20,20,20,.95);
+  text-align: center;
+
+  box-shadow:
+    0 20px 40px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+.bet-modal-icon{
+  font-size: 34px;
+  margin-bottom: 10px;
+}
+
+.bet-modal-title{
+  font-size: 18px;
+  font-weight: 800;
+  margin-bottom: 8px;
+}
+
+.bet-modal-desc{
+  font-size: 14px;
+  line-height: 1.5;
+  opacity: .9;
+}
+
+.bet-modal-desc b{
+  color: #8ab4ff;
+}
+
+.bet-modal-note{
+  margin-top: 10px;
+  font-size: 12px;
+  opacity: .6;
+}
+
+
+
   </style>
 </head>
 
@@ -528,6 +595,27 @@ html, body {
 
     <div id="result" class="result"></div>
 
+  </div>
+</div>
+
+
+
+<!-- ✅ MODAL: ĐÃ VÀO LỆNH -->
+<div class="bet-modal hidden" id="betConfirmModal">
+  <div class="bet-modal-backdrop"></div>
+
+  <div class="bet-modal-box">
+    <div class="bet-modal-icon">✅</div>
+    <div class="bet-modal-title">Đã vào lệnh</div>
+
+    <div class="bet-modal-desc">
+      Bạn đã đặt cược <b><span id="betConfirmValue">0</span> 💎</b><br/>
+      Vui lòng chờ kết quả phiên quay
+    </div>
+
+    <div class="bet-modal-note">
+      ⏳ Phiên sẽ tự động quay khi hết thời gian
+    </div>
   </div>
 </div>
 
