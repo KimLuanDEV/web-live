@@ -210,3 +210,16 @@ function spawnFlyDiamond(amount){
 
   setTimeout(() => el.remove(), 1000);
 }
+
+
+
+  // Chặn zoom bằng gesture (iOS / Android)
+  document.addEventListener('gesturestart', e => e.preventDefault());
+  document.addEventListener('gesturechange', e => e.preventDefault());
+  document.addEventListener('gestureend', e => e.preventDefault());
+
+  // Chặn Ctrl + scroll (desktop)
+  window.addEventListener('wheel', e => {
+    if (e.ctrlKey) e.preventDefault();
+  }, { passive: false });
+
