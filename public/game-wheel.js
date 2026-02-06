@@ -382,14 +382,8 @@ function showRoundResult(multiplier){
 
   modal.classList.remove("hidden");
 
-  // 💰 TÍNH LÃI / LỖ RÒNG (LUÔN DÙNG lockedBet)
-  let winAmount = 0;
-
-  if (multiplier === 0){
-    winAmount = -lockedBet;          // mất toàn bộ
-  } else {
-    winAmount = lockedBet * multiplier - lockedBet; // lãi ròng
-  }
+  // ✅ payout = tổng coin được cộng lại từ server (bet * multiplier)
+  const payout = Math.floor(lockedBet * multiplier);
 
   if (multiplier === 0){
     icon.textContent  = "💥";
@@ -402,7 +396,6 @@ function showRoundResult(multiplier){
     `;
     desc.className    = "bet-modal-desc result-lose";
   } else {
-    // 🎯 icon theo mức trúng
     if (multiplier >= 10) icon.textContent = "💎";
     else if (multiplier >= 5) icon.textContent = "🔥";
     else if (multiplier >= 2) icon.textContent = "✨";
@@ -412,16 +405,16 @@ function showRoundResult(multiplier){
     desc.innerHTML    = `
       Bạn trúng <b>x${multiplier}</b><br>
       <span style="font-size:18px;font-weight:900">
-        ${winAmount > 0 ? "+" : ""}${winAmount.toLocaleString()} 💎
+        +${payout.toLocaleString()} 💎
       </span>
+      <div style="margin-top:6px; font-size:12px; opacity:.65">
+        (Lãi ròng: ${(payout - lockedBet).toLocaleString()} 💎)
+      </div>
     `;
     desc.className    = "bet-modal-desc result-win";
   }
 
-  // ⏱️ tự đóng sau 3.5s
-  setTimeout(() => {
-    hideRoundResultModal();
-  }, 3500);
+  setTimeout(() => hideRoundResultModal(), 3500);
 }
 
 
