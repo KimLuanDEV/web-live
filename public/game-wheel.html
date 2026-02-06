@@ -525,7 +525,7 @@ html, body {
 <header class="game-header">
   <!-- LEFT -->
   <div class="gh-left">
-    <button class="gh-back" onclick="history.back()">←</button>
+    <button class="gh-back" onclick="handleBack()">←</button>
   </div>
 
   <!-- CENTER -->
@@ -651,6 +651,21 @@ html, body {
     </div>
   </div>
 </div>
+
+
+
+<div id="backLockModal" class="bet-modal hidden">
+  <div class="bet-modal-backdrop"></div>
+  <div class="bet-modal-box">
+    <div class="bet-modal-icon">🔒</div>
+    <div class="bet-modal-title">Không thể quay lại</div>
+    <div class="bet-modal-desc">
+      Bạn đã vào lệnh.<br>
+      Vui lòng chờ <b>kết thúc phiên</b>.
+    </div>
+  </div>
+</div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>

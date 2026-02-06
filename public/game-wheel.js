@@ -373,3 +373,27 @@ function setBetUILocked(locked){
     btn.style.pointerEvents = locked ? "none" : "auto";
   });
 }
+
+
+function handleBack() {
+  // 🔒 ĐÃ VÀO LỆNH → CẤM QUAY LẠI
+  if (hasBetThisRound) {
+    showLockedBackModal();
+    return;
+  }
+
+  // ✅ CHƯA VÀO LỆNH → CHO QUAY
+  history.back();
+}
+
+
+function showLockedBackModal(){
+  const m = document.getElementById("backLockModal");
+  if (!m) return;
+  m.classList.remove("hidden");
+
+  // ⏱️ tự đóng sau 2s
+  setTimeout(() => {
+    m.classList.add("hidden");
+  }, 2000);
+}
