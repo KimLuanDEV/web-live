@@ -185,6 +185,34 @@
 }
 
 
+/* ================= DIAMOND FLY EFFECT ================= */
+
+.fly-diamond{
+  position: fixed;
+  z-index: 2000;
+  font-size: 18px;
+  font-weight: 800;
+  pointer-events: none;
+
+  animation: flyToHeader 0.9s ease-out forwards;
+}
+
+@keyframes flyToHeader{
+  0%{
+    transform: translate(0,0) scale(1);
+    opacity: 1;
+  }
+  80%{
+    opacity: 1;
+  }
+  100%{
+    transform: translate(var(--dx), var(--dy)) scale(0.4);
+    opacity: 0;
+  }
+}
+
+
+
   </style>
 </head>
 

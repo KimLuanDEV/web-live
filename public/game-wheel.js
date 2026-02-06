@@ -3,6 +3,7 @@
 let spinning = false;
 let currentRotation = 0;
 let serverDiamond = 0; // 💎 CHỈ LẤY TỪ SERVER
+let lastDiamond = 0;
 
 
 /* ================= SOCKET CONNECT ================= */
@@ -19,9 +20,20 @@ const socket = io({
 // 💎 nhận coin realtime từ server (nguồn duy nhất)
 socket.on("coin-update", (data) => {
   if (typeof data?.coins !== "number") return;
-  serverDiamond = data.coins;
+
+  const newVal = data.coins;
+  const diff = newVal - serverDiamond;
+
+  // nếu coin tăng → bay 💎
+  if (diff > 0){
+    spawnFlyDiamond(diff);
+  }
+
+  lastDiamond = serverDiamond;
+  serverDiamond = newVal;
   updateDiamondUI();
 });
+
 
 
 /* ================= UI ================= */
@@ -112,3 +124,33 @@ socket.on("wheel-error", (err) => {
 
   alert(map[err?.message] || "❌ Có lỗi xảy ra");
 });
+
+
+
+function spawnFlyDiamond(amount){
+  const from = document.getElementById("wheel");
+  const to   = document.getElementById("diamondDisplay");
+  if (!from || !to) return;
+
+  const f = from.getBoundingClientRect();
+  const t = to.getBoundingClientRect();
+
+  const el = document.createElement("div");
+  el.className = "fly-diamond";
+  el.textContent = "💎 +" + amount;
+
+  el.style.left = f.left + f.width / 2 + "px";
+  el.style.top  = f.top + f.height / 2 + "px";
+
+  const dx = t.left - f.left;
+  const dy = t.top  - f.top;
+
+  el.style.setProperty("--dx", dx + "px");
+  el.style.setProperty("--dy", dy + "px");
+
+  document.body.appendChild(el);
+
+  setTimeout(() => {
+    el.remove();
+  }, 1000);
+}
