@@ -98,32 +98,33 @@ const finalLen = Math.max(0, fullLen - slotRadius + visualInset);
 
 
 /**
- * ✨ Chạy sáng từng ô như roulette rồi chốt
+ * ✨ Chạy sáng từng ô như roulette rồi chốt (ĐÃ TĂNG VÒNG – ĐÃ HƠN)
  * @param {number} winIndex - index ô trúng
  * @param {Function} done - callback sau khi dừng
  */
 function runOrbRoulette(winIndex, done){
-const slots  = Array.from(document.querySelectorAll(".orb-slot"));
-const spokes = Array.from(document.querySelectorAll(".orb-spoke"));
+  const slots  = Array.from(document.querySelectorAll(".orb-slot"));
+  const spokes = Array.from(document.querySelectorAll(".orb-spoke"));
 
   if (!slots.length) return;
 
   let current = 0;
   let loops = 0;
-  const totalLoops = 3;      // số vòng chạy đầy
-  let speed = 80;            // ms (ban đầu nhanh)
-  const slowDownAt = 2;      // bắt đầu chậm dần ở vòng cuối
+
+  const totalLoops = 6;   // 🔥 TĂNG: số vòng chạy đầy (3 → 6)
+  const slowDownAt = 4;   // 🔥 chỉ chậm ở 2 vòng cuối
+
+  let speed = 60;         // 🔥 nhanh hơn lúc đầu
+  const maxSpeed = 220;   // 🔥 tốc độ chậm nhất khi chốt
 
   function step(){
     // clear
     slots.forEach(s => s.classList.remove("running","active"));
     spokes.forEach(s => s.classList.remove("running","active"));
 
-
     // bật ô hiện tại
     slots[current].classList.add("running");
     spokes[current]?.classList.add("running");
-
 
     // sang ô tiếp
     current = (current + 1) % slots.length;
@@ -131,20 +132,20 @@ const spokes = Array.from(document.querySelectorAll(".orb-spoke"));
     // hoàn thành 1 vòng
     if (current === 0) loops++;
 
-    // giảm tốc ở vòng cuối
+    // 🎯 chỉ giảm tốc ở giai đoạn cuối
     if (loops >= slowDownAt){
-      speed += 25; // chậm dần
+      speed = Math.min(maxSpeed, speed + 18);
     }
 
-    // điều kiện dừng: đã đủ vòng & đúng ô trúng
+    // 🎯 điều kiện dừng: đủ vòng & đúng ô trúng
     if (loops >= totalLoops && current === winIndex){
       slots.forEach(s => s.classList.remove("running"));
       slots[winIndex].classList.add("active");
 
-// 🔥 cập nhật nan theo kích thước mới của slot
-requestAnimationFrame(() => {
-  setupOrbSpokes();
-});
+      // cập nhật nan theo slot cuối
+      requestAnimationFrame(() => {
+        setupOrbSpokes();
+      });
 
       spokes[winIndex]?.classList.add("active");
 
