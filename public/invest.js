@@ -88,3 +88,8 @@ function openGameHub(){
 function closeGameHub(){
   document.getElementById("gameHubSheet")?.classList.add("hidden");
 }
+
+
+function openWheelGame(){
+  location.href = "/game-wheel.html";
+}

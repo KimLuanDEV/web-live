@@ -300,12 +300,6 @@ html, body {
     url("/assets/bg/detective.jpg");
 }
 
-.invest-card.roleplay{
-  background-image:
-    linear-gradient(180deg, rgba(255,100,180,.35), rgba(0,0,0,.95)),
-    url("/assets/bg/roleplay.jpg");
-}
-
 .invest-card.locked{
   filter: grayscale(1);
   opacity: .55;
@@ -315,6 +309,22 @@ html, body {
 .invest-card.coming-soon{
   background:
     linear-gradient(180deg, rgba(120,120,120,.35), rgba(0,0,0,.95));
+}
+
+
+
+.invest-card.wheel{
+  background-image:
+    linear-gradient(180deg, rgba(255,200,0,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/wheel.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 45px rgba(255,200,0,.3),
+    0 12px 30px rgba(0,0,0,.7);
 }
 
 
@@ -433,10 +443,11 @@ html, body {
           <div class="asset-name">Thiên tài phá án</div>
         </div>
 
-        <!-- ❤️ GAME NHẬP VAI -->
-        <div class="invest-card roleplay locked">
-          <div class="asset-name">Nhập vai</div>
-        </div>
+<!-- 🎡 GAME VÒNG QUAY MAY MẮN -->
+<div class="invest-card wheel" onclick="openWheelGame()">
+  <div class="asset-name">Vòng quay may mắn</div>
+</div>
+
 
         <!-- ➕ GAME KHÁC -->
         <div class="invest-card coming-soon">

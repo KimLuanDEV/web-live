@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>🎡 Vòng quay may mắn</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <link rel="stylesheet" href="/style.css">
+
+  <style>
+    body{
+      margin:0;
+      background:#000;
+      color:#fff;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      min-height:100vh;
+    }
+
+    .wheel-wrap{
+      position:relative;
+      width:260px;
+      height:260px;
+    }
+
+    .wheel{
+      width:100%;
+      height:100%;
+      border-radius:50%;
+      background:
+        conic-gradient(
+          #ffd700 0deg 45deg,
+          #ff5252 45deg 90deg,
+          #4caf50 90deg 135deg,
+          #03a9f4 135deg 180deg,
+          #9c27b0 180deg 225deg,
+          #ff9800 225deg 270deg,
+          #00bcd4 270deg 315deg,
+          #e91e63 315deg 360deg
+        );
+      box-shadow:
+        0 0 40px rgba(255,215,0,.5),
+        inset 0 0 25px rgba(0,0,0,.6);
+      transition: transform 4s cubic-bezier(.17,.67,.14,1);
+    }
+
+    .pointer{
+      position:absolute;
+      top:-18px;
+      left:50%;
+      transform:translateX(-50%);
+      width:0;
+      height:0;
+      border-left:14px solid transparent;
+      border-right:14px solid transparent;
+      border-bottom:26px solid #ffd700;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,.6));
+    }
+
+    .spin-btn{
+      margin-top:24px;
+      padding:14px 28px;
+      font-size:16px;
+      font-weight:700;
+      border:none;
+      border-radius:999px;
+      cursor:pointer;
+      background:linear-gradient(180deg,#ffd700,#ff9800);
+      color:#000;
+      box-shadow:0 6px 20px rgba(255,200,0,.5);
+    }
+
+    .spin-btn:active{
+      transform:scale(.95);
+    }
+
+    .result{
+      margin-top:16px;
+      font-size:15px;
+      opacity:.9;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="wheel-wrap">
+    <div class="pointer"></div>
+    <div id="wheel" class="wheel"></div>
+  </div>
+
+  <button class="spin-btn" onclick="spinWheel()">🎡 Quay ngay</button>
+  <div id="result" class="result"></div>
+
+<script src="/game-wheel.js"></script>
+</body>
+</html>
