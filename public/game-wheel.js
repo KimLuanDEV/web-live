@@ -387,27 +387,24 @@ setActionText("ĐÃ VÀO LỆNH");
 
 socket.on("wheel-round-new", data => {
 
-  // 🔄 RESET TRẠNG THÁI PHIÊN
+  // 🔄 reset trạng thái UI (KHÔNG reset bet logic)
   waitingNextRound = false;
   hasBetThisRound  = false;
-  didBetThisRound  = false;   // 🔥 QUAN TRỌNG: reset cờ đã bet
-  lockedBet        = 0;       // 🔥 tránh rò thưởng phiên cũ
 
-  // ❌ KHÔNG mở bet bar ngay
+  // ❌ KHÔNG reset didBetThisRound ở đây nữa
+  // ❌ KHÔNG reset lockedBet ở đây nữa
+
   setActionText("CHỜ KẾT QUẢ");
 
-  // Ẩn toàn bộ modal / overlay của phiên trước
   hideRoundLockOverlay();
   hideBetConfirmModal();
   hideRoundResultModal();
 
-  // Reset UI bet
   currentBet = 0;
   updateBetUI();
 
   spinning = false;
 
-  // ⏱️ BẮT ĐẦU COUNTDOWN PHIÊN MỚI
   roundEndAt = data.endAt;
   startRoundCountdown();
 });
@@ -437,7 +434,7 @@ socket.on("wheel-round-result", data => {
     renderQuickHistory();
   }
 
-  
+
     // 🔓 CHỈ LÚC NÀY MỚI MỞ BET BAR
     waitingNextRound = false;
     hasBetThisRound = false;
