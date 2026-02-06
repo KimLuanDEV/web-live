@@ -6,6 +6,7 @@ let roundEndAt = 0;
 let roundTimerInterval = null;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 let lockedBet = 0; // 💰 bet đã chốt cho round
+let waitingNextRound = false; // ⏳ phải đợi phiên mới
 
 let serverDiamond = 0;   // 💎 coin từ server
 let lastDiamond = 0;
@@ -17,25 +18,23 @@ let currentBet = 0;
 
 
 
-// 🔁 KHÔI PHỤC LOCK SAU RELOAD (PHẢI ĐẶT SAU GLOBAL STATE)
+
+// 🔁 KHÔI PHỤC SAU RELOAD → CHỈ ĐÁNH DẤU, KHÔNG CHO VÀO GAME
 (function restoreWheelLock(){
   if (localStorage.getItem("wheel_locked") === "1") {
     hasBetThisRound = true;
+    waitingNextRound = true; // 🔒 PHẢI ĐỢI ROUND MỚI
     lockedBet = Number(localStorage.getItem("wheel_locked_bet") || 0);
 
-    // ⚠️ UI lúc này DOM chưa sẵn sàng → đợi 1 frame
     requestAnimationFrame(() => {
       setBetUILocked(true);
-
+      setActionText("CHỜ PHIÊN MỚI");
 
       const btn = document.getElementById("btnSpin");
-      if (btn) {
-        btn.disabled = true;
-        btn.textContent = "ĐÃ VÀO LỆNH";
-      }
+      if (btn) btn.disabled = true;
 
-      // chặn back
-      history.pushState(null, "", location.href);
+      // ❌ KHÔNG show overlay
+      // ❌ KHÔNG cho thao tác gì
     });
   }
 })();
@@ -79,6 +78,35 @@ socket.on("coin-update", (data) => {
 
 /* ================= UI ================= */
 
+
+// 🔒 SERVER BÁO: USER PHẢI ĐỢI PHIÊN MỚI
+socket.on("wheel-locked", data => {
+  waitingNextRound = true;
+  hasBetThisRound = true;
+
+  setBetUILocked(true);
+  setActionText("CHỜ PHIÊN MỚI");
+
+  // đảm bảo không lộ UI chơi
+  hideBetConfirmModal();
+  hideRoundResultModal();
+});
+
+
+// ✅ SERVER BÁO: ĐƯỢC VÀO GAME
+socket.on("wheel-open", data => {
+  waitingNextRound = false;
+  hasBetThisRound = false;
+
+  setBetUILocked(false);
+  setActionText("VÀO LỆNH");
+
+  roundEndAt = data.endAt;
+  startRoundCountdown();
+});
+
+
+
 function updateDiamondUI(){
   const el = document.getElementById("diamondValue");
   if (el){
@@ -97,14 +125,14 @@ function updateBetUI(){
 /* ================= BET CONTROLS (INVEST STYLE) ================= */
 
 function setBetRatio(ratio){
-  if (spinning) return;
+  if (spinning || waitingNextRound) return;
 
   currentBet = Math.floor(serverDiamond * ratio);
   updateBetUI();
 }
 
 function addBet(amount){
-  if (spinning) return;
+  if (spinning || waitingNextRound) return;
 
   currentBet += amount;
   if (currentBet > serverDiamond){
@@ -114,7 +142,7 @@ function addBet(amount){
 }
 
 function resetBet(){
-  if (spinning) return;
+  if (spinning || waitingNextRound) return;
 
   currentBet = 0;
   updateBetUI();
@@ -129,8 +157,7 @@ const multipliers = [0, 0.5, 1, 2, 5, 10];
 /* ================= GAME ACTION ================= */
 
 function spinWheel(){
-
-if (hasBetThisRound) return;
+  if (hasBetThisRound || waitingNextRound) return;
 
 
   if (currentBet <= 0){
@@ -164,18 +191,17 @@ setActionText("ĐÃ VÀO LỆNH");
 
 socket.on("wheel-round-new", data => {
 
-  // 🔓 CLEAR LOCK TRƯỚC
+  // 🔓 CHỈ LÚC NÀY MỚI ĐƯỢC VÀO LẠI
+  waitingNextRound = false;
+  hasBetThisRound = false;
+  lockedBet = 0;
+
   localStorage.removeItem("wheel_locked");
   localStorage.removeItem("wheel_locked_bet");
 
-  hasBetThisRound = false;   // ✅ reset TRƯỚC
-  lockedBet = 0;
-
-  // 🔓 MỞ BET BAR
   setBetUILocked(false);
   setActionText("VÀO LỆNH");
 
-  // 🔥 TẮT OVERLAY + MODAL
   hideRoundLockOverlay();
   hideBetConfirmModal();
   hideRoundResultModal();
@@ -188,6 +214,7 @@ socket.on("wheel-round-new", data => {
   roundEndAt = data.endAt;
   startRoundCountdown();
 });
+
 
 
 

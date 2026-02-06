@@ -581,10 +581,30 @@ socket.on("wheel-bet", data => {
 
 
 
-socket.emit("wheel-round-new", {
-  roundId: wheelRound.id,
-  endAt: wheelRound.endAt
-});
+// ================================
+// 🔐 CHECK USER CÓ ĐƯỢC VÀO GAME WHEEL KHÔNG
+// ================================
+const uid = socket.data.uid;
+
+// user đã vào lệnh trong round hiện tại?
+const alreadyBet =
+  Array.isArray(wheelRound.bets) &&
+  wheelRound.bets.some(b => b.uid === uid);
+
+if (alreadyBet && wheelRound.endAt > Date.now()) {
+  // 🔒 KHÓA – PHẢI ĐỢI ROUND MỚI
+  socket.emit("wheel-locked", {
+    reason: "WAIT_NEXT_ROUND",
+    roundId: wheelRound.id,
+    endAt: wheelRound.endAt
+  });
+} else {
+  // ✅ CHO PHÉP VÀO GAME
+  socket.emit("wheel-open", {
+    roundId: wheelRound.id,
+    endAt: wheelRound.endAt
+  });
+}
 
 
   socket.on("disconnect", () => {
