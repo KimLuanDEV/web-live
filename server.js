@@ -539,31 +539,34 @@ wheelRound.bets.forEach(o => {
   const me = users[o.uid];
   if (!me?.profile) return;
 
+  let winAmount = 0;
+
   if (multiplier > 0){
-    const winAmount = Math.floor(o.bet * multiplier);
+    winAmount = Math.floor(o.bet * multiplier);
 
     // 💰 cộng coin
     me.profile.coins += winAmount;
 
-    // 📜 lưu lịch sử (để hiển thị history)
-    wheelHistory.unshift({
-      roundId: wheelRound.id,
-      uid: o.uid,
-      name: me.profile.name || "Người chơi",
-      bet: o.bet,
-      multiplier,
-      winAmount,
-      ts: Date.now()
-    });
-
-    // 🏆 lưu cho TOP PHIÊN NÀY
+    // 🏆 chỉ add top nếu thắng
     roundWinners.push({
       uid: o.uid,
       name: me.profile.name || "Người chơi",
       winAmount
     });
   }
+
+  // 📜 LUÔN LƯU LỊCH SỬ – KỂ CẢ x0
+  wheelHistory.unshift({
+    roundId: wheelRound.id,
+    uid: o.uid,
+    name: me.profile.name || "Người chơi",
+    bet: o.bet,
+    multiplier,
+    winAmount,      // = 0 nếu x0
+    ts: Date.now()
+  });
 });
+
 
 
 // 🥇 TOP 3 THẮNG NHIỀU NHẤT TRONG PHIÊN NÀY
