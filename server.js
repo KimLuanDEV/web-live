@@ -554,14 +554,31 @@ setInterval(() => {
     const index = Math.floor(Math.random() * multipliers.length);
     const multiplier = multipliers[index];
 
-    wheelRound.bets.forEach(o => {
-      const me = users[o.uid];
-      if (!me?.profile) return;
+ wheelRound.bets.forEach(o => {
+  const me = users[o.uid];
+  if (!me?.profile) return;
 
-      if (multiplier > 0) {
-        me.profile.coins += Math.floor(o.bet * multiplier);
-      }
+  if (multiplier > 0){
+    const winAmount = Math.floor(o.bet * multiplier);
+
+    // 💰 cộng coin
+    me.profile.coins += winAmount;
+
+    // 🏆 LƯU LỊCH SỬ NGƯỜI THẮNG
+    wheelHistory.unshift({
+      roundId: wheelRound.id,
+      uid: o.uid,
+      name: me.profile.name || "Người chơi",
+      bet: o.bet,
+      multiplier,
+      winAmount,
+      ts: Date.now()
     });
+  }
+});
+
+
+
 
     saveUsers(users);
 
@@ -580,13 +597,7 @@ io.emit("wheel-top-winners", topWinners);
 
 
 
-// 📜 UPDATE WHEEL HISTORY
-wheelHistory.unshift({
-  roundId: wheelRound.id,
-  multiplier,
-  index,
-  ts: Date.now()
-});
+
 
 // 🔒 giữ tối đa N kết quả
 wheelHistory = wheelHistory.slice(0, MAX_WHEEL_HISTORY);
