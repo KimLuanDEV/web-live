@@ -14,6 +14,8 @@ let lastDiamond = 0;
 // 🎯 BET STATE (GIỐNG INVEST)
 let currentBet = 0;
 
+const QUICK_HISTORY_KEY = "wheel_quick_history";
+const QUICK_HISTORY_MAX = 8;
 
 
 
@@ -383,7 +385,6 @@ socket.on("wheel-round-new", data => {
 
 
 
-
 socket.on("wheel-round-result", data => {
   hideBetConfirmModal();
   setActionText("ĐANG QUAY");
@@ -391,21 +392,40 @@ socket.on("wheel-round-result", data => {
   const { index, multiplier } = data;
   spinning = true;
 
- runOrbRoulette(index, () => {
+  runOrbRoulette(index, () => {
 
-  showRoundResult(multiplier);
+    // ✅ HIỂN THỊ KẾT QUẢ
+    showRoundResult(multiplier);
 
-  // 🔓 CHỈ LÚC NÀY MỚI MỞ BET BAR
-  waitingNextRound = false;
-  hasBetThisRound = false;
+    // 📜 LƯU QUICK HISTORY (PHÍA TRÊN BET BAR)
+    const list = JSON.parse(
+      localStorage.getItem(QUICK_HISTORY_KEY) || "[]"
+    );
 
-  setBetUILocked(false);
-  setActionText("VÀO LỆNH");
+    list.unshift({
+      multiplier,
+      time: Date.now()
+    });
 
-  spinning = false;
+    localStorage.setItem(
+      QUICK_HISTORY_KEY,
+      JSON.stringify(list.slice(0, QUICK_HISTORY_MAX))
+    );
+
+    // 🔄 render lại khối lịch sử
+    renderQuickHistory();
+
+    // 🔓 CHỈ LÚC NÀY MỚI MỞ BET BAR
+    waitingNextRound = false;
+    hasBetThisRound = false;
+
+    setBetUILocked(false);
+    setActionText("VÀO LỆNH");
+
+    spinning = false;
+  });
 });
 
-});
 
 
 
@@ -716,3 +736,41 @@ function hideRoundLockOverlay(){
   const el = document.getElementById("roundLockOverlay");
   if (el) el.classList.add("hidden");
 }
+
+
+function renderQuickHistory(){
+  const wrap = document.getElementById("quickHistoryList");
+  if (!wrap) return;
+
+  const list = JSON.parse(
+    localStorage.getItem(QUICK_HISTORY_KEY) || "[]"
+  );
+
+  wrap.innerHTML = "";
+
+  if (!list.length){
+    wrap.innerHTML = `<span class="qh-empty">Chưa có dữ liệu</span>`;
+    return;
+  }
+
+  list.forEach(item => {
+    const span = document.createElement("span");
+    span.className = "qh-item";
+
+    if (item.multiplier === 0){
+      span.classList.add("qh-lose");
+    }
+    else if (item.multiplier === 1){
+      span.classList.add("qh-neutral");
+    }
+    else{
+      span.classList.add("qh-win");
+    }
+
+    span.textContent = "x" + item.multiplier;
+    wrap.appendChild(span);
+  });
+}
+
+
+document.addEventListener("DOMContentLoaded", renderQuickHistory);
