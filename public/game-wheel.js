@@ -382,20 +382,23 @@ function showRoundResult(multiplier){
 
   modal.classList.remove("hidden");
 
-  // 💰 tính tiền trúng (dựa trên bet đã vào lệnh)
-const winAmount =
-  multiplier > 0
-    ? Math.floor(lockedBet * (multiplier - 1))
-    : -currentBet; // trượt = mất bet
+  // 💰 TÍNH LÃI / LỖ RÒNG (LUÔN DÙNG lockedBet)
+  let winAmount = 0;
 
-
+  if (multiplier === 0){
+    winAmount = -lockedBet;          // mất toàn bộ
+  } else {
+    winAmount = lockedBet * multiplier - lockedBet; // lãi ròng
+  }
 
   if (multiplier === 0){
     icon.textContent  = "💥";
     title.textContent = "Trượt rồi!";
     desc.innerHTML    = `
       Bạn không trúng phiên này 😢<br>
-      <small>Chúc bạn may mắn ở phiên sau</small>
+      <span style="font-size:18px;font-weight:900;color:#ff5252">
+        -${lockedBet.toLocaleString()} 💎
+      </span>
     `;
     desc.className    = "bet-modal-desc result-lose";
   } else {
@@ -405,11 +408,11 @@ const winAmount =
     else if (multiplier >= 2) icon.textContent = "✨";
     else icon.textContent = "🎉";
 
-    title.textContent = "Chúc mừng!";
+    title.textContent = multiplier === 1 ? "Hòa vốn!" : "Chúc mừng!";
     desc.innerHTML    = `
       Bạn trúng <b>x${multiplier}</b><br>
       <span style="font-size:18px;font-weight:900">
-        +${winAmount.toLocaleString()} 💎
+        ${winAmount > 0 ? "+" : ""}${winAmount.toLocaleString()} 💎
       </span>
     `;
     desc.className    = "bet-modal-desc result-win";
@@ -420,6 +423,7 @@ const winAmount =
     hideRoundResultModal();
   }, 3500);
 }
+
 
 
 function hideRoundResultModal(){
