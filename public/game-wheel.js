@@ -201,9 +201,6 @@ const socket = io({
   }
 });
 
-// 🔥 LOAD LỊCH SỬ CƯỢC NGAY KHI CONNECT
-loadMyBetHistory();
-
 
 // 💎 nhận coin realtime từ server
 socket.on("coin-update", (data) => {
@@ -934,11 +931,17 @@ function renderTopWinners(){
 
 
 
-function openMyBetHistory(){
+async function openMyBetHistory(){
+  await loadMyBetHistory();   // 👈 LOAD LẠI TỪ SERVER
   renderMyBetHistory();
+
   document.getElementById("myBetHistoryModal")
     ?.classList.remove("hidden");
 }
+
+
+
+
 
 function closeMyBetHistory(){
   document.getElementById("myBetHistoryModal")
@@ -958,18 +961,21 @@ function renderMyBetHistory(){
 
   myBetHistory.forEach(item => {
     const div = document.createElement("div");
+    const win = Number(item.winAmount || 0);
+
     div.className =
       "my-bet-item " +
-      (item.win > 0 ? "win" : item.win < 0 ? "lose" : "neutral");
+      (win > 0 ? "win" : win < 0 ? "lose" : "neutral");
 
     div.innerHTML = `
       <div>💎 ${item.bet.toLocaleString()} · x${item.multiplier}</div>
-      <div>${item.win > 0 ? "+" : ""}${item.win.toLocaleString()} 💎</div>
+      <div>${win > 0 ? "+" : ""}${win.toLocaleString()} 💎</div>
     `;
 
     wrap.appendChild(div);
   });
 }
+
 
 
 function updateRoundCountUI(){
