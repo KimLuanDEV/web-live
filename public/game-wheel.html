@@ -1357,6 +1357,50 @@ html, body {
 .my-bet-item.neutral{ color:#bbb; }
 
 
+
+/* ================= QUICK MY BET HISTORY ICON ================= */
+
+.quick-my-history-btn{
+  position: fixed;
+  top: 68px;          /* sát ngay dưới header */
+  left: 10px;
+  z-index: 998;
+
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+
+  background: rgba(255,255,255,.07);
+  color: #fff;
+  font-size: 15px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  backdrop-filter: blur(6px);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.12),
+    0 4px 12px rgba(0,0,0,.6);
+}
+
+/* chạm */
+.quick-my-history-btn:active{
+  transform: scale(.9);
+}
+
+/* mobile nhỏ hơn */
+@media (max-width: 360px){
+  .quick-my-history-btn{
+    width: 30px;
+    height: 30px;
+    font-size: 14px;
+  }
+}
+
+
   </style>
 </head>
 
@@ -1389,8 +1433,8 @@ html, body {
 </header>
 
 <!-- 📜 MY BET HISTORY QUICK BUTTON -->
-<button class="quick-my-history-btn" onclick="openMyBetHistory()">
-  📜 Lịch sử
+<button class="quick-my-history-btn" onclick="openMyBetHistory()" aria-label="Lịch sử đặt cược">
+  📜
 </button>
 
 
