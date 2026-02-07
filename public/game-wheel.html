@@ -1208,6 +1208,86 @@ html, body {
 
 
 
+/* ================= RESULT VISUAL UPGRADE ================= */
+
+/* BODY */
+.result-body{
+  margin-top: 6px;
+  padding: 12px 10px;
+  border-radius: 14px;
+
+  background: rgba(255,255,255,.05);
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.08);
+}
+
+/* ICON */
+#roundResultIcon{
+  font-size: 46px;
+  margin-bottom: 6px;
+}
+
+/* TITLE */
+#roundResultTitle{
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: .4px;
+}
+
+/* ===== WIN ===== */
+.result-win{
+  color: #ffd700;
+  text-shadow:
+    0 0 10px rgba(255,215,0,.9),
+    0 0 24px rgba(255,180,0,.6);
+}
+
+.result-win .result-body{
+  background: linear-gradient(
+    180deg,
+    rgba(255,215,0,.15),
+    rgba(255,160,0,.05)
+  );
+  box-shadow:
+    inset 0 0 0 1px rgba(255,215,0,.35),
+    0 0 24px rgba(255,200,0,.35);
+}
+
+/* ===== LOSE ===== */
+.result-lose{
+  color: #ff6b6b;
+}
+
+.result-lose .result-body{
+  background: rgba(255,80,80,.12);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,80,80,.3);
+}
+
+/* ===== NEUTRAL ===== */
+.result-neutral{
+  color: #bbb;
+}
+
+.result-neutral .result-body{
+  background: rgba(200,200,200,.08);
+}
+
+/* ===== AMOUNT ===== */
+.result-amount{
+  font-size: 26px;
+  font-weight: 900;
+  margin-top: 6px;
+}
+
+/* ===== NET ===== */
+.result-net{
+  margin-top: 6px;
+  font-size: 12px;
+  opacity: .7;
+}
+
+
+
   </style>
 </head>
 
@@ -1376,7 +1456,8 @@ html, body {
     <div class="bet-modal-icon" id="roundResultIcon">🎡</div>
     <div class="bet-modal-title" id="roundResultTitle">Kết quả</div>
 
-    <div class="bet-modal-desc" id="roundResultDesc">--</div>
+    <div class="bet-modal-desc result-body" id="roundResultDesc">--</div>
+
 
 
 <div class="top-winners">

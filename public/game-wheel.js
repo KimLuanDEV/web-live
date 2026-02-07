@@ -619,13 +619,17 @@ function showRoundResult(multiplier){
   if (!didBetThisRound){
     icon.textContent  = "👀";
     title.textContent = "Bạn không tham gia phiên này";
-    desc.innerHTML    = `
-      <span style="font-size:14px; opacity:.8">
-        Phiên này bạn không đặt cược 💭<br>
-        Hãy vào lệnh ở vòng tiếp theo nhé 💎
-      </span>
-    `;
-    desc.className = "bet-modal-desc result-neutral";
+
+desc.innerHTML = `
+  <div class="result-body">
+    <div>Phiên này bạn không đặt cược 💭</div>
+    <div class="result-net">
+      Hãy vào lệnh ở vòng tiếp theo nhé 💎
+    </div>
+  </div>
+`;
+desc.className = "bet-modal-desc result-neutral";
+
 
     setTimeout(() => {
       hideRoundResultModal();
@@ -640,13 +644,17 @@ function showRoundResult(multiplier){
   if (multiplier === 0){
     icon.textContent  = "💥";
     title.textContent = "Trượt rồi!";
-    desc.innerHTML    = `
-      Bạn không trúng phiên này 😢<br>
-      <span style="font-size:18px;font-weight:900;color:#ff5252">
-        -${lockedBet.toLocaleString()} 💎
-      </span>
-    `;
-    desc.className = "bet-modal-desc result-lose";
+
+desc.innerHTML = `
+  <div class="result-body">
+    <div>Bạn không trúng phiên này 😢</div>
+    <div class="result-amount">
+      -${lockedBet.toLocaleString()} 💎
+    </div>
+  </div>
+`;
+desc.className = "bet-modal-desc result-lose";
+
   } 
   else {
     if (multiplier >= 10)      icon.textContent = "💎";
@@ -655,16 +663,20 @@ function showRoundResult(multiplier){
     else                       icon.textContent = "🎉";
 
     title.textContent = multiplier === 1 ? "Hòa vốn!" : "Chúc mừng!";
-    desc.innerHTML    = `
-      Bạn trúng <b>x${multiplier}</b><br>
-      <span style="font-size:18px;font-weight:900">
-        +${payout.toLocaleString()} 💎
-      </span>
-      <div style="margin-top:6px; font-size:12px; opacity:.65">
-        (Lãi ròng: ${(payout - lockedBet).toLocaleString()} 💎)
-      </div>
-    `;
-    desc.className = "bet-modal-desc result-win";
+
+desc.innerHTML = `
+  <div class="result-body">
+    <div>Bạn trúng <b>x${multiplier}</b></div>
+    <div class="result-amount">
+      +${payout.toLocaleString()} 💎
+    </div>
+    <div class="result-net">
+      Lãi ròng: ${(payout - lockedBet).toLocaleString()} 💎
+    </div>
+  </div>
+`;
+desc.className = "bet-modal-desc result-win";
+
   }
 
 setTimeout(() => {
