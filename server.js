@@ -41,10 +41,6 @@ function getTodayStartTsVN() {
 }
 
 
-function calcWheelRoundCountToday() {
-  const todayStart = getTodayStartTsVN();
-  return wheelHistory.filter(r => r.ts && r.ts >= todayStart).length;
-}
 
 
 
@@ -85,6 +81,13 @@ function saveWheelHistory(list){
 
 // 📜 history global
 let wheelHistory = loadWheelHistory();
+
+// ================================
+// 🔢 ROUND COUNT TODAY (SERVER)
+// ================================
+let wheelRoundCountToday = 0;
+let wheelRoundDayTs = getTodayStartTsVN();
+
 
 
 // 🔥 chỉ giữ lịch sử vòng quay trong 24h
@@ -552,6 +555,16 @@ let wheelRound = {
 // ================================
 setInterval(() => {
   try {
+
+// 🔁 RESET ROUND KHI QUA NGÀY MỚI (0H VN)
+const todayStart = getTodayStartTsVN();
+if (todayStart !== wheelRoundDayTs) {
+  wheelRoundCountToday = 0;
+  wheelRoundDayTs = todayStart;
+}
+
+
+
     const users = loadUsers();
 
 // 🎯 WEIGHTED MULTIPLIER (CÂN BẰNG GAME)
@@ -650,15 +663,14 @@ io.emit("wheel-top-winners", topRoundWinners);
 
     wheelRound.bets.forEach(o => emitCoinUpdate(o.uid));
 
-// 🔢 TÍNH ROUND TRONG NGÀY DỰA TRÊN HISTORY (CHUẨN THỰC TẾ)
-const roundCountToday = calcWheelRoundCountToday();
 
-// 🔔 gửi kết quả + roundCount cho client
+
+
 io.emit("wheel-round-result", {
   roundId: wheelRound.id,
   index,
   multiplier,
-  roundCountToday
+  roundCountToday: wheelRoundCountToday
 });
 
 
@@ -673,7 +685,8 @@ saveWheelHistory(wheelHistory);
 // 🔔 realtime push – CHỈ 1 LẦN / ROUND
 io.emit("wheel-history-update", wheelHistory.slice(0, MAX_WHEEL_HISTORY));
 
-
+// ➕ ROUND MỚI TRONG NGÀY
+wheelRoundCountToday++;
 
 
     const id = Date.now();
@@ -723,7 +736,7 @@ socket.emit("wheel-history", wheelHistory);
 
 
 socket.emit("wheel-round-count", {
-  roundCountToday: calcWheelRoundCountToday() + 1
+  roundCountToday: wheelRoundCountToday + 1
 });
 
   
