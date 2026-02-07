@@ -16,14 +16,27 @@ let wheelHistory = []; // 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
 let pendingWheelHistory = null;
 let topWinners = []; // 🏆 TOP WINNERS (từ server)
 let roundCountToday = 0;
-let roundCountDate  = new Date().toDateString();
+let roundDayStart   = 0;     // timestamp 0h hôm nay
 
 
 
-// 🔄 LOAD SỐ PHIÊN TRONG NGÀY
-roundCountToday = Number(localStorage.getItem("round_count_today") || 0);
-roundCountDate  = localStorage.getItem("round_count_date") || new Date().toDateString();
-updateRoundCountUI();
+// 🔄 LOAD ROUND COUNT KHI LOAD TRANG
+(function loadRoundCount(){
+  const todayStart = getTodayStart();
+
+  const savedDay   = Number(localStorage.getItem("round_day_start") || 0);
+  const savedCount = Number(localStorage.getItem("round_count_today") || 0);
+
+  if (savedDay === todayStart){
+    roundDayStart = savedDay;
+    roundCountToday = savedCount;
+  } else {
+    roundDayStart = todayStart;
+    roundCountToday = 0;
+  }
+
+  updateRoundCountUI();
+})();
 
 
 
@@ -440,14 +453,24 @@ socket.on("wheel-round-new", data => {
 
 socket.on("wheel-round-result", data => {
 
-checkNewDay();
-roundCountToday++;
-updateRoundCountUI();
+  // 🕛 LẤY MỐC 0H HÔM NAY
+  const todayStart = getTodayStart();
 
+  // 🔄 NẾU QUA NGÀY MỚI → RESET
+  if (roundDayStart !== todayStart){
+    roundDayStart = todayStart;
+    roundCountToday = 0;
+  }
 
- // 💾 SAVE VÀO LOCALSTORAGE
+  // 🔢 TĂNG ROUND (ROUND ĐẦU TIÊN = 1)
+  roundCountToday++;
+  updateRoundCountUI();
+
+  // 💾 SAVE LOCALSTORAGE
+  localStorage.setItem("round_day_start", roundDayStart);
   localStorage.setItem("round_count_today", roundCountToday);
-  localStorage.setItem("round_count_date", roundCountDate);
+
+  // ===== LOGIC CŨ CỦA BẠN (GIỮ NGUYÊN) =====
 
   hideBetConfirmModal();
   setActionText("ĐANG QUAY");
@@ -455,24 +478,21 @@ updateRoundCountUI();
   const { index, multiplier } = data;
   spinning = true;
 
-
- setOrbSpinning();
+  setOrbSpinning();
 
   runOrbRoulette(index, () => {
 
     // ✅ HIỂN THỊ KẾT QUẢ
     showRoundResult(multiplier);
 
+    // 📜 render history SAU KHI QUAY XONG
+    if (pendingWheelHistory){
+      wheelHistory = pendingWheelHistory;
+      pendingWheelHistory = null;
+      renderQuickHistory();
+    }
 
-      // 📜 render history SAU KHI QUAY XONG (hồi hộp)
-  if (pendingWheelHistory){
-    wheelHistory = pendingWheelHistory;
-    pendingWheelHistory = null;
-    renderQuickHistory();
-  }
-
-
-    // 🔓 CHỈ LÚC NÀY MỚI MỞ BET BAR
+    // 🔓 MỞ BET BAR
     waitingNextRound = false;
     hasBetThisRound = false;
 
@@ -482,6 +502,7 @@ updateRoundCountUI();
     spinning = false;
   });
 });
+
 
 
 
@@ -967,16 +988,16 @@ function renderMyBetHistory(){
   });
 }
 
-function updateRoundCountUI(){
-  const el = document.getElementById("roundCountValue");
-  if (el) el.textContent = roundCountToday;
+function getTodayStart(){
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
 }
 
 
-function checkNewDay(){
-  const today = new Date().toDateString();
-  if (today !== roundCountDate){
-    roundCountDate = today;
-    roundCountToday = 0;
-  }
+function updateRoundCountUI(){
+  const el = document.getElementById("roundCountValue");
+  if (!el) return;
+
+  el.textContent = roundCountToday > 0 ? roundCountToday : 1;
 }
