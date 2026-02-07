@@ -894,14 +894,18 @@ function updateOrbCountdown(sec){
 }
 
 function setOrbSpinning(){
-  const el = document.getElementById("orbCore");
-  if (!el) return;
+  const core = document.getElementById("orbCore");
+  const engine = document.querySelector(".orb-engine");
 
-  el.classList.remove("countdown");
-  el.classList.add("spinning");
+  if (core){
+    core.classList.remove("countdown");
+    core.classList.add("spinning");
+    core.textContent = "⏳";
+  }
 
-  el.textContent = "⏳";
+  engine?.classList.add("spinning");
 }
+
 
 
 function renderTopWinners(){
