@@ -598,6 +598,25 @@ wheelRound.bets.forEach(o => {
       winAmount
     });
   }
+
+  // ============================
+  // 📜 LƯU LỊCH SỬ CƯỢC CỦA USER
+  // ============================
+  me.wheelBetHistory ||= [];
+
+  me.wheelBetHistory.unshift({
+    roundId: wheelRound.id,
+    ts: Date.now(),
+    bet: o.bet,
+    multiplier,
+    winAmount    // 0 nếu thua
+  });
+
+  // 🔥 CHỈ GIỮ 24H
+  const now = Date.now();
+  me.wheelBetHistory = me.wheelBetHistory.filter(
+    h => now - h.ts <= ONE_DAY
+  );
 });
 
 
@@ -1171,6 +1190,24 @@ saveInvestState(investRound);
       message:"SERVER_ERROR"
     });
   }
+});
+
+
+// ================================
+// 📜 WHEEL – MY BET HISTORY
+// ================================
+app.get("/api/wheel/my-history", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+  if (!me) return res.json({ ok:false });
+
+  res.json({
+    ok: true,
+    list: me.wheelBetHistory || []
+  });
 });
 
 

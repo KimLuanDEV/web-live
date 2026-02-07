@@ -201,6 +201,10 @@ const socket = io({
   }
 });
 
+// 🔥 LOAD LỊCH SỬ CƯỢC NGAY KHI CONNECT
+loadMyBetHistory();
+
+
 // 💎 nhận coin realtime từ server
 socket.on("coin-update", (data) => {
   if (typeof data?.coins !== "number") return;
@@ -300,6 +304,26 @@ socket.on("wheel-open", data => {
   roundEndAt = data.endAt;
   startRoundCountdown();
 });
+
+
+
+// 📜 LOAD LỊCH SỬ CƯỢC CỦA TÔI TỪ SERVER
+async function loadMyBetHistory(){
+  try{
+    const res = await fetch("/api/wheel/my-history", {
+      headers: {
+        "x-uid": me.uid
+      }
+    });
+
+    const data = await res.json();
+    if (data.ok && Array.isArray(data.list)){
+      myBetHistory = data.list;
+    }
+  }catch(e){
+    console.error("❌ loadMyBetHistory failed", e);
+  }
+}
 
 
 
@@ -694,22 +718,6 @@ desc.innerHTML = `
 desc.className = "bet-modal-desc result-win";
 
   }
-
-
- // 📜 LƯU LỊCH SỬ BET CỦA NGƯỜI CHƠI
-myBetHistory.unshift({
-  bet: lockedBet,
-  multiplier: multiplier,
-  win: multiplier === 0
-    ? -lockedBet
-    : Math.floor(lockedBet * multiplier),
-  time: Date.now()
-});
-
-// Giữ tối đa 20 phiên gần nhất
-if (myBetHistory.length > 20){
-  myBetHistory.pop();
-}
 
 
 
