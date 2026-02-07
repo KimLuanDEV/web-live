@@ -1125,6 +1125,89 @@ html, body {
 .tw-item.rank-3{ opacity: .8; }
 
 
+
+/* ================= BET CONFIRM – PRO ================= */
+
+.bet-confirm-card{
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform: translate(-50%,-50%) scale(.92);
+  width:300px;
+  padding:26px 22px;
+  border-radius:24px;
+  text-align:center;
+
+  background: linear-gradient(
+    180deg,
+    rgba(30,30,30,.98),
+    rgba(15,15,15,.98)
+  );
+
+  box-shadow:
+    0 30px 70px rgba(0,0,0,.85),
+    inset 0 0 0 1px rgba(255,255,255,.08);
+
+  animation: betConfirmPop .35s ease-out forwards;
+}
+
+@keyframes betConfirmPop{
+  from{
+    opacity:0;
+    transform: translate(-50%,-60%) scale(.85);
+  }
+  to{
+    opacity:1;
+    transform: translate(-50%,-50%) scale(1);
+  }
+}
+
+/* ICON */
+.bet-confirm-icon{
+  font-size:42px;
+  margin-bottom:10px;
+
+  filter:
+    drop-shadow(0 0 10px rgba(120,180,255,.9))
+    drop-shadow(0 0 24px rgba(120,180,255,.6));
+}
+
+/* TITLE */
+.bet-confirm-title{
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:1px;
+  color:#8ab4ff;
+  margin-bottom:10px;
+}
+
+/* AMOUNT – TRỌNG TÂM */
+.bet-confirm-amount{
+  font-size:28px;
+  font-weight:900;
+  color:#ffd700;
+  margin-bottom:8px;
+
+  text-shadow:
+    0 0 10px rgba(255,215,0,.9),
+    0 0 24px rgba(255,180,0,.6);
+}
+
+/* DESC */
+.bet-confirm-desc{
+  font-size:14px;
+  opacity:.85;
+  margin-bottom:6px;
+}
+
+/* TIMER NOTE */
+.bet-confirm-timer{
+  font-size:12px;
+  opacity:.6;
+}
+
+
+
   </style>
 </head>
 
@@ -1256,26 +1339,29 @@ html, body {
 
 
 
-<!-- ✅ MODAL: ĐÃ VÀO LỆNH -->
+<!-- ✅ BET CONFIRM MODAL (PRO) -->
 <div class="bet-modal hidden" id="betConfirmModal">
- <div class="bet-modal-backdrop" onclick="hideBetConfirmModal()"></div>
+  <div class="bet-modal-backdrop" onclick="hideBetConfirmModal()"></div>
 
+  <div class="bet-confirm-card" onclick="event.stopPropagation()">
+    <div class="bet-confirm-icon">💎</div>
 
-<div class="bet-modal-box" onclick="event.stopPropagation()">
+    <div class="bet-confirm-title">LỆNH ĐÃ ĐƯỢC GHI NHẬN</div>
 
-    <div class="bet-modal-icon">✅</div>
-    <div class="bet-modal-title">Đã vào lệnh</div>
-
-    <div class="bet-modal-desc">
-      Bạn đã đặt cược <b><span id="betConfirmValue">0</span> 💎</b><br/>
-      Vui lòng chờ kết quả phiên quay
+    <div class="bet-confirm-amount">
+      <span id="betConfirmValue">0</span> 💎
     </div>
 
-    <div class="bet-modal-note">
-      ⏳ Phiên sẽ tự động quay khi hết thời gian
+    <div class="bet-confirm-desc">
+      Vui lòng chờ vòng quay kết thúc
+    </div>
+
+    <div class="bet-confirm-timer">
+      ⏳ Tự động quay khi hết thời gian
     </div>
   </div>
 </div>
+
 
 
 
