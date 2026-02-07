@@ -85,8 +85,10 @@ let wheelHistory = loadWheelHistory();
 // ================================
 // 🔢 ROUND COUNT TODAY (SERVER)
 // ================================
-let wheelRoundCountToday = 0;
-let wheelRoundDayTs = getTodayStartTsVN();
+const wheelRoundState = loadWheelRoundCount();
+
+let wheelRoundCountToday = wheelRoundState.count || 0;
+let wheelRoundDayTs = wheelRoundState.dayTs || getTodayStartTsVN();
 
 
 
@@ -101,12 +103,54 @@ saveWheelHistory(wheelHistory);
 
 
 
+
+
+
+
 const INVEST_HISTORY_FILE =
   "/opt/render/project/data/invest_history.json";
 
 
 const INVEST_STATE_FILE =
   "/opt/render/project/data/invest_state.json";
+
+
+  // ================================
+// 🔢 ROUND COUNT PERSIST (24H)
+// ================================
+const WHEEL_ROUND_COUNT_FILE =
+  "/opt/render/project/data/wheel_round_count.json";
+
+function loadWheelRoundCount(){
+  try{
+    if (!fs.existsSync(WHEEL_ROUND_COUNT_FILE)) {
+      return {
+        dayTs: getTodayStartTsVN(),
+        count: 0
+      };
+    }
+    return JSON.parse(
+      fs.readFileSync(WHEEL_ROUND_COUNT_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load wheel round count failed", e);
+    return {
+      dayTs: getTodayStartTsVN(),
+      count: 0
+    };
+  }
+}
+
+function saveWheelRoundCount(data){
+  try{
+    fs.writeFileSync(
+      WHEEL_ROUND_COUNT_FILE,
+      JSON.stringify(data, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save wheel round count failed", e);
+  }
+}
 
 
   function loadInvestState(){
@@ -561,7 +605,13 @@ const todayStart = getTodayStartTsVN();
 if (todayStart !== wheelRoundDayTs) {
   wheelRoundCountToday = 0;
   wheelRoundDayTs = todayStart;
+
+  saveWheelRoundCount({
+    dayTs: wheelRoundDayTs,
+    count: wheelRoundCountToday
+  });
 }
+
 
 
 
@@ -666,6 +716,12 @@ io.emit("wheel-top-winners", topRoundWinners);
 
 // ➕ ROUND MỚI TRONG NGÀY
 wheelRoundCountToday++;
+
+
+saveWheelRoundCount({
+  dayTs: wheelRoundDayTs,
+  count: wheelRoundCountToday
+});
 
 
 io.emit("wheel-round-result", {
