@@ -41,16 +41,6 @@ function calcWheelRoundCountToday() {
 
 
 
-function checkNewWheelDay() {
-  const today = new Date().toDateString();
-
-  if (wheelRoundDate !== today) {
-    wheelRoundDate  = today;
-    wheelRoundCount = 0;
-
-    console.log("🗓️ New day → reset wheel round count");
-  }
-}
 
 
 // ================================
@@ -705,8 +695,7 @@ io.on("connection", socket => {
 // 📜 gửi lịch sử vòng quay cho user mới vào
 socket.emit("wheel-history", wheelHistory);
 
-// 🔢 GỬI SỐ ROUND TRONG NGÀY NGAY KHI CONNECT
-checkNewWheelDay();
+
 
 socket.emit("wheel-round-count", {
   roundCountToday: calcWheelRoundCountToday()
