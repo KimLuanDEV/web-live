@@ -485,8 +485,6 @@ socket.on("wheel-round-result", data => {
 
   runOrbRoulette(index, () => {
 
-    
-
     // ✅ HIỂN THỊ KẾT QUẢ
     showRoundResult(multiplier);
 
