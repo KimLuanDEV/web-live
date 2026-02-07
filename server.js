@@ -24,21 +24,27 @@ const ONE_DAY = 24 * 60 * 60 * 1000; // 🔥 24h
 
 
 
+function getTodayStartTsVN() {
+  // VN = UTC+7
+  const offsetMin = 7 * 60;
 
-function getTodayStartTs() {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d.getTime();
+  const now = Date.now();
+
+  // đổi sang "giờ VN"
+  const vnNow = now + offsetMin * 60 * 1000;
+
+  // lấy 00:00 theo VN (tính trên epoch VN)
+  const vnDayStart = Math.floor(vnNow / ONE_DAY) * ONE_DAY;
+
+  // trả về timestamp thật (UTC epoch)
+  return vnDayStart - offsetMin * 60 * 1000;
 }
 
 
 function calcWheelRoundCountToday() {
-  const todayStart = getTodayStartTs();
-  return wheelHistory.filter(
-    r => r.ts && r.ts >= todayStart
-  ).length;
+  const todayStart = getTodayStartTsVN();
+  return wheelHistory.filter(r => r.ts && r.ts >= todayStart).length;
 }
-
 
 
 
@@ -717,7 +723,7 @@ socket.emit("wheel-history", wheelHistory);
 
 
 socket.emit("wheel-round-count", {
-  roundCountToday: calcWheelRoundCountToday()
+  roundCountToday: calcWheelRoundCountToday() + 1
 });
 
   
