@@ -438,6 +438,11 @@ setActionText("ĐÃ VÀO LỆNH");
 
 socket.on("wheel-round-new", data => {
 
+    // 🔔 FALLBACK: TĂNG ROUND KHI BẮT ĐẦU PHIÊN MỚI
+  roundCountToday++;
+  updateRoundCountUI();
+  
+
   // reset trạng thái UI (KHÔNG đụng vốn cược)
   waitingNextRound = false;
   hasBetThisRound  = false;
