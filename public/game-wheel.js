@@ -15,6 +15,18 @@ let didBetThisRound = false; // ✅ chỉ true nếu user thực sự bet
 let wheelHistory = []; // 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
 let pendingWheelHistory = null;
 let topWinners = []; // 🏆 TOP WINNERS (từ server)
+let roundCountToday = 0;
+let roundCountDate  = new Date().toDateString();
+
+
+
+// 🔄 LOAD SỐ PHIÊN TRONG NGÀY
+roundCountToday = Number(localStorage.getItem("round_count_today") || 0);
+roundCountDate  = localStorage.getItem("round_count_date") || new Date().toDateString();
+updateRoundCountUI();
+
+
+
 
 
 (function setupOrbSlots(){
@@ -427,6 +439,16 @@ socket.on("wheel-round-new", data => {
 
 
 socket.on("wheel-round-result", data => {
+
+checkNewDay();
+roundCountToday++;
+updateRoundCountUI();
+
+
+ // 💾 SAVE VÀO LOCALSTORAGE
+  localStorage.setItem("round_count_today", roundCountToday);
+  localStorage.setItem("round_count_date", roundCountDate);
+
   hideBetConfirmModal();
   setActionText("ĐANG QUAY");
 
@@ -943,4 +965,18 @@ function renderMyBetHistory(){
 
     wrap.appendChild(div);
   });
+}
+
+function updateRoundCountUI(){
+  const el = document.getElementById("roundCountValue");
+  if (el) el.textContent = roundCountToday;
+}
+
+
+function checkNewDay(){
+  const today = new Date().toDateString();
+  if (today !== roundCountDate){
+    roundCountDate = today;
+    roundCountToday = 0;
+  }
 }
