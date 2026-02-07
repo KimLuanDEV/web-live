@@ -1840,12 +1840,21 @@ html, body {
   filter: blur(2px);
 }
 
-#bg-layer{
-  position: fixed;
-  inset: 0;
 
-  /* 👇 QUAN TRỌNG NHẤT */
-  z-index: -9999;
+
+html, body{
+  height: 100%;
+  background: #000; /* fallback */
+}
+
+body{
+  position: relative;
+}
+
+#bg-layer{
+  position: absolute;   /* 👈 KHÔNG DÙNG fixed */
+  inset: 0;
+  z-index: 0;
 
   background:
     radial-gradient(circle at 50% 30%, rgba(255,215,0,.18), transparent 60%),
@@ -1855,10 +1864,6 @@ html, body {
   pointer-events: none;
 }
 
-body > *{
-  position: relative;
-  z-index: 1;
-}
 
   </style>
 </head>
