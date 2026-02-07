@@ -1837,6 +1837,50 @@ html, body {
 
 
 
+.orb-wheel{
+  position: relative;
+  width: 280px;
+  height: 280px;
+}
+
+.orb-backplate{
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  z-index: 0;
+  pointer-events: none;
+
+  background: url("/assets/orb-backplate.png") center center / contain no-repeat;
+
+  /* glow nhẹ cho đẹp */
+  filter: drop-shadow(0 0 40px rgba(255,215,0,.35));
+}
+
+
+
+.orb-backplate{ z-index: 0; }
+.orb-engine   { z-index: 1; }
+.orb-core     { z-index: 2; }
+.orb-spokes   { z-index: 3; }
+.orb-slots    { z-index: 4; }
+
+
+.orb-backplate{
+  outline: 1px dashed red;
+}
+
+
+.orb-backplate.spinning{
+  animation: backplateSpin 20s linear infinite;
+}
+
+@keyframes backplateSpin{
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(-360deg); }
+}
+
+
+
   </style>
 </head>
 
@@ -1881,46 +1925,46 @@ html, body {
 
 <div class="orb-wheel">
 
-  <!-- KHỐI ĐỘNG CƠ -->
-<div class="orb-engine">
-  <div class="engine-ring"></div>
-  <div class="engine-body">
-    <div class="engine-core-glow"></div>
+  <!-- 🌌 NỀN TRỤC / BACKPLATE -->
+  <div class="orb-backplate"></div>
+
+  <!-- ⚙️ KHỐI ĐỘNG CƠ -->
+  <div class="orb-engine">
+    <div class="engine-ring"></div>
+    <div class="engine-body">
+      <div class="engine-core-glow"></div>
+    </div>
   </div>
-</div>
 
-
-  <!-- TRỤC GIỮA -->
+  <!-- 🔩 TRỤC GIỮA -->
   <div class="orb-core" id="orbCore">--</div>
 
+  <!-- 🔗 NAN -->
+  <div class="orb-spokes">
+    <div class="orb-spoke" data-i="0"></div>
+    <div class="orb-spoke" data-i="1"></div>
+    <div class="orb-spoke" data-i="2"></div>
+    <div class="orb-spoke" data-i="3"></div>
+    <div class="orb-spoke" data-i="4"></div>
+    <div class="orb-spoke" data-i="5"></div>
+    <div class="orb-spoke" data-i="6"></div>
+    <div class="orb-spoke" data-i="7"></div>
+  </div>
 
-
-  <!-- NAN NỐI TRỤC → Ô -->
-<div class="orb-spokes">
-  <div class="orb-spoke" data-i="0"></div>
-  <div class="orb-spoke" data-i="1"></div>
-  <div class="orb-spoke" data-i="2"></div>
-  <div class="orb-spoke" data-i="3"></div>
-  <div class="orb-spoke" data-i="4"></div>
-  <div class="orb-spoke" data-i="5"></div>
-  <div class="orb-spoke" data-i="6"></div>
-  <div class="orb-spoke" data-i="7"></div>
-</div>
-
-
-  <!-- 8 Ô XUNG QUANH -->
+  <!-- 🎯 SLOT -->
   <div class="orb-slots">
-<div class="orb-slot" data-i="0"><span>x0.5</span></div>
-<div class="orb-slot" data-i="1"><span>x1.2</span></div>
-<div class="orb-slot" data-i="2"><span>x1.5</span></div>
-<div class="orb-slot" data-i="3"><span>x2</span></div>
-<div class="orb-slot" data-i="4"><span>x5</span></div>
-<div class="orb-slot" data-i="5"><span>x10</span></div>
-<div class="orb-slot" data-i="6"><span>x2</span></div>
-<div class="orb-slot" data-i="7"><span>x1.5</span></div>
+    <div class="orb-slot"><span>x0.5</span></div>
+    <div class="orb-slot"><span>x1.2</span></div>
+    <div class="orb-slot"><span>x1.5</span></div>
+    <div class="orb-slot"><span>x2</span></div>
+    <div class="orb-slot"><span>x5</span></div>
+    <div class="orb-slot"><span>x10</span></div>
+    <div class="orb-slot"><span>x2</span></div>
+    <div class="orb-slot"><span>x1.5</span></div>
   </div>
 
 </div>
+
 
 
 

@@ -483,7 +483,18 @@ socket.on("wheel-round-result", data => {
 
   setOrbSpinning();
 
+
+// 🌌 BẬT QUAY NỀN
+  document.querySelector(".orb-backplate")
+    ?.classList.add("spinning");
+
+
   runOrbRoulette(index, () => {
+
+    // 🌌 TẮT QUAY NỀN
+  document.querySelector(".orb-backplate")
+    ?.classList.remove("spinning");
+    
 
     // ✅ HIỂN THỊ KẾT QUẢ
     showRoundResult(multiplier);
