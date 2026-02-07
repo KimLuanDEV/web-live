@@ -1843,10 +1843,12 @@ html, body {
 #bg-layer{
   position: fixed;
   inset: 0;
-  z-index: 0;   /* 👈 rất quan trọng */
+
+  /* 👇 QUAN TRỌNG NHẤT */
+  z-index: -9999;
 
   background:
-    radial-gradient(circle at 50% 30%, rgba(255,215,0,.12), transparent 60%),
+    radial-gradient(circle at 50% 30%, rgba(255,215,0,.18), transparent 60%),
     linear-gradient(180deg, #050608, #000),
     url("/assets/bg-wheel-energy.jpg") center / cover no-repeat;
 
