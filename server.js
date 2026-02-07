@@ -1146,6 +1146,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.use(express.static(path.join(__dirname, "public")));
+app.use("/assets", express.static("public/assets"));
 
 // 🔥 SERVE FILE DATA (CHO GAME PHÁ ÁN)
 app.use("/data", express.static(path.join(__dirname, "data")));
