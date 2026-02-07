@@ -696,6 +696,12 @@ io.on("connection", socket => {
 // 📜 gửi lịch sử vòng quay cho user mới vào
 socket.emit("wheel-history", wheelHistory);
 
+// 🔢 GỬI SỐ ROUND TRONG NGÀY NGAY KHI CONNECT
+checkNewWheelDay();
+
+socket.emit("wheel-round-count", {
+  roundCountToday: wheelRoundCount
+});
 
   
 // ================================
