@@ -530,9 +530,9 @@ setInterval(() => {
 
 // 🎯 WEIGHTED MULTIPLIER (CÂN BẰNG GAME)
 const weightedMultipliers = [
-  { m: 0.4, w: 45 },
-  { m: 0.7, w: 20 },
-  { m: 1,   w: 15 },
+  { m: 0.5, w: 45 },
+  { m: 1.2, w: 20 },
+  { m: 1.5,   w: 15 },
   { m: 2,   w: 12 },
   { m: 5,   w: 6  },
   { m: 10,  w: 2  }
