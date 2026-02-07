@@ -649,6 +649,10 @@ const index = multipliers.indexOf(multiplier);
 
 // 🏆 TOP WINNERS CHO PHIÊN HIỆN TẠI
 const roundWinners = [];
+// 🔢 ROUND ĐANG KẾT THÚC
+const currentRoundToday = wheelRoundCountToday + 1;
+
+
 
 wheelRound.bets.forEach(o => {
   const me = users[o.uid];
@@ -677,7 +681,7 @@ wheelRound.bets.forEach(o => {
 
 me.wheelBetHistory.unshift({
   roundId: wheelRound.id,            // (giữ nếu cần debug)
-  roundToday: wheelRoundCountToday,  // ✅ ROUND TRONG NGÀY
+  roundToday: currentRoundToday,  // ✅ ROUND TRONG NGÀY
   ts: Date.now(),
   bet: o.bet,
   multiplier,
