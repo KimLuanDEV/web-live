@@ -890,7 +890,7 @@ function updateOrbCountdown(sec){
   el.classList.add("countdown");
   el.classList.remove("spinning");
 
-  el.textContent = sec > 0 ? sec : "🎡";
+  el.textContent = sec > 0 ? sec : "⏳";
 }
 
 function setOrbSpinning(){
