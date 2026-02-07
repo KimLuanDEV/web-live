@@ -1837,47 +1837,6 @@ html, body {
 
 
 
-.orb-wheel{
-  position: relative;
-  width: 280px;
-  height: 280px;
-}
-
-.orb-backplate{
-  position: absolute;
-  inset: 0;
-  border-radius: 50%;
-  z-index: 0;
-  pointer-events: none;
-
-  background: url("/assets/orb-backplate.png") center center / contain no-repeat;
-
-  /* glow nhẹ cho đẹp */
-  filter: drop-shadow(0 0 40px rgba(255,215,0,.35));
-}
-
-
-
-.orb-backplate{ z-index: 0; }
-.orb-engine   { z-index: 1; }
-.orb-core     { z-index: 2; }
-.orb-spokes   { z-index: 3; }
-.orb-slots    { z-index: 4; }
-
-
-.orb-backplate{
-  outline: 1px dashed red;
-}
-
-
-.orb-backplate.spinning{
-  animation: backplateSpin 20s linear infinite;
-}
-
-@keyframes backplateSpin{
-  from{ transform: rotate(0deg); }
-  to{ transform: rotate(-360deg); }
-}
 
 
 
@@ -1925,8 +1884,7 @@ html, body {
 
 <div class="orb-wheel">
 
-  <!-- 🌌 NỀN TRỤC / BACKPLATE -->
-  <div class="orb-backplate"></div>
+
 
   <!-- ⚙️ KHỐI ĐỘNG CƠ -->
   <div class="orb-engine">
