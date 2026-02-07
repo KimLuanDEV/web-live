@@ -22,6 +22,43 @@ const fs = require("fs");
 const ONE_DAY = 24 * 60 * 60 * 1000; // 🔥 24h
 
 
+  // ================================
+// 🔢 ROUND COUNT PERSIST (24H)
+// ================================
+const WHEEL_ROUND_COUNT_FILE =
+  "/opt/render/project/data/wheel_round_count.json";
+
+function loadWheelRoundCount(){
+  try{
+    if (!fs.existsSync(WHEEL_ROUND_COUNT_FILE)) {
+      return {
+        dayTs: getTodayStartTsVN(),
+        count: 0
+      };
+    }
+    return JSON.parse(
+      fs.readFileSync(WHEEL_ROUND_COUNT_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load wheel round count failed", e);
+    return {
+      dayTs: getTodayStartTsVN(),
+      count: 0
+    };
+  }
+}
+
+function saveWheelRoundCount(data){
+  try{
+    fs.writeFileSync(
+      WHEEL_ROUND_COUNT_FILE,
+      JSON.stringify(data, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save wheel round count failed", e);
+  }
+}
+
 
 
 function getTodayStartTsVN() {
@@ -115,42 +152,7 @@ const INVEST_STATE_FILE =
   "/opt/render/project/data/invest_state.json";
 
 
-  // ================================
-// 🔢 ROUND COUNT PERSIST (24H)
-// ================================
-const WHEEL_ROUND_COUNT_FILE =
-  "/opt/render/project/data/wheel_round_count.json";
 
-function loadWheelRoundCount(){
-  try{
-    if (!fs.existsSync(WHEEL_ROUND_COUNT_FILE)) {
-      return {
-        dayTs: getTodayStartTsVN(),
-        count: 0
-      };
-    }
-    return JSON.parse(
-      fs.readFileSync(WHEEL_ROUND_COUNT_FILE, "utf8")
-    );
-  }catch(e){
-    console.error("❌ Load wheel round count failed", e);
-    return {
-      dayTs: getTodayStartTsVN(),
-      count: 0
-    };
-  }
-}
-
-function saveWheelRoundCount(data){
-  try{
-    fs.writeFileSync(
-      WHEEL_ROUND_COUNT_FILE,
-      JSON.stringify(data, null, 2)
-    );
-  }catch(e){
-    console.error("❌ Save wheel round count failed", e);
-  }
-}
 
 
   function loadInvestState(){
