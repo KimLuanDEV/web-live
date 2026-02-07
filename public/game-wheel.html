@@ -9,16 +9,21 @@
   <link rel="stylesheet" href="/style.css">
 
   <style>
-    body{
-      margin:0;
-      background:#000;
-      color:#fff;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      min-height:100vh;
-    }
+  body{
+  margin:0;
+  color:#fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,215,0,.08), transparent 60%),
+    linear-gradient(180deg, #050608, #000),
+    url("/assets/bg-wheel-energy.jpg") center / cover no-repeat;
+}
+
 
     .wheel-wrap{
       position:relative;
@@ -1835,16 +1840,6 @@ html, body {
   filter: blur(2px);
 }
 
-
-
-
-
-body{
-  background:
-    radial-gradient(circle at 50% 30%, rgba(255,215,0,.08), transparent 60%),
-    linear-gradient(180deg, #050608, #000),
-    url("/assets/bg-wheel-energy.jpg") center / cover no-repeat;
-}
 
 
   </style>
