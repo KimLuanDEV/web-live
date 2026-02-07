@@ -1126,67 +1126,71 @@ html, body {
 
 
 
-/* ================= BET CONFIRM – PRO ================= */
+/* ================= BET CONFIRM – BOTTOM SHEET ================= */
 
-.bet-confirm-card{
-  position:absolute;
-  left:50%;
-  top:50%;
-  transform: translate(-50%,-50%) scale(.92);
-  width:300px;
-  padding:26px 22px;
-  border-radius:24px;
-  text-align:center;
+.bet-confirm-sheet{
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
 
-  background: linear-gradient(
-    180deg,
-    rgba(30,30,30,.98),
-    rgba(15,15,15,.98)
-  );
+  padding: 18px 18px 26px;
+  text-align: center;
+
+  background: rgba(20,20,20,.97);
+  border-radius: 22px 22px 0 0;
 
   box-shadow:
-    0 30px 70px rgba(0,0,0,.85),
-    inset 0 0 0 1px rgba(255,255,255,.08);
+    0 -20px 40px rgba(0,0,0,.75),
+    inset 0 0 0 1px rgba(255,255,255,.06);
 
-  animation: betConfirmPop .35s ease-out forwards;
+  animation: betConfirmUp .32s cubic-bezier(.18,.8,.28,1);
 }
 
-@keyframes betConfirmPop{
+/* ANIMATION */
+@keyframes betConfirmUp{
   from{
-    opacity:0;
-    transform: translate(-50%,-60%) scale(.85);
+    transform: translateY(100%);
   }
   to{
-    opacity:1;
-    transform: translate(-50%,-50%) scale(1);
+    transform: translateY(0);
   }
+}
+
+/* HANDLE (dùng chung với result sheet) */
+.bet-confirm-sheet .sheet-handle{
+  width: 42px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.35);
+  margin: 0 auto 14px;
 }
 
 /* ICON */
 .bet-confirm-icon{
-  font-size:42px;
-  margin-bottom:10px;
+  font-size: 40px;
+  margin-bottom: 6px;
 
   filter:
     drop-shadow(0 0 10px rgba(120,180,255,.9))
-    drop-shadow(0 0 24px rgba(120,180,255,.6));
+    drop-shadow(0 0 22px rgba(120,180,255,.6));
 }
 
 /* TITLE */
 .bet-confirm-title{
-  font-size:14px;
-  font-weight:900;
-  letter-spacing:1px;
-  color:#8ab4ff;
-  margin-bottom:10px;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: .8px;
+  color: #8ab4ff;
+  margin-bottom: 8px;
 }
 
 /* AMOUNT – TRỌNG TÂM */
 .bet-confirm-amount{
-  font-size:28px;
-  font-weight:900;
-  color:#ffd700;
-  margin-bottom:8px;
+  font-size: 30px;
+  font-weight: 900;
+  color: #ffd700;
+  margin-bottom: 8px;
 
   text-shadow:
     0 0 10px rgba(255,215,0,.9),
@@ -1195,16 +1199,17 @@ html, body {
 
 /* DESC */
 .bet-confirm-desc{
-  font-size:14px;
-  opacity:.85;
-  margin-bottom:6px;
+  font-size: 14px;
+  opacity: .85;
+  margin-bottom: 6px;
 }
 
-/* TIMER NOTE */
+/* TIMER */
 .bet-confirm-timer{
-  font-size:12px;
-  opacity:.6;
+  font-size: 12px;
+  opacity: .6;
 }
+
 
 
 
@@ -1419,14 +1424,18 @@ html, body {
 
 
 
-<!-- ✅ BET CONFIRM MODAL (PRO) -->
+<!-- ✅ BET CONFIRM BOTTOM SHEET -->
 <div class="bet-modal hidden" id="betConfirmModal">
   <div class="bet-modal-backdrop" onclick="hideBetConfirmModal()"></div>
 
-  <div class="bet-confirm-card" onclick="event.stopPropagation()">
+  <div class="bet-confirm-sheet" onclick="event.stopPropagation()">
+    <div class="sheet-handle"></div>
+
     <div class="bet-confirm-icon">💎</div>
 
-    <div class="bet-confirm-title">LỆNH ĐÃ ĐƯỢC GHI NHẬN</div>
+    <div class="bet-confirm-title">
+      LỆNH ĐÃ ĐƯỢC GHI NHẬN
+    </div>
 
     <div class="bet-confirm-amount">
       <span id="betConfirmValue">0</span> 💎
