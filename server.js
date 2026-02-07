@@ -664,6 +664,8 @@ io.emit("wheel-top-winners", topRoundWinners);
     wheelRound.bets.forEach(o => emitCoinUpdate(o.uid));
 
 
+// ➕ ROUND MỚI TRONG NGÀY
+wheelRoundCountToday++;
 
 
 io.emit("wheel-round-result", {
@@ -685,8 +687,6 @@ saveWheelHistory(wheelHistory);
 // 🔔 realtime push – CHỈ 1 LẦN / ROUND
 io.emit("wheel-history-update", wheelHistory.slice(0, MAX_WHEEL_HISTORY));
 
-// ➕ ROUND MỚI TRONG NGÀY
-wheelRoundCountToday++;
 
 
     const id = Date.now();
@@ -701,6 +701,13 @@ wheelRoundCountToday++;
       roundId: wheelRound.id,
       endAt: wheelRound.endAt
     });
+
+
+// 🔔 CẬP NHẬT ROUND ĐANG CHẠY CHO TẤT CẢ CLIENT
+io.emit("wheel-round-count", {
+  roundCountToday: wheelRoundCountToday + 1
+});
+
 
   } catch (e) {
     console.error("❌ wheel round error", e);
