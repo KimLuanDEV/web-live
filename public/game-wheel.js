@@ -7,18 +7,14 @@ let roundTimerInterval = null;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 let lockedBet = 0; // 💰 bet đã chốt cho round
 let waitingNextRound = false; // ⏳ phải đợi phiên mới
-
+let myBetHistory = [];
 let serverDiamond = 0;   // 💎 coin từ server
 let lastDiamond = 0;
-
-// 🎯 BET STATE (GIỐNG INVEST)
-let currentBet = 0;
+let currentBet = 0; // 🎯 BET STATE (GIỐNG INVEST)
 let didBetThisRound = false; // ✅ chỉ true nếu user thực sự bet
-// 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
-let wheelHistory = [];
+let wheelHistory = []; // 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
 let pendingWheelHistory = null;
-// 🏆 TOP WINNERS (từ server)
-let topWinners = [];
+let topWinners = []; // 🏆 TOP WINNERS (từ server)
 
 
 (function setupOrbSlots(){
@@ -631,6 +627,8 @@ desc.innerHTML = `
 desc.className = "bet-modal-desc result-neutral";
 
 
+
+
     setTimeout(() => {
       hideRoundResultModal();
     }, 5000);
@@ -678,6 +676,24 @@ desc.innerHTML = `
 desc.className = "bet-modal-desc result-win";
 
   }
+
+
+ // 📜 LƯU LỊCH SỬ BET CỦA NGƯỜI CHƠI
+myBetHistory.unshift({
+  bet: lockedBet,
+  multiplier: multiplier,
+  win: multiplier === 0
+    ? -lockedBet
+    : Math.floor(lockedBet * multiplier),
+  time: Date.now()
+});
+
+// Giữ tối đa 20 phiên gần nhất
+if (myBetHistory.length > 20){
+  myBetHistory.pop();
+}
+
+
 
 setTimeout(() => {
   hideRoundResultModal();
@@ -890,3 +906,41 @@ function renderTopWinners(){
   });
 }
 
+
+
+function openMyBetHistory(){
+  renderMyBetHistory();
+  document.getElementById("myBetHistoryModal")
+    ?.classList.remove("hidden");
+}
+
+function closeMyBetHistory(){
+  document.getElementById("myBetHistoryModal")
+    ?.classList.add("hidden");
+}
+
+function renderMyBetHistory(){
+  const wrap = document.getElementById("myBetHistoryList");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+
+  if (!myBetHistory.length){
+    wrap.innerHTML = `<div class="tw-empty">Chưa có dữ liệu</div>`;
+    return;
+  }
+
+  myBetHistory.forEach(item => {
+    const div = document.createElement("div");
+    div.className =
+      "my-bet-item " +
+      (item.win > 0 ? "win" : item.win < 0 ? "lose" : "neutral");
+
+    div.innerHTML = `
+      <div>💎 ${item.bet.toLocaleString()} · x${item.multiplier}</div>
+      <div>${item.win > 0 ? "+" : ""}${item.win.toLocaleString()} 💎</div>
+    `;
+
+    wrap.appendChild(div);
+  });
+}
