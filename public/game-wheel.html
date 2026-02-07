@@ -1840,26 +1840,30 @@ html, body {
   filter: blur(2px);
 }
 
-body{
-  position: relative;
-}
-
-body::before{
-  content:"";
+#bg-layer{
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: 0;   /* 👈 rất quan trọng */
 
   background:
-    radial-gradient(circle at 50% 30%, rgba(255,215,0,.08), transparent 60%),
+    radial-gradient(circle at 50% 30%, rgba(255,215,0,.12), transparent 60%),
     linear-gradient(180deg, #050608, #000),
     url("/assets/bg-wheel-energy.jpg") center / cover no-repeat;
+
+  pointer-events: none;
+}
+
+body > *:not(#bg-layer){
+  position: relative;
+  z-index: 1;
 }
 
   </style>
 </head>
 
 <body>
+
+  <div id="bg-layer"></div>
 
 <header class="game-header">
   <!-- LEFT -->
