@@ -1500,6 +1500,72 @@ html, body {
 }
 
 
+/* ================= MY BET HISTORY DETAIL ================= */
+
+.my-bet-item{
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  padding: 10px 12px;
+  border-radius: 14px;
+
+  background: rgba(255,255,255,.06);
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.08),
+    0 6px 18px rgba(0,0,0,.4);
+
+  font-size: 13px;
+}
+
+/* TOP: TIME + ROUND */
+.my-bet-top{
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  opacity: .7;
+}
+
+.my-bet-round{
+  color: #8ab4ff;
+  font-weight: 800;
+}
+
+/* MAIN: BET – MULTI – WIN */
+.my-bet-main{
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+
+  font-weight: 800;
+}
+
+.my-bet-bet{
+  color: #fff;
+}
+
+.my-bet-multi{
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.12);
+  font-size: 12px;
+}
+
+/* STATE */
+.my-bet-item.win .my-bet-win{
+  color: #ffd700;
+}
+
+.my-bet-item.lose .my-bet-win{
+  color: #ff6b6b;
+}
+
+.my-bet-item.neutral .my-bet-win{
+  color: #bbb;
+}
+
+
   </style>
 </head>
 

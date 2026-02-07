@@ -441,7 +441,7 @@ socket.on("wheel-round-new", data => {
     // 🔔 FALLBACK: TĂNG ROUND KHI BẮT ĐẦU PHIÊN MỚI
   roundCountToday++;
   updateRoundCountUI();
-  
+
 
   // reset trạng thái UI (KHÔNG đụng vốn cược)
   waitingNextRound = false;
@@ -953,6 +953,23 @@ function closeMyBetHistory(){
     ?.classList.add("hidden");
 }
 
+
+function formatDateTime(ts){
+  if (!ts) return "--";
+  const d = new Date(ts);
+  return d.toLocaleString("vi-VN", {
+    hour12: false,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit"
+  });
+}
+
+
+
 function renderMyBetHistory(){
   const wrap = document.getElementById("myBetHistoryList");
   if (!wrap) return;
@@ -966,15 +983,34 @@ function renderMyBetHistory(){
 
   myBetHistory.forEach(item => {
     const div = document.createElement("div");
+
     const win = Number(item.winAmount || 0);
+    const time = formatDateTime(item.ts);
+    const round = item.roundId || "--";
 
     div.className =
       "my-bet-item " +
       (win > 0 ? "win" : win < 0 ? "lose" : "neutral");
 
     div.innerHTML = `
-      <div>💎 ${item.bet.toLocaleString()} · x${item.multiplier}</div>
-      <div>${win > 0 ? "+" : ""}${win.toLocaleString()} 💎</div>
+      <div class="my-bet-top">
+        <span class="my-bet-time">${time}</span>
+        <span class="my-bet-round">Round #${round}</span>
+      </div>
+
+      <div class="my-bet-main">
+        <span class="my-bet-bet">
+          💎 ${Number(item.bet).toLocaleString()}
+        </span>
+
+        <span class="my-bet-multi">
+          x${item.multiplier}
+        </span>
+
+        <span class="my-bet-win">
+          ${win > 0 ? "+" : ""}${win.toLocaleString()} 💎
+        </span>
+      </div>
     `;
 
     wrap.appendChild(div);
@@ -989,3 +1025,6 @@ function updateRoundCountUI(){
 
   el.textContent = roundCountToday > 0 ? roundCountToday : 1;
 }
+
+
+
