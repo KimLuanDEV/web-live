@@ -986,7 +986,9 @@ function renderMyBetHistory(){
 
     const win = Number(item.winAmount || 0);
     const time = formatDateTime(item.ts);
-    const round = item.roundId || "--";
+
+    const round = item.roundToday ?? "--";
+
 
     div.className =
       "my-bet-item " +

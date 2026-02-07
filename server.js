@@ -673,13 +673,15 @@ wheelRound.bets.forEach(o => {
   // ============================
   me.wheelBetHistory ||= [];
 
-  me.wheelBetHistory.unshift({
-    roundId: wheelRound.id,
-    ts: Date.now(),
-    bet: o.bet,
-    multiplier,
-    winAmount    // 0 nếu thua
-  });
+me.wheelBetHistory.unshift({
+  roundId: wheelRound.id,            // (giữ nếu cần debug)
+  roundToday: wheelRoundCountToday,  // ✅ ROUND TRONG NGÀY
+  ts: Date.now(),
+  bet: o.bet,
+  multiplier,
+  winAmount
+});
+
 
   // 🔥 CHỈ GIỮ 24H
   const now = Date.now();
