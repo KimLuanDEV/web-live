@@ -900,6 +900,24 @@ html, body {
 
 
 
+/* NAN TRÚNG */
+.orb-spoke.active{
+  opacity:1;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,215,0,0),
+      rgba(255,215,0,1),
+      rgba(255,215,0,0)
+    );
+
+  box-shadow:
+    0 0 20px rgba(255,215,0,1),
+    0 0 40px rgba(255,180,0,.8);
+}
+
+
 
 
 /* NAN SÁNG KHI CHẠY */
@@ -1819,121 +1837,6 @@ html, body {
 
 
 
-/* ================= ORB SHAFT – TRỤC TRUYỀN ================= */
-
-.orb-shaft{
-  position: absolute;
-  top: calc(90px + 280px - 10px); /* 👈 đáy orb-wheel */
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 2;
-  pointer-events: none;
-}
-
-/* 🔩 ĐẦU KHỚP NỐI (GẦN ENGINE) */
-.shaft-head{
-  width: 28px;
-  height: 12px;
-  border-radius: 999px;
-
-  background: radial-gradient(circle,#eee,#888,#222);
-  box-shadow:
-    inset 0 0 6px rgba(255,255,255,.5),
-    0 4px 10px rgba(0,0,0,.7);
-
-  margin: 0 auto;
-}
-
-/* 🧱 THÂN TRỤC */
-.shaft-body{
-  width: 10px;
-  height: 120px;
-  margin: 0 auto;
-
-  background: linear-gradient(
-    180deg,
-    #333,
-    #777,
-    #222
-  );
-
-  border-radius: 999px;
-
-  box-shadow:
-    inset 0 0 6px rgba(255,255,255,.2),
-    inset 0 -8px 12px rgba(0,0,0,.9),
-    0 8px 20px rgba(0,0,0,.8);
-
-  position: relative;
-}
-
-/* ✨ NĂNG LƯỢNG CHẠY BÊN TRONG */
-.shaft-body::after{
-  content:"";
-  position:absolute;
-  left:50%;
-  top:0;
-  transform: translateX(-50%);
-  width:4px;
-  height:100%;
-
-  background: linear-gradient(
-    180deg,
-    rgba(255,215,0,0),
-    rgba(255,215,0,.9),
-    rgba(255,215,0,0)
-  );
-
-  opacity:.35;
-  filter: blur(1px);
-}
-
-/* 🪨 ĐẾ NHẬN LỰC (TRÊN BET BAR) */
-.shaft-base{
-  width: 44px;
-  height: 14px;
-  margin: 0 auto;
-
-  border-radius: 999px;
-
-  background: radial-gradient(circle,#555,#222);
-  box-shadow:
-    inset 0 0 6px rgba(255,255,255,.15),
-    0 6px 14px rgba(0,0,0,.8);
-}
-
-
-/* ================= SHAFT ACTIVE ================= */
-
-.orb-engine.spinning ~ .orb-shaft .shaft-body::after{
-  animation: shaftFlow .8s linear infinite;
-  opacity: 1;
-}
-
-@keyframes shaftFlow{
-  from{
-    background-position: 0 0;
-  }
-  to{
-    background-position: 0 120px;
-  }
-}
-
-
-
-/* JACKPOT */
-.orb-slot.active ~ .orb-shaft .shaft-body::after{
-  background: linear-gradient(
-    180deg,
-    rgba(255,255,255,0),
-    rgba(255,215,0,1),
-    rgba(255,160,0,0)
-  );
-}
-
-
-
-
   </style>
 </head>
 
@@ -2018,16 +1921,6 @@ html, body {
   </div>
 
 </div>
-
-
-
-<!-- 🔩 TRỤC TRUYỀN LỰC -->
-<div class="orb-shaft">
-  <div class="shaft-head"></div>
-  <div class="shaft-body"></div>
-  <div class="shaft-base"></div>
-</div>
-
 
 
 
