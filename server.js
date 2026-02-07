@@ -22,11 +22,22 @@ const fs = require("fs");
 const ONE_DAY = 24 * 60 * 60 * 1000; // 🔥 24h
 
 
-// ================================
-// 🎡 WHEEL ROUND COUNT (RESET 0H)
-// ================================
-let wheelRoundCount = 0;
-let wheelRoundDate  = new Date().toDateString(); // theo server
+
+
+
+function getTodayStartTs() {
+  const d = new Date();
+  d.setHours(0, 0, 0, 0);
+  return d.getTime();
+}
+
+
+function calcWheelRoundCountToday() {
+  const todayStart = getTodayStartTs();
+  return wheelHistory.filter(
+    r => r.ts && r.ts >= todayStart
+  ).length;
+}
 
 
 
@@ -624,19 +635,17 @@ io.emit("wheel-top-winners", topRoundWinners);
 
     wheelRound.bets.forEach(o => emitCoinUpdate(o.uid));
 
- // 🔁 kiểm tra sang ngày mới (0h)
-checkNewWheelDay();
-
-// ➕ tăng số round trong ngày
-wheelRoundCount++;
+// 🔢 TÍNH ROUND TRONG NGÀY DỰA TRÊN HISTORY (CHUẨN THỰC TẾ)
+const roundCountToday = calcWheelRoundCountToday();
 
 // 🔔 gửi kết quả + roundCount cho client
 io.emit("wheel-round-result", {
   roundId: wheelRound.id,
   index,
   multiplier,
-  roundCountToday: wheelRoundCount
+  roundCountToday
 });
+
 
 
 
@@ -700,7 +709,7 @@ socket.emit("wheel-history", wheelHistory);
 checkNewWheelDay();
 
 socket.emit("wheel-round-count", {
-  roundCountToday: wheelRoundCount
+  roundCountToday: calcWheelRoundCountToday()
 });
 
   
