@@ -15,28 +15,7 @@ let didBetThisRound = false; // ✅ chỉ true nếu user thực sự bet
 let wheelHistory = []; // 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
 let pendingWheelHistory = null;
 let topWinners = []; // 🏆 TOP WINNERS (từ server)
-let roundCountToday = 0;
-let roundDayStart   = 0;     // timestamp 0h hôm nay
-
-
-
-// 🔄 LOAD ROUND COUNT KHI LOAD TRANG
-(function loadRoundCount(){
-  const todayStart = getTodayStart();
-
-  const savedDay   = Number(localStorage.getItem("round_day_start") || 0);
-  const savedCount = Number(localStorage.getItem("round_count_today") || 0);
-
-  if (savedDay === todayStart){
-    roundDayStart = savedDay;
-    roundCountToday = savedCount;
-  } else {
-    roundDayStart = todayStart;
-    roundCountToday = 0;
-  }
-
-  updateRoundCountUI();
-})();
+let roundCountToday = 1; // server sẽ gửi
 
 
 
@@ -247,6 +226,17 @@ socket.on("coin-update", (data) => {
 });
 
 
+// 🔢 SERVER GỬI SỐ ROUND TRONG NGÀY
+socket.on("wheel-round-count", data => {
+  if (typeof data?.roundCountToday === "number"){
+    roundCountToday = data.roundCountToday;
+    updateRoundCountUI();
+  }
+});
+
+
+
+
 // 📜 nhận lịch sử khi mới vào / reload
 socket.on("wheel-history", list => {
   if (!Array.isArray(list)) return;
@@ -450,28 +440,15 @@ socket.on("wheel-round-new", data => {
 
 
 
-
 socket.on("wheel-round-result", data => {
 
-  // 🕛 LẤY MỐC 0H HÔM NAY
-  const todayStart = getTodayStart();
-
-  // 🔄 NẾU QUA NGÀY MỚI → RESET
-  if (roundDayStart !== todayStart){
-    roundDayStart = todayStart;
-    roundCountToday = 0;
+  // 🔢 LẤY ROUND COUNT TRONG NGÀY TỪ SERVER
+  if (typeof data?.roundCountToday === "number"){
+    roundCountToday = data.roundCountToday;
   }
-
-  // 🔢 TĂNG ROUND (ROUND ĐẦU TIÊN = 1)
-  roundCountToday++;
   updateRoundCountUI();
 
-  // 💾 SAVE LOCALSTORAGE
-  localStorage.setItem("round_day_start", roundDayStart);
-  localStorage.setItem("round_count_today", roundCountToday);
-
   // ===== LOGIC CŨ CỦA BẠN (GIỮ NGUYÊN) =====
-
   hideBetConfirmModal();
   setActionText("ĐANG QUAY");
 
@@ -502,8 +479,6 @@ socket.on("wheel-round-result", data => {
     spinning = false;
   });
 });
-
-
 
 
 
@@ -986,12 +961,6 @@ function renderMyBetHistory(){
 
     wrap.appendChild(div);
   });
-}
-
-function getTodayStart(){
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d.getTime();
 }
 
 

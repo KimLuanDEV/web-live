@@ -22,6 +22,25 @@ const fs = require("fs");
 const ONE_DAY = 24 * 60 * 60 * 1000; // 🔥 24h
 
 
+// ================================
+// 🎡 WHEEL ROUND COUNT (RESET 0H)
+// ================================
+let wheelRoundCount = 0;
+let wheelRoundDate  = new Date().toDateString(); // theo server
+
+
+
+function checkNewWheelDay() {
+  const today = new Date().toDateString();
+
+  if (wheelRoundDate !== today) {
+    wheelRoundDate  = today;
+    wheelRoundCount = 0;
+
+    console.log("🗓️ New day → reset wheel round count");
+  }
+}
+
 
 // ================================
 // 🎡 WHEEL HISTORY (REALTIME + PERSIST)
@@ -605,11 +624,19 @@ io.emit("wheel-top-winners", topRoundWinners);
 
     wheelRound.bets.forEach(o => emitCoinUpdate(o.uid));
 
-    io.emit("wheel-round-result", {
-      roundId: wheelRound.id,
-      index,
-      multiplier
-    });
+ // 🔁 kiểm tra sang ngày mới (0h)
+checkNewWheelDay();
+
+// ➕ tăng số round trong ngày
+wheelRoundCount++;
+
+// 🔔 gửi kết quả + roundCount cho client
+io.emit("wheel-round-result", {
+  roundId: wheelRound.id,
+  index,
+  multiplier,
+  roundCountToday: wheelRoundCount
+});
 
 
 
