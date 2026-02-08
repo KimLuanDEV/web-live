@@ -1891,29 +1891,28 @@ body::before{
 /* ================= STAGE ================= */
 .orb-stage{
   position: relative;
-  width: 320px;
-  height: 420px;
-  pointer-events: auto;
+  width: 300px;
+  height: 380px;
+  margin: 0 auto;
+  transform: translateY(-70px); /* 👈 dịch lên */
 }
-
 
 
 /* ================= BASE ================= */
 .orb-base{
-  position: absolute;
-  bottom: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 260px;
-  height: 70px;
-
-  background: radial-gradient(circle at center, #2a2a2a, #000 70%);
-  border-radius: 50%;
-
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:260px;
+  height:70px;
+  border-radius:50%;
+  background: radial-gradient(circle,#222,#000 70%);
   box-shadow:
-    0 22px 40px rgba(0,0,0,.85),
-    inset 0 0 18px rgba(255,215,0,.25);
+    0 20px 40px rgba(0,0,0,.9),
+    inset 0 0 20px rgba(255,215,0,.25);
 }
+
 .base-ring{
   position:absolute;
   inset:10px;
@@ -1926,20 +1925,20 @@ body::before{
   position:absolute;
   inset:-20px;
   border-radius:50%;
-  background: radial-gradient(circle, rgba(255,215,0,.35), rgba(0,0,0,0) 70%);
+  background: radial-gradient(circle,rgba(255,200,80,.25),transparent 70%);
   filter: blur(20px);
 }
 
 /* ================= WHEEL ================= */
 .orb-wheel{
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 280px;
-  height: 280px;
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:280px;
+  height:280px;
+  border-radius:50%;
 }
-
 
 /* VÒNG NGOÀI */
 .orb-rim{
@@ -2039,21 +2038,6 @@ body::before{
 
 
 
-/* ================= GAME STAGE ================= */
-/* VÙNG GIỮA HEADER ↔ BET BAR */
-.game-stage{
-  position: relative;
-  width: 100%;
-  height: calc(100vh - 64px - 260px); /* header + bet bar */
-  margin-top: 64px;                  /* đúng dưới header */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-}
-
-
-
   </style>
 </head>
 
@@ -2096,54 +2080,49 @@ body::before{
 </div>
 
 
-<!-- 🎡 GAME STAGE (VÙNG CHƠI THỰC) -->
-<div class="game-stage">
+<div class="orb-stage">
 
-  <div class="orb-stage">
+  <!-- 🧱 CHÂN ĐẾ -->
+  <div class="orb-base">
+    <div class="base-ring"></div>
+    <div class="base-glow"></div>
+  </div>
 
-    <!-- 🎡 VÒNG QUAY -->
-    <div class="orb-wheel">
+  <!-- 🎡 VÒNG QUAY -->
+  <div class="orb-wheel">
 
-      <!-- 🌐 VÒNG NGOÀI -->
-      <div class="orb-rim"></div>
+    <!-- 🌐 VÒNG NGOÀI -->
+    <div class="orb-rim"></div>
 
-      <!-- 🔗 NAN -->
-      <div class="orb-spokes">
-        <div class="orb-spoke"></div>
-        <div class="orb-spoke"></div>
-        <div class="orb-spoke"></div>
-        <div class="orb-spoke"></div>
-        <div class="orb-spoke"></div>
-        <div class="orb-spoke"></div>
-        <div class="orb-spoke"></div>
-        <div class="orb-spoke"></div>
-      </div>
-
-      <!-- 🎯 SLOT -->
-      <div class="orb-slots">
-        <div class="orb-slot"><span>x0.5</span></div>
-        <div class="orb-slot"><span>x1.2</span></div>
-        <div class="orb-slot"><span>x1.5</span></div>
-        <div class="orb-slot"><span>x2</span></div>
-        <div class="orb-slot"><span>x5</span></div>
-        <div class="orb-slot"><span>x10</span></div>
-        <div class="orb-slot"><span>x2</span></div>
-        <div class="orb-slot"><span>x1.5</span></div>
-      </div>
-
-      <!-- ⚙️ CORE -->
-      <div class="orb-core" id="orbCore">--</div>
+    <!-- 🔗 NAN -->
+    <div class="orb-spokes">
+      <div class="orb-spoke"></div>
+      <div class="orb-spoke"></div>
+      <div class="orb-spoke"></div>
+      <div class="orb-spoke"></div>
+      <div class="orb-spoke"></div>
+      <div class="orb-spoke"></div>
+      <div class="orb-spoke"></div>
+      <div class="orb-spoke"></div>
     </div>
 
-    <!-- 🧱 CHÂN ĐẾ -->
-    <div class="orb-base">
-      <div class="base-ring"></div>
-      <div class="base-glow"></div>
+    <!-- 🎯 SLOT -->
+    <div class="orb-slots">
+      <div class="orb-slot"><span>x0.5</span></div>
+      <div class="orb-slot"><span>x1.2</span></div>
+      <div class="orb-slot"><span>x1.5</span></div>
+      <div class="orb-slot"><span>x2</span></div>
+      <div class="orb-slot"><span>x5</span></div>
+      <div class="orb-slot"><span>x10</span></div>
+      <div class="orb-slot"><span>x2</span></div>
+      <div class="orb-slot"><span>x1.5</span></div>
     </div>
+
+    <!-- ⚙️ TRỤC NĂNG LƯỢNG -->
+    <div class="orb-core" id="orbCore">--</div>
 
   </div>
 </div>
-
 
 
 
