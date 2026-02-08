@@ -247,7 +247,8 @@ select{
   position:fixed;
   top:0;
   right:0;
-  width:100vw;
+  width:420px;          /* ✅ side panel chuẩn */
+  max-width:100%;
   height:100vh;
   background:#070707;
   border-left:1px solid rgba(255,255,255,.08);
@@ -310,6 +311,8 @@ select{
   margin-top:40px;
 }
 .hidden{ display:none }
+
+
 
 </style>
 </head>
@@ -409,6 +412,9 @@ select{
 </div>
 
 
+
+
+<script src="/socket.io/socket.io.js"></script>
 
 
 <script>
