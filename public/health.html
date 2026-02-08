@@ -5,13 +5,93 @@
   <title>💚 Sức khỏe</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
+
+
+
+<style>
+
+   /* ===== HEALTH HEADER ===== */
+.health-header{
+  position:sticky;
+  top:0;
+  z-index:50;
+
+  height:64px;
+  padding:0 12px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  background:
+    linear-gradient(180deg, rgba(30,80,50,.35), rgba(14,14,18,.95));
+  backdrop-filter: blur(6px);
+
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+/* BACK */
+.hh-back{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  border:none;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  font-size:18px;
+  cursor:pointer;
+}
+.hh-back:active{
+  transform:scale(.95);
+}
+
+/* CENTER */
+.hh-center{
+  flex:1;
+  text-align:center;
+  line-height:1.1;
+}
+
+.hh-icon{
+  font-size:16px;
+  margin-bottom:2px;
+}
+
+.hh-title{
+  font-weight:800;
+  font-size:16px;
+}
+
+.hh-sub{
+  font-size:11px;
+  opacity:.65;
+}
+
+/* RIGHT PLACEHOLDER */
+.hh-right{
+  width:36px;
+}
+
+
+</style>
+
 </head>
 <body style="background:#0e0e12;color:#fff">
 
-<header class="simple-header">
-  <button onclick="history.back()" class="back-btn">←</button>
-  <div class="title">💚 Sức khỏe</div>
+<header class="health-header">
+  <button class="hh-back" onclick="history.back()">←</button>
+
+  <div class="hh-center">
+    <div class="hh-icon">💚</div>
+    <div class="hh-title">Sức khỏe</div>
+    <div class="hh-sub">Dinh dưỡng · Lối sống · Cơ thể</div>
+  </div>
+
+  <div class="hh-right">
+    <!-- chừa sẵn cho icon sau này -->
+  </div>
 </header>
+
 
 <main style="padding:40px;text-align:center;opacity:.8">
   <div style="font-size:48px">🧘‍♂️</div>
