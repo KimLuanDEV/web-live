@@ -562,7 +562,6 @@ socket.on("admin-wheel-bet-reset", data => {
 
 async function addBetToPanel({ uid, bet }) {
 
-  // 🔒 CHỐNG DUPLICATE CHUẨN
   if (betUidSet.has(uid)) return;
   betUidSet.add(uid);
 
@@ -589,8 +588,18 @@ async function addBetToPanel({ uid, bet }) {
   `;
 
   betListBody.prepend(div);
+
+  // 🔥 FIX REPAINT (CHÍNH LÀ CHỖ NÀY)
+  if (betListPanel.classList.contains("show")){
+    forceRepaint(betListPanel);
+  }
 }
 
+
+function forceRepaint(el){
+  el.style.transform = "translateX(0)";
+  el.offsetHeight; // 🔥 force reflow
+}
 
 
 </script>
