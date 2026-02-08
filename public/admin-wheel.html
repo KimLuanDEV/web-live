@@ -41,9 +41,6 @@ h2{margin:0 0 12px}
   <div class="row">Round ID</div>
   <div id="roundId" class="value">--</div>
 
-  <div class="row">Round ID (debug)</div>
-  <div id="roundTs" class="hash">--</div>
-
   <div class="row">Multiplier</div>
   <div id="mul" class="value">--</div>
 
@@ -101,7 +98,7 @@ async function loadSecret(){
   if (!data.ok) return;
 
   roundId.textContent  = "Round #" + data.roundToday;
-  roundTs.textContent  = data.roundId;
+
 
   mul.textContent     = "x" + data.result.multiplier;
   idx.textContent     = data.result.index;
