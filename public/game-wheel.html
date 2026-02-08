@@ -747,25 +747,6 @@ html, body {
   transform: translateY(-70px); /* 👈 đẩy lên 70px */
 }
 
-/* CORE */
-.orb-core{
-  position:absolute;
-  inset: 38%;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:26px;
-  z-index:2;
-
-   background:
-    radial-gradient(circle,#fff,#ffd36a,#3a2a00 70%);
-  color:#111;
-
-  box-shadow:
-    0 0 30px rgba(255,215,0,.85),
-    inset 0 0 16px rgba(0,0,0,.85);
-}
 
 /* SLOT CONTAINER */
 .orb-slots{
@@ -773,50 +754,8 @@ html, body {
   inset:0;
 }
 
-/* SLOT */
-.orb-slot{
-  position:absolute;
-  width:64px;
-  height:64px;
-  border-radius:999px;
-
-  background: rgba(255,255,255,.08);
-  color:#fff;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-weight:900;
-  font-size:14px;
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.1),
-    0 6px 18px rgba(0,0,0,.6);
-
-  transition: all .25s ease;
-}
-
-/* SLOT SÁNG (TRÚNG) */
-.orb-slot.active{
-  background: linear-gradient(180deg,#ffd700,#ff9800);
-  color:#000;
-  transform: scale(1.15);
-
-  box-shadow:
-    0 0 30px rgba(255,200,0,.9),
-    0 0 60px rgba(255,160,0,.6);
-}
 
 
-/* SLOT ĐANG CHẠY */
-.orb-slot.running{
-  background: linear-gradient(180deg,#8ab4ff,#4f7cff);
-  color:#000;
-  box-shadow:
-    0 0 18px rgba(120,180,255,.9),
-    0 0 36px rgba(120,180,255,.6);
-}
 
 
 /* ================= ORB SPOKES ================= */
@@ -830,35 +769,7 @@ html, body {
 
 /* ================= ORB SPOKE – POWER SHAFT ================= */
 
-.orb-spoke{
-  position:absolute;
-  left:50%;
-  top:50%;
 
-  height:4px;              /* dày hơn, nhìn có lực */
-  width:0;                 /* JS set */
-  border-radius:999px;
-
-  transform-origin: 0% 50%;
-  opacity:.65;
-
-  background:
-    linear-gradient(
-      90deg,
-      rgba(255,255,255,.15),
-      rgba(255,255,255,.6),
-      rgba(255,255,255,.15)
-    );
-
-  box-shadow:
-    inset 0 0 6px rgba(255,255,255,.35),
-    0 0 10px rgba(255,255,255,.15);
-
-  transition:
-    opacity .25s ease,
-    box-shadow .25s ease,
-    background .25s ease;
-}
 
 
 /* ĐẦU GẮN TRỤC */
@@ -966,9 +877,6 @@ html, body {
 }
 
 
-.orb-slot{
-  overflow: hidden; /* 🔥 che phần nan đâm vào */
-}
 
 
 
@@ -1088,7 +996,20 @@ html, body {
   font-weight: 900;
   color:black;
   letter-spacing: .5px;
+  animation: corePulse 1.2s ease-in-out infinite;
 }
+
+@keyframes corePulse{
+  0%,100%{
+    box-shadow:
+      0 0 30px rgba(255,215,0,.6);
+  }
+  50%{
+    box-shadow:
+      0 0 70px rgba(255,215,0,1);
+  }
+}
+
 
 .orb-core.spinning{
   font-size: 26px;
@@ -1734,16 +1655,7 @@ html, body {
 }
 
 
-.orb-spoke{
-  height:3px;                /* dày hơn */
-  border-radius:4px;
 
-  background: linear-gradient(
-    90deg,
-    rgba(255,215,0,.6),
-    rgba(255,255,255,.4)
-  );
-}
 
 
 .orb-engine.spinning .engine-core-glow{
@@ -1759,29 +1671,7 @@ html, body {
 
 /* ================= ORB SLOT – PREMIUM ================= */
 
-.orb-slot{
-  position:absolute;
-  width:66px;
-  height:66px;
-  border-radius:50%;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
- 
-  font-weight:900;
-  font-size:14px;
-  transition: all .25s ease;
-  overflow:hidden;
-
-    background:
-    radial-gradient(circle at 30% 30%, #3a3a3a, #111 70%);
-  box-shadow:
-    inset 0 0 0 2px rgba(255,255,255,.06),
-    inset 0 -8px 14px rgba(0,0,0,.9),
-    0 12px 28px rgba(0,0,0,.85);
-}
 
 /* viền kim loại */
 .orb-slot::before{
@@ -1826,26 +1716,30 @@ html, body {
 /* SLOT ĐANG CHẠY */
 .orb-slot.running{
   transform: scale(1.15);
-   background:
-    radial-gradient(circle at 30% 30%, #7fb4ff, #1e2b55 70%);
-  color:#000;
+ background:
+    radial-gradient(circle at 30% 30%,
+      #8ab4ff,
+      #1b2a55 70%
+    );
 
   box-shadow:
-    0 0 32px rgba(120,180,255,1),
-    0 0 60px rgba(120,180,255,.6);
+    0 0 40px rgba(120,180,255,1),
+    0 0 80px rgba(120,180,255,.6);
 }
 
 
 /* SLOT TRÚNG */
 .orb-slot.active{
   transform: scale(1.3);
- background:
-    radial-gradient(circle at 30% 30%, #fff7cc, #ffb300 65%);
-  color:#000;
+  background:
+    radial-gradient(circle at 30% 30%,
+      #fff7cc,
+      #ffb300 65%
+    );
 
   box-shadow:
-    0 0 50px rgba(255,215,0,1),
-    0 0 90px rgba(255,160,0,.9);
+    0 0 60px rgba(255,215,0,1),
+    0 0 120px rgba(255,160,0,.9);
 }
 
 .orb-slot.active::after{
@@ -1904,14 +1798,58 @@ body::before{
   bottom:0;
   left:50%;
   transform:translateX(-50%);
-  width:260px;
-  height:70px;
+  width:280px;
+  height:80px;
   border-radius:50%;
-  background: radial-gradient(circle,#222,#000 70%);
+
+  background:
+    radial-gradient(circle at center,
+      #3a2a00,
+      #120c00 70%
+    );
+
   box-shadow:
-    0 20px 40px rgba(0,0,0,.9),
-    inset 0 0 20px rgba(255,215,0,.25);
+    0 30px 60px rgba(0,0,0,.9),
+    inset 0 0 30px rgba(255,215,0,.25);
 }
+
+
+.orb-base::after{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(120,180,255,.35),
+      rgba(0,0,0,0) 65%
+    );
+
+  filter: blur(14px);
+}
+
+
+
+.orb-wheel::before{
+  content:"";
+  position:absolute;
+  inset:-40px;
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(255,215,0,.25),
+      rgba(120,180,255,.18),
+      rgba(0,0,0,0) 70%
+    );
+
+  filter: blur(28px);
+  z-index:-1;
+}
+
 
 .base-ring{
   position:absolute;
@@ -1965,10 +1903,18 @@ body::before{
   color:#000;
 
   background:
-    radial-gradient(circle,#fff7cc,#ffb300 70%);
+    radial-gradient(circle,
+      #fff9dc,
+      #ffd700,
+      #5a3b00 70%
+    );
+
+  color:#000;
+
   box-shadow:
-    0 0 40px rgba(255,215,0,1),
-    inset 0 0 20px rgba(0,0,0,.8);
+    0 0 40px rgba(255,215,0,.9),
+    0 0 80px rgba(255,180,0,.6),
+    inset 0 0 20px rgba(0,0,0,.9);
 
   z-index:4;
 }
@@ -1987,11 +1933,13 @@ body::before{
   width:120px;
   height:4px;
   transform-origin:0 50%;
-  background: linear-gradient(
-    90deg,
-    rgba(255,255,255,.2),
-    rgba(255,215,0,.9)
-  );
+  background:
+    linear-gradient(
+      90deg,
+      rgba(255,215,0,0),
+      rgba(255,215,0,.9),
+      rgba(255,215,0,0)
+    );
   box-shadow:0 0 12px rgba(255,215,0,.8);
 }
 
@@ -2022,13 +1970,17 @@ body::before{
   font-weight:900;
   color:#fff;
 
-  background:
-    radial-gradient(circle at 30% 30%, #3a3a3a, #111 70%);
+ background:
+    radial-gradient(circle at 30% 30%,
+      #3b3b3b,
+      #0f0f0f 70%
+    );
+
   box-shadow:
     inset 0 0 0 2px rgba(255,255,255,.08),
-    0 10px 25px rgba(0,0,0,.8);
+    inset 0 -10px 20px rgba(0,0,0,.95),
+    0 14px 30px rgba(0,0,0,.85);
 }
-
 /* text */
 .orb-slot span{
   text-shadow:
