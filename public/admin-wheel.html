@@ -6,6 +6,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+
+html, body{
+  width:100%;
+  overflow-x:hidden;
+}
+
+
 *{box-sizing:border-box}
 body{
   margin:0;
@@ -56,16 +63,18 @@ body{
 /* ===== MAIN ===== */
 .admin-main{
   flex:1;
-  display:flex;
-  flex-direction:column;
+  display:grid;
+  grid-template-columns: minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr);
   gap:32px;
   padding:32px;
-  max-width:520px;
-  margin:0 auto;
+  width:100%;
+  max-width:100%;
 }
+
 
 /* ===== RESULT CORE ===== */
 .result-core{
+  overflow:hidden;
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -73,6 +82,7 @@ body{
 }
 
 .orb{
+  overflow:hidden;
   width:260px;
   height:260px;
   border-radius:50%;
@@ -151,6 +161,9 @@ body{
 .meta-item span{opacity:.6}
 .meta-item strong{font-weight:700}
 .meta-item.mono strong{
+  word-break: break-all;
+  max-width:100%;
+  display:block;
   font-family:monospace;
   font-size:11px;
   opacity:.7;
@@ -200,6 +213,14 @@ select{
 }
 .btn-danger:hover{
   filter:brightness(1.1);
+}
+
+
+@media (max-width: 900px){
+  .admin-main{
+    grid-template-columns: 1fr;
+    padding:24px 16px;
+  }
 }
 
 </style>
