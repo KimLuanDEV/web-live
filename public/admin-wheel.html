@@ -536,11 +536,9 @@ async function loadBetList(){
 
 
 socket.on("admin-wheel-bet-new", data => {
-  // chỉ xử lý khi panel đang mở
-  if (!betListPanel.classList.contains("show")) return;
-
   addBetToPanel(data);
 });
+
 
 socket.on("admin-wheel-bet-reset", data => {
   betListBody.innerHTML =
@@ -550,12 +548,9 @@ socket.on("admin-wheel-bet-reset", data => {
 
 async function addBetToPanel({ uid, bet }) {
 
-  // tránh duplicate
-  if (
-    betListBody.querySelector(`[data-uid="${uid}"]`)
-  ) return;
+  // 🔒 tránh duplicate
+  if (betListBody.querySelector(`[data-uid="${uid}"]`)) return;
 
-  // lấy tên user (từ cache hoặc gọi API nhanh)
   let name = "Người chơi";
 
   try{
@@ -567,7 +562,7 @@ async function addBetToPanel({ uid, bet }) {
     if (u) name = u.name || name;
   }catch{}
 
-  // nếu đang empty → clear
+  // 🔥 xoá empty nếu có
   const empty = betListBody.querySelector(".empty");
   if (empty) empty.remove();
 
@@ -579,8 +574,10 @@ async function addBetToPanel({ uid, bet }) {
     <div class="bet">💎 ${bet}</div>
   `;
 
+  // 🔝 người mới lên đầu
   betListBody.prepend(div);
 }
+
 
 
 </script>
