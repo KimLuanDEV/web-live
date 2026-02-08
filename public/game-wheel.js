@@ -640,7 +640,7 @@ if (remain === 50){
 }
 
 // ⏳ GIAI ĐOẠN BÌNH THƯỜNG: 1s → nhảy 1 slot
-if (remain > 5 && remain <= 50){
+if (remain <= 50){
   stepCountdownSlot();
 }
 
@@ -649,7 +649,6 @@ if (remain > 5 && remain <= 50){
     // 🔥 GIAI ĐOẠN CUỐI: tăng tốc
     if (remain <= 5 && remain > 0){
       stepCountdownSlot();
-      stepCountdownSlot(); // 👈 nhảy thêm → cảm giác nhanh
     }
 
     // 🚨 UI khóa khi còn 3s
