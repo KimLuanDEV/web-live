@@ -1443,13 +1443,15 @@ app.get("/api/admin/wheel/secret", (req, res) => {
     return res.json({ ok:false, message:"NO_ROUND" });
   }
 
-  res.json({
-    ok: true,
-    roundId: wheelRound.id,
-    startAt: wheelRound.startAt,
-    endAt: wheelRound.endAt,
-    result: wheelRound.secretResult
-  });
+res.json({
+  ok: true,
+  roundId: wheelRound.id,              // giữ nếu cần debug
+  roundToday: wheelRoundCountToday + 1, // ✅ ROUND TRONG NGÀY
+  startAt: wheelRound.startAt,
+  endAt: wheelRound.endAt,
+  result: wheelRound.secretResult
+});
+
 });
 
 
