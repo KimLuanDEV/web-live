@@ -655,6 +655,11 @@ let wheelRound = {
   bets: []
 };
 
+
+ensureWheelSecret(wheelRound);
+
+
+
 // ================================
 // ⏱️ AUTO SPIN WHEEL EVERY 60s
 // ================================
