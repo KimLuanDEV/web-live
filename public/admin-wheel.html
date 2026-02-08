@@ -2,90 +2,172 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>🔐 Admin – Kết quả vòng quay</title>
+<title>🛑 ADMIN CONTROL – WHEEL</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <style>
+*{box-sizing:border-box}
 body{
-  background:#0b0b0b;
+  margin:0;
+  height:100vh;
+  background:
+    radial-gradient(circle at top, #1a1a1a, #050505 60%);
   color:#fff;
-  font-family:system-ui;
+  font-family:system-ui, -apple-system, BlinkMacSystemFont;
   display:flex;
   align-items:center;
   justify-content:center;
-  height:100vh;
 }
-.card{
-  background:#141414;
-  padding:24px;
-  border-radius:16px;
-  width:320px;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);
+
+/* ===== LAYOUT ===== */
+.admin-wrap{
+  width:100%;
+  height:100%;
+  display:grid;
+  grid-template-columns: 1fr 420px;
 }
-h2{margin:0 0 12px}
-.row{margin:8px 0;font-size:14px}
-.value{
-  font-size:22px;
-  font-weight:900;
-  color:#ffd700;
+
+/* ===== LEFT: STATUS ===== */
+.status{
+  padding:48px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
 }
-.hash{
-  word-break:break-all;
-  font-size:11px;
+
+.title{
+  font-size:14px;
+  letter-spacing:2px;
   opacity:.6;
+}
+
+.round{
+  font-size:48px;
+  font-weight:900;
+  margin:8px 0 32px;
+  color:#00e5ff;
+}
+
+.mul{
+  font-size:120px;
+  font-weight:900;
+  line-height:1;
+  color:#ffd700;
+  text-shadow:
+    0 0 30px rgba(255,215,0,.4),
+    0 0 80px rgba(255,215,0,.2);
+}
+
+.meta{
+  margin-top:32px;
+  display:flex;
+  gap:24px;
+  opacity:.8;
+}
+
+.meta div span{
+  display:block;
+  font-size:12px;
+  opacity:.5;
+}
+
+/* ===== RIGHT: DANGER PANEL ===== */
+.panel{
+  background:linear-gradient(180deg,#111,#0a0a0a);
+  border-left:1px solid rgba(255,255,255,.05);
+  padding:32px;
+  display:flex;
+  flex-direction:column;
+}
+
+.panel h2{
+  margin:0 0 8px;
+  color:#ff5252;
+}
+
+.warn{
+  font-size:12px;
+  opacity:.6;
+  margin-bottom:24px;
+}
+
+select,button{
+  width:100%;
+  padding:14px;
+  border-radius:10px;
+  border:none;
+  font-size:16px;
+}
+
+select{
+  background:#181818;
+  color:#fff;
+  margin-bottom:16px;
+}
+
+button{
+  background:#b00020;
+  color:#fff;
+  font-weight:900;
+  cursor:pointer;
+  transition:.15s;
+}
+button:hover{background:#d00030}
+button:active{transform:scale(.98)}
+
+.hash{
+  margin-top:auto;
+  font-size:11px;
+  opacity:.4;
+  word-break:break-all;
 }
 </style>
 </head>
+
 <body>
 
-<div class="card">
-  <h2>🎡 Round Secret</h2>
-  <div class="row">Round ID</div>
-  <div id="roundId" class="value">--</div>
+<div class="admin-wrap">
 
-  <div class="row">Multiplier</div>
-  <div id="mul" class="value">--</div>
+  <!-- LEFT -->
+  <div class="status">
+    <div class="title">CURRENT ROUND</div>
+    <div id="roundId" class="round">--</div>
 
-  <div class="row">Index</div>
-  <div id="idx" class="value">--</div>
+    <div class="title">SECRET MULTIPLIER</div>
+    <div id="mul" class="mul">--</div>
 
-  <div class="row">Commit hash</div>
-  <div id="hash" class="hash">--</div>
+    <div class="meta">
+      <div>
+        <span>INDEX</span>
+        <strong id="idx">--</strong>
+      </div>
+    </div>
+  </div>
 
+  <!-- RIGHT -->
+  <div class="panel">
+    <h2>🛑 OVERRIDE MODE</h2>
+    <div class="warn">
+      Chỉ dùng khi thật sự cần thiết.<br>
+      Không thể hoàn tác.
+    </div>
 
-  <hr style="margin:16px 0;opacity:.2">
+    <select id="forceMul">
+      <option value="">— chọn multiplier —</option>
+      <option value="0.5">x0.5</option>
+      <option value="1.2">x1.2</option>
+      <option value="1.5">x1.5</option>
+      <option value="2">x2</option>
+      <option value="5">x5</option>
+      <option value="10">x10</option>
+    </select>
 
-<div class="row">⚠️ Override kết quả</div>
+    <button onclick="overrideResult()">FORCE RESULT</button>
 
-<select id="forceMul">
-  <option value="">-- chọn --</option>
-  <option value="0.5">x0.5</option>
-  <option value="1.2">x1.2</option>
-  <option value="1.5">x1.5</option>
-  <option value="2">x2</option>
-  <option value="5">x5</option>
-  <option value="10">x10</option>
-</select>
-
-<button onclick="overrideResult()" style="
-  margin-top:10px;
-  background:#b00020;
-  color:#fff;
-  border:none;
-  padding:10px;
-  border-radius:8px;
-  font-weight:700;
-  width:100%;
-">
-🛑 FORCE RESULT
-</button>
-
+    <div id="hash" class="hash">hash: --</div>
+  </div>
 
 </div>
-
-
-
-
-
-
 
 <script>
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
@@ -97,20 +179,14 @@ async function loadSecret(){
   const data = await res.json();
   if (!data.ok) return;
 
-  roundId.textContent  = "Round #" + data.roundToday;
-
-
-  mul.textContent     = "x" + data.result.multiplier;
-  idx.textContent     = data.result.index;
-  hash.textContent    = data.result.hash;
+  roundId.textContent = "ROUND #" + data.roundToday;
+  mul.textContent    = "x" + data.result.multiplier;
+  idx.textContent    = data.result.index;
+  hash.textContent   = "hash: " + data.result.hash;
 }
 
 loadSecret();
 setInterval(loadSecret, 3000);
-
-
-
-
 
 async function overrideResult(){
   const v = Number(forceMul.value);
@@ -129,13 +205,11 @@ async function overrideResult(){
   });
 
   const data = await res.json();
-  if (!data.ok) return alert("❌ Override thất bại");
+  if (!data.ok) return alert("Override thất bại");
 
-  alert("🔥 ĐÃ OVERRIDE → x" + v);
+  alert("🔥 ĐÃ FORCE → x" + v);
   loadSecret();
 }
-
-
 </script>
 
 </body>
