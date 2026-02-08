@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>🛑 ADMIN CONTROL – WHEEL</title>
+<title>ADMIN · WHEEL CONTROL</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
@@ -11,114 +11,126 @@ body{
   margin:0;
   height:100vh;
   background:
-    radial-gradient(circle at top, #1a1a1a, #050505 60%);
+    radial-gradient(circle at center, #111 0%, #050505 70%);
+  font-family:system-ui,-apple-system;
   color:#fff;
-  font-family:system-ui, -apple-system, BlinkMacSystemFont;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-/* ===== LAYOUT ===== */
-.admin-wrap{
+/* ===== MAIN STAGE ===== */
+.stage{
   width:100%;
   height:100%;
-  display:grid;
-  grid-template-columns: 1fr 420px;
-}
-
-/* ===== LEFT: STATUS ===== */
-.status{
-  padding:48px;
   display:flex;
   flex-direction:column;
+  align-items:center;
   justify-content:center;
+  gap:32px;
 }
 
-.title{
+/* ===== ROUND ===== */
+.round{
   font-size:14px;
   letter-spacing:2px;
   opacity:.6;
 }
-
-.round{
-  font-size:48px;
-  font-weight:900;
-  margin:8px 0 32px;
+.round strong{
+  display:block;
+  font-size:36px;
   color:#00e5ff;
+  margin-top:6px;
+}
+
+/* ===== ORB ===== */
+.orb{
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:
+    radial-gradient(circle at 30% 30%, #333, #111 60%);
+  box-shadow:
+    0 0 40px rgba(0,229,255,.15),
+    inset 0 0 40px rgba(0,0,0,.6);
+}
+
+.orb::before{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border-radius:50%;
+  border:2px solid rgba(0,229,255,.35);
+  filter:blur(2px);
 }
 
 .mul{
-  font-size:120px;
+  font-size:84px;
   font-weight:900;
-  line-height:1;
   color:#ffd700;
   text-shadow:
-    0 0 30px rgba(255,215,0,.4),
-    0 0 80px rgba(255,215,0,.2);
+    0 0 25px rgba(255,215,0,.5),
+    0 0 60px rgba(255,215,0,.25);
 }
 
+/* ===== META ===== */
 .meta{
-  margin-top:32px;
   display:flex;
   gap:24px;
-  opacity:.8;
+  font-size:13px;
+  opacity:.7;
 }
 
-.meta div span{
-  display:block;
-  font-size:12px;
-  opacity:.5;
+/* ===== OVERRIDE ===== */
+.override{
+  margin-top:20px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+  border-radius:16px;
+  padding:20px;
+  width:280px;
+  text-align:center;
 }
 
-/* ===== RIGHT: DANGER PANEL ===== */
-.panel{
-  background:linear-gradient(180deg,#111,#0a0a0a);
-  border-left:1px solid rgba(255,255,255,.05);
-  padding:32px;
-  display:flex;
-  flex-direction:column;
-}
-
-.panel h2{
-  margin:0 0 8px;
+.override h3{
+  margin:0 0 6px;
   color:#ff5252;
 }
-
-.warn{
+.override p{
+  margin:0 0 14px;
   font-size:12px;
   opacity:.6;
-  margin-bottom:24px;
 }
 
 select,button{
   width:100%;
-  padding:14px;
+  padding:12px;
   border-radius:10px;
   border:none;
-  font-size:16px;
+  font-size:15px;
 }
 
 select{
-  background:#181818;
+  background:#111;
   color:#fff;
-  margin-bottom:16px;
+  margin-bottom:12px;
 }
 
 button{
   background:#b00020;
   color:#fff;
-  font-weight:900;
-  cursor:pointer;
-  transition:.15s;
+  font-weight:800;
 }
 button:hover{background:#d00030}
-button:active{transform:scale(.98)}
 
 .hash{
-  margin-top:auto;
+  margin-top:10px;
   font-size:11px;
-  opacity:.4;
+  opacity:.35;
   word-break:break-all;
 }
 </style>
@@ -126,31 +138,24 @@ button:active{transform:scale(.98)}
 
 <body>
 
-<div class="admin-wrap">
+<div class="stage">
 
-  <!-- LEFT -->
-  <div class="status">
-    <div class="title">CURRENT ROUND</div>
-    <div id="roundId" class="round">--</div>
-
-    <div class="title">SECRET MULTIPLIER</div>
-    <div id="mul" class="mul">--</div>
-
-    <div class="meta">
-      <div>
-        <span>INDEX</span>
-        <strong id="idx">--</strong>
-      </div>
-    </div>
+  <div class="round">
+    CURRENT ROUND
+    <strong id="roundId">--</strong>
   </div>
 
-  <!-- RIGHT -->
-  <div class="panel">
-    <h2>🛑 OVERRIDE MODE</h2>
-    <div class="warn">
-      Chỉ dùng khi thật sự cần thiết.<br>
-      Không thể hoàn tác.
-    </div>
+  <div class="orb">
+    <div id="mul" class="mul">--</div>
+  </div>
+
+  <div class="meta">
+    <div>Index: <strong id="idx">--</strong></div>
+  </div>
+
+  <div class="override">
+    <h3>🛑 Override</h3>
+    <p>Không thể hoàn tác</p>
 
     <select id="forceMul">
       <option value="">— chọn multiplier —</option>
@@ -191,9 +196,7 @@ setInterval(loadSecret, 3000);
 async function overrideResult(){
   const v = Number(forceMul.value);
   if (!v) return alert("Chưa chọn multiplier");
-
-  if (!confirm("⚠️ OVERRIDE KẾT QUẢ?\nKhông thể hoàn tác!"))
-    return;
+  if (!confirm("OVERRIDE KẾT QUẢ?")) return;
 
   const res = await fetch("/api/admin/wheel/override",{
     method:"POST",
@@ -207,7 +210,6 @@ async function overrideResult(){
   const data = await res.json();
   if (!data.ok) return alert("Override thất bại");
 
-  alert("🔥 ĐÃ FORCE → x" + v);
   loadSecret();
 }
 </script>
