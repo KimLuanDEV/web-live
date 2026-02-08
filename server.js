@@ -844,17 +844,6 @@ wheelRound = {
 };
 
 
-// 🔐 REALTIME SECRET – ADMIN ONLY
-io.emit("admin-wheel-secret", {
-  roundId: wheelRound.id,
-  roundToday: wheelRoundCountToday + 1,
-  startAt: wheelRound.startAt,
-  endAt: wheelRound.endAt,
-  result: wheelRound.secretResult
-});
-
-
-
 
     
     io.emit("wheel-round-new", {
@@ -882,7 +871,6 @@ io.emit("wheel-round-count", {
 io.on("connection", socket => {
   const { uid, deviceId } = socket.handshake.auth || {};
 
-
   socket.data.deviceId = deviceId;
 
   if (!uid) return;
@@ -906,24 +894,6 @@ socket.emit("wheel-history", wheelHistory);
 socket.emit("wheel-round-count", {
   roundCountToday: wheelRoundCountToday + 1
 });
-
-
-// 🧠 SYNC BET LIST CHO ADMIN KHI CONNECT
-if (me?.role === "admin") {
-  socket.emit("wheel-bet-update", {
-    roundId: wheelRound.id,
-    bets: (wheelRound.bets || []).map(b => {
-      const u = users[b.uid];
-      return {
-        uid: b.uid,
-        name: u?.profile?.name || "Người chơi",
-        avatar: u?.profile?.avatar || "",
-        bet: b.bet
-      };
-    })
-  });
-}
-
 
   
 // ================================
@@ -960,24 +930,6 @@ socket.on("wheel-bet", data => {
     roundId: wheelRound.id,
     bet
   });
-
-
-// 🔔 REALTIME UPDATE – ADMIN + VIEW
-io.emit("wheel-bet-update", {
-  roundId: wheelRound.id,
-  bets: wheelRound.bets.map(b => {
-    const u = users[b.uid];
-    return {
-      uid: b.uid,
-      name: u?.profile?.name || "Người chơi",
-      avatar: u?.profile?.avatar || "",
-      bet: b.bet
-    };
-  })
-});
-
-
-
 });
 
 
@@ -1472,28 +1424,6 @@ saveInvestState(investRound);
       message:"SERVER_ERROR"
     });
   }
-});
-
-
-app.get("/api/admin/wheel/bets", (req, res) => {
-  const uid = req.headers["x-uid"];
-  if (!uid) return res.json({ ok:false });
-
-  const users = loadUsers();
-  if (users[uid]?.role !== "admin")
-    return res.status(403).json({ ok:false });
-
-  const list = (wheelRound?.bets || []).map(b => {
-    const u = users[b.uid];
-    return {
-      uid: b.uid,
-      name: u?.profile?.name || "Người chơi",
-      avatar: u?.profile?.avatar || "",
-      bet: b.bet
-    };
-  });
-
-  res.json({ ok:true, list });
 });
 
 
