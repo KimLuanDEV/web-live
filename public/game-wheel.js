@@ -644,12 +644,7 @@ if (remain <= 50){
   stepCountdownSlot();
 }
 
-    
-
-    // 🔥 GIAI ĐOẠN CUỐI: tăng tốc
-    if (remain <= 5 && remain > 0){
-      stepCountdownSlot();
-    }
+  
 
     // 🚨 UI khóa khi còn 3s
     if (remain <= 3){
