@@ -410,6 +410,112 @@ html, body {
 }
 
 
+/* ===== PORTFOLIO HEADER ===== */
+.portfolio-head{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+
+  background:
+    linear-gradient(180deg,
+      rgba(25,20,15,0.96),
+      rgba(10,8,6,0.94)
+    );
+}
+
+/* LEFT */
+.ph-left{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.ph-icon{
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 18px;
+  background:
+    radial-gradient(circle at top,
+      #ffd27d,
+      #b8860b 70%
+    );
+  box-shadow:
+    0 0 14px rgba(255,200,80,0.6);
+}
+
+.ph-text{
+  display: flex;
+  flex-direction: column;
+}
+
+.ph-title{
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.4px;
+}
+
+.ph-sub{
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+}
+
+/* CLOSE */
+.ph-close{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  font-size: 18px;
+  color: #fff;
+
+  background: rgba(255,255,255,0.08);
+  transition: 0.2s ease;
+}
+
+.ph-close:hover{
+  background: rgba(255,180,80,0.25);
+  color: #ffcc66;
+}
+
+
+.portfolio-head::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:1px;
+  background: linear-gradient(90deg,
+    transparent,
+    #ffcc66,
+    transparent
+  );
+}
+
+
+.gamehub-head::after{
+  content:"";
+  position:absolute;
+  left:0; right:0; bottom:0;
+  height:1px;
+  background: linear-gradient(90deg,
+    transparent,
+    #00f0ff,
+    transparent
+  );
+}
+
 
 </style>
 
@@ -470,10 +576,19 @@ html, body {
   <div class="sheet-backdrop" onclick="closePortfolio()"></div>
 
   <div class="sheet-box">
-    <div class="sheet-head">
-      <div class="sheet-title">Các mảng đầu tư</div>
-      <button class="sheet-close" onclick="closePortfolio()">✕</button>
+
+<div class="sheet-head portfolio-head">
+  <div class="ph-left">
+    <div class="ph-icon">💼</div>
+    <div class="ph-text">
+      <div class="ph-title">Các mảng đầu tư</div>
+      <div class="ph-sub">Chọn tài sản để tham gia</div>
     </div>
+  </div>
+
+  <button class="sheet-close ph-close" onclick="closePortfolio()">✕</button>
+</div>
+
 
     <div class="sheet-body">
       <div class="invest-grid">
