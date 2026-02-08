@@ -16,6 +16,8 @@ let wheelHistory = []; // 📜 WHEEL HISTORY TỪ SERVER (REALTIME)
 let pendingWheelHistory = null;
 let topWinners = []; // 🏆 TOP WINNERS (từ server)
 let roundCountToday = 1; // server sẽ gửi
+let countdownSlotTimer = null;
+let countdownSlotIndex = 0;
 
 
 
@@ -483,6 +485,9 @@ socket.on("wheel-round-result", data => {
 
   setOrbSpinning();
 
+  
+stopSlotCountdownGlow();
+
   runOrbRoulette(index, () => {
 
     // ✅ HIỂN THỊ KẾT QUẢ
@@ -589,6 +594,19 @@ function spawnFlyDiamond(amount){
 
       // 🔥 HIỆN SỐ NGAY TRONG ORB
   updateOrbCountdown(remain);
+
+
+// 🔥 SLOT SÁNG THEO COUNTDOWN
+if (remain > 3 && !spinning){
+  // càng gần 0 càng nhanh
+  const speed = remain > 10 ? 260 : remain > 5 ? 200 : 140;
+  startSlotCountdownGlow(speed);
+}
+else {
+  stopSlotCountdownGlow();
+}
+
+
 
 if (remain <= 3){
   el.classList.add("danger");
@@ -1035,3 +1053,36 @@ function updateRoundCountUI(){
 
 
 document.querySelector(".orb-wheel")?.classList.add("spinning");
+
+
+
+function startSlotCountdownGlow(speed = 220){
+  stopSlotCountdownGlow();
+
+  const slots = document.querySelectorAll(".orb-slot");
+  if (!slots.length) return;
+
+  countdownSlotIndex = 0;
+
+  countdownSlotTimer = setInterval(() => {
+    slots.forEach(s => s.classList.remove("countdown"));
+
+    slots[countdownSlotIndex].classList.add("countdown");
+
+    countdownSlotIndex =
+      (countdownSlotIndex + 1) % slots.length;
+  }, speed);
+}
+
+
+
+function stopSlotCountdownGlow(){
+  if (countdownSlotTimer){
+    clearInterval(countdownSlotTimer);
+    countdownSlotTimer = null;
+  }
+
+  document
+    .querySelectorAll(".orb-slot")
+    .forEach(s => s.classList.remove("countdown"));
+}
