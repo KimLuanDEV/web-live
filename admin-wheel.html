@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>🔐 Admin – Kết quả vòng quay</title>
+<style>
+body{
+  background:#0b0b0b;
+  color:#fff;
+  font-family:system-ui;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+}
+.card{
+  background:#141414;
+  padding:24px;
+  border-radius:16px;
+  width:320px;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);
+}
+h2{margin:0 0 12px}
+.row{margin:8px 0;font-size:14px}
+.value{
+  font-size:22px;
+  font-weight:900;
+  color:#ffd700;
+}
+.hash{
+  word-break:break-all;
+  font-size:11px;
+  opacity:.6;
+}
+</style>
+</head>
+<body>
+
+<div class="card">
+  <h2>🎡 Round Secret</h2>
+  <div class="row">Round ID</div>
+  <div id="roundId" class="value">--</div>
+
+  <div class="row">Multiplier</div>
+  <div id="mul" class="value">--</div>
+
+  <div class="row">Index</div>
+  <div id="idx" class="value">--</div>
+
+  <div class="row">Commit hash</div>
+  <div id="hash" class="hash">--</div>
+</div>
+
+<script>
+const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+async function loadSecret(){
+  const res = await fetch("/api/admin/wheel/secret",{
+    headers:{ "x-uid": me.uid }
+  });
+  const data = await res.json();
+  if (!data.ok) return;
+
+  roundId.textContent = data.roundId;
+  mul.textContent     = "x" + data.result.multiplier;
+  idx.textContent     = data.result.index;
+  hash.textContent    = data.result.hash;
+}
+
+loadSecret();
+setInterval(loadSecret, 3000);
+</script>
+
+</body>
+</html>

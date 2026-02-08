@@ -633,32 +633,10 @@ if (todayStart !== wheelRoundDayTs) {
 
     const users = loadUsers();
 
-// 🎯 WEIGHTED MULTIPLIER (CÂN BẰNG GAME)
-const weightedMultipliers = [
-  { m: 0.5, w: 55 },
-  { m: 1.2, w: 20 },
-  { m: 1.5,   w: 12 },
-  { m: 2,   w: 10 },
-  { m: 5,   w: 2 },
-  { m: 10,  w: 1  }
-];
+// 🎯 DÙNG KẾT QUẢ ĐÃ CHỐT TỪ ĐẦU ROUND
+const multiplier = wheelRound.secretResult.multiplier;
+const index      = wheelRound.secretResult.index;
 
-function pickMultiplierWeighted(){
-  const total = weightedMultipliers.reduce((s, x) => s + x.w, 0);
-  let r = Math.random() * total;
-
-  for (const item of weightedMultipliers){
-    if ((r -= item.w) <= 0){
-      return item.m;
-    }
-  }
-  return 0;
-}
-
-// 🎡 PICK KẾT QUẢ
-const multiplier = pickMultiplierWeighted();
-const multipliers = weightedMultipliers.map(x => x.m);
-const index = multipliers.indexOf(multiplier);
 
 
 // 🏆 TOP WINNERS CHO PHIÊN HIỆN TẠI
@@ -767,14 +745,54 @@ io.emit("wheel-history-update", wheelHistory.slice(0, MAX_WHEEL_HISTORY));
 
 
 
-    const id = Date.now();
-    wheelRound = {
-      id,
-      startAt: id,
-      endAt: id + 60000,
-      bets: []
-    };
+ const id = Date.now();
 
+// 🎯 WEIGHTED MULTIPLIER (CHỐT NGAY KHI ROUND BẮT ĐẦU)
+const weightedMultipliers = [
+  { m: 0.5, w: 55 },
+  { m: 1.2, w: 20 },
+  { m: 1.5, w: 12 },
+  { m: 2,   w: 10 },
+  { m: 5,   w: 2 },
+  { m: 10,  w: 1 }
+];
+
+function pickMultiplierWeighted(){
+  const total = weightedMultipliers.reduce((s, x) => s + x.w, 0);
+  let r = Math.random() * total;
+  for (const item of weightedMultipliers){
+    if ((r -= item.w) <= 0) return item.m;
+  }
+  return 0;
+}
+
+const secretMultiplier = pickMultiplierWeighted();
+const multipliers = weightedMultipliers.map(x => x.m);
+const secretIndex = multipliers.indexOf(secretMultiplier);
+
+// 🔐 COMMIT HASH (ADMIN VERIFY)
+const commitHash = crypto
+  .createHash("sha256")
+  .update(id + ":" + secretMultiplier)
+  .digest("hex");
+
+wheelRound = {
+  id,
+  startAt: id,
+  endAt: id + 60000,
+  bets: [],
+
+  // 🔐 TUYỆT ĐỐI KHÔNG EMIT
+  secretResult: {
+    multiplier: secretMultiplier,
+    index: secretIndex,
+    hash: commitHash
+  }
+};
+
+
+
+    
     io.emit("wheel-round-new", {
       roundId: wheelRound.id,
       endAt: wheelRound.endAt
@@ -1295,6 +1313,33 @@ saveInvestState(investRound);
     });
   }
 });
+
+
+
+app.get("/api/admin/wheel/secret", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (me?.role !== "admin") {
+    return res.status(403).json({ ok:false });
+  }
+
+  if (!wheelRound?.secretResult) {
+    return res.json({ ok:false, message:"NO_ROUND" });
+  }
+
+  res.json({
+    ok: true,
+    roundId: wheelRound.id,
+    startAt: wheelRound.startAt,
+    endAt: wheelRound.endAt,
+    result: wheelRound.secretResult
+  });
+});
+
 
 
 // ================================
