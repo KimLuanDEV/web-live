@@ -167,32 +167,49 @@ body{background:#0e0e12;color:#fff}
 </main>
 
 <script>
+    
 function calc(){
   const h = height.value/100;
-  const w = weight.value;
-  const a = age.value;
+  const w = Number(weight.value);
+  const a = Number(age.value);
   const g = gender.value;
 
   if(!h||!w||!a) return;
 
-  const bmi = (w/(h*h)).toFixed(1);
+  const bmi = +(w/(h*h)).toFixed(1);
   const bmr = g==='male'
     ? Math.round(10*w + 6.25*h*100 - 5*a + 5)
     : Math.round(10*w + 6.25*h*100 - 5*a - 161);
 
-  const water = (w*0.035).toFixed(1);
+  const water = +(w*0.035).toFixed(1);
 
-  document.getElementById('bmi').innerText = bmi;
-  document.getElementById('bmr').innerText = bmr;
-  document.getElementById('water').innerText = water+'L';
+  bmiEl.innerText = bmi;
+  bmrEl.innerText = bmr;
+  waterEl.innerText = water+'L';
 
   let note='Chỉ số bình thường.';
   if(bmi<18.5) note='Bạn hơi gầy, nên tăng cường dinh dưỡng.';
   else if(bmi>=25) note='Chỉ số cao, nên chú ý vận động và ăn uống.';
+  noteEl.innerText = note;
 
-  document.getElementById('note').innerText = note;
+  // ✅ LƯU DATA
+  setHealthData("metrics", {
+    height: h*100,
+    weight: w,
+    age: a,
+    gender: g,
+    bmi,
+    bmr,
+    waterTarget: water
+  });
 }
+
+
 </script>
+
+
+
+<script src="/health-store.js"></script>
 
 </body>
 </html>

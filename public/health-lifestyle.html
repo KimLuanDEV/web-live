@@ -198,3 +198,61 @@ body{
           </div>
         </div>
         <div class="habit-toggle"></div>
+      </div>
+
+      <div class="habit-item">
+        <div class="habit-left">
+          <div class="habit-icon">🛌</div>
+          <div>
+            <div class="habit-name">Ngủ sớm</div>
+            <div class="habit-desc">Trước 23:00</div>
+          </div>
+        </div>
+        <div class="habit-toggle"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 💡 GỢI Ý -->
+  <div class="life-tip">
+    <div class="life-tip-icon">💡</div>
+    <div class="life-tip-text">
+      Đi bộ 10 phút sau bữa ăn giúp cải thiện tiêu hóa và giấc ngủ.
+    </div>
+  </div>
+
+</main>
+
+<script>
+    
+function saveLifestyle(){
+  const toggles = document.querySelectorAll('.habit-toggle');
+  setHealthData("lifestyle", {
+    sleepHours: 6,
+    steps: 3200,
+    exerciseMinutes: 20,
+    habits: {
+      water: toggles[0].classList.contains('active'),
+      walk: toggles[1].classList.contains('active'),
+      sleepEarly: toggles[2].classList.contains('active')
+    }
+  });
+}
+
+document.querySelectorAll('.habit-toggle').forEach(t=>{
+  t.onclick=()=>{
+    t.classList.toggle('active');
+    saveLifestyle();
+  };
+});
+
+</script>
+
+
+
+<script src="/health-store.js"></script>
+
+
+</body>
+</html>
