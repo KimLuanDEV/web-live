@@ -225,10 +225,12 @@ body{
 </main>
 
 <script>
-    
-function saveLifestyle(){
+
+async function saveLifestyle(){
   const toggles = document.querySelectorAll('.habit-toggle');
-  setHealthData("lifestyle", {
+  const data = await loadHealthData();
+
+  data.lifestyle = {
     sleepHours: 6,
     steps: 3200,
     exerciseMinutes: 20,
@@ -237,13 +239,15 @@ function saveLifestyle(){
       walk: toggles[1].classList.contains('active'),
       sleepEarly: toggles[2].classList.contains('active')
     }
-  });
+  };
+
+  await saveHealthData(data);
 }
 
 document.querySelectorAll('.habit-toggle').forEach(t=>{
-  t.onclick=()=>{
+  t.onclick = async ()=>{
     t.classList.toggle('active');
-    saveLifestyle();
+    await saveLifestyle();
   };
 });
 

@@ -168,7 +168,7 @@ body{background:#0e0e12;color:#fff}
 
 <script>
 
-function calc(){
+async function calc(){
   const bmiEl   = document.getElementById('bmi');
   const bmrEl   = document.getElementById('bmr');
   const waterEl = document.getElementById('water');
@@ -188,18 +188,18 @@ function calc(){
 
   const water = +(w * 0.035).toFixed(1);
 
-  bmiEl.innerText   = bmi;
-  bmrEl.innerText   = bmr;
+  bmiEl.innerText = bmi;
+  bmrEl.innerText = bmr;
   waterEl.innerText = water + 'L';
 
   let note = 'Chỉ số bình thường.';
   if (bmi < 18.5) note = 'Bạn hơi gầy, nên tăng cường dinh dưỡng.';
-  else if (bmi >= 25) note = 'Chỉ số cao, nên chú ý vận động và ăn uống.';
+  else if (bmi >= 25) note = 'Chỉ số cao, nên chú ý vận động.';
 
   noteEl.innerText = note;
 
-  // ✅ Lưu dữ liệu healthData
-  setHealthData("metrics", {
+  const data = await loadHealthData();
+  data.metrics = {
     height: h * 100,
     weight: w,
     age: a,
@@ -207,8 +207,11 @@ function calc(){
     bmi,
     bmr,
     waterTarget: water
-  });
+  };
+
+  await saveHealthData(data);
 }
+
 
 
 

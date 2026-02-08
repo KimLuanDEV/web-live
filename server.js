@@ -19,6 +19,20 @@ const twilio = require("twilio");
 
 const fs = require("fs");
 
+
+// ================================
+// 🧠 HEALTH DATA (PER USER)
+// ================================
+const HEALTH_DIR = path.join("/opt/render/project/data", "health");
+
+if (!fs.existsSync(HEALTH_DIR)) {
+  fs.mkdirSync(HEALTH_DIR, { recursive: true });
+  console.log("📁 Created health data dir");
+}
+
+
+
+
 const ONE_DAY = 24 * 60 * 60 * 1000; // 🔥 24h
 
 
@@ -1284,6 +1298,43 @@ saveInvestState(investRound);
 
 
 // ================================
+// 🧠 HEALTH – GET DATA
+// ================================
+app.get("/api/health/:uid", (req, res) => {
+  const { uid } = req.params;
+
+  if (!uid) {
+    return res.status(400).json({ ok: false, error: "NO_UID" });
+  }
+
+  const file = path.join(HEALTH_DIR, `${uid}.json`);
+
+  if (!fs.existsSync(file)) {
+    return res.json({
+      ok: true,
+      healthData: {}
+    });
+  }
+
+  try {
+    const raw = fs.readFileSync(file, "utf8");
+    const json = raw ? JSON.parse(raw) : {};
+    return res.json({
+      ok: true,
+      healthData: json.healthData || {}
+    });
+  } catch (e) {
+    console.error("❌ Load health failed:", e);
+    return res.status(500).json({
+      ok: false,
+      error: "READ_HEALTH_FAILED"
+    });
+  }
+});
+
+
+
+// ================================
 // 📜 WHEEL – MY BET HISTORY
 // ================================
 app.get("/api/wheel/my-history", (req, res) => {
@@ -1412,6 +1463,51 @@ app.get("/api/invest/history", (req, res) => {
   });
 });
 
+
+
+// ================================
+// 🧠 HEALTH – SAVE DATA
+// ================================
+app.post("/api/health/:uid", (req, res) => {
+  const { uid } = req.params;
+  const healthData = req.body;
+
+  if (!uid) {
+    return res.status(400).json({ ok: false, error: "NO_UID" });
+  }
+
+  if (!healthData || typeof healthData !== "object") {
+    return res.status(400).json({
+      ok: false,
+      error: "INVALID_DATA"
+    });
+  }
+
+  const file = path.join(HEALTH_DIR, `${uid}.json`);
+
+  try {
+    fs.writeFileSync(
+      file,
+      JSON.stringify(
+        {
+          uid,
+          healthData,
+          updatedAt: Date.now()
+        },
+        null,
+        2
+      )
+    );
+
+    return res.json({ ok: true });
+  } catch (e) {
+    console.error("❌ Save health failed:", e);
+    return res.status(500).json({
+      ok: false,
+      error: "SAVE_HEALTH_FAILED"
+    });
+  }
+});
 
 
 

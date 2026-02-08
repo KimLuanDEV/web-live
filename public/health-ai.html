@@ -141,38 +141,27 @@ body{background:#0e0e12;color:#fff}
 <script>
 
 
-function genAdvice(){
-  const metrics = getHealthPart("metrics");
-  const life = getHealthPart("lifestyle");
-  const nutri = getHealthPart("nutrition");
-
-  let msg = '';
+async function genAdvice(){
+  const data = await loadHealthData();
+  const { metrics={}, lifestyle={}, nutrition={} } = data;
 
   if(!metrics.bmi){
     aiMsg.innerText = '⚠️ Vui lòng nhập chỉ số cơ thể trước.';
     return;
   }
 
-  if(metrics.bmi >= 25){
-    msg += '📉 BMI hơi cao, nên giảm tinh bột và tăng vận động.\n\n';
-  }else if(metrics.bmi < 18.5){
-    msg += '📈 BMI thấp, nên ăn đủ chất và tăng đạm.\n\n';
-  }else{
-    msg += '✅ BMI ổn định, hãy duy trì.\n\n';
-  }
+  let msg = '';
 
-  if(life.sleepHours && life.sleepHours < 7){
-    msg += '😴 Bạn ngủ chưa đủ, nên ngủ sớm hơn.\n\n';
-  }
+  if(metrics.bmi >= 25) msg += '📉 BMI hơi cao.\n\n';
+  else if(metrics.bmi < 18.5) msg += '📈 BMI thấp.\n\n';
+  else msg += '✅ BMI ổn định.\n\n';
 
-  if(nutri.waterIntake < metrics.waterTarget){
-    msg += '💧 Bạn uống chưa đủ nước hôm nay.\n\n';
-  }
+  if(lifestyle.sleepHours < 7) msg += '😴 Ngủ chưa đủ.\n\n';
+  if(nutrition.waterIntake < metrics.waterTarget) msg += '💧 Uống chưa đủ nước.\n\n';
 
-  msg += '🎯 Gợi ý hôm nay: đi bộ thêm 2.000 bước.';
+  msg += '🎯 Mục tiêu hôm nay: đi bộ thêm 2.000 bước.';
 
   aiMsg.innerText = msg;
-  aiTip.innerText = 'AI Coach đã phân tích dữ liệu thật của bạn.';
 }
 
 

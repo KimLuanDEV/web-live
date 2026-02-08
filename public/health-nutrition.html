@@ -148,18 +148,18 @@ body{
 </main>
 
 
-
 <script src="/health-store.js"></script>
 
-
-
-
 <script>
-setHealthData("nutrition", {
-  calories: 320,
-  protein: 45,
-  waterIntake: 1.2
-});
+(async ()=>{
+  const data = await loadHealthData();
+  data.nutrition = {
+    calories: 320,
+    protein: 45,
+    waterIntake: 1.2
+  };
+  await saveHealthData(data);
+})();
 </script>
 
 
