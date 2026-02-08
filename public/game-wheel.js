@@ -629,19 +629,22 @@ function startRoundCountdown(){
     // 🔥 HIỆN SỐ NGAY TRONG ORB
     updateOrbCountdown(remain);
 
-    // ❌ KHÔNG CHO SLOT ACTIVE KHI CÒN XA
-    if (remain > 50){
-      document
-        .querySelectorAll(".orb-slot.active, .orb-spoke.active")
-        .forEach(el => el.classList.remove("active"));
-    }
 
     /* ================= SLOT GLOW COUNTDOWN ================= */
 
-    // ⏳ GIAI ĐOẠN BÌNH THƯỜNG: 1s → nhảy 1 slot
-    if (remain > 5 && remain <= 50){
-      stepCountdownSlot();
-    }
+// ⏳ BẮT ĐẦU NẢY SLOT → TẮT ACTIVE CŨ
+if (remain === 50){
+  document
+    .querySelectorAll(".orb-slot.active, .orb-spoke.active")
+    .forEach(el => el.classList.remove("active"));
+}
+
+// ⏳ GIAI ĐOẠN BÌNH THƯỜNG: 1s → nhảy 1 slot
+if (remain > 5 && remain <= 50){
+  stepCountdownSlot();
+}
+
+    
 
     // 🔥 GIAI ĐOẠN CUỐI: tăng tốc
     if (remain <= 5 && remain > 0){
