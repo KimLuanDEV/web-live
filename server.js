@@ -1426,6 +1426,35 @@ saveInvestState(investRound);
   }
 });
 
+// 🔐 ADMIN – GET CURRENT WHEEL BETS
+app.get("/api/admin/wheel/bets", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+  if (me?.role !== "admin")
+    return res.status(403).json({ ok:false });
+
+  if (!wheelRound || !Array.isArray(wheelRound.bets)) {
+    return res.json({ ok:true, list: [] });
+  }
+
+  const list = wheelRound.bets.map(b => {
+    const u = users[b.uid];
+    return {
+      uid: b.uid,
+      name: u?.profile?.name || "Người chơi",
+      bet: b.bet
+    };
+  });
+
+  res.json({
+    ok:true,
+    roundId: wheelRound.id,
+    list
+  });
+});
 
 
 app.get("/api/admin/wheel/secret", (req, res) => {
