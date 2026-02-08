@@ -2241,6 +2241,36 @@ body::before{
 }
 
 
+.orb-field{
+  position:absolute;
+  inset:20%;
+  border-radius:50%;
+  pointer-events:none;
+  z-index:3;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(120,180,255,.0),
+      rgba(120,180,255,.35),
+      rgba(120,180,255,.0)
+    );
+
+  box-shadow:
+    inset 0 0 30px rgba(120,180,255,.6),
+    0 0 60px rgba(120,180,255,.45);
+}
+
+.orb-wheel.spinning .orb-field{
+  animation: fieldSpin 1.2s linear infinite;
+}
+
+@keyframes fieldSpin{
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
+}
+
+
   </style>
 </head>
 
@@ -2294,15 +2324,7 @@ body::before{
   <!-- 🎡 VÒNG QUAY -->
   <div class="orb-wheel">
 
-  <!-- 🦾 CHÂN ĐỠ ORB -->
-<div class="orb-arms">
-  <div class="orb-arm left">
-    <span class="arm-core"></span>
-  </div>
-  <div class="orb-arm right">
-    <span class="arm-core"></span>
-  </div>
-</div>
+<div class="orb-field"></div>
 
 
 
