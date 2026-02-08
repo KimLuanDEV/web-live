@@ -1100,20 +1100,3 @@ document.querySelector(".orb-wheel")?.classList.add("spinning");
 
 
 
-function lockScroll(){
-  document.body.style.overflow = "hidden";
-  document.documentElement.style.overflow = "hidden";
-}
-
-function unlockScroll(){
-  document.body.style.overflow = "";
-  document.documentElement.style.overflow = "";
-}
-
-// gọi khi load game
-lockScroll();
-
-
-document.addEventListener("touchmove", e => {
-  e.preventDefault();
-}, { passive: false });
