@@ -328,6 +328,89 @@ html, body {
 }
 
 
+
+/* ===== GAME HUB HEADER ===== */
+.gamehub-head{
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 14px 16px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+
+  background:
+    linear-gradient(180deg,
+      rgba(20,20,30,0.95),
+      rgba(10,10,15,0.92)
+    );
+}
+
+/* LEFT */
+.gh-left{
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.gh-icon{
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 20px;
+  background:
+    radial-gradient(circle at top,
+      #00f0ff,
+      #0066ff 70%
+    );
+  box-shadow:
+    0 0 14px rgba(0,200,255,0.6);
+}
+
+.gh-text{
+  display: flex;
+  flex-direction: column;
+}
+
+.gh-title{
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.5px;
+}
+
+.gh-sub{
+  font-size: 11px;
+  color: rgba(255,255,255,0.55);
+}
+
+/* CLOSE */
+.gh-close{
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+
+  font-size: 18px;
+  color: #fff;
+
+  background: rgba(255,255,255,0.08);
+  transition: 0.2s ease;
+}
+
+.gh-close:hover{
+  background: rgba(255,80,80,0.25);
+  color: #ff5a5a;
+}
+
+
+
 </style>
 
 
@@ -430,10 +513,19 @@ html, body {
   <div class="sheet-backdrop" onclick="closeGameHub()"></div>
 
   <div class="sheet-box">
-    <div class="sheet-head">
-      <div class="sheet-title">Game Center</div>
-      <button class="sheet-close" onclick="closeGameHub()">✕</button>
+
+<div class="sheet-head gamehub-head">
+  <div class="gh-left">
+    <div class="gh-icon">🎮</div>
+    <div class="gh-text">
+      <div class="gh-title">Game Center</div>
+      <div class="gh-sub">Chọn trò chơi để bắt đầu</div>
     </div>
+  </div>
+
+  <button class="sheet-close gh-close" onclick="closeGameHub()">✕</button>
+</div>
+
 
     <div class="sheet-body">
       <div class="invest-grid">
