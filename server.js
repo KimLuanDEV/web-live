@@ -1237,6 +1237,65 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
+
+// 🛑 ADMIN OVERRIDE WHEEL RESULT (DANGEROUS)
+app.post("/api/admin/wheel/override", (req, res) => {
+  const uid = req.headers["x-uid"];
+  const { multiplier } = req.body;
+
+  if (!uid) return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+  if (me?.role !== "admin")
+    return res.status(403).json({ ok:false });
+
+  if (!wheelRound || !wheelRound.secretResult)
+    return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
+
+  // ⛔ không cho override khi round đã kết thúc
+  if (Date.now() >= wheelRound.endAt)
+    return res.json({ ok:false, message:"ROUND_ENDED" });
+
+  const allowed = [0.5,1.2,1.5,2,5,10];
+  if (!allowed.includes(multiplier))
+    return res.json({ ok:false, message:"INVALID_MULTIPLIER" });
+
+  const index = allowed.indexOf(multiplier);
+
+  const hash = crypto
+    .createHash("sha256")
+    .update(wheelRound.id + ":" + multiplier + ":override")
+    .digest("hex");
+
+  // 🔥 OVERRIDE THẲNG
+  wheelRound.secretResult = {
+    multiplier,
+    index,
+    hash,
+    overridden: true,
+    overriddenBy: uid,
+    overriddenAt: Date.now()
+  };
+
+  console.warn(
+    "🛑 [WHEEL OVERRIDE]",
+    "round", wheelRound.id,
+    "→ x" + multiplier,
+    "by", uid
+  );
+
+  res.json({
+    ok:true,
+    roundId: wheelRound.id,
+    result: wheelRound.secretResult
+  });
+});
+
+
+
+
+
 app.post("/api/invest/close-early", (req, res) => {
   try {
     const uid = req.headers["x-uid"];

@@ -49,7 +49,43 @@ h2{margin:0 0 12px}
 
   <div class="row">Commit hash</div>
   <div id="hash" class="hash">--</div>
+
+
+  <hr style="margin:16px 0;opacity:.2">
+
+<div class="row">⚠️ Override kết quả</div>
+
+<select id="forceMul">
+  <option value="">-- chọn --</option>
+  <option value="0.5">x0.5</option>
+  <option value="1.2">x1.2</option>
+  <option value="1.5">x1.5</option>
+  <option value="2">x2</option>
+  <option value="5">x5</option>
+  <option value="10">x10</option>
+</select>
+
+<button onclick="overrideResult()" style="
+  margin-top:10px;
+  background:#b00020;
+  color:#fff;
+  border:none;
+  padding:10px;
+  border-radius:8px;
+  font-weight:700;
+  width:100%;
+">
+🛑 FORCE RESULT
+</button>
+
+
 </div>
+
+
+
+
+
+
 
 <script>
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
@@ -69,6 +105,35 @@ async function loadSecret(){
 
 loadSecret();
 setInterval(loadSecret, 3000);
+
+
+
+
+
+async function overrideResult(){
+  const v = Number(forceMul.value);
+  if (!v) return alert("Chưa chọn multiplier");
+
+  if (!confirm("⚠️ OVERRIDE KẾT QUẢ?\nKhông thể hoàn tác!"))
+    return;
+
+  const res = await fetch("/api/admin/wheel/override",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({ multiplier:v })
+  });
+
+  const data = await res.json();
+  if (!data.ok) return alert("❌ Override thất bại");
+
+  alert("🔥 ĐÃ OVERRIDE → x" + v);
+  loadSecret();
+}
+
+
 </script>
 
 </body>
