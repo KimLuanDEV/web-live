@@ -2,18 +2,27 @@
 // 🧠 HEALTH STORE – BACKEND VERSION
 // ================================
 
-// 👉 UID phải tồn tại (login system của bạn)
-const UID = localStorage.getItem("uid");
+// 🔐 ENSURE UID (LOGIN OR GUEST)
+function ensureUID(){
+  let uid = localStorage.getItem("uid");
+
+  // 🧪 Guest mode (chưa login)
+  if (!uid) {
+    uid = "guest_" + Math.random().toString(36).slice(2, 10);
+    localStorage.setItem("uid", uid);
+    console.info("👤 Guest UID created:", uid);
+  }
+
+  return uid;
+}
+
+// 👉 UID luôn tồn tại
+const UID = ensureUID();
 
 // ================================
 // 📥 LOAD HEALTH DATA
 // ================================
 async function loadHealthData(){
-  if (!UID) {
-    console.warn("⚠️ No UID, cannot load health data");
-    return {};
-  }
-
   try {
     const res = await fetch(`/api/health/${UID}`);
     const json = await res.json();
@@ -33,11 +42,6 @@ async function loadHealthData(){
 // 📤 SAVE HEALTH DATA
 // ================================
 async function saveHealthData(data){
-  if (!UID) {
-    console.warn("⚠️ No UID, cannot save health data");
-    return;
-  }
-
   try {
     await fetch(`/api/health/${UID}`, {
       method: "POST",
