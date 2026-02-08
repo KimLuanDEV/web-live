@@ -414,6 +414,14 @@ select{
 <script>
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
+const socket = io({
+  auth:{
+    uid: me.uid
+  }
+});
+
+
+
 async function loadSecret(){
   const res = await fetch("/api/admin/wheel/secret",{
     headers:{ "x-uid": me.uid }
@@ -518,6 +526,54 @@ async function loadBetList(){
       <div class="bet">💎 ${b.bet}</div>
     </div>
   `).join("");
+}
+
+
+socket.on("admin-wheel-bet-new", data => {
+  // chỉ xử lý khi panel đang mở
+  if (!betListPanel.classList.contains("show")) return;
+
+  addBetToPanel(data);
+});
+
+socket.on("admin-wheel-bet-reset", data => {
+  betListBody.innerHTML =
+    `<div class="empty">Chưa có ai đặt cược</div>`;
+});
+
+
+async function addBetToPanel({ uid, bet }) {
+
+  // tránh duplicate
+  if (
+    betListBody.querySelector(`[data-uid="${uid}"]`)
+  ) return;
+
+  // lấy tên user (từ cache hoặc gọi API nhanh)
+  let name = "Người chơi";
+
+  try{
+    const res = await fetch("/api/admin/users",{
+      headers:{ "x-uid": me.uid }
+    });
+    const data = await res.json();
+    const u = data.users.find(x => x.uid === uid);
+    if (u) name = u.name || name;
+  }catch{}
+
+  // nếu đang empty → clear
+  const empty = betListBody.querySelector(".empty");
+  if (empty) empty.remove();
+
+  const div = document.createElement("div");
+  div.className = "bet-item";
+  div.dataset.uid = uid;
+  div.innerHTML = `
+    <div class="name">${name}</div>
+    <div class="bet">💎 ${bet}</div>
+  `;
+
+  betListBody.prepend(div);
 }
 
 

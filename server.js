@@ -851,6 +851,11 @@ wheelRound = {
       endAt: wheelRound.endAt
     });
 
+io.emit("admin-wheel-bet-reset", {
+  roundId: wheelRound.id
+});
+
+
 
 // 🔔 CẬP NHẬT ROUND ĐANG CHẠY CHO TẤT CẢ CLIENT
 io.emit("wheel-round-count", {
@@ -900,6 +905,8 @@ socket.emit("wheel-round-count", {
 // 🎡 GAME WHEEL – SERVER SIDE
 // ================================
 socket.on("wheel-bet", data => {
+
+
   const uid = socket.data.uid;
   if (!uid) return socket.emit("wheel-error",{ message:"NOT_LOGIN" });
 
@@ -925,6 +932,14 @@ socket.on("wheel-bet", data => {
   emitCoinUpdate(uid);
 
   wheelRound.bets.push({ uid, bet });
+
+  // 🔔 EMIT LIVE BET CHO ADMIN
+io.emit("admin-wheel-bet-new", {
+  roundId: wheelRound.id,
+  uid,
+  bet
+});
+
 
   socket.emit("wheel-bet-ok", {
     roundId: wheelRound.id,
