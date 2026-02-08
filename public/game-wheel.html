@@ -2103,66 +2103,119 @@ body::before{
   position:absolute;
   inset:0;
   pointer-events:none;
-  z-index:0; /* dưới slot, trên nền */
+  z-index:2;
 }
 
 
+/* ARM CHUNG */
 .orb-arm{
   position:absolute;
-  bottom: -30px;            /* 🔥 gắn xuống đế */
-  width:18px;
-  height:180px;
+  top:50%;
+  width:180px;
+  height:12px;
+  transform-origin: left center;
 
-  border-radius:12px;
+  /* thân kim loại */
+  background: linear-gradient(
+    180deg,
+    #666,
+    #2a2a2a 50%,
+    #111
+  );
 
-  background:
-    linear-gradient(
-      180deg,
-      #777,
-      #2a2a2a 50%,
-      #111
-    );
+  border-radius: 999px;
 
   box-shadow:
-    inset 0 0 8px rgba(255,255,255,.25),
-    inset 0 -10px 20px rgba(0,0,0,.9),
-    0 0 24px rgba(255,200,80,.25);
-
-  transform-origin: bottom center;
+    inset 0 1px 2px rgba(255,255,255,.25),
+    inset 0 -2px 4px rgba(0,0,0,.9),
+    0 0 18px rgba(255,200,80,.35);
 }
 
 
+/* ARM TRÁI / PHẢI */
 .orb-arm.left{
-  left:55px;
-  transform: rotate(18deg);
+  left:50%;
+  transform: rotate(112deg) translateX(-6px);
 }
-
 
 .orb-arm.right{
-  right: 55px;
-  transform: rotate(-18deg);
+  left:50%;
+  transform: rotate(68deg) translateX(-6px);
 }
 
 
-.orb-arm::after{
+/* ĐẦU GẮN VÀO TRỤC */
+.orb-arm::before{
   content:"";
   position:absolute;
-  top:-10px;
-  left:50%;
-  transform: translateX(-50%);
+  left:-10px;
+  top:50%;
+  transform:translateY(-50%);
 
-  width:26px;
-  height:26px;
+  width:18px;
+  height:18px;
   border-radius:50%;
 
-  background:
-    radial-gradient(circle,#ddd,#666,#111);
+  background: radial-gradient(circle,#eee,#888,#222);
 
   box-shadow:
-    0 0 10px rgba(255,215,0,.6),
+    0 0 10px rgba(255,255,255,.6),
     inset 0 0 6px rgba(0,0,0,.8);
 }
 
+/* ĐẦU GẮN VÀO ĐẾ */
+.orb-arm::after{
+  content:"";
+  position:absolute;
+  right:-8px;
+  top:50%;
+  transform:translateY(-50%);
+
+  width:14px;
+  height:14px;
+  border-radius:50%;
+
+  background: radial-gradient(circle,#ffd700,#b8860b,#2a1c00);
+
+  box-shadow:
+    0 0 12px rgba(255,215,0,.9);
+}
+
+
+/* LÕI NĂNG LƯỢNG CHẠY BÊN TRONG */
+.arm-core{
+  position:absolute;
+  inset:3px;
+  border-radius:999px;
+
+  background: linear-gradient(
+    90deg,
+    rgba(120,180,255,0),
+    rgba(120,180,255,.9),
+    rgba(120,180,255,0)
+  );
+
+  opacity:.6;
+  filter: blur(1px);
+  animation: armFlow 2.2s linear infinite;
+}
+
+@keyframes armFlow{
+  from{ background-position: 0% 50%; }
+  to{ background-position: 200% 50%; }
+}
+
+/* 🔥 KHI ORB ĐANG QUAY */
+.orb-wheel.spinning .orb-arm{
+  box-shadow:
+    inset 0 1px 2px rgba(255,255,255,.3),
+    0 0 26px rgba(120,180,255,.9);
+}
+
+.orb-wheel.spinning .arm-core{
+  opacity:1;
+  animation-duration: .9s;
+}
 
 
 .orb-wheel.spinning .orb-arm{
@@ -2243,9 +2296,14 @@ body::before{
 
   <!-- 🦾 CHÂN ĐỠ ORB -->
 <div class="orb-arms">
-  <div class="orb-arm left"></div>
-  <div class="orb-arm right"></div>
+  <div class="orb-arm left">
+    <span class="arm-core"></span>
+  </div>
+  <div class="orb-arm right">
+    <span class="arm-core"></span>
+  </div>
 </div>
+
 
 
     <!-- 🔗 NAN -->
