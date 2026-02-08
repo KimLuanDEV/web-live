@@ -1446,7 +1446,6 @@ html, body {
   display: none;
 }
 
-/* HEADER */
 .fs-header{
   height: 64px;
   padding: 0 12px;
@@ -1458,11 +1457,23 @@ html, body {
   border-bottom: 1px solid rgba(255,255,255,.08);
 }
 
+/* LEFT SLOT */
+.fs-left{
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ✅ CĂN GIỮA */
+}
+
+/* BUTTON */
 .fs-back{
   width: 40px;
   height: 40px;
   border-radius: 50%;
   border: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center; /* ✅ icon giữa nút */
 
   background: rgba(255,255,255,.08);
   color: #fff;
@@ -1473,6 +1484,7 @@ html, body {
 .fs-back:active{
   transform: scale(.9);
 }
+
 
 .fs-title{
   text-align: center;
@@ -2513,7 +2525,11 @@ body::before{
 <!-- 📜 MY BET HISTORY FULLSCREEN MODAL -->
 <div class="fs-modal hidden" id="myBetHistoryModal">
   <div class="fs-header">
+
+    <div class="fs-left">
     <button class="fs-back" onclick="closeMyBetHistory()">←</button>
+  </div>
+
     <div class="fs-title">Lịch sử đặt cược</div>
     <div class="fs-spacer"></div>
   </div>
