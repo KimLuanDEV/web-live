@@ -418,8 +418,6 @@ select{
 
 
 <script>
-const betUidSet = new Set();
-
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const socket = io({
@@ -506,20 +504,16 @@ const betListPanel = document.getElementById("betListPanel");
 const betListBody  = document.getElementById("betListBody");
 
 function toggleBetList(){
-  const opening = !betListPanel.classList.contains("show");
-
   betListPanel.classList.toggle("show");
   betListPanel.classList.toggle("hidden");
 
-  // 🔥 CHỈ LOAD KHI MỞ LẦN ĐẦU
-  if (opening){
+  if (betListPanel.classList.contains("show")){
     loadBetList();
   }
 }
 
 async function loadBetList(){
   betListBody.innerHTML = `<div class="empty">Đang tải...</div>`;
-  betUidSet.clear();
 
   const res = await fetch("/api/admin/wheel/bets",{
     headers:{ "x-uid": me.uid }
@@ -532,39 +526,36 @@ async function loadBetList(){
     return;
   }
 
-  betListBody.innerHTML = "";
-
-  data.list.forEach(b=>{
-    betUidSet.add(b.uid);
-
-    const div = document.createElement("div");
-    div.className = "bet-item";
-    div.dataset.uid = b.uid;
-    div.innerHTML = `
+  betListBody.innerHTML = data.list.map(b => `
+    <div class="bet-item">
       <div class="name">${b.name}</div>
       <div class="bet">💎 ${b.bet}</div>
-    `;
-    betListBody.appendChild(div);
-  });
+    </div>
+  `).join("");
 }
 
 
-
 socket.on("admin-wheel-bet-new", data => {
+  // chỉ xử lý khi panel đang mở
+  if (!betListPanel.classList.contains("show")) return;
+
   addBetToPanel(data);
 });
-
 
 socket.on("admin-wheel-bet-reset", data => {
   betListBody.innerHTML =
     `<div class="empty">Chưa có ai đặt cược</div>`;
 });
 
+
 async function addBetToPanel({ uid, bet }) {
 
-  if (betUidSet.has(uid)) return;
-  betUidSet.add(uid);
+  // tránh duplicate
+  if (
+    betListBody.querySelector(`[data-uid="${uid}"]`)
+  ) return;
 
+  // lấy tên user (từ cache hoặc gọi API nhanh)
   let name = "Người chơi";
 
   try{
@@ -576,6 +567,7 @@ async function addBetToPanel({ uid, bet }) {
     if (u) name = u.name || name;
   }catch{}
 
+  // nếu đang empty → clear
   const empty = betListBody.querySelector(".empty");
   if (empty) empty.remove();
 
@@ -588,17 +580,6 @@ async function addBetToPanel({ uid, bet }) {
   `;
 
   betListBody.prepend(div);
-
-  // 🔥 FIX REPAINT (CHÍNH LÀ CHỖ NÀY)
-  if (betListPanel.classList.contains("show")){
-    forceRepaint(betListPanel);
-  }
-}
-
-
-function forceRepaint(el){
-  el.style.transform = "translateX(0)";
-  el.offsetHeight; // 🔥 force reflow
 }
 
 
