@@ -133,6 +133,29 @@ button:hover{background:#d00030}
   opacity:.35;
   word-break:break-all;
 }
+
+
+.countdown{
+  font-size:32px;
+  font-weight:800;
+  letter-spacing:2px;
+  color:#00e5ff;
+  text-shadow:0 0 15px rgba(0,229,255,.4);
+}
+
+.countdown.danger{
+  color:#ff5252;
+  animation:pulse .8s infinite;
+}
+
+@keyframes pulse{
+  0%{opacity:1}
+  50%{opacity:.4}
+  100%{opacity:1}
+}
+
+
+
 </style>
 </head>
 
@@ -148,6 +171,9 @@ button:hover{background:#d00030}
   <div class="orb">
     <div id="mul" class="mul">--</div>
   </div>
+
+<div id="countdown" class="countdown">--</div>
+
 
   <div class="meta">
     <div>Index: <strong id="idx">--</strong></div>
@@ -188,7 +214,12 @@ async function loadSecret(){
   mul.textContent    = "x" + data.result.multiplier;
   idx.textContent    = data.result.index;
   hash.textContent   = "hash: " + data.result.hash;
+
+  // ⏱️ COUNTDOWN
+  roundEndAt = data.endAt;
+  startCountdown();
 }
+
 
 loadSecret();
 setInterval(loadSecret, 3000);
@@ -212,6 +243,37 @@ async function overrideResult(){
 
   loadSecret();
 }
+
+
+
+
+let roundEndAt = 0;
+let countdownTimer = null;
+
+function startCountdown(){
+  if (countdownTimer) clearInterval(countdownTimer);
+
+  countdownTimer = setInterval(() => {
+    if (!roundEndAt) return;
+
+    const remain = Math.max(
+      0,
+      Math.ceil((roundEndAt - Date.now()) / 1000)
+    );
+
+    countdown.textContent = remain + "s";
+
+    if (remain <= 5){
+      countdown.classList.add("danger");
+    } else {
+      countdown.classList.remove("danger");
+    }
+
+  }, 500);
+}
+
+
+
 </script>
 
 </body>
