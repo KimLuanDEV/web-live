@@ -28,6 +28,8 @@ async function loadPredict(){
 
   const { multiplier, index, endAt } = data;
 
+  
+
   // 🎯 show multiplier
   document.getElementById("multiplier").textContent = "x" + multiplier;
 
@@ -44,6 +46,13 @@ async function loadPredict(){
 
   document.getElementById("countdown").textContent =
     "⏳ Còn " + remain + "s";
+
+
+    // ⏱️ SET END TIME + START VIEWER COUNTDOWN
+roundEndAt = endAt;
+startRoundCountdownViewer();
+
+
 
   // 🔒 lock warning
   document.getElementById("lockText").textContent =
