@@ -167,34 +167,40 @@ body{background:#0e0e12;color:#fff}
 </main>
 
 <script>
-    
+
 function calc(){
-  const h = height.value/100;
+  const bmiEl   = document.getElementById('bmi');
+  const bmrEl   = document.getElementById('bmr');
+  const waterEl = document.getElementById('water');
+  const noteEl  = document.getElementById('note');
+
+  const h = height.value / 100;
   const w = Number(weight.value);
   const a = Number(age.value);
   const g = gender.value;
 
-  if(!h||!w||!a) return;
+  if (!h || !w || !a) return;
 
-  const bmi = +(w/(h*h)).toFixed(1);
-  const bmr = g==='male'
+  const bmi = +(w / (h * h)).toFixed(1);
+  const bmr = g === 'male'
     ? Math.round(10*w + 6.25*h*100 - 5*a + 5)
     : Math.round(10*w + 6.25*h*100 - 5*a - 161);
 
-  const water = +(w*0.035).toFixed(1);
+  const water = +(w * 0.035).toFixed(1);
 
-  bmiEl.innerText = bmi;
-  bmrEl.innerText = bmr;
-  waterEl.innerText = water+'L';
+  bmiEl.innerText   = bmi;
+  bmrEl.innerText   = bmr;
+  waterEl.innerText = water + 'L';
 
-  let note='Chỉ số bình thường.';
-  if(bmi<18.5) note='Bạn hơi gầy, nên tăng cường dinh dưỡng.';
-  else if(bmi>=25) note='Chỉ số cao, nên chú ý vận động và ăn uống.';
+  let note = 'Chỉ số bình thường.';
+  if (bmi < 18.5) note = 'Bạn hơi gầy, nên tăng cường dinh dưỡng.';
+  else if (bmi >= 25) note = 'Chỉ số cao, nên chú ý vận động và ăn uống.';
+
   noteEl.innerText = note;
 
-  // ✅ LƯU DATA
+  // ✅ Lưu dữ liệu healthData
   setHealthData("metrics", {
-    height: h*100,
+    height: h * 100,
     weight: w,
     age: a,
     gender: g,
@@ -203,6 +209,7 @@ function calc(){
     waterTarget: water
   });
 }
+
 
 
 </script>
