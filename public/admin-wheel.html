@@ -418,6 +418,8 @@ select{
 
 
 <script>
+const betUidSet = new Set();
+
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 const socket = io({
@@ -504,16 +506,20 @@ const betListPanel = document.getElementById("betListPanel");
 const betListBody  = document.getElementById("betListBody");
 
 function toggleBetList(){
+  const opening = !betListPanel.classList.contains("show");
+
   betListPanel.classList.toggle("show");
   betListPanel.classList.toggle("hidden");
 
-  if (betListPanel.classList.contains("show")){
+  // 🔥 CHỈ LOAD KHI MỞ LẦN ĐẦU
+  if (opening){
     loadBetList();
   }
 }
 
 async function loadBetList(){
   betListBody.innerHTML = `<div class="empty">Đang tải...</div>`;
+  betUidSet.clear();
 
   const res = await fetch("/api/admin/wheel/bets",{
     headers:{ "x-uid": me.uid }
@@ -526,13 +532,22 @@ async function loadBetList(){
     return;
   }
 
-  betListBody.innerHTML = data.list.map(b => `
-    <div class="bet-item">
+  betListBody.innerHTML = "";
+
+  data.list.forEach(b=>{
+    betUidSet.add(b.uid);
+
+    const div = document.createElement("div");
+    div.className = "bet-item";
+    div.dataset.uid = b.uid;
+    div.innerHTML = `
       <div class="name">${b.name}</div>
       <div class="bet">💎 ${b.bet}</div>
-    </div>
-  `).join("");
+    `;
+    betListBody.appendChild(div);
+  });
 }
+
 
 
 socket.on("admin-wheel-bet-new", data => {
@@ -545,11 +560,11 @@ socket.on("admin-wheel-bet-reset", data => {
     `<div class="empty">Chưa có ai đặt cược</div>`;
 });
 
-
 async function addBetToPanel({ uid, bet }) {
 
-  // 🔒 tránh duplicate
-  if (betListBody.querySelector(`[data-uid="${uid}"]`)) return;
+  // 🔒 CHỐNG DUPLICATE CHUẨN
+  if (betUidSet.has(uid)) return;
+  betUidSet.add(uid);
 
   let name = "Người chơi";
 
@@ -562,7 +577,6 @@ async function addBetToPanel({ uid, bet }) {
     if (u) name = u.name || name;
   }catch{}
 
-  // 🔥 xoá empty nếu có
   const empty = betListBody.querySelector(".empty");
   if (empty) empty.remove();
 
@@ -574,7 +588,6 @@ async function addBetToPanel({ uid, bet }) {
     <div class="bet">💎 ${bet}</div>
   `;
 
-  // 🔝 người mới lên đầu
   betListBody.prepend(div);
 }
 
