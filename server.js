@@ -610,11 +610,6 @@ let wheelRound = {
   bets: []
 };
 
-
-// 🔮 KẾT QUẢ PHIÊN SẮP QUAY (ADMIN TOOL)
-let nextWheelResult = null;
-
-
 // ================================
 // ⏱️ AUTO SPIN WHEEL EVERY 60s
 // ================================
@@ -664,19 +659,6 @@ function pickMultiplierWeighted(){
 const multiplier = pickMultiplierWeighted();
 const multipliers = weightedMultipliers.map(x => x.m);
 const index = multipliers.indexOf(multiplier);
-
-
-// 🔮 LƯU KẾT QUẢ CHO TOOL ADMIN (TRƯỚC KHI QUAY)
-nextWheelResult = {
-  roundId: wheelRound.id,
-  index,
-  multiplier,
-  startAt: wheelRound.startAt, // 🔥 THÊM
-  endAt: wheelRound.endAt
-};
-
-
-
 
 
 // 🏆 TOP WINNERS CHO PHIÊN HIỆN TẠI
@@ -785,20 +767,18 @@ io.emit("wheel-history-update", wheelHistory.slice(0, MAX_WHEEL_HISTORY));
 
 
 
-const id = Date.now();
-wheelRound = {
-  id,
-  startAt: id,              // 🔥 THỜI ĐIỂM MỞ PHIÊN
-  endAt: id + 60000,        // 🔥 THỜI ĐIỂM QUAY
-  bets: []
-};
+    const id = Date.now();
+    wheelRound = {
+      id,
+      startAt: id,
+      endAt: id + 60000,
+      bets: []
+    };
 
-io.emit("wheel-round-new", {
-  roundId: wheelRound.id,
-  startAt: wheelRound.startAt, // ✅ GỬI START
-  endAt: wheelRound.endAt
-});
-
+    io.emit("wheel-round-new", {
+      roundId: wheelRound.id,
+      endAt: wheelRound.endAt
+    });
 
 
 // 🔔 CẬP NHẬT ROUND ĐANG CHẠY CHO TẤT CẢ CLIENT
@@ -898,14 +878,11 @@ if (alreadyBet && wheelRound.endAt > Date.now()) {
     endAt: wheelRound.endAt
   });
 } else {
-
   // ✅ CHO PHÉP VÀO GAME
-socket.emit("wheel-open", {
-  roundId: wheelRound.id,
-  startAt: wheelRound.startAt, // 🔥 GỬI START
-  endAt: wheelRound.endAt
-});
-
+  socket.emit("wheel-open", {
+    roundId: wheelRound.id,
+    endAt: wheelRound.endAt
+  });
 }
 
 
@@ -1796,34 +1773,6 @@ app.get("/api/admin/market/disputes", (req,res)=>{
   res.json({ ok:true, list });
 });
 
-
-
-// ================================
-// 🔮 ADMIN – WHEEL NEXT RESULT
-// ================================
-app.get("/api/admin/wheel-next", (req, res) => {
-  const uid = req.headers["x-uid"];
-  if (!uid) return res.status(403).json({ ok:false });
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if (!me || me.role !== "admin") {
-    return res.status(403).json({ ok:false });
-  }
-
-  if (!nextWheelResult) {
-    return res.json({
-      ok: true,
-      data: null
-    });
-  }
-
-  res.json({
-    ok: true,
-    data: nextWheelResult
-  });
-});
 
 
 
