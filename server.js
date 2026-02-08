@@ -671,9 +671,10 @@ nextWheelResult = {
   roundId: wheelRound.id,
   index,
   multiplier,
-  willSpinAt: Date.now(),
+  startAt: wheelRound.startAt, // 🔥 THÊM
   endAt: wheelRound.endAt
 };
+
 
 
 
@@ -784,18 +785,20 @@ io.emit("wheel-history-update", wheelHistory.slice(0, MAX_WHEEL_HISTORY));
 
 
 
-    const id = Date.now();
-    wheelRound = {
-      id,
-      startAt: id,
-      endAt: id + 60000,
-      bets: []
-    };
+const id = Date.now();
+wheelRound = {
+  id,
+  startAt: id,              // 🔥 THỜI ĐIỂM MỞ PHIÊN
+  endAt: id + 60000,        // 🔥 THỜI ĐIỂM QUAY
+  bets: []
+};
 
-    io.emit("wheel-round-new", {
-      roundId: wheelRound.id,
-      endAt: wheelRound.endAt
-    });
+io.emit("wheel-round-new", {
+  roundId: wheelRound.id,
+  startAt: wheelRound.startAt, // ✅ GỬI START
+  endAt: wheelRound.endAt
+});
+
 
 
 // 🔔 CẬP NHẬT ROUND ĐANG CHẠY CHO TẤT CẢ CLIENT
@@ -895,11 +898,14 @@ if (alreadyBet && wheelRound.endAt > Date.now()) {
     endAt: wheelRound.endAt
   });
 } else {
+
   // ✅ CHO PHÉP VÀO GAME
-  socket.emit("wheel-open", {
-    roundId: wheelRound.id,
-    endAt: wheelRound.endAt
-  });
+socket.emit("wheel-open", {
+  roundId: wheelRound.id,
+  startAt: wheelRound.startAt, // 🔥 GỬI START
+  endAt: wheelRound.endAt
+});
+
 }
 
 

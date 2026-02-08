@@ -1,3 +1,5 @@
+let currentRoundEndAt = null;
+
 const slots = document.querySelectorAll(".slot");
 
 function clearActive(){
@@ -26,12 +28,25 @@ async function loadPredict(){
     return;
   }
 
-  const { multiplier, index, endAt } = data;
+const { multiplier, index, startAt, endAt } = data;
 
-  
-// 🔥 SUY RA THỜI ĐIỂM BẮT ĐẦU QUAY
-roundStartAt = endAt - ROUND_DURATION;
-startRoundCountdownViewer();
+
+
+// 🔒 CHỈ KHỞI TẠO COUNTDOWN KHI SANG PHIÊN MỚI
+if (currentRoundEndAt !== endAt){
+  currentRoundEndAt = endAt;
+
+roundStartAt = startAt;
+
+
+
+  // ⚠️ nếu mở trang MUỘN → clamp về hiện tại
+  if (roundStartAt < Date.now()){
+    roundStartAt = Date.now();
+  }
+  startRoundCountdownViewer();
+}
+
 
   // 🎯 show multiplier
   document.getElementById("multiplier").textContent = "x" + multiplier;
@@ -62,7 +77,8 @@ startRoundCountdownViewer();
 
 // 🔁 auto refresh
 loadPredict();
-setInterval(loadPredict, 1000);
+setInterval(loadPredict, 3000);
+
 
 
 
@@ -70,8 +86,7 @@ setInterval(loadPredict, 1000);
 let roundStartAt = null;
 let viewerTimer  = null;
 
-// ⏳ thời gian 1 phiên cược (PHẢI TRÙNG SERVER)
-const ROUND_DURATION = 60 * 1000; // 60s
+
 
 function startRoundCountdownViewer(){
   if (!roundStartAt) return;
