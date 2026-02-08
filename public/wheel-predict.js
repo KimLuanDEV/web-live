@@ -29,6 +29,9 @@ async function loadPredict(){
   const { multiplier, index, endAt } = data;
 
   
+// 🔥 SUY RA THỜI ĐIỂM BẮT ĐẦU QUAY
+roundStartAt = endAt - ROUND_DURATION;
+startRoundCountdownViewer();
 
   // 🎯 show multiplier
   document.getElementById("multiplier").textContent = "x" + multiplier;
@@ -48,10 +51,6 @@ async function loadPredict(){
     "⏳ Còn " + remain + "s";
 
 
-    // ⏱️ SET END TIME + START VIEWER COUNTDOWN
-roundEndAt = endAt;
-startRoundCountdownViewer();
-
 
 
   // 🔒 lock warning
@@ -67,23 +66,27 @@ setInterval(loadPredict, 1000);
 
 
 
-let roundEndAt = null;
-let roundTimer = null;
+// ⏱️ VIEWER COUNTDOWN – TRƯỚC KHI QUAY
+let roundStartAt = null;
+let viewerTimer  = null;
+
+// ⏳ thời gian 1 phiên cược (PHẢI TRÙNG SERVER)
+const ROUND_DURATION = 60 * 1000; // 60s
 
 function startRoundCountdownViewer(){
-  if (!roundEndAt) return;
+  if (!roundStartAt) return;
 
-  if (roundTimer) clearInterval(roundTimer);
+  if (viewerTimer) clearInterval(viewerTimer);
 
-  roundTimer = setInterval(() => {
+  viewerTimer = setInterval(() => {
     const remain = Math.max(
       0,
-      Math.ceil((roundEndAt - Date.now()) / 1000)
+      Math.ceil((roundStartAt - Date.now()) / 1000)
     );
 
-    const timeEl = document.getElementById("roundTime");
+    const timeEl   = document.getElementById("roundTime");
     const statusEl = document.getElementById("roundStatus");
-    const box = document.getElementById("roundCountdown");
+    const box      = document.getElementById("roundCountdown");
 
     if (!timeEl) return;
 
@@ -92,13 +95,15 @@ function startRoundCountdownViewer(){
     if (remain > 5){
       statusEl.textContent = "Đang nhận cược";
       box.classList.remove("warning");
-    } else if (remain > 0){
-      statusEl.textContent = "Sắp quay…";
+    }
+    else if (remain > 0){
+      statusEl.textContent = "Sắp bắt đầu quay";
       box.classList.add("warning");
-    } else {
+    }
+    else{
       statusEl.textContent = "Đang quay";
       box.classList.add("warning");
-      clearInterval(roundTimer);
+      clearInterval(viewerTimer);
     }
   }, 1000);
 }
