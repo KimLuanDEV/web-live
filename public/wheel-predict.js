@@ -1,3 +1,6 @@
+let spinning = false;
+
+
 const values = [0.5, 1.2, 1.5, 2, 5, 10];
 const svg = document.getElementById("wheelSvg");
 
@@ -36,7 +39,7 @@ function clearActive(){
     .forEach(s=>s.classList.remove("active"));
 }
 
-// 🔁 load predict
+
 async function loadPredict(){
   const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
 
@@ -56,6 +59,7 @@ async function loadPredict(){
   if(!data){
     document.getElementById("multiplier").textContent = "--";
     document.getElementById("countdown").textContent = "Chưa có phiên";
+    svg.classList.remove("spinning");
     return;
   }
 
@@ -63,16 +67,33 @@ async function loadPredict(){
 
   document.getElementById("multiplier").textContent = "x"+multiplier;
 
-  const slice = svg.querySelector(`.slice[data-index="${index}"]`);
-  if(slice) slice.classList.add("active");
-
   const remain = Math.max(0, Math.ceil((endAt - Date.now())/1000));
   document.getElementById("countdown").textContent =
     "⏳ Còn " + remain + "s";
 
+  // 🎡 FAKE SPIN KHI CÒN XA
+  if (remain > 5){
+    if (!spinning){
+      svg.classList.add("spinning");
+      spinning = true;
+    }
+    document.getElementById("lockText").textContent = "";
+    return;
+  }
+
+  // 🔒 STOP SPIN + LOCK Ô TRÚNG
+  if (spinning){
+    svg.classList.remove("spinning");
+    spinning = false;
+  }
+
+  const slice = svg.querySelector(`.slice[data-index="${index}"]`);
+  if(slice) slice.classList.add("active");
+
   document.getElementById("lockText").textContent =
-    remain <= 5 ? "🔒 Sắp quay – khóa cược" : "";
+    "🔒 Sắp quay – khóa cược";
 }
+
 
 // SVG helpers
 function polarToCartesian(cx, cy, r, angle){

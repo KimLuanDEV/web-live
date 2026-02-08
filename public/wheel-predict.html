@@ -87,6 +87,22 @@ svg{
   font-size:14px;
   color:#ff5252;
 }
+
+/* 🎡 FAKE SPIN ANIMATION */
+#wheelSvg{
+  transition: transform 1s linear;
+}
+
+#wheelSvg.spinning{
+  animation: fakeSpin 2s linear infinite;
+}
+
+@keyframes fakeSpin{
+  from{ transform: rotate(0deg); }
+  to{ transform: rotate(360deg); }
+}
+
+
 </style>
 </head>
 
