@@ -55,3 +55,41 @@ async function loadPredict(){
 // 🔁 auto refresh
 loadPredict();
 setInterval(loadPredict, 1000);
+
+
+
+let roundEndAt = null;
+let roundTimer = null;
+
+function startRoundCountdownViewer(){
+  if (!roundEndAt) return;
+
+  if (roundTimer) clearInterval(roundTimer);
+
+  roundTimer = setInterval(() => {
+    const remain = Math.max(
+      0,
+      Math.ceil((roundEndAt - Date.now()) / 1000)
+    );
+
+    const timeEl = document.getElementById("roundTime");
+    const statusEl = document.getElementById("roundStatus");
+    const box = document.getElementById("roundCountdown");
+
+    if (!timeEl) return;
+
+    timeEl.textContent = remain + "s";
+
+    if (remain > 5){
+      statusEl.textContent = "Đang nhận cược";
+      box.classList.remove("warning");
+    } else if (remain > 0){
+      statusEl.textContent = "Sắp quay…";
+      box.classList.add("warning");
+    } else {
+      statusEl.textContent = "Đang quay";
+      box.classList.add("warning");
+      clearInterval(roundTimer);
+    }
+  }, 1000);
+}
