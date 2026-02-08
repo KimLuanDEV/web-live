@@ -1033,36 +1033,3 @@ function updateRoundCountUI(){
 }
 
 
-
-/* ================= METEOR BACKGROUND EFFECT ================= */
-
-(function meteorBackground(){
-  const layer = document.querySelector(".meteor-layer");
-  if (!layer) return;
-
-  function spawnMeteor(){
-    const m = document.createElement("div");
-    m.className = "meteor";
-
-    // vị trí bắt đầu (phía trên + phải)
-    const startX = Math.random() * window.innerWidth + window.innerWidth * 0.3;
-    const startY = Math.random() * window.innerHeight * 0.4;
-
-    m.style.left = startX + "px";
-    m.style.top  = startY + "px";
-
-    const duration = 1200 + Math.random() * 1200;
-    m.style.animationDuration = duration + "ms";
-
-    layer.appendChild(m);
-
-    setTimeout(() => m.remove(), duration);
-  }
-
-  // spawn ngẫu nhiên
-  setInterval(() => {
-    if (Math.random() < 0.6){   // mật độ
-      spawnMeteor();
-    }
-  }, 800);
-})();
