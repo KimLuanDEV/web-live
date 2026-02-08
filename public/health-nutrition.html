@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <title>🥗 Dinh dưỡng</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
+
+<style>
+body{
+  background:#0e0e12;
+  color:#fff;
+}
+
+/* reuse header */
+.health-header{
+  position:sticky;
+  top:0;
+  z-index:50;
+  height:64px;
+  padding:0 12px;
+  display:grid;
+  grid-template-columns:36px 1fr 36px;
+  align-items:center;
+  background:linear-gradient(180deg, rgba(40,90,60,.4), rgba(14,14,18,.95));
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.hh-back{
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:10px;border:none;
+  background:rgba(255,255,255,.06);
+  color:#fff;font-size:18px;
+}
+
+.hh-center{text-align:center;}
+.hh-title{font-weight:800;}
+.hh-sub{font-size:11px;opacity:.65;}
+
+.page{
+  padding:16px;
+}
+
+/* summary */
+.nutri-summary{
+  background:#15151c;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:20px;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.ns-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  text-align:center;
+}
+
+.ns-val{font-weight:800;}
+.ns-lb{font-size:11px;opacity:.6}
+
+/* food list */
+.food-list{
+  display:grid;
+  gap:12px;
+}
+
+.food-card{
+  display:flex;
+  gap:12px;
+  padding:12px;
+  border-radius:14px;
+  background:#15151c;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.food-icon{font-size:24px;}
+.food-name{font-weight:700;}
+.food-desc{font-size:12px;opacity:.65}
+</style>
+</head>
+
+<body>
+
+<header class="health-header">
+  <button class="hh-back" onclick="history.back()">←</button>
+  <div class="hh-center">
+    <div class="hh-title">🥗 Dinh dưỡng</div>
+    <div class="hh-sub">Hôm nay ăn gì?</div>
+  </div>
+  <div></div>
+</header>
+
+<main class="page">
+
+  <!-- 📊 TỔNG KẾT -->
+  <div class="nutri-summary">
+    <div style="font-weight:800;margin-bottom:10px">Hôm nay</div>
+    <div class="ns-grid">
+      <div>
+        <div class="ns-val">320</div>
+        <div class="ns-lb">Calo</div>
+      </div>
+      <div>
+        <div class="ns-val">45g</div>
+        <div class="ns-lb">Đạm</div>
+      </div>
+      <div>
+        <div class="ns-val">1.2L</div>
+        <div class="ns-lb">Nước</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 🍽️ GỢI Ý -->
+  <div style="font-weight:800;margin-bottom:12px">Gợi ý hôm nay</div>
+
+  <div class="food-list">
+
+    <div class="food-card">
+      <div class="food-icon">🍳</div>
+      <div>
+        <div class="food-name">Trứng ốp la</div>
+        <div class="food-desc">Giàu đạm · Dễ làm · Sáng</div>
+      </div>
+    </div>
+
+    <div class="food-card">
+      <div class="food-icon">🥗</div>
+      <div>
+        <div class="food-name">Salad rau</div>
+        <div class="food-desc">Ít calo · Tốt tiêu hóa</div>
+      </div>
+    </div>
+
+    <div class="food-card">
+      <div class="food-icon">🍚</div>
+      <div>
+        <div class="food-name">Cơm + cá</div>
+        <div class="food-desc">Cân bằng · Năng lượng</div>
+      </div>
+    </div>
+
+  </div>
+
+</main>
+
+</body>
+</html>

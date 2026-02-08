@@ -1,0 +1,198 @@
+
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>❤️ Chỉ số cơ thể</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+
+<style>
+body{background:#0e0e12;color:#fff}
+
+/* HEADER */
+.health-header{
+  position:sticky;top:0;z-index:50;
+  height:64px;padding:0 12px;
+  display:grid;grid-template-columns:36px 1fr 36px;
+  align-items:center;
+  background:linear-gradient(180deg, rgba(90,40,40,.35), rgba(14,14,18,.95));
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.hh-back{
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:10px;border:none;
+  background:rgba(255,255,255,.06);
+  color:#fff;font-size:18px;
+}
+.hh-center{text-align:center}
+.hh-title{font-weight:800}
+.hh-sub{font-size:11px;opacity:.65}
+
+.page{padding:16px}
+
+/* FORM */
+.metric-form{
+  background:#15151c;
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:20px;
+  border:1px solid rgba(255,255,255,.06);
+}
+.mf-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.mf-group{display:flex;flex-direction:column;gap:4px}
+.mf-group label{font-size:12px;opacity:.7}
+.mf-group input, .mf-group select{
+  background:#0e0e12;
+  border:1px solid rgba(255,255,255,.1);
+  color:#fff;
+  padding:10px;
+  border-radius:10px;
+}
+.mf-btn{
+  margin-top:14px;
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:800;
+  background:#e74c3c;
+  color:#fff;
+}
+
+/* RESULT */
+.metric-result{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+.mr-card{
+  background:#15151c;
+  border-radius:14px;
+  padding:14px 8px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.06);
+}
+.mr-icon{font-size:22px}
+.mr-value{font-weight:800;margin-top:4px}
+.mr-label{font-size:11px;opacity:.6}
+
+/* NOTE */
+.metric-note{
+  margin-top:16px;
+  padding:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#3b1f1f,#15151c);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<header class="health-header">
+  <button class="hh-back" onclick="history.back()">←</button>
+  <div class="hh-center">
+    <div class="hh-title">❤️ Chỉ số cơ thể</div>
+    <div class="hh-sub">BMI · BMR · Nước/ngày</div>
+  </div>
+  <div></div>
+</header>
+
+<main class="page">
+
+  <!-- FORM -->
+  <div class="metric-form">
+    <div style="font-weight:800;margin-bottom:12px">Thông tin cơ bản</div>
+
+    <div class="mf-grid">
+      <div class="mf-group">
+        <label>Chiều cao (cm)</label>
+        <input id="height" type="number" placeholder="170">
+      </div>
+
+      <div class="mf-group">
+        <label>Cân nặng (kg)</label>
+        <input id="weight" type="number" placeholder="65">
+      </div>
+
+      <div class="mf-group">
+        <label>Tuổi</label>
+        <input id="age" type="number" placeholder="25">
+      </div>
+
+      <div class="mf-group">
+        <label>Giới tính</label>
+        <select id="gender">
+          <option value="male">Nam</option>
+          <option value="female">Nữ</option>
+        </select>
+      </div>
+    </div>
+
+    <button class="mf-btn" onclick="calc()">TÍNH CHỈ SỐ</button>
+  </div>
+
+  <!-- RESULT -->
+  <div class="metric-result">
+    <div class="mr-card">
+      <div class="mr-icon">⚖️</div>
+      <div id="bmi" class="mr-value">--</div>
+      <div class="mr-label">BMI</div>
+    </div>
+
+    <div class="mr-card">
+      <div class="mr-icon">🔥</div>
+      <div id="bmr" class="mr-value">--</div>
+      <div class="mr-label">BMR</div>
+    </div>
+
+    <div class="mr-card">
+      <div class="mr-icon">💧</div>
+      <div id="water" class="mr-value">--</div>
+      <div class="mr-label">Nước/ngày</div>
+    </div>
+  </div>
+
+  <div class="metric-note" id="note">
+    Nhập thông tin để xem đánh giá sức khỏe.
+  </div>
+
+</main>
+
+<script>
+function calc(){
+  const h = height.value/100;
+  const w = weight.value;
+  const a = age.value;
+  const g = gender.value;
+
+  if(!h||!w||!a) return;
+
+  const bmi = (w/(h*h)).toFixed(1);
+  const bmr = g==='male'
+    ? Math.round(10*w + 6.25*h*100 - 5*a + 5)
+    : Math.round(10*w + 6.25*h*100 - 5*a - 161);
+
+  const water = (w*0.035).toFixed(1);
+
+  document.getElementById('bmi').innerText = bmi;
+  document.getElementById('bmr').innerText = bmr;
+  document.getElementById('water').innerText = water+'L';
+
+  let note='Chỉ số bình thường.';
+  if(bmi<18.5) note='Bạn hơi gầy, nên tăng cường dinh dưỡng.';
+  else if(bmi>=25) note='Chỉ số cao, nên chú ý vận động và ăn uống.';
+
+  document.getElementById('note').innerText = note;
+}
+</script>
+
+</body>
+</html>

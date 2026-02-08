@@ -81,6 +81,112 @@
 }
 
 
+/* ===== PAGE ===== */
+.health-page{
+  padding:16px;
+}
+
+/* ===== OVERVIEW ===== */
+.health-overview{
+  margin-bottom:26px;
+}
+
+.ho-title{
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.ho-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+}
+
+.ho-card{
+  background:#15151c;
+  border-radius:14px;
+  padding:12px 8px;
+  text-align:center;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.ho-icon{ font-size:20px; }
+.ho-value{
+  font-weight:800;
+  margin-top:4px;
+}
+.ho-label{
+  font-size:11px;
+  opacity:.65;
+}
+
+/* ===== MODULE ===== */
+.health-modules{
+  margin-bottom:26px;
+}
+
+.hm-title{
+  font-weight:800;
+  margin-bottom:12px;
+}
+
+.hm-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:12px;
+}
+
+.hm-card{
+  background:#15151c;
+  border-radius:16px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.06);
+}
+
+.hm-card:active{
+  transform:scale(.97);
+}
+
+.hm-icon{
+  font-size:24px;
+  margin-bottom:8px;
+}
+
+.hm-name{
+  font-weight:700;
+}
+
+.hm-desc{
+  font-size:12px;
+  opacity:.65;
+}
+
+/* LOCKED */
+.hm-card.locked{
+  opacity:.45;
+  filter:grayscale(1);
+}
+
+/* ===== TIP ===== */
+.health-tip{
+  display:flex;
+  gap:12px;
+  padding:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#1f3d2e,#15151c);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.ht-icon{
+  font-size:22px;
+}
+
+.ht-text{
+  font-size:13px;
+  line-height:1.4;
+}
+
+
 </style>
 
 </head>
@@ -101,11 +207,80 @@
 </header>
 
 
-<main style="padding:40px;text-align:center;opacity:.8">
-  <div style="font-size:48px">🧘‍♂️</div>
-  <h3>Chuyên mục Sức khỏe</h3>
-  <p>Sẽ được phát triển trong thời gian tới</p>
+<main class="health-page">
+
+  <!-- 📊 TỔNG QUAN -->
+  <section class="health-overview">
+    <div class="ho-title">Tổng quan hôm nay</div>
+
+    <div class="ho-grid">
+      <div class="ho-card">
+        <div class="ho-icon">💧</div>
+        <div class="ho-value">1.2L</div>
+        <div class="ho-label">Nước uống</div>
+      </div>
+
+      <div class="ho-card">
+        <div class="ho-icon">😴</div>
+        <div class="ho-value">6h</div>
+        <div class="ho-label">Ngủ</div>
+      </div>
+
+      <div class="ho-card">
+        <div class="ho-icon">🔥</div>
+        <div class="ho-value">320</div>
+        <div class="ho-label">Calo</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 🧩 MODULE -->
+  <section class="health-modules">
+    <div class="hm-title">Danh mục</div>
+
+    <div class="hm-grid">
+
+  <div class="hm-card" onclick="location.href='/health-nutrition.html'">
+  <div class="hm-icon">🥗</div>
+  <div class="hm-name">Dinh dưỡng</div>
+  <div class="hm-desc">Ăn uống · Thực đơn</div>
+  </div>
+
+<div class="hm-card" onclick="location.href='/health-lifestyle.html'">
+  <div class="hm-icon">🏃‍♂️</div>
+  <div class="hm-name">Lối sống</div>
+  <div class="hm-desc">Ngủ · Vận động · Thói quen</div>
+</div>
+
+
+<div class="hm-card" onclick="location.href='/health-metrics.html'">
+  <div class="hm-icon">❤️</div>
+  <div class="hm-name">Chỉ số</div>
+  <div class="hm-desc">BMI · BMR · Nước/ngày</div>
+</div>
+
+
+<div class="hm-card" onclick="location.href='/health-ai.html'">
+  <div class="hm-icon">🤖</div>
+  <div class="hm-name">AI Coach</div>
+  <div class="hm-desc">Gợi ý cá nhân hóa</div>
+</div>
+
+
+
+    </div>
+  </section>
+
+  <!-- 💡 GỢI Ý -->
+  <section class="health-tip">
+    <div class="ht-icon">💡</div>
+    <div class="ht-text">
+      Uống thêm nước và đi bộ 10 phút để cải thiện sức khỏe hôm nay.
+    </div>
+  </section>
+
 </main>
+
 
 </body>
 </html>

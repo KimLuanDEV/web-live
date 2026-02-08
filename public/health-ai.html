@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>🤖 AI Coach</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+
+<style>
+body{background:#0e0e12;color:#fff}
+
+/* HEADER */
+.health-header{
+  position:sticky;top:0;z-index:50;
+  height:64px;padding:0 12px;
+  display:grid;grid-template-columns:36px 1fr 36px;
+  align-items:center;
+  background:linear-gradient(180deg, rgba(60,60,120,.35), rgba(14,14,18,.95));
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+.hh-back{
+  width:36px;height:36px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:10px;border:none;
+  background:rgba(255,255,255,.06);
+  color:#fff;font-size:18px;
+}
+.hh-center{text-align:center}
+.hh-title{font-weight:800}
+.hh-sub{font-size:11px;opacity:.65}
+
+.page{padding:16px}
+
+/* AI BOX */
+.ai-box{
+  background:#15151c;
+  border-radius:16px;
+  padding:16px;
+  border:1px solid rgba(255,255,255,.06);
+  margin-bottom:16px;
+}
+
+.ai-header{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.ai-avatar{
+  width:40px;height:40px;
+  border-radius:50%;
+  background:linear-gradient(135deg,#6a8cff,#9b59b6);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+}
+
+.ai-name{font-weight:800}
+.ai-status{font-size:11px;opacity:.6}
+
+/* MESSAGE */
+.ai-msg{
+  background:#0e0e12;
+  border-radius:14px;
+  padding:12px;
+  margin-bottom:10px;
+  font-size:13px;
+  line-height:1.4;
+}
+
+/* ACTION */
+.ai-actions{
+  display:grid;
+  gap:10px;
+}
+
+.ai-btn{
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  font-weight:700;
+  background:#5865f2;
+  color:#fff;
+}
+
+/* TIP */
+.ai-tip{
+  margin-top:16px;
+  padding:14px;
+  border-radius:14px;
+  background:linear-gradient(135deg,#2c355f,#15151c);
+  border:1px solid rgba(255,255,255,.08);
+  font-size:13px;
+}
+</style>
+</head>
+
+<body>
+
+<header class="health-header">
+  <button class="hh-back" onclick="history.back()">←</button>
+  <div class="hh-center">
+    <div class="hh-title">🤖 AI Coach</div>
+    <div class="hh-sub">Gợi ý theo cơ thể & thói quen</div>
+  </div>
+  <div></div>
+</header>
+
+<main class="page">
+
+  <!-- AI CHAT -->
+  <div class="ai-box">
+    <div class="ai-header">
+      <div class="ai-avatar">🤖</div>
+      <div>
+        <div class="ai-name">Health Coach</div>
+        <div class="ai-status">Phân tích dữ liệu của bạn…</div>
+      </div>
+    </div>
+
+    <div id="aiMsg" class="ai-msg">
+      Chào bạn 👋  
+      Mình sẽ giúp bạn cải thiện sức khỏe dựa trên chỉ số cơ thể và thói quen hằng ngày.
+    </div>
+  </div>
+
+  <!-- ACTION -->
+  <div class="ai-actions">
+    <button class="ai-btn" onclick="genAdvice()">📊 Phân tích & gợi ý</button>
+    <button class="ai-btn" onclick="quickTip()">⚡ Gợi ý nhanh hôm nay</button>
+  </div>
+
+  <div id="aiTip" class="ai-tip">
+    Nhấn nút để nhận lời khuyên cá nhân hóa.
+  </div>
+
+</main>
+
+<script>
+function genAdvice(){
+  // Giả lập dữ liệu (sau này lấy từ module khác)
+  const bmi = 26.2;
+  const sleep = 6;
+  const water = 1.2;
+
+  let msg = '';
+
+  if(bmi >= 25){
+    msg += '📉 BMI của bạn đang hơi cao. Nên giảm tinh bột và tăng vận động nhẹ.\n\n';
+  }else{
+    msg += '✅ BMI ổn định, hãy duy trì chế độ hiện tại.\n\n';
+  }
+
+  if(sleep < 7){
+    msg += '😴 Bạn ngủ chưa đủ. Cố gắng ngủ sớm hơn 30–60 phút.\n\n';
+  }
+
+  if(water < 2){
+    msg += '💧 Lượng nước thấp, nên uống thêm 1 ly mỗi 1–2 giờ.\n\n';
+  }
+
+  msg += '🎯 Mục tiêu hôm nay: đi bộ 6.000 bước và uống đủ nước.';
+
+  document.getElementById('aiMsg').innerText = msg;
+  document.getElementById('aiTip').innerText =
+    'AI Coach đã đưa ra gợi ý dựa trên dữ liệu hiện tại của bạn.';
+}
+
+function quickTip(){
+  const tips = [
+    'Đi bộ 10 phút sau bữa ăn giúp giảm đường huyết.',
+    'Uống nước trước khi đói để tránh ăn quá nhiều.',
+    'Ngủ trước 23h giúp cơ thể phục hồi tốt hơn.',
+    'Giãn cơ 5 phút mỗi 2 giờ làm việc.'
+  ];
+  document.getElementById('aiTip').innerText =
+    tips[Math.floor(Math.random()*tips.length)];
+}
+</script>
+
+</body>
+</html>
