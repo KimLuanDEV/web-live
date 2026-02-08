@@ -610,6 +610,11 @@ let wheelRound = {
   bets: []
 };
 
+
+// 🔮 KẾT QUẢ PHIÊN SẮP QUAY (ADMIN TOOL)
+let nextWheelResult = null;
+
+
 // ================================
 // ⏱️ AUTO SPIN WHEEL EVERY 60s
 // ================================
@@ -659,6 +664,18 @@ function pickMultiplierWeighted(){
 const multiplier = pickMultiplierWeighted();
 const multipliers = weightedMultipliers.map(x => x.m);
 const index = multipliers.indexOf(multiplier);
+
+
+// 🔮 LƯU KẾT QUẢ CHO TOOL ADMIN (TRƯỚC KHI QUAY)
+nextWheelResult = {
+  roundId: wheelRound.id,
+  index,
+  multiplier,
+  willSpinAt: Date.now(),
+  endAt: wheelRound.endAt
+};
+
+
 
 
 // 🏆 TOP WINNERS CHO PHIÊN HIỆN TẠI
@@ -1773,6 +1790,34 @@ app.get("/api/admin/market/disputes", (req,res)=>{
   res.json({ ok:true, list });
 });
 
+
+
+// ================================
+// 🔮 ADMIN – WHEEL NEXT RESULT
+// ================================
+app.get("/api/admin/wheel-next", (req, res) => {
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(403).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (!me || me.role !== "admin") {
+    return res.status(403).json({ ok:false });
+  }
+
+  if (!nextWheelResult) {
+    return res.json({
+      ok: true,
+      data: null
+    });
+  }
+
+  res.json({
+    ok: true,
+    data: nextWheelResult
+  });
+});
 
 
 
