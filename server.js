@@ -20,6 +20,51 @@ const twilio = require("twilio");
 const fs = require("fs");
 
 
+function ensureWheelSecret(round){
+  if (!round) return;
+
+  if (round.secretResult && round.secretResult.multiplier != null) {
+    return; // ✅ đã có → không tạo lại
+  }
+
+  const weightedMultipliers = [
+    { m: 0.5, w: 55 },
+    { m: 1.2, w: 20 },
+    { m: 1.5, w: 12 },
+    { m: 2,   w: 10 },
+    { m: 5,   w: 2 },
+    { m: 10,  w: 1 }
+  ];
+
+  const total = weightedMultipliers.reduce((s, x) => s + x.w, 0);
+  let r = Math.random() * total;
+
+  let multiplier = 0;
+  for (const item of weightedMultipliers){
+    if ((r -= item.w) <= 0){
+      multiplier = item.m;
+      break;
+    }
+  }
+
+  const multipliers = weightedMultipliers.map(x => x.m);
+  const index = multipliers.indexOf(multiplier);
+
+  const hash = crypto
+    .createHash("sha256")
+    .update(round.id + ":" + multiplier)
+    .digest("hex");
+
+  round.secretResult = {
+    multiplier,
+    index,
+    hash
+  };
+
+  console.log("🔐 [WHEEL] secretResult created for round", round.id);
+}
+
+
 // ================================
 // 🧠 HEALTH DATA (PER USER)
 // ================================
@@ -615,6 +660,9 @@ let wheelRound = {
 // ================================
 setInterval(() => {
   try {
+
+    // 🔐 ĐẢM BẢO ROUND LUÔN CÓ KẾT QUẢ
+ensureWheelSecret(wheelRound);
 
 // 🔁 RESET ROUND KHI QUA NGÀY MỚI (0H VN)
 const todayStart = getTodayStartTsVN();
