@@ -627,10 +627,19 @@ function startRoundCountdown(){
     // 🔥 HIỆN SỐ NGAY TRONG ORB
     updateOrbCountdown(remain);
 
+
+    // ❌ KHÔNG CHO SLOT ACTIVE KHI CÒN XA THỜI ĐIỂM QUAY
+if (remain > 50){
+  document
+    .querySelectorAll(".orb-slot.active, .orb-spoke.active")
+    .forEach(el => el.classList.remove("active"));
+}
+
+
     /* ================= SLOT GLOW COUNTDOWN ================= */
 
-    // 👉 bắt đầu phát sáng slot khi còn ≤ 8 giây
-    if (remain > 0 && remain <= 8){
+    // 👉 bắt đầu phát sáng slot khi còn ≤ 50 giây
+    if (remain > 0 && remain <= 50){
       if (!countdownSlotTimer){
         startCountdownSlotGlow();
       }
