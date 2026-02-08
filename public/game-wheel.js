@@ -20,6 +20,38 @@ let countdownSlotTimer = null;
 let countdownSlotIndex = 0;
 
 
+function startCountdownSlotGlow(){
+  const slots  = document.querySelectorAll(".orb-slot");
+  const spokes = document.querySelectorAll(".orb-spoke");
+  if (!slots.length) return;
+
+  stopCountdownSlotGlow(); // tránh chạy trùng
+
+  countdownSlotIndex = 0;
+
+  countdownSlotTimer = setInterval(() => {
+    // clear
+    slots.forEach(s => s.classList.remove("running"));
+    spokes.forEach(s => s.classList.remove("running"));
+
+    // bật slot hiện tại
+    slots[countdownSlotIndex].classList.add("running");
+    spokes[countdownSlotIndex]?.classList.add("running");
+
+    countdownSlotIndex =
+      (countdownSlotIndex + 1) % slots.length;
+  }, 180); // tốc độ sáng (150–220ms là đẹp)
+}
+
+function stopCountdownSlotGlow(){
+  if (countdownSlotTimer){
+    clearInterval(countdownSlotTimer);
+    countdownSlotTimer = null;
+  }
+
+  document.querySelectorAll(".orb-slot,.orb-spoke")
+    .forEach(el => el.classList.remove("running"));
+}
 
 
 
@@ -470,6 +502,9 @@ socket.on("wheel-round-new", data => {
 
 socket.on("wheel-round-result", data => {
 
+stopCountdownSlotGlow();
+
+
   // 🔢 LẤY ROUND COUNT TRONG NGÀY TỪ SERVER
   if (typeof data?.roundCountToday === "number"){
     roundCountToday = data.roundCountToday;
@@ -484,9 +519,6 @@ socket.on("wheel-round-result", data => {
   spinning = true;
 
   setOrbSpinning();
-
-  
-stopSlotCountdownGlow();
 
   runOrbRoulette(index, () => {
 
@@ -579,7 +611,7 @@ function spawnFlyDiamond(amount){
 
 
 
-  function startRoundCountdown(){
+function startRoundCountdown(){
   const el = document.getElementById("roundTimer");
   if (!el || !roundEndAt) return;
 
@@ -592,41 +624,40 @@ function spawnFlyDiamond(amount){
 
     el.textContent = `${remain}`;
 
-      // 🔥 HIỆN SỐ NGAY TRONG ORB
-  updateOrbCountdown(remain);
+    // 🔥 HIỆN SỐ NGAY TRONG ORB
+    updateOrbCountdown(remain);
 
+    /* ================= SLOT GLOW COUNTDOWN ================= */
 
-// 🔥 SLOT SÁNG THEO COUNTDOWN
-if (remain > 3 && !spinning){
-  // càng gần 0 càng nhanh
-  const speed = remain > 10 ? 260 : remain > 5 ? 200 : 140;
-  startSlotCountdownGlow(speed);
-}
-else {
-  stopSlotCountdownGlow();
-}
+    // 👉 bắt đầu phát sáng slot khi còn ≤ 8 giây
+    if (remain > 0 && remain <= 8){
+      if (!countdownSlotTimer){
+        startCountdownSlotGlow();
+      }
+    }
 
+    // 👉 còn 3 giây → tăng cảm giác căng thẳng
+    if (remain <= 3){
+      el.classList.add("danger");
+      setBetUILocked(true);
+      setActionText("ĐÃ KHÓA");
+    }
+    else {
+      el.classList.remove("danger");
 
+      // 🔒 nếu đã bet → vẫn khóa
+      if (hasBetThisRound){
+        setBetUILocked(true);
+        setActionText("ĐÃ VÀO LỆNH");
+      }
+    }
 
-if (remain <= 3){
-  el.classList.add("danger");
-  setBetUILocked(true);
-  setActionText("ĐÃ KHÓA");
-}
-else {
-  el.classList.remove("danger");
-
-  // 🔒 nếu đã bet → vẫn khóa
-  if (hasBetThisRound){
-    setBetUILocked(true);
-    setActionText("ĐÃ VÀO LỆNH");
-  }
-}
-
-
+    // 👉 hết giờ → dừng countdown + tắt slot glow
     if (remain <= 0){
       clearInterval(roundTimerInterval);
+      stopCountdownSlotGlow();
     }
+
   }, 300);
 }
 
@@ -1056,33 +1087,5 @@ document.querySelector(".orb-wheel")?.classList.add("spinning");
 
 
 
-function startSlotCountdownGlow(speed = 220){
-  stopSlotCountdownGlow();
-
-  const slots = document.querySelectorAll(".orb-slot");
-  if (!slots.length) return;
-
-  countdownSlotIndex = 0;
-
-  countdownSlotTimer = setInterval(() => {
-    slots.forEach(s => s.classList.remove("countdown"));
-
-    slots[countdownSlotIndex].classList.add("countdown");
-
-    countdownSlotIndex =
-      (countdownSlotIndex + 1) % slots.length;
-  }, speed);
-}
 
 
-
-function stopSlotCountdownGlow(){
-  if (countdownSlotTimer){
-    clearInterval(countdownSlotTimer);
-    countdownSlotTimer = null;
-  }
-
-  document
-    .querySelectorAll(".orb-slot")
-    .forEach(s => s.classList.remove("countdown"));
-}
