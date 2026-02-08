@@ -12,97 +12,60 @@ body{
   padding:20px;
 }
 
-h2{ margin-bottom:12px; }
+h2{
+  margin-bottom:12px;
+}
 
 .panel{
   border:1px solid #00ff9c;
-  border-radius:16px;
+  border-radius:14px;
   padding:16px;
   max-width:420px;
 }
 
 .big{
-  font-size:36px;
+  font-size:38px;
   font-weight:900;
-  text-align:center;
+}
+
+.sub{
+  opacity:.7;
+  font-size:13px;
 }
 
 .countdown{
-  text-align:center;
-  margin-top:8px;
-  font-size:20px;
+  margin-top:10px;
+  font-size:22px;
   color:#ffd54f;
 }
 
-.wheel-wrap{
-  position:relative;
-  width:260px;
-  height:260px;
-  margin:16px auto;
+.wheel{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:16px;
 }
 
-.pointer{
-  position:absolute;
-  top:-6px;
-  left:50%;
-  transform:translateX(-50%);
-  width:0;
-  height:0;
-  border-left:12px solid transparent;
-  border-right:12px solid transparent;
-  border-bottom:20px solid #ff5252;
-  z-index:5;
+.slot{
+  border:1px solid #0f0;
+  border-radius:10px;
+  padding:10px 0;
+  text-align:center;
+  font-size:18px;
+  opacity:.4;
 }
 
-svg{
-  width:100%;
-  height:100%;
-}
-
-.slice{
-  fill:#111;
-  stroke:#00ff9c;
-  stroke-width:1;
-  opacity:.35;
-}
-
-.slice.active{
+.slot.active{
   opacity:1;
-  fill:#00ff9c;
-  filter:drop-shadow(0 0 10px #00ff9c);
-}
-
-.label{
-  fill:#000;
-  font-size:12px;
-  font-weight:700;
-  text-anchor:middle;
-  dominant-baseline:middle;
-  pointer-events:none;
+  background:rgba(0,255,156,.15);
+  box-shadow:0 0 12px #00ff9c;
 }
 
 .lock{
-  text-align:center;
-  margin-top:8px;
+  margin-top:14px;
   font-size:14px;
   color:#ff5252;
 }
-
-/* 🎡 FAKE SPIN ANIMATION */
-#wheelSvg{
-  transition: transform 1s linear;
-}
-
-#wheelSvg.spinning{
-  animation: fakeSpin 2s linear infinite;
-}
-
-@keyframes fakeSpin{
-  from{ transform: rotate(0deg); }
-  to{ transform: rotate(360deg); }
-}
-
-
 </style>
 </head>
 
@@ -111,18 +74,21 @@ svg{
 <h2>🔮 WHEEL PREDICT</h2>
 
 <div class="panel">
-
+  <div class="sub">Hệ số sắp quay</div>
   <div class="big" id="multiplier">--</div>
+
   <div class="countdown" id="countdown">--</div>
 
-  <div class="wheel-wrap">
-    <div class="pointer"></div>
-
-    <svg viewBox="-130 -130 260 260" id="wheelSvg"></svg>
+  <div class="wheel" id="wheel">
+    <div class="slot">x0.5</div>
+    <div class="slot">x1.2</div>
+    <div class="slot">x1.5</div>
+    <div class="slot">x2</div>
+    <div class="slot">x5</div>
+    <div class="slot">x10</div>
   </div>
 
   <div class="lock" id="lockText"></div>
-
 </div>
 
 <script src="wheel-predict.js"></script>
