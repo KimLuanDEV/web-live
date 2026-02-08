@@ -391,18 +391,33 @@ html, body {
 
 /* CLOSE */
 .gh-close{
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+  line-height: 1;
+
   border-radius: 10px;
   border: none;
   cursor: pointer;
 
   font-size: 18px;
-  color: #fff;
+  font-weight: 600;
 
+  color: #fff;
   background: rgba(255,255,255,0.08);
-  transition: 0.2s ease;
 }
+
+
+.gh-close:hover{
+  background: rgba(255,80,80,0.25);
+  color: #ff5a5a;
+}
+
 
 .gh-close:hover{
   background: rgba(255,80,80,0.25);
