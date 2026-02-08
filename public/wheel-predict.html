@@ -3,37 +3,92 @@
 <head>
 <meta charset="utf-8">
 <title>🔮 Wheel Predict Tool</title>
+
 <style>
 body{
   background:#000;
-  color:#0f0;
+  color:#00ff9c;
   font-family: monospace;
   padding:20px;
 }
-.card{
-  border:1px solid #0f0;
-  padding:16px;
-  border-radius:12px;
+
+h2{
+  margin-bottom:12px;
 }
+
+.panel{
+  border:1px solid #00ff9c;
+  border-radius:14px;
+  padding:16px;
+  max-width:420px;
+}
+
 .big{
-  font-size:32px;
+  font-size:38px;
   font-weight:900;
+}
+
+.sub{
+  opacity:.7;
+  font-size:13px;
+}
+
+.countdown{
+  margin-top:10px;
+  font-size:22px;
+  color:#ffd54f;
+}
+
+.wheel{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:8px;
+  margin-top:16px;
+}
+
+.slot{
+  border:1px solid #0f0;
+  border-radius:10px;
+  padding:10px 0;
+  text-align:center;
+  font-size:18px;
+  opacity:.4;
+}
+
+.slot.active{
+  opacity:1;
+  background:rgba(0,255,156,.15);
+  box-shadow:0 0 12px #00ff9c;
+}
+
+.lock{
+  margin-top:14px;
+  font-size:14px;
+  color:#ff5252;
 }
 </style>
 </head>
+
 <body>
 
-<h2>🔮 KẾT QUẢ PHIÊN SẮP QUAY</h2>
+<h2>🔮 WHEEL PREDICT</h2>
 
-<div class="card">
-  <div>Hệ số:</div>
+<div class="panel">
+  <div class="sub">Hệ số sắp quay</div>
   <div class="big" id="multiplier">--</div>
 
-  <div style="margin-top:12px">Index:</div>
-  <div id="index">--</div>
+  <div class="countdown" id="countdown">--</div>
 
-  <div style="margin-top:12px">Round ID:</div>
-  <div id="roundId">--</div>
+  <div class="wheel" id="wheel">
+    <div class="slot">x0.5</div>
+    <div class="slot">x1.2</div>
+    <div class="slot">x1.5</div>
+    <div class="slot">x2</div>
+    <div class="slot">x5</div>
+    <div class="slot">x10</div>
+  </div>
+
+  <div class="lock" id="lockText"></div>
 </div>
 
 <script src="wheel-predict.js"></script>
