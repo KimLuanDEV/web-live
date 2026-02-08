@@ -93,3 +93,14 @@ function closeGameHub(){
 function openWheelGame(){
   location.href = "/game-wheel.html";
 }
+
+
+function openPortfolio(){
+  document.getElementById("portfolioSheet").classList.remove("hidden");
+  document.body.classList.add("sheet-open");
+}
+
+function closePortfolio(){
+  document.getElementById("portfolioSheet").classList.add("hidden");
+  document.body.classList.remove("sheet-open");
+}
