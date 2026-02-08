@@ -1033,3 +1033,5 @@ function updateRoundCountUI(){
 }
 
 
+
+document.querySelector(".orb-wheel")?.classList.add("spinning");
