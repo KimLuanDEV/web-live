@@ -28,10 +28,15 @@ socket.on("coin-update", data=>{
 
     betBtns.forEach(b=>b.disabled = true);
     betPctBtns.forEach(b=>b.disabled = true);
+}else{
+  // CHỈ mở bet nếu đã chọn hand
+  if(myHand){
+    unlockBet();
   }else{
-    betBtns.forEach(b=>b.disabled = false);
-    betPctBtns.forEach(b=>b.disabled = false);
+    lockBet();
   }
+}
+
 });
 
 /* ================= COUNTDOWN ================= */
@@ -138,18 +143,21 @@ socket.on("rps-round-new", data=>{
   document.getElementById("serverOverlay")
     .classList.add("hidden");
 
-  // reset state
-  myHand  = null;
-  betCoin = 0;
-  betValue.textContent = "0";
+// reset state
+myHand  = null;
+betCoin = 0;
+betValue.textContent = "0";
 
-  playBtn.disabled = true;
+playBtn.disabled = true;
 
-  hands.forEach(h=>h.classList.remove("active"));
-  betBtns.forEach(b=>b.classList.remove("active"));
-  betPctBtns.forEach(b=>b.classList.remove("active"));
+hands.forEach(h=>h.classList.remove("active"));
+betBtns.forEach(b=>b.classList.remove("active"));
+betPctBtns.forEach(b=>b.classList.remove("active"));
 
-  statusMsg.textContent = "Round mới – chọn tay";
+lockBet(); // 🔒 KHÓA BET
+
+statusMsg.textContent = "Round mới – chọn tay";
+
 });
 
 /* ================= HAND SELECT ================= */
@@ -162,10 +170,14 @@ hands.forEach(el=>{
     el.classList.add("active");
 
     myHand = el.dataset.hand;
+
+    unlockBet(); // 🔓 MỞ BET
+
     playBtn.disabled = true;
     statusMsg.textContent = "Chọn vốn đầu tư";
   };
 });
+
 
 /* ================= BET SELECT ================= */
 
@@ -224,6 +236,7 @@ playBtn.onclick = async ()=>{
   }
 
   playBtn.disabled = true;
+  lockBet();
   statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 
   document.getElementById("waitOverlay")
@@ -265,3 +278,27 @@ function closeRpsResult(){
   document.getElementById("serverOverlay")
     .classList.add("hidden");
 }
+
+function lockBet(){
+  betBtns.forEach(b=>{
+    b.disabled = true;
+    b.classList.add("bet-locked");
+  });
+  betPctBtns.forEach(b=>{
+    b.disabled = true;
+    b.classList.add("bet-locked");
+  });
+}
+
+function unlockBet(){
+  betBtns.forEach(b=>{
+    b.disabled = false;
+    b.classList.remove("bet-locked");
+  });
+  betPctBtns.forEach(b=>{
+    b.disabled = false;
+    b.classList.remove("bet-locked");
+  });
+}
+
+lockBet();
