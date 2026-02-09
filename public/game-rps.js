@@ -110,19 +110,33 @@ document.getElementById("waitOverlay")
     outcomeEl.className = "sr-draw";
   }
 
-  outcomeEl.textContent = text;
-  coinEl.textContent =
-    (coinChange > 0 ? "+" : "") + coinChange + " 💎";
+outcomeEl.textContent = text;
+coinEl.textContent =
+  (coinChange > 0 ? "+" : "") + coinChange + " 💎";
 
-  playBtn.disabled = true;
-  statusMsg.textContent = "⏳ Đợi round mới";
+/* ===============================
+   ⚡ UPDATE COIN REALTIME (FIX)
+   =============================== */
+const currentCoins = Number(myCoinsEl.textContent || 0);
+const newCoins = currentCoins + coinChange;
+
+// cập nhật ngay header
+myCoinsEl.textContent = newCoins;
+
+// (tuỳ chọn) lưu tạm để reload không bị nhảy
+localStorage.setItem("last_rps_coins", newCoins);
+/* =============================== */
+
+playBtn.disabled = true;
+statusMsg.textContent = "⏳ Đợi round mới";
+
 });
 
 
 
 socket.on("rps-round-new", data=>{
 
-    
+
 document.getElementById("waitOverlay")
   .classList.add("hidden");
 
