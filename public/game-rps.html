@@ -207,15 +207,7 @@ body{
   gap:8px;
 }
 
-.bet-btn{
-  padding:10px;
-  border-radius:12px;
-  border:none;
-  font-weight:700;
-  background:rgba(255,255,255,.08);
-  color:#fff;
-  cursor:pointer;
-}
+
 
 .bet-btn.active{
   background:linear-gradient(180deg,#00ffb0,#00b97d);
@@ -422,14 +414,7 @@ body{
   text-shadow:0 0 18px rgba(0,255,180,.8);
 }
 
-/* GRID */
-.grid-3{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-bottom:12px;
 
-}
 
 /* % BET */
 .bet-pct{
@@ -460,7 +445,7 @@ body{
 
 /* QUICK BET */
 .bet-btn{
-  padding:14px 0;
+  padding:10px 0;
   border-radius:16px;
   border:1px solid rgba(255,255,255,.15);
   background:rgba(255,255,255,.08);
@@ -517,21 +502,6 @@ body{
 }
 
 
-.bet-btn.reset{
-  grid-column: 1 / -1;      /* chiếm trọn 3 cột */
-  height: 48px;
-  font-size: 16px;
-  font-weight: 900;
-  color: #ffb400;
-
-  background: rgba(255,180,0,.15);
-  border: 1px dashed rgba(255,180,0,.7);
-
-  box-shadow:
-    0 0 18px rgba(255,180,0,.45),
-    inset 0 0 10px rgba(255,180,0,.2);
-}
-
 .bet-btn.reset:hover{
   box-shadow:
     0 0 26px rgba(255,180,0,.8),
@@ -565,7 +535,7 @@ body{
   max-width: none;        /* ❗ bỏ bó chiều ngang */
   margin: 0;
 
-  padding: 14px 14px 18px;
+   padding: 10px 12px 12px;   /* 🔽 gọn hơn */
   border-radius: 0;       /* ❗ phẳng như bet bar */
 
   background: rgba(20,20,20,.96);
@@ -578,14 +548,14 @@ body{
 .grid-3{
   display: grid;
   grid-template-columns: repeat(3,1fr);
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 8px;
 }
 
 
 .bet-btn.reset{
   grid-column: 1 / -1;
-  height: 42px;
+  height: 38px;
 
   background: rgba(255,80,80,.15);
   color: #ff8080;
@@ -603,7 +573,7 @@ body{
 
 .bet-sheet .rps-btn{
   width: 100%;
-height:52px;
+  height:46px;
   font-size:18px;
   letter-spacing:.5px;
   border-radius: 14px;
