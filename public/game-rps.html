@@ -215,6 +215,30 @@ body{
 
 
 
+#rpsTimer{
+  font-weight:900;
+  color:#00ffb0;
+  text-shadow:0 0 14px rgba(0,255,180,.7);
+}
+
+.rps-timer-warn{
+  color:#ffb400 !important;
+  text-shadow:0 0 16px rgba(255,180,0,.8);
+}
+
+.rps-timer-danger{
+  color:#ff4d4d !important;
+  text-shadow:0 0 18px rgba(255,80,80,.9);
+  animation:pulse .8s infinite alternate;
+}
+
+@keyframes pulse{
+  from{ transform:scale(1); }
+  to{ transform:scale(1.15); }
+}
+
+
+
 </style>
 </head>
 
@@ -231,10 +255,15 @@ body{
 <main class="rps-stage">
 
   <!-- STATUS -->
-  <div class="rps-status">
-    <div class="rps-round">Round #1</div>
-    <div class="rps-msg" id="statusMsg">Chọn tay của bạn</div>
+ <div class="rps-status">
+  <div class="rps-round">
+    Round <span id="rpsRoundId">#1</span> •
+    <span id="rpsTimer">60</span>s
   </div>
+  <div class="rps-msg" id="statusMsg">Chọn tay của bạn</div>
+</div>
+
+  
 
   <!-- HANDS -->
   <div class="rps-hands">
@@ -285,6 +314,47 @@ body{
   }
 });
 
+
+// ================================
+// ⏱️ RPS COUNTDOWN (SERVER SYNC)
+// ================================
+let rpsEndAt = 0;
+let rpsTimerInterval = null;
+
+const rpsTimerEl  = document.getElementById("rpsTimer");
+const rpsRoundEl  = document.getElementById("rpsRoundId");
+
+function startRpsCountdown(){
+  if(rpsTimerInterval){
+    clearInterval(rpsTimerInterval);
+  }
+
+  rpsTimerInterval = setInterval(()=>{
+    const remain = Math.max(
+      0,
+      Math.ceil((rpsEndAt - Date.now()) / 1000)
+    );
+
+    rpsTimerEl.textContent = remain;
+
+    rpsTimerEl.classList.remove(
+      "rps-timer-warn",
+      "rps-timer-danger"
+    );
+
+    if(remain <= 10){
+      rpsTimerEl.classList.add("rps-timer-danger");
+    }else if(remain <= 20){
+      rpsTimerEl.classList.add("rps-timer-warn");
+    }
+
+    if(remain <= 0){
+      clearInterval(rpsTimerInterval);
+    }
+  }, 300);
+}
+
+
 socket.on("rps-round-result", data=>{
   const enemy = data.enemyHand;
 
@@ -299,10 +369,16 @@ socket.on("rps-round-result", data=>{
     <div class="text">${text}</div>
   `;
 
-  statusMsg.textContent = "Round kết thúc – chờ round mới";
+  playBtn.disabled = true;
+  statusMsg.textContent = "⏳ Đợi round mới";
 });
 
+
 socket.on("rps-round-new", data=>{
+  rpsEndAt = data.endAt;
+  rpsRoundEl.textContent = data.roundId;
+  startRpsCountdown();
+
   playBtn.disabled = false;
   myHand = null;
   betCoin = 0;
@@ -310,6 +386,7 @@ socket.on("rps-round-new", data=>{
   hands.forEach(h=>h.classList.remove("active"));
   statusMsg.textContent = "Round mới – chọn tay";
 });
+
 
 /* ================= RPS LOGIC (BASIC) ================= */
 
