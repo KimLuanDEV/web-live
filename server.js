@@ -1252,6 +1252,54 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
+// ================================
+// ✊✋✌️ RPS BET
+// ================================
+app.post("/api/rps/bet",(req,res)=>{
+  const uid = req.headers["x-uid"];
+  const { bet, result } = req.body;
+
+  if(!uid) return res.json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return res.json({ ok:false });
+
+  const coin = Math.floor(Number(bet));
+  if(!coin || coin <= 0)
+    return res.json({ ok:false });
+
+  if(me.profile.coins < coin)
+    return res.json({ ok:false, message:"NOT_ENOUGH_COIN" });
+
+  let win = 0, lose = 0;
+
+  if(result === "win"){
+    win = coin;          // 🔥 x2 tổng nhận
+    me.profile.coins += win;
+  }
+
+  if(result === "lose"){
+    lose = coin;
+    me.profile.coins -= coin;
+  }
+
+  // hòa → không trừ không cộng
+
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  return res.json({
+    ok:true,
+    win,
+    lose,
+    coins: me.profile.coins
+  });
+});
+
+
+
+
 
 // 🛑 ADMIN OVERRIDE WHEEL RESULT (DANGEROUS)
 app.post("/api/admin/wheel/override", (req, res) => {

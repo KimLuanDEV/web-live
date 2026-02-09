@@ -162,6 +162,59 @@ body{
   cursor:not-allowed;
 }
 
+
+.rps-bet{
+  width:100%;
+  max-width:360px;
+  padding:14px;
+  border-radius:18px;
+  background:rgba(0,0,0,.55);
+  box-shadow:0 0 25px rgba(0,255,180,.25);
+}
+
+.bet-label{
+  font-weight:800;
+  margin-bottom:10px;
+}
+
+.bet-row{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:8px;
+}
+
+.bet-btn{
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  font-weight:700;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  cursor:pointer;
+}
+
+.bet-btn.active{
+  background:linear-gradient(180deg,#00ffb0,#00b97d);
+  color:#002016;
+}
+
+.bet-custom input{
+  width:100%;
+  margin-top:10px;
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  background:#111;
+  color:#fff;
+}
+
+.bet-info{
+  margin-top:8px;
+  opacity:.85;
+}
+
+
+
 </style>
 </head>
 
@@ -193,6 +246,30 @@ body{
   <!-- RESULT -->
   <div class="rps-result" id="resultBox"></div>
 
+
+
+  <!-- 💎 BET PANEL -->
+<div class="rps-bet">
+  <div class="bet-label">Cược kim cương</div>
+
+  <div class="bet-row">
+    <button class="bet-btn" data-bet="10">10</button>
+    <button class="bet-btn" data-bet="50">50</button>
+    <button class="bet-btn" data-bet="100">100</button>
+    <button class="bet-btn" data-bet="500">500</button>
+  </div>
+
+  <div class="bet-custom">
+    <input id="betInput" type="number" min="1" placeholder="Nhập số coin">
+  </div>
+
+  <div class="bet-info">
+    Đã chọn: <b><span id="betValue">0</span></b> 💎
+  </div>
+</div>
+
+
+
   <!-- ACTION -->
   <div class="rps-action">
     <button class="rps-btn" id="playBtn" disabled>BẮT ĐẦU</button>
@@ -200,4 +277,116 @@ body{
 
 </main>
 
-<s
+<script>
+/* ================= RPS LOGIC (BASIC) ================= */
+
+const hands = document.querySelectorAll(".rps-hand");
+const playBtn = document.getElementById("playBtn");
+const resultBox = document.getElementById("resultBox");
+const statusMsg = document.getElementById("statusMsg");
+
+let myHand = null;
+
+hands.forEach(el=>{
+  el.onclick = ()=>{
+    hands.forEach(h=>h.classList.remove("active"));
+    el.classList.add("active");
+    myHand = el.dataset.hand;
+    playBtn.disabled = false;
+    statusMsg.textContent = "Sẵn sàng chiến!";
+  };
+});
+
+playBtn.onclick = async ()=>{
+  if(!myHand) return;
+  if(!betCoin || betCoin <= 0){
+    alert("Vui lòng chọn số coin cược");
+    return;
+  }
+
+  playBtn.disabled = true;
+  statusMsg.textContent = "Đang so tay...";
+
+  const enemy = randomHand();
+  const result = calcResult(myHand, enemy);
+
+  // 🔥 gửi server xử lý coin
+  const res = await fetch("/api/rps/bet",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": JSON.parse(localStorage.getItem("user_profile"))?.uid
+    },
+    body: JSON.stringify({
+      bet: betCoin,
+      result
+    })
+  }).then(r=>r.json());
+
+  showResult(myHand, enemy, result, res);
+};
+
+
+function randomHand(){
+  return ["rock","paper","scissors"][Math.floor(Math.random()*3)];
+}
+
+function calcResult(me, enemy){
+  if(me === enemy) return "draw";
+  if(
+    (me==="rock" && enemy==="scissors") ||
+    (me==="paper" && enemy==="rock") ||
+    (me==="scissors" && enemy==="paper")
+  ) return "win";
+  return "lose";
+}
+
+function showResult(me, enemy, result, server){
+  let icon="😐", text="HÒA";
+
+  if(result==="win"){ icon="🔥"; text=`THẮNG +${server.win} 💎`; }
+  if(result==="lose"){ icon="💥"; text=`THUA -${server.lose} 💎`; }
+
+  resultBox.innerHTML = `
+    <div class="icon">${icon}</div>
+    <div class="text">${text}</div>
+  `;
+
+  betCoin = 0;
+  betValue.textContent = "0";
+  betInput.value = "";
+  hands.forEach(h=>h.classList.remove("active"));
+  statusMsg.textContent = "Chọn tay để chơi tiếp";
+}
+
+
+
+
+
+let betCoin = 0;
+
+const betBtns   = document.querySelectorAll(".bet-btn");
+const betInput  = document.getElementById("betInput");
+const betValue  = document.getElementById("betValue");
+
+betBtns.forEach(btn=>{
+  btn.onclick = ()=>{
+    betBtns.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    betCoin = Number(btn.dataset.bet);
+    betInput.value = "";
+    betValue.textContent = betCoin;
+  };
+});
+
+betInput.oninput = ()=>{
+  betBtns.forEach(b=>b.classList.remove("active"));
+  betCoin = Math.max(0, Number(betInput.value || 0));
+  betValue.textContent = betCoin;
+};
+
+
+</script>
+
+</body>
+</html>
