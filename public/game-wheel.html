@@ -2276,142 +2276,8 @@ body::before{
   }
 }
 
-/* ===== STAGE ===== */
-.orb-stage{
-  position:relative;
-  width:320px;
-  height:520px;
-  margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* ===== ENERGY BEAM ===== */
-.energy-beam{
-  position:absolute;
-  top:-120px;
-  width:12px;
-  height:260px;
-  background:linear-gradient(
-    180deg,
-    rgba(120,200,255,.9),
-    rgba(120,200,255,.1),
-    transparent
-  );
-  filter:blur(1px);
-}
-
-/* ===== WHEEL ===== */
-.orb-wheel{
-  position:relative;
-  width:300px;
-  height:300px;
-  border-radius:50%;
-  z-index:2;
-}
-
-/* ===== METAL RIM ===== */
-.orb-rim{
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  background:
-    radial-gradient(circle at top,#555,#111 70%);
-  box-shadow:
-    inset 0 0 30px rgba(0,0,0,.9),
-    0 0 60px rgba(120,180,255,.35);
-}
-
-/* ===== CORE ===== */
-.orb-core{
-  position:absolute;
-  inset:38%;
-  border-radius:50%;
-  background:
-    radial-gradient(circle,
-      #ffd37a,
-      #ff9800,
-      #662a00
-    );
-  box-shadow:
-    0 0 40px rgba(255,160,0,.9),
-    0 0 80px rgba(255,120,0,.6);
-  animation:corePulse 2s infinite;
-}
-
-@keyframes corePulse{
-  0%,100%{ transform:scale(1); }
-  50%{ transform:scale(1.12); }
-}
 
 
-
-.orb-slots{
-  position:absolute;
-  inset:0;
-}
-
-.orb-slot{
-  position:absolute;
-  width:64px;
-  height:64px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  color:#fff;
-  text-shadow:0 0 10px currentColor;
-  box-shadow:
-    inset 0 0 12px rgba(255,255,255,.25),
-    0 0 20px rgba(0,0,0,.6);
-}
-
-.orb-slot.blue{
-  background:radial-gradient(circle,#7dd3ff,#124d78);
-  box-shadow:0 0 30px rgba(120,200,255,.9);
-}
-
-.orb-slot.orange{
-  background:radial-gradient(circle,#ffd37a,#b65a00);
-  box-shadow:0 0 30px rgba(255,180,80,.9);
-}
-
-.orb-slot.purple{
-  background:radial-gradient(circle,#caa9ff,#4a2a78);
-  box-shadow:0 0 30px rgba(180,140,255,.9);
-}
-
-.orb-slot.gold{
-  background:radial-gradient(circle,#fff3b0,#ffb300);
-  color:#000;
-}
-
-
-.orb-base{
-  position:absolute;
-  bottom:-90px;
-  width:340px;
-  height:120px;
-  border-radius:50%;
-  background:
-    radial-gradient(ellipse at center,
-      #3a3a3a,
-      #0a0a0a 70%
-    );
-  box-shadow:
-    0 60px 100px rgba(0,0,0,.95);
-}
-
-.base-lights{
-  position:absolute;
-  inset:18px;
-  border-radius:50%;
-  box-shadow:
-    0 0 30px rgba(120,200,255,.6),
-    inset 0 0 20px rgba(120,200,255,.4);
-}
 
 
   </style>
@@ -2457,16 +2323,16 @@ body::before{
 
 <div class="orb-stage">
 
-  <!-- 🌌 BEAM NĂNG LƯỢNG -->
-  <div class="energy-beam"></div>
+  <!-- 🧱 CHÂN ĐẾ -->
+  <div class="orb-base">
+    <div class="base-ring"></div>
+    <div class="base-glow"></div>
+  </div>
 
-  <!-- ⚙️ VÒNG QUAY -->
+  <!-- 🎡 VÒNG QUAY -->
   <div class="orb-wheel">
 
-    <!-- VÒNG KIM LOẠI -->
-    <div class="orb-rim"></div>
-
-    <!-- NAN NĂNG LƯỢNG -->
+    <!-- 🔗 NAN -->
     <div class="orb-spokes">
       <div class="orb-spoke"></div>
       <div class="orb-spoke"></div>
@@ -2478,29 +2344,22 @@ body::before{
       <div class="orb-spoke"></div>
     </div>
 
-    <!-- SLOT -->
+    <!-- 🎯 SLOT -->
     <div class="orb-slots">
-      <div class="orb-slot blue"><span>x1.2</span></div>
-      <div class="orb-slot orange"><span>x1.5</span></div>
-      <div class="orb-slot purple"><span>x2</span></div>
-      <div class="orb-slot blue"><span>x3</span></div>
-      <div class="orb-slot orange"><span>x5</span></div>
-      <div class="orb-slot gold"><span>x10</span></div>
-      <div class="orb-slot purple"><span>x2</span></div>
-      <div class="orb-slot blue"><span>x1.5</span></div>
+      <div class="orb-slot"><span>x0.5</span></div>
+      <div class="orb-slot"><span>x1.2</span></div>
+      <div class="orb-slot"><span>x1.5</span></div>
+      <div class="orb-slot"><span>x2</span></div>
+      <div class="orb-slot"><span>x5</span></div>
+      <div class="orb-slot"><span>x10</span></div>
+      <div class="orb-slot"><span>x2</span></div>
+      <div class="orb-slot"><span>x1.5</span></div>
     </div>
 
-    <!-- 🔥 LÕI -->
-    <div class="orb-core"></div>
+    <!-- ⚙️ TRỤC NĂNG LƯỢNG -->
+    <div class="orb-core" id="orbCore">--</div>
 
   </div>
-
-  <!-- 🧱 CHÂN ĐẾ -->
-  <div class="orb-base">
-    <div class="base-layer"></div>
-    <div class="base-lights"></div>
-  </div>
-
 </div>
 
 
