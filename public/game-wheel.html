@@ -2278,6 +2278,225 @@ body::before{
 
 
 
+/* ================= STAGE ================= */
+.orb-stage{
+  position: relative;
+  width: 320px;
+  height: 420px;
+  margin: 0 auto;
+}
+
+/* ================= HALO ================= */
+.orb-halo{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,
+      rgba(120,180,255,.25),
+      rgba(255,215,0,.2),
+      rgba(0,0,0,0) 65%
+    );
+  filter: blur(40px);
+  z-index:0;
+}
+
+/* ================= WHEEL ================= */
+.orb-wheel{
+  position:absolute;
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:280px;
+  height:280px;
+  border-radius:50%;
+  z-index:2;
+}
+
+/* ================= WEDGES ================= */
+.orb-wedges{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  overflow:hidden;
+}
+
+.orb-wedge{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  transform-origin:50% 50%;
+  clip-path: polygon(50% 50%, 100% 0, 100% 100%);
+  background:
+    radial-gradient(circle at 30% 30%,
+      #2a3a6a,
+      #0a1024 70%
+    );
+}
+
+.orb-wedge span{
+  position:absolute;
+  top:18%;
+  font-size:15px;
+  font-weight:900;
+  color:#ffd700;
+  text-shadow:
+    0 0 6px rgba(255,215,0,.8),
+    0 2px 4px rgba(0,0,0,.9);
+}
+
+/* xoay 8 mảnh */
+.orb-wedge:nth-child(1){ transform:rotate(0deg); }
+.orb-wedge:nth-child(2){ transform:rotate(45deg); }
+.orb-wedge:nth-child(3){ transform:rotate(90deg); }
+.orb-wedge:nth-child(4){ transform:rotate(135deg); }
+.orb-wedge:nth-child(5){ transform:rotate(180deg); }
+.orb-wedge:nth-child(6){ transform:rotate(225deg); }
+.orb-wedge:nth-child(7){ transform:rotate(270deg); }
+.orb-wedge:nth-child(8){ transform:rotate(315deg); }
+
+/* ================= ACTIVE / RUNNING ================= */
+.orb-wedge.running{
+  background:
+    radial-gradient(circle at 30% 30%,
+      #8ab4ff,
+      #1a2450 70%
+    );
+  box-shadow: inset 0 0 30px rgba(120,180,255,.9);
+}
+
+.orb-wedge.active{
+  background:
+    radial-gradient(circle at 30% 30%,
+      #fff2b0,
+      #ffb300 70%
+    );
+  box-shadow:
+    inset 0 0 40px rgba(255,215,0,1),
+    0 0 40px rgba(255,160,0,.9);
+}
+
+.orb-wedge.active span{
+  color:#000;
+  text-shadow:none;
+}
+
+/* ================= SPOKES ================= */
+.orb-spokes{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:3;
+}
+
+.orb-spoke{
+  position:absolute;
+  top:50%;
+  left:50%;
+  height:2px;
+  background:transparent;
+  transform-origin:left center;
+}
+
+.orb-spoke.running{
+  background:linear-gradient(
+    90deg,
+    rgba(120,180,255,0),
+    rgba(120,180,255,1),
+    rgba(120,180,255,0)
+  );
+  box-shadow:0 0 16px rgba(120,180,255,.9);
+}
+
+.orb-spoke.active{
+  background:linear-gradient(
+    90deg,
+    rgba(255,215,0,0),
+    rgba(255,215,0,1),
+    rgba(255,215,0,0)
+  );
+  box-shadow:0 0 24px rgba(255,215,0,1);
+}
+
+/* ================= CORE ================= */
+.orb-core{
+  position:absolute;
+  inset:36%;
+  border-radius:50%;
+  z-index:4;
+
+  background:
+    radial-gradient(circle,
+      #ffd700,
+      #ff9800,
+      #3a2500
+    );
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:26px;
+  font-weight:900;
+  color:#000;
+
+  box-shadow:
+    0 0 30px rgba(255,215,0,.9),
+    inset 0 0 20px rgba(0,0,0,.8);
+}
+
+.orb-core.spinning{
+  animation: coreSpin 0.8s linear infinite;
+}
+
+@keyframes coreSpin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+/* ================= BASE ================= */
+.orb-base{
+  position:absolute;
+  bottom:-70px;
+  left:50%;
+  transform:translateX(-50%);
+  width:300px;
+  height:90px;
+  border-radius:50%;
+
+  background:
+    radial-gradient(ellipse at center,
+      #4a3a00,
+      #120c00 70%
+    );
+
+  box-shadow:
+    0 30px 60px rgba(0,0,0,.9),
+    inset 0 10px 20px rgba(255,215,0,.2);
+}
+
+.base-ring{
+  position:absolute;
+  inset:16px;
+  border-radius:50%;
+  box-shadow:
+    inset 0 0 0 2px rgba(255,215,0,.45),
+    inset 0 0 18px rgba(0,0,0,.9);
+}
+
+.base-glow{
+  position:absolute;
+  inset:-40px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,
+      rgba(120,180,255,.35),
+      rgba(0,0,0,0) 70%
+    );
+  filter: blur(30px);
+}
 
 
   </style>
@@ -2323,16 +2542,25 @@ body::before{
 
 <div class="orb-stage">
 
-  <!-- 🧱 CHÂN ĐẾ -->
-  <div class="orb-base">
-    <div class="base-ring"></div>
-    <div class="base-glow"></div>
-  </div>
+  <!-- 🌌 GLOW NỀN -->
+  <div class="orb-halo"></div>
 
-  <!-- 🎡 VÒNG QUAY -->
+  <!-- 🎡 WHEEL -->
   <div class="orb-wheel">
 
-    <!-- 🔗 NAN -->
+    <!-- 🧩 8 MẢNH GHÉP -->
+    <div class="orb-wedges">
+      <div class="orb-wedge"><span>x0.5</span></div>
+      <div class="orb-wedge"><span>x1.2</span></div>
+      <div class="orb-wedge"><span>x1.5</span></div>
+      <div class="orb-wedge"><span>x2</span></div>
+      <div class="orb-wedge"><span>x5</span></div>
+      <div class="orb-wedge"><span>x10</span></div>
+      <div class="orb-wedge"><span>x2</span></div>
+      <div class="orb-wedge"><span>x1.5</span></div>
+    </div>
+
+    <!-- 🔗 NAN NĂNG LƯỢNG (logic cũ dùng lại) -->
     <div class="orb-spokes">
       <div class="orb-spoke"></div>
       <div class="orb-spoke"></div>
@@ -2344,23 +2572,18 @@ body::before{
       <div class="orb-spoke"></div>
     </div>
 
-    <!-- 🎯 SLOT -->
-    <div class="orb-slots">
-      <div class="orb-slot"><span>x0.5</span></div>
-      <div class="orb-slot"><span>x1.2</span></div>
-      <div class="orb-slot"><span>x1.5</span></div>
-      <div class="orb-slot"><span>x2</span></div>
-      <div class="orb-slot"><span>x5</span></div>
-      <div class="orb-slot"><span>x10</span></div>
-      <div class="orb-slot"><span>x2</span></div>
-      <div class="orb-slot"><span>x1.5</span></div>
-    </div>
-
-    <!-- ⚙️ TRỤC NĂNG LƯỢNG -->
+    <!-- ⚙️ LÕI -->
     <div class="orb-core" id="orbCore">--</div>
-
   </div>
+
+  <!-- 🧱 CHÂN ĐẾ -->
+  <div class="orb-base">
+    <div class="base-ring"></div>
+    <div class="base-glow"></div>
+  </div>
+
 </div>
+
 
 
 
