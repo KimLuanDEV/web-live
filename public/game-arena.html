@@ -2,21 +2,19 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>Đấu trường thời gian</title>
+<title>Oẳn Tù Tì</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="/style.css">
 
 <style>
-/* ================= ARENA PAGE ================= */
-
-html, body{
+html,body{
   margin:0;
   padding:0;
   height:100%;
   background:#000;
   color:#fff;
-  font-family: system-ui, -apple-system, BlinkMacSystemFont;
+  font-family: system-ui, -apple-system;
 }
 
 /* ===== BACKGROUND ===== */
@@ -24,12 +22,12 @@ html, body{
   position:fixed;
   inset:0;
   background:
-    linear-gradient(180deg, rgba(0,0,0,.25), rgba(0,0,0,.85)),
+    linear-gradient(180deg, rgba(0,0,0,.35), rgba(0,0,0,.95)),
     url("/assets/bg/arena.jpg") center / cover no-repeat;
   z-index:0;
 }
 
-/* ===== PAGE WRAP ===== */
+/* ===== PAGE ===== */
 .arena-page{
   position:relative;
   z-index:1;
@@ -43,54 +41,46 @@ html, body{
   position:sticky;
   top:0;
   z-index:5;
-
   display:flex;
   align-items:center;
-  justify-content:space-between;
   padding:14px 16px;
-
   backdrop-filter: blur(10px);
   background: rgba(10,10,15,.85);
   border-bottom:1px solid rgba(255,255,255,.08);
 }
 
-.arena-header .back{
+.back{
   background:none;
   border:none;
   color:#fff;
   font-size:20px;
-  cursor:pointer;
 }
 
 .arena-title{
-  text-align:center;
   flex:1;
+  text-align:center;
 }
-
 .arena-title h1{
-  font-size:16px;
   margin:0;
-  font-weight:800;
-  letter-spacing:.5px;
+  font-size:16px;
+  font-weight:900;
 }
-
 .arena-title .sub{
   font-size:11px;
-  opacity:.65;
+  opacity:.6;
 }
 
 /* ===== TIMER ===== */
 .arena-timer{
+  margin:20px 0;
   text-align:center;
-  margin:18px 0;
 }
 
 .timer-ring{
-  width:120px;
-  height:120px;
-  border-radius:50%;
+  width:110px;
+  height:110px;
   margin:0 auto;
-
+  border-radius:50%;
   display:flex;
   align-items:center;
   justify-content:center;
@@ -102,129 +92,89 @@ html, body{
     );
 
   box-shadow:
-    0 0 35px rgba(255,80,80,.6),
+    0 0 30px rgba(255,80,80,.7),
     inset 0 0 18px rgba(0,0,0,.8);
 }
 
 .timer-ring span{
-  font-size:34px;
+  font-size:32px;
   font-weight:900;
 }
 
-/* ===== ARENA OPTIONS ===== */
-.arena-options{
+/* ===== CHOICES ===== */
+.rps-grid{
   display:grid;
   grid-template-columns:repeat(3,1fr);
-  gap:14px;
+  gap:16px;
   padding:0 16px;
 }
 
-.arena-option{
+.rps-card{
   aspect-ratio:1/1.15;
-  border-radius:18px;
+  border-radius:22px;
   cursor:pointer;
 
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:flex-end;
-
-  padding:12px;
-  text-align:center;
+  justify-content:center;
 
   background:
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.85));
+    linear-gradient(180deg, rgba(255,255,255,.1), rgba(0,0,0,.9));
 
   box-shadow:
-    0 10px 25px rgba(0,0,0,.7),
-    inset 0 1px 0 rgba(255,255,255,.12);
+    0 10px 30px rgba(0,0,0,.75),
+    inset 0 1px 0 rgba(255,255,255,.15);
 
   transition:.18s ease;
 }
 
-.arena-option:active{
-  transform:scale(.96);
+.rps-card:active{
+  transform:scale(.95);
 }
 
-.arena-option.attack{
-  box-shadow:0 0 25px rgba(255,60,60,.35);
+.rps-card.selected{
+  outline:2px solid #ffd86a;
+  box-shadow:
+    0 0 35px rgba(255,200,0,.85);
 }
 
-.arena-option.defend{
-  box-shadow:0 0 25px rgba(0,200,255,.35);
+.rps-icon{
+  font-size:42px;
 }
-
-.arena-option.allin{
-  box-shadow:0 0 30px rgba(255,200,0,.45);
-}
-
-.arena-option .icon{
-  font-size:34px;
-  margin-bottom:10px;
-}
-
-.arena-option .name{
-  font-size:14px;
+.rps-name{
+  margin-top:10px;
+  font-size:15px;
   font-weight:800;
 }
 
-/* ===== FOOTER / BET BAR ===== */
+/* ===== FOOTER ===== */
 .arena-footer{
   margin-top:auto;
-  padding:14px 16px 22px;
+  padding:16px;
   background:
-    linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.9));
+    linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.95));
 }
 
-.bet-bar{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-
-  padding:12px 14px;
-  border-radius:16px;
-
-  background: rgba(15,15,20,.9);
-  box-shadow:0 8px 24px rgba(0,0,0,.8);
-}
-
-.bet-info{
-  display:flex;
-  flex-direction:column;
-}
-
-.bet-info .label{
-  font-size:11px;
-  opacity:.6;
-}
-
-.bet-info .value{
-  font-size:16px;
-  font-weight:800;
-}
-
-.bet-btn{
-  padding:10px 18px;
-  border-radius:14px;
+.confirm-btn{
+  width:100%;
+  padding:14px;
   border:none;
+  border-radius:18px;
   cursor:pointer;
 
-  font-weight:800;
+  font-size:16px;
+  font-weight:900;
   color:#000;
 
   background:
     linear-gradient(180deg, #ffd86a, #ffb700);
-  box-shadow:0 0 18px rgba(255,200,0,.6);
+
+  box-shadow:0 0 22px rgba(255,200,0,.7);
 }
 
-.bet-btn:active{
-  transform:scale(.96);
-}
-
-/* ===== LOCKED ===== */
-.locked{
-  opacity:.45;
+.confirm-btn.locked{
+  opacity:.5;
   pointer-events:none;
 }
 </style>
@@ -239,81 +189,80 @@ html, body{
   <!-- HEADER -->
   <div class="arena-header">
     <button class="back" onclick="history.back()">←</button>
-
     <div class="arena-title">
-      <h1>Đấu trường thời gian</h1>
-      <div class="sub">Realtime • Sinh tồn</div>
+      <h1>Oẳn Tù Tì</h1>
+      <div class="sub">Đối kháng • Realtime</div>
     </div>
-
     <div style="width:28px"></div>
   </div>
 
   <!-- TIMER -->
   <div class="arena-timer">
     <div class="timer-ring">
-      <span id="arenaTimer">30</span>
+      <span id="roundTimer">15</span>
     </div>
   </div>
 
-  <!-- OPTIONS -->
-  <div class="arena-options">
-
-    <div class="arena-option attack" onclick="selectArena('attack')">
-      <div class="icon">⚔️</div>
-      <div class="name">Tấn công</div>
+  <!-- CHOICES -->
+  <div class="rps-grid">
+    <div class="rps-card" onclick="selectMove('rock')">
+      <div class="rps-icon">✊</div>
+      <div class="rps-name">BÚA</div>
     </div>
 
-    <div class="arena-option defend" onclick="selectArena('defend')">
-      <div class="icon">🛡️</div>
-      <div class="name">Phòng thủ</div>
+    <div class="rps-card" onclick="selectMove('scissors')">
+      <div class="rps-icon">✌️</div>
+      <div class="rps-name">KÉO</div>
     </div>
 
-    <div class="arena-option allin" onclick="selectArena('allin')">
-      <div class="icon">🔥</div>
-      <div class="name">All-in</div>
+    <div class="rps-card" onclick="selectMove('paper')">
+      <div class="rps-icon">✋</div>
+      <div class="rps-name">BAO</div>
     </div>
-
   </div>
 
   <!-- FOOTER -->
   <div class="arena-footer">
-    <div class="bet-bar">
-      <div class="bet-info">
-        <div class="label">Lựa chọn</div>
-        <div class="value" id="arenaChoice">—</div>
-      </div>
-
-      <button class="bet-btn" onclick="confirmArena()">VÀO LỆNH</button>
-    </div>
+    <button class="confirm-btn" id="confirmBtn" onclick="confirmMove()">
+      XÁC NHẬN
+    </button>
   </div>
 
 </div>
 
 <script>
-let selectedArena = null;
-let time = 30;
+let selectedMove = null;
+let time = 15;
 
-function selectArena(type){
-  selectedArena = type;
-  document.getElementById("arenaChoice").textContent =
-    type === "attack" ? "⚔️ Tấn công" :
-    type === "defend" ? "🛡️ Phòng thủ" :
-    "🔥 All-in";
+function selectMove(move){
+  selectedMove = move;
+  document.querySelectorAll(".rps-card")
+    .forEach((el,idx)=>{
+      el.classList.remove("selected");
+      if(
+        (idx===0 && move==="rock") ||
+        (idx===1 && move==="scissors") ||
+        (idx===2 && move==="paper")
+      ){
+        el.classList.add("selected");
+      }
+    });
 }
 
-function confirmArena(){
-  if(!selectedArena){
-    alert("⚠️ Hãy chọn chiến thuật!");
+function confirmMove(){
+  if(!selectedMove){
+    alert("⚠️ Hãy chọn BÚA – KÉO – BAO");
     return;
   }
-  alert("✅ Đã vào lệnh: " + selectedArena);
-  document.querySelector(".bet-btn").classList.add("locked");
+  alert("✅ Bạn đã chọn: " + selectedMove.toUpperCase());
+  document.getElementById("confirmBtn").classList.add("locked");
 }
 
+// countdown demo
 setInterval(()=>{
   if(time > 0){
     time--;
-    document.getElementById("arenaTimer").textContent = time;
+    document.getElementById("roundTimer").textContent = time;
   }
 },1000);
 </script>
