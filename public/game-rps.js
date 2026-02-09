@@ -204,30 +204,25 @@ function selectBet(value){
 }
 
 
-/* QUICK BET */
 betBtns.forEach(btn=>{
   btn.onclick = ()=>{
-    betPctBtns.forEach(b=>b.classList.remove("active"));
+    clearBetHighlight();       // 🔥 TẮT Ô CŨ
+    btn.classList.add("active");
 
-    btn.classList.add("active"); // chỉ highlight, KHÔNG reset betCoin
     selectBet(Number(btn.dataset.bet));
   };
 });
 
 
-/* % BET – SET VỐN (KHÔNG CỘNG DỒN) */
+
 betPctBtns.forEach(btn=>{
   btn.onclick = ()=>{
-    // reset highlight
-    betBtns.forEach(b=>b.classList.remove("active"));
-    betPctBtns.forEach(b=>b.classList.remove("active"));
-
+    clearBetHighlight();       // 🔥 TẮT Ô CŨ
     btn.classList.add("active");
 
     const pct   = Number(btn.dataset.pct);
     const coins = Number(myCoinsEl.textContent || 0);
 
-    // 🔁 SET lại vốn (ghi đè)
     betCoin =
       pct === 100
         ? coins
@@ -241,6 +236,7 @@ betPctBtns.forEach(btn=>{
     }
   };
 });
+
 
 
 /* ================= PLAY ================= */
@@ -321,3 +317,9 @@ function unlockBet(){
 }
 
 lockBet();
+
+
+function clearBetHighlight(){
+  betBtns.forEach(b=>b.classList.remove("active"));
+  betPctBtns.forEach(b=>b.classList.remove("active"));
+}
