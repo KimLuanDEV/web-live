@@ -186,7 +186,15 @@ const betPctBtns = document.querySelectorAll(".bet-pct");
 const betValue   = document.getElementById("betValue");
 
 function selectBet(value){
-  betCoin = value;
+  const myCoins = Number(myCoinsEl.textContent || 0);
+
+  betCoin += value; // ✅ CỘNG DỒN
+
+  // ⛔ Không cho vượt quá số coin đang có
+  if(betCoin > myCoins){
+    betCoin = myCoins;
+  }
+
   betValue.textContent = betCoin;
 
   if(myHand && betCoin > 0){
@@ -195,20 +203,22 @@ function selectBet(value){
   }
 }
 
+
 /* QUICK BET */
 betBtns.forEach(btn=>{
   btn.onclick = ()=>{
-    betBtns.forEach(b=>b.classList.remove("active"));
     betPctBtns.forEach(b=>b.classList.remove("active"));
 
-    btn.classList.add("active");
+    btn.classList.add("active"); // chỉ highlight, KHÔNG reset betCoin
     selectBet(Number(btn.dataset.bet));
   };
 });
 
-/* % BET */
+
+/* % BET – SET VỐN (KHÔNG CỘNG DỒN) */
 betPctBtns.forEach(btn=>{
   btn.onclick = ()=>{
+    // reset highlight
     betBtns.forEach(b=>b.classList.remove("active"));
     betPctBtns.forEach(b=>b.classList.remove("active"));
 
@@ -217,12 +227,21 @@ betPctBtns.forEach(btn=>{
     const pct   = Number(btn.dataset.pct);
     const coins = Number(myCoinsEl.textContent || 0);
 
-    const value =
-      pct === 100 ? coins : Math.floor(coins * pct / 100);
+    // 🔁 SET lại vốn (ghi đè)
+    betCoin =
+      pct === 100
+        ? coins
+        : Math.floor(coins * pct / 100);
 
-    selectBet(value);
+    betValue.textContent = betCoin;
+
+    if(myHand && betCoin > 0){
+      playBtn.disabled = false;
+      statusMsg.textContent = "Sẵn sàng chốt lệnh";
+    }
   };
 });
+
 
 /* ================= PLAY ================= */
 
