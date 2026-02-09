@@ -104,3 +104,10 @@ function closePortfolio(){
   document.getElementById("portfolioSheet").classList.add("hidden");
   document.body.classList.remove("sheet-open");
 }
+
+
+function openArenaGame(){
+  alert("⚔️ Game Đấu trường thời gian sẽ ra mắt sớm!");
+  // sau này chỉ cần:
+  // location.href = "/game-arena.html";
+}
