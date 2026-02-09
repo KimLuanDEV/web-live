@@ -56,6 +56,9 @@ function startRpsCountdown(){
       Math.ceil((rpsEndAt - Date.now()) / 1000)
     );
 
+updateTimerRing(remain);
+
+
     rpsTimerEl.textContent = remain;
     rpsTimerEl.classList.remove("rps-timer-warn","rps-timer-danger");
 
@@ -74,6 +77,11 @@ function startRpsCountdown(){
 /* ================= ROUND RESULT ================= */
 
 socket.on("rps-round-result", data=>{
+
+    totalRoundTime = Math.ceil(
+  (data.endAt - Date.now()) / 1000
+);
+
 
   document.getElementById("waitOverlay")?.classList.add("hidden");
 
@@ -359,3 +367,26 @@ document.addEventListener('touchend', e => {
   lastTouchEnd = now;
 }, false);
 
+
+
+const RING_LENGTH = 113;
+let totalRoundTime = 60; // set khi round bắt đầu
+
+function updateTimerRing(remain){
+  const ring = document.querySelector(".ring-progress");
+  const timerBox = document.querySelector(".bet-timer");
+
+  if(!ring || !timerBox) return;
+
+  const progress = remain / totalRoundTime;
+  ring.style.strokeDashoffset =
+    RING_LENGTH * (1 - progress);
+
+  timerBox.classList.remove("warn","danger");
+
+  if(remain <= 10){
+    timerBox.classList.add("danger");
+  }else if(remain <= 20){
+    timerBox.classList.add("warn");
+  }
+}

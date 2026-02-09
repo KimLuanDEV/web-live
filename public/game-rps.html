@@ -594,6 +594,110 @@ html, body{
   overscroll-behavior: none;
 }
 
+
+
+/* ===== BET TIMER (TOP LEFT) ===== */
+.bet-timer{
+  position: absolute;
+  top: 6px;
+  left: 10px;
+  z-index: 2;
+
+  font-size: 13px;
+  font-weight: 900;
+  color: #00ffb0;
+
+  display: flex;
+  align-items: center;
+  gap: 4px;
+
+  text-shadow: 0 0 12px rgba(0,255,180,.8);
+}
+
+/* đảm bảo rps-bet là relative */
+.bet-sheet .rps-bet.pro{
+  position: relative;
+}
+
+.bet-timer.danger{
+  color:#ff4d4d;
+  animation:pulse .8s infinite alternate;
+}
+
+
+/* ===== TIMER RING ===== */
+.bet-timer.ring{
+  position: absolute;
+  top: 27px;
+  left: 15px;
+  z-index: 5;
+
+  width: 44px;
+  height: 44px;
+}
+
+.timer-ring{
+  transform: rotate(-90deg);
+}
+
+.ring-bg{
+  fill: none;
+  stroke: rgba(255,255,255,.15);
+  stroke-width: 4;
+}
+
+.ring-progress{
+  fill: none;
+  stroke: #00ffb0;
+  stroke-width: 4;
+  stroke-linecap: round;
+
+  stroke-dasharray: 113; /* 2πr ≈ 113 */
+  stroke-dashoffset: 0;
+
+  transition: stroke-dashoffset .3s linear,
+              stroke .3s linear;
+}
+
+.timer-text{
+  position: absolute;
+  inset: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 12px;
+  font-weight: 900;
+  color: #00ffb0;
+  text-shadow: 0 0 10px rgba(0,255,180,.8);
+}
+
+/* WARNING */
+.bet-timer.warn .ring-progress,
+.bet-timer.warn .timer-text{
+  color: #ffcc00;
+  stroke: #ffcc00;
+}
+
+/* DANGER */
+.bet-timer.danger .ring-progress,
+.bet-timer.danger .timer-text{
+  color: #ff4d4d;
+  stroke: #ff4d4d;
+}
+
+.bet-timer.danger{
+  animation: pulse .8s infinite alternate;
+}
+
+@keyframes pulse{
+  from{ transform: scale(1); }
+  to{ transform: scale(1.08); }
+}
+
+
+
 </style>
 </head>
 
@@ -602,7 +706,7 @@ html, body{
 <!-- ===== HEADER ===== -->
 <header class="rps-header">
   <button class="back-btn" onclick="history.back()">←</button>
-  <div class="rps-title">Kéo • Búa • Bao</div>
+  <div class="rps-title">Scissors • Rock • Paper</div>
   <div class="rps-wallet">
   💎 <span id="myCoins">0</span>
 </div>
@@ -615,8 +719,8 @@ html, body{
   <!-- STATUS -->
  <div class="rps-status">
   <div class="rps-round">
-    Round <span id="rpsRoundId">#1</span> •
-    <span id="rpsTimer">60</span>s
+    Round <span id="rpsRoundId">#1</span> 
+  
   </div>
   <div class="rps-msg" id="statusMsg">Chọn tay của bạn</div>
 </div>
@@ -696,6 +800,25 @@ html, body{
 <div class="bet-sheet">
 
   <div class="rps-bet pro">
+
+<!-- ⏳ ROUND TIMER RING -->
+<div class="bet-timer ring">
+  <svg class="timer-ring" width="44" height="44">
+    <circle
+      class="ring-bg"
+      cx="22" cy="22" r="18"
+    />
+    <circle
+      class="ring-progress"
+      cx="22" cy="22" r="18"
+    />
+  </svg>
+
+  <div class="timer-text">
+    <span id="rpsTimer">60</span>
+  </div>
+</div>
+
 
     <!-- INFO -->
     <div class="bet-info big">
