@@ -3,7 +3,12 @@
 <head>
 <meta charset="utf-8">
 <title>Kéo • Búa • Bao</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1,
+               maximum-scale=1,
+               user-scalable=no">
+
 
 <link rel="stylesheet" href="/style.css">
 <script src="/socket.io/socket.io.js"></script>
@@ -135,8 +140,9 @@ body{
 /* ===== ACTION ===== */
 .rps-action{
   width:100%;
-  max-width:360px;
+  max-width:none;   /* ✅ cho full ngang */
 }
+
 
 .rps-btn{
   width:100%;
@@ -606,14 +612,18 @@ body{
 }
 
 .bet-sheet .rps-action{
+  width:100%;
   margin-top: 6px;
 }
 
 .bet-sheet .rps-btn{
   width: 100%;
-  height: 46px;
-  font-size: 16px;
+height:52px;
+  font-size:18px;
+  letter-spacing:.5px;
   border-radius: 14px;
+  display:block;
+
 }
 
 
@@ -621,6 +631,10 @@ body{
   padding-bottom: 260px; /* chỉnh theo chiều cao bet bar */
 }
 
+html, body{
+  touch-action: manipulation;   /* chặn zoom gesture */
+  overscroll-behavior: none;
+}
 
 </style>
 </head>
