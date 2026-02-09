@@ -2383,56 +2383,76 @@ body::before{
   text-shadow:none;
 }
 
-/* ================= SPOKES ================= */
-.orb-spokes{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  z-index:3;
-}
+/* ================= ORB SPOKE – ENERGY BEAM ================= */
 
 .orb-spoke{
   position:absolute;
   top:50%;
   left:50%;
-  height:2px;
-  background:transparent;
+  height:3px;
+  opacity:0;
   transform-origin:left center;
+  pointer-events:none;
+
+  /* 🌈 năng lượng mặc định */
+  background: linear-gradient(
+    90deg,
+    rgba(120,180,255,0),
+    rgba(120,180,255,.9),
+    rgba(120,180,255,0)
+  );
+
+  filter: blur(.2px);
 }
 
+/* ❌ BỎ CƠ KHÍ */
+.orb-spoke::before,
+.orb-spoke::after{
+  display:none;
+}
+
+/* ⚡ ĐANG CHẠY */
 .orb-spoke.running{
-  background:linear-gradient(
+  opacity:1;
+  height:4px;
+
+  background: linear-gradient(
     90deg,
     rgba(120,180,255,0),
     rgba(120,180,255,1),
     rgba(120,180,255,0)
   );
-  box-shadow:0 0 16px rgba(120,180,255,.9);
+
+  box-shadow:
+    0 0 14px rgba(120,180,255,.9),
+    0 0 28px rgba(120,180,255,.6);
 }
 
+/* 🏆 TRÚNG */
 .orb-spoke.active{
-  background:linear-gradient(
+  opacity:1;
+  height:5px;
+
+  background: linear-gradient(
     90deg,
     rgba(255,215,0,0),
     rgba(255,215,0,1),
     rgba(255,215,0,0)
   );
-  box-shadow:0 0 24px rgba(255,215,0,1);
+
+  box-shadow:
+    0 0 18px rgba(255,215,0,1),
+    0 0 36px rgba(255,160,0,.9);
 }
 
-/* ================= CORE ================= */
+
+/* ================= ORB CORE – ENERGY CORE ================= */
+
 .orb-core{
   position:absolute;
-  inset:36%;
+  inset:38%;
   border-radius:50%;
-  z-index:4;
-
-  background:
-    radial-gradient(circle,
-      #ffd700,
-      #ff9800,
-      #3a2500
-    );
+  z-index:3;
 
   display:flex;
   align-items:center;
@@ -2442,19 +2462,47 @@ body::before{
   font-weight:900;
   color:#000;
 
+  background:
+    radial-gradient(
+      circle,
+      #fff6c0 0%,
+      #ffb300 45%,
+      #5a3200 70%,
+      #000 100%
+    );
+
   box-shadow:
-    0 0 30px rgba(255,215,0,.9),
-    inset 0 0 20px rgba(0,0,0,.8);
+    0 0 28px rgba(255,215,0,.9),
+    inset 0 0 18px rgba(0,0,0,.85);
 }
 
+/* ⏳ COUNTDOWN */
+.orb-core.countdown{
+  animation: corePulse 1.2s ease-in-out infinite;
+}
+
+@keyframes corePulse{
+  0%,100%{
+    box-shadow:
+      0 0 26px rgba(255,215,0,.6);
+  }
+  50%{
+    box-shadow:
+      0 0 60px rgba(255,215,0,1);
+  }
+}
+
+/* 🔄 QUAY */
 .orb-core.spinning{
-  animation: coreSpin 0.8s linear infinite;
+  color:#fff;
+  animation: coreSpin .8s linear infinite;
 }
 
 @keyframes coreSpin{
   from{ transform:rotate(0deg); }
   to{ transform:rotate(360deg); }
 }
+
 
 /* ================= BASE ================= */
 .orb-base{
