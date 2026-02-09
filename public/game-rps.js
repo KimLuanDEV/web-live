@@ -76,8 +76,6 @@ if(remain <= 5){
   statusMsg.textContent = "⛔ Đã khóa cược";
 }
 
-document.querySelector(".bet-sheet")
-  ?.classList.add("bet-locked");
 
 
 // ⏹ HẾT GIỜ
