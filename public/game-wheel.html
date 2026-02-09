@@ -2277,71 +2277,6 @@ body::before{
 }
 
 
-/* ================= QUICK HISTORY HEADER ================= */
-
-.qh-head{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:6px;
-}
-
-.qh-top-btn{
-  border:none;
-  padding:4px 10px;
-  border-radius:999px;
-
-  font-size:12px;
-  font-weight:800;
-
-  background: rgba(255,215,0,.15);
-  color:#ffd700;
-
-  cursor:pointer;
-  box-shadow:
-    inset 0 0 0 1px rgba(255,215,0,.35);
-}
-
-.qh-top-btn:active{
-  transform: scale(.95);
-}
-
-
-/* ================= TOP DAY LIST ================= */
-
-.top-day-item{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-
-  padding:10px 12px;
-  border-radius:14px;
-
-  background: rgba(255,255,255,.06);
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.08),
-    0 6px 18px rgba(0,0,0,.4);
-
-  font-size:14px;
-  font-weight:800;
-}
-
-.td-rank{
-  width:36px;
-  color:#ffd700;
-}
-
-.td-name{
-  flex:1;
-  opacity:.9;
-}
-
-.td-win{
-  color:#8ab4ff;
-  font-weight:900;
-}
-
-
 
 
 
@@ -2432,41 +2367,12 @@ body::before{
 
 <!-- 📜 QUICK HISTORY (ABOVE BET BAR) -->
 <div class="quick-history">
-
-  <div class="qh-head">
-    <div class="qh-title">Lịch sử gần nhất</div>
-
-    <!-- 🏆 TOP DAY BUTTON -->
-    <button class="qh-top-btn" onclick="toggleTopDay()">
-      🏆 Top
-    </button>
-  </div>
-
+  <div class="qh-title">Lịch sử gần nhất</div>
   <div class="qh-list" id="quickHistoryList">
     <span class="qh-empty">Chưa có dữ liệu</span>
   </div>
 </div>
 
-
-
-<!-- 🏆 TOP 10 WINNERS TODAY -->
-<div id="topDayPanel" class="sheet hidden">
-
-  <div class="sheet-backdrop" onclick="toggleTopDay()"></div>
-
-  <div class="sheet-box">
-
-    <div class="sheet-head">
-      <div class="gh-title">🏆 Top thắng hôm nay</div>
-      <button class="sheet-close" onclick="toggleTopDay()">✕</button>
-    </div>
-
-    <div class="sheet-body" id="topDayList">
-      <div class="tw-empty">Chưa có dữ liệu</div>
-    </div>
-
-  </div>
-</div>
 
 
 

@@ -175,41 +175,6 @@ function saveWheelHistory(list){
   }
 }
 
-
-// ================================
-// 🏆 TOP WINNERS (PER DAY)
-// ================================
-const WHEEL_TOP_DAY_FILE =
-  "/opt/render/project/data/wheel_top_day.json";
-
-function loadWheelTopDay(){
-  try{
-    if (!fs.existsSync(WHEEL_TOP_DAY_FILE)) return {};
-    return JSON.parse(
-      fs.readFileSync(WHEEL_TOP_DAY_FILE,"utf8")
-    );
-  }catch(e){
-    console.error("❌ Load wheel top day failed", e);
-    return {};
-  }
-}
-
-function saveWheelTopDay(data){
-  try{
-    fs.writeFileSync(
-      WHEEL_TOP_DAY_FILE,
-      JSON.stringify(data,null,2)
-    );
-  }catch(e){
-    console.error("❌ Save wheel top day failed", e);
-  }
-}
-
-
-
-
-
-
 // 📜 history global
 let wheelHistory = loadWheelHistory();
 
@@ -704,8 +669,7 @@ setInterval(() => {
     // 🔐 ĐẢM BẢO ROUND LUÔN CÓ KẾT QUẢ
 ensureWheelSecret(wheelRound);
 
-
-// 🔁 RESET ROUND + TOP KHI QUA NGÀY MỚI (0H VN)
+// 🔁 RESET ROUND KHI QUA NGÀY MỚI (0H VN)
 const todayStart = getTodayStartTsVN();
 if (todayStart !== wheelRoundDayTs) {
   wheelRoundCountToday = 0;
@@ -715,11 +679,7 @@ if (todayStart !== wheelRoundDayTs) {
     dayTs: wheelRoundDayTs,
     count: wheelRoundCountToday
   });
-
-  // 🧹 reset top winners trong ngày
-  saveWheelTopDay({});
 }
-
 
 
 
@@ -758,32 +718,6 @@ wheelRound.bets.forEach(o => {
       winAmount
     });
   }
-
-
-  // ================================
-// 🏆 CỘNG TOP THẮNG TRONG NGÀY
-// ================================
-const topDay = loadWheelTopDay();
-
-roundWinners.forEach(w => {
-  topDay[w.uid] ||= {
-    uid: w.uid,
-    name: w.name,
-    totalWin: 0
-  };
-
-  topDay[w.uid].totalWin += w.winAmount;
-});
-
-saveWheelTopDay(topDay);
-
-// 🔔 emit TOP 10 realtime
-const top10Day = Object.values(topDay)
-  .sort((a,b)=> b.totalWin - a.totalWin)
-  .slice(0,10);
-
-io.emit("wheel-top-day", top10Day);
-
 
   // ============================
   // 📜 LƯU LỊCH SỬ CƯỢC CỦA USER
@@ -967,15 +901,6 @@ socket.emit("wheel-round-count", {
 });
 
   
-// 🏆 gửi top winners trong ngày cho user mới
-const topDay = loadWheelTopDay();
-const top10Day = Object.values(topDay)
-  .sort((a,b)=> b.totalWin - a.totalWin)
-  .slice(0,10);
-
-socket.emit("wheel-top-day", top10Day);
-
-
 // ================================
 // 🎡 GAME WHEEL – SERVER SIDE
 // ================================
