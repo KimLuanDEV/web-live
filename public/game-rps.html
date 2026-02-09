@@ -302,21 +302,24 @@ body{
 }
 
 
-/* ===== WAITING OVERLAY ===== */
+/* ===== WAITING INLINE STATE ===== */
 .rps-wait-overlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.75);
-  backdrop-filter: blur(8px);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:9000;
+  position: relative;        /* ❗ KHÔNG fixed */
+  width: 100%;
+  max-width: 360px;
+  margin: 16px auto;
+  background: rgba(0,0,0,.6);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 30px rgba(0,255,180,.35);
 }
 
 .rps-wait-overlay.hidden{
-  display:none;
+  display: none;
 }
+
 
 .rps-wait-box{
   text-align:center;
@@ -410,6 +413,31 @@ body{
     <div class="rps-hand" data-hand="scissors">✌️</div>
   </div>
 
+
+
+
+<!-- ⏳ WAITING RESULT OVERLAY (GLOBAL) -->
+<div class="rps-wait-overlay hidden" id="waitOverlay">
+  <div class="rps-wait-box">
+
+    <div class="rps-wait-spinner">
+      <span>✊</span>
+      <span>✋</span>
+      <span>✌️</span>
+    </div>
+
+    <div class="rps-wait-title">
+      Hệ thống đang quay
+    </div>
+
+    <div class="rps-wait-sub">
+      Vui lòng chờ kết quả…
+    </div>
+
+  </div>
+</div>
+
+
   <!-- RESULT -->
   <div class="rps-result" id="resultBox"></div>
 
@@ -477,28 +505,6 @@ body{
 </main>
 
 
-
-
-<!-- ⏳ WAITING RESULT OVERLAY (GLOBAL) -->
-<div class="rps-wait-overlay hidden" id="waitOverlay">
-  <div class="rps-wait-box">
-
-    <div class="rps-wait-spinner">
-      <span>✊</span>
-      <span>✋</span>
-      <span>✌️</span>
-    </div>
-
-    <div class="rps-wait-title">
-      Hệ thống đang quay
-    </div>
-
-    <div class="rps-wait-sub">
-      Vui lòng chờ kết quả…
-    </div>
-
-  </div>
-</div>
 
 
 <script src="/socket.io/socket.io.js"></script>
