@@ -52,7 +52,8 @@ function stopCountdownSlotGlow(){
 
 
 (function setupOrbSlots(){
-  const slots = document.querySelectorAll(".orb-slot");
+  const slots = document.querySelectorAll(".orb-wedge");
+
   if (!slots.length) return;
 
   const radius = 110;
@@ -1097,6 +1098,5 @@ function updateRoundCountUI(){
 document.querySelector(".orb-wheel")?.classList.add("spinning");
 
 
-
-
-
+document.querySelector(".orb-wedges")
+  ?.classList.toggle("running", true);
