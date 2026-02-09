@@ -65,19 +65,19 @@ body{
 }
 
 .rps-stage{
-  position: fixed;
-  top: 56px;           /* header */
-  left: 0;
-  right: 0;
-  bottom: 260px;       /* bet-sheet THỰC TẾ */
+  min-height: 100vh;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
 
-  overflow-y: auto;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior: contain;
+  padding-top: 56px;      /* = header */
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 280px;  /* = bet sheet */
 
-  padding: 16px;
-  box-sizing: border-box;
+  box-shadow:none;        /* ❌ bỏ shadow gây ảo giác height */
 }
+
 
 
 
