@@ -323,3 +323,20 @@ function clearBetHighlight(){
   betBtns.forEach(b=>b.classList.remove("active"));
   betPctBtns.forEach(b=>b.classList.remove("active"));
 }
+
+
+const resetBetBtn = document.getElementById("resetBet");
+
+if(resetBetBtn){
+  resetBetBtn.onclick = ()=>{
+    betCoin = 0;
+    betValue.textContent = "0";
+
+    clearBetHighlight();
+
+    playBtn.disabled = true;
+    statusMsg.textContent = myHand
+      ? "Chọn lại vốn đầu tư"
+      : "Chọn tay trước";
+  };
+}

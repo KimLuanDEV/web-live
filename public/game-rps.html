@@ -492,6 +492,27 @@ body{
 }
 
 
+.bet-btn.reset{
+  grid-column: 1 / -1;      /* chiếm trọn 3 cột */
+  height: 48px;
+  font-size: 16px;
+  font-weight: 900;
+  color: #ffb400;
+
+  background: rgba(255,180,0,.15);
+  border: 1px dashed rgba(255,180,0,.7);
+
+  box-shadow:
+    0 0 18px rgba(255,180,0,.45),
+    inset 0 0 10px rgba(255,180,0,.2);
+}
+
+.bet-btn.reset:hover{
+  box-shadow:
+    0 0 26px rgba(255,180,0,.8),
+    inset 0 0 14px rgba(255,180,0,.35);
+}
+
 
 </style>
 </head>
@@ -609,21 +630,30 @@ body{
     <button class="bet-pct allin" data-pct="100">ALL IN</button>
   </div>
 
-  <!-- QUICK BET -->
-  <div class="bet-row grid-3">
-    <button class="bet-btn" data-bet="10">10</button>
-    <button class="bet-btn" data-bet="50">50</button>
-    <button class="bet-btn" data-bet="100">100</button>
+<!-- QUICK BET -->
+<div class="bet-row grid-3">
+  <button class="bet-btn" data-bet="10">10</button>
+  <button class="bet-btn" data-bet="50">50</button>
+  <button class="bet-btn" data-bet="100">100</button>
 
-    <button class="bet-btn" data-bet="500">500</button>
-    <button class="bet-btn" data-bet="1000">1K</button>
-    <button class="bet-btn" data-bet="5000">5K</button>
-  </div>
+  <button class="bet-btn" data-bet="500">500</button>
+  <button class="bet-btn" data-bet="1000">1K</button>
+  <button class="bet-btn" data-bet="5000">5K</button>
+</div>
 
+<!-- RESET BET -->
+<div class="bet-row grid-3">
+  <button class="bet-btn reset" id="resetBet">
+    RESET
+  </button>
+</div>
+
+
+  
   <!-- ACTION -->
   <div class="rps-action">
     <button class="rps-btn" id="playBtn" disabled>
-      ⚔️ BẮT ĐẦU
+      Chốt lệnh
     </button>
   </div>
 
