@@ -2276,188 +2276,7 @@ body::before{
   }
 }
 
-/* CONTAINER */
-.orb-wedges{
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  overflow:hidden;
-}
 
-/* 1 MẢNH GHÉP */
-.orb-wedge{
-  position:absolute;
-  inset:0;
-  clip-path: polygon(
-    50% 50%,   /* tâm trục */
-    100% 0%,
-    100% 100%
-  );
-
-  transform-origin: 50% 50%;
-
-  background:
-    radial-gradient(
-      circle at 30% 30%,
-      #2a2a2a,
-      #0c0c0c 70%
-    );
-
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.08),
-    inset 0 0 30px rgba(0,0,0,.9);
-}
-
-/* xoay từng mảnh */
-.orb-wedge:nth-child(1){ transform: rotate(0deg); }
-.orb-wedge:nth-child(2){ transform: rotate(45deg); }
-.orb-wedge:nth-child(3){ transform: rotate(90deg); }
-.orb-wedge:nth-child(4){ transform: rotate(135deg); }
-.orb-wedge:nth-child(5){ transform: rotate(180deg); }
-.orb-wedge:nth-child(6){ transform: rotate(225deg); }
-.orb-wedge:nth-child(7){ transform: rotate(270deg); }
-.orb-wedge:nth-child(8){ transform: rotate(315deg); }
-
-/* TEXT */
-.orb-wedge span{
-  position:absolute;
-  left:72%;
-  top:50%;
-  transform: translate(-50%,-50%) rotate(90deg);
-
-  font-size:14px;
-  font-weight:900;
-  color:#ffd700;
-
-  text-shadow:
-    0 0 6px rgba(255,215,0,.6),
-    0 2px 4px rgba(0,0,0,.9);
-}
-
-
-/* WEDGE ĐANG CHẠY */
-.orb-wedge.running{
-  background:
-    radial-gradient(
-      circle at 30% 30%,
-      #8ab4ff,
-      #1b2a55 70%
-    );
-
-  box-shadow:
-    0 0 30px rgba(120,180,255,.9),
-    inset 0 0 20px rgba(120,180,255,.6);
-}
-
-/* WEDGE TRÚNG */
-.orb-wedge.active{
-  background:
-    radial-gradient(
-      circle at 30% 30%,
-      #fff3c4,
-      #ffb300 70%
-    );
-
-  box-shadow:
-    0 0 60px rgba(255,215,0,1),
-    inset 0 0 30px rgba(255,160,0,.9);
-}
-
-.orb-wedge.active span{
-  color:#000;
-  text-shadow:none;
-}
-
-/* ================= METAL DIVIDERS ================= */
-.orb-wedges::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:5;
-
-  /* 🔩 RÃNH KIM LOẠI CHIA 8 MẢNH */
-  background:
-    repeating-conic-gradient(
-      from -90deg,
-      rgba(0,0,0,0) 0deg 43deg,
-      rgba(255,215,0,.55) 43deg 44deg,
-      rgba(40,40,40,1) 44deg 45deg
-    );
-
-  /* tạo độ sâu */
-  box-shadow:
-    inset 0 0 0 1px rgba(255,255,255,.08),
-    inset 0 0 22px rgba(0,0,0,.9);
-}
-
-.orb-engine::after{
-  content:"";
-  position:absolute;
-  inset:-4px;
-  border-radius:50%;
-
-  background:
-    radial-gradient(
-      circle,
-      rgba(255,215,0,.8),
-      rgba(255,215,0,.3),
-      rgba(0,0,0,0) 70%
-    );
-
-  box-shadow:
-    0 0 18px rgba(255,215,0,.8);
-}
-
-
-
-/* Khi có slot chạy → rãnh sáng nhẹ */
-.orb-wedges.running::after{
-  filter: brightness(1.4);
-}
-
-
-/* Khi có slot chạy → rãnh sáng nhẹ */
-.orb-wedges.running::after{
-  filter: brightness(1.4);
-}
-
-
-.orb-wedges::after{
-  mix-blend-mode: overlay;
-}
-
-.orb-rim{
-  box-shadow:
-    inset 0 0 0 2px rgba(255,215,0,.35),
-    inset 0 0 14px rgba(0,0,0,.9);
-}
-
-
-.orb-wedge{
-  position:absolute;
-  inset:0;
-  transform-origin:50% 50%;
-}
-
-/* mỗi mảnh 45deg */
-.orb-wedge{
-  --i: attr(data-i number);
-  transform: rotate(calc(var(--i) * 45deg));
-}
-
-.orb-wedge span{
-  position:absolute;
-  left:50%;
-  top:14%;           /* đẩy ra gần viền */
-  transform:
-    translate(-50%,0)
-    rotate(calc(var(--i) * -45deg));
-
-  font-weight:900;
-  color:#ffd700;
-}
 
 
 
@@ -2526,16 +2345,16 @@ body::before{
     </div>
 
     <!-- 🎯 SLOT -->
-<div class="orb-wedges">
-  <div class="orb-wedge" data-i="0"><span>x0.5</span></div>
-  <div class="orb-wedge" data-i="1"><span>x1.2</span></div>
-  <div class="orb-wedge" data-i="2"><span>x1.5</span></div>
-  <div class="orb-wedge" data-i="3"><span>x2</span></div>
-  <div class="orb-wedge" data-i="4"><span>x5</span></div>
-  <div class="orb-wedge" data-i="5"><span>x10</span></div>
-  <div class="orb-wedge" data-i="6"><span>x2</span></div>
-  <div class="orb-wedge" data-i="7"><span>x1.5</span></div>
-</div>
+    <div class="orb-slots">
+      <div class="orb-slot"><span>x0.5</span></div>
+      <div class="orb-slot"><span>x1.2</span></div>
+      <div class="orb-slot"><span>x1.5</span></div>
+      <div class="orb-slot"><span>x2</span></div>
+      <div class="orb-slot"><span>x5</span></div>
+      <div class="orb-slot"><span>x10</span></div>
+      <div class="orb-slot"><span>x2</span></div>
+      <div class="orb-slot"><span>x1.5</span></div>
+    </div>
 
     <!-- ⚙️ TRỤC NĂNG LƯỢNG -->
     <div class="orb-core" id="orbCore">--</div>
