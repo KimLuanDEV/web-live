@@ -107,7 +107,5 @@ function closePortfolio(){
 
 
 function openArenaGame(){
-  alert("⚔️ Game Đấu trường thời gian sẽ ra mắt sớm!");
-  // sau này chỉ cần:
-  // location.href = "/game-arena.html";
+ location.href = "/game-arena.html";
 }
