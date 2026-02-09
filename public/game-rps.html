@@ -238,6 +238,13 @@ body{
 }
 
 
+.rps-wallet{
+  font-weight:800;
+  color:#00ffb0;
+  text-shadow:0 0 12px rgba(0,255,180,.7);
+}
+
+
 
 </style>
 </head>
@@ -248,7 +255,10 @@ body{
 <header class="rps-header">
   <button class="back-btn" onclick="history.back()">←</button>
   <div class="rps-title">Kéo • Búa • Bao</div>
-  <div style="width:24px"></div>
+  <div class="rps-wallet">
+  💎 <span id="myCoins">0</span>
+</div>
+
 </header>
 
 <!-- ===== STAGE ===== -->
@@ -315,6 +325,17 @@ body{
 });
 
 
+const myCoinsEl = document.getElementById("myCoins");
+
+// 💎 realtime wallet (profile.coins)
+socket.on("coin-update", data=>{
+  if(typeof data.coins === "number"){
+    myCoinsEl.textContent = data.coins;
+  }
+});
+
+
+
 // ================================
 // ⏱️ RPS COUNTDOWN (SERVER SYNC)
 // ================================
@@ -356,6 +377,11 @@ function startRpsCountdown(){
 
 
 socket.on("rps-round-result", data=>{
+  if(!myHand){
+    statusMsg.textContent = "Round kết thúc";
+    return;
+  }
+
   const enemy = data.enemyHand;
 
   let icon="😐", text="HÒA";
@@ -429,11 +455,6 @@ playBtn.onclick = async ()=>{
 
 };
 
-
-function randomHand(){
-  return ["rock","paper","scissors"][Math.floor(Math.random()*3)];
-}
-
 function calcResult(me, enemy){
   if(me === enemy) return "draw";
   if(
@@ -443,26 +464,6 @@ function calcResult(me, enemy){
   ) return "win";
   return "lose";
 }
-
-function showResult(me, enemy, result, server){
-  let icon="😐", text="HÒA";
-
-  if(result==="win"){ icon="🔥"; text=`THẮNG +${server.win} 💎`; }
-  if(result==="lose"){ icon="💥"; text=`THUA -${server.lose} 💎`; }
-
-  resultBox.innerHTML = `
-    <div class="icon">${icon}</div>
-    <div class="text">${text}</div>
-  `;
-
-  betCoin = 0;
-  betValue.textContent = "0";
-  betInput.value = "";
-  hands.forEach(h=>h.classList.remove("active"));
-  statusMsg.textContent = "Chọn tay để chơi tiếp";
-}
-
-
 
 
 
