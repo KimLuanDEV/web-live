@@ -245,6 +245,37 @@ body{
 }
 
 
+.rps-server-result{
+  width:100%;
+  max-width:360px;
+  margin-top:12px;
+  padding:12px;
+  border-radius:16px;
+  background:rgba(0,0,0,.6);
+  box-shadow:0 0 22px rgba(0,255,180,.25);
+  font-size:14px;
+}
+
+.rps-server-result.hidden{
+  display:none;
+}
+
+.sr-title{
+  font-weight:900;
+  margin-bottom:8px;
+  color:#00ffb0;
+}
+
+.sr-row{
+  display:flex;
+  justify-content:space-between;
+  margin-top:4px;
+}
+
+.sr-win{ color:#00ffb0; }
+.sr-lose{ color:#ff4d4d; }
+.sr-draw{ color:#ffc44d; }
+
 
 </style>
 </head>
@@ -284,6 +315,27 @@ body{
 
   <!-- RESULT -->
   <div class="rps-result" id="resultBox"></div>
+
+<!-- 🧾 SERVER RESULT DETAIL -->
+<div class="rps-server-result hidden" id="serverResult">
+  <div class="sr-title">Kết quả từ hệ thống</div>
+
+  <div class="sr-row">
+    <span>Hệ thống ra:</span>
+    <b id="srEnemy">---</b>
+  </div>
+
+  <div class="sr-row">
+    <span>Kết quả:</span>
+    <b id="srOutcome">---</b>
+  </div>
+
+  <div class="sr-row">
+    <span>Thay đổi kim cương:</span>
+    <b id="srCoin">0</b>
+  </div>
+</div>
+
 
 
 
@@ -377,33 +429,67 @@ function startRpsCountdown(){
 
 
 socket.on("rps-round-result", data=>{
+  const panel = document.getElementById("serverResult");
+  const enemyEl = document.getElementById("srEnemy");
+  const outcomeEl = document.getElementById("srOutcome");
+  const coinEl = document.getElementById("srCoin");
+
+  panel.classList.remove("hidden");
+
+  // map tay server
+  const handMap = {
+    rock: "✊ Búa",
+    paper: "✋ Bao",
+    scissors: "✌️ Kéo"
+  };
+
+  enemyEl.textContent = handMap[data.enemyHand] || "---";
+
+  // ❌ user không vào lệnh
   if(!myHand){
+    outcomeEl.textContent = "Không tham gia";
+    outcomeEl.className = "sr-draw";
+    coinEl.textContent = "0";
     statusMsg.textContent = "Round kết thúc";
+    playBtn.disabled = true;
     return;
   }
 
-  const enemy = data.enemyHand;
+  const result = calcResult(myHand, data.enemyHand);
 
-  let icon="😐", text="HÒA";
-  const result = calcResult(myHand, enemy);
+  let coinChange = 0;
+  let text = "";
 
-  if(result==="win"){ icon="🔥"; text="THẮNG"; }
-  if(result==="lose"){ icon="💥"; text="THUA"; }
+  if(result === "win"){
+    text = "THẮNG";
+    coinChange = betCoin * 2;
+    outcomeEl.className = "sr-win";
+  }else if(result === "lose"){
+    text = "THUA";
+    coinChange = -betCoin;
+    outcomeEl.className = "sr-lose";
+  }else{
+    text = "HOÀ";
+    coinChange = betCoin;
+    outcomeEl.className = "sr-draw";
+  }
 
-  resultBox.innerHTML = `
-    <div class="icon">${icon}</div>
-    <div class="text">${text}</div>
-  `;
+  outcomeEl.textContent = text;
+  coinEl.textContent =
+    (coinChange > 0 ? "+" : "") + coinChange + " 💎";
 
   playBtn.disabled = true;
   statusMsg.textContent = "⏳ Đợi round mới";
 });
 
 
+
 socket.on("rps-round-new", data=>{
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = data.roundId;
   startRpsCountdown();
+
+  document.getElementById("serverResult").classList.add("hidden");
 
   playBtn.disabled = false;
   myHand = null;
