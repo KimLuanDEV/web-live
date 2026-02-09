@@ -57,6 +57,11 @@ function startRpsCountdown(){
 
 
 socket.on("rps-round-result", data=>{
+
+document.getElementById("waitOverlay")
+  .classList.add("hidden");
+
+
   const panel = document.getElementById("serverResult");
   const enemyEl = document.getElementById("srEnemy");
   const outcomeEl = document.getElementById("srOutcome");
@@ -116,6 +121,12 @@ socket.on("rps-round-result", data=>{
 
 
 socket.on("rps-round-new", data=>{
+
+    
+document.getElementById("waitOverlay")
+  .classList.add("hidden");
+
+
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = data.roundId;
   startRpsCountdown();
@@ -159,6 +170,11 @@ playBtn.onclick = async ()=>{
 
   playBtn.disabled = true;
   statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
+
+document.getElementById("waitOverlay")
+  .classList.remove("hidden");
+
+
 
   await fetch("/api/rps/bet",{
     method:"POST",
