@@ -64,6 +64,9 @@ socket.on("rps-round-result", data=>{
 
   panel.classList.remove("hidden");
 
+  document.getElementById("serverOverlay")
+  .classList.remove("hidden");
+
   // map tay server
   const handMap = {
     rock: "✊ Búa",
@@ -117,7 +120,9 @@ socket.on("rps-round-new", data=>{
   rpsRoundEl.textContent = data.roundId;
   startRpsCountdown();
 
-  document.getElementById("serverResult").classList.add("hidden");
+  document.getElementById("serverOverlay")
+  .classList.add("hidden");
+
 
   playBtn.disabled = false;
   myHand = null;
@@ -202,3 +207,9 @@ betInput.oninput = ()=>{
   betCoin = Math.max(0, Number(betInput.value || 0));
   betValue.textContent = betCoin;
 };
+
+
+function closeRpsResult(){
+  document.getElementById("serverOverlay")
+    .classList.add("hidden");
+}

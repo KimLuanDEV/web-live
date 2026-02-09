@@ -21,7 +21,7 @@ html,body{
 body{
   background:
     radial-gradient(circle at top, rgba(0,255,180,.15), transparent 60%),
-    url("/assets/bg/rps.jpg") center / cover no-repeat fixed;
+    url("/assets/bg/rps1.jpg") center / cover no-repeat fixed;
 }
 
 /* ===== HEADER ===== */
@@ -277,6 +277,31 @@ body{
 .sr-draw{ color:#ffc44d; }
 
 
+.rps-result-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.65);
+  backdrop-filter: blur(6px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.rps-result-overlay.hidden{
+  display:none;
+}
+
+.rps-result-box{
+  width:90%;
+  max-width:360px;
+  padding:18px;
+  border-radius:20px;
+  background:rgba(0,0,0,.9);
+  box-shadow:0 0 40px rgba(0,255,180,.45);
+}
+
+
 </style>
 </head>
 
@@ -317,7 +342,10 @@ body{
   <div class="rps-result" id="resultBox"></div>
 
 <!-- 🧾 SERVER RESULT DETAIL -->
-<div class="rps-server-result hidden" id="serverResult">
+<div class="rps-result-overlay hidden" id="serverOverlay">
+  <div class="rps-server-result" id="serverResult">
+
+
   <div class="sr-title">Kết quả từ hệ thống</div>
 
   <div class="sr-row">
@@ -333,6 +361,13 @@ body{
   <div class="sr-row">
     <span>Thay đổi kim cương:</span>
     <b id="srCoin">0</b>
+  </div>
+
+  <button class="rps-btn" onclick="closeRpsResult()">
+  OK
+</button>
+
+
   </div>
 </div>
 
