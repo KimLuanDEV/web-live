@@ -11,8 +11,21 @@ const myCoinsEl = document.getElementById("myCoins");
 socket.on("coin-update", data=>{
   if(typeof data.coins === "number"){
     myCoinsEl.textContent = data.coins;
+
+    // 🔒 HẾT COIN → KHÓA CƯỢC
+    if(data.coins <= 0){
+      playBtn.disabled = true;
+      statusMsg.textContent = "💎 Bạn đã hết kim cương";
+
+      betBtns.forEach(b=>b.disabled = true);
+      betInput.disabled = true;
+    }else{
+      betBtns.forEach(b=>b.disabled = false);
+      betInput.disabled = false;
+    }
   }
 });
+
 
 
 
@@ -155,6 +168,17 @@ document.getElementById("waitOverlay")
   betValue.textContent = "0";
   hands.forEach(h=>h.classList.remove("active"));
   statusMsg.textContent = "Round mới – chọn tay";
+
+// mở lại cược nếu còn coin
+const myCoins = Number(myCoinsEl.textContent || 0);
+if(myCoins > 0){
+  playBtn.disabled = false;
+  betBtns.forEach(b=>b.disabled = false);
+  betInput.disabled = false;
+}
+
+
+
 });
 
 
@@ -180,17 +204,27 @@ hands.forEach(el=>{
 
 playBtn.onclick = async ()=>{
   if(!myHand) return;
-  if(!betCoin) return alert("Chọn số coin cược");
+
+  const myCoins = Number(myCoinsEl.textContent || 0);
+
+  if(!betCoin || betCoin <= 0){
+    alert("Chọn số kim cương cược");
+    return;
+  }
+
+  // ⛔ KHÔNG ĐỦ COIN → CHẶN NGAY TỪ CLIENT
+  if(betCoin > myCoins){
+    alert("💎 Không đủ kim cương để đặt cược");
+    return;
+  }
 
   playBtn.disabled = true;
   statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 
-document.getElementById("waitOverlay")
-  .classList.remove("hidden");
+  document.getElementById("waitOverlay")
+    .classList.remove("hidden");
 
-
-
-  await fetch("/api/rps/bet",{
+  const res = await fetch("/api/rps/bet",{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -200,9 +234,17 @@ document.getElementById("waitOverlay")
       bet: betCoin,
       hand: myHand
     })
-  });
+  }).then(r=>r.json());
 
+  // ⛔ SERVER TỪ CHỐI → MỞ LẠI UI
+  if(!res.ok){
+    alert(res.message || "Không thể đặt cược");
+    playBtn.disabled = false;
+    document.getElementById("waitOverlay")
+      .classList.add("hidden");
+  }
 };
+
 
 function calcResult(me, enemy){
   if(me === enemy) return "draw";
