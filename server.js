@@ -661,6 +661,36 @@ ensureWheelSecret(wheelRound);
 
 
 // ================================
+// ✊✋✌️ RPS ROUND STATE (GLOBAL)
+// ================================
+let rpsRound = {
+  id: Date.now(),
+  startAt: Date.now(),
+  endAt: Date.now() + 60000,
+  secretHand: pickRpsHand(), // 🔐 CHỐT NGAY
+  bets: [] // { uid, hand, bet }
+};
+
+function pickRpsHand(){
+  return ["rock","paper","scissors"][
+    Math.floor(Math.random()*3)
+  ];
+}
+
+function calcRps(me, enemy){
+  if(me === enemy) return "draw";
+  if(
+    (me==="rock" && enemy==="scissors") ||
+    (me==="paper" && enemy==="rock") ||
+    (me==="scissors" && enemy==="paper")
+  ) return "win";
+  return "lose";
+}
+
+
+
+
+// ================================
 // ⏱️ AUTO SPIN WHEEL EVERY 60s
 // ================================
 setInterval(() => {
@@ -869,6 +899,74 @@ io.emit("wheel-round-count", {
 }, 60000);
 
 
+// ================================
+// ⏱️ AUTO RPS RESULT EVERY 60s
+// ================================
+setInterval(() => {
+  try {
+    const users = loadUsers();
+    const enemy = rpsRound.secretHand;
+
+    rpsRound.bets.forEach(o=>{
+      const me = users[o.uid];
+      if(!me?.profile) return;
+
+      const result = calcRps(o.hand, enemy);
+
+      let win = 0;
+
+      if(result === "win"){
+        win = o.bet * 2; // 🔥 thắng x2
+        me.profile.coins += win;
+      }
+
+      if(result === "draw"){
+        me.profile.coins += o.bet; // hoàn tiền
+      }
+
+      me.rpsHistory ||= [];
+      me.rpsHistory.unshift({
+        roundId: rpsRound.id,
+        ts: Date.now(),
+        myHand: o.hand,
+        enemy,
+        bet: o.bet,
+        result,
+        win
+      });
+
+      emitCoinUpdate(o.uid);
+    });
+
+    saveUsers(users);
+
+    // 🔔 emit kết quả cho client
+    io.emit("rps-round-result",{
+      roundId: rpsRound.id,
+      enemyHand: enemy
+    });
+
+    // 🔄 round mới
+    const id = Date.now();
+    rpsRound = {
+      id,
+      startAt: id,
+      endAt: id + 60000,
+      secretHand: pickRpsHand(),
+      bets: []
+    };
+
+    io.emit("rps-round-new",{
+      roundId: rpsRound.id,
+      endAt: rpsRound.endAt
+    });
+
+  } catch(e){
+    console.error("❌ RPS ROUND ERROR", e);
+  }
+}, 60000);
+
+
 
 // ================================
 // 🔐 SOCKET AUTH & FORCE LOGOUT (FIX)
@@ -901,6 +999,13 @@ socket.emit("wheel-round-count", {
 });
 
   
+// ✊✋✌️ RPS ROUND INFO
+socket.emit("rps-round-new",{
+  roundId: rpsRound.id,
+  endAt: rpsRound.endAt
+});
+
+
 // ================================
 // 🎡 GAME WHEEL – SERVER SIDE
 // ================================
@@ -1252,18 +1357,17 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
-// ================================
-// ✊✋✌️ RPS BET
-// ================================
 app.post("/api/rps/bet",(req,res)=>{
   const uid = req.headers["x-uid"];
-  const { bet, result } = req.body;
+  const { bet, hand } = req.body;
 
-  if(!uid) return res.json({ ok:false });
+  if(!uid || !hand)
+    return res.json({ ok:false });
 
   const users = loadUsers();
   const me = users[uid];
-  if(!me?.profile) return res.json({ ok:false });
+  if(!me?.profile)
+    return res.json({ ok:false });
 
   const coin = Math.floor(Number(bet));
   if(!coin || coin <= 0)
@@ -1272,31 +1376,27 @@ app.post("/api/rps/bet",(req,res)=>{
   if(me.profile.coins < coin)
     return res.json({ ok:false, message:"NOT_ENOUGH_COIN" });
 
-  let win = 0, lose = 0;
+  // ⛔ mỗi round chỉ 1 lệnh
+  if (rpsRound.bets.some(b => b.uid === uid))
+    return res.json({ ok:false, message:"ALREADY_BET" });
 
-  if(result === "win"){
-    win = coin;          // 🔥 x2 tổng nhận
-    me.profile.coins += win;
-  }
-
-  if(result === "lose"){
-    lose = coin;
-    me.profile.coins -= coin;
-  }
-
-  // hòa → không trừ không cộng
-
+  // 🔻 trừ coin NGAY
+  me.profile.coins -= coin;
   saveUsers(users);
   emitCoinUpdate(uid);
 
+  rpsRound.bets.push({
+    uid,
+    hand,
+    bet: coin
+  });
+
   return res.json({
     ok:true,
-    win,
-    lose,
-    coins: me.profile.coins
+    roundId: rpsRound.id,
+    endAt: rpsRound.endAt
   });
 });
-
 
 
 

@@ -278,6 +278,39 @@ body{
 </main>
 
 <script>
+
+    const socket = io({
+  auth:{
+    uid: JSON.parse(localStorage.getItem("user_profile"))?.uid
+  }
+});
+
+socket.on("rps-round-result", data=>{
+  const enemy = data.enemyHand;
+
+  let icon="😐", text="HÒA";
+  const result = calcResult(myHand, enemy);
+
+  if(result==="win"){ icon="🔥"; text="THẮNG"; }
+  if(result==="lose"){ icon="💥"; text="THUA"; }
+
+  resultBox.innerHTML = `
+    <div class="icon">${icon}</div>
+    <div class="text">${text}</div>
+  `;
+
+  statusMsg.textContent = "Round kết thúc – chờ round mới";
+});
+
+socket.on("rps-round-new", data=>{
+  playBtn.disabled = false;
+  myHand = null;
+  betCoin = 0;
+  betValue.textContent = "0";
+  hands.forEach(h=>h.classList.remove("active"));
+  statusMsg.textContent = "Round mới – chọn tay";
+});
+
 /* ================= RPS LOGIC (BASIC) ================= */
 
 const hands = document.querySelectorAll(".rps-hand");
@@ -297,21 +330,15 @@ hands.forEach(el=>{
   };
 });
 
+
 playBtn.onclick = async ()=>{
   if(!myHand) return;
-  if(!betCoin || betCoin <= 0){
-    alert("Vui lòng chọn số coin cược");
-    return;
-  }
+  if(!betCoin) return alert("Chọn số coin cược");
 
   playBtn.disabled = true;
-  statusMsg.textContent = "Đang so tay...";
+  statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 
-  const enemy = randomHand();
-  const result = calcResult(myHand, enemy);
-
-  // 🔥 gửi server xử lý coin
-  const res = await fetch("/api/rps/bet",{
+  await fetch("/api/rps/bet",{
     method:"POST",
     headers:{
       "Content-Type":"application/json",
@@ -319,11 +346,10 @@ playBtn.onclick = async ()=>{
     },
     body: JSON.stringify({
       bet: betCoin,
-      result
+      hand: myHand
     })
-  }).then(r=>r.json());
+  });
 
-  showResult(myHand, enemy, result, res);
 };
 
 
