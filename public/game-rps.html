@@ -514,6 +514,38 @@ body{
 }
 
 
+/* ===== BET BOTTOM SHEET ===== */
+.bet-sheet{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+
+  display: flex;
+  justify-content: center;
+
+  padding: 12px 12px 16px;
+  background: linear-gradient(
+    to top,
+    rgba(0,0,0,.9),
+    rgba(0,0,0,.6),
+    transparent
+  );
+}
+
+/* đẩy nội dung trên không bị che */
+.rps-stage{
+  padding-bottom: 320px; /* chỉnh theo chiều cao bet panel */
+}
+
+
+
+.bet-sheet .rps-bet.pro{
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
 </style>
 </head>
 
@@ -612,53 +644,50 @@ body{
 
 
 
-<!-- 💎 BET PANEL PRO -->
-<div class="rps-bet pro">
+<!-- 💎 BET BOTTOM SHEET -->
+<div class="bet-sheet">
 
-  <!-- INFO -->
-  <div class="bet-info big">
-    Vốn đầu tư
-    <div class="bet-amount">
-      <span id="betValue">0</span> 💎
+  <div class="rps-bet pro">
+
+    <!-- INFO -->
+    <div class="bet-info big">
+      Vốn đầu tư
+      <div class="bet-amount">
+        <span id="betValue">0</span> 💎
+      </div>
     </div>
+
+    <!-- % BET -->
+    <div class="bet-percent grid-3">
+      <button class="bet-pct" data-pct="25">25%</button>
+      <button class="bet-pct" data-pct="50">50%</button>
+      <button class="bet-pct allin" data-pct="100">ALL IN</button>
+    </div>
+
+    <!-- QUICK BET -->
+    <div class="bet-row grid-3">
+      <button class="bet-btn" data-bet="10">10</button>
+      <button class="bet-btn" data-bet="50">50</button>
+      <button class="bet-btn" data-bet="100">100</button>
+      <button class="bet-btn" data-bet="500">500</button>
+      <button class="bet-btn" data-bet="1000">1K</button>
+      <button class="bet-btn" data-bet="5000">5K</button>
+    </div>
+
+    <!-- RESET -->
+    <div class="bet-row grid-3">
+      <button class="bet-btn reset" id="resetBet">RESET</button>
+    </div>
+
+    <!-- ACTION -->
+    <div class="rps-action">
+      <button class="rps-btn" id="playBtn" disabled>
+        Chốt lệnh
+      </button>
+    </div>
+
   </div>
-
-  <!-- % BET -->
-  <div class="bet-percent grid-3">
-    <button class="bet-pct" data-pct="25">25%</button>
-    <button class="bet-pct" data-pct="50">50%</button>
-    <button class="bet-pct allin" data-pct="100">ALL IN</button>
-  </div>
-
-<!-- QUICK BET -->
-<div class="bet-row grid-3">
-  <button class="bet-btn" data-bet="10">10</button>
-  <button class="bet-btn" data-bet="50">50</button>
-  <button class="bet-btn" data-bet="100">100</button>
-
-  <button class="bet-btn" data-bet="500">500</button>
-  <button class="bet-btn" data-bet="1000">1K</button>
-  <button class="bet-btn" data-bet="5000">5K</button>
 </div>
-
-<!-- RESET BET -->
-<div class="bet-row grid-3">
-  <button class="bet-btn reset" id="resetBet">
-    RESET
-  </button>
-</div>
-
-
-  
-  <!-- ACTION -->
-  <div class="rps-action">
-    <button class="rps-btn" id="playBtn" disabled>
-      Chốt lệnh
-    </button>
-  </div>
-
-</div>
-
 
 
 
