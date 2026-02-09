@@ -106,6 +106,6 @@ function closePortfolio(){
 }
 
 
-function openArenaGame(){
- location.href = "/game-arena.html";
+function openRPSGame(){
+  location.href = "/game-rps.html"; // trang game sau này
 }
