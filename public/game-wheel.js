@@ -18,6 +18,8 @@ let topWinners = []; // 🏆 TOP WINNERS (từ server)
 let roundCountToday = 1; // server sẽ gửi
 let countdownSlotTimer = null;
 let countdownSlotIndex = 0;
+let topDayWinners = []; // 🏆 TOP 10 THẮNG TRONG NGÀY
+
 
 
 function stepCountdownSlot(){
@@ -298,6 +300,13 @@ socket.on("wheel-top-winners", list => {
   renderTopWinners();
 });
 
+// 🏆 TOP 10 THẮNG NHIỀU NHẤT TRONG NGÀY
+socket.on("wheel-top-day", list => {
+  if (!Array.isArray(list)) return;
+  topDayWinners = list;
+  renderTopDayWinners();
+});
+
 
 
 
@@ -536,6 +545,10 @@ stopCountdownSlotGlow();
     setActionText("VÀO LỆNH");
 
     spinning = false;
+
+renderTopDayWinners();
+
+
   });
 });
 
@@ -1099,4 +1112,39 @@ document.querySelector(".orb-wheel")?.classList.add("spinning");
 
 
 
+function renderTopDayWinners(){
+  const wrap = document.getElementById("topDayList");
+  if (!wrap) return;
+
+  wrap.innerHTML = "";
+
+  if (!topDayWinners.length){
+    wrap.innerHTML = `
+      <div class="tw-empty">
+        Chưa có dữ liệu hôm nay
+      </div>
+    `;
+    return;
+  }
+
+  topDayWinners.slice(0,10).forEach((u, i) => {
+    const div = document.createElement("div");
+    div.className = "top-day-item";
+
+    div.innerHTML = `
+      <div class="td-rank">#${i + 1}</div>
+      <div class="td-name">${u.name || "Người chơi"}</div>
+      <div class="td-win">+${Number(u.totalWin || 0).toLocaleString()} 💎</div>
+    `;
+
+    wrap.appendChild(div);
+  });
+}
+
+
+function toggleTopDay(){
+  document
+    .getElementById("topDayPanel")
+    ?.classList.toggle("hidden");
+}
 
