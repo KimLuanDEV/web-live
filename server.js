@@ -658,6 +658,7 @@ let wheelRound = {
 
 ensureWheelSecret(wheelRound);
 
+const RPS_BET_LOCK_BEFORE_MS = 5000; // 🔒 khóa trước 5s
 
 
 // ================================
@@ -1360,6 +1361,18 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 app.post("/api/rps/bet",(req,res)=>{
   const uid = req.headers["x-uid"];
   const { bet, hand } = req.body;
+
+// ⏱️ SERVER-SIDE TIME CHECK (ANTI-LAG)
+const now = Date.now();
+const remainMs = rpsRound.endAt - now;
+
+if (remainMs <= RPS_BET_LOCK_BEFORE_MS) {
+  return res.json({
+    ok: false,
+    message: "⛔ Đã quá thời gian đặt cược"
+  });
+}
+
 
   if(!uid || !hand)
     return res.json({ ok:false });

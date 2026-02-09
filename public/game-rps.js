@@ -68,9 +68,25 @@ updateTimerRing(remain);
       rpsTimerEl.classList.add("rps-timer-warn");
     }
 
-    if(remain <= 0){
-      clearInterval(rpsTimerInterval);
-    }
+  // 🔒 KHÓA BET KHI CÒN 5 GIÂY
+if(remain <= 5){
+  lockBet();        // 🔒 khóa bet
+  lockHand();       // 🔒 khóa hand
+  playBtn.disabled = true;
+  statusMsg.textContent = "⛔ Đã khóa cược";
+}
+
+document.querySelector(".bet-sheet")
+  ?.classList.add("bet-locked");
+
+
+// ⏹ HẾT GIỜ
+if(remain <= 0){
+  clearInterval(rpsTimerInterval);
+}
+
+
+
   },300);
 }
 
@@ -162,8 +178,8 @@ hands.forEach(h=>h.classList.remove("active"));
 betBtns.forEach(b=>b.classList.remove("active"));
 betPctBtns.forEach(b=>b.classList.remove("active"));
 
+unlockHand();   // 🔓 mở chọn tay
 lockBet(); // 🔒 KHÓA BET
-
 statusMsg.textContent = "Round mới – chọn tay";
 
 });
@@ -301,6 +317,23 @@ function closeRpsResult(){
   document.getElementById("serverOverlay")
     .classList.add("hidden");
 }
+
+
+function lockHand(){
+  hands.forEach(h=>{
+    h.classList.add("bet-locked");
+    h.style.pointerEvents = "none";
+  });
+}
+
+function unlockHand(){
+  hands.forEach(h=>{
+    h.classList.remove("bet-locked");
+    h.style.pointerEvents = "auto";
+  });
+}
+
+
 
 function lockBet(){
   betBtns.forEach(b=>{
