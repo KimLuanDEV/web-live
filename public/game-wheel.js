@@ -21,8 +21,7 @@ let countdownSlotIndex = 0;
 
 
 function stepCountdownSlot(){
-  const slots  = document.querySelectorAll(".orb-wedge")
-
+  const slots  = document.querySelectorAll(".orb-slot");
   const spokes = document.querySelectorAll(".orb-spoke");
   if (!slots.length) return;
 
