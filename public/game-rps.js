@@ -92,9 +92,6 @@ if(remain <= 0){
 
 socket.on("rps-round-result", data=>{
 
-    totalRoundTime = Math.ceil(
-  (data.endAt - Date.now()) / 1000
-);
 
 
   document.getElementById("waitOverlay")?.classList.add("hidden");
@@ -153,32 +150,40 @@ socket.on("rps-round-result", data=>{
 /* ================= ROUND NEW ================= */
 
 socket.on("rps-round-new", data=>{
-
   document.getElementById("waitOverlay")?.classList.add("hidden");
 
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = data.roundId;
+
+  // ✅ SET THỜI GIAN GỐC CỦA ROUND
+  totalRoundTime = Math.max(
+    1,
+    Math.ceil((data.endAt - Date.now()) / 1000)
+  );
+
+  // ✅ RESET RING VỀ FULL
+  resetTimerRing();
+
   startRpsCountdown();
 
   document.getElementById("serverOverlay")
     .classList.add("hidden");
 
-// reset state
-myHand  = null;
-betCoin = 0;
-betValue.textContent = "0";
+  // reset state
+  myHand  = null;
+  betCoin = 0;
+  betValue.textContent = "0";
 
-playBtn.disabled = true;
+  playBtn.disabled = true;
+  hands.forEach(h=>h.classList.remove("active"));
+  betBtns.forEach(b=>b.classList.remove("active"));
+  betPctBtns.forEach(b=>b.classList.remove("active"));
 
-hands.forEach(h=>h.classList.remove("active"));
-betBtns.forEach(b=>b.classList.remove("active"));
-betPctBtns.forEach(b=>b.classList.remove("active"));
-
-unlockHand();   // 🔓 mở chọn tay
-lockBet(); // 🔒 KHÓA BET
-statusMsg.textContent = "Round mới – chọn tay";
-
+  unlockHand();
+  lockBet();
+  statusMsg.textContent = "Round mới – chọn tay";
 });
+
 
 /* ================= HAND SELECT ================= */
 
@@ -426,4 +431,17 @@ function updateTimerRing(remain){
   }else if(remain <= 20){
     timerBox.classList.add("warn");
   }
+}
+
+
+function resetTimerRing(){
+  const ring = document.querySelector(".ring-progress");
+  const timerBox = document.querySelector(".bet-timer");
+
+  if(!ring || !timerBox) return;
+
+  // FULL vòng
+  ring.style.strokeDashoffset = 0;
+
+  timerBox.classList.remove("warn","danger");
 }
