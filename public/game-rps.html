@@ -552,6 +552,76 @@ body{
   border-bottom-right-radius: 0;
 }
 
+/* ===== BET BAR FIXED BOTTOM (GIỐNG GAME WHEEL) ===== */
+.bet-sheet{
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 998;
+
+  padding: 0 env(safe-area-inset-bottom);
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,0),
+    rgba(0,0,0,.9)
+  );
+}
+
+
+.bet-sheet .rps-bet.pro{
+  width: 100%;
+  max-width: none;        /* ❗ bỏ bó chiều ngang */
+  margin: 0;
+
+  padding: 14px 14px 18px;
+  border-radius: 0;       /* ❗ phẳng như bet bar */
+
+  background: rgba(20,20,20,.96);
+
+  box-shadow:
+    0 -10px 30px rgba(0,0,0,.6),
+    inset 0 0 0 1px rgba(255,255,255,.06);
+}
+
+.grid-3{
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+
+.bet-btn.reset{
+  grid-column: 1 / -1;
+  height: 42px;
+
+  background: rgba(255,80,80,.15);
+  color: #ff8080;
+
+  border: none;
+  border-radius: 12px;
+
+  font-weight: 800;
+}
+
+.bet-sheet .rps-action{
+  margin-top: 6px;
+}
+
+.bet-sheet .rps-btn{
+  width: 100%;
+  height: 46px;
+  font-size: 16px;
+  border-radius: 14px;
+}
+
+
+body{
+  padding-bottom: 260px; /* chỉnh theo chiều cao bet bar */
+}
+
+
 </style>
 </head>
 
