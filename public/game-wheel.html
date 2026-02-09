@@ -2435,6 +2435,32 @@ body::before{
 }
 
 
+.orb-wedge{
+  position:absolute;
+  inset:0;
+  transform-origin:50% 50%;
+}
+
+/* mỗi mảnh 45deg */
+.orb-wedge{
+  --i: attr(data-i number);
+  transform: rotate(calc(var(--i) * 45deg));
+}
+
+.orb-wedge span{
+  position:absolute;
+  left:50%;
+  top:14%;           /* đẩy ra gần viền */
+  transform:
+    translate(-50%,0)
+    rotate(calc(var(--i) * -45deg));
+
+  font-weight:900;
+  color:#ffd700;
+}
+
+
+
   </style>
 </head>
 

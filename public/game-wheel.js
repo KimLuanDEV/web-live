@@ -1100,3 +1100,11 @@ document.querySelector(".orb-wheel")?.classList.add("spinning");
 
 document.querySelector(".orb-wedges")
   ?.classList.toggle("running", true);
+
+
+  const container = document.querySelector(".orb-wedges");
+container.innerHTML = multipliers.map((m, i) => `
+  <div class="orb-wedge" data-i="${i}">
+    <span>${m}</span>
+  </div>
+`).join("");
