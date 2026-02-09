@@ -144,9 +144,7 @@ socket.on("rps-round-result", data=>{
   coinEl.textContent =
     (coinChange > 0 ? "+" : "") + coinChange + " 💎";
 
-  // update wallet UI ngay
-  myCoinsEl.textContent =
-    Number(myCoinsEl.textContent || 0) + coinChange;
+
 
   playBtn.disabled = true;
   statusMsg.textContent = "⏳ Đợi round mới";
@@ -291,12 +289,20 @@ playBtn.onclick = async ()=>{
     })
   }).then(r=>r.json());
 
-  if(!res.ok){
-    alert(res.message || "Không thể đặt cược");
-    playBtn.disabled = false;
-    document.getElementById("waitOverlay")
-      ?.classList.add("hidden");
-  }
+if(!res.ok){
+  alert(res.message || "Không thể đặt cược");
+
+  // 🔄 QUAY LẠI TRẠNG THÁI CHƯA ĐẶT
+  playBtn.disabled = true;
+  unlockBet();
+
+  statusMsg.textContent = "⛔ Chưa chốt lệnh";
+
+  document.getElementById("waitOverlay")
+    ?.classList.add("hidden");
+}
+
+
 };
 
 /* ================= UTIL ================= */
