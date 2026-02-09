@@ -285,3 +285,58 @@ function closeRpsResult(){
   document.getElementById("serverOverlay")
     .classList.add("hidden");
 }
+
+
+const betPctBtns = document.querySelectorAll(".bet-pct");
+const betBalance = document.getElementById("betBalance");
+
+/* sync balance */
+function syncBetBalance(){
+  const coins = Number(myCoinsEl.textContent || 0);
+  betBalance.textContent = coins;
+}
+syncBetBalance();
+
+socket.on("coin-update", ()=>syncBetBalance());
+
+/* % BET */
+betPctBtns.forEach(btn=>{
+  btn.onclick = ()=>{
+    betBtns.forEach(b=>b.classList.remove("active"));
+    betPctBtns.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+
+    const pct = Number(btn.dataset.pct);
+    const coins = Number(myCoinsEl.textContent || 0);
+
+    betCoin =
+      pct === 100
+        ? coins
+        : Math.floor(coins * pct / 100);
+
+    betInput.value = "";
+    betValue.textContent = betCoin;
+  };
+});
+
+/* QUICK BET (giữ logic cũ) */
+betBtns.forEach(btn=>{
+  btn.onclick = ()=>{
+    betBtns.forEach(b=>b.classList.remove("active"));
+    betPctBtns.forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+
+    betCoin = Number(btn.dataset.bet);
+    betInput.value = "";
+    betValue.textContent = betCoin;
+  };
+});
+
+/* CUSTOM */
+betInput.oninput = ()=>{
+  betBtns.forEach(b=>b.classList.remove("active"));
+  betPctBtns.forEach(b=>b.classList.remove("active"));
+
+  betCoin = Math.max(0, Number(betInput.value || 0));
+  betValue.textContent = betCoin;
+};
