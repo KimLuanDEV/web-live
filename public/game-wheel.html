@@ -2278,6 +2278,87 @@ body::before{
 
 
 
+/* ================= ORB SLOTS – PIE STYLE ================= */
+
+.orb-slots.pie{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  overflow:hidden;
+}
+
+/* mỗi slot = 1 mảnh */
+.orb-slots.pie .orb-slot{
+  position:absolute;
+  inset:0;
+  clip-path: polygon(50% 50%, 100% 0%, 100% 100%);
+  transform-origin: 50% 50%;
+  background:
+    radial-gradient(circle at 30% 30%,
+      #1b2a55,
+      #070b1a 70%
+    );
+
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.08);
+  transition: filter .25s, transform .25s;
+}
+
+/* xoay 8 mảnh */
+.orb-slot[data-i="0"]{ transform: rotate(0deg); }
+.orb-slot[data-i="1"]{ transform: rotate(45deg); }
+.orb-slot[data-i="2"]{ transform: rotate(90deg); }
+.orb-slot[data-i="3"]{ transform: rotate(135deg); }
+.orb-slot[data-i="4"]{ transform: rotate(180deg); }
+.orb-slot[data-i="5"]{ transform: rotate(225deg); }
+.orb-slot[data-i="6"]{ transform: rotate(270deg); }
+.orb-slot[data-i="7"]{ transform: rotate(315deg); }
+
+/* text trong mỗi mảnh */
+.orb-slot span{
+  position:absolute;
+  left:50%;
+  top:14%;
+  transform: translateX(-50%) rotate(90deg);
+
+  font-size:14px;
+  font-weight:900;
+  color:#ffd700;
+
+  text-shadow:
+    0 0 6px rgba(255,215,0,.6),
+    0 1px 2px rgba(0,0,0,.9);
+}
+
+/* ================= EFFECT ================= */
+
+/* slot đang chạy */
+.orb-slot.running{
+  filter: brightness(1.4);
+  background:
+    radial-gradient(circle at 30% 30%,
+      #8ab4ff,
+      #1b2a55 70%
+    );
+}
+
+/* slot trúng */
+.orb-slot.active{
+  filter: brightness(1.6);
+  background:
+    radial-gradient(circle at 30% 30%,
+      #fff6cc,
+      #ffb300 70%
+    );
+  box-shadow:
+    inset 0 0 0 2px rgba(255,215,0,.6),
+    0 0 40px rgba(255,215,0,.9);
+}
+
+.orb-slot.active span{
+  color:#000;
+  text-shadow:none;
+}
 
 
   </style>
@@ -2344,17 +2425,18 @@ body::before{
       <div class="orb-spoke"></div>
     </div>
 
-    <!-- 🎯 SLOT -->
-    <div class="orb-slots">
-      <div class="orb-slot"><span>x0.5</span></div>
-      <div class="orb-slot"><span>x1.2</span></div>
-      <div class="orb-slot"><span>x1.5</span></div>
-      <div class="orb-slot"><span>x2</span></div>
-      <div class="orb-slot"><span>x5</span></div>
-      <div class="orb-slot"><span>x10</span></div>
-      <div class="orb-slot"><span>x2</span></div>
-      <div class="orb-slot"><span>x1.5</span></div>
-    </div>
+<!-- 🎯 SLOT – 8 MẢNH GHÉP -->
+<div class="orb-slots pie">
+  <div class="orb-slot" data-i="0"><span>x0.5</span></div>
+  <div class="orb-slot" data-i="1"><span>x1.2</span></div>
+  <div class="orb-slot" data-i="2"><span>x1.5</span></div>
+  <div class="orb-slot" data-i="3"><span>x2</span></div>
+  <div class="orb-slot" data-i="4"><span>x5</span></div>
+  <div class="orb-slot" data-i="5"><span>x10</span></div>
+  <div class="orb-slot" data-i="6"><span>x2</span></div>
+  <div class="orb-slot" data-i="7"><span>x1.5</span></div>
+</div>
+
 
     <!-- ⚙️ TRỤC NĂNG LƯỢNG -->
     <div class="orb-core" id="orbCore">--</div>
