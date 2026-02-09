@@ -37,10 +37,12 @@ body{
   right: 0;
   z-index: 1000;
 
+  height: 56px;          /* ✅ CỐ ĐỊNH */
+  padding: 0 16px;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:14px 16px;
 
   background:rgba(0,0,0,.65);
   backdrop-filter: blur(10px);
@@ -64,15 +66,19 @@ body{
 
 /* ===== MAIN ===== */
 .rps-stage{
-  min-height:calc(100vh - 64px);
+  min-height: 100vh;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:space-between;
-  padding:84px 16px 28px; /* 64px header + dư */
-  padding-bottom: 320px; /* chỉnh theo chiều cao bet panel */
-   box-shadow: 0 6px 18px rgba(0,0,0,.4);
+
+  padding-top: 56px;      /* = header */
+  padding-left: 16px;
+  padding-right: 16px;
+  padding-bottom: 280px;  /* = bet sheet */
+
+  box-shadow:none;        /* ❌ bỏ shadow gây ảo giác height */
 }
+
 
 /* ===== STATUS ===== */
 .rps-status{
