@@ -94,7 +94,6 @@ if(remain <= 0){
 
 
 
-
 socket.on("rps-round-state", data => {
 
   rpsEndAt = data.endAt;
@@ -120,7 +119,7 @@ socket.on("rps-round-state", data => {
 
     statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 
-    // 🌟 trạng thái đã chốt (giống playBtn.onclick)
+    // 🌟 trạng thái đã chốt
     const handsWrap = document.querySelector(".rps-hands");
     handsWrap?.classList.add("confirmed-state");
 
@@ -133,15 +132,16 @@ socket.on("rps-round-state", data => {
         h.classList.add("confirmed");
         h.classList.remove("active");
 
-        // 📌 SNAP HAND VỀ TARGET (không animation)
+        // 📌 SNAP ĐÚNG – KHÔNG RESIZE
         if (target) {
-          const rect = target.getBoundingClientRect();
+          requestAnimationFrame(() => {
+            const t = target.getBoundingClientRect();
 
-          h.style.position = "fixed";
-          h.style.left   = rect.left + "px";
-          h.style.top    = rect.top  + "px";
-          h.style.width  = rect.width + "px";
-          h.style.height = rect.height + "px";
+            h.style.position = "fixed";
+            h.style.left = t.left + "px";
+            h.style.top  = t.top  + "px";
+            h.style.transform = "translate(0,0)";
+          });
         }
 
       } else {
@@ -166,6 +166,7 @@ socket.on("rps-round-state", data => {
     statusMsg.textContent = "Round mới – chọn tay";
   }
 });
+
 
 
 

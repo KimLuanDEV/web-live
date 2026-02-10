@@ -881,14 +881,17 @@ html, body{
 /* 🎯 VỊ TRÍ ĐÍCH CỐ ĐỊNH CHO HAND */
 #rpsHandTarget{
   position: fixed;
-  left: 18%;   /* ⬅️ lệch trái nhẹ */
-  top: 27%;    /* ⬇️ gần giữa màn hình */
+  left: 18%;
+  top: 27%;
 
-  width: 0;
-  height: 0;
+  width: 94px;     /* = width rps-hand */
+  height: 112px;   /* = height rps-hand */
+
+  transform: translate(-50%, -50%);
   pointer-events: none;
-  z-index: 1;
+  z-index: 5;
 }
+
 
 /* hand bay tới target */
 .rps-hand.to-target{
