@@ -159,7 +159,8 @@ if (handImgMap[data.enemyHand]) {
 
 
   // ❌ KHÔNG THAM GIA ROUND
-  if (!myHand) {
+if (!hasBetThisRound) {
+
     outcomeEl.textContent = "Không tham gia";
     outcomeEl.className  = "sr-draw";
     coinEl.textContent   = "0 💎";
