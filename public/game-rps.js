@@ -360,7 +360,17 @@ function handleRoundNew(data){
     h.style.width = "";
     h.style.height = "";
     h.style.pointerEvents = "auto";
+
+    
+  // ✅ thêm 2 dòng này
+  h.style.transform = "";
+  const img = h.querySelector("img");
+  if (img) img.style.transform = "";
+
+
   });
+
+
 
   // reset enemy hand
   const enemyHandEl = document.getElementById("enemyHand");
@@ -512,7 +522,8 @@ hands.forEach(h => {
 
     h.style.transform = "translate(0,0)";
     const img = h.querySelector("img");
-    if (img) img.style.transform = "scale(1)";
+   if (img) img.style.transform = "";
+
 
     // 🔥 2. ĐỢI DOM ÁP DỤNG → LẤY RECT CHUẨN
     requestAnimationFrame(() => {
