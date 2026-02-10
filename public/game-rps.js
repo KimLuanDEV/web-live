@@ -434,6 +434,9 @@ function handleRoundNew(data){
 document.getElementById("rpsVsBadge")
   ?.classList.add("hidden");
 
+backBtn?.classList.remove("locked");
+
+
 }
 
 
@@ -553,6 +556,10 @@ lockHand();
 
 hasBetThisRound = true;
 
+lockBack();
+backBtn?.classList.add("locked");
+
+
 // 🌟 HIGHLIGHT HAND ĐÃ CHỐT
 const handsWrap = document.querySelector(".rps-hands");
 handsWrap.classList.add("confirmed-state");
@@ -668,6 +675,8 @@ function closeRpsResult(){
 
   // 🔁 RESET SAU KHI ĐÃ XEM KẾT QUẢ
   hasBetThisRound = false;
+
+  backBtn?.classList.remove("locked");
 }
 
 
@@ -883,4 +892,53 @@ function renderMyRpsHistory(){
       </div>
     </div>
   `).join("");
+}
+
+
+
+function lockBack(){
+  history.pushState({ locked: true }, "", location.href);
+}
+
+function unlockBack(){
+  // không push thêm state nữa, chỉ cho phép back bình thường
+}
+
+
+const backBtn = document.getElementById("backBtn");
+
+if (backBtn){
+  backBtn.onclick = () => {
+    if (hasBetThisRound){
+      openBackConfirm();   // 🔥 MỞ MODAL
+      return;
+    }
+    history.back();
+  };
+}
+
+
+
+window.addEventListener("popstate", () => {
+  if (hasBetThisRound){
+    lockBack();
+    openBackConfirm();   // 🔥 modal thay vì alert
+  }
+});
+
+
+
+history.pushState(null, "", location.href);
+
+
+function openBackConfirm(){
+  document
+    .getElementById("backConfirm")
+    ?.classList.remove("hidden");
+}
+
+function closeBackConfirm(){
+  document
+    .getElementById("backConfirm")
+    ?.classList.add("hidden");
 }
