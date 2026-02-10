@@ -112,6 +112,9 @@ socket.on("rps-round-state", data => {
 
   if (hasBetThisRound) {
 
+    document.getElementById("rpsVsBadge")
+  ?.classList.remove("hidden");
+
     // 🔒 KHÓA TOÀN BỘ
     lockBet();
     lockHand();
@@ -385,6 +388,12 @@ function handleRoundNew(data){
   lockBet();
 
   statusMsg.textContent = "Round mới – chọn tay";
+
+
+  // ❌ ẨN VS
+document.getElementById("rpsVsBadge")
+  ?.classList.add("hidden");
+
 }
 
 
@@ -554,6 +563,10 @@ hands.forEach(h => {
 
 
 statusMsg.textContent = "Đã vào lệnh – chờ kết quả";
+
+// ⚔️ HIỆN VS
+document.getElementById("rpsVsBadge")
+  ?.classList.remove("hidden");
 
 
 

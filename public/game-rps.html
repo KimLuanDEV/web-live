@@ -1249,6 +1249,64 @@ html, body{
 }
 
 
+/* ===== VS BADGE ===== */
+.rps-vs{
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%,-50%) scale(.9);
+
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-weight: 1000;
+  font-size: 20px;
+  letter-spacing: 1px;
+
+  color: #001a12;
+  background:
+    radial-gradient(circle at top,
+      #00ffb0,
+      #00b97d 60%,
+      #007a55);
+
+  box-shadow:
+    0 0 25px rgba(0,255,180,.9),
+    0 0 50px rgba(0,255,180,.5),
+    inset 0 0 18px rgba(255,255,255,.35);
+
+  z-index: 20;
+  pointer-events: none;
+}
+
+.rps-vs::before{
+  content:"";
+  position:absolute;
+  inset:-8px;
+  border-radius:50%;
+  border:2px solid rgba(0,255,180,.6);
+  box-shadow:0 0 25px rgba(0,255,180,.8);
+  animation:vsPulse 1.2s infinite alternate;
+}
+
+@keyframes vsPulse{
+  from{ transform:scale(1); opacity:.6; }
+  to{ transform:scale(1.15); opacity:1; }
+}
+
+.rps-vs.hidden{
+  opacity:0;
+  transform:translate(-50%,-50%) scale(.6);
+  pointer-events:none;
+}
+
+
+
 </style>
 </head>
 
@@ -1421,16 +1479,20 @@ html, body{
 
 
 
+<!-- 🎯 RPS HAND TARGET POSITION -->
+<div id="rpsHandTarget"></div>
+
+
+<!-- ⚔️ VS BADGE -->
+<div id="rpsVsBadge" class="rps-vs hidden">
+  <span>VS</span>
+</div>
 
 <!-- 🎯 ENEMY HAND (ẨN KẾT QUẢ) -->
 <div id="enemyHand" class="rps-hand img enemy hidden">
   <img id="enemyHandImg" src="/assets/rps/unknown.png" alt="Enemy">
 </div>
 
-
-
-<!-- 🎯 RPS HAND TARGET POSITION -->
-<div id="rpsHandTarget"></div>
 
 
  
