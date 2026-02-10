@@ -130,17 +130,6 @@ if (
 }
 
 
-if(imgMap[data.enemyHand]){
-  enemyHandEl.classList.remove("pending");
-
-  // hiệu ứng lật nhẹ
-  enemyHandEl.style.transform = "rotateY(90deg)";
-
-  setTimeout(()=>{
-    enemyHandImg.src = imgMap[data.enemyHand];
-    enemyHandEl.style.transform = "rotateY(0deg)";
-  },150);
-}
 
 
 
