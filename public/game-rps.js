@@ -92,6 +92,58 @@ if(remain <= 0){
   },300);
 }
 
+
+
+
+socket.on("rps-round-state", data => {
+
+  rpsEndAt = data.endAt;
+  rpsRoundEl.textContent = "#" + data.roundId;
+
+  resetTimerRing();
+  startRpsCountdown();
+
+  // =========================
+  // 🔁 RESTORE BET STATE
+  // =========================
+  hasBetThisRound = data.hasBet;
+  myHand  = data.myHand;
+  betCoin = data.bet || 0;
+  betValue.textContent = betCoin;
+
+  if (hasBetThisRound) {
+    // 🔒 UI khi đã vào lệnh
+    lockBet();
+    lockHand();
+    playBtn.disabled = true;
+
+    statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
+
+    hands.forEach(h => {
+      if (h.dataset.hand === myHand) {
+        h.classList.add("confirmed");
+      } else {
+        h.classList.add("locked-dim");
+      }
+    });
+
+    // hiện hand đối thủ dạng ?
+    const enemyHandEl = document.getElementById("enemyHand");
+    const enemyImgEl  = document.getElementById("enemyHandImg");
+    enemyImgEl.src = "/assets/rps/unknown.png";
+    enemyHandEl.classList.remove("hidden");
+    enemyHandEl.classList.add("show");
+
+  } else {
+    // ✅ chưa bet
+    unlockHand();
+    lockBet();
+    statusMsg.textContent = "Round mới – chọn tay";
+  }
+});
+
+
+
 /* ================= ROUND RESULT ================= */
 
 socket.on("rps-round-result", data => {

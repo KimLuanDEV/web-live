@@ -1153,10 +1153,18 @@ socket.emit("wheel-round-count", {
 
   
 // ✊✋✌️ RPS ROUND INFO
-socket.emit("rps-round-new",{
+
+const myBet = rpsRound.bets.find(b => b.uid === uid);
+
+socket.emit("rps-round-state",{
   roundId: rpsRound.id,
-  endAt: rpsRound.endAt
+  endAt: rpsRound.endAt,
+
+  hasBet: !!myBet,
+  myHand: myBet?.hand || null,
+  bet: myBet?.bet || 0
 });
+
 
 
 // ================================
