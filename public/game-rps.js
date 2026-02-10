@@ -320,7 +320,7 @@ function handleRoundNew(data){
   document.getElementById("serverOverlay")
     ?.classList.add("hidden");
 
-  hasBetThisRound = false;
+  
 
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = "#" + data.roundId;
@@ -612,13 +612,14 @@ function calcResult(me, enemy){
 
 function closeRpsResult(){
 
-  // ❌ hủy auto close nếu user bấm tay
   clearTimeout(autoCloseResultTimer);
 
   document.getElementById("serverOverlay")
     .classList.add("hidden");
-}
 
+  // 🔁 RESET SAU KHI ĐÃ XEM KẾT QUẢ
+  hasBetThisRound = false;
+}
 
 
 function lockHand(){
