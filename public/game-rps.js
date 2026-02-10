@@ -16,6 +16,7 @@ let rpsHistory = [];
 let myHand  = null;
 let betCoin = 0;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
+let isShowingResult = false;
 
 
 // ===============================
@@ -109,6 +110,9 @@ if(remain <= 0){
 /* ================= ROUND RESULT ================= */
 
 socket.on("rps-round-result", data => {
+
+  isShowingResult = true;
+
 
 // ===============================
 // 🎯 REVEAL ENEMY HAND (SERVER)
@@ -212,33 +216,42 @@ socket.on("rps-history-update", list => {
 
 socket.on("rps-round-new", data => {
 
+  // ⏳ Nếu đang hiển thị kết quả → delay reset
+  if (isShowingResult){
+    setTimeout(()=>{
+      isShowingResult = false;
+      handleRpsRoundNew(data);
+    }, 1200); // ⏱️ 1.2s (bạn có thể chỉnh 1000–1500)
+    return;
+  }
+
+  handleRpsRoundNew(data);
+});
+
+
+function handleRpsRoundNew(data){
+
   hasBetThisRound = false;
 
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = data.roundId;
 
-  // ✅ SET THỜI GIAN GỐC CỦA ROUND
   totalRoundTime = Math.max(
     1,
     Math.ceil((data.endAt - Date.now()) / 1000)
   );
 
-  // ✅ RESET RING VỀ FULL
   resetTimerRing();
   startRpsCountdown();
 
-  // ===============================
   // 🔄 RESET STATE
-  // ===============================
   myHand  = null;
   betCoin = 0;
   betValue.textContent = "0";
 
   playBtn.disabled = true;
 
-  // ===============================
   // 🔄 RESET PLAYER HAND
-  // ===============================
   hands.forEach(h=>{
     h.classList.remove(
       "active",
@@ -256,9 +269,7 @@ socket.on("rps-round-new", data => {
     h.style.pointerEvents = "auto";
   });
 
-  // ===============================
   // 🔄 RESET ENEMY HAND
-  // ===============================
   if (enemyHandEl){
     enemyHandEl.classList.add("hidden");
     enemyHandEl.classList.remove("pending");
@@ -267,9 +278,7 @@ socket.on("rps-round-new", data => {
     enemyHandEl.style.transform = "";
   }
 
-  // ===============================
   // 🔄 RESET BET UI
-  // ===============================
   betBtns.forEach(b=>b.classList.remove("active"));
   betPctBtns.forEach(b=>b.classList.remove("active"));
 
@@ -277,8 +286,7 @@ socket.on("rps-round-new", data => {
   lockBet();
 
   statusMsg.textContent = "Round mới – chọn tay";
-});
-
+}
 
 
 /* ================= HAND SELECT ================= */
