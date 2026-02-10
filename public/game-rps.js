@@ -862,10 +862,11 @@ function renderMyRpsHistory(){
         <div class="bh-round">Round #${h.roundId}</div>
 
 <div class="bh-hand" style="display:flex;align-items:center;gap:8px">
-  <span>Bạn</span>
+  <span>YOU</span>
   <img src="${HAND_IMG[h.myHand]}" class="bh-hand-img">
-  <span>VS</span>
+  <span>⚔</span>
   <img src="${HAND_IMG[h.enemy]}" class="bh-hand-img">
+  <span>ENERMY</span>
 </div>
 
 
