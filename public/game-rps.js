@@ -786,3 +786,61 @@ function renderRpsHistory(){
     box.appendChild(el);
   });
 }
+
+
+
+
+/* ================= BET HISTORY ================= */
+
+function openBetHistory(){
+  document
+    .getElementById("betHistoryModal")
+    .classList.remove("hidden");
+
+  renderBetHistory();
+}
+
+function closeBetHistory(){
+  document
+    .getElementById("betHistoryModal")
+    .classList.add("hidden");
+}
+
+function renderBetHistory(){
+  const box = document.getElementById("betHistoryList");
+  if (!box) return;
+
+  if (!Array.isArray(rpsHistory) || !rpsHistory.length){
+    box.innerHTML = `<div style="opacity:.6;text-align:center">
+      Chưa có lịch sử
+    </div>`;
+    return;
+  }
+
+  box.innerHTML = rpsHistory.map(h=>{
+    let resultClass = "bh-draw";
+    let resultText  = "—";
+
+    if (h.result === "win"){
+      resultClass = "bh-win";
+      resultText  = `+${h.win} 💎`;
+    }else if (h.result === "lose"){
+      resultClass = "bh-lose";
+      resultText  = `-${h.bet} 💎`;
+    }
+
+    return `
+      <div class="bh-item">
+        <div class="bh-left">
+          <div class="bh-round">Round #${h.roundId}</div>
+          <div class="bh-hand">
+            Bạn: ${h.myHand} · Địch: ${h.enemy}
+          </div>
+        </div>
+        <div class="bh-right ${resultClass}">
+          ${resultText}
+        </div>
+      </div>
+    `;
+  }).join("");
+}
