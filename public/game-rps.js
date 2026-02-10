@@ -17,6 +17,22 @@ let myHand  = null;
 let betCoin = 0;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 
+
+// ===============================
+// 👊 ENEMY HAND (GLOBAL)
+// ===============================
+const enemyHandEl  = document.getElementById("enemyHand");
+const enemyHandImg = document.getElementById("enemyHandImg");
+const enemyTarget  = document.getElementById("rpsEnemyTarget");
+
+const ENEMY_IMG_MAP = {
+  rock: "/assets/rps/rock.png",
+  paper: "/assets/rps/paper.png",
+  scissors: "/assets/rps/scissors.png"
+};
+
+
+
 /* ================= WALLET REALTIME ================= */
 
 socket.on("coin-update", data=>{
@@ -94,16 +110,25 @@ if(remain <= 0){
 
 socket.on("rps-round-result", data => {
 
+// ===============================
+// 🎯 REVEAL ENEMY HAND (SERVER)
+// ===============================
+if (
+  enemyHandEl &&
+  enemyHandImg &&
+  ENEMY_IMG_MAP[data.enemyHand]
+){
+  enemyHandEl.classList.remove("pending");
 
-// ===== REVEAL ENEMY HAND (SERVER RESULT) =====
-const enemyHandEl  = document.getElementById("enemyHand");
-const enemyHandImg = document.getElementById("enemyHandImg");
+  // hiệu ứng lật
+  enemyHandEl.style.transform = "rotateY(90deg)";
 
-const imgMap = {
-  rock: "/assets/rps/rock.png",
-  paper: "/assets/rps/paper.png",
-  scissors: "/assets/rps/scissors.png"
-};
+  setTimeout(()=>{
+    enemyHandImg.src = ENEMY_IMG_MAP[data.enemyHand];
+    enemyHandEl.style.transform = "rotateY(0deg)";
+  },150);
+}
+
 
 if(imgMap[data.enemyHand]){
   enemyHandEl.classList.remove("pending");
