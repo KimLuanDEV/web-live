@@ -515,7 +515,7 @@ hands.forEach(h => {
 
     // 🔥 1. GỠ ACTIVE + TRẢ VỀ SIZE GỐC
     h.classList.remove("active");
-
+    h.classList.remove("locked-dim");
     h.style.transform = "translate(0,0)";
     const img = h.querySelector("img");
    if (img) img.style.transform = "";

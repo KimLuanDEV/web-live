@@ -171,13 +171,7 @@ body{
 
 
 
-/* HAND KHÁC KHI ĐÃ CHỐT */
-.rps-hand.locked-dim{
-  opacity:.22;
-  filter:grayscale(1) blur(.3px);
-  transform:scale(.92);
-  box-shadow:none;
-}
+
 
 /* LOCKED */
 .rps-hand.bet-locked{
@@ -691,13 +685,31 @@ html, body{
   filter: none;
 }
 
-/* các hand khác khi đã vào lệnh */
-.rps-hand.locked-dim{
+/* ===== HAND KHÁC BỊ MỜ (KHÔNG ẢNH HƯỞNG CONFIRMED) ===== */
+.rps-hand.locked-dim:not(.confirmed){
   opacity: .25;
   filter: grayscale(1);
   transform: scale(.95);
   box-shadow: none;
 }
+
+/* image mode */
+.rps-hand.locked-dim:not(.confirmed) img{
+  opacity: .25;
+  filter: grayscale(1) blur(.5px);
+}
+
+/* đảm bảo hand đã chốt LUÔN SÁNG */
+.rps-hand.confirmed{
+  opacity: 1 !important;
+  filter: none !important;
+}
+
+.rps-hand.confirmed img{
+  opacity: 1 !important;
+  filter: none !important;
+}
+
 
 
 
@@ -843,11 +855,7 @@ html, body{
   }
 }
 
-/* các tay khác khi đã khóa */
-.rps-hand.locked-dim img{
-  opacity: .75;
-  filter: grayscale(1) blur(.5px);
-}
+
 
 .rps-hand.win img{ filter: drop-shadow(0 0 40px #00ffb0); }
 .rps-hand.lose img{ filter: drop-shadow(0 0 40px #ff4d4d); }
