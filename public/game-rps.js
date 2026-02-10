@@ -16,6 +16,8 @@ let rpsHistory = [];
 let myHand  = null;
 let betCoin = 0;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
+let isShowingResult = false;
+let pendingRoundNew = null;
 
 /* ================= WALLET REALTIME ================= */
 
@@ -166,6 +168,23 @@ setTimeout(()=>{
 
   playBtn.disabled = true;
   statusMsg.textContent = "⏳ Đợi round mới";
+
+
+// ⏸ đang hiển thị kết quả
+isShowingResult = true;
+
+// cho user xem lật bài + kết quả trong 2.5s
+setTimeout(() => {
+  isShowingResult = false;
+
+  // nếu có round mới tới sớm → xử lý bây giờ
+  if (pendingRoundNew) {
+    handleRoundNew(pendingRoundNew);
+    pendingRoundNew = null;
+  }
+}, 5000);
+
+
 });
 
 
@@ -187,50 +206,31 @@ socket.on("rps-history-update", list => {
 
 
 
+function handleRoundNew(data){
 
-
-/* ================= ROUND NEW ================= */
-
-socket.on("rps-round-new", data => {
-
-  // ===============================
-  // 🔄 ROUND STATE
-  // ===============================
   hasBetThisRound = false;
 
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = data.roundId;
 
-  // ✅ SET THỜI GIAN GỐC CỦA ROUND
   totalRoundTime = Math.max(
     1,
     Math.ceil((data.endAt - Date.now()) / 1000)
   );
 
-  // ✅ RESET TIMER
   resetTimerRing();
   startRpsCountdown();
 
-  // ===============================
-  // 🔄 RESET USER STATE
-  // ===============================
+  // reset user
   myHand  = null;
   betCoin = 0;
   betValue.textContent = "0";
-
   playBtn.disabled = true;
 
-  // ===============================
-  // 🔥 RESET HAND WRAP
-  // ===============================
+  // reset hands
   const handsWrap = document.querySelector(".rps-hands");
-  if (handsWrap){
-    handsWrap.classList.remove("confirmed-state");
-  }
+  handsWrap?.classList.remove("confirmed-state");
 
-  // ===============================
-  // 🔥 RESET PLAYER HANDS
-  // ===============================
   hands.forEach(h => {
     h.classList.remove(
       "active",
@@ -241,7 +241,6 @@ socket.on("rps-round-new", data => {
       "win",
       "lose"
     );
-
     h.style.position = "";
     h.style.left = "";
     h.style.top = "";
@@ -250,33 +249,37 @@ socket.on("rps-round-new", data => {
     h.style.pointerEvents = "auto";
   });
 
-  // ===============================
-  // 👤 RESET ENEMY HAND (QUAN TRỌNG)
-  // ===============================
+  // reset enemy hand
   const enemyHandEl = document.getElementById("enemyHand");
   const enemyImgEl  = document.getElementById("enemyHandImg");
-
-  if (enemyHandEl && enemyImgEl){
+  if (enemyHandEl){
     enemyHandEl.classList.add("hidden");
-    enemyHandEl.classList.remove("show", "flip");
+    enemyHandEl.classList.remove("show","flip");
     enemyImgEl.src = "/assets/rps/unknown.png";
   }
 
-  // ===============================
-  // 🔄 RESET BET UI
-  // ===============================
+  // reset bet
   betBtns.forEach(b => b.classList.remove("active"));
   betPctBtns.forEach(b => b.classList.remove("active"));
 
   unlockHand();
   lockBet();
 
-  // ===============================
-  // 📝 STATUS
-  // ===============================
   statusMsg.textContent = "Round mới – chọn tay";
-});
+}
 
+
+/* ================= ROUND NEW ================= */
+socket.on("rps-round-new", data => {
+
+  // ⛔ nếu đang xem kết quả → delay
+  if (isShowingResult){
+    pendingRoundNew = data;
+    return;
+  }
+
+  handleRoundNew(data);
+});
 
 
 /* ================= HAND SELECT ================= */
