@@ -915,7 +915,37 @@ html, body{
   top: 27%;
   z-index: 2;
   pointer-events: none;
+
+  background:
+    radial-gradient(circle at top,
+      rgba(255,80,80,.28),
+      rgba(0,0,0,.92) 70%);
+
+  border: 1px solid rgba(255,80,80,.55);
+
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.85),
+    inset 0 0 22px rgba(255,80,80,.25);
 }
+
+
+/* glow viền trong */
+.rps-hand.enemy::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:22px;
+  box-shadow: inset 0 0 40px rgba(255,80,80,.45);
+  pointer-events:none;
+}
+
+/* ảnh enemy */
+.rps-hand.enemy img{
+  filter:
+    drop-shadow(0 0 14px rgba(255,80,80,.8))
+    drop-shadow(0 0 32px rgba(255,80,80,.55));
+}
+
 
 /* ẩn ban đầu */
 .rps-hand.enemy.hidden{
