@@ -175,7 +175,7 @@ if (!hasBetThisRound) {
   let coinChange = 0;
 
   if (result === "win") {
-    outcomeEl.textContent = "WIN x3";
+    outcomeEl.textContent = "WIN";
     outcomeEl.className  = "sr-win";
     coinChange = betCoin * 3;
   } else if (result === "lose") {

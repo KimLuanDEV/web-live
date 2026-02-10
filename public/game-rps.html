@@ -1075,6 +1075,176 @@ html, body{
 
 
 
+/* ===== STATUS HUD ===== */
+.rps-status{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  margin-top:14px;
+}
+
+.rps-status-card{
+  min-width:260px;
+  padding:12px 18px;
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,255,180,.18),
+      rgba(0,0,0,.85)
+    );
+
+  border:1px solid rgba(0,255,180,.35);
+
+  box-shadow:
+    0 0 30px rgba(0,255,180,.35),
+    inset 0 0 20px rgba(0,255,180,.12);
+
+  text-align:center;
+  backdrop-filter: blur(8px);
+}
+
+/* ROUND */
+.rps-round{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1.2px;
+  color:#7fffe0;
+  opacity:.9;
+}
+
+.rps-round span{
+  color:#00ffb0;
+  margin-left:4px;
+}
+
+/* DIVIDER */
+.rps-divider{
+  height:1px;
+  margin:6px 0;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(0,255,180,.6),
+    transparent
+  );
+}
+
+/* MESSAGE */
+.rps-msg{
+  font-size:18px;
+  font-weight:900;
+  line-height:1.25;
+
+  color:#ffffff;
+  text-shadow:
+    0 0 12px rgba(0,255,180,.6),
+    0 0 22px rgba(0,255,180,.35);
+}
+
+/* STATE COLORS (optional gắn bằng JS) */
+.rps-msg.wait{
+  color:#ffc44d;
+  text-shadow:0 0 14px rgba(255,200,80,.8);
+}
+
+.rps-msg.locked{
+  color:#ff4d4d;
+  text-shadow:0 0 16px rgba(255,80,80,.9);
+}
+
+.rps-msg.ready{
+  color:#00ffb0;
+}
+
+
+
+/* ===== STATUS HUD ===== */
+.rps-status{
+  width:100%;
+  display:flex;
+  justify-content:center;
+  margin-top:14px;
+}
+
+.rps-status-card{
+  min-width:260px;
+  padding:12px 18px;
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,255,180,.18),
+      rgba(0,0,0,.85)
+    );
+
+  border:1px solid rgba(0,255,180,.35);
+
+  box-shadow:
+    0 0 30px rgba(0,255,180,.35),
+    inset 0 0 20px rgba(0,255,180,.12);
+
+  text-align:center;
+  backdrop-filter: blur(8px);
+}
+
+/* ROUND */
+.rps-round{
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1.2px;
+  color:#7fffe0;
+  opacity:.9;
+}
+
+.rps-round span{
+  color:#00ffb0;
+  margin-left:4px;
+}
+
+/* DIVIDER */
+.rps-divider{
+  height:1px;
+  margin:6px 0;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    rgba(0,255,180,.6),
+    transparent
+  );
+}
+
+/* MESSAGE */
+.rps-msg{
+  font-size:18px;
+  font-weight:900;
+  line-height:1.25;
+
+  color:#ffffff;
+  text-shadow:
+    0 0 12px rgba(0,255,180,.6),
+    0 0 22px rgba(0,255,180,.35);
+}
+
+/* STATE COLORS (optional gắn bằng JS) */
+.rps-msg.wait{
+  color:#ffc44d;
+  text-shadow:0 0 14px rgba(255,200,80,.8);
+}
+
+.rps-msg.locked{
+  color:#ff4d4d;
+  text-shadow:0 0 16px rgba(255,80,80,.9);
+}
+
+.rps-msg.ready{
+  color:#00ffb0;
+}
+
 
 </style>
 </head>
@@ -1094,13 +1264,21 @@ html, body{
 <!-- ===== STAGE ===== -->
 <main class="rps-stage">
 
-  <!-- STATUS -->
- <div class="rps-status">
-  <div class="rps-round">
-    Round <span id="rpsRoundId">#1</span> 
-  
+<!-- STATUS -->
+<div class="rps-status">
+  <div class="rps-status-card">
+
+    <div class="rps-round">
+      ROUND <span id="rpsRoundId">#1</span>
+    </div>
+
+    <div class="rps-divider"></div>
+
+    <div class="rps-msg" id="statusMsg">
+      Chọn tay của bạn
+    </div>
+
   </div>
-  <div class="rps-msg" id="statusMsg">Chọn tay của bạn</div>
 </div>
 
   
