@@ -471,12 +471,14 @@ body{
 }
 
 
-/* ===== BET LOCK ===== */
-.bet-locked{
+/* ===== BET LOCK (KHÔNG ÁP DỤNG CHO ENEMY) ===== */
+.bet-locked:not(.enemy){
   opacity:.4;
   pointer-events:none;
   filter: grayscale(1);
 }
+
+
 
 
 .bet-btn.reset:hover{

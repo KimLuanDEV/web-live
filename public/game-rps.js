@@ -633,10 +633,12 @@ function closeRpsResult(){
 
 function lockHand(){
   hands.forEach(h=>{
+    if(h.classList.contains("enemy")) return; // ⛔ bỏ qua enemy
     h.classList.add("bet-locked");
     h.style.pointerEvents = "none";
   });
 }
+
 
 function unlockHand(){
   hands.forEach(h=>{
