@@ -1352,10 +1352,46 @@ html, body{
 
 
 
+/* 🌋 LOSE OVERLAY */
+#loseOverlay{
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(circle at center,
+      rgba(255,60,60,.35),
+      rgba(120,0,0,.55),
+      rgba(0,0,0,.85) 70%);
+
+  opacity: 0;
+  pointer-events: none;
+  z-index: 1;
+
+  transition: opacity .25s ease;
+}
+
+/* KHI THUA */
+#loseOverlay.active{
+  opacity: 1;
+  animation: lavaPulse 1s ease-out;
+}
+
+@keyframes lavaPulse{
+  0%   { opacity: 0; }
+  20%  { opacity: .9; }
+  60%  { opacity: .5; }
+  100% { opacity: 0; }
+}
+
+
 </style>
 </head>
 
 <body>
+
+<!-- 🌋 LOSE BACKGROUND OVERLAY -->
+<div id="loseOverlay"></div>
+
+
 
 <!-- ===== HEADER ===== -->
 <header class="rps-header">

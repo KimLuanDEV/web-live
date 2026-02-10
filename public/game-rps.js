@@ -178,24 +178,22 @@ socket.on("rps-round-state", data => {
 
 socket.on("rps-round-result", data => {
 
+  // 🃏 LẬT HAND ĐỐI THỦ
+  const enemyHandEl = document.getElementById("enemyHand");
+  const enemyImgEl  = document.getElementById("enemyHandImg");
 
-// 🃏 LẬT HAND ĐỐI THỦ
-const enemyHandEl = document.getElementById("enemyHand");
-const enemyImgEl  = document.getElementById("enemyHandImg");
+  const imgMap = {
+    rock: "/assets/rps/rock.png",
+    paper: "/assets/rps/paper.png",
+    scissors: "/assets/rps/scissors.png"
+  };
 
-const imgMap = {
-  rock: "/assets/rps/rock.png",
-  paper: "/assets/rps/paper.png",
-  scissors: "/assets/rps/scissors.png"
-};
+  // hiệu ứng lật
+  enemyHandEl.classList.add("flip");
 
-// hiệu ứng lật
-enemyHandEl.classList.add("flip");
-
-setTimeout(()=>{
-  enemyImgEl.src = imgMap[data.enemyHand] || "/assets/rps/unknown.png";
-}, 300);
-
+  setTimeout(()=>{
+    enemyImgEl.src = imgMap[data.enemyHand] || "/assets/rps/unknown.png";
+  }, 300);
 
 
   const enemyEl   = document.getElementById("srEnemy");
@@ -205,44 +203,41 @@ setTimeout(()=>{
   document.getElementById("serverOverlay")
     .classList.remove("hidden");
 
-// ⏱ AUTO CLOSE RESULT SAU 3s
-clearTimeout(autoCloseResultTimer);
-
-autoCloseResultTimer = setTimeout(() => {
-  closeRpsResult();
-}, 5000);
-
-
-const handImgMap = {
-  rock: "/assets/rps/rock.png",
-  paper: "/assets/rps/paper.png",
-  scissors: "/assets/rps/scissors.png"
-};
+  // ⏱ AUTO CLOSE RESULT SAU 5s
+  clearTimeout(autoCloseResultTimer);
+  autoCloseResultTimer = setTimeout(() => {
+    closeRpsResult();
+  }, 5000);
 
 
-if (handImgMap[data.enemyHand]) {
-  enemyEl.innerHTML = `
-    <img
-      src="${handImgMap[data.enemyHand]}"
-      alt="${data.enemyHand}"
-      style="
-        width:42px;
-        height:42px;
-        object-fit:contain;
-        filter:
-          drop-shadow(0 0 10px rgba(0,255,180,.8))
-          drop-shadow(0 0 24px rgba(0,255,180,.6));
-      "
-    />
-  `;
-} else {
-  enemyEl.textContent = "---";
-}
+  const handImgMap = {
+    rock: "/assets/rps/rock.png",
+    paper: "/assets/rps/paper.png",
+    scissors: "/assets/rps/scissors.png"
+  };
+
+  if (handImgMap[data.enemyHand]) {
+    enemyEl.innerHTML = `
+      <img
+        src="${handImgMap[data.enemyHand]}"
+        alt="${data.enemyHand}"
+        style="
+          width:42px;
+          height:42px;
+          object-fit:contain;
+          filter:
+            drop-shadow(0 0 10px rgba(0,255,180,.8))
+            drop-shadow(0 0 24px rgba(0,255,180,.6));
+        "
+      />
+    `;
+  } else {
+    enemyEl.textContent = "---";
+  }
 
 
   // ❌ KHÔNG THAM GIA ROUND
-if (!hasBetThisRound) {
-
+  if (!hasBetThisRound) {
     outcomeEl.textContent = "Không tham gia";
     outcomeEl.className  = "sr-draw";
     coinEl.textContent   = "0 💎";
@@ -260,10 +255,21 @@ if (!hasBetThisRound) {
     outcomeEl.textContent = "WIN";
     outcomeEl.className  = "sr-win";
     coinChange = betCoin * 2;
+
   } else if (result === "lose") {
     outcomeEl.textContent = "LOSE";
     outcomeEl.className  = "sr-lose";
     coinChange = -betCoin;
+
+    /* 🌋🔥 NỀN ĐỎ KHI THUA */
+    const lava = document.getElementById("loseOverlay");
+    lava?.classList.add("active");
+
+    // tự tắt sau 1s
+    setTimeout(() => {
+      lava?.classList.remove("active");
+    }, 1000);
+
   } else {
     outcomeEl.textContent = "DRAW";
     outcomeEl.className  = "sr-draw";
@@ -274,28 +280,25 @@ if (!hasBetThisRound) {
   coinEl.textContent =
     (coinChange > 0 ? "+" : "") + coinChange + " 💎";
 
-
-
   playBtn.disabled = true;
   statusMsg.textContent = "⏳ Đợi round mới";
 
 
-// ⏸ đang hiển thị kết quả
-isShowingResult = true;
+  // ⏸ đang hiển thị kết quả
+  isShowingResult = true;
 
-// cho user xem lật bài + kết quả trong 2.5s
-setTimeout(() => {
-  isShowingResult = false;
+  // cho user xem lật bài + kết quả
+  setTimeout(() => {
+    isShowingResult = false;
 
-  // nếu có round mới tới sớm → xử lý bây giờ
-  if (pendingRoundNew) {
-    handleRoundNew(pendingRoundNew);
-    pendingRoundNew = null;
-  }
-}, 10000);
-
+    if (pendingRoundNew) {
+      handleRoundNew(pendingRoundNew);
+      pendingRoundNew = null;
+    }
+  }, 10000);
 
 });
+
 
 
 
