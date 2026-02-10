@@ -174,15 +174,15 @@ if (handImgMap[data.enemyHand]) {
   let coinChange = 0;
 
   if (result === "win") {
-    outcomeEl.textContent = "THẮNG x3";
+    outcomeEl.textContent = "WIN x3";
     outcomeEl.className  = "sr-win";
     coinChange = betCoin * 3;
   } else if (result === "lose") {
-    outcomeEl.textContent = "THUA";
+    outcomeEl.textContent = "LOSE";
     outcomeEl.className  = "sr-lose";
     coinChange = -betCoin;
   } else {
-    outcomeEl.textContent = "HOÀ";
+    outcomeEl.textContent = "DRAW";
     outcomeEl.className  = "sr-draw";
     coinChange = betCoin;
   }
