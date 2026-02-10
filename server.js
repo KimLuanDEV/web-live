@@ -81,6 +81,45 @@ if (!fs.existsSync(HEALTH_DIR)) {
 const ONE_DAY = 24 * 60 * 60 * 1000; // 🔥 24h
 
 
+// ================================
+// 🔢 RPS ROUND COUNT PERSIST (24H)
+// ================================
+const RPS_ROUND_COUNT_FILE =
+  "/opt/render/project/data/rps_round_count.json";
+
+function loadRpsRoundCount(){
+  try{
+    if (!fs.existsSync(RPS_ROUND_COUNT_FILE)) {
+      return {
+        dayTs: getTodayStartTsVN(),
+        count: 0
+      };
+    }
+    return JSON.parse(
+      fs.readFileSync(RPS_ROUND_COUNT_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load RPS round count failed", e);
+    return {
+      dayTs: getTodayStartTsVN(),
+      count: 0
+    };
+  }
+}
+
+function saveRpsRoundCount(data){
+  try{
+    fs.writeFileSync(
+      RPS_ROUND_COUNT_FILE,
+      JSON.stringify(data, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save RPS round count failed", e);
+  }
+}
+
+
+
   // ================================
 // 🔢 ROUND COUNT PERSIST (24H)
 // ================================
@@ -137,10 +176,7 @@ function getTodayStartTsVN() {
 }
 
 
-// ================================
-// 🔢 RPS ROUND COUNT (SERVER)
-// ================================
-let rpsRoundCount = 0;
+
 
 
 // ================================
@@ -682,6 +718,15 @@ const activeUsers = new Map();
 
 
 // ================================
+// 🔢 RPS ROUND COUNT STATE
+// ================================
+const rpsRoundState = loadRpsRoundCount();
+
+let rpsRoundCount = rpsRoundState.count || 0;
+let rpsRoundDayTs = rpsRoundState.dayTs || getTodayStartTsVN();
+
+
+// ================================
 // 🎡 WHEEL ROUND STATE (GLOBAL)
 // ================================
 let wheelRound = {
@@ -700,10 +745,21 @@ const RPS_BET_LOCK_BEFORE_MS = 5000; // 🔒 khóa trước 5s
 // ================================
 // ✊✋✌️ RPS ROUND STATE (GLOBAL)
 // ================================
+const todayStart = getTodayStartTsVN();
+if (todayStart !== rpsRoundDayTs) {
+  rpsRoundCount = 0;
+  rpsRoundDayTs = todayStart;
+
+  saveRpsRoundCount({
+    dayTs: rpsRoundDayTs,
+    count: rpsRoundCount
+  });
+}
+
 rpsRoundCount++;
 
 let rpsRound = {
-  id: rpsRoundCount,          // ✅ số phiên
+  id: rpsRoundCount,          // ✅ round trong ngày
   startAt: Date.now(),
   endAt: Date.now() + 60000,
   secretHand: pickRpsHand(),
@@ -1022,13 +1078,23 @@ io.emit("rps-history-update", rpsHistoryGlobal);
 
 
 
-// =========================
-// 5️⃣ TẠO ROUND MỚI
-// =========================
-rpsRoundCount++; // ✅ tăng phiên
+// 🔁 RESET ROUND KHI QUA NGÀY MỚI (0H VN)
+const todayStart = getTodayStartTsVN();
+if (todayStart !== rpsRoundDayTs) {
+  rpsRoundCount = 0;
+  rpsRoundDayTs = todayStart;
+}
+
+// ➕ ROUND MỚI
+rpsRoundCount++;
+
+saveRpsRoundCount({
+  dayTs: rpsRoundDayTs,
+  count: rpsRoundCount
+});
 
 rpsRound = {
-  id: rpsRoundCount,          // ✅ số round
+  id: rpsRoundCount,          // ✅ #1 → #N trong ngày
   startAt: Date.now(),
   endAt: Date.now() + 60000,
   secretHand: pickRpsHand(),
@@ -1036,7 +1102,7 @@ rpsRound = {
 };
 
 io.emit("rps-round-new",{
-  roundId: rpsRound.id,       // 👉 gửi số phiên
+  roundId: rpsRound.id,
   endAt: rpsRound.endAt
 });
 
