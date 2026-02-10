@@ -77,7 +77,7 @@ if(remain <= 5){
   lockBet();        // 🔒 khóa bet
   lockHand();       // 🔒 khóa hand
   playBtn.disabled = true;
-  statusMsg.textContent = "⛔ Đã khóa cược";
+  statusMsg.textContent = "Đã khóa cược";
 }
 
 
@@ -244,7 +244,8 @@ function handleRoundNew(data){
   hasBetThisRound = false;
 
   rpsEndAt = data.endAt;
-  rpsRoundEl.textContent = data.roundId;
+  rpsRoundEl.textContent = "#" + data.roundId;
+
 
   totalRoundTime = Math.max(
     1,
@@ -453,7 +454,7 @@ hands.forEach(h=>{
 
 
 
-statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
+statusMsg.textContent = "Đã vào lệnh – chờ kết quả";
 
 
 

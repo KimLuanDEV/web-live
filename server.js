@@ -137,6 +137,10 @@ function getTodayStartTsVN() {
 }
 
 
+// ================================
+// 🔢 RPS ROUND COUNT (SERVER)
+// ================================
+let rpsRoundCount = 0;
 
 
 // ================================
@@ -696,13 +700,16 @@ const RPS_BET_LOCK_BEFORE_MS = 5000; // 🔒 khóa trước 5s
 // ================================
 // ✊✋✌️ RPS ROUND STATE (GLOBAL)
 // ================================
+rpsRoundCount++;
+
 let rpsRound = {
-  id: Date.now(),
+  id: rpsRoundCount,          // ✅ số phiên
   startAt: Date.now(),
   endAt: Date.now() + 60000,
-  secretHand: pickRpsHand(), // 🔐 CHỐT NGAY
-  bets: [] // { uid, hand, bet }
+  secretHand: pickRpsHand(),
+  bets: []
 };
+
 
 function pickRpsHand(){
   return ["rock","paper","scissors"][
@@ -1015,23 +1022,26 @@ io.emit("rps-history-update", rpsHistoryGlobal);
 
 
 
+// =========================
+// 5️⃣ TẠO ROUND MỚI
+// =========================
+rpsRoundCount++; // ✅ tăng phiên
 
-    // =========================
-    // 5️⃣ TẠO ROUND MỚI
-    // =========================
-    const id = Date.now();
-    rpsRound = {
-      id,
-      startAt: id,
-      endAt: id + 60000,
-      secretHand: pickRpsHand(),
-      bets: []
-    };
+rpsRound = {
+  id: rpsRoundCount,          // ✅ số round
+  startAt: Date.now(),
+  endAt: Date.now() + 60000,
+  secretHand: pickRpsHand(),
+  bets: []
+};
 
-    io.emit("rps-round-new",{
-      roundId: rpsRound.id,
-      endAt: rpsRound.endAt
-    });
+io.emit("rps-round-new",{
+  roundId: rpsRound.id,       // 👉 gửi số phiên
+  endAt: rpsRound.endAt
+});
+
+
+
 
   } catch(e){
     console.error("❌ RPS ROUND ERROR", e);
