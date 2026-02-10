@@ -94,8 +94,7 @@ if(remain <= 0){
 
 socket.on("rps-round-result", data => {
 
-  // Ẩn overlay chờ
-  document.getElementById("waitOverlay")?.classList.add("hidden");
+
 
   const enemyEl   = document.getElementById("srEnemy");
   const outcomeEl = document.getElementById("srOutcome");
@@ -177,7 +176,7 @@ socket.on("rps-history-update", list => {
 socket.on("rps-round-new", data=>{
   
   hasBetThisRound = false;
-  document.getElementById("waitOverlay")?.classList.add("hidden");
+ 
 
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = data.roundId;
@@ -333,8 +332,7 @@ hands.forEach(h=>{
 statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 
 
-  document.getElementById("waitOverlay")
-    ?.classList.remove("hidden");
+
 
   const res = await fetch("/api/rps/bet",{
     method:"POST",
@@ -357,8 +355,7 @@ if(!res.ok){
 
   statusMsg.textContent = "⛔ Chưa chốt lệnh";
 
-  document.getElementById("waitOverlay")
-    ?.classList.add("hidden");
+
 }
 
 
