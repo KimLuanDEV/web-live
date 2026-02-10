@@ -11,7 +11,8 @@ const statusMsg = document.getElementById("statusMsg");
 const playBtn   = document.getElementById("playBtn");
 
 /* ================= GLOBAL STATE ================= */
-
+const MAX_RPS_HISTORY = 10;
+let rpsHistory = [];
 let myHand  = null;
 let betCoin = 0;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
@@ -91,10 +92,9 @@ if(remain <= 0){
 
 /* ================= ROUND RESULT ================= */
 
-socket.on("rps-round-result", data=>{
+socket.on("rps-round-result", data => {
 
-
-
+  // Ẩn overlay chờ
   document.getElementById("waitOverlay")?.classList.add("hidden");
 
   const enemyEl   = document.getElementById("srEnemy");
@@ -112,41 +112,56 @@ socket.on("rps-round-result", data=>{
 
   enemyEl.textContent = handMap[data.enemyHand] || "---";
 
-  if(!myHand){
+  // ❌ KHÔNG THAM GIA ROUND
+  if (!myHand) {
     outcomeEl.textContent = "Không tham gia";
     outcomeEl.className  = "sr-draw";
-    coinEl.textContent   = "0";
+    coinEl.textContent   = "0 💎";
+
     playBtn.disabled = true;
     statusMsg.textContent = "Round kết thúc";
     return;
   }
 
+  // ✅ CÓ THAM GIA
   const result = calcResult(myHand, data.enemyHand);
-
   let coinChange = 0;
 
-  if(result === "win"){
-    outcomeEl.textContent = "THẮNG";
+  if (result === "win") {
+    outcomeEl.textContent = "THẮNG x3";
     outcomeEl.className  = "sr-win";
     coinChange = betCoin * 3;
-  }else if(result === "lose"){
+  } else if (result === "lose") {
     outcomeEl.textContent = "THUA";
     outcomeEl.className  = "sr-lose";
     coinChange = -betCoin;
-  }else{
+  } else {
     outcomeEl.textContent = "HOÀ";
     outcomeEl.className  = "sr-draw";
     coinChange = betCoin;
   }
 
+  // ❗ CHỈ HIỂN THỊ – KHÔNG CỘNG/TRỪ COIN Ở CLIENT
   coinEl.textContent =
     (coinChange > 0 ? "+" : "") + coinChange + " 💎";
 
+  // ===============================
+  // 📜 QUICK HISTORY (PHÍA TRÊN BET BAR)
+  // ===============================
+  if (typeof rpsHistory !== "undefined") {
+    rpsHistory.unshift({
+      enemy: data.enemyHand,
+      result // win | lose | draw
+    });
 
+    rpsHistory = rpsHistory.slice(0, MAX_RPS_HISTORY);
+    renderRpsHistory();
+  }
 
   playBtn.disabled = true;
   statusMsg.textContent = "⏳ Đợi round mới";
 });
+
 
 /* ================= ROUND NEW ================= */
 
@@ -475,4 +490,31 @@ function resetTimerRing(){
   ring.style.strokeDashoffset = 0;
 
   timerBox.classList.remove("warn","danger");
+}
+
+
+
+function renderRpsHistory(){
+  const box = document.getElementById("rpsHistoryList");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  if(!rpsHistory.length){
+    box.innerHTML = `<span class="rh-empty">Chưa có dữ liệu</span>`;
+    return;
+  }
+
+  const iconMap = {
+    rock: "✊",
+    paper: "✋",
+    scissors: "✌️"
+  };
+
+  rpsHistory.forEach(h=>{
+    const el = document.createElement("div");
+    el.className = `rh-item rh-${h.result}`;
+    el.textContent = iconMap[h.enemy] || "?";
+    box.appendChild(el);
+  });
 }
