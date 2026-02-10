@@ -178,7 +178,10 @@ socket.on("rps-round-new", data=>{
   betValue.textContent = "0";
 
   playBtn.disabled = true;
-  hands.forEach(h=>h.classList.remove("active"));
+  hands.forEach(h=>{
+  h.classList.remove("active","confirmed","locked-dim");
+});
+
   betBtns.forEach(b=>b.classList.remove("active"));
   betPctBtns.forEach(b=>b.classList.remove("active"));
 
@@ -290,6 +293,18 @@ lockBet();
 lockHand();
 
 hasBetThisRound = true;
+
+// 🌟 HIGHLIGHT HAND ĐÃ CHỐT
+hands.forEach(h=>{
+  if(h.dataset.hand === myHand){
+    h.classList.add("confirmed");
+    h.classList.remove("active");
+  }else{
+    h.classList.add("locked-dim");
+    h.classList.remove("active");
+  }
+});
+
 
 statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 

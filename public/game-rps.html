@@ -697,6 +697,24 @@ html, body{
 }
 
 
+/* ===== HAND CONFIRMED (ĐÃ CHỐT) ===== */
+.rps-hand.confirmed{
+  outline: 3px solid #00ffb0;
+  box-shadow:
+    0 0 40px rgba(0,255,180,.9),
+    inset 0 0 22px rgba(0,255,180,.35);
+
+  transform: scale(1.08);
+  filter: none;
+}
+
+/* các hand khác khi đã vào lệnh */
+.rps-hand.locked-dim{
+  opacity: .25;
+  filter: grayscale(1);
+  transform: scale(.95);
+  box-shadow: none;
+}
 
 
 </style>
