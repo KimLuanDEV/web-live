@@ -810,21 +810,26 @@ function renderBetHistory(){
   const box = document.getElementById("betHistoryList");
   if (!box) return;
 
-  if (!Array.isArray(rpsHistory) || !rpsHistory.length){
-    box.innerHTML = `<div style="opacity:.6;text-align:center">
-      Chưa có lịch sử
-    </div>`;
+  // ✅ CHỈ LẤY LỊCH SỬ CỦA MÌNH
+  const myHistory = rpsHistory.filter(h => h.myHand);
+
+  if (!myHistory.length){
+    box.innerHTML = `
+      <div style="opacity:.6;text-align:center">
+        Bạn chưa tham gia round nào
+      </div>
+    `;
     return;
   }
 
-  box.innerHTML = rpsHistory.map(h=>{
+  box.innerHTML = myHistory.map(h=>{
     let resultClass = "bh-draw";
     let resultText  = "—";
 
     if (h.result === "win"){
       resultClass = "bh-win";
       resultText  = `+${h.win} 💎`;
-    }else if (h.result === "lose"){
+    } else if (h.result === "lose"){
       resultClass = "bh-lose";
       resultText  = `-${h.bet} 💎`;
     }
