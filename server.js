@@ -908,22 +908,23 @@ setInterval(() => {
     const users = loadUsers();
     const enemy = rpsRound.secretHand;
 
+    // =========================
+    // 1️⃣ TÍNH KẾT QUẢ & CẬP NHẬT COIN
+    // =========================
     rpsRound.bets.forEach(o=>{
       const me = users[o.uid];
       if(!me?.profile) return;
 
       const result = calcRps(o.hand, enemy);
-
       let win = 0;
 
       if(result === "win"){
-        win = o.bet * 2; // 🔥 thắng x2
+        win = o.bet * 2;          // 🔥 thắng x2
         me.profile.coins += win;
+      }else if(result === "draw"){
+        me.profile.coins += o.bet; // 🔄 hoàn tiền
       }
-
-      if(result === "draw"){
-        me.profile.coins += o.bet; // hoàn tiền
-      }
+      // ❌ lose: không cộng gì (đã trừ khi bet)
 
       me.rpsHistory ||= [];
       me.rpsHistory.unshift({
@@ -935,19 +936,31 @@ setInterval(() => {
         result,
         win
       });
+    });
 
+    // =========================
+    // 2️⃣ LƯU USER TRƯỚC
+    // =========================
+    saveUsers(users);
+
+    // =========================
+    // 3️⃣ EMIT COIN REALTIME (SAU KHI SAVE)
+    // =========================
+    rpsRound.bets.forEach(o=>{
       emitCoinUpdate(o.uid);
     });
 
-    saveUsers(users);
-
-    // 🔔 emit kết quả cho client
+    // =========================
+    // 4️⃣ EMIT KẾT QUẢ ROUND
+    // =========================
     io.emit("rps-round-result",{
       roundId: rpsRound.id,
       enemyHand: enemy
     });
 
-    // 🔄 round mới
+    // =========================
+    // 5️⃣ TẠO ROUND MỚI
+    // =========================
     const id = Date.now();
     rpsRound = {
       id,
@@ -966,6 +979,7 @@ setInterval(() => {
     console.error("❌ RPS ROUND ERROR", e);
   }
 }, 60000);
+
 
 
 
