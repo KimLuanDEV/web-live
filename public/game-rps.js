@@ -19,7 +19,16 @@ let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 let isShowingResult = false;
 let pendingRoundNew = null;
 let autoCloseResultTimer = null;
+let myRpsHistory = [];
 /* ================= WALLET REALTIME ================= */
+
+
+socket.on("rps-my-history", list => {
+  if (!Array.isArray(list)) return;
+  myRpsHistory = list;
+  renderMyRpsHistory();
+});
+
 
 socket.on("coin-update", data=>{
   if(typeof data.coins !== "number") return;
@@ -797,7 +806,7 @@ function openBetHistory(){
     .getElementById("betHistoryModal")
     .classList.remove("hidden");
 
-  renderBetHistory();
+  renderMyRpsHistory();
 }
 
 function closeBetHistory(){
@@ -806,46 +815,36 @@ function closeBetHistory(){
     .classList.add("hidden");
 }
 
-function renderBetHistory(){
+function renderMyRpsHistory(){
   const box = document.getElementById("betHistoryList");
   if (!box) return;
 
-  // ✅ CHỈ LẤY LỊCH SỬ CỦA MÌNH
-  const myHistory = rpsHistory.filter(h => h.myHand);
-
-  if (!myHistory.length){
+  if (!myRpsHistory.length){
     box.innerHTML = `
-      <div style="opacity:.6;text-align:center">
-        Bạn chưa tham gia round nào
+      <div style="text-align:center;opacity:.6">
+        Bạn chưa có lịch sử chơi
       </div>
     `;
     return;
   }
 
-  box.innerHTML = myHistory.map(h=>{
-    let resultClass = "bh-draw";
-    let resultText  = "—";
-
-    if (h.result === "win"){
-      resultClass = "bh-win";
-      resultText  = `+${h.win} 💎`;
-    } else if (h.result === "lose"){
-      resultClass = "bh-lose";
-      resultText  = `-${h.bet} 💎`;
-    }
-
-    return `
-      <div class="bh-item">
-        <div class="bh-left">
-          <div class="bh-round">Round #${h.roundId}</div>
-          <div class="bh-hand">
-            Bạn: ${h.myHand} · Địch: ${h.enemy}
-          </div>
-        </div>
-        <div class="bh-right ${resultClass}">
-          ${resultText}
+  box.innerHTML = myRpsHistory.map(h => `
+    <div class="bh-item">
+      <div class="bh-left">
+        <div class="bh-round">Round #${h.roundId}</div>
+        <div class="bh-hand">
+          Bạn: ${h.myHand} · Địch: ${h.enemy}
         </div>
       </div>
-    `;
-  }).join("");
+      <div class="bh-right ${h.result}">
+        ${
+          h.result === "win"
+            ? "+" + h.win + " 💎"
+            : h.result === "lose"
+              ? "-" + h.bet + " 💎"
+              : "Hoà"
+        }
+      </div>
+    </div>
+  `).join("");
 }

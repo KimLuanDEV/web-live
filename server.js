@@ -1141,6 +1141,9 @@ io.on("connection", socket => {
 // ✊✋✌️ gửi lịch sử RPS cho user mới vào
 socket.emit("rps-history", rpsHistoryGlobal);
 
+// ✊✋✌️ gửi lịch sử RPS của RIÊNG USER
+socket.emit("rps-my-history", me?.rpsHistory || []);
+
 
 // 📜 gửi lịch sử vòng quay cho user mới vào
 socket.emit("wheel-history", wheelHistory);
