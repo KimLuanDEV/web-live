@@ -863,27 +863,6 @@ html, body{
 
 
 
-/* ===== RPS HAND AFTER CONFIRM ===== */
-.rps-hands.confirmed-state{
-  justify-content:flex-start;
-  padding-left:12px;
-}
-
-/* hand được chọn → trượt sang trái */
-/* HAND ĐÃ CHỐT → XUỐNG GIỮA + LỆCH TRÁI */
-.rps-hand.move-left{
-  position: relative;
-  z-index: 20;
-
-  transform:
-    translate(-50px, 140px)   /* ⬅️ trái + ⬇️ xuống */
-    scale(1.18);
-
-  transition:
-    transform .55s cubic-bezier(.4,0,.2,1),
-    opacity .35s ease;
-}
-
 
 /* hand không chọn → ẩn dần */
 .rps-hand.hide-hand{
@@ -894,10 +873,34 @@ html, body{
 
 /* animation mượt */
 .rps-hand{
-  transition:
-    transform .45s cubic-bezier(.4,0,.2,1),
-    opacity .35s ease;
+  transition: opacity .35s ease;
 }
+
+
+
+/* 🎯 VỊ TRÍ ĐÍCH CỐ ĐỊNH CHO HAND */
+#rpsHandTarget{
+  position: fixed;
+  left: 42%;   /* ⬅️ lệch trái nhẹ */
+  top: 58%;    /* ⬇️ gần giữa màn hình */
+
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* hand bay tới target */
+.rps-hand.to-target{
+  position: fixed;
+  z-index: 999;
+
+  transition:
+    left .55s cubic-bezier(.4,0,.2,1),
+    top  .55s cubic-bezier(.4,0,.2,1),
+    transform .55s cubic-bezier(.4,0,.2,1);
+}
+
 
 
 </style>
@@ -1063,6 +1066,10 @@ html, body{
 
 
 
+
+
+<!-- 🎯 RPS HAND TARGET POSITION -->
+<div id="rpsHandTarget"></div>
 
 
  

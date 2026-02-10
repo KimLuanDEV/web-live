@@ -174,7 +174,7 @@ socket.on("rps-history-update", list => {
 /* ================= ROUND NEW ================= */
 
 socket.on("rps-round-new", data=>{
-  
+
   hasBetThisRound = false;
 
   rpsEndAt = data.endAt;
@@ -199,23 +199,30 @@ socket.on("rps-round-new", data=>{
 
   playBtn.disabled = true;
 
-  // 🔥 RESET HAND UI (QUAN TRỌNG)
+  // 🔥 RESET HAND WRAP
   const handsWrap = document.querySelector(".rps-hands");
   if (handsWrap){
     handsWrap.classList.remove("confirmed-state");
   }
 
-  hands.forEach(h=>{
-    h.classList.remove(
-      "active",
-      "confirmed",
-      "locked-dim",
-      "move-left",
-      "hide-hand",
-      "bet-locked"
-    );
-    h.style.pointerEvents = "auto";
-  });
+  // 🔥 RESET TỪNG HAND (QUAN TRỌNG)
+hands.forEach(h=>{
+  h.classList.remove(
+    "active",
+    "confirmed",
+    "hide-hand",
+    "bet-locked",
+    "to-target"
+  );
+
+  h.style.position = "";
+  h.style.left = "";
+  h.style.top = "";
+  h.style.width = "";
+  h.style.height = "";
+  h.style.pointerEvents = "auto";
+});
+
 
   // 🔄 RESET BET UI
   betBtns.forEach(b=>b.classList.remove("active"));
@@ -226,6 +233,7 @@ socket.on("rps-round-new", data=>{
 
   statusMsg.textContent = "Round mới – chọn tay";
 });
+
 
 
 /* ================= HAND SELECT ================= */
@@ -335,15 +343,34 @@ hasBetThisRound = true;
 const handsWrap = document.querySelector(".rps-hands");
 handsWrap.classList.add("confirmed-state");
 
+const target = document.getElementById("rpsHandTarget");
+
 hands.forEach(h=>{
   if(h.dataset.hand === myHand){
-    h.classList.add("confirmed","move-left");
+
+    const rect = h.getBoundingClientRect();
+    const t    = target.getBoundingClientRect();
+
+    // giữ vị trí ban đầu
+    h.style.position = "fixed";
+    h.style.left   = rect.left + "px";
+    h.style.top    = rect.top  + "px";
+    h.style.width  = rect.width + "px";
+    h.style.height = rect.height + "px";
+
+    h.classList.add("confirmed","to-target");
     h.classList.remove("active");
+
+    requestAnimationFrame(()=>{
+      h.style.left = t.left + "px";
+      h.style.top  = t.top  + "px";
+    });
+
   }else{
     h.classList.add("hide-hand");
-    h.classList.remove("active","locked-dim");
   }
 });
+
 
 
 
