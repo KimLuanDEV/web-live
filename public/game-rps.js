@@ -18,7 +18,7 @@ let betCoin = 0;
 let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 let isShowingResult = false;
 let pendingRoundNew = null;
-
+let autoCloseResultTimer = null;
 /* ================= WALLET REALTIME ================= */
 
 socket.on("coin-update", data=>{
@@ -123,13 +123,40 @@ setTimeout(()=>{
   document.getElementById("serverOverlay")
     .classList.remove("hidden");
 
-  const handMap = {
-    rock: "✊ Búa",
-    paper: "✋ Bao",
-    scissors: "✌️ Kéo"
-  };
+// ⏱ AUTO CLOSE RESULT SAU 3s
+clearTimeout(autoCloseResultTimer);
 
-  enemyEl.textContent = handMap[data.enemyHand] || "---";
+autoCloseResultTimer = setTimeout(() => {
+  closeRpsResult();
+}, 3000);
+
+
+const handImgMap = {
+  rock: "/assets/rps/rock.png",
+  paper: "/assets/rps/paper.png",
+  scissors: "/assets/rps/scissors.png"
+};
+
+
+if (handImgMap[data.enemyHand]) {
+  enemyEl.innerHTML = `
+    <img
+      src="${handImgMap[data.enemyHand]}"
+      alt="${data.enemyHand}"
+      style="
+        width:42px;
+        height:42px;
+        object-fit:contain;
+        filter:
+          drop-shadow(0 0 10px rgba(0,255,180,.8))
+          drop-shadow(0 0 24px rgba(0,255,180,.6));
+      "
+    />
+  `;
+} else {
+  enemyEl.textContent = "---";
+}
+
 
   // ❌ KHÔNG THAM GIA ROUND
   if (!myHand) {
@@ -207,6 +234,9 @@ socket.on("rps-history-update", list => {
 
 
 function handleRoundNew(data){
+
+  clearTimeout(autoCloseResultTimer);
+
 
   hasBetThisRound = false;
 
@@ -474,9 +504,14 @@ function calcResult(me, enemy){
 }
 
 function closeRpsResult(){
+
+  // ❌ hủy auto close nếu user bấm tay
+  clearTimeout(autoCloseResultTimer);
+
   document.getElementById("serverOverlay")
     .classList.add("hidden");
 }
+
 
 
 function lockHand(){
