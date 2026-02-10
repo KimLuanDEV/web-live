@@ -268,7 +268,7 @@ socket.on("rps-round-result", data => {
     // tự tắt sau 1s
     setTimeout(() => {
       lava?.classList.remove("active");
-    }, 1000);
+    }, 3000);
 
   } else {
     outcomeEl.textContent = "DRAW";
