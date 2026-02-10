@@ -95,6 +95,29 @@ if(remain <= 0){
 socket.on("rps-round-result", data => {
 
 
+// ===== REVEAL ENEMY HAND (SERVER RESULT) =====
+const enemyHandEl  = document.getElementById("enemyHand");
+const enemyHandImg = document.getElementById("enemyHandImg");
+
+const imgMap = {
+  rock: "/assets/rps/rock.png",
+  paper: "/assets/rps/paper.png",
+  scissors: "/assets/rps/scissors.png"
+};
+
+if(imgMap[data.enemyHand]){
+  enemyHandEl.classList.remove("pending");
+
+  // hiệu ứng lật nhẹ
+  enemyHandEl.style.transform = "rotateY(90deg)";
+
+  setTimeout(()=>{
+    enemyHandImg.src = imgMap[data.enemyHand];
+    enemyHandEl.style.transform = "rotateY(0deg)";
+  },150);
+}
+
+
 
   const enemyEl   = document.getElementById("srEnemy");
   const outcomeEl = document.getElementById("srOutcome");
@@ -173,7 +196,7 @@ socket.on("rps-history-update", list => {
 
 /* ================= ROUND NEW ================= */
 
-socket.on("rps-round-new", data=>{
+socket.on("rps-round-new", data => {
 
   hasBetThisRound = false;
 
@@ -199,32 +222,40 @@ socket.on("rps-round-new", data=>{
 
   playBtn.disabled = true;
 
-  // 🔥 RESET HAND WRAP
-  const handsWrap = document.querySelector(".rps-hands");
-  if (handsWrap){
-    handsWrap.classList.remove("confirmed-state");
+  // ===============================
+  // 🔄 RESET PLAYER HAND
+  // ===============================
+  hands.forEach(h=>{
+    h.classList.remove(
+      "active",
+      "confirmed",
+      "hide-hand",
+      "bet-locked",
+      "to-target"
+    );
+
+    h.style.position = "";
+    h.style.left = "";
+    h.style.top = "";
+    h.style.width = "";
+    h.style.height = "";
+    h.style.pointerEvents = "auto";
+  });
+
+  // ===============================
+  // 🔄 RESET ENEMY HAND
+  // ===============================
+  if (enemyHandEl){
+    enemyHandEl.classList.add("hidden");
+    enemyHandEl.classList.remove("pending");
+    enemyHandEl.style.left = "";
+    enemyHandEl.style.top = "";
+    enemyHandEl.style.transform = "";
   }
 
-  // 🔥 RESET TỪNG HAND (QUAN TRỌNG)
-hands.forEach(h=>{
-  h.classList.remove(
-    "active",
-    "confirmed",
-    "hide-hand",
-    "bet-locked",
-    "to-target"
-  );
-
-  h.style.position = "";
-  h.style.left = "";
-  h.style.top = "";
-  h.style.width = "";
-  h.style.height = "";
-  h.style.pointerEvents = "auto";
-});
-
-
+  // ===============================
   // 🔄 RESET BET UI
+  // ===============================
   betBtns.forEach(b=>b.classList.remove("active"));
   betPctBtns.forEach(b=>b.classList.remove("active"));
 
@@ -331,54 +362,61 @@ playBtn.onclick = async ()=>{
     return;
   }
 
-playBtn.disabled = true;
+  playBtn.disabled = true;
 
-// 🔒 KHÓA TOÀN BỘ
-lockBet();
-lockHand();
+  // 🔒 KHÓA TOÀN BỘ
+  lockBet();
+  lockHand();
+  hasBetThisRound = true;
 
-hasBetThisRound = true;
+  // ===============================
+  // 👊 PLAYER HAND → BAY TỚI TARGET
+  // ===============================
+  const target = document.getElementById("rpsHandTarget");
 
-// 🌟 HIGHLIGHT HAND ĐÃ CHỐT
-const handsWrap = document.querySelector(".rps-hands");
-handsWrap.classList.add("confirmed-state");
+  hands.forEach(h=>{
+    if(h.dataset.hand === myHand){
 
-const target = document.getElementById("rpsHandTarget");
+      const rect = h.getBoundingClientRect();
+      const t    = target.getBoundingClientRect();
 
-hands.forEach(h=>{
-  if(h.dataset.hand === myHand){
+      h.style.position = "fixed";
+      h.style.left   = rect.left + "px";
+      h.style.top    = rect.top  + "px";
+      h.style.width  = rect.width + "px";
+      h.style.height = rect.height + "px";
 
-    const rect = h.getBoundingClientRect();
-    const t    = target.getBoundingClientRect();
+      h.classList.add("confirmed","to-target");
+      h.classList.remove("active");
 
-    // giữ vị trí ban đầu
-    h.style.position = "fixed";
-    h.style.left   = rect.left + "px";
-    h.style.top    = rect.top  + "px";
-    h.style.width  = rect.width + "px";
-    h.style.height = rect.height + "px";
+      requestAnimationFrame(()=>{
+        h.style.left = t.left + "px";
+        h.style.top  = t.top  + "px";
+      });
 
-    h.classList.add("confirmed","to-target");
-    h.classList.remove("active");
+    }else{
+      h.classList.add("hide-hand");
+    }
+  });
 
-    requestAnimationFrame(()=>{
-      h.style.left = t.left + "px";
-      h.style.top  = t.top  + "px";
-    });
+  // ===============================
+  // 👊 ENEMY HAND – ÚP BÀI (PENDING)
+  // ===============================
+  if(enemyHandEl && enemyTarget){
+    enemyHandImg.src = "/assets/rps/unknown.png";
+    enemyHandEl.classList.remove("hidden");
+    enemyHandEl.classList.add("pending");
 
-  }else{
-    h.classList.add("hide-hand");
+    const et = enemyTarget.getBoundingClientRect();
+    enemyHandEl.style.left = et.left + "px";
+    enemyHandEl.style.top  = et.top  + "px";
   }
-});
 
+  statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 
-
-
-statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
-
-
-
-
+  // ===============================
+  // 📡 GỬI BET LÊN SERVER
+  // ===============================
   const res = await fetch("/api/rps/bet",{
     method:"POST",
     headers:{
@@ -391,20 +429,15 @@ statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
     })
   }).then(r=>r.json());
 
-if(!res.ok){
-  alert(res.message || "Không thể đặt cược");
+  if(!res.ok){
+    alert(res.message || "Không thể đặt cược");
 
-  // 🔄 QUAY LẠI TRẠNG THÁI CHƯA ĐẶT
-  playBtn.disabled = true;
-  unlockBet();
-
-  statusMsg.textContent = "⛔ Chưa chốt lệnh";
-
-
-}
-
-
+    // 🔄 QUAY LẠI TRẠNG THÁI CHƯA ĐẶT
+    unlockBet();
+    statusMsg.textContent = "⛔ Chưa chốt lệnh";
+  }
 };
+
 
 /* ================= UTIL ================= */
 

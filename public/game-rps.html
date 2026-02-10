@@ -902,6 +902,30 @@ html, body{
 }
 
 
+/* enemy hand */
+.rps-hand.enemy{
+  position: fixed;
+  z-index: 998;
+  pointer-events: none;
+  transition: transform .35s ease;
+}
+
+/* target enemy */
+#rpsEnemyTarget{
+  position: fixed;
+  right: 82%;   /* đối diện player */
+  top: 27%;
+  width:0;
+  height:0;
+}
+
+/* pending state */
+.rps-hand.enemy.pending{
+  filter: grayscale(1) blur(.4px);
+  opacity:.7;
+}
+
+
 
 </style>
 </head>
@@ -1066,6 +1090,12 @@ html, body{
 
 
 
+
+
+<!-- 👊 ENEMY HAND (ẨN KẾT QUẢ) -->
+<div id="enemyHand" class="rps-hand img enemy hidden">
+  <img id="enemyHandImg" src="/assets/rps/unknown.png" alt="Enemy">
+</div>
 
 
 <!-- 🎯 RPS HAND TARGET POSITION -->
