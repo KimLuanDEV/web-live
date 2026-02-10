@@ -1513,6 +1513,113 @@ html, body{
 }
 
 
+/* ===== BET HISTORY HEADER PRO ===== */
+.bh-header.pro{
+  height:64px;
+  padding:0 16px;
+
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,255,180,.22),
+      rgba(0,0,0,.75)
+    );
+
+  border-bottom:1px solid rgba(0,255,180,.35);
+  box-shadow:
+    0 6px 20px rgba(0,0,0,.8),
+    inset 0 0 18px rgba(0,255,180,.18);
+
+  backdrop-filter: blur(10px);
+}
+
+/* LEFT */
+.bh-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+/* ICON */
+.bh-icon{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:18px;
+
+  background:
+    radial-gradient(circle at top,
+      #00ffb0,
+      #00b97d 60%,
+      #007a55);
+
+  color:#002016;
+
+  box-shadow:
+    0 0 18px rgba(0,255,180,.9),
+    0 0 36px rgba(0,255,180,.5);
+}
+
+/* TEXT */
+.bh-text{
+  display:flex;
+  flex-direction:column;
+  line-height:1.1;
+}
+
+.bh-title{
+  font-size:17px;
+  font-weight:900;
+  color:#ffffff;
+  text-shadow:
+    0 0 12px rgba(0,255,180,.7);
+}
+
+.bh-sub{
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:1px;
+  color:#7fffe0;
+  opacity:.85;
+}
+
+/* CLOSE BTN */
+.bh-close{
+  width:36px;
+  height:36px;
+  border-radius:12px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.15);
+
+  font-size:20px;
+  color:#fff;
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.bh-close:hover{
+  background:rgba(255,80,80,.25);
+  border-color:rgba(255,80,80,.6);
+  box-shadow:0 0 18px rgba(255,80,80,.7);
+}
+
+
+
 
 </style>
 </head>
@@ -1724,10 +1831,18 @@ html, body{
 
   <div class="bet-history-sheet">
 
-    <div class="bh-header">
-      <div class="bh-title">📜 Lịch sử đặt cược</div>
-      <button class="bh-close" onclick="closeBetHistory()">✕</button>
+<div class="bh-header pro">
+  <div class="bh-left">
+    <div class="bh-icon">📜</div>
+    <div class="bh-text">
+      <div class="bh-title">Lịch sử đặt cược</div>
+      <div class="bh-sub">Kéo • Búa • Bao</div>
     </div>
+  </div>
+
+  <button class="bh-close" onclick="closeBetHistory()">✕</button>
+</div>
+
 
     <div class="bh-body" id="betHistoryList">
       <!-- render bằng JS -->
