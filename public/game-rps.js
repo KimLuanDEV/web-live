@@ -256,7 +256,7 @@ if (!hasBetThisRound) {
   if (result === "win") {
     outcomeEl.textContent = "WIN";
     outcomeEl.className  = "sr-win";
-    coinChange = betCoin * 3;
+    coinChange = betCoin * 2;
   } else if (result === "lose") {
     outcomeEl.textContent = "LOSE";
     outcomeEl.className  = "sr-lose";
