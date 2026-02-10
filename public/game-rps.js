@@ -112,35 +112,61 @@ socket.on("rps-round-state", data => {
   betValue.textContent = betCoin;
 
   if (hasBetThisRound) {
-    // 🔒 UI khi đã vào lệnh
+
+    // 🔒 KHÓA TOÀN BỘ
     lockBet();
     lockHand();
     playBtn.disabled = true;
 
     statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 
+    // 🌟 trạng thái đã chốt (giống playBtn.onclick)
+    const handsWrap = document.querySelector(".rps-hands");
+    handsWrap?.classList.add("confirmed-state");
+
+    const target = document.getElementById("rpsHandTarget");
+
     hands.forEach(h => {
+      h.style.pointerEvents = "none";
+
       if (h.dataset.hand === myHand) {
         h.classList.add("confirmed");
+        h.classList.remove("active");
+
+        // 📌 SNAP HAND VỀ TARGET (không animation)
+        if (target) {
+          const rect = target.getBoundingClientRect();
+
+          h.style.position = "fixed";
+          h.style.left   = rect.left + "px";
+          h.style.top    = rect.top  + "px";
+          h.style.width  = rect.width + "px";
+          h.style.height = rect.height + "px";
+        }
+
       } else {
-        h.classList.add("locked-dim");
+        h.classList.add("hide-hand");
+        h.classList.remove("active");
       }
     });
 
-    // hiện hand đối thủ dạng ?
+    // 👤 HIỆN HAND ĐỐI THỦ DẠNG ?
     const enemyHandEl = document.getElementById("enemyHand");
     const enemyImgEl  = document.getElementById("enemyHandImg");
+
     enemyImgEl.src = "/assets/rps/unknown.png";
     enemyHandEl.classList.remove("hidden");
     enemyHandEl.classList.add("show");
 
   } else {
-    // ✅ chưa bet
+
+    // ✅ CHƯA BET
     unlockHand();
     lockBet();
     statusMsg.textContent = "Round mới – chọn tay";
   }
 });
+
 
 
 
