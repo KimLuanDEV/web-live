@@ -316,11 +316,7 @@ socket.on("rps-history-update", list => {
 function handleRoundNew(data){
 
 
-  // 🔻 nếu sheet còn mở thì đóng
-  document.getElementById("serverOverlay")
-    ?.classList.add("hidden");
 
-  
 
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = "#" + data.roundId;
