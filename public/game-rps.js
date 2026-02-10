@@ -14,6 +14,7 @@ const playBtn   = document.getElementById("playBtn");
 
 let myHand  = null;
 let betCoin = 0;
+let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
 
 /* ================= WALLET REALTIME ================= */
 
@@ -150,6 +151,8 @@ socket.on("rps-round-result", data=>{
 /* ================= ROUND NEW ================= */
 
 socket.on("rps-round-new", data=>{
+  
+  hasBetThisRound = false;
   document.getElementById("waitOverlay")?.classList.add("hidden");
 
   rpsEndAt = data.endAt;
@@ -191,17 +194,19 @@ const hands = document.querySelectorAll(".rps-hand");
 
 hands.forEach(el=>{
   el.onclick = ()=>{
+    if(hasBetThisRound) return; // ⛔ chặn
+
     hands.forEach(h=>h.classList.remove("active"));
     el.classList.add("active");
 
     myHand = el.dataset.hand;
 
-    unlockBet(); // 🔓 MỞ BET
-
+    unlockBet();
     playBtn.disabled = true;
     statusMsg.textContent = "Chọn vốn đầu tư";
   };
 });
+
 
 
 /* ================= BET SELECT ================= */
@@ -231,17 +236,20 @@ function selectBet(value){
 
 betBtns.forEach(btn=>{
   btn.onclick = ()=>{
-    clearBetHighlight();       // 🔥 TẮT Ô CŨ
-    btn.classList.add("active");
+    if(hasBetThisRound) return; // ⛔ chặn
 
+    clearBetHighlight();
+    btn.classList.add("active");
     selectBet(Number(btn.dataset.bet));
   };
 });
 
 
 
+
 betPctBtns.forEach(btn=>{
   btn.onclick = ()=>{
+    if(hasBetThisRound) return; // ⛔ chặn
     clearBetHighlight();       // 🔥 TẮT Ô CŨ
     btn.classList.add("active");
 
@@ -275,9 +283,16 @@ playBtn.onclick = async ()=>{
     return;
   }
 
-  playBtn.disabled = true;
-  lockBet();
-  statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
+playBtn.disabled = true;
+
+// 🔒 KHÓA TOÀN BỘ
+lockBet();
+lockHand();
+
+hasBetThisRound = true;
+
+statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
+
 
   document.getElementById("waitOverlay")
     ?.classList.remove("hidden");
@@ -379,6 +394,7 @@ const resetBetBtn = document.getElementById("resetBet");
 
 if(resetBetBtn){
   resetBetBtn.onclick = ()=>{
+  if(hasBetThisRound) return;
     betCoin = 0;
     betValue.textContent = "0";
 
