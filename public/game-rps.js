@@ -23,6 +23,14 @@ let myRpsHistory = [];
 /* ================= WALLET REALTIME ================= */
 
 
+const HAND_IMG = {
+  rock: "/assets/rps/rock.png",
+  paper: "/assets/rps/paper.png",
+  scissors: "/assets/rps/scissors.png"
+};
+
+
+
 socket.on("rps-my-history", list => {
   if (!Array.isArray(list)) return;
   myRpsHistory = list;
@@ -852,9 +860,16 @@ function renderMyRpsHistory(){
     <div class="bh-item">
       <div class="bh-left">
         <div class="bh-round">Round #${h.roundId}</div>
-        <div class="bh-hand">
-          Bạn: ${h.myHand} · Địch: ${h.enemy}
-        </div>
+
+<div class="bh-hand" style="display:flex;align-items:center;gap:8px">
+  <span>Bạn</span>
+  <img src="${HAND_IMG[h.myHand]}" class="bh-hand-img">
+  <span>VS</span>
+  <img src="${HAND_IMG[h.enemy]}" class="bh-hand-img">
+</div>
+
+
+
       </div>
       <div class="bh-right ${h.result}">
         ${
