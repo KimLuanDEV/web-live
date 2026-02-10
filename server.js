@@ -1006,32 +1006,46 @@ setInterval(() => {
     // =========================
     // 1️⃣ TÍNH KẾT QUẢ & CẬP NHẬT COIN
     // =========================
-    rpsRound.bets.forEach(o=>{
-      const me = users[o.uid];
-      if(!me?.profile) return;
+rpsRound.bets.forEach(o => {
+  const me = users[o.uid];
+  if (!me?.profile) return;
 
-      const result = calcRps(o.hand, enemy);
-      let win = 0;
+  const result = calcRps(o.hand, enemy);
+  let win = 0;
 
-      if(result === "win"){
-        win = o.bet * 2;          // 🔥 thắng x2
-        me.profile.coins += win;
-      }else if(result === "draw"){
-        me.profile.coins += o.bet; // 🔄 hoàn tiền
-      }
-      // ❌ lose: không cộng gì (đã trừ khi bet)
+  if (result === "win") {
+    win = o.bet * 2;           // 🔥 thắng x2
+    me.profile.coins += win;
+  } else if (result === "draw") {
+    me.profile.coins += o.bet; // 🔄 hoàn tiền
+  }
+  // ❌ lose: không cộng gì
 
-      me.rpsHistory ||= [];
-      me.rpsHistory.unshift({
-        roundId: rpsRound.id,
-        ts: Date.now(),
-        myHand: o.hand,
-        enemy,
-        bet: o.bet,
-        result,
-        win
-      });
-    });
+  me.rpsHistory ||= [];
+
+  // ✅ TẠO 1 OBJECT DUY NHẤT
+  const historyItem = {
+    roundId: rpsRound.id,
+    ts: Date.now(),
+    myHand: o.hand,
+    enemy,
+    bet: o.bet,
+    result,
+    win
+  };
+
+  // 📜 LƯU VÀO USER
+  me.rpsHistory.unshift(historyItem);
+
+  // 🔒 GIỚI HẠN LỊCH SỬ (VD 30)
+  if (me.rpsHistory.length > 30) {
+    me.rpsHistory.length = 30;
+  }
+
+  // 🔥 REALTIME APPEND CHO RIÊNG USER
+  emitToUser(o.uid, "rps-my-history-append", historyItem);
+});
+
 
     // =========================
     // 2️⃣ LƯU USER TRƯỚC
@@ -1484,6 +1498,17 @@ function kickOldSessions(uid, newSocket) {
     });
 
     s.disconnect(true);
+  }
+}
+
+
+function emitToUser(uid, event, data) {
+  const sockets = activeUsers.get(uid);
+  if (!sockets) return;
+
+  for (const sid of sockets) {
+    const s = io.sockets.sockets.get(sid);
+    if (s) s.emit(event, data);
   }
 }
 

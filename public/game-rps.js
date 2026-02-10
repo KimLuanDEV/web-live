@@ -30,6 +30,26 @@ socket.on("rps-my-history", list => {
 });
 
 
+// 🔥 REALTIME APPEND LỊCH SỬ CỦA MÌNH
+socket.on("rps-my-history-append", item => {
+  if (!item) return;
+
+  myRpsHistory.unshift(item);
+
+  // giới hạn số dòng
+  if (myRpsHistory.length > MAX_RPS_HISTORY) {
+    myRpsHistory.length = MAX_RPS_HISTORY;
+  }
+
+  // nếu modal đang mở → render ngay
+  const modal = document.getElementById("betHistoryModal");
+  if (modal && !modal.classList.contains("hidden")) {
+    renderMyRpsHistory();
+  }
+});
+
+
+
 socket.on("coin-update", data=>{
   if(typeof data.coins !== "number") return;
 
