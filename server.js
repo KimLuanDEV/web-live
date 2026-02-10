@@ -139,6 +139,38 @@ function getTodayStartTsVN() {
 
 
 
+// ================================
+// ✊✋✌️ RPS HISTORY (GLOBAL)
+// ================================
+const RPS_HISTORY_FILE =
+  "/opt/render/project/data/rps_history.json";
+
+const MAX_RPS_HISTORY = 20;
+
+function loadRpsHistory(){
+  try{
+    if(!fs.existsSync(RPS_HISTORY_FILE)) return [];
+    return JSON.parse(fs.readFileSync(RPS_HISTORY_FILE,"utf8"));
+  }catch(e){
+    console.error("❌ Load RPS history failed", e);
+    return [];
+  }
+}
+
+function saveRpsHistory(list){
+  try{
+    fs.writeFileSync(
+      RPS_HISTORY_FILE,
+      JSON.stringify(list,null,2)
+    );
+  }catch(e){
+    console.error("❌ Save RPS history failed", e);
+  }
+}
+
+let rpsHistoryGlobal = loadRpsHistory();
+
+
 
 
 // ================================
@@ -958,6 +990,32 @@ setInterval(() => {
       enemyHand: enemy
     });
 
+
+// =========================
+// 📜 LƯU LỊCH SỬ ROUND (DÙ CÓ BET HAY KHÔNG)
+// =========================
+rpsHistoryGlobal.unshift({
+  roundId: rpsRound.id,
+  ts: Date.now(),
+  enemy: enemy,
+  betCount: rpsRound.bets.length,
+  hasBet: rpsRound.bets.length > 0
+});
+
+
+// chỉ giữ N round
+rpsHistoryGlobal = rpsHistoryGlobal.slice(0, MAX_RPS_HISTORY);
+
+// 💾 lưu file
+saveRpsHistory(rpsHistoryGlobal);
+
+// 🔔 realtime push cho client
+io.emit("rps-history-update", rpsHistoryGlobal);
+
+
+
+
+
     // =========================
     // 5️⃣ TẠO ROUND MỚI
     // =========================
@@ -1002,6 +1060,10 @@ io.on("connection", socket => {
   const coins = Number(me?.profile?.coins || 0);
 
   socket.emit("coin-update", { coins });
+
+
+// ✊✋✌️ gửi lịch sử RPS cho user mới vào
+socket.emit("rps-history", rpsHistoryGlobal);
 
 
 // 📜 gửi lịch sử vòng quay cho user mới vào

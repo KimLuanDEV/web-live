@@ -145,22 +145,31 @@ socket.on("rps-round-result", data => {
   coinEl.textContent =
     (coinChange > 0 ? "+" : "") + coinChange + " 💎";
 
-  // ===============================
-  // 📜 QUICK HISTORY (PHÍA TRÊN BET BAR)
-  // ===============================
-  if (typeof rpsHistory !== "undefined") {
-    rpsHistory.unshift({
-      enemy: data.enemyHand,
-      result // win | lose | draw
-    });
 
-    rpsHistory = rpsHistory.slice(0, MAX_RPS_HISTORY);
-    renderRpsHistory();
-  }
 
   playBtn.disabled = true;
   statusMsg.textContent = "⏳ Đợi round mới";
 });
+
+
+
+// ===============================
+// 📜 RPS GLOBAL HISTORY (SERVER)
+// ===============================
+socket.on("rps-history", list => {
+  if (!Array.isArray(list)) return;
+  rpsHistory = list.slice(0, MAX_RPS_HISTORY);
+  renderRpsHistory();
+});
+
+socket.on("rps-history-update", list => {
+  if (!Array.isArray(list)) return;
+  rpsHistory = list.slice(0, MAX_RPS_HISTORY);
+  renderRpsHistory();
+});
+
+
+
 
 
 /* ================= ROUND NEW ================= */
