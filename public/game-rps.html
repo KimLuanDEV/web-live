@@ -1284,6 +1284,17 @@ html, body{
   pointer-events: none;
 }
 
+.rps-vs .vs-icon{
+  font-size: 30px;
+  color: #002016;
+
+  text-shadow:
+    0 0 10px rgba(0,255,180,1),
+    0 0 26px rgba(0,255,180,.9),
+    0 0 40px rgba(0,255,180,.6);
+}
+
+
 .rps-vs::before{
   content:"";
   position:absolute;
@@ -1485,8 +1496,9 @@ html, body{
 
 <!-- ⚔️ VS BADGE -->
 <div id="rpsVsBadge" class="rps-vs hidden">
-  <span>VS</span>
+  <span class="vs-icon">⚔</span>
 </div>
+
 
 <!-- 🎯 ENEMY HAND (ẨN KẾT QUẢ) -->
 <div id="enemyHand" class="rps-hand img enemy hidden">
