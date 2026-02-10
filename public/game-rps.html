@@ -870,12 +870,20 @@ html, body{
 }
 
 /* hand được chọn → trượt sang trái */
+/* HAND ĐÃ CHỐT → XUỐNG GIỮA + LỆCH TRÁI */
 .rps-hand.move-left{
+  position: relative;
+  z-index: 20;
+
   transform:
-    translateX(-120px)
-    scale(1.15);
-  z-index:10;
+    translate(-50px, 140px)   /* ⬅️ trái + ⬇️ xuống */
+    scale(1.18);
+
+  transition:
+    transform .55s cubic-bezier(.4,0,.2,1),
+    opacity .35s ease;
 }
+
 
 /* hand không chọn → ẩn dần */
 .rps-hand.hide-hand{
