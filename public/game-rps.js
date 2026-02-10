@@ -128,7 +128,7 @@ clearTimeout(autoCloseResultTimer);
 
 autoCloseResultTimer = setTimeout(() => {
   closeRpsResult();
-}, 3000);
+}, 5000);
 
 
 const handImgMap = {
@@ -236,8 +236,10 @@ socket.on("rps-history-update", list => {
 
 function handleRoundNew(data){
 
-  clearTimeout(autoCloseResultTimer);
 
+  // 🔻 nếu sheet còn mở thì đóng
+  document.getElementById("serverOverlay")
+    ?.classList.add("hidden");
 
   hasBetThisRound = false;
 
