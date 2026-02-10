@@ -95,6 +95,24 @@ if(remain <= 0){
 socket.on("rps-round-result", data => {
 
 
+// 🃏 LẬT HAND ĐỐI THỦ
+const enemyHandEl = document.getElementById("enemyHand");
+const enemyImgEl  = document.getElementById("enemyHandImg");
+
+const imgMap = {
+  rock: "/assets/rps/rock.png",
+  paper: "/assets/rps/paper.png",
+  scissors: "/assets/rps/scissors.png"
+};
+
+// hiệu ứng lật
+enemyHandEl.classList.add("flip");
+
+setTimeout(()=>{
+  enemyImgEl.src = imgMap[data.enemyHand] || "/assets/rps/unknown.png";
+}, 300);
+
+
 
   const enemyEl   = document.getElementById("srEnemy");
   const outcomeEl = document.getElementById("srOutcome");
@@ -173,8 +191,11 @@ socket.on("rps-history-update", list => {
 
 /* ================= ROUND NEW ================= */
 
-socket.on("rps-round-new", data=>{
+socket.on("rps-round-new", data => {
 
+  // ===============================
+  // 🔄 ROUND STATE
+  // ===============================
   hasBetThisRound = false;
 
   rpsEndAt = data.endAt;
@@ -186,12 +207,12 @@ socket.on("rps-round-new", data=>{
     Math.ceil((data.endAt - Date.now()) / 1000)
   );
 
-  // ✅ RESET RING VỀ FULL
+  // ✅ RESET TIMER
   resetTimerRing();
   startRpsCountdown();
 
   // ===============================
-  // 🔄 RESET STATE
+  // 🔄 RESET USER STATE
   // ===============================
   myHand  = null;
   betCoin = 0;
@@ -199,38 +220,60 @@ socket.on("rps-round-new", data=>{
 
   playBtn.disabled = true;
 
+  // ===============================
   // 🔥 RESET HAND WRAP
+  // ===============================
   const handsWrap = document.querySelector(".rps-hands");
   if (handsWrap){
     handsWrap.classList.remove("confirmed-state");
   }
 
-  // 🔥 RESET TỪNG HAND (QUAN TRỌNG)
-hands.forEach(h=>{
-  h.classList.remove(
-    "active",
-    "confirmed",
-    "hide-hand",
-    "bet-locked",
-    "to-target"
-  );
+  // ===============================
+  // 🔥 RESET PLAYER HANDS
+  // ===============================
+  hands.forEach(h => {
+    h.classList.remove(
+      "active",
+      "confirmed",
+      "hide-hand",
+      "bet-locked",
+      "to-target",
+      "win",
+      "lose"
+    );
 
-  h.style.position = "";
-  h.style.left = "";
-  h.style.top = "";
-  h.style.width = "";
-  h.style.height = "";
-  h.style.pointerEvents = "auto";
-});
+    h.style.position = "";
+    h.style.left = "";
+    h.style.top = "";
+    h.style.width = "";
+    h.style.height = "";
+    h.style.pointerEvents = "auto";
+  });
 
+  // ===============================
+  // 👤 RESET ENEMY HAND (QUAN TRỌNG)
+  // ===============================
+  const enemyHandEl = document.getElementById("enemyHand");
+  const enemyImgEl  = document.getElementById("enemyHandImg");
 
+  if (enemyHandEl && enemyImgEl){
+    enemyHandEl.classList.add("hidden");
+    enemyHandEl.classList.remove("show", "flip");
+    enemyImgEl.src = "/assets/rps/unknown.png";
+  }
+
+  // ===============================
   // 🔄 RESET BET UI
-  betBtns.forEach(b=>b.classList.remove("active"));
-  betPctBtns.forEach(b=>b.classList.remove("active"));
+  // ===============================
+  betBtns.forEach(b => b.classList.remove("active"));
+  betPctBtns.forEach(b => b.classList.remove("active"));
 
   unlockHand();
   lockBet();
 
+  // ===============================
+  // 📝 STATUS
+  // ===============================
   statusMsg.textContent = "Round mới – chọn tay";
 });
 
@@ -376,6 +419,15 @@ hands.forEach(h=>{
 
 statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
 
+
+
+// 👤 HIỆN HAND ĐỐI THỦ DẠNG ?
+const enemyHandEl = document.getElementById("enemyHand");
+const enemyImgEl  = document.getElementById("enemyHandImg");
+
+enemyImgEl.src = "/assets/rps/unknown.png";
+enemyHandEl.classList.remove("hidden");
+enemyHandEl.classList.add("show");
 
 
 

@@ -903,6 +903,54 @@ html, body{
 
 
 
+
+
+/* ===== ENEMY HAND ===== */
+.rps-hand.enemy{
+  position: fixed;
+  right: 18%;      /* đối diện hand player */
+  top: 27%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* ẩn ban đầu */
+.rps-hand.enemy.hidden{
+  opacity: 0;
+  transform: scale(.6);
+}
+
+/* hiện khi vào lệnh */
+.rps-hand.enemy.show{
+  opacity: 1;
+  transform: scale(1);
+  transition: .35s ease;
+}
+
+/* hiệu ứng lật */
+.rps-hand.enemy.flip img{
+  animation: enemyFlip .6s ease forwards;
+}
+
+@keyframes enemyFlip{
+  0%{
+    transform: rotateY(0deg);
+  }
+  49%{
+    transform: rotateY(90deg);
+  }
+  50%{
+    transform: rotateY(-90deg);
+  }
+  100%{
+    transform: rotateY(0deg);
+  }
+}
+
+
+
+
+
 </style>
 </head>
 
@@ -1065,6 +1113,12 @@ html, body{
 </div>
 
 
+
+
+<!-- 🎯 ENEMY HAND (ẨN KẾT QUẢ) -->
+<div id="enemyHand" class="rps-hand img enemy hidden">
+  <img id="enemyHandImg" src="/assets/rps/unknown.png" alt="Enemy">
+</div>
 
 
 
