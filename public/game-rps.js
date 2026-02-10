@@ -176,7 +176,6 @@ socket.on("rps-history-update", list => {
 socket.on("rps-round-new", data=>{
   
   hasBetThisRound = false;
- 
 
   rpsEndAt = data.endAt;
   rpsRoundEl.textContent = data.roundId;
@@ -189,25 +188,42 @@ socket.on("rps-round-new", data=>{
 
   // ✅ RESET RING VỀ FULL
   resetTimerRing();
-
   startRpsCountdown();
 
-
-  // reset state
+  // ===============================
+  // 🔄 RESET STATE
+  // ===============================
   myHand  = null;
   betCoin = 0;
   betValue.textContent = "0";
 
   playBtn.disabled = true;
-  hands.forEach(h=>{
-  h.classList.remove("active","confirmed","locked-dim");
-});
 
+  // 🔥 RESET HAND UI (QUAN TRỌNG)
+  const handsWrap = document.querySelector(".rps-hands");
+  if (handsWrap){
+    handsWrap.classList.remove("confirmed-state");
+  }
+
+  hands.forEach(h=>{
+    h.classList.remove(
+      "active",
+      "confirmed",
+      "locked-dim",
+      "move-left",
+      "hide-hand",
+      "bet-locked"
+    );
+    h.style.pointerEvents = "auto";
+  });
+
+  // 🔄 RESET BET UI
   betBtns.forEach(b=>b.classList.remove("active"));
   betPctBtns.forEach(b=>b.classList.remove("active"));
 
   unlockHand();
   lockBet();
+
   statusMsg.textContent = "Round mới – chọn tay";
 });
 
@@ -316,15 +332,19 @@ lockHand();
 hasBetThisRound = true;
 
 // 🌟 HIGHLIGHT HAND ĐÃ CHỐT
+const handsWrap = document.querySelector(".rps-hands");
+handsWrap.classList.add("confirmed-state");
+
 hands.forEach(h=>{
   if(h.dataset.hand === myHand){
-    h.classList.add("confirmed");
+    h.classList.add("confirmed","move-left");
     h.classList.remove("active");
   }else{
-    h.classList.add("locked-dim");
-    h.classList.remove("active");
+    h.classList.add("hide-hand");
+    h.classList.remove("active","locked-dim");
   }
 });
+
 
 
 statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";

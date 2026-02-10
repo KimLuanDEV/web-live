@@ -862,6 +862,36 @@ html, body{
 
 
 
+
+/* ===== RPS HAND AFTER CONFIRM ===== */
+.rps-hands.confirmed-state{
+  justify-content:flex-start;
+  padding-left:12px;
+}
+
+/* hand được chọn → trượt sang trái */
+.rps-hand.move-left{
+  transform:
+    translateX(-120px)
+    scale(1.15);
+  z-index:10;
+}
+
+/* hand không chọn → ẩn dần */
+.rps-hand.hide-hand{
+  opacity:0;
+  transform:scale(.6);
+  pointer-events:none;
+}
+
+/* animation mượt */
+.rps-hand{
+  transition:
+    transform .45s cubic-bezier(.4,0,.2,1),
+    opacity .35s ease;
+}
+
+
 </style>
 </head>
 
