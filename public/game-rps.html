@@ -747,6 +747,7 @@ html, body{
   border-radius:4px;
 }
 
+/* ===== RPS HISTORY IMAGE MODE ===== */
 .rh-item{
   min-width:46px;
   height:46px;
@@ -756,25 +757,41 @@ html, body{
   align-items:center;
   justify-content:center;
 
-  font-size:22px;
-  font-weight:900;
-
-  background:rgba(255,255,255,.08);
+  background:rgba(255,255,255,.06);
   box-shadow:inset 0 0 14px rgba(0,0,0,.6);
+
+  overflow:hidden;
 }
 
-.rh-win{
-  color:#00ffb0;
-  box-shadow:0 0 18px rgba(0,255,180,.6);
+.rh-item img{
+  width:78%;
+  height:78%;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 8px rgba(0,255,180,.6))
+    drop-shadow(0 0 16px rgba(0,255,180,.35));
 }
-.rh-lose{
-  color:#ff4d4d;
-  box-shadow:0 0 18px rgba(255,80,80,.6);
+
+/* trạng thái kết quả */
+.rh-win img{
+  filter:
+    drop-shadow(0 0 10px rgba(0,255,180,.9))
+    drop-shadow(0 0 24px rgba(0,255,180,.8));
 }
-.rh-draw{
-  color:#ffc44d;
-  box-shadow:0 0 18px rgba(255,200,80,.6);
+
+.rh-lose img{
+  filter:
+    drop-shadow(0 0 10px rgba(255,80,80,.9))
+    drop-shadow(0 0 24px rgba(255,80,80,.8));
 }
+
+.rh-draw img{
+  filter:
+    drop-shadow(0 0 10px rgba(255,200,80,.9))
+    drop-shadow(0 0 24px rgba(255,200,80,.8));
+}
+
 
 .rh-empty{
   opacity:.6;

@@ -509,16 +509,21 @@ function renderRpsHistory(){
     return;
   }
 
-  const iconMap = {
-    rock: "✊",
-    paper: "✋",
-    scissors: "✌️"
+  const imgMap = {
+    rock: "/assets/rps/rock.png",
+    paper: "/assets/rps/paper.png",
+    scissors: "/assets/rps/scissors.png"
   };
 
   rpsHistory.forEach(h=>{
     const el = document.createElement("div");
     el.className = `rh-item rh-${h.result}`;
-    el.textContent = iconMap[h.enemy] || "?";
+
+    const img = document.createElement("img");
+    img.src = imgMap[h.enemy];
+    img.alt = h.enemy;
+
+    el.appendChild(img);
     box.appendChild(el);
   });
 }
