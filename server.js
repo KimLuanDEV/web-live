@@ -919,7 +919,7 @@ setInterval(() => {
       let win = 0;
 
       if(result === "win"){
-        win = o.bet * 2;          // 🔥 thắng x2
+        win = o.bet * 3;          // 🔥 thắng x3
         me.profile.coins += win;
       }else if(result === "draw"){
         me.profile.coins += o.bet; // 🔄 hoàn tiền

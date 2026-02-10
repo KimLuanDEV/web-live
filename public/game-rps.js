@@ -128,7 +128,7 @@ socket.on("rps-round-result", data=>{
   if(result === "win"){
     outcomeEl.textContent = "THẮNG";
     outcomeEl.className  = "sr-win";
-    coinChange = betCoin * 2;
+    coinChange = betCoin * 3;
   }else if(result === "lose"){
     outcomeEl.textContent = "THUA";
     outcomeEl.className  = "sr-lose";
