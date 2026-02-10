@@ -192,8 +192,6 @@ socket.on("rps-round-new", data=>{
 
   startRpsCountdown();
 
-  document.getElementById("serverOverlay")
-    .classList.add("hidden");
 
   // reset state
   myHand  = null;
