@@ -783,6 +783,68 @@ html, body{
 
 
 
+/* ===== RPS HAND IMAGE MODE ===== */
+.rps-hand.img{
+  padding: 14px;
+}
+
+.rps-hand.img img{
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  filter:
+    drop-shadow(0 0 12px rgba(0,255,180,.6))
+    drop-shadow(0 0 28px rgba(0,255,180,.35));
+
+  transition: transform .2s ease, filter .2s ease;
+}
+
+/* hover */
+.rps-hand.img:hover img{
+  transform: scale(1.08);
+  filter:
+    drop-shadow(0 0 18px rgba(0,255,180,.9))
+    drop-shadow(0 0 40px rgba(0,255,180,.6));
+}
+
+/* active (chọn tay) */
+.rps-hand.active img{
+  transform: scale(1.12);
+  filter:
+    drop-shadow(0 0 26px rgba(0,255,180,1))
+    drop-shadow(0 0 60px rgba(0,255,180,.9));
+}
+
+/* confirmed (đã chốt lệnh) */
+.rps-hand.confirmed img{
+  animation: rpsGlow 1s ease-in-out infinite alternate;
+}
+
+@keyframes rpsGlow{
+  from{
+    filter:
+      drop-shadow(0 0 25px rgba(0,255,180,.9))
+      drop-shadow(0 0 50px rgba(0,255,180,.6));
+  }
+  to{
+    filter:
+      drop-shadow(0 0 40px rgba(0,255,180,1))
+      drop-shadow(0 0 80px rgba(0,255,180,1));
+  }
+}
+
+/* các tay khác khi đã khóa */
+.rps-hand.locked-dim img{
+  opacity: .25;
+  filter: grayscale(1) blur(.5px);
+}
+
+.rps-hand.win img{ filter: drop-shadow(0 0 40px #00ffb0); }
+.rps-hand.lose img{ filter: drop-shadow(0 0 40px #ff4d4d); }
+
+
+
 </style>
 </head>
 
@@ -812,12 +874,21 @@ html, body{
 
   
 
-  <!-- HANDS -->
-  <div class="rps-hands">
-    <div class="rps-hand" data-hand="rock">✊</div>
-    <div class="rps-hand" data-hand="paper">✋</div>
-    <div class="rps-hand" data-hand="scissors">✌️</div>
+<!-- HANDS -->
+<div class="rps-hands">
+  <div class="rps-hand img" data-hand="rock">
+    <img src="/assets/rps/rock.png" alt="Rock">
   </div>
+
+  <div class="rps-hand img" data-hand="paper">
+    <img src="/assets/rps/paper.png" alt="Paper">
+  </div>
+
+  <div class="rps-hand img" data-hand="scissors">
+    <img src="/assets/rps/scissors.png" alt="Scissors">
+  </div>
+</div>
+
 
 
 
