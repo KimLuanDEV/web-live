@@ -182,7 +182,7 @@ setTimeout(() => {
     handleRoundNew(pendingRoundNew);
     pendingRoundNew = null;
   }
-}, 5000);
+}, 10000);
 
 
 });

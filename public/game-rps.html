@@ -949,6 +949,126 @@ html, body{
 
 
 
+/* ===== RESULT BOTTOM SHEET ===== */
+.rps-result-overlay{
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.rps-result-overlay.hidden{
+  display: none;
+}
+
+/* SHEET */
+.rps-result-sheet{
+  width: 100%;
+  max-width: 420px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,255,180,.15),
+      rgba(0,0,0,.95) 35%
+    );
+
+  border-top-left-radius: 22px;
+  border-top-right-radius: 22px;
+
+  box-shadow:
+    0 -20px 40px rgba(0,0,0,.8),
+    0 0 40px rgba(0,255,180,.35);
+
+  padding: 10px 16px 18px;
+
+  animation: sheetUp .35s cubic-bezier(.2,.8,.2,1);
+}
+
+/* HANDLE */
+.sheet-handle{
+  width: 46px;
+  height: 5px;
+  border-radius: 999px;
+  margin: 4px auto 10px;
+
+  background: rgba(255,255,255,.35);
+}
+
+/* CONTENT */
+.rps-server-result{
+  width: 100%;
+  padding: 12px;
+  border-radius: 16px;
+
+  background: rgba(0,0,0,.55);
+  border: 1px solid rgba(0,255,180,.35);
+
+  box-shadow:
+    inset 0 0 18px rgba(0,255,180,.15),
+    0 0 24px rgba(0,255,180,.25);
+
+  font-size: 15px;
+}
+
+/* TITLE */
+.sr-title{
+  text-align: center;
+  font-weight: 900;
+  font-size: 17px;
+  margin-bottom: 12px;
+
+  color: #00ffb0;
+  text-shadow: 0 0 14px rgba(0,255,180,.8);
+}
+
+/* ROW */
+.sr-row{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 8px 10px;
+  margin-bottom: 6px;
+
+  border-radius: 12px;
+  background: rgba(255,255,255,.06);
+}
+
+/* RESULT COLOR */
+.sr-win{ color:#00ffb0; }
+.sr-lose{ color:#ff4d4d; }
+.sr-draw{ color:#ffc44d; }
+
+/* BUTTON */
+.rps-server-result .rps-btn{
+  margin-top: 12px;
+  height: 46px;
+  font-size: 18px;
+  border-radius: 16px;
+}
+
+/* ANIMATION */
+@keyframes sheetUp{
+  from{
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to{
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+
+
+
 
 
 </style>
@@ -1000,40 +1120,41 @@ html, body{
 
 
 
-
-  <!-- RESULT -->
-  <div class="rps-result" id="resultBox"></div>
-
-<!-- 🧾 SERVER RESULT DETAIL -->
+<!-- 🧾 SERVER RESULT BOTTOM SHEET -->
 <div class="rps-result-overlay hidden" id="serverOverlay">
 
-  <div class="rps-server-result" id="serverResult">
+  <div class="rps-result-sheet">
 
+    <!-- handle -->
+    <div class="sheet-handle"></div>
 
-  <div class="sr-title">Kết quả từ hệ thống</div>
+    <div class="rps-server-result" id="serverResult">
 
-  <div class="sr-row">
-    <span>Hệ thống ra:</span>
-    <b id="srEnemy">---</b>
-  </div>
+      <div class="sr-title">Kết quả từ hệ thống</div>
 
-  <div class="sr-row">
-    <span>Kết quả:</span>
-    <b id="srOutcome">---</b>
-  </div>
+      <div class="sr-row">
+        <span>Hệ thống ra:</span>
+        <b id="srEnemy">---</b>
+      </div>
 
-  <div class="sr-row">
-    <span>Thay đổi kim cương:</span>
-    <b id="srCoin">0</b>
-  </div>
+      <div class="sr-row">
+        <span>Kết quả:</span>
+        <b id="srOutcome">---</b>
+      </div>
 
-  <button class="rps-btn" onclick="closeRpsResult()">
-  OK
-</button>
+      <div class="sr-row">
+        <span>Thay đổi kim cương:</span>
+        <b id="srCoin">0</b>
+      </div>
 
+      <button class="rps-btn" onclick="closeRpsResult()">
+        OK
+      </button>
 
+    </div>
   </div>
 </div>
+
 
 
 
