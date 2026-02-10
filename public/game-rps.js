@@ -504,28 +504,41 @@ handsWrap.classList.add("confirmed-state");
 
 const target = document.getElementById("rpsHandTarget");
 
-hands.forEach(h=>{
-  if(h.dataset.hand === myHand){
+hands.forEach(h => {
+  if (h.dataset.hand === myHand) {
 
-    const rect = h.getBoundingClientRect();
-    const t    = target.getBoundingClientRect();
-
-    // giữ vị trí ban đầu
-    h.style.position = "fixed";
-    h.style.left   = rect.left + "px";
-    h.style.top    = rect.top  + "px";
-    h.style.width  = rect.width + "px";
-    h.style.height = rect.height + "px";
-
-    h.classList.add("confirmed","to-target");
+    // 🔥 1. GỠ ACTIVE + TRẢ VỀ SIZE GỐC
     h.classList.remove("active");
 
-    requestAnimationFrame(()=>{
-      h.style.left = t.left + "px";
-      h.style.top  = t.top  + "px";
+    h.style.transform = "translate(0,0)";
+    const img = h.querySelector("img");
+    if (img) img.style.transform = "scale(1)";
+
+    // 🔥 2. ĐỢI DOM ÁP DỤNG → LẤY RECT CHUẨN
+    requestAnimationFrame(() => {
+
+      const rect = h.getBoundingClientRect();
+      const t    = target.getBoundingClientRect();
+
+      // 🔥 3. GIỮ VỊ TRÍ BAN ĐẦU (SIZE CHUẨN)
+      h.style.position = "fixed";
+      h.style.left   = rect.left + "px";
+      h.style.top    = rect.top  + "px";
+
+      // 🚫 KHÔNG set width / height
+
+      // 🔥 4. ĐÁNH DẤU ĐÃ CHỐT
+      h.classList.add("confirmed", "to-target");
+
+      // 🔥 5. BAY VỀ TARGET
+      requestAnimationFrame(() => {
+        h.style.left = t.left + "px";
+        h.style.top  = t.top  + "px";
+      });
+
     });
 
-  }else{
+  } else {
     h.classList.add("hide-hand");
   }
 });
