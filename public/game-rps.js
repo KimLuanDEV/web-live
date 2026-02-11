@@ -918,19 +918,13 @@ if (backBtn){
 }
 
 
-window.addEventListener("popstate", (e) => {
 
+window.addEventListener("popstate", () => {
   if (hasBetThisRound){
-    // user đang cược → chặn
-    history.pushState({ rpsLock: true }, "", location.href);
-    openBackConfirm();
-  } else {
-    // không cược → cho back bình thường
-    window.location.href = "/";
+    lockBack();
+    openBackConfirm();   // 🔥 modal thay vì alert
   }
-
 });
-
 
 
 
