@@ -296,6 +296,15 @@ socket.on("rps-round-result", data => {
         // 🏆 5️⃣ HIỆN KẾT QUẢ SAU CÙNG
         // ===============================
 
+// 🏆 5️⃣ HIỆN KẾT QUẢ SAU CÙNG
+
+enemyEl.innerHTML = `
+  <img src="${imgMap[data.enemyHand]}" alt="${data.enemyHand}">
+`;
+
+
+
+
         let coinChange = 0;
 
         if (result === "win") {
