@@ -548,11 +548,26 @@ function openHgm(){
   hgm.setAttribute("aria-hidden", "false");
   setTimeout(()=>{ try{ hgmOk?.focus(); }catch{} }, 0);
 }
+
 function closeHgm(){
   if (!hgm) return;
+
+  // 🔥 bỏ focus khỏi button trước
+  try {
+    if (document.activeElement) {
+      document.activeElement.blur();
+    }
+  } catch {}
+
   hgm.classList.add("hidden");
   hgm.setAttribute("aria-hidden", "true");
+
+  // focus về body
+  setTimeout(()=>{
+    try { document.body.focus(); } catch {}
+  }, 0);
 }
+
 function rememberHgm(){
   if (hgmDontShow?.checked) localStorage.setItem("host_guide_off", "1");
 }
