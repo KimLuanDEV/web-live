@@ -14,11 +14,8 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
-
-
-/*
 const twilio = require("twilio");
-*/
+
 
 const fs = require("fs");
 
@@ -5201,7 +5198,6 @@ function emitLobbyUpdate() {
 }
 
 
-/*
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
   try {
@@ -5220,7 +5216,6 @@ app.get("/ice", async (_req, res) => {
     return res.status(500).json({ error: err.message });
   }
 });
-*/
 
 
 async function sendPushToUser(uid, payload) {
@@ -7829,7 +7824,7 @@ app.get("/lobby", (_, res) => {
 // ================================
 // 🎥 ZEGO TOKEN API
 // ================================
-
+const crypto = require("crypto");
 
 app.post("/api/zego/token", express.json(), (req, res) => {
   const { userId } = req.body;

@@ -18,7 +18,7 @@
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/style.css" />
 
-
+  <script src="https://unpkg.com/zego-express-engine-webrtc"></script>
 
 </head>
 <body class="viewer-fullscreen">
@@ -472,7 +472,6 @@
 
 
 
-  <script src="https://unpkg.com/zego-express-engine-webrtc@2.18.0/dist/zego-express-engine.min.js"></script>
 
   <script src="/socket.io/socket.io.js"></script>
   <script src="/chat-global.js"></script>
@@ -578,14 +577,8 @@ function openHgm(){
 }
 function closeHgm(){
   if (!hgm) return;
-
-if (document.activeElement) {
-  document.activeElement.blur();
-}
-
-hgm.classList.add("hidden");
-hgm.setAttribute("aria-hidden","true");
-
+  hgm.classList.add("hidden");
+  hgm.setAttribute("aria-hidden", "true");
 }
 function rememberHgm(){
   if (hgmDontShow?.checked) localStorage.setItem("host_guide_off", "1");
