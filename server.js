@@ -14,7 +14,7 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
-const zego = require("zego");
+const twilio = require("twilio");
 
 
 const fs = require("fs");
@@ -5201,14 +5201,14 @@ function emitLobbyUpdate() {
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
   try {
-    const accountSid = process.env.ZEGO_APP_ID;
-    const authToken = process.env.ZEGO_SERVER_SECRET;
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
 
     if (!accountSid || !authToken) {
-      return res.status(500).json({ error: "Missing ZEGO_APP_ID or ZEGO_SERVER_SECRET" });
+      return res.status(500).json({ error: "Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN" });
     }
 
-    const client = zego(accountSid, authToken);
+    const client = twilio(accountSid, authToken);
     const token = await client.tokens.create();
 
     return res.json({ iceServers: token.iceServers });
