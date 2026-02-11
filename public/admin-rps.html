@@ -78,6 +78,31 @@ body{
 }
 
 
+
+.bet-row{
+  padding:8px;
+  border-bottom:1px solid rgba(0,255,180,.2);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.bet-name{
+  flex:1;
+}
+
+.bet-amount{
+  color:#00ffb0;
+  font-weight:700;
+}
+
+.bet-hand-img{
+  width:40px;
+  height:40px;
+  filter: drop-shadow(0 0 8px rgba(0,255,180,.7));
+}
+
+
 </style>
 </head>
 
@@ -345,16 +370,24 @@ function renderBetList(){
 
   count.textContent = betList.length;
 
+  const imgMap = {
+    rock: "/assets/rps/rock.png",
+    paper: "/assets/rps/paper.png",
+    scissors: "/assets/rps/scissors.png"
+  };
+
   box.innerHTML = betList.map(o => `
-    <div style="
-      padding:6px;
-      border-bottom:1px solid rgba(0,255,180,.2);
-      display:flex;
-      justify-content:space-between;
-    ">
-      <span>${o.name}</span>
-      <span>${o.bet} 💎</span>
-      <span style="color:#ffb400">${o.hand.toUpperCase()}</span>
+    <div class="bet-row">
+      <span class="bet-name">${o.name}</span>
+
+      <span class="bet-amount">
+        ${o.bet} 💎
+      </span>
+
+      <img 
+        src="${imgMap[o.hand] || '/assets/rps/unknown.png'}"
+        class="bet-hand-img"
+      >
     </div>
   `).join("");
 }
