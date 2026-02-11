@@ -69,6 +69,23 @@ body{
     </div>
 
 
+
+<div style="margin-top:20px">
+  <div style="font-weight:800;color:#00ffb0">
+    👥 Người đã cược (<span id="betCount">0</span>)
+  </div>
+
+  <div id="betList" style="
+    margin-top:10px;
+    max-height:200px;
+    overflow:auto;
+    font-size:14px;
+  ">
+  </div>
+</div>
+
+
+
 <div style="margin-top:20px;text-align:center">
   <button onclick="override('rock')"  class="refresh">ROCK</button>
   <button onclick="override('paper')" class="refresh">PAPER</button>
@@ -89,7 +106,8 @@ body{
 
 let countdownInterval = null;
 let currentEndAt = 0;
-
+let currentRoundId = null;
+let betList = [];
 
 
   const socket = io({
@@ -99,7 +117,25 @@ let currentEndAt = 0;
 });
 
 
+socket.on("admin-rps-bet-new", data => {
 
+  if(data.roundId !== currentRoundId) return;
+
+  betList.push(data);
+
+  renderBetList();
+});
+
+
+socket.on("admin-rps-bet-reset", data => {
+  betList = [];
+  renderBetList();
+});
+
+
+socket.on("admin-rps-secret-update", data => {
+  currentRoundId = data.roundId;
+});
 
 
 // 🔥 REALTIME UPDATE SECRET
@@ -170,7 +206,7 @@ async function loadSecret(){
       loadSecret();
     }, remain + 100); // +100ms tránh lệch
   }
-  
+
    startCountdown(data.endAt);
 
 }
@@ -240,6 +276,30 @@ function startCountdown(endAt){
 
   update();
   countdownInterval = setInterval(update, 1000);
+}
+
+
+
+
+function renderBetList(){
+
+  const box = document.getElementById("betList");
+  const count = document.getElementById("betCount");
+
+  count.textContent = betList.length;
+
+  box.innerHTML = betList.map(o => `
+    <div style="
+      padding:6px;
+      border-bottom:1px solid rgba(0,255,180,.2);
+      display:flex;
+      justify-content:space-between;
+    ">
+      <span>${o.name}</span>
+      <span>${o.bet} 💎</span>
+      <span style="color:#ffb400">${o.hand.toUpperCase()}</span>
+    </div>
+  `).join("");
 }
 
 

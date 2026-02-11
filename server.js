@@ -1125,6 +1125,12 @@ io.emit("admin-rps-secret-update", {
 });
 
 
+io.emit("admin-rps-bet-reset", {
+  roundId: rpsRound.id
+});
+
+
+
 
 io.emit("rps-round-new",{
   roundId: rpsRound.id,
@@ -1605,6 +1611,17 @@ if (remainMs <= RPS_BET_LOCK_BEFORE_MS) {
     hand,
     bet: coin
   });
+
+// 🔔 REALTIME PUSH CHO ADMIN
+io.emit("admin-rps-bet-new", {
+  roundId: rpsRound.id,
+  uid,
+  hand,
+  bet: coin,
+  name: me.profile.name || "Người chơi"
+});
+
+
 
   return res.json({
     ok:true,
