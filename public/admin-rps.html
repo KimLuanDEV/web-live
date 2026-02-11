@@ -75,11 +75,6 @@ body{
 </div>
 
 
-
-    <button class="refresh" onclick="loadSecret()">
-      Refresh
-    </button>
-
   </div>
 
 </div>
@@ -117,6 +112,7 @@ socket.on("admin-rps-secret-update", data => {
   }
 });
 
+let nextReloadTimer = null;
 
 async function loadSecret(){
 
@@ -130,17 +126,11 @@ async function loadSecret(){
   }
 
   const res = await fetch("/api/admin/rps/secret",{
-    headers:{
-      "x-uid": profile.uid
-    }
+    headers:{ "x-uid": profile.uid }
   });
 
   const data = await res.json();
-
-  if(!data.ok){
-    alert("Không có quyền hoặc lỗi");
-    return;
-  }
+  if(!data.ok) return;
 
   document.getElementById("roundId").textContent = "#" + data.roundId;
   document.getElementById("endAt").textContent =
@@ -148,9 +138,26 @@ async function loadSecret(){
 
   document.getElementById("secretHand").textContent =
     data.secretHand.toUpperCase();
-}
 
+  // ===============================
+  // 🔥 SYNC THEO endAt
+  // ===============================
+  if(nextReloadTimer){
+    clearTimeout(nextReloadTimer);
+  }
+
+  const now = Date.now();
+  const remain = data.endAt - now;
+
+  if(remain > 0){
+    nextReloadTimer = setTimeout(() => {
+      loadSecret();
+    }, remain + 100); // +100ms tránh lệch
+  }
+}
 loadSecret();
+
+
 
 async function override(hand){
 

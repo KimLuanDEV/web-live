@@ -1170,6 +1170,8 @@ socket.emit("rps-history", rpsHistoryGlobal);
 socket.emit("rps-my-history", me?.rpsHistory || []);
 
 
+
+
 // 📜 gửi lịch sử vòng quay cho user mới vào
 socket.emit("wheel-history", wheelHistory);
 
@@ -1178,6 +1180,7 @@ socket.emit("wheel-history", wheelHistory);
 socket.emit("wheel-round-count", {
   roundCountToday: wheelRoundCountToday + 1
 });
+
 
   
 // ✊✋✌️ RPS ROUND INFO
