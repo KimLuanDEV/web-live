@@ -453,6 +453,13 @@ function handleRoundNew(data){
   if (img) img.style.transform = "";
 
 
+// 🔥 ĐẢM BẢO HAND HIỆN LẠI
+h.classList.remove("hidden");
+h.style.opacity = "1";
+h.style.filter = "";
+
+
+
   });
 
 
@@ -464,6 +471,8 @@ function handleRoundNew(data){
     enemyHandEl.classList.add("hidden");
     enemyHandEl.classList.remove("show","flip");
     enemyImgEl.src = "/assets/rps/unknown.png";
+    enemyHandEl.classList.remove("burn");
+    enemyHandEl.style.opacity = "1";
   }
 
   // reset bet
