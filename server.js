@@ -14,8 +14,11 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
-const twilio = require("twilio");
 
+
+/*
+const twilio = require("twilio");
+*/
 
 const fs = require("fs");
 
@@ -5198,6 +5201,7 @@ function emitLobbyUpdate() {
 }
 
 
+/*
 // ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
 app.get("/ice", async (_req, res) => {
   try {
@@ -5216,6 +5220,7 @@ app.get("/ice", async (_req, res) => {
     return res.status(500).json({ error: err.message });
   }
 });
+*/
 
 
 async function sendPushToUser(uid, payload) {
@@ -7816,6 +7821,54 @@ if (uid) {
 app.get("/lobby", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "lobby.html"));
 });
+
+
+
+
+
+// ================================
+// 🎥 ZEGO TOKEN API
+// ================================
+const crypto = require("crypto");
+
+app.post("/api/zego/token", express.json(), (req, res) => {
+  const { userId } = req.body;
+  if (!userId) return res.json({ ok: false });
+
+  const appID = Number(process.env.ZEGO_APP_ID);
+  const serverSecret = process.env.ZEGO_SERVER_SECRET;
+
+  const effectiveTimeInSeconds = 3600;
+
+  const payloadObject = {
+    app_id: appID,
+    user_id: userId,
+    nonce: Math.floor(Math.random() * 100000),
+    ctime: Math.floor(Date.now() / 1000),
+    expire: effectiveTimeInSeconds
+  };
+
+  const payload = Buffer
+    .from(JSON.stringify(payloadObject))
+    .toString("base64");
+
+  const signature = crypto
+    .createHmac("sha256", serverSecret)
+    .update(payload)
+    .digest("base64");
+
+  const token = `${payload}.${signature}`;
+
+  res.json({
+    ok: true,
+    token,
+    appID
+  });
+});
+
+
+
+
 
 
 const PORT = process.env.PORT || 3000;

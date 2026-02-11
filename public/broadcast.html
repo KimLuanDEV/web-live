@@ -17,6 +17,9 @@
   <title>Host - Livestream Pro</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/style.css" />
+
+  <script src="https://unpkg.com/zego-express-engine-webrtc"></script>
+
 </head>
 <body class="viewer-fullscreen">
   
@@ -510,15 +513,39 @@ startLiveBigBtn?.addEventListener("click", () => {
 
 let __isLive = false;
 
-btnStart.addEventListener("click", () => {
-  if(__isLive) return;
+let zg;
 
+
+btnStart.addEventListener("click", async () => {
+  if (__isLive) return;
   __isLive = true;
 
-  // 🔥 PHẢI dùng event server đang nghe
-  socket.emit("host-start-live", { roomId });
+  const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-  console.log("🔥 LIVE STARTED:", roomId);
+  const res = await fetch("/api/zego/token", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ userId: profile.uid })
+  });
+
+  const data = await res.json();
+
+  zg = new ZegoExpressEngine(data.appID, true);
+
+  await zg.loginRoom(roomId, data.token, {
+    userID: profile.uid,
+    userName: profile.name || "Host"
+  });
+
+  localStream = await zg.createStream({
+    camera: { video: true, audio: true }
+  });
+
+  preview.srcObject = localStream;
+
+  zg.startPublishingStream(roomId, localStream);
+
+  syncStartLiveOverlay(true);
 });
 
 
@@ -550,8 +577,14 @@ function openHgm(){
 }
 function closeHgm(){
   if (!hgm) return;
-  hgm.classList.add("hidden");
-  hgm.setAttribute("aria-hidden", "true");
+  
+if (document.activeElement) {
+  document.activeElement.blur();
+}
+
+hgm.classList.add("hidden");
+hgm.setAttribute("aria-hidden","true");
+
 }
 function rememberHgm(){
   if (hgmDontShow?.checked) localStorage.setItem("host_guide_off", "1");
