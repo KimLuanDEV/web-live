@@ -157,7 +157,7 @@ socket.on("rps-round-state", data => {
     lockHand();
     playBtn.disabled = true;
 
-    statusMsg.textContent = "⏳ Đã vào lệnh – chờ kết quả";
+    statusMsg.textContent = "Đã vào lệnh – chờ kết quả";
 
     // 🌟 trạng thái đã chốt
     const handsWrap = document.querySelector(".rps-hands");
@@ -286,6 +286,40 @@ socket.on("rps-round-result", data => {
 
   // ✅ CÓ THAM GIA
   const result = calcResult(myHand, data.enemyHand);
+
+// ==========================
+// ⚔️ COMBAT ANIMATION
+// ==========================
+
+const playerEl = [...hands].find(h => h.dataset.hand === myHand);
+const enemyElCard = document.getElementById("enemyHand");
+
+// delay để đợi lật bài xong
+setTimeout(()=>{
+
+  playerEl?.classList.add("collide-player");
+  enemyElCard?.classList.add("collide-enemy");
+
+  // sau va chạm
+  setTimeout(()=>{
+
+    playerEl?.classList.remove("collide-player");
+    enemyElCard?.classList.remove("collide-enemy");
+
+    if(result === "win"){
+      enemyElCard?.classList.add("burn");
+    }
+    else if(result === "lose"){
+      playerEl?.classList.add("burn");
+    }
+
+  },450);
+
+},400);
+
+
+
+
   let coinChange = 0;
 
   if (result === "win") {
@@ -391,7 +425,10 @@ function handleRoundNew(data){
       "bet-locked",
       "to-target",
       "win",
-      "lose"
+      "lose",
+      "collide-player",
+      "collide-enemy",
+      "burn"
     );
     h.style.position = "";
     h.style.left = "";

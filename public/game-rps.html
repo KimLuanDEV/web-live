@@ -1635,6 +1635,61 @@ html, body{
 
 
 
+/* ===== BATTLE COLLISION ===== */
+@keyframes collideCenter {
+  0%   { transform: translate(0,0) scale(1); }
+  60%  { transform: translate(40px,0) scale(1.15); }
+  100% { transform: translate(0,0) scale(1); }
+}
+
+@keyframes collideCenterEnemy {
+  0%   { transform: translate(0,0) scale(1); }
+  60%  { transform: translate(-40px,0) scale(1.15); }
+  100% { transform: translate(0,0) scale(1); }
+}
+
+.rps-hand.collide-player{
+  animation: collideCenter .45s ease forwards;
+  z-index:1000;
+}
+
+.rps-hand.collide-enemy{
+  animation: collideCenterEnemy .45s ease forwards;
+  z-index:1000;
+}
+
+/* ===== FIRE DESTROY ===== */
+@keyframes burnAway {
+  0%{
+    opacity:1;
+    filter:brightness(1) saturate(1);
+  }
+  40%{
+    filter:
+      brightness(2)
+      saturate(2)
+      drop-shadow(0 0 20px #ff4d00)
+      drop-shadow(0 0 40px #ff0000);
+  }
+  70%{
+    filter:
+      brightness(3)
+      saturate(3)
+      drop-shadow(0 0 40px #ff0000);
+  }
+  100%{
+    opacity:0;
+    transform:scale(.6) rotate(15deg);
+    filter:blur(4px);
+  }
+}
+
+.rps-hand.burn{
+  animation: burnAway .8s ease forwards;
+}
+
+
+
 
 
 </style>
