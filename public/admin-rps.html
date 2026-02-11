@@ -84,7 +84,40 @@ body{
 
 </div>
 
+
+
+
+<script src="/socket.io/socket.io.js"></script>
+
 <script>
+  const socket = io({
+  auth:{
+    uid: JSON.parse(localStorage.getItem("user_profile"))?.uid
+  }
+});
+
+// 🔥 REALTIME UPDATE SECRET
+socket.on("admin-rps-secret-update", data => {
+
+  document.getElementById("roundId").textContent =
+    "#" + data.roundId;
+
+  document.getElementById("endAt").textContent =
+    new Date(data.endAt).toLocaleTimeString();
+
+  document.getElementById("secretHand").textContent =
+    data.secretHand.toUpperCase();
+
+  if(data.overridden){
+    document.getElementById("secretHand")
+      .style.color = "#ff4444";
+  } else {
+    document.getElementById("secretHand")
+      .style.color = "#00ffb0";
+  }
+});
+
+
 async function loadSecret(){
 
   const profile = JSON.parse(

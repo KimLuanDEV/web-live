@@ -1115,6 +1115,17 @@ rpsRound = {
   bets: []
 };
 
+
+// 🔔 ADMIN REALTIME – ROUND MỚI
+io.emit("admin-rps-secret-update", {
+  roundId: rpsRound.id,
+  secretHand: rpsRound.secretHand,
+  endAt: rpsRound.endAt,
+  overridden: false
+});
+
+
+
 io.emit("rps-round-new",{
   roundId: rpsRound.id,
   endAt: rpsRound.endAt
@@ -1851,6 +1862,16 @@ app.post("/api/admin/rps/override", (req, res) => {
 
   // 🔥 OVERRIDE THẲNG
   rpsRound.secretHand = hand;
+
+// 🔔 REALTIME PUSH CHO ADMIN
+io.emit("admin-rps-secret-update", {
+  roundId: rpsRound.id,
+  secretHand: rpsRound.secretHand,
+  endAt: rpsRound.endAt,
+  overridden: true
+});
+
+
 
   console.warn(
     "🛑 [RPS OVERRIDE]",
