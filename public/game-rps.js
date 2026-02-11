@@ -292,25 +292,12 @@ document.getElementById("rpsVsBadge")
       // ⏳ 4️⃣ ĐỢI CHÁY XONG
       setTimeout(()=>{
 
-let winnerEl = null;
-
-if(result === "win"){
-  enemyElCard?.classList.add("hidden");
-  winnerEl = playerEl;
-}
-else if(result === "lose"){
-  playerEl?.classList.add("hidden");
-  winnerEl = enemyElCard;
-}
-else{
-  winnerEl = playerEl; // draw vẫn cho player nổi nhẹ
-}
-
-// 🎉 MOVE WINNER RA GIỮA
-if(winnerEl){
-  winnerEl.classList.add("win-center");
-}
-
+        if(result === "win"){
+          enemyElCard?.classList.add("hidden");
+        }
+        else if(result === "lose"){
+          playerEl?.classList.add("hidden");
+        }
 
         // ===============================
         // 🏆 5️⃣ HIỆN KẾT QUẢ SAU CÙNG
