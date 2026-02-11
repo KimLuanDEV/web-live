@@ -215,7 +215,6 @@ socket.on("rps-round-state", data => {
 
 socket.on("rps-round-result", data => {
 
-  // 🃏 LẬT HAND ĐỐI THỦ
   const enemyHandEl = document.getElementById("enemyHand");
   const enemyImgEl  = document.getElementById("enemyHandImg");
 
@@ -225,106 +224,123 @@ socket.on("rps-round-result", data => {
     scissors: "/assets/rps/scissors.png"
   };
 
-  // hiệu ứng lật
+  // 🃏 1️⃣ LẬT BÀI
   enemyHandEl.classList.add("flip");
 
   setTimeout(()=>{
-    enemyImgEl.src = imgMap[data.enemyHand] || "/assets/rps/unknown.png";
-  }, 300);
-
+    enemyImgEl.src =
+      imgMap[data.enemyHand] || "/assets/rps/unknown.png";
+  },300);
 
   const enemyEl   = document.getElementById("srEnemy");
   const outcomeEl = document.getElementById("srOutcome");
   const coinEl    = document.getElementById("srCoin");
 
-  document.getElementById("serverOverlay")
-    .classList.remove("hidden");
-
-  // ⏱ AUTO CLOSE RESULT SAU 5s
-  clearTimeout(autoCloseResultTimer);
-  autoCloseResultTimer = setTimeout(() => {
-    closeRpsResult();
-  }, 5000);
-
-
-  const handImgMap = {
-    rock: "/assets/rps/rock.png",
-    paper: "/assets/rps/paper.png",
-    scissors: "/assets/rps/scissors.png"
-  };
-
-  if (handImgMap[data.enemyHand]) {
-    enemyEl.innerHTML = `
-      <img
-        src="${handImgMap[data.enemyHand]}"
-        alt="${data.enemyHand}"
-        style="
-          width:42px;
-          height:42px;
-          object-fit:contain;
-          filter:
-            drop-shadow(0 0 10px rgba(0,255,180,.8))
-            drop-shadow(0 0 24px rgba(0,255,180,.6));
-        "
-      />
-    `;
-  } else {
-    enemyEl.textContent = "---";
-  }
-
-
-  // ❌ KHÔNG THAM GIA ROUND
+  // ❌ KHÔNG THAM GIA
   if (!hasBetThisRound) {
-    outcomeEl.textContent = "Không tham gia";
-    outcomeEl.className  = "sr-draw";
-    coinEl.textContent   = "0 💎";
+    setTimeout(()=>{
+      document.getElementById("serverOverlay")
+        .classList.remove("hidden");
 
-    playBtn.disabled = true;
-    statusMsg.textContent = "Round kết thúc";
+      outcomeEl.textContent = "Không tham gia";
+      outcomeEl.className   = "sr-draw";
+      coinEl.textContent    = "0 💎";
+
+      playBtn.disabled = true;
+      statusMsg.textContent = "Round kết thúc";
+    },800);
+
     return;
   }
 
   // ✅ CÓ THAM GIA
   const result = calcResult(myHand, data.enemyHand);
 
-// ==========================
-// ⚔️ COMBAT ANIMATION
-// ==========================
+  const playerEl     = [...hands].find(h => h.dataset.hand === myHand);
+  const enemyElCard  = document.getElementById("enemyHand");
 
-const playerEl = [...hands].find(h => h.dataset.hand === myHand);
-const enemyElCard = document.getElementById("enemyHand");
-
-// delay để đợi lật bài xong
-setTimeout(()=>{
-
-  playerEl?.classList.add("collide-player");
-  enemyElCard?.classList.add("collide-enemy");
-
-  // sau va chạm
-  setTimeout(()=>{
-
-    playerEl?.classList.remove("collide-player");
-    enemyElCard?.classList.remove("collide-enemy");
-
-if(result === "win"){
-  enemyElCard?.classList.add("burn");
+  // ===============================
+  // ⚔️ 2️⃣ COMBAT SEQUENCE
+  // ===============================
 
   setTimeout(()=>{
-    enemyElCard?.classList.add("hidden");
-  },1000);
-}
-else if(result === "lose"){
-  playerEl?.classList.add("burn");
 
-  setTimeout(()=>{
-    playerEl?.classList.add("hidden");
-  },1000);
-}
+    // 💥 VA CHẠM
+    playerEl?.classList.add("collide-player");
+    enemyElCard?.classList.add("collide-enemy");
 
+    setTimeout(()=>{
 
-  },450);
+      playerEl?.classList.remove("collide-player");
+      enemyElCard?.classList.remove("collide-enemy");
 
-},400);
+      // 🔥 3️⃣ CHÁY LÁ THUA
+      if(result === "win"){
+        enemyElCard?.classList.add("burn");
+      }
+      else if(result === "lose"){
+        playerEl?.classList.add("burn");
+      }
+
+      // ⏳ 4️⃣ ĐỢI CHÁY XONG
+      setTimeout(()=>{
+
+        if(result === "win"){
+          enemyElCard?.classList.add("hidden");
+        }
+        else if(result === "lose"){
+          playerEl?.classList.add("hidden");
+        }
+
+        // ===============================
+        // 🏆 5️⃣ HIỆN KẾT QUẢ SAU CÙNG
+        // ===============================
+
+        let coinChange = 0;
+
+        if (result === "win") {
+          outcomeEl.textContent = "WIN";
+          outcomeEl.className  = "sr-win";
+          coinChange = betCoin * 2;
+        }
+        else if (result === "lose") {
+          outcomeEl.textContent = "LOSE";
+          outcomeEl.className  = "sr-lose";
+          coinChange = -betCoin;
+
+          const lava = document.getElementById("loseOverlay");
+          lava?.classList.add("active");
+          setTimeout(()=>{
+            lava?.classList.remove("active");
+          },3000);
+        }
+        else {
+          outcomeEl.textContent = "DRAW";
+          outcomeEl.className  = "sr-draw";
+          coinChange = betCoin;
+        }
+
+        coinEl.textContent =
+          (coinChange > 0 ? "+" : "") + coinChange + " 💎";
+
+        document.getElementById("serverOverlay")
+          .classList.remove("hidden");
+
+        // ⏱ AUTO CLOSE SAU 5s
+        clearTimeout(autoCloseResultTimer);
+        autoCloseResultTimer = setTimeout(()=>{
+          closeRpsResult();
+        },5000);
+
+        playBtn.disabled = true;
+        statusMsg.textContent = "⏳ Đợi round mới";
+
+      },1000); // burn time
+
+    },450); // collide time
+
+  },400); // flip delay
+
 
 
 
