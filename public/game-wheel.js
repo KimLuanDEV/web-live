@@ -19,12 +19,6 @@ let roundCountToday = 1; // server sẽ gửi
 let countdownSlotTimer = null;
 let countdownSlotIndex = 0;
 
-const HAND_ICON = {
-  rock: "✊",
-  paper: "✋",
-  scissors: "✌️"
-};
-
 
 function stepCountdownSlot(){
   const slots  = document.querySelectorAll(".orb-slot");

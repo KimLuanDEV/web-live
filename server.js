@@ -1790,6 +1790,37 @@ saveInvestState(investRound);
   }
 });
 
+
+
+// ================================
+// 🔐 ADMIN – XEM TRƯỚC KẾT QUẢ RPS
+// ================================
+app.get("/api/admin/rps/secret", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (me?.role !== "admin") {
+    return res.status(403).json({ ok:false });
+  }
+
+  if (!rpsRound) {
+    return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
+  }
+
+  return res.json({
+    ok: true,
+    roundId: rpsRound.id,
+    endAt: rpsRound.endAt,
+    secretHand: rpsRound.secretHand
+  });
+});
+
+
+
 // 🔐 ADMIN – GET CURRENT WHEEL BETS
 app.get("/api/admin/wheel/bets", (req, res) => {
   const uid = req.headers["x-uid"];

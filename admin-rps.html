@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>RPS Control</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:system-ui;
+}
+
+.admin-wrap{
+  padding:20px;
+}
+
+.card{
+  padding:20px;
+  border-radius:16px;
+  background:rgba(0,255,180,.1);
+  border:1px solid rgba(0,255,180,.4);
+  box-shadow:0 0 30px rgba(0,255,180,.3);
+}
+
+.title{
+  font-size:22px;
+  font-weight:900;
+  color:#00ffb0;
+  margin-bottom:15px;
+}
+
+.secret{
+  font-size:30px;
+  font-weight:900;
+  text-align:center;
+  margin-top:15px;
+  text-shadow:0 0 20px rgba(0,255,180,.8);
+}
+
+.refresh{
+  margin-top:15px;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer;
+  background:#00ffb0;
+  color:#001a12;
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-wrap">
+
+  <div class="card">
+    <div class="title">✊ RPS Round Control</div>
+
+    <div>Round: <b id="roundId">--</b></div>
+    <div>Kết thúc lúc: <b id="endAt">--</b></div>
+
+    <div class="secret" id="secretHand">
+      ---
+    </div>
+
+    <button class="refresh" onclick="loadSecret()">
+      Refresh
+    </button>
+
+  </div>
+
+</div>
+
+<script>
+async function loadSecret(){
+
+  const profile = JSON.parse(
+    localStorage.getItem("user_profile")
+  );
+
+  if(!profile?.uid){
+    alert("Chưa đăng nhập");
+    return;
+  }
+
+  const res = await fetch("/api/admin/rps/secret",{
+    headers:{
+      "x-uid": profile.uid
+    }
+  });
+
+  const data = await res.json();
+
+  if(!data.ok){
+    alert("Không có quyền hoặc lỗi");
+    return;
+  }
+
+  document.getElementById("roundId").textContent = "#" + data.roundId;
+  document.getElementById("endAt").textContent =
+    new Date(data.endAt).toLocaleTimeString();
+
+  document.getElementById("secretHand").textContent =
+    data.secretHand.toUpperCase();
+}
+
+loadSecret();
+</script>
+
+</body>
+</html>
