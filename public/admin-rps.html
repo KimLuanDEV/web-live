@@ -103,6 +103,66 @@ body{
 }
 
 
+.admin-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.admin-modal.hidden{
+  display:none;
+}
+
+.admin-modal-box{
+  width:320px;
+  padding:20px;
+  border-radius:16px;
+  background:#001a12;
+  border:1px solid rgba(0,255,180,.4);
+  box-shadow:0 0 30px rgba(0,255,180,.4);
+  text-align:center;
+}
+
+.admin-modal-title{
+  font-weight:900;
+  font-size:18px;
+  color:#00ffb0;
+  margin-bottom:10px;
+}
+
+.admin-modal-content{
+  margin-bottom:20px;
+}
+
+.admin-modal-actions{
+  display:flex;
+  justify-content:center;
+  gap:15px;
+}
+
+.modal-btn{
+  padding:8px 16px;
+  border:none;
+  border-radius:8px;
+  cursor:pointer;
+  font-weight:700;
+}
+
+.modal-btn.ok{
+  background:#00ffb0;
+  color:#001a12;
+}
+
+.modal-btn.cancel{
+  background:#222;
+  color:#fff;
+}
+
+
 </style>
 </head>
 
@@ -161,6 +221,32 @@ body{
 
 </div>
 
+
+
+<!-- 🔥 ADMIN MODAL -->
+<div id="adminModal" class="admin-modal hidden">
+  <div class="admin-modal-box">
+
+    <div class="admin-modal-title" id="adminModalTitle">
+      Thông báo
+    </div>
+
+    <div class="admin-modal-content" id="adminModalContent">
+      Nội dung
+    </div>
+
+    <div class="admin-modal-actions">
+      <button id="adminModalCancel" class="modal-btn cancel hidden">
+        Hủy
+      </button>
+
+      <button id="adminModalOk" class="modal-btn ok">
+        OK
+      </button>
+    </div>
+
+  </div>
+</div>
 
 
 
@@ -252,7 +338,11 @@ async function loadSecret(){
   );
 
   if(!profile?.uid){
-    alert("Chưa đăng nhập");
+   showModal({
+  title:"Lỗi",
+  content:"Chưa đăng nhập"
+});
+
     return;
   }
 
@@ -298,8 +388,46 @@ loadSecret();
 
 async function override(hand){
 
-  if(!confirm("Override thành " + hand.toUpperCase() + " ?"))
-    return;
+showModal({
+  title:"Xác nhận override",
+  content:"Override thành <b>" + hand.toUpperCase() + "</b> ?",
+  showCancel:true,
+  onOk: async () => {
+
+    const profile = JSON.parse(
+      localStorage.getItem("user_profile")
+    );
+
+    const res = await fetch("/api/admin/rps/override",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-uid": profile.uid
+      },
+      body: JSON.stringify({ hand })
+    });
+
+    const data = await res.json();
+
+    if(!data.ok){
+      showModal({
+        title:"Lỗi",
+        content:data.message || "Không thành công"
+      });
+      return;
+    }
+
+    showModal({
+      title:"Thành công",
+      content:"Đã override thành <b>" + data.secretHand.toUpperCase() + "</b>"
+    });
+
+    loadSecret();
+  }
+});
+
+return;
+
 
   const profile = JSON.parse(
     localStorage.getItem("user_profile")
@@ -415,6 +543,38 @@ async function loadCurrentBets(){
   renderBetList();
 }
 
+
+
+
+function showModal({
+  title = "Thông báo",
+  content = "",
+  showCancel = false,
+  onOk = null
+}){
+
+  const modal = document.getElementById("adminModal");
+  const titleEl = document.getElementById("adminModalTitle");
+  const contentEl = document.getElementById("adminModalContent");
+  const okBtn = document.getElementById("adminModalOk");
+  const cancelBtn = document.getElementById("adminModalCancel");
+
+  titleEl.textContent = title;
+  contentEl.innerHTML = content;
+
+  cancelBtn.classList.toggle("hidden", !showCancel);
+
+  modal.classList.remove("hidden");
+
+  okBtn.onclick = () => {
+    modal.classList.add("hidden");
+    if(onOk) onOk();
+  };
+
+  cancelBtn.onclick = () => {
+    modal.classList.add("hidden");
+  };
+}
 
 
 
