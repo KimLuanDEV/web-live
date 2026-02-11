@@ -312,6 +312,66 @@ select{
 }
 .hidden{ display:none }
 
+.admin-modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+}
+
+.admin-modal.hidden{
+  display:none;
+}
+
+.admin-modal-box{
+  width:340px;
+  background:#0c0c0c;
+  border:1px solid rgba(0,229,255,.3);
+  border-radius:18px;
+  padding:24px;
+  text-align:center;
+  box-shadow:0 0 40px rgba(0,229,255,.2);
+}
+
+.admin-modal-title{
+  font-size:18px;
+  font-weight:900;
+  color:#00e5ff;
+  margin-bottom:12px;
+}
+
+.admin-modal-content{
+  font-size:14px;
+  margin-bottom:20px;
+  opacity:.9;
+}
+
+.admin-modal-actions{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+}
+
+.modal-btn{
+  padding:10px 18px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  font-weight:800;
+}
+
+.modal-btn.ok{
+  background:#00e5ff;
+  color:#000;
+}
+
+.modal-btn.cancel{
+  background:#222;
+  color:#fff;
+}
 
 
 </style>
@@ -414,6 +474,31 @@ select{
 
 
 
+<!-- ===== ADMIN MODAL ===== -->
+<div id="adminModal" class="admin-modal hidden">
+  <div class="admin-modal-box">
+
+    <div class="admin-modal-title" id="modalTitle">
+      Thông báo
+    </div>
+
+    <div class="admin-modal-content" id="modalContent">
+      Nội dung
+    </div>
+
+    <div class="admin-modal-actions">
+      <button id="modalCancel" class="modal-btn cancel hidden">
+        Hủy
+      </button>
+      <button id="modalOk" class="modal-btn ok">
+        OK
+      </button>
+    </div>
+
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 
 
@@ -451,22 +536,48 @@ setInterval(loadSecret, 3000);
 
 async function overrideResult(){
   const v = Number(forceMul.value);
-  if (!v) return alert("Chưa chọn multiplier");
-  if (!confirm("OVERRIDE KẾT QUẢ?")) return;
 
-  const res = await fetch("/api/admin/wheel/override",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": me.uid
-    },
-    body: JSON.stringify({ multiplier:v })
+  if (!v){
+    showModal({
+      title:"Lỗi",
+      content:"Chưa chọn multiplier"
+    });
+    return;
+  }
+
+  showModal({
+    title:"Xác nhận override",
+    content:"Bạn chắc chắn muốn <b>FORCE x" + v + "</b> ?<br><br>Hành động này không thể hoàn tác.",
+    showCancel:true,
+    onOk: async () => {
+
+      const res = await fetch("/api/admin/wheel/override",{
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-uid": me.uid
+        },
+        body: JSON.stringify({ multiplier:v })
+      });
+
+      const data = await res.json();
+
+      if (!data.ok){
+        showModal({
+          title:"Lỗi",
+          content:"Override thất bại"
+        });
+        return;
+      }
+
+      showModal({
+        title:"Thành công",
+        content:"Đã override thành x" + v
+      });
+
+      loadSecret();
+    }
   });
-
-  const data = await res.json();
-  if (!data.ok) return alert("Override thất bại");
-
-  loadSecret();
 }
 
 
@@ -581,6 +692,39 @@ async function addBetToPanel({ uid, bet }) {
 
   betListBody.prepend(div);
 }
+
+
+
+function showModal({
+  title="Thông báo",
+  content="",
+  showCancel=false,
+  onOk=null
+}){
+
+  const modal   = document.getElementById("adminModal");
+  const titleEl = document.getElementById("modalTitle");
+  const contentEl = document.getElementById("modalContent");
+  const okBtn   = document.getElementById("modalOk");
+  const cancelBtn = document.getElementById("modalCancel");
+
+  titleEl.textContent = title;
+  contentEl.innerHTML = content;
+
+  cancelBtn.classList.toggle("hidden", !showCancel);
+
+  modal.classList.remove("hidden");
+
+  okBtn.onclick = () => {
+    modal.classList.add("hidden");
+    if(onOk) onOk();
+  };
+
+  cancelBtn.onclick = () => {
+    modal.classList.add("hidden");
+  };
+}
+
 
 
 </script>
