@@ -548,11 +548,22 @@ function openHgm(){
   hgm.setAttribute("aria-hidden", "false");
   setTimeout(()=>{ try{ hgmOk?.focus(); }catch{} }, 0);
 }
+
 function closeHgm(){
   if (!hgm) return;
+
+  // 🔥 Remove focus khỏi button trong modal
+  if (document.activeElement) {
+    document.activeElement.blur();
+  }
+
   hgm.classList.add("hidden");
   hgm.setAttribute("aria-hidden", "true");
+
+  // Optionally focus lại body
+  document.body.focus();
 }
+
 function rememberHgm(){
   if (hgmDontShow?.checked) localStorage.setItem("host_guide_off", "1");
 }
