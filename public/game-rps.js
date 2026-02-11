@@ -243,6 +243,12 @@ document.getElementById("rpsVsBadge")
   const outcomeEl = document.getElementById("srOutcome");
   const coinEl    = document.getElementById("srCoin");
 
+
+  enemyEl.innerHTML = `
+  <img src="${imgMap[data.enemyHand]}" alt="${data.enemyHand}">
+`;
+
+
   // ❌ KHÔNG THAM GIA
   if (!hasBetThisRound) {
     setTimeout(()=>{
