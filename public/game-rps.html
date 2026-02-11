@@ -1725,6 +1725,44 @@ html, body{
 }
 
 
+
+/* ===== WIN CENTER MOVE ===== */
+@keyframes winCenterMove {
+  0%{
+    transform: translate(0,0) scale(1);
+  }
+  50%{
+    transform: translate(0,-10px) scale(1.2);
+  }
+  100%{
+    transform: translate(0,-20px) scale(1.35);
+  }
+}
+
+@keyframes winGlowPulse {
+  from{
+    filter:
+      drop-shadow(0 0 30px #00ffb0)
+      drop-shadow(0 0 60px #00ffb0);
+  }
+  to{
+    filter:
+      drop-shadow(0 0 50px #00ffb0)
+      drop-shadow(0 0 100px #00ffb0);
+  }
+}
+
+.rps-hand.win-center{
+  animation: winCenterMove .6s ease forwards;
+  z-index:2000;
+}
+
+.rps-hand.win-center img{
+  animation: winGlowPulse 1s ease-in-out infinite alternate;
+}
+
+
+
 </style>
 </head>
 
