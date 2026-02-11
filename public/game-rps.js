@@ -224,17 +224,16 @@ socket.on("rps-round-result", data => {
     scissors: "/assets/rps/scissors.png"
   };
 
+  const enemyEl   = document.getElementById("srEnemy");
+  const outcomeEl = document.getElementById("srOutcome");
+  const coinEl    = document.getElementById("srCoin");
+
   // 🃏 1️⃣ LẬT BÀI
   enemyHandEl.classList.add("flip");
-
   setTimeout(()=>{
     enemyImgEl.src =
       imgMap[data.enemyHand] || "/assets/rps/unknown.png";
   },300);
-
-  const enemyEl   = document.getElementById("srEnemy");
-  const outcomeEl = document.getElementById("srOutcome");
-  const coinEl    = document.getElementById("srCoin");
 
   // ❌ KHÔNG THAM GIA
   if (!hasBetThisRound) {
@@ -249,18 +248,17 @@ socket.on("rps-round-result", data => {
       playBtn.disabled = true;
       statusMsg.textContent = "Round kết thúc";
     },800);
-
     return;
   }
 
   // ✅ CÓ THAM GIA
   const result = calcResult(myHand, data.enemyHand);
 
-  const playerEl     = [...hands].find(h => h.dataset.hand === myHand);
-  const enemyElCard  = document.getElementById("enemyHand");
+  const playerEl    = [...hands].find(h => h.dataset.hand === myHand);
+  const enemyElCard = enemyHandEl;
 
   // ===============================
-  // ⚔️ 2️⃣ COMBAT SEQUENCE
+  // ⚔️ COMBAT SEQUENCE
   // ===============================
 
   setTimeout(()=>{
@@ -269,12 +267,25 @@ socket.on("rps-round-result", data => {
     playerEl?.classList.add("collide-player");
     enemyElCard?.classList.add("collide-enemy");
 
+    // 🔥 RUNG
+    document.body.classList.add("shake");
+    setTimeout(()=> document.body.classList.remove("shake"), 350);
+
+    // ⚡ FLASH
+    const flash = document.getElementById("impactFlash");
+    flash?.classList.add("active");
+    setTimeout(()=> flash?.classList.remove("active"), 400);
+
     setTimeout(()=>{
 
       playerEl?.classList.remove("collide-player");
       enemyElCard?.classList.remove("collide-enemy");
 
-      // 🔥 3️⃣ CHÁY LÁ THUA
+      // 🐌 SLOW MOTION
+      playerEl?.style.transition = "transform .15s ease";
+      enemyElCard?.style.transition = "transform .15s ease";
+
+      // 🔥 BURN
       if(result === "win"){
         enemyElCard?.classList.add("burn");
       }
@@ -282,8 +293,12 @@ socket.on("rps-round-result", data => {
         playerEl?.classList.add("burn");
       }
 
-      // ⏳ 4️⃣ ĐỢI CHÁY XONG
+      // ⏳ ĐỢI BURN XONG
       setTimeout(()=>{
+
+        // reset slow motion
+        playerEl?.style.transition = "";
+        enemyElCard?.style.transition = "";
 
         if(result === "win"){
           enemyElCard?.classList.add("hidden");
@@ -293,19 +308,28 @@ socket.on("rps-round-result", data => {
         }
 
         // ===============================
-        // 🏆 5️⃣ HIỆN KẾT QUẢ SAU CÙNG
+        // 🏆 HIỂN THỊ KẾT QUẢ
         // ===============================
 
         let coinChange = 0;
 
         if (result === "win") {
+
           outcomeEl.textContent = "WIN";
-          outcomeEl.className  = "sr-win";
+          outcomeEl.className   = "sr-win";
           coinChange = betCoin * 2;
-        }
+
+          // 🟢 WIN GLOW
+          document.body.classList.add("win-glow");
+          setTimeout(()=>{
+            document.body.classList.remove("win-glow");
+          },800);
+
+        } 
         else if (result === "lose") {
+
           outcomeEl.textContent = "LOSE";
-          outcomeEl.className  = "sr-lose";
+          outcomeEl.className   = "sr-lose";
           coinChange = -betCoin;
 
           const lava = document.getElementById("loseOverlay");
@@ -313,11 +337,14 @@ socket.on("rps-round-result", data => {
           setTimeout(()=>{
             lava?.classList.remove("active");
           },3000);
-        }
+
+        } 
         else {
+
           outcomeEl.textContent = "DRAW";
-          outcomeEl.className  = "sr-draw";
+          outcomeEl.className   = "sr-draw";
           coinChange = betCoin;
+
         }
 
         coinEl.textContent =
@@ -326,7 +353,7 @@ socket.on("rps-round-result", data => {
         document.getElementById("serverOverlay")
           .classList.remove("hidden");
 
-        // ⏱ AUTO CLOSE SAU 5s
+        // auto close
         clearTimeout(autoCloseResultTimer);
         autoCloseResultTimer = setTimeout(()=>{
           closeRpsResult();
@@ -335,63 +362,23 @@ socket.on("rps-round-result", data => {
         playBtn.disabled = true;
         statusMsg.textContent = "⏳ Đợi round mới";
 
-      },1000); // burn time
+        // đánh dấu đang show result
+        isShowingResult = true;
 
-    },450); // collide time
+        setTimeout(()=>{
+          isShowingResult = false;
 
-  },400); // flip delay
+          if (pendingRoundNew) {
+            handleRoundNew(pendingRoundNew);
+            pendingRoundNew = null;
+          }
+        },5000);
 
+      },1000); // burn
 
+    },450); // collide
 
-
-
-  let coinChange = 0;
-
-  if (result === "win") {
-    outcomeEl.textContent = "WIN";
-    outcomeEl.className  = "sr-win";
-    coinChange = betCoin * 2;
-
-  } else if (result === "lose") {
-    outcomeEl.textContent = "LOSE";
-    outcomeEl.className  = "sr-lose";
-    coinChange = -betCoin;
-
-    /* 🌋🔥 NỀN ĐỎ KHI THUA */
-    const lava = document.getElementById("loseOverlay");
-    lava?.classList.add("active");
-
-    // tự tắt sau 1s
-    setTimeout(() => {
-      lava?.classList.remove("active");
-    }, 3000);
-
-  } else {
-    outcomeEl.textContent = "DRAW";
-    outcomeEl.className  = "sr-draw";
-    coinChange = betCoin;
-  }
-
-  // ❗ CHỈ HIỂN THỊ – KHÔNG CỘNG/TRỪ COIN Ở CLIENT
-  coinEl.textContent =
-    (coinChange > 0 ? "+" : "") + coinChange + " 💎";
-
-  playBtn.disabled = true;
-  statusMsg.textContent = "⏳ Đợi round mới";
-
-
-  // ⏸ đang hiển thị kết quả
-  isShowingResult = true;
-
-  // cho user xem lật bài + kết quả
-  setTimeout(() => {
-    isShowingResult = false;
-
-    if (pendingRoundNew) {
-      handleRoundNew(pendingRoundNew);
-      pendingRoundNew = null;
-    }
-  }, 10000);
+  },400); // flip
 
 });
 
