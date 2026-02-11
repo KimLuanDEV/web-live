@@ -384,6 +384,58 @@ enemyElCard?.style.transition = "transform .15s ease";
 
   },400); // flip delay
 
+
+
+
+
+  let coinChange = 0;
+
+  if (result === "win") {
+    outcomeEl.textContent = "WIN";
+    outcomeEl.className  = "sr-win";
+    coinChange = betCoin * 2;
+
+  } else if (result === "lose") {
+    outcomeEl.textContent = "LOSE";
+    outcomeEl.className  = "sr-lose";
+    coinChange = -betCoin;
+
+    /* 🌋🔥 NỀN ĐỎ KHI THUA */
+    const lava = document.getElementById("loseOverlay");
+    lava?.classList.add("active");
+
+    // tự tắt sau 1s
+    setTimeout(() => {
+      lava?.classList.remove("active");
+    }, 3000);
+
+  } else {
+    outcomeEl.textContent = "DRAW";
+    outcomeEl.className  = "sr-draw";
+    coinChange = betCoin;
+  }
+
+  // ❗ CHỈ HIỂN THỊ – KHÔNG CỘNG/TRỪ COIN Ở CLIENT
+  coinEl.textContent =
+    (coinChange > 0 ? "+" : "") + coinChange + " 💎";
+
+  playBtn.disabled = true;
+  statusMsg.textContent = "⏳ Đợi round mới";
+
+
+  // ⏸ đang hiển thị kết quả
+  isShowingResult = true;
+
+  // cho user xem lật bài + kết quả
+  setTimeout(() => {
+    isShowingResult = false;
+
+    if (pendingRoundNew) {
+      handleRoundNew(pendingRoundNew);
+      pendingRoundNew = null;
+    }
+  }, 10000);
+
 });
 
 
