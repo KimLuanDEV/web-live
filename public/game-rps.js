@@ -250,21 +250,30 @@ document.getElementById("rpsVsBadge")
 
 
   // ❌ KHÔNG THAM GIA
-  if (!hasBetThisRound) {
-    setTimeout(()=>{
-      document.getElementById("serverOverlay")
-        .classList.remove("hidden");
+if (!hasBetThisRound) {
+  setTimeout(()=>{
 
-      outcomeEl.textContent = "Không tham gia";
-      outcomeEl.className   = "sr-draw";
-      coinEl.textContent    = "0 💎";
+    document.getElementById("serverOverlay")
+      .classList.remove("hidden");
 
-      playBtn.disabled = true;
-      statusMsg.textContent = "Round kết thúc";
-    },800);
+    outcomeEl.textContent = "Không tham gia";
+    outcomeEl.className   = "sr-draw";
+    coinEl.textContent    = "0 💎";
 
-    return;
-  }
+    playBtn.disabled = true;
+    statusMsg.textContent = "Round kết thúc";
+
+    // ⏱ AUTO CLOSE SAU 5s
+    clearTimeout(autoCloseResultTimer);
+    autoCloseResultTimer = setTimeout(()=>{
+      closeRpsResult();
+    },5000);
+
+  },800);
+
+  return;
+}
+
 
   // ✅ CÓ THAM GIA
   const result = calcResult(myHand, data.enemyHand);
