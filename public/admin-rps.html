@@ -129,7 +129,7 @@ let nextReloadTimer = null;
 
 async function loadSecret(){
 
-  startCountdown(data.endAt);
+ 
 
 
   const profile = JSON.parse(
@@ -170,6 +170,9 @@ async function loadSecret(){
       loadSecret();
     }, remain + 100); // +100ms tránh lệch
   }
+  
+   startCountdown(data.endAt);
+
 }
 loadSecret();
 
