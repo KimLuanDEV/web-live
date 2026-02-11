@@ -62,6 +62,7 @@ body{
 
     <div>Round: <b id="roundId">--</b></div>
     <div>Kết thúc lúc: <b id="endAt">--</b></div>
+    <div>Thời gian chốt phiên: <b id="countdown">--</b></div>
 
     <div class="secret" id="secretHand">
       ---
@@ -85,11 +86,21 @@ body{
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
+
+let countdownInterval = null;
+let currentEndAt = 0;
+
+
+
   const socket = io({
   auth:{
     uid: JSON.parse(localStorage.getItem("user_profile"))?.uid
   }
 });
+
+
+
+
 
 // 🔥 REALTIME UPDATE SECRET
 socket.on("admin-rps-secret-update", data => {
@@ -110,11 +121,16 @@ socket.on("admin-rps-secret-update", data => {
     document.getElementById("secretHand")
       .style.color = "#00ffb0";
   }
+
+  startCountdown(data.endAt);
 });
 
 let nextReloadTimer = null;
 
 async function loadSecret(){
+
+  startCountdown(data.endAt);
+
 
   const profile = JSON.parse(
     localStorage.getItem("user_profile")
@@ -187,6 +203,43 @@ async function override(hand){
   alert("Đã override thành " + data.secretHand.toUpperCase());
   loadSecret();
 }
+
+
+
+function startCountdown(endAt){
+
+  currentEndAt = endAt;
+
+  if(countdownInterval){
+    clearInterval(countdownInterval);
+  }
+
+  function update(){
+    const remain = Math.max(
+      0,
+      Math.ceil((currentEndAt - Date.now()) / 1000)
+    );
+
+    document.getElementById("countdown").textContent =
+      remain + "s";
+
+    // 🔴 flash khi còn 5s
+    if(remain <= 5){
+      document.getElementById("countdown").style.color = "#ff4444";
+    }else{
+      document.getElementById("countdown").style.color = "#00ffb0";
+    }
+
+    if(remain <= 0){
+      clearInterval(countdownInterval);
+    }
+  }
+
+  update();
+  countdownInterval = setInterval(update, 1000);
+}
+
+
 
 
 </script>
