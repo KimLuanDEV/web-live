@@ -29,10 +29,6 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
   <link rel="stylesheet" href="/style.css" />
-
-
-  <script src="https://unpkg.com/zego-express-engine-webrtc"></script>
-
 </head>
 <body class="viewer-fullscreen">
 
@@ -3437,40 +3433,6 @@ socket.on("force-logout", (data) => {
     location.href = "/login.html";
   }, 3000);
 });
-
-
-
-let zg;
-
-async function joinLive() {
-
-  const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
-
-  const res = await fetch("/api/zego/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId: profile.uid })
-  });
-
-  const data = await res.json();
-
-  zg = new ZegoExpressEngine(data.appID, true);
-
-  await zg.loginRoom(roomId, data.token, {
-    userID: profile.uid,
-    userName: profile.name || "Viewer"
-  });
-
-  zg.on("roomStreamUpdate", async (roomID, updateType, streamList) => {
-    if (updateType === "ADD") {
-      const remoteStream = await zg.startPlayingStream(streamList[0].streamID);
-      player.srcObject = remoteStream;
-    }
-  });
-}
-
-joinLive();
-
 
 
 

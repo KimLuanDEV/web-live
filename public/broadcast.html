@@ -17,9 +17,6 @@
   <title>Host - Livestream Pro</title>
   <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/style.css" />
-
-  <script src="https://unpkg.com/zego-express-engine-webrtc"></script>
-
 </head>
 <body class="viewer-fullscreen">
   
@@ -513,39 +510,15 @@ startLiveBigBtn?.addEventListener("click", () => {
 
 let __isLive = false;
 
-let zg;
+btnStart.addEventListener("click", () => {
+  if(__isLive) return;
 
-
-btnStart.addEventListener("click", async () => {
-  if (__isLive) return;
   __isLive = true;
 
-  const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  // 🔥 PHẢI dùng event server đang nghe
+  socket.emit("host-start-live", { roomId });
 
-  const res = await fetch("/api/zego/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId: profile.uid })
-  });
-
-  const data = await res.json();
-
-  zg = new ZegoExpressEngine(data.appID, true);
-
-  await zg.loginRoom(roomId, data.token, {
-    userID: profile.uid,
-    userName: profile.name || "Host"
-  });
-
-  localStream = await zg.createStream({
-    camera: { video: true, audio: true }
-  });
-
-  preview.srcObject = localStream;
-
-  zg.startPublishingStream(roomId, localStream);
-
-  syncStartLiveOverlay(true);
+  console.log("🔥 LIVE STARTED:", roomId);
 });
 
 
