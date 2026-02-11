@@ -237,8 +237,7 @@ socket.on("rps-round-result", data => {
   const outcomeEl = document.getElementById("srOutcome");
   const coinEl    = document.getElementById("srCoin");
 
-  document.getElementById("serverOverlay")
-    .classList.remove("hidden");
+
 
   // ⏱ AUTO CLOSE RESULT SAU 5s
   clearTimeout(autoCloseResultTimer);
@@ -294,33 +293,30 @@ socket.on("rps-round-result", data => {
 const playerEl = [...hands].find(h => h.dataset.hand === myHand);
 const enemyElCard = document.getElementById("enemyHand");
 
-// delay để đợi lật bài xong
+// delay đợi lật bài
 setTimeout(()=>{
 
   playerEl?.classList.add("collide-player");
   enemyElCard?.classList.add("collide-enemy");
 
-  // sau va chạm
   setTimeout(()=>{
 
     playerEl?.classList.remove("collide-player");
     enemyElCard?.classList.remove("collide-enemy");
 
-if(result === "win"){
-  enemyElCard?.classList.add("burn");
+    if(result === "win"){
+      enemyElCard?.classList.add("burn");
+    }
+    else if(result === "lose"){
+      playerEl?.classList.add("burn");
+    }
 
-  setTimeout(()=>{
-    enemyElCard?.classList.add("hidden");
-  },1000);
-}
-else if(result === "lose"){
-  playerEl?.classList.add("burn");
+    // ⏳ ĐỢI CHÁY XONG → MỚI HIỆN RESULT
+    setTimeout(()=>{
 
-  setTimeout(()=>{
-    playerEl?.classList.add("hidden");
-  },1000);
-}
+      showResultSheet(result, coinChange, data.enemyHand);
 
+    },1000);
 
   },450);
 
@@ -718,6 +714,42 @@ function calcResult(me, enemy){
   ) return "win";
   return "lose";
 }
+
+
+function showResultSheet(result, coinChange, enemyHand){
+
+  const overlay   = document.getElementById("serverOverlay");
+  const outcomeEl = document.getElementById("srOutcome");
+  const coinEl    = document.getElementById("srCoin");
+
+  overlay.classList.remove("hidden");
+
+  if(result === "win"){
+    outcomeEl.textContent = "WIN";
+    outcomeEl.className = "sr-outcome sr-win";
+  }
+  else if(result === "lose"){
+    outcomeEl.textContent = "LOSE";
+    outcomeEl.className = "sr-outcome sr-lose";
+  }
+  else{
+    outcomeEl.textContent = "DRAW";
+    outcomeEl.className = "sr-outcome sr-draw";
+  }
+
+  coinEl.textContent =
+    (coinChange > 0 ? "+" : "") + coinChange + " 💎";
+
+  // auto close sau 5s
+  clearTimeout(autoCloseResultTimer);
+  autoCloseResultTimer = setTimeout(()=>{
+    closeRpsResult();
+  },5000);
+
+}
+
+
+
 
 function closeRpsResult(){
 
