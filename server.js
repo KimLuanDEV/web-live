@@ -23,7 +23,7 @@ const fs = require("fs");
 
 
 const jwt = require("jsonwebtoken");
-
+const app = express();
 const ZEGO_APP_ID = process.env.ZEGO_APP_ID;
 const ZEGO_SERVER_SECRET = process.env.ZEGO_SERVER_SECRET;
 
@@ -739,7 +739,7 @@ function seededRandom(seed) {
 }
 
 
-const app = express();
+
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
