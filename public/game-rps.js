@@ -224,6 +224,13 @@ socket.on("rps-round-result", data => {
     scissors: "/assets/rps/scissors.png"
   };
 
+
+
+// ❌ ẨN VS KHI BẮT ĐẦU CHIẾN ĐẤU
+document.getElementById("rpsVsBadge")
+  ?.classList.add("hidden");
+
+
   // 🃏 1️⃣ LẬT BÀI
   enemyHandEl.classList.add("flip");
 
