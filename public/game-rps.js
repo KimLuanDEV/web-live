@@ -306,12 +306,21 @@ setTimeout(()=>{
     playerEl?.classList.remove("collide-player");
     enemyElCard?.classList.remove("collide-enemy");
 
-    if(result === "win"){
-      enemyElCard?.classList.add("burn");
-    }
-    else if(result === "lose"){
-      playerEl?.classList.add("burn");
-    }
+if(result === "win"){
+  enemyElCard?.classList.add("burn");
+
+  setTimeout(()=>{
+    enemyElCard?.classList.add("hidden");
+  },1000);
+}
+else if(result === "lose"){
+  playerEl?.classList.add("burn");
+
+  setTimeout(()=>{
+    playerEl?.classList.add("hidden");
+  },1000);
+}
+
 
   },450);
 

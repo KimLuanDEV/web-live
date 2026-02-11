@@ -1658,36 +1658,63 @@ html, body{
   z-index:1000;
 }
 
-/* ===== FIRE DESTROY ===== */
-@keyframes burnAway {
+/* ===== FIRE DESTROY (REAL BURN) ===== */
+
+@keyframes burnImg {
   0%{
     opacity:1;
-    filter:brightness(1) saturate(1);
-  }
-  40%{
+    transform:scale(1);
     filter:
-      brightness(2)
-      saturate(2)
       drop-shadow(0 0 20px #ff4d00)
       drop-shadow(0 0 40px #ff0000);
   }
+
+  40%{
+    transform:scale(1.15) rotate(-8deg);
+    filter:
+      brightness(2)
+      saturate(2)
+      drop-shadow(0 0 40px #ff0000)
+      drop-shadow(0 0 80px #ff5500);
+  }
+
   70%{
+    transform:scale(.9) rotate(12deg);
     filter:
       brightness(3)
       saturate(3)
-      drop-shadow(0 0 40px #ff0000);
+      drop-shadow(0 0 60px #ff0000);
   }
+
   100%{
     opacity:0;
-    transform:scale(.6) rotate(15deg);
-    filter:blur(4px);
+    transform:scale(.5) rotate(25deg);
+    filter:blur(6px);
   }
 }
 
-.rps-hand.burn{
-  animation: burnAway .8s ease forwards;
+.rps-hand.burn img{
+  animation: burnImg 1s ease forwards;
 }
 
+
+.rps-hand.burn::before{
+  content:"";
+  position:absolute;
+  inset:-20px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle,
+      rgba(255,120,0,.8),
+      rgba(255,0,0,.6),
+      transparent 70%);
+  animation: fireFlash .6s ease forwards;
+}
+
+@keyframes fireFlash{
+  from{ opacity:1; transform:scale(.5); }
+  to{ opacity:0; transform:scale(1.5); }
+}
 
 
 
