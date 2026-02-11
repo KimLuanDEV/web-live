@@ -265,41 +265,14 @@ socket.on("rps-round-result", data => {
 
   setTimeout(()=>{
 
-// 💥 VA CHẠM MẠNH
-playerEl?.classList.add("collide-player");
-enemyElCard?.classList.add("collide-enemy");
-
-// 🔥 RUNG MÀN HÌNH
-document.body.classList.add("shake");
-setTimeout(()=>{
-  document.body.classList.remove("shake");
-},350);
-
-// ⚡ FLASH TRUNG TÂM
-const flash = document.getElementById("impactFlash");
-flash?.classList.add("active");
-setTimeout(()=>{
-  flash?.classList.remove("active");
-},400);
-
-
-
-
-
+    // 💥 VA CHẠM
+    playerEl?.classList.add("collide-player");
+    enemyElCard?.classList.add("collide-enemy");
 
     setTimeout(()=>{
 
       playerEl?.classList.remove("collide-player");
       enemyElCard?.classList.remove("collide-enemy");
-
-
-
-// 🐌 SLOW MOTION 0.15s
-playerEl?.style.transition = "transform .15s ease";
-enemyElCard?.style.transition = "transform .15s ease";
-
-
-
 
       // 🔥 3️⃣ CHÁY LÁ THUA
       if(result === "win"){
@@ -311,12 +284,6 @@ enemyElCard?.style.transition = "transform .15s ease";
 
       // ⏳ 4️⃣ ĐỢI CHÁY XONG
       setTimeout(()=>{
-
-
-          // 🔥 RESET SLOW MOTION
-  playerEl?.style.transition = "";
-  enemyElCard?.style.transition = "";
-
 
         if(result === "win"){
           enemyElCard?.classList.add("hidden");
@@ -368,8 +335,6 @@ enemyElCard?.style.transition = "transform .15s ease";
         playBtn.disabled = true;
         statusMsg.textContent = "⏳ Đợi round mới";
 
-
-        
       },1000); // burn time
 
     },450); // collide time
