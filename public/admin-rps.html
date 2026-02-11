@@ -50,6 +50,34 @@ body{
   background:#00ffb0;
   color:#001a12;
 }
+
+
+
+.override-wrap{
+  margin-top:25px;
+  display:flex;
+  justify-content:center;
+  gap:25px;
+}
+
+.override-hand{
+  width:90px;
+  height:90px;
+  cursor:pointer;
+  transition: all .25s ease;
+  filter: drop-shadow(0 0 15px rgba(0,255,180,.6));
+}
+
+.override-hand:hover{
+  transform: scale(1.15);
+  filter: drop-shadow(0 0 25px #00ffb0);
+}
+
+.override-hand:active{
+  transform: scale(.95);
+}
+
+
 </style>
 </head>
 
@@ -87,10 +115,20 @@ body{
 
 
 
-<div style="margin-top:20px;text-align:center">
-  <button onclick="override('rock')"  class="refresh">ROCK</button>
-  <button onclick="override('paper')" class="refresh">PAPER</button>
-  <button onclick="override('scissors')" class="refresh">SCISSORS</button>
+<div class="override-wrap">
+
+  <img src="/assets/rps/rock.png"
+       class="override-hand"
+       onclick="override('rock')">
+
+  <img src="/assets/rps/paper.png"
+       class="override-hand"
+       onclick="override('paper')">
+
+  <img src="/assets/rps/scissors.png"
+       class="override-hand"
+       onclick="override('scissors')">
+
 </div>
 
 
