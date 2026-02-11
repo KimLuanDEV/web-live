@@ -897,7 +897,7 @@ function renderMyRpsHistory(){
 
 
 function lockBack(){
-  history.pushState({ locked: true }, "", location.href);
+  history.pushState({ rpsLock: true }, "", location.href);
 }
 
 function unlockBack(){
@@ -918,17 +918,20 @@ if (backBtn){
 }
 
 
+window.addEventListener("popstate", (e) => {
 
-window.addEventListener("popstate", () => {
   if (hasBetThisRound){
-    lockBack();
-    openBackConfirm();   // 🔥 modal thay vì alert
+    // user đang cược → chặn
+    history.pushState({ rpsLock: true }, "", location.href);
+    openBackConfirm();
+  } else {
+    // không cược → cho back bình thường
+    window.location.href = "/";
   }
+
 });
 
 
-
-history.pushState(null, "", location.href);
 
 
 function openBackConfirm(){
