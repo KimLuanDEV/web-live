@@ -119,7 +119,8 @@ let betList = [];
 
 socket.on("admin-rps-bet-new", data => {
 
-  if(data.roundId !== currentRoundId) return;
+ if(currentRoundId && data.roundId !== currentRoundId) return;
+
 
   betList.push(data);
 
@@ -133,13 +134,10 @@ socket.on("admin-rps-bet-reset", data => {
 });
 
 
-socket.on("admin-rps-secret-update", data => {
-  currentRoundId = data.roundId;
-});
-
-
 // 🔥 REALTIME UPDATE SECRET
 socket.on("admin-rps-secret-update", data => {
+
+  currentRoundId = data.roundId;
 
   document.getElementById("roundId").textContent =
     "#" + data.roundId;
@@ -151,21 +149,24 @@ socket.on("admin-rps-secret-update", data => {
     data.secretHand.toUpperCase();
 
   if(data.overridden){
-    document.getElementById("secretHand")
-      .style.color = "#ff4444";
+    document.getElementById("secretHand").style.color = "#ff4444";
   } else {
-    document.getElementById("secretHand")
-      .style.color = "#00ffb0";
+    document.getElementById("secretHand").style.color = "#00ffb0";
   }
 
+  // 🔥 RESET DANH SÁCH KHI ROUND MỚI
+  betList = [];
+  renderBetList();
+
   startCountdown(data.endAt);
+
+  // 🔥 LOAD DANH SÁCH CƯỢC HIỆN TẠI
+  loadCurrentBets();
 });
 
 let nextReloadTimer = null;
 
 async function loadSecret(){
-
- 
 
 
   const profile = JSON.parse(
@@ -208,8 +209,9 @@ async function loadSecret(){
   }
 
    startCountdown(data.endAt);
-
+ await loadCurrentBets(); 
 }
+
 loadSecret();
 
 
@@ -300,6 +302,29 @@ function renderBetList(){
       <span style="color:#ffb400">${o.hand.toUpperCase()}</span>
     </div>
   `).join("");
+}
+
+
+async function loadCurrentBets(){
+
+  const profile = JSON.parse(
+    localStorage.getItem("user_profile")
+  );
+
+  if(!profile?.uid) return;
+
+  const res = await fetch("/api/admin/rps/bets",{
+    headers:{ "x-uid": profile.uid }
+  });
+
+  const data = await res.json();
+  if(!data.ok) return;
+
+  currentRoundId = data.roundId;
+
+  betList = data.list || [];
+
+  renderBetList();
 }
 
 
