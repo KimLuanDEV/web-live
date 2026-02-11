@@ -67,6 +67,15 @@ body{
       ---
     </div>
 
+
+<div style="margin-top:20px;text-align:center">
+  <button onclick="override('rock')"  class="refresh">ROCK</button>
+  <button onclick="override('paper')" class="refresh">PAPER</button>
+  <button onclick="override('scissors')" class="refresh">SCISSORS</button>
+</div>
+
+
+
     <button class="refresh" onclick="loadSecret()">
       Refresh
     </button>
@@ -109,6 +118,37 @@ async function loadSecret(){
 }
 
 loadSecret();
+
+async function override(hand){
+
+  if(!confirm("Override thành " + hand.toUpperCase() + " ?"))
+    return;
+
+  const profile = JSON.parse(
+    localStorage.getItem("user_profile")
+  );
+
+  const res = await fetch("/api/admin/rps/override",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": profile.uid
+    },
+    body: JSON.stringify({ hand })
+  });
+
+  const data = await res.json();
+
+  if(!data.ok){
+    alert("Lỗi: " + (data.message || "Không thành công"));
+    return;
+  }
+
+  alert("Đã override thành " + data.secretHand.toUpperCase());
+  loadSecret();
+}
+
+
 </script>
 
 </body>

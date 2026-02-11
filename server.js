@@ -1820,6 +1820,53 @@ app.get("/api/admin/rps/secret", (req, res) => {
 });
 
 
+// 🛑 ADMIN OVERRIDE RPS RESULT (DANGEROUS)
+app.post("/api/admin/rps/override", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  const { hand } = req.body;
+
+  if (!uid) return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (me?.role !== "admin") {
+    return res.status(403).json({ ok:false });
+  }
+
+  if (!rpsRound) {
+    return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
+  }
+
+  // ⛔ Không cho override khi round đã kết thúc
+  if (Date.now() >= rpsRound.endAt) {
+    return res.json({ ok:false, message:"ROUND_ENDED" });
+  }
+
+  const allowed = ["rock","paper","scissors"];
+  if (!allowed.includes(hand)) {
+    return res.json({ ok:false, message:"INVALID_HAND" });
+  }
+
+  // 🔥 OVERRIDE THẲNG
+  rpsRound.secretHand = hand;
+
+  console.warn(
+    "🛑 [RPS OVERRIDE]",
+    "round", rpsRound.id,
+    "→", hand,
+    "by", uid
+  );
+
+  res.json({
+    ok:true,
+    roundId: rpsRound.id,
+    secretHand: rpsRound.secretHand
+  });
+});
+
+
 
 // 🔐 ADMIN – GET CURRENT WHEEL BETS
 app.get("/api/admin/wheel/bets", (req, res) => {
