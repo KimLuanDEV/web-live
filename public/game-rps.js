@@ -335,14 +335,6 @@ enemyElCard?.style.transition = "transform .15s ease";
           outcomeEl.textContent = "WIN";
           outcomeEl.className  = "sr-win";
           coinChange = betCoin * 2;
-
-            // 🟢 WIN GLOW EFFECT
-  document.body.classList.add("win-glow");
-  setTimeout(()=>{
-    document.body.classList.remove("win-glow");
-  },800);
-
-  
         }
         else if (result === "lose") {
           outcomeEl.textContent = "LOSE";
