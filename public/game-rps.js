@@ -212,17 +212,14 @@ socket.on("rps-round-state", data => {
 
 
 /* ================= ROUND RESULT ================= */
-
 socket.on("rps-round-result", data => {
 
-  // ⛔ Đang hiển thị kết quả
   isShowingResult = true;
 
   const enemyHandEl = document.getElementById("enemyHand");
   const enemyImgEl  = document.getElementById("enemyHandImg");
-
-  const outcomeEl = document.getElementById("srOutcome");
-  const coinEl    = document.getElementById("srCoin");
+  const outcomeEl   = document.getElementById("srOutcome");
+  const coinEl      = document.getElementById("srCoin");
 
   const imgMap = {
     rock: "/assets/rps/rock.png",
@@ -243,17 +240,7 @@ socket.on("rps-round-result", data => {
     },300);
 
     setTimeout(()=>{
-      document
-        .getElementById("serverOverlay")
-        .classList.remove("hidden");
-
-      outcomeEl.textContent = "Không tham gia";
-      outcomeEl.className   = "sr-draw";
-      coinEl.textContent    = "0 💎";
-
-      playBtn.disabled = true;
-      statusMsg.textContent = "Round kết thúc";
-
+      showResult("Không tham gia","sr-draw",0);
       isShowingResult = false;
     },800);
 
@@ -270,11 +257,7 @@ socket.on("rps-round-result", data => {
     h => h.dataset.hand === myHand
   );
 
-  const enemyElCard = enemyHandEl;
-
-  // ===============================
-  // 1️⃣ FLIP ENEMY
-  // ===============================
+  // 1️⃣ FLIP
   enemyHandEl.classList.add("flip");
 
   setTimeout(()=>{
@@ -282,112 +265,69 @@ socket.on("rps-round-result", data => {
       imgMap[data.enemyHand] || "/assets/rps/unknown.png";
   },300);
 
-  // ===============================
   // 2️⃣ COLLIDE
-  // ===============================
   setTimeout(()=>{
 
     playerEl?.classList.add("collide-player");
-    enemyElCard?.classList.add("collide-enemy");
+    enemyHandEl?.classList.add("collide-enemy");
 
     setTimeout(()=>{
 
       playerEl?.classList.remove("collide-player");
-      enemyElCard?.classList.remove("collide-enemy");
+      enemyHandEl?.classList.remove("collide-enemy");
 
-      // ===============================
-      // 3️⃣ BURN LOSER
-      // ===============================
+      // 3️⃣ BURN
       if(result === "win"){
-        enemyElCard?.classList.add("burn");
+        enemyHandEl?.classList.add("burn");
       }
       else if(result === "lose"){
         playerEl?.classList.add("burn");
       }
 
-      // ===============================
       // 4️⃣ WAIT BURN
-      // ===============================
       setTimeout(()=>{
 
         if(result === "win"){
-          enemyElCard?.classList.add("hidden");
+          enemyHandEl?.classList.add("hidden");
         }
         else if(result === "lose"){
           playerEl?.classList.add("hidden");
 
-          // 🌋 Lava effect
-          const lava =
-            document.getElementById("loseOverlay");
-
+          const lava = document.getElementById("loseOverlay");
           lava?.classList.add("active");
-
           setTimeout(()=>{
             lava?.classList.remove("active");
-          },3000);
+          },2000);
         }
 
-        // ===============================
-        // 5️⃣ SHOW RESULT
-        // ===============================
+        // 5️⃣ SHOW FINAL RESULT
         let coinChange = 0;
+        let className  = "sr-draw";
+        let text       = "DRAW";
 
         if (result === "win") {
-          outcomeEl.textContent = "WIN";
-          outcomeEl.className  = "sr-win";
+          text = "WIN";
+          className = "sr-win";
           coinChange = betCoin * 2;
         }
         else if (result === "lose") {
-          outcomeEl.textContent = "LOSE";
-          outcomeEl.className  = "sr-lose";
+          text = "LOSE";
+          className = "sr-lose";
           coinChange = -betCoin;
         }
         else {
-          outcomeEl.textContent = "DRAW";
-          outcomeEl.className  = "sr-draw";
           coinChange = betCoin;
         }
 
-        coinEl.textContent =
-          (coinChange > 0 ? "+" : "") +
-          coinChange + " 💎";
+        showResult(text, className, coinChange);
 
-        document
-          .getElementById("serverOverlay")
-          .classList.remove("hidden");
+      },900);
 
-        playBtn.disabled = true;
-        statusMsg.textContent = "⏳ Đợi round mới";
+    },400);
 
-        // ===============================
-        // AUTO CLOSE 5s
-        // ===============================
-        clearTimeout(autoCloseResultTimer);
-
-        autoCloseResultTimer = setTimeout(()=>{
-          closeRpsResult();
-        },5000);
-
-        // ===============================
-        // CHO ROUND NEW CHỜ 10s
-        // ===============================
-        setTimeout(()=>{
-          isShowingResult = false;
-
-          if (pendingRoundNew) {
-            handleRoundNew(pendingRoundNew);
-            pendingRoundNew = null;
-          }
-        },10000);
-
-      },1000); // burn time
-
-    },450); // collide time
-
-  },400); // flip delay
+  },400);
 
 });
-
 
 
 
@@ -958,7 +898,39 @@ function renderMyRpsHistory(){
 
 
 
+function showResult(text, className, coinChange){
 
+  const overlay  = document.getElementById("serverOverlay");
+  const outcomeEl= document.getElementById("srOutcome");
+  const coinEl   = document.getElementById("srCoin");
 
+  outcomeEl.textContent = text;
+  outcomeEl.className   = className;
+
+  coinEl.textContent =
+    (coinChange > 0 ? "+" : "") +
+    coinChange + " 💎";
+
+  overlay.classList.remove("hidden");
+
+  playBtn.disabled = true;
+  statusMsg.textContent = "⏳ Đợi round mới";
+
+  clearTimeout(autoCloseResultTimer);
+  autoCloseResultTimer = setTimeout(()=>{
+    closeRpsResult();
+  },5000);
+
+  // 🔓 Cho phép round mới xử lý lại sau 5.5s
+  setTimeout(()=>{
+    isShowingResult = false;
+
+    if (pendingRoundNew) {
+      handleRoundNew(pendingRoundNew);
+      pendingRoundNew = null;
+    }
+
+  },5500);
+}
 
 
