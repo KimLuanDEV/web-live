@@ -1633,100 +1633,7 @@ html, body{
 }
 
 
-.back-btn.locked{
-  opacity: .35;
-  pointer-events: none;
-}
 
-
-
-/* ===== BACK CONFIRM MODAL ===== */
-.back-confirm-overlay{
-  position: fixed;
-  inset: 0;
-  z-index: 20000;
-
-  background: rgba(0,0,0,.75);
-  backdrop-filter: blur(8px);
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.back-confirm-overlay.hidden{
-  display: none;
-}
-
-.back-confirm-box{
-  width: 88%;
-  max-width: 320px;
-  padding: 22px 20px;
-  border-radius: 22px;
-
-  background:
-    linear-gradient(
-      180deg,
-      rgba(255,80,80,.18),
-      rgba(0,0,0,.92)
-    );
-
-  border: 1px solid rgba(255,80,80,.45);
-
-  box-shadow:
-    0 0 40px rgba(255,80,80,.55),
-    inset 0 0 20px rgba(255,80,80,.25);
-
-  text-align: center;
-  animation: popIn .25s ease;
-}
-
-@keyframes popIn{
-  from{
-    transform: scale(.85);
-    opacity: 0;
-  }
-  to{
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-.bc-icon{
-  font-size: 36px;
-  margin-bottom: 8px;
-}
-
-.bc-title{
-  font-size: 18px;
-  font-weight: 1000;
-  color: #ff8080;
-  margin-bottom: 6px;
-}
-
-.bc-desc{
-  font-size: 14px;
-  line-height: 1.4;
-  opacity: .85;
-  margin-bottom: 16px;
-}
-
-.bc-btn{
-  width: 100%;
-  height: 44px;
-  border-radius: 14px;
-  border: none;
-
-  font-size: 16px;
-  font-weight: 900;
-  cursor: pointer;
-
-  background: linear-gradient(180deg,#ff8080,#ff4d4d);
-  color: #2a0000;
-
-  box-shadow:
-    0 0 20px rgba(255,80,80,.6);
-}
 
 
 
@@ -1742,7 +1649,7 @@ html, body{
 
 <!-- ===== HEADER ===== -->
 <header class="rps-header">
-  <button class="back-btn" id="backBtn">←</button>
+  <button class="back-btn" onclick="history.back()">←</button>
   <div class="rps-title">Scissors • Rock • Paper</div>
   <div class="rps-wallet">
   💎 <span id="myCoins">0</span>
@@ -1967,27 +1874,6 @@ html, body{
 
 
 
-<!-- ⛔ CONFIRM BACK MODAL -->
-<div class="back-confirm-overlay hidden" id="backConfirm">
-
-  <div class="back-confirm-box">
-    <div class="bc-icon">⚠️</div>
-
-    <div class="bc-title">
-      Không thể quay lại
-    </div>
-
-    <div class="bc-desc">
-      Bạn đã vào lệnh.<br>
-      Vui lòng chờ kết quả vòng đấu.
-    </div>
-
-    <button class="bc-btn" onclick="closeBackConfirm()">
-      OK
-    </button>
-  </div>
-
-</div>
 
 
 
