@@ -64,9 +64,10 @@ body{
     <div>Kết thúc lúc: <b id="endAt">--</b></div>
     <div>Thời gian chốt phiên: <b id="countdown">--</b></div>
 
-    <div class="secret" id="secretHand">
-      ---
-    </div>
+<div class="secret" id="secretHand">
+  <img id="secretImg" src="/assets/rps/unknown.png" 
+       style="width:100px;height:100px;">
+</div>
 
 
 
@@ -104,10 +105,13 @@ body{
 
 <script>
 
+
+
 let countdownInterval = null;
 let currentEndAt = 0;
 let currentRoundId = null;
 let betList = [];
+
 
 
   const socket = io({
@@ -115,6 +119,14 @@ let betList = [];
     uid: JSON.parse(localStorage.getItem("user_profile"))?.uid
   }
 });
+
+
+const imgMap = {
+  rock: "/assets/rps/rock.png",
+  paper: "/assets/rps/paper.png",
+  scissors: "/assets/rps/scissors.png"
+};
+
 
 
 socket.on("admin-rps-bet-new", data => {
@@ -145,8 +157,11 @@ socket.on("admin-rps-secret-update", data => {
   document.getElementById("endAt").textContent =
     new Date(data.endAt).toLocaleTimeString();
 
-  document.getElementById("secretHand").textContent =
-    data.secretHand.toUpperCase();
+const imgEl = document.getElementById("secretImg");
+
+imgEl.src =
+  imgMap[data.secretHand] || "/assets/rps/unknown.png";
+
 
   if(data.overridden){
     document.getElementById("secretHand").style.color = "#ff4444";
@@ -189,8 +204,10 @@ async function loadSecret(){
   document.getElementById("endAt").textContent =
     new Date(data.endAt).toLocaleTimeString();
 
-  document.getElementById("secretHand").textContent =
-    data.secretHand.toUpperCase();
+const imgEl = document.getElementById("secretImg");
+
+imgEl.src =
+  imgMap[data.secretHand] || "/assets/rps/unknown.png";
 
   // ===============================
   // 🔥 SYNC THEO endAt
