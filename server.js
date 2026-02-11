@@ -14,38 +14,10 @@ const express = require("express");
 const http = require("http");
 const path = require("path");
 const { Server } = require("socket.io");
-
+const twilio = require("twilio");
 
 
 const fs = require("fs");
-
-
-
-
-const jwt = require("jsonwebtoken");
-const app = express();
-const ZEGO_APP_ID = process.env.ZEGO_APP_ID;
-const ZEGO_SERVER_SECRET = process.env.ZEGO_SERVER_SECRET;
-
-function generateZegoToken(userId) {
-  const payload = {
-    user_id: userId,
-    app_id: ZEGO_APP_ID
-  };
-
-  return jwt.sign(payload, ZEGO_SERVER_SECRET, {
-    expiresIn: "2h"
-  });
-}
-
-app.get("/zego-token", (req, res) => {
-  const userId = req.query.userId;
-  if (!userId) return res.status(400).json({ error: "Missing userId" });
-
-  const token = generateZegoToken(userId);
-  res.json({ token, appId: ZEGO_APP_ID });
-});
-
 
 
 function ensureWheelSecret(round){
@@ -739,7 +711,7 @@ function seededRandom(seed) {
 }
 
 
-
+const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
@@ -5226,6 +5198,24 @@ function emitLobbyUpdate() {
 }
 
 
+// ICE servers from Twilio (TURN). Client will filter invalid STUN urls if any.
+app.get("/ice", async (_req, res) => {
+  try {
+    const accountSid = process.env.TWILIO_ACCOUNT_SID;
+    const authToken = process.env.TWILIO_AUTH_TOKEN;
+
+    if (!accountSid || !authToken) {
+      return res.status(500).json({ error: "Missing TWILIO_ACCOUNT_SID or TWILIO_AUTH_TOKEN" });
+    }
+
+    const client = twilio(accountSid, authToken);
+    const token = await client.tokens.create();
+
+    return res.json({ iceServers: token.iceServers });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
 
 
 async function sendPushToUser(uid, payload) {
