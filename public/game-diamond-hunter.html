@@ -968,19 +968,23 @@ const CLASS_CONFIG = {
 async function savePlayer(){
   if(!player) return;
 
-  player.lastOnline = Date.now();
-
   const uid = localStorage.getItem("uid");
   if(!uid) return;
 
-  await fetch("/api/hunter/save",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": uid
-    },
-    body: JSON.stringify(player)
-  });
+  player.lastOnline = Date.now();
+
+  try{
+    await fetch("/api/hunter/save",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-uid": uid
+      },
+      body: JSON.stringify(player)
+    });
+  }catch(e){
+    console.error("SAVE ERROR", e);
+  }
 }
 
 
@@ -990,43 +994,24 @@ async function savePlayer(){
 window.onload = async function(){
 
   const uid = localStorage.getItem("uid");
+  if(!uid) return;
 
-  if(!uid){
-    location.href = "/login.html";
-    return;
+  const res = await fetch("/api/hunter/load",{
+    headers:{ "x-uid": uid }
+  });
+
+  const data = await res.json();
+
+  if(data.ok && data.char){
+    player = data.char;
+
+    recalcStats();
+    applyOfflineRegen();
+    showHub();
+    startRegen();
   }
 
-  try{
-
-    const res = await fetch("/api/hunter/load",{
-      headers:{ "x-uid": uid }
-    });
-
-    const data = await res.json();
-
-    if(data.ok && data.char){
-
-      player = data.char;
-
-      recalcStats();
-      applyOfflineRegen();
-      showHub();
-      startRegen();
-
-      return;
-    }
-
-    // ❗ Nếu không có nhân vật → hiện create
-    switchScreen("createScreen");
-
-  }catch(e){
-    console.error("LOAD CHAR ERROR", e);
-    switchScreen("createScreen");
-  }
 };
-
-console.log("UID:", uid);
-console.log("LOAD RESULT:", data);
 
 
 
@@ -1071,7 +1056,7 @@ function selectClass(el, type){
 
 
 
-function createCharacter(){
+async function createCharacter(){
 
   const name=document.getElementById("charName").value.trim();
   if(!name || !selectedClass)
@@ -1102,10 +1087,13 @@ function createCharacter(){
     }
   };
 
-  savePlayer();
+  // 🔥 BẮT BUỘC CHỜ SERVER LƯU XONG
+  await savePlayer();
+
   showHub();
   startRegen();
 }
+
 
 function showHub(){
 
@@ -1741,11 +1729,15 @@ function startRegen(){
 
 
 
-window.addEventListener("beforeunload",()=>{
-if(player){
-    player.lastOnline = Date.now();
-    savePlayer();
-  }
+window.addEventListener("beforeunload",(e)=>{
+  if(!player) return;
+
+  player.lastOnline = Date.now();
+
+  navigator.sendBeacon(
+    "/api/hunter/save",
+    JSON.stringify(player)
+  );
 });
 
 
