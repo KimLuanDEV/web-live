@@ -990,24 +990,43 @@ async function savePlayer(){
 window.onload = async function(){
 
   const uid = localStorage.getItem("uid");
-  if(!uid) return;
 
-  const res = await fetch("/api/hunter/load",{
-    headers:{ "x-uid": uid }
-  });
-
-  const data = await res.json();
-
-  if(data.ok && data.char){
-    player = data.char;
-
-    recalcStats();
-    applyOfflineRegen();
-    showHub();
-    startRegen();
+  if(!uid){
+    location.href = "/login.html";
+    return;
   }
 
+  try{
+
+    const res = await fetch("/api/hunter/load",{
+      headers:{ "x-uid": uid }
+    });
+
+    const data = await res.json();
+
+    if(data.ok && data.char){
+
+      player = data.char;
+
+      recalcStats();
+      applyOfflineRegen();
+      showHub();
+      startRegen();
+
+      return;
+    }
+
+    // ❗ Nếu không có nhân vật → hiện create
+    switchScreen("createScreen");
+
+  }catch(e){
+    console.error("LOAD CHAR ERROR", e);
+    switchScreen("createScreen");
+  }
 };
+
+console.log("UID:", uid);
+console.log("LOAD RESULT:", data);
 
 
 
