@@ -1627,15 +1627,25 @@ function unequipItem(slot){
   const item = player.equipment[slot];
   if(!item) return;
 
+  // Trả đồ về kho
   player.inventory.push(item);
-  player.equipment[slot]=null;
 
+  // Xóa khỏi slot
+  player.equipment[slot] = null;
+
+  // Tính lại chỉ số
   recalcStats();
 
-  localStorage.setItem("hunter_char",JSON.stringify(player));
+  // Lưu
+  localStorage.setItem("hunter_char", JSON.stringify(player));
 
+  // Nếu đang mở inventory → cập nhật ngay
+  renderInventory();
+
+  // Cập nhật Hub overlay
   showHub();
 }
+
 
 
 function recalcStats(){
@@ -1908,8 +1918,8 @@ function startRegen(){
         player.hp = player.maxHp;
 
     player.lastOnline = Date.now();
-localStorage.setItem("hunter_char",
-  JSON.stringify(player));
+    localStorage.setItem("hunter_char",
+    JSON.stringify(player));
 
 
       // Nếu đang ở Hub → update ngay
