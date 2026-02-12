@@ -965,29 +965,19 @@ const CLASS_CONFIG = {
   }
 };
 
+
 function savePlayer(){
-  if(!player) return;
-  player.lastOnline = Date.now();
-  localStorage.setItem("hunter_char",
-    JSON.stringify(player));
+  saveCharacter();
 }
+
 
 
 
 /* ===== INIT ===== */
-window.onload=function(){
-
-  const saved=localStorage.getItem("hunter_char");
-  if(saved){
-  player=JSON.parse(saved);
-
-  recalcStats();
-  applyOfflineRegen();
-  showHub();
-  startRegen();
-}
-
+window.onload = function(){
+  loadCharacter();
 };
+
 
 
 
@@ -1157,24 +1147,25 @@ Object.keys(player.equipment).forEach(slot=>{
 
 
 
-
-function resetCharacter(){
+async function resetCharacter(){
 
   if(!confirm("Bạn chắc chắn muốn xóa nhân vật?"))
     return;
 
-  // Dừng regen
-  if(regenInterval) clearInterval(regenInterval);
-
-  // Xóa player trong RAM
   player = null;
 
-  // Xóa localStorage
-  localStorage.removeItem("hunter_char");
+  await fetch("/api/hunter/character",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": localStorage.getItem("uid")
+    },
+    body: JSON.stringify({ character: null })
+  });
 
-  // Chuyển về màn tạo nhân vật
   switchScreen("createScreen");
 }
+
 
 
 
@@ -1691,12 +1682,6 @@ function startRegen(){
 
 
 
-window.addEventListener("beforeunload",()=>{
-  if(player && localStorage.getItem("hunter_char")){
-    player.lastOnline = Date.now();
-    savePlayer();
-  }
-});
 
 
 
@@ -1711,6 +1696,55 @@ savePlayer();
 
 
   location.href = "combat.html";
+}
+
+
+
+
+async function loadCharacter(){
+
+  const uid = localStorage.getItem("uid");
+  if(!uid){
+    alert("Bạn chưa đăng nhập");
+    return;
+  }
+
+  const res = await fetch("/api/hunter/character",{
+    headers:{ "x-uid": uid }
+  });
+
+  const data = await res.json();
+
+  if(data.ok && data.character){
+
+    player = data.character;
+
+    recalcStats();
+    applyOfflineRegen();
+    showHub();
+    startRegen();
+
+  }else{
+    switchScreen("createScreen");
+  }
+}
+
+
+async function saveCharacter(){
+
+  const uid = localStorage.getItem("uid");
+  if(!uid || !player) return;
+
+  player.lastOnline = Date.now();
+
+  await fetch("/api/hunter/character",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": uid
+    },
+    body: JSON.stringify({ character: player })
+  });
 }
 
 

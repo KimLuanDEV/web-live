@@ -1822,6 +1822,24 @@ saveInvestState(investRound);
 });
 
 
+app.get("/api/hunter/character", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (!me?.profile)
+    return res.json({ ok:true, character:null });
+
+  return res.json({
+    ok:true,
+    character: me.profile.character || null
+  });
+});
+
+
 // 🔐 ADMIN – GET CURRENT RPS BETS
 app.get("/api/admin/rps/bets", (req, res) => {
 
@@ -1884,6 +1902,27 @@ app.get("/api/admin/rps/secret", (req, res) => {
     secretHand: rpsRound.secretHand
   });
 });
+
+
+
+app.post("/api/hunter/character", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  if (!uid) return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (!me?.profile)
+    return res.json({ ok:false });
+
+  me.profile.character = req.body.character;
+
+  saveUsers(users);
+
+  return res.json({ ok:true });
+});
+
 
 
 // 🛑 ADMIN OVERRIDE RPS RESULT (DANGEROUS)
