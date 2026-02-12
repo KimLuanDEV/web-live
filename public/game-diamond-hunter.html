@@ -1422,9 +1422,24 @@ function backToHub(){
 
 
 function resetCharacter(){
+
+  if(!confirm("Bạn chắc chắn muốn xóa nhân vật?"))
+    return;
+
+  // Dừng regen
+  if(regenInterval) clearInterval(regenInterval);
+
+  // Xóa player trong RAM
+  player = null;
+
+  // Xóa localStorage
   localStorage.removeItem("hunter_char");
-  location.reload();
+
+  // Chuyển về màn tạo nhân vật
+  switchScreen("createScreen");
 }
+
+
 
 function switchScreen(id){
   document.querySelectorAll(".screen")
@@ -1947,12 +1962,13 @@ function startRegen(){
 
 
 window.addEventListener("beforeunload",()=>{
-  if(player){
+  if(player && localStorage.getItem("hunter_char")){
     player.lastOnline = Date.now();
     localStorage.setItem("hunter_char",
       JSON.stringify(player));
   }
 });
+
 
 
 
