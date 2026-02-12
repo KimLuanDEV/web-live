@@ -482,6 +482,33 @@ input{
 }
 
 
+
+.inventory-item{
+  position:relative;
+}
+
+.sell-icon{
+  position:absolute;
+  top:4px;
+  right:4px;
+  font-size:12px;
+  background:#ff0033;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.sell-icon:hover{
+  transform:scale(1.2);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1062,7 +1089,6 @@ function toggleInventory(){
 
 
 
-
 function renderInventory(){
 
   const grid = document.getElementById("inventoryGrid");
@@ -1077,13 +1103,30 @@ function renderInventory(){
 
     const div=document.createElement("div");
     div.className="inventory-item";
-    div.innerText=item.icon;
 
+    // Icon item
+    const icon=document.createElement("div");
+    icon.innerText=item.icon;
+    icon.style.fontSize="24px";
+    div.appendChild(icon);
+
+    // Sell icon
+    const sell=document.createElement("div");
+    sell.className="sell-icon";
+    sell.innerText="🗑";
+    sell.onclick=(e)=>{
+      e.stopPropagation(); // không trigger equip
+      sellItem(index);
+    };
+    div.appendChild(sell);
+
+    // Click item = equip
     div.onclick=()=>equipItem(index);
 
     grid.appendChild(div);
   });
 }
+
 
 
 function equipItem(index){
@@ -1208,6 +1251,26 @@ function buyItem(item){
   showHub();
 }
 
+
+
+function sellItem(index){
+
+  const item = player.inventory[index];
+
+  const sellPrice = Math.floor(item.price * 0.5);
+
+  if(!confirm(`Bán ${item.name} với giá ${sellPrice} 💎 ?`))
+    return;
+
+  player.gold += sellPrice;
+
+  player.inventory.splice(index,1);
+
+  localStorage.setItem("hunter_char",JSON.stringify(player));
+
+  renderInventory();
+  showHub();
+}
 
 
 
