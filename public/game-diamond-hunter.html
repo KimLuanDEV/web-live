@@ -194,6 +194,38 @@ input{
 }
 
 
+.class-preview{
+  margin-top:18px;
+  padding:16px;
+  border-radius:18px;
+  background:#0a0f15;
+  box-shadow:0 0 25px rgba(0,255,255,.15);
+  animation:fadeUp .25s ease;
+}
+
+.hidden{
+  display:none;
+}
+
+.preview-title{
+  font-weight:800;
+  font-size:16px;
+  margin-bottom:10px;
+  color:#00f0ff;
+}
+
+.preview-stat{
+  font-size:14px;
+  margin-bottom:6px;
+  opacity:.9;
+}
+
+@keyframes fadeUp{
+  from{transform:translateY(10px);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+
+
 
 </style>
 </head>
@@ -233,6 +265,24 @@ input{
   </div>
 
 </div>
+
+<!-- CLASS PREVIEW -->
+<div id="classPreview" class="class-preview hidden">
+  <div class="preview-title" id="previewName"></div>
+
+  <div class="preview-stat">
+    ❤️ HP: <span id="previewHp"></span>
+  </div>
+
+  <div class="preview-stat">
+    ⚔ ATK: <span id="previewAtk"></span>
+  </div>
+
+  <div class="preview-stat">
+    🛡 DEF: <span id="previewDef"></span>
+  </div>
+</div>
+
 
 
   <button class="btn" onclick="createCharacter()">Tạo nhân vật</button>
@@ -293,11 +343,38 @@ window.onload=function(){
 };
 
 function selectClass(el,type){
+
   document.querySelectorAll(".class-card")
     .forEach(c=>c.classList.remove("selected"));
+
   el.classList.add("selected");
   selectedClass=type;
+
+  const preview = document.getElementById("classPreview");
+  preview.classList.remove("hidden");
+
+  if(type==="warrior"){
+    document.getElementById("previewName").innerText="⚔ Chiến Binh";
+    document.getElementById("previewHp").innerText="800";
+    document.getElementById("previewAtk").innerText="120";
+    document.getElementById("previewDef").innerText="90";
+  }
+
+  if(type==="assassin"){
+    document.getElementById("previewName").innerText="🏹 Sát Thủ";
+    document.getElementById("previewHp").innerText="500";
+    document.getElementById("previewAtk").innerText="200";
+    document.getElementById("previewDef").innerText="40";
+  }
+
+  if(type==="mage"){
+    document.getElementById("previewName").innerText="🔮 Pháp Sư";
+    document.getElementById("previewHp").innerText="550";
+    document.getElementById("previewAtk").innerText="170";
+    document.getElementById("previewDef").innerText="60";
+  }
 }
+
 
 function createCharacter(){
 
