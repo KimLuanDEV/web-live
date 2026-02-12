@@ -1742,18 +1742,18 @@ window.addEventListener("beforeunload",(e)=>{
 
 
 
-function goToCombat(){
+async function goToCombat(){
 
   if(player.deadUntil && Date.now() < player.deadUntil){
     alert("⏳ Nhân vật chưa hồi sinh!");
     return;
   }
 
-savePlayer();
-
+  await savePlayer();   // 🔥 bắt buộc chờ
 
   location.href = "combat.html";
 }
+
 
 
 </script>
