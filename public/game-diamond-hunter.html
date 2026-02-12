@@ -377,6 +377,97 @@ input{
 
 
 
+.inventory{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+}
+
+.inventory-box{
+  width:90%;
+  max-width:500px;
+  background:#0b1118;
+  border-radius:24px;
+  padding:20px;
+  box-shadow:0 0 40px rgba(0,255,255,.3);
+}
+
+.inventory-header{
+  font-weight:800;
+  font-size:18px;
+  margin-bottom:15px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.close-btn{
+  cursor:pointer;
+  opacity:.7;
+}
+
+.inventory-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:12px;
+}
+
+.inventory-item{
+  aspect-ratio:1/1;
+  background:#111;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  box-shadow:0 0 15px rgba(0,255,255,.1);
+  cursor:pointer;
+  transition:.2s;
+}
+
+.inventory-item:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 25px rgba(0,255,255,.4);
+}
+
+.hidden{
+  display:none;
+}
+
+.hub-btn.secondary{
+  background:#111;
+  color:#fff;
+}
+
+
+.hub-gold{
+  font-weight:700;
+  margin-bottom:10px;
+  color:#ffd700;
+}
+
+
+.equip-section{
+  display:flex;
+  gap:12px;
+  margin-top:15px;
+}
+
+.equip-slot{
+  flex:1;
+  background:#111;
+  padding:10px;
+  border-radius:12px;
+  text-align:center;
+  font-size:13px;
+  cursor:pointer;
+  box-shadow:0 0 10px rgba(0,255,255,.1);
+}
+
+
 </style>
 </head>
 <body>
@@ -450,6 +541,11 @@ input{
 
   <div class="hub-name" id="infoName"></div>
 
+  <div class="hub-gold">
+  💎 <span id="goldStat"></span>
+</div>
+
+
   <!-- HP BAR -->
   <div class="hub-label">❤️ HP</div>
   <div class="hub-hp">
@@ -480,6 +576,20 @@ input{
     </div>
   </div>
 
+
+<div class="equip-section">
+
+  <div class="equip-slot" onclick="unequipItem('weapon')">
+    ⚔ <span id="weaponSlot">Trống</span>
+  </div>
+
+  <div class="equip-slot" onclick="unequipItem('armor')">
+    🛡 <span id="armorSlot">Trống</span>
+  </div>
+
+</div>
+
+
 </div>
 
 
@@ -487,6 +597,16 @@ input{
 
 
   <div class="hub-actions">
+
+    <button class="hub-btn secondary" onclick="toggleInventory()">
+  🎒 Kho đồ
+</button>
+
+<button class="hub-btn secondary" onclick="toggleShop()">
+  🛒 Shop
+</button>
+
+
     <button class="hub-btn primary" onclick="openCombat()">
       ⚔ Vào chiến đấu
     </button>
@@ -520,9 +640,50 @@ input{
 </div>
 
 
+
+
+
+
+<!-- ================= INVENTORY ================= -->
+<div id="inventoryPanel" class="inventory hidden">
+
+  <div class="inventory-box">
+
+    <div class="inventory-header">
+      🎒 Kho đồ cá nhân
+      <span class="close-btn" onclick="toggleInventory()">✕</span>
+    </div>
+
+    <div class="inventory-grid" id="inventoryGrid">
+      <!-- Items render ở đây -->
+    </div>
+  </div>
+</div>
+
+
+
+<!-- ================= SHOP ================= -->
+<div id="shopPanel" class="inventory hidden">
+
+  <div class="inventory-box">
+
+    <div class="inventory-header">
+      🛒 Shop Trang Bị
+      <span class="close-btn" onclick="toggleShop()">✕</span>
+    </div>
+
+    <div class="inventory-grid" id="shopGrid">
+    </div>
+
+  </div>
+</div>
+
+
+
+
 <script>
 
-let selectedClass=null;
+    let selectedClass=null;
 let player=null;
 let enemy=null;
 
@@ -578,13 +739,57 @@ function createCharacter(){
   if(!name || !selectedClass) return alert("Nhập tên và chọn phái!");
 
   if(selectedClass==="warrior"){
-    player={name,level:1,maxHp:800,hp:800,atk:120,def:90,exp:0};
+   player={
+  name,
+  level:1,
+  maxHp:800,
+  hp:800,
+  atk:120,
+  def:90,
+  exp:0,
+  gold:500,
+  inventory:[],
+  equipment:{
+  weapon:null,
+  armor:null
+}
+};
   }
+
   if(selectedClass==="assassin"){
-    player={name,level:1,maxHp:500,hp:500,atk:200,def:40,exp:0};
+    player={
+  name,
+  level:1,
+  maxHp:500,
+  hp:500,
+  atk:200,
+  def:40,
+  exp:0,
+  gold:500,
+  inventory:[],
+  equipment:{
+  weapon:null,
+  armor:null
+}
+};
   }
+
   if(selectedClass==="mage"){
-    player={name,level:1,maxHp:550,hp:550,atk:170,def:60,exp:0};
+player={
+  name,
+  level:1,
+  maxHp:550,
+  hp:550,
+  atk:170,
+  def:60,
+  exp:0,
+  gold:500,
+  inventory:[],
+  equipment:{
+  weapon:null,
+  armor:null
+}
+};
   }
 
   localStorage.setItem("hunter_char",JSON.stringify(player));
@@ -617,6 +822,7 @@ function showHub(){
   document.getElementById("atkStat").innerText=player.atk;
   document.getElementById("defStat").innerText=player.def;
   document.getElementById("lvStat").innerText=player.level;
+  document.getElementById("goldStat").innerText=player.gold;
 
 
 // Nếu đang chết
@@ -626,6 +832,14 @@ if(player.deadUntil && Date.now() < player.deadUntil){
   startRespawnTimer(remaining);
 
 }
+
+document.getElementById("weaponSlot").innerText =
+  player.equipment.weapon ? player.equipment.weapon.name : "Trống";
+
+document.getElementById("armorSlot").innerText =
+  player.equipment.armor ? player.equipment.armor.name : "Trống";
+
+
 
 
 }
@@ -776,8 +990,165 @@ function startRespawnTimer(timeLeft){
 }
 
 
+function toggleInventory(){
+  const panel=document.getElementById("inventoryPanel");
+  panel.classList.toggle("hidden");
+  renderInventory();
+}
+
+
+
+
+function renderInventory(){
+
+  const grid = document.getElementById("inventoryGrid");
+  grid.innerHTML="";
+
+  if(!player.inventory || player.inventory.length===0){
+    grid.innerHTML="<div style='opacity:.6'>Trống</div>";
+    return;
+  }
+
+  player.inventory.forEach((item,index)=>{
+
+    const div=document.createElement("div");
+    div.className="inventory-item";
+    div.innerText=item.icon;
+
+    div.onclick=()=>equipItem(index);
+
+    grid.appendChild(div);
+  });
+}
+
+
+function equipItem(index){
+
+  const item = player.inventory[index];
+
+  if(item.type==="consumable"){
+    alert("Không thể trang bị vật phẩm này");
+    return;
+  }
+
+  player.equipment[item.type]=item;
+
+  // Xóa khỏi inventory
+  player.inventory.splice(index,1);
+
+  recalcStats();
+
+  localStorage.setItem("hunter_char",JSON.stringify(player));
+
+  renderInventory();
+  showHub();
+}
+
+
+function unequipItem(slot){
+
+  const item = player.equipment[slot];
+  if(!item) return;
+
+  player.inventory.push(item);
+  player.equipment[slot]=null;
+
+  recalcStats();
+
+  localStorage.setItem("hunter_char",JSON.stringify(player));
+
+  showHub();
+}
+
+
+function recalcStats(){
+
+  // Reset base theo class
+  if(player.atk===120 || player.atk>120){
+    player.atk=120;
+    player.def=90;
+    player.maxHp=800;
+  }
+
+  if(player.atk===200 || player.atk>200){
+    player.atk=200;
+    player.def=40;
+    player.maxHp=500;
+  }
+
+  if(player.atk===170 || player.atk>170){
+    player.atk=170;
+    player.def=60;
+    player.maxHp=550;
+  }
+
+  // Cộng lại từ equipment
+  const weapon = player.equipment.weapon;
+  const armor = player.equipment.armor;
+
+  [weapon,armor].forEach(item=>{
+    if(!item) return;
+    if(item.atk) player.atk += item.atk;
+    if(item.def) player.def += item.def;
+    if(item.hp) player.maxHp += item.hp;
+  });
+
+  if(player.hp > player.maxHp) player.hp=player.maxHp;
+}
+
+
+
+const shopItems = [
+{ id:1, icon:"🗡", name:"Kiếm thép", price:200, atk:30, type:"weapon" },
+{ id:2, icon:"🛡", name:"Khiên bạc", price:180, def:25, type:"armor" },
+{ id:3, icon:"💎", name:"Đá tăng lực", price:150, hp:200, type:"consumable" }
+];
+
+function toggleShop(){
+  const panel=document.getElementById("shopPanel");
+  panel.classList.toggle("hidden");
+  renderShop();
+}
+
+function renderShop(){
+  const grid=document.getElementById("shopGrid");
+  grid.innerHTML="";
+
+  shopItems.forEach(item=>{
+    const div=document.createElement("div");
+    div.className="inventory-item";
+    div.innerHTML=`
+      <div style="font-size:22px">${item.icon}</div>
+      <div style="font-size:11px">${item.price} 💎</div>
+    `;
+    div.onclick=()=>buyItem(item);
+    grid.appendChild(div);
+  });
+}
+
+function buyItem(item){
+
+  if(player.gold < item.price){
+    alert("Không đủ 💎");
+    return;
+  }
+
+  player.gold -= item.price;
+  player.inventory.push(item);
+
+  localStorage.setItem("hunter_char",JSON.stringify(player));
+
+  alert("Đã mua "+item.name);
+  showHub();
+}
+
+
+
 
 </script>
 
+<!--
+<script src="/game-diamond-hunter.js"></script>
+-->
 </body>
 </html>
