@@ -672,6 +672,16 @@ input{
     🛡 <span id="defOverlay"></span>
   </div>
 
+
+  <div class="char-badge" style="bottom:50px; right:12px">
+  💨 <span id="dodgeOverlay"></span>%
+</div>
+
+<div class="char-badge" style="bottom:50px; left:12px">
+  💥 <span id="critOverlay"></span>%
+</div>
+
+
   </div>
 
 <div class="hub-name" id="infoName"></div>
@@ -933,6 +943,9 @@ player={
   hp:800,
   atk:120,
   def:90,
+  dodge:5,
+  critRate:10,
+  critDamage:1.5,
   exp:0,
   gold:500,
   inventory:[],
@@ -966,6 +979,9 @@ equipment:{
   hp:500,
   atk:200,
   def:40,
+  dodge:15,
+  critRate:25,
+  critDamage:1.5,
   exp:0,
   gold:500,
   inventory:[],
@@ -998,6 +1014,9 @@ player={
   hp:550,
   atk:170,
   def:60,
+  dodge:8,
+  critRate:18,
+  critDamage:1.5,
   exp:0,
   gold:500,
   inventory:[],
@@ -1084,6 +1103,11 @@ if(!player.equipment.helmet){
   if(defOverlay)
     defOverlay.innerText = player.def;
 
+const dodgeEl = document.getElementById("dodgeOverlay");
+if(dodgeEl) dodgeEl.innerText = player.dodge;
+
+const critEl = document.getElementById("critOverlay");
+if(critEl) critEl.innerText = player.critRate;
 
 
 // ===== EQUIPMENT =====
@@ -1138,45 +1162,80 @@ function renderCombat(){
 
 function attack(){
 
-  let dmgToEnemy=Math.max(0,player.atk-enemy.def*0.5);
-  dmgToEnemy=Math.floor(dmgToEnemy);
-  enemy.hp-=dmgToEnemy;
+  let logText = "";
 
-  if(enemy.hp<=0){
-    enemy.hp=0;
-    player.exp+=100;
+  // ===== PLAYER ATTACK =====
+
+  let dodged = false;
+
+  if(enemy.dodge && Math.random()*100 < enemy.dodge){
+    dodged = true;
+    logText += "💨 Quái né tránh!\n";
+  }
+
+  if(!dodged){
+
+    let dmgToEnemy = Math.max(0, player.atk - enemy.def*0.5);
+
+    // Crit
+    let isCrit = Math.random()*100 < player.critRate;
+
+    if(isCrit){
+      dmgToEnemy *= player.critDamage;
+      logText += "💥 Chí mạng!\n";
+    }
+
+    dmgToEnemy = Math.floor(dmgToEnemy);
+    enemy.hp -= dmgToEnemy;
+
+    logText += "Bạn gây " + dmgToEnemy + " sát thương.\n";
+  }
+
+  if(enemy.hp <= 0){
+    enemy.hp = 0;
+    player.exp += 100;
     levelUp();
-    document.getElementById("battleLog").innerText=
-      "🎉 Hạ quái! +100 EXP";
+    logText += "🎉 Hạ quái! +100 EXP";
+    document.getElementById("battleLog").innerText = logText;
     localStorage.setItem("hunter_char",JSON.stringify(player));
     return;
   }
 
-  let dmgToPlayer=Math.max(0,enemy.atk-player.def*0.4);
-  dmgToPlayer=Math.floor(dmgToPlayer);
-  player.hp-=dmgToPlayer;
+  // ===== ENEMY ATTACK =====
 
-if(player.hp<=0){
-  player.hp=0;
+  let playerDodged = Math.random()*100 < player.dodge;
 
-  // Ghi thời gian chết
-  player.deadUntil = Date.now() + (24*60*60*1000);
+  if(playerDodged){
+    logText += "💨 Bạn né tránh!\n";
+  }else{
 
-  localStorage.setItem("hunter_char",JSON.stringify(player));
+    let dmgToPlayer =
+      Math.max(0, enemy.atk - player.def*0.4);
 
-  document.getElementById("battleLog").innerText=
-    "💀 Bạn đã bị hạ! Hồi sinh sau 24 giờ.";
+    dmgToPlayer = Math.floor(dmgToPlayer);
+    player.hp -= dmgToPlayer;
 
-  setTimeout(()=>{
-    backToHub();
-  },1500);
+    logText += "Quái gây " + dmgToPlayer + " sát thương.\n";
+  }
 
-  return;
-}
+  if(player.hp <= 0){
+    player.hp = 0;
+    player.deadUntil = Date.now() + (24*60*60*1000);
 
+    localStorage.setItem("hunter_char",JSON.stringify(player));
 
+    logText += "💀 Bạn đã bị hạ! Hồi sinh sau 24 giờ.";
+
+    document.getElementById("battleLog").innerText = logText;
+
+    setTimeout(()=> backToHub(),1500);
+    return;
+  }
+
+  document.getElementById("battleLog").innerText = logText;
   renderCombat();
 }
+
 
 function levelUp(){
 
@@ -1407,29 +1466,50 @@ function unequipItem(slot){
 
 function recalcStats(){
 
-  // Reset về base stats
+  // Reset base stats
   player.maxHp = player.baseStats.maxHp;
   player.atk   = player.baseStats.atk;
   player.def   = player.baseStats.def;
 
-  // Cộng level bonus
+  // Reset dodge & crit theo class gốc
+  if(player.classType==="warrior"){
+    player.dodge = 5;
+    player.critRate = 10;
+  }
+
+  if(player.classType==="assassin"){
+    player.dodge = 15;
+    player.critRate = 25;
+  }
+
+  if(player.classType==="mage"){
+    player.dodge = 8;
+    player.critRate = 18;
+  }
+
+  player.critDamage = 1.5;
+
+  // Level bonus
   player.maxHp += player.level * 50;
   player.atk   += player.level * 10;
   player.def   += player.level * 8;
 
-// Cộng equipment bonus cho tất cả slot
-Object.values(player.equipment).forEach(item=>{
-  if(!item) return;
-  if(item.atk) player.atk += item.atk;
-  if(item.def) player.def += item.def;
-  if(item.hp)  player.maxHp += item.hp;
-});
+  // Equipment bonus
+  Object.values(player.equipment).forEach(item=>{
+    if(!item) return;
 
+    if(item.atk) player.atk += item.atk;
+    if(item.def) player.def += item.def;
+    if(item.hp)  player.maxHp += item.hp;
 
-  // Giữ HP không vượt max
+    if(item.dodge) player.dodge += item.dodge;
+    if(item.critRate) player.critRate += item.critRate;
+  });
+
   if(player.hp > player.maxHp)
     player.hp = player.maxHp;
 }
+
 
 
 
