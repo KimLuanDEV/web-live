@@ -373,21 +373,21 @@ input{
 .inventory{
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.75);
+  background:#000;
   display:flex;
-  align-items:center;
-  justify-content:center;
+  flex-direction:column;
   z-index:999;
 }
 
 .inventory-box{
-  width:90%;
-  max-width:500px;
-  background:#0b1118;
-  border-radius:24px;
+  flex:1;
+  width:100%;
+  background:linear-gradient(145deg,#0b1118,#060a0f);
   padding:20px;
-  box-shadow:0 0 40px rgba(0,255,255,.3);
+  overflow-y:auto;
+  border-radius:0;
 }
+
 
 .inventory-header{
   font-weight:800;
@@ -547,6 +547,64 @@ input{
 .def-badge{ bottom:12px; right:12px; }
 
 
+
+.inventory-equip{
+  margin-bottom:20px;
+}
+
+.equip-title{
+  font-weight:800;
+  margin-bottom:10px;
+  color:#00f0ff;
+}
+
+.equip-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.equip-slot{
+  background:#0f1620;
+  border-radius:16px;
+  padding:12px;
+  text-align:center;
+  font-size:13px;
+  box-shadow:0 0 15px rgba(0,255,255,.15);
+  cursor:pointer;
+  transition:.2s;
+}
+
+.equip-slot:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 25px rgba(0,255,255,.4);
+}
+
+
+.inventory-close{
+  position:absolute;
+  top:15px;
+  right:15px;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  border:none;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(8px);
+  color:#fff;
+  font-size:18px;
+  cursor:pointer;
+  box-shadow:0 0 20px rgba(0,255,255,.4);
+  z-index:1000;
+  transition:.2s;
+}
+
+.inventory-close:hover{
+  transform:scale(1.1);
+  box-shadow:0 0 30px rgba(0,255,255,.8);
+}
+
+
 </style>
 </head>
 <body>
@@ -642,45 +700,7 @@ input{
 
 <div class="hub-name" id="infoName"></div>
 
-<div class="equip-section">
 
-  <div class="equip-slot" onclick="unequipItem('weapon')">
-    ⚔ <span id="weaponSlot">Trống</span>
-  </div>
-
-  <div class="equip-slot" onclick="unequipItem('armor')">
-    🛡 <span id="armorSlot">Trống</span>
-  </div>
-
-  <div class="equip-slot" onclick="unequipItem('helmet')">
-    🪖 <span id="helmetSlot">Trống</span>
-  </div>
-
-  <div class="equip-slot" onclick="unequipItem('gloves')">
-    🧤 <span id="glovesSlot">Trống</span>
-  </div>
-
-  <div class="equip-slot" onclick="unequipItem('boots')">
-    👢 <span id="bootsSlot">Trống</span>
-  </div>
-
-  <div class="equip-slot" onclick="unequipItem('shoulder')">
-    🛡️ <span id="shoulderSlot">Trống</span>
-  </div>
-
-  <div class="equip-slot" onclick="unequipItem('legs')">
-    🦿 <span id="legsSlot">Trống</span>
-  </div>
-
-  <div class="equip-slot" onclick="unequipItem('ring')">
-    💍 <span id="ringSlot">Trống</span>
-  </div>
-
-  <div class="equip-slot" onclick="unequipItem('gem')">
-    🔮 <span id="gemSlot">Trống</span>
-  </div>
-
-  </div>
 
   </div>
 
@@ -733,8 +753,16 @@ input{
 
 </div>
 
+
+
 <!-- ================= INVENTORY ================= -->
 <div id="inventoryPanel" class="inventory hidden">
+
+<button class="inventory-close"
+        onclick="toggleInventory()">
+  ✕
+</button>
+
 
   <div class="inventory-box">
 
@@ -745,9 +773,55 @@ input{
       💎 <span id="inventoryGold"></span>
     </div>
   </div>
-
-  <span class="close-btn" onclick="toggleInventory()">✕</span>
 </div>
+
+
+<div class="inventory-equip">
+
+  <div class="equip-title">⚔ Trang bị</div>
+
+  <div class="equip-grid">
+
+    <div class="equip-slot" onclick="unequipItem('weapon')">
+      ⚔ <span id="weaponSlot">Trống</span>
+    </div>
+
+    <div class="equip-slot" onclick="unequipItem('armor')">
+      🛡 <span id="armorSlot">Trống</span>
+    </div>
+
+    <div class="equip-slot" onclick="unequipItem('helmet')">
+      🪖 <span id="helmetSlot">Trống</span>
+    </div>
+
+    <div class="equip-slot" onclick="unequipItem('gloves')">
+      🧤 <span id="glovesSlot">Trống</span>
+    </div>
+
+    <div class="equip-slot" onclick="unequipItem('boots')">
+      👢 <span id="bootsSlot">Trống</span>
+    </div>
+
+    <div class="equip-slot" onclick="unequipItem('shoulder')">
+      🛡️ <span id="shoulderSlot">Trống</span>
+    </div>
+
+    <div class="equip-slot" onclick="unequipItem('legs')">
+      🦿 <span id="legsSlot">Trống</span>
+    </div>
+
+    <div class="equip-slot" onclick="unequipItem('ring')">
+      💍 <span id="ringSlot">Trống</span>
+    </div>
+
+    <div class="equip-slot" onclick="unequipItem('gem')">
+      🔮 <span id="gemSlot">Trống</span>
+    </div>
+
+  </div>
+
+</div>
+
 
 
     <div class="inventory-grid" id="inventoryGrid">
@@ -755,6 +829,9 @@ input{
     </div>
   </div>
 </div>
+
+
+
 
 <!-- ================= SHOP ================= -->
 <div id="shopPanel" class="inventory hidden">
@@ -1263,6 +1340,20 @@ if(goldDisplay){
 
     grid.appendChild(div);
   });
+
+
+// Update equip slot hiển thị
+Object.keys(player.equipment).forEach(slot=>{
+  const el = document.getElementById(slot + "Slot");
+  if(el){
+    el.innerText = player.equipment[slot]
+      ? player.equipment[slot].name
+      : "Trống";
+  }
+});
+
+
+
 }
 
 
