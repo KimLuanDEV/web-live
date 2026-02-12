@@ -509,6 +509,44 @@ input{
 
 
 
+/* ===== CHARACTER CARD ===== */
+
+.character-card{
+  position:relative;
+  width:100%;
+  max-width:320px;
+  margin:0 auto 20px;
+  border-radius:24px;
+  overflow:hidden;
+  box-shadow:0 0 40px rgba(0,255,255,.3);
+}
+
+.character-img{
+  width:100%;
+  height:400px;
+  object-fit:cover;
+  display:block;
+}
+
+/* Badge chung */
+.char-badge{
+  position:absolute;
+  padding:6px 10px;
+  border-radius:14px;
+  font-size:13px;
+  font-weight:700;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(6px);
+  box-shadow:0 0 10px rgba(0,255,255,.5);
+}
+
+/* Vị trí */
+.hp-badge{ top:12px; left:12px; }
+.lv-badge{ top:12px; right:12px; }
+.atk-badge{ bottom:12px; left:12px; }
+.def-badge{ bottom:12px; right:12px; }
+
+
 </style>
 </head>
 <body>
@@ -578,52 +616,38 @@ input{
 
 <div class="hub-card">
 
-  <img id="hubAvatar" class="hub-avatar-img">
+<div class="character-card">
 
-  <div class="hub-name" id="infoName"></div>
+  <img id="hubAvatar" class="character-img">
 
-  <div class="hub-gold">
+  <!-- TOP LEFT -->
+  <div class="char-badge hp-badge">
+    ❤️ <span id="hpOverlay"></span>
+  </div>
+
+  <!-- TOP RIGHT -->
+  <div class="char-badge lv-badge">
+    ⭐ LV <span id="lvOverlay"></span>
+  </div>
+
+  <!-- BOTTOM LEFT -->
+  <div class="char-badge atk-badge">
+    ⚔ <span id="atkOverlay"></span>
+  </div>
+
+  <!-- BOTTOM RIGHT -->
+  <div class="char-badge def-badge">
+    🛡 <span id="defOverlay"></span>
+  </div>
+
+</div>
+
+<div class="hub-name" id="infoName"></div>
+
+<div class="hub-gold">
   💎 <span id="goldStat"></span>
 </div>
 
-
-<!-- HP BAR -->
-<div class="hub-label">
-  ❤️ HP 
-  <span class="hub-value" id="hpText"></span>
-</div>
-<div class="hub-hp">
-  <div class="hub-hp-fill" id="hpBar"></div>
-</div>
-
-
-<!-- EXP BAR -->
-<div class="hub-label">
-  ⭐ EXP 
-  <span class="hub-value" id="expText"></span>
-</div>
-<div class="hub-exp">
-  <div class="hub-exp-fill" id="expBar"></div>
-</div>
-
-
-  <!-- STATS 3 CỘT -->
-  <div class="hub-stats-grid">
-    <div class="stat-box">
-      <div class="stat-value" id="atkStat"></div>
-      <div class="stat-label">⚔ ATK</div>
-    </div>
-
-    <div class="stat-box">
-      <div class="stat-value" id="defStat"></div>
-      <div class="stat-label">🛡 DEF</div>
-    </div>
-
-    <div class="stat-box">
-      <div class="stat-value" id="lvStat"></div>
-      <div class="stat-label">LV</div>
-    </div>
-  </div>
 
 
 <div class="equip-section">
@@ -907,9 +931,23 @@ document.getElementById("expText").innerText =
 
 
   // Stats
-  document.getElementById("atkStat").innerText=player.atk;
-  document.getElementById("defStat").innerText=player.def;
-  document.getElementById("lvStat").innerText=player.level;
+
+
+document.getElementById("hpOverlay").innerText =
+  player.hp + "/" + player.maxHp;
+
+document.getElementById("lvOverlay").innerText =
+  player.level;
+
+document.getElementById("atkOverlay").innerText =
+  player.atk;
+
+document.getElementById("defOverlay").innerText =
+  player.def;
+
+
+
+
   document.getElementById("goldStat").innerText=player.gold;
 
 
