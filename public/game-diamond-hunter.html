@@ -444,10 +444,12 @@ input{
 
 
 .equip-section{
-  display:flex;
-  gap:12px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
   margin-top:15px;
 }
+
 
 .equip-slot{
   flex:1;
@@ -644,7 +646,6 @@ input{
 
 
 
-
 <div class="equip-section">
 
   <div class="equip-slot" onclick="unequipItem('weapon')">
@@ -655,7 +656,36 @@ input{
     🛡 <span id="armorSlot">Trống</span>
   </div>
 
+  <div class="equip-slot" onclick="unequipItem('helmet')">
+    🪖 <span id="helmetSlot">Trống</span>
+  </div>
+
+  <div class="equip-slot" onclick="unequipItem('gloves')">
+    🧤 <span id="glovesSlot">Trống</span>
+  </div>
+
+  <div class="equip-slot" onclick="unequipItem('boots')">
+    👢 <span id="bootsSlot">Trống</span>
+  </div>
+
+  <div class="equip-slot" onclick="unequipItem('shoulder')">
+    🛡️ <span id="shoulderSlot">Trống</span>
+  </div>
+
+  <div class="equip-slot" onclick="unequipItem('legs')">
+    🦿 <span id="legsSlot">Trống</span>
+  </div>
+
+  <div class="equip-slot" onclick="unequipItem('ring')">
+    💍 <span id="ringSlot">Trống</span>
+  </div>
+
+  <div class="equip-slot" onclick="unequipItem('gem')">
+    🔮 <span id="gemSlot">Trống</span>
+  </div>
+
 </div>
+
 
 
 </div>
@@ -840,10 +870,18 @@ player={
   exp:0,
   gold:500,
   inventory:[],
-  equipment:{
-    weapon:null,
-    armor:null
-  }
+equipment:{
+  weapon:null,
+  armor:null,
+  helmet:null,
+  gloves:null,
+  boots:null,
+  shoulder:null,
+  legs:null,
+  ring:null,
+  gem:null
+}
+
 };
 
   }
@@ -865,10 +903,18 @@ player={
   exp:0,
   gold:500,
   inventory:[],
-  equipment:{
+equipment:{
   weapon:null,
-  armor:null
+  armor:null,
+  helmet:null,
+  gloves:null,
+  boots:null,
+  shoulder:null,
+  legs:null,
+  ring:null,
+  gem:null
 }
+
 };
   }
 
@@ -889,10 +935,18 @@ player={
   exp:0,
   gold:500,
   inventory:[],
-  equipment:{
+equipment:{
   weapon:null,
-  armor:null
+  armor:null,
+  helmet:null,
+  gloves:null,
+  boots:null,
+  shoulder:null,
+  legs:null,
+  ring:null,
+  gem:null
 }
+
 };
   }
 
@@ -901,6 +955,25 @@ player={
 }
 
 function showHub(){
+
+
+// Fix save cũ thiếu slot
+if(!player.equipment.helmet){
+  player.equipment = {
+    weapon:null,
+    armor:null,
+    helmet:null,
+    gloves:null,
+    boots:null,
+    shoulder:null,
+    legs:null,
+    ring:null,
+    gem:null,
+    ...player.equipment
+  };
+}
+
+
 
   switchScreen("hubScreen");
 
@@ -947,20 +1020,18 @@ function showHub(){
 
 
 
-  // ===== EQUIPMENT =====
-  const weaponSlot = document.getElementById("weaponSlot");
-  if(weaponSlot)
-    weaponSlot.innerText =
-      player.equipment.weapon
-        ? player.equipment.weapon.name
-        : "Trống";
+// ===== EQUIPMENT =====
+Object.keys(player.equipment).forEach(slot=>{
+  const el = document.getElementById(slot + "Slot");
+  if(el){
+    el.innerText = player.equipment[slot]
+      ? player.equipment[slot].name
+      : "Trống";
+  }
+});
 
-  const armorSlot = document.getElementById("armorSlot");
-  if(armorSlot)
-    armorSlot.innerText =
-      player.equipment.armor
-        ? player.equipment.armor.name
-        : "Trống";
+
+        
 
   // ===== DEAD CHECK =====
   if(player.deadUntil && Date.now() < player.deadUntil){
@@ -1266,16 +1337,14 @@ function recalcStats(){
   player.atk   += player.level * 10;
   player.def   += player.level * 8;
 
-  // Cộng equipment bonus
-  const weapon = player.equipment.weapon;
-  const armor  = player.equipment.armor;
+// Cộng equipment bonus cho tất cả slot
+Object.values(player.equipment).forEach(item=>{
+  if(!item) return;
+  if(item.atk) player.atk += item.atk;
+  if(item.def) player.def += item.def;
+  if(item.hp)  player.maxHp += item.hp;
+});
 
-  [weapon,armor].forEach(item=>{
-    if(!item) return;
-    if(item.atk) player.atk += item.atk;
-    if(item.def) player.def += item.def;
-    if(item.hp)  player.maxHp += item.hp;
-  });
 
   // Giữ HP không vượt max
   if(player.hp > player.maxHp)
