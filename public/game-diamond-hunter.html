@@ -983,10 +983,14 @@ window.onload=function(){
   const saved=localStorage.getItem("hunter_char");
   if(saved){
     player=JSON.parse(saved);
+
+    applyOfflineRegen();   // 🔥 THÊM DÒNG NÀY
+
     showHub();
-    startRegen();   // 🔥 THÊM DÒNG NÀY
+    startRegen();
   }
 };
+
 
 
 function selectClass(el,type){
@@ -1850,6 +1854,36 @@ function sellItem(index){
 }
 
 
+function applyOfflineRegen(){
+
+  if(!player.lastOnline) return;
+
+  const now = Date.now();
+  const diffMs = now - player.lastOnline;
+
+  const secondsOffline = Math.floor(diffMs / 1000);
+
+  if(secondsOffline <= 0) return;
+
+  // Không hồi khi chết
+  if(player.deadUntil && now < player.deadUntil)
+    return;
+
+  const regenAmount = secondsOffline * player.regen;
+
+  player.hp += regenAmount;
+
+  if(player.hp > player.maxHp)
+    player.hp = player.maxHp;
+
+  player.hp = Math.floor(player.hp);
+
+  console.log("Offline regen:", secondsOffline, "giây");
+}
+
+
+
+
 function startRegen(){
 
   if(regenInterval) clearInterval(regenInterval);
@@ -1873,8 +1907,10 @@ function startRegen(){
       if(player.hp > player.maxHp)
         player.hp = player.maxHp;
 
-      localStorage.setItem("hunter_char",
-        JSON.stringify(player));
+    player.lastOnline = Date.now();
+localStorage.setItem("hunter_char",
+  JSON.stringify(player));
+
 
       // Nếu đang ở Hub → update ngay
       const hpOverlay =
@@ -1897,6 +1933,17 @@ function startRegen(){
 
   },1000);
 }
+
+
+
+window.addEventListener("beforeunload",()=>{
+  if(player){
+    player.lastOnline = Date.now();
+    localStorage.setItem("hunter_char",
+      JSON.stringify(player));
+  }
+});
+
 
 
 </script>
