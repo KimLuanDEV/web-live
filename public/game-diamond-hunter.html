@@ -552,7 +552,6 @@ input{
 <body>
 
 
-    
 <!-- ================= CREATE CHARACTER ================= -->
 <div id="createScreen" class="screen active">
 
@@ -612,9 +611,9 @@ input{
 <!-- ================= HUB ================= -->
 <div id="hubScreen" class="screen">
 
-<div class="hub-card">
+  <div class="hub-card">
 
-<div class="character-card">
+  <div class="character-card">
 
   <div id="hubAvatar" class="character-bg"></div>
 
@@ -639,12 +638,9 @@ input{
     🛡 <span id="defOverlay"></span>
   </div>
 
-</div>
+  </div>
 
 <div class="hub-name" id="infoName"></div>
-
-
-
 
 <div class="equip-section">
 
@@ -684,11 +680,9 @@ input{
     🔮 <span id="gemSlot">Trống</span>
   </div>
 
-</div>
+  </div>
 
-
-
-</div>
+  </div>
 
 
 
@@ -696,7 +690,7 @@ input{
 
   <div class="hub-actions">
 
-    <button class="hub-btn secondary" onclick="toggleInventory()">
+<button class="hub-btn secondary" onclick="toggleInventory()">
   🎒 Kho đồ
 </button>
 
@@ -705,19 +699,19 @@ input{
 </button>
 
 
-
-
-    <button class="hub-btn primary" onclick="openCombat()">
+<button class="hub-btn primary" onclick="openCombat()">
       ⚔ Vào chiến đấu
-    </button>
+</button>
 
-    <button class="hub-btn danger" onclick="resetCharacter()">
+<button class="hub-btn danger" onclick="resetCharacter()">
       🗑 Xóa nhân vật
-    </button>
+</button>
+
   </div>
 
-</div>
 
+
+</div>
 
 <!-- ================= COMBAT ================= -->
 <div id="combatScreen" class="screen">
@@ -738,11 +732,6 @@ input{
   <div class="log" id="battleLog"></div>
 
 </div>
-
-
-
-
-
 
 <!-- ================= INVENTORY ================= -->
 <div id="inventoryPanel" class="inventory hidden">
@@ -767,8 +756,6 @@ input{
   </div>
 </div>
 
-
-
 <!-- ================= SHOP ================= -->
 <div id="shopPanel" class="inventory hidden">
 
@@ -792,6 +779,37 @@ input{
   </div>
 </div>
 
+
+
+
+
+<!-- ===== SHOP ITEM MODAL ===== -->
+<div id="shopItemModal" class="inventory hidden">
+
+  <div class="inventory-box">
+
+    <div class="inventory-header">
+      <span id="modalItemName"></span>
+      <span class="close-btn" onclick="closeShopItemModal()">✕</span>
+    </div>
+
+    <div style="text-align:center;font-size:50px;margin:10px 0"
+         id="modalItemIcon"></div>
+
+    <div id="modalItemStats"
+         style="margin-bottom:15px;font-size:14px;opacity:.9"></div>
+
+    <div style="margin-bottom:15px;color:#ffd700">
+      Giá: <span id="modalItemPrice"></span> 💎
+    </div>
+
+    <button class="btn"
+            onclick="confirmBuyItem()">
+      🛒 Mua
+    </button>
+
+  </div>
+</div>
 
 
 
@@ -1417,7 +1435,7 @@ if(shopGold){
       <div style="font-size:22px">${item.icon}</div>
       <div style="font-size:11px">${item.price} 💎</div>
     `;
-    div.onclick=()=>buyItem(item);
+    div.onclick=()=>openShopItemModal(item);
     grid.appendChild(div);
   });
 }
@@ -1437,6 +1455,62 @@ localStorage.setItem("hunter_char",JSON.stringify(player));
 renderShop();   // 👈 cập nhật tiền ngay
 alert("Đã mua " + item.name);
 
+}
+
+
+
+let selectedShopItem = null;
+
+function openShopItemModal(item){
+
+  selectedShopItem = item;
+
+  document.getElementById("shopItemModal")
+    .classList.remove("hidden");
+
+  document.getElementById("modalItemName")
+    .innerText = item.name;
+
+  document.getElementById("modalItemIcon")
+    .innerText = item.icon;
+
+  let stats = "";
+
+  if(item.atk) stats += "⚔ ATK +" + item.atk + "<br>";
+  if(item.def) stats += "🛡 DEF +" + item.def + "<br>";
+  if(item.hp)  stats += "❤️ HP +" + item.hp + "<br>";
+  if(item.heal) stats += "🧪 Hồi " + item.heal + " HP<br>";
+
+  document.getElementById("modalItemStats")
+    .innerHTML = stats || "Không có chỉ số";
+
+  document.getElementById("modalItemPrice")
+    .innerText = item.price;
+}
+
+function closeShopItemModal(){
+  document.getElementById("shopItemModal")
+    .classList.add("hidden");
+  selectedShopItem = null;
+}
+
+function confirmBuyItem(){
+
+  if(!selectedShopItem) return;
+
+  if(player.gold < selectedShopItem.price){
+    alert("Không đủ 💎");
+    return;
+  }
+
+  player.gold -= selectedShopItem.price;
+  player.inventory.push(selectedShopItem);
+
+  localStorage.setItem("hunter_char",
+    JSON.stringify(player));
+
+  closeShopItemModal();
+  renderShop();
 }
 
 
