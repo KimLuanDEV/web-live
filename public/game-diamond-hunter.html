@@ -556,6 +556,8 @@ input{
 </head>
 <body>
 
+
+    
 <!-- ================= CREATE CHARACTER ================= -->
 <div id="createScreen" class="screen active">
 
@@ -753,10 +755,17 @@ input{
 
   <div class="inventory-box">
 
-    <div class="inventory-header">
-      🛒 Shop Trang Bị
-      <span class="close-btn" onclick="toggleShop()">✕</span>
+ <div class="inventory-header">
+  <div>
+    🛒 Shop Trang Bị
+    <div style="font-size:14px;margin-top:4px;color:#ffd700">
+      💎 <span id="shopGold"></span>
     </div>
+  </div>
+
+  <span class="close-btn" onclick="toggleShop()">✕</span>
+</div>
+
 
     <div class="inventory-grid" id="shopGrid">
     </div>
@@ -1310,6 +1319,13 @@ function renderShop(){
   const grid=document.getElementById("shopGrid");
   grid.innerHTML="";
 
+  // Update gold hiển thị trong shop
+const shopGold = document.getElementById("shopGold");
+if(shopGold){
+  shopGold.innerText = player.gold;
+}
+
+
   shopItems.forEach(item=>{
     const div=document.createElement("div");
     div.className="inventory-item";
@@ -1329,13 +1345,14 @@ function buyItem(item){
     return;
   }
 
-  player.gold -= item.price;
-  player.inventory.push(item);
+player.gold -= item.price;
+player.inventory.push(item);
 
-  localStorage.setItem("hunter_char",JSON.stringify(player));
+localStorage.setItem("hunter_char",JSON.stringify(player));
 
-  alert("Đã mua "+item.name);
-  showHub();
+renderShop();   // 👈 cập nhật tiền ngay
+alert("Đã mua " + item.name);
+
 }
 
 
