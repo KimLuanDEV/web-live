@@ -468,6 +468,20 @@ input{
 }
 
 
+.hub-label{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  opacity:.7;
+  margin-bottom:4px;
+}
+
+.hub-value{
+  font-weight:700;
+  opacity:1;
+}
+
+
 </style>
 </head>
 <body>
@@ -546,17 +560,25 @@ input{
 </div>
 
 
-  <!-- HP BAR -->
-  <div class="hub-label">❤️ HP</div>
-  <div class="hub-hp">
-    <div class="hub-hp-fill" id="hpBar"></div>
-  </div>
+<!-- HP BAR -->
+<div class="hub-label">
+  ❤️ HP 
+  <span class="hub-value" id="hpText"></span>
+</div>
+<div class="hub-hp">
+  <div class="hub-hp-fill" id="hpBar"></div>
+</div>
 
-  <!-- EXP BAR -->
-  <div class="hub-label">⭐ EXP</div>
-  <div class="hub-exp">
-    <div class="hub-exp-fill" id="expBar"></div>
-  </div>
+
+<!-- EXP BAR -->
+<div class="hub-label">
+  ⭐ EXP 
+  <span class="hub-value" id="expText"></span>
+</div>
+<div class="hub-exp">
+  <div class="hub-exp-fill" id="expBar"></div>
+</div>
+
 
   <!-- STATS 3 CỘT -->
   <div class="hub-stats-grid">
@@ -844,6 +866,17 @@ document.getElementById("hubAvatar").src=avatarPath;
   document.getElementById("expBar").style.width =
     (player.exp/(player.level*200)*100)+"%";
 
+
+    // HP text
+document.getElementById("hpText").innerText =
+  player.hp + " / " + player.maxHp;
+
+// EXP text
+const expNeed = player.level * 200;
+document.getElementById("expText").innerText =
+  player.exp + " / " + expNeed;
+
+  
   // Stats
   document.getElementById("atkStat").innerText=player.atk;
   document.getElementById("defStat").innerText=player.def;
@@ -864,6 +897,8 @@ document.getElementById("weaponSlot").innerText =
 
 document.getElementById("armorSlot").innerText =
   player.equipment.armor ? player.equipment.armor.name : "Trống";
+
+
 
 
 
