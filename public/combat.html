@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Đấu Trường</title>
+
+<style>
+body{
+  margin:0;
+  background:#000;
+  color:#fff;
+  font-family:system-ui;
+}
+
+.container{
+  padding:20px;
+}
+
+.title{
+  text-align:center;
+  font-size:20px;
+  font-weight:800;
+  margin-bottom:20px;
+  color:#00f0ff;
+}
+
+.card{
+  background:#0a0f15;
+  padding:15px;
+  border-radius:16px;
+  margin-bottom:15px;
+}
+
+.enemy{
+  box-shadow:0 0 25px rgba(255,0,60,.3);
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  background:linear-gradient(90deg,#ff0044,#ff9900);
+  color:#fff;
+  font-weight:700;
+  margin-top:10px;
+}
+
+.back{
+  margin-top:10px;
+  background:#111;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="title">⚔ ĐẤU TRƯỜNG</div>
+
+<div class="card" id="playerStats"></div>
+<div class="card enemy" id="enemyStats"></div>
+
+<button class="btn" onclick="attack()">⚔ Tấn công</button>
+<button class="btn back" onclick="backToHub()">⬅ Quay lại</button>
+
+<div id="battleLog" style="margin-top:15px;font-size:13px"></div>
+
+</div>
+
+<script>
+
+let player = JSON.parse(localStorage.getItem("hunter_char"));
+let enemy = null;
+let isAttacking = false;
+
+if(!player){
+  location.href="game-diamond-hunter.html";
+}
+
+/* ===== SAVE ===== */
+function savePlayer(){
+  if(!player) return;
+  player.lastOnline = Date.now();
+  localStorage.setItem("hunter_char",
+    JSON.stringify(player));
+}
+
+/* ===== RECALC STATS (phòng khi có trang bị) ===== */
+function recalcStats(){
+
+  const CLASS_CONFIG = {
+    warrior:{ base:{maxHp:800,atk:120,def:90}, dodge:5, critRate:10 },
+    assassin:{ base:{maxHp:500,atk:200,def:40}, dodge:15, critRate:25 },
+    mage:{ base:{maxHp:550,atk:170,def:60}, dodge:8, critRate:18 }
+  };
+
+  const config = CLASS_CONFIG[player.classType];
+
+  player.maxHp = config.base.maxHp + player.level*50;
+  player.atk   = config.base.atk   + player.level*10;
+  player.def   = config.base.def   + player.level*8;
+  player.dodge = config.dodge;
+  player.critRate = config.critRate;
+  player.critDamage = 1.5;
+
+  if(player.equipment){
+    Object.values(player.equipment).forEach(item=>{
+      if(!item) return;
+      if(item.atk) player.atk += item.atk;
+      if(item.def) player.def += item.def;
+      if(item.hp)  player.maxHp += item.hp;
+      if(item.dodge) player.dodge += item.dodge;
+      if(item.critRate) player.critRate += item.critRate;
+    });
+  }
+
+  if(player.hp > player.maxHp)
+    player.hp = player.maxHp;
+}
+
+/* ===== SPAWN ENEMY ===== */
+function spawnEnemy(){
+  enemy={
+    maxHp:600+player.level*150,
+    hp:600+player.level*150,
+    atk:100+player.level*20,
+    def:50+player.level*10
+  };
+}
+
+/* ===== LEVEL UP ===== */
+function checkLevelUp(){
+  if(player.exp >= player.level*200){
+    player.level++;
+    player.exp = 0;
+    player.hp = player.maxHp;
+  }
+}
+
+/* ===== RENDER ===== */
+function render(){
+  document.getElementById("playerStats").innerText =
+    player.name+" | HP "+Math.floor(player.hp)+"/"+player.maxHp;
+
+  document.getElementById("enemyStats").innerText =
+    "Quái | HP "+Math.floor(enemy.hp)+"/"+enemy.maxHp;
+}
+
+/* ===== ATTACK ===== */
+function attack(){
+
+  if(isAttacking) return;
+  isAttacking = true;
+
+  let logText="";
+
+  /* PLAYER ATTACK */
+
+  // Enemy dodge
+  if(Math.random()*100 < 5){
+    logText += "👹 Quái né đòn!\n";
+  }else{
+
+    let dmg = player.atk - enemy.def*0.5;
+    dmg = Math.max(0, dmg);
+
+    // Crit
+    if(Math.random()*100 < player.critRate){
+      dmg *= player.critDamage;
+      logText += "💥 CHÍ MẠNG!\n";
+    }
+
+    dmg = Math.floor(dmg);
+    enemy.hp -= dmg;
+
+    logText += "Bạn gây "+dmg+" sát thương.\n";
+  }
+
+  if(enemy.hp <= 0){
+    enemy.hp = 0;
+    player.exp += 100;
+    checkLevelUp();
+    savePlayer();
+    logText += "🎉 Hạ quái! +100 EXP\n";
+
+    document.getElementById("battleLog").innerText = logText;
+    render();
+
+    setTimeout(()=>{
+      spawnEnemy();
+      render();
+      document.getElementById("battleLog").innerText = "";
+      isAttacking=false;
+    },1500);
+
+    return;
+  }
+
+  /* ENEMY ATTACK */
+
+  if(Math.random()*100 < player.dodge){
+    logText += "💨 Bạn né được đòn!\n";
+  }else{
+
+    let dmg = enemy.atk - player.def*0.4;
+    dmg = Math.max(0,dmg);
+    dmg = Math.floor(dmg);
+
+    player.hp -= dmg;
+    logText += "Quái gây "+dmg+" sát thương.\n";
+  }
+
+  if(player.hp <= 0){
+    player.hp=0;
+    player.deadUntil =
+      Date.now()+(24*60*60*1000);
+
+    savePlayer();
+
+    logText += "💀 Bạn đã bị hạ!";
+    document.getElementById("battleLog").innerText=logText;
+
+    setTimeout(()=>{
+      location.href="game-diamond-hunter.html";
+    },1500);
+
+    return;
+  }
+
+  document.getElementById("battleLog").innerText = logText;
+
+  savePlayer();
+  render();
+
+  setTimeout(()=>isAttacking=false,300);
+}
+
+/* ===== BACK ===== */
+function backToHub(){
+  savePlayer();
+  location.href="game-diamond-hunter.html";
+}
+
+/* ===== INIT ===== */
+recalcStats();
+spawnEnemy();
+render();
+
+</script>
+
+</body>
+</html>

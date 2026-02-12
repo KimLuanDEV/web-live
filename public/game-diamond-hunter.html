@@ -109,16 +109,6 @@ input{
   width:100%;
 }
 
-/* ===== COMBAT ===== */
-.enemy{
-  box-shadow:0 0 25px rgba(255,0,60,.25);
-}
-
-.log{
-  margin-top:10px;
-  font-size:13px;
-  opacity:.8;
-}
 
 
 
@@ -635,127 +625,6 @@ input{
   color:#00ffcc;
 }
 
-
-/* ===== NEW COMBAT DESIGN ===== */
-
-.combat-new{
-  background:radial-gradient(circle at center,#0b1a24,#000);
-  min-height:100vh;
-  display:flex;
-  flex-direction:column;
-  padding:0;
-}
-
-.combat-header{
-  display:flex;
-  align-items:center;
-  padding:15px;
-  background:rgba(0,0,0,.5);
-}
-
-.combat-title{
-  flex:1;
-  text-align:center;
-  font-weight:800;
-  color:#00f0ff;
-}
-
-.back-btn{
-  background:none;
-  border:none;
-  color:#fff;
-  font-size:18px;
-}
-
-.battle-arena{
-  flex:1;
-  display:flex;
-  align-items:center;
-  justify-content:space-around;
-  padding:20px;
-}
-
-.fighter{
-  width:40%;
-  text-align:center;
-}
-
-.fighter-avatar{
-  width:120px;
-  height:160px;
-  margin:0 auto 15px;
-  background-size:cover;
-  background-position:center;
-  border-radius:16px;
-  box-shadow:0 0 30px rgba(0,255,255,.4);
-}
-
-.enemy-avatar{
-  background:url('/assets/classes/warrior.jpg');
-  filter:hue-rotate(200deg);
-}
-
-.hp-bar{
-  height:12px;
-  background:#111;
-  border-radius:20px;
-  overflow:hidden;
-  margin-bottom:6px;
-}
-
-.hp-fill{
-  height:100%;
-  width:100%;
-  background:linear-gradient(90deg,#00ff99,#00f0ff);
-  transition:.3s;
-}
-
-.enemy-hp .enemy-fill{
-  background:linear-gradient(90deg,#ff0033,#ff6600);
-}
-
-.hp-text{
-  font-size:13px;
-}
-
-.vs-text{
-  font-size:22px;
-  font-weight:800;
-  color:#fff;
-  opacity:.5;
-}
-
-.combat-actions{
-  padding:15px;
-}
-
-.attack-btn{
-  width:100%;
-  padding:16px;
-  border:none;
-  border-radius:18px;
-  font-size:16px;
-  font-weight:800;
-  background:linear-gradient(90deg,#ff0044,#ff9900);
-  color:#fff;
-  box-shadow:0 0 25px rgba(255,0,60,.5);
-  transition:.2s;
-}
-
-.attack-btn:active{
-  transform:scale(.96);
-}
-
-.combat-log{
-  max-height:120px;
-  overflow:auto;
-  padding:12px;
-  font-size:13px;
-  background:rgba(0,0,0,.6);
-}
-
-
-
 </style>
 </head>
 <body>
@@ -878,9 +747,10 @@ input{
 </button>
 
 
-<button class="hub-btn primary" onclick="openCombat()">
+<button class="hub-btn primary" onclick="goToCombat()">
       ⚔ Vào chiến đấu
 </button>
+
 
 <button class="hub-btn danger" onclick="resetCharacter()">
       🗑 Xóa nhân vật
@@ -891,52 +761,6 @@ input{
 
 
 </div>
-
-
-<!-- ================= NEW COMBAT SCREEN ================= -->
-<div id="combatScreen" class="screen combat-new">
-
-  <div class="combat-header">
-    <button class="back-btn" onclick="backToHub()">⬅</button>
-    <div class="combat-title">⚔ ĐẤU TRƯỜNG</div>
-  </div>
-
-  <div class="battle-arena">
-
-    <!-- PLAYER -->
-    <div class="fighter player-side">
-      <div class="fighter-avatar" id="playerAvatar"></div>
-      <div class="hp-bar">
-        <div class="hp-fill" id="playerHpBar"></div>
-      </div>
-      <div class="hp-text" id="playerHpText"></div>
-    </div>
-
-    <!-- VS -->
-    <div class="vs-text">VS</div>
-
-    <!-- ENEMY -->
-    <div class="fighter enemy-side">
-      <div class="fighter-avatar enemy-avatar"></div>
-      <div class="hp-bar enemy-hp">
-        <div class="hp-fill enemy-fill" id="enemyHpBar"></div>
-      </div>
-      <div class="hp-text" id="enemyHpText"></div>
-    </div>
-
-  </div>
-
-  <div class="combat-actions">
-    <button class="attack-btn" onclick="attack()">⚔ TẤN CÔNG</button>
-  </div>
-
-  <div class="combat-log" id="battleLog"></div>
-
-</div>
-
-
-
-
 
 
 
@@ -1122,58 +946,87 @@ input{
 let regenInterval = null;
 let selectedClass=null;
 let player=null;
-let enemy=null;
-let isInCombat = false;
+
+const CLASS_CONFIG = {
+  warrior:{
+    base:{ maxHp:800, atk:120, def:90 },
+    dodge:5,
+    critRate:10
+  },
+  assassin:{
+    base:{ maxHp:500, atk:200, def:40 },
+    dodge:15,
+    critRate:25
+  },
+  mage:{
+    base:{ maxHp:550, atk:170, def:60 },
+    dodge:8,
+    critRate:18
+  }
+};
+
+function savePlayer(){
+  if(!player) return;
+  player.lastOnline = Date.now();
+  localStorage.setItem("hunter_char",
+    JSON.stringify(player));
+}
+
+
 
 /* ===== INIT ===== */
 window.onload=function(){
 
   const saved=localStorage.getItem("hunter_char");
   if(saved){
-    player=JSON.parse(saved);
+  player=JSON.parse(saved);
 
-    applyOfflineRegen();   // 🔥 THÊM DÒNG NÀY
+  recalcStats();
+  applyOfflineRegen();
+  showHub();
+  startRegen();
+}
 
-    showHub();
-    startRegen();
-  }
 };
 
 
 
-function selectClass(el,type){
+function selectClass(el, type){
 
+  // Remove selected cũ
   document.querySelectorAll(".class-card")
-    .forEach(c=>c.classList.remove("selected"));
+    .forEach(c => c.classList.remove("selected"));
 
   el.classList.add("selected");
-  selectedClass=type;
+  selectedClass = type;
 
   const preview = document.getElementById("classPreview");
-  preview.classList.remove("hidden");
+  if(preview) preview.classList.remove("hidden");
 
-  let hp=0, atk=0, def=0, name="";
+  const config = CLASS_CONFIG[type];
+  if(!config) return;
 
-  if(type==="warrior"){
-    name="⚔ Chiến Binh";
-    hp=800; atk=120; def=90;
-  }
+  const nameMap = {
+    warrior: "⚔ Chiến Binh",
+    assassin: "🏹 Sát Thủ",
+    mage: "🔮 Pháp Sư"
+  };
 
-  if(type==="assassin"){
-    name="🏹 Sát Thủ";
-    hp=500; atk=200; def=40;
-  }
+  const hp  = config.base.maxHp;
+  const atk = config.base.atk;
+  const def = config.base.def;
 
-  if(type==="mage"){
-    name="🔮 Pháp Sư";
-    hp=550; atk=170; def=60;
-  }
+  document.getElementById("previewName").innerText =
+    nameMap[type] || type;
 
-  document.getElementById("previewName").innerText=name;
+  document.getElementById("hpFill").style.width =
+    (hp / 1000 * 100) + "%";
 
-  document.getElementById("hpFill").style.width=(hp/1000*100)+"%";
-  document.getElementById("atkFill").style.width=(atk/300*100)+"%";
-  document.getElementById("defFill").style.width=(def/150*100)+"%";
+  document.getElementById("atkFill").style.width =
+    (atk / 300 * 100) + "%";
+
+  document.getElementById("defFill").style.width =
+    (def / 150 * 100) + "%";
 }
 
 
@@ -1181,148 +1034,58 @@ function selectClass(el,type){
 function createCharacter(){
 
   const name=document.getElementById("charName").value.trim();
-  if(!name || !selectedClass) return alert("Nhập tên và chọn phái!");
+  if(!name || !selectedClass)
+    return alert("Nhập tên và chọn phái!");
 
-  if(selectedClass==="warrior"){
-player={
-  classType:"warrior",
-  name,
-  level:1,
-  baseStats:{
-    maxHp:800,
-    atk:120,
-    def:90
-  },
-  maxHp:800,
-  hp:800,
-  atk:120,
-  def:90,
-  dodge:5,
-  critRate:10,
-  critDamage:1.5,
-  regen: 0.5,
-  exp:0,
-  gold:500,
-  inventory:[],
-equipment:{
-  weapon:null,
-  armor:null,
-  helmet:null,
-  gloves:null,
-  boots:null,
-  shoulder:null,
-  legs:null,
-  ring:null,
-  gem:null
-}
+  const config = CLASS_CONFIG[selectedClass];
 
-};
+  player = {
+    classType:selectedClass,
+    name,
+    level:1,
+    baseStats:config.base,
+    maxHp:config.base.maxHp,
+    hp:config.base.maxHp,
+    atk:config.base.atk,
+    def:config.base.def,
+    dodge:config.dodge,
+    critRate:config.critRate,
+    critDamage:1.5,
+    regen:0.5,
+    exp:0,
+    gold:500,
+    inventory:[],
+    equipment:{
+      weapon:null, armor:null, helmet:null,
+      gloves:null, boots:null, shoulder:null,
+      legs:null, ring:null, gem:null
+    }
+  };
 
-  }
-
-  if(selectedClass==="assassin"){
-    player={
-  classType:"assassin",
-  name,
-  level:1,
-  baseStats:{
-  maxHp:500,
-  atk:200,
-  def:40
-},
-  maxHp:500,
-  hp:500,
-  atk:200,
-  def:40,
-  dodge:15,
-  critRate:25,
-  critDamage:1.5,
-  regen: 0.5,
-  exp:0,
-  gold:500,
-  inventory:[],
-equipment:{
-  weapon:null,
-  armor:null,
-  helmet:null,
-  gloves:null,
-  boots:null,
-  shoulder:null,
-  legs:null,
-  ring:null,
-  gem:null
-}
-
-};
-  }
-
-  if(selectedClass==="mage"){
-player={
-  classType:"mage",
-  name,
-  level:1,
-  baseStats:{
-  maxHp:550,
-  atk:170,
-  def:60
-},
-  maxHp:550,
-  hp:550,
-  atk:170,
-  def:60,
-  dodge:8,
-  critRate:18,
-  critDamage:1.5,
-  regen: 0.5,
-  exp:0,
-  gold:500,
-  inventory:[],
-equipment:{
-  weapon:null,
-  armor:null,
-  helmet:null,
-  gloves:null,
-  boots:null,
-  shoulder:null,
-  legs:null,
-  ring:null,
-  gem:null
-}
-
-};
-  }
-
-  localStorage.setItem("hunter_char",JSON.stringify(player));
+  savePlayer();
   showHub();
   startRegen();
-
-
 }
 
 function showHub(){
 
-
-// Fix save cũ thiếu slot
-if(!player.equipment.helmet){
-  player.equipment = {
-    weapon:null,
-    armor:null,
-    helmet:null,
-    gloves:null,
-    boots:null,
-    shoulder:null,
-    legs:null,
-    ring:null,
-    gem:null,
-    ...player.equipment
-  };
-}
+if(!player) return;
 
 
+const defaultEquip = {
+  weapon:null, armor:null, helmet:null,
+  gloves:null, boots:null, shoulder:null,
+  legs:null, ring:null, gem:null
+};
 
-  switchScreen("hubScreen");
+player.equipment = {
+  ...defaultEquip,
+  ...player.equipment
+};
 
-  if(!player) return;
+
+switchScreen("hubScreen");
+
 
   // ===== NAME =====
   const nameEl = document.getElementById("infoName");
@@ -1391,213 +1154,8 @@ Object.keys(player.equipment).forEach(slot=>{
 }
 
 
-function openCombat(){
 
-  if(player.deadUntil && Date.now() < player.deadUntil){
-    alert("⏳ Nhân vật chưa hồi sinh!");
-    return;
-  }
 
-  isInCombat = true;   // 🔥 THÊM DÒNG NÀY
-
-  enemy={
-    maxHp:600+player.level*150,
-    hp:600+player.level*150,
-    atk:100+player.level*20,
-    def:50+player.level*10
-  };
-
-  switchScreen("combatScreen");
-  renderCombat();
-}
-
-
-
-
-function renderCombat(){
-
-  // Avatar player
-  let avatarPath="";
-  if(player.classType==="warrior")
-    avatarPath="/assets/classes/warrior.jpg";
-  if(player.classType==="assassin")
-    avatarPath="/assets/classes/assassin.jpg";
-  if(player.classType==="mage")
-    avatarPath="/assets/classes/mage.jpg";
-
-  document.getElementById("playerAvatar")
-    .style.backgroundImage = `url(${avatarPath})`;
-
-  // HP %
-  const playerPercent =
-    (player.hp / player.maxHp) * 100;
-
-  const enemyPercent =
-    (enemy.hp / enemy.maxHp) * 100;
-
-  document.getElementById("playerHpBar")
-    .style.width = playerPercent + "%";
-
-  document.getElementById("enemyHpBar")
-    .style.width = enemyPercent + "%";
-
-  document.getElementById("playerHpText")
-    .innerText = player.hp + " / " + player.maxHp;
-
-  document.getElementById("enemyHpText")
-    .innerText = enemy.hp + " / " + enemy.maxHp;
-}
-
-
-
-
-
-function attack(){
-
-  let logText = "";
-
-  // ===== PLAYER ATTACK =====
-
-  let dodged = false;
-
-  if(enemy.dodge && Math.random()*100 < enemy.dodge){
-    dodged = true;
-    logText += "💨 Quái né tránh!\n";
-  }
-
-  if(!dodged){
-
-    let dmgToEnemy = Math.max(0, player.atk - enemy.def*0.5);
-
-    // Crit
-    let isCrit = Math.random()*100 < player.critRate;
-
-    if(isCrit){
-      dmgToEnemy *= player.critDamage;
-      logText += "💥 Chí mạng!\n";
-    }
-
-    dmgToEnemy = Math.floor(dmgToEnemy);
-    enemy.hp -= dmgToEnemy;
-
-    logText += "Bạn gây " + dmgToEnemy + " sát thương.\n";
-  }
-
-if(enemy.hp <= 0){
-  enemy.hp = 0;
-
-  player.exp += 100;
-
-  // 🔥 DROP LOOT
-  const lootLog = dropLoot();
-
-  levelUp();
-
-  logText += "🎉 Hạ quái! +100 EXP\n";
-  logText += lootLog;
-
-  document.getElementById("battleLog").innerText = logText;
-
-  localStorage.setItem("hunter_char",
-    JSON.stringify(player));
-
-  return;
-}
-
-
-  // ===== ENEMY ATTACK =====
-
-  let playerDodged = Math.random()*100 < player.dodge;
-
-  if(playerDodged){
-    logText += "💨 Bạn né tránh!\n";
-  }else{
-
-    let dmgToPlayer =
-      Math.max(0, enemy.atk - player.def*0.4);
-
-    dmgToPlayer = Math.floor(dmgToPlayer);
-    player.hp -= dmgToPlayer;
-
-    logText += "Quái gây " + dmgToPlayer + " sát thương.\n";
-  }
-
-  if(player.hp <= 0){
-    player.hp = 0;
-    player.deadUntil = Date.now() + (24*60*60*1000);
-
-    localStorage.setItem("hunter_char",JSON.stringify(player));
-
-    logText += "💀 Bạn đã bị hạ! Hồi sinh sau 24 giờ.";
-
-    document.getElementById("battleLog").innerText = logText;
-
-    setTimeout(()=> backToHub(),1500);
-    return;
-  }
-
-  document.getElementById("battleLog").innerText = logText;
-  renderCombat();
-}
-
-
-function levelUp(){
-
-  if(player.exp >= player.level * 200){
-
-    player.level++;
-    player.exp = 0;
-
-    recalcStats();
-
-    player.hp = player.maxHp;
-  }
-}
-
-
-function dropLoot(){
-
-  let log = "";
-
-  // ===== RƠI KIM CƯƠNG =====
-  const goldDrop =
-    Math.floor(50 + Math.random()*50 + player.level*20);
-
-  player.gold += goldDrop;
-
-  log += "💎 Nhặt được " + goldDrop + " kim cương!\n";
-
-  // ===== TỶ LỆ RƠI TRANG BỊ 15% =====
-  const dropChance = Math.random();
-
-  if(dropChance < 0.15){
-
-    // Lọc chỉ trang bị (không potion)
-    const equipItems = shopItems.filter(i =>
-      i.type !== "potion"
-    );
-
-    const randomItem =
-      equipItems[Math.floor(Math.random()*equipItems.length)];
-
-    player.inventory.push({...randomItem});
-
-    log += "🎁 Rơi trang bị: " + randomItem.name + "!";
-  }
-
-  return log;
-}
-
-
-
-
-function backToHub(){
-
-  isInCombat = false;  // 🔥 THÊM DÒNG NÀY
-
-  localStorage.setItem("hunter_char",JSON.stringify(player));
-  showHub();
-}
 
 
 function resetCharacter(){
@@ -1635,6 +1193,9 @@ let respawnInterval=null;
 function startRespawnTimer(timeLeft){
 
   const btn = document.querySelector(".hub-btn.primary");
+  if(!btn) return;
+
+
   btn.disabled = true;
   btn.innerText = "⏳ Đang hồi sinh...";
 
@@ -1653,7 +1214,8 @@ function startRespawnTimer(timeLeft){
       player.deadUntil = null;
       player.hp = player.maxHp;
 
-      localStorage.setItem("hunter_char",JSON.stringify(player));
+     savePlayer();
+
 
       btn.disabled = false;
       btn.innerText = "⚔ Vào chiến đấu";
@@ -1682,6 +1244,8 @@ function toggleInventory(){
 
 
 function renderInventory(){
+
+   if(!player) return; 
 
   const grid = document.getElementById("inventoryGrid");
   grid.innerHTML = "";
@@ -1783,7 +1347,8 @@ function equipItem(index){
     // Xóa potion sau khi dùng
     player.inventory.splice(index,1);
 
-    localStorage.setItem("hunter_char",JSON.stringify(player));
+    savePlayer();
+
 
     renderInventory();
     showHub();
@@ -1807,7 +1372,8 @@ function equipItem(index){
 
   recalcStats();
 
-  localStorage.setItem("hunter_char",JSON.stringify(player));
+  savePlayer();
+
 
   renderInventory();
   showHub();
@@ -1831,7 +1397,8 @@ function unequipItem(slot){
   recalcStats();
 
   // Lưu
-  localStorage.setItem("hunter_char", JSON.stringify(player));
+  savePlayer();
+
 
   // Nếu đang mở inventory → cập nhật ngay
   renderInventory();
@@ -1841,33 +1408,17 @@ function unequipItem(slot){
 }
 
 
-
 function recalcStats(){
 
-  // Reset base stats
-  player.maxHp = player.baseStats.maxHp;
-  player.atk   = player.baseStats.atk;
-  player.def   = player.baseStats.def;
+  const config = CLASS_CONFIG[player.classType];
 
-  // Reset theo class
-  if(player.classType==="warrior"){
-    player.dodge = 5;
-    player.critRate = 10;
-    player.regen = 0.5;
-  }
+  player.maxHp = config.base.maxHp;
+  player.atk   = config.base.atk;
+  player.def   = config.base.def;
 
-  if(player.classType==="assassin"){
-    player.dodge = 15;
-    player.critRate = 25;
-    player.regen = 0.5;
-  }
-
-  if(player.classType==="mage"){
-    player.dodge = 8;
-    player.critRate = 18;
-    player.regen = 0.5;
-  }
-
+  player.dodge = config.dodge;
+  player.critRate = config.critRate;
+  player.regen = 0.5;
   player.critDamage = 1.5;
 
   // Level bonus
@@ -1878,20 +1429,17 @@ function recalcStats(){
   // Equipment bonus
   Object.values(player.equipment).forEach(item=>{
     if(!item) return;
-
     if(item.atk) player.atk += item.atk;
     if(item.def) player.def += item.def;
     if(item.hp)  player.maxHp += item.hp;
     if(item.dodge) player.dodge += item.dodge;
     if(item.critRate) player.critRate += item.critRate;
-    if(item.regen) player.regen += item.regen;  // 🔥 THÊM DÒNG NÀY
+    if(item.regen) player.regen += item.regen;
   });
 
   if(player.hp > player.maxHp)
     player.hp = player.maxHp;
 }
-
-
 
 
 const shopItems = [
@@ -1973,7 +1521,8 @@ function buyItem(item){
 player.gold -= item.price;
 player.inventory.push(item);
 
-localStorage.setItem("hunter_char",JSON.stringify(player));
+savePlayer();
+
 
 renderShop();   // 👈 cập nhật tiền ngay
 alert("Đã mua " + item.name);
@@ -2029,8 +1578,8 @@ function confirmBuyItem(){
   player.gold -= selectedShopItem.price;
   player.inventory.push(selectedShopItem);
 
-  localStorage.setItem("hunter_char",
-    JSON.stringify(player));
+savePlayer();
+
 
   closeShopItemModal();
   renderShop();
@@ -2051,7 +1600,8 @@ function sellItem(index){
 
   player.inventory.splice(index,1);
 
-  localStorage.setItem("hunter_char",JSON.stringify(player));
+  savePlayer();
+
 
   renderInventory();
   showHub();
@@ -2059,6 +1609,9 @@ function sellItem(index){
 
 
 function applyOfflineRegen(){
+
+recalcStats();
+
 
   if(!player.lastOnline) return;
 
@@ -2083,6 +1636,9 @@ function applyOfflineRegen(){
   player.hp = Math.floor(player.hp);
 
   console.log("Offline regen:", secondsOffline, "giây");
+
+  savePlayer();
+
 }
 
 
@@ -2096,14 +1652,10 @@ function startRegen(){
 
     if(!player) return;
 
-    // 🚫 Pause regen khi đang combat
-    if(isInCombat) return;
-
     // Không regen khi chết
     if(player.deadUntil && Date.now() < player.deadUntil)
       return;
 
-    // Nếu HP chưa full
     if(player.hp < player.maxHp){
 
       player.hp += player.regen;
@@ -2111,12 +1663,7 @@ function startRegen(){
       if(player.hp > player.maxHp)
         player.hp = player.maxHp;
 
-    player.lastOnline = Date.now();
-    localStorage.setItem("hunter_char",
-    JSON.stringify(player));
-
-
-      // Nếu đang ở Hub → update ngay
+      // Update UI thôi (không save mỗi tick)
       const hpOverlay =
         document.getElementById("hpOverlay");
 
@@ -2125,13 +1672,17 @@ function startRegen(){
           player.hp + "/" + player.maxHp;
       }
 
-      // Nếu đang mở inventory
       const hpInv =
         document.getElementById("invHpFinal");
 
       if(hpInv){
         hpInv.innerText =
           player.hp + " / " + player.maxHp;
+      }
+
+      // Chỉ save khi full HP
+      if(player.hp === player.maxHp){
+        savePlayer();
       }
     }
 
@@ -2143,12 +1694,24 @@ function startRegen(){
 window.addEventListener("beforeunload",()=>{
   if(player && localStorage.getItem("hunter_char")){
     player.lastOnline = Date.now();
-    localStorage.setItem("hunter_char",
-      JSON.stringify(player));
+    savePlayer();
   }
 });
 
 
+
+function goToCombat(){
+
+  if(player.deadUntil && Date.now() < player.deadUntil){
+    alert("⏳ Nhân vật chưa hồi sinh!");
+    return;
+  }
+
+savePlayer();
+
+
+  location.href = "combat.html";
+}
 
 
 </script>
