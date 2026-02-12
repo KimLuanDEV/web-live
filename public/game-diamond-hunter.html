@@ -842,6 +842,11 @@ input{
       🔥 Sát thương chí mạng <span id="invCritDmgFinal"></span>
     </div>
 
+    <div class="stat-row">
+  ♻ Hồi máu /s <span id="invRegenFinal"></span>
+    </div>
+
+
   </div>
 
 </div>
@@ -966,9 +971,11 @@ input{
 
 <script>
 
-    let selectedClass=null;
+let regenInterval = null;
+let selectedClass=null;
 let player=null;
 let enemy=null;
+let isInCombat = false;
 
 /* ===== INIT ===== */
 window.onload=function(){
@@ -977,8 +984,10 @@ window.onload=function(){
   if(saved){
     player=JSON.parse(saved);
     showHub();
+    startRegen();   // 🔥 THÊM DÒNG NÀY
   }
 };
+
 
 function selectClass(el,type){
 
@@ -1039,6 +1048,7 @@ player={
   dodge:5,
   critRate:10,
   critDamage:1.5,
+  regen: 0.5,
   exp:0,
   gold:500,
   inventory:[],
@@ -1075,6 +1085,7 @@ equipment:{
   dodge:15,
   critRate:25,
   critDamage:1.5,
+  regen: 0.5,
   exp:0,
   gold:500,
   inventory:[],
@@ -1110,6 +1121,7 @@ player={
   dodge:8,
   critRate:18,
   critDamage:1.5,
+  regen: 0.5,
   exp:0,
   gold:500,
   inventory:[],
@@ -1130,6 +1142,9 @@ equipment:{
 
   localStorage.setItem("hunter_char",JSON.stringify(player));
   showHub();
+  startRegen();
+
+
 }
 
 function showHub(){
@@ -1226,11 +1241,12 @@ Object.keys(player.equipment).forEach(slot=>{
 
 function openCombat(){
 
-  // Nếu đang chết
   if(player.deadUntil && Date.now() < player.deadUntil){
     alert("⏳ Nhân vật chưa hồi sinh!");
     return;
   }
+
+  isInCombat = true;   // 🔥 THÊM DÒNG NÀY
 
   enemy={
     maxHp:600+player.level*150,
@@ -1345,9 +1361,13 @@ function levelUp(){
 
 
 function backToHub(){
+
+  isInCombat = false;  // 🔥 THÊM DÒNG NÀY
+
   localStorage.setItem("hunter_char",JSON.stringify(player));
   showHub();
 }
+
 
 function resetCharacter(){
   localStorage.removeItem("hunter_char");
@@ -1433,12 +1453,15 @@ function renderInventory(){
   const dodgeEl= document.getElementById("invDodgeFinal");
   const critEl = document.getElementById("invCritFinal");
   const critDmgEl = document.getElementById("invCritDmgFinal");
+  const regenEl = document.getElementById("invRegenFinal");
+
 
   if(hpEl)   hpEl.innerText   = player.hp + " / " + player.maxHp;
   if(atkEl)  atkEl.innerText  = player.atk;
   if(defEl)  defEl.innerText  = player.def;
   if(dodgeEl)dodgeEl.innerText= player.dodge + "%";
   if(critEl) critEl.innerText = player.critRate + "%";
+  if(regenEl) regenEl.innerText = player.regen;
   if(critDmgEl) critDmgEl.innerText =
       (player.critDamage * 100) + "%";
 
@@ -1570,20 +1593,23 @@ function recalcStats(){
   player.atk   = player.baseStats.atk;
   player.def   = player.baseStats.def;
 
-  // Reset dodge & crit theo class gốc
+  // Reset theo class
   if(player.classType==="warrior"){
     player.dodge = 5;
     player.critRate = 10;
+    player.regen = 0.5;
   }
 
   if(player.classType==="assassin"){
     player.dodge = 15;
     player.critRate = 25;
+    player.regen = 0.5;
   }
 
   if(player.classType==="mage"){
     player.dodge = 8;
     player.critRate = 18;
+    player.regen = 0.5;
   }
 
   player.critDamage = 1.5;
@@ -1600,9 +1626,9 @@ function recalcStats(){
     if(item.atk) player.atk += item.atk;
     if(item.def) player.def += item.def;
     if(item.hp)  player.maxHp += item.hp;
-
     if(item.dodge) player.dodge += item.dodge;
     if(item.critRate) player.critRate += item.critRate;
+    if(item.regen) player.regen += item.regen;  // 🔥 THÊM DÒNG NÀY
   });
 
   if(player.hp > player.maxHp)
@@ -1775,6 +1801,54 @@ function sellItem(index){
   showHub();
 }
 
+
+function startRegen(){
+
+  if(regenInterval) clearInterval(regenInterval);
+
+  regenInterval = setInterval(()=>{
+
+    if(!player) return;
+    
+    // 🚫 Pause regen khi đang combat
+    if(isInCombat) return;
+
+    // Không regen khi chết
+    if(player.deadUntil && Date.now() < player.deadUntil)
+      return;
+
+    // Nếu HP chưa full
+    if(player.hp < player.maxHp){
+
+      player.hp += player.regen;
+
+      if(player.hp > player.maxHp)
+        player.hp = player.maxHp;
+
+      localStorage.setItem("hunter_char",
+        JSON.stringify(player));
+
+      // Nếu đang ở Hub → update ngay
+      const hpOverlay =
+        document.getElementById("hpOverlay");
+
+      if(hpOverlay){
+        hpOverlay.innerText =
+          player.hp + "/" + player.maxHp;
+      }
+
+      // Nếu đang mở inventory
+      const hpInv =
+        document.getElementById("invHpFinal");
+
+      if(hpInv){
+        hpInv.innerText =
+          player.hp + " / " + player.maxHp;
+      }
+    }
+
+  },1000);
+}
 
 
 </script>
