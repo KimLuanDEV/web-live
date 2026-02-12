@@ -109,3 +109,11 @@ function closePortfolio(){
 function openRPSGame(){
   location.href = "/game-rps.html"; // trang game sau này
 }
+
+function openDiamondHunter(){
+  // tạm thời chưa mở game thật
+  alert("💎 Thợ săn kim cương sẽ sớm ra mắt!");
+  
+  // Sau này:
+  // location.href = "/game-diamond-hunter.html";
+}

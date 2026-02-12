@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thợ săn kim cương</title>
+<link rel="stylesheet" href="/style.css">
+
+<style>
+body{
+  margin:0;
+  background:#000;
+  font-family:system-ui;
+  color:#fff;
+}
+
+/* ===== SCREEN ===== */
+.screen{
+  display:none;
+  padding:20px;
+}
+
+.screen.active{
+  display:block;
+}
+
+/* ===== TITLE ===== */
+.title{
+  font-size:20px;
+  font-weight:800;
+  text-align:center;
+  margin-bottom:20px;
+  color:#00f0ff;
+}
+
+/* ===== INPUT ===== */
+input{
+  width:100%;
+  padding:12px;
+  border-radius:12px;
+  border:none;
+  margin-bottom:20px;
+  background:#111;
+  color:#fff;
+}
+
+/* ===== CLASS SELECT ===== */
+.class-grid{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:12px;
+}
+
+@media (max-width: 768px){
+  .class-grid{
+    grid-template-columns:repeat(3, 1fr);
+  }
+}
+
+
+
+.class-card{
+  padding:14px;
+  border-radius:16px;
+  background:#0a0f15;
+  cursor:pointer;
+  border:1px solid transparent;
+  height:140px;
+}
+
+.class-card.selected{
+  border:1px solid #00f0ff;
+  box-shadow:0 0 20px rgba(0,255,255,.3);
+}
+
+.btn{
+  margin-top:20px;
+  padding:14px;
+  width:100%;
+  border:none;
+  border-radius:14px;
+  font-weight:700;
+  background:linear-gradient(90deg,#00f0ff,#00ff99);
+  cursor:pointer;
+}
+
+/* ===== HUB ===== */
+.card{
+  background:#0a0f15;
+  border-radius:18px;
+  padding:16px;
+  margin-bottom:15px;
+  box-shadow:0 0 25px rgba(0,255,255,.15);
+}
+
+.bar{
+  height:10px;
+  background:#111;
+  border-radius:10px;
+  overflow:hidden;
+  margin-bottom:10px;
+}
+
+.fill{
+  height:100%;
+  background:linear-gradient(90deg,#00f0ff,#00ff99);
+}
+
+.menu-btn{
+  padding:12px;
+  margin-top:10px;
+  border:none;
+  border-radius:12px;
+  background:#111;
+  color:#fff;
+  width:100%;
+}
+
+/* ===== COMBAT ===== */
+.enemy{
+  box-shadow:0 0 25px rgba(255,0,60,.25);
+}
+
+.log{
+  margin-top:10px;
+  font-size:13px;
+  opacity:.8;
+}
+
+
+
+.class-card{
+  position:relative;
+  height:130px;
+  border-radius:18px;
+  overflow:hidden;
+  cursor:pointer;
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:flex-end;
+  padding:14px;
+  transition:.2s;
+}
+
+/* Overlay tối */
+.class-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,
+    rgba(0,0,0,.2),
+    rgba(0,0,0,.7)
+  );
+}
+
+.class-info{
+  position:relative;
+  z-index:1;
+}
+
+.class-title{
+  font-weight:800;
+  font-size:16px;
+}
+
+.class-sub{
+  font-size:13px;
+  opacity:.8;
+}
+
+/* ẢNH NỀN */
+.class-card.warrior{
+  background-image:url('/assets/classes/warrior.jpg');
+}
+
+.class-card.assassin{
+  background-image:url('/assets/classes/assassin.jpg');
+}
+
+.class-card.mage{
+  background-image:url('/assets/classes/mage.jpg');
+}
+
+/* Hover */
+.class-card:hover{
+  transform:scale(1.02);
+}
+
+/* Selected */
+.class-card.selected{
+  box-shadow:0 0 25px rgba(0,255,255,.6);
+  border:1px solid #00f0ff;
+}
+
+
+
+</style>
+</head>
+<body>
+
+<!-- ================= CREATE CHARACTER ================= -->
+<div id="createScreen" class="screen active">
+
+  <div class="title">✨ Tạo nhân vật</div>
+
+  <input id="charName" placeholder="Nhập tên nhân vật">
+
+<div class="class-grid">
+
+  <div class="class-card warrior"
+       onclick="selectClass(this,'warrior')">
+    <div class="class-info">
+      <div class="class-title">⚔ Chiến Binh</div>
+      <div class="class-sub">HP cao • DEF cao</div>
+    </div>
+  </div>
+
+  <div class="class-card assassin"
+       onclick="selectClass(this,'assassin')">
+    <div class="class-info">
+      <div class="class-title">🏹 Sát Thủ</div>
+      <div class="class-sub">ATK cực cao • Mỏng</div>
+    </div>
+  </div>
+
+  <div class="class-card mage"
+       onclick="selectClass(this,'mage')">
+    <div class="class-info">
+      <div class="class-title">🔮 Pháp Sư</div>
+      <div class="class-sub">Damage phép • Cân bằng</div>
+    </div>
+  </div>
+
+</div>
+
+
+  <button class="btn" onclick="createCharacter()">Tạo nhân vật</button>
+</div>
+
+
+<!-- ================= HUB ================= -->
+<div id="hubScreen" class="screen">
+
+  <div class="title">🏕 Thông tin nhân vật</div>
+
+  <div class="card">
+    <div id="infoName"></div>
+    <div class="bar"><div class="fill" id="hpBar"></div></div>
+    <div id="infoStats"></div>
+  </div>
+
+  <button class="menu-btn" onclick="openCombat()">⚔ Vào chiến đấu</button>
+  <button class="menu-btn" onclick="resetCharacter()">🗑 Xóa nhân vật</button>
+
+</div>
+
+
+<!-- ================= COMBAT ================= -->
+<div id="combatScreen" class="screen">
+
+  <div class="title">⚔ Chiến đấu</div>
+
+  <div class="card">
+    <div id="playerCombatStats"></div>
+  </div>
+
+  <div class="card enemy">
+    <div id="enemyStats"></div>
+  </div>
+
+  <button class="btn" onclick="attack()">Tấn công</button>
+  <button class="menu-btn" onclick="backToHub()">⬅ Quay lại</button>
+
+  <div class="log" id="battleLog"></div>
+
+</div>
+
+
+<script>
+
+let selectedClass=null;
+let player=null;
+let enemy=null;
+
+/* ===== INIT ===== */
+window.onload=function(){
+  const saved=localStorage.getItem("hunter_char");
+  if(saved){
+    player=JSON.parse(saved);
+    showHub();
+  }
+};
+
+function selectClass(el,type){
+  document.querySelectorAll(".class-card")
+    .forEach(c=>c.classList.remove("selected"));
+  el.classList.add("selected");
+  selectedClass=type;
+}
+
+function createCharacter(){
+
+  const name=document.getElementById("charName").value.trim();
+  if(!name || !selectedClass) return alert("Nhập tên và chọn phái!");
+
+  if(selectedClass==="warrior"){
+    player={name,level:1,maxHp:800,hp:800,atk:120,def:90,exp:0};
+  }
+  if(selectedClass==="assassin"){
+    player={name,level:1,maxHp:500,hp:500,atk:200,def:40,exp:0};
+  }
+  if(selectedClass==="mage"){
+    player={name,level:1,maxHp:550,hp:550,atk:170,def:60,exp:0};
+  }
+
+  localStorage.setItem("hunter_char",JSON.stringify(player));
+  showHub();
+}
+
+function showHub(){
+  switchScreen("hubScreen");
+  document.getElementById("infoName").innerText=
+    player.name+" (LV "+player.level+")";
+  document.getElementById("infoStats").innerText=
+    "HP "+player.hp+"/"+player.maxHp+
+    " | ATK "+player.atk+
+    " | DEF "+player.def;
+  document.getElementById("hpBar").style.width=
+    (player.hp/player.maxHp*100)+"%";
+}
+
+function openCombat(){
+  enemy={
+    maxHp:600+player.level*150,
+    hp:600+player.level*150,
+    atk:100+player.level*20,
+    def:50+player.level*10
+  };
+  switchScreen("combatScreen");
+  renderCombat();
+}
+
+function renderCombat(){
+  document.getElementById("playerCombatStats").innerText=
+    player.name+" | HP "+player.hp+"/"+player.maxHp;
+  document.getElementById("enemyStats").innerText=
+    "Quái | HP "+enemy.hp+"/"+enemy.maxHp;
+}
+
+function attack(){
+
+  let dmgToEnemy=Math.max(0,player.atk-enemy.def*0.5);
+  dmgToEnemy=Math.floor(dmgToEnemy);
+  enemy.hp-=dmgToEnemy;
+
+  if(enemy.hp<=0){
+    enemy.hp=0;
+    player.exp+=100;
+    levelUp();
+    document.getElementById("battleLog").innerText=
+      "🎉 Hạ quái! +100 EXP";
+    localStorage.setItem("hunter_char",JSON.stringify(player));
+    return;
+  }
+
+  let dmgToPlayer=Math.max(0,enemy.atk-player.def*0.4);
+  dmgToPlayer=Math.floor(dmgToPlayer);
+  player.hp-=dmgToPlayer;
+
+  if(player.hp<=0){
+    player.hp=0;
+    document.getElementById("battleLog").innerText=
+      "💀 Bạn đã bị hạ!";
+  }
+
+  renderCombat();
+}
+
+function levelUp(){
+  if(player.exp>=player.level*200){
+    player.level++;
+    player.exp=0;
+    player.maxHp+=200;
+    player.hp=player.maxHp;
+    player.atk+=40;
+    player.def+=25;
+  }
+}
+
+function backToHub(){
+  localStorage.setItem("hunter_char",JSON.stringify(player));
+  showHub();
+}
+
+function resetCharacter(){
+  localStorage.removeItem("hunter_char");
+  location.reload();
+}
+
+function switchScreen(id){
+  document.querySelectorAll(".screen")
+    .forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
+}
+
+</script>
+
+</body>
+</html>
