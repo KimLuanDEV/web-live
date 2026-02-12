@@ -612,6 +612,29 @@ input{
   margin-bottom:4px;
 }
 
+
+.stats-simple{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.stat-row{
+  background:#0f1620;
+  padding:12px 14px;
+  border-radius:14px;
+  display:flex;
+  justify-content:space-between;
+  font-weight:600;
+  box-shadow:0 0 12px rgba(0,255,255,.15);
+}
+
+.stat-row span{
+  font-weight:800;
+  color:#00ffcc;
+}
+
 </style>
 </head>
 <body>
@@ -791,33 +814,32 @@ input{
 
 <div class="inventory-stats">
 
-  <div class="stats-title">📊 Chỉ số nhân vật</div>
+  <div class="stats-title">Chỉ số cơ bản</div>
 
-  <div class="stats-grid">
+  <div class="stats-simple">
 
-    <div class="stat-card">
-      <div class="stat-num" id="invHp"></div>
-      <div class="stat-label">HP</div>
+    <div class="stat-row">
+      ❤️ HP <span id="invHpFinal"></span>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-num" id="invAtk"></div>
-      <div class="stat-label">ATK</div>
+    <div class="stat-row">
+      ⚔ ATK <span id="invAtkFinal"></span>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-num" id="invDef"></div>
-      <div class="stat-label">DEF</div>
+    <div class="stat-row">
+      🛡 DEF <span id="invDefFinal"></span>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-num" id="invDodge"></div>
-      <div class="stat-label">Dodge %</div>
+    <div class="stat-row">
+      💨 Né tránh <span id="invDodgeFinal"></span>
     </div>
 
-    <div class="stat-card">
-      <div class="stat-num" id="invCrit"></div>
-      <div class="stat-label">Crit %</div>
+    <div class="stat-row">
+      💥 Chí mạng <span id="invCritFinal"></span>
+    </div>
+
+    <div class="stat-row">
+      🔥 Sát thương chí mạng <span id="invCritDmgFinal"></span>
     </div>
 
   </div>
@@ -826,10 +848,11 @@ input{
 
 
 
+
 <div class="inventory-equip">
 
 
-  <div class="equip-title">⚔ Trang bị</div>
+  <div class="equip-title">Trang bị</div>
 
   <div class="equip-grid">
 
@@ -1394,87 +1417,73 @@ function toggleInventory(){
 
 function renderInventory(){
 
-
-
-
   const grid = document.getElementById("inventoryGrid");
-  grid.innerHTML="";
+  grid.innerHTML = "";
 
-
-  // Update gold hiển thị trong inventory
-const goldDisplay = document.getElementById("inventoryGold");
-if(goldDisplay){
-  goldDisplay.innerText = player.gold;
-}
-
-
-
-  if(!player.inventory || player.inventory.length===0){
-    grid.innerHTML="<div style='opacity:.6'>Trống</div>";
-    return;
+  // ===== UPDATE GOLD =====
+  const goldDisplay = document.getElementById("inventoryGold");
+  if(goldDisplay){
+    goldDisplay.innerText = player.gold;
   }
 
-  player.inventory.forEach((item,index)=>{
+  // ===== UPDATE FINAL STATS =====
+  const hpEl   = document.getElementById("invHpFinal");
+  const atkEl  = document.getElementById("invAtkFinal");
+  const defEl  = document.getElementById("invDefFinal");
+  const dodgeEl= document.getElementById("invDodgeFinal");
+  const critEl = document.getElementById("invCritFinal");
+  const critDmgEl = document.getElementById("invCritDmgFinal");
 
-    const div=document.createElement("div");
-    div.className="inventory-item";
+  if(hpEl)   hpEl.innerText   = player.hp + " / " + player.maxHp;
+  if(atkEl)  atkEl.innerText  = player.atk;
+  if(defEl)  defEl.innerText  = player.def;
+  if(dodgeEl)dodgeEl.innerText= player.dodge + "%";
+  if(critEl) critEl.innerText = player.critRate + "%";
+  if(critDmgEl) critDmgEl.innerText =
+      (player.critDamage * 100) + "%";
 
+  // ===== INVENTORY EMPTY =====
+  if(!player.inventory || player.inventory.length===0){
+    grid.innerHTML = "<div style='opacity:.6'>Trống</div>";
+  }else{
 
+    player.inventory.forEach((item,index)=>{
 
-// ===== UPDATE PERSONAL STATS =====
-document.getElementById("invHp").innerText =
-  player.hp + "/" + player.maxHp;
+      const div = document.createElement("div");
+      div.className = "inventory-item";
 
-document.getElementById("invAtk").innerText =
-  player.atk;
+      const icon = document.createElement("div");
+      icon.innerText = item.icon;
+      icon.style.fontSize = "24px";
+      div.appendChild(icon);
 
-document.getElementById("invDef").innerText =
-  player.def;
+      const sell = document.createElement("div");
+      sell.className = "sell-icon";
+      sell.innerText = "🗑";
+      sell.onclick = (e)=>{
+        e.stopPropagation();
+        sellItem(index);
+      };
+      div.appendChild(sell);
 
-document.getElementById("invDodge").innerText =
-  player.dodge;
+      div.onclick = ()=>equipItem(index);
 
-document.getElementById("invCrit").innerText =
-  player.critRate;
+      grid.appendChild(div);
+    });
+  }
 
-
-
-    // Icon item
-    const icon=document.createElement("div");
-    icon.innerText=item.icon;
-    icon.style.fontSize="24px";
-    div.appendChild(icon);
-
-    // Sell icon
-    const sell=document.createElement("div");
-    sell.className="sell-icon";
-    sell.innerText="🗑";
-    sell.onclick=(e)=>{
-      e.stopPropagation(); // không trigger equip
-      sellItem(index);
-    };
-    div.appendChild(sell);
-
-    // Click item = equip
-    div.onclick=()=>equipItem(index);
-
-    grid.appendChild(div);
+  // ===== UPDATE EQUIPMENT SLOTS =====
+  Object.keys(player.equipment).forEach(slot=>{
+    const el = document.getElementById(slot + "Slot");
+    if(el){
+      el.innerText = player.equipment[slot]
+        ? player.equipment[slot].name
+        : "Trống";
+    }
   });
 
-
-// Update equip slot hiển thị
-Object.keys(player.equipment).forEach(slot=>{
-  const el = document.getElementById(slot + "Slot");
-  if(el){
-    el.innerText = player.equipment[slot]
-      ? player.equipment[slot].name
-      : "Trống";
-  }
-});
-
-
-
 }
+
 
 
 
