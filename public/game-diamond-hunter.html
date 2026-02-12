@@ -59,18 +59,11 @@ input{
 
 
 
-.class-card{
-  padding:14px;
-  border-radius:16px;
-  background:#0a0f15;
-  cursor:pointer;
-  border:1px solid transparent;
-  height:140px;
-}
 
 .class-card.selected{
+  box-shadow:0 0 30px rgba(0,255,255,.6);
   border:1px solid #00f0ff;
-  box-shadow:0 0 20px rgba(0,255,255,.3);
+  transform:scale(1.03);
 }
 
 .btn{
@@ -131,7 +124,7 @@ input{
 
 .class-card{
   position:relative;
-  height:180px;
+  height:160px;
   border-radius:18px;
   overflow:hidden;
   cursor:pointer;
@@ -139,18 +132,18 @@ input{
   background-position:center;
   display:flex;
   align-items:flex-end;
-  padding:14px;
-  transition:.2s;
+  padding:12px;
+  transition:.25s;
 }
 
-/* Overlay tối */
 .class-card::before{
   content:"";
   position:absolute;
   inset:0;
-  background:linear-gradient(180deg,
-    rgba(0,0,0,.2),
-    rgba(0,0,0,.7)
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.1),
+    rgba(0,0,0,.75)
   );
 }
 
@@ -182,12 +175,12 @@ input{
 
 
 .class-preview{
-  margin-top:18px;
-  padding:16px;
-  border-radius:18px;
-  background:#0a0f15;
-  box-shadow:0 0 25px rgba(0,255,255,.15);
-  animation:fadeUp .25s ease;
+  margin-top:20px;
+  padding:18px;
+  border-radius:20px;
+  background:linear-gradient(145deg,#0b1118,#060a0f);
+  box-shadow:0 0 40px rgba(0,255,255,.15);
+  animation:fadeUp .3s ease;
 }
 
 .hidden{
@@ -196,9 +189,30 @@ input{
 
 .preview-title{
   font-weight:800;
-  font-size:16px;
-  margin-bottom:10px;
+  font-size:18px;
+  margin-bottom:15px;
   color:#00f0ff;
+  text-align:center;
+}
+
+.preview-bar{
+  margin-bottom:12px;
+  font-size:14px;
+}
+
+.preview-bar .bar{
+  height:8px;
+  background:#111;
+  border-radius:10px;
+  overflow:hidden;
+  margin-top:5px;
+}
+
+.preview-bar .fill{
+  height:100%;
+  width:0%;
+  transition:.4s;
+  border-radius:10px;
 }
 
 .preview-stat{
@@ -243,21 +257,31 @@ input{
 
 <!-- CLASS PREVIEW -->
 <div id="classPreview" class="class-preview hidden">
+
   <div class="preview-title" id="previewName"></div>
 
-  <div class="preview-stat">
-    ❤️ HP: <span id="previewHp"></span>
+  <div class="preview-bar">
+    <span>❤️ HP</span>
+    <div class="bar">
+      <div class="fill" id="hpFill"></div>
+    </div>
   </div>
 
-  <div class="preview-stat">
-    ⚔ ATK: <span id="previewAtk"></span>
+  <div class="preview-bar">
+    <span>⚔ ATK</span>
+    <div class="bar">
+      <div class="fill" id="atkFill"></div>
+    </div>
   </div>
 
-  <div class="preview-stat">
-    🛡 DEF: <span id="previewDef"></span>
+  <div class="preview-bar">
+    <span>🛡 DEF</span>
+    <div class="bar">
+      <div class="fill" id="defFill"></div>
+    </div>
   </div>
+
 </div>
-
 
 
   <button class="btn" onclick="createCharacter()">Tạo nhân vật</button>
@@ -328,27 +352,30 @@ function selectClass(el,type){
   const preview = document.getElementById("classPreview");
   preview.classList.remove("hidden");
 
+  let hp=0, atk=0, def=0, name="";
+
   if(type==="warrior"){
-    document.getElementById("previewName").innerText="⚔ Chiến Binh";
-    document.getElementById("previewHp").innerText="800";
-    document.getElementById("previewAtk").innerText="120";
-    document.getElementById("previewDef").innerText="90";
+    name="⚔ Chiến Binh";
+    hp=800; atk=120; def=90;
   }
 
   if(type==="assassin"){
-    document.getElementById("previewName").innerText="🏹 Sát Thủ";
-    document.getElementById("previewHp").innerText="500";
-    document.getElementById("previewAtk").innerText="200";
-    document.getElementById("previewDef").innerText="40";
+    name="🏹 Sát Thủ";
+    hp=500; atk=200; def=40;
   }
 
   if(type==="mage"){
-    document.getElementById("previewName").innerText="🔮 Pháp Sư";
-    document.getElementById("previewHp").innerText="550";
-    document.getElementById("previewAtk").innerText="170";
-    document.getElementById("previewDef").innerText="60";
+    name="🔮 Pháp Sư";
+    hp=550; atk=170; def=60;
   }
+
+  document.getElementById("previewName").innerText=name;
+
+  document.getElementById("hpFill").style.width=(hp/1000*100)+"%";
+  document.getElementById("atkFill").style.width=(atk/300*100)+"%";
+  document.getElementById("defFill").style.width=(def/150*100)+"%";
 }
+
 
 
 function createCharacter(){
