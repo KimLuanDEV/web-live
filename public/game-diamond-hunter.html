@@ -739,9 +739,15 @@ function createCharacter(){
   if(!name || !selectedClass) return alert("Nhập tên và chọn phái!");
 
   if(selectedClass==="warrior"){
-   player={
+player={
+  classType:"warrior",
   name,
   level:1,
+  baseStats:{
+    maxHp:800,
+    atk:120,
+    def:90
+  },
   maxHp:800,
   hp:800,
   atk:120,
@@ -750,16 +756,23 @@ function createCharacter(){
   gold:500,
   inventory:[],
   equipment:{
-  weapon:null,
-  armor:null
-}
+    weapon:null,
+    armor:null
+  }
 };
+
   }
 
   if(selectedClass==="assassin"){
     player={
+  classType:"assassin",
   name,
   level:1,
+  baseStats:{
+  maxHp:500,
+  atk:200,
+  def:40
+},
   maxHp:500,
   hp:500,
   atk:200,
@@ -776,8 +789,14 @@ function createCharacter(){
 
   if(selectedClass==="mage"){
 player={
+  classType:"mage",
   name,
   level:1,
+  baseStats:{
+  maxHp:550,
+  atk:170,
+  def:60
+},
   maxHp:550,
   hp:550,
   atk:170,
@@ -803,12 +822,19 @@ function showHub(){
     player.name;
 
   // Avatar theo class
-  let avatarPath="";
-  if(player.atk===120) avatarPath="/assets/classes/warrior.jpg";
-  if(player.atk===200) avatarPath="/assets/classes/assassin.jpg";
-  if(player.atk===170) avatarPath="/assets/classes/mage.jpg";
+let avatarPath="";
 
-  document.getElementById("hubAvatar").src=avatarPath;
+if(player.classType==="warrior")
+  avatarPath="/assets/classes/warrior.jpg";
+
+if(player.classType==="assassin")
+  avatarPath="/assets/classes/assassin.jpg";
+
+if(player.classType==="mage")
+  avatarPath="/assets/classes/mage.jpg";
+
+document.getElementById("hubAvatar").src=avatarPath;
+
 
   // HP bar
   document.getElementById("hpBar").style.width =
@@ -917,15 +943,18 @@ if(player.hp<=0){
 }
 
 function levelUp(){
-  if(player.exp>=player.level*200){
+
+  if(player.exp >= player.level * 200){
+
     player.level++;
-    player.exp=0;
-    player.maxHp+=200;
-    player.hp=player.maxHp;
-    player.atk+=40;
-    player.def+=25;
+    player.exp = 0;
+
+    recalcStats();
+
+    player.hp = player.maxHp;
   }
 }
+
 
 function backToHub(){
   localStorage.setItem("hunter_char",JSON.stringify(player));
@@ -1063,37 +1092,30 @@ function unequipItem(slot){
 
 function recalcStats(){
 
-  // Reset base theo class
-  if(player.atk===120 || player.atk>120){
-    player.atk=120;
-    player.def=90;
-    player.maxHp=800;
-  }
+  // Reset về base stats
+  player.maxHp = player.baseStats.maxHp;
+  player.atk   = player.baseStats.atk;
+  player.def   = player.baseStats.def;
 
-  if(player.atk===200 || player.atk>200){
-    player.atk=200;
-    player.def=40;
-    player.maxHp=500;
-  }
+  // Cộng level bonus
+  player.maxHp += player.level * 50;
+  player.atk   += player.level * 10;
+  player.def   += player.level * 8;
 
-  if(player.atk===170 || player.atk>170){
-    player.atk=170;
-    player.def=60;
-    player.maxHp=550;
-  }
-
-  // Cộng lại từ equipment
+  // Cộng equipment bonus
   const weapon = player.equipment.weapon;
-  const armor = player.equipment.armor;
+  const armor  = player.equipment.armor;
 
   [weapon,armor].forEach(item=>{
     if(!item) return;
     if(item.atk) player.atk += item.atk;
     if(item.def) player.def += item.def;
-    if(item.hp) player.maxHp += item.hp;
+    if(item.hp)  player.maxHp += item.hp;
   });
 
-  if(player.hp > player.maxHp) player.hp=player.maxHp;
+  // Giữ HP không vượt max
+  if(player.hp > player.maxHp)
+    player.hp = player.maxHp;
 }
 
 
