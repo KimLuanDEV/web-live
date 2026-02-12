@@ -656,6 +656,8 @@ input{
 </button>
 
 
+
+
     <button class="hub-btn primary" onclick="openCombat()">
       ⚔ Vào chiến đấu
     </button>
@@ -1133,6 +1135,37 @@ function equipItem(index){
 
   const item = player.inventory[index];
 
+  // 🧪 Nếu là potion thì dùng ngay
+  if(item.type==="potion"){
+
+    if(player.deadUntil && Date.now() < player.deadUntil){
+      alert("Không thể dùng khi đang chết!");
+      return;
+    }
+
+    if(player.hp >= player.maxHp){
+      alert("HP đã đầy!");
+      return;
+    }
+
+    player.hp += item.heal;
+
+    if(player.hp > player.maxHp)
+      player.hp = player.maxHp;
+
+    alert("Hồi +" + item.heal + " HP");
+
+    // Xóa potion sau khi dùng
+    player.inventory.splice(index,1);
+
+    localStorage.setItem("hunter_char",JSON.stringify(player));
+
+    renderInventory();
+    showHub();
+    return;
+  }
+
+  // 🔥 Trang bị bình thường
   if(item.type==="consumable"){
     alert("Không thể trang bị vật phẩm này");
     return;
@@ -1140,15 +1173,11 @@ function equipItem(index){
 
   const slot = item.type;
 
-  // Nếu slot đã có đồ → trả lại inventory
   if(player.equipment[slot]){
     player.inventory.push(player.equipment[slot]);
   }
 
-  // Trang bị item mới
   player.equipment[slot] = item;
-
-  // Xóa khỏi inventory
   player.inventory.splice(index,1);
 
   recalcStats();
@@ -1158,6 +1187,7 @@ function equipItem(index){
   renderInventory();
   showHub();
 }
+
 
 
 
@@ -1210,8 +1240,16 @@ function recalcStats(){
 const shopItems = [
 { id:1, icon:"🗡", name:"Kiếm thép", price:200, atk:30, type:"weapon" },
 { id:2, icon:"🛡", name:"Khiên bạc", price:180, def:25, type:"armor" },
-{ id:3, icon:"💎", name:"Đá tăng lực", price:150, hp:200, type:"consumable" }
+{ id:3, icon:"💎", name:"Đá tăng lực", price:150, hp:200, type:"consumable" },
+
+// 🧪 Potion nhỏ
+{ id:4, icon:"🧪", name:"Bình máu nhỏ", price:80, heal:150, type:"potion" },
+
+// 🔥 Potion lớn
+{ id:5, icon:"🧪", name:"Bình máu lớn", price:220, heal:500, type:"potion" }
 ];
+
+
 
 function toggleShop(){
   const panel=document.getElementById("shopPanel");
