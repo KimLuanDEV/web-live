@@ -635,6 +635,127 @@ input{
   color:#00ffcc;
 }
 
+
+/* ===== NEW COMBAT DESIGN ===== */
+
+.combat-new{
+  background:radial-gradient(circle at center,#0b1a24,#000);
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+  padding:0;
+}
+
+.combat-header{
+  display:flex;
+  align-items:center;
+  padding:15px;
+  background:rgba(0,0,0,.5);
+}
+
+.combat-title{
+  flex:1;
+  text-align:center;
+  font-weight:800;
+  color:#00f0ff;
+}
+
+.back-btn{
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:18px;
+}
+
+.battle-arena{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-around;
+  padding:20px;
+}
+
+.fighter{
+  width:40%;
+  text-align:center;
+}
+
+.fighter-avatar{
+  width:120px;
+  height:160px;
+  margin:0 auto 15px;
+  background-size:cover;
+  background-position:center;
+  border-radius:16px;
+  box-shadow:0 0 30px rgba(0,255,255,.4);
+}
+
+.enemy-avatar{
+  background:url('/assets/classes/warrior.jpg');
+  filter:hue-rotate(200deg);
+}
+
+.hp-bar{
+  height:12px;
+  background:#111;
+  border-radius:20px;
+  overflow:hidden;
+  margin-bottom:6px;
+}
+
+.hp-fill{
+  height:100%;
+  width:100%;
+  background:linear-gradient(90deg,#00ff99,#00f0ff);
+  transition:.3s;
+}
+
+.enemy-hp .enemy-fill{
+  background:linear-gradient(90deg,#ff0033,#ff6600);
+}
+
+.hp-text{
+  font-size:13px;
+}
+
+.vs-text{
+  font-size:22px;
+  font-weight:800;
+  color:#fff;
+  opacity:.5;
+}
+
+.combat-actions{
+  padding:15px;
+}
+
+.attack-btn{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:18px;
+  font-size:16px;
+  font-weight:800;
+  background:linear-gradient(90deg,#ff0044,#ff9900);
+  color:#fff;
+  box-shadow:0 0 25px rgba(255,0,60,.5);
+  transition:.2s;
+}
+
+.attack-btn:active{
+  transform:scale(.96);
+}
+
+.combat-log{
+  max-height:120px;
+  overflow:auto;
+  padding:12px;
+  font-size:13px;
+  background:rgba(0,0,0,.6);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -771,25 +892,52 @@ input{
 
 </div>
 
-<!-- ================= COMBAT ================= -->
-<div id="combatScreen" class="screen">
 
-  <div class="title">⚔ Chiến đấu</div>
+<!-- ================= NEW COMBAT SCREEN ================= -->
+<div id="combatScreen" class="screen combat-new">
 
-  <div class="card">
-    <div id="playerCombatStats"></div>
+  <div class="combat-header">
+    <button class="back-btn" onclick="backToHub()">⬅</button>
+    <div class="combat-title">⚔ ĐẤU TRƯỜNG</div>
   </div>
 
-  <div class="card enemy">
-    <div id="enemyStats"></div>
+  <div class="battle-arena">
+
+    <!-- PLAYER -->
+    <div class="fighter player-side">
+      <div class="fighter-avatar" id="playerAvatar"></div>
+      <div class="hp-bar">
+        <div class="hp-fill" id="playerHpBar"></div>
+      </div>
+      <div class="hp-text" id="playerHpText"></div>
+    </div>
+
+    <!-- VS -->
+    <div class="vs-text">VS</div>
+
+    <!-- ENEMY -->
+    <div class="fighter enemy-side">
+      <div class="fighter-avatar enemy-avatar"></div>
+      <div class="hp-bar enemy-hp">
+        <div class="hp-fill enemy-fill" id="enemyHpBar"></div>
+      </div>
+      <div class="hp-text" id="enemyHpText"></div>
+    </div>
+
   </div>
 
-  <button class="btn" onclick="attack()">Tấn công</button>
-  <button class="menu-btn" onclick="backToHub()">⬅ Quay lại</button>
+  <div class="combat-actions">
+    <button class="attack-btn" onclick="attack()">⚔ TẤN CÔNG</button>
+  </div>
 
-  <div class="log" id="battleLog"></div>
+  <div class="combat-log" id="battleLog"></div>
 
 </div>
+
+
+
+
+
 
 
 
@@ -1267,11 +1415,42 @@ function openCombat(){
 
 
 function renderCombat(){
-  document.getElementById("playerCombatStats").innerText=
-    player.name+" | HP "+player.hp+"/"+player.maxHp;
-  document.getElementById("enemyStats").innerText=
-    "Quái | HP "+enemy.hp+"/"+enemy.maxHp;
+
+  // Avatar player
+  let avatarPath="";
+  if(player.classType==="warrior")
+    avatarPath="/assets/classes/warrior.jpg";
+  if(player.classType==="assassin")
+    avatarPath="/assets/classes/assassin.jpg";
+  if(player.classType==="mage")
+    avatarPath="/assets/classes/mage.jpg";
+
+  document.getElementById("playerAvatar")
+    .style.backgroundImage = `url(${avatarPath})`;
+
+  // HP %
+  const playerPercent =
+    (player.hp / player.maxHp) * 100;
+
+  const enemyPercent =
+    (enemy.hp / enemy.maxHp) * 100;
+
+  document.getElementById("playerHpBar")
+    .style.width = playerPercent + "%";
+
+  document.getElementById("enemyHpBar")
+    .style.width = enemyPercent + "%";
+
+  document.getElementById("playerHpText")
+    .innerText = player.hp + " / " + player.maxHp;
+
+  document.getElementById("enemyHpText")
+    .innerText = enemy.hp + " / " + enemy.maxHp;
 }
+
+
+
+
 
 function attack(){
 
