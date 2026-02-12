@@ -581,6 +581,37 @@ input{
 }
 
 
+
+.inventory-stats{
+  margin-bottom:20px;
+}
+
+.stats-title{
+  font-weight:800;
+  color:#00f0ff;
+  margin-bottom:10px;
+}
+
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+}
+
+.stat-card{
+  background:#0f1620;
+  border-radius:14px;
+  padding:12px;
+  text-align:center;
+  box-shadow:0 0 15px rgba(0,255,255,.15);
+}
+
+.stat-num{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:4px;
+}
+
 </style>
 </head>
 <body>
@@ -757,7 +788,46 @@ input{
 </div>
 
 
+
+<div class="inventory-stats">
+
+  <div class="stats-title">📊 Chỉ số nhân vật</div>
+
+  <div class="stats-grid">
+
+    <div class="stat-card">
+      <div class="stat-num" id="invHp"></div>
+      <div class="stat-label">HP</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-num" id="invAtk"></div>
+      <div class="stat-label">ATK</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-num" id="invDef"></div>
+      <div class="stat-label">DEF</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-num" id="invDodge"></div>
+      <div class="stat-label">Dodge %</div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-num" id="invCrit"></div>
+      <div class="stat-label">Crit %</div>
+    </div>
+
+  </div>
+
+</div>
+
+
+
 <div class="inventory-equip">
+
 
   <div class="equip-title">⚔ Trang bị</div>
 
@@ -1348,6 +1418,26 @@ if(goldDisplay){
 
     const div=document.createElement("div");
     div.className="inventory-item";
+
+
+
+// ===== UPDATE PERSONAL STATS =====
+document.getElementById("invHp").innerText =
+  player.hp + "/" + player.maxHp;
+
+document.getElementById("invAtk").innerText =
+  player.atk;
+
+document.getElementById("invDef").innerText =
+  player.def;
+
+document.getElementById("invDodge").innerText =
+  player.dodge;
+
+document.getElementById("invCrit").innerText =
+  player.critRate;
+
+
 
     // Icon item
     const icon=document.createElement("div");
