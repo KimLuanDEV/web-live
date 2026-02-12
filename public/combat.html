@@ -82,27 +82,42 @@ async function loadCharacter(){
   const uid = localStorage.getItem("uid");
 
   if(!uid){
-    location.href="game-diamond-hunter.html";
+    alert("Bạn chưa đăng nhập");
+    location.href = "login.html"; // hoặc trang login
     return;
   }
 
   const res = await fetch("/api/hunter/character",{
-    headers:{ "x-uid": uid }
+    headers:{
+      "x-uid": uid
+    }
   });
+
+  if(res.status === 401){
+    alert("Phiên đăng nhập hết hạn");
+    return;
+  }
 
   const data = await res.json();
 
-  if(!data.ok || !data.character){
-    location.href="game-diamond-hunter.html";
+  if(!data.ok){
+    alert("Lỗi tải nhân vật");
+    return;
+  }
+
+  if(!data.character){
+    switchScreen?.("createScreen");
     return;
   }
 
   player = data.character;
 
   recalcStats();
-  spawnEnemy();
-  render();
+  spawnEnemy?.();
+  render?.();
 }
+
+
 
 /* ===== SAVE TO SERVER ===== */
 async function savePlayer(){
@@ -121,6 +136,7 @@ async function savePlayer(){
     body: JSON.stringify({ character: player })
   });
 }
+
 
 /* ===== RECALC STATS ===== */
 function recalcStats(){
