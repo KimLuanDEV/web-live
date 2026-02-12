@@ -965,19 +965,29 @@ const CLASS_CONFIG = {
   }
 };
 
-
 function savePlayer(){
-  saveCharacter();
+  if(!player) return;
+  player.lastOnline = Date.now();
+  localStorage.setItem("hunter_char",
+    JSON.stringify(player));
 }
 
 
 
-
 /* ===== INIT ===== */
-window.onload = function(){
-  loadCharacter();
-};
+window.onload=function(){
 
+  const saved=localStorage.getItem("hunter_char");
+  if(saved){
+  player=JSON.parse(saved);
+
+  recalcStats();
+  applyOfflineRegen();
+  showHub();
+  startRegen();
+}
+
+};
 
 
 
@@ -1147,25 +1157,24 @@ Object.keys(player.equipment).forEach(slot=>{
 
 
 
-async function resetCharacter(){
+
+function resetCharacter(){
 
   if(!confirm("Bạn chắc chắn muốn xóa nhân vật?"))
     return;
 
+  // Dừng regen
+  if(regenInterval) clearInterval(regenInterval);
+
+  // Xóa player trong RAM
   player = null;
 
-  await fetch("/api/hunter/character",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": localStorage.getItem("uid")
-    },
-    body: JSON.stringify({ character: null })
-  });
+  // Xóa localStorage
+  localStorage.removeItem("hunter_char");
 
+  // Chuyển về màn tạo nhân vật
   switchScreen("createScreen");
 }
-
 
 
 
@@ -1682,6 +1691,12 @@ function startRegen(){
 
 
 
+window.addEventListener("beforeunload",()=>{
+  if(player && localStorage.getItem("hunter_char")){
+    player.lastOnline = Date.now();
+    savePlayer();
+  }
+});
 
 
 
@@ -1696,68 +1711,6 @@ savePlayer();
 
 
   location.href = "combat.html";
-}
-
-
-
-async function loadCharacter(){
-
-  const uid = localStorage.getItem("uid");
-
-  if(!uid){
-    alert("Bạn chưa đăng nhập");
-    location.href = "login.html"; // hoặc trang login
-    return;
-  }
-
-  const res = await fetch("/api/hunter/character",{
-    headers:{
-      "x-uid": uid
-    }
-  });
-
-  if(res.status === 401){
-    alert("Phiên đăng nhập hết hạn");
-    return;
-  }
-
-  const data = await res.json();
-
-  if(!data.ok){
-    alert("Lỗi tải nhân vật");
-    return;
-  }
-
-  if(!data.character){
-    switchScreen?.("createScreen");
-    return;
-  }
-
-  player = data.character;
-
-  recalcStats();
-  spawnEnemy?.();
-  render?.();
-}
-
-
-
-
-async function saveCharacter(){
-
-  const uid = localStorage.getItem("uid");
-  if(!uid || !player) return;
-
-  player.lastOnline = Date.now();
-
-  await fetch("/api/hunter/character",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": uid
-    },
-    body: JSON.stringify({ character: player })
-  });
 }
 
 

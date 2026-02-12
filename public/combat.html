@@ -72,73 +72,23 @@ body{
 
 <script>
 
-let player = null;
+let player = JSON.parse(localStorage.getItem("hunter_char"));
 let enemy = null;
 let isAttacking = false;
 
-/* ===== LOAD CHARACTER FROM SERVER ===== */
-async function loadCharacter(){
-
-  const uid = localStorage.getItem("uid");
-
-  if(!uid){
-    alert("Bạn chưa đăng nhập");
-    location.href = "login.html"; // hoặc trang login
-    return;
-  }
-
-  const res = await fetch("/api/hunter/character",{
-    headers:{
-      "x-uid": uid
-    }
-  });
-
-  if(res.status === 401){
-    alert("Phiên đăng nhập hết hạn");
-    return;
-  }
-
-  const data = await res.json();
-
-  if(!data.ok){
-    alert("Lỗi tải nhân vật");
-    return;
-  }
-
-  if(!data.character){
-    switchScreen?.("createScreen");
-    return;
-  }
-
-  player = data.character;
-
-  recalcStats();
-  spawnEnemy?.();
-  render?.();
+if(!player){
+  location.href="game-diamond-hunter.html";
 }
 
-
-
-/* ===== SAVE TO SERVER ===== */
-async function savePlayer(){
-
-  const uid = localStorage.getItem("uid");
-  if(!uid || !player) return;
-
+/* ===== SAVE ===== */
+function savePlayer(){
+  if(!player) return;
   player.lastOnline = Date.now();
-
-  await fetch("/api/hunter/character",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": uid
-    },
-    body: JSON.stringify({ character: player })
-  });
+  localStorage.setItem("hunter_char",
+    JSON.stringify(player));
 }
 
-
-/* ===== RECALC STATS ===== */
+/* ===== RECALC STATS (phòng khi có trang bị) ===== */
 function recalcStats(){
 
   const CLASS_CONFIG = {
@@ -200,12 +150,14 @@ function render(){
 }
 
 /* ===== ATTACK ===== */
-async function attack(){
+function attack(){
 
-  if(isAttacking || !player) return;
+  if(isAttacking) return;
   isAttacking = true;
 
   let logText="";
+
+  /* PLAYER ATTACK */
 
   // Enemy dodge
   if(Math.random()*100 < 5){
@@ -215,6 +167,7 @@ async function attack(){
     let dmg = player.atk - enemy.def*0.5;
     dmg = Math.max(0, dmg);
 
+    // Crit
     if(Math.random()*100 < player.critRate){
       dmg *= player.critDamage;
       logText += "💥 CHÍ MẠNG!\n";
@@ -230,8 +183,7 @@ async function attack(){
     enemy.hp = 0;
     player.exp += 100;
     checkLevelUp();
-    await savePlayer();
-
+    savePlayer();
     logText += "🎉 Hạ quái! +100 EXP\n";
 
     document.getElementById("battleLog").innerText = logText;
@@ -240,32 +192,36 @@ async function attack(){
     setTimeout(()=>{
       spawnEnemy();
       render();
-      document.getElementById("battleLog").innerText="";
+      document.getElementById("battleLog").innerText = "";
       isAttacking=false;
     },1500);
 
     return;
   }
 
-  // Enemy attack
+  /* ENEMY ATTACK */
+
   if(Math.random()*100 < player.dodge){
     logText += "💨 Bạn né được đòn!\n";
   }else{
+
     let dmg = enemy.atk - player.def*0.4;
     dmg = Math.max(0,dmg);
     dmg = Math.floor(dmg);
+
     player.hp -= dmg;
     logText += "Quái gây "+dmg+" sát thương.\n";
   }
 
   if(player.hp <= 0){
-    player.hp = 0;
-    player.deadUntil = Date.now() + (24*60*60*1000);
+    player.hp=0;
+    player.deadUntil =
+      Date.now()+(24*60*60*1000);
 
-    await savePlayer();
+    savePlayer();
 
     logText += "💀 Bạn đã bị hạ!";
-    document.getElementById("battleLog").innerText = logText;
+    document.getElementById("battleLog").innerText=logText;
 
     setTimeout(()=>{
       location.href="game-diamond-hunter.html";
@@ -274,8 +230,9 @@ async function attack(){
     return;
   }
 
-  await savePlayer();
   document.getElementById("battleLog").innerText = logText;
+
+  savePlayer();
   render();
 
   setTimeout(()=>isAttacking=false,300);
@@ -288,9 +245,12 @@ function backToHub(){
 }
 
 /* ===== INIT ===== */
-loadCharacter();
+recalcStats();
+spawnEnemy();
+render();
 
 </script>
+
 
 
 </body>
