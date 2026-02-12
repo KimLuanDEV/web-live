@@ -108,20 +108,25 @@ async function loadCharacter(){
 async function savePlayer(){
   if(!player) return;
 
-  player.lastOnline = Date.now();
-
   const uid = localStorage.getItem("uid");
   if(!uid) return;
 
-  await fetch("/api/hunter/save",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": uid
-    },
-    body: JSON.stringify(player)
-  });
+  player.lastOnline = Date.now();
+
+  try{
+    await fetch("/api/hunter/save",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-uid": uid
+      },
+      body: JSON.stringify(player)
+    });
+  }catch(e){
+    console.error("SAVE ERROR", e);
+  }
 }
+
 
 
 /* ===== RECALC STATS (phòng khi có trang bị) ===== */
@@ -275,13 +280,27 @@ function attack(){
 }
 
 /* ===== BACK ===== */
-function backToHub(){
-  savePlayer();
+async function backToHub(){
+  await savePlayer();
   location.href="game-diamond-hunter.html";
 }
 
+
 /* ===== INIT ===== */
 loadCharacter();
+
+window.addEventListener("beforeunload",()=>{
+  if(!player) return;
+
+  player.lastOnline = Date.now();
+
+  navigator.sendBeacon(
+    "/api/hunter/save",
+    JSON.stringify(player)
+  );
+});
+
+
 
 
 </script>
