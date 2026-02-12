@@ -650,9 +650,7 @@ input{
 
 <div class="hub-name" id="infoName"></div>
 
-<div class="hub-gold">
-  💎 <span id="goldStat"></span>
-</div>
+
 
 
 
@@ -730,10 +728,17 @@ input{
 
   <div class="inventory-box">
 
-    <div class="inventory-header">
-      🎒 Kho đồ cá nhân
-      <span class="close-btn" onclick="toggleInventory()">✕</span>
+<div class="inventory-header">
+  <div>
+    🎒 Kho đồ cá nhân
+    <div style="font-size:14px;margin-top:4px;color:#ffd700">
+      💎 <span id="inventoryGold"></span>
     </div>
+  </div>
+
+  <span class="close-btn" onclick="toggleInventory()">✕</span>
+</div>
+
 
     <div class="inventory-grid" id="inventoryGrid">
       <!-- Items render ở đây -->
@@ -942,10 +947,7 @@ function showHub(){
   if(defOverlay)
     defOverlay.innerText = player.def;
 
-  // ===== GOLD =====
-  const goldEl = document.getElementById("goldStat");
-  if(goldEl)
-    goldEl.innerText = player.gold;
+
 
   // ===== EQUIPMENT =====
   const weaponSlot = document.getElementById("weaponSlot");
@@ -1128,8 +1130,20 @@ function toggleInventory(){
 
 function renderInventory(){
 
+
+
+
   const grid = document.getElementById("inventoryGrid");
   grid.innerHTML="";
+
+
+  // Update gold hiển thị trong inventory
+const goldDisplay = document.getElementById("inventoryGold");
+if(goldDisplay){
+  goldDisplay.innerText = player.gold;
+}
+
+
 
   if(!player.inventory || player.inventory.length===0){
     grid.innerHTML="<div style='opacity:.6'>Trống</div>";
