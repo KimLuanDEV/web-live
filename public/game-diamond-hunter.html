@@ -1300,15 +1300,27 @@ function attack(){
     logText += "Bạn gây " + dmgToEnemy + " sát thương.\n";
   }
 
-  if(enemy.hp <= 0){
-    enemy.hp = 0;
-    player.exp += 100;
-    levelUp();
-    logText += "🎉 Hạ quái! +100 EXP";
-    document.getElementById("battleLog").innerText = logText;
-    localStorage.setItem("hunter_char",JSON.stringify(player));
-    return;
-  }
+if(enemy.hp <= 0){
+  enemy.hp = 0;
+
+  player.exp += 100;
+
+  // 🔥 DROP LOOT
+  const lootLog = dropLoot();
+
+  levelUp();
+
+  logText += "🎉 Hạ quái! +100 EXP\n";
+  logText += lootLog;
+
+  document.getElementById("battleLog").innerText = logText;
+
+  localStorage.setItem("hunter_char",
+    JSON.stringify(player));
+
+  return;
+}
+
 
   // ===== ENEMY ATTACK =====
 
@@ -1358,6 +1370,42 @@ function levelUp(){
     player.hp = player.maxHp;
   }
 }
+
+
+function dropLoot(){
+
+  let log = "";
+
+  // ===== RƠI KIM CƯƠNG =====
+  const goldDrop =
+    Math.floor(50 + Math.random()*50 + player.level*20);
+
+  player.gold += goldDrop;
+
+  log += "💎 Nhặt được " + goldDrop + " kim cương!\n";
+
+  // ===== TỶ LỆ RƠI TRANG BỊ 15% =====
+  const dropChance = Math.random();
+
+  if(dropChance < 0.15){
+
+    // Lọc chỉ trang bị (không potion)
+    const equipItems = shopItems.filter(i =>
+      i.type !== "potion"
+    );
+
+    const randomItem =
+      equipItems[Math.floor(Math.random()*equipItems.length)];
+
+    player.inventory.push({...randomItem});
+
+    log += "🎁 Rơi trang bị: " + randomItem.name + "!";
+  }
+
+  return log;
+}
+
+
 
 
 function backToHub(){
@@ -1809,7 +1857,7 @@ function startRegen(){
   regenInterval = setInterval(()=>{
 
     if(!player) return;
-    
+
     // 🚫 Pause regen khi đang combat
     if(isInCombat) return;
 
