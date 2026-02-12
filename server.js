@@ -7810,6 +7810,60 @@ if (uid) {
 });
 
 
+// ================================
+// 🧙 HUNTER CHARACTER – LOAD
+// ================================
+app.get("/api/hunter/load", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  if (!uid) {
+    return res.json({ ok:false, message:"NOT_LOGIN" });
+  }
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (!me) {
+    return res.json({ ok:false, message:"USER_NOT_FOUND" });
+  }
+
+  return res.json({
+    ok:true,
+    char: me.hunterChar || null
+  });
+});
+
+
+// ================================
+// 🧙 HUNTER CHARACTER – SAVE
+// ================================
+app.post("/api/hunter/save", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  const char = req.body;
+
+  if (!uid) {
+    return res.json({ ok:false, message:"NOT_LOGIN" });
+  }
+
+  if (!char || typeof char !== "object") {
+    return res.json({ ok:false, message:"INVALID_DATA" });
+  }
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (!me) {
+    return res.json({ ok:false, message:"USER_NOT_FOUND" });
+  }
+
+  // 🔥 GẮN VÀO ACCOUNT
+  me.hunterChar = char;
+
+  saveUsers(users);
+
+  return res.json({ ok:true });
+});
 
 
 

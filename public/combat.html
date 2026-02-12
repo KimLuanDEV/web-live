@@ -72,21 +72,57 @@ body{
 
 <script>
 
-let player = JSON.parse(localStorage.getItem("hunter_char"));
+
+let player = null;
 let enemy = null;
 let isAttacking = false;
 
-if(!player){
-  location.href="game-diamond-hunter.html";
+async function loadCharacter(){
+
+  const uid = localStorage.getItem("uid");
+  if(!uid){
+    location.href="game-diamond-hunter.html";
+    return;
+  }
+
+  const res = await fetch("/api/hunter/load",{
+    headers:{ "x-uid": uid }
+  });
+
+  const data = await res.json();
+
+  if(!data.ok || !data.char){
+    location.href="game-diamond-hunter.html";
+    return;
+  }
+
+  player = data.char;
+
+  recalcStats();
+  spawnEnemy();
+  render();
 }
 
+
 /* ===== SAVE ===== */
-function savePlayer(){
+async function savePlayer(){
   if(!player) return;
+
   player.lastOnline = Date.now();
-  localStorage.setItem("hunter_char",
-    JSON.stringify(player));
+
+  const uid = localStorage.getItem("uid");
+  if(!uid) return;
+
+  await fetch("/api/hunter/save",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": uid
+    },
+    body: JSON.stringify(player)
+  });
 }
+
 
 /* ===== RECALC STATS (phòng khi có trang bị) ===== */
 function recalcStats(){
@@ -245,9 +281,8 @@ function backToHub(){
 }
 
 /* ===== INIT ===== */
-recalcStats();
-spawnEnemy();
-render();
+loadCharacter();
+
 
 </script>
 
