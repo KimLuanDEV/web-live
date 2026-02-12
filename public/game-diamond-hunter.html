@@ -876,7 +876,7 @@ const expNeed = player.level * 200;
 document.getElementById("expText").innerText =
   player.exp + " / " + expNeed;
 
-  
+
   // Stats
   document.getElementById("atkStat").innerText=player.atk;
   document.getElementById("defStat").innerText=player.def;
@@ -1095,7 +1095,15 @@ function equipItem(index){
     return;
   }
 
-  player.equipment[item.type]=item;
+  const slot = item.type;
+
+  // Nếu slot đã có đồ → trả lại inventory
+  if(player.equipment[slot]){
+    player.inventory.push(player.equipment[slot]);
+  }
+
+  // Trang bị item mới
+  player.equipment[slot] = item;
 
   // Xóa khỏi inventory
   player.inventory.splice(index,1);
@@ -1107,6 +1115,7 @@ function equipItem(index){
   renderInventory();
   showHub();
 }
+
 
 
 function unequipItem(slot){
