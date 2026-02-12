@@ -228,6 +228,155 @@ input{
 
 
 
+/* ===== HUB DESIGN ===== */
+
+.hub-header{
+  text-align:center;
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:20px;
+  color:#00f0ff;
+  text-shadow:0 0 15px rgba(0,255,255,.6);
+}
+
+.hub-card{
+  background:linear-gradient(145deg,#0b1118,#060a0f);
+  border-radius:24px;
+  padding:25px 20px;
+  text-align:center;
+  box-shadow:
+    0 0 40px rgba(0,255,255,.15),
+    inset 0 0 30px rgba(0,255,255,.05);
+  margin-bottom:20px;
+}
+
+.hub-avatar{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  margin:0 auto 15px;
+  background:radial-gradient(circle,#00f0ff,#001a1f);
+  box-shadow:0 0 25px rgba(0,255,255,.6);
+}
+
+.hub-name{
+  font-size:18px;
+  font-weight:800;
+  margin-bottom:15px;
+}
+
+.hub-hp{
+  height:12px;
+  background:#111;
+  border-radius:20px;
+  overflow:hidden;
+  margin-bottom:15px;
+}
+
+.hub-hp-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00f0ff,#00ff99);
+  transition:.4s;
+  border-radius:20px;
+}
+
+.hub-stats{
+  font-size:14px;
+  opacity:.85;
+  margin-bottom:10px;
+}
+
+.hub-actions{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+
+.hub-btn{
+  padding:14px;
+  border:none;
+  border-radius:16px;
+  font-weight:700;
+  cursor:pointer;
+  font-size:15px;
+  transition:.2s;
+}
+
+.hub-btn.primary{
+  background:linear-gradient(90deg,#00f0ff,#00ff99);
+  color:#000;
+}
+
+.hub-btn.danger{
+  background:linear-gradient(90deg,#ff0044,#ff5500);
+  color:#fff;
+}
+
+.hub-btn:hover{
+  transform:scale(1.03);
+}
+
+.hub-avatar-img{
+  width:100px;
+  height:100px;
+  border-radius:50%;
+  object-fit:cover;
+  margin:0 auto 15px;
+  box-shadow:0 0 25px rgba(0,255,255,.6);
+  border:2px solid #00f0ff;
+}
+
+.hub-label{
+  font-size:12px;
+  opacity:.7;
+  margin-bottom:4px;
+  text-align:left;
+}
+
+.hub-exp{
+  height:10px;
+  background:#111;
+  border-radius:20px;
+  overflow:hidden;
+  margin-bottom:18px;
+}
+
+.hub-exp-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ffd700,#ff9900);
+  transition:.4s;
+  border-radius:20px;
+}
+
+.hub-stats-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:12px;
+  margin-top:10px;
+}
+
+.stat-box{
+  background:#0f1620;
+  border-radius:14px;
+  padding:10px;
+  text-align:center;
+  box-shadow:0 0 15px rgba(0,255,255,.1);
+}
+
+.stat-value{
+  font-size:18px;
+  font-weight:800;
+}
+
+.stat-label{
+  font-size:12px;
+  opacity:.6;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -291,16 +440,61 @@ input{
 <!-- ================= HUB ================= -->
 <div id="hubScreen" class="screen">
 
-  <div class="title">🏕 Thông tin nhân vật</div>
-
-  <div class="card">
-    <div id="infoName"></div>
-    <div class="bar"><div class="fill" id="hpBar"></div></div>
-    <div id="infoStats"></div>
+  <div class="hub-header">
+    🏕 Thông tin nhân vật
   </div>
 
-  <button class="menu-btn" onclick="openCombat()">⚔ Vào chiến đấu</button>
-  <button class="menu-btn" onclick="resetCharacter()">🗑 Xóa nhân vật</button>
+<div class="hub-card">
+
+  <img id="hubAvatar" class="hub-avatar-img">
+
+  <div class="hub-name" id="infoName"></div>
+
+  <!-- HP BAR -->
+  <div class="hub-label">❤️ HP</div>
+  <div class="hub-hp">
+    <div class="hub-hp-fill" id="hpBar"></div>
+  </div>
+
+  <!-- EXP BAR -->
+  <div class="hub-label">⭐ EXP</div>
+  <div class="hub-exp">
+    <div class="hub-exp-fill" id="expBar"></div>
+  </div>
+
+  <!-- STATS 3 CỘT -->
+  <div class="hub-stats-grid">
+    <div class="stat-box">
+      <div class="stat-value" id="atkStat"></div>
+      <div class="stat-label">⚔ ATK</div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-value" id="defStat"></div>
+      <div class="stat-label">🛡 DEF</div>
+    </div>
+
+    <div class="stat-box">
+      <div class="stat-value" id="lvStat"></div>
+      <div class="stat-label">LV</div>
+    </div>
+  </div>
+
+</div>
+
+
+
+
+
+  <div class="hub-actions">
+    <button class="hub-btn primary" onclick="openCombat()">
+      ⚔ Vào chiến đấu
+    </button>
+
+    <button class="hub-btn danger" onclick="resetCharacter()">
+      🗑 Xóa nhân vật
+    </button>
+  </div>
 
 </div>
 
@@ -399,15 +593,32 @@ function createCharacter(){
 
 function showHub(){
   switchScreen("hubScreen");
-  document.getElementById("infoName").innerText=
-    player.name+" (LV "+player.level+")";
-  document.getElementById("infoStats").innerText=
-    "HP "+player.hp+"/"+player.maxHp+
-    " | ATK "+player.atk+
-    " | DEF "+player.def;
-  document.getElementById("hpBar").style.width=
+
+  document.getElementById("infoName").innerText =
+    player.name;
+
+  // Avatar theo class
+  let avatarPath="";
+  if(player.atk===120) avatarPath="/assets/classes/warrior.jpg";
+  if(player.atk===200) avatarPath="/assets/classes/assassin.jpg";
+  if(player.atk===170) avatarPath="/assets/classes/mage.jpg";
+
+  document.getElementById("hubAvatar").src=avatarPath;
+
+  // HP bar
+  document.getElementById("hpBar").style.width =
     (player.hp/player.maxHp*100)+"%";
+
+  // EXP bar
+  document.getElementById("expBar").style.width =
+    (player.exp/(player.level*200)*100)+"%";
+
+  // Stats
+  document.getElementById("atkStat").innerText=player.atk;
+  document.getElementById("defStat").innerText=player.def;
+  document.getElementById("lvStat").innerText=player.level;
 }
+
 
 function openCombat(){
   enemy={
