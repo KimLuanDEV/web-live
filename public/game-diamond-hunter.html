@@ -764,6 +764,7 @@ let enemy=null;
 
 /* ===== INIT ===== */
 window.onload=function(){
+
   const saved=localStorage.getItem("hunter_char");
   if(saved){
     player=JSON.parse(saved);
@@ -891,77 +892,72 @@ player={
 }
 
 function showHub(){
+
   switchScreen("hubScreen");
 
-  document.getElementById("infoName").innerText =
-    player.name;
+  if(!player) return;
 
-  // Avatar theo class
-let avatarPath="";
+  // ===== NAME =====
+  const nameEl = document.getElementById("infoName");
+  if(nameEl) nameEl.innerText = player.name;
 
-if(player.classType==="warrior")
-  avatarPath="/assets/classes/warrior.jpg";
+  // ===== AVATAR =====
+  let avatarPath="";
 
-if(player.classType==="assassin")
-  avatarPath="/assets/classes/assassin.jpg";
+  if(player.classType==="warrior")
+    avatarPath="/assets/classes/warrior.jpg";
 
-if(player.classType==="mage")
-  avatarPath="/assets/classes/mage.jpg";
+  if(player.classType==="assassin")
+    avatarPath="/assets/classes/assassin.jpg";
 
-document.getElementById("hubAvatar").src=avatarPath;
+  if(player.classType==="mage")
+    avatarPath="/assets/classes/mage.jpg";
 
+  const avatarEl = document.getElementById("hubAvatar");
+  if(avatarEl) avatarEl.src = avatarPath;
 
+  // ===== OVERLAY STATS =====
+  const hpOverlay = document.getElementById("hpOverlay");
+  if(hpOverlay)
+    hpOverlay.innerText = player.hp + "/" + player.maxHp;
 
-    // HP text
-document.getElementById("hpText").innerText =
-  player.hp + " / " + player.maxHp;
+  const lvOverlay = document.getElementById("lvOverlay");
+  if(lvOverlay)
+    lvOverlay.innerText = player.level;
 
-// EXP text
-const expNeed = player.level * 200;
-document.getElementById("expText").innerText =
-  player.exp + " / " + expNeed;
+  const atkOverlay = document.getElementById("atkOverlay");
+  if(atkOverlay)
+    atkOverlay.innerText = player.atk;
 
+  const defOverlay = document.getElementById("defOverlay");
+  if(defOverlay)
+    defOverlay.innerText = player.def;
 
-  // Stats
+  // ===== GOLD =====
+  const goldEl = document.getElementById("goldStat");
+  if(goldEl)
+    goldEl.innerText = player.gold;
 
+  // ===== EQUIPMENT =====
+  const weaponSlot = document.getElementById("weaponSlot");
+  if(weaponSlot)
+    weaponSlot.innerText =
+      player.equipment.weapon
+        ? player.equipment.weapon.name
+        : "Trống";
 
-document.getElementById("hpOverlay").innerText =
-  player.hp + "/" + player.maxHp;
+  const armorSlot = document.getElementById("armorSlot");
+  if(armorSlot)
+    armorSlot.innerText =
+      player.equipment.armor
+        ? player.equipment.armor.name
+        : "Trống";
 
-document.getElementById("lvOverlay").innerText =
-  player.level;
-
-document.getElementById("atkOverlay").innerText =
-  player.atk;
-
-document.getElementById("defOverlay").innerText =
-  player.def;
-
-
-
-
-  document.getElementById("goldStat").innerText=player.gold;
-
-
-// Nếu đang chết
-if(player.deadUntil && Date.now() < player.deadUntil){
-
-  const remaining = player.deadUntil - Date.now();
-  startRespawnTimer(remaining);
-
-}
-
-document.getElementById("weaponSlot").innerText =
-  player.equipment.weapon ? player.equipment.weapon.name : "Trống";
-
-document.getElementById("armorSlot").innerText =
-  player.equipment.armor ? player.equipment.armor.name : "Trống";
-
-
-
-
-
-
+  // ===== DEAD CHECK =====
+  if(player.deadUntil && Date.now() < player.deadUntil){
+    const remaining = player.deadUntil - Date.now();
+    startRespawnTimer(remaining);
+  }
 }
 
 
