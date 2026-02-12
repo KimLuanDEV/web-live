@@ -965,54 +965,29 @@ const CLASS_CONFIG = {
   }
 };
 
-async function savePlayer(){
+function savePlayer(){
   if(!player) return;
-
-  const uid = localStorage.getItem("uid");
-  if(!uid) return;
-
   player.lastOnline = Date.now();
-
-  try{
-    await fetch("/api/hunter/save",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "x-uid": uid
-      },
-      body: JSON.stringify(player)
-    });
-  }catch(e){
-    console.error("SAVE ERROR", e);
-  }
+  localStorage.setItem("hunter_char",
+    JSON.stringify(player));
 }
 
 
 
-
 /* ===== INIT ===== */
-window.onload = async function(){
+window.onload=function(){
 
-  const uid = localStorage.getItem("uid");
-  if(!uid) return;
+  const saved=localStorage.getItem("hunter_char");
+  if(saved){
+  player=JSON.parse(saved);
 
-  const res = await fetch("/api/hunter/load",{
-    headers:{ "x-uid": uid }
-  });
-
-  const data = await res.json();
-
-  if(data.ok && data.char){
-    player = data.char;
-
-    recalcStats();
-    applyOfflineRegen();
-    showHub();
-    startRegen();
-  }
+  recalcStats();
+  applyOfflineRegen();
+  showHub();
+  startRegen();
+}
 
 };
-
 
 
 
@@ -1056,7 +1031,7 @@ function selectClass(el, type){
 
 
 
-async function createCharacter(){
+function createCharacter(){
 
   const name=document.getElementById("charName").value.trim();
   if(!name || !selectedClass)
@@ -1087,13 +1062,10 @@ async function createCharacter(){
     }
   };
 
-  // 🔥 BẮT BUỘC CHỜ SERVER LƯU XONG
-  await savePlayer();
-
+  savePlayer();
   showHub();
   startRegen();
 }
-
 
 function showHub(){
 
@@ -1186,7 +1158,7 @@ Object.keys(player.equipment).forEach(slot=>{
 
 
 
-async function resetCharacter(){
+function resetCharacter(){
 
   if(!confirm("Bạn chắc chắn muốn xóa nhân vật?"))
     return;
@@ -1197,18 +1169,8 @@ async function resetCharacter(){
   // Xóa player trong RAM
   player = null;
 
-const uid = localStorage.getItem("uid");
-if(uid){
-  await fetch("/api/hunter/save",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": uid
-    },
-    body: JSON.stringify(null)
-  });
-}
-
+  // Xóa localStorage
+  localStorage.removeItem("hunter_char");
 
   // Chuyển về màn tạo nhân vật
   switchScreen("createScreen");
@@ -1729,31 +1691,27 @@ function startRegen(){
 
 
 
-window.addEventListener("beforeunload",(e)=>{
-  if(!player) return;
-
-  player.lastOnline = Date.now();
-
-  navigator.sendBeacon(
-    "/api/hunter/save",
-    JSON.stringify(player)
-  );
+window.addEventListener("beforeunload",()=>{
+  if(player && localStorage.getItem("hunter_char")){
+    player.lastOnline = Date.now();
+    savePlayer();
+  }
 });
 
 
 
-async function goToCombat(){
+function goToCombat(){
 
   if(player.deadUntil && Date.now() < player.deadUntil){
     alert("⏳ Nhân vật chưa hồi sinh!");
     return;
   }
 
-  await savePlayer();   // 🔥 bắt buộc chờ
+savePlayer();
+
 
   location.href = "combat.html";
 }
-
 
 
 </script>
