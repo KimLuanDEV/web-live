@@ -2606,27 +2606,52 @@ function openEquippedItem(slot){
   const enhance = item.enhance || 0;
   const multi = 1 + enhance * 0.05;
 
-  function statRow(label, value, suffix=""){
-    if(!value) return "";
-    return `
-      <div style="display:flex;justify-content:space-between">
-        <span>${label}</span>
-        <span>
-          ${Math.floor(value * multi)}${suffix}
-        </span>
-      </div>
-    `;
-  }
+function statRow(label, value, suffix=""){
+  if(value === undefined || value === null) return "";
 
-  let html = "";
+  return `
+    <div style="display:flex;justify-content:space-between">
+      <span>${label}</span>
+      <span>
+        ${value}${suffix}
+      </span>
+    </div>
+  `;
+}
 
-  html += statRow("⚔ ATK", item.atk);
-  html += statRow("🛡 DEF", item.def);
-  html += statRow("❤️ HP", item.hp);
-  html += statRow("💨 Né tránh", item.dodge, "%");
-  html += statRow("💥 Crit", item.critRate, "%");
-  html += statRow("🩸 Hút máu", item.lifesteal, "%");
-  html += statRow("♻ Regen", item.regen);
+
+
+
+let html = "";
+
+if(item.atk)
+  html += statRow("⚔ ATK",
+    getEnhancedValue(item,"atk"));
+
+if(item.def)
+  html += statRow("🛡 DEF",
+    getEnhancedValue(item,"def"));
+
+if(item.hp)
+  html += statRow("❤️ HP",
+    getEnhancedValue(item,"hp"));
+
+if(item.dodge)
+  html += statRow("💨 Né",
+    item.dodge + "%");
+
+if(item.critRate)
+  html += statRow("💥 Crit",
+    item.critRate + "%");
+
+if(item.lifesteal)
+  html += statRow("🩸 Hút máu",
+    item.lifesteal + "%");
+
+if(item.regen)
+  html += statRow("♻ Regen",
+    item.regen);
+
 
   html += `
     <div style="margin-top:10px;opacity:.8">
@@ -2652,6 +2677,21 @@ function openEquippedItem(slot){
     closeInventoryItemModal();
   };
 }
+
+
+function getEnhancedValue(item, stat){
+
+  if(!item || !item[stat]) return 0;
+
+  const enhance = item.enhance || 0;
+
+  const scale = 1 + enhance * 0.1 + enhance * enhance * 0.02;
+
+  return Math.floor(item[stat] * scale);
+}
+
+
+
 
 
 </script>
