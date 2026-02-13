@@ -1321,16 +1321,24 @@ input{
          style="font-size:14px;margin-bottom:20px;opacity:.9">
     </div>
 
-    <button class="btn"
-            onclick="confirmEquipItem()">
-      ✅ Trang bị
-    </button>
+<div id="invModalButtons">
 
-    <button class="btn secondary"
-            style="margin-top:10px;background:#111;color:#ff5555"
-            onclick="confirmSellItem()">
-      🗑 Bán
-    </button>
+  <button id="btnEquip" class="btn">
+    ✅ Trang bị
+  </button>
+
+  <button id="btnEnhance" class="btn"
+          style="margin-top:10px;background:linear-gradient(90deg,#ff9900,#ffcc00);color:#000">
+    🔥 Cường hóa
+  </button>
+
+  <button id="btnUnequip" class="btn secondary"
+          style="margin-top:10px;background:#111;color:#ff5555">
+    🗑 Tháo
+  </button>
+
+</div>
+
 
   </div>
 </div>
@@ -2457,6 +2465,7 @@ function confirmUnequip(){
 
 
 let selectedInventoryIndex = null;
+
 function openInventoryItem(index){
 
   const item = player.inventory[index];
@@ -2468,12 +2477,18 @@ function openInventoryItem(index){
     .classList.remove("hidden");
 
   document.getElementById("invModalName")
-    .innerText = item.name;
+    .innerText = item.name + " +" + (item.enhance || 0);
 
   document.getElementById("invModalImg")
     .src = item.img;
 
   const equipped = player.equipment[item.type];
+
+  // Lấy giá trị đã tính theo enhance
+  function val(it, stat){
+    if(!it || !it[stat]) return 0;
+    return getEnhancedValue(it, stat);
+  }
 
   function compareStat(label, newVal, oldVal, suffix=""){
 
@@ -2501,34 +2516,36 @@ function openInventoryItem(index){
 
   let html = "";
 
-  html += compareStat("⚔ ATK", item.atk,
-    equipped?.atk);
+  html += compareStat("⚔ ATK",
+    val(item,"atk"),
+    val(equipped,"atk"));
 
-  html += compareStat("🛡 DEF", item.def,
-    equipped?.def);
+  html += compareStat("🛡 DEF",
+    val(item,"def"),
+    val(equipped,"def"));
 
-  html += compareStat("❤️ HP", item.hp,
-    equipped?.hp);
+  html += compareStat("❤️ HP",
+    val(item,"hp"),
+    val(equipped,"hp"));
 
-  html += compareStat("💨 Né", item.dodge,
-    equipped?.dodge, "%");
+  html += compareStat("💨 Né",
+    item.dodge || 0,
+    equipped?.dodge || 0,
+    "%");
 
-  html += compareStat("💥 Crit", item.critRate,
-    equipped?.critRate, "%");
+  html += compareStat("💥 Crit",
+    item.critRate || 0,
+    equipped?.critRate || 0,
+    "%");
 
-  html += compareStat("🩸 Hút máu", item.lifesteal,
-    equipped?.lifesteal, "%");
+  html += compareStat("🩸 Hút máu",
+    item.lifesteal || 0,
+    equipped?.lifesteal || 0,
+    "%");
 
-  html += compareStat("♻ Regen", item.regen,
-    equipped?.regen);
-
-  if(item.enhance){
-    html += `
-      <div style="margin-top:8px;opacity:.8">
-        🔥 Cường hóa +${item.enhance}
-      </div>
-    `;
-  }
+  html += compareStat("♻ Regen",
+    item.regen || 0,
+    equipped?.regen || 0);
 
   if(equipped){
     html += `
@@ -2540,31 +2557,59 @@ function openInventoryItem(index){
 
   document.getElementById("invModalStats")
     .innerHTML = html;
+
+  // ===== HIỂN THỊ NÚT =====
+
+  const btnEquip   = document.getElementById("btnEquip");
+  const btnEnhance = document.getElementById("btnEnhance");
+  const btnUnequip = document.getElementById("btnUnequip");
+
+  // Kho đồ → Trang bị + Cường hóa
+  btnEquip.style.display   = "block";
+  btnEnhance.style.display = "block";
+  btnUnequip.style.display = "none";
+
+  btnEquip.innerText = "✅ Trang bị";
+  btnEquip.onclick = confirmEquipItem;
+
+  btnEnhance.innerText = "🔥 Cường hóa";
+  btnEnhance.onclick = function(){
+
+    // Tạm gán vào equipment để enhance
+    const old = player.equipment[item.type];
+    player.equipment[item.type] = item;
+
+    openEnhance(item.type);
+
+    player.equipment[item.type] = old;
+
+    closeInventoryItemModal();
+  };
 }
 
 
+
 function closeInventoryItemModal(){
+
   document.getElementById("inventoryItemModal")
     .classList.add("hidden");
 
   selectedInventoryIndex = null;
   selectedEquippedSlot = null;
 
-  // Reset nút về mặc định
-  const equipBtn = document.querySelector(
-    "#inventoryItemModal .btn"
-  );
+  const btnEquip   = document.getElementById("btnEquip");
+  const btnEnhance = document.getElementById("btnEnhance");
+  const btnUnequip = document.getElementById("btnUnequip");
 
-  const sellBtn = document.querySelector(
-    "#inventoryItemModal .btn.secondary"
-  );
+  // Ẩn toàn bộ nút khi đóng
+  btnEquip.style.display   = "none";
+  btnEnhance.style.display = "none";
+  btnUnequip.style.display = "none";
 
-  equipBtn.style.display = "block";
-  equipBtn.innerText = "✅ Trang bị";
-  equipBtn.onclick = confirmEquipItem;
-
-  sellBtn.innerText = "🗑 Bán";
-  sellBtn.onclick = confirmSellItem;
+  // Reset nội dung (không gán onclick ở đây nữa)
+  btnEquip.innerText   = "✅ Trang bị";
+  btnEnhance.innerText = "🔥 Cường hóa";
+  btnUnequip.innerText = "🗑 Tháo";
 }
 
 
@@ -2587,6 +2632,7 @@ function confirmSellItem(){
 
 let selectedEquippedSlot = null;
 
+
 function openEquippedItem(slot){
 
   const item = player.equipment[slot];
@@ -2603,54 +2649,67 @@ function openEquippedItem(slot){
   document.getElementById("invModalImg")
     .src = item.img;
 
-  const enhance = item.enhance || 0;
-  const multi = 1 + enhance * 0.05;
-
-  function statRow(label, value, suffix=""){
-    if(!value) return "";
-    return `
-      <div style="display:flex;justify-content:space-between">
-        <span>${label}</span>
-        <span>
-          ${Math.floor(value * multi)}${suffix}
-        </span>
-      </div>
-    `;
-  }
+  // ===== HIỂN THỊ STAT =====
 
   let html = "";
 
-  html += statRow("⚔ ATK", item.atk);
-  html += statRow("🛡 DEF", item.def);
-  html += statRow("❤️ HP", item.hp);
-  html += statRow("💨 Né tránh", item.dodge, "%");
-  html += statRow("💥 Crit", item.critRate, "%");
-  html += statRow("🩸 Hút máu", item.lifesteal, "%");
-  html += statRow("♻ Regen", item.regen);
+  html += statRow("⚔ ATK", getEnhancedValue(item,"atk"));
+  html += statRow("🛡 DEF", getEnhancedValue(item,"def"));
+  html += statRow("❤️ HP", getEnhancedValue(item,"hp"));
+  html += statRow("💨 Né tránh", item.dodge || 0, "%");
+  html += statRow("💥 Crit", item.critRate || 0, "%");
+  html += statRow("🩸 Hút máu", item.lifesteal || 0, "%");
+  html += statRow("♻ Regen", item.regen || 0);
 
   html += `
     <div style="margin-top:10px;opacity:.8">
-      🔥 Cường hóa +${enhance}
+      🔥 Cường hóa +${item.enhance || 0}
     </div>
   `;
 
   document.getElementById("invModalStats")
     .innerHTML = html;
 
-  // Ẩn nút Trang bị
-  document.querySelector("#inventoryItemModal .btn")
-    .style.display = "none";
+  // ===== XỬ LÝ NÚT =====
 
-  // Đổi nút Bán thành Tháo
-  const sellBtn = document.querySelector(
-    "#inventoryItemModal .btn.secondary"
-  );
+  const btnEquip   = document.getElementById("btnEquip");
+  const btnEnhance = document.getElementById("btnEnhance");
+  const btnUnequip = document.getElementById("btnUnequip");
 
-  sellBtn.innerText = "🗑 Tháo trang bị";
-  sellBtn.onclick = function(){
+  // Ẩn nút Trang bị vì đang mặc
+  btnEquip.style.display   = "none";
+
+  // Hiện Cường hóa + Tháo
+  btnEnhance.style.display = "block";
+  btnUnequip.style.display = "block";
+
+  // Cường hóa
+  btnEnhance.innerText = "🔥 Cường hóa";
+  btnEnhance.onclick = function(){
+    openEnhance(slot);
+    closeInventoryItemModal();
+  };
+
+  // Tháo
+  btnUnequip.innerText = "🗑 Tháo";
+  btnUnequip.onclick = function(){
     unequipItem(slot);
     closeInventoryItemModal();
   };
+}
+
+
+
+
+
+function statRow(label,value,suffix=""){
+  if(value===undefined || value===null) return "";
+  return `
+    <div style="display:flex;justify-content:space-between">
+      <span>${label}</span>
+      <span>${value}${suffix}</span>
+    </div>
+  `;
 }
 
 
