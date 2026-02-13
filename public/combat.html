@@ -622,9 +622,10 @@ html, body{
     ←
   </button>
 
-  <div class="header-title">
-    ARENA
-  </div>
+<div class="header-title">
+  ARENA - ẢI <span id="stageText">1</span>
+</div>
+
 
   <div class="header-right">
     <div class="header-gold">
@@ -707,6 +708,7 @@ html, body{
 
 <script>
 
+let stage = parseInt(localStorage.getItem("arena_stage")) || 1;
 let player = JSON.parse(localStorage.getItem("hunter_char"));
 let enemy = null;
 let isAttacking = false;
@@ -716,8 +718,6 @@ let skillCooldown = {
   2:0,
   3:0
 };
-
-
 let status = {
   enemyBurn:0,
   enemyPoison:0,
@@ -798,13 +798,23 @@ function recalcStats(){
 
 /* ===== SPAWN ENEMY ===== */
 function spawnEnemy(){
-  enemy={
-    maxHp:600,
-    hp:600,
-    atk:100,
-    def:50
+
+  const isBoss = stage % 5 === 0;
+
+  const baseHp = 400 + stage * 120;
+  const baseAtk = 60 + stage * 15;
+  const baseDef = 30 + stage * 8;
+
+  enemy = {
+    maxHp: isBoss ? baseHp * 2 : baseHp,
+    hp:    isBoss ? baseHp * 2 : baseHp,
+    atk:   isBoss ? baseAtk * 1.5 : baseAtk,
+    def:   baseDef,
+    isBoss: isBoss
   };
+
 }
+
 
 /* ===== LEVEL UP ===== */
 function checkLevelUp(){
@@ -829,7 +839,11 @@ function render(){
     `url(${avatarMap[player.classType]})`;
 
   document.getElementById("enemyAvatar").style.backgroundImage =
-    "url(/assets/classes/enemy.jpg)"; // tạm dùng ảnh này cho quái
+
+   enemy.isBoss 
+  ? "url(/assets/classes/boss.jpg)" 
+  : "url(/assets/classes/enemy.jpg)";
+
 
   // Player HP
   const playerPercent =
@@ -906,6 +920,7 @@ for(let i=1;i<=3;i++){
   }
 }
 
+document.getElementById("stageText").innerText = stage;
 
 
 }
@@ -1137,9 +1152,10 @@ playDeath(".character.enemy");
 
     player.exp += 100;
 
-    const diamondDrop = Math.floor(
-      20 + Math.random() * (30 + player.level * 5)
-    );
+  const diamondDrop = Math.floor(
+  20 + stage * 5 + Math.random() * (30 + stage * 8)
+);
+
 
     player.gold += diamondDrop;
 
@@ -1158,6 +1174,9 @@ updateCooldownUI();
 
     
 setTimeout(()=>{
+  stage++; // 🔥 tăng ải
+  localStorage.setItem("arena_stage", stage);
+
   spawnEnemy();
 
 document
@@ -1293,7 +1312,7 @@ if(enemy.hp <= 0){
   player.exp += 100;
 
   const diamondDrop = Math.floor(
-    20 + Math.random() * (30 + player.level * 5)
+    20 + stage * 5 + Math.random() * (30 + stage * 8)
   );
 
   player.gold += diamondDrop;
@@ -1313,6 +1332,9 @@ updateCooldownUI();
 
 
   setTimeout(()=>{
+    stage++; // 🔥 tăng ải
+    localStorage.setItem("arena_stage", stage);
+
     spawnEnemy();
     document
       .querySelector(".character.enemy")
@@ -1342,6 +1364,17 @@ updateCooldownUI();
 function enemyTurn(){
 
   let logText = "";
+
+  if(enemy.isBoss && Math.random() < 0.3){
+  let rage = Math.floor(enemy.atk * 1.5);
+  player.hp -= rage;
+  document.getElementById("battleLog").innerText += 
+    "🔥 BOSS Cuồng Nộ gây " + rage + " sát thương!\n";
+  render();
+  return;
+}
+
+
 
   /* ===== ENEMY BỊ STUN ===== */
   if(status.enemyStun){
@@ -1435,6 +1468,9 @@ function enemyTurn(){
     playDeath(".character.enemy");
 
     setTimeout(()=>{
+      stage++; // 🔥 tăng ải
+      localStorage.setItem("arena_stage", stage);
+
       spawnEnemy();
       document
         .querySelector(".character.enemy")
