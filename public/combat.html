@@ -157,6 +157,49 @@ body{
 }
 
 
+/* SLASH EFFECT */
+.slash{
+  position:absolute;
+  top:50%;
+  left:50%;
+  width:120px;
+  height:8px;
+  background:linear-gradient(90deg,transparent,#fff,transparent);
+  transform:translate(-50%,-50%) rotate(25deg);
+  animation:slashMove .3s forwards;
+  opacity:0;
+}
+
+@keyframes slashMove{
+  0%{opacity:1; transform:translate(-50%,-50%) rotate(25deg) scale(0.5);}
+  100%{opacity:0; transform:translate(-50%,-50%) rotate(25deg) scale(1.8);}
+}
+
+/* SCREEN SHAKE */
+.screenShake{
+  animation:screenShake .3s;
+}
+
+@keyframes screenShake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-5px)}
+  50%{transform:translateX(5px)}
+  75%{transform:translateX(-5px)}
+  100%{transform:translateX(0)}
+}
+
+/* LOW HP GLOW */
+.lowHp{
+  box-shadow:0 0 25px red !important;
+  animation:lowPulse 1s infinite;
+}
+
+@keyframes lowPulse{
+  0%{filter:brightness(1)}
+  50%{filter:brightness(1.5)}
+  100%{filter:brightness(1)}
+}
+
 
 </style>
 </head>
@@ -307,6 +350,19 @@ function render(){
     .innerText =
     "Quái | " +
     Math.floor(enemy.hp) + "/" + enemy.maxHp;
+
+
+const playerAvatar =
+  document.querySelector(".character:not(.enemy) .avatar");
+
+if(player.hp / player.maxHp < 0.2){
+  playerAvatar.classList.add("lowHp");
+}else{
+  playerAvatar.classList.remove("lowHp");
+}
+
+
+
 }
 
 
@@ -334,6 +390,21 @@ function showDamage(targetClass, dmg, isCrit=false){
   setTimeout(()=>dmgEl.remove(),1000);
 }
 
+
+
+function showSlash(targetClass){
+
+  const target =
+    document.querySelector(targetClass + " .avatar");
+
+  const slash = document.createElement("div");
+  slash.className="slash";
+
+  target.style.position="relative";
+  target.appendChild(slash);
+
+  setTimeout(()=>slash.remove(),300);
+}
 
 
 
@@ -372,6 +443,20 @@ logText += "Bạn gây "+dmg+" sát thương.\n";
 /* ===== EFFECT ===== */
 showDamage(".character.enemy", dmg, isCrit);
 
+showSlash(".character.enemy");
+
+if(isCrit){
+  document.querySelector(".arena")
+    .classList.add("screenShake");
+
+  setTimeout(()=>{
+    document.querySelector(".arena")
+      .classList.remove("screenShake");
+  },300);
+}
+
+
+
 const enemyAvatar =
   document.querySelector(".enemy .avatar");
 
@@ -384,6 +469,16 @@ setTimeout(()=>{
   }
 
 if(enemy.hp <= 0){
+
+document.body.style.transition="0.3s";
+document.body.style.filter="blur(2px)";
+
+setTimeout(()=>{
+  document.body.style.filter="none";
+},300);
+
+
+
   enemy.hp = 0;
 
   // ===== EXP =====
@@ -455,6 +550,10 @@ if(enemy.hp <= 0){
     player.hp -= dmg;
 
     showDamage(".character:not(.enemy)", dmg);
+
+    showSlash(".character:not(.enemy)");
+
+
 
 const playerAvatar =
   document.querySelector(".character:not(.enemy) .avatar");
