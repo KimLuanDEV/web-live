@@ -108,6 +108,56 @@ body{
   overflow-y:auto;
 }
 
+
+/* HIT SHAKE */
+.hit{
+  animation:shake .25s;
+}
+
+@keyframes shake{
+  0%{transform:translateX(0)}
+  25%{transform:translateX(-6px)}
+  50%{transform:translateX(6px)}
+  75%{transform:translateX(-6px)}
+  100%{transform:translateX(0)}
+}
+
+/* DAMAGE FLOAT */
+.damage{
+  position:absolute;
+  font-weight:900;
+  font-size:22px;
+  pointer-events:none;
+  animation:floatUp 1s forwards;
+  z-index:10;
+}
+
+
+@keyframes floatUp{
+  0%{opacity:1; transform:translate(-50%,0);}
+  100%{opacity:0; transform:translate(-50%,-60px);}
+}
+
+/* CRIT EFFECT */
+.crit{
+  color:#ff0033;
+  font-size:28px;
+  text-shadow:0 0 15px red;
+}
+
+/* FLASH HIT */
+.flash{
+  animation:flashHit .2s;
+}
+
+@keyframes flashHit{
+  0%{filter:brightness(1)}
+  50%{filter:brightness(2)}
+  100%{filter:brightness(1)}
+}
+
+
+
 </style>
 </head>
 
@@ -260,6 +310,34 @@ function render(){
 }
 
 
+function showDamage(targetClass, dmg, isCrit=false){
+
+  const target =
+    document.querySelector(targetClass + " .avatar");
+
+  const dmgEl = document.createElement("div");
+  dmgEl.className="damage";
+  dmgEl.innerText = "-" + dmg;
+
+  if(isCrit){
+    dmgEl.classList.add("crit");
+  }
+
+  /* Vị trí cố định theo bên */
+  dmgEl.style.top = "20px";
+  dmgEl.style.left = "50%";
+  dmgEl.style.transform = "translateX(-50%)";
+
+  target.style.position = "relative"; // đảm bảo có positioning
+  target.appendChild(dmgEl);
+
+  setTimeout(()=>dmgEl.remove(),1000);
+}
+
+
+
+
+
 /* ===== ATTACK ===== */
 function attack(){
 
@@ -275,19 +353,34 @@ function attack(){
     logText += "👹 Quái né đòn!\n";
   }else{
 
-    let dmg = player.atk - enemy.def*0.5;
-    dmg = Math.max(0, dmg);
+let dmg = player.atk - enemy.def*0.5;
+dmg = Math.max(0, dmg);
 
-    // Crit
-    if(Math.random()*100 < player.critRate){
-      dmg *= player.critDamage;
-      logText += "💥 CHÍ MẠNG!\n";
-    }
+let isCrit = false;
 
-    dmg = Math.floor(dmg);
-    enemy.hp -= dmg;
+if(Math.random()*100 < player.critRate){
+  dmg *= player.critDamage;
+  isCrit = true;
+  logText += "💥 CHÍ MẠNG!\n";
+}
 
-    logText += "Bạn gây "+dmg+" sát thương.\n";
+dmg = Math.floor(dmg);
+enemy.hp -= dmg;
+
+logText += "Bạn gây "+dmg+" sát thương.\n";
+
+/* ===== EFFECT ===== */
+showDamage(".character.enemy", dmg, isCrit);
+
+const enemyAvatar =
+  document.querySelector(".enemy .avatar");
+
+enemyAvatar.classList.add("hit","flash");
+
+setTimeout(()=>{
+  enemyAvatar.classList.remove("hit","flash");
+},200);
+
   }
 
 if(enemy.hp <= 0){
@@ -360,6 +453,18 @@ if(enemy.hp <= 0){
     dmg = Math.floor(dmg);
 
     player.hp -= dmg;
+
+    showDamage(".character:not(.enemy)", dmg);
+
+const playerAvatar =
+  document.querySelector(".character:not(.enemy) .avatar");
+
+playerAvatar.classList.add("hit","flash");
+
+setTimeout(()=>{
+  playerAvatar.classList.remove("hit","flash");
+},200);
+
     logText += "Quái gây "+dmg+" sát thương.\n";
   }
 
