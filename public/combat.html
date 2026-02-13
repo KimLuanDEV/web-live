@@ -124,10 +124,10 @@ function recalcStats(){
 /* ===== SPAWN ENEMY ===== */
 function spawnEnemy(){
   enemy={
-    maxHp:600+player.level*150,
-    hp:600+player.level*150,
-    atk:100+player.level*20,
-    def:50+player.level*10
+    maxHp:600,
+    hp:600,
+    atk:100,
+    def:50
   };
 }
 
@@ -179,25 +179,64 @@ function attack(){
     logText += "Bạn gây "+dmg+" sát thương.\n";
   }
 
-  if(enemy.hp <= 0){
-    enemy.hp = 0;
-    player.exp += 100;
-    checkLevelUp();
-    savePlayer();
-    logText += "🎉 Hạ quái! +100 EXP\n";
+if(enemy.hp <= 0){
+  enemy.hp = 0;
 
-    document.getElementById("battleLog").innerText = logText;
-    render();
+  // ===== EXP =====
+  player.exp += 100;
 
-    setTimeout(()=>{
-      spawnEnemy();
-      render();
-      document.getElementById("battleLog").innerText = "";
-      isAttacking=false;
-    },1500);
+  // ===== DIAMOND DROP =====
+  const diamondDrop = Math.floor(
+    20 + Math.random() * (30 + player.level * 5)
+  );
 
-    return;
+  player.gold += diamondDrop;
+
+  // ===== ITEM DROP CHANCE =====
+  const dropChance = 15 + player.level * 2; // %
+
+  let itemDropText = "";
+
+  if(Math.random() * 100 < dropChance){
+
+    const lootTable = [
+      { icon:"🗡", name:"Kiếm rỉ sét", atk:15, type:"weapon", price:120 },
+      { icon:"🛡", name:"Giáp cũ", def:12, type:"armor", price:100 },
+      { icon:"🪖", name:"Mũ sắt mẻ", def:8, type:"helmet", price:90 },
+      { icon:"💍", name:"Nhẫn may mắn", atk:10, type:"ring", price:150 },
+      { icon:"🔮", name:"Ngọc hồi phục", hp:120, type:"gem", price:180 }
+    ];
+
+    const randomItem =
+      lootTable[Math.floor(Math.random()*lootTable.length)];
+
+    player.inventory.push(randomItem);
+
+    itemDropText =
+      `🎁 Nhặt được: ${randomItem.icon} ${randomItem.name}\n`;
   }
+
+  checkLevelUp();
+  savePlayer();
+
+  logText +=
+    "🎉 Hạ quái! +100 EXP\n" +
+    `💎 Nhận ${diamondDrop} kim cương\n` +
+    itemDropText;
+
+  document.getElementById("battleLog").innerText = logText;
+  render();
+
+  setTimeout(()=>{
+    spawnEnemy();
+    render();
+    document.getElementById("battleLog").innerText = "";
+    isAttacking=false;
+  },1500);
+
+  return;
+}
+
 
   /* ENEMY ATTACK */
 
