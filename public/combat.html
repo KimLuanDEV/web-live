@@ -49,33 +49,74 @@ body{
   box-shadow:0 0 30px rgba(255,0,60,.4);
 }
 
+/* ===== PRO HP BAR ===== */
+
 .hp-wrapper{
-  width:80%;
-  margin:10px auto 0;
+  width:90%;
+  margin:15px auto 0;
 }
 
-.hp-bar{
-  height:12px;
-  background:#111;
-  border-radius:20px;
+.hp-bar.pro{
+  position:relative;
+  height:22px;
+  border-radius:14px;
+  background:linear-gradient(180deg,#050b12,#0c1c26);
   overflow:hidden;
+  border:1px solid rgba(0,255,255,.4);
+  box-shadow:0 0 15px rgba(0,255,255,.3);
+}
+
+.hp-bar.pro.enemy-bar{
+  border:1px solid rgba(255,0,60,.4);
+  box-shadow:0 0 15px rgba(255,0,60,.3);
 }
 
 .hp-fill{
-  height:100%;
+  position:absolute;
+  inset:0;
   width:100%;
+  transition:width .4s ease;
   background:linear-gradient(90deg,#00f0ff,#00ff99);
-  transition:.3s;
 }
 
-.enemy .hp-fill{
+.enemy-bar .hp-fill{
   background:linear-gradient(90deg,#ff0044,#ff9900);
 }
 
-.hp-text{
-  font-size:12px;
-  margin-top:4px;
+/* LIGHT SWEEP EFFECT */
+.hp-glow{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,.25) 40%,
+    transparent 80%
+  );
+  animation:hpSweep 2.5s linear infinite;
+  pointer-events:none;
 }
+
+@keyframes hpSweep{
+  0%{transform:translateX(-100%)}
+  100%{transform:translateX(100%)}
+}
+
+/* TEXT INSIDE BAR */
+.hp-text.inside{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1px;
+  color:#fff;
+  text-shadow:0 0 6px #000;
+  pointer-events:none;
+}
+
 
 .actions{
   padding:0 20px 20px;
@@ -477,23 +518,29 @@ body{
   <div class="character">
     <div class="avatar" id="playerAvatar"></div>
 
-    <div class="hp-wrapper">
-      <div class="hp-bar">
-        <div class="hp-fill" id="playerHpFill"></div>
-      </div>
-      <div class="hp-text" id="playerHpText"></div>
-    </div>
+<div class="hp-wrapper">
+  <div class="hp-bar pro">
+    <div class="hp-fill" id="playerHpFill"></div>
+    <div class="hp-glow"></div>
+    <div class="hp-text inside" id="playerHpText"></div>
+  </div>
+</div>
+
+
   </div>
 
   <div class="character enemy">
     <div class="avatar" id="enemyAvatar"></div>
 
-    <div class="hp-wrapper">
-      <div class="hp-bar">
-        <div class="hp-fill" id="enemyHpFill"></div>
-      </div>
-      <div class="hp-text" id="enemyHpText"></div>
-    </div>
+<div class="hp-wrapper">
+  <div class="hp-bar pro enemy-bar">
+    <div class="hp-fill" id="enemyHpFill"></div>
+    <div class="hp-glow"></div>
+    <div class="hp-text inside" id="enemyHpText"></div>
+  </div>
+</div>
+
+
   </div>
 </div>
 
@@ -649,6 +696,20 @@ function render(){
   document.getElementById("playerHpFill")
     .style.width = playerPercent + "%";
 
+
+    // LOW HP EFFECT (Player)
+const playerBar = document.querySelector(".hp-bar.pro");
+
+if(player.hp / player.maxHp < 0.25){
+  playerBar.style.boxShadow = "0 0 25px red";
+  playerBar.style.borderColor = "red";
+}else{
+  playerBar.style.boxShadow = "0 0 15px rgba(0,255,255,.3)";
+  playerBar.style.borderColor = "rgba(0,255,255,.4)";
+}
+
+
+
   document.getElementById("playerHpText")
     .innerText =
     player.name + " | " +
@@ -659,12 +720,24 @@ function render(){
   const enemyPercent =
     (enemy.hp / enemy.maxHp) * 100;
 
+// LOW HP EFFECT (Enemy)
+const enemyBar = document.querySelector(".enemy-bar");
+
+if(enemy.hp / enemy.maxHp < 0.25){
+  enemyBar.style.boxShadow = "0 0 25px red";
+  enemyBar.style.borderColor = "red";
+}else{
+  enemyBar.style.boxShadow = "0 0 15px rgba(255,0,60,.3)";
+  enemyBar.style.borderColor = "rgba(255,0,60,.4)";
+}
+
+
   document.getElementById("enemyHpFill")
     .style.width = enemyPercent + "%";
 
   document.getElementById("enemyHpText")
     .innerText =
-    "Quái | " +
+    "Enemy | " +
     Math.floor(enemy.hp) + "/" + enemy.maxHp;
 
 
