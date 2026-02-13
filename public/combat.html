@@ -201,6 +201,30 @@ body{
 }
 
 
+/* ===== DEATH EFFECT ===== */
+.dead{
+  animation:fadeDead 1.2s forwards;
+}
+
+@keyframes fadeDead{
+  0%{
+    filter:grayscale(0%);
+    opacity:1;
+    transform:scale(1);
+  }
+  50%{
+    filter:grayscale(100%);
+    opacity:.6;
+  }
+  100%{
+    filter:grayscale(100%);
+    opacity:0;
+    transform:scale(.8);
+  }
+}
+
+
+
 </style>
 </head>
 
@@ -425,6 +449,15 @@ function showSlash(targetClass){
 }
 
 
+function playDeath(targetClass){
+
+  const card =
+    document.querySelector(targetClass);
+
+  card.classList.add("dead");
+}
+
+
 
 
 /* ===== ATTACK ===== */
@@ -486,6 +519,9 @@ function attack(){
 
     enemy.hp = 0;
 
+playDeath(".character.enemy");
+
+
     document.body.style.transition="0.3s";
     document.body.style.filter="blur(2px)";
 
@@ -511,12 +547,19 @@ function attack(){
     document.getElementById("battleLog").innerText = logText;
     render();
 
-    setTimeout(()=>{
-      spawnEnemy();
-      render();
-      document.getElementById("battleLog").innerText = "";
-      isAttacking = false;
-    },1500);
+setTimeout(()=>{
+  spawnEnemy();
+
+  // reset class dead
+  document
+    .querySelector(".character.enemy")
+    .classList.remove("dead");
+
+  render();
+  document.getElementById("battleLog").innerText = "";
+  isAttacking = false;
+},1500);
+
 
     return;
   }
@@ -668,6 +711,8 @@ function enemyTurn(){
 if(player.hp <= 0){
 
   player.hp = 0;
+
+  playDeath(".character:not(.enemy)");
 
   // ===== SET DEAD TIME 24H =====
   player.deadUntil = Date.now() + (24 * 60 * 60 * 1000);
