@@ -237,15 +237,33 @@ body{
 <div class="log" id="battleLog"></div>
 
 <div class="actions">
-  <button class="btn" onclick="attack()">⚔ TẤN CÔNG</button>
+
+  <button class="btn" onclick="attack()">⚔ Đánh thường</button>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:10px">
+    <button class="btn skill" onclick="useSkill(1)" id="skill1Btn">K1</button>
+    <button class="btn skill" onclick="useSkill(2)" id="skill2Btn">K2</button>
+    <button class="btn skill" onclick="useSkill(3)" id="skill3Btn">K3</button>
+  </div>
+
   <button class="btn back" onclick="backToHub()">⬅ Quay lại</button>
+
 </div>
+
+
+
 
 <script>
 
 let player = JSON.parse(localStorage.getItem("hunter_char"));
 let enemy = null;
 let isAttacking = false;
+
+let skillCooldown = {
+  1:0,
+  2:0,
+  3:0
+};
 
 if(!player){
   location.href="game-diamond-hunter.html";
@@ -515,6 +533,107 @@ function attack(){
 }
 
 
+
+function useSkill(skillId){
+
+  if(isAttacking) return;
+
+  if(skillCooldown[skillId] > 0){
+    alert("Skill đang hồi chiêu!");
+    return;
+  }
+
+  isAttacking = true;
+
+  let dmg = 0;
+  let logText = "";
+
+  const cls = player.classType;
+
+  /* ===== WARRIOR ===== */
+  if(cls==="warrior"){
+
+    if(skillId===1){
+      dmg = Math.floor(player.atk * 1.5);
+      skillCooldown[1]=3;
+      logText="⚔ Chém Xoáy!";
+    }
+
+    if(skillId===2){
+      player.tempReduce=0.5;
+      skillCooldown[2]=4;
+      logText="🛡 Khiên Thép!";
+    }
+
+    if(skillId===3){
+      player.tempAtk=0.3;
+      skillCooldown[3]=5;
+      logText="🔥 Cuồng Nộ!";
+    }
+  }
+
+  /* ===== ASSASSIN ===== */
+  if(cls==="assassin"){
+
+    if(skillId===1){
+      dmg = Math.floor(player.atk * 2);
+      skillCooldown[1]=3;
+      logText="🗡 Đâm Bóng Tối!";
+    }
+
+    if(skillId===2){
+      player.tempDodge=100;
+      skillCooldown[2]=4;
+      logText="👥 Ảnh Phân Thân!";
+    }
+
+    if(skillId===3){
+      enemy.dot=3;
+      skillCooldown[3]=5;
+      logText="☠ Độc Liên Hoàn!";
+    }
+  }
+
+  /* ===== MAGE ===== */
+  if(cls==="mage"){
+
+    if(skillId===1){
+      dmg = Math.floor(player.atk * 1.7);
+      skillCooldown[1]=3;
+      logText="🔥 Hỏa Cầu!";
+    }
+
+    if(skillId===2){
+      player.shield = Math.floor(player.maxHp * 0.3);
+      skillCooldown[2]=4;
+      logText="🛡 Lá Chắn Ma Pháp!";
+    }
+
+    if(skillId===3){
+      dmg = Math.floor(player.atk * 2.5);
+      skillCooldown[3]=5;
+      logText="⚡ Sét Tử Thần!";
+    }
+  }
+
+  if(dmg>0){
+    enemy.hp -= dmg;
+    showDamage(".character.enemy", dmg, true);
+    showSlash(".character.enemy");
+  }
+
+  document.getElementById("battleLog").innerText = logText;
+  render();
+
+  updateCooldownUI();
+
+  setTimeout(()=>{
+    enemyTurn();
+  },600);
+}
+
+
+
 function enemyTurn(){
 
   let logText = "";
@@ -546,23 +665,58 @@ function enemyTurn(){
 
   document.getElementById("battleLog").innerText += logText;
 
-  if(player.hp <= 0){
-    player.hp = 0;
-    savePlayer();
-    render();
+if(player.hp <= 0){
 
-    setTimeout(()=>{
-      location.href="game-diamond-hunter.html";
-    },1000);
+  player.hp = 0;
 
-    return;
-  }
+  // ===== SET DEAD TIME 24H =====
+  player.deadUntil = Date.now() + (24 * 60 * 60 * 1000);
+
+  savePlayer();
+  render();
+
+  document.getElementById("battleLog").innerText +=
+    "💀 Bạn đã bị hạ!";
+
+  setTimeout(()=>{
+    location.href="game-diamond-hunter.html";
+  },1500);
+
+  return;
+}
+
+
 
   savePlayer();
   render();
 
   isAttacking = false;
+
+
+Object.keys(skillCooldown).forEach(k=>{
+  if(skillCooldown[k]>0) skillCooldown[k]--;
+});
+
+updateCooldownUI();
+
+
 }
+
+
+
+function updateCooldownUI(){
+  [1,2,3].forEach(i=>{
+    const btn = document.getElementById("skill"+i+"Btn");
+    if(skillCooldown[i]>0){
+      btn.innerText="CD "+skillCooldown[i];
+      btn.disabled=true;
+    }else{
+      btn.innerText="K"+i;
+      btn.disabled=false;
+    }
+  });
+}
+
 
 
 /* ===== BACK ===== */
