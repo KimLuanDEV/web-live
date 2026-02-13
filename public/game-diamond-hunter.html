@@ -466,17 +466,6 @@ input{
 }
 
 
-.equip-slot{
-  flex:1;
-  background:#111;
-  padding:10px;
-  border-radius:12px;
-  text-align:center;
-  font-size:13px;
-  cursor:pointer;
-  box-shadow:0 0 10px rgba(0,255,255,.1);
-}
-
 
 .hub-label{
   display:flex;
@@ -573,27 +562,7 @@ input{
   color:#00f0ff;
 }
 
-.equip-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-}
 
-.equip-slot{
-  background:#0f1620;
-  border-radius:16px;
-  padding:12px;
-  text-align:center;
-  font-size:13px;
-  box-shadow:0 0 15px rgba(0,255,255,.15);
-  cursor:pointer;
-  transition:.2s;
-}
-
-.equip-slot:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 25px rgba(0,255,255,.4);
-}
 
 
 
@@ -815,6 +784,48 @@ input{
   padding:2px 6px;
   border-radius:8px;
   box-shadow:0 0 10px rgba(255,215,0,.6);
+}
+
+
+.equip-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:14px;
+}
+
+.equip-slot{
+  background:linear-gradient(145deg,#0b1118,#060a0f);
+  border-radius:18px;
+  padding:10px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  transition:.25s;
+  cursor:pointer;
+  box-shadow:
+    0 0 20px rgba(0,255,255,.15),
+    inset 0 0 20px rgba(0,255,255,.05);
+}
+
+.equip-slot:hover{
+  transform:translateY(-4px);
+  box-shadow:
+    0 0 35px rgba(0,255,255,.5);
+}
+
+.equip-label{
+  font-size:11px;
+  opacity:.6;
+  margin-bottom:6px;
+}
+
+.equip-content{
+  width:100%;
+  aspect-ratio:1/1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
 
@@ -1046,43 +1057,53 @@ input{
 
   <div class="equip-grid">
 
-    <div class="equip-slot" onclick="openEnhance('weapon')">
-      ⚔ <span id="weaponSlot">Trống</span>
-    </div>
-
-    <div class="equip-slot" onclick="openEnhance('armor')">
-      🛡 <span id="armorSlot">Trống</span>
-    </div>
-
-    <div class="equip-slot" onclick="openEnhance('helmet')">
-      🪖 <span id="helmetSlot">Trống</span>
-    </div>
-
-    <div class="equip-slot" onclick="openEnhance('gloves')">
-      🧤 <span id="glovesSlot">Trống</span>
-    </div>
-
-    <div class="equip-slot" onclick="openEnhance('boots')">
-      👢 <span id="bootsSlot">Trống</span>
-    </div>
-
-    <div class="equip-slot" onclick="openEnhance('shoulder')">
-      🛡️ <span id="shoulderSlot">Trống</span>
-    </div>
-
-    <div class="equip-slot" onclick="openEnhance('legs')">
-      🦿 <span id="legsSlot">Trống</span>
-    </div>
-
-    <div class="equip-slot" onclick="openEnhance('ring')">
-      💍 <span id="ringSlot">Trống</span>
-    </div>
-
-    <div class="equip-slot" onclick="openEnhance('gem')">
-      🔮 <span id="gemSlot">Trống</span>
-    </div>
-
+  <div class="equip-slot" onclick="openEnhance('weapon')">
+    <div class="equip-label">Vũ khí</div>
+    <div id="weaponSlot" class="equip-content"></div>
   </div>
+
+  <div class="equip-slot" onclick="openEnhance('armor')">
+    <div class="equip-label">Giáp</div>
+    <div id="armorSlot" class="equip-content"></div>
+  </div>
+
+  <div class="equip-slot" onclick="openEnhance('helmet')">
+    <div class="equip-label">Mũ</div>
+    <div id="helmetSlot" class="equip-content"></div>
+  </div>
+
+  <div class="equip-slot" onclick="openEnhance('gloves')">
+    <div class="equip-label">Găng</div>
+    <div id="glovesSlot" class="equip-content"></div>
+  </div>
+
+  <div class="equip-slot" onclick="openEnhance('boots')">
+    <div class="equip-label">Giày</div>
+    <div id="bootsSlot" class="equip-content"></div>
+  </div>
+
+  <div class="equip-slot" onclick="openEnhance('shoulder')">
+    <div class="equip-label">Vai</div>
+    <div id="shoulderSlot" class="equip-content"></div>
+  </div>
+
+  <div class="equip-slot" onclick="openEnhance('legs')">
+    <div class="equip-label">Chân</div>
+    <div id="legsSlot" class="equip-content"></div>
+  </div>
+
+  <div class="equip-slot" onclick="openEnhance('ring')">
+    <div class="equip-label">Nhẫn</div>
+    <div id="ringSlot" class="equip-content"></div>
+  </div>
+
+  <div class="equip-slot" onclick="openEnhance('gem')">
+    <div class="equip-label">Ngọc</div>
+    <div id="gemSlot" class="equip-content"></div>
+  </div>
+
+</div>
+
 
 </div>
 
@@ -1401,7 +1422,7 @@ Object.keys(player.equipment).forEach(slot=>{
     `;
 
   }else{
-    el.innerHTML = `<div class="equip-empty">Trống</div>`;
+    el.innerHTML = `<div class="equip-empty">+</div>`;
   }
 });
 
@@ -1604,7 +1625,7 @@ Object.keys(player.equipment).forEach(slot=>{
       </div>
     `;
   }else{
-    el.innerHTML = `<div class="equip-empty">Trống</div>`;
+    el.innerHTML = `<div class="equip-empty">+</div>`;
   }
 });
 
