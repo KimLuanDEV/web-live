@@ -2457,7 +2457,6 @@ function confirmUnequip(){
 
 
 let selectedInventoryIndex = null;
-
 function openInventoryItem(index){
 
   const item = player.inventory[index];
@@ -2474,22 +2473,73 @@ function openInventoryItem(index){
   document.getElementById("invModalImg")
     .src = item.img;
 
-  let statsHTML = "";
+  const equipped = player.equipment[item.type];
 
-  if(item.atk) statsHTML += "⚔ ATK +" + item.atk + "<br>";
-  if(item.def) statsHTML += "🛡 DEF +" + item.def + "<br>";
-  if(item.hp) statsHTML += "❤️ HP +" + item.hp + "<br>";
-  if(item.dodge) statsHTML += "💨 Né +" + item.dodge + "%<br>";
-  if(item.critRate) statsHTML += "💥 Crit +" + item.critRate + "%<br>";
-  if(item.lifesteal) statsHTML += "🩸 Hút máu +" + item.lifesteal + "%<br>";
-  if(item.regen) statsHTML += "♻ Regen +" + item.regen + "<br>";
+  function compareStat(label, newVal, oldVal, suffix=""){
+
+    if(!newVal && !oldVal) return "";
+
+    newVal = newVal || 0;
+    oldVal = oldVal || 0;
+
+    const diff = newVal - oldVal;
+
+    let color = "#fff";
+    if(diff > 0) color = "#00ff88";
+    if(diff < 0) color = "#ff4444";
+
+    return `
+      <div style="display:flex;justify-content:space-between">
+        <span>${label}</span>
+        <span style="color:${color}">
+          ${newVal}${suffix}
+          ${diff!==0 ? ` (${diff>0?"+":""}${diff})` : ""}
+        </span>
+      </div>
+    `;
+  }
+
+  let html = "";
+
+  html += compareStat("⚔ ATK", item.atk,
+    equipped?.atk);
+
+  html += compareStat("🛡 DEF", item.def,
+    equipped?.def);
+
+  html += compareStat("❤️ HP", item.hp,
+    equipped?.hp);
+
+  html += compareStat("💨 Né", item.dodge,
+    equipped?.dodge, "%");
+
+  html += compareStat("💥 Crit", item.critRate,
+    equipped?.critRate, "%");
+
+  html += compareStat("🩸 Hút máu", item.lifesteal,
+    equipped?.lifesteal, "%");
+
+  html += compareStat("♻ Regen", item.regen,
+    equipped?.regen);
 
   if(item.enhance){
-    statsHTML += "<br>🔥 Cường hóa +" + item.enhance;
+    html += `
+      <div style="margin-top:8px;opacity:.8">
+        🔥 Cường hóa +${item.enhance}
+      </div>
+    `;
+  }
+
+  if(equipped){
+    html += `
+      <div style="margin-top:10px;font-size:12px;opacity:.6">
+        Đang mặc: ${equipped.name}
+      </div>
+    `;
   }
 
   document.getElementById("invModalStats")
-    .innerHTML = statsHTML;
+    .innerHTML = html;
 }
 
 function closeInventoryItemModal(){

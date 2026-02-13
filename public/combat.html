@@ -792,17 +792,40 @@ function recalcStats(){
   player.critDamage = 1.5;
   player.lifesteal = 0;
 
-  if(player.equipment){
-    Object.values(player.equipment).forEach(item=>{
-      if(!item) return;
-      if(item.atk) player.atk += item.atk;
-      if(item.def) player.def += item.def;
-      if(item.hp)  player.maxHp += item.hp;
-      if(item.dodge) player.dodge += item.dodge;
-      if(item.critRate) player.critRate += item.critRate;
-      if(item.lifesteal) player.lifesteal += item.lifesteal;
-    });
-  }
+if(player.equipment){
+
+  Object.values(player.equipment).forEach(item=>{
+    if(!item) return;
+
+    const enhance = item.enhance || 0;
+    const scale = 1 + enhance * 0.1 + enhance * enhance * 0.02;
+
+
+    if(item.atk)
+      player.atk += Math.floor(item.atk * scale);
+
+    if(item.def)
+      player.def += Math.floor(item.def * scale);
+
+    if(item.hp)
+      player.maxHp += Math.floor(item.hp * scale);
+
+    if(item.dodge)
+      player.dodge += item.dodge;
+
+    if(item.critRate)
+      player.critRate += item.critRate;
+
+    if(item.lifesteal)
+      player.lifesteal += item.lifesteal;
+
+    if(item.regen)
+      player.regen += item.regen;
+  });
+}
+
+
+
 
   if(player.hp > player.maxHp)
     player.hp = player.maxHp;
