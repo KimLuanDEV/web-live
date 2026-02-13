@@ -728,6 +728,26 @@ let status = {
 };
 
 
+/* ===== SKILL ICON MAP ===== */
+const SKILL_ICONS = {
+  warrior:{
+    1:"/assets/skills/warrior_skill1.png",
+    2:"/assets/skills/warrior_skill2.png",
+    3:"/assets/skills/warrior_skill3.png"
+  },
+  assassin:{
+    1:"/assets/skills/assassin_skill1.png",
+    2:"/assets/skills/assassin_skill2.png",
+    3:"/assets/skills/assassin_skill3.png"
+  },
+  mage:{
+    1:"/assets/skills/mage_skill1.png",
+    2:"/assets/skills/mage_skill2.png",
+    3:"/assets/skills/mage_skill3.png"
+  }
+};
+
+
 
 if(!player){
   location.href="game-diamond-hunter.html";
@@ -868,6 +888,20 @@ if(player.hp / player.maxHp < 0.2){
   playerAvatar.classList.add("lowHp");
 }else{
   playerAvatar.classList.remove("lowHp");
+}
+
+
+// ===== UPDATE SKILL ICON THEO CLASS =====
+const skillMap = SKILL_ICONS[player.classType];
+
+for(let i=1;i<=3;i++){
+  const btn = document.getElementById("skill"+i+"Btn");
+  if(!btn) continue;
+
+  const img = btn.querySelector("img");
+  if(img && skillMap[i]){
+    img.src = skillMap[i];
+  }
 }
 
 
