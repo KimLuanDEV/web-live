@@ -824,15 +824,57 @@ if(player.equipment){
   });
 }
 
-
-
-
   if(player.hp > player.maxHp)
     player.hp = player.maxHp;
+
+
+/* ===== GOLDEN SET BONUS ===== */
+
+if(player.equipment){
+
+const equipped = Object.values(player.equipment)
+  .filter(i => i && i.set === "golden");
+
+const count = equipped.length;
+
+if(count >= 3){
+  player.atk += 150;
+}
+
+if(count >= 6){
+  player.def += 250;
+  player.critRate += 15;
+}
+
+if(count >= 9){
+  player.atk += 300;
+  player.lifesteal += 20;
+  player.regen += 15;
+}
+
+}
+
+
+
 }
 
 /* ===== SPAWN ENEMY ===== */
 function spawnEnemy(){
+
+  if(gameMode === "gold"){
+
+  const scale = stage * 1.8;
+
+  enemy = {
+    maxHp: 1200 + scale * 200,
+    hp:    1200 + scale * 200,
+    atk:   200 + scale * 40,
+    def:   100 + scale * 25,
+    isBoss:true,
+    isGolden:true
+  };
+}
+
 
   if(gameMode === "rank"){
 
@@ -880,7 +922,8 @@ function checkLevelUp(){
 /* ===== RENDER ===== */
 function render(){
 
-  // Avatar theo class
+  /* ================= AVATAR ================= */
+
   const avatarMap = {
     warrior:"/assets/classes/warrior.jpg",
     assassin:"/assets/classes/assassin.jpg",
@@ -890,92 +933,134 @@ function render(){
   document.getElementById("playerAvatar").style.backgroundImage =
     `url(${avatarMap[player.classType]})`;
 
+  // 👑 Enemy avatar theo mode
+  let enemyImg = "/assets/classes/enemy.jpg";
+
+  if(gameMode === "gold"){
+    enemyImg = "/assets/classes/boss_gold.jpg";
+  }
+  else if(enemy.isBoss){
+    enemyImg = "/assets/classes/boss.jpg";
+  }
+
   document.getElementById("enemyAvatar").style.backgroundImage =
-
-   enemy.isBoss 
-  ? "url(/assets/classes/boss.jpg)" 
-  : "url(/assets/classes/enemy.jpg)";
+    `url(${enemyImg})`;
 
 
-  // Player HP
+  /* ================= BACKGROUND ================= */
+
+  if(gameMode === "gold"){
+    document.body.style.background =
+      "radial-gradient(circle at center,#3a2600,#000)";
+  }else{
+    document.body.style.background =
+      "radial-gradient(circle at center,#08121a,#000)";
+  }
+
+
+  /* ================= PLAYER HP ================= */
+
   const playerPercent =
     (player.hp / player.maxHp) * 100;
 
   document.getElementById("playerHpFill")
     .style.width = playerPercent + "%";
 
+  const playerBar =
+    document.querySelector(".hp-bar.pro");
 
-    // LOW HP EFFECT (Player)
-const playerBar = document.querySelector(".hp-bar.pro");
+  if(player.hp / player.maxHp < 0.25){
+    playerBar.style.boxShadow = "0 0 25px red";
+    playerBar.style.borderColor = "red";
+  }else{
+    playerBar.style.boxShadow =
+      gameMode === "gold"
+        ? "0 0 25px gold"
+        : "0 0 15px rgba(0,255,255,.3)";
 
-if(player.hp / player.maxHp < 0.25){
-  playerBar.style.boxShadow = "0 0 25px red";
-  playerBar.style.borderColor = "red";
-}else{
-  playerBar.style.boxShadow = "0 0 15px rgba(0,255,255,.3)";
-  playerBar.style.borderColor = "rgba(0,255,255,.4)";
-}
+    playerBar.style.borderColor =
+      gameMode === "gold"
+        ? "gold"
+        : "rgba(0,255,255,.4)";
+  }
 
-
-
-  document.getElementById("playerHpText")
-    .innerText =
+  document.getElementById("playerHpText").innerText =
     player.name + " | " +
     Math.floor(player.hp) + "/" + player.maxHp;
 
-  document.getElementById("headerGold").innerText = player.gold;
-  // Enemy HP
+
+  /* ================= ENEMY HP ================= */
+
   const enemyPercent =
     (enemy.hp / enemy.maxHp) * 100;
-
-// LOW HP EFFECT (Enemy)
-const enemyBar = document.querySelector(".enemy-bar");
-
-if(enemy.hp / enemy.maxHp < 0.25){
-  enemyBar.style.boxShadow = "0 0 25px red";
-  enemyBar.style.borderColor = "red";
-}else{
-  enemyBar.style.boxShadow = "0 0 15px rgba(255,0,60,.3)";
-  enemyBar.style.borderColor = "rgba(255,0,60,.4)";
-}
-
 
   document.getElementById("enemyHpFill")
     .style.width = enemyPercent + "%";
 
-  document.getElementById("enemyHpText")
-    .innerText =
-    "Enemy | " +
+  const enemyBar =
+    document.querySelector(".enemy-bar");
+
+  if(enemy.hp / enemy.maxHp < 0.25){
+    enemyBar.style.boxShadow = "0 0 25px red";
+    enemyBar.style.borderColor = "red";
+  }else{
+    enemyBar.style.boxShadow =
+      gameMode === "gold"
+        ? "0 0 25px gold"
+        : "0 0 15px rgba(255,0,60,.3)";
+
+    enemyBar.style.borderColor =
+      gameMode === "gold"
+        ? "gold"
+        : "rgba(255,0,60,.4)";
+  }
+
+  document.getElementById("enemyHpText").innerText =
+    (gameMode === "gold" ? "👑 Golden Boss | " : "Enemy | ") +
     Math.floor(enemy.hp) + "/" + enemy.maxHp;
 
 
-const playerAvatar =
-  document.querySelector(".character:not(.enemy) .avatar");
+  /* ================= LOW HP EFFECT ================= */
 
-if(player.hp / player.maxHp < 0.2){
-  playerAvatar.classList.add("lowHp");
-}else{
-  playerAvatar.classList.remove("lowHp");
-}
+  const playerAvatar =
+    document.querySelector(".character:not(.enemy) .avatar");
 
-
-// ===== UPDATE SKILL ICON THEO CLASS =====
-const skillMap = SKILL_ICONS[player.classType];
-
-for(let i=1;i<=3;i++){
-  const btn = document.getElementById("skill"+i+"Btn");
-  if(!btn) continue;
-
-  const img = btn.querySelector("img");
-  if(img && skillMap[i]){
-    img.src = skillMap[i];
+  if(player.hp / player.maxHp < 0.2){
+    playerAvatar.classList.add("lowHp");
+  }else{
+    playerAvatar.classList.remove("lowHp");
   }
+
+
+  /* ================= SKILL ICON ================= */
+
+  const skillMap = SKILL_ICONS[player.classType];
+
+  for(let i=1;i<=3;i++){
+    const btn = document.getElementById("skill"+i+"Btn");
+    if(!btn) continue;
+
+    const img = btn.querySelector("img");
+    if(img && skillMap[i]){
+      img.src = skillMap[i];
+    }
+  }
+
+
+  /* ================= STAGE TEXT ================= */
+
+  document.getElementById("stageText").innerText =
+    gameMode === "gold"
+      ? " 👑 HOÀNG KIM"
+      : " " + stage;
+
+
+  /* ================= GOLD HEADER ================= */
+
+  document.getElementById("headerGold").innerText =
+    player.gold;
 }
 
-document.getElementById("stageText").innerText = stage;
-
-
-}
 
 
 function showDamage(targetClass, dmg, isCrit=false){
@@ -1753,7 +1838,15 @@ function switchMode(){
   if(gameMode === "rank"){
     gameMode = "farm";
     stage = 1;
-  }else{
+  }
+  else if(gameMode === "farm"){
+    if(stage < 10){
+      alert("Cần vượt 10 ải để mở Map Hoàng Kim!");
+      return;
+    }
+    gameMode = "gold";
+  }
+  else{
     gameMode = "rank";
     stage = parseInt(localStorage.getItem("arena_stage")) || 1;
   }
@@ -1765,18 +1858,143 @@ function switchMode(){
 
   document.getElementById("battleLog").innerText =
     gameMode === "rank"
-    ? "🏆 Chế độ Vượt Ải"
-    : "🌾 Chế độ Cày Quái";
+      ? "🏆 Chế độ Vượt Ải"
+      : gameMode === "farm"
+      ? "🌾 Chế độ Cày Quái"
+      : "👑 MAP HOÀNG KIM";
 }
+
+
+
 
 function dropRandomItem(){
 
   const roll = Math.random()*100;
-
   let item;
 
-  // ===== MYTHIC 1% =====
-  if(roll < 1){
+  /* ================= ULTIMATE (MAP HOÀNG KIM) ================= */
+  if(gameMode === "gold" && roll < 5){
+
+   const ultimateItems = [
+
+  /* ===== WEAPON ===== */
+  {
+    name:"👑 Kiếm Hoàng Kim Vô Cực",
+    atk:200,
+    critRate:15,
+    critDamage:1,
+    lifesteal:12,
+    type:"weapon",
+    img:"/assets/items/gold_sword.png",
+    rarity:"ultimate",
+    set:"golden"
+  },
+
+  /* ===== ARMOR ===== */
+  {
+    name:"🛡 Giáp Thần Thoại Ánh Kim",
+    def:180,
+    hp:1500,
+    regen:8,
+    type:"armor",
+    img:"/assets/items/gold_armor.png",
+    rarity:"ultimate",
+    set:"golden"
+  },
+
+  /* ===== HELM ===== */
+  {
+    name:"👑 Mũ Hoàng Kim Thánh Vương",
+    def:120,
+    hp:800,
+    critRate:8,
+    type:"helm",
+    img:"/assets/items/gold_helm.png",
+    rarity:"ultimate",
+    set:"golden"
+  },
+
+  /* ===== SHOULDER ===== */
+  {
+    name:"🦾 Vai Hoàng Kim Thiên Uy",
+    def:140,
+    atk:70,
+    type:"shoulder",
+    img:"/assets/items/gold_shoulder.png",
+    rarity:"ultimate",
+    set:"golden"
+  },
+
+  /* ===== GREAVES ===== */
+  {
+    name:"🦵 Giáp Chân Hoàng Kim Bất Diệt",
+    def:130,
+    hp:900,
+    regen:5,
+    type:"legs",
+    img:"/assets/items/gold_legs.png",
+    rarity:"ultimate",
+    set:"golden"
+  },
+
+  /* ===== BOOTS ===== */
+  {
+    name:"👢 Hài Hoàng Kim Tốc Ảnh",
+    dodge:20,
+    atk:80,
+    type:"boots",
+    img:"/assets/items/gold_boots.png",
+    rarity:"ultimate",
+    set:"golden"
+  },
+
+  /* ===== GLOVES ===== */
+  {
+    name:"🧤 Găng Tay Hoàng Kim Hủy Diệt",
+    atk:90,
+    critRate:10,
+    lifesteal:6,
+    type:"gloves",
+    img:"/assets/items/gold_gloves.png",
+    rarity:"ultimate",
+    set:"golden"
+  },
+
+  /* ===== RING ===== */
+  {
+    name:"💍 Nhẫn Thống Trị",
+    atk:100,
+    critRate:12,
+    lifesteal:10,
+    type:"ring",
+    img:"/assets/items/gold_ring.png",
+    rarity:"ultimate",
+    set:"golden"
+  },
+
+  /* ===== GEM ===== */
+  {
+    name:"💎 Ngọc Hoàng Kim Thánh Lực",
+    hp:1200,
+    critDamage:0.8,
+    regen:6,
+    type:"gem",
+    img:"/assets/items/gold_gem.png",
+    rarity:"ultimate",
+    set:"golden"
+  }
+
+];
+
+
+
+    item = ultimateItems[
+      Math.floor(Math.random()*ultimateItems.length)
+    ];
+  }
+
+  /* ================= MYTHIC 1% ================= */
+  else if(roll < 6){
 
     const mythicItems = [
 
@@ -1824,17 +2042,17 @@ function dropRandomItem(){
     item = mythicItems[
       Math.floor(Math.random()*mythicItems.length)
     ];
-
   }
+
+  /* ================= NORMAL ================= */
   else{
 
-    // ===== NORMAL POOL =====
     const normalItems = [
 
-      { name:"Kiếm Sắt", atk:12, type:"weapon", img:"/assets/items/weapon_sword_1.png" },
-      { name:"Giáp Thép", def:25, type:"armor", img:"/assets/items/armor_silver.png" },
-      { name:"Nhẫn Máu", lifesteal:5, type:"ring", img:"/assets/items/ring_power.png" },
-      { name:"Ngọc Sinh Mệnh", hp:300, type:"gem", img:"/assets/items/gem_life.png" }
+      { name:"Kiếm Sắt", atk:12, type:"weapon", img:"/assets/items/weapon_sword_1.png", rarity:"normal" },
+      { name:"Giáp Thép", def:25, type:"armor", img:"/assets/items/armor_silver.png", rarity:"normal" },
+      { name:"Nhẫn Máu", lifesteal:5, type:"ring", img:"/assets/items/ring_power.png", rarity:"normal" },
+      { name:"Ngọc Sinh Mệnh", hp:300, type:"gem", img:"/assets/items/gem_life.png", rarity:"normal" }
 
     ];
 
@@ -1843,20 +2061,33 @@ function dropRandomItem(){
     ];
   }
 
+  /* ================= FINALIZE ================= */
+
   const finalItem = {
     ...item,
     enhance:0
   };
 
-  if(!player.inventory) player.inventory=[];
+  if(!player.inventory) player.inventory = [];
 
   player.inventory.push(finalItem);
 
+  /* ================= LOG ================= */
+
+  let rarityText = "";
+
+  if(finalItem.rarity === "ultimate")
+    rarityText = "✨✨ ULTIMATE ✨✨ ";
+
+  else if(finalItem.rarity === "mythic")
+    rarityText = "🔥 MYTHIC 🔥 ";
+
   document.getElementById("battleLog").innerText +=
-    "🎁 Rơi trang bị: " + finalItem.name + "\n";
+    rarityText + "🎁 Rơi trang bị: " + finalItem.name + "\n";
 
   savePlayer();
 }
+
 
 </script>
 
