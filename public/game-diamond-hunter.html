@@ -596,28 +596,33 @@ input{
   margin-bottom:4px;
 }
 
+/* ===== CLEAN STATS GRID ===== */
 
-.stats-simple{
-  display:flex;
-  flex-direction:column;
+.stats-grid-clean{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
   gap:10px;
-  margin-bottom:20px;
 }
 
 .stat-row{
-  background:#0f1620;
-  padding:12px 14px;
+  background:linear-gradient(145deg,#0b1118,#060a0f);
   border-radius:14px;
+  padding:10px 12px;
   display:flex;
   justify-content:space-between;
+  align-items:center;
+  font-size:13px;
   font-weight:600;
-  box-shadow:0 0 12px rgba(0,255,255,.15);
+  box-shadow:
+    0 0 15px rgba(0,255,255,.1),
+    inset 0 0 10px rgba(0,255,255,.05);
 }
 
 .stat-row span{
   font-weight:800;
   color:#00ffcc;
 }
+
 
 
 /* ===== HEADER PERFECT CENTER ===== */
@@ -1012,7 +1017,7 @@ input{
 
   <div class="stats-title">Chỉ số cơ bản</div>
 
-  <div class="stats-simple">
+  <div class="stats-grid-clean">
 
     <div class="stat-row">
       ❤️ HP <span id="invHpFinal"></span>
