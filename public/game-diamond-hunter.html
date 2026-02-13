@@ -625,9 +625,35 @@ input{
   color:#00ffcc;
 }
 
+
+.back-btn{
+  position:fixed;
+  top:15px;
+  left:15px;
+  width:42px;
+  height:42px;
+  border-radius:50%;
+  border:none;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(135deg,#00f0ff,#00ff99);
+  color:#000;
+  box-shadow:0 0 15px rgba(0,255,255,.6);
+  z-index:2000;
+  transition:.2s;
+}
+
+.back-btn:hover{
+  transform:scale(1.1);
+}
+
+
 </style>
 </head>
 <body>
+
+<button class="back-btn" onclick="goBack()">←</button>
 
 
 <!-- ================= CREATE CHARACTER ================= -->
@@ -1701,17 +1727,46 @@ window.addEventListener("beforeunload",()=>{
 
 
 function goToCombat(){
-
   if(player.deadUntil && Date.now() < player.deadUntil){
     alert("⏳ Nhân vật chưa hồi sinh!");
     return;
   }
-
 savePlayer();
-
-
   location.href = "combat.html";
 }
+
+
+
+function goBack(){
+
+  // Nếu đang ở màn Hub → quay về trang trước
+  if(document.getElementById("hubScreen").classList.contains("active")){
+    location.href = "invest.html"; // đổi nếu bạn có trang chính khác
+    return;
+  }
+
+  // Nếu đang ở Create → quay về index
+  if(document.getElementById("createScreen").classList.contains("active")){
+    location.href = "invest.html";
+    return;
+  }
+
+  // Nếu đang mở Inventory → đóng lại
+  if(!document.getElementById("inventoryPanel").classList.contains("hidden")){
+    toggleInventory();
+    return;
+  }
+
+  // Nếu đang mở Shop → đóng lại
+  if(!document.getElementById("shopPanel").classList.contains("hidden")){
+    toggleShop();
+    return;
+  }
+
+  // Mặc định
+  history.back();
+}
+
 
 
 </script>
