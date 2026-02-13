@@ -688,6 +688,41 @@ html, body{
 
 
 
+/* ===== LOCK OVERLAY ===== */
+
+.mode-card{
+  position:relative;
+}
+
+.lock-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  background:rgba(0,0,0,.6);
+  border-radius:14px;
+}
+
+.mode-card.locked{
+  filter:grayscale(100%);
+  opacity:.6;
+  cursor:not-allowed;
+}
+
+/* ===== UNLOCK EFFECT ===== */
+
+.unlock-flash{
+  animation:unlockFlash .8s ease-out;
+}
+
+@keyframes unlockFlash{
+  0%{box-shadow:0 0 0px gold;}
+  50%{box-shadow:0 0 40px gold;}
+  100%{box-shadow:0 0 0px gold;}
+}
+
 
 </style>
 </head>
@@ -726,9 +761,16 @@ html, body{
       🌾 Farm
     </button>
 
-    <button onclick="setMode('gold')" class="mode-card gold" data-mode="gold">
-      👑 Hoàng Kim
-    </button>
+<button onclick="setMode('gold')" 
+        class="mode-card gold" 
+        data-mode="gold"
+        id="goldBtn">
+
+  👑 Hoàng Kim
+  <span class="lock-overlay" id="goldLock">🔒</span>
+
+</button>
+
 
   </div>
 </div>
@@ -1920,14 +1962,19 @@ function backToHub(){
 recalcStats();
 spawnEnemy();
 render();
+updateGoldLock();
 setMode(gameMode);
 
 function setMode(mode){
 
-  if(mode === "gold" && stage < 10){
-    alert("Cần vượt 10 ải để mở Map Hoàng Kim!");
-    return;
-  }
+const unlocked = localStorage.getItem("gold_unlocked");
+
+if(mode === "gold" && !unlocked){
+  alert("Cần vượt 10 ải Rank để mở Map Hoàng Kim!");
+  return;
+}
+
+
 
   gameMode = mode;
 
@@ -2188,6 +2235,37 @@ function dropRandomItem(){
     rarityText + "🎁 Rơi trang bị: " + finalItem.name + "\n";
 
   savePlayer();
+}
+
+
+
+function updateGoldLock(){
+
+  const maxRankStage =
+    parseInt(localStorage.getItem("arena_stage")) || 1;
+
+  const goldBtn = document.getElementById("goldBtn");
+  const lock = document.getElementById("goldLock");
+
+  if(maxRankStage >= 10){
+
+    if(!localStorage.getItem("gold_unlocked")){
+      localStorage.setItem("gold_unlocked","1");
+
+      goldBtn.classList.add("unlock-flash");
+      setTimeout(()=>{
+        goldBtn.classList.remove("unlock-flash");
+      },800);
+    }
+
+    goldBtn.classList.remove("locked");
+    lock.style.display="none";
+
+  }else{
+
+    goldBtn.classList.add("locked");
+    lock.style.display="flex";
+  }
 }
 
 
