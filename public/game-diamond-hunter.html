@@ -1727,62 +1727,59 @@ function equipItem(index){
 
   const item = player.inventory[index];
 
-  // 🧪 Nếu là potion thì dùng ngay
+  if(!item || !item.type){
+    alert("Vật phẩm này không thể trang bị!");
+    return;
+  }
+
+  // Potion dùng ngay
   if(item.type==="potion"){
-
-    if(player.deadUntil && Date.now() < player.deadUntil){
-      alert("Không thể dùng khi đang chết!");
-      return;
-    }
-
     if(player.hp >= player.maxHp){
       alert("HP đã đầy!");
       return;
     }
 
     player.hp += item.heal;
-
     if(player.hp > player.maxHp)
       player.hp = player.maxHp;
 
-    alert("Hồi +" + item.heal + " HP");
-
-    // Xóa potion sau khi dùng
     player.inventory.splice(index,1);
 
     savePlayer();
-
-
     renderInventory();
     showHub();
     return;
   }
 
-  // 🔥 Trang bị bình thường
-  if(item.type==="consumable"){
+  const validSlots = [
+    "weapon","armor","helmet","gloves",
+    "boots","shoulder","legs","ring","gem"
+  ];
+
+  if(!validSlots.includes(item.type)){
     alert("Không thể trang bị vật phẩm này");
     return;
   }
 
   const slot = item.type;
 
+  // Nếu slot đã có đồ
   if(player.equipment[slot]){
     player.inventory.push(player.equipment[slot]);
   }
 
   item.enhance = item.enhance || 0;
-  player.equipment[slot] = item;
 
+  player.equipment[slot] = item;
   player.inventory.splice(index,1);
 
   recalcStats();
-
   savePlayer();
-
 
   renderInventory();
   showHub();
 }
+
 
 
 

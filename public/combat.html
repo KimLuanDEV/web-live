@@ -1749,16 +1749,34 @@ function switchMode(){
 function dropRandomItem(){
 
   const items = [
-    { name:"Kiếm Hiếm", atk:15 },
-    { name:"Giáp Cứng", def:20 },
-    { name:"Nhẫn Máu", hp:120 }
+    {
+      name:"Kiếm Hiếm",
+      atk:15,
+      type:"weapon",
+      img:"/assets/items/weapon_sword_1.png"
+    },
+    {
+      name:"Giáp Cứng",
+      def:20,
+      type:"armor",
+      img:"/assets/items/armor_silver.png"
+    },
+    {
+      name:"Nhẫn Máu",
+      hp:120,
+      lifesteal:5,
+      type:"ring",
+      img:"/assets/items/ring_power.png"
+    }
   ];
 
-  const item = items[
-    Math.floor(Math.random()*items.length)
-  ];
+  const item = {
+    ...items[Math.floor(Math.random()*items.length)],
+    enhance:0
+  };
 
   if(!player.inventory) player.inventory=[];
+
   player.inventory.push(item);
 
   document.getElementById("battleLog").innerText +=
@@ -1766,6 +1784,10 @@ function dropRandomItem(){
 
   savePlayer();
 }
+
+
+
+
 
 </script>
 
