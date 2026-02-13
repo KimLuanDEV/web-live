@@ -1365,14 +1365,36 @@ function enemyTurn(){
 
   let logText = "";
 
-  if(enemy.isBoss && Math.random() < 0.3){
+if(enemy.isBoss && Math.random() < 0.3){
+
   let rage = Math.floor(enemy.atk * 1.5);
   player.hp -= rage;
+
+  showDamage(".character:not(.enemy)", rage, true);
+  showSlash(".character:not(.enemy)");
+
   document.getElementById("battleLog").innerText += 
     "🔥 BOSS Cuồng Nộ gây " + rage + " sát thương!\n";
+
   render();
+
+  // kiểm tra player chết
+  if(player.hp <= 0){
+    player.hp = 0;
+    playDeath(".character:not(.enemy)");
+    savePlayer();
+    render();
+    setTimeout(()=>{
+      location.href="game-diamond-hunter.html";
+    },1500);
+    return;
+  }
+
+  reduceCooldown();
+  isAttacking = false;   // 🔥 QUAN TRỌNG
   return;
 }
+
 
 
 
