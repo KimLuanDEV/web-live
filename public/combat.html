@@ -724,6 +724,85 @@ html, body{
 }
 
 
+
+/* ===== GOLD UNLOCK POPUP ===== */
+
+.gold-popup{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  animation:fadeIn .4s ease;
+}
+
+.gold-popup.hidden{
+  display:none;
+}
+
+.gold-popup-content{
+  width:85%;
+  max-width:380px;
+  padding:25px 20px;
+  border-radius:20px;
+  text-align:center;
+  background:linear-gradient(180deg,#2b1a00,#000);
+  border:2px solid gold;
+  box-shadow:0 0 40px gold;
+  animation:popScale .4s ease;
+}
+
+.gold-icon{
+  font-size:50px;
+  margin-bottom:10px;
+  animation:goldSpin 3s linear infinite;
+}
+
+.gold-title{
+  font-size:20px;
+  font-weight:900;
+  color:gold;
+  text-shadow:0 0 15px gold;
+  margin-bottom:10px;
+}
+
+.gold-desc{
+  font-size:14px;
+  opacity:.85;
+  margin-bottom:20px;
+}
+
+.gold-btn-popup{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:14px;
+  font-weight:900;
+  font-size:15px;
+  background:linear-gradient(90deg,gold,#ff9900);
+  color:#000;
+  cursor:pointer;
+}
+
+@keyframes popScale{
+  0%{transform:scale(.6); opacity:0;}
+  100%{transform:scale(1); opacity:1;}
+}
+
+@keyframes fadeIn{
+  from{opacity:0;}
+  to{opacity:1;}
+}
+
+@keyframes goldSpin{
+  0%{transform:rotate(0);}
+  100%{transform:rotate(360deg);}
+}
+
+
+
 </style>
 </head>
 
@@ -844,6 +923,31 @@ html, body{
 <div class="log" id="battleLog"></div>
 
 
+
+
+<!-- ===== GOLD UNLOCK POPUP ===== -->
+<div id="goldUnlockPopup" class="gold-popup hidden">
+
+  <div class="gold-popup-content">
+
+    <div class="gold-icon">👑</div>
+
+    <div class="gold-title">
+      MAP HOÀNG KIM ĐÃ MỞ!
+    </div>
+
+    <div class="gold-desc">
+      Bạn đã vượt qua 10 ải Rank.
+      <br>
+      Sức mạnh Hoàng Kim đang chờ đợi...
+    </div>
+
+    <button onclick="closeGoldPopup()" class="gold-btn-popup">
+      BẮT ĐẦU CHINH PHỤC
+    </button>
+
+  </div>
+</div>
 
 
 
@@ -1183,7 +1287,7 @@ function render(){
 
   document.getElementById("stageText").innerText =
     gameMode === "gold"
-      ? " 👑 HOÀNG KIM"
+      ? ""
       : " " + stage;
 
 
@@ -2250,12 +2354,19 @@ function updateGoldLock(){
   if(maxRankStage >= 10){
 
     if(!localStorage.getItem("gold_unlocked")){
+
       localStorage.setItem("gold_unlocked","1");
 
+      // 🔥 HIỆU ỨNG FLASH
       goldBtn.classList.add("unlock-flash");
       setTimeout(()=>{
         goldBtn.classList.remove("unlock-flash");
       },800);
+
+      // 👑 HIỆN POPUP
+      document
+        .getElementById("goldUnlockPopup")
+        .classList.remove("hidden");
     }
 
     goldBtn.classList.remove("locked");
@@ -2266,6 +2377,17 @@ function updateGoldLock(){
     goldBtn.classList.add("locked");
     lock.style.display="flex";
   }
+}
+
+
+
+function closeGoldPopup(){
+
+  document
+    .getElementById("goldUnlockPopup")
+    .classList.add("hidden");
+
+  setMode("gold");
 }
 
 
