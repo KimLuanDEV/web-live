@@ -623,15 +623,22 @@ html, body{
   </button>
 
 <div class="header-title">
-  ARENA - ẢI <span id="stageText">1</span>
+  ARENA<span id="stageText">1</span>
 </div>
 
 
-  <div class="header-right">
-    <div class="header-gold">
-      💎 <span id="headerGold">0</span>
-    </div>
+<div class="header-right">
+  <button onclick="switchMode()" 
+          style="background:#111;color:#00f0ff;border:none;
+                 padding:6px 10px;border-radius:10px;font-weight:800;">
+    MODE
+  </button>
+
+  <div class="header-gold">
+    💎 <span id="headerGold">0</span>
   </div>
+</div>
+
 
 </div>
 
@@ -709,6 +716,7 @@ html, body{
 <script>
 
 let stage = parseInt(localStorage.getItem("arena_stage")) || 1;
+let gameMode = localStorage.getItem("arena_mode") || "rank";
 let player = JSON.parse(localStorage.getItem("hunter_char"));
 let enemy = null;
 let isAttacking = false;
@@ -799,21 +807,38 @@ function recalcStats(){
 /* ===== SPAWN ENEMY ===== */
 function spawnEnemy(){
 
-  const isBoss = stage % 5 === 0;
+  if(gameMode === "rank"){
 
-  const baseHp = 400 + stage * 120;
-  const baseAtk = 60 + stage * 15;
-  const baseDef = 30 + stage * 8;
+    const isBoss = stage % 5 === 0;
 
-  enemy = {
-    maxHp: isBoss ? baseHp * 2 : baseHp,
-    hp:    isBoss ? baseHp * 2 : baseHp,
-    atk:   isBoss ? baseAtk * 1.5 : baseAtk,
-    def:   baseDef,
-    isBoss: isBoss
-  };
+    const baseHp = 400 + stage * 120;
+    const baseAtk = 60 + stage * 15;
+    const baseDef = 30 + stage * 8;
 
+    enemy = {
+      maxHp: isBoss ? baseHp * 2 : baseHp,
+      hp:    isBoss ? baseHp * 2 : baseHp,
+      atk:   isBoss ? baseAtk * 1.5 : baseAtk,
+      def:   baseDef,
+      isBoss: isBoss
+    };
+
+  }else{
+
+    // 🌾 FARM MODE
+    const scale = player.level * 1.2;
+
+    enemy = {
+      maxHp: 300 + scale * 80,
+      hp:    300 + scale * 80,
+      atk:   40 + scale * 12,
+      def:   20 + scale * 6,
+      isBoss:false
+    };
+
+  }
 }
+
 
 
 /* ===== LEVEL UP ===== */
@@ -1152,12 +1177,26 @@ playDeath(".character.enemy");
 
     player.exp += 100;
 
-  const diamondDrop = Math.floor(
-  20 + stage * 5 + Math.random() * (30 + stage * 8)
-);
+let diamondDrop;
+
+if(gameMode === "rank"){
+  diamondDrop = Math.floor(
+    15 + stage * 3 + Math.random()*20
+  );
+}else{
+  diamondDrop = Math.floor(
+    25 + player.level * 5 + Math.random()*40
+  );
+}
+
 
 
     player.gold += diamondDrop;
+
+    if(gameMode === "farm" && Math.random() < 0.25){
+  dropRandomItem();
+}
+
 
     checkLevelUp();
     savePlayer();
@@ -1174,8 +1213,12 @@ updateCooldownUI();
 
     
 setTimeout(()=>{
-  stage++; // 🔥 tăng ải
+
+if(gameMode === "rank"){
+  stage++;
   localStorage.setItem("arena_stage", stage);
+}
+
 
   spawnEnemy();
 
@@ -1311,11 +1354,24 @@ if(enemy.hp <= 0){
 
   player.exp += 100;
 
-  const diamondDrop = Math.floor(
-    20 + stage * 5 + Math.random() * (30 + stage * 8)
+let diamondDrop;
+
+if(gameMode === "rank"){
+  diamondDrop = Math.floor(
+    15 + stage * 3 + Math.random()*20
   );
+}else{
+  diamondDrop = Math.floor(
+    25 + player.level * 5 + Math.random()*40
+  );
+}
+
 
   player.gold += diamondDrop;
+
+  if(gameMode === "farm" && Math.random() < 0.25){
+  dropRandomItem();
+}
 
   checkLevelUp();
   savePlayer();
@@ -1332,8 +1388,11 @@ updateCooldownUI();
 
 
   setTimeout(()=>{
-    stage++; // 🔥 tăng ải
-    localStorage.setItem("arena_stage", stage);
+if(gameMode === "rank"){
+  stage++;
+  localStorage.setItem("arena_stage", stage);
+}
+
 
     spawnEnemy();
     document
@@ -1489,9 +1548,16 @@ if(enemy.isBoss && Math.random() < 0.3){
     enemy.hp = 0;
     playDeath(".character.enemy");
 
+    if(gameMode === "farm" && Math.random() < 0.25){
+  dropRandomItem();
+}
+
     setTimeout(()=>{
-      stage++; // 🔥 tăng ải
-      localStorage.setItem("arena_stage", stage);
+if(gameMode === "rank"){
+  stage++;
+  localStorage.setItem("arena_stage", stage);
+}
+
 
       spawnEnemy();
       document
@@ -1605,6 +1671,52 @@ function backToHub(){
 recalcStats();
 spawnEnemy();
 render();
+
+
+
+function switchMode(){
+
+  if(gameMode === "rank"){
+    gameMode = "farm";
+    stage = 1;
+  }else{
+    gameMode = "rank";
+    stage = parseInt(localStorage.getItem("arena_stage")) || 1;
+  }
+
+  localStorage.setItem("arena_mode", gameMode);
+
+  spawnEnemy();
+  render();
+
+  document.getElementById("battleLog").innerText =
+    gameMode === "rank"
+    ? "🏆 Chế độ Vượt Ải"
+    : "🌾 Chế độ Cày Quái";
+}
+
+
+
+function dropRandomItem(){
+
+  const items = [
+    { name:"Kiếm Hiếm", atk:15 },
+    { name:"Giáp Cứng", def:20 },
+    { name:"Nhẫn Máu", hp:120 }
+  ];
+
+  const item = items[
+    Math.floor(Math.random()*items.length)
+  ];
+
+  if(!player.inventory) player.inventory=[];
+  player.inventory.push(item);
+
+  document.getElementById("battleLog").innerText +=
+    "🎁 Rơi trang bị: " + item.name + "\n";
+
+  savePlayer();
+}
 
 </script>
 
