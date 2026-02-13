@@ -1308,6 +1308,10 @@ if(enemy.hp <= 0){
 
   render();
 
+reduceCooldown();
+updateCooldownUI();
+
+
   setTimeout(()=>{
     spawnEnemy();
     document
