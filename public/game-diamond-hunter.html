@@ -921,39 +921,39 @@ input{
 
   <div class="equip-grid">
 
-    <div class="equip-slot" onclick="unequipItem('weapon')">
+    <div class="equip-slot" onclick="openEnhance('weapon')">
       ⚔ <span id="weaponSlot">Trống</span>
     </div>
 
-    <div class="equip-slot" onclick="unequipItem('armor')">
+    <div class="equip-slot" onclick="openEnhance('armor')">
       🛡 <span id="armorSlot">Trống</span>
     </div>
 
-    <div class="equip-slot" onclick="unequipItem('helmet')">
+    <div class="equip-slot" onclick="openEnhance('helmet')">
       🪖 <span id="helmetSlot">Trống</span>
     </div>
 
-    <div class="equip-slot" onclick="unequipItem('gloves')">
+    <div class="equip-slot" onclick="openEnhance('gloves')">
       🧤 <span id="glovesSlot">Trống</span>
     </div>
 
-    <div class="equip-slot" onclick="unequipItem('boots')">
+    <div class="equip-slot" onclick="openEnhance('boots')">
       👢 <span id="bootsSlot">Trống</span>
     </div>
 
-    <div class="equip-slot" onclick="unequipItem('shoulder')">
+    <div class="equip-slot" onclick="openEnhance('shoulder')">
       🛡️ <span id="shoulderSlot">Trống</span>
     </div>
 
-    <div class="equip-slot" onclick="unequipItem('legs')">
+    <div class="equip-slot" onclick="openEnhance('legs')">
       🦿 <span id="legsSlot">Trống</span>
     </div>
 
-    <div class="equip-slot" onclick="unequipItem('ring')">
+    <div class="equip-slot" onclick="openEnhance('ring')">
       💍 <span id="ringSlot">Trống</span>
     </div>
 
-    <div class="equip-slot" onclick="unequipItem('gem')">
+    <div class="equip-slot" onclick="openEnhance('gem')">
       🔮 <span id="gemSlot">Trống</span>
     </div>
 
@@ -1027,6 +1027,37 @@ input{
   </div>
 </div>
 
+
+
+
+
+<div id="enhanceModal" class="inventory hidden">
+  <div class="inventory-box">
+
+    <div class="inventory-header">
+      🔥 Cường Hóa
+      <span class="close-btn" onclick="closeEnhance()">✕</span>
+    </div>
+
+    <div id="enhanceItemName"
+         style="text-align:center;font-weight:800;margin:15px 0"></div>
+
+    <div id="enhanceInfo"
+         style="text-align:center;margin-bottom:15px"></div>
+
+<button class="btn" onclick="enhanceItem()">
+  🔥 Cường Hóa
+</button>
+
+<button class="btn secondary"
+        style="margin-top:10px;background:#111;color:#ff5555"
+        onclick="confirmUnequip()">
+  🗑 Tháo trang bị
+</button>
+
+
+  </div>
+</div>
 
 
 <script>
@@ -1229,12 +1260,17 @@ if(critEl) critEl.innerText = player.critRate;
 // ===== EQUIPMENT =====
 Object.keys(player.equipment).forEach(slot=>{
   const el = document.getElementById(slot + "Slot");
-  if(el){
-    el.innerText = player.equipment[slot]
-      ? player.equipment[slot].name
-      : "Trống";
+  if(!el) return;
+
+  const item = player.equipment[slot];
+
+  if(item){
+    el.innerText = item.name + " +" + (item.enhance || 0);
+  }else{
+    el.innerText = "Trống";
   }
 });
+
 
 
         
@@ -1410,9 +1446,13 @@ if(headerGold && player){
   Object.keys(player.equipment).forEach(slot=>{
     const el = document.getElementById(slot + "Slot");
     if(el){
-      el.innerText = player.equipment[slot]
-        ? player.equipment[slot].name
-        : "Trống";
+if(player.equipment[slot]){
+  const it = player.equipment[slot];
+  el.innerText = it.name + " +" + (it.enhance || 0);
+}else{
+  el.innerText = "Trống";
+}
+
     }
   });
 
@@ -1468,7 +1508,9 @@ function equipItem(index){
     player.inventory.push(player.equipment[slot]);
   }
 
+  item.enhance = item.enhance || 0;
   player.equipment[slot] = item;
+
   player.inventory.splice(index,1);
 
   recalcStats();
@@ -1528,15 +1570,21 @@ function recalcStats(){
   player.def   += player.level * 8;
 
   // Equipment bonus
-  Object.values(player.equipment).forEach(item=>{
-    if(!item) return;
-    if(item.atk) player.atk += item.atk;
-    if(item.def) player.def += item.def;
-    if(item.hp)  player.maxHp += item.hp;
-    if(item.dodge) player.dodge += item.dodge;
-    if(item.critRate) player.critRate += item.critRate;
-    if(item.regen) player.regen += item.regen;
-  });
+Object.values(player.equipment).forEach(item=>{
+  if(!item) return;
+
+  const enhance = item.enhance || 0;
+  const multi = 1 + (enhance * 0.05);
+
+  if(item.atk) player.atk += Math.floor(item.atk * multi);
+  if(item.def) player.def += Math.floor(item.def * multi);
+  if(item.hp)  player.maxHp += Math.floor(item.hp * multi);
+
+  if(item.dodge) player.dodge += item.dodge;
+  if(item.critRate) player.critRate += item.critRate;
+  if(item.regen) player.regen += item.regen;
+});
+
 
   if(player.hp > player.maxHp)
     player.hp = player.maxHp;
@@ -1846,6 +1894,116 @@ function handleBack(){
   }
 
   // Nếu đang create → không back
+}
+
+
+
+let selectedEnhanceSlot = null;
+
+function openEnhance(slot){
+
+  const item = player.equipment[slot];
+  if(!item) return;
+
+  selectedEnhanceSlot = slot;
+
+  document.getElementById("enhanceModal")
+    .classList.remove("hidden");
+
+  updateEnhanceUI();
+}
+
+function closeEnhance(){
+  document.getElementById("enhanceModal")
+    .classList.add("hidden");
+}
+
+function updateEnhanceUI(){
+
+  const item = player.equipment[selectedEnhanceSlot];
+  const lv = item.enhance || 0;
+
+  let rate = 100;
+  let cost = 100;
+
+  if(lv >= 5 && lv < 10){
+    rate = 70;
+    cost = 300;
+  }
+
+  if(lv >= 10){
+    rate = 40;
+    cost = 600;
+  }
+
+  document.getElementById("enhanceItemName")
+    .innerText = item.name + " +" + lv;
+
+  document.getElementById("enhanceInfo")
+    .innerHTML =
+      `Tỉ lệ thành công: ${rate}%<br>
+       Chi phí: ${cost} 💎`;
+}
+
+function enhanceItem(){
+
+  const item = player.equipment[selectedEnhanceSlot];
+  let lv = item.enhance || 0;
+
+  let rate = 100;
+  let cost = 100;
+
+  if(lv >= 5 && lv < 10){
+    rate = 70;
+    cost = 300;
+  }
+
+  if(lv >= 10){
+    rate = 40;
+    cost = 600;
+  }
+
+  if(player.gold < cost){
+    alert("Không đủ 💎");
+    return;
+  }
+
+  player.gold -= cost;
+
+  if(Math.random()*100 <= rate){
+    item.enhance = lv + 1;
+    alert("🔥 Thành công! +" + item.enhance);
+  }else{
+    if(lv >= 10){
+      item.enhance = Math.max(0, lv - 1);
+      alert("💥 Thất bại! Giảm cấp!");
+    }else{
+      alert("💥 Thất bại!");
+    }
+  }
+
+  recalcStats();
+  savePlayer();
+
+  updateEnhanceUI();
+  renderInventory();
+  showHub();
+}
+
+
+function confirmUnequip(){
+
+  if(!selectedEnhanceSlot) return;
+
+  const item = player.equipment[selectedEnhanceSlot];
+  if(!item) return;
+
+  if(!confirm("Tháo " + item.name + " ?"))
+    return;
+
+  unequipItem(selectedEnhanceSlot);
+
+  closeEnhance();
 }
 
 
