@@ -1138,54 +1138,54 @@ input{
   <div class="equip-grid">
 
 
-      <div class="equip-slot" onclick="openEnhance('ring')">
+     <div class="equip-slot" onclick="openEquippedItem('ring')">
     <div class="equip-label">Nhẫn</div>
     <div id="ringSlot" class="equip-content"></div>
   </div>
 
-  <div class="equip-slot" onclick="openEnhance('helmet')">
+  <div class="equip-slot" onclick="openEquippedItem('helmet')">
     <div class="equip-label">Mũ</div>
     <div id="helmetSlot" class="equip-content"></div>
   </div>
 
 
-    <div class="equip-slot" onclick="openEnhance('gem')">
+   <div class="equip-slot" onclick="openEquippedItem('gem')">
     <div class="equip-label">Ngọc</div>
     <div id="gemSlot" class="equip-content"></div>
   </div>
 
 
-  <div class="equip-slot" onclick="openEnhance('weapon')">
+ <div class="equip-slot" onclick="openEquippedItem('weapon')">
     <div class="equip-label">Vũ khí</div>
     <div id="weaponSlot" class="equip-content"></div>
   </div>
 
 
-    <div class="equip-slot" onclick="openEnhance('armor')">
+   <div class="equip-slot" onclick="openEquippedItem('armor')">
     <div class="equip-label">Giáp</div>
     <div id="armorSlot" class="equip-content"></div>
   </div>
 
 
-    <div class="equip-slot" onclick="openEnhance('shoulder')">
+    <div class="equip-slot" onclick="openEquippedItem('shoulder')">
     <div class="equip-label">Vai</div>
     <div id="shoulderSlot" class="equip-content"></div>
   </div>
 
 
-  <div class="equip-slot" onclick="openEnhance('gloves')">
+ <div class="equip-slot" onclick="openEquippedItem('gloves')">
     <div class="equip-label">Găng</div>
     <div id="glovesSlot" class="equip-content"></div>
   </div>
   
 
-  <div class="equip-slot" onclick="openEnhance('legs')">
+ <div class="equip-slot" onclick="openEquippedItem('legs')">
     <div class="equip-label">Chân</div>
     <div id="legsSlot" class="equip-content"></div>
   </div>
 
 
-   <div class="equip-slot" onclick="openEnhance('boots')">
+   <div class="equip-slot" onclick="openEquippedItem('boots')">
     <div class="equip-label">Giày</div>
     <div id="bootsSlot" class="equip-content"></div>
   </div>
@@ -2542,11 +2542,34 @@ function openInventoryItem(index){
     .innerHTML = html;
 }
 
+
 function closeInventoryItemModal(){
   document.getElementById("inventoryItemModal")
     .classList.add("hidden");
+
   selectedInventoryIndex = null;
+  selectedEquippedSlot = null;
+
+  // Reset nút về mặc định
+  const equipBtn = document.querySelector(
+    "#inventoryItemModal .btn"
+  );
+
+  const sellBtn = document.querySelector(
+    "#inventoryItemModal .btn.secondary"
+  );
+
+  equipBtn.style.display = "block";
+  equipBtn.innerText = "✅ Trang bị";
+  equipBtn.onclick = confirmEquipItem;
+
+  sellBtn.innerText = "🗑 Bán";
+  sellBtn.onclick = confirmSellItem;
 }
+
+
+
+
 
 function confirmEquipItem(){
   if(selectedInventoryIndex===null) return;
@@ -2560,6 +2583,75 @@ function confirmSellItem(){
   closeInventoryItemModal();
 }
 
+
+
+let selectedEquippedSlot = null;
+
+function openEquippedItem(slot){
+
+  const item = player.equipment[slot];
+  if(!item) return;
+
+  selectedEquippedSlot = slot;
+
+  document.getElementById("inventoryItemModal")
+    .classList.remove("hidden");
+
+  document.getElementById("invModalName")
+    .innerText = item.name + " +" + (item.enhance || 0);
+
+  document.getElementById("invModalImg")
+    .src = item.img;
+
+  const enhance = item.enhance || 0;
+  const multi = 1 + enhance * 0.05;
+
+  function statRow(label, value, suffix=""){
+    if(!value) return "";
+    return `
+      <div style="display:flex;justify-content:space-between">
+        <span>${label}</span>
+        <span>
+          ${Math.floor(value * multi)}${suffix}
+        </span>
+      </div>
+    `;
+  }
+
+  let html = "";
+
+  html += statRow("⚔ ATK", item.atk);
+  html += statRow("🛡 DEF", item.def);
+  html += statRow("❤️ HP", item.hp);
+  html += statRow("💨 Né tránh", item.dodge, "%");
+  html += statRow("💥 Crit", item.critRate, "%");
+  html += statRow("🩸 Hút máu", item.lifesteal, "%");
+  html += statRow("♻ Regen", item.regen);
+
+  html += `
+    <div style="margin-top:10px;opacity:.8">
+      🔥 Cường hóa +${enhance}
+    </div>
+  `;
+
+  document.getElementById("invModalStats")
+    .innerHTML = html;
+
+  // Ẩn nút Trang bị
+  document.querySelector("#inventoryItemModal .btn")
+    .style.display = "none";
+
+  // Đổi nút Bán thành Tháo
+  const sellBtn = document.querySelector(
+    "#inventoryItemModal .btn.secondary"
+  );
+
+  sellBtn.innerText = "🗑 Tháo trang bị";
+  sellBtn.onclick = function(){
+    unequipItem(slot);
+    closeInventoryItemModal();
+  };
+}
 
 
 </script>
