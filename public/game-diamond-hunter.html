@@ -1047,6 +1047,10 @@ input{
   ♻ Hồi máu /s <span id="invRegenFinal"></span>
     </div>
 
+    <div class="stat-row">
+  🩸 Hút máu <span id="invLifestealFinal"></span>
+    </div>
+
 
   </div>
 
@@ -1326,6 +1330,7 @@ function createCharacter(){
     critRate:config.critRate,
     critDamage:1.5,
     regen:0.5,
+    lifesteal:0,
     exp:0,
     gold:500,
     inventory:[],
@@ -1566,6 +1571,7 @@ if(headerGold && player){
   const critEl = document.getElementById("invCritFinal");
   const critDmgEl = document.getElementById("invCritDmgFinal");
   const regenEl = document.getElementById("invRegenFinal");
+  const lifestealEl = document.getElementById("invLifestealFinal");
 
 
   if(hpEl)   hpEl.innerText   = player.hp + " / " + player.maxHp;
@@ -1574,6 +1580,7 @@ if(headerGold && player){
   if(dodgeEl)dodgeEl.innerText= player.dodge + "%";
   if(critEl) critEl.innerText = player.critRate + "%";
   if(regenEl) regenEl.innerText = player.regen;
+  if(lifestealEl) lifestealEl.innerText = player.lifesteal + "%";
   if(critDmgEl) critDmgEl.innerText =
       (player.critDamage * 100) + "%";
 
@@ -1746,6 +1753,7 @@ function recalcStats(){
   player.critRate = config.critRate;
   player.regen = 0.5;
   player.critDamage = 1.5;
+  player.lifesteal = 0;
 
   // Level bonus
   player.maxHp += player.level * 50;
@@ -1766,6 +1774,8 @@ Object.values(player.equipment).forEach(item=>{
   if(item.dodge) player.dodge += item.dodge;
   if(item.critRate) player.critRate += item.critRate;
   if(item.regen) player.regen += item.regen;
+  if(item.lifesteal) player.lifesteal += item.lifesteal;
+
 });
 
 

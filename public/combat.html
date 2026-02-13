@@ -788,6 +788,7 @@ function recalcStats(){
   player.dodge = config.dodge;
   player.critRate = config.critRate;
   player.critDamage = 1.5;
+  player.lifesteal = 0;
 
   if(player.equipment){
     Object.values(player.equipment).forEach(item=>{
@@ -797,6 +798,7 @@ function recalcStats(){
       if(item.hp)  player.maxHp += item.hp;
       if(item.dodge) player.dodge += item.dodge;
       if(item.critRate) player.critRate += item.critRate;
+      if(item.lifesteal) player.lifesteal += item.lifesteal;
     });
   }
 
@@ -958,7 +960,15 @@ function showDamage(targetClass, dmg, isCrit=false){
 
   const dmgEl = document.createElement("div");
   dmgEl.className="damage";
+
+
+  if(dmg > 0){
   dmgEl.innerText = "-" + dmg;
+}else{
+  dmgEl.innerText = "+" + Math.abs(dmg);
+  dmgEl.style.color = "#00ff99";
+}
+
 
   if(isCrit){
     dmgEl.classList.add("crit");
@@ -1133,6 +1143,26 @@ function attack(){
 
     dmg = Math.floor(dmg);
     enemy.hp -= dmg;
+
+
+// ===== LIFE STEAL =====
+if(player.lifesteal > 0){
+
+  const heal = Math.floor(
+    dmg * (player.lifesteal / 100)
+  );
+
+  player.hp += heal;
+
+  if(player.hp > player.maxHp)
+    player.hp = player.maxHp;
+
+  showDamage(".character:not(.enemy)", -heal);
+
+}
+
+
+
 
     logText += "Bạn gây "+dmg+" sát thương.\n";
 
@@ -1336,6 +1366,25 @@ function useSkill(skillId){
 if(dmg>0){
   dmg = Math.floor(dmg);
   enemy.hp -= dmg;
+
+
+// ===== LIFE STEAL =====
+if(player.lifesteal > 0){
+
+  const heal = Math.floor(
+    dmg * (player.lifesteal / 100)
+  );
+
+  player.hp += heal;
+
+  if(player.hp > player.maxHp)
+    player.hp = player.maxHp;
+
+  showDamage(".character:not(.enemy)", -heal);
+
+}
+
+
 
   showDamage(".character.enemy", dmg, true);
   showSlash(".character.enemy");
