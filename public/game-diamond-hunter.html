@@ -1300,6 +1300,44 @@ input{
 </div>
 
 
+
+<!-- ===== INVENTORY ITEM MODAL ===== -->
+<div id="inventoryItemModal" class="inventory hidden">
+  <div class="inventory-box">
+
+    <div class="inventory-header-pro">
+      <div class="inv-title-pro" id="invModalName"></div>
+      <button class="inv-close-pro"
+              onclick="closeInventoryItemModal()">✕</button>
+    </div>
+
+    <div style="text-align:center;margin:20px 0">
+      <img id="invModalImg"
+           style="width:150px;height:150px;object-fit:contain;
+                  filter:drop-shadow(0 0 20px #00f0ff)">
+    </div>
+
+    <div id="invModalStats"
+         style="font-size:14px;margin-bottom:20px;opacity:.9">
+    </div>
+
+    <button class="btn"
+            onclick="confirmEquipItem()">
+      ✅ Trang bị
+    </button>
+
+    <button class="btn secondary"
+            style="margin-top:10px;background:#111;color:#ff5555"
+            onclick="confirmSellItem()">
+      🗑 Bán
+    </button>
+
+  </div>
+</div>
+
+
+
+
 <script>
 
 let regenInterval = null;
@@ -1705,7 +1743,8 @@ if(item.enhance){
       };
       div.appendChild(sell);
 
-      div.onclick = ()=>equipItem(index);
+      div.onclick = ()=>openInventoryItem(index);
+
 
       grid.appendChild(div);
     });
@@ -2413,6 +2452,62 @@ function confirmUnequip(){
   unequipItem(selectedEnhanceSlot);
 
   closeEnhance();
+}
+
+
+
+let selectedInventoryIndex = null;
+
+function openInventoryItem(index){
+
+  const item = player.inventory[index];
+  if(!item) return;
+
+  selectedInventoryIndex = index;
+
+  document.getElementById("inventoryItemModal")
+    .classList.remove("hidden");
+
+  document.getElementById("invModalName")
+    .innerText = item.name;
+
+  document.getElementById("invModalImg")
+    .src = item.img;
+
+  let statsHTML = "";
+
+  if(item.atk) statsHTML += "⚔ ATK +" + item.atk + "<br>";
+  if(item.def) statsHTML += "🛡 DEF +" + item.def + "<br>";
+  if(item.hp) statsHTML += "❤️ HP +" + item.hp + "<br>";
+  if(item.dodge) statsHTML += "💨 Né +" + item.dodge + "%<br>";
+  if(item.critRate) statsHTML += "💥 Crit +" + item.critRate + "%<br>";
+  if(item.lifesteal) statsHTML += "🩸 Hút máu +" + item.lifesteal + "%<br>";
+  if(item.regen) statsHTML += "♻ Regen +" + item.regen + "<br>";
+
+  if(item.enhance){
+    statsHTML += "<br>🔥 Cường hóa +" + item.enhance;
+  }
+
+  document.getElementById("invModalStats")
+    .innerHTML = statsHTML;
+}
+
+function closeInventoryItemModal(){
+  document.getElementById("inventoryItemModal")
+    .classList.add("hidden");
+  selectedInventoryIndex = null;
+}
+
+function confirmEquipItem(){
+  if(selectedInventoryIndex===null) return;
+  equipItem(selectedInventoryIndex);
+  closeInventoryItemModal();
+}
+
+function confirmSellItem(){
+  if(selectedInventoryIndex===null) return;
+  sellItem(selectedInventoryIndex);
+  closeInventoryItemModal();
 }
 
 
