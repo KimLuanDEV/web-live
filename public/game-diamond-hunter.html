@@ -626,7 +626,7 @@ input{
 }
 
 
-/* ===== HEADER ===== */
+/* ===== HEADER FIXED CENTER ===== */
 
 .game-header{
   position:fixed;
@@ -639,31 +639,33 @@ input{
   align-items:center;
   justify-content:space-between;
   padding:0 15px;
-  z-index:1000;
+  z-index:1;
 
   box-shadow:
     0 0 25px rgba(0,255,255,.2),
     inset 0 -1px 0 rgba(0,255,255,.2);
 }
 
+/* TITLE CĂN GIỮA TUYỆT ĐỐI */
 .header-title{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
   font-weight:800;
   font-size:16px;
   color:#00f0ff;
-  text-align:center;
   letter-spacing:1px;
+  pointer-events:none; /* không chặn click */
 }
 
+/* Left & Right giữ nguyên */
 .header-btn{
   background:none;
   border:none;
   color:#00f0ff;
   font-size:22px;
   cursor:pointer;
-}
-
-.header-btn:hover{
-  transform:scale(1.1);
+  z-index:2;
 }
 
 .header-gold{
@@ -673,7 +675,9 @@ input{
   padding:6px 12px;
   border-radius:20px;
   box-shadow:0 0 15px rgba(255,215,0,.4);
+  z-index:2;
 }
+
 
 .screen{
   display:none;
@@ -694,7 +698,7 @@ input{
   </button>
 
   <div class="header-title">
-    💎 Thợ Săn Kim Cương
+     Diamond Hunter
   </div>
 
   <div class="header-right">
@@ -1829,7 +1833,7 @@ function handleBack(){
   // Nếu đang ở hub → confirm
   if(document.getElementById("hubScreen").classList.contains("active")){
     if(confirm("Thoát game?")){
-      location.href = "/";
+      location.href = "invest.html";
     }
     return;
   }
