@@ -640,7 +640,8 @@ input{
   grid-template-columns: 1fr auto 1fr;
   align-items:center;
 
-  padding:0 15px;
+  padding:0;
+
   z-index:1000;
 
   box-shadow:
@@ -656,7 +657,11 @@ input{
   color:#00f0ff;
   font-size:22px;
   cursor:pointer;
+
+  padding-left:12px;   /* khoảng click */
+  padding-right:12px;
 }
+
 
 /* CENTER */
 .header-title{
@@ -670,7 +675,9 @@ input{
 /* RIGHT */
 .header-right{
   justify-self:end;
+  padding-right:15px;  /* giữ gold không sát mép */
 }
+
 
 .header-gold{
   font-weight:700;
