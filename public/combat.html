@@ -415,129 +415,109 @@ function attack(){
   if(isAttacking) return;
   isAttacking = true;
 
-  let logText="";
+  let logText = "";
 
-  /* PLAYER ATTACK */
+  /* ===== PLAYER ATTACK ===== */
 
-  // Enemy dodge
   if(Math.random()*100 < 5){
     logText += "👹 Quái né đòn!\n";
   }else{
 
-let dmg = player.atk - enemy.def*0.5;
-dmg = Math.max(0, dmg);
+    let dmg = player.atk - enemy.def*0.5;
+    dmg = Math.max(0, dmg);
 
-let isCrit = false;
+    let isCrit = false;
 
-if(Math.random()*100 < player.critRate){
-  dmg *= player.critDamage;
-  isCrit = true;
-  logText += "💥 CHÍ MẠNG!\n";
-}
+    if(Math.random()*100 < player.critRate){
+      dmg *= player.critDamage;
+      isCrit = true;
+      logText += "💥 CHÍ MẠNG!\n";
+    }
 
-dmg = Math.floor(dmg);
-enemy.hp -= dmg;
+    dmg = Math.floor(dmg);
+    enemy.hp -= dmg;
 
-logText += "Bạn gây "+dmg+" sát thương.\n";
+    logText += "Bạn gây "+dmg+" sát thương.\n";
 
-/* ===== EFFECT ===== */
-showDamage(".character.enemy", dmg, isCrit);
+    /* EFFECT */
+    showDamage(".character.enemy", dmg, isCrit);
+    showSlash(".character.enemy");
 
-showSlash(".character.enemy");
+    if(isCrit){
+      document.querySelector(".arena")
+        .classList.add("screenShake");
 
-if(isCrit){
-  document.querySelector(".arena")
-    .classList.add("screenShake");
+      setTimeout(()=>{
+        document.querySelector(".arena")
+          .classList.remove("screenShake");
+      },300);
+    }
 
-  setTimeout(()=>{
-    document.querySelector(".arena")
-      .classList.remove("screenShake");
-  },300);
-}
+    const enemyAvatar =
+      document.querySelector(".enemy .avatar");
 
+    enemyAvatar.classList.add("hit","flash");
 
-
-const enemyAvatar =
-  document.querySelector(".enemy .avatar");
-
-enemyAvatar.classList.add("hit","flash");
-
-setTimeout(()=>{
-  enemyAvatar.classList.remove("hit","flash");
-},200);
-
+    setTimeout(()=>{
+      enemyAvatar.classList.remove("hit","flash");
+    },200);
   }
 
-if(enemy.hp <= 0){
+  /* ===== KIỂM TRA QUÁI CHẾT ===== */
+  if(enemy.hp <= 0){
 
-document.body.style.transition="0.3s";
-document.body.style.filter="blur(2px)";
+    enemy.hp = 0;
 
-setTimeout(()=>{
-  document.body.style.filter="none";
-},300);
+    document.body.style.transition="0.3s";
+    document.body.style.filter="blur(2px)";
 
+    setTimeout(()=>{
+      document.body.style.filter="none";
+    },300);
 
+    player.exp += 100;
 
-  enemy.hp = 0;
+    const diamondDrop = Math.floor(
+      20 + Math.random() * (30 + player.level * 5)
+    );
 
-  // ===== EXP =====
-  player.exp += 100;
+    player.gold += diamondDrop;
 
-  // ===== DIAMOND DROP =====
-  const diamondDrop = Math.floor(
-    20 + Math.random() * (30 + player.level * 5)
-  );
+    checkLevelUp();
+    savePlayer();
 
-  player.gold += diamondDrop;
+    logText +=
+      "🎉 Hạ quái! +100 EXP\n" +
+      `💎 Nhận ${diamondDrop} kim cương\n`;
 
-  // ===== ITEM DROP CHANCE =====
-  const dropChance = 15 + player.level * 2; // %
+    document.getElementById("battleLog").innerText = logText;
+    render();
 
-  let itemDropText = "";
+    setTimeout(()=>{
+      spawnEnemy();
+      render();
+      document.getElementById("battleLog").innerText = "";
+      isAttacking = false;
+    },1500);
 
-  if(Math.random() * 100 < dropChance){
-
-    const lootTable = [
-      { icon:"🗡", name:"Kiếm rỉ sét", atk:15, type:"weapon", price:120 },
-      { icon:"🛡", name:"Giáp cũ", def:12, type:"armor", price:100 },
-      { icon:"🪖", name:"Mũ sắt mẻ", def:8, type:"helmet", price:90 },
-      { icon:"💍", name:"Nhẫn may mắn", atk:10, type:"ring", price:150 },
-      { icon:"🔮", name:"Ngọc hồi phục", hp:120, type:"gem", price:180 }
-    ];
-
-    const randomItem =
-      lootTable[Math.floor(Math.random()*lootTable.length)];
-
-    player.inventory.push(randomItem);
-
-    itemDropText =
-      `🎁 Nhặt được: ${randomItem.icon} ${randomItem.name}\n`;
+    return;
   }
 
-  checkLevelUp();
-  savePlayer();
-
-  logText +=
-    "🎉 Hạ quái! +100 EXP\n" +
-    `💎 Nhận ${diamondDrop} kim cương\n` +
-    itemDropText;
-
+  /* ===== UPDATE UI SAU PLAYER ===== */
   document.getElementById("battleLog").innerText = logText;
+  savePlayer();
   render();
 
+  /* ===== DELAY TRƯỚC KHI QUÁI PHẢN CÔNG ===== */
   setTimeout(()=>{
-    spawnEnemy();
-    render();
-    document.getElementById("battleLog").innerText = "";
-    isAttacking=false;
-  },1500);
-
-  return;
+    enemyTurn();
+  },600);
 }
 
 
-  /* ENEMY ATTACK */
+function enemyTurn(){
+
+  let logText = "";
 
   if(Math.random()*100 < player.dodge){
     logText += "💨 Bạn né được đòn!\n";
@@ -550,47 +530,40 @@ setTimeout(()=>{
     player.hp -= dmg;
 
     showDamage(".character:not(.enemy)", dmg);
-
     showSlash(".character:not(.enemy)");
 
+    const playerAvatar =
+      document.querySelector(".character:not(.enemy) .avatar");
 
+    playerAvatar.classList.add("hit","flash");
 
-const playerAvatar =
-  document.querySelector(".character:not(.enemy) .avatar");
-
-playerAvatar.classList.add("hit","flash");
-
-setTimeout(()=>{
-  playerAvatar.classList.remove("hit","flash");
-},200);
+    setTimeout(()=>{
+      playerAvatar.classList.remove("hit","flash");
+    },200);
 
     logText += "Quái gây "+dmg+" sát thương.\n";
   }
 
+  document.getElementById("battleLog").innerText += logText;
+
   if(player.hp <= 0){
-    player.hp=0;
-    player.deadUntil =
-      Date.now()+(24*60*60*1000);
-
+    player.hp = 0;
     savePlayer();
-
-    logText += "💀 Bạn đã bị hạ!";
-    document.getElementById("battleLog").innerText=logText;
+    render();
 
     setTimeout(()=>{
       location.href="game-diamond-hunter.html";
-    },1500);
+    },1000);
 
     return;
   }
 
-  document.getElementById("battleLog").innerText = logText;
-
   savePlayer();
   render();
 
-  setTimeout(()=>isAttacking=false,300);
+  isAttacking = false;
 }
+
 
 /* ===== BACK ===== */
 function backToHub(){
