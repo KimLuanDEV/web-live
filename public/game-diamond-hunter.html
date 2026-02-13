@@ -626,34 +626,85 @@ input{
 }
 
 
-.back-btn{
+/* ===== HEADER ===== */
+
+.game-header{
   position:fixed;
-  top:15px;
-  left:15px;
-  width:42px;
-  height:42px;
-  border-radius:50%;
-  border:none;
-  font-size:18px;
-  font-weight:700;
-  cursor:pointer;
-  background:linear-gradient(135deg,#00f0ff,#00ff99);
-  color:#000;
-  box-shadow:0 0 15px rgba(0,255,255,.6);
-  z-index:2000;
-  transition:.2s;
+  top:0;
+  left:0;
+  right:0;
+  height:60px;
+  background:linear-gradient(90deg,#050b12,#0b1a22);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 15px;
+  z-index:1000;
+
+  box-shadow:
+    0 0 25px rgba(0,255,255,.2),
+    inset 0 -1px 0 rgba(0,255,255,.2);
 }
 
-.back-btn:hover{
+.header-title{
+  font-weight:800;
+  font-size:16px;
+  color:#00f0ff;
+  text-align:center;
+  letter-spacing:1px;
+}
+
+.header-btn{
+  background:none;
+  border:none;
+  color:#00f0ff;
+  font-size:22px;
+  cursor:pointer;
+}
+
+.header-btn:hover{
   transform:scale(1.1);
 }
+
+.header-gold{
+  font-weight:700;
+  color:#ffd700;
+  background:rgba(0,0,0,.4);
+  padding:6px 12px;
+  border-radius:20px;
+  box-shadow:0 0 15px rgba(255,215,0,.4);
+}
+
+.screen{
+  display:none;
+  padding:80px 20px 20px; /* thêm top padding */
+}
+
 
 
 </style>
 </head>
 <body>
 
-<button class="back-btn" onclick="goBack()">←</button>
+  <!-- ===== GLOBAL HEADER ===== -->
+<div class="game-header">
+
+  <button class="header-btn back" onclick="handleBack()">
+    ←
+  </button>
+
+  <div class="header-title">
+    💎 Thợ Săn Kim Cương
+  </div>
+
+  <div class="header-right">
+    <div class="header-gold">
+      💎 <span id="headerGold">0</span>
+    </div>
+  </div>
+
+</div>
+
 
 
 <!-- ================= CREATE CHARACTER ================= -->
@@ -1097,6 +1148,11 @@ function showHub(){
 
 if(!player) return;
 
+const headerGold = document.getElementById("headerGold");
+if(headerGold && player){
+  headerGold.innerText = player.gold;
+}
+
 
 const defaultEquip = {
   weapon:null, armor:null, helmet:null,
@@ -1273,6 +1329,8 @@ function renderInventory(){
 
    if(!player) return; 
 
+
+   
   const grid = document.getElementById("inventoryGrid");
   grid.innerHTML = "";
 
@@ -1281,6 +1339,12 @@ function renderInventory(){
   if(goldDisplay){
     goldDisplay.innerText = player.gold;
   }
+
+  const headerGold = document.getElementById("headerGold");
+if(headerGold && player){
+  headerGold.innerText = player.gold;
+}
+
 
   // ===== UPDATE FINAL STATS =====
   const hpEl   = document.getElementById("invHpFinal");
@@ -1727,44 +1791,50 @@ window.addEventListener("beforeunload",()=>{
 
 
 function goToCombat(){
+
   if(player.deadUntil && Date.now() < player.deadUntil){
     alert("⏳ Nhân vật chưa hồi sinh!");
     return;
   }
+
 savePlayer();
+
+
   location.href = "combat.html";
 }
 
 
 
-function goBack(){
+function handleBack(){
 
-  // Nếu đang ở màn Hub → quay về trang trước
-  if(document.getElementById("hubScreen").classList.contains("active")){
-    location.href = "invest.html"; // đổi nếu bạn có trang chính khác
-    return;
-  }
+  const inventory = document.getElementById("inventoryPanel");
+  const shop = document.getElementById("shopPanel");
+  const modal = document.getElementById("shopItemModal");
 
-  // Nếu đang ở Create → quay về index
-  if(document.getElementById("createScreen").classList.contains("active")){
-    location.href = "invest.html";
-    return;
-  }
-
-  // Nếu đang mở Inventory → đóng lại
-  if(!document.getElementById("inventoryPanel").classList.contains("hidden")){
+  if(!inventory.classList.contains("hidden")){
     toggleInventory();
     return;
   }
 
-  // Nếu đang mở Shop → đóng lại
-  if(!document.getElementById("shopPanel").classList.contains("hidden")){
+  if(!shop.classList.contains("hidden")){
     toggleShop();
     return;
   }
 
-  // Mặc định
-  history.back();
+  if(!modal.classList.contains("hidden")){
+    closeShopItemModal();
+    return;
+  }
+
+  // Nếu đang ở hub → confirm
+  if(document.getElementById("hubScreen").classList.contains("active")){
+    if(confirm("Thoát game?")){
+      location.href = "/";
+    }
+    return;
+  }
+
+  // Nếu đang create → không back
 }
 
 
