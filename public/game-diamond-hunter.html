@@ -379,13 +379,66 @@ input{
 }
 
 
-.inventory-header{
-  font-weight:800;
-  font-size:18px;
-  margin-bottom:15px;
+
+
+/* ===== INVENTORY HEADER PRO ===== */
+
+.inventory-header-pro{
+  position:relative;
   display:flex;
   justify-content:space-between;
+  align-items:center;
+  padding:14px 18px;
+  border-radius:18px;
+  background:
+    linear-gradient(145deg,#0c1824,#060b12);
+  box-shadow:
+    0 0 30px rgba(0,255,255,.2),
+    inset 0 0 25px rgba(0,255,255,.05);
+  margin-bottom:20px;
 }
+
+.inv-title-pro{
+  font-size:18px;
+  font-weight:800;
+  color:#00f0ff;
+  letter-spacing:.5px;
+  text-shadow:0 0 12px rgba(0,255,255,.6);
+}
+
+.inv-right-pro{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.inv-gold-pro{
+  padding:6px 14px;
+  border-radius:20px;
+  background:linear-gradient(90deg,#ffd700,#ff9900);
+  font-weight:800;
+  color:#000;
+  box-shadow:0 0 18px rgba(255,215,0,.6);
+}
+
+.inv-close-pro{
+  width:38px;
+  height:38px;
+  border-radius:50%;
+  border:none;
+  font-size:16px;
+  font-weight:800;
+  background:linear-gradient(135deg,#ff0044,#ff5500);
+  color:#fff;
+  cursor:pointer;
+  transition:.25s;
+  box-shadow:0 0 20px rgba(255,0,80,.5);
+}
+
+.inv-close-pro:hover{
+  transform:scale(1.1);
+}
+
 
 .close-btn{
   cursor:pointer;
@@ -1000,16 +1053,24 @@ input{
     
   <div class="inventory-box">
 
-<div class="inventory-header">
-  <div>
+<div class="inventory-header-pro">
+
+  <div class="inv-title-pro">
     🎒 Kho đồ cá nhân
-    <div style="font-size:14px;margin-top:4px;color:#ffd700">
-      💎 <span id="inventoryGold"></span>
-    </div>
   </div>
 
-  <span class="close-btn" onclick="toggleInventory()">✕</span>
+  <div class="inv-right-pro">
+    <div class="inv-gold-pro">
+      💎 <span id="inventoryGold"></span>
+    </div>
+
+    <button class="inv-close-pro"
+            onclick="toggleInventory()">✕</button>
+  </div>
+
 </div>
+
+
 
 
 
