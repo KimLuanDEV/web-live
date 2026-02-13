@@ -2123,22 +2123,47 @@ savePlayer();
 function sellItem(index){
 
   const item = player.inventory[index];
+  if(!item) return;
 
-  const sellPrice = Math.floor(item.price * 0.5);
+  // Nếu không có price (đồ rơi)
+  let sellPrice = 0;
 
-  if(!confirm(`Bán ${item.name} với giá ${sellPrice} 💎 ?`))
-    return;
+  if(item.price){
+    sellPrice = Math.floor(item.price * 0.6);
+  }else{
+    // Tự tính giá theo stat
+    sellPrice = calculateSellValue(item);
+  }
 
   player.gold += sellPrice;
 
   player.inventory.splice(index,1);
 
   savePlayer();
-
-
   renderInventory();
   showHub();
 }
+
+
+
+function calculateSellValue(item){
+
+  let value = 50; // giá base
+
+  if(item.atk) value += item.atk * 5;
+  if(item.def) value += item.def * 4;
+  if(item.hp) value += item.hp * 0.2;
+  if(item.critRate) value += item.critRate * 20;
+  if(item.lifesteal) value += item.lifesteal * 30;
+  if(item.regen) value += item.regen * 40;
+
+  if(item.rarity==="mythic"){
+    value *= 5;
+  }
+
+  return Math.floor(value);
+}
+
 
 
 function applyOfflineRegen(){
