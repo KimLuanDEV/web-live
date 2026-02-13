@@ -1201,16 +1201,23 @@ input{
 
   <div class="inventory-box">
 
- <div class="inventory-header">
-  <div>
+<div class="inventory-header-pro">
+
+  <div class="inv-title-pro">
     🛒 Shop Trang Bị
-    <div style="font-size:14px;margin-top:4px;color:#ffd700">
-      💎 <span id="shopGold"></span>
-    </div>
   </div>
 
-  <span class="close-btn" onclick="toggleShop()">✕</span>
+  <div class="inv-right-pro">
+    <div class="inv-gold-pro">
+      💎 <span id="shopGold"></span>
+    </div>
+
+    <button class="inv-close-pro"
+            onclick="toggleShop()">✕</button>
+  </div>
+
 </div>
+
 
 
     <div class="inventory-grid" id="shopGrid">
