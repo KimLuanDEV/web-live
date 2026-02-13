@@ -693,67 +693,67 @@ input{
 
 
 
-/* ===== SHOP CARD PRO ===== */
+/* ===== SHOP CARD CLEAN PRO ===== */
 
 .shop-item{
-  aspect-ratio:1/1;
-  position:relative;
-  background:radial-gradient(circle at top,#111 0%,#050b12 80%);
-  border-radius:20px;
-  padding:12px;
   display:flex;
   flex-direction:column;
   align-items:center;
-  justify-content:space-between;
-  cursor:pointer;
   transition:.25s;
-  border:1px solid rgba(0,255,255,.2);
-  overflow:hidden;
+  cursor:pointer;
 }
 
-.shop-item::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:20px;
-  box-shadow:inset 0 0 30px rgba(0,255,255,.15);
-  pointer-events:none;
-}
-
-.shop-item:hover{
-  transform:translateY(-4px) scale(1.05);
-  box-shadow:
-    0 10px 25px rgba(0,255,255,.3),
-    0 0 35px rgba(0,255,255,.5);
-}
-
-/* IMAGE FULL */
-.shop-img{
+/* ===== IMAGE FULL ===== */
+.shop-img-wrap{
   width:100%;
-  height:65%;
+  aspect-ratio:1/1;
+  background:radial-gradient(circle at top,#111,#050b12);
+  border-radius:20px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+  border:1px solid rgba(0,255,255,.2);
+  box-shadow:0 0 25px rgba(0,255,255,.15);
+  transition:.3s;
+}
+
+.shop-item:hover .shop-img-wrap{
+  transform:scale(1.05);
+  box-shadow:
+    0 10px 30px rgba(0,255,255,.4),
+    0 0 40px rgba(0,255,255,.5);
+}
+
+.shop-img{
+  width:90%;
+  height:90%;
   object-fit:contain;
-  filter:drop-shadow(0 0 15px rgba(0,255,255,.6));
+  filter:drop-shadow(0 0 20px rgba(0,255,255,.6));
 }
 
-/* ITEM NAME */
-.shop-name{
-  font-size:13px;
-  font-weight:700;
+/* ===== INFO BELOW IMAGE ===== */
+.shop-info{
+  margin-top:10px;
   text-align:center;
-  margin-top:5px;
-  color:#fff;
 }
 
-/* PRICE BADGE */
+.shop-name{
+  font-size:14px;
+  font-weight:700;
+  color:#fff;
+  margin-bottom:4px;
+}
+
 .shop-price{
-  margin-top:6px;
-  padding:4px 10px;
+  display:inline-block;
+  padding:4px 12px;
   border-radius:14px;
   background:linear-gradient(90deg,#ffd700,#ff9900);
   color:#000;
   font-weight:800;
   font-size:12px;
-  box-shadow:0 0 15px rgba(255,215,0,.6);
+  box-shadow:0 0 12px rgba(255,215,0,.5);
 }
 
 
@@ -1811,10 +1811,16 @@ if(shopGold){
 
 
 div.innerHTML = `
-  <img src="${item.img}" class="shop-img">
-  <div class="shop-name">${item.name}</div>
-  <div class="shop-price">${item.price} 💎</div>
+  <div class="shop-img-wrap">
+    <img src="${item.img}" class="shop-img">
+  </div>
+
+  <div class="shop-info">
+    <div class="shop-name">${item.name}</div>
+    <div class="shop-price">${item.price} 💎</div>
+  </div>
 `;
+
 
 
   div.onclick = ()=>openShopItemModal(item);
