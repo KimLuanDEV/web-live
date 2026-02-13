@@ -847,13 +847,33 @@ html, body{
 <div class="mode-wrapper">
   <div class="mode-scroll">
 
-    <button onclick="setMode('rank')" class="mode-card" data-mode="rank">
-      🏆 Rank
-    </button>
+<button onclick="setMode('rank')" 
+        class="mode-card" 
+        data-mode="rank">
 
-    <button onclick="setMode('farm')" class="mode-card" data-mode="farm">
-      🌾 Farm
-    </button>
+  🏆 Rank
+
+  <span class="loot-btn"
+        onclick="event.stopPropagation(); openLootPreview('rank')">
+    👁
+  </span>
+
+</button>
+
+
+<button onclick="setMode('farm')" 
+        class="mode-card" 
+        data-mode="farm">
+
+  🌾 Farm
+
+  <span class="loot-btn"
+        onclick="event.stopPropagation(); openLootPreview('farm')">
+    👁
+  </span>
+
+</button>
+
 
 <button onclick="setMode('gold')" 
         class="mode-card gold" 
@@ -2455,33 +2475,44 @@ function openLootPreview(mode){
     items = getRankLoot();
   }
 
-  items.forEach(item=>{
 
-    const div = document.createElement("div");
-    div.style.position="relative";
+items.forEach(item=>{
 
-    let borderColor="#00f0ff";
+  const div = document.createElement("div");
+  div.style.position="relative";
 
-    if(item.rarity==="ultimate") borderColor="gold";
-    if(item.rarity==="mythic") borderColor="#ff00ff";
+  let borderColor="#00f0ff";
+  if(item.rarity==="ultimate") borderColor="gold";
+  if(item.rarity==="mythic") borderColor="#ff00ff";
 
-    div.innerHTML = `
-      <div style="
-        border:2px solid ${borderColor};
-        border-radius:12px;
-        padding:6px;
-        text-align:center;
-        background:#0b1118;
-      ">
-        <img src="${item.img}" style="width:60px;height:60px;object-fit:cover">
-        <div style="font-size:11px;margin-top:5px">
-          ${item.name}
-        </div>
+  div.innerHTML = `
+    <div style="
+      border:2px solid ${borderColor};
+      border-radius:12px;
+      padding:6px;
+      text-align:center;
+      background:#0b1118;
+    ">
+      <img src="${item.img}" style="width:60px;height:60px;object-fit:cover">
+      <div style="font-size:10px;margin-top:5px">
+        ${item.name}
       </div>
-    `;
+      <div style="
+        font-size:11px;
+        margin-top:4px;
+        color:${borderColor};
+        font-weight:800;
+      ">
+        ${item.rate.toFixed(2)}%
+      </div>
+    </div>
+  `;
 
-    grid.appendChild(div);
-  });
+  grid.appendChild(div);
+});
+
+
+
 
   document
     .getElementById("lootModal")
@@ -2497,29 +2528,52 @@ function closeLootPreview(){
 
 
 function getGoldLoot(){
+
+  const ultimateRate = 5 / 9; // 5% chia đều 9 món
+  const mythicRate = 1 / 4;   // 1% chia đều 4 món
+
   return [
 
-    { name:"👑 Kiếm Hoàng Kim Vô Cực", img:"/assets/items/gold_sword.png", rarity:"ultimate" },
-    { name:"🛡 Giáp Thần Thoại Ánh Kim", img:"/assets/items/gold_armor.png", rarity:"ultimate" },
-    { name:"👑 Mũ Hoàng Kim Thánh Vương", img:"/assets/items/gold_helm.png", rarity:"ultimate" },
-    { name:"🦾 Vai Hoàng Kim Thiên Uy", img:"/assets/items/gold_shoulder.png", rarity:"ultimate" },
-    { name:"🦵 Giáp Chân Hoàng Kim Bất Diệt", img:"/assets/items/gold_legs.png", rarity:"ultimate" },
-    { name:"👢 Hài Hoàng Kim Tốc Ảnh", img:"/assets/items/gold_boots.png", rarity:"ultimate" },
-    { name:"🧤 Găng Tay Hoàng Kim Hủy Diệt", img:"/assets/items/gold_gloves.png", rarity:"ultimate" },
-    { name:"💍 Nhẫn Thống Trị", img:"/assets/items/gold_ring.png", rarity:"ultimate" },
-    { name:"💎 Ngọc Hoàng Kim Thánh Lực", img:"/assets/items/gold_gem.png", rarity:"ultimate" }
+    { name:"👑 Kiếm Hoàng Kim Vô Cực", img:"/assets/items/gold_sword.png", rarity:"ultimate", rate: ultimateRate },
+    { name:"🛡 Giáp Thần Thoại Ánh Kim", img:"/assets/items/gold_armor.png", rarity:"ultimate", rate: ultimateRate },
+    { name:"👑 Mũ Hoàng Kim Thánh Vương", img:"/assets/items/gold_helm.png", rarity:"ultimate", rate: ultimateRate },
+    { name:"🦾 Vai Hoàng Kim Thiên Uy", img:"/assets/items/gold_shoulder.png", rarity:"ultimate", rate: ultimateRate },
+    { name:"🦵 Giáp Chân Hoàng Kim Bất Diệt", img:"/assets/items/gold_legs.png", rarity:"ultimate", rate: ultimateRate },
+    { name:"👢 Hài Hoàng Kim Tốc Ảnh", img:"/assets/items/gold_boots.png", rarity:"ultimate", rate: ultimateRate },
+    { name:"🧤 Găng Tay Hoàng Kim Hủy Diệt", img:"/assets/items/gold_gloves.png", rarity:"ultimate", rate: ultimateRate },
+    { name:"💍 Nhẫn Thống Trị", img:"/assets/items/gold_ring.png", rarity:"ultimate", rate: ultimateRate },
+    { name:"💎 Ngọc Hoàng Kim Thánh Lực", img:"/assets/items/gold_gem.png", rarity:"ultimate", rate: ultimateRate },
+
+    // Mythic
+    { name:"👑 Đại Kiếm Thần Phạt", img:"/assets/items/weapon_greatsword.png", rarity:"mythic", rate: mythicRate },
+    { name:"🔥 Giáp Bất Tử", img:"/assets/items/armor_warrior.png", rarity:"mythic", rate: mythicRate },
+    { name:"🩸 Nhẫn Huyết Thần", img:"/assets/items/ring_power.png", rarity:"mythic", rate: mythicRate },
+    { name:"💎 Ngọc Hủy Diệt", img:"/assets/items/gem_life.png", rarity:"mythic", rate: mythicRate }
 
   ];
 }
+
 
 function getFarmLoot(){
+
+  const normalRate = 24 / 4;  // 24% chia đều 4 món
+  const mythicRate = 1 / 4;   // 1% chia đều 4 món
+
   return [
-    { name:"Kiếm Sắt", img:"/assets/items/weapon_sword_1.png", rarity:"normal" },
-    { name:"Giáp Thép", img:"/assets/items/armor_silver.png", rarity:"normal" },
-    { name:"Nhẫn Máu", img:"/assets/items/ring_power.png", rarity:"normal" },
-    { name:"Ngọc Sinh Mệnh", img:"/assets/items/gem_life.png", rarity:"normal" }
+
+    { name:"Kiếm Sắt", img:"/assets/items/weapon_sword_1.png", rarity:"normal", rate: normalRate },
+    { name:"Giáp Thép", img:"/assets/items/armor_silver.png", rarity:"normal", rate: normalRate },
+    { name:"Nhẫn Máu", img:"/assets/items/ring_power.png", rarity:"normal", rate: normalRate },
+    { name:"Ngọc Sinh Mệnh", img:"/assets/items/gem_life.png", rarity:"normal", rate: normalRate },
+
+    { name:"👑 Đại Kiếm Thần Phạt", img:"/assets/items/weapon_greatsword.png", rarity:"mythic", rate: mythicRate },
+    { name:"🔥 Giáp Bất Tử", img:"/assets/items/armor_warrior.png", rarity:"mythic", rate: mythicRate },
+    { name:"🩸 Nhẫn Huyết Thần", img:"/assets/items/ring_power.png", rarity:"mythic", rate: mythicRate },
+    { name:"💎 Ngọc Hủy Diệt", img:"/assets/items/gem_life.png", rarity:"mythic", rate: mythicRate }
+
   ];
 }
+
 
 function getRankLoot(){
   return getFarmLoot(); // tạm dùng chung
