@@ -545,6 +545,70 @@ html, body{
 }
 
 
+
+/* ===== LIGHTNING ===== */
+.lightning{
+  position:absolute;
+  width:6px;
+  height:200px;
+  background:linear-gradient(#00f0ff,#ffffff,#00f0ff);
+  left:50%;
+  top:-50px;
+  transform:translateX(-50%);
+  animation:lightningStrike .3s ease-out forwards;
+  box-shadow:0 0 20px #00f0ff;
+}
+
+@keyframes lightningStrike{
+  0%{opacity:1; height:0;}
+  100%{opacity:0; height:220px;}
+}
+
+/* ===== SHADOW DASH ===== */
+.shadow-dash{
+  position:absolute;
+  inset:0;
+  background:rgba(0,255,150,.15);
+  animation:dashMove .3s ease-out forwards;
+  pointer-events:none;
+}
+
+@keyframes dashMove{
+  0%{opacity:0; transform:translateX(-80px);}
+  50%{opacity:1;}
+  100%{opacity:0; transform:translateX(0);}
+}
+
+/* ===== GROUND CRACK ===== */
+.ground-crack{
+  position:absolute;
+  bottom:-10px;
+  left:50%;
+  width:120px;
+  height:40px;
+  transform:translateX(-50%);
+  background:radial-gradient(circle,#ff9900,transparent);
+  animation:crack .4s ease-out forwards;
+}
+
+@keyframes crack{
+  0%{opacity:1; transform:translateX(-50%) scale(.4);}
+  100%{opacity:0; transform:translateX(-50%) scale(1.5);}
+}
+
+/* ===== SLOW MOTION ===== */
+.slowmo{
+  animation:slowmoEffect .6s ease-out forwards;
+}
+
+@keyframes slowmoEffect{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.05);}
+  100%{transform:scale(1);}
+}
+
+
+
 </style>
 </head>
 
@@ -895,6 +959,43 @@ function showSkillEffect(targetClass, type){
 
 
 
+function playClassSkillAnimation(type){
+
+  const enemyAvatar =
+    document.querySelector(".character.enemy .avatar");
+
+  const arena = document.querySelector(".arena");
+
+  /* ===== MAGE ===== */
+  if(type==="mage"){
+    const lightning = document.createElement("div");
+    lightning.className="lightning";
+    enemyAvatar.appendChild(lightning);
+    setTimeout(()=>lightning.remove(),300);
+  }
+
+  /* ===== ASSASSIN ===== */
+  if(type==="assassin"){
+    const dash = document.createElement("div");
+    dash.className="shadow-dash";
+    enemyAvatar.appendChild(dash);
+    setTimeout(()=>dash.remove(),300);
+  }
+
+  /* ===== WARRIOR ===== */
+  if(type==="warrior"){
+    const crack = document.createElement("div");
+    crack.className="ground-crack";
+    enemyAvatar.appendChild(crack);
+    setTimeout(()=>crack.remove(),400);
+  }
+
+  /* ===== SLOW MOTION ===== */
+  arena.classList.add("slowmo");
+  setTimeout(()=>arena.classList.remove("slowmo"),600);
+}
+
+
 function playDeath(targetClass){
 
   const card = document.querySelector(targetClass);
@@ -1139,6 +1240,7 @@ if(dmg>0){
 
   // 🔥 Skill Effect
   showSkillEffect(".character.enemy", player.classType);
+  playClassSkillAnimation(player.classType);
 }
 
 
