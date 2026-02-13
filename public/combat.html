@@ -611,6 +611,8 @@ html, body{
 
 
 
+
+
 </style>
 </head>
 
@@ -1744,50 +1746,94 @@ function switchMode(){
     : "🌾 Chế độ Cày Quái";
 }
 
-
-
 function dropRandomItem(){
 
-  const items = [
-    {
-      name:"Kiếm Hiếm",
-      atk:15,
-      type:"weapon",
-      img:"/assets/items/weapon_sword_1.png"
-    },
-    {
-      name:"Giáp Cứng",
-      def:20,
-      type:"armor",
-      img:"/assets/items/armor_silver.png"
-    },
-    {
-      name:"Nhẫn Máu",
-      hp:120,
-      lifesteal:5,
-      type:"ring",
-      img:"/assets/items/ring_power.png"
-    }
-  ];
+  const roll = Math.random()*100;
 
-  const item = {
-    ...items[Math.floor(Math.random()*items.length)],
+  let item;
+
+  // ===== MYTHIC 1% =====
+  if(roll < 1){
+
+    const mythicItems = [
+
+      {
+        name:"👑 Đại Kiếm Thần Phạt",
+        atk:120,
+        critRate:10,
+        critDamage:0.5,
+        lifesteal:8,
+        type:"weapon",
+        img:"/assets/items/weapon_greatsword.png",
+        rarity:"mythic"
+      },
+
+      {
+        name:"🔥 Giáp Bất Tử",
+        def:90,
+        hp:800,
+        regen:5,
+        type:"armor",
+        img:"/assets/items/armor_warrior.png",
+        rarity:"mythic"
+      },
+
+      {
+        name:"🩸 Nhẫn Huyết Thần",
+        lifesteal:15,
+        critRate:8,
+        type:"ring",
+        img:"/assets/items/ring_power.png",
+        rarity:"mythic"
+      },
+
+      {
+        name:"💎 Ngọc Hủy Diệt",
+        atk:60,
+        critDamage:0.6,
+        type:"gem",
+        img:"/assets/items/gem_life.png",
+        rarity:"mythic"
+      }
+
+    ];
+
+    item = mythicItems[
+      Math.floor(Math.random()*mythicItems.length)
+    ];
+
+  }
+  else{
+
+    // ===== NORMAL POOL =====
+    const normalItems = [
+
+      { name:"Kiếm Sắt", atk:12, type:"weapon", img:"/assets/items/weapon_sword_1.png" },
+      { name:"Giáp Thép", def:25, type:"armor", img:"/assets/items/armor_silver.png" },
+      { name:"Nhẫn Máu", lifesteal:5, type:"ring", img:"/assets/items/ring_power.png" },
+      { name:"Ngọc Sinh Mệnh", hp:300, type:"gem", img:"/assets/items/gem_life.png" }
+
+    ];
+
+    item = normalItems[
+      Math.floor(Math.random()*normalItems.length)
+    ];
+  }
+
+  const finalItem = {
+    ...item,
     enhance:0
   };
 
   if(!player.inventory) player.inventory=[];
 
-  player.inventory.push(item);
+  player.inventory.push(finalItem);
 
   document.getElementById("battleLog").innerText +=
-    "🎁 Rơi trang bị: " + item.name + "\n";
+    "🎁 Rơi trang bị: " + finalItem.name + "\n";
 
   savePlayer();
 }
-
-
-
-
 
 </script>
 
