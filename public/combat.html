@@ -319,24 +319,6 @@ body{
   border-color:#444;
 }
 
-/* BACK BUTTON */
-.btn-back{
-  width:100%;
-  margin-top:14px;
-  padding:14px;
-  border:none;
-  border-radius:16px;
-  background:#111;
-  color:#aaa;
-  font-weight:700;
-  cursor:pointer;
-  transition:.2s;
-}
-
-.btn-back:hover{
-  background:#1a1a1a;
-  color:#fff;
-}
 
 
 /* ===== SKILL CIRCLE ===== */
@@ -403,13 +385,92 @@ body{
 
 
 
+/* ===== GAME HEADER ===== */
+
+.game-header{
+  position:relative;
+  height:65px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:linear-gradient(180deg,#061018,#02070c);
+  border-bottom:1px solid rgba(0,255,255,.2);
+  box-shadow:0 0 25px rgba(0,255,255,.15);
+}
+
+.header-title{
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:#00f0ff;
+  text-shadow:0 0 15px #00f0ff;
+}
+
+.header-back{
+  position:absolute;
+  left:12px;
+  top:50%;
+  transform:translateY(-50%);
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  border:none;
+  background:#0d1a22;
+  color:#00f0ff;
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+  box-shadow:0 0 15px rgba(0,255,255,.4);
+  transition:.2s;
+}
+
+.header-back:hover{
+  background:#122430;
+}
+
+.header-right{
+  position:absolute;
+  right:12px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  gap:10px;
+}
+
+
+.header-gold{
+  background:#0d1a22;
+  padding:6px 10px;
+  border-radius:12px;
+  font-size:13px;
+  font-weight:800;
+  box-shadow:0 0 10px rgba(0,255,255,.2);
+}
+
 
 </style>
 </head>
 
 <body>
 
-<div class="title">⚔ ĐẤU TRƯỜNG</div>
+<div class="game-header">
+
+  <button class="header-back" onclick="backToHub()">
+    ←
+  </button>
+
+  <div class="header-title">
+    ARENA
+  </div>
+
+  <div class="header-right">
+    <div class="header-gold">
+      💎 <span id="headerGold">0</span>
+    </div>
+  </div>
+
+</div>
+
 
 <div class="arena">
 
@@ -437,14 +498,11 @@ body{
 </div>
 
 
-
-<div class="log" id="battleLog"></div>
-
 <div class="actions">
 
   <!-- MAIN ATTACK -->
   <button class="btn-main" onclick="attack()">
-    ⚔ ĐÁNH
+    ATTACK
   </button>
 
   <!-- SKILL BAR -->
@@ -468,14 +526,12 @@ body{
     <img src="/assets/skills/skill3.png">
   </button>
 </div>
-
-
-  <!-- BACK -->
-  <button class="btn-back" onclick="backToHub()">
-    ⬅ Rời trận
-  </button>
-
 </div>
+
+
+
+<div class="log" id="battleLog"></div>
+
 
 
 
@@ -598,6 +654,7 @@ function render(){
     player.name + " | " +
     Math.floor(player.hp) + "/" + player.maxHp;
 
+  document.getElementById("headerGold").innerText = player.gold;
   // Enemy HP
   const enemyPercent =
     (enemy.hp / enemy.maxHp) * 100;
