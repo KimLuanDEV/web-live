@@ -803,6 +803,21 @@ html, body{
 
 
 
+.loot-btn{
+  position:absolute;
+  right:8px;
+  top:6px;
+  font-size:14px;
+  cursor:pointer;
+  opacity:.8;
+}
+
+.loot-btn:hover{
+  opacity:1;
+}
+
+
+
 </style>
 </head>
 
@@ -846,9 +861,14 @@ html, body{
         id="goldBtn">
 
   👑 Hoàng Kim
-  <span class="lock-overlay" id="goldLock">🔒</span>
 
+  <span class="loot-btn" onclick="event.stopPropagation(); openLootPreview('gold')">
+    👁
+  </span>
+
+  <span class="lock-overlay" id="goldLock">🔒</span>
 </button>
+
 
 
   </div>
@@ -944,6 +964,30 @@ html, body{
 
     <button onclick="closeGoldPopup()" class="gold-btn-popup">
       BẮT ĐẦU CHINH PHỤC
+    </button>
+
+  </div>
+</div>
+
+
+
+<!-- ===== LOOT PREVIEW ===== -->
+<div id="lootModal" class="gold-popup hidden">
+  <div class="gold-popup-content" style="max-width:500px">
+
+    <div class="gold-title">
+      Danh sách vật phẩm có thể rơi
+    </div>
+
+    <div id="lootGrid" style="
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:12px;
+      margin:15px 0;
+    "></div>
+
+    <button onclick="closeLootPreview()" class="gold-btn-popup">
+      Đóng
     </button>
 
   </div>
@@ -2389,6 +2433,99 @@ function closeGoldPopup(){
 
   setMode("gold");
 }
+
+
+
+function openLootPreview(mode){
+
+  const grid = document.getElementById("lootGrid");
+  grid.innerHTML = "";
+
+  let items = [];
+
+  if(mode === "gold"){
+    items = getGoldLoot();
+  }
+
+  if(mode === "farm"){
+    items = getFarmLoot();
+  }
+
+  if(mode === "rank"){
+    items = getRankLoot();
+  }
+
+  items.forEach(item=>{
+
+    const div = document.createElement("div");
+    div.style.position="relative";
+
+    let borderColor="#00f0ff";
+
+    if(item.rarity==="ultimate") borderColor="gold";
+    if(item.rarity==="mythic") borderColor="#ff00ff";
+
+    div.innerHTML = `
+      <div style="
+        border:2px solid ${borderColor};
+        border-radius:12px;
+        padding:6px;
+        text-align:center;
+        background:#0b1118;
+      ">
+        <img src="${item.img}" style="width:60px;height:60px;object-fit:cover">
+        <div style="font-size:11px;margin-top:5px">
+          ${item.name}
+        </div>
+      </div>
+    `;
+
+    grid.appendChild(div);
+  });
+
+  document
+    .getElementById("lootModal")
+    .classList.remove("hidden");
+}
+
+function closeLootPreview(){
+  document
+    .getElementById("lootModal")
+    .classList.add("hidden");
+}
+
+
+
+function getGoldLoot(){
+  return [
+
+    { name:"👑 Kiếm Hoàng Kim Vô Cực", img:"/assets/items/gold_sword.png", rarity:"ultimate" },
+    { name:"🛡 Giáp Thần Thoại Ánh Kim", img:"/assets/items/gold_armor.png", rarity:"ultimate" },
+    { name:"👑 Mũ Hoàng Kim Thánh Vương", img:"/assets/items/gold_helm.png", rarity:"ultimate" },
+    { name:"🦾 Vai Hoàng Kim Thiên Uy", img:"/assets/items/gold_shoulder.png", rarity:"ultimate" },
+    { name:"🦵 Giáp Chân Hoàng Kim Bất Diệt", img:"/assets/items/gold_legs.png", rarity:"ultimate" },
+    { name:"👢 Hài Hoàng Kim Tốc Ảnh", img:"/assets/items/gold_boots.png", rarity:"ultimate" },
+    { name:"🧤 Găng Tay Hoàng Kim Hủy Diệt", img:"/assets/items/gold_gloves.png", rarity:"ultimate" },
+    { name:"💍 Nhẫn Thống Trị", img:"/assets/items/gold_ring.png", rarity:"ultimate" },
+    { name:"💎 Ngọc Hoàng Kim Thánh Lực", img:"/assets/items/gold_gem.png", rarity:"ultimate" }
+
+  ];
+}
+
+function getFarmLoot(){
+  return [
+    { name:"Kiếm Sắt", img:"/assets/items/weapon_sword_1.png", rarity:"normal" },
+    { name:"Giáp Thép", img:"/assets/items/armor_silver.png", rarity:"normal" },
+    { name:"Nhẫn Máu", img:"/assets/items/ring_power.png", rarity:"normal" },
+    { name:"Ngọc Sinh Mệnh", img:"/assets/items/gem_life.png", rarity:"normal" }
+  ];
+}
+
+function getRankLoot(){
+  return getFarmLoot(); // tạm dùng chung
+}
+
+
 
 
 </script>
