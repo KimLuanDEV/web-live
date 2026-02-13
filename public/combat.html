@@ -610,6 +610,82 @@ html, body{
 }
 
 
+.mode-btn{
+  background:#0d1a22;
+  color:#00f0ff;
+  border:none;
+  padding:6px 10px;
+  border-radius:10px;
+  font-weight:800;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.mode-btn:hover{
+  background:#122430;
+}
+
+.gold-btn{
+  color:gold;
+  box-shadow:0 0 10px gold;
+}
+
+
+
+/* ===== MODE SCROLL BAR ===== */
+
+.mode-wrapper{
+  width:100%;
+  background:#050b12;
+  border-bottom:1px solid rgba(0,255,255,.15);
+  overflow:hidden;
+}
+
+.mode-scroll{
+  display:flex;
+  gap:12px;
+  padding:10px 15px;
+  overflow-x:auto;
+  scroll-behavior:smooth;
+}
+
+.mode-scroll::-webkit-scrollbar{
+  display:none;
+}
+
+.mode-card{
+  flex:0 0 auto;
+  min-width:120px;
+  padding:10px 14px;
+  border-radius:14px;
+  border:1px solid rgba(0,255,255,.25);
+  background:linear-gradient(180deg,#0d1a22,#09131a);
+  color:#00f0ff;
+  font-weight:800;
+  cursor:pointer;
+  transition:.25s;
+  white-space:nowrap;
+}
+
+.mode-card:hover{
+  transform:translateY(-2px);
+  box-shadow:0 0 15px rgba(0,255,255,.4);
+}
+
+.mode-card.active{
+  border:1px solid #00f0ff;
+  box-shadow:0 0 20px #00f0ff;
+}
+
+.mode-card.gold{
+  color:gold;
+  border:1px solid rgba(255,215,0,.5);
+}
+
+.mode-card.gold.active{
+  box-shadow:0 0 25px gold;
+}
+
 
 
 
@@ -630,19 +706,33 @@ html, body{
 
 
 <div class="header-right">
-  <button onclick="switchMode()" 
-          style="background:#111;color:#00f0ff;border:none;
-                 padding:6px 10px;border-radius:10px;font-weight:800;">
-    MODE
-  </button>
 
   <div class="header-gold">
     💎 <span id="headerGold">0</span>
   </div>
+
+</div>
 </div>
 
 
+<div class="mode-wrapper">
+  <div class="mode-scroll">
+
+    <button onclick="setMode('rank')" class="mode-card" data-mode="rank">
+      🏆 Rank
+    </button>
+
+    <button onclick="setMode('farm')" class="mode-card" data-mode="farm">
+      🌾 Farm
+    </button>
+
+    <button onclick="setMode('gold')" class="mode-card gold" data-mode="gold">
+      👑 Hoàng Kim
+    </button>
+
+  </div>
 </div>
+
 
 
 <div class="arena">
@@ -1830,25 +1920,27 @@ function backToHub(){
 recalcStats();
 spawnEnemy();
 render();
+setMode(gameMode);
 
+function setMode(mode){
 
+  if(mode === "gold" && stage < 10){
+    alert("Cần vượt 10 ải để mở Map Hoàng Kim!");
+    return;
+  }
 
-function switchMode(){
+  gameMode = mode;
 
-  if(gameMode === "rank"){
-    gameMode = "farm";
+  if(mode === "rank"){
+    stage = parseInt(localStorage.getItem("arena_stage")) || 1;
+  }
+
+  if(mode === "farm"){
     stage = 1;
   }
-  else if(gameMode === "farm"){
-    if(stage < 10){
-      alert("Cần vượt 10 ải để mở Map Hoàng Kim!");
-      return;
-    }
-    gameMode = "gold";
-  }
-  else{
-    gameMode = "rank";
-    stage = parseInt(localStorage.getItem("arena_stage")) || 1;
+
+  if(mode === "gold"){
+    stage = 1;
   }
 
   localStorage.setItem("arena_mode", gameMode);
@@ -1857,12 +1949,22 @@ function switchMode(){
   render();
 
   document.getElementById("battleLog").innerText =
-    gameMode === "rank"
+    mode === "rank"
       ? "🏆 Chế độ Vượt Ải"
-      : gameMode === "farm"
+      : mode === "farm"
       ? "🌾 Chế độ Cày Quái"
       : "👑 MAP HOÀNG KIM";
+
+  // ===== ACTIVE MODE UI =====
+  document.querySelectorAll(".mode-card")
+    .forEach(btn=>{
+      btn.classList.remove("active");
+      if(btn.dataset.mode === mode){
+        btn.classList.add("active");
+      }
+    });
 }
+
 
 
 
