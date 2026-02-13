@@ -693,6 +693,35 @@ input{
 
 
 
+.shop-item{
+  position:relative;
+  overflow:hidden;
+  border:1px solid rgba(0,255,255,.2);
+}
+
+.shop-img{
+  width:70%;
+  height:70%;
+  object-fit:contain;
+  transition:.3s;
+}
+
+.shop-item:hover .shop-img{
+  transform:scale(1.1);
+}
+
+.shop-price{
+  position:absolute;
+  bottom:5px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11px;
+  background:rgba(0,0,0,.6);
+  padding:3px 6px;
+  border-radius:8px;
+}
+
+
 </style>
 </head>
 <body>
@@ -1594,37 +1623,128 @@ Object.values(player.equipment).forEach(item=>{
 const shopItems = [
 
   // ===== WEAPON =====
-  { id:1, icon:"🗡", name:"Kiếm thép", price:200, atk:30, type:"weapon" },
-  { id:2, icon:"⚔", name:"Đại kiếm", price:450, atk:60, type:"weapon" },
+  { 
+    id:1,
+    img:"/assets/items/weapon_sword_1.png",
+    name:"Kiếm thép",
+    price:200,
+    atk:30,
+    type:"weapon"
+  },
+  { 
+    id:2,
+    img:"/assets/items/weapon_greatsword.png",
+    name:"Đại kiếm",
+    price:450,
+    atk:60,
+    type:"weapon"
+  },
 
   // ===== ARMOR =====
-  { id:3, icon:"🛡", name:"Giáp bạc", price:180, def:25, type:"armor" },
-  { id:4, icon:"🛡", name:"Giáp chiến binh", price:400, def:55, type:"armor" },
+  { 
+    id:3,
+    img:"/assets/items/armor_silver.png",
+    name:"Giáp bạc",
+    price:180,
+    def:25,
+    type:"armor"
+  },
+  { 
+    id:4,
+    img:"/assets/items/armor_warrior.png",
+    name:"Giáp chiến binh",
+    price:400,
+    def:55,
+    type:"armor"
+  },
 
   // ===== HELMET =====
-  { id:5, icon:"🪖", name:"Mũ sắt", price:150, def:15, type:"helmet" },
+  { 
+    id:5,
+    img:"/assets/items/helmet_iron.png",
+    name:"Mũ sắt",
+    price:150,
+    def:15,
+    type:"helmet"
+  },
 
   // ===== GLOVES =====
-  { id:6, icon:"🧤", name:"Găng tăng lực", price:170, atk:12, type:"gloves" },
+  { 
+    id:6,
+    img:"/assets/items/gloves_power.png",
+    name:"Găng tăng lực",
+    price:170,
+    atk:12,
+    type:"gloves"
+  },
 
   // ===== BOOTS =====
-  { id:7, icon:"👢", name:"Giày chiến đấu", price:160, def:10, type:"boots" },
+  { 
+    id:7,
+    img:"/assets/items/boots_battle.png",
+    name:"Giày chiến đấu",
+    price:160,
+    def:10,
+    type:"boots"
+  },
 
   // ===== SHOULDER =====
-  { id:8, icon:"🛡️", name:"Giáp vai rồng", price:320, def:35, type:"shoulder" },
+  { 
+    id:8,
+    img:"/assets/items/shoulder_dragon.png",
+    name:"Giáp vai rồng",
+    price:320,
+    def:35,
+    type:"shoulder"
+  },
 
   // ===== LEGS =====
-  { id:9, icon:"🦿", name:"Giáp chân thép", price:300, def:30, type:"legs" },
+  { 
+    id:9,
+    img:"/assets/items/legs_steel.png",
+    name:"Giáp chân thép",
+    price:300,
+    def:30,
+    type:"legs"
+  },
 
   // ===== RING =====
-  { id:10, icon:"💍", name:"Nhẫn sức mạnh", price:500, atk:45, type:"ring" },
+  { 
+    id:10,
+    img:"/assets/items/ring_power.png",
+    name:"Nhẫn sức mạnh",
+    price:500,
+    atk:45,
+    type:"ring"
+  },
 
   // ===== GEM =====
-  { id:11, icon:"🔮", name:"Ngọc sinh mệnh", price:600, hp:300, type:"gem" },
+  { 
+    id:11,
+    img:"/assets/items/gem_life.png",
+    name:"Ngọc sinh mệnh",
+    price:600,
+    hp:300,
+    type:"gem"
+  },
 
   // ===== POTION =====
-  { id:12, icon:"🧪", name:"Bình máu nhỏ", price:80, heal:150, type:"potion" },
-  { id:13, icon:"🧪", name:"Bình máu lớn", price:220, heal:500, type:"potion" }
+  { 
+    id:12,
+    img:"/assets/items/potion_small.png",
+    name:"Bình máu nhỏ",
+    price:80,
+    heal:150,
+    type:"potion"
+  },
+  { 
+    id:13,
+    img:"/assets/items/potion_large.png",
+    name:"Bình máu lớn",
+    price:220,
+    heal:500,
+    type:"potion"
+  }
 
 ];
 
@@ -1648,16 +1768,22 @@ if(shopGold){
 }
 
 
-  shopItems.forEach(item=>{
-    const div=document.createElement("div");
-    div.className="inventory-item";
-    div.innerHTML=`
-      <div style="font-size:22px">${item.icon}</div>
-      <div style="font-size:11px">${item.price} 💎</div>
-    `;
-    div.onclick=()=>openShopItemModal(item);
-    grid.appendChild(div);
-  });
+ shopItems.forEach(item=>{
+
+  const div = document.createElement("div");
+  div.className = "inventory-item shop-item";
+
+  div.innerHTML = `
+    <img src="${item.img}" class="shop-img">
+    <div class="shop-price">${item.price} 💎</div>
+  `;
+
+  div.onclick = ()=>openShopItemModal(item);
+
+  grid.appendChild(div);
+});
+
+
 }
 
 function buyItem(item){
@@ -1692,8 +1818,9 @@ function openShopItemModal(item){
   document.getElementById("modalItemName")
     .innerText = item.name;
 
-  document.getElementById("modalItemIcon")
-    .innerText = item.icon;
+document.getElementById("modalItemIcon")
+  .innerHTML = `<img src="${item.img}" style="width:80px">`;
+
 
   let stats = "";
 
