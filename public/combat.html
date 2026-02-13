@@ -376,6 +376,33 @@ body{
   filter:grayscale(100%);
 }
 
+/* TEXT GIỮA VÒNG */
+.cd-text{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  font-size:18px;
+  color:#fff;
+  text-shadow:0 0 10px #000;
+  pointer-events:none;
+}
+
+/* SKILL READY PULSE */
+.skill-ready{
+  animation:skillPulse 1.2s infinite;
+}
+
+@keyframes skillPulse{
+  0%{ box-shadow:0 0 15px rgba(0,255,255,.4);}
+  50%{ box-shadow:0 0 35px rgba(0,255,255,.9);}
+  100%{ box-shadow:0 0 15px rgba(0,255,255,.4);}
+}
+
+
+
 
 </style>
 </head>
@@ -422,18 +449,22 @@ body{
 
   <!-- SKILL BAR -->
 <div class="skill-bar">
+
   <button class="skill-circle" onclick="useSkill(1)" id="skill1Btn">
-    <div class="cooldown" id="cd1"></div>
-    <img src="/assets/skills/skill1.png">
+  <div class="cooldown" id="cd1"></div>
+  <div class="cd-text" id="cdText1"></div>
+  <img src="/assets/skills/skill1.png">
   </button>
 
   <button class="skill-circle" onclick="useSkill(2)" id="skill2Btn">
-    <div class="cooldown" id="cd2"></div>
+  <div class="cooldown" id="cd2"></div>
+  <div class="cd-text" id="cdText2"></div>
     <img src="/assets/skills/skill2.png">
   </button>
 
   <button class="skill-circle" onclick="useSkill(3)" id="skill3Btn">
-    <div class="cooldown" id="cd3"></div>
+  <div class="cooldown" id="cd3"></div>
+  <div class="cd-text" id="cdText3"></div>
     <img src="/assets/skills/skill3.png">
   </button>
 </div>
@@ -778,6 +809,8 @@ document
   savePlayer();
   render();
 
+  reduceCooldown();
+
   /* ===== DELAY TRƯỚC KHI QUÁI PHẢN CÔNG ===== */
   setTimeout(()=>{
     enemyTurn();
@@ -879,6 +912,8 @@ function useSkill(skillId){
   render();
 
   updateCooldownUI();
+  reduceCooldown();
+
 
   setTimeout(()=>enemyTurn(),600);
 }
@@ -1019,11 +1054,7 @@ function enemyTurn(){
   render();
 
   /* ===== GIẢM COOLDOWN ===== */
-  Object.keys(skillCooldown).forEach(k=>{
-    if(skillCooldown[k] > 0) skillCooldown[k]--;
-  });
-
-  updateCooldownUI();
+reduceCooldown();
 
   isAttacking = false;
 }
@@ -1039,15 +1070,16 @@ function updateCooldownUI(){
 
     const btn = document.getElementById("skill"+i+"Btn");
     const cd = document.getElementById("cd"+i);
+    const text = document.getElementById("cdText"+i);
 
     if(skillCooldown[i] > 0){
 
-      const percent =
-        skillCooldown[i] / maxCD[i];
-
+      const percent = skillCooldown[i] / maxCD[i];
       const deg = percent * 360;
 
       cd.style.display = "block";
+      text.innerText = skillCooldown[i];
+
       cd.style.background =
         `conic-gradient(
           rgba(0,0,0,.75) 0deg,
@@ -1056,17 +1088,32 @@ function updateCooldownUI(){
           transparent 360deg
         )`;
 
+      btn.classList.remove("skill-ready");
       btn.classList.add("disabled");
 
     }else{
 
       cd.style.display = "none";
+      text.innerText = "";
+
       btn.classList.remove("disabled");
+      btn.classList.add("skill-ready");
     }
 
   });
 }
 
+
+function reduceCooldown(){
+
+  Object.keys(skillCooldown).forEach(k=>{
+    if(skillCooldown[k] > 0){
+      skillCooldown[k]--;
+    }
+  });
+
+  updateCooldownUI();
+}
 
 
 
