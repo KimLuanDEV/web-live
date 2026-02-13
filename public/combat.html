@@ -503,6 +503,48 @@ html, body{
 }
 
 
+
+/* ===== SKILL CAST EFFECT ===== */
+
+.skill-cast{
+  position:fixed;
+  inset:0;
+  background:radial-gradient(circle at center,
+    rgba(0,255,255,.2),
+    transparent 70%);
+  animation:skillFlash .4s ease-out forwards;
+  pointer-events:none;
+  z-index:999;
+}
+
+@keyframes skillFlash{
+  0%{opacity:1;}
+  100%{opacity:0;}
+}
+
+/* ENERGY BURST */
+.energy-burst{
+  position:absolute;
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  border:3px solid rgba(255,255,255,.6);
+  animation:burst 0.5s ease-out forwards;
+  pointer-events:none;
+}
+
+@keyframes burst{
+  0%{
+    opacity:1;
+    transform:scale(.3);
+  }
+  100%{
+    opacity:0;
+    transform:scale(1.6);
+  }
+}
+
+
 </style>
 </head>
 
@@ -810,6 +852,49 @@ function showSlash(targetClass){
 }
 
 
+
+
+function showSkillEffect(targetClass, type){
+
+  // Flash toàn màn
+  const flash = document.createElement("div");
+  flash.className = "skill-cast";
+  document.body.appendChild(flash);
+  setTimeout(()=>flash.remove(),400);
+
+  // Burst tại target
+  const target =
+    document.querySelector(targetClass + " .avatar");
+
+  const burst = document.createElement("div");
+  burst.className="energy-burst";
+
+  // đổi màu theo hệ
+  if(type==="warrior") burst.style.borderColor="#ff9900";
+  if(type==="assassin") burst.style.borderColor="#00ff99";
+  if(type==="mage") burst.style.borderColor="#00f0ff";
+
+  burst.style.top="50%";
+  burst.style.left="50%";
+  burst.style.transform="translate(-50%,-50%)";
+
+  target.style.position="relative";
+  target.appendChild(burst);
+
+  setTimeout(()=>burst.remove(),500);
+
+  // rung mạnh hơn
+  document.querySelector(".arena")
+    .classList.add("screenShake");
+
+  setTimeout(()=>{
+    document.querySelector(".arena")
+      .classList.remove("screenShake");
+  },300);
+}
+
+
+
 function playDeath(targetClass){
 
   const card = document.querySelector(targetClass);
@@ -1045,12 +1130,17 @@ function useSkill(skillId){
     }
   }
 
-  if(dmg>0){
-    dmg = Math.floor(dmg);
-    enemy.hp -= dmg;
-    showDamage(".character.enemy", dmg, true);
-    showSlash(".character.enemy");
-  }
+if(dmg>0){
+  dmg = Math.floor(dmg);
+  enemy.hp -= dmg;
+
+  showDamage(".character.enemy", dmg, true);
+  showSlash(".character.enemy");
+
+  // 🔥 Skill Effect
+  showSkillEffect(".character.enemy", player.classType);
+}
+
 
   document.getElementById("battleLog").innerText = logText;
   render();
