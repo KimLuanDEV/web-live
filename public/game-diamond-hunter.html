@@ -1287,12 +1287,6 @@ input{
     <div class="label">Cường hóa</div>
   </button>
 
-<button class="hub-mini-btn" onclick="openSettings()">
-  <div class="icon">⚙️</div>
-  <div class="label">Cài đặt</div>
-</button>
-
-
 </div>
 
 
@@ -1648,30 +1642,6 @@ input{
 
 
 
-<!-- ===== SETTINGS MODAL ===== -->
-<div id="settingsModal" class="inventory hidden">
-  <div class="inventory-box">
-
-    <div class="inventory-header-pro">
-      <div class="inv-title-pro">⚙ Cài đặt</div>
-      <button class="inv-close-pro"
-              onclick="closeSettings()">✕</button>
-    </div>
-
-    <button class="hub-btn primary"
-            onclick="uploadCharacter()">
-      📤 Tải nhân vật lên Server
-    </button>
-
-    <button class="hub-btn secondary"
-            onclick="loadCharacterFromServer()">
-      📥 Tải nhân vật từ Server
-    </button>
-
-  </div>
-</div>
-
-
 
 <script>
 let selectedEnhanceIndex = null;
@@ -1707,35 +1677,17 @@ function savePlayer(){
 
 
 /* ===== INIT ===== */
-window.onload = async function(){
+window.onload=function(){
 
-  const userId = localStorage.getItem("userId");
+  const saved=localStorage.getItem("hunter_char");
+  if(saved){
+  player=JSON.parse(saved);
 
-  if(userId){
-
-    try{
-      const res = await fetch("/api/character/" + userId);
-      const data = await res.json();
-
-      if(data.success){
-        player = data.character;
-      }
-    }catch(e){}
-  }
-
-  if(!player){
-    const saved = localStorage.getItem("hunter_char");
-    if(saved){
-      player = JSON.parse(saved);
-    }
-  }
-
-  if(player){
-    recalcStats();
-    applyOfflineRegen();
-    showHub();
-    startRegen();
-  }
+  recalcStats();
+  applyOfflineRegen();
+  showHub();
+  startRegen();
+}
 
 };
 
@@ -3259,100 +3211,10 @@ function renderEnhanceSlots(){
 
 
 
-
-
 function closeEnhanceSelect(){
   document
     .getElementById("enhanceSelectModal")
     .classList.add("hidden");
-}
-
-
-
-function openSettings(){
-  document.getElementById("settingsModal")
-    .classList.remove("hidden");
-}
-
-function closeSettings(){
-  document.getElementById("settingsModal")
-    .classList.add("hidden");
-}
-
-
-
-
-async function uploadCharacter(){
-
-  if(!player){
-    alert("Chưa có nhân vật!");
-    return;
-  }
-
-  const userId = localStorage.getItem("userId");
-  if(!userId){
-    alert("Chưa đăng nhập!");
-    return;
-  }
-
-  try{
-
-    const res = await fetch("/api/character/save",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        userId,
-        character:player
-      })
-    });
-
-    const data = await res.json();
-
-    if(data.success){
-      alert("✅ Đã tải nhân vật lên server!");
-    }else{
-      alert("❌ Lỗi khi lưu!");
-    }
-
-  }catch(err){
-    alert("❌ Không kết nối được server");
-  }
-}
-
-
-
-async function loadCharacterFromServer(){
-
-  const userId = localStorage.getItem("userId");
-  if(!userId){
-    alert("Chưa đăng nhập!");
-    return;
-  }
-
-  try{
-
-    const res = await fetch("/api/character/" + userId);
-    const data = await res.json();
-
-    if(!data.success){
-      alert("Không có dữ liệu trên server");
-      return;
-    }
-
-    player = data.character;
-
-    recalcStats();
-    savePlayer();
-    showHub();
-    startRegen();
-
-    alert("✅ Đã tải nhân vật!");
-
-  }catch(err){
-    alert("Lỗi kết nối server");
-  }
 }
 
 

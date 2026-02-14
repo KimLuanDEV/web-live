@@ -1565,26 +1565,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/data", express.static(path.join(__dirname, "data")));
 
 
-app.post("/api/character/save", (req,res)=>{
-  const { userId, character } = req.body;
-
-  if(!userId || !character)
-    return res.json({ success:false });
-
-  const data = JSON.parse(
-    fs.readFileSync("./data/characters.json")
-  );
-
-  data[userId] = character;
-
-  fs.writeFileSync(
-    "./data/characters.json",
-    JSON.stringify(data,null,2)
-  );
-
-  res.json({ success:true });
-});
-
 
 app.post("/api/rps/bet",(req,res)=>{
   const uid = req.headers["x-uid"];
@@ -1840,25 +1820,6 @@ saveInvestState(investRound);
     });
   }
 });
-
-
-
-app.get("/api/character/:userId",(req,res)=>{
-
-  const userId = req.params.userId;
-
-  const data = JSON.parse(
-    fs.readFileSync("./data/characters.json")
-  );
-
-  if(data[userId]){
-    res.json({ success:true, character:data[userId] });
-  }else{
-    res.json({ success:false });
-  }
-
-});
-
 
 
 // 🔐 ADMIN – GET CURRENT RPS BETS
