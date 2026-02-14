@@ -2183,202 +2183,183 @@ if(mode === "gold" && !unlocked){
 
 
 
-
 function dropRandomItem(){
 
-  const roll = Math.random()*100;
   let item;
 
-  /* ================= ULTIMATE (MAP HOÀNG KIM) ================= */
-  if(gameMode === "gold" && roll < 5){
+  /* ================= MAP HOÀNG KIM ================= */
+  if(gameMode === "gold"){
 
-   const ultimateItems = [
+    const ultimateItems = [
 
-  /* ===== WEAPON ===== */
-  {
-    name:"👑 Kiếm Hoàng Kim Vô Cực",
-    atk:200,
-    critRate:15,
-    critDamage:1,
-    lifesteal:12,
-    type:"weapon",
-    img:"/assets/items/gold_sword.png",
-    rarity:"ultimate",
-    set:"golden"
-  },
+      {
+        name:"👑 Kiếm Hoàng Kim Vô Cực",
+        atk:200,
+        critRate:15,
+        critDamage:1,
+        lifesteal:12,
+        type:"weapon",
+        img:"/assets/items/gold_sword.png",
+        rarity:"ultimate",
+        set:"golden"
+      },
 
-  /* ===== ARMOR ===== */
-  {
-    name:"🛡 Giáp Thần Thoại Ánh Kim",
-    def:180,
-    hp:1500,
-    regen:8,
-    type:"armor",
-    img:"/assets/items/gold_armor.png",
-    rarity:"ultimate",
-    set:"golden"
-  },
+      {
+        name:"🛡 Giáp Thần Thoại Ánh Kim",
+        def:180,
+        hp:1500,
+        regen:8,
+        type:"armor",
+        img:"/assets/items/gold_armor.png",
+        rarity:"ultimate",
+        set:"golden"
+      },
 
-  /* ===== HELM ===== */
-  {
-    name:"👑 Mũ Hoàng Kim Thánh Vương",
-    def:120,
-    hp:800,
-    critRate:8,
-    type:"helm",
-    img:"/assets/items/gold_helm.png",
-    rarity:"ultimate",
-    set:"golden"
-  },
+      {
+        name:"👑 Mũ Hoàng Kim Thánh Vương",
+        def:120,
+        hp:800,
+        critRate:8,
+        type:"helm",
+        img:"/assets/items/gold_helm.png",
+        rarity:"ultimate",
+        set:"golden"
+      },
 
-  /* ===== SHOULDER ===== */
-  {
-    name:"🦾 Vai Hoàng Kim Thiên Uy",
-    def:140,
-    atk:70,
-    type:"shoulder",
-    img:"/assets/items/gold_shoulder.png",
-    rarity:"ultimate",
-    set:"golden"
-  },
+      {
+        name:"🦾 Vai Hoàng Kim Thiên Uy",
+        def:140,
+        atk:70,
+        type:"shoulder",
+        img:"/assets/items/gold_shoulder.png",
+        rarity:"ultimate",
+        set:"golden"
+      },
 
-  /* ===== GREAVES ===== */
-  {
-    name:"🦵 Giáp Chân Hoàng Kim Bất Diệt",
-    def:130,
-    hp:900,
-    regen:5,
-    type:"legs",
-    img:"/assets/items/gold_legs.png",
-    rarity:"ultimate",
-    set:"golden"
-  },
+      {
+        name:"🦵 Giáp Chân Hoàng Kim Bất Diệt",
+        def:130,
+        hp:900,
+        regen:5,
+        type:"legs",
+        img:"/assets/items/gold_legs.png",
+        rarity:"ultimate",
+        set:"golden"
+      },
 
-  /* ===== BOOTS ===== */
-  {
-    name:"👢 Hài Hoàng Kim Tốc Ảnh",
-    dodge:20,
-    atk:80,
-    type:"boots",
-    img:"/assets/items/gold_boots.png",
-    rarity:"ultimate",
-    set:"golden"
-  },
+      {
+        name:"👢 Hài Hoàng Kim Tốc Ảnh",
+        dodge:20,
+        atk:80,
+        type:"boots",
+        img:"/assets/items/gold_boots.png",
+        rarity:"ultimate",
+        set:"golden"
+      },
 
-  /* ===== GLOVES ===== */
-  {
-    name:"🧤 Găng Tay Hoàng Kim Hủy Diệt",
-    atk:90,
-    critRate:10,
-    lifesteal:6,
-    type:"gloves",
-    img:"/assets/items/gold_gloves.png",
-    rarity:"ultimate",
-    set:"golden"
-  },
+      {
+        name:"🧤 Găng Tay Hoàng Kim Hủy Diệt",
+        atk:90,
+        critRate:10,
+        lifesteal:6,
+        type:"gloves",
+        img:"/assets/items/gold_gloves.png",
+        rarity:"ultimate",
+        set:"golden"
+      },
 
-  /* ===== RING ===== */
-  {
-    name:"💍 Nhẫn Thống Trị",
-    atk:100,
-    critRate:12,
-    lifesteal:10,
-    type:"ring",
-    img:"/assets/items/gold_ring.png",
-    rarity:"ultimate",
-    set:"golden"
-  },
+      {
+        name:"💍 Nhẫn Thống Trị",
+        atk:100,
+        critRate:12,
+        lifesteal:10,
+        type:"ring",
+        img:"/assets/items/gold_ring.png",
+        rarity:"ultimate",
+        set:"golden"
+      },
 
-  /* ===== GEM ===== */
-  {
-    name:"💎 Ngọc Hoàng Kim Thánh Lực",
-    hp:1200,
-    critDamage:0.8,
-    regen:6,
-    type:"gem",
-    img:"/assets/items/gold_gem.png",
-    rarity:"ultimate",
-    set:"golden"
-  }
+      {
+        name:"💎 Ngọc Hoàng Kim Thánh Lực",
+        hp:1200,
+        critDamage:0.8,
+        regen:6,
+        type:"gem",
+        img:"/assets/items/gold_gem.png",
+        rarity:"ultimate",
+        set:"golden"
+      }
 
-];
-
-
+    ];
 
     item = ultimateItems[
       Math.floor(Math.random()*ultimateItems.length)
     ];
   }
 
-  /* ================= MYTHIC 1% ================= */
-  else if(roll < 6){
-
-    const mythicItems = [
-
-      {
-        name:"👑 Đại Kiếm Thần Phạt",
-        atk:120,
-        critRate:10,
-        critDamage:0.5,
-        lifesteal:8,
-        type:"weapon",
-        img:"/assets/items/weapon_greatsword.png",
-        rarity:"mythic"
-      },
-
-      {
-        name:"🔥 Giáp Bất Tử",
-        def:90,
-        hp:800,
-        regen:5,
-        type:"armor",
-        img:"/assets/items/armor_warrior.png",
-        rarity:"mythic"
-      },
-
-      {
-        name:"🩸 Nhẫn Huyết Thần",
-        lifesteal:15,
-        critRate:8,
-        type:"ring",
-        img:"/assets/items/ring_power.png",
-        rarity:"mythic"
-      },
-
-      {
-        name:"💎 Ngọc Hủy Diệt",
-        atk:60,
-        critDamage:0.6,
-        type:"gem",
-        img:"/assets/items/gem_life.png",
-        rarity:"mythic"
-      }
-
-    ];
-
-    item = mythicItems[
-      Math.floor(Math.random()*mythicItems.length)
-    ];
-  }
-
-  /* ================= NORMAL ================= */
+  /* ================= MAP KHÁC ================= */
   else{
 
-    const normalItems = [
+    const roll = Math.random()*100;
 
-      { name:"Kiếm Sắt", atk:12, type:"weapon", img:"/assets/items/weapon_sword_1.png", rarity:"normal" },
-      { name:"Giáp Thép", def:25, type:"armor", img:"/assets/items/armor_silver.png", rarity:"normal" },
-      { name:"Nhẫn Máu", lifesteal:5, type:"ring", img:"/assets/items/ring_power.png", rarity:"normal" },
-      { name:"Ngọc Sinh Mệnh", hp:300, type:"gem", img:"/assets/items/gem_life.png", rarity:"normal" }
+    if(roll < 1){
 
-    ];
+      const mythicItems = [
+        {
+          name:"👑 Đại Kiếm Thần Phạt",
+          atk:120,
+          critRate:10,
+          critDamage:0.5,
+          lifesteal:8,
+          type:"weapon",
+          img:"/assets/items/weapon_greatsword.png",
+          rarity:"mythic"
+        },
+        {
+          name:"🔥 Giáp Bất Tử",
+          def:90,
+          hp:800,
+          regen:5,
+          type:"armor",
+          img:"/assets/items/armor_warrior.png",
+          rarity:"mythic"
+        },
+        {
+          name:"🩸 Nhẫn Huyết Thần",
+          lifesteal:15,
+          critRate:8,
+          type:"ring",
+          img:"/assets/items/ring_power.png",
+          rarity:"mythic"
+        },
+        {
+          name:"💎 Ngọc Hủy Diệt",
+          atk:60,
+          critDamage:0.6,
+          type:"gem",
+          img:"/assets/items/gem_life.png",
+          rarity:"mythic"
+        }
+      ];
 
-    item = normalItems[
-      Math.floor(Math.random()*normalItems.length)
-    ];
+      item = mythicItems[
+        Math.floor(Math.random()*mythicItems.length)
+      ];
+
+    }else{
+
+      const normalItems = [
+        { name:"Kiếm Sắt", atk:12, type:"weapon", img:"/assets/items/weapon_sword_1.png", rarity:"normal" },
+        { name:"Giáp Thép", def:25, type:"armor", img:"/assets/items/armor_silver.png", rarity:"normal" },
+        { name:"Nhẫn Máu", lifesteal:5, type:"ring", img:"/assets/items/ring_power.png", rarity:"normal" },
+        { name:"Ngọc Sinh Mệnh", hp:300, type:"gem", img:"/assets/items/gem_life.png", rarity:"normal" }
+      ];
+
+      item = normalItems[
+        Math.floor(Math.random()*normalItems.length)
+      ];
+    }
   }
-
-  /* ================= FINALIZE ================= */
 
   const finalItem = {
     ...item,
@@ -2389,18 +2370,8 @@ function dropRandomItem(){
 
   player.inventory.push(finalItem);
 
-  /* ================= LOG ================= */
-
-  let rarityText = "";
-
-  if(finalItem.rarity === "ultimate")
-    rarityText = "✨✨ ULTIMATE ✨✨ ";
-
-  else if(finalItem.rarity === "mythic")
-    rarityText = "🔥 MYTHIC 🔥 ";
-
   document.getElementById("battleLog").innerText +=
-    rarityText + "🎁 Rơi trang bị: " + finalItem.name + "\n";
+    "🎁 Rơi trang bị: " + finalItem.name + "\n";
 
   savePlayer();
 }
