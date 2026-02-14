@@ -1110,6 +1110,91 @@ input{
   animation:goldSlotPulse 2s ease-in-out infinite;
 }
 
+
+/* ===== GOLD ROTATING RING ===== */
+
+.equip-slot.gold-active::after{
+  content:"";
+  position:absolute;
+  inset:-3px;
+  border-radius:20px;
+  background:conic-gradient(
+    from 0deg,
+    rgba(255,215,0,0) 0deg,
+    rgba(255,215,0,.9) 90deg,
+    rgba(255,215,0,0) 180deg
+  );
+  animation:goldRotate 3s linear infinite;
+  z-index:-1;
+  filter:blur(8px);
+}
+
+
+.character-card.full-gold{
+  box-shadow:
+    0 0 40px gold,
+    0 0 80px rgba(255,215,0,.8);
+}
+
+.character-card.full-gold::before{
+  content:"";
+  position:absolute;
+  inset:-5px;
+  border-radius:28px;
+  background:conic-gradient(
+    from 0deg,
+    rgba(255,215,0,0) 0deg,
+    rgba(255,215,0,1) 120deg,
+    rgba(255,215,0,0) 240deg
+  );
+  animation:goldRotate 4s linear infinite;
+  filter:blur(10px);
+  z-index:-1;
+}
+
+
+.equip-slot.gold-bonus::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  border-radius:18px;
+  background:linear-gradient(
+    120deg,
+    transparent 30%,
+    rgba(255,255,255,.6),
+    transparent 70%
+  );
+  animation:goldShineMove 2.5s linear infinite;
+  pointer-events:none;
+}
+
+@keyframes goldShineMove{
+  0%{ transform:translateX(-100%); }
+  100%{ transform:translateX(100%); }
+}
+
+
+@keyframes goldShake{
+  0%{ transform:translateY(0); }
+  25%{ transform:translateY(-2px); }
+  50%{ transform:translateY(0); }
+  75%{ transform:translateY(2px); }
+  100%{ transform:translateY(0); }
+}
+
+.equip-slot.gold-bonus{
+  animation:goldShake 1.2s ease-in-out infinite;
+}
+
+
+@keyframes goldRotate{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+
+
+
 @keyframes goldSlotPulse{
   0%{ box-shadow:0 0 20px gold; }
   50%{ box-shadow:0 0 45px gold; }
@@ -1876,17 +1961,18 @@ Object.keys(player.equipment).forEach(slot=>{
   }
 });
 
-
-
-
-
-        
+   
 
   // ===== DEAD CHECK =====
   if(player.deadUntil && Date.now() < player.deadUntil){
     const remaining = player.deadUntil - Date.now();
     startRespawnTimer(remaining);
   }
+
+
+updateGoldSetEffect();
+
+
 }
 
 
@@ -2107,6 +2193,9 @@ Object.keys(player.equipment).forEach(slot=>{
     contentEl.innerHTML = `<div class="equip-empty">+</div>`;
   }
 });
+
+
+updateGoldSetEffect();
 
 
 }
@@ -3243,6 +3332,41 @@ function closeEnhanceSelect(){
     .getElementById("enhanceSelectModal")
     .classList.add("hidden");
 }
+
+
+
+function updateGoldSetEffect(){
+
+  let goldCount = 0;
+
+  Object.values(player.equipment).forEach(item=>{
+    if(item && item.rarity === "gold"){
+      goldCount++;
+    }
+  });
+
+  const slots = document.querySelectorAll(".equip-slot");
+  const charCard = document.querySelector(".character-card");
+
+  slots.forEach(s=>{
+    s.classList.remove("gold-bonus");
+  });
+
+  charCard.classList.remove("full-gold");
+
+  if(goldCount >= 3){
+    slots.forEach(s=>{
+      if(s.classList.contains("gold-active")){
+        s.classList.add("gold-bonus");
+      }
+    });
+  }
+
+  if(goldCount >= 6){
+    charCard.classList.add("full-gold");
+  }
+}
+
 
 
 
