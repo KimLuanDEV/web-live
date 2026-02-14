@@ -7,23 +7,34 @@
 
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
 
 <title>Đấu Trường</title>
 
 <style>
+
+html, body{
+  background:#02070c;
+}
+
 body{
   margin:0;
   font-family:system-ui;
   color:#fff;
-  height:100vh;
+
+  min-height:100vh;
   overflow:hidden;
+
+  padding-top:env(safe-area-inset-top);
+  background-color:#02070c; /* thêm dòng này */
 
   background-repeat:no-repeat;
   background-position:center center;
-  background-size:cover;   /* ⭐ ĐỔI LẠI COVER */
+  background-size:cover;
   transition:background .5s ease;
 }
+
 
 
 
@@ -2082,10 +2093,7 @@ if(Math.random() < dropRate){
   checkLevelUp();
   savePlayer();
 
-  document.getElementById("battleLog").innerText +=
-    "🎉 Hạ quái!\n" +
-    "+100 EXP\n" +
-    `💎 Nhận ${diamondDrop} kim cương\n`;
+  appendLog("🎉 Hạ quái!\n" + "+100 EXP\n" + `💎 Nhận ${diamondDrop} kim cương\n`);
 
   render();
 }
@@ -2106,8 +2114,7 @@ if(enemy.isBoss && Math.random() < 0.3){
   showDamage(".character:not(.enemy)", rage, true);
   showSlash(".character:not(.enemy)");
 
-  document.getElementById("battleLog").innerText += 
-    "🔥 BOSS Cuồng Nộ gây " + rage + " sát thương!\n";
+  appendLog("🔥 BOSS Cuồng Nộ gây " + rage + " sát thương!\n");
 
   render();
 
@@ -2265,8 +2272,7 @@ if(enemy.hp <= 0){
     savePlayer();
     render();
 
-    document.getElementById("battleLog").innerText +=
-      "💀 Bạn đã bị hạ!";
+   appendLog("💀 Bạn đã bị hạ!");
 
     setTimeout(()=>{
       location.href="game-diamond-hunter.html";
@@ -2592,8 +2598,7 @@ function dropRandomItem(){
 
   player.inventory.push(finalItem);
 
-  document.getElementById("battleLog").innerText +=
-    "🎁 Rơi trang bị: " + finalItem.name + "\n";
+  appendLog("🎁 Rơi trang bị: " + finalItem.name + "\n");
 
   savePlayer();
 }
@@ -2830,12 +2835,10 @@ function resetAllSkills(){
   updateCooldownUI();
 }
 
-
 function appendLog(text){
 
   const log = document.getElementById("battleLog");
 
-  // Tách từng dòng nếu có \n
   const lines = text.split("\n");
 
   lines.forEach(lineText=>{
@@ -2843,47 +2846,40 @@ function appendLog(text){
     if(!lineText.trim()) return;
 
     const line = document.createElement("div");
-    line.className = "log-line";
+    line.className = "log-line log-normal";
+    line.innerText = lineText;
 
-    const icon = document.createElement("div");
-    icon.className = "log-icon";
-
-    const textEl = document.createElement("div");
-    textEl.className = "log-text";
-    textEl.innerText = lineText;
-
-    // ===== PHÂN LOẠI =====
     if(lineText.includes("CHÍ MẠNG")){
-      textEl.classList.add("log-crit");
-      icon.innerText = "💥";
+      line.classList.add("log-crit");
     }
     else if(lineText.includes("Rơi trang bị")){
-      textEl.classList.add("log-loot");
-      icon.innerText = "🎁";
+      line.classList.add("log-loot");
     }
     else if(lineText.includes("Hạ quái")){
-      textEl.classList.add("log-exp");
-      icon.innerText = "🎉";
+      line.classList.add("log-exp");
     }
     else if(lineText.includes("BOSS")){
-      textEl.classList.add("log-boss");
-      icon.innerText = "🔥";
+      line.classList.add("log-boss");
     }
     else if(lineText.includes("đã bị hạ")){
-      textEl.classList.add("log-death");
-      icon.innerText = "💀";
-    }
-    else{
-      icon.innerText = "➤";
+      line.classList.add("log-death");
     }
 
-    line.appendChild(icon);
-    line.appendChild(textEl);
-    log.appendChild(line);
+    log.prepend(line);
+
+    // Giữ tối đa 6 dòng
+    while(log.children.length > 6){
+      log.removeChild(log.lastChild);
+    }
+
+    // Auto remove sau 4s
+    setTimeout(()=>{
+      if(line.parentNode){
+        line.remove();
+      }
+    },4000);
 
   });
-
-  log.scrollTop = log.scrollHeight;
 }
 
 
