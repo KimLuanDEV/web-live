@@ -700,29 +700,24 @@ body{
 .header-back{
   position:absolute;
   left:12px;
-
-  top:calc(env(safe-area-inset-top) + 50%);
-  
-
+  top:50%;
+  transform:translateY(-50%);
   width:42px;
   height:42px;
-
   border-radius:50%;
   border:none;
   background:#0d1a22;
   color:#00f0ff;
   font-size:22px;
-  font-weight:900;
+  font-weight:800;
   cursor:pointer;
+  box-shadow:0 0 15px rgba(0,255,255,.4);
+  transition:.2s;
 
   display:flex;
   align-items:center;
   justify-content:center;
-
-  box-shadow:0 0 15px rgba(0,255,255,.4);
-  transition:.2s;
 }
-
 
 .header-back:hover{
   background:#122430;
