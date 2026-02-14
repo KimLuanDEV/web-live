@@ -896,6 +896,70 @@ input{
 
 
 
+/* ===== HUB ACTION LAYOUT ===== */
+
+.hub-quick-row{
+  display:flex;
+  gap:12px;
+  margin-bottom:16px;
+}
+
+.hub-mini-btn{
+  flex:1;
+  background:linear-gradient(145deg,#0b1118,#060a0f);
+  border:1px solid rgba(0,255,255,.25);
+  border-radius:16px;
+  padding:14px 8px;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  cursor:pointer;
+  transition:.25s;
+  box-shadow:
+    0 0 15px rgba(0,255,255,.15),
+    inset 0 0 10px rgba(0,255,255,.05);
+}
+
+.hub-mini-btn .icon{
+  font-size:22px;
+}
+
+.hub-mini-btn .label{
+  font-size:12px;
+  margin-top:6px;
+  opacity:.8;
+}
+
+.hub-mini-btn:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 0 35px rgba(0,255,255,.5);
+}
+
+/* ===== MAIN BUTTON ENHANCE ===== */
+
+.hub-btn.big{
+  padding:18px;
+  font-size:16px;
+  margin-bottom:12px;
+}
+
+/* ===== DANGER BUTTON SMALLER ===== */
+
+.hub-btn.small{
+  font-size:12px;
+  padding:10px;
+  opacity:.8;
+}
+
+.hub-btn.small:hover{
+  opacity:1;
+}
+
+
 </style>
 </head>
 <body>
@@ -1027,31 +1091,42 @@ input{
 
 
 
-  <div class="hub-actions">
+<div class="hub-actions">
 
-<button class="hub-btn secondary" onclick="toggleInventory()">
-  🎒 Kho đồ
-</button>
+  <!-- QUICK ACTION ROW -->
+  <div class="hub-quick-row">
 
-<button class="hub-btn secondary" onclick="toggleShop()">
-  🛒 Shop
-</button>
+    <button class="hub-mini-btn" onclick="toggleInventory()">
+      <div class="icon">🎒</div>
+      <div class="label">Kho đồ</div>
+    </button>
 
-
-<button class="hub-btn primary" onclick="goToCombat()">
-      ⚔ Vào chiến đấu
-</button>
-
-
-<button class="hub-btn danger" onclick="resetCharacter()">
-      🗑 Xóa nhân vật
-</button>
+    <button class="hub-mini-btn" onclick="toggleShop()">
+      <div class="icon">🛒</div>
+      <div class="label">Shop</div>
+    </button>
 
   </div>
+
+  <!-- MAIN ACTION -->
+  <button class="hub-btn primary big" onclick="goToCombat()">
+    ⚔ Vào chiến đấu
+  </button>
+
+  <!-- DANGER ZONE -->
+  <button class="hub-btn danger small" onclick="resetCharacter()">
+    🗑 Xóa nhân vật
+  </button>
+
+</div>
+
+
 
 
 
 </div>
+
+
 
 
 
