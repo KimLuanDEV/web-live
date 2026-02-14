@@ -14,12 +14,17 @@
 <style>
 body{
   margin:0;
-  background:radial-gradient(circle at center,#08121a,#000);
   font-family:system-ui;
   color:#fff;
   height:100vh;
-  overflow:hidden;   /* ⭐ QUAN TRỌNG */
+  overflow:hidden;
+
+  background-size:cover;
+  background-position:center;
+  background-repeat:no-repeat;
+  transition:background .5s ease;
 }
+
 
 
 html, body{
@@ -970,10 +975,23 @@ html, body{
 }
 
 
+.bg-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  pointer-events:none;
+  z-index:-1;
+}
+
+
+
 </style>
 </head>
 
 <body>
+
+  <div class="bg-overlay"></div>
+
 
 <div class="game-header">
 
@@ -1317,13 +1335,15 @@ function render(){
 
   /* ================= BACKGROUND ================= */
 
-  if(gameMode === "gold"){
-    document.body.style.background =
-      "radial-gradient(circle at center,#3a2600,#000)";
-  }else{
-    document.body.style.background =
-      "radial-gradient(circle at center,#08121a,#000)";
-  }
+const bgMap = {
+  rank: "/assets/maps/arena_rank.jpg",
+  farm: "/assets/maps/arena_farm.jpg",
+  gold: "/assets/maps/arena_gold.jpg"
+};
+
+document.body.style.backgroundImage =
+  `url(${bgMap[gameMode]})`;
+
 
 
   /* ================= PLAYER HP ================= */
