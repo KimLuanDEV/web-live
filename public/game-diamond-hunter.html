@@ -1092,6 +1092,46 @@ input{
 
 
 
+/* ===== EQUIPPED GOLD SLOT EFFECT ===== */
+
+.equip-slot.gold-active{
+  border:2px solid #ffd700;
+
+  background:
+    radial-gradient(circle at top,
+      rgba(255,215,0,.25),
+      rgba(40,25,0,.9));
+
+  box-shadow:
+    0 0 20px #ffd700,
+    0 0 40px rgba(255,215,0,.7),
+    inset 0 0 20px rgba(255,215,0,.5);
+
+  animation:goldSlotPulse 2s ease-in-out infinite;
+}
+
+@keyframes goldSlotPulse{
+  0%{ box-shadow:0 0 20px gold; }
+  50%{ box-shadow:0 0 45px gold; }
+  100%{ box-shadow:0 0 20px gold; }
+}
+
+/* Mythic tím */
+.equip-slot.mythic-active{
+  border:2px solid #ff00ff;
+
+  box-shadow:
+    0 0 25px #ff00ff,
+    0 0 50px rgba(255,0,255,.8);
+
+  background:
+    radial-gradient(circle at top,
+      rgba(255,0,255,.2),
+      rgba(25,0,25,.9));
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1803,14 +1843,26 @@ if(critEl) critEl.innerText = player.critRate;
 
 // ===== EQUIPMENT =====
 Object.keys(player.equipment).forEach(slot=>{
-  const el = document.getElementById(slot + "Slot");
-  if(!el) return;
+  const contentEl = document.getElementById(slot + "Slot");
+  if(!contentEl) return;
+
+  const slotEl = contentEl.closest(".equip-slot");
+  slotEl.classList.remove("gold-active","mythic-active");
 
   const item = player.equipment[slot];
 
   if(item){
 
-    el.innerHTML = `
+    // ⭐ thêm hiệu ứng theo rarity
+    if(item.rarity === "gold"){
+      slotEl.classList.add("gold-active");
+    }
+
+    if(item.rarity === "mythic"){
+      slotEl.classList.add("mythic-active");
+    }
+
+    contentEl.innerHTML = `
       <div class="equip-img-wrap">
         <img src="${item.img}" class="equip-img">
         ${item.enhance ? 
@@ -1820,9 +1872,10 @@ Object.keys(player.equipment).forEach(slot=>{
     `;
 
   }else{
-    el.innerHTML = `<div class="equip-empty">+</div>`;
+    contentEl.innerHTML = `<div class="equip-empty">+</div>`;
   }
 });
+
 
 
 
@@ -2022,13 +2075,26 @@ if(item.enhance){
 
 // ===== UPDATE EQUIPMENT SLOTS =====
 Object.keys(player.equipment).forEach(slot=>{
-  const el = document.getElementById(slot + "Slot");
-  if(!el) return;
+  const contentEl = document.getElementById(slot + "Slot");
+  if(!contentEl) return;
+
+  const slotEl = contentEl.closest(".equip-slot");
+  slotEl.classList.remove("gold-active","mythic-active");
 
   const item = player.equipment[slot];
 
   if(item){
-    el.innerHTML = `
+
+    // ⭐ thêm hiệu ứng theo rarity
+    if(item.rarity === "gold"){
+      slotEl.classList.add("gold-active");
+    }
+
+    if(item.rarity === "mythic"){
+      slotEl.classList.add("mythic-active");
+    }
+
+    contentEl.innerHTML = `
       <div class="equip-img-wrap">
         <img src="${item.img}" class="equip-img">
         ${item.enhance ? 
@@ -2036,8 +2102,9 @@ Object.keys(player.equipment).forEach(slot=>{
           : ""}
       </div>
     `;
+
   }else{
-    el.innerHTML = `<div class="equip-empty">+</div>`;
+    contentEl.innerHTML = `<div class="equip-empty">+</div>`;
   }
 });
 
