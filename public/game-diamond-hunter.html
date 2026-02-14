@@ -1803,7 +1803,8 @@ async function createCharacter(){
   const name = document.getElementById("charName").value.trim();
   if(!name || !selectedClass) return alert("Nhập tên & chọn class");
 
-  const config = getClassConfig(selectedClass);
+  const config = CLASS_CONFIG[selectedClass];
+
 
   try{
 
