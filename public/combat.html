@@ -870,22 +870,27 @@ body{
 
 
 
-/* ===== MODE SCROLL BAR ===== */
+/* ===== MODE BAR PRO GAME ===== */
 
 .mode-wrapper{
   width:100%;
-  background:#050b12;
-  border-bottom:1px solid rgba(0,255,255,.15);
-  overflow:hidden;
-
   margin-top:calc(65px + env(safe-area-inset-top));
-}
 
+  background:linear-gradient(
+    180deg,
+    rgba(8,18,28,.95),
+    rgba(4,10,16,.95)
+  );
+
+  backdrop-filter:blur(15px);
+  border-bottom:1px solid rgba(0,255,255,.25);
+  box-shadow:0 10px 30px rgba(0,0,0,.6);
+}
 
 .mode-scroll{
   display:flex;
-  gap:12px;
-  padding:10px 15px;
+  gap:14px;
+  padding:14px 18px;
   overflow-x:auto;
   scroll-behavior:smooth;
 }
@@ -894,37 +899,103 @@ body{
   display:none;
 }
 
+/* ===== CARD ===== */
+
 .mode-card{
+  position:relative;
   flex:0 0 auto;
-  min-width:120px;
-  padding:10px 14px;
-  border-radius:14px;
+  min-width:110px;
+
+  padding:10px 18px;
+  border-radius:18px;
+
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,.08),
+    rgba(0,0,0,.35)
+  );
+
+  backdrop-filter:blur(8px);
+
   border:1px solid rgba(0,255,255,.25);
-  background:linear-gradient(180deg,#0d1a22,#09131a);
+
   color:#00f0ff;
-  font-weight:800;
+  font-weight:900;
+  font-size:14px;
+  letter-spacing:.5px;
+
   cursor:pointer;
   transition:.25s;
   white-space:nowrap;
+
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.6),
+    inset 0 0 15px rgba(0,255,255,.15);
 }
 
+/* Hover nâng nhẹ */
 .mode-card:hover{
-  transform:translateY(-2px);
-  box-shadow:0 0 15px rgba(0,255,255,.4);
+  transform:translateY(-3px);
+  box-shadow:
+    0 14px 25px rgba(0,0,0,.7),
+    0 0 20px rgba(0,255,255,.5);
 }
 
+/* Active mode */
 .mode-card.active{
   border:1px solid #00f0ff;
-  box-shadow:0 0 20px #00f0ff;
+  box-shadow:
+    0 0 30px #00f0ff,
+    inset 0 0 20px rgba(0,255,255,.6);
+  transform:translateY(-2px) scale(1.03);
 }
+
+/* Click effect */
+.mode-card:active{
+  transform:scale(.96);
+}
+
+/* ===== GOLD SPECIAL ===== */
 
 .mode-card.gold{
   color:gold;
   border:1px solid rgba(255,215,0,.5);
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.6),
+    inset 0 0 15px rgba(255,215,0,.2);
+}
+
+.mode-card.gold:hover{
+  box-shadow:
+    0 0 30px gold,
+    inset 0 0 25px rgba(255,215,0,.4);
 }
 
 .mode-card.gold.active{
-  box-shadow:0 0 25px gold;
+  box-shadow:
+    0 0 40px gold,
+    inset 0 0 30px rgba(255,215,0,.8);
+  border:1px solid gold;
+}
+
+/* ===== LOCK OVERLAY UPGRADE ===== */
+
+.lock-overlay{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.8),
+    rgba(0,0,0,.5)
+  );
+
+  backdrop-filter:blur(5px);
+  border-radius:18px;
 }
 
 
