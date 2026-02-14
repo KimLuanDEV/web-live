@@ -1966,7 +1966,7 @@ function rewardEnemyKill(){
 
 if(gameMode === "farm") dropRate = 0.25;
 if(gameMode === "rank") dropRate = 0.15;
-if(gameMode === "gold") dropRate = 1;   // 👑 Gold luôn rơi
+if(gameMode === "gold") dropRate = 0.01; 
 
 if(Math.random() < dropRate){
   dropRandomItem();
@@ -2615,7 +2615,7 @@ function closeLootPreview(){
 
 function getGoldLoot(){
 
-  const ultimateRate = 100; // 5% chia đều 9 món
+  const ultimateRate = 1 / 9; // 5% chia đều 9 món
 
   return [
     { name:"👑 Kiếm Hoàng Kim Vô Cực", img:"/assets/items/gold_sword.png", rarity:"ultimate", rate: ultimateRate },
