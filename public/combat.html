@@ -1659,7 +1659,7 @@ if(gameMode === "rank"){
   localStorage.setItem("arena_stage", stage);
 }
 
-
+resetAllSkills();
   spawnEnemy();
 
 document
@@ -1806,6 +1806,8 @@ function useSkill(skillId){
             stage++;
             localStorage.setItem("arena_stage", stage);
           }
+
+          resetAllSkills();
           spawnEnemy();
           document.querySelector(".character.enemy")
             .classList.remove("disintegrate");
@@ -2024,6 +2026,7 @@ if(enemy.hp <= 0){
       stage++;
       localStorage.setItem("arena_stage", stage);
     }
+    resetAllSkills();
 
     spawnEnemy();
 
@@ -2607,6 +2610,16 @@ function startCast(duration = 400){
     }, duration);
 
   });
+}
+
+
+function resetAllSkills(){
+
+  Object.keys(skillCooldown).forEach(k=>{
+    skillCooldown[k] = 0;
+  });
+
+  updateCooldownUI();
 }
 
 
