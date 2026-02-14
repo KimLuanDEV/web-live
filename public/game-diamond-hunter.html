@@ -959,6 +959,96 @@ input{
   opacity:1;
 }
 
+.enhance-btn{
+  border:1px solid rgba(255,170,0,.4);
+  box-shadow:
+    0 0 15px rgba(255,170,0,.2),
+    inset 0 0 10px rgba(255,170,0,.1);
+}
+
+.enhance-btn:hover{
+  box-shadow:
+    0 0 40px rgba(255,170,0,.6);
+}
+
+
+/* ===== ENHANCE UI PRO ===== */
+
+.enhance-box{
+  text-align:center;
+}
+
+.enhance-item-preview{
+  margin:20px 0;
+}
+
+.enhance-img{
+  width:140px;
+  height:140px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 25px #00f0ff);
+}
+
+.enhance-name{
+  margin-top:10px;
+  font-weight:800;
+  font-size:18px;
+  color:#00f0ff;
+}
+
+.enhance-stats{
+  margin:20px 0;
+  font-size:14px;
+  opacity:.9;
+}
+
+.enhance-rate-wrap{
+  margin:20px 0;
+}
+
+.enhance-rate-bar{
+  height:14px;
+  background:#111;
+  border-radius:20px;
+  overflow:hidden;
+}
+
+.enhance-rate-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00ffcc,#00f0ff);
+  transition:.4s;
+}
+
+.enhance-rate-text{
+  margin-top:6px;
+  font-weight:700;
+}
+
+.enhance-cost{
+  margin:15px 0;
+  font-weight:800;
+  color:#ffd700;
+}
+
+.enhance-btn-main{
+  width:100%;
+  padding:16px;
+  border:none;
+  border-radius:16px;
+  font-weight:800;
+  font-size:16px;
+  background:linear-gradient(90deg,#ff9900,#ffd700);
+  color:#000;
+  cursor:pointer;
+  transition:.25s;
+  box-shadow:0 0 25px rgba(255,215,0,.5);
+}
+
+.enhance-btn-main:hover{
+  transform:scale(1.05);
+}
+
 
 </style>
 </head>
@@ -1094,19 +1184,25 @@ input{
 <div class="hub-actions">
 
   <!-- QUICK ACTION ROW -->
-  <div class="hub-quick-row">
+<div class="hub-quick-row">
 
-    <button class="hub-mini-btn" onclick="toggleInventory()">
-      <div class="icon">🎒</div>
-      <div class="label">Kho đồ</div>
-    </button>
+  <button class="hub-mini-btn" onclick="toggleInventory()">
+    <div class="icon">🎒</div>
+    <div class="label">Kho đồ</div>
+  </button>
 
-    <button class="hub-mini-btn" onclick="toggleShop()">
-      <div class="icon">🛒</div>
-      <div class="label">Shop</div>
-    </button>
+  <button class="hub-mini-btn" onclick="toggleShop()">
+    <div class="icon">🛒</div>
+    <div class="label">Shop</div>
+  </button>
 
-  </div>
+  <button class="hub-mini-btn enhance-btn" onclick="openEnhanceFromHub()">
+    <div class="icon">⚒️</div>
+    <div class="label">Cường hóa</div>
+  </button>
+
+</div>
+
 
   <!-- MAIN ACTION -->
   <button class="hub-btn primary big" onclick="goToCombat()">
@@ -1347,31 +1443,37 @@ input{
 
 
 <div id="enhanceModal" class="inventory hidden">
-  <div class="inventory-box">
 
-    <div class="inventory-header">
-      🔥 Cường Hóa
-      <span class="close-btn" onclick="closeEnhance()">✕</span>
-    </div>
+<div class="inventory-box enhance-box">
 
-    <div id="enhanceItemName"
-         style="text-align:center;font-weight:800;margin:15px 0"></div>
-
-    <div id="enhanceInfo"
-         style="text-align:center;margin-bottom:15px"></div>
-
-<button class="btn" onclick="enhanceItem()">
-  🔥 Cường Hóa
-</button>
-
-<button class="btn secondary"
-        style="margin-top:10px;background:#111;color:#ff5555"
-        onclick="confirmUnequip()">
-  🗑 Tháo trang bị
-</button>
-
-
+  <div class="inventory-header-pro">
+    <div class="inv-title-pro">🔥 Cường Hóa Trang Bị</div>
+    <button class="inv-close-pro" onclick="closeEnhance()">✕</button>
   </div>
+
+  <div class="enhance-item-preview">
+    <img id="enhanceItemImg" class="enhance-img">
+    <div id="enhanceItemName" class="enhance-name"></div>
+  </div>
+
+  <div id="enhanceStatsPreview" class="enhance-stats"></div>
+
+  <div class="enhance-rate-wrap">
+    <div class="enhance-rate-bar">
+      <div id="enhanceRateFill" class="enhance-rate-fill"></div>
+    </div>
+    <div id="enhanceRateText" class="enhance-rate-text"></div>
+  </div>
+
+  <div id="enhanceCostText" class="enhance-cost"></div>
+
+  <button class="enhance-btn-main" onclick="enhanceItem()">
+    🔥 Cường Hóa
+  </button>
+
+</div>
+
+
 </div>
 
 
@@ -1414,6 +1516,28 @@ input{
 
 </div>
 
+
+  </div>
+</div>
+
+
+
+<!-- ===== ENHANCE SLOT SELECT ===== -->
+<div id="enhanceSelectModal" class="inventory hidden">
+  <div class="inventory-box">
+
+    <div class="inventory-header-pro">
+      <div class="inv-title-pro">
+        🔥 Chọn trang bị để cường hóa
+      </div>
+
+      <button class="inv-close-pro"
+              onclick="closeEnhanceSelect()">✕</button>
+    </div>
+
+    <div class="equip-grid" id="enhanceSlotGrid">
+      <!-- render slot ở đây -->
+    </div>
 
   </div>
 </div>
@@ -2474,14 +2598,50 @@ function updateEnhanceUI(){
     cost = 600;
   }
 
+  document.getElementById("enhanceItemImg").src = item.img;
+
   document.getElementById("enhanceItemName")
     .innerText = item.name + " +" + lv;
 
-  document.getElementById("enhanceInfo")
-    .innerHTML =
-      `Tỉ lệ thành công: ${rate}%<br>
-       Chi phí: ${cost} 💎`;
+  // Preview stat tăng
+  let statPreview = "";
+
+  ["atk","def","hp"].forEach(stat=>{
+    if(item[stat]){
+      const current = getEnhancedValue(item,stat);
+      const next = Math.floor(item[stat] * getEnhanceMultiplier(lv+1));
+      statPreview += `
+        <div>
+          ${stat.toUpperCase()}:
+          ${current} → <span style="color:#00ff88">${next}</span>
+        </div>
+      `;
+    }
+  });
+
+  document.getElementById("enhanceStatsPreview")
+    .innerHTML = statPreview;
+
+  document.getElementById("enhanceRateFill")
+    .style.width = rate + "%";
+
+  document.getElementById("enhanceRateText")
+    .innerText = "Tỉ lệ thành công: " + rate + "%";
+
+  document.getElementById("enhanceCostText")
+    .innerText = "Chi phí: " + cost + " 💎";
+
+    if(lv >= 10){
+  document.getElementById("enhanceItemImg")
+    .style.filter = "drop-shadow(0 0 35px gold)";
 }
+
+
+}
+
+
+
+
 
 function getEnhanceMultiplier(enhance){
   return 1 + enhance * 0.05;
@@ -2863,6 +3023,70 @@ function getEnhancedValue(item, stat){
 
 
 
+function openEnhanceFromHub(){
+
+  document
+    .getElementById("enhanceSelectModal")
+    .classList.remove("hidden");
+
+  renderEnhanceSlots();
+}
+
+
+function renderEnhanceSlots(){
+
+  const grid = document.getElementById("enhanceSlotGrid");
+  grid.innerHTML = "";
+
+  Object.keys(player.equipment).forEach(slot=>{
+
+    const item = player.equipment[slot];
+
+    const div = document.createElement("div");
+    div.className = "equip-slot";
+
+    if(item){
+
+      div.innerHTML = `
+        <div class="equip-label">${slot.toUpperCase()}</div>
+        <div class="equip-content">
+          <img src="${item.img}" class="equip-img">
+          ${item.enhance ?
+            `<div class="enhance-badge">+${item.enhance}</div>`
+            : ""
+          }
+        </div>
+      `;
+
+      div.onclick = ()=>{
+        closeEnhanceSelect();
+        openEnhance(slot);
+      };
+
+    }else{
+
+      div.innerHTML = `
+        <div class="equip-label">${slot.toUpperCase()}</div>
+        <div class="equip-content">
+          <div class="equip-empty">Trống</div>
+        </div>
+      `;
+
+      div.style.opacity = .4;
+    }
+
+    grid.appendChild(div);
+  });
+}
+
+
+
+
+function closeEnhanceSelect(){
+  document
+    .getElementById("enhanceSelectModal")
+    .classList.add("hidden");
+}
 
 
 
