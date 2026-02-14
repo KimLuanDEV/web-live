@@ -1061,6 +1061,37 @@ input{
 }
 
 
+/* ===== NAME INSIDE AVATAR ===== */
+
+.char-name-overlay{
+  position:absolute;
+  bottom:0;
+  left:50%;
+  transform:translate(-50%,-50%);
+  
+  padding:10px 18px;
+  border-radius:20px;
+
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);
+
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:1px;
+
+  color:#00f0ff;
+
+  text-shadow:
+    0 0 10px rgba(0,255,255,.8),
+    0 0 20px rgba(0,255,255,.6);
+
+  box-shadow:
+    0 0 30px rgba(0,255,255,.4),
+    inset 0 0 15px rgba(0,255,255,.2);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1151,6 +1182,10 @@ input{
 
   <div id="hubAvatar" class="character-bg"></div>
 
+<!-- NAME INSIDE AVATAR -->
+<div class="char-name-overlay">
+  <span id="infoName"></span>
+</div>
 
   <!-- TOP LEFT -->
   <div class="char-badge hp-badge">
@@ -1184,7 +1219,7 @@ input{
 
   </div>
 
-<div class="hub-name" id="infoName"></div>
+
 
   </div>
 
