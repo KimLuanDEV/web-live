@@ -20,19 +20,6 @@ const twilio = require("twilio");
 const fs = require("fs");
 
 
-
-// ================================
-// 🔐 CHARACTER CODE GENERATOR
-// ================================
-function generateCharacterCode(){
-  return "DH-" +
-    crypto.randomBytes(4)
-      .toString("hex")
-      .toUpperCase();
-}
-
-
-
 function ensureWheelSecret(round){
   if (!round) return;
 
@@ -130,26 +117,6 @@ function saveRpsRoundCount(data){
     console.error("❌ Save RPS round count failed", e);
   }
 }
-
-
-function ensureCharacterCodes(){
-  const users = loadUsers();
-  let changed = false;
-
-  Object.values(users).forEach(u=>{
-    if(u.profile && !u.profile.characterCode){
-      u.profile.characterCode = generateCharacterCode();
-      changed = true;
-    }
-  });
-
-  if(changed){
-    saveUsers(users);
-    console.log("🔐 Generated missing character codes");
-  }
-}
-
-
 
 
 
@@ -1598,83 +1565,6 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/data", express.static(path.join(__dirname, "data")));
 
 
-// ================================
-// 🎮 CREATE DIAMOND HUNTER CHARACTER
-// ================================
-app.post("/api/character/create", (req,res)=>{
-
-  const { name, classType, baseStats } = req.body;
-
-  if(!name || !classType || !baseStats){
-    return res.json({ ok:false });
-  }
-
-  const users = loadUsers();
-
-  // 🔥 Tạo uid mới cho game (không cần login)
-  const uid = "hunter_" + Date.now();
-
-  const profile = {
-    name,
-    classType,
-    level:1,
-    exp:0,
-    coins:500,
-    ...baseStats,
-    inventory:[],
-    equipment:{
-      weapon:null, armor:null, helmet:null,
-      gloves:null, boots:null, shoulder:null,
-      legs:null, ring:null, gem:null
-    },
-    characterCode: generateCharacterCode()
-  };
-
-  users[uid] = {
-    uid,
-    profile
-  };
-
-  saveUsers(users);
-
-  return res.json({
-    ok:true,
-    uid,
-    profile
-  });
-});
-
-
-// ================================
-// 🔐 LOAD CHARACTER BY CODE
-// ================================
-app.post("/api/character/load-by-code", (req,res)=>{
-
-  const { code } = req.body;
-  if(!code){
-    return res.json({ ok:false, message:"NO_CODE" });
-  }
-
-  const users = loadUsers();
-
-  const foundUser = Object.values(users).find(u =>
-    u.profile?.characterCode === code
-  );
-
-  if(!foundUser){
-    return res.json({
-      ok:false,
-      message:"INVALID_CODE"
-    });
-  }
-
-  return res.json({
-    ok:true,
-    profile: foundUser.profile
-  });
-});
-
-
 
 app.post("/api/rps/bet",(req,res)=>{
   const uid = req.headers["x-uid"];
@@ -1930,49 +1820,6 @@ saveInvestState(investRound);
     });
   }
 });
-
-
-app.get("/api/profile", (req,res)=>{
-  const uid = req.headers["x-uid"];
-  if(!uid) return res.json({ ok:false });
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if(!me?.profile){
-    return res.json({ ok:false });
-  }
-
-  return res.json({
-    ok:true,
-    profile: me.profile
-  });
-});
-
-
-// ================================
-// 🔐 GET MY CHARACTER CODE
-// ================================
-app.get("/api/character/my-code", (req,res)=>{
-
-  const uid = req.headers["x-uid"];
-  if(!uid){
-    return res.json({ ok:false });
-  }
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if(!me?.profile){
-    return res.json({ ok:false });
-  }
-
-  return res.json({
-    ok:true,
-    code: me.profile.characterCode
-  });
-});
-
 
 
 // 🔐 ADMIN – GET CURRENT RPS BETS
@@ -7970,9 +7817,6 @@ app.get("/lobby", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "lobby.html"));
 });
 
-
-
-ensureCharacterCodes();
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));

@@ -1162,8 +1162,6 @@ input{
 
   <div class="title">✨ Tạo nhân vật</div>
 
-
-
   <input id="charName" placeholder="Nhập tên nhân vật">
 
 <div class="class-grid">
@@ -1212,14 +1210,6 @@ input{
 
 
   <button class="btn" onclick="createCharacter()">Tạo nhân vật</button>
-
-
-  <button class="btn secondary"
-        onclick="openLoadCodeModal()">
-  🔐 Nhập mã nhân vật
-</button>
-
-
 </div>
 
 
@@ -1236,12 +1226,6 @@ input{
 <div class="char-name-overlay">
   <span id="infoName"></span>
 </div>
-
-<div class="char-badge"
-     style="top:50px; right:12px; font-size:11px">
-  🔐 <span id="characterCodeDisplay"></span>
-</div>
-
 
   <!-- TOP LEFT -->
   <div class="char-badge hp-badge">
@@ -1278,7 +1262,6 @@ input{
 
 
   </div>
-
 
 
 
@@ -1659,31 +1642,6 @@ input{
 
 
 
-<!-- ===== LOAD BY CODE ===== -->
-<div id="loadCodeModal" class="inventory hidden">
-  <div class="inventory-box">
-
-    <div class="inventory-header-pro">
-      <div class="inv-title-pro">
-        🔐 Nhập mã nhân vật
-      </div>
-
-      <button class="inv-close-pro"
-              onclick="closeLoadCodeModal()">✕</button>
-    </div>
-
-    <input id="characterCodeInput"
-           placeholder="VD: DH-8F3A91C2">
-
-    <button class="btn"
-            onclick="loadCharacterByCode()">
-      Tải nhân vật
-    </button>
-
-  </div>
-</div>
-
-
 
 <script>
 let selectedEnhanceIndex = null;
@@ -1719,35 +1677,19 @@ function savePlayer(){
 
 
 /* ===== INIT ===== */
-window.onload = async function(){
+window.onload=function(){
 
-  const uid = localStorage.getItem("hunter_uid");
-  if(!uid){
-    switchScreen("createScreen");
-    return;
-  }
+  const saved=localStorage.getItem("hunter_char");
+  if(saved){
+  player=JSON.parse(saved);
 
-  try{
-    const res = await fetch("/api/profile",{
-      headers:{ "x-uid": uid }
-    });
+  recalcStats();
+  applyOfflineRegen();
+  showHub();
+  startRegen();
+}
 
-    const data = await res.json();
-
-    if(!data.ok){
-      switchScreen("createScreen");
-      return;
-    }
-
-    player = data.profile;
-    showHub();
-
-  }catch{
-    switchScreen("createScreen");
-  }
 };
-
-
 
 
 
@@ -1789,66 +1731,44 @@ function selectClass(el, type){
     (def / 150 * 100) + "%";
 }
 
-function generateCharacterCode(){
-  return "DH-" + Math.random()
-    .toString(36)
-    .substring(2,10)
-    .toUpperCase();
-}
 
 
+function createCharacter(){
 
-async function createCharacter(){
-
-  const name = document.getElementById("charName").value.trim();
-  if(!name || !selectedClass) return alert("Nhập tên & chọn class");
+  const name=document.getElementById("charName").value.trim();
+  if(!name || !selectedClass)
+    return alert("Nhập tên và chọn phái!");
 
   const config = CLASS_CONFIG[selectedClass];
 
-
-  try{
-
-    const res = await fetch("/api/character/create",{
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body: JSON.stringify({
-        name,
-        classType:selectedClass,
-        baseStats:{
-          maxHp:config.base.maxHp,
-          hp:config.base.maxHp,
-          atk:config.base.atk,
-          def:config.base.def,
-          dodge:config.dodge,
-          critRate:config.critRate,
-          critDamage:1.5,
-          regen:0.5,
-          lifesteal:0
-        }
-      })
-    });
-
-    const data = await res.json();
-
-    if(!data.ok){
-      alert("Tạo nhân vật lỗi");
-      return;
+  player = {
+    classType:selectedClass,
+    name,
+    level:1,
+    baseStats:config.base,
+    maxHp:config.base.maxHp,
+    hp:config.base.maxHp,
+    atk:config.base.atk,
+    def:config.base.def,
+    dodge:config.dodge,
+    critRate:config.critRate,
+    critDamage:1.5,
+    regen:0.5,
+    lifesteal:0,
+    exp:0,
+    gold:500,
+    inventory:[],
+    equipment:{
+      weapon:null, armor:null, helmet:null,
+      gloves:null, boots:null, shoulder:null,
+      legs:null, ring:null, gem:null
     }
+  };
 
-    // 🔥 LƯU UID
-    localStorage.setItem("hunter_uid", data.uid);
-
-    player = data.profile;
-
-    showHub();
-
-  }catch(err){
-    alert("Lỗi server");
-  }
+  savePlayer();
+  showHub();
+  startRegen();
 }
-
 
 function showHub(){
 
@@ -1878,15 +1798,6 @@ switchScreen("hubScreen");
   // ===== NAME =====
   const nameEl = document.getElementById("infoName");
   if(nameEl) nameEl.innerText = player.name;
-
-
-  // ===== CHARACTER CODE =====
-const codeEl = document.getElementById("characterCodeDisplay");
-if(codeEl){
-  codeEl.innerText = player.characterCode || "Chưa có mã";
-}
-
-
 
   // ===== AVATAR =====
   let avatarPath="";
@@ -3304,70 +3215,6 @@ function closeEnhanceSelect(){
   document
     .getElementById("enhanceSelectModal")
     .classList.add("hidden");
-}
-
-
-
-function openLoadCodeModal(){
-  document.getElementById("loadCodeModal")
-    .classList.remove("hidden");
-}
-
-function closeLoadCodeModal(){
-  document.getElementById("loadCodeModal")
-    .classList.add("hidden");
-}
-
-
-
-async function loadCharacterByCode(){
-
-  const code =
-    document.getElementById("characterCodeInput")
-      .value.trim().toUpperCase();
-
-  if(!code){
-    alert("Nhập mã trước!");
-    return;
-  }
-
-  try{
-
-    const res = await fetch(
-      "/api/character/load-by-code",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body: JSON.stringify({ code })
-      }
-    );
-
-    const data = await res.json();
-
-    if(!data.ok){
-      alert("❌ Mã không hợp lệ");
-      return;
-    }
-
-    player = data.profile;
-
-    // Cache local để chơi mượt
-    localStorage.setItem(
-      "hunter_char",
-      JSON.stringify(player)
-    );
-
-    recalcStats();
-    showHub();
-    startRegen();
-
-    closeLoadCodeModal();
-
-  }catch(err){
-    alert("Lỗi kết nối server");
-  }
 }
 
 
