@@ -19,10 +19,25 @@ body{
   height:100vh;
   overflow:hidden;
 
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
-  transition:background .5s ease;
+background-size:auto 100vh;
+background-position:center 45%;
+background-repeat:no-repeat;
+transition:background .5s ease;
+}
+
+
+@media (max-width:768px){
+  body{
+    background-size:auto 100vh;
+    background-position:center 45%;
+  }
+}
+
+@media (min-width:769px){
+  body{
+    background-size:cover;
+    background-position:center;
+  }
 }
 
 
