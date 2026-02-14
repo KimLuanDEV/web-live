@@ -1879,6 +1879,44 @@ if(gameMode === "rank"){
 }
 
 
+
+function rewardEnemyKill(){
+
+  player.exp += 100;
+
+  let diamondDrop;
+
+  if(gameMode === "rank"){
+    diamondDrop = Math.floor(
+      15 + stage * 3 + Math.random()*20
+    );
+  }else{
+    diamondDrop = Math.floor(
+      25 + player.level * 5 + Math.random()*40
+    );
+  }
+
+  player.gold += diamondDrop;
+
+  if(gameMode === "farm" && Math.random() < 0.25){
+    dropRandomItem();
+  }
+
+  checkLevelUp();
+  savePlayer();
+
+  document.getElementById("battleLog").innerText +=
+    "🎉 Hạ quái!\n" +
+    "+100 EXP\n" +
+    `💎 Nhận ${diamondDrop} kim cương\n`;
+
+  render();
+}
+
+
+
+
+
 function enemyTurn(){
 
   let logText = "";
@@ -2002,33 +2040,36 @@ if(enemy.isBoss && Math.random() < 0.3){
   document.getElementById("battleLog").innerText += logText;
 
   /* ===== KIỂM TRA QUÁI CHẾT DO REFLECT / DOT ===== */
-  if(enemy.hp <= 0){
+if(enemy.hp <= 0){
 
-    enemy.hp = 0;
-    playDeath(".character.enemy");
+  enemy.hp = 0;
 
-    if(gameMode === "farm" && Math.random() < 0.25){
-  dropRandomItem();
+  playDeath(".character.enemy");
+
+  rewardEnemyKill();   // ⭐ thêm dòng này
+
+  setTimeout(()=>{
+
+    if(gameMode === "rank"){
+      stage++;
+      localStorage.setItem("arena_stage", stage);
+    }
+
+    spawnEnemy();
+
+    document
+      .querySelector(".character.enemy")
+      .classList.remove("disintegrate");
+
+    render();
+    document.getElementById("battleLog").innerText = "";
+    isAttacking = false;
+
+  },1500);
+
+  return;
 }
 
-    setTimeout(()=>{
-if(gameMode === "rank"){
-  stage++;
-  localStorage.setItem("arena_stage", stage);
-}
-
-
-      spawnEnemy();
-      document
-        .querySelector(".character.enemy")
-        .classList.remove("disintegrate");
-      render();
-      document.getElementById("battleLog").innerText = "";
-      isAttacking = false;
-    },1500);
-
-    return;
-  }
 
   /* ===== PLAYER CHẾT ===== */
   if(player.hp <= 0){
