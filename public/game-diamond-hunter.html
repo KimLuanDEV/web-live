@@ -1719,23 +1719,34 @@ function savePlayer(){
 
 
 /* ===== INIT ===== */
-window.onload = function(){
+window.onload = async function(){
 
-  const saved = localStorage.getItem("hunter_char");
+  const uid = localStorage.getItem("hunter_uid");
+  if(!uid){
+    switchScreen("createScreen");
+    return;
+  }
 
-  if(saved){
+  try{
+    const res = await fetch("/api/profile",{
+      headers:{ "x-uid": uid }
+    });
 
-    player = JSON.parse(saved);
+    const data = await res.json();
 
-    recalcStats();
-    applyOfflineRegen();
+    if(!data.ok){
+      switchScreen("createScreen");
+      return;
+    }
+
+    player = data.profile;
     showHub();
-    startRegen();
 
-  }else{
+  }catch{
     switchScreen("createScreen");
   }
 };
+
 
 
 
@@ -1778,44 +1789,65 @@ function selectClass(el, type){
     (def / 150 * 100) + "%";
 }
 
-
-
-function createCharacter(){
-
-  const name=document.getElementById("charName").value.trim();
-  if(!name || !selectedClass)
-    return alert("Nhập tên và chọn phái!");
-
-  const config = CLASS_CONFIG[selectedClass];
-
-  player = {
-    classType:selectedClass,
-    name,
-    level:1,
-    baseStats:config.base,
-    maxHp:config.base.maxHp,
-    hp:config.base.maxHp,
-    atk:config.base.atk,
-    def:config.base.def,
-    dodge:config.dodge,
-    critRate:config.critRate,
-    critDamage:1.5,
-    regen:0.5,
-    lifesteal:0,
-    exp:0,
-    gold:500,
-    inventory:[],
-    equipment:{
-      weapon:null, armor:null, helmet:null,
-      gloves:null, boots:null, shoulder:null,
-      legs:null, ring:null, gem:null
-    }
-  };
-
-  savePlayer();
-  showHub();
-  startRegen();
+function generateCharacterCode(){
+  return "DH-" + Math.random()
+    .toString(36)
+    .substring(2,10)
+    .toUpperCase();
 }
+
+
+
+async function createCharacter(){
+
+  const name = document.getElementById("charName").value.trim();
+  if(!name || !selectedClass) return alert("Nhập tên & chọn class");
+
+  const config = getClassConfig(selectedClass);
+
+  try{
+
+    const res = await fetch("/api/character/create",{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body: JSON.stringify({
+        name,
+        classType:selectedClass,
+        baseStats:{
+          maxHp:config.base.maxHp,
+          hp:config.base.maxHp,
+          atk:config.base.atk,
+          def:config.base.def,
+          dodge:config.dodge,
+          critRate:config.critRate,
+          critDamage:1.5,
+          regen:0.5,
+          lifesteal:0
+        }
+      })
+    });
+
+    const data = await res.json();
+
+    if(!data.ok){
+      alert("Tạo nhân vật lỗi");
+      return;
+    }
+
+    // 🔥 LƯU UID
+    localStorage.setItem("hunter_uid", data.uid);
+
+    player = data.profile;
+
+    showHub();
+
+  }catch(err){
+    alert("Lỗi server");
+  }
+}
+
 
 function showHub(){
 

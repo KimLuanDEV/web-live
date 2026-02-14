@@ -1598,6 +1598,52 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/data", express.static(path.join(__dirname, "data")));
 
 
+// ================================
+// 🎮 CREATE DIAMOND HUNTER CHARACTER
+// ================================
+app.post("/api/character/create", (req,res)=>{
+
+  const { name, classType, baseStats } = req.body;
+
+  if(!name || !classType || !baseStats){
+    return res.json({ ok:false });
+  }
+
+  const users = loadUsers();
+
+  // 🔥 Tạo uid mới cho game (không cần login)
+  const uid = "hunter_" + Date.now();
+
+  const profile = {
+    name,
+    classType,
+    level:1,
+    exp:0,
+    coins:500,
+    ...baseStats,
+    inventory:[],
+    equipment:{
+      weapon:null, armor:null, helmet:null,
+      gloves:null, boots:null, shoulder:null,
+      legs:null, ring:null, gem:null
+    },
+    characterCode: generateCharacterCode()
+  };
+
+  users[uid] = {
+    uid,
+    profile
+  };
+
+  saveUsers(users);
+
+  return res.json({
+    ok:true,
+    uid,
+    profile
+  });
+});
+
 
 // ================================
 // 🔐 LOAD CHARACTER BY CODE
@@ -1883,6 +1929,24 @@ saveInvestState(investRound);
       message:"SERVER_ERROR"
     });
   }
+});
+
+
+app.get("/api/profile", (req,res)=>{
+  const uid = req.headers["x-uid"];
+  if(!uid) return res.json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if(!me?.profile){
+    return res.json({ ok:false });
+  }
+
+  return res.json({
+    ok:true,
+    profile: me.profile
+  });
 });
 
 
