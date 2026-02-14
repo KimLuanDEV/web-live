@@ -817,6 +817,74 @@ html, body{
 }
 
 
+/* ===== CAST CHARGE ===== */
+.skill-charge{
+  position:absolute;
+  inset:0;
+  border-radius:50%;
+  border:3px solid #00f0ff;
+  animation:chargeSpin .4s linear forwards;
+  pointer-events:none;
+}
+
+@keyframes chargeSpin{
+  0%{transform:scale(.5) rotate(0deg); opacity:1;}
+  100%{transform:scale(1.4) rotate(360deg); opacity:0;}
+}
+
+
+
+.impactZoom{
+  animation:impactZoom .3s ease-out;
+}
+
+@keyframes impactZoom{
+  0%{transform:scale(1);}
+  50%{transform:scale(1.08);}
+  100%{transform:scale(1);}
+}
+
+
+
+
+.explosion-ring{
+  position:absolute;
+  width:140px;
+  height:140px;
+  border-radius:50%;
+  border:4px solid rgba(255,255,255,.6);
+  animation:explodeRing .5s ease-out forwards;
+  pointer-events:none;
+}
+
+@keyframes explodeRing{
+  0%{transform:scale(.4); opacity:1;}
+  100%{transform:scale(1.8); opacity:0;}
+}
+
+
+
+/* ===== CAST BAR ===== */
+.cast-bar-wrapper{
+  position:absolute;
+  bottom:-12px;
+  left:50%;
+  transform:translateX(-50%);
+  width:120px;
+  height:8px;
+  background:#111;
+  border-radius:10px;
+  overflow:hidden;
+  box-shadow:0 0 10px rgba(0,255,255,.3);
+}
+
+.cast-bar-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00f0ff,#00ff99);
+  transition:width .4s linear;
+}
+
 
 </style>
 </head>
@@ -1022,6 +1090,7 @@ let gameMode = localStorage.getItem("arena_mode") || "rank";
 let player = JSON.parse(localStorage.getItem("hunter_char"));
 let enemy = null;
 let isAttacking = false;
+let isCasting = false;  
 
 let skillCooldown = {
   1:0,
@@ -1366,6 +1435,16 @@ function showSkillEffect(targetClass, type){
     document.querySelector(".arena")
       .classList.remove("screenShake");
   },300);
+
+
+  document.querySelector(".arena")
+  .classList.add("impactZoom");
+
+setTimeout(()=>{
+  document.querySelector(".arena")
+    .classList.remove("impactZoom");
+},300);
+
 }
 
 
@@ -1376,6 +1455,12 @@ function playClassSkillAnimation(type){
     document.querySelector(".character.enemy .avatar");
 
   const arena = document.querySelector(".arena");
+
+  const ring = document.createElement("div");
+ring.className="explosion-ring";
+enemyAvatar.appendChild(ring);
+setTimeout(()=>ring.remove(),500);
+
 
   /* ===== MAGE ===== */
   if(type==="mage"){
@@ -1604,26 +1689,25 @@ document
   },600);
 }
 
-
 function useSkill(skillId){
 
   if(isAttacking) return;
+  if(isCasting) return;
   if(skillCooldown[skillId] > 0) return;
 
   isAttacking = true;
+
   let dmg = 0;
   let logText = "";
   const cls = player.classType;
 
-  /* ===== WARRIOR ===== */
-  if(cls==="warrior"){
+  /* ===== SET SKILL ===== */
 
+  if(cls==="warrior"){
     if(skillId===1){
-      if(enemy.hp < enemy.maxHp*0.3){
-        dmg = player.atk * 2.5;
-      }else{
-        dmg = player.atk * 1.2;
-      }
+      dmg = enemy.hp < enemy.maxHp*0.3
+        ? player.atk * 2.5
+        : player.atk * 1.2;
       skillCooldown[1]=3;
       logText="⚔ Bổ Đao Kết Liễu!";
     }
@@ -1636,15 +1720,13 @@ function useSkill(skillId){
     }
 
     if(skillId===3){
-      status.enemyAtkDown = 2;
+      dmg = player.atk * 2.2;
       skillCooldown[3]=5;
-      logText="🗣 Gầm Chiến Trường!";
+      logText="⚡ Thiên Lôi!";
     }
   }
 
-  /* ===== ASSASSIN ===== */
   if(cls==="assassin"){
-
     if(skillId===1){
       dmg = player.atk * 1.8;
       skillCooldown[1]=3;
@@ -1664,9 +1746,7 @@ function useSkill(skillId){
     }
   }
 
-  /* ===== MAGE ===== */
   if(cls==="mage"){
-
     if(skillId===1){
       dmg = player.atk * 1.5;
       status.enemyBurn = 2;
@@ -1688,111 +1768,86 @@ function useSkill(skillId){
     }
   }
 
-if(dmg>0){
-  dmg = Math.floor(dmg);
-  enemy.hp -= dmg;
+  /* ===================================================== */
+  /* ================= SKILL CÓ DAMAGE =================== */
+  /* ===================================================== */
 
+  if(dmg > 0){
 
-// ===== LIFE STEAL =====
-if(player.lifesteal > 0){
+    playChargeEffect();
 
-  const heal = Math.floor(
-    dmg * (player.lifesteal / 100)
-  );
+    startCast(400).then(()=>{
 
-  player.hp += heal;
+      dmg = Math.floor(dmg);
+      enemy.hp -= dmg;
 
-  if(player.hp > player.maxHp)
-    player.hp = player.maxHp;
+      // lifesteal
+      if(player.lifesteal > 0){
+        const heal = Math.floor(dmg * (player.lifesteal/100));
+        player.hp = Math.min(player.hp + heal, player.maxHp);
+        showDamage(".character:not(.enemy)", -heal);
+      }
 
-  showDamage(".character:not(.enemy)", -heal);
+      // chết do skill
+      if(enemy.hp <= 0){
 
-}
+        enemy.hp = 0;
+        playDeath(".character.enemy");
 
+        rewardEnemyKill();
 
+        reduceCooldown();          // ⭐ FIX CHÍNH
+        updateCooldownUI();        // ⭐ FIX CHÍNH
 
-  showDamage(".character.enemy", dmg, true);
-  showSlash(".character.enemy");
+        render();
 
-  // 🔥 Skill Effect
-  showSkillEffect(".character.enemy", player.classType);
-  playClassSkillAnimation(player.classType);
-}
+        setTimeout(()=>{
+          if(gameMode==="rank"){
+            stage++;
+            localStorage.setItem("arena_stage", stage);
+          }
+          spawnEnemy();
+          document.querySelector(".character.enemy")
+            .classList.remove("disintegrate");
+          render();
+          document.getElementById("battleLog").innerText="";
+          isAttacking = false;
+        },1500);
 
-/* ===== KIỂM TRA QUÁI CHẾT DO SKILL ===== */
-if(enemy.hp <= 0){
+        return;
+      }
 
-  enemy.hp = 0;
+      // chưa chết
+      showDamage(".character.enemy", dmg, true);
+      showSlash(".character.enemy");
+      showSkillEffect(".character.enemy", player.classType);
+      playClassSkillAnimation(player.classType);
 
-  playDeath(".character.enemy");
+      document.getElementById("battleLog").innerText = logText;
+      render();
 
-  player.exp += 100;
+      reduceCooldown();     // ⭐ luôn giảm sau lượt player
+      updateCooldownUI();
 
-let diamondDrop;
+      setTimeout(()=>enemyTurn(),600);
+    });
 
-if(gameMode === "rank"){
-  diamondDrop = Math.floor(
-    15 + stage * 3 + Math.random()*20
-  );
-}else{
-  diamondDrop = Math.floor(
-    25 + player.level * 5 + Math.random()*40
-  );
-}
+    return;
+  }
 
-
-  player.gold += diamondDrop;
-
-  if(gameMode === "farm" && Math.random() < 0.25){
-  dropRandomItem();
-}
-
-  checkLevelUp();
-  savePlayer();
-
-  document.getElementById("battleLog").innerText =
-    "🎉 Hạ quái bằng kỹ năng!\n" +
-    "+100 EXP\n" +
-    `💎 Nhận ${diamondDrop} kim cương`;
-
-  render();
-
-reduceCooldown();
-updateCooldownUI();
-
-
-  setTimeout(()=>{
-if(gameMode === "rank"){
-  stage++;
-  localStorage.setItem("arena_stage", stage);
-}
-
-
-    spawnEnemy();
-    document
-      .querySelector(".character.enemy")
-      .classList.remove("disintegrate");
-
-    render();
-    document.getElementById("battleLog").innerText="";
-    isAttacking = false;
-  },1500);
-
-  return;
-}
-
-
+  /* ===================================================== */
+  /* ================= SKILL KHÔNG DAMAGE ================ */
+  /* ===================================================== */
 
   document.getElementById("battleLog").innerText = logText;
+
   render();
 
-  updateCooldownUI();
   reduceCooldown();
-
+  updateCooldownUI();
 
   setTimeout(()=>enemyTurn(),600);
 }
-
 
 
 function rewardEnemyKill(){
@@ -2497,6 +2552,62 @@ function getRankLoot(){
   return getFarmLoot(); // tạm dùng chung
 }
 
+
+
+function playChargeEffect(){
+  const avatar = document.querySelector(".character:not(.enemy) .avatar");
+
+  const charge = document.createElement("div");
+  charge.className = "skill-charge";
+
+  avatar.style.position="relative";
+  avatar.appendChild(charge);
+
+  setTimeout(()=>charge.remove(),400);
+}
+
+
+function startCast(duration = 400){
+
+  return new Promise(resolve=>{
+
+    const avatar =
+      document.querySelector(".character:not(.enemy) .avatar");
+
+    isCasting = true;
+
+    // disable skill buttons
+    for(let i=1;i<=3;i++){
+      document
+        .getElementById("skill"+i+"Btn")
+        .classList.add("disabled");
+    }
+
+    // tạo cast bar
+    const wrapper = document.createElement("div");
+    wrapper.className = "cast-bar-wrapper";
+
+    const fill = document.createElement("div");
+    fill.className = "cast-bar-fill";
+
+    wrapper.appendChild(fill);
+
+    avatar.style.position="relative";
+    avatar.appendChild(wrapper);
+
+    // trigger animation
+    setTimeout(()=>{
+      fill.style.width = "100%";
+    },10);
+
+    setTimeout(()=>{
+      wrapper.remove();
+      isCasting = false;
+      resolve();
+    }, duration);
+
+  });
+}
 
 
 
