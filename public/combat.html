@@ -202,6 +202,66 @@ body{
   z-index:90;
 }
 
+
+
+/* ===== LOG LINE STYLE ===== */
+
+.log-line{
+  display:flex;
+  align-items:flex-start;
+  gap:8px;
+  margin-bottom:6px;
+  font-size:13px;
+  letter-spacing:.5px;
+  opacity:0;
+  transform:translateY(6px);
+  animation:logFade .25s ease forwards;
+}
+
+@keyframes logFade{
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+}
+
+.log-icon{
+  min-width:18px;
+  font-size:14px;
+  opacity:.9;
+}
+
+.log-text{
+  flex:1;
+}
+
+.log-crit{
+  color:#ff0033;
+  font-weight:900;
+  text-shadow:0 0 10px #ff0033;
+}
+
+.log-loot{
+  color:gold;
+  font-weight:800;
+  text-shadow:0 0 8px gold;
+}
+
+.log-exp{
+  color:#00ff99;
+}
+
+.log-boss{
+  color:#ff9900;
+  font-weight:800;
+}
+
+.log-death{
+  color:#ff4444;
+  font-weight:900;
+}
+
+
 /* Scroll đẹp */
 .log::-webkit-scrollbar{
   width:6px;
@@ -1811,7 +1871,7 @@ if(enemy.hp <= 0){
 
 
   /* ===== UPDATE UI SAU PLAYER ===== */
-  document.getElementById("battleLog").innerText = logText;
+  appendLog(logText);
   savePlayer();
   render();
 
@@ -1959,7 +2019,8 @@ function useSkill(skillId){
       showSkillEffect(".character.enemy", player.classType);
       playClassSkillAnimation(player.classType);
 
-      document.getElementById("battleLog").innerText = logText;
+      appendLog(logText);
+
       render();
 
       reduceCooldown();     // ⭐ luôn giảm sau lượt player
@@ -1975,7 +2036,8 @@ function useSkill(skillId){
   /* ================= SKILL KHÔNG DAMAGE ================ */
   /* ===================================================== */
 
-  document.getElementById("battleLog").innerText = logText;
+  appendLog(logText);
+
 
   render();
 
@@ -2773,29 +2835,54 @@ function appendLog(text){
 
   const log = document.getElementById("battleLog");
 
-  const line = document.createElement("div");
-  line.innerText = text;
+  // Tách từng dòng nếu có \n
+  const lines = text.split("\n");
 
-  // Tô màu theo nội dung
-  if(text.includes("CHÍ MẠNG")){
-    line.style.color = "#ff0033";
-    line.style.fontWeight = "800";
-  }
-  else if(text.includes("Rơi trang bị")){
-    line.style.color = "gold";
-    line.style.fontWeight = "700";
-  }
-  else if(text.includes("Hạ quái")){
-    line.style.color = "#00ff99";
-  }
-  else if(text.includes("đã bị hạ")){
-    line.style.color = "#ff4444";
-    line.style.fontWeight = "800";
-  }
+  lines.forEach(lineText=>{
 
-  log.appendChild(line);
+    if(!lineText.trim()) return;
 
-  // auto scroll xuống cuối
+    const line = document.createElement("div");
+    line.className = "log-line";
+
+    const icon = document.createElement("div");
+    icon.className = "log-icon";
+
+    const textEl = document.createElement("div");
+    textEl.className = "log-text";
+    textEl.innerText = lineText;
+
+    // ===== PHÂN LOẠI =====
+    if(lineText.includes("CHÍ MẠNG")){
+      textEl.classList.add("log-crit");
+      icon.innerText = "💥";
+    }
+    else if(lineText.includes("Rơi trang bị")){
+      textEl.classList.add("log-loot");
+      icon.innerText = "🎁";
+    }
+    else if(lineText.includes("Hạ quái")){
+      textEl.classList.add("log-exp");
+      icon.innerText = "🎉";
+    }
+    else if(lineText.includes("BOSS")){
+      textEl.classList.add("log-boss");
+      icon.innerText = "🔥";
+    }
+    else if(lineText.includes("đã bị hạ")){
+      textEl.classList.add("log-death");
+      icon.innerText = "💀";
+    }
+    else{
+      icon.innerText = "➤";
+    }
+
+    line.appendChild(icon);
+    line.appendChild(textEl);
+    log.appendChild(line);
+
+  });
+
   log.scrollTop = log.scrollHeight;
 }
 
