@@ -3062,13 +3062,12 @@ function getEnhancedValue(item, stat){
 
 
 function openEnhanceFromHub(){
-
-  document
-    .getElementById("enhanceSelectModal")
+  document.getElementById("enhanceSelectModal")
     .classList.remove("hidden");
 
   renderEnhanceSlots();
 }
+
 
 
 function renderEnhanceSlots(){
@@ -3076,41 +3075,58 @@ function renderEnhanceSlots(){
   const grid = document.getElementById("enhanceSlotGrid");
   grid.innerHTML = "";
 
-  Object.keys(player.equipment).forEach(slot=>{
+  const slotOrder = [
+    "weapon","armor","helmet",
+    "gloves","boots","shoulder",
+    "legs","ring","gem"
+  ];
+
+  slotOrder.forEach(slot => {
 
     const item = player.equipment[slot];
 
     const div = document.createElement("div");
     div.className = "equip-slot";
 
+    let labelMap = {
+      weapon:"Vũ khí",
+      armor:"Giáp",
+      helmet:"Mũ",
+      gloves:"Găng",
+      boots:"Giày",
+      shoulder:"Vai",
+      legs:"Chân",
+      ring:"Nhẫn",
+      gem:"Ngọc"
+    };
+
+    div.innerHTML = `
+      <div class="equip-label">${labelMap[slot]}</div>
+      <div class="equip-content">
+        ${
+          item ?
+          `
+          <div class="equip-img-wrap">
+            <img src="${item.img}" class="equip-img">
+            ${item.enhance ? 
+              `<div class="enhance-badge">+${item.enhance}</div>` 
+              : ""}
+          </div>
+          `
+          :
+          `<div class="equip-empty">Trống</div>`
+        }
+      </div>
+    `;
+
+    // Chỉ cho bấm nếu slot có item
     if(item){
-
-      div.innerHTML = `
-        <div class="equip-label">${slot.toUpperCase()}</div>
-        <div class="equip-content">
-          <img src="${item.img}" class="equip-img">
-          ${item.enhance ?
-            `<div class="enhance-badge">+${item.enhance}</div>`
-            : ""
-          }
-        </div>
-      `;
-
-      div.onclick = ()=>{
-        closeEnhanceSelect();
+      div.onclick = function(){
+        selectedEnhanceSlot = slot;
+        selectedEnhanceIndex = null;
         openEnhance(slot);
+        closeEnhanceSelect();
       };
-
-    }else{
-
-      div.innerHTML = `
-        <div class="equip-label">${slot.toUpperCase()}</div>
-        <div class="equip-content">
-          <div class="equip-empty">Trống</div>
-        </div>
-      `;
-
-      div.style.opacity = .4;
     }
 
     grid.appendChild(div);
