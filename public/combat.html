@@ -1723,81 +1723,50 @@ if(player.lifesteal > 0){
     },200);
   }
 
-  /* ===== KIỂM TRA QUÁI CHẾT ===== */
-  if(enemy.hp <= 0){
+  
+/* ===== KIỂM TRA QUÁI CHẾT ===== */
+if(enemy.hp <= 0){
 
-    enemy.hp = 0;
+  enemy.hp = 0;
 
-playDeath(".character.enemy");
+  playDeath(".character.enemy");
 
+  document.body.style.transition="0.3s";
+  document.body.style.filter="blur(2px)";
 
-    document.body.style.transition="0.3s";
-    document.body.style.filter="blur(2px)";
+  setTimeout(()=>{
+    document.body.style.filter="none";
+  },300);
 
-    setTimeout(()=>{
-      document.body.style.filter="none";
-    },300);
+  // ⭐ CHUYỂN TOÀN BỘ THƯỞNG VỀ HÀM CHUNG
+  rewardEnemyKill();
 
-    player.exp += 100;
+  reduceCooldown();
+  updateCooldownUI();
 
-let diamondDrop;
+  setTimeout(()=>{
 
-if(gameMode === "rank"){
-  diamondDrop = Math.floor(
-    15 + stage * 3 + Math.random()*20
-  );
-}else{
-  diamondDrop = Math.floor(
-    25 + player.level * 5 + Math.random()*40
-  );
-}
+    if(gameMode === "rank"){
+      stage++;
+      localStorage.setItem("arena_stage", stage);
+    }
 
+    resetAllSkills();
+    spawnEnemy();
 
+    document
+      .querySelector(".character.enemy")
+      .classList.remove("disintegrate");
 
-    player.gold += diamondDrop;
-
-    if(gameMode === "farm" && Math.random() < 0.25){
-  dropRandomItem();
-}
-
-
-    checkLevelUp();
-    savePlayer();
-
-    logText +=
-      "🎉 Hạ quái! +100 EXP\n" +
-      `💎 Nhận ${diamondDrop} kim cương\n`;
-
-    document.getElementById("battleLog").innerText = logText;
     render();
+    document.getElementById("battleLog").innerText = "";
+    isAttacking = false;
 
-reduceCooldown();
-updateCooldownUI();
+  },1500);
 
-    
-setTimeout(()=>{
-
-if(gameMode === "rank"){
-  stage++;
-  localStorage.setItem("arena_stage", stage);
+  return;
 }
 
-resetAllSkills();
-  spawnEnemy();
-
-document
-  .querySelector(".character.enemy")
-  .classList.remove("disintegrate");
-
-
-  render();
-  document.getElementById("battleLog").innerText = "";
-  isAttacking = false;
-},1500);
-
-
-    return;
-  }
 
   /* ===== UPDATE UI SAU PLAYER ===== */
   document.getElementById("battleLog").innerText = logText;
@@ -1993,9 +1962,18 @@ function rewardEnemyKill(){
 
   player.gold += diamondDrop;
 
-  if(gameMode === "farm" && Math.random() < 0.25){
-    dropRandomItem();
-  }
+ let dropRate = 0;
+
+if(gameMode === "farm") dropRate = 0.25;
+if(gameMode === "rank") dropRate = 0.15;
+if(gameMode === "gold") dropRate = 1;   // 👑 Gold luôn rơi
+
+if(Math.random() < dropRate){
+  dropRandomItem();
+}
+
+
+
 
   checkLevelUp();
   savePlayer();
@@ -2357,7 +2335,7 @@ function dropRandomItem(){
         def:120,
         hp:800,
         critRate:8,
-        type:"helm",
+        type:"helmet",
         img:"/assets/items/gold_helm.png",
         rarity:"ultimate",
         set:"golden"
@@ -2637,7 +2615,7 @@ function closeLootPreview(){
 
 function getGoldLoot(){
 
-  const ultimateRate = 5 / 9; // 5% chia đều 9 món
+  const ultimateRate = 100; // 5% chia đều 9 món
 
   return [
     { name:"👑 Kiếm Hoàng Kim Vô Cực", img:"/assets/items/gold_sword.png", rarity:"ultimate", rate: ultimateRate },
