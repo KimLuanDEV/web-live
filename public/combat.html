@@ -171,18 +171,60 @@ body{
   background:#111;
 }
 
+/* ===== COMBAT LOG PRO ===== */
 .log{
-   position:fixed;
-  top:450px;   /* nằm trên skill */
-  left:20px;
-  right:20px;
-  margin:15px 20px;
-  background:#0b1118;
-  padding:12px;
-  border-radius:14px;
+  position:fixed;
+  bottom:180px;          /* nằm trên skill bar */
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  max-width:520px;
+
+  padding:14px 16px;
+  border-radius:18px;
+
+  background:rgba(10,20,30,0.6);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  border:1px solid rgba(0,255,255,.35);
+
+  box-shadow:
+    0 10px 40px rgba(0,0,0,.6),
+    0 0 25px rgba(0,255,255,.3);
+
   font-size:13px;
-  height:100px;
+  line-height:1.5;
+
+  max-height:140px;
   overflow-y:auto;
+
+  z-index:90;
+}
+
+/* Scroll đẹp */
+.log::-webkit-scrollbar{
+  width:6px;
+}
+.log::-webkit-scrollbar-thumb{
+  background:#00f0ff;
+  border-radius:10px;
+}
+
+
+.log::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  height:30px;
+  background:linear-gradient(
+    to top,
+    rgba(10,20,30,0.9),
+    transparent
+  );
+  pointer-events:none;
 }
 
 
@@ -2032,7 +2074,8 @@ if(enemy.isBoss && Math.random() < 0.3){
     status.enemyStun = false;
     logText += "❄ Quái bị đóng băng và mất lượt!\n";
 
-    document.getElementById("battleLog").innerText += logText;
+    appendLog(logText);
+
     isAttacking = false;
     return;
   }
@@ -2042,7 +2085,8 @@ if(enemy.isBoss && Math.random() < 0.3){
     status.playerInvisible = false;
     logText += "🌫 Bạn né nhờ tàng hình!\n";
 
-    document.getElementById("battleLog").innerText += logText;
+    appendLog(logText);
+
     isAttacking = false;
     return;
   }
@@ -2110,7 +2154,8 @@ if(enemy.isBoss && Math.random() < 0.3){
     logText += "🔥 Quái bị thiêu đốt -"+burn+"\n";
   }
 
-  document.getElementById("battleLog").innerText += logText;
+  appendLog(logText);
+
 
   /* ===== KIỂM TRA QUÁI CHẾT DO REFLECT / DOT ===== */
 if(enemy.hp <= 0){
@@ -2722,6 +2767,38 @@ function resetAllSkills(){
 
   updateCooldownUI();
 }
+
+
+function appendLog(text){
+
+  const log = document.getElementById("battleLog");
+
+  const line = document.createElement("div");
+  line.innerText = text;
+
+  // Tô màu theo nội dung
+  if(text.includes("CHÍ MẠNG")){
+    line.style.color = "#ff0033";
+    line.style.fontWeight = "800";
+  }
+  else if(text.includes("Rơi trang bị")){
+    line.style.color = "gold";
+    line.style.fontWeight = "700";
+  }
+  else if(text.includes("Hạ quái")){
+    line.style.color = "#00ff99";
+  }
+  else if(text.includes("đã bị hạ")){
+    line.style.color = "#ff4444";
+    line.style.fontWeight = "800";
+  }
+
+  log.appendChild(line);
+
+  // auto scroll xuống cuối
+  log.scrollTop = log.scrollHeight;
+}
+
 
 
 
