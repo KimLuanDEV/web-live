@@ -310,13 +310,14 @@ html, body{
 
 .actions{
   position:fixed;
-  bottom:0;
+  bottom: 15px;
   left:0;
   width:100%;
-  padding:12px 20px 18px;
+  padding:12px auto 18px;
   background:linear-gradient(180deg,transparent,#050b12 40%);
   backdrop-filter:blur(6px);
   z-index:100;
+   text-align:center; 
 }
 
 
@@ -342,10 +343,12 @@ html, body{
 /* SKILL BAR */
 .skill-bar{
   display:flex;
-  justify-content:space-between;
-  gap:12px;
+  justify-content:center;   /* ⭐ căn giữa */
+  align-items:center;
+  gap:50px;                 /* khoảng cách đều */
   margin-top:14px;
 }
+
 
 .skill-btn{
   flex:1;
@@ -399,6 +402,7 @@ html, body{
   overflow:hidden;
   cursor:pointer;
   box-shadow:0 0 20px rgba(0,255,255,.4);
+   flex-shrink:0;   
 }
 
 .skill-circle img{
