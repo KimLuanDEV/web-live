@@ -2,7 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
 <meta name="theme-color" content="#02070c">
 
 <meta name="mobile-web-app-capable" content="yes">
@@ -15,11 +16,13 @@
 <style>
 
 html, body{
+  margin:0;
+  padding:0;
+  height:100%;
   background:#02070c;
 }
 
 body{
-  margin:0;
   font-family:system-ui;
   color:#fff;
 
@@ -27,13 +30,15 @@ body{
   overflow:hidden;
 
   padding-top:env(safe-area-inset-top);
-  background-color:#02070c; /* thêm dòng này */
+  padding-bottom:env(safe-area-inset-bottom);
 
   background-repeat:no-repeat;
   background-position:center center;
   background-size:cover;
+
   transition:background .5s ease;
 }
+
 
 
 
@@ -71,9 +76,9 @@ body{
   justify-content:space-between;
   align-items:center;
   padding:0 30px;
-  
-  
+  margin-top:20px;
 }
+
 
 .character{
   width:45%;
@@ -657,16 +662,26 @@ body{
 /* ===== GAME HEADER ===== */
 
 .game-header{
-  position:relative;
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+
   padding-top:env(safe-area-inset-top);
   height:calc(65px + env(safe-area-inset-top));
+
   display:flex;
   align-items:center;
   justify-content:center;
+
   background:linear-gradient(180deg,#061018,#02070c);
+
   border-bottom:1px solid rgba(0,255,255,.2);
   box-shadow:0 0 25px rgba(0,255,255,.15);
+
+  z-index:200;
 }
+
 
 .header-title{
   font-size:20px;
@@ -852,7 +867,10 @@ body{
   background:#050b12;
   border-bottom:1px solid rgba(0,255,255,.15);
   overflow:hidden;
+
+  margin-top:calc(65px + env(safe-area-inset-top));
 }
+
 
 .mode-scroll{
   display:flex;
