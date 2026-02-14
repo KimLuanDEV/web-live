@@ -20,7 +20,12 @@ html, body{
   padding:0;
   height:100%;
   background:#02070c;
+
+  overflow:hidden;
+  overscroll-behavior:none;
+  touch-action:none;
 }
+
 
 body{
   font-family:system-ui;
@@ -38,6 +43,7 @@ body{
 
   transition:background .5s ease;
 }
+
 
 
 
@@ -2900,6 +2906,11 @@ function appendLog(text){
   });
 }
 
+document.addEventListener("touchmove", function(e){
+  if(!e.target.closest(".log")){
+    e.preventDefault();
+  }
+}, { passive:false });
 
 
 
