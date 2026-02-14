@@ -1050,6 +1050,16 @@ input{
 }
 
 
+
+.enhance-gold-left{
+  margin-top:10px;
+  font-weight:800;
+  color:#00ffcc;
+  font-size:14px;
+  text-shadow:0 0 10px rgba(0,255,255,.6);
+}
+
+
 </style>
 </head>
 <body>
@@ -1465,7 +1475,19 @@ input{
     <div id="enhanceRateText" class="enhance-rate-text"></div>
   </div>
 
-  <div id="enhanceCostText" class="enhance-cost"></div>
+
+
+<div class="enhance-gold-left">
+  💎 Hiện có: <span id="enhanceGoldLeft"></span>
+</div>
+
+<div id="enhanceCostText" class="enhance-cost"></div>
+
+
+<div id="enhanceResult"
+     style="margin:10px 0;font-weight:800;height:24px">
+</div>
+
 
   <button class="enhance-btn-main" onclick="enhanceItem()">
     🔥 Cường Hóa
@@ -2636,6 +2658,10 @@ function updateEnhanceUI(){
     .style.filter = "drop-shadow(0 0 35px gold)";
 }
 
+document.getElementById("enhanceGoldLeft")
+  .innerText = player.gold;
+
+
 
 }
 
@@ -2679,30 +2705,57 @@ function enhanceItem(){
   }
 
   if(player.gold < cost){
-    alert("Không đủ 💎");
+    showEnhanceResult("❌ Không đủ 💎", "red");
     return;
   }
 
   player.gold -= cost;
 
-  if(Math.random()*100 <= rate){
+  const success = Math.random()*100 <= rate;
+
+  if(success){
+
     item.enhance = lv + 1;
-    alert("🔥 Thành công! +" + item.enhance);
+
+    showEnhanceResult("🔥 THÀNH CÔNG! +" + item.enhance, "#00ff88");
+
   }else{
+
     if(lv >= 10){
       item.enhance = Math.max(0, lv - 1);
-      alert("💥 Thất bại! Giảm cấp!");
+      showEnhanceResult("💥 THẤT BẠI! Giảm cấp!", "#ff4444");
     }else{
-      alert("💥 Thất bại!");
+      showEnhanceResult("💥 THẤT BẠI!", "#ff4444");
     }
+
+    // rung ảnh khi fail
+    const img = document.getElementById("enhanceItemImg");
+    img.style.transform = "translateX(-5px)";
+    setTimeout(()=> img.style.transform="translateX(5px)",100);
+    setTimeout(()=> img.style.transform="translateX(0px)",200);
   }
 
   recalcStats();
   savePlayer();
 
+  updateEnhanceUI();   // ⭐ cập nhật lại UI ngay
   renderInventory();
   showHub();
 }
+
+
+function showEnhanceResult(text,color){
+
+  const el = document.getElementById("enhanceResult");
+
+  el.innerText = text;
+  el.style.color = color;
+
+  setTimeout(()=>{
+    el.innerText = "";
+  },2500);
+}
+
 
 
 function confirmUnequip(){
