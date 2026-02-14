@@ -310,14 +310,46 @@ html, body{
 
 .actions{
   position:fixed;
-  bottom: 15px;
-  left:0;
-  width:100%;
-  padding:12px auto 18px;
-  background:linear-gradient(180deg,transparent,#050b12 40%);
-  backdrop-filter:blur(6px);
+  bottom:0px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  max-width:520px;
+
+  padding:16px 20px 20px;
+  border-radius:0px;
+
+  background:rgba(10,20,30,0.55);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+
+  border:1px solid rgba(0,255,255,.25);
+
+  box-shadow:
+    0 20px 40px rgba(0,0,0,.6),
+    0 0 25px rgba(0,255,255,.25);
+
   z-index:100;
-   text-align:center; 
+  text-align:center;
+  overflow:hidden;
+}
+
+
+.actions::before{
+  content:"";
+  position:absolute;
+  top:-60%;
+  left:-30%;
+  width:160%;
+  height:200%;
+  background:linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,.08) 40%,
+    transparent 70%
+  );
+  transform:rotate(25deg);
+  pointer-events:none;
 }
 
 
@@ -394,16 +426,34 @@ html, body{
 /* ===== SKILL CIRCLE ===== */
 .skill-circle{
   position:relative;
-  width:75px;
-  height:75px;
+  width:78px;
+  height:78px;
   border-radius:50%;
-  border:none;
-  background:#0d1a22;
-  overflow:hidden;
-  cursor:pointer;
-  box-shadow:0 0 20px rgba(0,255,255,.4);
-   flex-shrink:0;   
+  border:2px solid rgba(0,255,255,.4);
+
+  background:linear-gradient(
+    180deg,
+    rgba(255,255,255,.08),
+    rgba(0,0,0,.3)
+  );
+
+  backdrop-filter:blur(8px);
+
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.6),
+    inset 0 0 15px rgba(0,255,255,.2),
+    0 0 20px rgba(0,255,255,.4);
+
+  transition:.25s;
 }
+
+.skill-circle:active{
+  transform:translateY(4px);
+  box-shadow:
+    0 6px 12px rgba(0,0,0,.6),
+    inset 0 0 20px rgba(0,255,255,.5);
+}
+
 
 .skill-circle img{
   width:100%;
@@ -445,8 +495,27 @@ html, body{
 
 /* SKILL READY PULSE */
 .skill-ready{
-  animation:skillPulse 1.2s infinite;
+  animation:skillGlow 1.5s infinite;
 }
+
+@keyframes skillGlow{
+  0%{
+    box-shadow:
+      0 10px 20px rgba(0,0,0,.6),
+      0 0 15px rgba(0,255,255,.4);
+  }
+  50%{
+    box-shadow:
+      0 10px 20px rgba(0,0,0,.6),
+      0 0 35px rgba(0,255,255,1);
+  }
+  100%{
+    box-shadow:
+      0 10px 20px rgba(0,0,0,.6),
+      0 0 15px rgba(0,255,255,.4);
+  }
+}
+
 
 @keyframes skillPulse{
   0%{ box-shadow:0 0 15px rgba(0,255,255,.4);}
