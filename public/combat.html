@@ -19,11 +19,12 @@ body{
   height:100vh;
   overflow:hidden;
 
-background-size:auto 100vh;
-background-position:center center;
-background-repeat:no-repeat;
-transition:background .5s ease;
+  background-repeat:no-repeat;
+  background-position:center center;
+  background-size:cover;   /* ⭐ ĐỔI LẠI COVER */
+  transition:background .5s ease;
 }
+
 
 
 @media (max-width:768px){
@@ -42,11 +43,6 @@ transition:background .5s ease;
 
 
 
-html, body{
-  margin:0;
-  padding:0;
-  background:#02070c;
-}
 
 
 .title{
@@ -996,6 +992,14 @@ html, body{
   background:rgba(0,0,0,.55);
   pointer-events:none;
   z-index:-1;
+}
+
+
+@media (max-width:768px){
+  body{
+    background-position:center center !important;
+    background-size:cover !important;
+  }
 }
 
 
