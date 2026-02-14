@@ -17,9 +17,10 @@ body{
   background:radial-gradient(circle at center,#08121a,#000);
   font-family:system-ui;
   color:#fff;
-  padding:0;
-  min-height:100vh;
+  height:100vh;
+  overflow:hidden;   /* ⭐ QUAN TRỌNG */
 }
+
 
 html, body{
   margin:0;
@@ -38,11 +39,13 @@ html, body{
 }
 
 .arena{
-  height:30vh;
+  height:38vh;
   display:flex;
   justify-content:space-between;
   align-items:center;
   padding:0 30px;
+  
+  
 }
 
 .character{
@@ -133,9 +136,6 @@ html, body{
 }
 
 
-.actions{
-  padding:8px 20px 15px;
-}
 
 
 .btn{
@@ -156,12 +156,16 @@ html, body{
 }
 
 .log{
+   position:fixed;
+  top:450px;   /* nằm trên skill */
+  left:20px;
+  right:20px;
   margin:15px 20px;
   background:#0b1118;
   padding:12px;
   border-radius:14px;
   font-size:13px;
-  height:70px;
+  height:100px;
   overflow-y:auto;
 }
 
@@ -305,10 +309,16 @@ html, body{
 /* ===== ACTION PANEL REDESIGN ===== */
 
 .actions{
-  padding:15px 20px 25px;
-  background:linear-gradient(180deg,transparent,#050b12);
+  position:fixed;
+  bottom:0;
+  left:0;
+  width:100%;
+  padding:12px 20px 18px;
+  background:linear-gradient(180deg,transparent,#050b12 40%);
   backdrop-filter:blur(6px);
+  z-index:100;
 }
+
 
 /* MAIN ATTACK */
 .btn-main{
