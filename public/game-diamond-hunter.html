@@ -2584,18 +2584,33 @@ function handleBack(){
 
 let selectedEnhanceSlot = null;
 
-function openEnhance(slot){
+function openEnhance(target){
 
-  const item = player.equipment[slot];
+  let item = null;
+
+  if(typeof target === "string"){
+    // Từ slot trang bị
+    selectedEnhanceSlot = target;
+    selectedEnhanceIndex = null;
+    item = player.equipment[target];
+  }else{
+    // Từ inventory
+    selectedEnhanceIndex = target;
+    selectedEnhanceSlot = null;
+    item = player.inventory[target];
+  }
+
   if(!item) return;
-
-  selectedEnhanceSlot = slot;
 
   document.getElementById("enhanceModal")
     .classList.remove("hidden");
 
   updateEnhanceUI();
 }
+
+
+
+
 
 function closeEnhance(){
   document.getElementById("enhanceModal")
@@ -2604,7 +2619,18 @@ function closeEnhance(){
 
 function updateEnhanceUI(){
 
-  const item = player.equipment[selectedEnhanceSlot];
+  let item = null;
+
+  if(selectedEnhanceSlot){
+    item = player.equipment[selectedEnhanceSlot];
+  }
+
+  if(selectedEnhanceIndex !== null){
+    item = player.inventory[selectedEnhanceIndex];
+  }
+
+  if(!item) return;
+
   const lv = item.enhance || 0;
 
   let rate = 100;
@@ -2625,7 +2651,7 @@ function updateEnhanceUI(){
   document.getElementById("enhanceItemName")
     .innerText = item.name + " +" + lv;
 
-  // Preview stat tăng
+  // ===== PREVIEW STAT =====
   let statPreview = "";
 
   ["atk","def","hp"].forEach(stat=>{
@@ -2635,7 +2661,8 @@ function updateEnhanceUI(){
       statPreview += `
         <div>
           ${stat.toUpperCase()}:
-          ${current} → <span style="color:#00ff88">${next}</span>
+          ${current} → 
+          <span style="color:#00ff88">${next}</span>
         </div>
       `;
     }
@@ -2653,16 +2680,17 @@ function updateEnhanceUI(){
   document.getElementById("enhanceCostText")
     .innerText = "Chi phí: " + cost + " 💎";
 
-    if(lv >= 10){
-  document.getElementById("enhanceItemImg")
-    .style.filter = "drop-shadow(0 0 35px gold)";
-}
+  document.getElementById("enhanceGoldLeft")
+    .innerText = player.gold;
 
-document.getElementById("enhanceGoldLeft")
-  .innerText = player.gold;
-
-
-
+  // Glow khi cấp cao
+  if(lv >= 10){
+    document.getElementById("enhanceItemImg")
+      .style.filter = "drop-shadow(0 0 35px gold)";
+  }else{
+    document.getElementById("enhanceItemImg")
+      .style.filter = "drop-shadow(0 0 25px #00f0ff)";
+  }
 }
 
 
@@ -2887,55 +2915,11 @@ function openInventoryItem(index){
   // 🔥 SỬA CHỖ NÀY — KHÔNG GÁN TẠM SLOT NỮA
   btnEnhance.innerText = "🔥 Cường hóa";
 
-  btnEnhance.onclick = function(){
+btnEnhance.onclick = function(){
+  openEnhance(index);
+  closeInventoryItemModal();
+};
 
-    selectedEnhanceIndex = index;  // enhance trực tiếp từ inventory
-    selectedEnhanceSlot = null;
-
-    openEnhanceFromInventory();
-    closeInventoryItemModal();
-  };
-}
-
-
-function updateEnhanceUIInventory(){
-
-  const item = player.inventory[selectedEnhanceIndex];
-  const lv = item.enhance || 0;
-
-  let rate = 100;
-  let cost = 100;
-
-  if(lv >= 5 && lv < 10){
-    rate = 70;
-    cost = 300;
-  }
-
-  if(lv >= 10){
-    rate = 40;
-    cost = 600;
-  }
-
-  document.getElementById("enhanceItemName")
-    .innerText = item.name + " +" + lv;
-
-  document.getElementById("enhanceInfo")
-    .innerHTML =
-      `Tỉ lệ thành công: ${rate}%<br>
-       Chi phí: ${cost} 💎`;
-}
-
-
-
-function openEnhanceFromInventory(){
-
-  const item = player.inventory[selectedEnhanceIndex];
-  if(!item) return;
-
-  document.getElementById("enhanceModal")
-    .classList.remove("hidden");
-
-  updateEnhanceUIInventory();
 }
 
 
