@@ -20,6 +20,19 @@ const twilio = require("twilio");
 const fs = require("fs");
 
 
+
+// ================================
+// 🔐 CHARACTER CODE GENERATOR
+// ================================
+function generateCharacterCode(){
+  return "DH-" +
+    crypto.randomBytes(4)
+      .toString("hex")
+      .toUpperCase();
+}
+
+
+
 function ensureWheelSecret(round){
   if (!round) return;
 
@@ -117,6 +130,26 @@ function saveRpsRoundCount(data){
     console.error("❌ Save RPS round count failed", e);
   }
 }
+
+
+function ensureCharacterCodes(){
+  const users = loadUsers();
+  let changed = false;
+
+  Object.values(users).forEach(u=>{
+    if(u.profile && !u.profile.characterCode){
+      u.profile.characterCode = generateCharacterCode();
+      changed = true;
+    }
+  });
+
+  if(changed){
+    saveUsers(users);
+    console.log("🔐 Generated missing character codes");
+  }
+}
+
+
 
 
 
@@ -1566,6 +1599,37 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
+// ================================
+// 🔐 LOAD CHARACTER BY CODE
+// ================================
+app.post("/api/character/load-by-code", (req,res)=>{
+
+  const { code } = req.body;
+  if(!code){
+    return res.json({ ok:false, message:"NO_CODE" });
+  }
+
+  const users = loadUsers();
+
+  const foundUser = Object.values(users).find(u =>
+    u.profile?.characterCode === code
+  );
+
+  if(!foundUser){
+    return res.json({
+      ok:false,
+      message:"INVALID_CODE"
+    });
+  }
+
+  return res.json({
+    ok:true,
+    profile: foundUser.profile
+  });
+});
+
+
+
 app.post("/api/rps/bet",(req,res)=>{
   const uid = req.headers["x-uid"];
   const { bet, hand } = req.body;
@@ -1820,6 +1884,31 @@ saveInvestState(investRound);
     });
   }
 });
+
+
+// ================================
+// 🔐 GET MY CHARACTER CODE
+// ================================
+app.get("/api/character/my-code", (req,res)=>{
+
+  const uid = req.headers["x-uid"];
+  if(!uid){
+    return res.json({ ok:false });
+  }
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if(!me?.profile){
+    return res.json({ ok:false });
+  }
+
+  return res.json({
+    ok:true,
+    code: me.profile.characterCode
+  });
+});
+
 
 
 // 🔐 ADMIN – GET CURRENT RPS BETS
@@ -7817,6 +7906,9 @@ app.get("/lobby", (_, res) => {
   res.sendFile(path.join(__dirname, "public", "lobby.html"));
 });
 
+
+
+ensureCharacterCodes();
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
