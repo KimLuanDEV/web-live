@@ -111,60 +111,37 @@ if(progress >= 90){
     }
 
     grid.innerHTML += `
-  <div class="animal-card ${rarityClass}" id="animal-${i}">
-
-   <div class="nest ${
-  progress >= 90 && progress < 100 ? 'shake' : ''
-}">
+      <div class="animal-card ${rarityClass} ${progress>=100?'hatched':''}" id="animal-${i}">
 
 
-      ${
-        progress >= 100
-          ? `
-            <img src="${
-              a.type === "dragon"
-                ? "/assets/animals/dragon.png"
-                : "/assets/animals/chicken.png"
-            }"
-            class="animal-img">
-          `
-          : `
-            <img src="${img}"
-                 style="width:70px;height:70px;object-fit:contain;">
-          `
-      }
+        <div class="animal-stage ${stageClass}">
+          ${stageHTML}
+        </div>
 
-    </div>
+        <div class="grow-bar">
+          <div class="grow-fill"
+            style="width:${progress}%">
+          </div>
+        </div>
 
-    ${
-      progress >= 100
-        ? `<button class="sell-btn"
-             onclick="sellAnimal(${i})">
-             Sell +${a.value} 💎
-           </button>`
-        : `<div class="countdown">
-             ⏳ ${secondsLeft}s
-           </div>`
-    }
+        <div class="progress-text">
+          ${progress.toFixed(0)}%
+        </div>
 
-  </div>
-`;
+        ${
+          progress >= 100
+          ? `<button class="sell-btn"
+               onclick="sellAnimal(${i})">
+               Sell +${a.value} 💎
+             </button>`
+          : `<div class="countdown">
+               ⏳ ${secondsLeft}s
+             </div>`
+        }
 
-  });
-
-
-  const max = Number(document.getElementById("slotMax").textContent);
-
-for(let i = animals.length; i < max; i++){
-  grid.innerHTML += `
-    <div class="animal-card empty-slot">
-      <div class="nest nest-empty">
-        <div class="plus">+</div>
       </div>
-    </div>
-  `;
-}
-
+    `;
+  });
 
   // ===== LEGENDARY HEADER GLOW =====
 const hasLegend = animals.some(a => {

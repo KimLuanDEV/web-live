@@ -30,17 +30,18 @@ body{
 
 .animal-card{
   position:relative;
-  width:100%;
-  aspect-ratio:1/1;
-  background:transparent;
-  border:none;
-  box-shadow:none;
-  padding:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
+  background:rgba(0,255,150,.05);
+  border-radius:18px;
+  padding:14px;
+  text-align:center;
+  border:1px solid rgba(0,255,150,.15);
+  backdrop-filter:blur(6px);
 
+  box-shadow:
+    0 0 20px rgba(0,255,150,.15);
+
+  transition:0.25s ease;
+}
 
 .animal-card:hover{
   transform:translateY(-3px);
@@ -65,78 +66,6 @@ body{
   font-weight:bold;
   cursor:pointer;
 }
-
-
-/* ============================= */
-/* 🪺 NEST SLOT */
-/* ============================= */
-
-.nest{
-  position:relative;
-  width:120px;
-  height:120px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.nest::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:url("/assets/nest/nest.png") center/contain no-repeat;
-  z-index:0;
-}
-
-.animal-card.legendary .nest::before{
-  background:url("/assets/nest/nest-dragon.png") center/contain no-repeat;
-}
-
-
-.nest-empty{
-  opacity:.3;
-}
-
-
-.animal-card.common .nest{
-  filter:drop-shadow(0 0 15px rgba(0,255,150,.4));
-}
-
-.animal-card.rare .nest{
-  filter:drop-shadow(0 0 20px gold);
-}
-
-.animal-card.epic .nest{
-  filter:drop-shadow(0 0 20px #00ccff);
-}
-
-.animal-card.legendary .nest{
-  filter:drop-shadow(0 0 35px #ff5000);
-}
-
-
-.nest.shake{
-  animation:nestShake .4s infinite;
-}
-
-@keyframes nestShake{
-  0%{ transform:translateX(0); }
-  25%{ transform:translateX(-3px); }
-  50%{ transform:translateX(3px); }
-  75%{ transform:translateX(-3px); }
-  100%{ transform:translateX(0); }
-}
-
-
-.nest-empty{
-  opacity:.4;
-}
-
-.plus{
-  font-size:36px;
-  color:rgba(255,255,255,.4);
-}
-
 
 
 
