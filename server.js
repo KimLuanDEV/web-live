@@ -546,12 +546,22 @@ let animalDB = loadAnimals();
 
 Object.values(animalDB).forEach(list=>{
   list.forEach(a=>{
-    if(typeof a.broken === "undefined"){
+
+    if(typeof a.broken === "undefined")
       a.broken = null;
+
+    if(typeof a.stage === "undefined")
+      a.stage = 0;
+
+    if(typeof a.finalized === "undefined"){
+      // 🔥 nếu đã stage 2 thì auto finalize
+      a.finalized = (a.stage === 2);
     }
+
   });
 });
 saveAnimals(animalDB);
+
 
 
 
@@ -856,15 +866,10 @@ setInterval(()=>{
 
 if(age >= growTime){
 
-  // 🔒 Nếu đã xử lý rồi thì bỏ qua
-  if(a.stage === 2) return;
+  // 🔒 Nếu đã finalize rồi → KHÔNG BAO GIỜ ĐỤNG NỮA
+  if(a.finalized) return;
 
-  // 🔐 đảm bảo stage luôn tồn tại
-  if(typeof a.stage !== "number"){
-    a.stage = 0;
-  }
-
-  if(a.broken === null){
+  if(a.stage !== 2){
 
     const failRateMap = {
       normal: 0.5,
@@ -881,11 +886,14 @@ if(age >= growTime){
 
     const failRate = failRateMap[a.type] || 0.1;
     a.broken = Math.random() < failRate;
-  }
 
-  a.stage = 2;
-  changedUsers.add(uid);
+    a.stage = 2;
+    a.finalized = true;  // 🔥 LOCK VĨNH VIỄN
+
+    changedUsers.add(uid);
+  }
 }
+
 
 
     });
@@ -1351,6 +1359,7 @@ const eggMap = {
   animalDB[uid].push({
     stage:0,
     broken: null,
+    finalized: false, 
     createdAt: Date.now(),
     growTime: cfg.grow,
     value: Math.floor(cfg.min + Math.random()*(cfg.max-cfg.min)),
