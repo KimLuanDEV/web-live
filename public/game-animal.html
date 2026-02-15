@@ -7,8 +7,14 @@
 
 
 <style>
-body{
+
+html, body{
   margin:0;
+  padding:0;
+  height:100%;
+}
+
+body{
   background:
     radial-gradient(circle at top,
       #001a12,
@@ -17,9 +23,9 @@ body{
   color:#fff;
   font-family:sans-serif;
 
-  padding-top:120px; /* cố định */
-  min-height:100vh;
+  padding-top:120px;
 }
+
 
 
 
@@ -28,6 +34,7 @@ body{
   grid-template-columns:repeat(2,1fr);
   gap:12px;
   padding:16px;
+  min-height:calc(100vh - 120px);
 }
 
 .animal-card{
