@@ -41,3 +41,10 @@ socket.on("animal-update", data=>{
   animals = data;
   render();
 });
+
+socket.on("coin-update", data=>{
+  const el = document.getElementById("coinValue");
+  if(el){
+    el.textContent = data.coins ?? 0;
+  }
+});
