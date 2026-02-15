@@ -690,16 +690,26 @@ body{
 /* READY badge */
 .ready-badge{
   position:absolute;
-  top:-8px;
-  right:-8px;
-  background:#00ff99;
+  top:8px;
+  right:8px;
+  background:linear-gradient(90deg,#00ff99,#00ccff);
   color:#000;
   font-size:10px;
   padding:4px 8px;
   border-radius:20px;
   font-weight:bold;
-  box-shadow:0 0 15px rgba(0,255,150,.7);
+  letter-spacing:.5px;
+  box-shadow:0 0 12px rgba(0,255,150,.8);
+  animation:readyPulse 1.2s infinite;
+  z-index:5;
 }
+
+@keyframes readyPulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.08); }
+  100%{ transform:scale(1); }
+}
+
 
 
 .animal-img{

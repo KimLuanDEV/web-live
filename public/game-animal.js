@@ -92,13 +92,13 @@ function render(){
         animalImg = "/assets/animals/" + animalMap[a.type];
       }
 
-      stageHTML = `
-        <div class="animal-stage hatched-animal">
-          <div class="hatch-glow"></div>
-          <img src="${animalImg}" class="animal-img">
-          <div class="ready-badge">READY</div>
-        </div>
-      `;
+stageHTML = `
+  <div class="animal-stage hatched-animal">
+    <div class="hatch-glow"></div>
+    <img src="${animalImg}" class="animal-img">
+  </div>
+`;
+
 
     }else{
 
@@ -146,11 +146,14 @@ stageHTML += `
     // =============================
 
     grid.innerHTML += `
-      <div class="animal-card ${rarityClass} ${progress>=100?'hatched':''}" id="animal-${i}">
+     <div class="animal-card ${rarityClass} ${progress>=100?'hatched':''}" id="animal-${i}">
 
-        <div class="animal-stage ${stageClass}">
-          ${stageHTML}
-        </div>
+  ${progress>=100 ? `<div class="ready-badge">READY</div>` : ""}
+
+  <div class="animal-stage ${stageClass}">
+    ${stageHTML}
+  </div>
+
 
         <div class="grow-bar">
           <div class="grow-fill"
