@@ -237,10 +237,24 @@ function upgradeBarn(){
 
 
 
+function updateSlotDisplay(){
+
+  const countEl = document.getElementById("slotCount");
+  const maxEl = document.getElementById("slotMax");
+
+  if(!countEl || !maxEl) return;
+
+  countEl.textContent = animals.length;
+}
+
+
+
 socket.on("animal-update", data=>{
   animals = data;
   render();
+  updateSlotDisplay();
 });
+
 
 socket.on("coin-update", data=>{
   const el = document.getElementById("coinValue");
@@ -250,12 +264,21 @@ socket.on("coin-update", data=>{
 });
 
 socket.on("barn-update", data=>{
+
   barnLevel = data.level;
   barnConfig = data.config;
 
-  const el = document.getElementById("barnLevel");
-  if(el) el.textContent = barnLevel;
+  const levelEl = document.getElementById("barnLevel");
+  if(levelEl) levelEl.textContent = barnLevel;
+
+  const max = barnConfig[barnLevel]?.max || 4;
+
+  const slotMaxEl = document.getElementById("slotMax");
+  if(slotMaxEl) slotMaxEl.textContent = max;
+
+  updateSlotDisplay();
 });
+
 
 
 setInterval(()=>{
