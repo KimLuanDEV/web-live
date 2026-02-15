@@ -8,10 +8,17 @@
 <style>
 body{
   margin:0;
-  background:#000;
+  background:
+    radial-gradient(circle at top,
+      #001a12,
+      #000
+    );
   color:#fff;
   font-family:sans-serif;
+  padding-top:70px;
+  min-height:100vh;
 }
+
 
 .farm-grid{
   display:grid;
@@ -21,12 +28,26 @@ body{
 }
 
 .animal-card{
-  background:#111;
+  position:relative;
+  background:rgba(0,255,150,.05);
   border-radius:18px;
-  padding:12px;
+  padding:14px;
   text-align:center;
-  box-shadow:0 0 25px rgba(0,255,150,.15);
+  border:1px solid rgba(0,255,150,.15);
+  backdrop-filter:blur(6px);
+
+  box-shadow:
+    0 0 20px rgba(0,255,150,.15);
+
+  transition:0.25s ease;
 }
+
+.animal-card:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 0 30px rgba(0,255,150,.35);
+}
+
 
 .animal-stage{
   font-size:42px;
@@ -113,6 +134,44 @@ body{
 
 
 
+.grow-bar{
+  height:6px;
+  background:rgba(255,255,255,.1);
+  border-radius:10px;
+  margin-top:8px;
+  overflow:hidden;
+}
+
+.grow-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  transition:0.3s;
+}
+
+
+.buy-btn{
+  position:fixed;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+
+  padding:14px 28px;
+  border:none;
+  border-radius:30px;
+
+  font-size:15px;
+  font-weight:bold;
+
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  color:#000;
+
+  box-shadow:0 0 30px rgba(0,255,150,.4);
+  cursor:pointer;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -137,7 +196,10 @@ body{
 
 <div class="farm-grid" id="farmGrid"></div>
 
-<button onclick="buyEgg()">Mua trứng (100 💎)</button>
+<button class="buy-btn" onclick="buyEgg()">
+  🥚 Buy Egg (100 💎)
+</button>
+
 
 
 
@@ -147,8 +209,6 @@ body{
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="game-animal.js"></script>
-
-
 
 
 
