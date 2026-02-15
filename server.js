@@ -1252,20 +1252,22 @@ socket.on("animal-buy-egg", type=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
 
-// 🏰 CHECK BARN SLOT
-const barnLevel = me.barnLevel || 1;
-const maxSlot = BARN_CONFIG[barnLevel]?.max || 4;
+  // 🏰 CHECK BARN SLOT (PHẢI ĐẶT SAU KHI CÓ me)
+  const barnLevel = me.barnLevel || 1;
+  const maxSlot = BARN_CONFIG[barnLevel]?.max || 4;
 
-animalDB[uid] ||= [];
+  animalDB[uid] ||= [];
 
-if(animalDB[uid].length >= maxSlot){
-  socket.emit("animal-error",{
-    message:"BARN_FULL"
-  });
-  return;
-}
-
+  if(animalDB[uid].length >= maxSlot){
+    socket.emit("animal-error",{
+      message:"BARN_FULL"
+    });
+    return;
+  }
 
   const eggMap = {
     normal:{ price:100, grow:60000, min:150, max:250 },
@@ -1277,18 +1279,12 @@ if(animalDB[uid].length >= maxSlot){
   const cfg = eggMap[type];
   if(!cfg) return;
 
-  const users = loadUsers();
-  const me = users[uid];
-  if(!me?.profile) return;
-
   if(me.profile.coins < cfg.price){
     socket.emit("animal-error",{ message:"NOT_ENOUGH_COIN" });
     return;
   }
 
   me.profile.coins -= cfg.price;
-
-  animalDB[uid] ||= [];
 
   animalDB[uid].push({
     stage:0,
@@ -1304,6 +1300,7 @@ if(animalDB[uid].length >= maxSlot){
   emitCoinUpdate(uid);
   socket.emit("animal-update", animalDB[uid]);
 });
+
 
 
 // ================================
