@@ -9,16 +9,15 @@
 <style>
 body{
   margin:0;
-  background:
-    radial-gradient(circle at top,#001a12,#000);
+  background:radial-gradient(circle at top,#001a12,#000);
   color:#fff;
   font-family:sans-serif;
 
-  padding-top:150px; /* chỉ 1 lần */
-  padding-bottom:120px; /* chừa chỗ cho nút shop */
-
-  min-height:100vh;
+  padding-top:110px;   /* chuẩn header */
+  padding-bottom:0;    /* bỏ */
+  min-height:auto;     /* bỏ */
 }
+
 
 
 .farm-grid{
@@ -32,7 +31,7 @@ body{
   position:relative;
   background:rgba(0,255,150,.05);
   border-radius:18px;
-  padding:12px;
+  padding:14px;
   text-align:center;
   border:1px solid rgba(0,255,150,.15);
   backdrop-filter:blur(6px);
@@ -100,7 +99,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:10px 16px;
+  padding:8px 16px;
 }
 
 .header-top{
@@ -108,7 +107,7 @@ body{
 }
 
 .header-bottom{
-  padding-bottom:12px;
+  padding-bottom:8px;
 }
 
 /* ===== Barn ===== */
@@ -773,8 +772,8 @@ body{
 
 
 .animal-img{
-  width:80px;
-  height:80px;
+  width:90px;
+  height:90px;
   object-fit:contain;
   filter:drop-shadow(0 0 15px rgba(0,255,150,.6));
   animation:animalIdle 2s ease-in-out infinite;
