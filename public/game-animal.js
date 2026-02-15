@@ -63,15 +63,15 @@ function render(){
     }
 
     // =============================
-    // 🐣 STAGE RENDER
-    // =============================
+// 🐣 STAGE RENDER (SERVER CONTROLLED)
+// =============================
 
-    let stageClass = "";
-    let stageHTML = "";
+let stageClass = "";
+let stageHTML = "";
 
-if(progress >= 100){
+// 🔒 Chỉ nở khi server xác nhận
+if(a.stage === 2){
 
-  // 💀 Nếu trứng hỏng
   if(a.broken){
 
     stageHTML = `
@@ -84,7 +84,6 @@ if(progress >= 100){
 
   }else{
 
-    // ===== Animal mapping =====
     let animalImg = "/assets/animals/chicken.png";
 
     const animalMap = {
@@ -111,53 +110,44 @@ if(progress >= 100){
       </div>
     `;
   }
+
+}else{
+
+  // ===== Egg Stage =====
+  stageHTML = `
+    <div class="nest-wrapper">
+      <img src="/assets/farm/nest.png"
+           class="nest-img">
+      <img src="${eggImg}"
+           class="egg-on-nest">
+    </div>
+  `;
+
+  // Crack effect chỉ dựa trên progress
+  if(progress >= 90){
+
+    stageClass = "almost-hatch";
+
+    let crackImg = "/assets/effects/crack-white.png";
+    let crackColor = "#00ff99";
+
+    if(rarityClass === "rare") crackColor = "gold";
+    if(rarityClass === "epic") crackColor = "#00ccff";
+    if(rarityClass === "legendary") crackColor = "#ff5000";
+    if(rarityClass === "mythic") crackColor = "#ff00ff";
+
+    stageHTML += `
+      <div class="crack-overlay"
+           style="
+             background-image:url('${crackImg}');
+             filter: drop-shadow(0 0 8px ${crackColor})
+                     drop-shadow(0 0 16px ${crackColor});
+           ">
+      </div>
+    `;
+  }
 }
-else{
 
-      // ===== Egg =====
-stageHTML = `
-  <div class="nest-wrapper">
-    <img src="/assets/farm/nest.png"
-         class="nest-img">
-
-    <img src="${eggImg}"
-         class="egg-on-nest">
-  </div>
-`;
-
-
-      // ===== Crack effect 90%+ =====
-      if(progress >= 90){
-
-        stageClass = "almost-hatch";
-
-let crackImg = "/assets/effects/crack-white.png";
-let crackColor = "#00ff99"; // default common
-
-if(rarityClass === "rare")
-  crackColor = "gold";
-
-if(rarityClass === "epic")
-  crackColor = "#00ccff";
-
-if(rarityClass === "legendary")
-  crackColor = "#ff5000";
-
-if(rarityClass === "mythic")
-  crackColor = "#ff00ff";
-
-stageHTML += `
-  <div class="crack-overlay"
-       style="
-         background-image:url('${crackImg}');
-         filter: drop-shadow(0 0 8px ${crackColor})
-                 drop-shadow(0 0 16px ${crackColor});
-       ">
-  </div>
-`;
-
-      }
-    }
 
     // =============================
     // 🧱 CARD RENDER
@@ -166,7 +156,18 @@ stageHTML += `
     grid.innerHTML += `
 <div class="animal-card 
      ${rarityClass} 
-     ${progress>=100?'hatched':''}
+
+    ${
+  a.stage === 2
+  ? (
+      a.broken
+      ? `<div class="ready-badge broken-badge">BROKEN</div>`
+      : `<div class="ready-badge">READY</div>`
+    )
+  : ""
+}
+
+
      ${a.broken?'broken':''}" 
      id="animal-${i}">
 
@@ -198,7 +199,7 @@ stageHTML += `
         </div>
 
 ${
-  progress >= 100
+a.stage === 2
   ? (
       a.broken
       ? `<div style="color:#ff4444;font-weight:bold;margin-top:6px">
@@ -217,6 +218,7 @@ ${
   : `<div class="countdown">
        ⏳ ${secondsLeft}s
      </div>`
+
 }
 
 
