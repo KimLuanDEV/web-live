@@ -528,19 +528,6 @@ document.getElementById("shopOverlay")
 });
 
 
-function setRealVh(){
-  document.documentElement.style.setProperty(
-    '--vh',
-    window.innerHeight * 0.01 + 'px'
-  );
-}
-
-setRealVh();
-window.addEventListener('resize', setRealVh);
-
-
-
-
 
 
 socket.on("animal-update", data=>{
