@@ -518,7 +518,14 @@ body{
 
 .crack-overlay{
   position:absolute;
-  inset:0;
+
+  top:-20px;     /* 👈 đẩy lên */
+  left:50%;
+  transform:translateX(-50%);
+
+  width:70px;    /* gần bằng trứng */
+  height:70px;
+
   pointer-events:none;
 
   background-size:contain;
@@ -529,6 +536,7 @@ body{
   opacity:.85;
   animation:crackPulse 1.2s infinite;
 }
+
 
 @keyframes crackPulse{
   0%{ opacity:.6; }
