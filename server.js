@@ -819,7 +819,7 @@ function calcRps(me, enemy){
 
 
 // ================================
-// 🐣 AUTO GROW ANIMALS
+// 🐣 AUTO GROW ANIMALS (FIX)
 // ================================
 setInterval(()=>{
 
@@ -831,13 +831,9 @@ setInterval(()=>{
     animalDB[uid].forEach(a=>{
 
       const age = now - a.createdAt;
+      const growTime = a.growTime || 60000;
 
-      if(age > 30000 && a.stage === 0){
-        a.stage = 1;
-        changed = true;
-      }
-
-      if(age > 60000 && a.stage === 1){
+      if(age >= growTime && a.stage !== 2){
         a.stage = 2;
         changed = true;
       }
@@ -851,7 +847,8 @@ setInterval(()=>{
     saveAnimals(animalDB);
   }
 
-}, 5000);
+}, 3000);
+
 
 
 

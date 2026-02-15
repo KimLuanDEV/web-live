@@ -16,35 +16,41 @@ function render(){
   animals.forEach((a,i)=>{
 
     const age = now - a.createdAt;
-
     const growTime = a.growTime || 60000;
 
+    let progress = Math.min(100, (age/growTime)*100);
+    progress = Math.max(0, progress);
+
+    let secondsLeft = Math.max(
+      0,
+      Math.ceil((growTime - age)/1000)
+    );
+
     let icon = "🥚";
-    let progress = 0;
+    let rarityClass = "common";
 
-    // ===== ICON THEO TYPE =====
-    if(a.type === "gold") icon = "🥚✨";
-    if(a.type === "diamond") icon = "💎";
-    if(a.type === "dragon") icon = "🐉";
+    if(a.type==="gold"){
+      icon="🥚✨";
+      rarityClass="rare";
+    }
+    if(a.type==="diamond"){
+      icon="💎";
+      rarityClass="epic";
+    }
+    if(a.type==="dragon"){
+      icon="🐉";
+      rarityClass="legendary";
+    }
 
-    // ===== STAGE LOGIC =====
-    if(age >= growTime){
-      progress = 100;
-      icon = a.type === "dragon" ? "🐲" : "🐔";
-    }else{
-      progress = Math.max(
-        0,
-        Math.min(100, (age / growTime) * 100)
-      );
+    if(progress>=100){
+      icon = a.type==="dragon" ? "🐲" : "🐔";
     }
 
     grid.innerHTML += `
-      <div class="animal-card">
+      <div class="animal-card ${rarityClass}" id="animal-${i}">
 
-        <div class="animal-stage">${icon}</div>
-
-        <div style="font-size:12px;opacity:.6">
-          ${a.type?.toUpperCase() || "NORMAL"}
+        <div class="animal-stage ${progress>=100?'hatching':''}">
+          ${icon}
         </div>
 
         <div class="grow-bar">
@@ -53,15 +59,19 @@ function render(){
           </div>
         </div>
 
+        <div class="progress-text">
+          ${progress.toFixed(0)}%
+        </div>
+
         ${
-          progress >= 100
+          progress>=100
           ? `<button class="sell-btn"
-              onclick="sell(${i})">
-              Sell +${a.value} 💎
-            </button>`
-          : `<div style="opacity:.6;margin-top:6px">
-              Growing...
-            </div>`
+               onclick="sellAnimal(${i})">
+               Sell +${a.value} 💎
+             </button>`
+          : `<div class="countdown">
+               ⏳ ${secondsLeft}s
+             </div>`
         }
 
       </div>
@@ -71,13 +81,23 @@ function render(){
 
 
 
+
 function buyEgg(){
   socket.emit("animal-buy-egg");
 }
 
-function sell(index){
-  socket.emit("animal-sell", index);
+function sellAnimal(index){
+
+  const card = document.getElementById("animal-"+index);
+  if(card){
+    card.classList.add("selling");
+  }
+
+  setTimeout(()=>{
+    socket.emit("animal-sell", index);
+  },300);
 }
+
 
 
 // ================== SHOP DATA ==================

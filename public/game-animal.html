@@ -232,6 +232,80 @@ body{
 }
 
 
+/* ============================= */
+/* 🌟 RARITY GLOW */
+/* ============================= */
+
+.animal-card.common{
+  box-shadow:0 0 15px rgba(0,255,150,.2);
+}
+
+.animal-card.rare{
+  box-shadow:0 0 20px rgba(255,215,0,.4);
+}
+
+.animal-card.epic{
+  box-shadow:0 0 25px rgba(0,200,255,.5);
+}
+
+.animal-card.legendary{
+  box-shadow:0 0 35px rgba(255,80,0,.7);
+  animation:pulseLegend 1.5s infinite;
+}
+
+@keyframes pulseLegend{
+  0%{ box-shadow:0 0 25px rgba(255,80,0,.6); }
+  50%{ box-shadow:0 0 45px rgba(255,80,0,1); }
+  100%{ box-shadow:0 0 25px rgba(255,80,0,.6); }
+}
+
+/* ============================= */
+/* ⏱ Countdown */
+/* ============================= */
+
+.countdown{
+  font-size:12px;
+  margin-top:4px;
+  opacity:.7;
+}
+
+/* ============================= */
+/* 🐣 Hatch Animation */
+/* ============================= */
+
+@keyframes hatch{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.2); }
+  100%{ transform:scale(1); }
+}
+
+.hatching{
+  animation:hatch 0.6s ease;
+}
+
+/* ============================= */
+/* 💥 Sell Effect */
+/* ============================= */
+
+@keyframes sellPop{
+  0%{ transform:scale(1); opacity:1; }
+  100%{ transform:scale(0); opacity:0; }
+}
+
+.selling{
+  animation:sellPop 0.4s forwards;
+}
+
+/* ============================= */
+/* % TEXT */
+/* ============================= */
+
+.progress-text{
+  font-size:11px;
+  margin-top:4px;
+}
+
+
 </style>
 </head>
 <body>
