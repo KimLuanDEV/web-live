@@ -111,36 +111,42 @@ if(progress >= 90){
     }
 
     grid.innerHTML += `
-      <div class="animal-card ${rarityClass} ${progress>=100?'hatched':''}" id="animal-${i}">
+  <div class="animal-card ${rarityClass}" id="animal-${i}">
 
+    <div class="nest ${!a?'nest-empty':''}">
 
-        <div class="animal-stage ${stageClass}">
-          ${stageHTML}
-        </div>
+      ${
+        progress >= 100
+          ? `
+            <img src="${
+              a.type === "dragon"
+                ? "/assets/animals/dragon.png"
+                : "/assets/animals/chicken.png"
+            }"
+            class="animal-img">
+          `
+          : `
+            <img src="${img}"
+                 style="width:70px;height:70px;object-fit:contain;">
+          `
+      }
 
-        <div class="grow-bar">
-          <div class="grow-fill"
-            style="width:${progress}%">
-          </div>
-        </div>
+    </div>
 
-        <div class="progress-text">
-          ${progress.toFixed(0)}%
-        </div>
+    ${
+      progress >= 100
+        ? `<button class="sell-btn"
+             onclick="sellAnimal(${i})">
+             Sell +${a.value} 💎
+           </button>`
+        : `<div class="countdown">
+             ⏳ ${secondsLeft}s
+           </div>`
+    }
 
-        ${
-          progress >= 100
-          ? `<button class="sell-btn"
-               onclick="sellAnimal(${i})">
-               Sell +${a.value} 💎
-             </button>`
-          : `<div class="countdown">
-               ⏳ ${secondsLeft}s
-             </div>`
-        }
+  </div>
+`;
 
-      </div>
-    `;
   });
 
   // ===== LEGENDARY HEADER GLOW =====

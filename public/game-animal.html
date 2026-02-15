@@ -30,18 +30,17 @@ body{
 
 .animal-card{
   position:relative;
-  background:rgba(0,255,150,.05);
-  border-radius:18px;
-  padding:14px;
-  text-align:center;
-  border:1px solid rgba(0,255,150,.15);
-  backdrop-filter:blur(6px);
-
-  box-shadow:
-    0 0 20px rgba(0,255,150,.15);
-
-  transition:0.25s ease;
+  width:100%;
+  aspect-ratio:1/1;
+  background:transparent;
+  border:none;
+  box-shadow:none;
+  padding:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
+
 
 .animal-card:hover{
   transform:translateY(-3px);
@@ -65,6 +64,40 @@ body{
   border-radius:10px;
   font-weight:bold;
   cursor:pointer;
+}
+
+
+/* ============================= */
+/* 🪺 NEST SLOT */
+/* ============================= */
+
+.nest{
+  position:relative;
+  width:120px;
+  height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.nest::before{
+  content:"";
+  position:absolute;
+  bottom:0;
+  width:100%;
+  height:60px;
+  background:
+    radial-gradient(circle at center,
+      #5a3a1a 40%,
+      #2b1a0a 70%);
+  border-radius:50%;
+  box-shadow:
+    0 0 20px rgba(0,0,0,.6),
+    inset 0 0 20px rgba(0,0,0,.5);
+}
+
+.nest-empty{
+  opacity:.3;
 }
 
 
