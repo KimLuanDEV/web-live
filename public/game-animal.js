@@ -165,16 +165,28 @@ stageHTML += `
           ${progress.toFixed(0)}%
         </div>
 
-        ${
-          progress >= 100
-          ? `<button class="sell-btn"
-               onclick="sellAnimal(${i})">
-               Sell +${a.value} 💎
-             </button>`
-          : `<div class="countdown">
-               ⏳ ${secondsLeft}s
-             </div>`
-        }
+${
+  progress >= 100
+  ? (
+      a.broken
+      ? `<div style="color:#ff4444;font-weight:bold;margin-top:6px">
+           🥚 Broken egg
+         </div>
+         <button class="sell-btn"
+           style="background:#444;color:#fff"
+           onclick="discardAnimal(${i})">
+           Discard
+         </button>`
+      : `<button class="sell-btn"
+           onclick="sellAnimal(${i})">
+           Sell +${a.value} 💎
+         </button>`
+    )
+  : `<div class="countdown">
+       ⏳ ${secondsLeft}s
+     </div>`
+}
+
 
       </div>
     `;
@@ -564,6 +576,9 @@ socket.on("coin-update", data=>{
 });
 
 
+function discardAnimal(index){
+  socket.emit("animal-discard", index);
+}
 
 
 socket.on("barn-update", data => {

@@ -842,10 +842,36 @@ setInterval(()=>{
       const age = now - a.createdAt;
       const growTime = a.growTime || 60000;
 
-      if(age >= growTime && a.stage !== 2){
-        a.stage = 2;
-        changed = true;
-      }
+if(age >= growTime && a.stage !== 2){
+
+  // ===== TỶ LỆ HỎNG =====
+  const failRateMap = {
+    normal: 0.5,
+    forest: 0.5,
+
+    gold: 0.5,
+    thunder: 0.5,
+
+    diamond: 0.5,
+    shadow: 0.5,
+
+    dragon: 0.5,
+    phoenix: 0.5,
+
+    celestial: 0.5,
+    voidlord: 0.5
+  };
+
+  const failRate = failRateMap[a.type] || 0.1;
+
+  const isBroken = Math.random() < failRate;
+
+  a.stage = 2;
+  a.broken = isBroken;   // 🔥 NEW FLAG
+
+  changed = true;
+}
+
 
     });
 
@@ -1333,8 +1359,16 @@ socket.on("animal-sell", index=>{
   if(!list || !list[index]) return;
 
   const a = list[index];
+
+  // ❌ Chưa sẵn sàng
   if(a.stage !== 2){
     socket.emit("animal-error",{ message:"NOT_READY" });
+    return;
+  }
+
+  // 💀 Trứng bị hỏng
+  if(a.broken){
+    socket.emit("animal-error",{ message:"EGG_BROKEN" });
     return;
   }
 
@@ -1342,8 +1376,10 @@ socket.on("animal-sell", index=>{
   const me = users[uid];
   if(!me?.profile) return;
 
+  // 💰 Cộng coin
   me.profile.coins += a.value;
 
+  // 🗑 Xóa khỏi chuồng
   list.splice(index,1);
 
   saveUsers(users);
@@ -1353,6 +1389,27 @@ socket.on("animal-sell", index=>{
 
   socket.emit("animal-update", list);
 });
+
+
+
+socket.on("animal-discard", index=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const list = animalDB[uid];
+  if(!list || !list[index]) return;
+
+  const a = list[index];
+  if(a.stage !== 2 || !a.broken) return;
+
+  list.splice(index,1);
+
+  saveAnimals(animalDB);
+
+  socket.emit("animal-update", list);
+});
+
 
 
 // ================================
