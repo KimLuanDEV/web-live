@@ -206,15 +206,32 @@ function closeShop(){
 
 
 function renderShop(){
+
   const box = document.getElementById("shopGrid");
-  box.innerHTML="";
+  box.innerHTML = "";
 
   eggTypes.forEach(e=>{
-    box.innerHTML+=`
-      <div class="shop-item" onclick="buyEggType('${e.id}')">
-        <div class="egg-name">${e.name}</div>
-        <div>💎 ${e.price}</div>
-        <div class="egg-rare">${e.rare}</div>
+
+    let img = "/assets/eggs/egg1.png";
+
+    if(e.id === "gold") img = "/assets/eggs/egg2.png";
+    if(e.id === "diamond") img = "/assets/eggs/egg3.png";
+    if(e.id === "dragon") img = "/assets/eggs/egg4.png";
+
+    box.innerHTML += `
+      <div class="shop-item"
+           onclick="buyEggType('${e.id}')">
+
+        <img src="${img}" class="shop-img">
+
+        <div class="shop-name">
+          ${e.name}
+        </div>
+
+        <div class="shop-price">
+          💎 ${e.price}
+        </div>
+
       </div>
     `;
   });
