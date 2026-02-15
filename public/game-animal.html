@@ -616,6 +616,64 @@ body{
 }
 
 
+/* ============================= */
+/* 🐔 HATCHED STYLE */
+/* ============================= */
+
+.animal-card.hatched{
+  background:linear-gradient(
+    180deg,
+    rgba(0,255,150,.12),
+    rgba(0,0,0,.4)
+  );
+  border:1px solid rgba(0,255,150,.4);
+  box-shadow:0 0 35px rgba(0,255,150,.4);
+}
+
+.animal-stage.hatched-animal{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:48px;
+}
+
+/* Glow circle */
+.hatch-glow{
+  position:absolute;
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:radial-gradient(
+    circle,
+    rgba(0,255,150,.5),
+    transparent 70%
+  );
+  animation:glowPulse 1.5s infinite;
+}
+
+@keyframes glowPulse{
+  0%{ transform:scale(1); opacity:.8; }
+  50%{ transform:scale(1.2); opacity:1; }
+  100%{ transform:scale(1); opacity:.8; }
+}
+
+/* READY badge */
+.ready-badge{
+  position:absolute;
+  top:-8px;
+  right:-8px;
+  background:#00ff99;
+  color:#000;
+  font-size:10px;
+  padding:4px 8px;
+  border-radius:20px;
+  font-weight:bold;
+  box-shadow:0 0 15px rgba(0,255,150,.7);
+}
+
+
+
 </style>
 </head>
 <body>

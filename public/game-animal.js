@@ -59,14 +59,16 @@ function render(){
     let stageClass = "";
     let stageHTML = "";
 
-    if(progress >= 100){
+if(progress >= 100){
 
-      // Đã nở → hiện animal
-      stageHTML = `
-        <div class="hatching">
-          ${a.type === "dragon" ? "🐲" : "🐔"}
-        </div>
-      `;
+  stageHTML = `
+    <div class="animal-stage hatched-animal">
+      <div class="hatch-glow"></div>
+      ${a.type === "dragon" ? "🐲" : "🐔"}
+      <div class="ready-badge">READY</div>
+    </div>
+  `;
+
 
     }else{
 
@@ -102,7 +104,8 @@ if(progress >= 90){
     }
 
     grid.innerHTML += `
-      <div class="animal-card ${rarityClass}" id="animal-${i}">
+      <div class="animal-card ${rarityClass} ${progress>=100?'hatched':''}" id="animal-${i}">
+
 
         <div class="animal-stage ${stageClass}">
           ${stageHTML}
