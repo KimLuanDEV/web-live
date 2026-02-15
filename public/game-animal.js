@@ -117,13 +117,22 @@ else{
       // ===== Egg =====
 stageHTML = `
   <div class="nest-wrapper">
-    <img src="/assets/farm/nest.png"
-         class="nest-img">
 
+    <!-- BACK -->
+    <img src="/assets/farm/nest_back.png"
+         class="nest-back">
+
+    <!-- EGG -->
     <img src="${eggImg}"
          class="egg-on-nest">
+
+    <!-- FRONT (che đáy trứng) -->
+    <img src="/assets/farm/nest_front.png"
+         class="nest-front">
+
   </div>
 `;
+
 
 
       // ===== Crack effect 90%+ =====
