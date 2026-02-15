@@ -611,6 +611,3 @@ socket.on("barn-update", data => {
 setInterval(()=>{
   render();
 },1000);
-
-
-
