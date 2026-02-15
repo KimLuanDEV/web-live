@@ -69,38 +69,50 @@ function render(){
     let stageClass = "";
     let stageHTML = "";
 
-    if(progress >= 100){
+if(progress >= 100){
 
-      // ===== Animal mapping =====
+  // 💀 Nếu trứng hỏng
+  if(a.broken){
 
-      let animalImg = "/assets/animals/chicken.png";
+    stageHTML = `
+      <div class="animal-stage hatched-animal">
+        <img src="/assets/eggs/broken_egg.png"
+             class="animal-img"
+             style="animation:none;filter:drop-shadow(0 0 20px red);">
+      </div>
+    `;
 
-      const animalMap = {
-        normal:"chicken.png",
-        forest:"forest_chicken.png",
-        gold:"golden_chicken.png",
-        thunder:"thunder_bird.png",
-        diamond:"ice_bird.png",
-        shadow:"shadow_beast.png",
-        dragon:"dragon.png",
-        phoenix:"phoenix.png",
-        celestial:"celestial_beast.png",
-        voidlord:"void_lord.png"
-      };
+  }else{
 
-      if(animalMap[a.type]){
-        animalImg = "/assets/animals/" + animalMap[a.type];
-      }
+    // ===== Animal mapping =====
+    let animalImg = "/assets/animals/chicken.png";
 
-stageHTML = `
-  <div class="animal-stage hatched-animal">
-    <div class="hatch-glow"></div>
-    <img src="${animalImg}" class="animal-img">
-  </div>
-`;
+    const animalMap = {
+      normal:"chicken.png",
+      forest:"forest_chicken.png",
+      gold:"golden_chicken.png",
+      thunder:"thunder_bird.png",
+      diamond:"ice_bird.png",
+      shadow:"shadow_beast.png",
+      dragon:"dragon.png",
+      phoenix:"phoenix.png",
+      celestial:"celestial_beast.png",
+      voidlord:"void_lord.png"
+    };
 
+    if(animalMap[a.type]){
+      animalImg = "/assets/animals/" + animalMap[a.type];
+    }
 
-    }else{
+    stageHTML = `
+      <div class="animal-stage hatched-animal">
+        <div class="hatch-glow"></div>
+        <img src="${animalImg}" class="animal-img">
+      </div>
+    `;
+  }
+}
+else{
 
       // ===== Egg =====
       stageHTML = `
