@@ -862,6 +862,50 @@ body{
 
 
 
+/* ============================= */
+/* 🪹 NEST STYLE */
+/* ============================= */
+
+.nest-wrapper{
+  position:relative;
+  width:90px;
+  height:90px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.nest-img{
+  position:absolute;
+  width:90px;
+  height:90px;
+  object-fit:contain;
+  bottom:0;
+  filter:drop-shadow(0 0 12px rgba(255,200,100,.6));
+}
+
+.egg-on-nest{
+  position:relative;
+  width:55px;
+  height:55px;
+  object-fit:contain;
+  z-index:2;
+  animation:eggIdle 2s ease-in-out infinite;
+}
+
+@keyframes eggIdle{
+  0%{ transform:translateY(0); }
+  50%{ transform:translateY(-4px); }
+  100%{ transform:translateY(0); }
+}
+
+
+.almost-hatch .nest-wrapper{
+  animation:eggShake 0.4s infinite;
+}
+
+
 </style>
 </head>
 <body>

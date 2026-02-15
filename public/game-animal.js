@@ -115,10 +115,16 @@ if(progress >= 100){
 else{
 
       // ===== Egg =====
-      stageHTML = `
-        <img src="${eggImg}"
-             style="width:70px;height:70px;object-fit:contain;">
-      `;
+stageHTML = `
+  <div class="nest-wrapper">
+    <img src="/assets/farm/nest.png"
+         class="nest-img">
+
+    <img src="${eggImg}"
+         class="egg-on-nest">
+  </div>
+`;
+
 
       // ===== Crack effect 90%+ =====
       if(progress >= 90){
