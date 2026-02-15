@@ -55,27 +55,39 @@ function render(){
       img = "/assets/eggs/egg4.png";
     }
 
-    // ===== Animation state =====
+    // ===== Stage Animation =====
     let stageClass = "";
-
-    if(progress >= 90 && progress < 100){
-      stageClass = "almost-hatch";
-    }
+    let stageHTML = "";
 
     if(progress >= 100){
-      stageClass = "cracking";
+
+      // Đã nở → hiện animal
+      stageHTML = `
+        <div class="hatching">
+          ${a.type === "dragon" ? "🐲" : "🐔"}
+        </div>
+      `;
+
+    }else{
+
+      // Đang ấp → hiện trứng
+      stageHTML = `
+        <img src="${img}"
+             style="width:70px;height:70px;object-fit:contain;">
+      `;
+
+      // 90–99% → rung + crack
+      if(progress >= 90){
+        stageClass = "almost-hatch";
+        stageHTML += `<div class="crack-overlay"></div>`;
+      }
     }
 
     grid.innerHTML += `
       <div class="animal-card ${rarityClass}" id="animal-${i}">
 
         <div class="animal-stage ${stageClass}">
-          ${
-            progress >= 100
-              ? (a.type === "dragon" ? "🐲" : "🐔")
-              : `<img src="${img}"
-                     style="width:70px;height:70px;object-fit:contain;">`
-          }
+          ${stageHTML}
         </div>
 
         <div class="grow-bar">
@@ -115,6 +127,7 @@ function render(){
   }
 
 }
+
 
 
 
