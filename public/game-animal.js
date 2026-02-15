@@ -6,6 +6,8 @@ const socket = io({
 
 let animals = [];
 let pendingEgg = null;
+let barnLevel = 1;
+let barnConfig = {};
 
 function render(){
 
@@ -186,6 +188,12 @@ function closeConfirm(){
 
 function confirmBuy(){
 
+  if(confirmMode === "barn"){
+    socket.emit("barn-upgrade");
+    closeConfirm();
+    return;
+  }
+
   if(!pendingEgg) return;
 
   socket.emit("animal-buy-egg", pendingEgg.id);
@@ -194,6 +202,29 @@ function confirmBuy(){
   closeShop();
 }
 
+
+function upgradeBarn(){
+
+  const next = barnLevel + 1;
+  const cfg = barnConfig[next];
+
+  if(!cfg){
+    alert("Max Level");
+    return;
+  }
+
+  pendingBarnUpgrade = next;
+
+  document.getElementById("confirmContent").innerHTML =
+    `Upgrade Barn to Lv ${next}?<br>
+     Max Animals: ${cfg.max}<br>
+     Cost: 💎 ${cfg.price}`;
+
+  document.getElementById("confirmOverlay")
+    .classList.remove("hidden");
+
+  confirmMode = "barn";
+}
 
 
 
@@ -207,6 +238,14 @@ socket.on("coin-update", data=>{
   if(el){
     el.textContent = data.coins ?? 0;
   }
+});
+
+socket.on("barn-update", data=>{
+  barnLevel = data.level;
+  barnConfig = data.config;
+
+  const el = document.getElementById("barnLevel");
+  if(el) el.textContent = barnLevel;
 });
 
 

@@ -389,9 +389,16 @@ body{
 
   <button class="header-back" onclick="history.back()">←</button>
 
-  <div class="header-title">
-    Diamond Farm
-  </div>
+<div class="header-title">
+  🏰 Barn Lv <span id="barnLevel">1</span>
+</div>
+
+<button class="header-back"
+  style="right:110px;left:auto"
+  onclick="upgradeBarn()">
+  ⬆
+</button>
+
 
   <div class="header-coins">
     💎 <span id="coinValue">0</span>

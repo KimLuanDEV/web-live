@@ -543,6 +543,15 @@ function saveAnimals(db){
 
 let animalDB = loadAnimals();
 
+// ================================
+// 🏰 BARN CONFIG
+// ================================
+const BARN_CONFIG = {
+  1: { max: 4,  price: 500 },
+  2: { max: 6,  price: 1200 },
+  3: { max: 10, price: 3000 },
+  4: { max: 16, price: 7000 }
+};
 
 
 
@@ -1243,6 +1252,21 @@ socket.on("animal-buy-egg", type=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
+
+// 🏰 CHECK BARN SLOT
+const barnLevel = me.barnLevel || 1;
+const maxSlot = BARN_CONFIG[barnLevel]?.max || 4;
+
+animalDB[uid] ||= [];
+
+if(animalDB[uid].length >= maxSlot){
+  socket.emit("animal-error",{
+    message:"BARN_FULL"
+  });
+  return;
+}
+
+
   const eggMap = {
     normal:{ price:100, grow:60000, min:150, max:250 },
     gold:{ price:300, grow:50000, min:400, max:700 },
@@ -1316,6 +1340,47 @@ socket.on("animal-sell", index=>{
 });
 
 
+// ================================
+// 🏰 UPGRADE BARN
+// ================================
+socket.on("barn-upgrade", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  const current = me.barnLevel || 1;
+  const next = current + 1;
+
+  if(!BARN_CONFIG[next]){
+    socket.emit("animal-error",{ message:"MAX_LEVEL" });
+    return;
+  }
+
+  const price = BARN_CONFIG[next].price;
+
+  if(me.profile.coins < price){
+    socket.emit("animal-error",{ message:"NOT_ENOUGH_COIN" });
+    return;
+  }
+
+  me.profile.coins -= price;
+  me.barnLevel = next;
+
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  socket.emit("barn-update",{
+    level: next,
+    config: BARN_CONFIG
+  });
+
+});
+
+
 
 
   socket.emit("coin-update", { coins });
@@ -1343,6 +1408,15 @@ socket.emit("wheel-round-count", {
   roundCountToday: wheelRoundCountToday + 1
 });
 
+
+// 🏰 SEND BARN DATA
+const usersNow = loadUsers();
+const meNow = usersNow[uid];
+
+socket.emit("barn-update", {
+  level: meNow?.barnLevel || 1,
+  config: BARN_CONFIG
+});
 
   
 // ✊✋✌️ RPS ROUND INFO
