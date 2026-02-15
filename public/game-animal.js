@@ -147,28 +147,28 @@ function sellAnimal(index){
 const eggTypes = [
   {
     id:"normal",
-    name:"🥚 Egg 1",
+    name:"Verdant Egg",
     price:100,
     rare:"Common",
     grow:60000
   },
   {
     id:"gold",
-    name:"🥚 Egg 2",
+    name:"Solar Egg",
     price:300,
     rare:"Rare",
     grow:50000
   },
   {
     id:"diamond",
-    name:"🥚 Egg 3",
+    name:"Frost Diamond Egg",
     price:800,
     rare:"Epic",
     grow:40000
   },
   {
     id:"dragon",
-    name:"🥚 Egg 4",
+    name:"Inferno Dragon Egg",
     price:2000,
     rare:"Legendary",
     grow:35000
