@@ -113,25 +113,31 @@ function render(){
 
         stageClass = "almost-hatch";
 
-        let crackImg = "/assets/effects/crack-common.png";
+let crackImg = "/assets/effects/crack-white.png";
+let crackColor = "#00ff99"; // default common
 
-        if(rarityClass === "rare")
-          crackImg = "/assets/effects/crack-rare.png";
+if(rarityClass === "rare")
+  crackColor = "gold";
 
-        if(rarityClass === "epic")
-          crackImg = "/assets/effects/crack-epic.png";
+if(rarityClass === "epic")
+  crackColor = "#00ccff";
 
-        if(rarityClass === "legendary")
-          crackImg = "/assets/effects/crack-legendary.png";
+if(rarityClass === "legendary")
+  crackColor = "#ff5000";
 
-        if(rarityClass === "mythic")
-          crackImg = "/assets/effects/crack-legendary.png";
+if(rarityClass === "mythic")
+  crackColor = "#ff00ff";
 
-        stageHTML += `
-          <div class="crack-overlay"
-               style="background:url('${crackImg}') center/contain no-repeat;">
-          </div>
-        `;
+stageHTML += `
+  <div class="crack-overlay"
+       style="
+         background-image:url('${crackImg}');
+         filter: drop-shadow(0 0 8px ${crackColor})
+                 drop-shadow(0 0 16px ${crackColor});
+       ">
+  </div>
+`;
+
       }
     }
 
