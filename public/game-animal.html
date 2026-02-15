@@ -147,6 +147,33 @@ body{
   box-shadow:0 0 15px rgba(0,200,255,.25);
 }
 
+
+.slot-box.full{
+  background:rgba(255,0,0,.15);
+  box-shadow:0 0 20px rgba(255,0,0,.6);
+  animation:slotPulse 1s infinite;
+}
+
+@keyframes slotPulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.05); }
+  100%{ transform:scale(1); }
+}
+
+
+.slot-box.warning{
+  animation:slotShake .5s ease infinite;
+}
+
+@keyframes slotShake{
+  0%{ transform:translateX(0); }
+  25%{ transform:translateX(-2px); }
+  50%{ transform:translateX(2px); }
+  75%{ transform:translateX(-2px); }
+  100%{ transform:translateX(0); }
+}
+
+
 /* Back button */
 
 .header-back{
@@ -410,6 +437,28 @@ body{
   color:#000;
   box-shadow:0 0 20px rgba(0,255,150,.4);
 }
+
+
+.barn-info.flash{
+  animation:barnFlash 0.6s ease;
+}
+
+@keyframes barnFlash{
+  0%{
+    box-shadow:0 0 10px rgba(0,255,150,.5);
+    transform:scale(1);
+  }
+  50%{
+    box-shadow:0 0 40px rgba(0,255,150,1);
+    transform:scale(1.15);
+  }
+  100%{
+    box-shadow:0 0 10px rgba(0,255,150,.5);
+    transform:scale(1);
+  }
+}
+
+
 
 
 </style>

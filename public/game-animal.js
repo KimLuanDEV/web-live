@@ -10,6 +10,7 @@ let barnLevel = 1;
 let barnConfig = {};
 let confirmMode = null;
 let pendingBarnUpgrade = null;
+let currentCoin = 0;
 
 function render(){
 
@@ -241,11 +242,24 @@ function updateSlotDisplay(){
 
   const countEl = document.getElementById("slotCount");
   const maxEl = document.getElementById("slotMax");
+  const box = document.querySelector(".slot-box");
 
-  if(!countEl || !maxEl) return;
+  if(!countEl || !maxEl || !box) return;
 
-  countEl.textContent = animals.length;
+  const count = animals.length;
+  const max = Number(maxEl.textContent);
+
+  countEl.textContent = count;
+
+  box.classList.remove("full","warning");
+
+  if(count >= max){
+    box.classList.add("full");
+  } else if(count >= max - 1){
+    box.classList.add("warning");
+  }
 }
+
 
 
 
@@ -256,12 +270,35 @@ socket.on("animal-update", data=>{
 });
 
 
+
+
 socket.on("coin-update", data=>{
+
   const el = document.getElementById("coinValue");
-  if(el){
-    el.textContent = data.coins ?? 0;
-  }
+  if(!el) return;
+
+  const newCoin = data.coins ?? 0;
+
+  const diff = newCoin - currentCoin;
+  const steps = 20;
+  let step = 0;
+
+  const interval = setInterval(()=>{
+    step++;
+    const value = currentCoin + (diff * (step/steps));
+    el.textContent = Math.floor(value);
+
+    if(step>=steps){
+      clearInterval(interval);
+      el.textContent = newCoin;
+      currentCoin = newCoin;
+    }
+  },15);
 });
+
+
+
+
 
 socket.on("barn-update", data=>{
 
@@ -269,7 +306,20 @@ socket.on("barn-update", data=>{
   barnConfig = data.config;
 
   const levelEl = document.getElementById("barnLevel");
-  if(levelEl) levelEl.textContent = barnLevel;
+
+  if(levelEl){
+  levelEl.textContent = barnLevel;
+
+  const box = document.querySelector(".barn-info");
+  if(box){
+    box.classList.add("flash");
+    setTimeout(()=>{
+      box.classList.remove("flash");
+    },600);
+  }
+}
+
+
 
   const max = barnConfig[barnLevel]?.max || 4;
 
