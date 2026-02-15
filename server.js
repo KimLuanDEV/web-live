@@ -1333,7 +1333,6 @@ const eggMap = {
 
   animalDB[uid].push({
     stage:0,
-    broken:null,
     createdAt: Date.now(),
     growTime: cfg.grow,
     value: Math.floor(cfg.min + Math.random()*(cfg.max-cfg.min)),
