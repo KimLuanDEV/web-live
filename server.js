@@ -854,30 +854,39 @@ setInterval(()=>{
       const age = now - a.createdAt;
       const growTime = a.growTime || 60000;
 
-      if(age >= growTime && a.stage !== 2){
+if(age >= growTime){
 
-        if(a.broken === null){
+  // 🔒 Nếu đã xử lý rồi thì bỏ qua
+  if(a.stage === 2) return;
 
-          const failRateMap = {
-            normal: 0.5,
-            forest: 0.5,
-            gold: 0.5,
-            thunder: 0.5,
-            diamond: 0.5,
-            shadow: 0.5,
-            dragon: 0.5,
-            phoenix: 0.5,
-            celestial: 0.5,
-            voidlord: 0.5
-          };
+  // 🔐 đảm bảo stage luôn tồn tại
+  if(typeof a.stage !== "number"){
+    a.stage = 0;
+  }
 
-          const failRate = failRateMap[a.type] || 0.1;
-          a.broken = Math.random() < failRate;
-        }
+  if(a.broken === null){
 
-        a.stage = 2;
-        changedUsers.add(uid);
-      }
+    const failRateMap = {
+      normal: 0.5,
+      forest: 0.5,
+      gold: 0.5,
+      thunder: 0.5,
+      diamond: 0.5,
+      shadow: 0.5,
+      dragon: 0.5,
+      phoenix: 0.5,
+      celestial: 0.5,
+      voidlord: 0.5
+    };
+
+    const failRate = failRateMap[a.type] || 0.1;
+    a.broken = Math.random() < failRate;
+  }
+
+  a.stage = 2;
+  changedUsers.add(uid);
+}
+
 
     });
 
