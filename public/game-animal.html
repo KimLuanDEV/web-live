@@ -867,19 +867,18 @@ body{
 
 
 /* ============================= */
-/* 🪹 NEST STYLE (Layer fake front) */
+/* 🪹 NEST STYLE */
 /* ============================= */
 
 .nest-wrapper{
   position:relative;
   width:100px;
-  height:90px;
+  height:80px;  /* thấp hơn để nhìn đúng tỷ lệ */
   display:flex;
   align-items:flex-end;
   justify-content:center;
 }
 
-/* Ảnh tổ chính */
 .nest-img{
   position:absolute;
   bottom:0;
@@ -889,34 +888,25 @@ body{
   z-index:1;
 }
 
-/* Trứng */
 .egg-on-nest{
   position:relative;
   width:60px;
   height:auto;
   z-index:2;
-  transform:translateY(-30px); /* chỉnh vừa phải */
+  transform:translateY(-38px);  /* 👈 đẩy lên */
 }
 
-/* 🔥 Mép trước giả che đáy trứng */
-.nest-wrapper::after{
-  content:"";
-  position:absolute;
-  bottom:12px;     /* điều chỉnh độ che */
-  width:80px;
-  height:32px;
 
-  background:radial-gradient(
-    ellipse at center,
-    rgba(120,70,30,.9),
-    rgba(80,40,15,.95)
-  );
-
-  border-radius:50%;
-  z-index:3;      /* cao hơn trứng */
-  filter:blur(2px);
+@keyframes eggIdle{
+  0%{ transform:translateY(0); }
+  50%{ transform:translateY(-4px); }
+  100%{ transform:translateY(0); }
 }
 
+
+.almost-hatch .nest-wrapper{
+  animation:eggShake 0.4s infinite;
+}
 
 
 </style>
