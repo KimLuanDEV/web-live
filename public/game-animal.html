@@ -13,7 +13,7 @@ body{
   color:#fff;
   font-family:sans-serif;
 
-  padding-top:110px;   /* chuẩn header */
+  padding-top:95px;   /* chuẩn header */
   padding-bottom:0;    /* bỏ */
   min-height:auto;     /* bỏ */
 }
@@ -25,6 +25,7 @@ body{
   grid-template-columns:repeat(2,1fr);
   gap:12px;
   padding:16px;
+  min-height:calc(100dvh - 95px - 100px);
 }
 
 .animal-card{
@@ -51,9 +52,9 @@ body{
 
 .animal-stage{
   position:relative;
-  width:70px;
-  height:70px;
-  margin:10px auto;
+  width:95px;
+  height:95px;
+  margin:14px auto;
 }
 
 
@@ -210,7 +211,7 @@ body{
 
 .buy-btn{
   position:fixed;
-  bottom:24px;
+  bottom:calc(20px + env(safe-area-inset-bottom));
   left:50%;
   transform:translateX(-50%);
   z-index:1500;
@@ -772,8 +773,8 @@ body{
 
 
 .animal-img{
-  width:90px;
-  height:90px;
+  width:100px;
+  height:100px;
   object-fit:contain;
   filter:drop-shadow(0 0 15px rgba(0,255,150,.6));
   animation:animalIdle 2s ease-in-out infinite;
