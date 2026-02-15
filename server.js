@@ -1241,39 +1241,49 @@ io.on("connection", socket => {
 // ================================
 // 🥚 BUY EGG
 // ================================
-socket.on("animal-buy-egg", ()=>{
+socket.on("animal-buy-egg", type=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
+
+  const eggMap = {
+    normal:{ price:100, grow:60000, min:150, max:250 },
+    gold:{ price:300, grow:50000, min:400, max:700 },
+    diamond:{ price:800, grow:40000, min:1000, max:1500 },
+    dragon:{ price:2000, grow:35000, min:3000, max:5000 }
+  };
+
+  const cfg = eggMap[type];
+  if(!cfg) return;
 
   const users = loadUsers();
   const me = users[uid];
   if(!me?.profile) return;
 
-  const cost = 100;
-
-  if(me.profile.coins < cost){
+  if(me.profile.coins < cfg.price){
     socket.emit("animal-error",{ message:"NOT_ENOUGH_COIN" });
     return;
   }
 
-  me.profile.coins -= cost;
+  me.profile.coins -= cfg.price;
 
   animalDB[uid] ||= [];
 
   animalDB[uid].push({
     stage:0,
     createdAt: Date.now(),
-    value: Math.floor(150 + Math.random()*200)
+    growTime: cfg.grow,
+    value: Math.floor(cfg.min + Math.random()*(cfg.max-cfg.min)),
+    type
   });
 
   saveUsers(users);
   saveAnimals(animalDB);
 
   emitCoinUpdate(uid);
-
   socket.emit("animal-update", animalDB[uid]);
 });
+
 
 // ================================
 // 🐔 SELL ANIMAL

@@ -171,6 +171,66 @@ body{
 }
 
 
+.shop-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(8px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2000;
+}
+
+.shop-overlay.hidden{
+  display:none;
+}
+
+.shop-box{
+  width:90%;
+  max-width:400px;
+  background:#111;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:0 0 40px rgba(0,255,150,.25);
+}
+
+.shop-header{
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+.shop-grid{
+  display:grid;
+  gap:12px;
+}
+
+.shop-item{
+  padding:14px;
+  border-radius:14px;
+  background:rgba(0,255,150,.05);
+  border:1px solid rgba(0,255,150,.15);
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.shop-item:hover{
+  transform:scale(1.02);
+  box-shadow:0 0 25px rgba(0,255,150,.3);
+}
+
+.egg-name{
+  font-weight:bold;
+  margin-bottom:4px;
+}
+
+.egg-rare{
+  font-size:12px;
+  opacity:.7;
+}
+
 
 </style>
 </head>
@@ -196,8 +256,8 @@ body{
 
 <div class="farm-grid" id="farmGrid"></div>
 
-<button class="buy-btn" onclick="buyEgg()">
-  🥚 Buy Egg (100 💎)
+<button class="buy-btn" onclick="openShop()">
+  🛒 Open Shop
 </button>
 
 
@@ -205,13 +265,25 @@ body{
 
 
 
+<!-- ================= SHOP ================= -->
+<div class="shop-overlay hidden" id="shopOverlay">
+
+  <div class="shop-box">
+
+    <div class="shop-header">
+      🛒 Egg Shop
+      <button onclick="closeShop()">✕</button>
+    </div>
+
+    <div class="shop-grid" id="shopGrid"></div>
+
+  </div>
+
+</div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>
 <script src="game-animal.js"></script>
-
-
-
-
 </body>
 </html>
