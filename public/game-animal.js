@@ -96,6 +96,7 @@ function render(){
         <div class="animal-stage hatched-animal">
           <div class="hatch-glow"></div>
           <img src="${animalImg}" class="animal-img">
+          <div class="ready-badge">READY</div>
         </div>
       `;
 
@@ -144,19 +145,12 @@ stageHTML += `
     // 🧱 CARD RENDER
     // =============================
 
-grid.innerHTML += `
-  <div class="animal-card ${rarityClass} ${progress>=100?'hatched':''}" id="animal-${i}">
+    grid.innerHTML += `
+      <div class="animal-card ${rarityClass} ${progress>=100?'hatched':''}" id="animal-${i}">
 
-    ${
-      progress >= 100
-      ? `<div class="ready-badge">READY</div>`
-      : ``
-    }
-
-    <div class="animal-stage ${stageClass}">
-      ${stageHTML}
-    </div>
-
+        <div class="animal-stage ${stageClass}">
+          ${stageHTML}
+        </div>
 
         <div class="grow-bar">
           <div class="grow-fill"
