@@ -77,10 +77,28 @@ function render(){
       `;
 
       // 90–99% → rung + crack
-      if(progress >= 90){
-        stageClass = "almost-hatch";
-        stageHTML += `<div class="crack-overlay"></div>`;
-      }
+if(progress >= 90){
+  stageClass = "almost-hatch";
+
+  let crackImg = "/assets/effects/crack-common.png";
+
+  if(a.type === "gold")
+    crackImg = "/assets/effects/crack-rare.png";
+
+  if(a.type === "diamond")
+    crackImg = "/assets/effects/crack-epic.png";
+
+  if(a.type === "dragon")
+    crackImg = "/assets/effects/crack-legendary.png";
+
+  stageHTML += `
+    <div class="crack-overlay"
+         style="background:url('${crackImg}') center/contain no-repeat;">
+    </div>
+  `;
+}
+
+
     }
 
     grid.innerHTML += `
