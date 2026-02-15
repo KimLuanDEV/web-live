@@ -156,18 +156,7 @@ if(a.stage === 2){
     grid.innerHTML += `
 <div class="animal-card 
      ${rarityClass} 
-
-    ${
-  a.stage === 2
-  ? (
-      a.broken
-      ? `<div class="ready-badge broken-badge">BROKEN</div>`
-      : `<div class="ready-badge">READY</div>`
-    )
-  : ""
-}
-
-
+     ${progress>=100?'hatched':''}
      ${a.broken?'broken':''}" 
      id="animal-${i}">
 
@@ -199,7 +188,7 @@ if(a.stage === 2){
         </div>
 
 ${
-a.stage === 2
+  progress >= 100
   ? (
       a.broken
       ? `<div style="color:#ff4444;font-weight:bold;margin-top:6px">
@@ -218,7 +207,6 @@ a.stage === 2
   : `<div class="countdown">
        ⏳ ${secondsLeft}s
      </div>`
-
 }
 
 
