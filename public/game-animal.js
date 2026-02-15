@@ -165,7 +165,16 @@ stageHTML += `
      id="animal-${i}">
 
 
-  ${progress>=100 ? `<div class="ready-badge">READY</div>` : ""}
+ ${
+  progress>=100
+  ? (
+      a.broken
+      ? `<div class="ready-badge broken-badge">BROKEN</div>`
+      : `<div class="ready-badge">READY</div>`
+    )
+  : ""
+}
+
 
   <div class="animal-stage ${stageClass}">
     ${stageHTML}

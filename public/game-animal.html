@@ -777,6 +777,21 @@ body{
 }
 
 
+/* 💀 BROKEN BADGE */
+.broken-badge{
+  background:linear-gradient(90deg,#ff0000,#ff5500);
+  color:#fff;
+  box-shadow:0 0 15px rgba(255,0,0,.9);
+  animation:brokenBadgePulse 1.2s infinite;
+}
+
+@keyframes brokenBadgePulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.1); }
+  100%{ transform:scale(1); }
+}
+
+
 
 .animal-img{
   width:80px;
