@@ -113,7 +113,10 @@ if(progress >= 90){
     grid.innerHTML += `
   <div class="animal-card ${rarityClass}" id="animal-${i}">
 
-    <div class="nest ${!a?'nest-empty':''}">
+   <div class="nest ${
+  progress >= 90 && progress < 100 ? 'shake' : ''
+}">
+
 
       ${
         progress >= 100
@@ -148,6 +151,20 @@ if(progress >= 90){
 `;
 
   });
+
+
+  const max = Number(document.getElementById("slotMax").textContent);
+
+for(let i = animals.length; i < max; i++){
+  grid.innerHTML += `
+    <div class="animal-card empty-slot">
+      <div class="nest nest-empty">
+        <div class="plus">+</div>
+      </div>
+    </div>
+  `;
+}
+
 
   // ===== LEGENDARY HEADER GLOW =====
 const hasLegend = animals.some(a => {
