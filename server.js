@@ -845,7 +845,7 @@ function calcRps(me, enemy){
 setInterval(()=>{
 
   const now = Date.now();
-  let changed = false;
+  let changedUsers = new Set();
 
   Object.keys(animalDB).forEach(uid=>{
 
@@ -854,43 +854,41 @@ setInterval(()=>{
       const age = now - a.createdAt;
       const growTime = a.growTime || 60000;
 
-if(age >= growTime){
+      if(age >= growTime && a.stage !== 2){
 
-  if(a.stage !== 2){
+        if(a.broken === null){
 
-    if(a.broken === null){   // 🔒 CHỈ RANDOM 1 LẦN
+          const failRateMap = {
+            normal: 0.5,
+            forest: 0.5,
+            gold: 0.5,
+            thunder: 0.5,
+            diamond: 0.5,
+            shadow: 0.5,
+            dragon: 0.5,
+            phoenix: 0.5,
+            celestial: 0.5,
+            voidlord: 0.5
+          };
 
-      const failRateMap = {
-        normal: 0.5,
-        forest: 0.5,
-        gold: 0.5,
-        thunder: 0.5,
-        diamond: 0.5,
-        shadow: 0.5,
-        dragon: 0.5,
-        phoenix: 0.5,
-        celestial: 0.5,
-        voidlord: 0.5
-      };
+          const failRate = failRateMap[a.type] || 0.1;
+          a.broken = Math.random() < failRate;
+        }
 
-      const failRate = failRateMap[a.type] || 0.1;
-      a.broken = Math.random() < failRate;
-    }
-
-    a.stage = 2;
-    changed = true;
-  }
-}
-
-
+        a.stage = 2;
+        changedUsers.add(uid);
+      }
 
     });
 
-    emitToUser(uid,"animal-update", animalDB[uid]);
   });
 
-  if(changed){
+  if(changedUsers.size > 0){
     saveAnimals(animalDB);
+
+    changedUsers.forEach(uid=>{
+      emitToUser(uid,"animal-update", animalDB[uid]);
+    });
   }
 
 }, 3000);
