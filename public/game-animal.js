@@ -341,11 +341,12 @@ const eggTypes = [
 function openShop(){
 
   const overlay = document.getElementById("shopOverlay");
+
   overlay.classList.remove("hidden");
 
-  setTimeout(()=>{
+  requestAnimationFrame(()=>{
     overlay.classList.add("show");
-  },10);
+  });
 
   renderShop();
 }
@@ -360,8 +361,9 @@ function closeShop(){
 
   setTimeout(()=>{
     overlay.classList.add("hidden");
-  },300);
+  },350);
 }
+
 
 
 
