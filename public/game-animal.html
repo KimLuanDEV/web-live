@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>Nông trại kim cương</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+
 
 <style>
 body{
@@ -68,26 +69,37 @@ body{
 /* ============================= */
 /* 🐣 HEADER STYLE */
 /* ============================= */
-
 .farm-header{
   position:fixed;
   top:0;
   left:0;
   width:100%;
+
   height:60px;
+  padding-top:env(safe-area-inset-top);
+  padding-left:env(safe-area-inset-left);
+  padding-right:env(safe-area-inset-right);
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  background:rgba(0,0,0,.6);
-  backdrop-filter:blur(10px);
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.9),
+      rgba(0,0,0,.6)
+    );
+
+  backdrop-filter:blur(12px);
 
   border-bottom:1px solid rgba(0,255,150,.2);
-  box-shadow:0 0 25px rgba(0,255,150,.15);
+  box-shadow:
+    0 0 35px rgba(0,255,150,.2);
 
   z-index:999;
 }
+
 
 .header-title{
   font-weight:bold;
@@ -97,7 +109,7 @@ body{
 
 .header-back{
   position:absolute;
-  left:12px;
+  left:calc(12px + env(safe-area-inset-left));
 
   width:36px;
   height:36px;
@@ -113,9 +125,10 @@ body{
   box-shadow:0 0 10px rgba(0,255,150,.3);
 }
 
+
 .header-coins{
   position:absolute;
-  right:12px;
+  right:calc(12px + env(safe-area-inset-right));
 
   background:rgba(0,255,150,.1);
   padding:6px 12px;
@@ -127,9 +140,10 @@ body{
   box-shadow:0 0 15px rgba(0,255,150,.2);
 }
 
+
 /* đẩy nội dung xuống dưới header */
 body{
-  padding-top:70px;
+  padding-top:calc(70px + env(safe-area-inset-top));
 }
 
 
