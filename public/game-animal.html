@@ -7,18 +7,26 @@
 
 
 <style>
-body{
+
+html, body{
   margin:0;
+  padding:0;
+  height:100%;
+}
+
+body{
   background:
     radial-gradient(circle at top,#001a12,#000);
   color:#fff;
   font-family:sans-serif;
 
-  padding-top:110px; /* chỉ 1 lần */
-  padding-bottom:120px; /* chừa chỗ cho nút shop */
+  padding-top:110px;
+  padding-bottom:120px;
 
-  height:100vw;
+  min-height:calc(var(--vh, 1vh) * 100);
+
 }
+
 
 
 .farm-grid{
