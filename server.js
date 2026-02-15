@@ -1269,12 +1269,30 @@ socket.on("animal-buy-egg", type=>{
     return;
   }
 
-  const eggMap = {
-    normal:{ price:100, grow:60000, min:150, max:250 },
-    gold:{ price:300, grow:50000, min:400, max:700 },
-    diamond:{ price:800, grow:40000, min:1000, max:1500 },
-    dragon:{ price:2000, grow:35000, min:3000, max:5000 }
-  };
+const eggMap = {
+
+  // ===== COMMON =====
+  normal:{ price:100, grow:60000, min:150, max:250 },
+  forest:{ price:180, grow:55000, min:200, max:320 },
+
+  // ===== RARE =====
+  gold:{ price:300, grow:50000, min:400, max:700 },
+  thunder:{ price:450, grow:48000, min:600, max:950 },
+
+  // ===== EPIC =====
+  diamond:{ price:800, grow:40000, min:1000, max:1500 },
+  shadow:{ price:1200, grow:38000, min:1600, max:2200 },
+
+  // ===== LEGENDARY =====
+  dragon:{ price:2000, grow:35000, min:3000, max:5000 },
+  phoenix:{ price:3500, grow:30000, min:5500, max:8000 },
+
+  // ===== MYTHIC =====
+  celestial:{ price:6000, grow:25000, min:9000, max:12000 },
+  voidlord:{ price:10000, grow:20000, min:15000, max:22000 }
+
+};
+
 
   const cfg = eggMap[type];
   if(!cfg) return;
