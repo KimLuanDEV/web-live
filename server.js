@@ -514,6 +514,40 @@ function cleanupExpiredBooths(){
 
 
 
+// ================================
+// 🐣 ANIMAL FARM DATA
+// ================================
+const ANIMAL_FILE =
+  "/opt/render/project/data/animal_farm.json";
+
+function loadAnimals(){
+  try{
+    if(!fs.existsSync(ANIMAL_FILE)) return {};
+    return JSON.parse(fs.readFileSync(ANIMAL_FILE,"utf8"));
+  }catch(e){
+    console.error("❌ Load animal data failed", e);
+    return {};
+  }
+}
+
+function saveAnimals(db){
+  try{
+    fs.writeFileSync(
+      ANIMAL_FILE,
+      JSON.stringify(db,null,2)
+    );
+  }catch(e){
+    console.error("❌ Save animal data failed", e);
+  }
+}
+
+let animalDB = loadAnimals();
+
+
+
+
+
+
 const WITHDRAW_FILE = "/opt/render/project/data/withdraw_requests.json";
 
 function loadWithdraws(){
@@ -783,6 +817,41 @@ function calcRps(me, enemy){
   return "lose";
 }
 
+
+// ================================
+// 🐣 AUTO GROW ANIMALS
+// ================================
+setInterval(()=>{
+
+  const now = Date.now();
+  let changed = false;
+
+  Object.keys(animalDB).forEach(uid=>{
+
+    animalDB[uid].forEach(a=>{
+
+      const age = now - a.createdAt;
+
+      if(age > 30000 && a.stage === 0){
+        a.stage = 1;
+        changed = true;
+      }
+
+      if(age > 60000 && a.stage === 1){
+        a.stage = 2;
+        changed = true;
+      }
+
+    });
+
+    emitToUser(uid,"animal-update", animalDB[uid]);
+  });
+
+  if(changed){
+    saveAnimals(animalDB);
+  }
+
+}, 5000);
 
 
 
@@ -1152,6 +1221,7 @@ io.emit("rps-round-new",{
 // 🔐 SOCKET AUTH & FORCE LOGOUT (FIX)
 // ================================
 io.on("connection", socket => {
+
   const { uid, deviceId } = socket.handshake.auth || {};
 
   socket.data.deviceId = deviceId;
@@ -1160,11 +1230,86 @@ io.on("connection", socket => {
 
   bindSocketToUser(uid, socket);
 
+
   // 🔥 GỬI COIN NGAY KHI CONNECT (QUAN TRỌNG)
   const users = loadUsers();
   const me = users[uid];
 
   const coins = Number(me?.profile?.coins || 0);
+
+
+// ================================
+// 🥚 BUY EGG
+// ================================
+socket.on("animal-buy-egg", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  const cost = 100;
+
+  if(me.profile.coins < cost){
+    socket.emit("animal-error",{ message:"NOT_ENOUGH_COIN" });
+    return;
+  }
+
+  me.profile.coins -= cost;
+
+  animalDB[uid] ||= [];
+
+  animalDB[uid].push({
+    stage:0,
+    createdAt: Date.now(),
+    value: Math.floor(150 + Math.random()*200)
+  });
+
+  saveUsers(users);
+  saveAnimals(animalDB);
+
+  emitCoinUpdate(uid);
+
+  socket.emit("animal-update", animalDB[uid]);
+});
+
+// ================================
+// 🐔 SELL ANIMAL
+// ================================
+socket.on("animal-sell", index=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const list = animalDB[uid];
+  if(!list || !list[index]) return;
+
+  const a = list[index];
+  if(a.stage !== 2){
+    socket.emit("animal-error",{ message:"NOT_READY" });
+    return;
+  }
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  me.profile.coins += a.value;
+
+  list.splice(index,1);
+
+  saveUsers(users);
+  saveAnimals(animalDB);
+
+  emitCoinUpdate(uid);
+
+  socket.emit("animal-update", list);
+});
+
+
+
 
   socket.emit("coin-update", { coins });
 
@@ -1180,6 +1325,10 @@ socket.emit("rps-my-history", me?.rpsHistory || []);
 
 // 📜 gửi lịch sử vòng quay cho user mới vào
 socket.emit("wheel-history", wheelHistory);
+
+
+// 🐣 SEND ANIMAL DATA
+socket.emit("animal-update", animalDB[uid] || []);
 
 
 

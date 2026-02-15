@@ -114,3 +114,7 @@ function openDiamondHunter(){
 
   location.href = "/game-diamond-hunter.html";
 }
+
+
+
+

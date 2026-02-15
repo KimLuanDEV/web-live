@@ -665,6 +665,21 @@ body.sheet-open{
 
 
 
+.invest-card.animal{
+  background-image:
+    linear-gradient(180deg, rgba(0,255,150,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/animal.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 45px rgba(0,255,150,.25),
+    0 12px 30px rgba(0,0,0,.7);
+}
+
+
 </style>
 
 
@@ -793,10 +808,11 @@ body.sheet-open{
     <div class="sheet-body">
       <div class="invest-grid">
 
-        <!-- 🕵️ GAME PHÁ ÁN -->
-        <div class="invest-card detective" onclick="location.href='/game-detective.html'">
-          <div class="asset-name">Thiên tài phá án</div>
-        </div>
+<!-- 🐣 GAME NUÔI ĐỘNG VẬT -->
+<div class="invest-card animal" onclick="location.href='/game-animal.html'">
+  <div class="asset-name">Nông trại kim cương</div>
+</div>
+
 
 <!-- 🎡 GAME VÒNG QUAY MAY MẮN -->
 <div class="invest-card wheel" onclick="openWheelGame()">
