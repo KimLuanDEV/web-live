@@ -14,10 +14,10 @@ body{
   color:#fff;
   font-family:sans-serif;
 
-  padding-top:110px; /* chỉ để chừa header */
-  padding-bottom:0;  /* ❌ bỏ 120px */
+  padding-top:110px; /* chỉ 1 lần */
+  padding-bottom:120px; /* chừa chỗ cho nút shop */
 
-  min-height:100dvh; /* dùng dvh thay vì vh cho mobile */
+  min-height:100vh;
 }
 
 
@@ -211,7 +211,7 @@ body{
 
 .buy-btn{
   position:fixed;
-  bottom:calc(16px + env(safe-area-inset-bottom));
+  bottom:24px;
   left:50%;
   transform:translateX(-50%);
   z-index:1500;
