@@ -5,6 +5,7 @@ const socket = io({
 });
 
 let animals = [];
+let pendingEgg = null;
 
 function render(){
 
@@ -30,15 +31,15 @@ function render(){
     let rarityClass = "common";
 
     if(a.type==="gold"){
-      icon="🥚✨";
+      icon="🥚";
       rarityClass="rare";
     }
     if(a.type==="diamond"){
-      icon="💎";
+      icon="🥚";
       rarityClass="epic";
     }
     if(a.type==="dragon"){
-      icon="🐉";
+      icon="🥚";
       rarityClass="legendary";
     }
 
@@ -157,11 +158,41 @@ function renderShop(){
   });
 }
 
+
+
 function buyEggType(id){
-  socket.emit("animal-buy-egg", id);
+
+  const egg = eggTypes.find(e=>e.id===id);
+  if(!egg) return;
+
+  pendingEgg = egg;
+
+  document.getElementById("confirmContent").innerHTML =
+    `Buy <b>${egg.name}</b><br>
+     Price: 💎 ${egg.price}<br>
+     Rarity: ${egg.rare}`;
+
+  document.getElementById("confirmOverlay")
+    .classList.remove("hidden");
 }
 
 
+
+function closeConfirm(){
+  document.getElementById("confirmOverlay")
+    .classList.add("hidden");
+  pendingEgg = null;
+}
+
+function confirmBuy(){
+
+  if(!pendingEgg) return;
+
+  socket.emit("animal-buy-egg", pendingEgg.id);
+
+  closeConfirm();
+  closeShop();
+}
 
 
 

@@ -306,6 +306,78 @@ body{
 }
 
 
+/* ============================= */
+/* 💎 CONFIRM MODAL */
+/* ============================= */
+
+.confirm-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(10px);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:3000;
+}
+
+.confirm-overlay.hidden{
+  display:none;
+}
+
+.confirm-box{
+  width:90%;
+  max-width:320px;
+  background:#111;
+  border-radius:20px;
+  padding:20px;
+  text-align:center;
+  box-shadow:0 0 40px rgba(0,255,150,.3);
+  animation:popIn .2s ease;
+}
+
+@keyframes popIn{
+  from{ transform:scale(.8); opacity:0; }
+  to{ transform:scale(1); opacity:1; }
+}
+
+.confirm-title{
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.confirm-content{
+  font-size:14px;
+  margin-bottom:18px;
+  opacity:.8;
+}
+
+.confirm-actions{
+  display:flex;
+  gap:10px;
+}
+
+.confirm-actions button{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:12px;
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.confirm-cancel{
+  background:#222;
+  color:#aaa;
+}
+
+.confirm-ok{
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  color:#000;
+  box-shadow:0 0 20px rgba(0,255,150,.4);
+}
+
+
 </style>
 </head>
 <body>
@@ -350,6 +422,36 @@ body{
     </div>
 
     <div class="shop-grid" id="shopGrid"></div>
+
+  </div>
+
+</div>
+
+
+<!-- ================= CONFIRM BUY ================= -->
+<div class="confirm-overlay hidden" id="confirmOverlay">
+
+  <div class="confirm-box">
+
+    <div class="confirm-title">
+      Confirm Purchase
+    </div>
+
+    <div class="confirm-content" id="confirmContent">
+      Are you sure?
+    </div>
+
+    <div class="confirm-actions">
+      <button class="confirm-cancel"
+        onclick="closeConfirm()">
+        Cancel
+      </button>
+
+      <button class="confirm-ok"
+        onclick="confirmBuy()">
+        Buy
+      </button>
+    </div>
 
   </div>
 
