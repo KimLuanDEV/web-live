@@ -146,7 +146,12 @@ stageHTML += `
     // =============================
 
     grid.innerHTML += `
-<div class="animal-card ${rarityClass} ${progress>=100?'hatched':''}" id="animal-${i}">
+<div class="animal-card 
+     ${rarityClass} 
+     ${progress>=100?'hatched':''}
+     ${a.broken?'broken':''}" 
+     id="animal-${i}">
+
 
   ${progress>=100 ? `<div class="ready-badge">READY</div>` : ""}
 
