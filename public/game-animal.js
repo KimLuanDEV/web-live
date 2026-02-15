@@ -175,14 +175,35 @@ const eggTypes = [
   }
 ];
 
+
+
 function openShop(){
-  document.getElementById("shopOverlay").classList.remove("hidden");
+
+  const overlay = document.getElementById("shopOverlay");
+  overlay.classList.remove("hidden");
+
+  setTimeout(()=>{
+    overlay.classList.add("show");
+  },10);
+
   renderShop();
 }
 
+
+
 function closeShop(){
-  document.getElementById("shopOverlay").classList.add("hidden");
+
+  const overlay = document.getElementById("shopOverlay");
+
+  overlay.classList.remove("show");
+
+  setTimeout(()=>{
+    overlay.classList.add("hidden");
+  },300);
 }
+
+
+
 
 function renderShop(){
   const box = document.getElementById("shopGrid");
@@ -305,6 +326,14 @@ if(count >= max){
 }
 
 }
+
+
+document.getElementById("shopOverlay")
+.addEventListener("click", e=>{
+  if(e.target.id === "shopOverlay"){
+    closeShop();
+  }
+});
 
 
 
