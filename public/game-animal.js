@@ -15,48 +15,55 @@ let currentCoin = 0;
 function render(){
 
   const grid = document.getElementById("farmGrid");
+  if(!grid) return;
+
   grid.innerHTML = "";
 
   const now = Date.now();
 
   animals.forEach((a,i)=>{
 
-    const age = now - a.createdAt;
-    const growTime = a.growTime || 60000;
+    if(!a) return;
+
+    const growTime = Number(a.growTime) || 60000;
+    const age = now - Number(a.createdAt || now);
 
     let progress = Math.min(100, (age/growTime)*100);
     progress = Math.max(0, progress);
 
-    let secondsLeft = Math.max(
+    const secondsLeft = Math.max(
       0,
       Math.ceil((growTime - age)/1000)
     );
 
-    let icon = "🥚";
     let rarityClass = "common";
+    let img = "/assets/eggs/egg1.png";
 
-    if(a.type==="gold"){
-      icon="🥚";
-      rarityClass="rare";
-    }
-    if(a.type==="diamond"){
-      icon="🥚";
-      rarityClass="epic";
-    }
-    if(a.type==="dragon"){
-      icon="🥚";
-      rarityClass="legendary";
+    if(a.type === "gold"){
+      rarityClass = "rare";
+      img = "/assets/eggs/egg2.png";
     }
 
-    if(progress>=100){
-      icon = a.type==="dragon" ? "🐲" : "🐔";
+    if(a.type === "diamond"){
+      rarityClass = "epic";
+      img = "/assets/eggs/egg3.png";
+    }
+
+    if(a.type === "dragon"){
+      rarityClass = "legendary";
+      img = "/assets/eggs/egg4.png";
     }
 
     grid.innerHTML += `
       <div class="animal-card ${rarityClass}" id="animal-${i}">
 
         <div class="animal-stage ${progress>=100?'hatching':''}">
-          ${icon}
+          ${
+            progress >= 100
+              ? (a.type === "dragon" ? "🐲" : "🐔")
+              : `<img src="${img}"
+                     style="width:70px;height:70px;object-fit:contain;">`
+          }
         </div>
 
         <div class="grow-bar">
@@ -84,13 +91,13 @@ function render(){
     `;
   });
 
+  // ===== LEGENDARY HEADER GLOW =====
   const hasLegend = animals.some(a =>
     a.type === "dragon" &&
-    (Date.now() - a.createdAt) >= (a.growTime || 60000)
+    (now - (a.createdAt || 0)) >= (a.growTime || 60000)
   );
 
   const header = document.querySelector(".farm-header");
-
   if(header){
     header.classList.toggle("legendary-glow", hasLegend);
   }
