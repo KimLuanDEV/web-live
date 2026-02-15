@@ -64,7 +64,14 @@ if(progress >= 100){
   stageHTML = `
     <div class="animal-stage hatched-animal">
       <div class="hatch-glow"></div>
-      ${a.type === "dragon" ? "🐲" : "🐔"}
+
+      ${
+  a.type === "dragon"
+    ? `<img src="/assets/animals/dragon.png" class="animal-img">`
+    : `<img src="/assets/animals/chicken.png" class="animal-img">`
+}
+
+
       <div class="ready-badge">READY</div>
     </div>
   `;

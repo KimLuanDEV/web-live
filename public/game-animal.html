@@ -673,6 +673,35 @@ body{
 }
 
 
+.animal-img{
+  width:80px;
+  height:80px;
+  object-fit:contain;
+  filter:drop-shadow(0 0 15px rgba(0,255,150,.6));
+  animation:animalIdle 2s ease-in-out infinite;
+}
+
+@keyframes animalIdle{
+  0%{ transform:translateY(0); }
+  50%{ transform:translateY(-6px); }
+  100%{ transform:translateY(0); }
+}
+
+
+
+.animal-card.rare .animal-img{
+  filter:drop-shadow(0 0 20px gold);
+}
+
+.animal-card.epic .animal-img{
+  filter:drop-shadow(0 0 20px #00ccff);
+}
+
+.animal-card.legendary .animal-img{
+  filter:drop-shadow(0 0 30px #ff5000);
+}
+
+
 
 </style>
 </head>
