@@ -26,6 +26,7 @@ body{
   grid-template-columns:repeat(2,1fr);
   gap:12px;
   padding:16px;
+  padding-bottom:120px;
 }
 
 .animal-card{
@@ -216,22 +217,39 @@ body{
 
 .buy-btn{
   position:fixed;
-  bottom:20px;
-  left:50%;
-  transform:translateX(-50%);
+  left:0;
+  right:0;
+  bottom:0;
 
-  padding:14px 28px;
+  padding:16px;
+  padding-bottom:calc(16px + env(safe-area-inset-bottom));
+
   border:none;
-  border-radius:30px;
-
-  font-size:15px;
+  font-size:16px;
   font-weight:bold;
 
-  background:linear-gradient(90deg,#00ff99,#00ccff);
-  color:#000;
+  background:linear-gradient(
+    90deg,
+    #00ff99,
+    #00ccff
+  );
 
-  box-shadow:0 0 30px rgba(0,255,150,.4);
-  cursor:pointer;
+  color:#000;
+  text-align:center;
+
+  box-shadow:
+    0 -5px 25px rgba(0,255,150,.35);
+
+  backdrop-filter:blur(8px);
+
+  z-index:1200;
+
+  transform:translateZ(0);
+  will-change:transform;
+}
+
+.buy-btn:active{
+  transform:scale(.98) translateZ(0);
 }
 
 
