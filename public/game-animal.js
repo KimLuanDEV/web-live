@@ -8,6 +8,8 @@ let animals = [];
 let pendingEgg = null;
 let barnLevel = 1;
 let barnConfig = {};
+let confirmMode = null;
+let pendingBarnUpgrade = null;
 
 function render(){
 
@@ -183,20 +185,29 @@ function buyEggType(id){
 function closeConfirm(){
   document.getElementById("confirmOverlay")
     .classList.add("hidden");
+
+  confirmMode = null;
   pendingEgg = null;
+  pendingBarnUpgrade = null;
 }
+
 
 function confirmBuy(){
 
   if(confirmMode === "barn"){
     socket.emit("barn-upgrade");
+    confirmMode = null;
+    pendingBarnUpgrade = null;
     closeConfirm();
     return;
   }
 
-  if(!pendingEgg) return;
+  if(pendingEgg){
+    socket.emit("animal-buy-egg", pendingEgg.id);
+  }
 
-  socket.emit("animal-buy-egg", pendingEgg.id);
+  confirmMode = null;
+  pendingEgg = null;
 
   closeConfirm();
   closeShop();
@@ -213,7 +224,7 @@ function upgradeBarn(){
     return;
   }
 
-  pendingBarnUpgrade = next;
+  confirmMode = "barn";
 
   document.getElementById("confirmContent").innerHTML =
     `Upgrade Barn to Lv ${next}?<br>
@@ -222,8 +233,6 @@ function upgradeBarn(){
 
   document.getElementById("confirmOverlay")
     .classList.remove("hidden");
-
-  confirmMode = "barn";
 }
 
 
