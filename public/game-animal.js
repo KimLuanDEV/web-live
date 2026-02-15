@@ -26,14 +26,15 @@ function render(){
     if(!a) return;
 
     const growTime = Number(a.growTime) || 60000;
-    const age = now - Number(a.createdAt || now);
+    const created = Number(a.createdAt) || now;
+    const age = now - created;
 
-    let progress = Math.min(100, (age/growTime)*100);
+    let progress = Math.min(100, (age / growTime) * 100);
     progress = Math.max(0, progress);
 
     const secondsLeft = Math.max(
       0,
-      Math.ceil((growTime - age)/1000)
+      Math.ceil((growTime - age) / 1000)
     );
 
     let rarityClass = "common";
@@ -54,10 +55,21 @@ function render(){
       img = "/assets/eggs/egg4.png";
     }
 
+    // ===== Animation state =====
+    let stageClass = "";
+
+    if(progress >= 90 && progress < 100){
+      stageClass = "almost-hatch";
+    }
+
+    if(progress >= 100){
+      stageClass = "cracking";
+    }
+
     grid.innerHTML += `
       <div class="animal-card ${rarityClass}" id="animal-${i}">
 
-        <div class="animal-stage ${progress>=100?'hatching':''}">
+        <div class="animal-stage ${stageClass}">
           ${
             progress >= 100
               ? (a.type === "dragon" ? "🐲" : "🐔")
@@ -77,7 +89,7 @@ function render(){
         </div>
 
         ${
-          progress>=100
+          progress >= 100
           ? `<button class="sell-btn"
                onclick="sellAnimal(${i})">
                Sell +${a.value} 💎
@@ -103,6 +115,7 @@ function render(){
   }
 
 }
+
 
 
 
