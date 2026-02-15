@@ -543,6 +543,18 @@ function saveAnimals(db){
 
 let animalDB = loadAnimals();
 
+
+Object.values(animalDB).forEach(list=>{
+  list.forEach(a=>{
+    if(typeof a.broken === "undefined"){
+      a.broken = null;
+    }
+  });
+});
+saveAnimals(animalDB);
+
+
+
 // ================================
 // 🏰 BARN CONFIG
 // ================================
@@ -846,8 +858,7 @@ if(age >= growTime){
 
   if(a.stage !== 2){
 
-    // 🔒 chỉ random nếu chưa có broken
-    if(typeof a.broken === "undefined"){
+    if(a.broken === null){   // 🔒 CHỈ RANDOM 1 LẦN
 
       const failRateMap = {
         normal: 0.5,
@@ -863,7 +874,6 @@ if(age >= growTime){
       };
 
       const failRate = failRateMap[a.type] || 0.1;
-
       a.broken = Math.random() < failRate;
     }
 
@@ -1333,6 +1343,7 @@ const eggMap = {
 
   animalDB[uid].push({
     stage:0,
+    broken: null,
     createdAt: Date.now(),
     growTime: cfg.grow,
     value: Math.floor(cfg.min + Math.random()*(cfg.max-cfg.min)),
