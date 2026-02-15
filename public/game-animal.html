@@ -7,6 +7,12 @@
 
 
 <style>
+:root{
+  --header-height: 130px; /* chỉnh theo thực tế header */
+}
+
+
+    
 body{
   margin:0;
   background:
@@ -14,7 +20,7 @@ body{
   color:#fff;
   font-family:sans-serif;
 
-  padding-top:110px; /* chỉ 1 lần */
+  padding-top: calc(var(--header-height) + env(safe-area-inset-top));
   padding-bottom:120px; /* chừa chỗ cho nút shop */
 
   min-height:100vh;
@@ -94,6 +100,9 @@ body{
   box-shadow:0 0 35px rgba(0,255,150,.25);
 
   z-index:999;
+   height: var(--header-height);
+  box-sizing: border-box;
+  
 }
 
 .header-row{
