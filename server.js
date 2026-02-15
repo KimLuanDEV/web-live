@@ -842,35 +842,36 @@ setInterval(()=>{
       const age = now - a.createdAt;
       const growTime = a.growTime || 60000;
 
-if(age >= growTime && a.stage !== 2){
+if(age >= growTime){
 
-  // ===== TỶ LỆ HỎNG =====
-  const failRateMap = {
-    normal: 0.5,
-    forest: 0.5,
+  if(a.stage !== 2){
 
-    gold: 0.5,
-    thunder: 0.5,
+    // 🔒 chỉ random nếu chưa có broken
+    if(typeof a.broken === "undefined"){
 
-    diamond: 0.5,
-    shadow: 0.5,
+      const failRateMap = {
+        normal: 0.5,
+        forest: 0.5,
+        gold: 0.5,
+        thunder: 0.5,
+        diamond: 0.5,
+        shadow: 0.5,
+        dragon: 0.5,
+        phoenix: 0.5,
+        celestial: 0.5,
+        voidlord: 0.5
+      };
 
-    dragon: 0.5,
-    phoenix: 0.5,
+      const failRate = failRateMap[a.type] || 0.1;
 
-    celestial: 0.5,
-    voidlord: 0.5
-  };
+      a.broken = Math.random() < failRate;
+    }
 
-  const failRate = failRateMap[a.type] || 0.1;
-
-  const isBroken = Math.random() < failRate;
-
-  a.stage = 2;
-  a.broken = isBroken;   // 🔥 NEW FLAG
-
-  changed = true;
+    a.stage = 2;
+    changed = true;
+  }
 }
+
 
 
     });
@@ -1332,6 +1333,7 @@ const eggMap = {
 
   animalDB[uid].push({
     stage:0,
+    broken:null,
     createdAt: Date.now(),
     growTime: cfg.grow,
     value: Math.floor(cfg.min + Math.random()*(cfg.max-cfg.min)),
