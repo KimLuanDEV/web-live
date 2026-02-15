@@ -116,10 +116,13 @@ function render(){
   });
 
   // ===== LEGENDARY HEADER GLOW =====
-  const hasLegend = animals.some(a =>
-    a.type === "dragon" &&
-    (now - (a.createdAt || 0)) >= (a.growTime || 60000)
-  );
+const hasLegend = animals.some(a => {
+  const growTime = Number(a.growTime) || 60000;
+  const created = Number(a.createdAt) || 0;
+  return a.type === "dragon" &&
+         (now - created) >= growTime;
+});
+
 
   const header = document.querySelector(".farm-header");
   if(header){
