@@ -58,10 +58,14 @@ body{
 
 .animal-stage{
   position:relative;
-  width:70px;
-  height:70px;
-  margin:10px auto;
+  width:100px;
+  height:100px;
+  margin:0 auto 6px;
+  display:flex;
+  align-items:flex-end;   /* 👈 Quan trọng */
+  justify-content:center;
 }
+
 
 
 .sell-btn{
@@ -868,31 +872,30 @@ body{
 
 .nest-wrapper{
   position:relative;
-  width:90px;
-  height:90px;
-  margin:0 auto;
+  width:100px;
+  height:80px;  /* thấp hơn để nhìn đúng tỷ lệ */
   display:flex;
-  align-items:center;
+  align-items:flex-end;
   justify-content:center;
 }
 
 .nest-img{
   position:absolute;
-  width:90px;
-  height:90px;
-  object-fit:contain;
   bottom:0;
-  filter:drop-shadow(0 0 12px rgba(255,200,100,.6));
+  width:100px;
+  height:auto;
+  object-fit:contain;
+  z-index:1;
 }
 
 .egg-on-nest{
   position:relative;
-  width:55px;
-  height:55px;
-  object-fit:contain;
+  width:60px;
+  height:auto;
   z-index:2;
-  animation:eggIdle 2s ease-in-out infinite;
+  margin-bottom:12px; /* 👈 hạ trứng xuống đúng lòng tổ */
 }
+
 
 @keyframes eggIdle{
   0%{ transform:translateY(0); }
