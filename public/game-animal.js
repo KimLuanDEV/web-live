@@ -83,6 +83,18 @@ function render(){
       </div>
     `;
   });
+
+  const hasLegend = animals.some(a =>
+    a.type === "dragon" &&
+    (Date.now() - a.createdAt) >= (a.growTime || 60000)
+  );
+
+  const header = document.querySelector(".farm-header");
+
+  if(header){
+    header.classList.toggle("legendary-glow", hasLegend);
+  }
+
 }
 
 
@@ -92,17 +104,41 @@ function buyEgg(){
   socket.emit("animal-buy-egg");
 }
 
+
+
 function sellAnimal(index){
 
   const card = document.getElementById("animal-"+index);
-  if(card){
-    card.classList.add("selling");
-  }
+  if(!card) return;
+
+  const rect = card.getBoundingClientRect();
+  const coinBox = document.querySelector(".coin-box");
+  const coinRect = coinBox.getBoundingClientRect();
+
+  const fly = document.createElement("div");
+  fly.className = "flying-coin";
+  fly.textContent = "+💎";
+
+  fly.style.left = rect.left + rect.width/2 + "px";
+  fly.style.top  = rect.top + rect.height/2 + "px";
+
+  const dx = coinRect.left - rect.left;
+  const dy = coinRect.top - rect.top;
+
+  fly.style.setProperty("--dx", dx+"px");
+  fly.style.setProperty("--dy", dy+"px");
+
+  document.body.appendChild(fly);
+
+  setTimeout(()=> fly.remove(),800);
+
+  card.classList.add("selling");
 
   setTimeout(()=>{
     socket.emit("animal-sell", index);
   },300);
 }
+
 
 
 
@@ -253,11 +289,21 @@ function updateSlotDisplay(){
 
   box.classList.remove("full","warning");
 
-  if(count >= max){
-    box.classList.add("full");
-  } else if(count >= max - 1){
-    box.classList.add("warning");
-  }
+const oldTip = box.querySelector(".slot-tooltip");
+if(oldTip) oldTip.remove();
+
+if(count >= max){
+  box.classList.add("full");
+
+  const tip = document.createElement("div");
+  tip.className = "slot-tooltip";
+  tip.textContent = "Upgrade barn";
+  box.appendChild(tip);
+
+} else if(count >= max - 1){
+  box.classList.add("warning");
+}
+
 }
 
 
@@ -299,35 +345,45 @@ socket.on("coin-update", data=>{
 
 
 
-
-socket.on("barn-update", data=>{
+socket.on("barn-update", data => {
 
   barnLevel = data.level;
   barnConfig = data.config;
 
   const levelEl = document.getElementById("barnLevel");
 
-  if(levelEl){
-  levelEl.textContent = barnLevel;
+  if (levelEl) {
+    levelEl.textContent = barnLevel;
 
-  const box = document.querySelector(".barn-info");
-  if(box){
-    box.classList.add("flash");
-    setTimeout(()=>{
-      box.classList.remove("flash");
-    },600);
+    const box = document.querySelector(".barn-info");
+    if (box) {
+      box.classList.add("flash");
+
+      setTimeout(() => {
+        box.classList.remove("flash");
+      }, 600);
+    }
   }
-}
 
-
-
+  // ===== UPDATE SLOT MAX =====
   const max = barnConfig[barnLevel]?.max || 4;
 
   const slotMaxEl = document.getElementById("slotMax");
-  if(slotMaxEl) slotMaxEl.textContent = max;
+  if (slotMaxEl) {
+    slotMaxEl.textContent = max;
+  }
 
   updateSlotDisplay();
+
+  // ===== UPDATE HEADER LEVEL COLOR =====
+  const header = document.querySelector(".farm-header");
+  if (header) {
+    header.classList.remove("level-1","level-2","level-3","level-4");
+    header.classList.add("level-" + barnLevel);
+  }
+
 });
+
 
 
 
