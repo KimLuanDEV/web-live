@@ -609,7 +609,7 @@ socket.on("egg-round-result", data=>{
   const area = document.getElementById("eggHatchArea");
 
  resultEl.textContent =
-  "Trưởng thành: x " + data.multiplier;
+  "x " + data.multiplier;
 
 
   // ===== SUCCESS =====
@@ -671,7 +671,7 @@ if(eggImg){
   eggEndAt = data.endAt;
   eggHasBet = false;
   document.getElementById("eggResult").textContent =
-  "Trưởng thành: x ?";
+  "x ?";
 
   updateEggButton();
 });
