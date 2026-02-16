@@ -14,6 +14,32 @@ let currentCoin = 0;
 let eggEndAt = 0;
 let eggHasBet = false;
 
+
+
+const DISPLAY_EGGS = [
+  { img:"egg1.png",  w:20 },
+  { img:"egg5.png",  w:20 },
+  { img:"egg2.png",  w:15 },
+  { img:"egg6.png",  w:15 },
+  { img:"egg3.png",  w:10 },
+  { img:"egg7.png",  w:8 },
+  { img:"egg4.png",  w:6 },
+  { img:"egg8.png",  w:4 },
+  { img:"egg9.png",  w:1 },
+  { img:"egg10.png", w:1 }
+];
+
+function randomDisplayEgg(){
+  const total = DISPLAY_EGGS.reduce((s,x)=>s+x.w,0);
+  let r = Math.random()*total;
+  for(const e of DISPLAY_EGGS){
+    if((r -= e.w) <= 0) return e;
+  }
+  return DISPLAY_EGGS[0];
+}
+
+
+
 function render(){
 
   const grid = document.getElementById("farmGrid");
@@ -743,17 +769,29 @@ socket.on("egg-round-state", data=>{
   updateEggButton();
 });
 
+
+
+
 socket.on("egg-round-new", data=>{
 
   const eggImg = document.getElementById("multiEggImg");
-if(eggImg){
-  eggImg.src = "/assets/eggs/egg1.png";
-}
+  const area   = document.getElementById("eggHatchArea");
+
+  // 🎲 RANDOM TRỨNG CHO ROUND MỚI
+  const egg = randomDisplayEgg();
+
+  if(eggImg){
+    eggImg.src = "/assets/eggs/" + egg.img;
+  }
+
+  // ✨ reset effect
+  area.classList.remove("egg-hatch-success");
+  area.classList.remove("egg-hatch-broken");
 
   eggEndAt = data.endAt;
   eggHasBet = false;
-  document.getElementById("eggResult").textContent =
-  "x ?";
+
+  document.getElementById("eggResult").textContent = "x ?";
 
   updateEggButton();
 });
