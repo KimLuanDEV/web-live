@@ -608,7 +608,9 @@ socket.on("egg-round-result", data=>{
   const eggImg = document.getElementById("multiEggImg");
   const area = document.getElementById("eggHatchArea");
 
-  resultEl.textContent = "x " + data.multiplier;
+ resultEl.textContent =
+  "Trưởng thành: x " + data.multiplier;
+
 
   // ===== SUCCESS =====
   if(data.multiplier > 0){
@@ -668,7 +670,9 @@ if(eggImg){
 
   eggEndAt = data.endAt;
   eggHasBet = false;
-  document.getElementById("eggResult").textContent = "x ?";
+  document.getElementById("eggResult").textContent =
+  "Trưởng thành: x ?";
+
   updateEggButton();
 });
 
@@ -773,7 +777,7 @@ setInterval(()=>{
   const el = document.getElementById("eggCountdown");
   if(el) el.textContent = left + "s";
 
-  
+
   const area = document.getElementById("eggHatchArea");
 
 if(left <= 5 && left > 0){
