@@ -1688,7 +1688,20 @@ io.emit("admin-wheel-bet-new", {
 socket.on("egg-bet", data=>{
 
   const uid = socket.data.uid;
-  if (!uid) return socket.emit("egg-error",{message:"NOT_LOGIN"});
+  if (!uid)
+    return socket.emit("egg-error",{message:"NOT_LOGIN"});
+
+  // 🔒 LOCK NẾU CÒN < 5 GIÂY
+  const now = Date.now();
+  const timeLeft = Math.floor(
+    (eggRound.endAt - now) / 1000
+  );
+
+  if(timeLeft < 5){
+    return socket.emit("egg-error",{
+      message:"ROUND_CLOSED"
+    });
+  }
 
   const bet = Math.floor(Number(data?.bet));
   if (!bet || bet <= 0)
@@ -1709,10 +1722,7 @@ socket.on("egg-bet", data=>{
   saveUsers(users);
   emitCoinUpdate(uid);
 
-  eggRound.bets.push({
-    uid,
-    bet
-  });
+  eggRound.bets.push({ uid, bet });
 
   socket.emit("egg-bet-ok",{
     roundId: eggRound.id,
@@ -1720,6 +1730,7 @@ socket.on("egg-bet", data=>{
   });
 
 });
+
 
 
 

@@ -571,16 +571,29 @@ function placeEggBet(){
 
 
 function updateEggButton(){
+
   const btn = document.getElementById("eggBetBtn");
   if(!btn) return;
+
+  const left = Math.max(
+    0,
+    Math.floor((eggEndAt - Date.now())/1000)
+  );
 
   if(eggHasBet){
     btn.classList.add("locked");
     btn.textContent = "LOCKED";
-  }else{
-    btn.classList.remove("locked");
-    btn.textContent = "BET";
+    return;
   }
+
+  if(left < 5){
+    btn.classList.add("locked");
+    btn.textContent = "CLOSED";
+    return;
+  }
+
+  btn.classList.remove("locked");
+  btn.textContent = "BET";
 }
 
 
@@ -788,6 +801,8 @@ if(left <= 5 && left > 0){
 }else{
   area.classList.remove("almost-hatch");
 }
+
+updateEggButton();
 
 
 },1000);
