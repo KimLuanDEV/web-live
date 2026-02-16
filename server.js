@@ -1310,35 +1310,38 @@ io.emit("rps-round-new",{
 // ================================
 // 🥚 AUTO EGG RESULT EVERY 60s
 // ================================
-setInterval(() => {
-  try {
+setInterval(()=>{
 
-    const users = loadUsers();
-    const multiplier = pickEggMultiplier();
+  const now = Date.now();
 
-    eggRound.bets.forEach(o=>{
-      const me = users[o.uid];
-      if(!me?.profile) return;
+  if(now >= eggRound.endAt){
 
-      const win = Math.floor(o.bet * multiplier);
-      me.profile.coins += win;
-    });
+    try{
 
-    saveUsers(users);
+      const users = loadUsers();
+      const multiplier = pickEggMultiplier();
 
-    eggRound.bets.forEach(o=>{
-      emitCoinUpdate(o.uid);
-    });
+      eggRound.bets.forEach(o=>{
+        const me = users[o.uid];
+        if(!me?.profile) return;
 
-    // 🔥 EMIT RESULT
-    io.emit("egg-round-result",{
-      roundId: eggRound.id,
-      multiplier
-    });
+        const win = Math.floor(o.bet * multiplier);
+        me.profile.coins += win;
+      });
 
-    // ⏳ CHỜ 10 GIÂY MỚI RESET
-    setTimeout(()=>{
+      saveUsers(users);
 
+      eggRound.bets.forEach(o=>{
+        emitCoinUpdate(o.uid);
+      });
+
+      // 🔥 EMIT RESULT NGAY KHI 0s
+      io.emit("egg-round-result",{
+        roundId: eggRound.id,
+        multiplier
+      });
+
+      // 🔁 ROUND MỚI NGAY
       const id = Date.now();
 
       eggRound = {
@@ -1353,13 +1356,13 @@ setInterval(() => {
         endAt: eggRound.endAt
       });
 
-    },10000);
+    }catch(e){
+      console.error("❌ egg round error", e);
+    }
 
-  } catch(e){
-    console.error("❌ egg round error", e);
   }
 
-},60000);
+},1000); // check mỗi 1s
 
 
 
