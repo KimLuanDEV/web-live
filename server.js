@@ -1746,48 +1746,40 @@ io.emit("admin-wheel-bet-new", {
 socket.on("egg-bet", data=>{
 
   const uid = socket.data.uid;
-  if (!uid)
-    return socket.emit("egg-error",{message:"NOT_LOGIN"});
-
-  // 🔒 LOCK NẾU CÒN < 5 GIÂY
-  const now = Date.now();
-  const timeLeft = Math.floor(
-    (eggRound.endAt - now) / 1000
-  );
-
-  if(timeLeft <= 5){
-    return socket.emit("egg-error",{
-      message:"ROUND_CLOSED"
-    });
-  }
+  if(!uid) return socket.emit("egg-error",{ message:"NOT_LOGIN" });
 
   const bet = Math.floor(Number(data?.bet));
-  if (!bet || bet <= 0)
-    return socket.emit("egg-error",{message:"BET_INVALID"});
+  if(!bet || bet <= 0)
+    return socket.emit("egg-error",{ message:"BET_INVALID" });
 
   const users = loadUsers();
   const me = users[uid];
-  if (!me?.profile)
-    return socket.emit("egg-error",{message:"USER_INVALID"});
+  if(!me?.profile)
+    return socket.emit("egg-error",{ message:"USER_INVALID" });
 
-  if (eggRound.bets.some(b => b.uid === uid))
-    return socket.emit("egg-error",{message:"ALREADY_BET"});
+  // ⛔ mỗi round chỉ 1 bet
+  if(eggRound.bets.some(b=>b.uid === uid))
+    return socket.emit("egg-error",{ message:"ALREADY_BET" });
 
-  if (me.profile.coins < bet)
-    return socket.emit("egg-error",{message:"NOT_ENOUGH_COIN"});
+  // ⛔ khóa trước 5s cuối
+  if(eggRound.endAt - Date.now() <= 5000)
+    return socket.emit("egg-error",{ message:"ROUND_CLOSED" });
 
+  // 🔥 CHẶN KHÔNG ĐỦ COIN
+  if(me.profile.coins < bet)
+    return socket.emit("egg-error",{ message:"NOT_ENOUGH_COIN" });
+
+  // 🔻 trừ coin ngay
   me.profile.coins -= bet;
   saveUsers(users);
-  emitCoinUpdate(uid);
 
   eggRound.bets.push({ uid, bet });
 
-  socket.emit("egg-bet-ok",{
-    roundId: eggRound.id,
-    bet
-  });
+  emitCoinUpdate(uid);
 
+  socket.emit("egg-bet-ok");
 });
+
 
 
 

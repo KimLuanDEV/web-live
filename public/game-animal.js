@@ -831,6 +831,33 @@ function discardAnimal(index){
 }
 
 
+
+function closeEggBetSheet(){
+
+  const overlay = document.getElementById("eggBetOverlay");
+
+  overlay.classList.remove("show");
+
+  setTimeout(()=>{
+    overlay.classList.add("hidden");
+  },350);
+}
+
+
+
+function confirmEggBet(){
+
+  if(!selectedEggBet) return;
+
+  socket.emit("egg-bet",{
+    bet: selectedEggBet
+  });
+
+  closeEggBetSheet();
+}
+
+
+
 socket.on("barn-update", data => {
 
   barnLevel = data.level;
@@ -931,6 +958,7 @@ const EGG_BET_OPTIONS = [
   2000, 5000, 10000
 ];
 
+
 function openEggBetSheet(){
 
   const overlay = document.getElementById("eggBetOverlay");
@@ -940,50 +968,56 @@ function openEggBetSheet(){
   grid.innerHTML = "";
 
   EGG_BET_OPTIONS.forEach(amount=>{
+
     const div = document.createElement("div");
     div.className = "egg-bet-item";
     div.textContent = amount + " 💎";
 
-    div.onclick = ()=>{
-      document.querySelectorAll(".egg-bet-item")
-        .forEach(x=>x.classList.remove("active"));
-      div.classList.add("active");
-      selectedEggBet = amount;
-    };
+    // 🔥 Disable nếu không đủ coin
+    if(amount > currentCoin){
+
+      div.classList.add("disabled");
+
+    }else{
+
+      div.onclick = ()=>{
+        document.querySelectorAll(".egg-bet-item")
+          .forEach(x=>x.classList.remove("active"));
+
+        div.classList.add("active");
+        selectedEggBet = amount;
+      };
+
+    }
 
     grid.appendChild(div);
   });
 
   overlay.classList.remove("hidden");
 
-requestAnimationFrame(()=>{
-  overlay.classList.add("show");
-});
-
-}
-
-
-function closeEggBetSheet(){
-
-  const overlay = document.getElementById("eggBetOverlay");
-
-  overlay.classList.remove("show");
-
-  setTimeout(()=>{
-    overlay.classList.add("hidden");
-  },350);
-}
-
-
-
-function confirmEggBet(){
-
-  if(!selectedEggBet) return;
-
-  socket.emit("egg-bet",{
-    bet: selectedEggBet
+  requestAnimationFrame(()=>{
+    overlay.classList.add("show");
   });
 
-  closeEggBetSheet();
 }
 
+
+
+
+
+
+socket.on("egg-error", data=>{
+
+  if(data.message === "NOT_ENOUGH_COIN"){
+    alert("❌ Not enough coin");
+  }
+
+  if(data.message === "ROUND_CLOSED"){
+    alert("⛔ Round closed");
+  }
+
+  if(data.message === "ALREADY_BET"){
+    alert("⚠ You already bet");
+  }
+
+});
