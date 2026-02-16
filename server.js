@@ -803,14 +803,23 @@ let wheelRound = {
 
 
 // ================================
-// 🥚 EGG MULTIPLIER ROUND (GLOBAL)
+// 🥚 EGG ROUND STATE (GLOBAL)
 // ================================
-let eggRound = {
-  id: Date.now(),
-  startAt: Date.now(),
-  endAt: Date.now() + 60000,
-  bets: []
-};
+
+const ROUND_DURATION = 60000;       // 60s tổng
+const RESULT_ANIM = 10000;          // 10s hoạt cảnh
+const NEXT_ROUND_TIME = ROUND_DURATION - RESULT_ANIM; // 50s
+
+let eggRound = (() => {
+  const id = Date.now();
+  return {
+    id,
+    startAt: id,
+    endAt: id + ROUND_DURATION,
+    bets: []
+  };
+})();
+
 
 const EGG_MULTIPLIERS = [
   { m: 0,   w: 35 },   // x0
@@ -1306,9 +1315,8 @@ io.emit("rps-round-new",{
 
 
 
-
 // ================================
-// 🥚 AUTO EGG RESULT EVERY 60s
+// 🥚 AUTO EGG RESULT
 // ================================
 setInterval(() => {
   try {
@@ -1336,7 +1344,7 @@ setInterval(() => {
       multiplier
     });
 
-    // ⏳ CHỜ 10 GIÂY MỚI RESET
+    // ⏳ 10s hoạt cảnh
     setTimeout(()=>{
 
       const id = Date.now();
@@ -1344,7 +1352,7 @@ setInterval(() => {
       eggRound = {
         id,
         startAt: id,
-        endAt: id + 60000,
+        endAt: id + NEXT_ROUND_TIME,   // ✅ 50s
         bets: []
       };
 
@@ -1353,13 +1361,14 @@ setInterval(() => {
         endAt: eggRound.endAt
       });
 
-    },10000);
+    }, RESULT_ANIM);
 
   } catch(e){
     console.error("❌ egg round error", e);
   }
 
-},60000);
+}, ROUND_DURATION);
+
 
 
 
