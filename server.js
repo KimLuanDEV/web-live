@@ -802,13 +802,41 @@ let wheelRound = {
 };
 
 
+
+
 // ================================
 // 🥚 EGG ROUND STATE (GLOBAL)
 // ================================
 
+
+
+
+
 const ROUND_DURATION = 60000;       // 60s tổng
 const RESULT_ANIM = 10000;          // 10s hoạt cảnh
 const NEXT_ROUND_TIME = ROUND_DURATION - RESULT_ANIM; // 50s
+const EGG_DISPLAY_POOL = [
+  { type:"normal",    img:"egg1.png",  w:20 },
+  { type:"forest",    img:"egg5.png",  w:20 },
+  { type:"gold",      img:"egg2.png",  w:15 },
+  { type:"thunder",   img:"egg6.png",  w:15 },
+  { type:"diamond",   img:"egg3.png",  w:10 },
+  { type:"shadow",    img:"egg7.png",  w:8 },
+  { type:"dragon",    img:"egg4.png",  w:6 },
+  { type:"phoenix",   img:"egg8.png",  w:4 },
+  { type:"celestial", img:"egg9.png",  w:1 },
+  { type:"voidlord",  img:"egg10.png", w:1 }
+];
+
+function pickDisplayEgg(){
+  const total = EGG_DISPLAY_POOL.reduce((s,x)=>s+x.w,0);
+  let r = Math.random()*total;
+  for(const e of EGG_DISPLAY_POOL){
+    if((r -= e.w) <= 0) return e;
+  }
+  return EGG_DISPLAY_POOL[0];
+}
+
 
 let eggRound = (() => {
   const id = Date.now();
@@ -816,9 +844,11 @@ let eggRound = (() => {
     id,
     startAt: id,
     endAt: id + ROUND_DURATION,
-    bets: []
+    bets: [],
+    displayEgg: pickDisplayEgg()
   };
 })();
+
 
 
 const EGG_MULTIPLIERS = [
@@ -1372,17 +1402,21 @@ setInterval(() => {
 
       const id = Date.now();
 
-      eggRound = {
-        id,
-        startAt: id,
-        endAt: id + NEXT_ROUND_TIME, // 50s
-        bets: []
-      };
+ eggRound = {
+  id,
+  startAt: id,
+  endAt: id + NEXT_ROUND_TIME,
+  bets: [],
+  displayEgg: pickDisplayEgg()
+};
 
-      io.emit("egg-round-new",{
-        roundId: eggRound.id,
-        endAt: eggRound.endAt
-      });
+
+io.emit("egg-round-new",{
+  roundId: eggRound.id,
+  endAt: eggRound.endAt,
+  displayEgg: eggRound.displayEgg
+});
+
 
     }, RESULT_ANIM);
 
@@ -1637,8 +1671,10 @@ socket.emit("wheel-round-count", {
 socket.emit("egg-round-state",{
   roundId: eggRound.id,
   endAt: eggRound.endAt,
-  hasBet: eggRound.bets.some(b=>b.uid===uid)
+  hasBet: eggRound.bets.some(b=>b.uid===uid),
+  displayEgg: eggRound.displayEgg
 });
+
 
 
 
