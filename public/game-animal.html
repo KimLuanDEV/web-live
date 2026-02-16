@@ -919,64 +919,7 @@ body{
 }
 
 
-/* ================= EGG MULTIPLIER ================= */
 
-.egg-multiplier-box{
-  margin:16px;
-  padding:16px;
-  border-radius:20px;
-  background:rgba(0,255,150,.06);
-  border:1px solid rgba(0,255,150,.25);
-  backdrop-filter:blur(10px);
-  box-shadow:0 0 25px rgba(0,255,150,.2);
-  text-align:center;
-}
-
-.egg-multi-header{
-  display:flex;
-  justify-content:space-between;
-  font-weight:bold;
-  margin-bottom:10px;
-}
-
-#eggCountdown{
-  color:#00ff99;
-}
-
-.egg-multi-result{
-  font-size:32px;
-  font-weight:900;
-  margin:8px 0;
-  letter-spacing:2px;
-}
-
-.egg-multi-bet{
-  display:flex;
-  gap:8px;
-}
-
-.egg-multi-bet input{
-  flex:1;
-  padding:10px;
-  border-radius:12px;
-  border:none;
-  background:#111;
-  color:#fff;
-}
-
-.egg-multi-bet button{
-  padding:10px 16px;
-  border:none;
-  border-radius:12px;
-  background:linear-gradient(90deg,#00ff99,#00ccff);
-  font-weight:bold;
-  cursor:pointer;
-}
-
-.egg-multi-bet button.locked{
-  opacity:.5;
-  pointer-events:none;
-}
 
 
 /* ================= MULTIPLIER HATCH ================= */
@@ -1037,6 +980,139 @@ body{
 
 
 
+
+
+/* ========================= */
+/* 🥚 PRO EGG PANEL */
+/* ========================= */
+
+.egg-multiplier-box.pro{
+  margin:20px;
+  padding:20px;
+  border-radius:28px;
+
+  background:
+    linear-gradient(180deg,
+      rgba(0,255,150,.12),
+      rgba(0,0,0,.6));
+
+  border:1px solid rgba(0,255,150,.35);
+
+  backdrop-filter:blur(16px);
+
+  box-shadow:
+    0 0 40px rgba(0,255,150,.3),
+    inset 0 0 25px rgba(0,255,150,.1);
+}
+
+/* ===== TOP BAR ===== */
+
+.egg-top-bar{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:16px;
+}
+
+.egg-title{
+  font-weight:800;
+  font-size:16px;
+  letter-spacing:1px;
+}
+
+.egg-timer{
+  padding:6px 14px;
+  border-radius:20px;
+  font-weight:bold;
+  font-size:14px;
+
+  background:rgba(0,255,150,.15);
+  box-shadow:0 0 15px rgba(0,255,150,.6);
+}
+
+/* ===== CENTER ===== */
+
+.egg-center{
+  text-align:center;
+}
+
+.nest-wrapper.big{
+  width:140px;
+  height:100px;
+}
+
+.egg-on-nest.big{
+  width:90px;
+  transform:translateY(-45px);
+}
+
+/* ===== MULTIPLIER ===== */
+
+.egg-multi-result.pro{
+  margin-top:10px;
+  font-size:42px;
+  font-weight:900;
+  letter-spacing:3px;
+
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  text-shadow:0 0 25px rgba(0,255,150,.8);
+}
+
+/* ===== BET AREA ===== */
+
+.egg-multi-bet.pro{
+  margin-top:20px;
+  display:flex;
+  gap:10px;
+}
+
+.egg-multi-bet.pro input{
+  flex:1;
+  padding:14px;
+  border-radius:16px;
+  border:1px solid rgba(0,255,150,.3);
+  background:rgba(0,0,0,.6);
+  color:#fff;
+  font-size:14px;
+  outline:none;
+}
+
+.egg-multi-bet.pro input:focus{
+  border-color:#00ff99;
+  box-shadow:0 0 15px rgba(0,255,150,.6);
+}
+
+.egg-multi-bet.pro button{
+  padding:14px 22px;
+  border:none;
+  border-radius:16px;
+  font-weight:800;
+  font-size:14px;
+
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  color:#000;
+
+  box-shadow:
+    0 0 25px rgba(0,255,150,.7);
+
+  transition:.2s ease;
+}
+
+.egg-multi-bet.pro button:hover{
+  transform:translateY(-3px);
+  box-shadow:
+    0 0 35px rgba(0,255,150,1);
+}
+
+.egg-multi-bet.pro button.locked{
+  opacity:.4;
+  pointer-events:none;
+}
+
+
 </style>
 </head>
 <body>
@@ -1080,32 +1156,38 @@ body{
 
 
 
-<!-- ================= EGG MULTIPLIER PANEL ================= -->
-<div class="egg-multiplier-box">
+<div class="egg-multiplier-box pro">
 
-  <div class="egg-multi-header">
-    🥚 Mystic Egg Multiplier
-    <span id="eggCountdown">60s</span>
+  <div class="egg-top-bar">
+    <div class="egg-title">
+      🥚 Mystic Egg
+    </div>
+
+    <div class="egg-timer" id="eggCountdown">
+      60s
+    </div>
   </div>
 
-<div class="egg-hatch-area" id="eggHatchArea">
+  <div class="egg-center">
 
-  <div class="nest-wrapper">
-    <img src="/assets/farm/nest.png" class="nest-img">
-    <img src="/assets/eggs/egg1.png"
-         class="egg-on-nest"
-         id="multiEggImg">
+    <div class="egg-hatch-area" id="eggHatchArea">
+
+      <div class="nest-wrapper big">
+        <img src="/assets/farm/nest.png" class="nest-img">
+        <img src="/assets/eggs/egg1.png"
+             class="egg-on-nest big"
+             id="multiEggImg">
+      </div>
+
+    </div>
+
+    <div class="egg-multi-result pro" id="eggResult">
+      x ?
+    </div>
+
   </div>
 
-<div class="egg-multi-result" id="eggResult">
-x ?
-</div>
-
-
-</div>
-
-
-  <div class="egg-multi-bet">
+  <div class="egg-multi-bet pro">
 
     <input type="number"
            id="eggBetInput"
