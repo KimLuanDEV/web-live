@@ -13,6 +13,9 @@ let pendingBarnUpgrade = null;
 let currentCoin = 0;
 let eggEndAt = 0;
 let eggHasBet = false;
+let eggResultData = null;
+let eggAnimationStarted = false;
+
 
 function render(){
 
@@ -597,6 +600,45 @@ function updateEggButton(){
 }
 
 
+function startEggAnimation(data){
+
+  const resultEl = document.getElementById("eggResult");
+  const eggImg = document.getElementById("multiEggImg");
+  const area = document.getElementById("eggHatchArea");
+
+  resultEl.textContent =
+    "x " + data.multiplier;
+
+  // ===== SUCCESS =====
+  if(data.multiplier > 0){
+
+    resultEl.style.color = "#00ff99";
+    eggImg.src = "/assets/animals/chicken.png";
+
+    area.classList.add("hatching");
+
+    setTimeout(()=>{
+      area.classList.remove("hatching");
+    },10000);
+
+  }
+  // ===== BROKEN =====
+  else{
+
+    resultEl.style.color = "#ff4444";
+    eggImg.src = "/assets/eggs/broken_egg.png";
+
+    area.classList.add("egg-hatch-broken");
+
+    setTimeout(()=>{
+      area.classList.remove("egg-hatch-broken");
+    },10000);
+  }
+
+}
+
+
+
 
 document.getElementById("shopOverlay")
 .addEventListener("click", e=>{
@@ -614,57 +656,8 @@ socket.on("egg-bet-ok", ()=>{
 });
 
 
-
 socket.on("egg-round-result", data=>{
-
-  const resultEl = document.getElementById("eggResult");
-  const eggImg = document.getElementById("multiEggImg");
-  const area = document.getElementById("eggHatchArea");
-
-  resultEl.textContent =
-    "x " + data.multiplier;
-
-  // 🔒 Ngưng countdown khi đang hoạt cảnh
-  eggEndAt = 0;
-
-  // ===== SUCCESS =====
-  if(data.multiplier > 0){
-
-    resultEl.style.color = "#00ff99";
-
-    area.classList.remove("egg-hatch-broken");
-    area.classList.add("egg-hatch-success");
-
-    // đổi thành gà
-    eggImg.src = "/assets/animals/chicken.png";
-
-    const glow = document.createElement("div");
-    glow.className = "multi-glow";
-    area.appendChild(glow);
-
-    // ⏳ Giữ trạng thái 10 giây
-    setTimeout(()=>{
-      glow.remove();
-      area.classList.remove("egg-hatch-success");
-    },10000);
-
-  }
-  // ===== BROKEN =====
-  else{
-
-    resultEl.style.color = "#ff4444";
-
-    area.classList.remove("egg-hatch-success");
-    area.classList.add("egg-hatch-broken");
-
-    // đổi sang broken egg
-    eggImg.src = "/assets/eggs/broken_egg.png";
-
-    setTimeout(()=>{
-      area.classList.remove("egg-hatch-broken");
-    },10000);
-  }
-
+  eggResultData = data;
 });
 
 
@@ -677,20 +670,45 @@ socket.on("egg-round-state", data=>{
   updateEggButton();
 });
 
+
+
 socket.on("egg-round-new", data=>{
 
-  const eggImg = document.getElementById("multiEggImg");
-if(eggImg){
-  eggImg.src = "/assets/eggs/egg1.png";
-}
-
+  // ⏱ Cập nhật thời gian round mới
   eggEndAt = data.endAt;
   eggHasBet = false;
-  document.getElementById("eggResult").textContent =
-  "x ?";
+
+  // 🔁 Reset animation flags
+  eggResultData = null;
+  eggAnimationStarted = false;
+
+  // 🥚 Reset ảnh về trứng
+  const eggImg = document.getElementById("multiEggImg");
+  if(eggImg){
+    eggImg.src = "/assets/eggs/egg1.png";
+  }
+
+  // 🎯 Reset text hệ số
+  const resultEl = document.getElementById("eggResult");
+  if(resultEl){
+    resultEl.textContent =
+      "x ?";
+    resultEl.style.color = "#ffffff";
+  }
+
+  // 🧹 Xóa mọi class hoạt cảnh cũ
+  const area = document.getElementById("eggHatchArea");
+  if(area){
+    area.classList.remove(
+      "egg-hatch-broken",
+      "hatching",
+      "almost-hatch"
+    );
+  }
 
   updateEggButton();
 });
+
 
 
 
@@ -784,25 +802,23 @@ setInterval(()=>{
 
 
 setInterval(()=>{
+
   if(!eggEndAt) return;
 
-  const left = Math.max(0,
+  const left = Math.max(
+    0,
     Math.floor((eggEndAt - Date.now())/1000)
   );
 
   const el = document.getElementById("eggCountdown");
   if(el) el.textContent = left + "s";
 
+  updateEggButton();
 
-  const area = document.getElementById("eggHatchArea");
-
-if(left <= 5 && left > 0){
-  area.classList.add("almost-hatch");
-}else{
-  area.classList.remove("almost-hatch");
-}
-
-updateEggButton();
-
+  // 🎬 CHỈ BẮT ĐẦU HOẠT CẢNH KHI HẾT 60S
+  if(left === 0 && eggResultData && !eggAnimationStarted){
+    eggAnimationStarted = true;
+    startEggAnimation(eggResultData);
+  }
 
 },1000);
