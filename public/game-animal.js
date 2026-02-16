@@ -892,3 +892,21 @@ updateEggButton();
 
 
 },1000);
+
+
+
+window.addEventListener("load", ()=>{
+
+  const header = document.querySelector(".farm-header");
+  const panel  = document.querySelector(".egg-multiplier-box.pro");
+
+  if(header && panel){
+    const h = header.offsetHeight;
+    panel.style.top = h + "px";
+
+    document.querySelector(".farm-grid")
+      .style.marginTop =
+        (h + panel.offsetHeight) + "px";
+  }
+
+});
