@@ -745,6 +745,10 @@ socket.on("egg-round-state", data=>{
 
   eggEndAt = data.endAt;
   eggHasBet = data.hasBet;
+  eggHasBet = data.hasBet;
+
+  document.getElementById("eggBetBtn")
+  .disabled = eggHasBet;
 
   const eggImg = document.getElementById("multiEggImg");
 
@@ -910,3 +914,56 @@ window.addEventListener("load", ()=>{
   }
 
 });
+
+
+
+let selectedEggBet = null;
+
+const EGG_BET_OPTIONS = [
+  10, 50, 100,
+  200, 500, 1000,
+  2000, 5000, 10000
+];
+
+function openEggBetSheet(){
+
+  const overlay = document.getElementById("eggBetOverlay");
+  const grid = document.getElementById("eggBetGrid");
+
+  selectedEggBet = null;
+  grid.innerHTML = "";
+
+  EGG_BET_OPTIONS.forEach(amount=>{
+    const div = document.createElement("div");
+    div.className = "egg-bet-item";
+    div.textContent = amount + " 💎";
+
+    div.onclick = ()=>{
+      document.querySelectorAll(".egg-bet-item")
+        .forEach(x=>x.classList.remove("active"));
+      div.classList.add("active");
+      selectedEggBet = amount;
+    };
+
+    grid.appendChild(div);
+  });
+
+  overlay.classList.remove("hidden");
+}
+
+function closeEggBetSheet(){
+  document.getElementById("eggBetOverlay")
+    .classList.add("hidden");
+}
+
+function confirmEggBet(){
+
+  if(!selectedEggBet) return;
+
+  socket.emit("egg-bet",{
+    bet: selectedEggBet
+  });
+
+  closeEggBetSheet();
+}
+

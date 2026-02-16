@@ -1133,6 +1133,85 @@ body{
 
 
 
+/* ============================= */
+/* 🥚 EGG BET SHEET */
+/* ============================= */
+
+.egg-bet-overlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.6);
+  backdrop-filter:blur(8px);
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  z-index:3000;
+  transition:.3s;
+}
+
+.egg-bet-overlay.hidden{
+  display:none;
+}
+
+.egg-bet-sheet{
+  width:100%;
+  max-width:500px;
+  background:linear-gradient(
+    180deg,
+    rgba(20,20,20,.95),
+    rgba(0,0,0,1)
+  );
+  border-top-left-radius:30px;
+  border-top-right-radius:30px;
+  padding:20px;
+  padding-bottom:40px;
+  border-top:1px solid rgba(0,255,150,.3);
+  box-shadow:0 -20px 60px rgba(0,255,150,.4);
+}
+
+.egg-bet-title{
+  text-align:center;
+  font-weight:bold;
+  margin-bottom:15px;
+}
+
+.egg-bet-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.egg-bet-item{
+  padding:12px;
+  border-radius:14px;
+  text-align:center;
+  background:rgba(0,255,150,.08);
+  border:1px solid rgba(0,255,150,.3);
+  font-weight:bold;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.egg-bet-item.active{
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  color:#000;
+  box-shadow:0 0 20px rgba(0,255,150,.8);
+}
+
+.egg-bet-confirm{
+  width:100%;
+  height:50px;
+  border:none;
+  border-radius:16px;
+  font-weight:bold;
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  color:#000;
+  box-shadow:0 0 25px rgba(0,255,150,.5);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1207,19 +1286,13 @@ body{
 
   </div>
 
-  <div class="egg-multi-bet pro">
 
-    <input type="number"
-           id="eggBetInput"
-           placeholder="Enter 💎"
-           min="1">
+<div class="egg-multi-bet pro">
+  <button id="eggBetBtn" onclick="openEggBetSheet()">
+    BUY
+  </button>
+</div>
 
-    <button id="eggBetBtn"
-            onclick="placeEggBet()">
-      BUY
-    </button>
-
-  </div>
 
 </div>
 
@@ -1279,6 +1352,32 @@ body{
         Buy
       </button>
     </div>
+
+  </div>
+
+</div>
+
+
+
+<!-- 🥚 EGG BET BOTTOM SHEET -->
+<div class="egg-bet-overlay hidden" id="eggBetOverlay">
+
+  <div class="egg-bet-sheet">
+
+    <div class="sheet-handle"></div>
+
+    <div class="egg-bet-title">
+      Select Bet Amount
+    </div>
+
+    <div class="egg-bet-grid" id="eggBetGrid">
+      <!-- render mốc cược -->
+    </div>
+
+    <button class="egg-bet-confirm"
+            onclick="confirmEggBet()">
+      CONFIRM
+    </button>
 
   </div>
 
