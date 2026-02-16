@@ -851,42 +851,32 @@ let eggRound = (() => {
 
 
 
-const EGG_MULTIPLIERS = [
-
-  // 💀 Thua nhiều
-  { m: 0,    w: 400 },
-
-  // 🔻 Thua nhẹ
-  { m: 0.2,  w: 150 },
-  { m: 0.5,  w: 120 },
-
-  // 🔄 Hoàn vốn / lời nhỏ
-  { m: 1,    w: 100 },
-  { m: 1.5,  w: 80 },
-  { m: 2,    w: 60 },
-  { m: 3,    w: 40 },
-  { m: 5,    w: 25 },
-
-  // 🔥 Lời lớn
-  { m: 10,   w: 15 },
-  { m: 20,   w: 8 },
-  { m: 50,   w: 3 },
-
-  // 💎 JACKPOT
-  { m: 100,  w: 1 }
-
-];
-
-
 function pickEggMultiplier(){
-  const total = EGG_MULTIPLIERS.reduce((s,x)=>s+x.w,0);
-  let r = Math.random()*total;
-  for(const item of EGG_MULTIPLIERS){
-    if((r -= item.w) <= 0){
-      return item.m;
-    }
+
+  const r = Math.random();
+
+  // 💀 45% thua
+  if(r < 0.45){
+    return 0;
   }
-  return 0;
+
+  // 🔻 25% lời nhỏ (0 → 2)
+  if(r < 0.70){
+    return Number((Math.random() * 2).toFixed(2));
+  }
+
+  // 🔥 20% lời vừa (2 → 10)
+  if(r < 0.90){
+    return Number((2 + Math.random() * 8).toFixed(2));
+  }
+
+  // 💎 9% lời lớn (10 → 50)
+  if(r < 0.99){
+    return Number((10 + Math.random() * 40).toFixed(2));
+  }
+
+  // 🎰 1% jackpot (50 → 100)
+  return Number((50 + Math.random() * 50).toFixed(2));
 }
 
 
