@@ -805,10 +805,6 @@ let wheelRound = {
 // ================================
 // 🥚 EGG MULTIPLIER ROUND (GLOBAL)
 // ================================
-const EGG_ROUND_TOTAL = 60000;      // 60s tổng
-const EGG_ANIMATION_TIME = 10000;   // 10s hoạt cảnh
-const EGG_LOCK_BEFORE_END = 5000;
-
 let eggRound = {
   id: Date.now(),
   startAt: Date.now(),
@@ -1121,7 +1117,7 @@ const commitHash = crypto
 wheelRound = {
   id,
   startAt: id,
-  endAt: id + EGG_ROUND_TOTAL,
+  endAt: id + 60000,
   bets: [],
 
   // 🔐 TUYỆT ĐỐI KHÔNG EMIT
@@ -1314,38 +1310,35 @@ io.emit("rps-round-new",{
 // ================================
 // 🥚 AUTO EGG RESULT EVERY 60s
 // ================================
-setInterval(()=>{
+setInterval(() => {
+  try {
 
-  const now = Date.now();
+    const users = loadUsers();
+    const multiplier = pickEggMultiplier();
 
-  if(now >= eggRound.endAt){
+    eggRound.bets.forEach(o=>{
+      const me = users[o.uid];
+      if(!me?.profile) return;
 
-    try{
+      const win = Math.floor(o.bet * multiplier);
+      me.profile.coins += win;
+    });
 
-      const users = loadUsers();
-      const multiplier = pickEggMultiplier();
+    saveUsers(users);
 
-      eggRound.bets.forEach(o=>{
-        const me = users[o.uid];
-        if(!me?.profile) return;
+    eggRound.bets.forEach(o=>{
+      emitCoinUpdate(o.uid);
+    });
 
-        const win = Math.floor(o.bet * multiplier);
-        me.profile.coins += win;
-      });
+    // 🔥 EMIT RESULT
+    io.emit("egg-round-result",{
+      roundId: eggRound.id,
+      multiplier
+    });
 
-      saveUsers(users);
+    // ⏳ CHỜ 10 GIÂY MỚI RESET
+    setTimeout(()=>{
 
-      eggRound.bets.forEach(o=>{
-        emitCoinUpdate(o.uid);
-      });
-
-      // 🔥 EMIT RESULT NGAY KHI 0s
-      io.emit("egg-round-result",{
-        roundId: eggRound.id,
-        multiplier
-      });
-
-      // 🔁 ROUND MỚI NGAY
       const id = Date.now();
 
       eggRound = {
@@ -1360,13 +1353,13 @@ setInterval(()=>{
         endAt: eggRound.endAt
       });
 
-    }catch(e){
-      console.error("❌ egg round error", e);
-    }
+    },10000);
 
+  } catch(e){
+    console.error("❌ egg round error", e);
   }
 
-},1000); // check mỗi 1s
+},60000);
 
 
 
@@ -1698,38 +1691,18 @@ socket.on("egg-bet", data=>{
   if (!uid)
     return socket.emit("egg-error",{message:"NOT_LOGIN"});
 
+  // 🔒 LOCK NẾU CÒN < 5 GIÂY
   const now = Date.now();
+  const timeLeft = Math.floor(
+    (eggRound.endAt - now) / 1000
+  );
 
-  // =========================
-  // 🧠 1️⃣ CHECK PHASE
-  // =========================
-  const elapsed = now - eggRound.startAt;
-  const timeLeftMs = eggRound.endAt - now;
-
-  // 🚫 10s đầu là animation
-  if(elapsed < EGG_ANIMATION_TIME){
-    return socket.emit("egg-error",{
-      message:"ROUND_ANIMATING"
-    });
-  }
-
-  // 🔒 khóa 5s cuối
-  if(timeLeftMs < EGG_LOCK_BEFORE_END){
+  if(timeLeft < 5){
     return socket.emit("egg-error",{
       message:"ROUND_CLOSED"
     });
   }
 
-  // ⛔ nếu round đã hết
-  if(timeLeftMs <= 0){
-    return socket.emit("egg-error",{
-      message:"ROUND_FINISHED"
-    });
-  }
-
-  // =========================
-  // 💰 2️⃣ VALIDATE BET
-  // =========================
   const bet = Math.floor(Number(data?.bet));
   if (!bet || bet <= 0)
     return socket.emit("egg-error",{message:"BET_INVALID"});
@@ -1745,9 +1718,6 @@ socket.on("egg-bet", data=>{
   if (me.profile.coins < bet)
     return socket.emit("egg-error",{message:"NOT_ENOUGH_COIN"});
 
-  // =========================
-  // 💎 3️⃣ TRỪ COIN & LƯU
-  // =========================
   me.profile.coins -= bet;
   saveUsers(users);
   emitCoinUpdate(uid);
@@ -1760,6 +1730,7 @@ socket.on("egg-bet", data=>{
   });
 
 });
+
 
 
 
