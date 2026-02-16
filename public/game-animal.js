@@ -609,7 +609,7 @@ socket.on("egg-round-result", data=>{
   const area = document.getElementById("eggHatchArea");
 
   resultEl.textContent =
-    "🎯 Hệ số trúng thưởng: x " + data.multiplier;
+    "x " + data.multiplier;
 
   // 🔒 Ngưng countdown khi đang hoạt cảnh
   eggEndAt = 0;
