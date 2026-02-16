@@ -1710,7 +1710,7 @@ socket.on("egg-bet", data=>{
     (eggRound.endAt - now) / 1000
   );
 
-  if(timeLeft < 5){
+  if(timeLeft <= 5){
     return socket.emit("egg-error",{
       message:"ROUND_CLOSED"
     });
