@@ -938,9 +938,12 @@ function openEggBetSheet(){
     div.className = "egg-bet-item";
     div.textContent = amount + " 💎";
 
-    div.onclick = ()=>{
+    div.onclick = (e)=>{
+      e.stopPropagation();
+
       document.querySelectorAll(".egg-bet-item")
         .forEach(x=>x.classList.remove("active"));
+
       div.classList.add("active");
       selectedEggBet = amount;
     };
@@ -949,7 +952,15 @@ function openEggBetSheet(){
   });
 
   overlay.classList.remove("hidden");
+
+  // 👇 click outside close
+  overlay.onclick = (e)=>{
+    if(e.target.id === "eggBetOverlay"){
+      closeEggBetSheet();
+    }
+  };
 }
+
 
 function closeEggBetSheet(){
   document.getElementById("eggBetOverlay")
@@ -967,3 +978,21 @@ function confirmEggBet(){
   closeEggBetSheet();
 }
 
+
+
+function quickBet(percent){
+
+  if(!window.myProfile) return;
+
+  const coins = window.myProfile.coins || 0;
+
+  let amount = Math.floor(coins * percent);
+
+  if(amount < 1) return;
+
+  selectedEggBet = amount;
+
+  // highlight none
+  document.querySelectorAll(".egg-bet-item")
+    .forEach(x=>x.classList.remove("active"));
+}

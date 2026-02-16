@@ -1211,6 +1211,47 @@ body{
 }
 
 
+/* QUICK BET */
+
+.egg-bet-quick{
+  display:flex;
+  gap:10px;
+  margin-bottom:15px;
+}
+
+.quick-item{
+  flex:1;
+  padding:10px 0;
+  text-align:center;
+  border-radius:12px;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(0,255,150,.3);
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.quick-item:hover{
+  background:rgba(0,255,150,.2);
+}
+
+.quick-item.allin{
+  background:linear-gradient(90deg,#ffcc00,#ff6600);
+  color:#000;
+  border:none;
+}
+
+/* click outside */
+
+.egg-bet-overlay{
+  cursor:pointer;
+}
+
+.egg-bet-sheet{
+  cursor:auto;
+}
+
+
 
 </style>
 </head>
@@ -1367,6 +1408,14 @@ body{
     <div class="sheet-handle"></div>
 
     <div class="egg-bet-title">
+
+  <div class="egg-bet-quick">
+  <div class="quick-item" onclick="quickBet(0.25)">25%</div>
+  <div class="quick-item" onclick="quickBet(0.5)">50%</div>
+  <div class="quick-item allin" onclick="quickBet(1)">ALL IN</div>
+</div>
+
+
       Select Bet Amount
     </div>
 
