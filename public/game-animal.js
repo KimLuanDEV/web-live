@@ -609,14 +609,12 @@ document.getElementById("shopOverlay")
   }
 });
 
-
 document.getElementById("eggBetOverlay")
 .addEventListener("click", e=>{
   if(e.target.id === "eggBetOverlay"){
     closeEggBetSheet();
   }
 });
-
 
 
 
@@ -934,26 +932,49 @@ const EGG_BET_OPTIONS = [
 ];
 
 function openEggBetSheet(){
+
   const overlay = document.getElementById("eggBetOverlay");
-  overlay.classList.remove("hidden");
-  requestAnimationFrame(()=>{
-    overlay.classList.add("show");
+  const grid = document.getElementById("eggBetGrid");
+
+  selectedEggBet = null;
+  grid.innerHTML = "";
+
+  EGG_BET_OPTIONS.forEach(amount=>{
+    const div = document.createElement("div");
+    div.className = "egg-bet-item";
+    div.textContent = amount + " 💎";
+
+    div.onclick = ()=>{
+      document.querySelectorAll(".egg-bet-item")
+        .forEach(x=>x.classList.remove("active"));
+      div.classList.add("active");
+      selectedEggBet = amount;
+    };
+
+    grid.appendChild(div);
   });
+
+  overlay.classList.remove("hidden");
+
+requestAnimationFrame(()=>{
+  overlay.classList.add("show");
+});
+
 }
 
+
 function closeEggBetSheet(){
+
   const overlay = document.getElementById("eggBetOverlay");
+
   overlay.classList.remove("show");
+
   setTimeout(()=>{
     overlay.classList.add("hidden");
   },350);
 }
 
 
-function closeEggBetSheet(){
-  document.getElementById("eggBetOverlay")
-    .classList.add("hidden");
-}
 
 function confirmEggBet(){
 
