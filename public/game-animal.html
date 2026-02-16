@@ -1228,6 +1228,48 @@ body{
 }
 
 
+.egg-current-bet{
+  flex:1;
+  height:50px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  border-radius:18px;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,255,150,.18),
+      rgba(0,0,0,.4)
+    );
+
+  border:1px solid rgba(0,255,150,.4);
+
+  font-weight:700;
+  letter-spacing:.5px;
+
+  box-shadow:
+    inset 0 0 10px rgba(0,255,150,.3),
+    0 0 20px rgba(0,255,150,.3);
+
+  transition:.2s ease;
+}
+
+.egg-current-bet span{
+  font-size:12px;
+  opacity:.6;
+}
+
+.egg-current-bet strong{
+  font-size:18px;
+  color:#00ffcc;
+  text-shadow:
+    0 0 8px rgba(0,255,150,.8);
+}
+
 
 </style>
 </head>
@@ -1305,10 +1347,19 @@ body{
 
 
 <div class="egg-multi-bet pro">
+
+<div class="egg-current-bet" id="eggCurrentBet">
+  <span>Current Bet</span>
+  <strong>0 💎</strong>
+</div>
+
+
   <button id="eggBetBtn" onclick="openEggBetSheet()">
     BUY
   </button>
+
 </div>
+
 
 
 </div>

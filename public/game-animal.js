@@ -619,8 +619,19 @@ document.getElementById("eggBetOverlay")
 
 
 socket.on("egg-bet-ok", ()=>{
+
   eggHasBet = true;
   updateEggButton();
+
+  const betEl = document.getElementById("eggCurrentBet");
+  if(betEl && selectedEggBet){
+    betEl.innerHTML = `
+  <span>Current Bet</span>
+  <strong>${selectedEggBet} 💎</strong>
+`;
+
+  }
+
 });
 
 
@@ -772,6 +783,14 @@ socket.on("egg-round-new", data=>{
 
   const eggImg = document.getElementById("multiEggImg");
   const area   = document.getElementById("eggHatchArea");
+  const betEl = document.getElementById("eggCurrentBet");
+if(betEl){
+ betEl.innerHTML = `
+  <span>Current Bet</span>
+  <strong>0 💎</strong>
+`;
+
+}
 
   if(data.displayEgg && eggImg){
     eggImg.src = "/assets/eggs/" + data.displayEgg.img;
