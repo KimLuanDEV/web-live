@@ -628,7 +628,8 @@ socket.on("egg-round-result", data=>{
   eggEndAt = 0;
 
   // ===== HIỂN THỊ MULTIPLIER =====
-  resultEl.textContent = "x " + data.multiplier;
+  animateMultiplier(data.multiplier);
+
 
   // ===== SUCCESS =====
   if(data.multiplier > 0){
@@ -693,6 +694,44 @@ socket.on("egg-round-result", data=>{
 
 });
 
+
+
+function animateMultiplier(target){
+
+  const resultEl = document.getElementById("eggResult");
+  if(!resultEl) return;
+
+  const duration = 800; // ms
+  const start = performance.now();
+
+  function easeOut(t){
+    return 1 - Math.pow(1 - t, 3);
+  }
+
+  function update(now){
+
+    const progress = Math.min(1, (now - start) / duration);
+    const eased = easeOut(progress);
+
+    const current = (target * eased).toFixed(2);
+
+    resultEl.textContent = "x " + current;
+
+    if(progress < 1){
+      requestAnimationFrame(update);
+    }else{
+      resultEl.textContent = "x " + target.toFixed(2);
+
+      // 💥 pop effect khi xong
+      resultEl.classList.add("multi-pop");
+      setTimeout(()=>{
+        resultEl.classList.remove("multi-pop");
+      },300);
+    }
+  }
+
+  requestAnimationFrame(update);
+}
 
 
 
