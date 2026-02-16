@@ -604,19 +604,51 @@ socket.on("egg-bet-ok", ()=>{
 
 socket.on("egg-round-result", data=>{
 
-  const el = document.getElementById("eggResult");
+  const resultEl = document.getElementById("eggResult");
+  const eggImg = document.getElementById("multiEggImg");
+  const area = document.getElementById("eggHatchArea");
 
-  el.textContent = "x " + data.multiplier;
+  resultEl.textContent = "x " + data.multiplier;
 
-  if(data.multiplier >= 1.5){
-    el.style.color = "#00ff99";
-  }else if(data.multiplier === 0){
-    el.style.color = "#ff4444";
-  }else{
-    el.style.color = "#ffaa00";
+  // ===== SUCCESS =====
+  if(data.multiplier > 0){
+
+    resultEl.style.color = "#00ff99";
+
+    area.classList.remove("egg-hatch-broken");
+    area.classList.add("egg-hatch-success");
+
+    // glow effect
+    const glow = document.createElement("div");
+    glow.className = "multi-glow";
+    area.appendChild(glow);
+
+    // đổi thành chicken icon
+    eggImg.src = "/assets/animals/chicken.png";
+
+    setTimeout(()=>{
+      glow.remove();
+      area.classList.remove("egg-hatch-success");
+    },800);
+
+  }
+  // ===== BROKEN =====
+  else{
+
+    resultEl.style.color = "#ff4444";
+
+    area.classList.remove("egg-hatch-success");
+    area.classList.add("egg-hatch-broken");
+
+    eggImg.src = "/assets/eggs/broken_egg.png";
+
+    setTimeout(()=>{
+      area.classList.remove("egg-hatch-broken");
+    },800);
   }
 
 });
+
 
 
 
@@ -628,6 +660,12 @@ socket.on("egg-round-state", data=>{
 });
 
 socket.on("egg-round-new", data=>{
+
+  const eggImg = document.getElementById("multiEggImg");
+if(eggImg){
+  eggImg.src = "/assets/eggs/egg1.png";
+}
+
   eggEndAt = data.endAt;
   eggHasBet = false;
   document.getElementById("eggResult").textContent = "x ?";
@@ -734,5 +772,15 @@ setInterval(()=>{
 
   const el = document.getElementById("eggCountdown");
   if(el) el.textContent = left + "s";
+
+  
+  const area = document.getElementById("eggHatchArea");
+
+if(left <= 5 && left > 0){
+  area.classList.add("almost-hatch");
+}else{
+  area.classList.remove("almost-hatch");
+}
+
 
 },1000);

@@ -979,6 +979,50 @@ body{
 }
 
 
+/* ================= MULTIPLIER HATCH ================= */
+
+.egg-hatch-area{
+  position:relative;
+  margin:10px 0;
+}
+
+.egg-hatch-success{
+  animation:hatchSuccess .6s ease;
+}
+
+@keyframes hatchSuccess{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.3); }
+  100%{ transform:scale(1); }
+}
+
+.egg-hatch-broken{
+  animation:hatchBroken .6s ease;
+}
+
+@keyframes hatchBroken{
+  0%{ transform:rotate(0deg); }
+  25%{ transform:rotate(-8deg); }
+  50%{ transform:rotate(8deg); }
+  75%{ transform:rotate(-8deg); }
+  100%{ transform:rotate(0deg); }
+}
+
+.multi-glow{
+  position:absolute;
+  width:80px;
+  height:80px;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(0,255,150,.6),
+    transparent 70%);
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  animation:glowPulse 1s infinite;
+}
+
+
 </style>
 </head>
 <body>
@@ -1030,9 +1074,21 @@ body{
     <span id="eggCountdown">60s</span>
   </div>
 
+<div class="egg-hatch-area" id="eggHatchArea">
+
+  <div class="nest-wrapper">
+    <img src="/assets/farm/nest.png" class="nest-img">
+    <img src="/assets/eggs/egg1.png"
+         class="egg-on-nest"
+         id="multiEggImg">
+  </div>
+
   <div class="egg-multi-result" id="eggResult">
     x ?
   </div>
+
+</div>
+
 
   <div class="egg-multi-bet">
 
