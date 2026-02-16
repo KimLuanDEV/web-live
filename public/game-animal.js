@@ -608,9 +608,11 @@ socket.on("egg-round-result", data=>{
   const eggImg = document.getElementById("multiEggImg");
   const area = document.getElementById("eggHatchArea");
 
- resultEl.textContent =
-  "x " + data.multiplier;
+  resultEl.textContent =
+    "🎯 Hệ số trúng thưởng: x " + data.multiplier;
 
+  // 🔒 Ngưng countdown khi đang hoạt cảnh
+  eggEndAt = 0;
 
   // ===== SUCCESS =====
   if(data.multiplier > 0){
@@ -620,18 +622,18 @@ socket.on("egg-round-result", data=>{
     area.classList.remove("egg-hatch-broken");
     area.classList.add("egg-hatch-success");
 
-    // glow effect
+    // đổi thành gà
+    eggImg.src = "/assets/animals/chicken.png";
+
     const glow = document.createElement("div");
     glow.className = "multi-glow";
     area.appendChild(glow);
 
-    // đổi thành chicken icon
-    eggImg.src = "/assets/animals/chicken.png";
-
+    // ⏳ Giữ trạng thái 10 giây
     setTimeout(()=>{
       glow.remove();
       area.classList.remove("egg-hatch-success");
-    },800);
+    },10000);
 
   }
   // ===== BROKEN =====
@@ -642,11 +644,12 @@ socket.on("egg-round-result", data=>{
     area.classList.remove("egg-hatch-success");
     area.classList.add("egg-hatch-broken");
 
+    // đổi sang broken egg
     eggImg.src = "/assets/eggs/broken_egg.png";
 
     setTimeout(()=>{
       area.classList.remove("egg-hatch-broken");
-    },800);
+    },10000);
   }
 
 });

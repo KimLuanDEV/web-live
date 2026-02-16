@@ -1326,30 +1326,34 @@ setInterval(() => {
 
     saveUsers(users);
 
-    // emit coin update
     eggRound.bets.forEach(o=>{
       emitCoinUpdate(o.uid);
     });
 
+    // 🔥 EMIT RESULT
     io.emit("egg-round-result",{
       roundId: eggRound.id,
       multiplier
     });
 
-    // reset round
-    const id = Date.now();
+    // ⏳ CHỜ 10 GIÂY MỚI RESET
+    setTimeout(()=>{
 
-    eggRound = {
-      id,
-      startAt: id,
-      endAt: id + 60000,
-      bets: []
-    };
+      const id = Date.now();
 
-    io.emit("egg-round-new",{
-      roundId: eggRound.id,
-      endAt: eggRound.endAt
-    });
+      eggRound = {
+        id,
+        startAt: id,
+        endAt: id + 60000,
+        bets: []
+      };
+
+      io.emit("egg-round-new",{
+        roundId: eggRound.id,
+        endAt: eggRound.endAt
+      });
+
+    },10000);
 
   } catch(e){
     console.error("❌ egg round error", e);
