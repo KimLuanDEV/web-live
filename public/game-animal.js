@@ -11,6 +11,8 @@ let barnConfig = {};
 let confirmMode = null;
 let pendingBarnUpgrade = null;
 let currentCoin = 0;
+let eggEndAt = 0;
+let eggHasBet = false;
 
 function render(){
 
@@ -554,12 +556,84 @@ if(count >= max){
 }
 
 
+
+function placeEggBet(){
+
+  if(eggHasBet) return;
+
+  const input = document.getElementById("eggBetInput");
+  const bet = Number(input.value);
+
+  if(!bet || bet <= 0) return;
+
+  socket.emit("egg-bet",{ bet });
+}
+
+
+function updateEggButton(){
+  const btn = document.getElementById("eggBetBtn");
+  if(!btn) return;
+
+  if(eggHasBet){
+    btn.classList.add("locked");
+    btn.textContent = "LOCKED";
+  }else{
+    btn.classList.remove("locked");
+    btn.textContent = "BET";
+  }
+}
+
+
+
 document.getElementById("shopOverlay")
 .addEventListener("click", e=>{
   if(e.target.id === "shopOverlay"){
     closeShop();
   }
 });
+
+
+
+
+socket.on("egg-bet-ok", ()=>{
+  eggHasBet = true;
+  updateEggButton();
+});
+
+
+
+socket.on("egg-round-result", data=>{
+
+  const el = document.getElementById("eggResult");
+
+  el.textContent = "x " + data.multiplier;
+
+  if(data.multiplier >= 1.5){
+    el.style.color = "#00ff99";
+  }else if(data.multiplier === 0){
+    el.style.color = "#ff4444";
+  }else{
+    el.style.color = "#ffaa00";
+  }
+
+});
+
+
+
+
+socket.on("egg-round-state", data=>{
+  eggEndAt = data.endAt;
+  eggHasBet = data.hasBet;
+  updateEggButton();
+});
+
+socket.on("egg-round-new", data=>{
+  eggEndAt = data.endAt;
+  eggHasBet = false;
+  document.getElementById("eggResult").textContent = "x ?";
+  updateEggButton();
+});
+
 
 
 
@@ -647,4 +721,18 @@ socket.on("barn-update", data => {
 
 setInterval(()=>{
   render();
+},1000);
+
+
+
+setInterval(()=>{
+  if(!eggEndAt) return;
+
+  const left = Math.max(0,
+    Math.floor((eggEndAt - Date.now())/1000)
+  );
+
+  const el = document.getElementById("eggCountdown");
+  if(el) el.textContent = left + "s";
+
 },1000);

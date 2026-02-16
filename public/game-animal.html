@@ -919,6 +919,66 @@ body{
 }
 
 
+/* ================= EGG MULTIPLIER ================= */
+
+.egg-multiplier-box{
+  margin:16px;
+  padding:16px;
+  border-radius:20px;
+  background:rgba(0,255,150,.06);
+  border:1px solid rgba(0,255,150,.25);
+  backdrop-filter:blur(10px);
+  box-shadow:0 0 25px rgba(0,255,150,.2);
+  text-align:center;
+}
+
+.egg-multi-header{
+  display:flex;
+  justify-content:space-between;
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+#eggCountdown{
+  color:#00ff99;
+}
+
+.egg-multi-result{
+  font-size:32px;
+  font-weight:900;
+  margin:8px 0;
+  letter-spacing:2px;
+}
+
+.egg-multi-bet{
+  display:flex;
+  gap:8px;
+}
+
+.egg-multi-bet input{
+  flex:1;
+  padding:10px;
+  border-radius:12px;
+  border:none;
+  background:#111;
+  color:#fff;
+}
+
+.egg-multi-bet button{
+  padding:10px 16px;
+  border:none;
+  border-radius:12px;
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  font-weight:bold;
+  cursor:pointer;
+}
+
+.egg-multi-bet button.locked{
+  opacity:.5;
+  pointer-events:none;
+}
+
+
 </style>
 </head>
 <body>
@@ -960,6 +1020,35 @@ body{
 
 </div>
 
+
+
+<!-- ================= EGG MULTIPLIER PANEL ================= -->
+<div class="egg-multiplier-box">
+
+  <div class="egg-multi-header">
+    🥚 Mystic Egg Multiplier
+    <span id="eggCountdown">60s</span>
+  </div>
+
+  <div class="egg-multi-result" id="eggResult">
+    x ?
+  </div>
+
+  <div class="egg-multi-bet">
+
+    <input type="number"
+           id="eggBetInput"
+           placeholder="Enter 💎"
+           min="1">
+
+    <button id="eggBetBtn"
+            onclick="placeEggBet()">
+      BET
+    </button>
+
+  </div>
+
+</div>
 
 
 <div class="farm-grid" id="farmGrid"></div>
