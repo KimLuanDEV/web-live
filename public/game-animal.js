@@ -747,7 +747,7 @@ socket.on("egg-round-state", data=>{
   eggHasBet = data.hasBet;
   eggHasBet = data.hasBet;
 
-  document.getElementById("eggBetBtn")
+   document.getElementById("eggBetBtn")
   .disabled = eggHasBet;
 
   const eggImg = document.getElementById("multiEggImg");
@@ -938,12 +938,9 @@ function openEggBetSheet(){
     div.className = "egg-bet-item";
     div.textContent = amount + " 💎";
 
-    div.onclick = (e)=>{
-      e.stopPropagation();
-
+    div.onclick = ()=>{
       document.querySelectorAll(".egg-bet-item")
         .forEach(x=>x.classList.remove("active"));
-
       div.classList.add("active");
       selectedEggBet = amount;
     };
@@ -952,15 +949,7 @@ function openEggBetSheet(){
   });
 
   overlay.classList.remove("hidden");
-
-  // 👇 click outside close
-  overlay.onclick = (e)=>{
-    if(e.target.id === "eggBetOverlay"){
-      closeEggBetSheet();
-    }
-  };
 }
-
 
 function closeEggBetSheet(){
   document.getElementById("eggBetOverlay")
@@ -978,44 +967,3 @@ function confirmEggBet(){
   closeEggBetSheet();
 }
 
-
-
-function quickBet(percent){
-
-  const coins = currentCoin || 0;
-
-  if(coins <= 0) return;
-
-  const amount = Math.floor(coins * percent);
-
-  if(amount < 1) return;
-
-  selectedEggBet = amount;
-
-  // remove highlight
-  document.querySelectorAll(".egg-bet-item")
-    .forEach(x=>x.classList.remove("active"));
-
-  // tìm item trùng trong grid
-  const items = document.querySelectorAll(".egg-bet-item");
-
-  let matched = false;
-
-  items.forEach(item=>{
-    if(item.textContent.includes(amount)){
-      item.classList.add("active");
-      matched = true;
-    }
-  });
-
-  // nếu không có trong grid → tạo tạm item custom
-  if(!matched){
-    const grid = document.getElementById("eggBetGrid");
-
-    const div = document.createElement("div");
-    div.className = "egg-bet-item active";
-    div.textContent = amount + " 💎";
-
-    grid.appendChild(div);
-  }
-}
