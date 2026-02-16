@@ -802,6 +802,38 @@ let wheelRound = {
 };
 
 
+// ================================
+// 🥚 EGG MULTIPLIER ROUND (GLOBAL)
+// ================================
+let eggRound = {
+  id: Date.now(),
+  startAt: Date.now(),
+  endAt: Date.now() + 60000,
+  bets: []
+};
+
+const EGG_MULTIPLIERS = [
+  { m: 0,   w: 35 },   // x0
+  { m: 0.5, w: 25 },   // x0.5
+  { m: 1,   w: 20 },   // x1
+  { m: 1.5, w: 12 },   // x1.5
+  { m: 2,   w: 8 }     // x2
+];
+
+function pickEggMultiplier(){
+  const total = EGG_MULTIPLIERS.reduce((s,x)=>s+x.w,0);
+  let r = Math.random()*total;
+  for(const item of EGG_MULTIPLIERS){
+    if((r -= item.w) <= 0){
+      return item.m;
+    }
+  }
+  return 0;
+}
+
+
+
+
 ensureWheelSecret(wheelRound);
 
 const RPS_BET_LOCK_BEFORE_MS = 5000; // 🔒 khóa trước 5s
@@ -1276,6 +1308,61 @@ io.emit("rps-round-new",{
 
 
 // ================================
+// 🥚 AUTO EGG RESULT EVERY 60s
+// ================================
+setInterval(() => {
+  try {
+
+    const users = loadUsers();
+    const multiplier = pickEggMultiplier();
+
+    eggRound.bets.forEach(o=>{
+      const me = users[o.uid];
+      if(!me?.profile) return;
+
+      const win = Math.floor(o.bet * multiplier);
+      me.profile.coins += win;
+    });
+
+    saveUsers(users);
+
+    // emit coin update
+    eggRound.bets.forEach(o=>{
+      emitCoinUpdate(o.uid);
+    });
+
+    io.emit("egg-round-result",{
+      roundId: eggRound.id,
+      multiplier
+    });
+
+    // reset round
+    const id = Date.now();
+
+    eggRound = {
+      id,
+      startAt: id,
+      endAt: id + 60000,
+      bets: []
+    };
+
+    io.emit("egg-round-new",{
+      roundId: eggRound.id,
+      endAt: eggRound.endAt
+    });
+
+  } catch(e){
+    console.error("❌ egg round error", e);
+  }
+
+},60000);
+
+
+
+
+
+
+// ================================
 // 🔐 SOCKET AUTH & FORCE LOGOUT (FIX)
 // ================================
 io.on("connection", socket => {
@@ -1509,6 +1596,16 @@ socket.emit("wheel-round-count", {
 });
 
 
+
+// 🥚 SEND EGG ROUND STATE
+socket.emit("egg-round-state",{
+  roundId: eggRound.id,
+  endAt: eggRound.endAt,
+  hasBet: eggRound.bets.some(b=>b.uid===uid)
+});
+
+
+
 // 🏰 SEND BARN DATA
 const usersNow = loadUsers();
 const meNow = usersNow[uid];
@@ -1581,6 +1678,44 @@ io.emit("admin-wheel-bet-new", {
 });
 
 
+// ================================
+// 🥚 EGG BET
+// ================================
+socket.on("egg-bet", data=>{
+
+  const uid = socket.data.uid;
+  if (!uid) return socket.emit("egg-error",{message:"NOT_LOGIN"});
+
+  const bet = Math.floor(Number(data?.bet));
+  if (!bet || bet <= 0)
+    return socket.emit("egg-error",{message:"BET_INVALID"});
+
+  const users = loadUsers();
+  const me = users[uid];
+  if (!me?.profile)
+    return socket.emit("egg-error",{message:"USER_INVALID"});
+
+  if (eggRound.bets.some(b => b.uid === uid))
+    return socket.emit("egg-error",{message:"ALREADY_BET"});
+
+  if (me.profile.coins < bet)
+    return socket.emit("egg-error",{message:"NOT_ENOUGH_COIN"});
+
+  me.profile.coins -= bet;
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  eggRound.bets.push({
+    uid,
+    bet
+  });
+
+  socket.emit("egg-bet-ok",{
+    roundId: eggRound.id,
+    bet
+  });
+
+});
 
 
 
