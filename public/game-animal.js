@@ -597,7 +597,7 @@ function updateEggButton(){
   }
 
   btn.classList.remove("locked");
-  btn.textContent = "BET";
+  btn.textContent = "BUY";
 }
 
 
