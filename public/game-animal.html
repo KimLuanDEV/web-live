@@ -986,23 +986,21 @@ body{
 
 .egg-multiplier-box.pro{
   position:fixed;
-  top:0;
   left:0;
   width:100%;
 
-  padding:20px;
+  padding:16px 18px 18px;
 
   background:
     linear-gradient(180deg,
       rgba(0,255,150,.12),
-      rgba(0,0,0,.85));
+      rgba(0,0,0,.9));
 
-  border-bottom:1px solid rgba(0,255,150,.35);
+  border-bottom:1px solid rgba(0,255,150,.25);
 
-  backdrop-filter:blur(16px);
+  backdrop-filter:blur(14px);
 
-  box-shadow:
-    0 10px 40px rgba(0,255,150,.25);
+  box-shadow:0 8px 30px rgba(0,255,150,.25);
 
   z-index:900;
 }
@@ -1015,55 +1013,58 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  margin-bottom:16px;
+  margin-bottom:12px;
 }
 
 .egg-title{
-  font-weight:800;
-  font-size:16px;
-  letter-spacing:1px;
+  font-size:15px;
+  font-weight:700;
+  opacity:.9;
 }
 
 .egg-timer{
-  padding:6px 14px;
+  min-width:60px;
+  text-align:center;
+  padding:6px 12px;
   border-radius:20px;
-  font-weight:bold;
-  font-size:14px;
-
-  background:rgba(0,255,150,.15);
-  box-shadow:0 0 15px rgba(0,255,150,.6);
+  font-size:13px;
 }
+
 
 /* ===== CENTER ===== */
 
 .egg-center{
-  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
 }
 
 .nest-wrapper.big{
-  width:140px;
-  height:100px;
+  width:130px;
+  height:90px;
 }
 
 .egg-on-nest.big{
-  width:90px;
-  transform:translateY(-35px);
+  width:85px;
+  transform:translateY(-32px);
 }
+
 
 /* ===== MULTIPLIER ===== */
 
 .egg-multi-result.pro{
-  margin-top:10px;
-  font-size:42px;
+  margin-top:4px;
+  font-size:36px;
   font-weight:900;
-  letter-spacing:3px;
+  letter-spacing:2px;
 
   color:#00ffcc;
 
   text-shadow:
-    0 0 10px #00ff99,
-    0 0 20px #00ccff,
-    0 0 40px rgba(0,255,150,.8);
+    0 0 8px #00ff99,
+    0 0 20px rgba(0,255,150,.8);
 }
 
 
@@ -1071,9 +1072,9 @@ body{
 /* ===== BET AREA ===== */
 
 .egg-multi-bet.pro{
-  margin-top:20px;
+  margin-top:16px;
   display:flex;
-  gap:10px;
+  gap:8px;
 }
 
 .egg-multi-bet.pro input{
