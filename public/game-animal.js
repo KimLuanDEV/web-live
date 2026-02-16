@@ -982,17 +982,40 @@ function confirmEggBet(){
 
 function quickBet(percent){
 
-  if(!window.myProfile) return;
+  const coins = currentCoin || 0;
 
-  const coins = window.myProfile.coins || 0;
+  if(coins <= 0) return;
 
-  let amount = Math.floor(coins * percent);
+  const amount = Math.floor(coins * percent);
 
   if(amount < 1) return;
 
   selectedEggBet = amount;
 
-  // highlight none
+  // remove highlight
   document.querySelectorAll(".egg-bet-item")
     .forEach(x=>x.classList.remove("active"));
+
+  // tìm item trùng trong grid
+  const items = document.querySelectorAll(".egg-bet-item");
+
+  let matched = false;
+
+  items.forEach(item=>{
+    if(item.textContent.includes(amount)){
+      item.classList.add("active");
+      matched = true;
+    }
+  });
+
+  // nếu không có trong grid → tạo tạm item custom
+  if(!matched){
+    const grid = document.getElementById("eggBetGrid");
+
+    const div = document.createElement("div");
+    div.className = "egg-bet-item active";
+    div.textContent = amount + " 💎";
+
+    grid.appendChild(div);
+  }
 }
