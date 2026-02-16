@@ -1338,13 +1338,17 @@ setInterval(() => {
       emitCoinUpdate(o.uid);
     });
 
-    // 🔥 EMIT RESULT
+    const now = Date.now();
+    const animEndAt = now + RESULT_ANIM;
+
+    // 🔥 EMIT RESULT + ANIM TIMER
     io.emit("egg-round-result",{
       roundId: eggRound.id,
-      multiplier
+      multiplier,
+      animEndAt
     });
 
-    // ⏳ 10s hoạt cảnh
+    // ⏳ SAU 10s → ROUND MỚI
     setTimeout(()=>{
 
       const id = Date.now();
@@ -1352,7 +1356,7 @@ setInterval(() => {
       eggRound = {
         id,
         startAt: id,
-        endAt: id + NEXT_ROUND_TIME,   // ✅ 50s
+        endAt: id + NEXT_ROUND_TIME, // 50s
         bets: []
       };
 

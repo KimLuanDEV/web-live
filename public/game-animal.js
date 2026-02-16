@@ -618,14 +618,16 @@ socket.on("egg-bet-ok", ()=>{
 socket.on("egg-round-result", data=>{
 
   const resultEl = document.getElementById("eggResult");
-  const eggImg = document.getElementById("multiEggImg");
-  const area = document.getElementById("eggHatchArea");
+  const eggImg   = document.getElementById("multiEggImg");
+  const area     = document.getElementById("eggHatchArea");
 
-  resultEl.textContent =
-    "x " + data.multiplier;
+  const animEndAt = data.animEndAt || (Date.now() + 10000);
 
-  // 🔒 Ngưng countdown khi đang hoạt cảnh
+  // 🔒 Dừng countdown betting
   eggEndAt = 0;
+
+  // ===== HIỂN THỊ MULTIPLIER =====
+  resultEl.textContent = "x " + data.multiplier;
 
   // ===== SUCCESS =====
   if(data.multiplier > 0){
@@ -635,18 +637,11 @@ socket.on("egg-round-result", data=>{
     area.classList.remove("egg-hatch-broken");
     area.classList.add("egg-hatch-success");
 
-    // đổi thành gà
     eggImg.src = "/assets/animals/chicken.png";
 
     const glow = document.createElement("div");
     glow.className = "multi-glow";
     area.appendChild(glow);
-
-    // ⏳ Giữ trạng thái 10 giây
-    setTimeout(()=>{
-      glow.remove();
-      area.classList.remove("egg-hatch-success");
-    },10000);
 
   }
   // ===== BROKEN =====
@@ -657,15 +652,40 @@ socket.on("egg-round-result", data=>{
     area.classList.remove("egg-hatch-success");
     area.classList.add("egg-hatch-broken");
 
-    // đổi sang broken egg
     eggImg.src = "/assets/eggs/broken_egg.png";
-
-    setTimeout(()=>{
-      area.classList.remove("egg-hatch-broken");
-    },10000);
   }
 
+  // ====================================
+  // 🔥 ĐẾM NGƯỢC 10s HOẠT CẢNH
+  // ====================================
+  function updateAnimCountdown(){
+
+    const now = Date.now();
+    const seconds = Math.max(
+      0,
+      Math.ceil((animEndAt - now) / 1000)
+    );
+
+    resultEl.textContent =
+      "x " + data.multiplier + " • " + seconds + "s";
+
+    if(seconds > 0){
+      requestAnimationFrame(updateAnimCountdown);
+    }else{
+
+      // 🔄 RESET EFFECT KHI HẾT HOẠT CẢNH
+      area.classList.remove("egg-hatch-success");
+      area.classList.remove("egg-hatch-broken");
+
+      const glowEl = area.querySelector(".multi-glow");
+      if(glowEl) glowEl.remove();
+    }
+  }
+
+  updateAnimCountdown();
+
 });
+
 
 
 
