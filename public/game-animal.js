@@ -620,6 +620,7 @@ socket.on("egg-round-result", data=>{
   const resultEl = document.getElementById("eggResult");
   const eggImg   = document.getElementById("multiEggImg");
   const area     = document.getElementById("eggHatchArea");
+  const countdownEl = document.getElementById("eggCountdown");
 
   const animEndAt = data.animEndAt || (Date.now() + 10000);
 
@@ -656,7 +657,7 @@ socket.on("egg-round-result", data=>{
   }
 
   // ====================================
-  // 🔥 ĐẾM NGƯỢC 10s HOẠT CẢNH
+  // 🔥 ĐẾM NGƯỢC 10s TẠI VỊ TRÍ COUNTDOWN
   // ====================================
   function updateAnimCountdown(){
 
@@ -666,8 +667,10 @@ socket.on("egg-round-result", data=>{
       Math.ceil((animEndAt - now) / 1000)
     );
 
-    resultEl.textContent =
-      "x " + data.multiplier + " • " + seconds + "s";
+    if(countdownEl){
+      countdownEl.textContent = seconds + "s";
+      countdownEl.classList.add("danger");
+    }
 
     if(seconds > 0){
       requestAnimationFrame(updateAnimCountdown);
@@ -679,6 +682,10 @@ socket.on("egg-round-result", data=>{
 
       const glowEl = area.querySelector(".multi-glow");
       if(glowEl) glowEl.remove();
+
+      if(countdownEl){
+        countdownEl.classList.remove("danger");
+      }
     }
   }
 
