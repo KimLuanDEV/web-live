@@ -855,30 +855,29 @@ function pickEggMultiplier(){
 
   const r = Math.random();
 
-  // 💀 45% thua
-  if(r < 0.45){
+  // 💀 65% thua
+  if(r < 0.65){
     return 0;
   }
 
-  // 🔻 25% lời nhỏ (0 → 2)
-  if(r < 0.70){
-    return Number((Math.random() * 2).toFixed(2));
+  // 🔻 20% lời nhỏ (0.5 → 1.5)
+  if(r < 0.85){
+    return Number((0.5 + Math.random() * 1).toFixed(2));
   }
 
-  // 🔥 20% lời vừa (2 → 10)
-  if(r < 0.90){
-    return Number((2 + Math.random() * 8).toFixed(2));
+  // 🔥 10% lời vừa (2 → 5)
+  if(r < 0.95){
+    return Number((2 + Math.random() * 3).toFixed(2));
   }
 
-  // 💎 9% lời lớn (10 → 50)
+  // 💎 4% lời lớn (5 → 15)
   if(r < 0.99){
-    return Number((10 + Math.random() * 40).toFixed(2));
+    return Number((5 + Math.random() * 10).toFixed(2));
   }
 
-  // 🎰 1% jackpot (50 → 100)
-  return Number((50 + Math.random() * 50).toFixed(2));
+  // 🎰 1% jackpot (20 → 50)
+  return Number((20 + Math.random() * 30).toFixed(2));
 }
-
 
 
 
