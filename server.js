@@ -1381,11 +1381,12 @@ setInterval(() => {
     const animEndAt = now + RESULT_ANIM;
 
     // 🔥 EMIT RESULT + ANIM TIMER
-    io.emit("egg-round-result",{
-      roundId: eggRound.id,
-      multiplier,
-      animEndAt
-    });
+io.emit("egg-round-result",{
+  roundId: eggRound.id,
+  multiplier,
+  animEndAt,
+  eggType: eggRound.displayEgg.type   // 🔥 QUAN TRỌNG
+});
 
     // ⏳ SAU 10s → ROUND MỚI
     setTimeout(()=>{

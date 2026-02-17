@@ -666,7 +666,26 @@ socket.on("egg-round-result", data=>{
     area.classList.remove("egg-hatch-broken");
     area.classList.add("egg-hatch-success");
 
-    eggImg.src = "/assets/animals/chicken.png";
+    const animalMap = {
+  normal:   "chicken.png",
+  forest:   "forest_chicken.png",
+  gold:     "golden_chicken.png",
+  thunder:  "thunder_bird.png",
+  diamond:  "ice_bird.png",
+  shadow:   "shadow_beast.png",
+  dragon:   "dragon.png",
+  phoenix:  "phoenix.png",
+  celestial:"celestial_beast.png",
+  voidlord: "void_lord.png"
+};
+
+if(data.multiplier > 0){
+
+  const img = animalMap[data.eggType] || "chicken.png";
+  eggImg.src = "/assets/animals/" + img;
+
+}
+
 
     const glow = document.createElement("div");
     glow.className = "multi-glow";
