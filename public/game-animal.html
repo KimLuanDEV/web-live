@@ -1287,9 +1287,12 @@ body{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  padding:8px 0 14px;
+  padding:8px 6px 14px;   /* 👈 thêm padding ngang */
+  gap:12px;  
 
   border-bottom:1px solid rgba(0,255,150,.2);
+  padding-left: max(6px, env(safe-area-inset-left));
+  padding-right: max(6px, env(safe-area-inset-right));
 }
 
 /* LEFT */
@@ -1348,6 +1351,9 @@ body{
   display:flex;
   flex-direction:column;
   align-items:flex-end;
+  
+  min-width:85px;         /* 👈 giữ chiều rộng tối thiểu */
+  flex-shrink:0;          /* 👈 không cho bị ép */
 }
 
 .timer-label{
