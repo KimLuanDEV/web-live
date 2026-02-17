@@ -757,19 +757,29 @@ function animateMultiplier(target){
 
 
 
-
-socket.on("egg-round-state", data=>{
+socket.on("egg-round-state", data => {
 
   eggEndAt = data.endAt;
   eggHasBet = data.hasBet;
-  eggHasBet = data.hasBet;
 
-   document.getElementById("eggBetBtn")
-  .disabled = eggHasBet;
+  // 🔒 Disable nút nếu đã cược
+  const betBtn = document.getElementById("eggBetBtn");
+  if (betBtn) {
+    betBtn.disabled = eggHasBet;
+  }
 
+  // 💎 Hiển thị lại số bet khi reload
+  const betBox = document.getElementById("eggCurrentBet");
+  if (betBox) {
+    const strong = betBox.querySelector("strong");
+    if (strong) {
+      strong.textContent = (data.bet || 0) + " 💎";
+    }
+  }
+
+  // 🥚 Sync hình trứng
   const eggImg = document.getElementById("multiEggImg");
-
-  if(data.displayEgg && eggImg){
+  if (data.displayEgg && eggImg) {
     eggImg.src = "/assets/eggs/" + data.displayEgg.img;
   }
 

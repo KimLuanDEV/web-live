@@ -1658,12 +1658,16 @@ socket.emit("wheel-round-count", {
 
 
 // 🥚 SEND EGG ROUND STATE
+const myEggBet = eggRound.bets.find(b => b.uid === uid);
+
 socket.emit("egg-round-state",{
   roundId: eggRound.id,
   endAt: eggRound.endAt,
-  hasBet: eggRound.bets.some(b=>b.uid===uid),
+  hasBet: !!myEggBet,
+  bet: myEggBet?.bet || 0,
   displayEgg: eggRound.displayEgg
 });
+
 
 
 
