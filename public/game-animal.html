@@ -1276,6 +1276,119 @@ body{
 }
 
 
+
+
+
+/* ========================= */
+/* 🥚 EGG TOP BAR PRO */
+/* ========================= */
+
+.egg-top-bar.pro{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:8px 0 14px;
+
+  border-bottom:1px solid rgba(0,255,150,.2);
+}
+
+/* LEFT */
+
+.egg-title-wrap{
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.egg-icon-glow{
+  font-size:22px;
+  width:38px;
+  height:38px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:50%;
+
+  background:radial-gradient(circle,
+    rgba(0,255,150,.4),
+    transparent 70%);
+
+  box-shadow:
+    0 0 15px rgba(0,255,150,.6),
+    0 0 30px rgba(0,255,150,.3);
+
+  animation:eggIconPulse 2s infinite;
+}
+
+@keyframes eggIconPulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.15); }
+  100%{ transform:scale(1); }
+}
+
+.egg-title-text{
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:.5px;
+  color:#00ffcc;
+  text-shadow:0 0 10px rgba(0,255,150,.7);
+}
+
+.egg-sub{
+  font-size:10px;
+  opacity:.6;
+  font-weight:500;
+  letter-spacing:.5px;
+  margin-top:2px;
+}
+
+/* RIGHT */
+
+.egg-timer-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+}
+
+.timer-label{
+  font-size:10px;
+  opacity:.6;
+  margin-bottom:2px;
+  letter-spacing:1px;
+}
+
+.egg-timer{
+  min-width:60px;
+  padding:6px 14px;
+  border-radius:30px;
+  font-size:14px;
+  font-weight:900;
+
+  background:linear-gradient(90deg,#00ff99,#00ccff);
+  color:#000;
+
+  box-shadow:
+    0 0 20px rgba(0,255,150,.8);
+
+  transition:.2s ease;
+}
+
+/* 🔥 Danger state */
+
+#eggCountdown.danger{
+  background:linear-gradient(90deg,#ff0000,#ff5500);
+  color:#fff;
+
+  box-shadow:
+    0 0 25px rgba(255,0,0,.9);
+
+  animation:dangerPulse 0.8s infinite;
+}
+
+/* ========================= */
+/* 🥚 EGG TOP BAR PRO END */
+/* ========================= */
+
 </style>
 </head>
 <body>
@@ -1321,15 +1434,29 @@ body{
 
 <div class="egg-multiplier-box pro">
 
-  <div class="egg-top-bar">
-    <div class="egg-title">
-      🥚 Mystic Egg
-    </div>
+<div class="egg-top-bar pro">
 
+  <div class="egg-title-wrap">
+    <div class="egg-icon-glow">🥚</div>
+    <div class="egg-title-text">
+      Mystic Egg
+      <div class="egg-sub">
+        High Risk • High Reward
+      </div>
+    </div>
+  </div>
+
+  <div class="egg-timer-wrap">
+    <div class="timer-label">
+      NEXT HATCH
+    </div>
     <div class="egg-timer" id="eggCountdown">
       60s
     </div>
   </div>
+
+</div>
+
 
   <div class="egg-center">
 
