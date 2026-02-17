@@ -1436,6 +1436,59 @@ body{
 /* 🥚 EGG TOP BAR PRO END */
 /* ========================= */
 
+
+
+/* ========================= */
+/* ✨ EGG PARTICLES */
+/* ========================= */
+
+.egg-particles{
+  position:absolute;
+  width:180px;
+  height:180px;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;
+  z-index:1;
+}
+
+.egg-particle{
+  position:absolute;
+  width:6px;
+  height:6px;
+  border-radius:50%;
+
+  background:radial-gradient(circle,
+    #00ffcc,
+    rgba(0,255,150,.3)
+  );
+
+  box-shadow:
+    0 0 8px #00ffcc,
+    0 0 15px rgba(0,255,150,.8);
+
+  animation:particleOrbit linear infinite;
+}
+
+/* Orbit motion */
+@keyframes particleOrbit{
+  from{
+    transform:
+      rotate(0deg)
+      translateX(70px)
+      rotate(0deg);
+  }
+  to{
+    transform:
+      rotate(360deg)
+      translateX(70px)
+      rotate(-360deg);
+  }
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1508,6 +1561,9 @@ body{
   <div class="egg-center">
 
     <div class="egg-hatch-area" id="eggHatchArea">
+
+      <div class="egg-particles" id="eggParticles"></div>
+
 
       <div class="nest-wrapper big">
         <img src="/assets/farm/nest.png" class="nest-img">

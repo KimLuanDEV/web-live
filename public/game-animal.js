@@ -1069,3 +1069,29 @@ function updateLayoutHeights(){
 
 window.addEventListener("load", updateLayoutHeights);
 window.addEventListener("resize", updateLayoutHeights);
+
+
+function initEggParticles(){
+
+  const container = document.getElementById("eggParticles");
+  if(!container) return;
+
+  container.innerHTML = "";
+
+  const count = 12;
+
+  for(let i=0;i<count;i++){
+
+    const p = document.createElement("div");
+    p.className = "egg-particle";
+
+    const duration = 6 + Math.random()*6;
+
+    p.style.animationDuration = duration + "s";
+    p.style.animationDelay = (-Math.random()*duration) + "s";
+
+    container.appendChild(p);
+  }
+}
+
+window.addEventListener("load", initEggParticles);
