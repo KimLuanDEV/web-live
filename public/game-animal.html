@@ -986,9 +986,14 @@ body{
 .egg-multiplier-box.pro{
   position:fixed;
   left:0;
-  width:100%;
+  right:0;                 /* 👈 thêm */
+  width:auto;              /* 👈 đổi */
 
-  padding:16px 18px 18px;
+  padding:
+    16px
+    max(18px, env(safe-area-inset-right))
+    18px
+    max(18px, env(safe-area-inset-left));
 
   background:
     linear-gradient(180deg,
@@ -996,13 +1001,11 @@ body{
       rgba(0,0,0,.9));
 
   border-bottom:1px solid rgba(0,255,150,.25);
-
   backdrop-filter:blur(14px);
-
   box-shadow:0 8px 30px rgba(0,255,150,.25);
-
   z-index:900;
 }
+
 
 
 
@@ -1301,6 +1304,7 @@ body{
   display:flex;
   align-items:center;
   gap:10px;
+  min-width:0;
 }
 
 .egg-icon-glow{
