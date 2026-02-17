@@ -900,7 +900,7 @@ body{
   width:60px;
   height:auto;
   z-index:2;
-  transform:translateY(-38px);  /* 👈 đẩy lên */
+ 
 }
 
 
@@ -1070,15 +1070,18 @@ body{
 
 
 .nest-wrapper.big{
+  display:flex;
   width:130px;
-  height:90px;
+  height:110px;
   position:relative;
   z-index:2;
+  align-items:flex-end;
+  justify-content:center;
 }
 
 .egg-on-nest.big{
   width:85px;
-  transform:translateY(-32px);
+  
 }
 
 
@@ -1436,59 +1439,6 @@ body{
 /* 🥚 EGG TOP BAR PRO END */
 /* ========================= */
 
-
-
-/* ========================= */
-/* ✨ EGG PARTICLES */
-/* ========================= */
-
-.egg-particles{
-  position:absolute;
-  width:180px;
-  height:180px;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  pointer-events:none;
-  z-index:1;
-}
-
-.egg-particle{
-  position:absolute;
-  width:6px;
-  height:6px;
-  border-radius:50%;
-
-  background:radial-gradient(circle,
-    #00ffcc,
-    rgba(0,255,150,.3)
-  );
-
-  box-shadow:
-    0 0 8px #00ffcc,
-    0 0 15px rgba(0,255,150,.8);
-
-  animation:particleOrbit linear infinite;
-}
-
-/* Orbit motion */
-@keyframes particleOrbit{
-  from{
-    transform:
-      rotate(0deg)
-      translateX(70px)
-      rotate(0deg);
-  }
-  to{
-    transform:
-      rotate(360deg)
-      translateX(70px)
-      rotate(-360deg);
-  }
-}
-
-
-
 </style>
 </head>
 <body>
@@ -1561,9 +1511,6 @@ body{
   <div class="egg-center">
 
     <div class="egg-hatch-area" id="eggHatchArea">
-
-      <div class="egg-particles" id="eggParticles"></div>
-
 
       <div class="nest-wrapper big">
         <img src="/assets/farm/nest.png" class="nest-img">
