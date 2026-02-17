@@ -1081,30 +1081,25 @@ body{
 /* ============================= */
 
 .egg-multi-bet.pro{
-
-  margin-top:18px;
+  position:fixed;
+  left:0;
+  width:100%;
 
   display:flex;
-  align-items:center;
+  gap:0;
 
-  border-radius:22px;
-  overflow:hidden;
+  padding:0 16px 14px;
 
-  background:
-    linear-gradient(
+  background:linear-gradient(
       180deg,
-      rgba(0,255,150,.15),
-      rgba(0,0,0,.8)
-    );
+      rgba(0,255,150,.12),
+      rgba(0,0,0,.85)
+  );
 
-  border:1px solid rgba(0,255,150,.35);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(0,255,150,.25);
 
-  box-shadow:
-    0 0 25px rgba(0,255,150,.35);
-
-  backdrop-filter:blur(10px);
-
-  transition:.25s ease;
+  z-index:890;
 }
 
 
