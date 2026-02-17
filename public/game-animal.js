@@ -1040,3 +1040,22 @@ socket.on("egg-error", data=>{
   }
 
 });
+
+
+function updateLayoutHeights(){
+  const header = document.querySelector(".farm-header");
+  const eggBox = document.querySelector(".egg-multiplier-box.pro");
+
+  if(header && eggBox){
+    const headerH = header.offsetHeight;
+    const eggH = eggBox.offsetHeight;
+
+    eggBox.style.top = headerH + "px";
+
+    const grid = document.querySelector(".farm-grid");
+    grid.style.marginTop = (headerH + eggH + 20) + "px";
+  }
+}
+
+window.addEventListener("load", updateLayoutHeights);
+window.addEventListener("resize", updateLayoutHeights);
