@@ -1076,13 +1076,115 @@ body{
 
 /* ===== BET AREA ===== */
 
+/* ============================= */
+/* 💎 PRO BET BAR */
+/* ============================= */
+
 .egg-multi-bet.pro{
-  margin-top:16px;
+
+  margin-top:18px;
 
   display:flex;
-  gap:12px;
+  align-items:center;
 
-  padding:0 6px;   /* 👈 tạo khoảng cách 2 bên */
+  border-radius:22px;
+  overflow:hidden;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,255,150,.15),
+      rgba(0,0,0,.8)
+    );
+
+  border:1px solid rgba(0,255,150,.35);
+
+  box-shadow:
+    0 0 25px rgba(0,255,150,.35);
+
+  backdrop-filter:blur(10px);
+
+  transition:.25s ease;
+}
+
+
+/* ===== LEFT SIDE ===== */
+
+.egg-current-bet{
+  flex:1;
+
+  height:60px;
+
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+
+  font-weight:700;
+
+  background:transparent;
+
+  border-right:1px solid rgba(0,255,150,.25);
+}
+
+.egg-current-bet span{
+  font-size:12px;
+  opacity:.6;
+}
+
+.egg-current-bet strong{
+  font-size:20px;
+  color:#00ffcc;
+
+  text-shadow:
+    0 0 10px rgba(0,255,150,.9);
+}
+
+
+/* ===== BUY BUTTON ===== */
+
+#eggBetBtn{
+  width:140px;
+  height:60px;
+
+  border:none;
+  cursor:pointer;
+
+  font-weight:900;
+  letter-spacing:.5px;
+
+  background:linear-gradient(
+    90deg,
+    #00ff99,
+    #00ccff
+  );
+
+  color:#000;
+
+  transition:.25s ease;
+
+  box-shadow:
+    inset 0 0 15px rgba(255,255,255,.3),
+    0 0 20px rgba(0,255,150,.8);
+}
+
+#eggBetBtn:hover{
+  transform:scale(1.05);
+  box-shadow:
+    0 0 35px rgba(0,255,150,1);
+}
+
+#eggBetBtn:active{
+  transform:scale(.95);
+}
+
+
+/* ===== LOCKED STATE ===== */
+
+#eggBetBtn.locked{
+  background:#333;
+  color:#aaa;
+  box-shadow:none;
 }
 
 
