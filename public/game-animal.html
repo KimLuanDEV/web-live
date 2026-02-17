@@ -986,26 +986,31 @@ body{
 .egg-multiplier-box.pro{
   position:fixed;
   left:0;
-  right:0;                 /* 👈 thêm */
-  width:auto;              /* 👈 đổi */
+  right:0;
 
   padding:
-    16px
-    max(18px, env(safe-area-inset-right))
     18px
-    max(18px, env(safe-area-inset-left));
+    max(20px, env(safe-area-inset-right))
+    22px
+    max(20px, env(safe-area-inset-left));
 
   background:
-    linear-gradient(180deg,
-      rgba(0,255,150,.12),
-      rgba(0,0,0,.9));
+    linear-gradient(
+      180deg,
+      rgba(0,255,150,.18),
+      rgba(0,0,0,.95)
+    );
 
-  border-bottom:1px solid rgba(0,255,150,.25);
-  backdrop-filter:blur(14px);
-  box-shadow:0 8px 30px rgba(0,255,150,.25);
+  border-bottom:1px solid rgba(0,255,150,.35);
+
+  backdrop-filter:blur(18px);
+
+  box-shadow:
+    0 15px 40px rgba(0,255,150,.25),
+    inset 0 0 40px rgba(0,255,150,.1);
+
   z-index:900;
 }
-
 
 
 
@@ -1036,16 +1041,39 @@ body{
 /* ===== CENTER ===== */
 
 .egg-center{
+  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
-  gap:6px;
+  gap:8px;
 }
+
+.egg-center::before{
+  content:"";
+  position:absolute;
+  width:160px;
+  height:160px;
+  border-radius:50%;
+
+  background:
+    radial-gradient(
+      circle,
+      rgba(0,255,150,.35),
+      transparent 70%
+    );
+
+  filter:blur(25px);
+  z-index:0;
+}
+
+
 
 .nest-wrapper.big{
   width:130px;
   height:90px;
+  position:relative;
+  z-index:2;
 }
 
 .egg-on-nest.big{
@@ -1057,11 +1085,12 @@ body{
 /* ===== MULTIPLIER ===== */
 
 .egg-multi-result.pro{
-  margin-top:4px;
-  font-size:36px;
+  margin-top:6px;
+  font-size:40px;
   font-weight:900;
-  letter-spacing:2px;
+  letter-spacing:3px;
 
+  
   color:#00ffcc;
 
   text-shadow:
@@ -1100,28 +1129,36 @@ body{
 }
 
 .egg-multi-bet.pro button{
-  margin-right: 25px;
-  min-width:150px;
-  padding:14px 22px;
-  border:none;
-  border-radius:16px;
-  font-weight:800;
-  font-size:14px;
+  flex:1;
+  height:58px;
 
-  background:linear-gradient(90deg,#00ff99,#00ccff);
+  border:none;
+  border-radius:20px;
+
+  font-weight:900;
+  font-size:15px;
+  letter-spacing:1px;
+
+  background:
+    linear-gradient(90deg,#00ff99,#00ccff);
+
   color:#000;
 
   box-shadow:
-    0 0 25px rgba(0,255,150,.7);
+    0 8px 30px rgba(0,255,150,.6),
+    0 0 40px rgba(0,255,150,.6);
 
-  transition:.2s ease;
+  transition:.25s ease;
 }
 
 .egg-multi-bet.pro button:hover{
   transform:translateY(-3px);
-  box-shadow:
-    0 0 35px rgba(0,255,150,1);
 }
+
+.egg-multi-bet.pro button:active{
+  transform:scale(.96);
+}
+
 
 .egg-multi-bet.pro button.locked{
   opacity:.4;
@@ -1238,30 +1275,29 @@ body{
 
 .egg-current-bet{
   flex:1;
-  height:50px;
+  height:58px;
 
   display:flex;
   flex-direction:column;
   justify-content:center;
   align-items:center;
 
-  border-radius:18px;
+  border-radius:20px;
 
   background:
     linear-gradient(
       180deg,
-      rgba(0,255,150,.18),
+      rgba(0,255,150,.25),
       rgba(0,0,0,.4)
     );
 
-  border:1px solid rgba(0,255,150,.4);
+  border:1px solid rgba(0,255,150,.5);
 
   font-weight:700;
-  letter-spacing:.5px;
 
   box-shadow:
-    inset 0 0 10px rgba(0,255,150,.3),
-    0 0 20px rgba(0,255,150,.3);
+    inset 0 0 15px rgba(0,255,150,.3),
+    0 0 25px rgba(0,255,150,.3);
 
   transition:.2s ease;
 }
@@ -1272,12 +1308,13 @@ body{
 }
 
 .egg-current-bet strong{
-  font-size:18px;
+  font-size:20px;
   color:#00ffcc;
-  text-shadow:
-    0 0 8px rgba(0,255,150,.8);
-}
 
+  text-shadow:
+    0 0 10px rgba(0,255,150,.9),
+    0 0 20px rgba(0,255,150,.6);
+}
 
 
 
