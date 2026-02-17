@@ -1061,7 +1061,8 @@ function updateLayoutHeights(){
     const grid = document.querySelector(".farm-grid");
 
     grid.style.marginTop =
-      (headerH + eggH + betBar.offsetHeight + 20) + "px";
+  (headerH + eggH + betBar.offsetHeight) + "px";
+
   }
 }
 
