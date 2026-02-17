@@ -120,16 +120,9 @@ if(a.stage === 2){
 }else{
 
   // ===== Egg Stage =====
-  stageHTML = `
-    <div class="nest-wrapper">
-      <img src="/assets/farm/nest.png"
-           class="nest-img">
-      <img src="${eggImg}"
-           class="egg-on-nest">
-    </div>
-  `;
 
-  // Crack effect chỉ dựa trên progress
+  let crackHTML = "";
+
   if(progress >= 90){
 
     stageClass = "almost-hatch";
@@ -142,7 +135,7 @@ if(a.stage === 2){
     if(rarityClass === "legendary") crackColor = "#ff5000";
     if(rarityClass === "mythic") crackColor = "#ff00ff";
 
-    stageHTML += `
+    crackHTML = `
       <div class="crack-overlay"
            style="
              background-image:url('${crackImg}');
@@ -152,7 +145,20 @@ if(a.stage === 2){
       </div>
     `;
   }
+
+  stageHTML = `
+    <div class="nest-wrapper">
+      <img src="/assets/farm/nest.png"
+           class="nest-img">
+
+      <img src="${eggImg}"
+           class="egg-on-nest">
+
+      ${crackHTML}
+    </div>
+  `;
 }
+
 
 
     // =============================
