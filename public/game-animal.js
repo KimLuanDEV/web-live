@@ -1103,21 +1103,29 @@ function renderEggHistory(list){
 
   bar.innerHTML = "";
 
-  list.forEach(h=>{
+  list.forEach((h, index)=>{
 
     let cls = "lose";
+    let label = "LOSE";
 
-    if(h.multiplier > 0 && h.multiplier < 2)
+    if(h.multiplier > 0 && h.multiplier < 2){
       cls = "small";
+      label = "WIN";
+    }
 
-    if(h.multiplier >= 2 && h.multiplier < 10)
+    if(h.multiplier >= 2 && h.multiplier < 10){
       cls = "big";
+      label = "BIG";
+    }
 
-    if(h.multiplier >= 10)
+    if(h.multiplier >= 10){
       cls = "jackpot";
+      label = "JACKPOT";
+    }
 
     bar.innerHTML += `
-      <div class="egg-history-item ${cls}">
+      <div class="egg-history-item ${cls} ${index===0?'latest':''}"
+           data-label="${label}">
         x${h.multiplier}
       </div>
     `;
