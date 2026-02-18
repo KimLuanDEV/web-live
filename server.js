@@ -30,14 +30,15 @@ function ensureWheelSecret(round){
     return; // ✅ đã có → không tạo lại
   }
 
-  const weightedMultipliers = [
-    { m: 0.5, w: 55 },
-    { m: 1.2, w: 20 },
-    { m: 1.5, w: 12 },
-    { m: 2,   w: 10 },
-    { m: 5,   w: 2 },
-    { m: 10,  w: 1 }
-  ];
+const weightedMultipliers = [
+  { m: 0.5, w: 65 },
+  { m: 1.2, w: 15 },
+  { m: 1.5, w: 8 },
+  { m: 2,   w: 7 },
+  { m: 5,   w: 3 },
+  { m: 10,  w: 2 }
+];
+
 
   const total = weightedMultipliers.reduce((s, x) => s + x.w, 0);
   let r = Math.random() * total;
