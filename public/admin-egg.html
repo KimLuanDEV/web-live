@@ -84,27 +84,13 @@ h2{
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/socket.io/socket.io.js"></script>
 <script>
-
-// 🔥 LẤY UID TỪ HỆ THỐNG LOGIN
-const uid = localStorage.getItem("uid");
-
-if(!uid){
-  alert("Not logged in");
-  location.href = "/";
-}
-
-// 🔥 CONNECT SOCKET BẰNG UID THẬT
 const socket = io({
-  auth:{ uid }
+  auth:{ uid:"KimDogCat" } // 🔥 thay bằng uid admin
 });
 
 let endAt = 0;
 
-// ===============================
-// REALTIME SECRET UPDATE
-// ===============================
 socket.on("admin-egg-secret-update", data=>{
 
   document.getElementById("roundId").textContent = data.roundId;
@@ -121,21 +107,16 @@ socket.on("admin-egg-secret-update", data=>{
   endAt = data.endAt;
 });
 
-// ===============================
-// TIMER
-// ===============================
+
 setInterval(()=>{
   if(!endAt) return;
-  const left = Math.max(
-    0,
+  const left = Math.max(0,
     Math.floor((endAt - Date.now())/1000)
   );
   document.getElementById("timer").textContent = left;
 },1000);
 
-// ===============================
-// OVERRIDE
-// ===============================
+
 async function overrideEgg(){
 
   const value = Number(
@@ -153,7 +134,7 @@ async function overrideEgg(){
       method:"POST",
       headers:{
         "Content-Type":"application/json",
-        "x-uid": uid
+        "x-uid":"KimDogCat" // 🔥 thay UID admin
       },
       body: JSON.stringify({
         multiplier:value
@@ -173,6 +154,8 @@ async function overrideEgg(){
     status.innerText="❌ " + (data.message || "Failed");
   }
 }
+
+
 
 </script>
 
