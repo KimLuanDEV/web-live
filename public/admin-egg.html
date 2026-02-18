@@ -80,8 +80,15 @@ h2{
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
+
+const uid = localStorage.getItem("uid");
+
+if(!uid){
+  alert("❌ Not logged in");
+}
+
 const socket = io({
-  auth:{ uid:"ADMIN_ID_HERE" } // 🔥 thay bằng uid admin
+  auth:{ uid }
 });
 
 let endAt = 0;
@@ -96,48 +103,59 @@ socket.on("admin-egg-secret-update", data=>{
 
 setInterval(()=>{
   if(!endAt) return;
-  const left = Math.max(0,
+  const left = Math.max(
+    0,
     Math.floor((endAt - Date.now())/1000)
   );
   document.getElementById("timer").textContent = left;
 },1000);
 
 
-
-
 async function overrideEgg(){
+
+  if(!uid){
+    alert("❌ Not logged in");
+    return;
+  }
 
   const m = Number(
     document.getElementById("overrideMulti").value
   );
 
-  if(!m && m !== 0){
+  if(isNaN(m) || m < 0){
     alert("Invalid multiplier");
     return;
   }
 
-  const res = await fetch(
-    "/api/admin/egg/override",
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json",
-        "x-uid":"ADMIN_ID_HERE"
-      },
-      body: JSON.stringify({ multiplier:m })
+  try{
+
+    const res = await fetch(
+      "/api/admin/egg/override",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json",
+          "x-uid": uid
+        },
+        body: JSON.stringify({ multiplier:m })
+      }
+    );
+
+    const json = await res.json();
+
+    if(!json.ok){
+      alert("❌ " + (json.message || "Override failed"));
+      console.log("Override error:", json);
+      return;
     }
-  );
 
-  const json = await res.json();
+    alert("✅ Override success → x" + m);
 
-  if(!json.ok){
-    alert(json.message || "Override failed");
-    return;
+  }catch(err){
+    console.error(err);
+    alert("Server error");
   }
-
-  alert("Override success → x" + m);
 }
-
 
 </script>
 
