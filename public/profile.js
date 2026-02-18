@@ -37,6 +37,23 @@ if (btnAdmin && window.__profileAuth) {
 }
 
 
+const btnAdminPanel = document.getElementById("btnAdminPanel");
+
+if(btnAdminPanel){
+  const isAdmin =
+    window.__profileAuth?.role === "admin" ||
+    (window.__profileAuth?.roles || []).includes("admin");
+
+  btnAdminPanel.classList.toggle("hidden", !isAdmin);
+
+  btnAdminPanel.onclick = () => {
+    location.href = "/admin-control.html";
+  };
+}
+
+
+
+
 
 
 // 👥 / 💬 PROFILE ACTION VISIBILITY (FIX DỨT ĐIỂM)
