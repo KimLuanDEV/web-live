@@ -1096,3 +1096,40 @@ window.addEventListener("load", updateLayoutHeights);
 window.addEventListener("resize", updateLayoutHeights);
 
 
+function renderEggHistory(list){
+
+  const bar = document.getElementById("eggHistoryBar");
+  if(!bar) return;
+
+  bar.innerHTML = "";
+
+  list.forEach(h=>{
+
+    let cls = "lose";
+
+    if(h.multiplier > 0 && h.multiplier < 2)
+      cls = "small";
+
+    if(h.multiplier >= 2 && h.multiplier < 10)
+      cls = "big";
+
+    if(h.multiplier >= 10)
+      cls = "jackpot";
+
+    bar.innerHTML += `
+      <div class="egg-history-item ${cls}">
+        x${h.multiplier}
+      </div>
+    `;
+  });
+}
+
+
+
+socket.on("egg-history", list=>{
+  renderEggHistory(list);
+});
+
+socket.on("egg-history-update", list=>{
+  renderEggHistory(list);
+});

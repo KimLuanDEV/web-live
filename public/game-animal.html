@@ -1441,6 +1441,90 @@ body{
 /* 🥚 EGG TOP BAR PRO END */
 /* ========================= */
 
+
+
+/* ============================= */
+/* 📜 EGG HISTORY */
+/* ============================= */
+
+.egg-history-wrap{
+  margin-top:120px;
+  padding:0 16px;
+}
+
+.history-title{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:6px;
+}
+
+.egg-history-bar{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+  padding-bottom:6px;
+}
+
+.egg-history-bar::-webkit-scrollbar{
+  display:none;
+}
+
+.egg-history-item{
+  min-width:48px;
+  height:36px;
+
+  border-radius:10px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-weight:bold;
+  font-size:13px;
+
+  backdrop-filter:blur(6px);
+  border:1px solid rgba(255,255,255,.1);
+
+  transition:.2s ease;
+}
+
+/* LOSE */
+.egg-history-item.lose{
+  background:rgba(255,0,0,.15);
+  color:#ff4444;
+  box-shadow:0 0 12px rgba(255,0,0,.4);
+}
+
+/* SMALL WIN */
+.egg-history-item.small{
+  background:rgba(0,255,150,.15);
+  color:#00ff99;
+  box-shadow:0 0 12px rgba(0,255,150,.4);
+}
+
+/* BIG WIN */
+.egg-history-item.big{
+  background:rgba(0,200,255,.2);
+  color:#00ccff;
+  box-shadow:0 0 18px rgba(0,200,255,.7);
+}
+
+/* JACKPOT */
+.egg-history-item.jackpot{
+  background:linear-gradient(90deg,#ff00ff,#ff5000);
+  color:#fff;
+  box-shadow:0 0 25px rgba(255,0,150,1);
+  animation:jackpotPulse 1s infinite;
+}
+
+@keyframes jackpotPulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.1); }
+  100%{ transform:scale(1); }
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1542,6 +1626,15 @@ body{
     BUY
   </button>
 
+</div>
+
+<div class="egg-history-wrap">
+  <div class="history-title">
+    📜 Round History
+  </div>
+
+  <div class="egg-history-bar" id="eggHistoryBar">
+  </div>
 </div>
 
 

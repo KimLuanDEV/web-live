@@ -212,6 +212,41 @@ let rpsHistoryGlobal = loadRpsHistory();
 
 
 
+// ================================
+// 🥚 EGG HISTORY (GLOBAL)
+// ================================
+const EGG_HISTORY_FILE =
+  "/opt/render/project/data/egg_history.json";
+
+const MAX_EGG_HISTORY = 20;
+
+function loadEggHistory(){
+  try{
+    if(!fs.existsSync(EGG_HISTORY_FILE)) return [];
+    return JSON.parse(
+      fs.readFileSync(EGG_HISTORY_FILE,"utf8")
+    );
+  }catch(e){
+    console.error("❌ Load egg history failed", e);
+    return [];
+  }
+}
+
+function saveEggHistory(list){
+  try{
+    fs.writeFileSync(
+      EGG_HISTORY_FILE,
+      JSON.stringify(list,null,2)
+    );
+  }catch(e){
+    console.error("❌ Save egg history failed", e);
+  }
+}
+
+let eggHistory = loadEggHistory();
+
+
+
 
 // ================================
 // 🎡 WHEEL HISTORY (REALTIME + PERSIST)
@@ -1379,6 +1414,27 @@ setInterval(() => {
     const now = Date.now();
     const animEndAt = now + RESULT_ANIM;
 
+
+
+// 📜 LƯU LỊCH SỬ ROUND
+eggHistory.unshift({
+  roundId: eggRound.id,
+  multiplier,
+  ts: Date.now(),
+  eggType: eggRound.displayEgg.type
+});
+
+// Giữ tối đa 20
+eggHistory = eggHistory.slice(0, MAX_EGG_HISTORY);
+
+saveEggHistory(eggHistory);
+
+// Push realtime
+io.emit("egg-history-update", eggHistory);
+
+
+
+
     // 🔥 EMIT RESULT + ANIM TIMER
 io.emit("egg-round-result",{
   roundId: eggRound.id,
@@ -1629,8 +1685,11 @@ socket.on("barn-upgrade", ()=>{
 
 
 
+socket.emit("egg-history", eggHistory);
 
-  socket.emit("coin-update", { coins });
+
+
+socket.emit("coin-update", { coins });
 
 
 // ✊✋✌️ gửi lịch sử RPS cho user mới vào
