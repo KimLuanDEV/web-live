@@ -1538,6 +1538,29 @@ io.on("connection", socket => {
   bindSocketToUser(uid, socket);
 
 
+
+  // ================================
+  // 🔐 SEND CURRENT EGG SECRET TO ADMIN (REALTIME FIX)
+  // ================================
+  const usersNow = loadUsers();
+  const meNow = usersNow[uid];
+
+  if (meNow?.role === "admin" && eggRound?.secretResult) {
+
+    socket.emit("admin-egg-secret-update", {
+      roundId: eggRound.id,
+      multiplier: eggRound.secretResult.multiplier,
+      hash: eggRound.secretResult.hash,
+      endAt: eggRound.endAt,
+      eggType: eggRound.displayEgg?.type,
+      overridden: eggRound.secretResult.overridden || false
+    });
+
+  }
+
+
+
+
   // 🔥 GỬI COIN NGAY KHI CONNECT (QUAN TRỌNG)
   const users = loadUsers();
   const me = users[uid];
@@ -1773,13 +1796,6 @@ socket.emit("egg-round-state",{
   displayEgg: eggRound.displayEgg
 });
 
-
-
-
-
-// 🏰 SEND BARN DATA
-const usersNow = loadUsers();
-const meNow = usersNow[uid];
 
 socket.emit("barn-update", {
   level: meNow?.barnLevel || 1,
