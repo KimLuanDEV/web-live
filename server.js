@@ -250,6 +250,24 @@ let eggHistory = loadEggHistory();
 
 
 
+const eggRoundState = loadEggRoundCount();
+
+let eggRoundCount = eggRoundState.count || 0;
+let eggRoundDayTs = eggRoundState.dayTs || getTodayStartTsVN();
+
+// reset nếu qua ngày mới
+const eggTodayStart = getTodayStartTsVN();
+if (eggTodayStart !== eggRoundDayTs) {
+  eggRoundCount = 0;
+  eggRoundDayTs = eggTodayStart;
+
+  saveEggRoundCount({
+    dayTs: eggRoundDayTs,
+    count: eggRoundCount
+  });
+}
+
+
 
 // ================================
 // 🎡 WHEEL HISTORY (REALTIME + PERSIST)
@@ -322,6 +340,42 @@ const INVEST_STATE_FILE =
 
 
 
+// ================================
+// 🥚 EGG ROUND COUNT PERSIST (24H)
+// ================================
+const EGG_ROUND_COUNT_FILE =
+  "/opt/render/project/data/egg_round_count.json";
+
+function loadEggRoundCount(){
+  try{
+    if (!fs.existsSync(EGG_ROUND_COUNT_FILE)) {
+      return {
+        dayTs: getTodayStartTsVN(),
+        count: 0
+      };
+    }
+    return JSON.parse(
+      fs.readFileSync(EGG_ROUND_COUNT_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load egg round count failed", e);
+    return {
+      dayTs: getTodayStartTsVN(),
+      count: 0
+    };
+  }
+}
+
+function saveEggRoundCount(data){
+  try{
+    fs.writeFileSync(
+      EGG_ROUND_COUNT_FILE,
+      JSON.stringify(data, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save egg round count failed", e);
+  }
+}
 
 
   function loadInvestState(){
@@ -898,12 +952,20 @@ function ensureEggSecret(round){
 }
 
 let eggRound = (() => {
-  const id = Date.now();
+
+  eggRoundCount++;
+
+  saveEggRoundCount({
+    dayTs: eggRoundDayTs,
+    count: eggRoundCount
+  });
+
+  const id = eggRoundCount;
 
   const round = {
     id,
-    startAt: id,
-    endAt: id + ROUND_DURATION,
+    startAt: Date.now(),
+    endAt: Date.now() + ROUND_DURATION,
     bets: [],
     displayEgg: pickDisplayEgg(),
     secretResult: null
@@ -1476,41 +1538,56 @@ io.emit("egg-round-result",{
 });
 
 
-    // ⏳ SAU 10s → ROUND MỚI
-    setTimeout(()=>{
+setTimeout(()=>{
 
-      const id = Date.now();
+  // 🔄 Nếu qua ngày mới VN → reset counter
+  const todayStart = getTodayStartTsVN();
+  if (todayStart !== eggRoundDayTs) {
+    eggRoundCount = 0;
+    eggRoundDayTs = todayStart;
+  }
 
-eggRound = {
-  id,
-  startAt: id,
-  endAt: id + NEXT_ROUND_TIME,
-  bets: [],
-  displayEgg: pickDisplayEgg(),
-  secretResult: null
-};
+  // ➕ Tăng round
+  eggRoundCount++;
 
-ensureEggSecret(eggRound);
+  // 💾 Lưu persist
+  saveEggRoundCount({
+    dayTs: eggRoundDayTs,
+    count: eggRoundCount
+  });
 
-// 🔥 emit cho admin biết trước
-io.emit("admin-egg-secret-update", {
-  roundId: eggRound.id,
-  multiplier: eggRound.secretResult.multiplier,
-  hash: eggRound.secretResult.hash,
-  endAt: eggRound.endAt,
-  eggType: eggRound.displayEgg.type
-});
+  const id = eggRoundCount;
+  const now = Date.now();
+
+  eggRound = {
+    id,                         // 🔥 Round #1 #2 #3
+    startAt: now,               // vẫn dùng timestamp cho thời gian
+    endAt: now + NEXT_ROUND_TIME,
+    bets: [],
+    displayEgg: pickDisplayEgg(),
+    secretResult: null
+  };
+
+  ensureEggSecret(eggRound);
+
+  // 🔥 emit cho admin biết trước
+  io.emit("admin-egg-secret-update", {
+    roundId: eggRound.id,
+    multiplier: eggRound.secretResult.multiplier,
+    hash: eggRound.secretResult.hash,
+    endAt: eggRound.endAt,
+    eggType: eggRound.displayEgg.type
+  });
+
+  io.emit("egg-round-new",{
+    roundId: eggRound.id,
+    endAt: eggRound.endAt,
+    displayEgg: eggRound.displayEgg
+  });
+
+}, RESULT_ANIM);
 
 
-
-io.emit("egg-round-new",{
-  roundId: eggRound.id,
-  endAt: eggRound.endAt,
-  displayEgg: eggRound.displayEgg
-});
-
-
-    }, RESULT_ANIM);
 
   } catch(e){
     console.error("❌ egg round error", e);

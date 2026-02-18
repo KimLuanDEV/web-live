@@ -784,6 +784,13 @@ function animateMultiplier(target){
 
 socket.on("egg-round-state", data => {
 
+const roundEl = document.getElementById("eggRoundId");
+if(roundEl && data.roundId){
+  roundEl.textContent = data.roundId;
+}
+
+
+
   eggEndAt = data.endAt;
   eggHasBet = data.hasBet;
 
@@ -819,6 +826,14 @@ socket.on("egg-round-new", data=>{
   const eggImg = document.getElementById("multiEggImg");
   const area   = document.getElementById("eggHatchArea");
   const betEl = document.getElementById("eggCurrentBet");
+
+   // ✅ THÊM ĐOẠN NÀY
+  const roundEl = document.getElementById("eggRoundId");
+  if(roundEl){
+    roundEl.textContent = data.roundId;
+  }
+
+
 if(betEl){
  betEl.innerHTML = `
   <span>Current Bet</span>
