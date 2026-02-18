@@ -42,33 +42,40 @@ h2{
   <h2>🥚 Current Egg Round</h2>
   <div>Round ID: <span id="roundId">-</span></div>
   <div>Egg Type: <span id="eggType">-</span></div>
+
+
   <div class="secret">
     Multiplier: x <span id="multi">?</span>
   </div>
-  <div class="hash">
-    Hash: <span id="hash">-</span>
-  </div>
 
 
-  <div style="margin-top:20px;">
-  <input id="overrideInput"
-         type="number"
-         step="0.1"
-         placeholder="Enter multiplier"
-         style="padding:8px;border-radius:8px;border:none;width:150px;">
-  
+  <hr style="margin:20px 0">
+
+<div>
+  <input type="number"
+         id="overrideMulti"
+         placeholder="Override multiplier"
+         step="0.01"
+         style="padding:8px;border-radius:8px;border:none;width:180px;">
+         
   <button onclick="overrideEgg()"
-          style="padding:8px 14px;border-radius:8px;border:none;
-                 background:#ff4444;color:#fff;margin-left:10px;">
+          style="padding:8px 16px;border:none;border-radius:8px;background:#ff4444;color:white;cursor:pointer;">
     OVERRIDE
   </button>
 </div>
 
 
 
+  <div class="hash">
+    Hash: <span id="hash">-</span>
+  </div>
+
+
   <div class="timer">
     Ends in: <span id="timer">--</span>s
   </div>
+
+
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -98,33 +105,37 @@ setInterval(()=>{
 
 
 
+async function overrideEgg(){
 
-function overrideEgg(){
+  const m = Number(
+    document.getElementById("overrideMulti").value
+  );
 
-  const value =
-    Number(document.getElementById("overrideInput").value);
-
-  if(!value && value !== 0){
+  if(!m && m !== 0){
     alert("Invalid multiplier");
     return;
   }
 
-  fetch("/api/admin/egg/override",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid":"ADMIN_ID_HERE"
-    },
-    body:JSON.stringify({ multiplier:value })
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(!res.ok){
-      alert(res.message || "Override failed");
-      return;
+  const res = await fetch(
+    "/api/admin/egg/override",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-uid":"ADMIN_ID_HERE"
+      },
+      body: JSON.stringify({ multiplier:m })
     }
-    alert("Override success!");
-  });
+  );
+
+  const json = await res.json();
+
+  if(!json.ok){
+    alert(json.message || "Override failed");
+    return;
+  }
+
+  alert("Override success → x" + m);
 }
 
 
