@@ -2213,37 +2213,6 @@ kickOldSessions(uid, socket); // kick sau
 // 🔧 Parse JSON body (BẮT BUỘC cho admin API)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-
-// ================================
-// 🔐 ADMIN ROUTE PROTECTION
-// ================================
-function adminAuthMiddleware(req, res, next){
-
-  const uid = req.headers["x-uid"];
-
-  if(!uid){
-    return res.status(401).send("Not logged in");
-  }
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if(me?.role !== "admin"){
-    return res.status(403).send("Forbidden");
-  }
-
-  next();
-}
-
-// 🔒 PROTECT ADMIN FILES
-app.use("/admin-control.html", adminAuthMiddleware);
-app.use("/admin-egg.html", adminAuthMiddleware);
-app.use("/admin-wheel.html", adminAuthMiddleware);
-app.use("/admin-rps.html", adminAuthMiddleware);
-app.use("/admin-invest.html", adminAuthMiddleware);
-
-
 app.use(express.static(path.join(__dirname, "public")));
 
 // 🔥 SERVE FILE DATA (CHO GAME PHÁ ÁN)

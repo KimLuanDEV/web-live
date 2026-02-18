@@ -81,41 +81,19 @@ iframe{
 </div>
 
 <div class="content">
-  <iframe id="frame"></iframe>
+  <iframe id="frame" src="/admin-egg.html"></iframe>
 </div>
-
 
 <script>
 const tabs = document.querySelectorAll(".tab");
 const frame = document.getElementById("frame");
 
-const uid = localStorage.getItem("uid");
-
-if(!uid){
-  alert("Not logged in");
-  location.href = "/";
-}
+const profile = JSON.parse(
+  localStorage.getItem("user_profile") || "{}"
+);
 
 document.getElementById("adminUid").innerText =
-  "UID: " + uid;
-
-// 🔥 LOAD ADMIN PAGE WITH AUTH
-async function loadAdminPage(url){
-
-  const res = await fetch(url,{
-    headers:{
-      "x-uid": uid
-    }
-  });
-
-  if(res.status !== 200){
-    document.body.innerHTML = "<h2 style='padding:40px'>Access Denied</h2>";
-    return;
-  }
-
-  const html = await res.text();
-  frame.srcdoc = html;
-}
+  "UID: " + (profile.uid || "UNKNOWN");
 
 function loadTab(type){
 
@@ -123,26 +101,23 @@ function loadTab(type){
   event.target.classList.add("active");
 
   if(type === "egg"){
-    loadAdminPage("/admin-egg.html");
+    frame.src = "/admin-egg.html";
   }
 
   if(type === "wheel"){
-    loadAdminPage("/admin-wheel.html");
+    frame.src = "/admin-wheel.html";
   }
 
   if(type === "rps"){
-    loadAdminPage("/admin-rps.html");
+    frame.src = "/admin-rps.html";
   }
 
   if(type === "invest"){
-    loadAdminPage("/admin-invest.html");
+    frame.src = "/admin-invest.html"; // 🔥 sẽ tạo tiếp
   }
 }
 
-// 🔥 LOAD DEFAULT TAB
-loadAdminPage("/admin-egg.html");
 </script>
-
 
 </body>
 </html>
