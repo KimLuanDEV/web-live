@@ -880,8 +880,7 @@ function ensureEggSecret(round){
     return;
   }
 
-  const multiplier = eggRound.secretResult.multiplier;
-
+  const multiplier = pickEggMultiplier();
 
   const hash = crypto
     .createHash("sha256")
@@ -897,6 +896,7 @@ function ensureEggSecret(round){
 
 let eggRound = (() => {
   const id = Date.now();
+
   const round = {
     id,
     startAt: id,
@@ -907,6 +907,7 @@ let eggRound = (() => {
   };
 
   ensureEggSecret(round);
+
   return round;
 })();
 
@@ -1422,7 +1423,8 @@ setInterval(() => {
   try {
 
     const users = loadUsers();
-    const multiplier = pickEggMultiplier();
+    const multiplier = eggRound.secretResult.multiplier;
+
 
     eggRound.bets.forEach(o=>{
       const me = users[o.uid];
