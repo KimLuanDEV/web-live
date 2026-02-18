@@ -881,7 +881,7 @@ function createEggRound(){
   return {
     id,
     startAt: id,
-    endAt: id + ROUND_DURATION,
+    endAt: id + NEXT_ROUND_TIME,
     bets: [],
     displayEgg: pickDisplayEgg(),
 
@@ -1483,7 +1483,8 @@ io.emit("admin-egg-secret-update",{
     console.error("❌ egg round error", e);
   }
 
-}, ROUND_DURATION);
+}, NEXT_ROUND_TIME);
+
 
 
 
