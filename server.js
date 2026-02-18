@@ -2213,7 +2213,8 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 // ================================
 app.post("/api/admin/unlock", (req, res) => {
 
-  const { uid, code } = req.body;
+  const uid = req.headers["x-uid"];
+  const { code } = req.body;
 
   if (!uid || !code) {
     return res.json({ ok:false });
@@ -2243,6 +2244,7 @@ app.post("/api/admin/unlock", (req, res) => {
     role:"admin"
   });
 });
+
 
 
 

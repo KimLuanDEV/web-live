@@ -132,7 +132,9 @@ async function unlockAdmin(){
 
   const code = document.getElementById("adminCode").value;
 
-  if(!profile.uid){
+  const uid = localStorage.getItem("uid");  // 🔥 dùng uid thật
+
+  if(!uid){
     alert("Not logged in");
     return;
   }
@@ -140,10 +142,10 @@ async function unlockAdmin(){
   const res = await fetch("/api/admin/unlock",{
     method:"POST",
     headers:{
-      "Content-Type":"application/json"
+      "Content-Type":"application/json",
+      "x-uid": uid   // 🔥 gửi qua header
     },
     body: JSON.stringify({
-      uid: profile.uid,
       code
     })
   });
@@ -155,15 +157,9 @@ async function unlockAdmin(){
     return;
   }
 
-  profile.role = "admin";
-  localStorage.setItem(
-    "user_profile",
-    JSON.stringify(profile)
-  );
-
-  document.getElementById("unlockBox").style.display="none";
-
   alert("Admin unlocked 🔥");
+
+  location.reload();
 }
 
 
