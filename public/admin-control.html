@@ -1,0 +1,120 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>ADMIN CONTROL CENTER</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<style>
+body{
+  margin:0;
+  background:#050505;
+  color:#fff;
+  font-family:system-ui;
+}
+
+.header{
+  padding:20px;
+  background:#0b0b0b;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.header h1{
+  margin:0;
+  font-size:20px;
+  letter-spacing:2px;
+}
+
+.tabs{
+  display:flex;
+  gap:10px;
+  padding:15px;
+  background:#070707;
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+
+.tab{
+  padding:10px 18px;
+  border-radius:12px;
+  background:#111;
+  cursor:pointer;
+  font-weight:700;
+  border:1px solid rgba(255,255,255,.1);
+}
+
+.tab.active{
+  background:#00e5ff;
+  color:#000;
+}
+
+.content{
+  padding:20px;
+}
+
+iframe{
+  width:100%;
+  height:calc(100vh - 140px);
+  border:none;
+  border-radius:16px;
+  background:#000;
+}
+</style>
+</head>
+
+<body>
+
+<div class="header">
+  <h1>🧨 ADMIN CONTROL CENTER</h1>
+  <div id="adminUid"></div>
+</div>
+
+<div class="tabs">
+  <div class="tab active" onclick="loadTab('egg')">🥚 Egg</div>
+  <div class="tab" onclick="loadTab('wheel')">🎡 Wheel</div>
+  <div class="tab" onclick="loadTab('rps')">✊ RPS</div>
+  <div class="tab" onclick="loadTab('invest')">📊 Invest</div>
+</div>
+
+<div class="content">
+  <iframe id="frame" src="/admin-egg.html"></iframe>
+</div>
+
+<script>
+const tabs = document.querySelectorAll(".tab");
+const frame = document.getElementById("frame");
+
+const profile = JSON.parse(
+  localStorage.getItem("user_profile") || "{}"
+);
+
+document.getElementById("adminUid").innerText =
+  "UID: " + (profile.uid || "UNKNOWN");
+
+function loadTab(type){
+
+  tabs.forEach(t=>t.classList.remove("active"));
+  event.target.classList.add("active");
+
+  if(type === "egg"){
+    frame.src = "/admin-egg.html";
+  }
+
+  if(type === "wheel"){
+    frame.src = "/admin-wheel.html";
+  }
+
+  if(type === "rps"){
+    frame.src = "/admin-rps.html";
+  }
+
+  if(type === "invest"){
+    frame.src = "/admin-invest.html"; // 🔥 sẽ tạo tiếp
+  }
+}
+</script>
+
+</body>
+</html>
