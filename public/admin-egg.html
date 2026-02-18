@@ -1,283 +1,82 @@
-<!doctype html>
-<html lang="vi">
+<!DOCTYPE html>
+<html>
 <head>
 <meta charset="utf-8">
-<title>Admin – Egg Control</title>
+<title>Admin - Egg Round</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <style>
 body{
-  margin:0;
-  font-family:sans-serif;
-  background:#0b0f14;
+  background:#111;
   color:#fff;
-}
-
-/* ===== HEADER ===== */
-.admin-header{
-  padding:20px;
-  background:linear-gradient(90deg,#111,#000);
-  border-bottom:1px solid #222;
-  font-size:20px;
-  font-weight:bold;
-  letter-spacing:.5px;
-}
-
-/* ===== GRID ===== */
-.admin-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:20px;
+  font-family:sans-serif;
   padding:20px;
 }
-
-/* ===== CARD ===== */
-.admin-card{
-  background:#141a20;
+.box{
+  background:#1c1c1c;
+  padding:20px;
   border-radius:16px;
-  padding:20px;
-  box-shadow:0 0 30px rgba(0,255,150,.15);
+  box-shadow:0 0 30px rgba(0,255,150,.2);
 }
-
-.card-title{
+h2{
+  margin-top:0;
+}
+.secret{
+  font-size:24px;
   font-weight:bold;
-  margin-bottom:12px;
-  font-size:16px;
   color:#00ff99;
 }
-
-.stat{
-  font-size:14px;
-  margin-bottom:6px;
-  opacity:.8;
+.hash{
+  font-size:12px;
+  opacity:.6;
+  word-break:break-all;
 }
-
-/* ===== MULTIPLIER SELECT ===== */
-.multi-grid{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:10px;
+.timer{
+  font-size:18px;
+  margin-top:10px;
 }
-
-.multi-btn{
-  padding:10px;
-  border-radius:10px;
-  border:none;
-  background:#222;
-  color:#fff;
-  cursor:pointer;
-  font-weight:bold;
-  transition:.2s;
-}
-
-.multi-btn:hover{
-  background:#00ff99;
-  color:#000;
-}
-
-.multi-btn.active{
-  background:#ff4d00;
-  color:#fff;
-}
-
-/* ===== ACTION BUTTON ===== */
-.action-btn{
-  margin-top:12px;
-  width:100%;
-  padding:12px;
-  border:none;
-  border-radius:12px;
-  font-weight:bold;
-  cursor:pointer;
-  background:linear-gradient(90deg,#00ff99,#00ccff);
-  color:#000;
-}
-
-/* ===== HISTORY ===== */
-.history-list{
-  max-height:300px;
-  overflow:auto;
-  font-size:13px;
-}
-
-.history-item{
-  padding:8px;
-  border-bottom:1px solid #222;
-}
-
-.win{ color:#00ff99; }
-.lose{ color:#ff4444; }
-
 </style>
 </head>
 <body>
 
-<div class="admin-header">
-  🥚 Egg Round Control Panel
-</div>
-
-<div class="admin-grid">
-
-  <!-- LEFT SIDE -->
-  <div class="admin-card">
-    <div class="card-title">Current Round</div>
-
-    <div class="stat">Round ID: <span id="roundId">-</span></div>
-    <div class="stat">Egg Type: <span id="eggType">-</span></div>
-    <div class="stat">Total Bet: <span id="totalBet">0 💎</span></div>
-    <div class="stat">Time Left: <span id="timeLeft">0s</span></div>
+<div class="box">
+  <h2>🥚 Current Egg Round</h2>
+  <div>Round ID: <span id="roundId">-</span></div>
+  <div>Egg Type: <span id="eggType">-</span></div>
+  <div class="secret">
+    Multiplier: x <span id="multi">?</span>
   </div>
-
-  <!-- RIGHT SIDE -->
-  <div class="admin-card">
-    <div class="card-title">Force Multiplier</div>
-
-    <div class="multi-grid" id="multiGrid">
-      <!-- JS render -->
-    </div>
-
-    <button class="action-btn"
-            onclick="applyOverride()">
-      APPLY RESULT
-    </button>
-
-    <button class="action-btn"
-            style="margin-top:10px;background:#ff4444;color:#fff"
-            onclick="forceEnd()">
-      FORCE END ROUND
-    </button>
+  <div class="hash">
+    Hash: <span id="hash">-</span>
   </div>
-
-  <!-- HISTORY -->
-  <div class="admin-card" style="grid-column:1/3">
-    <div class="card-title">Last 20 Rounds</div>
-    <div class="history-list" id="historyList"></div>
+  <div class="timer">
+    Ends in: <span id="timer">--</span>s
   </div>
-
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
-const uid = localStorage.getItem("uid");
-
 const socket = io({
-  auth:{ uid }
+  auth:{ uid:"ADMIN_ID_HERE" } // 🔥 thay bằng uid admin
 });
 
+let endAt = 0;
 
-let selectedMultiplier = null;
-let currentEndAt = 0;
-
-/* ===== MULTIPLIER OPTIONS ===== */
-const multipliers = [
-  0,
-  0.5,
-  1,
-  1.5,
-  2,
-  3,
-  5,
-  10,
-  20,
-  50
-];
-
-function renderMultipliers(){
-
-  const grid = document.getElementById("multiGrid");
-  grid.innerHTML = "";
-
-  multipliers.forEach(m=>{
-    grid.innerHTML += `
-      <button class="multi-btn"
-              onclick="selectMulti(${m})"
-              id="multi-${m}">
-        x ${m}
-      </button>
-    `;
-  });
-}
-
-function selectMulti(m){
-
-  selectedMultiplier = m;
-
-  document.querySelectorAll(".multi-btn")
-    .forEach(b=>b.classList.remove("active"));
-
-  document.getElementById("multi-"+m)
-    .classList.add("active");
-}
-
-/* ===== APPLY OVERRIDE ===== */
-function applyOverride(){
-
-  if(selectedMultiplier == null) return;
-
-  socket.emit("admin-egg-set-result",{
-    multiplier:selectedMultiplier
-  });
-}
-
-/* ===== FORCE END ===== */
-function forceEnd(){
-  socket.emit("admin-egg-force-end");
-}
-
-/* ===== REALTIME UPDATE ===== */
-socket.on("admin-egg-state", data=>{
-
-  document.getElementById("roundId").textContent =
-    data.roundId;
-
-  document.getElementById("eggType").textContent =
-    data.eggType;
-
-  document.getElementById("totalBet").textContent =
-    data.totalBet + " 💎";
-
-  currentEndAt = data.endAt;
+socket.on("admin-egg-secret-update", data=>{
+  document.getElementById("roundId").textContent = data.roundId;
+  document.getElementById("eggType").textContent = data.eggType;
+  document.getElementById("multi").textContent = data.multiplier;
+  document.getElementById("hash").textContent = data.hash;
+  endAt = data.endAt;
 });
 
-/* ===== COUNTDOWN ===== */
 setInterval(()=>{
-
-  if(!currentEndAt) return;
-
-  const left = Math.max(
-    0,
-    Math.floor((currentEndAt - Date.now())/1000)
+  if(!endAt) return;
+  const left = Math.max(0,
+    Math.floor((endAt - Date.now())/1000)
   );
-
-  document.getElementById("timeLeft")
-    .textContent = left + "s";
-
+  document.getElementById("timer").textContent = left;
 },1000);
-
-/* ===== HISTORY ===== */
-socket.on("egg-history-update", list=>{
-
-  const box = document.getElementById("historyList");
-  box.innerHTML = "";
-
-  list.forEach(h=>{
-    box.innerHTML += `
-      <div class="history-item">
-        Round ${h.roundId} – 
-        <span class="${
-          h.multiplier>0?'win':'lose'
-        }">
-          x${h.multiplier}
-        </span>
-        – ${h.eggType}
-      </div>
-    `;
-  });
-});
-
-renderMultipliers();
-
 </script>
+
 </body>
 </html>

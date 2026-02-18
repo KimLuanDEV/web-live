@@ -873,20 +873,43 @@ function pickDisplayEgg(){
 }
 
 
+function ensureEggSecret(round){
+  if(!round) return;
+
+  if(round.secretResult && round.secretResult.multiplier != null){
+    return;
+  }
+
+  const multiplier = eggRound.secretResult.multiplier;
+
+
+  const hash = crypto
+    .createHash("sha256")
+    .update(round.id + ":" + multiplier)
+    .digest("hex");
+
+  round.secretResult = {
+    multiplier,
+    hash,
+    overridden:false
+  };
+}
+
 let eggRound = (() => {
   const id = Date.now();
-  return {
+  const round = {
     id,
     startAt: id,
     endAt: id + ROUND_DURATION,
     bets: [],
     displayEgg: pickDisplayEgg(),
-
-    // 🔥 NEW
-    overrideMultiplier: null,
-    forceEnd: false
+    secretResult: null
   };
+
+  ensureEggSecret(round);
+  return round;
 })();
+
 
 
 
@@ -1399,12 +1422,7 @@ setInterval(() => {
   try {
 
     const users = loadUsers();
-
-    // 🔥 ƯU TIÊN ADMIN OVERRIDE
-const multiplier =
-  eggRound.overrideMultiplier ??
-  pickEggMultiplier();
-
+    const multiplier = pickEggMultiplier();
 
     eggRound.bets.forEach(o=>{
       const me = users[o.uid];
@@ -1463,10 +1481,19 @@ eggRound = {
   endAt: id + NEXT_ROUND_TIME,
   bets: [],
   displayEgg: pickDisplayEgg(),
-
-  overrideMultiplier: null,
-  forceEnd: false
+  secretResult: null
 };
+
+ensureEggSecret(eggRound);
+
+// 🔥 emit cho admin biết trước
+io.emit("admin-egg-secret-update", {
+  roundId: eggRound.id,
+  multiplier: eggRound.secretResult.multiplier,
+  hash: eggRound.secretResult.hash,
+  endAt: eggRound.endAt,
+  eggType: eggRound.displayEgg.type
+});
 
 
 
@@ -1475,18 +1502,6 @@ io.emit("egg-round-new",{
   endAt: eggRound.endAt,
   displayEgg: eggRound.displayEgg
 });
-
-
-
-// 🔥 RESET STATE CHO ADMIN
-io.emit("admin-egg-state",{
-  roundId: eggRound.id,
-  eggType: eggRound.displayEgg.type,
-  totalBet: 0,
-  endAt: eggRound.endAt
-});
-
-
 
 
     }, RESULT_ANIM);
@@ -1522,46 +1537,6 @@ io.on("connection", socket => {
   const me = users[uid];
 
   const coins = Number(me?.profile?.coins || 0);
-
-
-
-
-
-// ================================
-// 🥚 ADMIN CONTROL EGG
-// ================================
-socket.on("admin-egg-set-result", data=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if(me?.role !== "admin") return;
-
-  eggRound.overrideMultiplier =
-    Number(data.multiplier);
-
-  console.log("🔥 ADMIN EGG OVERRIDE:",
-    data.multiplier);
-});
-
-socket.on("admin-egg-force-end", ()=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if(me?.role !== "admin") return;
-
-  eggRound.endAt = Date.now() + 1000;
-
-  console.log("🔥 ADMIN FORCE END EGG");
-});
-
 
 
 // ================================
@@ -1902,21 +1877,6 @@ socket.on("egg-bet", data=>{
   saveUsers(users);
 
   eggRound.bets.push({ uid, bet });
-
-
-
-// 🔥 REALTIME UPDATE CHO ADMIN
-io.emit("admin-egg-state",{
-  roundId: eggRound.id,
-  eggType: eggRound.displayEgg.type,
-  totalBet: eggRound.bets.reduce(
-    (s,b)=>s+b.bet,0
-  ),
-  endAt: eggRound.endAt
-});
-
-
-
 
   emitCoinUpdate(uid);
 
