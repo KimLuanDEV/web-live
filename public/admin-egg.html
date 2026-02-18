@@ -44,6 +44,21 @@ body{
   <div id="eggType"></div>
 </div>
 
+
+<div class="box">
+  <div>Override Multiplier</div>
+  <input type="number" id="overrideInput" placeholder="Enter x" 
+         style="width:100%;padding:10px;margin-top:10px;border-radius:8px;border:none;">
+  <button onclick="overrideEgg()"
+          style="margin-top:10px;width:100%;padding:12px;
+                 background:#ff4444;border:none;border-radius:10px;
+                 font-weight:bold;color:#fff;">
+    ⚠ Override
+  </button>
+</div>
+
+
+
 <script>
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
 const socket = io({ auth:{ uid: me.uid }});
@@ -61,6 +76,42 @@ socket.on("admin-egg-secret-update", data=>{
   document.getElementById("multiplier").textContent = "x " + data.multiplier;
   document.getElementById("eggType").textContent = data.eggType;
 });
+
+
+
+function overrideEgg(){
+
+  const value = Number(
+    document.getElementById("overrideInput").value
+  );
+
+  if(isNaN(value)){
+    alert("Invalid multiplier");
+    return;
+  }
+
+  fetch("/api/admin/egg/override",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": me.uid
+    },
+    body: JSON.stringify({
+      multiplier: value
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
+    if(!data.ok){
+      alert(data.message || "Override failed");
+      return;
+    }
+    alert("Override success → x" + value);
+  });
+}
+
+
+
 </script>
 
 </body>
