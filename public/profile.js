@@ -47,7 +47,7 @@ if(btnAdminPanel){
   btnAdminPanel.classList.toggle("hidden", !isAdmin);
 
   btnAdminPanel.onclick = () => {
-    location.href = "/admin-control.html";
+    location.href = "/lsp-admincenter-128995.html";
   };
 }
 
