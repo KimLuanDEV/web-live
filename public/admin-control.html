@@ -109,6 +109,12 @@ iframe{
 </div>
 
 <script>
+
+
+
+
+
+
 const tabs = document.querySelectorAll(".tab");
 const frame = document.getElementById("frame");
 
@@ -116,8 +122,23 @@ const profile = JSON.parse(
   localStorage.getItem("user_profile") || "{}"
 );
 
+// 🔒 CHẶN NGAY NẾU KHÔNG PHẢI ADMIN
+if(!profile.uid || profile.role !== "admin"){
+  location.href = "/profile.html";
+}
+
+// hiển thị UID admin
 document.getElementById("adminUid").innerText =
-  "UID: " + (profile.uid || "UNKNOWN");
+  "UID: " + profile.uid;
+
+
+
+  // đảm bảo iframe không load nếu không admin
+if(profile.role !== "admin"){
+  frame.remove();
+}
+
+
 
 function loadTab(type){
 

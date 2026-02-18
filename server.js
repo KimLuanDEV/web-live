@@ -2213,6 +2213,39 @@ kickOldSessions(uid, socket); // kick sau
 // 🔧 Parse JSON body (BẮT BUỘC cho admin API)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+
+
+
+// ================================
+// 🔒 ADMIN PAGE PROTECTION
+// ================================
+function requireAdminPage(req, res, next) {
+
+  const uid = req.headers["x-uid"];
+
+  if (!uid) {
+    return res.redirect("/profile.html");
+  }
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (me?.role !== "admin") {
+    return res.redirect("/profile.html");
+  }
+
+  next();
+}
+
+app.get("/admin.html", requireAdminPage);
+app.get("/admin-control.html", requireAdminPage);
+app.get("/admin-egg.html", requireAdminPage);
+app.get("/admin-rps.html", requireAdminPage);
+app.get("/admin-wheel.html", requireAdminPage);
+
+
 app.use(express.static(path.join(__dirname, "public")));
 
 // 🔥 SERVE FILE DATA (CHO GAME PHÁ ÁN)
