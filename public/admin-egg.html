@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Admin Egg Control</title>
+<script src="/socket.io/socket.io.js"></script>
+<style>
+body{
+  background:#111;
+  color:#fff;
+  font-family:sans-serif;
+  padding:20px;
+}
+.box{
+  background:#1c1c1c;
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 0 30px rgba(0,255,150,.3);
+  margin-bottom:20px;
+}
+.big{
+  font-size:36px;
+  font-weight:bold;
+  color:#00ff99;
+}
+</style>
+</head>
+<body>
+
+<h2>🥚 Egg Admin Panel</h2>
+
+<div class="box">
+  <div>Round ID:</div>
+  <div id="roundId"></div>
+</div>
+
+<div class="box">
+  <div>Secret Multiplier:</div>
+  <div id="multiplier" class="big">?</div>
+</div>
+
+<div class="box">
+  <div>Egg Type:</div>
+  <div id="eggType"></div>
+</div>
+
+<script>
+const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
+const socket = io({ auth:{ uid: me.uid }});
+
+socket.emit("admin-get-egg-secret");
+
+socket.on("admin-egg-secret", data=>{
+  document.getElementById("roundId").textContent = data.roundId;
+  document.getElementById("multiplier").textContent = "x " + data.multiplier;
+  document.getElementById("eggType").textContent = data.eggType;
+});
+
+socket.on("admin-egg-secret-update", data=>{
+  document.getElementById("roundId").textContent = data.roundId;
+  document.getElementById("multiplier").textContent = "x " + data.multiplier;
+  document.getElementById("eggType").textContent = data.eggType;
+});
+</script>
+
+</body>
+</html>

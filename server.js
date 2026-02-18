@@ -873,16 +873,27 @@ function pickDisplayEgg(){
 }
 
 
-let eggRound = (() => {
+function createEggRound(){
   const id = Date.now();
+
+  const multiplier = pickEggMultiplier();
+
   return {
     id,
     startAt: id,
     endAt: id + ROUND_DURATION,
     bets: [],
-    displayEgg: pickDisplayEgg()
+    displayEgg: pickDisplayEgg(),
+
+    // 🔐 SECRET (KHÔNG EMIT)
+    secretResult: {
+      multiplier
+    }
   };
-})();
+}
+
+let eggRound = createEggRound();
+
 
 
 
@@ -1395,7 +1406,8 @@ setInterval(() => {
   try {
 
     const users = loadUsers();
-    const multiplier = pickEggMultiplier();
+    const multiplier = eggRound.secretResult.multiplier;
+
 
     eggRound.bets.forEach(o=>{
       const me = users[o.uid];
@@ -1448,13 +1460,7 @@ io.emit("egg-round-result",{
 
       const id = Date.now();
 
- eggRound = {
-  id,
-  startAt: id,
-  endAt: id + NEXT_ROUND_TIME,
-  bets: [],
-  displayEgg: pickDisplayEgg()
-};
+eggRound = createEggRound();
 
 
 io.emit("egg-round-new",{
@@ -1474,6 +1480,13 @@ io.emit("egg-round-new",{
 
 
 
+
+io.emit("admin-egg-secret-update",{
+  roundId: eggRound.id,
+  multiplier: eggRound.secretResult.multiplier,
+  endAt: eggRound.endAt,
+  eggType: eggRound.displayEgg.type
+});
 
 
 
@@ -1497,6 +1510,30 @@ io.on("connection", socket => {
   const me = users[uid];
 
   const coins = Number(me?.profile?.coins || 0);
+
+
+
+
+
+socket.on("admin-get-egg-secret", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if(me?.role !== "admin") return;
+
+  socket.emit("admin-egg-secret",{
+    roundId: eggRound.id,
+    multiplier: eggRound.secretResult.multiplier,
+    endAt: eggRound.endAt,
+    eggType: eggRound.displayEgg.type
+  });
+});
+
+
 
 
 // ================================
