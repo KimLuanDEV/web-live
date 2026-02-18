@@ -45,6 +45,28 @@ h2{
   <div class="secret">
     Multiplier: x <span id="multi">?</span>
   </div>
+
+<div style="margin-top:20px">
+  <input type="number" step="0.1"
+         id="overrideInput"
+         placeholder="Enter multiplier"
+         style="padding:8px;width:150px">
+
+  <button onclick="overrideEgg()"
+          style="padding:8px 12px;
+                 background:red;
+                 color:#fff;
+                 border:none;
+                 border-radius:6px">
+    OVERRIDE
+  </button>
+</div>
+
+<div id="overrideStatus"
+     style="margin-top:10px;color:orange">
+</div>
+
+
   <div class="hash">
     Hash: <span id="hash">-</span>
   </div>
@@ -76,6 +98,41 @@ setInterval(()=>{
   );
   document.getElementById("timer").textContent = left;
 },1000);
+
+
+
+function overrideEgg(){
+
+  const value = Number(
+    document.getElementById("overrideInput").value
+  );
+
+  if(!value && value !== 0){
+    alert("Invalid multiplier");
+    return;
+  }
+
+  fetch("/api/admin/egg/override",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid":"ADMIN_ID_HERE" // 🔥 thay bằng uid admin
+    },
+    body: JSON.stringify({ multiplier:value })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.ok){
+      document.getElementById("overrideStatus")
+        .textContent = "⚠️ RESULT OVERRIDDEN";
+    }else{
+      alert(res.message || "Override failed");
+    }
+  });
+}
+
+
+
 </script>
 
 </body>

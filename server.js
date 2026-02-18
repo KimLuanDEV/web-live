@@ -2200,6 +2200,75 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/data", express.static(path.join(__dirname, "data")));
 
 
+// 🛑 ADMIN OVERRIDE EGG RESULT (DANGEROUS)
+app.post("/api/admin/egg/override", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  const { multiplier } = req.body;
+
+  if (!uid) return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (me?.role !== "admin") {
+    return res.status(403).json({ ok:false });
+  }
+
+  if (!eggRound || !eggRound.secretResult) {
+    return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
+  }
+
+  // ⛔ Không cho override khi round đã kết thúc
+  if (Date.now() >= eggRound.endAt) {
+    return res.json({ ok:false, message:"ROUND_ENDED" });
+  }
+
+  const value = Number(multiplier);
+
+  if (isNaN(value) || value < 0) {
+    return res.json({ ok:false, message:"INVALID_MULTIPLIER" });
+  }
+
+  const hash = crypto
+    .createHash("sha256")
+    .update(eggRound.id + ":" + value + ":override")
+    .digest("hex");
+
+  eggRound.secretResult = {
+    multiplier: value,
+    hash,
+    overridden: true,
+    overriddenBy: uid,
+    overriddenAt: Date.now()
+  };
+
+  console.warn(
+    "🛑 [EGG OVERRIDE]",
+    "round", eggRound.id,
+    "→ x" + value,
+    "by", uid
+  );
+
+  // 🔥 Emit realtime cho admin page
+  io.emit("admin-egg-secret-update", {
+    roundId: eggRound.id,
+    multiplier: value,
+    hash,
+    endAt: eggRound.endAt,
+    eggType: eggRound.displayEgg.type,
+    overridden: true
+  });
+
+  res.json({
+    ok:true,
+    roundId: eggRound.id,
+    result: eggRound.secretResult
+  });
+});
+
+
+
 
 app.post("/api/rps/bet",(req,res)=>{
   const uid = req.headers["x-uid"];
