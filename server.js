@@ -2224,19 +2224,19 @@ app.post("/api/admin/egg/override", (req, res) => {
     return res.json({ ok:false, message:"ROUND_ENDED" });
   }
 
-  const value = Number(multiplier);
-
-  if (isNaN(value) || value < 0) {
+  const m = Number(multiplier);
+  if (isNaN(m) || m < 0) {
     return res.json({ ok:false, message:"INVALID_MULTIPLIER" });
   }
 
+  // 🔥 OVERRIDE THẲNG
   const hash = crypto
     .createHash("sha256")
-    .update(eggRound.id + ":" + value + ":override")
+    .update(eggRound.id + ":" + m + ":override")
     .digest("hex");
 
   eggRound.secretResult = {
-    multiplier: value,
+    multiplier: m,
     hash,
     overridden: true,
     overriddenBy: uid,
@@ -2246,14 +2246,14 @@ app.post("/api/admin/egg/override", (req, res) => {
   console.warn(
     "🛑 [EGG OVERRIDE]",
     "round", eggRound.id,
-    "→ x" + value,
+    "→ x" + m,
     "by", uid
   );
 
-  // 🔥 Emit realtime cho admin page
+  // 🔔 push realtime cho admin panel
   io.emit("admin-egg-secret-update", {
     roundId: eggRound.id,
-    multiplier: value,
+    multiplier: m,
     hash,
     endAt: eggRound.endAt,
     eggType: eggRound.displayEgg.type,
