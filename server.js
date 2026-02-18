@@ -1462,11 +1462,18 @@ io.emit("egg-round-result",{
 
 eggRound = createEggRound();
 
-
 io.emit("egg-round-new",{
   roundId: eggRound.id,
   endAt: eggRound.endAt,
   displayEgg: eggRound.displayEgg
+});
+
+// 🔥 THÊM ĐOẠN NÀY
+io.emit("admin-egg-secret-update",{
+  roundId: eggRound.id,
+  multiplier: eggRound.secretResult.multiplier,
+  endAt: eggRound.endAt,
+  eggType: eggRound.displayEgg.type
 });
 
 
@@ -1481,12 +1488,6 @@ io.emit("egg-round-new",{
 
 
 
-io.emit("admin-egg-secret-update",{
-  roundId: eggRound.id,
-  multiplier: eggRound.secretResult.multiplier,
-  endAt: eggRound.endAt,
-  eggType: eggRound.displayEgg.type
-});
 
 
 
