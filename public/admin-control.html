@@ -122,24 +122,11 @@ const profile = JSON.parse(
   localStorage.getItem("user_profile") || "{}"
 );
 
-// 🔒 CHẶN NGAY NẾU KHÔNG PHẢI ADMIN
-if(!profile.uid || profile.role !== "admin"){
-  location.href = "/profile.html";
-}
-
-// hiển thị UID admin
 document.getElementById("adminUid").innerText =
-  "UID: " + profile.uid;
+  "UID: " + (profile.uid || "UNKNOWN");
 
 
-
-  // đảm bảo iframe không load nếu không admin
-if(profile.role !== "admin"){
-  frame.remove();
-}
-
-
-
+  
 function loadTab(type){
 
   tabs.forEach(t=>t.classList.remove("active"));
