@@ -42,69 +42,75 @@ h2{
   <h2>🥚 Current Egg Round</h2>
   <div>Round ID: <span id="roundId">-</span></div>
   <div>Egg Type: <span id="eggType">-</span></div>
-
-
   <div class="secret">
     Multiplier: x <span id="multi">?</span>
   </div>
 
 
-  <hr style="margin:20px 0">
+  <hr style="margin:20px 0;border-color:#333">
 
 <div>
+  <h3>⚠ Override Multiplier</h3>
+
   <input type="number"
-         id="overrideMulti"
-         placeholder="Override multiplier"
-         step="0.01"
-         style="padding:8px;border-radius:8px;border:none;width:180px;">
-         
+         id="overrideInput"
+         placeholder="Enter multiplier"
+         style="padding:8px;border-radius:8px;border:none;width:150px">
+
   <button onclick="overrideEgg()"
-          style="padding:8px 16px;border:none;border-radius:8px;background:#ff4444;color:white;cursor:pointer;">
+          style="padding:8px 16px;
+                 border:none;
+                 border-radius:8px;
+                 background:#ff3b3b;
+                 color:#fff;
+                 cursor:pointer">
     OVERRIDE
   </button>
+
+  <div id="overrideStatus"
+       style="margin-top:10px;font-size:14px;color:#ff8888">
+  </div>
 </div>
+
 
 
 
   <div class="hash">
     Hash: <span id="hash">-</span>
   </div>
-
-
   <div class="timer">
     Ends in: <span id="timer">--</span>s
   </div>
-
-
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
-const uid = localStorage.getItem("uid");
-
-if(!uid){
-  alert("❌ Not logged in");
-}
-
 const socket = io({
-  auth:{ uid }
+  auth:{ uid:"ADMIN_ID_HERE" } // 🔥 thay bằng uid admin
 });
 
 let endAt = 0;
 
 socket.on("admin-egg-secret-update", data=>{
+
   document.getElementById("roundId").textContent = data.roundId;
   document.getElementById("eggType").textContent = data.eggType;
   document.getElementById("multi").textContent = data.multiplier;
   document.getElementById("hash").textContent = data.hash;
+
+  if(data.overridden){
+    document.getElementById("multi").style.color = "#ff3b3b";
+  }else{
+    document.getElementById("multi").style.color = "#00ff99";
+  }
+
   endAt = data.endAt;
 });
 
+
 setInterval(()=>{
   if(!endAt) return;
-  const left = Math.max(
-    0,
+  const left = Math.max(0,
     Math.floor((endAt - Date.now())/1000)
   );
   document.getElementById("timer").textContent = left;
@@ -113,49 +119,43 @@ setInterval(()=>{
 
 async function overrideEgg(){
 
-  if(!uid){
-    alert("❌ Not logged in");
-    return;
-  }
-
-  const m = Number(
-    document.getElementById("overrideMulti").value
+  const value = Number(
+    document.getElementById("overrideInput").value
   );
 
-  if(isNaN(m) || m < 0){
+  if(isNaN(value)){
     alert("Invalid multiplier");
     return;
   }
 
-  try{
-
-    const res = await fetch(
-      "/api/admin/egg/override",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json",
-          "x-uid": uid
-        },
-        body: JSON.stringify({ multiplier:m })
-      }
-    );
-
-    const json = await res.json();
-
-    if(!json.ok){
-      alert("❌ " + (json.message || "Override failed"));
-      console.log("Override error:", json);
-      return;
+  const res = await fetch(
+    "/api/admin/egg/override",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "x-uid":"KimDogCat" // 🔥 thay UID admin
+      },
+      body: JSON.stringify({
+        multiplier:value
+      })
     }
+  );
 
-    alert("✅ Override success → x" + m);
+  const data = await res.json();
 
-  }catch(err){
-    console.error(err);
-    alert("Server error");
+  const status = document.getElementById("overrideStatus");
+
+  if(data.ok){
+    status.style.color="#00ff99";
+    status.innerText="✅ Override success!";
+  }else{
+    status.style.color="#ff6666";
+    status.innerText="❌ " + (data.message || "Failed");
   }
 }
+
+
 
 </script>
 

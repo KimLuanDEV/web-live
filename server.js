@@ -2269,15 +2269,13 @@ io.emit("admin-rps-bet-new", {
   });
 });
 
-
 // 🛑 ADMIN OVERRIDE EGG RESULT (DANGEROUS)
 app.post("/api/admin/egg/override", (req, res) => {
 
   const uid = req.headers["x-uid"];
   const { multiplier } = req.body;
 
-  if (!uid)
-    return res.status(401).json({ ok:false });
+  if (!uid) return res.status(401).json({ ok:false });
 
   const users = loadUsers();
   const me = users[uid];
@@ -2288,16 +2286,13 @@ app.post("/api/admin/egg/override", (req, res) => {
   if (!eggRound || !eggRound.secretResult)
     return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
 
-  // ⛔ Không cho override khi round đã kết thúc
   if (Date.now() >= eggRound.endAt)
     return res.json({ ok:false, message:"ROUND_ENDED" });
 
   const m = Number(multiplier);
-
   if (isNaN(m) || m < 0)
     return res.json({ ok:false, message:"INVALID_MULTIPLIER" });
 
-  // 🔐 hash mới khi override
   const hash = crypto
     .createHash("sha256")
     .update(eggRound.id + ":" + m + ":override")
@@ -2318,7 +2313,7 @@ app.post("/api/admin/egg/override", (req, res) => {
     "by", uid
   );
 
-  // 🔔 realtime push lại cho admin page
+  // 🔔 realtime cho admin
   io.emit("admin-egg-secret-update", {
     roundId: eggRound.id,
     multiplier: m,
@@ -2334,6 +2329,7 @@ app.post("/api/admin/egg/override", (req, res) => {
     result: eggRound.secretResult
   });
 });
+
 
 
 // 🛑 ADMIN OVERRIDE WHEEL RESULT (DANGEROUS)
