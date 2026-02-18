@@ -979,43 +979,42 @@ let eggRound = (() => {
 
 
 
-
 function pickEggMultiplier(){
 
   const r = Math.random();
 
-  // 💀 50% x0
-  if(r < 0.50){
+  // 💀 30% x0
+  if(r < 0.30){
     return 0;
   }
 
-  // 🔻 22% (0.1 → 0.9)
-  if(r < 0.72){
-    return Number((0.1 + Math.random() * 0.8).toFixed(2));
+  // 🔻 25% (0.4 → 0.9)
+  if(r < 0.55){
+    return Number((0.4 + Math.random() * 0.5).toFixed(2));
   }
 
-  // ⚖️ 13% (1.0 → 1.9)
-  if(r < 0.85){
-    return Number((1 + Math.random() * 0.9).toFixed(2));
+  // ⚖️ 20% (1.0 → 1.6)
+  if(r < 0.75){
+    return Number((1 + Math.random() * 0.6).toFixed(2));
   }
 
-  // 🔥 8% (2.0 → 2.9)
-  if(r < 0.93){
-    return Number((2 + Math.random() * 0.9).toFixed(2));
+  // 🔥 15% (1.7 → 2.5)
+  if(r < 0.90){
+    return Number((1.7 + Math.random() * 0.8).toFixed(2));
   }
 
-  // 💎 5% (3.0 → 4.9)
-  if(r < 0.98){
-    return Number((3 + Math.random() * 1.9).toFixed(2));
+  // 💎 7% (2.6 → 4.0)
+  if(r < 0.97){
+    return Number((2.6 + Math.random() * 1.4).toFixed(2));
   }
 
-  // 🚀 1.5% (5 → 9.9)
+  // 🚀 2.5% (4 → 7)
   if(r < 0.995){
-    return Number((5 + Math.random() * 4.9).toFixed(2));
+    return Number((4 + Math.random() * 3).toFixed(2));
   }
 
-  // 🎰 0.5% (10 → 20)
-  return Number((10 + Math.random() * 10).toFixed(2));
+  // 🎰 0.5% (8 → 10)
+  return Number((8 + Math.random() * 2).toFixed(2));
 }
 
 
