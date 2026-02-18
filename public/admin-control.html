@@ -61,17 +61,41 @@ iframe{
   border-radius:16px;
   background:#000;
 }
+
+
+.back-btn{
+  background:#111;
+  color:#fff;
+  border:1px solid rgba(255,255,255,.15);
+  padding:8px 14px;
+  border-radius:10px;
+  cursor:pointer;
+  font-weight:600;
+}
+
+.back-btn:hover{
+  background:#00e5ff;
+  color:#000;
+}
+
 </style>
 </head>
 
 <body>
 
 
-
 <div class="header">
-  <h1>🧨 ADMIN CONTROL CENTER</h1>
+  <button class="back-btn" onclick="goBackProfile()">
+    ←
+  </button>
+
+  <h1>ADMIN CENTER</h1>
+
   <div id="adminUid"></div>
 </div>
+
+
+
 
 <div class="tabs">
   <div class="tab active" onclick="loadTab('egg')">🥚 Egg</div>
@@ -116,6 +140,12 @@ function loadTab(type){
     frame.src = "/admin-invest.html"; // 🔥 sẽ tạo tiếp
   }
 }
+
+
+function goBackProfile(){
+  location.href = "/profile.html";
+}
+
 
 </script>
 
