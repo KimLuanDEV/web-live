@@ -1673,26 +1673,77 @@ socket.on("animal-buy-egg", type=>{
 const eggMap = {
 
   // ===== COMMON =====
-  normal:{ price:100, grow:60000, min:150, max:250 },
-  forest:{ price:180, grow:55000, min:200, max:320 },
+  normal:{ 
+    price:100, 
+    grow:60000, 
+    min:150, 
+    max:210 
+  },
+  forest:{ 
+    price:180, 
+    grow:60000, 
+    min:270, 
+    max:380 
+  },
 
   // ===== RARE =====
-  gold:{ price:300, grow:50000, min:400, max:700 },
-  thunder:{ price:450, grow:48000, min:600, max:950 },
+  gold:{ 
+    price:300, 
+    grow:60000, 
+    min:450, 
+    max:650 
+  },
+  thunder:{ 
+    price:450, 
+    grow:48000, 
+    min:700, 
+    max:950 
+  },
 
   // ===== EPIC =====
-  diamond:{ price:800, grow:40000, min:1000, max:1500 },
-  shadow:{ price:1200, grow:38000, min:1600, max:2200 },
+  diamond:{ 
+    price:800, 
+    grow:60000, 
+    min:1200, 
+    max:1800 
+  },
+  shadow:{ 
+    price:1200, 
+    grow:60000, 
+    min:1800, 
+    max:2600 
+  },
 
   // ===== LEGENDARY =====
-  dragon:{ price:2000, grow:35000, min:3000, max:5000 },
-  phoenix:{ price:3500, grow:30000, min:5500, max:8000 },
+  dragon:{ 
+    price:2000, 
+    grow:60000, 
+    min:3200, 
+    max:4800 
+  },
+  phoenix:{ 
+    price:3500, 
+    grow:60000, 
+    min:5600, 
+    max:8000 
+  },
 
   // ===== MYTHIC =====
-  celestial:{ price:6000, grow:25000, min:9000, max:12000 },
-  voidlord:{ price:10000, grow:20000, min:15000, max:22000 }
+  celestial:{ 
+    price:6000, 
+    grow:60000, 
+    min:10000, 
+    max:14000 
+  },
+  voidlord:{ 
+    price:10000, 
+    grow:60000, 
+    min:17000, 
+    max:24000 
+  }
 
 };
+
 
 
   const cfg = eggMap[type];
