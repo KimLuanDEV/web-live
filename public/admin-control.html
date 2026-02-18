@@ -66,6 +66,18 @@ iframe{
 
 <body>
 
+<div id="unlockBox" style="padding:20px; text-align:center;">
+  <input type="password"
+         id="adminCode"
+         placeholder="Enter Admin Code"
+         style="padding:10px;border-radius:8px;border:none;">
+  <button onclick="unlockAdmin()"
+          style="padding:10px 20px;border-radius:8px;border:none;background:#00e5ff;">
+    UNLOCK
+  </button>
+</div>
+
+
 <div class="header">
   <h1>🧨 ADMIN CONTROL CENTER</h1>
   <div id="adminUid"></div>
@@ -114,6 +126,48 @@ function loadTab(type){
     frame.src = "/admin-invest.html"; // 🔥 sẽ tạo tiếp
   }
 }
+
+
+async function unlockAdmin(){
+
+  const code = document.getElementById("adminCode").value;
+
+  if(!profile.uid){
+    alert("Not logged in");
+    return;
+  }
+
+  const res = await fetch("/api/admin/unlock",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json"
+    },
+    body: JSON.stringify({
+      uid: profile.uid,
+      code
+    })
+  });
+
+  const data = await res.json();
+
+  if(!data.ok){
+    alert("Invalid code");
+    return;
+  }
+
+  profile.role = "admin";
+  localStorage.setItem(
+    "user_profile",
+    JSON.stringify(profile)
+  );
+
+  document.getElementById("unlockBox").style.display="none";
+
+  alert("Admin unlocked 🔥");
+}
+
+
+
 </script>
 
 </body>

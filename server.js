@@ -20,6 +20,12 @@ const twilio = require("twilio");
 const fs = require("fs");
 
 
+// ================================
+// 🔐 ADMIN SECRET CODE
+// ================================
+const ADMIN_SECRET_CODE = process.env.ADMIN_CODE || "LSP999";
+
+
 function ensureWheelSecret(round){
   if (!round) return;
 
@@ -2202,6 +2208,41 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
+// ================================
+// 🔐 ADMIN UNLOCK BY CODE
+// ================================
+app.post("/api/admin/unlock", (req, res) => {
+
+  const { uid, code } = req.body;
+
+  if (!uid || !code) {
+    return res.json({ ok:false });
+  }
+
+  if (code !== ADMIN_SECRET_CODE) {
+    return res.json({
+      ok:false,
+      message:"INVALID_CODE"
+    });
+  }
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (!me) {
+    return res.json({ ok:false });
+  }
+
+  me.role = "admin";
+  saveUsers(users);
+
+  console.warn("🔐 ADMIN UNLOCKED:", uid);
+
+  res.json({
+    ok:true,
+    role:"admin"
+  });
+});
 
 
 
