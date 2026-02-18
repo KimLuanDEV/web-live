@@ -880,7 +880,11 @@ let eggRound = (() => {
     startAt: id,
     endAt: id + ROUND_DURATION,
     bets: [],
-    displayEgg: pickDisplayEgg()
+    displayEgg: pickDisplayEgg(),
+
+    // 🔥 NEW
+    overrideMultiplier: null,
+    forceEnd: false
   };
 })();
 
@@ -1395,7 +1399,12 @@ setInterval(() => {
   try {
 
     const users = loadUsers();
-    const multiplier = pickEggMultiplier();
+
+    // 🔥 ƯU TIÊN ADMIN OVERRIDE
+const multiplier =
+  eggRound.overrideMultiplier ??
+  pickEggMultiplier();
+
 
     eggRound.bets.forEach(o=>{
       const me = users[o.uid];
@@ -1448,13 +1457,17 @@ io.emit("egg-round-result",{
 
       const id = Date.now();
 
- eggRound = {
+eggRound = {
   id,
   startAt: id,
   endAt: id + NEXT_ROUND_TIME,
   bets: [],
-  displayEgg: pickDisplayEgg()
+  displayEgg: pickDisplayEgg(),
+
+  overrideMultiplier: null,
+  forceEnd: false
 };
+
 
 
 io.emit("egg-round-new",{
@@ -1462,6 +1475,18 @@ io.emit("egg-round-new",{
   endAt: eggRound.endAt,
   displayEgg: eggRound.displayEgg
 });
+
+
+
+// 🔥 RESET STATE CHO ADMIN
+io.emit("admin-egg-state",{
+  roundId: eggRound.id,
+  eggType: eggRound.displayEgg.type,
+  totalBet: 0,
+  endAt: eggRound.endAt
+});
+
+
 
 
     }, RESULT_ANIM);
@@ -1497,6 +1522,46 @@ io.on("connection", socket => {
   const me = users[uid];
 
   const coins = Number(me?.profile?.coins || 0);
+
+
+
+
+
+// ================================
+// 🥚 ADMIN CONTROL EGG
+// ================================
+socket.on("admin-egg-set-result", data=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if(me?.role !== "admin") return;
+
+  eggRound.overrideMultiplier =
+    Number(data.multiplier);
+
+  console.log("🔥 ADMIN EGG OVERRIDE:",
+    data.multiplier);
+});
+
+socket.on("admin-egg-force-end", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if(me?.role !== "admin") return;
+
+  eggRound.endAt = Date.now() + 1000;
+
+  console.log("🔥 ADMIN FORCE END EGG");
+});
+
 
 
 // ================================
@@ -1837,6 +1902,21 @@ socket.on("egg-bet", data=>{
   saveUsers(users);
 
   eggRound.bets.push({ uid, bet });
+
+
+
+// 🔥 REALTIME UPDATE CHO ADMIN
+io.emit("admin-egg-state",{
+  roundId: eggRound.id,
+  eggType: eggRound.displayEgg.type,
+  totalBet: eggRound.bets.reduce(
+    (s,b)=>s+b.bet,0
+  ),
+  endAt: eggRound.endAt
+});
+
+
+
 
   emitCoinUpdate(uid);
 
