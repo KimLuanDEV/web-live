@@ -32,7 +32,7 @@ if (btnAdmin && window.__profileAuth) {
   btnAdmin.classList.toggle("hidden", !isAdmin);
 
   btnAdmin.onclick = () => {
-    location.href = "/admin.html";
+    location.href = "/lsp-admin-128995.html";
   };
 }
 

@@ -3092,7 +3092,7 @@ app.get("/api/withdraw-history", (req, res) => {
 
 
 // 🔐 BẢO VỆ TRANG ADMIN
-app.get("/admin.html", (req, res) => {
+app.get("/lsp-admin-128995.html", (req, res) => {
   const uid = req.headers["x-uid"];
   if (!uid) return res.status(403).send("Forbidden");
 
@@ -3103,7 +3103,7 @@ app.get("/admin.html", (req, res) => {
     return res.status(403).send("Not allowed");
   }
 
-  res.sendFile(path.join(__dirname, "public", "admin.html"));
+  res.sendFile(path.join(__dirname, "public", "lsp-admin-128995.html"));
 });
 
 
@@ -6179,7 +6179,7 @@ socket.on("topup-transferred", async ({ fromUid, agentUid, time }) => {
   await sendPushToUser(agentUid, {
     title: "💳 Yêu cầu nạp coin",
     body: `${fromUid} đã chuyển khoản`,
-    url: "/admin.html#topup",
+    url: "/lsp-admin-128995.html#topup",
     tag: "topup-waiting"
   });
 

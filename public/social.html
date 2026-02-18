@@ -38,14 +38,30 @@
 }
 
 .lp-topbar{
-  display:flex;
-  align-items:center;
-  gap:12px;
-  padding:12px;
-  background:rgba(0,0,0,.5);
-  border-bottom:1px solid rgba(255,255,255,.12);
-  backdrop-filter: blur(10px);
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  /* ✅ SAFE ZONE */
+  padding-top: calc(12px + env(safe-area-inset-top));
+  padding-left: calc(16px + env(safe-area-inset-left));
+  padding-right: calc(16px + env(safe-area-inset-right));
+  padding-bottom: 12px;
+
+  background: rgba(0,0,0,.55);
+  backdrop-filter: blur(14px);
+
+  border-bottom: 1px solid rgba(255,255,255,.12);
+  z-index: 1000;
 }
+
+
 
 .lp-title{
   display:flex;
@@ -69,7 +85,7 @@
   margin-left: calc(50% - 50vw); /* phá max-width lp-shell */
   margin-top: 0;
   position: sticky;
-  top: 56px; /* ngay dưới topbar */
+  top: calc(56px + env(safe-area-inset-top));
   z-index: 900;
   backdrop-filter: blur(12px);
   background: rgba(0,0,0,.55);
@@ -1291,6 +1307,8 @@
       <button class="lp-post-btn" onclick="submitPost()">Đăng</button>
     </div>
   </div>
+
+
 
   <!-- FEED -->
   <div id="lpFeed" class="lp-feed"></div>
