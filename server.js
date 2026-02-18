@@ -873,27 +873,16 @@ function pickDisplayEgg(){
 }
 
 
-function createEggRound(){
+let eggRound = (() => {
   const id = Date.now();
-
-  const multiplier = pickEggMultiplier();
-
   return {
     id,
     startAt: id,
-    endAt: id + NEXT_ROUND_TIME,
+    endAt: id + ROUND_DURATION,
     bets: [],
-    displayEgg: pickDisplayEgg(),
-
-    // 🔐 SECRET (KHÔNG EMIT)
-    secretResult: {
-      multiplier
-    }
+    displayEgg: pickDisplayEgg()
   };
-}
-
-let eggRound = createEggRound();
-
+})();
 
 
 
@@ -1406,8 +1395,7 @@ setInterval(() => {
   try {
 
     const users = loadUsers();
-    const multiplier = eggRound.secretResult.multiplier;
-
+    const multiplier = pickEggMultiplier();
 
     eggRound.bets.forEach(o=>{
       const me = users[o.uid];
@@ -1460,20 +1448,19 @@ io.emit("egg-round-result",{
 
       const id = Date.now();
 
-eggRound = createEggRound();
+ eggRound = {
+  id,
+  startAt: id,
+  endAt: id + NEXT_ROUND_TIME,
+  bets: [],
+  displayEgg: pickDisplayEgg()
+};
+
 
 io.emit("egg-round-new",{
   roundId: eggRound.id,
   endAt: eggRound.endAt,
   displayEgg: eggRound.displayEgg
-});
-
-// 🔥 THÊM ĐOẠN NÀY
-io.emit("admin-egg-secret-update",{
-  roundId: eggRound.id,
-  multiplier: eggRound.secretResult.multiplier,
-  endAt: eggRound.endAt,
-  eggType: eggRound.displayEgg.type
 });
 
 
@@ -1483,9 +1470,7 @@ io.emit("admin-egg-secret-update",{
     console.error("❌ egg round error", e);
   }
 
-}, NEXT_ROUND_TIME);
-
-
+}, ROUND_DURATION);
 
 
 
@@ -1512,30 +1497,6 @@ io.on("connection", socket => {
   const me = users[uid];
 
   const coins = Number(me?.profile?.coins || 0);
-
-
-
-
-
-socket.on("admin-get-egg-secret", ()=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if(me?.role !== "admin") return;
-
-  socket.emit("admin-egg-secret",{
-    roundId: eggRound.id,
-    multiplier: eggRound.secretResult.multiplier,
-    endAt: eggRound.endAt,
-    eggType: eggRound.displayEgg.type
-  });
-});
-
-
 
 
 // ================================
@@ -2195,65 +2156,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // 🔥 SERVE FILE DATA (CHO GAME PHÁ ÁN)
 app.use("/data", express.static(path.join(__dirname, "data")));
-
-
-
-
-// 🛑 ADMIN OVERRIDE EGG RESULT (DANGEROUS)
-app.post("/api/admin/egg/override", (req, res) => {
-
-  const uid = req.headers["x-uid"];
-  const { multiplier } = req.body;
-
-  if (!uid) return res.status(401).json({ ok:false });
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if (me?.role !== "admin")
-    return res.status(403).json({ ok:false });
-
-  if (!eggRound || !eggRound.secretResult)
-    return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
-
-  // ⛔ Không cho override khi round đã kết thúc
-  if (Date.now() >= eggRound.endAt)
-    return res.json({ ok:false, message:"ROUND_ENDED" });
-
-  const num = Number(multiplier);
-  if (isNaN(num) || num < 0)
-    return res.json({ ok:false, message:"INVALID_MULTIPLIER" });
-
-  // 🔥 OVERRIDE THẲNG
-  eggRound.secretResult = {
-    multiplier: num,
-    overridden: true,
-    overriddenBy: uid,
-    overriddenAt: Date.now()
-  };
-
-  console.warn(
-    "🛑 [EGG OVERRIDE]",
-    "round", eggRound.id,
-    "→ x" + num,
-    "by", uid
-  );
-
-  // 🔔 realtime update admin panel
-  io.emit("admin-egg-secret-update",{
-    roundId: eggRound.id,
-    multiplier: num,
-    endAt: eggRound.endAt,
-    eggType: eggRound.displayEgg.type,
-    overridden: true
-  });
-
-  res.json({
-    ok:true,
-    roundId: eggRound.id,
-    result: eggRound.secretResult
-  });
-});
 
 
 
