@@ -81,19 +81,41 @@ iframe{
 </div>
 
 <div class="content">
-  <iframe id="frame" src="/admin-egg.html"></iframe>
+  <iframe id="frame"></iframe>
 </div>
+
 
 <script>
 const tabs = document.querySelectorAll(".tab");
 const frame = document.getElementById("frame");
 
-const profile = JSON.parse(
-  localStorage.getItem("user_profile") || "{}"
-);
+const uid = localStorage.getItem("uid");
+
+if(!uid){
+  alert("Not logged in");
+  location.href = "/";
+}
 
 document.getElementById("adminUid").innerText =
-  "UID: " + (profile.uid || "UNKNOWN");
+  "UID: " + uid;
+
+// 🔥 LOAD ADMIN PAGE WITH AUTH
+async function loadAdminPage(url){
+
+  const res = await fetch(url,{
+    headers:{
+      "x-uid": uid
+    }
+  });
+
+  if(res.status !== 200){
+    document.body.innerHTML = "<h2 style='padding:40px'>Access Denied</h2>";
+    return;
+  }
+
+  const html = await res.text();
+  frame.srcdoc = html;
+}
 
 function loadTab(type){
 
@@ -101,23 +123,26 @@ function loadTab(type){
   event.target.classList.add("active");
 
   if(type === "egg"){
-    frame.src = "/admin-egg.html";
+    loadAdminPage("/admin-egg.html");
   }
 
   if(type === "wheel"){
-    frame.src = "/admin-wheel.html";
+    loadAdminPage("/admin-wheel.html");
   }
 
   if(type === "rps"){
-    frame.src = "/admin-rps.html";
+    loadAdminPage("/admin-rps.html");
   }
 
   if(type === "invest"){
-    frame.src = "/admin-invest.html"; // 🔥 sẽ tạo tiếp
+    loadAdminPage("/admin-invest.html");
   }
 }
 
+// 🔥 LOAD DEFAULT TAB
+loadAdminPage("/admin-egg.html");
 </script>
+
 
 </body>
 </html>
