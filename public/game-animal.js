@@ -618,7 +618,7 @@ document.getElementById("shopOverlay")
 document.getElementById("eggBetOverlay")
 .addEventListener("click", e=>{
   if(e.target.id === "eggBetOverlay"){
-   
+    closeEggBetSheet();
   }
 });
 
@@ -877,9 +877,6 @@ socket.on("coin-update", data=>{
       currentCoin = newCoin;
     }
   },15);
-
-  renderBetOptions();
-
 });
 
 
@@ -889,6 +886,16 @@ function discardAnimal(index){
 
 
 
+function closeEggBetSheet(){
+
+  const overlay = document.getElementById("eggBetOverlay");
+
+  overlay.classList.remove("show");
+
+  setTimeout(()=>{
+    overlay.classList.add("hidden");
+  },350);
+}
 
 
 
@@ -900,7 +907,7 @@ function confirmEggBet(){
     bet: selectedEggBet
   });
 
-
+  closeEggBetSheet();
 }
 
 
@@ -1006,6 +1013,48 @@ const EGG_BET_OPTIONS = [
 ];
 
 
+function openEggBetSheet(){
+
+  const overlay = document.getElementById("eggBetOverlay");
+  const grid = document.getElementById("eggBetGrid");
+
+  selectedEggBet = null;
+  grid.innerHTML = "";
+
+  EGG_BET_OPTIONS.forEach(amount=>{
+
+    const div = document.createElement("div");
+    div.className = "egg-bet-item";
+    div.textContent = amount + " 💎";
+
+    // 🔥 Disable nếu không đủ coin
+    if(amount > currentCoin){
+
+      div.classList.add("disabled");
+
+    }else{
+
+      div.onclick = ()=>{
+        document.querySelectorAll(".egg-bet-item")
+          .forEach(x=>x.classList.remove("active"));
+
+        div.classList.add("active");
+        selectedEggBet = amount;
+      };
+
+    }
+
+    grid.appendChild(div);
+  });
+
+  overlay.classList.remove("hidden");
+
+  requestAnimationFrame(()=>{
+    overlay.classList.add("show");
+  });
+
+}
+
 
 
 
@@ -1044,8 +1093,6 @@ function updateLayoutHeights(){
 }
 
 window.addEventListener("load", updateLayoutHeights);
-renderBetOptions();
-
 window.addEventListener("resize", updateLayoutHeights);
 
 
@@ -1094,36 +1141,3 @@ socket.on("egg-history", list=>{
 socket.on("egg-history-update", list=>{
   renderEggHistory(list);
 });
-
-
-
-function renderBetOptions(){
-
-  const grid = document.getElementById("eggBetGrid");
-  if(!grid) return;
-
-  grid.innerHTML = "";
-  selectedEggBet = null;
-
-  EGG_BET_OPTIONS.forEach(amount=>{
-
-    const div = document.createElement("div");
-    div.className = "egg-bet-item";
-    div.textContent = amount + " 💎";
-
-    if(amount > currentCoin){
-      div.classList.add("disabled");
-    }else{
-      div.onclick = ()=>{
-        document.querySelectorAll(".egg-bet-item")
-          .forEach(x=>x.classList.remove("active"));
-
-        div.classList.add("active");
-        selectedEggBet = amount;
-      };
-    }
-
-    grid.appendChild(div);
-  });
-
-}

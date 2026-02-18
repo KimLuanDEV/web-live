@@ -1586,35 +1586,6 @@ body{
 
 
 
-.egg-multi-bet.pro.column{
-  flex-direction:column;
-  gap:14px;
-}
-
-.egg-multi-bet.pro .egg-bet-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
-}
-
-.egg-multi-bet.pro .egg-bet-confirm{
-  height:55px;
-  border:none;
-  border-radius:18px;
-  font-weight:900;
-  font-size:15px;
-  letter-spacing:1px;
-
-  background:linear-gradient(90deg,#00ff99,#00ccff);
-  color:#000;
-
-  box-shadow:
-    0 8px 30px rgba(0,255,150,.6),
-    0 0 40px rgba(0,255,150,.6);
-
-  transition:.25s ease;
-}
-
 </style>
 </head>
 <body>
@@ -1705,6 +1676,23 @@ body{
   </div>
 
 
+<div class="egg-multi-bet pro">
+
+<div class="egg-current-bet" id="eggCurrentBet">
+  <span>Current Bet</span>
+  <strong>0 💎</strong>
+</div>
+
+
+  <button id="eggBetBtn" onclick="openEggBetSheet()">
+    BUY
+  </button>
+
+  
+</div>
+
+
+
 <div class="egg-history-wrap">
   <div class="history-title">
   Round History
@@ -1712,25 +1700,6 @@ body{
 
   <div class="egg-history-bar" id="eggHistoryBar">
   </div>
-</div>
-
-
-<div class="egg-multi-bet pro column">
-
-  <div class="egg-current-bet" id="eggCurrentBet">
-    <span>Current Bet</span>
-    <strong>0 💎</strong>
-  </div>
-
-  <div class="egg-bet-grid" id="eggBetGrid">
-    <!-- render mốc cược -->
-  </div>
-
-  <button class="egg-bet-confirm"
-          onclick="confirmEggBet()">
-    CONFIRM
-  </button>
-
 </div>
 
 
@@ -1800,6 +1769,30 @@ body{
 </div>
 
 
+
+<!-- 🥚 EGG BET BOTTOM SHEET -->
+<div class="egg-bet-overlay hidden" id="eggBetOverlay">
+
+  <div class="egg-bet-sheet">
+
+    <div class="sheet-handle"></div>
+
+    <div class="egg-bet-title">
+      Select Bet Amount
+    </div>
+
+    <div class="egg-bet-grid" id="eggBetGrid">
+      <!-- render mốc cược -->
+    </div>
+
+    <button class="egg-bet-confirm"
+            onclick="confirmEggBet()">
+      CONFIRM
+    </button>
+
+  </div>
+
+</div>
 
 
 
