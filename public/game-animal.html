@@ -1448,7 +1448,8 @@ body{
 /* ============================= */
 
 .egg-history-wrap{
-  margin-top:120px;
+  border-top:1px solid rgba(0,255,150,.2);
+  margin-top: 15px;
   padding:0 16px;
 }
 
@@ -1456,13 +1457,14 @@ body{
   font-size:13px;
   opacity:.7;
   margin-bottom:6px;
+  margin-top :5px;
 }
 
 .egg-history-bar{
   display:flex;
-  gap:6px;
+  gap:4px;
   overflow-x:auto;
-  padding-bottom:6px;
+  padding-bottom:2px;
 }
 
 .egg-history-bar::-webkit-scrollbar{
@@ -1568,6 +1570,7 @@ body{
 
 
 
+
 <div class="egg-multiplier-box pro">
 
 <div class="egg-top-bar pro">
@@ -1626,11 +1629,14 @@ body{
     BUY
   </button>
 
+  
 </div>
+
+
 
 <div class="egg-history-wrap">
   <div class="history-title">
-    📜 Round History
+  Round History
   </div>
 
   <div class="egg-history-bar" id="eggHistoryBar">
@@ -1640,6 +1646,7 @@ body{
 
 
 </div>
+
 
 
 <div class="farm-grid" id="farmGrid"></div>
