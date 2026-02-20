@@ -247,6 +247,48 @@ function saveEggHistory(list){
   }
 }
 
+
+
+
+
+// ================================
+// 🥚 EGG ROUND COUNT PERSIST (24H)
+// ================================
+const EGG_ROUND_COUNT_FILE =
+  "/opt/render/project/data/egg_round_count.json";
+
+function loadEggRoundCount(){
+  try{
+    if (!fs.existsSync(EGG_ROUND_COUNT_FILE)) {
+      return {
+        dayTs: getTodayStartTsVN(),
+        count: 0
+      };
+    }
+    return JSON.parse(
+      fs.readFileSync(EGG_ROUND_COUNT_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load egg round count failed", e);
+    return {
+      dayTs: getTodayStartTsVN(),
+      count: 0
+    };
+  }
+}
+
+function saveEggRoundCount(data){
+  try{
+    fs.writeFileSync(
+      EGG_ROUND_COUNT_FILE,
+      JSON.stringify(data, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save egg round count failed", e);
+  }
+}
+
+
 let eggHistory = loadEggHistory();
 
 
@@ -340,43 +382,6 @@ const INVEST_STATE_FILE =
   "/opt/render/project/data/invest_state.json";
 
 
-
-// ================================
-// 🥚 EGG ROUND COUNT PERSIST (24H)
-// ================================
-const EGG_ROUND_COUNT_FILE =
-  "/opt/render/project/data/egg_round_count.json";
-
-function loadEggRoundCount(){
-  try{
-    if (!fs.existsSync(EGG_ROUND_COUNT_FILE)) {
-      return {
-        dayTs: getTodayStartTsVN(),
-        count: 0
-      };
-    }
-    return JSON.parse(
-      fs.readFileSync(EGG_ROUND_COUNT_FILE, "utf8")
-    );
-  }catch(e){
-    console.error("❌ Load egg round count failed", e);
-    return {
-      dayTs: getTodayStartTsVN(),
-      count: 0
-    };
-  }
-}
-
-function saveEggRoundCount(data){
-  try{
-    fs.writeFileSync(
-      EGG_ROUND_COUNT_FILE,
-      JSON.stringify(data, null, 2)
-    );
-  }catch(e){
-    console.error("❌ Save egg round count failed", e);
-  }
-}
 
 
   function loadInvestState(){
@@ -2079,9 +2084,9 @@ if(
   const bet = timeRaceRound.bets.find(b=>b.uid===uid);
   if(!bet) return;
 
-  if(timeRaceRound.stopped.has(uid)) return;
+if(timeRaceRound.stopped.includes(uid)) return;
 
-  timeRaceRound.stopped.add(uid);
+timeRaceRound.stopped.push(uid);
 
   const win = Math.floor(
     bet.bet * timeRaceRound.currentMultiplier
