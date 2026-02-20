@@ -1025,6 +1025,51 @@ ensureWheelSecret(wheelRound);
 const RPS_BET_LOCK_BEFORE_MS = 5000; // 🔒 khóa trước 5s
 
 
+
+
+
+// ================================
+// ⚔️ SURVIVAL BATTLE (PER USER)
+// ================================
+const SURVIVAL_FILE =
+  "/opt/render/project/data/survival_sessions.json";
+
+function loadSurvival(){
+  try{
+    if(!fs.existsSync(SURVIVAL_FILE)) return {};
+    return JSON.parse(
+      fs.readFileSync(SURVIVAL_FILE,"utf8")
+    );
+  }catch(e){
+    console.error("❌ Load survival failed", e);
+    return {};
+  }
+}
+
+function saveSurvival(db){
+  try{
+    fs.writeFileSync(
+      SURVIVAL_FILE,
+      JSON.stringify(db,null,2)
+    );
+  }catch(e){
+    console.error("❌ Save survival failed", e);
+  }
+}
+
+let survivalDB = loadSurvival();
+
+function getSurvivalWinRate(round){
+  const base = 0.75;       // hiệp 1: 75%
+  const decay = 0.03;      // mỗi hiệp giảm 3%
+  return Math.max(0.25, base - (round-1)*decay);
+}
+
+
+
+
+
+
 // ================================
 // ✊✋✌️ RPS ROUND STATE (GLOBAL)
 // ================================
@@ -1654,6 +1699,321 @@ io.on("connection", socket => {
   const me = users[uid];
 
   const coins = Number(me?.profile?.coins || 0);
+
+
+
+
+
+// ================================
+// ⚔️ SURVIVAL START
+// ================================
+socket.on("survival-start", ({ bet }) => {
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  bet = Math.floor(Number(bet));
+  if(!bet || bet <= 0)
+    return socket.emit("survival-error",{message:"BET_INVALID"});
+
+  if(me.profile.coins < bet)
+    return socket.emit("survival-error",{message:"NOT_ENOUGH_COIN"});
+
+  // trừ coin
+  me.profile.coins -= bet;
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  survivalDB[uid] = {
+    round: 1,
+    bet,
+    active: true
+  };
+
+  saveSurvival(survivalDB);
+
+  socket.emit("survival-state", survivalDB[uid]);
+});
+
+
+// ================================
+// ⚔️ SURVIVAL FIGHT NEXT ROUND
+// ================================
+socket.on("survival-fight", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const session = survivalDB[uid];
+  if(!session || !session.active)
+    return socket.emit("survival-error",{message:"NO_ACTIVE_GAME"});
+
+  const winRate = getSurvivalWinRate(session.round);
+  const win = Math.random() < winRate;
+
+  if(win){
+
+    session.round++;
+
+    if(session.round > 20){
+
+      const users = loadUsers();
+      const me = users[uid];
+
+      const reward = session.bet * 5; // full 20 hiệp x5
+
+      me.profile.coins += reward;
+      saveUsers(users);
+      emitCoinUpdate(uid);
+
+      delete survivalDB[uid];
+      saveSurvival(survivalDB);
+
+      return socket.emit("survival-finish",{
+        result:"WIN_ALL",
+        reward
+      });
+    }
+
+    saveSurvival(survivalDB);
+
+    socket.emit("survival-round-win",{
+      round: session.round
+    });
+
+  } else {
+
+    delete survivalDB[uid];
+    saveSurvival(survivalDB);
+
+    socket.emit("survival-finish",{
+      result:"LOSE"
+    });
+  }
+
+});
+
+
+// ================================
+// ⚔️ SURVIVAL START
+// ================================
+socket.on("survival-start", ({ bet }) => {
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  bet = Math.floor(Number(bet));
+  if(!bet || bet <= 0)
+    return socket.emit("survival-error",{message:"BET_INVALID"});
+
+  if(me.profile.coins < bet)
+    return socket.emit("survival-error",{message:"NOT_ENOUGH_COIN"});
+
+  // trừ coin
+  me.profile.coins -= bet;
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  survivalDB[uid] = {
+    round: 1,
+    bet,
+    active: true
+  };
+
+  saveSurvival(survivalDB);
+
+  socket.emit("survival-state", survivalDB[uid]);
+});
+
+
+// ================================
+// ⚔️ SURVIVAL FIGHT NEXT ROUND
+// ================================
+socket.on("survival-fight", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const session = survivalDB[uid];
+  if(!session || !session.active)
+    return socket.emit("survival-error",{message:"NO_ACTIVE_GAME"});
+
+  const winRate = getSurvivalWinRate(session.round);
+  const win = Math.random() < winRate;
+
+  if(win){
+
+    session.round++;
+
+    if(session.round > 20){
+
+      const users = loadUsers();
+      const me = users[uid];
+
+      const reward = session.bet * 5; // full 20 hiệp x5
+
+      me.profile.coins += reward;
+      saveUsers(users);
+      emitCoinUpdate(uid);
+
+      delete survivalDB[uid];
+      saveSurvival(survivalDB);
+
+      return socket.emit("survival-finish",{
+        result:"WIN_ALL",
+        reward
+      });
+    }
+
+    saveSurvival(survivalDB);
+
+    socket.emit("survival-round-win",{
+      round: session.round
+    });
+
+  } else {
+
+    delete survivalDB[uid];
+    saveSurvival(survivalDB);
+
+    socket.emit("survival-finish",{
+      result:"LOSE"
+    });
+  }
+
+});
+
+
+// ================================
+// ⚔️ SURVIVAL START
+// ================================
+socket.on("survival-start", ({ bet }) => {
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  bet = Math.floor(Number(bet));
+  if(!bet || bet <= 0)
+    return socket.emit("survival-error",{message:"BET_INVALID"});
+
+  if(me.profile.coins < bet)
+    return socket.emit("survival-error",{message:"NOT_ENOUGH_COIN"});
+
+  // trừ coin
+  me.profile.coins -= bet;
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  survivalDB[uid] = {
+    round: 1,
+    bet,
+    active: true
+  };
+
+  saveSurvival(survivalDB);
+
+  socket.emit("survival-state", survivalDB[uid]);
+});
+
+
+// ================================
+// ⚔️ SURVIVAL FIGHT NEXT ROUND
+// ================================
+socket.on("survival-fight", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const session = survivalDB[uid];
+  if(!session || !session.active)
+    return socket.emit("survival-error",{message:"NO_ACTIVE_GAME"});
+
+  const winRate = getSurvivalWinRate(session.round);
+  const win = Math.random() < winRate;
+
+  if(win){
+
+    session.round++;
+
+    if(session.round > 20){
+
+      const users = loadUsers();
+      const me = users[uid];
+
+      const reward = session.bet * 5; // full 20 hiệp x5
+
+      me.profile.coins += reward;
+      saveUsers(users);
+      emitCoinUpdate(uid);
+
+      delete survivalDB[uid];
+      saveSurvival(survivalDB);
+
+      return socket.emit("survival-finish",{
+        result:"WIN_ALL",
+        reward
+      });
+    }
+
+    saveSurvival(survivalDB);
+
+    socket.emit("survival-round-win",{
+      round: session.round
+    });
+
+  } else {
+
+    delete survivalDB[uid];
+    saveSurvival(survivalDB);
+
+    socket.emit("survival-finish",{
+      result:"LOSE"
+    });
+  }
+
+});
+
+
+// ================================
+// ⚔️ SURVIVAL CASHOUT
+// ================================
+socket.on("survival-cashout", ()=>{
+
+  const uid = socket.data.uid;
+  const session = survivalDB[uid];
+  if(!session) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  const multiplier = 1 + (session.round - 1) * 0.3;
+  const reward = Math.floor(session.bet * multiplier);
+
+  me.profile.coins += reward;
+
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  delete survivalDB[uid];
+  saveSurvival(survivalDB);
+
+  socket.emit("survival-finish",{
+    result:"CASHOUT",
+    reward
+  });
+});
 
 
 // ================================
