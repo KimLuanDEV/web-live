@@ -116,7 +116,5 @@ function openDiamondHunter(){
 }
 
 
-function openSurvivalGame(){
-  location.href = "/game-survival.html";
-}
+
 
