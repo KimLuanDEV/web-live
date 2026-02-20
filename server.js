@@ -21,6 +21,8 @@ const fs = require("fs");
 
 
 
+
+
 function ensureWheelSecret(round){
   if (!round) return;
 
@@ -873,49 +875,6 @@ const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
 
 
-
-
-
-
-// ======================================
-// ⚔️ IMMORTAL WARRIOR GLOBAL ROUND
-// ======================================
-
-const WARRIOR_BET_TIME = 30000; // 30s
-const WARRIOR_MAX_ROUNDS = 20;
-const WARRIOR_WIN_RATE = 0.65;
-
-let warriorRound = null;
-
-function startWarriorRound(){
-
-  warriorRound = {
-    id: Date.now(),
-    bets: [],
-    endAt: Date.now() + WARRIOR_BET_TIME,
-    status: "betting"
-  };
-
-  io.emit("warrior-round-new", {
-    id: warriorRound.id,
-    endAt: warriorRound.endAt
-  });
-
-  setTimeout(()=>{
-    warriorRound.status = "fighting";
-    io.emit("warrior-round-locked", {
-      id: warriorRound.id
-    });
-  }, WARRIOR_BET_TIME);
-}
-
-
-// ⚔️ Start Immortal Warrior round engine
-startWarriorRound();
-
-
-
-
 // ================================
 // 🔢 RPS ROUND COUNT STATE
 // ================================
@@ -1695,90 +1654,6 @@ io.on("connection", socket => {
   const me = users[uid];
 
   const coins = Number(me?.profile?.coins || 0);
-
-
-
-
-
-
-// ======================================
-// ⚔️ WARRIOR BET
-// ======================================
-socket.on("warrior-bet", data=>{
-
-  const uid = socket.data.uid;
-  if(!uid || !warriorRound) return;
-
-  if(warriorRound.status !== "betting"){
-    return socket.emit("warrior-error",{message:"ROUND_LOCKED"});
-  }
-
-  const bet = Math.floor(Number(data?.bet));
-  if(!bet || bet <= 0)
-    return socket.emit("warrior-error",{message:"BET_INVALID"});
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if(me.profile.coins < bet)
-    return socket.emit("warrior-error",{message:"NOT_ENOUGH"});
-
-  if(warriorRound.bets.some(b=>b.uid===uid))
-    return socket.emit("warrior-error",{message:"ALREADY_BET"});
-
-  me.profile.coins -= bet;
-
-  warriorRound.bets.push({
-    uid,
-    bet,
-    round:1,
-    alive:true
-  });
-
-  saveUsers(users);
-
-  socket.emit("coin-update",{coins:me.profile.coins});
-  socket.emit("warrior-bet-ok",{bet});
-});
-
-
-
-socket.on("warrior-fight", ()=>{
-
-  const uid = socket.data.uid;
-  if(!uid || !warriorRound) return;
-
-  const player = warriorRound.bets.find(b=>b.uid===uid);
-  if(!player || !player.alive) return;
-
-  const win = Math.random() < WARRIOR_WIN_RATE;
-
-  if(win){
-
-    player.round++;
-
-    if(player.round > WARRIOR_MAX_ROUNDS){
-      player.alive = false;
-
-      const reward = player.bet * 5; // ví dụ x5 khi full 20
-      const users = loadUsers();
-      users[uid].profile.coins += reward;
-      saveUsers(users);
-
-      socket.emit("coin-update",{coins:users[uid].profile.coins});
-      socket.emit("warrior-finish",{reward});
-      return;
-    }
-
-    socket.emit("warrior-win",{round:player.round});
-
-  }else{
-
-    player.alive = false;
-    socket.emit("warrior-lose",{});
-  }
-});
-
 
 
 // ================================

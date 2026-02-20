@@ -115,8 +115,8 @@ function openDiamondHunter(){
   location.href = "/game-diamond-hunter.html";
 }
 
-function openImmortalWarrior(){
-  location.href = "/game-immortal-warrior.html";
-}
 
+function openSurvivalGame(){
+  location.href = "/game-survival.html";
+}
 
