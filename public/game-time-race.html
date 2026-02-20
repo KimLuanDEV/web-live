@@ -244,6 +244,60 @@ html,body{
 }
 
 
+.bet-grid{
+  display:grid;
+  grid-template-columns: repeat(3,1fr);
+  gap:10px;
+  margin-bottom:14px;
+}
+
+.bet-chip{
+  padding:10px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.1);
+  background:#111;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.bet-chip:hover{
+  background:#1a1a2e;
+}
+
+.bet-chip.active{
+  background:#007bff;
+  box-shadow:0 0 20px rgba(0,123,255,.6);
+}
+
+
+.bet-quick{
+  display:flex;
+  gap:10px;
+  margin-bottom:12px;
+}
+
+.quick-btn{
+  flex:1;
+  padding:10px;
+  border-radius:10px;
+  border:1px solid rgba(255,255,255,.1);
+  background:#141420;
+  color:#fff;
+  font-weight:600;
+  cursor:pointer;
+  transition:.15s;
+}
+
+.quick-btn:hover{
+  background:#1f1f35;
+}
+
+.quick-btn.allin{
+  background:#ff2d2d;
+}
+
 </style>
 </head>
 <body>
@@ -292,9 +346,25 @@ html,body{
 
 
 <div class="tr-bottom">
-  <input id="betInput" class="bet-input" type="number" placeholder="Nhập số 💎">
+
+  <div class="bet-quick">
+  <button class="quick-btn" data-type="25">25%</button>
+  <button class="quick-btn" data-type="50">50%</button>
+  <button class="quick-btn allin" data-type="all">ALL IN</button>
+</div>
+
+  <div class="bet-grid">
+    <button class="bet-chip" data-bet="10">10</button>
+    <button class="bet-chip" data-bet="50">50</button>
+    <button class="bet-chip" data-bet="100">100</button>
+    <button class="bet-chip" data-bet="500">500</button>
+    <button class="bet-chip" data-bet="1000">1k</button>
+    <button class="bet-chip" data-bet="1000">5k</button>
+  </div>
+
   <button id="betBtn" class="btn btn-bet">ĐẶT CƯỢC</button>
   <button id="stopBtn" class="btn btn-stop">STOP</button>
+
 </div>
 
 <script>
@@ -316,12 +386,62 @@ const socket = io({
 let betEndAt = 0;
 let crashed = false;
 let hasBet = false;
+let currentCoins = 0;
+let selectedBet = 0;
 
 const multiplierEl = document.getElementById("multiplier");
 const betBtn = document.getElementById("betBtn");
 const stopBtn = document.getElementById("stopBtn");
-const betInput = document.getElementById("betInput");
 const betTimer = document.getElementById("betTimer");
+
+
+
+document.querySelectorAll(".quick-btn").forEach(btn=>{
+  btn.onclick = ()=>{
+
+    if(!currentCoins) return;
+
+    const type = btn.dataset.type;
+    let bet = 0;
+
+    if(type === "25"){
+      bet = Math.floor(currentCoins * 0.25);
+    }
+    else if(type === "50"){
+      bet = Math.floor(currentCoins * 0.5);
+    }
+    else if(type === "all"){
+      bet = currentCoins;
+    }
+
+    // highlight chip tương ứng nếu trùng
+    document.querySelectorAll(".bet-chip")
+      .forEach(b=>b.classList.remove("active"));
+
+    selectedBet = bet;
+
+    // hiệu ứng nháy nhẹ
+    btn.animate([
+      { transform:"scale(1)" },
+      { transform:"scale(1.08)" },
+      { transform:"scale(1)" }
+    ],{ duration:200 });
+
+  };
+});
+
+
+
+document.querySelectorAll(".bet-chip").forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll(".bet-chip")
+      .forEach(b=>b.classList.remove("active"));
+
+    btn.classList.add("active");
+    selectedBet = Number(btn.dataset.bet);
+  };
+});
+
 
 function updateTimer(){
   if(!betEndAt) return;
@@ -450,7 +570,7 @@ socket.on("time-race-crash",data=>{
 /* BET */
 
 betBtn.onclick=()=>{
-  const bet = Number(betInput.value);
+  const bet = selectedBet;
   if(!bet || bet<=0) return;
 
   socket.emit("time-race-bet",{bet});
@@ -479,10 +599,12 @@ socket.on("time-race-lost",data=>{
   multiplierEl.textContent="THUA x"+data.crashPoint;
 });
 
-socket.on("coin-update",data=>{
-  document.getElementById("coinBalance").textContent = data.coins;
-});
 
+
+socket.on("coin-update",data=>{
+  currentCoins = Number(data.coins || 0);
+  document.getElementById("coinBalance").textContent = currentCoins;
+});
 
 
 </script>
