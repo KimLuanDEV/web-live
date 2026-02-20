@@ -21,43 +21,6 @@ const fs = require("fs");
 
 
 
-// ======================================
-// ⚔️ IMMORTAL WARRIOR GLOBAL ROUND
-// ======================================
-
-const WARRIOR_BET_TIME = 30000; // 30s
-const WARRIOR_MAX_ROUNDS = 20;
-const WARRIOR_WIN_RATE = 0.65;
-
-let warriorRound = null;
-
-function startWarriorRound(){
-
-  warriorRound = {
-    id: Date.now(),
-    bets: [],
-    endAt: Date.now() + WARRIOR_BET_TIME,
-    status: "betting"
-  };
-
-  io.emit("warrior-round-new", {
-    id: warriorRound.id,
-    endAt: warriorRound.endAt
-  });
-
-  setTimeout(()=>{
-    warriorRound.status = "fighting";
-    io.emit("warrior-round-locked", {
-      id: warriorRound.id
-    });
-  }, WARRIOR_BET_TIME);
-}
-
-// tự chạy khi server start
-startWarriorRound();
-
-
-
 function ensureWheelSecret(round){
   if (!round) return;
 
@@ -908,6 +871,49 @@ const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map(); 
+
+
+
+
+
+
+// ======================================
+// ⚔️ IMMORTAL WARRIOR GLOBAL ROUND
+// ======================================
+
+const WARRIOR_BET_TIME = 30000; // 30s
+const WARRIOR_MAX_ROUNDS = 20;
+const WARRIOR_WIN_RATE = 0.65;
+
+let warriorRound = null;
+
+function startWarriorRound(){
+
+  warriorRound = {
+    id: Date.now(),
+    bets: [],
+    endAt: Date.now() + WARRIOR_BET_TIME,
+    status: "betting"
+  };
+
+  io.emit("warrior-round-new", {
+    id: warriorRound.id,
+    endAt: warriorRound.endAt
+  });
+
+  setTimeout(()=>{
+    warriorRound.status = "fighting";
+    io.emit("warrior-round-locked", {
+      id: warriorRound.id
+    });
+  }, WARRIOR_BET_TIME);
+}
+
+
+// ⚔️ Start Immortal Warrior round engine
+startWarriorRound();
+
+
 
 
 // ================================
