@@ -352,11 +352,17 @@ socket.on("time-race-new", data => {
   hasBet = false;
 
   const bomb = document.querySelector(".bomb-body");
+  const spark = document.querySelector(".spark");
 
-  // 🔄 reset trạng thái boom
+  // 🔄 Remove class trạng thái
   bomb.classList.remove("crash", "hot");
 
+  // 🧼 RESET INLINE STYLE (QUAN TRỌNG)
+  bomb.style.boxShadow = "";
+  bomb.style.background = "";
 
+  // 🔥 reset tốc độ lửa
+  spark.style.animationDuration = "0.4s";
 
   // 🎯 reset multiplier
   multiplierEl.classList.remove("crash");
