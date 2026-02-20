@@ -18,29 +18,70 @@ html,body{
   overflow:hidden;
 }
 
-/* HEADER */
+/* HEADER PRO */
+
 .tr-header{
   position:fixed;
   top:0;
   left:0;
   right:0;
-  padding:14px;
+  padding:calc(14px + env(safe-area-inset-top)) 16px 14px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  background:linear-gradient(180deg,#0b0b15,#000);
-  z-index:10;
+  background:linear-gradient(180deg,#0d0d1f,#000);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.06);
+  z-index:100;
+}
+
+.tr-back{
+  width:36px;
+  height:36px;
+  border-radius:10px;
+  border:none;
+  background:#111;
+  color:#fff;
+  font-size:20px;
+  cursor:pointer;
+}
+
+.tr-head-center{
+  text-align:center;
+  flex:1;
 }
 
 .tr-title{
   font-weight:700;
-  font-size:16px;
+  font-size:14px;
 }
 
-.tr-timer{
-  font-size:13px;
-  opacity:.8;
+.tr-sub{
+  font-size:11px;
+  opacity:.6;
 }
+
+.tr-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+}
+
+.tr-coins{
+  background:#111;
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:13px;
+}
+
+.tr-timer-badge{
+  background:#007bff;
+  padding:6px 10px;
+  border-radius:10px;
+  font-size:12px;
+  font-weight:700;
+}
+
 
 /* CENTER */
 .tr-center{
@@ -131,8 +172,23 @@ html,body{
 <body>
 
 <div class="tr-header">
-  <div class="tr-title">⏱ Cuộc Đua Với Thời Gian</div>
-  <div class="tr-timer" id="betTimer">Đặt cược: 15s</div>
+
+  <button class="tr-back" onclick="location.href='/invest.html'">‹</button>
+
+  <div class="tr-head-center">
+    <div class="tr-title">Cuộc Đua Với Thời Gian</div>
+    <div class="tr-sub">Crash Multiplier</div>
+  </div>
+
+  <div class="tr-right">
+    <div class="tr-coins">
+      💎 <span id="coinBalance">0</span>
+    </div>
+    <div class="tr-timer-badge" id="betTimer">
+      15s
+    </div>
+  </div>
+
 </div>
 
 <div class="tr-center">
@@ -174,12 +230,13 @@ const betTimer = document.getElementById("betTimer");
 function updateTimer(){
   if(!betEndAt) return;
   const left = Math.max(0,Math.floor((betEndAt-Date.now())/1000));
-  if(left>0){
-    betTimer.textContent="Đặt cược: "+left+"s";
-  }else{
-    betTimer.textContent="Đang chạy...";
-    betBtn.disabled=true;
-  }
+if(left>0){
+  betTimer.textContent=left+"s";
+}else{
+  betTimer.textContent="RUN";
+  betTimer.style.background="#ff2d2d";
+  betBtn.disabled=true;
+}
 }
 setInterval(updateTimer,500);
 
@@ -248,6 +305,19 @@ socket.on("time-race-stopped",data=>{
   stopBtn.style.display="none";
   multiplierEl.textContent="x"+data.multiplier+" ✔";
 });
+
+
+socket.on("time-race-lost",data=>{
+  stopBtn.style.display="none";
+  multiplierEl.textContent="THUA x"+data.crashPoint;
+});
+
+socket.on("coin-update",data=>{
+  document.getElementById("coinBalance").textContent = data.coins;
+});
+
+
+
 </script>
 </body>
 </html>

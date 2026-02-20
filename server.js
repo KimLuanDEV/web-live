@@ -1669,29 +1669,45 @@ setInterval(()=>{
     multiplier
   });
 
-  if(multiplier >= timeRaceRound.crashPoint){
+if(multiplier >= timeRaceRound.crashPoint){
 
-    timeRaceRound.crashed = true;
+  timeRaceRound.crashed = true;
 
-    io.emit("time-race-crash",{
-      crashPoint: timeRaceRound.crashPoint
+  const users = loadUsers();
+
+  // 🔥 xử lý người chưa STOP
+  timeRaceRound.bets.forEach(b=>{
+    if(!timeRaceRound.stopped.includes(b.uid)){
+      // thua → không hoàn tiền (đã trừ lúc đặt cược)
+      emitToUser(b.uid,"time-race-lost",{
+        crashPoint: timeRaceRound.crashPoint
+      });
+    }
+  });
+
+  saveUsers(users);
+
+  io.emit("time-race-crash",{
+    crashPoint: timeRaceRound.crashPoint
+  });
+
+  setTimeout(()=>{
+    timeRaceRound = createTimeRaceRound();
+
+    io.emit("time-race-new",{
+      roundId: timeRaceRound.id,
+      betEndAt: timeRaceRound.betEndAt
     });
 
-    setTimeout(()=>{
-      timeRaceRound = createTimeRaceRound();
+    io.emit("time-race-tick",{
+      multiplier:1
+    });
+
+  },5000);
+}
 
 
-      io.emit("time-race-new",{
-        roundId: timeRaceRound.id,
-        betEndAt: timeRaceRound.betEndAt
-      });
 
-      io.emit("time-race-tick",{
-  multiplier: 1
-});
-
-    },5000);
-  }
 
 }, TIME_RACE_TICK);
 
