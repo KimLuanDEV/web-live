@@ -22,6 +22,44 @@ const fs = require("fs");
 
 
 
+// ================================
+// 🥚 EGG ROUND COUNT PERSIST (24H)
+// ================================
+const EGG_ROUND_COUNT_FILE =
+  "/opt/render/project/data/egg_round_count.json";
+
+function loadEggRoundCount(){
+  try{
+    if (!fs.existsSync(EGG_ROUND_COUNT_FILE)) {
+      return {
+        dayTs: getTodayStartTsVN(),
+        count: 0
+      };
+    }
+    return JSON.parse(
+      fs.readFileSync(EGG_ROUND_COUNT_FILE, "utf8")
+    );
+  }catch(e){
+    console.error("❌ Load egg round count failed", e);
+    return {
+      dayTs: getTodayStartTsVN(),
+      count: 0
+    };
+  }
+}
+
+function saveEggRoundCount(data){
+  try{
+    fs.writeFileSync(
+      EGG_ROUND_COUNT_FILE,
+      JSON.stringify(data, null, 2)
+    );
+  }catch(e){
+    console.error("❌ Save egg round count failed", e);
+  }
+}
+
+
 
 function ensureWheelSecret(round){
   if (!round) return;
@@ -341,42 +379,6 @@ const INVEST_STATE_FILE =
 
 
 
-// ================================
-// 🥚 EGG ROUND COUNT PERSIST (24H)
-// ================================
-const EGG_ROUND_COUNT_FILE =
-  "/opt/render/project/data/egg_round_count.json";
-
-function loadEggRoundCount(){
-  try{
-    if (!fs.existsSync(EGG_ROUND_COUNT_FILE)) {
-      return {
-        dayTs: getTodayStartTsVN(),
-        count: 0
-      };
-    }
-    return JSON.parse(
-      fs.readFileSync(EGG_ROUND_COUNT_FILE, "utf8")
-    );
-  }catch(e){
-    console.error("❌ Load egg round count failed", e);
-    return {
-      dayTs: getTodayStartTsVN(),
-      count: 0
-    };
-  }
-}
-
-function saveEggRoundCount(data){
-  try{
-    fs.writeFileSync(
-      EGG_ROUND_COUNT_FILE,
-      JSON.stringify(data, null, 2)
-    );
-  }catch(e){
-    console.error("❌ Save egg round count failed", e);
-  }
-}
 
 
   function loadInvestState(){
@@ -1701,9 +1703,6 @@ io.on("connection", socket => {
   const coins = Number(me?.profile?.coins || 0);
 
 
-
-
-
 // ================================
 // ⚔️ SURVIVAL START
 // ================================
@@ -1737,158 +1736,6 @@ socket.on("survival-start", ({ bet }) => {
   saveSurvival(survivalDB);
 
   socket.emit("survival-state", survivalDB[uid]);
-});
-
-
-// ================================
-// ⚔️ SURVIVAL FIGHT NEXT ROUND
-// ================================
-socket.on("survival-fight", ()=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const session = survivalDB[uid];
-  if(!session || !session.active)
-    return socket.emit("survival-error",{message:"NO_ACTIVE_GAME"});
-
-  const winRate = getSurvivalWinRate(session.round);
-  const win = Math.random() < winRate;
-
-  if(win){
-
-    session.round++;
-
-    if(session.round > 20){
-
-      const users = loadUsers();
-      const me = users[uid];
-
-      const reward = session.bet * 5; // full 20 hiệp x5
-
-      me.profile.coins += reward;
-      saveUsers(users);
-      emitCoinUpdate(uid);
-
-      delete survivalDB[uid];
-      saveSurvival(survivalDB);
-
-      return socket.emit("survival-finish",{
-        result:"WIN_ALL",
-        reward
-      });
-    }
-
-    saveSurvival(survivalDB);
-
-    socket.emit("survival-round-win",{
-      round: session.round
-    });
-
-  } else {
-
-    delete survivalDB[uid];
-    saveSurvival(survivalDB);
-
-    socket.emit("survival-finish",{
-      result:"LOSE"
-    });
-  }
-
-});
-
-
-// ================================
-// ⚔️ SURVIVAL START
-// ================================
-socket.on("survival-start", ({ bet }) => {
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const users = loadUsers();
-  const me = users[uid];
-  if(!me?.profile) return;
-
-  bet = Math.floor(Number(bet));
-  if(!bet || bet <= 0)
-    return socket.emit("survival-error",{message:"BET_INVALID"});
-
-  if(me.profile.coins < bet)
-    return socket.emit("survival-error",{message:"NOT_ENOUGH_COIN"});
-
-  // trừ coin
-  me.profile.coins -= bet;
-  saveUsers(users);
-  emitCoinUpdate(uid);
-
-  survivalDB[uid] = {
-    round: 1,
-    bet,
-    active: true
-  };
-
-  saveSurvival(survivalDB);
-
-  socket.emit("survival-state", survivalDB[uid]);
-});
-
-
-// ================================
-// ⚔️ SURVIVAL FIGHT NEXT ROUND
-// ================================
-socket.on("survival-fight", ()=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const session = survivalDB[uid];
-  if(!session || !session.active)
-    return socket.emit("survival-error",{message:"NO_ACTIVE_GAME"});
-
-  const winRate = getSurvivalWinRate(session.round);
-  const win = Math.random() < winRate;
-
-  if(win){
-
-    session.round++;
-
-    if(session.round > 20){
-
-      const users = loadUsers();
-      const me = users[uid];
-
-      const reward = session.bet * 5; // full 20 hiệp x5
-
-      me.profile.coins += reward;
-      saveUsers(users);
-      emitCoinUpdate(uid);
-
-      delete survivalDB[uid];
-      saveSurvival(survivalDB);
-
-      return socket.emit("survival-finish",{
-        result:"WIN_ALL",
-        reward
-      });
-    }
-
-    saveSurvival(survivalDB);
-
-    socket.emit("survival-round-win",{
-      round: session.round
-    });
-
-  } else {
-
-    delete survivalDB[uid];
-    saveSurvival(survivalDB);
-
-    socket.emit("survival-finish",{
-      result:"LOSE"
-    });
-  }
-
 });
 
 
@@ -2014,6 +1861,9 @@ socket.on("survival-cashout", ()=>{
     reward
   });
 });
+
+
+
 
 
 // ================================
