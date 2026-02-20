@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>Cuộc Đua Với Thời Gian</title>
+<title>Time Race</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link rel="stylesheet" href="/style.css">
@@ -298,6 +298,26 @@ html,body{
   background:#ff2d2d;
 }
 
+.selected-bet-bar{
+  margin-bottom:12px;
+  padding:10px;
+  text-align:center;
+  border-radius:12px;
+  background:#111;
+  font-weight:600;
+  font-size:14px;
+  transition:.2s;
+}
+
+.selected-bet-bar.active{
+  background:#007bff;
+  box-shadow:0 0 20px rgba(0,123,255,.6);
+}
+
+#selectedBetValue{
+  font-weight:800;
+}
+
 </style>
 </head>
 <body>
@@ -307,7 +327,7 @@ html,body{
   <button class="tr-back" onclick="location.href='/invest.html'">‹</button>
 
   <div class="tr-head-center">
-    <div class="tr-title">Cuộc Đua Với Thời Gian</div>
+    <div class="tr-title">Time Race</div>
     <div class="tr-sub">Crash Multiplier</div>
   </div>
 
@@ -346,6 +366,11 @@ html,body{
 
 
 <div class="tr-bottom">
+
+  <div class="selected-bet-bar">
+  Selected Bet: 
+  <span id="selectedBetValue">0</span> 💎
+</div>
 
   <div class="bet-quick">
   <button class="quick-btn" data-type="25">25%</button>
@@ -393,7 +418,18 @@ const multiplierEl = document.getElementById("multiplier");
 const betBtn = document.getElementById("betBtn");
 const stopBtn = document.getElementById("stopBtn");
 const betTimer = document.getElementById("betTimer");
+const selectedBetEl = document.getElementById("selectedBetValue");
+const selectedBetBar = document.querySelector(".selected-bet-bar");
 
+function updateSelectedBetDisplay(){
+  selectedBetEl.textContent = selectedBet.toLocaleString();
+
+  if(selectedBet > 0){
+    selectedBetBar.classList.add("active");
+  }else{
+    selectedBetBar.classList.remove("active");
+  }
+}
 
 
 document.querySelectorAll(".quick-btn").forEach(btn=>{
@@ -419,6 +455,7 @@ document.querySelectorAll(".quick-btn").forEach(btn=>{
       .forEach(b=>b.classList.remove("active"));
 
     selectedBet = bet;
+    updateSelectedBetDisplay();
 
     // hiệu ứng nháy nhẹ
     btn.animate([
@@ -439,6 +476,7 @@ document.querySelectorAll(".bet-chip").forEach(btn=>{
 
     btn.classList.add("active");
     selectedBet = Number(btn.dataset.bet);
+    updateSelectedBetDisplay();
   };
 });
 
@@ -487,6 +525,10 @@ socket.on("time-race-new", data => {
   // 🎯 reset multiplier
   multiplierEl.classList.remove("crash");
   multiplierEl.textContent = "x1.00";
+
+  // 💎 RESET SELECTED BET
+  selectedBet = 0;
+  updateSelectedBetDisplay();
 
   // 🔘 reset nút
   betBtn.disabled = false;
