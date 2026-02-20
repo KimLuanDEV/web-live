@@ -356,6 +356,12 @@ socket.on("time-race-new", data => {
   // 🔄 reset trạng thái boom
   bomb.classList.remove("crash", "hot");
 
+
+  bomb.style.boxShadow = "";
+bomb.style.background = "";
+document.querySelector(".spark").style.animationDuration = "0.4s";
+
+
   // 🎯 reset multiplier
   multiplierEl.classList.remove("crash");
   multiplierEl.textContent = "x1.00";
@@ -373,13 +379,35 @@ socket.on("time-race-new", data => {
 socket.on("time-race-tick",data=>{
   if(crashed) return;
 
-  multiplierEl.textContent="x"+Number(data.multiplier).toFixed(2);
+  const m = Number(data.multiplier);
+  multiplierEl.textContent = "x" + m.toFixed(2);
 
-  if(data.multiplier > 5){
-    document.querySelector(".bomb-body").classList.add("hot");
-  }
+  const bomb = document.querySelector(".bomb-body");
+  const spark = document.querySelector(".spark");
+
+  // 🔥 Tính độ nóng (giới hạn max 10x)
+  const intensity = Math.min(m / 10, 1); 
+  const glow = 60 + intensity * 200;      // glow tăng dần
+  const redPower = Math.floor(255 * intensity);
+
+  // 🔥 Glow theo multiplier
+  bomb.style.boxShadow = `
+    inset -15px -15px 40px rgba(0,0,0,.7),
+    0 0 ${glow}px rgba(${redPower},0,0,.7)
+  `;
+
+  // 🔥 Nền bomb đỏ dần
+  bomb.style.background = `
+    radial-gradient(circle at 30% 30%, 
+    rgb(${80 + redPower/3},${20 - intensity*20},${20 - intensity*20}),
+    #0a0a0a 70%)
+  `;
+
+  // 🔥 Tia lửa cháy nhanh dần
+  spark.style.animationDuration = 
+    (0.4 - intensity * 0.3) + "s";
+
 });
-
 
 socket.on("time-race-crash",data=>{
 
