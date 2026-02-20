@@ -686,6 +686,41 @@ body.sheet-open{
 
 
 
+/* ⏱ TIME RACE – CRASH GAME */
+.invest-card.time-race{
+  background-image:
+    linear-gradient(180deg, rgba(0,255,255,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/time-race.jpg"); /* có thể thay ảnh sau */
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 50px rgba(0,255,255,.35),
+    0 12px 30px rgba(0,0,0,.75);
+}
+
+/* hiệu ứng glow nhịp tim */
+.invest-card.time-race::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(0,255,255,.25), transparent 60%);
+  mix-blend-mode: screen;
+  animation: pulseRace 2.5s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes pulseRace{
+  0%{opacity:.4}
+  50%{opacity:.9}
+  100%{opacity:.4}
+}
+
+
+
 
 </style>
 
@@ -838,6 +873,12 @@ body.sheet-open{
   <div class="asset-name"></div>
 </div>
 
+
+<!-- ⏱ GAME CUỘC ĐUA VỚI THỜI GIAN -->
+<div class="invest-card time-race"
+     onclick="openTimeRaceGame()">
+  <div class="asset-name"></div>
+</div>
 
 
       </div>

@@ -117,4 +117,6 @@ function openDiamondHunter(){
 
 
 
-
+function openTimeRaceGame(){
+  location.href = "/game-time-race.html";
+}
