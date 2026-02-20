@@ -216,6 +216,10 @@ const socket = io({
 let currentRound = 0;
 let thinking = false;
 let countdownInterval = null;
+let betPlaced = false;
+let betEndAt = 0;
+let betTimer = null;
+
 
 const actionBtn = document.getElementById("actionBtn");
 const roundText = document.getElementById("roundText");
@@ -233,9 +237,14 @@ socket.on("coin-update", data=>{
 // ================= START =================
 
 actionBtn.onclick = ()=>{
-  if(actionBtn.textContent === "START"){
-    socket.emit("warrior-start");
-  }else if(actionBtn.textContent === "FIGHT"){
+
+  if(actionBtn.textContent === "ĐẶT CƯỢC"){
+    const bet = prompt("Nhập số 💎 cược:");
+    if(!bet) return;
+    socket.emit("warrior-bet",{bet});
+  }
+
+  else if(actionBtn.textContent === "FIGHT"){
     socket.emit("warrior-fight");
   }
 };
@@ -263,6 +272,32 @@ socket.on("warrior-finish", ()=>{
   showResult("🏆 IMMORTAL WARRIOR!", "finish");
   resetGame();
 });
+
+
+
+socket.on("warrior-round-new", data=>{
+  betPlaced = false;
+  betEndAt = data.endAt;
+  actionBtn.textContent = "ĐẶT CƯỢC";
+  startBetCountdown();
+});
+
+
+
+socket.on("warrior-round-locked", ()=>{
+  if(!betPlaced){
+    actionBtn.disabled = true;
+    roundText.textContent = "Đã khóa cược";
+  }
+});
+
+
+socket.on("warrior-bet-ok", data=>{
+  betPlaced = true;
+  actionBtn.textContent = "FIGHT";
+  roundText.textContent = "Vòng 1 / 20";
+});
+
 
 // ================= UI FUNCTIONS =================
 
@@ -305,6 +340,27 @@ function startThinkingTimer(){
 
   },1000);
 }
+
+
+
+function startBetCountdown(){
+
+  clearInterval(betTimer);
+
+  betTimer = setInterval(()=>{
+    const left = Math.max(0, Math.floor((betEndAt - Date.now())/1000));
+
+    timerText.textContent = "Mở cược còn: " + left + "s";
+
+    if(left <= 0){
+      clearInterval(betTimer);
+      timerText.textContent = "Đang bắt đầu chiến đấu...";
+    }
+
+  },1000);
+}
+
+
 
 </script>
 
