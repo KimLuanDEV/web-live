@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Cuộc Đua Với Thời Gian</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link rel="stylesheet" href="/style.css">
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+html,body{
+  margin:0;
+  padding:0;
+  background:#000;
+  font-family:system-ui;
+  color:#fff;
+  overflow:hidden;
+}
+
+/* HEADER */
+.tr-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  padding:14px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:linear-gradient(180deg,#0b0b15,#000);
+  z-index:10;
+}
+
+.tr-title{
+  font-weight:700;
+  font-size:16px;
+}
+
+.tr-timer{
+  font-size:13px;
+  opacity:.8;
+}
+
+/* CENTER */
+.tr-center{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%);
+  text-align:center;
+}
+
+.multiplier{
+  font-size:64px;
+  font-weight:800;
+  text-shadow:0 0 25px #00f0ff;
+  transition:.1s;
+}
+
+.multiplier.big{
+  font-size:80px;
+}
+
+.multiplier.crash{
+  color:#ff2d2d;
+  text-shadow:0 0 30px red;
+}
+
+/* BET PANEL */
+.tr-bottom{
+  position:fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  padding:16px;
+  background:#0b0b15;
+  border-top:1px solid rgba(255,255,255,.08);
+}
+
+.bet-input{
+  width:100%;
+  padding:12px;
+  border-radius:10px;
+  border:none;
+  background:#111;
+  color:#fff;
+  margin-bottom:12px;
+  font-size:16px;
+}
+
+.btn{
+  width:100%;
+  padding:14px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.btn-bet{
+  background:#007bff;
+}
+
+.btn-stop{
+  background:#ff2d2d;
+  margin-top:8px;
+  display:none;
+}
+
+.btn:disabled{
+  opacity:.5;
+}
+
+/* CRASH FLASH */
+.crash-flash{
+  position:fixed;
+  inset:0;
+  background:rgba(255,0,0,.15);
+  animation:flash .4s ease 4;
+  pointer-events:none;
+}
+
+@keyframes flash{
+  from{opacity:0}
+  to{opacity:1}
+}
+</style>
+</head>
+<body>
+
+<div class="tr-header">
+  <div class="tr-title">⏱ Cuộc Đua Với Thời Gian</div>
+  <div class="tr-timer" id="betTimer">Đặt cược: 15s</div>
+</div>
+
+<div class="tr-center">
+  <div id="multiplier" class="multiplier">x1.00</div>
+</div>
+
+<div class="tr-bottom">
+  <input id="betInput" class="bet-input" type="number" placeholder="Nhập số 💎">
+  <button id="betBtn" class="btn btn-bet">ĐẶT CƯỢC</button>
+  <button id="stopBtn" class="btn btn-stop">STOP</button>
+</div>
+
+<script>
+const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
+
+let deviceId = localStorage.getItem("device_id");
+if(!deviceId){
+  deviceId="dev_"+Math.random().toString(36).slice(2);
+  localStorage.setItem("device_id",deviceId);
+}
+
+const socket = io({
+  auth:{
+    uid:me.uid,
+    deviceId
+  }
+});
+
+let betEndAt = 0;
+let crashed = false;
+let hasBet = false;
+
+const multiplierEl = document.getElementById("multiplier");
+const betBtn = document.getElementById("betBtn");
+const stopBtn = document.getElementById("stopBtn");
+const betInput = document.getElementById("betInput");
+const betTimer = document.getElementById("betTimer");
+
+function updateTimer(){
+  if(!betEndAt) return;
+  const left = Math.max(0,Math.floor((betEndAt-Date.now())/1000));
+  if(left>0){
+    betTimer.textContent="Đặt cược: "+left+"s";
+  }else{
+    betTimer.textContent="Đang chạy...";
+    betBtn.disabled=true;
+  }
+}
+setInterval(updateTimer,500);
+
+/* SOCKET EVENTS */
+
+socket.on("time-race-state",data=>{
+  betEndAt=data.betEndAt;
+  multiplierEl.textContent="x"+Number(data.multiplier).toFixed(2);
+  crashed=data.crashed;
+});
+
+socket.on("time-race-new",data=>{
+  crashed=false;
+  hasBet=false;
+  betBtn.disabled=false;
+  stopBtn.style.display="none";
+  multiplierEl.classList.remove("crash");
+  multiplierEl.textContent="x1.00";
+  betEndAt=data.betEndAt;
+});
+
+socket.on("time-race-tick",data=>{
+  if(crashed) return;
+  multiplierEl.textContent="x"+Number(data.multiplier).toFixed(2);
+
+  if(data.multiplier>5){
+    multiplierEl.classList.add("big");
+  }
+});
+
+socket.on("time-race-crash",data=>{
+  crashed=true;
+  multiplierEl.classList.add("crash");
+  multiplierEl.textContent="CRASH x"+data.crashPoint;
+
+  const flash=document.createElement("div");
+  flash.className="crash-flash";
+  document.body.appendChild(flash);
+  setTimeout(()=>flash.remove(),800);
+
+  stopBtn.style.display="none";
+});
+
+/* BET */
+
+betBtn.onclick=()=>{
+  const bet = Number(betInput.value);
+  if(!bet || bet<=0) return;
+
+  socket.emit("time-race-bet",{bet});
+};
+
+socket.on("time-race-bet-ok",()=>{
+  hasBet=true;
+  betBtn.disabled=true;
+  stopBtn.style.display="block";
+});
+
+/* STOP */
+
+stopBtn.onclick=()=>{
+  socket.emit("time-race-stop");
+};
+
+socket.on("time-race-stopped",data=>{
+  stopBtn.style.display="none";
+  multiplierEl.textContent="x"+data.multiplier+" ✔";
+});
+</script>
+</body>
+</html>

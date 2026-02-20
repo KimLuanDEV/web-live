@@ -1609,7 +1609,86 @@ setTimeout(()=>{
 
 
 
+// ================================
+// ⏱️ TIME RACE (CRASH GAME)
+// ================================
 
+const TIME_RACE_TOTAL = 60000;   // 60s 1 round
+const TIME_RACE_BET = 15000;     // 15s đặt cược
+const TIME_RACE_TICK = 100;      // update mỗi 100ms
+
+function pickCrashPoint(){
+  const r = Math.random();
+
+  if(r < 0.35) return Number((1.01 + Math.random()*0.49).toFixed(2));
+  if(r < 0.70) return Number((1.5 + Math.random()*1.5).toFixed(2));
+  if(r < 0.90) return Number((3 + Math.random()*3).toFixed(2));
+  if(r < 0.99) return Number((6 + Math.random()*9).toFixed(2));
+  return Number((15 + Math.random()*35).toFixed(2));
+}
+
+function createTimeRaceRound(){
+  const now = Date.now();
+  return {
+    id: now,
+    startAt: now,
+    betEndAt: now + TIME_RACE_BET,
+    endAt: now + TIME_RACE_TOTAL,
+    crashPoint: pickCrashPoint(),
+    currentMultiplier: 1,
+    bets: [],
+    stopped: [],
+    crashed: false
+  };
+}
+
+let timeRaceRound = createTimeRaceRound();
+
+
+
+setInterval(()=>{
+
+  const now = Date.now();
+
+  if(timeRaceRound.crashed) return;
+
+  if(now < timeRaceRound.betEndAt) return;
+
+  const elapsed = (now - timeRaceRound.betEndAt)/1000;
+
+  const multiplier = Number((1 + elapsed * 0.25).toFixed(2));
+
+  timeRaceRound.currentMultiplier = multiplier;
+
+  io.emit("time-race-tick",{
+    multiplier
+  });
+
+  if(multiplier >= timeRaceRound.crashPoint){
+
+    timeRaceRound.crashed = true;
+
+    io.emit("time-race-crash",{
+      crashPoint: timeRaceRound.crashPoint
+    });
+
+    setTimeout(()=>{
+      timeRaceRound = createTimeRaceRound();
+
+
+      io.emit("time-race-new",{
+        roundId: timeRaceRound.id,
+        betEndAt: timeRaceRound.betEndAt
+      });
+
+      io.emit("time-race-tick",{
+  multiplier: 1
+});
+
+    },5000);
+  }
+
+}, TIME_RACE_TICK);
 
 
 // ================================
@@ -1900,6 +1979,17 @@ socket.emit("egg-history", eggHistory);
 socket.emit("coin-update", { coins });
 
 
+// ================================
+// ⏱️ SEND TIME RACE STATE
+// ================================
+socket.emit("time-race-state",{
+  roundId: timeRaceRound.id,
+  betEndAt: timeRaceRound.betEndAt,
+  multiplier: timeRaceRound.currentMultiplier,
+  crashed: timeRaceRound.crashed
+});
+
+
 // ✊✋✌️ gửi lịch sử RPS cho user mới vào
 socket.emit("rps-history", rpsHistoryGlobal);
 
@@ -1940,6 +2030,77 @@ socket.emit("barn-update", {
   level: meNow?.barnLevel || 1,
   config: BARN_CONFIG
 });
+
+
+
+
+socket.on("time-race-bet", data=>{
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  if(Date.now() > timeRaceRound.betEndAt)
+    return socket.emit("time-race-error",{message:"BET_CLOSED"});
+
+  const bet = Math.floor(Number(data?.bet));
+  if(!bet || bet <= 0)
+    return socket.emit("time-race-error",{message:"BET_INVALID"});
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  if(timeRaceRound.bets.some(b=>b.uid===uid))
+    return socket.emit("time-race-error",{message:"ALREADY_BET"});
+
+  if(me.profile.coins < bet)
+    return socket.emit("time-race-error",{message:"NOT_ENOUGH_COIN"});
+
+  me.profile.coins -= bet;
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  timeRaceRound.bets.push({uid, bet});
+
+  socket.emit("time-race-bet-ok");
+});
+
+
+socket.on("time-race-stop", ()=>{
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+if(
+  timeRaceRound.crashed ||
+  timeRaceRound.currentMultiplier >= timeRaceRound.crashPoint
+){
+  return;
+}
+
+  const bet = timeRaceRound.bets.find(b=>b.uid===uid);
+  if(!bet) return;
+
+  if(timeRaceRound.stopped.has(uid)) return;
+
+  timeRaceRound.stopped.add(uid);
+
+  const win = Math.floor(
+    bet.bet * timeRaceRound.currentMultiplier
+  );
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  me.profile.coins += win;
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  socket.emit("time-race-stopped",{
+    multiplier: timeRaceRound.currentMultiplier,
+    win
+  });
+});
+
 
   
 // ✊✋✌️ RPS ROUND INFO
