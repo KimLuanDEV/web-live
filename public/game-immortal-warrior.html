@@ -1,0 +1,312 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>⚔️ Chiến Binh Bất Tử</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+
+/* ================= BASE ================= */
+
+html,body{
+  margin:0;
+  padding:0;
+  background:#000;
+  font-family: system-ui;
+  color:#fff;
+  overflow:hidden;
+}
+
+.page{
+  height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+/* ================= HEADER ================= */
+
+.topbar{
+  padding:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:linear-gradient(180deg,#111,#050505);
+  border-bottom:1px solid rgba(255,255,255,.06);
+}
+
+.title{
+  font-size:18px;
+  font-weight:700;
+  letter-spacing:.5px;
+}
+
+.coin{
+  font-weight:600;
+  color:#00ffcc;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  padding:20px;
+  text-align:center;
+}
+
+/* WARRIOR */
+
+.warrior{
+  font-size:90px;
+  animation:idle 2s infinite alternate ease-in-out;
+}
+
+@keyframes idle{
+  from{transform:translateY(-5px)}
+  to{transform:translateY(5px)}
+}
+
+/* ROUND TEXT */
+
+.round{
+  font-size:20px;
+  margin-top:10px;
+  opacity:.8;
+}
+
+/* PROGRESS BAR */
+
+.progress{
+  width:100%;
+  max-width:400px;
+  height:14px;
+  background:#111;
+  border-radius:20px;
+  overflow:hidden;
+  margin-top:20px;
+}
+
+.progress-inner{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ff2d55,#ff9500);
+  transition:width .4s ease;
+}
+
+/* TIMER */
+
+.timer{
+  margin-top:15px;
+  font-size:16px;
+  opacity:.8;
+}
+
+/* BUTTONS */
+
+.buttons{
+  margin-top:30px;
+}
+
+.btn{
+  padding:14px 30px;
+  border:none;
+  border-radius:30px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  transition:.2s ease;
+}
+
+.btn-primary{
+  background:linear-gradient(90deg,#ff2d55,#ff9500);
+  color:#fff;
+}
+
+.btn-danger{
+  background:#222;
+  color:#ff4444;
+}
+
+.btn:active{
+  transform:scale(.95);
+}
+
+/* RESULT */
+
+.result{
+  margin-top:20px;
+  font-size:22px;
+  font-weight:700;
+  min-height:30px;
+}
+
+.win{
+  color:#00ff99;
+  text-shadow:0 0 15px #00ff99;
+}
+
+.lose{
+  color:#ff4444;
+  text-shadow:0 0 15px #ff4444;
+}
+
+.finish{
+  color:#ffd700;
+  text-shadow:0 0 20px #ffd700;
+}
+
+</style>
+</head>
+<body>
+
+<div class="page">
+
+<div class="topbar">
+  <div class="title">⚔️ Chiến Binh Bất Tử</div>
+  <div class="coin" id="coinDisplay">💎 0</div>
+</div>
+
+<div class="main">
+
+  <div class="warrior">🛡️</div>
+
+  <div class="round" id="roundText">
+    Bấm START để bắt đầu
+  </div>
+
+  <div class="progress">
+    <div class="progress-inner" id="progressBar"></div>
+  </div>
+
+  <div class="timer" id="timerText"></div>
+
+  <div class="result" id="resultText"></div>
+
+  <div class="buttons">
+    <button class="btn btn-primary" id="actionBtn">
+      START
+    </button>
+  </div>
+
+</div>
+</div>
+
+<script>
+
+// ================= CONNECT =================
+
+const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+let deviceId = localStorage.getItem("device_id");
+if (!deviceId) {
+  deviceId = "dev_" + Math.random().toString(36).slice(2);
+  localStorage.setItem("device_id", deviceId);
+}
+
+const socket = io({
+  auth:{ uid:me.uid, deviceId }
+});
+
+// ================= STATE =================
+
+let currentRound = 0;
+let thinking = false;
+let countdownInterval = null;
+
+const actionBtn = document.getElementById("actionBtn");
+const roundText = document.getElementById("roundText");
+const resultText = document.getElementById("resultText");
+const progressBar = document.getElementById("progressBar");
+const timerText = document.getElementById("timerText");
+
+// ================= COIN UPDATE =================
+
+socket.on("coin-update", data=>{
+  document.getElementById("coinDisplay").textContent =
+    "💎 " + data.coins;
+});
+
+// ================= START =================
+
+actionBtn.onclick = ()=>{
+  if(actionBtn.textContent === "START"){
+    socket.emit("warrior-start");
+  }else if(actionBtn.textContent === "FIGHT"){
+    socket.emit("warrior-fight");
+  }
+};
+
+// ================= SERVER EVENTS =================
+
+socket.on("warrior-state", data=>{
+  currentRound = data.round;
+  updateUI();
+  actionBtn.textContent = "FIGHT";
+});
+
+socket.on("warrior-win", data=>{
+  currentRound = data.round - 1;
+  showResult("CHIẾN THẮNG!", "win");
+  startThinkingTimer();
+});
+
+socket.on("warrior-lose", ()=>{
+  showResult("BẠN ĐÃ NGÃ XUỐNG 💀", "lose");
+  resetGame();
+});
+
+socket.on("warrior-finish", ()=>{
+  showResult("🏆 IMMORTAL WARRIOR!", "finish");
+  resetGame();
+});
+
+// ================= UI FUNCTIONS =================
+
+function updateUI(){
+  roundText.textContent = "Vòng " + currentRound + " / 20";
+  progressBar.style.width = (currentRound / 20 * 100) + "%";
+}
+
+function showResult(text, type){
+  resultText.textContent = text;
+  resultText.className = "result " + type;
+}
+
+function resetGame(){
+  actionBtn.textContent = "START";
+  currentRound = 0;
+  progressBar.style.width = "0%";
+  roundText.textContent = "Bấm START để bắt đầu";
+  timerText.textContent = "";
+}
+
+function startThinkingTimer(){
+  thinking = true;
+  actionBtn.disabled = true;
+  let seconds = 15;
+  timerText.textContent = "Tiếp tục sau " + seconds + "s";
+
+  countdownInterval = setInterval(()=>{
+    seconds--;
+    timerText.textContent = "Tiếp tục sau " + seconds + "s";
+
+    if(seconds <= 0){
+      clearInterval(countdownInterval);
+      actionBtn.disabled = false;
+      actionBtn.textContent = "FIGHT";
+      updateUI();
+      timerText.textContent = "";
+      thinking = false;
+    }
+
+  },1000);
+}
+
+</script>
+
+</body>
+</html>
