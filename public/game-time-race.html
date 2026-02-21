@@ -635,6 +635,48 @@ border-top:1px solid rgba(0,255,255,.08);
 }
 
 
+
+/* STOP dưới bomb */
+
+.stop-wrap{
+  margin-top:28px;
+  text-align:center;
+}
+
+.btn-stop-floating{
+  display:none;
+
+  padding:18px 60px;
+  border-radius:40px;
+
+  font-size:20px;
+  font-weight:900;
+  letter-spacing:1px;
+
+  border:none;
+  cursor:pointer;
+
+  background:linear-gradient(
+    135deg,
+    #ff2d2d,
+    #ff0000
+  );
+
+  color:#fff;
+
+  box-shadow:
+    0 0 40px rgba(255,0,0,.8),
+    inset 0 0 20px rgba(255,255,255,.2);
+
+  animation:stopPulse 1.5s infinite;
+}
+
+@keyframes stopPulse{
+  0%,100%{ transform:scale(1); }
+  50%{ transform:scale(1.06); }
+}
+
+
 </style>
 </head>
 <body>
@@ -694,6 +736,12 @@ border-top:1px solid rgba(0,255,255,.08);
 
   </div>
 
+<div class="stop-wrap">
+  <button id="stopBtn" class="btn-stop-floating">
+    STOP
+  </button>
+</div>
+
 </div>
 
 
@@ -724,7 +772,7 @@ border-top:1px solid rgba(0,255,255,.08);
   </div>
 
   <button id="betBtn" class="btn btn-bet">COMFIRM</button>
-  <button id="stopBtn" class="btn btn-stop">STOP</button>
+
 
 </div>
 
@@ -832,7 +880,7 @@ function updateTimer(){
 if(left>0){
   betTimer.textContent = left;
 }else{
-betTimer.textContent = "🔥";
+betTimer.textContent = "";
 betTimer.style.color = "#ff2d2d";
 betTimer.style.textShadow = "0 0 15px red";
   betBtn.disabled=true;
