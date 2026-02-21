@@ -1090,16 +1090,23 @@ document.querySelectorAll(".bet-chip").forEach(btn=>{
 function updateTimer(){
   if(!betEndAt) return;
 
-  const betPanel = document.querySelector(".tr-bottom"); // bet bar
+  const betPanel = document.querySelector(".tr-bottom");
   const msLeft = betEndAt - serverTime();
   const left = Math.max(0, Math.ceil(msLeft / 1000));
 
   // hiển thị số giây
   betTimer.textContent = left > 0 ? left : "";
 
-  // 🔒 KHÓA TOÀN BỘ BET BAR khi còn <= 3s
+  // ✅ Nếu đã đặt cược rồi -> khóa bet bar luôn, KHÔNG mở lại
+  if(hasBet){
+    betPanel?.classList.add("locked");
+    betBtn.disabled = true;
+    return;
+  }
+
+  // 🔒 Chưa bet thì mới khóa theo <= 3s
   if(msLeft <= 3000){
-    betPanel?.classList.add("locked");   // khóa chip + quick + confirm
+    betPanel?.classList.add("locked");
     betBtn.disabled = true;
 
     betTimer.style.color = "#ff2d2d";
@@ -1112,7 +1119,6 @@ function updateTimer(){
     betTimer.style.textShadow = "";
   }
 
-  // hết giờ thì chắc chắn khóa
   if(msLeft <= 0){
     betPanel?.classList.add("locked");
     betBtn.disabled = true;
