@@ -1401,6 +1401,7 @@ socket.on("time-race-history-update",
 );
 
 
+
 socket.on("time-race-restore", data=>{
 
   serverOffset = data.serverNow - Date.now();
@@ -1408,18 +1409,10 @@ socket.on("time-race-restore", data=>{
   crashed = data.crashed;
   hasBet = data.hasBet;
 
-  const currentMultiplier = Number(data.multiplier || 1);
+  const currentMultiplier = Number(data.multiplier);
 
   multiplierEl.textContent =
     "x" + currentMultiplier.toFixed(2);
-
-  // ✅ RESTORE Selected Bet (để không bị 0 khi reload)
-  if(hasBet){
-    selectedBet = Number(data.betAmount || 0);
-  }else{
-    selectedBet = 0;
-  }
-  updateSelectedBetDisplay(); // bạn đã dùng hàm này ở time-race-new :contentReference[oaicite:3]{index=3}
 
   if(hasBet){
 
@@ -1429,24 +1422,21 @@ socket.on("time-race-restore", data=>{
 
     betBtn.disabled = true;
 
-    // ✅ Nếu đã STOP rồi thì ẩn nút STOP luôn
-    if(data.stopped || crashed){
-      stopBtn.style.display = "none";
-      return;
-    }
+    if(!crashed && !data.stopped){
 
-    // ✅ Có bet + chưa crash + chưa stop → hiện STOP ngay
-    stopBtn.style.display = "block";
+      stopBtn.style.display = "block";
 
-    // 🔒 nếu chưa chạy thì vẫn khóa (multiplier <= 1)
-    if(currentMultiplier <= 1){
-      stopBtn.disabled = true;
-      stopBtn.style.opacity = ".6";
-      raceStarted = false;
-    }else{
-      stopBtn.disabled = false;
-      stopBtn.style.opacity = "1";
-      raceStarted = true;
+      // 🔒 nếu chưa chạy thì vẫn khóa
+      if(currentMultiplier <= 1){
+        stopBtn.disabled = true;
+        stopBtn.style.opacity = ".6";
+      }
+      else{
+        stopBtn.disabled = false;
+        stopBtn.style.opacity = "1";
+        raceStarted = true;
+      }
+
     }
 
   }else{
@@ -1460,6 +1450,7 @@ socket.on("time-race-restore", data=>{
   }
 
 });
+
 
 </script>
 </body>
