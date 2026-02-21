@@ -488,6 +488,12 @@ body{
 
 /* 💎 multiplier */
 .bomb-multi{
+   position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%, -50%);
+  font-size:60px;
+  z-index:5;
   font-size:60px;
   font-weight:900;
   letter-spacing:2px;
@@ -1004,17 +1010,15 @@ border-top:1px solid rgba(0,255,255,.08);
 
   <div class="bomb-core-glow"></div>
 
-  <div class="bomb-body">
+<div class="bomb-body">
+  <div class="bomb-timer" id="betTimer">15</div>
+</div>
 
-    <div class="bomb-timer" id="betTimer">
-      15
-    </div>
+<div id="multiplier" class="bomb-multi">
+  x1.00
+</div>
 
-    <div id="multiplier" class="bomb-multi">
-      x1.00
-    </div>
 
-  </div>
 
   <div class="bomb-fuse">
     <div class="spark"></div>
@@ -1276,20 +1280,27 @@ socket.on("time-race-state",data=>{
 
 socket.on("time-race-new", data => {
 
-  document.querySelector(".bomb-wrap")
-  .classList.remove("exploded");
+  // 🔥 Hiện lại bomb nếu vừa crash
+  const bombWrap = document.querySelector(".bomb-wrap");
+  const bomb = document.querySelector(".bomb-body");
+  const fuse = document.querySelector(".bomb-fuse");
+  const glow = document.querySelector(".bomb-core-glow");
+  const spark = document.querySelector(".spark");
 
-  // 🔄 RESET LOGIC STATE
+  bombWrap.classList.remove("exploded");
+
+  if(bomb) bomb.style.display = "";
+  if(fuse) fuse.style.display = "";
+  if(glow) glow.style.display = "";
+  if(spark) spark.style.display = "";
+
+  // ================= RESET LOGIC STATE =================
   raceStarted = false;
   crashed = false;
   hasBet = false;
 
   serverOffset = data.serverNow - Date.now();
   betEndAt = data.betEndAt;
-
-  const bomb = document.querySelector(".bomb-body");
-  const spark = document.querySelector(".spark");
-  const fuse = document.querySelector(".bomb-fuse"); // 🔥 thêm dòng này
 
   const betPanel = document.querySelector(".tr-bottom");
   betPanel.classList.remove("locked");
@@ -1308,7 +1319,7 @@ socket.on("time-race-new", data => {
   /* ================= RESET FUSE ================= */
 
   if(fuse){
-    fuse.style.height = "60px";   // 🔥 reset lại chiều cao dây
+    fuse.style.height = "60px";
   }
 
   /* ================= RESET UI ================= */
@@ -1321,7 +1332,6 @@ socket.on("time-race-new", data => {
 
   betBtn.disabled = false;
   stopBtn.style.display = "none";
-
 });
 
 socket.on("time-race-tick",data=>{
@@ -1447,9 +1457,11 @@ socket.on("time-race-crash",data=>{
 
   /* ================= HIDE BOMB ================= */
 
-  setTimeout(()=>{
-    bombWrap.classList.add("exploded");
-  },250);
+setTimeout(()=>{
+  bomb.style.display = "none";
+  document.querySelector(".bomb-fuse").style.display = "none";
+  document.querySelector(".bomb-core-glow").style.display = "none";
+},250);
 
   multiplierEl.animate([
     { transform:"scale(1)" },
