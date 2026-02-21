@@ -2130,7 +2130,7 @@ if(timeRaceRound){
 
   const uidNow = socket.data.uid;
 
-  const myBet = timeRaceRound.bets.find(
+  const myBetObj = timeRaceRound.bets.find(
     b => b.uid === uidNow
   );
 
@@ -2143,13 +2143,12 @@ if(timeRaceRound){
     serverNow: Date.now(),
     multiplier: timeRaceRound.currentMultiplier,
     crashed: timeRaceRound.crashed,
-    hasBet: !!myBet,
-    stopped: hasStopped
+    hasBet: !!myBetObj,
+    stopped: hasStopped,
+    myBet: myBetObj?.bet || 0   // 🔥 THÊM DÒNG NÀY
   });
 
-  
 }
-
 
 
 // ================================
