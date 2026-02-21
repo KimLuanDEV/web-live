@@ -2144,6 +2144,7 @@ if(timeRaceRound){
     multiplier: timeRaceRound.currentMultiplier,
     crashed: timeRaceRound.crashed,
     hasBet: !!myBet,
+    betAmount: myBet ? myBet.bet : 0,
     stopped: hasStopped
   });
 
