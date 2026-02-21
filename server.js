@@ -2898,35 +2898,28 @@ app.post("/api/admin/egg/override", (req, res) => {
 
 
 
-// 🛑 ADMIN OVERRIDE TIME RACE CRASH
 app.post("/api/admin/time-race/override", (req, res) => {
 
   const uid = req.headers["x-uid"];
   const { crashPoint } = req.body;
 
-  if (!uid) return res.status(401).json({ ok:false });
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if (me?.role !== "admin")
-    return res.status(403).json({ ok:false });
-
-  if (!timeRaceRound || timeRaceRound.crashed)
-    return res.json({ ok:false, message:"ROUND_ENDED" });
+  if (!uid) 
+    return res.status(401).json({ ok:false });
 
   const cp = Number(crashPoint);
 
   if (!cp || cp < 1)
     return res.json({ ok:false, message:"INVALID_CRASH" });
 
-  // ✅ OVERRIDE
+  if (!timeRaceRound || timeRaceRound.crashed)
+    return res.json({ ok:false, message:"ROUND_ENDED" });
+
+  // ✅ Override trực tiếp
   timeRaceRound.crashPoint = Number(cp.toFixed(2));
   timeRaceRound.overridden = true;
 
-  console.log("🛑 ADMIN OVERRIDE CRASH:", cp);
+  console.log("💣 OVERRIDE CRASH:", cp);
 
-  // 🔔 cập nhật lại cho admin
   io.emit("admin-time-race-secret-update", {
     roundId: timeRaceRound.id,
     crashPoint: timeRaceRound.crashPoint,
