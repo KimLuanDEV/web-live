@@ -1088,31 +1088,33 @@ document.querySelectorAll(".bet-chip").forEach(btn=>{
 
 
 function updateTimer(){
-
   if(!betEndAt) return;
 
+  const betPanel = document.querySelector(".tr-bottom"); // bet bar
   const msLeft = betEndAt - serverTime();
   const left = Math.max(0, Math.ceil(msLeft / 1000));
 
-  // hiển thị số giây nếu còn thời gian
+  // hiển thị số giây
   betTimer.textContent = left > 0 ? left : "";
 
-  // 🔒 KHÓA KHI CÒN <= 3 GIÂY
+  // 🔒 KHÓA TOÀN BỘ BET BAR khi còn <= 3s
   if(msLeft <= 3000){
+    betPanel?.classList.add("locked");   // khóa chip + quick + confirm
     betBtn.disabled = true;
 
     betTimer.style.color = "#ff2d2d";
     betTimer.style.textShadow = "0 0 15px red";
-  }
-  else{
+  }else{
+    betPanel?.classList.remove("locked");
     betBtn.disabled = false;
 
     betTimer.style.color = "";
     betTimer.style.textShadow = "";
   }
 
-  // hết giờ
+  // hết giờ thì chắc chắn khóa
   if(msLeft <= 0){
+    betPanel?.classList.add("locked");
     betBtn.disabled = true;
   }
 }
