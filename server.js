@@ -1702,13 +1702,19 @@ const TIME_RACE_BET = 15000;     // 15s đặt cược
 const TIME_RACE_TICK = 100;      // update mỗi 100ms
 
 function pickCrashPoint(){
+
+  const houseEdge = 0.05; // 5% nhà cái
+
   const r = Math.random();
 
-  if(r < 0.35) return Number((1.01 + Math.random()*0.49).toFixed(2));
-  if(r < 0.70) return Number((1.5 + Math.random()*1.5).toFixed(2));
-  if(r < 0.90) return Number((3 + Math.random()*3).toFixed(2));
-  if(r < 0.99) return Number((6 + Math.random()*9).toFixed(2));
-  return Number((15 + Math.random()*35).toFixed(2));
+  // 1% auto crash tại x1.00 (tăng cảm giác kịch tính)
+  if(r < 0.01){
+    return 1.00;
+  }
+
+  const crash = (1 - houseEdge) / (1 - r);
+
+  return Number(Math.max(1, crash).toFixed(2));
 }
 
 function createTimeRaceRound(){
@@ -1748,7 +1754,7 @@ setInterval(()=>{
 
   const elapsed = (now - timeRaceRound.betEndAt)/1000;
 
-  const multiplier = Number((1 + elapsed * 0.25).toFixed(2));
+  const multiplier = Number((Math.exp(elapsed * 0.045)).toFixed(2));
 
   timeRaceRound.currentMultiplier = multiplier;
 
