@@ -1593,12 +1593,14 @@ function renderMyHistory(list){
     const item = document.createElement("div");
     item.className = "tr-history-item-card";
 
-    item.innerHTML = `
-      <div>#${h.roundId}</div>
-      <div>${h.bet} 💎</div>
-      <div>x${Number(h.stopMultiplier).toFixed(2)}</div>
-      <div style="color:#00f0ff">+${h.win}</div>
-    `;
+item.innerHTML = `
+  <div>#${h.roundId}</div>
+  <div>${h.bet} 💎</div>
+  <div>x${Number(h.stopMultiplier).toFixed(2)}</div>
+<div style="color:${h.result === 'win' ? '#00f0ff' : '#ff2d2d'};font-weight:700">
+  ${h.result === 'win' ? '✔ +' + h.win : '✖ LOSE'}
+</div>
+`;
 
     wrap.appendChild(item);
   });
@@ -1884,7 +1886,7 @@ stopBtn.onclick=()=>{
 
 socket.on("time-race-stopped",data=>{
   stopBtn.style.display="none";
-  multiplierEl.textContent="x"+data.multiplier+" ✔";
+  multiplierEl.textContent="x"+data.multiplier+"";
 });
 
 

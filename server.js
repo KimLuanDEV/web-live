@@ -1808,35 +1808,66 @@ if(multiplier >= timeRaceRound.crashPoint){
 
   timeRaceRound.crashed = true;
 
-// 📜 LƯU HISTORY
-timeRaceHistory.unshift({
-  roundId: timeRaceRoundCount + 1,
-  crashPoint: timeRaceRound.crashPoint,
-  ts: Date.now()
-});
+  // 📜 LƯU HISTORY GLOBAL
+  timeRaceHistory.unshift({
+    roundId: timeRaceRoundCount + 1,
+    crashPoint: timeRaceRound.crashPoint,
+    ts: Date.now()
+  });
 
-// Giữ tối đa 20
-timeRaceHistory =
-  timeRaceHistory.slice(0, MAX_TIME_RACE_HISTORY);
+  timeRaceHistory =
+    timeRaceHistory.slice(0, MAX_TIME_RACE_HISTORY);
 
-saveTimeRaceHistory(timeRaceHistory);
+  saveTimeRaceHistory(timeRaceHistory);
 
-// 🔔 realtime push
-io.emit("time-race-history-update",
-  timeRaceHistory
-);
-
+  io.emit("time-race-history-update",
+    timeRaceHistory
+  );
 
   const users = loadUsers();
 
-  // 🔥 xử lý người chưa STOP
+  // 🔥 xử lý tất cả người chơi
   timeRaceRound.bets.forEach(b=>{
-    if(!timeRaceRound.stopped.includes(b.uid)){
-      // thua → không hoàn tiền (đã trừ lúc đặt cược)
+
+    const me = users[b.uid];
+    if(!me?.profile) return;
+
+    const stopped =
+      timeRaceRound.stopped.includes(b.uid);
+
+    if(!stopped){
+
+      // ❌ emit thua
       emitToUser(b.uid,"time-race-lost",{
         crashPoint: timeRaceRound.crashPoint
       });
+
+      // ============================
+      // 📜 LƯU LỊCH SỬ THUA
+      // ============================
+      me.timeRaceHistory ||= [];
+
+      me.timeRaceHistory.unshift({
+        roundId: timeRaceRound.id,
+        ts: Date.now(),
+        bet: b.bet,
+        stopMultiplier: timeRaceRound.crashPoint,
+        win: 0,
+        result: "lose"
+      });
+
+      if(me.timeRaceHistory.length > 30){
+        me.timeRaceHistory.length = 30;
+      }
+
+      // 🔥 cập nhật realtime cho user
+      emitToUser(
+        b.uid,
+        "time-race-my-history",
+        me.timeRaceHistory
+      );
     }
+
   });
 
   saveUsers(users);
@@ -1845,9 +1876,8 @@ io.emit("time-race-history-update",
     crashPoint: timeRaceRound.crashPoint
   });
 
-setTimeout(()=>{
+  setTimeout(()=>{
 
-    // ➕ tăng số phiên trong ngày
     timeRaceRoundCount++;
 
     saveTimeRaceRoundCount({
@@ -1858,37 +1888,31 @@ setTimeout(()=>{
     timeRaceRound = createTimeRaceRound();
     emitTimeRacePlayers();
 
-// 🔔 EMIT SECRET CHO ADMIN
-io.emit("admin-time-race-secret-update", {
-  roundId: timeRaceRound.id,
-  crashPoint: timeRaceRound.crashPoint,
-  betEndAt: timeRaceRound.betEndAt,
-  endAt: timeRaceRound.endAt,
-  crashed: false
-});
-
-
-
+    io.emit("admin-time-race-secret-update", {
+      roundId: timeRaceRound.id,
+      crashPoint: timeRaceRound.crashPoint,
+      betEndAt: timeRaceRound.betEndAt,
+      endAt: timeRaceRound.endAt,
+      crashed: false
+    });
 
     io.emit("time-race-round-count",{
       roundCountToday: timeRaceRoundCount
     });
 
-io.emit("time-race-new",{
-  roundId: timeRaceRound.id,
-  betEndAt: timeRaceRound.betEndAt,
-  serverNow: Date.now()
-});
+    io.emit("time-race-new",{
+      roundId: timeRaceRound.id,
+      betEndAt: timeRaceRound.betEndAt,
+      serverNow: Date.now()
+    });
 
     io.emit("time-race-tick",{
       multiplier:1
     });
 
-},5000);
+  },5000);
 
 }
-
-
 
 
 }, TIME_RACE_TICK);
@@ -2394,7 +2418,8 @@ me.timeRaceHistory.unshift({
   ts: Date.now(),
   bet: bet.bet,
   stopMultiplier: timeRaceRound.currentMultiplier,
-  win
+  win,
+  result: "win"
 });
 
 if(me.timeRaceHistory.length > 30){
