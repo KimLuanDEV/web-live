@@ -1940,8 +1940,35 @@ if (meNow?.role === "admin" && timeRaceRound) {
     crashPoint: timeRaceRound.crashPoint,
     betEndAt: timeRaceRound.betEndAt,
     endAt: timeRaceRound.endAt,
-    crashed: timeRaceRound.crashed
+    crashed: timeRaceRound.crashed,
+    overridden: timeRaceRound.overridden
   });
+
+  // 🔥 GỬI MULTIPLIER HIỆN TẠI
+  socket.emit("admin-time-race-tick", {
+    multiplier: timeRaceRound.currentMultiplier
+  });
+
+  // 🔥 GỬI DANH SÁCH PLAYER
+  const usersNow = loadUsers();
+
+  const list = timeRaceRound.bets.map(b=>{
+    const me = usersNow[b.uid];
+    return {
+      uid: b.uid,
+      name: me?.profile?.name || "Người chơi",
+      bet: b.bet,
+      stopped: timeRaceRound.stopped.includes(b.uid)
+    };
+  });
+
+  socket.emit("admin-time-race-players",{
+    roundId: timeRaceRound.id,
+    players: list
+  });
+
+  // 🔥 GỬI HISTORY
+  socket.emit("time-race-history-update", timeRaceHistory);
 
 }
 
