@@ -931,6 +931,34 @@ border-top:1px solid rgba(0,255,255,.08);
 }
 
 
+/* ===== BOMB FRAGMENTS ===== */
+
+.bomb-fragment{
+  position:absolute;
+  width:22px;
+  height:22px;
+  border-radius:4px;
+
+  background:radial-gradient(circle,
+    #444,
+    #111 70%
+  );
+
+  box-shadow:
+    0 0 20px rgba(255,0,0,.7);
+
+  pointer-events:none;
+}
+
+@keyframes fragmentFly{
+  to{
+    transform:
+      translate(var(--x), var(--y))
+      rotate(720deg);
+    opacity:0;
+  }
+}
+
 
 </style>
 </head>
@@ -1344,7 +1372,6 @@ if(hasBet && !raceStarted && !crashed){
 
 });
 
-
 socket.on("time-race-crash",data=>{
 
   raceStarted = false;
@@ -1359,13 +1386,11 @@ socket.on("time-race-crash",data=>{
   multiplierEl.textContent =
     "x" + Number(data.crashPoint).toFixed(2);
 
-  /* ================= BURN FUSE ================= */
-
   if(fuse){
     fuse.style.height = "0px";
   }
 
-  /* ================= EXPLOSION ================= */
+  /* ================= EXPLOSION CORE ================= */
 
   const ring = document.createElement("div");
   ring.className = "explosion-ring";
@@ -1375,19 +1400,50 @@ socket.on("time-race-crash",data=>{
   core.className = "explosion-core";
   bombWrap.appendChild(core);
 
+  /* ================= FRAGMENTS ================= */
+
+  const fragmentCount = 14;
+
+  for(let i=0;i<fragmentCount;i++){
+
+    const frag = document.createElement("div");
+    frag.className = "bomb-fragment";
+
+    // random direction
+    const angle = Math.random() * Math.PI * 2;
+    const distance = 150 + Math.random()*120;
+
+    const x = Math.cos(angle) * distance + "px";
+    const y = Math.sin(angle) * distance + "px";
+
+    frag.style.setProperty("--x", x);
+    frag.style.setProperty("--y", y);
+
+    frag.style.left = "50%";
+    frag.style.top = "50%";
+    frag.style.transform = "translate(-50%, -50%)";
+
+    frag.style.animation =
+      "fragmentFly 700ms ease-out forwards";
+
+    bombWrap.appendChild(frag);
+
+    setTimeout(()=>frag.remove(),700);
+  }
+
   setTimeout(()=>{
     ring.remove();
     core.remove();
   },600);
 
-  /* ================= SHAKE ================= */
+  /* ================= SCREEN SHAKE ================= */
 
   document.body.animate([
     { transform:"translateX(0px)" },
-    { transform:"translateX(6px)" },
-    { transform:"translateX(-6px)" },
+    { transform:"translateX(8px)" },
+    { transform:"translateX(-8px)" },
     { transform:"translateX(0px)" }
-  ],{ duration:200 });
+  ],{ duration:250 });
 
   /* ================= HIDE BOMB ================= */
 
@@ -1395,16 +1451,16 @@ socket.on("time-race-crash",data=>{
     bombWrap.classList.add("exploded");
   },250);
 
-  /* ================= MULTI POP EFFECT ================= */
-
   multiplierEl.animate([
     { transform:"scale(1)" },
-    { transform:"scale(1.4)" },
+    { transform:"scale(1.5)" },
     { transform:"scale(1)" }
   ],{ duration:500 });
 
   stopBtn.style.display="none";
 });
+
+
 
 /* BET */
 
