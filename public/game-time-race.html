@@ -1414,42 +1414,19 @@ socket.on("time-race-restore", data=>{
   multiplierEl.textContent =
     "x" + currentMultiplier.toFixed(2);
 
-  // 🔥 RESTORE SỐ TIỀN BET
-  if(data.bet){
-    selectedBet = data.bet;
-
-    const betValueEl =
-      document.getElementById("selectedBetValue");
-
-    if(betValueEl){
-      betValueEl.textContent = data.bet;
-    }
-  }
-
   if(hasBet){
 
-    // 🔒 KHÓA TOÀN BỘ BET BAR
-    const bottom =
-      document.querySelector(".tr-bottom");
+    document
+      .querySelector(".tr-bottom")
+      .classList.add("locked");
 
-    bottom.classList.add("locked");
-
-    // disable tất cả input trong bet bar
-    bottom
-      .querySelectorAll("input, button")
-      .forEach(el=>{
-        if(el.id !== "stopBtn"){
-          el.disabled = true;
-        }
-      });
-
-    // Ẩn nút bet
-    betBtn.style.display = "none";
+    betBtn.disabled = true;
 
     if(!crashed && !data.stopped){
 
       stopBtn.style.display = "block";
 
+      // 🔒 nếu chưa chạy thì vẫn khóa
       if(currentMultiplier <= 1){
         stopBtn.disabled = true;
         stopBtn.style.opacity = ".6";
@@ -1460,29 +1437,20 @@ socket.on("time-race-restore", data=>{
         raceStarted = true;
       }
 
-    }else{
-      stopBtn.style.display = "none";
     }
 
   }else{
 
-    // 🔓 MỞ LẠI BET BAR
-    const bottom =
-      document.querySelector(".tr-bottom");
+    document
+      .querySelector(".tr-bottom")
+      .classList.remove("locked");
 
-    bottom.classList.remove("locked");
-
-    bottom
-      .querySelectorAll("input, button")
-      .forEach(el=>{
-        el.disabled = false;
-      });
-
-    betBtn.style.display = "block";
+    betBtn.disabled = false;
     stopBtn.style.display = "none";
   }
 
 });
+
 
 </script>
 </body>
