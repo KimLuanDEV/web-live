@@ -879,7 +879,6 @@ border-top:1px solid rgba(0,255,255,.08);
 .tr-bottom.locked{
   opacity:.4;
   pointer-events:none;
-  transform:scale(.98);
   transition:.25s;
 }
 
@@ -1156,7 +1155,6 @@ socket.on("time-race-new", data => {
   // 🔄 RESET LOGIC STATE
   raceStarted = false;
   crashed = false;
-  hasBet = false;
 
   serverOffset = data.serverNow - Date.now();
   betEndAt = data.betEndAt;
@@ -1363,6 +1361,40 @@ socket.on("time-race-history-update",
   renderTimeRaceHistory
 );
 
+
+
+socket.on("time-race-restore", data=>{
+
+  serverOffset = data.serverNow - Date.now();
+  betEndAt = data.betEndAt;
+  crashed = data.crashed;
+  hasBet = data.hasBet;
+
+  multiplierEl.textContent =
+    "x" + Number(data.multiplier).toFixed(2);
+
+  if(hasBet){
+
+    // 🔒 khóa bet bar
+    document
+      .querySelector(".tr-bottom")
+      .classList.add("locked");
+
+    betBtn.disabled = true;
+
+    if(!crashed && !data.stopped){
+      stopBtn.style.display = "block";
+    }
+
+  }else{
+    document
+      .querySelector(".tr-bottom")
+      .classList.remove("locked");
+
+    betBtn.disabled = false;
+    stopBtn.style.display = "none";
+  }
+});
 
 
 </script>

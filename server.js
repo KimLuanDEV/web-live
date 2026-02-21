@@ -2121,6 +2121,34 @@ socket.emit("egg-history", eggHistory);
 socket.emit("coin-update", { coins });
 
 
+
+// ================================
+// 🔄 RESTORE TIME RACE STATE
+// ================================
+
+if(timeRaceRound){
+
+  const uidNow = socket.data.uid;
+
+  const myBet = timeRaceRound.bets.find(
+    b => b.uid === uidNow
+  );
+
+  const hasStopped =
+    timeRaceRound.stopped.includes(uidNow);
+
+  socket.emit("time-race-restore",{
+    roundId: timeRaceRound.id,
+    betEndAt: timeRaceRound.betEndAt,
+    serverNow: Date.now(),
+    multiplier: timeRaceRound.currentMultiplier,
+    crashed: timeRaceRound.crashed,
+    hasBet: !!myBet,
+    stopped: hasStopped
+  });
+}
+
+
 // ================================
 // ⏱️ SEND TIME RACE STATE
 // ================================
