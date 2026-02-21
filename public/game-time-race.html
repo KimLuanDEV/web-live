@@ -828,22 +828,6 @@ border-top:1px solid rgba(0,255,255,.08);
   }
 }
 
-
-/* ===== CAMERA SHAKE ===== */
-
-.shake-screen{
-  animation:cameraShake .5s ease;
-}
-
-@keyframes cameraShake{
-  0%{ transform:translate(0,0); }
-  20%{ transform:translate(-10px,5px); }
-  40%{ transform:translate(8px,-6px); }
-  60%{ transform:translate(-6px,4px); }
-  80%{ transform:translate(4px,-3px); }
-  100%{ transform:translate(0,0); }
-}
-
 </style>
 </head>
 <body>
@@ -974,94 +958,6 @@ const stopBtn = document.getElementById("stopBtn");
 const betTimer = document.getElementById("betTimer");
 const selectedBetEl = document.getElementById("selectedBetValue");
 const selectedBetBar = document.querySelector(".selected-bet-bar");
-
-/* ================= PARTICLE EXPLOSION ================= */
-
-const canvas = document.getElementById("explosionCanvas");
-const ctx = canvas.getContext("2d");
-
-
-
-function resizeCanvas(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-}
-resizeCanvas();
-window.addEventListener("resize", resizeCanvas);
-
-function explodeParticles(x,y){
-
-  const particles = [];
-
-  for(let i=0;i<80;i++){
-    particles.push({
-      x,y,
-      vx:(Math.random()-0.5)*12,
-      vy:(Math.random()-0.5)*12,
-      life:60,
-      size:Math.random()*6+2,
-      color:`hsl(${Math.random()*40},100%,50%)`
-    });
-  }
-
-  function animate(){
-    ctx.clearRect(0,0,canvas.width,canvas.height);
-
-    particles.forEach(p=>{
-      p.x += p.vx;
-      p.y += p.vy;
-      p.vy += 0.3; // gravity
-      p.life--;
-
-      ctx.beginPath();
-      ctx.fillStyle = p.color;
-      ctx.arc(p.x,p.y,p.size,0,Math.PI*2);
-      ctx.fill();
-    });
-
-    if(particles.some(p=>p.life>0)){
-      requestAnimationFrame(animate);
-    }else{
-      ctx.clearRect(0,0,canvas.width,canvas.height);
-    }
-  }
-
-  animate();
-}
-
-
-function createDebris(x,y){
-
-  for(let i=0;i<8;i++){
-
-    const piece = document.createElement("div");
-
-    piece.style.position="fixed";
-    piece.style.width="14px";
-    piece.style.height="14px";
-    piece.style.borderRadius="50%";
-    piece.style.background="#222";
-    piece.style.boxShadow="0 0 10px red";
-    piece.style.left=x+"px";
-    piece.style.top=y+"px";
-    piece.style.zIndex=600;
-
-    document.body.appendChild(piece);
-
-    const vx = (Math.random()-0.5)*600;
-    const vy = (Math.random()-0.5)*600;
-
-    piece.animate([
-      { transform:"translate(0,0)", opacity:1 },
-      { transform:`translate(${vx}px,${vy}px)`, opacity:0 }
-    ],{
-      duration:800,
-      easing:"cubic-bezier(.2,.8,.2,1)"
-    });
-
-    setTimeout(()=>piece.remove(),800);
-  }
-}
 
 
 function serverTime(){
@@ -1195,26 +1091,6 @@ socket.on("time-race-state",data=>{
   betEndAt = data.betEndAt;
   multiplierEl.textContent =
     "x"+Number(data.multiplier).toFixed(2);
-
-
-// 📍 Lấy vị trí bomb giữa màn hình
-const rect = bomb.getBoundingClientRect();
-const centerX = rect.left + rect.width/2;
-const centerY = rect.top + rect.height/2;
-
-// 💥 Particle explosion
-explodeParticles(centerX,centerY);
-
-// 🧨 Debris pieces
-createDebris(centerX,centerY);
-
-// 📳 Camera shake
-document.body.classList.add("shake-screen");
-setTimeout(()=>{
-  document.body.classList.remove("shake-screen");
-},500);
-
-
 
   crashed=data.crashed;
 });
@@ -1430,19 +1306,5 @@ socket.on("time-race-history-update",
 
 
 </script>
-
-
-
-
-
-<canvas id="explosionCanvas"
-        style="
-          position:fixed;
-          inset:0;
-          pointer-events:none;
-          z-index:500;
-        ">
-</canvas>
-
 </body>
 </html>
