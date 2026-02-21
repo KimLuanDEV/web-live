@@ -1279,6 +1279,97 @@ body.crash-dark{
 }
 
 
+
+/* ================= WIN MODAL ================= */
+
+.tr-win-modal{
+  position:fixed;
+  inset:0;
+  z-index:999;
+}
+
+.tr-win-modal.hidden{
+  display:none;
+}
+
+.tr-win-backdrop{
+  position:absolute;
+  inset:0;
+  background:rgba(0,0,0,.7);
+  backdrop-filter:blur(8px);
+}
+
+.tr-win-box{
+  position:absolute;
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-50%) scale(.8);
+
+  width:280px;
+  padding:30px 20px;
+  border-radius:22px;
+
+  text-align:center;
+
+  background:linear-gradient(
+    135deg,
+    rgba(0,255,255,.15),
+    rgba(0,0,0,.9)
+  );
+
+  border:1px solid rgba(0,255,255,.4);
+
+  box-shadow:
+    0 0 60px rgba(0,255,255,.6),
+    inset 0 0 30px rgba(0,255,255,.2);
+
+  animation:winPop .3s ease forwards;
+}
+
+@keyframes winPop{
+  to{
+    transform:translate(-50%,-50%) scale(1);
+  }
+}
+
+.tr-win-title{
+  font-size:20px;
+  font-weight:900;
+  margin-bottom:16px;
+  color:#00f0ff;
+  text-shadow:0 0 20px #00f0ff;
+}
+
+.tr-win-multiplier{
+  font-size:36px;
+  font-weight:900;
+  margin-bottom:10px;
+  color:#fff;
+}
+
+.tr-win-amount{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:20px;
+  color:#00f0ff;
+}
+
+.tr-win-btn{
+  padding:10px 24px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  cursor:pointer;
+
+  background:linear-gradient(
+    135deg,#007bff,#00f0ff
+  );
+
+  box-shadow:0 0 25px rgba(0,255,255,.6);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1424,6 +1515,36 @@ body.crash-dark{
 
 
 
+
+<!-- ================= WIN MODAL ================= -->
+<div id="timeRaceWinModal" class="tr-win-modal hidden">
+
+  <div class="tr-win-backdrop"
+       onclick="closeTimeRaceWinModal()"></div>
+
+  <div class="tr-win-box">
+
+    <div class="tr-win-title">
+      YOU WON!
+    </div>
+
+    <div class="tr-win-multiplier">
+      x<span id="winMultiplier">1.00</span>
+    </div>
+
+    <div class="tr-win-amount">
+      +<span id="winAmount">0</span> 💎
+    </div>
+
+    <button class="tr-win-btn"
+            onclick="closeTimeRaceWinModal()">
+      OK
+    </button>
+
+  </div>
+</div>
+
+
 <script>
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
 
@@ -1456,6 +1577,38 @@ const selectedBetEl = document.getElementById("selectedBetValue");
 const selectedBetBar = document.querySelector(".selected-bet-bar");
 const fuse = document.querySelector(".bomb-fuse");
 const maxFuseHeight = 60; // phải khớp CSS
+
+
+
+
+function showTimeRaceWinModal(multiplier, amount){
+
+  document.getElementById("winMultiplier")
+    .textContent = Number(multiplier).toFixed(2);
+
+  document.getElementById("winAmount")
+    .textContent = Number(amount).toLocaleString();
+
+  document
+    .getElementById("timeRaceWinModal")
+    .classList.remove("hidden");
+
+  // hiệu ứng glow toàn màn
+  document.body.animate([
+    { boxShadow:"0 0 0 rgba(0,255,255,0)" },
+    { boxShadow:"0 0 100px rgba(0,255,255,.8)" },
+    { boxShadow:"0 0 0 rgba(0,255,255,0)" }
+  ],{ duration:600 });
+
+}
+
+function closeTimeRaceWinModal(){
+  document
+    .getElementById("timeRaceWinModal")
+    .classList.add("hidden");
+}
+
+
 
 function serverTime(){
   return Date.now() + serverOffset;
@@ -1955,9 +2108,21 @@ stopBtn.onclick=()=>{
   socket.emit("time-race-stop");
 };
 
+
 socket.on("time-race-stopped",data=>{
+
   stopBtn.style.display="none";
-  multiplierEl.textContent="x"+data.multiplier+"";
+
+  multiplierEl.textContent =
+    "x" + Number(data.multiplier).toFixed(2);
+
+  const winAmount = data.win || 0;
+
+  showTimeRaceWinModal(
+    data.multiplier,
+    winAmount
+  );
+
 });
 
 
