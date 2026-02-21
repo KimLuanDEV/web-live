@@ -966,6 +966,49 @@ border-top:1px solid rgba(0,255,255,.08);
 }
 
 
+/* ===== SLOW MOTION EFFECT ===== */
+
+body.slowmo *,
+body.slowmo *::before,
+body.slowmo *::after{
+  animation-duration: calc(var(--origDur, 1s) * 2) !important;
+  transition-duration: .2s !important;
+}
+
+body.slowmo{
+  transform: scale(1.02);
+  transition: transform .2s ease;
+}
+
+
+
+/* ===== MULTIPLIER CRASH GLOW ===== */
+
+.bomb-multi.crash-red{
+  background:none !important;
+  -webkit-text-fill-color:#ff2d2d !important;
+  color:#ff2d2d !important;
+
+  text-shadow:
+    0 0 10px #ff0000,
+    0 0 25px #ff0000,
+    0 0 50px #ff0000,
+    0 0 90px rgba(255,0,0,.9);
+
+  animation:crashPulse .6s ease-in-out infinite;
+}
+
+@keyframes crashPulse{
+  0%,100%{
+    transform:translate(-50%,-50%) scale(1);
+  }
+  50%{
+    transform:translate(-50%,-50%) scale(1.12);
+  }
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1324,7 +1367,10 @@ socket.on("time-race-new", data => {
 
   /* ================= RESET UI ================= */
 
+
+
   multiplierEl.classList.remove("crash");
+  multiplierEl.classList.remove("crash-red");
   multiplierEl.textContent = "x1.00";
 
   selectedBet = 0;
@@ -1390,11 +1436,14 @@ socket.on("time-race-crash",data=>{
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-body");
   const fuse = document.querySelector(".bomb-fuse");
+  const glow = document.querySelector(".bomb-core-glow");
 
   bomb.classList.add("crash");
 
   multiplierEl.textContent =
     "x" + Number(data.crashPoint).toFixed(2);
+
+  multiplierEl.classList.add("crash-red");
 
   if(fuse){
     fuse.style.height = "0px";
@@ -1419,7 +1468,6 @@ socket.on("time-race-crash",data=>{
     const frag = document.createElement("div");
     frag.className = "bomb-fragment";
 
-    // random direction
     const angle = Math.random() * Math.PI * 2;
     const distance = 150 + Math.random()*120;
 
@@ -1432,9 +1480,7 @@ socket.on("time-race-crash",data=>{
     frag.style.left = "50%";
     frag.style.top = "50%";
     frag.style.transform = "translate(-50%, -50%)";
-
-    frag.style.animation =
-      "fragmentFly 700ms ease-out forwards";
+    frag.style.animation = "fragmentFly 700ms ease-out forwards";
 
     bombWrap.appendChild(frag);
 
@@ -1446,32 +1492,47 @@ socket.on("time-race-crash",data=>{
     core.remove();
   },600);
 
+  /* ================= SLOW MOTION 0.2s ================= */
+
+  // Freeze nhẹ + zoom cinematic
+  document.body.style.transition = "transform 0.2s ease";
+  document.body.style.transform = "scale(1.03)";
+
+  bomb.style.transition = "transform 0.2s ease";
+  bomb.style.transform = "scale(1.1)";
+
   /* ================= SCREEN SHAKE ================= */
 
   document.body.animate([
     { transform:"translateX(0px)" },
-    { transform:"translateX(8px)" },
-    { transform:"translateX(-8px)" },
+    { transform:"translateX(6px)" },
+    { transform:"translateX(-6px)" },
     { transform:"translateX(0px)" }
-  ],{ duration:250 });
+  ],{ duration:200 });
 
-  /* ================= HIDE BOMB ================= */
+  /* ================= HIDE AFTER 0.2s ================= */
 
-setTimeout(()=>{
-  bomb.style.display = "none";
-  document.querySelector(".bomb-fuse").style.display = "none";
-  document.querySelector(".bomb-core-glow").style.display = "none";
-},250);
+  setTimeout(()=>{
+
+    document.body.style.transform = "";
+    bomb.style.transform = "";
+
+    bomb.style.display = "none";
+    if(fuse) fuse.style.display = "none";
+    if(glow) glow.style.display = "none";
+
+  },200);
+
+  /* ================= MULTI POP ================= */
 
   multiplierEl.animate([
     { transform:"scale(1)" },
-    { transform:"scale(1.5)" },
+    { transform:"scale(1.6)" },
     { transform:"scale(1)" }
   ],{ duration:500 });
 
   stopBtn.style.display="none";
 });
-
 
 
 /* BET */
