@@ -875,6 +875,14 @@ border-top:1px solid rgba(0,255,255,.08);
   }
 }
 
+
+.tr-bottom.locked{
+  opacity:.4;
+  pointer-events:none;
+  transform:scale(.98);
+  transition:.25s;
+}
+
 </style>
 </head>
 <body>
@@ -1156,6 +1164,8 @@ socket.on("time-race-new", data => {
   const bomb = document.querySelector(".bomb-body");
   const spark = document.querySelector(".spark");
 
+  const betPanel = document.querySelector(".tr-bottom");
+  betPanel.classList.remove("locked");
   /* ================= HARD RESET VISUAL ================= */
 
   // ❌ remove toàn bộ class trạng thái
@@ -1302,9 +1312,12 @@ betBtn.onclick=()=>{
 
 socket.on("time-race-bet-ok",()=>{
   hasBet = true;
-  betBtn.disabled = true;
 
-  // ❌ chưa cho bấm STOP
+  // 🔒 khóa toàn bộ bet panel
+  const betPanel = document.querySelector(".tr-bottom");
+  betPanel.classList.add("locked");
+
+  betBtn.disabled = true;
   stopBtn.style.display = "none";
 });
 
