@@ -1008,6 +1008,40 @@ body.slowmo{
 }
 
 
+/* ===== CRASH BACKGROUND GLOW ===== */
+
+.crash-bg-glow{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:150;
+
+  background:
+    radial-gradient(circle at 50% 50%,
+      rgba(255,0,0,.6),
+      rgba(255,0,0,.35) 30%,
+      rgba(255,0,0,.15) 55%,
+      transparent 75%
+    );
+
+  animation:crashBgPulse .6s ease-out forwards;
+}
+
+@keyframes crashBgPulse{
+  0%{
+    opacity:0;
+    transform:scale(.6);
+  }
+  40%{
+    opacity:1;
+    transform:scale(1.1);
+  }
+  100%{
+    opacity:0;
+    transform:scale(1.6);
+  }
+}
+
 
 </style>
 </head>
@@ -1444,6 +1478,18 @@ socket.on("time-race-crash",data=>{
     "x" + Number(data.crashPoint).toFixed(2);
 
   multiplierEl.classList.add("crash-red");
+
+/* ================= BACKGROUND RED SHOCK ================= */
+
+const bgGlow = document.createElement("div");
+bgGlow.className = "crash-bg-glow";
+document.body.appendChild(bgGlow);
+
+setTimeout(()=>{
+  bgGlow.remove();
+},600);
+
+
 
   if(fuse){
     fuse.style.height = "0px";
