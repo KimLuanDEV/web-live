@@ -1155,6 +1155,7 @@ socket.on("time-race-new", data => {
   // 🔄 RESET LOGIC STATE
   raceStarted = false;
   crashed = false;
+  hasBet = false;   // 🔥 đảm bảo reset
 
   serverOffset = data.serverNow - Date.now();
   betEndAt = data.betEndAt;
@@ -1208,10 +1209,14 @@ socket.on("time-race-tick",data=>{
   }
 
   // 🚀 Bắt đầu race thật sự
-  if(hasBet && !raceStarted){
-    raceStarted = true;
+if(hasBet && !raceStarted && !crashed){
+  raceStarted = true;
+
+  // chỉ show nếu bet panel đang locked
+  if(document.querySelector(".tr-bottom").classList.contains("locked")){
     stopBtn.style.display = "block";
   }
+}
 
   multiplierEl.textContent = "x" + m.toFixed(2);
 
