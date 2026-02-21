@@ -2130,23 +2130,27 @@ if(timeRaceRound){
 
   const uidNow = socket.data.uid;
 
-  const myBet = timeRaceRound.bets.find(
-    b => b.uid === uidNow
-  );
+const myBet = timeRaceRound.bets.find(
+  b => b.uid === uidNow
+);
 
-  const hasStopped =
-    timeRaceRound.stopped.includes(uidNow);
+const hasStopped =
+  timeRaceRound.stopped.includes(uidNow);
 
-  socket.emit("time-race-restore",{
-    roundId: timeRaceRound.id,
-    betEndAt: timeRaceRound.betEndAt,
-    serverNow: Date.now(),
-    multiplier: timeRaceRound.currentMultiplier,
-    crashed: timeRaceRound.crashed,
-    hasBet: !!myBet,
-    stopped: hasStopped
-  });
+socket.emit("time-race-restore",{
+  roundId: timeRaceRound.id,
+  betEndAt: timeRaceRound.betEndAt,
+  serverNow: Date.now(),
+  multiplier: timeRaceRound.currentMultiplier,
+  crashed: timeRaceRound.crashed,
+  hasBet: !!myBet,
+  bet: myBet?.bet || 0,   // 🔥 QUAN TRỌNG
+  stopped: hasStopped
+});
+
+
 }
+
 
 
 // ================================
@@ -2224,7 +2228,7 @@ socket.on("time-race-bet", data=>{
     return socket.emit("time-race-error",{message:"BET_CLOSED"});
   }
 
-  
+
   if(Date.now() > timeRaceRound.betEndAt)
     return socket.emit("time-race-error",{message:"BET_CLOSED"});
 
