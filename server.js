@@ -1744,6 +1744,27 @@ let timeRaceRound = createTimeRaceRound();
 
 
 
+
+// 🔔 Emit secret round đầu tiên cho admin
+io.on("connection", socket => {
+  const usersNow = loadUsers();
+  const uid = socket.data?.uid;
+  if (!uid) return;
+
+  const me = usersNow[uid];
+  if (me?.role === "admin") {
+    socket.emit("admin-time-race-secret-update", {
+      roundId: timeRaceRound.id,
+      crashPoint: timeRaceRound.crashPoint,
+      betEndAt: timeRaceRound.betEndAt,
+      endAt: timeRaceRound.endAt,
+      crashed: timeRaceRound.crashed
+    });
+  }
+});
+
+
+
 setInterval(()=>{
 
   const now = Date.now();
@@ -1815,6 +1836,19 @@ setTimeout(()=>{
 
     timeRaceRound = createTimeRaceRound();
 
+
+// 🔔 EMIT SECRET CHO ADMIN
+io.emit("admin-time-race-secret-update", {
+  roundId: timeRaceRound.id,
+  crashPoint: timeRaceRound.crashPoint,
+  betEndAt: timeRaceRound.betEndAt,
+  endAt: timeRaceRound.endAt,
+  crashed: false
+});
+
+
+
+
     io.emit("time-race-round-count",{
       roundCountToday: timeRaceRoundCount
     });
@@ -1872,6 +1906,23 @@ io.on("connection", socket => {
     });
 
   }
+
+
+
+// ================================
+// 💣 SEND CURRENT TIME RACE SECRET TO ADMIN
+// ================================
+if (meNow?.role === "admin" && timeRaceRound) {
+
+  socket.emit("admin-time-race-secret-update", {
+    roundId: timeRaceRound.id,
+    crashPoint: timeRaceRound.crashPoint,
+    betEndAt: timeRaceRound.betEndAt,
+    endAt: timeRaceRound.endAt,
+    crashed: timeRaceRound.crashed
+  });
+
+}
 
 
 
@@ -3033,6 +3084,15 @@ saveInvestState(investRound);
     });
   }
 });
+
+
+
+app.get("/admin-time-race.html",(req,res)=>{
+  res.sendFile(
+    path.join(__dirname,"public/admin-time-race.html")
+  );
+});
+
 
 
 // 🔐 ADMIN – GET CURRENT RPS BETS

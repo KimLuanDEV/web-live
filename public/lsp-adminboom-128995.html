@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Admin - Time Race Control</title>
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+body{
+  background:#111;
+  color:#fff;
+  font-family:system-ui;
+  padding:20px;
+}
+
+.card{
+  background:#1b1b1b;
+  padding:20px;
+  border-radius:14px;
+  margin-bottom:20px;
+  box-shadow:0 0 30px rgba(255,0,0,.2);
+}
+
+.big{
+  font-size:32px;
+  font-weight:800;
+  color:#ff2d2d;
+}
+
+.label{
+  opacity:.6;
+  font-size:13px;
+}
+
+</style>
+</head>
+<body>
+
+<h2>💣 Time Race Admin Control</h2>
+
+<div class="card">
+  <div class="label">Round ID</div>
+  <div id="roundId"></div>
+</div>
+
+<div class="card">
+  <div class="label">Crash Point</div>
+  <div id="crashPoint" class="big"></div>
+</div>
+
+<div class="card">
+  <div class="label">Bet End At</div>
+  <div id="betEnd"></div>
+</div>
+
+<div class="card">
+  <div class="label">Round End At</div>
+  <div id="endAt"></div>
+</div>
+
+<script>
+
+const socket = io({
+  auth:{
+    uid: localStorage.getItem("uid"),
+    deviceId: localStorage.getItem("deviceId")
+  }
+});
+
+socket.on("admin-time-race-secret-update",data=>{
+  document.getElementById("roundId").textContent = data.roundId;
+  document.getElementById("crashPoint").textContent = "x" + data.crashPoint;
+  document.getElementById("betEnd").textContent =
+    new Date(data.betEndAt).toLocaleTimeString();
+
+  document.getElementById("endAt").textContent =
+    new Date(data.endAt).toLocaleTimeString();
+});
+
+</script>
+
+</body>
+</html>
