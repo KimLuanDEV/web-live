@@ -1054,38 +1054,36 @@ socket.on("time-race-state",data=>{
 socket.on("time-race-new", data => {
 
   raceStarted = false;
-
-  serverOffset = data.serverNow - Date.now();
   crashed = false;
   hasBet = false;
+
+  serverOffset = data.serverNow - Date.now();
+  betEndAt = data.betEndAt;
 
   const bomb = document.querySelector(".bomb-body");
   const spark = document.querySelector(".spark");
 
-  // 🔄 Remove class trạng thái
+  // 🧼 RESET CLASS
   bomb.classList.remove("crash", "hot");
 
-  // 🧼 RESET INLINE STYLE (QUAN TRỌNG)
+  // 🧼 RESET STYLE INLINE
   bomb.style.boxShadow = "";
   bomb.style.background = "";
 
-  // 🔥 reset tốc độ lửa
-  spark.style.animationDuration = "0.4s";
+  // 🔥 RESET FUSE SPEED về mặc định CSS (.3s)
+  spark.style.animationDuration = "";
 
-  // 🎯 reset multiplier
+  // 🎯 RESET MULTIPLIER
   multiplierEl.classList.remove("crash");
   multiplierEl.textContent = "x1.00";
 
-  // 💎 RESET SELECTED BET
+  // 💎 RESET BET
   selectedBet = 0;
   updateSelectedBetDisplay();
 
-  // 🔘 reset nút
+  // 🔘 RESET BUTTONS
   betBtn.disabled = false;
   stopBtn.style.display = "none";
-
-  // ⏱ cập nhật thời gian bet
-  betEndAt = data.betEndAt;
 
 });
 
