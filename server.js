@@ -2201,10 +2201,9 @@ socket.emit("coin-update", { coins });
 
 
 // ================================
-// 🔄 RESTORE TIME RACE STATE
+// 🔄 RESTORE TIME RACE STATE (FIX FULL)
 // ================================
-
-if(timeRaceRound){
+if (timeRaceRound) {
 
   const uidNow = socket.data.uid;
 
@@ -2215,17 +2214,26 @@ if(timeRaceRound){
   const hasStopped =
     timeRaceRound.stopped.includes(uidNow);
 
-  socket.emit("time-race-restore",{
+  socket.emit("time-race-restore", {
     roundId: timeRaceRound.id,
     betEndAt: timeRaceRound.betEndAt,
+    endAt: timeRaceRound.endAt,          // 🔥 thêm
     serverNow: Date.now(),
     multiplier: timeRaceRound.currentMultiplier,
     crashed: timeRaceRound.crashed,
     hasBet: !!myBetObj,
     stopped: hasStopped,
-    myBet: myBetObj?.bet || 0   // 🔥 THÊM DÒNG NÀY
+    myBet: myBetObj?.bet || 0,
+    roundCountToday: timeRaceRoundCount + 1 // 🔥 thêm
   });
 
+  // 🔥 gửi luôn history
+  socket.emit("time-race-history-update", timeRaceHistory);
+
+  // 🔥 gửi luôn round count
+  socket.emit("time-race-round-count", {
+    roundCountToday: timeRaceRoundCount + 1
+  });
 }
 
 
