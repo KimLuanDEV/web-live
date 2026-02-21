@@ -748,8 +748,13 @@ border-top:1px solid rgba(0,255,255,.08);
 /* STOP dưới bomb */
 
 .stop-wrap{
-  margin-top:35px;
+  position:absolute;
+  top:100%;
+  left:50%;
+  transform:translate(-50%,20px);
+  width:100%;
   text-align:center;
+  pointer-events:none;
 }
 
 
@@ -781,6 +786,7 @@ border-top:1px solid rgba(0,255,255,.08);
 
   transition:.15s;
   position:relative;
+  pointer-events:auto;
 }
 
 /* outer metal ring */
