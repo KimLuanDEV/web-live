@@ -1059,30 +1059,98 @@ body.crash-dark{
 }
 
 
+/* ================= CYBER HISTORY BUTTON ================= */
 
 .tr-history-btn{
-  width:42px;
-  height:42px;
-  border-radius:16px;
+  width:70px;
+  height:70px;
+  border-radius:50%;
 
-  border:1px solid rgba(0,255,255,.3);
-  background:rgba(255,255,255,.06);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:4px;
 
-  font-size:18px;
+  border:1px solid rgba(0,255,255,.4);
+
+  background:
+    radial-gradient(circle at 30% 30%,
+      rgba(0,255,255,.3),
+      rgba(0,0,0,.6)
+    );
+
+  backdrop-filter:blur(12px);
+
   cursor:pointer;
 
-  backdrop-filter:blur(10px);
-
   box-shadow:
-    0 0 20px rgba(0,255,255,.3),
-    inset 0 0 12px rgba(0,255,255,.1);
+    0 0 25px rgba(0,255,255,.5),
+    inset 0 0 15px rgba(0,255,255,.2);
 
   transition:.2s;
+  position:relative;
 }
 
+/* outer pulse */
+.tr-history-btn::after{
+  content:"";
+  position:absolute;
+  inset:-18px;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(0,255,255,.5),
+    transparent 70%);
+  animation:historyPulse 2s infinite;
+  z-index:-1;
+}
+
+@keyframes historyPulse{
+  0%,100%{ opacity:.4; transform:scale(1); }
+  50%{ opacity:1; transform:scale(1.15); }
+}
+
+/* icon */
+.tr-history-icon{
+  width:18px;
+  height:18px;
+  border:2px solid #00f0ff;
+  border-radius:4px;
+  position:relative;
+}
+
+.tr-history-icon::before,
+.tr-history-icon::after{
+  content:"";
+  position:absolute;
+  left:3px;
+  right:3px;
+  height:2px;
+  background:#00f0ff;
+}
+
+.tr-history-icon::before{
+  top:4px;
+}
+
+.tr-history-icon::after{
+  bottom:4px;
+}
+
+/* text */
+.tr-history-label{
+  font-size:10px;
+  font-weight:700;
+  letter-spacing:1px;
+  color:#00f0ff;
+}
+
+/* hover */
 .tr-history-btn:hover{
   transform:scale(1.1);
-  box-shadow:0 0 35px rgba(0,255,255,.7);
+  box-shadow:
+    0 0 45px rgba(0,255,255,.9),
+    inset 0 0 20px rgba(0,255,255,.4);
 }
 
 
@@ -1292,7 +1360,10 @@ body.crash-dark{
 <div class="bet-history-floating">
   <button class="tr-history-btn"
           onclick="openTimeRaceHistory()">
-    📜
+
+    <span class="tr-history-icon"></span>
+    <span class="tr-history-label">LOG</span>
+
   </button>
 </div>
 
