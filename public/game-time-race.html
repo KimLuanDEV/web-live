@@ -783,6 +783,51 @@ border-top:1px solid rgba(0,255,255,.08);
 }
 
 
+
+/* ===== EXPLOSION EFFECT ===== */
+
+.explosion-ring{
+  position:absolute;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  border:4px solid rgba(255,0,0,.8);
+  animation:explodeRing .6s ease-out forwards;
+  pointer-events:none;
+}
+
+@keyframes explodeRing{
+  from{
+    transform:scale(1);
+    opacity:1;
+  }
+  to{
+    transform:scale(2.2);
+    opacity:0;
+  }
+}
+
+.explosion-core{
+  position:absolute;
+  width:240px;
+  height:240px;
+  border-radius:50%;
+  background:radial-gradient(circle,#fff,#ff0000 60%,transparent 70%);
+  animation:explodeCore .4s ease-out forwards;
+  pointer-events:none;
+}
+
+@keyframes explodeCore{
+  from{
+    opacity:1;
+    transform:scale(1);
+  }
+  to{
+    opacity:0;
+    transform:scale(1.6);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -1142,41 +1187,61 @@ socket.on("time-race-tick",data=>{
 
 });
 
+
+
 socket.on("time-race-crash",data=>{
 
   raceStarted = false;
   crashed = true;
 
+  const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-body");
 
-  // 🔴 Đổi trạng thái boom sang crash
+  // 🔴 đổi trạng thái crash
   bomb.classList.add("crash");
 
-  // 💣 Hiển thị multiplier cuối cùng
-  multiplierEl.textContent = "x" + Number(data.crashPoint).toFixed(2);
+  multiplierEl.textContent =
+    "x" + Number(data.crashPoint).toFixed(2);
 
-  // 💥 Rung nhẹ
+  /* ================= EXPLOSION ================= */
+
+  // shockwave ring
+  const ring = document.createElement("div");
+  ring.className = "explosion-ring";
+  bombWrap.appendChild(ring);
+
+  // flash core
+  const core = document.createElement("div");
+  core.className = "explosion-core";
+  bombWrap.appendChild(core);
+
+  // remove after animation
+  setTimeout(()=>{
+    ring.remove();
+    core.remove();
+  },700);
+
+  /* ================= SHAKE ================= */
+
   bomb.animate([
-    { transform: "translateX(-5px)" },
-    { transform: "translateX(5px)" },
-    { transform: "translateX(-3px)" },
-    { transform: "translateX(3px)" },
-    { transform: "translateX(0)" }
-  ], {
-    duration: 400,
-    iterations: 2
+    { transform: "scale(1)" },
+    { transform: "scale(1.2)" },
+    { transform: "scale(.95)" },
+    { transform: "scale(1.1)" },
+    { transform: "scale(1)" }
+  ],{
+    duration:500
   });
 
-  // 🔥 Flash màn hình
+  /* ================= FLASH SCREEN ================= */
+
   const flash = document.createElement("div");
   flash.className = "crash-flash";
   document.body.appendChild(flash);
-  setTimeout(()=> flash.remove(), 700);
+  setTimeout(()=> flash.remove(), 600);
 
-  // ❌ Ẩn nút stop
-  stopBtn.style.display = "none";
+  stopBtn.style.display="none";
 });
-
 
 
 /* BET */
