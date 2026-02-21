@@ -325,6 +325,24 @@ html,body{
 }
 
 
+/* TIMER TRONG BOMB */
+
+.bomb-timer{
+  position:absolute;
+  top:22px;
+  font-size:18px;
+  font-weight:800;
+  color:#ffcc00;
+  text-shadow:0 0 10px #ff9900;
+  animation: pulseTimer 1s infinite;
+}
+
+@keyframes pulseTimer{
+  0%{ transform:scale(1); opacity:.8;}
+  50%{ transform:scale(1.1); opacity:1;}
+  100%{ transform:scale(1); opacity:.8;}
+}
+
 </style>
 </head>
 <body>
@@ -345,9 +363,6 @@ html,body{
     <div class="tr-coins">
       💎 <span id="coinBalance">0</span>
     </div>
-    <div class="tr-timer-badge" id="betTimer">
-      15s
-    </div>
   </div>
 
 </div>
@@ -359,9 +374,18 @@ html,body{
 
   <div class="bomb-wrap">
 
-    <div class="bomb-body">
-      <div id="multiplier" class="bomb-multi">x1.00</div>
-    </div>
+<div class="bomb-body">
+
+  <!-- TIMER INSIDE BOMB -->
+  <div class="bomb-timer" id="betTimer">
+    15
+  </div>
+
+  <div id="multiplier" class="bomb-multi">
+    x1.00
+  </div>
+
+</div>
 
     <div class="bomb-fuse">
       <div class="spark"></div>
@@ -495,10 +519,11 @@ function updateTimer(){
   if(!betEndAt) return;
   const left = Math.max(0,Math.floor((betEndAt-Date.now())/1000));
 if(left>0){
-  betTimer.textContent=left+"s";
+  betTimer.textContent = left;
 }else{
-  betTimer.textContent="RUN";
-  betTimer.style.background="#ff2d2d";
+betTimer.textContent = "🔥";
+betTimer.style.color = "#ff2d2d";
+betTimer.style.textShadow = "0 0 15px red";
   betBtn.disabled=true;
 }
 }
