@@ -2899,26 +2899,16 @@ app.post("/api/admin/egg/override", (req, res) => {
 
 
 // ================================
-// 💣 ADMIN FORCE TIME RACE CRASH
+// 💣 FORCE TIME RACE CRASH
 // ================================
 app.post("/api/admin/time-race/force-crash", (req, res) => {
-
-  const uid = req.headers["x-uid"];
-  if (!uid)
-    return res.status(401).json({ ok:false });
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if (me?.role !== "admin")
-    return res.status(403).json({ ok:false });
 
   if (!timeRaceRound || timeRaceRound.crashed)
     return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
 
   timeRaceRound.crashed = true;
 
-  console.warn("💣 FORCE CRASH BY ADMIN:", uid);
+  console.warn("💣 FORCE CRASH");
 
   // 📜 LƯU HISTORY
   timeRaceHistory.unshift({
@@ -2954,7 +2944,6 @@ app.post("/api/admin/time-race/force-crash", (req, res) => {
 
   res.json({ ok:true });
 });
-
 
 
 app.post("/api/admin/time-race/override", (req, res) => {
