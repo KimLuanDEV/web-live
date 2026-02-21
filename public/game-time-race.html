@@ -343,6 +343,50 @@ html,body{
   100%{ transform:scale(1); opacity:.8;}
 }
 
+
+.tr-history-wrap{
+  position:fixed;
+  bottom:160px;
+  left:0;
+  right:0;
+  padding:0 16px;
+}
+
+.history-title{
+  font-size:11px;
+  opacity:.5;
+  margin-bottom:6px;
+}
+
+.tr-history-bar{
+  display:flex;
+  gap:6px;
+  overflow-x:auto;
+}
+
+.tr-history-item{
+  min-width:55px;
+  padding:6px;
+  border-radius:8px;
+  font-size:12px;
+  text-align:center;
+  font-weight:700;
+  background:#111;
+}
+
+.tr-history-item.low{
+  color:#ff2d2d;
+}
+
+.tr-history-item.mid{
+  color:#ff9900;
+}
+
+.tr-history-item.high{
+  color:#00f0ff;
+}
+
+
 </style>
 </head>
 <body>
@@ -397,6 +441,16 @@ html,body{
 
 
 
+
+<div class="tr-history-wrap">
+  <div class="history-title">
+    Round History
+  </div>
+
+  <div class="tr-history-bar"
+       id="timeRaceHistoryBar">
+  </div>
+</div>
 
 
 <div class="tr-bottom">
@@ -538,6 +592,47 @@ betTimer.style.textShadow = "0 0 15px red";
 }
 setInterval(updateTimer,500);
 
+
+
+
+
+function renderTimeRaceHistory(list){
+  const bar =
+    document.getElementById(
+      "timeRaceHistoryBar"
+    );
+
+  if(!bar) return;
+
+  bar.innerHTML = "";
+
+  list.forEach(h=>{
+
+    const div = document.createElement("div");
+    div.className = "tr-history-item";
+
+    const crash = Number(h.crashPoint);
+
+    if(crash < 2){
+      div.classList.add("low");
+    }
+    else if(crash < 5){
+      div.classList.add("mid");
+    }
+    else{
+      div.classList.add("high");
+    }
+
+    div.textContent =
+      "x" + crash.toFixed(2);
+
+    bar.appendChild(div);
+
+  });
+}
+
+
+
 /* SOCKET EVENTS */
 
 socket.on("time-race-state",data=>{
@@ -551,7 +646,6 @@ socket.on("time-race-state",data=>{
 
   crashed=data.crashed;
 });
-
 
 
 socket.on("time-race-new", data => {
@@ -706,6 +800,16 @@ socket.on("time-race-round-count", data=>{
     el.textContent = data.roundCountToday;
   }
 });
+
+
+
+socket.on("time-race-history",
+  renderTimeRaceHistory
+);
+
+socket.on("time-race-history-update",
+  renderTimeRaceHistory
+);
 
 
 

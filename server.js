@@ -1656,6 +1656,43 @@ let timeRaceRoundDayTs =
   timeRaceRoundState.dayTs || getTodayStartTsVN();
 
 
+
+
+// ================================
+// 📜 TIME RACE HISTORY (GLOBAL)
+// ================================
+const TIME_RACE_HISTORY_FILE =
+  "/opt/render/project/data/time_race_history.json";
+
+const MAX_TIME_RACE_HISTORY = 20;
+
+function loadTimeRaceHistory(){
+  try{
+    if(!fs.existsSync(TIME_RACE_HISTORY_FILE)) return [];
+    return JSON.parse(
+      fs.readFileSync(TIME_RACE_HISTORY_FILE,"utf8")
+    );
+  }catch(e){
+    console.error("❌ Load time race history failed",e);
+    return [];
+  }
+}
+
+function saveTimeRaceHistory(list){
+  try{
+    fs.writeFileSync(
+      TIME_RACE_HISTORY_FILE,
+      JSON.stringify(list,null,2)
+    );
+  }catch(e){
+    console.error("❌ Save time race history failed",e);
+  }
+}
+
+let timeRaceHistory = loadTimeRaceHistory();
+
+
+
 // ================================
 // ⏱️ TIME RACE (CRASH GAME)
 // ================================
@@ -1722,6 +1759,25 @@ setInterval(()=>{
 if(multiplier >= timeRaceRound.crashPoint){
 
   timeRaceRound.crashed = true;
+
+// 📜 LƯU HISTORY
+timeRaceHistory.unshift({
+  roundId: timeRaceRoundCount + 1,
+  crashPoint: timeRaceRound.crashPoint,
+  ts: Date.now()
+});
+
+// Giữ tối đa 20
+timeRaceHistory =
+  timeRaceHistory.slice(0, MAX_TIME_RACE_HISTORY);
+
+saveTimeRaceHistory(timeRaceHistory);
+
+// 🔔 realtime push
+io.emit("time-race-history-update",
+  timeRaceHistory
+);
+
 
   const users = loadUsers();
 
@@ -2076,6 +2132,10 @@ socket.emit("time-race-state",{
   serverNow: Date.now()
 });
 
+
+socket.emit("time-race-history",
+  timeRaceHistory
+);
 
 socket.emit("time-race-round-count",{
   roundCountToday: timeRaceRoundCount + 1
