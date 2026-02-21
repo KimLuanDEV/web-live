@@ -118,16 +118,26 @@ html,body{
 .tr-back{
   position:relative;
   z-index:2;
-  width:40px;
-  height:40px;
-  border-radius:14px;
+
+  width:42px;
+  height:42px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:16px;
+
   border:1px solid rgba(0,255,255,.25);
-  background:rgba(255,255,255,.05);
+  background:rgba(255,255,255,.06);
+
   color:#fff;
-  font-size:18px;
+  font-size:20px;
+  font-weight:700;
+
   cursor:pointer;
 
-  backdrop-filter:blur(8px);
+  backdrop-filter:blur(10px);
 
   box-shadow:
     0 0 20px rgba(0,255,255,.3),
@@ -156,9 +166,18 @@ html,body{
   font-size:18px;
   letter-spacing:.7px;
 
-  background:linear-gradient(90deg,#00f0ff,#ffffff,#00f0ff);
+  background:linear-gradient(
+    90deg,
+    #00f0ff,
+    #ffffff,
+    #00f0ff
+  );
   background-size:200%;
+
+  background-clip:text;
   -webkit-background-clip:text;
+
+  color:transparent;
   -webkit-text-fill-color:transparent;
 
   animation:titleShimmer 4s linear infinite;
