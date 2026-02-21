@@ -917,73 +917,6 @@ border-top:1px solid rgba(0,255,255,.08);
 }
 
 
-/* ================= ENERGY RING ================= */
-
-.bomb-energy-ring{
-  position:absolute;
-  inset:-15px;
-  border-radius:50%;
-  border:2px solid rgba(0,255,255,.4);
-
-  box-shadow:
-    0 0 25px rgba(0,255,255,.8),
-    inset 0 0 20px rgba(0,255,255,.6);
-
-  animation:rotateRing 6s linear infinite;
-}
-
-@keyframes rotateRing{
-  from{ transform:rotate(0deg); }
-  to{ transform:rotate(360deg); }
-}
-
-/* ================= ELECTRIC ARC ================= */
-
-.bomb-electric{
-  position:absolute;
-  inset:-25px;
-  border-radius:50%;
-
-  background:
-    conic-gradient(
-      from 0deg,
-      transparent 0deg,
-      rgba(0,255,255,.8) 20deg,
-      transparent 40deg
-    );
-
-  filter:blur(6px);
-  animation:electricSpin 1.5s linear infinite;
-  opacity:.7;
-}
-
-@keyframes electricSpin{
-  from{ transform:rotate(0deg); }
-  to{ transform:rotate(360deg); }
-}
-
-/* ================= HEAT DISTORTION ================= */
-
-.bomb-body::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  border-radius:50%;
-
-  background:
-    radial-gradient(circle,
-      rgba(255,0,0,.1),
-      transparent 70%);
-
-  mix-blend-mode:overlay;
-  animation:heatWave 2s ease-in-out infinite;
-}
-
-@keyframes heatWave{
-  0%,100%{ opacity:.2; }
-  50%{ opacity:.6; }
-}
-
 
 </style>
 </head>
@@ -1028,12 +961,17 @@ border-top:1px solid rgba(0,255,255,.08);
 <div class="bomb-wrap">
 
   <div class="bomb-core-glow"></div>
-  <div class="bomb-energy-ring"></div>
-  <div class="bomb-electric"></div>
 
   <div class="bomb-body">
-    <div class="bomb-timer" id="betTimer">15</div>
-    <div id="multiplier" class="bomb-multi">x1.00</div>
+
+    <div class="bomb-timer" id="betTimer">
+      15
+    </div>
+
+    <div id="multiplier" class="bomb-multi">
+      x1.00
+    </div>
+
   </div>
 
   <div class="bomb-fuse">
@@ -1336,57 +1274,40 @@ socket.on("time-race-tick",data=>{
     return;
   }
 
-  // ================= START RACE =================
-  if(hasBet && !raceStarted && !crashed){
-    raceStarted = true;
 
-    stopBtn.disabled = false;
-    stopBtn.style.opacity = "1";
-  }
+if(hasBet && !raceStarted && !crashed){
+  raceStarted = true;
 
+  // 🔓 Cho click khi race bắt đầu
+  stopBtn.disabled = false;
+  stopBtn.style.opacity = "1";
+}
   multiplierEl.textContent = "x" + m.toFixed(2);
 
   const bomb = document.querySelector(".bomb-body");
   const spark = document.querySelector(".spark");
 
-  // ================= INTENSITY =================
+  // 🔥 Tính độ nóng
   const intensity = Math.min(m / 10, 1);
-  const glow = 80 + intensity * 250;
+  const glow = 60 + intensity * 200;
   const redPower = Math.floor(255 * intensity);
 
-  // ================= GLOW CORE =================
+  // 🔥 Glow theo multiplier
   bomb.style.boxShadow = `
-    inset -20px -20px 50px rgba(0,0,0,.8),
-    0 0 ${glow}px rgba(${redPower},0,0,.8)
+    inset -15px -15px 40px rgba(0,0,0,.7),
+    0 0 ${glow}px rgba(${redPower},0,0,.7)
   `;
 
-  // ================= COLOR SHIFT =================
+  // 🔥 Nền bomb đỏ dần
   bomb.style.background = `
     radial-gradient(circle at 30% 30%, 
-    rgb(${90 + redPower/2},${20 - intensity*25},${20 - intensity*25}),
+    rgb(${80 + redPower/3},${20 - intensity*20},${20 - intensity*20}),
     #0a0a0a 70%)
   `;
 
-  // ================= SPARK SPEED =================
+  // 🔥 Tia lửa cháy nhanh dần
   spark.style.animationDuration =
-    (0.4 - intensity * 0.35) + "s";
-
-  // ================= SHAKE WHEN > x5 =================
-  if(m > 5){
-    document.body.animate([
-      { transform:"translateX(0px)" },
-      { transform:"translateX(3px)" },
-      { transform:"translateX(-3px)" },
-      { transform:"translateX(0px)" }
-    ],{ duration:80 });
-  }
-
-  // ================= CRITICAL MODE > x8 =================
-  if(m > 8){
-    bomb.classList.add("hot");
-  }else{
-    bomb.classList.remove("hot");
-  }
+    (0.4 - intensity * 0.3) + "s";
 
 });
 
