@@ -1805,13 +1805,16 @@ setInterval(updateTimer,500);
 
 function renderTimeRaceHistory(list){
   const bar =
-    document.getElementById("timeRaceHistoryBar");
+    document.getElementById(
+      "timeRaceHistoryBar"
+    );
 
   if(!bar) return;
 
   bar.innerHTML = "";
 
   list.forEach(h=>{
+
     const div = document.createElement("div");
     div.className = "tr-history-item";
 
@@ -1827,13 +1830,12 @@ function renderTimeRaceHistory(list){
       div.classList.add("high");
     }
 
-    div.textContent = "x" + crash.toFixed(2);
+    div.textContent =
+      "x" + crash.toFixed(2);
 
     bar.appendChild(div);
-  });
 
-  // 🔥 auto scroll newest
-  bar.scrollLeft = bar.scrollWidth;
+  });
 }
 
 
