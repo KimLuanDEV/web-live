@@ -1043,6 +1043,21 @@ body.slowmo{
 }
 
 
+/* ===== DARK RED BACKGROUND MODE ===== */
+
+body.crash-dark{
+  background:
+    radial-gradient(circle at 50% 30%,
+      rgba(255,0,0,.35),
+      rgba(30,0,0,.95) 60%
+    ),
+    url('/assets/bg/time-race-bg.jpg') center/cover no-repeat fixed;
+
+  background-blend-mode: overlay;
+
+  transition: background 1s ease;
+}
+
 </style>
 </head>
 <body>
@@ -1052,7 +1067,7 @@ body.slowmo{
   <button class="tr-back" onclick="location.href='/invest.html'">‹</button>
 
   <div class="tr-head-center">
-    <div class="tr-title">Time Race</div>
+    <div class="tr-title">Boom Explosion</div>
     <div class="tr-sub">
    Round •
   <span id="roundToday">1</span>
@@ -1489,6 +1504,14 @@ setTimeout(()=>{
   bgGlow.remove();
 },600);
 
+
+/* ================= DARK RED MODE 1s ================= */
+
+document.body.classList.add("crash-dark");
+
+setTimeout(()=>{
+  document.body.classList.remove("crash-dark");
+},1000);
 
 
   if(fuse){
