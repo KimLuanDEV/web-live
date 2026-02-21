@@ -22,6 +22,8 @@ html,body{
 
 /* ================= GLASS NEON HEADER LEVEL 2 ================= */
 
+/* ================= LEVEL 3 CINEMATIC HEADER ================= */
+
 .tr-header{
   position:fixed;
   top:0;
@@ -31,68 +33,80 @@ html,body{
   padding-top:env(safe-area-inset-top);
   padding-left:16px;
   padding-right:16px;
-  padding-bottom:16px;
+  padding-bottom:18px;
 
-  height:calc(80px + env(safe-area-inset-top));
+  height:calc(95px + env(safe-area-inset-top));
 
   display:flex;
   align-items:flex-end;
   justify-content:space-between;
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(0,20,40,.75) 0%,
-      rgba(0,0,0,.85) 100%
-    );
+  background:linear-gradient(
+    120deg,
+    rgba(0,30,60,.85),
+    rgba(0,0,0,.95),
+    rgba(0,30,60,.85)
+  );
 
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
+  background-size:200% 200%;
+  animation:headerFlow 8s ease infinite;
 
-  border-bottom:1px solid rgba(0,255,255,.15);
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px);
+
+  border-bottom:1px solid rgba(0,255,255,.25);
+
+  box-shadow:
+    0 0 60px rgba(0,255,255,.15),
+    inset 0 0 40px rgba(0,255,255,.05);
 
   overflow:hidden;
-  z-index:200;
+  z-index:300;
+}
+
+@keyframes headerFlow{
+  0%{ background-position:0% 50%; }
+  50%{ background-position:100% 50%; }
+  100%{ background-position:0% 50%; }
 }
 
 .tr-header::before{
   content:"";
   position:absolute;
-  top:0;
-  left:0;
-  right:0;
-  height:40px;
-
-  background:radial-gradient(
-    circle at center,
-    rgba(0,255,255,.25),
-    transparent 70%
-  );
-
+  inset:0;
+  background-image:
+    radial-gradient(circle at 20% 40%, rgba(0,255,255,.2) 0%, transparent 60%),
+    radial-gradient(circle at 80% 20%, rgba(0,255,255,.15) 0%, transparent 60%),
+    radial-gradient(circle at 50% 80%, rgba(0,255,255,.1) 0%, transparent 60%);
+  animation:particleMove 10s linear infinite;
   pointer-events:none;
+  opacity:.6;
+}
+
+@keyframes particleMove{
+  0%{ transform:translateY(0); }
+  50%{ transform:translateY(-10px); }
+  100%{ transform:translateY(0); }
 }
 
 
-
-/* animated neon line */
 .tr-header::after{
   content:"";
   position:absolute;
   bottom:0;
   left:-50%;
   width:200%;
-  height:2px;
+  height:3px;
 
   background:linear-gradient(
     90deg,
     transparent,
     #00f0ff,
-    #00f0ff,
+    #00ffff,
     transparent
   );
 
-  animation:neonSlide 3s linear infinite;
-  opacity:.8;
+  animation:neonSlide 4s linear infinite;
 }
 
 @keyframes neonSlide{
@@ -133,15 +147,20 @@ html,body{
 
 .tr-title{
   font-weight:900;
-  font-size:16px;
-  letter-spacing:.6px;
-  color:#fff;
+  font-size:18px;
+  letter-spacing:.7px;
 
-  text-shadow:
-    0 0 10px #00f0ff,
-    0 0 25px rgba(0,255,255,.6);
+  background:linear-gradient(90deg,#00f0ff,#ffffff,#00f0ff);
+  background-size:200%;
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 
-  animation: neonPulse 3s ease-in-out infinite;
+  animation:titleShimmer 4s linear infinite;
+}
+
+@keyframes titleShimmer{
+  from{ background-position:0%;}
+  to{ background-position:200%;}
 }
 
 @keyframes neonPulse{
@@ -161,26 +180,31 @@ html,body{
 }
 
 .tr-coins{
-  padding:8px 14px;
-  border-radius:18px;
+  padding:10px 16px;
+  border-radius:20px;
 
-  background:
-    linear-gradient(135deg,
-      rgba(0,255,255,.15),
-      rgba(0,0,0,.4)
-    );
+  background:linear-gradient(
+    135deg,
+    rgba(0,255,255,.2),
+    rgba(0,0,0,.4)
+  );
 
-  border:1px solid rgba(0,255,255,.35);
+  border:1px solid rgba(0,255,255,.4);
 
-  font-weight:700;
+  font-weight:800;
 
   box-shadow:
-    0 0 25px rgba(0,255,255,.25),
-    inset 0 0 12px rgba(0,255,255,.1);
+    0 0 25px rgba(0,255,255,.4),
+    inset 0 0 15px rgba(0,255,255,.15);
 
-  backdrop-filter:blur(10px);
+  backdrop-filter:blur(12px);
 
-  transition:.2s;
+  animation:coinPulse 3s ease-in-out infinite;
+}
+
+@keyframes coinPulse{
+  0%,100%{ box-shadow:0 0 25px rgba(0,255,255,.3); }
+  50%{ box-shadow:0 0 45px rgba(0,255,255,.8); }
 }
 
 .tr-coins:hover{
@@ -460,7 +484,7 @@ html,body{
 
 .tr-history-wrap{
   position:fixed;
-  top:calc(100px + env(safe-area-inset-top));
+   top:calc(115px + env(safe-area-inset-top));
   left:0;
   right:0;
   padding:8px 16px 6px;
