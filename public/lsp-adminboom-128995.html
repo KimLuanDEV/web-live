@@ -49,6 +49,18 @@ body{
 </div>
 
 <div class="card">
+  <div class="label">Override Crash Point</div>
+  <input id="overrideInput" type="number" step="0.01" min="1"
+         style="width:100%;padding:10px;margin-top:10px;border-radius:8px;border:none;">
+  <button onclick="overrideCrash()"
+          style="margin-top:10px;padding:10px;width:100%;
+          background:#ff2d2d;border:none;border-radius:8px;color:#fff;font-weight:700;">
+    FORCE CRASH POINT
+  </button>
+</div>
+
+
+<div class="card">
   <div class="label">Bet End At</div>
   <div id="betEnd"></div>
 </div>
@@ -76,6 +88,44 @@ socket.on("admin-time-race-secret-update",data=>{
   document.getElementById("endAt").textContent =
     new Date(data.endAt).toLocaleTimeString();
 });
+
+
+
+
+
+
+function overrideCrash(){
+
+  const value = Number(
+    document.getElementById("overrideInput").value
+  );
+
+  if(!value || value < 1){
+    alert("Invalid crash point");
+    return;
+  }
+
+  fetch("/api/admin/time-race/override",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": localStorage.getItem("uid")
+    },
+    body: JSON.stringify({
+      crashPoint:value
+    })
+  })
+  .then(r=>r.json())
+  .then(res=>{
+    if(res.ok){
+      alert("Override success → x" + res.crashPoint);
+    }else{
+      alert(res.message || "Error");
+    }
+  });
+
+}
+
 
 </script>
 

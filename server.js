@@ -2953,6 +2953,67 @@ app.post("/api/admin/wheel/override", (req, res) => {
 
 
 
+// 🛑 ADMIN OVERRIDE TIME RACE CRASH POINT (DANGEROUS)
+app.post("/api/admin/time-race/override", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  const { crashPoint } = req.body;
+
+  if (!uid)
+    return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (me?.role !== "admin")
+    return res.status(403).json({ ok:false });
+
+  if (!timeRaceRound)
+    return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
+
+  // ⛔ Không cho override khi đã crash
+  if (timeRaceRound.crashed)
+    return res.json({ ok:false, message:"ROUND_ALREADY_CRASHED" });
+
+  const cp = Number(crashPoint);
+
+  if (isNaN(cp) || cp < 1)
+    return res.json({ ok:false, message:"INVALID_CRASH_POINT" });
+
+  // 🔥 OVERRIDE TRỰC TIẾP
+  timeRaceRound.crashPoint = Number(cp.toFixed(2));
+  timeRaceRound.overridden = true;
+  timeRaceRound.overriddenBy = uid;
+  timeRaceRound.overriddenAt = Date.now();
+
+  console.warn(
+    "🛑 [TIME RACE OVERRIDE]",
+    "round", timeRaceRound.id,
+    "→ x" + cp,
+    "by", uid
+  );
+
+  // 🔔 Cập nhật lại cho admin realtime
+  io.emit("admin-time-race-secret-update", {
+    roundId: timeRaceRound.id,
+    crashPoint: timeRaceRound.crashPoint,
+    betEndAt: timeRaceRound.betEndAt,
+    endAt: timeRaceRound.endAt,
+    crashed: timeRaceRound.crashed,
+    overridden: true
+  });
+
+  res.json({
+    ok:true,
+    roundId: timeRaceRound.id,
+    crashPoint: timeRaceRound.crashPoint
+  });
+});
+
+
+
+
+
 
 
 app.post("/api/invest/close-early", (req, res) => {
