@@ -1708,9 +1708,9 @@ function pickCrashPoint(){
   const r = Math.random();
 
   // 1% auto crash tại x1.00 (tăng cảm giác kịch tính)
-  if(r < 0.01){
-    return 1.00;
-  }
+if(r < 0.01){
+  return 0;
+}
 
   const crash = (1 - houseEdge) / (1 - r);
 
@@ -1872,9 +1872,15 @@ if(multiplier >= timeRaceRound.crashPoint){
 
   saveUsers(users);
 
-  io.emit("time-race-crash",{
-    crashPoint: timeRaceRound.crashPoint
-  });
+
+const displayCrash =
+  timeRaceRound.crashPoint <= 1
+    ? 0
+    : timeRaceRound.crashPoint;
+
+io.emit("time-race-crash",{
+  crashPoint: displayCrash
+});
 
   setTimeout(()=>{
 
