@@ -919,6 +919,18 @@ border-top:1px solid rgba(0,255,255,.08);
 }
 
 
+.bomb-wrap.exploded{
+  animation: bombVanish .4s forwards;
+}
+
+@keyframes bombVanish{
+  to{
+    opacity:0;
+    transform:scale(1.4);
+  }
+}
+
+
 
 </style>
 </head>
@@ -1236,6 +1248,9 @@ socket.on("time-race-state",data=>{
 
 socket.on("time-race-new", data => {
 
+  document.querySelector(".bomb-wrap")
+  .classList.remove("exploded");
+
   // 🔄 RESET LOGIC STATE
   raceStarted = false;
   crashed = false;
@@ -1330,7 +1345,6 @@ if(hasBet && !raceStarted && !crashed){
 });
 
 
-
 socket.on("time-race-crash",data=>{
 
   raceStarted = false;
@@ -1338,23 +1352,17 @@ socket.on("time-race-crash",data=>{
 
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-body");
-  const fuse = document.querySelector(".bomb-fuse");   // 🔥 thêm
-  const spark = document.querySelector(".spark");       // 🔥 thêm
+  const fuse = document.querySelector(".bomb-fuse");
 
-  // 🔴 đổi trạng thái crash
   bomb.classList.add("crash");
 
   multiplierEl.textContent =
     "x" + Number(data.crashPoint).toFixed(2);
 
-  /* ================= BURN FULL FUSE ================= */
+  /* ================= BURN FUSE ================= */
 
   if(fuse){
-    fuse.style.height = "0px";   // 🔥 dây cháy hết
-  }
-
-  if(spark){
-    spark.style.top = "0px";     // 🔥 spark rơi xuống sát bomb
+    fuse.style.height = "0px";
   }
 
   /* ================= EXPLOSION ================= */
@@ -1370,21 +1378,9 @@ socket.on("time-race-crash",data=>{
   setTimeout(()=>{
     ring.remove();
     core.remove();
-  },700);
+  },600);
 
   /* ================= SHAKE ================= */
-
-  bomb.animate([
-    { transform: "scale(1)" },
-    { transform: "scale(1.25)" },
-    { transform: "scale(.9)" },
-    { transform: "scale(1.15)" },
-    { transform: "scale(1)" }
-  ],{
-    duration:500
-  });
-
-  /* ================= SCREEN SHAKE ================= */
 
   document.body.animate([
     { transform:"translateX(0px)" },
@@ -1393,16 +1389,22 @@ socket.on("time-race-crash",data=>{
     { transform:"translateX(0px)" }
   ],{ duration:200 });
 
-  /* ================= FLASH SCREEN ================= */
+  /* ================= HIDE BOMB ================= */
 
-  const flash = document.createElement("div");
-  flash.className = "crash-flash";
-  document.body.appendChild(flash);
-  setTimeout(()=> flash.remove(), 600);
+  setTimeout(()=>{
+    bombWrap.classList.add("exploded");
+  },250);
+
+  /* ================= MULTI POP EFFECT ================= */
+
+  multiplierEl.animate([
+    { transform:"scale(1)" },
+    { transform:"scale(1.4)" },
+    { transform:"scale(1)" }
+  ],{ duration:500 });
 
   stopBtn.style.display="none";
 });
-
 
 /* BET */
 
