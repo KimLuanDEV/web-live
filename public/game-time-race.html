@@ -86,7 +86,7 @@ html,body{
 /* CENTER */
 .tr-center{
   position:absolute;
-  top:50%;
+  top:45%;
   left:50%;
   transform:translate(-50%,-50%);
   text-align:center;
@@ -346,10 +346,13 @@ html,body{
 
 .tr-history-wrap{
   position:fixed;
-  bottom:160px;
+  top:calc(64px + env(safe-area-inset-top));
   left:0;
   right:0;
-  padding:0 16px;
+  padding:8px 16px 6px;
+  background:linear-gradient(180deg,#000,#0a0a15);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  z-index:90;
 }
 
 .history-title{
@@ -362,16 +365,22 @@ html,body{
   display:flex;
   gap:6px;
   overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.tr-history-bar::-webkit-scrollbar{
+  display:none;
 }
 
 .tr-history-item{
-  min-width:55px;
-  padding:6px;
-  border-radius:8px;
+  min-width:52px;
+  padding:6px 0;
+  border-radius:20px;
   font-size:12px;
   text-align:center;
   font-weight:700;
   background:#111;
+  border:1px solid rgba(255,255,255,.08);
 }
 
 .tr-history-item.low{
@@ -411,6 +420,15 @@ html,body{
 
 </div>
 
+<div class="tr-history-wrap">
+  <div class="history-title">
+    Round History
+  </div>
+
+  <div class="tr-history-bar"
+       id="timeRaceHistoryBar">
+  </div>
+</div>
 
 
 
@@ -442,15 +460,6 @@ html,body{
 
 
 
-<div class="tr-history-wrap">
-  <div class="history-title">
-    Round History
-  </div>
-
-  <div class="tr-history-bar"
-       id="timeRaceHistoryBar">
-  </div>
-</div>
 
 
 <div class="tr-bottom">
