@@ -523,6 +523,9 @@ body{
   width:12px;
   height:60px;
 
+  transform-origin:bottom;   /* QUAN TRỌNG */
+  transition:height .3s linear;
+
   border-radius:6px;
 
   background:linear-gradient(
@@ -1052,7 +1055,8 @@ const stopBtn = document.getElementById("stopBtn");
 const betTimer = document.getElementById("betTimer");
 const selectedBetEl = document.getElementById("selectedBetValue");
 const selectedBetBar = document.querySelector(".selected-bet-bar");
-
+const fuse = document.querySelector(".bomb-fuse");
+const maxFuseHeight = 60; // phải khớp CSS
 
 function serverTime(){
   return Date.now() + serverOffset;
@@ -1129,6 +1133,21 @@ function updateTimer(){
 
   // hiển thị số giây
   betTimer.textContent = left > 0 ? left : "";
+
+
+  // ================= FUSE BURNING =================
+if(betEndAt){
+
+  const totalTime = 15000; // nếu round 15s
+  const timePassed = totalTime - (betEndAt - serverTime());
+
+  let percent = Math.max(0, Math.min(1, timePassed / totalTime));
+
+  const newHeight = maxFuseHeight * (1 - percent);
+
+  fuse.style.height = newHeight + "px";
+}
+
 
   // ✅ Nếu đã đặt cược rồi -> khóa bet bar luôn, KHÔNG mở lại
   if(hasBet){
@@ -1221,33 +1240,34 @@ socket.on("time-race-new", data => {
   // 🔄 RESET LOGIC STATE
   raceStarted = false;
   crashed = false;
-  hasBet = false;   // 🔥 đảm bảo reset
+  hasBet = false;
 
   serverOffset = data.serverNow - Date.now();
   betEndAt = data.betEndAt;
 
   const bomb = document.querySelector(".bomb-body");
   const spark = document.querySelector(".spark");
+  const fuse = document.querySelector(".bomb-fuse"); // 🔥 thêm dòng này
 
   const betPanel = document.querySelector(".tr-bottom");
   betPanel.classList.remove("locked");
+
   /* ================= HARD RESET VISUAL ================= */
 
-  // ❌ remove toàn bộ class trạng thái
   bomb.classList.remove("crash", "hot");
 
-  // ❌ reset inline style hoàn toàn
   bomb.style.cssText = "";
   spark.style.cssText = "";
 
-  // ❌ reset transition để tránh dư animation
   bomb.style.transition = "none";
-
-  // 🔁 force browser repaint
   void bomb.offsetWidth;
-
-  // 🔄 bật lại transition
   bomb.style.transition = "";
+
+  /* ================= RESET FUSE ================= */
+
+  if(fuse){
+    fuse.style.height = "60px";   // 🔥 reset lại chiều cao dây
+  }
 
   /* ================= RESET UI ================= */
 
@@ -1261,7 +1281,6 @@ socket.on("time-race-new", data => {
   stopBtn.style.display = "none";
 
 });
-
 
 socket.on("time-race-tick",data=>{
 
@@ -1320,6 +1339,8 @@ socket.on("time-race-crash",data=>{
 
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-body");
+  const fuse = document.querySelector(".bomb-fuse");   // 🔥 thêm
+  const spark = document.querySelector(".spark");       // 🔥 thêm
 
   // 🔴 đổi trạng thái crash
   bomb.classList.add("crash");
@@ -1327,19 +1348,26 @@ socket.on("time-race-crash",data=>{
   multiplierEl.textContent =
     "x" + Number(data.crashPoint).toFixed(2);
 
+  /* ================= BURN FULL FUSE ================= */
+
+  if(fuse){
+    fuse.style.height = "0px";   // 🔥 dây cháy hết
+  }
+
+  if(spark){
+    spark.style.top = "0px";     // 🔥 spark rơi xuống sát bomb
+  }
+
   /* ================= EXPLOSION ================= */
 
-  // shockwave ring
   const ring = document.createElement("div");
   ring.className = "explosion-ring";
   bombWrap.appendChild(ring);
 
-  // flash core
   const core = document.createElement("div");
   core.className = "explosion-core";
   bombWrap.appendChild(core);
 
-  // remove after animation
   setTimeout(()=>{
     ring.remove();
     core.remove();
@@ -1349,13 +1377,22 @@ socket.on("time-race-crash",data=>{
 
   bomb.animate([
     { transform: "scale(1)" },
-    { transform: "scale(1.2)" },
-    { transform: "scale(.95)" },
-    { transform: "scale(1.1)" },
+    { transform: "scale(1.25)" },
+    { transform: "scale(.9)" },
+    { transform: "scale(1.15)" },
     { transform: "scale(1)" }
   ],{
     duration:500
   });
+
+  /* ================= SCREEN SHAKE ================= */
+
+  document.body.animate([
+    { transform:"translateX(0px)" },
+    { transform:"translateX(6px)" },
+    { transform:"translateX(-6px)" },
+    { transform:"translateX(0px)" }
+  ],{ duration:200 });
 
   /* ================= FLASH SCREEN ================= */
 
