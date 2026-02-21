@@ -2361,6 +2361,26 @@ emitTimeRacePlayers();
   if(!me?.profile) return;
 
   me.profile.coins += win;
+
+
+  // ============================
+// 📜 LƯU LỊCH SỬ TIME RACE USER
+// ============================
+me.timeRaceHistory ||= [];
+
+me.timeRaceHistory.unshift({
+  roundId: timeRaceRound.id,
+  ts: Date.now(),
+  bet: bet.bet,
+  stopMultiplier: timeRaceRound.currentMultiplier,
+  win
+});
+
+if(me.timeRaceHistory.length > 30){
+  me.timeRaceHistory.length = 30;
+}
+
+
   saveUsers(users);
   emitCoinUpdate(uid);
 
@@ -3158,6 +3178,18 @@ app.get("/admin-time-race.html",(req,res)=>{
   );
 });
 
+
+
+app.get("/api/time-race/my-history",(req,res)=>{
+
+  const uid = req.headers["x-uid"];
+  if(!uid) return res.json([]);
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  res.json(me?.timeRaceHistory || []);
+});
 
 
 // 🔐 ADMIN – GET CURRENT RPS BETS
