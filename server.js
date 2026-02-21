@@ -1744,6 +1744,26 @@ function createTimeRaceRound(){
 let timeRaceRound = createTimeRaceRound();
 
 
+function emitTimeRacePlayers(){
+
+  const users = loadUsers();
+
+  const list = timeRaceRound.bets.map(b=>{
+    const me = users[b.uid];
+    return {
+      uid: b.uid,
+      name: me?.profile?.name || "Người chơi",
+      bet: b.bet,
+      stopped: timeRaceRound.stopped.includes(b.uid)
+    };
+  });
+
+  io.emit("admin-time-race-players",{
+    roundId: timeRaceRound.id,
+    players: list
+  });
+}
+
 
 
 // 🔔 Emit secret round đầu tiên cho admin
@@ -1836,7 +1856,7 @@ setTimeout(()=>{
     });
 
     timeRaceRound = createTimeRaceRound();
-
+    emitTimeRacePlayers();
 
 // 🔔 EMIT SECRET CHO ADMIN
 io.emit("admin-time-race-secret-update", {
@@ -2307,6 +2327,7 @@ socket.on("time-race-bet", data=>{
   emitCoinUpdate(uid);
 
   timeRaceRound.bets.push({uid, bet});
+  emitTimeRacePlayers();
 
   socket.emit("time-race-bet-ok");
 });
@@ -2329,6 +2350,7 @@ if(
 if(timeRaceRound.stopped.includes(uid)) return;
 
 timeRaceRound.stopped.push(uid);
+emitTimeRacePlayers();
 
   const win = Math.floor(
     bet.bet * timeRaceRound.currentMultiplier

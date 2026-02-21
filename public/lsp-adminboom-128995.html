@@ -32,6 +32,25 @@ body{
   font-size:13px;
 }
 
+.player-row{
+  display:flex;
+  justify-content:space-between;
+  padding:8px 0;
+  border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.player-name{
+  font-weight:600;
+}
+
+.player-bet{
+  color:#ffd54a;
+}
+
+.player-stop{
+  color:#4caf50;
+}
+
 </style>
 </head>
 <body>
@@ -75,6 +94,12 @@ body{
   <div id="endAt"></div>
 </div>
 
+
+<div class="card">
+  <div class="label">Players In Round</div>
+  <div id="playerList"></div>
+</div>
+
 <script>
 
 const socket = io({
@@ -94,6 +119,37 @@ socket.on("admin-time-race-secret-update",data=>{
     new Date(data.endAt).toLocaleTimeString();
 });
 
+
+
+socket.on("admin-time-race-players", data=>{
+
+  const wrap = document.getElementById("playerList");
+  wrap.innerHTML = "";
+
+  if(!data.players.length){
+    wrap.innerHTML = "<div style='opacity:.5'>No players</div>";
+    return;
+  }
+
+  data.players.forEach(p=>{
+
+    const div = document.createElement("div");
+    div.className = "player-row";
+
+    div.innerHTML = `
+      <div class="player-name">
+        ${p.name}
+        ${p.stopped ? "<span class='player-stop'> (STOP)</span>" : ""}
+      </div>
+      <div class="player-bet">
+        ${p.bet} 💎
+      </div>
+    `;
+
+    wrap.appendChild(div);
+  });
+
+});
 
 
 function overrideCrash(){
