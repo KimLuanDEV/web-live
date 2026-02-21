@@ -2898,53 +2898,6 @@ app.post("/api/admin/egg/override", (req, res) => {
 
 
 
-// ================================
-// 💣 FORCE TIME RACE CRASH
-// ================================
-app.post("/api/admin/time-race/force-crash", (req, res) => {
-
-  if (!timeRaceRound || timeRaceRound.crashed)
-    return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
-
-  timeRaceRound.crashed = true;
-
-  console.warn("💣 FORCE CRASH");
-
-  // 📜 LƯU HISTORY
-  timeRaceHistory.unshift({
-    roundId: timeRaceRoundCount + 1,
-    crashPoint: timeRaceRound.currentMultiplier,
-    forced: true,
-    ts: Date.now()
-  });
-
-  timeRaceHistory =
-    timeRaceHistory.slice(0, MAX_TIME_RACE_HISTORY);
-
-  saveTimeRaceHistory(timeRaceHistory);
-
-  // 🔔 xử lý người chưa stop
-  const usersNow = loadUsers();
-
-  timeRaceRound.bets.forEach(b=>{
-    if(!timeRaceRound.stopped.includes(b.uid)){
-      emitToUser(b.uid,"time-race-lost",{
-        crashPoint: timeRaceRound.currentMultiplier
-      });
-    }
-  });
-
-  saveUsers(usersNow);
-
-  // 🔥 EMIT CRASH NGAY LẬP TỨC
-  io.emit("time-race-crash",{
-    crashPoint: timeRaceRound.currentMultiplier,
-    forced:true
-  });
-
-  res.json({ ok:true });
-});
-
 
 app.post("/api/admin/time-race/override", (req, res) => {
 

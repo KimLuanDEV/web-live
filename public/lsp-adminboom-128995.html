@@ -65,21 +65,6 @@ body{
   </button>
 </div>
 
-
-<div class="card">
-  <button onclick="forceCrash()"
-          style="width:100%;
-          padding:14px;
-          background:#ff0000;
-          border:none;
-          border-radius:10px;
-          font-weight:800;
-          color:white;">
-    💣 FORCE CRASH NOW
-  </button>
-</div>
-
-
 <div class="card">
   <div class="label">Bet End At</div>
   <div id="betEnd"></div>
@@ -140,25 +125,6 @@ function overrideCrash(){
   });
 }
 
-
-
-function forceCrash(){
-  fetch("/api/admin/time-race/force-crash",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": localStorage.getItem("uid")
-    }
-  })
-  .then(r=>r.json())
-  .then(res=>{
-    if(res.ok){
-      alert("💣 Crash forced");
-    }else{
-      alert("Error");
-    }
-  });
-}
 
 </script>
 
