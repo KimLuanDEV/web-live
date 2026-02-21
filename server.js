@@ -1728,7 +1728,7 @@ function createTimeRaceRound(){
   const now = Date.now();
 
   return {
-    id: now,
+    id: timeRaceRoundCount + 1,   // ✅ dùng round trong ngày
     startAt: now,
     betEndAt: now + TIME_RACE_BET,
     endAt: now + TIME_RACE_TOTAL,
