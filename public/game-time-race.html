@@ -869,19 +869,21 @@ border-top:1px solid rgba(0,255,255,.08);
 /* ===== STOP FLOATING OUTSIDE BET BAR ===== */
 
 .btn-stop-floating-outside{
-  display: none;
+  display:none;
   position:fixed;
 
   left:16px;
   bottom:calc(320px + env(safe-area-inset-bottom));
 
-  padding:10px 20px;
-  border-radius:18px;
+  width:60px;
+  height:34px;
+
+  border-radius:20px;
   border:none;
 
-  font-weight:900;
-  font-size:14px;
-  letter-spacing:1px;
+  font-weight:800;
+  font-size:12px;
+  letter-spacing:.5px;
 
   color:#fff;
   cursor:pointer;
@@ -889,14 +891,17 @@ border-top:1px solid rgba(0,255,255,.08);
   background:linear-gradient(135deg,#ff2d2d,#ff6600);
 
   box-shadow:
-    0 0 30px rgba(255,0,0,.7),
-    0 0 60px rgba(255,0,0,.4);
+    0 0 15px rgba(255,0,0,.7);
 
   transition:.2s;
-  
 
-  z-index:250; /* cao hơn tr-bottom 200 */
+  z-index:250;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
+
 
 .btn-stop-floating-outside:hover{
   transform:translateY(-2px);
