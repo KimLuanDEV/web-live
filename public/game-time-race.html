@@ -516,15 +516,14 @@ body{
 /* 🔥 fuse */
 .bomb-fuse{
   position:absolute;
-  top:-50px;
+  bottom:100%;     /* 🔥 neo vào bomb */
   left:50%;
   transform:translateX(-50%);
 
   width:12px;
   height:60px;
 
-  transform-origin:bottom;   /* QUAN TRỌNG */
-  transition:height .3s linear;
+  transition:height .2s linear;
 
   border-radius:6px;
 
@@ -540,9 +539,9 @@ body{
 /* ✨ spark */
 .spark{
   position:absolute;
-  top:-18px;
+  bottom:100%;   /* 🔥 neo vào đầu dây */
   left:50%;
-  transform:translateX(-50%);
+  transform:translate(-50%, 0);
 
   width:24px;
   height:24px;
