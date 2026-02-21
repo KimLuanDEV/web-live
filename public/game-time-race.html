@@ -882,6 +882,13 @@ border-top:1px solid rgba(0,255,255,.08);
   transition:.25s;
 }
 
+
+
+.btn-stop-floating:disabled{
+  filter:grayscale(.5);
+  box-shadow:0 0 20px rgba(255,0,0,.3);
+}
+
 </style>
 </head>
 <body>
@@ -1208,16 +1215,14 @@ socket.on("time-race-tick",data=>{
     return;
   }
 
-  // 🚀 Bắt đầu race thật sự
+
 if(hasBet && !raceStarted && !crashed){
   raceStarted = true;
 
-  // chỉ show nếu bet panel đang locked
-  if(document.querySelector(".tr-bottom").classList.contains("locked")){
-    stopBtn.style.display = "block";
-  }
+  // 🔓 Cho click khi race bắt đầu
+  stopBtn.disabled = false;
+  stopBtn.style.opacity = "1";
 }
-
   multiplierEl.textContent = "x" + m.toFixed(2);
 
   const bomb = document.querySelector(".bomb-body");
@@ -1313,17 +1318,20 @@ betBtn.onclick=()=>{
   socket.emit("time-race-bet",{bet});
 };
 
+
 socket.on("time-race-bet-ok",()=>{
   hasBet = true;
 
-  // 🔒 khóa toàn bộ bet panel
   const betPanel = document.querySelector(".tr-bottom");
   betPanel.classList.add("locked");
 
   betBtn.disabled = true;
-  stopBtn.style.display = "none";
-});
 
+  // 🔥 Hiện STOP ngay nhưng chưa cho click
+  stopBtn.style.display = "block";
+  stopBtn.disabled = true;
+  stopBtn.style.opacity = ".6";
+});
 /* STOP */
 
 stopBtn.onclick=()=>{
