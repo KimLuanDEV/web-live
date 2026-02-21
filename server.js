@@ -2245,6 +2245,27 @@ socket.emit("time-race-history",
   timeRaceHistory
 );
 
+
+// ================================
+// 📜 SEND MY TIME RACE HISTORY
+// ================================
+socket.emit("time-race-my-history",
+  me?.timeRaceHistory || []
+);
+
+socket.on("time-race-get-my-history", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const meNow = users[uid];
+
+  socket.emit("time-race-my-history",
+    meNow?.timeRaceHistory || []
+  );
+});
+
 socket.emit("time-race-round-count",{
   roundCountToday: timeRaceRoundCount + 1
 });
@@ -2379,6 +2400,12 @@ me.timeRaceHistory.unshift({
 if(me.timeRaceHistory.length > 30){
   me.timeRaceHistory.length = 30;
 }
+
+
+socket.emit("time-race-my-history",
+  me.timeRaceHistory
+);
+
 
 
   saveUsers(users);

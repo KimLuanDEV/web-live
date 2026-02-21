@@ -1553,8 +1553,9 @@ function openTimeRaceHistory(){
     .getElementById("timeRaceHistorySheet")
     .classList.remove("hidden");
 
-  loadMyTimeRaceHistory();
+  socket.emit("time-race-get-my-history");
 }
+
 
 function closeTimeRaceHistory(){
   document
@@ -1565,18 +1566,19 @@ function closeTimeRaceHistory(){
 
 
 
-async function loadMyTimeRaceHistory(){
 
-  const res = await fetch("/api/time-race/my-history",{
-    headers:{
-      "x-uid": localStorage.getItem("uid")
-    }
-  });
+/* SOCKET EVENTS */
 
-  const list = await res.json();
+socket.on("time-race-my-history", list=>{
+  renderMyHistory(list);
+});
+
+function renderMyHistory(list){
 
   const wrap =
     document.getElementById("timeRaceHistoryList");
+
+  if(!wrap) return;
 
   wrap.innerHTML = "";
 
@@ -1592,10 +1594,10 @@ async function loadMyTimeRaceHistory(){
     item.className = "tr-history-item-card";
 
     item.innerHTML = `
-      <div>Round #${h.roundId}</div>
-      <div>Bet: ${h.bet} 💎</div>
-      <div>x${h.stopMultiplier}</div>
-      <div>Win: ${h.win}</div>
+      <div>#${h.roundId}</div>
+      <div>${h.bet} 💎</div>
+      <div>x${Number(h.stopMultiplier).toFixed(2)}</div>
+      <div style="color:#00f0ff">+${h.win}</div>
     `;
 
     wrap.appendChild(item);
@@ -1603,8 +1605,6 @@ async function loadMyTimeRaceHistory(){
 }
 
 
-
-/* SOCKET EVENTS */
 
 socket.on("time-race-state",data=>{
 
