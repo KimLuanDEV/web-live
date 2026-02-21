@@ -513,13 +513,19 @@ html,body{
 
 .tr-history-wrap{
   position:fixed;
-  top:calc(105px + env(safe-area-inset-top));
+
+  /* 🔥 bám sát header */
+  top:calc(90px + env(safe-area-inset-top));
+
   left:0;
   right:0;
-  padding:8px 16px 6px;
-  background:linear-gradient(180deg,#000,#0a0a15);
-  border-bottom:1px solid rgba(255,255,255,.05);
-  z-index:90;
+
+  padding:10px 16px 8px;
+
+background:transparent;
+border-top:1px solid rgba(0,255,255,.08);
+
+  z-index:290; /* thấp hơn header 300 */
 }
 
 .history-title{
