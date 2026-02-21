@@ -2898,6 +2898,65 @@ app.post("/api/admin/egg/override", (req, res) => {
 
 
 
+// ================================
+// 💣 ADMIN FORCE TIME RACE CRASH
+// ================================
+app.post("/api/admin/time-race/force-crash", (req, res) => {
+
+  const uid = req.headers["x-uid"];
+  if (!uid)
+    return res.status(401).json({ ok:false });
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if (me?.role !== "admin")
+    return res.status(403).json({ ok:false });
+
+  if (!timeRaceRound || timeRaceRound.crashed)
+    return res.json({ ok:false, message:"NO_ACTIVE_ROUND" });
+
+  timeRaceRound.crashed = true;
+
+  console.warn("💣 FORCE CRASH BY ADMIN:", uid);
+
+  // 📜 LƯU HISTORY
+  timeRaceHistory.unshift({
+    roundId: timeRaceRoundCount + 1,
+    crashPoint: timeRaceRound.currentMultiplier,
+    forced: true,
+    ts: Date.now()
+  });
+
+  timeRaceHistory =
+    timeRaceHistory.slice(0, MAX_TIME_RACE_HISTORY);
+
+  saveTimeRaceHistory(timeRaceHistory);
+
+  // 🔔 xử lý người chưa stop
+  const usersNow = loadUsers();
+
+  timeRaceRound.bets.forEach(b=>{
+    if(!timeRaceRound.stopped.includes(b.uid)){
+      emitToUser(b.uid,"time-race-lost",{
+        crashPoint: timeRaceRound.currentMultiplier
+      });
+    }
+  });
+
+  saveUsers(usersNow);
+
+  // 🔥 EMIT CRASH NGAY LẬP TỨC
+  io.emit("time-race-crash",{
+    crashPoint: timeRaceRound.currentMultiplier,
+    forced:true
+  });
+
+  res.json({ ok:true });
+});
+
+
+
 app.post("/api/admin/time-race/override", (req, res) => {
 
   const uid = req.headers["x-uid"];
