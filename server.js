@@ -1757,10 +1757,11 @@ setTimeout(()=>{
       roundCountToday: timeRaceRoundCount
     });
 
-    io.emit("time-race-new",{
-      roundId: timeRaceRound.id,
-      betEndAt: timeRaceRound.betEndAt
-    });
+io.emit("time-race-new",{
+  roundId: timeRaceRound.id,
+  betEndAt: timeRaceRound.betEndAt,
+  serverNow: Date.now()
+});
 
     io.emit("time-race-tick",{
       multiplier:1
@@ -2071,7 +2072,8 @@ socket.emit("time-race-state",{
   roundId: timeRaceRound.id,
   betEndAt: timeRaceRound.betEndAt,
   multiplier: timeRaceRound.currentMultiplier,
-  crashed: timeRaceRound.crashed
+  crashed: timeRaceRound.crashed,
+  serverNow: Date.now()
 });
 
 

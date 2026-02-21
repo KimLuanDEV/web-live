@@ -447,6 +447,8 @@ let crashed = false;
 let hasBet = false;
 let currentCoins = 0;
 let selectedBet = 0;
+let serverOffset = 0;
+
 
 const multiplierEl = document.getElementById("multiplier");
 const betBtn = document.getElementById("betBtn");
@@ -454,6 +456,13 @@ const stopBtn = document.getElementById("stopBtn");
 const betTimer = document.getElementById("betTimer");
 const selectedBetEl = document.getElementById("selectedBetValue");
 const selectedBetBar = document.querySelector(".selected-bet-bar");
+
+
+function serverTime(){
+  return Date.now() + serverOffset;
+}
+
+
 
 function updateSelectedBetDisplay(){
   selectedBetEl.textContent = selectedBet.toLocaleString();
@@ -517,7 +526,7 @@ document.querySelectorAll(".bet-chip").forEach(btn=>{
 
 function updateTimer(){
   if(!betEndAt) return;
-  const left = Math.max(0,Math.floor((betEndAt-Date.now())/1000));
+ const left = Math.max(0,Math.floor((betEndAt - serverTime()) / 1000));
 if(left>0){
   betTimer.textContent = left;
 }else{
@@ -532,8 +541,14 @@ setInterval(updateTimer,500);
 /* SOCKET EVENTS */
 
 socket.on("time-race-state",data=>{
-  betEndAt=data.betEndAt;
-  multiplierEl.textContent="x"+Number(data.multiplier).toFixed(2);
+
+  // 🔥 tính lệch giờ
+  serverOffset = data.serverNow - Date.now();
+
+  betEndAt = data.betEndAt;
+  multiplierEl.textContent =
+    "x"+Number(data.multiplier).toFixed(2);
+
   crashed=data.crashed;
 });
 
@@ -541,6 +556,7 @@ socket.on("time-race-state",data=>{
 
 socket.on("time-race-new", data => {
 
+  serverOffset = data.serverNow - Date.now();
   crashed = false;
   hasBet = false;
 
