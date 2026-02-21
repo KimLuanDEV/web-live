@@ -2218,6 +2218,13 @@ socket.on("time-race-bet", data=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
+
+    // 🔒 khóa đặt cược khi còn <= 3s
+  if(timeRaceRound.betEndAt - Date.now() <= 3000){
+    return socket.emit("time-race-error",{message:"BET_CLOSED"});
+  }
+
+  
   if(Date.now() > timeRaceRound.betEndAt)
     return socket.emit("time-race-error",{message:"BET_CLOSED"});
 

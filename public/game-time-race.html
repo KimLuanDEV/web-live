@@ -1088,17 +1088,35 @@ document.querySelectorAll(".bet-chip").forEach(btn=>{
 
 
 function updateTimer(){
+
   if(!betEndAt) return;
- const left = Math.max(0,Math.floor((betEndAt - serverTime()) / 1000));
-if(left>0){
-  betTimer.textContent = left;
-}else{
-betTimer.textContent = "";
-betTimer.style.color = "#ff2d2d";
-betTimer.style.textShadow = "0 0 15px red";
-  betBtn.disabled=true;
+
+  const msLeft = betEndAt - serverTime();
+  const left = Math.max(0, Math.ceil(msLeft / 1000));
+
+  // hiển thị số giây nếu còn thời gian
+  betTimer.textContent = left > 0 ? left : "";
+
+  // 🔒 KHÓA KHI CÒN <= 3 GIÂY
+  if(msLeft <= 3000){
+    betBtn.disabled = true;
+
+    betTimer.style.color = "#ff2d2d";
+    betTimer.style.textShadow = "0 0 15px red";
+  }
+  else{
+    betBtn.disabled = false;
+
+    betTimer.style.color = "";
+    betTimer.style.textShadow = "";
+  }
+
+  // hết giờ
+  if(msLeft <= 0){
+    betBtn.disabled = true;
+  }
 }
-}
+
 setInterval(updateTimer,500);
 
 
