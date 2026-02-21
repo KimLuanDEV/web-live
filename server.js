@@ -1613,6 +1613,48 @@ setTimeout(()=>{
 
 
 
+// ================================
+// 🔢 TIME RACE ROUND COUNT (24H)
+// ================================
+const TIME_RACE_ROUND_FILE =
+  "/opt/render/project/data/time_race_round_count.json";
+
+function loadTimeRaceRoundCount(){
+  try{
+    if(!fs.existsSync(TIME_RACE_ROUND_FILE)){
+      return {
+        dayTs: getTodayStartTsVN(),
+        count: 0
+      };
+    }
+    return JSON.parse(
+      fs.readFileSync(TIME_RACE_ROUND_FILE,"utf8")
+    );
+  }catch(e){
+    return {
+      dayTs: getTodayStartTsVN(),
+      count: 0
+    };
+  }
+}
+
+function saveTimeRaceRoundCount(data){
+  try{
+    fs.writeFileSync(
+      TIME_RACE_ROUND_FILE,
+      JSON.stringify(data,null,2)
+    );
+  }catch(e){}
+}
+
+const timeRaceRoundState = loadTimeRaceRoundCount();
+
+let timeRaceRoundCount =
+  timeRaceRoundState.count || 0;
+
+let timeRaceRoundDayTs =
+  timeRaceRoundState.dayTs || getTodayStartTsVN();
+
 
 // ================================
 // ⏱️ TIME RACE (CRASH GAME)
@@ -1633,6 +1675,14 @@ function pickCrashPoint(){
 }
 
 function createTimeRaceRound(){
+
+  // 🔄 Reset khi qua ngày mới (0h VN)
+  const todayStart = getTodayStartTsVN();
+  if(todayStart !== timeRaceRoundDayTs){
+    timeRaceRoundCount = 0;
+    timeRaceRoundDayTs = todayStart;
+  }
+
   const now = Date.now();
   return {
     id: now,
@@ -1691,8 +1741,21 @@ if(multiplier >= timeRaceRound.crashPoint){
     crashPoint: timeRaceRound.crashPoint
   });
 
-  setTimeout(()=>{
+setTimeout(()=>{
+
+    // ➕ tăng số phiên trong ngày
+    timeRaceRoundCount++;
+
+    saveTimeRaceRoundCount({
+      dayTs: timeRaceRoundDayTs,
+      count: timeRaceRoundCount
+    });
+
     timeRaceRound = createTimeRaceRound();
+
+    io.emit("time-race-round-count",{
+      roundCountToday: timeRaceRoundCount
+    });
 
     io.emit("time-race-new",{
       roundId: timeRaceRound.id,
@@ -1703,7 +1766,8 @@ if(multiplier >= timeRaceRound.crashPoint){
       multiplier:1
     });
 
-  },5000);
+},5000);
+
 }
 
 
@@ -2008,6 +2072,11 @@ socket.emit("time-race-state",{
   betEndAt: timeRaceRound.betEndAt,
   multiplier: timeRaceRound.currentMultiplier,
   crashed: timeRaceRound.crashed
+});
+
+
+socket.emit("time-race-round-count",{
+  roundCountToday: timeRaceRoundCount + 1
 });
 
 

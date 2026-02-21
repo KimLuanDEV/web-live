@@ -318,6 +318,13 @@ html,body{
   font-weight:800;
 }
 
+#roundToday{
+  font-weight:700;
+  color:#00f0ff;
+  text-shadow:0 0 8px #00f0ff;
+}
+
+
 </style>
 </head>
 <body>
@@ -328,7 +335,10 @@ html,body{
 
   <div class="tr-head-center">
     <div class="tr-title">Time Race</div>
-    <div class="tr-sub">Crash Multiplier</div>
+    <div class="tr-sub">
+   Round •
+  <span id="roundToday">1</span>
+</div>
   </div>
 
   <div class="tr-right">
@@ -647,6 +657,15 @@ socket.on("coin-update",data=>{
   currentCoins = Number(data.coins || 0);
   document.getElementById("coinBalance").textContent = currentCoins;
 });
+
+
+socket.on("time-race-round-count", data=>{
+  const el = document.getElementById("roundToday");
+  if(el){
+    el.textContent = data.roundCountToday;
+  }
+});
+
 
 
 </script>
