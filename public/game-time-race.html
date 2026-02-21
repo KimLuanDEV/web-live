@@ -1673,74 +1673,46 @@ socket.on("time-race-history-update",
 socket.on("time-race-restore", data=>{
 
   serverOffset = data.serverNow - Date.now();
-  betEndAt = data.betEndAt || 0;
-  crashed = !!data.crashed;
-  hasBet = !!data.hasBet;
+  betEndAt = data.betEndAt;
+  crashed = data.crashed;
+  hasBet = data.hasBet;
 
-  /* ================= ROUND COUNT ================= */
-
-  if(data.roundCountToday){
-    const roundEl = document.getElementById("roundToday");
-    if(roundEl){
-      roundEl.textContent = data.roundCountToday;
-    }
-  }
-
-  /* ================= MULTIPLIER ================= */
-
-  const currentMultiplier = Number(data.multiplier || 1);
+  const currentMultiplier = Number(data.multiplier);
   multiplierEl.textContent =
     "x" + currentMultiplier.toFixed(2);
 
   /* ================= RESTORE BET VALUE ================= */
 
-  selectedBet = Number(data.myBet || 0);
+  if(data.myBet){
+    selectedBet = Number(data.myBet);
+  }else{
+    selectedBet = 0;
+  }
+
   updateSelectedBetDisplay();
 
-  const betPanel = document.querySelector(".tr-bottom");
-  const bomb = document.querySelector(".bomb-body");
-  const fuse = document.querySelector(".bomb-fuse");
-
-  /* ================= CRASH STATE ================= */
-
-  if(crashed){
-
-    multiplierEl.classList.add("crash-red");
-
-    if(bomb) bomb.classList.add("crash");
-    if(fuse) fuse.style.height = "0px";
-
-    stopBtn.style.display = "none";
-
-    betPanel.classList.add("locked");
-    betBtn.disabled = true;
-
-    return;
-  }
-
-  /* ================= MID-RACE ================= */
-
-  if(currentMultiplier > 1){
-    raceStarted = true;
-  }
-
-  /* ================= RESTORE BET UI ================= */
+  /* ================= RESTORE UI STATE ================= */
 
   if(hasBet){
 
-    betPanel.classList.add("locked");
+    document
+      .querySelector(".tr-bottom")
+      .classList.add("locked");
+
     betBtn.disabled = true;
 
-    if(!data.stopped){
+    if(!crashed && !data.stopped){
 
       stopBtn.style.display = "block";
 
       if(currentMultiplier <= 1){
         stopBtn.disabled = true;
         stopBtn.style.opacity = ".6";
-      }else{
+      }
+      else{
         stopBtn.disabled = false;
         stopBtn.style.opacity = "1";
+        raceStarted = true;
       }
 
     }else{
@@ -1749,7 +1721,10 @@ socket.on("time-race-restore", data=>{
 
   }else{
 
-    betPanel.classList.remove("locked");
+    document
+      .querySelector(".tr-bottom")
+      .classList.remove("locked");
+
     betBtn.disabled = false;
     stopBtn.style.display = "none";
   }
