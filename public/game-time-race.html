@@ -30,15 +30,16 @@ html,body{
   left:0;
   right:0;
 
-  padding-top:env(safe-area-inset-top);
+  /* Safe zone + cân giữa */
+  padding-top:calc(env(safe-area-inset-top) + 10px);
   padding-left:16px;
   padding-right:16px;
-  padding-bottom:18px;
+  padding-bottom:14px;
 
-  height:calc(95px + env(safe-area-inset-top));
+  height:calc(90px + env(safe-area-inset-top));
 
   display:flex;
-  align-items:flex-end;
+  align-items:center;      /* 🔥 QUAN TRỌNG: căn giữa dọc */
   justify-content:space-between;
 
   background:linear-gradient(
@@ -115,6 +116,8 @@ html,body{
 }
 
 .tr-back{
+  position:relative;
+  z-index:2;
   width:40px;
   height:40px;
   border-radius:14px;
@@ -140,8 +143,11 @@ html,body{
 }
 
 .tr-head-center{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
   text-align:center;
-  flex:1;
+  width:200px;
 }
 
 
@@ -169,11 +175,15 @@ html,body{
 }
 
 .tr-sub{
-  font-size:11px;
-  opacity:.6;
+  font-size:12px;
+  opacity:.75;
+  margin-top:4px;
+  letter-spacing:.5px;
 }
 
 .tr-right{
+  position:relative;
+  z-index:2;
   display:flex;
   align-items:center;
   gap:8px;
@@ -484,7 +494,7 @@ html,body{
 
 .tr-history-wrap{
   position:fixed;
-   top:calc(115px + env(safe-area-inset-top));
+  top:calc(105px + env(safe-area-inset-top));
   left:0;
   right:0;
   padding:8px 16px 6px;
