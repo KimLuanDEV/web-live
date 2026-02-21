@@ -865,52 +865,6 @@ border-top:1px solid rgba(0,255,255,.08);
   }
 }
 
-
-/* ===== STOP FLOATING OUTSIDE BET BAR ===== */
-
-.btn-stop-floating-outside{
-  display:none;
-  position:fixed;
-
-  left:16px;
-  bottom:calc(320px + env(safe-area-inset-bottom));
-
-  width:60px;
-  height:34px;
-
-  border-radius:20px;
-  border:none;
-
-  font-weight:800;
-  font-size:12px;
-  letter-spacing:.5px;
-
-  color:#fff;
-  cursor:pointer;
-
-  background:linear-gradient(135deg,#ff2d2d,#ff6600);
-
-  box-shadow:
-    0 0 15px rgba(255,0,0,.7);
-
-  transition:.2s;
-
-  z-index:250;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-
-.btn-stop-floating-outside:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    0 0 45px rgba(255,0,0,.9);
-}
-
-
-
 </style>
 </head>
 <body>
@@ -969,13 +923,17 @@ border-top:1px solid rgba(0,255,255,.08);
     </div>
 
   </div>
+
+
+<div class="stop-wrap">
+  <button id="stopBtn" class="btn-stop-floating">
+    STOP
+  </button>
+</div>
+
 </div>
 
 
-
-<button id="stopBtn" class="btn-stop-floating-outside">
-  STOP
-</button>
 
 
 
@@ -1042,19 +1000,6 @@ const selectedBetBar = document.querySelector(".selected-bet-bar");
 function serverTime(){
   return Date.now() + serverOffset;
 }
-
-
-
-function updateStopPosition(){
-  const betBar = document.querySelector(".tr-bottom");
-  if(!betBar) return;
-
-  const height = betBar.offsetHeight;
-  stopBtn.style.bottom = height + 20 + "px";
-}
-
-window.addEventListener("resize", updateStopPosition);
-window.addEventListener("load", updateStopPosition);
 
 
 
