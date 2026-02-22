@@ -2399,6 +2399,15 @@ socket.emit("barn-update", {
 // ================================
 // 👑⚔ KING VS SLAVE – SOCKET
 // ================================
+
+
+// 🔥 GỬI THÔNG TIN ROUND & SLAVE INDEX KHI USER CONNECT
+socket.emit("ks-init",{
+  roundId: ksRoundId,
+  slaveIndex: ksSlaveIndex
+});
+
+
 socket.on("ks-get-state", ()=>{
   const uid = socket.data.uid;
   if(!uid) return;
@@ -2568,8 +2577,13 @@ socket.on("ks-next", ()=>{
   ksRoundId++;
   ksKingIndex = Math.floor(Math.random() * 5);
   ksSlaveIndex = Math.floor(Math.random() * 5);
-  
-  socket.emit("ks-round-new", {
+
+  socket.emit("ks-init",{
+    roundId: ksRoundId,
+    slaveIndex: ksSlaveIndex
+  });
+
+  socket.emit("ks-round-new",{
     roundId: ksRoundId
   });
 });

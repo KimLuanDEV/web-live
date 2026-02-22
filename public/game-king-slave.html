@@ -866,7 +866,9 @@ let pickedIndex = -1;
 let usedPlayerCards = new Set();
 let usedKingCards = new Set();
 let currentBetValue = 0;
-
+// 🔥 Nhận từ server
+let ksSlaveIndex = null;
+window.ksSlaveIndex = null;
 /* Deck definitions */
 
 const SLAVE_DECK = ["Civilian","Civilian","SLAVE","Civilian","Civilian"];
@@ -893,9 +895,24 @@ function buildRow(el, type){
     // ⚠️ KHÔNG set dataset.t ở đây nữa
     // loại card sẽ do server quyết định khi reveal
 
-    const img = document.createElement("img");
-    img.src = "/assets/ks/card-back.png";
-    card.appendChild(img);
+const img = document.createElement("img");
+
+if(type === "king"){
+  // 👑 KING luôn úp
+  img.src = "/assets/ks/card-back.png";
+  card.classList.add("cover");
+}
+else{
+  // 🎯 PLAYER hiển thị ngay mặt bài
+  if(idx === window.ksSlaveIndex){
+    img.src = "/assets/ks/card-slave.png";
+    card.classList.add("slave");
+  }else{
+    img.src = "/assets/ks/card-common.png";
+  }
+}
+
+card.appendChild(img);
 
     // click player
     if(type === "player"){
@@ -1112,6 +1129,16 @@ function animateToArena(cardEl, targetEl){
 socket.on("connect", ()=>{
   // xin state
   socket.emit("ks-get-state");
+});
+
+
+// 🔥 Nhận vị trí SLAVE từ server
+socket.on("ks-init", (data)=>{
+  ksSlaveIndex = data.slaveIndex;
+  window.ksSlaveIndex = ksSlaveIndex;
+
+  // build lại player để hiển thị đúng SLAVE
+  buildRow(playerRow, "player");
 });
 
 
