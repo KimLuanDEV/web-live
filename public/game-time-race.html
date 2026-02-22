@@ -867,71 +867,95 @@ body{
 
 
 
-/* ================= DETONATE BUTTON ================= */
+/* ================= CYBER STOP BUTTON V2 ================= */
 
 .btn-stop-floating{
-  display: none;
-  width:70px;
-  height:70px;
+ 
+
+  width:88px;
+  height:88px;
   border-radius:50%;
 
-  font-size:20px;
-  font-weight:900;
-  letter-spacing:1px;
-
-  border:none;
+  position:relative;
   cursor:pointer;
+  border:none;
+
+  font-size:14px;
+  font-weight:900;
+  letter-spacing:2px;
 
   color:#fff;
 
   background:
-    radial-gradient(circle at 30% 30%, #ff4444, #b80000 70%);
+    radial-gradient(circle at 30% 30%, #ff3b3b, #7a0000 70%);
 
   box-shadow:
-    inset -10px -15px 30px rgba(0,0,0,.6),
-    0 0 60px rgba(255,0,0,.8),
-    0 0 120px rgba(255,0,0,.4);
+    inset -15px -20px 40px rgba(0,0,0,.7),
+    0 0 40px rgba(255,0,0,.6);
 
-  transition:.15s;
-  position:relative;
+  transition:.2s;
 }
 
-/* outer metal ring */
+/* outer cyber ring */
 .btn-stop-floating::before{
   content:"";
   position:absolute;
-  inset:-12px;
+  inset:-16px;
   border-radius:50%;
-  background:linear-gradient(145deg,#666,#222);
-  z-index:-1;
+
+  border:3px solid rgba(255,0,0,.5);
+
+  box-shadow:
+    0 0 25px rgba(255,0,0,.6);
+
+  animation:stopRingRotate 3s linear infinite;
+}
+
+@keyframes stopRingRotate{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
 }
 
 /* glow pulse */
 .btn-stop-floating::after{
   content:"";
   position:absolute;
-  inset:-25px;
+  inset:-30px;
   border-radius:50%;
   background:radial-gradient(circle,
-    rgba(255,0,0,.6),
+    rgba(255,0,0,.5),
     transparent 70%);
-  animation:detonatePulse 1.5s infinite;
-  z-index:-2;
+  animation:stopPulse 1.5s infinite;
+  z-index:-1;
 }
 
-@keyframes detonatePulse{
-  0%,100%{ opacity:.5; transform:scale(1);}
-  50%{ opacity:1; transform:scale(1.1);}
+@keyframes stopPulse{
+  0%,100%{ opacity:.4; transform:scale(1); }
+  50%{ opacity:1; transform:scale(1.15); }
 }
 
-/* press effect */
+/* hover */
+.btn-stop-floating:hover{
+  transform:scale(1.08);
+  box-shadow:
+    0 0 70px rgba(255,0,0,.9);
+}
+
+/* press */
 .btn-stop-floating:active{
   transform:scale(.9);
   box-shadow:
-    inset 0 0 50px rgba(0,0,0,.8),
-    0 0 40px rgba(255,0,0,.6);
+    inset 0 0 60px rgba(0,0,0,.9),
+    0 0 40px rgba(255,0,0,.7);
 }
 
+/* disabled state */
+.btn-stop-floating:disabled{
+  filter:grayscale(.6);
+  opacity:.6;
+  box-shadow:
+    0 0 20px rgba(255,0,0,.3);
+}
 
 
 /* ===== EXPLOSION EFFECT ===== */
