@@ -149,11 +149,18 @@ html,body{
 <!-- PLAYER CARDS -->
 <div id="playerRow" class="ks-player-row"></div>
 
+<script src="/socket.io/socket.io.js"></script>
 <script>
 
-let playerDeck = [];
-let kingDeck = [];
-let roundActive = false;
+const socket = io({
+  auth:{
+    uid: localStorage.getItem("uid")
+  }
+});
+
+let playerDeck = ["slave","normal","normal","normal","normal"];
+let kingDeckCount = 5;
+let roundActive = true;
 
 const map = {
   king:"👑",
@@ -161,38 +168,25 @@ const map = {
   normal:"👤"
 };
 
-function shuffle(arr){
-  return arr.sort(()=>Math.random()-0.5);
-}
-
-function startRound(){
-  playerDeck = shuffle(["slave","normal","normal","normal","normal"]);
-  kingDeck   = shuffle(["king","normal","normal","normal","normal"]);
-
-  document.getElementById("playerBig").textContent = "?";
-  document.getElementById("kingBig").textContent = "?";
-  document.getElementById("result").textContent = "";
-
-  renderKing();
-  renderPlayer();
-  roundActive = true;
-}
+/* ================= RENDER KING ================= */
 
 function renderKing(){
+
   const row = document.getElementById("kingRow");
   row.innerHTML = "";
 
-  kingDeck.forEach(()=>{
-
+  for(let i=0;i<kingDeckCount;i++){
     const div = document.createElement("div");
     div.className = "ks-king-card";
     div.textContent = "🂠";
     row.appendChild(div);
-
-  });
+  }
 }
 
+/* ================= RENDER PLAYER ================= */
+
 function renderPlayer(){
+
   const row = document.getElementById("playerRow");
   row.innerHTML = "";
 
@@ -205,55 +199,57 @@ function renderPlayer(){
   });
 }
 
+/* ================= PLAY CARD ================= */
+
 function playCard(index){
-
   if(!roundActive) return;
+  socket.emit("kvs-play-card",{ index });
+}
 
-  const playerCard = playerDeck.splice(index,1)[0];
-  const kingCard   = kingDeck.shift();
+/* ================= RECEIVE RESULT ================= */
 
-  document.getElementById("playerBig").textContent = map[playerCard];
-  document.getElementById("kingBig").textContent = map[kingCard];
+socket.on("kvs-result", data=>{
+
+  document.getElementById("playerBig").textContent =
+    map[data.playerCard];
+
+  document.getElementById("kingBig").textContent =
+    map[data.kingCard];
+
+  kingDeckCount--;
+  playerDeck.splice(
+    playerDeck.findIndex((_,i)=>i===0),1
+  );
+
+  const resultEl =
+    document.getElementById("result");
+
+  if(data.result==="win"){
+    resultEl.textContent =
+      "🔥 BẮT ĐƯỢC VUA!";
+    resultEl.style.color = "#00ff88";
+    roundActive = false;
+  }
+  else if(data.result==="lose"){
+    resultEl.textContent =
+      "💀 Thua!";
+    resultEl.style.color = "#ff4444";
+    roundActive = false;
+  }
+  else{
+    resultEl.textContent =
+      "🤝 Hòa - tiếp tục!";
+    resultEl.style.color = "#ffaa00";
+  }
 
   renderKing();
   renderPlayer();
+});
 
-  const resultEl = document.getElementById("result");
+/* ================= INIT ================= */
 
-  if(playerCard==="slave" && kingCard==="king"){
-    resultEl.textContent = "🔥 BẮT ĐƯỢC VUA!";
-    resultEl.style.color = "#00ff88";
-    roundActive = false;
-    return;
-  }
-
-  if(playerCard==="slave" && kingCard==="normal"){
-    resultEl.textContent = "💀 Nô lệ lộ diện!";
-    resultEl.style.color = "#ff4444";
-    roundActive = false;
-    return;
-  }
-
-  if(playerCard==="normal" && kingCard==="king"){
-    resultEl.textContent = "💀 Gặp Vua!";
-    resultEl.style.color = "#ff4444";
-    roundActive = false;
-    return;
-  }
-
-  if(playerCard==="normal" && kingCard==="normal"){
-    resultEl.textContent = "🤝 Hòa - tiếp tục!";
-    resultEl.style.color = "#ffaa00";
-
-    if(playerDeck.length===0){
-      resultEl.textContent = "💀 Không bắt được vua!";
-      roundActive=false;
-      return;
-    }
-  }
-}
-
-startRound();
+renderKing();
+renderPlayer();
 
 </script>
 
