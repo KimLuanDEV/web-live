@@ -222,7 +222,7 @@ let rpsHistoryGlobal = loadRpsHistory();
 // ================================
 let ksRoundId = 1;
 let ksKingIndex = Math.floor(Math.random() * 5); // 🎯 random KING mỗi round
-
+let ksSlaveIndex = Math.floor(Math.random() * 5);
 const ksUserState = new Map();
 
 // helper: tạo deck và pick index
@@ -240,10 +240,13 @@ function ksCardByIndex(role, idx){
       : "Civilian";
   }
 
-  // SLAVE cố định ở index 2 (hoặc bạn có thể random sau)
-  return idx === 2
-    ? "SLAVE"
-    : "Civilian";
+  if(role === "player"){
+    return idx === ksSlaveIndex
+      ? "SLAVE"
+      : "Civilian";
+  }
+
+  return "Civilian";
 }
 
 
@@ -2563,8 +2566,8 @@ socket.on("ks-next", ()=>{
   if(!uid) return;
 
   ksRoundId++;
-
-  ksKingIndex = Math.floor(Math.random() * 5); // 🎯 random lại KING
+  ksKingIndex = Math.floor(Math.random() * 5);
+  ksSlaveIndex = Math.floor(Math.random() * 5);
   
   socket.emit("ks-round-new", {
     roundId: ksRoundId
