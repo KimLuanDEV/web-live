@@ -2011,6 +2011,14 @@ if (meNow?.role === "admin" && timeRaceRound) {
 
   const coins = Number(me?.profile?.coins || 0);
 
+// 🔥 GỬI DIAMOND NGAY KHI CONNECT
+const diamonds = Number(me?.profile?.diamonds || 0);
+
+socket.emit("diamond-update", {
+  diamonds
+});
+
+
 
 // ================================
 // 🥚 BUY EGG
