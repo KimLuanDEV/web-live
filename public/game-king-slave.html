@@ -768,6 +768,9 @@ let myBet = 0;
 let canPick = false;
 let picked = false;
 let pickedIndex = -1;
+let usedPlayerCards = new Set();
+
+
 
 /* Deck definitions */
 const KING_DECK = ["COMMON","COMMON","COMMON","COMMON","KING"];
@@ -802,15 +805,20 @@ function buildRow(el, type){
     label.textContent = (t==="KING" ? "KING" : t==="SLAVE" ? "SLAVE" : "COMMON");
     card.appendChild(label);
 
-    if(type === "player"){
-      card.addEventListener("click", ()=>{
-        if(!canPick || picked) return;
-        picked = true;
-        pickedIndex = idx;
-        socket.emit("ks-pick", { index: idx });
-        flashPick(card);
-      });
-    }
+
+if(type === "player"){
+  card.addEventListener("click", ()=>{
+    if(!canPick || picked) return;
+
+    // ❌ Không cho dùng lại bài đã đánh
+    if(usedPlayerCards.has(idx)) return;
+
+    picked = true;
+    pickedIndex = idx;
+    socket.emit("ks-pick", { index: idx });
+    flashPick(card);
+  });
+}
 
     el.appendChild(card);
   });
@@ -849,6 +857,10 @@ function lockAll(){
 }
 
 function resetUIForNewRound(data){
+
+  // 🔥 Reset danh sách bài đã dùng
+  usedPlayerCards.clear();
+
   roundId = data?.roundId || (roundId + 1);
   roundText.textContent = "#" + roundId;
 
@@ -866,6 +878,13 @@ function resetUIForNewRound(data){
 
   buildRow(kingRow, "king");
   buildRow(playerRow, "player");
+
+  // 🔥 Reset lại style các lá bài (đặt ở đây)
+  [...playerRow.children].forEach(c=>{
+    c.style.opacity = "1";
+    c.style.pointerEvents = "auto";
+    c.style.transform = "";
+  });
 }
 
 /* =========================
@@ -1002,6 +1021,9 @@ socket.on("ks-result", (r)=>{
   const kingIdx = r.kingIndex;
   const youIdx  = r.youIndex;
 
+
+usedPlayerCards.add(youIdx);
+
   const kCard = kingRow.children[kingIdx];
   const yCard = playerRow.children[youIdx];
 
@@ -1060,6 +1082,16 @@ socket.on("ks-result", (r)=>{
     mWin.textContent = String(r.win);
 
     overlay.classList.add("show");
+
+
+    // 🔥 Làm biến mất bài đã dùng
+const originalCard = playerRow.children[youIdx];
+if(originalCard){
+  originalCard.style.opacity = "0";
+  originalCard.style.pointerEvents = "none";
+  originalCard.style.transform = "scale(.7)";
+}
+
 
   }, 1600);
 
