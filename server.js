@@ -234,10 +234,10 @@ function ksPickKingIndex(){
 }
 function ksCardByIndex(role, idx){
   if(role === "king"){
-    return idx === 4 ? "KING" : "COMMON"; // sẽ shuffle ở client, nhưng server cần đúng mapping
+    return idx === 4 ? "KING" : "Civilian"; // sẽ shuffle ở client, nhưng server cần đúng mapping
   }
   // player: idx 4 là SLAVE
-  return idx === 4 ? "SLAVE" : "COMMON";
+  return idx === 4 ? "SLAVE" : "Civilian";
 }
 
 
@@ -2496,12 +2496,12 @@ socket.on("ks-pick", (data)=>{
 
   ksUserState.set(uid, st);
 
-  const you = (youIndex === 4) ? "SLAVE" : "COMMON";
-  const king = (kingPickIndex === 4) ? "KING" : "COMMON";
+  const you = (youIndex === 4) ? "SLAVE" : "Civilian";
+  const king = (kingPickIndex === 4) ? "KING" : "Civilian";
 
   let result = "draw";
   if(you === "SLAVE" && king === "KING") result = "win";
-  else if(you === "COMMON" && king === "COMMON") result = "draw";
+  else if(you === "Civilian" && king === "Civilian") result = "draw";
   else result = "lose";
 
   const users = loadUsers();
