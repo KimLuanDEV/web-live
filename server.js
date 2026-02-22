@@ -1971,6 +1971,18 @@ io.on("connection", socket => {
   const usersNow = loadUsers();
   const meNow = usersNow[uid];
 
+
+
+// ================================
+// 💎 SEND DIAMOND WHEN CONNECT
+// ================================
+if (me?.profile) {
+  socket.emit("diamond-update", {
+    diamonds: Number(me.profile.diamonds || 0)
+  });
+}
+
+
   if (meNow?.role === "admin" && eggRound?.secretResult) {
 
     socket.emit("admin-egg-secret-update", {
