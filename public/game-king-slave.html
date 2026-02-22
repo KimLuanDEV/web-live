@@ -769,7 +769,7 @@ let canPick = false;
 let picked = false;
 let pickedIndex = -1;
 let usedPlayerCards = new Set();
-
+let usedKingCards = new Set();
 
 
 /* Deck definitions */
@@ -860,6 +860,7 @@ function resetUIForNewRound(data){
 
   // 🔥 Reset danh sách bài đã dùng
   usedPlayerCards.clear();
+  usedKingCards.clear();
 
   roundId = data?.roundId || (roundId + 1);
   roundText.textContent = "#" + roundId;
@@ -885,6 +886,14 @@ function resetUIForNewRound(data){
     c.style.pointerEvents = "auto";
     c.style.transform = "";
   });
+
+  [...kingRow.children].forEach(c=>{
+  c.style.opacity = "1";
+  c.style.pointerEvents = "auto";
+  c.style.transform = "";
+});
+
+
 }
 
 /* =========================
@@ -1023,6 +1032,7 @@ socket.on("ks-result", (r)=>{
 
 
 usedPlayerCards.add(youIdx);
+usedKingCards.add(kingIdx);
 
   const kCard = kingRow.children[kingIdx];
   const yCard = playerRow.children[youIdx];
@@ -1090,6 +1100,14 @@ if(originalCard){
   originalCard.style.opacity = "0";
   originalCard.style.pointerEvents = "none";
   originalCard.style.transform = "scale(.7)";
+}
+
+
+const originalKingCard = kingRow.children[kingIdx];
+if(originalKingCard){
+  originalKingCard.style.opacity = "0";
+  originalKingCard.style.pointerEvents = "none";
+  originalKingCard.style.transform = "scale(.7)";
 }
 
 

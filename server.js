@@ -2501,8 +2501,8 @@ socket.on("ks-pick", (data)=>{
 
 saveUsers(users);
 
-emitToUser(uid, "diamond-update", {
-  diamonds: me.profile.coins
+emitToUser(uid, "coin-update", {
+  coins: me.profile.coins
 });
 
   }else if(result === "draw"){
@@ -2517,7 +2517,7 @@ emitToUser(uid, "diamond-update", {
   }
 
   saveUsers(users);
-  emitToUser(uid, "diamond-update", { diamonds: me.profile.coins });
+  emitToUser(uid, "coin-update", { coins: me.profile.coins });
 
   socket.emit("ks-result",{
     roundId: ksRoundId,
