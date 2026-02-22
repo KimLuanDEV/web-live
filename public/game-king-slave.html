@@ -1230,15 +1230,6 @@ const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
   [...playerRow.children].forEach(c=>c.classList.remove("cover"));
 
 
-// Đổi ảnh khi mở bài
-[...kingRow.children].forEach(c=>{
-  const t = c.dataset.t;
-  const img = c.querySelector("img");
-  if(!img) return;
-
-  if(t==="KING") img.src = "/assets/ks/card-king.png";
-  else img.src = "/assets/ks/card-common.png";
-});
 
 [...playerRow.children].forEach(c=>{
   const t = c.dataset.t;
