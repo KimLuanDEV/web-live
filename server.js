@@ -221,11 +221,8 @@ let rpsHistoryGlobal = loadRpsHistory();
 // 👑⚔ KING VS SLAVE (SOLO VS SERVER)
 // ================================
 let ksRoundId = 1;
-
-// mỗi user lưu state riêng: bet + phase
-// phase: "idle" | "picked"
+let ksKingIndex = Math.floor(Math.random() * 5); // 🎯 random KING mỗi round
 const ksUserState = new Map();
-// uid -> { bet, playerUsed:[], kingUsed:[] }
 
 // helper: tạo deck và pick index
 function ksPickKingIndex(){
@@ -2496,8 +2493,11 @@ socket.on("ks-pick", (data)=>{
 
   ksUserState.set(uid, st);
 
-  const you = (youIndex === 4) ? "SLAVE" : "Civilian";
-  const king = (kingPickIndex === 4) ? "KING" : "Civilian";
+// Player: SLAVE cố định vị trí 2
+const you = (youIndex === 2) ? "SLAVE" : "Civilian";
+
+// King: dùng index random đã tạo
+const king = (kingPickIndex === ksKingIndex) ? "KING" : "Civilian";
 
   let result = "draw";
   if(you === "SLAVE" && king === "KING") result = "win";
@@ -2559,6 +2559,8 @@ socket.on("ks-next", ()=>{
 
   ksRoundId++;
 
+  ksKingIndex = Math.floor(Math.random() * 5); // 🎯 random lại KING
+  
   socket.emit("ks-round-new", {
     roundId: ksRoundId
   });
