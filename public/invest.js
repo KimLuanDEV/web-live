@@ -120,3 +120,8 @@ function openDiamondHunter(){
 function openTimeRaceGame(){
   location.href = "/game-time-race.html";
 }
+
+
+function openKingSlaveGame(){
+  location.href = "/game-king-vs-slave.html";
+}

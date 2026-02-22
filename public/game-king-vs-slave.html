@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>King vs Slave</title>
+
+<style>
+
+/* ================= BASE ================= */
+html,body{
+  margin:0;
+  background:#050508;
+  font-family: system-ui, sans-serif;
+  color:#fff;
+  overflow:hidden;
+}
+
+/* ===== HEADER ===== */
+.ks-header{
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  background:linear-gradient(180deg,#0a0a12,#050508);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  z-index:10;
+}
+
+.ks-title{
+  font-weight:700;
+  letter-spacing:.5px;
+}
+
+.back-btn{
+  background:none;
+  border:none;
+  color:#fff;
+  font-size:20px;
+}
+
+/* ===== MAIN AREA ===== */
+.ks-wrap{
+  padding-top:70px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  height:100vh;
+}
+
+/* ===== ARENA ===== */
+.ks-arena{
+  margin-top:20px;
+  width:100%;
+  max-width:500px;
+  height:280px;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* glow background */
+.ks-arena::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255,0,120,.25), transparent 60%);
+  animation:pulse 3s infinite;
+}
+
+@keyframes pulse{
+  0%{opacity:.4}
+  50%{opacity:.9}
+  100%{opacity:.4}
+}
+
+/* ===== CARD BASE ===== */
+.ks-card{
+  width:120px;
+  height:180px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:50px;
+  font-weight:700;
+  background:linear-gradient(180deg,#111,#000);
+  box-shadow:
+    0 0 30px rgba(255,255,255,.05),
+    0 10px 30px rgba(0,0,0,.7);
+  transition:.3s;
+}
+
+.ks-card.player{
+  position:absolute;
+  left:20px;
+}
+
+.ks-card.bot{
+  position:absolute;
+  right:20px;
+}
+
+/* flip animation */
+.flip{
+  transform:rotateY(180deg);
+}
+
+/* ===== SELECT AREA ===== */
+.ks-select{
+  margin-top:30px;
+  display:flex;
+  gap:16px;
+}
+
+.ks-option{
+  width:90px;
+  height:120px;
+  border-radius:14px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  cursor:pointer;
+  background:linear-gradient(180deg,#151515,#050505);
+  border:1px solid rgba(255,255,255,.08);
+  transition:.2s;
+}
+
+.ks-option:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 20px rgba(255,0,120,.4);
+}
+
+/* ===== RESULT ===== */
+.ks-result{
+  margin-top:30px;
+  font-size:22px;
+  font-weight:700;
+  min-height:30px;
+}
+
+/* ===== BUTTON ===== */
+.ks-btn{
+  margin-top:20px;
+  padding:10px 26px;
+  border:none;
+  border-radius:10px;
+  font-weight:600;
+  background:linear-gradient(90deg,#ff007a,#ff4c00);
+  color:#fff;
+  cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="ks-header">
+  <button class="back-btn" onclick="history.back()">←</button>
+  <div class="ks-title">👑 King vs Slave</div>
+  <div style="width:30px"></div>
+</div>
+
+<div class="ks-wrap">
+
+  <!-- ARENA -->
+  <div class="ks-arena">
+    <div id="playerCard" class="ks-card player">?</div>
+    <div id="botCard" class="ks-card bot">?</div>
+  </div>
+
+  <!-- SELECT -->
+  <div class="ks-select">
+    <div class="ks-option" onclick="selectRole('king')">👑</div>
+    <div class="ks-option" onclick="selectRole('knight')">🗡</div>
+    <div class="ks-option" onclick="selectRole('slave')">🔒</div>
+  </div>
+
+  <div id="result" class="ks-result"></div>
+
+  <button class="ks-btn" onclick="resetGame()">Chơi lại</button>
+
+</div>
+
+<script>
+
+let selectedRole = null;
+
+function selectRole(role){
+  selectedRole = role;
+
+  const roles = ["king","knight","slave"];
+  const botRole = roles[Math.floor(Math.random()*3)];
+
+  const map = {
+    king:"👑",
+    knight:"🗡",
+    slave:"🔒"
+  };
+
+  document.getElementById("playerCard").textContent = map[role];
+  document.getElementById("botCard").textContent = map[botRole];
+
+  showResult(role, botRole);
+}
+
+function showResult(player, bot){
+
+  let resultText = "";
+
+  if(player === bot){
+    resultText = "🤝 Hòa";
+  }
+  else if(
+    (player==="king" && bot==="slave") ||
+    (player==="slave" && bot==="knight") ||
+    (player==="knight" && bot==="king")
+  ){
+    resultText = "🔥 Bạn thắng!";
+  }
+  else{
+    resultText = "💀 Bạn thua!";
+  }
+
+  document.getElementById("result").textContent = resultText;
+}
+
+function resetGame(){
+  document.getElementById("playerCard").textContent = "?";
+  document.getElementById("botCard").textContent = "?";
+  document.getElementById("result").textContent = "";
+}
+
+</script>
+
+</body>
+</html>
