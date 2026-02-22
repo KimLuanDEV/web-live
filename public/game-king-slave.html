@@ -782,8 +782,7 @@ const myBetText = document.getElementById("myBetText");
 const statusText = document.getElementById("statusText");
 const roundText = document.getElementById("roundText");
 const resultText = document.getElementById("resultText");
-
-
+const clearBetBtn = document.getElementById("clearBetBtn");
 const resetBtn = document.getElementById("resetBtn");
 
 
@@ -1003,6 +1002,14 @@ resetBtn.onclick = ()=>{
 
 
 
+
+clearBetBtn.onclick = ()=>{
+  betInput.value = "";
+  myBet = 0;
+  myBetText.textContent = "0";
+  resultText.textContent = "—";
+  setStatus("Đã reset cược");
+};
 
 
 
