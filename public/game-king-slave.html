@@ -246,7 +246,20 @@
       box-shadow: 0 24px 60px rgba(0,0,0,.55);
       overflow:hidden;
       position:relative;
+      transition: all .25s ease;
     }
+
+    
+    .panel.hide{
+  opacity:0;
+  transform: translateY(20px) scale(.98);
+  pointer-events:none;
+  transition: all .25s ease;
+}
+
+
+
+
     .panel::before{
       content:"";
       position:absolute; inset:-1px;
@@ -471,6 +484,11 @@
       .panel-inner{padding:14px}
       .big-title .name{font-size:16px}
     }
+
+
+
+
+
   </style>
 </head>
 
@@ -500,7 +518,7 @@
     <div class="king-row">
       <div class="row-head">
         <div class="tag">
-          <span class="badge">👑</span> KING (Nhà cái)
+          <span class="badge">👑</span> KING
         </div>
         <div class="phase" id="phaseText">Chưa cược</div>
       </div>
@@ -568,7 +586,7 @@
       <div class="row-head">
         <div class="tag">
           <span class="badge" style="background:radial-gradient(circle at top, rgba(0,240,255,.9), rgba(0,90,120,.9)); box-shadow:0 0 16px rgba(0,240,255,.25);">⛓</span>
-          SLAVE (Bạn)
+          SLAVE
         </div>
         <div class="phase" id="timerText">—</div>
       </div>
@@ -654,6 +672,8 @@ const pickHint = document.getElementById("pickHint");
 
 const resetBtn = document.getElementById("resetBtn");
 const leaveBtn = document.getElementById("leaveBtn");
+
+const panel = document.querySelector(".panel");
 
 /* modal */
 const overlay = document.getElementById("overlay");
@@ -808,6 +828,7 @@ betBtn.onclick = ()=>{
 };
 
 resetBtn.onclick = ()=>{
+  panel.classList.remove("hide");
   socket.emit("ks-reset");
 };
 
@@ -851,6 +872,10 @@ socket.on("ks-bet-ok", (d)=>{
   myBet = d.bet;
   myBetText.textContent = myBet.toLocaleString("en-US");
   setStatus("Đặt cược thành công");
+
+  // 🔥 ẨN PANEL
+  panel.classList.add("hide");
+
   openPick();
 });
 
@@ -860,6 +885,7 @@ socket.on("ks-error", (e)=>{
 });
 
 socket.on("ks-round-new", (d)=>{
+  panel.classList.remove("hide");
   resetUIForNewRound(d);
 });
 
