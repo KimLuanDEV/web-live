@@ -14,21 +14,68 @@ html,body{
   overflow:hidden;
 }
 
-/* ================= HEADER ================= */
+/* ================= HEADER PRO ================= */
 .ks-header{
   position:fixed;
   top:0;
   left:0;
   right:0;
-  height:60px;
+  height:70px;
   display:flex;
   align-items:center;
-  justify-content:center;
-  background:linear-gradient(180deg,#0c0c18,#050508);
+  justify-content:space-between;
+  padding:0 16px;
+  background:linear-gradient(180deg,#0f0f1a,#06060b);
   border-bottom:1px solid rgba(255,255,255,.05);
-  z-index:10;
+  z-index:100;
+  backdrop-filter:blur(6px);
+}
+
+/* back */
+.ks-back{
+  font-size:22px;
+  cursor:pointer;
+  opacity:.8;
+}
+
+.ks-back:hover{
+  opacity:1;
+}
+
+/* center title */
+.ks-center{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.ks-title{
   font-weight:700;
+  font-size:18px;
+  background:linear-gradient(90deg,#ffd700,#ff9900);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.ks-sub{
+  font-size:11px;
+  opacity:.6;
   letter-spacing:.5px;
+}
+
+/* right wallet */
+.ks-wallet{
+  text-align:right;
+}
+
+.ks-diamond{
+  color:#00e6ff;
+  font-weight:700;
+}
+
+.ks-bet{
+  font-size:11px;
+  opacity:.6;
 }
 
 /* ================= KING ROW ================= */
@@ -130,24 +177,24 @@ html,body{
 <body>
 
 <div class="ks-header">
-  👑 King vs Slave
-</div>
 
-<div style="position:fixed;top:60px;left:0;right:0;
-display:flex;justify-content:center;gap:10px;padding:8px;
-background:#0a0a14;z-index:9">
+  <div class="ks-back" onclick="history.back()">
+    ←
+  </div>
 
-  💎 <span id="diamondValue">0</span>
+  <div class="ks-center">
+    <div class="ks-title">👑 King vs Slave</div>
+    <div class="ks-sub">Bắt vua để chiến thắng</div>
+  </div>
 
-  <input id="betInput" type="number"
-         placeholder="Bet"
-         style="width:80px;border-radius:6px;border:none;padding:4px;text-align:center">
-
-  <button onclick="placeBet()"
-          style="background:#ff007a;border:none;color:#fff;
-                 padding:4px 10px;border-radius:6px">
-    Cược
-  </button>
+  <div class="ks-wallet">
+    <div class="ks-diamond">
+      💎 <span id="diamondValue">0</span>
+    </div>
+    <div class="ks-bet">
+      Bet: <span id="currentBet">0</span>
+    </div>
+  </div>
 
 </div>
 
@@ -219,6 +266,8 @@ socket.on("kvs-bet-ok", data=>{
   document.getElementById("result").textContent =
     "Đã cược 💎 " + data.bet;
 
+document.getElementById("currentBet").textContent = data.bet;
+
   renderKing();
   renderPlayer();
 });
@@ -233,6 +282,8 @@ function playCard(index){
 /* ================= RESULT ================= */
 
 socket.on("kvs-result", data=>{
+
+  document.getElementById("currentBet").textContent = 0;
 
   document.getElementById("playerBig").textContent =
     map[data.playerCard];
