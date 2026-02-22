@@ -171,6 +171,122 @@ html,body{
   font-weight:700;
   font-size:18px;
 }
+
+
+/* ================= BET OVERLAY ================= */
+.bet-overlay{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,215,0,.10), transparent 55%),
+    radial-gradient(circle at 50% 70%, rgba(0,230,255,.10), transparent 55%),
+    rgba(0,0,0,.62);
+  backdrop-filter: blur(10px);
+}
+
+.bet-panel{
+  width:min(420px, 92vw);
+  border-radius:18px;
+  padding:18px 16px 16px;
+  background:linear-gradient(180deg, rgba(20,20,30,.92), rgba(0,0,0,.86));
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow: 0 20px 60px rgba(0,0,0,.65);
+  text-align:center;
+}
+
+.bet-badge{
+  width:52px;
+  height:52px;
+  margin:0 auto 10px;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
+  background:linear-gradient(180deg, rgba(255,215,0,.25), rgba(0,0,0,.4));
+  border:1px solid rgba(255,215,0,.25);
+  box-shadow:0 0 22px rgba(255,215,0,.25);
+}
+
+.bet-title{
+  font-weight:800;
+  font-size:18px;
+  letter-spacing:.3px;
+}
+
+.bet-sub{
+  margin-top:4px;
+  font-size:12px;
+  opacity:.7;
+}
+
+.bet-row{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+}
+
+.bet-input{
+  flex:1;
+  height:40px;
+  border-radius:12px;
+  border:1px solid rgba(255,255,255,.10);
+  outline:none;
+  background:rgba(0,0,0,.35);
+  color:#fff;
+  padding:0 12px;
+  font-weight:700;
+  text-align:center;
+}
+
+.bet-go{
+  width:96px;
+  height:40px;
+  border:none;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer;
+  color:#fff;
+  background:linear-gradient(90deg,#ff007a,#ff4c00);
+  box-shadow:0 0 18px rgba(255,0,122,.22);
+}
+
+.bet-quick{
+  margin-top:12px;
+  display:flex;
+  gap:8px;
+  justify-content:center;
+  flex-wrap:wrap;
+}
+
+.bet-quick button{
+  min-width:72px;
+  height:34px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.10);
+  background:rgba(0,0,0,.28);
+  color:#fff;
+  font-weight:700;
+  cursor:pointer;
+}
+
+.bet-err{
+  margin-top:10px;
+  min-height:18px;
+  font-size:12px;
+  color:#ff6868;
+  opacity:.95;
+}
+
+/* Ẩn/hiện UI game theo trạng thái */
+.hidden-ui{ display:none !important; }
+
+
 </style>
 </head>
 
@@ -198,21 +314,50 @@ html,body{
 
 </div>
 
-<!-- KING CARDS -->
-<div id="kingRow" class="ks-king-row"></div>
+<!-- 💎 BET OVERLAY (CENTER) -->
+<div id="betOverlay" class="bet-overlay">
+  <div class="bet-panel">
+    <div class="bet-badge">💎</div>
+    <div class="bet-title">Đặt cược để bắt đầu</div>
+    <div class="bet-sub">Chỉ thắng khi 🔒 bắt được 👑</div>
 
-<!-- ARENA -->
-<div class="ks-arena">
-  <div class="ks-battle">
-    <div id="playerBig" class="ks-big-card">?</div>
-    <div id="kingBig" class="ks-big-card">?</div>
+    <div class="bet-row">
+      <input id="betInput" class="bet-input" type="number" placeholder="Nhập bet">
+      <button class="bet-go" onclick="placeBet()">CƯỢC</button>
+    </div>
+
+    <div class="bet-quick">
+      <button onclick="setBetQuick(10)">10</button>
+      <button onclick="setBetQuick(50)">50</button>
+      <button onclick="setBetQuick(100)">100</button>
+      <button onclick="setBetQuick('all')">ALL</button>
+    </div>
+
+    <div id="betErr" class="bet-err"></div>
   </div>
 </div>
 
-<div id="result" class="ks-result"></div>
 
-<!-- PLAYER CARDS -->
-<div id="playerRow" class="ks-player-row"></div>
+<!-- 🎮 GAME UI (chỉ hiện sau khi cược) -->
+<div id="gameUI" class="hidden-ui">
+
+  <!-- KING CARDS -->
+  <div id="kingRow" class="ks-king-row"></div>
+
+  <!-- ARENA -->
+  <div class="ks-arena">
+    <div class="ks-battle">
+      <div id="playerBig" class="ks-big-card">?</div>
+      <div id="kingBig" class="ks-big-card">?</div>
+    </div>
+  </div>
+
+  <div id="result" class="ks-result"></div>
+
+  <!-- PLAYER CARDS -->
+  <div id="playerRow" class="ks-player-row"></div>
+
+</div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -232,6 +377,32 @@ const map = {
   normal:"👤"
 };
 
+
+let lastPickIndex = -1;
+
+function showBetOverlay(show){
+  document.getElementById("betOverlay").style.display = show ? "flex" : "none";
+}
+
+function showGameUI(show){
+  document.getElementById("gameUI").classList.toggle("hidden-ui", !show);
+}
+
+function setBetQuick(v){
+  const input = document.getElementById("betInput");
+  if(v === "all"){
+    const d = Number(document.getElementById("diamondValue").textContent || 0);
+    input.value = d;
+  }else{
+    input.value = v;
+  }
+}
+
+function setBetError(msg){
+  document.getElementById("betErr").textContent = msg || "";
+}
+
+
 /* ================= DIAMOND UPDATE ================= */
 
 socket.on("diamond-update", data=>{
@@ -248,10 +419,11 @@ function placeBet(){
   );
 
   if(!bet || bet<=0){
-    alert("Bet không hợp lệ");
+    setBetError("Bet không hợp lệ");
     return;
   }
 
+  setBetError("");
   socket.emit("kvs-bet",{ bet });
 }
 
@@ -260,13 +432,19 @@ function placeBet(){
 socket.on("kvs-bet-ok", data=>{
   betPlaced = true;
   roundActive = true;
+
   kingCount = 5;
   playerDeck = ["slave","normal","normal","normal","normal"];
+  lastPickIndex = -1;
 
   document.getElementById("result").textContent =
     "Đã cược 💎 " + data.bet;
 
-document.getElementById("currentBet").textContent = data.bet;
+  document.getElementById("currentBet").textContent = data.bet;
+
+  // ✅ show game – hide overlay
+  showBetOverlay(false);
+  showGameUI(true);
 
   renderKing();
   renderPlayer();
@@ -276,6 +454,7 @@ document.getElementById("currentBet").textContent = data.bet;
 
 function playCard(index){
   if(!roundActive || !betPlaced) return;
+  lastPickIndex = index;
   socket.emit("kvs-play-card",{ index });
 }
 
@@ -283,7 +462,14 @@ function playCard(index){
 
 socket.on("kvs-result", data=>{
 
-  document.getElementById("currentBet").textContent = 0;
+  // ✅ trừ 1 lá king đã lật
+  kingCount = Math.max(0, kingCount - 1);
+
+  // ✅ trừ đúng lá player đã chọn
+  if(lastPickIndex >= 0 && lastPickIndex < playerDeck.length){
+    playerDeck.splice(lastPickIndex, 1);
+  }
+  lastPickIndex = -1;
 
   document.getElementById("playerBig").textContent =
     map[data.playerCard];
@@ -291,27 +477,40 @@ socket.on("kvs-result", data=>{
   document.getElementById("kingBig").textContent =
     map[data.kingCard];
 
-  kingCount--;
-
-  const resultEl =
-    document.getElementById("result");
+  const resultEl = document.getElementById("result");
 
   if(data.result==="win"){
-    resultEl.textContent =
-      "🔥 THẮNG +" + data.win + " 💎";
-    resultEl.style.color="#00ff88";
-    roundActive=false;
-    betPlaced=false;
+    resultEl.textContent = "🔥 THẮNG +" + (data.win||0) + " 💎";
+    resultEl.style.color = "#00ff88";
+
+    roundActive = false;
+    betPlaced = false;
+    document.getElementById("currentBet").textContent = 0;
+
+    // ✅ về màn cược
+    showGameUI(false);
+    showBetOverlay(true);
+    document.getElementById("betInput").value = "";
+    setBetError("");
   }
   else if(data.result==="lose"){
-    resultEl.textContent="💀 Thua";
-    resultEl.style.color="#ff4444";
-    roundActive=false;
-    betPlaced=false;
+    resultEl.textContent = "💀 Thua";
+    resultEl.style.color = "#ff4444";
+
+    roundActive = false;
+    betPlaced = false;
+    document.getElementById("currentBet").textContent = 0;
+
+    // ✅ về màn cược
+    showGameUI(false);
+    showBetOverlay(true);
+    document.getElementById("betInput").value = "";
+    setBetError("");
   }
   else{
-    resultEl.textContent="🤝 Hòa";
-    resultEl.style.color="#ffaa00";
+    resultEl.textContent = "🤝 Hòa";
+    resultEl.style.color = "#ffaa00";
+    // draw → tiếp tục, giữ UI game
   }
 
   renderKing();
@@ -342,6 +541,12 @@ function renderPlayer(){
     row.appendChild(div);
   });
 }
+
+
+
+showGameUI(false);
+showBetOverlay(true);
+setBetError("");
 
 renderKing();
 renderPlayer();
