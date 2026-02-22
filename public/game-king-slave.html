@@ -297,13 +297,6 @@
       pointer-events:none;
     }
 
-    .panel-inner{
-      position:relative;
-      padding: 16px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
 
 .betBox{
   border-radius:20px;
@@ -489,7 +482,6 @@
     /* small screens */
     @media (max-width:420px){
       .card{height:78px;border-radius:14px}
-      .panel-inner{padding:14px}
     }
 
 
@@ -648,9 +640,8 @@
   </div>
 
 
-      <div class="panel">
-        <div class="panel-inner">
-          <div class="betBox" id="betBox">
+    <div class="panel">
+        <div class="betBox" id="betBox">
             <div class="statusLine">
               <div>Trạng thái: <b id="statusText">Chờ cược</b></div>
               <div>Phiên: <b id="roundText">#1</b></div>
@@ -683,12 +674,6 @@
               <div>Kết quả: <b id="resultText">—</b></div>
             </div>
           </div>
-
-          <div class="betRow">
-            <button class="btn" id="resetBtn">Chơi lại</button>
-          </div>
-
-        </div>
       </div>
     </div>
 
@@ -783,7 +768,7 @@ const statusText = document.getElementById("statusText");
 const roundText = document.getElementById("roundText");
 const resultText = document.getElementById("resultText");
 const clearBetBtn = document.getElementById("clearBetBtn");
-const resetBtn = document.getElementById("resetBtn");
+
 
 
 const panel = document.querySelector(".panel");
@@ -995,14 +980,6 @@ betBtn.onclick = ()=>{
   socket.emit("ks-bet", { bet });
 };
 
-resetBtn.onclick = ()=>{
-  panel.classList.remove("hide");
-  socket.emit("ks-reset");
-};
-
-
-
-
 clearBetBtn.onclick = ()=>{
   currentBetValue = 0;
   betDisplay.textContent = "0 💎";
@@ -1204,6 +1181,16 @@ setTimeout(()=>{
     mWin.textContent = String(r.win);
 
     overlay.classList.add("show");
+
+
+    // 🔄 AUTO NEXT ROUND (chỉ khi không phải draw)
+if(r.result !== "draw"){
+  setTimeout(()=>{
+    overlay.classList.remove("show");
+    resetArena();
+    socket.emit("ks-next"); // server tạo round mới
+  }, 3000);
+}
 
 
   }, 1600);
