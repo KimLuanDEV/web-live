@@ -1004,8 +1004,8 @@ resetBtn.onclick = ()=>{
 
 
 clearBetBtn.onclick = ()=>{
-  betInput.value = "";
-  myBet = 0;
+  currentBetValue = 0;
+  betDisplay.textContent = "0 💎";
   myBetText.textContent = "0";
   resultText.textContent = "—";
   setStatus("Đã reset cược");
@@ -1082,7 +1082,8 @@ socket.on("ks-state", (s)=>{
   if(s.myBet && s.myBet > 0){
     myBet = s.myBet;
     myBetText.textContent = myBet.toLocaleString("en-US");
-    betInput.value = myBet;
+    currentBetValue = myBet;
+    betDisplay.textContent = myBet.toLocaleString("en-US") + " 💎";
     openPick();
   }
 });
