@@ -347,11 +347,7 @@
       white-space:nowrap;
     }
 
-.btn.primary{
-  background: linear-gradient(180deg, rgba(0,240,255,.35), rgba(0,120,140,.4));
-  border:1px solid rgba(0,240,255,.5);
-  box-shadow:0 0 30px rgba(0,240,255,.25);
-}
+
 
 
     .btn:disabled{
@@ -558,6 +554,44 @@
 
 
 
+.betActions{
+  display:flex;
+  gap:10px;
+  margin-top:4px;
+}
+
+.btn.ghost{
+  flex:1;
+  background:rgba(255,255,255,.05);
+  border:1px solid rgba(255,255,255,.12);
+}
+
+.btn.primary{
+  flex:1;
+  background: linear-gradient(180deg, rgba(0,240,255,.35), rgba(0,120,140,.4));
+  border:1px solid rgba(0,240,255,.5);
+  box-shadow:0 0 30px rgba(0,240,255,.25);
+}
+
+
+.betDisplay{
+  flex:1;
+  height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:14px;
+  border:1px solid rgba(0,240,255,.18);
+  background:rgba(0,0,0,.6);
+
+  font-weight:900;
+  font-size:15px;
+  letter-spacing:.5px;
+
+  box-shadow: inset 0 0 20px rgba(0,0,0,.6);
+}
+
 
   </style>
 </head>
@@ -616,10 +650,6 @@
 
       <div class="panel">
         <div class="panel-inner">
-
-     
-      
-
           <div class="betBox" id="betBox">
             <div class="statusLine">
               <div>Trạng thái: <b id="statusText">Chờ cược</b></div>
@@ -627,8 +657,7 @@
             </div>
 
             <div class="betRow">
-              <input id="betInput" inputmode="numeric" placeholder="Nhập số 💎 cược..." />
-              <button class="btn primary" id="betBtn">Đặt cược</button>
+              <div class="betDisplay" id="betDisplay"> 0💎</div>
             </div>
 
             <div class="quick">
@@ -643,6 +672,12 @@
               <div class="chip" data-add="5000">+5000</div>
             </div>
 
+           <div class="betActions">
+             <button class="btn ghost" id="clearBetBtn">RESET</button>
+             <button class="btn primary" id="betBtn">CONFIRM</button>
+           </div>
+            
+
             <div class="statusLine">
               <div>Đã cược: <b id="myBetText">0</b> 💎</div>
               <div>Kết quả: <b id="resultText">—</b></div>
@@ -656,6 +691,9 @@
         </div>
       </div>
     </div>
+
+
+
 
     <!-- PLAYER CARDS -->
     <div class="player-row">
@@ -738,7 +776,7 @@ const playerRow = document.getElementById("playerRow");
 const phaseText = document.getElementById("phaseText");
 const timerText = document.getElementById("timerText");
 
-const betInput = document.getElementById("betInput");
+const betDisplay = document.getElementById("betDisplay");
 const betBtn = document.getElementById("betBtn");
 const myBetText = document.getElementById("myBetText");
 const statusText = document.getElementById("statusText");
@@ -781,7 +819,7 @@ let picked = false;
 let pickedIndex = -1;
 let usedPlayerCards = new Set();
 let usedKingCards = new Set();
-
+let currentBetValue = 0;
 
 /* Deck definitions */
 const KING_DECK = ["COMMON","COMMON","COMMON","COMMON","KING"];
@@ -898,8 +936,8 @@ function resetUIForNewRound(data){
   roundId = data?.roundId || (roundId + 1);
   roundText.textContent = "#" + roundId;
 
-  myBet = 0;
-  myBetText.textContent = "0";
+  currentBetValue = 0;
+  betDisplay.textContent = "0 💎";
   resultText.textContent = "—";
   setStatus("Chờ cược");
   setPhase("Chưa cược");
@@ -939,21 +977,21 @@ document.querySelectorAll(".chip").forEach(ch=>{
 
     if(x){
       const v = Math.floor(diamonds * Number(x));
-      betInput.value = v > 0 ? v : "";
-      return;
+      currentBetValue = v > 0 ? v : 0;
     }
     if(add){
-      const cur = Math.floor(Number(betInput.value || 0));
-      betInput.value = cur + Math.floor(Number(add));
+      currentBetValue += Math.floor(Number(add));
     }
+
+    betDisplay.textContent =
+      currentBetValue.toLocaleString("en-US") + " 💎";
   });
 });
-
 /* =========================
    Bet
    ========================= */
 betBtn.onclick = ()=>{
-  const bet = Math.floor(Number(betInput.value));
+  const bet = currentBetValue;
   if(!bet || bet <= 0) return;
   socket.emit("ks-bet", { bet });
 };
