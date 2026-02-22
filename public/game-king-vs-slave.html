@@ -58,20 +58,19 @@ html,body{
   margin-top:20px;
   width:100%;
   max-width:500px;
-  height:280px;
+  height:260px;
   position:relative;
   display:flex;
   align-items:center;
   justify-content:center;
 }
 
-/* glow background */
 .ks-arena::before{
   content:"";
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 50% 40%, rgba(255,0,120,.25), transparent 60%);
+    radial-gradient(circle at 50% 40%, rgba(255,215,0,.25), transparent 60%);
   animation:pulse 3s infinite;
 }
 
@@ -81,10 +80,10 @@ html,body{
   100%{opacity:.4}
 }
 
-/* ===== CARD BASE ===== */
+/* ===== CARD ===== */
 .ks-card{
   width:120px;
-  height:180px;
+  height:170px;
   border-radius:16px;
   display:flex;
   align-items:center;
@@ -98,36 +97,26 @@ html,body{
   transition:.3s;
 }
 
-.ks-card.player{
-  position:absolute;
-  left:20px;
-}
+.ks-card.player{ position:absolute; left:20px; }
+.ks-card.bot{ position:absolute; right:20px; }
 
-.ks-card.bot{
-  position:absolute;
-  right:20px;
-}
-
-/* flip animation */
-.flip{
-  transform:rotateY(180deg);
-}
-
-/* ===== SELECT AREA ===== */
+/* ===== SELECT ===== */
 .ks-select{
   margin-top:30px;
   display:flex;
-  gap:16px;
+  gap:12px;
+  flex-wrap:wrap;
+  justify-content:center;
 }
 
 .ks-option{
-  width:90px;
-  height:120px;
+  width:80px;
+  height:110px;
   border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:34px;
+  font-size:28px;
   cursor:pointer;
   background:linear-gradient(180deg,#151515,#050505);
   border:1px solid rgba(255,255,255,.08);
@@ -136,15 +125,16 @@ html,body{
 
 .ks-option:hover{
   transform:scale(1.05);
-  box-shadow:0 0 20px rgba(255,0,120,.4);
+  box-shadow:0 0 20px rgba(255,215,0,.4);
 }
 
 /* ===== RESULT ===== */
 .ks-result{
-  margin-top:30px;
-  font-size:22px;
+  margin-top:25px;
+  font-size:20px;
   font-weight:700;
-  min-height:30px;
+  min-height:28px;
+  text-align:center;
 }
 
 /* ===== BUTTON ===== */
@@ -172,73 +162,119 @@ html,body{
 
 <div class="ks-wrap">
 
-  <!-- ARENA -->
   <div class="ks-arena">
     <div id="playerCard" class="ks-card player">?</div>
     <div id="botCard" class="ks-card bot">?</div>
   </div>
 
-  <!-- SELECT -->
-  <div class="ks-select">
-    <div class="ks-option" onclick="selectRole('king')">👑</div>
-    <div class="ks-option" onclick="selectRole('knight')">🗡</div>
-    <div class="ks-option" onclick="selectRole('slave')">🔒</div>
-  </div>
+  <div id="cardArea" class="ks-select"></div>
 
   <div id="result" class="ks-result"></div>
 
-  <button class="ks-btn" onclick="resetGame()">Chơi lại</button>
+  <button class="ks-btn" onclick="startRound()">Chơi lại</button>
 
 </div>
 
 <script>
 
-let selectedRole = null;
+/* ================= GAME LOGIC ================= */
 
-function selectRole(role){
-  selectedRole = role;
+let playerDeck = [];
+let kingDeck   = [];
+let roundActive = false;
 
-  const roles = ["king","knight","slave"];
-  const botRole = roles[Math.floor(Math.random()*3)];
-
-  const map = {
-    king:"👑",
-    knight:"🗡",
-    slave:"🔒"
-  };
-
-  document.getElementById("playerCard").textContent = map[role];
-  document.getElementById("botCard").textContent = map[botRole];
-
-  showResult(role, botRole);
+function shuffle(arr){
+  return arr.sort(()=>Math.random()-0.5);
 }
 
-function showResult(player, bot){
+function startRound(){
+  playerDeck = shuffle(["slave","normal","normal","normal","normal"]);
+  kingDeck   = shuffle(["king","normal","normal","normal","normal"]);
 
-  let resultText = "";
-
-  if(player === bot){
-    resultText = "🤝 Hòa";
-  }
-  else if(
-    (player==="king" && bot==="slave") ||
-    (player==="slave" && bot==="knight") ||
-    (player==="knight" && bot==="king")
-  ){
-    resultText = "🔥 Bạn thắng!";
-  }
-  else{
-    resultText = "💀 Bạn thua!";
-  }
-
-  document.getElementById("result").textContent = resultText;
-}
-
-function resetGame(){
   document.getElementById("playerCard").textContent = "?";
   document.getElementById("botCard").textContent = "?";
   document.getElementById("result").textContent = "";
+
+  roundActive = true;
+  renderCards();
 }
+
+function renderCards(){
+  const area = document.getElementById("cardArea");
+  area.innerHTML = "";
+
+  playerDeck.forEach((_,index)=>{
+    const div = document.createElement("div");
+    div.className = "ks-option";
+    div.textContent = "🂠";
+    div.onclick = ()=>playCard(index);
+    area.appendChild(div);
+  });
+}
+
+function playCard(index){
+
+  if(!roundActive) return;
+
+  const playerCard = playerDeck.splice(index,1)[0];
+  const kingCard   = kingDeck.shift();
+
+  const map = {
+    king:"👑",
+    slave:"🔒",
+    normal:"👤"
+  };
+
+  const playerEl = document.getElementById("playerCard");
+  const botEl    = document.getElementById("botCard");
+  const resultEl = document.getElementById("result");
+
+  playerEl.textContent = map[playerCard];
+  botEl.textContent    = map[kingCard];
+
+  /* ===== RULES ===== */
+
+  // WIN
+  if(playerCard==="slave" && kingCard==="king"){
+    resultEl.textContent = "🔥 BẮT ĐƯỢC VUA! BẠN THẮNG!";
+    resultEl.style.color = "#00ff88";
+    roundActive = false;
+    return;
+  }
+
+  // LOSE
+  if(playerCard==="slave" && kingCard==="normal"){
+    resultEl.textContent = "💀 Nô lệ lộ diện trước... Bạn thua!";
+    resultEl.style.color = "#ff4444";
+    roundActive = false;
+    return;
+  }
+
+  if(playerCard==="normal" && kingCard==="king"){
+    resultEl.textContent = "💀 Vua xuất hiện! Bạn thua!";
+    resultEl.style.color = "#ff4444";
+    roundActive = false;
+    return;
+  }
+
+  // DRAW
+  if(playerCard==="normal" && kingCard==="normal"){
+    resultEl.textContent = "🤝 Dân thường gặp nhau... Tiếp tục!";
+    resultEl.style.color = "#ffaa00";
+
+    // hết bài mà chưa bắt được vua
+    if(playerDeck.length === 0){
+      resultEl.textContent = "💀 Không bắt được vua!";
+      resultEl.style.color = "#ff4444";
+      roundActive = false;
+      return;
+    }
+
+    renderCards();
+  }
+}
+
+startRound();
 
 </script>
 
