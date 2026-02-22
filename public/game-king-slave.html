@@ -1209,10 +1209,24 @@ usedPlayerCards.add(youIdx);
 usedKingCards.add(kingIdx);
 
 const kCard = kingRow.querySelector(`[data-idx="${kingIdx}"]`);
+
+if(kCard){
+  kCard.classList.remove("cover");
+
+  const img = kCard.querySelector("img");
+  if(img){
+    if(kCard.dataset.t === "KING"){
+      img.src = "/assets/ks/card-king.png";
+    }else{
+      img.src = "/assets/ks/card-common.png";
+    }
+  }
+}
+
+
 const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
 
   // mở bài nhưng chưa highlight
-  [...kingRow.children].forEach(c=>c.classList.remove("cover"));
   [...playerRow.children].forEach(c=>c.classList.remove("cover"));
 
 
