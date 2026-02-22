@@ -224,7 +224,8 @@ let ksRoundId = 1;
 
 // mỗi user lưu state riêng: bet + phase
 // phase: "idle" | "picked"
-const ksUserState = new Map(); // uid -> { bet, picked }
+const ksUserState = new Map();
+// uid -> { bet, playerUsed:[], kingUsed:[] }
 
 // helper: tạo deck và pick index
 function ksPickKingIndex(){
@@ -2406,7 +2407,12 @@ socket.on("ks-reset", ()=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
-  ksUserState.set(uid, { bet:0, picked:false });
+  ksUserState.set(uid, {
+  bet:0,
+  playerUsed: [],
+  kingUsed: []
+});
+
   socket.emit("ks-round-new",{ roundId: ksRoundId });
 });
 
@@ -2440,7 +2446,12 @@ socket.on("ks-bet", (data)=>{
     coins: me.profile.coins
   });
 
-  ksUserState.set(uid, { bet, picked:false });
+
+  ksUserState.set(uid, {
+  bet,
+  playerUsed: [],
+  kingUsed: []
+});
 
   socket.emit("ks-bet-ok",{
     roundId: ksRoundId,
@@ -2450,96 +2461,98 @@ socket.on("ks-bet", (data)=>{
 });
 
 
-
 socket.on("ks-pick", (data)=>{
+
   const uid = socket.data.uid;
   if(!uid) return;
 
   const st = ksUserState.get(uid);
-  if(!st?.bet) return socket.emit("ks-error",{ message:"NEED_BET" });
-  if(st.picked) return;
+  if(!st?.bet)
+    return socket.emit("ks-error",{ message:"NEED_BET" });
 
   const youIndex = Math.floor(Number(data?.index));
   if(!(youIndex >= 0 && youIndex <= 4))
     return socket.emit("ks-error",{ message:"PICK_INVALID" });
 
-  st.picked = true;
+  // ❌ chặn dùng lại bài cũ
+  if(st.playerUsed.includes(youIndex))
+    return socket.emit("ks-error",{ message:"CARD_USED" });
+
+  st.playerUsed.push(youIndex);
+
+  // 🎯 chọn king chưa dùng
+  const available = [0,1,2,3,4].filter(
+    i => !st.kingUsed.includes(i)
+  );
+
+  if(available.length === 0){
+    return socket.emit("ks-error",{ message:"NO_CARD_LEFT" });
+  }
+
+  const kingPickIndex =
+    available[Math.floor(Math.random()*available.length)];
+
+  st.kingUsed.push(kingPickIndex);
+
   ksUserState.set(uid, st);
 
-  // server pick king
-  // index 4 là KING (theo mapping cố định)
-  const kingIndex = 4; // hoặc ksPickKingIndex() nếu muốn random vị trí KING
-  const kingPickIndex = ksPickKingIndex(); // vị trí lá mà King CHỌN trong 5 lá (0..4)
-
   const you = (youIndex === 4) ? "SLAVE" : "COMMON";
-  const king = (kingPickIndex === kingIndex) ? "KING" : "COMMON";
+  const king = (kingPickIndex === 4) ? "KING" : "COMMON";
 
-  // luật
   let result = "draw";
   if(you === "SLAVE" && king === "KING") result = "win";
   else if(you === "COMMON" && king === "COMMON") result = "draw";
   else result = "lose";
 
-  // payout
   const users = loadUsers();
   const me = users[uid];
-  if(!me?.profile){
-    // fallback
-    ksUserState.set(uid, { bet:0, picked:false });
-    return;
-  }
+  if(!me?.profile) return;
 
   let win = 0;
 
   if(result === "win"){
-    // thắng: nhận x5 (ăn cả vốn + lời = bet*2)
     win = st.bet * 5;
+    me.profile.coins += win;
+    saveUsers(users);
+    emitToUser(uid,"coin-update",{ coins: me.profile.coins });
 
-    me.profile.coins = Math.floor(
-  Number(me.profile.coins || 0)
-) + win;
+    ksUserState.set(uid,{
+      bet:0,
+      playerUsed:[],
+      kingUsed:[]
+    });
 
-saveUsers(users);
+  }else if(result === "lose"){
 
-emitToUser(uid, "coin-update", {
-  coins: me.profile.coins
-});
+    ksUserState.set(uid,{
+      bet:0,
+      playerUsed:[],
+      kingUsed:[]
+    });
 
-  }else if(result === "draw"){
-    // hòa: không hoàn, vì còn chơi tiếp cùng bet
-    // giữ bet và cho chọn lại
-    st.picked = false;
-    ksUserState.set(uid, st);
   }else{
-    // thua: mất bet
-    // reset bet
-    ksUserState.set(uid, { bet:0, picked:false });
+    // draw → giữ bet tiếp
   }
-
-  saveUsers(users);
-  emitToUser(uid, "coin-update", { coins: me.profile.coins });
 
   socket.emit("ks-result",{
     roundId: ksRoundId,
-    you, king,
+    you,
+    king,
     youIndex,
     kingIndex: kingPickIndex,
     result,
     bet: st.bet,
-    win: result==="win" ? win : 0
+    win
   });
 
   if(result === "draw"){
-    // cho chọn lại ngay
     socket.emit("ks-open-pick");
     return;
   }
 
-  // win/lose -> round mới cho user
   ksRoundId++;
   socket.emit("ks-round-new",{ roundId: ksRoundId });
 });
-
 
 
 socket.on("time-race-bet", data=>{
