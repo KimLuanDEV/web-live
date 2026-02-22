@@ -1188,12 +1188,18 @@ socket.on("ks-bet-ok", (d)=>{
 [...playerRow.children].forEach(c=>{
   c.classList.remove("cover");
 
+  const idx = Number(c.dataset.idx);
   const img = c.querySelector("img");
-  if(img){
+  if(!img) return;
+
+  if(idx === window.ksSlaveIndex){
+    img.src = "/assets/ks/card-slave.png";
+    c.classList.add("slave");
+  }else{
     img.src = "/assets/ks/card-common.png";
+    c.classList.remove("slave");
   }
 });
-
   canPick = true;
   picked = false;
   pickedIndex = -1;
