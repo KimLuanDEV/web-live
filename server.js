@@ -2411,11 +2411,10 @@ socket.on("ks-reset", ()=>{
 });
 
 
-
 socket.on("ks-bet", (data)=>{
 
   const uid = socket.data.uid;
-  if(!uid) 
+  if(!uid)
     return socket.emit("ks-error",{ message:"NOT_LOGIN" });
 
   const bet = Math.floor(Number(data?.bet));
@@ -2424,30 +2423,22 @@ socket.on("ks-bet", (data)=>{
 
   const users = loadUsers();
   const me = users[uid];
-
   if(!me?.profile)
     return socket.emit("ks-error",{ message:"USER_INVALID" });
 
-  // 🔥 đảm bảo diamonds luôn là number
-  me.profile.diamonds = Math.floor(
-    Number(me.profile.diamonds || 0)
+  me.profile.coins = Math.floor(
+    Number(me.profile.coins || 0)
   );
 
-  if(me.profile.diamonds < bet)
+  if(me.profile.coins < bet)
     return socket.emit("ks-error",{ message:"NOT_ENOUGH_DIAMOND" });
 
-  const st = ksUserState.get(uid);
-  if(st?.bet > 0)
-    return socket.emit("ks-error",{ message:"ALREADY_BET" });
-
-  // 💎 trừ diamond
-  me.profile.diamonds -= bet;
+  me.profile.coins -= bet;
 
   saveUsers(users);
 
-  // 🔥 EMIT REALTIME CHO TẤT CẢ TAB
   emitToUser(uid, "diamond-update", {
-    diamonds: me.profile.diamonds
+    diamonds: me.profile.coins
   });
 
   ksUserState.set(uid, { bet, picked:false });
@@ -2458,8 +2449,6 @@ socket.on("ks-bet", (data)=>{
   });
 
 });
-
-
 
 socket.on("ks-pick", (data)=>{
   const uid = socket.data.uid;
@@ -2505,14 +2494,14 @@ socket.on("ks-pick", (data)=>{
     // thắng: nhận x2 (ăn cả vốn + lời = bet*2)
     win = st.bet * 2;
 
-    me.profile.diamonds = Math.floor(
-  Number(me.profile.diamonds || 0)
+    me.profile.coins = Math.floor(
+  Number(me.profile.coins || 0)
 ) + win;
 
 saveUsers(users);
 
 emitToUser(uid, "diamond-update", {
-  diamonds: me.profile.diamonds
+  diamonds: me.profile.coins
 });
 
   }else if(result === "draw"){
@@ -2527,7 +2516,7 @@ emitToUser(uid, "diamond-update", {
   }
 
   saveUsers(users);
-  emitToUser(uid, "diamond-update", { diamonds: me.profile.diamonds });
+  emitToUser(uid, "diamond-update", { diamonds: me.profile.coins });
 
   socket.emit("ks-result",{
     roundId: ksRoundId,
