@@ -216,6 +216,32 @@ let rpsHistoryGlobal = loadRpsHistory();
 
 
 
+
+// ================================
+// 👑⚔ KING VS SLAVE (SOLO VS SERVER)
+// ================================
+let ksRoundId = 1;
+
+// mỗi user lưu state riêng: bet + phase
+// phase: "idle" | "picked"
+const ksUserState = new Map(); // uid -> { bet, picked }
+
+// helper: tạo deck và pick index
+function ksPickKingIndex(){
+  // 5 lá: 4 common + 1 king => random 0..4
+  return Math.floor(Math.random()*5);
+}
+function ksCardByIndex(role, idx){
+  if(role === "king"){
+    return idx === 4 ? "KING" : "COMMON"; // sẽ shuffle ở client, nhưng server cần đúng mapping
+  }
+  // player: idx 4 là SLAVE
+  return idx === 4 ? "SLAVE" : "COMMON";
+}
+
+
+
+
 // ================================
 // 🥚 EGG HISTORY (GLOBAL)
 // ================================
@@ -2342,6 +2368,140 @@ socket.emit("barn-update", {
   config: BARN_CONFIG
 });
 
+
+
+
+// ================================
+// 👑⚔ KING VS SLAVE – SOCKET
+// ================================
+socket.on("ks-get-state", ()=>{
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const st = ksUserState.get(uid) || { bet:0, picked:false };
+
+  socket.emit("ks-state",{
+    roundId: ksRoundId,
+    myBet: st.bet || 0
+  });
+});
+
+socket.on("ks-reset", ()=>{
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  ksUserState.set(uid, { bet:0, picked:false });
+  socket.emit("ks-round-new",{ roundId: ksRoundId });
+});
+
+socket.on("ks-bet", (data)=>{
+  const uid = socket.data.uid;
+  if(!uid) return socket.emit("ks-error",{ message:"NOT_LOGIN" });
+
+  const bet = Math.floor(Number(data?.bet));
+  if(!bet || bet <= 0) return socket.emit("ks-error",{ message:"BET_INVALID" });
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return socket.emit("ks-error",{ message:"USER_INVALID" });
+
+  // 💎 dùng diamonds (nếu bạn đang lưu ở profile.diamonds)
+  const cur = Math.floor(Number(me.profile.diamonds || 0));
+  if(cur < bet) return socket.emit("ks-error",{ message:"NOT_ENOUGH_DIAMOND" });
+
+  // mỗi round chỉ 1 bet (cho tới khi có kết quả win/lose)
+  const st = ksUserState.get(uid);
+  if(st?.bet > 0) return socket.emit("ks-error",{ message:"ALREADY_BET" });
+
+  me.profile.diamonds = cur - bet;
+  saveUsers(users);
+
+  // emit realtime
+  emitToUser(uid, "diamond-update", { diamonds: me.profile.diamonds });
+
+  ksUserState.set(uid, { bet, picked:false });
+
+  socket.emit("ks-bet-ok",{ roundId: ksRoundId, bet });
+});
+
+socket.on("ks-pick", (data)=>{
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const st = ksUserState.get(uid);
+  if(!st?.bet) return socket.emit("ks-error",{ message:"NEED_BET" });
+  if(st.picked) return;
+
+  const youIndex = Math.floor(Number(data?.index));
+  if(!(youIndex >= 0 && youIndex <= 4))
+    return socket.emit("ks-error",{ message:"PICK_INVALID" });
+
+  st.picked = true;
+  ksUserState.set(uid, st);
+
+  // server pick king
+  // index 4 là KING (theo mapping cố định)
+  const kingIndex = 4; // hoặc ksPickKingIndex() nếu muốn random vị trí KING
+  const kingPickIndex = ksPickKingIndex(); // vị trí lá mà King CHỌN trong 5 lá (0..4)
+
+  const you = (youIndex === 4) ? "SLAVE" : "COMMON";
+  const king = (kingPickIndex === kingIndex) ? "KING" : "COMMON";
+
+  // luật
+  let result = "draw";
+  if(you === "SLAVE" && king === "KING") result = "win";
+  else if(you === "COMMON" && king === "COMMON") result = "draw";
+  else result = "lose";
+
+  // payout
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile){
+    // fallback
+    ksUserState.set(uid, { bet:0, picked:false });
+    return;
+  }
+
+  let win = 0;
+
+  if(result === "win"){
+    // thắng: nhận x2 (ăn cả vốn + lời = bet*2)
+    win = st.bet * 2;
+    me.profile.diamonds = Math.floor(Number(me.profile.diamonds || 0)) + win;
+  }else if(result === "draw"){
+    // hòa: không hoàn, vì còn chơi tiếp cùng bet
+    // giữ bet và cho chọn lại
+    st.picked = false;
+    ksUserState.set(uid, st);
+  }else{
+    // thua: mất bet
+    // reset bet
+    ksUserState.set(uid, { bet:0, picked:false });
+  }
+
+  saveUsers(users);
+  emitToUser(uid, "diamond-update", { diamonds: me.profile.diamonds });
+
+  socket.emit("ks-result",{
+    roundId: ksRoundId,
+    you, king,
+    youIndex,
+    kingIndex: kingPickIndex,
+    result,
+    bet: st.bet,
+    win: result==="win" ? win : 0
+  });
+
+  if(result === "draw"){
+    // cho chọn lại ngay
+    socket.emit("ks-open-pick");
+    return;
+  }
+
+  // win/lose -> round mới cho user
+  ksRoundId++;
+  socket.emit("ks-round-new",{ roundId: ksRoundId });
+});
 
 
 
