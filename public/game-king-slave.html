@@ -619,8 +619,13 @@ if (!deviceId) {
 }
 
 const socket = io({
-  auth: { uid: me.uid, deviceId }
+  auth: { 
+    uid: me?.uid || null,
+    deviceId 
+  }
 });
+
+
 
 /* =========================
    UI refs
@@ -669,6 +674,16 @@ let pickedIndex = -1;
 /* Deck definitions */
 const KING_DECK = ["COMMON","COMMON","COMMON","COMMON","KING"];
 const SLAVE_DECK = ["COMMON","COMMON","COMMON","COMMON","SLAVE"];
+
+
+// ================================
+// 💎 Fallback lấy từ localStorage
+// ================================
+if (me?.diamonds != null) {
+  diamonds = Number(me.diamonds);
+  diamondEl.textContent = diamonds.toLocaleString("en-US");
+}
+
 
 function buildRow(el, type){
   el.innerHTML = "";
@@ -808,7 +823,14 @@ socket.on("coin-update", (d)=>{
 
 socket.on("diamond-update", (d)=>{
   diamonds = Math.floor(Number(d?.diamonds || 0));
+
   diamondEl.textContent = diamonds.toLocaleString("en-US");
+
+  // cập nhật lại localStorage
+  if(me){
+    me.diamonds = diamonds;
+    localStorage.setItem("user_profile", JSON.stringify(me));
+  }
 });
 
 socket.on("ks-state", (s)=>{
