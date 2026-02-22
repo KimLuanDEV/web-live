@@ -1262,18 +1262,18 @@ const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
 
 
 
-[...playerRow.children].forEach(c=>{
-  const idx = Number(c.dataset.idx);
-  const img = c.querySelector("img");
-  if(!img) return;
+// chỉ mở bài được chọn
+if(yCard){
+  const img = yCard.querySelector("img");
 
-  if(idx === r.youIndex && r.you === "SLAVE"){
-    img.src = "/assets/ks/card-slave.png";
-  }else{
-    img.src = "/assets/ks/card-common.png";
+  if(img){
+    if(r.you === "SLAVE"){
+      img.src = "/assets/ks/card-slave.png";
+    }else{
+      img.src = "/assets/ks/card-common.png";
+    }
   }
-});
-
+}
 
   // 1️⃣ Player bay trước
   if(yCard){
