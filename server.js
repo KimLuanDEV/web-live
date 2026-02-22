@@ -1977,8 +1977,13 @@ io.on("connection", socket => {
 // 💎 SEND DIAMOND WHEN CONNECT
 // ================================
 if (meNow?.profile) {
+
+  meNow.profile.diamonds = Math.floor(
+    Number(meNow.profile.diamonds || 0)
+  );
+
   socket.emit("diamond-update", {
-    diamonds: Number(meNow.profile.diamonds || 0)
+    diamonds: meNow.profile.diamonds
   });
 }
 
@@ -2405,35 +2410,56 @@ socket.on("ks-reset", ()=>{
   socket.emit("ks-round-new",{ roundId: ksRoundId });
 });
 
+
+
 socket.on("ks-bet", (data)=>{
+
   const uid = socket.data.uid;
-  if(!uid) return socket.emit("ks-error",{ message:"NOT_LOGIN" });
+  if(!uid) 
+    return socket.emit("ks-error",{ message:"NOT_LOGIN" });
 
   const bet = Math.floor(Number(data?.bet));
-  if(!bet || bet <= 0) return socket.emit("ks-error",{ message:"BET_INVALID" });
+  if(!bet || bet <= 0)
+    return socket.emit("ks-error",{ message:"BET_INVALID" });
 
   const users = loadUsers();
   const me = users[uid];
-  if(!me?.profile) return socket.emit("ks-error",{ message:"USER_INVALID" });
 
-  // 💎 dùng diamonds (nếu bạn đang lưu ở profile.diamonds)
-  const cur = Math.floor(Number(me.profile.diamonds || 0));
-  if(cur < bet) return socket.emit("ks-error",{ message:"NOT_ENOUGH_DIAMOND" });
+  if(!me?.profile)
+    return socket.emit("ks-error",{ message:"USER_INVALID" });
 
-  // mỗi round chỉ 1 bet (cho tới khi có kết quả win/lose)
+  // 🔥 đảm bảo diamonds luôn là number
+  me.profile.diamonds = Math.floor(
+    Number(me.profile.diamonds || 0)
+  );
+
+  if(me.profile.diamonds < bet)
+    return socket.emit("ks-error",{ message:"NOT_ENOUGH_DIAMOND" });
+
   const st = ksUserState.get(uid);
-  if(st?.bet > 0) return socket.emit("ks-error",{ message:"ALREADY_BET" });
+  if(st?.bet > 0)
+    return socket.emit("ks-error",{ message:"ALREADY_BET" });
 
-  me.profile.diamonds = cur - bet;
+  // 💎 trừ diamond
+  me.profile.diamonds -= bet;
+
   saveUsers(users);
 
-  // emit realtime
-  emitToUser(uid, "diamond-update", { diamonds: me.profile.diamonds });
+  // 🔥 EMIT REALTIME CHO TẤT CẢ TAB
+  emitToUser(uid, "diamond-update", {
+    diamonds: me.profile.diamonds
+  });
 
   ksUserState.set(uid, { bet, picked:false });
 
-  socket.emit("ks-bet-ok",{ roundId: ksRoundId, bet });
+  socket.emit("ks-bet-ok",{
+    roundId: ksRoundId,
+    bet
+  });
+
 });
+
+
 
 socket.on("ks-pick", (data)=>{
   const uid = socket.data.uid;
@@ -2478,7 +2504,17 @@ socket.on("ks-pick", (data)=>{
   if(result === "win"){
     // thắng: nhận x2 (ăn cả vốn + lời = bet*2)
     win = st.bet * 2;
-    me.profile.diamonds = Math.floor(Number(me.profile.diamonds || 0)) + win;
+
+    me.profile.diamonds = Math.floor(
+  Number(me.profile.diamonds || 0)
+) + win;
+
+saveUsers(users);
+
+emitToUser(uid, "diamond-update", {
+  diamonds: me.profile.diamonds
+});
+
   }else if(result === "draw"){
     // hòa: không hoàn, vì còn chơi tiếp cùng bet
     // giữ bet và cho chọn lại
