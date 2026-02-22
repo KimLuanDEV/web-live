@@ -133,6 +133,24 @@ html,body{
   👑 King vs Slave
 </div>
 
+<div style="position:fixed;top:60px;left:0;right:0;
+display:flex;justify-content:center;gap:10px;padding:8px;
+background:#0a0a14;z-index:9">
+
+  💎 <span id="diamondValue">0</span>
+
+  <input id="betInput" type="number"
+         placeholder="Bet"
+         style="width:80px;border-radius:6px;border:none;padding:4px;text-align:center">
+
+  <button onclick="placeBet()"
+          style="background:#ff007a;border:none;color:#fff;
+                 padding:4px 10px;border-radius:6px">
+    Cược
+  </button>
+
+</div>
+
 <!-- KING CARDS -->
 <div id="kingRow" class="ks-king-row"></div>
 
@@ -153,14 +171,13 @@ html,body{
 <script>
 
 const socket = io({
-  auth:{
-    uid: localStorage.getItem("uid")
-  }
+  auth:{ uid: localStorage.getItem("uid") }
 });
 
+let roundActive = false;
+let betPlaced = false;
 let playerDeck = ["slave","normal","normal","normal","normal"];
-let kingDeckCount = 5;
-let roundActive = true;
+let kingCount = 5;
 
 const map = {
   king:"👑",
@@ -168,45 +185,52 @@ const map = {
   normal:"👤"
 };
 
-/* ================= RENDER KING ================= */
+/* ================= DIAMOND UPDATE ================= */
 
-function renderKing(){
+socket.on("diamond-update", data=>{
+  document.getElementById("diamondValue").textContent =
+    data.diamonds;
+});
 
-  const row = document.getElementById("kingRow");
-  row.innerHTML = "";
+/* ================= PLACE BET ================= */
 
-  for(let i=0;i<kingDeckCount;i++){
-    const div = document.createElement("div");
-    div.className = "ks-king-card";
-    div.textContent = "🂠";
-    row.appendChild(div);
+function placeBet(){
+
+  const bet = Number(
+    document.getElementById("betInput").value
+  );
+
+  if(!bet || bet<=0){
+    alert("Bet không hợp lệ");
+    return;
   }
+
+  socket.emit("kvs-bet",{ bet });
 }
 
-/* ================= RENDER PLAYER ================= */
+/* ================= BET OK ================= */
 
-function renderPlayer(){
+socket.on("kvs-bet-ok", data=>{
+  betPlaced = true;
+  roundActive = true;
+  kingCount = 5;
+  playerDeck = ["slave","normal","normal","normal","normal"];
 
-  const row = document.getElementById("playerRow");
-  row.innerHTML = "";
+  document.getElementById("result").textContent =
+    "Đã cược 💎 " + data.bet;
 
-  playerDeck.forEach((_,index)=>{
-    const div = document.createElement("div");
-    div.className = "ks-player-card";
-    div.textContent = "🂠";
-    div.onclick = ()=>playCard(index);
-    row.appendChild(div);
-  });
-}
+  renderKing();
+  renderPlayer();
+});
 
 /* ================= PLAY CARD ================= */
 
 function playCard(index){
-  if(!roundActive) return;
+  if(!roundActive || !betPlaced) return;
   socket.emit("kvs-play-card",{ index });
 }
 
-/* ================= RECEIVE RESULT ================= */
+/* ================= RESULT ================= */
 
 socket.on("kvs-result", data=>{
 
@@ -216,37 +240,57 @@ socket.on("kvs-result", data=>{
   document.getElementById("kingBig").textContent =
     map[data.kingCard];
 
-  kingDeckCount--;
-  playerDeck.splice(
-    playerDeck.findIndex((_,i)=>i===0),1
-  );
+  kingCount--;
 
   const resultEl =
     document.getElementById("result");
 
   if(data.result==="win"){
     resultEl.textContent =
-      "🔥 BẮT ĐƯỢC VUA!";
-    resultEl.style.color = "#00ff88";
-    roundActive = false;
+      "🔥 THẮNG +" + data.win + " 💎";
+    resultEl.style.color="#00ff88";
+    roundActive=false;
+    betPlaced=false;
   }
   else if(data.result==="lose"){
-    resultEl.textContent =
-      "💀 Thua!";
-    resultEl.style.color = "#ff4444";
-    roundActive = false;
+    resultEl.textContent="💀 Thua";
+    resultEl.style.color="#ff4444";
+    roundActive=false;
+    betPlaced=false;
   }
   else{
-    resultEl.textContent =
-      "🤝 Hòa - tiếp tục!";
-    resultEl.style.color = "#ffaa00";
+    resultEl.textContent="🤝 Hòa";
+    resultEl.style.color="#ffaa00";
   }
 
   renderKing();
   renderPlayer();
 });
 
-/* ================= INIT ================= */
+/* ================= RENDER ================= */
+
+function renderKing(){
+  const row=document.getElementById("kingRow");
+  row.innerHTML="";
+  for(let i=0;i<kingCount;i++){
+    const div=document.createElement("div");
+    div.className="ks-king-card";
+    div.textContent="🂠";
+    row.appendChild(div);
+  }
+}
+
+function renderPlayer(){
+  const row=document.getElementById("playerRow");
+  row.innerHTML="";
+  playerDeck.forEach((_,i)=>{
+    const div=document.createElement("div");
+    div.className="ks-player-card";
+    div.textContent="🂠";
+    div.onclick=()=>playCard(i);
+    row.appendChild(div);
+  });
+}
 
 renderKing();
 renderPlayer();

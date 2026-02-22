@@ -1613,25 +1613,6 @@ setTimeout(()=>{
 
 
 
-// ================================
-// 👑 KING VS SLAVE ROUND (GLOBAL)
-// ================================
-let kvsRound = null;
-
-function createKvsRound(){
-
-  const shuffle = arr => arr.sort(()=>Math.random()-0.5);
-
-  return {
-    id: Date.now(),
-    kingDeck: shuffle(["king","normal","normal","normal","normal"]),
-    playerDecks: {}
-  };
-}
-
-kvsRound = createKvsRound();
-
-
 
 
 // ================================
@@ -2249,59 +2230,6 @@ socket.emit("egg-history", eggHistory);
 
 socket.emit("coin-update", { coins });
 
-
-
-
-// ================================
-// 👑 KING VS SLAVE PLAY
-// ================================
-socket.on("kvs-play-card", ({ index })=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  if(!kvsRound) kvsRound = createKvsRound();
-
-  // tạo deck riêng cho user nếu chưa có
-  if(!kvsRound.playerDecks[uid]){
-    kvsRound.playerDecks[uid] =
-      ["slave","normal","normal","normal","normal"]
-        .sort(()=>Math.random()-0.5);
-  }
-
-  const playerDeck = kvsRound.playerDecks[uid];
-
-  if(index < 0 || index >= playerDeck.length) return;
-
-  const playerCard = playerDeck.splice(index,1)[0];
-  const kingCard   = kvsRound.kingDeck.shift();
-
-  let result = "continue";
-
-  if(playerCard==="slave" && kingCard==="king"){
-    result = "win";
-  }
-  else if(playerCard==="normal" && kingCard==="normal"){
-    result = "draw";
-  }
-  else{
-    result = "lose";
-  }
-
-  socket.emit("kvs-result",{
-    roundId: kvsRound.id,
-    playerCard,
-    kingCard,
-    result,
-    remaining: playerDeck.length
-  });
-
-  // nếu kết thúc → reset round
-  if(result !== "draw"){
-    kvsRound = createKvsRound();
-  }
-
-});
 
 
 // ================================
@@ -6790,7 +6718,88 @@ function closeRoom(roomId, reason = "host_left") {
 io.on("connection", (socket) => {
 
 
+socket.on("kvs-bet", ({ bet })=>{
 
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  bet = Math.floor(Number(bet));
+  if(!bet || bet<=0) return;
+
+  if(me.profile.diamonds < bet){
+    return socket.emit("kvs-error",
+      { message:"NOT_ENOUGH_DIAMOND" });
+  }
+
+  // trừ kim cương
+  me.profile.diamonds -= bet;
+
+  me.kvsBet = bet;
+
+  saveUsers(users);
+
+  socket.emit("kvs-bet-ok",{ bet });
+  socket.emit("diamond-update",
+    { diamonds: me.profile.diamonds });
+});
+
+
+
+socket.on("kvs-play-card", ({ index })=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile || !me.kvsBet) return;
+
+  const bet = me.kvsBet;
+
+  const playerDeck =
+    ["slave","normal","normal","normal","normal"]
+      .sort(()=>Math.random()-0.5);
+
+  const kingDeck =
+    ["king","normal","normal","normal","normal"]
+      .sort(()=>Math.random()-0.5);
+
+  const playerCard = playerDeck[index];
+  const kingCard   = kingDeck[0];
+
+  let result="lose";
+  let win=0;
+
+  if(playerCard==="slave" && kingCard==="king"){
+    result="win";
+    win = bet * 5;   // x5 thưởng
+    me.profile.diamonds += win;
+  }
+  else if(playerCard==="normal" && kingCard==="normal"){
+    result="draw";
+  }
+
+  if(result!=="draw"){
+    me.kvsBet = null;
+  }
+
+  saveUsers(users);
+
+  socket.emit("kvs-result",{
+    playerCard,
+    kingCard,
+    result,
+    win
+  });
+
+  socket.emit("diamond-update",
+    { diamonds: me.profile.diamonds });
+
+});
 
 
 
