@@ -888,31 +888,23 @@ function buildRow(el, type){
   for(let idx = 0; idx < 5; idx++){
 
     const card = document.createElement("div");
-
     card.className = "card cover";
     card.dataset.idx = idx;
 
-    // ⚠️ KHÔNG set dataset.t ở đây nữa
-    // loại card sẽ do server quyết định khi reveal
+    const img = document.createElement("img");
 
-const img = document.createElement("img");
+    if(type === "king"){
+      // 👑 KING luôn úp
+      img.src = "/assets/ks/card-back.png";
+      card.classList.add("cover");
+    }
+    else{
+      // 🎯 PLAYER chỉ tạo mặt common ban đầu
+      // SLAVE sẽ được render bằng renderPlayerDeck()
+      img.src = "/assets/ks/card-common.png";
+    }
 
-if(type === "king"){
-  // 👑 KING luôn úp
-  img.src = "/assets/ks/card-back.png";
-  card.classList.add("cover");
-}
-else{
-  // 🎯 PLAYER hiển thị ngay mặt bài
-  if(idx === window.ksSlaveIndex){
-    img.src = "/assets/ks/card-slave.png";
-    card.classList.add("slave");
-  }else{
-    img.src = "/assets/ks/card-common.png";
-  }
-}
-
-card.appendChild(img);
+    card.appendChild(img);
 
     // click player
     if(type === "player"){
@@ -930,6 +922,29 @@ card.appendChild(img);
     el.appendChild(card);
   }
 }
+
+
+
+function renderPlayerDeck(){
+
+  if(ksSlaveIndex === null) return;
+
+  [...playerRow.children].forEach(c=>{
+    const idx = Number(c.dataset.idx);
+    const img = c.querySelector("img");
+    if(!img) return;
+
+    if(idx === ksSlaveIndex){
+      img.src = "/assets/ks/card-slave.png";
+      c.classList.add("slave");
+    }else{
+      img.src = "/assets/ks/card-common.png";
+      c.classList.remove("slave");
+    }
+  });
+
+}
+
 
 function flashPick(card){
   card.classList.remove("win","lose","draw");
@@ -1025,6 +1040,7 @@ function resetUIForNewRound(data){
 
   buildRow(kingRow, "king");
   buildRow(playerRow, "player");
+  renderPlayerDeck();
 
   // 🔥 Reset lại style các lá bài (đặt ở đây)
   [...playerRow.children].forEach(c=>{
@@ -1135,10 +1151,9 @@ socket.on("connect", ()=>{
 // 🔥 Nhận vị trí SLAVE từ server
 socket.on("ks-init", (data)=>{
   ksSlaveIndex = data.slaveIndex;
-  window.ksSlaveIndex = ksSlaveIndex;
 
-  // build lại player để hiển thị đúng SLAVE
   buildRow(playerRow, "player");
+  renderPlayerDeck();
 });
 
 
@@ -1176,8 +1191,10 @@ socket.on("ks-bet-ok", (d)=>{
   // 🔥 ẨN PANEL
   panel.classList.add("hide");
 
-  // 🔥 BUILD LẠI DECK CHẮC CHẮN
+  // 🔥 BUILD LẠI KING (vì KING luôn úp)
   buildRow(kingRow, "king");
+
+  // 🔥 BUILD LẠI PLAYER STRUCTURE
   buildRow(playerRow, "player");
 
   // 🔥 KING vẫn úp
@@ -1185,21 +1202,14 @@ socket.on("ks-bet-ok", (d)=>{
     c.classList.add("cover");
   });
 
-[...playerRow.children].forEach(c=>{
-  c.classList.remove("cover");
+  // 🔥 MỞ BÀI PLAYER
+  [...playerRow.children].forEach(c=>{
+    c.classList.remove("cover");
+  });
 
-  const idx = Number(c.dataset.idx);
-  const img = c.querySelector("img");
-  if(!img) return;
+  // 🔥 RENDER LẠI SLAVE CHUẨN
+  renderPlayerDeck();
 
-  if(idx === window.ksSlaveIndex){
-    img.src = "/assets/ks/card-slave.png";
-    c.classList.add("slave");
-  }else{
-    img.src = "/assets/ks/card-common.png";
-    c.classList.remove("slave");
-  }
-});
   canPick = true;
   picked = false;
   pickedIndex = -1;
