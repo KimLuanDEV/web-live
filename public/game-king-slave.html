@@ -35,22 +35,29 @@
       color:var(--txt);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
       overflow:hidden;
+      padding-bottom: var(--safeBot);
     }
 
  /* ===== TOPBAR NEW ===== */
 .topbar{
   position:fixed;
-  inset:0 0 auto 0;
-  height:72px;
-  padding-top: var(--safeTop);
+  top:0;
+  left:0;
+  right:0;
+
+  padding-top: calc(12px + var(--safeTop));
+  padding-bottom: 12px;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
+
   padding-left:16px;
   padding-right:16px;
+
   z-index:50;
 
-  background: linear-gradient(180deg, rgba(0,0,0,.85), rgba(0,0,0,.35));
+  background: linear-gradient(180deg, rgba(0,0,0,.95), rgba(0,0,0,.45));
   backdrop-filter: blur(18px);
   border-bottom:1px solid rgba(255,255,255,.06);
 }
@@ -110,15 +117,17 @@
 
 
     /* ===== LAYOUT ===== */
-    .wrap{
-      position:fixed;
-      inset:0;
-      padding-top: calc(70px + var(--safeTop));
-      padding-bottom: 140px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
+.wrap{
+  position:fixed;
+  inset:0;
+
+  padding-top: calc(76px + var(--safeTop));
+  padding-bottom: calc(120px + var(--safeBot));
+
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
 
     /* ===== KING ROW (TOP) ===== */
     .king-row{
@@ -401,18 +410,22 @@
     .statusLine b{color:#fff}
 
     /* ===== PLAYER ROW (BOTTOM) ===== */
-  .player-row{
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
+.player-row{
+  position:fixed;
+  left:0;
+  right:0;
+  bottom:0;
 
-  padding: 12px 12px calc(12px + var(--safeBot));
-  background: linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.85));
-  backdrop-filter: blur(12px);
+  padding-top:12px;
+  padding-left:12px;
+  padding-right:12px;
+  padding-bottom: calc(18px + var(--safeBot));
 
-  border-top: 1px solid rgba(255,255,255,.06);
-  z-index: 40;
+  background: linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.95));
+  backdrop-filter: blur(14px);
+
+  border-top:1px solid rgba(255,255,255,.06);
+  z-index:40;
 }
     /* ===== OVERLAY RESULT ===== */
     .overlay{
