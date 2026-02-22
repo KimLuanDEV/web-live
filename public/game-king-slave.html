@@ -161,19 +161,9 @@
     .card::before{
       content:"";
       position:absolute; inset:0;
-      background: radial-gradient(circle at 30% 20%, rgba(255,255,255,.14), transparent 45%),
-                  radial-gradient(circle at 70% 65%, rgba(0,240,255,.10), transparent 50%);
+      display:none;
       opacity:.9;
       pointer-events:none;
-    }
-    .card .label{
-      position:relative;
-      z-index:2;
-      font-weight:900;
-      letter-spacing:.6px;
-      font-size:14px;
-      text-shadow: 0 6px 18px rgba(0,0,0,.7);
-      opacity:.95;
     }
 
 /* ===== CARD IMAGE MODE ===== */
@@ -193,17 +183,13 @@
       background: linear-gradient(180deg, rgba(255,60,60,.22), rgba(0,0,0,.35));
       border-color: rgba(255,60,60,.25);
     }
-    .card.king .label{color:#ffd5d5}
-    .card.common-king .label{color:rgba(255,255,255,.85)}
 
     /* Player vibe */
     .card.slave{
       background: linear-gradient(180deg, rgba(0,240,255,.18), rgba(0,0,0,.35));
       border-color: rgba(0,240,255,.22);
     }
-    .card.common-player{
-      background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.35));
-    }
+
 
     /* States */
     .card.hidden-face .label{opacity:0}
@@ -217,7 +203,6 @@
                   );
       opacity:1;
     }
-    .card.cover .label{opacity:0}
 
     .card.reveal{
       animation: flipIn .35s ease-out both;
@@ -560,6 +545,7 @@
 
 
 
+
   </style>
 </head>
 
@@ -825,11 +811,7 @@ function buildRow(el, type){
     img.src = "/assets/ks/card-back.png";
     card.appendChild(img);
 
-    // ===== LABEL (ẩn khi cover) =====
-    const label = document.createElement("div");
-    label.className = "label";
-    label.textContent = (t==="KING" ? "KING" : t==="SLAVE" ? "SLAVE" : "COMMON");
-    card.appendChild(label);
+
 
     // ===== CLICK PLAYER =====
     if(type === "player"){
