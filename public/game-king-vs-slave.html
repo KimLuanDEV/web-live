@@ -6,17 +6,15 @@
 <title>King vs Slave</title>
 
 <style>
-
-/* ================= BASE ================= */
 html,body{
   margin:0;
-  background:#050508;
-  font-family: system-ui, sans-serif;
+  background:#06060b;
+  font-family:system-ui;
   color:#fff;
   overflow:hidden;
 }
 
-/* ===== HEADER ===== */
+/* ================= HEADER ================= */
 .ks-header{
   position:fixed;
   top:0;
@@ -25,163 +23,143 @@ html,body{
   height:60px;
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  padding:0 16px;
-  background:linear-gradient(180deg,#0a0a12,#050508);
+  justify-content:center;
+  background:linear-gradient(180deg,#0c0c18,#050508);
   border-bottom:1px solid rgba(255,255,255,.05);
   z-index:10;
-}
-
-.ks-title{
   font-weight:700;
   letter-spacing:.5px;
 }
 
-.back-btn{
-  background:none;
-  border:none;
-  color:#fff;
+/* ================= KING ROW ================= */
+.ks-king-row{
+  position:fixed;
+  top:70px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.ks-king-card{
+  width:55px;
+  height:80px;
+  border-radius:10px;
+  background:linear-gradient(180deg,#1a1a1a,#000);
+  display:flex;
+  align-items:center;
+  justify-content:center;
   font-size:20px;
+  border:1px solid rgba(255,215,0,.4);
+  box-shadow:0 0 10px rgba(255,215,0,.3);
 }
 
-/* ===== MAIN AREA ===== */
-.ks-wrap{
-  padding-top:70px;
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  height:100vh;
-}
-
-/* ===== ARENA ===== */
+/* ================= ARENA ================= */
 .ks-arena{
-  margin-top:20px;
-  width:100%;
-  max-width:500px;
-  height:260px;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.ks-arena::before{
-  content:"";
   position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 50% 40%, rgba(255,215,0,.25), transparent 60%);
-  animation:pulse 3s infinite;
+  top:160px;
+  left:0;
+  right:0;
+  bottom:140px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-@keyframes pulse{
-  0%{opacity:.4}
-  50%{opacity:.9}
-  100%{opacity:.4}
+.ks-battle{
+  display:flex;
+  gap:60px;
 }
 
-/* ===== CARD ===== */
-.ks-card{
-  width:120px;
-  height:170px;
+.ks-big-card{
+  width:130px;
+  height:190px;
   border-radius:16px;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:50px;
-  font-weight:700;
   background:linear-gradient(180deg,#111,#000);
-  box-shadow:
-    0 0 30px rgba(255,255,255,.05),
-    0 10px 30px rgba(0,0,0,.7);
-  transition:.3s;
-}
-
-.ks-card.player{ position:absolute; left:20px; }
-.ks-card.bot{ position:absolute; right:20px; }
-
-/* ===== SELECT ===== */
-.ks-select{
-  margin-top:30px;
-  display:flex;
-  gap:12px;
-  flex-wrap:wrap;
-  justify-content:center;
-}
-
-.ks-option{
-  width:80px;
-  height:110px;
-  border-radius:14px;
   display:flex;
   align-items:center;
   justify-content:center;
-  font-size:28px;
+  font-size:60px;
+  box-shadow:0 0 30px rgba(0,0,0,.8);
+}
+
+/* ================= PLAYER ROW ================= */
+.ks-player-row{
+  position:fixed;
+  bottom:20px;
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  gap:10px;
+}
+
+.ks-player-card{
+  width:65px;
+  height:95px;
+  border-radius:12px;
+  background:linear-gradient(180deg,#141414,#050505);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:24px;
   cursor:pointer;
-  background:linear-gradient(180deg,#151515,#050505);
-  border:1px solid rgba(255,255,255,.08);
+  border:1px solid rgba(0,255,200,.4);
+  box-shadow:0 0 10px rgba(0,255,200,.3);
   transition:.2s;
 }
 
-.ks-option:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 20px rgba(255,215,0,.4);
+.ks-player-card:hover{
+  transform:translateY(-10px);
 }
 
-/* ===== RESULT ===== */
+/* ================= RESULT ================= */
 .ks-result{
-  margin-top:25px;
-  font-size:20px;
-  font-weight:700;
-  min-height:28px;
+  position:absolute;
+  bottom:110px;
+  left:0;
+  right:0;
   text-align:center;
+  font-weight:700;
+  font-size:18px;
 }
-
-/* ===== BUTTON ===== */
-.ks-btn{
-  margin-top:20px;
-  padding:10px 26px;
-  border:none;
-  border-radius:10px;
-  font-weight:600;
-  background:linear-gradient(90deg,#ff007a,#ff4c00);
-  color:#fff;
-  cursor:pointer;
-}
-
 </style>
 </head>
 
 <body>
 
 <div class="ks-header">
-  <button class="back-btn" onclick="history.back()">←</button>
-  <div class="ks-title">👑 King vs Slave</div>
-  <div style="width:30px"></div>
+  👑 King vs Slave
 </div>
 
-<div class="ks-wrap">
+<!-- KING CARDS -->
+<div id="kingRow" class="ks-king-row"></div>
 
-  <div class="ks-arena">
-    <div id="playerCard" class="ks-card player">?</div>
-    <div id="botCard" class="ks-card bot">?</div>
+<!-- ARENA -->
+<div class="ks-arena">
+  <div class="ks-battle">
+    <div id="playerBig" class="ks-big-card">?</div>
+    <div id="kingBig" class="ks-big-card">?</div>
   </div>
-
-  <div id="cardArea" class="ks-select"></div>
-
-  <div id="result" class="ks-result"></div>
-
-  <button class="ks-btn" onclick="startRound()">Chơi lại</button>
-
 </div>
+
+<div id="result" class="ks-result"></div>
+
+<!-- PLAYER CARDS -->
+<div id="playerRow" class="ks-player-row"></div>
 
 <script>
 
-/* ================= GAME LOGIC ================= */
-
 let playerDeck = [];
-let kingDeck   = [];
+let kingDeck = [];
 let roundActive = false;
+
+const map = {
+  king:"👑",
+  slave:"🔒",
+  normal:"👤"
+};
 
 function shuffle(arr){
   return arr.sort(()=>Math.random()-0.5);
@@ -191,24 +169,39 @@ function startRound(){
   playerDeck = shuffle(["slave","normal","normal","normal","normal"]);
   kingDeck   = shuffle(["king","normal","normal","normal","normal"]);
 
-  document.getElementById("playerCard").textContent = "?";
-  document.getElementById("botCard").textContent = "?";
+  document.getElementById("playerBig").textContent = "?";
+  document.getElementById("kingBig").textContent = "?";
   document.getElementById("result").textContent = "";
 
+  renderKing();
+  renderPlayer();
   roundActive = true;
-  renderCards();
 }
 
-function renderCards(){
-  const area = document.getElementById("cardArea");
-  area.innerHTML = "";
+function renderKing(){
+  const row = document.getElementById("kingRow");
+  row.innerHTML = "";
+
+  kingDeck.forEach(()=>{
+
+    const div = document.createElement("div");
+    div.className = "ks-king-card";
+    div.textContent = "🂠";
+    row.appendChild(div);
+
+  });
+}
+
+function renderPlayer(){
+  const row = document.getElementById("playerRow");
+  row.innerHTML = "";
 
   playerDeck.forEach((_,index)=>{
     const div = document.createElement("div");
-    div.className = "ks-option";
+    div.className = "ks-player-card";
     div.textContent = "🂠";
     div.onclick = ()=>playCard(index);
-    area.appendChild(div);
+    row.appendChild(div);
   });
 }
 
@@ -219,58 +212,44 @@ function playCard(index){
   const playerCard = playerDeck.splice(index,1)[0];
   const kingCard   = kingDeck.shift();
 
-  const map = {
-    king:"👑",
-    slave:"🔒",
-    normal:"👤"
-  };
+  document.getElementById("playerBig").textContent = map[playerCard];
+  document.getElementById("kingBig").textContent = map[kingCard];
 
-  const playerEl = document.getElementById("playerCard");
-  const botEl    = document.getElementById("botCard");
+  renderKing();
+  renderPlayer();
+
   const resultEl = document.getElementById("result");
 
-  playerEl.textContent = map[playerCard];
-  botEl.textContent    = map[kingCard];
-
-  /* ===== RULES ===== */
-
-  // WIN
   if(playerCard==="slave" && kingCard==="king"){
-    resultEl.textContent = "🔥 BẮT ĐƯỢC VUA! BẠN THẮNG!";
+    resultEl.textContent = "🔥 BẮT ĐƯỢC VUA!";
     resultEl.style.color = "#00ff88";
     roundActive = false;
     return;
   }
 
-  // LOSE
   if(playerCard==="slave" && kingCard==="normal"){
-    resultEl.textContent = "💀 Nô lệ lộ diện trước... Bạn thua!";
+    resultEl.textContent = "💀 Nô lệ lộ diện!";
     resultEl.style.color = "#ff4444";
     roundActive = false;
     return;
   }
 
   if(playerCard==="normal" && kingCard==="king"){
-    resultEl.textContent = "💀 Vua xuất hiện! Bạn thua!";
+    resultEl.textContent = "💀 Gặp Vua!";
     resultEl.style.color = "#ff4444";
     roundActive = false;
     return;
   }
 
-  // DRAW
   if(playerCard==="normal" && kingCard==="normal"){
-    resultEl.textContent = "🤝 Dân thường gặp nhau... Tiếp tục!";
+    resultEl.textContent = "🤝 Hòa - tiếp tục!";
     resultEl.style.color = "#ffaa00";
 
-    // hết bài mà chưa bắt được vua
-    if(playerDeck.length === 0){
+    if(playerDeck.length===0){
       resultEl.textContent = "💀 Không bắt được vua!";
-      resultEl.style.color = "#ff4444";
-      roundActive = false;
+      roundActive=false;
       return;
     }
-
-    renderCards();
   }
 }
 
