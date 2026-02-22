@@ -1976,12 +1976,11 @@ io.on("connection", socket => {
 // ================================
 // 💎 SEND DIAMOND WHEN CONNECT
 // ================================
-if (me?.profile) {
+if (meNow?.profile) {
   socket.emit("diamond-update", {
-    diamonds: Number(me.profile.diamonds || 0)
+    diamonds: Number(meNow.profile.diamonds || 0)
   });
 }
-
 
   if (meNow?.role === "admin" && eggRound?.secretResult) {
 
