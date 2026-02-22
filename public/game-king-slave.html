@@ -1147,15 +1147,45 @@ socket.on("ks-state", (s)=>{
 });
 
 socket.on("ks-bet-ok", (d)=>{
+
   myBet = d.bet;
   myBetText.textContent = myBet.toLocaleString("en-US");
-  setStatus("Đặt cược thành công");
+
+  setStatus("Bet placed successfully");
 
   // 🔥 ẨN PANEL
   panel.classList.add("hide");
 
-  openPick();
+  // 🔥 BUILD LẠI DECK CHẮC CHẮN
+  buildRow(kingRow, "king");
+  buildRow(playerRow, "player");
+
+  // 🔥 KING vẫn úp
+  [...kingRow.children].forEach(c=>{
+    c.classList.add("cover");
+  });
+
+  // 🔥 PLAYER mở mặt ngay
+  [...playerRow.children].forEach(c=>{
+    c.classList.remove("cover");
+
+    const t = c.dataset.t;
+    const img = c.querySelector("img");
+
+    if(t==="SLAVE"){
+      img.src = "/assets/ks/card-slave.png";
+    }else{
+      img.src = "/assets/ks/card-common.png";
+    }
+  });
+
+  canPick = true;
+  picked = false;
+  pickedIndex = -1;
+
+  setPhase("Bet placed • Select card");
 });
+
 
 socket.on("ks-error", (e)=>{
   const msg = e?.message || "Lỗi";
