@@ -753,7 +753,12 @@ const mYou = document.getElementById("mYou");
 const mKing = document.getElementById("mKing");
 const mBet = document.getElementById("mBet");
 const mWin = document.getElementById("mWin");
-document.getElementById("mOk").onclick = ()=> overlay.classList.remove("show");
+
+document.getElementById("mOk").onclick = ()=>{
+  overlay.classList.remove("show");
+  resetArena();
+};
+
 document.getElementById("mAgain").onclick = ()=>{
   overlay.classList.remove("show");
   socket.emit("ks-next");
@@ -856,7 +861,27 @@ function lockAll(){
   pickHint.textContent = "Chờ round mới…";
 }
 
+
+function resetArena(){
+
+  const kingSlot = document.getElementById("kingSlot");
+  const playerSlot = document.getElementById("playerSlot");
+
+  if(kingSlot){
+    kingSlot.innerHTML = "";
+    kingSlot.classList.remove("combat");
+  }
+
+  if(playerSlot){
+    playerSlot.innerHTML = "";
+    playerSlot.classList.remove("combat");
+  }
+}
+
+
 function resetUIForNewRound(data){
+
+    resetArena();
 
   // 🔥 Reset danh sách bài đã dùng
   usedPlayerCards.clear();
