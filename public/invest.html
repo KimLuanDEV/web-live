@@ -722,79 +722,6 @@ body.sheet-open{
 
 
 
-/* ⚔️ PVP ARENA */
-.invest-card.pvp{
-  background-image:
-    linear-gradient(180deg, rgba(255,0,0,.35), rgba(0,0,0,.95)),
-    url("/assets/bg/pvp.jpg"); /* có thể thêm ảnh sau */
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  box-shadow:
-    0 0 50px rgba(255,0,0,.35),
-    0 12px 30px rgba(0,0,0,.75);
-}
-
-/* hiệu ứng ánh sáng đối kháng */
-.invest-card.pvp::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 30% 40%, rgba(255,0,0,.35), transparent 60%),
-    radial-gradient(circle at 70% 60%, rgba(255,120,0,.25), transparent 60%);
-  mix-blend-mode: screen;
-  animation: pvpGlow 2.5s ease-in-out infinite;
-  pointer-events:none;
-}
-
-@keyframes pvpGlow{
-  0%{opacity:.4}
-  50%{opacity:.9}
-  100%{opacity:.4}
-}
-
-
-
-
-/* 👑 KING & SLAVE GAME */
-.invest-card.king-slave{
-  background-image:
-    linear-gradient(180deg, rgba(255,215,0,.35), rgba(0,0,0,.95)),
-    url("/assets/bg/king-slave.jpg"); /* thêm ảnh sau */
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  box-shadow:
-    0 0 45px rgba(255,215,0,.35),
-    0 12px 30px rgba(0,0,0,.75);
-}
-
-/* hiệu ứng ánh vàng quyền lực */
-.invest-card.king-slave::after{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 50% 30%, rgba(255,215,0,.4), transparent 60%);
-  mix-blend-mode: screen;
-  animation: kingGlow 3s ease-in-out infinite;
-  pointer-events:none;
-}
-
-@keyframes kingGlow{
-  0%{opacity:.5}
-  50%{opacity:.9}
-  100%{opacity:.5}
-}
-
-
-
-
 </style>
 
 
@@ -842,16 +769,6 @@ body.sheet-open{
     <div class="risk">Game hay • cuồn hút</div>
     <div class="tap-hint">🎮 Xem toàn bộ</div>
   </div>
-
-
-<!-- ⚔️ PVP ARENA -->
-<div class="invest-card pvp"
-     onclick="openPVPArena()">
-  <h3>PVP Arena</h3>
-  <div class="risk">Đối kháng • Realtime</div>
-  <div class="tap-hint">⚔️ Thách đấu ngay</div>
-</div>
-
 
 </div>
 
@@ -966,56 +883,6 @@ body.sheet-open{
 
       </div>
     </div>
-  </div>
-</div>
-
-
-
-
-
-
-<div id="pvpSheet" class="sheet hidden">
-  <div class="sheet-backdrop" onclick="closePVPArena()"></div>
-
-  <div class="sheet-box">
-
-    <div class="sheet-head gamehub-head">
-      <div class="gh-left">
-        <div class="gh-icon">⚔️</div>
-        <div class="gh-text">
-          <div class="gh-title">PVP Arena</div>
-          <div class="gh-sub">Chọn chế độ đối kháng</div>
-        </div>
-      </div>
-
-      <button class="sheet-close gh-close"
-              onclick="closePVPArena()">✕</button>
-    </div>
-
-    <div class="sheet-body">
-      <div class="invest-grid">
-
-        <!-- 🥊 RPS REALTIME -->
-        <div class="invest-card rps"
-             onclick="location.href='/game-pvp-rps.html'">
-          <div class="asset-name"></div>
-        </div>
-
-        <!-- 💣 CRASH DUEL -->
-        <div class="invest-card time-race"
-             onclick="location.href='/game-pvp-crash.html'">
-          <div class="asset-name"></div>
-        </div>
-
-<!-- 👑 NHÀ VUA & NÔ LỆ -->
-<div class="invest-card king-slave"
-     onclick="openKingSlaveLobby()">
-  <div class="asset-name"></div>
-</div>
-
-      </div>
-    </div>
-
   </div>
 </div>
 
