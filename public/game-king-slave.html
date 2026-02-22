@@ -585,6 +585,65 @@
 }
 
 
+
+/* =========================
+   GLOBAL PHASE BAR
+   ========================= */
+
+.global-phase{
+  position:fixed;
+  top: calc(70px + var(--safeTop));
+  left:0;
+  right:0;
+  display:flex;
+  justify-content:center;
+  z-index:45;
+  pointer-events:none;
+}
+
+.phase-pill{
+  padding:8px 22px;
+  border-radius:40px;
+
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.6px;
+
+  backdrop-filter: blur(14px);
+  border:1px solid rgba(255,255,255,.12);
+
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.5));
+
+  box-shadow:
+    0 0 30px rgba(0,240,255,.15),
+    inset 0 0 20px rgba(0,0,0,.6);
+
+  transition:.3s;
+}
+
+/* trạng thái */
+
+.phase-pill.waiting{
+  border-color: rgba(255,204,102,.5);
+  box-shadow: 0 0 30px rgba(255,204,102,.35);
+}
+
+.phase-pill.picking{
+  border-color: rgba(0,240,255,.6);
+  box-shadow: 0 0 35px rgba(0,240,255,.4);
+}
+
+.phase-pill.result{
+  border-color: rgba(65,255,155,.6);
+  box-shadow: 0 0 35px rgba(65,255,155,.4);
+}
+
+.phase-pill.lose{
+  border-color: rgba(255,60,60,.6);
+  box-shadow: 0 0 35px rgba(255,60,60,.4);
+}
+
   </style>
 </head>
 
@@ -611,6 +670,15 @@
 </div>
 
 
+<!-- 🎯 GLOBAL PHASE BAR -->
+<div class="global-phase" id="globalPhase">
+  <div class="phase-pill" id="phaseText">
+    Chưa cược
+  </div>
+</div>
+
+
+
   <div class="wrap">
 
     <!-- KING CARDS -->
@@ -619,12 +687,12 @@
         <div class="tag">
           <span class="badge">👑</span> KING
         </div>
-        <div class="phase" id="phaseText">Chưa cược</div>
       </div>
 
       <div class="card-row" id="kingRow"></div>
     </div>
 
+    
     <!-- CENTER PANEL -->
     <div class="center">
 
@@ -866,8 +934,27 @@ function flashPick(card){
 }
 
 function setPhase(text){
-  phaseText.textContent = text;
+
+  const el = document.getElementById("phaseText");
+
+  el.textContent = text;
+
+  el.classList.remove("waiting","picking","result","lose");
+
+  if(text.includes("Chưa cược")){
+    el.classList.add("waiting");
+  }
+  else if(text.includes("Chọn")){
+    el.classList.add("picking");
+  }
+  else if(text.includes("Hòa")){
+    el.classList.add("result");
+  }
+  else if(text.includes("Kết thúc")){
+    el.classList.add("result");
+  }
 }
+
 
 function setStatus(text){
   statusText.textContent = text;
