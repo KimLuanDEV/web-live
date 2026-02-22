@@ -1452,6 +1452,23 @@ body.crash-dark{
 }
 
 
+@media screen and (orientation: landscape) {
+  body > * {
+    display: none !important;
+  }
+
+  body::after {
+    content: "Vui lòng xoay dọc màn hình 📱";
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    height:100vh;
+    color:#00f0ff;
+    font-size:22px;
+    font-weight:800;
+  }
+}
+
 
 </style>
 </head>
@@ -2302,6 +2319,7 @@ socket.on("time-race-restore", data=>{
 });
 
 
+
 // 🔒 Prevent double tap zoom
 let lastTouchEnd = 0;
 
@@ -2314,6 +2332,10 @@ document.addEventListener("touchend", function (event) {
 }, false);
 
 
+// 🔒 Lock portrait orientation
+if (screen.orientation && screen.orientation.lock) {
+  screen.orientation.lock("portrait").catch(()=>{});
+}
 
 </script>
 </body>
