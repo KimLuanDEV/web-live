@@ -487,6 +487,50 @@
 
 
 
+    /* ===== ARENA BACKGROUND LAYER ===== */
+.center{
+  position:relative;
+}
+
+.arena-bg{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:1;
+  pointer-events:none;
+}
+
+.panel{
+  position:relative;
+  z-index:5;
+}
+
+/* fight zone */
+.fight-zone{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:60px;
+}
+
+.slot{
+  width:120px;
+  height:160px;
+  border-radius:20px;
+  border:2px dashed rgba(255,255,255,.15);
+  background:rgba(255,255,255,.03);
+  backdrop-filter: blur(4px);
+}
+
+.vs-text{
+  font-size:30px;
+  font-weight:900;
+  opacity:.25;
+}
+
+
 
 
   </style>
@@ -528,6 +572,22 @@
 
     <!-- CENTER PANEL -->
     <div class="center">
+
+
+
+  <!-- ARENA NẰM PHÍA SAU -->
+  <div class="arena-bg">
+    <div class="fight-zone">
+      <div class="slot king-slot" id="kingSlot"></div>
+      <div class="vs-text">⚔</div>
+      <div class="slot player-slot" id="playerSlot"></div>
+    </div>
+  </div>
+
+
+
+  <div class="panel">
+
       <div class="panel">
         <div class="panel-inner">
 
