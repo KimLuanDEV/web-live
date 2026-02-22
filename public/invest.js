@@ -116,7 +116,13 @@ function openDiamondHunter(){
 }
 
 
+function openKingSlaveGame(){
+  location.href = "/game-king-slave.html";
+}
+
 
 function openTimeRaceGame(){
   location.href = "/game-time-race.html";
 }
+
+

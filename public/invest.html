@@ -721,6 +721,41 @@ body.sheet-open{
 
 
 
+/* 👑 KING VS SLAVE */
+.invest-card.king-slave{
+  background-image:
+    linear-gradient(180deg, rgba(255,0,0,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/king-slave.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 50px rgba(255,0,0,.35),
+    0 12px 30px rgba(0,0,0,.75);
+}
+
+/* hiệu ứng ánh sáng đỏ nhẹ */
+.invest-card.king-slave::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 40%, rgba(255,0,0,.25), transparent 60%);
+  mix-blend-mode: screen;
+  animation: pulseKing 2.2s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes pulseKing{
+  0%{opacity:.4}
+  50%{opacity:.9}
+  100%{opacity:.4}
+}
+
+
+
 
 </style>
 
@@ -879,6 +914,14 @@ body.sheet-open{
      onclick="openTimeRaceGame()">
   <div class="asset-name"></div>
 </div>
+
+
+<!-- 👑⚔ GAME KING VS SLAVE -->
+<div class="invest-card king-slave"
+     onclick="openKingSlaveGame()">
+  <div class="asset-name"></div>
+</div>
+
 
 
       </div>
