@@ -672,7 +672,7 @@
 <!-- 🎯 GLOBAL PHASE BAR -->
 <div class="global-phase" id="globalPhase">
   <div class="phase-pill" id="phaseText">
-    Chưa cược
+    Not yet bet
   </div>
 </div>
 
@@ -710,8 +710,8 @@
     <div class="panel">
         <div class="betBox" id="betBox">
             <div class="statusLine">
-              <div>Trạng thái: <b id="statusText">Chờ cược</b></div>
-              <div>Phiên: <b id="roundText">#1</b></div>
+              <div>Status: <b id="statusText">Waiting for a bet</b></div>
+              <div>Round: <b id="roundText">#1</b></div>
             </div>
 
             <div class="betRow">
@@ -737,8 +737,8 @@
             
 
             <div class="statusLine">
-              <div>Đã cược: <b id="myBetText">0</b> 💎</div>
-              <div>Kết quả: <b id="resultText">—</b></div>
+              <div>Bet: <b id="myBetText">0</b> 💎</div>
+              <div>Result: <b id="resultText">—</b></div>
             </div>
           </div>
       </div>
@@ -767,24 +767,24 @@
     <div class="backdrop"></div>
     <div class="modal">
       <div class="spark"></div>
-      <div class="mTitle" id="mTitle">Kết quả</div>
+      <div class="mTitle" id="mTitle">Result</div>
       <div class="mSub" id="mSub">—</div>
 
       <div class="mGrid">
         <div class="mCard">
-          <div class="k">Bạn chọn</div>
+          <div class="k">You selected</div>
           <div class="v" id="mYou">—</div>
         </div>
         <div class="mCard">
-          <div class="k">King chọn</div>
+          <div class="k">King selected</div>
           <div class="v" id="mKing">—</div>
         </div>
         <div class="mCard">
-          <div class="k">Cược</div>
+          <div class="k">Bet</div>
           <div class="v"><span id="mBet">0</span> 💎</div>
         </div>
         <div class="mCard">
-          <div class="k">Nhận</div>
+          <div class="k">Receive</div>
           <div class="v"><span id="mWin">0</span> 💎</div>
         </div>
       </div>
@@ -935,16 +935,16 @@ function setPhase(text){
 
   el.classList.remove("waiting","picking","result","lose");
 
-  if(text.includes("Chưa cược")){
+  if(text.includes("Please place your bet")){
     el.classList.add("waiting");
   }
-  else if(text.includes("Chọn")){
+  else if(text.includes("Select")){
     el.classList.add("picking");
   }
-  else if(text.includes("Hòa")){
+  else if(text.includes("Draw")){
     el.classList.add("result");
   }
-  else if(text.includes("Kết thúc")){
+  else if(text.includes("End")){
     el.classList.add("result");
   }
 }
@@ -959,8 +959,8 @@ function openPick(){
   picked = false;
   pickedIndex = -1;
   
-  setPhase("Đã cược • Chọn bài");
-  setStatus("Đang chọn bài");
+  setPhase("Bet placed • Select card");
+  setStatus("Selecting a card");
   // mở bài player
   [...playerRow.children].forEach(c=>{
     c.classList.remove("cover");
@@ -1004,8 +1004,8 @@ function resetUIForNewRound(data){
   currentBetValue = 0;
   betDisplay.textContent = "0 💎";
   resultText.textContent = "—";
-  setStatus("Chờ cược");
-  setPhase("Chưa cược");
+  setStatus("Waiting for a bet");
+  setPhase("Not yet bet");
   
 
   canPick = false;
@@ -1244,12 +1244,12 @@ setTimeout(()=>{
     resultText.textContent =
       (cls==="win" ? "WIN ✅" : cls==="lose" ? "LOSE ❌" : "DRAW 🔁");
 
-    setPhase(cls==="draw" ? "Hòa • Chơi tiếp" : "Kết thúc • Round mới");
-    setStatus(cls==="draw" ? "Hòa (thường vs thường) → chọn lại" : "Đã có kết quả");
+    setPhase(cls==="draw" ? "Draw • Select card" : "End • New round");
+    setStatus(cls==="draw" ? "Draw → Select card" : "Result");
 
     mTitle.textContent =
-      cls==="win" ? "Bạn thắng!" :
-      cls==="lose" ? "Bạn thua!" : "Hòa!";
+      cls==="win" ? "You Win!" :
+      cls==="lose" ? "You Lose!" : "Draw!";
 
     mSub.textContent =
       cls==="draw"
