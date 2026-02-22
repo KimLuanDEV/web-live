@@ -754,7 +754,6 @@
           <span class="badge" style="background:radial-gradient(circle at top, rgba(0,240,255,.9), rgba(0,90,120,.9)); box-shadow:0 0 16px rgba(0,240,255,.25);">⛓</span>
           SLAVE
         </div>
-        <div class="phase" id="timerText">—</div>
       </div>
 
       <div class="card-row" id="playerRow"></div>
@@ -825,7 +824,7 @@ const diamondEl = document.getElementById("diamondValue");
 const kingRow = document.getElementById("kingRow");
 const playerRow = document.getElementById("playerRow");
 const phaseText = document.getElementById("phaseText");
-const timerText = document.getElementById("timerText");
+
 
 const betDisplay = document.getElementById("betDisplay");
 const betBtn = document.getElementById("betBtn");
@@ -1007,7 +1006,7 @@ function resetUIForNewRound(data){
   resultText.textContent = "—";
   setStatus("Chờ cược");
   setPhase("Chưa cược");
-  timerText.textContent = "—";
+  
 
   canPick = false;
   picked = false;
