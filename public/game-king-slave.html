@@ -939,6 +939,9 @@ leaveBtn.onclick = ()=>{
 
 function animateToArena(cardEl, targetEl){
 
+     if(!cardEl || !targetEl) return; // 💥 chống crash
+
+
   const rect1 = cardEl.getBoundingClientRect();
   const rect2 = targetEl.getBoundingClientRect();
 
@@ -1040,20 +1043,24 @@ socket.on("ks-result", (r)=>{
 usedPlayerCards.add(youIdx);
 usedKingCards.add(kingIdx);
 
-  const kCard = kingRow.children[kingIdx];
-  const yCard = playerRow.children[youIdx];
+const kCard = kingRow.querySelector(`[data-idx="${kingIdx}"]`);
+const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
 
   // mở bài nhưng chưa highlight
   [...kingRow.children].forEach(c=>c.classList.remove("cover"));
   [...playerRow.children].forEach(c=>c.classList.remove("cover"));
 
   // 1️⃣ Player bay trước
+  if(yCard){
   animateToArena(yCard, document.getElementById("playerSlot"));
+}
 
   // 2️⃣ King bay sau
-  setTimeout(()=>{
+setTimeout(()=>{
+  if(kCard){
     animateToArena(kCard, document.getElementById("kingSlot"));
-  }, 400);
+  }
+}, 400);
 
   // 3️⃣ Combat rung nhẹ
   setTimeout(()=>{
