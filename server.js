@@ -1982,9 +1982,9 @@ if (meNow?.profile) {
     Number(meNow.profile.diamonds || 0)
   );
 
-  socket.emit("diamond-update", {
-    diamonds: meNow.profile.coins
-  });
+socket.emit("coin-update", {
+  coins: meNow.profile.coins
+});
 }
 
   if (meNow?.role === "admin" && eggRound?.secretResult) {
@@ -2426,19 +2426,18 @@ socket.on("ks-bet", (data)=>{
   if(!me?.profile)
     return socket.emit("ks-error",{ message:"USER_INVALID" });
 
-  me.profile.coins = Math.floor(
-    Number(me.profile.coins || 0)
-  );
+  me.profile.coins = Math.floor(Number(me.profile.coins || 0));
 
   if(me.profile.coins < bet)
-    return socket.emit("ks-error",{ message:"NOT_ENOUGH_DIAMOND" });
+    return socket.emit("ks-error",{ message:"NOT_ENOUGH_COIN" });
 
+  // trừ coin
   me.profile.coins -= bet;
 
   saveUsers(users);
 
-  emitToUser(uid, "diamond-update", {
-    diamonds: me.profile.coins
+  emitToUser(uid, "coin-update", {
+    coins: me.profile.coins
   });
 
   ksUserState.set(uid, { bet, picked:false });
@@ -2449,6 +2448,8 @@ socket.on("ks-bet", (data)=>{
   });
 
 });
+
+
 
 socket.on("ks-pick", (data)=>{
   const uid = socket.data.uid;

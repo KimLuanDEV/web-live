@@ -679,11 +679,10 @@ const SLAVE_DECK = ["COMMON","COMMON","COMMON","COMMON","SLAVE"];
 // ================================
 // 💎 Fallback lấy từ localStorage
 // ================================
-if (me?.diamonds != null) {
-  diamonds = Number(me.diamonds);
+if (me?.coins != null) {
+  diamonds = Number(me.coins);
   diamondEl.textContent = diamonds.toLocaleString("en-US");
 }
-
 
 function buildRow(el, type){
   el.innerHTML = "";
@@ -816,19 +815,14 @@ socket.on("connect", ()=>{
   socket.emit("ks-get-state");
 });
 
+
+
 socket.on("coin-update", (d)=>{
-  // bạn đang dùng coin-update trong server để sync ví,
-  // nhưng King vs Slave dùng 💎 nên ta nghe thêm diamond-update bên dưới.
-});
-
-socket.on("diamond-update", (d)=>{
-  diamonds = Math.floor(Number(d?.diamonds || 0));
-
+  diamonds = Math.floor(Number(d?.coins || 0));
   diamondEl.textContent = diamonds.toLocaleString("en-US");
 
-  // cập nhật lại localStorage
   if(me){
-    me.diamonds = diamonds;
+    me.coins = diamonds;
     localStorage.setItem("user_profile", JSON.stringify(me));
   }
 });
