@@ -938,33 +938,39 @@ leaveBtn.onclick = ()=>{
 
 
 function animateToArena(cardEl, targetEl){
+
   const rect1 = cardEl.getBoundingClientRect();
   const rect2 = targetEl.getBoundingClientRect();
 
-  const clone = cardEl.cloneNode(true);
-  clone.style.position = "fixed";
-  clone.style.left = rect1.left + "px";
-  clone.style.top = rect1.top + "px";
-  clone.style.width = rect1.width + "px";
-  clone.style.height = rect1.height + "px";
-  clone.style.zIndex = 100;
-  clone.style.transition = "all .45s cubic-bezier(.2,.8,.2,1)";
-  document.body.appendChild(clone);
+  const dx = rect2.left - rect1.left;
+  const dy = rect2.top - rect1.top;
+
+  cardEl.style.position = "fixed";
+  cardEl.style.left = rect1.left + "px";
+  cardEl.style.top = rect1.top + "px";
+  cardEl.style.width = rect1.width + "px";
+  cardEl.style.height = rect1.height + "px";
+  cardEl.style.zIndex = 1000;
+
+  document.body.appendChild(cardEl);
 
   requestAnimationFrame(()=>{
-    clone.style.left = rect2.left + "px";
-    clone.style.top = rect2.top + "px";
+    cardEl.style.transition = "all .45s cubic-bezier(.2,.8,.2,1)";
+    cardEl.style.left = rect2.left + "px";
+    cardEl.style.top = rect2.top + "px";
   });
 
   setTimeout(()=>{
+    cardEl.style.transition = "none";
+    cardEl.style.position = "relative";
+    cardEl.style.left = "";
+    cardEl.style.top = "";
+    cardEl.style.width = "100%";
+    cardEl.style.height = "100%";
+    cardEl.style.zIndex = "";
+
     targetEl.innerHTML = "";
-    targetEl.appendChild(clone);
-    clone.style.position = "relative";
-    clone.style.left = "0";
-    clone.style.top = "0";
-    clone.style.width = "100%";
-    clone.style.height = "100%";
-    clone.style.transition = "none";
+    targetEl.appendChild(cardEl);
   }, 450);
 }
 
@@ -1092,23 +1098,6 @@ usedKingCards.add(kingIdx);
     mWin.textContent = String(r.win);
 
     overlay.classList.add("show");
-
-
-    // 🔥 Làm biến mất bài đã dùng
-const originalCard = playerRow.children[youIdx];
-if(originalCard){
-  originalCard.style.opacity = "0";
-  originalCard.style.pointerEvents = "none";
-  originalCard.style.transform = "scale(.7)";
-}
-
-
-const originalKingCard = kingRow.children[kingIdx];
-if(originalKingCard){
-  originalKingCard.style.opacity = "0";
-  originalKingCard.style.pointerEvents = "none";
-  originalKingCard.style.transform = "scale(.7)";
-}
 
 
   }, 1600);
