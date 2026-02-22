@@ -592,19 +592,18 @@
 
 .global-phase{
   position:fixed;
-  top: calc(70px + var(--safeTop));
+  top: calc(310px + var(--safeTop));
   left:0;
   right:0;
   display:flex;
   justify-content:center;
-  z-index:45;
+  z-index:0;
   pointer-events:none;
 }
 
 .phase-pill{
   padding:8px 22px;
   border-radius:40px;
-
   font-size:13px;
   font-weight:900;
   letter-spacing:.6px;
@@ -793,7 +792,6 @@
 
       <div class="mBtns">
         <button class="btn primary" id="mOk">OK</button>
-        <button class="btn" id="mAgain">Chơi tiếp</button>
       </div>
     </div>
   </div>
@@ -855,10 +853,7 @@ document.getElementById("mOk").onclick = ()=>{
   resetArena();
 };
 
-document.getElementById("mAgain").onclick = ()=>{
-  overlay.classList.remove("show");
-  socket.emit("ks-next");
-};
+
 
 /* =========================
    Local state
