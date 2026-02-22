@@ -532,6 +532,19 @@
 
 
 
+.slot.combat{
+  animation: shake .25s ease;
+}
+
+@keyframes shake{
+  0%{transform: translateX(0)}
+  25%{transform: translateX(-6px)}
+  50%{transform: translateX(6px)}
+  75%{transform: translateX(-4px)}
+  100%{transform: translateX(0)}
+}
+
+
 
   </style>
 </head>
@@ -584,9 +597,6 @@
     </div>
   </div>
 
-
-
-  <div class="panel">
 
       <div class="panel">
         <div class="panel-inner">
@@ -896,6 +906,42 @@ leaveBtn.onclick = ()=>{
   location.href = "/invest.html";
 };
 
+
+
+
+function animateToArena(cardEl, targetEl){
+  const rect1 = cardEl.getBoundingClientRect();
+  const rect2 = targetEl.getBoundingClientRect();
+
+  const clone = cardEl.cloneNode(true);
+  clone.style.position = "fixed";
+  clone.style.left = rect1.left + "px";
+  clone.style.top = rect1.top + "px";
+  clone.style.width = rect1.width + "px";
+  clone.style.height = rect1.height + "px";
+  clone.style.zIndex = 100;
+  clone.style.transition = "all .45s cubic-bezier(.2,.8,.2,1)";
+  document.body.appendChild(clone);
+
+  requestAnimationFrame(()=>{
+    clone.style.left = rect2.left + "px";
+    clone.style.top = rect2.top + "px";
+  });
+
+  setTimeout(()=>{
+    targetEl.innerHTML = "";
+    targetEl.appendChild(clone);
+    clone.style.position = "relative";
+    clone.style.left = "0";
+    clone.style.top = "0";
+    clone.style.width = "100%";
+    clone.style.height = "100%";
+    clone.style.transition = "none";
+  }, 450);
+}
+
+
+
 /* =========================
    Socket events
    ========================= */
@@ -950,51 +996,73 @@ socket.on("ks-round-new", (d)=>{
 });
 
 socket.on("ks-result", (r)=>{
-  // r = { you:"SLAVE|COMMON", king:"KING|COMMON", result:"win|lose|draw", bet, win, roundId }
+
   lockAll();
 
-  // reveal king cards + highlight chosen
   const kingIdx = r.kingIndex;
-  const youIdx = r.youIndex;
+  const youIdx  = r.youIndex;
 
-  // mở hết để xem
-  [...kingRow.children].forEach(c=>c.classList.remove("cover"));
-  [...playerRow.children].forEach(c=>c.classList.remove("cover"));
-
-  // highlight
   const kCard = kingRow.children[kingIdx];
   const yCard = playerRow.children[youIdx];
 
-  const cls = r.result;
-  [kCard,yCard].forEach(c=>{
-    c.classList.remove("win","lose","draw");
-    c.classList.add(cls);
-    c.classList.add("reveal");
-    setTimeout(()=>c.classList.remove("reveal"), 380);
-  });
+  // mở bài nhưng chưa highlight
+  [...kingRow.children].forEach(c=>c.classList.remove("cover"));
+  [...playerRow.children].forEach(c=>c.classList.remove("cover"));
 
-  // UI texts
-  resultText.textContent =
-    (cls==="win" ? "WIN ✅" : cls==="lose" ? "LOSE ❌" : "DRAW 🔁");
+  // 1️⃣ Player bay trước
+  animateToArena(yCard, document.getElementById("playerSlot"));
 
-  setPhase(cls==="draw" ? "Hòa • Chơi tiếp" : "Kết thúc • Round mới");
-  setStatus(cls==="draw" ? "Hòa (thường vs thường) → chọn lại" : "Đã có kết quả");
+  // 2️⃣ King bay sau
+  setTimeout(()=>{
+    animateToArena(kCard, document.getElementById("kingSlot"));
+  }, 400);
 
-  // modal
-  mTitle.textContent = cls==="win" ? "Bạn thắng!" : cls==="lose" ? "Bạn thua!" : "Hòa!";
-  mSub.textContent =
-    cls==="draw"
-      ? "Thường vs Thường → hòa và chơi tiếp vòng này."
-      : "Round kết thúc. Bạn có thể chơi lại ngay.";
+  // 3️⃣ Combat rung nhẹ
+  setTimeout(()=>{
+    document.getElementById("playerSlot").classList.add("combat");
+    document.getElementById("kingSlot").classList.add("combat");
+  }, 900);
 
-  mYou.textContent = r.you;
-  mKing.textContent = r.king;
-  mBet.textContent = String(r.bet);
-  mWin.textContent = String(r.win);
+  setTimeout(()=>{
+    document.getElementById("playerSlot").classList.remove("combat");
+    document.getElementById("kingSlot").classList.remove("combat");
+  }, 1200);
 
-  overlay.classList.add("show");
+  // 4️⃣ Sau animation mới highlight + hiện modal
+  setTimeout(()=>{
 
-  // nếu draw → mở lại pick ngay (server sẽ phát ks-open-pick)
+    const cls = r.result;
+
+    const pSlot = document.getElementById("playerSlot").firstChild;
+    const kSlot = document.getElementById("kingSlot").firstChild;
+
+    if(pSlot) pSlot.classList.add(cls);
+    if(kSlot) kSlot.classList.add(cls);
+
+    resultText.textContent =
+      (cls==="win" ? "WIN ✅" : cls==="lose" ? "LOSE ❌" : "DRAW 🔁");
+
+    setPhase(cls==="draw" ? "Hòa • Chơi tiếp" : "Kết thúc • Round mới");
+    setStatus(cls==="draw" ? "Hòa (thường vs thường) → chọn lại" : "Đã có kết quả");
+
+    mTitle.textContent =
+      cls==="win" ? "Bạn thắng!" :
+      cls==="lose" ? "Bạn thua!" : "Hòa!";
+
+    mSub.textContent =
+      cls==="draw"
+        ? "Thường vs Thường → hòa và chơi tiếp vòng này."
+        : "Round kết thúc. Bạn có thể chơi lại ngay.";
+
+    mYou.textContent = r.you;
+    mKing.textContent = r.king;
+    mBet.textContent = String(r.bet);
+    mWin.textContent = String(r.win);
+
+    overlay.classList.add("show");
+
+  }, 1600);
+
 });
 
 socket.on("ks-open-pick", ()=>{
