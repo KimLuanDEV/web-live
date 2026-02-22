@@ -852,9 +852,9 @@ body{
 
 .stop-wrap{
   position:absolute;
-  top:calc(100% - 40px); /* nằm dưới bomb */
+  top:calc(100% - 50px); /* nằm dưới bomb */
   left:50%;
-  transform:translateX(-70%);
+  transform:translateX(-75%);
   width:100%;
   text-align:center;
   pointer-events:none; /* tránh ảnh hưởng layout */
@@ -870,7 +870,7 @@ body{
 /* ================= CYBER STOP BUTTON V2 ================= */
 
 .btn-stop-floating{
-  display:none;
+
   width:88px;
   height:88px;
   border-radius:50%;
@@ -895,25 +895,7 @@ body{
   transition:.2s;
 }
 
-/* outer cyber ring */
-.btn-stop-floating::before{
-  content:"";
-  position:absolute;
-  inset:-16px;
-  border-radius:50%;
 
-  border:3px solid rgba(255,0,0,.5);
-
-  box-shadow:
-    0 0 25px rgba(255,0,0,.6);
-
-  animation:stopRingRotate 3s linear infinite;
-}
-
-@keyframes stopRingRotate{
-  from{ transform:rotate(0deg); }
-  to{ transform:rotate(360deg); }
-}
 
 /* glow pulse */
 .btn-stop-floating::after{
