@@ -2550,10 +2550,19 @@ socket.on("ks-pick", (data)=>{
     return;
   }
 
-  ksRoundId++;
-  socket.emit("ks-round-new",{ roundId: ksRoundId });
 });
 
+
+socket.on("ks-next", ()=>{
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  ksRoundId++;
+
+  socket.emit("ks-round-new", {
+    roundId: ksRoundId
+  });
+});
 
 socket.on("time-race-bet", data=>{
   const uid = socket.data.uid;
