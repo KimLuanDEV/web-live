@@ -1,4 +1,12 @@
-const socket = io();
+const uid = localStorage.getItem("uid");
+const deviceId = localStorage.getItem("deviceId");
+
+const socket = io({
+  auth: {
+    uid,
+    deviceId
+  }
+});
 
 socket.emit("ks-get-rooms");
 
