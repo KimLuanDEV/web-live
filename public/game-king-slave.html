@@ -1158,14 +1158,19 @@ socket.on("ks-bet-ok", (d)=>{
     c.classList.add("cover");
   });
 
-[...playerRow.children].forEach(c=>{
-  c.classList.remove("cover");
+  // 🔥 PLAYER mở mặt ngay
+  [...playerRow.children].forEach(c=>{
+    c.classList.remove("cover");
 
-  const img = c.querySelector("img");
-  if(img){
-    img.src = "/assets/ks/card-common.png";
-  }
-});
+    const t = c.dataset.t;
+    const img = c.querySelector("img");
+
+    if(t==="SLAVE"){
+      img.src = "/assets/ks/card-slave.png";
+    }else{
+      img.src = "/assets/ks/card-common.png";
+    }
+  });
 
   canPick = true;
   picked = false;
@@ -1220,16 +1225,14 @@ const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
 
 
 [...playerRow.children].forEach(c=>{
-  const idx = Number(c.dataset.idx);
+  const t = c.dataset.t;
   const img = c.querySelector("img");
   if(!img) return;
 
-  if(idx === r.youIndex && r.you === "SLAVE"){
-    img.src = "/assets/ks/card-slave.png";
-  }else{
-    img.src = "/assets/ks/card-common.png";
-  }
+  if(t==="SLAVE") img.src = "/assets/ks/card-slave.png";
+  else img.src = "/assets/ks/card-common.png";
 });
+
 
 
   // 1️⃣ Player bay trước
@@ -1309,6 +1312,8 @@ socket.on("ks-open-pick", ()=>{
 });
 
 /* init deck */
+buildRow(kingRow, "king");
+buildRow(playerRow, "player");
 resetUIForNewRound({ roundId: 1 });
 
 </script>

@@ -222,6 +222,7 @@ let rpsHistoryGlobal = loadRpsHistory();
 // ================================
 let ksRoundId = 1;
 let ksKingIndex = Math.floor(Math.random() * 5); // 🎯 random KING mỗi round
+
 const ksUserState = new Map();
 
 // helper: tạo deck và pick index
