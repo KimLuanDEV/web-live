@@ -1983,7 +1983,7 @@ if (meNow?.profile) {
   );
 
   socket.emit("diamond-update", {
-    diamonds: meNow.profile.diamonds
+    diamonds: meNow.profile.coins
   });
 }
 
