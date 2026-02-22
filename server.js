@@ -1956,13 +1956,15 @@ io.emit("time-race-crash",{
 // ================================
 io.on("connection", socket => {
 
-  const { uid, deviceId } = socket.handshake.auth || {};
+const { uid, deviceId } = socket.handshake.auth || {};
 
-  socket.data.deviceId = deviceId;
+if (!uid) return;
 
-  if (!uid) return;
+// ✅ QUAN TRỌNG: lưu uid vào socket
+socket.data.uid = uid;
+socket.data.deviceId = deviceId;
 
-  bindSocketToUser(uid, socket);
+bindSocketToUser(uid, socket);
 
 
 
