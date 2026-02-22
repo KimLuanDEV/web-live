@@ -120,3 +120,15 @@ function openDiamondHunter(){
 function openTimeRaceGame(){
   location.href = "/game-time-race.html";
 }
+
+
+
+function openPVPArena(){
+  document.getElementById("pvpSheet")?.classList.remove("hidden");
+  document.body.classList.add("sheet-open");
+}
+
+function closePVPArena(){
+  document.getElementById("pvpSheet")?.classList.add("hidden");
+  document.body.classList.remove("sheet-open");
+}
