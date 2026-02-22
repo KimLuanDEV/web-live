@@ -758,6 +758,43 @@ body.sheet-open{
 
 
 
+
+/* 👑 KING & SLAVE GAME */
+.invest-card.king-slave{
+  background-image:
+    linear-gradient(180deg, rgba(255,215,0,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/king-slave.jpg"); /* thêm ảnh sau */
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 45px rgba(255,215,0,.35),
+    0 12px 30px rgba(0,0,0,.75);
+}
+
+/* hiệu ứng ánh vàng quyền lực */
+.invest-card.king-slave::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,215,0,.4), transparent 60%);
+  mix-blend-mode: screen;
+  animation: kingGlow 3s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes kingGlow{
+  0%{opacity:.5}
+  50%{opacity:.9}
+  100%{opacity:.5}
+}
+
+
+
+
 </style>
 
 
@@ -970,10 +1007,10 @@ body.sheet-open{
           <div class="asset-name">Crash Duel</div>
         </div>
 
-        <!-- 🛡 IMMORTAL FIGHT -->
-        <div class="invest-card diamond-hunter coming-soon">
-          <div class="asset-name">Immortal Arena</div>
-        </div>
+<!-- 👑 NHÀ VUA & NÔ LỆ -->
+<div class="invest-card king-slave coming-soon">
+  <div class="asset-name">Nhà Vua & Nô Lệ</div>
+</div>
 
       </div>
     </div>
