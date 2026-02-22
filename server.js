@@ -426,6 +426,10 @@ const { uploadToR2 } = require("./r2");
 let investRound = null;
 
 
+// ================================
+// 👑 KING VS SLAVE PVP ROOMS
+// ================================
+let ksRooms = [];
 
 
 // 🔄 Load invest round từ file
@@ -2577,18 +2581,92 @@ if (alreadyBet && wheelRound.endAt > Date.now()) {
 }
 
 
-  socket.on("disconnect", () => {
-    const uid = socket.data.uid;
-    if (!uid) return;
 
-    const set = activeUsers.get(uid);
-    if (set) {
-      set.delete(socket.id);
-      if (set.size === 0) {
-        activeUsers.delete(uid);
-      }
+// ================================
+// 👑 KING VS SLAVE – LOBBY
+// ================================
+
+// 🔄 Lấy danh sách phòng
+socket.on("ks-get-rooms", ()=>{
+  socket.emit("ks-room-list", ksRooms);
+});
+
+// ➕ Tạo phòng
+socket.on("ks-create-room", ()=>{
+  const roomId = Date.now();
+
+  const room = {
+    id: roomId,
+    players: 1,
+    members: [socket.id],
+    status: "waiting"
+  };
+
+  ksRooms.push(room);
+
+  io.emit("ks-room-list", ksRooms);
+});
+
+// 👥 Join phòng
+socket.on("ks-join-room", roomId=>{
+  const room = ksRooms.find(r=>r.id === roomId);
+  if(!room) return;
+  if(room.players >= 2) return;
+
+  room.players++;
+  room.members.push(socket.id);
+
+  io.emit("ks-room-list", ksRooms);
+
+  // 🔥 đủ 2 người → start game
+  if(room.players === 2){
+
+    room.status = "playing";
+
+    room.members.forEach(sid=>{
+      io.to(sid).emit("ks-start-game",{
+        roomId: room.id
+      });
+    });
+
+  }
+});
+
+
+
+
+socket.on("disconnect", () => {
+  const uid = socket.data.uid;
+  if (!uid) return;
+
+  const set = activeUsers.get(uid);
+  if (set) {
+    set.delete(socket.id);
+    if (set.size === 0) {
+      activeUsers.delete(uid);
     }
+  }
+
+  // ================================
+  // 👑 KING VS SLAVE – CLEAN ROOM
+  // ================================
+  ksRooms.forEach(room => {
+    room.members = room.members.filter(
+      sid => sid !== socket.id
+    );
+    room.players = room.members.length;
   });
+
+  // ❌ Xoá phòng trống
+  ksRooms = ksRooms.filter(
+    r => r.players > 0
+  );
+
+  // 🔄 Cập nhật lại lobby realtime
+  io.emit("ks-room-list", ksRooms);
+
+});
+
 });
 
 
@@ -9236,6 +9314,13 @@ if (uid) {
 
 
 });
+
+
+
+
+
+
+
 
 
 

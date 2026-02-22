@@ -122,6 +122,10 @@ function openTimeRaceGame(){
 }
 
 
+function openKingSlaveLobby(){
+  location.href = "/game-king-slave-lobby.html";
+}
+
 
 function openPVPArena(){
   document.getElementById("pvpSheet")?.classList.remove("hidden");
@@ -132,3 +136,5 @@ function closePVPArena(){
   document.getElementById("pvpSheet")?.classList.add("hidden");
   document.body.classList.remove("sheet-open");
 }
+
+
