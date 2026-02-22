@@ -229,14 +229,21 @@ function ksPickKingIndex(){
   // 5 lá: 4 common + 1 king => random 0..4
   return Math.floor(Math.random()*5);
 }
-function ksCardByIndex(role, idx){
-  if(role === "king"){
-    return idx === 4 ? "KING" : "Civilian"; // sẽ shuffle ở client, nhưng server cần đúng mapping
-  }
-  // player: idx 4 là SLAVE
-  return idx === 4 ? "SLAVE" : "Civilian";
-}
 
+
+function ksCardByIndex(role, idx){
+
+  if(role === "king"){
+    return idx === ksKingIndex
+      ? "KING"
+      : "Civilian";
+  }
+
+  // SLAVE cố định ở index 2 (hoặc bạn có thể random sau)
+  return idx === 2
+    ? "SLAVE"
+    : "Civilian";
+}
 
 
 
@@ -2493,11 +2500,8 @@ socket.on("ks-pick", (data)=>{
 
   ksUserState.set(uid, st);
 
-// Player: SLAVE cố định vị trí 2
-const you = (youIndex === 2) ? "SLAVE" : "Civilian";
-
-// King: dùng index random đã tạo
-const king = (kingPickIndex === ksKingIndex) ? "KING" : "Civilian";
+const you  = ksCardByIndex("player", youIndex);
+const king = ksCardByIndex("king", kingPickIndex);
 
   let result = "draw";
   if(you === "SLAVE" && king === "KING") result = "win";

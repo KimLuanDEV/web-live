@@ -868,7 +868,7 @@ let usedKingCards = new Set();
 let currentBetValue = 0;
 
 /* Deck definitions */
-const KING_DECK = ["Civilian","Civilian","KING","Civilian","Civilian"];
+
 const SLAVE_DECK = ["Civilian","Civilian","SLAVE","Civilian","Civilian"];
 
 
@@ -882,28 +882,22 @@ if (me?.coins != null) {
 
 function buildRow(el, type){
   el.innerHTML = "";
-  const deck = type === "king" ? KING_DECK : SLAVE_DECK;
 
-  deck.forEach((t, idx)=>{
+  for(let idx = 0; idx < 5; idx++){
 
     const card = document.createElement("div");
-    card.className = "card cover " + (
-      type === "king"
-        ? (t==="KING" ? "king" : "common-king")
-        : (t==="SLAVE" ? "slave" : "common-player")
-    );
 
+    card.className = "card cover";
     card.dataset.idx = idx;
-    card.dataset.t = t;
 
-    // ===== IMAGE =====
+    // ⚠️ KHÔNG set dataset.t ở đây nữa
+    // loại card sẽ do server quyết định khi reveal
+
     const img = document.createElement("img");
     img.src = "/assets/ks/card-back.png";
     card.appendChild(img);
 
-
-
-    // ===== CLICK PLAYER =====
+    // click player
     if(type === "player"){
       card.addEventListener("click", ()=>{
         if(!canPick || picked) return;
@@ -911,14 +905,13 @@ function buildRow(el, type){
 
         picked = true;
         pickedIndex = idx;
-
         socket.emit("ks-pick", { index: idx });
         flashPick(card);
       });
     }
 
     el.appendChild(card);
-  });
+  }
 }
 
 function flashPick(card){
@@ -1165,19 +1158,14 @@ socket.on("ks-bet-ok", (d)=>{
     c.classList.add("cover");
   });
 
-  // 🔥 PLAYER mở mặt ngay
-  [...playerRow.children].forEach(c=>{
-    c.classList.remove("cover");
+[...playerRow.children].forEach(c=>{
+  c.classList.remove("cover");
 
-    const t = c.dataset.t;
-    const img = c.querySelector("img");
-
-    if(t==="SLAVE"){
-      img.src = "/assets/ks/card-slave.png";
-    }else{
-      img.src = "/assets/ks/card-common.png";
-    }
-  });
+  const img = c.querySelector("img");
+  if(img){
+    img.src = "/assets/ks/card-common.png";
+  }
+});
 
   canPick = true;
   picked = false;
@@ -1215,7 +1203,7 @@ if(kCard){
 
   const img = kCard.querySelector("img");
   if(img){
-    if(kCard.dataset.t === "KING"){
+    if(r.king === "KING"){
       img.src = "/assets/ks/card-king.png";
     }else{
       img.src = "/assets/ks/card-common.png";
@@ -1232,14 +1220,16 @@ const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
 
 
 [...playerRow.children].forEach(c=>{
-  const t = c.dataset.t;
+  const idx = Number(c.dataset.idx);
   const img = c.querySelector("img");
   if(!img) return;
 
-  if(t==="SLAVE") img.src = "/assets/ks/card-slave.png";
-  else img.src = "/assets/ks/card-common.png";
+  if(idx === r.youIndex && r.you === "SLAVE"){
+    img.src = "/assets/ks/card-slave.png";
+  }else{
+    img.src = "/assets/ks/card-common.png";
+  }
 });
-
 
 
   // 1️⃣ Player bay trước
@@ -1319,8 +1309,6 @@ socket.on("ks-open-pick", ()=>{
 });
 
 /* init deck */
-buildRow(kingRow, "king");
-buildRow(playerRow, "player");
 resetUIForNewRound({ roundId: 1 });
 
 </script>
