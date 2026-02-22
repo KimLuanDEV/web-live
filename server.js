@@ -2492,8 +2492,8 @@ socket.on("ks-pick", (data)=>{
   let win = 0;
 
   if(result === "win"){
-    // thắng: nhận x2 (ăn cả vốn + lời = bet*2)
-    win = st.bet * 2;
+    // thắng: nhận x5 (ăn cả vốn + lời = bet*2)
+    win = st.bet * 5;
 
     me.profile.coins = Math.floor(
   Number(me.profile.coins || 0)
