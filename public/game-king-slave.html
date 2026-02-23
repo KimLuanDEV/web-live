@@ -1207,7 +1207,14 @@ body{
 }
 
 .card-front{
+  backface-visibility: hidden;
   transform: rotateY(180deg);
+}
+.card-back{
+  backface-visibility: hidden;
+}
+.card{
+  transform-style: preserve-3d;
 }
 
 .card.glow-king{
@@ -1918,46 +1925,39 @@ setTimeout(()=>{
 
 
 
-// 🎴 Lật King cinematic (fix nháy Warrior → King)
+// 🎴 Lật King cinematic
 setTimeout(()=>{
 
   const kingSlot = document.getElementById("kingSlot");
-  const kInSlot = kingSlot.firstChild;
-
+  const kInSlot = kingSlot.firstElementChild;
   if(!kInSlot) return;
 
-  const frontImg =
-    kInSlot.querySelector(".card-front img");
-
+  const frontImg = kInSlot.querySelector(".card-front img");
   if(!frontImg) return;
 
-  // 🕒 Đợi 600ms sau khi vào slot rồi mới xử lý
-  setTimeout(()=>{
+  // ✅ SET ẢNH TRƯỚC
+  if(r.king === "KING"){
+    frontImg.src = "/assets/ks/card-king.png";
+  }else{
+    frontImg.src = "/assets/ks/card-common.png";
+  }
 
-    // 🔥 1️⃣ ĐỔI ẢNH TRƯỚC
-    if(r.king === "KING"){
-      frontImg.src = "/assets/ks/card-king.png";
-    }else{
-      frontImg.src = "/assets/ks/card-common.png";
-    }
+  // 🔥 ÉP browser render xong ảnh trước khi flip
+  frontImg.onload = () => {
 
-    // 🔥 2️⃣ ÉP BROWSER RENDER ẢNH MỚI
-    void frontImg.offsetWidth;
+    requestAnimationFrame(()=>{
+      requestAnimationFrame(()=>{
+        kInSlot.classList.add("flip");
 
-    // 🔥 3️⃣ ĐỢI 1 FRAME RỒI MỚI FLIP
-    setTimeout(()=>{
+        if(r.king === "KING"){
+          setTimeout(()=>{
+            kInSlot.classList.add("glow-king");
+          },400);
+        }
+      });
+    });
 
-      kInSlot.classList.add("flip");
-
-      if(r.king === "KING"){
-        setTimeout(()=>{
-          kInSlot.classList.add("glow-king");
-        },400);
-      }
-
-    }, 50);
-
-  }, 600);
+  };
 
 }, 1000);
 
