@@ -240,7 +240,7 @@ body{
    ========================= */
 
 .king-row{
-  margin-top:-13px; /* kéo sát header */
+  margin-top:-10px; /* kéo sát header */
 
   padding:16px 14px 14px;
 
@@ -747,23 +747,6 @@ body{
   pointer-events:none;
 }
 
-/* Vòng đấu trường */
-.arena-bg::before{
-  content:"";
-  position:absolute;
-  width:420px;
-  height:420px;
-  border-radius:50%;
-  background:
-    radial-gradient(circle at center,
-      rgba(255,255,255,.08) 0%,
-      rgba(0,0,0,.4) 60%,
-      transparent 70%);
-  box-shadow:
-    0 0 120px rgba(0,240,255,.15),
-    0 0 160px rgba(255,60,60,.12);
-  animation: arenaPulse 4s ease-in-out infinite;
-}
 
 @keyframes arenaPulse{
   0%{ transform:scale(1); opacity:.8 }
@@ -776,7 +759,7 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:60px;
+  gap: 75px;
   position:relative;
 }
 
@@ -909,7 +892,7 @@ body{
 
 .global-phase{
   position:fixed;
-  top: calc(310px + var(--safeTop));
+  top: calc(250px + var(--safeTop));
   left:0;
   right:0;
   display:flex;
@@ -1098,7 +1081,7 @@ body{
   <div class="arena-bg">
     <div class="fight-zone">
       <div class="slot king-slot" id="kingSlot"></div>
-      <div class="vs-text">⚔</div>
+      <div class="vs-text"></div>
       <div class="slot player-slot" id="playerSlot"></div>
     </div>
   </div>
