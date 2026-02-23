@@ -2412,13 +2412,25 @@ socket.on("ks-get-state", ()=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
-  const st = ksUserState.get(uid) || { bet:0, picked:false };
+  const st = ksUserState.get(uid);
+
+  if(!st){
+    return socket.emit("ks-state",{
+      roundId: ksRoundId,
+      myBet: 0,
+      playerUsed: [],
+      kingUsed: []
+    });
+  }
 
   socket.emit("ks-state",{
     roundId: ksRoundId,
-    myBet: st.bet || 0
+    myBet: st.bet || 0,
+    playerUsed: st.playerUsed || [],
+    kingUsed: st.kingUsed || []
   });
 });
+
 
 socket.on("ks-reset", ()=>{
   const uid = socket.data.uid;
@@ -2464,10 +2476,12 @@ socket.on("ks-bet", (data)=>{
   });
 
 
-  ksUserState.set(uid, {
+const old = ksUserState.get(uid);
+
+ksUserState.set(uid, {
   bet,
-  playerUsed: [],
-  kingUsed: []
+  playerUsed: old?.playerUsed || [],
+  kingUsed: old?.kingUsed || []
 });
 
   socket.emit("ks-bet-ok",{
@@ -2511,10 +2525,11 @@ socket.on("ks-pick", (data)=>{
 
   st.kingUsed.push(kingPickIndex);
 
+  // 🔄 LƯU STATE SAU KHI UPDATE
   ksUserState.set(uid, st);
 
-const you  = ksCardByIndex("player", youIndex);
-const king = ksCardByIndex("king", kingPickIndex);
+  const you  = ksCardByIndex("player", youIndex);
+  const king = ksCardByIndex("king", kingPickIndex);
 
   let result = "draw";
   if(you === "SLAVE" && king === "KING") result = "win";
@@ -2528,28 +2543,24 @@ const king = ksCardByIndex("king", kingPickIndex);
   let win = 0;
 
   if(result === "win"){
+
     win = st.bet * 5;
     me.profile.coins += win;
+
     saveUsers(users);
     emitToUser(uid,"coin-update",{ coins: me.profile.coins });
 
-    ksUserState.set(uid,{
-      bet:0,
-      playerUsed:[],
-      kingUsed:[]
-    });
+    // ✅ XOÁ HOÀN TOÀN STATE
+    ksUserState.delete(uid);
 
-  }else if(result === "lose"){
-
-    ksUserState.set(uid,{
-      bet:0,
-      playerUsed:[],
-      kingUsed:[]
-    });
-
-  }else{
-    // draw → giữ bet tiếp
   }
+  else if(result === "lose"){
+
+    // ❌ thua → mất bet → xoá state
+    ksUserState.delete(uid);
+
+  }
+  // draw → giữ nguyên st (KHÔNG đụng gì)
 
   socket.emit("ks-result",{
     roundId: ksRoundId,
@@ -2564,7 +2575,6 @@ const king = ksCardByIndex("king", kingPickIndex);
 
   if(result === "draw"){
     socket.emit("ks-open-pick");
-    return;
   }
 
 });
