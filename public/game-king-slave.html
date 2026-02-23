@@ -1239,12 +1239,16 @@ body{
 .sheet-overlay{
   position:fixed;
   inset:0;
-  display:none;
   z-index:100;
+
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .35s ease;
 }
 
 .sheet-overlay.show{
-  display:block;
+  opacity:1;
+  pointer-events:auto;
 }
 
 .sheet-backdrop{
@@ -1252,8 +1256,9 @@ body{
   inset:0;
   background:rgba(0,0,0,.65);
   backdrop-filter:blur(12px);
+
   opacity:0;
-  transition:.3s;
+  transition: opacity .35s ease;
 }
 
 .sheet-overlay.show .sheet-backdrop{
@@ -1279,12 +1284,17 @@ body{
     0 -40px 100px rgba(0,0,0,.8),
     0 0 60px rgba(0,240,255,.1);
 
-  transform:translateY(100%);
-  transition: transform .4s cubic-bezier(.2,.8,.2,1);
+  transform:translateY(120%);
+  opacity:0;
+
+  transition:
+    transform .45s cubic-bezier(.22,1,.36,1),
+    opacity .3s ease;
 }
 
 .sheet-overlay.show .sheet{
   transform:translateY(0);
+  opacity:1;
 }
 
 .sheet-handle{
