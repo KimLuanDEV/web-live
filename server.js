@@ -237,16 +237,16 @@ function ksCardByIndex(role, idx){
   if(role === "king"){
     return idx === ksKingIndex
       ? "KING"
-      : "Civilian";
+      : "Warrior";
   }
 
   if(role === "player"){
     return idx === ksSlaveIndex
       ? "SLAVE"
-      : "Civilian";
+      : "Warrior";
   }
 
-  return "Civilian";
+  return "Warrior";
 }
 
 
@@ -2559,7 +2559,7 @@ socket.on("ks-pick", (data)=>{
 
   let result = "draw";
   if(you === "SLAVE" && king === "KING") result = "win";
-  else if(you === "Civilian" && king === "Civilian") result = "draw";
+  else if(you === "Warrior" && king === "Warrior") result = "draw";
   else result = "lose";
 
   const users = loadUsers();

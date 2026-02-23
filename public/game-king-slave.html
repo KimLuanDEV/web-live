@@ -1459,7 +1459,7 @@ let ksSlaveIndex = null;
 window.ksSlaveIndex = null;
 /* Deck definitions */
 
-const SLAVE_DECK = ["Civilian","Civilian","SLAVE","Civilian","Civilian"];
+const SLAVE_DECK = ["Warrior","Warrior","SLAVE","Warrior","Warrior"];
 
 
 // ================================
@@ -1918,13 +1918,16 @@ setTimeout(()=>{
 
 
 
-// 🎴 Lật King cinematic
+// 🎴 Lật King cinematic (delay lâu hơn để đứng combat 1 nhịp)
 setTimeout(()=>{
 
   const kingSlot = document.getElementById("kingSlot");
   const kInSlot = kingSlot.firstChild;
 
-  if(kInSlot){
+  if(!kInSlot) return;
+
+  // 🕒 Đợi 600ms sau khi vào slot rồi mới lật
+  setTimeout(()=>{
 
     const frontImg =
       kInSlot.querySelector(".card-front img");
@@ -1937,7 +1940,7 @@ setTimeout(()=>{
       }
     }
 
-    // 🔥 flip thật 180°
+    // 🔥 Flip thật sự
     kInSlot.classList.add("flip");
 
     if(r.king === "KING"){
@@ -1946,9 +1949,11 @@ setTimeout(()=>{
       },400);
     }
 
-  }
+  }, 600); // ← pause trước khi flip
 
-}, 900);
+}, 1000);  // ← đợi bay xong + đứng 1 nhịp
+
+
 
 
   // 3️⃣ Combat rung nhẹ
