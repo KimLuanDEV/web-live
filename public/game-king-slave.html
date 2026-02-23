@@ -521,6 +521,7 @@
   border:2px dashed rgba(255,255,255,.15);
   background:rgba(255,255,255,.03);
   backdrop-filter: blur(4px);
+  perspective: 1000px; /* thêm dòng này */
 }
 
 .vs-text{
@@ -646,39 +647,27 @@
 
 
 /* =========================
-   🎴 REAL 3D CARD FLIP
+   KING 3D FLIP EFFECT
    ========================= */
 
 .card{
-  perspective: 1000px;
-}
-
-.card-inner{
-  position:relative;
-  width:100%;
-  height:100%;
-  transition: transform .6s cubic-bezier(.2,.8,.2,1);
   transform-style: preserve-3d;
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
 }
 
-.card.flip .card-inner{
+.card.flip-3d{
   transform: rotateY(180deg);
 }
 
-.card-face{
-  position:absolute;
-  inset:0;
+.card img{
   backface-visibility: hidden;
-  border-radius:16px;
-  overflow:hidden;
 }
 
-.card-front{
-  transform: rotateY(180deg);
-}
-
-.card-back{
-  transform: rotateY(0deg);
+.card.glow-king{
+  box-shadow:
+    0 0 30px rgba(255,60,60,.6),
+    0 0 60px rgba(255,60,60,.3),
+    0 16px 28px rgba(0,0,0,.4);
 }
 
 
@@ -922,53 +911,31 @@ if (me?.coins != null) {
   diamondEl.textContent = diamonds.toLocaleString("en-US");
 }
 
-
 function buildRow(el, type){
   el.innerHTML = "";
 
   for(let idx = 0; idx < 5; idx++){
 
     const card = document.createElement("div");
-    card.className = "card";
+    card.className = "card cover";
     card.dataset.idx = idx;
 
-    // =========================
-    // 🎴 TẠO CẤU TRÚC 3D
-    // =========================
-    const inner = document.createElement("div");
-    inner.className = "card-inner";
+    const img = document.createElement("img");
 
-    const front = document.createElement("div");
-    front.className = "card-face card-front";
-
-    const back = document.createElement("div");
-    back.className = "card-face card-back";
-
-    const frontImg = document.createElement("img");
-    const backImg  = document.createElement("img");
-
-    // mặt sau luôn là card-back
-    backImg.src = "/assets/ks/card-back.png";
-
-    // mặt trước
     if(type === "king"){
-      // 👑 King luôn úp → mặt trước sẽ set khi reveal
-      frontImg.src = "/assets/ks/card-common.png";
-    }else{
-      // 🎯 Player mặc định common
-      frontImg.src = "/assets/ks/card-common.png";
+      // 👑 KING luôn úp
+      img.src = "/assets/ks/card-back.png";
+      card.classList.add("cover");
+    }
+    else{
+      // 🎯 PLAYER chỉ tạo mặt common ban đầu
+      // SLAVE sẽ được render bằng renderPlayerDeck()
+      img.src = "/assets/ks/card-common.png";
     }
 
-    front.appendChild(frontImg);
-    back.appendChild(backImg);
+    card.appendChild(img);
 
-    inner.appendChild(front);
-    inner.appendChild(back);
-    card.appendChild(inner);
-
-    // =========================
-    // 🎯 CLICK PLAYER
-    // =========================
+    // click player
     if(type === "player"){
       card.addEventListener("click", ()=>{
         if(!canPick || picked) return;
@@ -976,7 +943,6 @@ function buildRow(el, type){
 
         picked = true;
         pickedIndex = idx;
-
         socket.emit("ks-pick", { index: idx });
         flashPick(card);
       });
@@ -985,6 +951,7 @@ function buildRow(el, type){
     el.appendChild(card);
   }
 }
+
 
 
 function renderPlayerDeck(){
@@ -1334,23 +1301,34 @@ setTimeout(()=>{
   }
 }, 400);
 
-// 🎴 Lật King sau khi bay xong
+
+
+// 🎴 Lật King cinematic
 setTimeout(()=>{
 
   const kingSlot = document.getElementById("kingSlot");
-  const kCard = kingSlot.firstChild;
-  if(!kCard) return;
+  const kInSlot = kingSlot.firstChild;
 
-  const frontImg = kCard.querySelector(".card-front img");
+  if(kInSlot){
 
-  if(frontImg){
-    frontImg.src = r.king === "KING"
-      ? "/assets/ks/card-king.png"
-      : "/assets/ks/card-common.png";
+    const img = kInSlot.querySelector("img");
+
+    // 1️⃣ Lật mặt trước
+    kInSlot.classList.add("flip-3d");
+
+    // 2️⃣ Đổi hình giữa animation
+    setTimeout(()=>{
+      if(img){
+        if(r.king === "KING"){
+          img.src = "/assets/ks/card-king.png";
+          kInSlot.classList.add("glow-king");
+        }else{
+          img.src = "/assets/ks/card-common.png";
+        }
+      }
+    }, 300); // đổi mặt giữa flip
+
   }
-
-  // 🎴 Lật thật
-  kCard.classList.add("flip");
 
 }, 900);
 
