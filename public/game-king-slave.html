@@ -1764,12 +1764,16 @@ socket.on("connect", ()=>{
 
 // 🔥 Nhận vị trí SLAVE từ server
 socket.on("ks-init", (data)=>{
+
+  if(data.roundId){
+    roundId = data.roundId;   // <<< thêm dòng này
+  }
+
   ksSlaveIndex = data.slaveIndex;
 
   buildRow(playerRow, "player");
   renderPlayerDeck();
 });
-
 
 
 socket.on("coin-update", (d)=>{
@@ -1786,8 +1790,11 @@ socket.on("ks-state", (s)=>{
 
   if(!s) return;
 
-  // Nếu round mới thì mới reset
+  // 🔥 FIX: đồng bộ roundId trước
   if(s.roundId !== roundId){
+
+    roundId = s.roundId;   // <<< QUAN TRỌNG
+
     resetUIForNewRound({ roundId: s.roundId });
   }
 
