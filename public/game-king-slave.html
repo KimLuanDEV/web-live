@@ -1764,16 +1764,12 @@ socket.on("connect", ()=>{
 
 // 🔥 Nhận vị trí SLAVE từ server
 socket.on("ks-init", (data)=>{
-
-  if(data.roundId){
-    roundId = data.roundId;   // <<< thêm dòng này
-  }
-
   ksSlaveIndex = data.slaveIndex;
 
   buildRow(playerRow, "player");
   renderPlayerDeck();
 });
+
 
 
 socket.on("coin-update", (d)=>{
@@ -1790,11 +1786,8 @@ socket.on("ks-state", (s)=>{
 
   if(!s) return;
 
-  // 🔥 FIX: đồng bộ roundId trước
+  // Nếu round mới thì mới reset
   if(s.roundId !== roundId){
-
-    roundId = s.roundId;   // <<< QUAN TRỌNG
-
     resetUIForNewRound({ roundId: s.roundId });
   }
 
@@ -1925,7 +1918,7 @@ setTimeout(()=>{
 
 
 
-// 🎴 Lật King cinematic (delay lâu hơn để đứng combat 1 nhịp)
+// 🎴 Lật King cinematic (fix nháy Warrior → King)
 setTimeout(()=>{
 
   const kingSlot = document.getElementById("kingSlot");
@@ -1933,34 +1926,40 @@ setTimeout(()=>{
 
   if(!kInSlot) return;
 
-  // 🕒 Đợi 600ms sau khi vào slot rồi mới lật
+  const frontImg =
+    kInSlot.querySelector(".card-front img");
+
+  if(!frontImg) return;
+
+  // 🕒 Đợi 600ms sau khi vào slot rồi mới xử lý
   setTimeout(()=>{
 
-    const frontImg =
-      kInSlot.querySelector(".card-front img");
-
-    if(frontImg){
-      if(r.king === "KING"){
-        frontImg.src = "/assets/ks/card-king.png";
-      }else{
-        frontImg.src = "/assets/ks/card-common.png";
-      }
-    }
-
-    // 🔥 Flip thật sự
-    kInSlot.classList.add("flip");
-
+    // 🔥 1️⃣ ĐỔI ẢNH TRƯỚC
     if(r.king === "KING"){
-      setTimeout(()=>{
-        kInSlot.classList.add("glow-king");
-      },400);
+      frontImg.src = "/assets/ks/card-king.png";
+    }else{
+      frontImg.src = "/assets/ks/card-common.png";
     }
 
-  }, 600); // ← pause trước khi flip
+    // 🔥 2️⃣ ÉP BROWSER RENDER ẢNH MỚI
+    void frontImg.offsetWidth;
 
-}, 1000);  // ← đợi bay xong + đứng 1 nhịp
+    // 🔥 3️⃣ ĐỢI 1 FRAME RỒI MỚI FLIP
+    setTimeout(()=>{
 
+      kInSlot.classList.add("flip");
 
+      if(r.king === "KING"){
+        setTimeout(()=>{
+          kInSlot.classList.add("glow-king");
+        },400);
+      }
+
+    }, 50);
+
+  }, 600);
+
+}, 1000);
 
 
   // 3️⃣ Combat rung nhẹ

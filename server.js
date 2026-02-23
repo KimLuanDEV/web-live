@@ -221,21 +221,9 @@ let rpsHistoryGlobal = loadRpsHistory();
 // 👑⚔ KING VS SLAVE (SOLO VS SERVER)
 // ================================
 let ksRoundId = 1;
-let ksKingIndex = 0;
-let ksSlaveIndex = 0;
+let ksKingIndex = Math.floor(Math.random() * 5); // 🎯 random KING mỗi round
+let ksSlaveIndex = Math.floor(Math.random() * 5);
 const ksUserState = new Map();
-
-function ksResetRound(){
-  ksRoundId++;
-  ksKingIndex = Math.floor(Math.random() * 5);
-  ksSlaveIndex = Math.floor(Math.random() * 5);
-
-  console.log("👑 KS NEW ROUND:", ksRoundId,
-    "KING:", ksKingIndex,
-    "SLAVE:", ksSlaveIndex);
-}
-
-ksResetRound();
 
 // helper: tạo deck và pick index
 function ksPickKingIndex(){
@@ -2549,18 +2537,7 @@ socket.on("ks-pick", (data)=>{
 
   st.playerUsed.push(youIndex);
 
-  
-// 🎯 chọn king chưa dùng
-
-let kingPickIndex;
-
-// Nếu KING thật chưa dùng → bắt buộc rút đúng vị trí KING
-if(!st.kingUsed.includes(ksKingIndex)){
-
-  kingPickIndex = ksKingIndex;
-
-}else{
-
+  // 🎯 chọn king chưa dùng
   const available = [0,1,2,3,4].filter(
     i => !st.kingUsed.includes(i)
   );
@@ -2569,11 +2546,10 @@ if(!st.kingUsed.includes(ksKingIndex)){
     return socket.emit("ks-error",{ message:"NO_CARD_LEFT" });
   }
 
-  kingPickIndex =
+  const kingPickIndex =
     available[Math.floor(Math.random()*available.length)];
-}
 
-st.kingUsed.push(kingPickIndex);
+  st.kingUsed.push(kingPickIndex);
 
   // 🔄 LƯU STATE SAU KHI UPDATE
   ksUserState.set(uid, st);
@@ -2634,7 +2610,9 @@ socket.on("ks-next", ()=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
-  ksResetRound();
+  ksRoundId++;
+  ksKingIndex = Math.floor(Math.random() * 5);
+  ksSlaveIndex = Math.floor(Math.random() * 5);
 
   socket.emit("ks-init",{
     roundId: ksRoundId,
