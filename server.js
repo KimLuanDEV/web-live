@@ -1996,6 +1996,32 @@ socket.emit("coin-update", {
 });
 }
 
+// ================================
+// 👑 RESTORE KING VS SLAVE STATE
+// ================================
+const ksState = ksUserState.get(uid);
+
+if(ksState && ksState.bet > 0){
+
+  socket.emit("ks-state",{
+    roundId: ksRoundId,
+    myBet: ksState.bet,
+    playerUsed: ksState.playerUsed || [],
+    kingUsed: ksState.kingUsed || []
+  });
+
+}else{
+
+  socket.emit("ks-state",{
+    roundId: ksRoundId,
+    myBet: 0,
+    playerUsed: [],
+    kingUsed: []
+  });
+
+}
+
+
   if (meNow?.role === "admin" && eggRound?.secretResult) {
 
     socket.emit("admin-egg-secret-update", {

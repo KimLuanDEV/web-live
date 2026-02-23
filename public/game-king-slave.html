@@ -1777,16 +1777,31 @@ socket.on("coin-update", (d)=>{
 });
 
 socket.on("ks-state", (s)=>{
-  // { roundId, myBet, phase }
-  resetUIForNewRound({ roundId: s.roundId });
+
+  // Nếu là round mới thì mới reset
+  if(s.roundId !== roundId){
+    resetUIForNewRound({ roundId: s.roundId });
+  }
 
   if(s.myBet && s.myBet > 0){
+
     myBet = s.myBet;
-    myBetText.textContent = myBet.toLocaleString("en-US");
     currentBetValue = myBet;
-    betDisplay.textContent = myBet.toLocaleString("en-US") + " 💎";
-    openPick();
+
+    myBetText.textContent =
+      myBet.toLocaleString("en-US");
+
+    betDisplay.textContent =
+      myBet.toLocaleString("en-US") + " 💎";
+
+    panel.classList.add("hide");
+
+    canPick = true;
+    picked = false;
+
+    setPhase("Bet placed • Select card");
   }
+
 });
 
 socket.on("ks-bet-ok", (d)=>{
