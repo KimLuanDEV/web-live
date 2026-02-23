@@ -1322,6 +1322,66 @@ body{
 }
 
 
+/* ===== COMPACT RESULT ===== */
+
+.sheet-content.compact{
+  padding:20px 20px calc(26px + var(--safeBot));
+  text-align:center;
+}
+
+.result-title{
+  font-size:26px;
+  font-weight:1000;
+  letter-spacing:1px;
+  margin-top:4px;
+}
+
+.result-title.win{
+  color:#41ff9b;
+  text-shadow:0 0 25px rgba(65,255,155,.5);
+}
+
+.result-title.lose{
+  color:#ff3b3b;
+  text-shadow:0 0 25px rgba(255,60,60,.5);
+}
+
+.result-title.draw{
+  color:#ffcc66;
+}
+
+.result-versus{
+  margin-top:14px;
+  font-size:16px;
+  font-weight:900;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:14px;
+  opacity:.9;
+}
+
+.result-versus .vs{
+  font-size:18px;
+  opacity:.7;
+}
+
+.result-amount{
+  margin-top:22px;
+}
+
+.result-amount .label{
+  font-size:12px;
+  opacity:.6;
+  margin-bottom:6px;
+}
+
+.result-amount .value{
+  font-size:28px;
+  font-weight:1000;
+  letter-spacing:.5px;
+}
+
 
   </style>
 </head>
@@ -1457,36 +1517,27 @@ body{
   <div class="sheet">
     <div class="sheet-handle"></div>
 
-    <div class="sheet-content">
+   <div class="sheet-content compact">
 
-      <div class="mTitle" id="mTitle">Result</div>
-      <div class="mSub" id="mSub">—</div>
+  <div class="result-title" id="mTitle">WIN</div>
 
-      <div class="mGrid">
-        <div class="mCard">
-          <div class="k">You selected</div>
-          <div class="v" id="mYou">—</div>
-        </div>
+  <div class="result-versus">
+    <span id="mYou">SLAVE</span>
+    <span class="vs">⚔</span>
+    <span id="mKing">KING</span>
+  </div>
 
-        <div class="mCard">
-          <div class="k">King selected</div>
-          <div class="v" id="mKing">—</div>
-        </div>
-
-        <div class="mCard">
-          <div class="k">Bet</div>
-          <div class="v"><span id="mBet">0</span> 💎</div>
-        </div>
-
-        <div class="mCard">
-          <div class="k">Receive</div>
-          <div class="v"><span id="mWin">0</span> 💎</div>
-        </div>
-      </div>
-
-      <button class="sheet-btn" id="mOk">CONTINUE</button>
-
+  <div class="result-amount">
+    <div class="label">Receive</div>
+    <div class="value">
+      💎 <span id="mWin">0</span>
     </div>
+  </div>
+
+  <button class="sheet-btn" id="mOk">CONTINUE</button>
+
+</div>
+
   </div>
 </div>
 
@@ -2101,9 +2152,20 @@ setTimeout(()=>{
     setPhase(cls==="draw" ? "Draw • Select card" : "End • New round");
     setStatus(cls==="draw" ? "Draw → Select card" : "Result");
 
-    mTitle.textContent =
-      cls==="win" ? "You Win!" :
-      cls==="lose" ? "You Lose!" : "Draw!";
+mTitle.classList.remove("win","lose","draw");
+
+if(cls === "win"){
+  mTitle.textContent = "YOU WIN";
+  mTitle.classList.add("win");
+}
+else if(cls === "lose"){
+  mTitle.textContent = "YOU LOSE";
+  mTitle.classList.add("lose");
+}
+else{
+  mTitle.textContent = "DRAW";
+  mTitle.classList.add("draw");
+}
 
     mSub.textContent =
       cls==="draw"
