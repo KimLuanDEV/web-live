@@ -1260,128 +1260,129 @@ body{
   opacity:1;
 }
 
+/* =========================
+   RESULT SHEET 2.0 – CLEAN PREMIUM
+   ========================= */
+
 .sheet{
   position:absolute;
   left:0;
   right:0;
   bottom:0;
 
-  border-radius:28px 28px 0 0;
+  border-radius:26px 26px 0 0;
 
   background:
     linear-gradient(180deg,
-      rgba(15,15,20,.98),
-      rgba(5,5,8,.98));
+      rgba(20,20,28,.98),
+      rgba(8,8,12,.98));
 
-  border-top:1px solid rgba(255,255,255,.12);
+  border-top:1px solid rgba(255,255,255,.08);
 
   box-shadow:
-    0 -40px 100px rgba(0,0,0,.8),
-    0 0 60px rgba(0,240,255,.1);
+    0 -30px 80px rgba(0,0,0,.8);
 
   transform:translateY(100%);
-  transition: transform .4s cubic-bezier(.2,.8,.2,1);
-}
-
-.sheet-overlay.show .sheet{
-  transform:translateY(0);
-}
-
-.sheet-handle{
-  width:48px;
-  height:5px;
-  border-radius:4px;
-  background:rgba(255,255,255,.3);
-  margin:12px auto 8px;
+  transition: transform .35s cubic-bezier(.2,.8,.2,1);
 }
 
 .sheet-content{
-  padding:18px 20px calc(24px + var(--safeBot));
+  padding:20px 20px calc(22px + var(--safeBot));
 }
 
-.sheet-btn{
-  margin-top:18px;
-  width:100%;
-  height:48px;
-  border-radius:16px;
+/* ===== TITLE ===== */
 
+.mTitle{
+  font-size:24px;
   font-weight:1000;
-  letter-spacing:.8px;
-
-  background:
-    linear-gradient(180deg,
-      rgba(0,240,255,.6),
-      rgba(0,120,140,.8));
-
-  border:1px solid rgba(0,240,255,.8);
-
-  box-shadow:
-    0 0 40px rgba(0,240,255,.5);
-
-  color:#fff;
-}
-
-
-/* ===== COMPACT RESULT ===== */
-
-.sheet-content.compact{
-  padding:20px 20px calc(26px + var(--safeBot));
   text-align:center;
-}
-
-.result-title{
-  font-size:26px;
-  font-weight:1000;
   letter-spacing:1px;
-  margin-top:4px;
+  margin-bottom:4px;
 }
 
-.result-title.win{
+.mTitle.win{
   color:#41ff9b;
-  text-shadow:0 0 25px rgba(65,255,155,.5);
+  text-shadow:0 0 20px rgba(65,255,155,.5);
 }
 
-.result-title.lose{
+.mTitle.lose{
   color:#ff3b3b;
-  text-shadow:0 0 25px rgba(255,60,60,.5);
+  text-shadow:0 0 20px rgba(255,60,60,.5);
 }
 
-.result-title.draw{
+.mTitle.draw{
   color:#ffcc66;
 }
 
-.result-versus{
-  margin-top:14px;
-  font-size:16px;
+/* ===== SUMMARY LINE ===== */
+
+.mSummary{
+  text-align:center;
+  font-size:13px;
+  color:rgba(255,255,255,.6);
+  margin-bottom:16px;
+}
+
+/* ===== GRID ===== */
+
+.mGrid{
+  display:grid;
+  grid-template-columns: 1fr 1fr;
+  gap:12px;
+}
+
+.mCard{
+  border-radius:14px;
+  padding:12px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.08);
+}
+
+.mCard .k{
+  font-size:11px;
+  color:rgba(255,255,255,.5);
+}
+
+.mCard .v{
+  margin-top:6px;
+  font-size:15px;
   font-weight:900;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  gap:14px;
-  opacity:.9;
 }
 
-.result-versus .vs{
-  font-size:18px;
-  opacity:.7;
+/* ===== RECEIVE HIGHLIGHT ===== */
+
+.mCard.receive{
+  grid-column: span 2;
+  text-align:center;
+  padding:16px;
+  border-radius:16px;
 }
 
-.result-amount{
-  margin-top:22px;
+.mCard.receive.win{
+  background:rgba(65,255,155,.08);
+  border-color:rgba(65,255,155,.4);
 }
 
-.result-amount .label{
-  font-size:12px;
-  opacity:.6;
-  margin-bottom:6px;
+.mCard.receive.lose{
+  background:rgba(255,60,60,.08);
+  border-color:rgba(255,60,60,.4);
 }
 
-.result-amount .value{
-  font-size:28px;
+.mCard.receive .v{
+  font-size:22px;
+}
+
+/* ===== BUTTON ===== */
+
+.sheet-btn{
+  margin-top:18px;
+  height:46px;
+  border-radius:14px;
   font-weight:1000;
-  letter-spacing:.5px;
+  letter-spacing:.8px;
+  background:linear-gradient(180deg,#00f0ff,#007e8f);
+  border:none;
 }
-
 
   </style>
 </head>
@@ -1517,27 +1518,40 @@ body{
   <div class="sheet">
     <div class="sheet-handle"></div>
 
-   <div class="sheet-content compact">
+    <div class="sheet-content">
 
-  <div class="result-title" id="mTitle">WIN</div>
+      <div class="mTitle" id="mTitle">Result</div>
+      <div class="mSub" id="mSub">—</div>
 
-  <div class="result-versus">
-    <span id="mYou">SLAVE</span>
-    <span class="vs">⚔</span>
-    <span id="mKing">KING</span>
+<div class="mGrid">
+
+  <div class="mCard">
+    <div class="k">You selected</div>
+    <div class="v" id="mYou">—</div>
   </div>
 
-  <div class="result-amount">
-    <div class="label">Receive</div>
-    <div class="value">
-      💎 <span id="mWin">0</span>
-    </div>
+  <div class="mCard">
+    <div class="k">King selected</div>
+    <div class="v" id="mKing">—</div>
   </div>
 
-  <button class="sheet-btn" id="mOk">CONTINUE</button>
+  <div class="mCard">
+    <div class="k">Bet</div>
+    <div class="v"><span id="mBet">0</span> 💎</div>
+  </div>
+
+  <div class="mCard receive" id="mReceiveBox">
+    <div class="k">Receive</div>
+    <div class="v"><span id="mWin">0</span> 💎</div>
+  </div>
 
 </div>
 
+      <button class="sheet-btn" id="mOk">CONTINUE</button>
+
+    </div>
+
+    
   </div>
 </div>
 
@@ -2152,20 +2166,9 @@ setTimeout(()=>{
     setPhase(cls==="draw" ? "Draw • Select card" : "End • New round");
     setStatus(cls==="draw" ? "Draw → Select card" : "Result");
 
-mTitle.classList.remove("win","lose","draw");
-
-if(cls === "win"){
-  mTitle.textContent = "YOU WIN";
-  mTitle.classList.add("win");
-}
-else if(cls === "lose"){
-  mTitle.textContent = "YOU LOSE";
-  mTitle.classList.add("lose");
-}
-else{
-  mTitle.textContent = "DRAW";
-  mTitle.classList.add("draw");
-}
+    mTitle.textContent =
+      cls==="win" ? "You Win!" :
+      cls==="lose" ? "You Lose!" : "Draw!";
 
     mSub.textContent =
       cls==="draw"
