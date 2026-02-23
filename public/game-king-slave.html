@@ -644,74 +644,41 @@
 }
 
 
-/* ===========================
-   🎬 KING LEVEL 3 CINEMATIC
-   =========================== */
 
-body.king-focus::after{
-  content:"";
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.55);
-  backdrop-filter: blur(6px);
-  z-index:60;
-  animation: fadeFocus .4s ease forwards;
+/* =========================
+   🎴 REAL 3D CARD FLIP
+   ========================= */
+
+.card{
+  perspective: 1000px;
 }
 
-@keyframes fadeFocus{
-  from{opacity:0}
-  to{opacity:1}
-}
-
-.slot.glow-king{
-  border-color: rgba(255,60,60,.9);
-  box-shadow:
-    0 0 40px rgba(255,60,60,.6),
-    inset 0 0 20px rgba(255,60,60,.4);
-  transition:.3s;
-}
-
-.card.flip3d{
+.card-inner{
+  position:relative;
+  width:100%;
+  height:100%;
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
   transform-style: preserve-3d;
-  animation: flipReal .6s ease-out forwards;
 }
 
-@keyframes flipReal{
-  0%{ transform: rotateY(0deg) }
-  100%{ transform: rotateY(180deg) }
+.card.flip .card-inner{
+  transform: rotateY(180deg);
 }
 
-.impact-ring{
+.card-face{
   position:absolute;
-  width:200px;
-  height:200px;
-  border-radius:50%;
-  border:3px solid rgba(255,60,60,.8);
-  animation: ringExpand .6s ease-out forwards;
-  pointer-events:none;
+  inset:0;
+  backface-visibility: hidden;
+  border-radius:16px;
+  overflow:hidden;
 }
 
-@keyframes ringExpand{
-  from{
-    transform: scale(.4);
-    opacity:1;
-  }
-  to{
-    transform: scale(1.4);
-    opacity:0;
-  }
+.card-front{
+  transform: rotateY(180deg);
 }
 
-body.camera-shake{
-  animation: camShake .3s ease;
-}
-
-@keyframes camShake{
-  0%{transform:translateX(0)}
-  25%{transform:translateX(-6px)}
-  50%{transform:translateX(6px)}
-  75%{transform:translateX(-4px)}
-  100%{transform:translateX(0)}
+.card-back{
+  transform: rotateY(0deg);
 }
 
 
@@ -955,31 +922,53 @@ if (me?.coins != null) {
   diamondEl.textContent = diamonds.toLocaleString("en-US");
 }
 
+
 function buildRow(el, type){
   el.innerHTML = "";
 
   for(let idx = 0; idx < 5; idx++){
 
     const card = document.createElement("div");
-    card.className = "card cover";
+    card.className = "card";
     card.dataset.idx = idx;
 
-    const img = document.createElement("img");
+    // =========================
+    // 🎴 TẠO CẤU TRÚC 3D
+    // =========================
+    const inner = document.createElement("div");
+    inner.className = "card-inner";
 
+    const front = document.createElement("div");
+    front.className = "card-face card-front";
+
+    const back = document.createElement("div");
+    back.className = "card-face card-back";
+
+    const frontImg = document.createElement("img");
+    const backImg  = document.createElement("img");
+
+    // mặt sau luôn là card-back
+    backImg.src = "/assets/ks/card-back.png";
+
+    // mặt trước
     if(type === "king"){
-      // 👑 KING luôn úp
-      img.src = "/assets/ks/card-back.png";
-      card.classList.add("cover");
-    }
-    else{
-      // 🎯 PLAYER chỉ tạo mặt common ban đầu
-      // SLAVE sẽ được render bằng renderPlayerDeck()
-      img.src = "/assets/ks/card-common.png";
+      // 👑 King luôn úp → mặt trước sẽ set khi reveal
+      frontImg.src = "/assets/ks/card-common.png";
+    }else{
+      // 🎯 Player mặc định common
+      frontImg.src = "/assets/ks/card-common.png";
     }
 
-    card.appendChild(img);
+    front.appendChild(frontImg);
+    back.appendChild(backImg);
 
-    // click player
+    inner.appendChild(front);
+    inner.appendChild(back);
+    card.appendChild(inner);
+
+    // =========================
+    // 🎯 CLICK PLAYER
+    // =========================
     if(type === "player"){
       card.addEventListener("click", ()=>{
         if(!canPick || picked) return;
@@ -987,6 +976,7 @@ function buildRow(el, type){
 
         picked = true;
         pickedIndex = idx;
+
         socket.emit("ks-pick", { index: idx });
         flashPick(card);
       });
@@ -995,7 +985,6 @@ function buildRow(el, type){
     el.appendChild(card);
   }
 }
-
 
 
 function renderPlayerDeck(){
@@ -1349,54 +1338,21 @@ setTimeout(()=>{
 setTimeout(()=>{
 
   const kingSlot = document.getElementById("kingSlot");
-  const kInSlot = kingSlot.firstChild;
+  const kCard = kingSlot.firstChild;
+  if(!kCard) return;
 
-  if(!kInSlot) return;
+  const frontImg = kCard.querySelector(".card-front img");
 
-  // 🎥 Focus effect
-  document.body.classList.add("king-focus");
-
-  // 🔥 Glow slot
-  if(r.king === "KING"){
-    kingSlot.classList.add("glow-king");
+  if(frontImg){
+    frontImg.src = r.king === "KING"
+      ? "/assets/ks/card-king.png"
+      : "/assets/ks/card-common.png";
   }
 
-  setTimeout(()=>{
-
-    // 🎴 Flip 3D
-    kInSlot.classList.remove("cover");
-    kInSlot.classList.add("flip3d");
-
-    const img = kInSlot.querySelector("img");
-
-    if(img){
-      img.src = r.king === "KING"
-        ? "/assets/ks/card-king.png"
-        : "/assets/ks/card-common.png";
-    }
-
-    // 💥 Impact ring
-    const ring = document.createElement("div");
-    ring.className = "impact-ring";
-    kingSlot.appendChild(ring);
-
-    // 📳 Camera shake
-    document.body.classList.add("camera-shake");
-
-    setTimeout(()=>{
-      document.body.classList.remove("camera-shake");
-    },300);
-
-  }, 300); // delay trước flip
-
-  // 🧹 Clear focus sau cinematic
-  setTimeout(()=>{
-    document.body.classList.remove("king-focus");
-    kingSlot.classList.remove("glow-king");
-  },1000);
+  // 🎴 Lật thật
+  kCard.classList.add("flip");
 
 }, 900);
-
 
 
   // 3️⃣ Combat rung nhẹ
