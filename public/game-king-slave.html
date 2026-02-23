@@ -950,55 +950,91 @@ body{
 
 .global-phase{
   position:fixed;
-  top: calc(250px + var(--safeTop));
+  top: calc(230px + var(--safeTop));
   left:0;
   right:0;
+
   display:flex;
   justify-content:center;
-  z-index:0;
+
+  z-index:20;
   pointer-events:none;
 }
 
 .phase-pill{
-  padding:8px 22px;
-  border-radius:40px;
-  font-size:13px;
-  font-weight:900;
-  letter-spacing:.6px;
+  position:relative;
 
-  backdrop-filter: blur(14px);
+  padding:10px 28px;
+  border-radius:60px;
+
+  font-size:14px;
+  font-weight:1000;
+  letter-spacing:.8px;
+
+  color:#fff;
+
+  backdrop-filter: blur(18px);
+
   border:1px solid rgba(255,255,255,.12);
 
   background:
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(0,0,0,.5));
+    linear-gradient(90deg,
+      rgba(255,60,60,.15),
+      rgba(0,0,0,.7),
+      rgba(0,240,255,.15));
 
   box-shadow:
-    0 0 30px rgba(0,240,255,.15),
-    inset 0 0 20px rgba(0,0,0,.6);
+    0 0 30px rgba(255,255,255,.05),
+    0 0 60px rgba(0,240,255,.08);
 
+  overflow:hidden;
   transition:.3s;
 }
 
+/* light beam chạy ngang */
+.phase-pill::before{
+  content:"";
+  position:absolute;
+  top:0;
+  left:-50%;
+  width:50%;
+  height:100%;
+  background:linear-gradient(90deg,
+    transparent,
+    rgba(255,255,255,.35),
+    transparent);
+  transform:skewX(-25deg);
+  animation: phaseShine 3s linear infinite;
+}
+
+@keyframes phaseShine{
+  0%{ left:-50% }
+  100%{ left:120% }
+}
 /* trạng thái */
 
 .phase-pill.waiting{
-  border-color: rgba(255,204,102,.5);
-  box-shadow: 0 0 30px rgba(255,204,102,.35);
+  border-color: rgba(255,204,102,.6);
+  box-shadow:
+    0 0 35px rgba(255,204,102,.4);
 }
 
 .phase-pill.picking{
-  border-color: rgba(0,240,255,.6);
-  box-shadow: 0 0 35px rgba(0,240,255,.4);
+  border-color: rgba(0,240,255,.7);
+  box-shadow:
+    0 0 40px rgba(0,240,255,.6);
 }
 
 .phase-pill.result{
-  border-color: rgba(65,255,155,.6);
-  box-shadow: 0 0 35px rgba(65,255,155,.4);
+  border-color: rgba(65,255,155,.7);
+  box-shadow:
+    0 0 40px rgba(65,255,155,.6);
 }
 
 .phase-pill.lose{
-  border-color: rgba(255,60,60,.6);
-  box-shadow: 0 0 35px rgba(255,60,60,.4);
+  border-color: rgba(255,60,60,.7);
+  box-shadow:
+    0 0 40px rgba(255,60,60,.6);
 }
 
 
@@ -1558,7 +1594,7 @@ clearBetBtn.onclick = ()=>{
   betDisplay.textContent = "0 💎";
   myBetText.textContent = "0";
   resultText.textContent = "—";
-  setStatus("Đã reset cược");
+  setStatus("Reset bet");
 };
 
 
