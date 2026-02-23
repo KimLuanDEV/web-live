@@ -1215,6 +1215,12 @@ body{
 }
 
 
+.card.used{
+  opacity:.35;
+  filter: grayscale(60%);
+  pointer-events:none;
+}
+
   </style>
 </head>
 
@@ -1623,13 +1629,14 @@ function resetArena(){
 }
 
 
-function resetUIForNewRound(data){
+function resetUIForNewRound({ roundId, forceReset = false }){
 
     resetArena();
 
-  // 🔥 Reset danh sách bài đã dùng
+if(forceReset){
   usedPlayerCards.clear();
   usedKingCards.clear();
+}
 
   roundId = data?.roundId || (roundId + 1);
   roundText.textContent = "#" + roundId;
@@ -1778,11 +1785,14 @@ socket.on("coin-update", (d)=>{
 
 socket.on("ks-state", (s)=>{
 
-  // Nếu là round mới thì mới reset
+  if(!s) return;
+
+  // Nếu round mới thì mới reset
   if(s.roundId !== roundId){
     resetUIForNewRound({ roundId: s.roundId });
   }
 
+  // Restore bet
   if(s.myBet && s.myBet > 0){
 
     myBet = s.myBet;
@@ -1798,9 +1808,21 @@ socket.on("ks-state", (s)=>{
 
     canPick = true;
     picked = false;
-
-    setPhase("Bet placed • Select card");
   }
+
+  // 🔥 RESTORE CARD STATE
+  usedPlayerCards = new Set(s.playerUsed || []);
+  usedKingCards   = new Set(s.kingUsed || []);
+
+  // disable card đã dùng
+  document.querySelectorAll("#playerRow .card")
+    .forEach((card, idx)=>{
+      if(usedPlayerCards.has(idx)){
+        card.classList.add("used");
+        card.style.opacity = .4;
+        card.style.pointerEvents = "none";
+      }
+    });
 
 });
 
