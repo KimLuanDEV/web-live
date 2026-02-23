@@ -655,9 +655,7 @@
   transition: transform .6s cubic-bezier(.2,.8,.2,1);
 }
 
-.card.flip-3d{
-  transform: rotateY(180deg);
-}
+
 
 .card img{
   backface-visibility: hidden;
@@ -670,6 +668,50 @@
     0 16px 28px rgba(0,0,0,.4);
 }
 
+
+/* =========================
+   TRUE 3D FLIP (FRONT/BACK)
+   ========================= */
+
+.card{
+  perspective:1000px;
+}
+
+.card-inner{
+  width:100%;
+  height:100%;
+  position:relative;
+  transform-style: preserve-3d;
+  transition: transform .6s cubic-bezier(.2,.8,.2,1);
+}
+
+.card.flip .card-inner{
+  transform: rotateY(180deg);
+}
+
+.card-face{
+  position:absolute;
+  inset:0;
+  backface-visibility:hidden;
+  border-radius:16px;
+  overflow:hidden;
+}
+
+.card-face img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+.card-front{
+  transform: rotateY(180deg);
+}
+
+.card.glow-king{
+  box-shadow:
+    0 0 40px rgba(255,60,60,.7),
+    0 0 80px rgba(255,60,60,.4);
+}
 
 
   </style>
@@ -920,22 +962,50 @@ function buildRow(el, type){
     card.className = "card cover";
     card.dataset.idx = idx;
 
-    const img = document.createElement("img");
+    // =========================
+    // 🔥 INNER (3D container)
+    // =========================
+    const inner = document.createElement("div");
+    inner.className = "card-inner";
+
+    // =========================
+    // 🂠 BACK (mặt úp)
+    // =========================
+    const back = document.createElement("div");
+    back.className = "card-face card-back";
+
+    const backImg = document.createElement("img");
+    backImg.src = "/assets/ks/card-back.png";
+    back.appendChild(backImg);
+
+    // =========================
+    // 🂡 FRONT (mặt ngửa)
+    // =========================
+    const front = document.createElement("div");
+    front.className = "card-face card-front";
+
+    const frontImg = document.createElement("img");
 
     if(type === "king"){
-      // 👑 KING luôn úp
-      img.src = "/assets/ks/card-back.png";
-      card.classList.add("cover");
-    }
-    else{
-      // 🎯 PLAYER chỉ tạo mặt common ban đầu
-      // SLAVE sẽ được render bằng renderPlayerDeck()
-      img.src = "/assets/ks/card-common.png";
+      // KING chưa biết mặt → tạm để common
+      frontImg.src = "/assets/ks/card-common.png";
+    }else{
+      // PLAYER ban đầu là common
+      frontImg.src = "/assets/ks/card-common.png";
     }
 
-    card.appendChild(img);
+    front.appendChild(frontImg);
 
-    // click player
+    // =========================
+    // GHÉP STRUCTURE
+    // =========================
+    inner.appendChild(back);
+    inner.appendChild(front);
+    card.appendChild(inner);
+
+    // =========================
+    // CLICK PLAYER
+    // =========================
     if(type === "player"){
       card.addEventListener("click", ()=>{
         if(!canPick || picked) return;
@@ -944,6 +1014,7 @@ function buildRow(el, type){
         picked = true;
         pickedIndex = idx;
         socket.emit("ks-pick", { index: idx });
+
         flashPick(card);
       });
     }
@@ -951,7 +1022,6 @@ function buildRow(el, type){
     el.appendChild(card);
   }
 }
-
 
 
 function renderPlayerDeck(){
@@ -1311,22 +1381,25 @@ setTimeout(()=>{
 
   if(kInSlot){
 
-    const img = kInSlot.querySelector("img");
+    const frontImg =
+      kInSlot.querySelector(".card-front img");
 
-    // 1️⃣ Lật mặt trước
-    kInSlot.classList.add("flip-3d");
-
-    // 2️⃣ Đổi hình giữa animation
-    setTimeout(()=>{
-      if(img){
-        if(r.king === "KING"){
-          img.src = "/assets/ks/card-king.png";
-          kInSlot.classList.add("glow-king");
-        }else{
-          img.src = "/assets/ks/card-common.png";
-        }
+    if(frontImg){
+      if(r.king === "KING"){
+        frontImg.src = "/assets/ks/card-king.png";
+      }else{
+        frontImg.src = "/assets/ks/card-common.png";
       }
-    }, 300); // đổi mặt giữa flip
+    }
+
+    // 🔥 flip thật 180°
+    kInSlot.classList.add("flip");
+
+    if(r.king === "KING"){
+      setTimeout(()=>{
+        kInSlot.classList.add("glow-king");
+      },400);
+    }
 
   }
 
