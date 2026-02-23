@@ -445,16 +445,23 @@ body{
       min-height: 260px;
     }
 
-  .panel{
+.panel{
   width:min(520px, 100%);
-  border-radius:26px;
+  border-radius:28px;
   border:1px solid rgba(255,255,255,.08);
+
   background:
-    linear-gradient(180deg, rgba(15,15,20,.95), rgba(10,10,15,.85));
-  backdrop-filter: blur(18px);
+    linear-gradient(180deg,
+      rgba(15,15,20,.96),
+      rgba(8,8,12,.90));
+
+  backdrop-filter: blur(24px);
+
   box-shadow:
-    0 30px 80px rgba(0,0,0,.65),
-    inset 0 0 40px rgba(0,0,0,.6);
+    0 40px 120px rgba(0,0,0,.75),
+    0 0 80px rgba(255,60,60,.08),
+    0 0 80px rgba(0,240,255,.08);
+
   overflow:hidden;
   position:relative;
 }
@@ -537,33 +544,65 @@ body{
 }
 
 .chip{
-  height:36px;
+  height:38px;
+
   display:flex;
   align-items:center;
   justify-content:center;
-  border-radius:12px;
-  background:rgba(0,0,0,.5);
-  border:1px solid rgba(255,255,255,.12);
-  font-size:12px;
-  font-weight:800;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(180deg,
+      rgba(255,255,255,.06),
+      rgba(0,0,0,.6));
+
+  border:1px solid rgba(255,255,255,.15);
+
+  font-size:13px;
+  font-weight:900;
+  letter-spacing:.4px;
+
   transition:.2s;
   cursor:pointer;
 }
 
 .chip:hover{
-  background:rgba(0,240,255,.15);
-  border-color:rgba(0,240,255,.4);
+  background:
+    linear-gradient(180deg,
+      rgba(0,240,255,.35),
+      rgba(0,120,140,.5));
+
+  border-color: rgba(0,240,255,.6);
+
+  box-shadow:
+    0 0 20px rgba(0,240,255,.5);
+
   transform: translateY(-2px);
 }
 
- .statusLine{
+.chip:active{
+  transform: scale(.95);
+}
+
+.statusLine{
   display:flex;
   justify-content:space-between;
   align-items:center;
-  font-size:12px;
-  padding:8px 10px;
-  border-radius:12px;
-  background:rgba(255,255,255,.04);
+
+  font-size:13px;
+  padding:10px 14px;
+
+  border-radius:14px;
+
+  background:
+    linear-gradient(90deg,
+      rgba(255,60,60,.08),
+      rgba(0,240,255,.08));
+
+  border:1px solid rgba(255,255,255,.08);
+
+  box-shadow: inset 0 0 20px rgba(0,0,0,.6);
 }
 
     .statusLine b{color:#fff}
@@ -854,36 +893,55 @@ body{
 
 .btn.ghost{
   flex:1;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.12);
+  background:
+    linear-gradient(180deg,
+      rgba(255,60,60,.25),
+      rgba(120,0,0,.5));
+
+  border:1px solid rgba(255,60,60,.6);
+
+  box-shadow:
+    0 0 25px rgba(255,60,60,.3);
 }
 
 .btn.primary{
   flex:1;
-  background: linear-gradient(180deg, rgba(0,240,255,.35), rgba(0,120,140,.4));
-  border:1px solid rgba(0,240,255,.5);
-  box-shadow:0 0 30px rgba(0,240,255,.25);
-}
+  background:
+    linear-gradient(180deg,
+      rgba(0,240,255,.5),
+      rgba(0,120,140,.6));
 
+  border:1px solid rgba(0,240,255,.7);
+
+  box-shadow:
+    0 0 35px rgba(0,240,255,.5);
+}
 
 .betDisplay{
   flex:1;
-  height:44px;
+  height:50px;
+
   display:flex;
   align-items:center;
   justify-content:center;
 
-  border-radius:14px;
-  border:1px solid rgba(0,240,255,.18);
-  background:rgba(0,0,0,.6);
+  border-radius:18px;
 
-  font-weight:900;
-  font-size:15px;
-  letter-spacing:.5px;
+  background:
+    radial-gradient(circle at 50% 30%,
+      rgba(0,240,255,.35),
+      rgba(0,0,0,.8));
 
-  box-shadow: inset 0 0 20px rgba(0,0,0,.6);
+  border:1px solid rgba(0,240,255,.5);
+
+  font-weight:1000;
+  font-size:18px;
+  letter-spacing:1px;
+
+  box-shadow:
+    0 0 40px rgba(0,240,255,.4),
+    inset 0 0 30px rgba(0,0,0,.6);
 }
-
 
 
 /* =========================
