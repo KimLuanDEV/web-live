@@ -524,6 +524,8 @@
   background:rgba(255,255,255,.03);
   backdrop-filter: blur(4px);
   perspective: 1000px; /* thêm dòng này */
+  transform: translateZ(0);
+  will-change: transform;
 }
 
 .vs-text{
@@ -652,11 +654,13 @@
    KING 3D FLIP EFFECT
    ========================= */
 
-.card{
-  transform-style: preserve-3d;
-  transition: transform .6s cubic-bezier(.2,.8,.2,1);
+.card,
+.card-inner,
+.card-face{
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: transform;
 }
-
 
 
 .card img{
@@ -1226,7 +1230,7 @@ function animateToArena(cardEl, targetEl){
 
   setTimeout(()=>{
     cardEl.style.transition = "none";
-    cardEl.style.position = "relative";
+    cardEl.style.position = "";
     cardEl.style.left = "";
     cardEl.style.top = "";
     cardEl.style.width = "100%";
