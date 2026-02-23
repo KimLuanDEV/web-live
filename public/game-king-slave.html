@@ -1925,7 +1925,7 @@ setTimeout(()=>{
 
 
 
-// 🎴 Lật King cinematic
+// 🎴 Lật King cinematic (đứng 1 nhịp trước khi flip)
 setTimeout(()=>{
 
   const kingSlot = document.getElementById("kingSlot");
@@ -1935,31 +1935,42 @@ setTimeout(()=>{
   const frontImg = kInSlot.querySelector(".card-front img");
   if(!frontImg) return;
 
-  // ✅ SET ẢNH TRƯỚC
+  // ✅ Set ảnh trước
   if(r.king === "KING"){
     frontImg.src = "/assets/ks/card-king.png";
   }else{
     frontImg.src = "/assets/ks/card-common.png";
   }
 
-  // 🔥 ÉP browser render xong ảnh trước khi flip
-  frontImg.onload = () => {
+  // 🔥 Chờ ảnh load xong
+  const doFlip = () => {
 
-    requestAnimationFrame(()=>{
+    // ⏳ Đứng 1.2s trước khi lật (tăng hồi hộp)
+    setTimeout(()=>{
+
       requestAnimationFrame(()=>{
-        kInSlot.classList.add("flip");
+        requestAnimationFrame(()=>{
+          kInSlot.classList.add("flip");
 
-        if(r.king === "KING"){
-          setTimeout(()=>{
-            kInSlot.classList.add("glow-king");
-          },400);
-        }
+          if(r.king === "KING"){
+            setTimeout(()=>{
+              kInSlot.classList.add("glow-king");
+            },400);
+          }
+        });
       });
-    });
+
+    }, 1200); // 👈 chỉnh số này để tăng/giảm hồi hộp
 
   };
 
-}, 1000);
+  if(frontImg.complete){
+    doFlip();
+  }else{
+    frontImg.onload = doFlip;
+  }
+
+}, 1000); // 👈 đợi bay xong vào slot
 
 
   // 3️⃣ Combat rung nhẹ
