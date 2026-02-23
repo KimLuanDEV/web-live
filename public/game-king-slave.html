@@ -1632,15 +1632,20 @@ const mBet = document.getElementById("mBet");
 const mWin = document.getElementById("mWin");
 
 document.getElementById("mOk").onclick = ()=>{
-  overlay.classList.remove("show");
-  resetArena();
-};
 
+  overlay.classList.remove("show");
+
+  cardsLocked = false;      // 🔓 mở lại logic
+  unlockAllPlayerCards();   // 🔓 mở UI
+
+  resetArena();             // 🔁 reset sau cùng
+};
 
 
 /* =========================
    Local state
    ========================= */
+let cardsLocked = false;
 let diamonds = 0;
 let roundId = 1;
 let myBet = 0;
@@ -1720,18 +1725,26 @@ function buildRow(el, type){
     // CLICK PLAYER
     // =========================
     if(type === "player"){
-      card.addEventListener("click", ()=>{
-        if(!canPick || picked) return;
-        if(usedPlayerCards.has(idx)) return;
 
-        picked = true;
-        pickedIndex = idx;
-        socket.emit("ks-pick", { index: idx });
+card.addEventListener("click", ()=>{
 
-        flashPick(card);
-      });
+  if(cardsLocked) return;          // 🔒 khóa toàn bộ
+  if(!canPick || picked) return;
+  if(usedPlayerCards.has(idx)) return;
+
+  cardsLocked = true;              // 🔒 khóa ngay khi chọn
+  lockAllPlayerCards();            // 🔒 disable UI
+
+  picked = true;
+  pickedIndex = idx;
+
+  socket.emit("ks-pick", { index: idx });
+
+  flashPick(card);
+});
     }
 
+    
     el.appendChild(card);
   }
 }
@@ -2254,6 +2267,25 @@ socket.on("ks-open-pick", ()=>{
 /* init deck */
 resetUIForNewRound({ roundId: 1 });
 
+
+
+
+function lockAllPlayerCards(){
+  document.querySelectorAll("#playerRow .card")
+    .forEach(c=>{
+      c.style.pointerEvents = "none";
+      c.style.opacity = "0.6";
+    });
+}
+
+
+function unlockAllPlayerCards(){
+  document.querySelectorAll("#playerRow .card")
+    .forEach(c=>{
+      c.style.pointerEvents = "auto";
+      c.style.opacity = "1";
+    });
+}
 
 
 </script>
