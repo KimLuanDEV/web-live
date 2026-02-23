@@ -426,22 +426,77 @@
 
     .statusLine b{color:#fff}
 
-    /* ===== PLAYER ROW (BOTTOM) ===== */
+
+
+/* =========================
+   SLAVE ROW – REBEL STYLE
+   ========================= */
+
 .player-row{
   position:fixed;
   left:0;
   right:0;
   bottom:0;
 
-  padding-top:12px;
-  padding-left:12px;
-  padding-right:12px;
-  background: linear-gradient(180deg, rgba(0,0,0,.0), rgba(0,0,0,.95));
-  backdrop-filter: blur(14px);
+  padding:14px 12px 16px;
 
-  border-top:1px solid rgba(255,255,255,.06);
+  background:
+    linear-gradient(180deg,
+      rgba(0,0,0,.0),
+      rgba(0,0,0,.92)),
+    radial-gradient(circle at 50% 0%,
+      rgba(0,240,255,.12),
+      transparent 60%);
+
+  backdrop-filter: blur(18px);
+
+  border-top:1px solid rgba(0,240,255,.35);
+
+  box-shadow:
+    0 -10px 40px rgba(0,240,255,.12),
+    inset 0 0 40px rgba(0,0,0,.6);
+
   z-index:40;
+  overflow:hidden;
 }
+
+
+.player-row .row-head .tag{
+  font-weight:900;
+  font-size:13px;
+  letter-spacing:.8px;
+  color:#fff;
+
+  text-shadow:
+    0 0 10px rgba(0,240,255,.8),
+    0 0 20px rgba(0,240,255,.5);
+}
+
+
+.player-row .badge{
+  width:30px;
+  height:30px;
+  border-radius:12px;
+
+  background:
+    radial-gradient(circle at 30% 20%,
+      #e0ffff,
+      #00f0ff 40%,
+      #003a4a 90%);
+
+  box-shadow:
+    0 0 25px rgba(0,240,255,.8),
+    0 0 50px rgba(0,240,255,.4);
+
+  border:1px solid rgba(255,255,255,.4);
+
+  font-size:15px;
+}
+
+
+
+
+
     /* ===== OVERLAY RESULT ===== */
     .overlay{
       position:fixed; inset:0;
@@ -876,7 +931,7 @@
     <div class="king-row">
       <div class="row-head">
         <div class="tag">
-          <span class="badge">👑</span> KING
+        KING
         </div>
       </div>
 
@@ -943,7 +998,6 @@
     <div class="player-row">
       <div class="row-head">
         <div class="tag">
-          <span class="badge" style="background:radial-gradient(circle at top, rgba(0,240,255,.9), rgba(0,90,120,.9)); box-shadow:0 0 16px rgba(0,240,255,.25);">⛓</span>
           SLAVE
         </div>
       </div>
