@@ -1629,47 +1629,55 @@ function resetArena(){
 }
 
 
-function resetUIForNewRound({ roundId, forceReset = false }){
+function resetUIForNewRound({ roundId: newRoundId, forceReset = false }){
 
-    resetArena();
+  resetArena();
 
-if(forceReset){
-  usedPlayerCards.clear();
-  usedKingCards.clear();
-}
+  // 🔥 Chỉ clear khi thực sự round mới
+  if(forceReset){
+    usedPlayerCards.clear();
+    usedKingCards.clear();
+  }
 
-  roundId = data?.roundId || (roundId + 1);
+  // 🔥 Cập nhật roundId global đúng cách
+  if(typeof newRoundId === "number"){
+    roundId = newRoundId;
+  }else{
+    roundId = roundId + 1;
+  }
+
   roundText.textContent = "#" + roundId;
 
   currentBetValue = 0;
   betDisplay.textContent = "0 💎";
   resultText.textContent = "—";
+
   setStatus("Waiting for a bet");
   setPhase("Not yet bet");
-  
 
   canPick = false;
   picked = false;
   pickedIndex = -1;
-  
 
   buildRow(kingRow, "king");
   buildRow(playerRow, "player");
   renderPlayerDeck();
 
-  // 🔥 Reset lại style các lá bài (đặt ở đây)
+  // 🔥 Reset style player cards
   [...playerRow.children].forEach(c=>{
     c.style.opacity = "1";
     c.style.pointerEvents = "auto";
     c.style.transform = "";
+    c.classList.remove("used","win","lose","draw","flip","glow-king");
   });
 
+  // 🔥 Reset style king cards
   [...kingRow.children].forEach(c=>{
-  c.style.opacity = "1";
-  c.style.pointerEvents = "auto";
-  c.style.transform = "";
-});
-
+    c.style.opacity = "1";
+    c.style.pointerEvents = "auto";
+    c.style.transform = "";
+    c.classList.remove("used","win","lose","draw","flip","glow-king");
+  });
 
 }
 
