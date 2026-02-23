@@ -493,6 +493,16 @@
   position:relative;
 }
 
+.panel{
+  position:relative;
+  z-index:5;
+}
+
+
+/* =========================
+   ARENA CINEMATIC 2.0
+   ========================= */
+
 .arena-bg{
   position:absolute;
   inset:0;
@@ -503,35 +513,103 @@
   pointer-events:none;
 }
 
-.panel{
-  position:relative;
-  z-index:5;
+/* Vòng đấu trường */
+.arena-bg::before{
+  content:"";
+  position:absolute;
+  width:420px;
+  height:420px;
+  border-radius:50%;
+  background:
+    radial-gradient(circle at center,
+      rgba(255,255,255,.08) 0%,
+      rgba(0,0,0,.4) 60%,
+      transparent 70%);
+  box-shadow:
+    0 0 120px rgba(0,240,255,.15),
+    0 0 160px rgba(255,60,60,.12);
+  animation: arenaPulse 4s ease-in-out infinite;
 }
 
-/* fight zone */
+@keyframes arenaPulse{
+  0%{ transform:scale(1); opacity:.8 }
+  50%{ transform:scale(1.05); opacity:1 }
+  100%{ transform:scale(1); opacity:.8 }
+}
+
+/* ===== FIGHT ZONE ===== */
 .fight-zone{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:60px;
+  gap:80px;
+  position:relative;
 }
 
+/* ===== SLOT BASE ===== */
 .slot{
-  width:120px;
-  height:160px;
-  border-radius:20px;
-  border:2px dashed rgba(255,255,255,.15);
-  background:rgba(255,255,255,.03);
-  backdrop-filter: blur(4px);
-  perspective: 1000px; /* thêm dòng này */
-  transform: translateZ(0);
-  will-change: transform;
+  width:130px;
+  height:175px;
+  border-radius:22px;
+  border:2px solid rgba(255,255,255,.15);
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.45));
+  backdrop-filter: blur(8px);
+  position:relative;
+  transition:.3s;
 }
 
+/* ===== KING SLOT GLOW ===== */
+.king-slot{
+  box-shadow:
+    0 0 40px rgba(255,60,60,.35),
+    inset 0 0 40px rgba(255,60,60,.15);
+  border-color: rgba(255,60,60,.5);
+}
+
+/* ===== PLAYER SLOT GLOW ===== */
+.player-slot{
+  box-shadow:
+    0 0 40px rgba(0,240,255,.35),
+    inset 0 0 40px rgba(0,240,255,.15);
+  border-color: rgba(0,240,255,.5);
+}
+
+/* ===== VS TEXT ===== */
 .vs-text{
-  font-size:30px;
+  font-size:34px;
   font-weight:900;
-  opacity:.25;
+  opacity:.85;
+  text-shadow:
+    0 0 20px rgba(255,255,255,.6),
+    0 0 40px rgba(255,60,60,.5);
+  animation: vsPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes vsPulse{
+  0%{ transform:scale(1); opacity:.7 }
+  50%{ transform:scale(1.2); opacity:1 }
+  100%{ transform:scale(1); opacity:.7 }
+}
+
+
+.fight-zone::before{
+  content:"";
+  position:absolute;
+  width:200px;
+  height:6px;
+  background:linear-gradient(90deg,
+    rgba(255,60,60,.7),
+    rgba(255,255,255,.8),
+    rgba(0,240,255,.7));
+  filter: blur(6px);
+  animation: beamMove 2s linear infinite;
+}
+
+@keyframes beamMove{
+  0%{ opacity:.4 }
+  50%{ opacity:1 }
+  100%{ opacity:.4 }
 }
 
 
@@ -836,6 +914,7 @@
       <div class="card-row" id="playerRow"></div>
     </div>
 
+    
   </div>
 
 
