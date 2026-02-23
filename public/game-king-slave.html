@@ -1322,6 +1322,81 @@ body{
 }
 
 
+/* ===== RESULT HEADER ===== */
+
+.result-header{
+  text-align:center;
+  margin-bottom:18px;
+}
+
+.result-icon{
+  font-size:42px;
+  margin-bottom:6px;
+}
+
+.result-header .mTitle{
+  font-size:20px;
+  font-weight:1000;
+}
+
+.result-header .mSub{
+  font-size:12px;
+  color:rgba(255,255,255,.6);
+  margin-top:4px;
+}
+
+/* ===== RECEIVE BIG BLOCK ===== */
+
+.result-amount{
+  border-radius:20px;
+  padding:16px;
+  text-align:center;
+  margin-bottom:18px;
+
+  background:
+    linear-gradient(180deg,
+      rgba(0,240,255,.15),
+      rgba(0,0,0,.6));
+
+  border:1px solid rgba(0,240,255,.5);
+
+  box-shadow:
+    0 0 35px rgba(0,240,255,.3),
+    inset 0 0 25px rgba(0,0,0,.6);
+}
+
+.amount-label{
+  font-size:12px;
+  color:rgba(255,255,255,.6);
+  letter-spacing:.5px;
+}
+
+.amount-value{
+  margin-top:6px;
+  font-size:24px;
+  font-weight:1000;
+  letter-spacing:1px;
+}
+
+/* ===== MINI INFO ROW ===== */
+
+.result-row{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.mini-label{
+  font-size:11px;
+  color:rgba(255,255,255,.55);
+}
+
+.mini-value{
+  margin-top:4px;
+  font-size:14px;
+  font-weight:900;
+}
 
   </style>
 </head>
@@ -1457,37 +1532,39 @@ body{
   <div class="sheet">
     <div class="sheet-handle"></div>
 
-    <div class="sheet-content">
+<div class="sheet-content">
 
-      <div class="mTitle" id="mTitle">Result</div>
-      <div class="mSub" id="mSub">—</div>
+  <div class="result-header">
+    <div class="result-icon" id="resultIcon">🏆</div>
+    <div class="mTitle" id="mTitle">You Win!</div>
+    <div class="mSub" id="mSub">Round Result</div>
+  </div>
 
-      <div class="mGrid">
-        <div class="mCard">
-          <div class="k">You selected</div>
-          <div class="v" id="mYou">—</div>
-        </div>
-
-        <div class="mCard">
-          <div class="k">King selected</div>
-          <div class="v" id="mKing">—</div>
-        </div>
-
-        <div class="mCard">
-          <div class="k">Bet</div>
-          <div class="v"><span id="mBet">0</span> 💎</div>
-        </div>
-
-        <div class="mCard">
-          <div class="k">Receive</div>
-          <div class="v"><span id="mWin">0</span> 💎</div>
-        </div>
-      </div>
-
-      <button class="sheet-btn" id="mOk">CONTINUE</button>
-
+  <div class="result-amount">
+    <div class="amount-label">Receive</div>
+    <div class="amount-value">
+      <span id="mWin">0</span> 💎
     </div>
+  </div>
 
+  <div class="result-row">
+    <div>
+      <div class="mini-label">You</div>
+      <div class="mini-value" id="mYou">—</div>
+    </div>
+    <div>
+      <div class="mini-label">King</div>
+      <div class="mini-value" id="mKing">—</div>
+    </div>
+    <div>
+      <div class="mini-label">Bet</div>
+      <div class="mini-value"><span id="mBet">0</span> 💎</div>
+    </div>
+  </div>
+
+  <button class="sheet-btn" id="mOk">CONTINUE</button>
+
+</div>
     
   </div>
 </div>
@@ -2116,6 +2193,31 @@ setTimeout(()=>{
     mKing.textContent = r.king;
     mBet.textContent = String(r.bet);
     mWin.textContent = String(r.win);
+
+
+
+
+const iconEl = document.getElementById("resultIcon");
+const amountBlock = document.querySelector(".result-amount");
+
+if(r.result === "win"){
+  iconEl.textContent = "";
+  amountBlock.style.borderColor = "rgba(65,255,155,.7)";
+  amountBlock.style.boxShadow =
+    "0 0 35px rgba(65,255,155,.5)";
+}
+else if(r.result === "lose"){
+  iconEl.textContent = "";
+  amountBlock.style.borderColor = "rgba(255,60,60,.7)";
+  amountBlock.style.boxShadow =
+    "0 0 35px rgba(255,60,60,.5)";
+}
+else{
+  iconEl.textContent = "";
+}
+
+
+
 
     overlay.classList.add("show");
 
