@@ -1629,47 +1629,45 @@ function resetArena(){
 }
 
 
-function resetUIForNewRound({ roundId, forceReset = false }){
+function resetUIForNewRound({ roundId } = {}){
 
   resetArena();
 
-  if(forceReset){
-    usedPlayerCards.clear();
-    usedKingCards.clear();
-  }
+  // 🔥 LUÔN CLEAR BÀI KHI SANG ROUND MỚI
+  usedPlayerCards.clear();
+  usedKingCards.clear();
 
-  roundText.textContent = "#" + roundId;
+  roundText.textContent = "#" + (roundId || 1);
 
   currentBetValue = 0;
   betDisplay.textContent = "0 💎";
   resultText.textContent = "—";
+
   setStatus("Waiting for a bet");
   setPhase("Not yet bet");
-  
 
   canPick = false;
   picked = false;
   pickedIndex = -1;
-  
 
   buildRow(kingRow, "king");
   buildRow(playerRow, "player");
   renderPlayerDeck();
 
-  // 🔥 Reset lại style các lá bài (đặt ở đây)
+  // 🔥 Reset toàn bộ trạng thái card
   [...playerRow.children].forEach(c=>{
     c.style.opacity = "1";
     c.style.pointerEvents = "auto";
     c.style.transform = "";
+    c.classList.remove("win","lose","draw","reveal");
   });
 
   [...kingRow.children].forEach(c=>{
-  c.style.opacity = "1";
-  c.style.pointerEvents = "auto";
-  c.style.transform = "";
-});
-
-
+    c.style.opacity = "1";
+    c.style.pointerEvents = "auto";
+    c.style.transform = "";
+    c.classList.remove("win","lose","draw","reveal");
+  });
 }
 
 /* =========================
