@@ -2202,46 +2202,52 @@ clearBetBtn.onclick = ()=>{
 
 function animateToArena(cardEl, targetEl){
 
-playSound("fly");
+  return new Promise(resolve => {
 
-     if(!cardEl || !targetEl) return; // 💥 chống crash
+    playSound("fly");
 
+    if(!cardEl || !targetEl){
+      resolve();
+      return;
+    }
 
-  const rect1 = cardEl.getBoundingClientRect();
-  const rect2 = targetEl.getBoundingClientRect();
+    const rect1 = cardEl.getBoundingClientRect();
+    const rect2 = targetEl.getBoundingClientRect();
 
-  const dx = rect2.left - rect1.left;
-  const dy = rect2.top - rect1.top;
+    cardEl.style.position = "fixed";
+    cardEl.style.left = rect1.left + "px";
+    cardEl.style.top = rect1.top + "px";
+    cardEl.style.width = rect1.width + "px";
+    cardEl.style.height = rect1.height + "px";
+    cardEl.style.zIndex = 1000;
 
-  cardEl.style.position = "fixed";
-  cardEl.style.left = rect1.left + "px";
-  cardEl.style.top = rect1.top + "px";
-  cardEl.style.width = rect1.width + "px";
-  cardEl.style.height = rect1.height + "px";
-  cardEl.style.zIndex = 1000;
+    document.body.appendChild(cardEl);
 
-  document.body.appendChild(cardEl);
+    requestAnimationFrame(()=>{
+      cardEl.style.transition = "all .45s cubic-bezier(.2,.8,.2,1)";
+      cardEl.style.left = rect2.left + "px";
+      cardEl.style.top = rect2.top + "px";
+    });
 
-  requestAnimationFrame(()=>{
-    cardEl.style.transition = "all .45s cubic-bezier(.2,.8,.2,1)";
-    cardEl.style.left = rect2.left + "px";
-    cardEl.style.top = rect2.top + "px";
+    setTimeout(()=>{
+
+      cardEl.style.transition = "none";
+      cardEl.style.position = "";
+      cardEl.style.left = "";
+      cardEl.style.top = "";
+      cardEl.style.width = "100%";
+      cardEl.style.height = "100%";
+      cardEl.style.zIndex = "";
+
+      targetEl.innerHTML = "";
+      targetEl.appendChild(cardEl);
+
+      resolve();   // 🔥 báo đã xong animation
+
+    }, 450);
+
   });
-
-  setTimeout(()=>{
-    cardEl.style.transition = "none";
-    cardEl.style.position = "";
-    cardEl.style.left = "";
-    cardEl.style.top = "";
-    cardEl.style.width = "100%";
-    cardEl.style.height = "100%";
-    cardEl.style.zIndex = "";
-
-    targetEl.innerHTML = "";
-    targetEl.appendChild(cardEl);
-  }, 450);
 }
-
 
 
 /* =========================
@@ -2394,17 +2400,27 @@ if(yCard){
   }
 }
 
-  // 1️⃣ Player bay trước
-  if(yCard){
-  animateToArena(yCard, document.getElementById("playerSlot"));
-}
 
-// 2️⃣ King bay sau
-setTimeout(()=>{
-  if(kCard){
-    animateToArena(kCard, document.getElementById("kingSlot"));
+(async () => {
+
+  if(yCard){
+    await animateToArena(
+      yCard,
+      document.getElementById("playerSlot")
+    );
   }
-}, 400);
+
+  // ⏳ đứng 200ms cho đã mắt
+  await new Promise(r => setTimeout(r, 200));
+
+  if(kCard){
+    await animateToArena(
+      kCard,
+      document.getElementById("kingSlot")
+    );
+  }
+
+})();
 
 
 
