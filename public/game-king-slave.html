@@ -2,7 +2,13 @@
 <html lang="vi">
 <head>
   <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+  <meta name="viewport"
+      content="width=device-width,
+               initial-scale=1,
+               maximum-scale=1,
+               minimum-scale=1,
+               user-scalable=no,
+               viewport-fit=cover">
   <title>King vs Slave • Livestream Pro</title>
   <link rel="icon" href="/favicon.ico" type="image/x-icon">
   <script src="/socket.io/socket.io.js"></script>
@@ -25,6 +31,13 @@
     }
 
     *{box-sizing:border-box}
+
+
+html{
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
 
 html, body{
   height:100%;
@@ -2568,6 +2581,17 @@ socket.on("ks-retreat-ok", ()=>{
   socket.emit("ks-next");
 
 });
+
+
+/* 🔒 HARD LOCK ZOOM (iOS + Android) */
+
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('gesturechange', e => e.preventDefault());
+document.addEventListener('gestureend', e => e.preventDefault());
+
+document.addEventListener('dblclick', e => e.preventDefault());
+
+
 
 </script>
 </body>
