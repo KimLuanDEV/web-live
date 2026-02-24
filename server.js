@@ -6029,7 +6029,7 @@ if (!okSec) {
 
 // ➖ TRỪ KIM CƯƠNG NGAY KHI GỬI
 user.profile.coinReceived -= amt;
-user.profile.coins = Math.max(0, (user.profile.coins || 0) - amt);
+
 
 // 🧾 LOG (rất nên có)
 user.profile.withdrawHold ||= [];
