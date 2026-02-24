@@ -159,7 +159,7 @@ body{
   align-items:center;
   justify-content:center;
   line-height:1.1;
-  height:50px;
+  height:60px;     /* 🔥 tăng không gian */
 }
 
 /* Title “Hellfire” */
@@ -1585,14 +1585,17 @@ body{
 
 
 .game-logo{
-  height: 34px;
+  height: 48px;              /* 🔥 tăng kích thước */
+  max-width: 220px;          /* không vượt quá */
+
   object-fit: contain;
 
   filter:
-    drop-shadow(0 0 8px rgba(255,60,60,.8))
-    drop-shadow(0 0 18px rgba(0,240,255,.6));
+    drop-shadow(0 0 12px rgba(255,60,60,.9))
+    drop-shadow(0 0 25px rgba(0,240,255,.7));
 
   transition: transform .25s ease, filter .25s ease;
+  animation: logoBreath 3s ease-in-out infinite;
 }
 
 .game-logo:hover{
@@ -1601,6 +1604,14 @@ body{
     drop-shadow(0 0 12px rgba(255,0,0,1))
     drop-shadow(0 0 25px rgba(0,240,255,.9));
 }
+
+
+@keyframes logoBreath{
+  0%{ transform: scale(1); }
+  50%{ transform: scale(1.05); }
+  100%{ transform: scale(1); }
+}
+
 
   </style>
 </head>
