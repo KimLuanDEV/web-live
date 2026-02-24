@@ -2626,8 +2626,8 @@ socket.on("ks-retreat", ()=>{
   const me = users[uid];
   if(!me?.profile) return;
 
-  const reward = Math.floor(st.bet * 0.2);
-  me.profile.coins += reward;
+const reward = Math.floor(st.bet * 1.2); // bet gốc + 20%
+me.profile.coins += reward;
 
   saveUsers(users);
   emitToUser(uid,"coin-update",{ coins: me.profile.coins });
