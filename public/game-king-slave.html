@@ -449,25 +449,46 @@ body{
 .panel{
   width:min(520px, 100%);
   border-radius:28px;
-  border:1px solid rgba(255,255,255,.08);
 
   background:
+    radial-gradient(circle at 50% -20%,
+      rgba(255,0,0,.25),
+      transparent 60%),
     linear-gradient(180deg,
-      rgba(15,15,20,.96),
-      rgba(8,8,12,.90));
+      rgba(20,0,0,.98),
+      rgba(5,0,0,.95));
 
-  backdrop-filter: blur(24px);
+  border:1px solid rgba(255,0,0,.4);
 
   box-shadow:
-    0 40px 120px rgba(0,0,0,.75),
-    0 0 80px rgba(255,60,60,.08),
-    0 0 80px rgba(0,240,255,.08);
+    0 0 80px rgba(255,0,0,.25),
+    inset 0 0 80px rgba(0,0,0,.9);
 
-  overflow:hidden;
   position:relative;
+  overflow:hidden;
 }
 
+/* 🔥 Demon energy breathing */
+.panel::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 30% 40%,
+      rgba(255,0,0,.15),
+      transparent 60%);
+  animation: altarPulse 3s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes altarPulse{
+  0%{opacity:.6; transform:scale(1)}
+  50%{opacity:1; transform:scale(1.03)}
+  100%{opacity:.6; transform:scale(1)}
+}
     
+
+
     .panel.hide{
   opacity:0;
   transform: translateY(20px) scale(.98);
@@ -478,25 +499,24 @@ body{
 
 
 
-    .panel::before{
-      content:"";
-      position:absolute; inset:-1px;
-      background: radial-gradient(circle at 30% 0%, rgba(255,60,60,.18), transparent 55%),
-                  radial-gradient(circle at 70% 100%, rgba(0,240,255,.14), transparent 55%);
-      pointer-events:none;
-    }
-
 
 .betBox{
-  border-radius:20px;
-  border:1px solid rgba(255,255,255,.08);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.3));
-  padding:14px;
+  border-radius:22px;
+  padding:18px;
   display:flex;
   flex-direction:column;
-  gap:12px;
-  box-shadow: inset 0 0 25px rgba(0,0,0,.4);
+  gap:14px;
+
+  background:
+    linear-gradient(180deg,
+      rgba(40,0,0,.85),
+      rgba(0,0,0,.9));
+
+  border:1px solid rgba(255,0,0,.35);
+
+  box-shadow:
+    inset 0 0 60px rgba(0,0,0,.8),
+    0 0 40px rgba(255,0,0,.15);
 }
 
     .betRow{
@@ -546,22 +566,28 @@ body{
 
 .chip{
   height:38px;
+  border-radius:14px;
+  font-size:13px;
+  font-weight:900;
+
+ background:
+    linear-gradient(180deg,
+      rgba(120,0,0,.8),
+      rgba(40,0,0,.95));
+
+  border:1px solid rgba(255,255,255,.15);
+
+  box-shadow:
+    0 0 20px rgba(255,0,0,.2),
+    inset 0 0 20px rgba(0,0,0,.8);
+
+
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  border-radius:14px;
-
-  background:
-    linear-gradient(180deg,
-      rgba(255,255,255,.06),
-      rgba(0,0,0,.6));
-
-  border:1px solid rgba(255,255,255,.15);
-
-  font-size:13px;
-  font-weight:900;
+  
   letter-spacing:.4px;
 
   transition:.2s;
@@ -1000,15 +1026,18 @@ body{
 
 .btn.ghost{
   flex:1;
+
   background:
     linear-gradient(180deg,
-      rgba(255,60,60,.25),
-      rgba(120,0,0,.5));
+      rgba(60,0,0,.8),
+      rgba(20,0,0,.95));
 
-  border:1px solid rgba(255,60,60,.6);
+  border:1px solid rgba(255,0,0,.5);
 
   box-shadow:
-    0 0 25px rgba(255,60,60,.3);
+    0 0 25px rgba(255,0,0,.3);
+
+  color:#ffaaaa;
 }
 
 .btn.primary{
@@ -1027,27 +1056,31 @@ body{
 .betDisplay{
   flex:1;
   height:50px;
+  border-radius:18px;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  border-radius:18px;
-
-  background:
-    radial-gradient(circle at 50% 30%,
-      rgba(0,240,255,.35),
-      rgba(0,0,0,.8));
-
-  border:1px solid rgba(0,240,255,.5);
-
   font-weight:1000;
   font-size:18px;
   letter-spacing:1px;
 
+  border:1px solid rgba(255,0,0,.7);
+
+  box-shadow:
+    0 0 50px rgba(255,0,0,.6),
+    inset 0 0 40px rgba(0,0,0,.9);
+
   box-shadow:
     0 0 40px rgba(0,240,255,.4),
     inset 0 0 30px rgba(0,0,0,.6);
+
+  color:#fff;
+
+  text-shadow:
+    0 0 15px rgba(255,0,0,.9),
+    0 0 30px rgba(120,0,0,.8);
 }
 
 
