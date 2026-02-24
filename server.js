@@ -6508,7 +6508,7 @@ app.post("/api/admin/withdraw", (req, res) => {
   }
 
   const sub = Math.max(0, Number(amount) || 0);
-  const cur = Number(user.profile.coins || 0);
+  const cur = Number(user.profile.coinReceived || 0);
 
   if (sub <= 0) {
     return res.status(400).json({ error: "invalid_amount" });
@@ -6519,7 +6519,7 @@ app.post("/api/admin/withdraw", (req, res) => {
   }
 
   // ➖ TRỪ COIN
-  user.profile.coins = cur - sub;
+  user.profile.coinReceived = cur - sub;
 
   // 🧾 LOG ADMIN
   user.profile.adminLogs ||= [];
@@ -6529,7 +6529,7 @@ app.post("/api/admin/withdraw", (req, res) => {
     amount: sub,
     note: note || "",
     before: cur,
-    after: user.profile.coins,
+    after: user.profile.coinReceived,
     ts: Date.now()
   });
 
@@ -6573,11 +6573,11 @@ app.post("/api/admin/withdraw", (req, res) => {
     tag: "admin-withdraw"
   });
 
-  res.json({
-    ok: true,
-    uid: targetUid,
-    coins: user.profile.coins
-  });
+res.json({
+  ok: true,
+  uid: targetUid,
+  coinReceived: user.profile.coinReceived
+});
 });
 
 
