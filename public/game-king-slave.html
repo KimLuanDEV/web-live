@@ -1633,84 +1633,32 @@ const socket = io({
 });
 
 /* =========================
-   🔊 SOUND QUEUE ENGINE
+   🔊 SOUND SYSTEM
    ========================= */
 
 const sounds = {
-  bet: "/assets/sound/bet.mp3",
-  pick: "/assets/sound/pick.mp3",
-  fly: "/assets/sound/fly.mp3",
-  flip: "/assets/sound/flip.mp3",
-  win: "/assets/sound/win.mp3",
-  lose: "/assets/sound/lose.mp3",
-  draw: "/assets/sound/draw.mp3",
-  newRound: "/assets/sound/new-round.mp3"
+  bet: new Audio("/assets/sound/bet.mp3"),
+  pick: new Audio("/assets/sound/pick.mp3"),
+  fly: new Audio("/assets/sound/fly.mp3"),
+  flip: new Audio("/assets/sound/flip.mp3"),
+  win: new Audio("/assets/sound/win.mp3"),
+  lose: new Audio("/assets/sound/lose.mp3"),
+  draw: new Audio("/assets/sound/draw.mp3"),
+  newRound: new Audio("/assets/sound/new-round.mp3")
 };
 
-let soundQueue = [];
-let isPlayingQueue = false;
-let activeAudio = null;
-
-/* preload */
-Object.values(sounds).forEach(src=>{
-  const a = new Audio(src);
-  a.preload = "auto";
+// giảm delay
+Object.values(sounds).forEach(s=>{
+  s.preload = "auto";
+  s.volume = 0.7;
 });
 
-/* push vào queue */
-function queueSound(name, delay = 0){
-  soundQueue.push({ name, delay });
-  processQueue();
+function playSound(name){
+  const s = sounds[name];
+  if(!s) return;
+  s.currentTime = 0;
+  s.play().catch(()=>{});
 }
-
-/* xử lý queue */
-function processQueue(){
-
-  if(isPlayingQueue) return;
-  if(soundQueue.length === 0) return;
-
-  isPlayingQueue = true;
-
-  const { name, delay } = soundQueue.shift();
-
-  setTimeout(()=>{
-
-    // stop sound đang phát
-    if(activeAudio){
-      activeAudio.pause();
-      activeAudio.currentTime = 0;
-    }
-
-    const audio = new Audio(sounds[name]);
-    audio.volume = 0.7;
-    activeAudio = audio;
-
-    audio.play().catch(()=>{});
-
-    audio.onended = ()=>{
-      isPlayingQueue = false;
-      processQueue();
-    };
-
-    // fallback nếu file quá ngắn
-    setTimeout(()=>{
-      isPlayingQueue = false;
-      processQueue();
-    }, 1500);
-
-  }, delay);
-}
-
-/* clear queue khi cần */
-function clearSoundQueue(){
-  soundQueue = [];
-  if(activeAudio){
-    activeAudio.pause();
-    activeAudio.currentTime = 0;
-  }
-  isPlayingQueue = false;
-}
-
 /* =========================
    UI refs
    ========================= */
@@ -1852,7 +1800,7 @@ card.addEventListener("click", ()=>{
 
   flashPick(card);
 
-  queueSound("pick");
+ playSound("pick");
 
 });
     }
@@ -2035,7 +1983,7 @@ clearBetBtn.onclick = ()=>{
 
 function animateToArena(cardEl, targetEl){
 
-
+playSound("fly");
 
      if(!cardEl || !targetEl) return; // 💥 chống crash
 
@@ -2151,7 +2099,7 @@ socket.on("ks-state", (s)=>{
 
 socket.on("ks-bet-ok", (d)=>{
 
-  queueSound("bet");
+  playSound("bet");
 
   myBet = d.bet;
   myBetText.textContent = myBet.toLocaleString("en-US");
@@ -2187,159 +2135,200 @@ socket.on("ks-error", (e)=>{
 
 socket.on("ks-round-new", (d)=>{
 
-  queueSound("newRound");
+  playSound("newRound");
   
   panel.classList.remove("hide");
   resetUIForNewRound(d);
 });
 
-
 socket.on("ks-result", (r)=>{
 
   lockAll();
-  clearSoundQueue(); // 🔥 reset queue mỗi round
 
   const kingIdx = r.kingIndex;
   const youIdx  = r.youIndex;
 
-  usedPlayerCards.add(youIdx);
-  usedKingCards.add(kingIdx);
 
-  const kCard = kingRow.querySelector(`[data-idx="${kingIdx}"]`);
-  const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
+usedPlayerCards.add(youIdx);
+usedKingCards.add(kingIdx);
 
+const kCard = kingRow.querySelector(`[data-idx="${kingIdx}"]`);
+const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
+
+  // mở bài nhưng chưa highlight
   [...playerRow.children].forEach(c=>c.classList.remove("cover"));
 
-  // set ảnh player
-  if(yCard){
-    const img = yCard.querySelector("img");
-    if(img){
-      img.src = (r.you === "SLAVE")
-        ? "/assets/ks/card-slave.png"
-        : "/assets/ks/card-common.png";
-    }
-  }
 
-  /* =========================
-     🎧 SOUND TIMELINE
-     ========================= */
 
-  // 0ms – player fly
-  queueSound("fly", 0);
+// chỉ mở bài được chọn
+if(yCard){
+  const img = yCard.querySelector("img");
 
-  // 400ms – king fly
-  queueSound("fly", 400);
-
-  // 1500ms – flip
-  queueSound("flip", 1500);
-
-  // 2800ms – result
-  if(r.result === "win"){
-    queueSound("win", 2800);
-  }
-  else if(r.result === "lose"){
-    queueSound("lose", 2800);
-  }
-  else{
-    queueSound("draw", 2800);
-  }
-
-  /* =========================
-     🎴 ANIMATION
-     ========================= */
-
-  // Player bay
-  if(yCard){
-    animateToArena(yCard, document.getElementById("playerSlot"));
-  }
-
-  // King bay
-  setTimeout(()=>{
-    if(kCard){
-      animateToArena(kCard, document.getElementById("kingSlot"));
-    }
-  }, 400);
-
-  // Flip king
-  setTimeout(()=>{
-
-    const kingSlot = document.getElementById("kingSlot");
-    const kInSlot = kingSlot.firstElementChild;
-    if(!kInSlot) return;
-
-    const frontImg = kInSlot.querySelector(".card-front img");
-    if(!frontImg) return;
-
-    frontImg.src = (r.king === "KING")
-      ? "/assets/ks/card-king.png"
-      : "/assets/ks/card-common.png";
-
-    const doFlip = ()=>{
-      setTimeout(()=>{
-        kInSlot.classList.add("flip");
-        if(r.king === "KING"){
-          setTimeout(()=>{
-            kInSlot.classList.add("glow-king");
-          },400);
-        }
-      }, 1000);
-    };
-
-    if(frontImg.complete){
-      doFlip();
+  if(img){
+    if(r.you === "SLAVE"){
+      img.src = "/assets/ks/card-slave.png";
     }else{
-      frontImg.onload = doFlip;
+      img.src = "/assets/ks/card-common.png";
     }
+  }
+}
 
-  }, 1000);
+  // 1️⃣ Player bay trước
+  if(yCard){
+  animateToArena(yCard, document.getElementById("playerSlot"));
+}
 
-  /* =========================
-     💥 COMBAT SHAKE
-     ========================= */
+// 2️⃣ King bay sau
+setTimeout(()=>{
+  if(kCard){
+    animateToArena(kCard, document.getElementById("kingSlot"));
+  }
+}, 400);
 
+
+
+// 🎴 Lật King cinematic (đứng 1 nhịp trước khi flip)
+setTimeout(()=>{
+
+  const kingSlot = document.getElementById("kingSlot");
+  const kInSlot = kingSlot.firstElementChild;
+  if(!kInSlot) return;
+
+  const frontImg = kInSlot.querySelector(".card-front img");
+  if(!frontImg) return;
+
+  // ✅ Set ảnh trước
+  if(r.king === "KING"){
+    frontImg.src = "/assets/ks/card-king.png";
+  }else{
+    frontImg.src = "/assets/ks/card-common.png";
+  }
+
+  // 🔥 Chờ ảnh load xong
+  const doFlip = () => {
+
+    // ⏳ Đứng 1.2s trước khi lật (tăng hồi hộp)
+    setTimeout(()=>{
+
+      requestAnimationFrame(()=>{
+        requestAnimationFrame(()=>{
+
+playSound("flip");
+
+          kInSlot.classList.add("flip");
+
+          if(r.king === "KING"){
+            setTimeout(()=>{
+              kInSlot.classList.add("glow-king");
+            },400);
+          }
+        });
+      });
+
+    }, 1000); // 👈 chỉnh số này để tăng/giảm hồi hộp
+
+  };
+
+  if(frontImg.complete){
+    doFlip();
+  }else{
+    frontImg.onload = doFlip;
+  }
+
+}, 1000); // 👈 đợi bay xong vào slot
+
+
+  // 3️⃣ Combat rung nhẹ
   setTimeout(()=>{
-    playerSlot.classList.add("combat");
-    kingSlot.classList.add("combat");
+    document.getElementById("playerSlot").classList.add("combat");
+    document.getElementById("kingSlot").classList.add("combat");
   }, 900);
 
   setTimeout(()=>{
-    playerSlot.classList.remove("combat");
-    kingSlot.classList.remove("combat");
+    document.getElementById("playerSlot").classList.remove("combat");
+    document.getElementById("kingSlot").classList.remove("combat");
   }, 1200);
 
-  /* =========================
-     🎯 RESULT UI
-     ========================= */
-
+  // 4️⃣ Sau animation mới highlight + hiện modal
   setTimeout(()=>{
 
     const cls = r.result;
 
-    const pSlot = playerSlot.firstChild;
-    const kSlot = kingSlot.firstChild;
+    const pSlot = document.getElementById("playerSlot").firstChild;
+    const kSlot = document.getElementById("kingSlot").firstChild;
 
     if(pSlot) pSlot.classList.add(cls);
     if(kSlot) kSlot.classList.add(cls);
 
     resultText.textContent =
-      cls==="win" ? "WIN ✅" :
-      cls==="lose" ? "LOSE ❌" : "DRAW 🔁";
+      (cls==="win" ? "WIN ✅" : cls==="lose" ? "LOSE ❌" : "DRAW 🔁");
+
+    setPhase(cls==="draw" ? "Draw • Select card" : "End • New round");
+    setStatus(cls==="draw" ? "Draw → Select card" : "Result");
+
+    mTitle.textContent =
+      cls==="win" ? "You Win!" :
+      cls==="lose" ? "You Lose!" : "Draw!";
+
+    mSub.textContent =
+      cls==="draw"
+        ? ""
+        : "";
+
+    mYou.textContent = r.you;
+    mKing.textContent = r.king;
+    mBet.textContent = String(r.bet);
+    mWin.textContent = String(r.win);
+
+
+
+
+const iconEl = document.getElementById("resultIcon");
+const amountBlock = document.querySelector(".result-amount");
+
+if(r.result === "win"){
+  iconEl.textContent = "";
+  amountBlock.style.borderColor = "rgba(65,255,155,.7)";
+  amountBlock.style.boxShadow =
+    "0 0 35px rgba(65,255,155,.5)";
+}
+else if(r.result === "lose"){
+  iconEl.textContent = "";
+  amountBlock.style.borderColor = "rgba(255,60,60,.7)";
+  amountBlock.style.boxShadow =
+    "0 0 35px rgba(255,60,60,.5)";
+}
+else{
+  iconEl.textContent = "";
+}
+
+if(r.result === "win"){
+  playSound("win");
+}
+else if(r.result === "lose"){
+  playSound("lose");
+}
+else{
+  playSound("draw");
+}
+
 
     overlay.classList.add("show");
 
-    if(r.result !== "draw"){
-      setTimeout(()=>{
-        overlay.classList.remove("show");
-        resetArena();
-        socket.emit("ks-next");
-      }, 3000);
-    }
 
-  }, 3500);
+    // 🔄 AUTO NEXT ROUND (chỉ khi không phải draw)
+if(r.result !== "draw"){
+  setTimeout(()=>{
+    overlay.classList.remove("show");
+    resetArena();
+    socket.emit("ks-next"); // server tạo round mới
+  }, 3000);
+}
+
+
+  }, 4000);
 
 });
-
-
 socket.on("ks-open-pick", ()=>{
   // draw → cho chọn lại
   openPick();
