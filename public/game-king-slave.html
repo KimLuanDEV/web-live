@@ -2392,6 +2392,7 @@ const retreatBtn = document.getElementById("mRetreat");
 
 if(cls === "draw"){
   retreatBtn.style.display = "block";
+  retreatBtn.disabled = false;   // ✅ QUAN TRỌNG
 }else{
   retreatBtn.style.display = "none";
 }
@@ -2500,16 +2501,23 @@ socket.on("ks-retreat-ok", (d)=>{
   setPhase("Retreated • New round");
   setStatus("Retreated with small reward");
 
-  // cập nhật hiển thị
-  mTitle.textContent = "Retreated";
-  mWin.textContent = String(d.reward);
+  // ✅ RESET LOCAL STATE
+  cardsLocked = false;
+  canPick = false;
+  picked = false;
+  pickedIndex = -1;
+
+  usedPlayerCards.clear();
+  usedKingCards.clear();
+
+  unlockAllPlayerCards();
+  resetArena();
 
   // tự sang round mới
   setTimeout(()=>{
     socket.emit("ks-next");
   }, 1200);
 });
-
 
 </script>
 </body>

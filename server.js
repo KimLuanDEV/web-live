@@ -2568,24 +2568,29 @@ socket.on("ks-pick", (data)=>{
 
   let win = 0;
 
-  if(result === "win"){
-
+if(result === "win"){
     win = st.bet * 5;
     me.profile.coins += win;
 
     saveUsers(users);
     emitToUser(uid,"coin-update",{ coins: me.profile.coins });
 
-    // ✅ XOÁ HOÀN TOÀN STATE
-    ksUserState.delete(uid);
+    // ✅ reset thay vì delete
+    ksUserState.set(uid,{
+        bet: 0,
+        playerUsed: [],
+        kingUsed: []
+    });
+}
+else if(result === "lose"){
+    // ✅ reset thay vì delete
+    ksUserState.set(uid,{
+        bet: 0,
+        playerUsed: [],
+        kingUsed: []
+    });
+}
 
-  }
-  else if(result === "lose"){
-
-    // ❌ thua → mất bet → xoá state
-    ksUserState.delete(uid);
-
-  }
   // draw → giữ nguyên st (KHÔNG đụng gì)
 
   socket.emit("ks-result",{
@@ -2621,26 +2626,26 @@ socket.on("ks-retreat", ()=>{
   const me = users[uid];
   if(!me?.profile) return;
 
-  // 🔥 thưởng nhỏ 20%
   const reward = Math.floor(st.bet * 0.2);
-
   me.profile.coins += reward;
 
   saveUsers(users);
+  emitToUser(uid,"coin-update",{ coins: me.profile.coins });
 
-  emitToUser(uid,"coin-update",{
-    coins: me.profile.coins
-  });
-
-  // ✅ RESET STATE thay vì xoá
   ksUserState.set(uid,{
     bet: 0,
     playerUsed: [],
     kingUsed: []
   });
 
-  socket.emit("ks-retreat-ok",{
-    reward
+  socket.emit("ks-retreat-ok",{ reward });
+
+  // 🔥 QUAN TRỌNG
+  socket.emit("ks-state",{
+    roundId: ksRoundId,
+    myBet: 0,
+    playerUsed: [],
+    kingUsed: []
   });
 });
 
