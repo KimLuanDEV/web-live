@@ -1635,6 +1635,35 @@ const socket = io({
 
 
 /* =========================
+   🔊 SOUND SYSTEM
+   ========================= */
+
+const sounds = {
+  bet: new Audio("/assets/sound/bet.mp3"),
+  pick: new Audio("/assets/sound/pick.mp3"),
+  fly: new Audio("/assets/sound/fly.mp3"),
+  flip: new Audio("/assets/sound/flip.mp3"),
+  win: new Audio("/assets/sound/win.mp3"),
+  lose: new Audio("/assets/sound/lose.mp3"),
+  draw: new Audio("/assets/sound/draw.mp3"),
+  newRound: new Audio("/assets/sound/new-round.mp3")
+};
+
+// giảm delay
+Object.values(sounds).forEach(s=>{
+  s.preload = "auto";
+  s.volume = 0.7;
+});
+
+function playSound(name){
+  const s = sounds[name];
+  if(!s) return;
+  s.currentTime = 0;
+  s.play().catch(()=>{});
+}
+
+
+/* =========================
    UI refs
    ========================= */
 const diamondEl = document.getElementById("diamondValue");
@@ -1774,6 +1803,9 @@ card.addEventListener("click", ()=>{
   socket.emit("ks-pick", { index: idx });
 
   flashPick(card);
+
+  playSound("pick");
+
 });
     }
 
@@ -1955,6 +1987,8 @@ clearBetBtn.onclick = ()=>{
 
 function animateToArena(cardEl, targetEl){
 
+playSound("fly");
+
      if(!cardEl || !targetEl) return; // 💥 chống crash
 
 
@@ -2069,6 +2103,10 @@ socket.on("ks-state", (s)=>{
 
 socket.on("ks-bet-ok", (d)=>{
 
+
+  playSound("bet");
+
+
   myBet = d.bet;
   myBetText.textContent = myBet.toLocaleString("en-US");
 
@@ -2110,6 +2148,9 @@ socket.on("ks-error", (e)=>{
 });
 
 socket.on("ks-round-new", (d)=>{
+
+  playSound("newRound");
+  
   panel.classList.remove("hide");
   resetUIForNewRound(d);
 });
@@ -2186,6 +2227,8 @@ setTimeout(()=>{
       requestAnimationFrame(()=>{
         requestAnimationFrame(()=>{
           kInSlot.classList.add("flip");
+
+          playSound("flip");
 
           if(r.king === "KING"){
             setTimeout(()=>{
@@ -2273,6 +2316,15 @@ else{
 }
 
 
+if(r.result === "win"){
+  playSound("win");
+}
+else if(r.result === "lose"){
+  playSound("lose");
+}
+else{
+  playSound("draw");
+}
 
 
     overlay.classList.add("show");
