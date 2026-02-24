@@ -2632,8 +2632,12 @@ socket.on("ks-retreat", ()=>{
     coins: me.profile.coins
   });
 
-  // ❌ xoá hoàn toàn state
-  ksUserState.delete(uid);
+  // ✅ RESET STATE thay vì xoá
+  ksUserState.set(uid,{
+    bet: 0,
+    playerUsed: [],
+    kingUsed: []
+  });
 
   socket.emit("ks-retreat-ok",{
     reward
@@ -2644,12 +2648,20 @@ socket.on("ks-retreat", ()=>{
 
 
 socket.on("ks-next", ()=>{
+
   const uid = socket.data.uid;
   if(!uid) return;
 
   ksRoundId++;
   ksKingIndex = Math.floor(Math.random() * 5);
   ksSlaveIndex = Math.floor(Math.random() * 5);
+
+  // ✅ reset state cho round mới
+  ksUserState.set(uid,{
+    bet: 0,
+    playerUsed: [],
+    kingUsed: []
+  });
 
   socket.emit("ks-init",{
     roundId: ksRoundId,
@@ -2660,6 +2672,8 @@ socket.on("ks-next", ()=>{
     roundId: ksRoundId
   });
 });
+
+
 
 socket.on("time-race-bet", data=>{
   const uid = socket.data.uid;
