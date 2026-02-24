@@ -2036,12 +2036,16 @@ clearBetBtn.onclick = ()=>{
 
 function animateToArena(cardEl, targetEl){
 
-  if(!cardEl || !targetEl) return;
+queueSound("fly");
 
-  queueSound("fly");
+     if(!cardEl || !targetEl) return; // 💥 chống crash
+
 
   const rect1 = cardEl.getBoundingClientRect();
   const rect2 = targetEl.getBoundingClientRect();
+
+  const dx = rect2.left - rect1.left;
+  const dy = rect2.top - rect1.top;
 
   cardEl.style.position = "fixed";
   cardEl.style.left = rect1.left + "px";
@@ -2058,9 +2062,7 @@ function animateToArena(cardEl, targetEl){
     cardEl.style.top = rect2.top + "px";
   });
 
-  const onEnd = ()=>{
-    cardEl.removeEventListener("transitionend", onEnd);
-
+  setTimeout(()=>{
     cardEl.style.transition = "none";
     cardEl.style.position = "";
     cardEl.style.left = "";
@@ -2071,9 +2073,7 @@ function animateToArena(cardEl, targetEl){
 
     targetEl.innerHTML = "";
     targetEl.appendChild(cardEl);
-  };
-
-  cardEl.addEventListener("transitionend", onEnd);
+  }, 450);
 }
 
 
@@ -2193,12 +2193,10 @@ socket.on("ks-round-new", (d)=>{
   panel.classList.remove("hide");
   resetUIForNewRound(d);
 });
-
-
 socket.on("ks-result", (r)=>{
 
   lockAll();
-  clearSoundQueue();
+  clearSoundQueue(); // 🔥 reset queue mỗi round
 
   const kingIdx = r.kingIndex;
   const youIdx  = r.youIndex;
@@ -2209,16 +2207,11 @@ socket.on("ks-result", (r)=>{
   const kCard = kingRow.querySelector(`[data-idx="${kingIdx}"]`);
   const yCard = playerRow.querySelector(`[data-idx="${youIdx}"]`);
 
-  const playerSlot = document.getElementById("playerSlot");
-  const kingSlot   = document.getElementById("kingSlot");
-
   [...playerRow.children].forEach(c=>c.classList.remove("cover"));
 
-  /* =========================
-     🎴 PLAYER IMAGE
-     ========================= */
+  // set ảnh player
   if(yCard){
-    const img = yCard.querySelector(".card-front img");
+    const img = yCard.querySelector("img");
     if(img){
       img.src = (r.you === "SLAVE")
         ? "/assets/ks/card-slave.png"
@@ -2227,27 +2220,49 @@ socket.on("ks-result", (r)=>{
   }
 
   /* =========================
-     🛫 PLAYER FLY
+     🎧 SOUND TIMELINE
      ========================= */
+
+  // 0ms – player fly
+  queueSound("fly", 0);
+
+  // 400ms – king fly
+  queueSound("fly", 400);
+
+  // 1500ms – flip
+  queueSound("flip", 1500);
+
+  // 2800ms – result
+  if(r.result === "win"){
+    queueSound("win", 2800);
+  }
+  else if(r.result === "lose"){
+    queueSound("lose", 2800);
+  }
+  else{
+    queueSound("draw", 2800);
+  }
+
+  /* =========================
+     🎴 ANIMATION
+     ========================= */
+
+  // Player bay
   if(yCard){
-    animateToArena(yCard, playerSlot); // fly sound nằm trong animate
+    animateToArena(yCard, document.getElementById("playerSlot"));
   }
 
-  /* =========================
-     🛫 KING FLY (sau khi player fly xong)
-     ========================= */
-  if(kCard){
-    setTimeout(()=>{
-      animateToArena(kCard, kingSlot);
-    }, 200);
-  }
+  // King bay
+  setTimeout(()=>{
+    if(kCard){
+      animateToArena(kCard, document.getElementById("kingSlot"));
+    }
+  }, 400);
 
-  /* =========================
-     🎴 FLIP KING (SYNC)
-     ========================= */
-
+  // Flip king
   setTimeout(()=>{
 
+    const kingSlot = document.getElementById("kingSlot");
     const kInSlot = kingSlot.firstElementChild;
     if(!kInSlot) return;
 
@@ -2258,40 +2273,15 @@ socket.on("ks-result", (r)=>{
       ? "/assets/ks/card-king.png"
       : "/assets/ks/card-common.png";
 
-    const inner = kInSlot.querySelector(".card-inner");
-    if(!inner) return;
-
     const doFlip = ()=>{
-
-      // 🔥 phát flip sound khi bắt đầu lật
-      queueSound("flip");
-
-      kInSlot.classList.add("flip");
-
-      // 👇 khi animation flip kết thúc → phát result sound
-      inner.addEventListener("transitionend", function handler(e){
-
-        if(e.propertyName !== "transform") return;
-
-        inner.removeEventListener("transitionend", handler);
-
-        if(r.result === "win"){
-          queueSound("win");
+      setTimeout(()=>{
+        kInSlot.classList.add("flip");
+        if(r.king === "KING"){
+          setTimeout(()=>{
+            kInSlot.classList.add("glow-king");
+          },400);
         }
-        else if(r.result === "lose"){
-          queueSound("lose");
-        }
-        else{
-          queueSound("draw");
-        }
-
-      });
-
-      if(r.king === "KING"){
-        setTimeout(()=>{
-          kInSlot.classList.add("glow-king");
-        },400);
-      }
+      }, 1000);
     };
 
     if(frontImg.complete){
@@ -2300,7 +2290,7 @@ socket.on("ks-result", (r)=>{
       frontImg.onload = doFlip;
     }
 
-  }, 700);
+  }, 1000);
 
   /* =========================
      💥 COMBAT SHAKE
@@ -2309,12 +2299,12 @@ socket.on("ks-result", (r)=>{
   setTimeout(()=>{
     playerSlot.classList.add("combat");
     kingSlot.classList.add("combat");
-  }, 600);
+  }, 900);
 
   setTimeout(()=>{
     playerSlot.classList.remove("combat");
     kingSlot.classList.remove("combat");
-  }, 900);
+  }, 1200);
 
   /* =========================
      🎯 RESULT UI
@@ -2344,11 +2334,9 @@ socket.on("ks-result", (r)=>{
       }, 3000);
     }
 
-  }, 1800);
+  }, 3500);
 
 });
-
-
 socket.on("ks-open-pick", ()=>{
   // draw → cho chọn lại
   openPick();
