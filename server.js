@@ -6130,7 +6130,6 @@ app.post("/api/admin/withdraw-action", (req, res) => {
     reqItem.handledAt = Date.now();
 
     // hoàn lại đúng những gì đã hold
-    user.profile.coins = (user.profile.coins || 0) + amount;
     user.profile.coinReceived =
       (user.profile.coinReceived || 0) + amount;
 
