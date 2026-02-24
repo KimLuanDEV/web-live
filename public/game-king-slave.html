@@ -2103,36 +2103,26 @@ socket.on("ks-state", (s)=>{
 
 socket.on("ks-bet-ok", (d)=>{
 
-
   playSound("bet");
-
 
   myBet = d.bet;
   myBetText.textContent = myBet.toLocaleString("en-US");
 
   setStatus("Bet placed successfully");
 
-  // 🔥 ẨN PANEL
   panel.classList.add("hide");
 
-  // 🔥 BUILD LẠI KING (vì KING luôn úp)
   buildRow(kingRow, "king");
-
-  // 🔥 BUILD LẠI PLAYER STRUCTURE
   buildRow(playerRow, "player");
 
-  // 🔥 KING vẫn úp
-  [...kingRow.children].forEach(c=>{
-    c.classList.add("cover");
-  });
+  [...kingRow.children].forEach(c=>c.classList.add("cover"));
+  [...playerRow.children].forEach(c=>c.classList.remove("cover"));
 
-  // 🔥 MỞ BÀI PLAYER
-  [...playerRow.children].forEach(c=>{
-    c.classList.remove("cover");
-  });
-
-  // 🔥 RENDER LẠI SLAVE CHUẨN
   renderPlayerDeck();
+
+  // 🔥 QUAN TRỌNG
+  cardsLocked = false;
+  unlockAllPlayerCards();
 
   canPick = true;
   picked = false;
