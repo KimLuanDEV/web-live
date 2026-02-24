@@ -1533,6 +1533,25 @@ body{
   font-weight:900;
 }
 
+
+.result-actions{
+  display:flex;
+  gap:10px;
+}
+
+.sheet-btn.retreat{
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,220,150,.2), transparent 55%),
+    linear-gradient(180deg, rgba(255,204,102,.45), rgba(120,60,0,.85));
+
+  border:1px solid rgba(255,204,102,.6);
+
+  box-shadow:
+    0 0 40px rgba(255,204,102,.35),
+    inset 0 0 26px rgba(0,0,0,.75);
+}
+
+
   </style>
 </head>
 
@@ -1700,7 +1719,10 @@ body{
     </div>
   </div>
 
+  <div class="result-actions">
+  <button class="sheet-btn retreat" id="mRetreat">RETREAT</button>
   <button class="sheet-btn" id="mOk">CONTINUE</button>
+</div>
 
 </div>
     
@@ -2365,6 +2387,15 @@ playSound("flip");
       cls==="win" ? "You Win!" :
       cls==="lose" ? "You Lose!" : "Draw!";
 
+
+const retreatBtn = document.getElementById("mRetreat");
+
+if(cls === "draw"){
+  retreatBtn.style.display = "block";
+}else{
+  retreatBtn.style.display = "none";
+}
+
     mSub.textContent =
       cls==="draw"
         ? ""
@@ -2451,6 +2482,33 @@ function unlockAllPlayerCards(){
       c.style.opacity = "1";
     });
 }
+
+
+document.getElementById("mRetreat").onclick = ()=>{
+
+  const btn = document.getElementById("mRetreat");
+  btn.disabled = true;
+
+  socket.emit("ks-retreat");
+};
+
+
+socket.on("ks-retreat-ok", (d)=>{
+
+  overlay.classList.remove("show");
+
+  setPhase("Retreated • New round");
+  setStatus("Retreated with small reward");
+
+  // cập nhật hiển thị
+  mTitle.textContent = "Retreated";
+  mWin.textContent = String(d.reward);
+
+  // tự sang round mới
+  setTimeout(()=>{
+    socket.emit("ks-next");
+  }, 1200);
+});
 
 
 </script>

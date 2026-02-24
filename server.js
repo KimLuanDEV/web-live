@@ -2606,6 +2606,43 @@ socket.on("ks-pick", (data)=>{
 });
 
 
+// ================================
+// 🏳️ KS RETREAT (sau khi draw)
+// ================================
+socket.on("ks-retreat", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const st = ksUserState.get(uid);
+  if(!st?.bet) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  // 🔥 thưởng nhỏ 20%
+  const reward = Math.floor(st.bet * 0.2);
+
+  me.profile.coins += reward;
+
+  saveUsers(users);
+
+  emitToUser(uid,"coin-update",{
+    coins: me.profile.coins
+  });
+
+  // ❌ xoá hoàn toàn state
+  ksUserState.delete(uid);
+
+  socket.emit("ks-retreat-ok",{
+    reward
+  });
+});
+
+
+
+
 socket.on("ks-next", ()=>{
   const uid = socket.data.uid;
   if(!uid) return;
