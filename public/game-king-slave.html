@@ -2505,25 +2505,48 @@ document.getElementById("mRetreat").onclick = ()=>{
 
 socket.on("ks-retreat-ok", (d)=>{
 
-  overlay.classList.remove("show");
+  const reward = Math.floor(Number(d?.reward || 0));
 
-  setPhase("Retreated • New round");
-  setStatus("Retreated with small reward");
+  // 🔥 cập nhật modal trước
+  mTitle.textContent = "Retreated!";
+  mSub.textContent = "You escaped with demon mercy";
+  mYou.textContent = "—";
+  mKing.textContent = "—";
+  mBet.textContent = String(myBet);
+  mWin.textContent = reward.toLocaleString("en-US");
 
-  // ✅ RESET LOCAL STATE
-  cardsLocked = false;
-  canPick = false;
-  picked = false;
-  pickedIndex = -1;
+  // đổi màu block thưởng
+  const amountBlock = document.querySelector(".result-amount");
+  amountBlock.style.borderColor = "rgba(255,204,102,.8)";
+  amountBlock.style.boxShadow = "0 0 40px rgba(255,204,102,.5)";
 
-  usedPlayerCards.clear();
-  usedKingCards.clear();
+  // icon vàng
+  document.getElementById("resultIcon").textContent = "🏳";
 
-  unlockAllPlayerCards();
-  resetArena();
+  overlay.classList.add("show");
 
+  // 🔄 sau 2.5s mới sang round mới
+  setTimeout(()=>{
 
-socket.emit("ks-next");
+    overlay.classList.remove("show");
+
+    setPhase("Retreated • New round");
+    setStatus("Retreated with small reward");
+
+    cardsLocked = false;
+    canPick = false;
+    picked = false;
+    pickedIndex = -1;
+
+    usedPlayerCards.clear();
+    usedKingCards.clear();
+
+    unlockAllPlayerCards();
+    resetArena();
+
+    socket.emit("ks-next");
+
+  }, 2500);
 
 });
 
