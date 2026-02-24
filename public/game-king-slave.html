@@ -2202,52 +2202,46 @@ clearBetBtn.onclick = ()=>{
 
 function animateToArena(cardEl, targetEl){
 
-  return new Promise(resolve => {
+playSound("fly");
 
-    playSound("fly");
+     if(!cardEl || !targetEl) return; // 💥 chống crash
 
-    if(!cardEl || !targetEl){
-      resolve();
-      return;
-    }
 
-    const rect1 = cardEl.getBoundingClientRect();
-    const rect2 = targetEl.getBoundingClientRect();
+  const rect1 = cardEl.getBoundingClientRect();
+  const rect2 = targetEl.getBoundingClientRect();
 
-    cardEl.style.position = "fixed";
-    cardEl.style.left = rect1.left + "px";
-    cardEl.style.top = rect1.top + "px";
-    cardEl.style.width = rect1.width + "px";
-    cardEl.style.height = rect1.height + "px";
-    cardEl.style.zIndex = 1000;
+  const dx = rect2.left - rect1.left;
+  const dy = rect2.top - rect1.top;
 
-    document.body.appendChild(cardEl);
+  cardEl.style.position = "fixed";
+  cardEl.style.left = rect1.left + "px";
+  cardEl.style.top = rect1.top + "px";
+  cardEl.style.width = rect1.width + "px";
+  cardEl.style.height = rect1.height + "px";
+  cardEl.style.zIndex = 1000;
 
-    requestAnimationFrame(()=>{
-      cardEl.style.transition = "all .45s cubic-bezier(.2,.8,.2,1)";
-      cardEl.style.left = rect2.left + "px";
-      cardEl.style.top = rect2.top + "px";
-    });
+  document.body.appendChild(cardEl);
 
-    setTimeout(()=>{
-
-      cardEl.style.transition = "none";
-      cardEl.style.position = "";
-      cardEl.style.left = "";
-      cardEl.style.top = "";
-      cardEl.style.width = "100%";
-      cardEl.style.height = "100%";
-      cardEl.style.zIndex = "";
-
-      targetEl.innerHTML = "";
-      targetEl.appendChild(cardEl);
-
-      resolve();   // 🔥 báo đã xong animation
-
-    }, 450);
-
+  requestAnimationFrame(()=>{
+    cardEl.style.transition = "all .45s cubic-bezier(.2,.8,.2,1)";
+    cardEl.style.left = rect2.left + "px";
+    cardEl.style.top = rect2.top + "px";
   });
+
+  setTimeout(()=>{
+    cardEl.style.transition = "none";
+    cardEl.style.position = "";
+    cardEl.style.left = "";
+    cardEl.style.top = "";
+    cardEl.style.width = "100%";
+    cardEl.style.height = "100%";
+    cardEl.style.zIndex = "";
+
+    targetEl.innerHTML = "";
+    targetEl.appendChild(cardEl);
+  }, 450);
 }
+
 
 
 /* =========================
@@ -2399,7 +2393,6 @@ if(yCard){
     }
   }
 }
-
 
 (async () => {
 
