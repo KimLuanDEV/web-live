@@ -1113,98 +1113,162 @@ body{
 
 
 /* =========================
-   GLOBAL PHASE BAR
+   GLOBAL PHASE BAR • DEMON
    ========================= */
 
 .global-phase{
   position:fixed;
-  top: calc(230px + var(--safeTop));
+  top: calc(220px + var(--safeTop));
   left:0;
   right:0;
-
   display:flex;
   justify-content:center;
-
-  z-index:20;
+  z-index:60;
   pointer-events:none;
 }
 
+/* Demon capsule */
 .phase-pill{
   position:relative;
+  padding:12px 30px;
+  border-radius:999px;
 
-  padding:10px 28px;
-  border-radius:60px;
-
-  font-size:14px;
+  font-size:13px;
   font-weight:1000;
-  letter-spacing:.8px;
+  letter-spacing:1px;
+  text-transform:uppercase;
 
   color:#fff;
 
-  backdrop-filter: blur(18px);
-
-  border:1px solid rgba(255,255,255,.12);
+  border:1px solid rgba(255,50,80,.45);
 
   background:
-    linear-gradient(90deg,
-      rgba(255,60,60,.15),
-      rgba(0,0,0,.7),
-      rgba(0,240,255,.15));
+    radial-gradient(circle at 25% 30%, rgba(255,0,60,.28), transparent 55%),
+    radial-gradient(circle at 70% 25%, rgba(255,180,60,.12), transparent 58%),
+    linear-gradient(180deg, rgba(30,0,0,.92), rgba(0,0,0,.80));
+
+  backdrop-filter: blur(18px);
 
   box-shadow:
-    0 0 30px rgba(255,255,255,.05),
-    0 0 60px rgba(0,240,255,.08);
+    0 18px 60px rgba(0,0,0,.70),
+    0 0 26px rgba(255,0,60,.28),
+    inset 0 0 22px rgba(0,0,0,.75);
 
   overflow:hidden;
-  transition:.3s;
+  transform: translateZ(0);
 }
 
-/* light beam chạy ngang */
+/* rune / sigil layer */
 .phase-pill::before{
   content:"";
   position:absolute;
-  top:0;
-  left:-50%;
-  width:50%;
-  height:100%;
-  background:linear-gradient(90deg,
+  inset:-40%;
+  background:
+    repeating-linear-gradient(45deg,
+      rgba(255,0,60,.14) 0 2px,
+      rgba(255,0,60,0) 2px 10px),
+    radial-gradient(circle at 50% 55%, rgba(255,0,60,.20), transparent 60%),
+    radial-gradient(circle at 35% 40%, rgba(0,240,255,.10), transparent 55%);
+  filter: blur(10px);
+  opacity:.75;
+  pointer-events:none;
+  animation: demonSigil 3.2s ease-in-out infinite;
+}
+
+@keyframes demonSigil{
+  0%{ transform: translateY(0) scale(1); opacity:.55; }
+  50%{ transform: translateY(6px) scale(1.04); opacity:.95; }
+  100%{ transform: translateY(0) scale(1); opacity:.55; }
+}
+
+/* hellfire shine sweep */
+.phase-pill::after{
+  content:"";
+  position:absolute;
+  top:-40%;
+  left:-60%;
+  width:60%;
+  height:180%;
+  background: linear-gradient(90deg,
     transparent,
-    rgba(255,255,255,.35),
+    rgba(255,210,120,.35),
+    rgba(255,0,60,.25),
     transparent);
-  transform:skewX(-25deg);
-  animation: phaseShine 3s linear infinite;
+  transform: skewX(-22deg);
+  filter: blur(2px);
+  opacity:.85;
+  animation: hellSweep 2.8s linear infinite;
+  pointer-events:none;
 }
 
-@keyframes phaseShine{
-  0%{ left:-50% }
-  100%{ left:120% }
+@keyframes hellSweep{
+  0%{ left:-70%; }
+  100%{ left:140%; }
 }
-/* trạng thái */
 
+/* tiny horns */
+.phase-pill .horn{
+  position:absolute;
+  top:-7px;
+  width:12px;
+  height:12px;
+  border-radius:0 0 10px 10px;
+  background:
+    radial-gradient(circle at 30% 30%, rgba(255,220,150,.85), rgba(255,0,60,.85));
+  filter: drop-shadow(0 0 10px rgba(255,0,60,.45));
+  opacity:.9;
+}
+.phase-pill .horn.left{ left:18px; transform: rotate(-18deg); }
+.phase-pill .horn.right{ right:18px; transform: rotate(18deg); }
+
+/* ember dots */
+.phase-pill .embers{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:
+    radial-gradient(circle at 18% 65%, rgba(255,160,60,.35), transparent 28%),
+    radial-gradient(circle at 46% 30%, rgba(255,0,60,.30), transparent 26%),
+    radial-gradient(circle at 82% 55%, rgba(255,220,140,.22), transparent 30%);
+  opacity:.65;
+  mix-blend-mode: screen;
+}
+
+/* ===== STATES (demon colors) ===== */
 .phase-pill.waiting{
-  border-color: rgba(255,204,102,.6);
+  border-color: rgba(255,204,102,.55);
   box-shadow:
-    0 0 35px rgba(255,204,102,.4);
+    0 18px 60px rgba(0,0,0,.70),
+    0 0 30px rgba(255,204,102,.28),
+    0 0 18px rgba(255,0,60,.18),
+    inset 0 0 22px rgba(0,0,0,.75);
 }
 
 .phase-pill.picking{
-  border-color: rgba(0,240,255,.7);
+  border-color: rgba(0,240,255,.55);
   box-shadow:
-    0 0 40px rgba(0,240,255,.6);
+    0 18px 60px rgba(0,0,0,.70),
+    0 0 34px rgba(0,240,255,.35),
+    0 0 18px rgba(255,0,60,.12),
+    inset 0 0 22px rgba(0,0,0,.75);
 }
 
 .phase-pill.result{
-  border-color: rgba(65,255,155,.7);
+  border-color: rgba(65,255,155,.55);
   box-shadow:
-    0 0 40px rgba(65,255,155,.6);
+    0 18px 60px rgba(0,0,0,.70),
+    0 0 34px rgba(65,255,155,.30),
+    0 0 18px rgba(255,0,60,.12),
+    inset 0 0 22px rgba(0,0,0,.75);
 }
 
 .phase-pill.lose{
-  border-color: rgba(255,60,60,.7);
+  border-color: rgba(255,60,60,.75);
   box-shadow:
-    0 0 40px rgba(255,60,60,.6);
+    0 18px 60px rgba(0,0,0,.70),
+    0 0 38px rgba(255,60,60,.45),
+    inset 0 0 22px rgba(0,0,0,.75);
 }
-
 
 
 /* =========================
@@ -1506,6 +1570,9 @@ body{
 <!-- 🎯 GLOBAL PHASE BAR -->
 <div class="global-phase" id="globalPhase">
   <div class="phase-pill" id="phaseText">
+    <span class="horn left"></span>
+    <span class="horn right"></span>
+    <span class="embers"></span>
     Not yet bet
   </div>
 </div>
