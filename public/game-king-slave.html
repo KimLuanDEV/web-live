@@ -2394,26 +2394,17 @@ if(yCard){
   }
 }
 
-(async () => {
-
+  // 1️⃣ Player bay trước
   if(yCard){
-    await animateToArena(
-      yCard,
-      document.getElementById("playerSlot")
-    );
-  }
+  animateToArena(yCard, document.getElementById("playerSlot"));
+}
 
-  // ⏳ đứng 200ms cho đã mắt
-  await new Promise(r => setTimeout(r, 200));
-
+// 2️⃣ King bay sau
+setTimeout(()=>{
   if(kCard){
-    await animateToArena(
-      kCard,
-      document.getElementById("kingSlot")
-    );
+    animateToArena(kCard, document.getElementById("kingSlot"));
   }
-
-})();
+}, 1000);
 
 
 
