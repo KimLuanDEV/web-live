@@ -2036,7 +2036,7 @@ clearBetBtn.onclick = ()=>{
 
 function animateToArena(cardEl, targetEl){
 
-queueSound("fly");
+
 
      if(!cardEl || !targetEl) return; // 💥 chống crash
 
@@ -2188,11 +2188,14 @@ socket.on("ks-error", (e)=>{
 
 socket.on("ks-round-new", (d)=>{
 
-  playSound("newRound");
+  queueSound("newRound");
   
   panel.classList.remove("hide");
   resetUIForNewRound(d);
 });
+
+
+
 socket.on("ks-result", (r)=>{
 
   lockAll();
