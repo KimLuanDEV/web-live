@@ -1096,9 +1096,6 @@ body{
 
   border:1px solid rgba(255,0,0,.7);
 
-  box-shadow:
-    0 0 50px rgba(255,0,0,.6),
-    inset 0 0 40px rgba(0,0,0,.9);
 
   box-shadow:
     0 0 40px rgba(0,240,255,.4),
@@ -1955,15 +1952,24 @@ function flashPick(card){
   setTimeout(()=>card.classList.remove("reveal"), 380);
 }
 
+
+
 function setPhase(text){
 
   const el = document.getElementById("phaseText");
 
-  el.textContent = text;
+  // giữ lại horn + embers
+  const horns = `
+    <span class="horn left"></span>
+    <span class="horn right"></span>
+    <span class="embers"></span>
+  `;
+
+  el.innerHTML = horns + text;
 
   el.classList.remove("waiting","picking","result","lose");
 
-  if(text.includes("Please place your bet")){
+  if(text.includes("Not yet bet")){
     el.classList.add("waiting");
   }
   else if(text.includes("Select")){
@@ -2176,10 +2182,10 @@ socket.on("ks-state", (s)=>{
   if(!s) return;
 
   // Nếu round mới thì mới reset
-  if(s.roundId !== roundId){
-    resetUIForNewRound({ roundId: s.roundId });
-  }
-
+if(s.roundId !== roundId){
+  roundId = s.roundId;   // 🔥 THÊM DÒNG NÀY
+  resetUIForNewRound({ roundId: s.roundId });
+}
   // Restore bet
   if(s.myBet && s.myBet > 0){
 
@@ -2253,7 +2259,9 @@ socket.on("ks-error", (e)=>{
 socket.on("ks-round-new", (d)=>{
 
   playSound("newRound");
-  
+
+  document.getElementById("mRetreat").disabled = false;
+
   panel.classList.remove("hide");
   resetUIForNewRound(d);
 });
@@ -2390,10 +2398,11 @@ playSound("flip");
 
 const retreatBtn = document.getElementById("mRetreat");
 
-if(cls === "draw"){
+if(r.result === "draw" && (r.drawStreak || 0) <= 3){
   retreatBtn.style.display = "block";
-  retreatBtn.disabled = false;   // ✅ QUAN TRỌNG
-}else{
+  retreatBtn.disabled = false;
+}
+else{
   retreatBtn.style.display = "none";
 }
 
@@ -2513,10 +2522,9 @@ socket.on("ks-retreat-ok", (d)=>{
   unlockAllPlayerCards();
   resetArena();
 
-  // tự sang round mới
-  setTimeout(()=>{
-    socket.emit("ks-next");
-  }, 1200);
+
+socket.emit("ks-next");
+
 });
 
 </script>

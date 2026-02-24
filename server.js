@@ -2507,7 +2507,8 @@ const old = ksUserState.get(uid);
 ksUserState.set(uid, {
   bet,
   playerUsed: old?.playerUsed || [],
-  kingUsed: old?.kingUsed || []
+  kingUsed: old?.kingUsed || [],
+  drawStreak: old?.drawStreak || 0   // 🔥 thêm dòng này
 });
 
   socket.emit("ks-bet-ok",{
@@ -2551,13 +2552,11 @@ socket.on("ks-pick", (data)=>{
 
   st.kingUsed.push(kingPickIndex);
 
-  // 🔄 LƯU STATE SAU KHI UPDATE
-  ksUserState.set(uid, st);
-
   const you  = ksCardByIndex("player", youIndex);
   const king = ksCardByIndex("king", kingPickIndex);
 
   let result = "draw";
+
   if(you === "SLAVE" && king === "KING") result = "win";
   else if(you === "Warrior" && king === "Warrior") result = "draw";
   else result = "lose";
@@ -2568,30 +2567,54 @@ socket.on("ks-pick", (data)=>{
 
   let win = 0;
 
-if(result === "win"){
-    win = st.bet * 5;
-    me.profile.coins += win;
+  // ==============================
+  // 🔥 DRAW STREAK LOGIC
+  // ==============================
+  if(result === "draw"){
+      st.drawStreak = (st.drawStreak || 0) + 1;
+  } else {
+      st.drawStreak = 0;
+  }
 
-    saveUsers(users);
-    emitToUser(uid,"coin-update",{ coins: me.profile.coins });
+  // ==============================
+  // 🏆 WIN
+  // ==============================
+  if(result === "win"){
 
-    // ✅ reset thay vì delete
-    ksUserState.set(uid,{
-        bet: 0,
-        playerUsed: [],
-        kingUsed: []
-    });
-}
-else if(result === "lose"){
-    // ✅ reset thay vì delete
-    ksUserState.set(uid,{
-        bet: 0,
-        playerUsed: [],
-        kingUsed: []
-    });
-}
+      win = st.bet * 5;
+      me.profile.coins += win;
 
-  // draw → giữ nguyên st (KHÔNG đụng gì)
+      saveUsers(users);
+      emitToUser(uid,"coin-update",{ coins: me.profile.coins });
+
+      // reset state
+      ksUserState.set(uid,{
+          bet: 0,
+          playerUsed: [],
+          kingUsed: [],
+          drawStreak: 0
+      });
+
+  }
+  // ==============================
+  // ❌ LOSE
+  // ==============================
+  else if(result === "lose"){
+
+      ksUserState.set(uid,{
+          bet: 0,
+          playerUsed: [],
+          kingUsed: [],
+          drawStreak: 0
+      });
+
+  }
+  // ==============================
+  // ⚖️ DRAW → giữ nguyên state
+  // ==============================
+  else {
+      ksUserState.set(uid, st);
+  }
 
   socket.emit("ks-result",{
     roundId: ksRoundId,
@@ -2601,15 +2624,17 @@ else if(result === "lose"){
     kingIndex: kingPickIndex,
     result,
     bet: st.bet,
-    win
+    win,
+    drawStreak: st.drawStreak || 0
   });
 
   if(result === "draw"){
-    socket.emit("ks-open-pick");
+    socket.emit("ks-open-pick",{
+      drawStreak: st.drawStreak
+    });
   }
 
 });
-
 
 // ================================
 // 🏳️ KS RETREAT (sau khi draw)
@@ -2622,34 +2647,55 @@ socket.on("ks-retreat", ()=>{
   const st = ksUserState.get(uid);
   if(!st?.bet) return;
 
+  // ❌ Không cho retreat nếu chưa hòa lần nào
+  if(!st.drawStreak || st.drawStreak <= 0){
+    return socket.emit("ks-error",{ message:"RETREAT_NOT_ALLOWED" });
+  }
+
+  // ❌ Khóa retreat sau draw thứ 3
+  if(st.drawStreak > 3){
+    return socket.emit("ks-error",{ message:"RETREAT_LOCKED" });
+  }
+
   const users = loadUsers();
   const me = users[uid];
   if(!me?.profile) return;
 
-const reward = Math.floor(st.bet * 1.2); // bet gốc + 20%
-me.profile.coins += reward;
+  // 🎯 Multiplier theo số draw
+  let multiplier = 1.2;     // draw 1
+
+  if(st.drawStreak === 2) multiplier = 1.3;
+  if(st.drawStreak === 3) multiplier = 1.45;
+
+  const reward = Math.floor(st.bet * multiplier);
+
+  me.profile.coins += reward;
 
   saveUsers(users);
   emitToUser(uid,"coin-update",{ coins: me.profile.coins });
 
+  // 🔥 Reset toàn bộ state
   ksUserState.set(uid,{
     bet: 0,
     playerUsed: [],
-    kingUsed: []
+    kingUsed: [],
+    drawStreak: 0
   });
 
-  socket.emit("ks-retreat-ok",{ reward });
+  socket.emit("ks-retreat-ok",{ 
+    reward,
+    multiplier,
+    streak: st.drawStreak
+  });
 
-  // 🔥 QUAN TRỌNG
   socket.emit("ks-state",{
     roundId: ksRoundId,
     myBet: 0,
     playerUsed: [],
     kingUsed: []
   });
+
 });
-
-
 
 
 socket.on("ks-next", ()=>{
