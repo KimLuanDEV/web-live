@@ -2417,9 +2417,14 @@ else{
 
 mBet.textContent = String(r.bet);
 
-if(r.result === "draw" && (r.drawStreak || 1) <= 3){
+if(r.result === "draw"){
 
   const streak = r.drawStreak || 1;
+
+  // 🔥 tăng dần theo draw streak
+  // draw 1 = 20%
+  // draw 2 = 30%
+  // draw 3 = 40%
   const percent = 0.2 + (streak - 1) * 0.1;
 
   const retreatReward = Math.floor(r.bet * (1 + percent));
@@ -2428,12 +2433,13 @@ if(r.result === "draw" && (r.drawStreak || 1) <= 3){
 
   mSub.textContent =
     `Retreat now to receive +${Math.floor(percent*100)}% bonus`;
+
 }
-else if(r.result === "draw"){
-  // draw nhưng đã vượt giới hạn retreat
-  mWin.textContent = r.bet.toLocaleString("en-US");
+else{
+  mWin.textContent = String(r.win);
   mSub.textContent = "";
 }
+
 
 
 
