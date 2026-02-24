@@ -2647,44 +2647,6 @@ socket.on("ks-retreat", ()=>{
   const st = ksUserState.get(uid);
   if(!st?.bet) return;
 
-// ==============================
-// 🔥 AUTO WIN SAU 4 DRAW
-// ==============================
-if((st.drawStreak || 0) >= 4){
-
-  const users = loadUsers();
-  const me = users[uid];
-  if(!me?.profile) return;
-
-  const win = st.bet * 5;
-
-  me.profile.coins += win;
-
-  saveUsers(users);
-  emitToUser(uid,"coin-update",{ coins: me.profile.coins });
-
-  // reset state
-  ksUserState.set(uid,{
-    bet: 0,
-    playerUsed: [],
-    kingUsed: [],
-    drawStreak: 0
-  });
-
-  socket.emit("ks-result",{
-    roundId: ksRoundId,
-    you: "SLAVE",
-    king: "KING",
-    result: "win",
-    bet: st.bet,
-    win,
-    auto: true
-  });
-
-  return;
-}
-
-
   // ❌ Không cho retreat nếu chưa hòa lần nào
   if(!st.drawStreak || st.drawStreak <= 0){
     return socket.emit("ks-error",{ message:"RETREAT_NOT_ALLOWED" });
