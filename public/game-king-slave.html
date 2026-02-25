@@ -1402,18 +1402,17 @@ body{
   right:0;
   bottom:0;
 
+  height: 85vh;               /* 🔥 kiểm soát chiều cao */
+
   border-radius:28px 28px 0 0;
 
   background:
-    linear-gradient(180deg,
-      rgba(15,15,20,.98),
-      rgba(5,5,8,.98));
+    url("/assets/ui/result-sheet-bg.png")
+    top center / 100% 100%
+    no-repeat;
 
-  border-top:1px solid rgba(255,255,255,.12);
-
-  box-shadow:
-    0 -40px 100px rgba(0,0,0,.8),
-    0 0 60px rgba(0,240,255,.1);
+  border:none;
+  box-shadow:none;
 
   transform:translateY(120%);
   opacity:0;
@@ -1421,16 +1420,8 @@ body{
   transition:
     transform .45s cubic-bezier(.22,1,.36,1),
     opacity .3s ease;
-
-     animation: riseBoss .5s cubic-bezier(.2,1,.3,1);
 }
 
-
-@keyframes riseBoss{
-  0%{ transform:translateY(120%) scale(.9); }
-  60%{ transform:translateY(-10px) scale(1.02); }
-  100%{ transform:translateY(0) scale(1); }
-}
 
 
 .sheet-overlay.show .sheet{
