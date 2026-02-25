@@ -1179,16 +1179,13 @@ body{
 
 /* Demon capsule */
 .phase-pill{
-  
+
    /* ❌ bỏ relative để tránh layer phụ */
   position:static;
-
-  padding:18px 70px;          /* 🔥 tăng chiều ngang */
   min-width:unset;
   width:auto;
-  padding:18px 80px;           /* 🔥 dài hơn */
-  height:120px;                /* 🔥 cao hơn để cân chữ */
-
+  height:120px; 
+  
   display:flex;
   align-items:center;
   justify-content:center;
@@ -1206,9 +1203,9 @@ body{
 
   border:none;
   box-shadow:none;
+  padding:0;            /* 🔥 bỏ padding để không sinh vùng thừa */
 
   text-align:center;
-
   text-shadow:
     0 0 16px rgba(255,0,60,.9),
     0 0 30px rgba(0,240,255,.7);
