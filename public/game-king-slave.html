@@ -1666,26 +1666,30 @@ body{
   transform: scale(.95);
 }
 
-
 .btn-img{
   flex:1;
   background:none;
   border:none;
   padding:0;
   cursor:pointer;
+
+  height:64px; /* 🔥 tăng chiều cao tổng */
 }
 
 .btn-img img{
   width:100%;
-  height:48px;
-  object-fit:contain;
+  height:100%;
+  object-fit:cover; /* 🔥 cho full ngang */
+
+  border-radius:18px;
+
   transition:.25s;
   pointer-events:none;
 }
 
 .btn-img:hover img{
   transform: scale(1.05);
-  filter: drop-shadow(0 0 20px rgba(0,240,255,.7));
+  filter: drop-shadow(0 0 25px rgba(0,240,255,.9));
 }
 
 .btn-img:active img{
