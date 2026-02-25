@@ -1544,17 +1544,17 @@ body{
 
   display:flex;
   justify-content:space-between;
+  align-items:center;
   gap:16px;
 
-  padding:24px 26px;
+  height:120px;
+
+  padding:0 40px;
 
   background:
     url("/assets/ui/result-mini-bg.png")
     center / 100% 100%
     no-repeat;
-
-  border:none;
-  box-shadow:none;
 
   animation: miniGlow 3s ease-in-out infinite;
 }
@@ -1577,16 +1577,6 @@ body{
 
 
 
-
-.mini-label{
-  font-size:12px;
-  letter-spacing:1px;
-  text-transform:uppercase;
-  color:rgba(255,255,255,.6);
-
-  text-shadow:
-    0 0 8px rgba(255,60,60,.4);
-}
 
 .mini-value{
   margin-top:6px;
@@ -1987,15 +1977,12 @@ body{
 
   <div class="result-row">
     <div>
-      <div class="mini-label">You</div>
       <div class="mini-value" id="mYou">—</div>
     </div>
     <div>
-      <div class="mini-label">King</div>
       <div class="mini-value" id="mKing">—</div>
     </div>
     <div>
-      <div class="mini-label">Bet</div>
       <div class="mini-value"><span id="mBet">0</span></div>
     </div>
   </div>
