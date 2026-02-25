@@ -1758,27 +1758,27 @@ body{
 }
 
 .wallet-icon{
-  width:22px;
-  height:22px;
-  margin-right:6px;
+  width:44px;
+  height:44px;
+  margin-right:2px;
 }
 
 .inline{
-  width:18px;
-  height:18px;
-  margin-left:4px;
+  width:44px;
+  height:44px;
+  margin-left:2px;
 }
 
 .small{
-  width:20px;
-  height:20px;
-  margin-left:4px;
+  width:44px;
+  height:44px;
+  margin-left:2px;
 }
 
 .big{
-  width:30px;
-  height:30px;
-  margin-left:6px;
+  width:44px;
+  height:44px;
+  margin-left:2px;
 }
 
 
@@ -2309,7 +2309,7 @@ function resetUIForNewRound({ roundId } = {}){
   roundText.textContent = "#" + (roundId || 1);
 
   currentBetValue = 0;
-  betDisplay.textContent = "0 💎";
+  betDisplay.textContent = "0";
   resultText.textContent = "—";
 
   setStatus("Waiting for a bet");
