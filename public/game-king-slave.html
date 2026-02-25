@@ -1191,7 +1191,6 @@ body{
   font-weight:1000;
   letter-spacing:1.2px;
   text-transform:uppercase;
-
   color:#fff;
 
   background:
@@ -2111,13 +2110,7 @@ function setPhase(text){
 
   const el = document.getElementById("phaseText");
 
-  // giữ lại horn + embers
-  const horns = `
-    <span class="horn left"></span>
-    <span class="horn right"></span>
-  `;
-
-  el.innerHTML = horns + text;
+  el.textContent = text;   // 🔥 chỉ text
 
   el.classList.remove("waiting","picking","result","lose");
 
