@@ -1745,6 +1745,48 @@ body{
 }
 
 
+
+
+.diamond-icon{
+  display:inline-block;
+  vertical-align:middle;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 10px rgba(0,240,255,.8))
+    drop-shadow(0 0 20px rgba(0,240,255,.5));
+}
+
+.wallet-icon{
+  width:22px;
+  height:22px;
+  margin-right:6px;
+}
+
+.inline{
+  width:18px;
+  height:18px;
+  margin-left:4px;
+}
+
+.small{
+  width:20px;
+  height:20px;
+  margin-left:4px;
+}
+
+.big{
+  width:30px;
+  height:30px;
+  margin-left:6px;
+}
+
+
+
+
+
+
+
   </style>
 </head>
 
@@ -1769,8 +1811,8 @@ body{
 
   <div class="tb-side tb-right">
     <div class="wallet">
-      <span class="d">💎</span>
-      <span class="v" id="diamondValue">0</span>
+<img src="/assets/ui/diamond-icon.png" class="diamond-icon wallet-icon">
+<span class="v" id="diamondValue">0</span>
     </div>
   </div>
 
@@ -1825,7 +1867,7 @@ body{
            </div>
 
             <div class="betRow">
-              <div class="betDisplay" id="betDisplay"> 0💎</div>
+             <div class="betDisplay" id="betDisplay">0<img src="/assets/ui/diamond-icon.png" class="diamond-icon inline"></div>
             </div>
 
 <div class="quick">
@@ -1883,7 +1925,7 @@ body{
 
 
             <div class="statusLine" style="display: none;">
-              <div>Bet: <b id="myBetText">0</b> 💎</div>
+              <div>Bet:<b id="myBetText">0</b><img src="/assets/ui/diamond-icon.png" class="diamond-icon small"></div>
               <div>Result: <b id="resultText">—</b></div>
             </div>
           </div>
@@ -1926,7 +1968,8 @@ body{
   <div class="result-amount">
     <div class="amount-label"></div>
     <div class="amount-value">
-      <span id="mWin">0</span> 💎
+      <span id="mWin">0</span>
+      <img src="/assets/ui/diamond-icon.png" class="diamond-icon big">
     </div>
   </div>
 
@@ -1941,7 +1984,7 @@ body{
     </div>
     <div>
       <div class="mini-label">Bet</div>
-      <div class="mini-value"><span id="mBet">0</span> 💎</div>
+      <div class="mini-value"><span id="mBet">0</span><img src="/assets/ui/diamond-icon.png" class="diamond-icon small"></div>
     </div>
   </div>
 
@@ -2312,8 +2355,9 @@ document.querySelectorAll(".chip").forEach(ch=>{
       currentBetValue += Math.floor(Number(add));
     }
 
-    betDisplay.textContent =
-      currentBetValue.toLocaleString("en-US") + " 💎";
+betDisplay.innerHTML =
+  currentBetValue.toLocaleString("en-US") +
+  ' <img src="/assets/ui/diamond-icon.png" class="diamond-icon inline">';
   });
 });
 /* =========================
@@ -2426,8 +2470,9 @@ if(s.roundId !== roundId){
     myBetText.textContent =
       myBet.toLocaleString("en-US");
 
-    betDisplay.textContent =
-      myBet.toLocaleString("en-US") + " 💎";
+betDisplay.innerHTML =
+  currentBetValue.toLocaleString("en-US") +
+  ' <img src="/assets/ui/diamond-icon.png" class="diamond-icon inline">';
 
     panel.classList.add("hide");
 
