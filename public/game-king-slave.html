@@ -1179,7 +1179,6 @@ body{
 /* Demon capsule */
 .phase-pill{
 
-  /* ❌ bỏ relative để tránh layer phụ */
   position:static;
 
   width:520px;          /* fix cứng chiều ngang cho cân */
@@ -1200,9 +1199,10 @@ body{
     center / 100% 100%
     no-repeat;
 
-  border:none;
-  box-shadow:none;
-  padding:0;            /* 🔥 bỏ padding để không sinh vùng thừa */
+  border:none !important;
+  box-shadow:none !important;
+  padding:0;
+  margin:0;           /* 🔥 bỏ padding để không sinh vùng thừa */
 
   text-align:center;
 
