@@ -1465,27 +1465,91 @@ body{
 }
 
 
-/* ===== RESULT HEADER ===== */
+/* =========================
+   RESULT HEADER • DEMON CORE
+   ========================= */
 
 .result-header{
+  position:relative;
   text-align:center;
+  padding:20px 16px 16px;
   margin-bottom:18px;
+
+  border-radius:22px;
+
+  background:
+    radial-gradient(circle at 50% 20%,
+      rgba(255,0,60,.25),
+      transparent 60%),
+    linear-gradient(180deg,
+      rgba(255,255,255,.05),
+      rgba(0,0,0,.6));
+
+  border:1px solid rgba(255,255,255,.12);
+
+  box-shadow:
+    0 0 50px rgba(255,0,60,.25),
+    inset 0 0 40px rgba(0,0,0,.8);
 }
 
+/* 🔥 Demon glow aura */
+.result-header::before{
+  content:"";
+  position:absolute;
+  inset:-20px;
+  background:
+    radial-gradient(circle,
+      rgba(255,60,60,.35),
+      transparent 65%);
+  filter: blur(35px);
+  opacity:.6;
+  pointer-events:none;
+}
+
+/* 🏆 ICON */
 .result-icon{
-  font-size:42px;
-  margin-bottom:6px;
+  font-size:46px;
+  margin-bottom:10px;
+
+  animation: resultPulse 2s ease-in-out infinite;
+
+  text-shadow:
+    0 0 18px rgba(255,204,102,.9),
+    0 0 35px rgba(255,60,60,.7),
+    0 0 55px rgba(0,240,255,.6);
 }
 
+/* ✨ TITLE */
 .result-header .mTitle{
-  font-size:20px;
+  font-size:24px;
   font-weight:1000;
+  letter-spacing:1px;
+
+  background: linear-gradient(90deg,#ffcc66,#ff3b3b,#00f0ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+
+  text-shadow:
+    0 0 25px rgba(255,60,60,.6),
+    0 0 40px rgba(0,240,255,.6);
 }
 
+/* 📝 SUB */
 .result-header .mSub{
-  font-size:12px;
-  color:rgba(255,255,255,.6);
-  margin-top:4px;
+  margin-top:6px;
+  font-size:13px;
+  letter-spacing:.6px;
+  color:rgba(255,255,255,.75);
+
+  text-shadow:
+    0 0 10px rgba(0,240,255,.4);
+}
+
+/* 🔥 Animation */
+@keyframes resultPulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.08); }
+  100%{ transform:scale(1); }
 }
 
 /* ===== RECEIVE BIG BLOCK ===== */
