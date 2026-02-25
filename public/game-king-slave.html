@@ -1181,7 +1181,7 @@ body{
   min-width:unset;
   width:auto;
   padding:18px 80px;           /* 🔥 dài hơn */
-  height:72px;                /* 🔥 cao hơn để cân chữ */
+  height:90px;                /* 🔥 cao hơn để cân chữ */
 
   display:flex;
   align-items:center;
@@ -1240,31 +1240,6 @@ body{
   0%{ transform: translateY(0) scale(1); opacity:.55; }
   50%{ transform: translateY(6px) scale(1.04); opacity:.95; }
   100%{ transform: translateY(0) scale(1); opacity:.55; }
-}
-
-/* hellfire shine sweep */
-.phase-pill::after{
-  content:"";
-  position:absolute;
-  top:-40%;
-  left:-60%;
-  width:60%;
-  height:180%;
-  background: linear-gradient(90deg,
-    transparent,
-    rgba(255,210,120,.35),
-    rgba(255,0,60,.25),
-    transparent);
-  transform: skewX(-22deg);
-  filter: blur(2px);
-  opacity:.85;
-  animation: hellSweep 2.8s linear infinite;
-  pointer-events:none;
-}
-
-@keyframes hellSweep{
-  0%{ left:-70%; }
-  100%{ left:140%; }
 }
 
 /* tiny horns */
