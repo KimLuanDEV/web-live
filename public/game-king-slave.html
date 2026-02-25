@@ -1131,8 +1131,9 @@ body{
 }
 
 .betDisplay{
+  position:relative;
   width:100%;
-  height:50px;                /* 🔥 cao hơn cho đẹp */
+  height:50px;                 /* giữ nguyên chiều cao khung */
 
   display:flex;
   align-items:center;
@@ -1142,11 +1143,7 @@ body{
   font-weight:1000;
   letter-spacing:1.5px;
 
-  background:
-    url("/assets/ui/bet-display-bg.png")
-    center / 100% 100%
-    no-repeat;
-
+  background:none;             /* bỏ background cũ */
   border:none;
   box-shadow:none;
 
@@ -1155,8 +1152,25 @@ body{
   text-shadow:
     0 0 15px rgba(255,0,60,.9),
     0 0 35px rgba(0,240,255,.7);
+}
 
-     
+/* 🔥 Layer ảnh cao hơn khung */
+.betDisplay::before{
+  content:"";
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  
+  width:100%;
+  height:80px;                 /* 🔥 ảnh cao hơn khung */
+  
+  background:
+    url("/assets/ui/bet-display-bg.png")
+    center / 100% 100%
+    no-repeat;
+
+  z-index:-1;                  /* nằm phía sau text */
+  pointer-events:none;
 }
 
 
