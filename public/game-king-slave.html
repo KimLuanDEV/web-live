@@ -1181,7 +1181,7 @@ body{
   min-width:unset;
   width:auto;
   padding:18px 80px;           /* 🔥 dài hơn */
-  height:90px;                /* 🔥 cao hơn để cân chữ */
+  height:100px;                /* 🔥 cao hơn để cân chữ */
 
   display:flex;
   align-items:center;
@@ -1257,18 +1257,7 @@ body{
 .phase-pill .horn.left{ left:18px; transform: rotate(-18deg); }
 .phase-pill .horn.right{ right:18px; transform: rotate(18deg); }
 
-/* ember dots */
-.phase-pill .embers{
-  position:absolute;
-  inset:0;
-  pointer-events:none;
-  background:
-    radial-gradient(circle at 18% 65%, rgba(255,160,60,.35), transparent 28%),
-    radial-gradient(circle at 46% 30%, rgba(255,0,60,.30), transparent 26%),
-    radial-gradient(circle at 82% 55%, rgba(255,220,140,.22), transparent 30%);
-  opacity:.65;
-  mix-blend-mode: screen;
-}
+
 
 /* ===== STATES (demon colors) ===== */
 .phase-pill.waiting{
@@ -1722,7 +1711,6 @@ body{
 <!-- 🎯 GLOBAL PHASE BAR -->
 <div class="global-phase" id="globalPhase">
   <div class="phase-pill" id="phaseText">
-    <span class="embers"></span>
     Not yet bet
   </div>
 </div>
@@ -2133,7 +2121,6 @@ function setPhase(text){
   const horns = `
     <span class="horn left"></span>
     <span class="horn right"></span>
-    <span class="embers"></span>
   `;
 
   el.innerHTML = horns + text;
