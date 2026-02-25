@@ -1403,7 +1403,7 @@ body{
   bottom:0;
 
   
-  height: 75vh;
+  height: 70vh;
 
   border-radius:28px 28px 0 0;
 
@@ -1466,63 +1466,83 @@ body{
 
 
 /* =========================
-   RESULT HEADER • IMAGE MODE
+   RESULT HEADER • DEMON CORE
    ========================= */
 
 .result-header{
   position:relative;
   text-align:center;
-
-  height:150px;              /* chỉnh theo ảnh */
-  padding:0;
+  padding:20px 16px 16px;
   margin-bottom:18px;
 
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
+  border-radius:22px;
 
   background:
-    url("/assets/ui/result-header-bg.png")
-    center / 100% 100%
-    no-repeat;
+    radial-gradient(circle at 50% 20%,
+      rgba(255,0,60,.25),
+      transparent 60%),
+    linear-gradient(180deg,
+      rgba(255,255,255,.05),
+      rgba(0,0,0,.6));
 
-  border:none;
-  box-shadow:none;
+  border:1px solid rgba(255,255,255,.12);
+
+  box-shadow:
+    0 0 50px rgba(255,0,60,.25),
+    inset 0 0 40px rgba(0,0,0,.8);
 }
 
+/* 🔥 Demon glow aura */
+.result-header::before{
+  content:"";
+  position:absolute;
+  inset:-20px;
+  background:
+    radial-gradient(circle,
+      rgba(255,60,60,.35),
+      transparent 65%);
+  filter: blur(35px);
+  opacity:.6;
+  pointer-events:none;
+}
 
 /* 🏆 ICON */
 .result-icon{
-  font-size:42px;
-  margin-bottom:6px;
+  font-size:46px;
+  margin-bottom:10px;
+
+  animation: resultPulse 2s ease-in-out infinite;
 
   text-shadow:
-    0 0 12px rgba(255,255,255,.9),
-    0 0 25px rgba(255,60,60,.8);
+    0 0 18px rgba(255,204,102,.9),
+    0 0 35px rgba(255,60,60,.7),
+    0 0 55px rgba(0,240,255,.6);
 }
 
-/* TITLE */
+/* ✨ TITLE */
 .result-header .mTitle{
-  font-size:26px;
+  font-size:24px;
   font-weight:1000;
   letter-spacing:1px;
 
-  color:#fff;
+  background: linear-gradient(90deg,#ffcc66,#ff3b3b,#00f0ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
 
   text-shadow:
-    0 0 15px rgba(255,204,102,.9),
-    0 0 30px rgba(255,0,0,.8);
+    0 0 25px rgba(255,60,60,.6),
+    0 0 40px rgba(0,240,255,.6);
 }
 
-/* SUB */
+/* 📝 SUB */
 .result-header .mSub{
-  margin-top:4px;
+  margin-top:6px;
   font-size:13px;
-  color:rgba(255,255,255,.85);
+  letter-spacing:.6px;
+  color:rgba(255,255,255,.75);
 
   text-shadow:
-    0 0 10px rgba(0,0,0,.8);
+    0 0 10px rgba(0,240,255,.4);
 }
 
 /* 🔥 Animation */
