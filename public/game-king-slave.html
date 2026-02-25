@@ -1177,26 +1177,24 @@ body{
 .phase-pill{
   position:relative;
 
-  padding:18px 70px;          /* 🔥 tăng chiều ngang */
-  min-width:unset;
-  width:auto;
-  padding:18px 80px;           /* 🔥 dài hơn */
-  height:100px;                /* 🔥 cao hơn để cân chữ */
+  height:100px;              /* giữ cao cho đẹp */
+  padding:0 60px;            /* cân chữ */
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  font-size:16px;             /* 🔥 chữ lớn hơn */
+  font-size:18px;
   font-weight:1000;
-  letter-spacing:1.2px;
+  letter-spacing:1.5px;
   text-transform:uppercase;
 
   color:#fff;
 
+  /* ✅ CHỈ GIỮ ẢNH NỀN */
   background:
     url("/assets/ui/phase-pill-bg.png")
-    center / 100% 100%
+    center / contain
     no-repeat;
 
   border:none;
@@ -1205,10 +1203,9 @@ body{
   text-align:center;
 
   text-shadow:
-    0 0 16px rgba(255,0,60,.9),
+    0 0 18px rgba(255,0,60,.9),
     0 0 30px rgba(0,240,255,.7);
 }
-
 
 
 
@@ -1236,20 +1233,6 @@ body{
   100%{ transform: translateY(0) scale(1); opacity:.55; }
 }
 
-/* tiny horns */
-.phase-pill .horn{
-  position:absolute;
-  top:-7px;
-  width:12px;
-  height:12px;
-  border-radius:0 0 10px 10px;
-  background:
-    radial-gradient(circle at 30% 30%, rgba(255,220,150,.85), rgba(255,0,60,.85));
-  filter: drop-shadow(0 0 10px rgba(255,0,60,.45));
-  opacity:.9;
-}
-.phase-pill .horn.left{ left:18px; transform: rotate(-18deg); }
-.phase-pill .horn.right{ right:18px; transform: rotate(18deg); }
 
 
 
