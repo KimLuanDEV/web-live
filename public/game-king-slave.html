@@ -1537,22 +1537,16 @@ body{
     0 0 20px rgba(0,240,255,.8),
     0 0 40px rgba(255,60,60,.5);
 }
-
-
-/* ===== MINI INFO ROW FIXED ===== */
+/* ===== MINI INFO ROW ===== */
 
 .result-row{
   position:relative;
 
   display:flex;
   justify-content:space-between;
-  align-items:center;           /* 🔥 CĂN GIỮA DỌC */
+  gap:16px;
 
-  gap:12px;
-
-  padding:30px 28px;            /* 🔥 TĂNG CHIỀU CAO KHUNG */
-
-  min-height:120px;             /* 🔥 KHÔNG BỊ LÙN */
+  padding:24px 26px;
 
   background:
     url("/assets/ui/result-mini-bg.png")
@@ -1561,6 +1555,8 @@ body{
 
   border:none;
   box-shadow:none;
+
+  animation: miniGlow 3s ease-in-out infinite;
 }
 
 .result-row > div{
@@ -1568,8 +1564,8 @@ body{
   text-align:center;
   display:flex;
   flex-direction:column;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
 }
 
 
@@ -1581,17 +1577,20 @@ body{
 
 
 
-/* label nhỏ hơn */
+
 .mini-label{
-  font-size:11px;
+  font-size:12px;
   letter-spacing:1px;
-  opacity:.7;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.6);
+
+  text-shadow:
+    0 0 8px rgba(255,60,60,.4);
 }
 
-/* value to hơn, nổi bật hơn */
 .mini-value{
-  margin-top:8px;
-  font-size:20px;        /* 🔥 TĂNG SIZE */
+  margin-top:6px;
+  font-size:18px;
   font-weight:1000;
 
   background: linear-gradient(90deg,#ffcc66,#00f0ff);
@@ -1599,8 +1598,8 @@ body{
   -webkit-text-fill-color:transparent;
 
   text-shadow:
-    0 0 16px rgba(0,240,255,.6),
-    0 0 25px rgba(255,60,60,.4);
+    0 0 12px rgba(0,240,255,.6),
+    0 0 20px rgba(255,60,60,.4);
 }
 
 
@@ -1782,10 +1781,10 @@ body{
 }
 
 .small{
-  width:16px;
-  height:16px;
+  width:18px;
+  height:18px;
   margin-left:6px;
-  transform: translateY(0px);   /* 🔥 bỏ lệch */
+  transform: translateY(2px);
 }
 
 .big{
@@ -1997,7 +1996,7 @@ body{
     </div>
     <div>
       <div class="mini-label">Bet</div>
-      <div class="mini-value"><span id="mBet">0</span><img src="/assets/ui/diamond-icon.png" class="diamond-icon small"></div>
+      <div class="mini-value"><span id="mBet">0</span></div>
     </div>
   </div>
 
