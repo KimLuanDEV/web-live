@@ -1176,33 +1176,37 @@ body{
 /* Demon capsule */
 .phase-pill{
   position:relative;
-  padding:12px 30px;
-  border-radius:999px;
+  padding:14px 48px;
 
-  font-size:13px;
+  font-size:14px;
   font-weight:1000;
   letter-spacing:1px;
   text-transform:uppercase;
 
   color:#fff;
 
-  border:1px solid rgba(255,50,80,.45);
-
   background:
-    radial-gradient(circle at 25% 30%, rgba(255,0,60,.28), transparent 55%),
-    radial-gradient(circle at 70% 25%, rgba(255,180,60,.12), transparent 58%),
-    linear-gradient(180deg, rgba(30,0,0,.92), rgba(0,0,0,.80));
+    url("/assets/ui/phase-pill-bg.png") center/100% 100% no-repeat;
 
-  backdrop-filter: blur(18px);
+  border:none;
+  box-shadow:none;
 
-  box-shadow:
-    0 18px 60px rgba(0,0,0,.70),
-    0 0 26px rgba(255,0,60,.28),
-    inset 0 0 22px rgba(0,0,0,.75);
+  min-width:260px;
+  text-align:center;
 
-  overflow:hidden;
-  transform: translateZ(0);
+  text-shadow:
+    0 0 12px rgba(255,0,60,.8),
+    0 0 24px rgba(0,240,255,.6);
+  animation: phaseGlow 2.5s ease-in-out infinite;   
 }
+
+
+@keyframes phaseGlow{
+  0%{ transform:scale(1); filter:brightness(1); }
+  50%{ transform:scale(1.05); filter:brightness(1.2); }
+  100%{ transform:scale(1); filter:brightness(1); }
+}
+
 
 /* rune / sigil layer */
 .phase-pill::before{
@@ -1732,8 +1736,6 @@ body{
 <!-- 🎯 GLOBAL PHASE BAR -->
 <div class="global-phase" id="globalPhase">
   <div class="phase-pill" id="phaseText">
-    <span class="horn left"></span>
-    <span class="horn right"></span>
     <span class="embers"></span>
     Not yet bet
   </div>
