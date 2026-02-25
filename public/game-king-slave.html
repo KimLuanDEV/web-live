@@ -1718,6 +1718,15 @@ body{
 }
 
 
+/* Khi chỉ còn 1 nút trong result-actions */
+.result-actions:has(.result-btn:only-child){
+  justify-content:center;
+}
+
+.result-actions:has(.result-btn:only-child) .result-btn{
+  flex:0 0 70%;   /* chiếm 70% chiều ngang */
+}
+
 
   </style>
 </head>
