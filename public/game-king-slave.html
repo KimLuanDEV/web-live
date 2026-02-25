@@ -1164,7 +1164,7 @@ body{
 
 .global-phase{
   position:fixed;
-  top: calc(190px + var(--safeTop));
+  top: calc(175px + var(--safeTop));
   left:0;
   right:0;
   display:flex;
@@ -1233,6 +1233,12 @@ body{
   0%{ transform: translateY(0) scale(1); opacity:.55; }
   50%{ transform: translateY(6px) scale(1.04); opacity:.95; }
   100%{ transform: translateY(0) scale(1); opacity:.55; }
+}
+
+/* ❌ TẮT HOÀN TOÀN LAYER PHỤ */
+.phase-pill::before,
+.phase-pill::after{
+  display:none !important;
 }
 
 /* tiny horns */
