@@ -1163,53 +1163,37 @@ body{
 .global-phase{
   position:fixed;
   top: calc(185px + var(--safeTop));
-  left:0;
-  right:0;
+  left:50%;
+  transform: translateX(-50%);
 
-  display:flex;
-  justify-content:center;
+  width:auto;
+  height:auto;
+
+  display:block;
 
   z-index:60;
 
-  background:none;        /* 🔥 QUAN TRỌNG */
-  box-shadow:none;        /* 🔥 bỏ shadow */
+  pointer-events:none; /* 🔥 không chặn click phía dưới */
 }
 
 /* Demon capsule */
 .phase-pill{
-
-  /* ❌ bỏ relative để tránh layer phụ */
-  position:static;
-
-  width:520px;          /* fix cứng chiều ngang cho cân */
+  width:520px;
   height:110px;
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  font-size:12px;
-  font-weight:1000;
-  letter-spacing:1.2px;
-  text-transform:uppercase;
-  color:#fff;
-
   background:
     url("/assets/ui/phase-pill-bg.png")
-    center / 100% 100%
+    center / contain
     no-repeat;
 
+  background-color:transparent !important;
   border:none;
   box-shadow:none;
-  padding:0;            /* 🔥 bỏ padding để không sinh vùng thừa */
-
-  text-align:center;
-
-  text-shadow:
-    0 0 16px rgba(255,0,60,.9),
-    0 0 30px rgba(0,240,255,.7);
-
-  background-color: transparent !important;
+  padding:0;
 }
 
 /* rune / sigil layer */
