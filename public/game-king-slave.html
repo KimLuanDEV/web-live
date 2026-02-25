@@ -1176,28 +1176,39 @@ body{
 /* Demon capsule */
 .phase-pill{
   position:relative;
-  padding:14px 48px;
 
-  font-size:14px;
+  padding:18px 70px;          /* 🔥 tăng chiều ngang */
+  min-width:unset;
+  width:auto;
+  padding:18px 80px;           /* 🔥 dài hơn */
+  height:72px;                /* 🔥 cao hơn để cân chữ */
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:16px;             /* 🔥 chữ lớn hơn */
   font-weight:1000;
-  letter-spacing:1px;
+  letter-spacing:1.2px;
   text-transform:uppercase;
 
   color:#fff;
 
   background:
-    url("/assets/ui/phase-pill-bg.png") center/100% 100% no-repeat;
+    url("/assets/ui/phase-pill-bg.png")
+    center / 100% 100%
+    no-repeat;
 
   border:none;
   box-shadow:none;
 
-  min-width:260px;
   text-align:center;
 
   text-shadow:
-    0 0 12px rgba(255,0,60,.8),
-    0 0 24px rgba(0,240,255,.6);
-  animation: phaseGlow 2.5s ease-in-out infinite;   
+    0 0 16px rgba(255,0,60,.9),
+    0 0 30px rgba(0,240,255,.7);
+
+  animation: phaseGlow 2.5s ease-in-out infinite;
 }
 
 
@@ -1772,12 +1783,13 @@ body{
   </div>
 
 
-    <div class="panel">
-        <div class="betBox" id="betBox">
-            <div class="statusLine" style="display: none;">
-              <div>Status: <b id="statusText">Waiting for a bet</b></div>
-              <div style="display: none;">Round: <b id="roundText">#1</b></div>
-            </div>
+  <div class="panel">
+
+    <div class="betBox" id="betBox">
+     <div class="statusLine" style="display: none;">
+        <div>Status: <b id="statusText">Waiting for a bet</b></div>
+          <div style="display: none;">Round: <b id="roundText">#1</b></div>
+           </div>
 
             <div class="betRow">
               <div class="betDisplay" id="betDisplay"> 0💎</div>
