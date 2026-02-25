@@ -615,7 +615,7 @@ body{
  .quick{
   display:grid;
   grid-template-columns: repeat(3, 1fr);
-  gap:8px;
+  gap:12px;
   margin-top:4px;
 }
 
@@ -1645,16 +1645,18 @@ body{
   background:none;
   border:none;
   box-shadow:none;
+
+  height:50px;           /* tăng chiều cao container */
 }
 
 .img-chip img{
   width:100%;
-  height:44px;
-  object-fit:contain;
+  height:100%;
+  object-fit:cover;      /* 🔥 QUAN TRỌNG */
+  border-radius:16px;
   transition:.2s;
   pointer-events:none;
 }
-
 .img-chip:hover img{
   transform: translateY(-3px) scale(1.08);
   filter: drop-shadow(0 0 12px rgba(255,0,0,.8));
