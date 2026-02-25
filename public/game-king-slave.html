@@ -1179,18 +1179,19 @@ body{
 
 /* Demon capsule */
 .phase-pill{
+  position:relative;
 
-  /* ❌ bỏ relative để tránh layer phụ */
-  position:static;
-
-  width:520px;          /* fix cứng chiều ngang cho cân */
-  height:110px;
+  padding:18px 70px;          /* 🔥 tăng chiều ngang */
+  min-width:unset;
+  width:auto;
+  padding:18px 80px;           /* 🔥 dài hơn */
+  height:120px;                /* 🔥 cao hơn để cân chữ */
 
   display:flex;
   align-items:center;
   justify-content:center;
 
-  font-size:14px;
+  font-size:14px;             /* 🔥 chữ lớn hơn */
   font-weight:1000;
   letter-spacing:1.2px;
   text-transform:uppercase;
@@ -1198,12 +1199,11 @@ body{
 
   background:
     url("/assets/ui/phase-pill-bg.png")
-    center / contain
+    center / 100% 100%
     no-repeat;
 
   border:none;
   box-shadow:none;
-  padding:0;            /* 🔥 bỏ padding để không sinh vùng thừa */
 
   text-align:center;
 
