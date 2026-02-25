@@ -1647,6 +1647,128 @@ body{
   transform: scale(.92);
 }
 
+
+/* ===== RESULT SHEET LAYOUT FIT BG ===== */
+.sheet-content{
+  height:100%;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+  padding:22px 18px 18px;
+}
+
+.sheet-top{
+  /* chừa vùng crest trên background */
+  padding-top:18px;
+}
+
+.result-header{
+  text-align:center;
+}
+
+#resultIcon{
+  font-size:28px;
+  line-height:1;
+  margin-bottom:6px;
+  filter: drop-shadow(0 0 10px rgba(255,0,60,.6));
+}
+
+#mTitle{
+  font-size:22px;
+  font-weight:1000;
+  letter-spacing:1px;
+  text-transform:uppercase;
+}
+
+#mSub{
+  margin-top:6px;
+  font-size:13px;
+  opacity:.9;
+}
+
+.sheet-mid{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  justify-content:center; /* đưa amount vào đúng vùng giữa tối */
+  gap:14px;
+}
+
+.result-amount{
+  text-align:center;
+  padding:12px 10px;
+}
+
+.amount-label{
+  font-size:12px;
+  letter-spacing:2px;
+  opacity:.9;
+}
+
+.amount-value{
+  margin-top:6px;
+  font-size:42px;
+  font-weight:1000;
+  letter-spacing:1px;
+  text-shadow:
+    0 0 18px rgba(255,0,60,.75),
+    0 0 30px rgba(0,240,255,.45);
+}
+
+.amount-unit{
+  font-size:20px;
+  opacity:.95;
+}
+
+.result-stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:6px;
+}
+
+.result-stats .stat{
+  padding:10px 10px;
+  border-radius:14px;
+
+  /* card trong suốt nhẹ để hợp nền bg */
+  background: rgba(0,0,0,.25);
+  border: 1px solid rgba(255,255,255,.10);
+  backdrop-filter: blur(6px);
+}
+
+.mini-label{
+  font-size:11px;
+  letter-spacing:1.2px;
+  opacity:.85;
+  text-transform:uppercase;
+}
+
+.mini-value{
+  margin-top:6px;
+  font-size:14px;
+  font-weight:900;
+}
+
+/* BOT zone: đặt nút sát “bệ” của bg */
+.sheet-bot{
+  padding-bottom:8px;
+}
+
+.result-actions{
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+}
+
+.sheet-btn{
+  flex:1;
+  height:54px;
+  border-radius:16px;
+  font-weight:1000;
+  letter-spacing:1px;
+}
+
   </style>
 </head>
 
@@ -1817,43 +1939,61 @@ body{
   <div class="sheet">
     <div class="sheet-handle"></div>
 
+
+
 <div class="sheet-content">
 
-  <div class="result-header">
-    <div class="result-icon" id="resultIcon">🏆</div>
-    <div class="mTitle" id="mTitle">You Win!</div>
-    <div class="mSub" id="mSub">Round Result</div>
-  </div>
-
-  <div class="result-amount">
-    <div class="amount-label">Receive</div>
-    <div class="amount-value">
-      <span id="mWin">0</span> 💎
+  <!-- TOP: Crest zone (chừa khoảng trống để không đè lên đầu quỷ của bg) -->
+  <div class="sheet-top">
+    <div class="result-header">
+      <div class="result-icon" id="resultIcon">🏆</div>
+      <div class="mTitle" id="mTitle">You Win!</div>
+      <div class="mSub" id="mSub">Round Result</div>
     </div>
   </div>
 
-  <div class="result-row">
-    <div>
-      <div class="mini-label">You</div>
-      <div class="mini-value" id="mYou">—</div>
+  <!-- MID: Center dark zone (đặt Amount thật nổi) -->
+  <div class="sheet-mid">
+    <div class="result-amount">
+      <div class="amount-label">RECEIVE</div>
+      <div class="amount-value">
+        <span id="mWin">0</span> <span class="amount-unit">💎</span>
+      </div>
     </div>
-    <div>
-      <div class="mini-label">King</div>
-      <div class="mini-value" id="mKing">—</div>
-    </div>
-    <div>
-      <div class="mini-label">Bet</div>
-      <div class="mini-value"><span id="mBet">0</span> 💎</div>
+
+    <div class="result-stats">
+      <div class="stat">
+        <div class="mini-label">You</div>
+        <div class="mini-value" id="mYou">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="mini-label">King</div>
+        <div class="mini-value" id="mKing">—</div>
+      </div>
+
+      <div class="stat">
+        <div class="mini-label">Bet</div>
+        <div class="mini-value"><span id="mBet">0</span> 💎</div>
+      </div>
     </div>
   </div>
 
-  <div class="result-actions">
-  <button class="sheet-btn retreat" id="mRetreat">RETREAT</button>
-  <button class="sheet-btn" id="mOk">CONTINUE</button>
+
+
+  <!-- BOT: Base zone (đặt nút nằm đúng “bệ” của bg) -->
+  <div class="sheet-bot">
+    <div class="result-actions">
+      <button class="sheet-btn retreat" id="mRetreat">RETREAT</button>
+      <button class="sheet-btn" id="mOk">CONTINUE</button>
+    </div>
+  </div>
+
 </div>
 
-</div>
-    
+
+
+
   </div>
 </div>
 
