@@ -2029,6 +2029,41 @@ background:
 }
 
 
+.player-row{
+  position:fixed;
+}
+
+.player-guide{
+  position:absolute;
+  top:8px;
+  left:12px;
+
+  width:36px;
+  height:36px;
+  border-radius:50%;
+
+  background:
+    radial-gradient(circle at 30% 30%, #ffcc66, #8b0000);
+
+  box-shadow:
+    0 0 18px rgba(255,60,60,.6),
+    0 0 30px rgba(255,0,0,.4);
+
+  border:1px solid rgba(255,255,255,.25);
+
+  font-weight:1000;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.player-guide:hover{
+  transform:scale(1.1);
+  box-shadow:
+    0 0 30px rgba(255,120,0,.9);
+}
+
+
+
 
   </style>
 </head>
@@ -2070,12 +2105,6 @@ background:
 </div>
 
   <div class="tb-side tb-right">
-
-
-
-      <!-- 📖 NÚT HƯỚNG DẪN -->
-  <button class="guide-btn" id="openGuide">?</button>
-
 
     <div class="wallet">
 <img src="/assets/ui/diamond-icon.png" class="diamond-icon wallet-icon">
@@ -2215,6 +2244,11 @@ background:
 
     <!-- PLAYER CARDS -->
     <div class="player-row">
+
+        <!-- 📖 GUIDE BUTTON -->
+  <button class="guide-btn player-guide" id="openGuide">?</button>
+
+
       <div class="row-head">
         <div class="tag">
           SLAVE DECK
