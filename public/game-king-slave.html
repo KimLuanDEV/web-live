@@ -1908,25 +1908,22 @@ body{
   z-index:9999;
 
   display:flex;
-  align-items:center;
+  align-items:flex-end;
   justify-content:center;
 
-  overflow:hidden;
-}
-
-.game-loader::before{
-  content:"";
-  position:absolute;
-  inset:0;
+  padding-bottom:120px;
 
   background:
-    linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.9)),
+    linear-gradient(rgba(0,0,0,.75), rgba(0,0,0,.95)),
     url("/assets/ui/loading-bg.jpg");
 
   background-size:cover;
   background-position:center;
+  background-repeat:no-repeat;
 
   animation: slowZoom 8s ease-in-out infinite alternate;
+
+  transition: opacity .6s ease, visibility .6s ease;
 }
 
 @keyframes slowZoom{
@@ -1939,56 +1936,38 @@ body{
   visibility:hidden;
 }
 
-.loader-core{
-  width:300px;
-  text-align:center;
-}
-
-.loader-logo img{
-  width:220px;
-  object-fit:contain;
-
-  filter:
-    drop-shadow(0 0 25px red)
-    drop-shadow(0 0 40px cyan);
-
-  animation: logoPulse 2.5s ease-in-out infinite;
-}
-
-@keyframes logoPulse{
-  0%{ transform:scale(1) }
-  50%{ transform:scale(1.08) }
-  100%{ transform:scale(1) }
-}
+/* ===== PROGRESS BAR ===== */
 
 .loader-bar-wrap{
-  margin-top:30px;
-  width:100%;
+  width:280px;
   height:14px;
-  border-radius:12px;
-  background:rgba(255,255,255,.1);
+  border-radius:20px;
+  background:rgba(255,255,255,.08);
   overflow:hidden;
+
+  backdrop-filter: blur(8px);
+
+  box-shadow:
+    0 0 20px rgba(255,0,0,.4),
+    inset 0 0 20px rgba(0,0,0,.8);
 }
 
 .loader-bar{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,#ff3b3b,#ffcc66,#00f0ff);
+
+  background:
+    linear-gradient(90deg,
+      #ff3b3b,
+      #ffcc66,
+      #00f0ff);
+
+  box-shadow:
+    0 0 25px rgba(255,0,0,.8),
+    0 0 40px rgba(0,240,255,.8);
+
   transition: width .25s ease;
 }
-
-.loader-text{
-  margin-top:14px;
-  font-weight:900;
-  font-size:14px;
-  letter-spacing:1px;
-  color:#ffcc66;
-
-  text-shadow:
-    0 0 12px red,
-    0 0 20px cyan;
-}
-
 
 
 
@@ -2002,23 +1981,10 @@ body{
      GAME LOADING SCREEN
      ========================= -->
 <div class="game-loader" id="gameLoader">
-  <div class="loader-core">
-    
-    <div class="loader-logo">
-      <img src="/assets/ui/logo-king-slave.png">
-    </div>
-
-    <div class="loader-bar-wrap">
-      <div class="loader-bar" id="loaderBar"></div>
-    </div>
-
-    <div class="loader-text" id="loaderText">
-      Loading 0%
-    </div>
-
+  <div class="loader-bar-wrap">
+    <div class="loader-bar" id="loaderBar"></div>
   </div>
 </div>
-
 
 
 
@@ -3166,6 +3132,51 @@ function startSmartLoader(){
 
 document.addEventListener("DOMContentLoaded", ()=>{
   startSmartLoader();
+});
+
+
+/* =========================
+   SMOOTH LOADER
+   ========================= */
+
+const loaderBar = document.getElementById("loaderBar");
+const gameLoader = document.getElementById("gameLoader");
+
+let fakeProgress = 0;
+
+const smoothLoader = setInterval(()=>{
+
+  if(fakeProgress < 90){
+    fakeProgress += Math.random() * 4;
+    loaderBar.style.width = fakeProgress + "%";
+  }
+
+}, 120);
+
+window.addEventListener("load", ()=>{
+
+  clearInterval(smoothLoader);
+
+  let finish = setInterval(()=>{
+
+    fakeProgress += 3;
+
+    if(fakeProgress >= 100){
+      fakeProgress = 100;
+      loaderBar.style.width = "100%";
+
+      clearInterval(finish);
+
+      setTimeout(()=>{
+        gameLoader.classList.add("hide");
+      }, 400);
+
+    }else{
+      loaderBar.style.width = fakeProgress + "%";
+    }
+
+  }, 30);
+
 });
 
 
