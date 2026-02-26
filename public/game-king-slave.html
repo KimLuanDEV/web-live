@@ -110,61 +110,15 @@ body.loading .sheet-overlay {
   justify-content:space-between;
 
   background:
-    radial-gradient(circle at 20% 0%, rgba(255,0,60,.22), transparent 45%),
-    radial-gradient(circle at 80% 0%, rgba(0,240,255,.16), transparent 45%),
-    linear-gradient(180deg, rgba(10,0,0,.98), rgba(0,0,0,.78));
+    url("/assets/ui/header-king-slave.png")
+    center / 100% 100%
+    no-repeat;
 
-  backdrop-filter: blur(18px);
-
-  box-shadow:
-    0 14px 50px rgba(0,0,0,.75),
-    0 0 40px rgba(255,0,60,.18),
-    inset 0 -1px 0 rgba(255,255,255,.06);
-
-  overflow:hidden;
-  
+  border:none;
+  box-shadow:none;
+  backdrop-filter:none;
 }
 
-/* rune layer + ember dust */
-.topbar::before{
-  content:"";
-  position:absolute;
-  inset:-30%;
-  background:
-    radial-gradient(circle at 50% 40%, rgba(255,0,60,.18), transparent 55%),
-    radial-gradient(circle at 30% 60%, rgba(255,120,0,.10), transparent 55%),
-    radial-gradient(circle at 70% 55%, rgba(0,240,255,.10), transparent 55%),
-    repeating-linear-gradient(45deg,
-      rgba(255,0,60,.10) 0 2px,
-      rgba(255,0,60,0) 2px 10px);
-  filter: blur(10px);
-  opacity:.75;
-  pointer-events:none;
-  animation: demonBreath 3.2s ease-in-out infinite;
-}
-
-/* blood-drip bar */
-.topbar::after{
-  content:"";
-  position:absolute;
-  left:0; right:0; bottom:-1px;
-  height:10px;
-  background:
-    radial-gradient(circle at 12% 0%, rgba(255,0,60,.85), transparent 55%),
-    radial-gradient(circle at 33% 0%, rgba(255,0,60,.65), transparent 60%),
-    radial-gradient(circle at 57% 0%, rgba(255,0,60,.75), transparent 58%),
-    radial-gradient(circle at 82% 0%, rgba(255,0,60,.60), transparent 62%),
-    linear-gradient(90deg, transparent, rgba(255,0,60,.55), transparent);
-  filter: blur(1.2px);
-  opacity:.9;
-  pointer-events:none;
-}
-
-@keyframes demonBreath{
-  0%{transform: translateY(0) scale(1); opacity:.65}
-  50%{transform: translateY(6px) scale(1.03); opacity:.95}
-  100%{transform: translateY(0) scale(1); opacity:.65}
-}
 
 .tb-side{
   width:110px;
@@ -217,8 +171,8 @@ body.loading .sheet-overlay {
   padding: 0;
   margin: 0;
 
-  width: 48px;
-  height: 48px;
+  width:60px;
+  height:60px;
 
   display:flex;
   align-items:center;
@@ -284,6 +238,7 @@ body.loading .sheet-overlay {
   background: none;
   border: none;
   box-shadow: none;
+  margin-right:8px;
 }
 
 .wallet .d{
@@ -1764,7 +1719,7 @@ background:
 
 
 .game-logo{
-  height: 80px;              /* tăng chiều cao */
+  height:95px;              /* tăng chiều cao */
   max-width: 450px;          /* dài ngang hơn */
   width: auto;
 
@@ -2028,7 +1983,6 @@ background:
 <span class="v" id="diamondValue">0</span>
     </div>
   </div>
-
 
 </div>
 
