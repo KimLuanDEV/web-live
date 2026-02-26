@@ -961,13 +961,14 @@ background:
 }
 
 
-/* =========================
-   ARENA CINEMATIC 2.0
-   ========================= */
 
 /* =========================
    ARENA CINEMATIC LEVEL 10
    ========================= */
+
+
+
+
 
 .arena-bg{
   position:absolute;
@@ -978,7 +979,17 @@ background:
   z-index:1;
   pointer-events:none;
   overflow:hidden;
+
+  opacity:0;
+  pointer-events:none;
+  transition: opacity .4s ease;
 }
+
+/* Khi đã bet thành công */
+.arena-bg.show{
+  opacity:1;
+}
+
 
 /* 🔥 Hell vortex */
 .arena-bg::before{
@@ -2723,6 +2734,9 @@ socket.on("ks-bet-ok", (d)=>{
 
   panel.classList.add("hide");
 
+  document.querySelector(".arena-bg").classList.add("show");
+
+
   buildRow(kingRow, "king");
   buildRow(playerRow, "player");
 
@@ -2754,6 +2768,8 @@ socket.on("ks-round-new", (d)=>{
 
   document.getElementById("mRetreat").disabled = false;
 
+  document.querySelector(".arena-bg").classList.remove("show");
+  
   panel.classList.remove("hide");
   resetUIForNewRound(d);
 });
