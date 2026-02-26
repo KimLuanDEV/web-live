@@ -585,23 +585,39 @@ body.loading .sheet-overlay {
 
 
 .betBox{
-  border-radius:22px;
-  padding:14px;
-  display:flex;
-  flex-direction:column;
-  gap:10px;
+  border-radius:0;
+  padding:18px;
 
   background:
-    linear-gradient(180deg,
-      rgba(40,0,0,.85),
-      rgba(0,0,0,.9));
+    url("/assets/ui/bet-altar-bg.png")
+    center / 100% 100%
+    no-repeat;
 
-  border:1px solid rgba(255,0,0,.35);
-
-  box-shadow:
-    inset 0 0 60px rgba(0,0,0,.8),
-    0 0 40px rgba(255,0,0,.15);
+  border:none;
+  box-shadow:none;
 }
+
+
+.betBox::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at 50% 40%,
+      rgba(255,0,0,.25),
+      transparent 60%);
+
+  animation: altarGlow 3s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes altarGlow{
+  0%{opacity:.6}
+  50%{opacity:1}
+  100%{opacity:.6}
+}
+
 
     .betRow{
       display:flex;
