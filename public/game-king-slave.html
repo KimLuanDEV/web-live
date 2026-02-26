@@ -2645,14 +2645,19 @@ function resetUIForNewRound({ roundId } = {}){
   renderPlayerDeck();
 
   // 🔥 Reset toàn bộ trạng thái card
+if(playerRow){
   [...playerRow.children].forEach(c=>{
+    if(!c) return;
     c.style.opacity = "1";
     c.style.pointerEvents = "auto";
     c.style.transform = "";
     c.classList.remove("win","lose","draw","reveal");
   });
+}
 
+if(kingRow){
   [...kingRow.children].forEach(c=>{
+    if(!c) return;
     c.style.opacity = "1";
     c.style.pointerEvents = "auto";
     c.style.transform = "";
