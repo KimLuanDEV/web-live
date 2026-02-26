@@ -702,27 +702,37 @@ background:
   right:0;
   bottom:-10px;
 
-  padding:14px 12px calc(16px + var(--safeBot));
+  padding:18px 16px calc(22px + var(--safeBot));
 
   background:
-    linear-gradient(180deg,
-      rgba(0,0,0,.0),
-      rgba(0,0,0,.92)),
-    radial-gradient(circle at 50% 0%,
-      rgba(0,240,255,.12),
-      transparent 60%);
+    url("/assets/ui/slave-row-bg.png")
+    center bottom / 100% 100%
+    no-repeat;
 
-  backdrop-filter: blur(18px);
-
-  border-top:1px solid rgba(0,240,255,.35);
-
-  box-shadow:
-    0 -10px 40px rgba(0,240,255,.12),
-    inset 0 0 40px rgba(0,0,0,.6);
+  border:none;
+  box-shadow:none;
 
   z-index:40;
-  overflow:hidden;
 }
+
+
+.player-row::before{
+  content:"";
+  position:absolute;
+  top:-4px;
+  left:10%;
+  right:10%;
+  height:4px;
+
+  background:linear-gradient(90deg,
+    transparent,
+    rgba(0,240,255,.9),
+    transparent);
+
+  filter:blur(4px);
+  opacity:.7;
+}
+
 
 
 .player-row .row-head .tag{
@@ -2170,8 +2180,6 @@ background:
 
       <div class="card-row" id="playerRow"></div>
     </div>
-
-
   </div>
 
 
@@ -2769,7 +2777,7 @@ socket.on("ks-round-new", (d)=>{
   document.getElementById("mRetreat").disabled = false;
 
   document.querySelector(".arena-bg").classList.remove("show");
-  
+
   panel.classList.remove("hide");
   resetUIForNewRound(d);
 });
