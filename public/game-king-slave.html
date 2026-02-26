@@ -598,26 +598,6 @@ body.loading .sheet-overlay {
 }
 
 
-.betBox::before{
-  content:"";
-  position:absolute;
-  inset:0;
-
-  background:
-    radial-gradient(circle at 50% 40%,
-      rgba(255,0,0,.25),
-      transparent 60%);
-
-  animation: altarGlow 3s ease-in-out infinite;
-  pointer-events:none;
-}
-
-@keyframes altarGlow{
-  0%{opacity:.6}
-  50%{opacity:1}
-  100%{opacity:.6}
-}
-
 
     .betRow{
       display:flex;
