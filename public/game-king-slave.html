@@ -2029,37 +2029,47 @@ background:
 }
 
 
-.player-row{
-  position:fixed;
-}
+.betBox{
+  position:relative;
 
-.player-guide{
+  
+}
+.bet-guide{
   position:absolute;
-  top:8px;
-  left:12px;
+  top:18px;
+  right:18px;
 
-  width:36px;
-  height:36px;
-  border-radius:50%;
+  width:44px;
+  height:44px;
 
-  background:
-    radial-gradient(circle at 30% 30%, #ffcc66, #8b0000);
-
-  box-shadow:
-    0 0 18px rgba(255,60,60,.6),
-    0 0 30px rgba(255,0,0,.4);
-
-  border:1px solid rgba(255,255,255,.25);
-
-  font-weight:1000;
-  cursor:pointer;
-  transition:.2s;
+  background:none;
+  border:none;
+  box-shadow:none;
+  padding:0;
 }
 
-.player-guide:hover{
-  transform:scale(1.1);
-  box-shadow:
-    0 0 30px rgba(255,120,0,.9);
+.guide-icon{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 10px rgba(255,200,120,.8))
+    drop-shadow(0 0 20px rgba(255,120,0,.6));
+
+  transition:.25s;
+}
+
+.bet-guide:hover .guide-icon{
+  transform:scale(1.1) rotate(-3deg);
+
+  filter:
+    drop-shadow(0 0 20px rgba(255,220,150,1))
+    drop-shadow(0 0 35px rgba(255,120,0,.9));
+}
+
+.bet-guide:active .guide-icon{
+  transform:scale(.9);
 }
 
 
@@ -2168,6 +2178,12 @@ background:
   <div class="panel">
 
     <div class="betBox" id="betBox">
+
+
+<button class="guide-btn bet-guide" id="openGuide">
+  <img src="/assets/ui/icon-scroll-guide.png" class="guide-icon">
+</button>
+
      <div class="statusLine" style="display: none;">
         <div>Status: <b id="statusText">Waiting for a bet</b></div>
           <div style="display: none;">Round: <b id="roundText">#1</b></div>
@@ -2245,8 +2261,7 @@ background:
     <!-- PLAYER CARDS -->
     <div class="player-row">
 
-        <!-- 📖 GUIDE BUTTON -->
-  <button class="guide-btn player-guide" id="openGuide">?</button>
+
 
 
       <div class="row-head">
