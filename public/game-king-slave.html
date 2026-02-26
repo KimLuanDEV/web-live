@@ -2112,6 +2112,92 @@ background:
 }
 
 
+/* =========================
+   GUIDE SLIDER PROFESSIONAL
+   ========================= */
+
+.guide-modal{
+  max-height: 85vh;
+}
+
+.guide-slider-wrap{
+  overflow:hidden;
+  margin-top:14px;
+}
+
+.guide-slider{
+  display:flex;
+  transition: transform .45s cubic-bezier(.22,1,.36,1);
+}
+
+.guide-slide{
+  min-width:100%;
+  padding:10px 8px 18px;
+  text-align:center;
+}
+
+.guide-img{
+  width:100%;
+  height:140px;
+  object-fit:contain;
+  margin-bottom:10px;
+
+  filter:
+    drop-shadow(0 0 20px rgba(255,60,60,.5))
+    drop-shadow(0 0 20px rgba(0,240,255,.5));
+}
+
+.guide-slide-title{
+  font-weight:1000;
+  font-size:14px;
+  margin-bottom:6px;
+
+  background: linear-gradient(90deg,#ffcc66,#ff3b3b,#00f0ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.guide-slide-text{
+  font-size:12px;
+  line-height:1.5;
+  color:rgba(255,255,255,.75);
+}
+
+.guide-nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-top:8px;
+}
+
+.guide-arrow{
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-weight:1000;
+  cursor:pointer;
+}
+
+.guide-dots{
+  display:flex;
+  gap:6px;
+}
+
+.guide-dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:rgba(255,255,255,.3);
+}
+
+.guide-dot.active{
+  background:#ffcc66;
+  box-shadow:0 0 10px #ffcc66;
+}
+
 
 
   </style>
@@ -2373,69 +2459,83 @@ background:
 
 
 <!-- =========================
-     📖 GUIDE MODAL
+     📖 GUIDE MODAL • SLIDE MODE
      ========================= -->
 <div class="overlay" id="guideModal">
   <div class="backdrop"></div>
 
-  <div class="modal">
+  <div class="modal guide-modal">
     <div class="mTitle">HOW TO PLAY</div>
 
-<div class="mSub">
+    <div class="guide-slider-wrap">
+      <div class="guide-slider" id="guideSlider">
 
-  <div class="guide-section">
-    <div class="guide-title">⚔ OVERVIEW</div>
-    <div class="guide-text">
-      King vs Slave là game đấu trí 1v1 giữa bạn và KING.
-      Mỗi round bạn sẽ đặt cược 💎 và chọn 1 lá bài.
+        <!-- SLIDE 1 -->
+        <div class="guide-slide">
+          <img src="/assets/guide/guide-1.png" class="guide-img">
+          <div class="guide-slide-title">OVERVIEW</div>
+          <div class="guide-slide-text">
+            King vs Slave là game đấu trí 1v1.<br>
+            Đặt cược → Chọn 1 trong 5 lá bài.
+          </div>
+        </div>
+
+        <!-- SLIDE 2 -->
+        <div class="guide-slide">
+          <img src="/assets/guide/guide-2.png" class="guide-img">
+          <div class="guide-slide-title">DECK STRUCTURE</div>
+          <div class="guide-slide-text">
+            KING: 1 King + 4 Warrior<br>
+            SLAVE: 1 Slave + 4 Warrior
+          </div>
+        </div>
+
+        <!-- SLIDE 3 -->
+        <div class="guide-slide">
+          <img src="/assets/guide/guide-3.png" class="guide-img">
+          <div class="guide-slide-title">WIN LOGIC</div>
+          <div class="guide-slide-text">
+            Slave trúng King → WIN<br>
+            Chọn Warrior → LOSE<br>
+            Warrior vs Warrior → DRAW
+          </div>
+        </div>
+
+        <!-- SLIDE 4 -->
+        <div class="guide-slide">
+          <img src="/assets/guide/guide-4.png" class="guide-img">
+          <div class="guide-slide-title">RETREAT SYSTEM</div>
+          <div class="guide-slide-text">
+            Khi hòa bạn có thể Retreat.<br>
+            Bonus tăng tối đa sau 3 lần hòa.
+          </div>
+        </div>
+
+        <!-- SLIDE 5 -->
+        <div class="guide-slide">
+          <img src="/assets/guide/guide-5.png" class="guide-img">
+          <div class="guide-slide-title">STRATEGY</div>
+          <div class="guide-slide-text">
+            Quản lý vốn hợp lý.<br>
+            Không retreat quá sớm nếu muốn bonus cao.
+          </div>
+        </div>
+
+      </div>
     </div>
-  </div>
 
-  <div class="guide-section">
-    <div class="guide-title">🃏 DECK STRUCTURE</div>
-    <div class="guide-text">
-      • Mỗi bên có 5 lá bài <br>
-      • KING: 1 King 👑 + 4 Warrior ⚔ <br>
-      • SLAVE: 1 Slave ⛓ + 4 Warrior ⚔
+    <div class="guide-nav">
+      <button class="guide-arrow" id="prevGuide">◀</button>
+      <div class="guide-dots" id="guideDots"></div>
+      <button class="guide-arrow" id="nextGuide">▶</button>
     </div>
-  </div>
-
-  <div class="guide-section">
-    <div class="guide-title">🎯 WIN CONDITIONS</div>
-    <div class="guide-text">
-      • SLAVE chọn trúng KING → <b style="color:#41ff9b">WIN x lớn</b><br>
-      • SLAVE chọn Warrior → <b style="color:#ff3b3b">LOSE</b><br>
-      • Cả hai đều Warrior → <b style="color:#ffcc66">DRAW</b>
-    </div>
-  </div>
-
-  <div class="guide-section">
-    <div class="guide-title">🏳 RETREAT SYSTEM</div>
-    <div class="guide-text">
-      Khi DRAW, bạn có thể Retreat để rút lui và nhận bonus tăng dần.<br>
-      Bonus tăng tối đa sau 3 lần hòa liên tiếp.<br>
-      Sau lần hòa thứ 4 → không thể retreat nữa.
-    </div>
-  </div>
-
-  <div class="guide-section">
-    <div class="guide-title">💡 STRATEGY TIPS</div>
-    <div class="guide-text">
-      • Quản lý vốn hợp lý trước khi All-in.<br>
-      • Không retreat quá sớm nếu muốn bonus cao hơn.<br>
-      • Quan sát nhịp round để quyết định cược.
-    </div>
-  </div>
-
-</div>
 
     <div class="mBtns">
-      <button class="btn" id="closeGuide">Đóng</button>
+      <button class="btn" id="closeGuide">Close</button>
     </div>
+
   </div>
 </div>
-
-
 
 
 <script>
@@ -3375,6 +3475,8 @@ function finishLoading(){
 
 
 
+
+
 // ============================
 // 📖 GUIDE MODAL CONTROL
 // ============================
@@ -3394,6 +3496,54 @@ guideModal.querySelector(".backdrop").onclick = ()=>{
   guideModal.classList.remove("show");
 };
 
+
+
+
+
+/* =========================
+   GUIDE SLIDER LOGIC
+   ========================= */
+
+const slider = document.getElementById("guideSlider");
+const slides = document.querySelectorAll(".guide-slide");
+const dotsWrap = document.getElementById("guideDots");
+const prevBtn = document.getElementById("prevGuide");
+const nextBtn = document.getElementById("nextGuide");
+
+let currentSlide = 0;
+
+function updateGuide(){
+  slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+  document.querySelectorAll(".guide-dot").forEach((d,i)=>{
+    d.classList.toggle("active", i === currentSlide);
+  });
+}
+
+slides.forEach((_,i)=>{
+  const dot = document.createElement("div");
+  dot.className = "guide-dot";
+  if(i===0) dot.classList.add("active");
+  dot.onclick = ()=>{
+    currentSlide = i;
+    updateGuide();
+  };
+  dotsWrap.appendChild(dot);
+});
+
+nextBtn.onclick = ()=>{
+  if(currentSlide < slides.length-1){
+    currentSlide++;
+    updateGuide();
+  }
+};
+
+prevBtn.onclick = ()=>{
+  if(currentSlide > 0){
+    currentSlide--;
+    updateGuide();
+  }
+};
 
 </script>
 </body>
