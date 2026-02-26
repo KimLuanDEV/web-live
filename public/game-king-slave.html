@@ -2156,6 +2156,36 @@ background:
 
 
 
+.guide-zoom{
+  position:fixed;
+  inset:0;
+  z-index:200;
+  display:none;
+  align-items:center;
+  justify-content:center;
+}
+
+.guide-zoom.show{ display:flex; }
+
+.guide-zoom .zbg{
+  position:absolute; inset:0;
+  background:rgba(0,0,0,.75);
+  backdrop-filter: blur(10px);
+}
+
+.guide-zoom img{
+  position:relative;
+  width:min(96vw, 980px);
+  height:auto;
+  max-height:92vh;
+  object-fit:contain;
+  border-radius:18px;
+  box-shadow: 0 40px 120px rgba(0,0,0,.85);
+}
+
+
+
+
   </style>
 </head>
 
