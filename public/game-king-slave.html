@@ -3091,12 +3091,11 @@ document.addEventListener('dblclick', e => e.preventDefault());
 
 
 
-
 /* =========================
-   SMART IMAGE PRELOADER
+   ADVANCED SMOOTH LOADER
    ========================= */
 
-function preloadAllImages(){
+function startSmartLoader(){
 
   const loader = document.getElementById("gameLoader");
   const bar = document.getElementById("loaderBar");
@@ -3105,49 +3104,57 @@ function preloadAllImages(){
   const images = Array.from(document.images);
   const total = images.length;
 
-  if(total === 0){
-    finishLoading();
-    return;
-  }
+  let realLoaded = 0;
+  let displayPercent = 0;
+  let realPercent = 0;
+  let finished = false;
 
-  let loaded = 0;
-
-  function update(){
-    loaded++;
-    const percent = Math.floor((loaded / total) * 100);
-
-    bar.style.width = percent + "%";
-    text.textContent = "Loading " + percent + "%";
-
-    if(loaded >= total){
-      finishLoading();
-    }
-  }
-
+  // 🔥 Đếm load thật
   images.forEach(img=>{
     if(img.complete){
-      update();
+      realLoaded++;
     }else{
-      img.addEventListener("load", update);
-      img.addEventListener("error", update);
+      img.addEventListener("load", ()=>{
+        realLoaded++;
+      });
+      img.addEventListener("error", ()=>{
+        realLoaded++;
+      });
     }
   });
 
-  function finishLoading(){
-    setTimeout(()=>{
-      loader.classList.add("hide");
-    }, 400);
-  }
+  // 🔥 Loop animation mượt
+  const interval = setInterval(()=>{
+
+    realPercent = Math.floor((realLoaded / total) * 100);
+
+    // display chạy dần tới realPercent
+    if(displayPercent < realPercent){
+      displayPercent += 1;
+    }
+
+    bar.style.width = displayPercent + "%";
+    text.textContent = "Loading " + displayPercent + "%";
+
+    // Khi cả 2 đạt 100 → kết thúc
+    if(realPercent >= 100 && displayPercent >= 100){
+      clearInterval(interval);
+
+      setTimeout(()=>{
+        loader.classList.add("hide");
+      }, 400);
+    }
+
+  }, 15); // tốc độ mượt
 }
 
 /* =========================
-   START WHEN DOM READY
+   START NGAY KHI DOM READY
    ========================= */
 
-window.addEventListener("load", ()=>{
-  preloadAllImages();
+document.addEventListener("DOMContentLoaded", ()=>{
+  startSmartLoader();
 });
-
 
 
 </script>
