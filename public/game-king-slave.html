@@ -1879,10 +1879,117 @@ body{
 
 
 
+/* =========================
+   FULLSCREEN GAME LOADER
+   ========================= */
+
+.game-loader{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(255,0,0,.35),
+      rgba(0,0,0,.95));
+
+  backdrop-filter: blur(20px);
+
+  transition: opacity .6s ease, visibility .6s ease;
+}
+
+.game-loader.hide{
+  opacity:0;
+  visibility:hidden;
+}
+
+.loader-core{
+  width:300px;
+  text-align:center;
+}
+
+.loader-logo img{
+  width:220px;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 25px red)
+    drop-shadow(0 0 40px cyan);
+
+  animation: logoPulse 2.5s ease-in-out infinite;
+}
+
+@keyframes logoPulse{
+  0%{ transform:scale(1) }
+  50%{ transform:scale(1.08) }
+  100%{ transform:scale(1) }
+}
+
+.loader-bar-wrap{
+  margin-top:30px;
+  width:100%;
+  height:14px;
+  border-radius:12px;
+  background:rgba(255,255,255,.1);
+  overflow:hidden;
+}
+
+.loader-bar{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ff3b3b,#ffcc66,#00f0ff);
+  transition: width .25s ease;
+}
+
+.loader-text{
+  margin-top:14px;
+  font-weight:900;
+  font-size:14px;
+  letter-spacing:1px;
+  color:#ffcc66;
+
+  text-shadow:
+    0 0 12px red,
+    0 0 20px cyan;
+}
+
+
+
+
   </style>
 </head>
 
 <body>
+
+
+<!-- =========================
+     GAME LOADING SCREEN
+     ========================= -->
+<div class="game-loader" id="gameLoader">
+  <div class="loader-core">
+    
+    <div class="loader-logo">
+      <img src="/assets/ui/logo-king-slave.png">
+    </div>
+
+    <div class="loader-bar-wrap">
+      <div class="loader-bar" id="loaderBar"></div>
+    </div>
+
+    <div class="loader-text" id="loaderText">
+      Loading 0%
+    </div>
+
+  </div>
+</div>
+
+
+
+
 
   <!-- TOP BAR -->
 <div class="topbar">
@@ -2958,6 +3065,68 @@ document.addEventListener('gesturechange', e => e.preventDefault());
 document.addEventListener('gestureend', e => e.preventDefault());
 
 document.addEventListener('dblclick', e => e.preventDefault());
+
+
+
+
+
+
+
+/* =========================
+   SMART IMAGE PRELOADER
+   ========================= */
+
+function preloadAllImages(){
+
+  const loader = document.getElementById("gameLoader");
+  const bar = document.getElementById("loaderBar");
+  const text = document.getElementById("loaderText");
+
+  const images = Array.from(document.images);
+  const total = images.length;
+
+  if(total === 0){
+    finishLoading();
+    return;
+  }
+
+  let loaded = 0;
+
+  function update(){
+    loaded++;
+    const percent = Math.floor((loaded / total) * 100);
+
+    bar.style.width = percent + "%";
+    text.textContent = "Loading " + percent + "%";
+
+    if(loaded >= total){
+      finishLoading();
+    }
+  }
+
+  images.forEach(img=>{
+    if(img.complete){
+      update();
+    }else{
+      img.addEventListener("load", update);
+      img.addEventListener("error", update);
+    }
+  });
+
+  function finishLoading(){
+    setTimeout(()=>{
+      loader.classList.add("hide");
+    }, 400);
+  }
+}
+
+/* =========================
+   START WHEN DOM READY
+   ========================= */
+
+window.addEventListener("load", ()=>{
+  preloadAllImages();
+});
 
 
 
