@@ -1997,47 +1997,35 @@ background:
 
 
 /* =========================
-   GUIDE BUTTON (SLAVE DECK)
+   GUIDE BUTTON
    ========================= */
-
-.player-row .row-head{
-  position:relative;
-}
-
-.slave-guide{
-  position:absolute;
-  right:0;
-  top:50%;
-  transform:translateY(-50%);
-
-  width:32px;
-  height:32px;
-
+.guide-btn{
+  width:38px;
+  height:38px;
   border-radius:50%;
 
   font-weight:1000;
-  font-size:14px;
+  font-size:16px;
 
   background:
-    radial-gradient(circle at 30% 30%, #00f0ff, #003a4a);
+    radial-gradient(circle at 30% 30%, #ffcc66, #8b0000);
 
-  border:1px solid rgba(255,255,255,.4);
+  border:1px solid rgba(255,255,255,.3);
 
   color:#fff;
 
   box-shadow:
-    0 0 18px rgba(0,240,255,.8);
+    0 0 20px rgba(255,60,60,.5);
 
   cursor:pointer;
   transition:.2s;
-
-  z-index:5;
+  margin-right:10px;
 }
 
-.slave-guide:hover{
-  transform:translateY(-50%) scale(1.15);
+.guide-btn:hover{
+  transform: scale(1.1);
   box-shadow:
-    0 0 25px rgba(0,240,255,1);
+    0 0 30px rgba(255,120,0,.8);
 }
 
 
@@ -2055,7 +2043,6 @@ background:
 <!-- =========================
      GAME LOADING SCREEN
      ========================= -->
-     
 <!--
 <div class="game-loader" id="gameLoader">
   <div class="loader-bar-wrap">
@@ -2083,6 +2070,13 @@ background:
 </div>
 
   <div class="tb-side tb-right">
+
+
+
+      <!-- 📖 NÚT HƯỚNG DẪN -->
+  <button class="guide-btn" id="openGuide">?</button>
+
+
     <div class="wallet">
 <img src="/assets/ui/diamond-icon.png" class="diamond-icon wallet-icon">
 <span class="v" id="diamondValue">0</span>
@@ -2226,10 +2220,6 @@ background:
           SLAVE DECK
         </div>
       </div>
-
- <!-- 📖 GUIDE BUTTON -->
-    <button class="guide-btn slave-guide" id="openGuide">?</button>
-
 
       <div class="card-row" id="playerRow"></div>
     </div>
@@ -2645,19 +2635,14 @@ function resetUIForNewRound({ roundId } = {}){
   renderPlayerDeck();
 
   // 🔥 Reset toàn bộ trạng thái card
-if(playerRow){
   [...playerRow.children].forEach(c=>{
-    if(!c) return;
     c.style.opacity = "1";
     c.style.pointerEvents = "auto";
     c.style.transform = "";
     c.classList.remove("win","lose","draw","reveal");
   });
-}
 
-if(kingRow){
   [...kingRow.children].forEach(c=>{
-    if(!c) return;
     c.style.opacity = "1";
     c.style.pointerEvents = "auto";
     c.style.transform = "";
