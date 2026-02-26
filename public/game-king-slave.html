@@ -2079,7 +2079,15 @@ background:
    ========================= */
 
 .guide-modal{
-  max-height: 85vh;
+  width:min(560px, 96vw);
+  max-height: 88vh;
+
+  padding:0;
+  border:none;
+  background:none;
+  box-shadow:none;
+
+  position:relative;
 }
 
 .guide-slider-wrap{
@@ -2102,13 +2110,12 @@ background:
 /* tăng chiều cao ảnh theo màn hình */
 .guide-img{
   width:100%;
-  height: min(62vh, 420px);  /* ✅ to hơn nhiều, vẫn giới hạn */
+  height: min(70vh, 520px);
   object-fit:contain;
-  margin:0;
 
   filter:
-    drop-shadow(0 0 20px rgba(255,60,60,.45))
-    drop-shadow(0 0 20px rgba(0,240,255,.45));
+    drop-shadow(0 0 30px rgba(255,60,60,.5))
+    drop-shadow(0 0 30px rgba(0,240,255,.5));
 }
 
 
@@ -2184,7 +2191,21 @@ background:
 }
 
 
+.guide-frame{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none;
+  z-index:1;
+}
 
+
+.guide-modal > *:not(.guide-frame){
+  position:relative;
+  z-index:2;
+}
 
   </style>
 </head>
@@ -2450,7 +2471,10 @@ background:
 <div class="overlay" id="guideModal">
   <div class="backdrop"></div>
 
-  <div class="modal guide-modal">
+ <div class="modal guide-modal">
+  <img src="/assets/ui/guide-frame.png" class="guide-frame">
+
+
     <div class="mTitle">HOW TO PLAY</div>
 
     <div class="guide-slider-wrap">
