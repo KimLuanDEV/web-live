@@ -2078,29 +2078,8 @@ background:
    GUIDE SLIDER PROFESSIONAL
    ========================= */
 
-/* =========================
-   GUIDE MODAL • CINEMATIC BG
-   ========================= */
-
 .guide-modal{
-  position:relative;
-
-  width:min(560px, 94vw);
-  height:78vh;
-
-  padding:26px 22px 20px;
-
-  border-radius:0;
-  border:none;
-  box-shadow:none;
-
-  background:
-    url("/assets/ui/guide-modal-bg.png")
-    center / 100% 100%
-    no-repeat;
-
-  transform: scale(.92);
-  animation: modalIn .35s cubic-bezier(.2,.8,.2,1) forwards;
+  max-height: 85vh;
 }
 
 .guide-slider-wrap{
@@ -2123,30 +2102,13 @@ background:
 /* tăng chiều cao ảnh theo màn hình */
 .guide-img{
   width:100%;
-  height:68vh;   /* lớn hơn */
+  height: min(62vh, 420px);  /* ✅ to hơn nhiều, vẫn giới hạn */
   object-fit:contain;
+  margin:0;
 
   filter:
-    drop-shadow(0 0 30px rgba(255,60,60,.55))
-    drop-shadow(0 0 30px rgba(0,240,255,.55));
-}
-
-.guide-modal .mTitle{
-  font-size:24px;
-  font-weight:1000;
-  letter-spacing:1.2px;
-
-  margin-bottom:10px;
-
-  background: linear-gradient(90deg,#ffcc66,#ff3b3b,#00f0ff);
-  background-clip:text;
-  -webkit-background-clip:text;
-  color:transparent;
-  -webkit-text-fill-color:transparent;
-
-  text-shadow:
-    0 0 25px rgba(255,60,60,.7),
-    0 0 35px rgba(0,240,255,.7);
+    drop-shadow(0 0 20px rgba(255,60,60,.45))
+    drop-shadow(0 0 20px rgba(0,240,255,.45));
 }
 
 
@@ -2165,30 +2127,14 @@ background:
 }
 
 .guide-arrow{
-  width:44px;
-  height:44px;
-  border-radius:14px;
-
-  background:
-    linear-gradient(180deg,
-      rgba(120,0,0,.9),
-      rgba(40,0,0,.95));
-
-  border:1px solid rgba(255,204,102,.6);
-
-  color:#ffcc66;
+  width:40px;
+  height:40px;
+  border-radius:12px;
+  border:none;
+  background:rgba(255,255,255,.08);
+  color:#fff;
   font-weight:1000;
-
-  box-shadow:
-    0 0 20px rgba(255,0,0,.4);
-
-  transition:.2s;
-}
-
-.guide-arrow:hover{
-  transform:scale(1.1);
-  box-shadow:
-    0 0 30px rgba(255,120,0,.8);
+  cursor:pointer;
 }
 
 .guide-dots{
@@ -2236,9 +2182,6 @@ background:
   border-radius:18px;
   box-shadow: 0 40px 120px rgba(0,0,0,.85);
 }
-
-
-
 
   </style>
 </head>
