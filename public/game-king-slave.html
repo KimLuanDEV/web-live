@@ -421,9 +421,12 @@ body{
       user-select:none;
       transform: translateZ(0);
       box-shadow: 0 16px 28px rgba(0,0,0,.38);
+      position:relative;
     }
 
     
+
+
     .card::before{
       content:"";
       position:absolute; inset:0;
@@ -1360,12 +1363,25 @@ body{
   perspective:1000px;
 }
 
+.card-frame{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  pointer-events:none;
+  z-index:5; /* nằm trên card */
+}
+
+
 .card-inner{
   width:100%;
   height:100%;
   position:relative;
   transform-style: preserve-3d;
   transition: transform .6s cubic-bezier(.2,.8,.2,1);
+  position:relative;
+  z-index:2; /* nằm dưới frame */
 }
 
 .card.flip .card-inner{
@@ -1872,36 +1888,7 @@ body{
 }
 
 
-/* =========================
-   CARD ROW FRAME WRAPPER
-   ========================= */
 
-.card-frame-wrap{
-  position:relative;
-  width:100%;
-  padding:20px 16px;  /* khoảng cách trong khung */
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* Hình khung */
-.row-frame-img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:100% 100%;
-  pointer-events:none;
-  z-index:0;
-}
-
-/* Đưa card-row lên trên */
-.card-frame-wrap .card-row{
-  position:relative;
-  z-index:2;
-  width:100%;
-}
 
 
 .king-frame .row-frame-img{
@@ -1966,16 +1953,10 @@ body{
         KING DECK
         </div>
       </div>
-
-      <div class="card-frame-wrap king-frame">
-  <img src="/assets/ks/frame-row-king.png" class="row-frame-img">
-  <div class="card-row" id="kingRow"></div>
-      </div>
-
-
+       <div class="card-row" id="kingRow"></div>
     </div>
 
-    
+  
     <!-- CENTER PANEL -->
     <div class="center">
 
@@ -2087,12 +2068,7 @@ body{
           SLAVE DECK
         </div>
       </div>
-
-      <div class="card-frame-wrap player-frame">
-  <img src="/assets/ks/frame-row-player.png" class="row-frame-img">
-  <div class="card-row" id="playerRow"></div>
-      </div>
-
+      <div class="card-row" id="playerRow"></div>
     </div>
 
 
@@ -2270,6 +2246,7 @@ if (me?.coins != null) {
   diamondEl.textContent = diamonds.toLocaleString("en-US");
 }
 
+
 function buildRow(el, type){
   el.innerHTML = "";
 
@@ -2280,14 +2257,26 @@ function buildRow(el, type){
     card.dataset.idx = idx;
 
     // =========================
+    // 🔥 FRAME PNG (MỖI CARD 1 FRAME)
+    // =========================
+    const frame = document.createElement("img");
+    frame.className = "card-frame";
+
+    if(type === "king"){
+      frame.src = "/assets/ks/frame-card-king.png";
+    }else{
+      frame.src = "/assets/ks/frame-card-player.png";
+    }
+
+    card.appendChild(frame);
+
+    // =========================
     // 🔥 INNER (3D container)
     // =========================
     const inner = document.createElement("div");
     inner.className = "card-inner";
 
-    // =========================
-    // 🂠 BACK (mặt úp)
-    // =========================
+    // 🂠 BACK
     const back = document.createElement("div");
     back.className = "card-face card-back";
 
@@ -2295,62 +2284,45 @@ function buildRow(el, type){
     backImg.src = "/assets/ks/card-back.png";
     back.appendChild(backImg);
 
-    // =========================
-    // 🂡 FRONT (mặt ngửa)
-    // =========================
+    // 🂡 FRONT
     const front = document.createElement("div");
     front.className = "card-face card-front";
 
     const frontImg = document.createElement("img");
-
-    if(type === "king"){
-      // KING chưa biết mặt → tạm để common
-      frontImg.src = "/assets/ks/card-common.png";
-    }else{
-      // PLAYER ban đầu là common
-      frontImg.src = "/assets/ks/card-common.png";
-    }
-
+    frontImg.src = "/assets/ks/card-common.png";
     front.appendChild(frontImg);
 
-    // =========================
-    // GHÉP STRUCTURE
-    // =========================
     inner.appendChild(back);
     inner.appendChild(front);
+
     card.appendChild(inner);
 
     // =========================
     // CLICK PLAYER
     // =========================
     if(type === "player"){
+      card.addEventListener("click", ()=>{
 
-card.addEventListener("click", ()=>{
+        if(cardsLocked) return;
+        if(!canPick || picked) return;
+        if(usedPlayerCards.has(idx)) return;
 
-  if(cardsLocked) return;          // 🔒 khóa toàn bộ
-  if(!canPick || picked) return;
-  if(usedPlayerCards.has(idx)) return;
+        cardsLocked = true;
+        lockAllPlayerCards();
 
-  cardsLocked = true;              // 🔒 khóa ngay khi chọn
-  lockAllPlayerCards();            // 🔒 disable UI
+        picked = true;
+        pickedIndex = idx;
 
-  picked = true;
-  pickedIndex = idx;
+        socket.emit("ks-pick", { index: idx });
 
-  socket.emit("ks-pick", { index: idx });
-
-  flashPick(card);
-
- playSound("pick");
-
-});
+        flashPick(card);
+        playSound("pick");
+      });
     }
 
-    
     el.appendChild(card);
   }
 }
-
 
 function renderPlayerDeck(){
 
