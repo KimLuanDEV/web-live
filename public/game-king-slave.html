@@ -66,6 +66,32 @@ body{
   overscroll-behavior: none;
 }
 
+
+
+/* =========================
+   HIDE GAME BEFORE LOADED
+   ========================= */
+
+body.loading .topbar,
+body.loading .global-phase,
+body.loading .wrap,
+body.loading .player-row,
+body.loading .sheet-overlay {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.topbar,
+.global-phase,
+.wrap,
+.player-row,
+.sheet-overlay {
+  transition: opacity .5s ease;
+}
+
+
+
+
 /* =========================
    TOPBAR • DEMON ALTAR
    ========================= */
@@ -1981,7 +2007,8 @@ body{
   </style>
 </head>
 
-<body>
+
+<body class="loading">
 
 
 <!-- =========================
@@ -3079,114 +3106,75 @@ document.addEventListener('dblclick', e => e.preventDefault());
 
 
 /* =========================
-   ADVANCED SMOOTH LOADER
+   ADVANCED SMART LOADER (FINAL)
    ========================= */
 
 function startSmartLoader(){
 
   const loader = document.getElementById("gameLoader");
   const bar = document.getElementById("loaderBar");
-  const text = document.getElementById("loaderText");
 
   const images = Array.from(document.images);
-  const total = images.length;
+  const total = images.length || 1;
 
   let realLoaded = 0;
   let displayPercent = 0;
-  let realPercent = 0;
   let finished = false;
 
-  // 🔥 Đếm load thật
+  function updateReal(){
+    realLoaded++;
+  }
+
   images.forEach(img=>{
     if(img.complete){
-      realLoaded++;
+      updateReal();
     }else{
-      img.addEventListener("load", ()=>{
-        realLoaded++;
-      });
-      img.addEventListener("error", ()=>{
-        realLoaded++;
-      });
+      img.addEventListener("load", updateReal);
+      img.addEventListener("error", updateReal);
     }
   });
 
-  // 🔥 Loop animation mượt
   const interval = setInterval(()=>{
 
-    realPercent = Math.floor((realLoaded / total) * 100);
+    const realPercent = Math.floor((realLoaded / total) * 100);
 
-    // display chạy dần tới realPercent
+    // chạy mượt dần tới realPercent
     if(displayPercent < realPercent){
       displayPercent += 1;
     }
 
     bar.style.width = displayPercent + "%";
-    text.textContent = "Loading " + displayPercent + "%";
 
-    // Khi cả 2 đạt 100 → kết thúc
-    if(realPercent >= 100 && displayPercent >= 100){
+    if(realPercent >= 100 && displayPercent >= 100 && !finished){
+      finished = true;
       clearInterval(interval);
 
       setTimeout(()=>{
         loader.classList.add("hide");
-      }, 400);
+
+        setTimeout(()=>{
+          document.body.classList.remove("loading");
+        }, 400);
+
+      }, 300);
     }
 
-  }, 15); // tốc độ mượt
+  }, 12);
 }
 
-/* =========================
-   START NGAY KHI DOM READY
-   ========================= */
-
-document.addEventListener("DOMContentLoaded", ()=>{
-  startSmartLoader();
-});
+document.addEventListener("DOMContentLoaded", startSmartLoader);
 
 
-/* =========================
-   SMOOTH LOADER
-   ========================= */
 
-const loaderBar = document.getElementById("loaderBar");
-const gameLoader = document.getElementById("gameLoader");
+function finishLoading(){
+  const loader = document.getElementById("gameLoader");
 
-let fakeProgress = 0;
+  loader.classList.add("hide");
 
-const smoothLoader = setInterval(()=>{
-
-  if(fakeProgress < 90){
-    fakeProgress += Math.random() * 4;
-    loaderBar.style.width = fakeProgress + "%";
-  }
-
-}, 120);
-
-window.addEventListener("load", ()=>{
-
-  clearInterval(smoothLoader);
-
-  let finish = setInterval(()=>{
-
-    fakeProgress += 3;
-
-    if(fakeProgress >= 100){
-      fakeProgress = 100;
-      loaderBar.style.width = "100%";
-
-      clearInterval(finish);
-
-      setTimeout(()=>{
-        gameLoader.classList.add("hide");
-      }, 400);
-
-    }else{
-      loaderBar.style.width = fakeProgress + "%";
-    }
-
-  }, 30);
-
-});
+  setTimeout(()=>{
+    document.body.classList.remove("loading");
+  }, 400);
+}
 
 
 </script>
