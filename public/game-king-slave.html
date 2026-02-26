@@ -2472,7 +2472,9 @@ function setPhase(text){
 
 
 function setStatus(text){
+  if (statusText) {
   statusText.textContent = text;
+}
 }
 
 function openPick(){
