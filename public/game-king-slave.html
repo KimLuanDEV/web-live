@@ -1994,22 +1994,75 @@ background:
 
 
 
+
+
+/* =========================
+   GUIDE BUTTON (SLAVE DECK)
+   ========================= */
+
+.player-row .row-head{
+  position:relative;
+}
+
+.slave-guide{
+  position:absolute;
+  right:0;
+  top:50%;
+  transform:translateY(-50%);
+
+  width:32px;
+  height:32px;
+
+  border-radius:50%;
+
+  font-weight:1000;
+  font-size:14px;
+
+  background:
+    radial-gradient(circle at 30% 30%, #00f0ff, #003a4a);
+
+  border:1px solid rgba(255,255,255,.4);
+
+  color:#fff;
+
+  box-shadow:
+    0 0 18px rgba(0,240,255,.8);
+
+  cursor:pointer;
+  transition:.2s;
+
+  z-index:5;
+}
+
+.slave-guide:hover{
+  transform:translateY(-50%) scale(1.15);
+  box-shadow:
+    0 0 25px rgba(0,240,255,1);
+}
+
+
+
   </style>
 </head>
 
 
-<body class="loading">
+<body>
 
+ <!--
+<body class="loading">
+--> 
 
 <!-- =========================
      GAME LOADING SCREEN
      ========================= -->
+     
+<!--
 <div class="game-loader" id="gameLoader">
   <div class="loader-bar-wrap">
     <div class="loader-bar" id="loaderBar"></div>
   </div>
 </div>
-
+--> 
 
 
   <!-- TOP BAR -->
@@ -2174,6 +2227,10 @@ background:
         </div>
       </div>
 
+            <!-- 📖 NÚT HƯỚNG DẪN -->
+  <button class="guide-btn" id="openGuide">?</button>
+
+
       <div class="card-row" id="playerRow"></div>
     </div>
   </div>
@@ -2233,6 +2290,39 @@ background:
   </div>
 </div>
 
+
+
+
+
+<!-- =========================
+     📖 GUIDE MODAL
+     ========================= -->
+<div class="overlay" id="guideModal">
+  <div class="backdrop"></div>
+
+  <div class="modal">
+    <div class="mTitle">HOW TO PLAY</div>
+
+    <div class="mSub">
+      👑 KING vs ⛓ SLAVE <br><br>
+
+      🔥 Mỗi round có 5 lá bài. <br>
+      👑 KING có 1 lá King, 4 Warrior. <br>
+      ⛓ SLAVE có 1 lá Slave, 4 Warrior. <br><br>
+
+      🎯 Nếu SLAVE chọn đúng King → Thắng lớn. <br>
+      💀 Nếu chọn Warrior → Thua. <br>
+      ⚔ Nếu cả hai chọn Warrior → Hòa. <br><br>
+
+      🏳 Bạn có thể Retreat khi hòa để nhận bonus. <br>
+      🔒 Sau 3 lần hòa, không thể retreat nữa.
+    </div>
+
+    <div class="mBtns">
+      <button class="btn" id="closeGuide">Đóng</button>
+    </div>
+  </div>
+</div>
 
 
 
@@ -3169,6 +3259,29 @@ function finishLoading(){
     document.body.classList.remove("loading");
   }, 400);
 }
+
+
+
+
+
+// ============================
+// 📖 GUIDE MODAL CONTROL
+// ============================
+const guideModal = document.getElementById("guideModal");
+const openGuide = document.getElementById("openGuide");
+const closeGuide = document.getElementById("closeGuide");
+
+openGuide.onclick = ()=>{
+  guideModal.classList.add("show");
+};
+
+closeGuide.onclick = ()=>{
+  guideModal.classList.remove("show");
+};
+
+guideModal.querySelector(".backdrop").onclick = ()=>{
+  guideModal.classList.remove("show");
+};
 
 
 </script>
