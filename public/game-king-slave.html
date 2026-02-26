@@ -1911,15 +1911,27 @@ body{
   align-items:center;
   justify-content:center;
 
-  background:
-  radial-gradient(circle at center,
-    #200000,
-    #050508);
-  
-  opacity:1;
-  visibility:visible;
+  overflow:hidden;
+}
 
-  transition: opacity .6s ease, visibility .6s ease;
+.game-loader::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(rgba(0,0,0,.7), rgba(0,0,0,.9)),
+    url("/assets/ui/loading-bg.jpg");
+
+  background-size:cover;
+  background-position:center;
+
+  animation: slowZoom 8s ease-in-out infinite alternate;
+}
+
+@keyframes slowZoom{
+  from{ transform:scale(1); }
+  to{ transform:scale(1.08); }
 }
 
 .game-loader.hide{
