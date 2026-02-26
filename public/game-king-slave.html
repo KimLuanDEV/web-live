@@ -702,12 +702,11 @@ background:
   right:0;
   bottom:0;
 
-  padding:70px 40px calc(50px + var(--safeBot));
-  min-height:200px;
+  padding:60px 40px calc(40px + var(--safeBot));
 
   background:
     url("/assets/ui/slave-row-bg.png")
-    center bottom / 100% 100%
+    center bottom / cover
     no-repeat;
 
   border:none;
@@ -716,11 +715,7 @@ background:
   z-index:40;
 }
 
-.player-row .card-row{
-  max-width: 900px;
-  margin: 0 auto;
-  gap: 14px;
-}
+
 
 .player-row::before{
   content:"";
