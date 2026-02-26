@@ -1872,48 +1872,9 @@ body{
 }
 
 
-.king-frame .row-frame-img{
-  filter:
-    drop-shadow(0 0 30px rgba(255,60,60,.6));
-}
-
-.player-frame .row-frame-img{
-  filter:
-    drop-shadow(0 0 30px rgba(0,240,255,.6));
-}
 
 
-/* =========================
-   INDIVIDUAL CARD FRAME
-   ========================= */
 
-.card-wrap{
-  position:relative;
-  width: calc((100% - 40px) / 5);
-  height: 120px; /* cao hơn card */
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-.card-frame-img{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:contain;
-  pointer-events:none;
-  z-index:2;
-}
-
-/* card nằm bên trong frame */
-.card-wrap .card{
-  position:relative;
-  width:75%;
-  height:75%;
-  z-index:3;
-  border-radius:0; /* nếu frame không bo */
-}
 
 
   </style>
@@ -1967,10 +1928,11 @@ body{
         KING DECK
         </div>
       </div>
-       <div class="card-row" id="kingRow"></div>
+
+      <div class="card-row" id="kingRow"></div>
     </div>
 
-  
+    
     <!-- CENTER PANEL -->
     <div class="center">
 
@@ -2082,6 +2044,7 @@ body{
           SLAVE DECK
         </div>
       </div>
+
       <div class="card-row" id="playerRow"></div>
     </div>
 
@@ -2265,23 +2228,6 @@ function buildRow(el, type){
 
   for(let idx = 0; idx < 5; idx++){
 
-
-// ===== WRAP (frame wrapper) =====
-const wrap = document.createElement("div");
-wrap.className = "card-wrap";
-
-// ===== FRAME IMG =====
-const frame = document.createElement("img");
-frame.className = "card-frame-img";
-
-if(type === "king"){
-  frame.src = "/assets/ks/frame-card-king.png";
-}else{
-  frame.src = "/assets/ks/frame-card-player.png";
-}
-
-
-
     const card = document.createElement("div");
     card.className = "card cover";
     card.dataset.idx = idx;
@@ -2354,13 +2300,7 @@ card.addEventListener("click", ()=>{
     }
 
     
-   // GHÉP FRAME + CARD
-wrap.appendChild(frame);
-wrap.appendChild(card);
-
-// Đưa vào row
-el.appendChild(wrap);
-
+    el.appendChild(card);
   }
 }
 
