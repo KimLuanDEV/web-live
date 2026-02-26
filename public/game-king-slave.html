@@ -1016,15 +1016,26 @@ body{
 
 /* ===== SLOT BASE ===== */
 .slot{
-  width:130px;
-  height:175px;
-  border-radius:22px;
-  border:2px solid rgba(255,255,255,.15);
-  background:
-    linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.45));
-  backdrop-filter: blur(8px);
+  width: 130px;
+  height: 175px;
+
   position:relative;
-  transition:.3s;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background: none;      /* 🔥 bỏ nền */
+  border: none;          /* 🔥 bỏ viền */
+  border-radius: 0;      /* 🔥 không bo góc */
+  backdrop-filter: none; /* 🔥 bỏ blur */
+
+  transition: transform .25s ease;
+}
+
+.slot.combat{
+  animation: impact .35s ease;
+  filter: drop-shadow(0 0 30px rgba(255,255,255,.25));
 }
 
 /* ===== SLOT WRAPPER ===== */
@@ -1048,16 +1059,6 @@ body{
   z-index:2;
 }
 
-/* ===== SLOT BÊN TRONG ===== */
-.slot{
-  position:relative;
-  width:85%;
-  height:85%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:1;
-}
 
 /* CARD full không bo góc */
 .slot img{
