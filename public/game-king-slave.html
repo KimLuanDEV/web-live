@@ -1872,9 +1872,47 @@ body{
 }
 
 
+/* =========================
+   CARD ROW FRAME WRAPPER
+   ========================= */
+
+.card-frame-wrap{
+  position:relative;
+  width:100%;
+  padding:20px 16px;  /* khoảng cách trong khung */
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* Hình khung */
+.row-frame-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:100% 100%;
+  pointer-events:none;
+  z-index:0;
+}
+
+/* Đưa card-row lên trên */
+.card-frame-wrap .card-row{
+  position:relative;
+  z-index:2;
+  width:100%;
+}
 
 
+.king-frame .row-frame-img{
+  filter:
+    drop-shadow(0 0 30px rgba(255,60,60,.6));
+}
 
+.player-frame .row-frame-img{
+  filter:
+    drop-shadow(0 0 30px rgba(0,240,255,.6));
+}
 
 
   </style>
@@ -1929,7 +1967,12 @@ body{
         </div>
       </div>
 
-      <div class="card-row" id="kingRow"></div>
+      <div class="card-frame-wrap king-frame">
+  <img src="/assets/ks/frame-row-king.png" class="row-frame-img">
+  <div class="card-row" id="kingRow"></div>
+      </div>
+
+
     </div>
 
     
@@ -2045,7 +2088,11 @@ body{
         </div>
       </div>
 
-      <div class="card-row" id="playerRow"></div>
+      <div class="card-frame-wrap player-frame">
+  <img src="/assets/ks/frame-row-player.png" class="row-frame-img">
+  <div class="card-row" id="playerRow"></div>
+      </div>
+
     </div>
 
 
