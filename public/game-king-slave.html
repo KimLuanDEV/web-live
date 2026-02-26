@@ -532,44 +532,18 @@ body.loading .sheet-overlay {
 
 .panel{
   width:min(520px, 100%);
-  border-radius:28px;
-  top:-5px;
-  background:
-    radial-gradient(circle at 50% -20%,
-      rgba(255,0,0,.25),
-      transparent 60%),
-    linear-gradient(180deg,
-      rgba(20,0,0,.98),
-      rgba(5,0,0,.95));
+  border-radius:0;
 
-  border:1px solid rgba(255,0,0,.4);
-
-  box-shadow:
-    0 0 80px rgba(255,0,0,.25),
-    inset 0 0 80px rgba(0,0,0,.9);
+  background: transparent;   /* 🔥 bỏ nền đỏ */
+  border:none;               /* 🔥 bỏ viền */
+  box-shadow:none;           /* 🔥 bỏ glow */
 
   position:relative;
-  overflow:hidden;
+  overflow:visible;
 }
 
-/* 🔥 Demon energy breathing */
-.panel::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    radial-gradient(circle at 30% 40%,
-      rgba(255,0,0,.15),
-      transparent 60%);
-  animation: altarPulse 3s ease-in-out infinite;
-  pointer-events:none;
-}
 
-@keyframes altarPulse{
-  0%{opacity:.6; transform:scale(1)}
-  50%{opacity:1; transform:scale(1.03)}
-  100%{opacity:.6; transform:scale(1)}
-}
+
     
 
 
@@ -590,9 +564,10 @@ body.loading .sheet-overlay {
 
   background:
     url("/assets/ui/bet-altar-bg.png")
-    center / 100% 100%
+    center / contain
     no-repeat;
 
+  background-color: transparent; /* 🔥 đảm bảo không còn lớp nền */
   border:none;
   box-shadow:none;
 }
