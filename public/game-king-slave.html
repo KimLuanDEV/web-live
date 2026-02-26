@@ -424,8 +424,6 @@ body{
     }
 
     
-
-
     .card::before{
       content:"";
       position:absolute; inset:0;
@@ -1873,6 +1871,7 @@ body{
   margin-left:-20px;
 }
 
+
 .king-frame .row-frame-img{
   filter:
     drop-shadow(0 0 30px rgba(255,60,60,.6));
@@ -1885,26 +1884,35 @@ body{
 
 
 /* =========================
-   SINGLE CARD FRAME
+   INDIVIDUAL CARD FRAME
    ========================= */
 
-.card{
+.card-wrap{
   position:relative;
+  width: calc((100% - 40px) / 5);
+  height: 120px; /* cao hơn card */
+  display:flex;
+  align-items:center;
+  justify-content:center;
 }
 
-.card-frame{
+.card-frame-img{
   position:absolute;
   inset:0;
   width:100%;
   height:100%;
   object-fit:contain;
   pointer-events:none;
-  z-index:5; /* nằm trên card */
+  z-index:2;
 }
 
-.card-inner{
+/* card nằm bên trong frame */
+.card-wrap .card{
   position:relative;
-  z-index:2; /* nằm dưới frame */
+  width:75%;
+  height:75%;
+  z-index:3;
+  border-radius:0; /* nếu frame không bo */
 }
 
 
@@ -2252,29 +2260,31 @@ if (me?.coins != null) {
   diamondEl.textContent = diamonds.toLocaleString("en-US");
 }
 
-
 function buildRow(el, type){
   el.innerHTML = "";
 
   for(let idx = 0; idx < 5; idx++){
 
+
+// ===== WRAP (frame wrapper) =====
+const wrap = document.createElement("div");
+wrap.className = "card-wrap";
+
+// ===== FRAME IMG =====
+const frame = document.createElement("img");
+frame.className = "card-frame-img";
+
+if(type === "king"){
+  frame.src = "/assets/ks/frame-card-king.png";
+}else{
+  frame.src = "/assets/ks/frame-card-player.png";
+}
+
+
+
     const card = document.createElement("div");
     card.className = "card cover";
     card.dataset.idx = idx;
-
-    // =========================
-    // 🔥 FRAME PNG (MỖI CARD 1 FRAME)
-    // =========================
-    const frame = document.createElement("img");
-    frame.className = "card-frame";
-
-    if(type === "king"){
-      frame.src = "/assets/ks/frame-card-king.png";
-    }else{
-      frame.src = "/assets/ks/frame-card-player.png";
-    }
-
-    card.appendChild(frame);
 
     // =========================
     // 🔥 INNER (3D container)
@@ -2282,7 +2292,9 @@ function buildRow(el, type){
     const inner = document.createElement("div");
     inner.className = "card-inner";
 
-    // 🂠 BACK
+    // =========================
+    // 🂠 BACK (mặt úp)
+    // =========================
     const back = document.createElement("div");
     back.className = "card-face card-back";
 
@@ -2290,45 +2302,62 @@ function buildRow(el, type){
     backImg.src = "/assets/ks/card-back.png";
     back.appendChild(backImg);
 
-    // 🂡 FRONT
+    // =========================
+    // 🂡 FRONT (mặt ngửa)
+    // =========================
     const front = document.createElement("div");
     front.className = "card-face card-front";
 
     const frontImg = document.createElement("img");
-    frontImg.src = "/assets/ks/card-common.png";
+
+    if(type === "king"){
+      // KING chưa biết mặt → tạm để common
+      frontImg.src = "/assets/ks/card-common.png";
+    }else{
+      // PLAYER ban đầu là common
+      frontImg.src = "/assets/ks/card-common.png";
+    }
+
     front.appendChild(frontImg);
 
+    // =========================
+    // GHÉP STRUCTURE
+    // =========================
     inner.appendChild(back);
     inner.appendChild(front);
-
     card.appendChild(inner);
 
     // =========================
     // CLICK PLAYER
     // =========================
     if(type === "player"){
-      card.addEventListener("click", ()=>{
 
-        if(cardsLocked) return;
-        if(!canPick || picked) return;
-        if(usedPlayerCards.has(idx)) return;
+card.addEventListener("click", ()=>{
 
-        cardsLocked = true;
-        lockAllPlayerCards();
+  if(cardsLocked) return;          // 🔒 khóa toàn bộ
+  if(!canPick || picked) return;
+  if(usedPlayerCards.has(idx)) return;
 
-        picked = true;
-        pickedIndex = idx;
+  cardsLocked = true;              // 🔒 khóa ngay khi chọn
+  lockAllPlayerCards();            // 🔒 disable UI
 
-        socket.emit("ks-pick", { index: idx });
+  picked = true;
+  pickedIndex = idx;
 
-        flashPick(card);
-        playSound("pick");
-      });
+  socket.emit("ks-pick", { index: idx });
+
+  flashPick(card);
+
+ playSound("pick");
+
+});
     }
 
+    
     el.appendChild(card);
   }
 }
+
 
 function renderPlayerDeck(){
 
