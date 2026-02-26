@@ -2004,6 +2004,125 @@ body.loading .sheet-overlay {
 
 
 
+
+/* =========================
+   GUIDE OVERLAY
+========================= */
+
+.guide-overlay{
+  position:fixed;
+  inset:0;
+  z-index:120;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation: fadeIn .3s ease;
+}
+
+.guide-backdrop{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at center,
+      rgba(0,0,0,.6),
+      rgba(0,0,0,.95));
+  backdrop-filter: blur(12px);
+}
+
+.guide-box{
+  position:relative;
+  width:min(520px, 92vw);
+  border-radius:26px;
+  padding:24px;
+
+  background:
+    linear-gradient(180deg,
+      rgba(20,0,0,.98),
+      rgba(5,0,0,.95));
+
+  border:1px solid rgba(255,0,0,.4);
+
+  box-shadow:
+    0 0 80px rgba(255,0,0,.35),
+    0 0 60px rgba(0,240,255,.2);
+
+  animation: scaleIn .35s ease forwards;
+}
+
+@keyframes scaleIn{
+  from{ transform: scale(.85); opacity:0 }
+  to{ transform: scale(1); opacity:1 }
+}
+
+.guide-title{
+  font-size:20px;
+  font-weight:1000;
+  text-align:center;
+  margin-bottom:18px;
+
+  background: linear-gradient(90deg,#ffcc66,#ff3b3b,#00f0ff);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+
+.guide-content{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.g-item{
+  display:flex;
+  gap:12px;
+  align-items:flex-start;
+  font-size:14px;
+}
+
+.g-step{
+  min-width:26px;
+  height:26px;
+  border-radius:8px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-weight:900;
+  font-size:13px;
+
+  background: radial-gradient(circle at top,
+    #ffcc66,
+    #8b0000);
+
+  box-shadow: 0 0 14px rgba(255,0,0,.5);
+}
+
+.guide-btn{
+  margin-top:20px;
+  width:100%;
+  height:46px;
+  border-radius:16px;
+
+  font-weight:1000;
+  letter-spacing:.8px;
+
+  background:
+    linear-gradient(180deg,
+      rgba(0,240,255,.6),
+      rgba(0,120,140,.7));
+
+  border:none;
+  color:#fff;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.guide-btn:hover{
+  transform: translateY(-2px);
+}
+
+
+
   </style>
 </head>
 
@@ -2246,6 +2365,38 @@ body.loading .sheet-overlay {
     
   </div>
 </div>
+
+
+
+<div class="guide-title">👑 KING vs SLAVE</div>
+
+<div class="guide-content">
+
+<div class="g-item">
+  <div class="g-step">1</div>
+  <div>Place your bet.</div>
+</div>
+
+<div class="g-item">
+  <div class="g-step">2</div>
+  <div>Select one card.</div>
+</div>
+
+<div class="g-item">
+  <div class="g-step">3</div>
+  <div>SLAVE defeats KING. KING defeats WARRIOR.</div>
+</div>
+
+<div class="g-item">
+  <div class="g-step">4</div>
+  <div>4 consecutive draws = automatic victory.</div>
+</div>
+
+
+<button class="guide-btn" id="guideOkBtn">
+  ENTER THE ARENA ⚔
+</button>
+
 
 
 <script>
@@ -3175,6 +3326,29 @@ function finishLoading(){
     document.body.classList.remove("loading");
   }, 400);
 }
+
+
+
+
+/* =========================
+   GUIDE LOGIC
+========================= */
+
+const guideOverlay = document.getElementById("guideOverlay");
+const guideOkBtn = document.getElementById("guideOkBtn");
+
+// chỉ hiện lần đầu
+if(!localStorage.getItem("ks_guide_seen")){
+  guideOverlay.style.display = "flex";
+}else{
+  guideOverlay.style.display = "none";
+}
+
+guideOkBtn.onclick = ()=>{
+  guideOverlay.style.display = "none";
+  localStorage.setItem("ks_guide_seen", "1");
+};
+
 
 
 </script>
