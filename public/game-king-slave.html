@@ -2073,44 +2073,6 @@ background:
 }
 
 
-/* =========================
-   GUIDE MODAL PROFESSIONAL
-   ========================= */
-
-.guide-section{
-  margin-top:16px;
-  padding:12px 14px;
-  border-radius:16px;
-
-  background:
-    linear-gradient(180deg,
-      rgba(255,255,255,.04),
-      rgba(0,0,0,.5));
-
-  border:1px solid rgba(255,255,255,.08);
-}
-
-.guide-title{
-  font-size:13px;
-  font-weight:1000;
-  letter-spacing:.8px;
-  margin-bottom:6px;
-
-  background: linear-gradient(90deg,#ffcc66,#ff3b3b,#00f0ff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-
-  text-shadow:
-    0 0 10px rgba(255,60,60,.5),
-    0 0 20px rgba(0,240,255,.4);
-}
-
-.guide-text{
-  font-size:12px;
-  line-height:1.55;
-  color:rgba(255,255,255,.75);
-}
-
 
 /* =========================
    GUIDE SLIDER PROFESSIONAL
@@ -2132,19 +2094,27 @@ background:
 
 .guide-slide{
   min-width:100%;
-  padding:10px 8px 18px;
+  padding:6px 0 10px;   /* giảm padding để ảnh có thêm chỗ */
   text-align:center;
 }
 
+
+/* tăng chiều cao ảnh theo màn hình */
 .guide-img{
   width:100%;
-  height:140px;
+  height: min(62vh, 420px);  /* ✅ to hơn nhiều, vẫn giới hạn */
   object-fit:contain;
-  margin-bottom:10px;
+  margin:0;
 
   filter:
-    drop-shadow(0 0 20px rgba(255,60,60,.5))
-    drop-shadow(0 0 20px rgba(0,240,255,.5));
+    drop-shadow(0 0 20px rgba(255,60,60,.45))
+    drop-shadow(0 0 20px rgba(0,240,255,.45));
+}
+
+
+/* nếu màn hình thấp thì vẫn đọc được */
+@media (max-height: 700px){
+  .guide-img{ height: min(58vh, 360px); }
 }
 
 
@@ -2496,6 +2466,13 @@ background:
 
   </div>
 </div>
+
+
+<div class="guide-zoom" id="guideZoom">
+  <div class="zbg"></div>
+  <img id="guideZoomImg" src="" alt="Guide Zoom">
+</div>
+
 
 
 <script>
@@ -3504,6 +3481,24 @@ prevBtn.onclick = ()=>{
     updateGuide();
   }
 };
+
+
+const guideZoom = document.getElementById("guideZoom");
+const guideZoomImg = document.getElementById("guideZoomImg");
+
+document.querySelectorAll(".guide-img").forEach(img=>{
+  img.style.cursor = "zoom-in";
+  img.addEventListener("click", ()=>{
+    guideZoomImg.src = img.src;
+    guideZoom.classList.add("show");
+  });
+});
+
+guideZoom?.addEventListener("click", ()=>{
+  guideZoom.classList.remove("show");
+  guideZoomImg.src = "";
+});
+
 
 </script>
 </body>
