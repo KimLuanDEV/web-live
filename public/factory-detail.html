@@ -124,15 +124,18 @@ body{
 /* ===== HERO ===== */
 .hero{
   position:relative;
+  width:100%;
+  margin:0;            /* bỏ margin */
+  border-radius:0;     /* bỏ bo góc nếu muốn full edge */
   overflow:hidden;
-  border:1px solid rgba(0,240,255,.18);
-  box-shadow: 0 25px 80px rgba(0,0,0,.55), 0 0 55px rgba(0,240,255,.12);
+  border:none;         /* bỏ viền nếu muốn sát mép */
+  box-shadow:none;     /* bỏ shadow nếu muốn phẳng */
 }
 
 .factory-hero{
   display:block;
   width:100%;
-  height: 400px;
+  height: 420px;
   object-fit:cover;
   transform: scale(1.02);
   filter: contrast(1.08) saturate(1.12);
@@ -373,7 +376,7 @@ body{
   </div>
 </div>
 
-<div class="container">
+
 
   <div class="hero">
     <img id="factoryImg" class="factory-hero" alt="factory">
@@ -390,6 +393,7 @@ body{
     </div>
   </div>
 
+<div class="container">
   <div class="card" style="margin-top:12px">
     <div class="yard" id="yard"></div>
   </div>
