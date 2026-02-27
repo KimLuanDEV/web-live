@@ -1,85 +1,318 @@
 <!doctype html>
-<html>
+<html lang="vi">
 <head>
-  <meta charset="utf-8">
-  <title>Diamond Factory</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="/style.css">
+<meta charset="utf-8">
+<title>Nhà máy sản xuất Kim Cương</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="/style.css">
+
+<style>
+
+/* =========================
+   💎 DIAMOND FACTORY
+========================= */
+
+html,body{
+  margin:0;
+  padding:0;
+  background:#05080c;
+  color:#fff;
+  font-family:system-ui;
+  overflow:hidden;
+}
+
+/* ===== TOP BAR ===== */
+
+.topbar{
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  background:linear-gradient(180deg,#0b0f14,#05080c);
+  border-bottom:1px solid rgba(0,255,255,.15);
+}
+
+.title{
+  font-weight:800;
+  font-size:16px;
+  text-shadow:0 0 10px rgba(0,255,255,.6);
+}
+
+.wallet{
+  font-weight:700;
+  color:#00f0ff;
+}
+
+/* ===== FACTORY CORE ===== */
+
+.factory-wrap{
+  position:absolute;
+  inset:60px 0 170px 0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+.core{
+  width:230px;
+  height:230px;
+  border-radius:50%;
+  position:relative;
+  background:
+    radial-gradient(circle at center,
+      rgba(0,255,255,.8),
+      rgba(0,120,255,.4),
+      rgba(0,0,0,.9)
+    );
+  box-shadow:
+    0 0 40px rgba(0,255,255,.6),
+    0 0 80px rgba(0,200,255,.4),
+    inset 0 0 40px rgba(255,255,255,.15);
+  animation:pulse 2.5s ease-in-out infinite;
+}
+
+@keyframes pulse{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.05)}
+  100%{transform:scale(1)}
+}
+
+.stored{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:34px;
+  font-weight:900;
+  text-shadow:
+    0 0 15px rgba(0,255,255,1),
+    0 0 30px rgba(0,255,255,.7);
+}
+
+/* ===== STORAGE BAR ===== */
+
+.storage-bar{
+  position:absolute;
+  bottom:130px;
+  left:50%;
+  transform:translateX(-50%);
+  width:80%;
+  height:16px;
+  border-radius:10px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+}
+
+.storage-fill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00f0ff,#00aaff);
+  box-shadow:0 0 20px rgba(0,255,255,.8);
+  transition:width .3s linear;
+}
+
+/* ===== PANEL ===== */
+
+.panel{
+  position:absolute;
+  bottom:0;
+  left:0;
+  right:0;
+  background:linear-gradient(180deg,#0a1016,#05080c);
+  border-top:1px solid rgba(0,255,255,.2);
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+
+.stats{
+  display:flex;
+  justify-content:space-between;
+  font-size:13px;
+}
+
+.controls{
+  display:flex;
+  gap:12px;
+}
+
+.btn{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:800;
+  font-size:14px;
+  cursor:pointer;
+  background:linear-gradient(180deg,#00f0ff,#0088ff);
+  color:#001;
+  box-shadow:0 0 20px rgba(0,255,255,.5);
+}
+
+.btn:active{
+  transform:scale(.95);
+}
+
+.btn-upgrade{
+  background:linear-gradient(180deg,#ff5050,#aa0000);
+  box-shadow:0 0 20px rgba(255,0,0,.6);
+  color:#fff;
+}
+
+.status{
+  text-align:center;
+  font-size:13px;
+  opacity:.85;
+}
+
+</style>
 </head>
-<body class="factory-body">
+
+<body>
+
+<div class="topbar">
+  <div onclick="location.href='/invest.html'" style="cursor:pointer">←</div>
+  <div class="title">🏭 Nhà máy Kim Cương</div>
+  <div class="wallet"><span id="coinVal">0</span> 💎</div>
+</div>
 
 <div class="factory-wrap">
+  <div class="core">
+    <div class="stored" id="storedVal">0 💎</div>
+  </div>
+</div>
 
-  <div class="factory-header">
-    <h2>🏭 Diamond Factory</h2>
-    <div class="wallet">
-      💎 <span id="diamondValue">0</span>
-    </div>
+<div class="storage-bar">
+  <div class="storage-fill" id="storageFill"></div>
+</div>
+
+<div class="panel">
+
+  <div class="stats">
+    <div>🏭 Level: <b id="levelVal">1</b></div>
+    <div>⚡ <b id="rateVal">1</b> 💎/s</div>
+    <div>📦 <b id="storageVal">100</b></div>
   </div>
 
-  <div class="factory-core">
-    <div class="factory-level">
-      Level: <span id="factoryLevel">1</span>
-    </div>
+  <div class="controls">
+    <button class="btn" id="collectBtn">
+      THU HOẠCH
+    </button>
 
-    <div class="factory-storage">
-      Stored: <span id="factoryStorage">0</span> 💎
-    </div>
+    <button class="btn btn-upgrade" id="upgradeBtn">
+      NÂNG CẤP
+    </button>
+  </div>
 
-    <button id="collectBtn">Collect</button>
-    <button id="upgradeBtn">Upgrade</button>
+  <div class="status" id="statusText">
+    Nhà máy đang sản xuất...
   </div>
 
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-    
-const socket = io();
+
+const socket = io({
+  auth:{
+    uid: JSON.parse(localStorage.getItem("user_profile")||"{}").uid,
+    deviceId: localStorage.getItem("device_id")
+  }
+});
 
 let factory = {
-  level: 1,
-  storage: 0,
-  lastTick: Date.now()
+  level:1,
+  rate:1,
+  storage:100,
+  stored:0,
+  lastUpdate:Date.now()
 };
 
-const levelEl = document.getElementById("factoryLevel");
-const storageEl = document.getElementById("factoryStorage");
+const storedEl = document.getElementById("storedVal");
+const fillEl = document.getElementById("storageFill");
+const statusEl = document.getElementById("statusText");
 
-function updateUI(){
-  levelEl.textContent = factory.level;
-  storageEl.textContent = factory.storage;
-}
+const levelEl = document.getElementById("levelVal");
+const rateEl = document.getElementById("rateVal");
+const storageEl = document.getElementById("storageVal");
 
-setInterval(()=>{
+function update(){
+
   const now = Date.now();
-  const diff = now - factory.lastTick;
+  const seconds = (now - factory.lastUpdate)/1000;
 
-  if(diff >= 3000){
-    const produce = factory.level * 2;
-    factory.storage += produce;
-    factory.lastTick = now;
-    updateUI();
+  if(seconds > 0){
+    factory.stored += seconds * factory.rate;
+    if(factory.stored > factory.storage){
+      factory.stored = factory.storage;
+    }
+    factory.lastUpdate = now;
   }
 
-},1000);
+  render();
+}
 
-document.getElementById("collectBtn")
-.onclick = ()=>{
-  socket.emit("factory-collect", factory.storage);
-  factory.storage = 0;
-  updateUI();
+function render(){
+
+  storedEl.textContent =
+    Math.floor(factory.stored) + " 💎";
+
+  fillEl.style.width =
+    (factory.stored/factory.storage*100)+"%";
+
+  levelEl.textContent = factory.level;
+  rateEl.textContent = factory.rate;
+  storageEl.textContent = factory.storage;
+
+  if(factory.stored >= factory.storage){
+    statusEl.textContent = "Kho đầy – Thu hoạch ngay!";
+  }else{
+    statusEl.textContent = "Đang sản xuất...";
+  }
+}
+
+setInterval(update,1000);
+
+document.getElementById("collectBtn").onclick = ()=>{
+
+  update();
+
+  const amount = Math.floor(factory.stored);
+  if(amount <= 0) return;
+
+  socket.emit("factory-collect",{ amount });
+
+  factory.stored = 0;
+  render();
 };
 
-document.getElementById("upgradeBtn")
-.onclick = ()=>{
-  socket.emit("factory-upgrade");
+document.getElementById("upgradeBtn").onclick = ()=>{
+
+  const cost = factory.level * 200;
+
+  socket.emit("factory-upgrade",{ cost });
 };
 
+socket.on("factory-upgrade-success",()=>{
+
+  factory.level++;
+  factory.rate += 1;
+  factory.storage += 50;
+
+  render();
+});
+
+socket.on("coin-update", d=>{
+  document.getElementById("coinVal").textContent =
+    d.coins || 0;
+});
+
+render();
 
 </script>
-
-
 
 </body>
 </html>

@@ -130,3 +130,5 @@ function openDiamondFactoryGame(){
   location.href = "/game-diamond-factory.html";
 }
 
+
+

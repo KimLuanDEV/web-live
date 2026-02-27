@@ -2106,7 +2106,8 @@ if (meNow?.role === "admin" && timeRaceRound) {
 // ================================
 // 🏭 DIAMOND FACTORY
 // ================================
-socket.on("factory-collect", amount => {
+
+socket.on("factory-collect", ({amount})=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
@@ -2115,13 +2116,16 @@ socket.on("factory-collect", amount => {
   const me = users[uid];
   if(!me?.profile) return;
 
-  me.profile.coins += Number(amount || 0);
+  amount = Math.floor(Number(amount||0));
+  if(amount <= 0) return;
+
+  me.profile.coins += amount;
 
   saveUsers(users);
   emitCoinUpdate(uid);
 });
 
-socket.on("factory-upgrade", ()=>{
+socket.on("factory-upgrade", ({cost})=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
@@ -2130,30 +2134,20 @@ socket.on("factory-upgrade", ()=>{
   const me = users[uid];
   if(!me?.profile) return;
 
-  const upgradeCost = 500;
+  cost = Math.floor(Number(cost||0));
+  if(me.profile.coins < cost) return;
 
-  if(me.profile.coins < upgradeCost){
-    socket.emit("factory-error",{
-      message:"NOT_ENOUGH_COIN"
-    });
-    return;
-  }
-
-  me.profile.coins -= upgradeCost;
-  me.factoryLevel = (me.factoryLevel || 1) + 1;
+  me.profile.coins -= cost;
 
   saveUsers(users);
   emitCoinUpdate(uid);
 
-  socket.emit("factory-upgraded",{
-    level: me.factoryLevel
-  });
-
+  socket.emit("factory-upgrade-success");
 });
 
 
 
-
+  
 // ================================
 // 🥚 BUY EGG
 // ================================

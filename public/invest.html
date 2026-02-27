@@ -756,19 +756,40 @@ body.sheet-open{
 
 
 
+/* 🏭 DIAMOND FACTORY */
 .invest-card.diamond-factory{
   background-image:
     linear-gradient(180deg, rgba(0,255,255,.35), rgba(0,0,0,.95)),
-    url("/assets/bg/diamond-factory.jpg");
+    url("/assets/bg/diamond-factory.jpg"); /* bạn thêm ảnh sau */
 
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 
   box-shadow:
-    0 0 45px rgba(0,255,255,.3),
-    0 12px 30px rgba(0,0,0,.7);
+    0 0 60px rgba(0,255,255,.45),
+    0 12px 30px rgba(0,0,0,.8);
 }
+
+/* hiệu ứng ánh sáng công nghiệp */
+.invest-card.diamond-factory::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 30% 40%, rgba(0,255,255,.25), transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(0,200,255,.25), transparent 50%);
+  mix-blend-mode: screen;
+  animation: pulseFactory 2.8s ease-in-out infinite;
+  pointer-events:none;
+}
+
+@keyframes pulseFactory{
+  0%{opacity:.4}
+  50%{opacity:.9}
+  100%{opacity:.4}
+}
+
 
 
 </style>
@@ -936,13 +957,14 @@ body.sheet-open{
   <div class="asset-name"></div>
 </div>
 
-<!-- 🏭 GAME CƠ SỞ SẢN XUẤT KIM CƯƠNG -->
+
+<!-- 🏭💎 GAME NHÀ MÁY SẢN XUẤT KIM CƯƠNG -->
 <div class="invest-card diamond-factory"
      onclick="openDiamondFactoryGame()">
-  <div class="asset-name">
-    Cơ sở sản xuất kim cương
-  </div>
+  <div class="asset-name"></div>
 </div>
+
+
 
       </div>
     </div>
