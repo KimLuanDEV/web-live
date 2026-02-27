@@ -2239,6 +2239,48 @@ socket.emit("factory-update", factoryDB[uid]);
 // 🏭 DIAMOND FACTORY
 // ================================
 
+
+// ================================
+// 👷 HIRE WORKER
+// ================================
+socket.on("factory-hire-worker", ({ index })=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  factoryDB[uid] ||= [];
+  const f = factoryDB[uid][index];
+
+  if(!f || f.empty) return;
+
+  const cost = f.workerCost || 150;
+
+  if(me.profile.coins < cost){
+    socket.emit("factory-error",{
+      message:"NOT_ENOUGH_COIN"
+    });
+    return;
+  }
+
+  me.profile.coins -= cost;
+
+  f.workers = (f.workers || 0) + 1;
+  f.active = true; // 🔥 có worker thì hoạt động
+
+  saveUsers(users);
+  saveFactories(factoryDB);
+
+  emitCoinUpdate(uid);
+  socket.emit("factory-update", factoryDB[uid]);
+});
+
+
+
+
 socket.on("factory-collect", ({ index })=>{
 
   const uid = socket.data.uid;
@@ -2251,6 +2293,13 @@ socket.on("factory-collect", ({ index })=>{
   factoryDB[uid] ||= [];
   const f = factoryDB[uid][index];
 
+
+  if(!f.workers || f.workers <= 0){
+  socket.emit("factory-error",{
+    message:"NO_WORKER"
+  });
+  return;
+}
 
   if(f.active === false){
   socket.emit("factory-error",{
@@ -2333,14 +2382,18 @@ socket.on("factory-build", ({ index })=>{
   );
 
   // 🏗 tạo nhà máy mới
-  factoryDB[uid][index] = {
-    id: index + 1,
-    level: 1,
-    rate: 1,
-    storage: 100,
-    stored: 0,
-    lastUpdate: Date.now()
-  };
+factoryDB[uid][index] = {
+  id: index + 1,
+  level: 1,
+  rate: 1,
+  storage: 100,
+  stored: 0,
+  lastUpdate: Date.now(),
+
+  workers: 0,        // 🔥 chưa có công nhân
+  workerCost: 150,   // giá thuê
+  active: false
+};
 
   saveUsers(users);
   saveFactories(factoryDB);
@@ -2365,7 +2418,14 @@ socket.on("factory-upgrade", ({ index })=>{
   factoryDB[uid] ||= [];
   const f = factoryDB[uid][index];
 
-  
+if(!f.workers || f.workers <= 0){
+  socket.emit("factory-error",{
+    message:"NO_WORKER"
+  });
+  return;
+}
+
+
 if(f.active === false){
   socket.emit("factory-error",{
     message:"FACTORY_INACTIVE"

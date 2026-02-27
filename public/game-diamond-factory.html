@@ -169,7 +169,12 @@ function updateFactories(){
 
   factories.forEach(f=>{
 
-   if(f.empty || f.active === false) return;
+if(
+  f.empty ||
+  f.active === false ||
+  !f.workers ||
+  f.workers <= 0
+) return;
 
     const seconds = Math.floor((now - f.lastUpdate)/1000);
 
@@ -202,7 +207,9 @@ function render(){
     if(f.empty){
 
       const cost = (index + 1) * 500;
-      const disabled = myCoins < cost ? "opacity:.5;pointer-events:none;" : "";
+      const disabled = myCoins < cost
+        ? "opacity:.5;pointer-events:none;"
+        : "";
 
       const slot = document.createElement("div");
       slot.className = "slot-empty";
@@ -226,7 +233,13 @@ function render(){
     const card = document.createElement("div");
     card.className = "factory-card";
 
-    const currentStored = f._previewStored ?? f.stored;
+    const hasWorker = f.workers && f.workers > 0;
+    const isActive  = f.active !== false && hasWorker;
+
+    const currentStored = isActive
+      ? (f._previewStored ?? f.stored)
+      : f.stored;
+
     const percent = Math.min(
       100,
       (currentStored / f.storage) * 100
@@ -235,58 +248,105 @@ function render(){
     const upgradeCost = f.level * 300;
 
     const disableUpgrade =
-      myCoins < upgradeCost || f._upgrading
+      myCoins < upgradeCost ||
+      f._upgrading ||
+      !isActive
         ? "disabled"
         : "";
 
     const disableCollect =
-      currentStored <= 0 || f._collecting
+      currentStored <= 0 ||
+      f._collecting ||
+      !isActive
         ? "disabled"
         : "";
 
-const statusBlock = f.active === false
-  ? `<div style="color:#ff5555;font-weight:700;font-size:12px">
-       ⛔ Ngừng hoạt động (chưa trả phí)
-     </div>
-     <button class="btn"
-       style="background:#ffaa00"
-       onclick="payFactoryFee(${index})">
-       Trả phí ${f.dailyFee || 200} 💎
-     </button>`
-  : `<div style="font-size:11px;opacity:.6">
-       Phí/ngày: ${f.dailyFee || 200} 💎
-     </div>`;
+    // =========================
+    // 👷 WORKER BLOCK
+    // =========================
+    let workerBlock = "";
 
-card.innerHTML = `
-  <h3>Nhà máy #${f.id} (Lv.${f.level})</h3>
+    if(!hasWorker){
+      workerBlock = `
+        <div style="color:#ff7777;font-size:12px;font-weight:700">
+          👷 Chưa có công nhân
+        </div>
+        <button class="btn"
+          style="background:#ffaa00"
+          onclick="hireWorker(${index})">
+          Thuê công nhân (${f.workerCost || 150} 💎)
+        </button>
+      `;
+    }else{
+      workerBlock = `
+        <div style="font-size:12px;opacity:.8">
+          👷 Công nhân: ${f.workers}
+        </div>
+      `;
+    }
 
-  ${statusBlock}
+    // =========================
+    // 💸 DAILY FEE BLOCK
+    // =========================
+    let feeBlock = "";
 
-  <div class="factory-stats">
-    ⚡ ${f.rate} 💎/s<br>
-    📦 ${Math.floor(currentStored)}/${f.storage}
-  </div>
+    if(hasWorker && f.active === false){
+      feeBlock = `
+        <div style="color:#ff5555;font-weight:700;font-size:12px">
+          ⛔ Ngừng hoạt động (chưa trả phí)
+        </div>
+        <button class="btn"
+          style="background:#ffaa00"
+          onclick="payFactoryFee(${index})">
+          Trả phí ${f.dailyFee || 200} 💎
+        </button>
+      `;
+    }else{
+      feeBlock = `
+        <div style="font-size:11px;opacity:.6">
+          Phí/ngày: ${f.dailyFee || 200} 💎
+        </div>
+      `;
+    }
 
-  <div class="progress">
-    <div class="progress-fill" style="width:${percent}%"></div>
-  </div>
+    card.innerHTML = `
+      <h3>Nhà máy #${f.id} (Lv.${f.level})</h3>
 
-  <button class="btn btn-collect"
-    ${disableCollect || f.active === false ? "disabled" : ""}
-    onclick="collectFactory(${index})">
-    Thu hoạch
-  </button>
+      ${workerBlock}
+      ${feeBlock}
 
-  <button class="btn btn-upgrade"
-    ${disableUpgrade || f.active === false ? "disabled" : ""}
-    onclick="upgradeFactory(${index})">
-    ⬆ Nâng cấp (${upgradeCost} 💎)
-  </button>
-`;
+      <div class="factory-stats">
+        ⚡ ${f.rate} 💎/s<br>
+        📦 ${Math.floor(currentStored)}/${f.storage}
+      </div>
+
+      <div class="progress">
+        <div class="progress-fill"
+          style="width:${percent}%">
+        </div>
+      </div>
+
+      <button class="btn btn-collect"
+        ${disableCollect}
+        onclick="collectFactory(${index})">
+        Thu hoạch
+      </button>
+
+      <button class="btn btn-upgrade"
+        ${disableUpgrade}
+        onclick="upgradeFactory(${index})">
+        ⬆ Nâng cấp (${upgradeCost} 💎)
+      </button>
+    `;
 
     grid.appendChild(card);
   });
 }
+
+function hireWorker(index){
+  socket.emit("factory-hire-worker",{ index });
+}
+
 
 function collectFactory(index){
 
@@ -355,6 +415,11 @@ socket.on("coin-update", d=>{
 
 
 socket.on("factory-error", d=>{
+    if(d.message === "NO_WORKER"){
+  alert("Nhà máy chưa có công nhân!");
+}
+
+
   if(d.message === "NOT_ENOUGH_COIN"){
     alert("Không đủ kim cương!");
   }
