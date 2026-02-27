@@ -10,7 +10,7 @@
 :root{
   --bg0:#05080c;
   --bg1:#070c12;
-  --card: rgba(12,18,28,.72);
+
   --stroke: rgba(0,240,255,.22);
   --stroke2: rgba(255,255,255,.08);
   --glow: rgba(0,240,255,.35);
@@ -113,23 +113,10 @@ body{
   color:var(--good);
 }
 
-/* ===== LAYOUT ===== */
-.container{
-  max-width: 560px;
-  margin: 0 auto;
-}
 
-.card{
-  background: var(--card);
-  border:1px solid var(--stroke2);
-  border-radius: var(--r);
-  box-shadow:
-    0 20px 60px rgba(0,0,0,.45),
-    0 0 40px rgba(0,240,255,.08);
-  overflow:hidden;
-}
 
-.card + .card{ margin-top:12px; }
+
+
 
 /* ===== HERO ===== */
 .hero{
@@ -256,15 +243,8 @@ body{
   filter: grayscale(1);
 }
 
-/* ===== STATS GRID ===== */
-.stats{
-  padding:14px;
-}
-.grid{
-  display:grid;
-  grid-template-columns: 1fr 1fr;
-  gap:10px;
-}
+
+
 .tile{
   padding:12px 12px;
   border-radius:16px;
@@ -458,6 +438,12 @@ body{
   width:120px;
   z-index:6;
   transform-origin:center;
+
+  filter:
+  drop-shadow(0 15px 35px rgba(0,0,0,.5))
+  drop-shadow(0 0 25px rgba(0,240,255,.15));
+
+  
 }
 
 .controlBg{
@@ -483,11 +469,6 @@ body{
   text-shadow:0 0 18px rgba(0,240,255,.4);
 }
 
-.controlState{
-  font-size:11px;
-  font-weight:900;
-  letter-spacing:1px;
-}
 
 </style>
 </head>
@@ -509,7 +490,7 @@ body{
 
 
 
-  <div class="hero">
+<div class="hero">
     <img id="factoryImg" class="factory-hero" alt="factory">
 
       <!-- 🔥 worker layer -->
@@ -526,27 +507,24 @@ body{
       <div id="progressFill"></div>
     </div>
   </div>
-</div>
+  </div>
 
 
-<div class="controlPanel">
+  <div class="controlPanel">
   <img src="/assets/ui/factory-control-panel.png" class="controlBg">
 
   <div class="controlText">
     <div class="controlLevel">
       LV <span id="levelVal">1</span>
     </div>
-
-    <div class="controlState" id="stateVal">
-      ACTIVE
-    </div>
   </div>
-</div>
+  </div>
 
 
 
 
     <div class="heroHUD">
+
       <div class="badges">
         <div class="badge good">⚡ <span id="rateVal">0 💎/s</span></div>
         <div class="badge warn">👷 <span id="workerVal">0/1</span></div>
@@ -556,23 +534,14 @@ body{
         <span class="dot" id="activeDot"></span>
         <span id="activeText">ACTIVE</span>
       </div>
-    </div>
-  </div>
-
-
-
-<div class="container">
-
-
-
-  <div class="card stats">
-    <div class="grid">
-
 
     </div>
-  </div>
 
 </div>
+
+
+
+
 
 <div class="actionBar">
   <div class="actions">
@@ -606,13 +575,12 @@ const STORAGE_POS = {
 
 
 const CONTROL_POS = {
-  1: { top:"35%", left:"60%" },
-  2: { top:"36%", left:"62%" },
-  3: { top:"34%", left:"58%" },
-  4: { top:"33%", left:"60%" },
-  5: { top:"30%", left:"57%" }
+  1: { top:"35%", left:"60%", ry:-15, rx:-5,  rz:6,  scale:1 },
+  2: { top:"36%", left:"62%", ry:-18, rx:-6,  rz:8,  scale:1 },
+  3: { top:"34%", left:"58%", ry:-10, rx:-3,  rz:5,  scale:0.95 },
+  4: { top:"33%", left:"60%", ry:-20, rx:-8,  rz:10, scale:0.92 },
+  5: { top:"30%", left:"57%", ry:-25, rx:-10, rz:12, scale:0.9 }
 };
-
 
 
 let factory = null;
@@ -764,10 +732,6 @@ function render(){
   }
 
   // ===== STATE =====
-  const stateEl = document.getElementById("stateVal");
-  if(stateEl){
-    stateEl.textContent = active ? "Đang chạy" : "Tạm dừng";
-  }
 
   const activeText = document.getElementById("activeText");
   if(activeText){
@@ -783,11 +747,21 @@ function render(){
 
   // ===== Control =====
 
-  const ctrl = document.querySelector(".controlPanel");
+const ctrl = document.querySelector(".controlPanel");
 if(ctrl){
+
   const cfg = CONTROL_POS[level] || CONTROL_POS[5];
+
   ctrl.style.top  = cfg.top;
   ctrl.style.left = cfg.left;
+
+  ctrl.style.transform = `
+    perspective(800px)
+    rotateY(${cfg.ry}deg)
+    rotateX(${cfg.rx}deg)
+    rotateZ(${cfg.rz}deg)
+    scale(${cfg.scale})
+  `;
 }
 
 
