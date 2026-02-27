@@ -2302,7 +2302,34 @@ socket.on("factory-upgrade", ({ index })=>{
 
   if(!f || f.empty) return;
 
-  // 🔢 giá nâng cấp
+  // ============================
+  // 🔥 1️⃣ THU TRƯỚC KHI NÂNG CẤP
+  // ============================
+  const now = Date.now();
+  const seconds = Math.floor((now - f.lastUpdate)/1000);
+
+  if(seconds > 0){
+    f.stored += seconds * f.rate;
+    if(f.stored > f.storage){
+      f.stored = f.storage;
+    }
+  }
+
+  const harvestAmount = Math.floor(f.stored);
+
+  if(harvestAmount > 0){
+    me.profile.coins = Math.floor(
+      Number(me.profile.coins || 0) + harvestAmount
+    );
+  }
+
+  // reset kho sau khi thu
+  f.stored = 0;
+  f.lastUpdate = now;
+
+  // ============================
+  // 🔢 2️⃣ TÍNH GIÁ NÂNG CẤP
+  // ============================
   const cost = f.level * 300;
 
   if(me.profile.coins < cost){
@@ -2312,12 +2339,16 @@ socket.on("factory-upgrade", ({ index })=>{
     return;
   }
 
-  // 💰 trừ coin
+  // ============================
+  // 💰 3️⃣ TRỪ TIỀN
+  // ============================
   me.profile.coins = Math.floor(
     Number(me.profile.coins || 0) - cost
   );
 
-  // ⬆ nâng cấp
+  // ============================
+  // ⬆ 4️⃣ NÂNG CẤP
+  // ============================
   f.level += 1;
   f.rate += 1;
   f.storage += 100;
@@ -2326,12 +2357,8 @@ socket.on("factory-upgrade", ({ index })=>{
   saveFactories(factoryDB);
 
   emitCoinUpdate(uid);
-
   socket.emit("factory-update", factoryDB[uid]);
 });
-
-
-  
 // ================================
 // 🥚 BUY EGG
 // ================================
