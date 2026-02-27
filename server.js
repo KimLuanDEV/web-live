@@ -2268,7 +2268,19 @@ socket.on("factory-hire-worker", ({ index })=>{
 
   me.profile.coins -= cost;
 
-  f.workers = (f.workers || 0) + 1;
+  f.workers ||= 0;
+  f.maxWorkers ||= 1;
+
+if(f.workers >= f.maxWorkers){
+  socket.emit("factory-error",{
+    message:"MAX_WORKER_REACHED"
+  });
+  return;
+}
+
+f.workers += 1;
+f.active = true;
+
   f.active = true; // 🔥 có worker thì hoạt động
 
   saveUsers(users);
@@ -2390,9 +2402,13 @@ factoryDB[uid][index] = {
   stored: 0,
   lastUpdate: Date.now(),
 
-  workers: 0,        // 🔥 chưa có công nhân
-  workerCost: 150,   // giá thuê
-  active: false
+  workers: 0,
+  maxWorkers: 1,      // 🔥 level 1 chỉ được 1 worker
+  workerCost: 150,
+
+  active: false,
+  dailyFee: 200,
+  nextFeeAt: Date.now() + ONE_DAY
 };
 
   saveUsers(users);
@@ -2482,9 +2498,16 @@ if(f.active === false){
   // ============================
   // ⬆ 4️⃣ NÂNG CẤP
   // ============================
-  f.level += 1;
-  f.rate += 1;
-  f.storage += 100;
+f.level += 1;
+
+// ⚡ tăng rate nhẹ
+f.rate += 1;
+
+// 📦 tăng kho theo level
+f.storage += 100;
+
+// 👷 tăng max worker theo level
+f.maxWorkers = f.level;
 
   saveUsers(users);
   saveFactories(factoryDB);

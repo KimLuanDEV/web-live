@@ -233,7 +233,10 @@ function render(){
     const card = document.createElement("div");
     card.className = "factory-card";
 
-    const hasWorker = f.workers && f.workers > 0;
+    const currentWorkers = f.workers || 0;
+    const maxWorkers     = f.maxWorkers || 1;
+
+    const hasWorker = currentWorkers > 0;
     const isActive  = f.active !== false && hasWorker;
 
     const currentStored = isActive
@@ -250,7 +253,7 @@ function render(){
     const disableUpgrade =
       myCoins < upgradeCost ||
       f._upgrading ||
-      !isActive
+      f.active === false
         ? "disabled"
         : "";
 
@@ -262,25 +265,28 @@ function render(){
         : "";
 
     // =========================
-    // 👷 WORKER BLOCK
+    // 👷 WORKER BLOCK (NEW)
     // =========================
-    let workerBlock = "";
+    let workerBlock = `
+      <div style="font-size:12px;opacity:.85">
+        👷 ${currentWorkers}/${maxWorkers}
+      </div>
+    `;
 
-    if(!hasWorker){
-      workerBlock = `
-        <div style="color:#ff7777;font-size:12px;font-weight:700">
-          👷 Chưa có công nhân
-        </div>
+    if(currentWorkers < maxWorkers){
+      workerBlock += `
         <button class="btn"
           style="background:#ffaa00"
           onclick="hireWorker(${index})">
           Thuê công nhân (${f.workerCost || 150} 💎)
         </button>
       `;
-    }else{
-      workerBlock = `
-        <div style="font-size:12px;opacity:.8">
-          👷 Công nhân: ${f.workers}
+    }
+
+    if(currentWorkers === 0){
+      workerBlock += `
+        <div style="color:#ff7777;font-size:11px">
+          ⚠ Không có công nhân → Không hoạt động
         </div>
       `;
     }
@@ -290,7 +296,7 @@ function render(){
     // =========================
     let feeBlock = "";
 
-    if(hasWorker && f.active === false){
+    if(f.active === false && currentWorkers > 0){
       feeBlock = `
         <div style="color:#ff5555;font-weight:700;font-size:12px">
           ⛔ Ngừng hoạt động (chưa trả phí)
@@ -415,8 +421,8 @@ socket.on("coin-update", d=>{
 
 
 socket.on("factory-error", d=>{
-    if(d.message === "NO_WORKER"){
-  alert("Nhà máy chưa có công nhân!");
+if(d.message === "MAX_WORKER_REACHED"){
+  alert("Đã đạt tối đa số công nhân!");
 }
 
 
