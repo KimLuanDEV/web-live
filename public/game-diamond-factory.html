@@ -150,29 +150,11 @@ const socket = io({
   }
 });
 
-let factories = [
-  {empty:true},
-  {empty:true},
-  {empty:true}
-];
+let factories = [];
 
-function updateFactories(){
-  const now = Date.now();
-
-  factories.forEach(f=>{
-    if(f.empty) return;
-
-    const seconds = (now - f.lastUpdate)/1000;
-    f.stored += seconds * f.rate;
-    if(f.stored > f.storage){
-      f.stored = f.storage;
-    }
-    f.lastUpdate = now;
-  });
-
-  render();
-}
-
+// ================================
+// 🖥️ RENDER
+// ================================
 function render(){
 
   const grid = document.getElementById("factoryGrid");
@@ -180,36 +162,49 @@ function render(){
 
   factories.forEach((f,index)=>{
 
-if(f.empty){
-  const cost = (index + 1) * 500;
+    // ===== SLOT EMPTY =====
+    if(f.empty){
+      const cost = (index + 1) * 500;
 
-  const slot = document.createElement("div");
-  slot.className = "slot-empty";
-  slot.innerHTML = `
-    ➕ Xây nhà máy mới<br>
-    <span style="font-size:11px;opacity:.7">
-      Giá: ${cost} 💎
-    </span>
-  `;
-  slot.onclick = ()=> buildFactory(index);
-  grid.appendChild(slot);
-  return;
-}
+      const slot = document.createElement("div");
+      slot.className = "slot-empty";
+      slot.innerHTML = `
+        ➕ Xây nhà máy mới<br>
+        <span style="font-size:11px;opacity:.7">
+          Giá: ${cost} 💎
+        </span>
+      `;
+      slot.onclick = ()=> buildFactory(index);
+      grid.appendChild(slot);
+      return;
+    }
 
+    // ===== FACTORY CARD =====
     const card = document.createElement("div");
     card.className = "factory-card";
 
-    const percent = (f.stored/f.storage)*100;
+    const percent = f.storage > 0
+      ? (f.stored / f.storage) * 100
+      : 0;
+
+    const status = f.active
+      ? "🟢 Hoạt động"
+      : "🔴 Tạm dừng (Hết tiền)";
 
     card.innerHTML = `
       <h3>Nhà máy #${f.id}</h3>
+
       <div class="factory-stats">
         ⚡ ${f.rate} 💎/s<br>
-        📦 ${Math.floor(f.stored)}/${f.storage}
+        💸 ${f.opCost || 0} 💎/s<br>
+        📦 ${Math.floor(f.stored)}/${f.storage}<br>
+        ${status}
       </div>
 
       <div class="progress">
-        <div class="progress-fill" style="width:${percent}%"></div>
+        <div class="progress-fill"
+          style="width:${percent}%">
+        </div>
       </div>
 
       <button class="btn btn-collect"
@@ -227,6 +222,9 @@ if(f.empty){
   });
 }
 
+// ================================
+// 💰 COLLECT
+// ================================
 function collectFactory(index){
 
   const f = factories[index];
@@ -241,6 +239,9 @@ function collectFactory(index){
   render();
 }
 
+// ================================
+// ⬆️ UPGRADE (CLIENT CHỈ EMIT)
+// ================================
 function upgradeFactory(index){
 
   const f = factories[index];
@@ -248,15 +249,15 @@ function upgradeFactory(index){
 
   const cost = f.level * 300;
 
-  socket.emit("factory-upgrade",{cost});
-
-  f.level++;
-  f.rate += 1;
-  f.storage += 100;
-
-  render();
+  socket.emit("factory-upgrade",{
+    cost,
+    index
+  });
 }
 
+// ================================
+// 🏗 BUILD
+// ================================
 function buildFactory(index){
 
   const cost = (index + 1) * 500;
@@ -264,7 +265,9 @@ function buildFactory(index){
   socket.emit("factory-build",{cost,index});
 }
 
-
+// ================================
+// 🔁 SOCKET EVENTS
+// ================================
 socket.on("factory-update", data=>{
   factories = data;
   render();
@@ -275,12 +278,15 @@ socket.on("factory-build-success", data=>{
   render();
 });
 
+socket.on("factory-upgrade-success", data=>{
+  factories = data;
+  render();
+});
+
 socket.on("coin-update", d=>{
   document.getElementById("coinVal").textContent =
     d.coins || 0;
 });
-
-setInterval(updateFactories,1000);
 
 render();
 
