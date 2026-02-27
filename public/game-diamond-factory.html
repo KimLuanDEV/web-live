@@ -126,6 +126,13 @@ html,body{
   opacity:1;
 }
 
+
+.btn-restart{
+  background:linear-gradient(180deg,#00ff99,#009966);
+  color:#001;
+}
+
+
 </style>
 </head>
 
@@ -191,32 +198,39 @@ function render(){
       ? "🟢 Hoạt động"
       : "🔴 Tạm dừng (Hết tiền)";
 
-    card.innerHTML = `
-      <h3>Nhà máy #${f.id}</h3>
+   card.innerHTML = `
+  <h3>Nhà máy #${f.id}</h3>
 
-      <div class="factory-stats">
-        ⚡ ${f.rate} 💎/s<br>
-        💸 ${f.opCost || 0} 💎/s<br>
-        📦 ${Math.floor(f.stored)}/${f.storage}<br>
-        ${status}
-      </div>
+  <div class="factory-stats">
+    ⚡ ${f.rate} 💎/s<br>
+    💸 ${f.opCost || 0} 💎/s<br>
+    📦 ${Math.floor(f.stored)}/${f.storage}<br>
+    ${status}
+  </div>
 
-      <div class="progress">
-        <div class="progress-fill"
-          style="width:${percent}%">
-        </div>
-      </div>
+  <div class="progress">
+    <div class="progress-fill"
+      style="width:${percent}%">
+    </div>
+  </div>
 
-      <button class="btn btn-collect"
-        onclick="collectFactory(${index})">
-        Thu hoạch
-      </button>
+  <button class="btn btn-collect"
+    onclick="collectFactory(${index})">
+    Thu hoạch
+  </button>
 
-      <button class="btn btn-upgrade"
-        onclick="upgradeFactory(${index})">
-        Nâng cấp
-      </button>
-    `;
+  <button class="btn btn-upgrade"
+    onclick="upgradeFactory(${index})">
+    Nâng cấp
+  </button>
+
+  ${!f.active ? `
+    <button class="btn btn-restart"
+      onclick="restartFactory(${index})">
+      Bật lại nhà máy
+    </button>
+  ` : ``}
+`;
 
     grid.appendChild(card);
   });
@@ -263,6 +277,11 @@ function buildFactory(index){
   const cost = (index + 1) * 500;
 
   socket.emit("factory-build",{cost,index});
+}
+
+
+function restartFactory(index){
+  socket.emit("factory-restart",{ index });
 }
 
 // ================================

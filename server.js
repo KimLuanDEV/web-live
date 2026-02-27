@@ -2261,6 +2261,38 @@ factoryDB[uid][index] = {
 
 
 
+// ================================
+// 🔄 RESTART FACTORY
+// ================================
+socket.on("factory-restart", ({index})=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  const userFactories = factoryDB[uid];
+  if(!userFactories || !userFactories[index]) return;
+
+  const f = userFactories[index];
+  if(f.empty) return;
+
+  // Nếu còn tiền vận hành tối thiểu 1 giây
+  if(me.profile.coins < f.opCost){
+    return;
+  }
+
+  f.active = true;
+  f.lastUpdate = Date.now();
+
+  saveFactories(factoryDB);
+
+  socket.emit("factory-update", userFactories);
+});
+
+
   
 // ================================
 // 🥚 BUY EGG
