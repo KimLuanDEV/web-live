@@ -2212,14 +2212,23 @@ factoryDB[uid] ||= [
 
 // 🔥 TÍNH SẢN LƯỢNG SERVER-SIDE
 factoryDB[uid].forEach(f=>{
-  if(f.empty || f.active === false) return;
+
+  if(
+    f.empty ||
+    f.active === false ||
+    !f.workers ||
+    f.workers <= 0
+  ) return;
 
   const now = Date.now();
   const seconds = Math.floor((now - f.lastUpdate)/1000);
 
   if(seconds > 0){
 
-    f.stored += seconds * f.rate;
+    const productionRate =
+      f.workers * (f.baseRate || 1);
+
+    f.stored += seconds * productionRate;
 
     if(f.stored > f.storage){
       f.stored = f.storage;
@@ -2228,6 +2237,7 @@ factoryDB[uid].forEach(f=>{
     f.stored = Math.floor(f.stored);
     f.lastUpdate = now;
   }
+
 });
 
 // 💾 lưu lại để không tính lại lần sau
@@ -2336,7 +2346,12 @@ socket.on("factory-collect", ({ index })=>{
   const seconds = Math.floor((now - f.lastUpdate)/1000);
 
   if(seconds > 0){
-    f.stored += seconds * f.rate;
+
+    const productionRate =
+  f.workers * (f.baseRate || 1);
+
+f.stored += seconds * productionRate;
+
     if(f.stored > f.storage){
       f.stored = f.storage;
     }

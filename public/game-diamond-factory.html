@@ -322,7 +322,7 @@ function render(){
       ${feeBlock}
 
       <div class="factory-stats">
-        ⚡ ${f.rate} 💎/s<br>
+        ⚡ ${(f.workers || 0) * (f.baseRate || 1)} 💎/s
         📦 ${Math.floor(currentStored)}/${f.storage}
       </div>
 
