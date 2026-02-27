@@ -221,7 +221,13 @@
 <script src="/socket.io/socket.io.js"></script>
 <script>
 
-    const socket = io();
+const uid = localStorage.getItem("uid");
+
+const socket = io({
+  auth: {
+    uid: uid
+  }
+});
 
 const levelEl = document.getElementById("factoryLevel");
 const rateEl = document.getElementById("productionRate");
@@ -229,7 +235,9 @@ const storedEl = document.getElementById("storedAmount");
 const capEl = document.getElementById("storageCap");
 const progress = document.getElementById("progressFill");
 
-socket.emit("factory-get");
+socket.on("connect", ()=>{
+  socket.emit("factory-get");
+});
 
 socket.on("factory-state",(data)=>{
 
@@ -256,6 +264,12 @@ document.getElementById("upgradeBtn").onclick = ()=>{
 
 socket.on("coin-update",(d)=>{
   document.getElementById("diamondValue").textContent = d.coins;
+});
+
+
+
+socket.on("factory-error",(d)=>{
+  console.log("FACTORY ERROR:", d);
 });
 
 
