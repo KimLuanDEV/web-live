@@ -2257,6 +2257,18 @@ socket.on("factory-hire-worker", ({ index })=>{
 
   if(!f || f.empty) return;
 
+  f.workers ||= 0;
+  f.maxWorkers ||= 1;
+  f.baseRate ||= 1; // tốc độ mỗi worker
+
+  // 🔒 CHECK MAX TRƯỚC KHI TRỪ TIỀN
+  if(f.workers >= f.maxWorkers){
+    socket.emit("factory-error",{
+      message:"MAX_WORKER_REACHED"
+    });
+    return;
+  }
+
   const cost = f.workerCost || 150;
 
   if(me.profile.coins < cost){
@@ -2266,22 +2278,19 @@ socket.on("factory-hire-worker", ({ index })=>{
     return;
   }
 
-  me.profile.coins -= cost;
+  // 💰 TRỪ TIỀN
+  me.profile.coins = Math.floor(
+    Number(me.profile.coins || 0) - cost
+  );
 
-  f.workers ||= 0;
-  f.maxWorkers ||= 1;
+  // 👷 TĂNG WORKER
+  f.workers += 1;
 
-if(f.workers >= f.maxWorkers){
-  socket.emit("factory-error",{
-    message:"MAX_WORKER_REACHED"
-  });
-  return;
-}
+  // 🔥 RATE PHỤ THUỘC WORKER
+  f.rate = f.workers * f.baseRate;
 
-f.workers += 1;
-f.active = true;
-
-  f.active = true; // 🔥 có worker thì hoạt động
+  // ✅ Có worker thì hoạt động
+  f.active = true;
 
   saveUsers(users);
   saveFactories(factoryDB);
@@ -2289,7 +2298,6 @@ f.active = true;
   emitCoinUpdate(uid);
   socket.emit("factory-update", factoryDB[uid]);
 });
-
 
 
 
@@ -2397,13 +2405,16 @@ socket.on("factory-build", ({ index })=>{
 factoryDB[uid][index] = {
   id: index + 1,
   level: 1,
-  rate: 1,
+
+  baseRate: 1,   // tốc độ mỗi worker
+  rate: 0,       // tổng rate = workers * baseRate
+
   storage: 100,
   stored: 0,
   lastUpdate: Date.now(),
 
   workers: 0,
-  maxWorkers: 1,      // 🔥 level 1 chỉ được 1 worker
+  maxWorkers: 1,
   workerCost: 150,
 
   active: false,
@@ -2499,9 +2510,6 @@ if(f.active === false){
   // ⬆ 4️⃣ NÂNG CẤP
   // ============================
 f.level += 1;
-
-// ⚡ tăng rate nhẹ
-f.rate += 1;
 
 // 📦 tăng kho theo level
 f.storage += 100;
