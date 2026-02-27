@@ -249,31 +249,6 @@ body{
 }
 
 
-.worker{
-  position:absolute;
-  bottom:12px;
-  width:64px;
-  height:64px;
-  background-repeat:no-repeat;
-  background-size:512px 64px;
-  animation:
-    walk linear infinite,
-    sprite .72s steps(8) infinite;
-
-  filter: drop-shadow(0 0 10px rgba(0,240,255,.55));
-}
-
-@keyframes walk{
-  0%   { transform: translateX(-90px) scaleX(1); }
-  49%  { transform: translateX(calc(100% + 90px)) scaleX(1); }
-  50%  { transform: translateX(calc(100% + 90px)) scaleX(-1); }
-  99%  { transform: translateX(-90px) scaleX(-1); }
-  100% { transform: translateX(-90px) scaleX(1); }
-}
-@keyframes sprite{
-  from { background-position: 0 0; }
-  to   { background-position: -512px 0; }
-}
 
 .worker.inactive{
   animation:none;
@@ -379,37 +354,46 @@ body{
 
 .worker{
   position:absolute;
-  bottom:22%;   /* 🔥 chỉnh để nằm trong nhà máy */
-  width:48px;
-  height:48px;
+
+  /* 👇 chỉnh vị trí đúng cửa */
+  top:58%;              /* cao độ cửa */
+  left:0;
+
+  width:42px;
+  height:42px;
   object-fit:contain;
-  animation: insideWalk linear infinite;
+
+  animation: doorWalk linear infinite;
 }
 
-@keyframes insideWalk{
+@keyframes doorWalk{
 
+  /* đi từ trái vào cửa */
   0%{
     transform: translateX(-60px) scaleX(1);
     opacity:1;
   }
 
-  45%{
-    transform: translateX(40vw) scaleX(1);
+  40%{
+    transform: translateX(38vw) scaleX(1);
     opacity:1;
   }
 
-  50%{
-    transform: translateX(45vw) scaleX(1);
+  /* biến mất ngay cửa */
+  45%{
+    transform: translateX(42vw) scaleX(1);
     opacity:0;
   }
 
+  /* quay đầu bên trong */
   55%{
-    transform: translateX(45vw) scaleX(-1);
+    transform: translateX(42vw) scaleX(-1);
     opacity:0;
   }
 
+  /* đi ra */
   60%{
-    transform: translateX(40vw) scaleX(-1);
+    transform: translateX(38vw) scaleX(-1);
     opacity:1;
   }
 
