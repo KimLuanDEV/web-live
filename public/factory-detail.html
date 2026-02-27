@@ -480,6 +480,43 @@ body{
 
 
 
+
+
+.ratePanel{
+  position:absolute;
+  width:140px;
+  z-index:6;
+  pointer-events:none;
+}
+
+.rateBg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 12px 30px rgba(0,0,0,.6))
+    drop-shadow(0 0 20px rgba(0,240,255,.25));
+}
+
+.rateText{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-weight:1000;
+  font-size:18px;
+  color:#00f0ff;
+  text-shadow:0 0 18px rgba(0,240,255,.5);
+}
+
+.rateText .unit{
+  font-size:14px;
+  opacity:.9;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -547,7 +584,15 @@ body{
     <div class="heroHUD">
 
       <div class="badges">
-        <div class="badge good">⚡ <span id="rateVal">0 💎/s</span></div>
+
+        <div class="ratePanel">
+          <img src="/assets/ui/rate-panel.png" class="rateBg">
+        <div class="rateText">
+         <span id="rateVal">0</span>
+          <span class="unit">💎/s</span>
+       </div>
+        </div>
+
         <div class="badge warn">👷 <span id="workerVal">0/1</span></div>
       </div>
 
@@ -573,6 +618,17 @@ const socket = io({
     deviceId: localStorage.getItem("device_id")
   }
 });
+
+
+
+
+const RATE_POS = {
+  1: { top:"42%", left:"55%", scale:0.9 },
+  2: { top:"40%", left:"57%", scale:0.9 },
+  3: { top:"39%", left:"60%", scale:0.9 },
+  4: { top:"38%", left:"63%", scale:0.9 },
+  5: { top:"36%", left:"65%", scale:0.9 }
+};
 
 
 
@@ -740,6 +796,18 @@ function render(){
     };
   }
 
+
+
+ // ===== Rate =====
+
+  const ratePanel = document.querySelector(".ratePanel");
+if(ratePanel){
+  const cfg = RATE_POS[level] || RATE_POS[5];
+
+  ratePanel.style.top  = cfg.top;
+  ratePanel.style.left = cfg.left;
+  ratePanel.style.transform = `scale(${cfg.scale})`;
+}
 
 
 
