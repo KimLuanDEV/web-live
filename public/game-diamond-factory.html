@@ -9,7 +9,7 @@
 <style>
 
 /* =========================
-   💎 DIAMOND FACTORY
+   💎 DIAMOND FACTORY V2
 ========================= */
 
 html,body{
@@ -18,7 +18,6 @@ html,body{
   background:#05080c;
   color:#fff;
   font-family:system-ui;
-  overflow:hidden;
 }
 
 /* ===== TOP BAR ===== */
@@ -35,137 +34,96 @@ html,body{
 
 .title{
   font-weight:800;
-  font-size:16px;
+  font-size:15px;
   text-shadow:0 0 10px rgba(0,255,255,.6);
 }
 
 .wallet{
-  font-weight:700;
+  font-weight:800;
   color:#00f0ff;
 }
 
-/* ===== FACTORY CORE ===== */
+/* ===== GRID ===== */
 
-.factory-wrap{
-  position:absolute;
-  inset:60px 0 170px 0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+.factory-grid{
+  padding:16px;
+  display:grid;
+  grid-template-columns: repeat(auto-fill,minmax(160px,1fr));
+  gap:16px;
 }
 
-.core{
-  width:230px;
-  height:230px;
-  border-radius:50%;
+/* ===== FACTORY CARD ===== */
+
+.factory-card{
+  background:linear-gradient(180deg,#0a1016,#05080c);
+  border:1px solid rgba(0,255,255,.15);
+  border-radius:16px;
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
   position:relative;
-  background:
-    radial-gradient(circle at center,
-      rgba(0,255,255,.8),
-      rgba(0,120,255,.4),
-      rgba(0,0,0,.9)
-    );
-  box-shadow:
-    0 0 40px rgba(0,255,255,.6),
-    0 0 80px rgba(0,200,255,.4),
-    inset 0 0 40px rgba(255,255,255,.15);
-  animation:pulse 2.5s ease-in-out infinite;
 }
 
-@keyframes pulse{
-  0%{transform:scale(1)}
-  50%{transform:scale(1.05)}
-  100%{transform:scale(1)}
+.factory-card h3{
+  margin:0;
+  font-size:14px;
+  color:#00f0ff;
 }
 
-.stored{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:34px;
-  font-weight:900;
-  text-shadow:
-    0 0 15px rgba(0,255,255,1),
-    0 0 30px rgba(0,255,255,.7);
+.factory-stats{
+  font-size:12px;
+  opacity:.85;
 }
 
-/* ===== STORAGE BAR ===== */
-
-.storage-bar{
-  position:absolute;
-  bottom:130px;
-  left:50%;
-  transform:translateX(-50%);
-  width:80%;
-  height:16px;
-  border-radius:10px;
+.progress{
+  height:10px;
   background:rgba(255,255,255,.08);
+  border-radius:6px;
   overflow:hidden;
 }
 
-.storage-fill{
+.progress-fill{
   height:100%;
   width:0%;
   background:linear-gradient(90deg,#00f0ff,#00aaff);
-  box-shadow:0 0 20px rgba(0,255,255,.8);
+  box-shadow:0 0 10px rgba(0,255,255,.8);
   transition:width .3s linear;
 }
 
-/* ===== PANEL ===== */
-
-.panel{
-  position:absolute;
-  bottom:0;
-  left:0;
-  right:0;
-  background:linear-gradient(180deg,#0a1016,#05080c);
-  border-top:1px solid rgba(0,255,255,.2);
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-}
-
-.stats{
-  display:flex;
-  justify-content:space-between;
-  font-size:13px;
-}
-
-.controls{
-  display:flex;
-  gap:12px;
-}
-
 .btn{
-  flex:1;
-  padding:12px;
   border:none;
-  border-radius:12px;
-  font-weight:800;
-  font-size:14px;
+  padding:8px;
+  border-radius:8px;
+  font-weight:700;
+  font-size:12px;
   cursor:pointer;
+}
+
+.btn-collect{
   background:linear-gradient(180deg,#00f0ff,#0088ff);
   color:#001;
-  box-shadow:0 0 20px rgba(0,255,255,.5);
-}
-
-.btn:active{
-  transform:scale(.95);
 }
 
 .btn-upgrade{
   background:linear-gradient(180deg,#ff5050,#aa0000);
-  box-shadow:0 0 20px rgba(255,0,0,.6);
   color:#fff;
 }
 
-.status{
-  text-align:center;
+.slot-empty{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
   font-size:13px;
-  opacity:.85;
+  border:2px dashed rgba(0,255,255,.3);
+  border-radius:16px;
+  cursor:pointer;
+  opacity:.6;
+}
+
+.slot-empty:hover{
+  opacity:1;
 }
 
 </style>
@@ -179,38 +137,7 @@ html,body{
   <div class="wallet"><span id="coinVal">0</span> 💎</div>
 </div>
 
-<div class="factory-wrap">
-  <div class="core">
-    <div class="stored" id="storedVal">0 💎</div>
-  </div>
-</div>
-
-<div class="storage-bar">
-  <div class="storage-fill" id="storageFill"></div>
-</div>
-
-<div class="panel">
-
-  <div class="stats">
-    <div>🏭 Level: <b id="levelVal">1</b></div>
-    <div>⚡ <b id="rateVal">1</b> 💎/s</div>
-    <div>📦 <b id="storageVal">100</b></div>
-  </div>
-
-  <div class="controls">
-    <button class="btn" id="collectBtn">
-      THU HOẠCH
-    </button>
-
-    <button class="btn btn-upgrade" id="upgradeBtn">
-      NÂNG CẤP
-    </button>
-  </div>
-
-  <div class="status" id="statusText">
-    Nhà máy đang sản xuất...
-  </div>
-
+<div class="factory-grid" id="factoryGrid">
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -223,92 +150,130 @@ const socket = io({
   }
 });
 
-let factory = {
-  level:1,
-  rate:1,
-  storage:100,
-  stored:0,
-  lastUpdate:Date.now()
-};
+let factories = [
+  {id:1, level:1, rate:1, storage:100, stored:0, lastUpdate:Date.now()},
+  {id:2, empty:true},
+  {id:3, empty:true}
+];
 
-const storedEl = document.getElementById("storedVal");
-const fillEl = document.getElementById("storageFill");
-const statusEl = document.getElementById("statusText");
-
-const levelEl = document.getElementById("levelVal");
-const rateEl = document.getElementById("rateVal");
-const storageEl = document.getElementById("storageVal");
-
-function update(){
-
+function updateFactories(){
   const now = Date.now();
-  const seconds = (now - factory.lastUpdate)/1000;
 
-  if(seconds > 0){
-    factory.stored += seconds * factory.rate;
-    if(factory.stored > factory.storage){
-      factory.stored = factory.storage;
+  factories.forEach(f=>{
+    if(f.empty) return;
+
+    const seconds = (now - f.lastUpdate)/1000;
+    f.stored += seconds * f.rate;
+    if(f.stored > f.storage){
+      f.stored = f.storage;
     }
-    factory.lastUpdate = now;
-  }
+    f.lastUpdate = now;
+  });
 
   render();
 }
 
 function render(){
 
-  storedEl.textContent =
-    Math.floor(factory.stored) + " 💎";
+  const grid = document.getElementById("factoryGrid");
+  grid.innerHTML = "";
 
-  fillEl.style.width =
-    (factory.stored/factory.storage*100)+"%";
+  factories.forEach((f,index)=>{
 
-  levelEl.textContent = factory.level;
-  rateEl.textContent = factory.rate;
-  storageEl.textContent = factory.storage;
+    if(f.empty){
+      const slot = document.createElement("div");
+      slot.className = "slot-empty";
+      slot.textContent = "➕ Xây nhà máy mới";
+      slot.onclick = ()=> buildFactory(index);
+      grid.appendChild(slot);
+      return;
+    }
 
-  if(factory.stored >= factory.storage){
-    statusEl.textContent = "Kho đầy – Thu hoạch ngay!";
-  }else{
-    statusEl.textContent = "Đang sản xuất...";
-  }
+    const card = document.createElement("div");
+    card.className = "factory-card";
+
+    const percent = (f.stored/f.storage)*100;
+
+    card.innerHTML = `
+      <h3>Nhà máy #${f.id}</h3>
+      <div class="factory-stats">
+        ⚡ ${f.rate} 💎/s<br>
+        📦 ${Math.floor(f.stored)}/${f.storage}
+      </div>
+
+      <div class="progress">
+        <div class="progress-fill" style="width:${percent}%"></div>
+      </div>
+
+      <button class="btn btn-collect"
+        onclick="collectFactory(${index})">
+        Thu hoạch
+      </button>
+
+      <button class="btn btn-upgrade"
+        onclick="upgradeFactory(${index})">
+        Nâng cấp
+      </button>
+    `;
+
+    grid.appendChild(card);
+  });
 }
 
-setInterval(update,1000);
+function collectFactory(index){
 
-document.getElementById("collectBtn").onclick = ()=>{
+  const f = factories[index];
+  if(!f || f.empty) return;
 
-  update();
-
-  const amount = Math.floor(factory.stored);
+  const amount = Math.floor(f.stored);
   if(amount <= 0) return;
 
-  socket.emit("factory-collect",{ amount });
+  socket.emit("factory-collect",{amount});
 
-  factory.stored = 0;
+  f.stored = 0;
   render();
-};
+}
 
-document.getElementById("upgradeBtn").onclick = ()=>{
+function upgradeFactory(index){
 
-  const cost = factory.level * 200;
+  const f = factories[index];
+  if(!f || f.empty) return;
 
-  socket.emit("factory-upgrade",{ cost });
-};
+  const cost = f.level * 300;
 
-socket.on("factory-upgrade-success",()=>{
+  socket.emit("factory-upgrade",{cost});
 
-  factory.level++;
-  factory.rate += 1;
-  factory.storage += 50;
+  f.level++;
+  f.rate += 1;
+  f.storage += 100;
 
   render();
-});
+}
+
+function buildFactory(index){
+
+  const cost = 500;
+
+  socket.emit("factory-upgrade",{cost});
+
+  factories[index] = {
+    id:index+1,
+    level:1,
+    rate:1,
+    storage:100,
+    stored:0,
+    lastUpdate:Date.now()
+  };
+
+  render();
+}
 
 socket.on("coin-update", d=>{
   document.getElementById("coinVal").textContent =
     d.coins || 0;
 });
+
+setInterval(updateFactories,1000);
 
 render();
 
