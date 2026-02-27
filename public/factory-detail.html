@@ -405,6 +405,54 @@ body{
 
 
 
+.storagePanel{
+  position:absolute;
+  top:50%;          /* chỉnh cho nằm đúng thân nhà máy */
+  left:8%;
+  width:180px;
+  z-index:5;
+}
+
+.storageBg{
+  width:100%;
+  display:block;
+}
+
+.storageText{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  padding:14px;
+}
+
+.storageValue{
+  font-size:18px;
+  font-weight:1000;
+  color:#00f0ff;
+  text-shadow:0 0 18px rgba(0,240,255,.4);
+}
+
+.storageBar{
+  margin-top:8px;
+  width:100%;
+  height:8px;
+  background:rgba(255,255,255,.1);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.storageBar #progressFill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00f0ff,#008cff);
+  box-shadow:0 0 18px rgba(0,240,255,.4);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -428,9 +476,22 @@ body{
   <div class="hero">
     <img id="factoryImg" class="factory-hero" alt="factory">
 
-
       <!-- 🔥 worker layer -->
   <div class="factoryWorkers" id="factoryWorkers"></div>
+
+
+
+  <div class="storagePanel">
+  <img src="/assets/ui/storage-panel.png" class="storageBg">
+
+  <div class="storageText">
+    <div class="storageValue" id="storedVal">0/0</div>
+    <div class="storageBar">
+      <div id="progressFill"></div>
+    </div>
+  </div>
+</div>
+
 
 
     <div class="heroHUD">
@@ -454,6 +515,8 @@ body{
 
   <div class="card stats">
     <div class="grid">
+
+
       <div class="tile">
         <div class="k">📦 Kho</div>
         <div class="vbig good"><span id="storedVal">0/0</span></div>
@@ -468,6 +531,8 @@ body{
         <div class="k" style="margin-top:6px">⚙ Trạng thái</div>
         <div class="vbig" id="stateVal">—</div>
       </div>
+
+
     </div>
   </div>
 
