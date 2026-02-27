@@ -100,56 +100,6 @@ function saveFactories(db){
 
 let factoryDB = loadFactories();
 
-// ================================
-// 🏭 FACTORY OPERATION ENGINE
-// ================================
-setInterval(()=>{
-
-  const users = loadUsers();
-  let changed = false;
-
-  Object.keys(factoryDB).forEach(uid=>{
-
-    const userFactories = factoryDB[uid];
-    const me = users[uid];
-    if(!me?.profile) return;
-
-    userFactories.forEach(f=>{
-
-      if(!f || f.empty) return;
-      if(!f.active) return;
-
-      const now = Date.now();
-      const seconds = (now - f.lastUpdate)/1000;
-
-      const cost = seconds * f.opCost;
-
-      if(me.profile.coins >= cost){
-
-        me.profile.coins -= cost;
-        f.stored += seconds * f.rate;
-
-        if(f.stored > f.storage){
-          f.stored = f.storage;
-        }
-
-      }else{
-        f.active = false;
-      }
-
-      f.lastUpdate = now;
-      changed = true;
-    });
-
-  });
-
-  if(changed){
-    saveUsers(users);
-    saveFactories(factoryDB);
-  }
-
-},1000);
-
 
 
 // ================================
@@ -2238,16 +2188,14 @@ socket.on("factory-build", ({cost, index})=>{
     {empty:true}
   ];
 
-factoryDB[uid][index] = {
-  id:index+1,
-  level:1,
-  rate:1,
-  opCost:0.4,          // 💸 NEW
-  storage:100,
-  stored:0,
-  lastUpdate:Date.now(),
-  active:true          // 🔥 trạng thái hoạt động
-};
+  factoryDB[uid][index] = {
+    id:index+1,
+    level:1,
+    rate:1,
+    storage:100,
+    stored:0,
+    lastUpdate:Date.now()
+  };
 
   saveUsers(users);
   saveFactories(factoryDB);
@@ -2259,38 +2207,6 @@ factoryDB[uid][index] = {
   );
 });
 
-
-
-// ================================
-// 🔄 RESTART FACTORY
-// ================================
-socket.on("factory-restart", ({index})=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const users = loadUsers();
-  const me = users[uid];
-  if(!me?.profile) return;
-
-  const userFactories = factoryDB[uid];
-  if(!userFactories || !userFactories[index]) return;
-
-  const f = userFactories[index];
-  if(f.empty) return;
-
-  // Nếu còn tiền vận hành tối thiểu 1 giây
-  if(me.profile.coins < f.opCost){
-    return;
-  }
-
-  f.active = true;
-  f.lastUpdate = Date.now();
-
-  saveFactories(factoryDB);
-
-  socket.emit("factory-update", userFactories);
-});
 
 
   
