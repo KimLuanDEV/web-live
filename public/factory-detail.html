@@ -450,6 +450,45 @@ body{
 
 
 
+
+
+
+.controlPanel{
+  position:absolute;
+  width:120px;
+  z-index:6;
+  transform-origin:center;
+}
+
+.controlBg{
+  width:100%;
+  display:block;
+}
+
+.controlText{
+  position:absolute;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  padding:8px;
+}
+
+.controlLevel{
+  font-size:16px;
+  font-weight:1000;
+  color:#00f0ff;
+  text-shadow:0 0 18px rgba(0,240,255,.4);
+}
+
+.controlState{
+  font-size:11px;
+  font-weight:900;
+  letter-spacing:1px;
+}
+
 </style>
 </head>
 <body>
@@ -490,6 +529,22 @@ body{
 </div>
 
 
+<div class="controlPanel">
+  <img src="/assets/ui/factory-control-panel.png" class="controlBg">
+
+  <div class="controlText">
+    <div class="controlLevel">
+      LV <span id="levelVal">1</span>
+    </div>
+
+    <div class="controlState" id="stateVal">
+      ACTIVE
+    </div>
+  </div>
+</div>
+
+
+
 
     <div class="heroHUD">
       <div class="badges">
@@ -512,14 +567,6 @@ body{
 
   <div class="card stats">
     <div class="grid">
-
-
-      <div class="tile">
-        <div class="k">🏭 Cấp độ</div>
-        <div class="vbig"><span id="levelVal">1</span></div>
-        <div class="k" style="margin-top:6px">⚙ Trạng thái</div>
-        <div class="vbig" id="stateVal">—</div>
-      </div>
 
 
     </div>
@@ -555,6 +602,18 @@ const STORAGE_POS = {
   4: { top: "48%", left: "40%", ry:-38, rx:-20, rz:13 },
   5: { top: "44%", left: "36%", ry:-19, rx:-3, rz:13 }
 };
+
+
+
+const CONTROL_POS = {
+  1: { top:"35%", left:"60%" },
+  2: { top:"36%", left:"62%" },
+  3: { top:"34%", left:"58%" },
+  4: { top:"33%", left:"60%" },
+  5: { top:"30%", left:"57%" }
+};
+
+
 
 let factory = null;
 let previewTimer = null;
@@ -719,6 +778,19 @@ function render(){
   if(dot){
     dot.className = active ? "dot" : "dot off";
   }
+
+
+
+  // ===== Control =====
+
+  const ctrl = document.querySelector(".controlPanel");
+if(ctrl){
+  const cfg = CONTROL_POS[level] || CONTROL_POS[5];
+  ctrl.style.top  = cfg.top;
+  ctrl.style.left = cfg.left;
+}
+
+
 
   // ===== AUTO POSITION STORAGE PANEL =====
   const panel = document.querySelector(".storagePanel");
