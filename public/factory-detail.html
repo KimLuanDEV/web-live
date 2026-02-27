@@ -368,6 +368,59 @@ body{
 }
 .btn:active{ transform: translateY(1px); }
 
+
+
+.factoryWorkers{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.worker{
+  position:absolute;
+  bottom:22%;   /* 🔥 chỉnh để nằm trong nhà máy */
+  width:48px;
+  height:48px;
+  object-fit:contain;
+  animation: insideWalk linear infinite;
+}
+
+@keyframes insideWalk{
+
+  0%{
+    transform: translateX(-60px) scaleX(1);
+    opacity:1;
+  }
+
+  45%{
+    transform: translateX(40vw) scaleX(1);
+    opacity:1;
+  }
+
+  50%{
+    transform: translateX(45vw) scaleX(1);
+    opacity:0;
+  }
+
+  55%{
+    transform: translateX(45vw) scaleX(-1);
+    opacity:0;
+  }
+
+  60%{
+    transform: translateX(40vw) scaleX(-1);
+    opacity:1;
+  }
+
+  100%{
+    transform: translateX(-60px) scaleX(-1);
+    opacity:1;
+  }
+}
+
+
+
 </style>
 </head>
 <body>
@@ -390,6 +443,12 @@ body{
 
   <div class="hero">
     <img id="factoryImg" class="factory-hero" alt="factory">
+
+
+      <!-- 🔥 worker layer -->
+  <div class="factoryWorkers" id="factoryWorkers"></div>
+
+
     <div class="heroHUD">
       <div class="badges">
         <div class="badge good">⚡ <span id="rateVal">0 💎/s</span></div>
@@ -407,10 +466,7 @@ body{
 
 <div class="container">
 
-  <div class="card">
-    <div class="yard" id="yard"></div>
-  </div>
-  
+
 
   <div class="card stats">
     <div class="grid">
@@ -623,19 +679,15 @@ function render(){
 
 function renderWorkers(){
 
-  const yard = document.getElementById("yard");
-  yard.innerHTML = "";
+  const layer = document.getElementById("factoryWorkers");
+  if(!layer) return;
+
+  layer.innerHTML = "";
 
   if(!factory) return;
 
-  // ✅ ÉP KIỂU an toàn (tránh NaN)
-  const workers  = Number(factory.workers ?? 0);
-  const baseRate = Number(factory.baseRate ?? 1);
-
-  // ✅ ưu tiên rate nếu server có, fallback nếu thiếu
-  const rate = Number(factory.rate ?? (workers * baseRate)) || 0;
-
-  const count = Math.min(Math.max(0, workers), 8);
+  const workers = Number(factory.workers ?? 0);
+  const count   = Math.min(workers, 6);
 
   for(let i=0;i<count;i++){
 
@@ -643,19 +695,15 @@ function renderWorkers(){
     w.className = "worker";
     w.src = "/assets/ui/worker-bot.png";
 
-    // vị trí xuất phát
-    w.style.left = (i * 30) + "px";
+    // lệch pha cho đẹp
+    w.style.animationDelay = (i * 0.8) + "s";
 
-    // ✅ tốc độ phụ thuộc rate nhưng luôn ra số hợp lệ
-    const speedBase = 6;
-    const speed = Math.max(2, speedBase - (rate * 0.2));
+    // tốc độ theo rate
+    const rate = Number(factory.rate ?? 1);
+    const speed = Math.max(4, 8 - rate * 0.2);
     w.style.animationDuration = speed + "s";
 
-    if(factory.active === false){
-      w.classList.add("inactive");
-    }
-
-    yard.appendChild(w);
+    layer.appendChild(w);
   }
 }
 
