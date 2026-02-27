@@ -248,7 +248,6 @@ body{
   pointer-events:none;
 }
 
-/* sprite worker (8 frames 64x64 => sheet 512x64) */
 .worker{
   position:absolute;
   bottom:12px;
@@ -257,23 +256,47 @@ body{
   background-repeat:no-repeat;
   background-size:512px 64px;
   animation:
-    walk linear infinite,
+    enterFactory linear infinite,
     sprite .72s steps(8) infinite;
 
   filter: drop-shadow(0 0 10px rgba(0,240,255,.55));
 }
 
-@keyframes walk{
-  0%   { transform: translateX(-90px) scaleX(1); }
-  49%  { transform: translateX(calc(100% + 90px)) scaleX(1); }
-  50%  { transform: translateX(calc(100% + 90px)) scaleX(-1); }
-  99%  { transform: translateX(-90px) scaleX(-1); }
-  100% { transform: translateX(-90px) scaleX(1); }
+/* đi vào giữa rồi biến mất */
+@keyframes enterFactory{
+
+  0%{
+    transform: translateX(-80px) scaleX(1);
+    opacity:1;
+  }
+
+  40%{
+    transform: translateX(160px) scaleX(1);
+    opacity:1;
+  }
+
+  48%{
+    transform: translateX(180px) scaleX(1);
+    opacity:0;
+  }
+
+  /* bên trong nhà máy (tạm ẩn) */
+  52%{
+    transform: translateX(180px) scaleX(-1);
+    opacity:0;
+  }
+
+  60%{
+    transform: translateX(180px) scaleX(-1);
+    opacity:1;
+  }
+
+  100%{
+    transform: translateX(-80px) scaleX(-1);
+    opacity:1;
+  }
 }
-@keyframes sprite{
-  from { background-position: 0 0; }
-  to   { background-position: -512px 0; }
-}
+
 .worker.inactive{
   animation:none;
   opacity:.35;
@@ -627,27 +650,26 @@ function renderWorkers(){
 
   if(!factory) return;
 
-  // ✅ ÉP KIỂU an toàn (tránh NaN)
   const workers  = Number(factory.workers ?? 0);
   const baseRate = Number(factory.baseRate ?? 1);
+  const rate     = Number(factory.rate ?? (workers * baseRate)) || 0;
 
-  // ✅ ưu tiên rate nếu server có, fallback nếu thiếu
-  const rate = Number(factory.rate ?? (workers * baseRate)) || 0;
-
-  const count = Math.min(Math.max(0, workers), 8);
+  const count = Math.min(Math.max(0, workers), 6);
 
   for(let i=0;i<count;i++){
 
-    const w = document.createElement("img");
+    const w = document.createElement("div");
     w.className = "worker";
-    w.src = "/assets/ui/worker-bot.png";
 
-    // vị trí xuất phát
-    w.style.left = (i * 30) + "px";
+    w.style.backgroundImage =
+      "url('/assets/ui/worker-bot.png')";
 
-    // ✅ tốc độ phụ thuộc rate nhưng luôn ra số hợp lệ
+    // lệch pha mỗi worker
+    w.style.animationDelay = (i * 0.8) + "s";
+
+    // tốc độ dựa vào rate
     const speedBase = 6;
-    const speed = Math.max(2, speedBase - (rate * 0.2));
+    const speed = Math.max(3, speedBase - (rate * 0.15));
     w.style.animationDuration = speed + "s";
 
     if(factory.active === false){
