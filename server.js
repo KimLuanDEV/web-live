@@ -1292,7 +1292,9 @@ wheelRound.bets.forEach(o => {
     winAmount = Math.floor(o.bet * multiplier);
 
     // 💰 cộng coin
-    me.profile.coins += winAmount;
+me.profile.coins = Math.floor(
+  Number(me.profile.coins || 0) + winAmount
+);
 
     // 🏆 chỉ add top nếu thắng
     roundWinners.push({
@@ -1472,7 +1474,9 @@ rpsRound.bets.forEach(o => {
 
   if (result === "win") {
     win = o.bet * 2;           // 🔥 thắng x2
-    me.profile.coins += win;
+    me.profile.coins = Math.floor(
+  Number(me.profile.coins || 0) + win
+);
   } else if (result === "draw") {
     me.profile.coins += o.bet; // 🔄 hoàn tiền
   }
@@ -1619,7 +1623,9 @@ setInterval(() => {
       if(!me?.profile) return;
 
       const win = Math.floor(o.bet * multiplier);
-      me.profile.coins += win;
+    me.profile.coins = Math.floor(
+  Number(me.profile.coins || 0) + win
+);
     });
 
     saveUsers(users);
@@ -2063,6 +2069,11 @@ if (meNow?.profile) {
     Number(meNow.profile.diamonds || 0)
   );
 
+    meNow.profile.coins = Math.floor(
+    Number(meNow.profile.coins || 0)
+  );
+
+
 socket.emit("coin-update", {
   coins: meNow.profile.coins
 });
@@ -2135,7 +2146,7 @@ if (meNow?.role === "admin" && timeRaceRound) {
 
 
 // ================================
-// 🏭 SEND FACTORY DATA
+// 🏭 SEND FACTORY DATA (FIX RELOAD BUG)
 // ================================
 factoryDB[uid] ||= [
   {empty:true},
@@ -2143,13 +2154,36 @@ factoryDB[uid] ||= [
   {empty:true}
 ];
 
+// 🔥 TÍNH SẢN LƯỢNG SERVER-SIDE
+factoryDB[uid].forEach(f=>{
+  if(f.empty) return;
+
+  const now = Date.now();
+  const seconds = Math.floor((now - f.lastUpdate)/1000);
+
+  if(seconds > 0){
+
+    f.stored += seconds * f.rate;
+
+    if(f.stored > f.storage){
+      f.stored = f.storage;
+    }
+
+    f.stored = Math.floor(f.stored);
+    f.lastUpdate = now;
+  }
+});
+
+// 💾 lưu lại để không tính lại lần sau
+saveFactories(factoryDB);
+
 socket.emit("factory-update", factoryDB[uid]);
 
 // ================================
 // 🏭 DIAMOND FACTORY
 // ================================
 
-socket.on("factory-collect", ({amount})=>{
+socket.on("factory-collect", ({ index })=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
@@ -2158,14 +2192,43 @@ socket.on("factory-collect", ({amount})=>{
   const me = users[uid];
   if(!me?.profile) return;
 
-  amount = Math.floor(Number(amount||0));
+  factoryDB[uid] ||= [];
+  const f = factoryDB[uid][index];
+
+  if(!f || f.empty) return;
+
+  // 🔥 TÍNH LẠI SERVER-SIDE TRƯỚC KHI THU
+  const now = Date.now();
+  const seconds = Math.floor((now - f.lastUpdate)/1000);
+
+  if(seconds > 0){
+    f.stored += seconds * f.rate;
+    if(f.stored > f.storage){
+      f.stored = f.storage;
+    }
+    f.stored = Math.floor(f.stored);
+    f.lastUpdate = now;
+  }
+
+  const amount = Math.floor(f.stored);
   if(amount <= 0) return;
 
-  me.profile.coins += amount;
+  // 💰 cộng coin
+  me.profile.coins = Math.floor(
+    Number(me.profile.coins || 0) + amount
+  );
+
+  // 🗑 reset kho
+  f.stored = 0;
+  f.lastUpdate = Date.now();
 
   saveUsers(users);
+  saveFactories(factoryDB);
+
   emitCoinUpdate(uid);
+  socket.emit("factory-update", factoryDB[uid]);
 });
+
 
 
 socket.on("factory-build", ({cost, index})=>{
@@ -2180,7 +2243,9 @@ socket.on("factory-build", ({cost, index})=>{
   cost = Math.floor(Number(cost||0));
   if(me.profile.coins < cost) return;
 
-  me.profile.coins -= cost;
+me.profile.coins = Math.floor(
+  Number(me.profile.coins || 0) - cost
+);
 
   factoryDB[uid] ||= [
     {empty:true},
@@ -2761,7 +2826,9 @@ socket.on("ks-pick", (data)=>{
   if(result === "win"){
 
       win = st.bet * 5;
-      me.profile.coins += win;
+      me.profile.coins = Math.floor(
+  Number(me.profile.coins || 0) + win
+);
 
       saveUsers(users);
       emitToUser(uid,"coin-update",{ coins: me.profile.coins });
@@ -2973,7 +3040,9 @@ emitTimeRacePlayers();
   const me = users[uid];
   if(!me?.profile) return;
 
-  me.profile.coins += win;
+  me.profile.coins = Math.floor(
+  Number(me.profile.coins || 0) + win
+);
 
 
   // ============================
@@ -6541,7 +6610,7 @@ function emitMarketUpdate(action, boothId){
 
 
 
-// 🔥 REALTIME COIN SYNC
+// 🔥 REALTIME COIN SYNC (ANTI FLOAT SAFE)
 function emitCoinUpdate(uid) {
   if (!uid) return;
 
@@ -6549,12 +6618,38 @@ function emitCoinUpdate(uid) {
   const user = db[uid];
   if (!user || !user.profile) return;
 
+  // 🔒 ÉP SỐ NGUYÊN & CHỐNG NaN
+  user.profile.coins = Math.floor(
+    Number(user.profile.coins || 0)
+  );
+
+  user.profile.coinSent = Math.floor(
+    Number(user.profile.coinSent || 0)
+  );
+
+  user.profile.coinReceived = Math.floor(
+    Number(user.profile.coinReceived || 0)
+  );
+
+  user.profile.level = Math.floor(
+    Number(user.profile.level || 1)
+  );
+
+  user.profile.exp = Math.floor(
+    Number(user.profile.exp || 0)
+  );
+
+  // 🔒 Không cho coin âm
+  if (user.profile.coins < 0) {
+    user.profile.coins = 0;
+  }
+
   const payload = {
-    coins: user.profile.coins || 0,
-    coinSent: user.profile.coinSent || 0,
-    coinReceived: user.profile.coinReceived || 0,
-    level: user.profile.level || 1,
-    exp: user.profile.exp || 0
+    coins: user.profile.coins,
+    coinSent: user.profile.coinSent,
+    coinReceived: user.profile.coinReceived,
+    level: user.profile.level,
+    exp: user.profile.exp
   };
 
   const sockets = activeUsers.get(uid);

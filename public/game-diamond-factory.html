@@ -157,17 +157,21 @@ let factories = [
 ];
 
 function updateFactories(){
+
   const now = Date.now();
 
   factories.forEach(f=>{
     if(f.empty) return;
 
-    const seconds = (now - f.lastUpdate)/1000;
-    f.stored += seconds * f.rate;
-    if(f.stored > f.storage){
-      f.stored = f.storage;
-    }
-    f.lastUpdate = now;
+    const seconds = Math.floor((now - f.lastUpdate)/1000);
+
+    // chỉ preview hiển thị
+    const preview = Math.min(
+      f.storage,
+      f.stored + seconds * f.rate
+    );
+
+    f._previewStored = preview;
   });
 
   render();
@@ -199,13 +203,14 @@ if(f.empty){
     const card = document.createElement("div");
     card.className = "factory-card";
 
-    const percent = (f.stored/f.storage)*100;
+    const currentStored = f._previewStored ?? f.stored;
+    const percent = (currentStored / f.storage) * 100;
 
     card.innerHTML = `
       <h3>Nhà máy #${f.id}</h3>
       <div class="factory-stats">
         ⚡ ${f.rate} 💎/s<br>
-        📦 ${Math.floor(f.stored)}/${f.storage}
+        📦 ${Math.floor(currentStored)}/${f.storage}
       </div>
 
       <div class="progress">
@@ -227,18 +232,21 @@ if(f.empty){
   });
 }
 
+
 function collectFactory(index){
 
   const f = factories[index];
   if(!f || f.empty) return;
 
-  const amount = Math.floor(f.stored);
-  if(amount <= 0) return;
+  // (optional) chặn bấm khi đang thu
+  if(f._collecting) return;
+  f._collecting = true;
 
-  socket.emit("factory-collect",{amount});
+  // ✅ chỉ gửi index, server tự tính stored + cộng coin
+  socket.emit("factory-collect", { index });
 
-  f.stored = 0;
-  render();
+  // ❌ KHÔNG reset stored ở client
+  // server sẽ emit "factory-update" mới
 }
 
 function upgradeFactory(index){
@@ -246,15 +254,15 @@ function upgradeFactory(index){
   const f = factories[index];
   if(!f || f.empty) return;
 
-  const cost = f.level * 300;
+  // (optional) chống spam click
+  if(f._upgrading) return;
+  f._upgrading = true;
 
-  socket.emit("factory-upgrade",{cost});
+  // ✅ chỉ gửi index
+  socket.emit("factory-upgrade", { index });
 
-  f.level++;
-  f.rate += 1;
-  f.storage += 100;
-
-  render();
+  // ❌ KHÔNG tự tăng level/rate/storage ở client
+  // ❌ KHÔNG render thủ công
 }
 
 function buildFactory(index){
@@ -264,9 +272,17 @@ function buildFactory(index){
   socket.emit("factory-build",{cost,index});
 }
 
-
 socket.on("factory-update", data=>{
   factories = data;
+
+  factories.forEach(f=>{
+    if(!f.empty){
+      f._previewStored = f.stored;
+      f._collecting = false;
+      f._upgrading = false; // ✅ mở lại nút upgrade
+    }
+  });
+
   render();
 });
 
@@ -277,7 +293,7 @@ socket.on("factory-build-success", data=>{
 
 socket.on("coin-update", d=>{
   document.getElementById("coinVal").textContent =
-    d.coins || 0;
+    Math.floor(d.coins || 0);
 });
 
 setInterval(updateFactories,1000);
