@@ -516,6 +516,31 @@ body{
 }
 
 
+
+
+
+.upgradeBtn{
+  position:absolute;
+  width:150px;
+  z-index:7;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.upgradeBtn:active{
+  transform: scale(.95);
+}
+
+.upgradeImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 15px 35px rgba(0,0,0,.6))
+    drop-shadow(0 0 25px rgba(255,80,80,.35));
+}
+
+
+
 </style>
 </head>
 <body>
@@ -550,6 +575,11 @@ body{
 
 <div class="supervisorBtn" onclick="hire()">
   <img src="/assets/ui/worker-supervisor.png" class="supervisorImg">
+</div>
+
+
+<div class="upgradeBtn" onclick="upgrade()">
+  <img src="/assets/ui/worker-engineer.png" class="upgradeImg">
 </div>
 
 
@@ -601,7 +631,7 @@ body{
 
 <div class="actionBar">
   <div class="actions">
-    <button class="btn danger" onclick="upgrade()">Nâng cấp</button>
+    
   </div>
 </div>
 
@@ -619,6 +649,16 @@ const socket = io({
     deviceId: localStorage.getItem("device_id")
   }
 });
+
+
+
+const UPGRADE_POS = {
+  1: { top:"60%", left:"70%", scale:0.9 },
+  2: { top:"60%", left:"72%", scale:0.9 },
+  3: { top:"59%", left:"74%", scale:0.9 },
+  4: { top:"58%", left:"76%", scale:0.9 },
+  5: { top:"58%", left:"76%", scale:0.9 }
+};
 
 
 
@@ -781,6 +821,21 @@ function render(){
       img.src = "/assets/ui/factory-lv5.png";
     };
   }
+
+
+
+
+
+  // ===== Upgrade =====
+const up = document.querySelector(".upgradeBtn");
+if(up){
+  const cfg = UPGRADE_POS[level] || UPGRADE_POS[5];
+
+  up.style.top  = cfg.top;
+  up.style.left = cfg.left;
+  up.style.transform = `scale(${cfg.scale})`;
+}
+
 
 
 // ===== super visor=====
