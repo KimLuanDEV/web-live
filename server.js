@@ -101,6 +101,62 @@ function saveFactories(db){
 let factoryDB = loadFactories();
 
 
+// ================================
+// 🏭 FACTORY DAILY FEE ENGINE
+// ================================
+setInterval(()=>{
+
+  const users = loadUsers();
+  let changed = false;
+
+  Object.keys(factoryDB).forEach(uid=>{
+
+    const user = users[uid];
+    if(!user?.profile) return;
+
+    factoryDB[uid].forEach(f=>{
+
+      if(!f || f.empty) return;
+
+      // 🔧 bổ sung field cho factory cũ
+      if(typeof f.dailyFee === "undefined"){
+        f.dailyFee = 200;
+        f.nextFeeAt = Date.now() + ONE_DAY;
+        f.active = true;
+        changed = true;
+      }
+
+      // ⏰ đến hạn thu phí
+      if(Date.now() >= f.nextFeeAt){
+
+        if(user.profile.coins >= f.dailyFee){
+
+          user.profile.coins -= f.dailyFee;
+          f.nextFeeAt = Date.now() + ONE_DAY;
+          f.active = true;
+
+        }else{
+
+          // ❌ không đủ tiền → ngừng hoạt động
+          f.active = false;
+
+        }
+
+        changed = true;
+      }
+
+    });
+
+  });
+
+  if(changed){
+    saveUsers(users);
+    saveFactories(factoryDB);
+  }
+
+}, 60000); // check mỗi 1 phút
+
+
 
 // ================================
 // 🧠 HEALTH DATA (PER USER)
@@ -2156,7 +2212,7 @@ factoryDB[uid] ||= [
 
 // 🔥 TÍNH SẢN LƯỢNG SERVER-SIDE
 factoryDB[uid].forEach(f=>{
-  if(f.empty) return;
+  if(f.empty || f.active === false) return;
 
   const now = Date.now();
   const seconds = Math.floor((now - f.lastUpdate)/1000);
@@ -2194,6 +2250,15 @@ socket.on("factory-collect", ({ index })=>{
 
   factoryDB[uid] ||= [];
   const f = factoryDB[uid][index];
+
+
+  if(f.active === false){
+  socket.emit("factory-error",{
+    message:"FACTORY_INACTIVE"
+  });
+  return;
+}
+
 
   if(!f || f.empty) return;
 
@@ -2300,6 +2365,14 @@ socket.on("factory-upgrade", ({ index })=>{
   factoryDB[uid] ||= [];
   const f = factoryDB[uid][index];
 
+  
+if(f.active === false){
+  socket.emit("factory-error",{
+    message:"FACTORY_INACTIVE"
+  });
+  return;
+}
+  
   if(!f || f.empty) return;
 
   // ============================

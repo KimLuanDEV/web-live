@@ -168,7 +168,8 @@ function updateFactories(){
   const now = Date.now();
 
   factories.forEach(f=>{
-    if(f.empty) return;
+
+   if(f.empty || f.active === false) return;
 
     const seconds = Math.floor((now - f.lastUpdate)/1000);
 
@@ -243,30 +244,45 @@ function render(){
         ? "disabled"
         : "";
 
-    card.innerHTML = `
-      <h3>Nhà máy #${f.id} (Lv.${f.level})</h3>
+const statusBlock = f.active === false
+  ? `<div style="color:#ff5555;font-weight:700;font-size:12px">
+       ⛔ Ngừng hoạt động (chưa trả phí)
+     </div>
+     <button class="btn"
+       style="background:#ffaa00"
+       onclick="payFactoryFee(${index})">
+       Trả phí ${f.dailyFee || 200} 💎
+     </button>`
+  : `<div style="font-size:11px;opacity:.6">
+       Phí/ngày: ${f.dailyFee || 200} 💎
+     </div>`;
 
-      <div class="factory-stats">
-        ⚡ ${f.rate} 💎/s<br>
-        📦 ${Math.floor(currentStored)}/${f.storage}
-      </div>
+card.innerHTML = `
+  <h3>Nhà máy #${f.id} (Lv.${f.level})</h3>
 
-      <div class="progress">
-        <div class="progress-fill" style="width:${percent}%"></div>
-      </div>
+  ${statusBlock}
 
-      <button class="btn btn-collect"
-        ${disableCollect}
-        onclick="collectFactory(${index})">
-        Thu hoạch
-      </button>
+  <div class="factory-stats">
+    ⚡ ${f.rate} 💎/s<br>
+    📦 ${Math.floor(currentStored)}/${f.storage}
+  </div>
 
-      <button class="btn btn-upgrade"
-        ${disableUpgrade}
-        onclick="upgradeFactory(${index})">
-        ⬆ Nâng cấp (${upgradeCost} 💎)
-      </button>
-    `;
+  <div class="progress">
+    <div class="progress-fill" style="width:${percent}%"></div>
+  </div>
+
+  <button class="btn btn-collect"
+    ${disableCollect || f.active === false ? "disabled" : ""}
+    onclick="collectFactory(${index})">
+    Thu hoạch
+  </button>
+
+  <button class="btn btn-upgrade"
+    ${disableUpgrade || f.active === false ? "disabled" : ""}
+    onclick="upgradeFactory(${index})">
+    ⬆ Nâng cấp (${upgradeCost} 💎)
+  </button>
+`;
 
     grid.appendChild(card);
   });
@@ -308,6 +324,9 @@ function buildFactory(index){
   socket.emit("factory-build",{ index });
 }
 
+function payFactoryFee(index){
+  socket.emit("factory-pay-fee",{ index });
+}
 
 
 socket.on("factory-update", data=>{
@@ -338,6 +357,10 @@ socket.on("coin-update", d=>{
 socket.on("factory-error", d=>{
   if(d.message === "NOT_ENOUGH_COIN"){
     alert("Không đủ kim cương!");
+  }
+
+  if(d.message === "FACTORY_INACTIVE"){
+    alert("Nhà máy đang ngừng hoạt động! Hãy trả phí.");
   }
 });
 
