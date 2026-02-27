@@ -174,57 +174,130 @@ const socket = io({
 });
 
 let factory = null;
+let previewTimer = null;
+let previewStored = 0;
+
 
 socket.on("factory-update", list=>{
   factory = list[index];
   if(!factory) return;
 
+  // reset preview theo dữ liệu mới nhất từ server
+  previewStored = Number(factory.stored || 0);
+
   render();
+  startPreviewTicker(); // ✅ bật realtime kho
 });
+
 
 socket.on("coin-update", d=>{
   document.getElementById("coinVal").textContent =
     Math.floor(d.coins || 0);
 });
 
+
+function computePreviewStored(){
+
+  if(!factory) return 0;
+
+  // nếu không hoạt động / không có worker -> đứng yên
+  if(factory.active === false) return Number(factory.stored || 0);
+  if(!factory.workers || factory.workers <= 0) return Number(factory.stored || 0);
+
+  const stored   = Number(factory.stored || 0);
+  const storage  = Number(factory.storage || 0);
+  const lastUp   = Number(factory.lastUpdate || Date.now());
+
+  const workers  = Number(factory.workers || 0);
+  const baseRate = Number(factory.baseRate || 1);
+  const rate     = Number(factory.rate ?? (workers * baseRate)) || 0;
+
+  const sec = Math.floor((Date.now() - lastUp) / 1000);
+  const value = stored + sec * rate;
+
+  return Math.min(storage, value);
+}
+
+
+function startPreviewTicker(){
+
+  if(previewTimer) clearInterval(previewTimer);
+
+  previewTimer = setInterval(()=>{
+
+    if(!factory) return;
+
+    previewStored = computePreviewStored();
+
+    // update UI kho + progress realtime (không cần render lại toàn bộ)
+    const storage = Number(factory.storage || 1);
+    const percent = storage > 0 ? (previewStored / storage) * 100 : 0;
+
+    document.getElementById("storedVal").textContent =
+      Math.floor(previewStored) + "/" + storage;
+
+    document.getElementById("progressFill").style.width =
+      Math.min(100, Math.max(0, percent)) + "%";
+
+  }, 1000);
+}
+
+
+
+
 function render(){
 
+  if(!factory) return;
+
+  // ===== TITLE =====
+  const level = Number(factory.level || 1);
   document.getElementById("factoryTitle").textContent =
-    "🏭 Nhà máy #" + factory.id + " (Lv." + factory.level + ")";
+    "🏭 Nhà máy #" + factory.id + " (Lv." + level + ")";
 
-const MAX_FACTORY_IMG_LEVEL = 5;
+  // ===== IMAGE (clamp max lv5) =====
+  const MAX_FACTORY_IMG_LEVEL = 5;
+  const displayLevel = Math.min(level, MAX_FACTORY_IMG_LEVEL);
 
-const displayLevel = Math.min(
-  factory.level,
-  MAX_FACTORY_IMG_LEVEL
-);
+  const img = document.getElementById("factoryImg");
+  img.src = "/assets/ui/factory-lv" + displayLevel + ".png";
+  img.onerror = () => {
+    img.src = "/assets/ui/factory-lv5.png";
+  };
 
-document.getElementById("factoryImg").src =
-  "/assets/ui/factory-lv" + displayLevel + ".png";
+  // ===== STORED + PROGRESS (prefer previewStored) =====
+  const storage = Math.max(1, Number(factory.storage || 1));
+  const shownStored = Number(
+    (typeof previewStored !== "undefined" ? previewStored : null)
+      ?? factory.stored
+      ?? 0
+  );
 
-  const percent =
-    (factory.stored / factory.storage) * 100;
+  const percent = Math.min(
+    100,
+    Math.max(0, (shownStored / storage) * 100)
+  );
 
   document.getElementById("storedVal").textContent =
-    Math.floor(factory.stored) + "/" + factory.storage;
+    Math.floor(shownStored) + "/" + storage;
 
   document.getElementById("progressFill").style.width =
     percent + "%";
 
-const workers  = Number(factory.workers || 0);
-const baseRate = Number(factory.baseRate || 1);
+  // ===== RATE (no NaN) =====
+  const workers  = Math.max(0, Number(factory.workers || 0));
+  const baseRate = Math.max(0, Number(factory.baseRate || 1));
+  const rate     = Number(factory.rate ?? (workers * baseRate)) || 0;
 
-// ưu tiên rate (server đã set khi hire worker)
-const rate = Number(factory.rate ?? (workers * baseRate)) || 0;
+  document.getElementById("rateVal").textContent =
+    rate + " 💎/s";
 
-document.getElementById("rateVal").textContent =
-  rate + " 💎/s";
-
-
+  // ===== WORKERS DISPLAY =====
+  const maxWorkers = Math.max(1, Number(factory.maxWorkers || 1));
   document.getElementById("workerVal").textContent =
-    factory.workers + "/" + factory.maxWorkers;
+    workers + "/" + maxWorkers;
 
-    renderWorkers();
+  // ===== WORKER ANIM =====
+  renderWorkers();
 }
 
 
