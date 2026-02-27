@@ -471,6 +471,28 @@ body{
 }
 
 
+
+.collectTruck{
+  position:absolute;
+  width:90px;
+  cursor:pointer;
+  z-index:8;
+  transition:.25s ease;
+}
+
+.collectTruck:active{
+  transform: scale(.95);
+}
+
+.truckImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 10px 25px rgba(0,0,0,.6))
+    drop-shadow(0 0 20px rgba(0,240,255,.25));
+}
+
+
 </style>
 </head>
 <body>
@@ -497,6 +519,10 @@ body{
       <!-- 🔥 worker layer -->
   <div class="factoryWorkers" id="factoryWorkers"></div>
 
+
+  <div class="collectTruck" onclick="collect()">
+  <img src="/assets/ui/truck-collect.png" class="truckImg">
+</div>
 
 
   <div class="storagePanel">
@@ -566,6 +592,18 @@ const socket = io({
     deviceId: localStorage.getItem("device_id")
   }
 });
+
+
+const TRUCK_POS = {
+  1: { top:"58%", left:"22%" },
+  2: { top:"58%", left:"24%" },
+  3: { top:"58%", left:"26%" },
+  4: { top:"58%", left:"28%" },
+  5: { top:"58%", left:"28%" }
+};
+
+
+
 
 const STORAGE_POS = {
   1: { top: "33%", left: "38%", ry:-38, rx:-20, rz:13 },
@@ -703,6 +741,19 @@ function render(){
       img.src = "/assets/ui/factory-lv5.png";
     };
   }
+
+
+
+// ===== Truck=====
+  const truck = document.querySelector(".collectTruck");
+if(truck){
+  const cfg = TRUCK_POS[level] || TRUCK_POS[5];
+  truck.style.top  = cfg.top;
+  truck.style.left = cfg.left;
+}
+
+
+
 
   // ===== STORAGE TEXT + PROGRESS =====
   const storedEl = document.getElementById("storedVal");
