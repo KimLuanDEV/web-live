@@ -2174,22 +2174,17 @@ socket.on("factory-get", ()=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
-  factoryDB[uid] ||= {
-    level:1,
-    productionRate: FACTORY_CONFIG[1].production,
-    storageCap: FACTORY_CONFIG[1].storage,
-    stored:0,
-    lastUpdate: Date.now()
-  };
-
   const factory = factoryDB[uid];
+
+  if(!factory){
+    return socket.emit("factory-state", null);
+  }
 
   updateFactory(factory);
   saveFactories(factoryDB);
 
   socket.emit("factory-state", factory);
 });
-
 
 
 

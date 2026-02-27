@@ -235,12 +235,29 @@ const storedEl = document.getElementById("storedAmount");
 const capEl = document.getElementById("storageCap");
 const progress = document.getElementById("progressFill");
 
-socket.on("connect", ()=>{
-  socket.emit("factory-get");
-});
 
 socket.on("factory-state",(data)=>{
 
+  const buildBtn = document.getElementById("buildBtn");
+  const collectBtn = document.getElementById("collectBtn");
+  const upgradeBtn = document.getElementById("upgradeBtn");
+
+  if(!data){
+    // 🔥 chưa build
+    levelEl.textContent = "-";
+    rateEl.textContent = "0";
+    storedEl.textContent = "0";
+    capEl.textContent = "0";
+    progress.style.width = "0%";
+
+    buildBtn.style.display = "block";
+    collectBtn.style.display = "none";
+    upgradeBtn.style.display = "none";
+
+    return;
+  }
+
+  // 🔥 đã build
   levelEl.textContent = data.level;
   rateEl.textContent = data.productionRate;
   storedEl.textContent = data.stored;
@@ -248,7 +265,13 @@ socket.on("factory-state",(data)=>{
 
   const percent = (data.stored / data.storageCap) * 100;
   progress.style.width = percent + "%";
+
+  buildBtn.style.display = "none";
+  collectBtn.style.display = "block";
+  upgradeBtn.style.display = "block";
 });
+
+
 
 document.getElementById("buildBtn").onclick = ()=>{
   socket.emit("factory-build");
@@ -269,9 +292,18 @@ socket.on("coin-update",(d)=>{
 
 
 socket.on("factory-error",(d)=>{
-  console.log("FACTORY ERROR:", d);
+  alert("Factory Error: " + d.message);
 });
 
+
+
+socket.on("connect", ()=>{
+  socket.emit("factory-get");
+
+  setInterval(()=>{
+    socket.emit("factory-get");
+  }, 3000);
+});
 
 </script>
 
