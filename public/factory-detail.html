@@ -407,17 +407,8 @@ body{
 
 .storagePanel{
   position:absolute;
-  top:53%;          /* chỉnh cho nằm đúng thân nhà máy */
-  left:26%;
   width:46px;
   z-index:5;
-
-    transform:
-    perspective(800px)
-    rotateY(-38deg)
-    rotateX(-20deg)
-    rotateZ(13deg);
-
   transform-origin: left center;
 }
 
@@ -559,9 +550,18 @@ const socket = io({
   }
 });
 
+const STORAGE_POS = {
+  1: { top: "60%", left: "22%", ry:-28, rx:-12, rz:8 },
+  2: { top: "58%", left: "24%", ry:-32, rx:-15, rz:10 },
+  3: { top: "55%", left: "25%", ry:-35, rx:-18, rz:12 },
+  4: { top: "54%", left: "26%", ry:-38, rx:-20, rz:13 },
+  5: { top: "53%", left: "26%", ry:-38, rx:-20, rz:13 }
+};
+
 let factory = null;
 let previewTimer = null;
 let previewStored = 0;
+
 
 
 socket.on("factory-update", list=>{
@@ -664,7 +664,7 @@ function render(){
       "🏭 Nhà máy #" + factory.id + " (Lv." + level + ")";
   }
 
-  // ===== IMAGE (clamp max lv5) =====
+  // ===== IMAGE =====
   const MAX_FACTORY_IMG_LEVEL = 5;
   const displayLevel = Math.min(level, MAX_FACTORY_IMG_LEVEL);
 
@@ -676,7 +676,7 @@ function render(){
     };
   }
 
-  // ===== STORED + PROGRESS =====
+  // ===== STORAGE TEXT + PROGRESS =====
   const storedEl = document.getElementById("storedVal");
   if(storedEl){
     storedEl.textContent =
@@ -700,7 +700,7 @@ function render(){
     workerEl.textContent = workers + "/" + maxWorkers;
   }
 
-  // ===== LEVEL DISPLAY =====
+  // ===== LEVEL =====
   const levelEl = document.getElementById("levelVal");
   if(levelEl){
     levelEl.textContent = level;
@@ -722,7 +722,24 @@ function render(){
     dot.className = active ? "dot" : "dot off";
   }
 
-  // ===== WORKER ANIMATION =====
+  // ===== AUTO POSITION STORAGE PANEL =====
+  const panel = document.querySelector(".storagePanel");
+  if(panel){
+
+    const cfg = STORAGE_POS[level] || STORAGE_POS[5];
+
+    panel.style.top  = cfg.top;
+    panel.style.left = cfg.left;
+
+    panel.style.transform = `
+      perspective(800px)
+      rotateY(${cfg.ry}deg)
+      rotateX(${cfg.rx}deg)
+      rotateZ(${cfg.rz}deg)
+    `;
+  }
+
+  // ===== WORKERS =====
   renderWorkers();
 }
 
