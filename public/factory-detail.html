@@ -86,6 +86,46 @@ body{
   background:linear-gradient(180deg,#ff5050,#aa0000);
 }
 
+
+/* ===== WORKER YARD ===== */
+
+.yard{
+  position:relative;
+  height:140px;
+  border-radius:18px;
+  margin-bottom:20px;
+  background:
+    radial-gradient(circle at 50% 100%, rgba(0,255,255,.15), transparent 60%),
+    linear-gradient(180deg,#071018,#04080d);
+  border:1px solid rgba(0,255,255,.2);
+  overflow:hidden;
+}
+
+.worker{
+  position:absolute;
+  bottom:10px;
+  width:36px;
+  height:36px;
+  filter: drop-shadow(0 0 8px rgba(0,255,255,.7));
+  animation: walk linear infinite;
+}
+
+@keyframes walk{
+  0%   { transform: translateX(-40px) scaleX(1); }
+  49%  { transform: translateX(calc(100% + 40px)) scaleX(1); }
+  50%  { transform: translateX(calc(100% + 40px)) scaleX(-1); }
+  99%  { transform: translateX(-40px) scaleX(-1); }
+  100% { transform: translateX(-40px) scaleX(1); }
+}
+
+/* inactive state */
+.worker.inactive{
+  animation:none;
+  opacity:.4;
+  filter: grayscale(1);
+}
+
+
 </style>
 </head>
 <body>
@@ -99,6 +139,8 @@ body{
 <div class="container">
 
   <img id="factoryImg" class="factory-hero">
+
+<div class="yard" id="yard"></div>
 
   <div class="stat-box">
     <div>📦 Kho: <span id="storedVal">0</span></div>
@@ -167,7 +209,48 @@ function render(){
 
   document.getElementById("workerVal").textContent =
     factory.workers + "/" + factory.maxWorkers;
+    
+    renderWorkers();
 }
+
+
+function renderWorkers(){
+
+  const yard = document.getElementById("yard");
+  yard.innerHTML = "";
+
+  if(!factory) return;
+
+  const count = Math.min(factory.workers || 0, 8);
+
+  for(let i=0;i<count;i++){
+
+    const w = document.createElement("img");
+    w.className = "worker";
+
+    w.src = "/assets/ui/worker-bot.png"; // đổi thành asset bạn thích
+
+    // random vị trí xuất phát
+    w.style.left = (i * 30) + "px";
+
+    // tốc độ phụ thuộc rate
+    const speedBase = 6;
+    const speed =
+      Math.max(
+        2,
+        speedBase - (factory.workers * factory.baseRate * 0.2)
+      );
+
+    w.style.animationDuration = speed + "s";
+
+    if(factory.active === false){
+      w.classList.add("inactive");
+    }
+
+    yard.appendChild(w);
+  }
+}
+
 
 function collect(){
   socket.emit("factory-collect",{ index });
