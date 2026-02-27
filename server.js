@@ -2231,7 +2231,7 @@ socket.on("factory-collect", ({ index })=>{
 
 
 
-socket.on("factory-build", ({cost, index})=>{
+socket.on("factory-build", ({ index })=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
@@ -2240,26 +2240,41 @@ socket.on("factory-build", ({cost, index})=>{
   const me = users[uid];
   if(!me?.profile) return;
 
-  cost = Math.floor(Number(cost||0));
-  if(me.profile.coins < cost) return;
-
-me.profile.coins = Math.floor(
-  Number(me.profile.coins || 0) - cost
-);
-
+  // 🔐 đảm bảo mảng tồn tại
   factoryDB[uid] ||= [
     {empty:true},
     {empty:true},
     {empty:true}
   ];
 
+  // ❌ nếu slot đã có nhà máy thì không build nữa
+  if(factoryDB[uid][index] && !factoryDB[uid][index].empty){
+    return;
+  }
+
+  // 🔢 SERVER TỰ TÍNH GIÁ
+  const cost = (index + 1) * 500;
+
+  if(me.profile.coins < cost){
+    socket.emit("factory-error",{
+      message:"NOT_ENOUGH_COIN"
+    });
+    return;
+  }
+
+  // 💰 trừ coin
+  me.profile.coins = Math.floor(
+    Number(me.profile.coins || 0) - cost
+  );
+
+  // 🏗 tạo nhà máy mới
   factoryDB[uid][index] = {
-    id:index+1,
-    level:1,
-    rate:1,
-    storage:100,
-    stored:0,
-    lastUpdate:Date.now()
+    id: index + 1,
+    level: 1,
+    rate: 1,
+    storage: 100,
+    stored: 0,
+    lastUpdate: Date.now()
   };
 
   saveUsers(users);

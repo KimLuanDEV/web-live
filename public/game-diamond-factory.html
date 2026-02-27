@@ -126,6 +126,13 @@ html,body{
   opacity:1;
 }
 
+.btn:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+
+
 </style>
 </head>
 
@@ -182,32 +189,63 @@ function render(){
   const grid = document.getElementById("factoryGrid");
   grid.innerHTML = "";
 
+  const myCoins = Number(
+    document.getElementById("coinVal").textContent || 0
+  );
+
   factories.forEach((f,index)=>{
 
-if(f.empty){
-  const cost = (index + 1) * 500;
+    // =========================
+    // SLOT TRỐNG
+    // =========================
+    if(f.empty){
 
-  const slot = document.createElement("div");
-  slot.className = "slot-empty";
-  slot.innerHTML = `
-    ➕ Xây nhà máy mới<br>
-    <span style="font-size:11px;opacity:.7">
-      Giá: ${cost} 💎
-    </span>
-  `;
-  slot.onclick = ()=> buildFactory(index);
-  grid.appendChild(slot);
-  return;
-}
+      const cost = (index + 1) * 500;
+      const disabled = myCoins < cost ? "opacity:.5;pointer-events:none;" : "";
 
+      const slot = document.createElement("div");
+      slot.className = "slot-empty";
+      slot.style = disabled;
+
+      slot.innerHTML = `
+        ➕ Xây nhà máy mới<br>
+        <span style="font-size:11px;opacity:.7">
+          Giá: ${cost} 💎
+        </span>
+      `;
+
+      slot.onclick = ()=> buildFactory(index);
+      grid.appendChild(slot);
+      return;
+    }
+
+    // =========================
+    // FACTORY CARD
+    // =========================
     const card = document.createElement("div");
     card.className = "factory-card";
 
     const currentStored = f._previewStored ?? f.stored;
-    const percent = (currentStored / f.storage) * 100;
+    const percent = Math.min(
+      100,
+      (currentStored / f.storage) * 100
+    );
+
+    const upgradeCost = f.level * 300;
+
+    const disableUpgrade =
+      myCoins < upgradeCost || f._upgrading
+        ? "disabled"
+        : "";
+
+    const disableCollect =
+      currentStored <= 0 || f._collecting
+        ? "disabled"
+        : "";
 
     card.innerHTML = `
-      <h3>Nhà máy #${f.id}</h3>
+      <h3>Nhà máy #${f.id} (Lv.${f.level})</h3>
+
       <div class="factory-stats">
         ⚡ ${f.rate} 💎/s<br>
         📦 ${Math.floor(currentStored)}/${f.storage}
@@ -218,20 +256,21 @@ if(f.empty){
       </div>
 
       <button class="btn btn-collect"
+        ${disableCollect}
         onclick="collectFactory(${index})">
         Thu hoạch
       </button>
 
       <button class="btn btn-upgrade"
+        ${disableUpgrade}
         onclick="upgradeFactory(${index})">
-        Nâng cấp
+        ⬆ Nâng cấp (${upgradeCost} 💎)
       </button>
     `;
 
     grid.appendChild(card);
   });
 }
-
 
 function collectFactory(index){
 
@@ -266,11 +305,10 @@ function upgradeFactory(index){
 }
 
 function buildFactory(index){
-
-  const cost = (index + 1) * 500;
-
-  socket.emit("factory-build",{cost,index});
+  socket.emit("factory-build",{ index });
 }
+
+
 
 socket.on("factory-update", data=>{
   factories = data;
@@ -294,6 +332,13 @@ socket.on("factory-build-success", data=>{
 socket.on("coin-update", d=>{
   document.getElementById("coinVal").textContent =
     Math.floor(d.coins || 0);
+});
+
+
+socket.on("factory-error", d=>{
+  if(d.message === "NOT_ENOUGH_COIN"){
+    alert("Không đủ kim cương!");
+  }
 });
 
 setInterval(updateFactories,1000);
