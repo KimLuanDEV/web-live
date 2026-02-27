@@ -192,8 +192,15 @@ function render(){
   document.getElementById("factoryTitle").textContent =
     "🏭 Nhà máy #" + factory.id + " (Lv." + factory.level + ")";
 
-  document.getElementById("factoryImg").src =
-    "/assets/ui/factory-lv" + factory.level + ".png";
+const MAX_FACTORY_IMG_LEVEL = 5;
+
+const displayLevel = Math.min(
+  factory.level,
+  MAX_FACTORY_IMG_LEVEL
+);
+
+document.getElementById("factoryImg").src =
+  "/assets/ui/factory-lv" + displayLevel + ".png";
 
   const percent =
     (factory.stored / factory.storage) * 100;
@@ -204,12 +211,19 @@ function render(){
   document.getElementById("progressFill").style.width =
     percent + "%";
 
-  document.getElementById("rateVal").textContent =
-    (factory.workers * factory.baseRate) + " 💎/s";
+const workers  = Number(factory.workers || 0);
+const baseRate = Number(factory.baseRate || 1);
+
+// ưu tiên rate (server đã set khi hire worker)
+const rate = Number(factory.rate ?? (workers * baseRate)) || 0;
+
+document.getElementById("rateVal").textContent =
+  rate + " 💎/s";
+
 
   document.getElementById("workerVal").textContent =
     factory.workers + "/" + factory.maxWorkers;
-    
+
     renderWorkers();
 }
 
@@ -221,26 +235,27 @@ function renderWorkers(){
 
   if(!factory) return;
 
-  const count = Math.min(factory.workers || 0, 8);
+  // ✅ ÉP KIỂU an toàn (tránh NaN)
+  const workers  = Number(factory.workers ?? 0);
+  const baseRate = Number(factory.baseRate ?? 1);
+
+  // ✅ ưu tiên rate nếu server có, fallback nếu thiếu
+  const rate = Number(factory.rate ?? (workers * baseRate)) || 0;
+
+  const count = Math.min(Math.max(0, workers), 8);
 
   for(let i=0;i<count;i++){
 
     const w = document.createElement("img");
     w.className = "worker";
+    w.src = "/assets/ui/worker-bot.png";
 
-    w.src = "/assets/ui/worker-bot.png"; // đổi thành asset bạn thích
-
-    // random vị trí xuất phát
+    // vị trí xuất phát
     w.style.left = (i * 30) + "px";
 
-    // tốc độ phụ thuộc rate
+    // ✅ tốc độ phụ thuộc rate nhưng luôn ra số hợp lệ
     const speedBase = 6;
-    const speed =
-      Math.max(
-        2,
-        speedBase - (factory.workers * factory.baseRate * 0.2)
-      );
-
+    const speed = Math.max(2, speedBase - (rate * 0.2));
     w.style.animationDuration = speed + "s";
 
     if(factory.active === false){
@@ -250,7 +265,6 @@ function renderWorkers(){
     yard.appendChild(w);
   }
 }
-
 
 function collect(){
   socket.emit("factory-collect",{ index });
