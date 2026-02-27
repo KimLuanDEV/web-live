@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chi tiết Nhà máy</title>
+<link rel="stylesheet" href="/style.css">
+<style>
+
+body{
+  margin:0;
+  background:#05080c;
+  color:#fff;
+  font-family:system-ui;
+}
+
+/* HEADER */
+.topbar{
+  height:60px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
+  background:linear-gradient(180deg,#0b0f14,#05080c);
+  border-bottom:1px solid rgba(0,255,255,.15);
+}
+
+.back{
+  cursor:pointer;
+  font-size:20px;
+}
+
+.wallet{
+  font-weight:800;
+  color:#00f0ff;
+}
+
+/* MAIN */
+.container{
+  padding:20px;
+}
+
+.factory-hero{
+  width:100%;
+  border-radius:18px;
+  margin-bottom:20px;
+}
+
+.stat-box{
+  background:#0a1016;
+  border:1px solid rgba(0,255,255,.2);
+  border-radius:16px;
+  padding:16px;
+  margin-bottom:14px;
+}
+
+.progress{
+  height:12px;
+  background:rgba(255,255,255,.08);
+  border-radius:8px;
+  overflow:hidden;
+  margin-top:10px;
+}
+
+.fill{
+  height:100%;
+  background:linear-gradient(90deg,#00f0ff,#00aaff);
+  transition:.3s;
+}
+
+.btn{
+  width:100%;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:700;
+  margin-top:10px;
+  cursor:pointer;
+}
+
+.btn-primary{
+  background:linear-gradient(180deg,#00f0ff,#0088ff);
+}
+
+.btn-danger{
+  background:linear-gradient(180deg,#ff5050,#aa0000);
+}
+
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="back" onclick="location.href='/game-diamond-factory.html'">←</div>
+  <div id="factoryTitle">Nhà máy</div>
+  <div class="wallet"><span id="coinVal">0</span> 💎</div>
+</div>
+
+<div class="container">
+
+  <img id="factoryImg" class="factory-hero">
+
+  <div class="stat-box">
+    <div>📦 Kho: <span id="storedVal">0</span></div>
+    <div class="progress">
+      <div class="fill" id="progressFill"></div>
+    </div>
+  </div>
+
+  <div class="stat-box">
+    <div>⚡ Tốc độ: <span id="rateVal"></span></div>
+    <div>👷 Công nhân: <span id="workerVal"></span></div>
+  </div>
+
+  <button class="btn btn-primary" onclick="collect()">Thu hoạch</button>
+  <button class="btn btn-danger" onclick="upgrade()">Nâng cấp</button>
+  <button class="btn" onclick="hire()">Thuê công nhân</button>
+
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+
+const params = new URLSearchParams(location.search);
+const index = Number(params.get("index"));
+
+const socket = io({
+  auth:{
+    uid: JSON.parse(localStorage.getItem("user_profile")||"{}").uid,
+    deviceId: localStorage.getItem("device_id")
+  }
+});
+
+let factory = null;
+
+socket.on("factory-update", list=>{
+  factory = list[index];
+  if(!factory) return;
+
+  render();
+});
+
+socket.on("coin-update", d=>{
+  document.getElementById("coinVal").textContent =
+    Math.floor(d.coins || 0);
+});
+
+function render(){
+
+  document.getElementById("factoryTitle").textContent =
+    "🏭 Nhà máy #" + factory.id + " (Lv." + factory.level + ")";
+
+  document.getElementById("factoryImg").src =
+    "/assets/ui/factory-lv" + factory.level + ".png";
+
+  const percent =
+    (factory.stored / factory.storage) * 100;
+
+  document.getElementById("storedVal").textContent =
+    Math.floor(factory.stored) + "/" + factory.storage;
+
+  document.getElementById("progressFill").style.width =
+    percent + "%";
+
+  document.getElementById("rateVal").textContent =
+    (factory.workers * factory.baseRate) + " 💎/s";
+
+  document.getElementById("workerVal").textContent =
+    factory.workers + "/" + factory.maxWorkers;
+}
+
+function collect(){
+  socket.emit("factory-collect",{ index });
+}
+
+function upgrade(){
+  socket.emit("factory-upgrade",{ index });
+}
+
+function hire(){
+  socket.emit("factory-hire-worker",{ index });
+}
+
+</script>
+</body>
+</html>
