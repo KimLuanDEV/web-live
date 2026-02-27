@@ -132,7 +132,6 @@ html,body{
 }
 
 
-
 </style>
 </head>
 
@@ -146,6 +145,37 @@ html,body{
 
 <div class="factory-grid" id="factoryGrid">
 </div>
+
+
+
+
+
+
+<!-- =========================
+   🏭 FACTORY DETAIL MODAL
+========================= -->
+<div id="factoryModal" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:999;
+">
+  <div id="factoryDetail"
+       style="
+         width:90%;
+         max-width:420px;
+         background:#0a1016;
+         border:1px solid rgba(0,255,255,.2);
+         border-radius:16px;
+         padding:20px;
+       ">
+  </div>
+</div>
+
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -228,14 +258,13 @@ function render(){
     }
 
     // =========================
-    // FACTORY CARD
+    // FACTORY CARD (ẢNH)
     // =========================
     const card = document.createElement("div");
     card.className = "factory-card";
+    card.style.cursor = "pointer";
 
     const currentWorkers = f.workers || 0;
-    const maxWorkers     = f.maxWorkers || 1;
-
     const hasWorker = currentWorkers > 0;
     const isActive  = f.active !== false && hasWorker;
 
@@ -248,105 +277,37 @@ function render(){
       (currentStored / f.storage) * 100
     );
 
-    const upgradeCost = f.level * 300;
-
-    const disableUpgrade =
-      myCoins < upgradeCost ||
-      f._upgrading ||
-      f.active === false
-        ? "disabled"
-        : "";
-
-    const disableCollect =
-      currentStored <= 0 ||
-      f._collecting ||
-      !isActive
-        ? "disabled"
-        : "";
-
-    // =========================
-    // 👷 WORKER BLOCK (NEW)
-    // =========================
-let workerBlock = `
-  <div style="font-size:12px;opacity:.85">
-    👷 ${currentWorkers}/${maxWorkers}
-  </div>
-  <div style="font-size:11px;opacity:.6">
-    💼 Lương/ngày: ${(f.workerSalary || 50) * currentWorkers} 💎
-  </div>
-`;
-
-    if(currentWorkers < maxWorkers){
-      workerBlock += `
-        <button class="btn"
-          style="background:#ffaa00"
-          onclick="hireWorker(${index})">
-          Thuê công nhân (${f.workerCost || 150} 💎)
-        </button>
-      `;
-    }
-
-    if(currentWorkers === 0){
-      workerBlock += `
-        <div style="color:#ff7777;font-size:11px">
-          ⚠ Không có công nhân → Không hoạt động
-        </div>
-      `;
-    }
-
-    // =========================
-    // 💸 DAILY FEE BLOCK
-    // =========================
-    let feeBlock = "";
-
-    if(f.active === false && currentWorkers > 0){
-      feeBlock = `
-        <div style="color:#ff5555;font-weight:700;font-size:12px">
-          ⛔ Ngừng hoạt động (chưa trả phí)
-        </div>
-        <button class="btn"
-          style="background:#ffaa00"
-          onclick="payFactoryFee(${index})">
-          Trả phí ${f.dailyFee || 200} 💎
-        </button>
-      `;
-    }else{
-      feeBlock = `
-        <div style="font-size:11px;opacity:.6">
-          Phí/ngày: ${f.dailyFee || 200} 💎
-        </div>
-      `;
-    }
-
+    // 🔥 chỉ hiển thị ảnh + level + progress
     card.innerHTML = `
-      <h3>Nhà máy #${f.id} (Lv.${f.level})</h3>
-
-      ${workerBlock}
-      ${feeBlock}
-
-      <div class="factory-stats">
-        ⚡ ${(f.workers || 0) * (f.baseRate || 1)} 💎/s
-        📦 ${Math.floor(currentStored)}/${f.storage}
+      <div style="position:relative">
+        <img src="/assets/ui/factory.png"
+             style="width:100%;border-radius:12px;
+                    opacity:${isActive ? 1 : .5}">
+        
+        <div style="
+          position:absolute;
+          top:8px;
+          left:8px;
+          background:rgba(0,0,0,.6);
+          padding:4px 8px;
+          border-radius:8px;
+          font-size:11px;
+        ">
+          Lv.${f.level}
+        </div>
       </div>
 
-      <div class="progress">
+      <div class="progress" style="margin-top:8px">
         <div class="progress-fill"
           style="width:${percent}%">
         </div>
       </div>
-
-      <button class="btn btn-collect"
-        ${disableCollect}
-        onclick="collectFactory(${index})">
-        Thu hoạch
-      </button>
-
-      <button class="btn btn-upgrade"
-        ${disableUpgrade}
-        onclick="upgradeFactory(${index})">
-        ⬆ Nâng cấp (${upgradeCost} 💎)
-      </button>
     `;
+
+    // click mở modal chi tiết
+    card.onclick = ()=>{
+      openFactoryDetail(index);
+    };
 
     grid.appendChild(card);
   });
@@ -441,6 +402,84 @@ if(d.message === "MAX_WORKER_REACHED"){
 setInterval(updateFactories,1000);
 
 render();
+
+
+
+
+function openFactoryDetail(index){
+
+  const f = factories[index];
+  if(!f || f.empty) return;
+
+  const modal = document.getElementById("factoryModal");
+  const box   = document.getElementById("factoryDetail");
+
+  const currentWorkers = f.workers || 0;
+  const maxWorkers     = f.maxWorkers || 1;
+
+  const currentStored = f.stored;
+
+  box.innerHTML = `
+    <h3>🏭 Nhà máy #${f.id} (Lv.${f.level})</h3>
+
+    <div style="margin-top:10px">
+      ⚡ Tốc độ:
+      ${(f.workers||0)*(f.baseRate||1)} 💎/s
+    </div>
+
+    <div>
+      📦 Kho:
+      ${Math.floor(currentStored)}/${f.storage}
+    </div>
+
+    <div>
+      👷 Công nhân:
+      ${currentWorkers}/${maxWorkers}
+    </div>
+
+    <div>
+      💼 Lương/ngày:
+      ${(f.workerSalary||50)*currentWorkers} 💎
+    </div>
+
+    <div>
+      🧾 Phí vận hành:
+      ${f.dailyFee||200} 💎/ngày
+    </div>
+
+    <div style="margin-top:15px;display:flex;flex-direction:column;gap:8px">
+
+      <button class="btn btn-collect"
+        onclick="collectFactory(${index})">
+        Thu hoạch
+      </button>
+
+      <button class="btn btn-upgrade"
+        onclick="upgradeFactory(${index})">
+        ⬆ Nâng cấp (${f.level*300} 💎)
+      </button>
+
+      <button class="btn"
+        style="background:#ffaa00"
+        onclick="hireWorker(${index})">
+        Thuê công nhân
+      </button>
+
+      <button class="btn"
+        style="background:#555"
+        onclick="closeFactoryDetail()">
+        Đóng
+      </button>
+    </div>
+  `;
+
+  modal.style.display = "flex";
+}
+
+function closeFactoryDetail(){
+  document.getElementById("factoryModal").style.display="none";
+}
+
 
 </script>
 
