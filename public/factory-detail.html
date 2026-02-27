@@ -125,7 +125,7 @@ body{
 .hero{
   position:relative;
   width:100%;
-  margin: -10px;            /* bỏ margin */
+  margin: 0;            /* bỏ margin */
   border-radius:0;     /* bỏ bo góc nếu muốn full edge */
   overflow:hidden;
   border:none;         /* bỏ viền nếu muốn sát mép */
@@ -134,11 +134,12 @@ body{
 
 .factory-hero{
   display:block;
-  width:100%;
-  height: 430px;
-  object-fit:cover;
-  transform: scale(1.02);
-  filter: contrast(1.08) saturate(1.12);
+  width:100vw;          /* ✅ full ngang viewport */
+  max-width:100%;
+  height:450px;         /* chỉnh tùy bạn */
+  object-fit:cover;     /* ✅ ảnh cover full */
+  object-position:center;
+  transform:none;       /* ✅ bỏ scale để khỏi bị crop khó kiểm soát */
 }
 
 .hero::after{
