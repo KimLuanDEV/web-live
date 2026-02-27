@@ -70,6 +70,39 @@ const weightedMultipliers = [
 
 
 // ================================
+// 🏭 DIAMOND FACTORY DATA
+// ================================
+const FACTORY_FILE =
+  "/opt/render/project/data/diamond_factory.json";
+
+function loadFactories(){
+  try{
+    if(!fs.existsSync(FACTORY_FILE)) return {};
+    return JSON.parse(
+      fs.readFileSync(FACTORY_FILE,"utf8")
+    );
+  }catch(e){
+    console.error("❌ Load factory failed", e);
+    return {};
+  }
+}
+
+function saveFactories(db){
+  try{
+    fs.writeFileSync(
+      FACTORY_FILE,
+      JSON.stringify(db,null,2)
+    );
+  }catch(e){
+    console.error("❌ Save factory failed", e);
+  }
+}
+
+let factoryDB = loadFactories();
+
+
+
+// ================================
 // 🧠 HEALTH DATA (PER USER)
 // ================================
 const HEALTH_DIR = path.join("/opt/render/project/data", "health");
@@ -2101,7 +2134,16 @@ if (meNow?.role === "admin" && timeRaceRound) {
   const coins = Number(me?.profile?.coins || 0);
 
 
+// ================================
+// 🏭 SEND FACTORY DATA
+// ================================
+factoryDB[uid] ||= [
+  {empty:true},
+  {empty:true},
+  {empty:true}
+];
 
+socket.emit("factory-update", factoryDB[uid]);
 
 // ================================
 // 🏭 DIAMOND FACTORY
@@ -2125,7 +2167,8 @@ socket.on("factory-collect", ({amount})=>{
   emitCoinUpdate(uid);
 });
 
-socket.on("factory-upgrade", ({cost})=>{
+
+socket.on("factory-build", ({cost, index})=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
@@ -2139,10 +2182,29 @@ socket.on("factory-upgrade", ({cost})=>{
 
   me.profile.coins -= cost;
 
+  factoryDB[uid] ||= [
+    {empty:true},
+    {empty:true},
+    {empty:true}
+  ];
+
+  factoryDB[uid][index] = {
+    id:index+1,
+    level:1,
+    rate:1,
+    storage:100,
+    stored:0,
+    lastUpdate:Date.now()
+  };
+
   saveUsers(users);
+  saveFactories(factoryDB);
+
   emitCoinUpdate(uid);
 
-  socket.emit("factory-upgrade-success");
+  socket.emit("factory-build-success",
+    factoryDB[uid]
+  );
 });
 
 

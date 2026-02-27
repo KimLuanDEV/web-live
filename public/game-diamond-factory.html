@@ -259,25 +259,21 @@ function upgradeFactory(index){
 
 function buildFactory(index){
 
-  // 💎 Giá tăng theo slot
   const cost = (index + 1) * 500;
 
-  socket.emit("factory-upgrade",{cost});
-
-  socket.once("factory-upgrade-success", ()=>{
-
-    factories[index] = {
-      id:index+1,
-      level:1,
-      rate:1,
-      storage:100,
-      stored:0,
-      lastUpdate:Date.now()
-    };
-
-    render();
-  });
+  socket.emit("factory-build",{cost,index});
 }
+
+
+socket.on("factory-update", data=>{
+  factories = data;
+  render();
+});
+
+socket.on("factory-build-success", data=>{
+  factories = data;
+  render();
+});
 
 socket.on("coin-update", d=>{
   document.getElementById("coinVal").textContent =
