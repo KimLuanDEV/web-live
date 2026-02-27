@@ -226,10 +226,41 @@ let ksSlaveIndex = Math.floor(Math.random() * 5);
 const ksUserState = new Map();
 
 // helper: tạo deck và pick index
+
 function ksPickKingIndex(){
   // 5 lá: 4 common + 1 king => random 0..4
   return Math.floor(Math.random()*5);
 }
+
+
+function getFavIndex(history){
+
+  if(!history || history.length < 5) return null;
+
+  const count = {};
+
+  history.forEach(i=>{
+    count[i] = (count[i]||0)+1;
+  });
+
+  let maxIndex = null;
+  let maxCount = 0;
+
+  for(const k in count){
+    if(count[k] > maxCount){
+      maxCount = count[k];
+      maxIndex = Number(k);
+    }
+  }
+
+  // nếu 1 vị trí chiếm >50% lượt gần đây
+  if(maxCount / history.length >= 0.6){
+    return maxIndex;
+  }
+
+  return null;
+}
+
 
 
 function ksCardByIndex(role, idx){
@@ -2518,7 +2549,6 @@ ksUserState.set(uid, {
 
 });
 
-
 socket.on("ks-pick", (data)=>{
 
   const uid = socket.data.uid;
@@ -2538,6 +2568,15 @@ socket.on("ks-pick", (data)=>{
 
   st.playerUsed.push(youIndex);
 
+  // ============================
+  // 🔥 LƯU PICK HISTORY
+  // ============================
+  st.pickHistory ||= [];
+  st.pickHistory.push(youIndex);
+  if(st.pickHistory.length > 10){
+    st.pickHistory.shift();
+  }
+
   // 🎯 chọn king chưa dùng
   const available = [0,1,2,3,4].filter(
     i => !st.kingUsed.includes(i)
@@ -2547,8 +2586,31 @@ socket.on("ks-pick", (data)=>{
     return socket.emit("ks-error",{ message:"NO_CARD_LEFT" });
   }
 
-  const kingPickIndex =
-    available[Math.floor(Math.random()*available.length)];
+  // ============================
+  // 🔥 ANTI NUÔI SLOT
+  // ============================
+
+  let kingPickIndex;
+  const fav = getFavIndex(st.pickHistory);
+
+  if(fav !== null && Math.random() < 0.65){
+
+    // 65% tránh vị trí đang bị nuôi
+    const safe = available.filter(i => i !== fav);
+
+    if(safe.length > 0){
+      kingPickIndex =
+        safe[Math.floor(Math.random()*safe.length)];
+    }else{
+      kingPickIndex =
+        available[Math.floor(Math.random()*available.length)];
+    }
+
+  }else{
+
+    kingPickIndex =
+      available[Math.floor(Math.random()*available.length)];
+  }
 
   st.kingUsed.push(kingPickIndex);
 
@@ -2587,12 +2649,12 @@ socket.on("ks-pick", (data)=>{
       saveUsers(users);
       emitToUser(uid,"coin-update",{ coins: me.profile.coins });
 
-      // reset state
       ksUserState.set(uid,{
           bet: 0,
           playerUsed: [],
           kingUsed: [],
-          drawStreak: 0
+          drawStreak: 0,
+          pickHistory: []
       });
 
   }
@@ -2605,7 +2667,8 @@ socket.on("ks-pick", (data)=>{
           bet: 0,
           playerUsed: [],
           kingUsed: [],
-          drawStreak: 0
+          drawStreak: 0,
+          pickHistory: []
       });
 
   }
@@ -2635,6 +2698,7 @@ socket.on("ks-pick", (data)=>{
   }
 
 });
+
 
 // ================================
 // 🏳️ KS RETREAT (sau khi draw)
