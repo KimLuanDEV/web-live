@@ -407,10 +407,18 @@ body{
 
 .storagePanel{
   position:absolute;
-  top:50%;          /* chỉnh cho nằm đúng thân nhà máy */
-  left:8%;
-  width:180px;
+  top:53%;          /* chỉnh cho nằm đúng thân nhà máy */
+  left:26%;
+  width:46px;
   z-index:5;
+
+    transform:
+    perspective(800px)
+    rotateY(-38deg)
+    rotateX(-20deg)
+    rotateZ(13deg);
+
+  transform-origin: left center;
 }
 
 .storageBg{
