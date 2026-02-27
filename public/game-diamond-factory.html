@@ -258,7 +258,7 @@ function render(){
     }
 
     // =========================
-    // FACTORY CARD (ẢNH)
+    // FACTORY CARD
     // =========================
     const card = document.createElement("div");
     card.className = "factory-card";
@@ -277,13 +277,58 @@ function render(){
       (currentStored / f.storage) * 100
     );
 
-    // 🔥 chỉ hiển thị ảnh + level + progress
+    // =========================
+    // 🎨 ẢNH THEO LEVEL
+    // =========================
+    let levelImg = "factory-lv1.png";
+
+    if(f.level >= 5){
+      levelImg = "factory-lv5.png";
+    }else if(f.level === 4){
+      levelImg = "factory-lv4.png";
+    }else if(f.level === 3){
+      levelImg = "factory-lv3.png";
+    }else if(f.level === 2){
+      levelImg = "factory-lv2.png";
+    }
+
+    // 🔥 nếu full kho → đổi màu progress
+    const progressColor =
+      percent >= 100
+        ? "linear-gradient(90deg,#ffd700,#ffaa00)"
+        : "linear-gradient(90deg,#00f0ff,#00aaff)";
+
+    // =========================
+    // HTML CARD
+    // =========================
     card.innerHTML = `
       <div style="position:relative">
-        <img src="/assets/ui/factory.png"
-             style="width:100%;border-radius:12px;
-                    opacity:${isActive ? 1 : .5}">
-        
+
+        <img src="/assets/ui/${levelImg}"
+             style="width:100%;
+                    border-radius:12px;
+                    opacity:${isActive ? 1 : .5};
+                    transition:.3s">
+
+        ${
+          !isActive
+          ? `<div style="
+              position:absolute;
+              inset:0;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              font-size:12px;
+              font-weight:700;
+              background:rgba(0,0,0,.6);
+              border-radius:12px;
+              color:#ff5555;
+            ">
+              ⛔ Tạm dừng
+            </div>`
+          : ""
+        }
+
         <div style="
           position:absolute;
           top:8px;
@@ -295,16 +340,17 @@ function render(){
         ">
           Lv.${f.level}
         </div>
+
       </div>
 
       <div class="progress" style="margin-top:8px">
         <div class="progress-fill"
-          style="width:${percent}%">
+          style="width:${percent}%;
+                 background:${progressColor}">
         </div>
       </div>
     `;
 
-    // click mở modal chi tiết
     card.onclick = ()=>{
       openFactoryDetail(index);
     };
