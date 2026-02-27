@@ -2273,6 +2273,48 @@ me.profile.coins = Math.floor(
 });
 
 
+socket.on("factory-upgrade", ({ index })=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  factoryDB[uid] ||= [];
+  const f = factoryDB[uid][index];
+
+  if(!f || f.empty) return;
+
+  // 🔢 giá nâng cấp
+  const cost = f.level * 300;
+
+  if(me.profile.coins < cost){
+    socket.emit("factory-error",{
+      message:"NOT_ENOUGH_COIN"
+    });
+    return;
+  }
+
+  // 💰 trừ coin
+  me.profile.coins = Math.floor(
+    Number(me.profile.coins || 0) - cost
+  );
+
+  // ⬆ nâng cấp
+  f.level += 1;
+  f.rate += 1;
+  f.storage += 100;
+
+  saveUsers(users);
+  saveFactories(factoryDB);
+
+  emitCoinUpdate(uid);
+
+  socket.emit("factory-update", factoryDB[uid]);
+});
+
 
   
 // ================================
