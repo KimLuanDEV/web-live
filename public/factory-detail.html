@@ -40,13 +40,14 @@ body{
   position:sticky;
   top:0;
   z-index:50;
-  padding: calc(10px + var(--safeTop)) 14px 10px;
+
+  padding: calc(10px + var(--safeTop)) 14px 0; /* ✅ bottom = 0 */
+
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  background:
-    linear-gradient(180deg, rgba(10,16,24,.88), rgba(5,8,12,.58));
+  background: linear-gradient(180deg, rgba(10,16,24,.88), rgba(5,8,12,.58));
   backdrop-filter: blur(14px);
   border-bottom:1px solid rgba(0,240,255,.15);
 }
@@ -125,7 +126,7 @@ body{
 .hero{
   position:relative;
   width:100%;
-  margin:0;            /* bỏ margin */
+  margin: 0;            /* bỏ margin */
   border-radius:0;     /* bỏ bo góc nếu muốn full edge */
   overflow:hidden;
   border:none;         /* bỏ viền nếu muốn sát mép */
