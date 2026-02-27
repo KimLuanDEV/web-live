@@ -76,27 +76,6 @@ body{
   box-shadow: 0 10px 30px rgba(0,0,0,.35), 0 0 24px rgba(0,240,255,.12);
 }
 
-.title-wrap{
-  display:flex;
-  flex-direction:column;
-  gap:2px;
-  align-items:center;
-  min-width:0;
-}
-#factoryTitle{
-  font-weight:900;
-  letter-spacing:.3px;
-  font-size:14px;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  max-width: 56vw;
-}
-.subtle{
-  font-size:11px;
-  color:var(--muted);
-  letter-spacing:.2px;
-}
 
 .wallet{
   display:flex;
@@ -508,10 +487,6 @@ body{
 <div class="topbar">
   <div class="back" onclick="location.href='/game-diamond-factory.html'">←</div>
 
-  <div class="title-wrap">
-    <div id="factoryTitle">Nhà máy</div>
-    <div class="subtle">Livestream Pro • Diamond Factory</div>
-  </div>
 
   <div class="wallet">
     <span class="v" id="coinVal">0</span>
@@ -752,12 +727,6 @@ function render(){
 
   const active = factory.active !== false;
 
-  // ===== TITLE =====
-  const titleEl = document.getElementById("factoryTitle");
-  if(titleEl){
-    titleEl.textContent =
-      "🏭 Nhà máy #" + factory.id + " (Lv." + level + ")";
-  }
 
   // ===== IMAGE =====
   const MAX_FACTORY_IMG_LEVEL = 5;
