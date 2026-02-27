@@ -151,9 +151,9 @@ const socket = io({
 });
 
 let factories = [
-  {id:1, level:1, rate:1, storage:100, stored:0, lastUpdate:Date.now()},
-  {id:2, empty:true},
-  {id:3, empty:true}
+  {empty:true},
+  {empty:true},
+  {empty:true}
 ];
 
 function updateFactories(){
@@ -180,14 +180,21 @@ function render(){
 
   factories.forEach((f,index)=>{
 
-    if(f.empty){
-      const slot = document.createElement("div");
-      slot.className = "slot-empty";
-      slot.textContent = "➕ Xây nhà máy mới";
-      slot.onclick = ()=> buildFactory(index);
-      grid.appendChild(slot);
-      return;
-    }
+if(f.empty){
+  const cost = (index + 1) * 500;
+
+  const slot = document.createElement("div");
+  slot.className = "slot-empty";
+  slot.innerHTML = `
+    ➕ Xây nhà máy mới<br>
+    <span style="font-size:11px;opacity:.7">
+      Giá: ${cost} 💎
+    </span>
+  `;
+  slot.onclick = ()=> buildFactory(index);
+  grid.appendChild(slot);
+  return;
+}
 
     const card = document.createElement("div");
     card.className = "factory-card";
@@ -252,20 +259,24 @@ function upgradeFactory(index){
 
 function buildFactory(index){
 
-  const cost = 500;
+  // 💎 Giá tăng theo slot
+  const cost = (index + 1) * 500;
 
   socket.emit("factory-upgrade",{cost});
 
-  factories[index] = {
-    id:index+1,
-    level:1,
-    rate:1,
-    storage:100,
-    stored:0,
-    lastUpdate:Date.now()
-  };
+  socket.once("factory-upgrade-success", ()=>{
 
-  render();
+    factories[index] = {
+      id:index+1,
+      level:1,
+      rate:1,
+      storage:100,
+      stored:0,
+      lastUpdate:Date.now()
+    };
+
+    render();
+  });
 }
 
 socket.on("coin-update", d=>{
