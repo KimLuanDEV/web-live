@@ -159,6 +159,61 @@ setInterval(()=>{
 
 
 // ================================
+// 💼 WORKER SALARY ENGINE
+// ================================
+setInterval(()=>{
+
+  const users = loadUsers();
+  let changed = false;
+
+  Object.keys(factoryDB).forEach(uid=>{
+
+    const user = users[uid];
+    if(!user?.profile) return;
+
+    factoryDB[uid].forEach(f=>{
+
+      if(!f || f.empty) return;
+      if(!f.workers || f.workers <= 0) return;
+
+      f.workerSalary ||= 50;
+      f.nextSalaryAt ||= Date.now() + ONE_DAY;
+
+      if(Date.now() >= f.nextSalaryAt){
+
+        const totalSalary =
+          f.workers * f.workerSalary;
+
+        if(user.profile.coins >= totalSalary){
+
+          user.profile.coins -= totalSalary;
+          f.nextSalaryAt = Date.now() + ONE_DAY;
+
+        }else{
+
+          // ❌ Không đủ lương → Worker nghỉ hết
+          f.workers = 0;
+          f.active = false;
+
+        }
+
+        changed = true;
+      }
+
+    });
+
+  });
+
+  if(changed){
+    saveUsers(users);
+    saveFactories(factoryDB);
+  }
+
+}, 60000);
+
+
+
+// ================================
 // 🧠 HEALTH DATA (PER USER)
 // ================================
 const HEALTH_DIR = path.join("/opt/render/project/data", "health");
@@ -2421,9 +2476,7 @@ factoryDB[uid][index] = {
   id: index + 1,
   level: 1,
 
-  baseRate: 1,   // tốc độ mỗi worker
-  rate: 0,       // tổng rate = workers * baseRate
-
+  baseRate: 1,
   storage: 100,
   stored: 0,
   lastUpdate: Date.now(),
@@ -2431,6 +2484,9 @@ factoryDB[uid][index] = {
   workers: 0,
   maxWorkers: 1,
   workerCost: 150,
+
+  workerSalary: 50,              // 💼 NEW
+  nextSalaryAt: Date.now() + ONE_DAY, // 💼 NEW
 
   active: false,
   dailyFee: 200,

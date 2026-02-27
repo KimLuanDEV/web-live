@@ -267,11 +267,14 @@ function render(){
     // =========================
     // 👷 WORKER BLOCK (NEW)
     // =========================
-    let workerBlock = `
-      <div style="font-size:12px;opacity:.85">
-        👷 ${currentWorkers}/${maxWorkers}
-      </div>
-    `;
+let workerBlock = `
+  <div style="font-size:12px;opacity:.85">
+    👷 ${currentWorkers}/${maxWorkers}
+  </div>
+  <div style="font-size:11px;opacity:.6">
+    💼 Lương/ngày: ${(f.workerSalary || 50) * currentWorkers} 💎
+  </div>
+`;
 
     if(currentWorkers < maxWorkers){
       workerBlock += `
