@@ -427,54 +427,177 @@ body{
   margin:0 auto;
 }
 
-.bomb-img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-
-  filter:
-    drop-shadow(0 0 50px rgba(0,255,255,.6))
-    drop-shadow(0 0 100px rgba(0,255,255,.4));
-
-  animation:bombFloat 3s ease-in-out infinite;
+/* 🔵 outer glow */
+.bomb-core-glow{
+  position:absolute;
+  inset:-40px;
+  border-radius:50%;
+  background:radial-gradient(circle,
+    rgba(0,255,255,.4),
+    transparent 70%);
+  filter:blur(40px);
+  animation:corePulse 3s ease-in-out infinite;
+  z-index:-2;
 }
 
-@keyframes bombFloat{
-  0%,100%{ transform:translateY(0); }
-  50%{ transform:translateY(-8px); }
+@keyframes corePulse{
+  0%,100%{ opacity:.6; transform:scale(1); }
+  50%{ opacity:1; transform:scale(1.1); }
 }
 
+/* 🎱 body */
+.bomb-body{
+  width:260px;
+  height:260px;
+  border-radius:50%;
+  position:relative;
+
+  background:
+    radial-gradient(circle at 35% 30%,
+      #666 0%,
+      #222 45%,
+      #000 85%
+    );
+
+  box-shadow:
+    inset -35px -35px 80px rgba(0,0,0,.9),
+    inset 20px 20px 40px rgba(255,255,255,.08),
+    0 0 90px rgba(0,255,255,.4);
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* 🔲 metal ring */
+.bomb-body::before{
+  content:"";
+  position:absolute;
+  inset:8px;
+  border-radius:50%;
+  border:3px solid rgba(0,255,255,.5);
+  box-shadow:0 0 25px rgba(0,255,255,.6);
+}
+
+/* ⏳ timer */
 .bomb-timer{
   position:absolute;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%);
-
-  font-size:22px;
-  font-weight:900;
+  top:28px;
+  font-size:16px;
+  font-weight:800;
+  letter-spacing:1px;
   color:#ffcc00;
-
-  text-shadow:
-    0 0 10px #ff9900,
-    0 0 25px #ff3300;
+  text-shadow:0 0 10px #ff9900;
+  animation:timerBlink 1s infinite;
 }
 
+@keyframes timerBlink{
+  0%,100%{ opacity:.7; }
+  50%{ opacity:1; }
+}
+
+/* 💎 multiplier */
 .bomb-multi{
-  position:absolute;
+   position:absolute;
   top:50%;
   left:50%;
   transform:translate(-50%, -50%);
-
+  font-size:60px;
+  z-index:5;
   font-size:60px;
   font-weight:900;
   letter-spacing:2px;
 
-  background:linear-gradient(90deg,#00f0ff,#fff,#00f0ff);
+  background:linear-gradient(
+    90deg,
+    #00f0ff,
+    #ffffff,
+    #00f0ff
+  );
+
   background-size:200%;
+  background-clip:text;
   -webkit-background-clip:text;
+  color:transparent;
   -webkit-text-fill-color:transparent;
 
   animation:multiShine 3s linear infinite;
+}
+
+@keyframes multiShine{
+  from{ background-position:0%; }
+  to{ background-position:200%; }
+}
+
+/* 🔥 fuse */
+.bomb-fuse{
+  position:absolute;
+  bottom:90%;     /* 🔥 neo vào bomb */
+  left:50%;
+  transform:translateX(-50%);
+
+  width:12px;
+  height:60px;
+
+  transition:height .2s linear;
+
+  border-radius:6px;
+
+  background:linear-gradient(
+    180deg,
+    #555,
+    #222
+  );
+
+  box-shadow:inset 0 0 10px rgba(0,0,0,.6);
+}
+
+/* ✨ spark */
+.spark{
+  position:absolute;
+  bottom:90%;   /* 🔥 neo vào đầu dây */
+  left:50%;
+  transform:translate(-50%, 0);
+
+  width:24px;
+  height:24px;
+  border-radius:50%;
+
+  background:radial-gradient(circle,
+    #fff,
+    #ffcc00,
+    #ff3300
+  );
+
+  box-shadow:
+    0 0 30px #ff6600,
+    0 0 60px #ff0000;
+
+  animation:sparkFire .3s infinite alternate;
+}
+
+@keyframes sparkFire{
+  from{
+    transform:translateX(-50%) scale(1);
+    opacity:.8;
+  }
+  to{
+    transform:translateX(-50%) scale(1.25);
+    opacity:1;
+  }
+}
+
+/* 🔴 hot state */
+.bomb-body.hot{
+  box-shadow:
+    0 0 140px rgba(255,0,0,.9),
+    inset -35px -35px 80px rgba(0,0,0,.9);
+}
+
+/* 💥 crash */
+.bomb-body.crash{
+  background:radial-gradient(circle,#ff0000,#200 70%);
+  box-shadow:0 0 160px red;
 }
 
 
@@ -1394,16 +1517,24 @@ body.crash-dark{
 
 <div class="bomb-wrap">
 
-  <img src="/assets/time-race/bomb-time-race-unified.png"
-       class="bomb-img">
+  <div class="bomb-core-glow"></div>
 
+<div class="bomb-body">
   <div class="bomb-timer" id="betTimer">15</div>
+</div>
 
-  <div id="multiplier" class="bomb-multi">
-    x1.00
+<div id="multiplier" class="bomb-multi">
+  x1.00
+</div>
+
+
+
+  <div class="bomb-fuse">
+    <div class="spark"></div>
   </div>
 
 </div>
+
 
 
 <div class="stop-wrap">
@@ -1413,8 +1544,6 @@ body.crash-dark{
 </div>
 
 </div>
-
-
 
 
 
