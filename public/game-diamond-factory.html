@@ -1,312 +1,83 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diamond Production Factory</title>
-
-
-<style>
-
-    body{
-  margin:0;
-  font-family: 'Segoe UI', sans-serif;
-  background:
-    radial-gradient(circle at 50% 20%, rgba(0,240,255,.15), transparent 60%),
-    linear-gradient(180deg,#0b0f1a,#000);
-  color:white;
-  overflow:hidden;
-}
-
-/* WRAP */
-.factory-wrap{
-  padding:20px;
-}
-
-/* TOP BAR */
-.factory-topbar{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px 20px;
-  background:rgba(255,255,255,.05);
-  backdrop-filter:blur(8px);
-  border-radius:20px;
-  box-shadow:0 0 30px rgba(0,255,255,.2);
-}
-
-.game-title{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:2px;
-  background:linear-gradient(90deg,#00f0ff,#00aaff);
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-}
-
-.wallet-box{
-  font-size:18px;
-  font-weight:700;
-  display:flex;
-  align-items:center;
-  gap:6px;
-}
-
-/* PANEL */
-.factory-panel{
-  margin-top:40px;
-  display:flex;
-  gap:40px;
-  align-items:center;
-  justify-content:center;
-}
-
-/* FACTORY IMAGE */
-.factory-image{
-  position:relative;
-  width:280px;
-  height:280px;
-}
-
-.factory-glow{
-  position:absolute;
-  width:100%;
-  height:100%;
-  border-radius:50%;
-  background:radial-gradient(circle,
-    rgba(0,255,255,.4),
-    transparent 70%);
-  animation: glowPulse 3s infinite ease-in-out;
-}
-
-.factory-core{
-  position:absolute;
-  width:160px;
-  height:160px;
-  top:50%;
-  left:50%;
-  transform:translate(-50%,-50%);
-  border-radius:30px;
-  background:linear-gradient(180deg,#00eaff,#0055ff);
-  box-shadow:
-    0 0 40px rgba(0,255,255,.8),
-    inset 0 0 20px rgba(255,255,255,.3);
-}
-
-/* INFO */
-.factory-info{
-  width:320px;
-}
-
-.level-box,
-.production-box,
-.storage-box{
-  margin-bottom:12px;
-  font-size:18px;
-  font-weight:700;
-}
-
-.progress-bar{
-  height:14px;
-  background:rgba(255,255,255,.1);
-  border-radius:20px;
-  overflow:hidden;
-  margin:15px 0;
-}
-
-.progress-fill{
-  height:100%;
-  width:0%;
-  background:linear-gradient(90deg,#00f0ff,#0055ff);
-  transition:.5s;
-  box-shadow:0 0 15px rgba(0,255,255,.7);
-}
-
-/* BUTTONS */
-.action-buttons{
-  display:flex;
-  flex-direction:column;
-  gap:12px;
-}
-
-.btn{
-  padding:12px;
-  border:none;
-  border-radius:15px;
-  font-weight:700;
-  cursor:pointer;
-  transition:.3s;
-}
-
-.build-btn{
-  background:linear-gradient(90deg,#00f0ff,#00aaff);
-}
-
-.collect-btn{
-  background:linear-gradient(90deg,#00ff88,#00cc66);
-}
-
-.upgrade-btn{
-  background:linear-gradient(90deg,#ffaa00,#ff6600);
-}
-
-.btn:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 20px rgba(255,255,255,.3);
-}
-
-@keyframes glowPulse{
-  0%{opacity:.4}
-  50%{opacity:.8}
-  100%{opacity:.4}
-}
-
-</style>
-
-
+  <meta charset="utf-8">
+  <title>Diamond Factory</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="/style.css">
 </head>
-<body>
+<body class="factory-body">
 
 <div class="factory-wrap">
 
-  <!-- TOP BAR -->
-  <div class="factory-topbar">
-    <div class="game-title">💎 DIAMOND PRODUCTION FACTORY</div>
-    <div class="wallet-box">
-      <span class="wallet-icon">💎</span>
-      <span id="diamondValue">0</span>
+  <div class="factory-header">
+    <h2>🏭 Diamond Factory</h2>
+    <div class="wallet">
+      💎 <span id="diamondValue">0</span>
     </div>
   </div>
 
-  <!-- MAIN FACTORY PANEL -->
-  <div class="factory-panel">
-
-    <div class="factory-image">
-      <div class="factory-glow"></div>
-      <div class="factory-core"></div>
+  <div class="factory-core">
+    <div class="factory-level">
+      Level: <span id="factoryLevel">1</span>
     </div>
 
-    <div class="factory-info">
-      <div class="level-box">
-        LEVEL <span id="factoryLevel">1</span>
-      </div>
-
-      <div class="production-box">
-        Production Rate:
-        <span id="productionRate">0</span> 💎 / minute
-      </div>
-
-      <div class="storage-box">
-        Storage:
-        <span id="storedAmount">0</span> /
-        <span id="storageCap">0</span>
-      </div>
-
-      <div class="progress-bar">
-        <div class="progress-fill" id="progressFill"></div>
-      </div>
-
-      <div class="action-buttons">
-        <button class="btn build-btn" id="buildBtn">Build Factory</button>
-        <button class="btn collect-btn" id="collectBtn">Collect Diamonds</button>
-        <button class="btn upgrade-btn" id="upgradeBtn">Upgrade Factory</button>
-      </div>
-
+    <div class="factory-storage">
+      Stored: <span id="factoryStorage">0</span> 💎
     </div>
 
+    <button id="collectBtn">Collect</button>
+    <button id="upgradeBtn">Upgrade</button>
   </div>
 
 </div>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
+    
+const socket = io();
 
-const uid = localStorage.getItem("uid");
-
-const socket = io({
-  auth: {
-    uid: uid
-  }
-});
+let factory = {
+  level: 1,
+  storage: 0,
+  lastTick: Date.now()
+};
 
 const levelEl = document.getElementById("factoryLevel");
-const rateEl = document.getElementById("productionRate");
-const storedEl = document.getElementById("storedAmount");
-const capEl = document.getElementById("storageCap");
-const progress = document.getElementById("progressFill");
+const storageEl = document.getElementById("factoryStorage");
 
+function updateUI(){
+  levelEl.textContent = factory.level;
+  storageEl.textContent = factory.storage;
+}
 
-socket.on("factory-state",(data)=>{
+setInterval(()=>{
+  const now = Date.now();
+  const diff = now - factory.lastTick;
 
-  const buildBtn = document.getElementById("buildBtn");
-  const collectBtn = document.getElementById("collectBtn");
-  const upgradeBtn = document.getElementById("upgradeBtn");
-
-  if(!data){
-    // 🔥 chưa build
-    levelEl.textContent = "-";
-    rateEl.textContent = "0";
-    storedEl.textContent = "0";
-    capEl.textContent = "0";
-    progress.style.width = "0%";
-
-    buildBtn.style.display = "block";
-    collectBtn.style.display = "none";
-    upgradeBtn.style.display = "none";
-
-    return;
+  if(diff >= 3000){
+    const produce = factory.level * 2;
+    factory.storage += produce;
+    factory.lastTick = now;
+    updateUI();
   }
 
-  // 🔥 đã build
-  levelEl.textContent = data.level;
-  rateEl.textContent = data.productionRate;
-  storedEl.textContent = data.stored;
-  capEl.textContent = data.storageCap;
+},1000);
 
-  const percent = (data.stored / data.storageCap) * 100;
-  progress.style.width = percent + "%";
-
-  buildBtn.style.display = "none";
-  collectBtn.style.display = "block";
-  upgradeBtn.style.display = "block";
-});
-
-
-
-document.getElementById("buildBtn").onclick = ()=>{
-  socket.emit("factory-build");
+document.getElementById("collectBtn")
+.onclick = ()=>{
+  socket.emit("factory-collect", factory.storage);
+  factory.storage = 0;
+  updateUI();
 };
 
-document.getElementById("collectBtn").onclick = ()=>{
-  socket.emit("factory-collect");
-};
-
-document.getElementById("upgradeBtn").onclick = ()=>{
+document.getElementById("upgradeBtn")
+.onclick = ()=>{
   socket.emit("factory-upgrade");
 };
 
-socket.on("coin-update",(d)=>{
-  document.getElementById("diamondValue").textContent = d.coins;
-});
-
-
-
-socket.on("factory-error",(d)=>{
-  alert("Factory Error: " + d.message);
-});
-
-
-
-socket.on("connect", ()=>{
-  socket.emit("factory-get");
-
-  setInterval(()=>{
-    socket.emit("factory-get");
-  }, 3000);
-});
 
 </script>
-
 
 
 

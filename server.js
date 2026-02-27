@@ -615,34 +615,7 @@ function loadInbox(){
 
 
 
-// ================================
-// 💎 DIAMOND FACTORY DATA
-// ================================
-const FACTORY_FILE =
-  "/opt/render/project/data/diamond_factory.json";
 
-function loadFactories(){
-  try{
-    if(!fs.existsSync(FACTORY_FILE)) return {};
-    return JSON.parse(fs.readFileSync(FACTORY_FILE,"utf8"));
-  }catch(e){
-    console.error("❌ Load factory failed", e);
-    return {};
-  }
-}
-
-function saveFactories(db){
-  try{
-    fs.writeFileSync(
-      FACTORY_FILE,
-      JSON.stringify(db,null,2)
-    );
-  }catch(e){
-    console.error("❌ Save factory failed", e);
-  }
-}
-
-let factoryDB = loadFactories();
 
 
 
@@ -762,42 +735,6 @@ Object.values(animalDB).forEach(list=>{
 saveAnimals(animalDB);
 
 
-
-
-// ================================
-// 🏭 FACTORY CONFIG
-// ================================
-const FACTORY_CONFIG = {
-  1: { cost:0,    production:2,  storage:100 },
-  2: { cost:500,  production:5,  storage:200 },
-  3: { cost:1500, production:12, storage:400 },
-  4: { cost:5000, production:25, storage:800 },
-  5: { cost:15000,production:60, storage:2000 }
-};
-
-
-// ================================
-// ⚙️ UPDATE FACTORY PRODUCTION
-// ================================
-function updateFactory(factory){
-  if(!factory) return;
-
-  const now = Date.now();
-  const diff = now - (factory.lastUpdate || now);
-
-  const minutes = diff / 60000;
-
-  const produced = Math.floor(
-    minutes * factory.productionRate
-  );
-
-  factory.stored = Math.min(
-    factory.storageCap,
-    (factory.stored || 0) + produced
-  );
-
-  factory.lastUpdate = now;
-}
 
 
 // ================================
@@ -2167,123 +2104,51 @@ if (meNow?.role === "admin" && timeRaceRound) {
 
 
 // ================================
-// 🏭 FACTORY STATE ON CONNECT
+// 🏭 DIAMOND FACTORY
 // ================================
-socket.on("factory-get", ()=>{
+socket.on("factory-collect", amount => {
 
   const uid = socket.data.uid;
   if(!uid) return;
-
-  const factory = factoryDB[uid];
-
-  if(!factory){
-    return socket.emit("factory-state", null);
-  }
-
-  updateFactory(factory);
-  saveFactories(factoryDB);
-
-  socket.emit("factory-state", factory);
-});
-
-
-
-socket.on("factory-build", ()=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  if(factoryDB[uid]){
-    return socket.emit("factory-error",{message:"ALREADY_BUILT"});
-  }
-
-  factoryDB[uid] = {
-    level:1,
-    productionRate: FACTORY_CONFIG[1].production,
-    storageCap: FACTORY_CONFIG[1].storage,
-    stored:0,
-    lastUpdate: Date.now()
-  };
-
-  saveFactories(factoryDB);
-
-  socket.emit("factory-state", factoryDB[uid]);
-});
-
-
-
-
-socket.on("factory-collect", ()=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const factory = factoryDB[uid];
-  if(!factory) return;
-
-  updateFactory(factory);
-
-  const reward = factory.stored || 0;
-
-  if(reward <= 0){
-    return socket.emit("factory-error",{message:"EMPTY"});
-  }
 
   const users = loadUsers();
   const me = users[uid];
   if(!me?.profile) return;
 
-  me.profile.coins += reward;
-  factory.stored = 0;
+  me.profile.coins += Number(amount || 0);
 
   saveUsers(users);
-  saveFactories(factoryDB);
-
   emitCoinUpdate(uid);
-
-  socket.emit("factory-state", factory);
 });
-
-
 
 socket.on("factory-upgrade", ()=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
 
-  const factory = factoryDB[uid];
-  if(!factory) return;
-
-  const nextLevel = factory.level + 1;
-
-  if(!FACTORY_CONFIG[nextLevel]){
-    return socket.emit("factory-error",{message:"MAX_LEVEL"});
-  }
-
   const users = loadUsers();
   const me = users[uid];
   if(!me?.profile) return;
 
-  const cost = FACTORY_CONFIG[nextLevel].cost;
+  const upgradeCost = 500;
 
-  if(me.profile.coins < cost){
-    return socket.emit("factory-error",{message:"NOT_ENOUGH_COIN"});
+  if(me.profile.coins < upgradeCost){
+    socket.emit("factory-error",{
+      message:"NOT_ENOUGH_COIN"
+    });
+    return;
   }
 
-  me.profile.coins -= cost;
-
-  factory.level = nextLevel;
-  factory.productionRate =
-    FACTORY_CONFIG[nextLevel].production;
-  factory.storageCap =
-    FACTORY_CONFIG[nextLevel].storage;
+  me.profile.coins -= upgradeCost;
+  me.factoryLevel = (me.factoryLevel || 1) + 1;
 
   saveUsers(users);
-  saveFactories(factoryDB);
-
   emitCoinUpdate(uid);
 
-  socket.emit("factory-state", factory);
+  socket.emit("factory-upgraded",{
+    level: me.factoryLevel
+  });
+
 });
 
 
