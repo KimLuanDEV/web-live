@@ -474,7 +474,7 @@ body{
 
 .collectTruck{
   position:absolute;
-  width:90px;
+  width:250px;
   cursor:pointer;
   z-index:8;
   transition:.25s ease;
@@ -572,7 +572,6 @@ body{
 
 <div class="actionBar">
   <div class="actions">
-    <button class="btn primary" onclick="collect()">Thu hoạch</button>
     <button class="btn ghost" onclick="hire()">Thuê</button>
     <button class="btn danger" onclick="upgrade()">Nâng cấp</button>
   </div>
@@ -595,11 +594,11 @@ const socket = io({
 
 
 const TRUCK_POS = {
-  1: { top:"58%", left:"22%" },
-  2: { top:"58%", left:"24%" },
-  3: { top:"58%", left:"26%" },
-  4: { top:"58%", left:"28%" },
-  5: { top:"58%", left:"28%" }
+  1: { top:"76%", left:"20%" },
+  2: { top:"76%", left:"20%" },
+  3: { top:"76%", left:"20%" },
+  4: { top:"76%", left:"20%" },
+  5: { top:"76%", left:"20%" }
 };
 
 
@@ -751,8 +750,6 @@ if(truck){
   truck.style.top  = cfg.top;
   truck.style.left = cfg.left;
 }
-
-
 
 
   // ===== STORAGE TEXT + PROGRESS =====
