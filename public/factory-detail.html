@@ -33,22 +33,32 @@ body{
     linear-gradient(180deg, var(--bg1), var(--bg0));
   color:var(--txt);
   font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial;
+  overflow-x:hidden;
 }
 
 /* ===== TOPBAR (premium) ===== */
 .topbar{
-  position:sticky;
+  position:absolute;   /* 🔥 overlay */
   top:0;
-  z-index:50;
-  padding: calc(10px + var(--safeTop)) 14px 10px;
+  left:0;
+  right:0;
+  z-index:100;
+
+  padding: calc(14px + var(--safeTop)) 16px 14px;
+
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  background:
-    linear-gradient(180deg, rgba(10,16,24,.88), rgba(5,8,12,.58));
-  backdrop-filter: blur(14px);
-  border-bottom:1px solid rgba(0,240,255,.15);
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.65),
+    rgba(0,0,0,.35),
+    rgba(0,0,0,0)
+  );
+
+  backdrop-filter: blur(10px);
+  border:none;
 }
 
 .back{
@@ -136,7 +146,7 @@ body{
   display:block;
   width:100vw;          /* ✅ full ngang viewport */
   max-width:100%;
-  height:450px;         /* chỉnh tùy bạn */
+  height:70vh;        /* chỉnh tùy bạn */
   object-fit:cover;     /* ✅ ảnh cover full */
   object-position:center;
   transform:none;       /* ✅ bỏ scale để khỏi bị crop khó kiểm soát */
