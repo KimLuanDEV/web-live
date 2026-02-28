@@ -1464,7 +1464,7 @@ if(storagePanel){
 
 
   // ===== IMAGE =====
-  const MAX_FACTORY_IMG_LEVEL = 5;
+  const MAX_FACTORY_IMG_LEVEL = 15;
   const displayLevel = Math.min(level, MAX_FACTORY_IMG_LEVEL);
 
   const img = document.getElementById("factoryImg");
@@ -1486,7 +1486,7 @@ if(img){
 
     img.src = "/assets/ui/factory-lv" + displayLevel + ".png";
     img.onerror = () => {
-      img.src = "/assets/ui/factory-lv5.png";
+      img.src = "/assets/ui/factory-lv15.png";
     };
 
     document.getElementById("fireOverlay")
