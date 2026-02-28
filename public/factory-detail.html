@@ -815,28 +815,33 @@ body{
       ENGINEER UPGRADE
     </div>
 
-    <div class="upgradeInfo">
+<div class="upgradeInfo">
 
-      <div class="uRow">
-        <span>Current Level</span>
-        <b>LV <span id="uLevelNow">1</span></b>
-      </div>
+  <div class="uRow">
+    <span>Current Level</span>
+    <b>LV <span id="uLevelNow">1</span></b>
+  </div>
 
-      <div class="uRow">
-        <span>Current Rate</span>
-        <b><span id="uRateNow">0</span> 💎/s</b>
-      </div>
+  <div class="uRow next">
+    <span>Next Level</span>
+    <b>LV <span id="uLevelNext">2</span></b>
+  </div>
 
-      <div class="uRow next">
-        <span>Next Rate</span>
-        <b><span id="uRateNext">0</span> 💎/s</b>
-      </div>
+  <div class="uRow">
+    <span>Max Workers</span>
+    <b><span id="uWorkerNow">1</span></b>
+  </div>
 
-      <div class="uCost">
-        Cost: <span id="uCost">0</span> 💎
-      </div>
+  <div class="uRow next">
+    <span>Next Max Workers</span>
+    <b><span id="uWorkerNext">2</span></b>
+  </div>
 
-    </div>
+  <div class="uCost">
+    Cost: <span id="uCost">0</span> 💎
+  </div>
+
+</div>
 
     <div class="uActions">
       <button class="uBtn cancel" onclick="closeUpgrade()">Cancel</button>
@@ -1294,16 +1299,20 @@ function upgrade(){
     document.getElementById("levelVal").textContent
   );
 
-const rateNow = parseFloat(
-  document.getElementById("rateVal").textContent
-) || 0;
+  const workerText = document.getElementById("workerVal").textContent;
+  const maxWorkers = Number(workerText.split("/")[1] || 1);
 
-  const nextRate = (rateNow * 1.3).toFixed(1);
+  const nextLevel = level + 1;
+  const nextMaxWorkers = maxWorkers + 1;
+
   const cost = level * 300;
 
   document.getElementById("uLevelNow").textContent = level;
-  document.getElementById("uRateNow").textContent = rateNow;
-  document.getElementById("uRateNext").textContent = nextRate;
+  document.getElementById("uLevelNext").textContent = nextLevel;
+
+  document.getElementById("uWorkerNow").textContent = maxWorkers;
+  document.getElementById("uWorkerNext").textContent = nextMaxWorkers;
+
   document.getElementById("uCost").textContent = cost;
 
   document.getElementById("upgradeModal")
