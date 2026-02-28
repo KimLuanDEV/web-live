@@ -1750,7 +1750,7 @@ socket.on("factory-repaired",(data)=>{
   document.getElementById("repairTimer").textContent = "";
 
   document.getElementById("repairFill").style.width = "0%";
-  
+
 
   document.getElementById("fireOverlay")
     ?.classList.remove("show");
@@ -1795,23 +1795,25 @@ function startRepairCountdown(endAt){
 
   clearInterval(repairInterval);
 
-  const total = endAt - Date.now();
+  // 🔥 Luôn tính dựa trên 15s cố định (server logic)
+  const REPAIR_DURATION = 15000; 
 
   repairInterval = setInterval(()=>{
 
     const left = Math.max(0, endAt - Date.now());
-    const percent = 100 - (left / total) * 100;
 
-    fill.style.width = percent + "%";
+    // % = thời gian đã qua / 15s
+    const percent = 100 - (left / REPAIR_DURATION) * 100;
+
+    fill.style.width = Math.min(100, percent) + "%";
 
     if(left <= 0){
-      clearInterval(repairInterval);
       fill.style.width = "100%";
+      clearInterval(repairInterval);
     }
 
   },100);
 }
-
 
 
 socket.on("factory-repair-start",(data)=>{

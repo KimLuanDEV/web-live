@@ -246,7 +246,7 @@ setInterval(()=>{
 // ================================
 
 const FIRE_INTERVAL = 60000; // 60s 
-const FIRE_CHANCE   = 1;           // 50% mỗi giờ
+const FIRE_CHANCE   = 1;           // 100% mỗi 1 phút
 
 setInterval(()=>{
 
