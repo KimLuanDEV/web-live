@@ -898,6 +898,72 @@ body{
 
 
 
+/* =========================
+   🔧 REPAIR HUD LEVEL 10
+   ========================= */
+
+.repairHUD{
+  position:absolute;
+  bottom:80px;
+  left:50%;
+  transform:translateX(-50%);
+  width:260px;
+
+  padding:14px 16px;
+  border-radius:18px;
+
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255,120,0,.2), transparent 60%),
+    linear-gradient(180deg, rgba(30,10,0,.95), rgba(10,0,0,.95));
+
+  border:1px solid rgba(255,120,0,.4);
+
+  box-shadow:
+    0 0 40px rgba(255,80,0,.4),
+    0 20px 50px rgba(0,0,0,.8);
+
+  display:none;
+  z-index:60;
+}
+
+.fireOverlay.show .repairHUD{
+  display:block;
+}
+
+.repairTitle{
+  text-align:center;
+  font-size:12px;
+  font-weight:900;
+  letter-spacing:1px;
+  color:#ffcc66;
+  text-shadow:0 0 15px rgba(255,120,0,.6);
+}
+
+.repairBar{
+  margin-top:10px;
+  height:10px;
+  background:rgba(255,255,255,.08);
+  border-radius:999px;
+  overflow:hidden;
+}
+
+.repairBarFill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#ff6600,#ffcc66);
+  box-shadow:0 0 20px rgba(255,120,0,.7);
+  transition:.25s ease;
+}
+
+.repairTime{
+  margin-top:8px;
+  text-align:center;
+  font-weight:1000;
+  font-size:14px;
+  color:#fff;
+  text-shadow:0 0 15px rgba(255,120,0,.6);
+}
+
 
 </style>
 </head>
@@ -927,14 +993,17 @@ body{
 <div class="fireOverlay" id="fireOverlay">
   <div class="fireGlow"></div>
   <div class="fireText">FACTORY BURNED</div>
-  <div id="repairTimer" style="
-    position:absolute;
-    bottom:60px;
-    font-weight:1000;
-    font-size:18px;
-    color:#ffcc66;
-    text-shadow:0 0 20px rgba(255,120,0,.7);
-  "></div>
+
+<div class="repairHUD" id="repairHUD">
+  <div class="repairTitle">🔧 REPAIR IN PROGRESS</div>
+
+  <div class="repairBar">
+    <div class="repairBarFill" id="repairBarFill"></div>
+  </div>
+
+  <div class="repairTime" id="repairTimer">0s</div>
+</div>
+  
 </div>
 
 
@@ -1908,23 +1977,30 @@ function showNotify(message,type="warn"){
 
 
 
-
 function startRepairCountdown(endAt){
 
   const timer = document.getElementById("repairTimer");
+  const bar   = document.getElementById("repairBarFill");
 
   clearInterval(repairInterval);
 
+  const total = endAt - Date.now();
+
   repairInterval = setInterval(()=>{
 
-    const left = Math.max(0, endAt - Date.now());
-    const sec = Math.ceil(left/1000);
+    const now  = Date.now();
+    const left = Math.max(0, endAt - now);
+    const sec  = Math.ceil(left / 1000);
 
-    timer.textContent = "Repairing: " + sec + "s";
+    const percent = 100 - (left / total) * 100;
+
+    timer.textContent = sec + "s";
+    bar.style.width = Math.min(100, percent) + "%";
 
     if(left <= 0){
       clearInterval(repairInterval);
-      timer.textContent = "";
+      bar.style.width = "100%";
+      timer.textContent = "DONE";
     }
 
   },200);
