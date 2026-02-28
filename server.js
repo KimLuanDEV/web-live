@@ -269,11 +269,15 @@ setInterval(()=>{
         console.log("🔥 FIRE at factory", uid, index);
 
         // 🔥 RESET NHÀ MÁY
-        f.workers = 0;
-        f.stored  = 0;
-        f.active  = false;
-        f.burned  = true;
-        f.fireAt  = Date.now();
+f.workers = 0;
+f.stored  = 0;
+
+f.lastCollectAt = Date.now();   // 🔥 reset tick
+f.lastTickAt    = Date.now();   // nếu bạn có dùng
+
+f.active  = false;
+f.burned  = true;
+f.fireAt  = Date.now();
 
         changed = true;
 
@@ -314,10 +318,16 @@ setInterval(()=>{
 
       if(Date.now() >= f.repairEndAt){
 
-        f.repairing = false;
-        f.repairEndAt = null;
-        f.burned = false;
-        f.active = true;
+f.repairing = false;
+f.repairEndAt = null;
+
+f.burned = false;
+f.active = true;
+
+// 🔥 reset lại chu kỳ sản xuất
+f.stored = 0;
+f.lastCollectAt = Date.now();
+f.lastTickAt    = Date.now();
 
         changed = true;
 
