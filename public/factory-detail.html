@@ -1775,7 +1775,7 @@ function activateFireMode(){
   .classList.add("show");  
 
 
-  
+
 document.querySelector(".storagePanel")
   ?.style.setProperty("display","none");
 
@@ -1887,7 +1887,7 @@ socket.on("factory-repair-start",(data)=>{
   // ▶ bắt đầu progress bar
   startRepairCountdown(data.repairEndAt);
 
-  showNotify("👷 Worker đang sửa nhà máy...","warn");
+  showNotify("👷 Worker is repairing the factory...","warn");
 });
 
 
