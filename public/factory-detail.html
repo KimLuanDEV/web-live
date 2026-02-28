@@ -2280,39 +2280,42 @@ function openFinance(){
 
   const f = currentFactory;
 
-  const level   = f.level || 1;
-  const workers = f.workers || 0;
+  const workers  = Number(f.workers || 0);
+  const baseRate = Number(f.baseRate || 0);
 
-  const baseRate = f.baseRate || (1 * level);
+  // =========================
+  // 💎 GROSS PROFIT / SECOND
+  // =========================
+  const grossPerSec = baseRate * workers;
 
-  // 1 ngày = 86400 giây
-  const dailyProduction =
-    baseRate * workers * 86400;
+  // =========================
+  // 🔥 90% COST MODEL
+  // =========================
+  const operatingPerSec = grossPerSec * 0.5; // 50%
+  const salaryPerSec    = grossPerSec * 0.4; // 40%
+  const netPerSec       = grossPerSec * 0.1; // 10%
 
-  const dailyFee = f.dailyFee || 200;
+  // =========================
+  // 📅 1 DAY = 86400 seconds
+  // =========================
+  const dailyNet = netPerSec * 86400;
 
-  const salary =
-    (f.workerSalary || 50) * workers;
+  // =========================
+  // UI UPDATE
+  // =========================
+  document.getElementById("fNet").textContent =
+    Math.floor(dailyNet).toLocaleString() + " 💎";
 
-  const net =
-    dailyProduction - dailyFee - salary;
+  document.getElementById("fOpSec").textContent =
+    operatingPerSec.toFixed(2) + " 💎";
 
-  document.getElementById("fNet")
-    .textContent =
-      Math.floor(net).toLocaleString() + " 💎";
+  document.getElementById("fSalSec").textContent =
+    salaryPerSec.toFixed(2) + " 💎";
 
-      document.getElementById("fOpSec").textContent =
-  factory.operatingCostPerSec.toFixed(3) + " 💎";
-
-document.getElementById("fSalSec").textContent =
-  (factory.salaryPerSec * factory.workers).toFixed(3) + " 💎";
-
-
-
-  // 🔥 màu lợi nhuận
+  // màu lợi nhuận
   const netEl = document.getElementById("fNet");
 
-  if(net > 0){
+  if(netPerSec > 0){
     netEl.style.color = "#00f0ff";
   }else{
     netEl.style.color = "#ff4d4d";
@@ -2321,6 +2324,9 @@ document.getElementById("fSalSec").textContent =
   document.getElementById("financeModal")
     .classList.add("show");
 }
+
+
+
 
 function closeFinance(){
   document.getElementById("financeModal")
