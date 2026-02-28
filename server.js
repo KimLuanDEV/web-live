@@ -289,17 +289,29 @@ setInterval(()=>{
 
         console.log("🔥 FIRE at factory", uid, index);
 
-        // 🔥 RESET NHÀ MÁY
+// 🔥 RESET NHÀ MÁY
 f.workers = 0;
 f.stored  = 0;
 
-f.lastUpdate    = Date.now();   // 🔥 FIX HỒI SINH KIM CƯƠNG
+// 🔻 GIẢM 1 LEVEL (không xuống dưới 1)
+f.level ||= 1;
+if(f.level > 1){
+  f.level -= 1;
+
+  // 🔧 cập nhật lại chỉ số theo level mới
+  f.storage  = 100 * f.level;
+  f.baseRate = 1 * f.level;
+}
+
+// 🔥 reset timer
+f.lastUpdate    = Date.now();
 f.lastCollectAt = Date.now();
 f.lastTickAt    = Date.now();
 
 f.active  = false;
 f.burned  = true;
 f.fireAt  = Date.now();
+
 
         changed = true;
 
