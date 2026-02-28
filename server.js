@@ -149,115 +149,6 @@ saveFactories(factoryDB);
 
 
 
-// ================================
-// 🏭 FACTORY DAILY FEE ENGINE
-// ================================
-setInterval(()=>{
-
-  const users = loadUsers();
-  let changed = false;
-
-  Object.keys(factoryDB).forEach(uid=>{
-
-    const user = users[uid];
-    if(!user?.profile) return;
-
-    factoryDB[uid].forEach(f=>{
-
-      if(!f || f.empty) return;
-
-      // 🔧 bổ sung field cho factory cũ
-      if(typeof f.dailyFee === "undefined"){
-        f.dailyFee = 200;
-        f.nextFeeAt = Date.now() + ONE_DAY;
-        f.active = true;
-        changed = true;
-      }
-
-      // ⏰ đến hạn thu phí
-      if(Date.now() >= f.nextFeeAt){
-
-        if(user.profile.coins >= f.dailyFee){
-
-          user.profile.coins -= f.dailyFee;
-          f.nextFeeAt = Date.now() + ONE_DAY;
-          f.active = true;
-
-        }else{
-
-          // ❌ không đủ tiền → ngừng hoạt động
-          f.active = false;
-
-        }
-
-        changed = true;
-      }
-
-    });
-
-  });
-
-  if(changed){
-    saveUsers(users);
-    saveFactories(factoryDB);
-  }
-
-}, 60000); // check mỗi 1 phút
-
-
-
-// ================================
-// 💼 WORKER SALARY ENGINE
-// ================================
-setInterval(()=>{
-
-  const users = loadUsers();
-  let changed = false;
-
-  Object.keys(factoryDB).forEach(uid=>{
-
-    const user = users[uid];
-    if(!user?.profile) return;
-
-    factoryDB[uid].forEach(f=>{
-
-      if(!f || f.empty) return;
-      if(!f.workers || f.workers <= 0) return;
-
-      f.workerSalary ||= 50;
-      f.nextSalaryAt ||= Date.now() + ONE_DAY;
-
-      if(Date.now() >= f.nextSalaryAt){
-
-        const totalSalary =
-          f.workers * f.workerSalary;
-
-        if(user.profile.coins >= totalSalary){
-
-          user.profile.coins -= totalSalary;
-          f.nextSalaryAt = Date.now() + ONE_DAY;
-
-        }else{
-
-          // ❌ Không đủ lương → Worker nghỉ hết
-          f.workers = 0;
-          f.active = false;
-
-        }
-
-        changed = true;
-      }
-
-    });
-
-  });
-
-  if(changed){
-    saveUsers(users);
-    saveFactories(factoryDB);
-  }
-
-}, 60000);
 
 
 
@@ -333,6 +224,69 @@ f.fireAt  = Date.now();
   }
 
 }, FIRE_INTERVAL);
+
+
+
+
+// ================================
+// ⏱️ FACTORY COST ENGINE (PER SECOND)
+// ================================
+setInterval(()=>{
+
+  const users = loadUsers();
+  let changed = false;
+
+  Object.keys(factoryDB).forEach(uid=>{
+
+    const user = users[uid];
+    if(!user?.profile) return;
+
+    factoryDB[uid].forEach(f=>{
+
+      if(!f || f.empty) return;
+      if(!f.active) return;
+
+      // 🔧 init mặc định nếu chưa có
+      f.operatingCostPerSec ||= 0.02 * f.level;
+      f.salaryPerSec ||= 0.01 * f.level;
+
+      const totalCost =
+        f.operatingCostPerSec +
+        (f.workers || 0) * f.salaryPerSec;
+
+      if(user.profile.coins >= totalCost){
+
+        user.profile.coins = Math.floor(
+          Number(user.profile.coins || 0) - totalCost
+        );
+
+      }else{
+
+        // ❌ Hết tiền → tắt nhà máy
+        f.active = false;
+        f.workers = 0;
+
+        emitToUser(uid,"factory-stopped",{
+          message:"💸 Factory stopped due to insufficient funds"
+        });
+      }
+
+      changed = true;
+
+    });
+
+  });
+
+  if(changed){
+    saveUsers(users);
+    saveFactories(factoryDB);
+  }
+
+}, 1000);
+
+
+
+
 
 
 

@@ -1163,6 +1163,18 @@ body{
       <b id="fFee">0 💎</b>
     </div>
 
+
+    <div class="uRow">
+  <span>Operating Cost / sec</span>
+  <b id="fOpSec">0 💎</b>
+</div>
+
+<div class="uRow">
+  <span>Worker Salary / sec</span>
+  <b id="fSalSec">0 💎</b>
+</div>
+
+
     <div class="uActions">
       <button class="uBtn cancel"
         onclick="closeFinance()">Close</button>
@@ -2252,6 +2264,14 @@ function openFinance(){
   document.getElementById("fFee")
     .textContent =
       dailyFee.toLocaleString() + " 💎";
+
+      document.getElementById("fOpSec").textContent =
+  factory.operatingCostPerSec.toFixed(3) + " 💎";
+
+document.getElementById("fSalSec").textContent =
+  (factory.salaryPerSec * factory.workers).toFixed(3) + " 💎";
+
+  
 
   // 🔥 màu lợi nhuận
   const netEl = document.getElementById("fNet");
