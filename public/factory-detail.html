@@ -800,6 +800,43 @@ body{
 
 
 
+<!-- =========================
+     👷 HIRE WORKER MODAL
+     ========================= -->
+<div class="overlay" id="hireModal">
+
+  <div class="upgradeModalBox">
+
+    <div class="upgradeTitle">
+      HIRE WORKER
+    </div>
+
+    <div class="upgradeInfo">
+
+      <div class="uRow">
+        <span>Current Workers</span>
+        <b><span id="hWorkerNow">0</span></b>
+      </div>
+
+      <div class="uRow next">
+        <span>After Hire</span>
+        <b><span id="hWorkerNext">0</span></b>
+      </div>
+
+      <div class="uCost">
+        Cost: <span id="hCost">0</span> 💎
+      </div>
+
+    </div>
+
+    <div class="uActions">
+      <button class="uBtn cancel" onclick="closeHire()">Cancel</button>
+      <button class="uBtn confirm" onclick="confirmHire()">Hire</button>
+    </div>
+
+  </div>
+</div>
+
 
 
 
@@ -1289,7 +1326,44 @@ function collect(){
 
 
 function hire(){
+
+  if(!factory) return;
+
+  const workers = Number(factory.workers || 0);
+  const maxWorkers = Number(factory.maxWorkers || 1);
+
+  if(workers >= maxWorkers){
+    alert("Max workers reached");
+    return;
+  }
+
+  const nextWorkers = workers + 1;
+
+  // 🔥 giá thuê (bạn chỉnh theo server nếu khác)
+ const cost = factory.workerCost || 150;
+
+  document.getElementById("hWorkerNow").textContent =
+    workers + "/" + maxWorkers;
+
+  document.getElementById("hWorkerNext").textContent =
+    nextWorkers + "/" + maxWorkers;
+
+  document.getElementById("hCost").textContent = cost;
+
+  document.getElementById("hireModal")
+    .classList.add("show");
+}
+
+
+
+function closeHire(){
+  document.getElementById("hireModal")
+    .classList.remove("show");
+}
+
+function confirmHire(){
   socket.emit("factory-hire-worker",{ index });
+  closeHire();
 }
 
 
