@@ -1031,7 +1031,8 @@ function computePreviewStored(){
   if(!factory) return 0;
 
   // nếu không hoạt động / không có worker -> đứng yên
-  if(factory.active === false) return Number(factory.stored || 0);
+  if(factory.burned === true)
+  return Number(factory.stored || 0);
   if(!factory.workers || factory.workers <= 0) return Number(factory.stored || 0);
 
   const stored   = Number(factory.stored || 0);
@@ -1099,7 +1100,8 @@ function render(){
     Math.max(0, (shownStored / storage) * 100)
   );
 
-  const active = factory.active !== false;
+  const burned = factory.burned === true;
+  const active = !burned && factory.active !== false;
 
 
   // ===== IMAGE =====
@@ -1237,12 +1239,16 @@ if(truck){
 
   const activeText = document.getElementById("activeText");
   if(activeText){
-    activeText.textContent = active ? "ACTIVE" : "INACTIVE";
+    if(burned){
+  activeText.textContent = "BURNED";
+}else{
+  activeText.textContent = active ? "ACTIVE" : "INACTIVE";
+}
   }
 
   const dot = document.getElementById("activeDot");
   if(dot){
-    dot.className = active ? "dot" : "dot off";
+    dot.className = (!burned && active) ? "dot" : "dot off";
   }
 
 
@@ -1298,6 +1304,8 @@ function renderWorkers(){
 
   if(!factory) return;
 
+  if(factory.burned) return;
+
   const workers = Number(factory.workers ?? 0);
   const count   = Math.min(workers, 6);
 
@@ -1320,12 +1328,24 @@ function renderWorkers(){
 }
 
 function collect(){
+
+  if(factory?.burned){
+    alert("Factory is burned!");
+    return;
+  }
+
   socket.emit("factory-collect",{ index });
 }
 
 
 
 function hire(){
+
+
+  if(factory?.burned){
+  alert("Factory is burned!");
+  return;
+}
 
   if(!factory) return;
 
@@ -1368,6 +1388,12 @@ function confirmHire(){
 
 
 function upgrade(){
+
+if(factory?.burned){
+  alert("Factory is burned!");
+  return;
+}
+
 
   const level = Number(
     document.getElementById("levelVal").textContent
@@ -1416,6 +1442,19 @@ socket.on("factory-error",(d)=>{
   alert(d.message);
 });
 
+
+
+socket.on("factory-fire",(data)=>{
+
+  alert("🔥 NHÀ MÁY BỊ CHÁY!");
+
+  document.getElementById("activeDot")
+    .classList.add("off");
+
+  document.getElementById("activeText")
+    .textContent = "BURNED";
+
+});
 
 </script>
 </body>

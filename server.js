@@ -102,6 +102,25 @@ let factoryDB = loadFactories();
 
 
 // ================================
+// 🔥 INIT FIRE FIELD (SAFE)
+// ================================
+Object.keys(factoryDB).forEach(uid=>{
+  factoryDB[uid].forEach(f=>{
+    if(!f || f.empty) return;
+
+    if(typeof f.burned === "undefined")
+      f.burned = false;
+
+    if(typeof f.fireAt === "undefined")
+      f.fireAt = null;
+  });
+});
+
+saveFactories(factoryDB);
+
+
+
+// ================================
 // 🏭 FACTORY DAILY FEE ENGINE
 // ================================
 setInterval(()=>{
@@ -210,6 +229,65 @@ setInterval(()=>{
   }
 
 }, 60000);
+
+
+
+
+// ================================
+// 🔥 FACTORY FIRE DISASTER ENGINE
+// ================================
+
+const FIRE_INTERVAL = 60 * 60 * 1000; // 60 phút
+const FIRE_CHANCE   = 0.15;           // 15% mỗi giờ
+
+setInterval(()=>{
+
+  const users = loadUsers();
+  let changed = false;
+
+  Object.keys(factoryDB).forEach(uid=>{
+
+    const user = users[uid];
+    if(!user?.profile) return;
+
+    factoryDB[uid].forEach((f, index)=>{
+
+      if(!f || f.empty) return;
+      if(f.burned) return;        // đã cháy rồi bỏ qua
+      if(!f.active) return;       // không hoạt động thì không cháy
+
+      if(Math.random() < FIRE_CHANCE){
+
+        console.log("🔥 FIRE at factory", uid, index);
+
+        // 🔥 RESET NHÀ MÁY
+        f.workers = 0;
+        f.stored  = 0;
+        f.active  = false;
+        f.burned  = true;
+        f.fireAt  = Date.now();
+
+        changed = true;
+
+        // 🔔 Emit realtime cho user
+        emitToUser(uid,"factory-fire",{
+          index,
+          message:"🔥 Nhà máy đã bị hỏa hoạn!"
+        });
+
+      }
+
+    });
+
+  });
+
+  if(changed){
+    saveUsers(users);
+    saveFactories(factoryDB);
+  }
+
+}, FIRE_INTERVAL);
+
 
 
 
@@ -2268,15 +2346,17 @@ factoryDB[uid] ||= [
 // 🔥 TÍNH SẢN LƯỢNG SERVER-SIDE
 factoryDB[uid].forEach(f=>{
 
-  if(
-    f.empty ||
-    f.active === false ||
-    !f.workers ||
-    f.workers <= 0
-  ) return;
+if(
+  f.empty ||
+  f.burned === true ||
+  f.active === false ||
+  !f.workers ||
+  f.workers <= 0
+) return;
 
   const now = Date.now();
-  const seconds = Math.floor((now - f.lastUpdate)/1000);
+  f.lastUpdate ||= Date.now();
+const seconds = Math.floor((now - f.lastUpdate)/1000);
 
   if(seconds > 0){
 
@@ -2321,6 +2401,13 @@ socket.on("factory-hire-worker", ({ index })=>{
   const f = factoryDB[uid][index];
 
   if(!f || f.empty) return;
+
+if(f.burned){
+  socket.emit("factory-error",{
+    message:"FACTORY_BURNED"
+  });
+  return;
+}
 
   f.workers ||= 0;
   f.maxWorkers ||= 1;
@@ -2396,9 +2483,17 @@ socket.on("factory-collect", ({ index })=>{
 
   if(!f || f.empty) return;
 
+  if(f.burned){
+  socket.emit("factory-error",{
+    message:"FACTORY_BURNED"
+  });
+  return;
+}
+
   // 🔥 TÍNH LẠI SERVER-SIDE TRƯỚC KHI THU
   const now = Date.now();
-  const seconds = Math.floor((now - f.lastUpdate)/1000);
+  f.lastUpdate ||= Date.now();
+const seconds = Math.floor((now - f.lastUpdate)/1000);
 
   if(seconds > 0){
 
@@ -2533,11 +2628,20 @@ if(f.active === false){
   
   if(!f || f.empty) return;
 
+if(f.burned){
+  socket.emit("factory-error",{
+    message:"FACTORY_BURNED"
+  });
+  return;
+}
+
   // ============================
   // 🔥 1️⃣ THU TRƯỚC KHI NÂNG CẤP
   // ============================
   const now = Date.now();
-  const seconds = Math.floor((now - f.lastUpdate)/1000);
+
+  f.lastUpdate ||= Date.now();
+const seconds = Math.floor((now - f.lastUpdate)/1000);
 
   if(seconds > 0){
     f.stored += seconds * f.rate;
