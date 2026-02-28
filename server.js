@@ -247,14 +247,31 @@ setInterval(()=>{
 
       if(!f || f.empty) return;
       if(!f.active) return;
+      if(f.burned) return;
 
-      f.operatingCostPerSec ||= 0.02 * f.level;
-      f.salaryPerSec ||= 0.01 * f.level;
+      const workers = Number(f.workers || 0);
+      const baseRate = Number(f.baseRate || 0);
 
-      const totalCost =
-        f.operatingCostPerSec +
-        (f.workers || 0) * f.salaryPerSec;
+      if(workers <= 0 || baseRate <= 0) return;
 
+      // ❗ Nếu kho đầy → không sản xuất → không tính cost
+      if(f.stored >= f.storage) return;
+
+      // =========================
+      // 💰 GROSS PROFIT / SECOND
+      // =========================
+      const grossPerSec = baseRate * workers;
+
+      // =========================
+      // 🔥 90% COST MODEL
+      // =========================
+      const operatingCost = grossPerSec * 0.5;  // 50%
+      const salaryCost    = grossPerSec * 0.4;  // 40%
+      const totalCost     = operatingCost + salaryCost;
+
+      // =========================
+      // 💸 TRỪ COIN
+      // =========================
       if(user.profile.coins >= totalCost){
 
         user.profile.coins = Math.floor(
@@ -265,11 +282,12 @@ setInterval(()=>{
 
       }else{
 
+        // 💥 Không đủ tiền → dừng nhà máy
         f.active = false;
         f.workers = 0;
 
         emitToUser(uid,"factory-stopped",{
-          message:"💸 Factory stopped due to insufficient funds"
+          message:"💸 Factory stopped (insufficient funds)"
         });
 
         userChanged = true;
@@ -279,7 +297,7 @@ setInterval(()=>{
 
     });
 
-    // 🔥 QUAN TRỌNG: Emit realtime nếu user bị trừ tiền
+    // 🔥 REALTIME UPDATE COIN
     if(userChanged){
       emitCoinUpdate(uid);
     }
@@ -292,9 +310,6 @@ setInterval(()=>{
   }
 
 }, 1000);
-
-
-
 
 
 
