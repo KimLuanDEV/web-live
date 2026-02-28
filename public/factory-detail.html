@@ -996,6 +996,32 @@ body{
 
 
 
+
+
+
+
+.toggleBtn{
+  position:absolute;
+  width:130px;
+  z-index:7;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.toggleBtn:active{
+  transform:scale(.95);
+}
+
+.toggleImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 12px 30px rgba(0,0,0,.6))
+    drop-shadow(0 0 25px rgba(0,240,255,.25));
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1037,6 +1063,11 @@ body{
   
 </div>
 
+
+
+<div class="toggleBtn" onclick="toggleFactory()">
+  <img src="/assets/ui/factory-toggle.png" class="toggleImg">
+</div>
 
 
 
@@ -2271,6 +2302,30 @@ function closeFinance(){
   document.getElementById("financeModal")
     .classList.remove("show");
 }
+
+
+function toggleFactory(){
+  socket.emit("factory-toggle");
+}
+
+
+
+socket.on("factory-status", data=>{
+
+  factory.active = data.active;
+
+  showNotify(
+    data.active
+      ? "🟢 Factory Activated"
+      : "🔴 Factory Stopped",
+    data.active ? "good" : "warn"
+  );
+
+  render();
+});
+
+
+
 
 </script>
 </body>

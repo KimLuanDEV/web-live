@@ -2457,6 +2457,50 @@ socket.emit("factory-update", factoryDB[uid]);
 // ================================
 
 
+
+
+
+socket.on("factory-toggle", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const user = users[uid];
+  if(!user?.profile) return;
+
+  const list = factoryDB[uid];
+  if(!list || !list[0] || list[0].empty) return;
+
+  const f = list[0];
+
+  // ❌ Không cho bật nếu đang cháy
+  if(f.burned){
+    return socket.emit("factory-status",{
+      active:false
+    });
+  }
+
+  // 🔄 Toggle
+  f.active = !f.active;
+
+  // Nếu bật mà chưa có worker → vẫn không hoạt động
+  if(f.active && (!f.workers || f.workers <= 0)){
+    f.active = false;
+  }
+
+  saveFactories(factoryDB);
+
+  emitToUser(uid,"factory-status",{
+    active: f.active
+  });
+
+});
+
+
+
+
+
 // ================================
 // 👷 HIRE WORKER
 // ================================
