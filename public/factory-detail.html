@@ -1346,6 +1346,14 @@ function render(){
   const active = !burned && factory.active !== false;
 
 
+
+// ===== STORAGE PANEL VISIBILITY =====
+const storagePanel = document.querySelector(".storagePanel");
+if(storagePanel){
+  storagePanel.style.display = burned ? "none" : "block";
+}
+
+
   // ===== IMAGE =====
   const MAX_FACTORY_IMG_LEVEL = 5;
   const displayLevel = Math.min(level, MAX_FACTORY_IMG_LEVEL);
@@ -1765,6 +1773,12 @@ function activateFireMode(){
 // repair
   document.getElementById("repairBtn")
   .classList.add("show");  
+
+
+  
+document.querySelector(".storagePanel")
+  ?.style.setProperty("display","none");
+
 }
 
 
