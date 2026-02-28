@@ -2476,27 +2476,44 @@ socket.on("factory-toggle", ()=>{
 
   // ❌ Không cho bật nếu đang cháy
   if(f.burned){
-    return socket.emit("factory-status",{
-      active:false
-    });
+    return emitToUser(uid,"factory-status",{ active:false });
   }
 
-  // 🔄 Toggle
-  f.active = !f.active;
+  // 🔄 Toggle trạng thái
+  const newState = !f.active;
 
-  // Nếu bật mà chưa có worker → vẫn không hoạt động
-  if(f.active && (!f.workers || f.workers <= 0)){
+  // ✅ Nếu bật lại
+  if(newState){
+
+    // Không có worker thì không cho bật
+    if(!f.workers || f.workers <= 0){
+      return emitToUser(uid,"factory-status",{ active:false });
+    }
+
+    f.active = true;
+
+    // 🔥 Reset mốc thời gian để production chạy tiếp
+    f.lastTickAt = Date.now();
+    f.lastUpdate = Date.now();
+
+  }else{
+
+    // ⛔ Tắt
     f.active = false;
+
   }
 
   saveFactories(factoryDB);
 
+  // 🔔 Emit trạng thái
   emitToUser(uid,"factory-status",{
     active: f.active
   });
 
-});
+  // 🔥 QUAN TRỌNG: Emit lại full factory để client cập nhật preview
+  emitToUser(uid,"factory-update", factoryDB[uid]);
 
+});
 
 
 
