@@ -1838,22 +1838,43 @@ socket.on("factory-error",(d)=>{
 
 socket.on("factory-fire",(data)=>{
 
+  if(data.index !== index) return;
 
-   if(data.index !== index) return;
+  // 🔥 cập nhật state local
+  factory.burned  = true;
+  factory.active  = false;
+  factory.workers = 0;
+  factory.stored  = 0;
 
+  // 🔥 bật cinematic fire
   activateFireMode();
 
+  // 🔥 xoá worker animation ngay lập tức
+  const workerLayer =
+    document.getElementById("factoryWorkers");
 
- showNotify("FACTORY BURNED!","bad");
+  if(workerLayer){
+    workerLayer.innerHTML = "";
+  }
 
+  // 🔥 ẩn storage panel
+  document.querySelector(".storagePanel")
+    ?.classList.add("hide");
+
+  // 🔥 hiện nút repair
+  document.getElementById("repairBtn")
+    ?.classList.add("show");
+
+  // 🔴 đổi trạng thái
   document.getElementById("activeDot")
-    .classList.add("off");
+    ?.classList.add("off");
 
   document.getElementById("activeText")
     .textContent = "BURNED";
 
-});
+  showNotify("🔥 FACTORY BURNED! Workers eliminated.","bad");
 
+});
 
 
 
