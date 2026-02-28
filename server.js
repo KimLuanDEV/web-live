@@ -245,8 +245,8 @@ setInterval(()=>{
 // 🔥 FACTORY FIRE DISASTER ENGINE
 // ================================
 
-const FIRE_INTERVAL = 60000; // 60s 
-const FIRE_CHANCE   = 1;           // 100% mỗi 1 phút
+const FIRE_INTERVAL = 60 * 60000; // 60 phuts
+const FIRE_CHANCE   = 0.25;           // 25% hỏa hoạn mỗi 60 phút
 
 setInterval(()=>{
 
@@ -2401,8 +2401,6 @@ if (meNow?.role === "admin" && timeRaceRound) {
 // ================================
 factoryDB[uid] ||= [
   {empty:true},
-  {empty:true},
-  {empty:true}
 ];
 
 // 🔥 TÍNH SẢN LƯỢNG SERVER-SIDE
@@ -2613,20 +2611,19 @@ socket.on("factory-build", ({ index })=>{
   const me = users[uid];
   if(!me?.profile) return;
 
-  // 🔐 đảm bảo mảng tồn tại
-  factoryDB[uid] ||= [
-    {empty:true},
-    {empty:true},
-    {empty:true}
-  ];
+  // 🔒 Chỉ cho phép 1 slot duy nhất
+  factoryDB[uid] ||= [{ empty:true }];
 
-  // ❌ nếu slot đã có nhà máy thì không build nữa
-  if(factoryDB[uid][index] && !factoryDB[uid][index].empty){
+  // 🔐 Nếu đã có nhà máy → chặn build
+  const alreadyBuilt = factoryDB[uid].some(f => !f.empty);
+  if(alreadyBuilt){
+    socket.emit("factory-error",{
+      message:"ONLY_ONE_FACTORY_ALLOWED"
+    });
     return;
   }
 
-  // 🔢 SERVER TỰ TÍNH GIÁ
-  const cost = (index + 1) * 500;
+  const cost = 500; // 💎 giá cố định
 
   if(me.profile.coins < cost){
     socket.emit("factory-error",{
@@ -2635,32 +2632,32 @@ socket.on("factory-build", ({ index })=>{
     return;
   }
 
-  // 💰 trừ coin
+  // 💰 Trừ coin
   me.profile.coins = Math.floor(
     Number(me.profile.coins || 0) - cost
   );
 
-  // 🏗 tạo nhà máy mới
-factoryDB[uid][index] = {
-  id: index + 1,
-  level: 1,
+  // 🏗 Tạo nhà máy duy nhất ở index 0
+  factoryDB[uid][0] = {
+    id: 1,
+    level: 1,
 
-  baseRate: 1,
-  storage: 100,
-  stored: 0,
-  lastUpdate: Date.now(),
+    baseRate: 1,
+    storage: 100,
+    stored: 0,
+    lastUpdate: Date.now(),
 
-  workers: 0,
-  maxWorkers: 1,
-  workerCost: 150,
+    workers: 0,
+    maxWorkers: 1,
+    workerCost: 150,
 
-  workerSalary: 50,              // 💼 NEW
-  nextSalaryAt: Date.now() + ONE_DAY, // 💼 NEW
+    workerSalary: 50,
+    nextSalaryAt: Date.now() + ONE_DAY,
 
-  active: false,
-  dailyFee: 200,
-  nextFeeAt: Date.now() + ONE_DAY
-};
+    active: false,
+    dailyFee: 200,
+    nextFeeAt: Date.now() + ONE_DAY
+  };
 
   saveUsers(users);
   saveFactories(factoryDB);
@@ -2671,7 +2668,6 @@ factoryDB[uid][index] = {
     factoryDB[uid]
   );
 });
-
 
 
 
