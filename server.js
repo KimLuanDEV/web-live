@@ -2408,33 +2408,43 @@ factoryDB[uid] ||= [
 // 🔥 TÍNH SẢN LƯỢNG SERVER-SIDE
 factoryDB[uid].forEach(f=>{
 
-if(
-  f.empty ||
-  f.burned ||
-  !f.active ||
-  !f.workers ||
-  f.workers <= 0
-) return;
-
-  const now = Date.now();
-  f.lastUpdate ||= Date.now();
-const seconds = Math.floor((now - f.lastUpdate)/1000);
-
-  if(seconds > 0){
-
-    const productionRate =
-      f.workers * (f.baseRate || 1);
-
-    f.stored += seconds * productionRate;
-
-    if(f.stored > f.storage){
-      f.stored = f.storage;
-    }
-
-    f.stored = Math.floor(f.stored);
-    f.lastUpdate = now;
+  // 🛡 HARD GUARD
+  if(
+    !f ||
+    f.empty ||
+    f.burned ||
+    !f.workers ||
+    f.workers <= 0
+  ){
+    // 🔥 đảm bảo không tích lũy ngầm
+    f.active = false;
+    f.stored = Math.floor(f.stored || 0);
+    f.lastUpdate = Date.now();
+    return;
   }
 
+  if(!f.active){
+    f.lastUpdate = Date.now();
+    return;
+  }
+
+  const now = Date.now();
+  f.lastUpdate ||= now;
+
+  const seconds = Math.floor((now - f.lastUpdate)/1000);
+  if(seconds <= 0) return;
+
+  const productionRate =
+    f.workers * (f.baseRate || 1);
+
+  f.stored += seconds * productionRate;
+
+  if(f.stored > f.storage){
+    f.stored = f.storage;
+  }
+
+  f.stored = Math.floor(f.stored);
+  f.lastUpdate = now;
 });
 
 // 💾 lưu lại để không tính lại lần sau
@@ -2746,7 +2756,10 @@ if(f.burned){
 const seconds = Math.floor((now - f.lastUpdate)/1000);
 
   if(seconds > 0){
-    f.stored += seconds * f.rate;
+
+const productionRate = f.workers * (f.baseRate || 1);
+f.stored += seconds * productionRate;
+
     if(f.stored > f.storage){
       f.stored = f.storage;
     }
