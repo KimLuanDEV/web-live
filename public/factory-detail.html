@@ -697,6 +697,80 @@ body{
 }
 
 
+
+
+
+/* =========================
+   🔥 FIRE MODE LEVEL 10
+   ========================= */
+
+.fireOverlay{
+  position:absolute;
+  inset:0;
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+  pointer-events:none;
+}
+
+.fireOverlay.show{
+  display:flex;
+  animation: screenShake .4s ease infinite alternate;
+}
+
+.fireGlow{
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 30%, rgba(255,80,0,.6), transparent 60%),
+    linear-gradient(180deg, rgba(255,0,0,.25), rgba(0,0,0,.7));
+  mix-blend-mode:screen;
+  animation: firePulse 1.2s ease-in-out infinite;
+}
+
+.fireText{
+  position:relative;
+  font-size:22px;
+  font-weight:1000;
+  color:#ff4d4d;
+  text-shadow:
+    0 0 25px rgba(255,0,0,.8),
+    0 0 50px rgba(255,100,0,.6);
+  letter-spacing:2px;
+}
+
+@keyframes firePulse{
+  0%{ opacity:.8 }
+  50%{ opacity:1 }
+  100%{ opacity:.8 }
+}
+
+@keyframes screenShake{
+  from{ transform:translate(-1px,0) }
+  to{ transform:translate(1px,0) }
+}
+
+
+
+
+.repairBtn{
+  position:absolute;
+  width:130px;
+  bottom:100px;
+  left:50%;
+  transform:translateX(-50%);
+  z-index:60;
+  display:none;
+  cursor:pointer;
+}
+
+.repairBtn.show{
+  display:block;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -712,6 +786,15 @@ body{
   <div class="factoryWorkers" id="factoryWorkers"></div>
 
 
+
+<!-- 🔥 FIRE OVERLAY -->
+<div class="fireOverlay" id="fireOverlay">
+  <div class="fireGlow"></div>
+  <div class="fireText">🔥 FACTORY BURNED 🔥</div>
+</div>
+
+
+
   <div class="collectTruck" onclick="collect()">
   <img src="/assets/ui/truck-collect.png" class="truckImg">
 </div>
@@ -724,6 +807,11 @@ body{
 
 <div class="upgradeBtn" onclick="upgrade()">
   <img src="/assets/ui/worker-engineer.png" class="upgradeImg">
+</div>
+
+
+<div class="repairBtn" id="repairBtn" onclick="repairFactory()">
+  <img src="/assets/ui/repair-btn.png">
 </div>
 
 
@@ -1446,6 +1534,12 @@ socket.on("factory-error",(d)=>{
 
 socket.on("factory-fire",(data)=>{
 
+
+   if(data.index !== index) return;
+
+  activateFireMode();
+
+
   alert("🔥 NHÀ MÁY BỊ CHÁY!");
 
   document.getElementById("activeDot")
@@ -1455,6 +1549,47 @@ socket.on("factory-fire",(data)=>{
     .textContent = "BURNED";
 
 });
+
+
+function activateFireMode(){
+
+  factory.burned = true;
+
+  // đổi ảnh
+  document.getElementById("factoryImg")
+    .src = "/assets/factory/factory-burned.png";
+
+  // hiện overlay
+  document.getElementById("fireOverlay")
+    .classList.add("show");
+
+  // đổi status
+  document.getElementById("activeText")
+    .textContent = "BURNED";
+
+  document.getElementById("activeDot")
+    .classList.add("off");
+
+  // xoá worker
+  document.getElementById("factoryWorkers")
+    .innerHTML = "";
+
+
+// repair
+  document.getElementById("repairBtn")
+  .classList.add("show");  
+}
+
+
+function repairFactory(){
+  socket.emit("factory-repair",{ index });
+}
+
+socket.on("factory-repaired",(data)=>{
+  if(data.index !== index) return;
+  location.reload();
+});
+
 
 </script>
 </body>

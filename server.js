@@ -2599,6 +2599,44 @@ factoryDB[uid][index] = {
 });
 
 
+
+
+socket.on("factory-repair", ({ index })=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const f = factoryDB[uid]?.[index];
+  if(!f || !f.burned) return;
+
+  const users = loadUsers();
+  const user = users[uid];
+
+  const repairCost = 500;
+
+  if(user.profile.coins < repairCost){
+    socket.emit("factory-error",{ message:"NOT_ENOUGH_COINS" });
+    return;
+  }
+
+  user.profile.coins -= repairCost;
+
+  f.burned = false;
+  f.active = true;
+  f.stored = 0;
+  f.fireAt = null;
+
+  saveUsers(users);
+  saveFactories(factoryDB);
+
+  emitCoinUpdate(uid);
+
+  emitToUser(uid,"factory-repaired",{ index });
+});
+
+
+
+
 socket.on("factory-upgrade", ({ index })=>{
 
   const uid = socket.data.uid;
