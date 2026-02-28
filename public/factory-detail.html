@@ -484,8 +484,8 @@ body{
 
 .ratePanel{
   position:absolute;
-  width:140px;
-  z-index:6;
+  width:170px;
+  z-index:8;
   pointer-events:none;
 }
 
@@ -503,11 +503,13 @@ body{
   display:flex;
   align-items:center;
   justify-content:center;
-  gap:6px;
+  gap:0px;
   font-weight:1000;
-  font-size:18px;
+  font-size: 12px;
   color:#00f0ff;
   text-shadow:0 0 18px rgba(0,240,255,.5);
+  right:-20px;
+  top:4px;
 }
 
 .rateText .unit{
@@ -623,11 +625,11 @@ const socket = io({
 
 
 const RATE_POS = {
-  1: { top:"42%", left:"55%", scale:0.9 },
-  2: { top:"40%", left:"57%", scale:0.9 },
-  3: { top:"39%", left:"60%", scale:0.9 },
-  4: { top:"38%", left:"63%", scale:0.9 },
-  5: { top:"36%", left:"65%", scale:0.9 }
+  1: { top:"-100%", left:"30%", scale:0.9 },
+  2: { top:"-100%", left:"30%", scale:0.9 },
+  3: { top:"-100%", left:"30%", scale:0.9 },
+  4: { top:"-100%", left:"30%", scale:0.9 },
+  5: { top:"-100%", left:"30%", scale:0.9 }
 };
 
 
