@@ -1598,11 +1598,24 @@ if(truck){
     progressEl.style.width = percent + "%";
   }
 
-  // ===== RATE =====
-  const rateEl = document.getElementById("rateVal");
-  if(rateEl){
-    rateEl.textContent = rate + " 💎/s";
+// ===== RATE =====
+const rateEl = document.getElementById("rateVal");
+if(rateEl){
+
+  if(
+    factory.burned === true ||
+    !factory.active ||
+    !factory.workers ||
+    factory.workers <= 0
+  ){
+    rateEl.textContent = "0 💎/s";
+  }else{
+    const realRate = Number(factory.rate ?? (workers * baseRate)) || 0;
+    rateEl.textContent = realRate + " 💎/s";
   }
+
+}
+
 
   // ===== WORKERS =====
   const workerEl = document.getElementById("workerVal");
