@@ -272,8 +272,9 @@ setInterval(()=>{
 f.workers = 0;
 f.stored  = 0;
 
-f.lastCollectAt = Date.now();   // 🔥 reset tick
-f.lastTickAt    = Date.now();   // nếu bạn có dùng
+f.lastUpdate    = Date.now();   // 🔥 FIX HỒI SINH KIM CƯƠNG
+f.lastCollectAt = Date.now();
+f.lastTickAt    = Date.now();
 
 f.active  = false;
 f.burned  = true;
@@ -326,6 +327,8 @@ f.active = true;
 
 // 🔥 reset lại chu kỳ sản xuất
 f.stored = 0;
+
+f.lastUpdate    = Date.now();   // 🔥 FIX TRIỆT ĐỂ
 f.lastCollectAt = Date.now();
 f.lastTickAt    = Date.now();
 
