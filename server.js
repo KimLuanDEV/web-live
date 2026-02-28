@@ -113,6 +113,14 @@ Object.keys(factoryDB).forEach(uid=>{
 
     if(typeof f.fireAt === "undefined")
       f.fireAt = null;
+
+if(typeof f.repairing === "undefined")
+  f.repairing = false;
+
+if(typeof f.repairEndAt === "undefined")
+  f.repairEndAt = null;
+
+
   });
 });
 
@@ -237,7 +245,7 @@ setInterval(()=>{
 // 🔥 FACTORY FIRE DISASTER ENGINE
 // ================================
 
-const FIRE_INTERVAL = 5 * 5 * 1000; // 60 phút
+const FIRE_INTERVAL = 60000; // 60s 
 const FIRE_CHANCE   = 1;           // 50% mỗi giờ
 
 setInterval(()=>{
@@ -287,6 +295,45 @@ setInterval(()=>{
   }
 
 }, FIRE_INTERVAL);
+
+
+
+// ================================
+// 🔧 FACTORY REPAIR ENGINE
+// ================================
+setInterval(()=>{
+
+  let changed = false;
+
+  Object.keys(factoryDB).forEach(uid=>{
+
+    factoryDB[uid].forEach((f,index)=>{
+
+      if(!f || f.empty) return;
+      if(!f.repairing) return;
+
+      if(Date.now() >= f.repairEndAt){
+
+        f.repairing = false;
+        f.repairEndAt = null;
+        f.burned = false;
+        f.active = true;
+
+        changed = true;
+
+        emitToUser(uid,"factory-repaired",{ index });
+      }
+
+    });
+
+  });
+
+  if(changed){
+    saveFactories(factoryDB);
+  }
+
+},1000);
+
 
 
 
@@ -2607,12 +2654,14 @@ socket.on("factory-repair", ({ index })=>{
   if(!uid) return;
 
   const f = factoryDB[uid]?.[index];
-  if(!f || !f.burned) return;
+  if(!f || !f.burned || f.repairing) return;
 
   const users = loadUsers();
   const user = users[uid];
+  if(!user?.profile) return;
 
   const repairCost = 500;
+  const REPAIR_TIME = 15000; // 15s
 
   if(user.profile.coins < repairCost){
     socket.emit("factory-error",{ message:"NOT_ENOUGH_COINS" });
@@ -2621,19 +2670,19 @@ socket.on("factory-repair", ({ index })=>{
 
   user.profile.coins -= repairCost;
 
-  f.burned = false;
-  f.active = true;
-  f.stored = 0;
-  f.fireAt = null;
+  f.repairing = true;
+  f.repairEndAt = Date.now() + REPAIR_TIME;
 
   saveUsers(users);
   saveFactories(factoryDB);
 
   emitCoinUpdate(uid);
 
-  emitToUser(uid,"factory-repaired",{ index });
+  emitToUser(uid,"factory-repair-start",{
+    index,
+    repairEndAt: f.repairEndAt
+  });
 });
-
 
 
 

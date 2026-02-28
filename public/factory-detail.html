@@ -858,7 +858,17 @@ body{
 <div class="fireOverlay" id="fireOverlay">
   <div class="fireGlow"></div>
   <div class="fireText">FACTORY BURNED</div>
+  <div id="repairTimer" style="
+    position:absolute;
+    bottom:60px;
+    font-weight:1000;
+    font-size:18px;
+    color:#ffcc66;
+    text-shadow:0 0 20px rgba(255,120,0,.7);
+  "></div>
 </div>
+
+
 
 
 
@@ -1172,7 +1182,7 @@ const CONTROL_POS = {
 let factory = null;
 let previewTimer = null;
 let previewStored = 0;
-
+let repairInterval = null;
 
 
 socket.on("factory-update", list=>{
@@ -1482,6 +1492,17 @@ if(ctrl){
 
   // ===== WORKERS =====
   renderWorkers();
+
+
+
+  if(factory.repairing && factory.repairEndAt){
+  startRepairCountdown(factory.repairEndAt);
+
+  document.getElementById("fireOverlay")
+    ?.classList.add("show");
+}
+
+
 }
 
 function renderWorkers(){
@@ -1686,11 +1707,29 @@ function repairFactory(){
   socket.emit("factory-repair",{ index });
 }
 
+
+
+
 socket.on("factory-repaired",(data)=>{
   if(data.index !== index) return;
-  location.reload();
-});
 
+  clearInterval(repairInterval);
+
+  document.getElementById("repairTimer").textContent = "";
+
+  document.getElementById("fireOverlay")
+    ?.classList.remove("show");
+
+  document.getElementById("repairBtn")
+    ?.classList.remove("show");
+
+  factory.burned = false;
+  factory.active = true;
+
+  render();
+
+  showNotify("Factory repaired!","good");
+});
 
 
 function showNotify(message,type="warn"){
@@ -1711,6 +1750,44 @@ function showNotify(message,type="warn"){
     box.classList.remove("show");
   },2500);
 }
+
+
+
+
+function startRepairCountdown(endAt){
+
+  const timer = document.getElementById("repairTimer");
+
+  clearInterval(repairInterval);
+
+  repairInterval = setInterval(()=>{
+
+    const left = Math.max(0, endAt - Date.now());
+    const sec = Math.ceil(left/1000);
+
+    timer.textContent = "Repairing: " + sec + "s";
+
+    if(left <= 0){
+      clearInterval(repairInterval);
+      timer.textContent = "";
+    }
+
+  },200);
+}
+
+
+
+socket.on("factory-repair-start",(data)=>{
+  if(data.index !== index) return;
+
+  document.getElementById("repairBtn")
+    ?.classList.remove("show");
+
+  startRepairCountdown(data.repairEndAt);
+
+  showNotify("Repairing factory...","warn");
+});
+
 
 
 
