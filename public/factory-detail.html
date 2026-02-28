@@ -77,22 +77,6 @@ body{
 }
 
 
-.wallet{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  padding:10px 12px;
-  border-radius:16px;
-  background: linear-gradient(180deg, rgba(0,240,255,.14), rgba(0,0,0,.35));
-  border:1px solid rgba(0,240,255,.22);
-  box-shadow: 0 0 30px rgba(0,240,255,.10);
-}
-.wallet .v{
-  font-weight:1000;
-  color:var(--good);
-}
-
-
 
 
 
@@ -549,19 +533,45 @@ body{
 }
 
 
+
+
+
+.coinPanel{
+  position:absolute;
+  width:180px;
+  z-index:9;
+  pointer-events:none;
+}
+
+.coinBg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 15px 35px rgba(0,0,0,.6))
+    drop-shadow(0 0 25px rgba(0,240,255,.25));
+}
+
+.coinText{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:1000;
+  font-size:20px;
+  color:#00f0ff;
+  text-shadow:0 0 20px rgba(0,240,255,.5);
+}
+
+
+
+
 </style>
 </head>
 <body>
 
 <div class="topbar">
   <div class="back" onclick="location.href='/game-diamond-factory.html'">←</div>
-
-
-  <div class="wallet">
-    <span class="v" id="coinVal">0</span>
-    <span>💎</span>
-  </div>
-</div>
 
 
 
@@ -586,6 +596,14 @@ body{
   <img src="/assets/ui/worker-engineer.png" class="upgradeImg">
 </div>
 
+
+<div class="coinPanel">
+  <img src="/assets/ui/coin-panel.png" class="coinBg">
+
+  <div class="coinText">
+    <span id="coinVal"></span>
+  </div>
+</div>
 
 
   <div class="storagePanel">
@@ -657,6 +675,20 @@ const socket = io({
     deviceId: localStorage.getItem("device_id")
   }
 });
+
+
+
+
+
+
+const COIN_POS = {
+  1: { top:"10%", left:"60%", scale:1 },
+  2: { top:"10%", left:"62%", scale:1 },
+  3: { top:"12%", left:"58%", scale:1 },
+  4: { top:"14%", left:"55%", scale:1 },
+  5: { top:"14%", left:"55%", scale:1 }
+};
+
 
 
 
@@ -846,6 +878,18 @@ function render(){
   }
 
 
+
+ // ===== Coin Panel =====
+
+const coin = document.querySelector(".coinPanel");
+if(coin){
+  const cfg = COIN_POS[level] || COIN_POS[5];
+
+  coin.style.top  = cfg.top;
+  coin.style.left = cfg.left;
+  coin.style.transform = `scale(${cfg.scale})`;
+}
+  
 
 
  // ===== Worker Panel =====
