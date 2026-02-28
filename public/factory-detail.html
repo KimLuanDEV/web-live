@@ -1878,14 +1878,22 @@ function renderWorkers(){
   const layer = document.getElementById("factoryWorkers");
   if(!layer) return;
 
+  // 🔥 LUÔN CLEAR TRƯỚC
   layer.innerHTML = "";
 
   if(!factory) return;
 
+  // ❌ Nếu cháy → không render
   if(factory.burned) return;
 
+  // ❌ Nếu không active → không render
+  if(!factory.active) return;
+
+  // ❌ Nếu không có worker → không render
   const workers = Number(factory.workers ?? 0);
-  const count   = Math.min(workers, 6);
+  if(workers <= 0) return;
+
+  const count = Math.min(workers, 6);
 
   for(let i=0;i<count;i++){
 
@@ -1893,10 +1901,8 @@ function renderWorkers(){
     w.className = "worker";
     w.src = "/assets/ui/worker-bot.png";
 
-    // lệch pha cho đẹp
     w.style.animationDelay = (i * 0.8) + "s";
 
-    // tốc độ theo rate
     const rate = Number(factory.rate ?? 1);
     const speed = Math.max(4, 8 - rate * 0.2);
     w.style.animationDuration = speed + "s";
@@ -2339,10 +2345,28 @@ function toggleFactory(){
 }
 
 
-
 socket.on("factory-status", data=>{
 
   factory.active = data.active;
+
+  if(!data.active){
+    // 🔥 Stop preview ticker
+    if(previewTimer){
+      clearInterval(previewTimer);
+      previewTimer = null;
+    }
+
+    // 🔥 Clear worker animation ngay lập tức
+    const layer = document.getElementById("factoryWorkers");
+    if(layer){
+      layer.innerHTML = "";
+    }
+  }else{
+    // nếu bật lại
+    if(factory.workers > 0 && !factory.burned){
+      startPreviewTicker();
+    }
+  }
 
   showNotify(
     data.active
