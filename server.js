@@ -237,8 +237,8 @@ setInterval(()=>{
 // 🔥 FACTORY FIRE DISASTER ENGINE
 // ================================
 
-const FIRE_INTERVAL = 60 * 60 * 1000; // 60 phút
-const FIRE_CHANCE   = 0.5;           // 50% mỗi giờ
+const FIRE_INTERVAL = 5 * 5 * 1000; // 60 phút
+const FIRE_CHANCE   = 1;           // 50% mỗi giờ
 
 setInterval(()=>{
 
