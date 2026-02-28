@@ -2507,14 +2507,14 @@ if(f.burned){
     Number(me.profile.coins || 0) - cost
   );
 
-  // 👷 TĂNG WORKER
-  f.workers += 1;
+f.workers += 1;
 
-  // 🔥 RATE PHỤ THUỘC WORKER
-  f.rate = f.workers * f.baseRate;
+// 🔥 RESET TIMER SẢN XUẤT KHI THUÊ WORKER
+f.stored = 0;
+f.lastUpdate = Date.now();
 
-  // ✅ Có worker thì hoạt động
-  f.active = true;
+f.rate = f.workers * f.baseRate;
+f.active = true;
 
   saveUsers(users);
   saveFactories(factoryDB);
@@ -2526,6 +2526,12 @@ if(f.burned){
 
 
 socket.on("factory-collect", ({ index })=>{
+
+
+if(!f.workers || f.workers <= 0){
+  return;
+}
+
 
   const uid = socket.data.uid;
   if(!uid) return;
