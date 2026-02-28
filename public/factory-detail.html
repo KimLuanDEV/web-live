@@ -839,22 +839,22 @@ body{
 
 
 
-
 /* =========================
-   👷 REPAIR WORKER CINEMATIC
+   👨‍🚒 MULTI REPAIR WORKERS
    ========================= */
+
+.repairWorkersLayer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  z-index:70;
+}
 
 .repairWorker{
   position:absolute;
-  bottom:395px;
-  left:-110px;
-  width:110px;
-  z-index:10;
-  display:none;
-}
-
-.repairWorker.show{
-  display:block;
+  bottom:40px;
+  left:-80px;
+  width:60px;
   animation: repairWalk 2s ease forwards;
 }
 
@@ -866,15 +866,9 @@ body{
 }
 
 @keyframes repairWalk{
-  0%{
-    left:-110px;
-  }
-  100%{
-    left:25%;
-  }
+  0%{ left:-80px; }
+  100%{ left: calc(30% + var(--offset,0px)); }
 }
-
-/* ⚡ Spark effect */
 
 .sparkFx{
   position:absolute;
@@ -883,10 +877,6 @@ body{
   width:30px;
   height:30px;
   background: radial-gradient(circle, #ffcc66, transparent 60%);
-  opacity:0;
-}
-
-.repairWorker.repairing .sparkFx{
   animation: sparkPulse .4s infinite;
 }
 
@@ -895,7 +885,6 @@ body{
   50%{ opacity:1 }
   100%{ opacity:0 }
 }
-
 
 
 
@@ -914,10 +903,7 @@ body{
   <div class="factoryWorkers" id="factoryWorkers"></div>
 
 
-  <div class="repairWorker" id="repairWorker">
-  <img src="/assets/ui/worker-repair.png" class="repairWorkerImg">
-  <div class="sparkFx"></div>
-</div>
+<div class="repairWorkersLayer" id="repairWorkersLayer"></div>
 
 <!-- 🔥 FIRE OVERLAY -->
 <div class="fireOverlay" id="fireOverlay">
@@ -1778,31 +1764,41 @@ function repairFactory(){
 socket.on("factory-repaired",(data)=>{
   if(data.index !== index) return;
 
+  // ⏹ Dừng countdown
   clearInterval(repairInterval);
+  repairInterval = null;
 
+  // 🧹 Xóa toàn bộ firefighter
+  const layer = document.getElementById("repairWorkersLayer");
+  if(layer){
+    layer.innerHTML = "";
+  }
 
-const worker = document.getElementById("repairWorker");
-if(worker){
-  worker.classList.remove("repairing");
-  worker.classList.remove("show");
-}
+  // 🧹 Reset timer text (nếu còn)
+  const timer = document.getElementById("repairTimer");
+  if(timer){
+    timer.textContent = "";
+  }
 
-
-  document.getElementById("repairTimer").textContent = "";
-
+  // 🔥 Tắt overlay cháy
   document.getElementById("fireOverlay")
     ?.classList.remove("show");
 
+  // Ẩn nút repair
   document.getElementById("repairBtn")
     ?.classList.remove("show");
 
+  // Cập nhật trạng thái
   factory.burned = false;
   factory.active = true;
+  factory.repairing = false;
 
+  // Render lại nhà máy
   render();
 
-  showNotify("Factory repaired!","good");
+  showNotify("👨‍🚒 Fire extinguished! Factory restored.","good");
 });
+
 
 
 function showNotify(message,type="warn"){
@@ -1853,27 +1849,37 @@ function startRepairCountdown(endAt){
 socket.on("factory-repair-start",(data)=>{
   if(data.index !== index) return;
 
-  // Ẩn nút repair
   document.getElementById("repairBtn")
     ?.classList.remove("show");
 
-  // 🔥 Bật worker chạy ra
-  const worker = document.getElementById("repairWorker");
+  const layer = document.getElementById("repairWorkersLayer");
+  layer.innerHTML = "";
 
-  if(worker){
-    worker.classList.remove("repairing");
-    worker.classList.add("show");
+  // số worker tham gia sửa (giới hạn 4 cho đẹp)
+  const total = Math.min(factory.workers || 1, 4);
 
-    // sau khi chạy tới nơi (2s) thì bật spark
-    setTimeout(()=>{
-      worker.classList.add("repairing");
-    },2000);
+  for(let i=0;i<total;i++){
+
+    const w = document.createElement("div");
+    w.className = "repairWorker";
+
+    // lệch vị trí mỗi người
+    w.style.setProperty("--offset", (i*40) + "px");
+
+    // lệch thời gian chạy
+    w.style.animationDelay = (i*0.4) + "s";
+
+    w.innerHTML = `
+      <img src="/assets/ui/worker-repair.png" class="repairWorkerImg">
+      <div class="sparkFx"></div>
+    `;
+
+    layer.appendChild(w);
   }
 
-  // ▶ bắt đầu progress bar
   startRepairCountdown(data.repairEndAt);
 
-  showNotify("👷 Worker đang sửa nhà máy...","warn");
+  showNotify("👨‍🚒 Team đang dập lửa...","warn");
 });
 
 
