@@ -323,7 +323,9 @@ f.repairing = false;
 f.repairEndAt = null;
 
 f.burned = false;
-f.active = true;
+
+// 🔥 KHÔNG tự bật lại nếu chưa có worker
+f.active = (f.workers > 0);
 
 // 🔥 reset lại chu kỳ sản xuất
 f.stored = 0;
@@ -2408,8 +2410,8 @@ factoryDB[uid].forEach(f=>{
 
 if(
   f.empty ||
-  f.burned === true ||
-  f.active === false ||
+  f.burned ||
+  !f.active ||
   !f.workers ||
   f.workers <= 0
 ) return;
