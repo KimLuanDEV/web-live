@@ -1154,17 +1154,6 @@ body{
     </div>
 
     <div class="uRow">
-      <span>Worker Salary Cost</span>
-      <b id="fSalary">0 💎</b>
-    </div>
-
-    <div class="uRow">
-      <span>Operating Cost</span>
-      <b id="fFee">0 💎</b>
-    </div>
-
-
-    <div class="uRow">
   <span>Operating Cost / sec</span>
   <b id="fOpSec">0 💎</b>
 </div>
@@ -2257,21 +2246,13 @@ function openFinance(){
     .textContent =
       Math.floor(net).toLocaleString() + " 💎";
 
-  document.getElementById("fSalary")
-    .textContent =
-      salary.toLocaleString() + " 💎";
-
-  document.getElementById("fFee")
-    .textContent =
-      dailyFee.toLocaleString() + " 💎";
-
       document.getElementById("fOpSec").textContent =
   factory.operatingCostPerSec.toFixed(3) + " 💎";
 
 document.getElementById("fSalSec").textContent =
   (factory.salaryPerSec * factory.workers).toFixed(3) + " 💎";
 
-  
+
 
   // 🔥 màu lợi nhuận
   const netEl = document.getElementById("fNet");
