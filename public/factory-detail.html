@@ -926,7 +926,7 @@ body{
   z-index:60;
 }
 
-.fireOverlay.show .repairHUD{
+.repairHUD.show{
   display:block;
 }
 
@@ -1938,7 +1938,9 @@ if(worker){
   worker.classList.remove("show");
 }
 
-
+document.getElementById("repairHUD")
+  ?.classList.remove("show");
+  
   document.getElementById("repairTimer").textContent = "";
 
   document.getElementById("fireOverlay")
@@ -2011,24 +2013,24 @@ function startRepairCountdown(endAt){
 socket.on("factory-repair-start",(data)=>{
   if(data.index !== index) return;
 
-  // Ẩn nút repair
   document.getElementById("repairBtn")
     ?.classList.remove("show");
 
-  // 🔥 Bật worker chạy ra
   const worker = document.getElementById("repairWorker");
 
   if(worker){
     worker.classList.remove("repairing");
     worker.classList.add("show");
 
-    // sau khi chạy tới nơi (2s) thì bật spark
     setTimeout(()=>{
       worker.classList.add("repairing");
     },2000);
   }
 
-  // ▶ bắt đầu progress bar
+  // 🔥 HIỆN HUD TẠI ĐÂY
+  document.getElementById("repairHUD")
+    ?.classList.add("show");
+
   startRepairCountdown(data.repairEndAt);
 
   showNotify("👷 Worker is repairing the factory...","warn");
