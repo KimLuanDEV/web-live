@@ -241,12 +241,13 @@ setInterval(()=>{
     const user = users[uid];
     if(!user?.profile) return;
 
+    let userChanged = false;
+
     factoryDB[uid].forEach(f=>{
 
       if(!f || f.empty) return;
       if(!f.active) return;
 
-      // 🔧 init mặc định nếu chưa có
       f.operatingCostPerSec ||= 0.02 * f.level;
       f.salaryPerSec ||= 0.01 * f.level;
 
@@ -260,20 +261,28 @@ setInterval(()=>{
           Number(user.profile.coins || 0) - totalCost
         );
 
+        userChanged = true;
+
       }else{
 
-        // ❌ Hết tiền → tắt nhà máy
         f.active = false;
         f.workers = 0;
 
         emitToUser(uid,"factory-stopped",{
           message:"💸 Factory stopped due to insufficient funds"
         });
+
+        userChanged = true;
       }
 
       changed = true;
 
     });
+
+    // 🔥 QUAN TRỌNG: Emit realtime nếu user bị trừ tiền
+    if(userChanged){
+      emitCoinUpdate(uid);
+    }
 
   });
 
