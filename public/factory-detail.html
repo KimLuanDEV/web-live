@@ -914,10 +914,14 @@ body{
   <div class="factoryWorkers" id="factoryWorkers"></div>
 
 
+
+
   <div class="repairWorker" id="repairWorker">
   <img src="/assets/ui/worker-repair.png" class="repairWorkerImg">
   <div class="sparkFx"></div>
 </div>
+
+
 
 <!-- 🔥 FIRE OVERLAY -->
 <div class="fireOverlay" id="fireOverlay">
@@ -1027,6 +1031,40 @@ body{
 
 
 
+
+
+
+<!-- =========================
+     🔧 REPAIR CONFIRM MODAL
+     ========================= -->
+<div class="overlay" id="repairModal">
+
+  <div class="upgradeModalBox">
+
+    <div class="upgradeTitle">
+      FACTORY REPAIR
+    </div>
+
+    <div class="upgradeInfo">
+
+      <div class="uRow">
+        <span>Status</span>
+        <b style="color:#ff4d4d">BURNED</b>
+      </div>
+
+      <div class="uCost">
+        Repair Cost: <span id="rCost">0</span> 💎
+      </div>
+
+    </div>
+
+    <div class="uActions">
+      <button class="uBtn cancel" onclick="closeRepair()">Cancel</button>
+      <button class="uBtn confirm" onclick="confirmRepair()">Repair</button>
+    </div>
+
+  </div>
+</div>
 
 
 
@@ -1783,10 +1821,40 @@ document.querySelector(".storagePanel")
 
 
 function repairFactory(){
-  socket.emit("factory-repair",{ index });
+
+  if(!factory) return;
+  if(factory.repairing) return;
+
+  const cost = factory.repairCost || 500;
+
+  const currentCoins = Number(
+    document.getElementById("coinVal").textContent || 0
+  );
+
+  if(currentCoins < cost){
+    showNotify("Not enough diamonds to repair.","bad");
+    return;
+  }
+
+  document.getElementById("rCost").textContent = cost;
+
+  document.getElementById("repairModal")
+    .classList.add("show");
 }
 
 
+function closeRepair(){
+  document.getElementById("repairModal")
+    .classList.remove("show");
+}
+
+function confirmRepair(){
+
+  document.getElementById("repairModal")
+    .classList.remove("show");
+
+  socket.emit("factory-repair",{ index });
+}
 
 
 socket.on("factory-repaired",(data)=>{
