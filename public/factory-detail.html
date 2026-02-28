@@ -967,6 +967,35 @@ body{
 
 
 
+
+/* =========================
+   💰 FINANCE BUTTON
+   ========================= */
+
+.financeBtn{
+  position:absolute;
+  width:120px;
+  right:12px;
+  top:120px;
+  z-index:20;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.financeBtn:active{
+  transform:scale(.95);
+}
+
+.financeImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 15px 35px rgba(0,0,0,.6))
+    drop-shadow(0 0 25px rgba(0,240,255,.25));
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1009,6 +1038,11 @@ body{
 </div>
 
 
+
+
+<div class="financeBtn" onclick="openFinance()">
+  <img src="/assets/ui/finance-btn.png" class="financeImg">
+</div>
 
 
 
@@ -1100,6 +1134,42 @@ body{
 </div>
 
 
+
+
+
+
+<!-- =========================
+     💰 FINANCE MODAL
+     ========================= -->
+<div class="overlay" id="financeModal">
+  <div class="upgradeModalBox">
+
+    <div class="upgradeTitle">
+      📊 BÁO CÁO TÀI CHÍNH NGÀY
+    </div>
+
+    <div class="uRow">
+      <span>Lợi nhuận ròng dự tính</span>
+      <b id="fNet">0 💎</b>
+    </div>
+
+    <div class="uRow">
+      <span>Chi phí công nhân</span>
+      <b id="fSalary">0 💎</b>
+    </div>
+
+    <div class="uRow">
+      <span>Chi phí vận hành</span>
+      <b id="fFee">0 💎</b>
+    </div>
+
+    <div class="uActions">
+      <button class="uBtn cancel"
+        onclick="closeFinance()">Đóng</button>
+    </div>
+
+  </div>
+</div>
 
 
 
@@ -1360,16 +1430,36 @@ let repairInterval = null;
 
 
 socket.on("factory-update", list=>{
+
   factory = list[index];
   if(!factory) return;
 
-  // reset preview theo dữ liệu mới nhất từ server
+  // 🔥 LƯU FACTORY HIỆN TẠI (cho finance modal)
+  currentFactory = factory;
+
+  // 🔄 Reset preview theo dữ liệu mới nhất từ server
   previewStored = Number(factory.stored || 0);
 
-  render();
-  startPreviewTicker(); // ✅ bật realtime kho
-});
+  // 🛑 Ngắt ticker cũ tránh nhân đôi interval
+  if(window.previewInterval){
+    clearInterval(window.previewInterval);
+    window.previewInterval = null;
+  }
 
+  render();
+
+  // ✅ Bật realtime kho nếu factory active + có worker
+  if(factory.active && factory.workers > 0 && !factory.burned){
+    startPreviewTicker();
+  }
+
+  // 🔥 Nếu finance modal đang mở → cập nhật số realtime
+  const modal = document.getElementById("financeModal");
+  if(modal && modal.classList.contains("show")){
+    openFinance(); // refresh lại số
+  }
+
+});
 
 socket.on("coin-update", d=>{
   document.getElementById("coinVal").textContent =
@@ -1401,19 +1491,46 @@ function computePreviewStored(){
 }
 
 
+
 function startPreviewTicker(){
 
-  if(previewTimer) clearInterval(previewTimer);
+  if(previewTimer){
+    clearInterval(previewTimer);
+    previewTimer = null;
+  }
+
+  // 🔥 KHÔNG chạy nếu không đủ điều kiện
+  if(
+    !factory ||
+    !factory.active ||
+    factory.burned ||
+    !factory.workers ||
+    factory.workers <= 0
+  ){
+    return;
+  }
 
   previewTimer = setInterval(()=>{
 
-    if(!factory) return;
+    // 🔥 Double check mỗi tick
+    if(
+      !factory ||
+      !factory.active ||
+      factory.burned ||
+      !factory.workers ||
+      factory.workers <= 0
+    ){
+      clearInterval(previewTimer);
+      previewTimer = null;
+      return;
+    }
 
     previewStored = computePreviewStored();
 
-    // update UI kho + progress realtime (không cần render lại toàn bộ)
     const storage = Number(factory.storage || 1);
-    const percent = storage > 0 ? (previewStored / storage) * 100 : 0;
+    const percent = storage > 0
+      ? (previewStored / storage) * 100
+      : 0;
 
     document.getElementById("storedVal").textContent =
       Math.floor(previewStored) + "/" + storage;
@@ -2093,6 +2210,66 @@ socket.on("factory-repair-start",(data)=>{
 });
 
 
+
+
+
+
+let currentFactory = null;
+
+function openFinance(){
+
+  if(!currentFactory || currentFactory.empty){
+    return;
+  }
+
+  const f = currentFactory;
+
+  const level   = f.level || 1;
+  const workers = f.workers || 0;
+
+  const baseRate = f.baseRate || (1 * level);
+
+  // 1 ngày = 86400 giây
+  const dailyProduction =
+    baseRate * workers * 86400;
+
+  const dailyFee = f.dailyFee || 200;
+
+  const salary =
+    (f.workerSalary || 50) * workers;
+
+  const net =
+    dailyProduction - dailyFee - salary;
+
+  document.getElementById("fNet")
+    .textContent =
+      Math.floor(net).toLocaleString() + " 💎";
+
+  document.getElementById("fSalary")
+    .textContent =
+      salary.toLocaleString() + " 💎";
+
+  document.getElementById("fFee")
+    .textContent =
+      dailyFee.toLocaleString() + " 💎";
+
+  // 🔥 màu lợi nhuận
+  const netEl = document.getElementById("fNet");
+
+  if(net > 0){
+    netEl.style.color = "#00f0ff";
+  }else{
+    netEl.style.color = "#ff4d4d";
+  }
+
+  document.getElementById("financeModal")
+    .classList.add("show");
+}
+
+function closeFinance(){
+  document.getElementById("financeModal")
+    .classList.remove("show");
+}
 
 </script>
 </body>
