@@ -838,6 +838,66 @@ body{
 
 
 
+
+/* =========================
+   👷 REPAIR WORKER CINEMATIC
+   ========================= */
+
+.repairWorker{
+  position:absolute;
+  bottom:40px;
+  left:-80px;
+  width:60px;
+  z-index:70;
+  display:none;
+}
+
+.repairWorker.show{
+  display:block;
+  animation: repairWalk 2s ease forwards;
+}
+
+.repairWorkerImg{
+  width:100%;
+  filter:
+    drop-shadow(0 10px 25px rgba(0,0,0,.6))
+    drop-shadow(0 0 20px rgba(255,140,0,.4));
+}
+
+@keyframes repairWalk{
+  0%{
+    left:-80px;
+  }
+  100%{
+    left:38%;
+  }
+}
+
+/* ⚡ Spark effect */
+
+.sparkFx{
+  position:absolute;
+  top:10px;
+  right:-20px;
+  width:30px;
+  height:30px;
+  background: radial-gradient(circle, #ffcc66, transparent 60%);
+  opacity:0;
+}
+
+.repairWorker.repairing .sparkFx{
+  animation: sparkPulse .4s infinite;
+}
+
+@keyframes sparkPulse{
+  0%{ opacity:0 }
+  50%{ opacity:1 }
+  100%{ opacity:0 }
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -853,6 +913,10 @@ body{
   <div class="factoryWorkers" id="factoryWorkers"></div>
 
 
+  <div class="repairWorker" id="repairWorker">
+  <img src="/assets/ui/worker-repair.png" class="repairWorkerImg">
+  <div class="sparkFx"></div>
+</div>
 
 <!-- 🔥 FIRE OVERLAY -->
 <div class="fireOverlay" id="fireOverlay">
@@ -1715,6 +1779,14 @@ socket.on("factory-repaired",(data)=>{
 
   clearInterval(repairInterval);
 
+
+const worker = document.getElementById("repairWorker");
+if(worker){
+  worker.classList.remove("repairing");
+  worker.classList.remove("show");
+}
+
+
   document.getElementById("repairTimer").textContent = "";
 
   document.getElementById("fireOverlay")
@@ -1780,14 +1852,28 @@ function startRepairCountdown(endAt){
 socket.on("factory-repair-start",(data)=>{
   if(data.index !== index) return;
 
+  // Ẩn nút repair
   document.getElementById("repairBtn")
     ?.classList.remove("show");
 
+  // 🔥 Bật worker chạy ra
+  const worker = document.getElementById("repairWorker");
+
+  if(worker){
+    worker.classList.remove("repairing");
+    worker.classList.add("show");
+
+    // sau khi chạy tới nơi (2s) thì bật spark
+    setTimeout(()=>{
+      worker.classList.add("repairing");
+    },2000);
+  }
+
+  // ▶ bắt đầu progress bar
   startRepairCountdown(data.repairEndAt);
 
-  showNotify("Repairing factory...","warn");
+  showNotify("👷 Worker đang sửa nhà máy...","warn");
 });
-
 
 
 
