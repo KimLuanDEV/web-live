@@ -567,12 +567,34 @@ body{
 
 
 
+
+.backBtn{
+  position:absolute;
+  width:110px;
+  z-index:20;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.backBtn:active{
+  transform:scale(.92);
+}
+
+.backImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 15px 35px rgba(0,0,0,.6))
+    drop-shadow(0 0 20px rgba(0,240,255,.25));
+}
+
+
 </style>
 </head>
 <body>
 
-<div class="topbar">
-  <div class="back" onclick="location.href='/game-diamond-factory.html'">←</div>
+
+  
 
 
 
@@ -605,6 +627,12 @@ body{
     <span id="coinVal"></span>
   </div>
 </div>
+
+
+<div class="backBtn" onclick="location.href='/game-diamond-factory.html'">
+  <img src="/assets/ui/back-panel.png" class="backImg">
+</div>
+
 
 
   <div class="storagePanel">
@@ -661,7 +689,6 @@ body{
 
     </div>
 
-</div>
 
 
 <script src="/socket.io/socket.io.js"></script>
@@ -679,6 +706,14 @@ const socket = io({
 
 
 
+
+const BACK_POS = {
+  1: { top:"12%", left:"8%", scale:1 },
+  2: { top:"12%", left:"8%", scale:1 },
+  3: { top:"10%", left:"6%", scale:1 },
+  4: { top:"10%", left:"6%", scale:1 },
+  5: { top:"10%", left:"6%", scale:1 }
+};
 
 
 
@@ -877,6 +912,20 @@ function render(){
       img.src = "/assets/ui/factory-lv5.png";
     };
   }
+
+
+
+
+ // ===== Back =====
+
+  const back = document.querySelector(".backBtn");
+if(back){
+  const cfg = BACK_POS[level] || BACK_POS[5];
+
+  back.style.top  = cfg.top;
+  back.style.left = cfg.left;
+  back.style.transform = `scale(${cfg.scale})`;
+}
 
 
 
