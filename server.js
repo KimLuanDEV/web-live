@@ -2528,10 +2528,6 @@ f.active = true;
 socket.on("factory-collect", ({ index })=>{
 
 
-if(!f.workers || f.workers <= 0){
-  return;
-}
-
 
   const uid = socket.data.uid;
   if(!uid) return;
