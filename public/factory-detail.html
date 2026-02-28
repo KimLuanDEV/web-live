@@ -771,6 +771,73 @@ body{
 
 
 
+
+/* =========================
+   🔔 NOTIFY PANEL
+   ========================= */
+
+.notify{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%) translateY(-30px);
+  opacity:0;
+  z-index:2000;
+  transition:.35s ease;
+  pointer-events:none;
+}
+
+.notify.show{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+.notifyInner{
+  min-width:260px;
+  padding:14px 18px;
+  border-radius:18px;
+
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0,240,255,.15), transparent 60%),
+    linear-gradient(180deg, rgba(10,20,30,.95), rgba(4,8,13,.95));
+
+  border:1px solid rgba(0,240,255,.35);
+  box-shadow:
+    0 0 40px rgba(0,240,255,.25),
+    0 20px 50px rgba(0,0,0,.7);
+
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.notifyIcon{
+  font-size:18px;
+}
+
+.notifyText{
+  font-weight:900;
+  font-size:14px;
+  letter-spacing:.5px;
+}
+
+.notify.good .notifyInner{
+  border-color: rgba(0,240,255,.5);
+}
+
+.notify.warn .notifyInner{
+  border-color: rgba(255,204,102,.6);
+}
+
+.notify.bad .notifyInner{
+  border-color: rgba(255,70,70,.7);
+  box-shadow:
+    0 0 45px rgba(255,0,0,.35),
+    0 20px 50px rgba(0,0,0,.7);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -976,6 +1043,18 @@ body{
   </div>
 </div>
 
+
+
+
+<!-- =========================
+     🔔 NOTIFICATION PANEL
+     ========================= -->
+<div class="notify" id="notifyBox">
+  <div class="notifyInner">
+    <div class="notifyIcon" id="notifyIcon">⚠</div>
+    <div class="notifyText" id="notifyText"></div>
+  </div>
+</div>
 
 
 
@@ -1439,10 +1518,10 @@ function renderWorkers(){
 
 function collect(){
 
-  if(factory?.burned){
-    alert("Factory is burned!");
-    return;
-  }
+if(factory?.burned){
+  showNotify("Factory is burned!","bad");
+  return;
+}
 
   socket.emit("factory-collect",{ index });
 }
@@ -1452,8 +1531,8 @@ function collect(){
 function hire(){
 
 
-  if(factory?.burned){
-  alert("Factory is burned!");
+if(factory?.burned){
+  showNotify("Factory is burned!","bad");
   return;
 }
 
@@ -1463,7 +1542,7 @@ function hire(){
   const maxWorkers = Number(factory.maxWorkers || 1);
 
   if(workers >= maxWorkers){
-    alert("Max workers reached");
+    showNotify("Max workers reached","warn");
     return;
   }
 
@@ -1500,7 +1579,7 @@ function confirmHire(){
 function upgrade(){
 
 if(factory?.burned){
-  alert("Factory is burned!");
+  showNotify("Factory is burned!","bad");
   return;
 }
 
@@ -1549,7 +1628,7 @@ function confirmUpgrade(){
 
 
 socket.on("factory-error",(d)=>{
-  alert(d.message);
+ showNotify(d.message,"bad");
 });
 
 
@@ -1562,7 +1641,7 @@ socket.on("factory-fire",(data)=>{
   activateFireMode();
 
 
-  alert("FACTORY BURNED!");
+ showNotify("FACTORY BURNED!","bad");
 
   document.getElementById("activeDot")
     .classList.add("off");
@@ -1611,6 +1690,28 @@ socket.on("factory-repaired",(data)=>{
   if(data.index !== index) return;
   location.reload();
 });
+
+
+
+function showNotify(message,type="warn"){
+
+  const box = document.getElementById("notifyBox");
+  const text = document.getElementById("notifyText");
+  const icon = document.getElementById("notifyIcon");
+
+  text.textContent = message;
+
+  box.className = "notify show " + type;
+
+  if(type==="good") icon.textContent="✔";
+  else if(type==="bad") icon.textContent="✖";
+  else icon.textContent="⚠";
+
+  setTimeout(()=>{
+    box.classList.remove("show");
+  },2500);
+}
+
 
 
 </script>
