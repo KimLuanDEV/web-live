@@ -1068,7 +1068,9 @@ body{
 
 
 <div class="toggleBtn" onclick="toggleFactory()">
-  <img src="/assets/ui/factory-toggle.png" class="toggleImg">
+  <img id="toggleImg"
+       src="/assets/ui/factory-toggle-on.png"
+       class="toggleImg">
 </div>
 
 
@@ -1648,6 +1650,26 @@ if(img){
   }
 }
 
+
+
+
+
+// ===== TOGGLE BUTTON IMAGE =====
+const toggleImg = document.getElementById("toggleImg");
+
+if(toggleImg){
+
+  if(factory.burned){
+    toggleImg.src = "/assets/ui/factory-toggle-off.png";
+  }
+  else if(factory.active){
+    toggleImg.src = "/assets/ui/factory-toggle-on.png";
+  }
+  else{
+    toggleImg.src = "/assets/ui/factory-toggle-off.png";
+  }
+
+}
 
 
 
