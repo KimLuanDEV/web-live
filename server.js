@@ -2435,6 +2435,109 @@ f.stored += seconds * productionRate;
 
 
 
+// ================================
+// ⚔ FACTORY RAID (PVP)
+// ================================
+socket.on("factory-raid", ({ targetUid, index }) => {
+
+  const uid = socket.data.uid;
+  if(!uid || !targetUid) return;
+
+  // ❌ không tự cướp mình
+  if(uid === targetUid){
+    socket.emit("factory-error",{
+      message:"CANNOT_RAID_SELF"
+    });
+    return;
+  }
+
+  const users = loadUsers();
+  const attacker = users[uid];
+  const victim = users[targetUid];
+
+  if(!attacker?.profile || !victim?.profile) return;
+
+  factoryDB[targetUid] ||= [];
+
+  const f = factoryDB[targetUid][index];
+  if(!f || f.empty){
+    socket.emit("factory-error",{
+      message:"FACTORY_NOT_FOUND"
+    });
+    return;
+  }
+
+  if(f.active === false){
+    socket.emit("factory-error",{
+      message:"FACTORY_INACTIVE"
+    });
+    return;
+  }
+
+  // ⏳ cooldown 30 phút
+  const now = Date.now();
+  attacker.lastRaidAt ||= 0;
+
+  if(now - attacker.lastRaidAt < 30 * 60 * 1000){
+    socket.emit("factory-error",{
+      message:"RAID_COOLDOWN"
+    });
+    return;
+  }
+
+  // 🔥 cập nhật sản lượng server-side trước khi cướp
+  const seconds = Math.floor((now - f.lastUpdate)/1000);
+
+  if(seconds > 0){
+    const productionRate =
+      f.workers * (f.baseRate || 1);
+
+    f.stored += seconds * productionRate;
+
+    if(f.stored > f.storage){
+      f.stored = f.storage;
+    }
+
+    f.stored = Math.floor(f.stored);
+    f.lastUpdate = now;
+  }
+
+  if(!f.stored || f.stored <= 0){
+    socket.emit("factory-error",{
+      message:"NOTHING_TO_RAID"
+    });
+    return;
+  }
+
+  // 💀 cướp 30%
+  const steal = Math.floor(f.stored * 0.3);
+
+  f.stored -= steal;
+
+  attacker.profile.coins = Math.floor(
+    Number(attacker.profile.coins || 0) + steal
+  );
+
+  attacker.lastRaidAt = now;
+
+  saveUsers(users);
+  saveFactories(factoryDB);
+
+  emitCoinUpdate(uid);
+
+  // 🔥 gửi cho attacker
+  socket.emit("factory-raid-success",{
+    amount: steal
+  });
+
+  // 🔔 gửi cho victim nếu online
+  emitToUser(targetUid,"factory-raided",{
+    amount: steal
+  });
+
+});
+
+
 socket.on("factory-build", ({ index })=>{
 
   const uid = socket.data.uid;
@@ -2502,6 +2605,58 @@ factoryDB[uid][index] = {
     factoryDB[uid]
   );
 });
+
+
+
+// ================================
+// 👀 FACTORY VISIT MODE
+// ================================
+socket.on("factory-visit", ({ targetUid })=>{
+
+  if(!targetUid) return;
+
+  factoryDB[targetUid] ||= [
+    {empty:true},
+    {empty:true},
+    {empty:true}
+  ];
+
+  // 🔥 cập nhật sản lượng server-side trước khi gửi
+  factoryDB[targetUid].forEach(f=>{
+
+    if(
+      f.empty ||
+      f.active === false ||
+      !f.workers ||
+      f.workers <= 0
+    ) return;
+
+    const now = Date.now();
+    const seconds = Math.floor((now - f.lastUpdate)/1000);
+
+    if(seconds > 0){
+
+      const productionRate =
+        f.workers * (f.baseRate || 1);
+
+      f.stored += seconds * productionRate;
+
+      if(f.stored > f.storage){
+        f.stored = f.storage;
+      }
+
+      f.stored = Math.floor(f.stored);
+      f.lastUpdate = now;
+    }
+
+  });
+
+  saveFactories(factoryDB);
+
+  socket.emit("factory-update", factoryDB[targetUid]);
+
+});
+
 
 
 socket.on("factory-upgrade", ({ index })=>{

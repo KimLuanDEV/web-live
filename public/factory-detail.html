@@ -727,6 +727,11 @@ body{
 </div>
 
 
+<div class="raidBtn" onclick="raid()" style="display:none;">
+  <img src="/assets/ui/btn-raid.png" class="upgradeImg">
+</div>
+
+
 <div class="coinPanel">
   <img src="/assets/ui/coin-panel.png" class="coinBg">
 
@@ -898,6 +903,12 @@ body{
 const params = new URLSearchParams(location.search);
 const index = Number(params.get("index"));
 
+const myUid = JSON.parse(localStorage.getItem("user_profile")||"{}").uid;
+const viewingUid = params.get("uid") || myUid;
+
+const isVisitMode = viewingUid !== myUid;
+
+
 const socket = io({
   auth:{
     uid: JSON.parse(localStorage.getItem("user_profile")||"{}").uid,
@@ -905,6 +916,18 @@ const socket = io({
   }
 });
 
+
+
+
+
+
+const RAID_POS = {
+  1: { top:"76%", left:"50%", scale:1 },
+  2: { top:"76%", left:"50%", scale:1 },
+  3: { top:"76%", left:"50%", scale:1 },
+  4: { top:"76%", left:"50%", scale:1 },
+  5: { top:"76%", left:"50%", scale:1 }
+};
 
 
 
@@ -1009,6 +1032,14 @@ let previewStored = 0;
 
 
 socket.on("factory-update", list=>{
+
+  if(isVisitMode){
+  socket.emit("factory-visit",{
+    targetUid: viewingUid
+  });
+}
+
+
   factory = list[index];
   if(!factory) return;
 
@@ -1113,6 +1144,26 @@ function render(){
       img.src = "/assets/ui/factory-lv5.png";
     };
   }
+
+
+
+
+// ===== RAID =====
+const raidBtn = document.querySelector(".raidBtn");
+
+if(raidBtn){
+
+  if(isVisitMode){
+    raidBtn.style.display = "block";
+
+    const cfg = RAID_POS[level] || RAID_POS[5];
+    raidBtn.style.top  = cfg.top;
+    raidBtn.style.left = cfg.left;
+    raidBtn.style.transform = `scale(${cfg.scale})`;
+  }else{
+    raidBtn.style.display = "none";
+  }
+}
 
 
 
@@ -1320,13 +1371,15 @@ function renderWorkers(){
 }
 
 function collect(){
+    if(isVisitMode) return;
+
   socket.emit("factory-collect",{ index });
 }
 
 
 
 function hire(){
-
+  if(isVisitMode) return;
   if(!factory) return;
 
   const workers = Number(factory.workers || 0);
@@ -1369,6 +1422,7 @@ function confirmHire(){
 
 function upgrade(){
 
+if(isVisitMode) return;
   const level = Number(
     document.getElementById("levelVal").textContent
   );
@@ -1415,6 +1469,27 @@ function confirmUpgrade(){
 socket.on("factory-error",(d)=>{
   alert(d.message);
 });
+
+
+
+function raid(){
+
+  if(!isVisitMode) return;
+
+  socket.emit("factory-raid",{
+    targetUid: viewingUid,
+    index
+  });
+}
+
+socket.on("factory-raid-success",(d)=>{
+  alert("⚔ Cướp thành công +" + d.amount + " 💎");
+});
+
+socket.on("factory-raided",(d)=>{
+  alert("💀 Nhà máy bạn bị cướp " + d.amount + " 💎");
+});
+
 
 
 </script>
