@@ -1956,33 +1956,26 @@ socket.on("factory-repaired",(data)=>{
 
   clearInterval(repairInterval);
 
-  // 🔥 reset local state
-  factory.burned  = false;
-  factory.active  = true;
-  factory.stored  = 0;        // 👈 QUAN TRỌNG
-  factory.workers = factory.workers || 0;
 
-  // 🔥 reset UI storage
-  const storedVal = document.getElementById("storedVal");
-  const progress  = document.getElementById("progressFill");
+const worker = document.getElementById("repairWorker");
+if(worker){
+  worker.classList.remove("repairing");
+  worker.classList.remove("show");
+}
 
-  if(storedVal){
-    storedVal.textContent = "0/" + (factory.capacity || 0);
-  }
+document.getElementById("repairHUD")
+  ?.classList.remove("show");
 
-  if(progress){
-    progress.style.width = "0%";
-  }
-
-  // 🔥 Ẩn HUD + fire
-  document.getElementById("repairHUD")
-    ?.classList.remove("show");
+  document.getElementById("repairTimer").textContent = "";
 
   document.getElementById("fireOverlay")
     ?.classList.remove("show");
 
   document.getElementById("repairBtn")
     ?.classList.remove("show");
+
+  factory.burned = false;
+  factory.active = true;
 
   render();
 
