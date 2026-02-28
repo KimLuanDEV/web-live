@@ -102,6 +102,27 @@ let factoryDB = loadFactories();
 
 
 // ================================
+// 🧹 FORCE SINGLE FACTORY CLEANUP
+// ================================
+Object.keys(factoryDB).forEach(uid => {
+
+  const list = factoryDB[uid];
+  if(!Array.isArray(list)) return;
+
+  // Nếu có nhiều hơn 1 → chỉ giữ lại cái đầu tiên đã build
+  const firstBuilt = list.find(f => f && !f.empty);
+
+  if(firstBuilt){
+    factoryDB[uid] = [ firstBuilt ];
+  }else{
+    factoryDB[uid] = [ { empty:true } ];
+  }
+
+});
+
+saveFactories(factoryDB);
+
+// ================================
 // 🔥 INIT FIRE FIELD (SAFE)
 // ================================
 Object.keys(factoryDB).forEach(uid=>{
@@ -2402,6 +2423,12 @@ if (meNow?.role === "admin" && timeRaceRound) {
 factoryDB[uid] ||= [
   {empty:true},
 ];
+
+// Nếu lỡ còn dư slot → cắt bỏ
+if(factoryDB[uid].length > 1){
+  factoryDB[uid] = [ factoryDB[uid][0] ];
+}
+
 
 // 🔥 TÍNH SẢN LƯỢNG SERVER-SIDE
 factoryDB[uid].forEach(f=>{
