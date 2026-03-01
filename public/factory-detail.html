@@ -309,6 +309,7 @@ body{
   z-index: 11;
   transform-origin: left center;
   bottom: -3px;
+  cursor: pointer;
 }
 
 .storageBg{
@@ -550,23 +551,6 @@ body{
 
 
 
-
-.backBtn{
-  position:absolute;
-  width:110px;
-  z-index:20;
-  cursor:pointer;
-  transition:.25s ease;
-}
-
-.backBtn:active{
-  transform:scale(.92);
-}
-
-.backImg{
-  width:100%;
-  display:block;
-}
 
 
 
@@ -982,7 +966,7 @@ body{
   cursor:pointer;
   transition:.25s ease;
   left:-5px;
-  top:95px;
+  top:57px;
 }
 
 .toggleBtn:active{
@@ -1147,12 +1131,6 @@ body{
     <span id="coinVal"></span>
   </div>
 </div>
-
-
-<div class="backBtn" onclick="location.href='/game-diamond-factory.html'">
-  <img src="/assets/ui/back-panel.png" class="backImg">
-</div>
-
 
 
   <div class="storagePanel" onclick="collect()">
@@ -1497,27 +1475,6 @@ const socket = io({
     deviceId: localStorage.getItem("device_id")
   }
 });
-
-
-
-
-const BACK_POS = {
-  1: { top:"38px", left:"-1%", scale:1 },
-  2: { top:"38px", left:"-1%", scale:1 },
-  3: { top:"38px", left:"-1%", scale:1 },
-  4: { top:"38px", left:"-1%", scale:1 },
-  5: { top:"38px", left:"-1%", scale:1 },
-  6: { top:"38px", left:"-1%", scale:1 },
-  7: { top:"38px", left:"-1%", scale:1 },
-  8: { top:"38px", left:"-1%", scale:1 },
-  9: { top:"38px", left:"-1%", scale:1 },
-  10: { top:"38px", left:"-1%", scale:1 },
-  11: { top:"38px", left:"-1%", scale:1 },
-  12: { top:"38px", left:"-1%", scale:1 },
-  13: { top:"38px", left:"-1%", scale:1 },
-  14: { top:"38px", left:"-1%", scale:1 },
-  15: { top:"38px", left:"-1%", scale:1 },
-};
 
 
 
@@ -1917,19 +1874,6 @@ if(toggleImg){
     toggleImg.src = "/assets/ui/factory-toggle-off.png";
   }
 
-}
-
-
-
- // ===== Back =====
-
-  const back = document.querySelector(".backBtn");
-if(back){
-  const cfg = BACK_POS[level] || BACK_POS[5];
-
-  back.style.top  = cfg.top;
-  back.style.left = cfg.left;
-  back.style.transform = `scale(${cfg.scale})`;
 }
 
 
