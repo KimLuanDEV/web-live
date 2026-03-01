@@ -285,13 +285,27 @@ setInterval(()=>{
       // =========================
       const grossPerSec = baseRate * workers;
 
-      // =========================
-      // 🔥 70% COST MODEL
-      // =========================
-      const operatingCost = grossPerSec * 0.5;  // 50%
-      const salaryCost    = grossPerSec * 0.2;  // 20%
-      const totalCost     = operatingCost + salaryCost;
+// =========================
+// 💰 BASE COST (70%)
+// =========================
+const operatingCost = grossPerSec * 0.5;  // 50%
+const salaryCost    = grossPerSec * 0.2;  // 20%
 
+// =========================
+// 🔥 FIRE DEFENSE COST (10% nếu level >=1)
+// =========================
+let fireDefenseCost = 0;
+
+if((f.fireDefenseLevel || 0) >= 1){
+  fireDefenseCost = grossPerSec * 0.10; // 10%
+}
+
+const totalCost =
+  operatingCost +
+  salaryCost +
+  fireDefenseCost;
+
+      
       // =========================
       // 💸 TRỪ COIN
       // =========================

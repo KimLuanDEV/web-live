@@ -1267,6 +1267,12 @@ body{
 </div>
 
 <div class="uRow">
+  <span>Fire Defense Cost / sec</span>
+  <b id="fFireCost">0 💎</b>
+</div>
+
+
+<div class="uRow">
   <span>Fire Risk / 10 sec</span>
   <b id="fFireRisk">0 %</b>
 </div>
@@ -2403,14 +2409,31 @@ function openFinance(){
   const grossPerSec = baseRate * workers;
 
   // =========================
-  // 🔥 70% COST MODEL
+  // 💰 BASE COST
   // =========================
   const operatingPerSec = grossPerSec * 0.5; // 50%
   const salaryPerSec    = grossPerSec * 0.2; // 20%
-  const netPerSec       = grossPerSec * 0.1; // 10%
 
   // =========================
-  // 📅 1 DAY = 86400 seconds
+  // 🔥 FIRE DEFENSE COST (10% nếu level ≥1)
+  // =========================
+  let fireDefensePerSec = 0;
+
+  if((f.fireDefenseLevel || 0) >= 1){
+    fireDefensePerSec = grossPerSec * 0.10;
+  }
+
+  // =========================
+  // 📊 NET PER SECOND
+  // =========================
+  const netPerSec =
+    grossPerSec -
+    operatingPerSec -
+    salaryPerSec -
+    fireDefensePerSec;
+
+  // =========================
+  // 📅 DAILY NET
   // =========================
   const dailyNet = netPerSec * 86400;
 
@@ -2426,7 +2449,9 @@ function openFinance(){
   document.getElementById("fSalSec").textContent =
     salaryPerSec.toFixed(2) + " 💎";
 
-  // màu lợi nhuận
+  document.getElementById("fFireCost").textContent =
+    fireDefensePerSec.toFixed(2) + " 💎";
+
   const netEl = document.getElementById("fNet");
 
   if(netPerSec > 0){
@@ -2435,53 +2460,47 @@ function openFinance(){
     netEl.style.color = "#ff4d4d";
   }
 
+  // =========================
+  // 🔥 FIRE RISK (10 sec)
+  // =========================
 
+  const FIRE_CHANCE = 0.005;
+  const MAX_FIRE_DEFENSE_LEVEL = 20;
 
-// =========================
-// 🔥 FIRE RISK CALCULATION
-// =========================
+  const defenseLevel = Math.min(
+    f.fireDefenseLevel || 0,
+    MAX_FIRE_DEFENSE_LEVEL
+  );
 
-const FIRE_CHANCE = 0.005; // 0.5% mỗi giây
-const MAX_FIRE_DEFENSE_LEVEL = 20;
+  const reduce = defenseLevel * 0.0002;
 
-const defenseLevel = Math.min(
-  f.fireDefenseLevel || 0,
-  MAX_FIRE_DEFENSE_LEVEL
-);
+  const finalChancePerSec = Math.max(
+    0.001,
+    FIRE_CHANCE - reduce
+  );
 
-const reduce = defenseLevel * 0.0002;
+  // 10 giây tích lũy thật
+  const chance10Sec =
+    1 - Math.pow(1 - finalChancePerSec, 1);
 
-const finalChancePerSec = Math.max(
-  0.001,
-  FIRE_CHANCE - reduce
-);
+  const percent = (chance10Sec * 100).toFixed(2);
 
-// 🔥 10 GIÂY (xác suất tích lũy)
-const chance10Sec = 1 - Math.pow(1 - finalChancePerSec, 1);
+  const fireEl = document.getElementById("fFireRisk");
+  fireEl.textContent = percent + " %";
 
-const percent = (chance10Sec * 100).toFixed(2);
-
-const fireEl = document.getElementById("fFireRisk");
-fireEl.textContent = percent + " %";
-
-// đổi màu theo rủi ro
-if(percent > 4){
-  fireEl.style.color = "#ff4d4d";      // nguy hiểm
-}
-else if(percent > 2){
-  fireEl.style.color = "#ffcc66";      // trung bình
-}
-else{
-  fireEl.style.color = "#00f0ff";      // an toàn
-}
-
-
-
+  if(percent > 4){
+    fireEl.style.color = "#ff4d4d";
+  }
+  else if(percent > 2){
+    fireEl.style.color = "#ffcc66";
+  }
+  else{
+    fireEl.style.color = "#00f0ff";
+  }
 
   document.getElementById("financeModal")
     .classList.add("show");
 }
-
 
 
 
