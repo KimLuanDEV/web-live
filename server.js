@@ -159,7 +159,7 @@ saveFactories(factoryDB);
 // 🔥 FACTORY FIRE DISASTER ENGINE
 // ================================
 
-const FIRE_INTERVAL = 1000; // 1s
+const FIRE_INTERVAL = 10000; // 10s
 const FIRE_CHANCE   = 0.005; // 0.5% hỏa hoạn giây
 const MAX_FIRE_DEFENSE_LEVEL = 20;
 
@@ -185,7 +185,7 @@ setInterval(()=>{
       // 🔥 TÍNH TỶ LỆ CHÁY THEO LEVEL PHÒNG CHÁY
 const baseChance = FIRE_CHANCE;
 
-// mỗi level giảm 0.0008 (0.02%)
+// mỗi level giảm 0.0002 (0.02%)
 const defenseLevel = Math.min(
   f.fireDefenseLevel || 0,
   MAX_FIRE_DEFENSE_LEVEL
@@ -2531,7 +2531,7 @@ const cost = (level + 1) * 200;
 
   me.profile.coins -= cost;
 
-  
+
   f.fireDefenseLevel = Math.min(
   level + 1,
   MAX_FIRE_DEFENSE_LEVEL

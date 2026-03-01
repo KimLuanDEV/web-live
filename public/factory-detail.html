@@ -1266,6 +1266,10 @@ body{
   <b id="fSalSec">0 💎</b>
 </div>
 
+<div class="uRow">
+  <span>Fire Risk / 10 sec</span>
+  <b id="fFireRisk">0 %</b>
+</div>
 
     <div class="uActions">
       <button class="uBtn cancel"
@@ -2410,6 +2414,49 @@ function openFinance(){
   }else{
     netEl.style.color = "#ff4d4d";
   }
+
+
+
+// =========================
+// 🔥 FIRE RISK CALCULATION
+// =========================
+
+const FIRE_CHANCE = 0.005; // 0.5% mỗi giây
+const MAX_FIRE_DEFENSE_LEVEL = 20;
+
+const defenseLevel = Math.min(
+  f.fireDefenseLevel || 0,
+  MAX_FIRE_DEFENSE_LEVEL
+);
+
+const reduce = defenseLevel * 0.0002;
+
+const finalChancePerSec = Math.max(
+  0.001,
+  FIRE_CHANCE - reduce
+);
+
+// 🔥 10 GIÂY (xác suất tích lũy)
+const chance10Sec = 1 - Math.pow(1 - finalChancePerSec, 10);
+
+const percent = (chance10Sec * 100).toFixed(2);
+
+const fireEl = document.getElementById("fFireRisk");
+fireEl.textContent = percent + " %";
+
+// đổi màu theo rủi ro
+if(percent > 4){
+  fireEl.style.color = "#ff4d4d";      // nguy hiểm
+}
+else if(percent > 2){
+  fireEl.style.color = "#ffcc66";      // trung bình
+}
+else{
+  fireEl.style.color = "#00f0ff";      // an toàn
+}
+
+
+
 
   document.getElementById("financeModal")
     .classList.add("show");
