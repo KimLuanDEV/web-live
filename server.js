@@ -227,11 +227,21 @@ f.stored  = 0;
 f.level ||= 1;
 if(f.level > 1){
   f.level -= 1;
-
-  // 🔧 cập nhật lại chỉ số theo level mới
-f.storage  = 100 * f.level;
-f.baseRate = 1;   // 🔥 FIX: luôn 1/s mỗi worker
 }
+
+// 🔧 cập nhật lại chỉ số theo level mới
+f.storage  = 100 * f.level;
+f.baseRate = 1;
+
+// 🔥 UPDATE MAX WORKER THEO LEVEL
+f.maxWorkers = f.level;
+
+// 🔒 Clamp worker nếu vượt quá level mới
+if(f.workers > f.maxWorkers){
+  f.workers = f.maxWorkers;
+}
+
+
 
 // 🔥 reset timer
 f.lastUpdate    = Date.now();
@@ -466,8 +476,17 @@ f.repairEndAt = null;
 
 f.burned = false;
 
+// 🔥 Đảm bảo worker đúng theo level hiện tại
+f.maxWorkers = f.level;
+
+if(f.workers > f.maxWorkers){
+  f.workers = f.maxWorkers;
+}
+
 // 🔥 KHÔNG tự bật lại nếu chưa có worker
 f.active = (f.workers > 0);
+
+
 
 // 🔥 reset lại chu kỳ sản xuất
 f.stored = 0;
