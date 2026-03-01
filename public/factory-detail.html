@@ -2420,7 +2420,14 @@ function openFinance(){
   let fireDefensePerSec = 0;
 
   if((f.fireDefenseLevel || 0) >= 1){
-    fireDefensePerSec = grossPerSec * 0.10;
+   const defenseLevel = Math.min(
+  f.fireDefenseLevel || 0,
+  20
+);
+
+const defensePercent = defenseLevel * 0.005;
+
+fireDefensePerSec = grossPerSec * defensePercent;
   }
 
   // =========================

@@ -307,14 +307,19 @@ setInterval(()=>{
 const operatingCost = grossPerSec * 0.5;  // 50%
 const salaryCost    = grossPerSec * 0.2;  // 20%
 
-// =========================
-// 🔥 FIRE DEFENSE COST (10% nếu level >=1)
-// =========================
+// 🔥 FIRE DEFENSE COST (scale theo level)
 let fireDefenseCost = 0;
 
-if((f.fireDefenseLevel || 0) >= 1){
-  fireDefenseCost = grossPerSec * 0.10; // 10%
-}
+const defenseLevel = Math.min(
+  f.fireDefenseLevel || 0,
+  MAX_FIRE_DEFENSE_LEVEL
+);
+
+// mỗi level = 0.5%
+// level 20 = 10%
+const defensePercent = defenseLevel * 0.005;
+
+fireDefenseCost = grossPerSec * defensePercent;
 
 const totalCost =
   operatingCost +
