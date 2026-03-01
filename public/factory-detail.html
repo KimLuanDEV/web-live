@@ -1337,6 +1337,11 @@ body{
   <b id="fFireCost">0 💎</b>
 </div>
 
+<div class="uRow">
+  <span>Hospital Operating Cost / sec</span>
+  <b id="fHospitalCost">0 💎</b>
+</div>
+
 
 <div class="uRow">
   <span>Fire Risk / 10 sec</span>
@@ -2488,20 +2493,18 @@ function openFinance(){
   const salaryPerSec    = grossPerSec * 0.2; // 20%
 
   // =========================
-  // 🔥 FIRE DEFENSE COST (10% nếu level ≥1)
+  // 🔥 FIRE DEFENSE COST
   // =========================
-  let fireDefensePerSec = 0;
+  const fireLevel = Math.min(f.fireDefenseLevel || 0, 20);
+  const firePercent = fireLevel * 0.005; // max 10%
+  const fireDefensePerSec = grossPerSec * firePercent;
 
-  if((f.fireDefenseLevel || 0) >= 1){
-   const defenseLevel = Math.min(
-  f.fireDefenseLevel || 0,
-  20
-);
-
-const defensePercent = defenseLevel * 0.005;
-
-fireDefensePerSec = grossPerSec * defensePercent;
-  }
+  // =========================
+  // 🏥 HOSPITAL COST
+  // =========================
+  const hospitalLevel = Math.min(f.hospitalLevel || 0, 20);
+  const hospitalPercent = hospitalLevel * 0.005; // max 10%
+  const hospitalPerSec = grossPerSec * hospitalPercent;
 
   // =========================
   // 📊 NET PER SECOND
@@ -2510,11 +2513,9 @@ fireDefensePerSec = grossPerSec * defensePercent;
     grossPerSec -
     operatingPerSec -
     salaryPerSec -
-    fireDefensePerSec;
+    fireDefensePerSec -
+    hospitalPerSec;
 
-  // =========================
-  // 📅 DAILY NET
-  // =========================
   const dailyNet = netPerSec * 86400;
 
   // =========================
@@ -2532,93 +2533,52 @@ fireDefensePerSec = grossPerSec * defensePercent;
   document.getElementById("fFireCost").textContent =
     fireDefensePerSec.toFixed(2) + " 💎";
 
-  const netEl = document.getElementById("fNet");
+  document.getElementById("fHospitalCost").textContent =
+    hospitalPerSec.toFixed(2) + " 💎";
 
-  if(netPerSec > 0){
-    netEl.style.color = "#00f0ff";
-  }else{
-    netEl.style.color = "#ff4d4d";
+  const netEl = document.getElementById("fNet");
+  netEl.style.color = netPerSec > 0 ? "#00f0ff" : "#ff4d4d";
+
+  // =========================
+  // ☠️ WORKER DEATH RISK
+  // =========================
+  const BASE_DEATH = 0.005; // 0.5%
+  const hospitalReduce = hospitalLevel * 0.0002; // mỗi level giảm 0.02%
+  const finalDeathChance = Math.max(0.001, BASE_DEATH - hospitalReduce);
+
+  let deathPercent = 0;
+  if(f.active !== false && !f.burned && workers > 0){
+    deathPercent = finalDeathChance * 100;
   }
 
+  const deathEl = document.getElementById("fDeathRisk");
+  deathEl.textContent = deathPercent.toFixed(2) + " %";
 
-
-// =========================
-// ☠️ WORKER DEATH RISK (10 sec)
-// =========================
-
-// Base 0.5%
-const BASE_DEATH_CHANCE = 0.005;
-
-// Hospital max 20 level
-const MAX_HOSPITAL_LEVEL = 20;
-
-const hospitalLevel = Math.min(
-  f.hospitalLevel || 0,
-  MAX_HOSPITAL_LEVEL
-);
-
-// mỗi level giảm 0.02% (0.0002)
-const hospitalReduce = hospitalLevel * 0.0002;
-
-// final chance không dưới 0.1%
-const finalDeathChance = Math.max(
-  0.001,
-  BASE_DEATH_CHANCE - hospitalReduce
-);
-
-let deathPercent = 0;
-
-if(f.active !== false && !f.burned && workers > 0){
-  deathPercent = finalDeathChance * 100;
-}
-
-const deathEl = document.getElementById("fDeathRisk");
-deathEl.textContent = deathPercent.toFixed(2) + " %";
-
-// màu hiển thị
-if(deathPercent <= 0.2){
-  deathEl.style.color = "#00f0ff"; // rất an toàn
-}
-else if(deathPercent <= 0.35){
-  deathEl.style.color = "#ffcc66"; // trung bình
-}
-else{
-  deathEl.style.color = "#ff4d4d"; // nguy hiểm
-}
-
+  if(deathPercent <= 0.2){
+    deathEl.style.color = "#00f0ff";
+  }else if(deathPercent <= 0.35){
+    deathEl.style.color = "#ffcc66";
+  }else{
+    deathEl.style.color = "#ff4d4d";
+  }
 
   // =========================
-  // 🔥 FIRE RISK (10 sec)
+  // 🔥 FIRE RISK
   // =========================
+  const BASE_FIRE = 0.005; // 0.5%
+  const fireReduce = fireLevel * 0.0002;
+  const finalFireChance = Math.max(0.001, BASE_FIRE - fireReduce);
 
-  const FIRE_CHANCE = 0.005;
-  const MAX_FIRE_DEFENSE_LEVEL = 20;
-
-  const defenseLevel = Math.min(
-    f.fireDefenseLevel || 0,
-    MAX_FIRE_DEFENSE_LEVEL
-  );
-
-  const reduce = defenseLevel * 0.0002;
-
-  const finalChancePerSec = Math.max(
-    0.001,
-    FIRE_CHANCE - reduce
-  );
-
-  // 10 giây tích lũy thật
-  const chance10Sec =
-    1 - Math.pow(1 - finalChancePerSec, 1);
-
-  const percent = (chance10Sec * 100).toFixed(2);
+  const firePercent10 =
+    (1 - Math.pow(1 - finalFireChance, 1)) * 100;
 
   const fireEl = document.getElementById("fFireRisk");
-  fireEl.textContent = percent + " %";
+  fireEl.textContent = firePercent10.toFixed(2) + " %";
 
-  if(percent > 4){
+  if(firePercent10 > 4){
     fireEl.style.color = "#ff4d4d";
   }
-  else if(percent > 2){
+  else if(firePercent10 > 2){
     fireEl.style.color = "#ffcc66";
   }
   else{
