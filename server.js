@@ -274,9 +274,10 @@ setInterval(()=>{
       // =========================
       if(user.profile.coins >= totalCost){
 
-        user.profile.coins = Math.floor(
-          Number(user.profile.coins || 0) - totalCost
-        );
+      user.profile.coins =
+  Math.round(
+    (Number(user.profile.coins || 0) - totalCost) * 100
+  ) / 100;
 
         userChanged = true;
 
