@@ -1044,8 +1044,8 @@ body{
   width:100%;
   display:block;
   filter:
-    drop-shadow(0 12px 30px rgba(0,0,0,.6))
-    
+    drop-shadow(0 12px 30px rgba(0,0,0,.6));
+  transform: scaleX(-1);
 }
 
 
@@ -1053,10 +1053,12 @@ body{
 
 .hospitalBtn{
   position:absolute;
-  width:130px;
+  width:180px;
   z-index:6;
   cursor:pointer;
   transition:.25s ease;
+  left: -42px;
+  bottom: 204px;
 }
 
 .hospitalBtn:active{
