@@ -1050,6 +1050,30 @@ body{
 
 
 
+
+.hospitalBtn{
+  position:absolute;
+  width:130px;
+  z-index:6;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.hospitalBtn:active{
+  transform:scale(.95);
+}
+
+.hospitalImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 12px 30px rgba(0,0,0,.6))
+    drop-shadow(0 0 25px rgba(0,255,180,.25));
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -1089,6 +1113,12 @@ body{
   <div class="repairTime" id="repairTimer">0s</div>
 </div>
   
+</div>
+
+
+
+<div class="hospitalBtn" onclick="openHospital()">
+  <img src="/assets/ui/hospital-btn.png" class="hospitalImg">
 </div>
 
 
@@ -1202,6 +1232,40 @@ body{
 
 
 
+
+
+
+
+<div class="overlay" id="hospitalModal">
+  <div class="upgradeModalBox">
+
+    <div class="upgradeTitle">
+       🏥 FACTORY HOSPITAL
+    </div>
+
+    <div class="uRow">
+      <span>Current Level</span>
+      <b id="hospitalLevelVal">0</b>
+    </div>
+
+    <div class="uRow next">
+      <span>Death Reduction</span>
+      <b id="hospitalReduceVal">0%</b>
+    </div>
+
+    <div class="uCost">
+      Upgrade Cost: <span id="hospitalCostVal">0</span> 💎
+    </div>
+
+    <div class="uActions">
+      <button class="uBtn cancel"
+        onclick="closeHospital()">Close</button>
+      <button class="uBtn confirm"
+        onclick="upgradeHospital()">Upgrade</button>
+    </div>
+
+  </div>
+</div>
 
 
 
@@ -2698,6 +2762,43 @@ socket.on("worker-death", (data)=>{
     "☠ " + (data.dead || 1) + " worker died.",
     "bad"
   );
+});
+
+
+
+
+
+function openHospital(){
+  document.getElementById("hospitalModal")
+    .classList.add("show");
+
+  const level = factory.hospitalLevel || 0;
+
+  document.getElementById("hospitalLevelVal")
+    .textContent = level;
+
+  const reducePercent = (level * 0.02).toFixed(2);
+  document.getElementById("hospitalReduceVal")
+    .textContent = reducePercent + "%";
+
+  document.getElementById("hospitalCostVal")
+    .textContent = (level + 1) * 800;
+}
+
+function closeHospital(){
+  document.getElementById("hospitalModal")
+    .classList.remove("show");
+}
+
+function upgradeHospital(){
+  socket.emit("hospital-upgrade",{
+    index
+  });
+}
+
+socket.on("hospital-updated",(data)=>{
+  factory.hospitalLevel = data.hospitalLevel;
+  openHospital();
 });
 
 

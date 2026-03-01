@@ -146,6 +146,10 @@ if(typeof f.repairEndAt === "undefined")
 if(typeof f.fireDefenseLevel === "undefined")
   f.fireDefenseLevel = 0;
 
+if(typeof f.hospitalLevel === "undefined")
+  f.hospitalLevel = 0;
+
+
   });
 });
 
@@ -305,7 +309,23 @@ setInterval(()=>{
       let deadCount = 0;
 
       for(let i=0;i<workers;i++){
-        if(Math.random() < WORKER_DEATH_CHANCE){
+
+
+  const hospitalLevel = Math.min(
+  f.hospitalLevel || 0 ,20);
+
+// mỗi level giảm 0.0002 (0.02%)
+// level 20 giảm 0.004 = 0.4%
+const hospitalReduce = hospitalLevel * 0.0002;
+
+const finalDeathChance = Math.max(
+  0.001, // không bao giờ dưới 0.1%
+  WORKER_DEATH_CHANCE - hospitalReduce
+);
+
+if(Math.random() < finalDeathChance){
+         
+         
           deadCount++;
         }
       }
@@ -2620,6 +2640,57 @@ socket.emit("factory-update", factoryDB[uid]);
 // ================================
 // 🏭 DIAMOND FACTORY
 // ================================
+
+
+socket.on("hospital-upgrade", ({ index })=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  const f = factoryDB[uid]?.[index];
+  if(!f || f.empty) return;
+
+  const current = f.hospitalLevel || 0;
+
+  if(current >= 20){
+    socket.emit("notify",{
+      type:"warn",
+      message:"🏥 Hospital max level reached"
+    });
+    return;
+  }
+
+  const cost = (current + 1) * 800;
+
+  if(me.profile.coins < cost){
+    socket.emit("notify",{
+      type:"bad",
+      message:"Not enough 💎"
+    });
+    return;
+  }
+
+  me.profile.coins -= cost;
+
+  f.hospitalLevel += 1;
+
+  saveUsers(users);
+  saveFactories(factoryDB);
+
+  emitCoinUpdate(uid);
+
+  socket.emit("hospital-updated",{
+    index,
+    hospitalLevel: f.hospitalLevel
+  });
+
+});
+
+
 
 
 socket.on("factory-upgrade-fire-defense", ()=>{
