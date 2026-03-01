@@ -161,6 +161,9 @@ saveFactories(factoryDB);
 
 const FIRE_INTERVAL = 1000; // 1s
 const FIRE_CHANCE   = 0.005; // 0.5% hỏa hoạn giây
+const MAX_FIRE_DEFENSE_LEVEL = 20;
+
+
 
 setInterval(()=>{
 
@@ -182,12 +185,17 @@ setInterval(()=>{
       // 🔥 TÍNH TỶ LỆ CHÁY THEO LEVEL PHÒNG CHÁY
 const baseChance = FIRE_CHANCE;
 
-// mỗi level giảm 0.0008 (0.03%)
-const reduce = (f.fireDefenseLevel || 0) * 0.0003;
+// mỗi level giảm 0.0008 (0.02%)
+const defenseLevel = Math.min(
+  f.fireDefenseLevel || 0,
+  MAX_FIRE_DEFENSE_LEVEL
+);
 
-// không bao giờ dưới 0.0005 (0.05%)
+const reduce = defenseLevel * 0.0002;
+
+// không bao giờ dưới 0.001 (0.1%)
 const finalChance = Math.max(
-  0.0005,
+  0.001,
   baseChance - reduce
 );
 
@@ -2502,8 +2510,17 @@ socket.on("factory-upgrade-fire-defense", ()=>{
 
   const f = list[0];
 
-  const level = f.fireDefenseLevel || 0;
-  const cost = (level + 1) * 200;
+const level = f.fireDefenseLevel || 0;
+
+// 🔥 CHẶN MAX LEVEL
+if(level >= MAX_FIRE_DEFENSE_LEVEL){
+  socket.emit("factory-error",{
+    message:"MAX_FIRE_DEFENSE_LEVEL"
+  });
+  return;
+}
+
+const cost = (level + 1) * 200;
 
   if(me.profile.coins < cost){
     socket.emit("factory-error",{
@@ -2513,7 +2530,12 @@ socket.on("factory-upgrade-fire-defense", ()=>{
   }
 
   me.profile.coins -= cost;
-  f.fireDefenseLevel = level + 1;
+
+  
+  f.fireDefenseLevel = Math.min(
+  level + 1,
+  MAX_FIRE_DEFENSE_LEVEL
+);
 
   saveUsers(users);
   saveFactories(factoryDB);

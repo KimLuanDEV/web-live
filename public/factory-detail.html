@@ -2466,22 +2466,55 @@ socket.on("factory-status", data=>{
 
 
 function openFireDefense(){
+
   if(!factory) return;
 
-  const level = factory.fireDefenseLevel || 0;
+  const MAX_FIRE_DEFENSE_LEVEL = 20;
 
-  const reduce = (level * 0.03).toFixed(2);
+  const level = Math.min(
+    factory.fireDefenseLevel || 0,
+    MAX_FIRE_DEFENSE_LEVEL
+  );
+
+  const reduce = (level * 0.02).toFixed(2);
+
   const cost = (level + 1) * 200;
 
-  document.getElementById("fdLevel").textContent = level;
-  document.getElementById("fdReduce").textContent = reduce + "%";
-  document.getElementById("fdCost").textContent =
-    "Upgrade Cost: " + cost + " 💎";
+  document.getElementById("fdLevel").textContent =
+    level + " / " + MAX_FIRE_DEFENSE_LEVEL;
+
+  document.getElementById("fdReduce").textContent =
+    reduce + "%";
+
+  const costEl = document.getElementById("fdCost");
+  const upgradeBtn = document.querySelector("#fireDefenseModal .confirm");
+
+  if(level >= MAX_FIRE_DEFENSE_LEVEL){
+
+    costEl.textContent = "MAX LEVEL REACHED";
+    costEl.style.color = "#00f0ff";
+
+    if(upgradeBtn){
+      upgradeBtn.disabled = true;
+      upgradeBtn.style.opacity = .5;
+    }
+
+  }else{
+
+    costEl.textContent =
+      "Upgrade Cost: " + cost + " 💎";
+
+    costEl.style.color = "#ffcc66";
+
+    if(upgradeBtn){
+      upgradeBtn.disabled = false;
+      upgradeBtn.style.opacity = 1;
+    }
+  }
 
   document.getElementById("fireDefenseModal")
     .classList.add("show");
 }
-
 
 function closeFireDefense(){
   document
