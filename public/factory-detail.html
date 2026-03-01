@@ -1050,6 +1050,29 @@ body{
 
 
 
+
+.hospitalBtn{
+  position:absolute;
+  width:120px;
+  z-index:7;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.hospitalBtn:active{
+  transform: scale(.95);
+}
+
+.hospitalImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 12px 30px rgba(0,0,0,.6))
+    drop-shadow(0 0 25px rgba(0,240,255,.4));
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1091,6 +1114,11 @@ body{
   
 </div>
 
+
+
+<div class="hospitalBtn" onclick="buildHospital()">
+  <img src="/assets/ui/build-hospital.png" class="hospitalImg">
+</div>
 
 
 <div class="fireDefenseBtn" onclick="openFireDefense()">
@@ -2697,6 +2725,25 @@ socket.on("worker-death", (data)=>{
   showNotify(
     "☠ " + (data.dead || 1) + " worker died.",
     "bad"
+  );
+});
+
+
+function buildHospital(){
+  socket.emit("factory-build-hospital",{ index });
+}
+
+
+
+socket.on("hospital-update",(data)=>{
+  if(data.index !== index) return;
+
+  factory.hospitalLevel = data.level;
+  render();
+
+  showNotify(
+    "🏥 Hospital Level " + data.level,
+    "good"
   );
 });
 
