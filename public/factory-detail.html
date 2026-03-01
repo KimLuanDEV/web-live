@@ -2674,6 +2674,34 @@ socket.on("fire-defense-updated",(data)=>{
 
 
 
+// ================================
+// ☠️ WORKER DEATH REALTIME UPDATE
+// ================================
+socket.on("worker-death", (data)=>{
+
+  if(data.index !== index) return;
+  if(!factory) return;
+
+  // cập nhật lại số worker local
+  factory.workers = Number(data.remain || 0);
+
+  // nếu không còn worker -> dừng preview
+  if(factory.workers <= 0 && previewTimer){
+    clearInterval(previewTimer);
+    previewTimer = null;
+  }
+
+  // render lại toàn bộ UI
+  render();
+
+  showNotify(
+    "☠ " + (data.dead || 1) + " worker died.",
+    "bad"
+  );
+});
+
+
+
 </script>
 </body>
 </html>
