@@ -2469,7 +2469,7 @@ function openFireDefense(){
 
   const level = factory.fireDefenseLevel || 0;
 
-  const reduce = (level * 0.08).toFixed(2);
+  const reduce = (level * 0.03).toFixed(2);
   const cost = (level + 1) * 200;
 
   document.getElementById("fdLevel").textContent = level;
