@@ -267,6 +267,78 @@ f.fireAt  = Date.now();
 
 
 
+
+
+
+
+// ================================
+// ☠️ WORKER DEATH ENGINE
+// ================================
+const WORKER_DEATH_INTERVAL = 10000; // 10s
+const WORKER_DEATH_CHANCE = 0.005;    // 0.5% mỗi worker
+
+setInterval(()=>{
+
+  let changed = false;
+
+  Object.keys(factoryDB).forEach(uid=>{
+
+    factoryDB[uid].forEach((f,index)=>{
+
+      if(!f || f.empty) return;
+      if(!f.active) return;
+      if(f.burned) return;
+
+      const workers = Number(f.workers || 0);
+      if(workers <= 0) return;
+
+      let deadCount = 0;
+
+      for(let i=0;i<workers;i++){
+        if(Math.random() < WORKER_DEATH_CHANCE){
+          deadCount++;
+        }
+      }
+
+      if(deadCount > 0){
+
+        f.workers -= deadCount;
+        if(f.workers < 0) f.workers = 0;
+
+        // nếu hết worker → dừng nhà máy
+        if(f.workers === 0){
+          f.active = false;
+        }
+
+        changed = true;
+
+        emitToUser(uid,"worker-death",{
+          index,
+          dead: deadCount,
+          remain: f.workers
+        });
+
+        emitToUser(uid,"notify",{
+          type:"bad",
+          message:`☠️ ${deadCount} The worker has died!`
+        });
+
+      }
+
+    });
+
+  });
+
+  if(changed){
+    saveFactories(factoryDB);
+  }
+
+}, WORKER_DEATH_INTERVAL);
+
+
+
+
+
 // ================================
 // ⏱️ FACTORY COST ENGINE (PER SECOND)
 // ================================

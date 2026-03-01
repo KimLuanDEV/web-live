@@ -1277,6 +1277,13 @@ body{
   <b id="fFireRisk">0 %</b>
 </div>
 
+
+<div class="uRow">
+  <span>Worker Death Risk / 10 sec</span>
+  <b id="fDeathRisk">0 %</b>
+</div>
+
+
     <div class="uActions">
       <button class="uBtn cancel"
         onclick="closeFinance()">Close</button>
@@ -2466,6 +2473,39 @@ fireDefensePerSec = grossPerSec * defensePercent;
   }else{
     netEl.style.color = "#ff4d4d";
   }
+
+
+
+// =========================
+// ☠️ WORKER DEATH RISK (10 sec)
+// =========================
+
+// ví dụ: 0.5% mỗi 10 giây
+const DEATH_CHANCE_PER_10S = 0.005;
+
+// nếu factory không active hoặc không có worker → 0%
+let deathPercent = 0;
+
+if(f.active !== false && !f.burned && workers > 0){
+  deathPercent = DEATH_CHANCE_PER_10S * 100;
+}
+
+const deathEl = document.getElementById("fDeathRisk");
+deathEl.textContent = deathPercent.toFixed(2) + " %";
+
+// đổi màu theo mức nguy hiểm
+if(deathPercent > 2){
+  deathEl.style.color = "#ff4d4d";
+}
+else if(deathPercent > 1){
+  deathEl.style.color = "#ffcc66";
+}
+else{
+  deathEl.style.color = "#00f0ff";
+}
+
+
+
 
   // =========================
   // 🔥 FIRE RISK (10 sec)
