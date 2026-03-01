@@ -263,10 +263,10 @@ setInterval(()=>{
       const grossPerSec = baseRate * workers;
 
       // =========================
-      // 🔥 90% COST MODEL
+      // 🔥 70% COST MODEL
       // =========================
       const operatingCost = grossPerSec * 0.5;  // 50%
-      const salaryCost    = grossPerSec * 0.4;  // 40%
+      const salaryCost    = grossPerSec * 0.2;  // 20%
       const totalCost     = operatingCost + salaryCost;
 
       // =========================
