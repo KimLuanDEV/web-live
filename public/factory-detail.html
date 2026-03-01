@@ -1078,13 +1078,13 @@ body{
 
 
 
-<div class="hospitalBtn" onclick="openHospital()">
+<div class="hospitalBtn burnHide" onclick="openHospital()">
   <img src="/assets/ui/hospital-btn.png" class="hospitalImg">
 </div>
 
 
 
-<div class="fireDefenseBtn" onclick="openFireDefense()">
+<div class="fireDefenseBtn burnHide" onclick="openFireDefense()">
   <img src="/assets/ui/fire-defense-btn.png" class="fireDefenseImg">
 </div>
 
@@ -1104,17 +1104,17 @@ body{
 
 
 
-  <div class="collectTruck" onclick="location.href='/game-diamond-factory.html'">
+ <div class="collectTruck burnHide" onclick="location.href='/game-diamond-factory.html'">
   <img src="/assets/ui/truck-collect.png" class="truckImg">
 </div>
 
 
-<div class="supervisorBtn" onclick="hire()">
+<div class="supervisorBtn burnHide" onclick="hire()">
   <img src="/assets/ui/worker-supervisor.png" class="supervisorImg">
 </div>
 
 
-<div class="upgradeBtn" onclick="upgrade()">
+<div class="upgradeBtn burnHide" onclick="upgrade()">
   <img src="/assets/ui/worker-engineer.png" class="upgradeImg">
 </div>
 
@@ -1804,6 +1804,11 @@ function render(){
 
 
 
+// 🔥 ẨN / HIỆN NÚT KHI CHÁY
+document.querySelectorAll(".burnHide").forEach(el=>{
+  el.style.display = burned ? "none" : "block";
+});
+
 
 
 // ===== FINANCE BUTTON VISIBILITY =====
@@ -2265,6 +2270,11 @@ socket.on("factory-fire",(data)=>{
   ?.style.setProperty("display","none");
 
 
+  document.querySelectorAll(".burnHide").forEach(el=>{
+  el.style.display = "none";
+  });
+
+
   showNotify("🔥 FACTORY BURNED! Workers eliminated.","bad");
 
 });
@@ -2389,6 +2399,11 @@ socket.on("factory-repaired",(data)=>{
 
     document.querySelector(".financeBtn")
   ?.style.setProperty("display","block");
+
+
+   document.querySelectorAll(".burnHide").forEach(el=>{
+    el.style.display = "block";
+    });
 
 
   render();
