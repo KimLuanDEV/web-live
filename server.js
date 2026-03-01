@@ -213,8 +213,8 @@ if(f.level > 1){
   f.level -= 1;
 
   // 🔧 cập nhật lại chỉ số theo level mới
-  f.storage  = 100 * f.level;
-  f.baseRate = 1 * f.level;
+f.storage  = 100 * f.level;
+f.baseRate = 1;   // 🔥 FIX: luôn 1/s mỗi worker
 }
 
 // 🔥 reset timer
