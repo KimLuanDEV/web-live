@@ -1027,10 +1027,12 @@ body{
 
 .fireDefenseBtn{
   position:absolute;
-  width:120px;
+  width:150px;
   z-index:8;
   cursor:pointer;
   transition:.25s ease;
+  right:-6px;
+  bottom:175px;
 }
 
 .fireDefenseBtn:active{
@@ -1203,31 +1205,37 @@ body{
 
 
 
+<!-- =========================
+     🔥 FIRE DEFENSE MODAL
+     ========================= -->
 <div class="overlay" id="fireDefenseModal">
   <div class="upgradeModalBox">
-    <div class="upgradeTitle">🔥 FIRE DEFENSE STATION</div>
+
+    <div class="upgradeTitle">
+       FIRE DEFENSE CENTER
+    </div>
 
     <div class="uRow">
-      <span>Current Level</span>
+      <span>Defense Level</span>
       <b id="fdLevel">0</b>
     </div>
 
-    <div class="uRow next">
-      <span>Next Risk Reduction</span>
-      <b id="fdNext">-0.08%</b>
+    <div class="uRow">
+      <span>Fire Chance Reduction</span>
+      <b id="fdReduce">0%</b>
     </div>
 
-    <div class="uCost">
-      Upgrade Cost: <span id="fdCost">1000</span> 💎
+    <div class="uCost" id="fdCost">
+      Upgrade Cost: 200 💎
     </div>
 
     <div class="uActions">
-      <button class="uBtn cancel" onclick="closeFD()">Close</button>
-      <button class="uBtn confirm" onclick="upgradeFD()">Upgrade</button>
+      <button class="uBtn cancel" onclick="closeFireDefense()">Close</button>
+      <button class="uBtn confirm" onclick="upgradeFireDefense()">Upgrade</button>
     </div>
+
   </div>
 </div>
-
 
 
 
@@ -2453,6 +2461,49 @@ socket.on("factory-status", data=>{
   render();
 });
 
+
+
+
+function openFireDefense(){
+  if(!factory) return;
+
+  const level = factory.fireDefenseLevel || 0;
+
+  const reduce = (level * 0.08).toFixed(2);
+  const cost = (level + 1) * 200;
+
+  document.getElementById("fdLevel").textContent = level;
+  document.getElementById("fdReduce").textContent = reduce + "%";
+  document.getElementById("fdCost").textContent =
+    "Upgrade Cost: " + cost + " 💎";
+
+  document.getElementById("fireDefenseModal")
+    .classList.add("show");
+}
+
+
+function closeFireDefense(){
+  document
+    .getElementById("fireDefenseModal")
+    ?.classList.remove("show");
+}
+
+
+function upgradeFireDefense(){
+  socket.emit("factory-upgrade-fire-defense");
+}
+
+
+socket.on("fire-defense-updated",(data)=>{
+
+  if(!factory) return;
+
+  factory.fireDefenseLevel = data.level;
+
+  showNotify("🔥 Fire Defense Upgraded!","good");
+
+  openFireDefense(); // refresh lại modal
+});
 
 
 

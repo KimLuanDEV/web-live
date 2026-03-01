@@ -182,8 +182,8 @@ setInterval(()=>{
       // 🔥 TÍNH TỶ LỆ CHÁY THEO LEVEL PHÒNG CHÁY
 const baseChance = FIRE_CHANCE;
 
-// mỗi level giảm 0.0008 (0.08%)
-const reduce = (f.fireDefenseLevel || 0) * 0.0008;
+// mỗi level giảm 0.0008 (0.03%)
+const reduce = (f.fireDefenseLevel || 0) * 0.0003;
 
 // không bao giờ dưới 0.0005 (0.05%)
 const finalChance = Math.max(
@@ -2488,7 +2488,7 @@ socket.emit("factory-update", factoryDB[uid]);
 // ================================
 
 
-socket.on("fire-defense-upgrade", ()=>{
+socket.on("factory-upgrade-fire-defense", ()=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
@@ -2497,14 +2497,18 @@ socket.on("fire-defense-upgrade", ()=>{
   const me = users[uid];
   if(!me?.profile) return;
 
-  const f = factoryDB[uid]?.[0];
-  if(!f || f.empty) return;
+  const list = factoryDB[uid];
+  if(!list || !list[0]) return;
+
+  const f = list[0];
 
   const level = f.fireDefenseLevel || 0;
-  const cost = (level + 1) * 1500;
+  const cost = (level + 1) * 200;
 
   if(me.profile.coins < cost){
-    socket.emit("factory-error",{ message:"NOT_ENOUGH_COIN" });
+    socket.emit("factory-error",{
+      message:"NOT_ENOUGH_COIN"
+    });
     return;
   }
 
@@ -2516,7 +2520,7 @@ socket.on("fire-defense-upgrade", ()=>{
 
   emitCoinUpdate(uid);
 
-  socket.emit("fire-defense-update",{
+  socket.emit("fire-defense-updated",{
     level: f.fireDefenseLevel
   });
 
