@@ -1093,7 +1093,9 @@ body{
 
 
 <div class="fireDefenseBtn" onclick="openFireDefense()">
-  <img src="/assets/ui/fire-defense-btn.png" class="fireDefenseImg">
+  <img id="fireDefenseImg"
+       src="/assets/ui/fire-defense-lv0.png"
+       class="fireDefenseImg">
 </div>
 
 
@@ -1539,8 +1541,13 @@ let repairInterval = null;
 socket.on("factory-update", list=>{
 
   factory = list[index];
+  
   if(!factory) return;
 
+
+  updateFireDefenseImage();
+
+  
   // 🔥 LƯU FACTORY HIỆN TẠI (cho finance modal)
   currentFactory = factory;
 
@@ -2499,11 +2506,30 @@ socket.on("fire-defense-updated",(data)=>{
   if(!factory) return;
 
   factory.fireDefenseLevel = data.level;
-
+  updateFireDefenseImage();
   showNotify("🔥 Fire Defense Upgraded!","good");
 
   openFireDefense(); // refresh lại modal
 });
+
+
+
+
+
+function updateFireDefenseImage(){
+
+  if(!factory) return;
+
+  const level = factory.fireDefenseLevel || 0;
+
+  const img = document.getElementById("fireDefenseImg");
+  if(!img) return;
+
+  const maxLevel = 15; // số ảnh bạn có
+  const showLevel = Math.min(level, maxLevel);
+
+  img.src = "/assets/ui/fire-defense-lv" + showLevel + ".png";
+}
 
 
 
