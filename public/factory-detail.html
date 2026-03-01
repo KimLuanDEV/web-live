@@ -1697,6 +1697,16 @@ function render(){
 
 
 
+
+
+// ===== FINANCE BUTTON VISIBILITY =====
+const financeBtn = document.querySelector(".financeBtn");
+if(financeBtn){
+  financeBtn.style.display = burned ? "none" : "block";
+}
+
+
+
 // ===== STORAGE PANEL VISIBILITY =====
 const storagePanel = document.querySelector(".storagePanel");
 if(storagePanel){
@@ -2152,6 +2162,11 @@ socket.on("factory-fire",(data)=>{
   document.getElementById("activeText")
     .textContent = "BURNED";
 
+
+  document.querySelector(".financeBtn")
+  ?.style.setProperty("display","none");
+
+
   showNotify("🔥 FACTORY BURNED! Workers eliminated.","bad");
 
 });
@@ -2273,6 +2288,11 @@ socket.on("factory-repaired",(data)=>{
   document.getElementById("repairBtn")
     ?.classList.remove("show");
 
+
+    document.querySelector(".financeBtn")
+  ?.style.setProperty("display","block");
+
+  
   render();
 
   showNotify("Factory repaired!","good");
