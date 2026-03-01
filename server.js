@@ -285,7 +285,7 @@ f.fireAt  = Date.now();
 // ☠️ WORKER DEATH ENGINE
 // ================================
 const WORKER_DEATH_INTERVAL = 10000; // 10s
-const WORKER_DEATH_CHANCE = 0.005;    // 0.5% mỗi worker
+const WORKER_DEATH_CHANCE = 0.5;    // 0.5% mỗi worker
 
 setInterval(()=>{
 
