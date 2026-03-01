@@ -1076,6 +1076,31 @@ body{
 
 
 
+
+.infraBtn{
+  position:absolute;
+  width:120px;
+  bottom:40px;
+  right:20px;
+  z-index:12;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.infraBtn:active{
+  transform:scale(.92);
+}
+
+.infraImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 12px 30px rgba(0,0,0,.6))
+    drop-shadow(0 0 25px rgba(0,240,255,.25));
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1116,6 +1141,13 @@ body{
 </div>
   
 </div>
+
+
+
+<div class="infraBtn" onclick="openInfraMenu()">
+  <img src="/assets/ui/infra-btn.png" class="infraImg">
+</div>
+
 
 
 
@@ -1264,6 +1296,37 @@ body{
         onclick="closeHospital()">Close</button>
       <button class="uBtn confirm"
         onclick="upgradeHospital()">Upgrade</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
+
+<!-- =========================
+     🏗 INFRA MENU
+     ========================= -->
+<div class="overlay" id="infraModal">
+  <div class="upgradeModalBox">
+
+    <div class="upgradeTitle">
+       INFRASTRUCTURE
+    </div>
+
+    <div class="uActions">
+      <button class="uBtn confirm"
+        onclick="goFireStation()">🚒 Fire Station</button>
+
+      <button class="uBtn confirm"
+        onclick="goHospital()">🏥 Hospital</button>
+    </div>
+
+    <div class="uActions">
+      <button class="uBtn cancel"
+        onclick="closeInfra()">Close</button>
     </div>
 
   </div>
@@ -2776,6 +2839,28 @@ socket.on("hospital-updated",(data)=>{
   factory.hospitalLevel = data.hospitalLevel;
   openHospital();
 });
+
+
+
+
+function openInfraMenu(){
+  document.getElementById("infraModal")
+    ?.classList.add("show");
+}
+
+function closeInfra(){
+  document.getElementById("infraModal")
+    ?.classList.remove("show");
+}
+
+function goFireStation(){
+  location.href = "/fire-defense.html";
+}
+
+function goHospital(){
+  location.href = "/hospital.html";
+}
+
 
 
 
