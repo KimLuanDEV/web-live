@@ -146,11 +146,6 @@ if(typeof f.repairEndAt === "undefined")
 if(typeof f.fireDefenseLevel === "undefined")
   f.fireDefenseLevel = 0;
 
-
-if(typeof f.hospitalLevel === "undefined")
-  f.hospitalLevel = 0;
-
-
   });
 });
 
@@ -287,11 +282,10 @@ f.fireAt  = Date.now();
 
 
 // ================================
-// ☠️ WORKER DEATH ENGINE (WITH HOSPITAL)
+// ☠️ WORKER DEATH ENGINE
 // ================================
 const WORKER_DEATH_INTERVAL = 10000; // 10s
-const BASE_WORKER_DEATH_CHANCE = 0.005; // 0.5%
-const MAX_HOSPITAL_LEVEL = 20;
+const WORKER_DEATH_CHANCE = 0.005;    // 0.5% mỗi worker
 
 setInterval(()=>{
 
@@ -308,22 +302,10 @@ setInterval(()=>{
       const workers = Number(f.workers || 0);
       if(workers <= 0) return;
 
-      // 🔥 TÍNH GIẢM THEO HOSPITAL
-      const hospitalLevel = Math.min(
-        f.hospitalLevel || 0,
-        MAX_HOSPITAL_LEVEL
-      );
-
-      const reduce = hospitalLevel * 0.0002; 
-      const finalChance = Math.max(
-        0.001,
-        BASE_WORKER_DEATH_CHANCE - reduce
-      );
-
       let deadCount = 0;
 
       for(let i=0;i<workers;i++){
-        if(Math.random() < finalChance){
+        if(Math.random() < WORKER_DEATH_CHANCE){
           deadCount++;
         }
       }
@@ -333,6 +315,7 @@ setInterval(()=>{
         f.workers -= deadCount;
         if(f.workers < 0) f.workers = 0;
 
+        // nếu hết worker → dừng nhà máy
         if(f.workers === 0){
           f.active = false;
         }
@@ -347,7 +330,7 @@ setInterval(()=>{
 
         emitToUser(uid,"notify",{
           type:"bad",
-          message:`☠️ ${deadCount} worker died!`
+          message:`☠️ ${deadCount} The worker has died!`
         });
 
       }
@@ -361,6 +344,7 @@ setInterval(()=>{
   }
 
 }, WORKER_DEATH_INTERVAL);
+
 
 
 
@@ -2636,59 +2620,6 @@ socket.emit("factory-update", factoryDB[uid]);
 // ================================
 // 🏭 DIAMOND FACTORY
 // ================================
-
-
-// ================================
-// 🏥 BUILD / UPGRADE HOSPITAL
-// ================================
-socket.on("factory-build-hospital", ()=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const users = loadUsers();
-  const me = users[uid];
-  if(!me?.profile) return;
-
-  const list = factoryDB[uid];
-  if(!list || !list[0]) return;
-
-  const f = list[0];
-
-  const level = f.hospitalLevel || 0;
-  const MAX_LEVEL = 10;
-
-  if(level >= MAX_LEVEL){
-    socket.emit("factory-error",{
-      message:"MAX_HOSPITAL_LEVEL"
-    });
-    return;
-  }
-
-  const cost = (level + 1) * 800;
-
-  if(me.profile.coins < cost){
-    socket.emit("factory-error",{
-      message:"NOT_ENOUGH_COIN"
-    });
-    return;
-  }
-
-  me.profile.coins -= cost;
-
-  f.hospitalLevel = level + 1;
-
-  saveUsers(users);
-  saveFactories(factoryDB);
-
-  emitCoinUpdate(uid);
-
-  socket.emit("hospital-updated",{
-    level: f.hospitalLevel
-  });
-
-});
-
 
 
 socket.on("factory-upgrade-fire-defense", ()=>{
