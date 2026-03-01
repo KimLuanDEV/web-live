@@ -122,6 +122,8 @@ Object.keys(factoryDB).forEach(uid => {
 
 saveFactories(factoryDB);
 
+
+
 // ================================
 // 🔥 INIT FIRE FIELD (SAFE)
 // ================================
@@ -149,6 +151,20 @@ if(typeof f.fireDefenseLevel === "undefined")
 
 saveFactories(factoryDB);
 
+
+
+
+// ================================
+// 🔥 FIX BASE RATE = 1 PER WORKER
+// ================================
+Object.keys(factoryDB).forEach(uid=>{
+  factoryDB[uid].forEach(f=>{
+    if(!f || f.empty) return;
+    f.baseRate = 1;  // 🔥 mỗi worker = 1/s
+  });
+});
+
+saveFactories(factoryDB);
 
 
 
