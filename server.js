@@ -423,10 +423,30 @@ const defensePercent = defenseLevel * 0.005;
 
 fireDefenseCost = grossPerSec * defensePercent;
 
+
+// 🏥 HOSPITAL COST (scale theo level)
+
+let hospitalCost = 0;
+
+const MAX_HOSPITAL_LEVEL = 20;
+
+const hospitalLevel = Math.min(
+  f.hospitalLevel || 0,
+  MAX_HOSPITAL_LEVEL
+);
+
+// mỗi level = 0.5%
+// level 20 = 10%
+const hospitalPercent = hospitalLevel * 0.005;
+
+hospitalCost = grossPerSec * hospitalPercent;
+
+
 const totalCost =
   operatingCost +
   salaryCost +
-  fireDefenseCost;
+  fireDefenseCost +
+  hospitalCost;
 
       
       // =========================
