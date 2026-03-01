@@ -2292,7 +2292,7 @@ socket.on("factory-repaired",(data)=>{
     document.querySelector(".financeBtn")
   ?.style.setProperty("display","block");
 
-  
+
   render();
 
   showNotify("Factory repaired!","good");
@@ -2457,7 +2457,7 @@ const finalChancePerSec = Math.max(
 );
 
 // 🔥 10 GIÂY (xác suất tích lũy)
-const chance10Sec = 1 - Math.pow(1 - finalChancePerSec, 10);
+const chance10Sec = 1 - Math.pow(1 - finalChancePerSec, 1);
 
 const percent = (chance10Sec * 100).toFixed(2);
 
