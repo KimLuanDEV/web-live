@@ -2544,31 +2544,45 @@ fireDefensePerSec = grossPerSec * defensePercent;
 // ☠️ WORKER DEATH RISK (10 sec)
 // =========================
 
-// ví dụ: 0.5% mỗi 10 giây
-const DEATH_CHANCE_PER_10S = 0.005;
+// Base 0.5%
+const BASE_DEATH_CHANCE = 0.005;
 
-// nếu factory không active hoặc không có worker → 0%
+// Hospital max 20 level
+const MAX_HOSPITAL_LEVEL = 20;
+
+const hospitalLevel = Math.min(
+  f.hospitalLevel || 0,
+  MAX_HOSPITAL_LEVEL
+);
+
+// mỗi level giảm 0.02% (0.0002)
+const hospitalReduce = hospitalLevel * 0.0002;
+
+// final chance không dưới 0.1%
+const finalDeathChance = Math.max(
+  0.001,
+  BASE_DEATH_CHANCE - hospitalReduce
+);
+
 let deathPercent = 0;
 
 if(f.active !== false && !f.burned && workers > 0){
-  deathPercent = DEATH_CHANCE_PER_10S * 100;
+  deathPercent = finalDeathChance * 100;
 }
 
 const deathEl = document.getElementById("fDeathRisk");
 deathEl.textContent = deathPercent.toFixed(2) + " %";
 
-// đổi màu theo mức nguy hiểm
-if(deathPercent > 2){
-  deathEl.style.color = "#ff4d4d";
+// màu hiển thị
+if(deathPercent <= 0.2){
+  deathEl.style.color = "#00f0ff"; // rất an toàn
 }
-else if(deathPercent > 1){
-  deathEl.style.color = "#ffcc66";
+else if(deathPercent <= 0.35){
+  deathEl.style.color = "#ffcc66"; // trung bình
 }
 else{
-  deathEl.style.color = "#00f0ff";
+  deathEl.style.color = "#ff4d4d"; // nguy hiểm
 }
-
-
 
 
   // =========================
