@@ -141,6 +141,8 @@ if(typeof f.repairing === "undefined")
 if(typeof f.repairEndAt === "undefined")
   f.repairEndAt = null;
 
+if(typeof f.fireDefenseLevel === "undefined")
+  f.fireDefenseLevel = 0;
 
   });
 });
@@ -157,8 +159,8 @@ saveFactories(factoryDB);
 // 🔥 FACTORY FIRE DISASTER ENGINE
 // ================================
 
-const FIRE_INTERVAL = 60 * 60000; // 60 phuts
-const FIRE_CHANCE   = 0.25;           // 25% hỏa hoạn mỗi 60 phút
+const FIRE_INTERVAL = 1000; // 1s
+const FIRE_CHANCE   = 0.005; // 0.5% hỏa hoạn giây
 
 setInterval(()=>{
 
@@ -176,7 +178,20 @@ setInterval(()=>{
       if(f.burned) return;        // đã cháy rồi bỏ qua
       if(!f.active) return;       // không hoạt động thì không cháy
 
-      if(Math.random() < FIRE_CHANCE){
+      
+      // 🔥 TÍNH TỶ LỆ CHÁY THEO LEVEL PHÒNG CHÁY
+const baseChance = FIRE_CHANCE;
+
+// mỗi level giảm 0.0008 (0.08%)
+const reduce = (f.fireDefenseLevel || 0) * 0.0008;
+
+// không bao giờ dưới 0.0005 (0.05%)
+const finalChance = Math.max(
+  0.0005,
+  baseChance - reduce
+);
+
+if(Math.random() < finalChance){
 
         console.log("🔥 FIRE at factory", uid, index);
 
@@ -2473,6 +2488,39 @@ socket.emit("factory-update", factoryDB[uid]);
 // ================================
 
 
+socket.on("fire-defense-upgrade", ()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  const f = factoryDB[uid]?.[0];
+  if(!f || f.empty) return;
+
+  const level = f.fireDefenseLevel || 0;
+  const cost = (level + 1) * 1500;
+
+  if(me.profile.coins < cost){
+    socket.emit("factory-error",{ message:"NOT_ENOUGH_COIN" });
+    return;
+  }
+
+  me.profile.coins -= cost;
+  f.fireDefenseLevel = level + 1;
+
+  saveUsers(users);
+  saveFactories(factoryDB);
+
+  emitCoinUpdate(uid);
+
+  socket.emit("fire-defense-update",{
+    level: f.fireDefenseLevel
+  });
+
+});
 
 
 

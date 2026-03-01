@@ -1024,6 +1024,29 @@ body{
 
 
 
+
+.fireDefenseBtn{
+  position:absolute;
+  width:120px;
+  z-index:8;
+  cursor:pointer;
+  transition:.25s ease;
+}
+
+.fireDefenseBtn:active{
+  transform:scale(.95);
+}
+
+.fireDefenseImg{
+  width:100%;
+  display:block;
+  filter:
+    drop-shadow(0 12px 30px rgba(0,0,0,.6))
+    drop-shadow(0 0 25px rgba(255,80,0,.35));
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1063,6 +1086,12 @@ body{
   <div class="repairTime" id="repairTimer">0s</div>
 </div>
   
+</div>
+
+
+
+<div class="fireDefenseBtn" onclick="openFireDefense()">
+  <img src="/assets/ui/fire-defense-btn.png" class="fireDefenseImg">
 </div>
 
 
@@ -1173,6 +1202,36 @@ body{
 
 
 
+
+<div class="overlay" id="fireDefenseModal">
+  <div class="upgradeModalBox">
+    <div class="upgradeTitle">🔥 FIRE DEFENSE STATION</div>
+
+    <div class="uRow">
+      <span>Current Level</span>
+      <b id="fdLevel">0</b>
+    </div>
+
+    <div class="uRow next">
+      <span>Next Risk Reduction</span>
+      <b id="fdNext">-0.08%</b>
+    </div>
+
+    <div class="uCost">
+      Upgrade Cost: <span id="fdCost">1000</span> 💎
+    </div>
+
+    <div class="uActions">
+      <button class="uBtn cancel" onclick="closeFD()">Close</button>
+      <button class="uBtn confirm" onclick="upgradeFD()">Upgrade</button>
+    </div>
+  </div>
+</div>
+
+
+
+
+
 <!-- =========================
      💰 FINANCE MODAL
      ========================= -->
@@ -1206,6 +1265,10 @@ body{
 
   </div>
 </div>
+
+
+
+
 
 
 
