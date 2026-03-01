@@ -1520,10 +1520,22 @@ function computePreviewStored(){
   const baseRate = Number(factory.baseRate || 1);
   const rate     = Number(factory.rate ?? (workers * baseRate)) || 0;
 
-  const sec = Math.floor((Date.now() - lastUp) / 1000);
-  const value = stored + sec * rate;
 
-  return Math.min(storage, value);
+let sec = Math.floor((Date.now() - lastUp) / 1000);
+
+// 🛡 Chặn âm do lệch clock
+if (sec < 0) sec = 0;
+
+let value = stored + sec * rate;
+
+// 🛡 Không cho âm
+if (value < 0) value = 0;
+
+// 🛡 Không vượt storage
+if (value > storage) value = storage;
+
+return value;
+
 }
 
 
