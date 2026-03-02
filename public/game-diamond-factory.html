@@ -17,12 +17,27 @@ html,body{
   padding:0;
   color:#fff;
   font-family:system-ui;
+  height:100%;
 
-  background:
-    radial-gradient(circle at 50% 0%, rgba(0,240,255,.08), transparent 50%),
-    radial-gradient(circle at 100% 100%, rgba(0,150,255,.08), transparent 60%),
-    linear-gradient(180deg,#05080c,#03060a);
+  background:url('/assets/ui/bg-diamond-factory.jpg') center top no-repeat;
+  background-size:cover;
+  background-attachment:fixed;
 }
+
+
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  background:linear-gradient(
+    180deg,
+    rgba(0,0,0,.3),
+    rgba(0,0,0,.6)
+  );
+  pointer-events:none;
+}
+
+
 /* ===== TOP BAR PREMIUM ===== */
 .topbar{
   position:relative;
