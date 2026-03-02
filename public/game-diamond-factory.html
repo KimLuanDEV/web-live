@@ -23,38 +23,84 @@ html,body{
     radial-gradient(circle at 100% 100%, rgba(0,150,255,.08), transparent 60%),
     linear-gradient(180deg,#05080c,#03060a);
 }
-/* ===== TOP BAR ===== */
+/* ===== TOP BAR PREMIUM ===== */
 
 .topbar{
-  height:70px;
+  position:relative;
+  height:80px;
   display:flex;
   align-items:center;
   justify-content:space-between;
-  padding:0 20px;
+  padding:0 18px;
 
   background:
-    linear-gradient(180deg, rgba(0,0,0,.7), rgba(0,0,0,.4));
+    linear-gradient(180deg,#0a1118,#05080c);
 
-  backdrop-filter: blur(12px);
+  border-bottom:1px solid rgba(0,240,255,.25);
 
-  border-bottom:1px solid rgba(0,240,255,.2);
-  box-shadow:0 10px 30px rgba(0,0,0,.5);
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.7),
+    0 0 40px rgba(0,240,255,.08);
+
+  z-index:20;
 }
 
-.title{
-  font-weight:800;
-  font-size:15px;
-  text-shadow:0 0 10px rgba(0,255,255,.6);
+.topbar::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  width:100%;
+  height:2px;
+  background:linear-gradient(90deg,#00f0ff,#0088ff,#00f0ff);
+  box-shadow:0 0 15px rgba(0,240,255,.8);
+}
+
+.tb-left{
+  width:70px;
+  display:flex;
+  align-items:center;
+}
+
+.tb-center{
+  flex:1;
+  text-align:center;
+}
+
+.tb-title{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:1px;
+  color:#00f0ff;
+
+  text-shadow:
+    0 0 15px rgba(0,240,255,.8),
+    0 0 30px rgba(0,240,255,.4);
+}
+
+.tb-right{
+  width:110px;
+  display:flex;
+  justify-content:flex-end;
 }
 
 .wallet{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 14px;
+
+  border-radius:999px;
+
+  background:rgba(0,0,0,.6);
+  border:1px solid rgba(0,240,255,.4);
+
+  box-shadow:
+    0 0 25px rgba(0,240,255,.35),
+    inset 0 0 15px rgba(0,240,255,.15);
+
   font-weight:900;
   font-size:14px;
-  padding:6px 14px;
-  border-radius:999px;
-  background:rgba(0,0,0,.6);
-  border:1px solid rgba(0,240,255,.3);
-  box-shadow:0 0 20px rgba(0,240,255,.25);
 }
 
 /* ===== GRID ===== */
@@ -185,20 +231,50 @@ html,body{
 }
 
 
+
+.headerLogo{
+  height:52px;
+  max-width:100%;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 25px rgba(0,240,255,.6))
+    drop-shadow(0 0 40px rgba(0,240,255,.3));
+
+  transition:.3s ease;
+}
+
+.headerLogo:hover{
+  transform:scale(1.05);
+}
+
+
 </style>
 </head>
 
 <body>
 
 <div class="topbar">
-  <div onclick="location.href='/invest.html'" style="cursor:pointer">←</div>
-  <div class="title">🏭 Nhà máy Kim Cương</div>
-  <div class="wallet"><span id="coinVal">0</span> 💎</div>
+
+  <div class="tb-left">
+    <div class="backBtn" onclick="location.href='/invest.html'">
+      <img src="/assets/ui/back-panel1.png" style="width:42px">
+    </div>
+  </div>
+
+<div class="tb-center">
+  <img src="/assets/ui/header-diamond-factory.png"
+       class="headerLogo">
 </div>
 
-<div class="factory-grid" id="factoryGrid">
-</div>
+  <div class="tb-right">
+    <div class="wallet">
+      <img src="/assets/ui/diamond-icon1.png" style="width:18px">
+      <span id="coinVal">0</span>
+    </div>
+  </div>
 
+</div>
 
 
 
