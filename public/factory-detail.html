@@ -6,8 +6,7 @@
       content="width=device-width,
                initial-scale=1,
                maximum-scale=1,
-               user-scalable=no,
-               viewport-fit=cover">
+               user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Factory Diamond</title>
 <link rel="stylesheet" href="/style.css">
@@ -42,7 +41,8 @@ html, body {
 
 body{
   margin:0;
-  background:#000;
+  background:none;
+  background-color:#05080c;
 }
 
 /* ===== TOPBAR (premium) ===== */
@@ -90,23 +90,26 @@ body{
 
 
 
-.factory-hero{
-  position:absolute;
-  top:-10vh;                  /* 👈 kéo xuống để phủ home bar */
-  left:0;
+/* ===== HERO ===== */
+.hero{
+  position:relative;
   width:100%;
-  height:120vh;              /* 👈 tăng chiều cao */
-  object-fit:cover;
-  object-position:center;
+  margin: 0;            /* bỏ margin */
+  border-radius:0;     /* bỏ bo góc nếu muốn full edge */
+  overflow:hidden;
+  border:none;         /* bỏ viền nếu muốn sát mép */
+  box-shadow:none;     /* bỏ shadow nếu muốn phẳng */
+  min-height: 100vh;
 }
 
 .factory-hero{
-  position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;
+  display:block;
+  width:100vw;          /* ✅ full ngang viewport */
+  max-width:100%;
+  height:100vh;        /* chỉnh tùy bạn */
+  object-fit:cover;     /* ✅ ảnh cover full */
   object-position:center;
+  transform:none;       /* ✅ bỏ scale để khỏi bị crop khó kiểm soát */
 }
 
 .hero::after{
@@ -2894,7 +2897,6 @@ observer.observe(document.body,{
   subtree:true,
   attributeFilter:["class"]
 });
-
 
 </script>
 </body>
