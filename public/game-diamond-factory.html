@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>Nhà máy sản xuất Kim Cương</title>
+<title>Diamond Factory</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="/style.css">
 
@@ -140,7 +140,7 @@ body::before{
   aspect-ratio:1/1;      /* ép vùng ảnh thành vuông */
   width:100%;
   border-radius:14px;
-  overflow:hidden;
+  overflow:visible;
 }
 
 .factory-img{
@@ -153,15 +153,22 @@ body::before{
 
 .img-frame{
   position:absolute;
-  inset:0;
-  width:100%;
-  height:100%;
-  object-fit:cover;      /* khung phủ vừa */
+  inset:-10px;          /* ✅ nới ra ngoài */
+  width:calc(100% + 20px);
+  height:calc(100% + 20px);
+  object-fit:cover;
   pointer-events:none;
-  z-index:5;
+  z-index:10;
 }
 
 
+.img-clip{
+  position:relative;
+  width:100%;
+  height:100%;
+  border-radius:14px;
+  overflow:hidden; /* ✅ chỉ clip ảnh/overlay */
+}
 
 
 .factory-card h3{
@@ -437,60 +444,62 @@ function render(){
     // =========================
     // HTML CARD (frame chỉ bọc ảnh)
     // =========================
-    card.innerHTML = `
-      <div class="img-wrap">
-        <img src="/assets/ui/${levelImg}"
-             class="factory-img"
-             style="
-               transition:.4s ease;
-               transform: scale(${isActive ? 1 : .95});
-               filter:${isActive ? "brightness(1)" : "grayscale(1) brightness(.6)"};
-             ">
+card.innerHTML = `
+  <div class="img-wrap">
+    <div class="img-clip">
+      <img src="/assets/ui/${levelImg}"
+           class="factory-img"
+           style="
+             transition:.4s ease;
+             transform: scale(${isActive ? 1 : .95});
+             filter:${isActive ? "brightness(1)" : "grayscale(1) brightness(.6)"};
+           ">
 
-        <img src="/assets/ui/frame-factory.png" class="img-frame">
+      ${
+        !isActive
+        ? `<div style="
+            position:absolute;
+            inset:0;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            font-size:12px;
+            font-weight:700;
+            background:rgba(0,0,0,.6);
+            border-radius:12px;
+            color:#ff5555;
+            z-index:6;
+          ">
+            ⛔ INACTIVE
+          </div>`
+        : ""
+      }
 
-        ${
-          !isActive
-          ? `<div style="
-              position:absolute;
-              inset:0;
-              display:flex;
-              align-items:center;
-              justify-content:center;
-              font-size:12px;
-              font-weight:700;
-              background:rgba(0,0,0,.6);
-              border-radius:12px;
-              color:#ff5555;
-              z-index:6;
-            ">
-              ⛔ INACTIVE
-            </div>`
-          : ""
-        }
-
-        <div style="
-          position:absolute;
-          top:8px;
-          left:8px;
-          background:rgba(0,0,0,.6);
-          padding:4px 8px;
-          border-radius:8px;
-          font-size:11px;
-          z-index:6;
-        ">
-          Lv.${f.level}
-        </div>
+      <div style="
+        position:absolute;
+        top:8px;
+        left:8px;
+        background:rgba(0,0,0,.6);
+        padding:4px 8px;
+        border-radius:8px;
+        font-size:11px;
+        z-index:6;
+      ">
+        Lv.${f.level}
       </div>
+    </div>
 
-      <div class="progress" style="margin-top:8px">
-        <div class="progress-fill"
-          style="width:${percent}%;
-                 background:${progressColor}">
-        </div>
-      </div>
-    `;
+    <!-- ✅ frame nằm ngoài clip để bọc hết -->
+    <img src="/assets/ui/frame-factory.png" class="img-frame">
+  </div>
 
+  <div class="progress" style="margin-top:8px">
+    <div class="progress-fill"
+      style="width:${percent}%;
+             background:${progressColor}">
+    </div>
+  </div>
+`;
     card.onclick = ()=>{
       location.href = "/factory-detail.html?index=" + index;
     };
