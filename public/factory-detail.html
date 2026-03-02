@@ -2,7 +2,11 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport"
+      content="width=device-width,
+               initial-scale=1,
+               maximum-scale=1,
+               user-scalable=no">
 <title>Factory Diamond</title>
 <link rel="stylesheet" href="/style.css">
 <style>
@@ -25,6 +29,14 @@
 }
 
 *{ box-sizing:border-box; }
+
+
+html, body {
+  overflow: hidden;
+  height: 100%;
+  touch-action: manipulation;
+}
+
 
 body{
   margin:0;
@@ -2823,6 +2835,31 @@ socket.on("hospital-updated",(data)=>{
   openHospital();
 });
 
+
+
+// 🔒 Disable pinch zoom (iOS)
+document.addEventListener("gesturestart", function (e) {
+  e.preventDefault();
+});
+
+document.addEventListener("gesturechange", function (e) {
+  e.preventDefault();
+});
+
+document.addEventListener("gestureend", function (e) {
+  e.preventDefault();
+});
+
+
+let lastTouchEnd = 0;
+
+document.addEventListener("touchend", function (event) {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    event.preventDefault();
+  }
+  lastTouchEnd = now;
+}, false);
 
 
 </script>
