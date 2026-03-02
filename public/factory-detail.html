@@ -1106,7 +1106,7 @@ body{
 /* HUD loading */
 .loadingHUD{
   position:absolute;
-  bottom:80px;
+  bottom:116px;
   left:50%;
   transform:translateX(-50%);
   width:80%;
@@ -3150,11 +3150,14 @@ initLoader();
 
 
 // =========================
-// ⏳ LOADER CONTROL
+// ⏳ LOADER CONTROL (MIN 10s)
 // =========================
 
 let loaderImagesReady = false;
 let loaderDataReady   = false;
+
+const MIN_LOADING_TIME = 10000; // 🔥 10 giây
+const loadingStartTime = Date.now();
 
 function markLoaderDataReady(){
   loaderDataReady = true;
@@ -3171,15 +3174,20 @@ function tryFinishLoading(){
   if(!loaderImagesReady) return;
   if(!loaderDataReady) return;
 
-  const overlay = document.getElementById("loadingOverlay");
-
-  if(!overlay) return;
-
-  overlay.classList.add("fadeOut");
+  const elapsed = Date.now() - loadingStartTime;
+  const remain  = Math.max(0, MIN_LOADING_TIME - elapsed);
 
   setTimeout(()=>{
-    overlay.classList.remove("show");
-  }, 350);
+    const overlay = document.getElementById("loadingOverlay");
+    if(!overlay) return;
+
+    overlay.classList.add("fadeOut");
+
+    setTimeout(()=>{
+      overlay.classList.remove("show");
+    }, 500);
+
+  }, remain);
 }
 
 
@@ -3225,6 +3233,33 @@ function waitAllImages(){
 window.addEventListener("load", ()=>{
   waitAllImages();
 });
+
+
+
+// =========================
+// 🎮 FAKE PROGRESS 10s
+// =========================
+
+let fakePercent = 0;
+
+const fakeInterval = setInterval(()=>{
+
+  if(fakePercent >= 100){
+    clearInterval(fakeInterval);
+    return;
+  }
+
+  fakePercent += 1;
+
+  const bar  = document.getElementById("loadingBarFill");
+  const text = document.getElementById("loadingPercent");
+
+  if(bar)  bar.style.width = fakePercent + "%";
+  if(text) text.textContent = fakePercent + "%";
+
+}, 100); // 100ms x 100 = 10s
+
+
 
 </script>
 </body>
