@@ -263,71 +263,92 @@ body{
   inset:0;
   pointer-events:none;
   overflow:hidden;
+
+  perspective: 800px; /* 👈 tạo chiều sâu */
 }
 
 .worker{
   position:absolute;
   left:0;
-  top:50%;              /* điểm xuất phát dưới */
+  top:50%;
   width:80px;
   height:100px;
   object-fit:contain;
 
-  animation: diagonalWalk linear infinite;
+  transform-style: preserve-3d;
+  animation: diagonalWalk3D 8s ease-in-out infinite;
 }
 
-@keyframes diagonalWalk{
+@keyframes diagonalWalk3D{
 
-  /* xuất phát dưới trái */
+  /* GẦN CAMERA (dưới) */
   0%{
-    transform: translate(170px, 450px) scaleX(1);
+    transform:
+      translate(120px, 480px)
+      scale(1.1)
+      rotateY(0deg);
     opacity:1;
   }
 
-  10%{
-    transform: translate(170px, 340px) scaleX(1);
+  /* đi lên - xa dần */
+  25%{
+    transform:
+      translate(150px, 250px)
+      scale(0.9)
+      rotateY(5deg);
     opacity:1;
   }
-  20%{
-    transform: translate(170px, 230px) scaleX(1);
+
+  /* tới cửa - nhỏ lại */
+  45%{
+    transform:
+      translate(170px, 50px)
+      scale(0.75)
+      rotateY(8deg);
     opacity:1;
   }
-  30%{
-    transform: translate(170px, 120px) scaleX(1);
-    opacity:1;
-  }
-  40%{
-    transform: translate(170px, 10px) scaleX(1);
-    opacity:1;
-  }
-  /* tới cửa */
+
+  /* vào trong - biến mất */
   50%{
-    transform: translate(170px, -100px) scaleX(1);
+    transform:
+      translate(170px, -80px)
+      scale(0.7)
+      rotateY(10deg);
     opacity:0;
   }
-  /* bên trong */
+
+  /* quay đầu bên trong */
   55%{
-    transform: translate(170px, -100px) scaleX(-1);
+    transform:
+      translate(170px, -80px)
+      scale(0.7)
+      rotateY(180deg);
     opacity:0;
   }
-  60%{
-    transform: translate(170px, -30px) scaleX(-1);
-    opacity:1;
-  }
+
+  /* đi ra - dần to lên */
   70%{
-    transform: translate(170px, 120px) scaleX(-1);
+    transform:
+      translate(150px, 120px)
+      scale(0.85)
+      rotateY(185deg);
     opacity:1;
   }
-  80%{
-    transform: translate(170px, 230px) scaleX(-1);
-    opacity:1;
+
+  85%{
+    transform:
+      translate(130px, 300px)
+      scale(1.0)
+      rotateY(185deg);
+      opacity:1;
   }
-  90%{
-    transform: translate(170px, 340px) scaleX(-1);
-    opacity:1;
-  }
+
+  /* trở lại gần camera */
   100%{
-    transform: translate(170px, 450px) scaleX(-1);
+    transform:
+      translate(120px, 480px)
+      scale(1.1)
+      rotateY(180deg);
     opacity:1;
   }
 }
