@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>Nhà máy sản xuất Kim Cương</title>
+<title>Diamond Factory</title>
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <link rel="stylesheet" href="/style.css">
 
@@ -75,8 +75,8 @@ body::before{
 /* ===== COIN TEXT ===== */
 .coinArea{
   position:absolute;
-  right:35px;
-  top:48%;
+  right:43px;
+  top: 63%;
   transform:translateY(-50%);
 
   font-size:17px;
@@ -102,7 +102,7 @@ body::before{
 
 .factory-card{
   position:relative;
-  border-radius:20px;
+  border-radius:30px;
   overflow:hidden;
   padding:0;
 
@@ -371,9 +371,9 @@ function render(){
       slot.style = disabled;
 
       slot.innerHTML = `
-        ➕ Xây nhà máy mới<br>
+        ➕ Build<br>
         <span style="font-size:11px;opacity:.7">
-          Giá: ${cost} 💎
+          Cost: ${cost} 💎
         </span>
       `;
 
@@ -452,7 +452,7 @@ function render(){
               border-radius:12px;
               color:#ff5555;
             ">
-              ⛔ Tạm dừng
+              ⛔ INACTIVE
             </div>`
           : ""
         }
