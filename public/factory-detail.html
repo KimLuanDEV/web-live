@@ -2108,25 +2108,35 @@ function renderWorkers(){
 
   const layer = document.getElementById("factoryWorkers");
   if(!layer) return;
-
-  // 🔥 LUÔN CLEAR TRƯỚC
-  layer.innerHTML = "";
-
   if(!factory) return;
 
-  // ❌ Nếu cháy → không render
-  if(factory.burned) return;
+  if(factory.burned || !factory.active) {
+    layer.innerHTML = "";
+    return;
+  }
 
-  // ❌ Nếu không active → không render
-  if(!factory.active) return;
-
-  // ❌ Nếu không có worker → không render
   const workers = Number(factory.workers ?? 0);
-  if(workers <= 0) return;
+  if(workers <= 0){
+    layer.innerHTML = "";
+    return;
+  }
 
-  const count = Math.min(workers, 6);
+  const current = layer.children.length;
+  const target  = Math.min(workers, 6);
 
-  for(let i=0;i<count;i++){
+  // 🔥 Nếu số worker không đổi → KHÔNG làm gì cả
+  if(current === target) return;
+
+  // 🔻 Nếu nhiều hơn → remove bớt
+  if(current > target){
+    for(let i=current-1;i>=target;i--){
+      layer.removeChild(layer.children[i]);
+    }
+    return;
+  }
+
+  // 🔺 Nếu thiếu → thêm mới
+  for(let i=current;i<target;i++){
 
     const w = document.createElement("img");
     w.className = "worker";
