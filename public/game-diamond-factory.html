@@ -100,12 +100,6 @@ body::before{
   gap:2px;
 }
 
-
-
-
-
-
-
 /* ===== FACTORY CARD ===== */
 
 .factory-card{
@@ -125,6 +119,34 @@ body::before{
   overflow:hidden;
 }
 
+/* Wrapper cho frame */
+.factory-frame{
+  position:relative;
+  width:100%;
+  box-sizing:border-box;
+
+  /* ✅ chừa chỗ cho viền PNG */
+  padding:14px;          /* đổi 14 -> 10/12/16 tùy khung dày mỏng */
+}
+
+.factory-frame .factory-card{
+  width:100%;
+  height:100%;
+  box-sizing:border-box;
+  border-radius:14px;    /* nhỏ hơn để lọt trong khung */
+}
+
+/* giữ nguyên */
+.factory-frame img.frame-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  pointer-events:none;
+  z-index:5;
+}
+
 /* bỏ transform khỏi .factory-card:hover */
 .factory-card:hover{
   box-shadow:
@@ -132,44 +154,11 @@ body::before{
     0 0 30px rgba(0,240,255,.2);
 }
 
-
-
-/* khung chỉ bọc phần ảnh */
-.img-wrap{
-  position:relative;
-  aspect-ratio:1/1;      /* ép vùng ảnh thành vuông */
-  width:100%;
-  border-radius:14px;
-  overflow:visible;
+/* đưa transform lên wrapper */
+.factory-frame:hover{
+  transform:translateY(-4px);
+  transition:.35s ease;
 }
-
-.factory-img{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-  border-radius:14px;
-}
-
-.img-frame{
-  position:absolute;
-  inset:-10px;          /* ✅ nới ra ngoài */
-  width:calc(100% + 20px);
-  height:calc(100% + 20px);
-  object-fit:cover;
-  pointer-events:none;
-  z-index:10;
-}
-
-
-.img-clip{
-  position:relative;
-  width:100%;
-  height:100%;
-  border-radius:14px;
-  overflow:hidden; /* ✅ chỉ clip ảnh/overlay */
-}
-
 
 .factory-card h3{
   margin:0;
@@ -390,7 +379,7 @@ function render(){
       slot.style = disabled;
 
       slot.innerHTML = `
-        ➕ Build factory<br>
+        ➕ Build<br>
         <span style="font-size:11px;opacity:.7">
           Cost: ${cost} 💎
         </span>
@@ -404,9 +393,12 @@ function render(){
     // =========================
     // FACTORY CARD
     // =========================
-    const card = document.createElement("div");
-    card.className = "factory-card";
-    card.style.cursor = "pointer";
+const wrapper = document.createElement("div");
+wrapper.className = "factory-frame";
+
+const card = document.createElement("div");
+card.className = "factory-card";
+card.style.cursor = "pointer";
 
     const currentWorkers = f.workers || 0;
     const hasWorker = currentWorkers > 0;
@@ -436,75 +428,84 @@ function render(){
       levelImg = "factory-lv2.png";
     }
 
+    // 🔥 nếu full kho → đổi màu progress
     const progressColor =
       percent >= 100
         ? "linear-gradient(90deg,#ffd700,#ffaa00)"
         : "linear-gradient(90deg,#00f0ff,#00aaff)";
 
     // =========================
-    // HTML CARD (frame chỉ bọc ảnh)
+    // HTML CARD
     // =========================
-card.innerHTML = `
-  <div class="img-wrap">
-    <div class="img-clip">
-      <img src="/assets/ui/${levelImg}"
-           class="factory-img"
-           style="
-             transition:.4s ease;
-             transform: scale(${isActive ? 1 : .95});
-             filter:${isActive ? "brightness(1)" : "grayscale(1) brightness(.6)"};
-           ">
+    card.innerHTML = `
+      <div style="position:relative">
 
-      ${
-        !isActive
-        ? `<div style="
-            position:absolute;
-            inset:0;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            font-size:12px;
-            font-weight:700;
-            background:rgba(0,0,0,.6);
-            border-radius:12px;
-            color:#ff5555;
-            z-index:6;
-          ">
-            ⛔ INACTIVE
-          </div>`
-        : ""
-      }
+<img src="/assets/ui/${levelImg}"
+     style="
+       width:100%;
+       border-radius:14px;
+       transition:.4s ease;
+       transform: scale(${isActive ? 1 : .95});
+       filter:${isActive ? "brightness(1)" : "grayscale(1) brightness(.6)"};
+     ">
 
-      <div style="
-        position:absolute;
-        top:8px;
-        left:8px;
-        background:rgba(0,0,0,.6);
-        padding:4px 8px;
-        border-radius:8px;
-        font-size:11px;
-        z-index:6;
-      ">
-        Lv.${f.level}
+        ${
+          !isActive
+          ? `<div style="
+              position:absolute;
+              inset:0;
+              display:flex;
+              align-items:center;
+              justify-content:center;
+              font-size:12px;
+              font-weight:700;
+              background:rgba(0,0,0,.6);
+              border-radius:12px;
+              color:#ff5555;
+            ">
+              ⛔ INACTIVE
+            </div>`
+          : ""
+        }
+
+        <div style="
+          position:absolute;
+          top:8px;
+          left:8px;
+          background:rgba(0,0,0,.6);
+          padding:4px 8px;
+          border-radius:8px;
+          font-size:11px;
+        ">
+          Lv.${f.level}
+        </div>
+
       </div>
-    </div>
 
-    <!-- ✅ frame nằm ngoài clip để bọc hết -->
-    <img src="/assets/ui/frame-factory.png" class="img-frame">
-  </div>
+      <div class="progress" style="margin-top:-4px">
+        <div class="progress-fill"
+          style="width:${percent}%;
+                 background:${progressColor}">
+        </div>
+      </div>
+    `;
 
-  <div class="progress" style="margin-top:8px">
-    <div class="progress-fill"
-      style="width:${percent}%;
-             background:${progressColor}">
-    </div>
-  </div>
-`;
-    card.onclick = ()=>{
-      location.href = "/factory-detail.html?index=" + index;
-    };
+ card.onclick = ()=>{
+  location.href = "/factory-detail.html?index=" + index;
+};
 
-    grid.appendChild(card);
+    wrapper.appendChild(card);
+
+const frame = document.createElement("img");
+frame.src = "/assets/ui/frame-factory.png";  // 🔥 ảnh khung PNG của bạn
+frame.className = "frame-img";
+
+wrapper.appendChild(frame);
+
+grid.appendChild(wrapper);
+
+
+
   });
 }
 
