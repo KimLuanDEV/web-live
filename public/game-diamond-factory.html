@@ -40,47 +40,31 @@ html,body{
   pointer-events:none;
 }
 
-/* Back */
-.tb-left{
+/* ===== HIT AREA BACK ===== */
+.backHit{
   position:absolute;
-  left:15px;
+  left:18px;
   top:50%;
   transform:translateY(-50%);
+  width:90px;
+  height:65px;
   cursor:pointer;
 }
 
-.backBtnImg{
-  width:48px;
-  transition:.25s ease;
-}
-
-.backBtnImg:active{
-  transform:scale(.9);
-}
-
-/* Coin */
-.tb-right{
+/* ===== COIN TEXT ===== */
+.coinArea{
   position:absolute;
-  right:18px;
+  right:55px;
   top:50%;
   transform:translateY(-50%);
-}
 
-.walletBox{
-  display:flex;
-  align-items:center;
-  gap:6px;
+  font-size:20px;
   font-weight:900;
-  font-size:16px;
-  color:#fff;
+  color:#ffffff;
 
   text-shadow:
-    0 0 12px rgba(0,240,255,.8),
-    0 0 25px rgba(0,240,255,.4);
-}
-
-.coinIcon{
-  width:22px;
+    0 0 12px rgba(0,240,255,.9),
+    0 0 25px rgba(0,240,255,.6);
 }
 
 /* ===== GRID ===== */
@@ -239,17 +223,14 @@ html,body{
   <!-- ẢNH NỀN HEADER -->
   <img src="/assets/ui/topbar-factory.png" class="topbar-bg">
 
-  <!-- BACK BUTTON -->
-  <div class="tb-left" onclick="location.href='/invest.html'">
-    <img src="/assets/ui/back-panel1.png" class="backBtnImg">
+  <!-- VÙNG CLICK BACK -->
+  <div class="backHit"
+       onclick="location.href='/invest.html'">
   </div>
 
-  <!-- COIN -->
-  <div class="tb-right">
-    <div class="walletBox">
-      <img src="/assets/ui/diamond-icon1.png" class="coinIcon">
-      <span id="coinVal">0</span>
-    </div>
+  <!-- VÙNG HIỂN THỊ COIN -->
+  <div class="coinArea">
+    <span id="coinVal">0</span>
   </div>
 
 </div>
