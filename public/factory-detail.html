@@ -1563,6 +1563,40 @@ body{
 
 
 
+
+<!-- =========================
+     ⚙ TOGGLE FACTORY MODAL
+     ========================= -->
+<div class="overlay" id="toggleModal">
+
+  <div class="upgradeModalBox">
+
+    <div class="upgradeTitle">
+      FACTORY CONTROL
+    </div>
+
+    <div class="uRow">
+      <span>Current Status</span>
+      <b id="toggleCurrent"></b>
+    </div>
+
+    <div class="uRow next">
+      <span>After Action</span>
+      <b id="toggleNext"></b>
+    </div>
+
+    <div class="uActions">
+      <button class="uBtn cancel" onclick="closeToggle()">Cancel</button>
+      <button class="uBtn confirm" onclick="confirmToggle()">Confirm</button>
+    </div>
+
+  </div>
+</div>
+
+
+
+
+
 <!-- =========================
      🔔 NOTIFICATION PANEL
      ========================= -->
@@ -2782,8 +2816,39 @@ function closeFinance(){
 
 
 function toggleFactory(){
-  socket.emit("factory-toggle");
+
+  if(!factory) return;
+  if(factory.burned){
+    showNotify("Factory is burned!","bad");
+    return;
+  }
+
+  const isActive = factory.active !== false;
+
+  document.getElementById("toggleCurrent").textContent =
+    isActive ? "ACTIVE" : "INACTIVE";
+
+  document.getElementById("toggleNext").textContent =
+    isActive ? "INACTIVE" : "ACTIVE";
+
+  document.getElementById("toggleModal")
+    .classList.add("show");
 }
+
+function closeToggle(){
+  document.getElementById("toggleModal")
+    .classList.remove("show");
+}
+
+function confirmToggle(){
+
+  closeToggle();
+
+  socket.emit("factory-toggle",{ index });
+
+}
+
+
 
 
 socket.on("factory-status", data=>{
