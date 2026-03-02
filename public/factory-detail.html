@@ -1078,17 +1078,15 @@ body{
 .loadingOverlay{
   position:fixed;
   inset:0;
-  z-index:5000;
+  z-index:999999;   /* 🔥 cao nhất */
+
   display:none;
   align-items:center;
   justify-content:center;
 
   padding: calc(18px + var(--safeTop)) 18px calc(18px + var(--safeBot));
-  background:
-    radial-gradient(circle at 50% 20%, rgba(0,240,255,.18), transparent 55%),
-    radial-gradient(circle at 50% 85%, rgba(0,120,255,.14), transparent 60%),
-    linear-gradient(180deg, rgba(0,0,0,.78), rgba(0,0,0,.92));
-  backdrop-filter: blur(10px);
+
+  background:#05080c;        /* 🔥 full màu đặc */
 }
 
 .loadingOverlay.show{ display:flex; }
@@ -1108,6 +1106,17 @@ body{
     0 0 55px rgba(0,240,255,.18),
     0 25px 70px rgba(0,0,0,.85);
 }
+
+.loadingOverlay::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 50% 20%, rgba(0,240,255,.18), transparent 55%),
+    radial-gradient(circle at 50% 85%, rgba(0,120,255,.14), transparent 60%);
+  pointer-events:none;
+}
+
 
 .loadingRing{
   position:relative;
