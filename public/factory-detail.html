@@ -1866,8 +1866,9 @@ socket.on("factory-update", list=>{
   factory = list[index];
   if(!factory) return;
 
-  // ✅ đã có data
+
   markLoaderDataReady();
+
 
   // 🔥 LƯU FACTORY HIỆN TẠI (cho finance modal)
   currentFactory = factory;
@@ -1881,16 +1882,7 @@ socket.on("factory-update", list=>{
     window.previewInterval = null;
   }
 
-  // ✅ Render UI theo data mới
   render();
-
-  // ✅ Sau khi render đã gắn xong DOM + img src (worker-bot, factoryImg...)
-  //    → quét và chờ TẤT CẢ ảnh load xong rồi mới cho loader tắt
-  requestAnimationFrame(()=>{
-    // watchAllImages() + tryFinishLoader() là 2 hàm mình đã hướng dẫn bạn thêm ở phần loader
-    if(typeof watchAllImages === "function") watchAllImages();
-    if(typeof tryFinishLoader === "function") tryFinishLoader();
-  });
 
   // ✅ Bật realtime kho nếu factory active + có worker
   if(factory.active && factory.workers > 0 && !factory.burned){
@@ -3124,84 +3116,6 @@ const LOADER = {
   started: false,
 };
 
-LOADER.pendingImgs = 0;
-LOADER.imgsReady = false;
-LOADER.imgObserver = null;
-LOADER.imgSeen = new WeakSet();
-
-function watchAllImages(){
-  if(LOADER.imgObserver){
-    LOADER.imgObserver.disconnect();
-    LOADER.imgObserver = null;
-  }
-
-  LOADER.pendingImgs = 0;
-  LOADER.imgsReady = false;
-  if(LOADER.sub) LOADER.sub.textContent = "Loading images…";
-
-  const track = (img)=>{
-    if(!img || img.tagName !== "IMG") return;
-    if(LOADER.imgSeen.has(img)) return;
-    LOADER.imgSeen.add(img);
-
-    // bỏ qua ảnh ẩn/không có src
-    if(!img.getAttribute("src")) return;
-
-    // nếu đã load OK
-    if(img.complete && img.naturalWidth > 0) return;
-
-    LOADER.pendingImgs++;
-
-    const done = ()=>{
-      img.removeEventListener("load", done);
-      img.removeEventListener("error", done);
-      LOADER.pendingImgs = Math.max(0, LOADER.pendingImgs - 1);
-      tryFinishLoader();
-    };
-
-    img.addEventListener("load", done, { once:true });
-    img.addEventListener("error", done, { once:true });
-  };
-
-  // Track toàn bộ img hiện có trong DOM (kể cả trong modal)
-  document.querySelectorAll("img").forEach(track);
-
-  // Track img được thêm vào sau (ví dụ worker-bot tạo trong renderWorkers)
-  LOADER.imgObserver = new MutationObserver((muts)=>{
-    for(const m of muts){
-      m.addedNodes?.forEach((n)=>{
-        if(!n) return;
-        if(n.nodeType !== 1) return;
-
-        if(n.tagName === "IMG") track(n);
-        else n.querySelectorAll?.("img")?.forEach(track);
-      });
-    }
-    tryFinishLoader();
-  });
-
-  LOADER.imgObserver.observe(document.body, { childList:true, subtree:true });
-
-  // nếu không còn pending ngay từ đầu
-  tryFinishLoader();
-}
-
-function tryFinishLoader(){
-  // progress cảm giác “đang load ảnh”
-  if(LOADER.pendingImgs > 0){
-    LOADER.target = Math.max(LOADER.target, 90);
-    if(LOADER.tip) LOADER.tip.textContent = `Loading assets… (${LOADER.pendingImgs})`;
-    return;
-  }
-
-  LOADER.imgsReady = true;
-  if(LOADER.tip) LOADER.tip.textContent = "Assets ready ✓";
-
-  if(LOADER.dataReady && LOADER.imgsReady){
-    finishLoader();
-  }
-}
-
 
 function initLoader(){
   LOADER.el   = document.getElementById("loadingOverlay");
@@ -3254,9 +3168,9 @@ function initLoader(){
     if(LOADER.pct)  LOADER.pct.textContent  = p + "%";
 
     // nếu đủ điều kiện tắt
- if(LOADER.imgsReady && LOADER.dataReady){
-  finishLoader();
-}
+    if(LOADER.imgReady && LOADER.dataReady){
+      finishLoader();
+    }
   }, 120);
 
   // hook ảnh hero
@@ -3276,9 +3190,6 @@ function initLoader(){
   }else{
     LOADER.imgReady = true;
   }
-
-  watchAllImages();
-
 }
 
 function markLoaderDataReady(){
