@@ -1136,7 +1136,7 @@ body{
   width:0%;
   background:linear-gradient(90deg,#00f0ff,#008cff);
   box-shadow:0 0 25px rgba(0,240,255,.5);
-  transition:.25s ease;
+  transition:none; /* 🔥 bỏ transition để không giật */
 }
 
 .loadingPercent{
@@ -3256,6 +3256,39 @@ function tryFinishLoading(){
 }
 
 
+// =========================
+// 🎮 SMOOTH PROGRESS (10s)
+// =========================
+
+const loadingStart = performance.now();
+
+function animateLoading(now){
+
+  const elapsed = now - loadingStart;
+  const progress = Math.min(elapsed / MIN_LOADING_TIME, 1);
+
+  const percent = Math.floor(progress * 100);
+
+  const bar  = document.getElementById("loadingBarFill");
+  const text = document.getElementById("loadingPercent");
+
+  if(bar){
+    bar.style.width = (progress * 100) + "%";
+  }
+
+  if(text){
+    text.textContent = percent + "%";
+  }
+
+  if(progress < 1){
+    requestAnimationFrame(animateLoading);
+  }
+}
+
+requestAnimationFrame(animateLoading);
+
+
+
 
 function waitAllImages(){
 
@@ -3270,59 +3303,24 @@ function waitAllImages(){
 
   function check(){
     loaded++;
-    const percent = Math.floor((loaded / total) * 100);
-
-    const bar = document.getElementById("loadingBarFill");
-    const text = document.getElementById("loadingPercent");
-
-    if(bar) bar.style.width = percent + "%";
-    if(text) text.textContent = percent + "%";
-
     if(loaded >= total){
       markLoaderImagesReady();
     }
   }
 
   for(let img of images){
-
     if(img.complete){
       check();
     }else{
       img.addEventListener("load", check);
       img.addEventListener("error", check);
     }
-
   }
 }
 
 window.addEventListener("load", ()=>{
   waitAllImages();
 });
-
-
-
-// =========================
-// 🎮 FAKE PROGRESS 10s
-// =========================
-
-let fakePercent = 0;
-
-const fakeInterval = setInterval(()=>{
-
-  if(fakePercent >= 100){
-    clearInterval(fakeInterval);
-    return;
-  }
-
-  fakePercent += 1;
-
-  const bar  = document.getElementById("loadingBarFill");
-  const text = document.getElementById("loadingPercent");
-
-  if(bar)  bar.style.width = fakePercent + "%";
-  if(text) text.textContent = fakePercent + "%";
-
-}, 100); // 100ms x 100 = 10s
 
 
 
