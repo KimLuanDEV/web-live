@@ -272,12 +272,12 @@ body{
   width:80px;
   height:100px;
 
-  background: url('/assets/ui/worker-sprite.png') 0 0 no-repeat;
-  background-size: 320px 100px;
+  background: url('/assets/ui/worker-female-12.png') 0 0 no-repeat;
+  background-size: 960px 100px;
 
   animation:
     diagonalWalk 8s linear infinite,
-    workerRun .6s steps(4) infinite;
+    workerRun .8s steps(12) infinite;
 }
 
 @keyframes diagonalWalk{
@@ -336,12 +336,10 @@ body{
   }
 }
 
-
 @keyframes workerRun{
   from { background-position: 0 0; }
-  to   { background-position: -320px 0; }
+  to   { background-position: -960px 0; }
 }
-
 
 
 .storagePanel{
@@ -2158,7 +2156,7 @@ w.className = "worker";
 
     const rate = Number(factory.rate ?? 1);
     const speed = Math.max(4, 8 - rate * 0.2);
-    w.style.animationDuration = speed + "s";
+    w.style.animationDuration = speed + "s, .8s";
 
     layer.appendChild(w);
   }
