@@ -107,8 +107,8 @@ body::before{
     radial-gradient(circle at 50% 0%, rgba(0,240,255,.08), transparent 70%),
     linear-gradient(180deg,#0a1118,#05080c);
 
-  border:1px solid rgba(0,240,255,.2);
-  border-radius:18px;
+  border:none; /* ❌ bỏ border cũ */
+  border-radius:20px;
   padding:0;
   display:flex;
   flex-direction:column;
@@ -117,6 +117,21 @@ body::before{
 
   transition:.35s ease;
   overflow:hidden;
+}
+
+/* Wrapper cho frame */
+.factory-frame{
+  position:relative;
+}
+
+.factory-frame img.frame-img{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  pointer-events:none;
+  z-index:5;
 }
 
 .factory-card:hover{
@@ -359,9 +374,12 @@ function render(){
     // =========================
     // FACTORY CARD
     // =========================
-    const card = document.createElement("div");
-    card.className = "factory-card";
-    card.style.cursor = "pointer";
+const wrapper = document.createElement("div");
+wrapper.className = "factory-frame";
+
+const card = document.createElement("div");
+card.className = "factory-card";
+card.style.cursor = "pointer";
 
     const currentWorkers = f.workers || 0;
     const hasWorker = currentWorkers > 0;
@@ -426,7 +444,7 @@ function render(){
               border-radius:12px;
               color:#ff5555;
             ">
-              ⛔ Tạm dừng
+              ⛔ INACTIVE
             </div>`
           : ""
         }
@@ -457,7 +475,18 @@ function render(){
   location.href = "/factory-detail.html?index=" + index;
 };
 
-    grid.appendChild(card);
+    wrapper.appendChild(card);
+
+const frame = document.createElement("img");
+frame.src = "/assets/ui/frame-factory.png";  // 🔥 ảnh khung PNG của bạn
+frame.className = "frame-img";
+
+wrapper.appendChild(frame);
+
+grid.appendChild(wrapper);
+
+
+
   });
 }
 
