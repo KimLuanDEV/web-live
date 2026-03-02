@@ -1216,6 +1216,9 @@ body{
   to{ opacity:0; transform: scale(1.02); }
 }
 
+
+
+
 </style>
 </head>
 <body>
@@ -3216,6 +3219,87 @@ function finishLoader(){
 
 // gọi loader khi load trang
 initLoader();
+
+
+
+
+
+// =========================
+// ⏳ LOADER CONTROL
+// =========================
+
+let loaderImagesReady = false;
+let loaderDataReady   = false;
+
+function markLoaderDataReady(){
+  loaderDataReady = true;
+  tryFinishLoading();
+}
+
+function markLoaderImagesReady(){
+  loaderImagesReady = true;
+  tryFinishLoading();
+}
+
+function tryFinishLoading(){
+
+  if(!loaderImagesReady) return;
+  if(!loaderDataReady) return;
+
+  const overlay = document.getElementById("loadingOverlay");
+
+  if(!overlay) return;
+
+  overlay.classList.add("fadeOut");
+
+  setTimeout(()=>{
+    overlay.classList.remove("show");
+  }, 350);
+}
+
+
+
+function waitAllImages(){
+
+  const images = document.images;
+  let loaded = 0;
+  const total = images.length;
+
+  if(total === 0){
+    markLoaderImagesReady();
+    return;
+  }
+
+  function check(){
+    loaded++;
+    const percent = Math.floor((loaded / total) * 100);
+
+    const bar = document.getElementById("loadingBarFill");
+    const text = document.getElementById("loadingPercent");
+
+    if(bar) bar.style.width = percent + "%";
+    if(text) text.textContent = percent + "%";
+
+    if(loaded >= total){
+      markLoaderImagesReady();
+    }
+  }
+
+  for(let img of images){
+
+    if(img.complete){
+      check();
+    }else{
+      img.addEventListener("load", check);
+      img.addEventListener("error", check);
+    }
+
+  }
+}
+
+window.addEventListener("load", ()=>{
+  waitAllImages();
+});
 
 </script>
 </body>
