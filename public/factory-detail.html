@@ -268,16 +268,12 @@ body{
 .worker{
   position:absolute;
   left:0;
-  top:50%;
+  top:50%;              /* điểm xuất phát dưới */
   width:80px;
   height:100px;
+  object-fit:contain;
 
-  background: url('/assets/ui/worker-female-12.png') 0 0 no-repeat;
-  background-size: 960px 100px;
-
-  animation:
-    diagonalWalk 8s linear infinite,
-    workerRun .8s steps(12) infinite;
+  animation: diagonalWalk linear infinite;
 }
 
 @keyframes diagonalWalk{
@@ -334,11 +330,6 @@ body{
     transform: translate(170px, 450px) scaleX(-1);
     opacity:1;
   }
-}
-
-@keyframes workerRun{
-  from { background-position: 0 0; }
-  to   { background-position: -960px 0; }
 }
 
 
@@ -847,7 +838,7 @@ body{
 
 .repairWorker{
   position:absolute;
-  bottom:395px;
+  bottom:515px;
   left:-110px;
   width:110px;
   z-index:10;
@@ -2147,16 +2138,15 @@ function renderWorkers(){
   // 🔺 Nếu thiếu → thêm mới
   for(let i=current;i<target;i++){
 
-const w = document.createElement("div");
-w.className = "worker";
-
-
+    const w = document.createElement("img");
+    w.className = "worker";
+    w.src = "/assets/ui/worker-bot.png";
 
     w.style.animationDelay = (i * 0.8) + "s";
 
     const rate = Number(factory.rate ?? 1);
     const speed = Math.max(4, 8 - rate * 0.2);
-    w.style.animationDuration = speed + "s, .8s";
+    w.style.animationDuration = speed + "s";
 
     layer.appendChild(w);
   }
