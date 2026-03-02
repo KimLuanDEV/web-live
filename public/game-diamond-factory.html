@@ -122,8 +122,21 @@ body::before{
 /* Wrapper cho frame */
 .factory-frame{
   position:relative;
+  width:100%;
+  box-sizing:border-box;
+
+  /* ✅ chừa chỗ cho viền PNG */
+  padding:14px;          /* đổi 14 -> 10/12/16 tùy khung dày mỏng */
 }
 
+.factory-frame .factory-card{
+  width:100%;
+  height:100%;
+  box-sizing:border-box;
+  border-radius:14px;    /* nhỏ hơn để lọt trong khung */
+}
+
+/* giữ nguyên */
 .factory-frame img.frame-img{
   position:absolute;
   inset:0;
@@ -134,11 +147,17 @@ body::before{
   z-index:5;
 }
 
+/* bỏ transform khỏi .factory-card:hover */
 .factory-card:hover{
-  transform:translateY(-4px);
   box-shadow:
     0 15px 40px rgba(0,0,0,.6),
     0 0 30px rgba(0,240,255,.2);
+}
+
+/* đưa transform lên wrapper */
+.factory-frame:hover{
+  transform:translateY(-4px);
+  transition:.35s ease;
 }
 
 .factory-card h3{
