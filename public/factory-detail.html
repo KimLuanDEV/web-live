@@ -268,12 +268,16 @@ body{
 .worker{
   position:absolute;
   left:0;
-  top:50%;              /* điểm xuất phát dưới */
+  top:50%;
   width:80px;
   height:100px;
-  object-fit:contain;
 
-  animation: diagonalWalk linear infinite;
+  background: url('/assets/ui/worker-sprite.png') 0 0 no-repeat;
+  background-size: 320px 100px;
+
+  animation:
+    diagonalWalk 8s linear infinite,
+    workerRun .6s steps(4) infinite;
 }
 
 @keyframes diagonalWalk{
@@ -331,6 +335,13 @@ body{
     opacity:1;
   }
 }
+
+
+@keyframes workerRun{
+  from { background-position: 0 0; }
+  to   { background-position: -320px 0; }
+}
+
 
 
 .storagePanel{
@@ -2138,9 +2149,10 @@ function renderWorkers(){
   // 🔺 Nếu thiếu → thêm mới
   for(let i=current;i<target;i++){
 
-    const w = document.createElement("img");
-    w.className = "worker";
-    w.src = "/assets/ui/worker-bot.png";
+const w = document.createElement("div");
+w.className = "worker";
+
+
 
     w.style.animationDelay = (i * 0.8) + "s";
 
