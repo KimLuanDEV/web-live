@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <title>Nhà máy sản xuất Kim Cương</title>
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="/style.css">
 
 <style>
@@ -41,13 +41,11 @@ body::before{
 /* ===== TOP BAR PREMIUM ===== */
 .topbar{
   position:relative;
+  height:95px;
   width:100%;
   overflow:hidden;
-
-  /* 🔥 ăn full tai thỏ */
-  padding-top: env(safe-area-inset-top);
-  height: calc(95px + env(safe-area-inset-top));
 }
+
 .topbar-bg{
   position:absolute;
   inset:0;
@@ -61,7 +59,7 @@ body::before{
 .backHit{
   position:absolute;
   left:18px;
-  top: calc(50% + env(safe-area-inset-top)/2);
+  top:50%;
   transform:translateY(-50%);
   width:90px;
   height:65px;
@@ -72,7 +70,7 @@ body::before{
 .coinArea{
   position:absolute;
   right:35px;
-  top: calc(50% + env(safe-area-inset-top)/2);
+  top:48%;
   transform:translateY(-50%);
 
   font-size:17px;
