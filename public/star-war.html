@@ -6,13 +6,16 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
-body{
+html, body{
   margin:0;
+  padding:0;
+  height:100%;
   overflow:hidden;
-  background:
-    radial-gradient(circle at 20% 20%, #0a1a2f 0%, #000 60%),
-    radial-gradient(circle at 80% 30%, #120a2f 0%, #000 60%);
-  font-family:Arial, Helvetica, sans-serif;
+  position:fixed;
+  width:100%;
+
+  touch-action:none;
+  overscroll-behavior:none;
   background-color:#000;
 }
 
@@ -1002,6 +1005,11 @@ function approveStart(){
   startGame();
 }
 
+
+
+document.addEventListener('touchmove', function(e){
+  e.preventDefault();
+}, { passive:false });
 
 
 </script>
