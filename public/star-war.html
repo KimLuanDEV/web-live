@@ -355,6 +355,16 @@ const player = {
   size: 25
 };
 
+
+const playerImg = new Image();
+playerImg.src = "/assets/star-war/player.png";
+
+// chỉnh kích thước hiển thị
+const PLAYER_WIDTH = 80;
+const PLAYER_HEIGHT = 80;
+
+
+
 const baseImg = new Image();
 baseImg.src = "/assets/star-war/base.png";
 
@@ -489,8 +499,11 @@ function update(){
     const dxp = e.x - player.x;
     const dyp = e.y - player.y;
 
-    if(Math.sqrt(dxp*dxp + dyp*dyp) < e.size + player.size){
+    const playerRadius = PLAYER_WIDTH / 2;
 
+if(Math.sqrt(dxp*dxp + dyp*dyp) < e.size + playerRadius)
+    
+    {
       explode(e.x,e.y);
       enemies.splice(ei,1);
 
@@ -569,19 +582,19 @@ function draw(){
     ctx.fillRect(s.x,s.y,2,2);
   });
 
-  // ===== PLAYER =====
-  ctx.shadowBlur = 25;
-  ctx.shadowColor = "#00f0ff";
-  ctx.fillStyle = "#00f0ff";
 
-  ctx.beginPath();
-  ctx.moveTo(player.x, player.y-30);
-  ctx.lineTo(player.x-20, player.y+20);
-  ctx.lineTo(player.x+20, player.y+20);
-  ctx.closePath();
-  ctx.fill();
 
-  ctx.shadowBlur = 0;
+
+// ===== PLAYER IMAGE =====
+if(playerImg.complete){
+  ctx.drawImage(
+    playerImg,
+    player.x - PLAYER_WIDTH/2,
+    player.y - PLAYER_HEIGHT/2,
+    PLAYER_WIDTH,
+    PLAYER_HEIGHT
+  );
+}
 
   // ===== BULLETS =====
   ctx.fillStyle = "#00ffff";
