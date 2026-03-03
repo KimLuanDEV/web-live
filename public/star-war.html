@@ -327,23 +327,28 @@ canvas{ display:block; }
    🧊 ULTRA THIN HUD 35px
    ========================= */
 
+/* =========================
+   🧊 ULTRA THIN HUD 35px
+   ========================= */
+
 .compactHUD{
   position:fixed;
   top:0;
-  left:205px;
-  right:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:96%;
+  max-width:1100px;
   height:35px;
-
-  padding: env(safe-area-inset-top)14px 0 14px;
+  padding:0 14px;
 
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  background:rgba(0,0,0,.35);
+  background:rgba(0,0,0,.28);
+  
   font-size:11px;
   letter-spacing:.3px;
-
   z-index:50;
 }
 
@@ -557,18 +562,8 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resize(){
-
-  const vh = window.visualViewport
-    ? window.visualViewport.height
-    : window.innerHeight;
-
-  canvas.width  = window.innerWidth;
-  canvas.height = vh;
-
-}
-
-if(window.visualViewport){
-  window.visualViewport.addEventListener("resize", resize);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
 }
 
 resize();
@@ -974,8 +969,8 @@ socket.on("star-war-start-approved", ()=>{
       setTimeout(()=>{
         countdown.style.display = "none";
         gameStarted = true;
-        starting = false;    
-    },700);
+        starting = false;
+      },700);
     }
 
   },1000);
