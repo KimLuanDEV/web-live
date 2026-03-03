@@ -49,25 +49,6 @@ body{
   background-color:#05080c;
 }
 
-/* =========================
-   🔒 HARD LOCK UI WHEN LOADING
-   ========================= */
-
-body.loading-active > *:not(.loadingOverlay){
-  opacity:0 !important;
-  pointer-events:none !important;
-}
-
-body.loading-active .hero{
-  display:none !important;
-}
-
-
-body.loading-active{
-  overflow:hidden;
-  background:#000;
-}
-
 
 /* ===== TOPBAR (premium) ===== */
 .topbar{
@@ -1660,8 +1641,6 @@ body.loading-active{
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
-document.body.classList.add("loading-active");
 
 const params = new URLSearchParams(location.search);
 const index = Number(params.get("index"));
@@ -3264,21 +3243,17 @@ function tryFinishLoading(){
   const elapsed = Date.now() - loadingStartTime;
   const remain  = Math.max(0, MIN_LOADING_TIME - elapsed);
 
- setTimeout(()=>{
-  const overlay = document.getElementById("loadingOverlay");
-  if(!overlay) return;
-
-  overlay.classList.add("fadeOut");
-
   setTimeout(()=>{
-    overlay.classList.remove("show");
+    const overlay = document.getElementById("loadingOverlay");
+    if(!overlay) return;
 
-    // 🔥 MỞ UI Ở ĐÂY
-    document.body.classList.remove("loading-active");
+    overlay.classList.add("fadeOut");
 
-  }, 500);
+    setTimeout(()=>{
+      overlay.classList.remove("show");
+    }, 500);
 
-}, remain);
+  }, remain);
 }
 
 
