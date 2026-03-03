@@ -168,18 +168,6 @@ canvas{ display:block; }
   pointer-events:auto;
 }
 
-/* hộp chính */
-.startBox{
-  width:380px;
-  padding:40px 30px;
-  border-radius:25px;
-  background:rgba(10,20,40,.85);
-  backdrop-filter:blur(12px);
-  border:1px solid #00f0ff;
-  box-shadow:0 0 40px rgba(0,240,255,.5);
-  text-align:center;
-  animation:fadeIn .4s ease;
-}
 
 /* buttons */
 .startBtn{
@@ -219,10 +207,6 @@ canvas{ display:block; }
   transform:scale(1.05);
 }
 
-@keyframes fadeIn{
-  from{opacity:0; transform:scale(.9);}
-  to{opacity:1; transform:scale(1);}
-}
 
 
 
@@ -417,17 +401,15 @@ canvas{ display:block; }
 
 .startBtnImg{
   width:100%;
+  height:200px;
   cursor:pointer;
   transition:.25s;
-  bottom:200px;
-  left:200px;
 }
 
 .startBtnImg img{
   width:100%;
   display:block;
   pointer-events:none;
-  
 }
 
 .startBtnImg:hover{
@@ -482,19 +464,18 @@ canvas{ display:block; }
 
 
 <div id="startPanel" class="startPanel">
-  <div class="startBox">
-    
+
+
 <div class="startBtnImg" onclick="confirmStart()">
   <img src="/assets/star-war/start-btn.png" alt="Start">
 </div>
 
-
-    <button class="exitBtn"
+ <button class="exitBtn"
       onclick="location.href='/game-diamond-factory.html'">
       EXIT
-    </button>
+</button>
 
-  </div>
+ 
 </div>
 
 
