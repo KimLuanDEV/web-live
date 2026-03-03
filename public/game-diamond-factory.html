@@ -406,9 +406,6 @@ function render(){
       (currentStored / f.storage) * 100
     );
 
-    // =========================
-    // 🎨 ẢNH THEO LEVEL
-    // =========================
     let levelImg = "factory-lv1.png";
 
     if(f.level >= 5){
@@ -421,26 +418,22 @@ function render(){
       levelImg = "factory-lv2.png";
     }
 
-    // 🔥 nếu full kho → đổi màu progress
     const progressColor =
       percent >= 100
         ? "linear-gradient(90deg,#ffd700,#ffaa00)"
         : "linear-gradient(90deg,#00f0ff,#00aaff)";
 
-    // =========================
-    // HTML CARD
-    // =========================
     card.innerHTML = `
       <div style="position:relative">
 
-<img src="/assets/ui/${levelImg}"
-     style="
-       width:100%;
-       border-radius:14px;
-       transition:.4s ease;
-       transform: scale(${isActive ? 1 : .95});
-       filter:${isActive ? "brightness(1)" : "grayscale(1) brightness(.6)"};
-     ">
+        <img src="/assets/ui/${levelImg}"
+          style="
+            width:100%;
+            border-radius:14px;
+            transition:.4s ease;
+            transform: scale(${isActive ? 1 : .95});
+            filter:${isActive ? "brightness(1)" : "grayscale(1) brightness(.6)"};
+          ">
 
         ${
           !isActive
@@ -483,13 +476,76 @@ function render(){
       </div>
     `;
 
- card.onclick = ()=>{
-  location.href = "/factory-detail.html?index=" + index;
-};
+    card.onclick = ()=>{
+      location.href = "/factory-detail.html?index=" + index;
+    };
 
     grid.appendChild(card);
   });
+
+
+  // ==========================================
+  // 🚀 STAR WAR CARD (THÊM Ở CUỐI GRID)
+  // ==========================================
+  const starCard = document.createElement("div");
+  starCard.className = "factory-card";
+  starCard.style.cursor = "pointer";
+
+  starCard.innerHTML = `
+    <div style="position:relative">
+
+      <img src="/assets/ui/star-war-thumb.png"
+           style="
+             width:100%;
+             border-radius:14px;
+             transition:.3s ease;
+           ">
+
+      <div style="
+        position:absolute;
+        inset:0;
+        background:linear-gradient(
+          180deg,
+          rgba(0,0,0,.1),
+          rgba(0,0,0,.6)
+        );
+        border-radius:14px;
+      "></div>
+
+      <div style="
+        position:absolute;
+        bottom:12px;
+        left:12px;
+        font-weight:900;
+        font-size:16px;
+        color:#00f0ff;
+        text-shadow:0 0 20px rgba(0,240,255,.8);
+      ">
+        🚀 STAR WAR
+      </div>
+
+    </div>
+
+    <div style="
+      margin-top:6px;
+      font-size:12px;
+      opacity:.8;
+    ">
+      Space battle – Earn 💎
+    </div>
+  `;
+
+  starCard.onclick = ()=>{
+    location.href = "/star-war.html";
+  };
+
+  grid.appendChild(starCard);
 }
+
+
+
+
+
 
 function hireWorker(index){
   socket.emit("factory-hire-worker",{ index });

@@ -2657,9 +2657,39 @@ saveFactories(factoryDB);
 
 socket.emit("factory-update", factoryDB[uid]);
 
+
+
+
+
+
+
+socket.on("star-war-reward", ({ reward })=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+  if(!me?.profile) return;
+
+  me.profile.coins =
+    Math.floor(Number(me.profile.coins || 0) + reward);
+
+  saveUsers(users);
+  emitCoinUpdate(uid);
+});
+
+
+
+
 // ================================
 // 🏭 DIAMOND FACTORY
 // ================================
+
+
+
+
+
 
 
 socket.on("hospital-upgrade", ({ index })=>{
