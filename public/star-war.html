@@ -132,7 +132,16 @@ canvas{ display:block; }
 }
 
 
-
+#playerElement{
+  position:fixed;
+  width:90px;          /* 🔥 chỉnh size tại đây */
+  bottom:120px;        /* 🔥 chỉnh vị trí dọc */
+  left:50%;
+  transform:translate(-50%, -50%);
+  pointer-events:none;
+  z-index:8;
+  transition:.1s linear;
+}
 
 
 #playerHitbox{
@@ -259,6 +268,7 @@ canvas{ display:block; }
 <canvas id="game"></canvas>
 
 
+<img id="playerElement" src="/assets/star-war/player.png">
 
 <div id="playerHitbox"></div>
 
@@ -405,10 +415,28 @@ for(let i=0;i<120;i++){
 /* ===================== CONTROL ===================== */
 canvas.addEventListener("mousemove", e=>{
   player.x = e.clientX;
+  document.getElementById("playerElement").style.left =
+    e.clientX + "px";
 });
+
 canvas.addEventListener("touchmove", e=>{
-  player.x = e.touches[0].clientX;
-});
+
+  e.preventDefault();
+
+  let touchX = e.touches[0].clientX;
+
+  const minX = 40;
+  const maxX = window.innerWidth - 40;
+
+  touchX = Math.max(minX, Math.min(maxX, touchX));
+
+  player.x = touchX;
+
+  document.getElementById("playerElement").style.left =
+    touchX + "px";
+
+}, { passive:false });
+
 
 /* ===================== SHOOT ===================== */
 setInterval(()=>{
@@ -607,18 +635,6 @@ function draw(){
   });
 
 
-
-
-// ===== PLAYER IMAGE =====
-if(playerImg.complete){
-  ctx.drawImage(
-    playerImg,
-    player.x - PLAYER_WIDTH/2,
-    player.y - PLAYER_HEIGHT/2,
-    PLAYER_WIDTH,
-    PLAYER_HEIGHT
-  );
-}
 
   // ===== BULLETS =====
   ctx.fillStyle = "#00ffff";
