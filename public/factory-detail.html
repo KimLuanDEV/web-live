@@ -49,17 +49,6 @@ body{
   background-color:#05080c;
 }
 
-
-body.loading-active .hero,
-body.loading-active .burnHide,
-body.loading-active .financeBtn,
-body.loading-active .storagePanel,
-body.loading-active .coinPanel,
-body.loading-active .controlPanel{
-  visibility:hidden;
-}
-
-
 /* ===== TOPBAR (premium) ===== */
 .topbar{
   position:absolute;   /* 🔥 overlay */
@@ -1091,8 +1080,6 @@ body.loading-active .controlPanel{
   z-index:999999;
   display:none;
   overflow:hidden;
-
-  background:#05080c; /* 🔥 nền cứng chống xuyên */
 }
 
 .loadingOverlay.show{
@@ -1653,11 +1640,6 @@ body.loading-active .controlPanel{
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
-// 🔥 Kích hoạt trạng thái loading ngay lập tức
-document.body.classList.add("loading-active");
-
-
 
 const params = new URLSearchParams(location.search);
 const index = Number(params.get("index"));
@@ -3268,7 +3250,6 @@ function tryFinishLoading(){
 
     setTimeout(()=>{
       overlay.classList.remove("show");
-      document.body.classList.remove("loading-active");
     }, 500);
 
   }, remain);
