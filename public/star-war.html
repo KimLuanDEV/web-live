@@ -557,9 +557,20 @@ const canvas = document.getElementById("game");
 const ctx = canvas.getContext("2d");
 
 function resize(){
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
+
+  const vh = window.visualViewport
+    ? window.visualViewport.height
+    : window.innerHeight;
+
+  canvas.width  = window.innerWidth;
+  canvas.height = vh;
+
 }
+
+if(window.visualViewport){
+  window.visualViewport.addEventListener("resize", resize);
+}
+
 resize();
 window.addEventListener("resize", resize);
 
@@ -963,9 +974,8 @@ socket.on("star-war-start-approved", ()=>{
       setTimeout(()=>{
         countdown.style.display = "none";
         gameStarted = true;
-        starting = false;
-        backBtn.style.display = "block";  // 🔥 Hiện nút EXIT khi game chạy
-      },700);
+        starting = false;    
+    },700);
     }
 
   },1000);
