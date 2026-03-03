@@ -1382,6 +1382,82 @@ body{
 
 
 
+
+
+/* =========================
+   🎯 TUTORIAL OVERLAY
+   ========================= */
+
+.tutorialOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.75);
+  backdrop-filter:blur(4px);
+  z-index:99999;
+  display:none;
+}
+
+.tutorialOverlay.show{
+  display:block;
+}
+
+.tutorialHighlight{
+  position:absolute;
+  border-radius:18px;
+  box-shadow:
+    0 0 0 9999px rgba(0,0,0,.75),
+    0 0 40px rgba(0,240,255,.8);
+  transition:.35s cubic-bezier(.4,0,.2,1);
+  pointer-events:none;
+  animation: pulseGlow 1.6s infinite;
+}
+
+@keyframes pulseGlow{
+  0%{ box-shadow:
+      0 0 0 9999px rgba(0,0,0,.75),
+      0 0 30px rgba(0,240,255,.6); }
+  50%{ box-shadow:
+      0 0 0 9999px rgba(0,0,0,.75),
+      0 0 60px rgba(0,240,255,1); }
+  100%{ box-shadow:
+      0 0 0 9999px rgba(0,0,0,.75),
+      0 0 30px rgba(0,240,255,.6); }
+}
+
+.tutorialTooltip{
+  position:absolute;
+  max-width:260px;
+  padding:16px;
+  border-radius:18px;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0,240,255,.2), transparent 60%),
+    linear-gradient(180deg, rgba(10,20,30,.95), rgba(4,8,13,.95));
+  border:1px solid rgba(0,240,255,.4);
+  box-shadow:
+    0 0 40px rgba(0,240,255,.4),
+    0 20px 50px rgba(0,0,0,.8);
+  color:#eaf6ff;
+  transition:.3s ease;
+}
+
+.tutorialText{
+  font-size:14px;
+  margin-bottom:12px;
+}
+
+.tutorialNext{
+  width:100%;
+  padding:10px;
+  border:none;
+  border-radius:12px;
+  font-weight:900;
+  background:linear-gradient(90deg,#00f0ff,#008cff);
+  cursor:pointer;
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -1921,6 +1997,25 @@ body{
 
     </div>
 
+  </div>
+
+</div>
+
+
+
+
+
+
+<!-- =========================
+     🎯 INTERACTIVE TUTORIAL
+     ========================= -->
+<div class="tutorialOverlay" id="tutorialOverlay">
+
+  <div class="tutorialHighlight" id="tutorialHighlight"></div>
+
+  <div class="tutorialTooltip" id="tutorialTooltip">
+    <div class="tutorialText" id="tutorialText"></div>
+    <button class="tutorialNext" onclick="nextTutorial()">NEXT</button>
   </div>
 
 </div>
@@ -3672,17 +3767,8 @@ const guideSteps = [
 let guideIndex = 0;
 
 function openGuide(){
-  guideIndex = 0;
-
-  document.getElementById("guideStepTotal")
-    .textContent = guideSteps.length;
-
-  renderGuide(true);
-
-  document.getElementById("guideModal")
-    .classList.add("show");
+  startTutorial();
 }
-
 function closeGuide(){
   document.getElementById("guideModal")
     .classList.remove("show");
@@ -3755,6 +3841,67 @@ function updateProgress(){
     .style.width = percent + "%";
 }
 
+
+
+
+
+
+// =========================
+// 🎯 INTERACTIVE TUTORIAL
+// =========================
+
+const tutorialSteps = [
+  { el:".upgradeBtn", text:"Upgrade factory to unlock more workers." },
+  { el:".supervisorBtn", text:"Hire workers to start production." },
+  { el:".storagePanel", text:"Collect diamonds before storage is full." },
+  { el:".fireDefenseBtn", text:"Upgrade fire defense to reduce risk." },
+  { el:".hospitalBtn", text:"Hospital reduces worker death rate." },
+  { el:".financeBtn", text:"Check profit and risk here." },
+  { el:".toggleBtn", text:"Turn factory OFF to avoid risk." },
+  { el:".collectTruck", text:"Go to main factory map." }
+];
+
+let tutorialIndex = 0;
+
+function startTutorial(){
+  tutorialIndex = 0;
+  document.getElementById("tutorialOverlay")
+    .classList.add("show");
+  showTutorialStep();
+}
+
+function nextTutorial(){
+  tutorialIndex++;
+  if(tutorialIndex >= tutorialSteps.length){
+    document.getElementById("tutorialOverlay")
+      .classList.remove("show");
+    return;
+  }
+  showTutorialStep();
+}
+
+function showTutorialStep(){
+
+  const step = tutorialSteps[tutorialIndex];
+  const target = document.querySelector(step.el);
+  if(!target) return;
+
+  const rect = target.getBoundingClientRect();
+
+  const highlight = document.getElementById("tutorialHighlight");
+  highlight.style.top = rect.top - 8 + "px";
+  highlight.style.left = rect.left - 8 + "px";
+  highlight.style.width = rect.width + 16 + "px";
+  highlight.style.height = rect.height + 16 + "px";
+
+  const tooltip = document.getElementById("tutorialTooltip");
+
+  tooltip.style.top = rect.bottom + 15 + "px";
+  tooltip.style.left = rect.left + "px";
+
+  document.getElementById("tutorialText")
+    .textContent = step.text;
+}
 
 </script>
 </body>
