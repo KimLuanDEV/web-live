@@ -1287,6 +1287,58 @@ body{
 
 
 
+.guideBody{
+  position:relative;
+}
+
+.guideProgress{
+  height:6px;
+  background:rgba(255,255,255,.1);
+  border-radius:999px;
+  overflow:hidden;
+  margin-bottom:12px;
+}
+
+.guideProgressFill{
+  height:100%;
+  width:0%;
+  background:linear-gradient(90deg,#00f0ff,#008cff);
+  box-shadow:0 0 20px rgba(0,240,255,.6);
+  transition:.4s ease;
+}
+
+.guideStepCounter{
+  text-align:right;
+  font-size:11px;
+  opacity:.7;
+  margin-bottom:10px;
+  letter-spacing:.5px;
+}
+
+.guideSlideWrap{
+  overflow:hidden;
+  min-height:140px;
+  position:relative;
+}
+
+.guideSlide{
+  transition:.35s cubic-bezier(.4,0,.2,1);
+  transform:translateX(0);
+  opacity:1;
+}
+
+.guideSlide.slide-out{
+  transform:translateX(-30px);
+  opacity:0;
+}
+
+.guideSlide.slide-in{
+  transform:translateX(30px);
+  opacity:0;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -1797,9 +1849,22 @@ body{
       <div class="guideClose" onclick="closeGuide()">✕</div>
     </div>
 
-    <div class="guideContent" id="guideContent">
-      <!-- Nội dung step sẽ render bằng JS -->
-    </div>
+ <div class="guideBody">
+
+  <div class="guideProgress">
+    <div class="guideProgressFill" id="guideProgressFill"></div>
+  </div>
+
+  <div class="guideStepCounter">
+    STEP <span id="guideStepNow">1</span> /
+    <span id="guideStepTotal">8</span>
+  </div>
+
+  <div class="guideSlideWrap">
+    <div class="guideSlide" id="guideSlide"></div>
+  </div>
+
+</div>
 
     <div class="guideFooter">
 
@@ -3509,35 +3574,55 @@ window.addEventListener("load", ()=>{
 
 
 
-
 const guideSteps = [
 
-`<b> BUILD & UPGRADE</b><br><br>
-Upgrade your factory to unlock more worker slots and increase production potential.`,
+{
+  icon:"🏗",
+  title:"BUILD & UPGRADE",
+  text:"Upgrade your factory to unlock more worker slots and increase production potential."
+},
 
-`<b> HIRE WORKERS</b><br><br>
-Each worker produces diamonds per second.<br>
-No worker = No income.`,
+{
+  icon:"👷",
+  title:"HIRE WORKERS",
+  text:"Each worker produces diamonds per second. No worker = No income."
+},
 
-`<b> PRODUCE & COLLECT</b><br><br>
-Diamonds are stored automatically.<br>
-Collect before storage is full.`,
+{
+  icon:"💎",
+  title:"PRODUCE & COLLECT",
+  text:"Diamonds are stored automatically. Collect before storage is full."
+},
 
-`<b> FIRE RISK</b><br><br>
-Factories may burn randomly.<br>
-If burned, all workers and stored diamonds are lost.`,
+{
+  icon:"🔥",
+  title:"FIRE RISK",
+  text:"Factories may burn randomly. If burned, all workers and stored diamonds are lost."
+},
 
-`<b> FIRE DEFENSE</b><br><br>
-Upgrade Fire Defense Center to reduce fire chance.`,
+{
+  icon:"🚒",
+  title:"FIRE DEFENSE",
+  text:"Upgrade Fire Defense Center to reduce fire chance."
+},
 
-`<b> HOSPITAL</b><br><br>
-Reduce worker death rate and stabilize production.`,
+{
+  icon:"🏥",
+  title:"HOSPITAL",
+  text:"Reduce worker death rate and stabilize production."
+},
 
-`<b> FINANCE PANEL</b><br><br>
-Monitor profit, costs, risks, and optimize your strategy.`,
+{
+  icon:"📊",
+  title:"FINANCE PANEL",
+  text:"Monitor profit, costs, risks, and optimize your strategy."
+},
 
-`<b> FACTORY CONTROL</b><br><br>
-You can turn factory OFF to avoid risks when needed.`
+{
+  icon:"⚙",
+  title:"FACTORY CONTROL",
+  text:"Turn factory OFF to avoid risks when needed."
+}
 
 ];
 
@@ -3545,7 +3630,12 @@ let guideIndex = 0;
 
 function openGuide(){
   guideIndex = 0;
-  renderGuide();
+
+  document.getElementById("guideStepTotal")
+    .textContent = guideSteps.length;
+
+  renderGuide(true);
+
   document.getElementById("guideModal")
     .classList.add("show");
 }
@@ -3571,22 +3661,54 @@ function prevGuide(){
   }
 }
 
-function renderGuide(){
+function renderGuide(firstLoad=false){
 
-  document.getElementById("guideContent")
-    .innerHTML = guideSteps[guideIndex];
+  const slide = document.getElementById("guideSlide");
 
-  const dots = document.getElementById("guideDots");
-  dots.innerHTML = "";
+  if(!firstLoad){
+    slide.classList.add("slide-out");
 
-  guideSteps.forEach((_,i)=>{
-    const d = document.createElement("div");
-    d.className = "guideDot" + (i===guideIndex?" active":"");
-    dots.appendChild(d);
-  });
+    setTimeout(()=>{
+      updateGuideContent();
+      slide.classList.remove("slide-out");
+    },200);
 
+  }else{
+    updateGuideContent();
+  }
+
+  updateProgress();
 }
 
+function updateGuideContent(){
+
+  const step = guideSteps[guideIndex];
+
+  const slide = document.getElementById("guideSlide");
+
+  slide.innerHTML = `
+    <div style="font-size:32px;margin-bottom:8px">
+      ${step.icon}
+    </div>
+    <div style="font-weight:1000;margin-bottom:8px;color:#00f0ff">
+      ${step.title}
+    </div>
+    <div style="font-size:14px;line-height:1.6">
+      ${step.text}
+    </div>
+  `;
+
+  document.getElementById("guideStepNow")
+    .textContent = guideIndex + 1;
+}
+
+function updateProgress(){
+
+  const percent = ((guideIndex+1) / guideSteps.length) * 100;
+
+  document.getElementById("guideProgressFill")
+    .style.width = percent + "%";
+}
 
 
 </script>
