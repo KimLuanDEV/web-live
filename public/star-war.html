@@ -104,7 +104,7 @@ canvas{ display:block; }
 
 #baseElement{
   position:fixed;
-  bottom:-80px;
+  bottom:-90px;
   left:50%;
   transform:translateX(-50%);
   width:114vw;              /* chỉnh kích thước tại đây */
@@ -129,6 +129,24 @@ canvas{ display:block; }
   /* DEBUG MODE (xem vùng va chạm) */
   border:2px solid red;
   background:rgba(255,0,0,.15);
+}
+
+
+
+
+:root{
+  --player-size: 100;        /* chỉnh kích cỡ tại đây */
+  --player-scale: 1;        /* scale nhanh */
+}
+
+.player-debug{
+  position:fixed;
+  pointer-events:none;
+  border:2px solid #00f0ff;
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  z-index:30;
+  display:none; /* bật khi cần debug */
 }
 
 
@@ -360,10 +378,15 @@ const player = {
 const playerImg = new Image();
 playerImg.src = "/assets/star-war/player.png";
 
-// chỉnh kích thước hiển thị
-const PLAYER_WIDTH = 80;
-const PLAYER_HEIGHT = 80;
 
+function getPlayerSize(){
+  const size = getComputedStyle(document.documentElement)
+    .getPropertyValue('--player-size');
+  const scale = getComputedStyle(document.documentElement)
+    .getPropertyValue('--player-scale');
+
+  return Number(size) * Number(scale);
+}
 
 
 const baseImg = new Image();
@@ -500,7 +523,7 @@ function update(){
     const dxp = e.x - player.x;
     const dyp = e.y - player.y;
 
-    const playerRadius = PLAYER_WIDTH / 2;
+    const playerRadius = getPlayerSize() / 2;
 
 if(Math.sqrt(dxp*dxp + dyp*dyp) < e.size + playerRadius)
     
@@ -588,13 +611,15 @@ function draw(){
 
 // ===== PLAYER IMAGE =====
 if(playerImg.complete){
-  ctx.drawImage(
-    playerImg,
-    player.x - PLAYER_WIDTH/2,
-    player.y - PLAYER_HEIGHT/2,
-    PLAYER_WIDTH,
-    PLAYER_HEIGHT
-  );
+const size = getPlayerSize();
+
+ctx.drawImage(
+  playerImg,
+  player.x - size/2,
+  player.y - size/2,
+  size,
+  size
+);
 }
 
   // ===== BULLETS =====
