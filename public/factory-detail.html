@@ -1427,7 +1427,7 @@ body{
 
 .tutorialTooltip{
   position:absolute;
-  max-width:260px;
+  max-width:80vw;
   padding:16px;
   border-radius:18px;
   background:
@@ -3891,19 +3891,54 @@ function showTutorialStep(){
 
   const rect = target.getBoundingClientRect();
 
+  // ===== Highlight =====
   const highlight = document.getElementById("tutorialHighlight");
-  highlight.style.top = rect.top - 8 + "px";
-  highlight.style.left = rect.left - 8 + "px";
-  highlight.style.width = rect.width + 16 + "px";
-  highlight.style.height = rect.height + 16 + "px";
+  highlight.style.top = (rect.top - 8) + "px";
+  highlight.style.left = (rect.left - 8) + "px";
+  highlight.style.width = (rect.width + 16) + "px";
+  highlight.style.height = (rect.height + 16) + "px";
 
   const tooltip = document.getElementById("tutorialTooltip");
 
-  tooltip.style.top = rect.top + 15 + "px";
-  tooltip.style.left = rect.left + "px";
+  document.getElementById("tutorialText").textContent = step.text;
 
-  document.getElementById("tutorialText")
-    .textContent = step.text;
+  // Đợi render xong để lấy đúng kích thước tooltip
+  requestAnimationFrame(()=>{
+
+    const tooltipHeight = tooltip.offsetHeight;
+    const tooltipWidth  = tooltip.offsetWidth;
+
+    const spaceBelow = window.innerHeight - rect.bottom;
+    const spaceAbove = rect.top;
+
+    let top;
+
+    // 🔥 Nếu không đủ chỗ bên dưới → đặt lên trên
+    if(spaceBelow < tooltipHeight + 20){
+      top = rect.top - tooltipHeight - 16;
+    }else{
+      top = rect.bottom + 16;
+    }
+
+    // Không cho tràn lên mép trên
+    if(top < 12) top = 12;
+
+    // Canh giữa theo target
+    let left = rect.left + rect.width/2 - tooltipWidth/2;
+
+    // Không cho tràn trái
+    if(left < 12) left = 12;
+
+    // Không cho tràn phải
+    if(left + tooltipWidth > window.innerWidth - 12){
+      left = window.innerWidth - tooltipWidth - 12;
+    }
+
+    tooltip.style.top = top + "px";
+    tooltip.style.left = left + "px";
+
+  });
+
 }
 
 </script>
