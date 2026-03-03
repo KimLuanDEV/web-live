@@ -572,7 +572,9 @@ let gameStarted = false;
 let starting = false;
 
 const backBtn = document.getElementById("backBtn");
-backBtn.style.display = "none";   // 🔥 Ẩn khi đang ở màn hình START
+if(backBtn){
+  backBtn.style.display = "block";
+}
 
 const player = {
   x: canvas.width/2,
