@@ -132,32 +132,6 @@ canvas{ display:block; }
 }
 
 
-#playerElement{
-  position:fixed;
-  width:120px;          /* 🔥 chỉnh size tại đây */
-  bottom:65px;        /* 🔥 chỉnh vị trí dọc */
-  left:50%;
-  transform:translate(-50%, -50%);
-  pointer-events:none;
-  z-index:8;
-  transition:.1s linear;
-}
-
-
-#playerHitbox{
-  position:fixed;
-  width:50px;          /* chỉnh độ rộng hitbox */
-  height:60px;         /* chỉnh chiều cao hitbox */
-  bottom: 84px;
-  pointer-events:none;
-  z-index:7;
-  transform:translate(-50%, -50%);
-
-  /* DEBUG */
-  border:2px solid cyan;
-  background:rgba(0,255,255,.15);
-}
-
 
 </style>
 </head>
@@ -269,9 +243,6 @@ canvas{ display:block; }
 <canvas id="game"></canvas>
 
 
-<img id="playerElement" src="/assets/star-war/player.png">
-
-<div id="playerHitbox"></div>
 
 
 <img id="baseElement" src="/assets/star-war/base.png">
@@ -416,28 +387,10 @@ for(let i=0;i<120;i++){
 /* ===================== CONTROL ===================== */
 canvas.addEventListener("mousemove", e=>{
   player.x = e.clientX;
-  document.getElementById("playerElement").style.left =
-    e.clientX + "px";
 });
-
 canvas.addEventListener("touchmove", e=>{
-
-  e.preventDefault();
-
-  let touchX = e.touches[0].clientX;
-
-  const minX = 40;
-  const maxX = window.innerWidth - 40;
-
-  touchX = Math.max(minX, Math.min(maxX, touchX));
-
-  player.x = touchX;
-
-  document.getElementById("playerElement").style.left =
-    touchX + "px";
-
-}, { passive:false });
-
+  player.x = e.touches[0].clientX;
+});
 
 /* ===================== SHOOT ===================== */
 setInterval(()=>{
@@ -489,7 +442,7 @@ function update(){
 
   const now = Date.now();
 
-  /* ================= SPAWN ================= */
+  // ================= SPAWN =================
   if(now - lastEnemySpawn > 800){
     spawnEnemy();
     lastEnemySpawn = now;
@@ -500,17 +453,7 @@ function update(){
     lastBossSpawn = now;
   }
 
-  /* ================= UPDATE HITBOX POSITION ================= */
-  const playerHitbox = document.getElementById("playerHitbox");
-  playerHitbox.style.left = player.x + "px";
-  playerHitbox.style.top  = player.y + "px";
-
-  const playerRect = playerHitbox.getBoundingClientRect();
-
-  const baseHitbox = document.getElementById("baseHitbox");
-  const baseRect = baseHitbox.getBoundingClientRect();
-
-  /* ================= BULLETS ================= */
+  // ================= BULLETS =================
   for(let i = bullets.length - 1; i >= 0; i--){
     bullets[i].y -= bullets[i].speed;
     if(bullets[i].y < -10){
@@ -518,22 +461,17 @@ function update(){
     }
   }
 
-  /* ================= ENEMIES MOVE ================= */
+  // ================= ENEMIES MOVE =================
   for(let i = enemies.length - 1; i >= 0; i--){
     enemies[i].y += enemies[i].speed;
   }
 
-  /* ================= COLLISIONS ================= */
+  // ================= COLLISIONS =================
   for(let ei = enemies.length - 1; ei >= 0; ei--){
 
     const e = enemies[ei];
 
-    const enemyLeft   = e.x - e.size;
-    const enemyRight  = e.x + e.size;
-    const enemyTop    = e.y - e.size;
-    const enemyBottom = e.y + e.size;
-
-    /* ===== Bullet Collision ===== */
+    // ===== Bullet collision =====
     for(let bi = bullets.length - 1; bi >= 0; bi--){
 
       const b = bullets[bi];
@@ -556,15 +494,17 @@ function update(){
       }
     }
 
-    if(!enemies[ei]) continue;
+    if(!enemies[ei]) continue; // enemy đã chết
 
-    /* ===== PLAYER HITBOX COLLISION ===== */
-    if(
-      enemyRight  >= playerRect.left &&
-      enemyLeft   <= playerRect.right &&
-      enemyBottom >= playerRect.top &&
-      enemyTop    <= playerRect.bottom
-    ){
+    // ===== Player collision =====
+    const dxp = e.x - player.x;
+    const dyp = e.y - player.y;
+
+    const playerRadius = PLAYER_WIDTH / 2;
+
+if(Math.sqrt(dxp*dxp + dyp*dyp) < e.size + playerRadius)
+    
+    {
       explode(e.x,e.y);
       enemies.splice(ei,1);
 
@@ -578,26 +518,34 @@ function update(){
       continue;
     }
 
-    /* ===== BASE HITBOX COLLISION ===== */
-    if(
-      enemyRight  >= baseRect.left &&
-      enemyLeft   <= baseRect.right &&
-      enemyBottom >= baseRect.top
-    ){
-      explode(e.x,e.y);
-      enemies.splice(ei,1);
+// ===== BASE COLLISION (CSS HITBOX) =====
+const hitbox = document.getElementById("baseHitbox");
+const rect = hitbox.getBoundingClientRect();
 
-      baseHp -= e.boss ? 40 : 15;
+const enemyBottom = e.y + e.size;
+const enemyLeft   = e.x - e.size;
+const enemyRight  = e.x + e.size;
 
-      if(baseHp <= 0){
-        baseHp = 0;
-        endGame();
-        return;
-      }
-    }
+if(
+  enemyBottom >= rect.top &&
+  enemyRight  >= rect.left &&
+  enemyLeft   <= rect.right
+){
+  explode(e.x, e.y);
+  enemies.splice(ei,1);
+
+  baseHp -= e.boss ? 40 : 15;
+
+  if(baseHp <= 0){
+    baseHp = 0;
+    endGame();
+    return;
   }
+}
 
-  /* ================= PARTICLES ================= */
+}
+
+  // ================= PARTICLES =================
   for(let i = particles.length - 1; i >= 0; i--){
     particles[i].x += particles[i].vx;
     particles[i].y += particles[i].vy;
@@ -608,13 +556,13 @@ function update(){
     }
   }
 
-  /* ================= STARS ================= */
-  for(let i = 0; i < stars.length; i++){
-    stars[i].y += stars[i].speed;
-    if(stars[i].y > canvas.height) stars[i].y = 0;
-  }
+  // ================= STARS =================
+  stars.forEach(s=>{
+    s.y += s.speed;
+    if(s.y > canvas.height) s.y = 0;
+  });
 
-  /* ================= UI ================= */
+  // ================= UI =================
   document.getElementById("scoreUI").textContent = score;
   document.getElementById("rewardUI").textContent = reward;
   document.getElementById("hpBar").style.width = hp + "%";
@@ -636,6 +584,18 @@ function draw(){
   });
 
 
+
+
+// ===== PLAYER IMAGE =====
+if(playerImg.complete){
+  ctx.drawImage(
+    playerImg,
+    player.x - PLAYER_WIDTH/2,
+    player.y - PLAYER_HEIGHT/2,
+    PLAYER_WIDTH,
+    PLAYER_HEIGHT
+  );
+}
 
   // ===== BULLETS =====
   ctx.fillStyle = "#00ffff";
