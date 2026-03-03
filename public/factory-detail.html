@@ -1149,6 +1149,134 @@ body{
 }
 
 
+
+/* =========================
+   📘 GUIDE MODAL PREMIUM
+   ========================= */
+
+.guideBox{
+  width:380px;
+  max-width:90%;
+  border-radius:26px;
+  padding:24px;
+
+  background:
+    radial-gradient(circle at 50% 0%, rgba(0,240,255,.15), transparent 60%),
+    linear-gradient(180deg, rgba(10,20,30,.98), rgba(4,8,13,.98));
+
+  border:1px solid rgba(0,240,255,.35);
+
+  box-shadow:
+    0 0 60px rgba(0,240,255,.25),
+    0 30px 80px rgba(0,0,0,.8);
+
+  animation: guideFade .35s ease;
+}
+
+@keyframes guideFade{
+  from{ transform:scale(.95); opacity:0 }
+  to{ transform:scale(1); opacity:1 }
+}
+
+.guideHeader{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.guideTitle{
+  font-weight:1000;
+  font-size:18px;
+  letter-spacing:1px;
+  color:#00f0ff;
+  text-shadow:0 0 25px rgba(0,240,255,.6);
+}
+
+.guideClose{
+  cursor:pointer;
+  font-weight:900;
+  font-size:18px;
+  opacity:.7;
+  transition:.2s;
+}
+.guideClose:hover{ opacity:1 }
+
+.guideContent{
+  min-height:140px;
+  font-size:14px;
+  line-height:1.6;
+  color:#eaf6ff;
+  transition:.25s ease;
+}
+
+.guideFooter{
+  margin-top:20px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+}
+
+.guideBtn{
+  padding:10px 16px;
+  border-radius:14px;
+  font-weight:900;
+  cursor:pointer;
+  border:none;
+  transition:.25s ease;
+}
+
+.guideBtn.ghost{
+  background:rgba(255,255,255,.1);
+  color:#fff;
+}
+
+.guideBtn.neon{
+  background:linear-gradient(90deg,#00f0ff,#008cff);
+  color:#001018;
+}
+
+.guideBtn:active{
+  transform:scale(.95);
+}
+
+.guideDots{
+  display:flex;
+  gap:6px;
+}
+
+.guideDot{
+  width:8px;
+  height:8px;
+  border-radius:999px;
+  background:rgba(255,255,255,.25);
+  transition:.25s;
+}
+
+.guideDot.active{
+  background:#00f0ff;
+  box-shadow:0 0 12px rgba(0,240,255,.7);
+}
+
+
+.guideBtnFloat{
+  position:absolute;
+  top:20px;
+  right:20px;
+  width:42px;
+  height:42px;
+  border-radius:14px;
+  background:linear-gradient(90deg,#00f0ff,#008cff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:900;
+  cursor:pointer;
+  z-index:200;
+  box-shadow:0 0 25px rgba(0,240,255,.5);
+}
+
+
 </style>
 </head>
 <body>
@@ -1164,6 +1292,8 @@ body{
   <div class="factoryWorkers" id="factoryWorkers"></div>
 
 
+
+  <div class="guideBtnFloat" onclick="openGuide()">❓</div>
 
 
   <div class="repairWorker" id="repairWorker">
@@ -1635,6 +1765,42 @@ body{
     </div>
 
     <div class="loadingPercent" id="loadingPercent">0%</div>
+  </div>
+
+</div>
+
+
+
+
+
+<!-- =========================
+     📘 HOW TO PLAY MODAL
+     ========================= -->
+<div class="overlay" id="guideModal">
+
+  <div class="guideBox">
+
+    <div class="guideHeader">
+      <div class="guideTitle">FACTORY GUIDE</div>
+      <div class="guideClose" onclick="closeGuide()">✕</div>
+    </div>
+
+    <div class="guideContent" id="guideContent">
+      <!-- Nội dung step sẽ render bằng JS -->
+    </div>
+
+    <div class="guideFooter">
+
+      <button class="guideBtn ghost"
+        onclick="prevGuide()">PREV</button>
+
+      <div class="guideDots" id="guideDots"></div>
+
+      <button class="guideBtn neon"
+        onclick="nextGuide()">NEXT</button>
+
+    </div>
+
   </div>
 
 </div>
@@ -3323,6 +3489,89 @@ function waitAllImages(){
 window.addEventListener("load", ()=>{
   waitAllImages();
 });
+
+
+
+
+
+
+
+const guideSteps = [
+
+`<b> BUILD & UPGRADE</b><br><br>
+Upgrade your factory to unlock more worker slots and increase production potential.`,
+
+`<b> HIRE WORKERS</b><br><br>
+Each worker produces diamonds per second.<br>
+No worker = No income.`,
+
+`<b> PRODUCE & COLLECT</b><br><br>
+Diamonds are stored automatically.<br>
+Collect before storage is full.`,
+
+`<b> FIRE RISK</b><br><br>
+Factories may burn randomly.<br>
+If burned, all workers and stored diamonds are lost.`,
+
+`<b> FIRE DEFENSE</b><br><br>
+Upgrade Fire Defense Center to reduce fire chance.`,
+
+`<b> HOSPITAL</b><br><br>
+Reduce worker death rate and stabilize production.`,
+
+`<b> FINANCE PANEL</b><br><br>
+Monitor profit, costs, risks, and optimize your strategy.`,
+
+`<b> FACTORY CONTROL</b><br><br>
+You can turn factory OFF to avoid risks when needed.`
+
+];
+
+let guideIndex = 0;
+
+function openGuide(){
+  guideIndex = 0;
+  renderGuide();
+  document.getElementById("guideModal")
+    .classList.add("show");
+}
+
+function closeGuide(){
+  document.getElementById("guideModal")
+    .classList.remove("show");
+}
+
+function nextGuide(){
+  if(guideIndex < guideSteps.length - 1){
+    guideIndex++;
+    renderGuide();
+  }else{
+    closeGuide();
+  }
+}
+
+function prevGuide(){
+  if(guideIndex > 0){
+    guideIndex--;
+    renderGuide();
+  }
+}
+
+function renderGuide(){
+
+  document.getElementById("guideContent")
+    .innerHTML = guideSteps[guideIndex];
+
+  const dots = document.getElementById("guideDots");
+  dots.innerHTML = "";
+
+  guideSteps.forEach((_,i)=>{
+    const d = document.createElement("div");
+    d.className = "guideDot" + (i===guideIndex?" active":"");
+    dots.appendChild(d);
+  });
+
+}
 
 
 
