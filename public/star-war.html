@@ -3,7 +3,8 @@
 <head>
 <meta charset="utf-8">
 <title>Star War</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 <style>
 body{
@@ -13,6 +14,7 @@ body{
     radial-gradient(circle at 20% 20%, #0a1a2f 0%, #000 60%),
     radial-gradient(circle at 80% 30%, #120a2f 0%, #000 60%);
   font-family:Arial, Helvetica, sans-serif;
+  background-color:#000;
 }
 
 canvas{ display:block; }
@@ -333,32 +335,33 @@ canvas{ display:block; }
 
 
 /* =========================
-   🧊 SUPER MINIMAL HUD
-   ========================= */
-
-/* =========================
    🧊 ULTRA THIN HUD 35px
    ========================= */
 
 .compactHUD{
   position:fixed;
   top:0;
-  left:50%;
-  transform:translateX(-50%);
-  width:96%;
-  max-width:1100px;
+  left:205;
+  right:0;
+
   height:35px;
-  padding:0 14px;
+
+  padding:
+    env(safe-area-inset-top)
+    14px
+    0
+    14px;
 
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  background:rgba(0,0,0,.28);
-  border-bottom:1px solid rgba(0,240,255,.15);
+  background:rgba(0,0,0,.35);
+  border-bottom:1px solid rgba(0,240,255,.12);
 
   font-size:11px;
   letter-spacing:.3px;
+
   z-index:50;
 }
 
@@ -426,14 +429,14 @@ canvas{ display:block; }
   <div class="hudCenter">
 
     <div class="miniHp">
-      <span>P</span>
+      <span>Player</span>
       <div class="miniBarWrap">
         <div class="miniBar playerHp" id="hpBar"></div>
       </div>
     </div>
 
     <div class="miniHp">
-      <span>B</span>
+      <span>Base</span>
       <div class="miniBarWrap">
         <div class="miniBar baseHp" id="baseHpBar"></div>
       </div>
