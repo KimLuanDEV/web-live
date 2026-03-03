@@ -1284,51 +1284,8 @@ body{
 
 
 
-/* =========================
-   🎬 CINEMATIC GUIDE MODE
-   ========================= */
 
-.cinematicOverlay{
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.88);
-  backdrop-filter:blur(6px);
-  z-index:5000;
-  display:none;
-}
 
-.cinematicOverlay.show{
-  display:block;
-}
-
-/* Spotlight hole effect */
-.spotlight{
-  position:absolute;
-  border-radius:20px;
-  pointer-events:none;
-  transition:.45s cubic-bezier(.2,.8,.2,1);
-
-  box-shadow:
-    0 0 0 9999px rgba(0,0,0,.88),
-    0 0 25px rgba(0,240,255,.9),
-    0 0 60px rgba(0,240,255,.4);
-}
-
-/* Neon highlight pulse */
-.guideHighlight{
-  position:relative;
-  z-index:6000 !important;
-  animation: neonPulse 1.2s infinite alternate;
-}
-
-@keyframes neonPulse{
-  from{
-    filter: drop-shadow(0 0 12px rgba(0,240,255,.6));
-  }
-  to{
-    filter: drop-shadow(0 0 28px rgba(0,240,255,1));
-  }
-}
 
 </style>
 </head>
@@ -1861,9 +1818,6 @@ body{
 </div>
 
 
-<div class="cinematicOverlay" id="cinematicOverlay">
-  <div class="spotlight" id="spotlight"></div>
-</div>
 
 
 <script src="/socket.io/socket.io.js"></script>
@@ -3555,127 +3509,83 @@ window.addEventListener("load", ()=>{
 
 
 
-const cinematicSteps = [
-  {
-    el: ".upgradeBtn",
-    text: " Upgrade your factory to increase level and unlock more worker capacity."
-  },
-  {
-    el: ".supervisorBtn",
-    text: " Hire workers to boost diamond production per second."
-  },
-  {
-    el: ".collectTruck",
-    text: " Collect diamonds before storage reaches maximum capacity."
-  },
-  {
-    el: ".fireDefenseBtn",
-    text: " Upgrade Fire Defense to reduce the chance of factory fires."
-  },
-  {
-    el: ".hospitalBtn",
-    text: " Build and upgrade the Hospital to reduce worker death risk."
-  }
+
+const guideSteps = [
+
+`<b> BUILD & UPGRADE</b><br><br>
+Upgrade your factory to unlock more worker slots and increase production potential.`,
+
+`<b> HIRE WORKERS</b><br><br>
+Each worker produces diamonds per second.<br>
+No worker = No income.`,
+
+`<b> PRODUCE & COLLECT</b><br><br>
+Diamonds are stored automatically.<br>
+Collect before storage is full.`,
+
+`<b> FIRE RISK</b><br><br>
+Factories may burn randomly.<br>
+If burned, all workers and stored diamonds are lost.`,
+
+`<b> FIRE DEFENSE</b><br><br>
+Upgrade Fire Defense Center to reduce fire chance.`,
+
+`<b> HOSPITAL</b><br><br>
+Reduce worker death rate and stabilize production.`,
+
+`<b> FINANCE PANEL</b><br><br>
+Monitor profit, costs, risks, and optimize your strategy.`,
+
+`<b> FACTORY CONTROL</b><br><br>
+You can turn factory OFF to avoid risks when needed.`
+
 ];
 
-let cinematicIndex = 0;
-
+let guideIndex = 0;
 
 function openGuide(){
-
-  cinematicIndex = 0;
-
+  guideIndex = 0;
+  renderGuide();
   document.getElementById("guideModal")
     .classList.add("show");
-
-  document.getElementById("cinematicOverlay")
-    .classList.add("show");
-
-  showCinematicStep();
 }
 
-
-
-function showCinematicStep(){
-
-  const step = cinematicSteps[cinematicIndex];
-  if(!step) return;
-
-  const el = document.querySelector(step.el);
-  if(!el) return;
-
-  document.querySelectorAll(".guideHighlight")
-    .forEach(e=>e.classList.remove("guideHighlight"));
-
-  el.classList.add("guideHighlight");
-
-  const rect = el.getBoundingClientRect();
-  const spot = document.getElementById("spotlight");
-
-  spot.style.width  = rect.width + 20 + "px";
-  spot.style.height = rect.height + 20 + "px";
-  spot.style.top    = rect.top - 10 + "px";
-  spot.style.left   = rect.left - 10 + "px";
-
-  document.getElementById("guideContent").innerHTML =
-    `<div style="font-weight:900;margin-bottom:10px">${step.title}</div>` +
-    step.text;
-
-  updateDots();
+function closeGuide(){
+  document.getElementById("guideModal")
+    .classList.remove("show");
 }
 
+function nextGuide(){
+  if(guideIndex < guideSteps.length - 1){
+    guideIndex++;
+    renderGuide();
+  }else{
+    closeGuide();
+  }
+}
 
-function updateDots(){
+function prevGuide(){
+  if(guideIndex > 0){
+    guideIndex--;
+    renderGuide();
+  }
+}
+
+function renderGuide(){
+
+  document.getElementById("guideContent")
+    .innerHTML = guideSteps[guideIndex];
 
   const dots = document.getElementById("guideDots");
   dots.innerHTML = "";
 
-  cinematicSteps.forEach((_,i)=>{
+  guideSteps.forEach((_,i)=>{
     const d = document.createElement("div");
-    d.className = "guideDot" + (i===cinematicIndex?" active":"");
+    d.className = "guideDot" + (i===guideIndex?" active":"");
     dots.appendChild(d);
   });
+
 }
-
-
-
-function nextGuide(){
-
-  cinematicIndex++;
-
-  if(cinematicIndex >= cinematicSteps.length){
-    closeGuide();
-    return;
-  }
-
-  showCinematicStep();
-}
-
-function prevGuide(){
-
-  if(cinematicIndex <= 0) return;
-
-  cinematicIndex--;
-  showCinematicStep();
-}
-
-
-
-function closeGuide(){
-
-  document.getElementById("guideModal")
-    .classList.remove("show");
-
-  document.getElementById("cinematicOverlay")
-    .classList.remove("show");
-
-  document.querySelectorAll(".guideHighlight")
-    .forEach(e=>e.classList.remove("guideHighlight"));
-}
-
-
-
-
 
 
 
