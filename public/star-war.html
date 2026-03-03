@@ -99,6 +99,23 @@ canvas{ display:block; }
   background:linear-gradient(45deg,#00f0ff,#0088ff);
   color:white;
 }
+
+
+
+#baseElement{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:60vw;              /* chỉnh kích thước tại đây */
+  max-width:900px;
+  pointer-events:none;
+  z-index:5;
+  transition:.3s;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -209,6 +226,8 @@ canvas{ display:block; }
 <canvas id="game"></canvas>
 
 
+
+<img id="baseElement" src="/assets/star-war/base.png">
 
 
 
@@ -466,24 +485,26 @@ function update(){
       continue;
     }
 
-    // ===== BASE COLLISION =====
-    const baseHeight = canvas.width * 0.6 * 0.25;
-    const baseTop = canvas.height - baseHeight;
+// ===== BASE COLLISION (HTML BASE) =====
+const baseElement = document.getElementById("baseElement");
+const baseRect = baseElement.getBoundingClientRect();
 
-    if(e.y + e.size >= baseTop){
+// e.y đang là toạ độ canvas → canvas full màn hình nên dùng trực tiếp
+const enemyBottom = e.y + e.size;
 
-      explode(e.x,e.y);
-      enemies.splice(ei,1);
+if(enemyBottom >= baseRect.top){
 
-      baseHp -= e.boss ? 40 : 15;
+  explode(e.x, e.y);
+  enemies.splice(ei,1);
 
-      if(baseHp <= 0){
-        baseHp = 0;
-        endGame();
-        return;
-      }
-    }
+  baseHp -= e.boss ? 40 : 15;
+
+  if(baseHp <= 0){
+    baseHp = 0;
+    endGame();
+    return;
   }
+}
 
   // ================= PARTICLES =================
   for(let i = particles.length - 1; i >= 0; i--){
@@ -562,30 +583,6 @@ function draw(){
     ctx.shadowBlur = 0;
   });
 
-// ===== BASE IMAGE =====
-const baseWidth  = canvas.width * 0.6;
-const baseHeight = baseWidth * 0.25;
-
-const baseX = canvas.width/2 - baseWidth/2;
-const baseY = canvas.height - baseHeight;
-
-// Nhấp nháy khi máu thấp
-if(baseHp < 60){
-  ctx.globalAlpha = 0.7 + Math.sin(Date.now()*0.01)*0.3;
-}
-
-// Vẽ PNG nếu đã load xong
-if(baseImg.complete){
-  ctx.drawImage(
-    baseImg,
-    baseX,
-    baseY,
-    baseWidth,
-    baseHeight
-  );
-}
-
-ctx.globalAlpha = 1; // reset
 }
 
 /* ===================== GAME OVER ===================== */
