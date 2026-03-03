@@ -107,6 +107,13 @@ canvas{ display:block; }
   <div class="hpBar" id="hpBar"></div>
 </div>
 
+<div class="hpWrap" style="top:50px;">
+  <div class="hpBar" id="baseHpBar"
+       style="background:linear-gradient(90deg,#00ff88,#00ffaa);">
+  </div>
+</div>
+
+
 <div class="hud">
   <div class="hudBox">Score: <span id="scoreUI">0</span></div>
   <div class="hudBox">Reward: <span id="rewardUI">0</span> 💎</div>
@@ -275,12 +282,14 @@ let reward = 0;
 let hp = 100;
 let gameOver = false;
 
+let baseHp = 200;   // ❤️ máu căn cứ
+
 let lastEnemySpawn = 0;
 let lastBossSpawn = 0;
 
 
 let gameStarted = false;
-
+let starting = false;
 
 const player = {
   x: canvas.width/2,
@@ -351,105 +360,205 @@ function explode(x,y){
   }
 }
 
+
+
 /* ===================== UPDATE ===================== */
 function update(){
-  if(!gameStarted) return;
-  if(gameOver) return;
+
+  if(!gameStarted || gameOver) return;
 
   const now = Date.now();
 
-  if(now-lastEnemySpawn>800){
+  // ================= SPAWN =================
+  if(now - lastEnemySpawn > 800){
     spawnEnemy();
-    lastEnemySpawn=now;
+    lastEnemySpawn = now;
   }
 
-  if(now-lastBossSpawn>30000){
+  if(now - lastBossSpawn > 30000){
     spawnBoss();
-    lastBossSpawn=now;
+    lastBossSpawn = now;
   }
 
-  bullets.forEach(b=>b.y-=b.speed);
-  bullets=bullets.filter(b=>b.y>-10);
+  // ================= BULLETS =================
+  for(let i = bullets.length - 1; i >= 0; i--){
+    bullets[i].y -= bullets[i].speed;
+    if(bullets[i].y < -10){
+      bullets.splice(i,1);
+    }
+  }
 
-  enemies.forEach(e=>e.y+=e.speed);
+  // ================= ENEMIES MOVE =================
+  for(let i = enemies.length - 1; i >= 0; i--){
+    enemies[i].y += enemies[i].speed;
+  }
 
-  enemies.forEach((e,ei)=>{
-    bullets.forEach((b,bi)=>{
-      const dx=e.x-b.x;
-      const dy=e.y-b.y;
-      if(Math.sqrt(dx*dx+dy*dy)<e.size){
+  // ================= COLLISIONS =================
+  for(let ei = enemies.length - 1; ei >= 0; ei--){
+
+    const e = enemies[ei];
+
+    // ===== Bullet collision =====
+    for(let bi = bullets.length - 1; bi >= 0; bi--){
+
+      const b = bullets[bi];
+      const dx = e.x - b.x;
+      const dy = e.y - b.y;
+
+      if(Math.sqrt(dx*dx + dy*dy) < e.size){
+
         e.hp--;
         bullets.splice(bi,1);
-        if(e.hp<=0){
+
+        if(e.hp <= 0){
           explode(e.x,e.y);
-          reward+=e.boss?50:5;
-          score+=e.boss?50:5;
+          reward += e.boss ? 50 : 5;
+          score  += e.boss ? 50 : 5;
           enemies.splice(ei,1);
         }
-      }
-    });
 
-    const dx=e.x-player.x;
-    const dy=e.y-player.y;
-    if(Math.sqrt(dx*dx+dy*dy)<e.size+player.size){
+        break;
+      }
+    }
+
+    if(!enemies[ei]) continue; // enemy đã chết
+
+    // ===== Player collision =====
+    const dxp = e.x - player.x;
+    const dyp = e.y - player.y;
+
+    if(Math.sqrt(dxp*dxp + dyp*dyp) < e.size + player.size){
+
       explode(e.x,e.y);
       enemies.splice(ei,1);
-      hp-=10;
-      if(hp<=0) endGame();
+
+      hp -= 10;
+      if(hp <= 0){
+        hp = 0;
+        endGame();
+        return;
+      }
+
+      continue;
     }
-  });
 
-  particles.forEach(p=>{
-    p.x+=p.vx;
-    p.y+=p.vy;
-    p.life--;
-  });
-  particles=particles.filter(p=>p.life>0);
+    // ===== BASE COLLISION =====
+    const baseTop = canvas.height - 40;
 
+    if(e.y + e.size >= baseTop){
+
+      explode(e.x,e.y);
+      enemies.splice(ei,1);
+
+      baseHp -= e.boss ? 40 : 15;
+
+      if(baseHp <= 0){
+        baseHp = 0;
+        endGame();
+        return;
+      }
+    }
+  }
+
+  // ================= PARTICLES =================
+  for(let i = particles.length - 1; i >= 0; i--){
+    particles[i].x += particles[i].vx;
+    particles[i].y += particles[i].vy;
+    particles[i].life--;
+
+    if(particles[i].life <= 0){
+      particles.splice(i,1);
+    }
+  }
+
+  // ================= STARS =================
   stars.forEach(s=>{
-    s.y+=s.speed;
-    if(s.y>canvas.height) s.y=0;
+    s.y += s.speed;
+    if(s.y > canvas.height) s.y = 0;
   });
 
-  document.getElementById("scoreUI").textContent=score;
-  document.getElementById("rewardUI").textContent=reward;
-  document.getElementById("hpBar").style.width=hp+"%";
+  // ================= UI =================
+  document.getElementById("scoreUI").textContent = score;
+  document.getElementById("rewardUI").textContent = reward;
+  document.getElementById("hpBar").style.width = hp + "%";
+  document.getElementById("baseHpBar").style.width =
+    (baseHp / 200 * 100) + "%";
 }
 
 /* ===================== DRAW ===================== */
 function draw(){
-  ctx.fillStyle="black";
+
+  // ===== CLEAR =====
+  ctx.fillStyle = "black";
   ctx.fillRect(0,0,canvas.width,canvas.height);
 
-  ctx.fillStyle="white";
+  // ===== STARS =====
+  ctx.fillStyle = "white";
   stars.forEach(s=>{
     ctx.fillRect(s.x,s.y,2,2);
   });
 
-  ctx.shadowBlur=20;
-  ctx.shadowColor="#00f0ff";
-  ctx.fillStyle="#00f0ff";
+  // ===== PLAYER =====
+  ctx.shadowBlur = 25;
+  ctx.shadowColor = "#00f0ff";
+  ctx.fillStyle = "#00f0ff";
+
   ctx.beginPath();
   ctx.moveTo(player.x, player.y-30);
   ctx.lineTo(player.x-20, player.y+20);
   ctx.lineTo(player.x+20, player.y+20);
   ctx.closePath();
   ctx.fill();
-  ctx.shadowBlur=0;
 
-  ctx.fillStyle="#00ffff";
+  ctx.shadowBlur = 0;
+
+  // ===== BULLETS =====
+  ctx.fillStyle = "#00ffff";
   bullets.forEach(b=>{
     ctx.fillRect(b.x-2,b.y,4,12);
   });
 
+  // ===== ENEMIES =====
   enemies.forEach(e=>{
-    ctx.fillStyle=e.boss?"red":"orange";
+
+    if(e.boss){
+      ctx.shadowBlur = 30;
+      ctx.shadowColor = "red";
+      ctx.fillStyle = "#ff2222";
+    }else{
+      ctx.shadowBlur = 15;
+      ctx.shadowColor = "orange";
+      ctx.fillStyle = "orange";
+    }
+
     ctx.beginPath();
     ctx.arc(e.x,e.y,e.size,0,Math.PI*2);
     ctx.fill();
+    ctx.shadowBlur = 0;
   });
 
-  ctx.fillStyle="yellow";
+  // ===== BASE =====
+  const baseWidth  = 160;
+  const baseHeight = 26;
+  const baseX = canvas.width/2 - baseWidth/2;
+  const baseY = canvas.height - 40;
+
+  // Nhấp nháy khi máu thấp
+  if(baseHp < 60){
+    ctx.shadowBlur = 40;
+    ctx.shadowColor = "#ff0000";
+    ctx.fillStyle = "rgba(255,0,0,.9)";
+  }else{
+    ctx.shadowBlur = 25;
+    ctx.shadowColor = "#00ff88";
+    ctx.fillStyle = "rgba(0,255,136,.9)";
+  }
+
+  ctx.fillRect(baseX, baseY, baseWidth, baseHeight);
+  ctx.shadowBlur = 0;
+
+  // ===== PARTICLES =====
+  ctx.fillStyle = "yellow";
   particles.forEach(p=>{
     ctx.fillRect(p.x,p.y,3,3);
   });
@@ -479,22 +588,10 @@ loop();
 
 
 
-function confirmStart(){
-
-  if(gameStarted || starting || gameOver) return;
-
-  const ok = confirm(
-    "Start Star War?\n\nEntry Fee: 50 💎\n\nDiamonds will be deducted immediately."
-  );
-
-  if(!ok) return;
-
-  startGame();
-}
 
 
 
-let starting = false;
+
 
 function startGame(){
 
