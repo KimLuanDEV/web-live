@@ -435,6 +435,13 @@ body{
   cursor:pointer;
   z-index:8;
   transition:.25s ease;
+  animation: backUp 3s ease-in-out infinite;
+}
+
+@keyframes backUp{
+  0%{ transform:translateY(0) }
+  50%{ transform:translateY(-6px) }
+  100%{ transform:translateY(0) }
 }
 
 .collectTruck:active{
@@ -1261,22 +1268,23 @@ body{
 
 .guideBtnFloat{
   position:absolute;
-  top:70px;
-  left:20px;
+  bottom:200px;
+  left:236px;
   width:70px;
   z-index:200;
   cursor:pointer;
-  animation: guideFloat 3s ease-in-out infinite;
-
-  filter:
-    drop-shadow(0 0 35px rgba(0,240,255,.6));
 }
 
-@keyframes guideFloat{
-  0%{ transform:translateY(0) }
-  50%{ transform:translateY(-6px) }
-  100%{ transform:translateY(0) }
+.guideBtnFloat:active{
+  transform:scale(.92);
 }
+
+.guideImg{
+  width:200px;
+  display:block;
+}
+
+
 
 
 </style>
