@@ -125,9 +125,6 @@ canvas{ display:block; }
   height:60px;          /* chỉnh chiều cao hitbox */
   z-index:6;
   pointer-events:none;
-  /* DEBUG MODE (xem vùng va chạm) */
-  border:2px solid red;
-  background:rgba(255,0,0,.15);
 }
 
 
@@ -339,26 +336,29 @@ canvas{ display:block; }
    🧊 SUPER MINIMAL HUD
    ========================= */
 
+/* =========================
+   🧊 ULTRA THIN HUD 35px
+   ========================= */
+
 .compactHUD{
   position:fixed;
   top:0;
   left:50%;
   transform:translateX(-50%);
-  width:95%;
+  width:96%;
   max-width:1100px;
-  height:40px;
-  padding:0 18px;
+  height:35px;
+  padding:0 14px;
 
   display:flex;
   align-items:center;
   justify-content:space-between;
 
-  background:rgba(0,0,0,.35);
-  border:1px solid rgba(0,240,255,.2);
-  backdrop-filter:blur(4px);
+  background:rgba(0,0,0,.28);
+  border-bottom:1px solid rgba(0,240,255,.15);
 
-  font-size:13px;
-  letter-spacing:.5px;
+  font-size:11px;
+  letter-spacing:.3px;
   z-index:50;
 }
 
@@ -367,24 +367,23 @@ canvas{ display:block; }
 
 .hudCenter{
   display:flex;
-  gap:20px;
+  gap:14px;
   align-items:center;
 }
 
 .miniHp{
   display:flex;
   align-items:center;
-  gap:8px;
-  font-size:11px;
-  letter-spacing:1px;
-  color:#aaa;
+  gap:6px;
+  font-size:10px;
+  color:#bbb;
 }
 
 .miniBarWrap{
-  width:90px;
-  height:4px;
-  background:rgba(255,255,255,.15);
-  border-radius:3px;
+  width:70px;
+  height:3px;
+  background:rgba(255,255,255,.2);
+  border-radius:2px;
   overflow:hidden;
 }
 
@@ -399,8 +398,8 @@ canvas{ display:block; }
 .hudRight{
   display:flex;
   align-items:center;
-  font-size:12px;
-  gap:18px;
+  font-size:11px;
+  gap:10px;
   font-weight:600;
 }
 
@@ -412,17 +411,11 @@ canvas{ display:block; }
   color:#00f0ff;
 }
 
-.miniLabel{
-  font-size:10px;
-  opacity:.6;
-  letter-spacing:1px;
-}
 
 .rewardStat{
   color:#00ffaa;
-  text-shadow:0 0 8px #00ffaa;
+  text-shadow:none;
 }
-
 
 </style>
 </head>
@@ -449,11 +442,6 @@ canvas{ display:block; }
   </div>
 
   <div class="hudRight">
-    <div class="miniStat">
-      <span class="miniLabel">SCORE</span>
-      <span id="scoreUI">0</span>
-    </div>
-
     <div class="miniStat rewardStat">
       💎 <span id="rewardUI">0</span>
     </div>
@@ -850,7 +838,6 @@ if(
   });
 
   // ================= UI =================
-  document.getElementById("scoreUI").textContent = score;
   document.getElementById("rewardUI").textContent = reward;
   document.getElementById("hpBar").style.width = hp + "%";
   document.getElementById("baseHpBar").style.width =
