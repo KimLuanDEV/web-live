@@ -161,11 +161,21 @@ canvas{ display:block; }
 .startPanel{
   position:fixed;
   inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
   z-index:40;
   pointer-events:auto;
+}
+
+/* Container có thể chỉnh vị trí */
+.startButtons{
+  position:absolute;
+
+  /* 🎯 chỉnh vị trí tại đây */
+  bottom:18%;
+  left:50%;
+  transform:translateX(-50%);
+
+  width:80%;
+  max-width:500px;
 }
 
 
@@ -485,21 +495,24 @@ canvas{ display:block; }
 
 
 
-
 <div id="startPanel" class="startPanel">
 
+  <div class="startButtons">
 
-<div class="startBtnImg" onclick="confirmStart()">
-  <img src="/assets/star-war/start-btn.png" alt="Start">
+    <div class="startBtnImg" onclick="confirmStart()">
+      <img src="/assets/star-war/start-btn.png" alt="Start">
+    </div>
+
+    <div class="exitBtnImg"
+         onclick="location.href='/game-diamond-factory.html'">
+      <img src="/assets/star-war/exit-btn.png" alt="Exit">
+    </div>
+
+  </div>
+
 </div>
 
-<div class="exitBtnImg"
-     onclick="location.href='/game-diamond-factory.html'">
-  <img src="/assets/star-war/exit-btn.png" alt="Exit">
-</div>
 
- 
-</div>
 
 
 <div id="countdown" style="
