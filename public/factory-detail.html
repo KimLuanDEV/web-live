@@ -54,8 +54,14 @@ body{
    ========================= */
 
 body.loading-active > *:not(.loadingOverlay){
-  visibility:hidden;
+  opacity:0 !important;
+  pointer-events:none !important;
 }
+
+body.loading-active .hero{
+  display:none !important;
+}
+
 
 body.loading-active{
   overflow:hidden;
