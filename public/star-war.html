@@ -229,30 +229,195 @@ canvas{ display:block; }
   to{opacity:1; transform:scale(1);}
 }
 
+
+
+
+
+/* =========================
+   🚀 GAME HUD PRO VERSION
+   ========================= */
+
+.gameHUD{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  width:92%;
+  max-width:1000px;
+  z-index:50;
+  color:white;
+  font-family:Orbitron, Arial, sans-serif;
+}
+
+/* ===== Top ===== */
+
+.hudTop{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  position:relative;
+  margin-bottom:15px;
+}
+
+.hudTitle{
+  font-size:22px;
+  font-weight:800;
+  letter-spacing:4px;
+  color:#00f0ff;
+  text-shadow:0 0 15px #00f0ff;
+}
+
+/* ===== Exit button ===== */
+
+.exitCircle{
+  position:absolute;
+  left:0;
+  width:40px;
+  height:40px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  font-size:18px;
+  font-weight:700;
+  background:rgba(255,0,60,.15);
+  border:1px solid #ff0040;
+  color:#ff0040;
+  box-shadow:0 0 15px rgba(255,0,60,.6);
+  transition:.2s;
+}
+
+.exitCircle:hover{
+  transform:scale(1.1);
+}
+
+/* ===== HP Section ===== */
+
+.hpSection{
+  display:flex;
+  gap:20px;
+  margin-bottom:15px;
+}
+
+.hpBlock{
+  flex:1;
+}
+
+.hpLabel{
+  font-size:11px;
+  margin-bottom:4px;
+  opacity:.8;
+  letter-spacing:2px;
+}
+
+.hpBarWrap{
+  width:100%;
+  height:10px;
+  background:rgba(255,255,255,.1);
+  border-radius:8px;
+  overflow:hidden;
+}
+
+.hpBar{
+  height:100%;
+  width:100%;
+  transition:.3s ease;
+}
+
+.playerHp{
+  background:linear-gradient(90deg,#ff0040,#ff8800);
+  box-shadow:0 0 10px #ff0040;
+}
+
+.baseHp{
+  background:linear-gradient(90deg,#00ff88,#00ffaa);
+  box-shadow:0 0 10px #00ffaa;
+}
+
+/* ===== Stats ===== */
+
+.statSection{
+  display:flex;
+  gap:20px;
+}
+
+.statBox{
+  flex:1;
+  padding:10px 0;
+  border-radius:12px;
+  background:rgba(0,0,0,.4);
+  border:1px solid rgba(0,240,255,.4);
+  text-align:center;
+  backdrop-filter:blur(6px);
+  box-shadow:0 0 20px rgba(0,240,255,.2);
+}
+
+.statLabel{
+  font-size:11px;
+  opacity:.7;
+  letter-spacing:2px;
+}
+
+.statValue{
+  font-size:20px;
+  font-weight:800;
+  color:#00f0ff;
+  text-shadow:0 0 10px #00f0ff;
+}
+
 </style>
 </head>
 <body>
 
-<div class="hpWrap">
-  <div class="hpBar" id="hpBar"></div>
-</div>
 
-<div class="hpWrap" style="top:50px;">
-  <div class="hpBar" id="baseHpBar"
-       style="background:linear-gradient(90deg,#00ff88,#00ffaa);">
+<div class="gameHUD">
+
+  <div class="hudTop">
+    <div class="exitCircle"
+         onclick="location.href='/game-diamond-factory.html'">
+      ✕
+    </div>
+
+    <div class="hudTitle">
+      STAR WAR
+    </div>
   </div>
+
+  <div class="hpSection">
+
+    <div class="hpBlock">
+      <div class="hpLabel">PLAYER</div>
+      <div class="hpBarWrap">
+        <div class="hpBar playerHp" id="hpBar"></div>
+      </div>
+    </div>
+
+    <div class="hpBlock">
+      <div class="hpLabel">BASE</div>
+      <div class="hpBarWrap">
+        <div class="hpBar baseHp" id="baseHpBar"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="statSection">
+    <div class="statBox">
+      <div class="statLabel">SCORE</div>
+      <div class="statValue" id="scoreUI">0</div>
+    </div>
+
+    <div class="statBox">
+      <div class="statLabel">REWARD</div>
+      <div class="statValue">
+        <span id="rewardUI">0</span> 💎
+      </div>
+    </div>
+  </div>
+
 </div>
 
-
-<div class="hud">
-  <div class="hudBox">Score: <span id="scoreUI">0</span></div>
-  <div class="hudBox">Reward: <span id="rewardUI">0</span> 💎</div>
-</div>
-
-<div class="backBtn" id="backBtn"
- onclick="location.href='/game-diamond-factory.html'">
-  EXIT
-</div>
 
 <div class="gameOverPanel" id="gameOverPanel">
   <div id="finalText"></div>
