@@ -259,38 +259,7 @@ canvas{ display:block; }
   margin-bottom:15px;
 }
 
-.hudTitle{
-  font-size:22px;
-  font-weight:800;
-  letter-spacing:4px;
-  color:#00f0ff;
-  text-shadow:0 0 15px #00f0ff;
-}
 
-/* ===== Exit button ===== */
-
-.exitCircle{
-  position:absolute;
-  left:0;
-  width:40px;
-  height:40px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  font-size:18px;
-  font-weight:700;
-  background:rgba(255,0,60,.15);
-  border:1px solid #ff0040;
-  color:#ff0040;
-  box-shadow:0 0 15px rgba(255,0,60,.6);
-  transition:.2s;
-}
-
-.exitCircle:hover{
-  transform:scale(1.1);
-}
 
 /* ===== HP Section ===== */
 
@@ -366,53 +335,127 @@ canvas{ display:block; }
   text-shadow:0 0 10px #00f0ff;
 }
 
+
+
+/* =========================
+   🚀 COMPACT HUD VERSION
+   ========================= */
+
+.compactHUD{
+  position:fixed;
+  top:12px;
+  left:50%;
+  transform:translateX(-50%);
+  width:95%;
+  max-width:1100px;
+  height:60px;
+  padding:0 20px;
+  display:flex;
+  align-items:center;
+  justify-content: center;
+  gap: 60px;
+  border-radius:20px;
+  background:rgba(0,0,0,.55);
+  border:1px solid rgba(0,240,255,.4);
+  backdrop-filter:blur(8px);
+  box-shadow:0 0 30px rgba(0,240,255,.25);
+  z-index:50;
+}
+
+
+
+/* ===== CENTER HP ===== */
+
+.hudCenter{
+  display:flex;
+  gap:20px;
+  align-items:center;
+}
+
+.miniHp{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  font-size:11px;
+  letter-spacing:1px;
+  color:#aaa;
+}
+
+.miniBarWrap{
+  width:120px;
+  height:6px;
+  background:rgba(255,255,255,.1);
+  border-radius:6px;
+  overflow:hidden;
+}
+
+.miniBar{
+  height:100%;
+  width:100%;
+  transition:.3s;
+}
+
+/* ===== RIGHT ===== */
+
+.hudRight{
+  display:flex;
+  align-items:center;
+  gap:25px;
+  font-size:14px;
+}
+
+.miniStat{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  font-weight:700;
+  color:#00f0ff;
+}
+
+.miniLabel{
+  font-size:10px;
+  opacity:.6;
+  letter-spacing:1px;
+}
+
+.rewardStat{
+  color:#00ffaa;
+  text-shadow:0 0 8px #00ffaa;
+}
+
+
 </style>
 </head>
 <body>
 
+<div class="gameHUD compactHUD">
 
-<div class="gameHUD">
+  <div class="hudCenter">
 
-  <div class="hudTop">
-    <div class="exitCircle"
-         onclick="location.href='/game-diamond-factory.html'">
-      ✕
-    </div>
-
-    <div class="hudTitle">
-      STAR WAR
-    </div>
-  </div>
-
-  <div class="hpSection">
-
-    <div class="hpBlock">
-      <div class="hpLabel">PLAYER</div>
-      <div class="hpBarWrap">
-        <div class="hpBar playerHp" id="hpBar"></div>
+    <div class="miniHp">
+      <span>P</span>
+      <div class="miniBarWrap">
+        <div class="miniBar playerHp" id="hpBar"></div>
       </div>
     </div>
 
-    <div class="hpBlock">
-      <div class="hpLabel">BASE</div>
-      <div class="hpBarWrap">
-        <div class="hpBar baseHp" id="baseHpBar"></div>
+    <div class="miniHp">
+      <span>B</span>
+      <div class="miniBarWrap">
+        <div class="miniBar baseHp" id="baseHpBar"></div>
       </div>
     </div>
 
   </div>
 
-  <div class="statSection">
-    <div class="statBox">
-      <div class="statLabel">SCORE</div>
-      <div class="statValue" id="scoreUI">0</div>
+  <div class="hudRight">
+    <div class="miniStat">
+      <span class="miniLabel">SCORE</span>
+      <span id="scoreUI">0</span>
     </div>
 
-    <div class="statBox">
-      <div class="statLabel">REWARD</div>
-      <div class="statValue">
-        <span id="rewardUI">0</span> 💎
-      </div>
+    <div class="miniStat rewardStat">
+      💎 <span id="rewardUI">0</span>
     </div>
   </div>
 
@@ -571,10 +614,7 @@ let lastBossSpawn = 0;
 let gameStarted = false;
 let starting = false;
 
-const backBtn = document.getElementById("backBtn");
-if(backBtn){
-  backBtn.style.display = "block";
-}
+
 
 const player = {
   x: canvas.width/2,
