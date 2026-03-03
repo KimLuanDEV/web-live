@@ -134,26 +134,30 @@ canvas{ display:block; }
 
 #playerElement{
   position:fixed;
-  width:120px;
-  bottom:120px;
+  width:120px;          /* 🔥 chỉnh size tại đây */
+  bottom:65px;        /* 🔥 chỉnh vị trí dọc */
+  left:50%;
+  transform:translate(-50%, -50%);
   pointer-events:none;
   z-index:8;
-  will-change: transform;
+  transition:.1s linear;
 }
 
 
 #playerHitbox{
   position:fixed;
-  width:50px;
-  height:60px;
+  width:50px;          /* chỉnh độ rộng hitbox */
+  height:60px;         /* chỉnh chiều cao hitbox */
+  bottom: 84px;
   pointer-events:none;
   z-index:7;
-  will-change: transform;
+  transform:translate(-50%, -50%);
 
   /* DEBUG */
   border:2px solid cyan;
   background:rgba(0,255,255,.15);
 }
+
 
 </style>
 </head>
@@ -410,9 +414,10 @@ for(let i=0;i<120;i++){
 }
 
 /* ===================== CONTROL ===================== */
-
 canvas.addEventListener("mousemove", e=>{
   player.x = e.clientX;
+  document.getElementById("playerElement").style.left =
+    e.clientX + "px";
 });
 
 canvas.addEventListener("touchmove", e=>{
@@ -424,7 +429,12 @@ canvas.addEventListener("touchmove", e=>{
   const minX = 40;
   const maxX = window.innerWidth - 40;
 
-  player.x = Math.max(minX, Math.min(maxX, touchX));
+  touchX = Math.max(minX, Math.min(maxX, touchX));
+
+  player.x = touchX;
+
+  document.getElementById("playerElement").style.left =
+    touchX + "px";
 
 }, { passive:false });
 
@@ -490,30 +500,15 @@ function update(){
     lastBossSpawn = now;
   }
 
-  /* ================= FIX PLAYER Y ================= */
-  player.y = canvas.height - 120;
-
-  /* ================= UPDATE PLAYER VISUAL + HITBOX ================= */
-  const playerElement = document.getElementById("playerElement");
-  const playerHitbox  = document.getElementById("playerHitbox");
-
-  const playerWidth  = playerElement.offsetWidth;
-  const playerHeight = playerElement.offsetHeight;
-
-  const hitWidth  = playerHitbox.offsetWidth;
-  const hitHeight = playerHitbox.offsetHeight;
-
-  // dùng transform thay vì left/top để mượt GPU
-  playerElement.style.transform =
-    `translate(${player.x - playerWidth/2}px, ${player.y - playerHeight/2}px)`;
-
-  playerHitbox.style.transform =
-    `translate(${player.x - hitWidth/2}px, ${player.y - hitHeight/2}px)`;
+  /* ================= UPDATE HITBOX POSITION ================= */
+  const playerHitbox = document.getElementById("playerHitbox");
+  playerHitbox.style.left = player.x + "px";
+  playerHitbox.style.top  = player.y + "px";
 
   const playerRect = playerHitbox.getBoundingClientRect();
 
-  const baseRect =
-    document.getElementById("baseHitbox").getBoundingClientRect();
+  const baseHitbox = document.getElementById("baseHitbox");
+  const baseRect = baseHitbox.getBoundingClientRect();
 
   /* ================= BULLETS ================= */
   for(let i = bullets.length - 1; i >= 0; i--){
