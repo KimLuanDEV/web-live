@@ -8,40 +8,124 @@
 <style>
 body{
   margin:0;
-  background:black;
   overflow:hidden;
+  background:
+    radial-gradient(circle at 20% 20%, #0a1a2f 0%, #000 60%),
+    radial-gradient(circle at 80% 30%, #120a2f 0%, #000 60%);
+  font-family:Arial, Helvetica, sans-serif;
 }
-canvas{
-  display:block;
+
+canvas{ display:block; }
+
+/* ===== HUD ===== */
+.hud{
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%);
+  display:flex;
+  gap:30px;
+  z-index:20;
 }
-.backBtn{
+
+.hudBox{
+  background:rgba(0,0,0,.5);
+  border:1px solid #00f0ff;
+  padding:8px 16px;
+  border-radius:12px;
+  color:#00f0ff;
+  font-weight:700;
+  backdrop-filter:blur(6px);
+  box-shadow:0 0 20px rgba(0,240,255,.4);
+}
+
+/* HP BAR */
+.hpWrap{
   position:fixed;
   top:20px;
   left:20px;
-  z-index:10;
-  background:#00f0ff;
-  padding:8px 14px;
-  border-radius:8px;
-  cursor:pointer;
+  width:200px;
+  height:14px;
+  background:rgba(255,255,255,.1);
+  border-radius:10px;
+  overflow:hidden;
+  z-index:20;
+}
+
+.hpBar{
+  height:100%;
+  width:100%;
+  background:linear-gradient(90deg,#ff0040,#ff8800);
+  transition:.3s;
+}
+
+/* EXIT BUTTON */
+.backBtn{
+  position:fixed;
+  top:20px;
+  right:20px;
+  z-index:20;
+  padding:10px 18px;
+  border-radius:12px;
+  background:linear-gradient(45deg,#00f0ff,#0088ff);
+  color:white;
   font-weight:700;
+  cursor:pointer;
+  box-shadow:0 0 15px rgba(0,240,255,.6);
+}
+
+/* GAME OVER */
+.gameOverPanel{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  color:white;
+  z-index:50;
+  display:none;
+}
+
+.gameOverPanel button{
+  margin-top:20px;
+  padding:10px 25px;
+  border:none;
+  border-radius:10px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(45deg,#00f0ff,#0088ff);
+  color:white;
 }
 </style>
 </head>
 <body>
 
+<div class="hpWrap">
+  <div class="hpBar" id="hpBar"></div>
+</div>
+
+<div class="hud">
+  <div class="hudBox">Score: <span id="scoreUI">0</span></div>
+  <div class="hudBox">Reward: <span id="rewardUI">0</span> 💎</div>
+</div>
+
 <div class="backBtn"
  onclick="location.href='/game-diamond-factory.html'">
-  ← BACK
+  EXIT
+</div>
+
+<div class="gameOverPanel" id="gameOverPanel">
+  <div id="finalText"></div>
+  <button onclick="location.reload()">RESTART</button>
 </div>
 
 <canvas id="game"></canvas>
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
-
-    // ================================
-// 🚀 STAR WAR – FULL GAME
-// ================================
 
 const socket = io({
   auth:{
@@ -60,12 +144,11 @@ function resize(){
 resize();
 window.addEventListener("resize", resize);
 
-// ================================
-// 🎮 GAME STATE
-// ================================
+/* ===================== GAME STATE ===================== */
 let bullets = [];
 let enemies = [];
 let particles = [];
+let stars = [];
 
 let score = 0;
 let reward = 0;
@@ -77,221 +160,190 @@ let lastBossSpawn = 0;
 
 const player = {
   x: canvas.width/2,
-  y: canvas.height - 100,
+  y: canvas.height - 120,
   size: 25
 };
 
-// ================================
-// 🎯 CONTROL
-// ================================
+/* ===================== STAR BACKGROUND ===================== */
+for(let i=0;i<120;i++){
+  stars.push({
+    x:Math.random()*canvas.width,
+    y:Math.random()*canvas.height,
+    speed:1+Math.random()*2
+  });
+}
+
+/* ===================== CONTROL ===================== */
 canvas.addEventListener("mousemove", e=>{
   player.x = e.clientX;
 });
-
 canvas.addEventListener("touchmove", e=>{
   player.x = e.touches[0].clientX;
 });
 
-// ================================
-// 🔫 SHOOT AUTO
-// ================================
+/* ===================== SHOOT ===================== */
 setInterval(()=>{
   if(gameOver) return;
-  bullets.push({
-    x: player.x,
-    y: player.y - 20,
-    speed: 8
-  });
-}, 200);
+  bullets.push({ x:player.x, y:player.y-20, speed:10 });
+},200);
 
-// ================================
-// 👾 SPAWN ENEMY
-// ================================
+/* ===================== SPAWN ===================== */
 function spawnEnemy(){
   enemies.push({
-    x: Math.random() * canvas.width,
-    y: -50,
-    size: 20,
-    speed: 2 + Math.random()*2,
-    hp: 1,
-    boss: false
+    x:Math.random()*canvas.width,
+    y:-40,
+    size:20,
+    speed:2+Math.random()*2,
+    hp:1,
+    boss:false
   });
 }
-
 function spawnBoss(){
   enemies.push({
-    x: canvas.width/2,
-    y: -100,
-    size: 60,
-    speed: 1.5,
-    hp: 30,
-    boss: true
+    x:canvas.width/2,
+    y:-100,
+    size:60,
+    speed:1.5,
+    hp:30,
+    boss:true
   });
 }
 
-// ================================
-// 💥 PARTICLE
-// ================================
+/* ===================== EXPLOSION ===================== */
 function explode(x,y){
-  for(let i=0;i<20;i++){
+  for(let i=0;i<25;i++){
     particles.push({
       x,y,
-      vx:(Math.random()-0.5)*4,
-      vy:(Math.random()-0.5)*4,
+      vx:(Math.random()-0.5)*5,
+      vy:(Math.random()-0.5)*5,
       life:30
     });
   }
 }
 
-// ================================
-// 🔄 UPDATE
-// ================================
+/* ===================== UPDATE ===================== */
 function update(){
-
   if(gameOver) return;
 
   const now = Date.now();
 
-  if(now - lastEnemySpawn > 800){
+  if(now-lastEnemySpawn>800){
     spawnEnemy();
-    lastEnemySpawn = now;
+    lastEnemySpawn=now;
   }
 
-  if(now - lastBossSpawn > 30000){
+  if(now-lastBossSpawn>30000){
     spawnBoss();
-    lastBossSpawn = now;
+    lastBossSpawn=now;
   }
 
-  // bullets
-  bullets.forEach(b=> b.y -= b.speed);
-  bullets = bullets.filter(b=> b.y > -10);
+  bullets.forEach(b=>b.y-=b.speed);
+  bullets=bullets.filter(b=>b.y>-10);
 
-  // enemies
-  enemies.forEach(e=>{
-    e.y += e.speed;
-  });
+  enemies.forEach(e=>e.y+=e.speed);
 
-  // collision
   enemies.forEach((e,ei)=>{
     bullets.forEach((b,bi)=>{
-      const dx = e.x - b.x;
-      const dy = e.y - b.y;
-      if(Math.sqrt(dx*dx+dy*dy) < e.size){
+      const dx=e.x-b.x;
+      const dy=e.y-b.y;
+      if(Math.sqrt(dx*dx+dy*dy)<e.size){
         e.hp--;
         bullets.splice(bi,1);
-        if(e.hp <= 0){
+        if(e.hp<=0){
           explode(e.x,e.y);
-
-          if(e.boss){
-            reward += 50;
-            score += 50;
-          }else{
-            reward += 5;
-            score += 5;
-          }
-
+          reward+=e.boss?50:5;
+          score+=e.boss?50:5;
           enemies.splice(ei,1);
         }
       }
     });
 
-    // hit player
-    const dx = e.x - player.x;
-    const dy = e.y - player.y;
-    if(Math.sqrt(dx*dx+dy*dy) < e.size + player.size){
+    const dx=e.x-player.x;
+    const dy=e.y-player.y;
+    if(Math.sqrt(dx*dx+dy*dy)<e.size+player.size){
       explode(e.x,e.y);
       enemies.splice(ei,1);
-      hp -= 10;
-      if(hp <= 0){
-        endGame();
-      }
+      hp-=10;
+      if(hp<=0) endGame();
     }
   });
 
-  // particles
   particles.forEach(p=>{
-    p.x += p.vx;
-    p.y += p.vy;
+    p.x+=p.vx;
+    p.y+=p.vy;
     p.life--;
   });
-  particles = particles.filter(p=> p.life > 0);
-}
+  particles=particles.filter(p=>p.life>0);
 
-// ================================
-// 🎨 DRAW
-// ================================
-function draw(){
-
-  ctx.fillStyle = "black";
-  ctx.fillRect(0,0,canvas.width,canvas.height);
-
-  // player
-  ctx.fillStyle = "#00f0ff";
-  ctx.beginPath();
-  ctx.moveTo(player.x, player.y - 30);
-  ctx.lineTo(player.x - 20, player.y + 20);
-  ctx.lineTo(player.x + 20, player.y + 20);
-  ctx.closePath();
-  ctx.fill();
-
-  // bullets
-  ctx.fillStyle = "#00ffff";
-  bullets.forEach(b=>{
-    ctx.fillRect(b.x-2, b.y, 4, 10);
+  stars.forEach(s=>{
+    s.y+=s.speed;
+    if(s.y>canvas.height) s.y=0;
   });
 
-  // enemies
+  document.getElementById("scoreUI").textContent=score;
+  document.getElementById("rewardUI").textContent=reward;
+  document.getElementById("hpBar").style.width=hp+"%";
+}
+
+/* ===================== DRAW ===================== */
+function draw(){
+  ctx.fillStyle="black";
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  ctx.fillStyle="white";
+  stars.forEach(s=>{
+    ctx.fillRect(s.x,s.y,2,2);
+  });
+
+  ctx.shadowBlur=20;
+  ctx.shadowColor="#00f0ff";
+  ctx.fillStyle="#00f0ff";
+  ctx.beginPath();
+  ctx.moveTo(player.x, player.y-30);
+  ctx.lineTo(player.x-20, player.y+20);
+  ctx.lineTo(player.x+20, player.y+20);
+  ctx.closePath();
+  ctx.fill();
+  ctx.shadowBlur=0;
+
+  ctx.fillStyle="#00ffff";
+  bullets.forEach(b=>{
+    ctx.fillRect(b.x-2,b.y,4,12);
+  });
+
   enemies.forEach(e=>{
-    ctx.fillStyle = e.boss ? "red" : "orange";
+    ctx.fillStyle=e.boss?"red":"orange";
     ctx.beginPath();
-    ctx.arc(e.x, e.y, e.size, 0, Math.PI*2);
+    ctx.arc(e.x,e.y,e.size,0,Math.PI*2);
     ctx.fill();
   });
 
-  // particles
-  ctx.fillStyle = "yellow";
+  ctx.fillStyle="yellow";
   particles.forEach(p=>{
-    ctx.fillRect(p.x,p.y,2,2);
+    ctx.fillRect(p.x,p.y,3,3);
   });
-
-  // UI
-  ctx.fillStyle = "white";
-  ctx.font = "16px Arial";
-  ctx.fillText("HP: "+hp, 20,30);
-  ctx.fillText("Score: "+score, 20,50);
-  ctx.fillText("Reward: "+reward+" 💎", 20,70);
 }
 
-// ================================
-// 🏁 GAME OVER
-// ================================
+/* ===================== GAME OVER ===================== */
 function endGame(){
-  gameOver = true;
+  gameOver=true;
+  socket.emit("star-war-reward",{reward});
 
-  socket.emit("star-war-reward",{ reward });
-
-  ctx.fillStyle="white";
-  ctx.font="40px Arial";
-  ctx.fillText("GAME OVER", canvas.width/2-120, canvas.height/2);
-
-  ctx.font="20px Arial";
-  ctx.fillText("Earned "+reward+" 💎", canvas.width/2-80, canvas.height/2+40);
+  const panel=document.getElementById("gameOverPanel");
+  panel.style.display="flex";
+  document.getElementById("finalText").innerHTML=
+    `<div style="font-size:40px;color:#ff0040">GAME OVER</div>
+     <div style="margin-top:15px">Earned ${reward} 💎</div>`;
 }
 
-// ================================
-// 🎮 LOOP
-// ================================
+/* ===================== LOOP ===================== */
 function loop(){
   update();
   draw();
   requestAnimationFrame(loop);
 }
-
 loop();
 
 </script>
-
-
-
 </body>
 </html>
