@@ -104,10 +104,10 @@ canvas{ display:block; }
 
 #baseElement{
   position:fixed;
-  bottom:0;
+  bottom:-80px;
   left:50%;
   transform:translateX(-50%);
-  width:60vw;              /* chỉnh kích thước tại đây */
+  width:114vw;              /* chỉnh kích thước tại đây */
   max-width:900px;
   pointer-events:none;
   z-index:5;
@@ -504,6 +504,7 @@ if(enemyBottom >= baseRect.top){
     endGame();
     return;
   }
+}
 }
 
   // ================= PARTICLES =================
