@@ -125,7 +125,6 @@ canvas{ display:block; }
   height:60px;          /* chỉnh chiều cao hitbox */
   z-index:6;
   pointer-events:none;
-
   /* DEBUG MODE (xem vùng va chạm) */
   border:2px solid red;
   background:rgba(255,0,0,.15);
@@ -150,6 +149,85 @@ canvas{ display:block; }
 }
 
 
+
+
+/* ===== START PANEL ===== */
+
+.startPanel{
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:40;
+  pointer-events:auto;
+}
+
+/* hộp chính */
+.startBox{
+  width:380px;
+  padding:40px 30px;
+  border-radius:25px;
+  background:rgba(10,20,40,.85);
+  backdrop-filter:blur(12px);
+  border:1px solid #00f0ff;
+  box-shadow:0 0 40px rgba(0,240,255,.5);
+  text-align:center;
+  animation:fadeIn .4s ease;
+}
+
+/* title */
+.startTitle{
+  font-size:38px;
+  font-weight:900;
+  margin-bottom:35px;
+  letter-spacing:4px;
+  color:#00f0ff;
+  text-shadow:0 0 25px #00f0ff;
+}
+
+/* buttons */
+.startBtn{
+  width:100%;
+  padding:15px 0;
+  border:none;
+  border-radius:15px;
+  font-size:18px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(45deg,#00f0ff,#0088ff);
+  color:white;
+  box-shadow:0 0 25px rgba(0,240,255,.7);
+  transition:.2s;
+}
+
+.startBtn:hover{
+  transform:scale(1.05);
+}
+
+.exitBtn{
+  width:100%;
+  margin-top:18px;
+  padding:12px 0;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(45deg,#ff0040,#ff8800);
+  color:white;
+  box-shadow:0 0 20px rgba(255,0,0,.6);
+  transition:.2s;
+}
+
+.exitBtn:hover{
+  transform:scale(1.05);
+}
+
+@keyframes fadeIn{
+  from{opacity:0; transform:scale(.9);}
+  to{opacity:1; transform:scale(1);}
+}
 
 </style>
 </head>
@@ -182,60 +260,23 @@ canvas{ display:block; }
 </div>
 
 
-<div id="startPanel" style="
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.9);
-  display:flex;
-  flex-direction:column;
-  align-items:center;
-  justify-content:center;
-  z-index:40;
-  color:white;
-">
+<div id="startPanel" class="startPanel">
+  <div class="startBox">
 
-  <div style="
-    font-size:42px;
-    font-weight:900;
-    margin-bottom:30px;
-    letter-spacing:3px;
-    color:#00f0ff;
-    text-shadow:0 0 20px #00f0ff;
-  ">
-    STAR WAR
+    <div class="startTitle">
+      STAR WAR
+    </div>
+
+    <button class="startBtn" onclick="confirmStart()">
+      START GAME (50 💎)
+    </button>
+
+    <button class="exitBtn"
+      onclick="location.href='/game-diamond-factory.html'">
+      EXIT
+    </button>
+
   </div>
-
-  <button onclick="confirmStart()" style="
-    padding:15px 50px;
-    border:none;
-    border-radius:15px;
-    font-size:18px;
-    font-weight:700;
-    cursor:pointer;
-    background:linear-gradient(45deg,#00f0ff,#0088ff);
-    color:white;
-    box-shadow:0 0 25px rgba(0,240,255,.7);
-  ">
-    START GAME (50 💎)
-  </button>
-
-
-<button onclick="location.href='/game-diamond-factory.html'" style="
-  margin-top:20px;
-  padding:10px 35px;
-  border:none;
-  border-radius:12px;
-  font-size:16px;
-  font-weight:700;
-  cursor:pointer;
-  background:linear-gradient(45deg,#ff0040,#ff8800);
-  color:white;
-  box-shadow:0 0 20px rgba(255,0,0,.6);
-">
-  EXIT
-</button>
-
-
 </div>
 
 
@@ -661,6 +702,7 @@ enemies.forEach(e=>{
       ctx.shadowBlur = 20;
       ctx.shadowColor = "#ff8800";
     }
+
 
 ctx.drawImage(
   img,
