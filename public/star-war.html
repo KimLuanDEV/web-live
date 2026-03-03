@@ -122,6 +122,66 @@ canvas{ display:block; }
   <button onclick="location.reload()">RESTART</button>
 </div>
 
+
+<div id="startPanel" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.9);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  z-index:40;
+  color:white;
+">
+
+  <div style="
+    font-size:42px;
+    font-weight:900;
+    margin-bottom:30px;
+    letter-spacing:3px;
+    color:#00f0ff;
+    text-shadow:0 0 20px #00f0ff;
+  ">
+    STAR WAR
+  </div>
+
+  <button onclick="startGame()" style="
+    padding:15px 50px;
+    border:none;
+    border-radius:15px;
+    font-size:18px;
+    font-weight:700;
+    cursor:pointer;
+    background:linear-gradient(45deg,#00f0ff,#0088ff);
+    color:white;
+    box-shadow:0 0 25px rgba(0,240,255,.7);
+  ">
+    START GAME
+  </button>
+
+</div>
+
+
+<div id="countdown" style="
+  position:fixed;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:rgba(0,0,0,.85);
+  font-size:120px;
+  font-weight:900;
+  color:#00f0ff;
+  text-shadow:0 0 40px #00f0ff;
+  z-index:45;
+  display:none;
+  letter-spacing:10px;
+">
+  3
+</div>
+
+
 <canvas id="game"></canvas>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -158,6 +218,10 @@ let gameOver = false;
 let lastEnemySpawn = 0;
 let lastBossSpawn = 0;
 
+
+let gameStarted = false;
+
+
 const player = {
   x: canvas.width/2,
   y: canvas.height - 120,
@@ -183,6 +247,7 @@ canvas.addEventListener("touchmove", e=>{
 
 /* ===================== SHOOT ===================== */
 setInterval(()=>{
+  if(!gameStarted) return;
   if(gameOver) return;
   bullets.push({ x:player.x, y:player.y-20, speed:10 });
 },200);
@@ -223,6 +288,7 @@ function explode(x,y){
 
 /* ===================== UPDATE ===================== */
 function update(){
+  if(!gameStarted) return;
   if(gameOver) return;
 
   const now = Date.now();
@@ -343,6 +409,41 @@ function loop(){
   requestAnimationFrame(loop);
 }
 loop();
+
+
+function startGame(){
+
+  const startPanel = document.getElementById("startPanel");
+  const countdown  = document.getElementById("countdown");
+
+  startPanel.style.display = "none";
+  countdown.style.display  = "flex";
+
+  let count = 3;
+  countdown.textContent = count;
+
+  const timer = setInterval(()=>{
+
+    count--;
+
+    if(count > 0){
+      countdown.textContent = count;
+    }else{
+      clearInterval(timer);
+
+      countdown.textContent = "GO";
+
+      setTimeout(()=>{
+        countdown.style.display = "none";
+        gameStarted = true;
+      },700);
+    }
+
+  },1000);
+
+}
+
+
 
 </script>
 </body>
