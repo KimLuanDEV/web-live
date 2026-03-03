@@ -1395,6 +1395,7 @@ body{
   backdrop-filter:blur(4px);
   z-index:99999;
   display:none;
+  cursor:pointer;
 }
 
 .tutorialOverlay.show{
@@ -1438,6 +1439,7 @@ body{
     0 20px 50px rgba(0,0,0,.8);
   color:#eaf6ff;
   transition:.3s ease;
+  pointer-events:none; /* tooltip không chặn click */
 }
 
 .tutorialText{
@@ -1445,15 +1447,6 @@ body{
   margin-bottom:12px;
 }
 
-.tutorialNext{
-  width:100%;
-  padding:10px;
-  border:none;
-  border-radius:12px;
-  font-weight:900;
-  background:linear-gradient(90deg,#00f0ff,#008cff);
-  cursor:pointer;
-}
 
 
 
@@ -2015,7 +2008,6 @@ body{
 
   <div class="tutorialTooltip" id="tutorialTooltip">
     <div class="tutorialText" id="tutorialText"></div>
-    <button class="tutorialNext" onclick="nextTutorial()">NEXT</button>
   </div>
 
 </div>
@@ -3865,8 +3857,19 @@ let tutorialIndex = 0;
 
 function startTutorial(){
   tutorialIndex = 0;
-  document.getElementById("tutorialOverlay")
-    .classList.add("show");
+
+  const overlay = document.getElementById("tutorialOverlay");
+  overlay.classList.add("show");
+
+  // 🔥 tap anywhere to next
+  overlay.onclick = function(e){
+
+    // Nếu click vào vùng highlight thì bỏ qua
+    if(e.target.id === "tutorialHighlight") return;
+
+    nextTutorial();
+  };
+
   showTutorialStep();
 }
 
