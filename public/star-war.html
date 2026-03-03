@@ -295,13 +295,11 @@ canvas{ display:block; }
 }
 
 .playerHp{
-  background:linear-gradient(90deg,#ff0040,#ff8800);
-  box-shadow:0 0 10px #ff0040;
+  background:linear-gradient(90deg,#ff3b3b,#ff8800);
 }
 
 .baseHp{
   background:linear-gradient(90deg,#00ff88,#00ffaa);
-  box-shadow:0 0 10px #00ffaa;
 }
 
 /* ===== Stats ===== */
@@ -338,30 +336,31 @@ canvas{ display:block; }
 
 
 /* =========================
-   🚀 COMPACT HUD VERSION
+   🧊 SUPER MINIMAL HUD
    ========================= */
 
 .compactHUD{
   position:fixed;
-  top:12px;
+  top:0;
   left:50%;
   transform:translateX(-50%);
   width:95%;
   max-width:1100px;
-  height:60px;
-  padding:0 20px;
+  height:40px;
+  padding:0 18px;
+
   display:flex;
   align-items:center;
-  justify-content: center;
-  gap: 60px;
-  border-radius:20px;
-  background:rgba(0,0,0,.55);
-  border:1px solid rgba(0,240,255,.4);
-  backdrop-filter:blur(8px);
-  box-shadow:0 0 30px rgba(0,240,255,.25);
+  justify-content:space-between;
+
+  background:rgba(0,0,0,.35);
+  border:1px solid rgba(0,240,255,.2);
+  backdrop-filter:blur(4px);
+
+  font-size:13px;
+  letter-spacing:.5px;
   z-index:50;
 }
-
 
 
 /* ===== CENTER HP ===== */
@@ -382,10 +381,10 @@ canvas{ display:block; }
 }
 
 .miniBarWrap{
-  width:120px;
-  height:6px;
-  background:rgba(255,255,255,.1);
-  border-radius:6px;
+  width:90px;
+  height:4px;
+  background:rgba(255,255,255,.15);
+  border-radius:3px;
   overflow:hidden;
 }
 
@@ -400,8 +399,9 @@ canvas{ display:block; }
 .hudRight{
   display:flex;
   align-items:center;
-  gap:25px;
-  font-size:14px;
+  font-size:12px;
+  gap:18px;
+  font-weight:600;
 }
 
 .miniStat{
