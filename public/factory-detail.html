@@ -1261,19 +1261,21 @@ body{
 
 .guideBtnFloat{
   position:absolute;
-  top:20px;
-  right:20px;
-  width:42px;
-  height:42px;
-  border-radius:14px;
-  background:linear-gradient(90deg,#00f0ff,#008cff);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-weight:900;
-  cursor:pointer;
+  top:70px;
+  left:20px;
+  width:70px;
   z-index:200;
-  box-shadow:0 0 25px rgba(0,240,255,.5);
+  cursor:pointer;
+  animation: guideFloat 3s ease-in-out infinite;
+
+  filter:
+    drop-shadow(0 0 35px rgba(0,240,255,.6));
+}
+
+@keyframes guideFloat{
+  0%{ transform:translateY(0) }
+  50%{ transform:translateY(-6px) }
+  100%{ transform:translateY(0) }
 }
 
 
@@ -1293,7 +1295,9 @@ body{
 
 
 
-  <div class="guideBtnFloat" onclick="openGuide()">❓</div>
+  <div class="guideBtnFloat burnHide" onclick="openGuide()">
+  <img src="/assets/ui/guide-btn.png" class="guideImg">
+</div>
 
 
   <div class="repairWorker" id="repairWorker">
