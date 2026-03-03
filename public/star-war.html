@@ -317,9 +317,13 @@ const player = {
   size: 25
 };
 
+const baseImg = new Image();
+baseImg.src = "/assets/star-war/base.png";
+
 
 const ENTRY_FEE = 50;
 let paidThisRound = false;
+
 
 
 /* ===================== STAR BACKGROUND ===================== */
@@ -463,7 +467,8 @@ function update(){
     }
 
     // ===== BASE COLLISION =====
-    const baseTop = canvas.height - 40;
+    const baseHeight = canvas.width * 0.6 * 0.25;
+    const baseTop = canvas.height - baseHeight;
 
     if(e.y + e.size >= baseTop){
 
@@ -557,31 +562,30 @@ function draw(){
     ctx.shadowBlur = 0;
   });
 
-  // ===== BASE =====
-  const baseWidth  = 160;
-  const baseHeight = 26;
-  const baseX = canvas.width/2 - baseWidth/2;
-  const baseY = canvas.height - 40;
+// ===== BASE IMAGE =====
+const baseWidth  = canvas.width * 0.6;
+const baseHeight = baseWidth * 0.25;
 
-  // Nhấp nháy khi máu thấp
-  if(baseHp < 60){
-    ctx.shadowBlur = 40;
-    ctx.shadowColor = "#ff0000";
-    ctx.fillStyle = "rgba(255,0,0,.9)";
-  }else{
-    ctx.shadowBlur = 25;
-    ctx.shadowColor = "#00ff88";
-    ctx.fillStyle = "rgba(0,255,136,.9)";
-  }
+const baseX = canvas.width/2 - baseWidth/2;
+const baseY = canvas.height - baseHeight;
 
-  ctx.fillRect(baseX, baseY, baseWidth, baseHeight);
-  ctx.shadowBlur = 0;
+// Nhấp nháy khi máu thấp
+if(baseHp < 60){
+  ctx.globalAlpha = 0.7 + Math.sin(Date.now()*0.01)*0.3;
+}
 
-  // ===== PARTICLES =====
-  ctx.fillStyle = "yellow";
-  particles.forEach(p=>{
-    ctx.fillRect(p.x,p.y,3,3);
-  });
+// Vẽ PNG nếu đã load xong
+if(baseImg.complete){
+  ctx.drawImage(
+    baseImg,
+    baseX,
+    baseY,
+    baseWidth,
+    baseHeight
+  );
+}
+
+ctx.globalAlpha = 1; // reset
 }
 
 /* ===================== GAME OVER ===================== */
