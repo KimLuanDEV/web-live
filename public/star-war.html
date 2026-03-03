@@ -119,7 +119,7 @@ canvas{ display:block; }
   <div class="hudBox">Reward: <span id="rewardUI">0</span> 💎</div>
 </div>
 
-<div class="backBtn"
+<div class="backBtn" id="backBtn"
  onclick="location.href='/game-diamond-factory.html'">
   EXIT
 </div>
@@ -166,6 +166,23 @@ canvas{ display:block; }
   ">
     START GAME (50 💎)
   </button>
+
+
+<button onclick="location.href='/game-diamond-factory.html'" style="
+  margin-bottom:20px;
+  padding:10px 35px;
+  border:none;
+  border-radius:12px;
+  font-size:16px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(45deg,#ff0040,#ff8800);
+  color:white;
+  box-shadow:0 0 20px rgba(255,0,0,.6);
+">
+  EXIT
+</button>
+
 
 </div>
 
@@ -290,6 +307,9 @@ let lastBossSpawn = 0;
 
 let gameStarted = false;
 let starting = false;
+
+const backBtn = document.getElementById("backBtn");
+backBtn.style.display = "none";   // 🔥 Ẩn khi đang ở màn hình START
 
 const player = {
   x: canvas.width/2,
@@ -634,6 +654,7 @@ socket.on("star-war-start-approved", ()=>{
         countdown.style.display = "none";
         gameStarted = true;
         starting = false;
+        backBtn.style.display = "block";  // 🔥 Hiện nút EXIT khi game chạy
       },700);
     }
 
