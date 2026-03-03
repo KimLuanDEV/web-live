@@ -146,7 +146,7 @@ canvas{ display:block; }
     STAR WAR
   </div>
 
-  <button onclick="startGame()" style="
+  <button onclick="confirmStart()" style="
     padding:15px 50px;
     border:none;
     border-radius:15px;
@@ -157,7 +157,7 @@ canvas{ display:block; }
     color:white;
     box-shadow:0 0 25px rgba(0,240,255,.7);
   ">
-    START GAME
+    START GAME (50 💎)
   </button>
 
 </div>
@@ -183,6 +183,66 @@ canvas{ display:block; }
 
 
 <canvas id="game"></canvas>
+
+
+
+
+
+<div id="feeModal" style="
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.8);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:60;
+">
+  <div style="
+    background:#0a1a2f;
+    padding:30px;
+    border-radius:20px;
+    border:1px solid #00f0ff;
+    text-align:center;
+    color:white;
+    width:300px;
+    box-shadow:0 0 30px rgba(0,240,255,.6);
+  ">
+    <div style="font-size:20px;font-weight:700;margin-bottom:15px;">
+      START STAR WAR
+    </div>
+
+    <div style="margin-bottom:20px;">
+      Entry Fee: <span style="color:#00f0ff">50 💎</span>
+    </div>
+
+    <button onclick="approveStart()" style="
+      margin-right:10px;
+      padding:8px 20px;
+      border:none;
+      border-radius:10px;
+      background:#00f0ff;
+      color:black;
+      font-weight:700;
+      cursor:pointer;
+    ">
+      CONFIRM
+    </button>
+
+    <button onclick="closeFeeModal()" style="
+      padding:8px 20px;
+      border:none;
+      border-radius:10px;
+      background:#ff0040;
+      color:white;
+      font-weight:700;
+      cursor:pointer;
+    ">
+      CANCEL
+    </button>
+  </div>
+</div>
+
+
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -419,6 +479,20 @@ loop();
 
 
 
+function confirmStart(){
+
+  if(gameStarted || starting || gameOver) return;
+
+  const ok = confirm(
+    "Start Star War?\n\nEntry Fee: 50 💎\n\nDiamonds will be deducted immediately."
+  );
+
+  if(!ok) return;
+
+  startGame();
+}
+
+
 
 let starting = false;
 
@@ -478,6 +552,23 @@ socket.on("star-war-start-denied", (data)=>{
   alert(data.message || "Not enough diamonds");
 
 });
+
+
+
+
+function confirmStart(){
+  if(gameStarted || starting || gameOver) return;
+  document.getElementById("feeModal").style.display="flex";
+}
+
+function closeFeeModal(){
+  document.getElementById("feeModal").style.display="none";
+}
+
+function approveStart(){
+  document.getElementById("feeModal").style.display="none";
+  startGame();
+}
 
 
 
