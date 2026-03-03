@@ -454,6 +454,52 @@ canvas{ display:block; }
   transform:scale(.95);
 }
 
+
+
+.startBtnImg,
+.exitBtnImg{
+  position:relative;
+  width:100%;
+}
+
+.startBtnImg img,
+.exitBtnImg img{
+  width:100%;
+  display:block;
+  pointer-events:none;
+}
+
+/* 🎯 HITBOX START */
+.startHitbox{
+  position:absolute;
+
+  /* ===== CHỈNH VÙNG BẤM Ở ĐÂY ===== */
+  top:20%;
+  left:15%;
+  width:70%;
+  height:50%;
+
+  cursor:pointer;
+}
+
+/* 🎯 HITBOX EXIT */
+.exitHitbox{
+  position:absolute;
+
+  top:25%;
+  left:20%;
+  width:60%;
+  height:45%;
+
+  cursor:pointer;
+}
+
+
+.startHitbox,
+.exitHitbox{
+  border:2px solid red;
+}
+
 </style>
 </head>
 <body>
@@ -498,14 +544,16 @@ canvas{ display:block; }
 
   <div class="startButtons">
 
-    <div class="startBtnImg" onclick="confirmStart()">
-      <img src="/assets/star-war/start-btn.png" alt="Start">
-    </div>
+<div class="startBtnImg">
+  <img src="/assets/star-war/start-btn.png" alt="Start">
+  <div class="startHitbox" onclick="confirmStart()"></div>
+</div>
 
-    <div class="exitBtnImg"
-         onclick="location.href='/game-diamond-factory.html'">
-      <img src="/assets/star-war/exit-btn.png" alt="Exit">
-    </div>
+<div class="exitBtnImg">
+  <img src="/assets/star-war/exit-btn.png" alt="Exit">
+  <div class="exitHitbox"
+       onclick="location.href='/game-diamond-factory.html'"></div>
+</div>
 
   </div>
 
