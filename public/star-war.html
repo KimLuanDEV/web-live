@@ -133,6 +133,22 @@ canvas{ display:block; }
 
 
 
+
+
+#playerHitbox{
+  position:fixed;
+  width:60px;          /* chỉnh độ rộng hitbox */
+  height:60px;         /* chỉnh chiều cao hitbox */
+  pointer-events:none;
+  z-index:7;
+  transform:translate(-50%, -50%);
+
+  /* DEBUG */
+  border:2px solid cyan;
+  background:rgba(0,255,255,.15);
+}
+
+
 </style>
 </head>
 <body>
@@ -242,6 +258,9 @@ canvas{ display:block; }
 
 <canvas id="game"></canvas>
 
+
+
+<div id="playerHitbox"></div>
 
 
 <img id="baseElement" src="/assets/star-war/base.png">
@@ -441,7 +460,7 @@ function update(){
 
   const now = Date.now();
 
-  // ================= SPAWN =================
+  /* ================= SPAWN ================= */
   if(now - lastEnemySpawn > 800){
     spawnEnemy();
     lastEnemySpawn = now;
@@ -452,7 +471,17 @@ function update(){
     lastBossSpawn = now;
   }
 
-  // ================= BULLETS =================
+  /* ================= UPDATE HITBOX POSITION ================= */
+  const playerHitbox = document.getElementById("playerHitbox");
+  playerHitbox.style.left = player.x + "px";
+  playerHitbox.style.top  = player.y + "px";
+
+  const playerRect = playerHitbox.getBoundingClientRect();
+
+  const baseHitbox = document.getElementById("baseHitbox");
+  const baseRect = baseHitbox.getBoundingClientRect();
+
+  /* ================= BULLETS ================= */
   for(let i = bullets.length - 1; i >= 0; i--){
     bullets[i].y -= bullets[i].speed;
     if(bullets[i].y < -10){
@@ -460,17 +489,22 @@ function update(){
     }
   }
 
-  // ================= ENEMIES MOVE =================
+  /* ================= ENEMIES MOVE ================= */
   for(let i = enemies.length - 1; i >= 0; i--){
     enemies[i].y += enemies[i].speed;
   }
 
-  // ================= COLLISIONS =================
+  /* ================= COLLISIONS ================= */
   for(let ei = enemies.length - 1; ei >= 0; ei--){
 
     const e = enemies[ei];
 
-    // ===== Bullet collision =====
+    const enemyLeft   = e.x - e.size;
+    const enemyRight  = e.x + e.size;
+    const enemyTop    = e.y - e.size;
+    const enemyBottom = e.y + e.size;
+
+    /* ===== Bullet Collision ===== */
     for(let bi = bullets.length - 1; bi >= 0; bi--){
 
       const b = bullets[bi];
@@ -493,17 +527,15 @@ function update(){
       }
     }
 
-    if(!enemies[ei]) continue; // enemy đã chết
+    if(!enemies[ei]) continue;
 
-    // ===== Player collision =====
-    const dxp = e.x - player.x;
-    const dyp = e.y - player.y;
-
-    const playerRadius = PLAYER_WIDTH / 2;
-
-if(Math.sqrt(dxp*dxp + dyp*dyp) < e.size + playerRadius)
-    
-    {
+    /* ===== PLAYER HITBOX COLLISION ===== */
+    if(
+      enemyRight  >= playerRect.left &&
+      enemyLeft   <= playerRect.right &&
+      enemyBottom >= playerRect.top &&
+      enemyTop    <= playerRect.bottom
+    ){
       explode(e.x,e.y);
       enemies.splice(ei,1);
 
@@ -517,34 +549,26 @@ if(Math.sqrt(dxp*dxp + dyp*dyp) < e.size + playerRadius)
       continue;
     }
 
-// ===== BASE COLLISION (CSS HITBOX) =====
-const hitbox = document.getElementById("baseHitbox");
-const rect = hitbox.getBoundingClientRect();
+    /* ===== BASE HITBOX COLLISION ===== */
+    if(
+      enemyRight  >= baseRect.left &&
+      enemyLeft   <= baseRect.right &&
+      enemyBottom >= baseRect.top
+    ){
+      explode(e.x,e.y);
+      enemies.splice(ei,1);
 
-const enemyBottom = e.y + e.size;
-const enemyLeft   = e.x - e.size;
-const enemyRight  = e.x + e.size;
+      baseHp -= e.boss ? 40 : 15;
 
-if(
-  enemyBottom >= rect.top &&
-  enemyRight  >= rect.left &&
-  enemyLeft   <= rect.right
-){
-  explode(e.x, e.y);
-  enemies.splice(ei,1);
-
-  baseHp -= e.boss ? 40 : 15;
-
-  if(baseHp <= 0){
-    baseHp = 0;
-    endGame();
-    return;
+      if(baseHp <= 0){
+        baseHp = 0;
+        endGame();
+        return;
+      }
+    }
   }
-}
 
-}
-
-  // ================= PARTICLES =================
+  /* ================= PARTICLES ================= */
   for(let i = particles.length - 1; i >= 0; i--){
     particles[i].x += particles[i].vx;
     particles[i].y += particles[i].vy;
@@ -555,13 +579,13 @@ if(
     }
   }
 
-  // ================= STARS =================
-  stars.forEach(s=>{
-    s.y += s.speed;
-    if(s.y > canvas.height) s.y = 0;
-  });
+  /* ================= STARS ================= */
+  for(let i = 0; i < stars.length; i++){
+    stars[i].y += stars[i].speed;
+    if(stars[i].y > canvas.height) stars[i].y = 0;
+  }
 
-  // ================= UI =================
+  /* ================= UI ================= */
   document.getElementById("scoreUI").textContent = score;
   document.getElementById("rewardUI").textContent = reward;
   document.getElementById("hpBar").style.width = hp + "%";
