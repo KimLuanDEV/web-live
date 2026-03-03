@@ -228,6 +228,11 @@ const player = {
   size: 25
 };
 
+
+const ENTRY_FEE = 50;
+let paidThisRound = false;
+
+
 /* ===================== STAR BACKGROUND ===================== */
 for(let i=0;i<120;i++){
   stars.push({
@@ -393,6 +398,8 @@ function draw(){
 /* ===================== GAME OVER ===================== */
 function endGame(){
   gameOver=true;
+  gameStarted = false;   // 🔥 thêm dòng này
+  starting = false;      // 🔥 thêm dòng này
   socket.emit("star-war-reward",{reward});
 
   const panel=document.getElementById("gameOverPanel");
@@ -411,7 +418,26 @@ function loop(){
 loop();
 
 
+
+
+let starting = false;
+
 function startGame(){
+
+  if(starting) return;
+  if(gameStarted) return;
+  if(gameOver) return;
+
+  starting = true;
+
+  socket.emit("star-war-start-request", {
+    fee: ENTRY_FEE
+  });
+
+}
+
+
+socket.on("star-war-start-approved", ()=>{
 
   const startPanel = document.getElementById("startPanel");
   const countdown  = document.getElementById("countdown");
@@ -436,12 +462,22 @@ function startGame(){
       setTimeout(()=>{
         countdown.style.display = "none";
         gameStarted = true;
+        starting = false;
       },700);
     }
 
   },1000);
 
-}
+});
+
+
+socket.on("star-war-start-denied", (data)=>{
+
+  starting = false;
+
+  alert(data.message || "Not enough diamonds");
+
+});
 
 
 

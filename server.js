@@ -1436,8 +1436,12 @@ function seededRandom(seed) {
 const app = express();
 const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
-const activeUsers = new Map(); 
+const activeUsers = new Map();
 
+// ================================
+// 🚀 STAR WAR SESSION STORE
+// ================================
+const starWarSessions = new Map();
 
 // ================================
 // 🔢 RPS ROUND COUNT STATE
@@ -2661,6 +2665,47 @@ socket.emit("factory-update", factoryDB[uid]);
 
 
 
+// ================================
+// 🚀 STAR WAR ENTRY
+// ================================
+socket.on("star-war-start-request", ()=>{
+
+  const ENTRY_FEE = 50;
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if(!me?.profile){
+    socket.emit("star-war-start-denied",{
+      message:"User not found"
+    });
+    return;
+  }
+
+  if(me.profile.coins < ENTRY_FEE){
+    socket.emit("star-war-start-denied",{
+      message:"❌ Not enough diamonds"
+    });
+    return;
+  }
+
+  me.profile.coins -= ENTRY_FEE;
+
+  saveUsers(users);
+  emitCoinUpdate(uid);
+
+  // 🔐 TẠO SESSION
+  starWarSessions.set(uid, {
+    startedAt: Date.now()
+  });
+
+  socket.emit("star-war-start-approved");
+
+});
+
 
 
 socket.on("star-war-reward", ({ reward })=>{
@@ -2668,15 +2713,31 @@ socket.on("star-war-reward", ({ reward })=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
+  // ❌ Không có session → chặn
+  if(!starWarSessions.has(uid)){
+    return;
+  }
+
   const users = loadUsers();
   const me = users[uid];
   if(!me?.profile) return;
 
+  const MAX_REWARD = 500; // 🔥 cap reward
+
+  const safeReward = Math.min(
+    Math.max(0, Number(reward || 0)),
+    MAX_REWARD
+  );
+
   me.profile.coins =
-    Math.floor(Number(me.profile.coins || 0) + reward);
+    Math.floor(Number(me.profile.coins || 0) + safeReward);
 
   saveUsers(users);
   emitCoinUpdate(uid);
+
+  // 🔒 XÓA SESSION (1 game chỉ reward 1 lần)
+  starWarSessions.delete(uid);
+
 });
 
 
