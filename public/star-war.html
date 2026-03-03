@@ -116,6 +116,23 @@ canvas{ display:block; }
 
 
 
+#baseHitbox{
+  position:fixed;
+  bottom:40px;          /* chỉnh cao thấp */
+  left:50%;
+  transform:translateX(-50%);
+  width:300px;          /* chỉnh độ rộng hitbox */
+  height:40px;          /* chỉnh chiều cao hitbox */
+  z-index:6;
+  pointer-events:none;
+
+  /* DEBUG MODE (xem vùng va chạm) */
+  border:2px solid red;
+  background:rgba(255,0,0,.15);
+}
+
+
+
 </style>
 </head>
 <body>
@@ -229,6 +246,8 @@ canvas{ display:block; }
 
 <img id="baseElement" src="/assets/star-war/base.png">
 
+
+<div id="baseHitbox"></div>
 
 
 <div id="feeModal" style="
@@ -485,15 +504,19 @@ function update(){
       continue;
     }
 
-// ===== BASE COLLISION (HTML BASE) =====
-const baseElement = document.getElementById("baseElement");
-const baseRect = baseElement.getBoundingClientRect();
+// ===== BASE COLLISION (CSS HITBOX) =====
+const hitbox = document.getElementById("baseHitbox");
+const rect = hitbox.getBoundingClientRect();
 
-// e.y đang là toạ độ canvas → canvas full màn hình nên dùng trực tiếp
 const enemyBottom = e.y + e.size;
+const enemyLeft   = e.x - e.size;
+const enemyRight  = e.x + e.size;
 
-if(enemyBottom >= baseRect.top){
-
+if(
+  enemyBottom >= rect.top &&
+  enemyRight  >= rect.left &&
+  enemyLeft   <= rect.right
+){
   explode(e.x, e.y);
   enemies.splice(ei,1);
 
@@ -505,6 +528,7 @@ if(enemyBottom >= baseRect.top){
     return;
   }
 }
+
 }
 
   // ================= PARTICLES =================
