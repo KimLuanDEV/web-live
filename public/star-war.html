@@ -414,6 +414,32 @@ canvas{ display:block; }
   text-shadow:none;
 }
 
+
+.startBtnImg{
+  width:100%;
+  cursor:pointer;
+  transition:.25s;
+  bottom:200px;
+  left:200px;
+}
+
+.startBtnImg img{
+  width:100%;
+  display:block;
+  pointer-events:none;
+  
+}
+
+.startBtnImg:hover{
+  transform:scale(1.06);
+  filter:brightness(1.1);
+}
+
+.startBtnImg:active{
+  transform:scale(.96);
+}
+
+
 </style>
 </head>
 <body>
@@ -453,12 +479,14 @@ canvas{ display:block; }
 </div>
 
 
+<div class="startBtnImg" onclick="confirmStart()">
+  <img src="/assets/star-war/start-btn.png" alt="Start">
+</div>
+
+
 <div id="startPanel" class="startPanel">
   <div class="startBox">
 
-    <button class="startBtn" onclick="confirmStart()">
-      START GAME
-    </button>
 
     <button class="exitBtn"
       onclick="location.href='/game-diamond-factory.html'">
