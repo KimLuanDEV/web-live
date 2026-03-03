@@ -1339,6 +1339,49 @@ body{
 
 
 
+
+.guideImageWrap{
+  display:flex;
+  justify-content:center;
+  margin-bottom:14px;
+}
+
+.guideImage{
+  width:90px;
+  height:90px;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 10px 25px rgba(0,0,0,.6))
+    drop-shadow(0 0 20px rgba(0,240,255,.35));
+
+  animation: guideFloat 3s ease-in-out infinite;
+}
+
+@keyframes guideFloat{
+  0%{ transform:translateY(0) }
+  50%{ transform:translateY(-6px) }
+  100%{ transform:translateY(0) }
+}
+
+.guideTitleText{
+  font-weight:1000;
+  font-size:16px;
+  margin-bottom:8px;
+  text-align:center;
+  color:#00f0ff;
+  text-shadow:0 0 20px rgba(0,240,255,.5);
+}
+
+.guideDesc{
+  font-size:14px;
+  line-height:1.6;
+  text-align:center;
+  opacity:.85;
+}
+
+
+
 </style>
 </head>
 <body>
@@ -3577,49 +3620,49 @@ window.addEventListener("load", ()=>{
 const guideSteps = [
 
 {
-  icon:"🏗",
+  image:"/assets/ui/guide/guide-build.png",
   title:"BUILD & UPGRADE",
   text:"Upgrade your factory to unlock more worker slots and increase production potential."
 },
 
 {
-  icon:"👷",
+  image:"/assets/ui/guide/guide-hire.png",
   title:"HIRE WORKERS",
   text:"Each worker produces diamonds per second. No worker = No income."
 },
 
 {
-  icon:"💎",
+  image:"/assets/ui/guide/guide-produce.png",
   title:"PRODUCE & COLLECT",
   text:"Diamonds are stored automatically. Collect before storage is full."
 },
 
 {
-  icon:"🔥",
+  image:"/assets/ui/guide/guide-fire.png",
   title:"FIRE RISK",
   text:"Factories may burn randomly. If burned, all workers and stored diamonds are lost."
 },
 
 {
-  icon:"🚒",
+  image:"/assets/ui/guide/guide-defense.png",
   title:"FIRE DEFENSE",
   text:"Upgrade Fire Defense Center to reduce fire chance."
 },
 
 {
-  icon:"🏥",
+  image:"/assets/ui/guide/guide-hospital.png",
   title:"HOSPITAL",
   text:"Reduce worker death rate and stabilize production."
 },
 
 {
-  icon:"📊",
+  image:"/assets/ui/guide/guide-finance.png",
   title:"FINANCE PANEL",
   text:"Monitor profit, costs, risks, and optimize your strategy."
 },
 
 {
-  icon:"⚙",
+  image:"/assets/ui/guide/guide-control.png",
   title:"FACTORY CONTROL",
   text:"Turn factory OFF to avoid risks when needed."
 }
@@ -3686,17 +3729,19 @@ function updateGuideContent(){
 
   const slide = document.getElementById("guideSlide");
 
-  slide.innerHTML = `
-    <div style="font-size:32px;margin-bottom:8px">
-      ${step.icon}
-    </div>
-    <div style="font-weight:1000;margin-bottom:8px;color:#00f0ff">
-      ${step.title}
-    </div>
-    <div style="font-size:14px;line-height:1.6">
-      ${step.text}
-    </div>
-  `;
+slide.innerHTML = `
+  <div class="guideImageWrap">
+    <img src="${step.image}" class="guideImage">
+  </div>
+
+  <div class="guideTitleText">
+    ${step.title}
+  </div>
+
+  <div class="guideDesc">
+    ${step.text}
+  </div>
+`;
 
   document.getElementById("guideStepNow")
     .textContent = guideIndex + 1;
