@@ -884,6 +884,8 @@ let starting = false;
 
 let damageFlash = 0;
 
+let dying = false;
+
 const player = {
   x: canvas.width/2,
   y: canvas.height - 120,
@@ -1055,6 +1057,21 @@ function explode(x,y){
       life:30
     });
   }
+}
+
+
+
+function bigExplosion(x,y){
+
+  for(let i=0;i<80;i++){
+    particles.push({
+      x,y,
+      vx:(Math.random()-0.5)*10,
+      vy:(Math.random()-0.5)*10,
+      life:50
+    });
+  }
+
 }
 
 
@@ -1243,11 +1260,22 @@ if(Math.sqrt(dxp*dxp + dyp*dyp) < e.hitRadius + playerRadius)
       damageFlash = 12;
 
 
-      if(hp <= 0){
-        hp = 0;
-        endGame();
-        return;
-      }
+if(hp <= 0){
+
+  hp = 0;
+
+  if(!dying){
+    dying = true;
+
+    bigExplosion(player.x, player.y);
+
+    setTimeout(()=>{
+      endGame();
+    },1200);
+  }
+
+  return;
+}
 
       continue;
     }
@@ -1271,11 +1299,29 @@ if(
   baseHp -= e.boss ? 40 : 15;
   damageFlash = 12;
 
-  if(baseHp <= 0){
-    baseHp = 0;
-    endGame();
-    return;
+if(baseHp <= 0){
+
+  baseHp = 0;
+
+  if(!dying){
+
+    dying = true;
+
+    const rect = document.getElementById("baseHitbox").getBoundingClientRect();
+
+    bigExplosion(
+      rect.left + rect.width/2,
+      rect.top
+    );
+
+    setTimeout(()=>{
+      endGame();
+    },1200);
+
   }
+
+  return;
+}
 }
 
 }
