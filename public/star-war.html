@@ -757,6 +757,56 @@ canvas{ display:block; }
   letter-spacing:2px;
 }
 
+
+
+/* =====================
+   WARP TUNNEL
+===================== */
+
+.warpLine{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:2px;
+  height:80px;
+  background:linear-gradient(#00f0ff,transparent);
+  transform-origin:center;
+  opacity:.7;
+  animation:warpMove linear infinite;
+}
+
+@keyframes warpMove{
+  from{
+    transform:translate(-50%,-50%) scaleY(.2);
+    opacity:.2;
+  }
+  to{
+    transform:translate(-50%,200vh) scaleY(2);
+    opacity:1;
+  }
+}
+
+/* warp flash */
+
+.warpFlash{
+  position:absolute;
+  inset:0;
+  background:white;
+  opacity:0;
+  pointer-events:none;
+}
+
+.warpFlash.active{
+  animation:warpFlashAnim .7s ease;
+}
+
+@keyframes warpFlashAnim{
+  0%{opacity:0}
+  40%{opacity:.9}
+  100%{opacity:0}
+}
+
+
 </style>
 </head>
 <body>
@@ -764,6 +814,8 @@ canvas{ display:block; }
 
 
 <div id="loadingScreen">
+
+  <div class="warpFlash" id="warpFlash"></div>
 
   <div class="cinematicLoader">
 
@@ -1010,13 +1062,15 @@ function assetLoaded(){
   document.getElementById("loadingBar").style.width = percent + "%";
   document.getElementById("loadingText").textContent = "Loading " + percent + "%";
 
-  if(loaded >= assets.length){
+if(loaded >= assets.length){
 
-    setTimeout(()=>{
-      document.getElementById("loadingScreen").style.display = "none";
-    },500);
+  warpFlash.classList.add("active");
 
-  }
+  setTimeout(()=>{
+    document.getElementById("loadingScreen").style.display = "none";
+  },900);
+
+}
 
 }
 
@@ -1053,6 +1107,35 @@ style.innerHTML = `
   to{ transform:translateY(100vh);}
 }`;
 document.head.appendChild(style);
+
+
+/* =====================
+   WARP JUMP EFFECT
+===================== */
+
+const warpFlash = document.getElementById("warpFlash");
+
+function spawnWarpLines(){
+
+  for(let i=0;i<60;i++){
+
+    const line = document.createElement("div");
+
+    line.className = "warpLine";
+
+    const angle = Math.random()*360;
+    const duration = 1 + Math.random()*1.5;
+
+    line.style.transform += ` rotate(${angle}deg)`;
+    line.style.animationDuration = duration + "s";
+
+    loader.appendChild(line);
+
+  }
+
+}
+
+spawnWarpLines();
 
 
 /* ===================== GAME STATE ===================== */
