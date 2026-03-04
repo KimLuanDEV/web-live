@@ -794,7 +794,7 @@ function spawnBoss(){
       drawSize:180,
       hitRadius:getBossSize()/2,
       speed:1.5,
-      hp:15,
+      hp:20,
       boss:true,
 
       phase:"enter",
@@ -878,9 +878,11 @@ for(let i = enemies.length - 1; i >= 0; i--){
       // di chuyển trái phải
       e.x += 3 * e.dir;
 
-      if(e.x < 120 || e.x > canvas.width-120){
-        e.dir *= -1;
-      }
+const edge = e.hitRadius;
+
+if(e.x < edge || e.x > canvas.width - edge){
+  e.dir *= -1;
+}
 
       // bắn đạn
 if(Date.now() - e.lastShot > 900){
