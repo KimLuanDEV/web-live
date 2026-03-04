@@ -1374,6 +1374,23 @@ ctx.drawImage(
 
 }
 
+
+
+// ===== EXPLOSION PARTICLES =====
+particles.forEach(p=>{
+
+  const alpha = p.life / 30;
+
+  ctx.fillStyle = `rgba(255,120,0,${alpha})`;
+
+  ctx.beginPath();
+  ctx.arc(p.x, p.y, 4, 0, Math.PI*2);
+  ctx.fill();
+
+});
+
+
+
 /* ===================== GAME OVER ===================== */
 function endGame(){
 
