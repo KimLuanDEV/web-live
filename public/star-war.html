@@ -937,12 +937,54 @@ for(let i=0;i<120;i++){
 }
 
 /* ===================== CONTROL ===================== */
+
+let dragging = false;
+
+/* PC */
+canvas.addEventListener("mousedown", e=>{
+  dragging = true;
+});
+
+canvas.addEventListener("mouseup", ()=>{
+  dragging = false;
+});
+
+canvas.addEventListener("mouseleave", ()=>{
+  dragging = false;
+});
+
 canvas.addEventListener("mousemove", e=>{
+  if(!dragging) return;   // 🔥 chỉ kéo mới di chuyển
   player.x = e.clientX;
 });
-canvas.addEventListener("touchmove", e=>{
-  player.x = e.touches[0].clientX;
+
+
+/* MOBILE */
+canvas.addEventListener("touchstart", e=>{
+  dragging = true;
 });
+
+canvas.addEventListener("touchend", ()=>{
+  dragging = false;
+});
+
+canvas.addEventListener("touchmove", e=>{
+
+  if(!dragging) return;
+
+  e.preventDefault();
+
+  let touchX = e.touches[0].clientX;
+
+  const minX = 40;
+  const maxX = window.innerWidth - 40;
+
+  touchX = Math.max(minX, Math.min(maxX, touchX));
+
+  player.x = touchX;
+
+}, { passive:false });
+
 
 /* ===================== SHOOT ===================== */
 setInterval(()=>{
