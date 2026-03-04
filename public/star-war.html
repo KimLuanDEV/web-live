@@ -680,54 +680,81 @@ canvas{ display:block; }
 
 
 
-
 /* =====================
-   LOADING SCREEN
+   CINEMATIC LOADER
 ===================== */
 
 #loadingScreen{
   position:fixed;
   inset:0;
-  background:black;
-  z-index:200;
-
+  background:radial-gradient(circle at center,#050b18,#000);
+  z-index:500;
   display:flex;
   align-items:center;
   justify-content:center;
+  overflow:hidden;
 }
 
-.loadingBox{
-  width:320px;
+.cinematicLoader{
   text-align:center;
+  width:320px;
 }
 
-.loadingTitle{
-  font-size:38px;
+/* ===== rotating ship ===== */
+
+.loaderShip{
+  width:90px;
+  margin-bottom:25px;
+  animation:shipFloat 3s ease-in-out infinite,
+             shipRotate 6s linear infinite;
+  filter:drop-shadow(0 0 20px #00f0ff);
+}
+
+@keyframes shipFloat{
+  0%{ transform:translateY(0px);}
+  50%{ transform:translateY(-12px);}
+  100%{ transform:translateY(0px);}
+}
+
+@keyframes shipRotate{
+  from{ transform:rotate(0deg);}
+  to{ transform:rotate(360deg);}
+}
+
+/* ===== title ===== */
+
+.loaderTitle{
+  font-size:42px;
   font-weight:900;
   color:#00f0ff;
-  text-shadow:0 0 25px #00f0ff;
+  letter-spacing:6px;
+  text-shadow:0 0 40px #00f0ff;
   margin-bottom:30px;
 }
+
+/* ===== loading bar ===== */
 
 .loadingBarWrap{
   width:100%;
   height:10px;
   background:rgba(255,255,255,.1);
-  border-radius:6px;
+  border-radius:10px;
   overflow:hidden;
-  margin-bottom:15px;
+  margin-bottom:12px;
 }
 
 #loadingBar{
   height:100%;
   width:0%;
-  background:linear-gradient(90deg,#00f0ff,#0088ff);
+  background:linear-gradient(90deg,#00f0ff,#0088ff,#00f0ff);
+  box-shadow:0 0 20px #00f0ff;
   transition:.3s;
 }
 
 #loadingText{
   font-size:13px;
-  opacity:.8;
+  color:#aaa;
+  letter-spacing:2px;
 }
 
 </style>
@@ -738,9 +765,12 @@ canvas{ display:block; }
 
 <div id="loadingScreen">
 
-  <div class="loadingBox">
+  <div class="cinematicLoader">
 
-    <div class="loadingTitle">
+    <img src="/assets/star-war/player.png"
+         class="loaderShip">
+
+    <div class="loaderTitle">
       STAR WAR
     </div>
 
@@ -749,7 +779,7 @@ canvas{ display:block; }
     </div>
 
     <div id="loadingText">
-      Loading Assets...
+      INITIALIZING SYSTEM
     </div>
 
   </div>
@@ -992,7 +1022,37 @@ function assetLoaded(){
 
 preloadAssets();
 
+/* =====================
+   LOADER STAR FIELD
+===================== */
 
+const loader = document.getElementById("loadingScreen");
+
+for(let i=0;i<80;i++){
+
+  const star = document.createElement("div");
+
+  star.style.position="absolute";
+  star.style.width="2px";
+  star.style.height="2px";
+  star.style.background="white";
+  star.style.left=Math.random()*100+"%";
+  star.style.top=Math.random()*100+"%";
+  star.style.opacity=Math.random();
+
+  star.style.animation =
+    "starMove " + (3+Math.random()*5) + "s linear infinite";
+
+  loader.appendChild(star);
+}
+
+const style = document.createElement("style");
+style.innerHTML = `
+@keyframes starMove{
+  from{ transform:translateY(0px);}
+  to{ transform:translateY(100vh);}
+}`;
+document.head.appendChild(style);
 
 
 /* ===================== GAME STATE ===================== */
