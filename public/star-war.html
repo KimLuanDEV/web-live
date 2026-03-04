@@ -551,42 +551,6 @@ canvas{ display:block; }
   text-shadow:0 0 15px #00f0ff;
 }
 
-.feeGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-bottom:15px;
-}
-
-.feeCard{
-  padding:14px 0;
-  border-radius:12px;
-  border:1px solid rgba(0,240,255,.4);
-  background:rgba(0,0,0,.4);
-  cursor:pointer;
-  transition:.2s;
-}
-
-.feeCard:hover{
-  transform:scale(1.05);
-  box-shadow:0 0 15px #00f0ff;
-}
-
-.feeCard.active{
-  background:linear-gradient(45deg,#00f0ff,#0088ff);
-  color:black;
-  font-weight:700;
-}
-
-.feeValue{
-  font-size:22px;
-  font-weight:800;
-}
-
-.feeLabel{
-  font-size:11px;
-  opacity:.7;
-}
 
 .feeSelected{
   margin:10px 0 20px;
@@ -619,6 +583,62 @@ canvas{ display:block; }
   background:linear-gradient(45deg,#ff0040,#ff8800);
   color:white;
 }
+
+
+
+.chipRow{
+  display:flex;
+  justify-content:center;
+  gap:16px;
+  margin-bottom:18px;
+}
+
+.betChip{
+  width:70px;
+  height:70px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  font-size:18px;
+  font-weight:800;
+  cursor:pointer;
+
+  background:
+    radial-gradient(circle at 30% 30%, #00f0ff, #0050ff);
+
+  border:3px solid rgba(255,255,255,.6);
+
+  box-shadow:
+    0 0 15px #00f0ff,
+    inset 0 0 10px rgba(255,255,255,.4);
+
+  transition:.2s;
+}
+
+.betChip span{
+  color:white;
+  text-shadow:0 0 8px #00f0ff;
+}
+
+.betChip:hover{
+  transform:scale(1.15);
+  box-shadow:
+    0 0 25px #00f0ff,
+    inset 0 0 12px rgba(255,255,255,.6);
+}
+
+.betChip.active{
+  background:
+    radial-gradient(circle at 30% 30%, #00ffaa, #00aa66);
+
+  box-shadow:
+    0 0 30px #00ffaa,
+    inset 0 0 15px rgba(255,255,255,.6);
+}
+
+
 
 </style>
 </head>
@@ -720,29 +740,25 @@ canvas{ display:block; }
       SELECT ENTRY
     </div>
 
-    <div class="feeGrid">
+<div class="chipRow">
 
-      <div class="feeCard" onclick="selectFee(50)">
-        <div class="feeValue">50</div>
-        <div class="feeLabel">💎 ENTRY</div>
-      </div>
+  <div class="betChip" onclick="selectFee(50)">
+    <span>50</span>
+  </div>
 
-      <div class="feeCard" onclick="selectFee(100)">
-        <div class="feeValue">100</div>
-        <div class="feeLabel">💎 ENTRY</div>
-      </div>
+  <div class="betChip" onclick="selectFee(100)">
+    <span>100</span>
+  </div>
 
-      <div class="feeCard active" onclick="selectFee(300)">
-        <div class="feeValue">300</div>
-        <div class="feeLabel">💎 ENTRY</div>
-      </div>
+  <div class="betChip active" onclick="selectFee(300)">
+    <span>300</span>
+  </div>
 
-      <div class="feeCard" onclick="selectFee(1000)">
-        <div class="feeValue">1000</div>
-        <div class="feeLabel">💎 ENTRY</div>
-      </div>
+  <div class="betChip" onclick="selectFee(1000)">
+    <span>1000</span>
+  </div>
 
-    </div>
+</div>
 
     <div class="feeSelected">
       Selected: <span id="selectedFee">50</span> 💎
@@ -1077,7 +1093,7 @@ for(let i = bossBullets.length-1; i>=0; i--){
           explode(e.x,e.y);
 
 const enemyReward = Math.floor(ENTRY_FEE / 50);
-const bossReward  = Math.floor(ENTRY_FEE / 5);
+const bossReward  = Math.floor(ENTRY_FEE / 10);
 
 reward += e.boss ? bossReward : enemyReward;
 
@@ -1393,13 +1409,12 @@ function selectFee(fee){
 
   document.getElementById("selectedFee").textContent = fee;
 
-  document.querySelectorAll(".feeCard").forEach(c=>{
+  document.querySelectorAll(".betChip").forEach(c=>{
     c.classList.remove("active");
   });
 
   event.currentTarget.classList.add("active");
 }
-
 
 </script>
 </body>
