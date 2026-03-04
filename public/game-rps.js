@@ -157,7 +157,7 @@ socket.on("rps-round-state", data => {
     lockHand();
     playBtn.disabled = true;
 
-    statusMsg.textContent = "Đã vào lệnh – chờ kết quả";
+    statusMsg.textContent = "Bet successfully placed – Waiting for the result";
 
     // 🌟 trạng thái đã chốt
     const handsWrap = document.querySelector(".rps-hands");
@@ -203,7 +203,7 @@ socket.on("rps-round-state", data => {
     // ✅ CHƯA BET
     unlockHand();
     lockBet();
-    statusMsg.textContent = "Round mới – chọn tay";
+    statusMsg.textContent = "New round – Choose your hand";
   }
 });
 
@@ -364,7 +364,7 @@ enemyEl.innerHTML = `
         },5000);
 
         playBtn.disabled = true;
-        statusMsg.textContent = "⏳ Đợi round mới";
+        statusMsg.textContent = " Wait new round";
 
       },1000); // burn time
 
@@ -532,7 +532,7 @@ hands.forEach(el=>{
 
     unlockBet();
     playBtn.disabled = true;
-    statusMsg.textContent = "Chọn vốn đầu tư";
+    statusMsg.textContent = "Choose betting amount";
   };
 });
 
