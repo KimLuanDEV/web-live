@@ -150,7 +150,7 @@ canvas{ display:block; }
   --enemy-scale:1;
 
   /* ===== BOSS SIZE ===== */
-  --boss-size:180;
+  --boss-size:70;
   --boss-scale:1;
 
 }
@@ -780,21 +780,31 @@ function spawnEnemy(){
 }
 
 function spawnBoss(){
-  enemies.push({
-    x:canvas.width/2,
-    y:-120,
-    drawSize:180,
-    hitRadius: getBossSize()/2,
-    speed:1.5,
-    hp:30,
-    boss:true,
 
-    // boss logic
-    phase:"enter",
-    targetY:150,
-    dir:1,
-    lastShot:0
-  });
+  const count = 4; // 🎯 số boss mỗi lần spawn
+
+  const gap = canvas.width / (count + 1);
+
+  for(let i=1;i<=count;i++){
+
+    enemies.push({
+      x: gap * i,
+      y: -120,
+
+      drawSize:180,
+      hitRadius:getBossSize()/2,
+      speed:1.5,
+      hp:30,
+      boss:true,
+
+      phase:"enter",
+      targetY:120 + Math.random()*60, // boss đứng cao thấp khác nhau
+      dir: Math.random() < 0.5 ? -1 : 1,
+      lastShot:0
+    });
+
+  }
+
 }
 
 /* ===================== EXPLOSION ===================== */
