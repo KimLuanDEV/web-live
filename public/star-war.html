@@ -702,7 +702,7 @@ let starting = false;
 const player = {
   x: canvas.width/2,
   y: canvas.height - 120,
-  size: 25
+  hitRadius: 18   // 🎯 chỉnh hitbox tại đây
 };
 
 
@@ -794,7 +794,7 @@ function spawnBoss(){
       drawSize:180,
       hitRadius:getBossSize()/2,
       speed:1.5,
-      hp:10,
+      hp:15,
       boss:true,
 
       phase:"enter",
@@ -932,7 +932,7 @@ for(let i = bossBullets.length-1; i>=0; i--){
   const dx = b.x - player.x;
   const dy = b.y - player.y;
 
-  const playerRadius = getPlayerSize()/2;
+  const playerRadius = player.hitRadius;
 
   if(Math.sqrt(dx*dx + dy*dy) < playerRadius){
 
@@ -985,7 +985,7 @@ for(let i = bossBullets.length-1; i>=0; i--){
     const dxp = e.x - player.x;
     const dyp = e.y - player.y;
 
-    const playerRadius = getPlayerSize() / 2;
+    const playerRadius = player.hitRadius;
 
 if(Math.sqrt(dxp*dxp + dyp*dyp) < e.hitRadius + playerRadius)
     
