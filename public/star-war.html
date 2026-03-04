@@ -138,9 +138,21 @@ canvas{ display:block; }
 
 
 
+
+
 :root{
-  --player-size: 100;        /* chỉnh kích cỡ tại đây */
-  --player-scale: 1;        /* scale nhanh */
+
+  --player-size:100;
+  --player-scale:1;
+
+  /* ===== ENEMY SIZE ===== */
+  --enemy-size:60;
+  --enemy-scale:1;
+
+  /* ===== BOSS SIZE ===== */
+  --boss-size:180;
+  --boss-scale:1;
+
 }
 
 .player-debug{
@@ -760,7 +772,7 @@ function spawnEnemy(){
     x:Math.random()*canvas.width,
     y:-60,
     drawSize: 60,
-    hitRadius: 22,      // tăng size để khớp ảnh
+    hitRadius: getEnemySize()/2,      // tăng size để khớp ảnh
     speed:2+Math.random()*2,
     hp:1,
     boss:false
@@ -772,7 +784,7 @@ function spawnBoss(){
     x:canvas.width/2,
     y:-120,
     drawSize:180,
-    hitRadius:70,
+    hitRadius: getBossSize()/2,
     speed:1.5,
     hp:30,
     boss:true,
@@ -1084,12 +1096,14 @@ enemies.forEach(e=>{
     }
 
 
+const size = e.boss ? getBossSize() : getEnemySize();
+
 ctx.drawImage(
   img,
-  e.x - e.drawSize/2,
-  e.y - e.drawSize/2,
-  e.drawSize,
-  e.drawSize
+  e.x - size/2,
+  e.y - size/2,
+  size,
+  size
 );
 
     ctx.restore();
@@ -1218,6 +1232,29 @@ document.addEventListener('dblclick', function (e) {
   e.preventDefault();
 }, { passive:false });
 
+
+
+function getEnemySize(){
+
+  const size = getComputedStyle(document.documentElement)
+    .getPropertyValue('--enemy-size');
+
+  const scale = getComputedStyle(document.documentElement)
+    .getPropertyValue('--enemy-scale');
+
+  return Number(size) * Number(scale);
+}
+
+function getBossSize(){
+
+  const size = getComputedStyle(document.documentElement)
+    .getPropertyValue('--boss-size');
+
+  const scale = getComputedStyle(document.documentElement)
+    .getPropertyValue('--boss-scale');
+
+  return Number(size) * Number(scale);
+}
 
 
 </script>
