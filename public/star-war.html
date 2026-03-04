@@ -807,6 +807,67 @@ canvas{ display:block; }
 }
 
 
+/* ======================
+   ENERGY RING
+====================== */
+
+.energyRing{
+  position:absolute;
+  width:220px;
+  height:220px;
+  border-radius:50%;
+  border:2px solid rgba(0,240,255,.3);
+  box-shadow:
+    0 0 30px rgba(0,240,255,.4),
+    inset 0 0 40px rgba(0,240,255,.4);
+  animation:ringSpin 6s linear infinite;
+}
+
+.energyRing::after{
+  content:"";
+  position:absolute;
+  inset:-20px;
+  border-radius:50%;
+  border:1px solid rgba(0,240,255,.2);
+  animation:ringSpinReverse 8s linear infinite;
+}
+
+@keyframes ringSpin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+@keyframes ringSpinReverse{
+  from{ transform:rotate(360deg); }
+  to{ transform:rotate(0deg); }
+}
+
+
+
+/* ======================
+   SHIP CHARGE
+====================== */
+
+.loaderShip.charge{
+  animation:
+    shipFloat 3s ease-in-out infinite,
+    shipRotate 6s linear infinite,
+    shipCharge 2s ease-in-out infinite;
+}
+
+@keyframes shipCharge{
+  0%{
+    filter:drop-shadow(0 0 10px #00f0ff);
+  }
+  50%{
+    filter:drop-shadow(0 0 40px #00f0ff);
+    transform:scale(1.15);
+  }
+  100%{
+    filter:drop-shadow(0 0 10px #00f0ff);
+  }
+}
+
 </style>
 </head>
 <body>
@@ -818,6 +879,8 @@ canvas{ display:block; }
   <div class="warpFlash" id="warpFlash"></div>
 
   <div class="cinematicLoader">
+
+    <div class="energyRing"></div>
 
     <img src="/assets/star-war/player.png"
          class="loaderShip">
@@ -1059,6 +1122,11 @@ function assetLoaded(){
 
   const percent = Math.floor((loaded / assets.length) * 100);
 
+  if(percent > 70){
+  document.querySelector(".loaderShip")
+    .classList.add("charge");
+}
+
   document.getElementById("loadingBar").style.width = percent + "%";
   document.getElementById("loadingText").textContent = "Loading " + percent + "%";
 
@@ -1127,7 +1195,12 @@ function spawnWarpLines(){
     const duration = 1 + Math.random()*1.5;
 
     line.style.transform += ` rotate(${angle}deg)`;
+
     line.style.animationDuration = duration + "s";
+
+setTimeout(()=>{
+  line.style.animationDuration = "0.5s";
+},1500);
 
     loader.appendChild(line);
 
