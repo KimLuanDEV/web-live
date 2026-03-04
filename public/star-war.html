@@ -882,7 +882,7 @@ let bossBullets = [];
 let gameStarted = false;
 let starting = false;
 
-
+let damageFlash = 0;
 
 const player = {
   x: canvas.width/2,
@@ -1175,6 +1175,7 @@ for(let i = bossBullets.length-1; i>=0; i--){
     bossBullets.splice(i,1);
 
     hp -= 15;
+    damageFlash = 12;   // 👈 nháy đỏ
 
     if(hp <= 0){
       hp = 0;
@@ -1235,6 +1236,9 @@ if(Math.sqrt(dxp*dxp + dyp*dyp) < e.hitRadius + playerRadius)
       enemies.splice(ei,1);
 
       hp -= 10;
+      damageFlash = 12;
+
+
       if(hp <= 0){
         hp = 0;
         endGame();
@@ -1261,6 +1265,7 @@ if(
   enemies.splice(ei,1);
 
   baseHp -= e.boss ? 40 : 15;
+  damageFlash = 12;
 
   if(baseHp <= 0){
     baseHp = 0;
@@ -1372,9 +1377,6 @@ ctx.drawImage(
 
 });
 
-}
-
-
 
 // ===== EXPLOSION PARTICLES =====
 particles.forEach(p=>{
@@ -1388,6 +1390,27 @@ particles.forEach(p=>{
   ctx.fill();
 
 });
+
+
+
+
+// ===== DAMAGE FLASH =====
+if(damageFlash > 0){
+
+  ctx.fillStyle = `rgba(255,0,0,${damageFlash * 0.03})`;
+
+  ctx.fillRect(0,0,canvas.width,canvas.height);
+
+  damageFlash--;
+}
+
+
+
+}
+
+
+
+
 
 
 
