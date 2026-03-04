@@ -606,10 +606,6 @@ canvas{ display:block; }
   pointer-events:none;
 }
 
-.betChip:hover{
-  transform:scale(1.15);
-}
-
 .betChip.active{
   transform:scale(1.2);
   filter:drop-shadow(0 0 15px #00f0ff);
@@ -622,18 +618,10 @@ canvas{ display:block; }
 
 .betChip:hover{
   transform:scale(1.15);
-  box-shadow:
-    0 0 25px #00f0ff,
-    inset 0 0 12px rgba(255,255,255,.6);
 }
 
 .betChip.active{
-  background:
-    radial-gradient(circle at 30% 30%, #00ffaa, #00aa66);
-
-  box-shadow:
-    0 0 30px #00ffaa,
-    inset 0 0 15px rgba(255,255,255,.6);
+  background: #00f0ff;
 }
 
 
@@ -759,7 +747,7 @@ canvas{ display:block; }
 </div>
 
     <div class="feeSelected">
-      Selected: <span id="selectedFee">50</span> 💎
+      Selected: <span id="selectedFee">300</span> 💎
     </div>
 
     <div class="feeActions">
