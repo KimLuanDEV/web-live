@@ -680,7 +680,7 @@ let baseHp = 200;   // ❤️ máu căn cứ
 
 let lastEnemySpawn = 0;
 let lastBossSpawn = 0;
-
+let bossBullets = [];
 
 let gameStarted = false;
 let starting = false;
@@ -771,11 +771,17 @@ function spawnBoss(){
   enemies.push({
     x:canvas.width/2,
     y:-120,
-    drawSize: 180,
-    hitRadius: 70,
+    drawSize:180,
+    hitRadius:70,
     speed:1.5,
     hp:30,
-    boss:true
+    boss:true,
+
+    // boss logic
+    phase:"enter",
+    targetY:150,
+    dir:1,
+    lastShot:0
   });
 }
 
@@ -819,10 +825,99 @@ function update(){
     }
   }
 
+
+
   // ================= ENEMIES MOVE =================
-  for(let i = enemies.length - 1; i >= 0; i--){
-    enemies[i].y += enemies[i].speed;
+for(let i = enemies.length - 1; i >= 0; i--){
+
+  const e = enemies[i];
+
+  if(!e.boss){
+
+    // enemy thường
+    e.y += e.speed;
+
+  }else{
+
+    // ===== BOSS =====
+
+    if(e.phase === "enter"){
+
+      e.y += e.speed;
+
+      if(e.y >= e.targetY){
+        e.phase = "fight";
+      }
+
+    }
+
+    else if(e.phase === "fight"){
+
+      // di chuyển trái phải
+      e.x += 3 * e.dir;
+
+      if(e.x < 120 || e.x > canvas.width-120){
+        e.dir *= -1;
+      }
+
+      // bắn đạn
+      if(Date.now() - e.lastShot > 1200){
+
+        const dx = player.x - e.x;
+        const dy = player.y - e.y;
+        const len = Math.sqrt(dx*dx + dy*dy);
+
+        bossBullets.push({
+          x:e.x,
+          y:e.y,
+          vx:dx/len * 6,
+          vy:dy/len * 6
+        });
+
+        e.lastShot = Date.now();
+      }
+
+    }
+
   }
+
+}
+
+
+ // ================= Ammor Boss =================
+for(let i = bossBullets.length-1; i>=0; i--){
+
+  const b = bossBullets[i];
+
+  b.x += b.vx;
+  b.y += b.vy;
+
+  if(b.y > canvas.height+50){
+    bossBullets.splice(i,1);
+    continue;
+  }
+
+  const dx = b.x - player.x;
+  const dy = b.y - player.y;
+
+  const playerRadius = getPlayerSize()/2;
+
+  if(Math.sqrt(dx*dx + dy*dy) < playerRadius){
+
+    bossBullets.splice(i,1);
+
+    hp -= 15;
+
+    if(hp <= 0){
+      hp = 0;
+      endGame();
+      return;
+    }
+
+  }
+
+}
+
 
   // ================= COLLISIONS =================
   for(let ei = enemies.length - 1; ei >= 0; ei--){
@@ -941,6 +1036,14 @@ function draw(){
   });
 
 
+// ===== BOSS BULLETS =====
+ctx.fillStyle = "#ff0040";
+
+bossBullets.forEach(b=>{
+  ctx.beginPath();
+  ctx.arc(b.x,b.y,5,0,Math.PI*2);
+  ctx.fill();
+});
 
 
 // ===== PLAYER IMAGE =====
