@@ -958,8 +958,8 @@ function spawnEnemy(){
     y:-60,
     drawSize: 60,
     hitRadius: getEnemySize()/2,      // tăng size để khớp ảnh
-    speed:2+Math.random()*2,
-    hp:1,
+    speed:3+Math.random()*2,
+    hp:2,
     boss:false
   });
 }
@@ -1158,7 +1158,7 @@ for(let i = bossBullets.length-1; i>=0; i--){
         if(e.hp <= 0){
           explode(e.x,e.y);
 
-const enemyReward = Math.floor(ENTRY_FEE / 100);
+const enemyReward = Math.floor(ENTRY_FEE / 50);
 const bossReward  = Math.floor(ENTRY_FEE / 10);
 
 reward += e.boss ? bossReward : enemyReward;
