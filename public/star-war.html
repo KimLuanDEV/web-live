@@ -1002,27 +1002,31 @@ setInterval(()=>{
 
 /* ===================== SPAWN ===================== */
 function spawnEnemy(){
+
+  const radius = getEnemySize()/2;
+
   enemies.push({
-    x:Math.random()*canvas.width,
-    y:-60,
+    x: radius + Math.random() * (canvas.width - radius*2),
+    y: -60,
     drawSize: 60,
-    hitRadius: getEnemySize()/2,      // tăng size để khớp ảnh
+    hitRadius: radius,
     speed:3+Math.random()*2,
     hp:1,
     boss:false
   });
-}
 
+}
 function spawnBoss(){
 
   const count = 4; // 🎯 số boss mỗi lần spawn
 
-  const gap = canvas.width / (count + 1);
+  const margin = getBossSize()/2;
+  const gap = (canvas.width - margin*2) / (count + 1);
 
   for(let i=1;i<=count;i++){
 
     enemies.push({
-      x: gap * i,
+      x: margin + gap * i,
       y: -120,
 
       drawSize:180,
