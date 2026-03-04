@@ -521,6 +521,105 @@ canvas{ display:block; }
   color:black;
 }
 
+
+
+.feeOverlay{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.85);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:60;
+}
+
+.feePanel{
+  width:360px;
+  padding:30px;
+  border-radius:20px;
+  background:#0a1a2f;
+  border:1px solid #00f0ff;
+  box-shadow:0 0 40px rgba(0,240,255,.6);
+  text-align:center;
+}
+
+.feeTitle{
+  font-size:22px;
+  font-weight:800;
+  margin-bottom:20px;
+  color:#00f0ff;
+  text-shadow:0 0 15px #00f0ff;
+}
+
+.feeGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+  margin-bottom:15px;
+}
+
+.feeCard{
+  padding:14px 0;
+  border-radius:12px;
+  border:1px solid rgba(0,240,255,.4);
+  background:rgba(0,0,0,.4);
+  cursor:pointer;
+  transition:.2s;
+}
+
+.feeCard:hover{
+  transform:scale(1.05);
+  box-shadow:0 0 15px #00f0ff;
+}
+
+.feeCard.active{
+  background:linear-gradient(45deg,#00f0ff,#0088ff);
+  color:black;
+  font-weight:700;
+}
+
+.feeValue{
+  font-size:22px;
+  font-weight:800;
+}
+
+.feeLabel{
+  font-size:11px;
+  opacity:.7;
+}
+
+.feeSelected{
+  margin:10px 0 20px;
+  font-weight:700;
+}
+
+.feeActions{
+  display:flex;
+  gap:10px;
+}
+
+.confirmBtn{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(45deg,#00f0ff,#0088ff);
+  color:black;
+}
+
+.cancelBtn{
+  flex:1;
+  padding:10px;
+  border:none;
+  border-radius:10px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(45deg,#ff0040,#ff8800);
+  color:white;
+}
+
 </style>
 </head>
 <body>
@@ -613,76 +712,49 @@ canvas{ display:block; }
 <div id="baseHitbox"></div>
 
 
-<div id="feeModal" style="
-  position:fixed;
-  inset:0;
-  background:rgba(0,0,0,.8);
-  display:none;
-  align-items:center;
-  justify-content:center;
-  z-index:60;
-">
-  <div style="
-    background:#0a1a2f;
-    padding:30px;
-    border-radius:20px;
-    border:1px solid #00f0ff;
-    text-align:center;
-    color:white;
-    width:300px;
-    box-shadow:0 0 30px rgba(0,240,255,.6);
-  ">
-    <div style="font-size:20px;font-weight:700;margin-bottom:15px;">
-      START STAR WAR
+<div id="feeModal" class="feeOverlay">
+
+  <div class="feePanel">
+
+    <div class="feeTitle">
+      SELECT ENTRY
     </div>
 
+    <div class="feeGrid">
 
+      <div class="feeCard" onclick="selectFee(50)">
+        <div class="feeValue">50</div>
+        <div class="feeLabel">💎 ENTRY</div>
+      </div>
 
-   <div style="margin-bottom:20px">
+      <div class="feeCard" onclick="selectFee(100)">
+        <div class="feeValue">100</div>
+        <div class="feeLabel">💎 ENTRY</div>
+      </div>
 
-<div style="margin-bottom:10px;font-weight:700">
-Select Entry Fee
-</div>
+      <div class="feeCard active" onclick="selectFee(300)">
+        <div class="feeValue">300</div>
+        <div class="feeLabel">💎 ENTRY</div>
+      </div>
 
-<button onclick="selectFee(50)" class="feeBtn">50 💎</button>
-<button onclick="selectFee(100)" class="feeBtn">100 💎</button>
-<button onclick="selectFee(300)" class="feeBtn">300 💎</button>
-<button onclick="selectFee(1000)" class="feeBtn">1000 💎</button>
+      <div class="feeCard" onclick="selectFee(1000)">
+        <div class="feeValue">1000</div>
+        <div class="feeLabel">💎 ENTRY</div>
+      </div>
 
-</div>
+    </div>
 
-<div style="margin-top:10px">
-Selected: <span id="selectedFee">300</span> 💎
-</div>
+    <div class="feeSelected">
+      Selected: <span id="selectedFee">50</span> 💎
+    </div>
 
+    <div class="feeActions">
+      <button class="confirmBtn" onclick="approveStart()">CONFIRM</button>
+      <button class="cancelBtn" onclick="closeFeeModal()">CANCEL</button>
+    </div>
 
-
-
-    <button onclick="approveStart()" style="
-      margin-right:10px;
-      padding:8px 20px;
-      border:none;
-      border-radius:10px;
-      background:#00f0ff;
-      color:black;
-      font-weight:700;
-      cursor:pointer;
-    ">
-      CONFIRM
-    </button>
-
-    <button onclick="closeFeeModal()" style="
-      padding:8px 20px;
-      border:none;
-      border-radius:10px;
-      background:#ff0040;
-      color:white;
-      font-weight:700;
-      cursor:pointer;
-    ">
-      CANCEL
-    </button>
   </div>
+
 </div>
 
 
@@ -1319,9 +1391,13 @@ function selectFee(fee){
 
   ENTRY_FEE = fee;
 
-  document.getElementById("selectedFee")
-    .textContent = fee;
+  document.getElementById("selectedFee").textContent = fee;
 
+  document.querySelectorAll(".feeCard").forEach(c=>{
+    c.classList.remove("active");
+  });
+
+  event.currentTarget.classList.add("active");
 }
 
 
