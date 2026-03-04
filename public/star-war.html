@@ -617,6 +617,67 @@ canvas{ display:block; }
 
 
 
+.gameOverBox{
+  width:340px;
+  padding:35px 30px;
+  border-radius:20px;
+
+  background:rgba(10,20,35,.95);
+  border:1px solid #00f0ff;
+
+  box-shadow:0 0 50px rgba(0,240,255,.5);
+  text-align:center;
+}
+
+.goTitle{
+  font-size:38px;
+  font-weight:900;
+  color:#ff0040;
+  text-shadow:0 0 25px #ff0040;
+  margin-bottom:25px;
+}
+
+.goReward span{
+  font-size:12px;
+  opacity:.7;
+  letter-spacing:2px;
+}
+
+.rewardValue{
+  font-size:32px;
+  font-weight:900;
+  color:#00f0ff;
+  margin-top:8px;
+  text-shadow:0 0 20px #00f0ff;
+}
+
+.goButtons{
+  margin-top:25px;
+  display:flex;
+  gap:10px;
+}
+
+.goBtn{
+  flex:1;
+  padding:12px;
+  border:none;
+  border-radius:12px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.restartBtn{
+  background:linear-gradient(45deg,#00f0ff,#0088ff);
+  color:white;
+  box-shadow:0 0 20px rgba(0,240,255,.6);
+}
+
+.exitBtn2{
+  background:linear-gradient(45deg,#ff0040,#ff8800);
+  color:white;
+  box-shadow:0 0 20px rgba(255,0,0,.6);
+}
+
 
 
 </style>
@@ -653,8 +714,34 @@ canvas{ display:block; }
 
 
 <div class="gameOverPanel" id="gameOverPanel">
-  <div id="finalText"></div>
-  <button onclick="location.reload()">RESTART</button>
+
+  <div class="gameOverBox">
+
+    <div class="goTitle">
+      GAME OVER
+    </div>
+
+    <div class="goReward">
+      <span>REWARD</span>
+      <div class="rewardValue">
+        💎 <span id="finalReward">0</span>
+      </div>
+    </div>
+
+    <div class="goButtons">
+      <button class="goBtn restartBtn"
+        onclick="location.reload()">
+        RESTART
+      </button>
+
+      <button class="goBtn exitBtn2"
+        onclick="location.href='/game-diamond-factory.html'">
+        EXIT
+      </button>
+    </div>
+
+  </div>
+
 </div>
 
 
@@ -1240,16 +1327,18 @@ ctx.drawImage(
 
 /* ===================== GAME OVER ===================== */
 function endGame(){
-  gameOver=true;
-  gameStarted = false;   // 🔥 thêm dòng này
-  starting = false;      // 🔥 thêm dòng này
+
+  gameOver = true;
+  gameStarted = false;
+  starting = false;
+
   socket.emit("star-war-reward",{reward});
 
-  const panel=document.getElementById("gameOverPanel");
-  panel.style.display="flex";
-  document.getElementById("finalText").innerHTML=
-    `<div style="font-size:40px;color:#ff0040">GAME OVER</div>
-     <div style="margin-top:15px">Earned ${reward} 💎</div>`;
+  const panel = document.getElementById("gameOverPanel");
+  panel.style.display = "flex";
+
+  document.getElementById("finalReward").textContent = reward;
+
 }
 
 /* ===================== LOOP ===================== */
