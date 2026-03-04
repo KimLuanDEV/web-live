@@ -256,12 +256,12 @@ if (!hasBetThisRound) {
     document.getElementById("serverOverlay")
       .classList.remove("hidden");
 
-    outcomeEl.textContent = "Không tham gia";
+    outcomeEl.textContent = "You do not place a bet";
     outcomeEl.className   = "sr-draw";
     coinEl.textContent    = "0 💎";
 
     playBtn.disabled = true;
-    statusMsg.textContent = "Round kết thúc";
+    statusMsg.textContent = "The round ends";
 
     // ⏱ AUTO CLOSE SAU 5s
     clearTimeout(autoCloseResultTimer);
@@ -558,7 +558,7 @@ function selectBet(value){
 
   if(myHand && betCoin > 0){
     playBtn.disabled = false;
-    statusMsg.textContent = "Sẵn sàng chốt lệnh";
+    statusMsg.textContent = "Ready";
   }
 }
 
@@ -608,7 +608,7 @@ playBtn.onclick = async ()=>{
 
   const myCoins = Number(myCoinsEl.textContent || 0);
   if(betCoin > myCoins){
-    alert("💎 Không đủ kim cương");
+    alert("💎 Not enough diamonds");
     return;
   }
 
@@ -703,13 +703,13 @@ enemyHandEl.classList.add("show");
   }).then(r=>r.json());
 
 if(!res.ok){
-  alert(res.message || "Không thể đặt cược");
+  alert(res.message || "Cannot place a bet");
 
   // 🔄 QUAY LẠI TRẠNG THÁI CHƯA ĐẶT
   playBtn.disabled = true;
   unlockBet();
 
-  statusMsg.textContent = "⛔ Chưa chốt lệnh";
+  statusMsg.textContent = "Unconfirmed";
 
 
 }
