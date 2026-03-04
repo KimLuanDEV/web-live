@@ -508,6 +508,19 @@ canvas{ display:block; }
 
 
 
+
+.feeBtn{
+  width:100%;
+  margin:6px 0;
+  padding:8px 0;
+  border:none;
+  border-radius:8px;
+  font-weight:700;
+  cursor:pointer;
+  background:linear-gradient(45deg,#00f0ff,#0088ff);
+  color:black;
+}
+
 </style>
 </head>
 <body>
@@ -623,9 +636,27 @@ canvas{ display:block; }
       START STAR WAR
     </div>
 
-    <div style="margin-bottom:20px;">
-      Entry Fee: <span style="color:#00f0ff">300 💎</span>
-    </div>
+
+
+   <div style="margin-bottom:20px">
+
+<div style="margin-bottom:10px;font-weight:700">
+Select Entry Fee
+</div>
+
+<button onclick="selectFee(50)" class="feeBtn">50 💎</button>
+<button onclick="selectFee(100)" class="feeBtn">100 💎</button>
+<button onclick="selectFee(300)" class="feeBtn">300 💎</button>
+<button onclick="selectFee(1000)" class="feeBtn">1000 💎</button>
+
+</div>
+
+<div style="margin-top:10px">
+Selected: <span id="selectedFee">300</span> 💎
+</div>
+
+
+
 
     <button onclick="approveStart()" style="
       margin-right:10px;
@@ -737,7 +768,7 @@ function getPlayerSize(){
 
 
 
-const ENTRY_FEE = 300;
+let ENTRY_FEE = 300;
 let paidThisRound = false;
 
 
@@ -972,7 +1003,12 @@ for(let i = bossBullets.length-1; i>=0; i--){
 
         if(e.hp <= 0){
           explode(e.x,e.y);
-          reward += e.boss ? 50 : 5;
+
+const enemyReward = Math.floor(ENTRY_FEE / 50);
+const bossReward  = Math.floor(ENTRY_FEE / 5);
+
+reward += e.boss ? bossReward : enemyReward;
+
           score  += e.boss ? 50 : 5;
           enemies.splice(ei,1);
         }
@@ -1276,6 +1312,16 @@ function getBossSize(){
     .getPropertyValue('--boss-scale');
 
   return Number(size) * Number(scale);
+}
+
+
+function selectFee(fee){
+
+  ENTRY_FEE = fee;
+
+  document.getElementById("selectedFee")
+    .textContent = fee;
+
 }
 
 
