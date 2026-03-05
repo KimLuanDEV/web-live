@@ -29,6 +29,10 @@ body{
     url("/assets/bg/rps1.jpg") center / cover no-repeat fixed;
 }
 
+body.loading-active *:not(#loadingOverlay):not(#rpsIntro){
+  visibility:hidden;
+}
+
 /* ===== HEADER (FIXED TOP) ===== */
 .rps-header{
   position: fixed;
@@ -1839,7 +1843,7 @@ html, body{
 #rpsIntro{
   position:fixed;
   inset:0;
-  z-index:999999;
+  z-index:999998;
 
   display:flex;
   flex-direction:column;
@@ -2178,7 +2182,7 @@ html, body{
   </div>
 
   <button class="rps-btn sr-ok" onclick="closeRpsResult()">
-   COMFIRM
+   CONFIRM
   </button>
 
 </div>
@@ -2265,7 +2269,7 @@ html, body{
     <!-- ACTION -->
     <div class="rps-action">
       <button class="rps-btn" id="playBtn" disabled>
-        COMFIRM
+        CONFIRM
       </button>
     </div>
 
@@ -2320,12 +2324,9 @@ html, body{
 
 
 
-
-
-
-
-<script src="/socket.io/socket.io.js"></script>
 <script>
+
+document.body.classList.add("loading-active");
 
   /* ================= SOCKET INIT ================= */
 
@@ -3296,10 +3297,10 @@ const loaderBar  = document.getElementById("loaderBar");
 const loaderText = document.getElementById("loaderText");
 
 const loaderSteps = [
-  "Connecting server...",
-  "Loading arena...",
-  "Preparing battle...",
-  "Syncing data...",
+  "Connecting server.",
+  "Loading arena.",
+  "Preparing battle.",
+  "Syncing data.",
   "Ready"
 ];
 
@@ -3322,13 +3323,20 @@ const loaderInterval = setInterval(()=>{
   }
 
   if(loaderProgress >= 100){
+
     clearInterval(loaderInterval);
 
     setTimeout(()=>{
-      document
-        .getElementById("loadingOverlay")
-        .classList.add("hide");
-    },500);
+
+      const overlay = document.getElementById("loadingOverlay");
+
+      overlay.classList.add("hide");
+
+      // 🔓 MỞ GAME
+      document.body.classList.remove("loading-active");
+
+    },600);
+
   }
 
 },400);
@@ -3347,8 +3355,8 @@ window.addEventListener("load",()=>{
   setTimeout(()=>{
 
     document
-    .querySelector(".introFlash")
-    .classList.add("active");
+      .querySelector(".introFlash")
+      .classList.add("active");
 
   },3200);
 
@@ -3356,10 +3364,14 @@ window.addEventListener("load",()=>{
 
     intro.classList.add("hide");
 
+    // 🔥 bắt đầu loader sau intro
+    document
+      .getElementById("loadingOverlay")
+      .classList.remove("hide");
+
   },3600);
 
 });
-
 
 
 </script>
