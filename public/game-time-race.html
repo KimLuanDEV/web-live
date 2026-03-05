@@ -1608,193 +1608,38 @@ body.crash-dark{
 
 }
 
-
-/* ===== LOADER ===== */
-
-.tr-loader{
-  position:fixed;
-  inset:0;
-  z-index:99999;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:#000;
-  overflow:hidden;
-}
-
-/* background */
-
-.loader-bg{
-  position:absolute;
-  inset:0;
-
-  background:
-  radial-gradient(
-    circle at 50% 40%,
-    rgba(0,255,255,.25),
-    rgba(0,0,0,.95) 70%
-  );
-
-  animation:bgMove 12s linear infinite;
-}
-
-@keyframes bgMove{
-
-  0%{ transform:scale(1) }
-  50%{ transform:scale(1.1) }
-  100%{ transform:scale(1) }
-
-}
-
-/* center */
-
-.loader-center{
-  text-align:center;
-  z-index:2;
-}
-
-/* bomb */
-
-.loader-bomb{
-  width:110px;
-
-  filter:
-  drop-shadow(0 0 20px #00f0ff)
-  drop-shadow(0 0 40px #00f0ff);
-
-  animation:bombPulse 1.4s ease infinite;
-}
-
-@keyframes bombPulse{
-
-  0%,100%{
-    transform:scale(1);
-  }
-
-  50%{
-    transform:scale(1.15);
-  }
-
-}
-
-/* logo */
-
-.loader-logo{
-  margin-top:18px;
-
-  font-size:28px;
-  font-weight:900;
-  letter-spacing:3px;
-
-  background:
-  linear-gradient(
-    90deg,
-    #00f0ff,
-    #ffffff,
-    #00f0ff
-  );
-
-  background-size:200%;
-
-  -webkit-background-clip:text;
-  color:transparent;
-
-  animation:logoShine 3s linear infinite;
-}
-
-@keyframes logoShine{
-  from{background-position:0%}
-  to{background-position:200%}
-}
-
-/* progress */
-
-.loader-bar{
-  width:240px;
-  height:6px;
-
-  margin:20px auto;
-
-  background:#111;
-  border-radius:6px;
-  overflow:hidden;
-}
-
-.loader-progress{
-  height:100%;
-  width:0%;
-
-  background:
-  linear-gradient(
-    90deg,
-    #0088ff,
-    #00f0ff
-  );
-
-  box-shadow:0 0 20px #00f0ff;
-
-  transition:width .3s;
-}
-
-/* text */
-
-.loader-text{
-  font-size:13px;
-  opacity:.85;
-}
-
-/* flash */
-
-.loader-flash{
-  position:absolute;
-  inset:0;
-  background:#fff;
-  opacity:0;
-  pointer-events:none;
-}
-
-
 </style>
 </head>
 <body>
 
 
 <!-- ================= TIME RACE LOADING ================= -->
-<div id="loadingOverlay" class="tr-loader show">
+<div id="loadingOverlay" class="tr-loading">
 
-  <div class="loader-bg"></div>
+  <div class="tr-loading-bg"></div>
 
-  <div class="loader-center">
+  <div class="tr-loading-center">
 
-    <img
-      src="/assets/time-race/bomb-icon.png"
-      class="loader-bomb"
-    >
-
-    <div class="loader-logo">
-      TIME RACE
+    <div class="tr-loading-logo">
+      CRASH
     </div>
 
-    <div class="loader-bar">
-      <div
-        class="loader-progress"
-        id="loaderProgress">
-      </div>
+<div class="tr-loading-bomb">
+  <img src="/assets/time-race/bomb-icon.png">
+</div>
+
+    <div class="tr-loading-bar">
+      <div id="loadingProgress" class="tr-loading-progress"></div>
     </div>
 
-    <div
-      class="loader-text"
-      id="loaderText">
-      Initializing engine...
+    <div id="loadingText" class="tr-loading-text">
+      Connecting to server...
     </div>
 
   </div>
 
-  <div class="loader-flash"></div>
-
 </div>
+
 
 
 <div class="tr-header">
@@ -2665,69 +2510,47 @@ if (screen.orientation && screen.orientation.lock) {
 
 /* ================= LOADER ================= */
 
-const progress = document.getElementById("loaderProgress");
-const text = document.getElementById("loaderText");
-const overlay = document.getElementById("loadingOverlay");
+const progress = document.getElementById("loadingProgress");
+const text = document.getElementById("loadingText");
 
 let load = 0;
 
-const steps = [
-
-"Initializing engine...",
-"Loading assets...",
-"Syncing game state...",
-"Connecting server...",
-"Preparing race..."
-
+const loadingSteps = [
+  "Initializing engine...",
+  "Loading assets...",
+  "Connecting server...",
+  "Syncing game state...",
+  "Preparing bomb..."
 ];
 
-const loaderInterval = setInterval(()=>{
+const interval = setInterval(()=>{
 
-  load += Math.random()*18;
+  load += Math.random()*15;
 
   if(load >= 100){
-
     load = 100;
-    clearInterval(loaderInterval);
+    clearInterval(interval);
 
     text.innerText = "Ready";
 
-    revealGame();
+    setTimeout(()=>{
+      const overlay = document.getElementById("loadingOverlay");
+      overlay.style.opacity = "0";
 
+      setTimeout(()=>{
+        overlay.remove();
+      },600);
+
+    },500);
   }
 
   progress.style.width = load + "%";
 
-  const stepIndex =
-  Math.floor(load/25);
+  const stepIndex = Math.floor(load / 25);
+  text.innerText = loadingSteps[Math.min(stepIndex, loadingSteps.length-1)];
 
-  text.innerText =
-  steps[Math.min(stepIndex,steps.length-1)];
+},400);
 
-},350);
-
-
-
-function revealGame(){
-
-  const flash =
-  document.querySelector(".loader-flash");
-
-  flash.style.opacity = "1";
-
-  setTimeout(()=>{
-
-    flash.style.opacity = "0";
-
-    overlay.style.opacity = "0";
-
-    setTimeout(()=>{
-      overlay.remove();
-    },600);
-
-  },200);
-
-}
 
 
 </script>
