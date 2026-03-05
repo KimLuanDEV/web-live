@@ -114,7 +114,7 @@ if(remain <= 5){
   lockBet();        // 🔒 khóa bet
   lockHand();       // 🔒 khóa hand
   playBtn.disabled = true;
-  statusMsg.textContent = "Đã khóa cược";
+  statusMsg.textContent = "Betting time is over";
 }
 
 
@@ -492,7 +492,7 @@ h.style.filter = "";
   unlockHand();
   lockBet();
 
-  statusMsg.textContent = "Round mới – chọn tay";
+  statusMsg.textContent = "New round – choose your hand";
 
 
   // ❌ ẨN VS
@@ -672,7 +672,7 @@ hands.forEach(h => {
 
 
 
-statusMsg.textContent = "Đã vào lệnh – chờ kết quả";
+statusMsg.textContent = "Waiting for results";
 
 // ⚔️ HIỆN VS
 document.getElementById("rpsVsBadge")
