@@ -1727,10 +1727,139 @@ html, body{
 
 
 
+/* ================= LOADER ================= */
+
+.loading-overlay{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(0,255,180,.15),
+      rgba(0,0,0,.95));
+
+  backdrop-filter: blur(6px);
+}
+
+/* CORE */
+.loader-core{
+  text-align:center;
+}
+
+/* LOGO */
+.loader-logo{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:2px;
+
+  margin-bottom:30px;
+
+  color:#00ffb0;
+
+  text-shadow:
+    0 0 20px rgba(0,255,180,.9),
+    0 0 40px rgba(0,255,180,.6);
+}
+
+/* RING */
+.loader-ring{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+
+  border:3px solid rgba(0,255,180,.2);
+  border-top:3px solid #00ffb0;
+
+  margin:auto;
+  margin-bottom:28px;
+
+  animation: loaderSpin 1.2s linear infinite;
+}
+
+@keyframes loaderSpin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+/* PROGRESS BAR */
+.loader-progress{
+  width:220px;
+  height:8px;
+
+  background:rgba(255,255,255,.08);
+  border-radius:20px;
+
+  overflow:hidden;
+  margin:auto;
+}
+
+.loader-bar{
+  height:100%;
+  width:0%;
+
+  background:
+    linear-gradient(90deg,
+      #00ffb0,
+      #00cfff,
+      #00ffb0);
+
+  box-shadow:0 0 12px rgba(0,255,180,.8);
+
+  transition:width .3s;
+}
+
+/* TEXT */
+.loader-text{
+  margin-top:14px;
+  font-size:13px;
+  color:#9fffe6;
+
+  text-shadow:0 0 10px rgba(0,255,180,.5);
+}
+
+/* HIDE */
+.loading-overlay.hide{
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .6s;
+}
+
+
+
 </style>
 </head>
 
 <body>
+
+
+ <!-- ===== CINEMATIC LOADER ===== -->
+<div id="loadingOverlay" class="loading-overlay">
+
+  <div class="loader-core">
+
+    <div class="loader-logo">
+      SCISSORS • ROCK • PAPER
+    </div>
+
+    <div class="loader-ring"></div>
+
+    <div class="loader-progress">
+      <div class="loader-bar" id="loaderBar"></div>
+    </div>
+
+    <div class="loader-text" id="loaderText">
+      Initializing Arena...
+    </div>
+
+  </div>
+
+</div>
+
 
 <!-- 🌋 LOSE BACKGROUND OVERLAY -->
 <div id="loseOverlay"></div>
@@ -2930,6 +3059,51 @@ function renderMyRpsHistory(){
 }
 
 
+
+
+
+/* ================= LOADER SYSTEM ================= */
+
+const loaderBar  = document.getElementById("loaderBar");
+const loaderText = document.getElementById("loaderText");
+
+const loaderSteps = [
+  "Connecting server...",
+  "Loading arena...",
+  "Preparing battle...",
+  "Syncing data...",
+  "Ready"
+];
+
+let loaderProgress = 0;
+let loaderStepIndex = 0;
+
+const loaderInterval = setInterval(()=>{
+
+  loaderProgress += Math.random() * 15;
+
+  if(loaderProgress > 100){
+    loaderProgress = 100;
+  }
+
+  loaderBar.style.width = loaderProgress + "%";
+
+  if(loaderStepIndex < loaderSteps.length){
+    loaderText.textContent = loaderSteps[loaderStepIndex];
+    loaderStepIndex++;
+  }
+
+  if(loaderProgress >= 100){
+    clearInterval(loaderInterval);
+
+    setTimeout(()=>{
+      document
+        .getElementById("loadingOverlay")
+        .classList.add("hide");
+    },500);
+  }
+
+},400);
 
 </script>
 </body>
