@@ -962,4 +962,33 @@ function renderMyRpsHistory(){
 
 
 
+/* ================= LOADER CONTROL ================= */
+
+const loader = document.getElementById("loadingOverlay");
+const loaderBar = document.getElementById("loadingProgress");
+
+let loadProgress = 0;
+
+function fakeLoading(){
+
+  const interval = setInterval(()=>{
+
+    loadProgress += Math.random()*20;
+
+    if(loadProgress >= 100){
+      loadProgress = 100;
+      clearInterval(interval);
+
+      setTimeout(()=>{
+        loader.classList.add("fade-out");
+      },500);
+    }
+
+    loaderBar.style.width = loadProgress + "%";
+
+  },400);
+
+}
+
+fakeLoading();
 

@@ -1727,10 +1727,134 @@ html, body{
 
 
 
+
+/* ================= GAME LOADER ================= */
+
+.loading-overlay{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(0,255,180,.15),
+      rgba(0,0,0,.95));
+
+  backdrop-filter: blur(6px);
+}
+
+.loading-box{
+  text-align:center;
+  width:260px;
+}
+
+.loading-logo{
+  font-size:22px;
+  font-weight:900;
+  letter-spacing:2px;
+  margin-bottom:20px;
+
+  color:#00ffb0;
+
+  text-shadow:
+    0 0 15px rgba(0,255,180,.8),
+    0 0 35px rgba(0,255,180,.6);
+}
+
+/* spinner */
+.loading-spinner{
+  width:60px;
+  height:60px;
+  margin:0 auto 18px;
+
+  border-radius:50%;
+  border:3px solid rgba(0,255,180,.2);
+  border-top:3px solid #00ffb0;
+
+  animation:spin 1s linear infinite;
+
+  box-shadow:0 0 20px rgba(0,255,180,.7);
+}
+
+@keyframes spin{
+  to{ transform:rotate(360deg); }
+}
+
+/* text */
+.loading-text{
+  font-size:13px;
+  opacity:.8;
+  margin-bottom:14px;
+}
+
+/* progress bar */
+.loading-bar{
+  width:100%;
+  height:6px;
+  border-radius:6px;
+  background:rgba(255,255,255,.08);
+  overflow:hidden;
+}
+
+.loading-progress{
+  height:100%;
+  width:0%;
+
+  background:
+    linear-gradient(90deg,
+      #00ffb0,
+      #00e0ff,
+      #00ffb0);
+
+  box-shadow:0 0 12px rgba(0,255,180,.8);
+
+  transition:width .3s ease;
+}
+
+/* fade out */
+.loading-overlay.fade-out{
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .6s ease;
+}
+
+
 </style>
 </head>
 
 <body>
+
+
+
+<!-- ================= LOADING OVERLAY ================= -->
+<div id="loadingOverlay" class="loading-overlay">
+
+  <div class="loading-box">
+
+    <div class="loading-logo">
+      RPS BATTLE
+    </div>
+
+    <div class="loading-spinner"></div>
+
+    <div class="loading-text">
+      Connecting to server...
+    </div>
+
+    <div class="loading-bar">
+      <div class="loading-progress" id="loadingProgress"></div>
+    </div>
+
+  </div>
+
+</div>
+
+
+
 
 <!-- 🌋 LOSE BACKGROUND OVERLAY -->
 <div id="loseOverlay"></div>
