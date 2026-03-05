@@ -3307,7 +3307,11 @@ const loaderSteps = [
 let loaderProgress = 0;
 let loaderStepIndex = 0;
 
-const loaderInterval = setInterval(()=>{
+let loaderInterval;
+
+function startLoader(){
+
+loaderInterval = setInterval(()=>{
 
   loaderProgress += Math.random() * 15;
 
@@ -3340,7 +3344,7 @@ const loaderInterval = setInterval(()=>{
   }
 
 },400);
-
+}
 
 
 
@@ -3360,16 +3364,18 @@ window.addEventListener("load",()=>{
 
   },3200);
 
-  setTimeout(()=>{
+  
+setTimeout(()=>{
 
-    intro.classList.add("hide");
+  intro.classList.add("hide");
 
-    // 🔥 bắt đầu loader sau intro
-    document
-      .getElementById("loadingOverlay")
-      .classList.remove("hide");
+  document
+    .getElementById("loadingOverlay")
+    .classList.remove("hide");
 
-  },3600);
+  startLoader();
+
+},3600);
 
 });
 
