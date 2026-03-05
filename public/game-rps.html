@@ -1725,251 +1725,12 @@ html, body{
 }
 
 
-/* ================= LOADER ================= */
 
-.loading-overlay{
-  position:fixed;
-  inset:0;
-  z-index:999999;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:
-    radial-gradient(circle at center,
-      rgba(0,255,180,.15),
-      rgba(0,0,0,.95));
-
-  backdrop-filter: blur(10px);
-}
-
-.loader-core{
-  text-align:center;
-  width:260px;
-}
-
-/* LOGO */
-.loader-logo{
-  font-weight:900;
-  letter-spacing:2px;
-  font-size:18px;
-  margin-bottom:24px;
-
-  color:#00ffb0;
-
-  text-shadow:
-    0 0 15px rgba(0,255,180,.9),
-    0 0 35px rgba(0,255,180,.5);
-}
-
-/* RING */
-.loader-ring{
-  width:90px;
-  height:90px;
-  margin:auto;
-  border-radius:50%;
-
-  border:3px solid rgba(0,255,180,.2);
-  border-top:3px solid #00ffb0;
-
-  animation:loaderSpin 1s linear infinite;
-
-  box-shadow:
-    0 0 20px rgba(0,255,180,.6);
-}
-
-@keyframes loaderSpin{
-  from{ transform:rotate(0deg); }
-  to{ transform:rotate(360deg); }
-}
-
-/* TEXT */
-.loader-text{
-  margin-top:20px;
-  font-size:12px;
-  letter-spacing:2px;
-  opacity:.8;
-}
-
-/* PROGRESS BAR */
-.loader-bar{
-  margin-top:18px;
-  height:6px;
-  background:rgba(255,255,255,.08);
-  border-radius:10px;
-  overflow:hidden;
-}
-
-#loaderProgress{
-  height:100%;
-  width:0%;
-
-  background:linear-gradient(
-    90deg,
-    #00ffb0,
-    #00b97d
-  );
-
-  box-shadow:0 0 20px rgba(0,255,180,.7);
-}
-
-
-
-/* ================= ULTRA AAA RPS INTRO ================= */
-
-.rps-intro{
-  position:fixed;
-  inset:0;
-  z-index:999999;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:#000;
-  overflow:hidden;
-}
-
-/* PARTICLE BACKGROUND */
-.rps-intro::before{
-  content:"";
-  position:absolute;
-  inset:0;
-
-  background:
-    radial-gradient(circle at center,
-      rgba(0,255,180,.15),
-      transparent 60%);
-
-  animation:introPulse 2s infinite alternate;
-}
-
-@keyframes introPulse{
-  from{ opacity:.4; }
-  to{ opacity:1; }
-}
-
-/* HANDS */
-.intro-hand{
-  position:absolute;
-  width:150px;
-  opacity:0;
-
-  filter:
-    drop-shadow(0 0 40px rgba(0,255,180,1))
-    drop-shadow(0 0 100px rgba(0,255,180,.8));
-}
-
-/* START POSITIONS */
-.intro-rock{ left:-220px; top:45%; }
-.intro-paper{ right:-220px; top:20%; }
-.intro-scissors{ bottom:-220px; left:50%; transform:translateX(-50%); }
-
-/* VS */
-.intro-vs{
-  position:absolute;
-  font-size:82px;
-  font-weight:1000;
-  color:#00ffb0;
-  opacity:0;
-
-  text-shadow:
-    0 0 30px rgba(0,255,180,1),
-    0 0 60px rgba(0,255,180,.9),
-    0 0 120px rgba(0,255,180,.6);
-}
-
-/* SHOCKWAVE */
-.intro-shockwave{
-  position:absolute;
-  width:20px;
-  height:20px;
-  border-radius:50%;
-
-  border:3px solid #00ffb0;
-  opacity:0;
-}
-
-@keyframes shockwave{
-  0%{
-    opacity:1;
-    transform:scale(.3);
-  }
-  100%{
-    opacity:0;
-    transform:scale(15);
-  }
-}
-
-/* FLASH */
-@keyframes introFlash{
-  0%{ background:#000; }
-  40%{ background:#00ffb0; }
-  100%{ background:#000; }
-}
-
-/* CAMERA SHAKE */
-@keyframes cameraShake{
-  0%{ transform:translate(0,0); }
-  25%{ transform:translate(4px,-4px); }
-  50%{ transform:translate(-4px,4px); }
-  75%{ transform:translate(3px,3px); }
-  100%{ transform:translate(0,0); }
-}
 
 </style>
 </head>
 
 <body>
-
-
-
-
-
-  <!-- ================= RPS CINEMATIC INTRO ================= -->
-<div id="rpsIntro" class="rps-intro">
-
-  <div class="intro-hands">
-
-    <img src="/assets/rps/rock.png" class="intro-hand intro-rock">
-    <img src="/assets/rps/paper.png" class="intro-hand intro-paper">
-    <img src="/assets/rps/scissors.png" class="intro-hand intro-scissors">
-
-  </div>
-
-  <div class="intro-vs">VS</div>
-
-  <div class="intro-shockwave"></div>
-
-</div>
-
-
-
-  
-<!-- ================= LOADING ================= -->
-<div id="loadingOverlay" class="loading-overlay">
-
-  <div class="loader-core">
-
-    <div class="loader-logo">
-      SCISSORS • ROCK • PAPER
-    </div>
-
-    <div class="loader-ring"></div>
-
-    <div class="loader-text">
-      CONNECTING TO SERVER...
-    </div>
-
-    <div class="loader-bar">
-      <div id="loaderProgress"></div>
-    </div>
-
-  </div>
-
-</div>
-
 
 <!-- 🌋 LOSE BACKGROUND OVERLAY -->
 <div id="loseOverlay"></div>
@@ -2207,7 +1968,969 @@ html, body{
 
 
 <script src="/socket.io/socket.io.js"></script>
-<script src="/game-rps.js"></script>
+<script>
 
+  /* ================= SOCKET INIT ================= */
+
+const socket = io({
+  auth:{
+    uid: JSON.parse(localStorage.getItem("user_profile"))?.uid
+  }
+});
+
+const myCoinsEl = document.getElementById("myCoins");
+const statusMsg = document.getElementById("statusMsg");
+const playBtn   = document.getElementById("playBtn");
+
+/* ================= GLOBAL STATE ================= */
+const MAX_RPS_HISTORY = 10;
+let rpsHistory = [];
+let myHand  = null;
+let betCoin = 0;
+let hasBetThisRound = false; // 🔒 đã vào lệnh hay chưa
+let isShowingResult = false;
+let pendingRoundNew = null;
+let autoCloseResultTimer = null;
+let myRpsHistory = [];
+/* ================= WALLET REALTIME ================= */
+
+
+const HAND_IMG = {
+  rock: "/assets/rps/rock.png",
+  paper: "/assets/rps/paper.png",
+  scissors: "/assets/rps/scissors.png"
+};
+
+
+
+socket.on("rps-my-history", list => {
+  if (!Array.isArray(list)) return;
+  myRpsHistory = list;
+  renderMyRpsHistory();
+});
+
+
+// 🔥 REALTIME APPEND LỊCH SỬ CỦA MÌNH
+socket.on("rps-my-history-append", item => {
+  if (!item) return;
+
+  myRpsHistory.unshift(item);
+
+  // giới hạn số dòng
+  if (myRpsHistory.length > MAX_RPS_HISTORY) {
+    myRpsHistory.length = MAX_RPS_HISTORY;
+  }
+
+  // nếu modal đang mở → render ngay
+  const modal = document.getElementById("betHistoryModal");
+  if (modal && !modal.classList.contains("hidden")) {
+    renderMyRpsHistory();
+  }
+});
+
+
+
+socket.on("coin-update", data=>{
+  if(typeof data.coins !== "number") return;
+
+  myCoinsEl.textContent = data.coins;
+
+  if(data.coins <= 0){
+    playBtn.disabled = true;
+    statusMsg.textContent = "💎 Bạn đã hết kim cương";
+
+    betBtns.forEach(b=>b.disabled = true);
+    betPctBtns.forEach(b=>b.disabled = true);
+}else{
+  // CHỈ mở bet nếu đã chọn hand
+  if(myHand){
+    unlockBet();
+  }else{
+    lockBet();
+  }
+}
+
+});
+
+/* ================= COUNTDOWN ================= */
+
+let rpsEndAt = 0;
+let rpsTimerInterval = null;
+
+const rpsTimerEl = document.getElementById("rpsTimer");
+const rpsRoundEl = document.getElementById("rpsRoundId");
+
+function startRpsCountdown(){
+  clearInterval(rpsTimerInterval);
+
+  rpsTimerInterval = setInterval(()=>{
+    const remain = Math.max(
+      0,
+      Math.ceil((rpsEndAt - Date.now()) / 1000)
+    );
+
+updateTimerRing(remain);
+
+
+    rpsTimerEl.textContent = remain;
+    rpsTimerEl.classList.remove("rps-timer-warn","rps-timer-danger");
+
+    if(remain <= 10){
+      rpsTimerEl.classList.add("rps-timer-danger");
+    }else if(remain <= 20){
+      rpsTimerEl.classList.add("rps-timer-warn");
+    }
+
+  // 🔒 KHÓA BET KHI CÒN 5 GIÂY
+if(remain <= 5){
+  lockBet();        // 🔒 khóa bet
+  lockHand();       // 🔒 khóa hand
+  playBtn.disabled = true;
+  statusMsg.textContent = "Betting time is over";
+}
+
+
+
+// ⏹ HẾT GIỜ
+if(remain <= 0){
+  clearInterval(rpsTimerInterval);
+}
+
+
+
+  },300);
+}
+
+
+
+socket.on("rps-round-state", data => {
+
+  rpsEndAt = data.endAt;
+  rpsRoundEl.textContent = "#" + data.roundId;
+
+  resetTimerRing();
+  startRpsCountdown();
+
+  // =========================
+  // 🔁 RESTORE BET STATE
+  // =========================
+  hasBetThisRound = data.hasBet;
+  myHand  = data.myHand;
+  betCoin = data.bet || 0;
+  betValue.textContent = betCoin;
+
+  if (hasBetThisRound) {
+
+    document.getElementById("rpsVsBadge")
+  ?.classList.remove("hidden");
+
+    // 🔒 KHÓA TOÀN BỘ
+    lockBet();
+    lockHand();
+    playBtn.disabled = true;
+
+    statusMsg.textContent = "Bet successfully placed – Waiting for the result";
+
+    // 🌟 trạng thái đã chốt
+    const handsWrap = document.querySelector(".rps-hands");
+    handsWrap?.classList.add("confirmed-state");
+
+    const target = document.getElementById("rpsHandTarget");
+
+    hands.forEach(h => {
+      h.style.pointerEvents = "none";
+
+      if (h.dataset.hand === myHand) {
+        h.classList.add("confirmed");
+        h.classList.remove("active");
+
+        // 📌 SNAP ĐÚNG – KHÔNG RESIZE
+        if (target) {
+          requestAnimationFrame(() => {
+            const t = target.getBoundingClientRect();
+
+            h.style.position = "fixed";
+            h.style.left = t.left + "px";
+            h.style.top  = t.top  + "px";
+            h.style.transform = "translate(0,0)";
+          });
+        }
+
+      } else {
+        h.classList.add("hide-hand");
+        h.classList.remove("active");
+      }
+    });
+
+    // 👤 HIỆN HAND ĐỐI THỦ DẠNG ?
+    const enemyHandEl = document.getElementById("enemyHand");
+    const enemyImgEl  = document.getElementById("enemyHandImg");
+
+    enemyImgEl.src = "/assets/rps/unknown.png";
+    enemyHandEl.classList.remove("hidden");
+    enemyHandEl.classList.add("show");
+
+  } else {
+
+    // ✅ CHƯA BET
+    unlockHand();
+    lockBet();
+    statusMsg.textContent = "New round – Choose your hand";
+  }
+});
+
+
+
+
+
+/* ================= ROUND RESULT ================= */
+
+socket.on("rps-round-result", data => {
+
+  const enemyHandEl = document.getElementById("enemyHand");
+  const enemyImgEl  = document.getElementById("enemyHandImg");
+
+  const imgMap = {
+    rock: "/assets/rps/rock.png",
+    paper: "/assets/rps/paper.png",
+    scissors: "/assets/rps/scissors.png"
+  };
+
+
+
+// ❌ ẨN VS KHI BẮT ĐẦU CHIẾN ĐẤU
+document.getElementById("rpsVsBadge")
+  ?.classList.add("hidden");
+
+
+  // 🃏 1️⃣ LẬT BÀI
+  enemyHandEl.classList.add("flip");
+
+  setTimeout(()=>{
+    enemyImgEl.src =
+      imgMap[data.enemyHand] || "/assets/rps/unknown.png";
+  },300);
+
+  const enemyEl   = document.getElementById("srEnemy");
+  const outcomeEl = document.getElementById("srOutcome");
+  const coinEl    = document.getElementById("srCoin");
+
+
+  enemyEl.innerHTML = `
+  <img src="${imgMap[data.enemyHand]}" alt="${data.enemyHand}">
+`;
+
+
+  // ❌ KHÔNG THAM GIA
+if (!hasBetThisRound) {
+  setTimeout(()=>{
+
+    document.getElementById("serverOverlay")
+      .classList.remove("hidden");
+
+    outcomeEl.textContent = "You do not place a bet";
+    outcomeEl.className   = "sr-draw";
+    coinEl.textContent    = "0 💎";
+
+    playBtn.disabled = true;
+    statusMsg.textContent = "The round ends";
+
+    // ⏱ AUTO CLOSE SAU 5s
+    clearTimeout(autoCloseResultTimer);
+    autoCloseResultTimer = setTimeout(()=>{
+      closeRpsResult();
+    },5000);
+
+  },800);
+
+  return;
+}
+
+
+  // ✅ CÓ THAM GIA
+  const result = calcResult(myHand, data.enemyHand);
+
+  const playerEl     = [...hands].find(h => h.dataset.hand === myHand);
+  const enemyElCard  = document.getElementById("enemyHand");
+
+  // ===============================
+  // ⚔️ 2️⃣ COMBAT SEQUENCE
+  // ===============================
+
+  setTimeout(()=>{
+
+    // 💥 VA CHẠM
+    playerEl?.classList.add("collide-player");
+    enemyElCard?.classList.add("collide-enemy");
+
+    setTimeout(()=>{
+
+      playerEl?.classList.remove("collide-player");
+      enemyElCard?.classList.remove("collide-enemy");
+
+      // 🔥 3️⃣ CHÁY LÁ THUA
+      if(result === "win"){
+        enemyElCard?.classList.add("burn");
+      }
+      else if(result === "lose"){
+        playerEl?.classList.add("burn");
+      }
+
+      // ⏳ 4️⃣ ĐỢI CHÁY XONG
+      setTimeout(()=>{
+
+        if(result === "win"){
+          enemyElCard?.classList.add("hidden");
+        }
+        else if(result === "lose"){
+          playerEl?.classList.add("hidden");
+        }
+
+        // ===============================
+        // 🏆 5️⃣ HIỆN KẾT QUẢ SAU CÙNG
+        // ===============================
+
+// 🏆 5️⃣ HIỆN KẾT QUẢ SAU CÙNG
+
+enemyEl.innerHTML = `
+  <img src="${imgMap[data.enemyHand]}" alt="${data.enemyHand}">
+`;
+
+
+
+
+        let coinChange = 0;
+
+        if (result === "win") {
+          outcomeEl.textContent = "WIN";
+          outcomeEl.className  = "sr-win";
+          coinChange = betCoin * 2;
+        }
+        else if (result === "lose") {
+          outcomeEl.textContent = "LOSE";
+          outcomeEl.className  = "sr-lose";
+          coinChange = -betCoin;
+
+          const lava = document.getElementById("loseOverlay");
+          lava?.classList.add("active");
+          setTimeout(()=>{
+            lava?.classList.remove("active");
+          },3000);
+        }
+        else {
+          outcomeEl.textContent = "DRAW";
+          outcomeEl.className  = "sr-draw";
+          coinChange = betCoin;
+        }
+
+        coinEl.textContent =
+          (coinChange > 0 ? "+" : "") + coinChange + " 💎";
+
+        document.getElementById("serverOverlay")
+          .classList.remove("hidden");
+
+        // ⏱ AUTO CLOSE SAU 5s
+        clearTimeout(autoCloseResultTimer);
+        autoCloseResultTimer = setTimeout(()=>{
+          closeRpsResult();
+        },5000);
+
+        playBtn.disabled = true;
+        statusMsg.textContent = " Wait new round";
+
+      },1000); // burn time
+
+    },450); // collide time
+
+  },400); // flip delay
+
+
+
+  // ⏸ đang hiển thị kết quả
+  isShowingResult = true;
+
+  // cho user xem lật bài + kết quả
+  setTimeout(() => {
+    isShowingResult = false;
+
+    if (pendingRoundNew) {
+      handleRoundNew(pendingRoundNew);
+      pendingRoundNew = null;
+    }
+  }, 10000);
+
+});
+
+
+
+
+// ===============================
+// 📜 RPS GLOBAL HISTORY (SERVER)
+// ===============================
+socket.on("rps-history", list => {
+  if (!Array.isArray(list)) return;
+  rpsHistory = list.slice(0, MAX_RPS_HISTORY);
+  renderRpsHistory();
+});
+
+socket.on("rps-history-update", list => {
+  if (!Array.isArray(list)) return;
+  rpsHistory = list.slice(0, MAX_RPS_HISTORY);
+  renderRpsHistory();
+});
+
+
+
+function handleRoundNew(data){
+
+
+
+
+  rpsEndAt = data.endAt;
+  rpsRoundEl.textContent = "#" + data.roundId;
+
+
+  totalRoundTime = Math.max(
+    1,
+    Math.ceil((data.endAt - Date.now()) / 1000)
+  );
+
+  resetTimerRing();
+  startRpsCountdown();
+
+  // reset user
+  myHand  = null;
+  betCoin = 0;
+  betValue.textContent = "0";
+  playBtn.disabled = true;
+
+  // reset hands
+  const handsWrap = document.querySelector(".rps-hands");
+  handsWrap?.classList.remove("confirmed-state");
+
+  hands.forEach(h => {
+    h.classList.remove(
+      "active",
+      "confirmed",
+      "hide-hand",
+      "bet-locked",
+      "to-target",
+      "win",
+      "lose",
+      "collide-player",
+      "collide-enemy",
+      "burn"
+    );
+    h.style.position = "";
+    h.style.left = "";
+    h.style.top = "";
+    h.style.width = "";
+    h.style.height = "";
+    h.style.pointerEvents = "auto";
+
+    
+  // ✅ thêm 2 dòng này
+  h.style.transform = "";
+  const img = h.querySelector("img");
+  if (img) img.style.transform = "";
+
+
+// 🔥 ĐẢM BẢO HAND HIỆN LẠI
+h.classList.remove("hidden");
+h.style.opacity = "1";
+h.style.filter = "";
+
+
+
+  });
+
+
+
+  // reset enemy hand
+  const enemyHandEl = document.getElementById("enemyHand");
+  const enemyImgEl  = document.getElementById("enemyHandImg");
+  if (enemyHandEl){
+    enemyHandEl.classList.add("hidden");
+    enemyHandEl.classList.remove("show","flip");
+    enemyImgEl.src = "/assets/rps/unknown.png";
+    enemyHandEl.classList.remove("burn");
+    enemyHandEl.style.opacity = "1";
+  }
+
+  // reset bet
+  betBtns.forEach(b => b.classList.remove("active"));
+  betPctBtns.forEach(b => b.classList.remove("active"));
+
+  unlockHand();
+  lockBet();
+
+  statusMsg.textContent = "New round – choose your hand";
+
+
+  // ❌ ẨN VS
+document.getElementById("rpsVsBadge")
+  ?.classList.add("hidden");
+
+
+
+}
+
+
+/* ================= ROUND NEW ================= */
+socket.on("rps-round-new", data => {
+
+  // ⛔ nếu đang xem kết quả → delay
+  if (isShowingResult){
+    pendingRoundNew = data;
+    return;
+  }
+
+  handleRoundNew(data);
+});
+
+
+/* ================= HAND SELECT ================= */
+
+const hands = document.querySelectorAll(".rps-hand");
+
+hands.forEach(el=>{
+  el.onclick = ()=>{
+    if(hasBetThisRound) return; // ⛔ chặn
+
+    hands.forEach(h=>h.classList.remove("active"));
+    el.classList.add("active");
+
+    myHand = el.dataset.hand;
+
+    unlockBet();
+    playBtn.disabled = true;
+    statusMsg.textContent = "Choose betting amount";
+  };
+});
+
+
+
+/* ================= BET SELECT ================= */
+
+const betBtns    = document.querySelectorAll(".bet-btn");
+const betPctBtns = document.querySelectorAll(".bet-pct");
+const betValue   = document.getElementById("betValue");
+
+function selectBet(value){
+  const myCoins = Number(myCoinsEl.textContent || 0);
+
+  betCoin += value; // ✅ CỘNG DỒN
+
+  // ⛔ Không cho vượt quá số coin đang có
+  if(betCoin > myCoins){
+    betCoin = myCoins;
+  }
+
+  betValue.textContent = betCoin;
+
+  if(myHand && betCoin > 0){
+    playBtn.disabled = false;
+    statusMsg.textContent = "Ready";
+  }
+}
+
+
+betBtns.forEach(btn=>{
+  btn.onclick = ()=>{
+    if(hasBetThisRound) return; // ⛔ chặn
+
+    clearBetHighlight();
+    btn.classList.add("active");
+    selectBet(Number(btn.dataset.bet));
+  };
+});
+
+
+
+
+betPctBtns.forEach(btn=>{
+  btn.onclick = ()=>{
+    if(hasBetThisRound) return; // ⛔ chặn
+    clearBetHighlight();       // 🔥 TẮT Ô CŨ
+    btn.classList.add("active");
+
+    const pct   = Number(btn.dataset.pct);
+    const coins = Number(myCoinsEl.textContent || 0);
+
+    betCoin =
+      pct === 100
+        ? coins
+        : Math.floor(coins * pct / 100);
+
+    betValue.textContent = betCoin;
+
+    if(myHand && betCoin > 0){
+      playBtn.disabled = false;
+      statusMsg.textContent = "Sẵn sàng chốt lệnh";
+    }
+  };
+});
+
+
+
+/* ================= PLAY ================= */
+
+playBtn.onclick = async ()=>{
+  if(!myHand || betCoin <= 0) return;
+
+  const myCoins = Number(myCoinsEl.textContent || 0);
+  if(betCoin > myCoins){
+    alert("💎 Not enough diamonds");
+    return;
+  }
+
+playBtn.disabled = true;
+
+// 🔒 KHÓA TOÀN BỘ
+lockBet();
+lockHand();
+
+hasBetThisRound = true;
+
+
+
+
+// 🌟 HIGHLIGHT HAND ĐÃ CHỐT
+const handsWrap = document.querySelector(".rps-hands");
+handsWrap.classList.add("confirmed-state");
+
+const target = document.getElementById("rpsHandTarget");
+
+hands.forEach(h => {
+  if (h.dataset.hand === myHand) {
+
+    // 🔥 1. GỠ ACTIVE + TRẢ VỀ SIZE GỐC
+    h.classList.remove("active");
+    h.classList.remove("locked-dim");
+    h.style.transform = "translate(0,0)";
+    const img = h.querySelector("img");
+   if (img) img.style.transform = "";
+
+
+    // 🔥 2. ĐỢI DOM ÁP DỤNG → LẤY RECT CHUẨN
+    requestAnimationFrame(() => {
+
+      const rect = h.getBoundingClientRect();
+      const t    = target.getBoundingClientRect();
+
+      // 🔥 3. GIỮ VỊ TRÍ BAN ĐẦU (SIZE CHUẨN)
+      h.style.position = "fixed";
+      h.style.left   = rect.left + "px";
+      h.style.top    = rect.top  + "px";
+
+      // 🚫 KHÔNG set width / height
+
+      // 🔥 4. ĐÁNH DẤU ĐÃ CHỐT
+      h.classList.add("confirmed", "to-target");
+
+      // 🔥 5. BAY VỀ TARGET
+      requestAnimationFrame(() => {
+        h.style.left = t.left + "px";
+        h.style.top  = t.top  + "px";
+      });
+
+    });
+
+  } else {
+    h.classList.add("hide-hand");
+  }
+});
+
+
+
+
+statusMsg.textContent = "Waiting for results";
+
+// ⚔️ HIỆN VS
+document.getElementById("rpsVsBadge")
+  ?.classList.remove("hidden");
+
+
+
+// 👤 HIỆN HAND ĐỐI THỦ DẠNG ?
+const enemyHandEl = document.getElementById("enemyHand");
+const enemyImgEl  = document.getElementById("enemyHandImg");
+
+enemyImgEl.src = "/assets/rps/unknown.png";
+enemyHandEl.classList.remove("hidden");
+enemyHandEl.classList.add("show");
+
+
+
+  const res = await fetch("/api/rps/bet",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": JSON.parse(localStorage.getItem("user_profile"))?.uid
+    },
+    body: JSON.stringify({
+      bet: betCoin,
+      hand: myHand
+    })
+  }).then(r=>r.json());
+
+if(!res.ok){
+  alert(res.message || "Cannot place a bet");
+
+  // 🔄 QUAY LẠI TRẠNG THÁI CHƯA ĐẶT
+  playBtn.disabled = true;
+  unlockBet();
+
+  statusMsg.textContent = "Unconfirmed";
+
+
+}
+
+
+};
+
+/* ================= UTIL ================= */
+
+function calcResult(me, enemy){
+  if(me === enemy) return "draw";
+  if(
+    (me==="rock" && enemy==="scissors") ||
+    (me==="paper" && enemy==="rock") ||
+    (me==="scissors" && enemy==="paper")
+  ) return "win";
+  return "lose";
+}
+
+function closeRpsResult(){
+
+  clearTimeout(autoCloseResultTimer);
+
+  document.getElementById("serverOverlay")
+    .classList.add("hidden");
+
+  // 🔁 RESET SAU KHI ĐÃ XEM KẾT QUẢ
+  hasBetThisRound = false;
+
+ 
+}
+
+
+function lockHand(){
+  hands.forEach(h=>{
+    if(h.classList.contains("enemy")) return; // ⛔ bỏ qua enemy
+    h.classList.add("bet-locked");
+    h.style.pointerEvents = "none";
+  });
+}
+
+
+function unlockHand(){
+  hands.forEach(h=>{
+    h.classList.remove("bet-locked");
+    h.style.pointerEvents = "auto";
+  });
+}
+
+
+
+function lockBet(){
+  betBtns.forEach(b=>{
+    b.disabled = true;
+    b.classList.add("bet-locked");
+  });
+  betPctBtns.forEach(b=>{
+    b.disabled = true;
+    b.classList.add("bet-locked");
+  });
+}
+
+function unlockBet(){
+  betBtns.forEach(b=>{
+    b.disabled = false;
+    b.classList.remove("bet-locked");
+  });
+  betPctBtns.forEach(b=>{
+    b.disabled = false;
+    b.classList.remove("bet-locked");
+  });
+}
+
+lockBet();
+
+
+function clearBetHighlight(){
+  betBtns.forEach(b=>b.classList.remove("active"));
+  betPctBtns.forEach(b=>b.classList.remove("active"));
+}
+
+
+const resetBetBtn = document.getElementById("resetBet");
+
+if(resetBetBtn){
+  resetBetBtn.onclick = ()=>{
+  if(hasBetThisRound) return;
+    betCoin = 0;
+    betValue.textContent = "0";
+
+    clearBetHighlight();
+
+    playBtn.disabled = true;
+    statusMsg.textContent = myHand
+      ? "Chọn lại vốn đầu tư"
+      : "Chọn tay trước";
+  };
+}
+
+
+
+
+/* ❌ Chặn pinch zoom (iOS) */
+document.addEventListener('gesturestart', e => e.preventDefault());
+document.addEventListener('gesturechange', e => e.preventDefault());
+document.addEventListener('gestureend', e => e.preventDefault());
+
+/* ❌ Chặn double tap zoom */
+let lastTouchEnd = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - lastTouchEnd <= 300) {
+    e.preventDefault();
+  }
+  lastTouchEnd = now;
+}, false);
+
+
+
+const RING_LENGTH = 113;
+let totalRoundTime = 60; // set khi round bắt đầu
+
+function updateTimerRing(remain){
+  const ring = document.querySelector(".ring-progress");
+  const timerBox = document.querySelector(".bet-timer");
+
+  if(!ring || !timerBox) return;
+
+  const progress = remain / totalRoundTime;
+  ring.style.strokeDashoffset =
+    RING_LENGTH * (1 - progress);
+
+  timerBox.classList.remove("warn","danger");
+
+  if(remain <= 10){
+    timerBox.classList.add("danger");
+  }else if(remain <= 20){
+    timerBox.classList.add("warn");
+  }
+}
+
+
+function resetTimerRing(){
+  const ring = document.querySelector(".ring-progress");
+  const timerBox = document.querySelector(".bet-timer");
+
+  if(!ring || !timerBox) return;
+
+  // FULL vòng
+  ring.style.strokeDashoffset = 0;
+
+  timerBox.classList.remove("warn","danger");
+}
+
+
+
+function renderRpsHistory(){
+  const box = document.getElementById("rpsHistoryList");
+  if(!box) return;
+
+  box.innerHTML = "";
+
+  if(!rpsHistory.length){
+    box.innerHTML = `<span class="rh-empty">Chưa có dữ liệu</span>`;
+    return;
+  }
+
+  const imgMap = {
+    rock: "/assets/rps/rock.png",
+    paper: "/assets/rps/paper.png",
+    scissors: "/assets/rps/scissors.png"
+  };
+
+  rpsHistory.forEach(h=>{
+    const el = document.createElement("div");
+    el.className = `rh-item rh-${h.result}`;
+
+    const img = document.createElement("img");
+    img.src = imgMap[h.enemy];
+    img.alt = h.enemy;
+
+    el.appendChild(img);
+    box.appendChild(el);
+  });
+}
+
+
+
+
+/* ================= BET HISTORY ================= */
+
+function openBetHistory(){
+  document
+    .getElementById("betHistoryModal")
+    .classList.remove("hidden");
+
+  renderMyRpsHistory();
+}
+
+function closeBetHistory(){
+  document
+    .getElementById("betHistoryModal")
+    .classList.add("hidden");
+}
+
+function renderMyRpsHistory(){
+  const box = document.getElementById("betHistoryList");
+  if (!box) return;
+
+  if (!myRpsHistory.length){
+    box.innerHTML = `
+      <div style="text-align:center;opacity:.6">
+        Bạn chưa có lịch sử chơi
+      </div>
+    `;
+    return;
+  }
+
+  box.innerHTML = myRpsHistory.map(h => `
+    <div class="bh-item">
+      <div class="bh-left">
+        <div class="bh-round">Round #${h.roundId}</div>
+
+<div class="bh-hand" style="display:flex;align-items:center;gap:8px">
+  <span>YOU</span>
+  <img src="${HAND_IMG[h.myHand]}" class="bh-hand-img">
+  <span>⚔</span>
+  <img src="${HAND_IMG[h.enemy]}" class="bh-hand-img">
+  <span>ENERMY</span>
+</div>
+
+
+
+      </div>
+      <div class="bh-right ${h.result}">
+        ${
+          h.result === "win"
+            ? "+" + h.win + " 💎"
+            : h.result === "lose"
+              ? "-" + h.bet + " 💎"
+              : "Hoà"
+        }
+      </div>
+    </div>
+  `).join("");
+}
+
+
+
+</script>
 </body>
 </html>
