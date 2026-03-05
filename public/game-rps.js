@@ -959,36 +959,34 @@ function renderMyRpsHistory(){
 
 
 
-
-
-
 /* ================= LOADER CONTROL ================= */
 
-const loader = document.getElementById("loadingOverlay");
-const loaderBar = document.getElementById("loadingProgress");
+let loaderProgress = 0;
 
-let loadProgress = 0;
+const loaderBar = document.getElementById("loaderProgress");
 
-function fakeLoading(){
+const loaderInterval = setInterval(()=>{
 
-  const interval = setInterval(()=>{
+  loaderProgress += Math.random()*20;
 
-    loadProgress += Math.random()*20;
+  if(loaderProgress > 100){
+    loaderProgress = 100;
+  }
 
-    if(loadProgress >= 100){
-      loadProgress = 100;
-      clearInterval(interval);
+  loaderBar.style.width = loaderProgress + "%";
 
-      setTimeout(()=>{
-        loader.classList.add("fade-out");
-      },500);
-    }
+  if(loaderProgress >= 100){
+    clearInterval(loaderInterval);
 
-    loaderBar.style.width = loadProgress + "%";
+    setTimeout(()=>{
+      document
+        .getElementById("loadingOverlay")
+        ?.remove();
+    },400);
+  }
 
-  },400);
+},300);
 
-}
 
-fakeLoading();
+
 

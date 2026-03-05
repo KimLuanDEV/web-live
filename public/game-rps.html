@@ -1725,15 +1725,12 @@ html, body{
 }
 
 
-
-
-
-/* ================= GAME LOADER ================= */
+/* ================= LOADER ================= */
 
 .loading-overlay{
   position:fixed;
   inset:0;
-  z-index:99999;
+  z-index:999999;
 
   display:flex;
   align-items:center;
@@ -1744,116 +1741,106 @@ html, body{
       rgba(0,255,180,.15),
       rgba(0,0,0,.95));
 
-  backdrop-filter: blur(6px);
+  backdrop-filter: blur(10px);
 }
 
-.loading-box{
+.loader-core{
   text-align:center;
   width:260px;
 }
 
-.loading-logo{
-  font-size:22px;
+/* LOGO */
+.loader-logo{
   font-weight:900;
   letter-spacing:2px;
-  margin-bottom:20px;
+  font-size:18px;
+  margin-bottom:24px;
 
   color:#00ffb0;
 
   text-shadow:
-    0 0 15px rgba(0,255,180,.8),
-    0 0 35px rgba(0,255,180,.6);
+    0 0 15px rgba(0,255,180,.9),
+    0 0 35px rgba(0,255,180,.5);
 }
 
-/* spinner */
-.loading-spinner{
-  width:60px;
-  height:60px;
-  margin:0 auto 18px;
-
+/* RING */
+.loader-ring{
+  width:90px;
+  height:90px;
+  margin:auto;
   border-radius:50%;
+
   border:3px solid rgba(0,255,180,.2);
   border-top:3px solid #00ffb0;
 
-  animation:spin 1s linear infinite;
+  animation:loaderSpin 1s linear infinite;
 
-  box-shadow:0 0 20px rgba(0,255,180,.7);
+  box-shadow:
+    0 0 20px rgba(0,255,180,.6);
 }
 
-@keyframes spin{
+@keyframes loaderSpin{
+  from{ transform:rotate(0deg); }
   to{ transform:rotate(360deg); }
 }
 
-/* text */
-.loading-text{
-  font-size:13px;
+/* TEXT */
+.loader-text{
+  margin-top:20px;
+  font-size:12px;
+  letter-spacing:2px;
   opacity:.8;
-  margin-bottom:14px;
 }
 
-/* progress bar */
-.loading-bar{
-  width:100%;
+/* PROGRESS BAR */
+.loader-bar{
+  margin-top:18px;
   height:6px;
-  border-radius:6px;
   background:rgba(255,255,255,.08);
+  border-radius:10px;
   overflow:hidden;
 }
 
-.loading-progress{
+#loaderProgress{
   height:100%;
   width:0%;
 
-  background:
-    linear-gradient(90deg,
-      #00ffb0,
-      #00e0ff,
-      #00ffb0);
+  background:linear-gradient(
+    90deg,
+    #00ffb0,
+    #00b97d
+  );
 
-  box-shadow:0 0 12px rgba(0,255,180,.8);
-
-  transition:width .3s ease;
+  box-shadow:0 0 20px rgba(0,255,180,.7);
 }
-
-/* fade out */
-.loading-overlay.fade-out{
-  opacity:0;
-  pointer-events:none;
-  transition:opacity .6s ease;
-}
-
 
 </style>
 </head>
 
 <body>
 
-
-
-<!-- ================= LOADING OVERLAY ================= -->
+<!-- ================= LOADING ================= -->
 <div id="loadingOverlay" class="loading-overlay">
 
-  <div class="loading-box">
+  <div class="loader-core">
 
-    <div class="loading-logo">
-      RPS BATTLE
+    <div class="loader-logo">
+      SCISSORS • ROCK • PAPER
     </div>
 
-    <div class="loading-spinner"></div>
+    <div class="loader-ring"></div>
 
-    <div class="loading-text">
-      Connecting to server...
+    <div class="loader-text">
+      CONNECTING TO SERVER...
     </div>
 
-    <div class="loading-bar">
-      <div class="loading-progress" id="loadingProgress"></div>
+    <div class="loader-bar">
+      <div id="loaderProgress"></div>
     </div>
 
   </div>
 
 </div>
-
-
 
 
 <!-- 🌋 LOSE BACKGROUND OVERLAY -->
