@@ -3240,26 +3240,27 @@ function renderMyRpsHistory(){
 function startUltraIntro(){
 
   const intro = document.getElementById("ultraIntro");
+  if(!intro) return;
+
   const flash = intro.querySelector(".intro-flash");
 
-  setTimeout(()=>{
-
-    flash.style.transition="opacity .2s";
-    flash.style.opacity="1";
-
+  if(flash){
     setTimeout(()=>{
 
-      flash.style.opacity="0";
+      flash.style.transition = "opacity .2s";
+      flash.style.opacity = "1";
 
-    },200);
+      setTimeout(()=>{
+        flash.style.opacity = "0";
+      },200);
 
-  },1800);
-
+    },1800);
+  }
 
   setTimeout(()=>{
 
-    intro.style.transition="opacity .8s";
-    intro.style.opacity="0";
+    intro.style.transition = "opacity .8s";
+    intro.style.opacity = "0";
 
     setTimeout(()=>{
       intro.remove();
@@ -3271,14 +3272,10 @@ function startUltraIntro(){
 
 
 
-
-
-
-
 /* ================= LOADING SYSTEM ================= */
 
-const loadingText = document.getElementById("loadingText");
-const loadingBar  = document.getElementById("loadingProgress");
+let loadingText;
+let loadingBar;
 
 let progress = 0;
 
@@ -3296,47 +3293,63 @@ function fakeLoading(){
 
   const interval = setInterval(()=>{
 
-    progress += Math.random()*15;
+    progress += Math.random() * 12;
 
     if(progress >= 100){
       progress = 100;
-      clearInterval(interval);
-      finishLoading();
     }
 
-    loadingBar.style.width = progress + "%";
+    const p = Math.floor(progress);
 
-    if(progress > stepIndex*20 && stepIndex < steps.length){
+    if(loadingBar){
+      loadingBar.style.width = p + "%";
+    }
+
+    if(loadingText && p > stepIndex * 20 && stepIndex < steps.length){
       loadingText.textContent = steps[stepIndex];
       stepIndex++;
     }
 
-  },400);
+    if(progress >= 100){
+      clearInterval(interval);
+      finishLoading();
+    }
+
+  },300);
 
 }
+
 
 function finishLoading(){
 
   const overlay = document.getElementById("loadingOverlay");
+  if(!overlay) return;
 
   overlay.style.transition = "opacity .6s";
   overlay.style.opacity = "0";
 
   setTimeout(()=>{
+
     overlay.remove();
 
-    // 🔥 chạy intro sau khi loading xong
+    // chạy intro sau khi loading xong
     startUltraIntro();
 
   },600);
 
 }
 
+
+/* ================= START LOADING ================= */
+
 window.addEventListener("load",()=>{
+
+  loadingText = document.getElementById("loadingText");
+  loadingBar  = document.getElementById("loadingProgress");
+
   fakeLoading();
+
 });
-
-
 
 
 </script>
