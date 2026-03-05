@@ -710,6 +710,35 @@ body::before{
 
 }
 
+
+
+.revealFlash{
+
+  position:fixed;
+  inset:0;
+
+  background:#00f0ff;
+  opacity:0;
+
+  pointer-events:none;
+
+  animation:revealFlash .6s ease;
+}
+
+@keyframes revealFlash{
+
+  0%{
+    opacity:.6;
+  }
+
+  100%{
+    opacity:0;
+  }
+
+}
+
+
+
 </style>
 </head>
 
@@ -1170,11 +1199,14 @@ const bootMessages = [
 
 let bootIndex = 0;
 
-setInterval(()=>{
+const bootInterval = setInterval(()=>{
 
   bootIndex++;
 
-  if(bootIndex >= bootMessages.length) return;
+  if(bootIndex >= bootMessages.length){
+    clearInterval(bootInterval);
+    return;
+  }
 
   document.getElementById("bootText").textContent =
     bootMessages[bootIndex];
@@ -1192,18 +1224,28 @@ const loaderInterval = setInterval(()=>{
 
   loaderProgress += Math.random()*5;
 
-  if(loaderProgress >= 100){
-    loaderProgress = 100;
+if(loaderProgress >= 100){
 
-    clearInterval(loaderInterval);
+  clearInterval(loaderInterval);
+  clearInterval(diamondInterval);
+  clearInterval(sparkInterval);
+
+  loaderProgress = 100;
+
 
     setTimeout(()=>{
 
       const overlay = document.getElementById("loadingOverlay");
 
-      overlay.style.transform = "scale(1.4)";
-      overlay.style.opacity = 0;
-      overlay.style.transition = "transform 1s, opacity 1s";
+overlay.style.transform = "scale(1.4)";
+overlay.style.opacity = 0;
+overlay.style.transition = "transform 1s, opacity 1s";
+
+const flash = document.createElement("div");
+flash.className = "revealFlash";
+document.body.appendChild(flash);
+
+setTimeout(()=> flash.remove(),600);
 
 setTimeout(()=>{
   overlay.remove();
@@ -1217,9 +1259,8 @@ setTimeout(()=>{
 },200);
 
 
-setInterval(spawnDiamond,200);
-setInterval(spawnSpark,120);
-
+const diamondInterval = setInterval(spawnDiamond,200);
+const sparkInterval   = setInterval(spawnSpark,120);
 }
 
 
