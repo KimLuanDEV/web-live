@@ -1726,12 +1726,120 @@ html, body{
 
 
 
+/* ================= LOADING ================= */
+
+.loading-overlay{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    radial-gradient(circle at center,
+      rgba(0,255,180,.15),
+      rgba(0,0,0,.95));
+
+  backdrop-filter: blur(10px);
+}
+
+.loader-center{
+  text-align:center;
+  width:80%;
+  max-width:320px;
+}
+
+.loader-logo{
+  font-size:60px;
+  margin-bottom:10px;
+
+  color:#00ffb0;
+
+  text-shadow:
+    0 0 25px rgba(0,255,180,1),
+    0 0 60px rgba(0,255,180,.7);
+
+  animation: loaderPulse 1.2s infinite alternate;
+}
+
+.loader-title{
+  font-size:18px;
+  font-weight:900;
+  letter-spacing:1px;
+  margin-bottom:8px;
+}
+
+.loader-sub{
+  font-size:13px;
+  opacity:.7;
+  margin-bottom:20px;
+}
+
+/* progress bar */
+.loader-bar{
+  height:6px;
+  border-radius:20px;
+  background:rgba(255,255,255,.1);
+  overflow:hidden;
+}
+
+.loader-progress{
+  width:0%;
+  height:100%;
+  background:
+    linear-gradient(90deg,#00ffb0,#00b97d);
+
+  box-shadow:
+    0 0 15px rgba(0,255,180,.9);
+
+  transition:width .3s linear;
+}
+
+@keyframes loaderPulse{
+  from{ transform:scale(1); }
+  to{ transform:scale(1.15); }
+}
+
+/* fade out */
+.loading-overlay.fadeOut{
+  opacity:0;
+  transition:opacity .6s ease;
+}
+
 
 </style>
 </head>
 
 <body>
   
+
+<!-- ================= LOADING OVERLAY ================= -->
+<div id="loadingOverlay" class="loading-overlay">
+
+  <div class="loader-center">
+
+    <div class="loader-logo">
+      ⚔
+    </div>
+
+    <div class="loader-title">
+      SCISSORS • ROCK • PAPER
+    </div>
+
+    <div class="loader-sub">
+      Preparing battle arena...
+    </div>
+
+    <div class="loader-bar">
+      <div class="loader-progress" id="loaderProgress"></div>
+    </div>
+
+  </div>
+
+</div>
+
 
 <!-- 🌋 LOSE BACKGROUND OVERLAY -->
 <div id="loseOverlay"></div>
@@ -2924,6 +3032,39 @@ function renderMyRpsHistory(){
   `).join("");
 }
 
+
+
+
+
+
+/* ================= LOADER ================= */
+
+const loaderBar = document.getElementById("loaderProgress");
+const loader    = document.getElementById("loadingOverlay");
+
+let progress = 0;
+
+const loaderInterval = setInterval(()=>{
+
+  progress += Math.random()*20;
+
+  if(progress >= 100){
+    progress = 100;
+    clearInterval(loaderInterval);
+
+    setTimeout(()=>{
+      loader.classList.add("fadeOut");
+
+      setTimeout(()=>{
+        loader.style.display = "none";
+      },600);
+
+    },500);
+  }
+
+  loaderBar.style.width = progress + "%";
+
+},400);
 
 
 </script>
