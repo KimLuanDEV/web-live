@@ -1471,150 +1471,147 @@ body.crash-dark{
 
 
 
-/* ================= TIME RACE LOADING ================= */
+/* ================= ULTRA INTRO ================= */
 
-.tr-loading{
+.tr-ultra-intro{
   position:fixed;
   inset:0;
-  z-index:9999;
+  z-index:99999;
+  background:#000;
 
   display:flex;
   align-items:center;
   justify-content:center;
-
-  background:#000;
+  overflow:hidden;
 }
 
-.tr-loading-bg{
+/* background */
+
+.intro-bg{
   position:absolute;
   inset:0;
 
   background:
-    radial-gradient(circle at 50% 40%,
-      rgba(0,255,255,.2),
-      rgba(0,0,0,.95) 70%
-    );
+  radial-gradient(circle at 50% 40%,
+    rgba(0,255,255,.25),
+    rgba(0,0,0,.95) 70%
+  );
 
-  animation:loadingBgMove 10s linear infinite;
+  animation:introBgZoom 6s ease forwards;
 }
 
-@keyframes loadingBgMove{
-  0%{ transform:scale(1); }
-  50%{ transform:scale(1.1); }
-  100%{ transform:scale(1); }
+@keyframes introBgZoom{
+  from{ transform:scale(1.2); }
+  to{ transform:scale(1); }
 }
 
-.tr-loading-center{
-  position:relative;
+.intro-center{
   text-align:center;
   z-index:2;
 }
 
-.tr-loading-logo{
-  font-size:26px;
+.intro-logo{
+  font-size:34px;
   font-weight:900;
-  letter-spacing:2px;
+  letter-spacing:3px;
+  margin-bottom:30px;
 
   background:linear-gradient(
-    90deg,
-    #00f0ff,
-    #ffffff,
-    #00f0ff
+    90deg,#00f0ff,#fff,#00f0ff
   );
-
   background-size:200%;
-  background-clip:text;
-  -webkit-background-clip:text;
 
+  -webkit-background-clip:text;
   color:transparent;
 
-  animation:logoShine 3s linear infinite;
+  animation:introLogoShine 3s linear infinite;
 }
 
-@keyframes logoShine{
-  from{ background-position:0%; }
-  to{ background-position:200%; }
+@keyframes introLogoShine{
+  from{ background-position:0% }
+  to{ background-position:200% }
 }
 
-.tr-loading-bomb{
-  font-size:70px;
-  margin:20px 0;
+/* bomb */
 
-  animation:bombPulse 1.2s ease-in-out infinite;
+.intro-bomb{
+  font-size:90px;
+  transform:translateY(-400px);
+
+  animation:bombDrop 1.2s ease forwards;
 }
 
-@keyframes bombPulse{
-  0%,100%{
-    transform:scale(1);
-    filter:drop-shadow(0 0 10px #00f0ff);
-  }
-  50%{
-    transform:scale(1.15);
-    filter:drop-shadow(0 0 25px #00f0ff);
-  }
+@keyframes bombDrop{
+  0%{ transform:translateY(-400px); }
+  70%{ transform:translateY(20px); }
+  100%{ transform:translateY(0); }
 }
 
-.tr-loading-bar{
-  width:220px;
-  height:6px;
-  background:#111;
-  border-radius:6px;
-  overflow:hidden;
-  margin:0 auto;
+/* fuse */
+
+.intro-fuse{
+  width:6px;
+  height:60px;
+  background:#555;
+  margin:10px auto;
+  border-radius:4px;
+  position:relative;
 }
 
-.tr-loading-progress{
-  height:100%;
-  width:0%;
+.intro-spark{
+  position:absolute;
+  top:-6px;
+  left:50%;
+  transform:translateX(-50%);
 
-  background:linear-gradient(
-    90deg,
-    #007bff,
-    #00f0ff
-  );
+  width:18px;
+  height:18px;
+  border-radius:50%;
 
-  box-shadow:0 0 15px #00f0ff;
+  background:radial-gradient(circle,#fff,#ffcc00,#ff3300);
 
-  transition:width .3s;
+  box-shadow:
+  0 0 20px #ff6600,
+  0 0 40px red;
+
+  animation:sparkFire .25s infinite alternate;
 }
 
-.tr-loading-text{
-  margin-top:14px;
-  font-size:13px;
-  opacity:.8;
+/* flash */
+
+.intro-flash{
+  position:absolute;
+  inset:0;
+  background:#fff;
+  opacity:0;
+  pointer-events:none;
 }
-
-
-
 </style>
 </head>
 <body>
 
 
-<!-- ================= TIME RACE LOADING ================= -->
-<div id="loadingOverlay" class="tr-loading">
+<div id="ultraIntro" class="tr-ultra-intro">
 
-  <div class="tr-loading-bg"></div>
+  <div class="intro-bg"></div>
 
-  <div class="tr-loading-center">
+  <div class="intro-center">
 
-    <div class="tr-loading-logo">
+    <div class="intro-logo">
       TIME RACE
     </div>
 
-    <div class="tr-loading-bomb">
+    <div class="intro-bomb">
       💣
     </div>
 
-    <div class="tr-loading-bar">
-      <div id="loadingProgress" class="tr-loading-progress"></div>
-    </div>
-
-    <div id="loadingText" class="tr-loading-text">
-      Connecting to server...
+    <div class="intro-fuse">
+      <div class="intro-spark"></div>
     </div>
 
   </div>
+
+  <div class="intro-flash"></div>
 
 </div>
 
@@ -2486,48 +2483,46 @@ if (screen.orientation && screen.orientation.lock) {
 
 
 
-/* ================= LOADER ================= */
+/* ================= ULTRA INTRO ================= */
 
-const progress = document.getElementById("loadingProgress");
-const text = document.getElementById("loadingText");
+const intro = document.getElementById("ultraIntro");
 
-let load = 0;
+setTimeout(()=>{
 
-const loadingSteps = [
-  "Initializing engine...",
-  "Loading assets...",
-  "Connecting server...",
-  "Syncing game state...",
-  "Preparing bomb..."
-];
+  // rung màn
+  document.body.animate([
+    { transform:"translateX(0px)" },
+    { transform:"translateX(8px)" },
+    { transform:"translateX(-8px)" },
+    { transform:"translateX(0px)" }
+  ],{ duration:300 });
 
-const interval = setInterval(()=>{
+},1200);
 
-  load += Math.random()*15;
 
-  if(load >= 100){
-    load = 100;
-    clearInterval(interval);
+setTimeout(()=>{
 
-    text.innerText = "Ready";
+  // flash
+  const flash = document.querySelector(".intro-flash");
 
-    setTimeout(()=>{
-      const overlay = document.getElementById("loadingOverlay");
-      overlay.style.opacity = "0";
+  flash.style.opacity = "1";
 
-      setTimeout(()=>{
-        overlay.remove();
-      },600);
+  setTimeout(()=>{
+    flash.style.opacity = "0";
+  },150);
 
-    },500);
-  }
+},1700);
 
-  progress.style.width = load + "%";
 
-  const stepIndex = Math.floor(load / 25);
-  text.innerText = loadingSteps[Math.min(stepIndex, loadingSteps.length-1)];
+setTimeout(()=>{
 
-},400);
+  intro.style.opacity = "0";
+
+  setTimeout(()=>{
+    intro.remove();
+  },600);
+
+},2200);
 
 
 
