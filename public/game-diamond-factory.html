@@ -1143,6 +1143,9 @@ setTimeout(()=>{
 
   setTimeout(()=>{
     intro.remove();
+
+    startLoader(); // 🚀 bắt đầu loader sau intro
+
   },1000);
 
 },3200);
@@ -1153,13 +1156,41 @@ setTimeout(()=>{
 // LOADER SYSTEM
 // =======================
 
+function startLoader(){
+
+
+const bootMessages = [
+"Booting Factory Core...",
+"Loading Worker Systems...",
+"Calibrating Diamond Extractors...",
+"Connecting Storage Network...",
+"Synchronizing Production...",
+"Initializing Livestream Pro Engine..."
+];
+
+let bootIndex = 0;
+
+setInterval(()=>{
+
+  bootIndex++;
+
+  if(bootIndex >= bootMessages.length) return;
+
+  document.getElementById("bootText").textContent =
+    bootMessages[bootIndex];
+
+},1200);
+
+
+
+
 let loaderProgress = 0;
 
 const loaderBar = document.getElementById("loaderProgress");
 
 const loaderInterval = setInterval(()=>{
 
-  loaderProgress += Math.random()*12;
+  loaderProgress += Math.random()*5;
 
   if(loaderProgress >= 100){
     loaderProgress = 100;
@@ -1170,21 +1201,26 @@ const loaderInterval = setInterval(()=>{
 
       const overlay = document.getElementById("loadingOverlay");
 
-overlay.style.transform = "scale(1.4)";
-overlay.style.opacity = 0;
-overlay.style.transition = "transform 1s, opacity 1s";
+      overlay.style.transform = "scale(1.4)";
+      overlay.style.opacity = 0;
+      overlay.style.transition = "transform 1s, opacity 1s";
 
-      setTimeout(()=>{
-        document.getElementById("loadingOverlay").remove();
-      },600);
+setTimeout(()=>{
+  overlay.remove();
+},1000);
 
     },300);
   }
 
   loaderBar.style.width = loaderProgress + "%";
 
-},120);
+},200);
 
+
+setInterval(spawnDiamond,200);
+setInterval(spawnSpark,120);
+
+}
 
 
 // =======================
@@ -1216,30 +1252,9 @@ function spawnDiamond(){
 
 }
 
-setInterval(spawnDiamond,200);
 
 
-const bootMessages = [
-"Booting Factory Core...",
-"Loading Worker Systems...",
-"Calibrating Diamond Extractors...",
-"Connecting Storage Network...",
-"Synchronizing Production...",
-"Initializing Livestream Pro Engine..."
-];
 
-let bootIndex = 0;
-
-setInterval(()=>{
-
-  bootIndex++;
-
-  if(bootIndex >= bootMessages.length) return;
-
-  document.getElementById("bootText").textContent =
-    bootMessages[bootIndex];
-
-},1200);
 
 
 
@@ -1263,7 +1278,6 @@ function spawnSpark(){
 
 }
 
-setInterval(spawnSpark,120);
 
 
 </script>
