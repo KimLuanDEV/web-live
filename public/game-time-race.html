@@ -1470,9 +1470,155 @@ body.crash-dark{
 }
 
 
+
+/* ================= TIME RACE LOADING ================= */
+
+.tr-loading{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#000;
+}
+
+.tr-loading-bg{
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at 50% 40%,
+      rgba(0,255,255,.2),
+      rgba(0,0,0,.95) 70%
+    );
+
+  animation:loadingBgMove 10s linear infinite;
+}
+
+@keyframes loadingBgMove{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.1); }
+  100%{ transform:scale(1); }
+}
+
+.tr-loading-center{
+  position:relative;
+  text-align:center;
+  z-index:2;
+}
+
+.tr-loading-logo{
+  font-size:26px;
+  font-weight:900;
+  letter-spacing:2px;
+
+  background:linear-gradient(
+    90deg,
+    #00f0ff,
+    #ffffff,
+    #00f0ff
+  );
+
+  background-size:200%;
+  background-clip:text;
+  -webkit-background-clip:text;
+
+  color:transparent;
+
+  animation:logoShine 3s linear infinite;
+}
+
+@keyframes logoShine{
+  from{ background-position:0%; }
+  to{ background-position:200%; }
+}
+
+.tr-loading-bomb{
+  font-size:70px;
+  margin:20px 0;
+
+  animation:bombPulse 1.2s ease-in-out infinite;
+}
+
+@keyframes bombPulse{
+  0%,100%{
+    transform:scale(1);
+    filter:drop-shadow(0 0 10px #00f0ff);
+  }
+  50%{
+    transform:scale(1.15);
+    filter:drop-shadow(0 0 25px #00f0ff);
+  }
+}
+
+.tr-loading-bar{
+  width:220px;
+  height:6px;
+  background:#111;
+  border-radius:6px;
+  overflow:hidden;
+  margin:0 auto;
+}
+
+.tr-loading-progress{
+  height:100%;
+  width:0%;
+
+  background:linear-gradient(
+    90deg,
+    #007bff,
+    #00f0ff
+  );
+
+  box-shadow:0 0 15px #00f0ff;
+
+  transition:width .3s;
+}
+
+.tr-loading-text{
+  margin-top:14px;
+  font-size:13px;
+  opacity:.8;
+}
+
+
+
 </style>
 </head>
 <body>
+
+
+<!-- ================= TIME RACE LOADING ================= -->
+<div id="loadingOverlay" class="tr-loading">
+
+  <div class="tr-loading-bg"></div>
+
+  <div class="tr-loading-center">
+
+    <div class="tr-loading-logo">
+      TIME RACE
+    </div>
+
+    <div class="tr-loading-bomb">
+      💣
+    </div>
+
+    <div class="tr-loading-bar">
+      <div id="loadingProgress" class="tr-loading-progress"></div>
+    </div>
+
+    <div id="loadingText" class="tr-loading-text">
+      Connecting to server...
+    </div>
+
+  </div>
+
+</div>
+
+
 
 <div class="tr-header">
 
@@ -2337,6 +2483,53 @@ document.addEventListener("touchend", function (event) {
 if (screen.orientation && screen.orientation.lock) {
   screen.orientation.lock("portrait").catch(()=>{});
 }
+
+
+
+/* ================= LOADER ================= */
+
+const progress = document.getElementById("loadingProgress");
+const text = document.getElementById("loadingText");
+
+let load = 0;
+
+const loadingSteps = [
+  "Initializing engine...",
+  "Loading assets...",
+  "Connecting server...",
+  "Syncing game state...",
+  "Preparing bomb..."
+];
+
+const interval = setInterval(()=>{
+
+  load += Math.random()*15;
+
+  if(load >= 100){
+    load = 100;
+    clearInterval(interval);
+
+    text.innerText = "Ready";
+
+    setTimeout(()=>{
+      const overlay = document.getElementById("loadingOverlay");
+      overlay.style.opacity = "0";
+
+      setTimeout(()=>{
+        overlay.remove();
+      },600);
+
+    },500);
+  }
+
+  progress.style.width = load + "%";
+
+  const stepIndex = Math.floor(load / 25);
+  text.innerText = loadingSteps[Math.min(stepIndex, loadingSteps.length-1)];
+
+},400);
+
+
 
 </script>
 </body>
