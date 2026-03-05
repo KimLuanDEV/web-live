@@ -1936,6 +1936,110 @@ html, body{
 }
 
 
+
+
+.battle-loader{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  background:
+  radial-gradient(circle at center,
+  #0c1a26 0%,
+  #000 70%);
+  opacity:0;
+  transition:opacity .6s ease;
+}
+
+/* energy ring */
+
+.battle-ring{
+  position:absolute;
+
+  width:260px;
+  height:260px;
+
+  border-radius:50%;
+
+  border:3px solid rgba(0,255,180,.5);
+
+  box-shadow:
+  0 0 30px rgba(0,255,180,.7),
+  inset 0 0 30px rgba(0,255,180,.5);
+
+  animation:ringSpin 6s linear infinite;
+}
+
+@keyframes ringSpin{
+  from{ transform:rotate(0deg);}
+  to{ transform:rotate(360deg);}
+}
+
+/* icons */
+
+.battle-icons{
+  position:relative;
+  width:200px;
+  height:200px;
+}
+
+.battle-icon{
+  position:absolute;
+
+  font-size:40px;
+  color:#00ffb0;
+
+  text-shadow:
+  0 0 20px #00ffb0;
+
+  animation:iconOrbit 3s linear infinite;
+}
+
+.rock{
+  top:0;
+  left:50%;
+  transform:translateX(-50%);
+}
+
+.paper{
+  bottom:0;
+  left:10%;
+}
+
+.scissor{
+  bottom:0;
+  right:10%;
+}
+
+@keyframes iconOrbit{
+  0%{ transform:rotate(0deg) translateX(0);}
+  50%{ transform:scale(1.2);}
+  100%{ transform:rotate(360deg);}
+}
+
+/* text */
+
+.battle-text{
+  margin-top:40px;
+
+  font-weight:700;
+  letter-spacing:2px;
+
+  color:#00ffb0;
+
+  animation:textPulse 1.2s infinite alternate;
+}
+
+@keyframes textPulse{
+  from{ opacity:.5;}
+  to{ opacity:1;}
+}
+
 </style>
 </head>
 
@@ -1943,26 +2047,20 @@ html, body{
   
 
 <!-- ================= LOADING OVERLAY ================= -->
-<div id="loadingOverlay" class="loading-overlay">
+<div id="loadingOverlay" class="battle-loader">
 
-  <div class="loader-center">
+  <div class="battle-ring"></div>
 
-    <div class="loader-logo">
-      ⚔
-    </div>
+  <div class="battle-icons">
 
-    <div class="loader-title">
-      SCISSORS • ROCK • PAPER
-    </div>
+    <div class="battle-icon rock">✊</div>
+    <div class="battle-icon paper">✋</div>
+    <div class="battle-icon scissor">✌</div>
 
-    <div class="loader-sub">
-      Preparing battle arena...
-    </div>
+  </div>
 
-    <div class="loader-bar">
-      <div class="loader-progress" id="loaderProgress"></div>
-    </div>
-
+  <div class="battle-text">
+    Preparing Battle...
   </div>
 
 </div>
@@ -1999,6 +2097,7 @@ html, body{
 </div>
 
 </header>
+
 
 <!-- ===== STAGE ===== -->
 <main class="rps-stage">
@@ -3185,11 +3284,11 @@ function renderMyRpsHistory(){
 
 function startIntro(){
 
-  const intro = document.getElementById("introCinematic");
+  const intro  = document.getElementById("introCinematic");
+  const loader = document.getElementById("loadingOverlay");
 
   setTimeout(()=>{
 
-    // ⚡ flash
     const flash = document.createElement("div");
     flash.className="revealFlash";
     document.body.appendChild(flash);
@@ -3198,12 +3297,20 @@ function startIntro(){
 
   },2200);
 
-
+  // kết thúc intro
   setTimeout(()=>{
+
     intro.style.opacity=0;
 
     setTimeout(()=>{
+
       intro.remove();
+
+      // hiện loader
+      loader.style.opacity = 1;
+
+      startLoader(); // chạy loader
+
     },800);
 
   },2600);
@@ -3219,9 +3326,9 @@ startIntro();
 const loaderBar = document.getElementById("loaderProgress");
 const loader    = document.getElementById("loadingOverlay");
 
-let progress = 0;
+function startLoader(){
 
-setTimeout(()=>{
+  let progress = 0;
 
   const loaderInterval = setInterval(()=>{
 
@@ -3235,7 +3342,7 @@ setTimeout(()=>{
         loader.classList.add("fadeOut");
 
         setTimeout(()=>{
-          loader.style.display="none";
+          loader.remove();
         },600);
 
       },500);
@@ -3245,7 +3352,7 @@ setTimeout(()=>{
 
   },400);
 
-},2600); // sau intro
+}
 
 
 
