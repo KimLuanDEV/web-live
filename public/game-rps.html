@@ -3328,6 +3328,8 @@ const loader    = document.getElementById("loadingOverlay");
 
 function startLoader(){
 
+  if(!loaderBar || !loader) return; // 🔥 tránh crash
+
   let progress = 0;
 
   const loaderInterval = setInterval(()=>{
@@ -3342,7 +3344,7 @@ function startLoader(){
         loader.classList.add("fadeOut");
 
         setTimeout(()=>{
-          loader.remove();
+          loader.style.display = "none";
         },600);
 
       },500);
