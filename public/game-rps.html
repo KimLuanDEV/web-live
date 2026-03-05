@@ -1727,11 +1727,155 @@ html, body{
 
 
 
+/* ================= LOADING ================= */
+
+.loading-overlay{
+  position:fixed;
+  inset:0;
+  z-index:99999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:#000;
+}
+
+/* background */
+.loading-bg{
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at top,
+      rgba(0,255,180,.25),
+      transparent 60%),
+    url("/assets/bg/rps1.jpg") center/cover no-repeat;
+
+  filter: blur(6px) brightness(.4);
+}
+
+/* center */
+.loading-center{
+  position:relative;
+  z-index:2;
+  text-align:center;
+}
+
+/* logo */
+.loading-logo{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:2px;
+
+  color:#00ffb0;
+
+  text-shadow:
+    0 0 20px rgba(0,255,180,1),
+    0 0 40px rgba(0,255,180,.8);
+}
+
+/* vs icon */
+.loading-vs{
+  margin:20px auto;
+  width:80px;
+  height:80px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  border-radius:50%;
+
+  font-size:36px;
+  color:#001a12;
+
+  background:
+    radial-gradient(circle,
+      #00ffb0,
+      #00b97d);
+
+  box-shadow:
+    0 0 30px rgba(0,255,180,1),
+    0 0 80px rgba(0,255,180,.6);
+
+  animation:vsSpin 2s linear infinite;
+}
+
+@keyframes vsSpin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+/* progress bar */
+.loading-bar{
+  width:260px;
+  height:6px;
+
+  margin:20px auto;
+
+  border-radius:10px;
+  background:rgba(255,255,255,.1);
+
+  overflow:hidden;
+}
+
+.loading-progress{
+  height:100%;
+  width:0%;
+
+  background:
+    linear-gradient(
+      90deg,
+      #00ffb0,
+      #00b97d
+    );
+
+  box-shadow:0 0 20px rgba(0,255,180,.8);
+
+  transition:width .25s linear;
+}
+
+/* text */
+.loading-text{
+  margin-top:12px;
+  font-size:14px;
+  opacity:.8;
+}
+
 </style>
 </head>
 
 <body>
   
+
+<!-- ================= LOADING OVERLAY ================= -->
+<div id="loadingOverlay" class="loading-overlay">
+
+  <div class="loading-bg"></div>
+
+  <div class="loading-center">
+
+    <div class="loading-logo">
+      SCISSORS • ROCK • PAPER
+    </div>
+
+    <div class="loading-vs">
+      ⚔
+    </div>
+
+    <div class="loading-bar">
+      <div class="loading-progress" id="loadingProgress"></div>
+    </div>
+
+    <div class="loading-text" id="loadingText">
+      Connecting to server...
+    </div>
+
+  </div>
+
+</div>
+
   
 
 <!-- 🌋 LOSE BACKGROUND OVERLAY -->
@@ -1823,7 +1967,7 @@ html, body{
   </div>
 
   <button class="rps-btn sr-ok" onclick="closeRpsResult()">
-   COMFIRM
+   CONFIRM
   </button>
 
 </div>
@@ -1910,7 +2054,7 @@ html, body{
     <!-- ACTION -->
     <div class="rps-action">
       <button class="rps-btn" id="playBtn" disabled>
-        COMFIRM
+        CONFIRM
       </button>
     </div>
 
@@ -2924,6 +3068,69 @@ function renderMyRpsHistory(){
     </div>
   `).join("");
 }
+
+
+
+
+
+
+/* ================= LOADING SYSTEM ================= */
+
+const loadingText = document.getElementById("loadingText");
+const loadingBar  = document.getElementById("loadingProgress");
+
+let progress = 0;
+
+function fakeLoading(){
+
+  const steps = [
+    "Loading assets...",
+    "Connecting server...",
+    "Preparing battlefield...",
+    "Synchronizing round...",
+    "Almost ready..."
+  ];
+
+  let stepIndex = 0;
+
+  const interval = setInterval(()=>{
+
+    progress += Math.random()*15;
+
+    if(progress >= 100){
+      progress = 100;
+      clearInterval(interval);
+      finishLoading();
+    }
+
+    loadingBar.style.width = progress + "%";
+
+    if(progress > stepIndex*20 && stepIndex < steps.length){
+      loadingText.textContent = steps[stepIndex];
+      stepIndex++;
+    }
+
+  },400);
+
+}
+
+function finishLoading(){
+
+  const overlay = document.getElementById("loadingOverlay");
+
+  overlay.style.transition = "opacity .6s";
+  overlay.style.opacity = "0";
+
+  setTimeout(()=>{
+    overlay.remove();
+  },600);
+
+}
+
+window.addEventListener("load",()=>{
+  fakeLoading();
+});
+
 
 
 
