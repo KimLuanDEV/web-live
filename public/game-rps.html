@@ -1809,6 +1809,126 @@ html, body{
 }
 
 
+
+
+/* ================= CINEMATIC INTRO ================= */
+
+.intro-cinematic{
+  position:fixed;
+  inset:0;
+  z-index:100000;
+
+  background:black;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  pointer-events:none;
+}
+
+/* PORTAL */
+.portal{
+  position:absolute;
+  width:300px;
+  height:300px;
+
+  border-radius:50%;
+
+  background:
+  radial-gradient(circle,
+    rgba(0,255,180,.9) 0%,
+    rgba(0,255,180,.4) 25%,
+    rgba(0,0,0,0) 70%);
+
+  filter:blur(10px);
+
+  animation:
+  portalOpen 1.6s ease forwards,
+  portalPulse 2s infinite;
+}
+
+@keyframes portalOpen{
+  from{
+    transform:scale(.1);
+    opacity:0;
+  }
+  to{
+    transform:scale(1);
+    opacity:1;
+  }
+}
+
+@keyframes portalPulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.15); }
+  100%{ transform:scale(1); }
+}
+
+/* LOGO */
+.intro-logo{
+  font-size:70px;
+  color:#00ffb0;
+
+  opacity:0;
+  transform:scale(.5);
+
+  text-shadow:
+  0 0 30px #00ffb0,
+  0 0 80px #00ffb0;
+
+  animation: logoSpawn 1s ease forwards;
+  animation-delay:1s;
+}
+
+@keyframes logoSpawn{
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+}
+
+
+
+.revealFlash{
+  position:fixed;
+  inset:0;
+  z-index:100001;
+
+  background:white;
+  opacity:.8;
+
+  animation:flashReveal .6s ease forwards;
+}
+
+@keyframes flashReveal{
+  from{opacity:.9}
+  to{opacity:0}
+}
+
+
+/* TITLE */
+
+.intro-title{
+  margin-top:12px;
+  font-weight:900;
+  letter-spacing:2px;
+  color:white;
+
+  opacity:0;
+
+  animation:titleFade 1s ease forwards;
+  animation-delay:1.4s;
+}
+
+@keyframes titleFade{
+  to{
+    opacity:1;
+  }
+}
+
+
 </style>
 </head>
 
@@ -1839,6 +1959,23 @@ html, body{
   </div>
 
 </div>
+
+
+
+<div id="introCinematic" class="intro-cinematic">
+
+  <div class="portal"></div>
+
+  <div class="intro-logo">
+    ⚔
+  </div>
+
+  <div class="intro-title">
+    SCISSORS • ROCK • PAPER
+  </div>
+
+</div>
+
 
 
 <!-- 🌋 LOSE BACKGROUND OVERLAY -->
@@ -3037,6 +3174,39 @@ function renderMyRpsHistory(){
 
 
 
+/* ================= CINEMATIC INTRO ================= */
+
+function startIntro(){
+
+  const intro = document.getElementById("introCinematic");
+
+  setTimeout(()=>{
+
+    // ⚡ flash
+    const flash = document.createElement("div");
+    flash.className="revealFlash";
+    document.body.appendChild(flash);
+
+    setTimeout(()=> flash.remove(),600);
+
+  },2200);
+
+
+  setTimeout(()=>{
+    intro.style.opacity=0;
+
+    setTimeout(()=>{
+      intro.remove();
+    },800);
+
+  },2600);
+
+}
+
+startIntro();
+
+
+
 /* ================= LOADER ================= */
 
 const loaderBar = document.getElementById("loaderProgress");
@@ -3044,27 +3214,31 @@ const loader    = document.getElementById("loadingOverlay");
 
 let progress = 0;
 
-const loaderInterval = setInterval(()=>{
+setTimeout(()=>{
 
-  progress += Math.random()*20;
+  const loaderInterval = setInterval(()=>{
 
-  if(progress >= 100){
-    progress = 100;
-    clearInterval(loaderInterval);
+    progress += Math.random()*20;
 
-    setTimeout(()=>{
-      loader.classList.add("fadeOut");
+    if(progress >= 100){
+      progress = 100;
+      clearInterval(loaderInterval);
 
       setTimeout(()=>{
-        loader.style.display = "none";
-      },600);
+        loader.classList.add("fadeOut");
 
-    },500);
-  }
+        setTimeout(()=>{
+          loader.style.display="none";
+        },600);
 
-  loaderBar.style.width = progress + "%";
+      },500);
+    }
 
-},400);
+    loaderBar.style.width = progress + "%";
+
+  },400);
+
+},2600); // sau intro
 
 
 </script>
