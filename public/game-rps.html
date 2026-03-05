@@ -1843,11 +1843,152 @@ html, body{
   opacity:.8;
 }
 
+
+
+/* ================= ULTRA INTRO ================= */
+
+.ultraIntro{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+  background:black;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+}
+
+/* background zoom */
+
+.intro-bg{
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at center,
+    rgba(0,255,180,.3),
+    transparent 70%),
+    url("/assets/bg/rps1.jpg") center/cover;
+
+  animation:introZoom 3s ease forwards;
+
+  filter:blur(4px) brightness(.5);
+}
+
+@keyframes introZoom{
+
+  from{
+    transform:scale(1.3);
+  }
+
+  to{
+    transform:scale(1);
+  }
+
+}
+
+/* center */
+
+.intro-center{
+  position:relative;
+  display:flex;
+  align-items:center;
+  gap:40px;
+  z-index:2;
+}
+
+/* hands */
+
+.intro-hand{
+
+  font-size:80px;
+
+  opacity:0;
+
+  transform:translateY(120px);
+
+}
+
+/* rock */
+
+.rock{
+  animation:rockEnter .8s forwards;
+}
+
+@keyframes rockEnter{
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+
+/* paper */
+
+.paper{
+  animation:paperEnter .8s .4s forwards;
+}
+
+@keyframes paperEnter{
+
+  to{
+    opacity:1;
+    transform:translateY(0);
+  }
+
+}
+
+/* VS */
+
+.intro-vs{
+
+  font-size:48px;
+  font-weight:900;
+
+  color:#00ffb0;
+
+  text-shadow:
+    0 0 20px #00ffb0,
+    0 0 50px #00ffb0;
+
+  opacity:0;
+
+  animation:vsEnter .8s .9s forwards;
+}
+
+@keyframes vsEnter{
+
+  from{
+    transform:scale(.5);
+  }
+
+  to{
+    opacity:1;
+    transform:scale(1);
+  }
+
+}
+
+/* flash */
+
+.intro-flash{
+  position:absolute;
+  inset:0;
+  background:white;
+  opacity:0;
+  pointer-events:none;
+}
+
+
 </style>
 </head>
 
 <body>
   
+
+
+
 
 <!-- ================= LOADING OVERLAY ================= -->
 <div id="loadingOverlay" class="loading-overlay">
@@ -1877,6 +2018,28 @@ html, body{
 </div>
 
   
+
+<!-- ================= ULTRA INTRO ================= -->
+<div id="ultraIntro" class="ultraIntro">
+
+  <div class="intro-bg"></div>
+
+  <div class="intro-center">
+
+    <div class="intro-hand rock">✊</div>
+
+    <div class="intro-vs">VS</div>
+
+    <div class="intro-hand paper">✋</div>
+
+  </div>
+
+  <div class="intro-flash"></div>
+
+</div>
+
+
+
 
 <!-- 🌋 LOSE BACKGROUND OVERLAY -->
 <div id="loseOverlay"></div>
@@ -3072,6 +3235,44 @@ function renderMyRpsHistory(){
 
 
 
+/* ================= ULTRA INTRO ================= */
+
+function startUltraIntro(){
+
+  const intro = document.getElementById("ultraIntro");
+  const flash = intro.querySelector(".intro-flash");
+
+  setTimeout(()=>{
+
+    flash.style.transition="opacity .2s";
+    flash.style.opacity="1";
+
+    setTimeout(()=>{
+
+      flash.style.opacity="0";
+
+    },200);
+
+  },1800);
+
+
+  setTimeout(()=>{
+
+    intro.style.transition="opacity .8s";
+    intro.style.opacity="0";
+
+    setTimeout(()=>{
+      intro.remove();
+    },800);
+
+  },2400);
+
+}
+
+
+
+
+
 
 
 /* ================= LOADING SYSTEM ================= */
@@ -3123,6 +3324,10 @@ function finishLoading(){
 
   setTimeout(()=>{
     overlay.remove();
+
+    // 🔥 chạy intro sau khi loading xong
+    startUltraIntro();
+
   },600);
 
 }
