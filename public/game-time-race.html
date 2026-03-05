@@ -65,6 +65,25 @@ body{
   100%{ background-position:0% 0%; }
 }
 
+
+
+body.game-hidden > *:not(#loadingOverlay){
+  opacity:0;
+  transform:scale(1.05);
+  filter:blur(8px);
+}
+
+body.game-ready > *:not(#loadingOverlay){
+  opacity:1;
+  transform:scale(1);
+  filter:blur(0);
+  transition:
+    opacity .8s ease,
+    transform .8s ease,
+    filter .8s ease;
+}
+
+
 /* HEADER PRO */
 
 /* ================= GLASS NEON HEADER LEVEL 2 ================= */
@@ -1608,6 +1627,9 @@ body.crash-dark{
 
 }
 
+
+
+
 </style>
 </head>
 <body>
@@ -1814,6 +1836,9 @@ body.crash-dark{
 
 
 <script>
+
+document.body.classList.add("game-hidden");
+
   
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
 
@@ -2533,15 +2558,22 @@ const interval = setInterval(()=>{
 
     text.innerText = "Ready";
 
-    setTimeout(()=>{
-      const overlay = document.getElementById("loadingOverlay");
-      overlay.style.opacity = "0";
+setTimeout(()=>{
 
-      setTimeout(()=>{
-        overlay.remove();
-      },600);
+  const overlay = document.getElementById("loadingOverlay");
 
-    },500);
+  overlay.style.opacity = "0";
+
+  setTimeout(()=>{
+
+    document.body.classList.remove("game-hidden");
+    document.body.classList.add("game-ready");
+
+    overlay.remove();
+
+  },600);
+
+},500);
   }
 
   progress.style.width = load + "%";
