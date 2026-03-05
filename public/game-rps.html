@@ -29,6 +29,12 @@ body{
     url("/assets/bg/rps1.jpg") center / cover no-repeat fixed;
 }
 
+
+body.loading-active{
+  overflow:hidden;
+}
+
+
 /* ===== HEADER (FIXED TOP) ===== */
 .rps-header{
   position: fixed;
@@ -1816,7 +1822,7 @@ html, body{
 .intro-cinematic{
   position:fixed;
   inset:0;
-  z-index:100000;
+  z-index:1000000;
 
   background:black;
 
@@ -1826,6 +1832,7 @@ html, body{
   justify-content:center;
 
   pointer-events:none;
+  transition:opacity .8s ease;
 }
 
 /* PORTAL */
@@ -3162,7 +3169,7 @@ function renderMyRpsHistory(){
             ? "+" + h.win + " 💎"
             : h.result === "lose"
               ? "-" + h.bet + " 💎"
-              : "Hoà"
+              : "Draw"
         }
       </div>
     </div>
@@ -3239,6 +3246,14 @@ setTimeout(()=>{
   },400);
 
 },2600); // sau intro
+
+
+
+document.body.classList.add("loading-active");
+
+setTimeout(()=>{
+  document.body.classList.remove("loading-active");
+},3000);
 
 
 </script>
