@@ -285,6 +285,7 @@ body::before{
     radial-gradient(circle at center,#00121f,#000);
 
   overflow:hidden;
+  transition:opacity .8s ease;
 }
 
 /* CORE */
@@ -377,6 +378,74 @@ body::before{
 }
 
 
+/* CYBER GRID BACKGROUND */
+
+#loadingOverlay::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    linear-gradient(#00f0ff22 1px, transparent 1px),
+    linear-gradient(90deg,#00f0ff22 1px, transparent 1px);
+
+  background-size:60px 60px;
+
+  animation:gridMove 8s linear infinite;
+}
+
+@keyframes gridMove{
+  from{
+    transform:translateY(0);
+  }
+  to{
+    transform:translateY(60px);
+  }
+}
+
+
+
+.diamondParticles{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.diamond{
+  position:absolute;
+  width:6px;
+  height:6px;
+
+  background:#00f0ff;
+
+  transform:rotate(45deg);
+
+  box-shadow:
+    0 0 10px #00f0ff,
+    0 0 20px #0088ff;
+
+  animation:diamondFloat linear infinite;
+}
+
+@keyframes diamondFloat{
+
+  from{
+    transform:translateY(100vh) rotate(45deg);
+    opacity:0;
+  }
+
+  20%{
+    opacity:1;
+  }
+
+  to{
+    transform:translateY(-20vh) rotate(45deg);
+    opacity:0;
+  }
+
+}
+
+
 </style>
 </head>
 
@@ -387,6 +456,10 @@ body::before{
      🚀 LOADING OVERLAY
 ========================= -->
 <div id="loadingOverlay">
+
+
+  <div class="diamondParticles"></div>
+
 
   <div class="loader-core">
 
@@ -401,9 +474,9 @@ body::before{
       <div class="loader-progress" id="loaderProgress"></div>
     </div>
 
-    <div class="loader-text">
-      Initializing Factory Systems...
-    </div>
+<div class="loader-text" id="bootText">
+Booting Factory Core...
+</div>
 
   </div>
 
@@ -801,6 +874,62 @@ const loaderInterval = setInterval(()=>{
   loaderBar.style.width = loaderProgress + "%";
 
 },120);
+
+
+
+// =======================
+// DIAMOND PARTICLES
+// =======================
+
+const particleContainer = document.querySelector(".diamondParticles");
+
+function spawnDiamond(){
+
+  const d = document.createElement("div");
+  d.className = "diamond";
+
+  const x = Math.random()*100;
+
+  d.style.left = x + "%";
+
+  const size = 4 + Math.random()*6;
+  d.style.width = size + "px";
+  d.style.height = size + "px";
+
+  const duration = 4 + Math.random()*4;
+
+  d.style.animationDuration = duration + "s";
+
+  particleContainer.appendChild(d);
+
+  setTimeout(()=> d.remove(), duration*1000);
+
+}
+
+setInterval(spawnDiamond,200);
+
+
+const bootMessages = [
+"Booting Factory Core...",
+"Loading Worker Systems...",
+"Calibrating Diamond Extractors...",
+"Connecting Storage Network...",
+"Synchronizing Production...",
+"Initializing Livestream Pro Engine..."
+];
+
+let bootIndex = 0;
+
+setInterval(()=>{
+
+  bootIndex++;
+
+  if(bootIndex >= bootMessages.length) return;
+
+  document.getElementById("bootText").textContent =
+    bootMessages[bootIndex];
+
+},1200);
 
 
 </script>
