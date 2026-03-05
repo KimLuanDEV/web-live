@@ -990,8 +990,7 @@ const loaderInterval = setInterval(()=>{
 
 
 
-
-/* ================= ULTRA RPS INTRO ================= */
+/* ================= ULTRA AAA INTRO ================= */
 
 function startRpsIntro(){
 
@@ -1002,49 +1001,58 @@ function startRpsIntro(){
   const paper = intro.querySelector(".intro-paper");
   const scissors = intro.querySelector(".intro-scissors");
   const vs = intro.querySelector(".intro-vs");
+  const shock = intro.querySelector(".intro-shockwave");
 
-  // hiện
   rock.style.opacity = 1;
   paper.style.opacity = 1;
   scissors.style.opacity = 1;
 
-  // bay vào
+  /* HANDS FLY IN */
   setTimeout(()=>{
-    rock.style.transition = "1s cubic-bezier(.2,.8,.2,1)";
-    paper.style.transition = "1s cubic-bezier(.2,.8,.2,1)";
-    scissors.style.transition = "1s cubic-bezier(.2,.8,.2,1)";
 
-    rock.style.left = "35%";
-    rock.style.top = "40%";
+    rock.style.transition="1.1s cubic-bezier(.2,.8,.2,1)";
+    paper.style.transition="1.1s cubic-bezier(.2,.8,.2,1)";
+    scissors.style.transition="1.1s cubic-bezier(.2,.8,.2,1)";
 
-    paper.style.right = "35%";
-    paper.style.top = "40%";
+    rock.style.left="35%";
+    paper.style.right="35%";
+    scissors.style.bottom="40%";
 
-    scissors.style.bottom = "40%";
   },100);
 
-  // collision
+  /* COLLISION */
   setTimeout(()=>{
-    intro.style.animation = "introFlash .3s";
-  },1100);
 
-  // show VS
-  setTimeout(()=>{
-    vs.style.opacity = 1;
-    vs.style.transform = "scale(1.2)";
-  },1300);
+    intro.style.animation="introFlash .35s";
 
-  // fade intro
-  setTimeout(()=>{
-    intro.style.transition = "1s";
-    intro.style.opacity = 0;
-  },1900);
+    shock.style.animation="shockwave .8s ease-out";
 
-  // remove
+    document.body.style.animation="cameraShake .4s";
+
+  },1200);
+
+  /* SHOW VS */
   setTimeout(()=>{
+
+    vs.style.opacity=1;
+    vs.style.transform="scale(1.4)";
+
+  },1500);
+
+  /* FADE OUT */
+  setTimeout(()=>{
+
+    intro.style.transition="1s";
+    intro.style.opacity=0;
+
+  },2300);
+
+  setTimeout(()=>{
+
     intro.remove();
-  },2600);
+
+  },3200);
 
 }
 
-window.addEventListener("load", startRpsIntro);
+window.addEventListener("load",startRpsIntro);
