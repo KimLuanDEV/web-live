@@ -446,10 +446,107 @@ body::before{
 }
 
 
+
+
+#introCinematic{
+  position:fixed;
+  inset:0;
+  z-index:10000;
+
+  background:black;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  overflow:hidden;
+}
+
+/* FLASH */
+
+.introFlash{
+  position:absolute;
+  inset:0;
+
+  background:radial-gradient(circle,#00f0ff,transparent 70%);
+  opacity:0;
+
+  animation:introFlash 1.5s ease forwards;
+}
+
+@keyframes introFlash{
+
+  0%{opacity:0}
+
+  40%{
+    opacity:.8;
+    transform:scale(.5);
+  }
+
+  100%{
+    opacity:0;
+    transform:scale(2);
+  }
+
+}
+
+/* LOGO */
+
+.introLogo{
+
+  font-size:48px;
+  font-weight:900;
+  letter-spacing:6px;
+
+  color:#00f0ff;
+
+  opacity:0;
+
+  text-shadow:
+    0 0 20px #00f0ff,
+    0 0 40px #0088ff,
+    0 0 80px #00f0ff;
+
+  animation:introLogo 2.5s ease forwards;
+  animation-delay:.5s;
+}
+
+@keyframes introLogo{
+
+  0%{
+    opacity:0;
+    transform:scale(.6);
+  }
+
+  50%{
+    opacity:1;
+    transform:scale(1.05);
+  }
+
+  100%{
+    opacity:1;
+    transform:scale(1);
+  }
+
+}
+
+
 </style>
 </head>
 
 <body>
+
+
+
+<div id="introCinematic">
+
+  <div class="introFlash"></div>
+
+  <div class="introLogo">
+    DIAMOND FACTORY
+  </div>
+
+</div>
 
 
 <!-- =========================
@@ -841,6 +938,24 @@ setInterval(updateFactories,1000);
 render();
 
 
+
+
+// =======================
+// AAA INTRO CINEMATIC
+// =======================
+
+setTimeout(()=>{
+
+  const intro = document.getElementById("introCinematic");
+
+  intro.style.opacity = 0;
+  intro.style.transition = "opacity 1s";
+
+  setTimeout(()=>{
+    intro.remove();
+  },1000);
+
+},3200);
 
 
 
