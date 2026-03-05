@@ -1979,6 +1979,17 @@ html, body{
 }
 
 
+.intro-hand img{
+  width:120px;
+  height:120px;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 20px rgba(0,255,180,.7))
+    drop-shadow(0 0 40px rgba(0,255,180,.4));
+}
+
+
 </style>
 </head>
 
@@ -2024,11 +2035,17 @@ html, body{
 
   <div class="intro-center">
 
-    <div class="intro-hand rock">✊</div>
+<div class="intro-hand rock">
+  <img src="/assets/rps/rock.png">
+</div>
 
-    <div class="intro-vs">VS</div>
+<div class="intro-vs">
+  VS
+</div>
 
-    <div class="intro-hand paper">✋</div>
+<div class="intro-hand paper">
+  <img src="/assets/rps/paper.png">
+</div>
 
   </div>
 
