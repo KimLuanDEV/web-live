@@ -990,3 +990,61 @@ const loaderInterval = setInterval(()=>{
 
 
 
+
+/* ================= ULTRA RPS INTRO ================= */
+
+function startRpsIntro(){
+
+  const intro = document.getElementById("rpsIntro");
+  if(!intro) return;
+
+  const rock = intro.querySelector(".intro-rock");
+  const paper = intro.querySelector(".intro-paper");
+  const scissors = intro.querySelector(".intro-scissors");
+  const vs = intro.querySelector(".intro-vs");
+
+  // hiện
+  rock.style.opacity = 1;
+  paper.style.opacity = 1;
+  scissors.style.opacity = 1;
+
+  // bay vào
+  setTimeout(()=>{
+    rock.style.transition = "1s cubic-bezier(.2,.8,.2,1)";
+    paper.style.transition = "1s cubic-bezier(.2,.8,.2,1)";
+    scissors.style.transition = "1s cubic-bezier(.2,.8,.2,1)";
+
+    rock.style.left = "35%";
+    rock.style.top = "40%";
+
+    paper.style.right = "35%";
+    paper.style.top = "40%";
+
+    scissors.style.bottom = "40%";
+  },100);
+
+  // collision
+  setTimeout(()=>{
+    intro.style.animation = "introFlash .3s";
+  },1100);
+
+  // show VS
+  setTimeout(()=>{
+    vs.style.opacity = 1;
+    vs.style.transform = "scale(1.2)";
+  },1300);
+
+  // fade intro
+  setTimeout(()=>{
+    intro.style.transition = "1s";
+    intro.style.opacity = 0;
+  },1900);
+
+  // remove
+  setTimeout(()=>{
+    intro.remove();
+  },2600);
+
+}
+
+window.addEventListener("load", startRpsIntro);
