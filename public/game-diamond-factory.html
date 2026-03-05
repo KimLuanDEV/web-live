@@ -593,6 +593,123 @@ body::before{
 
 
 
+.droneScan{
+
+  position:absolute;
+  width:80px;
+  height:30px;
+
+  top:40%;
+  left:-100px;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #00f0ff,
+    transparent
+  );
+
+  border-radius:30px;
+
+  filter:blur(2px);
+
+  animation:droneFly 6s linear infinite;
+}
+
+@keyframes droneFly{
+
+  0%{
+    left:-120px;
+    opacity:0;
+  }
+
+  10%{
+    opacity:1;
+  }
+
+  50%{
+    left:50%;
+  }
+
+  90%{
+    opacity:1;
+  }
+
+  100%{
+    left:110%;
+    opacity:0;
+  }
+
+}
+
+
+.forgeSparks{
+  position:absolute;
+  bottom:40%;
+  width:100%;
+  height:200px;
+  pointer-events:none;
+}
+
+.spark{
+
+  position:absolute;
+  width:3px;
+  height:12px;
+
+  background:linear-gradient(#00f0ff,#ffffff);
+
+  box-shadow:0 0 10px #00f0ff;
+
+  animation:sparkFly linear forwards;
+}
+
+@keyframes sparkFly{
+
+  from{
+    transform:translateY(0) rotate(20deg);
+    opacity:1;
+  }
+
+  to{
+    transform:translateY(-200px) rotate(20deg);
+    opacity:0;
+  }
+
+}
+
+
+.factoryLights{
+
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at 20% 70%, #00f0ff55, transparent 40%),
+    radial-gradient(circle at 60% 50%, #00f0ff55, transparent 40%),
+    radial-gradient(circle at 80% 80%, #00f0ff55, transparent 40%);
+
+  opacity:0;
+
+  animation:factoryBoot 4s ease forwards;
+}
+
+@keyframes factoryBoot{
+
+  0%{
+    opacity:0;
+  }
+
+  40%{
+    opacity:.3;
+  }
+
+  100%{
+    opacity:.6;
+  }
+
+}
+
 </style>
 </head>
 
@@ -622,6 +739,14 @@ body::before{
 <div class="radarScan"></div>
 
 <div class="energyCore"></div>
+
+
+<div class="droneScan"></div>
+
+
+<div class="forgeSparks"></div>
+
+<div class="factoryLights"></div>
 
   <div class="loader-core">
 
@@ -1115,6 +1240,30 @@ setInterval(()=>{
     bootMessages[bootIndex];
 
 },1200);
+
+
+
+
+const forge = document.querySelector(".forgeSparks");
+
+function spawnSpark(){
+
+  const s = document.createElement("div");
+  s.className = "spark";
+
+  s.style.left = Math.random()*100 + "%";
+
+  const duration = 1 + Math.random()*1.5;
+
+  s.style.animationDuration = duration + "s";
+
+  forge.appendChild(s);
+
+  setTimeout(()=> s.remove(), duration*1000);
+
+}
+
+setInterval(spawnSpark,120);
 
 
 </script>
