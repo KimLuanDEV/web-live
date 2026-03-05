@@ -1831,10 +1831,238 @@ html, body{
 
 
 
+
+/* =========================
+🎬 RPS CINEMATIC INTRO
+========================= */
+
+#rpsIntro{
+  position:fixed;
+  inset:0;
+  z-index:999999;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  background:
+  radial-gradient(circle at center,
+  #001f2b,
+  #000);
+
+  overflow:hidden;
+}
+
+/* PORTAL */
+
+.introPortal{
+  position:absolute;
+  width:600px;
+  height:600px;
+
+  border-radius:50%;
+
+  background:
+  radial-gradient(circle,
+  rgba(0,255,200,.4),
+  rgba(0,0,0,0));
+
+  filter:blur(40px);
+
+  animation:
+  portalPulse 2s infinite;
+}
+
+@keyframes portalPulse{
+  0%{transform:scale(.9);opacity:.5}
+  50%{transform:scale(1.1);opacity:1}
+  100%{transform:scale(.9);opacity:.5}
+}
+
+/* LOGO */
+
+.introLogo{
+  position:absolute;
+  top:18%;
+
+  font-size:34px;
+  font-weight:900;
+
+  letter-spacing:4px;
+
+  color:#00ffd0;
+
+  text-shadow:
+  0 0 20px #00ffd0,
+  0 0 40px #00ffd0;
+
+  opacity:0;
+
+  animation:logoReveal 2s forwards .5s;
+}
+
+@keyframes logoReveal{
+  to{opacity:1}
+}
+
+/* ARENA */
+
+.introArena{
+  position:relative;
+  width:420px;
+  height:200px;
+}
+
+/* HANDS */
+
+.introHand{
+  position:absolute;
+  width:130px;
+
+  opacity:0;
+}
+
+.rock{
+  left:0;
+  animation:rockEnter 1.4s forwards 1.4s;
+}
+
+.paper{
+  right:0;
+  animation:paperEnter 1.4s forwards 1.4s;
+}
+
+.scissors{
+  left:50%;
+  transform:translateX(-50%);
+  animation:scissorEnter 1.4s forwards 1.4s;
+}
+
+/* VS */
+
+.introVS{
+  position:absolute;
+  left:50%;
+  top:50%;
+
+  transform:translate(-50%,-50%) scale(.5);
+
+  font-size:60px;
+  font-weight:900;
+
+  color:white;
+
+  text-shadow:
+  0 0 20px #fff,
+  0 0 40px #00ffd0;
+
+  opacity:0;
+
+  animation:vsPop 1s forwards 2.6s;
+}
+
+@keyframes vsPop{
+  to{
+    opacity:1;
+    transform:translate(-50%,-50%) scale(1);
+  }
+}
+
+/* HAND ANIMATIONS */
+
+@keyframes rockEnter{
+  from{
+    transform:translateX(-200px);
+    opacity:0;
+  }
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+
+@keyframes paperEnter{
+  from{
+    transform:translateX(200px);
+    opacity:0;
+  }
+  to{
+    transform:translateX(0);
+    opacity:1;
+  }
+}
+
+@keyframes scissorEnter{
+  from{
+    transform:translate(-50%,100px);
+    opacity:0;
+  }
+  to{
+    transform:translate(-50%,0);
+    opacity:1;
+  }
+}
+
+/* FLASH */
+
+.introFlash{
+  position:absolute;
+  inset:0;
+  background:white;
+  opacity:0;
+}
+
+.introFlash.active{
+  animation:flashBang .5s forwards;
+}
+
+@keyframes flashBang{
+  0%{opacity:1}
+  100%{opacity:0}
+}
+
+/* HIDE */
+
+#rpsIntro.hide{
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .8s;
+}
+
+
 </style>
 </head>
 
 <body>
+
+
+<!-- =========================
+🎬 ULTRA RPS INTRO
+========================= -->
+
+<div id="rpsIntro">
+
+  <div class="introPortal"></div>
+
+  <div class="introLogo">
+    ROCK • PAPER • SCISSORS
+  </div>
+
+  <div class="introArena">
+
+    <img src="/assets/rps/rock.png" class="introHand rock">
+    <img src="/assets/rps/paper.png" class="introHand paper">
+    <img src="/assets/rps/scissors.png" class="introHand scissors">
+
+    <div class="introVS">VS</div>
+
+  </div>
+
+  <div class="introFlash"></div>
+
+</div>
+
 
 
  <!-- ===== CINEMATIC LOADER ===== -->
@@ -3104,6 +3332,35 @@ const loaderInterval = setInterval(()=>{
   }
 
 },400);
+
+
+
+
+/* =========================
+🎬 RPS INTRO CONTROLLER
+========================= */
+
+window.addEventListener("load",()=>{
+
+  const intro = document.getElementById("rpsIntro");
+
+  setTimeout(()=>{
+
+    document
+    .querySelector(".introFlash")
+    .classList.add("active");
+
+  },3200);
+
+  setTimeout(()=>{
+
+    intro.classList.add("hide");
+
+  },3600);
+
+});
+
+
 
 </script>
 </body>
