@@ -531,6 +531,68 @@ body::before{
 }
 
 
+
+.radarScan{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+
+  background:conic-gradient(
+    from 0deg,
+    transparent,
+    rgba(0,240,255,.25),
+    transparent 60%
+  );
+
+  animation:radarSpin 6s linear infinite;
+}
+
+@keyframes radarSpin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+
+.energyCore{
+
+  position:absolute;
+  width:120px;
+  height:120px;
+
+  border-radius:50%;
+
+  background:radial-gradient(
+    circle,
+    #00f0ff,
+    transparent 70%
+  );
+
+  filter:blur(20px);
+
+  animation:corePulse 2s ease-in-out infinite;
+}
+
+@keyframes corePulse{
+
+  0%{
+    transform:scale(.8);
+    opacity:.5;
+  }
+
+  50%{
+    transform:scale(1.2);
+    opacity:1;
+  }
+
+  100%{
+    transform:scale(.8);
+    opacity:.5;
+  }
+
+}
+
+
+
 </style>
 </head>
 
@@ -557,6 +619,9 @@ body::before{
 
   <div class="diamondParticles"></div>
 
+<div class="radarScan"></div>
+
+<div class="energyCore"></div>
 
   <div class="loader-core">
 
@@ -977,7 +1042,12 @@ const loaderInterval = setInterval(()=>{
     clearInterval(loaderInterval);
 
     setTimeout(()=>{
-      document.getElementById("loadingOverlay").style.opacity = 0;
+
+      const overlay = document.getElementById("loadingOverlay");
+
+overlay.style.transform = "scale(1.4)";
+overlay.style.opacity = 0;
+overlay.style.transition = "transform 1s, opacity 1s";
 
       setTimeout(()=>{
         document.getElementById("loadingOverlay").remove();
