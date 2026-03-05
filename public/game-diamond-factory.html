@@ -267,10 +267,148 @@ body::before{
 }
 
 
+
+/* =========================
+   LOADING OVERLAY
+========================= */
+
+#loadingOverlay{
+  position:fixed;
+  inset:0;
+  z-index:9999;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
+
+  background:
+    radial-gradient(circle at center,#00121f,#000);
+
+  overflow:hidden;
+}
+
+/* CORE */
+.loader-core{
+  text-align:center;
+}
+
+/* RINGS */
+
+.loader-ring{
+  position:absolute;
+  width:220px;
+  height:220px;
+
+  border:2px solid rgba(0,240,255,.3);
+  border-radius:50%;
+
+  animation:spin 3s linear infinite;
+}
+
+.loader-ring.ring2{
+  width:280px;
+  height:280px;
+
+  border-color:rgba(0,150,255,.2);
+  animation-direction:reverse;
+  animation-duration:6s;
+}
+
+/* LOGO */
+
+.loader-logo{
+  font-size:28px;
+  font-weight:900;
+  letter-spacing:3px;
+
+  color:#00f0ff;
+
+  text-shadow:
+    0 0 15px #00f0ff,
+    0 0 40px #0088ff;
+
+  margin-bottom:30px;
+}
+
+/* BAR */
+
+.loader-bar{
+  width:260px;
+  height:8px;
+
+  background:rgba(255,255,255,.08);
+  border-radius:20px;
+
+  overflow:hidden;
+
+  margin:auto;
+}
+
+.loader-progress{
+  width:0%;
+  height:100%;
+
+  background:linear-gradient(
+    90deg,
+    #00f0ff,
+    #0088ff,
+    #00f0ff
+  );
+
+  box-shadow:
+    0 0 20px rgba(0,240,255,.8);
+
+  transition:.3s;
+}
+
+/* TEXT */
+
+.loader-text{
+  margin-top:12px;
+  font-size:12px;
+  opacity:.7;
+}
+
+/* ANIMATION */
+
+@keyframes spin{
+  from{ transform:rotate(0deg); }
+  to{ transform:rotate(360deg); }
+}
+
+
 </style>
 </head>
 
 <body>
+
+
+<!-- =========================
+     🚀 LOADING OVERLAY
+========================= -->
+<div id="loadingOverlay">
+
+  <div class="loader-core">
+
+    <div class="loader-ring"></div>
+    <div class="loader-ring ring2"></div>
+
+    <div class="loader-logo">
+      DIAMOND FACTORY
+    </div>
+
+    <div class="loader-bar">
+      <div class="loader-progress" id="loaderProgress"></div>
+    </div>
+
+    <div class="loader-text">
+      Initializing Factory Systems...
+    </div>
+
+  </div>
+
+</div>
+
 
 <div class="topbar">
 
@@ -630,6 +768,39 @@ setInterval(updateFactories,1000);
 render();
 
 
+
+
+
+// =======================
+// LOADER SYSTEM
+// =======================
+
+let loaderProgress = 0;
+
+const loaderBar = document.getElementById("loaderProgress");
+
+const loaderInterval = setInterval(()=>{
+
+  loaderProgress += Math.random()*12;
+
+  if(loaderProgress >= 100){
+    loaderProgress = 100;
+
+    clearInterval(loaderInterval);
+
+    setTimeout(()=>{
+      document.getElementById("loadingOverlay").style.opacity = 0;
+
+      setTimeout(()=>{
+        document.getElementById("loadingOverlay").remove();
+      },600);
+
+    },300);
+  }
+
+  loaderBar.style.width = loaderProgress + "%";
+
+},120);
 
 
 </script>
