@@ -1448,9 +1448,38 @@ const activeUsers = new Map();
 const DTP_ROUND_FILE =
 "/opt/render/project/data/dtp_round_count.json";
 
+const DTP_HISTORY_FILE =
+"/opt/render/project/data/dtp_history.json";
 
-let dtpHistory = [];
+
+
+
+let dtpHistory = loadDtpHistory();
 const MAX_DTP_HISTORY = 10;
+
+
+function loadDtpHistory(){
+  try{
+    if(!fs.existsSync(DTP_HISTORY_FILE)) return [];
+    return JSON.parse(
+      fs.readFileSync(DTP_HISTORY_FILE,"utf8")
+    );
+  }catch(e){
+    console.error("❌ Load DTP history failed",e);
+    return [];
+  }
+}
+
+function saveDtpHistory(list){
+  try{
+    fs.writeFileSync(
+      DTP_HISTORY_FILE,
+      JSON.stringify(list,null,2)
+    );
+  }catch(e){
+    console.error("❌ Save DTP history failed",e);
+  }
+}
 
 
 function loadDtpRoundCount(){
@@ -1562,6 +1591,8 @@ dtpHistory.unshift(winner);
 if(dtpHistory.length > MAX_DTP_HISTORY){
   dtpHistory.pop();
 }
+
+saveDtpHistory(dtpHistory); // 🔥 thêm dòng này
 
 io.emit("dtp-history-update", dtpHistory);
 
