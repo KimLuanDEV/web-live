@@ -1442,8 +1442,16 @@ const activeUsers = new Map();
 // ================================
 // 🐉🐯🔥 DTP ROUND COUNT (24H)
 // ================================
+
+
+
 const DTP_ROUND_FILE =
 "/opt/render/project/data/dtp_round_count.json";
+
+
+let dtpHistory = [];
+const MAX_DTP_HISTORY = 20;
+
 
 function loadDtpRoundCount(){
   try{
@@ -1543,6 +1551,21 @@ setInterval(()=>{
     roundId: dtpRound.id,
     winner
   });
+
+
+  // =====================
+// SAVE HISTORY
+// =====================
+
+dtpHistory.unshift(winner);
+
+if(dtpHistory.length > MAX_DTP_HISTORY){
+  dtpHistory.pop();
+}
+
+io.emit("dtp-history-update", dtpHistory);
+
+
 
   // new round
 const todayStart = getTodayStartTsVN();
@@ -2896,6 +2919,9 @@ socket.on("star-war-reward", ({ reward })=>{
 
 
 //=====DTP=====
+
+
+socket.emit("dtp-history-update", dtpHistory);
 
 
 socket.emit("dtp-round-new",{

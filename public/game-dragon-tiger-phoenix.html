@@ -473,6 +473,17 @@ bar.appendChild(item);
 
 
 
+socket.on("dtp-history-update", list=>{
+
+dtpHistory = list;
+
+renderDtpHistory();
+
+});
+
+
+
+
 </script>
 
 </body>
