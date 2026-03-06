@@ -14,12 +14,43 @@
 /* ================= BACKGROUND ================= */
 
 body{
+
 margin:0;
 font-family:system-ui;
-background:#000;
+
+background:
+linear-gradient(
+rgba(0,0,0,.65),
+rgba(0,0,0,.9)
+),
+url("/assets/dtp/bg-arena.jpg");
+
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
+
 color:#fff;
 overflow:hidden;
+
 }
+
+
+body::before{
+
+content:"";
+position:fixed;
+inset:0;
+
+background:
+radial-gradient(
+circle at center,
+rgba(255,215,0,.15),
+transparent 60%
+);
+
+pointer-events:none;
+}
+
 
 /* ================= TOPBAR PRO ================= */
 
@@ -113,36 +144,82 @@ height:60vh;
 }
 
 
-/* ================= BET PANEL ================= */
+/* ================= BET PANEL PRO ================= */
 
 .bet-panel{
-
 display:flex;
-
 justify-content:center;
-
-gap:12px;
-
-padding:12px;
-
+gap:16px;
+padding:16px;
 }
+
+/* CHIP BASE */
 
 .chip{
 
-background:#111;
+width:70px;
+height:70px;
 
-border-radius:10px;
+border-radius:50%;
 
-padding:10px 14px;
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-weight:700;
+font-size:16px;
 
 cursor:pointer;
 
-border:1px solid rgba(255,255,255,.1);
+transition:.25s;
+
+box-shadow:
+0 4px 10px rgba(0,0,0,.6),
+inset 0 0 10px rgba(255,255,255,.2);
+
+border:3px dashed rgba(255,255,255,.3);
 
 }
 
-.chip:active{
-transform:scale(.9);
+/* CHIP COLORS */
+
+.chip10{
+background:radial-gradient(circle,#2f7bff,#002f80);
+}
+
+.chip50{
+background:radial-gradient(circle,#8b2bff,#3a0068);
+}
+
+.chip100{
+background:radial-gradient(circle,#ff3a3a,#5c0000);
+}
+
+.chip500{
+background:radial-gradient(circle,#ffcc00,#6a5200);
+color:#000;
+}
+
+/* ACTIVE CHIP */
+
+.chip.active{
+
+transform:scale(1.15);
+
+box-shadow:
+0 0 20px rgba(255,255,255,.6),
+0 0 40px rgba(255,255,255,.4);
+
+}
+
+/* HOVER */
+
+.chip:hover{
+transform:scale(1.1);
+}
+
+.chip span{
+pointer-events:none;
 }
 
 /* ================= RESULT ================= */
@@ -335,13 +412,23 @@ background:#ff8c00;
 </div>
 
 
-
 <div class="bet-panel">
 
-   <div class="chip" onclick="setBet(10)">10</div>
-   <div class="chip" onclick="setBet(50)">50</div>
-   <div class="chip" onclick="setBet(100)">100</div>
-   <div class="chip" onclick="setBet(500)">500</div>
+  <div class="chip chip10 active" onclick="setBet(10,this)">
+      <span>10</span>
+  </div>
+
+  <div class="chip chip50" onclick="setBet(50,this)">
+      <span>50</span>
+  </div>
+
+  <div class="chip chip100" onclick="setBet(100,this)">
+      <span>100</span>
+  </div>
+
+  <div class="chip chip500" onclick="setBet(500,this)">
+      <span>500</span>
+  </div>
 
 </div>
 
@@ -390,11 +477,17 @@ document.getElementById("coins").textContent = data.coins;
 
 /* ================= BET ================= */
 
-function setBet(v){
+function setBet(v,el){
 
 currentBet = v;
 
+document.querySelectorAll(".chip")
+.forEach(c=>c.classList.remove("active"));
+
+el.classList.add("active");
+
 }
+
 
 function placeBet(side){
 
