@@ -1439,16 +1439,62 @@ const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map();
 
 
+// ================================
+// 🐉🐯🔥 DTP ROUND COUNT (24H)
+// ================================
+const DTP_ROUND_FILE =
+"/opt/render/project/data/dtp_round_count.json";
+
+function loadDtpRoundCount(){
+  try{
+    if(!fs.existsSync(DTP_ROUND_FILE)){
+      return {
+        dayTs: getTodayStartTsVN(),
+        count: 0
+      };
+    }
+    return JSON.parse(
+      fs.readFileSync(DTP_ROUND_FILE,"utf8")
+    );
+  }catch(e){
+    return {
+      dayTs: getTodayStartTsVN(),
+      count: 0
+    };
+  }
+}
+
+function saveDtpRoundCount(data){
+  fs.writeFileSync(
+    DTP_ROUND_FILE,
+    JSON.stringify(data,null,2)
+  );
+}
 
 
+
+const dtpRoundState = loadDtpRoundCount();
+
+let dtpRoundCount =
+  dtpRoundState.count || 0;
+
+let dtpRoundDayTs =
+  dtpRoundState.dayTs || getTodayStartTsVN();
 
 
 // ================================
 // 🐉🐯🔥 DRAGON TIGER PHOENIX ROUND
 // ================================
 
+dtpRoundCount++;
+
+saveDtpRoundCount({
+  dayTs: dtpRoundDayTs,
+  count: dtpRoundCount
+});
+
 let dtpRound = {
-  id: Date.now(),
+  id: dtpRoundCount,
   startAt: Date.now(),
   endAt: Date.now() + 60000,
   bets: []
@@ -1499,12 +1545,26 @@ setInterval(()=>{
   });
 
   // new round
-  dtpRound = {
-    id: Date.now(),
-    startAt: Date.now(),
-    endAt: Date.now() + 60000,
-    bets: []
-  };
+const todayStart = getTodayStartTsVN();
+
+if(todayStart !== dtpRoundDayTs){
+  dtpRoundCount = 0;
+  dtpRoundDayTs = todayStart;
+}
+
+dtpRoundCount++;
+
+saveDtpRoundCount({
+  dayTs: dtpRoundDayTs,
+  count: dtpRoundCount
+});
+
+dtpRound = {
+  id: dtpRoundCount,
+  startAt: Date.now(),
+  endAt: Date.now() + 60000,
+  bets: []
+};
 
   io.emit("dtp-round-new",{
     roundId: dtpRound.id
