@@ -422,8 +422,8 @@ if(side === "phoenix"){
 
 socket.on("dtp-round-new", data=>{
 
-// 🔥 nếu vừa reload và đã restore bet thì không reset
-if(currentRound !== data.roundId && !betRestored){
+// 🔥 round mới → luôn reset cược
+if(currentRound !== data.roundId){
 
    betDragon = 0;
    betTiger = 0;
@@ -432,6 +432,8 @@ if(currentRound !== data.roundId && !betRestored){
    document.getElementById("betDragon").textContent = 0;
    document.getElementById("betTiger").textContent = 0;
    document.getElementById("betPhoenix").textContent = 0;
+
+   betRestored = false;
 }
 
 currentRound = data.roundId;
