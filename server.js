@@ -2920,6 +2920,26 @@ socket.on("star-war-reward", ({ reward })=>{
 
 //=====DTP=====
 
+// =====================
+// SEND CURRENT BETS
+// =====================
+
+const betSummary = {
+  dragon:0,
+  tiger:0,
+  phoenix:0
+};
+
+dtpRound.bets.forEach(b=>{
+  if(betSummary[b.side] !== undefined){
+     betSummary[b.side] += b.bet;
+  }
+});
+
+socket.emit("dtp-bet-update", betSummary);
+
+
+
 
 socket.emit("dtp-history-update", dtpHistory);
 

@@ -482,6 +482,18 @@ renderDtpHistory();
 });
 
 
+socket.on("dtp-bet-update", data=>{
+
+betDragon  = data.dragon  || 0;
+betTiger   = data.tiger   || 0;
+betPhoenix = data.phoenix || 0;
+
+document.getElementById("betDragon").textContent = betDragon;
+document.getElementById("betTiger").textContent  = betTiger;
+document.getElementById("betPhoenix").textContent = betPhoenix;
+
+});
+
 
 
 </script>
