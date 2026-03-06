@@ -1455,7 +1455,7 @@ const DTP_HISTORY_FILE =
 
 
 let dtpHistory = loadDtpHistory();
-const MAX_DTP_HISTORY = 10;
+const MAX_DTP_HISTORY = 8;
 
 
 function loadDtpHistory(){

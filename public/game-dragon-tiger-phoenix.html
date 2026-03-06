@@ -236,7 +236,7 @@ font-weight:700;
 
 .history-bar{
 display:flex;
-gap:10px;
+gap:12px;
 padding:6px 0px;
 justify-content:center;
 background:#020202;
@@ -244,9 +244,9 @@ border-bottom:1px solid rgba(255,255,255,.08);
 }
 
 .history-item{
-width:30px;
-height:30px;
-border-radius:8px;
+width:40px;
+height:40px;
+border-radius:0px;
 display:flex;
 align-items:center;
 justify-content:center;
@@ -504,7 +504,7 @@ if(winCard){
 
 dtpHistory.unshift(data.winner);
 
-if(dtpHistory.length > 10){
+if(dtpHistory.length > 8){
   dtpHistory.pop();
 }
 
