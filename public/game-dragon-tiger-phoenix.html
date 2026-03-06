@@ -151,103 +151,98 @@ padding:20px;
 height:80vh;
 }
 
+
+.arena::before{
+
+content:"";
+
+position:absolute;
+
+width:700px;
+height:700px;
+
+background:
+radial-gradient(
+circle,
+rgba(255,215,0,.12),
+rgba(255,215,0,.04),
+transparent 70%
+);
+
+border-radius:50%;
+
+top:55%;
+left:50%;
+
+transform:translate(-50%,-50%);
+
+pointer-events:none;
+
+}
+
 /* HUD */
 
 .arena-hud{
 
 position:absolute;
-top:90px;
+
+top:70px;
 left:50%;
+
 transform:translateX(-50%);
 
 display:flex;
 flex-direction:column;
 align-items:center;
 
-gap:8px;
+padding:14px 32px;
 
-z-index:0;
+border-radius:40px;
+
+background:
+linear-gradient(180deg,#0e0e0e,#020202);
+
+border:1px solid rgba(255,255,255,.12);
+
+box-shadow:
+0 10px 40px rgba(0,0,0,.8),
+inset 0 0 10px rgba(255,255,255,.05);
 
 }
 
 /* ROUND */
 
-.round-ui{
-
-display:flex;
-flex-direction:column;
-align-items:center;
-
-padding:8px 24px;
-
-border-radius:30px;
-
-background:
-linear-gradient(180deg,#1a1a1a,#050505);
-
-border:1px solid rgba(255,255,255,.15);
-
-box-shadow:
-0 0 20px rgba(0,0,0,.8),
-inset 0 0 10px rgba(255,255,255,.05);
-
-}
-
-.round-label{
+.round-title{
 
 font-size:11px;
-letter-spacing:2px;
+letter-spacing:3px;
 opacity:.6;
 
 }
 
 .round-number{
 
-font-size:24px;
-font-weight:800;
+font-size:28px;
+font-weight:900;
+
+margin-top:2px;
 
 }
 
 /* TIMER */
 
-.timer-ui{
-
-display:flex;
-flex-direction:column;
-align-items:center;
-
-padding:6px 20px;
-
-border-radius:20px;
-
-background:
-linear-gradient(180deg,#111,#020202);
-
-border:1px solid rgba(255,215,0,.25);
-
-box-shadow:
-0 0 20px rgba(255,215,0,.15);
-
-}
-
-.timer-label{
-
-font-size:10px;
-letter-spacing:1px;
-opacity:.6;
-
-}
-
 .timer-number{
 
-font-size:28px;
+font-size:30px;
 font-weight:900;
 
 color:#ffd700;
 
 text-shadow:
 0 0 10px gold,
-0 0 25px gold;
+0 0 30px gold;
+
+margin-top:4px;
 
 }
 /* ================= BET BAR (BOTTOM CASINO) ================= */
@@ -406,7 +401,7 @@ box-shadow:
 transition:.25s;
 
 background:#000;
-
+transform:translateY(20px);
 }
 
 .bet-card.dragon{
@@ -534,16 +529,12 @@ background:#ff8c00;
 
 <div class="arena-hud">
 
-  <div class="round-ui">
-    <div class="round-label">ROUND</div>
-    <div class="round-number" id="roundId">0</div>
-  </div>
+  <div class="round-title">ROUND</div>
 
-  <div class="timer-ui">
-    <div class="timer-label">BETTING TIME</div>
-    <div class="timer-number">
+  <div class="round-number" id="roundId">0</div>
+
+  <div class="timer-number">
     <span id="timer">60</span>
-    </div>
   </div>
 
 </div>
