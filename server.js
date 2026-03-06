@@ -1450,7 +1450,7 @@ const DTP_ROUND_FILE =
 
 
 let dtpHistory = [];
-const MAX_DTP_HISTORY = 20;
+const MAX_DTP_HISTORY = 10;
 
 
 function loadDtpRoundCount(){
