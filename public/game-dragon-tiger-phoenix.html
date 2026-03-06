@@ -422,8 +422,8 @@ if(side === "phoenix"){
 
 socket.on("dtp-round-new", data=>{
 
-// 🔥 round mới → reset cược
-if(currentRound !== data.roundId){
+// 🔥 nếu vừa reload và đã restore bet thì không reset
+if(currentRound !== data.roundId && !betRestored){
 
    betDragon = 0;
    betTiger = 0;
@@ -432,8 +432,6 @@ if(currentRound !== data.roundId){
    document.getElementById("betDragon").textContent = 0;
    document.getElementById("betTiger").textContent = 0;
    document.getElementById("betPhoenix").textContent = 0;
-
-   betRestored = false;
 }
 
 currentRound = data.roundId;
@@ -441,6 +439,7 @@ currentRound = data.roundId;
 document.getElementById("roundId").textContent = data.roundId;
 
 });
+
 
 /* ================= TIMER ================= */
 
@@ -572,9 +571,6 @@ socket.on("dtp-bet-update", data=>{
 
 socket.on("dtp-my-bet", data=>{
 
-// 🔥 chỉ restore nếu cùng round
-if(betRestored) return;
-
 betDragon  = data.dragon  || 0;
 betTiger   = data.tiger   || 0;
 betPhoenix = data.phoenix || 0;
@@ -583,7 +579,7 @@ document.getElementById("betDragon").textContent  = betDragon;
 document.getElementById("betTiger").textContent   = betTiger;
 document.getElementById("betPhoenix").textContent = betPhoenix;
 
-betRestored = true;
+betRestored = true; // 🔥 thêm dòng này
 
 });
 
