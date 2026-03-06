@@ -303,6 +303,7 @@ let betDragon = 0;
 let betTiger = 0;
 let betPhoenix = 0;
 
+let betRestored = false;
 
 /* ================= COIN ================= */
 
@@ -348,8 +349,8 @@ if(side === "phoenix"){
 
 socket.on("dtp-round-new", data=>{
 
-// chỉ reset khi round thay đổi
-if(currentRound !== data.roundId){
+// 🔥 nếu vừa reload và đã restore bet thì không reset
+if(currentRound !== data.roundId && !betRestored){
 
    betDragon = 0;
    betTiger = 0;
@@ -505,8 +506,9 @@ document.getElementById("betDragon").textContent  = betDragon;
 document.getElementById("betTiger").textContent   = betTiger;
 document.getElementById("betPhoenix").textContent = betPhoenix;
 
-});
+betRestored = true; // 🔥 thêm dòng này
 
+});
 
 
 </script>
