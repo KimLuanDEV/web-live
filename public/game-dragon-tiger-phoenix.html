@@ -156,44 +156,98 @@ height:80vh;
 .arena-hud{
 
 position:absolute;
-top:80px;
+top:90px;
 left:50%;
 transform:translateX(-50%);
 
 display:flex;
-flex-direction:column;   /* quan trọng */
-
+flex-direction:column;
 align-items:center;
-gap:6px;
+
+gap:8px;
 
 z-index:5;
 
 }
 
+/* ROUND */
+
 .round-ui{
 
-font-size:18px;
-font-weight:700;
+display:flex;
+flex-direction:column;
+align-items:center;
 
-padding:8px 18px;
+padding:8px 24px;
 
-border-radius:20px;
+border-radius:30px;
 
-background:linear-gradient(180deg,#111,#050505);
+background:
+linear-gradient(180deg,#1a1a1a,#050505);
+
 border:1px solid rgba(255,255,255,.15);
+
+box-shadow:
+0 0 20px rgba(0,0,0,.8),
+inset 0 0 10px rgba(255,255,255,.05);
 
 }
 
+.round-label{
+
+font-size:11px;
+letter-spacing:2px;
+opacity:.6;
+
+}
+
+.round-number{
+
+font-size:24px;
+font-weight:800;
+
+}
+
+/* TIMER */
+
 .timer-ui{
 
-font-size:22px;
-font-weight:800;
+display:flex;
+flex-direction:column;
+align-items:center;
+
+padding:6px 20px;
+
+border-radius:20px;
+
+background:
+linear-gradient(180deg,#111,#020202);
+
+border:1px solid rgba(255,215,0,.25);
+
+box-shadow:
+0 0 20px rgba(255,215,0,.15);
+
+}
+
+.timer-label{
+
+font-size:10px;
+letter-spacing:1px;
+opacity:.6;
+
+}
+
+.timer-number{
+
+font-size:28px;
+font-weight:900;
 
 color:#ffd700;
 
 text-shadow:
 0 0 10px gold,
-0 0 20px gold;
+0 0 25px gold;
 
 }
 /* ================= BET BAR (BOTTOM CASINO) ================= */
@@ -478,17 +532,21 @@ background:#ff8c00;
 
 <div class="arena">
 
-  <div class="arena-hud">
+<div class="arena-hud">
 
-    <div class="round-ui">
-      ROUND <span id="roundId">0</span>
-    </div>
-
-    <div class="timer-ui">
-      ⏱ <span id="timer">60</span>
-    </div>
-
+  <div class="round-ui">
+    <div class="round-label">ROUND</div>
+    <div class="round-number" id="roundId">0</div>
   </div>
+
+  <div class="timer-ui">
+    <div class="timer-label">BETTING TIME</div>
+    <div class="timer-number">
+    <span id="timer">60</span>
+    </div>
+  </div>
+
+</div>
 
   <div class="bet-card dragon" onclick="placeBet('dragon')">
       <img src="/assets/dtp/dragon.png">
