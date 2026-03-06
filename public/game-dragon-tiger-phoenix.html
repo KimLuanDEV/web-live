@@ -141,14 +141,56 @@ font-size:18px;
 /* ================= ARENA ================= */
 
 .arena{
+position:relative;
 flex:1;
 display:flex;
-justify-content:space-around;
+justify-content:center;
 align-items:center;
+gap:30px;
 padding:20px;
 height:80vh;
 }
 
+/* HUD */
+
+.arena-hud{
+
+position:absolute;
+top:20px;
+left:50%;
+transform:translateX(-50%);
+
+display:flex;
+gap:20px;
+
+z-index:5;
+
+}
+
+.round-ui,
+.timer-ui{
+
+padding:8px 16px;
+
+border-radius:20px;
+
+background:
+linear-gradient(180deg,#111,#050505);
+
+border:1px solid rgba(255,255,255,.15);
+
+font-weight:700;
+font-size:16px;
+
+box-shadow:
+0 0 20px rgba(0,0,0,.8);
+
+}
+
+.timer-ui{
+color:#ffd700;
+font-size:18px;
+}
 
 /* ================= BET BAR (BOTTOM CASINO) ================= */
 
@@ -414,15 +456,7 @@ background:#ff8c00;
 
 <div class="topbar">
 
-  <div class="top-item round-box">
-    <div class="top-label">ROUND</div>
-    <div class="top-value" id="roundId">0</div>
-  </div>
 
-  <div class="top-item timer-box">
-    <div class="top-label">TIME</div>
-    <div class="top-value timer" id="timer">60</div>
-  </div>
 
   <div class="top-item coin-box">
     <div class="top-label">DIAMOND</div>
@@ -439,6 +473,18 @@ background:#ff8c00;
 
 
 <div class="arena">
+
+  <div class="arena-hud">
+
+    <div class="round-ui">
+      ROUND <span id="roundId">0</span>
+    </div>
+
+    <div class="timer-ui">
+      ⏱ <span id="timer">60</span>
+    </div>
+
+  </div>
 
   <div class="bet-card dragon" onclick="placeBet('dragon')">
       <img src="/assets/dtp/dragon.png">
