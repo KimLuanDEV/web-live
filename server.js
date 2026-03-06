@@ -2897,6 +2897,13 @@ socket.on("star-war-reward", ({ reward })=>{
 
 //=====DTP=====
 
+
+socket.emit("dtp-round-new",{
+  roundId: dtpRound.id
+});
+
+
+
 socket.on("dtp-bet", ({ side, bet }) => {
 
   const uid = socket.data.uid;
