@@ -1438,6 +1438,97 @@ const server = http.createServer(app);
 const io = new Server(server, { cors: { origin: "*" } });
 const activeUsers = new Map();
 
+
+
+
+
+
+// ================================
+// 🐉🐯🔥 DRAGON TIGER PHOENIX ROUND
+// ================================
+
+let dtpRound = {
+  id: Date.now(),
+  startAt: Date.now(),
+  endAt: Date.now() + 60000,
+  bets: []
+};
+
+function pickDtpWinner(){
+
+  const r = Math.random();
+
+  if(r < 0.333) return "dragon";
+  if(r < 0.666) return "tiger";
+  return "phoenix";
+
+}
+
+
+
+setInterval(()=>{
+
+  const users = loadUsers();
+
+  const winner = pickDtpWinner();
+
+  dtpRound.bets.forEach(o=>{
+
+    const me = users[o.uid];
+    if(!me?.profile) return;
+
+    if(o.side === winner){
+
+      const win = o.bet * 3;
+
+      me.profile.coins += win;
+
+    }
+
+  });
+
+  saveUsers(users);
+
+  dtpRound.bets.forEach(o=>{
+    emitCoinUpdate(o.uid);
+  });
+
+  io.emit("dtp-result",{
+    roundId: dtpRound.id,
+    winner
+  });
+
+  // new round
+  dtpRound = {
+    id: Date.now(),
+    startAt: Date.now(),
+    endAt: Date.now() + 60000,
+    bets: []
+  };
+
+  io.emit("dtp-round-new",{
+    roundId: dtpRound.id
+  });
+
+},60000);
+
+
+
+setInterval(()=>{
+
+  const remain =
+    Math.max(
+      0,
+      Math.floor((dtpRound.endAt - Date.now())/1000)
+    );
+
+  io.emit("dtp-timer", remain);
+
+},1000);
+
+
+
+
 // ================================
 // 🚀 STAR WAR SESSION STORE
 // ================================
@@ -2743,6 +2834,48 @@ socket.on("star-war-reward", ({ reward })=>{
 
 
 
+
+//=====DTP=====
+
+socket.on("dtp-bet", ({ side, bet }) => {
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if(!me?.profile) return;
+
+  bet = Number(bet || 0);
+
+  if(me.profile.coins < bet){
+    socket.emit("notify",{
+      type:"bad",
+      message:"Not enough coins"
+    });
+    return;
+  }
+
+  me.profile.coins -= bet;
+
+  dtpRound.bets.push({
+    uid,
+    side,
+    bet
+  });
+
+  saveUsers(users);
+
+  emitCoinUpdate(uid);
+
+});
+
+
+
+
+
+
 // ================================
 // 🏭 DIAMOND FACTORY
 // ================================
@@ -2800,6 +2933,9 @@ socket.on("hospital-upgrade", ({ index })=>{
   });
 
 });
+
+
+
 
 
 
