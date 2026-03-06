@@ -59,24 +59,22 @@ pointer-events:none;
 
 
 /* ================= TOPBAR PRO ================= */
-
 .topbar{
 
 display:flex;
-justify-content:space-between;
 align-items:center;
+gap:0px;
 
 padding:10px 14px;
 
 background:
 linear-gradient(180deg,#0a0a0a,#000);
-
 border-bottom:1px solid rgba(255,255,255,.08);
-
 box-shadow:
 0 10px 40px rgba(0,0,0,.9);
-
+margin-bottom:-6px;
 }
+
 
 .top-item{
 
@@ -84,16 +82,8 @@ display:flex;
 flex-direction:column;
 align-items:center;
 
-padding:6px 12px;
-
-border-radius:10px;
-
-background:
-linear-gradient(180deg,#111,#050505);
-
-border:1px solid rgba(255,255,255,.08);
-
-min-width:90px;
+padding:0;
+min-width:68px;
 
 }
 
@@ -107,7 +97,7 @@ letter-spacing:1px;
 
 .top-value{
 
-font-size:18px;
+font-size:15px;
 font-weight:700;
 
 }
@@ -450,8 +440,6 @@ display:flex;
 gap:1px;
 padding:6px 0px;
 justify-content:center;
-background:#020202;
-border-bottom:1px solid rgba(255,255,255,.08);
 }
 
 .history-item{
@@ -486,6 +474,51 @@ background:#ff8c00;
 
 
 
+/* BACK BUTTON */
+
+.back-btn{
+
+font-size:22px;
+font-weight:900;
+
+width:36px;
+height:36px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+transition:.2s;
+
+}
+
+.back-btn:hover{
+
+transform:scale(1.1);
+
+box-shadow:0 0 10px rgba(255,255,255,.2);
+
+}
+
+
+/* GAME TITLE */
+
+.game-title{
+flex:1;
+display:flex;
+justify-content:center;
+align-items:center;
+margin-right:-51px;
+}
+
+.game-title img{
+width:280px;
+height:77px;
+object-fit:cover;
+pointer-events:none;
+}
+
 
 
 </style>
@@ -495,8 +528,13 @@ background:#ff8c00;
 
 <div class="topbar">
 
+  <div class="back-btn" onclick="location.href='/invest.html'">‹</div>
+
+<div class="game-title">
+  <img src="/assets/dtp/game-title.png" alt="Dragon Tiger Phoenix">
+</div>
+
   <div class="top-item coin-box">
-    <div class="top-label">DIAMOND</div>
     <div class="top-value coin">
       💎 <span id="coins">0</span>
     </div>
