@@ -348,15 +348,20 @@ if(side === "phoenix"){
 
 socket.on("dtp-round-new", data=>{
 
+// chỉ reset khi round thay đổi
+if(currentRound !== data.roundId){
+
+   betDragon = 0;
+   betTiger = 0;
+   betPhoenix = 0;
+
+   document.getElementById("betDragon").textContent = 0;
+   document.getElementById("betTiger").textContent = 0;
+   document.getElementById("betPhoenix").textContent = 0;
+}
+
 currentRound = data.roundId;
 
-betDragon = 0;
-betTiger = 0;
-betPhoenix = 0;
-
-document.getElementById("betDragon").textContent = 0;
-document.getElementById("betTiger").textContent = 0;
-document.getElementById("betPhoenix").textContent = 0;
 document.getElementById("roundId").textContent = data.roundId;
 
 });
@@ -484,12 +489,20 @@ renderDtpHistory();
 
 socket.on("dtp-bet-update", data=>{
 
+// nếu muốn hiển thị tổng cược phòng thì xử lý ở đây
+// hiện tại chỉ dùng cho thống kê, không ghi đè cược user
+
+});
+
+
+socket.on("dtp-my-bet", data=>{
+
 betDragon  = data.dragon  || 0;
 betTiger   = data.tiger   || 0;
 betPhoenix = data.phoenix || 0;
 
-document.getElementById("betDragon").textContent = betDragon;
-document.getElementById("betTiger").textContent  = betTiger;
+document.getElementById("betDragon").textContent  = betDragon;
+document.getElementById("betTiger").textContent   = betTiger;
 document.getElementById("betPhoenix").textContent = betPhoenix;
 
 });

@@ -2930,13 +2930,33 @@ const betSummary = {
   phoenix:0
 };
 
+const myBetRestore = {
+  dragon:0,
+  tiger:0,
+  phoenix:0
+};
+
 dtpRound.bets.forEach(b=>{
+
+  // tổng bet toàn phòng
   if(betSummary[b.side] !== undefined){
      betSummary[b.side] += b.bet;
   }
+
+  // bet của chính user
+  if(b.uid === uid){
+     if(myBetRestore[b.side] !== undefined){
+        myBetRestore[b.side] += b.bet;
+     }
+  }
+
 });
 
+// gửi tổng bet
 socket.emit("dtp-bet-update", betSummary);
+
+// gửi bet của user để restore khi reload
+socket.emit("dtp-my-bet", myBetRestore);
 
 
 
