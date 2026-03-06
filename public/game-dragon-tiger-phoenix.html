@@ -161,37 +161,41 @@ left:50%;
 transform:translateX(-50%);
 
 display:flex;
-gap:20px;
+flex-direction:column;   /* quan trọng */
+
+align-items:center;
+gap:6px;
 
 z-index:5;
 
 }
 
-.round-ui,
-.timer-ui{
+.round-ui{
 
-padding:8px 16px;
+font-size:18px;
+font-weight:700;
+
+padding:8px 18px;
 
 border-radius:20px;
 
-background:
-linear-gradient(180deg,#111,#050505);
-
+background:linear-gradient(180deg,#111,#050505);
 border:1px solid rgba(255,255,255,.15);
-
-font-weight:700;
-font-size:16px;
-
-box-shadow:
-0 0 20px rgba(0,0,0,.8);
 
 }
 
 .timer-ui{
-color:#ffd700;
-font-size:18px;
-}
 
+font-size:22px;
+font-weight:800;
+
+color:#ffd700;
+
+text-shadow:
+0 0 10px gold,
+0 0 20px gold;
+
+}
 /* ================= BET BAR (BOTTOM CASINO) ================= */
 
 .bet-panel{
