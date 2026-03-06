@@ -44,39 +44,6 @@ padding:20px;
 height:60vh;
 }
 
-/* ================= CARD ================= */
-
-.card{
-
-width:30%;
-aspect-ratio:3/4;
-
-border-radius:18px;
-
-overflow:hidden;
-
-cursor:pointer;
-
-position:relative;
-
-box-shadow:
-0 10px 40px rgba(0,0,0,.8);
-
-transition:.2s;
-
-}
-
-.card:active{
-transform:scale(.95);
-}
-
-.card img{
-width:100%;
-height:100%;
-object-fit:cover;
-}
-
-
 
 /* ================= BET PANEL ================= */
 
@@ -141,6 +108,63 @@ width:220px;
 margin-top:20px;
 }
 
+
+
+
+.bet-card{
+width:30%;
+aspect-ratio:3/4;
+border-radius:20px;
+overflow:hidden;
+position:relative;
+cursor:pointer;
+
+box-shadow:
+0 20px 60px rgba(0,0,0,.9),
+0 0 40px rgba(255,255,255,.05);
+
+transition:.25s;
+}
+
+.bet-card:hover{
+transform:scale(1.05);
+}
+
+.bet-card img{
+width:100%;
+height:100%;
+object-fit:cover;
+}
+
+/* overlay */
+
+.bet-overlay{
+position:absolute;
+bottom:0;
+left:0;
+right:0;
+padding:12px;
+background:linear-gradient(
+transparent,
+rgba(0,0,0,.9)
+);
+text-align:center;
+}
+
+.bet-title{
+font-weight:700;
+letter-spacing:2px;
+}
+
+.bet-amount{
+font-size:20px;
+margin-top:6px;
+color:#ffd700;
+font-weight:700;
+}
+
+
+
 </style>
 </head>
 
@@ -165,17 +189,29 @@ margin-top:20px;
 
 <div class="arena">
 
-   <div class="card" onclick="placeBet('dragon')">
-   <img src="/assets/dtp/dragon.png">
-   </div>
+  <div class="bet-card dragon" onclick="placeBet('dragon')">
+      <img src="/assets/dtp/dragon.png">
+      <div class="bet-overlay">
+        <div class="bet-title">DRAGON</div>
+        <div class="bet-amount" id="betDragon">0</div>
+      </div>
+  </div>
 
-   <div class="card" onclick="placeBet('tiger')">
-   <img src="/assets/dtp/tiger.png">
-   </div>
+  <div class="bet-card tiger" onclick="placeBet('tiger')">
+      <img src="/assets/dtp/tiger.png">
+      <div class="bet-overlay">
+        <div class="bet-title">TIGER</div>
+        <div class="bet-amount" id="betTiger">0</div>
+      </div>
+  </div>
 
-   <div class="card" onclick="placeBet('phoenix')">
-   <img src="/assets/dtp/phoenix.png">
-   </div>
+  <div class="bet-card phoenix" onclick="placeBet('phoenix')">
+      <img src="/assets/dtp/phoenix.png">
+      <div class="bet-overlay">
+        <div class="bet-title">PHOENIX</div>
+        <div class="bet-amount" id="betPhoenix">0</div>
+      </div>
+  </div>
 
 </div>
 
@@ -217,6 +253,11 @@ let currentBet = 10;
 
 let currentRound = 1;
 
+let betDragon = 0;
+let betTiger = 0;
+let betPhoenix = 0;
+
+
 /* ================= COIN ================= */
 
 socket.on("coin-update", data=>{
@@ -236,11 +277,24 @@ currentBet = v;
 function placeBet(side){
 
 socket.emit("dtp-bet",{
-
-side,
-bet:currentBet
-
+  side,
+  bet:currentBet
 });
+
+if(side === "dragon"){
+   betDragon += currentBet;
+   document.getElementById("betDragon").textContent = betDragon;
+}
+
+if(side === "tiger"){
+   betTiger += currentBet;
+   document.getElementById("betTiger").textContent = betTiger;
+}
+
+if(side === "phoenix"){
+   betPhoenix += currentBet;
+   document.getElementById("betPhoenix").textContent = betPhoenix;
+}
 
 }
 
@@ -250,9 +304,17 @@ socket.on("dtp-round-new", data=>{
 
 currentRound = data.roundId;
 
+betDragon = 0;
+betTiger = 0;
+betPhoenix = 0;
+
+document.getElementById("betDragon").textContent = 0;
+document.getElementById("betTiger").textContent = 0;
+document.getElementById("betPhoenix").textContent = 0;
 document.getElementById("roundId").textContent = data.roundId;
 
 });
+
 
 /* ================= TIMER ================= */
 
@@ -268,13 +330,41 @@ socket.on("dtp-result", data=>{
 
 const result = document.getElementById("result");
 
+const text = document.getElementById("resultText");
+const img  = document.getElementById("winnerImg");
+
+// hiện overlay
 result.classList.remove("hidden");
 
-document.getElementById("resultText").innerText =
-"Winner: " + data.winner.toUpperCase();
+// text
+text.innerText = "Winner: " + data.winner.toUpperCase();
 
-document.getElementById("winnerImg").src =
-"/assets/dtp/"+data.winner+".png";
+// image
+img.src = "/assets/dtp/" + data.winner + ".png";
+
+
+// =============================
+// highlight cửa thắng
+// =============================
+
+document.querySelectorAll(".bet-card")
+.forEach(c=>{
+  c.style.boxShadow =
+  "0 10px 40px rgba(0,0,0,.8)";
+});
+
+const winCard =
+document.querySelector("." + data.winner);
+
+if(winCard){
+  winCard.style.boxShadow =
+  "0 0 60px gold, 0 0 120px rgba(255,215,0,.6)";
+}
+
+
+// =============================
+// ẩn result sau 4s
+// =============================
 
 setTimeout(()=>{
 
