@@ -792,6 +792,45 @@ body.sheet-open{
 
 
 
+
+/* 🐉 DRAGON TIGER PHOENIX */
+.invest-card.dragon-tiger{
+  background-image:
+    linear-gradient(180deg, rgba(255,80,0,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/dragon-tiger.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 55px rgba(255,80,0,.45),
+    0 12px 30px rgba(0,0,0,.8);
+}
+
+/* hiệu ứng ánh lửa */
+.invest-card.dragon-tiger::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at 25% 40%, rgba(255,120,0,.35), transparent 60%),
+    radial-gradient(circle at 75% 60%, rgba(255,0,0,.25), transparent 60%);
+
+  mix-blend-mode: screen;
+  animation: pulseDragon 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseDragon{
+  0%{opacity:.4}
+  50%{opacity:.9}
+  100%{opacity:.4}
+}
+
+
+
+
 </style>
 
 
@@ -964,6 +1003,12 @@ body.sheet-open{
   <div class="asset-name"></div>
 </div>
 
+
+<!-- 🐉🐅🦅 GAME RỒNG - HỔ - PHƯỢNG HOÀNG -->
+<div class="invest-card dragon-tiger"
+     onclick="openDragonTigerGame()">
+  <div class="asset-name"></div>
+</div>
 
 
       </div>

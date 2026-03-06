@@ -132,3 +132,8 @@ function openDiamondFactoryGame(){
 
 
 
+
+function openDragonTigerGame(){
+  location.href = "/game-dragon-tiger.html";
+}
+
