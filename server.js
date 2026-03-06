@@ -2705,6 +2705,8 @@ io.on("connection", socket => {
 
   const { uid, deviceId } = socket.handshake.auth || {};
 
+  socket.data.uid = uid;
+
   socket.data.deviceId = deviceId;
 
   if (!uid) return;
