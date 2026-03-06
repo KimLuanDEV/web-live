@@ -14,6 +14,7 @@
 /* ================= BACKGROUND ================= */
 
 html, body{
+touch-action: manipulation;
 background: #000;
 }
 
@@ -230,7 +231,7 @@ background:#000;
 padding:0px 6px;
 border-radius:20px;
 border:1px solid rgba(255,255,255,.2);
-
+color:#ffd700;
 }
 
 /* hover */
@@ -284,22 +285,40 @@ margin-top:20px;
 
 
 .bet-card{
-width:30%;
+
+width:28%;
+max-width:260px;
+
 aspect-ratio:3/4;
-border-radius:20px;
+
+border-radius:22px;
 overflow:hidden;
+
 position:relative;
 cursor:pointer;
 
+border:2px solid rgba(255,255,255,.08);
+
 box-shadow:
-0 20px 60px rgba(0,0,0,.9),
-0 0 40px rgba(255,255,255,.05);
+0 25px 80px rgba(0,0,0,.9),
+0 0 30px rgba(255,255,255,.05);
 
 transition:.25s;
+
+background:#000;
+
 }
 
-.bet-card:hover{
-transform:scale(1.05);
+.bet-card.dragon{
+border-color:#ff4040;
+}
+
+.bet-card.tiger{
+border-color:#4090ff;
+}
+
+.bet-card.phoenix{
+border-color:#ff9b00;
 }
 
 .bet-card img{
@@ -311,27 +330,37 @@ object-fit:cover;
 /* overlay */
 
 .bet-overlay{
+
 position:absolute;
-bottom:0;
+bottom:-11px;
 left:0;
 right:0;
-padding:0;
+
+padding:0px;
+
 background:linear-gradient(
 transparent,
-rgba(0,0,0,.9)
+rgba(0,0,0,.8)
 );
-text-align:center;
-}
 
+display:flex;
+justify-content:center;
+align-items:center;
+
+}
 
 
 .bet-amount{
-font-size:20px;
-margin-top:-2px;
-color:#ffd700;
-font-weight:700;
-}
 
+font-size:26px;
+font-weight:800;
+color:#ffd700;
+text-shadow:
+0 0 10px gold,
+0 0 20px gold;
+padding:6px 14px;
+
+}
 
 
 
@@ -615,8 +644,10 @@ const winCard =
 document.querySelector("." + data.winner);
 
 if(winCard){
-  winCard.style.boxShadow =
-  "0 0 60px gold, 0 0 120px rgba(255,215,0,.6)";
+winCard.style.transform = "scale(1.08)";
+
+winCard.style.boxShadow =
+"0 0 80px gold,0 0 200px rgba(255,215,0,.7)";
 }
 
 
@@ -711,23 +742,7 @@ betRestored = true; // 🔥 thêm dòng này
 
 
 
-document.addEventListener('gesturestart', function (e) {
-  e.preventDefault();
-});
 
-let lastTouchEnd = 0;
-
-document.addEventListener('touchend', function (event) {
-
-  const now = Date.now();
-
-  if (now - lastTouchEnd <= 300) {
-    event.preventDefault();
-  }
-
-  lastTouchEnd = now;
-
-}, false);
 
 
 </script>
