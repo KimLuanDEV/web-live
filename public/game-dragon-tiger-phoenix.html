@@ -76,23 +76,7 @@ height:100%;
 object-fit:cover;
 }
 
-.multi{
 
-position:absolute;
-
-bottom:10px;
-
-left:50%;
-
-transform:translateX(-50%);
-
-font-size:22px;
-
-font-weight:800;
-
-text-shadow:0 2px 10px rgba(0,0,0,.8);
-
-}
 
 /* ================= BET PANEL ================= */
 
@@ -158,63 +142,54 @@ margin-top:20px;
 }
 
 </style>
-
 </head>
 
 <body>
 
 <div class="topbar">
 
-<div>
-Round: <span id="roundId">1</span>
+   <div>
+   Round: <span id="roundId">1</span>
+   </div>
+
+   <div>
+   ⏱ <span id="timer">60</span>
+   </div>
+
+   <div>
+   💎 <span id="coins">0</span>
+   </div>
+
 </div>
 
-<div>
-⏱ <span id="timer">60</span>
-</div>
-
-<div>
-💎 <span id="coins">0</span>
-</div>
-
-</div>
 
 <div class="arena">
 
-<div class="card" onclick="placeBet('dragon')">
+   <div class="card" onclick="placeBet('dragon')">
+   <img src="/assets/dtp/dragon.png">
+   </div>
 
-<img src="/assets/dtp/dragon.png">
+   <div class="card" onclick="placeBet('tiger')">
+   <img src="/assets/dtp/tiger.png">
+   </div>
 
-<div class="multi">x3</div>
-
-</div>
-
-<div class="card" onclick="placeBet('tiger')">
-
-<img src="/assets/dtp/tiger.png">
-
-<div class="multi">x3</div>
+   <div class="card" onclick="placeBet('phoenix')">
+   <img src="/assets/dtp/phoenix.png">
+   </div>
 
 </div>
 
-<div class="card" onclick="placeBet('phoenix')">
 
-<img src="/assets/dtp/phoenix.png">
-
-<div class="multi">x3</div>
-
-</div>
-
-</div>
 
 <div class="bet-panel">
 
-<div class="chip" onclick="setBet(10)">10</div>
-<div class="chip" onclick="setBet(50)">50</div>
-<div class="chip" onclick="setBet(100)">100</div>
-<div class="chip" onclick="setBet(500)">500</div>
+   <div class="chip" onclick="setBet(10)">10</div>
+   <div class="chip" onclick="setBet(50)">50</div>
+   <div class="chip" onclick="setBet(100)">100</div>
+   <div class="chip" onclick="setBet(500)">500</div>
 
 </div>
+
 
 <div id="result" class="result hidden">
 
