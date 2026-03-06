@@ -2985,22 +2985,17 @@ dtpRound.bets.forEach(b=>{
 
 });
 
-// gửi tổng bet
-socket.emit("dtp-bet-update", betSummary);
-
-// gửi bet của user để restore khi reload
-socket.emit("dtp-my-bet", myBetRestore);
-
-
-
-
-socket.emit("dtp-history-update", dtpHistory);
-
 
 socket.emit("dtp-round-new",{
   roundId: dtpRound.id
 });
 
+socket.emit("dtp-history-update", dtpHistory);
+
+socket.emit("dtp-bet-update", betSummary);
+
+// restore cược user
+socket.emit("dtp-my-bet", myBetRestore);
 
 
 socket.on("dtp-bet", ({ side, bet }) => {
