@@ -366,6 +366,8 @@ uid:me.uid
 }
 });
 
+
+
 /* ================= STATE ================= */
 
 let currentBet = 10;
@@ -422,18 +424,21 @@ if(side === "phoenix"){
 
 socket.on("dtp-round-new", data=>{
 
-// 🔥 round mới → luôn reset cược
+// chỉ reset khi round mới thật sự
 if(currentRound !== data.roundId){
 
-   betDragon = 0;
-   betTiger = 0;
-   betPhoenix = 0;
+   if(!betRestored){
 
-   document.getElementById("betDragon").textContent = 0;
-   document.getElementById("betTiger").textContent = 0;
-   document.getElementById("betPhoenix").textContent = 0;
+      betDragon = 0;
+      betTiger = 0;
+      betPhoenix = 0;
 
-   betRestored = false;
+      document.getElementById("betDragon").textContent = 0;
+      document.getElementById("betTiger").textContent = 0;
+      document.getElementById("betPhoenix").textContent = 0;
+
+   }
+
 }
 
 currentRound = data.roundId;
