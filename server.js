@@ -3021,6 +3021,7 @@ socket.on("dtp-bet", ({ side, bet }) => {
     return;
   }
 
+  // trừ coin
   me.profile.coins -= bet;
 
   dtpRound.bets.push({
@@ -3030,8 +3031,46 @@ socket.on("dtp-bet", ({ side, bet }) => {
   });
 
   saveUsers(users);
-
   emitCoinUpdate(uid);
+
+  // =====================
+  // UPDATE BET SUMMARY
+  // =====================
+
+  const betSummary = {
+    dragon:0,
+    tiger:0,
+    phoenix:0
+  };
+
+  dtpRound.bets.forEach(b=>{
+    if(betSummary[b.side] !== undefined){
+      betSummary[b.side] += b.bet;
+    }
+  });
+
+  io.emit("dtp-bet-update", betSummary);
+
+
+  // =====================
+  // UPDATE MY BET
+  // =====================
+
+  const myBet = {
+    dragon:0,
+    tiger:0,
+    phoenix:0
+  };
+
+  dtpRound.bets.forEach(b=>{
+    if(b.uid === uid){
+      if(myBet[b.side] !== undefined){
+        myBet[b.side] += b.bet;
+      }
+    }
+  });
+
+  socket.emit("dtp-my-bet", myBet);
 
 });
 
