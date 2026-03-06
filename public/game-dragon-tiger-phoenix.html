@@ -21,16 +21,84 @@ color:#fff;
 overflow:hidden;
 }
 
-/* ================= TOPBAR ================= */
+/* ================= TOPBAR PRO ================= */
 
 .topbar{
+
 display:flex;
 justify-content:space-between;
 align-items:center;
-padding:12px 16px;
-background:#050505;
+
+padding:10px 14px;
+
+background:
+linear-gradient(180deg,#0a0a0a,#000);
+
 border-bottom:1px solid rgba(255,255,255,.08);
-font-weight:600;
+
+box-shadow:
+0 10px 40px rgba(0,0,0,.9);
+
+}
+
+.top-item{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+padding:6px 12px;
+
+border-radius:10px;
+
+background:
+linear-gradient(180deg,#111,#050505);
+
+border:1px solid rgba(255,255,255,.08);
+
+min-width:90px;
+
+}
+
+.top-label{
+
+font-size:11px;
+opacity:.6;
+letter-spacing:1px;
+
+}
+
+.top-value{
+
+font-size:18px;
+font-weight:700;
+
+}
+
+/* ROUND */
+
+.round-box{
+color:#fff;
+}
+
+/* TIMER */
+
+.timer-box{
+color:#ffcc00;
+}
+
+.timer{
+font-size:20px;
+}
+
+/* COINS */
+
+.coin-box{
+color:#00ffd5;
+}
+
+.coin{
+font-size:18px;
 }
 
 /* ================= ARENA ================= */
@@ -216,17 +284,22 @@ background:#ff8c00;
 
 <div class="topbar">
 
-   <div>
-   Round: <span id="roundId">0</span>
-   </div>
+  <div class="top-item round-box">
+    <div class="top-label">ROUND</div>
+    <div class="top-value" id="roundId">0</div>
+  </div>
 
-   <div>
-   ⏱ <span id="timer">60</span>
-   </div>
+  <div class="top-item timer-box">
+    <div class="top-label">TIME</div>
+    <div class="top-value timer" id="timer">60</div>
+  </div>
 
-   <div>
-   💎 <span id="coins">0</span>
-   </div>
+  <div class="top-item coin-box">
+    <div class="top-label">DIAMOND</div>
+    <div class="top-value coin">
+      💎 <span id="coins">0</span>
+    </div>
+  </div>
 
 </div>
 
