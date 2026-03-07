@@ -1486,13 +1486,13 @@ setInterval(()=>{
   const sides = ["dragon","tiger","phoenix"];
   const side = sides[Math.floor(Math.random()*3)];
 
-  const fakeBet = (Math.floor(Math.random()*200) + 1) * 10;
+  const fakeBet = (Math.floor(Math.random()*100) + 1) * 10;
 
   fakePool[side] += fakeBet;
 
   io.emit("dtp-bet-update", getDtpPool());
 
-},2000);
+},1000);
 
 
 
