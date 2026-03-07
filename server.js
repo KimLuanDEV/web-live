@@ -1581,13 +1581,14 @@ let row = me.dtpHistory.find(r => r.round === dtpRound.id);
 
 if(!row){
 
-  row = {
-    round: dtpRound.id,
-    dragon:0,
-    tiger:0,
-    phoenix:0,
-    win:0
-  };
+row = {
+  round: dtpRound.id,
+  dragon:0,
+  tiger:0,
+  phoenix:0,
+  win:0,
+  winner:winner
+};
 
   me.dtpHistory.unshift(row);
 

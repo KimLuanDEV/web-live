@@ -1033,12 +1033,17 @@ const div = document.createElement("div");
 
 div.className = "history-row";
 
+const icon =
+r.winner==="dragon" ? "🐉" :
+r.winner==="tiger" ? "🐯" : "🔥";
+
 div.innerHTML = `
 <div>#${r.round}</div>
 <div>🐉 ${r.dragon||0}</div>
 <div>🐯 ${r.tiger||0}</div>
 <div>🔥 ${r.phoenix||0}</div>
-<div>${r.win}</div>
+<div>WIN ${icon}</div>
+<div>${r.win>0?"+":""}${r.win}</div>
 `;
 
 box.appendChild(div);
