@@ -329,23 +329,140 @@ filter:drop-shadow(0 0 10px gold);
 
 /* ================= RESULT ================= */
 
+/* ================= RESULT CINEMATIC ================= */
+
 .result{
 
 position:fixed;
-
 inset:0;
 
 display:flex;
-
 align-items:center;
-
 justify-content:center;
-
-flex-direction:column;
 
 background:rgba(0,0,0,.85);
 
-font-size:28px;
+backdrop-filter: blur(6px);
+
+z-index:100;
+
+}
+
+/* box */
+
+.result-box{
+
+position:relative;
+
+padding:40px 60px;
+
+border-radius:20px;
+
+background:
+linear-gradient(180deg,#0a0a0a,#000);
+
+border:1px solid rgba(255,255,255,.2);
+
+box-shadow:
+0 0 40px rgba(255,215,0,.4),
+0 0 120px rgba(255,215,0,.15);
+
+text-align:center;
+
+animation:resultPop .4s ease;
+
+}
+
+@keyframes resultPop{
+
+0%{
+transform:scale(.6);
+opacity:0;
+}
+
+100%{
+transform:scale(1);
+opacity:1;
+}
+
+}
+
+/* title */
+
+.result-title{
+
+font-size:14px;
+letter-spacing:4px;
+
+opacity:.6;
+
+margin-bottom:8px;
+
+}
+
+/* winner text */
+
+.result-name{
+
+font-size:36px;
+font-weight:900;
+
+letter-spacing:3px;
+
+color:#ffd700;
+
+text-shadow:
+0 0 10px gold,
+0 0 30px gold;
+
+}
+
+/* image */
+
+.result-image img{
+
+width:220px;
+
+margin-top:16px;
+
+animation:resultFloat 2s infinite ease-in-out;
+
+}
+
+@keyframes resultFloat{
+
+0%{transform:translateY(0)}
+50%{transform:translateY(-8px)}
+100%{transform:translateY(0)}
+
+}
+
+/* glow */
+
+.result-glow{
+
+position:absolute;
+
+inset:-20px;
+
+background:
+radial-gradient(
+circle,
+rgba(255,215,0,.4),
+transparent 70%
+);
+
+pointer-events:none;
+
+animation:glowPulse 2s infinite;
+
+}
+
+@keyframes glowPulse{
+
+0%{opacity:.5}
+50%{opacity:1}
+100%{opacity:.5}
 
 }
 
@@ -353,10 +470,6 @@ font-size:28px;
 display:none;
 }
 
-.result img{
-width:220px;
-margin-top:20px;
-}
 
 
 
@@ -1257,9 +1370,27 @@ max-width:260px;
 
 <div id="result" class="result hidden">
 
-<div id="resultText"></div>
+  <div class="result-box">
 
-<img id="winnerImg">
+    <div class="result-title">
+      WINNER
+    </div>
+
+    <div id="resultText" class="result-name">
+      DRAGON
+    </div>
+
+    <div class="result-image">
+      <img id="winnerImg">
+    </div>
+
+    <div class="result-glow"></div>
+
+  </div>
+
+</div>
+
+
 
 </div>
 
