@@ -16,6 +16,11 @@
 html, body{
 touch-action: manipulation;
 background: #000;
+
+height:100vh;
+width:100vw;
+overflow:hidden;
+
 }
 
 
@@ -2327,6 +2332,17 @@ document.getElementById("notifyModal")
 }
 
 
+
+function lockPortrait(){
+
+  if(screen.orientation && screen.orientation.lock){
+    screen.orientation.lock("portrait")
+    .catch(()=>{});
+  }
+
+}
+
+window.addEventListener("load", lockPortrait);
 
 
 
