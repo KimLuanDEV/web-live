@@ -965,9 +965,23 @@ animation:balanceShine 4s infinite;
 
 .balance-left{
 
-font-size:24px;
+width:32px;
+height:32px;
 
-filter:drop-shadow(0 0 8px gold);
+display:flex;
+align-items:center;
+justify-content:center;
+
+}
+
+.balance-left img{
+
+width:100%;
+height:100%;
+object-fit:contain;
+
+filter:
+drop-shadow(0 0 6px rgba(255,120,120,.8));
 
 }
 
@@ -1116,9 +1130,9 @@ animation:coinPop .3s;
 
 <div class="balance-bar">
 
-  <div class="balance-left">
-      💎
-  </div>
+<div class="balance-left">
+    <img src="/assets/dtp/meat-icon.png">
+</div>
 
   <div class="balance-center">
       <div class="balance-title">ACCOUNT BALANCE</div>
