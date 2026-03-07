@@ -671,6 +671,67 @@ color:#ff5a5a;
 
 
 
+.history-stats{
+
+display:flex;
+justify-content:space-between;
+
+margin-bottom:12px;
+font-size:12px;
+opacity:.8;
+
+}
+
+.stat span{
+
+display:block;
+
+font-size:16px;
+font-weight:800;
+
+margin-top:3px;
+
+}
+
+#historyProfit{
+color:#00ff9c;
+}
+
+#historyWinrate{
+color:#ffd700;
+}
+
+/* scroll */
+
+#myHistoryList{
+
+max-height:260px;
+overflow-y:auto;
+padding-right:4px;
+
+}
+
+/* scroll đẹp */
+
+#myHistoryList::-webkit-scrollbar{
+width:4px;
+}
+
+#myHistoryList::-webkit-scrollbar-thumb{
+background:#333;
+border-radius:10px;
+}
+
+/* big win */
+
+.history-bigwin{
+color:#ffd700;
+font-weight:900;
+text-shadow:0 0 10px gold;
+}
+
+
+
 </style>
 </head>
 
@@ -783,6 +844,20 @@ color:#ff5a5a;
 
 <div class="my-history-title">
 MY BET HISTORY
+</div>
+
+<div class="history-stats">
+
+<div class="stat">
+TOTAL P/L
+<span id="historyProfit">0</span>
+</div>
+
+<div class="stat">
+WIN RATE
+<span id="historyWinrate">0%</span>
+</div>
+
 </div>
 
 <div class="history-table">
@@ -1075,11 +1150,15 @@ document.getElementById("myHistoryModal")
 
 
 
+
 socket.on("dtp-my-history", list=>{
 
 const box = document.getElementById("myHistoryList");
 
 box.innerHTML = "";
+
+let totalProfit = 0;
+let winCount = 0;
 
 list.forEach(r=>{
 
@@ -1089,8 +1168,16 @@ const icon =
 r.winner==="dragon" ? "🐉" :
 r.winner==="tiger" ? "🐯" : "🔥";
 
-const resultClass =
+let resultClass =
 r.win > 0 ? "history-win" : "history-lose";
+
+if(r.win >= 200){
+resultClass += " history-bigwin";
+}
+
+if(r.win > 0) winCount++;
+
+totalProfit += r.win;
 
 div.className = "history-row " + resultClass;
 
@@ -1106,6 +1193,23 @@ div.innerHTML = `
 box.appendChild(div);
 
 });
+
+
+// =====================
+// STATS
+// =====================
+
+document.getElementById("historyProfit")
+.textContent =
+(totalProfit>0?"+":"") + totalProfit;
+
+const winrate =
+list.length
+? Math.round(winCount/list.length*100)
+: 0;
+
+document.getElementById("historyWinrate")
+.textContent = winrate + "%";
 
 });
 
