@@ -2335,14 +2335,14 @@ document.getElementById("notifyModal")
 
 function lockPortrait(){
 
-  if(screen.orientation && screen.orientation.lock){
-    screen.orientation.lock("portrait")
-    .catch(()=>{});
+  if(screen.orientation?.lock){
+    screen.orientation.lock("portrait").catch(()=>{});
   }
 
 }
 
-window.addEventListener("load", lockPortrait);
+document.addEventListener("touchstart", lockPortrait, { once:true });
+document.addEventListener("click", lockPortrait, { once:true });
 
 
 
