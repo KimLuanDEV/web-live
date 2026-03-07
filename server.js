@@ -1480,7 +1480,13 @@ setInterval(()=>{
   const remain =
     Math.floor((dtpRound.endAt - Date.now())/1000);
 
-  // 🔒 giống player: không cược khi <=5s
+  const elapsed =
+    Math.floor((Date.now() - dtpRound.startAt)/1000);
+
+  // ❌ 5s đầu: animation result
+  if(elapsed < 5) return;
+
+  // ❌ 5s cuối: khóa cược
   if(remain <= 5) return;
 
   const sides = ["dragon","tiger","phoenix"];
@@ -1702,7 +1708,7 @@ dtpRound = {
 
 
 function randomPool(){
-  return Math.floor(Math.random()*0) * 10;
+  return 0;
 }
 
 fakePool = {
