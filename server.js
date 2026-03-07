@@ -1553,22 +1553,42 @@ setInterval(()=>{
 
   const users = loadUsers();
 
-  const winner = pickDtpWinner();
+const winner = pickDtpWinner();
 
-  dtpRound.bets.forEach(o=>{
+dtpRound.bets.forEach(o=>{
 
-    const me = users[o.uid];
-    if(!me?.profile) return;
+  const me = users[o.uid];
+  if(!me?.profile) return;
 
-    if(o.side === winner){
+  let win = 0;
 
-      const win = o.bet * 3;
+  if(o.side === winner){
 
-      me.profile.coins += win;
+    win = o.bet * 3;
 
-    }
+    me.profile.coins += win;
 
+  }
+
+  // =====================
+  // SAVE USER HISTORY
+  // =====================
+
+  me.dtpHistory ||= [];
+
+  me.dtpHistory.unshift({
+    round: dtpRound.id,
+    side: o.side,
+    bet: o.bet,
+    win: win
   });
+
+  // chỉ giữ 30 round
+  me.dtpHistory = me.dtpHistory.slice(0,30);
+
+});
+
+  
 
   saveUsers(users);
 
@@ -2984,6 +3004,23 @@ dtpRound.bets.forEach(b=>{
   }
 
 });
+
+
+
+
+
+socket.on("dtp-get-my-history",()=>{
+
+const uid = socket.data.uid;
+
+const users = loadUsers();
+
+const list = users[uid]?.dtpHistory || [];
+
+socket.emit("dtp-my-history", list);
+
+});
+
 
 
 socket.emit("dtp-round-new",{

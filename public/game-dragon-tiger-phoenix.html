@@ -517,6 +517,100 @@ margin-right:-51px;
 
 
 
+
+
+.history-btn{
+
+font-size:18px;
+
+width:34px;
+height:34px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+cursor:pointer;
+
+border-radius:10px;
+
+transition:.2s;
+
+}
+
+.history-btn:hover{
+transform:scale(1.1);
+}
+
+
+
+
+.my-history{
+
+position:fixed;
+inset:0;
+
+background:rgba(0,0,0,.9);
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+z-index:50;
+
+}
+
+.my-history-box{
+
+width:90%;
+max-width:420px;
+
+background:#0a0a0a;
+
+border-radius:16px;
+
+padding:20px;
+
+border:1px solid rgba(255,255,255,.1);
+
+}
+
+.my-history-title{
+
+font-weight:800;
+margin-bottom:10px;
+
+}
+
+.history-row{
+
+display:flex;
+justify-content:space-between;
+
+padding:6px 0;
+
+border-bottom:1px solid rgba(255,255,255,.05);
+
+}
+
+.close-history{
+
+margin-top:10px;
+
+text-align:center;
+
+padding:8px;
+
+background:#222;
+
+border-radius:8px;
+
+cursor:pointer;
+
+}
+
+
+
 </style>
 </head>
 
@@ -526,14 +620,16 @@ margin-right:-51px;
 
   <div class="back-btn" onclick="location.href='/invest.html'">‹</div>
 
-<div class="game-title">
-  <span style="color:red">DRAGON</span> • <span style="color:rgb(17, 13, 231)">TIGER</span> • <span style="color:rgb(235, 129, 8)">PHOENIX</span>
-</div>
+  <div class="game-title">
+    <span style="color:red">DRAGON</span> • 
+    <span style="color:rgb(17,13,231)">TIGER</span> • 
+    <span style="color:rgb(235,129,8)">PHOENIX</span>
+  </div>
+
+  <div class="history-btn" onclick="openMyHistory()">📜</div>
 
   <div class="top-item coin-box">
-    <div class="top-value coin">
-      💎 <span id="coins">0</span>
-    </div>
+    💎 <span id="coins">0</span>
   </div>
 
 </div>
@@ -615,6 +711,31 @@ margin-right:-51px;
 <img id="winnerImg">
 
 </div>
+
+
+
+
+
+<div id="myHistoryModal" class="my-history hidden">
+
+<div class="my-history-box">
+
+<div class="my-history-title">
+MY BET HISTORY
+</div>
+
+<div id="myHistoryList"></div>
+
+<div class="close-history" onclick="closeMyHistory()">
+CLOSE
+</div>
+
+</div>
+
+</div>
+
+
+
 
 <script>
 
@@ -855,6 +976,52 @@ betRestored = true; // 🔥 thêm dòng này
 
 });
 
+
+
+
+function openMyHistory(){
+
+socket.emit("dtp-get-my-history");
+
+document.getElementById("myHistoryModal")
+.classList.remove("hidden");
+
+}
+
+function closeMyHistory(){
+
+document.getElementById("myHistoryModal")
+.classList.add("hidden");
+
+}
+
+
+
+
+socket.on("dtp-my-history", list=>{
+
+const box = document.getElementById("myHistoryList");
+
+box.innerHTML = "";
+
+list.forEach(r=>{
+
+const div = document.createElement("div");
+
+div.className = "history-row";
+
+div.innerHTML = `
+<div>#${r.round}</div>
+<div>${r.side}</div>
+<div>${r.bet}</div>
+<div>${r.win}</div>
+`;
+
+box.appendChild(div);
+
+});
+
+});
 
 
 
