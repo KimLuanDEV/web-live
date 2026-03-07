@@ -3052,18 +3052,35 @@ socket.emit("dtp-bet-update", betSummary);
 socket.emit("dtp-my-bet", myBetRestore);
 
 
-socket.on("dtp-bet", ({ side, bet }) => {
+socket.on("dtp-bet", (data)=>{
 
   const uid = socket.data.uid;
   if(!uid) return;
+
+  const side = data.side;
+  const bet  = Number(data.bet || 0);
+
+  // ❌ bet không hợp lệ
+  if(!bet || bet <= 0) return;
+
+  // ❌ cửa không hợp lệ
+  if(!["dragon","tiger","phoenix"].includes(side)) return;
+
+  // ❌ hết thời gian cược (khóa trước 2s)
+  if(Date.now() > dtpRound.endAt - 5000){
+    socket.emit("notify",{
+      type:"bad",
+      message:"⛔ Betting closed"
+    });
+    return;
+  }
 
   const users = loadUsers();
   const me = users[uid];
 
   if(!me?.profile) return;
 
-  bet = Number(bet || 0);
-
+  // ❌ không đủ coins
   if(me.profile.coins < bet){
     socket.emit("notify",{
       type:"bad",
@@ -3072,7 +3089,10 @@ socket.on("dtp-bet", ({ side, bet }) => {
     return;
   }
 
-  // trừ coin
+  // =====================
+  // TRỪ COIN
+  // =====================
+
   me.profile.coins -= bet;
 
   dtpRound.bets.push({
@@ -3083,6 +3103,7 @@ socket.on("dtp-bet", ({ side, bet }) => {
 
   saveUsers(users);
   emitCoinUpdate(uid);
+
 
   // =====================
   // UPDATE BET SUMMARY
@@ -3124,7 +3145,6 @@ socket.on("dtp-bet", ({ side, bet }) => {
   socket.emit("dtp-my-bet", myBet);
 
 });
-
 
 
 

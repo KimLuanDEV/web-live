@@ -1786,6 +1786,15 @@ el.classList.add("active");
 
 function placeBet(side){
 
+// ❌ Không đủ coins → chặn ngay
+if(coins < currentBet){
+  alert("❌ Not enough coins");
+  return;
+}
+
+
+// ===== CHIP FLY ANIMATION =====
+
 const chip = document.querySelector(".chip.active img");
 const chipRect = chip.getBoundingClientRect();
 
@@ -1802,33 +1811,43 @@ flying.style.top  = chipRect.top + "px";
 document.body.appendChild(flying);
 
 setTimeout(()=>{
-flying.style.left = cardRect.left + cardRect.width/2 + "px";
-flying.style.top  = cardRect.top + cardRect.height/2 + "px";
-flying.style.transform = "scale(.6)";
+  flying.style.left = cardRect.left + cardRect.width/2 + "px";
+  flying.style.top  = cardRect.top + cardRect.height/2 + "px";
+  flying.style.transform = "scale(.6)";
 },10);
 
 setTimeout(()=>{
-flying.remove();
+  flying.remove();
 },600);
 
 
-// ===== original bet =====
+// ===== TRỪ COIN LOCAL =====
+
+coins -= currentBet;
+
+document.getElementById("coins").textContent = coins;
+
+
+// ===== SEND BET =====
 
 socket.emit("dtp-bet",{ side, bet:currentBet });
 
+
+// ===== UPDATE UI BET =====
+
 if(side==="dragon"){
-betDragon+=currentBet;
-betDragonEl.textContent=betDragon;
+  betDragon += currentBet;
+  betDragonEl.textContent = betDragon;
 }
 
 if(side==="tiger"){
-betTiger+=currentBet;
-betTigerEl.textContent=betTiger;
+  betTiger += currentBet;
+  betTigerEl.textContent = betTiger;
 }
 
 if(side==="phoenix"){
-betPhoenix+=currentBet;
-betPhoenixEl.textContent=betPhoenix;
+  betPhoenix += currentBet;
+  betPhoenixEl.textContent = betPhoenix;
 }
 
 }
