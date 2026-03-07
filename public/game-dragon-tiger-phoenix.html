@@ -630,6 +630,47 @@ box-shadow:
 }
 
 
+.history-table{
+font-size:13px;
+}
+
+.history-head{
+display:flex;
+justify-content:space-between;
+padding:6px 0;
+font-weight:700;
+opacity:.6;
+border-bottom:1px solid rgba(255,255,255,.1);
+margin-bottom:6px;
+}
+
+.history-row{
+
+display:flex;
+justify-content:space-between;
+
+padding:8px 0;
+
+border-bottom:1px solid rgba(255,255,255,.05);
+
+font-weight:600;
+
+}
+
+/* win */
+
+.history-win{
+color:#00ff9c;
+}
+
+/* lose */
+
+.history-lose{
+color:#ff5a5a;
+}
+
+
+
 </style>
 </head>
 
@@ -744,7 +785,20 @@ box-shadow:
 MY BET HISTORY
 </div>
 
+<div class="history-table">
+
+<div class="history-head">
+  <div>ROUND</div>
+  <div>🐉</div>
+  <div>🐯</div>
+  <div>🔥</div>
+  <div>RESULT</div>
+  <div>P/L</div>
+</div>
+
 <div id="myHistoryList"></div>
+
+</div>
 
 <div class="close-history" onclick="closeMyHistory()">
 CLOSE
@@ -1031,18 +1085,21 @@ list.forEach(r=>{
 
 const div = document.createElement("div");
 
-div.className = "history-row";
-
 const icon =
 r.winner==="dragon" ? "🐉" :
 r.winner==="tiger" ? "🐯" : "🔥";
 
+const resultClass =
+r.win > 0 ? "history-win" : "history-lose";
+
+div.className = "history-row " + resultClass;
+
 div.innerHTML = `
 <div>#${r.round}</div>
-<div>🐉 ${r.dragon||0}</div>
-<div>🐯 ${r.tiger||0}</div>
-<div>🔥 ${r.phoenix||0}</div>
-<div>WIN ${icon}</div>
+<div>${r.dragon||0}</div>
+<div>${r.tiger||0}</div>
+<div>${r.phoenix||0}</div>
+<div>${icon}</div>
 <div>${r.win>0?"+":""}${r.win}</div>
 `;
 
@@ -1051,7 +1108,6 @@ box.appendChild(div);
 });
 
 });
-
 
 
 
