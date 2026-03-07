@@ -4,7 +4,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<link rel="preload" as="image" href="/assets/dtp/beast-arena.jpg">
+<link rel="preload" as="image" href="/assets/dtp/btp-loading.jpg">
 <title>Dragon Tiger Phoenix</title>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -1549,7 +1549,7 @@ linear-gradient(
 rgba(0,0,0,.29),
 rgba(0,0,0,.15)
 ),
-url("/assets/dtp/beast-arena.jpg");
+url("/assets/dtp/btp-loading.jpg");
 
 background-size:cover;
 background-position:center;
@@ -2529,89 +2529,97 @@ document.getElementById("notifyModal")
 let loaderImagesReady = false;
 let loaderDomReady = false;
 
-const MIN_LOADING_TIME = 10000; // 2 giây
+const MIN_LOADING_TIME = 3000;
 const loadingStartTime = Date.now();
 
 function updateLoading(p){
-
-document.getElementById("loadingProgress")
-.style.width = p + "%";
-
+  document.getElementById("loadingProgress").style.width = p + "%";
 }
 
 /* DOM READY */
 
-window.addEventListener("load", ()=>{
+document.addEventListener("DOMContentLoaded", ()=>{
 
-loaderDomReady = true;
-updateLoading(50);
+  loaderDomReady = true;
+  updateLoading(30);
 
-checkLoader();
+  checkLoader();
 
 });
 
-/* IMAGE PRELOAD */
-function waitImages(){
 
-const images = document.images;
+/* PRELOAD IMAGES */
+
+const preloadImages = [
+
+"/assets/dtp/beast-arena.jpg",
+"/assets/dtp/btp-loading.jpg",
+
+"/assets/dtp/dragon.png",
+"/assets/dtp/tiger.png",
+"/assets/dtp/phoenix.png",
+
+"/assets/dtp/dragon-head.png",
+"/assets/dtp/tiger-head.png",
+"/assets/dtp/phoenix-head.png",
+
+"/assets/dtp/chip-dragon.png",
+"/assets/dtp/chip-tiger.png",
+"/assets/dtp/chip-phoenix.png",
+"/assets/dtp/chip-lion.png"
+
+];
+
 let loaded = 0;
 
-if(images.length === 0){
-loaderImagesReady = true;
-checkLoader();
-return;
-}
+preloadImages.forEach(src=>{
 
-function imageDone(){
-loaded++;
+  const img = new Image();
 
-updateLoading(50 + loaded/images.length*50);
+  img.onload = img.onerror = ()=>{
 
-if(loaded >= images.length){
-loaderImagesReady = true;
-checkLoader();
-}
-}
+    loaded++;
 
-for(let img of images){
+    updateLoading(
+      30 + (loaded/preloadImages.length)*70
+    );
 
-if(img.complete){
-imageDone();
-}else{
-img.onload = imageDone;
-img.onerror = imageDone;
-}
+    if(loaded === preloadImages.length){
+      loaderImagesReady = true;
+      checkLoader();
+    }
 
-}
+  };
 
-}
+  img.src = src;
 
-waitImages();
+});
+
 
 /* FINISH */
 
 function checkLoader(){
 
-if(!loaderDomReady) return;
-if(!loaderImagesReady) return;
+  if(!loaderDomReady) return;
+  if(!loaderImagesReady) return;
 
-const elapsed = Date.now() - loadingStartTime;
-const remain = Math.max(0, MIN_LOADING_TIME - elapsed);
+  const elapsed = Date.now() - loadingStartTime;
+  const remain = Math.max(0, MIN_LOADING_TIME - elapsed);
 
-setTimeout(()=>{
+  setTimeout(()=>{
 
-document.body.classList.remove("loading");
+    document.body.classList.remove("loading");
 
-const overlay =
-document.getElementById("loadingOverlay");
+    const overlay =
+      document.getElementById("loadingOverlay");
 
-overlay.style.opacity = "0";
+    overlay.style.opacity = "0";
 
-setTimeout(()=>{
-overlay.remove();
-},600);
+    setTimeout(()=>{
+      overlay.remove();
+    },600);
 
-}, remain);
+  }, remain);
 
 }
 
