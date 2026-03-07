@@ -353,18 +353,18 @@ z-index:100;
 
 position:relative;
 
-padding:40px 60px;
+width:520px;
+height:420px;
 
-border-radius:20px;
+background:url("/assets/dtp/result-stone-frame.png");
+background-size:contain;
+background-repeat:no-repeat;
+background-position:center;
 
-background:
-linear-gradient(180deg,#0a0a0a,#000);
-
-border:1px solid rgba(255,255,255,.2);
-
-box-shadow:
-0 0 40px rgba(255,215,0,.4),
-0 0 120px rgba(255,215,0,.15);
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
 
 text-align:center;
 
@@ -385,6 +385,36 @@ opacity:1;
 }
 
 }
+
+
+
+.result-image img{
+
+width:180px;
+margin-top:10px;
+
+animation:resultFloat 2s infinite ease-in-out;
+
+}
+
+
+
+.result-box::after{
+
+content:"";
+
+position:absolute;
+inset:0;
+
+background:
+radial-gradient(circle,
+rgba(255,215,0,.25),
+transparent 70%);
+
+pointer-events:none;
+
+}
+
 
 /* title */
 
@@ -1583,21 +1613,15 @@ line-height:1.5;
 
   <div class="result-box">
 
-    <div class="result-title">
-      WINNER
-    </div>
+    <div class="result-title">    </div>
 
-    <div id="resultText" class="result-name">
-      DRAGON
-    </div>
+    <div id="resultText" class="result-name">   </div>
 
     <div class="result-image">
       <img id="winnerImg">
     </div>
 
-    <div id="resultProfit" class="result-profit">
-      +0
-    </div>
+    <div id="resultProfit" class="result-profit">   </div>
 
     <div class="result-glow"></div>
 
