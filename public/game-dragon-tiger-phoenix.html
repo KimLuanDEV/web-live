@@ -327,7 +327,6 @@ filter:drop-shadow(0 0 10px gold);
 
 }
 
-/* ================= RESULT ================= */
 
 /* ================= RESULT CINEMATIC ================= */
 
@@ -465,6 +464,44 @@ animation:glowPulse 2s infinite;
 100%{opacity:.5}
 
 }
+
+/* profit */
+
+.result-profit{
+
+margin-top:14px;
+
+font-size:26px;
+font-weight:900;
+
+letter-spacing:2px;
+
+}
+
+/* win */
+
+.result-profit.win{
+
+color:#00ff9c;
+
+text-shadow:
+0 0 10px #00ff9c,
+0 0 25px rgba(0,255,150,.6);
+
+}
+
+/* lose */
+
+.result-profit.lose{
+
+color:#ff5a5a;
+
+text-shadow:
+0 0 10px #ff4040,
+0 0 25px rgba(255,80,80,.6);
+
+}
+
 
 .hidden{
 display:none;
@@ -1384,6 +1421,10 @@ max-width:260px;
       <img id="winnerImg">
     </div>
 
+    <div id="resultProfit" class="result-profit">
+      +0
+    </div>
+
     <div class="result-glow"></div>
 
   </div>
@@ -1615,6 +1656,7 @@ socket.on("dtp-result", data=>{
 const result = document.getElementById("result");
 const text   = document.getElementById("resultText");
 const img    = document.getElementById("winnerImg");
+const profitEl = document.getElementById("resultProfit");
 
 // =============================
 // SHOW RESULT
@@ -1624,8 +1666,34 @@ result.classList.remove("hidden");
 
 text.innerText = data.winner.toUpperCase();
 
-img.src =
-"/assets/dtp/" + data.winner + ".png";
+img.src = "/assets/dtp/" + data.winner + ".png";
+
+
+// =============================
+// CALCULATE PROFIT / LOSS
+// =============================
+
+const totalBet =
+betDragon + betTiger + betPhoenix;
+
+let win = 0;
+
+if(data.winner === "dragon")  win = betDragon * 3;
+if(data.winner === "tiger")   win = betTiger * 3;
+if(data.winner === "phoenix") win = betPhoenix * 3;
+
+const profit = win - totalBet;
+
+profitEl.textContent =
+(profit > 0 ? "+" : "") + profit;
+
+profitEl.classList.remove("win","lose");
+
+if(profit > 0){
+profitEl.classList.add("win");
+}else{
+profitEl.classList.add("lose");
+}
 
 
 // =============================
@@ -1642,18 +1710,17 @@ const winCard =
 document.querySelector("." + data.winner);
 
 if(winCard){
+
 winCard.style.boxShadow =
 "0 0 80px gold,0 0 200px rgba(255,215,0,.7)";
-}
 
 
 // =============================
-//  WIN EXPLOSION
+// WIN EXPLOSION
 // =============================
-
 
 const fx = document.createElement("div");
-fx.className="win-explosion";
+fx.className = "win-explosion";
 
 winCard.appendChild(fx);
 
@@ -1661,6 +1728,7 @@ setTimeout(()=>{
 fx.remove();
 },700);
 
+}
 
 
 // =============================
@@ -1670,7 +1738,7 @@ fx.remove();
 dtpHistory.unshift(data.winner);
 
 if(dtpHistory.length > 8){
-  dtpHistory.pop();
+dtpHistory.pop();
 }
 
 renderDtpHistory();
@@ -1685,7 +1753,6 @@ result.classList.add("hidden");
 },4000);
 
 });
-
 
 // =============================
 // RENDER HISTORY
