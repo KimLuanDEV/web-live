@@ -1417,16 +1417,23 @@ r.winner==="dragon" ? "/assets/dtp/dragon-head.png" :
 r.winner==="tiger" ? "/assets/dtp/tiger-head.png" :
 "/assets/dtp/phoenix-head.png";
 
-let resultClass =
-r.win > 0 ? "history-win" : "history-lose";
+let totalBet =
+(r.dragon||0) +
+(r.tiger||0) +
+(r.phoenix||0);
 
-if(r.win >= 200){
+let profit = (r.win||0) - totalBet;
+
+let resultClass =
+profit > 0 ? "history-win" : "history-lose";
+
+if(profit >= 200){
 resultClass += " history-bigwin";
 }
 
-if(r.win > 0) winCount++;
+if(profit > 0) winCount++;
 
-totalProfit += r.win;
+totalProfit += profit;
 
 div.className = "history-row " + resultClass;
 
@@ -1438,7 +1445,7 @@ div.innerHTML = `
 <div>
 <img src="${iconSrc}" class="history-icon">
 </div>
-<div>${r.win>0?"+":""}${r.win}</div>
+<div>${profit>0?"+":""}${profit}</div>
 `;
 
 box.appendChild(div);
