@@ -1528,6 +1528,122 @@ display:none !important;
 }
 
 
+
+
+
+
+
+/* ================= LOADING ================= */
+
+.loading-overlay{
+
+position:fixed;
+inset:0;
+
+background:
+linear-gradient(
+rgba(0,0,0,.9),
+rgba(0,0,0,.95)
+),
+url("/assets/dtp/beast-arena.jpg");
+
+background-size:cover;
+background-position:center;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+z-index:10000;
+
+}
+
+.loading-center{
+text-align:center;
+}
+
+.loading-logo{
+
+font-size:26px;
+font-weight:900;
+
+letter-spacing:3px;
+
+color:#ffd700;
+
+text-shadow:
+0 0 10px gold,
+0 0 40px gold;
+
+margin-bottom:40px;
+
+}
+
+.loading-spinner{
+
+width:70px;
+height:70px;
+
+border-radius:50%;
+
+border:6px solid rgba(255,255,255,.1);
+border-top:6px solid gold;
+
+animation:spin 1s linear infinite;
+
+margin:0 auto 30px auto;
+
+}
+
+@keyframes spin{
+
+0%{ transform:rotate(0deg); }
+100%{ transform:rotate(360deg); }
+
+}
+
+.loading-bar{
+
+width:260px;
+height:6px;
+
+background:#111;
+border-radius:20px;
+
+overflow:hidden;
+
+margin:auto;
+
+}
+
+.loading-progress{
+
+height:100%;
+width:0%;
+
+background:linear-gradient(
+90deg,
+#ff4040,
+#ffd700,
+#00ff9c
+);
+
+transition:.3s;
+
+}
+
+.loading-text{
+
+margin-top:16px;
+
+font-size:14px;
+opacity:.8;
+
+}
+
+
+
+
 </style>
 </head>
 
@@ -1870,6 +1986,32 @@ CLOSE
 
 <div class="rotate-lock">
 Please rotate your device
+</div>
+
+
+
+
+
+<div id="loadingOverlay" class="loading-overlay">
+
+  <div class="loading-center">
+
+    <div class="loading-logo">
+      DRAGON • TIGER • PHOENIX
+    </div>
+
+    <div class="loading-spinner"></div>
+
+    <div class="loading-bar">
+      <div id="loadingProgress" class="loading-progress"></div>
+    </div>
+
+    <div id="loadingText" class="loading-text">
+      Loading assets...
+    </div>
+
+  </div>
+
 </div>
 
 
@@ -2377,6 +2519,89 @@ document.getElementById("notifyModal")
 
 
 
+/* ================= LOADER CONTROL ================= */
+
+let loaderImagesReady = false;
+let loaderDomReady = false;
+
+function updateLoading(p){
+
+document.getElementById("loadingProgress")
+.style.width = p + "%";
+
+}
+
+/* DOM READY */
+
+window.addEventListener("load", ()=>{
+
+loaderDomReady = true;
+updateLoading(50);
+
+checkLoader();
+
+});
+
+/* IMAGE PRELOAD */
+
+function waitImages(){
+
+const images = document.images;
+let loaded = 0;
+
+if(images.length === 0){
+loaderImagesReady = true;
+checkLoader();
+return;
+}
+
+for(let img of images){
+
+if(img.complete){
+loaded++;
+}else{
+
+img.onload = img.onerror = ()=>{
+loaded++;
+
+updateLoading(50 + loaded/images.length*50);
+
+if(loaded === images.length){
+loaderImagesReady = true;
+checkLoader();
+}
+
+};
+
+}
+
+}
+
+}
+
+waitImages();
+
+/* FINISH */
+
+function checkLoader(){
+
+if(!loaderDomReady) return;
+if(!loaderImagesReady) return;
+
+setTimeout(()=>{
+
+const overlay =
+document.getElementById("loadingOverlay");
+
+overlay.style.opacity = "0";
+
+setTimeout(()=>{
+overlay.remove();
+},600);
+
+},500);
+
+}
 
 
 </script>
