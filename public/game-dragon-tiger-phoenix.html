@@ -1051,6 +1051,57 @@ filter:drop-shadow(0 0 10px gold);
 }
 
 
+
+/* ================= PAYOUT TEXT ================= */
+
+.payout-text{
+
+margin-top:8px;
+
+font-size:14px;
+font-weight:900;
+
+letter-spacing:1px;
+
+text-align:center;
+
+}
+
+/* dragon */
+
+.dragon-pay{
+color:#ff4040;
+text-shadow:0 0 8px rgba(255,80,80,.8);
+}
+
+/* tiger */
+
+.tiger-pay{
+color:#4090ff;
+text-shadow:0 0 8px rgba(80,150,255,.8);
+}
+
+/* phoenix */
+
+.phoenix-pay{
+color:#ff9b00;
+text-shadow:0 0 8px rgba(255,180,80,.8);
+}
+
+
+/* card column */
+
+.bet-col{
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+width:28%;
+max-width:260px;
+
+}
+
 </style>
 </head>
 
@@ -1094,45 +1145,65 @@ filter:drop-shadow(0 0 10px gold);
 
 </div>
 
-<div class="bet-card dragon" onclick="placeBet('dragon')">
+<div class="bet-col">
 
-  <img src="/assets/dtp/dragon.png">
+  <div class="bet-card dragon" onclick="placeBet('dragon')">
 
-  <div class="bet-overlay">
-    <div class="bet-amount" id="betDragon">0</div>
+    <img src="/assets/dtp/dragon.png">
+
+    <div class="bet-overlay">
+      <div class="bet-amount" id="betDragon">0</div>
+    </div>
+
+    <div class="pool-display">
+      <span id="poolDragon">0</span>
+    </div>
+
   </div>
 
-  <div class="pool-display">
-    <span id="poolDragon">0</span>
-  </div>
+  <div class="payout-text dragon-pay">WIN x3</div>
 
 </div>
 
-<div class="bet-card tiger" onclick="placeBet('tiger')">
 
-  <img src="/assets/dtp/tiger.png">
+<div class="bet-col">
 
-  <div class="bet-overlay">
-    <div class="bet-amount" id="betTiger">0</div>
+  <div class="bet-card tiger" onclick="placeBet('tiger')">
+
+    <img src="/assets/dtp/tiger.png">
+
+    <div class="bet-overlay">
+      <div class="bet-amount" id="betTiger">0</div>
+    </div>
+
+    <div class="pool-display">
+      <span id="poolTiger">0</span>
+    </div>
+
   </div>
 
-  <div class="pool-display">
-    <span id="poolTiger">0</span>
-  </div>
+  <div class="payout-text tiger-pay">WIN x3</div>
 
 </div>
 
-<div class="bet-card phoenix" onclick="placeBet('phoenix')">
 
-  <img src="/assets/dtp/phoenix.png">
+<div class="bet-col">
 
-  <div class="bet-overlay">
-    <div class="bet-amount" id="betPhoenix">0</div>
+  <div class="bet-card phoenix" onclick="placeBet('phoenix')">
+
+    <img src="/assets/dtp/phoenix.png">
+
+    <div class="bet-overlay">
+      <div class="bet-amount" id="betPhoenix">0</div>
+    </div>
+
+    <div class="pool-display">
+      <span id="poolPhoenix">0</span>
+    </div>
+
   </div>
 
-  <div class="pool-display">
-    <span id="poolPhoenix">0</span>
-  </div>
+  <div class="payout-text phoenix-pay">WIN x3</div>
 
 </div>
 
