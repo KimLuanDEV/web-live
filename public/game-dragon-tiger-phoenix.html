@@ -1753,6 +1753,9 @@ let betTiger = 0;
 let betPhoenix = 0;
 
 
+let coins = 0;
+
+
 const betDragonEl  = document.getElementById("betDragon");
 const betTigerEl   = document.getElementById("betTiger");
 const betPhoenixEl = document.getElementById("betPhoenix");
@@ -1764,9 +1767,11 @@ let betRestored = false;
 
 socket.on("coin-update", data=>{
 
+coins = data.coins;   // 🔥 lưu số dư
+
 const el = document.getElementById("coins");
 
-el.textContent = data.coins;
+el.textContent = coins;
 
 el.classList.add("coin-pop");
 
@@ -1791,6 +1796,19 @@ el.classList.add("active");
 
 
 function placeBet(side){
+
+// 🔴 CHẶN KHI KHÔNG ĐỦ COINS
+if(coins < currentBet){
+alert("Not enough coins");
+return;
+}
+
+// trừ coins client ngay (tránh spam click)
+coins -= currentBet;
+document.getElementById("coins").textContent = coins;
+
+
+// ===== CHIP ANIMATION =====
 
 const chip = document.querySelector(".chip.active img");
 const chipRect = chip.getBoundingClientRect();
@@ -1818,9 +1836,12 @@ flying.remove();
 },600);
 
 
-// ===== original bet =====
+// ===== SEND BET =====
 
 socket.emit("dtp-bet",{ side, bet:currentBet });
+
+
+// ===== UPDATE UI =====
 
 if(side==="dragon"){
 betDragon+=currentBet;
