@@ -61,18 +61,23 @@ pointer-events:none;
 /* ================= TOPBAR PRO ================= */
 .topbar{
 
+position:relative;
+
 display:flex;
 align-items:center;
-gap:0px;
 
-padding:10px 14px;
+height:46px;
+
+padding:0 14px;
 
 background:
 linear-gradient(180deg,#0a0a0a,#000);
+
 border-bottom:1px solid rgba(255,255,255,.08);
+
 box-shadow:
 0 10px 40px rgba(0,0,0,.9);
-margin-bottom:-6px;
+
 }
 
 
@@ -489,6 +494,9 @@ background:#ff8c00;
 
 .back-btn{
 
+position:relative;
+z-index:2;
+
 font-size:22px;
 font-weight:900;
 
@@ -517,14 +525,21 @@ box-shadow:0 0 10px rgba(255,255,255,.2);
 
 .game-title{
 
+position:absolute;
+
+left:50%;
+transform:translateX(-50%);
+
 font-size:15px;
 font-weight:800;
-opacity:.9;
-text-align:center;
-flex:1;
-margin-right:-51px;
-}
 
+letter-spacing:1px;
+
+opacity:.9;
+
+white-space:nowrap;
+
+}
 
 
 
