@@ -457,6 +457,7 @@ border:1px solid rgba(255,255,255,.1);
 width:38px;
 height:38px;
 object-fit:contain;
+filter:drop-shadow(0 0 6px rgba(255,215,0,.4));
 }
 
 .history-dragon{
@@ -472,6 +473,9 @@ background:#ff8c00;
 }
 
 
+.history-row.dragon{border-left:3px solid #ff4040;}
+.history-row.tiger{border-left:3px solid #4090ff;}
+.history-row.phoenix{border-left:3px solid #ff9b00;}
 
 
 /* BACK BUTTON */
@@ -1360,9 +1364,10 @@ list.forEach(r=>{
 
 const div = document.createElement("div");
 
-const icon =
-r.winner==="dragon" ? "🐉" :
-r.winner==="tiger" ? "🐯" : "🔥";
+let iconSrc =
+r.winner==="dragon" ? "/assets/dtp/dragon-head.png" :
+r.winner==="tiger" ? "/assets/dtp/tiger-head.png" :
+"/assets/dtp/phoenix-head.png";
 
 let resultClass =
 r.win > 0 ? "history-win" : "history-lose";
@@ -1382,7 +1387,9 @@ div.innerHTML = `
 <div>${r.dragon||0}</div>
 <div>${r.tiger||0}</div>
 <div>${r.phoenix||0}</div>
-<div>${icon}</div>
+<div>
+<img src="${iconSrc}" class="history-icon">
+</div>
 <div>${r.win>0?"+":""}${r.win}</div>
 `;
 
