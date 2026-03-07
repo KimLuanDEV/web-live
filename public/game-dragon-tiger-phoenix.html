@@ -1842,9 +1842,7 @@ uid:me.uid
 
 /* ================= STATE ================= */
 
-let fakeDragon  = 0;
-let fakeTiger   = 0;
-let fakePhoenix = 0;
+
 
 
 let currentBet = 10;
@@ -1899,6 +1897,11 @@ el.classList.add("active");
 
 
 function placeBet(side){
+
+if(document.getElementById("timer").textContent <= 5){
+showNotify("Betting closed");
+return;
+} 
 
 // 🔴 CHẶN KHI KHÔNG ĐỦ COINS
 if(coins < currentBet){
@@ -2158,14 +2161,9 @@ renderDtpHistory();
 
 socket.on("dtp-bet-update", data=>{
 
-document.getElementById("poolDragon").textContent =
-data.dragon;
-
-document.getElementById("poolTiger").textContent =
-data.tiger;
-
-document.getElementById("poolPhoenix").textContent =
-data.phoenix;
+updatePool("poolDragon",data.dragon);
+updatePool("poolTiger",data.tiger);
+updatePool("poolPhoenix",data.phoenix);
 
 });
 
@@ -2328,41 +2326,6 @@ document.getElementById("notifyModal")
 }
 
 
-
-function fakeCrowdBet(){
-
-const sides = ["dragon","tiger","phoenix"];
-
-const side = sides[Math.floor(Math.random()*3)];
-
-const amount =
-[10,20,50,100][Math.floor(Math.random()*4)];
-
-if(side==="dragon"){
-fakeDragon += amount;
-updatePool("poolDragon", Number(poolDragon.textContent)+amount);
-}
-
-if(side==="tiger"){
-fakeTiger += amount;
-updatePool("poolTiger", Number(poolTiger.textContent)+amount);
-}
-
-if(side==="phoenix"){
-fakePhoenix += amount;
-updatePool("poolPhoenix", Number(poolPhoenix.textContent)+amount);
-}
-
-}
-
-
-setInterval(()=>{
-
-const delay = 500 + Math.random()*1500;
-
-setTimeout(fakeCrowdBet,delay);
-
-},2000);
 
 
 

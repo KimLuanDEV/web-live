@@ -1452,6 +1452,39 @@ const DTP_HISTORY_FILE =
 "/opt/render/project/data/dtp_history.json";
 
 
+let fakePool = {
+  dragon: 0,
+  tiger: 0,
+  phoenix: 0
+};
+
+
+setInterval(()=>{
+
+  // fake bet nhỏ để tạo crowd
+  const sides = ["dragon","tiger","phoenix"];
+  const side = sides[Math.floor(Math.random()*3)];
+
+  const fakeBet = Math.floor(Math.random()*200) + 50;
+
+  fakePool[side] += fakeBet;
+
+  // tổng pool = real + fake
+  const betSummary = {
+    dragon: fakePool.dragon,
+    tiger: fakePool.tiger,
+    phoenix: fakePool.phoenix
+  };
+
+  dtpRound.bets.forEach(b=>{
+    betSummary[b.side] += b.bet;
+  });
+
+  io.emit("dtp-bet-update", betSummary);
+
+}, 2000);
+
+
 
 
 let dtpHistory = loadDtpHistory();
@@ -1656,6 +1689,15 @@ dtpRound = {
   endAt: Date.now() + 60000,
   bets: []
 };
+
+
+
+fakePool = {
+  dragon: Math.floor(Math.random()*5000),
+  tiger: Math.floor(Math.random()*5000),
+  phoenix: Math.floor(Math.random()*5000)
+};
+
 
   io.emit("dtp-round-new",{
     roundId: dtpRound.id
