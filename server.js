@@ -1574,17 +1574,33 @@ dtpRound.bets.forEach(o=>{
   // SAVE USER HISTORY
   // =====================
 
-  me.dtpHistory ||= [];
+me.dtpHistory ||= [];
 
-  me.dtpHistory.unshift({
+// tìm round hiện tại
+let row = me.dtpHistory.find(r => r.round === dtpRound.id);
+
+if(!row){
+
+  row = {
     round: dtpRound.id,
-    side: o.side,
-    bet: o.bet,
-    win: win
-  });
+    dragon:0,
+    tiger:0,
+    phoenix:0,
+    win:0
+  };
 
-  // chỉ giữ 30 round
-  me.dtpHistory = me.dtpHistory.slice(0,30);
+  me.dtpHistory.unshift(row);
+
+}
+
+// cộng bet theo cửa
+row[o.side] += o.bet;
+
+// cộng tiền thắng
+row.win += win;
+
+// giữ tối đa 30 round
+me.dtpHistory = me.dtpHistory.slice(0,30);
 
 });
 
