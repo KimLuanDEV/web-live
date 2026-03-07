@@ -1492,6 +1492,41 @@ cursor:pointer;
 
 
 
+/* ================= ORIENTATION LOCK ================= */
+
+.rotate-lock{
+position:fixed;
+inset:0;
+
+background:#000;
+
+display:none;
+align-items:center;
+justify-content:center;
+
+z-index:9999;
+
+font-size:22px;
+font-weight:800;
+
+text-align:center;
+color:#ffd700;
+
+padding:40px;
+}
+
+@media screen and (orientation:landscape){
+
+.rotate-lock{
+display:flex;
+}
+
+body > *:not(.rotate-lock){
+display:none !important;
+}
+
+}
+
 
 </style>
 </head>
@@ -1827,6 +1862,14 @@ CLOSE
 
   </div>
 
+</div>
+
+
+
+
+
+<div class="rotate-lock">
+Please rotate your device
 </div>
 
 
@@ -2333,16 +2376,6 @@ document.getElementById("notifyModal")
 
 
 
-function lockPortrait(){
-
-  if(screen.orientation?.lock){
-    screen.orientation.lock("portrait").catch(()=>{});
-  }
-
-}
-
-document.addEventListener("touchstart", lockPortrait, { once:true });
-document.addEventListener("click", lockPortrait, { once:true });
 
 
 
