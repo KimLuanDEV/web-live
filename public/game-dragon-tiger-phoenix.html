@@ -517,34 +517,6 @@ margin-right:-51px;
 
 
 
-
-
-.history-btn{
-
-font-size:18px;
-
-width:34px;
-height:34px;
-
-display:flex;
-align-items:center;
-justify-content:center;
-
-cursor:pointer;
-
-border-radius:10px;
-
-transition:.2s;
-
-}
-
-.history-btn:hover{
-transform:scale(1.1);
-}
-
-
-
-
 .my-history{
 
 position:fixed;
@@ -612,10 +584,57 @@ cursor:pointer;
 
 
 
+/* ================= FLOAT HISTORY BUTTON ================= */
+
+.history-float{
+
+position:fixed;
+
+right:14px;
+bottom:140px;
+
+width:46px;
+height:46px;
+
+border-radius:50%;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:20px;
+
+background:linear-gradient(180deg,#111,#000);
+
+border:1px solid rgba(255,255,255,.15);
+
+box-shadow:
+0 10px 30px rgba(0,0,0,.8),
+0 0 20px rgba(255,215,0,.2);
+
+cursor:pointer;
+
+z-index:40;
+
+transition:.2s;
+
+}
+
+.history-float:hover{
+
+transform:scale(1.1);
+
+box-shadow:
+0 0 20px gold;
+
+}
+
+
 </style>
 </head>
 
 <body>
+
 
 <div class="topbar">
 
@@ -627,7 +646,7 @@ cursor:pointer;
     <span style="color:rgb(235,129,8)">PHOENIX</span>
   </div>
 
-  <div class="history-btn" onclick="openMyHistory()">📜</div>
+  
 
   <div class="top-item coin-box">
     💎 <span id="coins">0</span>
@@ -737,6 +756,7 @@ CLOSE
 
 
 
+<div class="history-btn" onclick="openMyHistory()">📜</div>
 
 <script>
 
