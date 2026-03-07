@@ -353,38 +353,44 @@ z-index:100;
 
 position:relative;
 
-padding:40px 60px;
+width:420px;
+height:420px;
 
-border-radius:20px;
+display:flex;
+flex-direction:column;
+align-items:center;
+justify-content:center;
 
 background:
-linear-gradient(180deg,#0a0a0a,#000);
+url("/assets/dtp/result-stone-monkey.png")
+center/contain no-repeat;
 
-border:1px solid rgba(255,255,255,.2);
+padding-top:80px;
 
-box-shadow:
-0 0 40px rgba(255,215,0,.4),
-0 0 120px rgba(255,215,0,.15);
-
-text-align:center;
-
-animation:resultPop .4s ease;
+border:none;
+box-shadow:none;
 
 }
 
-@keyframes resultPop{
 
-0%{
-transform:scale(.6);
-opacity:0;
+.result-box::before{
+
+content:"";
+
+position:absolute;
+inset:-60px;
+
+background:
+radial-gradient(circle,
+rgba(255,215,0,.35),
+transparent 70%);
+
+z-index:-1;
+
+animation:glowPulse 2s infinite;
+
 }
 
-100%{
-transform:scale(1);
-opacity:1;
-}
-
-}
 
 /* title */
 
