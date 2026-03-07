@@ -552,7 +552,8 @@ inset:0;
 
 background:rgba(0,0,0,.9);
 
-display:flex;
+display:none;   /* 🔥 mặc định ẩn */
+
 align-items:center;
 justify-content:center;
 
@@ -716,7 +717,7 @@ cursor:pointer;
 
 
 
-<div id="myHistoryModal" class="my-history hidden">
+<div id="myHistoryModal" class="my-history">
 
 <div class="my-history-box">
 
@@ -984,14 +985,14 @@ function openMyHistory(){
 socket.emit("dtp-get-my-history");
 
 document.getElementById("myHistoryModal")
-.classList.remove("hidden");
+.style.display = "flex";
 
 }
 
 function closeMyHistory(){
 
 document.getElementById("myHistoryModal")
-.classList.add("hidden");
+.style.display = "none";
 
 }
 
