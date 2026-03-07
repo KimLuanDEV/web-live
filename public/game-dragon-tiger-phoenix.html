@@ -1542,8 +1542,8 @@ inset:0;
 
 background:
 linear-gradient(
-rgba(0,0,0,.9),
-rgba(0,0,0,.35)
+rgba(0,0,0,.29),
+rgba(0,0,0,.15)
 ),
 url("/assets/dtp/beast-arena.jpg");
 
@@ -2543,7 +2543,6 @@ checkLoader();
 });
 
 /* IMAGE PRELOAD */
-
 function waitImages(){
 
 const images = document.images;
@@ -2555,24 +2554,24 @@ checkLoader();
 return;
 }
 
-for(let img of images){
-
-if(img.complete){
-loaded++;
-}else{
-
-img.onload = img.onerror = ()=>{
+function imageDone(){
 loaded++;
 
 updateLoading(50 + loaded/images.length*50);
 
-if(loaded === images.length){
+if(loaded >= images.length){
 loaderImagesReady = true;
 checkLoader();
 }
+}
 
-};
+for(let img of images){
 
+if(img.complete){
+imageDone();
+}else{
+img.onload = imageDone;
+img.onerror = imageDone;
 }
 
 }
@@ -2602,6 +2601,13 @@ overlay.remove();
 },500);
 
 }
+
+
+setTimeout(()=>{
+loaderImagesReady = true;
+loaderDomReady = true;
+checkLoader();
+},10000);
 
 
 </script>
