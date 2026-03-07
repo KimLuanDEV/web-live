@@ -1563,7 +1563,18 @@ z-index:10000;
 }
 
 .loading-center{
+
+position:absolute;
+
+left:50%;
+bottom:120px;
+
+transform:translateX(-50%);
+
 text-align:center;
+
+width:100%;
+
 }
 
 
@@ -2510,7 +2521,7 @@ document.getElementById("notifyModal")
 let loaderImagesReady = false;
 let loaderDomReady = false;
 
-const MIN_LOADING_TIME = 60000;
+const MIN_LOADING_TIME = 10000;
 const loadingStartTime = Date.now();
 
 function updateLoading(p){
