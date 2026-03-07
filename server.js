@@ -1459,9 +1459,24 @@ let fakePool = {
 };
 
 
+function getDtpPool(){
+
+  const pool = {
+    dragon: fakePool.dragon,
+    tiger: fakePool.tiger,
+    phoenix: fakePool.phoenix
+  };
+
+  dtpRound.bets.forEach(b=>{
+    pool[b.side] += b.bet;
+  });
+
+  return pool;
+}
+
+
 setInterval(()=>{
 
-  // fake bet nhỏ để tạo crowd
   const sides = ["dragon","tiger","phoenix"];
   const side = sides[Math.floor(Math.random()*3)];
 
@@ -1469,21 +1484,9 @@ setInterval(()=>{
 
   fakePool[side] += fakeBet;
 
-  // tổng pool = real + fake
-  const betSummary = {
-    dragon: fakePool.dragon,
-    tiger: fakePool.tiger,
-    phoenix: fakePool.phoenix
-  };
+  io.emit("dtp-bet-update", getDtpPool());
 
-  dtpRound.bets.forEach(b=>{
-    betSummary[b.side] += b.bet;
-  });
-
-  io.emit("dtp-bet-update", betSummary);
-
-}, 2000);
-
+},2000);
 
 
 
@@ -3101,7 +3104,6 @@ socket.on("dtp-bet", ({ side, bet }) => {
 
   const users = loadUsers();
   const me = users[uid];
-
   if(!me?.profile) return;
 
   bet = Number(bet || 0);
@@ -3127,23 +3129,10 @@ socket.on("dtp-bet", ({ side, bet }) => {
   emitCoinUpdate(uid);
 
   // =====================
-  // UPDATE BET SUMMARY
+  // UPDATE POOL (REAL + FAKE)
   // =====================
 
-  const betSummary = {
-    dragon:0,
-    tiger:0,
-    phoenix:0
-  };
-
-  dtpRound.bets.forEach(b=>{
-    if(betSummary[b.side] !== undefined){
-      betSummary[b.side] += b.bet;
-    }
-  });
-
-  io.emit("dtp-bet-update", betSummary);
-
+  io.emit("dtp-bet-update", getDtpPool());
 
   // =====================
   // UPDATE MY BET
