@@ -1374,6 +1374,49 @@ cursor:pointer;
 }
 
 
+/* ================= GUIDE STEP ================= */
+
+.guide-step{
+
+display:flex;
+gap:12px;
+
+margin-bottom:16px;
+
+align-items:center;
+
+background:rgba(255,255,255,.03);
+
+padding:10px;
+
+border-radius:10px;
+
+border:1px solid rgba(255,255,255,.05);
+
+}
+
+.guide-step img{
+
+width:70px;
+height:70px;
+
+object-fit:contain;
+
+border-radius:8px;
+
+}
+
+.guide-text{
+
+font-size:13px;
+line-height:1.5;
+
+}
+
+
+
+
+
 </style>
 </head>
 
@@ -1493,7 +1536,7 @@ cursor:pointer;
   </div>
 
   <div class="balance-center">
-      <div class="balance-title">ACCOUNT BALANCE</div>
+      <div class="balance-title">MEAT BALANCE</div>
       <div class="balance-value" id="coins">0</div>
   </div>
 
@@ -1634,19 +1677,55 @@ HOW TO PLAY
 
 <div class="guide-content">
 
-<b>Choose an animal</b><br>
-Bet on Dragon, Tiger or Phoenix.<br><br>
+<div class="guide-step">
 
-<b>Payout</b><br>
-Correct prediction wins <b>x3</b> your bet.<br><br>
+<img src="/assets/dtp/guide-bet.png">
 
-<b>Example</b><br>
-Bet 100 on Dragon → If Dragon wins → You get 300.<br><br>
-
-<b>Tip</b><br>
-Watch recent results in the history bar.
+<div class="guide-text">
+<b>STEP 1</b><br>
+Choose an animal to bet on.
+</div>
 
 </div>
+
+
+<div class="guide-step">
+
+<img src="/assets/dtp/guide-chip.png">
+
+<div class="guide-text">
+<b>STEP 2</b><br>
+Select your chip value and place a bet.
+</div>
+
+</div>
+
+
+<div class="guide-step">
+
+<img src="/assets/dtp/guide-win.png">
+
+<div class="guide-text">
+<b>STEP 3</b><br>
+If your animal wins you get <b>x3 payout</b>.
+</div>
+
+</div>
+
+
+<div class="guide-step">
+
+<img src="/assets/dtp/guide-history.png">
+
+<div class="guide-text">
+<b>TIP</b><br>
+Watch recent results in the history bar.
+</div>
+
+</div>
+
+</div>
+
 
 <div class="guide-close" onclick="closeGuide()">
 CLOSE
