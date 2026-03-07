@@ -1477,6 +1477,12 @@ function getDtpPool(){
 
 setInterval(()=>{
 
+  const remain =
+    Math.floor((dtpRound.endAt - Date.now())/1000);
+
+  // 🔒 giống player: không cược khi <=5s
+  if(remain <= 5) return;
+
   const sides = ["dragon","tiger","phoenix"];
   const side = sides[Math.floor(Math.random()*3)];
 
