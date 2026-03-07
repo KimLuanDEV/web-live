@@ -1002,27 +1002,36 @@ animation:coinPop .3s;
 
 margin-left:auto;
 
-width:36px;
-height:36px;
+width:40px;
+height:40px;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
-font-size:18px;
-
 cursor:pointer;
 
-transition:.2s;
+transition:.25s;
+
+}
+
+.balance-history img{
+
+width:100%;
+height:100%;
+
+object-fit:contain;
+
+filter:
+drop-shadow(0 0 6px rgba(255,215,0,.5));
 
 }
 
 .balance-history:hover{
 
-transform:scale(1.1);
+transform:scale(1.15);
 
-box-shadow:
-0 0 12px rgba(255,215,0,.6);
+filter:drop-shadow(0 0 10px gold);
 
 }
 
@@ -1128,9 +1137,9 @@ box-shadow:
       <div class="balance-value" id="coins">0</div>
   </div>
 
-  <div class="balance-history" onclick="openMyHistory()">
-      📜
-  </div>
+<div class="balance-history" onclick="openMyHistory()">
+    <img src="/assets/dtp/monkey-history.png">
+</div>
 
 </div>
 
