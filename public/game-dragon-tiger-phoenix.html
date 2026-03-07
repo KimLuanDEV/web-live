@@ -647,26 +647,35 @@ background:#ff8c00;
 position:relative;
 z-index:2;
 
-font-size:22px;
-font-weight:900;
-
-width:36px;
-height:36px;
+width:44px;
+height:44px;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
 cursor:pointer;
-transition:.2s;
+transition:.25s;
+
+}
+
+.back-btn img{
+
+width:100%;
+height:100%;
+
+object-fit:contain;
+
+filter:
+drop-shadow(0 0 6px rgba(255,215,0,.5));
 
 }
 
 .back-btn:hover{
 
-transform:scale(1.1);
+transform:scale(1.2);
 
-box-shadow:0 0 10px rgba(255,255,255,.2);
+filter:drop-shadow(0 0 12px gold);
 
 }
 
@@ -1423,7 +1432,9 @@ line-height:1.5;
 
 <div class="topbar">
 
-  <div class="back-btn" onclick="location.href='/invest.html'">‹</div>
+  <div class="back-btn" onclick="location.href='/invest.html'">
+  <img src="/assets/dtp/monkey-exit.png">
+</div>
 
   <div class="game-title">
     <span style="color:red">DRAGON</span> • 
