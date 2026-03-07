@@ -1566,22 +1566,7 @@ z-index:10000;
 text-align:center;
 }
 
-.loading-logo{
 
-font-size:26px;
-font-weight:900;
-
-letter-spacing:3px;
-
-color:#ffd700;
-
-text-shadow:
-0 0 10px gold,
-0 0 40px gold;
-
-margin-bottom:40px;
-
-}
 
 .loading-spinner{
 
@@ -1999,10 +1984,6 @@ Please rotate your device
 <div id="loadingOverlay" class="loading-overlay">
 
   <div class="loading-center">
-
-    <div class="loading-logo">
-      DRAGON • TIGER • PHOENIX
-    </div>
 
     <div class="loading-spinner"></div>
 
@@ -2529,7 +2510,7 @@ document.getElementById("notifyModal")
 let loaderImagesReady = false;
 let loaderDomReady = false;
 
-const MIN_LOADING_TIME = 3000;
+const MIN_LOADING_TIME = 60000;
 const loadingStartTime = Date.now();
 
 function updateLoading(p){
@@ -2608,10 +2589,12 @@ function checkLoader(){
 
   setTimeout(()=>{
 
-    document.body.classList.remove("loading");
-
     const overlay =
-      document.getElementById("loadingOverlay");
+    document.getElementById("loadingOverlay");
+
+    if(!overlay) return;
+
+    document.body.classList.remove("loading");
 
     overlay.style.opacity = "0";
 
