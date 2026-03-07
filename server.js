@@ -1486,7 +1486,7 @@ setInterval(()=>{
   const sides = ["dragon","tiger","phoenix"];
   const side = sides[Math.floor(Math.random()*3)];
 
-  const fakeBet = (Math.floor(Math.random()*20) + 1) * 10;
+  const fakeBet = (Math.floor(Math.random()*200) + 1) * 10;
 
   fakePool[side] += fakeBet;
 
@@ -1702,7 +1702,7 @@ dtpRound = {
 
 
 function randomPool(){
-  return Math.floor(Math.random()*50) * 10;
+  return Math.floor(Math.random()*0) * 10;
 }
 
 fakePool = {
