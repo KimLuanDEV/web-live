@@ -2529,6 +2529,9 @@ document.getElementById("notifyModal")
 let loaderImagesReady = false;
 let loaderDomReady = false;
 
+const MIN_LOADING_TIME = 10000; // 2 giây
+const loadingStartTime = Date.now();
+
 function updateLoading(p){
 
 document.getElementById("loadingProgress")
@@ -2592,6 +2595,9 @@ function checkLoader(){
 if(!loaderDomReady) return;
 if(!loaderImagesReady) return;
 
+const elapsed = Date.now() - loadingStartTime;
+const remain = Math.max(0, MIN_LOADING_TIME - elapsed);
+
 setTimeout(()=>{
 
 document.body.classList.remove("loading");
@@ -2605,10 +2611,9 @@ setTimeout(()=>{
 overlay.remove();
 },600);
 
-},500);
+}, remain);
 
 }
-
 
 setTimeout(()=>{
 loaderImagesReady = true;
