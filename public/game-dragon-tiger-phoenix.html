@@ -1545,8 +1545,8 @@ inset:0;
 
 background:
 linear-gradient(
-rgba(0,0,0,.4),
-rgba(0,0,0,.6)
+rgba(0,0,0,.1),
+rgba(0,0,0,.1)
 ),
 url("/assets/dtp/btp-loading.jpg");
 
@@ -1674,6 +1674,22 @@ animation:loadingPulse 1.5s infinite;
 
 }
 
+
+
+.revealFlash{
+  position:fixed;
+  inset:0;
+  background:#fff7cc;
+  opacity:0;
+  pointer-events:none;
+  z-index:10001;
+  animation:revealFlashOut .6s ease;
+}
+
+@keyframes revealFlashOut{
+  0%{ opacity:.45; }
+  100%{ opacity:0; }
+}
 
 
 </style>
@@ -2552,109 +2568,154 @@ document.getElementById("notifyModal")
 
 let loaderImagesReady = false;
 let loaderDomReady = false;
+let loaderFinished = false;
 
-const MIN_LOADING_TIME = 10000;
+const MIN_LOADING_TIME = 10000; // 10 giây
 const loadingStartTime = Date.now();
 
-function updateLoading(p){
-  document.getElementById("loadingProgress").style.width = p + "%";
+const loadingTexts = [
+  "Connecting Arena...",
+  "Loading Dragon Spirit...",
+  "Loading Tiger Power...",
+  "Summoning Phoenix Flame...",
+  "Preparing Battle Arena...",
+  "Loading assets..."
+];
+
+let loadingIndex = 0;
+let visualProgress = 0;
+
+const loadingTextEl = document.getElementById("loadingText");
+const loadingBarEl  = document.getElementById("loadingProgress");
+const spinnerEl     = document.querySelector(".loading-spinner");
+
+function updateLoading(percent){
+  const safe = Math.max(0, Math.min(100, percent));
+  loadingBarEl.style.width = safe + "%";
+
+  const text =
+    loadingTexts[Math.min(loadingIndex, loadingTexts.length - 1)];
+
+  loadingTextEl.textContent = `${text} ${Math.floor(safe)}%`;
+
+  if(safe > 80 && spinnerEl){
+    spinnerEl.style.animationDuration = ".55s";
+  }
 }
 
 /* DOM READY */
 
 document.addEventListener("DOMContentLoaded", ()=>{
-
   loaderDomReady = true;
-  updateLoading(30);
-
   checkLoader();
-
 });
-
 
 /* PRELOAD IMAGES */
 
 const preloadImages = [
+  "/assets/dtp/beast-arena.jpg",
+  "/assets/dtp/btp-loading.jpg",
 
-"/assets/dtp/beast-arena.jpg",
-"/assets/dtp/btp-loading.jpg",
+  "/assets/dtp/dragon.png",
+  "/assets/dtp/tiger.png",
+  "/assets/dtp/phoenix.png",
 
-"/assets/dtp/dragon.png",
-"/assets/dtp/tiger.png",
-"/assets/dtp/phoenix.png",
+  "/assets/dtp/dragon-head.png",
+  "/assets/dtp/tiger-head.png",
+  "/assets/dtp/phoenix-head.png",
 
-"/assets/dtp/dragon-head.png",
-"/assets/dtp/tiger-head.png",
-"/assets/dtp/phoenix-head.png",
-
-"/assets/dtp/chip-dragon.png",
-"/assets/dtp/chip-tiger.png",
-"/assets/dtp/chip-phoenix.png",
-"/assets/dtp/chip-lion.png"
-
+  "/assets/dtp/chip-dragon.png",
+  "/assets/dtp/chip-tiger.png",
+  "/assets/dtp/chip-phoenix.png",
+  "/assets/dtp/chip-lion.png"
 ];
 
-let loaded = 0;
+let loadedAssets = 0;
 
 preloadImages.forEach(src=>{
-
   const img = new Image();
 
   img.onload = img.onerror = ()=>{
+    loadedAssets++;
 
-    loaded++;
-
-    updateLoading(
-      30 + (loaded/preloadImages.length)*70
-    );
-
-    if(loaded === preloadImages.length){
+    if(loadedAssets >= preloadImages.length){
       loaderImagesReady = true;
       checkLoader();
     }
-
   };
 
   img.src = src;
-
 });
 
+/* VISUAL PROGRESS: luôn chạy đủ 10 giây */
+
+const progressTimer = setInterval(()=>{
+
+  const elapsed = Date.now() - loadingStartTime;
+  const percent = (elapsed / MIN_LOADING_TIME) * 100;
+
+  visualProgress = Math.min(100, percent);
+
+  const textStep =
+    Math.min(
+      loadingTexts.length - 1,
+      Math.floor((visualProgress / 100) * loadingTexts.length)
+    );
+
+  loadingIndex = textStep;
+
+  updateLoading(visualProgress);
+
+  if(visualProgress >= 100){
+    clearInterval(progressTimer);
+    checkLoader();
+  }
+
+}, 100);
 
 /* FINISH */
 
 function checkLoader(){
 
+  if(loaderFinished) return;
   if(!loaderDomReady) return;
   if(!loaderImagesReady) return;
 
   const elapsed = Date.now() - loadingStartTime;
-  const remain = Math.max(0, MIN_LOADING_TIME - elapsed);
+  if(elapsed < MIN_LOADING_TIME) return;
+
+  loaderFinished = true;
+
+  clearInterval(progressTimer);
+  updateLoading(100);
+
+  const overlay = document.getElementById("loadingOverlay");
+  if(!overlay) return;
+
+  document.body.classList.remove("loading");
+
+  overlay.style.transform = "scale(1.03)";
+  overlay.style.opacity = "0";
+  overlay.style.transition = "transform .8s ease, opacity .8s ease";
+
+  const flash = document.createElement("div");
+  flash.className = "revealFlash";
+  document.body.appendChild(flash);
+
+  setTimeout(()=> flash.remove(), 600);
 
   setTimeout(()=>{
-
-    const overlay =
-    document.getElementById("loadingOverlay");
-
-    if(!overlay) return;
-
-    document.body.classList.remove("loading");
-
-    overlay.style.opacity = "0";
-
-    setTimeout(()=>{
-      overlay.remove();
-    },600);
-
-  }, remain);
-
+    overlay.remove();
+  }, 800);
 }
 
-setTimeout(()=>{
-loaderImagesReady = true;
-loaderDomReady = true;
-checkLoader();
-},10000);
+/* FALLBACK: tránh treo vô hạn nếu có asset lỗi lạ */
 
+setTimeout(()=>{
+  loaderDomReady = true;
+  loaderImagesReady = true;
+  checkLoader();
+}, 12000);
 
 </script>
 
