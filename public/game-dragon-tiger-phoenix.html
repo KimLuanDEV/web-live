@@ -732,6 +732,96 @@ text-shadow:0 0 10px gold;
 
 
 
+.flying-chip{
+position:fixed;
+width:60px;
+height:60px;
+pointer-events:none;
+z-index:999;
+transition:all .6s cubic-bezier(.2,.8,.2,1);
+}
+
+
+
+
+
+.win-explosion{
+
+position:absolute;
+inset:0;
+
+background:
+radial-gradient(circle,
+rgba(255,215,0,.9),
+rgba(255,215,0,.2),
+transparent 70%);
+
+animation:explode .7s ease-out;
+pointer-events:none;
+
+}
+
+@keyframes explode{
+
+0%{
+transform:scale(.3);
+opacity:1;
+}
+
+100%{
+transform:scale(2.5);
+opacity:0;
+}
+
+}
+
+
+
+.bet-progress{
+
+width:240px;
+height:6px;
+
+background:#111;
+border-radius:20px;
+
+margin-top:12px;
+
+overflow:hidden;
+
+}
+
+#betBar{
+
+height:100%;
+width:100%;
+
+background:linear-gradient(
+90deg,
+#00ff9c,
+#ffd700,
+#ff4040
+);
+
+transition:width 1s linear;
+
+}
+
+
+
+.bet-pool{
+
+position:absolute;
+bottom:140px;
+
+display:flex;
+gap:18px;
+
+font-size:13px;
+opacity:.8;
+
+}
+
 </style>
 </head>
 
@@ -772,6 +862,20 @@ text-shadow:0 0 10px gold;
   <div class="timer-number">
     <span id="timer">60</span>
   </div>
+
+
+<div class="bet-progress">
+<div id="betBar"></div>
+</div>
+
+<div class="bet-pool">
+
+<div>🐉 <span id="poolDragon">0</span></div>
+<div>🐯 <span id="poolTiger">0</span></div>
+<div>🔥 <span id="poolPhoenix">0</span></div>
+
+</div>
+
 
 </div>
 
@@ -939,24 +1043,49 @@ el.classList.add("active");
 
 function placeBet(side){
 
-socket.emit("dtp-bet",{
-  side,
-  bet:currentBet
-});
+const chip = document.querySelector(".chip.active img");
+const chipRect = chip.getBoundingClientRect();
 
-if(side === "dragon"){
-   betDragon += currentBet;
-   document.getElementById("betDragon").textContent = betDragon;
+const card = document.querySelector("." + side);
+const cardRect = card.getBoundingClientRect();
+
+const flying = document.createElement("img");
+flying.src = chip.src;
+flying.className = "flying-chip";
+
+flying.style.left = chipRect.left + "px";
+flying.style.top  = chipRect.top + "px";
+
+document.body.appendChild(flying);
+
+setTimeout(()=>{
+flying.style.left = cardRect.left + cardRect.width/2 + "px";
+flying.style.top  = cardRect.top + cardRect.height/2 + "px";
+flying.style.transform = "scale(.6)";
+},10);
+
+setTimeout(()=>{
+flying.remove();
+},600);
+
+
+// ===== original bet =====
+
+socket.emit("dtp-bet",{ side, bet:currentBet });
+
+if(side==="dragon"){
+betDragon+=currentBet;
+betDragonEl.textContent=betDragon;
 }
 
-if(side === "tiger"){
-   betTiger += currentBet;
-   document.getElementById("betTiger").textContent = betTiger;
+if(side==="tiger"){
+betTiger+=currentBet;
+betTigerEl.textContent=betTiger;
 }
 
-if(side === "phoenix"){
-   betPhoenix += currentBet;
-   document.getElementById("betPhoenix").textContent = betPhoenix;
+if(side==="phoenix"){
+betPhoenix+=currentBet;
+betPhoenixEl.textContent=betPhoenix;
 }
 
 }
@@ -991,6 +1120,11 @@ document.getElementById("roundId").textContent = data.roundId;
 socket.on("dtp-timer", t=>{
 
 document.getElementById("timer").textContent = t;
+
+const percent = t / 60 * 100;
+
+document.getElementById("betBar").style.width =
+percent + "%";
 
 });
 
@@ -1037,6 +1171,22 @@ if(winCard){
 winCard.style.boxShadow =
 "0 0 80px gold,0 0 200px rgba(255,215,0,.7)";
 }
+
+
+// =============================
+//  WIN EXPLOSION
+// =============================
+
+
+const fx = document.createElement("div");
+fx.className="win-explosion";
+
+winCard.appendChild(fx);
+
+setTimeout(()=>{
+fx.remove();
+},700);
+
 
 
 // =============================
@@ -1108,8 +1258,14 @@ renderDtpHistory();
 
 socket.on("dtp-bet-update", data=>{
 
-// nếu muốn hiển thị tổng cược phòng thì xử lý ở đây
-// hiện tại chỉ dùng cho thống kê, không ghi đè cược user
+document.getElementById("poolDragon").textContent =
+data.dragon;
+
+document.getElementById("poolTiger").textContent =
+data.tiger;
+
+document.getElementById("poolPhoenix").textContent =
+data.phoenix;
 
 });
 
