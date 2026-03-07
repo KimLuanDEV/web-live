@@ -645,26 +645,56 @@ box-shadow:
 font-size:13px;
 }
 
+.history-head,
+.history-row{
+
+display:grid;
+
+/* 6 cột */
+grid-template-columns:
+60px   /* round */
+1fr    /* dragon */
+1fr    /* tiger */
+1fr    /* phoenix */
+70px   /* result */
+70px;  /* P/L */
+
+align-items:center;
+text-align:center;
+
+}
+
+/* header style */
+
 .history-head{
-display:flex;
-justify-content:space-between;
+
 padding:6px 0;
 font-weight:700;
 opacity:.6;
+
 border-bottom:1px solid rgba(255,255,255,.1);
 margin-bottom:6px;
+
 }
+
+/* row style */
 
 .history-row{
 
-display:flex;
-justify-content:space-between;
-
 padding:8px 0;
-
 border-bottom:1px solid rgba(255,255,255,.05);
-
 font-weight:600;
+
+}
+
+/* căn giữa nội dung */
+
+.history-head div,
+.history-row div{
+
+display:flex;
+align-items:center;
+justify-content:center;
 
 }
 
@@ -1037,6 +1067,7 @@ WIN RATE
 <div id="myHistoryList"></div>
 
 </div>
+
 
 <div class="close-history" onclick="closeMyHistory()">
 CLOSE
