@@ -1132,7 +1132,6 @@ betPhoenixEl.textContent=betPhoenix;
 
 socket.on("dtp-round-new", data=>{
 
-// nếu round thay đổi
 if(currentRound !== data.roundId){
 
    betDragon = 0;
@@ -1143,12 +1142,15 @@ if(currentRound !== data.roundId){
    document.getElementById("betTiger").textContent = 0;
    document.getElementById("betPhoenix").textContent = 0;
 
-   // reset trạng thái restore
+   // 🔥 RESET POOL
+   document.getElementById("poolDragon").textContent = 0;
+   document.getElementById("poolTiger").textContent = 0;
+   document.getElementById("poolPhoenix").textContent = 0;
+
    betRestored = false;
 }
 
 currentRound = data.roundId;
-
 document.getElementById("roundId").textContent = data.roundId;
 
 });
