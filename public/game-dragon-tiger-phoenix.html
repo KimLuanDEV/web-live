@@ -1252,6 +1252,128 @@ max-width:260px;
 
 }
 
+
+
+/* ================= HELP BUTTON ================= */
+
+.help-btn{
+
+margin-left:auto;
+
+width:34px;
+height:34px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+border-radius:50%;
+
+font-weight:900;
+font-size:18px;
+
+background:
+linear-gradient(180deg,#ffd700,#ff9900);
+
+color:#000;
+
+cursor:pointer;
+
+box-shadow:
+0 0 10px gold;
+
+transition:.2s;
+
+}
+
+.help-btn:hover{
+
+transform:scale(1.15);
+
+box-shadow:
+0 0 20px gold;
+
+}
+
+
+
+
+/* ================= GUIDE MODAL ================= */
+
+.guide-modal{
+
+position:fixed;
+inset:0;
+
+background:rgba(0,0,0,.9);
+
+display:none;
+
+align-items:center;
+justify-content:center;
+
+z-index:120;
+
+}
+
+.guide-box{
+
+width:90%;
+max-width:420px;
+
+background:#0a0a0a;
+
+border-radius:18px;
+
+padding:22px;
+
+border:1px solid rgba(255,255,255,.1);
+
+box-shadow:
+0 0 30px rgba(255,215,0,.2);
+
+}
+
+.guide-title{
+
+font-size:18px;
+font-weight:900;
+
+margin-bottom:14px;
+
+text-align:center;
+
+letter-spacing:2px;
+
+}
+
+.guide-content{
+
+font-size:14px;
+
+line-height:1.6;
+
+opacity:.9;
+
+}
+
+.guide-close{
+
+margin-top:18px;
+
+padding:10px;
+
+text-align:center;
+
+background:#222;
+
+border-radius:10px;
+
+cursor:pointer;
+
+}
+
+
 </style>
 </head>
 
@@ -1267,6 +1389,8 @@ max-width:260px;
     <span style="color:rgb(17,13,231)">TIGER</span> • 
     <span style="color:rgb(235,129,8)">PHOENIX</span>
   </div>
+
+  <div class="help-btn" onclick="openGuide()">?</div>
 
 </div>
 
@@ -1496,6 +1620,41 @@ CLOSE
 </div>
 
 
+
+
+
+
+<div id="guideModal" class="guide-modal">
+
+<div class="guide-box">
+
+<div class="guide-title">
+HOW TO PLAY
+</div>
+
+<div class="guide-content">
+
+<b>Choose an animal</b><br>
+Bet on Dragon, Tiger or Phoenix.<br><br>
+
+<b>Payout</b><br>
+Correct prediction wins <b>x3</b> your bet.<br><br>
+
+<b>Example</b><br>
+Bet 100 on Dragon → If Dragon wins → You get 300.<br><br>
+
+<b>Tip</b><br>
+Watch recent results in the history bar.
+
+</div>
+
+<div class="guide-close" onclick="closeGuide()">
+CLOSE
+</div>
+
+</div>
+
+</div>
 
 
 
@@ -1931,6 +2090,22 @@ el.textContent=value;
 el.classList.add("bump");
 
 setTimeout(()=>el.classList.remove("bump"),200);
+
+}
+
+
+
+function openGuide(){
+
+document.getElementById("guideModal")
+.style.display = "flex";
+
+}
+
+function closeGuide(){
+
+document.getElementById("guideModal")
+.style.display = "none";
 
 }
 
