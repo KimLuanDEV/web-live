@@ -427,6 +427,76 @@ body{
   margin:0 auto;
 }
 
+
+.bomb-img{
+  width:260px;
+  height:auto;
+  position:absolute;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+
+  filter:
+    drop-shadow(0 0 30px #00f0ff)
+    drop-shadow(0 0 80px rgba(0,255,255,.5));
+}
+
+
+/* fuse */
+
+.bomb-fuse-img{
+  position:absolute;
+  width:80px;
+
+  left:50%;
+  top:-20px;
+
+  transform:translateX(-50%);
+}
+
+
+
+.bomb-timer{
+  position:absolute;
+  top:35px;
+  left:50%;
+  transform:translateX(-50%);
+
+  font-size:18px;
+  font-weight:900;
+
+  color:#ffcc00;
+  text-shadow:0 0 12px #ff9900;
+}
+
+
+/* spark */
+
+.spark{
+  position:absolute;
+  top:-40px;
+  left:50%;
+  transform:translateX(-50%);
+
+  width:24px;
+  height:24px;
+
+  border-radius:50%;
+
+  background:radial-gradient(circle,
+    #fff,
+    #ffcc00,
+    #ff3300
+  );
+
+  box-shadow:
+    0 0 30px #ff6600,
+    0 0 60px #ff0000;
+
+  animation:sparkFire .25s infinite alternate;
+}
+
+
 /* 🔵 outer glow */
 .bomb-core-glow{
   position:absolute;
@@ -445,56 +515,7 @@ body{
   50%{ opacity:1; transform:scale(1.1); }
 }
 
-/* 🎱 body */
-.bomb-body{
-  width:260px;
-  height:260px;
-  border-radius:50%;
-  position:relative;
 
-  background:
-    radial-gradient(circle at 35% 30%,
-      #666 0%,
-      #222 45%,
-      #000 85%
-    );
-
-  box-shadow:
-    inset -35px -35px 80px rgba(0,0,0,.9),
-    inset 20px 20px 40px rgba(255,255,255,.08),
-    0 0 90px rgba(0,255,255,.4);
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-}
-
-/* 🔲 metal ring */
-.bomb-body::before{
-  content:"";
-  position:absolute;
-  inset:8px;
-  border-radius:50%;
-  border:3px solid rgba(0,255,255,.5);
-  box-shadow:0 0 25px rgba(0,255,255,.6);
-}
-
-/* ⏳ timer */
-.bomb-timer{
-  position:absolute;
-  top:28px;
-  font-size:16px;
-  font-weight:800;
-  letter-spacing:1px;
-  color:#ffcc00;
-  text-shadow:0 0 10px #ff9900;
-  animation:timerBlink 1s infinite;
-}
-
-@keyframes timerBlink{
-  0%,100%{ opacity:.7; }
-  50%{ opacity:1; }
-}
 
 /* 💎 multiplier */
 .bomb-multi{
@@ -529,76 +550,7 @@ body{
   to{ background-position:200%; }
 }
 
-/* 🔥 fuse */
-.bomb-fuse{
-  position:absolute;
-  bottom:90%;     /* 🔥 neo vào bomb */
-  left:50%;
-  transform:translateX(-50%);
 
-  width:12px;
-  height:60px;
-
-  transition:height .2s linear;
-
-  border-radius:6px;
-
-  background:linear-gradient(
-    180deg,
-    #555,
-    #222
-  );
-
-  box-shadow:inset 0 0 10px rgba(0,0,0,.6);
-}
-
-/* ✨ spark */
-.spark{
-  position:absolute;
-  bottom:90%;   /* 🔥 neo vào đầu dây */
-  left:50%;
-  transform:translate(-50%, 0);
-
-  width:24px;
-  height:24px;
-  border-radius:50%;
-
-  background:radial-gradient(circle,
-    #fff,
-    #ffcc00,
-    #ff3300
-  );
-
-  box-shadow:
-    0 0 30px #ff6600,
-    0 0 60px #ff0000;
-
-  animation:sparkFire .3s infinite alternate;
-}
-
-@keyframes sparkFire{
-  from{
-    transform:translateX(-50%) scale(1);
-    opacity:.8;
-  }
-  to{
-    transform:translateX(-50%) scale(1.25);
-    opacity:1;
-  }
-}
-
-/* 🔴 hot state */
-.bomb-body.hot{
-  box-shadow:
-    0 0 140px rgba(255,0,0,.9),
-    inset -35px -35px 80px rgba(0,0,0,.9);
-}
-
-/* 💥 crash */
-.bomb-body.crash{
-  background:radial-gradient(circle,#ff0000,#200 70%);
-  box-shadow:0 0 160px red;
-}
 
 
 .bet-grid{
@@ -1690,19 +1642,17 @@ body.crash-dark{
 
   <div class="bomb-core-glow"></div>
 
-<div class="bomb-body">
+  <img class="bomb-img" src="/assets/time-race/bomb-body.png">
+
+  <img class="bomb-fuse-img" src="/assets/time-race/bomb-fuse.png">
+
   <div class="bomb-timer" id="betTimer">15</div>
-</div>
 
-<div id="multiplier" class="bomb-multi">
-  x1.00
-</div>
-
-
-
-  <div class="bomb-fuse">
-    <div class="spark"></div>
+  <div id="multiplier" class="bomb-multi">
+    x1.00
   </div>
+
+  <div class="spark"></div>
 
 </div>
 
@@ -2121,7 +2071,7 @@ socket.on("time-race-new", data => {
 
   // 🔥 Hiện lại bomb nếu vừa crash
   const bombWrap = document.querySelector(".bomb-wrap");
-  const bomb = document.querySelector(".bomb-body");
+  const bomb = document.querySelector(".bomb-img");
   const fuse = document.querySelector(".bomb-fuse");
   const glow = document.querySelector(".bomb-core-glow");
   const spark = document.querySelector(".spark");
