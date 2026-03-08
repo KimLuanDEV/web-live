@@ -170,18 +170,17 @@ onclick="setWinner('phoenix')">🔥 Phoenix</button>
 
 <script>
 
-// ==============================
-// CONNECT SOCKET
-// ==============================
-
 const socket = io();
 
 
 // ==============================
-// SECRET RESULT (REALTIME)
+// LOAD SECRET RESULT (API)
 // ==============================
 
-socket.on("dtp-secret-update", data => {
+async function loadSecret(){
+
+const res = await fetch("/api/admin/dtp-secret");
+const data = await res.json();
 
 document.getElementById("round").textContent =
   data.round;
@@ -189,7 +188,9 @@ document.getElementById("round").textContent =
 document.getElementById("secret").textContent =
   data.secret.toUpperCase();
 
-});
+}
+
+loadSecret();
 
 
 // ==============================
@@ -206,6 +207,8 @@ headers:{
 body:JSON.stringify({winner:w})
 });
 
+loadSecret();
+
 }
 
 
@@ -215,18 +218,16 @@ body:JSON.stringify({winner:w})
 
 socket.on("admin-dtp-bets-update", data => {
 
-// UPDATE POOL
 document.getElementById("poolDragon").textContent =
-  data.pool.dragon;
+data.pool.dragon;
 
 document.getElementById("poolTiger").textContent =
-  data.pool.tiger;
+data.pool.tiger;
 
 document.getElementById("poolPhoenix").textContent =
-  data.pool.phoenix;
+data.pool.phoenix;
 
 
-// RENDER BET TABLE
 const table = document.getElementById("betTable");
 
 table.innerHTML = `
@@ -239,7 +240,7 @@ table.innerHTML = `
 </tr>
 `;
 
-data.bets.forEach(b => {
+data.bets.forEach(b=>{
 
 const row = document.createElement("tr");
 
