@@ -5409,21 +5409,38 @@ app.get("/api/admin/dtp-bets",(req,res)=>{
 
 const users = loadUsers();
 
-const list = dtpRound.bets.map(b=>{
+const map = {};
 
-const me = users[b.uid];
+dtpRound.bets.forEach(b=>{
 
-return {
-name: me?.profile?.name || "Player",
-side: b.side,
-bet: b.bet
+if(!map[b.uid]){
+  map[b.uid] = {
+    name: users[b.uid]?.profile?.name || "Player",
+    dragon:0,
+    tiger:0,
+    phoenix:0
+  };
+}
+
+map[b.uid][b.side] += b.bet;
+
+});
+
+const list = Object.values(map).map(p=>{
+
+return{
+name:p.name,
+dragon:p.dragon,
+tiger:p.tiger,
+phoenix:p.phoenix,
+total:p.dragon + p.tiger + p.phoenix
 };
 
 });
 
 res.json({
 round: dtpRound.id,
-bets: list
+bets:list
 });
 
 });

@@ -52,8 +52,10 @@ margin-top:20px;
 <table id="betTable">
 <tr>
 <th>Player</th>
-<th>Side</th>
-<th>Bet</th>
+<th>Dragon</th>
+<th>Tiger</th>
+<th>Phoenix</th>
+<th>Total</th>
 </tr>
 </table>
 
@@ -112,8 +114,10 @@ const row = document.createElement("tr");
 
 row.innerHTML = `
 <td>${b.name}</td>
-<td>${b.side}</td>
-<td>${b.bet}</td>
+<td>${b.dragon}</td>
+<td>${b.tiger}</td>
+<td>${b.phoenix}</td>
+<td>${b.total}</td>
 `;
 
 table.appendChild(row);
