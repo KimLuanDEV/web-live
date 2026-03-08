@@ -1557,6 +1557,17 @@ function saveDtpRoundCount(data){
 }
 
 
+function pickDtpWinner(){
+
+  const r = Math.random();
+
+  if(r < 0.333) return "dragon";
+  if(r < 0.666) return "tiger";
+  return "phoenix";
+
+}
+
+
 
 const dtpRoundState = loadDtpRoundCount();
 
@@ -1586,15 +1597,6 @@ let dtpRound = {
   secretResult: pickDtpWinner() // 🔥 tạo ngay khi round bắt đầu
 };
 
-function pickDtpWinner(){
-
-  const r = Math.random();
-
-  if(r < 0.333) return "dragon";
-  if(r < 0.666) return "tiger";
-  return "phoenix";
-
-}
 
 
 
@@ -5498,12 +5500,13 @@ res.json({
 
 
 // Admin DTP ===//
-app.get("/api/admin/dtp-secret", (req,res)=>{
+app.get("/api/admin/dtp-secret",(req,res)=>{
 
-  res.json({
-    round: dtpRound.id,
-    secret: dtpRound.secretResult
-  });
+res.json({
+round: dtpRound.id,
+secret: dtpRound.secretResult,
+endAt: dtpRound.endAt
+});
 
 });
 
