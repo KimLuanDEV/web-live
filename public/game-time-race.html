@@ -10,7 +10,7 @@
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="screen-orientation" content="portrait">
-
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="/style.css">
 <script src="/socket.io/socket.io.js"></script>
 
@@ -448,13 +448,23 @@ body{
 
 .bomb-timer{
   position:absolute;
-  top:102px;
-  left:113px;
-  font-size:37px;
-  font-weight:800;
-  color:#ffcc00;
-  text-shadow:0 0 10px #ff9900;
- 
+  top:50%;
+  left:50%;
+  transform:translate(-50%,-60%);
+
+  font-size:34px;
+  font-weight:900;
+
+  font-family:"Orbitron", monospace; /* digital style */
+
+  letter-spacing:2px;
+
+  color:#00f0ff;
+
+  text-shadow:
+    0 0 10px #00f0ff,
+    0 0 25px #00f0ff,
+    0 0 50px rgba(0,255,255,.7);
 }
 
 
@@ -1848,11 +1858,22 @@ function updateTimer(){
   if(!betEndAt) return;
 
   const betPanel = document.querySelector(".tr-bottom");
-  const msLeft = betEndAt - serverTime();
-  const left = Math.max(0, Math.ceil(msLeft / 1000));
 
-  // hiển thị số giây
-  betTimer.textContent = left > 0 ? left : "";
+const msLeft = betEndAt - serverTime();
+
+if(msLeft > 0){
+
+  const seconds = Math.floor(msLeft / 1000);
+  const ms = Math.floor((msLeft % 1000) / 10); // 2 digit ms
+
+  betTimer.textContent =
+    seconds.toString().padStart(2,"0") +
+    ":" +
+    ms.toString().padStart(2,"0");
+
+}else{
+  betTimer.textContent = "";
+}
 
 
 
@@ -1885,7 +1906,7 @@ function updateTimer(){
   }
 }
 
-setInterval(updateTimer,500);
+setInterval(updateTimer,16);
 
 
 
