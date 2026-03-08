@@ -47,6 +47,17 @@ margin-top:20px;
 </div>
 
 
+<h3>PLAYER BETS</h3>
+
+<table id="betTable">
+<tr>
+<th>Player</th>
+<th>Side</th>
+<th>Bet</th>
+</tr>
+</table>
+
+
 <script>
 
 async function load(){
@@ -77,6 +88,41 @@ body:JSON.stringify({winner:w})
 load();
 
 }
+
+
+
+async function loadBets(){
+
+const res = await fetch("/api/admin/dtp-bets");
+const data = await res.json();
+
+const table = document.getElementById("betTable");
+
+table.innerHTML = `
+<tr>
+<th>Player</th>
+<th>Side</th>
+<th>Bet</th>
+</tr>
+`;
+
+data.bets.forEach(b=>{
+
+const row = document.createElement("tr");
+
+row.innerHTML = `
+<td>${b.name}</td>
+<td>${b.side}</td>
+<td>${b.bet}</td>
+`;
+
+table.appendChild(row);
+
+});
+
+}
+
+setInterval(loadBets,2000);
 
 
 </script>

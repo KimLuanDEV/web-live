@@ -5404,6 +5404,33 @@ app.get("/api/admin/rps/secret", (req, res) => {
 });
 
 
+
+app.get("/api/admin/dtp-bets",(req,res)=>{
+
+const users = loadUsers();
+
+const list = dtpRound.bets.map(b=>{
+
+const me = users[b.uid];
+
+return {
+name: me?.profile?.name || "Player",
+side: b.side,
+bet: b.bet
+};
+
+});
+
+res.json({
+round: dtpRound.id,
+bets: list
+});
+
+});
+
+
+
+
 // 🛑 ADMIN OVERRIDE RPS RESULT (DANGEROUS)
 app.post("/api/admin/rps/override", (req, res) => {
 
