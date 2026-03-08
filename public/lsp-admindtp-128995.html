@@ -5,25 +5,87 @@
 <style>
 
 body{
-background:#111;
-color:white;
+background:#0b0b0b;
+color:#fff;
 font-family:system-ui;
-text-align:center;
-padding:50px;
+padding:30px;
 }
 
-.box{
-background:#000;
-border:1px solid gold;
-padding:40px;
-border-radius:10px;
-display:inline-block;
+.admin-title{
+font-size:32px;
+font-weight:700;
+margin-bottom:20px;
+color:gold;
+}
+
+.panel{
+background:#111;
+border:1px solid #333;
+border-radius:12px;
+padding:20px;
+margin-bottom:20px;
+box-shadow:0 0 15px rgba(0,0,0,.6);
 }
 
 .result{
-font-size:40px;
+font-size:42px;
+font-weight:700;
 color:gold;
-margin-top:20px;
+margin-top:10px;
+}
+
+.override-buttons button{
+padding:10px 20px;
+margin:10px;
+border:none;
+border-radius:8px;
+font-weight:700;
+cursor:pointer;
+font-size:16px;
+}
+
+.btn-dragon{background:#b91c1c;color:#fff;}
+.btn-tiger{background:#f59e0b;color:#000;}
+.btn-phoenix{background:#9333ea;color:#fff;}
+
+.pool-grid{
+display:flex;
+gap:20px;
+margin-top:15px;
+}
+
+.pool-card{
+flex:1;
+background:#000;
+border:1px solid #333;
+padding:15px;
+border-radius:10px;
+text-align:center;
+font-size:18px;
+}
+
+.pool-dragon{color:#ef4444}
+.pool-tiger{color:#fbbf24}
+.pool-phoenix{color:#c084fc}
+
+table{
+width:100%;
+border-collapse:collapse;
+margin-top:15px;
+}
+
+th{
+background:#222;
+padding:10px;
+}
+
+td{
+padding:8px;
+border-bottom:1px solid #333;
+}
+
+tr:hover{
+background:#1a1a1a;
 }
 
 </style>
@@ -31,25 +93,66 @@ margin-top:20px;
 
 <body>
 
-<div class="box">
 
-<h2>DTP SECRET RESULT</h2>
+<div class="admin-title">
+🐉 DRAGON TIGER PHOENIX ADMIN
+</div>
 
-<div>Round: <span id="round"></span></div>
+
+<div class="panel">
+
+<h2>Round: <span id="round"></span></h2>
 
 <div class="result" id="secret"></div>
 
+<div class="override-buttons">
 
+<button class="btn-dragon"
+onclick="setWinner('dragon')">🐉 Dragon</button>
 
-<button onclick="setWinner('dragon')">DRAGON</button>
-<button onclick="setWinner('tiger')">TIGER</button>
-<button onclick="setWinner('phoenix')">PHOENIX</button>
+<button class="btn-tiger"
+onclick="setWinner('tiger')">🐯 Tiger</button>
+
+<button class="btn-phoenix"
+onclick="setWinner('phoenix')">🔥 Phoenix</button>
+
 </div>
 
+</div>
+
+
+<div class="panel">
+
+<h3>POOL</h3>
+
+<div class="pool-grid">
+
+<div class="pool-card pool-dragon">
+🐉 Dragon
+<div id="poolDragon">0</div>
+</div>
+
+<div class="pool-card pool-tiger">
+🐯 Tiger
+<div id="poolTiger">0</div>
+</div>
+
+<div class="pool-card pool-phoenix">
+🔥 Phoenix
+<div id="poolPhoenix">0</div>
+</div>
+
+</div>
+
+</div>
+
+
+<div class="panel">
 
 <h3>PLAYER BETS</h3>
 
 <table id="betTable">
+
 <tr>
 <th>Player</th>
 <th>Dragon</th>
@@ -57,10 +160,17 @@ margin-top:20px;
 <th>Phoenix</th>
 <th>Total</th>
 </tr>
+
 </table>
+
+</div>
 
 
 <script>
+
+// ==============================
+// LOAD SECRET RESULT
+// ==============================
 
 async function load(){
 
@@ -68,14 +178,18 @@ const res = await fetch("/api/admin/dtp-secret");
 const data = await res.json();
 
 document.getElementById("round").textContent = data.round;
-document.getElementById("secret").textContent = data.secret.toUpperCase();
+document.getElementById("secret").textContent =
+  data.secret.toUpperCase();
 
 }
 
 load();
-
 setInterval(load,2000);
 
+
+// ==============================
+// ADMIN OVERRIDE RESULT
+// ==============================
 
 async function setWinner(w){
 
@@ -92,19 +206,40 @@ load();
 }
 
 
+// ==============================
+// LOAD PLAYER BETS
+// ==============================
 
 async function loadBets(){
 
 const res = await fetch("/api/admin/dtp-bets");
 const data = await res.json();
 
+// =====================
+// UPDATE POOL
+// =====================
+document.getElementById("poolDragon").textContent =
+  data.pool.dragon;
+
+document.getElementById("poolTiger").textContent =
+  data.pool.tiger;
+
+document.getElementById("poolPhoenix").textContent =
+  data.pool.phoenix;
+
+
+// =====================
+// RENDER BET TABLE
+// =====================
 const table = document.getElementById("betTable");
 
 table.innerHTML = `
 <tr>
 <th>Player</th>
-<th>Side</th>
-<th>Bet</th>
+<th>Dragon</th>
+<th>Tiger</th>
+<th>Phoenix</th>
+<th>Total</th>
 </tr>
 `;
 
@@ -126,8 +261,8 @@ table.appendChild(row);
 
 }
 
+loadBets();
 setInterval(loadBets,2000);
-
 
 </script>
 

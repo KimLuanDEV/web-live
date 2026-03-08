@@ -5413,38 +5413,49 @@ const map = {};
 
 dtpRound.bets.forEach(b=>{
 
-if(!map[b.uid]){
-  map[b.uid] = {
-    name: users[b.uid]?.profile?.name || "Player",
-    dragon:0,
-    tiger:0,
-    phoenix:0
-  };
-}
+  if(!map[b.uid]){
+    map[b.uid] = {
+      name: users[b.uid]?.profile?.name || "Player",
+      dragon:0,
+      tiger:0,
+      phoenix:0
+    };
+  }
 
-map[b.uid][b.side] += b.bet;
+  map[b.uid][b.side] += b.bet;
 
 });
 
-const list = Object.values(map).map(p=>{
+// gộp theo user
+const list = Object.values(map).map(p=>({
 
-return{
-name:p.name,
-dragon:p.dragon,
-tiger:p.tiger,
-phoenix:p.phoenix,
-total:p.dragon + p.tiger + p.phoenix
+  name: p.name,
+  dragon: p.dragon,
+  tiger: p.tiger,
+  phoenix: p.phoenix,
+  total: p.dragon + p.tiger + p.phoenix
+
+}));
+
+// 🔥 tính pool toàn phòng
+const pool = {
+  dragon:0,
+  tiger:0,
+  phoenix:0
 };
 
+dtpRound.bets.forEach(b=>{
+  pool[b.side] += b.bet;
 });
 
+// trả dữ liệu
 res.json({
-round: dtpRound.id,
-bets:list
+  round: dtpRound.id,
+  bets: list,
+  pool: pool   // 🔥 THÊM DÒNG NÀY
 });
 
 });
-
 
 
 
