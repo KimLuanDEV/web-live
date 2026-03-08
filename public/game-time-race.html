@@ -329,24 +329,34 @@ body{
   left:0;
   right:0;
 
-  padding:18px 16px calc(20px + env(safe-area-inset-bottom));
+  padding:26px 20px calc(24px + env(safe-area-inset-bottom));
 
-  background:linear-gradient(
-    180deg,
-    rgba(10,10,25,.95),
-    rgba(0,0,0,.98)
-  );
+  background:
+    url("/assets/time-race/bet-panel.png")
+    center bottom / cover no-repeat;
 
-  backdrop-filter:blur(18px);
-  -webkit-backdrop-filter:blur(18px);
-
-  border-top:1px solid rgba(0,255,255,.15);
+  border-top:1px solid rgba(0,255,255,.2);
 
   box-shadow:
-    0 -10px 40px rgba(0,255,255,.08);
+    0 -15px 60px rgba(0,255,255,.2);
 
   z-index:200;
 }
+
+
+.tr-bottom::before{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at 50% 0%,
+      rgba(0,255,255,.15),
+      transparent 70%);
+
+  pointer-events:none;
+}
+
 
 .bet-input{
   width:100%;
@@ -538,14 +548,19 @@ body{
 .bet-chip{
   padding:12px;
   border-radius:14px;
-
-  border:1px solid rgba(255,255,255,.08);
   color: white;
-  background:rgba(255,255,255,.03);
 
   font-weight:700;
-
   transition:.2s;
+
+  backdrop-filter:blur(10px);
+
+  background:rgba(0,0,0,.5);
+
+  border:1px solid rgba(0,255,255,.3);
+
+  box-shadow:
+    0 0 15px rgba(0,255,255,.25);
 }
 
 .bet-chip:hover{
