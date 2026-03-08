@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>DTP Admin</title>
+<style>
+
+body{
+background:#111;
+color:white;
+font-family:system-ui;
+text-align:center;
+padding:50px;
+}
+
+.box{
+background:#000;
+border:1px solid gold;
+padding:40px;
+border-radius:10px;
+display:inline-block;
+}
+
+.result{
+font-size:40px;
+color:gold;
+margin-top:20px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="box">
+
+<h2>DTP SECRET RESULT</h2>
+
+<div>Round: <span id="round"></span></div>
+
+<div class="result" id="secret"></div>
+
+</div>
+
+<script>
+
+async function load(){
+
+const res = await fetch("/api/admin/dtp-secret");
+const data = await res.json();
+
+document.getElementById("round").textContent = data.round;
+document.getElementById("secret").textContent = data.secret.toUpperCase();
+
+}
+
+load();
+
+setInterval(load,2000);
+
+</script>
+
+</body>
+</html>

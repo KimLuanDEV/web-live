@@ -102,6 +102,7 @@ iframe{
   <div class="tab" onclick="loadTab('wheel')">🎡 Wheel</div>
   <div class="tab" onclick="loadTab('rps')">✊ RPS</div>
   <div class="tab" onclick="loadTab('boom')">💣 Boom</div>
+  <div class="tab" onclick="loadTab('dtp')">🦁 DTP</div>
 </div>
 
 <div class="content">
@@ -146,6 +147,10 @@ function loadTab(type){
 
   if(type === "boom"){
     frame.src = "/lsp-adminboom-128995.html"; // 🔥 sẽ tạo tiếp
+  }
+
+  if(type === "dtp"){
+    frame.src = "/lsp-admindtp-128995.html"; // 🔥 sẽ tạo tiếp
   }
 }
 

@@ -1582,7 +1582,8 @@ let dtpRound = {
   id: dtpRoundCount,
   startAt: Date.now(),
   endAt: Date.now() + 60000,
-  bets: []
+  bets: [],
+  secretResult: pickDtpWinner() // 🔥 tạo ngay khi round bắt đầu
 };
 
 function pickDtpWinner(){
@@ -1601,7 +1602,7 @@ setInterval(()=>{
 
   const users = loadUsers();
 
-const winner = pickDtpWinner();
+const winner = dtpRound.secretResult;
 
 dtpRound.bets.forEach(o=>{
 
@@ -5494,6 +5495,17 @@ res.json({
 
 });
 
+
+
+// Admin DTP ===//
+app.get("/api/admin/dtp-secret", (req,res)=>{
+
+  res.json({
+    round: dtpRound.id,
+    secret: dtpRound.secretResult
+  });
+
+});
 
 
 // ================================
