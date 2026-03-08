@@ -1797,7 +1797,7 @@ const stopBtn = document.getElementById("stopBtn");
 const betTimer = document.getElementById("betTimer");
 const selectedBetEl = document.getElementById("selectedBetValue");
 const selectedBetBar = document.querySelector(".selected-bet-bar");
-const fuse = document.querySelector(".bomb-fuse");
+const fuse = document.querySelector(".bomb-fuse-img")
 const maxFuseHeight = 60; // phải khớp CSS
 
 
@@ -2072,7 +2072,7 @@ socket.on("time-race-new", data => {
   // 🔥 Hiện lại bomb nếu vừa crash
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-img");
-  const fuse = document.querySelector(".bomb-fuse");
+  const fuse = document.querySelector(".bomb-fuse-img")
   const glow = document.querySelector(".bomb-core-glow");
   const spark = document.querySelector(".spark");
 
@@ -2147,7 +2147,7 @@ if(hasBet && !raceStarted && !crashed){
 }
   multiplierEl.textContent = "x" + m.toFixed(2);
 
-  const bomb = document.querySelector(".bomb-body");
+  const bomb = document.querySelector(".bomb-img")
   const spark = document.querySelector(".spark");
 
   // 🔥 Tính độ nóng
@@ -2180,8 +2180,8 @@ socket.on("time-race-crash",data=>{
   crashed = true;
 
   const bombWrap = document.querySelector(".bomb-wrap");
-  const bomb = document.querySelector(".bomb-body");
-  const fuse = document.querySelector(".bomb-fuse");
+  const bomb = document.querySelector(".bomb-img")
+  const fuse = document.querySelector(".bomb-fuse-img")
   const glow = document.querySelector(".bomb-core-glow");
 
   bomb.classList.add("crash");
