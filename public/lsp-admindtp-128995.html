@@ -171,29 +171,29 @@ onclick="setWinner('phoenix')">🔥 Phoenix</button>
 <script>
 
 // ==============================
-// SOCKET
+// CONNECT SOCKET
 // ==============================
 
 const socket = io();
 
 
 // ==============================
-// SECRET RESULT
+// SECRET RESULT (REALTIME)
 // ==============================
 
-socket.on("dtp-secret-update",data=>{
+socket.on("dtp-secret-update", data => {
 
 document.getElementById("round").textContent =
-data.round;
+  data.round;
 
 document.getElementById("secret").textContent =
-data.secret.toUpperCase();
+  data.secret.toUpperCase();
 
 });
 
 
 // ==============================
-// ADMIN OVERRIDE
+// ADMIN OVERRIDE RESULT
 // ==============================
 
 async function setWinner(w){
@@ -213,20 +213,20 @@ body:JSON.stringify({winner:w})
 // REALTIME BET UPDATE
 // ==============================
 
-socket.on("admin-dtp-bets-update",data=>{
+socket.on("admin-dtp-bets-update", data => {
 
-// update pool
+// UPDATE POOL
 document.getElementById("poolDragon").textContent =
-data.pool.dragon;
+  data.pool.dragon;
 
 document.getElementById("poolTiger").textContent =
-data.pool.tiger;
+  data.pool.tiger;
 
 document.getElementById("poolPhoenix").textContent =
-data.pool.phoenix;
+  data.pool.phoenix;
 
 
-// render table
+// RENDER BET TABLE
 const table = document.getElementById("betTable");
 
 table.innerHTML = `
@@ -239,7 +239,7 @@ table.innerHTML = `
 </tr>
 `;
 
-data.bets.forEach(b=>{
+data.bets.forEach(b => {
 
 const row = document.createElement("tr");
 
