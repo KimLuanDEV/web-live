@@ -1535,6 +1535,103 @@ body.crash-dark{
 
 
 
+
+.bet-panel-hitbox{
+  position:relative;
+  width:100%;
+  height:220px;
+}
+
+/* base */
+.hit{
+  position:absolute;
+  background:transparent;
+  border:none;
+  cursor:pointer;
+  background:rgba(255,0,0,.2);
+}
+
+/* QUICK */
+.quick25{
+  top:60px;
+  left:60px;
+  width:120px;
+  height:60px;
+}
+
+.quick50{
+  top:60px;
+  left:200px;
+  width:120px;
+  height:60px;
+}
+
+.quickAll{
+  top:60px;
+  right:60px;
+  width:140px;
+  height:60px;
+}
+
+/* BET ROW 1 */
+
+.bet10{
+  top:120px;
+  left:40px;
+  width:120px;
+  height:60px;
+}
+
+.bet50{
+  top:120px;
+  left:180px;
+  width:120px;
+  height:60px;
+}
+
+.bet100{
+  top:120px;
+  right:40px;
+  width:120px;
+  height:60px;
+}
+
+/* BET ROW 2 */
+
+.bet500{
+  top:180px;
+  left:40px;
+  width:120px;
+  height:60px;
+}
+
+.bet1000{
+  top:180px;
+  left:180px;
+  width:120px;
+  height:60px;
+}
+
+.bet5000{
+  top:180px;
+  right:40px;
+  width:120px;
+  height:60px;
+}
+
+/* CONFIRM */
+
+.confirm{
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:220px;
+  height:70px;
+}
+
+
+
+
 </style>
 </head>
 <body>
@@ -1659,22 +1756,26 @@ body.crash-dark{
   <span id="selectedBetValue">0</span> 💎
 </div>
 
-  <div class="bet-quick">
-  <button class="quick-btn" data-type="25">25%</button>
-  <button class="quick-btn" data-type="50">50%</button>
-  <button class="quick-btn allin" data-type="all">ALL IN</button>
+<div class="bet-panel-hitbox">
+
+  <!-- QUICK -->
+  <button class="hit quick25" data-type="25"></button>
+  <button class="hit quick50" data-type="50"></button>
+  <button class="hit quickAll" data-type="all"></button>
+
+  <!-- BET -->
+  <button class="hit bet10" data-bet="10"></button>
+  <button class="hit bet50" data-bet="50"></button>
+  <button class="hit bet100" data-bet="100"></button>
+
+  <button class="hit bet500" data-bet="500"></button>
+  <button class="hit bet1000" data-bet="1000"></button>
+  <button class="hit bet5000" data-bet="5000"></button>
+
+  <!-- CONFIRM -->
+  <button id="betBtn" class="hit confirm"></button>
+
 </div>
-
-  <div class="bet-grid">
-    <button class="bet-chip" data-bet="10">10💎</button>
-    <button class="bet-chip" data-bet="50">50💎</button>
-    <button class="bet-chip" data-bet="100">100💎</button>
-    <button class="bet-chip" data-bet="500">500💎</button>
-    <button class="bet-chip" data-bet="1000">1000💎</button>
-    <button class="bet-chip" data-bet="5000">5000💎</button>
-  </div>
-
-  <button id="betBtn" class="btn btn-bet">CONFIRM</button>
 
 
 </div>
@@ -1820,7 +1921,7 @@ function updateSelectedBetDisplay(){
 }
 
 
-document.querySelectorAll(".quick-btn").forEach(btn=>{
+document.querySelectorAll("[data-type]").forEach(btn=>{
   btn.onclick = ()=>{
 
     if(!currentCoins) return;
@@ -1839,7 +1940,7 @@ document.querySelectorAll(".quick-btn").forEach(btn=>{
     }
 
     // highlight chip tương ứng nếu trùng
-    document.querySelectorAll(".bet-chip")
+   document.querySelectorAll("[data-bet]")
       .forEach(b=>b.classList.remove("active"));
 
     selectedBet = bet;
@@ -1857,9 +1958,9 @@ document.querySelectorAll(".quick-btn").forEach(btn=>{
 
 
 
-document.querySelectorAll(".bet-chip").forEach(btn=>{
+document.querySelectorAll("[data-bet]").forEach(btn=>{
   btn.onclick = ()=>{
-    document.querySelectorAll(".bet-chip")
+   document.querySelectorAll("[data-bet]")
       .forEach(b=>b.classList.remove("active"));
 
     btn.classList.add("active");
