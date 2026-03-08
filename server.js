@@ -1475,6 +1475,54 @@ function getDtpPool(){
 }
 
 
+function getAdminDtpBetList(){
+
+const users = loadUsers();
+
+const map = {};
+
+dtpRound.bets.forEach(b=>{
+
+if(!map[b.uid]){
+  map[b.uid] = {
+    name: users[b.uid]?.profile?.name || "Player",
+    dragon:0,
+    tiger:0,
+    phoenix:0
+  };
+}
+
+map[b.uid][b.side] += b.bet;
+
+});
+
+return Object.values(map).map(p=>({
+
+name:p.name,
+dragon:p.dragon,
+tiger:p.tiger,
+phoenix:p.phoenix,
+total:p.dragon + p.tiger + p.phoenix
+
+}));
+
+}
+
+
+function emitAdminDtpBets(){
+
+io.emit("admin-dtp-bets-update",{
+
+round: dtpRound.id,
+
+pool: getDtpPool(),
+
+bets: getAdminDtpBetList()
+
+});
+
+}
+
 setInterval(()=>{
 
   const remain =
@@ -1725,6 +1773,8 @@ fakePool = {
   io.emit("dtp-round-new",{
     roundId: dtpRound.id
   });
+
+emitAdminDtpBets();
 
 },60000);
 
@@ -2813,6 +2863,9 @@ io.on("connection", socket => {
 
   if (!uid) return;
 
+    // 🔥 gửi danh sách cược hiện tại cho admin
+  emitAdminDtpBets();
+  
   bindSocketToUser(uid, socket);
 
 
@@ -3145,6 +3198,7 @@ socket.on("dtp-bet", ({ side, bet }) => {
     bet
   });
 
+  emitAdminDtpBets();
   saveUsers(users);
   emitCoinUpdate(uid);
 
