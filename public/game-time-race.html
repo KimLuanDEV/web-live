@@ -442,17 +442,6 @@ body{
 }
 
 
-/* fuse */
-
-.bomb-fuse-img{
-  position:absolute;
-  width:80px;
-
-  left:50%;
-  top:-20px;
-
-  transform:translateX(-50%);
-}
 
 
 /* TIMER TRONG BOMB */
@@ -1602,7 +1591,6 @@ body.crash-dark{
 
   <img class="bomb-img" src="/assets/time-race/bomb-body.png">
 
-  <img class="bomb-fuse-img" src="/assets/time-race/bomb-fuse.png">
 
   <div class="bomb-timer" id="betTimer">15</div>
 
@@ -1755,7 +1743,7 @@ const stopBtn = document.getElementById("stopBtn");
 const betTimer = document.getElementById("betTimer");
 const selectedBetEl = document.getElementById("selectedBetValue");
 const selectedBetBar = document.querySelector(".selected-bet-bar");
-const fuse = document.querySelector(".bomb-fuse-img")
+
 const maxFuseHeight = 60; // phải khớp CSS
 
 
@@ -1867,18 +1855,6 @@ function updateTimer(){
   betTimer.textContent = left > 0 ? left : "";
 
 
-  // ================= FUSE BURNING =================
-if(betEndAt){
-
-  const totalTime = 15000; // nếu round 15s
-  const timePassed = totalTime - (betEndAt - serverTime());
-
-  let percent = Math.max(0, Math.min(1, timePassed / totalTime));
-
-  const newHeight = maxFuseHeight * (1 - percent);
-
-  fuse.style.height = newHeight + "px";
-}
 
 
   // ✅ Nếu đã đặt cược rồi -> khóa bet bar luôn, KHÔNG mở lại
@@ -2030,7 +2006,6 @@ socket.on("time-race-new", data => {
   // 🔥 Hiện lại bomb nếu vừa crash
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-img");
-  const fuse = document.querySelector(".bomb-fuse-img")
   const glow = document.querySelector(".bomb-core-glow");
 
 
@@ -2063,11 +2038,7 @@ socket.on("time-race-new", data => {
   void bomb.offsetWidth;
   bomb.style.transition = "";
 
-  /* ================= RESET FUSE ================= */
 
-  if(fuse){
-    fuse.style.height = "60px";
-  }
 
   /* ================= RESET UI ================= */
 
@@ -2112,12 +2083,6 @@ if(hasBet && !raceStarted && !crashed){
   const bomb = document.querySelector(".bomb-img")
 
 
-bomb.style.boxShadow = `
-  0 0 40px rgba(0,255,255,.6),
-  0 0 80px rgba(0,255,255,.4)
-`;
-
-
 });
 
 socket.on("time-race-crash",data=>{
@@ -2127,7 +2092,6 @@ socket.on("time-race-crash",data=>{
 
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-img")
-  const fuse = document.querySelector(".bomb-fuse-img")
   const glow = document.querySelector(".bomb-core-glow");
 
   bomb.classList.add("crash");
@@ -2157,9 +2121,7 @@ setTimeout(()=>{
 },1000);
 
 
-  if(fuse){
-    fuse.style.height = "0px";
-  }
+
 
   /* ================= EXPLOSION CORE ================= */
 
@@ -2230,7 +2192,6 @@ setTimeout(()=>{
     bomb.style.transform = "";
 
     bomb.style.display = "none";
-    if(fuse) fuse.style.display = "none";
     if(glow) glow.style.display = "none";
 
   },200);
