@@ -470,31 +470,7 @@ body{
 
 
 
-/* spark */
 
-.spark{
-  position:absolute;
-  top:-40px;
-  left:50%;
-  transform:translateX(-50%);
-
-  width:24px;
-  height:24px;
-
-  border-radius:50%;
-
-  background:radial-gradient(circle,
-    #fff,
-    #ffcc00,
-    #ff3300
-  );
-
-  box-shadow:
-    0 0 30px #ff6600,
-    0 0 60px #ff0000;
-
-  animation:sparkFire .25s infinite alternate;
-}
 
 
 /* 🔵 outer glow */
@@ -1634,7 +1610,7 @@ body.crash-dark{
     x1.00
   </div>
 
-  <div class="spark"></div>
+
 
 </div>
 
@@ -2056,14 +2032,14 @@ socket.on("time-race-new", data => {
   const bomb = document.querySelector(".bomb-img");
   const fuse = document.querySelector(".bomb-fuse-img")
   const glow = document.querySelector(".bomb-core-glow");
-  const spark = document.querySelector(".spark");
+
 
   bombWrap.classList.remove("exploded");
 
   if(bomb) bomb.style.display = "";
   if(fuse) fuse.style.display = "";
   if(glow) glow.style.display = "";
-  if(spark) spark.style.display = "";
+ 
 
   // ================= RESET LOGIC STATE =================
   raceStarted = false;
@@ -2081,7 +2057,7 @@ socket.on("time-race-new", data => {
   bomb.classList.remove("crash", "hot");
 
   bomb.style.cssText = "";
-  spark.style.cssText = "";
+ 
 
   bomb.style.transition = "none";
   void bomb.offsetWidth;
@@ -2130,7 +2106,7 @@ if(hasBet && !raceStarted && !crashed){
   multiplierEl.textContent = "x" + m.toFixed(2);
 
   const bomb = document.querySelector(".bomb-img")
-  const spark = document.querySelector(".spark");
+
 
   // 🔥 Tính độ nóng
   const intensity = Math.min(m / 10, 1);
@@ -2150,9 +2126,7 @@ if(hasBet && !raceStarted && !crashed){
     #0a0a0a 70%)
   `;
 
-  // 🔥 Tia lửa cháy nhanh dần
-  spark.style.animationDuration =
-    (0.4 - intensity * 0.3) + "s";
+
 
 });
 
