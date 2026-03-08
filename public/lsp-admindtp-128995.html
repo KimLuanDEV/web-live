@@ -101,7 +101,12 @@ background:#1a1a1a;
 
 <div class="panel">
 
-<h2>Round: <span id="round"></span></h2>
+
+<h2>
+Round: <span id="round"></span>
+&nbsp;&nbsp;⏱ <span id="timer">60</span>s
+</h2>
+
 
 <div class="result" id="secret"></div>
 
@@ -268,6 +273,20 @@ table.appendChild(row);
 });
 
 });
+
+
+// ==============================
+// REALTIME TIMER
+// ==============================
+
+socket.on("dtp-timer", t => {
+
+document.getElementById("timer").textContent = t;
+
+});
+
+
+
 
 </script>
 
