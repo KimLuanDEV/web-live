@@ -39,7 +39,13 @@ margin-top:20px;
 
 <div class="result" id="secret"></div>
 
+
+
+<button onclick="setWinner('dragon')">DRAGON</button>
+<button onclick="setWinner('tiger')">TIGER</button>
+<button onclick="setWinner('phoenix')">PHOENIX</button>
 </div>
+
 
 <script>
 
@@ -56,6 +62,22 @@ document.getElementById("secret").textContent = data.secret.toUpperCase();
 load();
 
 setInterval(load,2000);
+
+
+async function setWinner(w){
+
+await fetch("/api/admin/dtp-override",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body:JSON.stringify({winner:w})
+});
+
+load();
+
+}
+
 
 </script>
 

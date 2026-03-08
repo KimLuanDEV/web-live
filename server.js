@@ -5161,6 +5161,27 @@ app.post("/api/admin/wheel/override", (req, res) => {
 
 
 
+app.post("/api/admin/dtp-override", express.json(), (req,res)=>{
+
+const { winner } = req.body;
+
+if(!["dragon","tiger","phoenix"].includes(winner)){
+  return res.json({ ok:false });
+}
+
+// 🔥 ghi đè kết quả round hiện tại
+dtpRound.secretResult = winner;
+
+console.log("ADMIN OVERRIDE:", winner);
+
+res.json({
+  ok:true,
+  round: dtpRound.id,
+  winner
+});
+
+});
+
 
 
 
