@@ -1604,7 +1604,7 @@ setInterval(()=>{
 
   const users = loadUsers();
 
-const winner = dtpRound.secretResult;
+const winner = dtpRound.secretResult || pickDtpWinner();
 
 dtpRound.bets.forEach(o=>{
 
@@ -1705,7 +1705,8 @@ dtpRound = {
   id: dtpRoundCount,
   startAt: Date.now(),
   endAt: Date.now() + 60000,
-  bets: []
+  bets: [],
+  secretResult: pickDtpWinner()   // 🔥 thêm dòng này
 };
 
 
