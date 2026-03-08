@@ -174,7 +174,7 @@ const socket = io();
 
 
 // ==============================
-// LOAD SECRET RESULT (API)
+// LOAD SECRET RESULT
 // ==============================
 
 async function loadSecret(){
@@ -191,6 +191,17 @@ document.getElementById("secret").textContent =
 }
 
 loadSecret();
+
+
+// ==============================
+// ROUND NEW (REALTIME)
+// ==============================
+
+socket.on("dtp-round-new", data => {
+
+loadSecret();
+
+});
 
 
 // ==============================
