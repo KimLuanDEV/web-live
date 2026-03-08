@@ -495,7 +495,8 @@ body{
 
 /* 💎 multiplier */
 .bomb-multi{
-   position:absolute;
+  display:none;   /* thêm dòng này */
+  position:absolute;
   top:49%;
   left:50%;
   transform:translate(-50%, -50%);
@@ -2075,6 +2076,7 @@ socket.on("time-race-new", data => {
   multiplierEl.classList.remove("crash");
   multiplierEl.classList.remove("crash-red");
   multiplierEl.textContent = "x1.00";
+  multiplierEl.style.display = "none";
 
   selectedBet = 0;
   updateSelectedBetDisplay();
@@ -2090,9 +2092,12 @@ socket.on("time-race-tick",data=>{
   const m = Number(data.multiplier);
 
   // 🔒 Chỉ cho phép vẽ hiệu ứng khi multiplier > 1
-  if(m <= 1){
-    return;
-  }
+ if(m <= 1){
+  multiplierEl.style.display = "none";
+  return;
+}
+
+multiplierEl.style.display = "block";
 
 
 if(hasBet && !raceStarted && !crashed){
@@ -2107,24 +2112,10 @@ if(hasBet && !raceStarted && !crashed){
   const bomb = document.querySelector(".bomb-img")
 
 
-  // 🔥 Tính độ nóng
-  const intensity = Math.min(m / 10, 1);
-  const glow = 60 + intensity * 200;
-  const redPower = Math.floor(255 * intensity);
-
-  // 🔥 Glow theo multiplier
-  bomb.style.boxShadow = `
-    inset -15px -15px 40px rgba(0,0,0,.7),
-    0 0 ${glow}px rgba(${redPower},0,0,.7)
-  `;
-
-  // 🔥 Nền bomb đỏ dần
-  bomb.style.background = `
-    radial-gradient(circle at 30% 30%, 
-    rgb(${80 + redPower/3},${20 - intensity*20},${20 - intensity*20}),
-    #0a0a0a 70%)
-  `;
-
+bomb.style.boxShadow = `
+  0 0 40px rgba(0,255,255,.6),
+  0 0 80px rgba(0,255,255,.4)
+`;
 
 
 });
