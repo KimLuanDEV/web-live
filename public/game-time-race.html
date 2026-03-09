@@ -123,12 +123,10 @@ body{
 
 
 .round-label{
+  position: absolute;
   opacity:.7;
-}
-
-#roundToday{
-  color:#00f0ff;
-  font-weight:800;
+  top: 112px;
+  left:-47px;
 }
 
 
@@ -142,13 +140,25 @@ body{
 .tr-coins{
   position:absolute;
 
-  top:88px;     /* chỉnh lên xuống */
-  right:30px;   /* chỉnh trái phải */
+  top:88px;
+  right:30px;
+
+  display:flex;
+  align-items:center;
+  gap:6px;
 
   font-size:14px;
   font-weight:900;
 
   color:#00f0ff;
+}
+
+.coin-icon{
+  width:18px;
+  height:18px;
+
+  filter:
+    drop-shadow(0 0 6px #00f0ff);
 }
 
 .tr-timer-badge{
@@ -361,7 +371,7 @@ body{
   left:50%;
   transform:translate(-50%, -50%);
   z-index:5;
-  font-size:22px;
+  font-size:15px;
   font-weight:900;
   letter-spacing:2px;
 
@@ -480,8 +490,8 @@ body{
 #roundToday{
   position:absolute;
 
-  top:107px;     /* chỉnh lên xuống */
-  left:0px;   /* chỉnh trái phải */
+  top:109px;     /* chỉnh lên xuống */
+  left:28px;   /* chỉnh trái phải */
 
   transform:translateX(-50%);
 
@@ -490,6 +500,7 @@ body{
 
   color:#00f0ff;
   text-shadow:0 0 10px #00f0ff;
+  
 }
 
 
@@ -1521,9 +1532,11 @@ body.crash-dark{
 
   <div class="tr-right">
 
-    <div class="tr-coins">
-     <span id="coinBalance"></span>
-    </div>
+<div class="tr-coins">
+  <img src="/assets/time-race/diamond-icon.png" class="coin-icon">
+  <span id="coinBalance"></span>
+</div>
+
   </div>
 
 </div>
