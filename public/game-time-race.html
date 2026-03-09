@@ -1021,10 +1021,10 @@ body.crash-dark{
 
 .bet-history-floating{
   position:fixed;
-  right:16px;
+  right:-8px;
 
   /* nằm ngay trên bet bar */
-  bottom:calc(255px + env(safe-area-inset-bottom));
+  bottom:calc(245px + env(safe-area-inset-bottom));
 
   z-index:210;
 }
@@ -1383,10 +1383,6 @@ body.crash-dark{
 
   cursor:pointer;
 
-  filter:
-    drop-shadow(0 0 20px #ff2d2d)
-    drop-shadow(0 0 40px rgba(255,0,0,.7));
-
   transition:.15s;
 }
 
@@ -1410,14 +1406,10 @@ body.crash-dark{
 
 .history-btn-img{
 
-  width:70px;
+  width:100px;
   height:auto;
 
   cursor:pointer;
-
-  filter:
-    drop-shadow(0 0 15px #00f0ff)
-    drop-shadow(0 0 35px rgba(0,255,255,.7));
 
   transition:.15s;
 
