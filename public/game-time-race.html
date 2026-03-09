@@ -2098,26 +2098,23 @@ socket.on("time-race-tick",data=>{
 
   const m = Number(data.multiplier);
 
-  // 🔒 Chỉ cho phép vẽ hiệu ứng khi multiplier > 1
- if(m <= 1){
-  multiplierEl.style.display = "none";
-  return;
-}
+  if(m <= 1){
+    multiplierEl.style.display = "none";
+    return;
+  }
 
-multiplierEl.style.display = "block";
+  multiplierEl.style.display = "block";
 
+  // 🔥 RACE START
+  if(hasBet && !crashed){
 
-if(hasBet && !raceStarted && !crashed){
-  raceStarted = true;
+    raceStarted = true;
 
-  // 🔓 Cho click khi race bắt đầu
-stopBtn.classList.remove("disabled");
-stopBtn.style.opacity = "1";
-}
+    stopBtn.classList.remove("disabled");
+    stopBtn.style.opacity = "1";
+  }
+
   multiplierEl.textContent = "x" + m.toFixed(2);
-
-  const bomb = document.querySelector(".bomb-img")
-
 
 });
 
@@ -2271,15 +2268,18 @@ stopBtn.style.opacity = ".6";
 });
 /* STOP */
 
-stopBtn.onclick = ()=>{
+stopBtn.addEventListener("click", ()=>{
 
-  if(stopBtn.classList.contains("disabled")){
-    return;
-  }
+  // nếu đang disabled thì không cho bấm
+  if(stopBtn.classList.contains("disabled")) return;
+
+  // khóa ngay để tránh spam
+  stopBtn.classList.add("disabled");
+  stopBtn.style.opacity = ".6";
 
   socket.emit("time-race-stop");
-};
 
+});
 
 socket.on("time-race-stopped",data=>{
 
