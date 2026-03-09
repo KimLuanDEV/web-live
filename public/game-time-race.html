@@ -1046,68 +1046,93 @@ body.crash-dark{
   left:50%;
   transform:translate(-50%,-50%) scale(.8);
 
-  width:280px;
-  padding:30px 20px;
-  border-radius:22px;
-
+  width:320px;
   text-align:center;
 
-  background:linear-gradient(
-    135deg,
-    rgba(0,255,255,.15),
-    rgba(0,0,0,.9)
-  );
-
-  border:1px solid rgba(0,255,255,.4);
-
-  box-shadow:
-    0 0 60px rgba(0,255,255,.6),
-    inset 0 0 30px rgba(0,255,255,.2);
-
-  animation:winPop .3s ease forwards;
+  animation:
+  winPop .3s ease forwards,
+  winGlow 2s ease-in-out infinite;
 }
 
-@keyframes winPop{
-  to{
-    transform:translate(-50%,-50%) scale(1);
-  }
+
+@keyframes winGlow{
+0%,100%{ filter:drop-shadow(0 0 10px #00f0ff); }
+50%{ filter:drop-shadow(0 0 40px #00f0ff); }
 }
+
+
+/* frame image */
+
+.tr-win-frame{
+  width:100%;
+  height:auto;
+  display:block;
+}
+
+/* content overlay */
+
+.tr-win-content{
+  position:absolute;
+  inset:0;
+
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+
+  gap:10px;
+  pointer-events:none;
+}
+
+/* title */
 
 .tr-win-title{
   font-size:20px;
   font-weight:900;
-  margin-bottom:16px;
+
   color:#00f0ff;
-  text-shadow:0 0 20px #00f0ff;
+
+  text-shadow:
+    0 0 15px #00f0ff,
+    0 0 35px rgba(0,255,255,.7);
 }
+
+/* multiplier */
 
 .tr-win-multiplier{
-  font-size:36px;
+  font-size:38px;
   font-weight:900;
-  margin-bottom:10px;
-  color:#fff;
 }
 
+/* amount */
+
 .tr-win-amount{
-  font-size:22px;
-  font-weight:800;
-  margin-bottom:20px;
+  font-size:24px;
+  font-weight:900;
   color:#00f0ff;
 }
 
+/* OK button */
+
 .tr-win-btn{
-  padding:10px 24px;
-  border:none;
-  border-radius:12px;
-  font-weight:700;
-  cursor:pointer;
+  margin-top:6px;
+
+  padding:6px 22px;
+
+  border-radius:10px;
 
   background:linear-gradient(
-    135deg,#007bff,#00f0ff
+    135deg,
+    #007bff,
+    #00f0ff
   );
 
-  box-shadow:0 0 25px rgba(0,255,255,.6);
+  box-shadow:0 0 20px rgba(0,255,255,.6);
+
+  pointer-events:auto;
+  cursor:pointer;
 }
+
 
 
 @media screen and (orientation: landscape) {
@@ -1601,7 +1626,13 @@ body.crash-dark{
   <div class="tr-win-backdrop"
        onclick="closeTimeRaceWinModal()"></div>
 
-  <div class="tr-win-box">
+<div class="tr-win-box">
+
+  <img 
+    src="/assets/time-race/win-frame.png"
+    class="tr-win-frame">
+
+  <div class="tr-win-content">
 
     <div class="tr-win-title">
       YOU WON!
@@ -1615,12 +1646,16 @@ body.crash-dark{
       +<span id="winAmount">0</span> 💎
     </div>
 
-    <button class="tr-win-btn"
-            onclick="closeTimeRaceWinModal()">
+    <div class="tr-win-btn"
+         onclick="closeTimeRaceWinModal()">
       OK
-    </button>
+    </div>
 
   </div>
+
+</div>
+
+
 </div>
 
 
