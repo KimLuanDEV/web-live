@@ -113,8 +113,24 @@ body{
 
 .tr-sub{
   font-size:13px;
-  opacity:.8;
+  opacity:.9;
+
+  display:flex;
+  gap:6px;
+  align-items:center;
+  justify-content:center;
 }
+
+
+.round-label{
+  opacity:.7;
+}
+
+#roundToday{
+  color:#00f0ff;
+  font-weight:800;
+}
+
 
 .tr-right{
   position:absolute;
@@ -1495,10 +1511,12 @@ body.crash-dark{
 
   <div class="tr-head-center">
     <div class="tr-title"></div>
-    <div class="tr-sub">
 
+<div class="tr-sub">
+  <span class="round-label">Round •</span>
   <span id="roundToday"></span>
 </div>
+
   </div>
 
   <div class="tr-right">
