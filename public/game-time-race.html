@@ -583,29 +583,29 @@ body{
 
 /* item */
 .tr-history-item{
-  min-width:58px;
-  padding:8px 0;
-  border-radius:22px;
+
+  width:64px;
+  height:64px;
+
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
   font-size:13px;
-  font-weight:800;
-  text-align:center;
+  font-weight:900;
 
-  backdrop-filter:blur(10px);
-
-  border:1px solid rgba(255,255,255,.08);
+  color:#fff;
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.05),
-      rgba(0,0,0,.4)
-    );
+    url("/assets/time-race/history-chip.png")
+    center / contain no-repeat;
 
-  box-shadow:
-    inset 0 0 12px rgba(0,255,255,.05);
+  text-shadow:
+    0 0 6px #000,
+    0 0 12px rgba(0,0,0,.8);
 
-  transition:.2s;
+  flex-shrink:0;
+
 }
 
 /* LOW (<2x) */
@@ -1493,6 +1493,7 @@ body.crash-dark{
   <div class="tr-history-bar"
        id="timeRaceHistoryBar">
   </div>
+
 </div>
 
 
