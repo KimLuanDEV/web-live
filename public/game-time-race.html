@@ -71,12 +71,11 @@ body{
 
 .tr-header{
   position:fixed;
-  top:0;
-  left:0;
+  top:-95px;
+  left:-35px;
   right:0;
-
-  height:120px;
-
+  height:184px;
+  width:500px;
   background:
     url("/assets/time-race/header-panel.png")
     center top / cover no-repeat;
@@ -84,49 +83,7 @@ body{
   z-index:300;
 }
 
-.tr-header::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background-image:
-    radial-gradient(circle at 20% 40%, rgba(0,255,255,.2) 0%, transparent 60%),
-    radial-gradient(circle at 80% 20%, rgba(0,255,255,.15) 0%, transparent 60%),
-    radial-gradient(circle at 50% 80%, rgba(0,255,255,.1) 0%, transparent 60%);
-  animation:particleMove 10s linear infinite;
-  pointer-events:none;
-  opacity:.6;
-}
 
-@keyframes particleMove{
-  0%{ transform:translateY(0); }
-  50%{ transform:translateY(-10px); }
-  100%{ transform:translateY(0); }
-}
-
-
-.tr-header::after{
-  content:"";
-  position:absolute;
-  bottom:0;
-  left:-50%;
-  width:200%;
-  height:3px;
-
-  background:linear-gradient(
-    90deg,
-    transparent,
-    #00f0ff,
-    #00ffff,
-    transparent
-  );
-
-  animation:neonSlide 4s linear infinite;
-}
-
-@keyframes neonSlide{
-  from{ transform:translateX(0);}
-  to{ transform:translateX(50%);}
-}
 
 .tr-back{
   position:absolute;
@@ -1517,22 +1474,20 @@ body.crash-dark{
 
 <div class="tr-header">
 
-  <button class="tr-back" onclick="location.href='/invest.html'">‹</button>
+  <button class="tr-back" onclick="location.href='/invest.html'"></button>
 
   <div class="tr-head-center">
-    <div class="tr-title">Boom Explosion</div>
+    <div class="tr-title"></div>
     <div class="tr-sub">
-   Round •
-  <span id="roundToday">1</span>
+  
+  <span id="roundToday"></span>
 </div>
   </div>
 
   <div class="tr-right">
 
-
-
     <div class="tr-coins">
-      💎 <span id="coinBalance">0</span>
+       <span id="coinBalance"></span>
     </div>
   </div>
 
