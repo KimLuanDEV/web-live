@@ -19,14 +19,15 @@ html,body{
   margin:0;
   padding:0;
 
-  background:
-  radial-gradient(circle at 50% 30%,
-    rgba(0,255,255,.15),
-    rgba(0,0,0,.95) 60%
-  ),
-  url('/assets/bg/time-race-bg.jpg') center/cover no-repeat fixed;
+background:
+radial-gradient(circle at 50% 35%,
+rgba(0,255,255,.18),
+rgba(0,0,0,.95) 65%
+),
+url("/assets/bg/time-race-bg-pro.jpg")
+center / cover no-repeat fixed;
 
-background-blend-mode: screen;
+background-blend-mode:screen;
 
 
   font-family:system-ui;
@@ -36,6 +37,25 @@ background-blend-mode: screen;
  touch-action: manipulation;
   overscroll-behavior: none;
 
+}
+
+body::after{
+content:"";
+position:fixed;
+inset:0;
+
+background:
+radial-gradient(circle at 50% 45%,
+rgba(0,255,255,.12),
+transparent 60%);
+
+animation:reactorPulse 6s ease-in-out infinite;
+pointer-events:none;
+}
+
+@keyframes reactorPulse{
+0%,100%{opacity:.4;}
+50%{opacity:.9;}
 }
 
 
