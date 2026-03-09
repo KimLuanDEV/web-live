@@ -329,17 +329,11 @@ body{
   left:0;
   right:0;
 
-  padding:26px 20px calc(24px + env(safe-area-inset-bottom));
+  padding:81px 20px calc(24px + env(safe-area-inset-bottom));
 
   background:
     url("/assets/time-race/bet-panel.png")
     center bottom / cover no-repeat;
-
-  border-top:1px solid rgba(0,255,255,.2);
-
-  box-shadow:
-    0 -15px 60px rgba(0,255,255,.2);
-
   z-index:200;
 }
 
@@ -348,12 +342,6 @@ body{
   content:"";
   position:absolute;
   inset:0;
-
-  background:
-    radial-gradient(circle at 50% 0%,
-      rgba(0,255,255,.15),
-      transparent 70%);
-
   pointer-events:none;
 }
 
@@ -613,35 +601,10 @@ body{
   margin-bottom:14px;
   padding:12px;
   text-align:center;
-  border-radius:16px;
-
-  background:linear-gradient(
-    135deg,
-    rgba(0,255,255,.1),
-    rgba(0,0,0,.5)
-  );
-
-  border:1px solid rgba(0,255,255,.25);
-
   font-weight:700;
   font-size:14px;
-
-  backdrop-filter:blur(10px);
-
-  transition:.25s;
 }
 
-.selected-bet-bar.active{
-  background:linear-gradient(
-    135deg,
-    rgba(0,123,255,.6),
-    rgba(0,255,255,.3)
-  );
-
-  box-shadow:
-    0 0 30px rgba(0,123,255,.6),
-    inset 0 0 20px rgba(0,255,255,.2);
-}
 
 #selectedBetValue{
   font-weight:800;
@@ -1553,80 +1516,80 @@ body.crash-dark{
 
 /* QUICK */
 .quick25{
-  top:28px;
-  left:49px;
-  width:86px;
-  height:26px;
+  top:-5px;
+  left:26px;
+  width:96px;
+  height:27px;
 }
 
 .quick50{
-  top:28px;
-  left:142px;
+  top:-5px;
+  left:135px;
   width:86px;
   height:26px;
 }
 
 .quickAll{
-  top:28px;
-  right:65px;
-  width:86px;
-  height:26px;
+  top:-5px;
+  right:48px;
+  width:96px;
+  height:27px;
 }
 
 /* BET ROW 1 */
 
 .bet10{
-  top:65px;
-  left:22px;
-  width:93px;
-  height:27px;
+  top:38px;
+  left:-2px;
+  width:103px;
+  height:28px;
 }
 
 .bet50{
-  top:65px;
-  left:129px;
-  width:100px;
-  height:27px;
+  top:38px;
+  left:123px;
+  width:110px;
+  height:28px;
 }
 
 .bet100{
-  top:65px;
-  right:47px;
-  width:100px;
-  height:27px;
+  top:38px;
+  right:25px;
+  width:110px;
+  height:28px;
 }
 
 /* BET ROW 2 */
 
 .bet500{
-  top:100px;
-  left:22px;
-  width:93px;
-  height:27px;
+  top:78px;
+  left:-7px;
+  width:110px;
+  height:30px;
 }
 
 .bet1000{
-  top:100px;
-  left:132px;
-  width:93px;
-  height:27px;
+  top:78px;
+  left:123px;
+  width:110px;
+  height:30px;
 }
 
 .bet5000{
-  top:100px;
-  right:53px;
-  width:93px;
-  height:27px;
+  top:78px;
+  right:25px;
+  width:110px;
+  height:30px;
 }
 
 /* CONFIRM */
 
 .confirm{
-  bottom:52px;
+  bottom:61px;
   left:50%;
   transform:translateX(-50%);
-  width:180px;
-  height:29px;
+  width:191px;
+  height:35px;
 }
 
 
@@ -1752,7 +1715,7 @@ body.crash-dark{
 <div class="tr-bottom">
 
   <div class="selected-bet-bar">
-  Selected Bet: 
+
   <span id="selectedBetValue">0</span> 💎
 </div>
 
