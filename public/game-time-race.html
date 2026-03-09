@@ -611,33 +611,21 @@ body{
 /* LOW (<2x) */
 .tr-history-item.low{
   color:#ff2d2d;
-  border-color:rgba(255,0,0,.3);
-  box-shadow:
-    0 0 12px rgba(255,0,0,.4);
+
 }
 
 /* MID (2-5x) */
 .tr-history-item.mid{
   color:#ff9900;
-  border-color:rgba(255,165,0,.3);
-  box-shadow:
-    0 0 12px rgba(255,165,0,.4);
+
 }
 
 /* HIGH (>5x) */
 .tr-history-item.high{
   color:#00f0ff;
-  border-color:rgba(0,255,255,.5);
-  box-shadow:
-    0 0 20px rgba(0,255,255,.6);
-
-  animation:historyHighPulse 2s infinite;
 }
 
-@keyframes historyHighPulse{
-  0%,100%{ transform:scale(1); }
-  50%{ transform:scale(1.08); }
-}
+
 
 /* hover effect */
 .tr-history-item:hover{
