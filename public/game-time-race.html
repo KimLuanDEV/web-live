@@ -598,11 +598,14 @@ body{
 }
 
 .selected-bet-bar{
-  margin-bottom:14px;
-  padding:12px;
-  text-align:center;
-  font-weight:700;
-  font-size:14px;
+  position:absolute;
+  top:-35px;      /* chỉnh lên xuống */
+  left:50%;       /* căn giữa */
+  transform:translateX(-50%);
+  padding:8px 16px;
+  font-weight:800;
+  font-size:16px;
+  z-index:5;
 }
 
 
@@ -1715,7 +1718,6 @@ body.crash-dark{
 <div class="tr-bottom">
 
   <div class="selected-bet-bar">
-
   <span id="selectedBetValue">0</span> 💎
 </div>
 
