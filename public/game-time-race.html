@@ -69,53 +69,19 @@ body{
 
 /* ================= GLASS NEON HEADER LEVEL 2 ================= */
 
-/* ================= LEVEL 3 CINEMATIC HEADER ================= */
-
 .tr-header{
   position:fixed;
   top:0;
   left:0;
   right:0;
 
-  /* Safe zone + cân giữa */
-  padding-top:calc(env(safe-area-inset-top) + 10px);
-  padding-left:16px;
-  padding-right:16px;
-  padding-bottom:14px;
+  height:120px;
 
-  height:calc(90px + env(safe-area-inset-top));
+  background:
+    url("/assets/time-race/header-panel.png")
+    center top / cover no-repeat;
 
-  display:flex;
-  align-items:center;      /* 🔥 QUAN TRỌNG: căn giữa dọc */
-  justify-content:space-between;
-
-  background:linear-gradient(
-    120deg,
-    rgba(0,30,60,.85),
-    rgba(0,0,0,.95),
-    rgba(0,30,60,.85)
-  );
-
-  background-size:200% 200%;
-  animation:headerFlow 8s ease infinite;
-
-  backdrop-filter:blur(25px);
-  -webkit-backdrop-filter:blur(25px);
-
-  border-bottom:1px solid rgba(0,255,255,.25);
-
-  box-shadow:
-    0 0 60px rgba(0,255,255,.15),
-    inset 0 0 40px rgba(0,255,255,.05);
-
-  overflow:hidden;
   z-index:300;
-}
-
-@keyframes headerFlow{
-  0%{ background-position:0% 50%; }
-  50%{ background-position:100% 50%; }
-  100%{ background-position:0% 50%; }
 }
 
 .tr-header::before{
@@ -163,129 +129,47 @@ body{
 }
 
 .tr-back{
-  position:relative;
-  z-index:2;
+  position:absolute;
+  left:20px;
+  top:40px;
 
-  width:42px;
-  height:42px;
+  width:60px;
+  height:40px;
 
-  display:flex;
-  align-items:center;
-  justify-content:center;
+  background:transparent;
+  border:none;
 
-  border-radius:16px;
-
-  border:1px solid rgba(0,255,255,.25);
-  background:rgba(255,255,255,.06);
-
-  color:#fff;
-  font-size:20px;
-  font-weight:700;
-
+  font-size:28px;
   cursor:pointer;
-
-  backdrop-filter:blur(10px);
-
-  box-shadow:
-    0 0 20px rgba(0,255,255,.3),
-    inset 0 0 12px rgba(0,255,255,.1);
-
-  transition:.2s;
-}
-
-.tr-back:hover{
-  transform:scale(1.08);
-  box-shadow:
-    0 0 30px rgba(0,255,255,.6);
 }
 
 .tr-head-center{
   position:absolute;
   left:50%;
+  top:42px;
   transform:translateX(-50%);
   text-align:center;
-  width:200px;
 }
-
 
 .tr-title{
+  font-size:20px;
   font-weight:900;
-  font-size:18px;
-  letter-spacing:.7px;
-
-  background:linear-gradient(
-    90deg,
-    #00f0ff,
-    #ffffff,
-    #00f0ff
-  );
-  background-size:200%;
-
-  background-clip:text;
-  -webkit-background-clip:text;
-
-  color:transparent;
-  -webkit-text-fill-color:transparent;
-
-  animation:titleShimmer 4s linear infinite;
-}
-
-@keyframes titleShimmer{
-  from{ background-position:0%;}
-  to{ background-position:200%;}
-}
-
-@keyframes neonPulse{
-  0%,100%{ opacity:.9; }
-  50%{ opacity:1; }
 }
 
 .tr-sub{
-  font-size:12px;
-  opacity:.75;
-  margin-top:4px;
-  letter-spacing:.5px;
+  font-size:13px;
+  opacity:.8;
 }
 
 .tr-right{
-  position:relative;
-  z-index:2;
-  display:flex;
-  align-items:center;
-  gap:8px;
+  position:absolute;
+  right:18px;
+  top:38px;
 }
 
 .tr-coins{
-  padding:10px 16px;
-  border-radius:20px;
-
-  background:linear-gradient(
-    135deg,
-    rgba(0,255,255,.2),
-    rgba(0,0,0,.4)
-  );
-
-  border:1px solid rgba(0,255,255,.4);
-
-  font-weight:800;
-
-  box-shadow:
-    0 0 25px rgba(0,255,255,.4),
-    inset 0 0 15px rgba(0,255,255,.15);
-
-  backdrop-filter:blur(12px);
-
-  animation:coinPulse 3s ease-in-out infinite;
-}
-
-@keyframes coinPulse{
-  0%,100%{ box-shadow:0 0 25px rgba(0,255,255,.3); }
-  50%{ box-shadow:0 0 45px rgba(0,255,255,.8); }
-}
-
-.tr-coins:hover{
-  box-shadow:
-    0 0 40px rgba(0,255,255,.6);
+  font-weight:900;
+  font-size:16px;
 }
 
 .tr-timer-badge{
@@ -599,7 +483,7 @@ body{
 
 .selected-bet-bar{
   position:absolute;
-  top: 71px;      /* chỉnh lên xuống */
+  top: 73px;      /* chỉnh lên xuống */
   left:50%;       /* căn giữa */
   transform:translateX(-50%);
   padding:8px 16px;
