@@ -585,69 +585,55 @@ body{
   display:none;
 }
 
-/* item */
+
+/* HISTORY ITEM BOMB */
+
 .tr-history-item{
-  min-width:58px;
-  padding:8px 0;
-  border-radius:22px;
+  position:relative;
 
-  font-size:13px;
-  font-weight:800;
-  text-align:center;
+  width:44px;
+  height:44px;
 
-  backdrop-filter:blur(10px);
-
-  border:1px solid rgba(255,255,255,.08);
+  display:flex;
+  align-items:center;
+  justify-content:center;
 
   background:
-    linear-gradient(
-      135deg,
-      rgba(255,255,255,.05),
-      rgba(0,0,0,.4)
-    );
+  url("/assets/time-race/history-bomb.png")
+  center / contain no-repeat;
 
-  box-shadow:
-    inset 0 0 12px rgba(0,255,255,.05);
+  font-size:11px;
+  font-weight:900;
 
-  transition:.2s;
+  color:#00f0ff;
+
+  text-shadow:
+  0 0 6px #00f0ff,
+  0 0 12px rgba(0,255,255,.8);
 }
 
-/* LOW (<2x) */
+/* LOW */
 .tr-history-item.low{
   color:#ff2d2d;
-  border-color:rgba(255,0,0,.3);
-  box-shadow:
-    0 0 12px rgba(255,0,0,.4);
+  text-shadow:
+  0 0 8px red,
+  0 0 16px rgba(255,0,0,.8);
 }
 
-/* MID (2-5x) */
+/* MID */
 .tr-history-item.mid{
   color:#ff9900;
-  border-color:rgba(255,165,0,.3);
-  box-shadow:
-    0 0 12px rgba(255,165,0,.4);
+  text-shadow:
+  0 0 8px orange,
+  0 0 16px rgba(255,165,0,.8);
 }
 
-/* HIGH (>5x) */
+/* HIGH */
 .tr-history-item.high{
   color:#00f0ff;
-  border-color:rgba(0,255,255,.5);
-  box-shadow:
-    0 0 20px rgba(0,255,255,.6);
-
-  animation:historyHighPulse 2s infinite;
-}
-
-@keyframes historyHighPulse{
-  0%,100%{ transform:scale(1); }
-  50%{ transform:scale(1.08); }
-}
-
-/* hover effect */
-.tr-history-item:hover{
-  transform:translateY(-2px);
-  box-shadow:
-    0 0 25px rgba(0,255,255,.8);
+  text-shadow:
+  0 0 10px #00f0ff,
+  0 0 25px #00f0ff;
 }
 
 
@@ -1561,7 +1547,6 @@ body.crash-dark{
 
 <div class="tr-history-wrap">
   <div class="history-title">
-    Round History
   </div>
 
   <div class="tr-history-bar"
