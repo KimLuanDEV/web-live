@@ -1636,73 +1636,6 @@ round:timeStopRound.id
 
 
 
-// ================================
-// PLAYER HIT
-// ================================
-
-io.on("connection",socket=>{
-
-
-  // ================================
-// TIME STOP BET
-// ================================
-
-socket.on("time-stop-bet",data=>{
-
-const uid = socket.data.uid;
-if(!uid) return;
-
-const bet = Number(data.bet);
-if(bet <= 0) return;
-
-const users = loadUsers();
-const me = users[uid];
-
-if(!me?.profile) return;
-
-if(me.profile.coins < bet){
-
-socket.emit("notify",{
-message:"Not enough coins"
-});
-
-return;
-}
-
-// trừ coin
-me.profile.coins -= bet;
-
-timeStopRound.bets.push({
-uid,
-bet
-});
-
-saveUsers(users);
-
-emitCoinUpdate(uid);
-
-});
-
-
-socket.on("time-stop-hit",data=>{
-
-const uid = socket.data.uid;
-if(!uid) return;
-
-// ❌ chỉ cho hit 1 lần
-if(timeStopRound.players.has(uid)) return;
-
-timeStopRound.players.add(uid);
-
-timeStopRound.hits.push({
-uid,
-time:Number(data.time)
-});
-
-});
-
-});
-
 
 
 // ================================
@@ -3288,6 +3221,83 @@ factoryDB[uid].forEach(f=>{
 saveFactories(factoryDB);
 
 socket.emit("factory-update", factoryDB[uid]);
+
+
+
+
+
+
+
+
+
+
+
+
+
+// ================================
+// PLAYER HIT
+// ================================
+
+
+
+  // ================================
+// TIME STOP BET
+// ================================
+
+socket.on("time-stop-bet",data=>{
+
+const uid = socket.data.uid;
+if(!uid) return;
+
+const bet = Number(data.bet);
+if(bet <= 0) return;
+
+const users = loadUsers();
+const me = users[uid];
+
+if(!me?.profile) return;
+
+if(me.profile.coins < bet){
+
+socket.emit("notify",{
+message:"Not enough coins"
+});
+
+return;
+}
+
+// trừ coin
+me.profile.coins -= bet;
+
+timeStopRound.bets.push({
+uid,
+bet
+});
+
+saveUsers(users);
+
+emitCoinUpdate(uid);
+
+});
+
+
+socket.on("time-stop-hit",data=>{
+
+const uid = socket.data.uid;
+if(!uid) return;
+
+// ❌ chỉ cho hit 1 lần
+if(timeStopRound.players.has(uid)) return;
+
+timeStopRound.players.add(uid);
+
+timeStopRound.hits.push({
+uid,
+time:Number(data.time)
+});
+
+});
+
 
 
 
