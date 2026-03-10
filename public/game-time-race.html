@@ -1710,7 +1710,7 @@ const maxFuseHeight = 60; // phải khớp CSS
 function showTimeRaceWinModal(multiplier, amount){
 
   winSound.currentTime = 0;
-  winSound.play();
+  winSound.play().catch(()=>{});
 
 
   document.getElementById("winMultiplier")
@@ -2062,7 +2062,7 @@ if(m > 1 && !raceStarted){
     betTimer.textContent = "";
 
     raceSound.currentTime = 0;
-    raceSound.play();
+    raceSound.play().catch(()=>{});
 }
 
   if(m <= 1){
