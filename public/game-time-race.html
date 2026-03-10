@@ -1813,7 +1813,8 @@ document.querySelectorAll("[data-bet]").forEach(btn=>{
 
 
 function updateTimer(){
-  if(!betEndAt) return;
+
+  if(!betEndAt || raceStarted || crashed) return;
 
   const betPanel = document.querySelector(".tr-bottom");
 
@@ -2049,7 +2050,7 @@ socket.on("time-race-new", data => {
 
 socket.on("time-race-tick",data=>{
 
-  if(crashed) return;
+  if(crashed || raceStarted && data.multiplier <= 1) return;
 
   const m = Number(data.multiplier);
 
@@ -2058,9 +2059,10 @@ if(m > 1 && !raceStarted){
 
     raceStarted = true;
 
+    betTimer.textContent = "";
+
     raceSound.currentTime = 0;
     raceSound.play();
-
 }
 
   if(m <= 1){
