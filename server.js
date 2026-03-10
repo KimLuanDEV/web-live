@@ -1441,6 +1441,134 @@ const activeUsers = new Map();
 
 
 
+// ================================
+// ⏱ TIME STOP GAME
+// ================================
+
+const TIME_STOP_TOTAL = 25000;   // 25s round
+const TIME_STOP_BET   = 15000;   // 15s đặt cược
+const TIME_STOP_PLAY  = 10000;   // 10s chạy đồng hồ
+
+let timeStopRound = {
+  id:1,
+  startAt:Date.now(),
+  playStartAt:0,
+  hits:[]
+};
+
+// ================================
+// ROUND LOOP
+// ================================
+
+setInterval(()=>{
+
+const now = Date.now();
+const elapsed = now - timeStopRound.startAt;
+
+// 15s đặt cược
+if(elapsed < TIME_STOP_BET){
+
+io.emit("time-stop-round",{
+round:timeStopRound.id,
+timer:Math.ceil((TIME_STOP_BET - elapsed)/1000)
+});
+
+return;
+}
+
+// bắt đầu chạy đồng hồ
+if(!timeStopRound.playStartAt){
+
+timeStopRound.playStartAt = Date.now();
+
+io.emit("time-stop-start",{
+serverStart:timeStopRound.playStartAt
+});
+
+}
+
+// kết thúc round sau 10s
+if(now - timeStopRound.playStartAt >= TIME_STOP_PLAY){
+
+// tính winner
+let best = null;
+
+timeStopRound.hits.forEach(p=>{
+
+const diff = Math.abs(10 - p.time);
+
+if(!best || diff < best.diff){
+best = { ...p, diff };
+}
+
+});
+
+if(best){
+
+// ========================
+// 💰 REWARD COIN
+// ========================
+
+const users = loadUsers();
+
+if(users[best.uid]){
+
+users[best.uid].profile.coins += 100;
+
+saveUsers(users);
+
+emitCoinUpdate(best.uid);
+
+}
+
+
+// ========================
+// 📢 EMIT RESULT
+// ========================
+
+io.emit("time-stop-result",{
+uid:best.uid,
+time:best.time,
+multiplier:5
+});
+
+}
+
+timeStopRound = {
+id: timeStopRound.id + 1,
+startAt: Date.now(),
+playStartAt:0,
+hits:[]
+};
+
+}
+
+},1000);
+
+
+// ================================
+// PLAYER HIT
+// ================================
+
+io.on("connection",socket=>{
+
+socket.on("time-stop-hit",data=>{
+
+const uid = socket.data.uid;
+if(!uid) return;
+
+timeStopRound.hits.push({
+uid,
+time:data.time
+});
+
+});
+
+});
+
+
+
+
 
 // ================================
 // 🐉🐯🔥 DTP ROUND COUNT (24H)

@@ -184,7 +184,7 @@ socket.on("time-stop-start",data=>{
 running=true;
 stopped=false;
 
-startTime=data.serverStart;
+startTime = Date.now() - (Date.now() - data.serverStart);
 
 resultEl.textContent="";
 
