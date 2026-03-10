@@ -1,125 +1,151 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="vi">
 <head>
-<meta charset="utf-8">
-<title>Time Stop</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
-<script src="/socket.io/socket.io.js"></script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>TIME STOP</title>
+
+<link rel="stylesheet" href="/css/main.css">
 
 <style>
 
-html,body{
+body{
+background:#05070f;
+color:white;
+font-family:Arial;
+text-align:center;
 margin:0;
-background:#000;
-color:#fff;
-font-family:system-ui;
 overflow:hidden;
 }
 
-/* ===== TOP BAR ===== */
+/* ================= TOP BAR ================= */
 
 .topbar{
-position:fixed;
-top:0;
-left:0;
-right:0;
-height:50px;
-
 display:flex;
 justify-content:space-between;
-align-items:center;
-
-padding:0 12px;
-
-background:#050505;
-border-bottom:1px solid rgba(255,255,255,.08);
-}
-
-.timer{
-font-size:18px;
+padding:10px 20px;
 font-weight:700;
+background:#0c1020;
+border-bottom:1px solid rgba(255,255,255,.1);
 }
 
-/* ===== CENTER CLOCK ===== */
+/* ================= TIMER ================= */
 
-.center{
-position:absolute;
-top:50%;
-left:50%;
-transform:translate(-50%,-50%);
-text-align:center;
+.timer-box{
+margin-top:120px;
 }
 
-.time{
-font-size:90px;
-font-weight:800;
-letter-spacing:2px;
+.timer-circle{
 
-text-shadow:
-0 0 20px rgba(0,255,255,.6);
+width:260px;
+height:260px;
+border-radius:50%;
+
+margin:auto;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:64px;
+font-weight:900;
+
+background:
+radial-gradient(circle,
+#0b0f25 40%,
+#0a0e1c 80%
+);
+
+border:4px solid #00f0ff;
+
+box-shadow:
+0 0 20px #00f0ff,
+0 0 60px rgba(0,240,255,.3);
+
 }
 
-.target{
-margin-top:10px;
-font-size:14px;
-opacity:.7;
-}
-
-/* ===== STOP BUTTON ===== */
+/* ================= BUTTON ================= */
 
 .stop-btn{
 
-position:absolute;
-bottom:120px;
-left:50%;
-transform:translateX(-50%);
+margin-top:40px;
 
-width:200px;
-height:70px;
+font-size:28px;
+font-weight:900;
 
-font-size:22px;
-font-weight:800;
+padding:18px 60px;
 
 border:none;
-border-radius:16px;
+border-radius:12px;
 
-background:
-linear-gradient(180deg,#00f0ff,#0066ff);
+background:linear-gradient(
+45deg,
+#ff2b2b,
+#ff7b00
+);
 
-color:#000;
-
-box-shadow:
-0 0 25px rgba(0,255,255,.7);
+color:white;
 
 cursor:pointer;
+
+box-shadow:
+0 0 20px rgba(255,0,0,.6);
+
 }
 
-/* ===== RESULT ===== */
+/* ================= BET ================= */
 
-.result{
+.bet-panel{
+
 position:absolute;
 bottom:40px;
-left:50%;
-transform:translateX(-50%);
-font-size:22px;
+left:0;
+right:0;
+
+}
+
+.bet-grid{
+
+display:flex;
+justify-content:center;
+gap:12px;
+
+}
+
+.bet-chip{
+
+background:#11142a;
+padding:12px 18px;
+border-radius:10px;
+cursor:pointer;
+
+border:1px solid rgba(255,255,255,.2);
+
 font-weight:700;
+
+}
+
+.bet-chip.active{
+
+border:1px solid #00f0ff;
+box-shadow:0 0 10px #00f0ff;
+
 }
 
 </style>
+
 </head>
 
 <body>
 
+<!-- ================= TOP BAR ================= -->
+
 <div class="topbar">
 
 <div>
-Round:
-<span id="round">0</span>
-</div>
-
-<div class="timer">
-⏱ <span id="timer">15</span>
+ROUND: <span id="roundId">1</span>
 </div>
 
 <div>
@@ -128,184 +154,163 @@ Round:
 
 </div>
 
+<!-- ================= TIMER ================= -->
 
-<div class="center">
+<div class="timer-box">
 
-<div id="timeValue" class="time">
-0.00
-</div>
+<div class="timer-circle">
 
-<div class="target">
-Target: 10.00s
-</div>
+<span id="timer">0.00</span>
 
 </div>
 
+<button class="stop-btn"
+onclick="stopTimer()">
 
-<button id="stopBtn" class="stop-btn">
-STOP TIME
+STOP
+
 </button>
 
-<div id="result" class="result"></div>
+</div>
 
+<!-- ================= BET ================= -->
 
+<div class="bet-panel">
 
+<div class="bet-grid">
 
-<div style="
-position:absolute;
-bottom:220px;
-left:50%;
-transform:translateX(-50%);
-">
-
-<button onclick="bet(10)">10💎</button>
-<button onclick="bet(50)">50💎</button>
-<button onclick="bet(100)">100💎</button>
+<div class="bet-chip" onclick="setBet(10)">10</div>
+<div class="bet-chip" onclick="setBet(50)">50</div>
+<div class="bet-chip" onclick="setBet(100)">100</div>
+<div class="bet-chip" onclick="setBet(500)">500</div>
 
 </div>
 
+</div>
 
+<script src="/socket.io/socket.io.js"></script>
 
 <script>
 
+/* ================= SOCKET ================= */
+
 const socket = io();
 
-let running = false;
-let startTime = 0;
-let stopped = false;
+/* ================= COIN ================= */
 
-const timeEl = document.getElementById("timeValue");
-const stopBtn = document.getElementById("stopBtn");
-const resultEl = document.getElementById("result");
-
-
-
-socket.emit("get-coins");
-
-
-/* ================================
-ROUND TIMER
-================================ */
-
-socket.on("time-stop-round",data=>{
-
-document.getElementById("round").textContent =
-data.round;
-
-document.getElementById("timer").textContent =
-data.timer;
-
-});
-
-/* ================================
-START COUNTING
-================================ */
-
-socket.on("time-stop-start",data=>{
-
-running=true;
-stopped=false;
-
-startTime = data.serverStart;
-
-resultEl.textContent="";
-
-});
-
-/* ================================
-CLIENT CLOCK
-================================ */
-
-setInterval(()=>{
-
-if(!running) return;
-if(stopped) return;
-
-const t = Math.min(
-10,
-(Date.now()-startTime)/1000
-);
-
-timeEl.textContent =
-t.toFixed(2);
-
-},16);
-
-
-/* ================================
-STOP BUTTON
-================================ */
-
-stopBtn.onclick=()=>{
-
-if(!running) return;
-if(stopped) return;
-
-stopped=true;
-running=false;
-
-const t = Math.min(
-10,
-(Date.now()-startTime)/1000
-);
-
-socket.emit("time-stop-hit",{
-time:t
-});
-
-};
-
-
-/* ================================
-RESULT
-================================ */
-
-socket.on("time-stop-result",data=>{
-
-resultEl.textContent =
-"⏱ "+data.time.toFixed(2)+"s  |  Reward x"+data.multiplier;
-
-});
-
-
-/* ================================
-COIN UPDATE
-================================ */
-
-socket.on("coin-update",data=>{
+socket.on("coin-update", data=>{
 document.getElementById("coins").textContent =
 data.coins;
 });
 
+/* ================= GAME ================= */
 
+let timer = 0;
+let running = false;
+let interval;
 
-socket.on("time-stop-round-new",data=>{
+let bet = 0;
 
-running=false;
-stopped=false;
+/* ================= BET ================= */
 
-timeEl.textContent="0.00";
-resultEl.textContent="";
+function setBet(v){
 
-});
+bet = v;
 
+document.querySelectorAll(".bet-chip")
+.forEach(el=>el.classList.remove("active"));
 
-let myBet = 0;
-
-function bet(v){
-
-if(myBet > 0) return;
-
-myBet = v;
-
-socket.emit("time-stop-bet",{
-bet:v
-});
+event.target.classList.add("active");
 
 }
 
+/* ================= START ================= */
 
+function startTimer(){
+
+timer = 0;
+
+running = true;
+
+interval = setInterval(()=>{
+
+timer += 0.01;
+
+if(timer > 10){
+
+resetGame();
+
+return;
+
+}
+
+document.getElementById("timer")
+.textContent = timer.toFixed(2);
+
+},10);
+
+}
+
+/* ================= STOP ================= */
+
+function stopTimer(){
+
+if(!running) return;
+
+running = false;
+
+clearInterval(interval);
+
+const t = timer;
+
+let reward = 0;
+
+/* ===== CALC REWARD ===== */
+
+if(t >= 9.9){
+
+reward = bet * 10;
+
+}else if(t >= 9){
+
+reward = bet * 5;
+
+}else if(t >= 8){
+
+reward = bet * 2;
+
+}
+
+/* ===== SEND SERVER ===== */
+
+socket.emit("time-stop-result",{
+
+bet,
+time:t
+
+});
+
+alert("Result: " + t.toFixed(2));
+
+setTimeout(startTimer,3000);
+
+}
+
+/* ================= RESET ================= */
+
+function resetGame(){
+
+clearInterval(interval);
+
+setTimeout(startTimer,2000);
+
+}
+
+/* ================= START GAME ================= */
+
+startTimer();
 
 </script>
+
 </body>
 </html>

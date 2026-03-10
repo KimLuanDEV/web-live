@@ -830,12 +830,10 @@ body.sheet-open{
 
 
 
-
-/* ⏳ TIME STOP GAME */
+/* ⏳ TIME STOP – DỪNG THỜI GIAN */
 .invest-card.time-stop{
-
   background-image:
-    linear-gradient(180deg, rgba(150,0,255,.35), rgba(0,0,0,.95)),
+    linear-gradient(180deg, rgba(120,0,255,.35), rgba(0,0,0,.95)),
     url("/assets/bg/time-stop.jpg");
 
   background-size: cover;
@@ -843,32 +841,28 @@ body.sheet-open{
   background-repeat: no-repeat;
 
   box-shadow:
-    0 0 50px rgba(150,0,255,.45),
+    0 0 50px rgba(150,0,255,.4),
     0 12px 30px rgba(0,0,0,.75);
 }
 
-/* hiệu ứng time distortion */
+/* hiệu ứng năng lượng thời gian */
 .invest-card.time-stop::after{
   content:"";
   position:absolute;
   inset:0;
 
   background:
-    radial-gradient(circle at 50% 40%,
-    rgba(200,120,255,.35),
-    transparent 60%);
+    radial-gradient(circle at 50% 40%, rgba(150,0,255,.35), transparent 65%);
 
   mix-blend-mode: screen;
-
-  animation: timeWarp 3s ease-in-out infinite;
-
+  animation: pulseTimeStop 2.4s ease-in-out infinite;
   pointer-events:none;
 }
 
-@keyframes timeWarp{
-  0%{opacity:.4; transform:scale(1)}
-  50%{opacity:.9; transform:scale(1.05)}
-  100%{opacity:.4; transform:scale(1)}
+@keyframes pulseTimeStop{
+  0%{opacity:.4}
+  50%{opacity:.95}
+  100%{opacity:.4}
 }
 
 
@@ -1052,11 +1046,13 @@ body.sheet-open{
 </div>
 
 
+
 <!-- ⏳ GAME DỪNG THỜI GIAN -->
 <div class="invest-card time-stop"
      onclick="openTimeStopGame()">
   <div class="asset-name"></div>
 </div>
+
 
 
       </div>
