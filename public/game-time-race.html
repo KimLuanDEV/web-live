@@ -2050,7 +2050,7 @@ socket.on("time-race-new", data => {
 
 socket.on("time-race-tick",data=>{
 
-  if(crashed || raceStarted && data.multiplier <= 1) return;
+  if(crashed || (raceStarted && data.multiplier <= 1)) return;
 
   const m = Number(data.multiplier);
 
@@ -2429,7 +2429,7 @@ const interval = setInterval(()=>{
       setTimeout(()=>{
         overlay.remove();
         bgMusic.volume = 0.4;
-        bgMusic.play().catch(()=>{});
+       
 
       },600);
 
@@ -2446,12 +2446,12 @@ const interval = setInterval(()=>{
 
 
 function unlockAudio(){
-  bgMusic.play().then(()=>{
-    bgMusic.pause();
-    bgMusic.currentTime = 0;
-  }).catch(()=>{});
-}
 
+  bgMusic.volume = 0.4;
+
+  bgMusic.play().catch(()=>{});
+
+}
 document.addEventListener("click", unlockAudio, {once:true});
 
 
