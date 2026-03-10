@@ -1433,7 +1433,6 @@ body.crash-dark{
 
 <!-- ===== GAME SOUNDS ===== -->
 
-<audio id="bgMusic" src="/assets/time-race/sounds/bg-music.mp3" loop></audio>
 
 <audio id="betSound" src="/assets/time-race/sounds/bet.mp3"></audio>
 
@@ -1444,6 +1443,11 @@ body.crash-dark{
 <audio id="crashSound" src="/assets/time-race/sounds/explosion.mp3"></audio>
 
 <audio id="winSound" src="/assets/time-race/sounds/win.mp3"></audio>
+
+<audio id="confirmSound" src="/assets/time-race/sounds/confirm.mp3"></audio>
+
+<audio id="logSound" src="/assets/time-race/sounds/log.mp3"></audio>
+
 
 
 <!-- ================= TIME RACE LOADING ================= -->
@@ -1663,13 +1667,14 @@ body.crash-dark{
 <script>
   
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
-const bgMusic = document.getElementById("bgMusic");
+
 const betSound = document.getElementById("betSound");
 const tickSound = document.getElementById("tickSound");
 const raceSound = document.getElementById("raceSound");
 const crashSound = document.getElementById("crashSound");
 const winSound = document.getElementById("winSound");
-
+const confirmSound = document.getElementById("confirmSound");
+const logSound = document.getElementById("logSound");
 
 let lastTickSecond = -1;
 
@@ -1922,6 +1927,10 @@ function renderTimeRaceHistory(list){
 
 
 function openTimeRaceHistory(){
+
+  logSound.currentTime = 0;
+  logSound.play().catch(()=>{});
+
   document
     .getElementById("timeRaceHistorySheet")
     .classList.remove("hidden");
@@ -2222,11 +2231,16 @@ setTimeout(()=>{
 /* BET */
 
 betBtn.onclick=()=>{
+
   const bet = selectedBet;
   if(!bet || bet<=0) return;
 
+  confirmSound.currentTime = 0;
+  confirmSound.play().catch(()=>{});
+
   socket.emit("time-race-bet",{bet});
 };
+
 
 
 socket.on("time-race-bet-ok",()=>{
@@ -2428,9 +2442,6 @@ const interval = setInterval(()=>{
 
       setTimeout(()=>{
         overlay.remove();
-        bgMusic.volume = 0.4;
-       
-
       },600);
 
     },500);
@@ -2445,14 +2456,7 @@ const interval = setInterval(()=>{
 
 
 
-function unlockAudio(){
 
-  bgMusic.volume = 0.4;
-
-  bgMusic.play().catch(()=>{});
-
-}
-document.addEventListener("click", unlockAudio, {once:true});
 
 
 </script>
