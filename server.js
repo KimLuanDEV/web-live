@@ -1442,19 +1442,38 @@ const activeUsers = new Map();
 
 
 // ================================
-// ⏱ TIME STOP GAME
+// ⏱ TIME STOP GAME ENGINE
 // ================================
 
-const TIME_STOP_TOTAL = 25000;   // 25s round
-const TIME_STOP_BET   = 15000;   // 15s đặt cược
-const TIME_STOP_PLAY  = 10000;   // 10s chạy đồng hồ
+const TIME_STOP_TOTAL = 25000;
+const TIME_STOP_BET   = 15000;
+const TIME_STOP_PLAY  = 10000;
+
+let timeStopHistory = [];
 
 let timeStopRound = {
   id:1,
   startAt:Date.now(),
   playStartAt:0,
-  hits:[]
+  hits:[],
+  players:new Set()
 };
+
+
+// ================================
+// MULTIPLIER LOGIC
+// ================================
+
+function calcMultiplier(diff){
+
+if(diff <= 0.01) return 20;
+if(diff <= 0.05) return 10;
+if(diff <= 0.1)  return 5;
+if(diff <= 0.3)  return 2;
+
+return 1;
+}
+
 
 // ================================
 // ROUND LOOP
@@ -1465,7 +1484,11 @@ setInterval(()=>{
 const now = Date.now();
 const elapsed = now - timeStopRound.startAt;
 
-// 15s đặt cược
+
+// ================================
+// BET PHASE
+// ================================
+
 if(elapsed < TIME_STOP_BET){
 
 io.emit("time-stop-round",{
@@ -1476,7 +1499,11 @@ timer:Math.ceil((TIME_STOP_BET - elapsed)/1000)
 return;
 }
 
-// bắt đầu chạy đồng hồ
+
+// ================================
+// START CLOCK
+// ================================
+
 if(!timeStopRound.playStartAt){
 
 timeStopRound.playStartAt = Date.now();
@@ -1487,10 +1514,22 @@ serverStart:timeStopRound.playStartAt
 
 }
 
-// kết thúc round sau 10s
-if(now - timeStopRound.playStartAt >= TIME_STOP_PLAY){
 
-// tính winner
+// ================================
+// PLAY PHASE
+// ================================
+
+const playElapsed = now - timeStopRound.playStartAt;
+
+if(playElapsed < TIME_STOP_PLAY){
+return;
+}
+
+
+// ================================
+// ROUND END
+// ================================
+
 let best = null;
 
 timeStopRound.hits.forEach(p=>{
@@ -1503,17 +1542,18 @@ best = { ...p, diff };
 
 });
 
-if(best){
 
-// ========================
-// 💰 REWARD COIN
-// ========================
+if(best){
 
 const users = loadUsers();
 
+const multiplier = calcMultiplier(best.diff);
+
+const reward = 100 * multiplier;
+
 if(users[best.uid]){
 
-users[best.uid].profile.coins += 100;
+users[best.uid].profile.coins += reward;
 
 saveUsers(users);
 
@@ -1522,28 +1562,54 @@ emitCoinUpdate(best.uid);
 }
 
 
-// ========================
-// 📢 EMIT RESULT
-// ========================
+// ================================
+// HISTORY
+// ================================
+
+timeStopHistory.unshift({
+round:timeStopRound.id,
+uid:best.uid,
+time:best.time,
+diff:best.diff,
+multiplier
+});
+
+timeStopHistory = timeStopHistory.slice(0,20);
+
+
+// ================================
+// EMIT RESULT
+// ================================
 
 io.emit("time-stop-result",{
 uid:best.uid,
 time:best.time,
-multiplier:5
+multiplier
 });
 
+io.emit("time-stop-history",timeStopHistory);
+
 }
+
+
+// ================================
+// NEW ROUND
+// ================================
 
 timeStopRound = {
-id: timeStopRound.id + 1,
-startAt: Date.now(),
+id:timeStopRound.id + 1,
+startAt:Date.now(),
 playStartAt:0,
-hits:[]
+hits:[],
+players:new Set()
 };
 
-}
+io.emit("time-stop-round-new",{
+round:timeStopRound.id
+});
 
-},1000);
+},100);
+
 
 
 // ================================
@@ -1557,16 +1623,19 @@ socket.on("time-stop-hit",data=>{
 const uid = socket.data.uid;
 if(!uid) return;
 
+// ❌ chỉ cho hit 1 lần
+if(timeStopRound.players.has(uid)) return;
+
+timeStopRound.players.add(uid);
+
 timeStopRound.hits.push({
 uid,
-time:data.time
+time:Number(data.time)
 });
 
 });
 
 });
-
-
 
 
 
