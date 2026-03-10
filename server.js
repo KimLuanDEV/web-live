@@ -3230,8 +3230,22 @@ socket.emit("factory-update", factoryDB[uid]);
 
 
 
+socket.on("get-coins",()=>{
 
+const uid = socket.data.uid;
+if(!uid) return;
 
+const users = loadUsers();
+
+if(users[uid]){
+
+socket.emit("coin-update",{
+coins: users[uid].profile.coins
+});
+
+}
+
+});
 
 
 // ================================
