@@ -1445,9 +1445,14 @@ const activeUsers = new Map();
 // ⏱ TIME STOP GAME ENGINE
 // ================================
 
-const TIME_STOP_TOTAL = 25000;
-const TIME_STOP_BET   = 15000;
-const TIME_STOP_PLAY  = 10000;
+const TIME_STOP_BET    = 15000;
+const TIME_STOP_PLAY   = 10000;
+const TIME_STOP_RESULT = 5000;
+
+const TIME_STOP_TOTAL =
+TIME_STOP_BET +
+TIME_STOP_PLAY +
+TIME_STOP_RESULT;
 
 let timeStopHistory = [];
 
@@ -1522,6 +1527,14 @@ serverStart:timeStopRound.playStartAt
 const playElapsed = now - timeStopRound.playStartAt;
 
 if(playElapsed < TIME_STOP_PLAY){
+return;
+}
+
+// ================================
+// RESULT PHASE
+// ================================
+
+if(playElapsed < TIME_STOP_PLAY + TIME_STOP_RESULT){
 return;
 }
 
