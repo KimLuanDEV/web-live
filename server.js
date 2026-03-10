@@ -1441,6 +1441,81 @@ const activeUsers = new Map();
 
 
 
+// ================================
+// ⏳ TIME STOP GAME ENGINE
+// ================================
+
+const TIME_STOP_DURATION = 15000; // 15s / round
+
+let timeStopRound = {
+  id: 1,
+  startAt: Date.now(),
+  endAt: Date.now() + TIME_STOP_DURATION,
+  bets: []
+};
+
+function createTimeStopRound(){
+
+  return {
+    id: timeStopRound.id + 1,
+    startAt: Date.now(),
+    endAt: Date.now() + TIME_STOP_DURATION,
+    bets: []
+  };
+
+}
+
+
+
+
+setInterval(()=>{
+
+  const users = loadUsers();
+
+  timeStopRound.bets.forEach(b=>{
+
+    const me = users[b.uid];
+    if(!me?.profile) return;
+
+    const t = Math.min(
+      10,
+      (b.stopAt - timeStopRound.startAt) / 1000
+    );
+
+    let reward = 0;
+
+    if(t >= 9.9){
+      reward = b.bet * 10;
+    }
+    else if(t >= 9){
+      reward = b.bet * 5;
+    }
+    else if(t >= 8){
+      reward = b.bet * 2;
+    }
+
+    me.profile.coins += reward;
+
+    emitToUser(b.uid,"time-stop-result",{
+      time: t,
+      reward
+    });
+
+  });
+
+  saveUsers(users);
+
+  timeStopRound = createTimeStopRound();
+
+  io.emit("time-stop-round-new",{
+    roundId: timeStopRound.id,
+    startAt: timeStopRound.startAt
+  });
+
+}, TIME_STOP_DURATION);
+
+
+
 
 // ================================
 // 🐉🐯🔥 DTP ROUND COUNT (24H)
@@ -3113,6 +3188,44 @@ socket.on("star-war-reward", ({ reward })=>{
 
 
 
+socket.on("time-stop-play",({bet})=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  if(!me?.profile) return;
+
+  if(me.profile.coins < bet){
+
+    socket.emit("notify",{
+      message:"Not enough coins"
+    });
+
+    return;
+  }
+
+  me.profile.coins -= bet;
+
+  timeStopRound.bets.push({
+    uid,
+    bet,
+    stopAt: Date.now()
+  });
+
+  saveUsers(users);
+
+  emitCoinUpdate(uid);
+
+});
+
+
+socket.emit("time-stop-round-new",{
+  roundId: timeStopRound.id,
+  startAt: timeStopRound.startAt
+});
 
 
 

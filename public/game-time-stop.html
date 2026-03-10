@@ -20,7 +20,7 @@ margin:0;
 overflow:hidden;
 }
 
-/* ================= TOP BAR ================= */
+/* TOP BAR */
 
 .topbar{
 display:flex;
@@ -31,7 +31,7 @@ background:#0c1020;
 border-bottom:1px solid rgba(255,255,255,.1);
 }
 
-/* ================= TIMER ================= */
+/* TIMER */
 
 .timer-box{
 margin-top:120px;
@@ -66,7 +66,7 @@ box-shadow:
 
 }
 
-/* ================= BUTTON ================= */
+/* STOP BUTTON */
 
 .stop-btn{
 
@@ -95,7 +95,7 @@ box-shadow:
 
 }
 
-/* ================= BET ================= */
+/* BET PANEL */
 
 .bet-panel{
 
@@ -140,12 +140,10 @@ box-shadow:0 0 10px #00f0ff;
 
 <body>
 
-<!-- ================= TOP BAR ================= -->
-
 <div class="topbar">
 
 <div>
-ROUND: <span id="roundId">1</span>
+ROUND: <span id="roundId">0</span>
 </div>
 
 <div>
@@ -154,100 +152,97 @@ ROUND: <span id="roundId">1</span>
 
 </div>
 
-<!-- ================= TIMER ================= -->
 
 <div class="timer-box">
 
 <div class="timer-circle">
-
 <span id="timer">0.00</span>
-
 </div>
 
-<button class="stop-btn"
-onclick="stopTimer()">
-
+<button class="stop-btn" onclick="stopTimer()">
 STOP
-
 </button>
 
 </div>
 
-<!-- ================= BET ================= -->
 
 <div class="bet-panel">
 
 <div class="bet-grid">
 
-<div class="bet-chip" onclick="setBet(10)">10</div>
-<div class="bet-chip" onclick="setBet(50)">50</div>
-<div class="bet-chip" onclick="setBet(100)">100</div>
-<div class="bet-chip" onclick="setBet(500)">500</div>
+<div class="bet-chip" onclick="setBet(10,this)">10</div>
+<div class="bet-chip" onclick="setBet(50,this)">50</div>
+<div class="bet-chip" onclick="setBet(100,this)">100</div>
+<div class="bet-chip" onclick="setBet(500,this)">500</div>
 
 </div>
 
 </div>
+
 
 <script src="/socket.io/socket.io.js"></script>
 
 <script>
 
-/* ================= SOCKET ================= */
-
 const socket = io();
 
 /* ================= COIN ================= */
 
-socket.on("coin-update", data=>{
+socket.on("coin-update",data=>{
+
 document.getElementById("coins").textContent =
 data.coins;
+
 });
 
-/* ================= GAME ================= */
+/* ================= ROUND ================= */
 
-let timer = 0;
-let running = false;
-let interval;
+let startAt = 0;
+let timerInterval;
 
-let bet = 0;
+socket.on("time-stop-round-new",data=>{
+
+document.getElementById("roundId").textContent =
+data.roundId;
+
+startAt = data.startAt;
+
+startTimer();
+
+});
+
+/* ================= TIMER ================= */
+
+function startTimer(){
+
+clearInterval(timerInterval);
+
+timerInterval = setInterval(()=>{
+
+const t = Math.min(
+10,
+(Date.now() - startAt)/1000
+);
+
+document.getElementById("timer").textContent =
+t.toFixed(2);
+
+},10);
+
+}
 
 /* ================= BET ================= */
 
-function setBet(v){
+let bet = 0;
+
+function setBet(v,el){
 
 bet = v;
 
 document.querySelectorAll(".bet-chip")
-.forEach(el=>el.classList.remove("active"));
+.forEach(e=>e.classList.remove("active"));
 
-event.target.classList.add("active");
-
-}
-
-/* ================= START ================= */
-
-function startTimer(){
-
-timer = 0;
-
-running = true;
-
-interval = setInterval(()=>{
-
-timer += 0.01;
-
-if(timer > 10){
-
-resetGame();
-
-return;
-
-}
-
-document.getElementById("timer")
-.textContent = timer.toFixed(2);
-
-},10);
+el.classList.add("active");
 
 }
 
@@ -255,60 +250,35 @@ document.getElementById("timer")
 
 function stopTimer(){
 
-if(!running) return;
+if(bet <= 0){
 
-running = false;
+alert("Select bet");
 
-clearInterval(interval);
-
-const t = timer;
-
-let reward = 0;
-
-/* ===== CALC REWARD ===== */
-
-if(t >= 9.9){
-
-reward = bet * 10;
-
-}else if(t >= 9){
-
-reward = bet * 5;
-
-}else if(t >= 8){
-
-reward = bet * 2;
+return;
 
 }
 
-/* ===== SEND SERVER ===== */
+socket.emit("time-stop-play",{
 
-socket.emit("time-stop-result",{
-
-bet,
-time:t
+bet
 
 });
 
-alert("Result: " + t.toFixed(2));
-
-setTimeout(startTimer,3000);
-
 }
 
-/* ================= RESET ================= */
+/* ================= RESULT ================= */
 
-function resetGame(){
+socket.on("time-stop-result",data=>{
 
-clearInterval(interval);
+const time = data.time;
+const reward = data.reward;
 
-setTimeout(startTimer,2000);
+alert(
+"TIME: "+time.toFixed(2)
++"\nWIN: "+reward
+);
 
-}
-
-/* ================= START GAME ================= */
-
-startTimer();
+});
 
 </script>
 
