@@ -149,6 +149,23 @@ STOP TIME
 <div id="result" class="result"></div>
 
 
+
+
+<div style="
+position:absolute;
+bottom:220px;
+left:50%;
+transform:translateX(-50%);
+">
+
+<button onclick="bet(10)">10💎</button>
+<button onclick="bet(50)">50💎</button>
+<button onclick="bet(100)">100💎</button>
+
+</div>
+
+
+
 <script>
 
 const socket = io();
@@ -266,6 +283,23 @@ timeEl.textContent="0.00";
 resultEl.textContent="";
 
 });
+
+
+let myBet = 0;
+
+function bet(v){
+
+if(myBet > 0) return;
+
+myBet = v;
+
+socket.emit("time-stop-bet",{
+bet:v
+});
+
+}
+
+
 
 </script>
 </body>
