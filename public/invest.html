@@ -830,40 +830,6 @@ body.sheet-open{
 
 
 
-/* ⏳ TIME STOP – DỪNG THỜI GIAN */
-.invest-card.time-stop{
-  background-image:
-    linear-gradient(180deg, rgba(120,0,255,.35), rgba(0,0,0,.95)),
-    url("/assets/bg/time-stop.jpg");
-
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
-
-  box-shadow:
-    0 0 50px rgba(150,0,255,.4),
-    0 12px 30px rgba(0,0,0,.75);
-}
-
-/* hiệu ứng năng lượng thời gian */
-.invest-card.time-stop::after{
-  content:"";
-  position:absolute;
-  inset:0;
-
-  background:
-    radial-gradient(circle at 50% 40%, rgba(150,0,255,.35), transparent 65%);
-
-  mix-blend-mode: screen;
-  animation: pulseTimeStop 2.4s ease-in-out infinite;
-  pointer-events:none;
-}
-
-@keyframes pulseTimeStop{
-  0%{opacity:.4}
-  50%{opacity:.95}
-  100%{opacity:.4}
-}
 
 
 </style>
@@ -1042,14 +1008,6 @@ body.sheet-open{
 <!-- 🐉🐅🦅 GAME RỒNG - HỔ - PHƯỢNG HOÀNG -->
 <div class="invest-card dragon-tiger"
      onclick="openDragonTigerGame()">
-  <div class="asset-name"></div>
-</div>
-
-
-
-<!-- ⏳ GAME DỪNG THỜI GIAN -->
-<div class="invest-card time-stop"
-     onclick="openTimeStopGame()">
   <div class="asset-name"></div>
 </div>
 
