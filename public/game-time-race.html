@@ -2090,13 +2090,18 @@ socket.on("time-race-crash",data=>{
   raceStarted = false;
   crashed = true;
  
+
+
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-img")
   const glow = document.querySelector(".bomb-core-glow");
 
   bomb.classList.add("crash");
 
-
+  // 🔊 dừng sound race ngay lập tức
+  raceSound.pause();
+  raceSound.currentTime = 0;
+  
   crashSound.currentTime = 0;
   crashSound.play();
 
