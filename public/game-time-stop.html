@@ -184,7 +184,7 @@ socket.on("time-stop-start",data=>{
 running=true;
 stopped=false;
 
-startTime = Date.now() - (Date.now() - data.serverStart);
+startTime = data.serverStart;
 
 resultEl.textContent="";
 
@@ -199,8 +199,10 @@ setInterval(()=>{
 if(!running) return;
 if(stopped) return;
 
-const t =
-(Date.now()-startTime)/1000;
+const t = Math.min(
+10,
+(Date.now()-startTime)/1000
+);
 
 timeEl.textContent =
 t.toFixed(2);
@@ -220,8 +222,10 @@ if(stopped) return;
 stopped=true;
 running=false;
 
-const t =
-(Date.now()-startTime)/1000;
+const t = Math.min(
+10,
+(Date.now()-startTime)/1000
+);
 
 socket.emit("time-stop-hit",{
 time:t
@@ -249,6 +253,18 @@ COIN UPDATE
 socket.on("coin-update",data=>{
 document.getElementById("coins").textContent =
 data.coins;
+});
+
+
+
+socket.on("time-stop-round-new",data=>{
+
+running=false;
+stopped=false;
+
+timeEl.textContent="0.00";
+resultEl.textContent="";
+
 });
 
 </script>

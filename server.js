@@ -1456,9 +1456,9 @@ let timeStopRound = {
   startAt:Date.now(),
   playStartAt:0,
   hits:[],
+  bets:[],            // ⭐ thêm dòng này
   players:new Set()
 };
-
 
 // ================================
 // MULTIPLIER LOGIC
@@ -1549,7 +1549,17 @@ const users = loadUsers();
 
 const multiplier = calcMultiplier(best.diff);
 
-const reward = 100 * multiplier;
+// tìm bet của player
+const betObj =
+timeStopRound.bets.find(
+b => b.uid === best.uid
+);
+
+let reward = 0;
+
+if(betObj){
+reward = betObj.bet * multiplier;
+}
 
 if(users[best.uid]){
 
@@ -1601,6 +1611,7 @@ id:timeStopRound.id + 1,
 startAt:Date.now(),
 playStartAt:0,
 hits:[],
+bets:[],              // ⭐ reset bet
 players:new Set()
 };
 
@@ -1617,6 +1628,48 @@ round:timeStopRound.id
 // ================================
 
 io.on("connection",socket=>{
+
+
+  // ================================
+// TIME STOP BET
+// ================================
+
+socket.on("time-stop-bet",data=>{
+
+const uid = socket.data.uid;
+if(!uid) return;
+
+const bet = Number(data.bet);
+if(bet <= 0) return;
+
+const users = loadUsers();
+const me = users[uid];
+
+if(!me?.profile) return;
+
+if(me.profile.coins < bet){
+
+socket.emit("notify",{
+message:"Not enough coins"
+});
+
+return;
+}
+
+// trừ coin
+me.profile.coins -= bet;
+
+timeStopRound.bets.push({
+uid,
+bet
+});
+
+saveUsers(users);
+
+emitCoinUpdate(uid);
+
+});
+
 
 socket.on("time-stop-hit",data=>{
 
