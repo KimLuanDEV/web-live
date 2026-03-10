@@ -2101,7 +2101,7 @@ socket.on("time-race-crash",data=>{
   // 🔊 dừng sound race ngay lập tức
   raceSound.pause();
   raceSound.currentTime = 0;
-  
+
   crashSound.currentTime = 0;
   crashSound.play();
 
@@ -2443,6 +2443,16 @@ const interval = setInterval(()=>{
 
 },400);
 
+
+
+function unlockAudio(){
+  bgMusic.play().then(()=>{
+    bgMusic.pause();
+    bgMusic.currentTime = 0;
+  }).catch(()=>{});
+}
+
+document.addEventListener("click", unlockAudio, {once:true});
 
 
 </script>
