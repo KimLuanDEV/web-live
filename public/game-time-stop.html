@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<title>Time Stop</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+
+html,body{
+margin:0;
+background:#000;
+color:#fff;
+font-family:system-ui;
+overflow:hidden;
+}
+
+/* ===== TOP BAR ===== */
+
+.topbar{
+position:fixed;
+top:0;
+left:0;
+right:0;
+height:50px;
+
+display:flex;
+justify-content:space-between;
+align-items:center;
+
+padding:0 12px;
+
+background:#050505;
+border-bottom:1px solid rgba(255,255,255,.08);
+}
+
+.timer{
+font-size:18px;
+font-weight:700;
+}
+
+/* ===== CENTER CLOCK ===== */
+
+.center{
+position:absolute;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+text-align:center;
+}
+
+.time{
+font-size:90px;
+font-weight:800;
+letter-spacing:2px;
+
+text-shadow:
+0 0 20px rgba(0,255,255,.6);
+}
+
+.target{
+margin-top:10px;
+font-size:14px;
+opacity:.7;
+}
+
+/* ===== STOP BUTTON ===== */
+
+.stop-btn{
+
+position:absolute;
+bottom:120px;
+left:50%;
+transform:translateX(-50%);
+
+width:200px;
+height:70px;
+
+font-size:22px;
+font-weight:800;
+
+border:none;
+border-radius:16px;
+
+background:
+linear-gradient(180deg,#00f0ff,#0066ff);
+
+color:#000;
+
+box-shadow:
+0 0 25px rgba(0,255,255,.7);
+
+cursor:pointer;
+}
+
+/* ===== RESULT ===== */
+
+.result{
+position:absolute;
+bottom:40px;
+left:50%;
+transform:translateX(-50%);
+font-size:22px;
+font-weight:700;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+
+<div>
+Round:
+<span id="round">0</span>
+</div>
+
+<div class="timer">
+⏱ <span id="timer">15</span>
+</div>
+
+<div>
+💎 <span id="coins">0</span>
+</div>
+
+</div>
+
+
+<div class="center">
+
+<div id="timeValue" class="time">
+0.00
+</div>
+
+<div class="target">
+Target: 10.00s
+</div>
+
+</div>
+
+
+<button id="stopBtn" class="stop-btn">
+STOP TIME
+</button>
+
+<div id="result" class="result"></div>
+
+
+<script>
+
+const socket = io();
+
+let running = false;
+let startTime = 0;
+let stopped = false;
+
+const timeEl = document.getElementById("timeValue");
+const stopBtn = document.getElementById("stopBtn");
+const resultEl = document.getElementById("result");
+
+/* ================================
+ROUND TIMER
+================================ */
+
+socket.on("time-stop-round",data=>{
+
+document.getElementById("round").textContent =
+data.round;
+
+document.getElementById("timer").textContent =
+data.timer;
+
+});
+
+/* ================================
+START COUNTING
+================================ */
+
+socket.on("time-stop-start",data=>{
+
+running=true;
+stopped=false;
+
+startTime=data.serverStart;
+
+resultEl.textContent="";
+
+});
+
+/* ================================
+CLIENT CLOCK
+================================ */
+
+setInterval(()=>{
+
+if(!running) return;
+if(stopped) return;
+
+const t =
+(Date.now()-startTime)/1000;
+
+timeEl.textContent =
+t.toFixed(2);
+
+},16);
+
+
+/* ================================
+STOP BUTTON
+================================ */
+
+stopBtn.onclick=()=>{
+
+if(!running) return;
+if(stopped) return;
+
+stopped=true;
+running=false;
+
+const t =
+(Date.now()-startTime)/1000;
+
+socket.emit("time-stop-hit",{
+time:t
+});
+
+};
+
+
+/* ================================
+RESULT
+================================ */
+
+socket.on("time-stop-result",data=>{
+
+resultEl.textContent =
+"⏱ "+data.time.toFixed(2)+"s  |  Reward x"+data.multiplier;
+
+});
+
+
+/* ================================
+COIN UPDATE
+================================ */
+
+socket.on("coin-update",data=>{
+document.getElementById("coins").textContent =
+data.coins;
+});
+
+</script>
+</body>
+</html>

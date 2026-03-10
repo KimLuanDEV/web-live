@@ -831,6 +831,46 @@ body.sheet-open{
 
 
 
+/* ⏳ TIME STOP GAME */
+.invest-card.time-stop{
+
+  background-image:
+    linear-gradient(180deg, rgba(150,0,255,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/time-stop.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 50px rgba(150,0,255,.45),
+    0 12px 30px rgba(0,0,0,.75);
+}
+
+/* hiệu ứng time distortion */
+.invest-card.time-stop::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at 50% 40%,
+    rgba(200,120,255,.35),
+    transparent 60%);
+
+  mix-blend-mode: screen;
+
+  animation: timeWarp 3s ease-in-out infinite;
+
+  pointer-events:none;
+}
+
+@keyframes timeWarp{
+  0%{opacity:.4; transform:scale(1)}
+  50%{opacity:.9; transform:scale(1.05)}
+  100%{opacity:.4; transform:scale(1)}
+}
+
 
 </style>
 
@@ -1011,6 +1051,12 @@ body.sheet-open{
   <div class="asset-name"></div>
 </div>
 
+
+<!-- ⏳ GAME DỪNG THỜI GIAN -->
+<div class="invest-card time-stop"
+     onclick="openTimeStopGame()">
+  <div class="asset-name"></div>
+</div>
 
 
       </div>
