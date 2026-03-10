@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<title>TIME STOP</title>
+
+<link rel="stylesheet" href="/css/main.css">
+
+<style>
+
+body{
+background:#05070f;
+color:white;
+font-family:Arial;
+text-align:center;
+margin:0;
+overflow:hidden;
+}
+
+/* TOP BAR */
+
+.topbar{
+display:flex;
+justify-content:space-between;
+padding:10px 20px;
+font-weight:700;
+background:#0c1020;
+border-bottom:1px solid rgba(255,255,255,.1);
+}
+
+/* TIMER */
+
+.timer-box{
+margin-top:120px;
+}
+
+.timer-circle{
+
+width:260px;
+height:260px;
+border-radius:50%;
+
+margin:auto;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-size:64px;
+font-weight:900;
+
+background:
+radial-gradient(circle,
+#0b0f25 40%,
+#0a0e1c 80%
+);
+
+border:4px solid #00f0ff;
+
+box-shadow:
+0 0 20px #00f0ff,
+0 0 60px rgba(0,240,255,.3);
+
+}
+
+/* STOP BUTTON */
+
+.stop-btn{
+
+margin-top:40px;
+
+font-size:28px;
+font-weight:900;
+
+padding:18px 60px;
+
+border:none;
+border-radius:12px;
+
+background:linear-gradient(
+45deg,
+#ff2b2b,
+#ff7b00
+);
+
+color:white;
+
+cursor:pointer;
+
+box-shadow:
+0 0 20px rgba(255,0,0,.6);
+
+}
+
+/* BET PANEL */
+
+.bet-panel{
+
+position:absolute;
+bottom:40px;
+left:0;
+right:0;
+
+}
+
+.bet-grid{
+
+display:flex;
+justify-content:center;
+gap:12px;
+
+}
+
+.bet-chip{
+
+background:#11142a;
+padding:12px 18px;
+border-radius:10px;
+cursor:pointer;
+
+border:1px solid rgba(255,255,255,.2);
+
+font-weight:700;
+
+}
+
+.bet-chip.active{
+
+border:1px solid #00f0ff;
+box-shadow:0 0 10px #00f0ff;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="topbar">
+
+<div>
+ROUND: <span id="roundId">0</span>
+</div>
+
+<div>
+💎 <span id="coins">0</span>
+</div>
+
+</div>
+
+
+<div class="timer-box">
+
+<div class="timer-circle">
+<span id="timer">0.00</span>
+</div>
+
+<button class="stop-btn" onclick="stopTimer()">
+STOP
+</button>
+
+</div>
+
+
+<div class="bet-panel">
+
+<div class="bet-grid">
+
+<div class="bet-chip" onclick="setBet(10,this)">10</div>
+<div class="bet-chip" onclick="setBet(50,this)">50</div>
+<div class="bet-chip" onclick="setBet(100,this)">100</div>
+<div class="bet-chip" onclick="setBet(500,this)">500</div>
+
+</div>
+
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+
+const socket = io();
+
+/* ================= COIN ================= */
+
+socket.on("coin-update",data=>{
+
+document.getElementById("coins").textContent =
+data.coins;
+
+});
+
+/* ================= ROUND ================= */
+
+let startAt = 0;
+let timerInterval;
+
+socket.on("time-stop-round-new",data=>{
+
+document.getElementById("roundId").textContent =
+data.roundId;
+
+startAt = data.startAt;
+
+startTimer();
+
+});
+
+/* ================= TIMER ================= */
+
+function startTimer(){
+
+clearInterval(timerInterval);
+
+timerInterval = setInterval(()=>{
+
+const t = Math.min(
+10,
+(Date.now() - startAt)/1000
+);
+
+document.getElementById("timer").textContent =
+t.toFixed(2);
+
+},10);
+
+}
+
+/* ================= BET ================= */
+
+let bet = 0;
+
+function setBet(v,el){
+
+bet = v;
+
+document.querySelectorAll(".bet-chip")
+.forEach(e=>e.classList.remove("active"));
+
+el.classList.add("active");
+
+}
+
+/* ================= STOP ================= */
+
+function stopTimer(){
+
+if(bet <= 0){
+
+alert("Select bet");
+
+return;
+
+}
+
+socket.emit("time-stop-play",{
+
+bet
+
+});
+
+}
+
+/* ================= RESULT ================= */
+
+socket.on("time-stop-result",data=>{
+
+const time = data.time;
+const reward = data.reward;
+
+alert(
+"TIME: "+time.toFixed(2)
++"\nWIN: "+reward
+);
+
+});
+
+</script>
+
+</body>
+</html>

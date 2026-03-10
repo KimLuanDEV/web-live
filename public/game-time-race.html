@@ -1431,6 +1431,20 @@ body.crash-dark{
 </head>
 <body>
 
+<!-- ===== GAME SOUNDS ===== -->
+
+<audio id="bgMusic" src="/assets/time-race/sounds/bg-music.mp3" loop></audio>
+
+<audio id="betSound" src="/assets/time-race/sounds/bet.mp3"></audio>
+
+<audio id="tickSound" src="/assets/time-race/sounds/tick.mp3"></audio>
+
+<audio id="raceSound" src="/assets/time-race/sounds/race-start.mp3"></audio>
+
+<audio id="crashSound" src="/assets/time-race/sounds/explosion.mp3"></audio>
+
+<audio id="winSound" src="/assets/time-race/sounds/win.mp3"></audio>
+
 
 <!-- ================= TIME RACE LOADING ================= -->
 <div id="loadingOverlay" class="tr-loading">
@@ -1649,6 +1663,16 @@ body.crash-dark{
 <script>
   
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
+const bgMusic = document.getElementById("bgMusic");
+const betSound = document.getElementById("betSound");
+const tickSound = document.getElementById("tickSound");
+const raceSound = document.getElementById("raceSound");
+const crashSound = document.getElementById("crashSound");
+const winSound = document.getElementById("winSound");
+
+
+let lastTickSecond = -1;
+
 
 let deviceId = localStorage.getItem("device_id");
 if(!deviceId){
@@ -1684,6 +1708,10 @@ const maxFuseHeight = 60; // phải khớp CSS
 
 
 function showTimeRaceWinModal(multiplier, amount){
+
+  winSound.currentTime = 0;
+  winSound.play();
+
 
   document.getElementById("winMultiplier")
     .textContent = Number(multiplier).toFixed(2);
@@ -1732,6 +1760,9 @@ function updateSelectedBetDisplay(){
 document.querySelectorAll("[data-type]").forEach(btn=>{
   btn.onclick = ()=>{
 
+    betSound.currentTime = 0;
+    betSound.play();
+
     if(!currentCoins) return;
 
     const type = btn.dataset.type;
@@ -1774,6 +1805,9 @@ document.querySelectorAll("[data-bet]").forEach(btn=>{
     btn.classList.add("active");
     selectedBet = Number(btn.dataset.bet);
     updateSelectedBetDisplay();
+
+    betSound.currentTime = 0;
+    betSound.play();
   };
 });
 
@@ -1784,6 +1818,19 @@ function updateTimer(){
   const betPanel = document.querySelector(".tr-bottom");
 
 const msLeft = betEndAt - serverTime();
+
+
+const secondsLeft = Math.floor(msLeft/1000);
+
+if(msLeft <= 3000 && msLeft > 0 && secondsLeft !== lastTickSecond){
+
+    lastTickSecond = secondsLeft;
+
+    tickSound.currentTime = 0;
+    tickSound.play();
+
+}
+
 
 if(msLeft > 0){
 
@@ -2006,6 +2053,16 @@ socket.on("time-race-tick",data=>{
 
   const m = Number(data.multiplier);
 
+
+if(m > 1 && !raceStarted){
+
+    raceStarted = true;
+
+    raceSound.currentTime = 0;
+    raceSound.play();
+
+}
+
   if(m <= 1){
     multiplierEl.style.display = "none";
     return;
@@ -2030,12 +2087,18 @@ socket.on("time-race-crash",data=>{
 
   raceStarted = false;
   crashed = true;
-
+ 
   const bombWrap = document.querySelector(".bomb-wrap");
   const bomb = document.querySelector(".bomb-img")
   const glow = document.querySelector(".bomb-core-glow");
 
   bomb.classList.add("crash");
+
+
+  crashSound.currentTime = 0;
+  crashSound.play();
+
+
 
   multiplierEl.textContent =
     "x" + Number(data.crashPoint).toFixed(2);
@@ -2358,6 +2421,9 @@ const interval = setInterval(()=>{
 
       setTimeout(()=>{
         overlay.remove();
+        bgMusic.volume = 0.4;
+        bgMusic.play().catch(()=>{});
+
       },600);
 
     },500);
