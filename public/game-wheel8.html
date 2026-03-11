@@ -164,11 +164,11 @@ margin-bottom:10px;
 <div class="topbar">
 
 <div>
-⏱ <span id="timer">60</span>
+⏱ <span id="timer"></span>
 </div>
 
 <div>
-💎 <span id="coins">0</span>
+💎 <span id="coins"></span>
 </div>
 
 </div>
@@ -276,20 +276,24 @@ bet:currentBet
 
 socket.on("wheel8-result",(data)=>{
 
+const slot = data.slot
 const m = data.multiplier
 
+// reset
 slots.forEach(s=>s.classList.remove("win"))
 
-slots.forEach(s=>{
-if(s.textContent === "x"+m){
-s.classList.add("win")
-}
-})
+// highlight đúng slot
+const winSlot =
+document.querySelector(".s"+slot)
 
-document.getElementById("resultText").textContent=
+if(winSlot){
+winSlot.classList.add("win")
+}
+
+document.getElementById("resultText").textContent =
 "Multiplier x"+m
 
-document.getElementById("resultModal").style.display="flex"
+document.getElementById("resultModal").style.display = "flex"
 
 })
 

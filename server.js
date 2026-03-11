@@ -1474,21 +1474,26 @@ const WHEEL8_SLOTS = [
 
 function pickWheel8(){
 
-  const total =
-  WHEEL8_SLOTS.reduce((s,x)=>s+x.w,0);
+const total = WHEEL8_SLOTS.reduce((s,x)=>s+x.w,0)
 
-  let r = Math.random()*total;
+let r = Math.random()*total
 
-  for(const s of WHEEL8_SLOTS){
+for(let i=0;i<WHEEL8_SLOTS.length;i++){
 
-    if((r-=s.w)<=0)
-      return s;
+const s = WHEEL8_SLOTS[i]
 
-  }
-
-  return WHEEL8_SLOTS[0];
+if((r-=s.w)<=0){
+return {
+slot:i+1,
+multiplier:s.m
+}
 }
 
+}
+
+return {slot:1,multiplier:5}
+
+}
 
 // ================================
 // ⏱ WHEEL8 TIMER REALTIME
@@ -1513,51 +1518,65 @@ io.emit("wheel8-timer",remain)
 // ================================
 setInterval(()=>{
 
-const users = loadUsers();
+const users = loadUsers()
 
-const result = pickWheel8();
+// 🎯 kết quả quay
+const result = pickWheel8()
 
-wheel8Round.bets.forEach(o=>{
-
-const me = users[o.uid];
-if(!me?.profile) return;
-
+// mapping slot → multiplier
 const multipliers=[5,5,5,5,10,15,25,45]
 
-if(multipliers[o.slot-1] === result.m){
+// tìm slot trúng
+const winSlot =
+multipliers.findIndex(x=>x===result.m) + 1
 
-const win = o.bet * result.m;
+// =======================
+// 💰 PAYOUT
+// =======================
+wheel8Round.bets.forEach(o=>{
 
-me.profile.coins += win;
+const me = users[o.uid]
+if(!me?.profile) return
+
+if(o.slot === winSlot){
+
+const win = o.bet * result.m
+me.profile.coins += win
 
 }
 
-});
+})
 
-saveUsers(users);
+saveUsers(users)
 
+// realtime coin
 wheel8Round.bets.forEach(o=>{
-emitCoinUpdate(o.uid);
-});
+emitCoinUpdate(o.uid)
+})
 
+// =======================
+// 🎡 EMIT RESULT
+// =======================
 io.emit("wheel8-result",{
-multiplier:result.m
-});
+slot: winSlot,
+multiplier: result.m
+})
 
+// =======================
+// 🔄 NEW ROUND
+// =======================
 wheel8Round = {
 id: Date.now(),
 startAt: Date.now(),
 endAt: Date.now()+35000,
 bets:[]
-};
+}
 
 io.emit("wheel8-round-new",{
 roundId: wheel8Round.id
-});
+})
 
-},35000);
-
-
+},35000)
 
 
 
