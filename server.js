@@ -1450,16 +1450,38 @@ const PERFECT_MAX = 60
 
 io.on("connection",socket=>{
 
-socket.on("fishing-cast",({bet})=>{
-
 const uid = socket.data.uid
 if(!uid) return
 
 const users = loadUsers()
 const me = users[uid]
 
+// ================================
+// 💎 SEND COIN WHEN CONNECT
+// ================================
+if(me?.profile){
+
+socket.emit("coin-update",{
+coins: me.profile.coins || 0
+})
+
+}
+
+
+// ================================
+// 🎣 CAST FISHING
+// ================================
+socket.on("fishing-cast",({bet})=>{
+
+const users = loadUsers()
+const me = users[uid]
+
 if(!me?.profile) return
 
+// kiểm tra bet hợp lệ
+bet = Number(bet) || 0
+
+if(bet <= 0) return
 if(me.profile.coins < bet) return
 
 me.profile.coins -= bet
@@ -1473,16 +1495,17 @@ emitCoinUpdate(uid)
 })
 
 
-
+// ================================
+// 🎣 REEL FISHING
+// ================================
 socket.on("fishing-reel",({pos})=>{
-
-const uid = socket.data.uid
-if(!uid) return
-
-const bet = socket.data.fishingBet || 0
 
 const users = loadUsers()
 const me = users[uid]
+
+if(!me?.profile) return
+
+const bet = socket.data.fishingBet || 0
 
 let win=false
 let reward=0
@@ -1490,7 +1513,6 @@ let reward=0
 if(pos >= PERFECT_MIN && pos <= PERFECT_MAX){
 
 win=true
-
 reward = bet * 2
 
 me.profile.coins += reward
@@ -1509,7 +1531,6 @@ reward
 })
 
 })
-
 
 
 
