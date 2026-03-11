@@ -141,7 +141,3 @@ function openDragonTigerGame(){
 function openTimeStopGame(){
   location.href = "/game-time-stop.html";
 }
-
-function openFishingGame(){
-  location.href = "/game-fishing.html";
-}
