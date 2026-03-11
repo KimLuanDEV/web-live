@@ -1523,16 +1523,13 @@ const users = loadUsers()
 // 🎯 kết quả quay
 const result = pickWheel8()
 
-// mapping slot → multiplier
-const multipliers=[5,5,5,5,10,15,25,45]
-
-// tìm slot trúng
-const winSlot =
-multipliers.findIndex(x=>x===result.m) + 1
+const winSlot = result.slot
+const multiplier = result.multiplier
 
 // =======================
 // 💰 PAYOUT
 // =======================
+
 wheel8Round.bets.forEach(o=>{
 
 const me = users[o.uid]
@@ -1540,16 +1537,21 @@ if(!me?.profile) return
 
 if(o.slot === winSlot){
 
-const win = o.bet * result.m
+const win = o.bet * multiplier
+
 me.profile.coins += win
 
 }
 
 })
 
+// lưu user
 saveUsers(users)
 
-// realtime coin
+// =======================
+// 💎 REALTIME COIN UPDATE
+// =======================
+
 wheel8Round.bets.forEach(o=>{
 emitCoinUpdate(o.uid)
 })
@@ -1557,14 +1559,16 @@ emitCoinUpdate(o.uid)
 // =======================
 // 🎡 EMIT RESULT
 // =======================
+
 io.emit("wheel8-result",{
 slot: winSlot,
-multiplier: result.m
+multiplier: multiplier
 })
 
 // =======================
 // 🔄 NEW ROUND
 // =======================
+
 wheel8Round = {
 id: Date.now(),
 startAt: Date.now(),
