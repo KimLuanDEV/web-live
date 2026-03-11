@@ -1497,7 +1497,9 @@ wheel8Round.bets.forEach(o=>{
 const me = users[o.uid];
 if(!me?.profile) return;
 
-if(o.slot === result){
+const multipliers=[2,3,5,10,0,0,0,0]
+
+if(multipliers[o.slot-1] === result.m){
 
 const win = o.bet * result.m;
 
@@ -3128,30 +3130,42 @@ socket.emit("factory-update", factoryDB[uid]);
 // ================================
 socket.on("wheel8-bet",({slot,bet})=>{
 
-const uid = socket.data.uid;
-if(!uid) return;
+const uid = socket.data.uid
+if(!uid) return
 
-const users = loadUsers();
-const me = users[uid];
+const users = loadUsers()
+const me = users[uid]
 
-if(!me?.profile) return;
+if(!me?.profile) return
 
-if(me.profile.coins < bet) return;
+bet = Number(bet)||0
+slot = Number(slot)||0
 
-me.profile.coins -= bet;
+if(bet<=0) return
+
+if(me.profile.coins < bet){
+socket.emit("notify",{
+message:"Not enough coins"
+})
+return
+}
+
+// trừ coin
+me.profile.coins -= bet
 
 wheel8Round.bets.push({
 uid,
 slot,
 bet
-});
+})
 
-saveUsers(users);
+saveUsers(users)
 
-emitCoinUpdate(uid);
+emitCoinUpdate(uid)
 
-});
+socket.emit("wheel8-bet-ok")
 
+})
 
 
 
