@@ -1441,6 +1441,98 @@ const activeUsers = new Map();
 
 
 
+// ================================
+// 🎡 LUCKY WHEEL 8 ROUND
+// ================================
+
+let wheel8Round = {
+  id: Date.now(),
+  startAt: Date.now(),
+  endAt: Date.now() + 60000,
+  bets: []
+};
+
+const WHEEL8_SLOTS = [
+  {m:2,w:25},
+  {m:3,w:20},
+  {m:5,w:15},
+  {m:10,w:5},
+
+  {m:0,w:10},
+  {m:0,w:10},
+  {m:0,w:10},
+  {m:0,w:5}
+];
+
+function pickWheel8(){
+
+  const total =
+  WHEEL8_SLOTS.reduce((s,x)=>s+x.w,0);
+
+  let r = Math.random()*total;
+
+  for(const s of WHEEL8_SLOTS){
+
+    if((r-=s.w)<=0)
+      return s;
+
+  }
+
+  return WHEEL8_SLOTS[0];
+}
+
+
+
+// ================================
+// 🎡 WHEEL8 AUTO ROUND
+// ================================
+setInterval(()=>{
+
+const users = loadUsers();
+
+const result = pickWheel8();
+
+wheel8Round.bets.forEach(o=>{
+
+const me = users[o.uid];
+if(!me?.profile) return;
+
+if(o.slot === result){
+
+const win = o.bet * result.m;
+
+me.profile.coins += win;
+
+}
+
+});
+
+saveUsers(users);
+
+wheel8Round.bets.forEach(o=>{
+emitCoinUpdate(o.uid);
+});
+
+io.emit("wheel8-result",{
+multiplier:result.m
+});
+
+wheel8Round = {
+id: Date.now(),
+startAt: Date.now(),
+endAt: Date.now()+60000,
+bets:[]
+};
+
+io.emit("wheel8-round-new",{
+roundId: wheel8Round.id
+});
+
+},60000);
+
+
+
+
 
 // ================================
 // 🐉🐯🔥 DTP ROUND COUNT (24H)
@@ -3026,6 +3118,39 @@ saveFactories(factoryDB);
 
 socket.emit("factory-update", factoryDB[uid]);
 
+
+
+
+
+
+// ================================
+// 🎡 WHEEL8 BET
+// ================================
+socket.on("wheel8-bet",({slot,bet})=>{
+
+const uid = socket.data.uid;
+if(!uid) return;
+
+const users = loadUsers();
+const me = users[uid];
+
+if(!me?.profile) return;
+
+if(me.profile.coins < bet) return;
+
+me.profile.coins -= bet;
+
+wheel8Round.bets.push({
+uid,
+slot,
+bet
+});
+
+saveUsers(users);
+
+emitCoinUpdate(uid);
+
+});
 
 
 

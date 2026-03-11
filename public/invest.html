@@ -830,6 +830,43 @@ body.sheet-open{
 
 
 
+/* 🎡 LUCKY WHEEL 8 */
+
+.invest-card.wheel8{
+  background-image:
+    linear-gradient(180deg, rgba(255,200,0,.35), rgba(0,0,0,.95)),
+    url("/assets/bg/wheel8.jpg");
+
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  box-shadow:
+    0 0 60px rgba(255,200,0,.45),
+    0 12px 30px rgba(0,0,0,.8);
+}
+
+/* hiệu ứng ánh sáng casino */
+
+.invest-card.wheel8::after{
+  content:"";
+  position:absolute;
+  inset:0;
+
+  background:
+    radial-gradient(circle at 30% 40%, rgba(255,200,0,.35), transparent 60%),
+    radial-gradient(circle at 70% 60%, rgba(255,120,0,.25), transparent 60%);
+
+  mix-blend-mode: screen;
+
+  animation: pulseWheel8 2.5s ease-in-out infinite;
+}
+
+@keyframes pulseWheel8{
+  0%{opacity:.4}
+  50%{opacity:.9}
+  100%{opacity:.4}
+}
 
 
 </style>
@@ -1012,6 +1049,11 @@ body.sheet-open{
 </div>
 
 
+<!-- 🎡 LUCKY WHEEL 8 -->
+<div class="invest-card wheel8"
+     onclick="openWheel8Game()">
+  <div class="asset-name"></div>
+</div>
 
       </div>
     </div>
