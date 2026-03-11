@@ -1440,33 +1440,7 @@ const activeUsers = new Map();
 
 
 
-// ================================
-// 💎 GLOBAL REALTIME COIN SYNC
-// ================================
-function emitCoinUpdate(uid){
 
-if(!uid) return;
-
-const db = loadUsers();
-const user = db[uid];
-
-if(!user?.profile) return;
-
-const coins = user.profile.coins || 0;
-
-// lấy tất cả socket của user
-const sockets = activeUsers.get(uid);
-if(!sockets) return;
-
-for(const sid of sockets){
-
-io.to(sid).emit("coin-update",{
-coins
-});
-
-}
-
-}
 
 
 // ================================
@@ -1483,15 +1457,19 @@ let wheel8Round = {
 };
 
 const WHEEL8_SLOTS = [
-  {m:2,w:25},
-  {m:3,w:20},
-  {m:5,w:15},
-  {m:10,w:5},
 
-  {m:0,w:10},
-  {m:0,w:10},
-  {m:0,w:10},
-  {m:0,w:5}
+{m:5,w:19.6},
+{m:5,w:19.6},
+{m:5,w:19.6},
+{m:5,w:19.6},
+
+{m:10,w:10},
+{m:15,w:6.6},
+
+{m:25,w: 4},
+
+{m:45,w: 1}
+
 ];
 
 function pickWheel8(){
@@ -1544,7 +1522,7 @@ wheel8Round.bets.forEach(o=>{
 const me = users[o.uid];
 if(!me?.profile) return;
 
-const multipliers=[2,3,5,10,0,0,0,0]
+const multipliers=[5,5,5,5,10,15,25,45]
 
 if(multipliers[o.slot-1] === result.m){
 
@@ -1569,7 +1547,7 @@ multiplier:result.m
 wheel8Round = {
 id: Date.now(),
 startAt: Date.now(),
-endAt: Date.now()+60000,
+endAt: Date.now()+35000,
 bets:[]
 };
 
@@ -1577,7 +1555,7 @@ io.emit("wheel8-round-new",{
 roundId: wheel8Round.id
 });
 
-},60000);
+},35000);
 
 
 
