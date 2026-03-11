@@ -1453,7 +1453,8 @@ let wheel8Round = {
   id: Date.now(),
   startAt: Date.now(),
   endAt: Date.now() + 35000,
-  bets: []
+  bets: [],
+  slotPool: [0,0,0,0,0,0,0,0]
 };
 
 const WHEEL8_SLOTS = [
@@ -1568,8 +1569,11 @@ wheel8Round = {
 id: Date.now(),
 startAt: Date.now(),
 endAt: Date.now()+35000,
-bets:[]
+bets:[],
+slotPool:[0,0,0,0,0,0,0,0]
 }
+
+io.emit("wheel8-pool-update",wheel8Round.slotPool)
 
 io.emit("wheel8-round-new",{
 roundId: wheel8Round.id
@@ -3187,8 +3191,12 @@ if(!me?.profile) return
 bet = Number(bet)||0
 slot = Number(slot)||0
 
-if(bet<=0) return
+if(bet <= 0) return
 
+// 🔒 slot hợp lệ
+if(slot < 1 || slot > 8) return
+
+// 💰 kiểm tra coin
 if(me.profile.coins < bet){
 socket.emit("notify",{
 message:"Not enough coins"
@@ -3196,19 +3204,45 @@ message:"Not enough coins"
 return
 }
 
-// trừ coin
+// =====================
+// 💸 TRỪ COIN
+// =====================
 me.profile.coins -= bet
 
+// =====================
+// 📥 LƯU BET
+// =====================
 wheel8Round.bets.push({
 uid,
 slot,
 bet
 })
 
+// =====================
+// 💎 CỘNG POOL SLOT
+// =====================
+wheel8Round.slotPool ||= [0,0,0,0,0,0,0,0]
+
+wheel8Round.slotPool[slot-1] += bet
+
+// =====================
+// 💾 SAVE USER
+// =====================
 saveUsers(users)
 
+// =====================
+// 🔄 UPDATE COIN REALTIME
+// =====================
 emitCoinUpdate(uid)
 
+// =====================
+// 🎡 UPDATE POOL REALTIME
+// =====================
+io.emit("wheel8-pool-update", wheel8Round.slotPool)
+
+// =====================
+// ✅ OK
+// =====================
 socket.emit("wheel8-bet-ok")
 
 })

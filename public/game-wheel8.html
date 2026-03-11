@@ -68,6 +68,8 @@ box-shadow:
 inset 0 1px 0 rgba(255,255,255,.1);
 
 cursor:pointer;
+position:relative;
+flex-direction:column;
 }
 
 .slot.active{
@@ -80,6 +82,31 @@ box-shadow:
 background:#00ffd0;
 color:#000;
 }
+
+
+.multi{
+font-size:18px;
+font-weight:800;
+}
+
+.pool{
+
+position:absolute;
+bottom:6px;
+left:50%;
+transform:translateX(-50%);
+
+font-size:13px;
+font-weight:700;
+
+color:#ffd700;
+
+text-shadow:
+0 0 5px #000,
+0 0 10px #000;
+
+}
+
 
 /* GRID POSITION */
 
@@ -156,6 +183,9 @@ font-size:22px;
 margin-bottom:10px;
 }
 
+
+
+
 </style>
 </head>
 
@@ -178,17 +208,45 @@ margin-bottom:10px;
 
 <div class="wheel">
 
-<div class="slot s1" onclick="bet(1)">x5</div>
-<div class="slot s2" onclick="bet(2)">x10</div>
+<div class="slot s1" onclick="bet(1)">
+<div class="multi">x5</div>
+<div class="pool" id="pool1">0</div>
+</div>
 
-<div class="slot s3" onclick="bet(3)">x15</div>
-<div class="slot s4" onclick="bet(4)">x25</div>
+<div class="slot s2" onclick="bet(2)">
+<div class="multi">x10</div>
+<div class="pool" id="pool2">0</div>
+</div>
 
-<div class="slot s5" onclick="bet(5)">x45</div>
-<div class="slot s6" onclick="bet(6)">x5</div>
+<div class="slot s3" onclick="bet(3)">
+<div class="multi">x15</div>
+<div class="pool" id="pool3">0</div>
+</div>
 
-<div class="slot s7" onclick="bet(7)">x5</div>
-<div class="slot s8" onclick="bet(8)">x5</div>
+<div class="slot s4" onclick="bet(4)">
+<div class="multi">x25</div>
+<div class="pool" id="pool4">0</div>
+</div>
+
+<div class="slot s5" onclick="bet(5)">
+<div class="multi">x45</div>
+<div class="pool" id="pool5">0</div>
+</div>
+
+<div class="slot s6" onclick="bet(6)">
+<div class="multi">x5</div>
+<div class="pool" id="pool6">0</div>
+</div>
+
+<div class="slot s7" onclick="bet(7)">
+<div class="multi">x5</div>
+<div class="pool" id="pool7">0</div>
+</div>
+
+<div class="slot s8" onclick="bet(8)">
+<div class="multi">x5</div>
+<div class="pool" id="pool8">0</div>
+</div>
 
 </div>
 
@@ -318,6 +376,33 @@ function closeResult(){
 document.getElementById("resultModal").style.display="none"
 
 }
+
+
+socket.on("wheel8-pool-update",(pool)=>{
+
+for(let i=0;i<8;i++){
+
+const el = document.getElementById("pool"+(i+1))
+
+if(el){
+el.textContent = pool[i]
+}
+
+}
+
+})
+
+
+socket.on("wheel8-round-new",()=>{
+
+for(let i=1;i<=8;i++){
+
+const el = document.getElementById("pool"+i)
+if(el) el.textContent = 0
+
+}
+
+})
 
 </script>
 
