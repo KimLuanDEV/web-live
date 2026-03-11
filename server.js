@@ -1440,6 +1440,34 @@ const activeUsers = new Map();
 
 
 
+// ================================
+// 💎 GLOBAL REALTIME COIN SYNC
+// ================================
+function emitCoinUpdate(uid){
+
+if(!uid) return;
+
+const db = loadUsers();
+const user = db[uid];
+
+if(!user?.profile) return;
+
+const coins = user.profile.coins || 0;
+
+// lấy tất cả socket của user
+const sockets = activeUsers.get(uid);
+if(!sockets) return;
+
+for(const sid of sockets){
+
+io.to(sid).emit("coin-update",{
+coins
+});
+
+}
+
+}
+
 
 // ================================
 // 🎡 LUCKY WHEEL 8 ROUND
@@ -2971,6 +2999,9 @@ io.emit("time-race-crash",{
 // ================================
 io.on("connection", socket => {
 
+
+
+  
   const { uid, deviceId } = socket.handshake.auth || {};
 
   socket.data.uid = uid;

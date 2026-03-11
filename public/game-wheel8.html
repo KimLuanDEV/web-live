@@ -237,7 +237,13 @@ OK
 
 <script>
 
-const socket = io()
+const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
+
+const socket = io({
+auth:{
+uid:me.uid
+}
+});
 
 let currentBet = 0
 
