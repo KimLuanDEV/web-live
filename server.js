@@ -1445,6 +1445,8 @@ const activeUsers = new Map();
 // 🎡 LUCKY WHEEL 8 ROUND
 // ================================
 
+
+
 let wheel8Round = {
   id: Date.now(),
   startAt: Date.now(),
@@ -1481,6 +1483,23 @@ function pickWheel8(){
   return WHEEL8_SLOTS[0];
 }
 
+
+// ================================
+// ⏱ WHEEL8 TIMER REALTIME
+// ================================
+setInterval(()=>{
+
+const remain =
+Math.max(
+0,
+Math.floor(
+(wheel8Round.endAt - Date.now())/1000
+)
+)
+
+io.emit("wheel8-timer",remain)
+
+},1000)
 
 
 // ================================
