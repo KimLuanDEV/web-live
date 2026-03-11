@@ -1452,7 +1452,7 @@ const activeUsers = new Map();
 let wheel8Round = {
   id: Date.now(),
   startAt: Date.now(),
-  endAt: Date.now() + 60000,
+  endAt: Date.now() + 35000,
   bets: []
 };
 
