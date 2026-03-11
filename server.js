@@ -1442,6 +1442,11 @@ const activeUsers = new Map();
 
 
 
+
+
+
+
+
 // ================================
 // 🐉🐯🔥 DTP ROUND COUNT (24H)
 // ================================
@@ -3111,8 +3116,70 @@ socket.on("star-war-reward", ({ reward })=>{
 
 
 
+//======Plinko=====
+
+socket.on("plinko-drop",({bet})=>{
+
+const uid = socket.data.uid
+if(!uid) return
+
+const users = loadUsers()
+const me = users[uid]
+
+if(!me?.profile) return
+
+bet = Number(bet||0)
+
+if(me.profile.coins < bet){
+socket.emit("notify",{
+message:"Not enough coins"
+})
+return
+}
+
+me.profile.coins -= bet
 
 
+// ====================
+// GENERATE PATH
+// ====================
+
+const rows = 10
+const path = []
+
+let pos = 5
+
+for(let i=0;i<rows;i++){
+
+const dir = Math.random()<0.5 ? -1 : 1
+path.push(dir)
+pos += dir
+
+}
+
+pos = Math.max(0,Math.min(10,pos))
+
+const multipliers = [
+10,5,2,1.5,1.2,1,1.2,1.5,2,5,10
+]
+
+const m = multipliers[pos]
+
+const win = Math.floor(bet * m)
+
+me.profile.coins += win
+
+saveUsers(users)
+
+emitCoinUpdate(uid)
+
+socket.emit("plinko-result",{
+path,
+multiplier:m,
+win
+})
+
+})
 
 
 

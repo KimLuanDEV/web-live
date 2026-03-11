@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>PLINKO</title>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+
+body{
+background:#0b0f1a;
+font-family:Arial;
+color:#fff;
+text-align:center;
+margin:0;
+overflow:hidden;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+padding:12px;
+font-weight:700;
+background:#111827;
+}
+
+.board{
+position:relative;
+width:420px;
+height:520px;
+margin:auto;
+}
+
+.peg{
+width:10px;
+height:10px;
+background:#00d4ff;
+border-radius:50%;
+position:absolute;
+box-shadow:0 0 8px #00d4ff;
+}
+
+.ball{
+width:14px;
+height:14px;
+background:#fff;
+border-radius:50%;
+position:absolute;
+box-shadow:0 0 10px #fff;
+}
+
+.slots{
+display:flex;
+justify-content:center;
+gap:6px;
+margin-top:10px;
+}
+
+.slot{
+width:40px;
+height:30px;
+background:#111;
+border:1px solid #333;
+font-size:12px;
+display:flex;
+align-items:center;
+justify-content:center;
+}
+
+.bet-panel{
+margin-top:10px;
+}
+
+.bet-chip{
+background:#222;
+border:1px solid #555;
+padding:6px 10px;
+margin:3px;
+cursor:pointer;
+}
+
+.drop-btn{
+margin-top:10px;
+padding:10px 30px;
+background:#00d4ff;
+color:#000;
+border:none;
+font-weight:700;
+cursor:pointer;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="topbar">
+
+<div>
+💎 <span id="coins">0</span>
+</div>
+
+<div>
+PLINKO
+</div>
+
+</div>
+
+
+<div class="board" id="board"></div>
+
+<div class="slots" id="slots"></div>
+
+<div class="bet-panel">
+
+<button class="bet-chip" onclick="setBet(10)">10</button>
+<button class="bet-chip" onclick="setBet(50)">50</button>
+<button class="bet-chip" onclick="setBet(100)">100</button>
+<button class="bet-chip" onclick="setBet(500)">500</button>
+
+</div>
+
+<button class="drop-btn" onclick="dropBall()">
+DROP
+</button>
+
+<script>
+
+const socket = io({
+auth:{
+uid: localStorage.getItem("uid")
+}
+})
+
+let bet = 10
+
+function setBet(v){
+bet = v
+}
+
+socket.on("coin-update",data=>{
+document.getElementById("coins").textContent =
+data.coins
+})
+
+
+// ======================
+// CREATE PEG BOARD
+// ======================
+
+const board = document.getElementById("board")
+
+const rows = 10
+const spacing = 38
+
+for(let r=0;r<rows;r++){
+
+for(let c=0;c<=r;c++){
+
+const peg = document.createElement("div")
+peg.className="peg"
+
+peg.style.left =
+200 + (c - r/2) * spacing + "px"
+
+peg.style.top =
+50 + r * 40 + "px"
+
+board.appendChild(peg)
+
+}
+
+}
+
+
+// ======================
+// SLOTS
+// ======================
+
+const multipliers = [
+10,5,2,1.5,1.2,1,1.2,1.5,2,5,10
+]
+
+const slots = document.getElementById("slots")
+
+multipliers.forEach(m=>{
+
+const d = document.createElement("div")
+d.className="slot"
+d.textContent="x"+m
+
+slots.appendChild(d)
+
+})
+
+
+// ======================
+// DROP BALL
+// ======================
+
+function dropBall(){
+
+socket.emit("plinko-drop",{
+bet
+})
+
+}
+
+
+// ======================
+// BALL ANIMATION
+// ======================
+
+socket.on("plinko-result",data=>{
+
+const ball = document.createElement("div")
+ball.className="ball"
+
+board.appendChild(ball)
+
+let x = 200
+let y = 20
+
+let step = 0
+
+function fall(){
+
+y += 40
+
+if(step < data.path.length){
+
+x += data.path[step] * 19
+step++
+
+ball.style.left = x + "px"
+ball.style.top = y + "px"
+
+setTimeout(fall,120)
+
+}else{
+
+board.removeChild(ball)
+
+}
+
+}
+
+fall()
+
+})
+
+</script>
+
+</body>
+</html>
