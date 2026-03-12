@@ -832,7 +832,7 @@ const m = data.multiplier
 
 slots.forEach(s=>s.classList.remove("win"))
 
-const winSlot = document.querySelector(".slot.s"+slot)
+const winSlot = slots[slot-1]
 
 if(winSlot){
 
