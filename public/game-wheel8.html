@@ -186,6 +186,29 @@ margin-bottom:10px;
 
 
 
+.mybet{
+
+position:absolute;
+
+top:4px;
+right:6px;
+
+font-size:11px;
+font-weight:800;
+
+color:#00ffd0;
+
+background:rgba(0,0,0,.6);
+
+padding:2px 6px;
+
+border-radius:6px;
+
+}
+
+
+
+
 </style>
 </head>
 
@@ -211,41 +234,49 @@ margin-bottom:10px;
 <div class="slot s1" onclick="bet(1)">
 <div class="multi">x5</div>
 <div class="pool" id="pool1">0</div>
+<div class="mybet" id="mybet1">0</div>
 </div>
 
 <div class="slot s2" onclick="bet(2)">
 <div class="multi">x10</div>
 <div class="pool" id="pool2">0</div>
+<div class="mybet" id="mybet2">0</div>
 </div>
 
 <div class="slot s3" onclick="bet(3)">
 <div class="multi">x15</div>
 <div class="pool" id="pool3">0</div>
+<div class="mybet" id="mybet3">0</div>
 </div>
 
 <div class="slot s4" onclick="bet(4)">
 <div class="multi">x25</div>
 <div class="pool" id="pool4">0</div>
+<div class="mybet" id="mybet4">0</div>
 </div>
 
 <div class="slot s5" onclick="bet(5)">
 <div class="multi">x45</div>
 <div class="pool" id="pool5">0</div>
+<div class="mybet" id="mybet5">0</div>
 </div>
 
 <div class="slot s6" onclick="bet(6)">
 <div class="multi">x5</div>
 <div class="pool" id="pool6">0</div>
+<div class="mybet" id="mybet6">0</div>
 </div>
 
 <div class="slot s7" onclick="bet(7)">
 <div class="multi">x5</div>
 <div class="pool" id="pool7">0</div>
+<div class="mybet" id="mybet7">0</div>
 </div>
 
 <div class="slot s8" onclick="bet(8)">
 <div class="multi">x5</div>
 <div class="pool" id="pool8">0</div>
+<div class="mybet" id="mybet8">0</div>
 </div>
 
 </div>
@@ -305,6 +336,8 @@ uid:me.uid
 
 let currentBet = 0
 
+
+const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
 
 /* SET BET */
@@ -327,6 +360,16 @@ socket.emit("wheel8-bet",{
 slot,
 bet:currentBet
 })
+
+// cộng cược cá nhân
+myBets[slot-1] += currentBet
+
+const el =
+document.getElementById("mybet"+slot)
+
+if(el){
+el.textContent = myBets[slot-1]
+}
 
 }
 
@@ -397,8 +440,17 @@ socket.on("wheel8-round-new",()=>{
 
 for(let i=1;i<=8;i++){
 
-const el = document.getElementById("pool"+i)
-if(el) el.textContent = 0
+const pool =
+document.getElementById("pool"+i)
+
+if(pool) pool.textContent = 0
+
+const mybet =
+document.getElementById("mybet"+i)
+
+if(mybet) mybet.textContent = 0
+
+myBets[i-1] = 0
 
 }
 
