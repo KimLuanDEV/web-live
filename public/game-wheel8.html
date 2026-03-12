@@ -48,7 +48,7 @@ display:grid;
 grid-template-columns:repeat(4,1fr);
 grid-template-rows:repeat(4,1fr);
 gap:6px;
-top:50px;
+top:145px;
 }
 
 .wheel-center{
@@ -362,31 +362,16 @@ top:0;
 left:0;
 
 width:100%;
-height:80px;
-
-display:flex;
-align-items:center;
-justify-content:center;
+height:140px;
 
 background:
-linear-gradient(
-180deg,
-rgba(0,0,0,.9),
-rgba(0,0,0,.2)
-);
+url("/assets/police/police-header.png")
+center / cover no-repeat;
 
-z-index:5;
+z-index:10;
 
 }
 
-.police-logo{
-
-height:60px;
-
-filter:
-drop-shadow(0 0 10px #00aaff);
-
-}
 
 
 
@@ -396,10 +381,7 @@ drop-shadow(0 0 10px #00aaff);
 
 <body>
 
-<div class="police-header">
-<img src="/assets/police/police-logo.png"
-class="police-logo">
-</div>
+<div class="police-header"></div>
 
 
 <!-- WHEEL -->
