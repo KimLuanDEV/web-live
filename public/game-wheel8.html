@@ -555,6 +555,45 @@ transform:translateX(-50%) scale(1.05);
 
 
 
+.result-img{
+
+width:90px;
+height:90px;
+
+margin:10px auto;
+
+display:block;
+
+filter:drop-shadow(0 0 10px #00aaff);
+
+}
+
+.result-info{
+
+font-size:18px;
+font-weight:700;
+
+margin-top:10px;
+
+display:flex;
+flex-direction:column;
+gap:6px;
+
+}
+
+.result-win{
+
+color:#00ff88;
+
+font-size:22px;
+
+text-shadow:
+0 0 10px #00ff88,
+0 0 20px #00ff88;
+
+}
+
+
 
 </style>
 </head>
@@ -663,7 +702,23 @@ transform:translateX(-50%) scale(1.05);
 RESULT
 </div>
 
-<div id="resultText"></div>
+<img id="resultImg" class="result-img">
+
+<div class="result-info">
+
+<div>
+BET: <span id="resultBet">0</span> 💎
+</div>
+
+<div>
+MULTIPLIER: x<span id="resultMulti">0</span>
+</div>
+
+<div class="result-win">
+WIN: <span id="resultWin">0</span> 💎
+</div>
+
+</div>
 
 <button onclick="closeResult()">
 OK
@@ -848,12 +903,26 @@ resultShowing = false
 
 }
 
-document.getElementById("resultText").textContent =
-"Multiplier x"+m
+
+// hình slot thắng
+document.getElementById("resultImg").src =
+"/assets/police/slot"+slot+".png"
+
+// tổng cược slot này
+const bet = myBets[slot-1] || 0
+
+// tiền thắng
+const win = bet * m
+
+document.getElementById("resultBet").textContent = bet
+document.getElementById("resultMulti").textContent = m
+document.getElementById("resultWin").textContent = win
 
 document.getElementById("resultModal").style.display = "flex"
 
 })
+
+
 /* TIMER */
 
 socket.on("wheel8-timer",(t)=>{
