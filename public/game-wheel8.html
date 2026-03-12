@@ -312,20 +312,58 @@ color:#fff;
 /* RESULT MODAL */
 
 .result{
+
 position:fixed;
-inset:0;
+left:0;
+bottom:0;
+width:100%;
+
 display:none;
-align-items:center;
-justify-content:center;
-background:rgba(0,0,0,.7);
-z-index: 2;
+
+background:rgba(0,0,0,.4);
+
+align-items:flex-end;
+
+z-index:10;
+
 }
 
 .result-box{
-background:#111;
-padding:30px;
-border-radius:14px;
+
+width:100%;
+
+background:linear-gradient(
+180deg,
+#0a0a0a,
+#111,
+#0a0a0a
+);
+
+border-top-left-radius:22px;
+border-top-right-radius:22px;
+
+padding:28px 20px 35px;
+
 text-align:center;
+
+box-shadow:
+0 -10px 40px rgba(0,0,0,.8),
+0 -2px 0 rgba(255,255,255,.1) inset;
+
+animation:sheetUp .35s ease;
+
+}
+
+@keyframes sheetUp{
+
+from{
+transform:translateY(100%);
+}
+
+to{
+transform:translateY(0);
+}
+
 }
 
 .result-title{
@@ -595,6 +633,90 @@ text-shadow:
 
 
 
+.sheet-handle{
+
+width:46px;
+height:5px;
+
+border-radius:10px;
+
+background:#777;
+
+margin:0 auto 16px;
+
+opacity:.6;
+
+}
+
+
+.result-grid{
+
+display:flex;
+justify-content:space-between;
+gap:10px;
+
+margin-top:12px;
+
+}
+
+.result-card{
+
+flex:1;
+
+background:#161616;
+
+border-radius:12px;
+
+padding:10px;
+
+font-size:14px;
+
+}
+
+.result-value{
+
+font-size:20px;
+font-weight:800;
+
+margin-top:4px;
+
+}
+
+.result-card.win{
+
+background:#062d19;
+
+color:#00ff9d;
+
+box-shadow:
+0 0 10px #00ff9d inset;
+
+}
+
+
+
+.result-ok{
+
+width:100%;
+margin-top:18px;
+
+padding:14px;
+
+font-size:18px;
+font-weight:800;
+
+border:none;
+border-radius:12px;
+
+background:#007bff;
+color:#fff;
+
+box-shadow:
+0 0 15px #007bff;
+
+}
+
+
 </style>
 </head>
 
@@ -698,29 +820,41 @@ text-shadow:
 
 <div class="result-box">
 
+<div class="sheet-handle"></div>
+
 <div class="result-title">
 RESULT
 </div>
 
 <img id="resultImg" class="result-img">
 
-<div class="result-info">
+<div class="result-grid">
 
-<div>
-BET: <span id="resultBet">0</span> 💎
+<div class="result-card">
+BET
+<div class="result-value">
+<span id="resultBet">0</span> 💎
+</div>
 </div>
 
-<div>
-MULTIPLIER: x<span id="resultMulti">0</span>
+<div class="result-card">
+MULTI
+<div class="result-value">
+x<span id="resultMulti">0</span>
+</div>
 </div>
 
-<div class="result-win">
-WIN: <span id="resultWin">0</span> 💎
+<div class="result-card win">
+WIN
+<div class="result-value">
+<span id="resultWin">0</span> 💎
+</div>
 </div>
 
 </div>
 
-<button onclick="closeResult()">
+
+<button class="result-ok" onclick="closeResult()">
 OK
 </button>
 
