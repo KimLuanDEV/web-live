@@ -35,6 +35,7 @@ color:#00ffd0;
 /* WHEEL AREA */
 
 .wheel{
+position:relative;
 width:340px;
 height:340px;
 margin:20px auto;
@@ -44,6 +45,40 @@ grid-template-rows:repeat(4,1fr);
 gap:6px;
 }
 
+.wheel-center{
+
+position:absolute;
+left:50%;
+top:50%;
+
+transform:translate(-50%,-50%);
+
+width:80px;
+height:80px;
+
+border-radius:50%;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+font-weight:900;
+font-size:22px;
+
+background:radial-gradient(
+circle,
+#00ffd0,
+#00695c
+);
+
+color:#000;
+
+box-shadow:
+0 0 20px #00ffd0,
+inset 0 0 10px rgba(255,255,255,.4);
+
+z-index:10;
+}
 /* SLOT */
 
 .slot{
@@ -270,6 +305,11 @@ border-radius:6px;
 <!-- WHEEL -->
 
 <div class="wheel">
+
+
+<div class="wheel-center">
+⏱ <span id="timer"></span>
+</div>
 
 <div class="slot s1" onclick="bet(1)">
 <div class="multi">x5</div>
