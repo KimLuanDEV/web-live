@@ -762,7 +762,21 @@ function bet(slot){
 
 if(!currentBet) return
 
-if(isBetLocked) return
+// nếu đã khóa cược
+if(isBetLocked){
+
+const banner =
+document.getElementById("betClosedBanner")
+
+banner.style.display = "block"
+
+// tự tắt sau 2s
+setTimeout(()=>{
+banner.style.display = "none"
+},2000)
+
+return
+}
 
 socket.emit("wheel8-bet",{
 slot,
@@ -829,15 +843,6 @@ document.getElementById("timer").textContent = t
 
 // khóa cược khi còn 5 giây
 isBetLocked = (t <= 5)
-
-const banner =
-document.getElementById("betClosedBanner")
-
-if(isBetLocked){
-banner.style.display = "block"
-}else{
-banner.style.display = "none"
-}
 
 // reset tốc độ mỗi round
 if(t >= 5){
