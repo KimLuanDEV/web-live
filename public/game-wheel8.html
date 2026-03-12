@@ -157,8 +157,8 @@ transition:.2s;
 .slot.win{
 
 filter:
-drop-shadow(0 0 20px #00aaff)
-drop-shadow(0 0 40px #00aaff);
+drop-shadow(0 0 20px #e61a2477)
+drop-shadow(0 0 40px #e61a2477);
 
 animation:policeWin 0.6s infinite alternate;
 
@@ -167,11 +167,11 @@ animation:policeWin 0.6s infinite alternate;
 @keyframes policeWin{
 
 0%{
-filter:drop-shadow(0 0 10px #00aaff);
+filter:drop-shadow(0 0 10px #e61a2477);
 }
 
 100%{
-filter:drop-shadow(0 0 25px #00aaff);
+filter:drop-shadow(0 0 25px #e61a2477);
 }
 
 }
@@ -808,35 +808,36 @@ el.style.display = "none"
 
 socket.on("wheel8-result",(data)=>{
 
+// dừng highlight chạy vòng
 stopHighlightLoop()
 
 const slot = Number(data.slot)
 const m = data.multiplier
 
+// reset highlight
 slots.forEach(s=>s.classList.remove("win"))
 
+// tìm slot thắng
 const winSlot =
 document.querySelector(".slot.s"+slot)
 
 if(winSlot){
 
+// highlight
 winSlot.classList.add("win")
 
+// giữ highlight 5 giây
 setTimeout(()=>{
 winSlot.classList.remove("win")
 },5000)
 
 }
 
-// hiển thị modal sau khi highlight xong
-setTimeout(()=>{
-
+// hiển thị modal
 document.getElementById("resultText").textContent =
 "Multiplier x"+m
 
 document.getElementById("resultModal").style.display = "flex"
-
-},5000)
 
 })
 /* TIMER */
