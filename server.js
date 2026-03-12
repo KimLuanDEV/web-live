@@ -3200,6 +3200,22 @@ socket.on("wheel8-bet",({slot,bet})=>{
 const uid = socket.data.uid
 if(!uid) return
 
+// =====================
+// ⏱ KIỂM TRA THỜI GIAN
+// =====================
+const remain = Math.max(
+0,
+Math.floor((wheel8Round.endAt - Date.now()) / 1000)
+)
+
+// 🔒 KHÓA CƯỢC KHI CÒN 5 GIÂY
+if(remain <= 5){
+socket.emit("notify",{
+message:"Betting closed"
+})
+return
+}
+
 const users = loadUsers()
 const me = users[uid]
 
