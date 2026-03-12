@@ -3010,6 +3010,23 @@ io.on("connection", socket => {
 
   if (!uid) return;
 
+
+// ================================
+// 🎡 RESTORE WHEEL8 BETS WHEN RELOAD
+// ================================
+
+const myWheelBets = [0,0,0,0,0,0,0,0];
+
+wheel8Round.bets
+.filter(b => b.uid === uid)
+.forEach(b => {
+  myWheelBets[b.slot - 1] += b.bet;
+});
+
+socket.emit("wheel8-my-bets", myWheelBets);
+
+
+
     // 🔥 gửi danh sách cược hiện tại cho admin
   emitAdminDtpBets();
   
