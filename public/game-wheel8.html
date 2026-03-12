@@ -814,6 +814,7 @@ box-shadow:
 </div>
 
 </div>
+
 <!-- RESULT -->
 
 <div id="resultModal" class="result">
@@ -831,23 +832,16 @@ RESULT
 <div class="result-grid">
 
 <div class="result-card">
-BET
+TOTAL BET
 <div class="result-value">
-<span id="resultBet">0</span> 💎
-</div>
-</div>
-
-<div class="result-card">
-MULTI
-<div class="result-value">
-x<span id="resultMulti">0</span>
+<span id="resultTotalBet">0</span> 💎
 </div>
 </div>
 
 <div class="result-card win">
-WIN
+TOTAL WIN
 <div class="result-value">
-<span id="resultWin">0</span> 💎
+<span id="resultTotalWin">0</span> 💎
 </div>
 </div>
 
@@ -1042,15 +1036,23 @@ resultShowing = false
 document.getElementById("resultImg").src =
 "/assets/police/slot"+slot+".png"
 
-// tổng cược slot này
-const bet = myBets[slot-1] || 0
+// tổng cược toàn bộ
+const totalBet =
+myBets.reduce((a,b)=>a+b,0)
+
+// cược slot thắng
+const winBet =
+myBets[slot-1] || 0
 
 // tiền thắng
-const win = bet * m
+const totalWin =
+winBet * m
 
-document.getElementById("resultBet").textContent = bet
-document.getElementById("resultMulti").textContent = m
-document.getElementById("resultWin").textContent = win
+document.getElementById("resultTotalBet").textContent =
+totalBet
+
+document.getElementById("resultTotalWin").textContent =
+totalWin
 
 document.getElementById("resultModal").style.display = "flex"
 
