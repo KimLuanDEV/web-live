@@ -10,13 +10,18 @@
 <style>
 
 body{
+
 margin:0;
-background:#000;
+
+background:
+url("/assets/police/bg-police-casino.jpg")
+center / cover no-repeat fixed;
+
 font-family:system-ui;
 color:#fff;
 overflow:hidden;
-}
 
+}
 /* TOP BAR */
 
 .topbar{
@@ -350,16 +355,50 @@ transform:scale(1.12);
 
 
 
+.police-header{
+
+position:absolute;
+top:0;
+left:0;
+
+width:100%;
+height:80px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:
+linear-gradient(
+180deg,
+rgba(0,0,0,.9),
+rgba(0,0,0,.2)
+);
+
+z-index:5;
+
+}
+
+.police-logo{
+
+height:60px;
+
+filter:
+drop-shadow(0 0 10px #00aaff);
+
+}
+
+
+
+
 </style>
 </head>
 
 <body>
 
-<div class="topbar">
-
-
-
-
+<div class="police-header">
+<img src="/assets/police/police-logo.png"
+class="police-logo">
 </div>
 
 
