@@ -668,12 +668,12 @@ socket.on("wheel8-result",(data)=>{
 const slot = data.slot
 const m = data.multiplier
 
-// reset
+// reset highlight
 slots.forEach(s=>s.classList.remove("win"))
 
-// highlight đúng slot
+// highlight đúng ô
 const winSlot =
-document.querySelector(".s"+slot)
+document.querySelector(".slot.s"+slot)
 
 if(winSlot){
 winSlot.classList.add("win")
