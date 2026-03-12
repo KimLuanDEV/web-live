@@ -57,30 +57,76 @@ top:50%;
 
 transform:translate(-50%,-50%);
 
-width:100px;
-height:100px;
-
-border-radius:50%;
+width:120px;
+height:120px;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
 font-weight:900;
-font-size:22px;
+font-size:26px;
 
-background:radial-gradient(
-circle,
-#ff0000,
-#690000
-);
+color:#ffffff;
 
-color:#000;
+background:
+url("/assets/police/wheel-center-police.png")
+center / contain no-repeat;
 
+text-shadow:
+0 0 10px #00aaff,
+0 0 20px #00aaff;
 
+z-index:2;
 
-z-index: 1;
 }
+
+
+#timer{
+
+font-size:28px;
+font-weight:900;
+
+color:#ffffff;
+
+text-shadow:
+0 0 10px #00aaff,
+0 0 20px #00aaff,
+0 0 40px #00aaff;
+
+}
+
+
+
+.wheel-center::after{
+
+content:"";
+
+position:absolute;
+
+width:160px;
+height:160px;
+
+border-radius:50%;
+
+background:
+radial-gradient(circle,
+rgba(0,170,255,.4),
+transparent 70%);
+
+animation:policeGlow 2s linear infinite;
+
+}
+
+@keyframes policeGlow{
+
+0%{ transform:rotate(0deg); }
+100%{ transform:rotate(360deg); }
+
+}
+
+
+
 /* SLOT */
 
 .slot{
