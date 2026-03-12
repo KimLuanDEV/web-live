@@ -165,8 +165,8 @@ text-shadow:
 position:absolute;
 bottom:0;
 width:100%;
-
-padding:16px 20px;
+height:280px;
+padding:0;
 
 background:
 url("/assets/police/police-panel.png")
@@ -182,21 +182,19 @@ inset 0 2px 0 rgba(255,255,255,.15);
 
 
 .bet-grid{
-
+position: absolute;
 display:flex;
-
 justify-content:center;
-
-gap:14px;
-
-margin-top:6px;
-
+gap:0px;
+margin-top:2px;
+bottom: 25px;
+left: 15px;
 }
 
 .bet-chip{
 
-width:52px;
-height:52px;
+width:100px;
+height:70px;
 
 border-radius:50%;
 
@@ -231,9 +229,7 @@ filter:drop-shadow(0 0 8px #00aaff);
 
 
 .bet-chip.active{
-background:#00ffd0;
-color:#000;
-box-shadow:0 0 15px #00ffd0;
+color:#fff;
 }
 
 /* RESULT MODAL */
@@ -401,7 +397,6 @@ inset 0 1px 0 rgba(255,255,255,.15);
 <div class="bet-chip" onclick="setBet(50)">50</div>
 <div class="bet-chip" onclick="setBet(100)">100</div>
 <div class="bet-chip" onclick="setBet(1000)">1K</div>
-<div class="bet-chip" onclick="setBet(5000)">5K</div>
 
 </div>
 
