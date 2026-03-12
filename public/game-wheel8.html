@@ -164,21 +164,19 @@ text-shadow:
 
 position:absolute;
 bottom:0;
-
 width:100%;
 
-padding:12px 16px;
+padding:16px 20px;
 
-background:linear-gradient(
-180deg,
-#0b0b0b,
-#020202
-);
+background:
+url("/assets/police/police-panel.png")
+center / cover no-repeat;
 
-border-top:1px solid rgba(255,255,255,.08);
+border-top:2px solid rgba(0,120,255,.6);
 
 box-shadow:
-0 -8px 25px rgba(0,0,0,.7);
+0 -10px 40px rgba(0,0,0,.8),
+inset 0 2px 0 rgba(255,255,255,.15);
 
 }
 
@@ -197,36 +195,38 @@ margin-top:6px;
 
 .bet-chip{
 
-background:radial-gradient(
-circle at 30% 30%,
-#444,
-#111
-);
+width:52px;
+height:52px;
 
 border-radius:50%;
 
-width:48px;
-height:48px;
+background:
+
+url("/assets/police/police-chip.png")
+center / contain no-repeat;
 
 display:flex;
 align-items:center;
 justify-content:center;
 
-font-weight:800;
+font-weight:900;
+font-size:14px;
 
-cursor:pointer;
+color:#fff;
 
-box-shadow:
-0 3px 8px rgba(0,0,0,.6),
-inset 0 1px 0 rgba(255,255,255,.2);
+text-shadow:0 0 6px #000;
 
-transition:.15s;
+transition:.2s;
 
 }
 
 
 .bet-chip:hover{
-transform:scale(1.1);
+
+transform:scale(1.15);
+
+filter:drop-shadow(0 0 8px #00aaff);
+
 }
 
 
