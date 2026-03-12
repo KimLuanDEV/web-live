@@ -308,6 +308,58 @@ inset 0 1px 0 rgba(255,255,255,.15);
 
 
 
+.bet-hitbox{
+
+position:absolute;
+width:100%;
+height:100%;
+left:0;
+top:0;
+background: red;
+}
+
+.chip{
+
+position:absolute;
+
+width:95px;
+height:95px;
+
+cursor:pointer;
+
+}
+
+/* vị trí theo ảnh */
+
+.c1{
+left:60px;
+bottom:60px;
+}
+
+.c2{
+left:170px;
+bottom:60px;
+}
+
+.c3{
+left:280px;
+bottom:60px;
+}
+
+.c4{
+left:390px;
+bottom:60px;
+}
+
+/* hover effect */
+
+.chip:hover{
+filter:drop-shadow(0 0 15px #00aaff);
+transform:scale(1.12);
+}
+
+
+
 </style>
 </head>
 
@@ -391,12 +443,12 @@ inset 0 1px 0 rgba(255,255,255,.15);
 
 <div class="bet-panel">
 
-<div class="bet-grid">
+<div class="bet-hitbox">
 
-<div class="bet-chip" onclick="setBet(10)">10</div>
-<div class="bet-chip" onclick="setBet(50)">50</div>
-<div class="bet-chip" onclick="setBet(100)">100</div>
-<div class="bet-chip" onclick="setBet(1000)">1K</div>
+<div class="chip c1" onclick="setBet(10)"></div>
+<div class="chip c2" onclick="setBet(50)"></div>
+<div class="chip c3" onclick="setBet(100)"></div>
+<div class="chip c4" onclick="setBet(1000)"></div>
 
 </div>
 
