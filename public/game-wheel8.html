@@ -759,12 +759,12 @@ socket.on("wheel8-timer",(t)=>{
 document.getElementById("timer").textContent = t
 
 // reset tốc độ mỗi round
-if(t >= 15){
+if(t >= 5){
 highlightSpeed = 1000
 }
 
 // sau 5 giây mới bắt đầu highlight
-if(t <= 10 && t > 5){
+if(t <= 30 && t > 5){
 startHighlightLoop()
 }
 
