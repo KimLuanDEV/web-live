@@ -695,7 +695,7 @@ let highlightIndex = 1
 let highlightLoop = null
 let highlightSpeed = 1000
 let isBetLocked = false
-
+let resultShowing = false
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
@@ -823,32 +823,30 @@ el.style.display = "none"
 
 socket.on("wheel8-result",(data)=>{
 
-// dừng highlight chạy vòng
+resultShowing = true
+
 stopHighlightLoop()
 
 const slot = Number(data.slot)
 const m = data.multiplier
 
-// reset highlight
 slots.forEach(s=>s.classList.remove("win"))
 
-// tìm slot thắng
-const winSlot =
-document.querySelector(".slot.s"+slot)
+const winSlot = document.querySelector(".slot.s"+slot)
 
 if(winSlot){
 
-// highlight
 winSlot.classList.add("win")
 
-// giữ highlight 5 giây
 setTimeout(()=>{
+
 winSlot.classList.remove("win")
+resultShowing = false
+
 },5000)
 
 }
 
-// hiển thị modal
 document.getElementById("resultText").textContent =
 "Multiplier x"+m
 
@@ -870,7 +868,7 @@ highlightSpeed = 1000
 }
 
 // sau 5 giây mới bắt đầu highlight
-if(t <= 30 && t > 5){
+if(!resultShowing && t <= 30 && t > 5){
 startHighlightLoop()
 }
 
