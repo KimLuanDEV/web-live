@@ -480,6 +480,65 @@ box-shadow:0 0 8px rgba(255,255,255,.4);
 
 
 
+.bet-closed-banner{
+
+position:absolute;
+top:140px;
+left:50%;
+transform:translateX(-50%);
+
+padding:10px 28px;
+
+font-weight:900;
+font-size:22px;
+letter-spacing:2px;
+
+color:#fff;
+
+background:
+linear-gradient(
+90deg,
+#001a33,
+#003a66,
+#001a33
+);
+
+border:2px solid #00aaff;
+
+border-radius:8px;
+
+text-shadow:
+0 0 10px #00aaff,
+0 0 20px #00aaff;
+
+box-shadow:
+0 0 20px #00aaff,
+inset 0 0 10px #00aaff;
+
+display:none;
+
+animation:policeFlash .5s infinite alternate;
+
+z-index:5;
+
+}
+
+@keyframes policeFlash{
+
+0%{
+opacity:0.7;
+transform:translateX(-50%) scale(1);
+}
+
+100%{
+opacity:1;
+transform:translateX(-50%) scale(1.05);
+}
+
+}
+
+
+
 
 </style>
 </head>
@@ -596,6 +655,12 @@ OK
 
 </div>
 
+</div>
+
+
+
+<div id="betClosedBanner" class="bet-closed-banner">
+🚨 BETTING CLOSED 🚨
 </div>
 
 
@@ -765,6 +830,15 @@ document.getElementById("timer").textContent = t
 // khóa cược khi còn 5 giây
 isBetLocked = (t <= 5)
 
+const banner =
+document.getElementById("betClosedBanner")
+
+if(isBetLocked){
+banner.style.display = "block"
+}else{
+banner.style.display = "none"
+}
+
 // reset tốc độ mỗi round
 if(t >= 5){
 highlightSpeed = 1000
@@ -836,6 +910,8 @@ mybet.style.display = "none"
 myBets[i-1] = 0
 
 }
+
+document.getElementById("betClosedBanner").style.display="none"
 
 })
 
