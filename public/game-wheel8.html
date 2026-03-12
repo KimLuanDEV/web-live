@@ -89,11 +89,7 @@ z-index:10;
 
 .slot{
 
-background:linear-gradient(
-180deg,
-rgba(255,255,255,.08),
-rgba(0,0,0,.9)
-);
+background:rgba(0,0,0,.7);
 
 border-radius:50px;
 
@@ -101,17 +97,31 @@ display:flex;
 align-items:center;
 justify-content:center;
 
-font-weight:800;
-font-size:18px;
-
-box-shadow:
-0 0 10px rgba(0,0,0,.7),
-inset 0 1px 0 rgba(255,255,255,.1);
-
 cursor:pointer;
 position:relative;
-flex-direction:column;
+
 }
+
+
+
+.slot-img{
+
+width:60%;
+height:60%;
+object-fit:contain;
+
+filter:drop-shadow(0 0 6px #000);
+
+transition:.2s;
+
+}
+
+.slot:hover .slot-img{
+
+transform:scale(1.15);
+
+}
+
 
 .slot.active{
 outline:3px solid #00ffd0;
@@ -122,6 +132,12 @@ box-shadow:
 .slot.win{
 background:#00ffd0;
 color:#000;
+
+
+box-shadow:
+0 0 25px #00ffd0,
+inset 0 0 15px #00ffd0;
+
 }
 
 
@@ -396,50 +412,42 @@ z-index:10;
 </div>
 
 <div class="slot s1" onclick="bet(1)">
-<div class="multi">x5</div>
-<div class="pool" id="pool1" style="display: none;">0</div>
+<img src="/assets/police/slot1.png" class="slot-img">
 <div class="mybet" id="mybet1">0</div>
 </div>
 
 <div class="slot s2" onclick="bet(2)">
-<div class="multi">x10</div>
-<div class="pool" id="pool2" style="display: none;">0</div>
+<img src="/assets/police/slot2.png" class="slot-img">
 <div class="mybet" id="mybet2">0</div>
 </div>
 
 <div class="slot s3" onclick="bet(3)">
-<div class="multi">x15</div>
-<div class="pool" id="pool3" style="display: none;">0</div>
+<img src="/assets/police/slot3.png" class="slot-img">
 <div class="mybet" id="mybet3">0</div>
 </div>
 
 <div class="slot s4" onclick="bet(4)">
-<div class="multi">x25</div>
-<div class="pool" id="pool4" style="display: none;">0</div>
+<img src="/assets/police/slot4.png" class="slot-img">
 <div class="mybet" id="mybet4">0</div>
 </div>
 
 <div class="slot s5" onclick="bet(5)">
-<div class="multi">x45</div>
-<div class="pool" id="pool5" style="display: none;">0</div>
+<img src="/assets/police/slot5.png" class="slot-img">
 <div class="mybet" id="mybet5">0</div>
 </div>
 
 <div class="slot s6" onclick="bet(6)">
-<div class="multi">x5</div>
-<div class="pool" id="pool6" style="display: none;">0</div>
+<img src="/assets/police/slot6.png" class="slot-img">
 <div class="mybet" id="mybet6">0</div>
 </div>
 
 <div class="slot s7" onclick="bet(7)">
-<div class="multi">x5</div>
-<div class="pool" id="pool7" style="display: none;">0</div>
+<img src="/assets/police/slot7.png" class="slot-img">
 <div class="mybet" id="mybet7">0</div>
 </div>
 
 <div class="slot s8" onclick="bet(8)">
-<div class="multi">x5</div>
-<div class="pool" id="pool8" style="display: none;">0</div>
+<img src="/assets/police/slot8.png" class="slot-img">
 <div class="mybet" id="mybet8">0</div>
 </div>
 
