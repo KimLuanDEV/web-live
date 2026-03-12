@@ -155,9 +155,12 @@ transition:.2s;
 .slot.win{
 
 box-shadow:
-0 0 20px #00aaff,
-0 0 40px #00aaff,
-inset 0 0 10px #00aaff;
+0 0 25px #00aaff,
+0 0 60px #00aaff,
+0 0 120px #00aaff,
+inset 0 0 20px #00aaff;
+
+transform:scale(1.08);
 
 border-radius:50%;
 
@@ -832,7 +835,8 @@ const m = data.multiplier
 
 slots.forEach(s=>s.classList.remove("win"))
 
-const winSlot = slots[slot-1]
+const winSlot =
+document.querySelector(".slot.s"+slot)
 
 if(winSlot){
 
