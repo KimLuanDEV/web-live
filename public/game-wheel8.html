@@ -691,8 +691,7 @@ function runHighlight(){
 
 slots.forEach(s=>s.classList.remove("win"))
 
-const slot =
-document.querySelector(".slot.s"+highlightIndex)
+const slot = slots[highlightIndex-1]
 
 if(slot){
 slot.classList.add("win")
@@ -809,33 +808,38 @@ el.style.display = "none"
 
 socket.on("wheel8-result",(data)=>{
 
+// dừng highlight chạy vòng
 stopHighlightLoop()
 
-const slot = data.slot
+const slot = Number(data.slot)
 const m = data.multiplier
 
+// reset highlight
 slots.forEach(s=>s.classList.remove("win"))
 
+// tìm slot thắng
 const winSlot =
 document.querySelector(".slot.s"+slot)
 
 if(winSlot){
 
+// highlight
 winSlot.classList.add("win")
 
+// giữ highlight 5 giây
 setTimeout(()=>{
 winSlot.classList.remove("win")
 },5000)
 
 }
 
+// hiển thị modal
 document.getElementById("resultText").textContent =
 "Multiplier x"+m
 
 document.getElementById("resultModal").style.display = "flex"
 
 })
-
 /* TIMER */
 
 socket.on("wheel8-timer",(t)=>{
