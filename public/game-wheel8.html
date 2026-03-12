@@ -613,6 +613,8 @@ let currentBet = 0
 let highlightIndex = 1
 let highlightLoop = null
 let highlightSpeed = 1000
+let isBetLocked = false
+
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
@@ -695,6 +697,8 @@ function bet(slot){
 
 if(!currentBet) return
 
+if(isBetLocked) return
+
 socket.emit("wheel8-bet",{
 slot,
 bet:currentBet
@@ -758,6 +762,9 @@ socket.on("wheel8-timer",(t)=>{
 
 document.getElementById("timer").textContent = t
 
+// khóa cược khi còn 5 giây
+isBetLocked = (t <= 5)
+
 // reset tốc độ mỗi round
 if(t >= 5){
 highlightSpeed = 1000
@@ -805,6 +812,10 @@ el.textContent = pool[i]
 
 
 socket.on("wheel8-round-new",()=>{
+
+isBetLocked = false
+highlightSpeed = 1000
+stopHighlightLoop()
 
 for(let i=1;i<=8;i++){
 
