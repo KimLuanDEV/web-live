@@ -79,7 +79,7 @@ color:#000;
 
 
 
-z-index: 0;
+z-index: 1;
 }
 /* SLOT */
 
@@ -98,7 +98,7 @@ margin-top:-45px;
 
 border-radius:50%;
 
-background:rgba(0,134,255,0.6);
+background:#757d89;
 
 display:flex;
 align-items:center;
@@ -402,40 +402,12 @@ z-index:2;
 }
 
 
-.wheel::before{
-content:"";
-position:absolute;
-left:50%;
-top:50%;
-width:2px;
-height:150px;
-background:rgba(255,255,255,.4);
-transform-origin:bottom center;
-box-shadow:0 0 6px rgba(255,255,255,.4);
-}
-
-
-.wheel::after{
-content:"";
-position:absolute;
-left:50%;
-top:50%;
-width:2px;
-height:150px;
-background:rgba(255,255,255,.4);
-transform-origin:bottom center;
-
-box-shadow:
-0 0 6px rgba(255,255,255,.4),
-0 0 0 0 rgba(255,255,255,.4),
-0 0 0 0 rgba(255,255,255,.4);
-}
 
 
 .spokes{
 position:absolute;
 left:50%;
-top:50%;
+top:11%;
 transform:translate(-50%,-50%);
 pointer-events:none;
 }
