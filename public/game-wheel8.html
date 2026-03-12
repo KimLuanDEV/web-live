@@ -612,23 +612,17 @@ uid:me.uid
 let currentBet = 0
 let highlightIndex = 1
 let highlightLoop = null
+let highlightSpeed = 1000
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
 
 
 
+function runHighlight(){
 
-function startHighlightLoop(){
-
-if(highlightLoop) return
-
-highlightLoop = setInterval(()=>{
-
-// reset
 slots.forEach(s=>s.classList.remove("win"))
 
-// highlight slot
 const slot =
 document.querySelector(".slot.s"+highlightIndex)
 
@@ -636,14 +630,37 @@ if(slot){
 slot.classList.add("win")
 }
 
-// next slot
 highlightIndex++
 
 if(highlightIndex > 8){
 highlightIndex = 1
 }
 
-},1000)
+}
+
+
+function changeHighlightSpeed(speed){
+
+highlightSpeed = speed
+
+if(highlightLoop){
+
+clearInterval(highlightLoop)
+
+highlightLoop =
+setInterval(runHighlight, highlightSpeed)
+
+}
+
+}
+
+
+
+function startHighlightLoop(){
+
+if(highlightLoop) return
+
+highlightLoop = setInterval(runHighlight, highlightSpeed)
 
 }
 
@@ -741,13 +758,17 @@ socket.on("wheel8-timer",(t)=>{
 
 document.getElementById("timer").textContent = t
 
-// khi timer đang chạy
+// start loop
 if(t > 0){
 startHighlightLoop()
 }
 
-})
+// khi còn 5 giây → tăng tốc
+if(t <= 5){
+changeHighlightSpeed(200)
+}
 
+})
 /* COIN UPDATE */
 
 socket.on("coin-update",(data)=>{
