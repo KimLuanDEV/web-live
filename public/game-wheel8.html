@@ -1023,9 +1023,9 @@ color:#ffcc00;
 
 <!-- RESULT -->
 
-<div id="resultModal" class="result">
+<div id="resultModal" class="result" onclick="closeResult()">
 
-<div class="result-box">
+<div class="result-box" onclick="event.stopPropagation()">
 
 <div class="sheet-handle"></div>
 
@@ -1053,13 +1053,7 @@ TOTAL WIN
 
 </div>
 
-
-<button class="result-ok" onclick="closeResult()">
-OK
-</button>
-
 </div>
-
 </div>
 
 
@@ -1285,6 +1279,11 @@ document.getElementById("resultTotalWin").textContent =
 totalWin
 
 document.getElementById("resultModal").style.display = "flex"
+
+setTimeout(()=>{
+closeResult()
+},5000)
+
 
 })
 
