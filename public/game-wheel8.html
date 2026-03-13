@@ -1133,10 +1133,7 @@ highlightLoop = setInterval(runHighlight, highlightSpeed)
 function stopHighlightLoop(){
 
 clearInterval(highlightLoop)
-
 highlightLoop = null
-
-slots.forEach(s=>s.classList.remove("win"))
 
 }
 
@@ -1355,7 +1352,10 @@ socket.on("wheel8-round-new",()=>{
 
 isBetLocked = false
 highlightSpeed = 1000
+
+if(!resultShowing){
 stopHighlightLoop()
+}
 
 for(let i=1;i<=8;i++){
 
