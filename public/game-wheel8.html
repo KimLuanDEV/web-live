@@ -848,6 +848,96 @@ z-index:0;
 
 
 
+/* HISTORY */
+
+.wheel-history{
+
+position:absolute;
+top:150px;
+left:50%;
+transform:translateX(-50%);
+
+width:300px;
+height:50px;
+
+display:flex;
+flex-direction:column;
+align-items:center;
+
+z-index:3;
+
+}
+
+.history-title{
+
+font-size:12px;
+font-weight:800;
+opacity:.7;
+margin-bottom:4px;
+
+}
+
+.history-list{
+
+display:flex;
+gap:6px;
+
+}
+
+.history-item{
+
+width:36px;
+height:36px;
+
+border-radius:10px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:
+linear-gradient(
+180deg,
+#0d1b2a,
+#020617
+);
+
+border:1px solid rgba(0,170,255,.4);
+
+box-shadow:
+0 0 10px rgba(0,170,255,.4),
+inset 0 0 6px rgba(0,170,255,.2);
+
+}
+
+/* màu theo multiplier */
+
+.h5{
+background:#1d2f55;
+color:#7ab7ff;
+}
+
+.h10{
+background:#2c1d55;
+color:#b37aff;
+}
+
+.h15{
+background:#55321d;
+color:#ffb77a;
+}
+
+.h25{
+background:#55311d;
+color:#ff7a7a;
+}
+
+.h45{
+background:#552a1d;
+color:#ffcc00;
+}
+
+
 
 </style>
 </head>
@@ -923,6 +1013,22 @@ z-index:0;
 </div>
 
 </div>
+
+
+
+<!-- ================= HISTORY ================= -->
+
+<div class="wheel-history">
+
+<div class="history-title">
+HISTORY
+</div>
+
+<div id="wheelHistoryList" class="history-list">
+</div>
+
+</div>
+
 
 
 <!-- BET PANEL -->
@@ -1165,6 +1271,10 @@ stopHighlightLoop()
 const slot = Number(data.slot)
 const m = data.multiplier
 
+// ⭐ thêm dòng này để lưu lịch sử
+updateHistory(slot,m)
+
+
 slots.forEach(s=>s.classList.remove("win"))
 
 const winSlot =
@@ -1209,7 +1319,6 @@ totalWin
 document.getElementById("resultModal").style.display = "flex"
 
 })
-
 
 /* TIMER */
 
@@ -1362,6 +1471,55 @@ document.addEventListener("contextmenu", e => e.preventDefault())
 // chặn drag ảnh
 document.addEventListener("dragstart", e => e.preventDefault())
 
+
+
+
+let wheelHistory = []
+
+function updateHistory(slot,multi){
+
+wheelHistory.unshift({
+slot,
+multi
+})
+
+if(wheelHistory.length > 10){
+wheelHistory.pop()
+}
+
+renderHistory()
+
+}
+
+function renderHistory(){
+
+const box =
+document.getElementById("wheelHistoryList")
+
+box.innerHTML = ""
+
+wheelHistory.forEach(h=>{
+
+const div = document.createElement("div")
+
+div.className = "history-item"
+
+// ⭐ icon xe / máy bay theo slot
+const img = document.createElement("img")
+
+img.src = "/assets/police/slot"+h.slot+".png"
+
+img.style.width = "26px"
+img.style.height = "26px"
+img.style.objectFit = "contain"
+
+div.appendChild(img)
+
+box.appendChild(div)
+
+})
+
+}
 
 </script>
 
