@@ -73,7 +73,7 @@ const weightedMultipliers = [
 const WHEEL8_HISTORY_FILE =
 "/opt/render/project/data/wheel8_history.json"
 
-const MAX_WHEEL8_HISTORY = 9
+const MAX_WHEEL8_HISTORY = 8
 
 
 function loadWheel8History(){
