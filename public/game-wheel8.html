@@ -189,6 +189,17 @@ border-radius:50%;
 }
 
 
+.slot.lose{
+
+opacity:0.15;
+
+transform:scale(.8);
+
+filter:grayscale(100%) blur(1px);
+
+transition:.5s;
+
+}
 
 
 .slot.win .slot-img{
@@ -1226,7 +1237,17 @@ const m = data.multiplier
 
 
 
-slots.forEach(s=>s.classList.remove("win"))
+slots.forEach((s,i)=>{
+
+s.classList.remove("win","lose")
+
+// slot thua
+if(i !== slot-1){
+s.classList.add("lose")
+}
+
+})
+
 
 const winSlot =
 document.querySelector(".slot.s"+slot)
@@ -1351,6 +1372,11 @@ el.textContent = pool[i]
 
 
 socket.on("wheel8-round-new",()=>{
+
+
+slots.forEach(s=>{
+s.classList.remove("lose","win")
+})
 
 isBetLocked = false
 highlightSpeed = 1000
