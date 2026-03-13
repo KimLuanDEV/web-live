@@ -886,6 +886,8 @@ let highlightLoop = null
 let highlightSpeed = 1000
 let isBetLocked = false
 let resultShowing = false
+let coins = 0
+
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
@@ -967,15 +969,34 @@ function bet(slot){
 
 if(!currentBet) return
 
-// nếu đã khóa cược
+// 🔒 kiểm tra đủ tiền
+if(coins < currentBet){
+
+const banner =
+document.getElementById("betClosedBanner")
+
+banner.textContent = "NOT ENOUGH COINS"
+
+banner.style.display = "block"
+
+setTimeout(()=>{
+banner.style.display = "none"
+banner.textContent = "BETTING CLOSED"
+},2000)
+
+return
+}
+
+// 🔒 nếu đã khóa cược
 if(isBetLocked){
 
 const banner =
 document.getElementById("betClosedBanner")
 
+banner.textContent = "BETTING CLOSED"
+
 banner.style.display = "block"
 
-// tự tắt sau 2s
 setTimeout(()=>{
 banner.style.display = "none"
 },2000)
@@ -983,6 +1004,7 @@ banner.style.display = "none"
 return
 }
 
+// gửi cược
 socket.emit("wheel8-bet",{
 slot,
 bet:currentBet
@@ -1008,7 +1030,6 @@ el.style.display = "none"
 }
 
 }
-
 /* RESULT */
 
 socket.on("wheel8-result",(data)=>{
@@ -1102,7 +1123,9 @@ changeHighlightSpeed(100)
 
 socket.on("coin-update",(data)=>{
 
-document.getElementById("coins").textContent=data.coins
+coins = data.coins
+
+document.getElementById("coins").textContent = coins
 
 })
 
