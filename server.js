@@ -1447,6 +1447,7 @@ const activeUsers = new Map();
 // 🎡 LUCKY WHEEL 8 ROUND
 // ================================
 
+let wheel8History = []
 
 
 let wheel8Round = {
@@ -1560,6 +1561,23 @@ io.emit("wheel8-result",{
 slot: winSlot,
 multiplier: multiplier
 })
+
+
+// =======================
+// 📜 SAVE HISTORY
+// =======================
+
+wheel8History.unshift({
+slot: winSlot,
+multi: multiplier
+})
+
+if(wheel8History.length > 8){
+wheel8History.pop()
+}
+
+io.emit("wheel8-history",wheel8History)
+
 
 // =======================
 // 🔄 NEW ROUND
@@ -3014,6 +3032,9 @@ io.on("connection", socket => {
 // ================================
 // 🎡 RESTORE WHEEL8 BETS WHEN RELOAD
 // ================================
+
+socket.emit("wheel8-history",wheel8History)
+
 
 const myWheelBets = [0,0,0,0,0,0,0,0];
 

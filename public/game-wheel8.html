@@ -853,7 +853,7 @@ z-index:0;
 .wheel-history{
 
 position:absolute;
-top:150px;
+bottom: 275px;
 left:50%;
 transform:translateX(-50%);
 
@@ -1125,7 +1125,7 @@ let highlightSpeed = 1000
 let isBetLocked = false
 let resultShowing = false
 let coins = 0
-
+let wheelHistory = []
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
@@ -1271,8 +1271,7 @@ stopHighlightLoop()
 const slot = Number(data.slot)
 const m = data.multiplier
 
-// ⭐ thêm dòng này để lưu lịch sử
-updateHistory(slot,m)
+
 
 
 slots.forEach(s=>s.classList.remove("win"))
@@ -1361,6 +1360,16 @@ coins = data.coins
 document.getElementById("coins").textContent = coins
 
 })
+
+
+socket.on("wheel8-history",(list)=>{
+
+wheelHistory = list
+
+renderHistory()
+
+})
+
 
 function closeResult(){
 
@@ -1474,22 +1483,7 @@ document.addEventListener("dragstart", e => e.preventDefault())
 
 
 
-let wheelHistory = []
 
-function updateHistory(slot,multi){
-
-wheelHistory.unshift({
-slot,
-multi
-})
-
-if(wheelHistory.length > 10){
-wheelHistory.pop()
-}
-
-renderHistory()
-
-}
 
 function renderHistory(){
 
