@@ -724,6 +724,45 @@ box-shadow:
 }
 
 
+
+#betClosedModal{
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,.45);
+z-index:999;
+}
+
+
+.bet-closed-bg{
+
+width:420px;
+height:200px;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:
+url("/assets/police/police-alert.png")
+center / contain no-repeat;
+
+}
+
+#betClosedText{
+position:absolute;
+font-size:26px;
+font-weight:900;
+color:#fff;
+text-shadow:
+0 0 10px #00aaff,
+0 0 20px #00aaff;
+}
+
+
+
 </style>
 </head>
 
@@ -865,8 +904,16 @@ OK
 
 
 
-<div id="betClosedBanner" class="bet-closed-banner">
- BETTING CLOSED 
+<div id="betClosedModal" class="bet-closed-modal">
+
+<div class="bet-closed-bg">
+
+<div id="betClosedText" class="bet-closed-text">
+BETTING CLOSED
+</div>
+
+</div>
+
 </div>
 
 
@@ -969,36 +1016,32 @@ function bet(slot){
 
 if(!currentBet) return
 
-// 🔒 kiểm tra đủ tiền
+const modal = document.getElementById("betClosedModal")
+const text  = document.getElementById("betClosedText")
+
+// 🔒 không đủ coin
 if(coins < currentBet){
 
-const banner =
-document.getElementById("betClosedBanner")
+text.textContent = "NOT ENOUGH COINS"
 
-banner.textContent = "NOT ENOUGH COINS"
-
-banner.style.display = "block"
+modal.style.display = "flex"
 
 setTimeout(()=>{
-banner.style.display = "none"
-banner.textContent = "BETTING CLOSED"
+modal.style.display = "none"
 },2000)
 
 return
 }
 
-// 🔒 nếu đã khóa cược
+// 🔒 đã khóa cược
 if(isBetLocked){
 
-const banner =
-document.getElementById("betClosedBanner")
+text.textContent = "BETTING CLOSED"
 
-banner.textContent = "BETTING CLOSED"
-
-banner.style.display = "block"
+modal.style.display = "flex"
 
 setTimeout(()=>{
-banner.style.display = "none"
+modal.style.display = "none"
 },2000)
 
 return
@@ -1021,11 +1064,7 @@ const value = myBets[slot-1]
 
 el.textContent = value
 
-if(value > 0){
-el.style.display = "block"
-}else{
-el.style.display = "none"
-}
+el.style.display = value > 0 ? "block" : "none"
 
 }
 
