@@ -3,7 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <title>Lucky Wheel</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport"
+content="width=device-width,
+initial-scale=1,
+maximum-scale=1,
+user-scalable=no">
 
 <script src="/socket.io/socket.io.js"></script>
 
@@ -1268,6 +1272,26 @@ el.style.display = "none"
 }
 
 })
+
+
+
+document.addEventListener("touchmove", function(e){
+
+if(e.scale !== 1){
+e.preventDefault()
+}
+
+},{ passive:false })
+
+
+document.addEventListener("wheel", function(e){
+
+if(e.ctrlKey){
+e.preventDefault()
+}
+
+},{ passive:false })
+
 
 
 </script>
