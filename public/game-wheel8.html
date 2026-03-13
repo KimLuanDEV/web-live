@@ -366,7 +366,8 @@ z-index:10;
 }
 
 .result-box{
-
+position: absolute;
+bottom: -52px;
 width:100%;
 height:320px;
 
@@ -394,15 +395,6 @@ transform:translateY(0);
 
 }
 
-.result-title{
-font-size:24px;
-font-weight:900;
-letter-spacing:2px;
-
-text-shadow:
-0 0 10px #00aaff,
-0 0 20px #00aaff;
-}
 
 
 
@@ -607,15 +599,13 @@ transform:translateX(-50%) scale(1.05);
 
 
 .result-img{
-
-width:90px;
-height:90px;
-
+position: absolute;
+top:102px;
+left: 168px;
+width:145px;
+height:145px;
 margin:10px auto;
-
 display:block;
-
-filter:drop-shadow(0 0 10px #00aaff);
 
 }
 
@@ -663,72 +653,33 @@ opacity:.6;
 
 
 .result-grid{
-
+position: absolute;
+bottom: 97px;
+left: 152px;
 display:flex;
 justify-content:space-between;
-gap:10px;
-
+gap:140px;
 margin-top:40px;
 
 }
 
 .result-card{
-
 flex:1;
-
-background:#161616;
-
-border-radius:12px;
-
 padding:10px;
-
 font-size:14px;
 
 }
 
-.result-value{
-
-font-size:20px;
-font-weight:800;
-
-margin-top:4px;
-
-}
-
 .result-card.win{
-
-background:#062d19;
-
 color:#00ff9d;
-
-box-shadow:
-0 0 10px #00ff9d inset;
-
 }
 
-
-
-.result-ok{
-
-width:100%;
-margin-top:18px;
-
-padding:14px;
-
-font-size:18px;
+.result-value{
+position: absolute;
+bottom: 36px;
+font-size:22px;
 font-weight:800;
-
-border:none;
-border-radius:12px;
-
-background:#007bff;
-color:#fff;
-
-box-shadow:
-0 0 15px #007bff;
-
 }
-
 
 
 #betClosedModal{
@@ -1022,9 +973,6 @@ color:#ffcc00;
 
 <div class="sheet-handle"></div>
 
-<div class="result-title">
-RESULT
-</div>
 
 <img id="resultImg" class="result-img">
 
