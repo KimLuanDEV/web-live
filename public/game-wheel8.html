@@ -164,6 +164,13 @@ border-radius:50%;
 }
 
 
+.slot.locked{
+pointer-events:none;
+opacity:.7;
+filter:grayscale(.15);
+}
+
+
 .slot.win .slot-img{
 
 filter:
@@ -1067,6 +1074,13 @@ document.getElementById("timer").textContent = t
 
 // khóa cược khi còn 5 giây
 isBetLocked = (t <= 5)
+
+if(isBetLocked){
+slots.forEach(s=>s.classList.add("locked"))
+}else{
+slots.forEach(s=>s.classList.remove("locked"))
+}
+
 
 // reset tốc độ mỗi round
 if(t >= 5){
