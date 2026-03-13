@@ -69,6 +69,39 @@ const weightedMultipliers = [
 }
 
 
+
+const WHEEL8_HISTORY_FILE =
+"/opt/render/project/data/wheel8_history.json"
+
+const MAX_WHEEL8_HISTORY = 9
+
+
+function loadWheel8History(){
+  try{
+    if(!fs.existsSync(WHEEL8_HISTORY_FILE)) return []
+    return JSON.parse(
+      fs.readFileSync(WHEEL8_HISTORY_FILE,"utf8")
+    )
+  }catch(e){
+    console.error("❌ Load wheel8 history failed",e)
+    return []
+  }
+}
+
+function saveWheel8History(list){
+  try{
+    fs.writeFileSync(
+      WHEEL8_HISTORY_FILE,
+      JSON.stringify(list,null,2)
+    )
+  }catch(e){
+    console.error("❌ Save wheel8 history failed",e)
+  }
+}
+
+
+
+
 // ================================
 // 🏭 DIAMOND FACTORY DATA
 // ================================
@@ -1447,7 +1480,17 @@ const activeUsers = new Map();
 // 🎡 LUCKY WHEEL 8 ROUND
 // ================================
 
-let wheel8History = []
+let wheel8History = loadWheel8History()
+
+// 🔥 chỉ giữ lịch sử 24h
+const ONE_DAYS = 24*60*60*1000
+
+wheel8History = wheel8History.filter(
+  h => Date.now() - h.ts <= ONE_DAYS
+)
+
+// lưu lại sau khi dọn
+saveWheel8History(wheel8History)
 
 
 let wheel8Round = {
@@ -1569,12 +1612,16 @@ multiplier: multiplier
 
 wheel8History.unshift({
 slot: winSlot,
-multi: multiplier
+multi: multiplier,
+ts: Date.now()
 })
 
-if(wheel8History.length > 9){
+if(wheel8History.length > MAX_WHEEL8_HISTORY){
 wheel8History.pop()
 }
+
+saveWheel8History(wheel8History)
+
 
 io.emit("wheel8-history",wheel8History)
 
