@@ -422,13 +422,51 @@ border-radius:6px;
 
 
 .coin-bar{
+
 position:absolute;
-bottom:107px;
-left:49%;
+bottom:110px;
+left:50%;
 transform:translateX(-50%);
-padding:9px 22px;
-z-index: 2;
-color: whitesmoke;
+
+z-index:5;
+
+}
+
+.coin-box{
+
+display:flex;
+align-items:center;
+gap:8px;
+
+padding:8px 18px;
+
+
+
+font-weight:900;
+font-size:18px;
+
+}
+
+.coin-icon{
+
+width:22px;
+height:22px;
+
+filter:
+drop-shadow(0 0 6px #00aaff);
+
+}
+
+.coin-value{
+
+color:#fff;
+
+text-shadow:
+0 0 6px #00aaff,
+0 0 12px #00aaff;
+
+letter-spacing:1px;
+
 }
 
 
@@ -797,7 +835,7 @@ z-index:3;
 .history-list{
 
 display:flex;
-gap:0px;
+gap:3px;
 
 }
 
@@ -948,8 +986,20 @@ color:#ffcc00;
 
 
 <div class="coin-bar">
-💎 <span id="coins"></span>
+
+<div class="coin-box">
+
+<img
+src="/assets/police/diamond-icon.png"
+class="coin-icon">
+
+<span id="coins" class="coin-value">0</span>
+
 </div>
+
+</div>
+
+
 
 
 <div class="bet-panel">
