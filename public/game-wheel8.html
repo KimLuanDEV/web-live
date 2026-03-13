@@ -189,17 +189,7 @@ border-radius:50%;
 }
 
 
-.slot.lose{
 
-opacity:0.15;
-
-transform:scale(.8);
-
-filter:grayscale(100%) blur(1px);
-
-transition:.5s;
-
-}
 
 
 .slot.win .slot-img{
@@ -1235,63 +1225,42 @@ const slot = Number(data.slot)
 const m = data.multiplier
 
 
-// reset slot
-slots.forEach(s=>{
-s.classList.remove("win","lose")
-})
 
 
-// slot thắng
+slots.forEach(s=>s.classList.remove("win"))
+
 const winSlot =
 document.querySelector(".slot.s"+slot)
 
 if(winSlot){
+
 winSlot.classList.add("win")
-}
 
-
-// slot thua
-slots.forEach((s,i)=>{
-
-if(i !== slot-1){
-s.classList.add("lose")
-}
-
-})
-
-
-// sau 5s reset
 setTimeout(()=>{
 
-slots.forEach(s=>{
-s.classList.remove("win","lose")
-})
-
+winSlot.classList.remove("win")
 resultShowing = false
 
 },5000)
 
+}
 
 
 // hình slot thắng
 document.getElementById("resultImg").src =
 "/assets/police/slot"+slot+".png"
 
-
 // tổng cược toàn bộ
 const totalBet =
 myBets.reduce((a,b)=>a+b,0)
-
 
 // cược slot thắng
 const winBet =
 myBets[slot-1] || 0
 
-
 // tiền thắng
 const totalWin =
 winBet * m
-
 
 document.getElementById("resultTotalBet").textContent =
 totalBet
@@ -1299,13 +1268,12 @@ totalBet
 document.getElementById("resultTotalWin").textContent =
 totalWin
 
-
 document.getElementById("resultModal").style.display = "flex"
-
 
 setTimeout(()=>{
 closeResult()
 },5000)
+
 
 })
 
@@ -1384,11 +1352,6 @@ el.textContent = pool[i]
 
 
 socket.on("wheel8-round-new",()=>{
-
-
-slots.forEach(s=>{
-s.classList.remove("lose","win")
-})
 
 isBetLocked = false
 highlightSpeed = 1000
