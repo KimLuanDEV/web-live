@@ -1572,7 +1572,7 @@ slot: winSlot,
 multi: multiplier
 })
 
-if(wheel8History.length > 8){
+if(wheel8History.length > 9){
 wheel8History.pop()
 }
 
