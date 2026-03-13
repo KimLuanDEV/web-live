@@ -1399,13 +1399,14 @@ document.getElementById("wheelHistoryList")
 
 box.innerHTML = ""
 
-wheelHistory.forEach(h=>{
+// chỉ lấy 8 kết quả mới nhất
+const list = wheelHistory.slice(-8).reverse()
+
+list.forEach(h=>{
 
 const div = document.createElement("div")
-
 div.className = "history-item"
 
-// ⭐ icon xe / máy bay theo slot
 const img = document.createElement("img")
 
 img.src = "/assets/police/slot"+h.slot+".png"
