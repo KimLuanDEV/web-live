@@ -71,6 +71,53 @@ const weightedMultipliers = [
 
 
 
+// ================================
+// 📜 WHEEL8 USER BET HISTORY
+// ================================
+const WHEEL8_USER_HISTORY_FILE =
+"/opt/render/project/data/wheel8_user_history.json"
+
+function loadWheel8UserHistory(){
+
+try{
+
+if(!fs.existsSync(WHEEL8_USER_HISTORY_FILE))
+return {}
+
+return JSON.parse(
+fs.readFileSync(WHEEL8_USER_HISTORY_FILE,"utf8")
+)
+
+}catch(e){
+
+console.error("❌ Load wheel8 user history failed",e)
+return {}
+
+}
+
+}
+
+function saveWheel8UserHistory(db){
+
+try{
+
+fs.writeFileSync(
+WHEEL8_USER_HISTORY_FILE,
+JSON.stringify(db,null,2)
+)
+
+}catch(e){
+
+console.error("❌ Save wheel8 user history failed",e)
+
+}
+
+}
+
+let wheel8UserHistory = loadWheel8UserHistory()
+
+
+
 const WHEEL8_ROUND_FILE =
 "/opt/render/project/data/wheel8_round_count.json"
 
@@ -1615,15 +1662,43 @@ wheel8Round.bets.forEach(o=>{
 const me = users[o.uid]
 if(!me?.profile) return
 
+let win = 0
+
 if(o.slot === winSlot){
 
-const win = o.bet * multiplier
-
+win = o.bet * multiplier
 me.profile.coins += win
 
 }
 
+// =====================
+// 📜 SAVE USER HISTORY
+// =====================
+
+if(!wheel8UserHistory[o.uid])
+wheel8UserHistory[o.uid] = []
+
+wheel8UserHistory[o.uid].unshift({
+
+roundId: wheel8Round.id,
+slot: o.slot,
+bet: o.bet,
+multiplier: multiplier,
+win: win,
+ts: Date.now()
+
 })
+
+// giữ tối đa 50 round
+wheel8UserHistory[o.uid] =
+wheel8UserHistory[o.uid].slice(0,50)
+
+})
+
+
+// 💾 LƯU FILE HISTORY
+saveWheel8UserHistory(wheel8UserHistory)
+
 
 // lưu user
 saveUsers(users)
@@ -3125,6 +3200,24 @@ io.on("connection", socket => {
 // ================================
 // 🎡 RESTORE WHEEL8 BETS WHEN RELOAD
 // ================================
+
+
+// ================================
+// 📜 SEND USER BET HISTORY
+// ================================
+socket.on("wheel8-get-my-history",()=>{
+
+const uid = socket.data.uid
+if(!uid) return
+
+socket.emit(
+"wheel8-my-history",
+wheel8UserHistory[uid] || []
+)
+
+})
+
+
 
 
 // gửi round hiện tại khi user vào game
