@@ -1490,16 +1490,32 @@ bet:currentBet
 
 /* 📜 LƯU HISTORY CƯỢC */
 
+// tìm record cùng round + slot
+let row = myBetHistory.find(r =>
+r.round === currentRoundId &&
+r.slot === slot
+)
+
+if(row){
+
+// cộng thêm cược
+row.bet += currentBet
+
+}else{
+
+// tạo record mới
 myBetHistory.unshift({
 round: currentRoundId,
 slot: slot,
 bet: currentBet
 })
 
+}
+
+// giới hạn 20 dòng
 if(myBetHistory.length > 20){
 myBetHistory.pop()
 }
-
 
 
 // lưu tạm slot vừa cược
