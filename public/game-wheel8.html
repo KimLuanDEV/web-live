@@ -1573,7 +1573,9 @@ list.forEach(r=>{
 myBetHistory.push({
 round: r.roundId,
 slot: r.slot,
-bet: r.bet
+bet: r.bet,
+win: r.win || 0,
+multi: r.multiplier || 0
 })
 
 })
@@ -1832,19 +1834,11 @@ list.reduce((a,b)=>a+b.bet,0)
 // tổng thắng
 let totalWin = 0
 
-const result = roundResults[round]
-
-if(result){
-
 list.forEach(b=>{
-
-if(b.slot == result.slot){
-totalWin += b.bet * result.multi
-}
-
+totalWin += b.win || 0
 })
 
-}
+
 
 const row = document.createElement("div")
 row.className="history-row"
@@ -1907,11 +1901,13 @@ row.className="history-row"
 
 let winMark = ""
 
-const result = roundResults[round]
+const winRow =
+bets.find(b=>b.slot == slot && b.win > 0)
 
-if(result && slot == result.slot){
+if(winRow){
 winMark = " ⭐ WIN"
 }
+
 
 row.innerHTML =
 "<img src='/assets/police/slot"+slot+".png' class='history-slot-icon'>" +
