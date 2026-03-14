@@ -1011,6 +1011,133 @@ center / contain no-repeat;
 
 
 
+.bet-history-btn{
+
+position:absolute;
+bottom:140px;
+right:10px;
+
+padding:8px 14px;
+
+font-size:12px;
+font-weight:900;
+
+background:linear-gradient(
+90deg,
+#001a33,
+#003a66,
+#001a33
+);
+
+border:1px solid #00aaff;
+border-radius:6px;
+
+color:#fff;
+
+text-shadow:
+0 0 8px #00aaff;
+
+box-shadow:
+0 0 10px #00aaff;
+
+cursor:pointer;
+
+}
+
+
+
+.history-modal{
+
+position:fixed;
+inset:0;
+
+display:none;
+
+background:rgba(0,0,0,.6);
+
+align-items:center;
+justify-content:center;
+
+z-index:20;
+
+}
+
+.history-box{
+
+width:320px;
+max-height:420px;
+
+background:#020617;
+
+border:2px solid #00aaff;
+
+border-radius:12px;
+
+padding:20px;
+
+box-shadow:
+0 0 20px #00aaff;
+
+overflow:auto;
+
+}
+
+.history-title{
+
+font-size:18px;
+font-weight:900;
+
+text-align:center;
+
+margin-bottom:15px;
+
+}
+
+.history-bets{
+
+display:flex;
+flex-direction:column;
+gap:8px;
+
+}
+
+.history-row{
+
+display:flex;
+justify-content:space-between;
+
+padding:6px 10px;
+
+background:#0d1b2a;
+
+border-radius:6px;
+
+font-size:13px;
+
+}
+
+.history-close{
+
+margin-top:15px;
+
+width:100%;
+
+padding:10px;
+
+font-weight:900;
+
+background:#003a66;
+
+border:none;
+
+color:#fff;
+
+border-radius:6px;
+
+cursor:pointer;
+
+}
+
 
 </style>
 </head>
@@ -1194,6 +1321,37 @@ BETTING CLOSED
 
 
 
+
+<!-- BET HISTORY BUTTON -->
+<div class="bet-history-btn" onclick="openMyBetHistory()">
+📜 MY BETS
+</div>
+
+
+
+<!-- ================= MY BET HISTORY ================= -->
+
+<div id="myBetHistoryModal" class="history-modal">
+
+<div class="history-box">
+
+<div class="history-title">
+MY BET HISTORY
+</div>
+
+<div id="myBetHistoryList" class="history-bets">
+</div>
+
+<button class="history-close"
+onclick="closeMyBetHistory()">
+CLOSE
+</button>
+
+</div>
+
+</div>
+
+
 <script>
 
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
@@ -1212,6 +1370,8 @@ let isBetLocked = false
 let resultShowing = false
 let coins = 0
 let wheelHistory = []
+let myBetHistory = []
+let currentRoundId = 0
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
@@ -1326,6 +1486,21 @@ socket.emit("wheel8-bet",{
 slot,
 bet:currentBet
 })
+
+
+/* 📜 LƯU HISTORY CƯỢC */
+
+myBetHistory.unshift({
+round: currentRoundId,
+slot: slot,
+bet: currentBet
+})
+
+if(myBetHistory.length > 20){
+myBetHistory.pop()
+}
+
+
 
 // lưu tạm slot vừa cược
 lastBetSlot = slot
@@ -1497,6 +1672,8 @@ el.textContent = pool[i]
 
 socket.on("wheel8-round-new",(data)=>{
 
+currentRoundId = data.roundId
+
 isBetLocked = false
 highlightSpeed = 1000
 
@@ -1661,6 +1838,48 @@ el.style.display = value > 0 ? "block" : "none"
 })
 
 
+
+
+function openMyBetHistory(){
+
+document.getElementById("myBetHistoryModal")
+.style.display="flex"
+
+renderMyBetHistory()
+
+}
+
+function closeMyBetHistory(){
+
+document.getElementById("myBetHistoryModal")
+.style.display="none"
+
+}
+
+
+
+function renderMyBetHistory(){
+
+const box =
+document.getElementById("myBetHistoryList")
+
+box.innerHTML=""
+
+myBetHistory.forEach(b=>{
+
+const row = document.createElement("div")
+row.className="history-row"
+
+row.innerHTML =
+"Round "+b.round+
+" | Slot "+b.slot+
+" | "+b.bet+" 💎"
+
+box.appendChild(row)
+
+})
+
+}
 
 </script>
 
