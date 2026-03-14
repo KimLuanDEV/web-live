@@ -1320,13 +1320,29 @@ modal.style.display = "none"
 return
 }
 
-// gửi cược
+// =======================
+// 💸 TRỪ COIN NGAY (FIX)
+// =======================
+
+coins -= currentBet
+
+if(coins < 0) coins = 0
+
+document.getElementById("coins").textContent = coins
+
+// =======================
+// 📡 GỬI CƯỢC
+// =======================
+
 socket.emit("wheel8-bet",{
 slot,
 bet:currentBet
 })
 
-// cộng cược cá nhân
+// =======================
+// 📊 CẬP NHẬT BET UI
+// =======================
+
 myBets[slot-1] += currentBet
 
 const el = document.getElementById("mybet"+slot)
