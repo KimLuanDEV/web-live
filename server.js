@@ -70,6 +70,44 @@ const weightedMultipliers = [
 
 
 
+
+const WHEEL8_ROUND_FILE =
+"/opt/render/project/data/wheel8_round_count.json"
+
+function loadWheel8Round(){
+
+try{
+if(!fs.existsSync(WHEEL8_ROUND_FILE)) return 1
+
+const data = JSON.parse(
+fs.readFileSync(WHEEL8_ROUND_FILE,"utf8")
+)
+
+return data.count || 1
+
+}catch(e){
+console.error("Load wheel8 round failed",e)
+return 1
+}
+
+}
+
+function saveWheel8Round(v){
+
+try{
+
+fs.writeFileSync(
+WHEEL8_ROUND_FILE,
+JSON.stringify({count:v},null,2)
+)
+
+}catch(e){
+console.error("Save wheel8 round failed",e)
+}
+
+}
+
+
 const WHEEL8_HISTORY_FILE =
 "/opt/render/project/data/wheel8_history.json"
 
@@ -1481,7 +1519,8 @@ const activeUsers = new Map();
 // ================================
 
 let wheel8History = loadWheel8History()
-let wheel8RoundCounter = 1
+
+let wheel8RoundCounter = loadWheel8Round()
 
 // 🔥 chỉ giữ lịch sử 24h
 const ONE_DAYS = 24*60*60*1000
@@ -1632,12 +1671,18 @@ io.emit("wheel8-history",wheel8History)
 // =======================
 
 wheel8Round = {
-  id: wheel8RoundCounter++,
+  id: wheel8RoundCounter,
   startAt: Date.now(),
   endAt: Date.now()+35000,
   bets:[],
   slotPool:[0,0,0,0,0,0,0,0]
 }
+
+// lưu round vào file
+saveWheel8Round(wheel8RoundCounter)
+
+// tăng counter cho round sau
+wheel8RoundCounter++
 
 io.emit("wheel8-pool-update",wheel8Round.slotPool)
 
