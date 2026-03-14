@@ -1014,9 +1014,8 @@ center / contain no-repeat;
 .bet-history-btn{
 
 position:absolute;
-bottom:140px;
-right:10px;
-
+bottom:268px;
+right:173px;
 padding:8px 14px;
 
 font-size:12px;
@@ -1041,7 +1040,7 @@ box-shadow:
 0 0 10px #00aaff;
 
 cursor:pointer;
-
+z-index: 1;
 }
 
 
@@ -1307,23 +1306,6 @@ class="coin-icon">
 
 
 
-<div id="roundDetailModal" class="history-modal">
-
-<div class="history-box">
-
-<div class="history-title">
-ROUND DETAILS
-</div>
-
-<div id="roundDetailList" class="history-bets"></div>
-
-<button class="history-close"
-onclick="closeRoundDetail()">
-CLOSE
-</button>
-
-</div>
-</div>
 
 
 <div id="betClosedModal" class="bet-closed-modal">
@@ -1343,7 +1325,7 @@ BETTING CLOSED
 
 <!-- BET HISTORY BUTTON -->
 <div class="bet-history-btn" onclick="openMyBetHistory()">
-📜 MY BETS
+MY BETS
 </div>
 
 
@@ -1369,6 +1351,28 @@ CLOSE
 </div>
 
 </div>
+
+
+
+
+<div id="roundDetailModal" class="history-modal">
+
+<div class="history-box">
+
+<div class="history-title">
+ROUND DETAILS
+</div>
+
+<div id="roundDetailList" class="history-bets"></div>
+
+<button class="history-close"
+onclick="closeRoundDetail()">
+CLOSE
+</button>
+
+</div>
+</div>
+
 
 
 <script>
