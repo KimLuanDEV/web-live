@@ -842,6 +842,7 @@ gap:3px;
 
 .history-item{
 
+position:relative;
 width:48px;
 height:48px;
 
@@ -865,6 +866,50 @@ box-shadow:
 inset 0 0 6px rgba(0,170,255,.3);
 
 }
+
+
+.history-new{
+
+position:absolute;
+
+top:-6px;
+left:-6px;
+
+font-size:9px;
+font-weight:900;
+
+padding:2px 5px;
+
+color:#fff;
+
+background:linear-gradient(
+90deg,
+#ff0033,
+#ff6600
+);
+
+border-radius:6px;
+
+box-shadow:
+0 0 6px #ff3300,
+0 0 10px #ff3300;
+
+animation:newPulse .8s infinite alternate;
+
+}
+
+@keyframes newPulse{
+
+0%{
+transform:scale(1);
+}
+
+100%{
+transform:scale(1.1);
+}
+
+}
+
 
 /* màu theo multiplier */
 
@@ -1461,10 +1506,9 @@ document.getElementById("wheelHistoryList")
 
 box.innerHTML = ""
 
-// chỉ lấy 8 kết quả mới nhất
 const list = wheelHistory.slice(0,8)
 
-list.forEach(h=>{
+list.forEach((h,i)=>{
 
 const div = document.createElement("div")
 div.className = "history-item"
@@ -1478,6 +1522,17 @@ img.style.height = "100%"
 img.style.objectFit = "contain"
 
 div.appendChild(img)
+
+// badge NEW cho kết quả mới nhất
+if(i === 0){
+
+const badge = document.createElement("div")
+badge.className = "history-new"
+badge.textContent = "NEW"
+
+div.appendChild(badge)
+
+}
 
 box.appendChild(div)
 
