@@ -1874,9 +1874,33 @@ document.getElementById("roundDetailList")
 
 box.innerHTML=""
 
-myBetHistory
-.filter(b=>b.round == round)
-.forEach(b=>{
+// lấy tất cả cược của round
+const bets =
+myBetHistory.filter(b=>b.round == round)
+
+// =======================
+// GỘP THEO SLOT
+// =======================
+
+const slotMap = {}
+
+bets.forEach(b=>{
+
+if(!slotMap[b.slot]){
+slotMap[b.slot] = 0
+}
+
+slotMap[b.slot] += b.bet
+
+})
+
+// =======================
+// RENDER
+// =======================
+
+Object.keys(slotMap).forEach(slot=>{
+
+const bet = slotMap[slot]
 
 const row = document.createElement("div")
 row.className="history-row"
@@ -1885,13 +1909,13 @@ let winMark = ""
 
 const result = roundResults[round]
 
-if(result && b.slot == result.slot){
+if(result && slot == result.slot){
 winMark = " ⭐ WIN"
 }
 
 row.innerHTML =
-"<img src='/assets/police/slot"+b.slot+".png' class='history-slot-icon'>" +
-"<span>"+b.bet+" 💎</span>" +
+"<img src='/assets/police/slot"+slot+".png' class='history-slot-icon'>" +
+"<span>"+bet+" 💎</span>" +
 winMark
 
 box.appendChild(row)
