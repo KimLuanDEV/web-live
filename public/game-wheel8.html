@@ -1326,8 +1326,10 @@ slot,
 bet:currentBet
 })
 
-// cộng cược cá nhân
-myBets[slot-1] += currentBet
+// lưu tạm slot vừa cược
+lastBetSlot = slot
+lastBetValue = currentBet
+
 
 const el = document.getElementById("mybet"+slot)
 
@@ -1638,6 +1640,25 @@ fetch("/api/wheel8-round")
 document.getElementById("roundId").textContent =
 d.roundId
 })
+
+
+socket.on("wheel8-bet-ok",()=>{
+
+myBets[lastBetSlot-1] += lastBetValue
+
+const el = document.getElementById("mybet"+lastBetSlot)
+
+if(el){
+
+const value = myBets[lastBetSlot-1]
+
+el.textContent = value
+el.style.display = value > 0 ? "block" : "none"
+
+}
+
+})
+
 
 
 </script>
