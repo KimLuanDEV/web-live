@@ -1495,7 +1495,7 @@ saveWheel8History(wheel8History)
 
 
 let wheel8Round = {
-  id: Date.now(),
+  id: wheel8RoundCounter++,
   startAt: Date.now(),
   endAt: Date.now() + 35000,
   bets: [],
@@ -3080,6 +3080,13 @@ io.on("connection", socket => {
 // ================================
 // 🎡 RESTORE WHEEL8 BETS WHEN RELOAD
 // ================================
+
+
+// gửi round hiện tại khi user vào game
+socket.emit("wheel8-round-new",{
+roundId: wheel8Round.id
+})
+
 
 socket.emit("wheel8-history",wheel8History)
 
