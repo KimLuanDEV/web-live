@@ -1481,6 +1481,7 @@ const activeUsers = new Map();
 // ================================
 
 let wheel8History = loadWheel8History()
+let wheel8RoundCounter = 1
 
 // 🔥 chỉ giữ lịch sử 24h
 const ONE_DAYS = 24*60*60*1000
@@ -1631,11 +1632,11 @@ io.emit("wheel8-history",wheel8History)
 // =======================
 
 wheel8Round = {
-id: Date.now(),
-startAt: Date.now(),
-endAt: Date.now()+35000,
-bets:[],
-slotPool:[0,0,0,0,0,0,0,0]
+  id: wheel8RoundCounter++,
+  startAt: Date.now(),
+  endAt: Date.now()+35000,
+  bets:[],
+  slotPool:[0,0,0,0,0,0,0,0]
 }
 
 io.emit("wheel8-pool-update",wheel8Round.slotPool)
