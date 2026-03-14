@@ -1307,6 +1307,25 @@ class="coin-icon">
 
 
 
+<div id="roundDetailModal" class="history-modal">
+
+<div class="history-box">
+
+<div class="history-title">
+ROUND DETAILS
+</div>
+
+<div id="roundDetailList" class="history-bets"></div>
+
+<button class="history-close"
+onclick="closeRoundDetail()">
+CLOSE
+</button>
+
+</div>
+</div>
+
+
 <div id="betClosedModal" class="bet-closed-modal">
 
 <div class="bet-closed-bg">
@@ -1372,6 +1391,11 @@ let coins = 0
 let wheelHistory = []
 let myBetHistory = []
 let currentRoundId = 0
+
+let lastWinSlot = 0
+let lastWinMulti = 0
+
+let roundResults = {}
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
@@ -1539,6 +1563,17 @@ el.style.display = value > 0 ? "block" : "none"
 /* RESULT */
 
 socket.on("wheel8-result",(data)=>{
+
+
+lastWinSlot = data.slot
+lastWinMulti = data.multiplier
+
+
+roundResults[currentRoundId] = {
+slot:data.slot,
+multi:data.multiplier
+}
+
 
 // cập nhật history ngay lập tức
 wheelHistory.unshift({
@@ -1881,21 +1916,147 @@ document.getElementById("myBetHistoryList")
 
 box.innerHTML=""
 
+// gom theo round
+const rounds = {}
+
 myBetHistory.forEach(b=>{
+
+if(!rounds[b.round]){
+rounds[b.round] = []
+}
+
+rounds[b.round].push(b)
+
+})
+
+Object.keys(rounds).forEach(round=>{
+
+const list = rounds[round]
+
+// tổng cược
+const totalBet =
+list.reduce((a,b)=>a+b.bet,0)
+
+// tổng thắng
+let totalWin = 0
+
+const result = roundResults[round]
+
+if(result){
+
+list.forEach(b=>{
+
+if(b.slot == result.slot){
+totalWin += b.bet * result.multi
+}
+
+})
+
+}
 
 const row = document.createElement("div")
 row.className="history-row"
 
 row.innerHTML =
-"Round "+b.round+
-" | Slot "+b.slot+
-" | "+b.bet+" 💎"
+"Round "+round+
+" | 💎"+totalBet+
+" | 💎"+totalWin
+
+// click mở chi tiết
+row.onclick = ()=>openRoundDetailFromHistory(round)
 
 box.appendChild(row)
 
 })
 
 }
+
+
+function openRoundDetailFromHistory(round){
+
+document.getElementById("roundDetailModal")
+.style.display="flex"
+
+const box =
+document.getElementById("roundDetailList")
+
+box.innerHTML=""
+
+myBetHistory
+.filter(b=>b.round == round)
+.forEach(b=>{
+
+const row = document.createElement("div")
+row.className="history-row"
+
+let winMark = ""
+
+const result = roundResults[round]
+
+if(result && b.slot == result.slot){
+winMark = " ⭐ WIN"
+}
+
+row.innerHTML =
+"Slot "+b.slot+
+" | "+b.bet+" 💎"+
+winMark
+
+box.appendChild(row)
+
+})
+
+}
+
+
+
+function openRoundDetail(){
+
+document.getElementById("roundDetailModal")
+.style.display="flex"
+
+renderRoundDetail()
+
+}
+
+function closeRoundDetail(){
+
+document.getElementById("roundDetailModal")
+.style.display="none"
+
+}
+
+function renderRoundDetail(){
+
+const box =
+document.getElementById("roundDetailList")
+
+box.innerHTML=""
+
+myBetHistory
+.filter(b=>b.round === currentRoundId)
+.forEach(b=>{
+
+const row = document.createElement("div")
+row.className="history-row"
+
+let winMark = ""
+
+if(b.slot === lastWinSlot){
+winMark = " ⭐ WIN"
+}
+
+row.innerHTML =
+"Slot "+b.slot+
+" | "+b.bet+" 💎"+
+winMark
+
+box.appendChild(row)
+
+})
+
+}
+
 
 </script>
 
