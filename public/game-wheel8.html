@@ -1193,6 +1193,7 @@ BETTING CLOSED
 </div>
 
 
+
 <script>
 
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
@@ -1641,6 +1642,23 @@ document.getElementById("roundId").textContent =
 d.roundId
 })
 
+
+socket.on("wheel8-bet-ok",()=>{
+
+myBets[lastBetSlot-1] += lastBetValue
+
+const el = document.getElementById("mybet"+lastBetSlot)
+
+if(el){
+
+const value = myBets[lastBetSlot-1]
+
+el.textContent = value
+el.style.display = value > 0 ? "block" : "none"
+
+}
+
+})
 
 
 
