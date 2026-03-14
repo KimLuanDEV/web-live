@@ -942,24 +942,108 @@ color:#ffcc00;
 .wheel-round{
 
 position:absolute;
-top:8px;
-right:10px;
+top:66px;
+right:123px;
 
-font-size:12px;
+font-size:32px;
 font-weight:700;
 
 color:#fff;
-
-background:rgba(0,0,0,0.5);
-
 padding:4px 8px;
-
-border-radius:6px;
-
 letter-spacing:1px;
 
 }
 
+
+
+
+
+/* DECOR BLOCKS */
+
+.decor-left,
+.decor-right{
+
+position:absolute;
+top:120px;
+
+width:140px;
+height:160px;
+
+pointer-events:none;
+opacity:.9;
+
+}
+
+/* radar trái */
+
+.decor-left{
+
+left:-120px;
+
+background:
+url("/assets/police/police-girl.png")
+center / contain no-repeat;
+
+animation:radarPulse 3s infinite linear;
+
+}
+
+/* bảng điều khiển phải */
+
+.decor-right{
+
+right:-120px;
+
+background:
+url("/assets/police/police-man.png")
+center / contain no-repeat;
+
+filter:
+drop-shadow(0 0 10px #00aaff)
+drop-shadow(0 0 25px #00aaff);
+
+animation:panelGlow 2s infinite alternate;
+
+}
+
+
+/* radar effect */
+
+@keyframes radarPulse{
+
+0%{
+transform:scale(1);
+opacity:.7;
+}
+
+50%{
+transform:scale(1.08);
+opacity:1;
+}
+
+100%{
+transform:scale(1);
+opacity:.7;
+}
+
+}
+
+/* panel glow */
+
+@keyframes panelGlow{
+
+0%{
+filter:
+drop-shadow(0 0 10px #00aaff);
+}
+
+100%{
+filter:
+drop-shadow(0 0 25px #00aaff)
+drop-shadow(0 0 40px #00aaff);
+}
+
+}
 
 
 </style>
@@ -1036,6 +1120,14 @@ letter-spacing:1px;
 </div>
 
 </div>
+
+
+
+<!-- LEFT DECOR -->
+<div class="decor-left"></div>
+
+<!-- RIGHT DECOR -->
+<div class="decor-right"></div>
 
 
 <!-- ================= ROUND ID ================= -->
