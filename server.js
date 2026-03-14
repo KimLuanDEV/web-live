@@ -5713,6 +5713,18 @@ app.get("/admin-time-race.html",(req,res)=>{
 
 
 
+
+app.get("/api/wheel8-round",(req,res)=>{
+
+res.json({
+roundId: wheel8Round.id
+})
+
+})
+
+
+
+
 app.get("/api/time-race/my-history",(req,res)=>{
 
   const uid = req.headers["x-uid"];

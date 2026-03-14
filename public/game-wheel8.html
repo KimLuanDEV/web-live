@@ -939,6 +939,28 @@ color:#ffcc00;
 }
 
 
+.wheel-round{
+
+position:absolute;
+top:8px;
+right:10px;
+
+font-size:12px;
+font-weight:700;
+
+color:#fff;
+
+background:rgba(0,0,0,0.5);
+
+padding:4px 8px;
+
+border-radius:6px;
+
+letter-spacing:1px;
+
+}
+
+
 
 </style>
 </head>
@@ -1013,6 +1035,13 @@ color:#ffcc00;
 <div class="mybet" id="mybet8">0</div>
 </div>
 
+</div>
+
+
+<!-- ================= ROUND ID ================= -->
+<div class="wheel-round">
+ROUND:
+<span id="roundId">-</span>
 </div>
 
 
@@ -1434,6 +1463,9 @@ myBets[i-1] = 0
 
 }
 
+document.getElementById("roundId").textContent =
+data.roundId
+
 // đóng modal cảnh báo
 document.getElementById("betClosedModal").style.display="none"
 
@@ -1539,6 +1571,16 @@ box.appendChild(div)
 })
 
 }
+
+
+
+fetch("/api/wheel8-round")
+.then(r=>r.json())
+.then(d=>{
+document.getElementById("roundId").textContent =
+d.roundId
+})
+
 
 </script>
 
