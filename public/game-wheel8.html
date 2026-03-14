@@ -1214,6 +1214,18 @@ el.style.display = value > 0 ? "block" : "none"
 
 socket.on("wheel8-result",(data)=>{
 
+// cập nhật history ngay lập tức
+wheelHistory.unshift({
+slot:data.slot,
+multi:data.multiplier
+})
+
+wheelHistory = wheelHistory.slice(0,8)
+
+renderHistory()
+
+
+
 resultShowing = true
 
 stopHighlightLoop()
