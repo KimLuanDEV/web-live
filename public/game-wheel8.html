@@ -1454,7 +1454,6 @@ document.addEventListener("dragstart", e => e.preventDefault())
 
 
 
-
 function renderHistory(){
 
 const box =
@@ -1463,7 +1462,7 @@ document.getElementById("wheelHistoryList")
 box.innerHTML = ""
 
 // chỉ lấy 8 kết quả mới nhất
-const list = wheelHistory.slice(-8).reverse()
+const list = wheelHistory.slice(0,8)
 
 list.forEach(h=>{
 
