@@ -52,9 +52,7 @@ background:#050505;
 border-bottom:1px solid rgba(255,255,255,.1);
 }
 
-#timer{
-color:#fff;
-}
+
 
 /* WHEEL AREA */
 
@@ -299,15 +297,7 @@ z-index: 1;
 }
 
 
-.bet-grid{
-position: absolute;
-display:flex;
-justify-content:center;
-gap:0px;
-margin-top:2px;
-bottom: 25px;
-left: 15px;
-}
+
 
 .bet-chip{
 
@@ -531,109 +521,7 @@ transform:scale(1.12);
 
 
 
-.spokes{
-position:absolute;
-left:189px;
-top:40px;
-transform:translate(-50%,-50%);
-pointer-events:none;
-}
 
-.spoke{
-
-position:absolute;
-
-width:2px;
-height:150px;
-
-background:linear-gradient(
-to top,
-rgba(255,255,255,.8),
-rgba(255,255,255,.1)
-);
-
-transform-origin:bottom center;
-
-box-shadow:0 0 8px rgba(255,255,255,.4);
-
-}
-
-
-.spoke.s1{ transform:rotate(0deg); }
-
-.spoke.s2{ transform:rotate(45deg); }
-
-.spoke.s3{ transform:rotate(90deg); }
-
-.spoke.s4{ transform:rotate(135deg); }
-
-.spoke.s5{ transform:rotate(180deg); }
-
-.spoke.s6{ transform:rotate(225deg); }
-
-.spoke.s7{ transform:rotate(270deg); }
-
-.spoke.s8{ transform:rotate(315deg); }
-
-
-
-.bet-closed-banner{
-
-position:absolute;
-bottom:161px;
-width:215px;
-left:50%;
-transform:translateX(-50%);
-
-padding:16px 7px;
-
-font-weight:900;
-font-size:22px;
-letter-spacing:2px;
-
-color:#fff;
-
-background:
-linear-gradient(
-90deg,
-#001a33,
-#003a66,
-#001a33
-);
-
-border:2px solid #00aaff;
-
-border-radius:8px;
-
-text-shadow:
-0 0 10px #00aaff,
-0 0 20px #00aaff;
-
-box-shadow:
-0 0 20px #00aaff,
-inset 0 0 10px #00aaff;
-
-display:none;
-
-animation:policeFlash .5s infinite alternate;
-
-z-index:5;
-
-}
-
-@keyframes policeFlash{
-
-0%{
-opacity:0.7;
-transform:translateX(-50%) scale(1);
-}
-
-100%{
-opacity:1;
-transform:translateX(-50%) scale(1.05);
-}
-
-}
 
 
 
@@ -648,30 +536,6 @@ display:block;
 
 }
 
-.result-info{
-
-font-size:18px;
-font-weight:700;
-
-margin-top:10px;
-
-display:flex;
-flex-direction:column;
-gap:6px;
-
-}
-
-.result-win{
-
-color:#00ff88;
-
-font-size:22px;
-
-text-shadow:
-0 0 10px #00ff88,
-0 0 20px #00ff88;
-
-}
 
 
 
@@ -868,6 +732,14 @@ inset 0 0 6px rgba(0,170,255,.3);
 }
 
 
+
+.history-item img{
+width:100%;
+height:100%;
+object-fit:contain;
+}
+
+
 .history-new{
 
 position:absolute;
@@ -911,32 +783,6 @@ transform:scale(1.1);
 }
 
 
-/* màu theo multiplier */
-
-.h5{
-background:#1d2f55;
-color:#7ab7ff;
-}
-
-.h10{
-background:#2c1d55;
-color:#b37aff;
-}
-
-.h15{
-background:#55321d;
-color:#ffb77a;
-}
-
-.h25{
-background:#55311d;
-color:#ff7a7a;
-}
-
-.h45{
-background:#552a1d;
-color:#ffcc00;
-}
 
 
 .wheel-round{
@@ -1137,6 +983,14 @@ cursor:pointer;
 
 }
 
+
+
+.history-slot-icon{
+width:26px;
+height:26px;
+object-fit:contain;
+margin-right:8px;
+}
 
 </style>
 </head>
@@ -1400,6 +1254,11 @@ let lastWinSlot = 0
 let lastWinMulti = 0
 
 let roundResults = {}
+
+
+let lastBetSlot = 0
+let lastBetValue = 0
+
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
@@ -1842,9 +1701,7 @@ const img = document.createElement("img")
 
 img.src = "/assets/police/slot"+h.slot+".png"
 
-img.style.width = "100%"
-img.style.height = "100%"
-img.style.objectFit = "contain"
+
 
 div.appendChild(img)
 
@@ -2002,8 +1859,8 @@ winMark = " ⭐ WIN"
 }
 
 row.innerHTML =
-"Slot "+b.slot+
-" | "+b.bet+" 💎"+
+"<img src='/assets/police/slot"+b.slot+".png' class='history-slot-icon'>" +
+"<span>"+b.bet+" 💎</span>" +
 winMark
 
 box.appendChild(row)
@@ -2014,14 +1871,7 @@ box.appendChild(row)
 
 
 
-function openRoundDetail(){
 
-document.getElementById("roundDetailModal")
-.style.display="flex"
-
-renderRoundDetail()
-
-}
 
 function closeRoundDetail(){
 
@@ -2030,36 +1880,6 @@ document.getElementById("roundDetailModal")
 
 }
 
-function renderRoundDetail(){
-
-const box =
-document.getElementById("roundDetailList")
-
-box.innerHTML=""
-
-myBetHistory
-.filter(b=>b.round === currentRoundId)
-.forEach(b=>{
-
-const row = document.createElement("div")
-row.className="history-row"
-
-let winMark = ""
-
-if(b.slot === lastWinSlot){
-winMark = " ⭐ WIN"
-}
-
-row.innerHTML =
-"Slot "+b.slot+
-" | "+b.bet+" 💎"+
-winMark
-
-box.appendChild(row)
-
-})
-
-}
 
 
 </script>
