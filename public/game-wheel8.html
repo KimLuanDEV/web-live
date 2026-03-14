@@ -1004,12 +1004,37 @@ url("/assets/police/police-girl2.png")
 center / contain no-repeat;
 
 
-
-
 }
 
 
+.history-modal{
+position:fixed;
+inset:0;
+display:none;
+align-items:center;
+justify-content:center;
+background:rgba(0,0,0,.7);
+z-index:1000;
+}
 
+.history-box{
+width:320px;
+background:#111;
+border-radius:10px;
+padding:20px;
+}
+
+.history-row{
+padding:6px;
+border-bottom:1px solid #333;
+font-size:14px;
+}
+
+.wheel-history-btn{
+position:absolute;
+top:10px;
+right:10px;
+}
 
 
 </style>
@@ -1191,6 +1216,34 @@ BETTING CLOSED
 </div>
 
 </div>
+
+
+<button class="wheel-history-btn"
+onclick="openWheelHistory()">
+📜 My Bets
+</button>
+
+
+
+<div id="wheelHistoryModal" class="history-modal">
+
+<div class="history-box">
+
+<div class="history-title">
+MY BET HISTORY
+</div>
+
+<div id="wheelHistoryList"
+class="history-list"></div>
+
+<button onclick="closeWheelHistory()">
+CLOSE
+</button>
+
+</div>
+
+</div>
+
 
 
 <script>
@@ -1656,6 +1709,53 @@ el.textContent = value
 el.style.display = value > 0 ? "block" : "none"
 
 }
+
+})
+
+
+
+
+function openWheelHistory(){
+
+socket.emit("wheel-history-request")
+
+document.getElementById(
+"wheelHistoryModal"
+).style.display = "flex"
+
+}
+
+function closeWheelHistory(){
+
+document.getElementById(
+"wheelHistoryModal"
+).style.display = "none"
+
+}
+
+socket.on("wheel-history-data",(list)=>{
+
+const box =
+document.getElementById("wheelHistoryList")
+
+box.innerHTML = ""
+
+list.forEach(h=>{
+
+const row = document.createElement("div")
+
+row.className = "history-row"
+
+row.innerHTML = `
+Round ${h.roundToday}
+| Bet ${h.bet}
+| x${h.multiplier}
+| Win ${h.winAmount}
+`
+
+box.appendChild(row)
+
+})
 
 })
 

@@ -3122,6 +3122,29 @@ io.on("connection", socket => {
   if (!uid) return;
 
 
+
+
+// ================================
+// 📜 WHEEL BET HISTORY (USER)
+// ================================
+socket.on("wheel-history-request",()=>{
+
+const uid = socket.data.uid
+if(!uid) return
+
+const users = loadUsers()
+const me = users[uid]
+
+if(!me?.wheelBetHistory) return
+
+socket.emit(
+"wheel-history-data",
+me.wheelBetHistory.slice(0,20)
+)
+
+})
+
+
 // ================================
 // 🎡 RESTORE WHEEL8 BETS WHEN RELOAD
 // ================================
