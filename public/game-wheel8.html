@@ -1591,16 +1591,13 @@ round: Number(r.roundId) || 0,
 slot: Number(r.slot) || 0,
 bet: Number(r.bet) || 0,
 win: Number(r.win) || 0,
-multi: Number(r.multiplier) || 0
+multi: Number(r.multiplier) || 0,
+winSlot: Number(r.winSlot) || 0
 })
 
 })
 
-
-// ===============================
-// 🔒 GIỮ 50 ROUND GẦN NHẤT
-// ===============================
-
+// giữ 50 round
 const rounds = {}
 
 myBetHistory.forEach(b=>{
@@ -1922,15 +1919,8 @@ function openRoundDetailFromHistory(round){
   // =======================
   // CHỈ HIỆN RESULT KHI XÁC ĐỊNH CHẮC CHẮN
   // =======================
-  let resultSlot = null
-  let resultMulti = null
-
-  const winRow = bets.find(b => b.win > 0)
-
-  if(winRow){
-    resultSlot = winRow.slot
-    resultMulti = winRow.multi
-  }
+let resultSlot = bets[0].winSlot
+let resultMulti = bets[0].multi
 
   // chỉ hiện result khi có winRow
   // vì round thua không có đủ dữ liệu để biết slot thắng thật
