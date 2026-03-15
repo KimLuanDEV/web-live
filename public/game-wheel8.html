@@ -1099,6 +1099,118 @@ font-weight:900;
 
 
 
+/* ROUND DETAIL FULLSCREEN */
+
+.round-result{
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+gap:14px;
+
+padding:16px;
+
+border-bottom:1px solid rgba(0,170,255,.3);
+
+}
+
+.round-result-icon{
+
+width:60px;
+height:60px;
+
+background-size:contain;
+background-position:center;
+background-repeat:no-repeat;
+
+filter:
+drop-shadow(0 0 10px #00aaff);
+
+}
+
+.round-result-text{
+
+font-size:18px;
+font-weight:900;
+
+color:#ffd700;
+
+text-shadow:
+0 0 10px #ffd700;
+
+}
+
+/* LIST */
+
+.round-detail-list{
+
+flex:1;
+
+overflow:auto;
+
+padding:10px 14px;
+
+display:flex;
+flex-direction:column;
+gap:8px;
+
+}
+
+/* SLOT ROW */
+
+.round-slot-row{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:12px;
+
+background:#020617;
+
+border:1px solid rgba(0,170,255,.3);
+
+border-radius:8px;
+
+transition:.15s;
+
+}
+
+.round-slot-row:hover{
+background:#0d1b2a;
+}
+
+.round-slot-left{
+
+display:flex;
+align-items:center;
+gap:10px;
+
+font-weight:700;
+
+}
+
+.round-slot-icon{
+
+width:32px;
+height:32px;
+
+object-fit:contain;
+
+}
+
+.round-slot-bet{
+font-weight:900;
+color:#fff;
+}
+
+.round-slot-win{
+color:#00ff9d;
+font-weight:900;
+}
+
+
 
 
 </style>
@@ -1331,20 +1443,33 @@ class="history-body"></div>
 
 <div id="roundDetailModal" class="history-modal">
 
-<div class="history-box">
+<div class="history-header">
 
-<div class="history-title">
-ROUND DETAILS
+<div>
+<div class="history-title">ROUND DETAILS</div>
+<div class="history-sub">Bet breakdown</div>
 </div>
-
-<div id="roundDetailList" class="history-bets"></div>
 
 <button class="history-close"
-onclick="closeRoundDetail()">
-CLOSE
-</button>
+onclick="closeRoundDetail()">✕</button>
 
 </div>
+
+
+<div class="round-result">
+
+<div id="roundResultIcon" class="round-result-icon"></div>
+
+<div class="round-result-text">
+RESULT
+<span id="roundResultMulti"></span>
+</div>
+
+</div>
+
+
+<div id="roundDetailList" class="round-detail-list"></div>
+
 </div>
 
 
@@ -2023,84 +2148,85 @@ box.appendChild(row)
 
 function openRoundDetailFromHistory(round){
 
-  document.getElementById("roundDetailModal").style.display = "flex"
-
+  const modal = document.getElementById("roundDetailModal")
   const box = document.getElementById("roundDetailList")
+
+  modal.style.display = "flex"
   box.innerHTML = ""
 
-  // =======================
+  // =====================
   // LẤY BET CỦA ROUND
-  // =======================
+  // =====================
 
   const bets = myBetHistory
     .filter(b => Number(b.round) === Number(round))
-    .map(b => ({
-      round: Number(b.round) || 0,
-      slot: Number(b.slot) || 0,
-      bet: Number(b.bet) || 0,
-      win: Number(b.win) || 0,
-      multi: Number(b.multi) || 0,
-      winSlot: Number(b.winSlot) || 0
-    }))
 
   if(!bets.length){
-    box.innerHTML = "<div class='history-row'>No data</div>"
+    box.innerHTML = "<div class='round-slot-row'>No data</div>"
     return
   }
 
-  // =======================
+  // =====================
   // RESULT
-  // =======================
+  // =====================
 
-  const resultSlot = bets[0].winSlot || 0
-  const resultMulti = bets[0].multi || 0
+  const resultSlot = Number(bets[0].winSlot) || 0
+  const resultMulti = Number(bets[0].multi) || 0
 
   const resultDiv = document.createElement("div")
-  resultDiv.className = "history-row result-row"
+  resultDiv.className = "round-result"
 
   if(resultSlot){
 
-    resultDiv.innerHTML =
-      "<b>RESULT</b>" +
-      "<img src='/assets/police/slot"+resultSlot+".png' class='history-slot-icon'>" +
-      " x"+resultMulti
+    resultDiv.innerHTML = `
+      <div class="round-result-icon"
+      style="background-image:url('/assets/police/slot${resultSlot}.png')"></div>
+
+      <div class="round-result-text">
+      RESULT x${resultMulti}
+      </div>
+    `
 
   }else{
 
     resultDiv.innerHTML =
-      "<b>RESULT</b> <span>Unknown</span>"
+      `<div class="round-result-text">RESULT UNKNOWN</div>`
 
   }
 
   box.appendChild(resultDiv)
 
-  // =======================
+
+  // =====================
   // GỘP BET THEO SLOT
-  // =======================
+  // =====================
 
   const slotMap = {}
 
   bets.forEach(b=>{
 
-    if(!b.slot) return
+    const slot = Number(b.slot)
 
-    if(!slotMap[b.slot]){
+    if(!slot) return
 
-      slotMap[b.slot] = {
+    if(!slotMap[slot]){
+
+      slotMap[slot] = {
         bet:0,
         win:0
       }
 
     }
 
-    slotMap[b.slot].bet += b.bet
-    slotMap[b.slot].win += b.win
+    slotMap[slot].bet += Number(b.bet) || 0
+    slotMap[slot].win += Number(b.win) || 0
 
   })
 
-  // =======================
+
+  // =====================
   // RENDER SLOT BET
-  // =======================
+  // =====================
 
   Object.keys(slotMap)
   .map(Number)
@@ -2110,21 +2236,28 @@ function openRoundDetailFromHistory(round){
     const item = slotMap[slot]
 
     const row = document.createElement("div")
-    row.className = "history-row"
+    row.className = "round-slot-row"
 
-    const winMark = item.win > 0 ? " ⭐ WIN" : ""
+    row.innerHTML = `
+      <div class="round-slot-left">
+        <img src="/assets/police/slot${slot}.png" class="round-slot-icon">
+        Slot ${slot}
+      </div>
 
-    row.innerHTML =
-      "<img src='/assets/police/slot"+slot+".png' class='history-slot-icon'>" +
-     winMark +
-      "<span>"+item.bet+" 💎</span>"
+      <div class="round-slot-bet">
+        💎 ${item.bet}
+      </div>
+
+      <div class="round-slot-win">
+        ${item.win > 0 ? "💎 "+item.win : ""}
+      </div>
+    `
 
     box.appendChild(row)
 
   })
 
 }
-
 
 
 
