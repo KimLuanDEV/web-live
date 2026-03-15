@@ -1569,62 +1569,89 @@ const activeUsers = new Map();
 
 
 
-
 // ================================
-// 🎡 LUCKY WHEEL 8 ROUND
+// 🎡 LUCKY WHEEL 8 ENGINE
 // ================================
 
+// load history
 let wheel8History = loadWheel8History()
 
-const wheel8State = loadWheel8Round()
-
-let wheel8RoundCounter = wheel8State.count || 0
-let wheel8RoundDayTs = wheel8State.dayTs || getTodayStartTsVN()
-
-const wheel8TodayStart = getTodayStartTsVN()
-
-// reset khi qua ngày mới
-if(wheel8TodayStart !== wheel8RoundDayTs){
-
-wheel8RoundCounter = 0
-wheel8RoundDayTs = wheel8TodayStart
-
-saveWheel8Round({
-dayTs: wheel8RoundDayTs,
-count: wheel8RoundCounter
-})
-
-}
-
-// 🔥 chỉ giữ lịch sử 24h
-const ONE_DAYS = 24*60*60*1000
+// chỉ giữ 24h
+const ONE_DAYS = 24 * 60 * 60 * 1000
 
 wheel8History = wheel8History.filter(
   h => Date.now() - h.ts <= ONE_DAYS
 )
 
-// lưu lại sau khi dọn
 saveWheel8History(wheel8History)
 
 
-let wheel8Round = {
-  id: wheel8RoundCounter++,
-  startAt: Date.now(),
-  endAt: Date.now() + 35000,
-  bets: [],
-  slotPool: [0,0,0,0,0,0,0,0]
-};
+// ================================
+// ROUND STATE
+// ================================
+
+const wheel8State = loadWheel8Round()
+
+let wheel8RoundCounter = wheel8State.count || 0
+let wheel8RoundDayTs   = wheel8State.dayTs || getTodayStartTsVN()
+
+const wheel8TodayStart = getTodayStartTsVN()
+
+// reset khi qua ngày
+if(wheel8TodayStart !== wheel8RoundDayTs){
+
+  wheel8RoundCounter = 0
+  wheel8RoundDayTs = wheel8TodayStart
+
+  saveWheel8Round({
+    dayTs: wheel8RoundDayTs,
+    count: wheel8RoundCounter
+  })
+
+}
+
+
+// ================================
+// SLOT TABLE
+// ================================
 
 const WHEEL8_SLOTS = [
-  { m: 5,  w: 19.6 }, // s1
-  { m: 10, w: 10   }, // s2
-  { m: 15, w: 6.6  }, // s3
-  { m: 25, w: 4    }, // s4
-  { m: 45, w: 1    }, // s5
-  { m: 5,  w: 19.6 }, // s6
-  { m: 5,  w: 19.6 }, // s7
-  { m: 5,  w: 19.6 }  // s8
+  { m:5,  w:19.6 },
+  { m:10, w:10 },
+  { m:15, w:6.6 },
+  { m:25, w:4 },
+  { m:45, w:1 },
+  { m:5,  w:19.6 },
+  { m:5,  w:19.6 },
+  { m:5,  w:19.6 }
 ];
+
+
+// ================================
+// CREATE ROUND
+// ================================
+
+function createWheel8Round(){
+
+  wheel8RoundCounter++
+
+  saveWheel8Round({
+    dayTs: wheel8RoundDayTs,
+    count: wheel8RoundCounter
+  })
+
+  return {
+    id: wheel8RoundCounter,
+    startAt: Date.now(),
+    endAt: Date.now() + 35000,
+    bets: [],
+    slotPool: [0,0,0,0,0,0,0,0]
+  }
+
+}
+
+
+let wheel8Round = createWheel8Round()
 
 function pickWheel8(){
 
