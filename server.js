@@ -1601,35 +1601,10 @@ setInterval(()=>{
 const users = loadUsers()
 
 // 🎯 kết quả quay
-let winSlots = []
-let multiplier = 0
+const result = pickWheel8()
 
-const r = Math.random()
-
-// 🔥 5% EVENT 4 SLOT x5
-if(r < 0.5){
-
-  winSlots = [1,6,7,8]
-  multiplier = 5
-
-}
-
-// 🔥 2% EVENT 4 SLOT VIP
-else if(r < 0.2){
-
-  winSlots = [2,3,4,5]
-
-}
-
-// 🎯 NORMAL
-else{
-
-  const result = pickWheel8()
-
-  winSlots = [result.slot]
-  multiplier = result.multiplier
-
-}
+const winSlot = result.slot
+const multiplier = result.multiplier
 
 // =======================
 // 💰 PAYOUT
@@ -1640,26 +1615,13 @@ wheel8Round.bets.forEach(o=>{
 const me = users[o.uid]
 if(!me?.profile) return
 
-if(winSlots.includes(o.slot)){
+if(o.slot === winSlot){
 
-let m = multiplier
+const win = o.bet * multiplier
 
-// nếu là event VIP
-if(winSlots.length === 4 && multiplier === 0){
-
-if(o.slot == 2) m = 10
-if(o.slot == 3) m = 15
-if(o.slot == 4) m = 25
-if(o.slot == 5) m = 45
-
-}
-
-const win = o.bet * m
 me.profile.coins += win
 
 }
-
-
 
 })
 
@@ -1679,8 +1641,8 @@ emitCoinUpdate(o.uid)
 // =======================
 
 io.emit("wheel8-result",{
-winSlots,
-multiplier
+slot: winSlot,
+multiplier: multiplier
 })
 
 
