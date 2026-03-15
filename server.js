@@ -1679,19 +1679,43 @@ if(!wheel8UserHistory[o.uid])
 wheel8UserHistory[o.uid] = []
 
 wheel8UserHistory[o.uid].unshift({
-
 roundId: wheel8Round.id,
 slot: o.slot,
 bet: o.bet,
 multiplier: multiplier,
 win: win,
 ts: Date.now()
+})
+
+
+// ===========================
+// 🔒 GIỮ 50 ROUND GẦN NHẤT
+// ===========================
+
+const roundMap = {}
+
+wheel8UserHistory[o.uid].forEach(r=>{
+
+if(!roundMap[r.roundId]){
+roundMap[r.roundId] = []
+}
+
+roundMap[r.roundId].push(r)
 
 })
 
-// giữ tối đa 50 round
-wheel8UserHistory[o.uid] =
-wheel8UserHistory[o.uid].slice(0,50)
+const roundIds =
+Object.keys(roundMap)
+.sort((a,b)=>b-a)
+.slice(0,50)
+
+const newHistory = []
+
+roundIds.forEach(id=>{
+newHistory.push(...roundMap[id])
+})
+
+wheel8UserHistory[o.uid] = newHistory
 
 })
 

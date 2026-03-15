@@ -1582,7 +1582,6 @@ renderHistory()
 // 📜 USER BET HISTORY
 socket.on("wheel8-my-history",(list)=>{
 
-// reset history
 myBetHistory = []
 
 list.forEach(r=>{
@@ -1597,13 +1596,36 @@ multi: Number(r.multiplier) || 0
 
 })
 
-// round mới nhất lên trên
-myBetHistory.sort((a,b)=>b.round - a.round)
 
-// giới hạn 50 record
-if(myBetHistory.length > 50){
-myBetHistory = myBetHistory.slice(0,50)
+// ===============================
+// 🔒 GIỮ 50 ROUND GẦN NHẤT
+// ===============================
+
+const rounds = {}
+
+myBetHistory.forEach(b=>{
+
+if(!rounds[b.round]){
+rounds[b.round] = []
 }
+
+rounds[b.round].push(b)
+
+})
+
+const roundIds =
+Object.keys(rounds)
+.map(Number)
+.sort((a,b)=>b-a)
+.slice(0,50)
+
+const newList = []
+
+roundIds.forEach(r=>{
+newList.push(...rounds[r])
+})
+
+myBetHistory = newList
 
 renderMyBetHistory()
 
@@ -1823,60 +1845,55 @@ document.getElementById("myBetHistoryModal")
 }
 
 
-
 function renderMyBetHistory(){
 
-  const box = document.getElementById("myBetHistoryList")
-  box.innerHTML = ""
+const box =
+document.getElementById("myBetHistoryList")
 
-  const rounds = {}
+box.innerHTML=""
 
-  myBetHistory.forEach(b=>{
+// gom theo round
+const rounds = {}
 
-    const round = Number(b.round) || 0
-    if(!round) return
+myBetHistory.forEach(b=>{
 
-    if(!rounds[round]){
-      rounds[round] = []
-    }
+if(!rounds[b.round]){
+rounds[b.round] = []
+}
 
-    rounds[round].push({
-      round,
-      slot: Number(b.slot) || 0,
-      bet: Number(b.bet) || 0,
-      win: Number(b.win) || 0,
-      multi: Number(b.multi) || 0
-    })
+rounds[b.round].push(b)
 
-  })
+})
 
-  Object.keys(rounds)
-  .map(Number)
-  .sort((a,b)=>b-a)
-  .forEach(round=>{
+Object.keys(rounds)
+.map(Number)
+.sort((a,b)=>b-a)
+.forEach(round=>{
 
-    const list = rounds[round]
+const list = rounds[round]
 
-    const totalBet = list.reduce((sum,item)=>{
-      return sum + (Number(item.bet) || 0)
-    },0)
+// tổng cược
+const totalBet =
+list.reduce((a,b)=>a + (b.bet || 0),0)
 
-    const totalWin = list.reduce((sum,item)=>{
-      return sum + (Number(item.win) || 0)
-    },0)
+// tổng thắng
+const totalWin =
+list.reduce((a,b)=>a + (b.win || 0),0)
 
-    const row = document.createElement("div")
-    row.className = "history-row"
-    row.innerHTML =
-      "Round " + round +
-      " | 💎" + totalBet +
-      " | 💎" + totalWin
+const row = document.createElement("div")
+row.className="history-row"
 
-    row.onclick = ()=>openRoundDetailFromHistory(round)
+row.innerHTML =
+"Round "+round+
+" | 💎"+totalBet+
+" | 💎"+totalWin
 
-    box.appendChild(row)
+row.onclick =
+()=>openRoundDetailFromHistory(round)
 
-  })
+box.appendChild(row)
+
+})
 
 }
 
