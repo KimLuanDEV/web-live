@@ -891,26 +891,41 @@ z-index: 1;
 
 
 
+/* FULLSCREEN HISTORY */
+
 .history-modal{
 
 position:fixed;
 inset:0;
 
 display:none;
+flex-direction:column;
 
-background:rgba(0,0,0,.6);
+background:
+linear-gradient(
+180deg,
+#020617,
+#000000
+);
 
-align-items:center;
-justify-content:center;
-
-z-index:20;
+z-index:50;
 
 }
 
+/* HEADER */
 
 .history-header{
-text-align:center;
-margin-bottom:10px;
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:16px 20px;
+
+border-bottom:1px solid rgba(0,170,255,.4);
+
+background:#001a33;
+
 }
 
 
@@ -935,51 +950,60 @@ overflow:auto;
 }
 
 .history-title{
+
 font-size:18px;
 font-weight:900;
-letter-spacing:1px;
+
 color:#00aaff;
+
 text-shadow:0 0 10px #00aaff;
+
 }
 
-
 .history-sub{
-font-size:11px;
+font-size:12px;
 opacity:.7;
 }
 
+/* TABLE AREA */
 
 .history-table{
-width:100%;
-border-radius:8px;
-overflow:hidden;
-border:1px solid rgba(0,170,255,.3);
+
+flex:1;
+
+overflow:auto;
+
+padding:10px 12px;
+
 }
 
-
-/* HEADER */
+/* HEADER ROW */
 
 .history-head{
+
 display:grid;
+
 grid-template-columns:1fr 1fr 1fr 1fr;
 
-background:#001a33;
-font-size:12px;
 font-weight:900;
 
-padding:8px 0;
+padding:10px 0;
 
 text-align:center;
 
-border-bottom:1px solid #00aaff;
-}
+background:#001a33;
 
+border-bottom:1px solid #00aaff;
+
+}
 
 /* BODY */
 
 .history-body{
+
 display:flex;
 flex-direction:column;
+
 }
 
 
@@ -998,26 +1022,30 @@ gap:8px;
 /* ROW */
 
 .history-row{
+
 display:grid;
+
 grid-template-columns:1fr 1fr 1fr 1fr;
 
-font-size:12px;
+padding:12px 0;
 
-padding:8px 0;
+font-size:14px;
 
 text-align:center;
 
-background:#020617;
+border-bottom:1px solid rgba(255,255,255,.06);
 
-border-bottom:1px solid rgba(255,255,255,.05);
-
-cursor:pointer;
 transition:.15s;
+
 }
 
 .history-row:hover{
+
 background:#0d1b2a;
+
 }
+
+/* WIN / LOSE */
 
 .history-row.win{
 color:#00ff9d;
@@ -1028,22 +1056,21 @@ font-weight:800;
 color:#ff5b5b;
 }
 
-
 .history-close{
 
-margin-top:15px;
-
-width:100%;
-
-padding:10px;
-
-font-weight:900;
+position:absolute;
+top:14px;
+right:16px;
 
 background:#003a66;
 
 border:none;
 
 color:#fff;
+
+font-weight:900;
+
+padding:8px 14px;
 
 border-radius:6px;
 
@@ -1270,12 +1297,18 @@ MY BETS
 
 <div id="myBetHistoryModal" class="history-modal">
 
-<div class="history-box">
-
 <div class="history-header">
+
+<div>
 <div class="history-title">MY BET HISTORY</div>
 <div class="history-sub">Last 50 rounds</div>
 </div>
+
+<button class="history-close"
+onclick="closeMyBetHistory()">✕</button>
+
+</div>
+
 
 <div class="history-table">
 
@@ -1286,14 +1319,8 @@ MY BETS
 <div>WIN</div>
 </div>
 
-<div id="myBetHistoryList" class="history-body"></div>
-
-</div>
-
-<button class="history-close"
-onclick="closeMyBetHistory()">
-CLOSE
-</button>
+<div id="myBetHistoryList"
+class="history-body"></div>
 
 </div>
 
