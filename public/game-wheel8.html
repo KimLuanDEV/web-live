@@ -907,6 +907,13 @@ z-index:20;
 
 }
 
+
+.history-header{
+text-align:center;
+margin-bottom:10px;
+}
+
+
 .history-box{
 
 width:320px;
@@ -928,15 +935,57 @@ overflow:auto;
 }
 
 .history-title{
-
 font-size:18px;
 font-weight:900;
+letter-spacing:1px;
+color:#00aaff;
+text-shadow:0 0 10px #00aaff;
+}
+
+
+.history-sub{
+font-size:11px;
+opacity:.7;
+}
+
+
+.history-table{
+width:100%;
+border-radius:8px;
+overflow:hidden;
+border:1px solid rgba(0,170,255,.3);
+}
+
+
+/* HEADER */
+
+.history-head{
+display:grid;
+grid-template-columns:1fr 1fr 1fr 1fr;
+
+background:#001a33;
+font-size:12px;
+font-weight:900;
+
+padding:8px 0;
 
 text-align:center;
 
-margin-bottom:15px;
-
+border-bottom:1px solid #00aaff;
 }
+
+
+/* BODY */
+
+.history-body{
+display:flex;
+flex-direction:column;
+}
+
+
+
+
+
 
 .history-bets{
 
@@ -946,20 +995,39 @@ gap:8px;
 
 }
 
+/* ROW */
+
 .history-row{
+display:grid;
+grid-template-columns:1fr 1fr 1fr 1fr;
 
-display:flex;
-justify-content:space-between;
+font-size:12px;
 
-padding:6px 10px;
+padding:8px 0;
 
-background:#0d1b2a;
+text-align:center;
 
-border-radius:6px;
+background:#020617;
 
-font-size:13px;
+border-bottom:1px solid rgba(255,255,255,.05);
 
+cursor:pointer;
+transition:.15s;
 }
+
+.history-row:hover{
+background:#0d1b2a;
+}
+
+.history-row.win{
+color:#00ff9d;
+font-weight:800;
+}
+
+.history-row.lose{
+color:#ff5b5b;
+}
+
 
 .history-close{
 
@@ -999,6 +1067,10 @@ border:1px solid #00aaff;
 box-shadow:0 0 10px #00aaff;
 font-weight:900;
 }
+
+
+
+
 
 
 
@@ -1200,11 +1272,22 @@ MY BETS
 
 <div class="history-box">
 
-<div class="history-title">
-MY BET HISTORY
+<div class="history-header">
+<div class="history-title">MY BET HISTORY</div>
+<div class="history-sub">Last 50 rounds</div>
 </div>
 
-<div id="myBetHistoryList" class="history-bets">
+<div class="history-table">
+
+<div class="history-head">
+<div>ROUND</div>
+<div>TIME</div>
+<div>BET</div>
+<div>WIN</div>
+</div>
+
+<div id="myBetHistoryList" class="history-body"></div>
+
 </div>
 
 <button class="history-close"
@@ -1877,13 +1960,20 @@ list.reduce((a,b)=>a + (b.bet || 0),0)
 const totalWin =
 list.reduce((a,b)=>a + (b.win || 0),0)
 
+// time fake demo
+const time =
+new Date().toLocaleTimeString()
+
 const row = document.createElement("div")
-row.className="history-row"
+
+row.className =
+"history-row " + (totalWin > 0 ? "win":"lose")
 
 row.innerHTML =
-"Round "+round+
-" | 💎"+totalBet+
-" | 💎"+totalWin
+"<div>"+round+"</div>" +
+"<div>"+time+"</div>" +
+"<div>💎"+totalBet+"</div>" +
+"<div>💎"+totalWin+"</div>"
 
 row.onclick =
 ()=>openRoundDetailFromHistory(round)
@@ -1893,6 +1983,8 @@ box.appendChild(row)
 })
 
 }
+
+
 
 function openRoundDetailFromHistory(round){
 
