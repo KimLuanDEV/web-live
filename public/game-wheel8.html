@@ -1187,30 +1187,46 @@ letter-spacing:1px;
 
 
 
-
 .exit-btn{
 
 position:absolute;
 bottom:226px;
 left:-14px;
 
-width: 180px;
-height: 192px;
+width:180px;
+height:192px;
 
-cursor:pointer;
-z-index: 1;
+pointer-events:none;
 
 }
 
-.exit-btn img{
+.exit-img{
 
 width:100%;
 height:100%;
 object-fit:contain;
 
-transition:.15s;
+}
+
+
+
+.exit-hitbox{
+
+position:absolute;
+
+width:70px;
+height:70px;
+
+left:60px;
+top:70px;
+
+cursor:pointer;
+
+pointer-events:auto;
 
 }
+
+
 
 .exit-btn:hover img{
 
@@ -1309,8 +1325,13 @@ ROUND:
 
 
 <!-- EXIT BUTTON -->
-<div class="exit-btn" onclick="leaveGame()">
-<img src="/assets/police/exit-btn.png">
+<div class="exit-btn">
+
+<img src="/assets/police/exit-btn.png" class="exit-img">
+
+<div class="exit-hitbox"
+onclick="leaveGame()"></div>
+
 </div>
 
 
