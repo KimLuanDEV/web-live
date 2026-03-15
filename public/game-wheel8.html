@@ -1901,6 +1901,10 @@ function openRoundDetailFromHistory(round){
   const box = document.getElementById("roundDetailList")
   box.innerHTML = ""
 
+  // =======================
+  // LẤY BET CỦA ROUND
+  // =======================
+
   const bets = myBetHistory
     .filter(b => Number(b.round) === Number(round))
     .map(b => ({
@@ -1908,7 +1912,8 @@ function openRoundDetailFromHistory(round){
       slot: Number(b.slot) || 0,
       bet: Number(b.bet) || 0,
       win: Number(b.win) || 0,
-      multi: Number(b.multi) || 0
+      multi: Number(b.multi) || 0,
+      winSlot: Number(b.winSlot) || 0
     }))
 
   if(!bets.length){
@@ -1917,52 +1922,58 @@ function openRoundDetailFromHistory(round){
   }
 
   // =======================
-  // CHỈ HIỆN RESULT KHI XÁC ĐỊNH CHẮC CHẮN
+  // RESULT
   // =======================
-let resultSlot = bets[0].winSlot
-let resultMulti = bets[0].multi
 
-  // chỉ hiện result khi có winRow
-  // vì round thua không có đủ dữ liệu để biết slot thắng thật
+  const resultSlot = bets[0].winSlot || 0
+  const resultMulti = bets[0].multi || 0
+
+  const resultDiv = document.createElement("div")
+  resultDiv.className = "history-row result-row"
+
   if(resultSlot){
 
-    const resultDiv = document.createElement("div")
-    resultDiv.className = "history-row result-row"
     resultDiv.innerHTML =
-      "<b>RESULT</b> " +
-      "<img src='/assets/police/slot" + resultSlot + ".png' class='history-slot-icon'>" +
-      " x" + resultMulti
-
-    box.appendChild(resultDiv)
+      "<b>RESULT</b>" +
+      "<img src='/assets/police/slot"+resultSlot+".png' class='history-slot-icon'>" +
+      " x"+resultMulti
 
   }else{
 
-    const resultDiv = document.createElement("div")
-    resultDiv.className = "history-row"
     resultDiv.innerHTML =
-      "<b>RESULT</b> <span>Chưa xác định slot thắng</span>"
+      "<b>RESULT</b> <span>Unknown</span>"
 
-    box.appendChild(resultDiv)
   }
 
+  box.appendChild(resultDiv)
+
   // =======================
-  // GỘP THEO SLOT
+  // GỘP BET THEO SLOT
   // =======================
+
   const slotMap = {}
 
   bets.forEach(b=>{
+
     if(!b.slot) return
 
     if(!slotMap[b.slot]){
+
       slotMap[b.slot] = {
-        bet: 0,
-        win: 0
+        bet:0,
+        win:0
       }
+
     }
 
     slotMap[b.slot].bet += b.bet
     slotMap[b.slot].win += b.win
+
   })
+
+  // =======================
+  // RENDER SLOT BET
+  // =======================
 
   Object.keys(slotMap)
   .map(Number)
@@ -1977,16 +1988,15 @@ let resultMulti = bets[0].multi
     const winMark = item.win > 0 ? " ⭐ WIN" : ""
 
     row.innerHTML =
-      "<img src='/assets/police/slot" + slot + ".png' class='history-slot-icon'>" +
-      "<span>Slot " + slot + winMark + "</span>" +
-      "<span>" + item.bet + " 💎</span>"
+      "<img src='/assets/police/slot"+slot+".png' class='history-slot-icon'>" +
+      "<span>Slot "+slot+winMark+"</span>" +
+      "<span>"+item.bet+" 💎</span>"
 
     box.appendChild(row)
 
   })
 
 }
-
 
 
 
