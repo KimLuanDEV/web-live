@@ -817,14 +817,38 @@ letter-spacing:1px;
 .bet-history-btn{
 
 position:absolute;
-bottom: 252px;
-right: -13px;
+bottom:252px;
+right:-13px;
 
 width:130px;
 height:130px;
 
+pointer-events:none;
+
+}
+
+.history-img{
+
+width:100%;
+height:100%;
+object-fit:contain;
+
+}
+
+
+.history-hitbox{
+
+position:absolute;
+
+width:70px;
+height:50px;
+
+left:30px;
+top:50px;
+
 cursor:pointer;
-z-index:0;
+
+pointer-events:auto;
 
 }
 
@@ -1214,10 +1238,10 @@ object-fit:contain;
 
 position:absolute;
 
-width:70px;
-height:70px;
+width:80px;
+height:40px;
 
-left:60px;
+left:90px;
 top:70px;
 
 cursor:pointer;
@@ -1429,10 +1453,14 @@ BETTING CLOSED
 
 
 <!-- BET HISTORY BUTTON -->
-<div class="bet-history-btn" onclick="openMyBetHistory()">
-<img src="/assets/police/history-btn.png">
-</div>
+<div class="bet-history-btn">
 
+<img src="/assets/police/history-btn.png" class="history-img">
+
+<div class="history-hitbox"
+onclick="openMyBetHistory()"></div>
+
+</div>
 
 <!-- ================= MY BET HISTORY ================= -->
 
