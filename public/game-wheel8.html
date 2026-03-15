@@ -1675,7 +1675,8 @@ slot: Number(r.slot) || 0,
 bet: Number(r.bet) || 0,
 win: Number(r.win) || 0,
 multi: Number(r.multiplier) || 0,
-winSlot: Number(r.winSlot) || 0
+winSlot: Number(r.winSlot) || 0,
+time: Number(r.ts) || 0
 })
 
 })
@@ -1960,9 +1961,16 @@ list.reduce((a,b)=>a + (b.bet || 0),0)
 const totalWin =
 list.reduce((a,b)=>a + (b.win || 0),0)
 
-// time fake demo
-const time =
-new Date().toLocaleTimeString()
+
+const ts = list[0].time || 0
+
+const time = ts
+? new Date(ts).toLocaleTimeString("vi-VN",{
+hour:"2-digit",
+minute:"2-digit",
+second:"2-digit"
+})
+: "--"
 
 const row = document.createElement("div")
 
