@@ -124,28 +124,38 @@ const WHEEL8_ROUND_FILE =
 function loadWheel8Round(){
 
 try{
-if(!fs.existsSync(WHEEL8_ROUND_FILE)) return 1
 
-const data = JSON.parse(
+if(!fs.existsSync(WHEEL8_ROUND_FILE)){
+return {
+dayTs: getTodayStartTsVN(),
+count: 0
+}
+}
+
+return JSON.parse(
 fs.readFileSync(WHEEL8_ROUND_FILE,"utf8")
 )
 
-return data.count || 1
-
 }catch(e){
+
 console.error("Load wheel8 round failed",e)
-return 1
+
+return {
+dayTs: getTodayStartTsVN(),
+count: 0
 }
 
 }
 
-function saveWheel8Round(v){
+}
+
+function saveWheel8Round(data){
 
 try{
 
 fs.writeFileSync(
 WHEEL8_ROUND_FILE,
-JSON.stringify({count:v},null,2)
+JSON.stringify(data,null,2)
 )
 
 }catch(e){
@@ -153,7 +163,6 @@ console.error("Save wheel8 round failed",e)
 }
 
 }
-
 
 const WHEEL8_HISTORY_FILE =
 "/opt/render/project/data/wheel8_history.json"
@@ -1567,7 +1576,25 @@ const activeUsers = new Map();
 
 let wheel8History = loadWheel8History()
 
-let wheel8RoundCounter = loadWheel8Round()
+const wheel8State = loadWheel8Round()
+
+let wheel8RoundCounter = wheel8State.count || 0
+let wheel8RoundDayTs = wheel8State.dayTs || getTodayStartTsVN()
+
+const wheel8TodayStart = getTodayStartTsVN()
+
+// reset khi qua ngày mới
+if(wheel8TodayStart !== wheel8RoundDayTs){
+
+wheel8RoundCounter = 0
+wheel8RoundDayTs = wheel8TodayStart
+
+saveWheel8Round({
+dayTs: wheel8RoundDayTs,
+count: wheel8RoundCounter
+})
+
+}
 
 // 🔥 chỉ giữ lịch sử 24h
 const ONE_DAYS = 24*60*60*1000
@@ -1778,11 +1805,12 @@ wheel8Round = {
   slotPool:[0,0,0,0,0,0,0,0]
 }
 
-// lưu round vào file
-saveWheel8Round(wheel8RoundCounter)
-
-// tăng counter cho round sau
 wheel8RoundCounter++
+
+saveWheel8Round({
+dayTs: wheel8RoundDayTs,
+count: wheel8RoundCounter
+})
 
 io.emit("wheel8-pool-update",wheel8Round.slotPool)
 
