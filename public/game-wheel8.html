@@ -2190,34 +2190,28 @@ function openRoundDetailFromHistory(round){
   }
 
   // =====================
-  // RESULT
+  // RESULT (UPDATE HEADER)
   // =====================
 
   const resultSlot = Number(bets[0].winSlot) || 0
   const resultMulti = Number(bets[0].multi) || 0
 
-  const resultDiv = document.createElement("div")
-  resultDiv.className = "round-result"
+  const icon  = document.getElementById("roundResultIcon")
+  const multi = document.getElementById("roundResultMulti")
 
   if(resultSlot){
 
-    resultDiv.innerHTML = `
-      <div class="round-result-icon"
-      style="background-image:url('/assets/police/slot${resultSlot}.png')"></div>
+    icon.style.backgroundImage =
+      "url('/assets/police/slot"+resultSlot+".png')"
 
-      <div class="round-result-text">
-      x${resultMulti}
-      </div>
-    `
+    multi.textContent = "x"+resultMulti
 
   }else{
 
-    resultDiv.innerHTML =
-      `<div class="round-result-text">RESULT UNKNOWN</div>`
+    icon.style.backgroundImage = ""
+    multi.textContent = "?"
 
   }
-
-  box.appendChild(resultDiv)
 
 
   // =====================
@@ -2248,7 +2242,7 @@ function openRoundDetailFromHistory(round){
 
 
   // =====================
-  // RENDER SLOT BET
+  // RENDER SLOT
   // =====================
 
   Object.keys(slotMap)
@@ -2261,19 +2255,23 @@ function openRoundDetailFromHistory(round){
     const row = document.createElement("div")
     row.className = "round-slot-row"
 
-row.innerHTML = `
-<div class="round-slot-left">
-<img src="/assets/police/slot${slot}.png" class="round-slot-icon">
-</div>
+    if(item.win > 0){
+      row.classList.add("win")
+    }
 
-<div class="round-slot-bet">
-💎 ${item.bet}
-</div>
+    row.innerHTML = `
+      <div class="round-slot-left">
+        <img src="/assets/police/slot${slot}.png" class="round-slot-icon">
+      </div>
 
-<div class="round-slot-win">
-${item.win > 0 ? "💎 "+item.win : "-"}
-</div>
-`
+      <div class="round-slot-bet">
+        💎 ${item.bet}
+      </div>
+
+      <div class="round-slot-win">
+        ${item.win > 0 ? "💎 "+item.win : "-"}
+      </div>
+    `
 
     box.appendChild(row)
 
