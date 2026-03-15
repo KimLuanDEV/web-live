@@ -71,53 +71,6 @@ const weightedMultipliers = [
 
 
 
-// ================================
-// 📜 WHEEL8 USER BET HISTORY
-// ================================
-const WHEEL8_USER_HISTORY_FILE =
-"/opt/render/project/data/wheel8_user_history.json"
-
-function loadWheel8UserHistory(){
-
-try{
-
-if(!fs.existsSync(WHEEL8_USER_HISTORY_FILE))
-return {}
-
-return JSON.parse(
-fs.readFileSync(WHEEL8_USER_HISTORY_FILE,"utf8")
-)
-
-}catch(e){
-
-console.error("❌ Load wheel8 user history failed",e)
-return {}
-
-}
-
-}
-
-function saveWheel8UserHistory(db){
-
-try{
-
-fs.writeFileSync(
-WHEEL8_USER_HISTORY_FILE,
-JSON.stringify(db,null,2)
-)
-
-}catch(e){
-
-console.error("❌ Save wheel8 user history failed",e)
-
-}
-
-}
-
-let wheel8UserHistory = loadWheel8UserHistory()
-
-
-
 const WHEEL8_ROUND_FILE =
 "/opt/render/project/data/wheel8_round_count.json"
 
@@ -1662,43 +1615,15 @@ wheel8Round.bets.forEach(o=>{
 const me = users[o.uid]
 if(!me?.profile) return
 
-let win = 0
-
 if(o.slot === winSlot){
 
-win = o.bet * multiplier
+const win = o.bet * multiplier
+
 me.profile.coins += win
 
 }
 
-// =====================
-// 📜 SAVE USER HISTORY
-// =====================
-
-if(!wheel8UserHistory[o.uid])
-wheel8UserHistory[o.uid] = []
-
-wheel8UserHistory[o.uid].unshift({
-
-roundId: wheel8Round.id,
-slot: o.slot,
-bet: o.bet,
-multiplier: multiplier,
-win: win,
-ts: Date.now()
-
 })
-
-// giữ tối đa 50 round
-wheel8UserHistory[o.uid] =
-wheel8UserHistory[o.uid].slice(0,50)
-
-})
-
-
-// 💾 LƯU FILE HISTORY
-saveWheel8UserHistory(wheel8UserHistory)
-
 
 // lưu user
 saveUsers(users)
@@ -3202,24 +3127,6 @@ io.on("connection", socket => {
 // ================================
 
 
-// ================================
-// 📜 SEND USER BET HISTORY
-// ================================
-socket.on("wheel8-get-my-history",()=>{
-
-const uid = socket.data.uid
-if(!uid) return
-
-socket.emit(
-"wheel8-my-history",
-wheel8UserHistory[uid] || []
-)
-
-})
-
-
-
-
 // gửi round hiện tại khi user vào game
 socket.emit("wheel8-round-new",{
 roundId: wheel8Round.id
@@ -3409,37 +3316,18 @@ socket.emit("factory-update", factoryDB[uid]);
 // ================================
 // 🎡 WHEEL8 BET
 // ================================
-
-const betCooldown = new Map()
-
 socket.on("wheel8-bet",({slot,bet})=>{
 
 const uid = socket.data.uid
 if(!uid) return
 
 // =====================
-// 🚫 ANTI SPAM
-// =====================
-
-const now = Date.now()
-const last = betCooldown.get(uid) || 0
-
-if(now - last < 80){
-return
-}
-
-betCooldown.set(uid, now)
-
-
-// =====================
 // ⏱ KIỂM TRA THỜI GIAN
 // =====================
-
 const remain = Math.max(
 0,
 Math.floor((wheel8Round.endAt - Date.now()) / 1000)
 )
-
 
 // 🔒 KHÓA CƯỢC KHI CÒN 5 GIÂY
 if(remain <= 5){
@@ -3449,98 +3337,66 @@ message:"Betting closed"
 return
 }
 
-
-// =====================
-// 👤 LOAD USER
-// =====================
-
 const users = loadUsers()
 const me = users[uid]
 
 if(!me?.profile) return
 
+bet = Number(bet)||0
+slot = Number(slot)||0
 
-// =====================
-// 🔧 FIX INPUT
-// =====================
-
-slot = Number(slot) || 0
-bet  = Math.floor(Number(bet) || 0)
-
+if(bet <= 0) return
 
 // 🔒 slot hợp lệ
 if(slot < 1 || slot > 8) return
 
-// 🔒 bet hợp lệ
-if(bet <= 0) return
-
-
-// =====================
-// 🔒 CLAMP BET
-// =====================
-
-bet = Math.min(bet, me.profile.coins)
-
-if(bet <= 0){
+// 💰 kiểm tra coin
+if(me.profile.coins < bet){
 socket.emit("notify",{
 message:"Not enough coins"
 })
 return
 }
 
-
 // =====================
 // 💸 TRỪ COIN
 // =====================
-
 me.profile.coins -= bet
-
 
 // =====================
 // 📥 LƯU BET
 // =====================
-
 wheel8Round.bets.push({
 uid,
 slot,
 bet
 })
 
-
 // =====================
 // 💎 CỘNG POOL SLOT
 // =====================
-
 wheel8Round.slotPool ||= [0,0,0,0,0,0,0,0]
 
 wheel8Round.slotPool[slot-1] += bet
 
-
 // =====================
 // 💾 SAVE USER
 // =====================
-
 saveUsers(users)
-
 
 // =====================
 // 🔄 UPDATE COIN REALTIME
 // =====================
-
 emitCoinUpdate(uid)
-
 
 // =====================
 // 🎡 UPDATE POOL REALTIME
 // =====================
-
 io.emit("wheel8-pool-update", wheel8Round.slotPool)
-
 
 // =====================
 // ✅ OK
 // =====================
-
 socket.emit("wheel8-bet-ok")
 
 })

@@ -52,7 +52,9 @@ background:#050505;
 border-bottom:1px solid rgba(255,255,255,.1);
 }
 
-
+#timer{
+color:#fff;
+}
 
 /* WHEEL AREA */
 
@@ -297,7 +299,15 @@ z-index: 1;
 }
 
 
-
+.bet-grid{
+position: absolute;
+display:flex;
+justify-content:center;
+gap:0px;
+margin-top:2px;
+bottom: 25px;
+left: 15px;
+}
 
 .bet-chip{
 
@@ -521,7 +531,109 @@ transform:scale(1.12);
 
 
 
+.spokes{
+position:absolute;
+left:189px;
+top:40px;
+transform:translate(-50%,-50%);
+pointer-events:none;
+}
 
+.spoke{
+
+position:absolute;
+
+width:2px;
+height:150px;
+
+background:linear-gradient(
+to top,
+rgba(255,255,255,.8),
+rgba(255,255,255,.1)
+);
+
+transform-origin:bottom center;
+
+box-shadow:0 0 8px rgba(255,255,255,.4);
+
+}
+
+
+.spoke.s1{ transform:rotate(0deg); }
+
+.spoke.s2{ transform:rotate(45deg); }
+
+.spoke.s3{ transform:rotate(90deg); }
+
+.spoke.s4{ transform:rotate(135deg); }
+
+.spoke.s5{ transform:rotate(180deg); }
+
+.spoke.s6{ transform:rotate(225deg); }
+
+.spoke.s7{ transform:rotate(270deg); }
+
+.spoke.s8{ transform:rotate(315deg); }
+
+
+
+.bet-closed-banner{
+
+position:absolute;
+bottom:161px;
+width:215px;
+left:50%;
+transform:translateX(-50%);
+
+padding:16px 7px;
+
+font-weight:900;
+font-size:22px;
+letter-spacing:2px;
+
+color:#fff;
+
+background:
+linear-gradient(
+90deg,
+#001a33,
+#003a66,
+#001a33
+);
+
+border:2px solid #00aaff;
+
+border-radius:8px;
+
+text-shadow:
+0 0 10px #00aaff,
+0 0 20px #00aaff;
+
+box-shadow:
+0 0 20px #00aaff,
+inset 0 0 10px #00aaff;
+
+display:none;
+
+animation:policeFlash .5s infinite alternate;
+
+z-index:5;
+
+}
+
+@keyframes policeFlash{
+
+0%{
+opacity:0.7;
+transform:translateX(-50%) scale(1);
+}
+
+100%{
+opacity:1;
+transform:translateX(-50%) scale(1.05);
+}
+
+}
 
 
 
@@ -536,6 +648,30 @@ display:block;
 
 }
 
+.result-info{
+
+font-size:18px;
+font-weight:700;
+
+margin-top:10px;
+
+display:flex;
+flex-direction:column;
+gap:6px;
+
+}
+
+.result-win{
+
+color:#00ff88;
+
+font-size:22px;
+
+text-shadow:
+0 0 10px #00ff88,
+0 0 20px #00ff88;
+
+}
 
 
 
@@ -732,14 +868,6 @@ inset 0 0 6px rgba(0,170,255,.3);
 }
 
 
-
-.history-item img{
-width:100%;
-height:100%;
-object-fit:contain;
-}
-
-
 .history-new{
 
 position:absolute;
@@ -783,6 +911,32 @@ transform:scale(1.1);
 }
 
 
+/* màu theo multiplier */
+
+.h5{
+background:#1d2f55;
+color:#7ab7ff;
+}
+
+.h10{
+background:#2c1d55;
+color:#b37aff;
+}
+
+.h15{
+background:#55321d;
+color:#ffb77a;
+}
+
+.h25{
+background:#55311d;
+color:#ff7a7a;
+}
+
+.h45{
+background:#552a1d;
+color:#ffcc00;
+}
 
 
 .wheel-round{
@@ -855,150 +1009,6 @@ center / contain no-repeat;
 }
 
 
-
-
-.bet-history-btn{
-
-position:absolute;
-bottom:268px;
-right:173px;
-padding:8px 14px;
-
-font-size:12px;
-font-weight:900;
-
-background:linear-gradient(
-90deg,
-#001a33,
-#003a66,
-#001a33
-);
-
-border:1px solid #00aaff;
-border-radius:6px;
-
-color:#fff;
-
-text-shadow:
-0 0 8px #00aaff;
-
-box-shadow:
-0 0 10px #00aaff;
-
-cursor:pointer;
-z-index: 1;
-}
-
-
-
-.history-modal{
-
-position:fixed;
-inset:0;
-
-display:none;
-
-background:rgba(0,0,0,.6);
-
-align-items:center;
-justify-content:center;
-
-z-index:20;
-
-}
-
-.history-box{
-
-width:320px;
-max-height:420px;
-
-background:#020617;
-
-border:2px solid #00aaff;
-
-border-radius:12px;
-
-padding:20px;
-
-box-shadow:
-0 0 20px #00aaff;
-
-overflow:auto;
-
-}
-
-.history-title{
-
-font-size:18px;
-font-weight:900;
-
-text-align:center;
-
-margin-bottom:15px;
-
-}
-
-.history-bets{
-
-display:flex;
-flex-direction:column;
-gap:8px;
-
-}
-
-.history-row{
-
-display:flex;
-justify-content:space-between;
-
-padding:6px 10px;
-
-background:#0d1b2a;
-
-border-radius:6px;
-
-font-size:13px;
-
-}
-
-.history-close{
-
-margin-top:15px;
-
-width:100%;
-
-padding:10px;
-
-font-weight:900;
-
-background:#003a66;
-
-border:none;
-
-color:#fff;
-
-border-radius:6px;
-
-cursor:pointer;
-
-}
-
-
-
-.history-slot-icon{
-width:26px;
-height:26px;
-object-fit:contain;
-margin-right:8px;
-}
-
-
-.result-row{
-background:#001a33;
-border:1px solid #00aaff;
-box-shadow:0 0 10px #00aaff;
-font-weight:900;
-}
 
 
 
@@ -1170,8 +1180,6 @@ class="coin-icon">
 
 
 
-
-
 <div id="betClosedModal" class="bet-closed-modal">
 
 <div class="bet-closed-bg">
@@ -1183,60 +1191,6 @@ BETTING CLOSED
 </div>
 
 </div>
-
-
-
-
-<!-- BET HISTORY BUTTON -->
-<div class="bet-history-btn" onclick="openMyBetHistory()">
-MY BETS
-</div>
-
-
-
-<!-- ================= MY BET HISTORY ================= -->
-
-<div id="myBetHistoryModal" class="history-modal">
-
-<div class="history-box">
-
-<div class="history-title">
-MY BET HISTORY
-</div>
-
-<div id="myBetHistoryList" class="history-bets">
-</div>
-
-<button class="history-close"
-onclick="closeMyBetHistory()">
-CLOSE
-</button>
-
-</div>
-
-</div>
-
-
-
-
-<div id="roundDetailModal" class="history-modal">
-
-<div class="history-box">
-
-<div class="history-title">
-ROUND DETAILS
-</div>
-
-<div id="roundDetailList" class="history-bets"></div>
-
-<button class="history-close"
-onclick="closeRoundDetail()">
-CLOSE
-</button>
-
-</div>
-</div>
-
 
 
 <script>
@@ -1257,20 +1211,6 @@ let isBetLocked = false
 let resultShowing = false
 let coins = 0
 let wheelHistory = []
-
-let myBetHistory = []
-
-let currentRoundId = 0
-
-let lastWinSlot = 0
-let lastWinMulti = 0
-
-let roundResults = {}
-
-
-let lastBetSlot = 0
-let lastBetValue = 0
-
 
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
@@ -1386,35 +1326,8 @@ slot,
 bet:currentBet
 })
 
-
-/* 📜 LƯU HISTORY CƯỢC */
-
-// tìm record cùng round + slot
-let row = myBetHistory.find(r =>
-r.round === currentRoundId &&
-r.slot === slot
-)
-
-if(row){
-
-// cộng thêm cược
-row.bet += currentBet
-
-}else{
-
-
-}
-
-// giới hạn 20 dòng
-if(myBetHistory.length > 20){
-myBetHistory.pop()
-}
-
-
-// lưu tạm slot vừa cược
-lastBetSlot = slot
-lastBetValue = currentBet
-
+// cộng cược cá nhân
+myBets[slot-1] += currentBet
 
 const el = document.getElementById("mybet"+slot)
 
@@ -1432,17 +1345,6 @@ el.style.display = value > 0 ? "block" : "none"
 /* RESULT */
 
 socket.on("wheel8-result",(data)=>{
-
-
-lastWinSlot = data.slot
-lastWinMulti = data.multiplier
-
-
-roundResults[currentRoundId] = {
-slot:data.slot,
-multi:data.multiplier
-}
-
 
 // cập nhật history ngay lập tức
 wheelHistory.unshift({
@@ -1514,10 +1416,6 @@ closeResult()
 },5000)
 
 
-
-// reload history sau khi có kết quả
-socket.emit("wheel8-get-my-history")
-
 })
 
 /* TIMER */
@@ -1572,30 +1470,6 @@ renderHistory()
 })
 
 
-
-// 📜 USER BET HISTORY
-socket.on("wheel8-my-history",(list)=>{
-
-myBetHistory = []
-
-list.forEach(r=>{
-
-myBetHistory.push({
-round: r.roundId,
-slot: r.slot,
-bet: r.bet,
-win: r.win || 0,
-multi: r.multiplier || 0
-})
-
-})
-
-renderMyBetHistory()
-
-})
-
-
-
 function closeResult(){
 
 document.getElementById("resultModal").style.display="none"
@@ -1619,8 +1493,6 @@ el.textContent = pool[i]
 
 
 socket.on("wheel8-round-new",(data)=>{
-
-currentRoundId = data.roundId
 
 isBetLocked = false
 highlightSpeed = 1000
@@ -1735,7 +1607,9 @@ const img = document.createElement("img")
 
 img.src = "/assets/police/slot"+h.slot+".png"
 
-
+img.style.width = "100%"
+img.style.height = "100%"
+img.style.objectFit = "contain"
 
 div.appendChild(img)
 
@@ -1764,223 +1638,6 @@ fetch("/api/wheel8-round")
 document.getElementById("roundId").textContent =
 d.roundId
 })
-
-
-
-// 📜 LOAD USER BET HISTORY
-socket.emit("wheel8-get-my-history")
-
-
-
-socket.on("wheel8-bet-ok",()=>{
-
-myBets[lastBetSlot-1] += lastBetValue
-
-const el = document.getElementById("mybet"+lastBetSlot)
-
-if(el){
-
-const value = myBets[lastBetSlot-1]
-
-el.textContent = value
-el.style.display = value > 0 ? "block" : "none"
-
-}
-
-})
-
-
-
-
-function openMyBetHistory(){
-
-document.getElementById("myBetHistoryModal")
-.style.display="flex"
-
-renderMyBetHistory()
-
-}
-
-function closeMyBetHistory(){
-
-document.getElementById("myBetHistoryModal")
-.style.display="none"
-
-}
-
-
-
-function renderMyBetHistory(){
-
-const box =
-document.getElementById("myBetHistoryList")
-
-box.innerHTML=""
-
-// gom theo round
-const rounds = {}
-
-myBetHistory.forEach(b=>{
-
-if(!rounds[b.round]){
-rounds[b.round] = []
-}
-
-rounds[b.round].push(b)
-
-})
-
-
-Object.keys(rounds)
-.sort((a,b)=>b-a)
-.forEach(round=>{
-
-const list = rounds[round]
-
-// tổng cược
-const totalBet =
-list.reduce((a,b)=>a+b.bet,0)
-
-// tổng thắng
-let totalWin = 0
-
-list.forEach(b=>{
-totalWin += b.win || 0
-})
-
-
-
-const row = document.createElement("div")
-row.className="history-row"
-
-row.innerHTML =
-"Round "+round+
-" | 💎"+totalBet+
-" | 💎"+totalWin
-
-// click mở chi tiết
-row.onclick = ()=>openRoundDetailFromHistory(round)
-
-box.appendChild(row)
-
-})
-
-}
-
-
-function openRoundDetailFromHistory(round){
-
-document.getElementById("roundDetailModal")
-.style.display="flex"
-
-const box =
-document.getElementById("roundDetailList")
-
-box.innerHTML=""
-
-// lấy tất cả cược của round
-const bets =
-myBetHistory.filter(b=>b.round == round)
-
-// =======================
-// TÌM KẾT QUẢ ROUND
-// =======================
-
-let resultSlot = null
-let resultMulti = null
-
-// tìm trong history có win
-const winRow = bets.find(b=>b.win > 0)
-
-if(winRow){
-resultSlot = winRow.slot
-resultMulti = winRow.multi
-}
-
-// nếu không có win thì lấy multiplier từ bất kỳ bet
-if(!resultSlot && bets.length){
-
-resultSlot = bets[0].slot
-resultMulti = bets[0].multi
-
-}
-
-// =======================
-// HIỂN THỊ RESULT
-// =======================
-
-if(resultSlot){
-
-const resultDiv = document.createElement("div")
-resultDiv.className="history-row"
-
-resultDiv.innerHTML =
-"<b>RESULT</b> "+
-"<img src='/assets/police/slot"+resultSlot+".png' class='history-slot-icon'>"+
-" x"+resultMulti
-
-box.appendChild(resultDiv)
-
-}
-
-// =======================
-// GỘP THEO SLOT
-// =======================
-
-const slotMap = {}
-
-bets.forEach(b=>{
-
-if(!slotMap[b.slot]){
-slotMap[b.slot] = 0
-}
-
-slotMap[b.slot] += b.bet
-
-})
-
-// =======================
-// RENDER BETS
-// =======================
-
-Object.keys(slotMap).forEach(slot=>{
-
-const bet = slotMap[slot]
-
-const row = document.createElement("div")
-row.className="history-row"
-
-let winMark = ""
-
-const winRow =
-bets.find(b=>b.slot == slot && b.win > 0)
-
-if(winRow){
-winMark = " ⭐ WIN"
-}
-
-row.innerHTML =
-"<img src='/assets/police/slot"+slot+".png' class='history-slot-icon'>"+ winMark +
-"<span>"+bet+" 💎</span>"
-
-
-box.appendChild(row)
-
-})
-
-}
-
-
-
-
-
-function closeRoundDetail(){
-
-document.getElementById("roundDetailModal")
-.style.display="none"
-
-}
-
 
 
 </script>
