@@ -1684,6 +1684,7 @@ slot: o.slot,
 bet: o.bet,
 multiplier: multiplier,
 win: win,
+winSlot: winSlot,
 ts: Date.now()
 })
 
