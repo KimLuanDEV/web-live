@@ -1761,7 +1761,14 @@ roundMap[r.roundId].push(r)
 
 const roundIds =
 Object.keys(roundMap)
-.sort((a,b)=>b-a)
+.sort((a,b)=>{
+
+const ta = roundMap[a][0]?.ts || 0
+const tb = roundMap[b][0]?.ts || 0
+
+return tb - ta
+
+})
 .slice(0,50)
 
 const newHistory = []

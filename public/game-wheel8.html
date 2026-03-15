@@ -1871,8 +1871,14 @@ rounds[b.round].push(b)
 
 const roundIds =
 Object.keys(rounds)
-.map(Number)
-.sort((a,b)=>b-a)
+.sort((a,b)=>{
+
+const ta = rounds[a][0]?.time || 0
+const tb = rounds[b][0]?.time || 0
+
+return tb - ta
+
+})
 .slice(0,50)
 
 const newList = []
@@ -2121,12 +2127,18 @@ rounds[b.round].push(b)
 
 })
 
-Object.keys(rounds)
-.map(Number)
-.sort((a,b)=>b-a)
-.forEach(round=>{
+Object.entries(rounds)
+.sort((a,b)=>{
 
-const list = rounds[round]
+const ta = a[1][0].time || 0
+const tb = b[1][0].time || 0
+
+return tb - ta
+
+})
+.forEach(([round,list])=>{
+
+
 
 // tổng cược
 const totalBet =
