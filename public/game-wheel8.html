@@ -1161,19 +1161,15 @@ gap:8px;
 
 .round-slot-row{
 
-display:flex;
+display:grid;
+
+grid-template-columns:1fr 1fr 1fr;
+
 align-items:center;
-justify-content:space-between;
 
-padding:12px;
+padding:12px 14px;
 
-background:#020617;
-
-border:1px solid rgba(0,170,255,.3);
-
-border-radius:8px;
-
-transition:.15s;
+border-bottom:1px solid rgba(255,255,255,.08);
 
 }
 
@@ -1185,9 +1181,9 @@ background:#0d1b2a;
 
 display:flex;
 align-items:center;
-gap:10px;
+gap:8px;
 
-font-weight:700;
+justify-content:center;
 
 }
 
@@ -1210,6 +1206,25 @@ color:#00ff9d;
 font-weight:900;
 }
 
+
+.round-table-head{
+
+display:grid;
+grid-template-columns:1fr 1fr 1fr;
+
+padding:12px 14px;
+
+font-weight:900;
+
+background:#001a33;
+
+border-bottom:1px solid #00aaff;
+
+text-align:center;
+
+letter-spacing:1px;
+
+}
 
 
 
@@ -1467,6 +1482,14 @@ RESULT
 
 </div>
 
+
+<div class="round-table-head">
+
+<div>SLOT</div>
+<div>BET</div>
+<div>WIN</div>
+
+</div>
 
 <div id="roundDetailList" class="round-detail-list"></div>
 
@@ -2238,19 +2261,19 @@ function openRoundDetailFromHistory(round){
     const row = document.createElement("div")
     row.className = "round-slot-row"
 
-    row.innerHTML = `
-      <div class="round-slot-left">
-        <img src="/assets/police/slot${slot}.png" class="round-slot-icon">
-      </div>
+row.innerHTML = `
+<div class="round-slot-left">
+<img src="/assets/police/slot${slot}.png" class="round-slot-icon">
+</div>
 
-      <div class="round-slot-bet">
-        💎 ${item.bet}
-      </div>
+<div class="round-slot-bet">
+💎 ${item.bet}
+</div>
 
-      <div class="round-slot-win">
-        ${item.win > 0 ? "💎 "+item.win : ""}
-      </div>
-    `
+<div class="round-slot-win">
+${item.win > 0 ? "💎 "+item.win : "-"}
+</div>
+`
 
     box.appendChild(row)
 
