@@ -1397,11 +1397,17 @@ r.slot === slot
 
 if(row){
 
-// cộng thêm cược
 row.bet += currentBet
 
 }else{
 
+myBetHistory.push({
+round: currentRoundId,
+slot: slot,
+bet: currentBet,
+win:0,
+multi:0
+})
 
 }
 
@@ -1576,9 +1582,14 @@ renderHistory()
 // 📜 USER BET HISTORY
 socket.on("wheel8-my-history",(list)=>{
 
-myBetHistory = []
-
 list.forEach(r=>{
+
+const exist = myBetHistory.find(x =>
+x.round === r.roundId &&
+x.slot === r.slot
+)
+
+if(!exist){
 
 myBetHistory.push({
 round: r.roundId,
@@ -1588,7 +1599,17 @@ win: r.win || 0,
 multi: r.multiplier || 0
 })
 
+}
+
 })
+
+// sort round mới nhất lên trên
+myBetHistory.sort((a,b)=>b.round - a.round)
+
+// giới hạn 50 record
+if(myBetHistory.length > 50){
+myBetHistory = myBetHistory.slice(0,50)
+}
 
 renderMyBetHistory()
 
