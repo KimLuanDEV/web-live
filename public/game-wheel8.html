@@ -1229,6 +1229,43 @@ letter-spacing:1px;
 }
 
 
+
+
+.exit-btn{
+
+position:absolute;
+top:10px;
+left:10px;
+
+width:80px;
+height:40px;
+
+cursor:pointer;
+z-index:20;
+
+}
+
+.exit-btn img{
+
+width:100%;
+height:100%;
+object-fit:contain;
+
+transition:.15s;
+
+}
+
+.exit-btn:hover img{
+
+transform:scale(1.1);
+
+filter:
+drop-shadow(0 0 10px #00aaff);
+
+}
+
+
+
 </style>
 </head>
 
@@ -1319,6 +1356,11 @@ ROUND:
 <span id="roundId">-</span>
 </div>
 
+
+<!-- EXIT BUTTON -->
+<div class="exit-btn" onclick="leaveGame()">
+<img src="/assets/police/exit-btn.png">
+</div>
 
 
 <!-- ================= HISTORY ================= -->
@@ -1670,7 +1712,7 @@ multi:0
 }
 
 // giới hạn 20 dòng
-if(myBetHistory.length > 20){
+if(myBetHistory.length > 200){
 myBetHistory.pop()
 }
 
@@ -2301,6 +2343,11 @@ document.getElementById("roundDetailModal")
 }
 
 
+function leaveGame(){
+
+window.location.href = "/invest.html"
+
+}
 
 </script>
 
