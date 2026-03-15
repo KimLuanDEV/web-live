@@ -1346,7 +1346,7 @@ el.style.display = value > 0 ? "block" : "none"
 
 socket.on("wheel8-result",(data)=>{
 
-// cập nhật history ngay lập tức
+// history
 wheelHistory.unshift({
 slot:data.slot,
 multi:data.multiplier
@@ -1356,52 +1356,58 @@ wheelHistory = wheelHistory.slice(0,8)
 
 renderHistory()
 
-
-
 resultShowing = true
 
 stopHighlightLoop()
 
-const slot = Number(data.slot)
+const winSlots = data.winSlots || []
 const m = data.multiplier
 
+slots.forEach(s=>s.classList.remove("win","lose"))
 
+/* highlight win */
 
+winSlots.forEach(s => {
 
-slots.forEach(s=>s.classList.remove("win"))
+const el = document.querySelector(".slot.s"+s)
 
-const winSlot =
-document.querySelector(".slot.s"+slot)
+if(el){
 
-if(winSlot){
-
-winSlot.classList.add("win")
+el.classList.add("win")
 
 setTimeout(()=>{
-
-winSlot.classList.remove("win")
+el.classList.remove("win")
 resultShowing = false
-
 },5000)
 
 }
 
+})
 
-// hình slot thắng
+/* result image */
+
+if(winSlots.length == 1){
+
 document.getElementById("resultImg").src =
-"/assets/police/slot"+slot+".png"
+"/assets/police/slot"+winSlots[0]+".png"
 
-// tổng cược toàn bộ
+}
+
+/* total bet */
+
 const totalBet =
 myBets.reduce((a,b)=>a+b,0)
 
-// cược slot thắng
-const winBet =
-myBets[slot-1] || 0
+/* total win */
 
-// tiền thắng
-const totalWin =
-winBet * m
+let totalWin = 0
+
+winSlots.forEach(s=>{
+
+const bet = myBets[s-1] || 0
+totalWin += bet * m
+
+})
 
 document.getElementById("resultTotalBet").textContent =
 totalBet
@@ -1414,7 +1420,6 @@ document.getElementById("resultModal").style.display = "flex"
 setTimeout(()=>{
 closeResult()
 },5000)
-
 
 })
 
