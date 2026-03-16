@@ -1739,35 +1739,33 @@ el.style.display = value > 0 ? "block" : "none"
 
 socket.on("wheel8-result",(data)=>{
 
+const winSlots = data.slots || [data.slot]
+const m = data.multiplier
 
-lastWinSlot = data.slot
-lastWinMulti = data.multiplier
+// slot đại diện để hiển thị hình
+const resultSlot = winSlots[0] || 1
 
+lastWinSlot = resultSlot
+lastWinMulti = m
 
 roundResults[currentRoundId] = {
-slot:data.slot,
-multi:data.multiplier
+slot: resultSlot,
+multi: m
 }
 
-
-// cập nhật history ngay lập tức
+// cập nhật history
 wheelHistory.unshift({
-slot:data.slot,
-multi:data.multiplier
+slot: resultSlot,
+multi: m
 })
 
 wheelHistory = wheelHistory.slice(0,8)
 
 renderHistory()
 
-
-
 resultShowing = true
 
 stopHighlightLoop()
-
-const winSlots = data.slots || [data.slot]
-const m = data.multiplier
 
 // reset highlight
 document.querySelectorAll(".slot")
@@ -1776,37 +1774,35 @@ document.querySelectorAll(".slot")
 // highlight tất cả slot thắng
 winSlots.forEach(s=>{
 
-  const winSlot =
-  document.querySelector(".slot.s"+s)
+const el = document.querySelector(".slot.s"+s)
 
-  if(winSlot){
+if(el){
 
-    winSlot.classList.add("win")
+el.classList.add("win")
 
-    setTimeout(()=>{
-      winSlot.classList.remove("win")
-      resultShowing = false
-    },5000)
+setTimeout(()=>{
+el.classList.remove("win")
+resultShowing = false
+},5000)
 
-  }
+}
 
 })
 
 // hình slot thắng
 document.getElementById("resultImg").src =
-"/assets/police/slot"+slot+".png"
+"/assets/police/slot"+resultSlot+".png"
 
-// tổng cược toàn bộ
+// tổng cược
 const totalBet =
 myBets.reduce((a,b)=>a+b,0)
 
-// cược slot thắng
-const winBet =
-myBets[slot-1] || 0
+// tổng tiền thắng (có thể nhiều slot)
+let totalWin = 0
 
-// tiền thắng
-const totalWin =
-winBet * m
+winSlots.forEach(s=>{
+totalWin += (myBets[s-1] || 0) * m
+})
 
 document.getElementById("resultTotalBet").textContent =
 totalBet
@@ -1820,13 +1816,10 @@ setTimeout(()=>{
 closeResult()
 },5000)
 
-
-
-// reload history sau khi có kết quả
+// reload history
 socket.emit("wheel8-get-my-history")
 
 })
-
 /* TIMER */
 
 socket.on("wheel8-timer",(t)=>{

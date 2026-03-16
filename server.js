@@ -1723,6 +1723,9 @@ if(Math.random() < 0.5){
 }
 
 
+const resultSlot = winSlots[0] || 1
+
+
 // =======================
 // 💰 PAYOUT
 // =======================
@@ -1755,7 +1758,7 @@ slot: o.slot,
 bet: o.bet,
 multiplier: multiplier,
 win: win,
-winSlot: winSlot,
+winSlot: resultSlot,
 ts: Date.now()
 })
 
@@ -1830,9 +1833,11 @@ event: specialEvent ? "x5-all" : null
 // =======================
 
 wheel8History.unshift({
-slot: winSlot,
-multi: multiplier,
-ts: Date.now()
+  slot: resultSlot,
+  multi: multiplier,
+  ts: Date.now(),
+  slots: winSlots,
+  event: specialEvent ? "x5-all" : null
 })
 
 if(wheel8History.length > MAX_WHEEL8_HISTORY){
