@@ -1708,7 +1708,7 @@ let winSlots = []
 let multiplier = 5
 
 // 🎁 0.1%: 4 cửa x5 đều thắng
-if(Math.random() < 0.5){
+if(Math.random() < 0.001){
 
   specialEvent = true
   winSlots = [1,6,7,8] // các slot x5
