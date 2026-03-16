@@ -2271,7 +2271,9 @@ if(resultSlot){
 let resultImg = "/assets/police/slot"+resultSlot+".png"
 
 // EVENT X5 ALL
-if(resultMulti === 5 && [1,6,7,8].includes(resultSlot)){
+const r = roundResults[round]
+
+if(r && r.slots && r.slots.length === 4){
 resultImg = "/assets/police/event-x5-all.png"
 }
 
