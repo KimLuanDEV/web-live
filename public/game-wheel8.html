@@ -1799,7 +1799,17 @@ let resultImg = "/assets/police/slot"+resultSlot+".png"
 
 // event 4 slot x5
 if(winSlots.length === 4){
+
+// event slot 1,6,7,8
+if(winSlots.includes(1)){
 resultImg = "/assets/police/event-x5-all.png"
+}
+
+// event slot 2,3,4,5
+else{
+resultImg = "/assets/police/event-x45-all.png"
+}
+
 }
 
 document.getElementById("resultImg").src = resultImg
@@ -1812,7 +1822,12 @@ myBets.reduce((a,b)=>a+b,0)
 let totalWin = 0
 
 winSlots.forEach(s=>{
-totalWin += (myBets[s-1] || 0) * m
+
+// multiplier theo slot
+const slotMulti = [5,10,15,25,45,5,5,5][s-1]
+
+totalWin += (myBets[s-1] || 0) * slotMulti
+
 })
 
 document.getElementById("resultTotalBet").textContent =
