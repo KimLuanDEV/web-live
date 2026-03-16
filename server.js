@@ -1707,21 +1707,21 @@ let winSlots = []
 let multiplier = null
 
 // 🎁 0.1% SPECIAL EVENT
-if(Math.random() < 0.5){
+if(Math.random() < 0.001){
 
   specialEvent = true
 
   if(Math.random() < 0.5){
 
-    // 4 slot x5
+    // 🎁 EVENT 1
+    // slot 1,6,7,8
     winSlots = [1,6,7,8]
-    multiplier = 5
 
   }else{
 
-    // 4 slot mixed multiplier
+    // 🎁 EVENT 2
+    // slot 2,3,4,5
     winSlots = [2,3,4,5]
-    multiplier = null
 
   }
 
