@@ -1701,23 +1701,28 @@ setInterval(()=>{
 
 const users = loadUsers()
 
-// 🎯 kết quả quay
 // 🎯 SPECIAL EVENT
 let specialEvent = false
 let winSlots = []
-let multiplier = 5
+let multiplier = null
 
 // 🎁 0.1% SPECIAL EVENT
 if(Math.random() < 0.5){
 
   specialEvent = true
-  multiplier = 5
 
-  // 50% mỗi nhóm
   if(Math.random() < 0.5){
+
+    // 4 slot x5
     winSlots = [1,6,7,8]
+    multiplier = 5
+
   }else{
+
+    // 4 slot mixed multiplier
     winSlots = [2,3,4,5]
+    multiplier = null
+
   }
 
 }else{
@@ -1728,7 +1733,6 @@ if(Math.random() < 0.5){
   multiplier = result.multiplier
 
 }
-
 
 const resultSlot = winSlots[0] || 1
 
@@ -1746,9 +1750,12 @@ let win = 0
 
 if(winSlots.includes(o.slot)){
 
-win = o.bet * multiplier
+  // lấy multiplier theo slot
+  const slotMulti = WHEEL8_SLOTS[o.slot-1].m
 
-me.profile.coins += win
+  win = o.bet * slotMulti
+
+  me.profile.coins += win
 
 }
 
