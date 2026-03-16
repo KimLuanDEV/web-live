@@ -1790,8 +1790,16 @@ resultShowing = false
 })
 
 // hình slot thắng
-document.getElementById("resultImg").src =
-"/assets/police/slot"+resultSlot+".png"
+// hình kết quả
+
+let resultImg = "/assets/police/slot"+resultSlot+".png"
+
+// event 4 slot x5
+if(winSlots.length === 4){
+resultImg = "/assets/police/event-x5-all.png"
+}
+
+document.getElementById("resultImg").src = resultImg
 
 // tổng cược
 const totalBet =
