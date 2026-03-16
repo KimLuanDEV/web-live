@@ -2075,7 +2075,14 @@ div.className = "history-item"
 
 const img = document.createElement("img")
 
-img.src = "/assets/police/slot"+h.slot+".png"
+let imgSrc = "/assets/police/slot"+h.slot+".png"
+
+// event x5 ALL
+if(h.multi === 5 && [1,6,7,8].includes(h.slot)){
+imgSrc = "/assets/police/event-x5-all.png"
+}
+
+img.src = imgSrc
 
 
 
@@ -2257,8 +2264,15 @@ function openRoundDetailFromHistory(round){
 
   if(resultSlot){
 
-    icon.style.backgroundImage =
-      "url('/assets/police/slot"+resultSlot+".png')"
+let resultImg = "/assets/police/slot"+resultSlot+".png"
+
+// event x5 ALL
+if(resultMulti === 5 && [1,6,7,8].includes(resultSlot)){
+resultImg = "/assets/police/event-x5-all.png"
+}
+
+icon.style.backgroundImage =
+"url('"+resultImg+"')"
 
     multi.textContent = "x"+resultMulti
 
