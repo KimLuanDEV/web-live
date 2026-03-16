@@ -1757,7 +1757,9 @@ slots: winSlots
 // cập nhật history
 wheelHistory.unshift({
 slot: resultSlot,
-multi: m
+multi: m,
+slots: winSlots,
+event: data.event || null
 })
 
 wheelHistory = wheelHistory.slice(0,8)
@@ -2078,16 +2080,15 @@ const img = document.createElement("img")
 
 let imgSrc = "/assets/police/slot"+h.slot+".png"
 
-// kiểm tra round đó có phải event không
-const r = roundResults[h.round]
-
-if(r && r.slots && r.slots.length === 4){
-imgSrc = "/assets/police/event-x5-all.png"
+// event x5 all
+if(
+  h.event === "x5-all" ||
+  (Array.isArray(h.slots) && h.slots.length === 4)
+){
+  imgSrc = "/assets/police/event-x5-all.png"
 }
 
 img.src = imgSrc
-
-
 
 div.appendChild(img)
 
