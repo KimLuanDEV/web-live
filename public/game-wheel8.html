@@ -1766,30 +1766,31 @@ resultShowing = true
 
 stopHighlightLoop()
 
-const slot = Number(data.slot)
+const winSlots = data.slots || [data.slot]
 const m = data.multiplier
 
+// reset highlight
+document.querySelectorAll(".slot")
+.forEach(s=>s.classList.remove("win"))
 
+// highlight tất cả slot thắng
+winSlots.forEach(s=>{
 
+  const winSlot =
+  document.querySelector(".slot.s"+s)
 
-slots.forEach(s=>s.classList.remove("win"))
+  if(winSlot){
 
-const winSlot =
-document.querySelector(".slot.s"+slot)
+    winSlot.classList.add("win")
 
-if(winSlot){
+    setTimeout(()=>{
+      winSlot.classList.remove("win")
+      resultShowing = false
+    },5000)
 
-winSlot.classList.add("win")
+  }
 
-setTimeout(()=>{
-
-winSlot.classList.remove("win")
-resultShowing = false
-
-},5000)
-
-}
-
+})
 
 // hình slot thắng
 document.getElementById("resultImg").src =

@@ -1702,10 +1702,26 @@ setInterval(()=>{
 const users = loadUsers()
 
 // 🎯 kết quả quay
-const result = pickWheel8()
+// 🎯 SPECIAL EVENT
+let specialEvent = false
+let winSlots = []
+let multiplier = 5
 
-const winSlot = result.slot
-const multiplier = result.multiplier
+// 🎁 50%: 4 cửa x5 đều thắng
+if(Math.random() < 0.5){
+
+  specialEvent = true
+  winSlots = [1,6,7,8] // các slot x5
+
+}else{
+
+  const result = pickWheel8()
+
+  winSlots = [result.slot]
+  multiplier = result.multiplier
+
+}
+
 
 // =======================
 // 💰 PAYOUT
@@ -1718,9 +1734,10 @@ if(!me?.profile) return
 
 let win = 0
 
-if(o.slot === winSlot){
+if(winSlots.includes(o.slot)){
 
 win = o.bet * multiplier
+
 me.profile.coins += win
 
 }
@@ -1802,8 +1819,9 @@ emitCoinUpdate(o.uid)
 // =======================
 
 io.emit("wheel8-result",{
-slot: winSlot,
-multiplier: multiplier
+slots: winSlots,
+multiplier: multiplier,
+event: specialEvent ? "x5-all" : null
 })
 
 
