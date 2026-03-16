@@ -1759,6 +1759,7 @@ bet: o.bet,
 multiplier: multiplier,
 win: win,
 winSlot: resultSlot,
+event: specialEvent ? "x5-all" : null,
 ts: Date.now()
 })
 

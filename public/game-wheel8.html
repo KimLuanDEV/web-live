@@ -1898,6 +1898,7 @@ bet: Number(r.bet) || 0,
 win: Number(r.win) || 0,
 multi: Number(r.multiplier) || 0,
 winSlot: Number(r.winSlot) || 0,
+event: r.event || null,
 time: Number(r.ts) || 0
 })
 
@@ -2244,10 +2245,6 @@ const box   = document.getElementById("roundDetailList")
 modal.style.display = "flex"
 box.innerHTML = ""
 
-// =====================
-// LẤY BET CỦA ROUND
-// =====================
-
 const bets = myBetHistory
 .filter(b => Number(b.round) === Number(round))
 
@@ -2256,11 +2253,7 @@ box.innerHTML = "<div class='round-slot-row'>No data</div>"
 return
 }
 
-// =====================
-// RESULT HEADER
-// =====================
-
-const resultSlot  = Number(bets[0].winSlot) || 0
+const resultSlot  = Number(bets[0].winSlot || bets[0].slot) || 0
 const resultMulti = Number(bets[0].multi) || 0
 
 const icon  = document.getElementById("roundResultIcon")
@@ -2271,15 +2264,13 @@ if(resultSlot){
 let resultImg = "/assets/police/slot"+resultSlot+".png"
 
 // EVENT X5 ALL
-const r = roundResults[round]
+const first = bets[0]
 
-if(r && r.slots && r.slots.length === 4){
+if(first && first.event === "x5-all"){
 resultImg = "/assets/police/event-x5-all.png"
 }
 
-icon.style.backgroundImage =
-"url('"+resultImg+"')"
-
+icon.style.backgroundImage = "url('"+resultImg+"')"
 multi.textContent = "x"+resultMulti
 
 }else{
@@ -2289,16 +2280,11 @@ multi.textContent = "?"
 
 }
 
-// =====================
-// GỘP BET THEO SLOT
-// =====================
-
 const slotMap = {}
 
 bets.forEach(b=>{
 
 const slot = Number(b.slot)
-
 if(!slot) return
 
 if(!slotMap[slot]){
@@ -2309,10 +2295,6 @@ slotMap[slot].bet += Number(b.bet) || 0
 slotMap[slot].win += Number(b.win) || 0
 
 })
-
-// =====================
-// RENDER SLOT
-// =====================
 
 Object.keys(slotMap)
 .map(Number)
