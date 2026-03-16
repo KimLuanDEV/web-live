@@ -1833,6 +1833,7 @@ event: specialEvent ? "x5-all" : null
 // =======================
 
 wheel8History.unshift({
+  roundId: wheel8Round.id,
   slot: resultSlot,
   multi: multiplier,
   ts: Date.now(),
@@ -1854,6 +1855,9 @@ io.emit("wheel8-history",wheel8History)
 // 🔄 NEW ROUND
 // =======================
 
+
+wheel8RoundCounter++
+
 wheel8Round = {
   id: wheel8RoundCounter,
   startAt: Date.now(),
@@ -1862,7 +1866,7 @@ wheel8Round = {
   slotPool:[0,0,0,0,0,0,0,0]
 }
 
-wheel8RoundCounter++
+
 
 saveWheel8Round({
 dayTs: wheel8RoundDayTs,

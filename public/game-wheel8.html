@@ -1750,7 +1750,8 @@ lastWinMulti = m
 
 roundResults[currentRoundId] = {
 slot: resultSlot,
-multi: m
+multi: m,
+slots: winSlots
 }
 
 // cập nhật history
@@ -2077,8 +2078,10 @@ const img = document.createElement("img")
 
 let imgSrc = "/assets/police/slot"+h.slot+".png"
 
-// event x5 ALL
-if(h.multi === 5 && [1,6,7,8].includes(h.slot)){
+// kiểm tra round đó có phải event không
+const r = roundResults[h.round]
+
+if(r && r.slots && r.slots.length === 4){
 imgSrc = "/assets/police/event-x5-all.png"
 }
 
@@ -2267,7 +2270,9 @@ function openRoundDetailFromHistory(round){
 let resultImg = "/assets/police/slot"+resultSlot+".png"
 
 // event x5 ALL
-if(resultMulti === 5 && [1,6,7,8].includes(resultSlot)){
+const r = roundResults[round]
+
+if(r && r.slots && r.slots.length === 4){
 resultImg = "/assets/police/event-x5-all.png"
 }
 
