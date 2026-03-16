@@ -2238,120 +2238,111 @@ box.appendChild(row)
 
 function openRoundDetailFromHistory(round){
 
-  const modal = document.getElementById("roundDetailModal")
-  const box = document.getElementById("roundDetailList")
+const modal = document.getElementById("roundDetailModal")
+const box   = document.getElementById("roundDetailList")
 
-  modal.style.display = "flex"
-  box.innerHTML = ""
+modal.style.display = "flex"
+box.innerHTML = ""
 
-  // =====================
-  // LẤY BET CỦA ROUND
-  // =====================
+// =====================
+// LẤY BET CỦA ROUND
+// =====================
 
-  const bets = myBetHistory
-    .filter(b => Number(b.round) === Number(round))
+const bets = myBetHistory
+.filter(b => Number(b.round) === Number(round))
 
-  if(!bets.length){
-    box.innerHTML = "<div class='round-slot-row'>No data</div>"
-    return
-  }
+if(!bets.length){
+box.innerHTML = "<div class='round-slot-row'>No data</div>"
+return
+}
 
-  // =====================
-  // RESULT (UPDATE HEADER)
-  // =====================
+// =====================
+// RESULT HEADER
+// =====================
 
-  const resultSlot = Number(bets[0].winSlot) || 0
-  const resultMulti = Number(bets[0].multi) || 0
+const resultSlot  = Number(bets[0].winSlot) || 0
+const resultMulti = Number(bets[0].multi) || 0
 
-  const icon  = document.getElementById("roundResultIcon")
-  const multi = document.getElementById("roundResultMulti")
+const icon  = document.getElementById("roundResultIcon")
+const multi = document.getElementById("roundResultMulti")
 
-  if(resultSlot){
+if(resultSlot){
 
 let resultImg = "/assets/police/slot"+resultSlot+".png"
 
-// event x5 ALL
-const r = roundResults[round]
-
-if(r && r.slots && r.slots.length === 4){
+// EVENT X5 ALL
+if(resultMulti === 5 && [1,6,7,8].includes(resultSlot)){
 resultImg = "/assets/police/event-x5-all.png"
 }
 
 icon.style.backgroundImage =
 "url('"+resultImg+"')"
 
-    multi.textContent = "x"+resultMulti
+multi.textContent = "x"+resultMulti
 
-  }else{
+}else{
 
-    icon.style.backgroundImage = ""
-    multi.textContent = "?"
+icon.style.backgroundImage = ""
+multi.textContent = "?"
 
-  }
+}
 
+// =====================
+// GỘP BET THEO SLOT
+// =====================
 
-  // =====================
-  // GỘP BET THEO SLOT
-  // =====================
+const slotMap = {}
 
-  const slotMap = {}
+bets.forEach(b=>{
 
-  bets.forEach(b=>{
+const slot = Number(b.slot)
 
-    const slot = Number(b.slot)
+if(!slot) return
 
-    if(!slot) return
+if(!slotMap[slot]){
+slotMap[slot] = {bet:0,win:0}
+}
 
-    if(!slotMap[slot]){
+slotMap[slot].bet += Number(b.bet) || 0
+slotMap[slot].win += Number(b.win) || 0
 
-      slotMap[slot] = {
-        bet:0,
-        win:0
-      }
+})
 
-    }
+// =====================
+// RENDER SLOT
+// =====================
 
-    slotMap[slot].bet += Number(b.bet) || 0
-    slotMap[slot].win += Number(b.win) || 0
+Object.keys(slotMap)
+.map(Number)
+.sort((a,b)=>a-b)
+.forEach(slot=>{
 
-  })
+const item = slotMap[slot]
 
+const row = document.createElement("div")
+row.className = "round-slot-row"
 
-  // =====================
-  // RENDER SLOT
-  // =====================
+if(item.win > 0){
+row.classList.add("win")
+}
 
-  Object.keys(slotMap)
-  .map(Number)
-  .sort((a,b)=>a-b)
-  .forEach(slot=>{
+row.innerHTML = `
+<div class="round-slot-left">
+<img src="/assets/police/slot${slot}.png" class="round-slot-icon">
+</div>
 
-    const item = slotMap[slot]
+<div class="round-slot-bet">
+💎 ${item.bet}
+</div>
 
-    const row = document.createElement("div")
-    row.className = "round-slot-row"
+<div class="round-slot-win">
+${item.win > 0 ? "💎 "+item.win : "-"}
+</div>
+`
 
-    if(item.win > 0){
-      row.classList.add("win")
-    }
+box.appendChild(row)
 
-    row.innerHTML = `
-      <div class="round-slot-left">
-        <img src="/assets/police/slot${slot}.png" class="round-slot-icon">
-      </div>
-
-      <div class="round-slot-bet">
-        💎 ${item.bet}
-      </div>
-
-      <div class="round-slot-win">
-        ${item.win > 0 ? "💎 "+item.win : "-"}
-      </div>
-    `
-
-    box.appendChild(row)
-
-  })
+})
 
 }
 
