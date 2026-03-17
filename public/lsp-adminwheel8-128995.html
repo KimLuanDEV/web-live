@@ -132,6 +132,41 @@ body{
 }
 
 
+.override-panel{
+  margin-top:20px;
+  text-align:center;
+}
+
+.override-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+  margin-top:10px;
+}
+
+.override-grid button{
+  padding:12px;
+  font-size:18px;
+  font-weight:900;
+
+  background:#001a33;
+  color:#00ffff;
+
+  border:1px solid #00ffff;
+  border-radius:10px;
+
+  cursor:pointer;
+
+  transition:.2s;
+}
+
+.override-grid button:hover{
+  background:#00ffff;
+  color:#000;
+  transform:scale(1.1);
+}
+
+
 </style>
 </head>
 
@@ -161,6 +196,28 @@ body{
   <div class="hash" id="hash"></div>
 
 </div>
+
+
+
+<div class="override-panel">
+
+  <div>OVERRIDE SLOT</div>
+
+  <div class="override-grid">
+
+    <button onclick="setSlot(1)">1</button>
+    <button onclick="setSlot(2)">2</button>
+    <button onclick="setSlot(3)">3</button>
+    <button onclick="setSlot(4)">4</button>
+    <button onclick="setSlot(5)">5</button>
+    <button onclick="setSlot(6)">6</button>
+    <button onclick="setSlot(7)">7</button>
+    <button onclick="setSlot(8)">8</button>
+
+  </div>
+
+</div>
+
 
 <script>
 const socket = io()
@@ -199,6 +256,16 @@ socket.on("wheel8-timer",(remain)=>{
   }
 
 })
+
+
+function setSlot(slot){
+
+  socket.emit("admin-wheel8-override",{
+    slot
+  })
+
+}
+
 
 </script>
 
