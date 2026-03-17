@@ -461,9 +461,11 @@ function setSlot(slot){
 }
 
 
-
 socket.on("admin-wheel8-bets-update",(data)=>{
 
+  // ======================
+  // 💰 SLOT POOL
+  // ======================
   const poolBox = document.getElementById("poolList")
   poolBox.innerHTML = ""
 
@@ -481,7 +483,7 @@ socket.on("admin-wheel8-bets-update",(data)=>{
       div.classList.add("low")
     }
 
-    // ✅ THÊM Ở ĐÂY
+    // 📊 % bar
     const percent = (v / max) * 100
     div.style.setProperty("--percent", percent + "%")
 
@@ -491,11 +493,51 @@ socket.on("admin-wheel8-bets-update",(data)=>{
     `
 
     poolBox.appendChild(div)
+  })
 
+
+  // ======================
+  // 👤 PLAYER BETS
+  // ======================
+  const betBox = document.getElementById("betList")
+  betBox.innerHTML = ""
+
+  if(!data.players || !data.players.length){
+    betBox.innerHTML = "<div>NO BETS</div>"
+    return
+  }
+
+  // sort giảm dần theo total
+  const players = data.players.sort((a,b)=>b.total - a.total)
+
+  players.forEach((p,index)=>{
+
+    const div = document.createElement("div")
+
+    // 🔥 chi tiết slot
+    const slotDetail = p.slots
+      .map((v,i)=> v>0 ? `S${i+1}:${v}` : "")
+      .filter(Boolean)
+      .join(" | ")
+
+    // 👑 highlight top 1
+    if(index === 0){
+      div.style.color = "#00ff88"
+      div.style.fontWeight = "bold"
+    }
+
+    div.innerHTML = `
+      <div>
+        ${p.name}<br>
+        <small>${slotDetail}</small>
+      </div>
+      <span>${p.total}</span>
+    `
+
+    betBox.appendChild(div)
   })
 
 })
-
 
 
 </script>
