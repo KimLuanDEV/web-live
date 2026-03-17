@@ -43,15 +43,6 @@ body{
 <script>
 const socket = io()
 
-socket.on("wheel8-current-round",(data)=>{
-
-  document.getElementById("round").textContent = data.roundId
-  document.getElementById("slot").textContent = data.slot
-  document.getElementById("multi").textContent = data.multiplier
-  document.getElementById("hash").textContent = data.hash
-
-})
-
 socket.on("admin-wheel8-secret",(data)=>{
 
   document.getElementById("round").textContent = data.roundId
