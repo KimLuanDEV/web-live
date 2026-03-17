@@ -3361,45 +3361,6 @@ io.on("connection", socket => {
 
 
 
-socket.on("admin-wheel8-override",(data)=>{
-
-  const slot = Number(data.slot)
-
-  if(!wheel8Round) return
-
-  // 🔒 validate
-  if(slot < 1 || slot > 8) return
-
-  // 🎯 lấy multiplier theo slot
-  const multiplier = WHEEL8_SLOTS[slot-1].m
-
-  // 🔥 OVERRIDE KẾT QUẢ
-  wheel8Round.secret = {
-    slot,
-    multiplier,
-    hash: crypto
-      .createHash("sha256")
-      .update(
-        wheel8Round.id + ":" + slot + ":" + multiplier
-      )
-      .digest("hex")
-  }
-
-  console.log("🛠 ADMIN OVERRIDE:", wheel8Round.secret)
-
-  // 🔔 cập nhật cho admin UI
-  io.emit("admin-wheel8-secret",{
-    roundId: wheel8Round.id,
-    slot,
-    multiplier,
-    hash: wheel8Round.secret.hash,
-    endAt: wheel8Round.endAt,
-    overridden:true
-  })
-
-})
-
-
 // ================================
 // 📜 SEND USER BET HISTORY
 // ================================
@@ -3452,6 +3413,87 @@ socket.emit("wheel8-my-bets", myWheelBets);
   const usersNow = loadUsers();
   const meNow = usersNow[uid];
 
+
+
+// ================================
+// 🎡 SEND CURRENT WHEEL8 SECRET TO ADMIN
+// ================================
+if (meNow?.role === "admin" && wheel8Round?.secret) {
+  socket.emit("admin-wheel8-secret", {
+    roundId: wheel8Round.id,
+    slot: wheel8Round.secret.slot,
+    multiplier: wheel8Round.secret.multiplier,
+    hash: wheel8Round.secret.hash,
+    endAt: wheel8Round.endAt,
+    overridden: wheel8Round.secret.overridden || false
+  });
+}
+
+
+// ================================
+// 🛠 ADMIN OVERRIDE WHEEL8
+// ================================
+socket.on("admin-wheel8-override",(data)=>{
+
+  const uid = socket.data.uid
+  if(!uid) return
+
+  const users = loadUsers()
+  const me = users[uid]
+
+  // chỉ admin mới được override
+  if(me?.role !== "admin"){
+    return
+  }
+
+  if(!wheel8Round || !wheel8Round.secret) return
+
+  const slot = Number(data.slot)
+  if(slot < 1 || slot > 8) return
+
+  // khóa override khi còn 5 giây
+  const remain = Math.max(
+    0,
+    Math.floor((wheel8Round.endAt - Date.now()) / 1000)
+  )
+
+  if(remain <= 5){
+    socket.emit("notify",{
+      message:"Too late to override"
+    })
+    return
+  }
+
+  const multiplier = WHEEL8_SLOTS[slot - 1].m
+
+  wheel8Round.secret = {
+    slot,
+    multiplier,
+    hash: crypto
+      .createHash("sha256")
+      .update(
+        wheel8Round.id + ":" + slot + ":" + multiplier
+      )
+      .digest("hex"),
+    overridden:true
+  }
+
+  console.log("🛠 ADMIN OVERRIDE WHEEL8:", {
+    roundId: wheel8Round.id,
+    slot,
+    multiplier
+  })
+
+  io.emit("admin-wheel8-secret",{
+    roundId: wheel8Round.id,
+    slot,
+    multiplier,
+    hash: wheel8Round.secret.hash,
+    endAt: wheel8Round.endAt,
+    overridden:true
+  })
+
+})
 
 
 // ================================
