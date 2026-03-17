@@ -219,73 +219,151 @@ body{
 }
 
 
+
+.container{
+  display:grid;
+  grid-template-columns: 2fr 1fr;
+  gap:15px;
+  padding:15px;
+}
+
+.card{
+  background:rgba(0,20,20,0.6);
+  border:1px solid rgba(0,255,255,0.2);
+  border-radius:16px;
+  padding:15px;
+
+  box-shadow:
+    0 0 15px rgba(0,255,255,0.1),
+    inset 0 0 10px rgba(0,255,255,0.05);
+}
+
+.full-card{
+  margin:15px;
+}
+
+.top-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+
+.label{
+  font-size:12px;
+  opacity:0.6;
+}
+
+.value{
+  font-size:22px;
+  font-weight:bold;
+}
+
+.section-title{
+  margin:15px 0 8px;
+  font-weight:bold;
+  font-size:14px;
+  opacity:0.8;
+}
+
+.center{
+  text-align:center;
+}
+
+/* override đẹp hơn */
+.override-grid button{
+  padding:10px;
+  font-size:16px;
+  border-radius:8px;
+
+  background:#001a33;
+  border:1px solid rgba(0,255,255,0.4);
+
+  transition:.2s;
+}
+
+.override-grid button:hover{
+  background:#00ffff;
+  color:#000;
+}
+
+/* player list */
+.bet-list div{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px solid rgba(0,255,255,0.1);
+}
+
+
+.pool-slot::after{
+  content:"";
+  position:absolute;
+  bottom:0;
+  left:0;
+  height:4px;
+  width:var(--percent);
+  background:linear-gradient(90deg,#00f,#0ff,#0f0,#ff0,#f00);
+}
+
+
 </style>
 </head>
 
 <body>
+<div class="container">
 
-<div class="header">🎡 ADMIN CONTROL</div>
+  <!-- LEFT -->
+  <div class="card main-card">
 
-<div class="panel">
+    <div class="row top-row">
+      <div>
+        <div class="label">ROUND</div>
+        <div id="round" class="value">--</div>
+      </div>
 
-  <div class="row">
-    <div>ROUND</div>
-    <div id="round">--</div>
+      <div id="time" class="timer">0s</div>
+    </div>
+
+    <div class="slot-box">
+      <img id="slotImg" class="slot-img-admin">
+    </div>
+
+    <div class="multi">x<span id="multi">0</span></div>
+
+    <div id="hash" class="hash"></div>
+
   </div>
 
-  <div class="slot-box">
+  <!-- RIGHT -->
+  <div class="card override-card">
 
-  <img id="slotImg"
-       src="/assets/police/slot1.png"
-       class="slot-img-admin">
+    <div class="label center">OVERRIDE</div>
 
-</div>
-
-  <div class="multi">x<span id="multi">0</span></div>
-
-  <div class="timer" id="time">0s</div>
-
-  <div class="hash" id="hash"></div>
-
-</div>
-
-
-
-<div class="override-panel">
-
-  <div>OVERRIDE SLOT</div>
-
-  <div class="override-grid">
-
-    <button onclick="setSlot(1)">1</button>
-    <button onclick="setSlot(2)">2</button>
-    <button onclick="setSlot(3)">3</button>
-    <button onclick="setSlot(4)">4</button>
-    <button onclick="setSlot(5)">5</button>
-    <button onclick="setSlot(6)">6</button>
-    <button onclick="setSlot(7)">7</button>
-    <button onclick="setSlot(8)">8</button>
+    <div class="override-grid">
+      <button onclick="setSlot(1)">1</button>
+      <button onclick="setSlot(2)">2</button>
+      <button onclick="setSlot(3)">3</button>
+      <button onclick="setSlot(4)">4</button>
+      <button onclick="setSlot(5)">5</button>
+      <button onclick="setSlot(6)">6</button>
+      <button onclick="setSlot(7)">7</button>
+      <button onclick="setSlot(8)">8</button>
+    </div>
 
   </div>
 
 </div>
 
+<!-- POOL + PLAYER -->
+<div class="card full-card">
 
-<div class="panel">
+  <div class="section-title">💰 SLOT POOL</div>
+  <div id="poolList" class="pool-grid"></div>
 
-  <div class="row">
-    <div>💰 SLOT POOL</div>
-  </div>
-
-  <div id="poolList"></div>
-
-  <div style="margin-top:15px">👤 PLAYER BETS</div>
-
-  <div id="betList"></div>
+  <div class="section-title">👤 PLAYER BETS</div>
+  <div id="betList" class="bet-list"></div>
 
 </div>
-
-
 
 <script>
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}")
@@ -383,6 +461,10 @@ socket.on("admin-wheel8-bets-update",(data)=>{
   })
 
 })
+
+const percent = (v / max) * 100
+
+div.style.setProperty("--percent", percent + "%")
 
 
 </script>
