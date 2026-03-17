@@ -1775,7 +1775,7 @@ win: win,
 winSlot: resultSlot,
 event: specialEvent
   ? (winSlots.includes(1) ? "x5-all" : "x45-all")
-  : null
+  : null,
 ts: Date.now()
 })
 
