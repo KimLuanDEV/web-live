@@ -227,23 +227,48 @@ transform:scale(1.2);
 }
 
 .multi{
+  position:absolute;
 
-position:absolute;
-top:1px;
-right: 11px;
-font-size:15px;
-font-weight:900;
+  top:-10px;
+  right:-8px;
 
-color:#ffd700;
+  width:48px;
+  height:28px;
 
-text-shadow:
-0 0 6px #000,
-0 0 10px #000,
-0 0 15px #ffcc00;
+  pointer-events:none;
 
-pointer-events:none;
-
+  z-index:3;
 }
+
+.multi img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 6px #00aaff)
+    drop-shadow(0 0 12px #00aaff);
+
+  transition:.2s;
+}
+
+
+.slot:hover .multi img{
+  transform:scale(1.1);
+  filter:
+    drop-shadow(0 0 10px #00cfff)
+    drop-shadow(0 0 20px #00cfff);
+}
+
+.slot.win .multi img{
+  filter:
+    drop-shadow(0 0 10px #ffd700)
+    drop-shadow(0 0 25px #ffcc00);
+
+  transform:scale(1.15);
+}
+
+
 
 .pool{
 
@@ -1418,49 +1443,49 @@ pointer-events:none;
 
 
 <div class="slot s1" onclick="bet(1)">
-<div class="multi">x5</div>
+<div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot1.png" class="slot-img">
 <div class="mybet" id="mybet1">0</div>
 </div>
 
 <div class="slot s2" onclick="bet(2)">
-<div class="multi">x10</div>
+<div class="multi"><img src="/assets/police/multi-x10.png"></div>
 <img src="/assets/police/slot2.png" class="slot-img">
 <div class="mybet" id="mybet2">0</div>
 </div>
 
 <div class="slot s3" onclick="bet(3)">
-<div class="multi">x15</div>
+<div class="multi"><img src="/assets/police/multi-x15.png"></div>
 <img src="/assets/police/slot3.png" class="slot-img">
 <div class="mybet" id="mybet3">0</div>
 </div>
 
 <div class="slot s4" onclick="bet(4)">
-<div class="multi">x25</div>
+<div class="multi"><img src="/assets/police/multi-x25.png"></div>
 <img src="/assets/police/slot4.png" class="slot-img">
 <div class="mybet" id="mybet4">0</div>
 </div>
 
 <div class="slot s5" onclick="bet(5)">
-<div class="multi">x45</div>
+<div class="multi"><img src="/assets/police/multi-x45.png"></div>
 <img src="/assets/police/slot5.png" class="slot-img">
 <div class="mybet" id="mybet5">0</div>
 </div>
 
 <div class="slot s6" onclick="bet(6)">
-<div class="multi">x5</div>
+<div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot6.png" class="slot-img">
 <div class="mybet" id="mybet6">0</div>
 </div>
 
 <div class="slot s7" onclick="bet(7)">
-<div class="multi">x5</div>
+<div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot7.png" class="slot-img">
 <div class="mybet" id="mybet7">0</div>
 </div>
 
 <div class="slot s8" onclick="bet(8)">
-<div class="multi">x5</div>
+<div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot8.png" class="slot-img">
 <div class="mybet" id="mybet8">0</div>
 </div>
