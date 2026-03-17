@@ -69,6 +69,33 @@ const weightedMultipliers = [
 }
 
 
+const WHEEL8_STATE_FILE =
+"/opt/render/project/data/wheel8_state.json"
+
+
+function saveWheel8State(round){
+  try{
+    fs.writeFileSync(
+      WHEEL8_STATE_FILE,
+      JSON.stringify(round,null,2)
+    )
+  }catch(e){
+    console.error("❌ Save wheel8 state failed",e)
+  }
+}
+
+function loadWheel8State(){
+  try{
+    if(!fs.existsSync(WHEEL8_STATE_FILE)) return null
+
+    return JSON.parse(
+      fs.readFileSync(WHEEL8_STATE_FILE,"utf8")
+    )
+  }catch(e){
+    console.error("❌ Load wheel8 state failed",e)
+    return null
+  }
+}
 
 
 // ================================
@@ -1671,13 +1698,23 @@ io.emit("admin-wheel8-secret",{
     count: wheel8RoundCounter
   })
 
+
+  // ✅ THÊM DÒNG NÀY
+saveWheel8State(round)
+
+
   return round
 }
 
 
-let wheel8Round = createWheel8Round()
+let wheel8Round = loadWheel8State()
 
+if(!wheel8Round || wheel8Round.endAt <= Date.now()){
+  wheel8Round = createWheel8Round()
+}
 
+// ✅ ĐẢM BẢO LUÔN CÓ FILE
+saveWheel8State(wheel8Round)
 
 
 
@@ -1910,6 +1947,7 @@ io.emit("wheel8-history",wheel8History)
 wheel8Round = createWheel8Round()
 
 
+saveWheel8State(wheel8Round)
 
 saveWheel8Round({
 dayTs: wheel8RoundDayTs,
@@ -3689,6 +3727,8 @@ slot,
 bet
 })
 
+
+saveWheel8State(wheel8Round)
 
 // =====================
 // 💎 POOL
