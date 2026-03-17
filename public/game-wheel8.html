@@ -1292,23 +1292,145 @@ text-align:center;
 
 }
 
+/* AAA LOADING */
+
+.loading-bg{
+
+position:absolute;
+inset:0;
+
+background:
+radial-gradient(circle at center,
+#001a33,
+#000000);
+
+animation:bgPulse 3s infinite alternate;
+
+}
+
+@keyframes bgPulse{
+
+0%{
+filter:brightness(1);
+}
+
+100%{
+filter:brightness(1.3);
+}
+
+}
+
+.loading-center{
+
+position:relative;
+z-index:2;
+
+text-align:center;
+
+}
+
+/* radar */
+
 .loading-radar{
 
-width:140px;
-height:140px;
+width:180px;
+height:180px;
 
-animation:radarSpin 2s linear infinite;
+animation:
+radarSpin 3s linear infinite;
 
 filter:
-drop-shadow(0 0 20px #00aaff);
+drop-shadow(0 0 25px #00aaff);
 
 }
 
 @keyframes radarSpin{
 
-0%{ transform:rotate(0deg); }
+0%{
+transform:rotate(0deg);
+}
 
-100%{ transform:rotate(360deg); }
+100%{
+transform:rotate(360deg);
+}
+
+}
+
+/* logo */
+
+.loading-logo{
+
+margin-top:20px;
+
+font-size:28px;
+font-weight:900;
+
+letter-spacing:4px;
+
+color:#00aaff;
+
+text-shadow:
+0 0 10px #00aaff,
+0 0 30px #00aaff,
+0 0 60px #00aaff;
+
+}
+
+/* progress */
+
+.loading-progress-box{
+
+margin-top:30px;
+
+display:flex;
+flex-direction:column;
+align-items:center;
+gap:10px;
+
+}
+
+.loading-progress-bar{
+
+width:260px;
+height:12px;
+
+background:#001a33;
+
+border-radius:30px;
+
+overflow:hidden;
+
+box-shadow:
+0 0 10px #00aaff inset;
+
+}
+
+#loadingProgress{
+
+height:100%;
+width:0%;
+
+background:
+linear-gradient(90deg,
+#00aaff,
+#00ffff,
+#00aaff);
+
+box-shadow:
+0 0 10px #00ffff,
+0 0 20px #00aaff;
+
+transition:.2s;
+
+}
+
+#loadingPercent{
+
+font-size:14px;
+
+letter-spacing:2px;
+
+opacity:.8;
 
 }
 
@@ -1651,29 +1773,33 @@ onclick="closeRoundDetail()">✕</button>
 
 
 
-<!-- GAME LOADING -->
+<!-- AAA GAME LOADING -->
 <div id="gameLoading">
 
-<div class="loading-box">
+<div class="loading-bg"></div>
 
-<img src="/assets/police/police-radar.png" class="loading-radar">
+<div class="loading-center">
 
-<div class="loading-title">
+<img src="/assets/police/police-radar.png"
+class="loading-radar">
+
+<div class="loading-logo">
 POLICE WHEEL
 </div>
 
-<div class="loading-bar">
+<div class="loading-progress-box">
+
+<div class="loading-progress-bar">
 <div id="loadingProgress"></div>
 </div>
 
-<div id="loadingText" class="loading-text">
-LOADING...
-</div>
+<div id="loadingPercent">0%</div>
 
 </div>
 
 </div>
 
+</div>
 
 
 <script>
@@ -2527,18 +2653,21 @@ window.location.href = "/invest.html"
 }
 
 
-
 window.addEventListener("load",()=>{
 
 let progress = 0
 
 const bar = document.getElementById("loadingProgress")
+const text = document.getElementById("loadingPercent")
 
 const timer = setInterval(()=>{
 
-progress += 10
+progress += Math.floor(Math.random()*10)+5
+
+if(progress > 100) progress = 100
 
 bar.style.width = progress + "%"
+text.textContent = progress + "%"
 
 if(progress >= 100){
 
@@ -2546,13 +2675,17 @@ clearInterval(timer)
 
 setTimeout(()=>{
 
+document.getElementById("gameLoading").style.opacity="0"
+
+setTimeout(()=>{
 document.getElementById("gameLoading").style.display="none"
+},400)
 
 },300)
 
 }
 
-},80)
+},120)
 
 })
 
