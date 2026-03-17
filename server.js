@@ -1773,7 +1773,9 @@ bet: o.bet,
 multiplier: multiplier,
 win: win,
 winSlot: resultSlot,
-event: specialEvent ? "x5-all" : null,
+event: specialEvent
+  ? (winSlots.includes(1) ? "x5-all" : "x45-all")
+  : null
 ts: Date.now()
 })
 
@@ -1839,7 +1841,9 @@ emitCoinUpdate(o.uid)
 io.emit("wheel8-result",{
 slots: winSlots,
 multiplier: multiplier,
-event: specialEvent ? "x5-all" : null
+event: specialEvent
+  ? (winSlots.includes(1) ? "x5-all" : "x45-all")
+  : null
 })
 
 
@@ -1853,7 +1857,9 @@ wheel8History.unshift({
   multi: multiplier,
   ts: Date.now(),
   slots: winSlots,
-  event: specialEvent ? "x5-all" : null
+  event: specialEvent
+  ? (winSlots.includes(1) ? "x5-all" : "x45-all")
+  : null
 })
 
 if(wheel8History.length > MAX_WHEEL8_HISTORY){

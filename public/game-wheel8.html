@@ -2096,12 +2096,25 @@ const img = document.createElement("img")
 
 let imgSrc = "/assets/police/slot"+h.slot+".png"
 
-// event x5 all
-if(
-  h.event === "x5-all" ||
-  (Array.isArray(h.slots) && h.slots.length === 4)
-){
+// EVENT X5 ALL
+if(h.event === "x5-all"){
   imgSrc = "/assets/police/event-x5-all.png"
+}
+
+// EVENT X45 ALL
+else if(h.event === "x45-all"){
+  imgSrc = "/assets/police/event-x45-all.png"
+}
+
+// fallback nếu server chưa gửi event
+else if(Array.isArray(h.slots) && h.slots.length === 4){
+
+  if(h.slots.includes(1)){
+    imgSrc = "/assets/police/event-x5-all.png"
+  }else{
+    imgSrc = "/assets/police/event-x45-all.png"
+  }
+
 }
 
 img.src = imgSrc
@@ -2281,8 +2294,16 @@ let resultImg = "/assets/police/slot"+resultSlot+".png"
 // EVENT X5 ALL
 const first = bets[0]
 
-if(first && first.event === "x5-all"){
-resultImg = "/assets/police/event-x5-all.png"
+if(first){
+
+  if(first.event === "x5-all"){
+    resultImg = "/assets/police/event-x5-all.png"
+  }
+
+  else if(first.event === "x45-all"){
+    resultImg = "/assets/police/event-x45-all.png"
+  }
+
 }
 
 icon.style.backgroundImage = "url('"+resultImg+"')"
