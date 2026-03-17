@@ -35,6 +35,9 @@ body{
   <div class="big">Slot: <span id="slot"></span></div>
   <div class="big">x<span id="multi"></span></div>
   <div>Hash: <span id="hash"></span></div>
+
+  <!-- ⏱ THÊM -->
+  <div class="big">Time: <span id="time">0</span>s</div>
 </div>
 
 <script>
@@ -48,6 +51,20 @@ socket.on("admin-wheel8-secret",(data)=>{
   document.getElementById("hash").textContent = data.hash
 
 })
+
+socket.on("wheel8-timer",(remain)=>{
+
+  const el = document.getElementById("time")
+  el.textContent = remain
+
+  if(remain <= 5){
+    el.style.color = "red"
+  }else{
+    el.style.color = "#00ffff"
+  }
+
+})
+
 </script>
 
 </body>
