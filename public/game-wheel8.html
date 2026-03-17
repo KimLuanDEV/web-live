@@ -13,6 +13,14 @@ user-scalable=no">
 
 <style>
 
+html, body{
+  margin:0;
+  padding:0;
+  background:#000;
+  height:100%;
+}
+
+
 
 *{
 -webkit-user-select:none;
@@ -26,6 +34,8 @@ margin:0;
 font-family:system-ui;
 color:#fff;
 overflow:hidden;
+  /* FIX NỀN TRẮNG */
+background:#000;
 }
 
 body::before{
@@ -1673,7 +1683,7 @@ onclick="closeRoundDetail()">✕</button>
 
   <div class="loading-ui">
 
-    <div class="loading-brand">POLICE WHEEL</div>
+    <div class="loading-brand">LOADING...</div>
 
     <div class="loading-progress-wrap">
       <div class="loading-progress-bar">
