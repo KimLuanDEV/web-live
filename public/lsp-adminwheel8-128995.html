@@ -42,20 +42,6 @@ body{
 
 
 
-<div class="box">
-  <div>OVERRIDE SLOT</div>
-
-  <button onclick="setSlot(1)">1</button>
-  <button onclick="setSlot(2)">2</button>
-  <button onclick="setSlot(3)">3</button>
-  <button onclick="setSlot(4)">4</button>
-  <button onclick="setSlot(5)">5</button>
-  <button onclick="setSlot(6)">6</button>
-  <button onclick="setSlot(7)">7</button>
-  <button onclick="setSlot(8)">8</button>
-</div>
-
-
 
 
 <script>
@@ -82,16 +68,6 @@ socket.on("wheel8-timer",(remain)=>{
   }
 
 })
-
-
-function setSlot(slot){
-
-  socket.emit("admin-wheel8-override",{
-    slot
-  })
-
-}
-
 
 </script>
 

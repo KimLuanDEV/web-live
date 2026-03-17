@@ -3359,46 +3359,6 @@ io.on("connection", socket => {
 // ================================
 
 
-
-
-
-
-socket.on("admin-wheel8-override", ({slot}) => {
-
-  console.log("🔥 ADMIN OVERRIDE RECEIVED:", slot)
-
-  slot = Number(slot)
-  if(slot < 1 || slot > 8) return
-
-  const m = WHEEL8_SLOTS[slot-1].m
-
-  // 🛠 override kết quả
-  wheel8Round.secret.slot = slot
-  wheel8Round.secret.multiplier = m
-
-  // 🔐 update hash
-  wheel8Round.secret.hash = crypto
-    .createHash("sha256")
-    .update(
-      wheel8Round.id + ":" + slot + ":" + m
-    )
-    .digest("hex")
-
-  console.log("✅ OVERRIDDEN:", slot, "x"+m)
-
-  // 🔔 update admin UI realtime
-  io.emit("admin-wheel8-secret",{
-    roundId: wheel8Round.id,
-    slot,
-    multiplier: m,
-    hash: wheel8Round.secret.hash,
-    endAt: wheel8Round.endAt,
-    overridden: true
-  })
-
-})
-
-
 // ================================
 // 📜 SEND USER BET HISTORY
 // ================================
@@ -3414,16 +3374,6 @@ wheel8UserHistory[uid] || []
 
 })
 
-
-
-  // 👇 gửi ngay state hiện tại
-  socket.emit("admin-wheel8-secret",{
-    roundId: wheel8Round.id,
-    slot: wheel8Round.secret.slot,
-    multiplier: wheel8Round.secret.multiplier,
-    hash: wheel8Round.secret.hash,
-    endAt: wheel8Round.endAt
-  })
 
 
 
