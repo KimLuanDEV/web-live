@@ -176,6 +176,49 @@ body{
   font-size:13px;
 }
 
+.pool-grid{
+  display:grid;
+  grid-template-columns: repeat(4,1fr);
+  gap:10px;
+}
+
+.pool-slot{
+  position:relative;
+  border-radius:12px;
+  overflow:hidden;
+  background:#111;
+}
+
+.pool-slot img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+
+/* 💰 số tiền */
+.pool-value{
+  position:absolute;
+  bottom:4px;
+  left:0;
+  width:100%;
+  text-align:center;
+  font-size:13px;
+  font-weight:bold;
+  color:#0ff;
+  text-shadow:0 0 6px #0ff;
+}
+
+/* 🔥 HOT SLOT */
+.pool-slot.hot{
+  box-shadow:0 0 12px red;
+}
+
+/* 🧊 LOW SLOT */
+.pool-slot.low{
+  opacity:0.5;
+}
+
+
 </style>
 </head>
 
@@ -313,35 +356,30 @@ function setSlot(slot){
 
 socket.on("admin-wheel8-bets-update",(data)=>{
 
-  // =====================
-  // 💰 SLOT POOL
-  // =====================
   const poolBox = document.getElementById("poolList")
   poolBox.innerHTML = ""
 
+  const max = Math.max(...data.pool,1)
+
   data.pool.forEach((v,i)=>{
 
-    const row = document.createElement("div")
-    row.innerHTML =
-      "<span>Slot "+(i+1)+"</span><span>"+v+"</span>"
+    const div = document.createElement("div")
+    div.className = "pool-slot"
 
-    poolBox.appendChild(row)
-  })
+    // 🔥 phân loại
+    if(v > max * 0.6){
+      div.classList.add("hot")
+    }else if(v < max * 0.2){
+      div.classList.add("low")
+    }
 
-  // =====================
-  // 👤 PLAYER BET
-  // =====================
-  const betBox = document.getElementById("betList")
-  betBox.innerHTML = ""
+    div.innerHTML = `
+      <img src="/assets/police/slot${i+1}.png">
+      <div class="pool-value">${v}</div>
+    `
 
-  data.players.forEach(p=>{
+    poolBox.appendChild(div)
 
-    const row = document.createElement("div")
-
-    row.innerHTML =
-      "<span>"+p.name+"</span><span>"+p.total+"</span>"
-
-    betBox.appendChild(row)
   })
 
 })
