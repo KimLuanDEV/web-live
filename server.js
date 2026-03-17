@@ -1640,9 +1640,7 @@ function createWheel8Round(){
     startAt: Date.now(),
     endAt: Date.now() + 35000,
     bets: [],
-    slotPool: [0,0,0,0,0,0,0,0],
-       // ✅ THÊM
-    override: null
+    slotPool: [0,0,0,0,0,0,0,0]
   }
 
   // 🔐 TẠO KẾT QUẢ TRƯỚC
@@ -1760,22 +1758,8 @@ if(Math.random() < 0.001){
 
 }else{
 
-let resultSlot
-let multiplier
-
-// ✅ ƯU TIÊN OVERRIDE
-if(wheel8Round.override){
-
-  resultSlot = wheel8Round.override
-
-  multiplier = WHEEL8_SLOTS[resultSlot-1].m
-
-}else{
-
-  resultSlot = wheel8Round.secret.slot
-  multiplier = wheel8Round.secret.multiplier
-
-}
+const resultSlot = wheel8Round.secret.slot
+multiplier = wheel8Round.secret.multiplier
 
 winSlots = [resultSlot]
 
@@ -3373,34 +3357,6 @@ io.on("connection", socket => {
 // ================================
 // 🎡 RESTORE WHEEL8 BETS WHEN RELOAD
 // ================================
-
-
-socket.on("admin-wheel8-override",(data)=>{
-
-  const slot = Number(data.slot)
-
-  if(!wheel8Round) return
-
-  // 🔒 validate
-  if(slot < 1 || slot > 8) return
-
-  // 🎯 set override
-  wheel8Round.override = slot
-
-  console.log("🛠 OVERRIDE SLOT:", slot)
-
-  // 🔔 update admin UI
-  io.emit("admin-wheel8-secret",{
-    roundId: wheel8Round.id,
-    slot,
-    multiplier: WHEEL8_SLOTS[slot-1].m,
-    hash: wheel8Round.secret.hash,
-    endAt: wheel8Round.endAt,
-    overridden:true
-  })
-
-})
-
 
 
 // ================================
