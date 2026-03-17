@@ -7,37 +7,159 @@
 
 <style>
 body{
-  background:#000;
-  color:#00ffff;
-  font-family:monospace;
-  padding:20px;
+  margin:0;
+  background:
+    radial-gradient(circle at center,#001a1a,#000);
+  color:#00eaff;
+  font-family:"Segoe UI",sans-serif;
 }
 
-.box{
-  border:1px solid #00ffff;
-  padding:20px;
-  margin-bottom:20px;
-}
-
-.big{
+/* ===== HEADER ===== */
+.header{
+  text-align:center;
   font-size:28px;
   font-weight:900;
+  padding:15px;
+  letter-spacing:2px;
+  color:#00ffff;
+  text-shadow:0 0 10px #00ffff;
 }
+
+/* ===== PANEL ===== */
+.panel{
+  width:420px;
+  margin:20px auto;
+  padding:25px;
+
+  background:rgba(0,20,20,0.6);
+  border:1px solid rgba(0,255,255,0.3);
+  border-radius:20px;
+
+  box-shadow:
+    0 0 20px rgba(0,255,255,0.2),
+    inset 0 0 10px rgba(0,255,255,0.1);
+}
+
+/* ===== ROW ===== */
+.row{
+  display:flex;
+  justify-content:space-between;
+  margin-bottom:12px;
+  font-size:14px;
+  opacity:0.8;
+}
+
+/* ===== BIG VALUE ===== */
+.big{
+  font-size:42px;
+  text-align:center;
+  font-weight:900;
+  margin:10px 0;
+
+  text-shadow:0 0 15px #00ffff;
+}
+
+/* ===== SLOT ===== */
+.slot{
+  font-size:60px;
+  text-align:center;
+  font-weight:900;
+
+  color:#00ffff;
+  text-shadow:0 0 25px #00ffff;
+}
+
+/* ===== MULTI ===== */
+.multi{
+  font-size:50px;
+  text-align:center;
+  font-weight:900;
+
+  color:#00ff88;
+  text-shadow:0 0 20px #00ff88;
+}
+
+/* ===== TIMER ===== */
+.timer{
+  text-align:center;
+  font-size:36px;
+  font-weight:900;
+  margin-top:10px;
+
+  text-shadow:0 0 15px #00ffff;
+}
+
+.timer.danger{
+  color:#ff4444;
+  text-shadow:0 0 20px red;
+}
+
+/* ===== HASH ===== */
+.hash{
+  font-size:11px;
+  word-break:break-all;
+  opacity:0.6;
+  margin-top:10px;
+}
+
+
+.slot-box{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  margin:10px 0;
+}
+
+.slot-img-admin{
+  width:140px;
+  height:140px;
+  object-fit:contain;
+
+  filter:
+    drop-shadow(0 0 15px #00aaff)
+    drop-shadow(0 0 30px #00aaff);
+
+  transition:.25s;
+}
+
+/* 🔥 hiệu ứng khi override */
+.slot-img-admin.flash{
+  transform:scale(1.2);
+
+  filter:
+    drop-shadow(0 0 25px #00ffff)
+    drop-shadow(0 0 50px #00ffff);
+}
+
+
 </style>
 </head>
 
 <body>
 
-<h2>🎡 ADMIN WHEEL8</h2>
+<div class="header">🎡 ADMIN CONTROL</div>
 
-<div class="box">
-  <div>Round: <span id="round"></span></div>
-  <div class="big">Slot: <span id="slot"></span></div>
-  <div class="big">x<span id="multi"></span></div>
-  <div>Hash: <span id="hash"></span></div>
+<div class="panel">
 
-  <!-- ⏱ THÊM -->
-  <div class="big">Time: <span id="time">0</span>s</div>
+  <div class="row">
+    <div>ROUND</div>
+    <div id="round">--</div>
+  </div>
+
+  <div class="slot-box">
+
+  <img id="slotImg"
+       src="/assets/police/slot1.png"
+       class="slot-img-admin">
+
+</div>
+
+  <div class="multi">x<span id="multi">0</span></div>
+
+  <div class="timer" id="time">0s</div>
+
+  <div class="hash" id="hash"></div>
+
 </div>
 
 <script>
@@ -46,7 +168,19 @@ const socket = io()
 socket.on("admin-wheel8-secret",(data)=>{
 
   document.getElementById("round").textContent = data.roundId
-  document.getElementById("slot").textContent = data.slot
+
+  const img = document.getElementById("slotImg")
+
+img.src = "/assets/police/slot" + data.slot + ".png"
+
+// 🔥 flash effect
+img.classList.add("flash")
+
+setTimeout(()=>{
+  img.classList.remove("flash")
+},200)
+
+
   document.getElementById("multi").textContent = data.multiplier
   document.getElementById("hash").textContent = data.hash
 
@@ -55,12 +189,13 @@ socket.on("admin-wheel8-secret",(data)=>{
 socket.on("wheel8-timer",(remain)=>{
 
   const el = document.getElementById("time")
-  el.textContent = remain
+
+  el.textContent = remain + "s"
 
   if(remain <= 5){
-    el.style.color = "red"
+    el.classList.add("danger")
   }else{
-    el.style.color = "#00ffff"
+    el.classList.remove("danger")
   }
 
 })
