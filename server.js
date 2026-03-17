@@ -3555,7 +3555,6 @@ if(!uid) return
 // =====================
 // 🚫 ANTI SPAM
 // =====================
-
 const now = Date.now()
 const last = betCooldown.get(uid) || 0
 
@@ -3567,28 +3566,24 @@ betCooldown.set(uid, now)
 
 
 // =====================
-// ⏱ KIỂM TRA THỜI GIAN
+// ⏱ TIME CHECK
 // =====================
-
 const remain = Math.max(
 0,
 Math.floor((wheel8Round.endAt - Date.now()) / 1000)
 )
 
-
-// 🔒 KHÓA CƯỢC KHI CÒN 5 GIÂY
 if(remain <= 5){
-socket.emit("notify",{
-message:"Betting closed"
+socket.emit("wheel8-bet-fail",{
+  message:"Betting closed"
 })
 return
 }
 
 
 // =====================
-// 👤 LOAD USER
+// 👤 USER
 // =====================
-
 const users = loadUsers()
 const me = users[uid]
 
@@ -3598,27 +3593,26 @@ if(!me?.profile) return
 // =====================
 // 🔧 FIX INPUT
 // =====================
-
 slot = Number(slot) || 0
 bet  = Math.floor(Number(bet) || 0)
 
-
-// 🔒 slot hợp lệ
-if(slot < 1 || slot > 8) return
-
-// 🔒 bet hợp lệ
-if(bet <= 0) return
-
-
-// =====================
-// 🔒 CLAMP BET
-// =====================
-
-bet = Math.min(bet, me.profile.coins)
+if(slot < 1 || slot > 8){
+socket.emit("wheel8-bet-fail",{message:"Invalid slot"})
+return
+}
 
 if(bet <= 0){
-socket.emit("notify",{
-message:"Not enough coins"
+socket.emit("wheel8-bet-fail",{message:"Invalid bet"})
+return
+}
+
+
+// =====================
+// 💰 CHECK COIN
+// =====================
+if(me.profile.coins < bet){
+socket.emit("wheel8-bet-fail",{
+  message:"Not enough coins"
 })
 return
 }
@@ -3627,14 +3621,28 @@ return
 // =====================
 // 💸 TRỪ COIN
 // =====================
-
 me.profile.coins -= bet
 
 
 // =====================
-// 📥 LƯU BET
+// 📥 LƯU BET (THEO USER)
 // =====================
 
+// 🔥 FIX QUAN TRỌNG
+if(!wheel8Round.userBets){
+  wheel8Round.userBets = {}
+}
+
+if(!wheel8Round.userBets[uid]){
+  wheel8Round.userBets[uid] = [0,0,0,0,0,0,0,0]
+}
+
+wheel8Round.userBets[uid][slot-1] += bet
+
+
+// =====================
+// 📦 LƯU LOG (GIỮ NGUYÊN)
+// =====================
 wheel8Round.bets.push({
 uid,
 slot,
@@ -3643,43 +3651,44 @@ bet
 
 
 // =====================
-// 💎 CỘNG POOL SLOT
+// 💎 POOL
 // =====================
-
 wheel8Round.slotPool ||= [0,0,0,0,0,0,0,0]
-
 wheel8Round.slotPool[slot-1] += bet
 
 
 // =====================
-// 💾 SAVE USER
+// 💾 SAVE
 // =====================
-
 saveUsers(users)
 
 
 // =====================
-// 🔄 UPDATE COIN REALTIME
+// 💰 UPDATE COIN
 // =====================
-
 emitCoinUpdate(uid)
 
 
 // =====================
-// 🎡 UPDATE POOL REALTIME
+// 🎡 UPDATE POOL
 // =====================
-
 io.emit("wheel8-pool-update", wheel8Round.slotPool)
 
 
 // =====================
-// ✅ OK
+// ✅ CONFIRM
 // =====================
-
 socket.emit("wheel8-bet-ok")
 
-})
 
+// =====================
+// 🔥 SYNC CHUẨN (ANTI LỆCH)
+// =====================
+socket.emit("wheel8-my-bets",
+  wheel8Round.userBets[uid]
+)
+
+})
 
 
 // ================================

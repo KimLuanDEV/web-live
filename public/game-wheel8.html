@@ -1919,12 +1919,9 @@ const text  = document.getElementById("betClosedText")
 if(coins < currentBet){
 
 text.textContent = "NOT ENOUGH COINS"
-
 modal.style.display = "flex"
 
-setTimeout(()=>{
-modal.style.display = "none"
-},2000)
+setTimeout(()=> modal.style.display = "none",2000)
 
 return
 }
@@ -1933,69 +1930,55 @@ return
 if(isBetLocked){
 
 text.textContent = "BETTING CLOSED"
-
 modal.style.display = "flex"
 
-setTimeout(()=>{
-modal.style.display = "none"
-},2000)
+setTimeout(()=> modal.style.display = "none",2000)
 
 return
 }
 
-// gửi cược
+// ✅ gửi cược (KHÔNG update UI ở đây)
 socket.emit("wheel8-bet",{
-slot,
-bet:currentBet
+  slot,
+  bet:currentBet
 })
 
 
-/* 📜 LƯU HISTORY CƯỢC */
+// =========================
+// 📜 LƯU HISTORY (OK giữ)
+// =========================
 
-// tìm record cùng round + slot
 let row = myBetHistory.find(r =>
 r.round === currentRoundId &&
 r.slot === slot
 )
 
 if(row){
-
-row.bet += currentBet
-
+  row.bet += currentBet
 }else{
-
-myBetHistory.push({
-round: currentRoundId,
-slot: slot,
-bet: currentBet,
-win:0,
-multi:0
-})
-
+  myBetHistory.push({
+    round: currentRoundId,
+    slot: slot,
+    bet: currentBet,
+    win:0,
+    multi:0
+  })
 }
 
-// giới hạn 20 dòng
+// giữ tối đa
 if(myBetHistory.length > 200){
-myBetHistory.pop()
+  myBetHistory.pop()
 }
 
 
-// lưu tạm slot vừa cược
+// =========================
+// 🧠 CHỈ LƯU PENDING
+// =========================
+
 lastBetSlot = slot
 lastBetValue = currentBet
 
-
-const el = document.getElementById("mybet"+slot)
-
-if(el){
-
-const value = myBets[slot-1]
-
-el.textContent = value
-
-el.style.display = value > 0 ? "block" : "none"
-
-}
+// ❌ KHÔNG update UI ở đây nữa
 
 }
 /* RESULT */
@@ -2426,6 +2409,8 @@ socket.emit("wheel8-get-my-history")
 
 socket.on("wheel8-bet-ok",()=>{
 
+if(!lastBetSlot) return
+
 myBets[lastBetSlot-1] += lastBetValue
 
 const el = document.getElementById("mybet"+lastBetSlot)
@@ -2439,10 +2424,29 @@ el.style.display = value > 0 ? "block" : "none"
 
 }
 
+// reset
+lastBetSlot = 0
+lastBetValue = 0
+
 })
 
 
+socket.on("wheel8-bet-fail",(data)=>{
 
+const modal = document.getElementById("betClosedModal")
+const text  = document.getElementById("betClosedText")
+
+text.textContent = data.message || "BET FAILED"
+
+modal.style.display = "flex"
+
+setTimeout(()=> modal.style.display = "none",2000)
+
+// reset
+lastBetSlot = 0
+lastBetValue = 0
+
+})
 
 function openMyBetHistory(){
 
