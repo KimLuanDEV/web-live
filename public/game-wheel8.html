@@ -1263,6 +1263,116 @@ drop-shadow(0 0 10px #00aaff);
 
 
 
+
+
+
+/* LOADING SCREEN */
+
+#gameLoading{
+
+position:fixed;
+inset:0;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:
+radial-gradient(circle at center,
+#001a33,
+#000);
+
+z-index:9999;
+
+}
+
+.loading-box{
+
+text-align:center;
+
+}
+
+.loading-radar{
+
+width:140px;
+height:140px;
+
+animation:radarSpin 2s linear infinite;
+
+filter:
+drop-shadow(0 0 20px #00aaff);
+
+}
+
+@keyframes radarSpin{
+
+0%{ transform:rotate(0deg); }
+
+100%{ transform:rotate(360deg); }
+
+}
+
+.loading-title{
+
+margin-top:10px;
+
+font-size:22px;
+font-weight:900;
+
+color:#00aaff;
+
+letter-spacing:2px;
+
+text-shadow:
+0 0 10px #00aaff,
+0 0 20px #00aaff;
+
+}
+
+.loading-bar{
+
+width:220px;
+height:10px;
+
+background:#001a33;
+
+border-radius:20px;
+
+margin:16px auto;
+
+overflow:hidden;
+
+box-shadow:
+0 0 10px #00aaff inset;
+
+}
+
+#loadingProgress{
+
+height:100%;
+width:0%;
+
+background:
+linear-gradient(90deg,
+#00aaff,
+#00ffff);
+
+transition:.2s;
+
+}
+
+.loading-text{
+
+font-size:12px;
+
+opacity:.8;
+
+letter-spacing:2px;
+
+}
+
+
+
 </style>
 </head>
 
@@ -1534,6 +1644,33 @@ onclick="closeRoundDetail()">✕</button>
 </div>
 
 <div id="roundDetailList" class="round-detail-list"></div>
+
+</div>
+
+
+
+
+
+<!-- GAME LOADING -->
+<div id="gameLoading">
+
+<div class="loading-box">
+
+<img src="/assets/police/police-radar.png" class="loading-radar">
+
+<div class="loading-title">
+POLICE WHEEL
+</div>
+
+<div class="loading-bar">
+<div id="loadingProgress"></div>
+</div>
+
+<div id="loadingText" class="loading-text">
+LOADING...
+</div>
+
+</div>
 
 </div>
 
@@ -2388,6 +2525,37 @@ function leaveGame(){
 window.location.href = "/invest.html"
 
 }
+
+
+
+window.addEventListener("load",()=>{
+
+let progress = 0
+
+const bar = document.getElementById("loadingProgress")
+
+const timer = setInterval(()=>{
+
+progress += 10
+
+bar.style.width = progress + "%"
+
+if(progress >= 100){
+
+clearInterval(timer)
+
+setTimeout(()=>{
+
+document.getElementById("gameLoading").style.display="none"
+
+},300)
+
+}
+
+},80)
+
+})
+
 
 </script>
 
