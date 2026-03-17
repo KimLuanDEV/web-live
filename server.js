@@ -114,6 +114,45 @@ console.error("❌ Save wheel8 user history failed",e)
 
 }
 
+
+
+function getAdminWheel8Data(){
+
+  const users = loadUsers()
+
+  const slotPool = [0,0,0,0,0,0,0,0]
+
+  const map = {}
+
+  wheel8Round.bets.forEach(b=>{
+
+    // tổng pool
+    slotPool[b.slot-1] += b.bet
+
+    // gom theo user
+    if(!map[b.uid]){
+      map[b.uid] = {
+        name: users[b.uid]?.profile?.name || "Player",
+        total: 0,
+        slots: [0,0,0,0,0,0,0,0]
+      }
+    }
+
+    map[b.uid].slots[b.slot-1] += b.bet
+    map[b.uid].total += b.bet
+
+  })
+
+  return {
+    round: wheel8Round.id,
+    pool: slotPool,
+    players: Object.values(map)
+  }
+}
+
+
+
+
 let wheel8UserHistory = loadWheel8UserHistory()
 
 
@@ -1921,6 +1960,9 @@ io.emit("wheel8-pool-update",wheel8Round.slotPool)
 io.emit("wheel8-round-new",{
 roundId: wheel8Round.id
 })
+
+
+io.emit("admin-wheel8-bets-update", getAdminWheel8Data())
 
 },35000)
 
@@ -3792,6 +3834,10 @@ socket.emit("wheel8-bet-ok")
 socket.emit("wheel8-my-bets",
   wheel8Round.userBets[uid]
 )
+
+
+
+io.emit("admin-wheel8-bets-update", getAdminWheel8Data())
 
 })
 

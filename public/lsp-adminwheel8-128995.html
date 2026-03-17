@@ -167,6 +167,15 @@ body{
 }
 
 
+#poolList div,
+#betList div{
+  display:flex;
+  justify-content:space-between;
+  padding:6px 0;
+  border-bottom:1px solid rgba(0,255,255,0.1);
+  font-size:13px;
+}
+
 </style>
 </head>
 
@@ -217,6 +226,22 @@ body{
   </div>
 
 </div>
+
+
+<div class="panel">
+
+  <div class="row">
+    <div>💰 SLOT POOL</div>
+  </div>
+
+  <div id="poolList"></div>
+
+  <div style="margin-top:15px">👤 PLAYER BETS</div>
+
+  <div id="betList"></div>
+
+</div>
+
 
 
 <script>
@@ -283,6 +308,43 @@ function setSlot(slot){
   })
 
 }
+
+
+
+socket.on("admin-wheel8-bets-update",(data)=>{
+
+  // =====================
+  // 💰 SLOT POOL
+  // =====================
+  const poolBox = document.getElementById("poolList")
+  poolBox.innerHTML = ""
+
+  data.pool.forEach((v,i)=>{
+
+    const row = document.createElement("div")
+    row.innerHTML =
+      "<span>Slot "+(i+1)+"</span><span>"+v+"</span>"
+
+    poolBox.appendChild(row)
+  })
+
+  // =====================
+  // 👤 PLAYER BET
+  // =====================
+  const betBox = document.getElementById("betList")
+  betBox.innerHTML = ""
+
+  data.players.forEach(p=>{
+
+    const row = document.createElement("div")
+
+    row.innerHTML =
+      "<span>"+p.name+"</span><span>"+p.total+"</span>"
+
+    betBox.appendChild(row)
+  })
+
+})
 
 
 </script>
