@@ -3360,17 +3360,21 @@ io.on("connection", socket => {
 
 
 
-  // 🔥 gửi ngay secret hiện tại cho admin
-  if(wheel8Round && wheel8Round.secret){
-    socket.emit("admin-wheel8-secret",{
-      roundId: wheel8Round.id,
-      slot: wheel8Round.secret.slot,
-      multiplier: wheel8Round.secret.multiplier,
-      hash: wheel8Round.secret.hash,
-      endAt: wheel8Round.endAt
-    })
-  }
+  socket.on("admin-wheel8-get-current",()=>{
 
+    if(wheel8Round && wheel8Round.secret){
+
+      socket.emit("admin-wheel8-secret",{
+        roundId: wheel8Round.id,
+        slot: wheel8Round.secret.slot,
+        multiplier: wheel8Round.secret.multiplier,
+        hash: wheel8Round.secret.hash,
+        endAt: wheel8Round.endAt
+      })
+
+    }
+
+  })
 
 
 // ================================

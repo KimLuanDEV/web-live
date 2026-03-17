@@ -43,6 +43,8 @@ body{
 <script>
 const socket = io()
 
+socket.emit("admin-wheel8-get-current")
+
 socket.on("admin-wheel8-secret",(data)=>{
 
   document.getElementById("round").textContent = data.roundId
