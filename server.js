@@ -3360,39 +3360,23 @@ io.on("connection", socket => {
 
 
 
-  // 👇 gửi ngay state hiện tại
-  socket.emit("admin-wheel8-secret",{
-    roundId: wheel8Round.id,
-    slot: wheel8Round.secret.slot,
-    multiplier: wheel8Round.secret.multiplier,
-    hash: wheel8Round.secret.hash,
-    endAt: wheel8Round.endAt
-  })
 
 
 
 socket.on("admin-wheel8-override", ({slot}) => {
 
-  const uid = socket.data.uid
-  const users = loadUsers()
-
-  // 🔒 chỉ admin
-  if(!users[uid] || users[uid].role !== "admin"){
-    return
-  }
+  console.log("🔥 ADMIN OVERRIDE RECEIVED:", slot)
 
   slot = Number(slot)
-
   if(slot < 1 || slot > 8) return
 
-  // 🎯 lấy multiplier theo slot
   const m = WHEEL8_SLOTS[slot-1].m
 
-  // 🔥 OVERRIDE
+  // 🛠 override kết quả
   wheel8Round.secret.slot = slot
   wheel8Round.secret.multiplier = m
 
-  // 🔐 update hash mới
+  // 🔐 update hash
   wheel8Round.secret.hash = crypto
     .createHash("sha256")
     .update(
@@ -3400,12 +3384,12 @@ socket.on("admin-wheel8-override", ({slot}) => {
     )
     .digest("hex")
 
-  console.log("🛠 ADMIN OVERRIDE:", slot, "x"+m)
+  console.log("✅ OVERRIDDEN:", slot, "x"+m)
 
-  // 🔔 cập nhật lại cho admin panel
+  // 🔔 update admin UI realtime
   io.emit("admin-wheel8-secret",{
     roundId: wheel8Round.id,
-    slot: slot,
+    slot,
     multiplier: m,
     hash: wheel8Round.secret.hash,
     endAt: wheel8Round.endAt,
@@ -3413,7 +3397,6 @@ socket.on("admin-wheel8-override", ({slot}) => {
   })
 
 })
-
 
 
 // ================================
@@ -3431,6 +3414,16 @@ wheel8UserHistory[uid] || []
 
 })
 
+
+
+  // 👇 gửi ngay state hiện tại
+  socket.emit("admin-wheel8-secret",{
+    roundId: wheel8Round.id,
+    slot: wheel8Round.secret.slot,
+    multiplier: wheel8Round.secret.multiplier,
+    hash: wheel8Round.secret.hash,
+    endAt: wheel8Round.endAt
+  })
 
 
 
