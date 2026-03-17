@@ -41,6 +41,15 @@ body{
 </div>
 
 
+<div class="box">
+  <h3>OVERRIDE</h3>
+
+  <input id="slotInput" placeholder="Slot 1-8">
+  <input id="multiInput" placeholder="Multiplier">
+
+  <button onclick="overrideResult()">SET RESULT</button>
+</div>
+
 
 
 
@@ -53,6 +62,11 @@ socket.on("admin-wheel8-secret",(data)=>{
   document.getElementById("slot").textContent = data.slot
   document.getElementById("multi").textContent = data.multiplier
   document.getElementById("hash").textContent = data.hash
+
+  if(data.overridden){
+  document.body.style.background = "#200"
+}
+
 
 })
 
@@ -68,6 +82,35 @@ socket.on("wheel8-timer",(remain)=>{
   }
 
 })
+
+
+
+function overrideResult(){
+
+  const slot = Number(
+    document.getElementById("slotInput").value
+  )
+
+  const multiplier = Number(
+    document.getElementById("multiInput").value
+  )
+
+  if(slot < 1 || slot > 8){
+    alert("Slot 1-8")
+    return
+  }
+
+  if(!multiplier){
+    alert("Invalid multiplier")
+    return
+  }
+
+  socket.emit("admin-wheel8-override",{
+    slot,
+    multiplier
+  })
+
+}
 
 </script>
 
