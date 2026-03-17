@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>ADMIN WHEEL8</title>
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+body{
+  background:#000;
+  color:#00ffff;
+  font-family:monospace;
+  padding:20px;
+}
+
+.box{
+  border:1px solid #00ffff;
+  padding:20px;
+  margin-bottom:20px;
+}
+
+.big{
+  font-size:28px;
+  font-weight:900;
+}
+</style>
+</head>
+
+<body>
+
+<h2>🎡 ADMIN WHEEL8</h2>
+
+<div class="box">
+  <div>Round: <span id="round"></span></div>
+  <div class="big">Slot: <span id="slot"></span></div>
+  <div class="big">x<span id="multi"></span></div>
+  <div>Hash: <span id="hash"></span></div>
+</div>
+
+<script>
+const socket = io()
+
+socket.on("admin-wheel8-secret",(data)=>{
+
+  document.getElementById("round").textContent = data.roundId
+  document.getElementById("slot").textContent = data.slot
+  document.getElementById("multi").textContent = data.multiplier
+  document.getElementById("hash").textContent = data.hash
+
+})
+</script>
+
+</body>
+</html>

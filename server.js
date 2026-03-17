@@ -1635,12 +1635,7 @@ function createWheel8Round(){
 
   wheel8RoundCounter++
 
-  saveWheel8Round({
-    dayTs: wheel8RoundDayTs,
-    count: wheel8RoundCounter
-  })
-
-  return {
+  const round = {
     id: wheel8RoundCounter,
     startAt: Date.now(),
     endAt: Date.now() + 35000,
@@ -1648,10 +1643,46 @@ function createWheel8Round(){
     slotPool: [0,0,0,0,0,0,0,0]
   }
 
+  // 🔐 TẠO KẾT QUẢ TRƯỚC
+  const result = pickWheel8()
+
+  round.secret = {
+    slot: result.slot,
+    multiplier: result.multiplier,
+    hash: crypto
+      .createHash("sha256")
+      .update(round.id + ":" + result.slot + ":" + result.multiplier)
+      .digest("hex")
+  }
+
+
+  // 🔔 ADMIN BIẾT TRƯỚC KẾT QUẢ
+io.emit("admin-wheel8-secret",{
+  roundId: round.id,
+  slot: round.secret.slot,
+  multiplier: round.secret.multiplier,
+  hash: round.secret.hash,
+  endAt: round.endAt
+})
+
+
+  saveWheel8Round({
+    dayTs: wheel8RoundDayTs,
+    count: wheel8RoundCounter
+  })
+
+  return round
 }
 
 
 let wheel8Round = createWheel8Round()
+
+
+
+
+
+
+
 
 function pickWheel8(){
 
@@ -1727,10 +1758,10 @@ if(Math.random() < 0.001){
 
 }else{
 
-  const result = pickWheel8()
+const resultSlot = wheel8Round.secret.slot
+multiplier = wheel8Round.secret.multiplier
 
-  winSlots = [result.slot]
-  multiplier = result.multiplier
+winSlots = [resultSlot]
 
 }
 
@@ -1876,16 +1907,7 @@ io.emit("wheel8-history",wheel8History)
 // 🔄 NEW ROUND
 // =======================
 
-
-wheel8RoundCounter++
-
-wheel8Round = {
-  id: wheel8RoundCounter,
-  startAt: Date.now(),
-  endAt: Date.now()+35000,
-  bets:[],
-  slotPool:[0,0,0,0,0,0,0,0]
-}
+wheel8Round = createWheel8Round()
 
 
 
