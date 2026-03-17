@@ -1961,6 +1961,20 @@ function closeResult(){
 
 document.getElementById("resultModal").style.display="none"
 
+// reset bet sau khi xem kết quả
+for(let i=1;i<=8;i++){
+
+const el = document.getElementById("mybet"+i)
+
+if(el){
+el.textContent = 0
+el.style.display = "none"
+}
+
+myBets[i-1] = 0
+
+}
+
 }
 
 
@@ -1999,16 +2013,9 @@ pool.textContent = 0
 pool.style.display = "none"
 }
 
-const mybet = document.getElementById("mybet"+i)
-
-if(mybet){
-mybet.textContent = 0
-mybet.style.display = "none"
 }
 
-myBets[i-1] = 0
 
-}
 
 document.getElementById("roundId").textContent =
 data.roundId
