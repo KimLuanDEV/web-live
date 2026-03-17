@@ -23,6 +23,28 @@ body{
   font-size:28px;
   font-weight:900;
 }
+
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:10px;
+}
+
+.btn{
+  padding:14px;
+  text-align:center;
+  border:1px solid #00ffff;
+  cursor:pointer;
+  font-weight:900;
+}
+
+.btn:hover{
+  background:#00ffff;
+  color:#000;
+}
+
+
 </style>
 </head>
 
@@ -42,14 +64,21 @@ body{
 
 
 <div class="box">
-  <h3>OVERRIDE</h3>
+  <h3>CLICK TO OVERRIDE</h3>
 
-  <input id="slotInput" placeholder="Slot 1-8">
-  <input id="multiInput" placeholder="Multiplier">
+  <div class="grid">
 
-  <button onclick="overrideResult()">SET RESULT</button>
+    <div class="btn" onclick="setSlot(1)">1</div>
+    <div class="btn" onclick="setSlot(2)">2</div>
+    <div class="btn" onclick="setSlot(3)">3</div>
+    <div class="btn" onclick="setSlot(4)">4</div>
+    <div class="btn" onclick="setSlot(5)">5</div>
+    <div class="btn" onclick="setSlot(6)">6</div>
+    <div class="btn" onclick="setSlot(7)">7</div>
+    <div class="btn" onclick="setSlot(8)">8</div>
+
+  </div>
 </div>
-
 
 
 
@@ -85,32 +114,25 @@ socket.on("wheel8-timer",(remain)=>{
 
 
 
-function overrideResult(){
+function setSlot(slot){
 
-  const slot = Number(
-    document.getElementById("slotInput").value
-  )
-
-  const multiplier = Number(
-    document.getElementById("multiInput").value
-  )
-
-  if(slot < 1 || slot > 8){
-    alert("Slot 1-8")
-    return
-  }
-
-  if(!multiplier){
-    alert("Invalid multiplier")
-    return
-  }
-
-  socket.emit("admin-wheel8-override",{
-    slot,
-    multiplier
+  // reset tất cả
+  document.querySelectorAll(".btn").forEach(b=>{
+    b.style.background = ""
+    b.style.color = "#00ffff"
   })
 
+  // highlight nút bấm
+  const el = event.target
+  el.style.background = "red"
+  el.style.color = "#fff"
+
+  socket.emit("admin-wheel8-override",{ slot })
+
 }
+
+
+
 
 </script>
 
