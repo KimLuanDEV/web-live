@@ -1503,34 +1503,45 @@ pointer-events:none;
 
 /* CARD CHUNG */
 .top-card{
-  width:90px;
-  padding:8px 6px;
+  width:95px;
+  height:90px;
 
-  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
 
-  background:rgba(0,20,40,.8);
-  border:1px solid rgba(0,170,255,.5);
-  border-radius:10px;
+  background:
+    url("/assets/police/top-card.png")
+    center / contain no-repeat;
 
-  box-shadow:
-    0 0 10px rgba(0,170,255,.6);
+  padding:0;
 
-  backdrop-filter:blur(6px);
+  border:none;
+  box-shadow:none;
 }
 
+/* TOP 1 NỔI */
+.top-card.top1{
+  width:120px;
+  height:110px;
 
+  background:
+    url("/assets/police/top-card-gold.png")
+    center / contain no-repeat;
+}
 
-/* NAME */
+/* TEXT */
 .top-name{
   font-size:11px;
   opacity:.7;
+  margin-top:6px;
 }
 
-/* WIN */
 .top-win{
   font-size:14px;
   font-weight:900;
-  margin-top:4px;
+  margin-top:2px;
 }
 
 /* BADGE */
