@@ -1945,7 +1945,7 @@ wheel8Round.bets.forEach(o=>{
     if(!winMap[o.uid]){
       winMap[o.uid] = {
         uid: o.uid,
-        name: users[o.uid]?.profile?.name || "Player",
+        name: "Player#" + o.uid.slice(-4),
         win: 0
       }
     }
