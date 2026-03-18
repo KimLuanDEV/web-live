@@ -1970,9 +1970,25 @@ const botNames = [
   "Agent#P3","Agent#K2","Agent#Z8"
 ]
 
-// 🔥 random win fake
 function fakeWin(){
-  return Math.floor(Math.random()*5000)+500
+
+  const slot =
+    WHEEL8_SLOTS[
+      Math.floor(Math.random()*WHEEL8_SLOTS.length)
+    ]
+
+  const m = slot.m
+
+  // 🎯 giả lập bet phổ biến
+  const betList = [50,100,200,500,1000]
+
+  let bet = betList[
+    Math.floor(Math.random()*betList.length)
+  ]
+
+  let win = bet * m
+
+  return win
 }
 
 // 🔥 fill đủ 3
