@@ -1486,49 +1486,109 @@ pointer-events:none;
 }
 
 
-
 .top-winners{
   position:absolute;
-  top:-450px;
+  top:-430px;
   left:50%;
   transform:translateX(-50%);
-  width:80%;
+  width:100%;
 
   display:flex;
-  flex-direction:column;
-  gap:4px;
+  justify-content:center;
+  align-items:flex-end;
+  gap:12px;
 
-  font-size:13px;
+  pointer-events:none;
+}
+
+/* CARD CHUNG */
+.top-card{
+  width:90px;
+  padding:8px 6px;
+
+  text-align:center;
+
+  background:rgba(0,20,40,.8);
+  border:1px solid rgba(0,170,255,.5);
+  border-radius:10px;
+
+  box-shadow:
+    0 0 10px rgba(0,170,255,.6);
+
+  backdrop-filter:blur(6px);
+}
+
+/* TOP 1 */
+.top-card.top1{
+  width:110px;
+  transform:translateY(-20px) scale(1.1);
+
+  border:1px solid #ffd700;
+
+  box-shadow:
+    0 0 12px #ffd700,
+    0 0 25px rgba(255,215,0,.6);
+}
+
+/* TOP 2 */
+.top-card.top2{
+  transform:translateY(0);
+  opacity:.9;
+}
+
+/* TOP 3 */
+.top-card.top3{
+  transform:translateY(0);
+  opacity:.8;
+}
+
+/* NAME */
+.top-name{
+  font-size:11px;
+  opacity:.7;
+}
+
+/* WIN */
+.top-win{
+  font-size:14px;
   font-weight:900;
+  margin-top:4px;
+}
+
+/* BADGE */
+.top-rank{
+  font-size:12px;
+  margin-bottom:2px;
 }
 
 
 
-
-.top-row{
-  display:flex;
-  justify-content:space-between;
-  padding:4px 8px;
-
-  background:rgba(0,20,40,.7);
-
-  border:1px solid rgba(0,170,255,.4);
-  border-radius:6px;
-
-  box-shadow:0 0 8px rgba(0,170,255,.5);
-}
-
-.top-row.gold{
+.top1 .top-win{
   color:#ffd700;
-  box-shadow:0 0 10px #ffd700;
 }
 
-.top-row.silver{
+.top2 .top-win{
   color:#c0c0c0;
 }
 
-.top-row.bronze{
+.top3 .top-win{
   color:#cd7f32;
+}
+
+
+.top-card{
+  animation:topFade .4s ease;
+}
+
+@keyframes topFade{
+  from{
+    opacity:0;
+    transform:translateY(20px) scale(.8);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
 }
 
 
@@ -2167,23 +2227,36 @@ box.innerHTML = ""
 
 if(data.top && data.top.length){
 
-  data.top.forEach((p,i)=>{
+  // đảm bảo luôn đúng thứ tự
+  const top = data.top
+    .sort((a,b)=>b.win - a.win)
+    .slice(0,3)
 
-    const row = document.createElement("div")
+  top.forEach((p,i)=>{
+
+    const card = document.createElement("div")
 
     let cls = ""
-    if(i===0) cls = "gold"
-    else if(i===1) cls = "silver"
-    else if(i===2) cls = "bronze"
+    let rank = ""
 
-    row.className = "top-row " + cls
+    if(i===0){ cls="top1"; rank="🥇" }
+    else if(i===1){ cls="top2"; rank="🥈" }
+    else if(i===2){ cls="top3"; rank="🥉" }
 
-  row.innerHTML = `
-  <span>👤 ???</span>
-  <span>+${p.win} 💎</span>
-  `
+    card.className = "top-card " + cls
 
-    box.appendChild(row)
+    card.innerHTML = `
+      <div class="top-rank">${rank}</div>
+      <div class="top-name">???</div>
+      <div class="top-win">+${p.win} 💎</div>
+    `
+
+    // 🔥 TOP 1 ở giữa
+    if(i === 0){
+      box.appendChild(card)
+    }else{
+      box.insertBefore(card, box.firstChild)
+    }
 
   })
 
