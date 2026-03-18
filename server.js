@@ -1957,24 +1957,16 @@ wheel8Round.bets.forEach(o=>{
 
 
 // =======================
-// 🤖 AUTO FILL TOP (FAKE)
+// 🤖 CREATE BOT BASE
 // =======================
 
-// 🔥 lấy slot thắng thật
 const realSlot = winSlots[0]
 
-// 🔥 lấy top thật (KHÔNG slice vội)
-let topWinners = Object.values(winMap)
-  .sort((a,b)=>b.win - a.win)
-
-
-// 🔥 DANH SÁCH BOT
 const botNames = [
   "Agent#A1","Agent#B7","Agent#X9",
   "Agent#P3","Agent#K2","Agent#Z8"
 ]
 
-// 🔥 fake theo slot thật
 function fakeWin(realSlot){
 
   const slot = WHEEL8_SLOTS[realSlot-1]
@@ -1988,12 +1980,11 @@ function fakeWin(realSlot){
   return bet * m
 }
 
+// 🔥 tạo sẵn 3 bot
+let botTop = []
+const usedWins = new Set()
 
-// 🔥 tránh trùng
-const usedWins = new Set(topWinners.map(x=>x.win))
-
-// 🔥 fill đủ 3
-while(topWinners.length < 3){
+while(botTop.length < 3){
 
   let win
 
@@ -2003,23 +1994,33 @@ while(topWinners.length < 3){
 
   usedWins.add(win)
 
-  topWinners.push({
+  botTop.push({
     uid: "bot_"+Math.random(),
     name: botNames[Math.floor(Math.random()*botNames.length)],
     win,
     fake:true
   })
-
 }
 
 
 // =======================
-// 🔥 SORT CUỐI (QUAN TRỌNG NHẤT)
+// 🧑 PLAYER LIST
 // =======================
 
-topWinners = topWinners
-  .sort((a,b)=>b.win - a.win)
-  .slice(0,3)
+let playerList = Object.values(winMap)
+
+
+// =======================
+// 🔥 MERGE + SORT
+// =======================
+
+let topWinners = [...botTop, ...playerList]
+
+// sort lớn → bé
+topWinners.sort((a,b)=>b.win - a.win)
+
+// lấy top 3 cuối cùng
+topWinners = topWinners.slice(0,3)
 
 // =======================
 // 🎡 EMIT RESULT
