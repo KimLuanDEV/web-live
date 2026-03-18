@@ -154,7 +154,7 @@ function getAdminWheel8Data(){
 
 
 let wheel8UserHistory = loadWheel8UserHistory()
-
+let wheel8NeedReset = false
 
 
 const WHEEL8_ROUND_FILE =
@@ -1672,6 +1672,29 @@ const WHEEL8_SLOTS = [
 
 function createWheel8Round(){
 
+  const todayStart = getTodayStartTsVN()
+
+  // 🔥 nếu qua ngày → chỉ đánh dấu (KHÔNG reset ngay)
+  if(todayStart !== wheel8RoundDayTs){
+    wheel8NeedReset = true
+  }
+
+  // 🔥 nếu cần reset → reset TRƯỚC khi tạo round mới
+  if(wheel8NeedReset){
+
+    console.log("🌅 RESET AFTER ROUND FINISH")
+
+    wheel8RoundCounter = 0
+    wheel8RoundDayTs = todayStart
+    wheel8NeedReset = false
+
+    saveWheel8Round({
+      dayTs: wheel8RoundDayTs,
+      count: wheel8RoundCounter
+    })
+  }
+
+  // 🔢 TĂNG ROUND
   wheel8RoundCounter++
 
   const round = {
@@ -1682,7 +1705,7 @@ function createWheel8Round(){
     slotPool: [0,0,0,0,0,0,0,0]
   }
 
-  // 🔐 TẠO KẾT QUẢ TRƯỚC
+  // 🔐 SECRET
   const result = pickWheel8()
 
   round.secret = {
@@ -1694,16 +1717,14 @@ function createWheel8Round(){
       .digest("hex")
   }
 
-
-  // 🔔 ADMIN BIẾT TRƯỚC KẾT QUẢ
-io.emit("admin-wheel8-secret",{
-  roundId: round.id,
-  slot: round.secret.slot,
-  multiplier: round.secret.multiplier,
-  hash: round.secret.hash,
-  endAt: round.endAt
-})
-
+  // 🔔 ADMIN
+  io.emit("admin-wheel8-secret",{
+    roundId: round.id,
+    slot: round.secret.slot,
+    multiplier: round.secret.multiplier,
+    hash: round.secret.hash,
+    endAt: round.endAt
+  })
 
   saveWheel8Round({
     dayTs: wheel8RoundDayTs,
@@ -1712,7 +1733,6 @@ io.emit("admin-wheel8-secret",{
 
   return round
 }
-
 
 let wheel8Round = createWheel8Round()
 
@@ -1945,6 +1965,14 @@ io.emit("wheel8-history",wheel8History)
 // =======================
 // 🔄 NEW ROUND
 // =======================
+
+// 🔥 CHECK QUA NGÀY SAU KHI KẾT THÚC ROUND
+const todayStart = getTodayStartTsVN()
+
+if(todayStart !== wheel8RoundDayTs){
+  wheel8NeedReset = true
+}
+
 
 wheel8Round = createWheel8Round()
 
