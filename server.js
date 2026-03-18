@@ -1955,10 +1955,37 @@ wheel8Round.bets.forEach(o=>{
 
 })
 
-// 🔥 sort top 3
-const topWinners = Object.values(winMap)
+// =======================
+// 🤖 AUTO FILL TOP (FAKE)
+// =======================
+
+let topWinners = Object.values(winMap)
   .sort((a,b)=>b.win - a.win)
   .slice(0,3)
+
+
+// 🔥 DANH SÁCH BOT
+const botNames = [
+  "Agent#A1","Agent#B7","Agent#X9",
+  "Agent#P3","Agent#K2","Agent#Z8"
+]
+
+// 🔥 random win fake
+function fakeWin(){
+  return Math.floor(Math.random()*5000)+500
+}
+
+// 🔥 fill đủ 3
+while(topWinners.length < 3){
+
+  topWinners.push({
+    uid: "bot_"+Math.random(),
+    name: botNames[Math.floor(Math.random()*botNames.length)],
+    win: fakeWin(),
+    fake:true
+  })
+
+}
 
 
 // =======================
