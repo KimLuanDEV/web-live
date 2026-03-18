@@ -423,27 +423,69 @@ transform:translateY(0);
 
 
 
-
 .mybet{
+  display:none;
 
-display:none;
+  position:absolute;
+  bottom:8px;
+  left:50%;
+  transform:translateX(-50%);
 
-position:absolute;
-bottom:14px;
-right:26px;
+  display:flex;
+  align-items:center;
+  gap:4px;
 
-font-size:13px;
-font-weight:800;
+  padding:3px 8px;
 
-color:#ffd700;
+  font-size:12px;
+  font-weight:900;
 
+  color:#fff;
 
-padding:2px 6px;
+  background:
+    linear-gradient(
+      180deg,
+      rgba(0,20,40,.9),
+      rgba(0,10,25,.95)
+    );
 
-border-radius:6px;
+  border:1px solid rgba(0,170,255,.6);
 
+  border-radius:999px;
+
+  box-shadow:
+    0 0 8px rgba(0,170,255,.6),
+    inset 0 0 6px rgba(0,170,255,.4);
+
+  backdrop-filter:blur(4px);
+
+  z-index:4;
 }
 
+/* ICON */
+.mybet img{
+  width:14px;
+  height:14px;
+
+  filter:
+    drop-shadow(0 0 4px #00cfff)
+    drop-shadow(0 0 8px #00aaff);
+}
+
+/* TEXT */
+.mybet span{
+  letter-spacing:0.5px;
+}
+
+/* WHEN BET > 0 → EFFECT */
+.mybet.active{
+  animation:betPulse .6s ease;
+}
+
+@keyframes betPulse{
+  0%{ transform:translateX(-50%) scale(0.8); opacity:0 }
+  100%{ transform:translateX(-50%) scale(1); opacity:1 }
+}
 
 
 .coin-bar{
@@ -1445,49 +1487,73 @@ pointer-events:none;
 <div class="slot s1" onclick="bet(1)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot1.png" class="slot-img">
-<div class="mybet" id="mybet1">0</div>
+<div class="mybet" id="mybet1">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s2" onclick="bet(2)">
 <div class="multi"><img src="/assets/police/multi-x10.png"></div>
 <img src="/assets/police/slot2.png" class="slot-img">
-<div class="mybet" id="mybet2">0</div>
+<div class="mybet" id="mybet2">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s3" onclick="bet(3)">
 <div class="multi"><img src="/assets/police/multi-x15.png"></div>
 <img src="/assets/police/slot3.png" class="slot-img">
-<div class="mybet" id="mybet3">0</div>
+<div class="mybet" id="mybet3">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s4" onclick="bet(4)">
 <div class="multi"><img src="/assets/police/multi-x25.png"></div>
 <img src="/assets/police/slot4.png" class="slot-img">
-<div class="mybet" id="mybet4">0</div>
+<div class="mybet" id="mybet4">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s5" onclick="bet(5)">
 <div class="multi"><img src="/assets/police/multi-x45.png"></div>
 <img src="/assets/police/slot5.png" class="slot-img">
-<div class="mybet" id="mybet5">0</div>
+<div class="mybet" id="mybet5">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s6" onclick="bet(6)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot6.png" class="slot-img">
-<div class="mybet" id="mybet6">0</div>
+<div class="mybet" id="mybet6">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s7" onclick="bet(7)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot7.png" class="slot-img">
-<div class="mybet" id="mybet7">0</div>
+<div class="mybet" id="mybet7">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s8" onclick="bet(8)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot8.png" class="slot-img">
-<div class="mybet" id="mybet8">0</div>
+<div class="mybet" id="mybet8">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 </div>
@@ -2206,10 +2272,13 @@ const value = bets[i]
 el.textContent = value
 
 if(value > 0){
-el.style.display = "block"
+  el.style.display = "flex"
+  el.classList.add("active")
 }else{
-el.style.display = "none"
+  el.style.display = "none"
+  el.classList.remove("active")
 }
+
 
 }
 
