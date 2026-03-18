@@ -1937,6 +1937,25 @@ socket.emit("wheel8-bet",{
 })
 
 
+// ⚡ FIX: HIỆN NGAY UI (KHÔNG CHỜ SERVER)
+
+myBets[slot-1] += currentBet
+
+const el = document.getElementById("mybet"+slot)
+
+if(el){
+
+  const span = el.querySelector("span")
+
+  if(span){
+    span.textContent = myBets[slot-1]
+  }
+
+  el.style.display = "flex" // 🔥 QUAN TRỌNG
+}
+
+
+
 // =========================
 // 📜 LƯU HISTORY (OK giữ)
 // =========================
@@ -2234,33 +2253,63 @@ el.textContent = pool[i]
 
 socket.on("wheel8-round-new",(data)=>{
 
-currentRoundId = data.roundId
+  currentRoundId = data.roundId
 
-isBetLocked = false
-highlightSpeed = 1000
+  isBetLocked = false
+  highlightSpeed = 1000
 
-if(!resultShowing){
-stopHighlightLoop()
-}
+  if(!resultShowing){
+    stopHighlightLoop()
+  }
 
-for(let i=1;i<=8;i++){
+  // =========================
+  // 🔄 RESET POOL
+  // =========================
+  for(let i=1;i<=8;i++){
 
-const pool = document.getElementById("pool"+i)
+    const pool = document.getElementById("pool"+i)
 
-if(pool){
-pool.textContent = 0
-pool.style.display = "none"
-}
+    if(pool){
+      pool.textContent = 0
+      pool.style.display = "none"
+    }
 
-}
+  }
 
+  // =========================
+  // 🔥 RESET MYBET (QUAN TRỌNG)
+  // =========================
+  for(let i=1;i<=8;i++){
 
+    myBets[i-1] = 0
 
-document.getElementById("roundId").textContent =
-data.roundId
+    const el = document.getElementById("mybet"+i)
 
-// đóng modal cảnh báo
-document.getElementById("betClosedModal").style.display="none"
+    if(el){
+
+      const span = el.querySelector("span")
+
+      if(span){
+        span.textContent = 0
+      }
+
+      el.style.display = "none"
+    }
+
+  }
+
+  // reset pending bet
+  lastBetSlot = 0
+  lastBetValue = 0
+
+  // =========================
+  // 🎯 UPDATE ROUND ID
+  // =========================
+  document.getElementById("roundId").textContent =
+  data.roundId
+
+  // đóng modal cảnh báo
+  document.getElementById("betClosedModal").style.display="none"
 
 })
 
@@ -2413,7 +2462,8 @@ if(el){
 const value = myBets[lastBetSlot-1]
 
 el.querySelector("span").textContent = value
-el.style.display = value > 0 ? "block" : "none"
+
+el.style.display = value > 0 ? "flex" : "none"
 
 }
 
