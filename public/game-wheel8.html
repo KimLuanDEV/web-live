@@ -426,22 +426,72 @@ transform:translateY(0);
 
 .mybet{
 
-display:none;
+  position:absolute;
 
-position:absolute;
-bottom:14px;
-right:26px;
+  bottom:-6px;
+  left:50%;
+  transform:translateX(-50%);
 
-font-size:13px;
-font-weight:800;
+  display:flex;
+  align-items:center;
+  gap:4px;
 
-color:#ffd700;
+  padding:3px 8px;
+
+  font-size:12px;
+  font-weight:900;
+
+  color:#fff;
+
+  border-radius:999px;
+
+  background:
+    linear-gradient(180deg,#0a1f33,#020617);
+
+  border:1px solid rgba(0,170,255,.6);
+
+  box-shadow:
+    0 0 8px rgba(0,170,255,.6),
+    inset 0 0 6px rgba(255,255,255,.1);
+
+  backdrop-filter:blur(4px);
+
+  z-index:4;
+
+  pointer-events:none;
+}
+
+.mybet img{
+  width:14px;
+  height:14px;
+
+  filter:
+    drop-shadow(0 0 4px #00aaff);
+}
+
+.mybet span{
+  text-shadow:
+    0 0 6px #00aaff;
+}
 
 
-padding:2px 6px;
 
-border-radius:6px;
+.slot:hover .mybet{
+  transform:translateX(-50%) scale(1.08);
+  box-shadow:
+    0 0 12px #00cfff,
+    inset 0 0 6px rgba(255,255,255,.2);
+}
 
+.slot.win .mybet{
+  background:
+    linear-gradient(180deg,#ffd700,#ff9900);
+
+  color:#000;
+
+  box-shadow:
+    0 0 12px #ffd700,
+    0 0 25px #ffcc00;
 }
 
 
@@ -1445,49 +1495,73 @@ pointer-events:none;
 <div class="slot s1" onclick="bet(1)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot1.png" class="slot-img">
-<div class="mybet" id="mybet1">0</div>
+<div class="mybet" id="mybet1">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s2" onclick="bet(2)">
 <div class="multi"><img src="/assets/police/multi-x10.png"></div>
 <img src="/assets/police/slot2.png" class="slot-img">
-<div class="mybet" id="mybet2">0</div>
+<div class="mybet" id="mybet2">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s3" onclick="bet(3)">
 <div class="multi"><img src="/assets/police/multi-x15.png"></div>
 <img src="/assets/police/slot3.png" class="slot-img">
-<div class="mybet" id="mybet3">0</div>
+<div class="mybet" id="mybet3">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s4" onclick="bet(4)">
 <div class="multi"><img src="/assets/police/multi-x25.png"></div>
 <img src="/assets/police/slot4.png" class="slot-img">
-<div class="mybet" id="mybet4">0</div>
+<div class="mybet" id="mybet4">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s5" onclick="bet(5)">
 <div class="multi"><img src="/assets/police/multi-x45.png"></div>
 <img src="/assets/police/slot5.png" class="slot-img">
-<div class="mybet" id="mybet5">0</div>
+<div class="mybet" id="mybet5">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s6" onclick="bet(6)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot6.png" class="slot-img">
-<div class="mybet" id="mybet6">0</div>
+<div class="mybet" id="mybet6">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s7" onclick="bet(7)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot7.png" class="slot-img">
-<div class="mybet" id="mybet7">0</div>
+<div class="mybet" id="mybet7">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 <div class="slot s8" onclick="bet(8)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot8.png" class="slot-img">
-<div class="mybet" id="mybet8">0</div>
+<div class="mybet" id="mybet8">
+  <img src="/assets/police/diamond-icon.png">
+  <span>0</span>
+</div>
 </div>
 
 </div>
@@ -2203,7 +2277,7 @@ if(el){
 
 const value = bets[i]
 
-el.textContent = value
+el.querySelector("span").textContent = value
 
 if(value > 0){
 el.style.display = "block"
@@ -2338,7 +2412,7 @@ if(el){
 
 const value = myBets[lastBetSlot-1]
 
-el.textContent = value
+el.querySelector("span").textContent = value
 el.style.display = value > 0 ? "block" : "none"
 
 }
