@@ -23,7 +23,7 @@ user-scalable=no">
   height:870px;
 
   transform:translate(-50%,-50%);
-  transform-origin:top left;
+  transform-origin:center center; /* 🔥 FIX */
 
   overflow:hidden;
 }
@@ -61,7 +61,7 @@ width:100%;
   justify-content:center;
   align-items:center;
 
-  
+
 }
 
 body::before{
@@ -2727,15 +2727,18 @@ function scaleGame(){
   const baseWidth = 430
   const baseHeight = 870
 
-  const scaleX = window.innerWidth / baseWidth
-  const scaleY = window.innerHeight / baseHeight
+  const screenW = window.visualViewport?.width || window.innerWidth
+  const screenH = window.visualViewport?.height || window.innerHeight
 
-  const scale = Math.min(scaleX, scaleY)
+  const scale = Math.min(
+    screenW / baseWidth,
+    screenH / baseHeight
+  )
 
   const app = document.getElementById("app")
 
   app.style.transform =
-    "translate(-50%, -50%) scale(" + scale + ")"
+    `translate(-50%, -50%) scale(${scale})`
 
 }
 
