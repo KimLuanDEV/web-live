@@ -1486,48 +1486,70 @@ pointer-events:none;
 }
 
 
-
 .top-winners{
   position:absolute;
-  bottom:400px;
+  bottom:360px;
   left:50%;
   transform:translateX(-50%);
-  width:80%;
+
+  width:320px;
 
   display:flex;
-  flex-direction:column;
-  gap:4px;
-
-  font-size:13px;
-  font-weight:900;
+  justify-content:center;
+  align-items:flex-end;
+  gap:12px;
 }
 
-.top-row{
-  display:flex;
-  justify-content:space-between;
-  padding:4px 8px;
+/* CARD CHUNG */
+.top-card{
+  width:90px;
+  padding:10px 6px;
 
-  background:rgba(0,20,40,.7);
+  text-align:center;
+
+  border-radius:10px;
+
+  background:rgba(0,20,40,.8);
 
   border:1px solid rgba(0,170,255,.4);
-  border-radius:6px;
 
-  box-shadow:0 0 8px rgba(0,170,255,.5);
+  box-shadow:
+    0 0 10px rgba(0,170,255,.5);
+
+  font-size:12px;
+  font-weight:900;
+
+  transition:.2s;
 }
 
-.top-row.gold{
+/* 🥇 TOP 1 */
+.top-card.gold{
+  order:2;
+
+  width:110px;
+
+  transform:translateY(-10px) scale(1.1);
+
   color:#ffd700;
-  box-shadow:0 0 10px #ffd700;
+
+  box-shadow:
+    0 0 15px #ffd700,
+    0 0 30px rgba(255,215,0,.6);
 }
 
-.top-row.silver{
+/* 🥈 TOP 2 */
+.top-card.silver{
+  order:1;
+
   color:#c0c0c0;
 }
 
-.top-row.bronze{
+/* 🥉 TOP 3 */
+.top-card.bronze{
+  order:3;
+
   color:#cd7f32;
 }
-
 
 
 </style>
@@ -2166,21 +2188,22 @@ if(data.top && data.top.length){
 
   data.top.forEach((p,i)=>{
 
-    const row = document.createElement("div")
+    const card = document.createElement("div")
 
     let cls = ""
     if(i===0) cls = "gold"
     else if(i===1) cls = "silver"
     else if(i===2) cls = "bronze"
 
-    row.className = "top-row " + cls
+    card.className = "top-card " + cls
 
-  row.innerHTML = `
-  <span>👤 ???</span>
-  <span>+${p.win} 💎</span>
-  `
+    card.innerHTML = `
+      <div style="font-size:16px">🏆</div>
+      <div>TOP ${i+1}</div>
+      <div style="margin-top:4px">+💎${p.win}</div>
+    `
 
-    box.appendChild(row)
+    box.appendChild(card)
 
   })
 
