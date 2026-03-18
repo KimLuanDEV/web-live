@@ -17,6 +17,9 @@ html, body{
   margin:0;
   padding:0;
   height:100%;
+  overflow:hidden;
+  overscroll-behavior:none;
+  touch-action:none;
 }
 
 
@@ -35,6 +38,8 @@ color:#fff;
 overflow:hidden;
   /* FIX NỀN TRẮNG */
 background:#000;
+position:fixed;
+width:100%;
 }
 
 body::before{
@@ -2290,11 +2295,20 @@ if(value > 0){
 
 document.addEventListener("touchmove", function(e){
 
-if(e.scale !== 1){
-e.preventDefault()
-}
+  const allowScroll = e.target.closest(
+    ".history-table, .round-detail-list"
+  )
 
-},{ passive:false })
+  if(!allowScroll){
+    e.preventDefault()
+  }
+
+}, { passive:false })
+
+
+window.addEventListener("scroll", function(){
+  window.scrollTo(0,0);
+});
 
 
 document.addEventListener("wheel", function(e){
