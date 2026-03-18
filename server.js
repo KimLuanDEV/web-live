@@ -1972,13 +1972,41 @@ function fakeWin(realSlot){
   const slot = WHEEL8_SLOTS[realSlot-1]
   const m = slot.m
 
-  const betList = [500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000]
+  let betList
 
-  let bet =
-    betList[Math.floor(Math.random()*betList.length)]
+  // 🎯 slot nhỏ → bet lớn
+  if(m === 5){
+    betList = [1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000]
+  }
+
+  // 🎯 slot trung bình
+  else if(m === 10 || m === 15){
+    betList = [500,600,700,800,900,1000,1100,1200,1300,1400,1500]
+  }
+
+  // 🎯 slot lớn
+  else if(m === 25){
+    betList = [200,300,400,500,600,700,800,900,1000]
+  }
+
+  // 🎯 slot siêu lớn
+  else if(m === 45){
+    betList = [200,300,400,500,600,700,800,900,1000]
+  }
+
+  // fallback
+  else{
+    betList = [500,1000]
+  }
+
+  const bet = betList[
+    Math.floor(Math.random()*betList.length)
+  ]
 
   return bet * m
 }
+
+
 
 // 🔥 tạo sẵn 3 bot
 let botTop = []
