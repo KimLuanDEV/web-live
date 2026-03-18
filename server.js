@@ -1924,17 +1924,56 @@ wheel8Round.bets.forEach(o=>{
 emitCoinUpdate(o.uid)
 })
 
+
+// =======================
+// 🏆 TOP WINNERS
+// =======================
+
+const winMap = {}
+
+wheel8Round.bets.forEach(o=>{
+
+  let win = 0
+
+  if(winSlots.includes(o.slot)){
+    const slotMulti = WHEEL8_SLOTS[o.slot-1].m
+    win = o.bet * slotMulti
+  }
+
+  if(win > 0){
+
+    if(!winMap[o.uid]){
+      winMap[o.uid] = {
+        uid: o.uid,
+        name: users[o.uid]?.profile?.name || "Player",
+        win: 0
+      }
+    }
+
+    winMap[o.uid].win += win
+  }
+
+})
+
+// 🔥 sort top 3
+const topWinners = Object.values(winMap)
+  .sort((a,b)=>b.win - a.win)
+  .slice(0,3)
+
+
 // =======================
 // 🎡 EMIT RESULT
 // =======================
 
 io.emit("wheel8-result",{
-slots: winSlots,
-multiplier: multiplier,
-event: specialEvent
-  ? (winSlots.includes(1) ? "x5-all" : "x45-all")
-  : null
+  slots: winSlots,
+  multiplier: multiplier,
+  event: specialEvent
+    ? (winSlots.includes(1) ? "x5-all" : "x45-all")
+    : null,
+  top: topWinners   // 🔥 THÊM DÒNG NÀY
 })
+
 
 
 // =======================

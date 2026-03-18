@@ -1486,6 +1486,50 @@ pointer-events:none;
 }
 
 
+
+.top-winners{
+  position:absolute;
+  bottom:10px;
+  left:50%;
+  transform:translateX(-50%);
+  width:80%;
+
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+
+  font-size:13px;
+  font-weight:900;
+}
+
+.top-row{
+  display:flex;
+  justify-content:space-between;
+  padding:4px 8px;
+
+  background:rgba(0,20,40,.7);
+
+  border:1px solid rgba(0,170,255,.4);
+  border-radius:6px;
+
+  box-shadow:0 0 8px rgba(0,170,255,.5);
+}
+
+.top-row.gold{
+  color:#ffd700;
+  box-shadow:0 0 10px #ffd700;
+}
+
+.top-row.silver{
+  color:#c0c0c0;
+}
+
+.top-row.bronze{
+  color:#cd7f32;
+}
+
+
+
 </style>
 </head>
 
@@ -1674,10 +1718,14 @@ class="coin-icon">
 <span id="resultTotalWin">0</span> 
 </div>
 </div>
+</div>
+
+
+<div id="topWinners" class="top-winners"></div>
 
 </div>
 
-</div>
+
 </div>
 
 
@@ -2105,6 +2153,38 @@ closeResult()
 
 // reload history
 socket.emit("wheel8-get-my-history")
+
+
+// =======================
+// 🏆 TOP WINNERS UI
+// =======================
+
+const box = document.getElementById("topWinners")
+box.innerHTML = ""
+
+if(data.top && data.top.length){
+
+  data.top.forEach((p,i)=>{
+
+    const row = document.createElement("div")
+
+    let cls = ""
+    if(i===0) cls = "gold"
+    else if(i===1) cls = "silver"
+    else if(i===2) cls = "bronze"
+
+    row.className = "top-row " + cls
+
+    row.innerHTML = `
+      <span>#${i+1} ${p.name}</span>
+      <span>+${p.win} 💎</span>
+    `
+
+    box.appendChild(row)
+
+  })
+
+}
 
 })
 /* TIMER */
