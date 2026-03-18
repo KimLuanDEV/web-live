@@ -1488,23 +1488,23 @@ pointer-events:none;
 
 .top-winners{
   position:absolute;
-  top:-430px;
-  left:50%;
+  top:-500px;
+  left:47%;
   transform:translateX(-50%);
   width:100%;
 
   display:flex;
   justify-content:center;
   align-items:flex-end;
-  gap:12px;
+  gap:0px;
 
   pointer-events:none;
 }
 
 /* CARD CHUNG */
 .top-card{
-  width:95px;
-  height:90px;
+  width:135px;
+  height:200px;
 
   display:flex;
   flex-direction:column;
@@ -1521,27 +1521,24 @@ pointer-events:none;
   box-shadow:none;
 }
 
-/* TOP 1 NỔI */
-.top-card.top1{
-  width:120px;
-  height:110px;
-
-  background:
-    url("/assets/police/top-card-gold.png")
-    center / contain no-repeat;
-}
 
 /* TEXT */
 .top-name{
-  font-size:11px;
+  position: relative;
+  font-size:13px;
   opacity:.7;
   margin-top:6px;
+  left:13px;
+  font-weight: bold;
 }
 
 .top-win{
-  font-size:14px;
+  position: relative;
+  font-size:13px;
   font-weight:900;
   margin-top:2px;
+  left: 13px;
+  top:-3px;
 }
 
 /* BADGE */
@@ -2235,9 +2232,8 @@ if(data.top && data.top.length){
     card.className = "top-card " + cls
 
     card.innerHTML = `
-      <div class="top-rank">${rank}</div>
       <div class="top-name">???</div>
-      <div class="top-win">+${p.win} 💎</div>
+      <div class="top-win">${p.win}💎</div>
     `
 
     // 🔥 TOP 1 ở giữa
