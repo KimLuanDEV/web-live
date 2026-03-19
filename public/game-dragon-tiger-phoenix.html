@@ -11,68 +11,52 @@
 
 <style>
 
-
-#app{
-  position:fixed;
-  left:50%;
-  top:50%;
-
-  width:430px;
-  height:870px;
-
-  transform:translate(-50%,-50%);
-  transform-origin:center center;
-
-  overflow:hidden;
-}
-
-
 /* ================= BACKGROUND ================= */
+
 html, body{
-  touch-action: manipulation;
-  background:#000;
+touch-action: manipulation;
+background: #000;
 
-  /* 🔥 FIX VH BUG */
-  height:100%;
-  width:100%;
+height:100vh;
+width:100vw;
+overflow:hidden;
 
-  overflow:hidden;
 }
 
 body.loading > *:not(#loadingOverlay){
-  visibility:hidden;
+visibility:hidden;
 }
 
+
 body{
-  margin:0;
-  overflow:hidden;
 
-  font-family:system-ui;
+margin:0;
+font-family:system-ui;
 
-  background:
-  linear-gradient(
-    rgba(0,0,0,.55),
-    rgba(0,0,0,.55)
-  ),
-  url("/assets/dtp/beast-arena.jpg");
+background:
+linear-gradient(
+rgba(0,0,0,.55),
+rgba(0,0,0,.55)
+),
+url("/assets/dtp/beast-arena.jpg");
 
-  background-size:cover;
-  background-position:center;
-  background-repeat:no-repeat;
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
 
-  color:#fff;
+color:#fff;
+overflow:hidden;
 
-  /* ❌ BỎ FLEX (rất quan trọng) */
-  /* display:flex; */
-  /* justify-content:center; */
-  /* align-items:center; */
 
-  -webkit-user-select:none;
+ -webkit-user-select:none;
+  -moz-user-select:none;
+  -ms-user-select:none;
   user-select:none;
 
   -webkit-touch-callout:none;
   -webkit-tap-highlight-color:transparent;
 }
+
 
 body::before{
 
@@ -99,8 +83,7 @@ position:relative;
 display:flex;
 align-items:center;
 
-padding-top: env(safe-area-inset-top);
-height: calc(46px + env(safe-area-inset-top));
+height:46px;
 
 padding:0 14px;
 
@@ -112,7 +95,6 @@ border-bottom:1px solid rgba(255,255,255,.08);
 box-shadow:
 0 10px 40px rgba(0,0,0,.9);
 margin-bottom:-6px;
-margin-top: -5px;
 }
 
 
@@ -266,7 +248,7 @@ margin-top:26px;
 
 .bet-panel{
 
-position:absolute;
+position:fixed;
 
 bottom:0;
 left:0;
@@ -367,7 +349,7 @@ filter:drop-shadow(0 0 10px gold);
 
 .result{
 
-position:absolute;
+position:fixed;
 inset:0;
 
 display:flex;
@@ -729,7 +711,7 @@ white-space:nowrap;
 
 .my-history{
 
-position:absolute;
+position:fixed;
 inset:0;
 
 background:rgba(0,0,0,.9);
@@ -1045,7 +1027,7 @@ animation:bump .25s;
 
 .balance-bar{
 
-position:absolute;
+position:fixed;
 
 bottom:115px;
 left:50%;
@@ -1447,7 +1429,7 @@ line-height:1.5;
 /* ================= MONKEY NOTIFY ================= */
 
 .notify-modal{
-position:absolute;
+position:fixed;
 inset:0;
 
 background:rgba(0,0,0,.75);
@@ -1517,7 +1499,7 @@ cursor:pointer;
 /* ================= ORIENTATION LOCK ================= */
 
 .rotate-lock{
-position:absolute;
+position:fixed;
 inset:0;
 
 background:#000;
@@ -1558,7 +1540,7 @@ display:none !important;
 /* ================= CINEMATIC LOADER ================= */
 
 .loading-overlay{
-position:absolute;
+position:fixed;
 inset:0;
 
 background:
@@ -1838,7 +1820,6 @@ animation:loadingPulse 1.5s infinite;
 
 <body>
 
- <div id="app">
 
 <div class="topbar">
 
@@ -2201,7 +2182,6 @@ Please rotate your device
 </div>
 
 
-</div> 
 
 <script>
 
@@ -2859,33 +2839,6 @@ setTimeout(()=>{
   loaderImagesReady = true;
   checkLoader();
 }, 12000);
-
-
-
-function scaleGame(){
-
-  const baseWidth = 430
-  const baseHeight = 870
-
-  const screenW = window.visualViewport?.width || window.innerWidth
-  const screenH = window.visualViewport?.height || window.innerHeight
-
-  const scale = Math.min(
-    screenW / baseWidth,
-    screenH / baseHeight
-  )
-
-  const app = document.getElementById("app")
-
-  app.style.transform =
-    `translate(-50%, -50%) scale(${scale})`
-
-}
-
-window.addEventListener("resize", scaleGame)
-window.addEventListener("load", scaleGame)
-
-
 
 </script>
 
