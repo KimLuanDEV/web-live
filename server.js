@@ -1965,19 +1965,63 @@ const botNames = [
   "Agent#P3","Agent#K2","Agent#Z8"
 ]
 
-// 🔥 fake theo MULTI + MULTI SLOT
 function fakeWin(winSlots){
 
   let totalWin = 0
 
-  // 🔥 số lượng slot bot sẽ cược (giống người thật)
-  const betCount = Math.floor(Math.random()*3) + 2 // 2 → 4 slot
+  // 🔥 detect event (multi-slot)
+  const isEvent = winSlots.length > 1
 
-  for(let i=0;i<betCount;i++){
+  // =========================
+  // 🎯 EVENT → cược nhiều slot
+  // =========================
+  if(isEvent){
 
-    // 🎯 chọn random slot trong toàn bộ wheel
-    const slotIndex =
-      Math.floor(Math.random()*WHEEL8_SLOTS.length) + 1
+    const betCount = Math.floor(Math.random()*3) + 2 // 2 → 4 slot
+
+    for(let i=0;i<betCount;i++){
+
+      const slotIndex =
+        Math.floor(Math.random()*WHEEL8_SLOTS.length) + 1
+
+      const slot = WHEEL8_SLOTS[slotIndex-1]
+      const m = slot.m
+
+      let betList
+
+      if(m === 5){
+        betList = [1500,2000,2500,3000,4000,5000,6000]
+      }
+      else if(m === 10 || m === 15){
+        betList = [800,1000,1200,1500,2000]
+      }
+      else if(m === 25){
+        betList = [400,500,600,800,1000]
+      }
+      else if(m === 45){
+        betList = [200,300,400,500,700,1000]
+      }
+      else{
+        betList = [500,1000]
+      }
+
+      const bet =
+        betList[Math.floor(Math.random()*betList.length)]
+
+      if(winSlots.includes(slotIndex)){
+        totalWin += bet * m
+      }
+
+    }
+
+  }
+
+  // =========================
+  // 🎯 NORMAL → chỉ 1 slot
+  // =========================
+  else{
+
+    const slotIndex = winSlots[0]
 
     const slot = WHEEL8_SLOTS[slotIndex-1]
     const m = slot.m
@@ -1985,16 +2029,16 @@ function fakeWin(winSlots){
     let betList
 
     if(m === 5){
-      betList = [1500,1800,2000,2200,2500,3000,4000,5000,6000]
+      betList = [1500,2000,2500,3000,4000,5000,6000]
     }
     else if(m === 10 || m === 15){
-      betList = [800,1000,1200,1400,1600,2000,2500,3000]
+      betList = [800,1000,1200,1500,2000,2500,3000]
     }
     else if(m === 25){
-      betList = [400,500,600,700,800,1000,1200,1500,2000]
+      betList = [400,500,600,800,1000,1200,1500,1800,2000,2500,3000]
     }
     else if(m === 45){
-      betList = [200,300,400,500,600,700,800,9000,1000,1200,1500,1800,2000]
+      betList = [200,300,400,500,700,1000,1500,1800,2000]
     }
     else{
       betList = [500,1000]
@@ -2003,14 +2047,11 @@ function fakeWin(winSlots){
     const bet =
       betList[Math.floor(Math.random()*betList.length)]
 
-    // ✅ nếu slot này nằm trong winSlots → cộng win
-    if(winSlots.includes(slotIndex)){
-      totalWin += bet * m
-    }
-
+    totalWin = bet * m
   }
 
-  // 🔒 đảm bảo bot luôn có win
+
+  // 🔒 đảm bảo luôn có win
   if(totalWin === 0){
     return fakeWin(winSlots)
   }
