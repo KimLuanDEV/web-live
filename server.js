@@ -1797,7 +1797,7 @@ let winSlots = []
 let multiplier = null
 
 // 🎁 0.25% SPECIAL EVENT
-if(Math.random() < 0.0025){
+if(Math.random() < 0.5){
 
   specialEvent = true
 
@@ -1957,58 +1957,60 @@ wheel8Round.bets.forEach(o=>{
 
 
 // =======================
-// 🤖 CREATE BOT BASE
+// 🤖 BOT CONFIG
 // =======================
-
-const realSlot = winSlots[0]
 
 const botNames = [
   "Agent#A1","Agent#B7","Agent#X9",
   "Agent#P3","Agent#K2","Agent#Z8"
 ]
 
-function fakeWin(realSlot){
+// 🔥 fake theo MULTI + MULTI SLOT
+function fakeWin(winSlots){
 
-  const slot = WHEEL8_SLOTS[realSlot-1]
+  // chọn random slot thắng
+  const slotIndex =
+    winSlots[Math.floor(Math.random()*winSlots.length)]
+
+  const slot = WHEEL8_SLOTS[slotIndex-1]
   const m = slot.m
 
   let betList
 
-  // 🎯 slot nhỏ → bet lớn
   if(m === 5){
-    betList = [1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,2100,2200,2300,2400,2500,2600,2700,2800,2900,3000]
+    betList = [1500,1800,2000,2200,2500,3000,4000,5000,6000]
   }
-
-  // 🎯 slot trung bình
   else if(m === 10 || m === 15){
-    betList = [500,600,700,800,900,1000,1100,1200,1300,1400,1500]
+    betList = [800,1000,1200,1400,1600,2000,2500,3000]
   }
-
-  // 🎯 slot lớn
   else if(m === 25){
-    betList = [200,300,400,500,600,700,800,900,1000]
+    betList = [400,500,600,700,800,1000,1500,2000]
   }
-
-  // 🎯 slot siêu lớn
   else if(m === 45){
-    betList = [200,300,400,500,600,700,800,900,1000]
+    betList = [200,300,400,500,600,700,800,900,1000,1200,1500,2000]
   }
-
-  // fallback
   else{
     betList = [500,1000]
   }
 
-  const bet = betList[
-    Math.floor(Math.random()*betList.length)
-  ]
+  let bet =
+    betList[Math.floor(Math.random()*betList.length)]
 
-  return bet * m
+  let win = bet * m
+
+  // 🔥 tạo variance cho top 1
+  if(Math.random() < 0.3){
+    win *= 2
+  }
+
+  return win
 }
 
 
+// =======================
+// 🤖 CREATE BOT FIRST
+// =======================
 
-// 🔥 tạo sẵn 3 bot
 let botTop = []
 const usedWins = new Set()
 
@@ -2017,7 +2019,7 @@ while(botTop.length < 3){
   let win
 
   do{
-    win = fakeWin(realSlot)
+    win = fakeWin(winSlots) // 🔥 FIX QUAN TRỌNG
   }while(usedWins.has(win))
 
   usedWins.add(win)
@@ -2039,16 +2041,32 @@ let playerList = Object.values(winMap)
 
 
 // =======================
-// 🔥 MERGE + SORT
+// 🔥 MERGE LOGIC
 // =======================
 
-let topWinners = [...botTop, ...playerList]
+// 🔥 ghép bot trước
+let merged = [...botTop]
 
-// sort lớn → bé
-topWinners.sort((a,b)=>b.win - a.win)
+// 🔥 chỉ add player nếu đủ mạnh
+playerList.forEach(p=>{
 
-// lấy top 3 cuối cùng
-topWinners = topWinners.slice(0,3)
+  // nếu player thắng > bot yếu nhất → cho vào
+  const minBotWin = Math.min(...merged.map(x=>x.win))
+
+  if(p.win > minBotWin){
+    merged.push(p)
+  }
+
+})
+
+
+// =======================
+// 🔥 SORT FINAL
+// =======================
+
+merged.sort((a,b)=>b.win - a.win)
+
+const topWinners = merged.slice(0,3)
 
 // =======================
 // 🎡 EMIT RESULT
