@@ -1797,7 +1797,7 @@ let winSlots = []
 let multiplier = null
 
 // 🎁 0.25% SPECIAL EVENT
-if(Math.random() < 0.0025){
+if(Math.random() < 0.5){
 
   specialEvent = true
 
