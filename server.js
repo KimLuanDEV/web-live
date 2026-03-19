@@ -1968,44 +1968,60 @@ const botNames = [
 // 🔥 fake theo MULTI + MULTI SLOT
 function fakeWin(winSlots){
 
-  // chọn random slot thắng
-  const slotIndex =
-    winSlots[Math.floor(Math.random()*winSlots.length)]
+  let totalWin = 0
 
-  const slot = WHEEL8_SLOTS[slotIndex-1]
-  const m = slot.m
+  // 🔥 số lượng slot bot sẽ cược (giống người thật)
+  const betCount = Math.floor(Math.random()*3) + 2 // 2 → 4 slot
 
-  let betList
+  for(let i=0;i<betCount;i++){
 
-  if(m === 5){
-    betList = [1500,1800,2000,2200,2500,3000,4000,5000,6000]
+    // 🎯 chọn random slot trong toàn bộ wheel
+    const slotIndex =
+      Math.floor(Math.random()*WHEEL8_SLOTS.length) + 1
+
+    const slot = WHEEL8_SLOTS[slotIndex-1]
+    const m = slot.m
+
+    let betList
+
+    if(m === 5){
+      betList = [1500,1800,2000,2200,2500,3000,4000,5000,6000]
+    }
+    else if(m === 10 || m === 15){
+      betList = [800,1000,1200,1400,1600,2000,2500,3000]
+    }
+    else if(m === 25){
+      betList = [400,500,600,700,800,1000,1200,1500,2000]
+    }
+    else if(m === 45){
+      betList = [200,300,400,500,600,700,800,9000,1000,1200,1500,1800,2000]
+    }
+    else{
+      betList = [500,1000,1500,2000]
+    }
+
+    const bet =
+      betList[Math.floor(Math.random()*betList.length)]
+
+    // ✅ nếu slot này nằm trong winSlots → cộng win
+    if(winSlots.includes(slotIndex)){
+      totalWin += bet * m
+    }
+
   }
-  else if(m === 10 || m === 15){
-    betList = [800,1000,1200,1400,1600,2000,2500,3000]
-  }
-  else if(m === 25){
-    betList = [400,500,600,700,800,1000,1500,2000]
-  }
-  else if(m === 45){
-    betList = [200,300,400,500,600,700,800,900,1000,1200,1500,2000]
-  }
-  else{
-    betList = [500,1000]
+
+  // 🔒 đảm bảo bot luôn có win
+  if(totalWin === 0){
+    return fakeWin(winSlots)
   }
 
-  let bet =
-    betList[Math.floor(Math.random()*betList.length)]
-
-  let win = bet * m
-
-  // 🔥 tạo variance cho top 1
+  // 🔥 variance (top 1)
   if(Math.random() < 0.3){
-    win *= 2
+    totalWin *= 2
   }
 
-  return win
+  return totalWin
 }
-
 
 // =======================
 // 🤖 CREATE BOT FIRST
