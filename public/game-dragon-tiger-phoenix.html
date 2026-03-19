@@ -99,7 +99,8 @@ position:relative;
 display:flex;
 align-items:center;
 
-height:46px;
+padding-top: env(safe-area-inset-top);
+height: calc(46px + env(safe-area-inset-top));
 
 padding:0 14px;
 
