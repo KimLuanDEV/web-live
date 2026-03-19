@@ -1997,7 +1997,7 @@ function fakeWin(winSlots){
       betList = [200,300,400,500,600,700,800,9000,1000,1200,1500,1800,2000]
     }
     else{
-      betList = [500,1000,1500,2000]
+      betList = [500,1000]
     }
 
     const bet =
