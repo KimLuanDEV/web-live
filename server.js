@@ -5918,7 +5918,7 @@ function kickOldSessions(uid, newSocket) {
     // ❌ KHÁC THIẾT BỊ → KICK
     s.emit("force-logout", {
       reason: "logged_in_elsewhere",
-      message: "⚠️ Tài khoản đã đăng nhập trên thiết bị khác"
+      message: "⚠️ Lỗi kết nối, kiểm tra đường truyền mạng!"
     });
 
     s.disconnect(true);
