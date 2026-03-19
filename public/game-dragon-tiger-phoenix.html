@@ -30,22 +30,24 @@
 /* ================= BACKGROUND ================= */
 
 html, body{
-touch-action: manipulation;
-background: #000;
+  touch-action: manipulation;
+  background:#000;
 
+  /* 🔥 FIX VH BUG */
   height:100%;
   width:100%;
-overflow:hidden;
 
+  overflow:hidden;
 }
 
 body.loading > *:not(#loadingOverlay){
-visibility:hidden;
+  visibility:hidden;
 }
-
 
 body{
   margin:0;
+  overflow:hidden;
+
   font-family:system-ui;
 
   background:
@@ -61,9 +63,7 @@ body{
 
   color:#fff;
 
-  overflow:hidden;
-
-  /* ❌ XÓA FLEX */
+  /* ❌ BỎ FLEX (rất quan trọng) */
   /* display:flex; */
   /* justify-content:center; */
   /* align-items:center; */
@@ -95,7 +95,10 @@ pointer-events:none;
 /* ================= TOPBAR PRO ================= */
 .topbar{
 
-position:relative;
+  position:absolute;
+  top:0;
+  left:0;
+  right:0;
 
 display:flex;
 align-items:center;
