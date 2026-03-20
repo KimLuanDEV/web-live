@@ -155,21 +155,31 @@ function getAdminWheel8Data(){
 function getTimeRaceBetList(){
 
   const users = loadUsers()
-
   const list = {}
 
+  // 👤 PLAYER REAL
   timeRaceRound.bets.forEach(b=>{
-
     if(!list[b.uid]){
       list[b.uid] = {
         name: users[b.uid]?.profile?.name || "Player",
         total: 0
       }
     }
-
     list[b.uid].total += b.bet
-
   })
+
+  // 🤖 BOT FAKE
+  const botCount = Math.floor(Math.random()*5) + 3 // 3 → 7 bot
+
+  for(let i=0;i<botCount;i++){
+
+    const id = "bot_"+i
+
+    list[id] = {
+      name: "Player#" + (1000 + Math.floor(Math.random()*9000)),
+      total: Math.floor(Math.random()*5000 + 500)
+    }
+  }
 
   return Object.values(list)
 }
@@ -3604,7 +3614,7 @@ io.emit("time-race-crash",{
 
     io.emit("time-race-bet-list", [])
 
-    
+
     emitTimeRacePlayers();
 
     io.emit("admin-time-race-secret-update", {
