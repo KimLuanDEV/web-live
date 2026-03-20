@@ -152,6 +152,29 @@ function getAdminWheel8Data(){
 
 
 
+function getTimeRaceBetList(){
+
+  const users = loadUsers()
+
+  const list = {}
+
+  timeRaceRound.bets.forEach(b=>{
+
+    if(!list[b.uid]){
+      list[b.uid] = {
+        name: users[b.uid]?.profile?.name || "Player",
+        total: 0
+      }
+    }
+
+    list[b.uid].total += b.bet
+
+  })
+
+  return Object.values(list)
+}
+
+
 
 let wheel8UserHistory = loadWheel8UserHistory()
 let wheel8NeedReset = false
@@ -3578,6 +3601,10 @@ io.emit("time-race-crash",{
     });
 
     timeRaceRound = createTimeRaceRound();
+
+    io.emit("time-race-bet-list", [])
+
+    
     emitTimeRacePlayers();
 
     io.emit("admin-time-race-secret-update", {
@@ -5524,12 +5551,10 @@ socket.on("time-race-bet", data=>{
   const uid = socket.data.uid;
   if(!uid) return;
 
-
-    // 🔒 khóa đặt cược khi còn <= 3s
+  // 🔒 khóa đặt cược khi còn <= 3s
   if(timeRaceRound.betEndAt - Date.now() <= 3000){
     return socket.emit("time-race-error",{message:"BET_CLOSED"});
   }
-
 
   if(Date.now() > timeRaceRound.betEndAt)
     return socket.emit("time-race-error",{message:"BET_CLOSED"});
@@ -5548,16 +5573,39 @@ socket.on("time-race-bet", data=>{
   if(me.profile.coins < bet)
     return socket.emit("time-race-error",{message:"NOT_ENOUGH_COIN"});
 
+  // =========================
+  // 💸 TRỪ COIN
+  // =========================
   me.profile.coins -= bet;
   saveUsers(users);
   emitCoinUpdate(uid);
 
+  // =========================
+  // 📥 LƯU BET
+  // =========================
   timeRaceRound.bets.push({uid, bet});
+
+  // =========================
+  // 📊 DANH SÁCH NGƯỜI CƯỢC
+  // =========================
+  const betList = timeRaceRound.bets.map(b => ({
+    name: users[b.uid]?.profile?.name || "Player",
+    bet: b.bet
+  }));
+
+  // 🔥 sort lớn → nhỏ
+  betList.sort((a,b)=>b.bet - a.bet);
+
+  // 🔔 emit realtime cho ALL
+  io.emit("time-race-bet-list", betList);
+
+  // (giữ lại nếu bạn đang dùng UI cũ)
   emitTimeRacePlayers();
 
   socket.emit("time-race-bet-ok");
-});
 
+  io.emit("time-race-bet-list", getTimeRaceBetList())
+});
 
 socket.on("time-race-stop", ()=>{
   const uid = socket.data.uid;
