@@ -14,7 +14,13 @@ const POST_GIFTS = [
   { id: "rose",    icon: "🌹", coin: 10 },
   { id: "beer",    icon: "🍺", coin: 20 },
   { id: "cake",    icon: "🎂", coin: 50 },
-  { id: "diamond", icon: "💎", coin: 100 }
+  { id: "diamond", icon: "💎", coin: 100 },
+
+  // 🔥 thêm mới
+  { id: "rocket",  icon: "🚀", coin: 200 },
+  { id: "crown",   icon: "👑", coin: 500 },
+  { id: "car",     icon: "🏎️", coin: 1000 },
+  { id: "castle",  icon: "🏰", coin: 2000 }
 ];
 
 let giftPostId = null;
