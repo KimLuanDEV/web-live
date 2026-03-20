@@ -2059,7 +2059,13 @@ item.innerHTML = `
 }
 
 
+let lastBetList = ""
+
 socket.on("time-race-bet-list",(list)=>{
+
+  const json = JSON.stringify(list)
+  if(json === lastBetList) return
+  lastBetList = json
 
   const box = document.getElementById("betListBox")
   if(!box) return
@@ -2075,17 +2081,21 @@ socket.on("time-race-bet-list",(list)=>{
       div.classList.add("top")
     }
 
-    div.innerHTML = `
-      <span>${p.name}</span>
-      <span>💎 ${Number(p.total || p.bet).toLocaleString()}</span>
-    `
+ const name =
+  p.uid?.startsWith("bot_")
+    ? "???"
+    : (p.name || "???")
+
+div.innerHTML = `
+  <span>${name}</span>
+  <span>💎 ${Number(p.total || p.bet).toLocaleString()}</span>
+`
 
     box.appendChild(div)
 
   })
 
 })
-
 
 
 
