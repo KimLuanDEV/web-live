@@ -3365,32 +3365,41 @@ function startFakeBotFlow(){
 
   if(!timeRaceRound) return
 
+  const roundId = timeRaceRound.id
   const betList = [10, 50, 100, 500, 1000, 5000]
 
   let botIndex = 0
 
-  const interval = setInterval(()=>{
+  function spawnOne(){
 
-    // ⛔ dừng khi hết thời gian cược
-    if(Date.now() > timeRaceRound.betEndAt){
-      clearInterval(interval)
+    // ⛔ nếu đã sang round khác thì dừng
+    if(!timeRaceRound || timeRaceRound.id !== roundId){
       return
     }
 
-    // 🔥 tạo bot mới
+    // ⛔ dừng khi còn <= 3s là khóa cược
+    if(timeRaceRound.betEndAt - Date.now() <= 3000){
+      return
+    }
+
     const bot = {
-      uid: "bot_" + botIndex,
+      uid: "bot_" + roundId + "_" + botIndex,
       name: "???",
-      total: betList[Math.floor(Math.random()*betList.length)]
+      total: betList[Math.floor(Math.random() * betList.length)]
     }
 
     timeRaceRound.bots.push(bot)
     botIndex++
 
-    // 🔔 update realtime
     io.emit("time-race-bet-list", getTimeRaceBetList())
 
-  }, 800 + Math.random()*1200) // delay tự nhiên
+    // delay ngẫu nhiên rồi tự gọi tiếp
+    const delay = Math.floor(800 + Math.random()*1200)
+    setTimeout(spawnOne, delay)
+  }
+
+  // bắt đầu
+  spawnOne()
 }
 
 
@@ -3643,7 +3652,7 @@ io.emit("time-race-crash",{
     });
 
     timeRaceRound = createTimeRaceRound();
-    
+
     startFakeBotFlow()
     io.emit("time-race-bet-list", [])
 
