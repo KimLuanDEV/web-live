@@ -161,7 +161,7 @@ function getTimeRaceBetList(){
   timeRaceRound.bets.forEach(b=>{
     if(!list[b.uid]){
       list[b.uid] = {
-        name: users[b.uid]?.profile?.name || "Player",
+        name: "???",
         total: 0
       }
     }
