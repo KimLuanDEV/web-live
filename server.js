@@ -169,17 +169,19 @@ function getTimeRaceBetList(){
   })
 
   // 🤖 BOT FAKE
-  const botCount = Math.floor(Math.random()*5) + 3 // 3 → 7 bot
+ const botCount = 10
 
-  for(let i=0;i<botCount;i++){
+ for(let i=0;i<botCount;i++){
 
-    const id = "bot_"+i
+  const id = "bot_"+i
 
-    list[id] = {
-      name: "???",
-      total: Math.floor(Math.random()*5000 + 500)
-    }
+  const betList = [10, 50, 100, 500, 1000, 5000]
+
+  list[id] = {
+    name: "???",
+    total: betList[Math.floor(Math.random() * betList.length)]
   }
+}
 
   return Object.values(list)
 }
