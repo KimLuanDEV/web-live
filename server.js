@@ -176,7 +176,7 @@ function getTimeRaceBetList(){
     const id = "bot_"+i
 
     list[id] = {
-      name: "???" + (1000 + Math.floor(Math.random()*9000)),
+      name: "???",
       total: Math.floor(Math.random()*5000 + 500)
     }
   }
