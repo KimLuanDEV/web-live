@@ -175,7 +175,7 @@ function getTimeRaceBetList(){
 
   const id = "bot_"+i
 
-  const betList = [10, 50, 100, 500, 1000, 5000]
+  const betList = [100, 500, 1000, 5000]
 
   list[id] = {
     name: "???",
