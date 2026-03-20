@@ -157,7 +157,7 @@ function getTimeRaceBetList(){
   const users = loadUsers()
   const list = {}
 
-  // 👤 PLAYER REAL
+  // 👤 PLAYER
   timeRaceRound.bets.forEach(b=>{
     if(!list[b.uid]){
       list[b.uid] = {
@@ -168,20 +168,12 @@ function getTimeRaceBetList(){
     list[b.uid].total += b.bet
   })
 
-  // 🤖 BOT FAKE
- const botCount = 10
-
- for(let i=0;i<botCount;i++){
-
-  const id = "bot_"+i
-
-  const betList = [100, 500, 1000, 5000]
-
-  list[id] = {
-    name: "???",
-    total: betList[Math.floor(Math.random() * betList.length)]
+  // 🤖 BOT (KHÔNG RANDOM LẠI)
+  if(timeRaceRound.bots){
+    timeRaceRound.bots.forEach(bot=>{
+      list[bot.uid] = bot
+    })
   }
-}
 
   return Object.values(list)
 }
@@ -3368,6 +3360,30 @@ function saveTimeRaceRoundCount(data){
   }catch(e){}
 }
 
+
+function generateFakeBots(){
+
+  const botCount = 10
+  const bots = []
+
+  const betList = [100, 500, 1000, 5000]
+
+  for(let i=0;i<botCount;i++){
+
+    bots.push({
+      uid: "bot_"+i,
+      name: "???",
+      total: betList[Math.floor(Math.random() * betList.length)]
+    })
+
+  }
+
+  return bots
+}
+
+
+
+
 const timeRaceRoundState = loadTimeRaceRoundCount();
 
 let timeRaceRoundCount =
@@ -3458,8 +3474,12 @@ function createTimeRaceRound(){
     bets: [],
     stopped: [],
     crashed: false,
-    overridden: false // ✅ THÊM DÒNG NÀY
+    overridden: false, // ✅ THÊM DÒNG NÀY
+      // ✅ CHÈN NGAY ĐÂY
+    bots: generateFakeBots()
   };
+
+
 }
 
 let timeRaceRound = createTimeRaceRound();
