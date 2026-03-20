@@ -3361,24 +3361,36 @@ function saveTimeRaceRoundCount(data){
 }
 
 
-function generateFakeBots(){
+function startFakeBotFlow(){
 
-  const botCount = 10
-  const bots = []
+  if(!timeRaceRound) return
 
-  const betList = [100, 500, 1000, 5000]
+  const betList = [10, 50, 100, 500, 1000, 5000]
 
-  for(let i=0;i<botCount;i++){
+  let botIndex = 0
 
-    bots.push({
-      uid: "bot_"+i,
+  const interval = setInterval(()=>{
+
+    // ⛔ dừng khi hết thời gian cược
+    if(Date.now() > timeRaceRound.betEndAt){
+      clearInterval(interval)
+      return
+    }
+
+    // 🔥 tạo bot mới
+    const bot = {
+      uid: "bot_" + botIndex,
       name: "???",
-      total: betList[Math.floor(Math.random() * betList.length)]
-    })
+      total: betList[Math.floor(Math.random()*betList.length)]
+    }
 
-  }
+    timeRaceRound.bots.push(bot)
+    botIndex++
 
-  return bots
+    // 🔔 update realtime
+    io.emit("time-race-bet-list", getTimeRaceBetList())
+
+  }, 800 + Math.random()*1200) // delay tự nhiên
 }
 
 
@@ -3476,10 +3488,8 @@ function createTimeRaceRound(){
     crashed: false,
     overridden: false, // ✅ THÊM DÒNG NÀY
       // ✅ CHÈN NGAY ĐÂY
-    bots: generateFakeBots()
+    bots: []
   };
-
-
 }
 
 let timeRaceRound = createTimeRaceRound();
@@ -3633,7 +3643,8 @@ io.emit("time-race-crash",{
     });
 
     timeRaceRound = createTimeRaceRound();
-
+    
+    startFakeBotFlow()
     io.emit("time-race-bet-list", [])
 
 
