@@ -1735,6 +1735,8 @@ body.crash-dark{
 
 
 <script>
+
+
   
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
 
@@ -1747,6 +1749,27 @@ const confirmSound = document.getElementById("confirmSound");
 const logSound = document.getElementById("logSound");
 
 let lastTickSecond = -1;
+
+let audioUnlocked = false;
+
+document.addEventListener("click", () => {
+  if(audioUnlocked) return;
+
+  audioUnlocked = true;
+
+  const audios = document.querySelectorAll("audio");
+
+  audios.forEach(a => {
+    a.muted = true;
+
+    a.play().then(()=>{
+      a.pause();
+      a.currentTime = 0;
+      a.muted = false;
+    }).catch(()=>{});
+  });
+
+});
 
 
 let deviceId = localStorage.getItem("device_id");
@@ -1836,7 +1859,7 @@ document.querySelectorAll("[data-type]").forEach(btn=>{
   btn.onclick = ()=>{
 
     betSound.currentTime = 0;
-    betSound.play();
+    betSound.play().catch(()=>{})
 
     if(!currentCoins) return;
 
@@ -1882,7 +1905,7 @@ document.querySelectorAll("[data-bet]").forEach(btn=>{
     updateSelectedBetDisplay();
 
     betSound.currentTime = 0;
-    betSound.play();
+    betSound.play().catch(()=>{})
   };
 });
 
@@ -1903,7 +1926,7 @@ if(msLeft <= 3000 && msLeft > 0 && secondsLeft !== lastTickSecond){
     lastTickSecond = secondsLeft;
 
     tickSound.currentTime = 0;
-    tickSound.play();
+    tickSound.play().catch(()=>{})
 
 }
 
@@ -2221,7 +2244,7 @@ socket.on("time-race-crash",data=>{
   raceSound.currentTime = 0;
 
   crashSound.currentTime = 0;
-  crashSound.play();
+  crashSound.play().catch(()=>{})
 
 
 
