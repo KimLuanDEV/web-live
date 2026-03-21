@@ -6144,7 +6144,6 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
-
 app.post("/api/change-security-code",(req,res)=>{
 
 const uid = req.headers["x-uid"];
@@ -6158,8 +6157,13 @@ const me = users[uid];
 if(!me?.profile)
 return res.json({ok:false});
 
-const old = String(oldCode).trim();
-const current = String(me.profile.securityCode || "").trim();
+const old =
+String(oldCode || "").trim();
+
+const current =
+String(me.profile.securityCode || "")
+.replace(/\s+/g,"")
+.trim();
 
 if(old !== current){
 return res.json({
@@ -6175,7 +6179,6 @@ saveUsers(users);
 res.json({ok:true});
 
 });
-
 
 
 app.post("/api/rps/bet",(req,res)=>{

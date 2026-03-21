@@ -1786,13 +1786,13 @@ document
 async function changeSecurityCode(){
 
 const oldCode =
-document.getElementById("oldSecurityCode").value;
+document.getElementById("oldSecurityCode").value.trim();
 
 const newCode =
-document.getElementById("newSecurityCode").value;
+document.getElementById("newSecurityCode").value.trim();
 
 const confirm =
-document.getElementById("confirmSecurityCode").value;
+document.getElementById("confirmSecurityCode").value.trim();
 
 if(!oldCode || !newCode){
 showMsg("Nhập đầy đủ thông tin");
@@ -1810,7 +1810,7 @@ headers:{
 "Content-Type":"application/json",
 "x-uid": __profileAuth.uid
 },
-body:JSON.stringify({
+body: JSON.stringify({
 oldCode,
 newCode
 })
@@ -1819,13 +1819,11 @@ newCode
 const data = await r.json();
 
 if(!data.ok){
-showMsg(data.message || "Không đổi được mã");
+showMsg(data.message || "Sai mã bảo mật");
 return;
 }
 
 showMsg("✅ Đổi mã bảo mật thành công");
 
 closeSecuritySheet();
-
 }
-
