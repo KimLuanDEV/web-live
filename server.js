@@ -6145,6 +6145,40 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
+app.post("/api/deposit",(req,res)=>{
+
+const { username, amount } = req.body
+
+if(!username || !amount || amount <= 0){
+return res.json({
+success:false,
+message:"Invalid request"
+})
+}
+
+const users = loadUsers()
+
+const user = users[username]
+
+if(!user || !user.profile){
+return res.json({
+success:false,
+message:"User not found"
+})
+}
+
+user.profile.coins += Number(amount)
+
+saveUsers(users)
+
+res.json({
+success:true,
+message:"Nạp thành công " + amount + " kim cương"
+})
+
+})
+
+
 
 
 
