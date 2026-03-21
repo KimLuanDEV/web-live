@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>User Manager</title>
+
+<meta name="viewport"
+content="width=device-width, initial-scale=1.0,
+maximum-scale=1.0,
+user-scalable=no">
+
+<link rel="stylesheet" href="/admin.css"> <!-- nếu có -->
+
+</head>
+<body>
+
+
+<div class="admin-shell">
+
+<div class="card">
+<div class="card-title">👥 Danh sách người dùng</div>
+
+<div class="search-row">
+<input id="searchUser" placeholder="🔍 Tìm UID hoặc tên" />
+</div>
+
+<div class="table-wrap">
+<table id="userTable">
+
+<thead>
+<tr>
+<th>Người dùng</th>
+</tr>
+</thead>
+
+<tbody></tbody>
+
+</table>
+</div>
+
+<!-- MOBILE LIST -->
+<div id="userCardList" class="user-card-list"></div>
+
+<div class="pager">
+<button onclick="gotoUserPage(userPage - 1)">◀</button>
+<span id="userPageInfo"></span>
+<button onclick="gotoUserPage(userPage + 1)">▶</button>
+</div>
+
+</div>
+
+</div>
+
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="/admin.js"></script>
+
+</body>
+</html>
