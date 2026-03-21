@@ -6144,41 +6144,44 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
+// ================================
+// 🔑 CHANGE SECURITY CODE
+// ================================
 app.post("/api/change-security-code",(req,res)=>{
 
-const uid = req.headers["x-uid"];
-if(!uid) return res.json({ok:false});
+  const uid = req.headers["x-uid"];
 
-const {oldCode,newCode} = req.body;
+  if(!uid)
+    return res.json({ok:false,message:"NOT_LOGIN"});
 
-const users = loadUsers();
-const me = users[uid];
+  const {oldCode,newCode} = req.body || {};
 
-if(!me?.profile)
-return res.json({ok:false});
+  if(!oldCode || !newCode)
+    return res.json({ok:false,message:"INVALID_INPUT"});
 
-const old =
-String(oldCode || "").trim();
+  const users = loadUsers();
+  const me = users[uid];
 
-const current =
-String(me.profile.securityCode || "")
-.replace(/\s+/g,"")
-.trim();
+  if(!me?.profile)
+    return res.json({ok:false,message:"USER_NOT_FOUND"});
 
-if(old !== current){
-return res.json({
-ok:false,
-message:"Sai mã bảo mật"
+  // check code cũ
+  if(me.profile.securityCode !== oldCode){
+    return res.json({
+      ok:false,
+      message:"❌ Security code cũ không đúng"
+    });
+  }
+
+  // update
+  me.profile.securityCode = newCode;
+
+  saveUsers(users);
+
+  res.json({ok:true});
+
 });
-}
 
-me.profile.securityCode = String(newCode).trim();
-
-saveUsers(users);
-
-res.json({ok:true});
-
-});
 
 
 app.post("/api/rps/bet",(req,res)=>{

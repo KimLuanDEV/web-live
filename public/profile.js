@@ -1766,64 +1766,68 @@ socket.on("force-logout", (data) => {
 });
 
 
-function openChangeSecurity(){
 
-document
-.getElementById("securitySheet")
-.classList.remove("hidden");
+// ==============================
+// 🔑 CHANGE SECURITY CODE
+// ==============================
 
+function openChangeSecurityCode(){
+  document
+    .getElementById("securityCodeModal")
+    .classList.remove("hidden");
 }
 
-function closeSecuritySheet(){
-
-document
-.getElementById("securitySheet")
-.classList.add("hidden");
-
+function closeSecurityCode(){
+  document
+    .getElementById("securityCodeModal")
+    .classList.add("hidden");
 }
 
+function submitSecurityCode(){
 
-function changeSecurityCode(){
+  const oldCode =
+    document.getElementById("oldSecurityCode").value.trim();
 
-const oldCode =
-document.getElementById("oldSecurityCode").value.trim();
+  const newCode =
+    document.getElementById("newSecurityCode").value.trim();
 
-const newCode =
-document.getElementById("newSecurityCode").value.trim();
+  const newCode2 =
+    document.getElementById("newSecurityCode2").value.trim();
 
-const confirm =
-document.getElementById("confirmSecurityCode").value.trim();
+  if(!oldCode || !newCode){
+    showMsg("❌ Vui lòng nhập đầy đủ");
+    return;
+  }
 
-if(!oldCode || !newCode){
-return showMsg("Nhập đầy đủ mã bảo mật");
-}
+  if(newCode !== newCode2){
+    showMsg("❌ Security code không khớp");
+    return;
+  }
 
-if(newCode !== confirm){
-return showMsg("Mã xác nhận không khớp");
-}
+  fetch("/api/change-security-code",{
+    method:"POST",
+    headers:{
+      "Content-Type":"application/json",
+      "x-uid": __profileAuth.uid
+    },
+    body: JSON.stringify({
+      oldCode,
+      newCode
+    })
+  })
+  .then(r=>r.json())
+  .then(data=>{
 
-fetch("/api/change-security-code",{
-method:"POST",
-headers:{
-"Content-Type":"application/json",
-"x-uid": __profileAuth.uid
-},
-body:JSON.stringify({
-oldCode: oldCode,
-newCode: newCode
-})
-})
-.then(r=>r.json())
-.then(res=>{
+    if(data.ok){
+      showMsg("✅ Đổi security code thành công");
+      closeSecurityCode();
+    }else{
+      showMsg(data.message || "❌ Lỗi");
+    }
 
-if(!res.ok){
-showMsg(res.message || "Đổi mã thất bại");
-return;
-}
-
-showMsg("✅ Đổi mã bảo mật thành công");
-closeSecuritySheet();
-
-});
+  })
+  .catch(()=>{
+    showMsg("❌ Server error");
+  });
 
 }

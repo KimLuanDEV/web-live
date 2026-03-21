@@ -278,8 +278,9 @@
       🔐 Đổi mật khẩu
     </button>
 
-    <button class="sheet-btn" onclick="openChangeSecurity()">
-  🔑 Đổi mã bảo mật
+
+    <button class="sheet-btn" onclick="openChangeSecurityCode()">
+  🔑 Đổi Security Code
 </button>
 
 
@@ -299,51 +300,24 @@
 
 
 
-<div id="securitySheet" class="sheet hidden">
+<!-- 🔑 CHANGE SECURITY CODE -->
+<div id="securityCodeModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
 
-<div class="sheet-backdrop" onclick="closeSecuritySheet()"></div>
+  <div class="modal-card">
+    <h3>🔑 Đổi Security Code</h3>
 
-<div class="sheet-panel">
+    <input id="oldSecurityCode" type="password" placeholder="Security code cũ">
+    <input id="newSecurityCode" type="password" placeholder="Security code mới">
+    <input id="newSecurityCode2" type="password" placeholder="Nhập lại security code">
 
-<div class="sheet-handle"></div>
-
-<div class="sheet-title">
-🔑 Đổi mã bảo mật
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button onclick="closeSecurityCode()">Hủy</button>
+      <button onclick="submitSecurityCode()">Đổi</button>
+    </div>
+  </div>
 </div>
 
-<input
-class="sheet-input"
-type="password"
-id="oldSecurityCode"
-placeholder="Mã bảo mật hiện tại"
-/>
-
-<input
-class="sheet-input"
-type="password"
-id="newSecurityCode"
-placeholder="Mã bảo mật mới"
-/>
-
-<input
-class="sheet-input"
-type="password"
-id="confirmSecurityCode"
-placeholder="Nhập lại mã"
-/>
-
-<button class="sheet-btn primary"
-onclick="changeSecurityCode()">
-Xác nhận
-</button>
-
-<button class="sheet-btn ghost"
-onclick="closeSecuritySheet()">
-✖ Hủy
-</button>
-
-</div>
-</div>
 
 
 <script src="/socket.io/socket.io.js"></script>
