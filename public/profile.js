@@ -1783,7 +1783,7 @@ document
 }
 
 
-async function changeSecurityCode(){
+function changeSecurityCode(){
 
 const oldCode =
 document.getElementById("oldSecurityCode").value.trim();
@@ -1795,35 +1795,35 @@ const confirm =
 document.getElementById("confirmSecurityCode").value.trim();
 
 if(!oldCode || !newCode){
-showMsg("Nhập đầy đủ thông tin");
-return;
+return showMsg("Nhập đầy đủ mã bảo mật");
 }
 
 if(newCode !== confirm){
-showMsg("Mã xác nhận không khớp");
-return;
+return showMsg("Mã xác nhận không khớp");
 }
 
-const r = await fetch("/api/change-security-code",{
+fetch("/api/change-security-code",{
 method:"POST",
 headers:{
 "Content-Type":"application/json",
 "x-uid": __profileAuth.uid
 },
-body: JSON.stringify({
-oldCode,
-newCode
+body:JSON.stringify({
+oldCode: oldCode,
+newCode: newCode
 })
-});
+})
+.then(r=>r.json())
+.then(res=>{
 
-const data = await r.json();
-
-if(!data.ok){
-showMsg(data.message || "Sai mã bảo mật");
+if(!res.ok){
+showMsg(res.message || "Đổi mã thất bại");
 return;
 }
 
 showMsg("✅ Đổi mã bảo mật thành công");
-
 closeSecuritySheet();
+
+});
+
 }
