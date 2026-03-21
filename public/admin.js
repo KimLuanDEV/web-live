@@ -60,10 +60,10 @@ function gotoUserPage(page){
   let list = USERS;
 
   if (userSearchKey) {
-    list = USERS.filter(u =>
-      u.uid.toLowerCase().includes(userSearchKey) ||
-      u.name.toLowerCase().includes(userSearchKey)
-    );
+list = USERS.filter(u =>
+  (u.uid || "").toLowerCase().includes(userSearchKey) ||
+  (u.name || "").toLowerCase().includes(userSearchKey)
+);
   }
 
   const totalPages = Math.max(1, Math.ceil(list.length / PAGE_SIZE));
@@ -82,10 +82,10 @@ function renderUserPage(){
 
   // 🔍 áp dụng search nếu có
   if (userSearchKey) {
-    list = USERS.filter(u =>
-      u.uid.toLowerCase().includes(userSearchKey) ||
-      u.name.toLowerCase().includes(userSearchKey)
-    );
+list = USERS.filter(u =>
+  (u.uid || "").toLowerCase().includes(userSearchKey) ||
+  (u.name || "").toLowerCase().includes(userSearchKey)
+);
   }
 
   const start = (userPage - 1) * PAGE_SIZE;
@@ -111,10 +111,10 @@ function renderUserPage(){
 
     let totalList = USERS;
     if (userSearchKey) {
-      totalList = USERS.filter(u =>
-        u.uid.toLowerCase().includes(userSearchKey) ||
-        u.name.toLowerCase().includes(userSearchKey)
-      );
+totalList = USERS.filter(u =>
+  (u.uid || "").toLowerCase().includes(userSearchKey) ||
+  (u.name || "").toLowerCase().includes(userSearchKey)
+);
     }
 
     const totalPages = Math.max(1, Math.ceil(totalList.length / PAGE_SIZE));
@@ -383,14 +383,25 @@ async function toggleLock(uid, isBlocked){
 
 const searchInput = document.getElementById("searchUser");
 
-if (searchInput) {
-  searchInput.addEventListener("input", e => {
-    userSearchKey = e.target.value.trim().toLowerCase();
-    userPage = 1;          // 🔁 reset về trang đầu
-    renderUserPage();      // 🔥 render đúng flow
-  });
-}
+let searchTimer;
 
+if (searchInput) {
+
+  searchInput.addEventListener("input", e => {
+
+    clearTimeout(searchTimer);
+
+    searchTimer = setTimeout(()=>{
+
+      userSearchKey = e.target.value.trim().toLowerCase();
+      userPage = 1;
+      renderUserPage();
+
+    },120);
+
+  });
+
+}
 
 
 
