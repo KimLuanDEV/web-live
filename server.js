@@ -9528,31 +9528,31 @@ app.post("/api/admin/withdraw", (req, res) => {
     return res.status(404).json({ error: "user_not_found" });
   }
 
-  const sub = Math.max(0, Number(amount) || 0);
-  const cur = Number(user.profile.coinReceived || 0);
+const sub = Math.max(0, Number(amount) || 0);
+const cur = Number(user.profile.coins || 0);
 
-  if (sub <= 0) {
-    return res.status(400).json({ error: "invalid_amount" });
-  }
+if (sub <= 0) {
+  return res.status(400).json({ error: "invalid_amount" });
+}
 
-  if (cur < sub) {
-    return res.status(400).json({ error: "not_enough_coin" });
-  }
+if (cur < sub) {
+  return res.status(400).json({ error: "not_enough_coin" });
+}
 
-  // ➖ TRỪ COIN
-  user.profile.coinReceived = cur - sub;
+// ➖ TRỪ COIN (không cho âm)
+user.profile.coins = Math.max(0, cur - sub);
 
-  // 🧾 LOG ADMIN
-  user.profile.adminLogs ||= [];
-  user.profile.adminLogs.unshift({
-    type: "withdraw",
-    by: adminUid,
-    amount: sub,
-    note: note || "",
-    before: cur,
-    after: user.profile.coinReceived,
-    ts: Date.now()
-  });
+// 🧾 LOG ADMIN
+user.profile.adminLogs ||= [];
+user.profile.adminLogs.unshift({
+  type: "withdraw",
+  by: adminUid,
+  amount: sub,
+  note: note || "",
+  before: cur,
+  after: user.profile.coins,
+  ts: Date.now()
+});
 
   saveUsers(db);
 
@@ -9594,11 +9594,11 @@ app.post("/api/admin/withdraw", (req, res) => {
     tag: "admin-withdraw"
   });
 
-res.json({
-  ok: true,
-  uid: targetUid,
-  coinReceived: user.profile.coinReceived
-});
+  res.json({
+    ok: true,
+    uid: targetUid,
+    coins: user.profile.coins
+  });
 });
 
 
