@@ -6145,6 +6145,34 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
+app.post("/api/change-security-code",(req,res)=>{
+
+const uid = req.headers["x-uid"];
+if(!uid) return res.json({ok:false});
+
+const {oldCode,newCode} = req.body;
+
+const users = loadUsers();
+const me = users[uid];
+
+if(!me?.profile)
+return res.json({ok:false});
+
+if(me.profile.securityCode !== oldCode){
+return res.json({
+ok:false,
+message:"Sai mã bảo mật"
+});
+}
+
+me.profile.securityCode = newCode;
+
+saveUsers(users);
+
+res.json({ok:true});
+
+});
+
 
 
 

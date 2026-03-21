@@ -278,6 +278,11 @@
       🔐 Đổi mật khẩu
     </button>
 
+    <button class="sheet-btn" onclick="openChangeSecurity()">
+  🔑 Đổi mã bảo mật
+</button>
+
+
    <button class="sheet-btn danger" onclick="confirmLogoutProfile()">
   ⏻ Đăng xuất
 </button>
@@ -291,6 +296,54 @@
 
 
 <div id="toast-container"></div>
+
+
+
+<div id="securitySheet" class="sheet hidden">
+
+<div class="sheet-backdrop" onclick="closeSecuritySheet()"></div>
+
+<div class="sheet-panel">
+
+<div class="sheet-handle"></div>
+
+<div class="sheet-title">
+🔑 Đổi mã bảo mật
+</div>
+
+<input
+class="sheet-input"
+type="password"
+id="oldSecurityCode"
+placeholder="Mã bảo mật hiện tại"
+/>
+
+<input
+class="sheet-input"
+type="password"
+id="newSecurityCode"
+placeholder="Mã bảo mật mới"
+/>
+
+<input
+class="sheet-input"
+type="password"
+id="confirmSecurityCode"
+placeholder="Nhập lại mã"
+/>
+
+<button class="sheet-btn primary"
+onclick="changeSecurityCode()">
+Xác nhận
+</button>
+
+<button class="sheet-btn ghost"
+onclick="closeSecuritySheet()">
+✖ Hủy
+</button>
+
+</div>
+</div>
 
 
 <script src="/socket.io/socket.io.js"></script>

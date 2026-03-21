@@ -1764,3 +1764,68 @@ socket.on("force-logout", (data) => {
     location.href = "/login.html";
   }, 3000);
 });
+
+
+function openChangeSecurity(){
+
+document
+.getElementById("securitySheet")
+.classList.remove("hidden");
+
+}
+
+function closeSecuritySheet(){
+
+document
+.getElementById("securitySheet")
+.classList.add("hidden");
+
+}
+
+
+async function changeSecurityCode(){
+
+const oldCode =
+document.getElementById("oldSecurityCode").value;
+
+const newCode =
+document.getElementById("newSecurityCode").value;
+
+const confirm =
+document.getElementById("confirmSecurityCode").value;
+
+if(!oldCode || !newCode){
+showMsg("Nhập đầy đủ thông tin");
+return;
+}
+
+if(newCode !== confirm){
+showMsg("Mã xác nhận không khớp");
+return;
+}
+
+const r = await fetch("/api/change-security-code",{
+method:"POST",
+headers:{
+"Content-Type":"application/json",
+"x-uid": __profileAuth.uid
+},
+body:JSON.stringify({
+oldCode,
+newCode
+})
+});
+
+const data = await r.json();
+
+if(!data.ok){
+showMsg(data.message || "Không đổi được mã");
+return;
+}
+
+showMsg("✅ Đổi mã bảo mật thành công");
+
+closeSecuritySheet();
+
+}
+
