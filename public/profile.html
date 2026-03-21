@@ -278,12 +278,6 @@
       🔐 Đổi mật khẩu
     </button>
 
-
-    <button class="sheet-btn" onclick="openChangeSecurityCode()">
-  🔑 Đổi Security Code
-</button>
-
-
    <button class="sheet-btn danger" onclick="confirmLogoutProfile()">
   ⏻ Đăng xuất
 </button>
@@ -297,27 +291,6 @@
 
 
 <div id="toast-container"></div>
-
-
-
-<!-- 🔑 CHANGE SECURITY CODE -->
-<div id="securityCodeModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-
-  <div class="modal-card">
-    <h3>🔑 Đổi Security Code</h3>
-
-    <input id="oldSecurityCode" type="password" placeholder="Security code cũ">
-    <input id="newSecurityCode" type="password" placeholder="Security code mới">
-    <input id="newSecurityCode2" type="password" placeholder="Nhập lại security code">
-
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button onclick="closeSecurityCode()">Hủy</button>
-      <button onclick="submitSecurityCode()">Đổi</button>
-    </div>
-  </div>
-</div>
-
 
 
 <script src="/socket.io/socket.io.js"></script>

@@ -6144,43 +6144,7 @@ app.use("/data", express.static(path.join(__dirname, "data")));
 
 
 
-// ================================
-// 🔑 CHANGE SECURITY CODE
-// ================================
-app.post("/api/change-security-code",(req,res)=>{
 
-  const uid = req.headers["x-uid"];
-
-  if(!uid)
-    return res.json({ok:false,message:"NOT_LOGIN"});
-
-  const {oldCode,newCode} = req.body || {};
-
-  if(!oldCode || !newCode)
-    return res.json({ok:false,message:"INVALID_INPUT"});
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  if(!me?.profile)
-    return res.json({ok:false,message:"USER_NOT_FOUND"});
-
-  // check code cũ
-  if(me.profile.securityCode !== oldCode){
-    return res.json({
-      ok:false,
-      message:"❌ Security code cũ không đúng"
-    });
-  }
-
-  // update
-  me.profile.securityCode = newCode;
-
-  saveUsers(users);
-
-  res.json({ok:true});
-
-});
 
 
 
