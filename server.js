@@ -6158,21 +6158,23 @@ const me = users[uid];
 if(!me?.profile)
 return res.json({ok:false});
 
-if(me.profile.securityCode !== oldCode){
+const old = String(oldCode).trim();
+const current = String(me.profile.securityCode || "").trim();
+
+if(old !== current){
 return res.json({
 ok:false,
 message:"Sai mã bảo mật"
 });
 }
 
-me.profile.securityCode = newCode;
+me.profile.securityCode = String(newCode).trim();
 
 saveUsers(users);
 
 res.json({ok:true});
 
 });
-
 
 
 
