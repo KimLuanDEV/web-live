@@ -38,8 +38,17 @@ function isAdmin(){
 }
 
 function canShowUserInList(u){
+
   if (!u || !u.uid || u.uid === auth.uid) return false;
-  return isAdmin() ? true : isMyFriend(u.uid);
+
+  // 👑 ADMIN luôn thấy mọi user
+  if (isAdmin()) return true;
+
+  // 👑 USER luôn thấy ADMIN
+  if (u.role === "admin") return true;
+
+  // 👤 USER thường → chỉ thấy bạn bè
+  return isMyFriend(u.uid);
 }
 
 
