@@ -58,6 +58,60 @@ background:#00b5d9;
 margin-top:10px;
 }
 
+/* ===== CONFIRM MODAL ===== */
+
+.confirm-modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.7);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:999;
+}
+
+.confirm-box{
+background:#0f172a;
+padding:25px;
+border-radius:14px;
+width:320px;
+text-align:center;
+box-shadow:0 0 30px rgba(0,0,0,.8);
+border:1px solid #1f2937;
+}
+
+.confirm-title{
+font-size:18px;
+margin-bottom:15px;
+font-weight:bold;
+}
+
+.confirm-user{
+margin:10px 0;
+font-size:14px;
+}
+
+.confirm-buttons{
+display:flex;
+gap:10px;
+margin-top:20px;
+}
+
+.btn-cancel{
+flex:1;
+background:#374151;
+color:#fff;
+}
+
+.btn-confirm{
+flex:1;
+background:#00e0ff;
+color:#000;
+font-weight:bold;
+}
+
+
+
 </style>
 </head>
 
@@ -67,7 +121,9 @@ margin-top:10px;
 
 <h1>💎 Nạp Kim Cương</h1>
 
-<input id="username" placeholder="Username" oninput="checkUser()">
+<input id="username" placeholder="Username">
+
+<button onclick="checkUser()">CHECK USER</button>
 
 <div id="userPreview" style="display:none;margin:10px 0">
 
@@ -87,15 +143,78 @@ style="width:60px;height:60px;border-radius:50%">
 
 </div>
 
+
+
+
+
+<div id="confirmModal" class="confirm-modal">
+
+<div class="confirm-box">
+
+<div class="confirm-title">CONFIRM DEPOSIT</div>
+
+<div class="confirm-user" id="confirmUser"></div>
+
+<div class="confirm-user" id="confirmAmount"></div>
+
+<div class="confirm-buttons">
+
+<button class="btn-cancel" onclick="closeConfirm()">
+CANCEL
+</button>
+
+<button class="btn-confirm" onclick="confirmDeposit()">
+CONFIRM
+</button>
+
+</div>
+
+</div>
+
+</div>
+
+
+
 <script>
 
-async function deposit(){
+function deposit(){
 
 const username =
 document.getElementById("username").value
 
 const amount =
 Number(document.getElementById("amount").value)
+
+if(!username || !amount){
+alert("Nhập username và số kim cương")
+return
+}
+
+document.getElementById("confirmUser").innerText =
+"User: " + username
+
+document.getElementById("confirmAmount").innerText =
+"Deposit: 💎 " + amount
+
+document.getElementById("confirmModal").style.display =
+"flex"
+
+}
+
+
+function closeConfirm(){
+document.getElementById("confirmModal").style.display="none"
+}
+
+async function confirmDeposit(){
+
+const username =
+document.getElementById("username").value
+
+const amount =
+Number(document.getElementById("amount").value)
+
+closeConfirm()
 
 const res = await fetch("/api/deposit",{
 method:"POST",
