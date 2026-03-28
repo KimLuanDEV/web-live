@@ -10278,27 +10278,39 @@ socket.on("private-message", async ({ to, text, msgId }) => {
   }
 
 
-  // 👑 ADMIN CHECK
-  const senderIsAdmin =
-    fromAcc.role === "admin" ||
-    fromAcc.profile?.role === "admin"
+// =========================
+// 👑 ADMIN CHECK
+// =========================
+const senderIsAdmin =
+  socket.data.role === "admin" ||
+  fromAcc.role === "admin" ||
+  fromAcc.profile?.role === "admin"
 
-  const receiverIsAdmin =
-    toAcc.role === "admin" ||
-    toAcc.profile?.role === "admin"
+const receiverIsAdmin =
+  toAcc.role === "admin" ||
+  toAcc.profile?.role === "admin"
 
 
-  // 👥 FRIEND CHECK (CHỈ USER ↔ USER)
-  if (!senderIsAdmin && !receiverIsAdmin){
+// =========================
+// 👥 FRIEND CHECK
+// =========================
+const needFriendCheck =
+  !senderIsAdmin && !receiverIsAdmin
 
-    const friends = fromAcc.profile?.friends || []
+if (needFriendCheck) {
 
-    if (!friends.includes(toUid)){
-      socket.emit("msg-blocked",{reason:"not_friend"})
-      return
-    }
+  const friends = fromAcc.profile?.friends || []
 
+  if (!friends.includes(toUid)) {
+
+    socket.emit("msg-blocked",{
+      reason:"not_friend"
+    })
+
+    return
   }
+
+}
 
 
   const msg = {
@@ -10341,7 +10353,7 @@ socket.on("private-message", async ({ to, text, msgId }) => {
   // 🔔 PUSH OFFLINE
   await sendPushToUser(toUid,{
     title: senderIsAdmin
-      ? "🛡️ Admin đã nhắn cho bạn"
+      ? "Bạn nhận được tin nhắn mới."
       : "💬 Tin nhắn mới",
 
     body: text?.slice(0,80) || "Bạn có tin nhắn mới",
