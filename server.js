@@ -10256,76 +10256,108 @@ socket.on("disconnect", () => {
 // 💬 CHAT 1–1 (ADMIN BYPASS FRIEND)
 // ================================
 socket.on("chat-send", async ({ toUid, text, media }) => {
-  const fromUid = socket.data.uid;
-  if (!fromUid || !toUid) return;
 
-  const db = loadUsers();
-  const fromAcc = db[fromUid];
-  const toAcc   = db[toUid];
-  if (!fromAcc || !toAcc) return;
+  const fromUid = socket.data.uid
+  if (!fromUid || !toUid) return
 
+  const db = loadUsers()
+  const fromAcc = db[fromUid]
+  const toAcc   = db[toUid]
+
+  if (!fromAcc || !toAcc) return
+
+
+  // =========================
   // 🚫 BLOCK CHECK (2 CHIỀU)
+  // =========================
   if (
-    (fromAcc.profile.blockedUsers || []).includes(toUid) ||
-    (toAcc.profile.blockedUsers || []).includes(fromUid)
-  ) {
-    return;
+    (fromAcc.profile?.blockedUsers || []).includes(toUid) ||
+    (toAcc.profile?.blockedUsers || []).includes(fromUid)
+  ){
+    return
   }
 
-  // 🔥 ADMIN BYPASS FRIEND CHECK
+
+  // =========================
+  // 👑 ADMIN CHECK
+  // =========================
   const senderIsAdmin =
     socket.data.role === "admin" ||
-    (socket.data.roles || []).includes("admin");
+    fromAcc.role === "admin" ||
+    fromAcc.profile?.role === "admin"
 
   const receiverIsAdmin =
     toAcc.role === "admin" ||
-    (toAcc.roles || []).includes("admin");
+    toAcc.profile?.role === "admin"
 
-  if (!senderIsAdmin && !receiverIsAdmin) {
-    const friends = fromAcc.profile.friends || [];
-    if (!friends.includes(toUid)) {
-      return; // ❌ không phải bạn → chặn
+
+  // =========================
+  // 👥 FRIEND CHECK
+  // =========================
+  if (!senderIsAdmin && !receiverIsAdmin){
+
+    const friends = fromAcc.profile?.friends || []
+
+    if (!friends.includes(toUid)){
+      socket.emit("msg-blocked",{reason:"not_friend"})
+      return
     }
+
   }
 
+
+  // =========================
   // 💾 TẠO MESSAGE
+  // =========================
   const msg = {
-    id: Date.now() + "_" + Math.random().toString(36).slice(2),
+    id: Date.now()+"_"+Math.random().toString(36).slice(2),
     from: fromUid,
     to: toUid,
     text: text || "",
     media: media || null,
     time: Date.now(),
-    read: false
-  };
+    read:false
+  }
 
-  // 📥 LƯU INBOX CHO CẢ 2
-  [fromUid, toUid].forEach(uid => {
-    if (!userInbox.has(uid)) userInbox.set(uid, []);
-    userInbox.get(uid).unshift(msg);
-  });
-  saveInbox(Object.fromEntries(userInbox));
 
-  // 🔁 REALTIME NẾU ONLINE
-  const sockets = activeUsers.get(toUid);
-  if (sockets) {
-    for (const sid of sockets) {
-      io.to(sid).emit("chat-receive", msg);
+  // =========================
+  // 📥 LƯU INBOX
+  // =========================
+  ;[fromUid,toUid].forEach(uid=>{
+    if(!userInbox.has(uid)) userInbox.set(uid,[])
+    userInbox.get(uid).unshift(msg)
+  })
+
+  saveInbox(Object.fromEntries(userInbox))
+
+
+  // =========================
+  // 🔁 REALTIME
+  // =========================
+  const sockets = activeUsers.get(toUid)
+
+  if(sockets){
+    for(const sid of sockets){
+      io.to(sid).emit("chat-receive",msg)
     }
   }
 
-  // 🔔 PUSH NẾU OFFLINE
-  await sendPushToUser(toUid, {
+
+  // =========================
+  // 🔔 PUSH OFFLINE
+  // =========================
+  await sendPushToUser(toUid,{
     title: senderIsAdmin
       ? "🛡️ Admin đã nhắn cho bạn"
       : "💬 Tin nhắn mới",
-    body: text?.slice(0, 80) || "Bạn có tin nhắn mới",
-    url: `/messages.html?uid=${fromUid}`,
-    tag: "chat-message"
-  });
-});
 
+    body: text?.slice(0,80) || "Bạn có tin nhắn mới",
 
+    url:`/messages.html?uid=${fromUid}`,
+    tag:"chat-message"
+  })
+
+})
 
 
 // ================================
