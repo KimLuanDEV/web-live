@@ -6569,16 +6569,7 @@ app.get("/admin-time-race.html",(req,res)=>{
 });
 
 
-app.get("/api/deposit-history",(req,res)=>{
 
-const history = loadDepositHistory()
-
-res.json({
-success:true,
-history
-})
-
-})
 
 
 app.get("/api/user-info",(req,res)=>{
