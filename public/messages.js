@@ -649,11 +649,16 @@ function renderUserList(){
   }
 
   // sort: online trước
-  usersToShow.sort((a, b) => {
-    const ao = onlineSet.has(a.uid);
-    const bo = onlineSet.has(b.uid);
-    return bo - ao;
-  });
+usersToShow.sort((a,b)=>{
+
+  if(a.role === "admin") return -1
+  if(b.role === "admin") return 1
+
+  const ao = onlineSet.has(a.uid)
+  const bo = onlineSet.has(b.uid)
+
+  return bo - ao
+})
 
   usersToShow.forEach(u => {
     const isOnline = onlineSet.has(u.uid);
