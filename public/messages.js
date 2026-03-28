@@ -946,11 +946,16 @@ async function enablePush() {
 
 
 socket.on("msg-blocked", ({ reason }) => {
-  if (reason === "not_friend") {
-    alert("🔒 Bạn chỉ có thể nhắn tin với người đã kết bạn.");
-  }
-});
 
+  if (reason === "not_friend") {
+
+    // nếu đang chat admin → bỏ qua
+    if (currentTarget?.role === "admin") return
+
+    alert("🔒 Bạn chỉ có thể nhắn tin với người đã kết bạn.")
+  }
+
+})
 
 
 function uploadChatFileWithProgress(file, type, onProgress) {
