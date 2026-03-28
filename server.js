@@ -6569,6 +6569,29 @@ app.get("/admin-time-race.html",(req,res)=>{
 });
 
 
+app.get("/api/user-info",(req,res)=>{
+
+const uid = req.query.uid
+
+const users = loadUsers()
+
+const user = users[uid]
+
+if(!user || !user.profile){
+return res.json({success:false})
+}
+
+res.json({
+success:true,
+user:{
+name:user.profile.name,
+avatar:user.profile.avatar,
+coins:user.profile.coins
+}
+})
+
+})
+
 
 
 app.get("/api/wheel8-round",(req,res)=>{

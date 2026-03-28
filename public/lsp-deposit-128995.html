@@ -67,7 +67,17 @@ margin-top:10px;
 
 <h1>💎 Nạp Kim Cương</h1>
 
-<input id="username" placeholder="Username">
+<input id="username" placeholder="Username" oninput="checkUser()">
+
+<div id="userPreview" style="display:none;margin:10px 0">
+
+<img id="userAvatar"
+style="width:60px;height:60px;border-radius:50%">
+
+<div id="userName"></div>
+<div id="userCoins"></div>
+
+</div>
 
 <input id="amount" type="number" placeholder="Số kim cương">
 
@@ -99,6 +109,43 @@ document.getElementById("result").innerText =
 data.message
 
 }
+
+
+async function checkUser(){
+
+const username =
+document.getElementById("username").value
+
+if(username.length < 2){
+document.getElementById("userPreview").style.display="none"
+return
+}
+
+const res = await fetch("/api/user-info?uid="+username)
+
+if(!res.ok) return
+
+const data = await res.json()
+
+if(!data.success){
+document.getElementById("userPreview").style.display="none"
+return
+}
+
+document.getElementById("userPreview").style.display="block"
+
+document.getElementById("userAvatar").src =
+data.user.avatar
+
+document.getElementById("userName").innerText =
+data.user.name
+
+document.getElementById("userCoins").innerText =
+"💎 "+data.user.coins
+
+}
+
+
 
 </script>
 
