@@ -10222,8 +10222,14 @@ io.on("connection", (socket) => {
 socket.on("auth", ({ uid, deviceId }) => {
   if (!uid) return;
 
+  const users = loadUsers();
+  const me = users[uid];
+
   socket.data.uid = uid;
   socket.data.deviceId = deviceId || null;
+
+  // 🔥 thêm dòng này
+  socket.data.role = me?.role || me?.profile?.role || "user";
 
   bindSocketToUser(uid, socket);
 });

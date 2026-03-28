@@ -33,6 +33,16 @@ function isMyFriend(uid){
 }
 
 
+function isAdmin(){
+  return auth?.role === "admin";
+}
+
+function canShowUserInList(u){
+  if (!u || !u.uid || u.uid === auth.uid) return false;
+  return isAdmin() ? true : isMyFriend(u.uid);
+}
+
+
 function fixMedia(url){
   if (!url) return "";
 
@@ -600,38 +610,43 @@ if (isMe && msgId) {
 
 const chatModal = document.getElementById("chatModal");
 
+
 function renderUserList(){
   userList.innerHTML = "";
 
-  // 1️⃣ CHƯA CÓ BẠN BÈ → HIỆN TEXT
-  if (!Array.isArray(auth.friends) || auth.friends.length === 0) {
+  const adminMode = isAdmin();
+
+  // 1️⃣ ADMIN: xem toàn bộ user
+  // 2️⃣ USER THƯỜNG: chỉ xem bạn bè
+  const usersToShow = allUsers.filter(u =>
+    u &&
+    u.uid &&
+    u.name &&
+    canShowUserInList(u)
+  );
+
+  // nếu không có ai
+  if (!usersToShow.length) {
     userList.innerHTML = `
       <div class="empty">
-        🤝 Bạn chưa có bạn bè nào<br>
-        <small>Hãy kết bạn để bắt đầu trò chuyện</small>
+        ${
+          adminMode
+            ? "📭 Hiện chưa có người dùng nào"
+            : "🤝 Bạn chưa có bạn bè nào<br><small>Hãy kết bạn để bắt đầu trò chuyện</small>"
+        }
       </div>
     `;
     return;
   }
 
-  // 2️⃣ LỌC BẠN BÈ
-  const friends = allUsers.filter(u =>
-    u &&
-    u.uid &&
-    u.name &&
-    u.uid !== auth.uid &&
-    isMyFriend(u.uid)
-  );
-
-  // 3️⃣ SORT: ONLINE → OFFLINE
-  friends.sort((a, b) => {
+  // sort: online trước
+  usersToShow.sort((a, b) => {
     const ao = onlineSet.has(a.uid);
     const bo = onlineSet.has(b.uid);
-    return bo - ao; // online trước
+    return bo - ao;
   });
 
-  // 4️⃣ RENDER
-  friends.forEach(u => {
+  usersToShow.forEach(u => {
     const isOnline = onlineSet.has(u.uid);
 
     const div = document.createElement("div");
