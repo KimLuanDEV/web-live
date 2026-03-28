@@ -2,63 +2,136 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Nạp Kim Cương</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Diamond Deposit</title>
 
 <style>
 
-body{
-background:#0b0f1a;
+*{
+box-sizing:border-box;
+}
+
+html,body{
+margin:0;
+padding:0;
+background:#060b16;
 color:#fff;
 font-family:system-ui;
+min-height:100vh;
 display:flex;
-justify-content:center;
-align-items:center;
-height:100vh;
-margin:0;
+flex-direction:column;
 }
+
+/* HEADER */
+
+.header{
+height:60px;
+background:#0f172a;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:bold;
+font-size:18px;
+letter-spacing:1px;
+border-bottom:1px solid #1f2937;
+}
+
+/* CONTAINER */
+
+.container{
+flex:1;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:20px;
+}
+
+/* CARD */
 
 .box{
-background:#111827;
-padding:30px;
-border-radius:15px;
-width:350px;
+background:#0f172a;
+padding:25px;
+border-radius:16px;
+width:100%;
+max-width:380px;
 text-align:center;
-box-shadow:0 0 20px rgba(0,0,0,.6);
+border:1px solid #1f2937;
+box-shadow:0 15px 50px rgba(0,0,0,.7);
 }
 
-h1{
+.box h2{
 margin-top:0;
 }
+
+/* INPUT */
 
 input{
 width:100%;
 padding:12px;
-border:none;
 border-radius:8px;
 margin:10px 0;
 font-size:16px;
+background:#020617;
+color:#fff;
+border:1px solid #1f2937;
 }
+
+/* BUTTON */
 
 button{
 width:100%;
 padding:12px;
-border:none;
 border-radius:8px;
-background:#00d4ff;
+margin-top:8px;
+background:#00e0ff;
 color:#000;
 font-weight:bold;
 cursor:pointer;
+border:none;
 }
 
 button:hover{
-background:#00b5d9;
+background:#00c5e0;
 }
+
+/* USER PREVIEW */
+
+#userPreview{
+margin-top:15px;
+padding:12px;
+background:#020617;
+border-radius:10px;
+border:1px solid #1f2937;
+}
+
+#userAvatar{
+width:60px;
+height:60px;
+border-radius:50%;
+margin-bottom:5px;
+}
+
+/* RESULT */
 
 .result{
 margin-top:10px;
+font-size:14px;
 }
 
-/* ===== CONFIRM MODAL ===== */
+/* FOOTER */
+
+.footer{
+height:50px;
+display:flex;
+align-items:center;
+justify-content:center;
+font-size:13px;
+color:#9ca3af;
+border-top:1px solid #1f2937;
+background:#0f172a;
+}
+
+/* CONFIRM MODAL */
 
 .confirm-modal{
 position:fixed;
@@ -76,8 +149,8 @@ padding:25px;
 border-radius:14px;
 width:320px;
 text-align:center;
-box-shadow:0 0 30px rgba(0,0,0,.8);
 border:1px solid #1f2937;
+box-shadow:0 0 40px rgba(0,0,0,.8);
 }
 
 .confirm-title{
@@ -110,48 +183,68 @@ color:#000;
 font-weight:bold;
 }
 
+/* MOBILE */
 
+@media(max-width:480px){
+
+.header{
+font-size:16px;
+}
+
+.box{
+padding:20px;
+}
+
+}
 
 </style>
 </head>
 
 <body>
 
+<div class="header">
+ DIAMOND DEPOSIT
+</div>
+
+<div class="container">
+
 <div class="box">
-
-<h1>💎 Nạp Kim Cương</h1>
-
-<input id="username" placeholder="Username">
+    
+<input id="username" placeholder="UserID">
 
 <button onclick="checkUser()">CHECK USER</button>
 
-<div id="userPreview" style="display:none;margin:10px 0">
+<div id="userPreview" style="display:none">
 
-<img id="userAvatar"
-style="width:60px;height:60px;border-radius:50%">
+<img id="userAvatar">
 
 <div id="userName"></div>
 <div id="userCoins"></div>
 
 </div>
 
-<input id="amount" type="number" placeholder="Số kim cương">
+<input id="amount" type="number" placeholder="Diamond">
 
-<button onclick="deposit()">Nạp</button>
+<button onclick="deposit()">CONFIRM</button>
 
 <div class="result" id="result"></div>
 
 </div>
 
+</div>
 
-
+<div class="footer">
+Livestream Pro
+</div>
 
 
 <div id="confirmModal" class="confirm-modal">
 
 <div class="confirm-box">
 
-<div class="confirm-title">CONFIRM DEPOSIT</div>
+<div class="confirm-title">
+CONFIRM DEPOSIT
+</div>
 
 <div class="confirm-user" id="confirmUser"></div>
 
@@ -172,7 +265,6 @@ CONFIRM
 </div>
 
 </div>
-
 
 
 <script>
@@ -205,6 +297,7 @@ document.getElementById("confirmModal").style.display =
 function closeConfirm(){
 document.getElementById("confirmModal").style.display="none"
 }
+
 
 async function confirmDeposit(){
 
@@ -260,11 +353,9 @@ document.getElementById("userName").innerText =
 data.user.name
 
 document.getElementById("userCoins").innerText =
-"💎 "+data.user.coins
+"💎 " + data.user.coins
 
 }
-
-
 
 </script>
 
