@@ -220,6 +220,14 @@ padding:20px;
  DIAMOND DEPOSIT
 </div>
 
+<div style="text-align:center;margin-top:10px">
+<button onclick="openHistory()">
+DEPOSIT HISTORY
+</button>
+</div>
+
+
+
 <div class="container">
 
 <div class="box">
@@ -279,6 +287,31 @@ CONFIRM
 </div>
 
 </div>
+
+
+
+<div id="historyModal" class="confirm-modal">
+
+<div class="confirm-box" style="width:90%;max-width:420px">
+
+<div class="confirm-title">
+DEPOSIT HISTORY
+</div>
+
+<div id="historyList"
+style="max-height:300px;overflow:auto;text-align:left;font-size:14px">
+</div>
+
+<div style="margin-top:15px">
+<button onclick="closeHistory()" class="btn-cancel">
+CLOSE
+</button>
+</div>
+
+</div>
+</div>
+
+
 
 
 <script>
@@ -377,6 +410,51 @@ if("serviceWorker" in navigator){
       .register("/deposit-sw.js")
       .catch(err => console.log("SW register failed:", err))
   })
+}
+
+
+
+
+async function openHistory(){
+
+const res = await fetch("/api/deposit-history")
+
+const data = await res.json()
+
+const box = document.getElementById("historyList")
+
+box.innerHTML = ""
+
+if(!data.history || data.history.length === 0){
+box.innerHTML = "No history"
+}
+
+data.history.forEach(h=>{
+
+const time = new Date(h.time)
+
+const row = document.createElement("div")
+
+row.style.borderBottom = "1px solid #1f2937"
+row.style.padding = "8px 0"
+
+row.innerHTML =
+"<b>"+h.user+"</b> +" +
+h.amount +
+" 💎<br><small>" +
+time.toLocaleString() +
+"</small>"
+
+box.appendChild(row)
+
+})
+
+document.getElementById("historyModal").style.display="flex"
+
+}
+
+function closeHistory(){
+document.getElementById("historyModal").style.display="none"
 }
 
 
