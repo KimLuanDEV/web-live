@@ -10498,41 +10498,77 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
     return;
   }
 
-  // ===== TRỪ / CỘNG ĐÚNG NGHIỆP VỤ =====
+  // =========================
+  // 💰 TRỪ / CỘNG COIN
+  // =========================
   from.profile.coins -= cost;
   from.profile.coinSent = (from.profile.coinSent || 0) + cost;
 
   to.profile.coinReceived =
     (to.profile.coinReceived || 0) + cost;
 
-  // ===== LƯU GIFT VÀO POST =====
+  // =========================
+  // ⭐ EXP + LEVEL (NGƯỜI NHẬN)
+  // =========================
+  let toLevelUp = false;
+
+  to.profile.exp = (to.profile.exp || 0) + cost;
+
+  while (to.profile.exp >= (to.profile.level || 1) * 100) {
+    to.profile.exp -= (to.profile.level || 1) * 100;
+    to.profile.level = (to.profile.level || 1) + 1;
+    toLevelUp = true;
+  }
+
+  // =========================
+  // ⭐ EXP + LEVEL (NGƯỜI TẶNG)
+  // =========================
+  let fromLevelUp = false;
+
+  // tặng quà nhận ít exp hơn
+  from.profile.exp =
+    (from.profile.exp || 0) + Math.floor(cost * 0.5);
+
+  while (from.profile.exp >= (from.profile.level || 1) * 100) {
+    from.profile.exp -= (from.profile.level || 1) * 100;
+    from.profile.level = (from.profile.level || 1) + 1;
+    fromLevelUp = true;
+  }
+
+  // =========================
+  // 🎁 LƯU GIFT VÀO POST
+  // =========================
   post.gifts ||= { total: 0, byUser: {} };
+
   post.gifts.total += cost;
+
   post.gifts.byUser[fromUid] =
     (post.gifts.byUser[fromUid] || 0) + cost;
 
   saveUsers(db);
   saveSocial();
 
-  // ===== REALTIME UPDATE =====
+  // =========================
+  // 🔄 REALTIME UPDATE
+  // =========================
   io.emit("lp-gift-post", {
-  postId,
-  total: post.gifts.total,
-  fromUid,
-  amount: cost
-});
-
-
-
+    postId,
+    total: post.gifts.total,
+    fromUid,
+    amount: cost
+  });
 
   emitCoinUpdate(fromUid);
   emitCoinUpdate(toUid);
 
-  // ===== INBOX + PUSH =====
+  // =========================
+  // 🔔 INBOX + PUSH
+  // =========================
   const giftText =
     `🎁 ${from.profile.name} đã tặng bạn ${cost.toLocaleString()} 💎`;
 
   if (!userInbox.has(toUid)) userInbox.set(toUid, []);
+
   userInbox.get(toUid).unshift({
     type: "post-gift",
     from: fromUid,
@@ -10551,6 +10587,7 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
     url: `/social.html#post-${postId}`,
     tag: "post-gift"
   });
+
 });
 
 
