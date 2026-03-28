@@ -585,6 +585,24 @@ cursor:pointer;
 
 }
 
+
+.chip.active{
+animation:chipGlow 1s infinite alternate;
+}
+
+@keyframes chipGlow{
+0%{
+transform:scale(1);
+filter:drop-shadow(0 0 8px #00aaff);
+}
+100%{
+transform:scale(1.1);
+filter:drop-shadow(0 0 18px #00cfff);
+}
+}
+
+
+
 /* vị trí theo ảnh */
 
 .c1{
@@ -2011,10 +2029,11 @@ function setBet(v){
 
 currentBet = v
 
-
-document.querySelectorAll(".bet-chip")
+// reset
+document.querySelectorAll(".chip")
 .forEach(c=>c.classList.remove("active"))
 
+// chip vừa bấm
 event.target.classList.add("active")
 
 }
