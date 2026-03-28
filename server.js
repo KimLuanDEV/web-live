@@ -6574,22 +6574,39 @@ app.get("/admin-time-race.html",(req,res)=>{
 
 app.get("/api/user-info",(req,res)=>{
 
-const uid = req.query.uid
+const q = String(req.query.uid || "").toLowerCase()
 
 const users = loadUsers()
 
-const user = users[uid]
+let found = null
 
-if(!user || !user.profile){
-return res.json({success:false})
+for(const uid in users){
+
+const u = users[uid]
+
+if(
+uid.toLowerCase() === q ||
+u.profile?.name?.toLowerCase() === q
+){
+found = u
+break
+}
+
+}
+
+if(!found){
+return res.json({
+success:false
+})
 }
 
 res.json({
 success:true,
 user:{
-name:user.profile.name,
-avatar:user.profile.avatar,
-coins:user.profile.coins
+uid: found.profile.uid,
+name: found.profile.name,
+avatar: found.profile.avatar,
+coins: found.profile.coins
 }
 })
 
