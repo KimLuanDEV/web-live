@@ -5,6 +5,18 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Diamond Deposit</title>
 
+
+<link rel="manifest" href="/deposit-manifest.json">
+
+<meta name="theme-color" content="#0f172a">
+
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+
+
 <style>
 
 *{
@@ -209,7 +221,7 @@ padding:20px;
 <div class="container">
 
 <div class="box">
-    
+
 <input id="username" placeholder="UserID">
 
 <button onclick="checkUser()">CHECK USER</button>
@@ -356,6 +368,15 @@ document.getElementById("userCoins").innerText =
 "💎 " + data.user.coins
 
 }
+
+if("serviceWorker" in navigator){
+
+navigator.serviceWorker
+.register("/deposit-sw.js")
+
+}
+
+
 
 </script>
 
