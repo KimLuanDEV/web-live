@@ -20,7 +20,10 @@ const POST_GIFTS = [
   { id: "rocket",  icon: "🚀", coin: 200 },
   { id: "crown",   icon: "👑", coin: 500 },
   { id: "car",     icon: "🏎️", coin: 1000 },
-  { id: "castle",  icon: "🏰", coin: 2000 }
+  { id: "castle",  icon: "🏰", coin: 2000 },
+  { id: "sword",  icon: "🗡️", coin: 5000 },
+  { id: "phoenix",  icon: "🐦", coin: 10000 },
+  { id: "dragon",  icon: "🐉", coin: 20000 }
 ];
 
 let giftPostId = null;
