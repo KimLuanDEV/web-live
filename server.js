@@ -10255,9 +10255,11 @@ socket.on("disconnect", () => {
 // ================================
 // 💬 CHAT 1–1 (ADMIN BYPASS FRIEND)
 // ================================
-socket.on("chat-send", async ({ toUid, text, media }) => {
+socket.on("private-message", async ({ to, text, msgId }) => {
 
   const fromUid = socket.data.uid
+  const toUid = to
+
   if (!fromUid || !toUid) return
 
   const db = loadUsers()
@@ -10267,9 +10269,7 @@ socket.on("chat-send", async ({ toUid, text, media }) => {
   if (!fromAcc || !toAcc) return
 
 
-  // =========================
-  // 🚫 BLOCK CHECK (2 CHIỀU)
-  // =========================
+  // 🚫 BLOCK CHECK
   if (
     (fromAcc.profile?.blockedUsers || []).includes(toUid) ||
     (toAcc.profile?.blockedUsers || []).includes(fromUid)
@@ -10278,11 +10278,8 @@ socket.on("chat-send", async ({ toUid, text, media }) => {
   }
 
 
-  // =========================
   // 👑 ADMIN CHECK
-  // =========================
   const senderIsAdmin =
-    socket.data.role === "admin" ||
     fromAcc.role === "admin" ||
     fromAcc.profile?.role === "admin"
 
@@ -10291,9 +10288,7 @@ socket.on("chat-send", async ({ toUid, text, media }) => {
     toAcc.profile?.role === "admin"
 
 
-  // =========================
-  // 👥 FRIEND CHECK
-  // =========================
+  // 👥 FRIEND CHECK (CHỈ USER ↔ USER)
   if (!senderIsAdmin && !receiverIsAdmin){
 
     const friends = fromAcc.profile?.friends || []
@@ -10306,23 +10301,17 @@ socket.on("chat-send", async ({ toUid, text, media }) => {
   }
 
 
-  // =========================
-  // 💾 TẠO MESSAGE
-  // =========================
   const msg = {
-    id: Date.now()+"_"+Math.random().toString(36).slice(2),
+    id: msgId || Date.now()+"_"+Math.random().toString(36).slice(2),
     from: fromUid,
     to: toUid,
     text: text || "",
-    media: media || null,
     time: Date.now(),
     read:false
   }
 
 
-  // =========================
-  // 📥 LƯU INBOX
-  // =========================
+  // 💾 SAVE INBOX
   ;[fromUid,toUid].forEach(uid=>{
     if(!userInbox.has(uid)) userInbox.set(uid,[])
     userInbox.get(uid).unshift(msg)
@@ -10331,21 +10320,25 @@ socket.on("chat-send", async ({ toUid, text, media }) => {
   saveInbox(Object.fromEntries(userInbox))
 
 
-  // =========================
   // 🔁 REALTIME
-  // =========================
   const sockets = activeUsers.get(toUid)
 
   if(sockets){
     for(const sid of sockets){
-      io.to(sid).emit("chat-receive",msg)
+      io.to(sid).emit("private-message",{
+        from:{
+          uid:fromUid,
+          name:fromAcc.profile.name,
+          avatar:fromAcc.profile.avatar
+        },
+        text:msg.text,
+        msgId:msg.id
+      })
     }
   }
 
 
-  // =========================
   // 🔔 PUSH OFFLINE
-  // =========================
   await sendPushToUser(toUid,{
     title: senderIsAdmin
       ? "🛡️ Admin đã nhắn cho bạn"
