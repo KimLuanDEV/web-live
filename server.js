@@ -10660,17 +10660,19 @@ from.transferHistory.unshift({
   type:"send",
   uid:toUid,
   name:to.profile.name,
+  avatar:to.profile.avatar,
   amount,
   time:Date.now()
-});
+})
 
 to.transferHistory.unshift({
   type:"receive",
   uid:fromUid,
   name:from.profile.name,
+  avatar:from.profile.avatar,
   amount,
   time:Date.now()
-});
+})
 
 // giữ tối đa 50
 from.transferHistory = from.transferHistory.slice(0,50);

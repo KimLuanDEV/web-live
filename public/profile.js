@@ -1960,30 +1960,62 @@ socket.on("coin-transfer-history-result",(data)=>{
 
 function renderTransferHistory(){
 
-  const box = document.getElementById("transferHistoryList")
+  const box =
+  document.getElementById("transferHistoryList")
+
   if(!box) return
 
   box.innerHTML = ""
 
-  const filtered = transferHistory.filter(t => t.type === historyTab)
+  const filtered =
+  transferHistory.filter(
+    t => t.type === historyTab
+  )
 
   if(filtered.length === 0){
-    box.innerHTML = "<div>Chưa có giao dịch</div>"
+    box.innerHTML =
+    `<div style="text-align:center;opacity:.6;padding:20px">
+      Chưa có giao dịch
+     </div>`
     return
   }
 
-  filtered.forEach(t => {
+  filtered.forEach(t=>{
 
     const div = document.createElement("div")
 
-    div.style.padding = "10px"
-    div.style.borderBottom = "1px solid #333"
+    div.className = "transfer-item"
+
+    const amountClass =
+      t.type === "send"
+      ? "transfer-send"
+      : "transfer-receive"
+
+    const amountSign =
+      t.type === "send"
+      ? "-"
+      : "+"
 
     div.innerHTML = `
-      <div><b>${t.name}</b></div>
-      <div>${t.amount} 💎</div>
-      <div style="font-size:12px;opacity:.6">
-        ${new Date(t.time).toLocaleString()}
+      <div class="transfer-left">
+
+        <img class="transfer-avatar"
+        src="${t.avatar || '/assets/default-avatar.png'}">
+
+        <div>
+          <div class="transfer-name">
+            ${t.name}
+          </div>
+
+          <div class="transfer-time">
+            ${new Date(t.time).toLocaleString()}
+          </div>
+        </div>
+
+      </div>
+
+      <div class="transfer-amount ${amountClass}">
+        ${amountSign}${t.amount} 💎
       </div>
     `
 
