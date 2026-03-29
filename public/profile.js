@@ -1805,10 +1805,21 @@ function submitTransfer(){
     return;
   }
 
-  socket.emit("coin-transfer",{
-    target,
-    amount
-  });
+  // 🔒 XÁC NHẬN TRƯỚC KHI CHUYỂN
+  showMsg(
+    `Bạn có chắc muốn chuyển ${amount} 💎 cho "${target}" ?`,
+    "Xác nhận chuyển kim cương"
+  );
 
-  closeTransfer();
+  document.getElementById("msgOk").onclick = () => {
+
+    socket.emit("coin-transfer",{
+      target,
+      amount
+    });
+
+    closeMsg();
+    closeTransfer();
+  };
+
 }
