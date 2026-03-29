@@ -1791,18 +1791,22 @@ function closeTransfer(){
 
 function submitTransfer(){
 
-  const toUid = document.getElementById("transferUid").value.trim();
+  const target = document
+    .getElementById("transferTarget")
+    .value
+    .trim();
+
   const amount = Number(
     document.getElementById("transferAmount").value
   );
 
-  if(!toUid || !amount || amount <= 0){
-    showMsg("⚠️ Nhập UID và số kim cương");
+  if(!target || !amount || amount <= 0){
+    showMsg("⚠️ Nhập tên nhân vật hoặc UID");
     return;
   }
 
   socket.emit("coin-transfer",{
-    toUid,
+    target,
     amount
   });
 

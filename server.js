@@ -10590,42 +10590,60 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
 
 });
 
-
-socket.on("coin-transfer", ({toUid, amount}) => {
+socket.on("coin-transfer", ({target, amount}) => {
 
   const fromUid = socket.data.uid;
-
-  if(!fromUid || !toUid) return;
+  if(!fromUid || !target) return;
 
   const users = loadUsers();
+
+  let toUid = null;
+
+  // 🔎 1. check UID trước
+  if(users[target]){
+    toUid = target;
+  }
+
+  // 🔎 2. nếu không phải UID → tìm theo tên
+  if(!toUid){
+
+    const key = Object.keys(users).find(uid =>
+      users[uid]?.profile?.name
+        ?.toLowerCase()
+        === target.toLowerCase()
+    );
+
+    if(key) toUid = key;
+  }
+
+  if(!toUid){
+    return emitToUser(fromUid,"notify",{
+      type:"bad",
+      message:"❌ Không tìm thấy người chơi"
+    });
+  }
+
+  if(toUid === fromUid){
+    return emitToUser(fromUid,"notify",{
+      type:"bad",
+      message:"🚫 Không thể gửi cho chính mình"
+    });
+  }
 
   const from = users[fromUid];
   const to   = users[toUid];
 
-  if(!from?.profile || !to?.profile) return;
-
   amount = Math.floor(Number(amount));
-
   if(amount <= 0) return;
 
-  // 🚫 không cho gửi cho chính mình
-  if(fromUid === toUid) return;
-
-  // 🚫 không đủ coin
   if(from.profile.coins < amount){
-
-    emitToUser(fromUid,"notify",{
+    return emitToUser(fromUid,"notify",{
       type:"bad",
       message:"❌ Không đủ kim cương"
     });
-
-    return;
   }
 
-  // =================
   // 💎 TRANSFER
-  // =================
-
   from.profile.coins -= amount;
   to.profile.coins   += amount;
 
@@ -10642,12 +10660,12 @@ socket.on("coin-transfer", ({toUid, amount}) => {
 
   emitToUser(fromUid,"notify",{
     type:"good",
-    message:`💎 Đã gửi ${amount} kim cương`
+    message:`💎 Đã gửi ${amount} cho ${to.profile.name}`
   });
 
   emitToUser(toUid,"notify",{
     type:"good",
-    message:`🎁 Bạn nhận được ${amount} kim cương`
+    message:`🎁 ${from.profile.name} đã gửi bạn ${amount} kim cương`
   });
 
 });
