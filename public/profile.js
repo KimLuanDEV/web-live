@@ -503,6 +503,8 @@ const p = {
 const nameInput = document.getElementById("nameInput");
 const avatarPreview = document.getElementById("avatarPreview");
 const coinVal = document.getElementById("coinVal");
+const coinDepositVal =
+  document.getElementById("coinDepositVal");
 const levelVal = document.getElementById("levelVal");
 const coinSentVal = document.getElementById("coinSentVal");
 const coinReceivedVal = document.getElementById("coinReceivedVal");
@@ -609,6 +611,9 @@ let __coverUploading = false;
 // 🔥 REALTIME COIN UPDATE (PROFILE)
 socket.on("coin-update", data => {
 
+
+
+
   // 🚫 ĐANG XEM PROFILE NGƯỜI KHÁC → KHÔNG UPDATE COIN
   if (viewUid && viewUid !== __profileAuth.uid) return;
 
@@ -628,6 +633,12 @@ socket.on("coin-update", data => {
   if (coinReceivedVal) {
     coinReceivedVal.textContent = data.coinReceived ?? 0;
   }
+
+  if(coinDepositVal){
+    coinDepositVal.textContent =
+      data.coinDeposit ?? 0
+  }
+
 
   // ⭐ LEVEL
   if (levelVal) {
@@ -878,7 +889,8 @@ if(wrap){
 
   coinSentVal.textContent = p.coinSent || 0;
   coinReceivedVal.textContent = p.coinReceived || 0;
-
+  coinDepositVal.textContent = p.coinDeposit || 0
+  
   // ⭐ EXP BAR
   const level = p.level || 1;
   const exp = p.exp || 0;

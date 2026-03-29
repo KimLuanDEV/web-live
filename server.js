@@ -6169,6 +6169,7 @@ message:"User not found"
 
 user.profile.coins += Number(amount)
 
+
 saveUsers(users)
 
 res.json({
@@ -9467,13 +9468,14 @@ function emitCoinUpdate(uid) {
     user.profile.coins = 0;
   }
 
-  const payload = {
-    coins: user.profile.coins,
-    coinSent: user.profile.coinSent,
-    coinReceived: user.profile.coinReceived,
-    level: user.profile.level,
-    exp: user.profile.exp
-  };
+const payload = {
+  coins: user.profile.coins,
+  coinSent: user.profile.coinSent,
+  coinReceived: user.profile.coinReceived,
+  coinDeposit: user.profile.coinDeposit || 0,
+  level: user.profile.level,
+  exp: user.profile.exp
+};
 
   const sockets = activeUsers.get(uid);
   if (!sockets) return;
@@ -9522,6 +9524,10 @@ app.post("/api/admin/topup", (req, res) => {
   const add = Math.max(0, Number(amount) || 0);
 
   user.profile.coins = (user.profile.coins || 0) + add;
+
+  // 💳 tổng kim cương đã nạp
+  user.profile.coinDeposit =
+  (user.profile.coinDeposit || 0) + add;
 
   // 🧾 log (optional nhưng nên có)
   user.profile.adminLogs ||= [];
@@ -9702,6 +9708,7 @@ app.post("/api/register", async (req,res)=>{
       avatar: "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
       bio: "",  
       coins:0,
+      coinDeposit:0,   // 💎 tổng đã nạp
       level:1,
       exp:0,
       coinSent:0,
