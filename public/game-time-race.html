@@ -1897,12 +1897,25 @@ document.querySelectorAll("[data-type]").forEach(btn=>{
 
 document.querySelectorAll("[data-bet]").forEach(btn=>{
   btn.onclick = ()=>{
-   document.querySelectorAll("[data-bet]")
-      .forEach(b=>b.classList.remove("active"));
 
-    btn.classList.add("active");
-    selectedBet = Number(btn.dataset.bet);
+    const value = Number(btn.dataset.bet);
+
+    // 🔥 cộng dồn chip
+    selectedBet += value;
+
+    // 🔒 không cho cược quá số coin
+    if(selectedBet > currentCoins){
+      selectedBet = currentCoins;
+    }
+
     updateSelectedBetDisplay();
+
+    // hiệu ứng chip
+    btn.animate([
+      {transform:"scale(1)"},
+      {transform:"scale(1.15)"},
+      {transform:"scale(1)"}
+    ],{duration:150});
 
     betSound.currentTime = 0;
     betSound.play().catch(()=>{})
