@@ -2087,7 +2087,7 @@ if(btnDepositHistory){
         </div>`
       }
 
-      data.reverse().forEach(item=>{
+     (data.history || []).reverse().forEach(item=>{
 
         const div = document.createElement("div")
         div.className = "transfer-item"
