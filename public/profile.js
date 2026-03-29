@@ -1842,35 +1842,42 @@ function closeTransfer(){
 
 function submitTransfer(){
 
+  const target = document
+    .getElementById("transferTarget")
+    .value
+    .trim()
+
   const amount = Number(
     document.getElementById("transferAmount").value
-  );
+  )
 
-  // ⚠️ chưa chọn người nhận từ preview
-  if(!transferUid){
-    showMsg("⚠️ Vui lòng nhập đúng tên hoặc UID người nhận");
-    return;
+  // ⚠️ chưa có người nhận
+  if(!transferUid && !target){
+    showMsg("⚠️ Nhập tên hoặc UID người nhận")
+    return
   }
 
-  // ⚠️ số coin không hợp lệ
+  // ⚠️ coin không hợp lệ
   if(!amount || amount <= 0){
-    showMsg("⚠️ Số kim cương không hợp lệ");
-    return;
+    showMsg("⚠️ Số kim cương không hợp lệ")
+    return
   }
 
+  // 🔥 nếu preview có UID → dùng UID
+  // nếu chưa → gửi target để server tự tìm
   socket.emit("coin-transfer",{
-    toUid: transferUid,
+    toUid: transferUid || target,
     amount
-  });
+  })
 
-  closeTransfer();
+  closeTransfer()
 
   // reset form
-  document.getElementById("transferTarget").value = "";
-  document.getElementById("transferAmount").value = "";
-  
-  const preview = document.getElementById("transferPreview");
-  if(preview) preview.classList.add("hidden");
+  document.getElementById("transferTarget").value = ""
+  document.getElementById("transferAmount").value = ""
 
-  transferUid = null;
+  const preview = document.getElementById("transferPreview")
+  if(preview) preview.classList.add("hidden")
+
+  transferUid = null
 }
