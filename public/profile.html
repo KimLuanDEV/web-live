@@ -217,6 +217,150 @@ color:#fff;
 
 
 
+.transfer-confirm{
+position:fixed;
+inset:0;
+display:flex;
+align-items:center;
+justify-content:center;
+z-index:9999;
+}
+
+.transfer-confirm.hidden{
+display:none;
+}
+
+.confirm-backdrop{
+position:absolute;
+inset:0;
+background:rgba(0,0,0,.65);
+backdrop-filter:blur(6px);
+}
+
+.confirm-card{
+
+position:relative;
+width:320px;
+max-width:92%;
+
+background:linear-gradient(180deg,#1e1e2f,#12121c);
+
+border-radius:16px;
+padding:22px;
+
+box-shadow:
+0 10px 30px rgba(0,0,0,.7),
+0 0 0 1px rgba(255,255,255,.05);
+
+color:#fff;
+text-align:center;
+
+animation:confirmPop .25s ease;
+}
+
+@keyframes confirmPop{
+from{transform:scale(.9);opacity:0}
+to{transform:scale(1);opacity:1}
+}
+
+.confirm-header{
+font-size:18px;
+font-weight:700;
+margin-bottom:18px;
+color:#7fd3ff;
+}
+
+.confirm-user{
+display:flex;
+align-items:center;
+justify-content:center;
+gap:12px;
+margin-bottom:16px;
+}
+
+.confirm-avatar{
+width:52px;
+height:52px;
+border-radius:50%;
+object-fit:cover;
+border:2px solid #4ac8ff;
+}
+
+.confirm-name{
+font-weight:600;
+font-size:15px;
+}
+
+.confirm-level{
+font-size:13px;
+opacity:.7;
+}
+
+.confirm-amount-box{
+margin-top:10px;
+padding:12px;
+border-radius:10px;
+background:rgba(255,255,255,.04);
+}
+
+.confirm-label{
+font-size:12px;
+opacity:.6;
+margin-bottom:6px;
+}
+
+.confirm-amount{
+font-size:22px;
+font-weight:700;
+display:flex;
+align-items:center;
+justify-content:center;
+gap:6px;
+color:#6fe4ff;
+}
+
+.confirm-amount img{
+width:18px;
+}
+
+.confirm-warning{
+font-size:12px;
+opacity:.6;
+margin-top:10px;
+}
+
+.confirm-actions{
+display:flex;
+gap:10px;
+margin-top:18px;
+}
+
+.confirm-actions button{
+flex:1;
+border:none;
+padding:10px;
+border-radius:10px;
+font-weight:600;
+cursor:pointer;
+}
+
+.btn-cancel{
+background:#2c2c3a;
+color:#fff;
+}
+
+.btn-confirm{
+background:linear-gradient(90deg,#4ac8ff,#7f6bff);
+color:#fff;
+}
+
+.btn-confirm:hover{
+opacity:.9;
+}
+
+
+
+
   </style>
 </head>
 
@@ -553,36 +697,55 @@ color:#fff;
 
 
 
-<div id="transferConfirmModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
+<div id="transferConfirmModal" class="transfer-confirm hidden">
 
-  <div class="modal-card">
+  <div class="confirm-backdrop" onclick="closeTransferConfirm()"></div>
 
-    <h3>💎 Xác nhận chuyển kim cương</h3>
+  <div class="confirm-card">
 
-    <div class="transfer-preview">
-      <img id="confirmAvatar">
+    <div class="confirm-header">
+      💎 Xác nhận chuyển kim cương
+    </div>
 
-      <div>
-        <div id="confirmName"></div>
-        <div id="confirmLevel"></div>
+    <div class="confirm-user">
+
+      <img id="confirmAvatar" class="confirm-avatar">
+
+      <div class="confirm-info">
+        <div id="confirmName" class="confirm-name"></div>
+        <div id="confirmLevel" class="confirm-level"></div>
+      </div>
+
+    </div>
+
+    <div class="confirm-amount-box">
+      <div class="confirm-label">Số lượng chuyển</div>
+      <div class="confirm-amount">
+        <span id="confirmAmount"></span>
+        <img src="/assets/ui/diamond-icon1.png">
       </div>
     </div>
 
-    <div style="margin:12px 0;font-size:18px">
-      Số lượng: <b id="confirmAmount"></b> 💎
-    </div>
-
-    <div style="opacity:.7;font-size:13px">
+    <div class="confirm-warning">
       ⚠ Giao dịch không thể hoàn tác
     </div>
 
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <button onclick="closeTransferConfirm()">Huỷ</button>
-      <button onclick="confirmTransfer()">Xác nhận</button>
+    <div class="confirm-actions">
+
+      <button class="btn-cancel"
+        onclick="closeTransferConfirm()">
+        Huỷ
+      </button>
+
+      <button class="btn-confirm"
+        onclick="confirmTransfer()">
+        Xác nhận
+      </button>
+
     </div>
 
   </div>
+
 </div>
 
 
