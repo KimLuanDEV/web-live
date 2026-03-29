@@ -122,6 +122,101 @@
 
 
 
+
+.bottom-sheet{
+position:fixed;
+inset:0;
+z-index:9999;
+display:flex;
+align-items:flex-end;
+}
+
+.bottom-sheet.hidden{
+display:none;
+}
+
+.sheet-backdrop{
+position:absolute;
+inset:0;
+background:rgba(0,0,0,.6);
+backdrop-filter:blur(3px);
+}
+
+.sheet-card{
+
+position:relative;
+width:100%;
+background:#121212;
+
+border-radius:18px 18px 0 0;
+
+padding:20px;
+padding-bottom:30px;
+
+animation:sheetUp .25s ease;
+}
+
+@keyframes sheetUp{
+from{
+transform:translateY(100%);
+}
+to{
+transform:translateY(0);
+}
+}
+
+.sheet-handle{
+width:40px;
+height:5px;
+background:#444;
+border-radius:10px;
+margin:0 auto 14px;
+}
+
+.sheet-header{
+font-size:18px;
+font-weight:600;
+text-align:center;
+margin-bottom:12px;
+}
+
+.sheet-card input{
+width:100%;
+padding:12px;
+margin-top:8px;
+border-radius:10px;
+border:none;
+background:#1e1e1e;
+color:#fff;
+}
+
+.sheet-actions{
+display:flex;
+gap:10px;
+margin-top:16px;
+}
+
+.sheet-actions button{
+flex:1;
+padding:12px;
+border:none;
+border-radius:10px;
+font-weight:600;
+}
+
+.btn-cancel{
+background:#2b2b2b;
+color:#ccc;
+}
+
+.btn-confirm{
+background:#00c853;
+color:#fff;
+}
+
+
+
+
   </style>
 </head>
 
@@ -408,40 +503,52 @@
 
 
 
-<div id="transferModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-  <div class="modal-card">
+<div id="transferModal" class="bottom-sheet hidden">
 
-    <h3>💎 Chuyển kim cương</h3>
+  <div class="sheet-backdrop" onclick="closeTransfer()"></div>
 
-<input id="transferTarget" placeholder="Tên nhân vật hoặc UID">
+  <div class="sheet-card">
 
-<!-- 🔎 PREVIEW USER -->
-<div id="transferPreview" class="transfer-preview hidden">
-  <div class="preview-avatar">
-    <img id="previewAvatar">
-  </div>
+    <div class="sheet-handle"></div>
 
-  <div class="preview-info">
-    <div class="preview-name" id="previewName"></div>
-    <div class="preview-level" id="previewLevel"></div>
-    <div class="preview-coins" id="previewCoins"></div>
-  </div>
-</div>
+    <div class="sheet-header">
+      💎 Chuyển kim cương
+    </div>
 
-<input id="transferAmount" type="number" placeholder="Số kim cương">
+    <input id="transferTarget"
+      placeholder="Tên nhân vật hoặc UID">
 
+    <!-- 🔎 PREVIEW USER -->
+    <div id="transferPreview"
+      class="transfer-preview hidden">
 
+      <div class="preview-avatar">
+        <img id="previewAvatar">
+      </div>
 
-    
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button onclick="closeTransfer()">Huỷ</button>
-      <button onclick="submitTransfer()">Chuyển</button>
+      <div class="preview-info">
+        <div class="preview-name" id="previewName"></div>
+        <div class="preview-level" id="previewLevel"></div>
+        <div class="preview-coins" id="previewCoins"></div>
+      </div>
+
+    </div>
+
+    <input id="transferAmount"
+      type="number"
+      placeholder="Số kim cương">
+
+    <div class="sheet-actions">
+      <button class="btn-cancel"
+        onclick="closeTransfer()">Huỷ</button>
+
+      <button class="btn-confirm"
+        onclick="submitTransfer()">Chuyển</button>
     </div>
 
   </div>
-</div>
 
+</div>
 
 
 
