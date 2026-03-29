@@ -1839,26 +1839,38 @@ function closeTransfer(){
 }
 
 
+
 function submitTransfer(){
 
-const amount =
-Number(document.getElementById("transferAmount").value)
+  const amount = Number(
+    document.getElementById("transferAmount").value
+  );
 
-if(!transferUid){
-showMsg("⚠️ Chưa chọn người nhận")
-return
-}
+  // ⚠️ chưa chọn người nhận từ preview
+  if(!transferUid){
+    showMsg("⚠️ Vui lòng nhập đúng tên hoặc UID người nhận");
+    return;
+  }
 
-if(!amount || amount <= 0){
-showMsg("⚠️ Số kim cương không hợp lệ")
-return
-}
+  // ⚠️ số coin không hợp lệ
+  if(!amount || amount <= 0){
+    showMsg("⚠️ Số kim cương không hợp lệ");
+    return;
+  }
 
-socket.emit("coin-transfer",{
-toUid:transferUid,
-amount
-})
+  socket.emit("coin-transfer",{
+    toUid: transferUid,
+    amount
+  });
 
-closeTransfer()
+  closeTransfer();
 
+  // reset form
+  document.getElementById("transferTarget").value = "";
+  document.getElementById("transferAmount").value = "";
+  
+  const preview = document.getElementById("transferPreview");
+  if(preview) preview.classList.add("hidden");
+
+  transferUid = null;
 }
