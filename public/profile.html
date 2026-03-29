@@ -356,7 +356,101 @@ opacity:.9;
 }
 
 
+/* ===== FULLSCREEN HISTORY ===== */
 
+.history-screen{
+position:fixed;
+inset:0;
+background:#0f0f14;
+z-index:9999;
+
+display:flex;
+flex-direction:column;
+}
+
+.history-screen.hidden{
+display:none;
+}
+
+
+/* HEADER */
+
+.history-header{
+
+display:flex;
+align-items:center;
+justify-content:space-between;
+
+padding:
+
+env(safe-area-inset-top)
+16px
+12px
+16px;
+
+background:#17171f;
+
+border-bottom:1px solid #222;
+}
+
+.history-title{
+font-size:18px;
+font-weight:700;
+}
+
+.history-close{
+background:none;
+border:none;
+color:#fff;
+font-size:22px;
+cursor:pointer;
+}
+
+
+/* TABS */
+
+.history-tabs{
+
+display:flex;
+gap:10px;
+
+padding:12px 16px;
+
+border-bottom:1px solid #222;
+}
+
+.history-tab{
+
+flex:1;
+
+padding:10px;
+
+border-radius:10px;
+
+background:#1e1e27;
+border:none;
+
+color:#aaa;
+font-weight:600;
+cursor:pointer;
+}
+
+.history-tab.active{
+
+background:#6c5cff;
+color:#fff;
+}
+
+
+/* LIST */
+
+.history-list{
+
+flex:1;
+overflow:auto;
+
+padding:10px 0;
+}
 
   </style>
 </head>
@@ -746,29 +840,41 @@ opacity:.9;
 
 
 
-<div id="transferHistoryModal" class="modal hidden">
+<div id="transferHistoryModal" class="history-screen hidden">
 
-  <div class="modal-backdrop"></div>
+  <div class="history-header">
 
-  <div class="modal-card">
-
-    <h3>Lịch sử kim cương</h3>
-
-    <!-- TAB -->
-    <div class="transfer-tabs">
-      <button id="tabSend" class="tab active">📤 Gửi</button>
-      <button id="tabReceive" class="tab">📥 Nhận</button>
+    <div class="history-title">
+     Lịch sử kim cương
     </div>
 
-    <!-- LIST -->
-    <div id="transferHistoryList"
-         style="max-height:320px;overflow:auto;margin-top:10px">
-    </div>
+    <button class="history-close"
+      onclick="closeTransferHistory()">
+      ✕
+    </button>
 
-    <div style="margin-top:12px">
-      <button onclick="closeTransferHistory()">Đóng</button>
-    </div>
+  </div>
 
+
+  <!-- TAB -->
+  <div class="history-tabs">
+
+    <button id="tabSend"
+      class="history-tab active">
+      📤 Đã gửi
+    </button>
+
+    <button id="tabReceive"
+      class="history-tab">
+      📥 Đã nhận
+    </button>
+
+  </div>
+
+
+  <!-- LIST -->
+  <div id="transferHistoryList"
+       class="history-list">
   </div>
 
 </div>
