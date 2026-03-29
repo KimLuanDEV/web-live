@@ -3366,7 +3366,7 @@ function startFakeBotFlow(){
   if(!timeRaceRound) return
 
   const roundId = timeRaceRound.id
-  const betList = [50,100,150,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,3000,3500,4000,4500,5000,6000,7000,8000,9000,10000,15000]
+  const betList = [50,100,150,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,3000,3500,4000,4500,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000]
 
   let botIndex = 0
 
@@ -10651,6 +10651,32 @@ from.profile.coinSent =
 
 // ❌ KHÔNG cộng coinReceived
 
+
+// lưu lịch sử
+from.transferHistory = from.transferHistory || [];
+to.transferHistory   = to.transferHistory || [];
+
+from.transferHistory.unshift({
+  type:"send",
+  uid:toUid,
+  name:to.profile.name,
+  amount,
+  time:Date.now()
+});
+
+to.transferHistory.unshift({
+  type:"receive",
+  uid:fromUid,
+  name:from.profile.name,
+  amount,
+  time:Date.now()
+});
+
+// giữ tối đa 50
+from.transferHistory = from.transferHistory.slice(0,50);
+to.transferHistory   = to.transferHistory.slice(0,50);
+
+
   saveUsers(users);
 
   emitCoinUpdate(fromUid);
@@ -10703,6 +10729,46 @@ socket.on("transfer-preview", ({target}) => {
 
 });
 
+
+
+
+socket.on("coin-transfer-history-result",(list)=>{
+
+  const box =
+    document.getElementById("transferHistoryList");
+
+  box.innerHTML = "";
+
+  if(!list || list.length === 0){
+    box.innerHTML = "<div>Chưa có giao dịch</div>";
+    return;
+  }
+
+  list.forEach(t => {
+
+    const div = document.createElement("div");
+
+    div.style.padding = "8px";
+    div.style.borderBottom = "1px solid #333";
+
+    const type =
+      t.type === "send"
+      ? "📤 Gửi"
+      : "📥 Nhận";
+
+    div.innerHTML = `
+      <div><b>${type}</b> ${t.amount} 💎</div>
+      <div>${t.name}</div>
+      <div style="font-size:12px;opacity:.7">
+        ${new Date(t.time).toLocaleString()}
+      </div>
+    `;
+
+    box.appendChild(div);
+
+  });
+
+});
 
 
 

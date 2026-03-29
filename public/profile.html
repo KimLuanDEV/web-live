@@ -55,6 +55,30 @@
 }
 
 
+
+.transfer-tabs{
+  display:flex;
+  gap:8px;
+  margin-top:10px;
+}
+
+.transfer-tabs .tab{
+  flex:1;
+  padding:8px;
+  border-radius:8px;
+  border:none;
+  background:#222;
+  color:#aaa;
+  cursor:pointer;
+}
+
+.transfer-tabs .tab.active{
+  background:#6c5cff;
+  color:#fff;
+}
+
+
+
   </style>
 </head>
 
@@ -201,6 +225,13 @@
   <span class="stat-badge">GỬI</span>
   <div class="stat-label">💎 Chuyển kim cương</div>
 </div>
+
+
+<div class="stat-box purple clickable" id="btnTransferHistory">
+  <span class="stat-badge">LỊCH SỬ</span>
+  <div class="stat-label">📜 Lịch sử chuyển coin</div>
+</div>
+
 
 
   </div>
@@ -403,6 +434,36 @@
 
   </div>
 </div>
+
+
+
+<div id="transferHistoryModal" class="modal hidden">
+
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card">
+
+    <h3>📜 Lịch sử kim cương</h3>
+
+    <!-- TAB -->
+    <div class="transfer-tabs">
+      <button id="tabSend" class="tab active">📤 Gửi</button>
+      <button id="tabReceive" class="tab">📥 Nhận</button>
+    </div>
+
+    <!-- LIST -->
+    <div id="transferHistoryList"
+         style="max-height:320px;overflow:auto;margin-top:10px">
+    </div>
+
+    <div style="margin-top:12px">
+      <button onclick="closeTransferHistory()">Đóng</button>
+    </div>
+
+  </div>
+
+</div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>

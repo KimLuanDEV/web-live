@@ -1894,3 +1894,116 @@ socket.on("transfer-preview-result",(data)=>{
 });
 
 
+
+const btnTransferHistory =
+  document.getElementById("btnTransferHistory");
+
+if(btnTransferHistory){
+
+  btnTransferHistory.onclick = () => {
+
+    socket.emit("coin-transfer-history");
+
+    document
+      .getElementById("transferHistoryModal")
+      .classList.remove("hidden");
+
+  };
+
+}
+
+function closeTransferHistory(){
+
+  document
+    .getElementById("transferHistoryModal")
+    .classList.add("hidden");
+
+}
+
+
+socket.on("coin-transfer-history",()=>{
+
+  const uid = socket.data.uid;
+  if(!uid) return;
+
+  const users = loadUsers();
+  const me = users[uid];
+
+  socket.emit(
+    "coin-transfer-history-result",
+    me.transferHistory || []
+  );
+
+});
+
+
+
+let transferHistory = []
+let historyTab = "send"
+
+const tabSend = document.getElementById("tabSend")
+const tabReceive = document.getElementById("tabReceive")
+
+if(tabSend){
+  tabSend.onclick = ()=>{
+    historyTab = "send"
+    tabSend.classList.add("active")
+    tabReceive.classList.remove("active")
+    renderTransferHistory()
+  }
+}
+
+if(tabReceive){
+  tabReceive.onclick = ()=>{
+    historyTab = "receive"
+    tabReceive.classList.add("active")
+    tabSend.classList.remove("active")
+    renderTransferHistory()
+  }
+}
+
+
+socket.on("coin-transfer-history-result",(list)=>{
+
+  transferHistory = list || []
+
+  renderTransferHistory()
+
+})
+
+
+function renderTransferHistory(){
+
+  const box = document.getElementById("transferHistoryList")
+  if(!box) return
+
+  box.innerHTML = ""
+
+  const filtered = transferHistory.filter(t => t.type === historyTab)
+
+  if(filtered.length === 0){
+    box.innerHTML = "<div>Chưa có giao dịch</div>"
+    return
+  }
+
+  filtered.forEach(t => {
+
+    const div = document.createElement("div")
+
+    div.style.padding = "10px"
+    div.style.borderBottom = "1px solid #333"
+
+    div.innerHTML = `
+      <div><b>${t.name}</b></div>
+      <div>${t.amount} 💎</div>
+      <div style="font-size:12px;opacity:.6">
+        ${new Date(t.time).toLocaleString()}
+      </div>
+    `
+
+    box.appendChild(div)
+
+  })
+
+}
+
