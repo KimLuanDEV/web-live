@@ -799,28 +799,28 @@ function getVipBadge(level){
   level = Number(level) || 1;
 
   if (level >= 250) {
-    return { key:"immortal", text:"💎 VIP IMMORTAL", color:"#ff3b3b" };
+    return { key:"immortal", text:"SVIP 8", color:"#ff3b3b" };
   }
   if (level >= 200) {
-    return { key:"emperor", text:"👑 VIP EMPEROR", color:"#ffd36e" };
+    return { key:"emperor", text:"SVIP 7", color:"#ffd36e" };
   }
   if (level >= 150) {
-    return { key:"king", text:"🔱 VIP KING", color:"#c77dff" };
+    return { key:"king", text:"SVIP 6", color:"#c77dff" };
   }
   if (level >= 100) {
-    return { key:"legend", text:"🔥 VIP LEGEND", color:"#ff6a00" };
+    return { key:"legend", text:"SVIP 5", color:"#ff6a00" };
   }
   if (level >= 70) {
-    return { key:"diamond", text:"💎 VIP DIAMOND", color:"#5fd1ff" };
+    return { key:"diamond", text:"SVIP 4", color:"#5fd1ff" };
   }
   if (level >= 40) {
-    return { key:"gold", text:"👑 VIP GOLD", color:"#ffd36e" };
+    return { key:"gold", text:"SVIP 3", color:"#ffd36e" };
   }
   if (level >= 20) {
-    return { key:"silver", text:"⭐ VIP SILVER", color:"#cfd8dc" };
+    return { key:"silver", text:"SVIP 2", color:"#cfd8dc" };
   }
   if (level >= 10) {
-    return { key:"vip", text:"💠 VIP", color:"#8bc34a" };
+    return { key:"vip", text:"SVIP 1", color:"#8bc34a" };
   }
   return null;
 }
