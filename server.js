@@ -10671,6 +10671,42 @@ socket.on("coin-transfer", ({target, amount}) => {
 });
 
 
+socket.on("coin-transfer-preview",({target})=>{
+
+const users = loadUsers()
+
+let user = null
+
+if(users[target]){
+user = users[target]
+}
+else{
+
+user = Object.values(users)
+.find(u =>
+u.profile?.name?.toLowerCase()
+=== target.toLowerCase()
+)
+
+}
+
+if(!user){
+socket.emit("coin-transfer-preview",null)
+return
+}
+
+socket.emit("coin-transfer-preview",{
+uid:user.profile.uid,
+name:user.profile.name,
+avatar:user.profile.avatar,
+level:user.profile.level,
+coins:user.profile.coins
+})
+
+})
+
+
+
 socket.on("clear-my-messages", ({ peer }) => {
   const me = socket.data.uid;
   if(!me || !peer) return;
