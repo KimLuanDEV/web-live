@@ -70,55 +70,6 @@ const btnBlock          = document.getElementById("btnBlock");
 // 🔧 FIX LEGACY AVATAR (/avatars -> R2)
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 
-
-
-const transferInput = document.getElementById("transferTarget")
-
-const previewBox = document.getElementById("transferPreview")
-const previewAvatar = document.getElementById("transferAvatar")
-const previewName = document.getElementById("transferName")
-const previewLevel = document.getElementById("transferLevel")
-const previewCoin = document.getElementById("transferCoin")
-
-let transferUid = null
-
-transferInput.addEventListener("input",()=>{
-
-  const q = transferInput.value.trim()
-
-  if(!q){
-    previewBox.classList.add("hidden")
-    transferUid = null
-    return
-  }
-
-  socket.emit("coin-transfer-preview",{target:q})
-
-})
-
-
-socket.on("coin-transfer-preview",(u)=>{
-
-  if(!u){
-    previewBox.classList.add("hidden")
-    transferUid = null
-    return
-  }
-
-  transferUid = u.uid
-
-  previewAvatar.src = u.avatar
-  previewName.textContent = "👤 " + u.name
-  previewLevel.textContent = "⭐ Level " + u.level
-  previewCoin.textContent = "💎 " + u.coins
-
-  previewBox.classList.remove("hidden")
-
-})
-
-
-
-
 function fixMedia(url){
   if (!url) return "";
   if (url.startsWith("/avatars/") || url.startsWith("/covers/")) {
@@ -1838,46 +1789,26 @@ function closeTransfer(){
   transferModal.classList.add("hidden");
 }
 
-
-
 function submitTransfer(){
 
   const target = document
     .getElementById("transferTarget")
     .value
-    .trim()
+    .trim();
 
   const amount = Number(
     document.getElementById("transferAmount").value
-  )
+  );
 
-  // ⚠️ chưa có người nhận
-  if(!transferUid && !target){
-    showMsg("⚠️ Nhập tên hoặc UID người nhận")
-    return
+  if(!target || !amount || amount <= 0){
+    showMsg("⚠️ Nhập tên nhân vật hoặc UID");
+    return;
   }
 
-  // ⚠️ coin không hợp lệ
-  if(!amount || amount <= 0){
-    showMsg("⚠️ Số kim cương không hợp lệ")
-    return
-  }
-
-  // 🔥 nếu preview có UID → dùng UID
-  // nếu chưa → gửi target để server tự tìm
   socket.emit("coin-transfer",{
-    toUid: transferUid || target,
+    target,
     amount
-  })
+  });
 
-  closeTransfer()
-
-  // reset form
-  document.getElementById("transferTarget").value = ""
-  document.getElementById("transferAmount").value = ""
-
-  const preview = document.getElementById("transferPreview")
-  if(preview) preview.classList.add("hidden")
-
-  transferUid = null
+  closeTransfer();
 }

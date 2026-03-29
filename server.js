@@ -10590,6 +10590,7 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
 
 });
 
+
 socket.on("coin-transfer", ({target, amount}) => {
 
   const fromUid = socket.data.uid;
@@ -10599,18 +10600,16 @@ socket.on("coin-transfer", ({target, amount}) => {
 
   let toUid = null;
 
-  // 🔎 1. check UID trước
+  // 1️⃣ nếu nhập UID
   if(users[target]){
     toUid = target;
   }
 
-  // 🔎 2. nếu không phải UID → tìm theo tên
+  // 2️⃣ nếu không phải UID → tìm theo tên
   if(!toUid){
-
     const key = Object.keys(users).find(uid =>
       users[uid]?.profile?.name
-        ?.toLowerCase()
-        === target.toLowerCase()
+        ?.toLowerCase() === target.toLowerCase()
     );
 
     if(key) toUid = key;
@@ -10634,7 +10633,6 @@ socket.on("coin-transfer", ({target, amount}) => {
   const to   = users[toUid];
 
   amount = Math.floor(Number(amount));
-  if(amount <= 0) return;
 
   if(from.profile.coins < amount){
     return emitToUser(fromUid,"notify",{
@@ -10643,7 +10641,7 @@ socket.on("coin-transfer", ({target, amount}) => {
     });
   }
 
-  // 💎 TRANSFER
+  // 💎 transfer
   from.profile.coins -= amount;
   to.profile.coins   += amount;
 
@@ -10669,42 +10667,6 @@ socket.on("coin-transfer", ({target, amount}) => {
   });
 
 });
-
-
-socket.on("coin-transfer-preview",({target})=>{
-
-const users = loadUsers()
-
-let user = null
-
-if(users[target]){
-user = users[target]
-}
-else{
-
-user = Object.values(users)
-.find(u =>
-u.profile?.name?.toLowerCase()
-=== target.toLowerCase()
-)
-
-}
-
-if(!user){
-socket.emit("coin-transfer-preview",null)
-return
-}
-
-socket.emit("coin-transfer-preview",{
-uid:user.profile.uid,
-name:user.profile.name,
-avatar:user.profile.avatar,
-level:user.profile.level,
-coins:user.profile.coins
-})
-
-})
-
 
 
 socket.on("clear-my-messages", ({ peer }) => {
