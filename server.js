@@ -10641,15 +10641,15 @@ socket.on("coin-transfer", ({target, amount}) => {
     });
   }
 
-  // 💎 transfer
-  from.profile.coins -= amount;
-  to.profile.coins   += amount;
+// 💎 transfer
+from.profile.coins -= amount;
+to.profile.coins   += amount;
 
-  from.profile.coinSent =
-    (from.profile.coinSent || 0) + amount;
+// 📊 thống kê người gửi
+from.profile.coinSent =
+  (from.profile.coinSent || 0) + amount;
 
-  to.profile.coinReceived =
-    (to.profile.coinReceived || 0) + amount;
+// ❌ KHÔNG cộng coinReceived
 
   saveUsers(users);
 
