@@ -3366,7 +3366,7 @@ function startFakeBotFlow(){
   if(!timeRaceRound) return
 
   const roundId = timeRaceRound.id
-  const betList = [10, 50, 100, 500, 1000, 5000]
+  const betList = [50,100,150,200,300,400,500,600,700,800,900,1000,1100,1200,1300,1400,1500,1600,1700,1800,1900,2000,3000,3500,4000,4500,5000,6000,7000,8000,9000,10000,15000]
 
   let botIndex = 0
 
