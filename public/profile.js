@@ -1823,3 +1823,36 @@ function submitTransfer(){
   };
 
 }
+
+
+const targetInput = document.getElementById("transferTarget");
+
+targetInput.addEventListener("blur", () => {
+
+  const target = targetInput.value.trim();
+  if(!target) return;
+
+  socket.emit("transfer-preview",{target});
+
+});
+
+socket.on("transfer-preview-result",(data)=>{
+
+  const box = document.getElementById("transferPreview");
+
+  if(!data.ok){
+    box.classList.add("hidden");
+    showMsg("❌ Không tìm thấy người chơi");
+    return;
+  }
+
+  document.getElementById("previewAvatar").src = data.avatar;
+  document.getElementById("previewName").textContent = "👤 " + data.name;
+  document.getElementById("previewLevel").textContent = "⭐ Level " + data.level;
+  document.getElementById("previewCoins").textContent = "💎 " + data.coins;
+
+  box.classList.remove("hidden");
+
+});
+
+

@@ -10669,6 +10669,43 @@ from.profile.coinSent =
 });
 
 
+socket.on("transfer-preview", ({target}) => {
+
+  const users = loadUsers();
+
+  let uid = null;
+
+  if(users[target]){
+    uid = target;
+  }
+
+  if(!uid){
+    const key = Object.keys(users).find(u =>
+      users[u]?.profile?.name?.toLowerCase() === target.toLowerCase()
+    );
+    if(key) uid = key;
+  }
+
+  if(!uid){
+    return socket.emit("transfer-preview-result",{ok:false});
+  }
+
+  const u = users[uid];
+
+  socket.emit("transfer-preview-result",{
+    ok:true,
+    uid,
+    name: u.profile.name,
+    avatar: u.profile.avatar,
+    level: u.profile.level,
+    coins: u.profile.coins
+  });
+
+});
+
+
+
+
 socket.on("clear-my-messages", ({ peer }) => {
   const me = socket.data.uid;
   if(!me || !peer) return;

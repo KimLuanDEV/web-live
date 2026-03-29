@@ -20,6 +20,42 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
   <link rel="stylesheet" href="/style.css" />
+
+
+  <style>
+
+    .transfer-preview{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  background:#111;
+  border-radius:10px;
+  padding:10px;
+  margin:10px 0;
+}
+
+.transfer-preview img{
+  width:42px;
+  height:42px;
+  border-radius:50%;
+}
+
+.preview-name{
+  font-weight:600;
+}
+
+.preview-level{
+  font-size:13px;
+  opacity:.8;
+}
+
+.preview-coins{
+  font-size:13px;
+  color:#4cd964;
+}
+
+
+  </style>
 </head>
 
 <body class="page-profile">
@@ -304,9 +340,22 @@
 
     <h3>💎 Chuyển kim cương</h3>
 
-    <input id="transferTarget" placeholder="Tên nhân vật hoặc UID">
+<input id="transferTarget" placeholder="Tên nhân vật hoặc UID">
 
-    <input id="transferAmount" type="number" placeholder="Số kim cương">
+<!-- 🔎 PREVIEW USER -->
+<div id="transferPreview" class="transfer-preview hidden">
+  <div class="preview-avatar">
+    <img id="previewAvatar">
+  </div>
+
+  <div class="preview-info">
+    <div class="preview-name" id="previewName"></div>
+    <div class="preview-level" id="previewLevel"></div>
+    <div class="preview-coins" id="previewCoins"></div>
+  </div>
+</div>
+
+<input id="transferAmount" type="number" placeholder="Số kim cương">
 
 
 
