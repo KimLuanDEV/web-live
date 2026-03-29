@@ -2080,14 +2080,23 @@ if(btnDepositHistory){
 
       depositHistoryList.innerHTML = ""
 
-      if(!data || !data.length){
-        depositHistoryList.innerHTML =
-        `<div style="padding:20px;text-align:center;opacity:.6">
+      const list = data.history || data || []
+
+      // ❗ không có dữ liệu
+      if(list.length === 0){
+
+        depositHistoryList.innerHTML = `
+        <div style="padding:20px;text-align:center;opacity:.6">
         Chưa có giao dịch nạp
-        </div>`
+        </div>
+        `
+
+        depositHistoryScreen.classList.remove("hidden")
+        return
       }
 
-     (data.history || []).reverse().forEach(item=>{
+      // render lịch sử
+      list.slice().reverse().forEach(item=>{
 
         const div = document.createElement("div")
         div.className = "transfer-item"

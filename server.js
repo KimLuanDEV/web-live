@@ -6599,20 +6599,18 @@ app.get("/admin-time-race.html",(req,res)=>{
 
 app.get("/api/deposit-history",(req,res)=>{
 
-  const uid = req.headers["x-uid"];
+const uid = req.headers["x-uid"]
 
-  if(!uid) return res.json({history:[]});
+if(!uid) return res.json([])
 
-  const users = loadUsers();
-  const user = users[uid];
+const users = loadUsers()
+const user = users[uid]
 
-  if(!user) return res.json({history:[]});
+if(!user) return res.json([])
 
-  res.json({
-    history: user.profile.depositLogs || []
-  });
+res.json(user.depositHistory || [])
 
-});
+})
 
 
 
