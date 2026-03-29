@@ -10729,6 +10729,19 @@ socket.on("transfer-preview", ({target}) => {
 
 });
 
+socket.on("coin-transfer-history", () => {
+
+  const uid = socket.data.uid
+  if(!uid) return
+
+  const users = loadUsers()
+  const me = users[uid]
+
+  socket.emit("coin-transfer-history-result", {
+    history: me.transferHistory || []
+  })
+
+})
 
 
 

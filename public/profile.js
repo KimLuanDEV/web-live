@@ -1896,19 +1896,19 @@ socket.on("transfer-preview-result",(data)=>{
 
 
 const btnTransferHistory =
-  document.getElementById("btnTransferHistory");
+document.getElementById("btnTransferHistory")
 
 if(btnTransferHistory){
 
-  btnTransferHistory.onclick = () => {
-
-    socket.emit("coin-transfer-history");
+  btnTransferHistory.onclick = ()=>{
 
     document
       .getElementById("transferHistoryModal")
-      .classList.remove("hidden");
+      .classList.remove("hidden")
 
-  };
+    socket.emit("coin-transfer-history")
+
+  }
 
 }
 
@@ -1921,20 +1921,6 @@ function closeTransferHistory(){
 }
 
 
-socket.on("coin-transfer-history",()=>{
-
-  const uid = socket.data.uid;
-  if(!uid) return;
-
-  const users = loadUsers();
-  const me = users[uid];
-
-  socket.emit(
-    "coin-transfer-history-result",
-    me.transferHistory || []
-  );
-
-});
 
 
 
@@ -1963,9 +1949,9 @@ if(tabReceive){
 }
 
 
-socket.on("coin-transfer-history-result",(list)=>{
+socket.on("coin-transfer-history-result",(data)=>{
 
-  transferHistory = list || []
+  transferHistory = data.history || []
 
   renderTransferHistory()
 
