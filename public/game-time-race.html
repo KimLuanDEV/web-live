@@ -1923,6 +1923,23 @@ document.querySelectorAll("[data-bet]").forEach(btn=>{
 });
 
 
+document.addEventListener("click",(e)=>{
+
+  // nếu click vào bet panel thì bỏ qua
+  if(e.target.closest(".bet-panel-hitbox")) return;
+
+  // nếu click vào nút confirm cũng bỏ qua
+  if(e.target.closest("#betBtn")) return;
+
+  // nếu không có cược thì không làm gì
+  if(selectedBet === 0) return;
+
+  // 🔥 reset cược
+  selectedBet = 0;
+  updateSelectedBetDisplay();
+
+});
+
 
 
 function updateTimer(){
