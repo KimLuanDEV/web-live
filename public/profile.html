@@ -161,7 +161,10 @@
 </button>
 
 
-
+<div class="stat-box purple clickable" id="btnTransferCoin">
+  <span class="stat-badge">GỬI</span>
+  <div class="stat-label">💎 Chuyển kim cương</div>
+</div>
 
 
   </div>
@@ -291,6 +294,27 @@
 
 
 <div id="toast-container"></div>
+
+
+
+
+<div id="transferModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+  <div class="modal-card">
+
+    <h3>💎 Chuyển kim cương</h3>
+
+    <input id="transferUid" placeholder="UID người nhận">
+    <input id="transferAmount" type="number" placeholder="Số kim cương">
+
+    <div style="display:flex;gap:10px;margin-top:12px">
+      <button onclick="closeTransfer()">Huỷ</button>
+      <button onclick="submitTransfer()">Chuyển</button>
+    </div>
+
+  </div>
+</div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>

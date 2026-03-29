@@ -10591,7 +10591,66 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
 });
 
 
+socket.on("coin-transfer", ({toUid, amount}) => {
 
+  const fromUid = socket.data.uid;
+
+  if(!fromUid || !toUid) return;
+
+  const users = loadUsers();
+
+  const from = users[fromUid];
+  const to   = users[toUid];
+
+  if(!from?.profile || !to?.profile) return;
+
+  amount = Math.floor(Number(amount));
+
+  if(amount <= 0) return;
+
+  // 🚫 không cho gửi cho chính mình
+  if(fromUid === toUid) return;
+
+  // 🚫 không đủ coin
+  if(from.profile.coins < amount){
+
+    emitToUser(fromUid,"notify",{
+      type:"bad",
+      message:"❌ Không đủ kim cương"
+    });
+
+    return;
+  }
+
+  // =================
+  // 💎 TRANSFER
+  // =================
+
+  from.profile.coins -= amount;
+  to.profile.coins   += amount;
+
+  from.profile.coinSent =
+    (from.profile.coinSent || 0) + amount;
+
+  to.profile.coinReceived =
+    (to.profile.coinReceived || 0) + amount;
+
+  saveUsers(users);
+
+  emitCoinUpdate(fromUid);
+  emitCoinUpdate(toUid);
+
+  emitToUser(fromUid,"notify",{
+    type:"good",
+    message:`💎 Đã gửi ${amount} kim cương`
+  });
+
+  emitToUser(toUid,"notify",{
+    type:"good",
+    message:`🎁 Bạn nhận được ${amount} kim cương`
+  });
+
+});
 
 
 socket.on("clear-my-messages", ({ peer }) => {

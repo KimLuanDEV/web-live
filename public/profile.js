@@ -1764,3 +1764,47 @@ socket.on("force-logout", (data) => {
     location.href = "/login.html";
   }, 3000);
 });
+
+
+
+const btnTransferCoin = document.getElementById("btnTransferCoin");
+const transferModal = document.getElementById("transferModal");
+
+if(btnTransferCoin){
+
+  btnTransferCoin.onclick = ()=>{
+
+    // chỉ cho chuyển coin của chính mình
+    if(viewUid && viewUid !== __profileAuth.uid){
+      showMsg("🚫 Bạn không thể chuyển kim cương từ tài khoản này");
+      return;
+    }
+
+    transferModal.classList.remove("hidden");
+  };
+
+}
+
+function closeTransfer(){
+  transferModal.classList.add("hidden");
+}
+
+function submitTransfer(){
+
+  const toUid = document.getElementById("transferUid").value.trim();
+  const amount = Number(
+    document.getElementById("transferAmount").value
+  );
+
+  if(!toUid || !amount || amount <= 0){
+    showMsg("⚠️ Nhập UID và số kim cương");
+    return;
+  }
+
+  socket.emit("coin-transfer",{
+    toUid,
+    amount
+  });
+
+  closeTransfer();
+}
