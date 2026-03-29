@@ -6597,6 +6597,22 @@ app.get("/admin-time-race.html",(req,res)=>{
 
 
 
+app.get("/api/deposit-history",(req,res)=>{
+
+const uid = req.headers["x-uid"]
+
+if(!uid) return res.json([])
+
+const users = loadUsers()
+const user = users[uid]
+
+if(!user) return res.json([])
+
+res.json(user.depositHistory || [])
+
+})
+
+
 
 
 app.get("/api/user-info",(req,res)=>{

@@ -2047,3 +2047,88 @@ function renderTransferHistory(){
 
 }
 
+
+
+
+const btnDepositHistory =
+  document.getElementById("btnDepositHistory")
+
+const depositHistoryScreen =
+  document.getElementById("depositHistoryScreen")
+
+const depositHistoryList =
+  document.getElementById("depositHistoryList")
+
+
+if(btnDepositHistory){
+
+  btnDepositHistory.onclick = ()=>{
+
+    // 🚫 không cho xem lịch sử người khác
+    if(viewUid && viewUid !== __profileAuth.uid){
+      showMsg("🚫 Không thể xem lịch sử nạp của người khác")
+      return
+    }
+
+    fetch("/api/deposit-history",{
+      headers:{
+        "x-uid":__profileAuth.uid
+      }
+    })
+    .then(r=>r.json())
+    .then(data=>{
+
+      depositHistoryList.innerHTML = ""
+
+      if(!data || !data.length){
+        depositHistoryList.innerHTML =
+        `<div style="padding:20px;text-align:center;opacity:.6">
+        Chưa có giao dịch nạp
+        </div>`
+      }
+
+      data.reverse().forEach(item=>{
+
+        const div = document.createElement("div")
+        div.className = "transfer-item"
+
+        div.innerHTML = `
+        <div class="transfer-left">
+
+          <img class="transfer-avatar"
+          src="/icons/icon-192.png">
+
+          <div>
+            <div class="transfer-name">
+            Nạp kim cương
+            </div>
+
+            <div class="transfer-time">
+            ${new Date(item.time).toLocaleString()}
+            </div>
+          </div>
+
+        </div>
+
+        <div class="transfer-amount transfer-receive">
+          +${item.amount}
+        </div>
+        `
+
+        depositHistoryList.appendChild(div)
+
+      })
+
+      depositHistoryScreen.classList.remove("hidden")
+
+    })
+
+  }
+
+}
+
+
+function closeDepositHistory(){
+  depositHistoryScreen.classList.add("hidden")
+}
+
