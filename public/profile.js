@@ -694,6 +694,7 @@ const defaultProfile = {
   exp: 0,            // 🔥 exp
   coinSent: 0,       // 🎁 đã tặng
   coinReceived: 0,   // 💎 đã nhận
+  coinDeposit:0,
   bio: "",
 
 };
@@ -1522,13 +1523,12 @@ async function loadFriendRequestCount(){
   }
 }
 
-
 function renderProfileViewOnly(p){
+
   // avatar + name
   avatarPreview.src = fixMedia(p.avatar) || defaultProfile.avatar;
   profileNameText.textContent = p.name || "User";
-  renderProfileVerified(p.uid);   // 🔥 BẮT BUỘC
-
+  renderProfileVerified(p.uid);
 
   // bio (chỉ xem)
   const bioInput = document.getElementById("bioInput");
@@ -1548,20 +1548,27 @@ function renderProfileViewOnly(p){
   const need  = level * 100;
 
   levelVal.textContent = level;
+
   coinVal.textContent = p.coins || 0;
   coinSentVal.textContent = p.coinSent || 0;
   coinReceivedVal.textContent = p.coinReceived || 0;
 
-  // ===== EXP BAR (FIX) =====
+  // 💳 FIX: HIỂN THỊ TỔNG ĐÃ NẠP
+  if (coinDepositVal){
+    coinDepositVal.textContent = p.coinDeposit || 0;
+  }
+
+  // ===== EXP BAR =====
   if (expText){
     expText.textContent = `${exp} / ${need}`;
   }
+
   if (expFill){
     expFill.style.width =
       Math.min(100, (exp / need) * 100) + "%";
   }
 
-  // ===== VIP BADGE (FIX) =====
+  // ===== VIP BADGE =====
   if (vipBadgeBox){
     vipBadgeBox.innerHTML = "";
     const badge = getVipBadge(level);
@@ -1574,7 +1581,7 @@ function renderProfileViewOnly(p){
     }
   }
 
-  // ===== AVATAR VIP EFFECT =====
+  // ===== AVATAR EFFECT =====
   const wrap = document.querySelector(".avatar-wrap");
   if (wrap){
     if (level >= 1) wrap.classList.add("halo-on");
@@ -1587,7 +1594,10 @@ function renderProfileViewOnly(p){
     "avatar-lv50",
     "avatar-lv100"
   );
-  if (level >= 1) avatarPreview.classList.add("avatar-lv100");
+
+  if (level >= 1){
+    avatarPreview.classList.add("avatar-lv100");
+  }
 
   const crown = document.getElementById("avatarCrown");
   if (crown){
@@ -1595,7 +1605,7 @@ function renderProfileViewOnly(p){
     else crown.classList.add("hidden");
   }
 
-  // ===== ẨN CHỨC NĂNG CHỈ DÀNH CHO CHỦ TÀI KHOẢN =====
+  // ===== ẨN CHỨC NĂNG CHỦ TÀI KHOẢN =====
   document.querySelectorAll(
     "#btnSave, #btnChangeAvatar, #btnChangeCover, #btnChangePass, .btn-logout"
   ).forEach(el => el && (el.style.display = "none"));
