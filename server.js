@@ -6167,14 +6167,40 @@ message:"User not found"
 })
 }
 
-user.profile.coins += Number(amount)
+// 🔒 chuẩn hóa số nạp
+const add = Math.floor(Number(amount))
 
+if(add <= 0){
+return res.json({
+success:false,
+message:"Amount invalid"
+})
+}
+
+// 💎 cộng coin
+user.profile.coins =
+(user.profile.coins || 0) + add
+
+// 💳 cộng tổng đã nạp
+user.profile.coinDeposit =
+(user.profile.coinDeposit || 0) + add
+
+// 🧾 log nạp (khuyên dùng)
+user.profile.depositLogs ||= []
+user.profile.depositLogs.unshift({
+amount:add,
+time:Date.now(),
+type:"deposit"
+})
 
 saveUsers(users)
 
+// 🔄 realtime update client
+emitCoinUpdate(user.profile.uid)
+
 res.json({
 success:true,
-message:"Nạp thành công " + amount + " kim cương"
+message:"Nạp thành công " + add + " kim cương"
 })
 
 })
