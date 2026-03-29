@@ -1789,6 +1789,8 @@ function closeTransfer(){
   transferModal.classList.add("hidden");
 }
 
+let pendingTransfer = null;
+
 function submitTransfer(){
 
   const target = document
@@ -1805,24 +1807,60 @@ function submitTransfer(){
     return;
   }
 
-  // 🔒 XÁC NHẬN TRƯỚC KHI CHUYỂN
-  showMsg(
-    `Bạn có chắc muốn chuyển ${amount} 💎 cho "${target}" ?`,
-    "Xác nhận chuyển kim cương"
-  );
+  const name =
+    document.getElementById("previewName").textContent.replace("👤 ","");
 
-  document.getElementById("msgOk").onclick = () => {
+  const level =
+    document.getElementById("previewLevel").textContent;
 
-    socket.emit("coin-transfer",{
-      target,
-      amount
-    });
+  const avatar =
+    document.getElementById("previewAvatar").src;
 
-    closeMsg();
-    closeTransfer();
-  };
+  if(!name){
+    showMsg("⚠️ Chưa xác định người nhận");
+    return;
+  }
 
+  // lưu tạm
+  pendingTransfer = {target,amount};
+
+  // render confirm modal
+  document.getElementById("confirmAvatar").src = avatar;
+  document.getElementById("confirmName").textContent = "👤 " + name;
+  document.getElementById("confirmLevel").textContent = level;
+  document.getElementById("confirmAmount").textContent = amount;
+
+  document
+    .getElementById("transferConfirmModal")
+    .classList.remove("hidden");
 }
+
+
+
+function closeTransferConfirm(){
+  document
+    .getElementById("transferConfirmModal")
+    .classList.add("hidden");
+}
+
+function confirmTransfer(){
+
+  if(!pendingTransfer) return;
+
+  socket.emit("coin-transfer",{
+    target: pendingTransfer.target,
+    amount: pendingTransfer.amount
+  });
+
+  pendingTransfer = null;
+
+  closeTransferConfirm();
+  closeTransfer();
+
+  showMsg("✅ Đã gửi yêu cầu chuyển kim cương");
+}
+
+
 
 
 const targetInput = document.getElementById("transferTarget");

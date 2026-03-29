@@ -370,6 +370,41 @@
 
 
 
+
+
+<div id="transferConfirmModal" class="modal hidden">
+  <div class="modal-backdrop"></div>
+
+  <div class="modal-card">
+
+    <h3>💎 Xác nhận chuyển kim cương</h3>
+
+    <div class="transfer-preview">
+      <img id="confirmAvatar">
+
+      <div>
+        <div id="confirmName"></div>
+        <div id="confirmLevel"></div>
+      </div>
+    </div>
+
+    <div style="margin:12px 0;font-size:18px">
+      Số lượng: <b id="confirmAmount"></b> 💎
+    </div>
+
+    <div style="opacity:.7;font-size:13px">
+      ⚠ Giao dịch không thể hoàn tác
+    </div>
+
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button onclick="closeTransferConfirm()">Huỷ</button>
+      <button onclick="confirmTransfer()">Xác nhận</button>
+    </div>
+
+  </div>
+</div>
+
+
 <script src="/socket.io/socket.io.js"></script>
 <script src="/chat-global.js"></script>
 <script src="/profile.js"></script>
