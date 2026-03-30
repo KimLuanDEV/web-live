@@ -2141,3 +2141,67 @@ function closeDepositHistory(){
   depositHistoryScreen.classList.add("hidden")
 }
 
+
+
+
+const transferInput = document.getElementById("transferTarget")
+const suggestBox = document.getElementById("transferSuggest")
+
+let suggestTimer = null
+
+transferInput.addEventListener("input",()=>{
+
+  const q = transferInput.value.trim()
+
+  if(q.length < 2){
+    suggestBox.classList.add("hidden")
+    return
+  }
+
+  clearTimeout(suggestTimer)
+
+  suggestTimer = setTimeout(()=>{
+
+    fetch("/api/user-search?q="+encodeURIComponent(q))
+    .then(r=>r.json())
+    .then(list=>{
+
+      suggestBox.innerHTML=""
+
+      if(!list.length){
+        suggestBox.classList.add("hidden")
+        return
+      }
+
+      list.forEach(u=>{
+
+        const div = document.createElement("div")
+        div.className="suggest-item"
+
+        div.innerHTML=`
+        <img class="suggest-avatar" src="${fixMedia(u.avatar)}">
+
+        <div>
+          <div class="suggest-name">${u.name}</div>
+          <div class="suggest-uid">${u.uid}</div>
+        </div>
+        `
+
+        div.onclick=()=>{
+          transferInput.value = u.uid
+          suggestBox.classList.add("hidden")
+
+          previewTransferUser(u)
+        }
+
+        suggestBox.appendChild(div)
+
+      })
+
+      suggestBox.classList.remove("hidden")
+
+    })
+
+  },200)
+
+})
