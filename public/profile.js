@@ -70,9 +70,6 @@ const btnBlock          = document.getElementById("btnBlock");
 // 🔧 FIX LEGACY AVATAR (/avatars -> R2)
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 
-let selectingSuggest = false
-
-
 function fixMedia(url){
   if (!url) return "";
   if (url.startsWith("/avatars/") || url.startsWith("/covers/")) {
@@ -1892,14 +1889,13 @@ const targetInput = document.getElementById("transferTarget");
 
 targetInput.addEventListener("blur", () => {
 
-  if(selectingSuggest) return
-
   const target = targetInput.value.trim();
   if(!target) return;
 
   socket.emit("transfer-preview",{target});
 
 });
+
 socket.on("transfer-preview-result",(data)=>{
 
   const box = document.getElementById("transferPreview");
@@ -2145,80 +2141,3 @@ function closeDepositHistory(){
   depositHistoryScreen.classList.add("hidden")
 }
 
-
-
-
-const transferInput = document.getElementById("transferTarget")
-const suggestBox = document.getElementById("transferSuggest")
-
-let suggestTimer = null
-
-transferInput.addEventListener("input",()=>{
-
-  const q = transferInput.value.trim()
-
-  if(q.length < 2){
-    suggestBox.classList.add("hidden")
-    return
-  }
-
-  clearTimeout(suggestTimer)
-
-  suggestTimer = setTimeout(()=>{
-
-    fetch("/api/user-search?q="+encodeURIComponent(q))
-    .then(r=>r.json())
-    .then(list=>{
-
-      suggestBox.innerHTML=""
-
-      if(!list.length){
-        suggestBox.classList.add("hidden")
-        return
-      }
-
-      list.forEach(u=>{
-
-        const div = document.createElement("div")
-        div.className="suggest-item"
-
-        div.innerHTML=`
-        <img class="suggest-avatar" src="${fixMedia(u.avatar)}">
-
-        <div>
-          <div class="suggest-name">${u.name}</div>
-          <div class="suggest-uid">${u.uid}</div>
-        </div>
-        `
-
-div.onclick=()=>{
-
-  selectingSuggest = true
-
-  transferInput.value = u.uid
-
-  suggestBox.classList.add("hidden")
-
-  const box = document.getElementById("transferPreview")
-
-  document.getElementById("previewAvatar").src = fixMedia(u.avatar)
-  document.getElementById("previewName").textContent = "👤 " + u.name
-  document.getElementById("previewLevel").textContent = "⭐ Level " + (u.level || 1)
-  document.getElementById("previewCoins").textContent = "💎 " + (u.coins || 0)
-
-  box.classList.remove("hidden")
-
-  setTimeout(()=> selectingSuggest = false , 50)
-
-}
-        suggestBox.appendChild(div)
-
-      })
-
-      suggestBox.classList.remove("hidden")
-
-    })
-
-  },200)
-
-})

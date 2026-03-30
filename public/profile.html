@@ -461,73 +461,6 @@ color:#fff;
 }
 
 
-
-.transfer-suggest{
-position:absolute;
-bottom:100%;
-left:0;
-width:100%;
-
-background:#1e1e1e;
-border-radius:12px;
-
-margin-bottom:6px;
-
-overflow:auto;
-max-height:220px;
-
-box-shadow:0 -10px 30px rgba(0,0,0,.7);
-
-animation:suggestUp .15s ease;
-
-z-index:1000;
-}
-
-@keyframes suggestUp{
-from{
-transform:translateY(6px);
-opacity:0;
-}
-to{
-transform:translateY(0);
-opacity:1;
-}
-}
-
-.transfer-suggest.hidden{
-display:none;
-}
-
-.suggest-item{
-display:flex;
-align-items:center;
-gap:10px;
-padding:10px;
-cursor:pointer;
-border-bottom:1px solid #2a2a2a;
-}
-
-.suggest-item:hover{
-background:#2c2c2c;
-}
-
-.suggest-avatar{
-width:32px;
-height:32px;
-border-radius:50%;
-}
-
-.suggest-name{
-font-weight:600;
-}
-
-.suggest-uid{
-font-size:12px;
-opacity:.6;
-}
-
-
-
   </style>
 </head>
 
@@ -840,8 +773,6 @@ opacity:.6;
     <input id="transferTarget"
       placeholder="Tên nhân vật hoặc UID">
 
-<div id="transferSuggest" class="transfer-suggest hidden"></div>
-      
     <!-- 🔎 PREVIEW USER -->
     <div id="transferPreview"
       class="transfer-preview hidden">

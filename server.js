@@ -6596,29 +6596,6 @@ app.get("/admin-time-race.html",(req,res)=>{
 });
 
 
-app.get("/api/user-search",(req,res)=>{
-
-const q = (req.query.q || "").toLowerCase()
-
-const users = loadUsers()
-
-const list = Object.values(users)
-.filter(u=>
-  u.profile?.name?.toLowerCase().includes(q) ||
-  u.profile?.uid?.toLowerCase().includes(q)
-)
-.slice(0,6)
-.map(u=>({
-  uid:u.profile.uid,
-  name:u.profile.name,
-  avatar:u.profile.avatar
-}))
-
-res.json(list)
-
-})
-
-
 
 app.get("/api/deposit-history",(req,res)=>{
 
