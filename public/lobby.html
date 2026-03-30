@@ -47,7 +47,25 @@ body.lobby-page{
 }
 
 
+.player-search{
+  padding:10px;
+  border-bottom:1px solid rgba(255,255,255,.1);
+}
 
+.player-search input{
+  width:100%;
+  padding:8px 10px;
+  border-radius:8px;
+  border:none;
+  background:#111;
+  color:#fff;
+  outline:none;
+  font-size:14px;
+}
+
+.player-search input::placeholder{
+  opacity:.6;
+}
 
 </style>
 
@@ -378,6 +396,14 @@ body.lobby-page{
       Danh sách User.
     </div>
 
+    <!-- 🔎 SEARCH -->
+    <div class="player-search">
+      <input
+        id="playerSearch"
+        placeholder="Tìm UID hoặc tên người dùng..."
+      />
+    </div>
+
     <div id="playerList" class="player-lobby-list">
       <div class="player-lobby-empty">
         Chưa có dữ liệu User.
@@ -385,7 +411,6 @@ body.lobby-page{
     </div>
   </div>
 </div>
-
 
 
 
@@ -1261,104 +1286,109 @@ playerLobby.querySelector(".player-lobby-backdrop").onclick = () => {
 };
 
 
-
 function renderPlayerLobbyAll(){
+
   const box = document.getElementById("playerList");
+  if(!box) return;
 
   if(!ALL_USERS.length){
     box.innerHTML = `<div class="player-lobby-empty">Chưa có người chơi</div>`;
     return;
   }
 
+  // 🔥 sort
+  let list = sortUsersForLobby(ALL_USERS);
 
-  // 🔥 ƯU TIÊN ADMIN + ONLINE + LEVEL
-  const sortedUsers = sortUsersForLobby(ALL_USERS);
+  // 🚫 bỏ user bị block
+  list = list.filter(u => !MY_BLOCKED.includes(u.uid));
 
+  // 🔎 SEARCH
+  if(PLAYER_SEARCH){
+    list = list.filter(u=>{
+      const name = (u.name || "").toLowerCase();
+      const uid  = (u.uid || "").toLowerCase();
+      return name.includes(PLAYER_SEARCH) || uid.includes(PLAYER_SEARCH);
+    });
+  }
 
-   box.innerHTML = sortedUsers.map(u=>{
+  if(!list.length){
+    box.innerHTML = `<div class="player-lobby-empty">Không tìm thấy user</div>`;
+    return;
+  }
 
-
-    // 🚫 ẨN USER ĐÃ BLOCK
-if (MY_BLOCKED.includes(u.uid)) return "";
+  box.innerHTML = list.map(u=>{
 
     const isOn = ONLINE_UIDS.includes(u.uid);
     const isMe = u.uid === profile.uid;
 
-
- const isFriend = MY_FRIENDS.includes(u.uid);
- const isPending = MY_REQUESTS.includes(u.uid);
-
+    const isFriend  = MY_FRIENDS.includes(u.uid);
+    const isPending = MY_REQUESTS.includes(u.uid);
 
     return `
       <div class="player-row ${isOn ? "online":"offline"}">
 
-     <div class="pava"
-     ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
-     style="${!isMe ? "cursor:pointer" : ""}">
+        <div class="pava"
+          ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
+          style="${!isMe ? "cursor:pointer" : ""}">
 
-  <img src="${fixAvatar(u.avatar)}">
-
-
-  <span class="dot ${isOn ? "on":"off"}"></span>
-</div>
-
-
+          <img src="${fixAvatar(u.avatar)}">
+          <span class="dot ${isOn ? "on":"off"}"></span>
+        </div>
 
         <div class="pinfo">
 
-   <div class="pname"
-  ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
-  style="${!isMe ? "cursor:pointer" : ""}">
-  ${u.name}
-  ${u.role === "admin"
-    ? `<span class="lp-verified" title="Admin Livestream Pro">✔︎</span>`
-    : ``}
-</div>
+          <div class="pname"
+            ${!isMe ? `onclick="openUserProfile('${u.uid}')"` : ``}
+            style="${!isMe ? "cursor:pointer" : ""}">
 
+            ${u.name}
 
+            ${u.role === "admin"
+              ? `<span class="lp-verified" title="Admin Livestream Pro">✔︎</span>`
+              : ``}
+          </div>
 
+          <div class="plevel">Lv ${u.level || 1}</div>
 
-          <div class="plevel">Lv ${u.level}</div>
         </div>
 
-${!isMe ? `
-  <div class="pactions">
-    ${
-      isFriend
-        ? `<button class="btn-friend ok" disabled>👥 Bạn bè</button>`
-        : isPending
-          ? `<button class="btn-friend pending" disabled>⏳ Đã gửi</button>`
-          : `<button class="btn-friend add"
-                onclick="addFriend('${u.uid}')">
-                ➕ Kết bạn
-             </button>`
-    }
+        ${!isMe ? `
+          <div class="pactions">
 
-    ${isFriend ? `
-  <button class="btn-chat"
-    onclick="openPrivateChat('${u.uid}', '${u.name}')">
-    💬 Nhắn tin
-  </button>
-` : `
-  <button class="btn-chat" disabled title="Chỉ nhắn tin với bạn bè">
-    🔒
-  </button>
-`}
+            ${
+              isFriend
+                ? `<button class="btn-friend ok" disabled>👥 Bạn bè</button>`
+                : isPending
+                  ? `<button class="btn-friend pending" disabled>⏳ Đã gửi</button>`
+                  : `<button class="btn-friend add"
+                      onclick="addFriend('${u.uid}')">
+                      ➕ Kết bạn
+                    </button>`
+            }
 
-<button class="btn-block"
-  title="Chặn user"
-  onclick="blockUser('${u.uid}','${u.name}')">
-  🚫
-</button>
+            ${isFriend ? `
+              <button class="btn-chat"
+                onclick="openPrivateChat('${u.uid}','${u.name}')">
+                💬 Nhắn tin
+              </button>
+            ` : `
+              <button class="btn-chat" disabled title="Chỉ nhắn tin với bạn bè">
+                🔒
+              </button>
+            `}
 
+            <button class="btn-block"
+              title="Chặn user"
+              onclick="blockUser('${u.uid}','${u.name}')">
+              🚫
+            </button>
 
-
-  </div>
-` : `<div class="pme">Bạn</div>`}
-
+          </div>
+        ` : `<div class="pme">Bạn</div>`}
 
       </div>
     `;
+
   }).join("");
 }
 
@@ -1763,6 +1793,17 @@ socket.on("force-logout", (data) => {
   }, 3000);
 });
 
+
+
+
+let PLAYER_SEARCH = ""
+
+const playerSearch = document.getElementById("playerSearch")
+
+playerSearch?.addEventListener("input", e=>{
+  PLAYER_SEARCH = e.target.value.toLowerCase()
+  renderPlayerLobbyAll()
+})
 
 
 
