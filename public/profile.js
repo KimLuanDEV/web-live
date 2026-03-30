@@ -2187,12 +2187,32 @@ transferInput.addEventListener("input",()=>{
         </div>
         `
 
-        div.onclick=()=>{
-          transferInput.value = u.uid
-          suggestBox.classList.add("hidden")
+    div.onclick=()=>{
 
-          previewTransferUser(u)
-        }
+  // lưu UID người được chọn
+  transferInput.value = u.uid
+
+  // ẩn gợi ý
+  suggestBox.classList.add("hidden")
+
+  // hiển thị preview luôn
+  const box = document.getElementById("transferPreview")
+
+  document.getElementById("previewAvatar").src =
+    fixMedia(u.avatar)
+
+  document.getElementById("previewName").textContent =
+    "👤 " + u.name
+
+  document.getElementById("previewLevel").textContent =
+    "⭐ Level " + (u.level || 1)
+
+  document.getElementById("previewCoins").textContent =
+    "💎 " + (u.coins || 0)
+
+  box.classList.remove("hidden")
+
+}
 
         suggestBox.appendChild(div)
 
