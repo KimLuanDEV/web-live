@@ -464,13 +464,34 @@ color:#fff;
 
 .transfer-suggest{
 position:absolute;
+bottom:100%;
+left:0;
 width:100%;
+
 background:#1e1e1e;
-border-radius:10px;
-margin-top:6px;
-overflow:hidden;
-box-shadow:0 6px 20px rgba(0,0,0,.6);
+border-radius:12px;
+
+margin-bottom:6px;
+
+overflow:auto;
+max-height:220px;
+
+box-shadow:0 -10px 30px rgba(0,0,0,.7);
+
+animation:suggestUp .15s ease;
+
 z-index:1000;
+}
+
+@keyframes suggestUp{
+from{
+transform:translateY(6px);
+opacity:0;
+}
+to{
+transform:translateY(0);
+opacity:1;
+}
 }
 
 .transfer-suggest.hidden{

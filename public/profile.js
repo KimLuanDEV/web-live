@@ -70,6 +70,9 @@ const btnBlock          = document.getElementById("btnBlock");
 // 🔧 FIX LEGACY AVATAR (/avatars -> R2)
 const R2_PUBLIC_URL = "https://pub-a6a541cf3a9c4d0aa06613e3d1dc1c60.r2.dev";
 
+let selectingSuggest = false
+
+
 function fixMedia(url){
   if (!url) return "";
   if (url.startsWith("/avatars/") || url.startsWith("/covers/")) {
@@ -1889,13 +1892,14 @@ const targetInput = document.getElementById("transferTarget");
 
 targetInput.addEventListener("blur", () => {
 
+  if(selectingSuggest) return
+
   const target = targetInput.value.trim();
   if(!target) return;
 
   socket.emit("transfer-preview",{target});
 
 });
-
 socket.on("transfer-preview-result",(data)=>{
 
   const box = document.getElementById("transferPreview");
@@ -2187,33 +2191,26 @@ transferInput.addEventListener("input",()=>{
         </div>
         `
 
-    div.onclick=()=>{
+div.onclick=()=>{
 
-  // lưu UID người được chọn
+  selectingSuggest = true
+
   transferInput.value = u.uid
 
-  // ẩn gợi ý
   suggestBox.classList.add("hidden")
 
-  // hiển thị preview luôn
   const box = document.getElementById("transferPreview")
 
-  document.getElementById("previewAvatar").src =
-    fixMedia(u.avatar)
-
-  document.getElementById("previewName").textContent =
-    "👤 " + u.name
-
-  document.getElementById("previewLevel").textContent =
-    "⭐ Level " + (u.level || 1)
-
-  document.getElementById("previewCoins").textContent =
-    "💎 " + (u.coins || 0)
+  document.getElementById("previewAvatar").src = fixMedia(u.avatar)
+  document.getElementById("previewName").textContent = "👤 " + u.name
+  document.getElementById("previewLevel").textContent = "⭐ Level " + (u.level || 1)
+  document.getElementById("previewCoins").textContent = "💎 " + (u.coins || 0)
 
   box.classList.remove("hidden")
 
-}
+  setTimeout(()=> selectingSuggest = false , 50)
 
+}
         suggestBox.appendChild(div)
 
       })
