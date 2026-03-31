@@ -30,7 +30,7 @@ border-radius:10px;
 
 .result-list{
 display:grid;
-grid-template-columns:repeat(10,1fr);
+grid-template-columns:repeat(5,1fr);
 gap:6px;
 }
 
@@ -62,12 +62,72 @@ height:8px;
 background:#00aaff;
 }
 
+
+.round-info{
+display:flex;
+justify-content:space-between;
+align-items:center;
+text-align:center;
+}
+
+.round-info .label{
+font-size:12px;
+opacity:.6;
+margin-bottom:4px;
+}
+
+#roundId{
+font-size:22px;
+font-weight:700;
+}
+
+#roundTimer{
+font-size:28px;
+font-weight:900;
+color:#00eaff;
+}
+
+#roundResult{
+font-size:24px;
+font-weight:900;
+color:#ffd000;
+}
+
+.round-left,
+.round-center,
+.round-right{
+flex:1;
+}
+
 </style>
 </head>
 
 <body>
 
 <h2>POLICE STATISTICS</h2>
+
+
+
+<div class="stat-box round-info">
+
+<div class="round-left">
+<div class="label">CURRENT ROUND</div>
+<div id="roundId">--</div>
+</div>
+
+<div class="round-center">
+<div class="label">TIME LEFT</div>
+<div id="roundTimer">--</div>
+</div>
+
+<div class="round-right">
+<div class="label">RESULT</div>
+<div id="roundResult">?</div>
+</div>
+
+</div>
+
+
 
 <div class="stat-box">
 <h3>LAST RESULTS</h3>
@@ -222,6 +282,31 @@ ${m}x - ${p}%
 })
 
 }
+
+
+
+let roundEnd = 0
+
+socket.on("wheel8-round-info",(data)=>{
+
+document.getElementById("roundId").textContent =
+"#"+data.roundId
+
+roundEnd = data.endAt
+
+})
+
+
+
+socket.on("wheel8-result",(data)=>{
+
+document.getElementById("roundResult").textContent =
+data.multi+"x"
+
+})
+
+
+
 
 </script>
 

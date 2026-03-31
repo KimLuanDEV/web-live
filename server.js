@@ -1732,6 +1732,9 @@ function createWheel8Round(){
     slotPool: [0,0,0,0,0,0,0,0]
   }
 
+
+
+  
   // 🔐 SECRET
   const result = pickWheel8()
 
@@ -2212,6 +2215,16 @@ saveWheel8Round({
 dayTs: wheel8RoundDayTs,
 count: wheel8RoundCounter
 })
+
+
+
+// gửi thông tin round mới
+io.emit("wheel8-round-info",{
+  roundId: wheel8Round.id,
+  endAt: wheel8Round.endAt
+})
+
+
 
 io.emit("wheel8-pool-update",wheel8Round.slotPool)
 
