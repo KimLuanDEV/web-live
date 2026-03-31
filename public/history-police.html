@@ -136,15 +136,6 @@ pointer-events:none;
 <div id="lastResults" class="result-list"></div>
 </div>
 
-<div class="stat-box">
-<h3>SLOT FREQUENCY</h3>
-<div id="slotStats"></div>
-</div>
-
-<div class="stat-box">
-<h3>MULTIPLIER STATS</h3>
-<div id="multiStats"></div>
-</div>
 
 
 
@@ -166,9 +157,6 @@ function renderStats(list){
 
 renderLast(list)
 
-renderSlotStats(list)
-
-renderMultiStats(list)
 
 }
 
@@ -201,57 +189,9 @@ box.appendChild(div)
 
 
 
-function renderSlotStats(list){
 
-const stat=[0,0,0,0,0,0,0,0]
 
-list.forEach(r=>{
-stat[r.slot-1]++
-})
 
-const box=document.getElementById("slotStats")
-box.innerHTML=""
-
-stat.forEach((v,i)=>{
-
-const p=Math.round(v/list.length*100)
-
-box.innerHTML+=`
-<div>
-Slot ${i+1} - ${p}%
-<div class="bar" style="width:${p}%"></div>
-</div>
-`
-
-})
-
-}
-
-function renderMultiStats(list){
-
-const map={}
-
-list.forEach(r=>{
-map[r.multi]=(map[r.multi]||0)+1
-})
-
-const box=document.getElementById("multiStats")
-box.innerHTML=""
-
-Object.keys(map).forEach(m=>{
-
-const p=Math.round(map[m]/list.length*100)
-
-box.innerHTML+=`
-<div>
-${m}x - ${p}%
-<div class="bar" style="width:${p}%"></div>
-</div>
-`
-
-})
-
-}
 
 
 
