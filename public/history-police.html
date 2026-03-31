@@ -290,7 +290,7 @@ let roundEnd = 0
 socket.on("wheel8-round-info",(data)=>{
 
 document.getElementById("roundId").textContent =
-"#"+data.roundId
+data.roundId
 
 roundEnd = data.endAt
 
@@ -306,8 +306,10 @@ document.getElementById("roundTimer").textContent = sec+"s"
 
 socket.on("wheel8-result",(data)=>{
 
+const multi = data.multiplier ?? data.multi ?? "?"
+
 document.getElementById("roundResult").textContent =
-data.multi+"x"
+multi + "x"
 
 })
 
