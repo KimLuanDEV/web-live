@@ -310,6 +310,15 @@ data.roundId
 
 roundEnd = data.endAt
 
+// giữ kết quả cũ 10 giây rồi mới reset
+setTimeout(()=>{
+
+const box = document.getElementById("roundResult")
+
+box.innerHTML = "?"
+
+},10000)
+
 })
 
 
