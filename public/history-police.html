@@ -29,9 +29,9 @@ border-radius:10px;
 }
 
 .result-list{
-display:flex;
+display:grid;
+grid-template-columns:repeat(10,1fr);
 gap:6px;
-flex-wrap:wrap;
 }
 
 .result{
@@ -124,24 +124,29 @@ renderMultiStats(list)
 
 }
 
+
 function renderLast(list){
 
-const box=document.getElementById("lastResults")
+const box = document.getElementById("lastResults")
 
-box.innerHTML=""
+box.innerHTML = ""
 
-list.forEach(r=>{
+// chỉ lấy 50 phiên gần nhất
+const last50 = list.slice(0,50)
 
-const div=document.createElement("div")
+last50.forEach(r=>{
 
-div.className="result"
-div.textContent=r.multi+"x"
+const div = document.createElement("div")
+
+div.className = "result"
+div.textContent = r.multi + "x"
 
 box.appendChild(div)
 
 })
 
 }
+
 
 function renderTable(list){
 
