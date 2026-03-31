@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Wheel Statistics</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+
+body{
+background:#000;
+color:#fff;
+font-family:system-ui;
+padding:20px;
+}
+
+h2{
+color:#00cfff;
+}
+
+.stat-box{
+background:#020617;
+border:1px solid #00aaff;
+padding:16px;
+margin-bottom:16px;
+border-radius:10px;
+}
+
+.result-list{
+display:flex;
+gap:6px;
+flex-wrap:wrap;
+}
+
+.result{
+width:50px;
+height:50px;
+display:flex;
+align-items:center;
+justify-content:center;
+background:#001a33;
+border-radius:8px;
+font-weight:900;
+}
+
+.table{
+width:100%;
+border-collapse:collapse;
+}
+
+.table th,
+.table td{
+padding:8px;
+border-bottom:1px solid rgba(255,255,255,.1);
+text-align:center;
+}
+
+.bar{
+height:8px;
+background:#00aaff;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>POLICE STATISTICS</h2>
+
+<div class="stat-box">
+<h3>LAST RESULTS</h3>
+<div id="lastResults" class="result-list"></div>
+</div>
+
+<div class="stat-box">
+<h3>SLOT FREQUENCY</h3>
+<div id="slotStats"></div>
+</div>
+
+<div class="stat-box">
+<h3>MULTIPLIER STATS</h3>
+<div id="multiStats"></div>
+</div>
+
+<div class="stat-box">
+<h3>ROUND HISTORY</h3>
+
+<table class="table">
+<thead>
+<tr>
+<th>Round</th>
+<th>Slot</th>
+<th>Multi</th>
+<th>Time</th>
+</tr>
+</thead>
+
+<tbody id="historyTable"></tbody>
+</table>
+
+</div>
+
+<script>
+
+const socket = io()
+
+socket.on("wheel8-history",list=>{
+
+renderStats(list)
+
+})
+
+function renderStats(list){
+
+renderLast(list)
+
+renderTable(list)
+
+renderSlotStats(list)
+
+renderMultiStats(list)
+
+}
+
+function renderLast(list){
+
+const box=document.getElementById("lastResults")
+
+box.innerHTML=""
+
+list.forEach(r=>{
+
+const div=document.createElement("div")
+
+div.className="result"
+div.textContent=r.multi+"x"
+
+box.appendChild(div)
+
+})
+
+}
+
+function renderTable(list){
+
+const box=document.getElementById("historyTable")
+
+box.innerHTML=""
+
+list.forEach(r=>{
+
+const tr=document.createElement("tr")
+
+tr.innerHTML=`
+<td>${r.roundId}</td>
+<td>${r.slot}</td>
+<td>${r.multi}x</td>
+<td>${new Date(r.ts).toLocaleTimeString()}</td>
+`
+
+box.appendChild(tr)
+
+})
+
+}
+
+function renderSlotStats(list){
+
+const stat=[0,0,0,0,0,0,0,0]
+
+list.forEach(r=>{
+stat[r.slot-1]++
+})
+
+const box=document.getElementById("slotStats")
+box.innerHTML=""
+
+stat.forEach((v,i)=>{
+
+const p=Math.round(v/list.length*100)
+
+box.innerHTML+=`
+<div>
+Slot ${i+1} - ${p}%
+<div class="bar" style="width:${p}%"></div>
+</div>
+`
+
+})
+
+}
+
+function renderMultiStats(list){
+
+const map={}
+
+list.forEach(r=>{
+map[r.multi]=(map[r.multi]||0)+1
+})
+
+const box=document.getElementById("multiStats")
+box.innerHTML=""
+
+Object.keys(map).forEach(m=>{
+
+const p=Math.round(map[m]/list.length*100)
+
+box.innerHTML+=`
+<div>
+${m}x - ${p}%
+<div class="bar" style="width:${p}%"></div>
+</div>
+`
+
+})
+
+}
+
+</script>
+
+</body>
+</html>
