@@ -45,17 +45,7 @@ border-radius:8px;
 font-weight:900;
 }
 
-.table{
-width:100%;
-border-collapse:collapse;
-}
 
-.table th,
-.table td{
-padding:8px;
-border-bottom:1px solid rgba(255,255,255,.1);
-text-align:center;
-}
 
 .bar{
 height:8px;
@@ -156,23 +146,7 @@ pointer-events:none;
 <div id="multiStats"></div>
 </div>
 
-<div class="stat-box">
-<h3>ROUND HISTORY</h3>
 
-<table class="table">
-<thead>
-<tr>
-<th>Round</th>
-<th>Slot</th>
-<th>Multi</th>
-<th>Time</th>
-</tr>
-</thead>
-
-<tbody id="historyTable"></tbody>
-</table>
-
-</div>
 
 <script>
 
@@ -224,28 +198,6 @@ box.appendChild(div)
 }
 
 
-function renderTable(list){
-
-const box=document.getElementById("historyTable")
-
-box.innerHTML=""
-
-list.forEach(r=>{
-
-const tr=document.createElement("tr")
-
-tr.innerHTML=`
-<td>${r.roundId}</td>
-<td>${r.slot}</td>
-<td>${r.multi}x</td>
-<td>${new Date(r.ts).toLocaleTimeString()}</td>
-`
-
-box.appendChild(tr)
-
-})
-
-}
 
 function renderSlotStats(list){
 
@@ -309,15 +261,6 @@ document.getElementById("roundId").textContent =
 data.roundId
 
 roundEnd = data.endAt
-
-// giữ kết quả cũ 10 giây rồi mới reset
-setTimeout(()=>{
-
-const box = document.getElementById("roundResult")
-
-box.innerHTML = "?"
-
-},10000)
 
 })
 
