@@ -322,7 +322,11 @@ document.getElementById("roundTimer").textContent = sec
 
 socket.on("wheel8-result",(data)=>{
 
-const slot = data.slot ?? "?"
+console.log("RESULT:",data)
+
+const slot = data.slot ?? data.winSlot ?? data.resultSlot
+
+if(!slot) return
 
 const box = document.getElementById("roundResult")
 
@@ -330,13 +334,12 @@ box.innerHTML = ""
 
 const img = document.createElement("img")
 
-img.src = "/assets/police/slot"+slot+".png"
+img.src = `/assets/police/slot${slot}.png`
 img.className = "result-img"
 
 box.appendChild(img)
 
 })
-
 
 
 
