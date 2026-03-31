@@ -88,9 +88,12 @@ color:#00eaff;
 }
 
 #roundResult{
-font-size:24px;
-font-weight:900;
-color:#ffd000;
+width:60px;
+height:60px;
+margin:auto;
+display:flex;
+align-items:center;
+justify-content:center;
 }
 
 .round-left,
@@ -319,10 +322,18 @@ document.getElementById("roundTimer").textContent = sec
 
 socket.on("wheel8-result",(data)=>{
 
-const multi = data.multiplier ?? data.multi ?? "?"
+const slot = data.slot ?? "?"
 
-document.getElementById("roundResult").textContent =
-multi + "x"
+const box = document.getElementById("roundResult")
+
+box.innerHTML = ""
+
+const img = document.createElement("img")
+
+img.src = "/assets/police/slot"+slot+".png"
+img.className = "result-img"
+
+box.appendChild(img)
 
 })
 
