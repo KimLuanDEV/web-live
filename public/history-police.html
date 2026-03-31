@@ -111,7 +111,7 @@ flex:1;
 <div class="stat-box round-info">
 
 <div class="round-left">
-<div class="label">CURRENT ROUND</div>
+<div class="label">ROUND</div>
 <div id="roundId">--</div>
 </div>
 
@@ -299,7 +299,7 @@ roundEnd = data.endAt
 
 
 socket.on("wheel8-timer",(sec)=>{
-document.getElementById("roundTimer").textContent = sec+"s"
+document.getElementById("roundTimer").textContent = sec
 })
 
 
