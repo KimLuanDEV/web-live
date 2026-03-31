@@ -298,6 +298,12 @@ roundEnd = data.endAt
 
 
 
+socket.on("wheel8-timer",(sec)=>{
+document.getElementById("roundTimer").textContent = sec+"s"
+})
+
+
+
 socket.on("wheel8-result",(data)=>{
 
 document.getElementById("roundResult").textContent =
