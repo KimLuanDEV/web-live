@@ -1766,7 +1766,7 @@ function createWheel8Round(){
 
 let wheel8Round = createWheel8Round()
 
-
+let lastWheel8Result = null
 
 
 
@@ -2159,15 +2159,17 @@ const topWinners = merged.slice(0,3)
 // 🎡 EMIT RESULT
 // =======================
 
-io.emit("wheel8-result",{
+lastWheel8Result = {
+  slot: resultSlot,
   slots: winSlots,
   multiplier: multiplier,
   event: specialEvent
     ? (winSlots.includes(1) ? "x5-all" : "x45-all")
     : null,
-  top: topWinners   // 🔥 THÊM DÒNG NÀY
-})
+  top: topWinners
+}
 
+io.emit("wheel8-result", lastWheel8Result)
 
 
 // =======================
@@ -3752,6 +3754,10 @@ roundId: wheel8Round.id
 
 socket.emit("wheel8-history",wheel8History)
 
+
+if(lastWheel8Result){
+  socket.emit("wheel8-result", lastWheel8Result)
+}
 
 const myWheelBets = [0,0,0,0,0,0,0,0];
 

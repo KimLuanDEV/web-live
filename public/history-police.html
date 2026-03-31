@@ -152,6 +152,10 @@ pointer-events:none;
 
 const socket = io()
 
+
+let roundResultResetTimer = null
+
+
 socket.on("wheel8-history",list=>{
 
 renderStats(list)
@@ -262,6 +266,15 @@ data.roundId
 
 roundEnd = data.endAt
 
+clearTimeout(roundResultResetTimer)
+
+roundResultResetTimer = setTimeout(()=>{
+
+  const box = document.getElementById("roundResult")
+  box.innerHTML = "?"
+
+},10000)
+
 })
 
 
@@ -276,18 +289,26 @@ socket.on("wheel8-result",(data)=>{
 
 console.log("RESULT:",data)
 
-const slot = data.slot ?? data.winSlot ?? data.resultSlot
+const slot =
+  data.slot ??
+  data.winSlot ??
+  data.resultSlot ??
+  data.slots?.[0]
 
 if(!slot) return
 
-const box = document.getElementById("roundResult")
+clearTimeout(roundResultResetTimer)
 
+const box = document.getElementById("roundResult")
 box.innerHTML = ""
 
 const img = document.createElement("img")
-
 img.src = `/assets/police/slot${slot}.png`
 img.className = "result-img"
+
+img.onerror = ()=>{
+  box.innerHTML = "?"
+}
 
 box.appendChild(img)
 
