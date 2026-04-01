@@ -101,6 +101,41 @@ pointer-events:none;
 }
 
 
+.miss-grid{
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+margin-top:10px;
+}
+
+.miss-box{
+background:#001a33;
+border-radius:10px;
+padding:10px;
+text-align:center;
+}
+
+.miss-box img{
+width:40px;
+height:40px;
+object-fit:contain;
+display:block;
+margin:auto;
+}
+
+.miss-count{
+font-size:20px;
+font-weight:900;
+margin-top:4px;
+color:#00eaff;
+}
+
+.miss-hot{
+color:#ff3b3b;
+}
+
+
+
 </style>
 </head>
 
@@ -136,7 +171,10 @@ pointer-events:none;
 <div id="lastResults" class="result-list"></div>
 </div>
 
-
+<div class="stat-box">
+<h3>SLOT MISS COUNT</h3>
+<div id="slotMiss" class="miss-grid"></div>
+</div>
 
 
 <script>
@@ -153,10 +191,12 @@ renderStats(list)
 
 })
 
+
 function renderStats(list){
 
 renderLast(list)
 
+renderMiss(list)
 
 }
 
@@ -250,6 +290,50 @@ img.onerror = ()=>{
 box.appendChild(img)
 
 })
+
+
+
+function renderMiss(list){
+
+const miss=[0,0,0,0,0,0,0,0]
+
+for(let i=0;i<8;i++){
+
+let count=0
+
+for(let r of list){
+
+if(r.slot===i+1) break
+
+count++
+
+}
+
+miss[i]=count
+
+}
+
+const box=document.getElementById("slotMiss")
+
+box.innerHTML=""
+
+miss.forEach((v,i)=>{
+
+box.innerHTML+=`
+<div class="miss-box">
+
+<img src="/assets/police/slot${i+1}.png">
+
+<div class="miss-count ${v>15?'miss-hot':''}">
+${v}
+</div>
+
+</div>
+`
+
+})
+
+}
 
 
 
