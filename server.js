@@ -3730,6 +3730,8 @@ socket.on("wheel8-get-history",()=>{
 socket.emit("wheel8-history",wheel8History)
 })
 
+socket.emit("wheel8-history", wheel8History)
+
 // ================================
 // 📜 SEND USER BET HISTORY
 // ================================
