@@ -3730,7 +3730,13 @@ socket.on("wheel8-get-history",()=>{
 socket.emit("wheel8-history",wheel8History)
 })
 
+// gửi dữ liệu ngay khi mở trang
 socket.emit("wheel8-history", wheel8History)
+
+socket.emit("wheel8-round-info",{
+  roundId: wheel8Round.id,
+  endAt: wheel8Round.endAt
+})
 
 // ================================
 // 📜 SEND USER BET HISTORY
