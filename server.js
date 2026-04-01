@@ -233,7 +233,7 @@ console.error("Save wheel8 round failed",e)
 const WHEEL8_HISTORY_FILE =
 "/opt/render/project/data/wheel8_history.json"
 
-const MAX_WHEEL8_HISTORY = 200
+const MAX_WHEEL8_HISTORY = 500
 
 
 function loadWheel8History(){

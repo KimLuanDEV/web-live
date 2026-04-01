@@ -296,7 +296,10 @@ box.appendChild(img)
 function renderMiss(list){
 
 const miss=[0,0,0,0,0,0,0,0]
+let missX5=0
+let missX45=0
 
+// tính slot miss
 for(let i=0;i<8;i++){
 
 let count=0
@@ -313,10 +316,26 @@ miss[i]=count
 
 }
 
+// tính event miss
+for(let r of list){
+
+if(r.event==="x5-all") break
+missX5++
+
+}
+
+for(let r of list){
+
+if(r.event==="x45-all") break
+missX45++
+
+}
+
 const box=document.getElementById("slotMiss")
 
 box.innerHTML=""
 
+// render slot
 miss.forEach((v,i)=>{
 
 box.innerHTML+=`
@@ -332,6 +351,32 @@ ${v}
 `
 
 })
+
+// render event x5
+box.innerHTML+=`
+<div class="miss-box">
+
+<img src="/assets/police/event-x5-all.png">
+
+<div class="miss-count ${missX5>30?'miss-hot':''}">
+${missX5}
+</div>
+
+</div>
+`
+
+// render event x45
+box.innerHTML+=`
+<div class="miss-box">
+
+<img src="/assets/police/event-x45-all.png">
+
+<div class="miss-count ${missX45>30?'miss-hot':''}">
+${missX45}
+</div>
+
+</div>
+`
 
 }
 
