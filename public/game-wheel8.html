@@ -1648,6 +1648,51 @@ pointer-events:auto;
 
 
 
+.miss-box{
+
+background:#001a33;
+border:1px solid #00aaff;
+border-radius:10px;
+
+padding:12px;
+margin-bottom:10px;
+
+text-align:center;
+
+box-shadow:0 0 10px #00aaff;
+
+}
+
+.miss-box img{
+width:40px;
+height:40px;
+}
+
+.miss-count{
+
+font-size:18px;
+font-weight:900;
+
+color:#ffd700;
+
+}
+
+.miss-sub{
+
+font-size:11px;
+opacity:.6;
+
+}
+
+.miss-box.event{
+
+border-color:#ff0033;
+box-shadow:0 0 10px #ff0033;
+
+}
+
+
+
 
 </style>
 </head>
@@ -2017,10 +2062,17 @@ onclick="closeSlotMiss()">✕</button>
 <div id="slotMissGrid"
 style="
 display:grid;
-grid-template-columns:repeat(4,1fr);
-gap:10px;
+grid-template-columns:1fr 1fr;
+gap:15px;
 padding:15px;
-"></div>
+">
+
+<div id="slotColX5"></div>
+
+<div id="slotColX45"></div>
+
+</div>
+
 
 </div>
 
@@ -3026,163 +3078,120 @@ document.getElementById("slotMissModal").style.display="none"
 
 function renderSlotMiss(){
 
-const grid = document.getElementById("slotMissGrid")
+const colX5 = document.getElementById("slotColX5")
+const colX45 = document.getElementById("slotColX45")
 
 if(!wheel8History.length){
-grid.innerHTML = "<div>Loading...</div>"
+colX5.innerHTML="Loading..."
+colX45.innerHTML=""
 return
 }
 
-const miss = [0,0,0,0,0,0,0,0]
+const miss=[0,0,0,0,0,0,0,0]
 
-let missX5All = 0
-let missX45All = 0
+let missX5=0
+let missX45=0
 
 
 // SLOT MISS
-for(let slot=1; slot<=8; slot++){
+for(let slot=1;slot<=8;slot++){
 
-let count = 0
+let count=0
 
 for(let i=0;i<wheel8History.length;i++){
 
-const r = wheel8History[i]
+const r=wheel8History[i]
 
-if(r.slot === slot){
-break
-}
+if(r.slot===slot) break
 
 count++
 
 }
 
-miss[slot-1] = count
+miss[slot-1]=count
 
 }
 
 
-// EVENT x5-all MISS
+// EVENT MISS
 for(let i=0;i<wheel8History.length;i++){
 
-const r = wheel8History[i]
-
-if(r.event === "x5-all"){
-break
-}
-
-missX5All++
+if(wheel8History[i].event==="x5-all") break
+missX5++
 
 }
 
-
-// EVENT x45-all MISS
 for(let i=0;i<wheel8History.length;i++){
 
-const r = wheel8History[i]
-
-if(r.event === "x45-all"){
-break
-}
-
-missX45All++
+if(wheel8History[i].event==="x45-all") break
+missX45++
 
 }
 
 
-
-grid.innerHTML = `
-
-${miss.map((m,i)=>`
-
-<div style="
-background:#001a33;
-border:1px solid #00aaff;
-border-radius:10px;
-padding:12px;
-text-align:center;
-box-shadow:0 0 10px #00aaff;
-">
-
-<img src="/assets/police/slot${i+1}.png"
-style="width:40px;height:40px"><br>
-
-<div style="
-font-size:18px;
-font-weight:900;
-color:#ffd700;
-">
-${m}
-</div>
-
-<div style="font-size:11px;opacity:.6">
-round miss
-</div>
-
-</div>
-
-`).join("")}
+// SLOT GROUP
+const x5Slots=[1,6,7,8]
+const x45Slots=[2,3,4,5]
 
 
-<!-- EVENT X5 ALL -->
+colX5.innerHTML=`
 
-<div style="
-background:#220000;
-border:1px solid #ff0033;
-border-radius:10px;
-padding:12px;
-text-align:center;
-box-shadow:0 0 10px #ff0033;
-">
+<div class="title-main">Light Weapons</div>
 
-<img src="/assets/police/event-x5-all.png"
-style="width:40px;height:40px"><br>
+${x5Slots.map(slot=>slotBox(slot,miss[slot-1])).join("")}
 
-<div style="
-font-size:18px;
-font-weight:900;
-color:#ffd700;
-">
-${missX5All}
-</div>
+${eventBox("event-x5-all.png",missX5)}
 
-<div style="font-size:11px;opacity:.6">
-round miss
-</div>
-
-</div>
+`
 
 
-<!-- EVENT X45 ALL -->
+colX45.innerHTML=`
 
-<div style="
-background:#220000;
-border:1px solid #ff0033;
-border-radius:10px;
-padding:12px;
-text-align:center;
-box-shadow:0 0 10px #ff0033;
-">
+<div class="title-main">Heavy Weapons</div>
 
-<img src="/assets/police/event-x45-all.png"
-style="width:40px;height:40px"><br>
+${x45Slots.map(slot=>slotBox(slot,miss[slot-1])).join("")}
 
-<div style="
-font-size:18px;
-font-weight:900;
-color:#ffd700;
-">
-${missX45All}
-</div>
-
-<div style="font-size:11px;opacity:.6">
-round miss
-</div>
-
-</div>
+${eventBox("event-x45-all.png",missX45)}
 
 `
 
 }
+
+
+function slotBox(slot,miss){
+
+return `
+<div class="miss-box">
+
+<img src="/assets/police/slot${slot}.png">
+
+<div class="miss-count">${miss}</div>
+
+<div class="miss-sub">round miss</div>
+
+</div>
+`
+
+}
+
+
+function eventBox(img,miss){
+
+return `
+<div class="miss-box event">
+
+<img src="/assets/police/${img}">
+
+<div class="miss-count">${miss}</div>
+
+<div class="miss-sub">event miss</div>
+
+</div>
+`
+
+}
+
+
 
 
 </script>
