@@ -1611,6 +1611,44 @@ pointer-events:none;
 
 
 
+.slot-miss-btn{
+
+position:absolute;
+bottom:252px;
+left:-13px;
+
+width:130px;
+height:130px;
+
+pointer-events:none;
+
+}
+
+.slot-miss-btn img{
+width:100%;
+height:134%;
+object-fit:contain;
+}
+
+.slot-miss-hitbox{
+
+position:absolute;
+
+width:77px;
+height:115px;
+
+left:30px;
+top:3px;
+
+cursor:pointer;
+
+pointer-events:auto;
+
+}
+
+
+
+
 </style>
 </head>
 
@@ -1838,6 +1876,19 @@ onclick="openMyBetHistory()"></div>
 
 </div>
 
+
+<!-- SLOT MISS BUTTON -->
+<div class="slot-miss-btn">
+
+<img src="/assets/police/stats-btn.png">
+
+<div class="slot-miss-hitbox"
+onclick="openSlotMiss()"></div>
+
+</div>
+
+
+
 <!-- ================= MY BET HISTORY ================= -->
 
 <div id="myBetHistoryModal" class="history-modal">
@@ -1946,6 +1997,37 @@ onclick="closeRoundDetail()">✕</button>
 
 </div>
 
+
+
+<div id="slotMissModal" class="history-modal">
+
+<div class="history-header">
+
+<div>
+<div class="history-title">SLOT MISS COUNT</div>
+</div>
+
+<button class="history-close"
+onclick="closeSlotMiss()">✕</button>
+
+</div>
+
+<div class="history-table">
+
+<div id="slotMissGrid"
+style="
+display:grid;
+grid-template-columns:repeat(4,1fr);
+gap:10px;
+padding:15px;
+"></div>
+
+</div>
+
+</div>
+
+
+
 <script>
 
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
@@ -1985,7 +2067,13 @@ let lastBetValue = 0
 const myBets = [0,0,0,0,0,0,0,0]
 const slots = document.querySelectorAll(".slot")
 
+let wheel8History = []
 
+socket.on("wheel8-history",(list)=>{
+
+wheel8History = list || []
+
+})
 
 function runHighlight(){
 
@@ -2921,6 +3009,92 @@ function scaleGame(){
 
 window.addEventListener("resize", scaleGame)
 window.addEventListener("load", scaleGame)
+
+
+function openSlotMiss(){
+
+renderSlotMiss()
+
+document.getElementById("slotMissModal").style.display="flex"
+
+}
+
+function closeSlotMiss(){
+document.getElementById("slotMissModal").style.display="none"
+}
+
+
+
+function renderSlotMiss(){
+
+const grid = document.getElementById("slotMissGrid")
+
+if(!wheel8History.length){
+grid.innerHTML = "<div>Loading...</div>"
+return
+}
+
+const miss = [0,0,0,0,0,0,0,0]
+
+// tìm slot xuất hiện gần nhất
+for(let slot=1; slot<=8; slot++){
+
+let count = 0
+
+for(let i=0;i<wheel8History.length;i++){
+
+const r = wheel8History[i]
+
+if(r.slot === slot){
+break
+}
+
+count++
+
+}
+
+miss[slot-1] = count
+
+}
+
+grid.innerHTML = miss.map((m,i)=>{
+
+return `
+<div style="
+background:#001a33;
+border:1px solid #00aaff;
+border-radius:10px;
+padding:12px;
+text-align:center;
+box-shadow:0 0 10px #00aaff;
+">
+
+<img src="/assets/police/slot${i+1}.png"
+style="width:40px;height:40px"><br>
+
+<div style="
+font-size:18px;
+font-weight:900;
+color:#ffd700;
+">
+
+${m}
+
+</div>
+
+<div style="
+font-size:11px;
+opacity:.6;
+">
+round miss
+</div>
+
+</div>
+`
+
+}).join("")
+
+}
 
 
 
