@@ -3024,7 +3024,6 @@ document.getElementById("slotMissModal").style.display="none"
 }
 
 
-
 function renderSlotMiss(){
 
 const grid = document.getElementById("slotMissGrid")
@@ -3036,7 +3035,11 @@ return
 
 const miss = [0,0,0,0,0,0,0,0]
 
-// tìm slot xuất hiện gần nhất
+let missX5All = 0
+let missX45All = 0
+
+
+// SLOT MISS
 for(let slot=1; slot<=8; slot++){
 
 let count = 0
@@ -3057,9 +3060,40 @@ miss[slot-1] = count
 
 }
 
-grid.innerHTML = miss.map((m,i)=>{
 
-return `
+// EVENT x5-all MISS
+for(let i=0;i<wheel8History.length;i++){
+
+const r = wheel8History[i]
+
+if(r.event === "x5-all"){
+break
+}
+
+missX5All++
+
+}
+
+
+// EVENT x45-all MISS
+for(let i=0;i<wheel8History.length;i++){
+
+const r = wheel8History[i]
+
+if(r.event === "x45-all"){
+break
+}
+
+missX45All++
+
+}
+
+
+
+grid.innerHTML = `
+
+${miss.map((m,i)=>`
+
 <div style="
 background:#001a33;
 border:1px solid #00aaff;
@@ -3077,25 +3111,78 @@ font-size:18px;
 font-weight:900;
 color:#ffd700;
 ">
-
 ${m}
-
 </div>
 
-<div style="
-font-size:11px;
-opacity:.6;
-">
+<div style="font-size:11px;opacity:.6">
 round miss
 </div>
 
 </div>
+
+`).join("")}
+
+
+<!-- EVENT X5 ALL -->
+
+<div style="
+background:#220000;
+border:1px solid #ff0033;
+border-radius:10px;
+padding:12px;
+text-align:center;
+box-shadow:0 0 10px #ff0033;
+">
+
+<img src="/assets/police/event-x5-all.png"
+style="width:40px;height:40px"><br>
+
+<div style="
+font-size:18px;
+font-weight:900;
+color:#ffd700;
+">
+${missX5All}
+</div>
+
+<div style="font-size:11px;opacity:.6">
+x5-all miss
+</div>
+
+</div>
+
+
+<!-- EVENT X45 ALL -->
+
+<div style="
+background:#220000;
+border:1px solid #ff0033;
+border-radius:10px;
+padding:12px;
+text-align:center;
+box-shadow:0 0 10px #ff0033;
+">
+
+<img src="/assets/police/event-x45-all.png"
+style="width:40px;height:40px"><br>
+
+<div style="
+font-size:18px;
+font-weight:900;
+color:#ffd700;
+">
+${missX45All}
+</div>
+
+<div style="font-size:11px;opacity:.6">
+x45-all miss
+</div>
+
+</div>
+
 `
 
-}).join("")
-
 }
-
 
 
 </script>
