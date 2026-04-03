@@ -3214,7 +3214,7 @@ return `
 
 <img src="/assets/police/slot${slot}.png">
 
-<div class="miss-count">${miss}</div>
+<div class="miss-count">${miss >= 500 ? "500+" : miss}</div>
 
 <div class="miss-sub">round miss</div>
 
@@ -3231,7 +3231,7 @@ return `
 
 <img src="/assets/police/${img}">
 
-<div class="miss-count">${miss}</div>
+<div class="miss-count">${miss >= 500 ? "500+" : miss}</div>
 
 <div class="miss-sub">event miss</div>
 
