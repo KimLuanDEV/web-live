@@ -3721,8 +3721,20 @@ io.on("connection", socket => {
   if (!uid) return;
 
 
+// ================================
+// 🎡 RESTORE WHEEL8 BETS WHEN RELOAD
+// ================================
 
 
+socket.on("wheel8-get-history",()=>{
+socket.emit("wheel8-history",wheel8History)
+})
+
+
+socket.emit("wheel8-round-info",{
+  roundId: wheel8Round.id,
+  endAt: wheel8Round.endAt
+})
 
 // ================================
 // 📜 SEND USER BET HISTORY
@@ -3748,6 +3760,12 @@ roundId: wheel8Round.id
 })
 
 
+socket.emit("wheel8-history",wheel8History)
+
+
+if(lastWheel8Result){
+  socket.emit("wheel8-result", lastWheel8Result)
+}
 
 const myWheelBets = [0,0,0,0,0,0,0,0];
 
