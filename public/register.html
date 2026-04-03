@@ -198,6 +198,7 @@ body{
 
 
 async function register(){
+
 const u = document.getElementById("username").value.trim();
 const name = document.getElementById("name").value.trim();
 const p = document.getElementById("password").value;
@@ -209,30 +210,39 @@ if(!u || !p || !p2 || !name || !sec){
   return;
 }
 
-  if(p !== p2){
-    showMsg("❌ Mật khẩu không khớp");
-    return;
-  }
+// ✅ kiểm tra username: viết liền, không dấu, >=6 ký tự
+const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
 
-  const res = await fetch("/api/register",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-   body: JSON.stringify({ 
-  username: u, 
-  password: p, 
-  name, 
-  securityCode: sec 
-})
+if(!usernameRegex.test(u)){
+  showMsg("❌ Tên đăng nhập phải viết liền, không dấu và tối thiểu 6 ký tự");
+  return;
+}
 
-  });
+if(p !== p2){
+  showMsg("❌ Mật khẩu không khớp");
+  return;
+}
 
-  const data = await res.json();
-  if(data.error){
-    showMsg("❌ Tài khoản đã tồn tại");
-    return;
-  }
+const res = await fetch("/api/register",{
+  method:"POST",
+  headers:{ "Content-Type":"application/json" },
+  body: JSON.stringify({ 
+    username: u, 
+    password: p, 
+    name, 
+    securityCode: sec 
+  })
+});
 
-  location.href="/login.html";
+const data = await res.json();
+
+if(data.error){
+  showMsg("❌ Tài khoản đã tồn tại");
+  return;
+}
+
+location.href="/login.html";
+
 }
 
 
