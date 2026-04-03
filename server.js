@@ -2000,8 +2000,8 @@ if(!winMap[o.uid]){
 // =======================
 
 const botNames = [
-  "Agent#A1","Agent#B7","Agent#X9",
-  "Agent#P3","Agent#K2","Agent#Z8"
+  "???","???","???",
+  "???","???","???"
 ]
 
 function fakeWin(winSlots){
