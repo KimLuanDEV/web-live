@@ -1692,6 +1692,22 @@ box-shadow:0 0 10px #ff0033;
 }
 
 
+.event-last{
+
+margin-top:6px;
+
+font-size:10px;
+line-height:1.3;
+
+opacity:.8;
+
+color:#ffd700;
+
+text-shadow:0 0 4px #000;
+
+}
+
+
 
 
 </style>
@@ -3075,7 +3091,6 @@ function closeSlotMiss(){
 document.getElementById("slotMissModal").style.display="none"
 }
 
-
 function renderSlotMiss(){
 
 const colX5 = document.getElementById("slotColX5")
@@ -3091,6 +3106,12 @@ const miss=[0,0,0,0,0,0,0,0]
 
 let missX5=0
 let missX45=0
+
+let lastX5Round="-"
+let lastX45Round="-"
+
+let lastX5Time="-"
+let lastX45Time="-"
 
 
 // SLOT MISS
@@ -3113,17 +3134,39 @@ miss[slot-1]=count
 }
 
 
-// EVENT MISS
+// EVENT MISS + LAST TIME
 for(let i=0;i<wheel8History.length;i++){
 
-if(wheel8History[i].event==="x5-all") break
+const r = wheel8History[i]
+
+if(r.event==="x5-all"){
+
+lastX5Round = r.round || "-"
+lastX5Time = r.ts
+? new Date(r.ts).toLocaleTimeString("vi-VN")
+: "-"
+
+break
+}
+
 missX5++
 
 }
 
 for(let i=0;i<wheel8History.length;i++){
 
-if(wheel8History[i].event==="x45-all") break
+const r = wheel8History[i]
+
+if(r.event==="x45-all"){
+
+lastX45Round = r.round || "-"
+lastX45Time = r.ts
+? new Date(r.ts).toLocaleTimeString("vi-VN")
+: "-"
+
+break
+}
+
 missX45++
 
 }
@@ -3136,20 +3179,28 @@ const x45Slots=[2,3,4,5]
 
 colX5.innerHTML=`
 
-
 ${x5Slots.map(slot=>slotBox(slot,miss[slot-1])).join("")}
 
-${eventBox("event-x5-all.png",missX5)}
+${eventBox(
+"event-x5-all.png",
+missX5,
+lastX5Round,
+lastX5Time
+)}
 
 `
 
 
 colX45.innerHTML=`
 
-
 ${x45Slots.map(slot=>slotBox(slot,miss[slot-1])).join("")}
 
-${eventBox("event-x45-all.png",missX45)}
+${eventBox(
+"event-x45-all.png",
+missX45,
+lastX45Round,
+lastX45Time
+)}
 
 `
 
@@ -3173,7 +3224,7 @@ return `
 }
 
 
-function eventBox(img,miss){
+function eventBox(img,miss,round,time){
 
 return `
 <div class="miss-box event">
@@ -3184,11 +3235,18 @@ return `
 
 <div class="miss-sub">event miss</div>
 
+<div class="event-last">
+
+<div>LAST:</div>
+<div>R#${round}</div>
+<div>${time}</div>
+
+</div>
+
 </div>
 `
 
 }
-
 
 
 
