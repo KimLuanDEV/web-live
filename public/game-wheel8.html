@@ -3172,9 +3172,6 @@ const miss=[0,0,0,0,0,0,0,0]
 let missX5=0
 let missX45=0
 
-let lastX5Round="-"
-let lastX45Round="-"
-
 let lastX5Time="-"
 let lastX45Time="-"
 
@@ -3206,8 +3203,6 @@ const r = wheel8History[i]
 
 if(r.event==="x5-all"){
 
-lastX5Round = r.round || "-"
-
 lastX5Time = r.ts
 ? new Date(r.ts).toLocaleString("vi-VN",{
   day:"2-digit",
@@ -3230,8 +3225,6 @@ for(let i=0;i<wheel8History.length;i++){
 const r = wheel8History[i]
 
 if(r.event==="x45-all"){
-
-lastX45Round = r.round || "-"
 
 lastX45Time = r.ts
 ? new Date(r.ts).toLocaleString("vi-VN",{
@@ -3263,7 +3256,6 @@ ${x5Slots.map(slot=>slotBox(slot,miss[slot-1])).join("")}
 ${eventBox(
 "event-x5-all.png",
 missX5,
-lastX5Round,
 lastX5Time
 )}
 
@@ -3277,7 +3269,6 @@ ${x45Slots.map(slot=>slotBox(slot,miss[slot-1])).join("")}
 ${eventBox(
 "event-x45-all.png",
 missX45,
-lastX45Round,
 lastX45Time
 )}
 
@@ -3303,7 +3294,7 @@ return `
 }
 
 
-function eventBox(img,miss,round,time){
+function eventBox(img,miss,time){
 
 return `
 <div class="miss-box event">
@@ -3317,14 +3308,12 @@ return `
 <div class="event-last">
 
 <div>LAST:</div>
-<div>R#${round}</div>
 <div>${time}</div>
 
 </div>
 
 </div>
 `
-
 }
 
 
