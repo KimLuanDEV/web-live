@@ -1950,6 +1950,13 @@ onclick="openSlotMiss()"></div>
 
 
 
+<button id="toggleTopNameBtn">
+👁
+</button>
+
+
+
+
 <!-- ================= MY BET HISTORY ================= -->
 
 <div id="myBetHistoryModal" class="history-modal">
@@ -3247,6 +3254,24 @@ return `
 `
 
 }
+
+
+
+
+const btn = document.getElementById("toggleTopNameBtn")
+
+btn.onclick = ()=>{
+  socket.emit("toggle-top-name")
+}
+
+socket.on("top-name-status", state=>{
+
+  btn.textContent =
+    state
+    ? "🙈"
+    : "👁"
+
+})
 
 
 

@@ -1972,13 +1972,22 @@ wheel8Round.bets.forEach(o=>{
 
   if(win > 0){
 
-    if(!winMap[o.uid]){
-      winMap[o.uid] = {
-        uid: o.uid,
-        name: "Player#" + o.uid.slice(-4),
-        win: 0
-      }
-    }
+const users = loadUsers()
+const user = users[o.uid]
+
+let displayName = "???"
+
+if(user?.profile?.showTopName){
+  displayName = user.profile.name
+}
+
+if(!winMap[o.uid]){
+  winMap[o.uid] = {
+    uid:o.uid,
+    name:displayName,
+    win:0
+  }
+}
 
     winMap[o.uid].win += win
   }
@@ -3724,6 +3733,27 @@ io.on("connection", socket => {
 // ================================
 // 🎡 RESTORE WHEEL8 BETS WHEN RELOAD
 // ================================
+
+
+
+socket.on("toggle-top-name", ()=>{
+
+  const uid = socket.data.uid
+  if(!uid) return
+
+  const users = loadUsers()
+  const me = users[uid]
+
+  if(!me?.profile) return
+
+  me.profile.showTopName = !me.profile.showTopName
+
+  saveUsers(users)
+
+  socket.emit("top-name-status", me.profile.showTopName)
+
+})
+
 
 
 socket.on("wheel8-get-history",()=>{
@@ -9794,7 +9824,8 @@ app.post("/api/register", async (req,res)=>{
       level:1,
       exp:0,
       coinSent:0,
-      coinReceived:0
+      coinReceived:0,
+      showTopName:false 
     }
   };
 
