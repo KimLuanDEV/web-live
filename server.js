@@ -3763,9 +3763,6 @@ roundId: wheel8Round.id
 socket.emit("wheel8-history",wheel8History)
 
 
-if(lastWheel8Result){
-  socket.emit("wheel8-result", lastWheel8Result)
-}
 
 const myWheelBets = [0,0,0,0,0,0,0,0];
 
