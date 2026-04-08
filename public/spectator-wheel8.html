@@ -1,0 +1,15 @@
+<script src="/socket.io/socket.io.js"></script>
+
+<script>
+
+const socket = io()
+
+socket.on("wheel8-timer",(t)=>{
+document.getElementById("timer").textContent = t
+})
+
+socket.on("wheel8-result",(data)=>{
+console.log("result",data)
+})
+
+</script>
