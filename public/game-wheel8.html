@@ -3367,9 +3367,13 @@ socket.on("top-name-status", state=>{
 
 
 
-document.getElementById("shareGameBtn").onclick = () => {
+document.getElementById("shareGameBtn").onclick = ()=>{
 
-  const uid = __profileAuth?.uid
+  const uid =
+    window.__profileAuth?.uid ||
+    socket?.data?.uid ||
+    localStorage.getItem("uid")
+
   if(!uid){
     alert("Login required")
     return
