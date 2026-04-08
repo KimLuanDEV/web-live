@@ -1815,6 +1815,29 @@ io.emit("wheel8-timer",remain)
 
 
 // ================================
+// 🎯 WHEEL8 PREDICTION
+// ================================
+function generateWheel8Prediction(){
+
+  const arr = []
+
+  while(arr.length < 3){
+
+    const s = Math.floor(Math.random()*8)+1
+
+    if(!arr.includes(s)){
+      arr.push(s)
+    }
+
+  }
+
+  return arr
+
+}
+
+
+
+// ================================
 // 🎡 WHEEL8 AUTO ROUND
 // ================================
 setInterval(()=>{
@@ -2242,6 +2265,18 @@ io.emit("wheel8-pool-update",wheel8Round.slotPool)
 io.emit("wheel8-round-new",{
 roundId: wheel8Round.id
 })
+
+
+// 🎯 gửi gợi ý sau 5 giây
+setTimeout(()=>{
+
+  const prediction = generateWheel8Prediction()
+
+  io.emit("wheel8-prediction",{
+    slots: prediction
+  })
+
+},5000)
 
 
 io.emit("admin-wheel8-bets-update", getAdminWheel8Data())

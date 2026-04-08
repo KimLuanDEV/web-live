@@ -2724,15 +2724,7 @@ el.textContent = pool[i]
 
 socket.on("wheel8-round-new",(data)=>{
 
-
 hidePrediction()
-
-// sau 5 giây mới hiện gợi ý
-setTimeout(()=>{
-showPrediction()
-},5000)
-
-
 
 currentRoundId = data.roundId
 
@@ -2754,15 +2746,37 @@ pool.style.display = "none"
 
 }
 
-
-
 document.getElementById("roundId").textContent =
 data.roundId
 
-// đóng modal cảnh báo
 document.getElementById("betClosedModal").style.display="none"
 
 })
+
+
+socket.on("wheel8-prediction",(data)=>{
+
+const box = document.getElementById("predictBox")
+const list = document.getElementById("predictList")
+
+if(!data || !data.slots) return
+
+list.innerHTML=""
+
+data.slots.forEach(slot=>{
+
+list.innerHTML += `
+<div class="predict-slot">
+<img src="/assets/police/slot${slot}.png">
+</div>
+`
+
+})
+
+box.style.display="block"
+
+})
+
 
 
 socket.on("wheel8-my-bets",(bets)=>{
@@ -3415,38 +3429,6 @@ socket.on("top-name-status", state=>{
 
 
 
-function showPrediction(){
-
-const box = document.getElementById("predictBox")
-const list = document.getElementById("predictList")
-
-list.innerHTML = ""
-
-const used = []   // lưu slot đã chọn
-
-while(used.length < 3){
-
-  const slot = Math.floor(Math.random()*8)+1
-
-  if(!used.includes(slot)){
-    used.push(slot)
-  }
-
-}
-
-used.forEach(slot=>{
-
-list.innerHTML += `
-<div class="predict-slot">
-<img src="/assets/police/slot${slot}.png">
-</div>
-`
-
-})
-
-box.style.display = "block"
-
-}
 
 
 function hidePrediction(){
