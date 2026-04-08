@@ -2207,14 +2207,16 @@ uid:me.uid
 }
 });
 
+// ==============================
+// 👁 SPECTATOR SEE PLAYER BET
+// ==============================
+
 const params = new URLSearchParams(location.search)
-const spectatorUid = params.get("spectator")
-
-const isSpectator = !!spectatorUid
-
+const isSpectator = params.has("spectator")
 
 if(isSpectator){
 
+  // label spectator
   const label = document.createElement("div")
   label.innerText = "👁 SPECTATOR MODE"
 
@@ -2234,6 +2236,28 @@ if(isSpectator){
   document.body.appendChild(label)
 
 }
+
+// nhận cược realtime
+socket.on("wheel8-bet-update",(data)=>{
+
+  const slot = data.slot
+  const bet  = Number(data.bet || 0)
+
+  const el = document.getElementById("mybet"+slot)
+
+  if(!el) return
+
+  const span = el.querySelector("span")
+
+  const old = Number(span.textContent || 0)
+
+  span.textContent = old + bet
+
+  el.style.display = "flex"
+
+  el.classList.add("active")
+
+})
 
 
 
@@ -3407,12 +3431,9 @@ socket.on("top-name-status", state=>{
 
 function shareGame(){
 
-  const uid = socket?.id || "viewer"
-
   const url =
-    location.origin +
-    "/game-wheel8.html?spectator=" +
-    uid
+  location.origin +
+  "/game-wheel8.html?spectator"
 
   navigator.clipboard.writeText(url)
 
