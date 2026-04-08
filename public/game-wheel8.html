@@ -1871,6 +1871,10 @@ onclick="leaveGame()"></div>
 </div>
 
 
+<button id="shareGameBtn">📡 Share</button>
+
+
+
 <!-- ================= HISTORY ================= -->
 
 <div class="wheel-history">
@@ -2165,6 +2169,32 @@ uid:me.uid
 });
 
 
+const urlParams = new URLSearchParams(location.search)
+const spectatorUid = urlParams.get("spectator")
+const isSpectator = !!spectatorUid
+
+
+if(isSpectator){
+
+  const label = document.createElement("div")
+  label.innerText = "👁 SPECTATOR MODE"
+
+  label.style = `
+  position:fixed;
+  top:10px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#000;
+  padding:6px 14px;
+  border:1px solid #00aaff;
+  border-radius:10px;
+  font-weight:900;
+  z-index:9999;
+  `
+
+  document.body.appendChild(label)
+
+}
 
 
 let currentBet = 0
@@ -2272,6 +2302,12 @@ event.target.classList.add("active")
 
 function bet(slot){
 
+
+  if(isSpectator){
+    alert("👁 Spectator mode")
+    return
+  }
+  
 if(!currentBet) return
 
 const modal = document.getElementById("betClosedModal")
@@ -2344,6 +2380,8 @@ lastBetValue = currentBet
 
 }
 /* RESULT */
+
+
 
 socket.on("wheel8-result",(data)=>{
 
@@ -3325,6 +3363,27 @@ socket.on("top-name-status", state=>{
     : "/assets/police/show-name-off.png"
 
 })
+
+
+
+
+document.getElementById("shareGameBtn").onclick = () => {
+
+  const uid = __profileAuth?.uid
+  if(!uid){
+    alert("Login required")
+    return
+  }
+
+  const link =
+    location.origin +
+    "/game-wheel8.html?spectator=" + uid
+
+  navigator.clipboard.writeText(link)
+
+  alert("📡 Share link copied!\n\n" + link)
+}
+
 
 
 
