@@ -1820,6 +1820,19 @@ object-fit:contain;
 }
 
 
+.predict-title-img{
+
+width:180px;
+margin-bottom:6px;
+
+filter:
+drop-shadow(0 0 10px #00aaff)
+drop-shadow(0 0 20px #00aaff);
+
+}
+
+
+
 
 </style>
 </head>
@@ -1952,7 +1965,10 @@ onclick="leaveGame()"></div>
 
 <!-- ================= SUGGESTION ================= -->
 <div id="predictBox" class="predict-box" style="display:none">
-<div class="predict-title">AI SUGGESTION</div>
+
+<img
+src="/assets/police/predict-title.png"
+class="predict-title-img">
 
 <div id="predictList" class="predict-list"></div>
 
