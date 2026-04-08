@@ -6642,15 +6642,6 @@ saveInvestState(investRound);
 });
 
 
-app.get("/spectate/wheel8/:id",(req,res)=>{
-
-res.sendFile(
-path.join(__dirname,"public/spectator-wheel8.html")
-)
-
-})
-
-
 
 app.get("/admin-time-race.html",(req,res)=>{
   res.sendFile(
