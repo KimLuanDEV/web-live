@@ -1749,28 +1749,6 @@ pointer-events:auto;
 
 
 
-.share-btn{
-position:absolute;
-top:20px;
-left:20px;
-
-padding:8px 14px;
-
-background:#001a33;
-border:1px solid #00aaff;
-
-color:#fff;
-font-weight:900;
-
-border-radius:6px;
-
-cursor:pointer;
-
-box-shadow:0 0 10px #00aaff;
-}
-
-
-
 
 
 </style>
@@ -1892,10 +1870,6 @@ onclick="leaveGame()"></div>
 
 </div>
 
-
-<button id="shareGameBtn" class="share-btn">
-📡 SHARE
-</button>
 
 <!-- ================= HISTORY ================= -->
 
@@ -3351,22 +3325,6 @@ socket.on("top-name-status", state=>{
     : "/assets/police/show-name-off.png"
 
 })
-
-
-
-
-document.getElementById("shareGameBtn").onclick = ()=>{
-
-  const uid = socket.id
-
-  const link =
-  location.origin + "/spectate/wheel8/" + uid
-
-  navigator.clipboard.writeText(link)
-
-  alert("🔗 Link copied:\n" + link)
-
-}
 
 
 
