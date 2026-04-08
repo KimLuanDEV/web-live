@@ -1749,6 +1749,76 @@ pointer-events:auto;
 
 
 
+.predict-box{
+
+position:absolute;
+top:120px;
+left:50%;
+transform:translateX(-50%);
+
+width:240px;
+
+text-align:center;
+z-index:6;
+
+}
+
+.predict-title{
+
+font-size:12px;
+font-weight:900;
+
+color:#00cfff;
+
+text-shadow:
+0 0 10px #00aaff;
+
+margin-bottom:6px;
+
+}
+
+.predict-list{
+
+display:flex;
+justify-content:center;
+gap:6px;
+
+}
+
+.predict-slot{
+
+width:46px;
+height:46px;
+
+border-radius:50%;
+
+display:flex;
+align-items:center;
+justify-content:center;
+
+background:
+linear-gradient(
+180deg,
+#0d1b2a,
+#020617
+);
+
+border:1px solid rgba(0,170,255,.5);
+
+box-shadow:
+0 0 10px rgba(0,170,255,.6),
+inset 0 0 6px rgba(0,170,255,.4);
+
+}
+
+.predict-slot img{
+
+width:80%;
+height:80%;
+object-fit:contain;
+
+}
+
 
 
 </style>
@@ -1880,6 +1950,13 @@ onclick="leaveGame()"></div>
 
 </div>
 
+<!-- ================= SUGGESTION ================= -->
+<div id="predictBox" class="predict-box" style="display:none">
+<div class="predict-title">AI SUGGESTION</div>
+
+<div id="predictList" class="predict-list"></div>
+
+</div>
 
 
 <!-- BET PANEL -->
@@ -2647,6 +2724,16 @@ el.textContent = pool[i]
 
 socket.on("wheel8-round-new",(data)=>{
 
+
+hidePrediction()
+
+// sau 5 giây mới hiện gợi ý
+setTimeout(()=>{
+showPrediction()
+},5000)
+
+
+
 currentRoundId = data.roundId
 
 isBetLocked = false
@@ -3325,6 +3412,42 @@ socket.on("top-name-status", state=>{
     : "/assets/police/show-name-off.png"
 
 })
+
+
+
+function showPrediction(){
+
+const box = document.getElementById("predictBox")
+const list = document.getElementById("predictList")
+
+list.innerHTML=""
+
+for(let i=0;i<3;i++){
+
+const slot =
+Math.floor(Math.random()*8)+1
+
+list.innerHTML += `
+<div class="predict-slot">
+<img src="/assets/police/slot${slot}.png">
+</div>
+`
+
+}
+
+box.style.display="block"
+
+}
+
+
+function hidePrediction(){
+
+const box =
+document.getElementById("predictBox")
+
+box.style.display="none"
+
+}
 
 
 
