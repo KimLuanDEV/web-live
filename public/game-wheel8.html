@@ -1750,37 +1750,6 @@ pointer-events:auto;
 
 
 
-.share-btn{
-position:absolute;
-top:120px;
-right:-7px;
-
-width:120px;
-height:80px;
-
-pointer-events:none;
-}
-
-.share-img{
-width:100%;
-height:100%;
-object-fit:contain;
-}
-
-.share-hitbox{
-position:absolute;
-width:85px;
-height:45px;
-left:17px;
-top:15px;
-
-cursor:pointer;
-pointer-events:auto;
-}
-
-
-
-
 
 </style>
 </head>
@@ -1900,18 +1869,6 @@ ROUND:
 onclick="leaveGame()"></div>
 
 </div>
-
-
-
-<div class="share-btn">
-
-<img src="/assets/police/share-btn.png" class="share-img">
-
-<div class="share-hitbox"
-onclick="shareGame()"></div>
-
-</div>
-
 
 
 <!-- ================= HISTORY ================= -->
@@ -2207,58 +2164,6 @@ uid:me.uid
 }
 });
 
-// ==============================
-// 👁 SPECTATOR SEE PLAYER BET
-// ==============================
-
-const params = new URLSearchParams(location.search)
-const isSpectator = params.has("spectator")
-
-if(isSpectator){
-
-  // label spectator
-  const label = document.createElement("div")
-  label.innerText = "👁 SPECTATOR MODE"
-
-  label.style = `
-  position:fixed;
-  top:10px;
-  left:50%;
-  transform:translateX(-50%);
-  background:#000;
-  padding:6px 14px;
-  border:1px solid #00aaff;
-  border-radius:10px;
-  font-weight:900;
-  z-index:9999;
-  `
-
-  document.body.appendChild(label)
-
-}
-
-// nhận cược realtime
-socket.on("wheel8-bet-update",(data)=>{
-
-  const slot = data.slot
-  const bet  = Number(data.bet || 0)
-
-  const el = document.getElementById("mybet"+slot)
-
-  if(!el) return
-
-  const span = el.querySelector("span")
-
-  const old = Number(span.textContent || 0)
-
-  span.textContent = old + bet
-
-  el.style.display = "flex"
-
-  el.classList.add("active")
-
-})
-
 
 
 
@@ -2366,11 +2271,6 @@ event.target.classList.add("active")
 /* BET */
 
 function bet(slot){
-
-if(isSpectator){
-  alert("👁 Spectator cannot bet")
-  return
-}
 
 if(!currentBet) return
 
@@ -3425,21 +3325,6 @@ socket.on("top-name-status", state=>{
     : "/assets/police/show-name-off.png"
 
 })
-
-
-
-
-function shareGame(){
-
-  const url =
-  location.origin +
-  "/game-wheel8.html?spectator"
-
-  navigator.clipboard.writeText(url)
-
-  alert("📺 Spectator link copied!\n\n" + url)
-
-}
 
 
 
