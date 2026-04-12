@@ -3898,7 +3898,7 @@ socket.on("admin-wheel8-override",(data)=>{
     Math.floor((wheel8Round.endAt - Date.now()) / 1000)
   )
 
-  if(remain <= 5){
+  if(remain <= 2){
     socket.emit("notify",{
       message:"Too late to override"
     })
