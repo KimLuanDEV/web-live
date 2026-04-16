@@ -94,13 +94,7 @@ body{
   text-shadow:0 0 20px red;
 }
 
-/* ===== HASH ===== */
-.hash{
-  font-size:11px;
-  word-break:break-all;
-  opacity:0.6;
-  margin-top:10px;
-}
+
 
 
 .slot-box{
@@ -396,14 +390,7 @@ body{
   gap:6px;
 }
 
-.bet-avatar{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  object-fit:cover;
 
-  border:1px solid #00ffff;
-}
 
 .bet-name{
   font-size:12px;
@@ -473,7 +460,6 @@ body{
 
     <div class="multi">x<span id="multi">0</span></div>
 
-    <div id="hash" class="hash"></div>
 
   </div>
 
@@ -501,7 +487,7 @@ body{
 <!-- POOL + PLAYER -->
 <div class="card full-card">
 
-  <div class="section-title">💰 SLOT POOL</div>
+  <div class="section-title">SLOT POOL</div>
   <div id="poolList" class="pool-grid"></div>
 
   <div class="section-title">👤 PLAYER BETS</div>
@@ -545,7 +531,6 @@ setTimeout(()=>{
 
 
   document.getElementById("multi").textContent = data.multiplier
-  document.getElementById("hash").textContent = data.hash
 
 })
 
@@ -660,9 +645,6 @@ socket.on("admin-wheel8-bets-update",(data)=>{
 
 div.innerHTML = `
   <div class="bet-left">
-
-    <img class="bet-avatar"
-    src="https://i.pravatar.cc/40?u=${p.name}">
 
     <div>
 
