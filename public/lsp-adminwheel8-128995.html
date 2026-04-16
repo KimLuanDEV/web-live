@@ -406,13 +406,30 @@ body{
 }
 
 .bet-slots{
-  display:flex;
+  display:grid;
+  grid-template-columns:repeat(4,20px);
   gap:4px;
-  margin-top:3px;
-  width:18px;
-  height:18px;
-  position:relative;
+  margin-top:4px;
 }
+
+.bet-slot{
+  width:20px;
+  height:20px;
+  position:relative;
+
+  opacity:.35;
+  transition:.2s;
+}
+
+
+.bet-slot.active{
+  opacity:1;
+
+  filter:
+    drop-shadow(0 0 6px #00ffff)
+    drop-shadow(0 0 12px #00ffff);
+}
+
 
 
 .bet-slot img{
@@ -444,6 +461,15 @@ body{
 
   background:rgba(255,200,0,0.1);
 }
+
+
+
+.bet-row{
+  display:flex;
+  gap:4px;
+  margin-top:2px;
+}
+
 
 
 
@@ -641,18 +667,42 @@ socket.on("admin-wheel8-bets-update",(data)=>{
       div.style.boxShadow = "0 0 10px #00ff88"
     }
 
-    let slotsHTML = ""
+let row1 = ""
+let row2 = ""
 
-    p.slots.forEach((v,i)=>{
-      if(v>0){
-        slotsHTML += `
-          <div class="bet-slot">
-            <img src="/assets/police/slot${i+1}.png">
-            <span>${v}</span>
-          </div>
-        `
-      }
-    })
+const row1Slots = [1,6,7,8]
+const row2Slots = [2,3,4,5]
+
+row1Slots.forEach(s=>{
+
+  const v = p.slots[s-1]
+  const active = v > 0 ? "active" : ""
+
+  row1 += `
+    <div class="bet-slot ${active}">
+      <img src="/assets/police/slot${s}.png">
+      ${v > 0 ? `<span>${v}</span>` : ``}
+    </div>
+  `
+})
+
+row2Slots.forEach(s=>{
+
+  const v = p.slots[s-1]
+  const active = v > 0 ? "active" : ""
+
+  row2 += `
+    <div class="bet-slot ${active}">
+      <img src="/assets/police/slot${s}.png">
+      ${v > 0 ? `<span>${v}</span>` : ``}
+    </div>
+  `
+})
+
+const slotsHTML = `
+  <div class="bet-row">${row1}</div>
+  <div class="bet-row">${row2}</div>
+`
 
 div.innerHTML = `
   <div class="bet-left">
