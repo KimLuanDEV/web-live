@@ -131,11 +131,12 @@ function getAdminWheel8Data(){
 
     // gom theo user
     if(!map[b.uid]){
-      map[b.uid] = {
-        name: users[b.uid]?.profile?.name || "Player",
-        total: 0,
-        slots: [0,0,0,0,0,0,0,0]
-      }
+   map[b.uid] = {
+  name: users[b.uid]?.profile?.name || "Player",
+  coins: users[b.uid]?.profile?.coins || 0,
+  total: 0,
+  slots: [0,0,0,0,0,0,0,0]
+}
     }
 
     map[b.uid].slots[b.slot-1] += b.bet

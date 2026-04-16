@@ -658,26 +658,32 @@ socket.on("admin-wheel8-bets-update",(data)=>{
       }
     })
 
-    div.innerHTML = `
-      <div class="bet-left">
+div.innerHTML = `
+  <div class="bet-left">
 
-        <img class="bet-avatar"
-        src="https://i.pravatar.cc/40?u=${p.name}">
+    <img class="bet-avatar"
+    src="https://i.pravatar.cc/40?u=${p.name}">
 
-        <div>
-          <div class="bet-name">${p.name}</div>
+    <div>
 
-          <div class="bet-slots">
-            ${slotsHTML}
-          </div>
-        </div>
+      <div class="bet-name">${p.name}</div>
 
+      <div style="font-size:10px;color:#00ffff;">
+        💰 ${p.coins}
       </div>
 
-      <div class="bet-total">
-        ${p.total}
+      <div class="bet-slots">
+        ${slotsHTML}
       </div>
-    `
+
+    </div>
+
+  </div>
+
+  <div class="bet-total">
+    ${p.total}
+  </div>
+`
 
     betBox.appendChild(div)
 
