@@ -370,44 +370,50 @@ body{
 
 
 .bet-card{
-  display:flex;
+  display:grid;
+  grid-template-columns: 1fr auto;
   align-items:center;
-  justify-content:space-between;
 
-  padding:6px 8px;
-  margin-bottom:4px;
+  padding:8px 10px;
+  margin-bottom:6px;
 
-  background:rgba(0,40,40,0.5);
-  border:1px solid rgba(0,255,255,0.15);
+  background:rgba(0,30,30,0.7);
+  border:1px solid rgba(0,255,255,0.2);
   border-radius:10px;
 
-  box-shadow:0 0 8px rgba(0,255,255,0.1);
+  box-shadow:
+    0 0 10px rgba(0,255,255,0.15),
+    inset 0 0 5px rgba(0,255,255,0.05);
 }
 
 .bet-left{
   display:flex;
-  align-items:center;
-  gap:6px;
+  flex-direction:column;
+  gap:2px;
 }
 
 
 
 .bet-name{
-  font-size:12px;
+  font-size:13px;
   font-weight:bold;
+  color:#00ffff;
+}
+
+.bet-coins{
+  font-size:11px;
+  color:#00ff88;
 }
 
 .bet-slots{
   display:flex;
-  gap:3px;
-  margin-top:2px;
-}
-
-.bet-slot{
+  gap:4px;
+  margin-top:3px;
   width:18px;
   height:18px;
   position:relative;
 }
+
 
 .bet-slot img{
   width:100%;
@@ -429,9 +435,14 @@ body{
 }
 
 .bet-total{
+  font-size:14px;
   font-weight:bold;
-  font-size:12px;
-  color:#00ff88;
+  color:#ffcc00;
+
+  padding:3px 6px;
+  border-radius:6px;
+
+  background:rgba(255,200,0,0.1);
 }
 
 
@@ -650,9 +661,9 @@ div.innerHTML = `
 
       <div class="bet-name">${p.name}</div>
 
-      <div style="font-size:10px;color:#00ffff;">
-        💰 ${p.coins}
-      </div>
+<div class="bet-coins">
+💰 ${p.coins}
+</div>
 
       <div class="bet-slots">
         ${slotsHTML}
