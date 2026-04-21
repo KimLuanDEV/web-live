@@ -1537,9 +1537,12 @@ function renderProfileViewOnly(p){
     bioInput.disabled = true;
   }
 
-  // cover
-  if (p.cover && coverPreview){
-    coverPreview.src = fixMedia(p.cover);
+  // ===== FIX COVER =====
+  if (coverPreview){
+    coverPreview.src =
+      p.cover
+        ? fixMedia(p.cover)
+        : defaultProfile.cover;
   }
 
   // ===== BASIC STATS =====
@@ -1553,7 +1556,6 @@ function renderProfileViewOnly(p){
   coinSentVal.textContent = p.coinSent || 0;
   coinReceivedVal.textContent = p.coinReceived || 0;
 
-  // 💳 FIX: HIỂN THỊ TỔNG ĐÃ NẠP
   if (coinDepositVal){
     coinDepositVal.textContent = p.coinDeposit || 0;
   }
