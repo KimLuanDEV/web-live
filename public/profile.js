@@ -1872,20 +1872,38 @@ function confirmTransfer(){
 
   if(!pendingTransfer) return;
 
+  const avatar = document.getElementById("confirmAvatar").src;
+  const name   = document.getElementById("confirmName").textContent;
+  const level  = document.getElementById("confirmLevel").textContent;
+  const amount = pendingTransfer.amount;
+
   socket.emit("coin-transfer",{
     target: pendingTransfer.target,
-    amount: pendingTransfer.amount
+    amount: amount
   });
+
+  // render success UI
+  document.getElementById("successAvatar").src = avatar;
+  document.getElementById("successName").textContent = name;
+  document.getElementById("successLevel").textContent = level;
+  document.getElementById("successAmount").textContent = amount;
 
   pendingTransfer = null;
 
   closeTransferConfirm();
   closeTransfer();
 
-  showMsg("✅ Đã gửi yêu cầu chuyển kim cương");
+  document
+    .getElementById("transferSuccessModal")
+    .classList.remove("hidden");
 }
 
 
+function closeTransferSuccess(){
+  document
+    .getElementById("transferSuccessModal")
+    .classList.add("hidden");
+}
 
 
 const targetInput = document.getElementById("transferTarget");

@@ -860,6 +860,48 @@ color:#fff;
 
 
 
+<div id="transferSuccessModal" class="transfer-confirm hidden">
+
+  <div class="confirm-backdrop"
+       onclick="closeTransferSuccess()"></div>
+
+  <div class="confirm-card">
+
+    <div class="confirm-header" style="color:#4cd964">
+      ✅ Chuyển kim cương thành công
+    </div>
+
+    <div class="confirm-user">
+
+      <img id="successAvatar" class="confirm-avatar">
+
+      <div class="confirm-info">
+        <div id="successName" class="confirm-name"></div>
+        <div id="successLevel" class="confirm-level"></div>
+      </div>
+
+    </div>
+
+    <div class="confirm-amount-box">
+      <div class="confirm-label">Đã chuyển</div>
+      <div class="confirm-amount">
+        <span id="successAmount"></span>
+      </div>
+    </div>
+
+    <div class="confirm-actions">
+      <button class="btn-confirm"
+        onclick="closeTransferSuccess()">
+        OK
+      </button>
+    </div>
+
+  </div>
+
+</div>
+
+
+
 <div id="transferHistoryModal" class="history-screen hidden">
 
   <div class="history-header">
