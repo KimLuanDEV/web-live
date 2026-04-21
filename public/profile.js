@@ -1771,6 +1771,7 @@ function showForceLogoutModal(message){
 }
 
 
+/*
 socket.on("force-logout", (data) => {
   const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
 
@@ -1786,7 +1787,7 @@ socket.on("force-logout", (data) => {
     location.href = "/login.html";
   }, 3000);
 });
-
+*/
 
 
 const btnTransferCoin = document.getElementById("btnTransferCoin");
