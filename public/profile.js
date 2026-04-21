@@ -1537,13 +1537,13 @@ function renderProfileViewOnly(p){
     bioInput.disabled = true;
   }
 
-  // ===== FIX COVER =====
-  if (coverPreview){
-    coverPreview.src =
-      p.cover
-        ? fixMedia(p.cover)
-        : defaultProfile.cover;
-  }
+// ===== FIX COVER =====
+if (coverPreview){
+  coverPreview.src =
+    p.cover
+      ? fixMedia(p.cover)
+      : "/assets/ui/default-cover.jpg";
+}
 
   // ===== BASIC STATS =====
   const level = Number(p.level || 1);
