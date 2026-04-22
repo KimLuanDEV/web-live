@@ -52,6 +52,21 @@ if(btnAdminPanel){
 }
 
 
+// 💰 WITHDRAW BUTTON (ADMIN ONLY)
+const btnWithdraw = document.getElementById("btnWithdraw");
+
+if(btnWithdraw){
+
+  const isAdmin =
+    ADMIN_UIDS.includes(window.__profileAuth?.uid) ||
+    window.__profileAuth?.role === "admin" ||
+    (window.__profileAuth?.roles || []).includes("admin");
+
+  // chỉ admin mới thấy
+  btnWithdraw.classList.toggle("hidden", !isAdmin);
+
+}
+
 
 
 
