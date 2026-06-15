@@ -382,13 +382,19 @@ const box=document.getElementById("slotMiss")
 
 box.innerHTML=""
 
-// render slot
-miss.forEach((v,i)=>{
+// render slot theo layout:
+// hàng trên: 1 - 6 - 7 - 8
+// hàng dưới: 2 - 3 - 4 - 5
+const slotOrder = [1,6,7,8,2,3,4,5]
+
+slotOrder.forEach(slot=>{
+
+const v = miss[slot-1]
 
 box.innerHTML+=`
 <div class="miss-box">
 
-<img src="/assets/police/slot${i+1}.png">
+<img src="/assets/police/slot${slot}.png">
 
 <div class="miss-count ${v>15?'miss-hot':''}">
 ${v}
