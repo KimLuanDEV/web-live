@@ -46,6 +46,38 @@ font-weight:900;
 }
 
 
+/* slot 1,6,7,8 = xanh */
+.result.result-blue{
+background:
+linear-gradient(
+180deg,
+#0077ff,
+#001a44
+);
+
+border:1px solid rgba(0,170,255,.9);
+
+box-shadow:
+0 0 10px rgba(0,170,255,.8),
+inset 0 0 8px rgba(0,170,255,.6);
+}
+
+/* slot 2,3,4,5 = đỏ */
+.result.result-red{
+background:
+linear-gradient(
+180deg,
+#d80812,
+#3a0004
+);
+
+border:1px solid rgba(255,40,40,.9);
+
+box-shadow:
+0 0 10px rgba(216,8,18,.8),
+inset 0 0 8px rgba(216,8,18,.6);
+}
+
 
 .bar{
 height:8px;
@@ -216,6 +248,18 @@ last50.forEach(r=>{
 
 const div = document.createElement("div")
 div.className = "result"
+
+const slot = Number(r.slot)
+
+// slot 2-3-4-5 = đỏ
+if([2,3,4,5].includes(slot)){
+  div.classList.add("result-red")
+}
+
+// slot 1-6-7-8 = xanh
+else if([1,6,7,8].includes(slot)){
+  div.classList.add("result-blue")
+}
 
 const img = document.createElement("img")
 
