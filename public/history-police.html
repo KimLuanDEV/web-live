@@ -445,6 +445,7 @@ socket.emit("wheel8-get-history")
 
 
 let roundResultResetTimer = null
+let liveTopClearTimer = null
 
 
 socket.on("wheel8-history",list=>{
@@ -648,18 +649,24 @@ data.roundId
 
 roundEnd = data.endAt
 
-const liveTopBox =
-  document.getElementById("liveTopWinnerList")
+clearTimeout(liveTopClearTimer)
 
-if(liveTopBox){
+liveTopClearTimer = setTimeout(()=>{
 
-  liveTopBox.innerHTML = `
-    <div class="live-top-empty">
-      Waiting for result...
-    </div>
-  `
+  const liveTopBox =
+    document.getElementById("liveTopWinnerList")
 
-}
+  if(liveTopBox){
+
+    liveTopBox.innerHTML = `
+      <div class="live-top-empty">
+        Waiting for result...
+      </div>
+    `
+
+  }
+
+},5000)
 
 
 clearTimeout(roundResultResetTimer)
