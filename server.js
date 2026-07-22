@@ -2216,8 +2216,11 @@ wheel8History.unshift({
   ts: Date.now(),
   slots: winSlots,
   event: specialEvent
-  ? (winSlots.includes(1) ? "x5-all" : "x45-all")
-  : null
+    ? (winSlots.includes(1) ? "x5-all" : "x45-all")
+    : null,
+
+  // lưu top 3 của phiên vào lịch sử
+  topWinners: topWinners
 })
 
 if(wheel8History.length > MAX_WHEEL8_HISTORY){

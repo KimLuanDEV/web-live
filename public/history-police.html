@@ -167,6 +167,116 @@ color:#ff3b3b;
 }
 
 
+/* TOP WINNERS MODAL */
+
+.top-modal{
+position:fixed;
+inset:0;
+background:rgba(0,0,0,.78);
+display:none;
+align-items:center;
+justify-content:center;
+z-index:9999;
+padding:20px;
+}
+
+.top-modal.show{
+display:flex;
+}
+
+.top-modal-box{
+width:min(420px,100%);
+background:linear-gradient(180deg,#041525,#010712);
+border:1px solid #00aaff;
+border-radius:14px;
+box-shadow:0 0 30px rgba(0,170,255,.45);
+overflow:hidden;
+}
+
+.top-modal-header{
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:14px 16px;
+border-bottom:1px solid rgba(0,170,255,.35);
+}
+
+.top-modal-title{
+font-size:18px;
+font-weight:900;
+color:#00eaff;
+}
+
+.top-modal-close{
+width:34px;
+height:34px;
+border:0;
+border-radius:8px;
+background:#182536;
+color:#fff;
+font-size:22px;
+cursor:pointer;
+}
+
+.top-round{
+padding:10px 16px 4px;
+font-size:13px;
+opacity:.7;
+}
+
+.top-list{
+padding:12px 16px 18px;
+}
+
+.top-winner{
+display:grid;
+grid-template-columns:42px 1fr auto;
+gap:10px;
+align-items:center;
+background:#001a33;
+border:1px solid rgba(0,170,255,.25);
+border-radius:10px;
+padding:11px;
+margin-top:8px;
+}
+
+.top-rank{
+font-size:21px;
+font-weight:900;
+color:#ffd43b;
+text-align:center;
+}
+
+.top-name{
+font-weight:800;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+
+.top-win{
+font-size:16px;
+font-weight:900;
+color:#00ff9d;
+white-space:nowrap;
+}
+
+.top-empty{
+padding:24px;
+text-align:center;
+opacity:.65;
+}
+
+.result{
+cursor:pointer;
+transition:transform .15s;
+}
+
+.result:hover{
+transform:scale(1.06);
+}
+
+
 
 </style>
 </head>
@@ -207,6 +317,28 @@ color:#ff3b3b;
 <h3>SLOT MISS COUNT</h3>
 <div id="slotMiss" class="miss-grid"></div>
 </div>
+
+
+<div id="topModal" class="top-modal">
+  <div class="top-modal-box">
+
+    <div class="top-modal-header">
+      <div class="top-modal-title">TOP 3 WINNERS</div>
+
+      <button
+        id="topModalClose"
+        class="top-modal-close"
+        type="button"
+      >×</button>
+    </div>
+
+    <div id="topRound" class="top-round"></div>
+
+    <div id="topWinnerList" class="top-list"></div>
+
+  </div>
+</div>
+
 
 
 <script>
@@ -268,6 +400,12 @@ img.className = "result-img"
 
 div.appendChild(img)
 
+div.title = "Click để xem top 3 thắng"
+
+div.addEventListener("click",()=>{
+  openTopWinners(r)
+})
+
 box.appendChild(div)
 
 })
@@ -275,7 +413,131 @@ box.appendChild(div)
 }
 
 
+function formatWin(value){
 
+const n = Number(value || 0)
+
+return Math.round(n).toLocaleString("en-US")
+
+}
+
+
+function openTopWinners(round){
+
+const modal = document.getElementById("topModal")
+const roundBox = document.getElementById("topRound")
+const listBox = document.getElementById("topWinnerList")
+
+roundBox.textContent =
+  "ROUND: " + (round.roundId ?? "--")
+
+const winners =
+  Array.isArray(round.topWinners)
+    ? [...round.topWinners]
+    : Array.isArray(round.top)
+      ? [...round.top]
+      : []
+
+winners.sort((a,b)=>{
+  return Number(b.win || b.amount || 0)
+       - Number(a.win || a.amount || 0)
+})
+
+const top3 = winners.slice(0,3)
+
+if(!top3.length){
+
+  listBox.innerHTML = `
+    <div class="top-empty">
+      Phiên này chưa có dữ liệu người thắng
+    </div>
+  `
+
+}else{
+
+  listBox.innerHTML = top3.map((item,index)=>{
+
+    const name =
+      item.name ||
+      item.displayName ||
+      "???"
+
+    const win =
+      item.win ??
+      item.amount ??
+      0
+
+    return `
+      <div class="top-winner">
+
+        <div class="top-rank">
+          #${index + 1}
+        </div>
+
+        <div class="top-name">
+          ${escapeTopHtml(name)}
+        </div>
+
+        <div class="top-win">
+          ${formatWin(win)}
+        </div>
+
+      </div>
+    `
+
+  }).join("")
+
+}
+
+modal.classList.add("show")
+
+}
+
+
+function closeTopWinners(){
+
+document
+  .getElementById("topModal")
+  .classList.remove("show")
+
+}
+
+
+function escapeTopHtml(value){
+
+return String(value)
+  .replaceAll("&","&amp;")
+  .replaceAll("<","&lt;")
+  .replaceAll(">","&gt;")
+  .replaceAll('"',"&quot;")
+  .replaceAll("'","&#039;")
+
+}
+
+
+document
+  .getElementById("topModalClose")
+  .addEventListener("click",closeTopWinners)
+
+
+document
+  .getElementById("topModal")
+  .addEventListener("click",event=>{
+
+    if(event.target.id === "topModal"){
+      closeTopWinners()
+    }
+
+  })
+
+
+document.addEventListener("keydown",event=>{
+
+  if(event.key === "Escape"){
+    closeTopWinners()
+  }
+
+})
 
 
 
