@@ -440,11 +440,8 @@ transform:scale(1.06);
 
 const socket = io()
 
-socket.on("connect",()=>{
 
-  socket.emit("wheel8-get-history")
-
-})
+socket.emit("wheel8-get-history")
 
 
 let roundResultResetTimer = null
@@ -453,44 +450,7 @@ let liveTopClearTimer = null
 
 socket.on("wheel8-history",list=>{
 
-  if(!Array.isArray(list)) return
-
-  renderStats(list)
-
-  // Dùng phiên gần nhất để cập nhật ngay khi reload
-  const latest = list[0]
-
-  if(latest){
-
-    const slot = Number(
-      latest.slot ??
-      latest.winSlot ??
-      latest.resultSlot ??
-      latest.slots?.[0]
-    )
-
-    if(slot){
-
-      const box =
-        document.getElementById("roundResult")
-
-      box.innerHTML = `
-        <img
-          src="/assets/police/slot${slot}.png"
-          class="result-img"
-        >
-      `
-
-    }
-
-    renderLiveTopWinners({
-      topWinners:
-        latest.topWinners ||
-        latest.top ||
-        []
-    })
-
-  }
+renderStats(list)
 
 })
 
@@ -681,49 +641,42 @@ document.addEventListener("keydown",event=>{
 
 
 let roundEnd = 0
-let currentRoundId = null
 
 socket.on("wheel8-round-info",(data)=>{
 
-  const newRoundId = String(data.roundId || "")
+document.getElementById("roundId").textContent =
+data.roundId
 
-  document.getElementById("roundId").textContent =
-    newRoundId || "--"
+roundEnd = data.endAt
 
-  roundEnd = data.endAt
+clearTimeout(liveTopClearTimer)
 
-  // Chỉ xóa dữ liệu khi thực sự sang phiên mới.
-  // Khi reload, currentRoundId đang null nên giữ kết quả cũ.
-  if(
-    currentRoundId !== null &&
-    newRoundId &&
-    newRoundId !== currentRoundId
-  ){
+liveTopClearTimer = setTimeout(()=>{
 
-    clearTimeout(liveTopClearTimer)
-    clearTimeout(roundResultResetTimer)
+  const liveTopBox =
+    document.getElementById("liveTopWinnerList")
 
-    const liveTopBox =
-      document.getElementById("liveTopWinnerList")
+  if(liveTopBox){
 
-    if(liveTopBox){
-      liveTopBox.innerHTML = `
-        <div class="live-top-empty">
-          Waiting for result...
-        </div>
-      `
-    }
-
-    const resultBox =
-      document.getElementById("roundResult")
-
-    if(resultBox){
-      resultBox.innerHTML = "?"
-    }
+    liveTopBox.innerHTML = `
+      <div class="live-top-empty">
+        Waiting for result...
+      </div>
+    `
 
   }
 
-  currentRoundId = newRoundId
+},5000)
+
+
+clearTimeout(roundResultResetTimer)
+
+roundResultResetTimer = setTimeout(()=>{
+
+  const box = document.getElementById("roundResult")
+  box.innerHTML = "?"
+
+},10000)
 
 })
 

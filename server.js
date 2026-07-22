@@ -2193,16 +2193,13 @@ const topWinners = merged.slice(0,5)
 // =======================
 
 lastWheel8Result = {
-  roundId: wheel8Round.id,
   slot: resultSlot,
   slots: winSlots,
   multiplier: multiplier,
   event: specialEvent
     ? (winSlots.includes(1) ? "x5-all" : "x45-all")
     : null,
-
-  top: topWinners,
-  topWinners: topWinners
+  top: topWinners
 }
 
 io.emit("wheel8-result", lastWheel8Result)
@@ -3799,32 +3796,7 @@ socket.on("toggle-top-name", ()=>{
 
 
 socket.on("wheel8-get-history",()=>{
-
-  // gửi lịch sử ngay khi reload
-  socket.emit("wheel8-history",wheel8History)
-
-  // gửi lại kết quả gần nhất ngay khi reload
-  if(lastWheel8Result){
-
-    socket.emit("wheel8-result",lastWheel8Result)
-
-  }else if(wheel8History.length > 0){
-
-    // dự phòng khi server vừa restart
-    const latest = wheel8History[0]
-
-    socket.emit("wheel8-result",{
-      roundId: latest.roundId,
-      slot: latest.slot,
-      slots: latest.slots || [latest.slot],
-      multiplier: latest.multi,
-      event: latest.event || null,
-      topWinners: latest.topWinners || [],
-      top: latest.topWinners || []
-    })
-
-  }
-
+socket.emit("wheel8-history",wheel8History)
 })
 
 
