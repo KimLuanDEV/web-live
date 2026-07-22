@@ -112,8 +112,8 @@ margin-bottom:8px;
 
 .live-top-list{
 display:grid;
-grid-template-columns:repeat(3,1fr);
-gap:8px;
+grid-template-columns:repeat(5,minmax(0,1fr));
+gap:6px;
 }
 
 .live-top-item{
@@ -386,7 +386,7 @@ transform:scale(1.06);
 <div class="live-top-winners">
 
   <div class="live-top-title">
-    TOP 3 WINNERS
+    TOP 5 WINNERS
   </div>
 
   <div id="liveTopWinnerList" class="live-top-list">
@@ -418,7 +418,7 @@ transform:scale(1.06);
   <div class="top-modal-box">
 
     <div class="top-modal-header">
-      <div class="top-modal-title">TOP 3 WINNERS</div>
+      <div class="top-modal-title">TOP 5 WINNERS</div>
 
       <button
         id="topModalClose"
@@ -539,9 +539,9 @@ winners.sort((a,b)=>{
        - Number(a.win || a.amount || 0)
 })
 
-const top3 = winners.slice(0,3)
+const top5 = winners.slice(0,5)
 
-if(!top3.length){
+if(!top5.length){
 
   listBox.innerHTML = `
     <div class="top-empty">
@@ -551,7 +551,7 @@ if(!top3.length){
 
 }else{
 
-  listBox.innerHTML = top3.map((item,index)=>{
+  listBox.innerHTML = top5.map((item,index)=>{
 
     const name =
       item.name ||
@@ -722,9 +722,9 @@ winners.sort((a,b)=>{
 
 })
 
-const top3 = winners.slice(0,3)
+const top5 = winners.slice(0,5)
 
-if(!top3.length){
+if(!top5.length){
 
   box.innerHTML = `
     <div class="live-top-empty">
@@ -735,7 +735,7 @@ if(!top3.length){
   return
 }
 
-box.innerHTML = top3.map((item,index)=>{
+box.innerHTML = top5.map((item,index)=>{
 
   const name =
     item.name ||
