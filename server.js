@@ -2186,7 +2186,7 @@ playerList.forEach(p=>{
 
 merged.sort((a,b)=>b.win - a.win)
 
-const topWinners = merged.slice(0,3)
+const topWinners = merged.slice(0,5)
 
 // =======================
 // 🎡 EMIT RESULT
