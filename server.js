@@ -2134,7 +2134,7 @@ function fakeWin(winSlots){
 let botTop = []
 const usedWins = new Set()
 
-while(botTop.length < 3){
+while(botTop.length < 5){
 
   let win
 
