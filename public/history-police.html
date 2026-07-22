@@ -90,7 +90,86 @@ display:flex;
 justify-content:space-between;
 align-items:center;
 text-align:center;
+flex-wrap:wrap;
 }
+
+
+/* TOP 3 HIỂN THỊ TRỰC TIẾP */
+
+.live-top-winners{
+width:100%;
+margin-top:14px;
+padding-top:12px;
+border-top:1px solid rgba(0,170,255,.35);
+}
+
+.live-top-title{
+font-size:13px;
+font-weight:900;
+color:#00eaff;
+margin-bottom:8px;
+}
+
+.live-top-list{
+display:grid;
+grid-template-columns:repeat(3,1fr);
+gap:8px;
+}
+
+.live-top-item{
+min-width:0;
+display:grid;
+grid-template-columns:30px minmax(0,1fr);
+grid-template-rows:auto auto;
+column-gap:7px;
+align-items:center;
+background:#001a33;
+border:1px solid rgba(0,170,255,.3);
+border-radius:9px;
+padding:8px;
+text-align:left;
+}
+
+.live-top-rank{
+grid-row:1 / 3;
+font-size:18px;
+font-weight:900;
+color:#ffd43b;
+text-align:center;
+}
+
+.live-top-name{
+min-width:0;
+font-size:13px;
+font-weight:800;
+overflow:hidden;
+text-overflow:ellipsis;
+white-space:nowrap;
+}
+
+.live-top-win{
+font-size:14px;
+font-weight:900;
+color:#00ff9d;
+white-space:nowrap;
+}
+
+.live-top-empty{
+grid-column:1 / -1;
+padding:10px;
+font-size:13px;
+opacity:.6;
+text-align:center;
+}
+
+@media(max-width:600px){
+
+.live-top-list{
+grid-template-columns:1fr;
+}
+
+}
+
 
 .round-info .label{
 font-size:12px;
@@ -302,6 +381,22 @@ transform:scale(1.06);
 <div class="round-right">
 <div class="label">RESULT</div>
 <div id="roundResult">?</div>
+</div>
+
+<div class="live-top-winners">
+
+  <div class="live-top-title">
+    TOP 3 WINNERS
+  </div>
+
+  <div id="liveTopWinnerList" class="live-top-list">
+
+    <div class="live-top-empty">
+      Waiting for result...
+    </div>
+
+  </div>
+
 </div>
 
 </div>
@@ -553,6 +648,20 @@ data.roundId
 
 roundEnd = data.endAt
 
+const liveTopBox =
+  document.getElementById("liveTopWinnerList")
+
+if(liveTopBox){
+
+  liveTopBox.innerHTML = `
+    <div class="live-top-empty">
+      Waiting for result...
+    </div>
+  `
+
+}
+
+
 clearTimeout(roundResultResetTimer)
 
 roundResultResetTimer = setTimeout(()=>{
@@ -572,6 +681,89 @@ document.getElementById("roundTimer").textContent = sec
 
 
 
+function renderLiveTopWinners(data){
+
+const box =
+  document.getElementById("liveTopWinnerList")
+
+if(!box) return
+
+const winners =
+  Array.isArray(data.topWinners)
+    ? [...data.topWinners]
+    : Array.isArray(data.top)
+      ? [...data.top]
+      : []
+
+winners.sort((a,b)=>{
+
+  const winA = Number(
+    a.win ??
+    a.amount ??
+    a.totalWin ??
+    0
+  )
+
+  const winB = Number(
+    b.win ??
+    b.amount ??
+    b.totalWin ??
+    0
+  )
+
+  return winB - winA
+
+})
+
+const top3 = winners.slice(0,3)
+
+if(!top3.length){
+
+  box.innerHTML = `
+    <div class="live-top-empty">
+      No winners this round
+    </div>
+  `
+
+  return
+}
+
+box.innerHTML = top3.map((item,index)=>{
+
+  const name =
+    item.name ||
+    item.displayName ||
+    "???"
+
+  const win =
+    item.win ??
+    item.amount ??
+    item.totalWin ??
+    0
+
+  return `
+    <div class="live-top-item">
+
+      <div class="live-top-rank">
+        #${index + 1}
+      </div>
+
+      <div class="live-top-name">
+        ${escapeTopHtml(name)}
+      </div>
+
+      <div class="live-top-win">
+        ${formatWin(win)}
+      </div>
+
+    </div>
+  `
+
+}).join("")
+
+}
+
+
 socket.on("wheel8-result",(data)=>{
 
 
@@ -582,6 +774,8 @@ const slot =
   data.slots?.[0]
 
 if(!slot) return
+
+renderLiveTopWinners(data)
 
 clearTimeout(roundResultResetTimer)
 
