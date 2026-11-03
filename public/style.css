@@ -3987,7 +3987,7 @@ body.is-live #startLiveOverlay {
 
 /* ===== VIEWER: VIDEO FULL MÀN HÌNH ===== */
 body.viewer-fullscreen {
-  margin: 0;
+  margin: -21px;
   padding: 0;
   overflow: hidden;
   background: #000;
