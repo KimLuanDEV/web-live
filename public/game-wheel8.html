@@ -24,12 +24,14 @@ user-scalable=no">
   top:50%;
 
   transform:translate(-50%,-50%) scale(1);
-
   transform-origin:center center;
 
   overflow:hidden;
-}
 
+  background:
+    url("/assets/police/bg-police-casino.jpg")
+    center / cover no-repeat;
+}
 
 html, body{
   margin:0;
@@ -67,17 +69,11 @@ width:100%;
 }
 
 body::before{
-
-content:"";
-position:fixed;
-inset:0;
-
-background:
-url("/assets/police/bg-police-casino.jpg")
-center / cover no-repeat;
-
-z-index:-1;
-
+  content:"";
+  position:fixed;
+  inset:0;
+  background:#000000;
+  z-index:-1;
 }
 /* TOP BAR */
 
@@ -2331,7 +2327,7 @@ padding:15px;
     const scaleY = screenHeight / BASE_HEIGHT;
 
     // Giữ nguyên tỷ lệ hình ảnh, không méo
-    const scale = Math.min(scaleX, scaleY);
+   const scale = Math.min(1, scaleX, scaleY);
 
     // Tự động căn giữa
     app.style.width = BASE_WIDTH + "px";
