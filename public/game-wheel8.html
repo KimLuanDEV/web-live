@@ -16,14 +16,16 @@ user-scalable=no">
 
 #app{
   position:fixed;
-  left:50%;
-  top:50%;
 
   width:430px;
   height:870px;
 
-  transform:translate(-50%,-50%);
-  transform-origin:center center; /* 🔥 FIX */
+  left:50%;
+  top:50%;
+
+  transform:translate(-50%,-50%) scale(1);
+
+  transform-origin:center center;
 
   overflow:hidden;
 }
@@ -2296,6 +2298,79 @@ padding:15px;
 
 
 <script>
+
+
+/* =====================================
+   AUTO RESPONSIVE IOS + ANDROID
+   GIỮ NGUYÊN BỐ CỤC 430 x 870
+===================================== */
+
+(function(){
+
+  const BASE_WIDTH = 430;
+  const BASE_HEIGHT = 870;
+
+  function resizeGame(){
+
+    const app = document.getElementById("app");
+
+    if(!app) return;
+
+    // Kích thước màn hình thực tế
+    const screenWidth = window.innerWidth;
+
+    const screenHeight =
+      window.visualViewport
+      ? window.visualViewport.height
+      : window.innerHeight;
+
+    // Tỷ lệ chiều ngang
+    const scaleX = screenWidth / BASE_WIDTH;
+
+    // Tỷ lệ chiều dọc
+    const scaleY = screenHeight / BASE_HEIGHT;
+
+    // Giữ nguyên tỷ lệ hình ảnh, không méo
+    const scale = Math.min(scaleX, scaleY);
+
+    // Tự động căn giữa
+    app.style.width = BASE_WIDTH + "px";
+    app.style.height = BASE_HEIGHT + "px";
+
+    app.style.transform =
+      `translate(-50%, -50%) scale(${scale})`;
+
+  }
+
+  // Khi mở game
+  if(document.readyState === "loading"){
+    document.addEventListener(
+      "DOMContentLoaded",
+      resizeGame
+    );
+  }else{
+    resizeGame();
+  }
+
+  // Khi thay đổi kích thước màn hình
+  window.addEventListener("resize", resizeGame);
+
+  // iOS Safari thay đổi vùng hiển thị
+  if(window.visualViewport){
+    window.visualViewport.addEventListener(
+      "resize",
+      resizeGame
+    );
+  }
+
+  // Khi xoay điện thoại
+  window.addEventListener(
+    "orientationchange",
+    resizeGame
+  );
+
+})();
+
 
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
 
