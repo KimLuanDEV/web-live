@@ -2853,7 +2853,8 @@ el.textContent = pool[i]
 
 socket.on("wheel8-round-new",(data)=>{
 
-hidePrediction()
+// Đã tắt chức năng dự đoán
+// hidePrediction()
 
 currentRoundId = data.roundId
 
@@ -2883,31 +2884,16 @@ document.getElementById("betClosedModal").style.display="none"
 })
 
 
-socket.on("wheel8-prediction",(data)=>{
+// =====================================
+// PREDICTION - ĐÃ VÔ HIỆU HÓA
+// =====================================
 
-/*
-const box = document.getElementById("predictBox")
-*/
+socket.on("wheel8-prediction", (data) => {
 
-const list = document.getElementById("predictList")
+    // Không xử lý vì đã tắt giao diện dự đoán
+    return;
 
-if(!data || !data.slots) return
-
-list.innerHTML=""
-
-data.slots.forEach(slot=>{
-
-list.innerHTML += `
-<div class="predict-slot">
-<img src="/assets/police/slot${slot}.png">
-</div>
-`
-
-})
-
-box.style.display="block"
-
-})
+});
 
 
 
