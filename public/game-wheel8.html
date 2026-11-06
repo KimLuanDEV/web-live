@@ -201,10 +201,6 @@ height:60%;
 
 object-fit:contain;
 
-filter:
-drop-shadow(0 0 6px #000)
-drop-shadow(0 0 10px rgba(0,0,0,.6));
-
 transition:.2s;
 
 }
@@ -2986,6 +2982,149 @@ div,img,button{
 
 
 
+
+/* ==========================================
+   MILITARY ROUND BADGE
+========================================== */
+
+.wheel-round {
+    position: absolute;
+
+    top: 8px;
+    right: 10px;
+
+    min-width: 160px;
+    height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 0 11px;
+
+    box-sizing: border-box;
+
+    background:
+        linear-gradient(
+            135deg,
+            #465c3b 0%,
+            #263b29 35%,
+            #101f14 75%,
+            #08120b 100%
+        );
+
+    border: 1px solid #b99a50;
+    border-bottom: 2px solid #d5b76b;
+    border-radius: 5px;
+
+    box-shadow:
+        0 4px 12px rgba(0,0,0,.75),
+        inset 0 1px 0 rgba(255,255,255,.18),
+        inset 0 0 10px rgba(0,0,0,.4);
+
+    color: #f0d58e;
+
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .5px;
+
+    z-index: 8;
+    white-space: nowrap;
+}
+
+/* VẠCH KIM LOẠI PHÍA TRÊN */
+
+.wheel-round::before {
+    content: "";
+
+    position: absolute;
+    top: 2px;
+    left: 10px;
+    right: 10px;
+
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,220,130,.55),
+        transparent
+    );
+
+    pointer-events: none;
+}
+
+/* NGÔI SAO QUÂN ĐỘI */
+
+.round-army-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 19px;
+    height: 19px;
+
+    flex-shrink: 0;
+
+    color: #f4d37c;
+    font-size: 17px;
+
+    text-shadow:
+        0 1px 2px #000,
+        0 0 7px rgba(255,210,90,.5);
+}
+
+/* CHỮ ROUND */
+
+.round-army-label {
+    color: #e7d49b;
+
+    font-size: 11px;
+    font-weight: 900;
+
+    letter-spacing: 1px;
+
+    text-shadow: 0 2px 2px #000;
+}
+
+/* ĐÈN LED XANH */
+
+.round-army-led {
+    width: 6px;
+    height: 6px;
+
+    flex-shrink: 0;
+
+    border-radius: 50%;
+
+    background: #9aff68;
+
+    box-shadow:
+        0 0 5px #8aff58,
+        0 0 10px rgba(138,255,88,.55);
+}
+
+/* MÃ PHIÊN */
+
+.wheel-round #roundId {
+    color: #a6ff70;
+
+    font-size: 14px;
+    font-weight: 1000;
+
+    letter-spacing: .5px;
+
+    font-variant-numeric: tabular-nums;
+
+    text-shadow:
+        0 1px 2px #000,
+        0 0 8px rgba(105,255,60,.4);
+}
+
+
+
+
 </style>
 </head>
 
@@ -3088,10 +3227,23 @@ div,img,button{
 
 
 
-<!-- ================= ROUND ID ================= -->
+
+<!-- ================= MILITARY ROUND ================= -->
+
 <div class="wheel-round">
-ROUND:
-<span id="roundId">-</span>
+
+    <div class="round-army-icon">
+        ★
+    </div>
+
+    <div class="round-army-label">
+        ROUND
+    </div>
+
+    <div class="round-army-led"></div>
+
+    <span id="roundId">-</span>
+
 </div>
 
 
