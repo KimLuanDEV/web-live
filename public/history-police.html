@@ -777,6 +777,47 @@ h2 {
 
 
 
+/* =========================================
+   MILITARY - SPECIAL EVENT RESULTS
+========================================= */
+
+.result.result-event-x5 {
+    background: linear-gradient(
+        145deg,
+        #365e26,
+        #142c13,
+        #061407
+    );
+
+    border: 2px solid #8dff53;
+
+    box-shadow:
+        inset 0 0 12px #76ff4033,
+        0 0 10px #76ff4033;
+}
+
+.result.result-event-x45 {
+    background: linear-gradient(
+        145deg,
+        #6c4c16,
+        #302008,
+        #110d05
+    );
+
+    border: 2px solid #ffd15e;
+
+    box-shadow:
+        inset 0 0 12px #ffcc4433,
+        0 0 10px #ffcc4433;
+}
+
+.result.result-event-x5 img,
+.result.result-event-x45 img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
 
 </style>
 </head>
@@ -885,49 +926,73 @@ renderMiss(list)
 }
 
 
-function renderLast(list){
 
-const box = document.getElementById("lastResults")
+function renderLast(list) {
 
-box.innerHTML = ""
+  const box = document.getElementById("lastResults");
+  box.innerHTML = "";
 
-const last50 = list.slice(0,50)
+  const last50 = list.slice(0, 50);
 
-last50.forEach(r=>{
+  last50.forEach(r => {
 
-const div = document.createElement("div")
-div.className = "result"
+    const div = document.createElement("div");
+    div.className = "result";
 
-const slot = Number(r.slot)
+    const slot = Number(r.slot);
+    const event = r.event;
 
-// slot 2-3-4-5 = đỏ
-if([2,3,4,5].includes(slot)){
-  div.classList.add("result-red")
+    const img = document.createElement("img");
+    img.className = "result-img";
+
+    // =====================================
+    // EVENT ĐẶC BIỆT
+    // =====================================
+
+    if (event === "x5-all") {
+
+      img.src = "/assets/police/event-x5-all.png";
+      div.classList.add("result-event-x5");
+
+    } else if (event === "x45-all") {
+
+      img.src = "/assets/police/event-x45-all.png";
+      div.classList.add("result-event-x45");
+
+    } else {
+
+      // =====================================
+      // SLOT THÔNG THƯỜNG
+      // =====================================
+
+      img.src = `/assets/police/slot${slot}.png`;
+
+      if ([2, 3, 4, 5].includes(slot)) {
+        div.classList.add("result-red");
+      } else if ([1, 6, 7, 8].includes(slot)) {
+        div.classList.add("result-blue");
+      }
+
+    }
+
+    img.onerror = () => {
+      console.warn("Không tải được ảnh:", img.src);
+    };
+
+    div.appendChild(img);
+
+    div.title = "Click để xem top 5 thắng";
+
+    div.addEventListener("click", () => {
+      openTopWinners(r);
+    });
+
+    box.appendChild(div);
+
+  });
+
 }
 
-// slot 1-6-7-8 = xanh
-else if([1,6,7,8].includes(slot)){
-  div.classList.add("result-blue")
-}
-
-const img = document.createElement("img")
-
-img.src = "/assets/police/slot"+r.slot+".png"
-img.className = "result-img"
-
-div.appendChild(img)
-
-div.title = "Click để xem top 5 thắng"
-
-div.addEventListener("click",()=>{
-  openTopWinners(r)
-})
-
-box.appendChild(div)
-
-})
-
-}
 
 
 function formatWin(value){
