@@ -594,12 +594,12 @@ transform:translate(-50%,-50%) scale(0.8);
 
 border-radius:50%;
 
-border:3px solid #d80812;
+border:3px solid #b6b900;
 
 box-shadow:
-0 0 10px #d80812,
-0 0 20px #d80812,
-0 0 40px #d80812;
+0 0 10px #b6b900,
+0 0 20px #b6b900,
+0 0 40px #b6b900;
 
 opacity:0;
 
@@ -2445,6 +2445,547 @@ div,img,button{
 
 
 
+/* ==========================================
+   MILITARY SLOT MISS COUNT
+   FULLSCREEN 430 x 870
+========================================== */
+
+/* MAIN MODAL */
+
+#slotMissModal {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(76,110,50,.28),
+            transparent 60%
+        ),
+        repeating-linear-gradient(
+            135deg,
+            transparent 0 45px,
+            rgba(120,145,70,.025) 45px 90px
+        ),
+        linear-gradient(
+            180deg,
+            #1a2c1b 0%,
+            #0b180f 50%,
+            #030804 100%
+        );
+
+    color: #e9f1e5;
+    z-index: 500;
+    overflow: hidden;
+    box-sizing: border-box;
+}
+
+#slotMissModal * {
+    box-sizing: border-box;
+}
+
+/* INNER FRAME */
+
+#slotMissModal::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+
+    border: 1px solid rgba(155,184,105,.24);
+
+    box-shadow:
+        inset 0 0 28px #0008,
+        0 0 10px #70ff3012;
+
+    pointer-events: none;
+}
+
+/* ==========================================
+   HEADER
+========================================== */
+
+#slotMissModal .history-header {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    min-height: 112px;
+    padding: 16px 70px 16px 22px;
+
+    background:
+        linear-gradient(
+            125deg,
+            #40543b,
+            #203222 55%,
+            #101c13
+        );
+
+    border-bottom: 3px solid #b69b57;
+
+    box-shadow:
+        0 5px 18px #0009,
+        inset 0 1px 0 #ffffff25;
+
+    flex-shrink: 0;
+    z-index: 2;
+}
+
+#slotMissModal .history-header::after {
+    content: "";
+    position: absolute;
+
+    bottom: -3px;
+    left: 20px;
+    right: 20px;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #a5ff60,
+        #e6c36d,
+        #a5ff60,
+        transparent
+    );
+
+    box-shadow: 0 0 10px #7fff5066;
+}
+
+/* MILITARY LABEL */
+
+#slotMissModal .miss-army-label {
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 2px;
+
+    color: #a4d58a;
+    margin-bottom: 6px;
+}
+
+/* TITLE */
+
+#slotMissModal .history-title {
+    font-size: 21px;
+    font-weight: 1000;
+    letter-spacing: 1px;
+
+    color: #f6d98d;
+
+    text-shadow:
+        0 2px 3px #000,
+        0 0 12px #ffc94b40;
+}
+
+/* SUBTITLE */
+
+#slotMissModal .miss-header-sub {
+    margin-top: 6px;
+
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+
+    color: #9cbb8d;
+}
+
+/* CLOSE BUTTON */
+
+#slotMissModal .history-close {
+    position: absolute;
+    top: 32px;
+    right: 18px;
+
+    width: 43px;
+    height: 43px;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(
+        145deg,
+        #56664b,
+        #1a2a1d 60%,
+        #080f0a
+    );
+
+    border: 2px solid #c5a45a;
+    border-radius: 5px;
+
+    color: #ffe2a0;
+    font-size: 20px;
+    font-weight: 900;
+
+    box-shadow:
+        0 4px 12px #0009,
+        inset 0 1px 0 #ffffff30;
+
+    cursor: pointer;
+}
+
+#slotMissModal .history-close:active {
+    transform: scale(.94);
+}
+
+/* ==========================================
+   CONTENT
+========================================== */
+
+#slotMissModal .miss-army-content {
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 14px 12px 12px;
+
+    overflow: hidden;
+}
+
+/* ==========================================
+   GROUP HEADER
+========================================== */
+
+#slotMissModal .miss-group-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+
+    margin-bottom: 12px;
+    flex-shrink: 0;
+}
+
+#slotMissModal .miss-group-title {
+    min-height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+
+    background: linear-gradient(
+        180deg,
+        #42573a,
+        #1d2e20
+    );
+
+    border: 1px solid #b89c55;
+    border-bottom: 2px solid #d6b66b;
+    border-radius: 5px;
+
+    color: #f1d48a;
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .3px;
+
+    box-shadow:
+        inset 0 1px 0 #ffffff15,
+        0 3px 8px #0005;
+}
+
+#slotMissModal .miss-group-title small {
+    color: #9aff69;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+/* STATUS LED */
+
+#slotMissModal .miss-status-dot {
+    width: 6px;
+    height: 6px;
+
+    background: #84ff58;
+    border-radius: 50%;
+
+    box-shadow:
+        0 0 5px #84ff58,
+        0 0 10px #84ff5866;
+}
+
+/* ==========================================
+   TWO COLUMN GRID
+========================================== */
+
+#slotMissModal #slotMissGrid {
+    display: grid !important;
+
+    grid-template-columns:
+        minmax(0,1fr)
+        minmax(0,1fr) !important;
+
+    gap: 10px !important;
+    padding: 0 2px 12px !important;
+
+    flex: 1;
+    min-height: 0;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    align-content: start;
+
+    scrollbar-width: thin;
+    scrollbar-color: #6b8751 transparent;
+}
+
+#slotMissModal #slotColX5,
+#slotMissModal #slotColX45 {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+
+    min-width: 0;
+}
+
+/* ==========================================
+   MILITARY SLOT CARD
+========================================== */
+
+#slotMissModal .miss-box {
+    position: relative;
+
+    width: 100%;
+    min-height: 104px;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0;
+    padding: 10px 6px;
+
+    background:
+        linear-gradient(
+            125deg,
+            rgba(105,130,70,.12),
+            transparent 65%
+        ),
+        linear-gradient(
+            180deg,
+            #2b412d,
+            #152619 65%,
+            #0c190f
+        );
+
+    border: 1px solid #526a47;
+    border-left: 3px solid #8b9d59;
+    border-radius: 6px;
+
+    box-shadow:
+        0 4px 10px #0007,
+        inset 0 1px 0 #ffffff12,
+        inset 0 -4px 12px #0004;
+
+    text-align: center;
+    overflow: hidden;
+}
+
+/* TOP METAL DETAIL */
+
+#slotMissModal .miss-box::before {
+    content: "";
+    position: absolute;
+
+    top: 0;
+    left: 12px;
+    right: 12px;
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #c7b16d88,
+        transparent
+    );
+}
+
+/* SLOT IMAGE */
+
+#slotMissModal .miss-box img {
+    width: 46px;
+    height: 46px;
+
+    object-fit: contain;
+    flex-shrink: 0;
+
+    margin-bottom: 3px;
+
+    filter:
+        drop-shadow(0 3px 4px #000a)
+        drop-shadow(0 0 5px #8bff4025);
+}
+
+/* MISS NUMBER */
+
+#slotMissModal .miss-count {
+    font-size: 23px;
+    line-height: 1.1;
+    font-weight: 1000;
+    letter-spacing: 1px;
+
+    color: #9dff6b;
+
+    text-shadow:
+        0 2px 2px #000,
+        0 0 10px #69ff3a55;
+
+    font-variant-numeric: tabular-nums;
+}
+
+/* SUB LABEL */
+
+#slotMissModal .miss-sub {
+    margin-top: 5px;
+
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+
+    color: #a6bc98;
+    opacity: 1;
+
+    text-transform: uppercase;
+}
+
+/* ==========================================
+   SPECIAL EVENT CARDS
+========================================== */
+
+#slotMissModal .miss-box.event {
+    min-height: 142px;
+
+    background:
+        radial-gradient(
+            ellipse at top,
+            rgba(174,132,42,.16),
+            transparent 70%
+        ),
+        linear-gradient(
+            180deg,
+            #3a4027,
+            #242a1b 65%,
+            #151b12
+        );
+
+    border: 1px solid #b89a4f;
+    border-left: 3px solid #f1c66c;
+
+    box-shadow:
+        0 4px 12px #0008,
+        inset 0 0 14px #e6b84b14;
+}
+
+#slotMissModal .miss-box.event img {
+    width: 60px;
+    height: 55px;
+
+    margin-bottom: 5px;
+
+    filter:
+        drop-shadow(0 4px 5px #000b)
+        drop-shadow(0 0 8px #f4c95744);
+}
+
+#slotMissModal .miss-box.event .miss-count {
+    color: #ffd579;
+
+    text-shadow:
+        0 2px 2px #000,
+        0 0 10px #ffc64a66;
+}
+
+#slotMissModal .miss-box.event .miss-sub {
+    color: #f1d394;
+}
+
+/* LAST EVENT TIME */
+
+#slotMissModal .event-last {
+    width: 100%;
+
+    margin-top: 9px;
+    padding: 7px 3px;
+
+    background: #080f09aa;
+
+    border: 1px solid #6c6941;
+    border-radius: 4px;
+
+    font-size: 10px;
+    line-height: 1.5;
+    font-weight: 800;
+
+    color: #e9d9aa;
+    opacity: 1;
+
+    overflow-wrap: anywhere;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+#slotMissModal .miss-army-footer {
+    min-height: 40px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 9px;
+
+    flex-shrink: 0;
+
+    border-top: 1px solid #576b43;
+
+    background: linear-gradient(
+        180deg,
+        #1d3020,
+        #101d13
+    );
+
+    color: #9ebf89;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+/* FOOTER LED */
+
+#slotMissModal .miss-footer-led {
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+    background: #81ff54;
+
+    box-shadow: 0 0 8px #81ff54;
+}
+
+#slotMissModal .miss-footer-decoration {
+    color: #dfbd69;
+    font-size: 13px;
+}
+
+/* SCROLLBAR */
+
+#slotMissModal ::-webkit-scrollbar {
+    width: 4px;
+}
+
+#slotMissModal ::-webkit-scrollbar-thumb {
+    background: #728b55;
+    border-radius: 5px;
+}
+
+
+
 </style>
 </head>
 
@@ -2824,39 +3365,78 @@ onclick="closeRoundDetail()">✕</button>
 
 
 
+
+<!-- =====================================
+     MILITARY SLOT MISS COUNT
+===================================== -->
+
 <div id="slotMissModal" class="history-modal">
 
-<div class="history-header">
+    <!-- HEADER -->
+    <div class="history-header">
 
-<div>
-<div class="history-title">SLOT MISS COUNT</div>
+        <div class="miss-header-info">
+            <div class="miss-army-label">
+                ★ MILITARY STATISTICS
+            </div>
+
+            <div class="history-title">
+                SLOT MISS COUNT
+            </div>
+
+            <div class="miss-header-sub">
+                ROUND TRACKING SYSTEM
+            </div>
+        </div>
+
+        <button
+            class="history-close"
+            onclick="closeSlotMiss()">
+            ✕
+        </button>
+
+    </div>
+
+    <!-- CONTENT -->
+    <div class="history-table miss-army-content">
+
+        <!-- GROUP HEADER -->
+        <div class="miss-group-header">
+
+            <div class="miss-group-title">
+                <span class="miss-status-dot"></span>
+                SLOT GROUP A
+                <small>×5</small>
+            </div>
+
+            <div class="miss-group-title">
+                <span class="miss-status-dot"></span>
+                SLOT GROUP B
+                <small>×10–45</small>
+            </div>
+
+        </div>
+
+        <!-- SLOT GRID -->
+        <div id="slotMissGrid">
+
+            <div id="slotColX5"></div>
+
+            <div id="slotColX45"></div>
+
+        </div>
+
+        <!-- FOOTER -->
+        <div class="miss-army-footer">
+            <span class="miss-footer-led"></span>
+            LIVE ROUND STATISTICS
+            <span class="miss-footer-decoration">★</span>
+        </div>
+
+    </div>
+
 </div>
 
-<button class="history-close"
-onclick="closeSlotMiss()">✕</button>
-
-</div>
-
-<div class="history-table">
-
-<div id="slotMissGrid"
-style="
-display:grid;
-grid-template-columns:1fr 1fr;
-gap:15px;
-padding:15px;
-">
-
-<div id="slotColX5"></div>
-
-<div id="slotColX45"></div>
-
-</div>
-
-
-</div>
-
-</div>
 
 
 
