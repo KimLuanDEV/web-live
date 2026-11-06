@@ -1872,6 +1872,579 @@ div,img,button{
 }
 
 
+
+/* ==========================================
+   MILITARY HISTORY UI
+   MY BET HISTORY + ROUND DETAILS
+   Layout: 430 x 870
+========================================== */
+
+#myBetHistoryModal,
+#roundDetailModal {
+    --army-bg: #07110b;
+    --army-panel: #152719;
+    --army-green: #74ff39;
+    --army-gold: #eac46b;
+    --army-line: #49634a;
+
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(60, 105, 46, .35),
+            transparent 55%
+        ),
+        repeating-linear-gradient(
+            135deg,
+            transparent 0 45px,
+            rgba(105, 135, 65, .025) 45px 90px
+        ),
+        linear-gradient(
+            180deg,
+            #172a1b 0%,
+            #0b190f 42%,
+            #030804 100%
+        );
+
+    color: #e8f2e4;
+    font-family: system-ui, sans-serif;
+    z-index: 500;
+    overflow: hidden;
+}
+
+/* Viền khung màn hình */
+
+#myBetHistoryModal::before,
+#roundDetailModal::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(143, 181, 105, .25);
+    box-shadow:
+        inset 0 0 25px rgba(0, 0, 0, .6),
+        0 0 12px rgba(88, 255, 40, .08);
+    pointer-events: none;
+    z-index: 0;
+}
+
+/* ==========================================
+   MILITARY HEADER
+========================================== */
+
+#myBetHistoryModal .history-header,
+#roundDetailModal .history-header {
+    position: relative;
+    flex-shrink: 0;
+    min-height: 92px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 18px 65px 18px 22px;
+
+    background:
+        linear-gradient(
+            120deg,
+            rgba(65, 90, 54, .25),
+            transparent 60%
+        ),
+        linear-gradient(
+            180deg,
+            #304431,
+            #152419 65%,
+            #0b150d
+        );
+
+    border-bottom: 3px solid #8c783d;
+
+    box-shadow:
+        0 5px 18px rgba(0, 0, 0, .65),
+        inset 0 1px 0 rgba(255, 255, 255, .12);
+
+    z-index: 2;
+}
+
+/* Thanh LED dưới header */
+
+#myBetHistoryModal .history-header::after,
+#roundDetailModal .history-header::after {
+    content: "";
+    position: absolute;
+    bottom: -3px;
+    left: 22px;
+    right: 22px;
+    height: 2px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #9bff51,
+        #d9b75e,
+        #9bff51,
+        transparent
+    );
+
+    box-shadow: 0 0 10px rgba(100, 255, 50, .6);
+}
+
+/* Tiêu đề */
+
+#myBetHistoryModal .history-title,
+#roundDetailModal .history-title {
+    font-size: 20px;
+    font-weight: 1000;
+    letter-spacing: 1.2px;
+
+    color: #f5d887;
+
+    text-shadow:
+        0 2px 2px #000,
+        0 0 12px rgba(255, 195, 60, .35);
+}
+
+/* Dòng phụ */
+
+#myBetHistoryModal .history-sub,
+#roundDetailModal .history-sub {
+    margin-top: 5px;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+
+    color: #a5c99b;
+    opacity: 1;
+}
+
+/* Nút đóng quân đội */
+
+#myBetHistoryModal .history-close,
+#roundDetailModal .history-close {
+    position: absolute;
+    top: 22px;
+    right: 18px;
+
+    width: 42px;
+    height: 42px;
+    padding: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid #b99a50;
+    border-radius: 5px;
+
+    background: linear-gradient(
+        145deg,
+        #4a5744,
+        #18251b 55%,
+        #080e09
+    );
+
+    color: #ffe3a0;
+    font-size: 19px;
+    font-weight: 900;
+
+    box-shadow:
+        0 4px 10px #0008,
+        inset 0 1px 0 #ffffff30;
+
+    cursor: pointer;
+    z-index: 5;
+}
+
+#myBetHistoryModal .history-close:active,
+#roundDetailModal .history-close:active {
+    transform: scale(.94);
+    background: #50633b;
+}
+
+/* ==========================================
+   MY BET HISTORY TABLE
+========================================== */
+
+#myBetHistoryModal .history-table {
+    position: relative;
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+
+    padding: 15px 12px 20px;
+    overflow: hidden;
+}
+
+/* Tiêu đề cột */
+
+#myBetHistoryModal .history-head {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    align-items: center;
+
+    min-height: 45px;
+    padding: 0 4px;
+    box-sizing: border-box;
+
+    background: linear-gradient(
+        180deg,
+        #46583b,
+        #202e22
+    );
+
+    border: 1px solid #b79a50;
+    border-bottom: 2px solid #c9a75b;
+    border-radius: 5px 5px 0 0;
+
+    color: #f3d68c;
+    font-size: 12px;
+    font-weight: 900;
+    letter-spacing: .6px;
+
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* Danh sách cuộn */
+
+#myBetHistoryModal .history-body {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+
+    padding: 9px 2px 20px;
+
+    scrollbar-width: thin;
+    scrollbar-color: #617a49 transparent;
+}
+
+/* Hàng lịch sử */
+
+#myBetHistoryModal .history-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    align-items: center;
+
+    min-height: 55px;
+    box-sizing: border-box;
+    padding: 8px 4px;
+
+    background: linear-gradient(
+        115deg,
+        #253b28,
+        #122117 70%,
+        #0b170e
+    );
+
+    border: 1px solid #425a3d;
+    border-left: 3px solid #829d57;
+    border-radius: 5px;
+
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, .35),
+        inset 0 1px 0 rgba(255, 255, 255, .05);
+
+    color: #e9f0e5;
+    font-size: 12px;
+    font-weight: 800;
+    text-align: center;
+
+    transition: background .15s;
+}
+
+#myBetHistoryModal .history-row:active {
+    background: #354d31;
+}
+
+/* Phiên thắng */
+
+#myBetHistoryModal .history-row.win {
+    border-left-color: #79ff4e;
+    background: linear-gradient(
+        110deg,
+        #274c2a,
+        #132b19
+    );
+}
+
+/* Phiên thua */
+
+#myBetHistoryModal .history-row.lose {
+    border-left-color: #e16b54;
+    background: linear-gradient(
+        110deg,
+        #3b2923,
+        #1b2018
+    );
+}
+
+/* Màu số liệu */
+
+#myBetHistoryModal .history-row.win > :last-child {
+    color: #8bff65;
+    text-shadow: 0 0 6px #47ff3440;
+}
+
+#myBetHistoryModal .history-row.lose > :last-child {
+    color: #ff9281;
+}
+
+/* ==========================================
+   ROUND RESULT
+========================================== */
+
+#roundDetailModal .round-result {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 18px;
+
+    min-height: 150px;
+    margin: 0;
+    padding: 14px 20px;
+
+    box-sizing: border-box;
+
+    background:
+        radial-gradient(
+            ellipse at center,
+            rgba(77, 124, 49, .3),
+            transparent 70%
+        ),
+        linear-gradient(
+            180deg,
+            #1b2f1c,
+            #0c180f
+        );
+
+    border-bottom: 2px solid #806e3c;
+    box-shadow: inset 0 -8px 18px #0005;
+
+    flex-shrink: 0;
+}
+
+/* Hình kết quả */
+
+#roundDetailModal .round-result-icon {
+    width: 108px;
+    height: 108px;
+    flex-shrink: 0;
+
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+
+    filter:
+        drop-shadow(0 0 8px rgba(113, 255, 60, .25))
+        drop-shadow(0 5px 5px #0008);
+}
+
+/* Hệ số kết quả */
+
+#roundDetailModal .round-result-text {
+    font-size: 25px;
+    font-weight: 1000;
+    letter-spacing: 1px;
+
+    color: #ffdc78;
+
+    text-shadow:
+        0 2px 3px #000,
+        0 0 12px rgba(255, 190, 45, .3);
+}
+
+/* ==========================================
+   ROUND DETAIL TABLE
+========================================== */
+
+#roundDetailModal .round-table-head {
+    display: grid;
+    grid-template-columns: 142px 2fr 1fr;
+    align-items: center;
+
+    min-height: 48px;
+    box-sizing: border-box;
+    padding: 0 12px;
+
+    background: linear-gradient(
+        180deg,
+        #435639,
+        #1b2b1e
+    );
+
+    border-bottom: 2px solid #b99a4e;
+
+    color: #f4d48b;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    text-align: center;
+
+    flex-shrink: 0;
+}
+
+/* Danh sách cược theo slot */
+
+#roundDetailModal .round-detail-list {
+    flex: 1;
+    min-height: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+
+    padding: 12px 10px 24px;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    scrollbar-width: thin;
+    scrollbar-color: #6e8753 transparent;
+}
+
+/* Từng slot */
+
+#roundDetailModal .round-slot-row {
+    display: grid;
+    grid-template-columns: 142px 2fr 1fr;
+    align-items: center;
+
+    min-height: 74px;
+    padding: 4px 12px;
+    box-sizing: border-box;
+
+    background: linear-gradient(
+        110deg,
+        #273d2a,
+        #152419 75%,
+        #0b160e
+    );
+
+    border: 1px solid #4b6244;
+    border-left: 3px solid #b99a50;
+    border-radius: 6px;
+
+    box-shadow:
+        0 4px 10px #0005,
+        inset 0 1px 0 #ffffff0b;
+
+    transition: background .15s;
+}
+
+#roundDetailModal .round-slot-row:active {
+    background: #344a30;
+}
+
+/* Khu vực icon slot */
+
+#roundDetailModal .round-slot-left {
+    position: relative;
+    left: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 5px;
+
+    min-width: 0;
+}
+
+/* Hình slot */
+
+#roundDetailModal .round-slot-icon {
+    width: 55px;
+    height: 55px;
+    flex-shrink: 0;
+
+    object-fit: contain;
+
+    filter: drop-shadow(0 3px 5px #0009);
+}
+
+/* Tiền cược */
+
+#roundDetailModal .round-slot-bet {
+    font-size: 14px;
+    font-weight: 900;
+    color: #f4e6bd;
+    text-align: center;
+}
+
+/* Tiền thắng */
+
+#roundDetailModal .round-slot-win {
+    font-size: 14px;
+    font-weight: 900;
+    color: #83ff62;
+    text-align: center;
+
+    text-shadow: 0 0 7px #43ff302e;
+}
+
+/* ==========================================
+   SHARED DETAILS
+========================================== */
+
+#myBetHistoryModal .result-row,
+#roundDetailModal .result-row {
+    background: linear-gradient(
+        120deg,
+        #46512a,
+        #243c22
+    );
+
+    border: 1px solid #c5a252;
+    border-left: 3px solid #e8c16b;
+
+    box-shadow:
+        inset 0 0 12px #e6b94c12,
+        0 0 8px #0006;
+
+    font-weight: 900;
+}
+
+/* Scrollbar */
+
+#myBetHistoryModal ::-webkit-scrollbar,
+#roundDetailModal ::-webkit-scrollbar {
+    width: 4px;
+}
+
+#myBetHistoryModal ::-webkit-scrollbar-thumb,
+#roundDetailModal ::-webkit-scrollbar-thumb {
+    background: #6b8552;
+    border-radius: 5px;
+}
+
+/* Màn hình nhỏ vẫn giữ bố cục */
+
+#myBetHistoryModal,
+#roundDetailModal {
+    box-sizing: border-box;
+}
+
+#myBetHistoryModal *,
+#roundDetailModal * {
+    box-sizing: border-box;
+}
+
+
+
+
 </style>
 </head>
 
