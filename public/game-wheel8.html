@@ -437,69 +437,123 @@ transform:translateY(0);
 
 
 
-.mybet{
-  display:none;
 
-  position:absolute;
-  bottom:-1px;
-  left:50%;
-  transform:translateX(-50%);
+/* ==========================================
+   MILITARY BET BADGE
+   HIỂN THỊ KIM CƯƠNG ĐÃ CƯỢC
+========================================== */
 
-  display:flex;
-  align-items:center;
-  gap:4px;
+.mybet {
+    position: absolute;
+    bottom: -5px;
+    left: 50%;
+    transform: translateX(-50%);
 
-  padding:3px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 
-  font-size:12px;
-  font-weight:900;
+    min-width: 55px;
+    height: 25px;
+    padding: 0 9px;
+    box-sizing: border-box;
 
-  color:#fff;
+    background:
+        linear-gradient(
+            135deg,
+            #50613d 0%,
+            #2c412a 25%,
+            #172719 65%,
+            #09130c 100%
+        );
 
-  background:
-    linear-gradient(
-      180deg,
-      rgba(0,20,40,.9),
-      rgba(0,10,25,.95)
+    border: 1px solid #c3a45d;
+    border-bottom: 2px solid #e1bb65;
+    border-radius: 5px;
+
+    box-shadow:
+        0 4px 8px rgba(0,0,0,.8),
+        inset 0 1px 0 rgba(255,255,255,.2),
+        inset 0 0 8px rgba(0,0,0,.4);
+
+    color: #aaff73;
+    font-size: 13px;
+    font-weight: 900;
+    white-space: nowrap;
+
+    z-index: 4;
+    pointer-events: none;
+}
+
+/* ĐƯỜNG KIM LOẠI TRÊN BẢNG */
+
+.mybet::before {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 7px;
+    right: 7px;
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,220,130,.65),
+        transparent
     );
-
-  border:1px solid rgba(0,170,255,.6);
-
-  border-radius:999px;
-
-  box-shadow:
-    0 0 8px rgba(0,170,255,.6),
-    inset 0 0 6px rgba(0,170,255,.4);
-
-  backdrop-filter:blur(4px);
-
-  z-index:4;
 }
 
-/* ICON */
-.mybet img{
-  width:14px;
-  height:14px;
+/* ICON KIM CƯƠNG */
 
-  filter:
-    drop-shadow(0 0 4px #00cfff)
-    drop-shadow(0 0 8px #00aaff);
+.mybet img {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 0 3px #9aff57)
+        drop-shadow(0 0 5px rgba(100,255,60,.45));
 }
 
-/* TEXT */
-.mybet span{
-  letter-spacing:0.5px;
+/* SỐ KIM CƯƠNG */
+
+.mybet span {
+    color: #b1ff76;
+    font-size: 13px;
+    font-weight: 1000;
+    letter-spacing: .4px;
+    font-variant-numeric: tabular-nums;
+
+    text-shadow:
+        0 1px 2px #000,
+        0 0 6px rgba(110,255,60,.55);
 }
 
-/* WHEN BET > 0 → EFFECT */
-.mybet.active{
-  animation:betPulse .6s ease;
+/* HIỆU ỨNG KHI CẬP NHẬT CƯỢC */
+
+.mybet.active {
+    animation: betPulse .35s ease-out;
 }
 
-@keyframes betPulse{
-  0%{ transform:translateX(-50%) scale(0.8); opacity:0 }
-  100%{ transform:translateX(-50%) scale(1); opacity:1 }
+@keyframes betPulse {
+    0% {
+        transform: translateX(-50%) scale(.8);
+        opacity: .5;
+    }
+
+    65% {
+        transform: translateX(-50%) scale(1.12);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateX(-50%) scale(1);
+        opacity: 1;
+    }
 }
+
 
 
 .coin-bar{
@@ -3143,10 +3197,12 @@ div,img,button{
 <div class="slot s1" onclick="bet(1)">
 <div class="multi"><img src="/assets/police/multi-x5.png"></div>
 <img src="/assets/police/slot1.png" class="slot-img">
+
 <div class="mybet" id="mybet1">
   <img src="/assets/police/diamond-icon.png">
   <span>0</span>
 </div>
+
 </div>
 
 <div class="slot s2" onclick="bet(2)">
