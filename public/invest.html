@@ -948,6 +948,398 @@ background-clip:text;
 
 
 
+/* ==========================================
+   LIVESTREAM PRO - INVEST LUXURY V3
+   OBSIDIAN BLACK & CHAMPAGNE GOLD
+========================================== */
+
+:root {
+  --iv-bg: #050505;
+  --iv-panel: #111114;
+  --iv-gold: #e9c88b;
+  --iv-gold-dark: #9e793e;
+  --iv-text: #f7f1e6;
+  --iv-muted: #9c9890;
+  --iv-line: rgba(233,200,139,.19);
+}
+
+html,
+body.page-invest {
+  margin: 0;
+  min-height: 100%;
+  background: #000 !important;
+  color: var(--iv-text);
+  font-family: system-ui, -apple-system,
+               "Segoe UI", sans-serif;
+}
+
+body.page-invest {
+  max-width: 430px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+/* HEADER */
+body.page-invest .invest-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  height: 76px;
+  padding: 10px 18px;
+  background: rgba(9,9,11,.97);
+  border-bottom: 1px solid var(--iv-line);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+body.page-invest .header-title {
+  position: absolute;
+  left: 64px;
+  right: 64px;
+  text-align: center;
+  pointer-events: none;
+}
+
+body.page-invest .title-main {
+  font-size: 17px;
+  font-weight: 850;
+  letter-spacing: 1.1px;
+  background: linear-gradient(
+    135deg,#fff4d7,#d8aa60,#fff0c5
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+body.page-invest .back-btn {
+  position: relative;
+  z-index: 2;
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  border: 1px solid var(--iv-line);
+  background: linear-gradient(145deg,#22201d,#101012);
+  color: var(--iv-gold);
+  font-size: 22px;
+}
+
+/* MAIN GRID */
+body.page-invest > .invest-grid {
+  width: 100%;
+  max-width: 430px;
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 14px;
+  padding: 22px 16px 32px;
+  margin: 0 auto;
+}
+
+/* CARD CHUNG */
+body.page-invest .invest-card {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 19px;
+  border: 1px solid rgba(233,200,139,.25);
+  background-color: #131316;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  color: #fff;
+  isolation: isolate;
+  box-shadow:
+    0 12px 30px rgba(0,0,0,.36),
+    inset 0 1px 0 rgba(255,255,255,.10);
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease;
+}
+
+body.page-invest .invest-card:active {
+  transform: scale(.975);
+}
+
+@media (hover:hover) {
+  body.page-invest .invest-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(233,200,139,.65);
+    box-shadow: 0 18px 36px rgba(0,0,0,.5);
+  }
+}
+
+/* PHỦ MÀU NHẸ, KHÔNG CHE ẢNH */
+body.page-invest .invest-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.02) 0%,
+    rgba(0,0,0,.06) 45%,
+    rgba(0,0,0,.72) 100%
+  );
+}
+
+body.page-invest .invest-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* TRADE VÀ GAMES */
+body.page-invest > .invest-grid > .invest-card {
+  aspect-ratio: 3 / 4;
+  min-height: 225px;
+  padding: 15px;
+  justify-content: flex-end;
+  gap: 5px;
+}
+
+body.page-invest > .invest-grid
+.invest-card.portfolio {
+  background-image: url("/assets/bg/portfolio.jpg");
+  border-color: rgba(233,200,139,.45);
+}
+
+body.page-invest > .invest-grid
+.invest-card.games {
+  background-image: url("/assets/bg/games.jpg");
+  border-color: rgba(139,183,232,.35);
+}
+
+body.page-invest > .invest-grid
+.invest-card h3 {
+  margin: 0;
+  font-size: 23px;
+  font-weight: 900;
+  letter-spacing: .3px;
+  color: #fff6e8;
+  text-shadow: 0 2px 10px #000;
+}
+
+body.page-invest .invest-card .risk {
+  font-size: 11px;
+  line-height: 1.4;
+  font-weight: 600;
+  color: #eee2cc;
+  opacity: 1;
+}
+
+body.page-invest .invest-card .tap-hint {
+  display: inline-flex;
+  align-self: flex-start;
+  width: auto;
+  margin-top: 7px;
+  padding: 7px 10px;
+  border-radius: 999px;
+  border: 1px solid rgba(255,225,170,.30);
+  background: rgba(10,10,12,.65);
+  color: #f5d69a;
+  font-size: 10px;
+  font-weight: 750;
+}
+
+/* SHEET TOÀN MÀN HÌNH */
+body.page-invest .sheet {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+body.page-invest .sheet.hidden {
+  display: none !important;
+}
+
+body.page-invest .sheet-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.82);
+}
+
+body.page-invest .sheet-box,
+body.page-invest #portfolioSheet .sheet-box {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  right: auto;
+  width: 100%;
+  max-width: 430px;
+  height: 100%;
+  max-height: none;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 0;
+  background: #080809;
+  box-shadow: 0 0 60px rgba(0,0,0,.8);
+  animation: none;
+}
+
+/* SHEET HEADER */
+body.page-invest .sheet-head,
+body.page-invest #portfolioSheet .sheet-head {
+  flex: 0 0 auto;
+  position: relative;
+  min-height: 78px;
+  padding: 15px 16px;
+  background: linear-gradient(
+    180deg,#1c1915,#0d0d0f
+  );
+  border-bottom: 1px solid var(--iv-line);
+  backdrop-filter: none;
+}
+
+body.page-invest .ph-icon,
+body.page-invest .gh-icon {
+  width: 42px;
+  height: 42px;
+  border-radius: 13px;
+  background: linear-gradient(145deg,#efd29a,#a97c3b);
+  box-shadow: 0 4px 18px rgba(208,160,79,.15);
+  color: #21170a;
+}
+
+body.page-invest .ph-title,
+body.page-invest .gh-title {
+  font-size: 16px;
+  font-weight: 850;
+  color: #f6e7c8;
+}
+
+body.page-invest .ph-sub,
+body.page-invest .gh-sub {
+  font-size: 11px;
+  color: #a8a29a;
+}
+
+body.page-invest .ph-close,
+body.page-invest .gh-close {
+  flex: 0 0 36px;
+  width: 36px;
+  height: 36px;
+  border-radius: 11px;
+  background: #242124;
+  border: 1px solid var(--iv-line);
+  color: #efd19a;
+}
+
+/* SHEET BODY */
+body.page-invest .sheet-body,
+body.page-invest #portfolioSheet .sheet-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 18px 14px 35px;
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(175,128,59,.08),
+      transparent 55%
+    ),
+    #080809;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* GRID BÊN TRONG POPUP */
+body.page-invest .sheet-body .invest-grid,
+body.page-invest #portfolioSheet .invest-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+  width: 100%;
+  max-width: 430px;
+  padding: 0;
+  margin: 0 auto;
+}
+
+/* CARD ASSET / GAME */
+body.page-invest .sheet-body .invest-card,
+body.page-invest #portfolioSheet .invest-card {
+  aspect-ratio: 3 / 4;
+  min-height: 0;
+  padding: 12px;
+  border-radius: 15px;
+  background-size: cover;
+  background-position: center;
+  box-shadow: 0 8px 22px rgba(0,0,0,.38);
+}
+
+/* BỎ HIỆU ỨNG PHỦ MÀU QUÁ MẠNH */
+body.page-invest .invest-card::after {
+  display: none !important;
+}
+
+/* ẢNH TÀI SẢN: GIỮ NGUYÊN ASSET GỐC */
+body.page-invest .invest-card.gold {
+  background-image: url("/assets/bg/gold.jpg");
+}
+body.page-invest .invest-card.silver {
+  background-image: url("/assets/bg/silver.jpg");
+}
+body.page-invest .invest-card.diamond {
+  background-image: url("/assets/bg/diamond.jpg");
+}
+body.page-invest .invest-card.oil {
+  background-image: url("/assets/bg/oil.jpg");
+}
+body.page-invest .invest-card.estate {
+  background-image: url("/assets/bg/estate.jpg");
+}
+body.page-invest .invest-card.atomic {
+  background-image: url("/assets/bg/atomic.jpg");
+}
+
+/* TÊN ASSET NẾU CÓ NỘI DUNG */
+body.page-invest .asset-name {
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  color: #fff4d9;
+  text-shadow: 0 2px 10px #000;
+}
+
+/* TRẠNG THÁI KHÓA */
+body.page-invest .invest-card.locked {
+  filter: grayscale(1);
+  opacity: .55;
+}
+
+/* MOBILE */
+@media (max-width: 360px) {
+  body.page-invest > .invest-grid {
+    gap: 10px;
+    padding: 16px 10px;
+  }
+
+  body.page-invest > .invest-grid > .invest-card {
+    min-height: 190px;
+    padding: 11px;
+  }
+
+  body.page-invest > .invest-grid
+  .invest-card h3 {
+    font-size: 20px;
+  }
+
+  body.page-invest .sheet-body .invest-grid {
+    gap: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.page-invest .invest-card {
+    transition: none;
+  }
+}
+
+
+
 </style>
 
 
@@ -974,19 +1366,23 @@ background-clip:text;
 
 <div class="invest-grid">
 
-  <!-- TRADE -->
-  <div class="invest-card portfolio" onclick="openPortfolio()">
-    <h3>Trade</h3>
-    <div class="risk">6 mảng • Realtime</div>
-    <div class="tap-hint">👆 Xem toàn bộ</div>
-  </div>
 
-  <!-- GAMES -->
-  <div class="invest-card games" onclick="openGameHub()">
-    <h3>Games</h3>
-    <div class="risk">Game hay • cuồn hút</div>
-    <div class="tap-hint">🎮 Xem toàn bộ</div>
-  </div>
+<!-- TRADE -->
+<div class="invest-card portfolio"
+     onclick="openPortfolio()">
+  <h3>TRADE</h3>
+  <div class="risk">6 lĩnh vực tài sản</div>
+  <div class="tap-hint">Khám phá thị trường ›</div>
+</div>
+
+<!-- GAMES -->
+<div class="invest-card games"
+     onclick="openGameHub()">
+  <h3>GAME CENTER</h3>
+  <div class="risk">Kho trò chơi giải trí</div>
+  <div class="tap-hint">Khám phá trò chơi ›</div>
+</div>
+
 
 </div>
 
