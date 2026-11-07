@@ -2020,19 +2020,48 @@ pointer-events:none;
 }
 
 
-.top-winners{
-  position:absolute;
-  top:-500px;
-  left:50%;
-  transform:translateX(-50%);
-  width:100%;
 
-  display:flex;
-  justify-content:center;
-  align-items:flex-end;
-  gap:0px;
+/* ==========================================
+   MILITARY TOP WINNERS BACKGROUND
+========================================== */
 
-  pointer-events:none;
+.top-winners {
+    position: absolute;
+    top: -500px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    width: 430px;
+    height: 240px;
+    box-sizing: border-box;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0;
+
+    padding: 38px 8px 12px;
+
+    background:
+        url("/assets/police/top-winners-bg.png")
+        center center / 100% 100% no-repeat;
+
+    filter: drop-shadow(0 8px 12px rgba(0,0,0,.65));
+
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* Giữ ba thẻ nằm phía trước hình nền */
+
+.top-winners .top-card {
+    position: relative;
+    z-index: 2;
+
+    width: 135px;
+    height: 180px;
+    flex: 0 0 135px;
+     background: none;
 }
 
 /* CARD CHUNG */
@@ -4531,12 +4560,14 @@ if(data.top && data.top.length){
       <div class="top-win">${p.win}💎</div>
     `
 
-    // 🔥 TOP 1 ở giữa
-    if(i === 0){
-      box.appendChild(card)
-    }else{
-      box.insertBefore(card, box.firstChild)
-    }
+// TOP 1 ở giữa: TOP 2 - TOP 1 - TOP 3
+if (i === 0) {
+    box.appendChild(card);
+} else if (i === 1) {
+    box.insertBefore(card, box.firstChild);
+} else {
+    box.appendChild(card);
+}
 
   })
 
