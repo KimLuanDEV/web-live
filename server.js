@@ -1846,39 +1846,51 @@ setInterval(()=>{
 const users = loadUsers()
 
 // 🎯 SPECIAL EVENT
-let specialEvent = false
-let winSlots = []
-let multiplier = null
+let specialEvent = false;
+let winSlots = [];
+let multiplier = null;
 
-// 🎁 0.25% SPECIAL EVENT
-if(Math.random() < 0.0025){
+const forcedEvent = wheel8Round.forcedEvent;
 
-  specialEvent = true
+if(forcedEvent === "x5-all"){
+
+  specialEvent = true;
+  winSlots = [1,6,7,8];
+  multiplier = 5;
+
+}else if(forcedEvent === "x45-all"){
+
+  specialEvent = true;
+  winSlots = [2,3,4,5];
+  multiplier = 45;
+
+}else if(wheel8Round.secret.overridden){
+
+  // Admin đã chọn slot thường
+  winSlots = [wheel8Round.secret.slot];
+  multiplier = wheel8Round.secret.multiplier;
+
+}else if(Math.random() < 0.0025){
+
+  // EVENT ngẫu nhiên khi Admin không override
+  specialEvent = true;
 
   if(Math.random() < 0.5){
-
-    // 🎁 EVENT 1
-    // slot 1,6,7,8
-    winSlots = [1,6,7,8]
-
+    winSlots = [1,6,7,8];
+    multiplier = 5;
   }else{
-
-    // 🎁 EVENT 2
-    // slot 2,3,4,5
-    winSlots = [2,3,4,5]
-
+    winSlots = [2,3,4,5];
+    multiplier = 45;
   }
 
 }else{
 
-const resultSlot = wheel8Round.secret.slot
-multiplier = wheel8Round.secret.multiplier
-
-winSlots = [resultSlot]
+  winSlots = [wheel8Round.secret.slot];
+  multiplier = wheel8Round.secret.multiplier;
 
 }
 
-const resultSlot = winSlots[0] || 1
+const resultSlot = winSlots[0] || 1;
 
 
 // =======================
@@ -3893,8 +3905,17 @@ socket.on("admin-wheel8-override",(data)=>{
 
   if(!wheel8Round || !wheel8Round.secret) return
 
-  const slot = Number(data.slot)
-  if(slot < 1 || slot > 8) return
+const event = data?.event;
+
+const validEvents = ["x5-all", "x45-all"];
+
+const isEvent = validEvents.includes(event);
+
+const slot = Number(data?.slot);
+
+if(!isEvent && (!Number.isInteger(slot) || slot < 1 || slot > 8)){
+  return;
+}
 
   // khóa override khi còn 5 giây
   const remain = Math.max(
@@ -3909,19 +3930,33 @@ socket.on("admin-wheel8-override",(data)=>{
     return
   }
 
-  const multiplier = WHEEL8_SLOTS[slot - 1].m
+  const selectedSlot = isEvent
+  ? (event === "x5-all" ? 1 : 2)
+  : slot;
 
-  wheel8Round.secret = {
-    slot,
-    multiplier,
-    hash: crypto
-      .createHash("sha256")
-      .update(
-        wheel8Round.id + ":" + slot + ":" + multiplier
-      )
-      .digest("hex"),
-    overridden:true
-  }
+const multiplier = isEvent
+  ? (event === "x5-all" ? 5 : 45)
+  : WHEEL8_SLOTS[selectedSlot - 1].m;
+
+wheel8Round.forcedEvent = isEvent ? event : null;
+
+wheel8Round.secret = {
+  slot: selectedSlot,
+  multiplier,
+  event: wheel8Round.forcedEvent,
+
+  hash: crypto
+    .createHash("sha256")
+    .update(
+      wheel8Round.id + ":" +
+      selectedSlot + ":" +
+      multiplier + ":" +
+      (wheel8Round.forcedEvent || "")
+    )
+    .digest("hex"),
+
+  overridden: true
+};
 
   console.log("🛠 ADMIN OVERRIDE WHEEL8:", {
     roundId: wheel8Round.id,
@@ -3935,7 +3970,8 @@ socket.on("admin-wheel8-override",(data)=>{
     multiplier,
     hash: wheel8Round.secret.hash,
     endAt: wheel8Round.endAt,
-    overridden:true
+    overridden:true,
+    event: wheel8Round.forcedEvent,
   })
 
 })
