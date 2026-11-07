@@ -2279,44 +2279,87 @@ body.page-invest .showroom-exit-hitbox:active {
 
 /* ===== GAME CENTER IMAGE SHOWROOM ===== */
 
+
 body.page-invest #gameHubSheet .game-showroom-box {
-  position: absolute;
-  inset: 0;
-  width: min(100%, 430px) !important;
-  max-width: 430px !important;
-  height: 100dvh;
-  max-height: none;
-  margin: auto;
-  padding: 0;
-  background: #000;
-  overflow-y: auto;
-  overflow-x: hidden;
-  display: block;
-  scrollbar-width: none;
+    position: absolute !important;
+
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    right: auto !important;
+
+    transform: translateX(-50%) !important;
+
+    width: 100% !important;
+    max-width: 430px !important;
+    height: 100dvh !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: block !important;
+
+    background: #000;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+
+    border: none !important;
+    border-radius: 0 !important;
+
+    animation: none !important;
+
+    scrollbar-width: none;
 }
 
 #gameHubSheet .game-showroom-box::-webkit-scrollbar {
   display: none;
 }
 
+
+/* KHUNG ẢNH ĐÚNG TỶ LỆ GỐC */
 #gameHubSheet .game-showroom-map {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 941 / 1672;
-  overflow: hidden;
-  background: #080808;
+    position: relative !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: auto !important;
+
+    aspect-ratio: 941 / 1672 !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+    background: #000;
 }
 
+/* BACKGROUND GAME CENTER */
 #gameHubSheet .game-showroom-background {
-  position: absolute;
-  inset: 0;
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: fill;
-  user-select: none;
-  pointer-events: none;
+    position: absolute !important;
+
+    top: 0 !important;
+    left: 0 !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: fill !important;
+    object-position: center center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    transform: none !important;
+
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
 }
+
 
 /* HITBOX TRONG SUỐT */
 #gameHubSheet .game-hitbox {
@@ -2347,36 +2390,45 @@ body.page-invest #gameHubSheet .game-showroom-box {
 /* 4 VÙNG BẤM - 2 CỘT, 2 HÀNG */
 
 /* Hàng 1 - bên trái */
+
+/* ROCK PAPER SCISSORS */
 #gameHubSheet .game-hitbox-1 {
-  left: 7%;
-  top: 24%;
-  width: 40%;
-  height: 25%;
+    left: 4%;
+    top: 16%;
+    width: 43%;
+    height: 32%;
 }
 
-/* Hàng 1 - bên phải */
+/* TIME RACE */
 #gameHubSheet .game-hitbox-2 {
-  left: 53%;
-  top: 24%;
-  width: 40%;
-  height: 25%;
+    left: 53%;
+    top: 16%;
+    width: 43%;
+    height: 32%;
 }
 
-/* Hàng 2 - bên trái */
+/* DRAGON TIGER PHOENIX */
 #gameHubSheet .game-hitbox-3 {
-  left: 7%;
-  top: 54%;
-  width: 40%;
-  height: 25%;
+    left: 4%;
+    top: 50%;
+    width: 43%;
+    height: 34%;
 }
 
-/* Hàng 2 - bên phải */
+/* MILITARY - WHEEL 8 */
 #gameHubSheet .game-hitbox-4 {
-  left: 53%;
-  top: 54%;
-  width: 40%;
-  height: 25%;
+    left: 53%;
+    top: 50%;
+    width: 43%;
+    height: 34%;
 }
+
+
+#gameHubSheet .game-hitbox {
+    background: rgba(0, 255, 0, .15) !important;
+    outline: 1px solid lime !important;
+}
+
 
 /* NÚT ĐÓNG */
 #gameHubSheet .game-showroom-close {
