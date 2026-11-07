@@ -3,14 +3,7 @@
 <head>
   <meta charset="utf-8">
   <title>Thị trường đầu tư</title>
-  <meta name="viewport"
-      content="width=device-width,
-               initial-scale=1.0,
-               maximum-scale=1.0,
-               minimum-scale=1.0,
-               user-scalable=no,
-               viewport-fit=cover">
-
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="/style.css">
 
 
@@ -2188,30 +2181,29 @@ body.page-invest .showroom-map {
 /* ẢNH PHỦ KÍN KHUNG */
 
 
-/* ===== SHOWROOM BACKGROUND MOBILE ===== */
-
 body.page-invest .showroom-background {
-    display: block !important;
+  display: block !important;
 
-    width: 100% !important;
-    height: 100% !important;
+  width: 100% !important;
+  height: 100% !important;
 
-    min-width: 0 !important;
-    min-height: 0 !important;
+  min-width: 100% !important;
+  min-height: 100% !important;
 
-    max-width: none !important;
-    max-height: none !important;
+  max-width: none !important;
+  max-height: none !important;
 
-    object-fit: fill !important;
-    object-position: center center !important;
+  object-fit: fill !important;
+  object-position: center center !important;
 
-    margin: 0 !important;
-    padding: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
 
-    pointer-events: none;
-    user-select: none;
-    -webkit-user-drag: none;
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
 }
+
 
 /* GIỮ HITBOX TRÊN ẢNH */
 
@@ -2281,47 +2273,6 @@ body.page-invest .showroom-exit-hitbox .exit-icon {
 
 body.page-invest .showroom-exit-hitbox:active {
   transform: scale(.96);
-}
-
-
-/* ===== KHÓA ZOOM MÀN HÌNH INVEST ===== */
-
-html,
-body {
-    width: 100%;
-    margin: 0;
-    padding: 0;
-
-    touch-action: pan-x pan-y;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
-}
-
-/* Giữ thao tác nhấn card */
-button,
-.showroom-item,
-.showroom-hitbox {
-    touch-action: manipulation;
-}
-
-
-
-/* ===== CÂN CHỈNH SHOWROOM MOBILE ===== */
-
-@media (max-width: 600px) {
-
-    body.page-invest .showroom-map {
-        height: 100dvh !important;
-        overflow: hidden !important;
-    }
-
-    body.page-invest .showroom-background {
-        width: 100% !important;
-        height: 100% !important;
-
-        object-fit: fill !important;
-        transform: translateY(12px);
-    }
 }
 
 </style>
