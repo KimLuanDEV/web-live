@@ -2275,6 +2275,273 @@ body.page-invest .showroom-exit-hitbox:active {
   transform: scale(.96);
 }
 
+
+
+
+/* ===== LUXURY GAME DIRECTORY ===== */
+
+body.page-invest #gameHubSheet .game-directory {
+  background: #090909;
+  color: #f7e7c8;
+  width: min(100%, 430px) !important;
+  max-width: 430px !important;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* HEADER */
+#gameHubSheet .gd-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: max(22px, env(safe-area-inset-top)) 17px 20px;
+  background: linear-gradient(160deg, #272018, #0c0b0a 85%);
+  border-bottom: 1px solid #75552e;
+  flex-shrink: 0;
+}
+
+#gameHubSheet .gd-header-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  font-size: 28px;
+  color: #f9d68e;
+  border: 1px solid #b48a4d;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #4b3620, #17110d);
+  box-shadow: 0 0 20px #b8860b24;
+}
+
+#gameHubSheet .gd-header-text {
+  flex: 1;
+  min-width: 0;
+}
+
+#gameHubSheet .gd-eyebrow {
+  font-size: 9px;
+  letter-spacing: 2.5px;
+  color: #bba079;
+}
+
+#gameHubSheet .gd-header h2 {
+  margin: 4px 0;
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  color: #f8d995;
+}
+
+#gameHubSheet .gd-header p {
+  margin: 0;
+  font-size: 11px;
+  color: #a69b8d;
+}
+
+#gameHubSheet .gd-close {
+  width: 35px;
+  height: 35px;
+  flex-shrink: 0;
+  border: 1px solid #655039;
+  border-radius: 10px;
+  background: #211b16;
+  color: #f4d49a;
+  font-size: 17px;
+  cursor: pointer;
+}
+
+/* BODY */
+#gameHubSheet .gd-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 23px 15px 35px;
+  background:
+    radial-gradient(ellipse at top, #6a48191f, transparent 60%),
+    #090909;
+  -webkit-overflow-scrolling: touch;
+}
+
+#gameHubSheet .gd-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px;
+  border: 1px solid #59452d;
+  border-radius: 12px;
+  background: linear-gradient(110deg, #282015, #11100e);
+}
+
+#gameHubSheet .gd-summary span {
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  color: #e4c38b;
+}
+
+#gameHubSheet .gd-summary strong {
+  font-size: 11px;
+  color: #f8d998;
+}
+
+#gameHubSheet .gd-section-title {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin: 27px 0 13px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+  color: #d6b47b;
+}
+
+#gameHubSheet .gd-section-title span {
+  color: #ffdb8f;
+}
+
+/* GAME LIST */
+#gameHubSheet .gd-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+#gameHubSheet .gd-game {
+  appearance: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  min-width: 0;
+  min-height: 83px;
+  padding: 12px;
+  border: 1px solid #493b2b;
+  border-radius: 13px;
+  background: linear-gradient(115deg, #201c17, #101013);
+  text-align: left;
+  color: #fff;
+  cursor: pointer;
+  transition: transform .2s, border-color .2s, background .2s;
+}
+
+#gameHubSheet .gd-game:active {
+  transform: scale(.98);
+  border-color: #e4bc79;
+}
+
+#gameHubSheet .gd-game:focus-visible {
+  outline: 2px solid #f5d18d;
+  outline-offset: 2px;
+}
+
+#gameHubSheet .gd-game-icon {
+  width: 52px;
+  height: 52px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  font-size: 25px;
+  border: 1px solid #ffffff25;
+}
+
+#gameHubSheet .gd-purple {
+  background: linear-gradient(145deg, #57357e, #21152f);
+}
+
+#gameHubSheet .gd-blue {
+  background: linear-gradient(145deg, #17617b, #10212f);
+}
+
+#gameHubSheet .gd-red {
+  background: linear-gradient(145deg, #7e3027, #2d1613);
+}
+
+#gameHubSheet .gd-gold {
+  background: linear-gradient(145deg, #9b702d, #38250d);
+  color: #ffdc90;
+}
+
+#gameHubSheet .gd-game-info {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#gameHubSheet .gd-game-info strong {
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .25px;
+  color: #f7d99e;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+#gameHubSheet .gd-game-info small {
+  font-size: 10px;
+  line-height: 1.5;
+  color: #aaa39b;
+}
+
+#gameHubSheet .gd-arrow {
+  flex-shrink: 0;
+  width: 25px;
+  height: 25px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: #e4bd7b;
+  color: #201408;
+  font-size: 23px;
+  line-height: 1;
+}
+
+#gameHubSheet .gd-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 35px;
+  padding: 18px 0;
+  border-top: 1px solid #574127;
+  color: #9f8357;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-align: center;
+}
+
+#gameHubSheet .gd-footer span {
+  color: #e5bd79;
+}
+
+/* MOBILE */
+@media (max-width: 360px) {
+  #gameHubSheet .gd-body {
+    padding: 18px 10px 28px;
+  }
+
+  #gameHubSheet .gd-game {
+    gap: 9px;
+    padding: 10px;
+  }
+
+  #gameHubSheet .gd-game-icon {
+    width: 44px;
+    height: 44px;
+    font-size: 21px;
+  }
+
+  #gameHubSheet .gd-game-info strong {
+    font-size: 11px;
+  }
+}
+
+
+
 </style>
 
 
@@ -2408,89 +2675,83 @@ body.page-invest .showroom-exit-hitbox:active {
 
 
 
+
 <div id="gameHubSheet" class="sheet hidden">
   <div class="sheet-backdrop" onclick="closeGameHub()"></div>
 
-  <div class="sheet-box">
+  <div class="sheet-box game-directory">
 
-<div class="sheet-head gamehub-head">
-  <div class="gh-left">
-    <div class="gh-icon">🎮</div>
-    <div class="gh-text">
-      <div class="gh-title">Game Center</div>
-      <div class="gh-sub">Chọn trò chơi để bắt đầu</div>
+    <div class="gd-header">
+      <div class="gd-header-icon">✦</div>
+      <div class="gd-header-text">
+        <div class="gd-eyebrow">LIVESTREAM PRO</div>
+        <h2>GAME CENTER</h2>
+        <p>Danh sách trò chơi giải trí</p>
+      </div>
+      <button class="gd-close" type="button"
+              onclick="closeGameHub()" aria-label="Đóng">✕</button>
     </div>
-  </div>
 
-  <button class="sheet-close gh-close" onclick="closeGameHub()">✕</button>
-</div>
+    <div class="gd-body">
+      <div class="gd-summary">
+        <span>GAME DIRECTORY</span>
+        <strong>04 GAMES</strong>
+      </div>
 
+      <div class="gd-section-title">
+        <span>✦</span> DANH SÁCH TRÒ CHƠI
+      </div>
 
-    <div class="sheet-body">
-      <div class="invest-grid">
+      <div class="gd-list">
 
-<!-- 🐣 GAME NUÔI ĐỘNG VẬT -->
-<div class="invest-card animal" onclick="location.href='/game-animal.html'" style="display: none;">
-  <div class="asset-name"></div>
-</div>
+        <button class="gd-game" type="button" onclick="openRPSGame()">
+          <span class="gd-game-icon gd-purple">✊</span>
+          <span class="gd-game-info">
+            <strong>ROCK PAPER SCISSORS</strong>
+            <small>Kéo búa bao · Đối kháng lựa chọn</small>
+          </span>
+          <span class="gd-arrow">›</span>
+        </button>
 
+        <button class="gd-game" type="button" onclick="openTimeRaceGame()">
+          <span class="gd-game-icon gd-blue">⏱</span>
+          <span class="gd-game-info">
+            <strong>TIME RACE</strong>
+            <small>Cuộc đua thời gian · Thử thách tốc độ</small>
+          </span>
+          <span class="gd-arrow">›</span>
+        </button>
 
-<!-- 🎡 GAME VÒNG QUAY MAY MẮN -->
-<div class="invest-card wheel" onclick="openWheelGame()" style="display: none;">
-  <div class="asset-name"></div>
-</div>
+        <button class="gd-game" type="button" onclick="openDragonTigerGame()">
+          <span class="gd-game-icon gd-red">🐉</span>
+          <span class="gd-game-info">
+            <strong>DRAGON TIGER PHOENIX</strong>
+            <small>Rồng · Hổ · Phượng Hoàng</small>
+          </span>
+          <span class="gd-arrow">›</span>
+        </button>
 
-
-<!-- ✊✋✌️ GAME KÉO BÚA BAO -->
-<div class="invest-card rps" onclick="openRPSGame()">
-  <div class="asset-name"></div>
-</div>
-
-<!-- 💎 GAME THỢ SĂN KIM CƯƠNG -->
-<div class="invest-card diamond-hunter coming-soon"
-     onclick="openDiamondHunter()" style="display: none;">
-  <div class="asset-name"></div>
-</div>
-
-
-<!-- ⏱ GAME CUỘC ĐUA VỚI THỜI GIAN -->
-<div class="invest-card time-race"
-     onclick="openTimeRaceGame()">
-  <div class="asset-name"></div>
-</div>
-
-
-<!-- 👑⚔ GAME KING VS SLAVE -->
-<div class="invest-card king-slave"
-     onclick="openKingSlaveGame()" style="display: none;">
-  <div class="asset-name"></div>
-</div>
-
-
-<!-- 🏭💎 GAME NHÀ MÁY SẢN XUẤT KIM CƯƠNG -->
-<div class="invest-card diamond-factory"
-     onclick="openDiamondFactoryGame()" style="display: none;">
-  <div class="asset-name"></div>
-</div>
-
-
-<!-- 🐉🐅🦅 GAME RỒNG - HỔ - PHƯỢNG HOÀNG -->
-<div class="invest-card dragon-tiger"
-     onclick="openDragonTigerGame()">
-  <div class="asset-name"></div>
-</div>
-
-
-<!-- 🎡 LUCKY WHEEL 8 -->
-<div class="invest-card wheel8"
-     onclick="openWheel8Game()">
-  <div class="asset-name"></div>
-</div>
+        <button class="gd-game" type="button" onclick="openWheel8Game()">
+          <span class="gd-game-icon gd-gold">✦</span>
+          <span class="gd-game-info">
+            <strong>LUCKY WHEEL 8</strong>
+            <small>Trò chơi 8 cửa · Kết quả ngẫu nhiên</small>
+          </span>
+          <span class="gd-arrow">›</span>
+        </button>
 
       </div>
+
+      <div class="gd-footer">
+        <span>✧</span>
+        PREMIUM GAMING EXPERIENCE
+        <span>✧</span>
+      </div>
     </div>
+
   </div>
 </div>
+
 
 
 <script src="/socket.io/socket.io.js"></script>

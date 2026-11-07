@@ -81,12 +81,27 @@ function closePortfolio(){
 }
 
 
-function openGameHub(){
-  document.getElementById("gameHubSheet")?.classList.remove("hidden");
+
+function openGameHub() {
+  const sheet = document.getElementById("gameHubSheet");
+  if (!sheet) return;
+
+  sheet.classList.remove("hidden");
+  document.body.classList.add("sheet-open");
 }
 
-function closeGameHub(){
-  document.getElementById("gameHubSheet")?.classList.add("hidden");
+function closeGameHub() {
+  const sheet = document.getElementById("gameHubSheet");
+  if (!sheet) return;
+
+  sheet.classList.add("hidden");
+
+  // Chỉ mở lại cuộn trang nếu không còn sheet nào đang mở
+  const portfolio = document.getElementById("portfolioSheet");
+
+  if (!portfolio || portfolio.classList.contains("hidden")) {
+    document.body.classList.remove("sheet-open");
+  }
 }
 
 
