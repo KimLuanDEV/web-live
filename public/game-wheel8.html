@@ -2025,6 +2025,11 @@ pointer-events:none;
    MILITARY TOP WINNERS BACKGROUND
 ========================================== */
 
+
+/* ======================================
+   TOP WINNERS - CĂN 3 THẺ VÀO KHUNG
+====================================== */
+
 .top-winners {
     position: absolute;
     top: -500px;
@@ -2040,11 +2045,11 @@ pointer-events:none;
     align-items: center;
     gap: 0;
 
-    padding: 38px 8px 12px;
+    padding: 0;
 
     background:
         url("/assets/police/top-winners-bg.png")
-        center center / 100% 100% no-repeat;
+        center / 100% 100% no-repeat;
 
     filter: drop-shadow(0 8px 12px rgba(0,0,0,.65));
 
@@ -2052,17 +2057,83 @@ pointer-events:none;
     z-index: 3;
 }
 
-/* Giữ ba thẻ nằm phía trước hình nền */
+/* 3 thẻ căn độc lập theo khung ảnh */
 
 .top-winners .top-card {
-    position: relative;
+    position: absolute;
     z-index: 2;
 
-    width: 135px;
-    height: 180px;
-    flex: 0 0 135px;
-     background: none;
+    width: 100px;
+    height: 125px;
+    padding: 0;
+    margin: 0;
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    background: none;
+    border: none;
+    box-shadow: none;
+
+    box-sizing: border-box;
 }
+
+/* TOP 2 - KHUNG BẠC BÊN TRÁI */
+
+.top-winners .top2 {
+    left: 66px;
+    top: 90px;
+}
+
+/* TOP 1 - KHUNG VÀNG CHÍNH GIỮA */
+
+.top-winners .top1 {
+    left: 165px;
+    top: 85px;
+}
+
+/* TOP 3 - KHUNG ĐỒNG BÊN PHẢI */
+
+.top-winners .top3 {
+    left: 267px;
+    top: 90px;
+}
+
+/* TÊN NGƯỜI CHƠI */
+
+.top-winners .top-name {
+    position: static;
+    margin: 0 0 5px;
+
+    max-width: 95px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+    font-size: 12px;
+    font-weight: 900;
+    opacity: 1;
+    text-align: center;
+    color: #fff;
+    text-shadow: 0 2px 4px #000;
+}
+
+/* SỐ KIM CƯƠNG THẮNG */
+
+.top-winners .top-win {
+    position: static;
+    margin: 0;
+
+    max-width: 100px;
+    font-size: 13px;
+    font-weight: 900;
+    text-align: center;
+
+    text-shadow: 0 2px 4px #000;
+}
+
 
 /* CARD CHUNG */
 .top-card{
