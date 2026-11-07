@@ -14535,6 +14535,67 @@ body.page-profile {
 
 
 
+
+/* =====================================
+   FIX COVER LỆCH - PROFILE 430PX
+===================================== */
+
+body.page-profile .profile-cover {
+  position: relative !important;
+
+  width: 100% !important;
+  max-width: 430px !important;
+
+  height: 265px;
+
+  margin: 0 auto !important;
+  padding: 0 !important;
+
+  left: auto !important;
+  right: auto !important;
+
+  transform: none !important;
+
+  overflow: hidden !important;
+  border-radius: 0 !important;
+}
+
+/* CĂN CHÍNH GIỮA ẢNH COVER */
+body.page-profile .profile-cover > #coverPreview {
+  position: absolute !important;
+
+  top: 0 !important;
+  left: 0 !important;
+  right: auto !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+
+  object-fit: cover !important;
+  object-position: center center !important;
+
+  display: block !important;
+}
+
+/* KHÔNG CÓ LỚP PHỦ MỜ */
+body.page-profile .profile-cover::before,
+body.page-profile .profile-cover::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* MÀN HÌNH NHỎ */
+@media (max-width: 390px) {
+  body.page-profile .profile-cover {
+    height: 238px;
+  }
+}
+
   </style>
 </head>
 
