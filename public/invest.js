@@ -88,6 +88,9 @@ function openGameHub() {
 
   sheet.classList.remove("hidden");
   document.body.classList.add("sheet-open");
+
+  const box = sheet.querySelector(".game-showroom-box");
+  if (box) box.scrollTop = 0;
 }
 
 function closeGameHub() {
@@ -96,10 +99,8 @@ function closeGameHub() {
 
   sheet.classList.add("hidden");
 
-  // Chỉ mở lại cuộn trang nếu không còn sheet nào đang mở
-  const portfolio = document.getElementById("portfolioSheet");
-
-  if (!portfolio || portfolio.classList.contains("hidden")) {
+  if (document.getElementById("portfolioSheet")
+      ?.classList.contains("hidden")) {
     document.body.classList.remove("sheet-open");
   }
 }

@@ -2277,270 +2277,132 @@ body.page-invest .showroom-exit-hitbox:active {
 
 
 
+/* ===== GAME CENTER IMAGE SHOWROOM ===== */
 
-/* ===== LUXURY GAME DIRECTORY ===== */
-
-body.page-invest #gameHubSheet .game-directory {
-  background: #090909;
-  color: #f7e7c8;
+body.page-invest #gameHubSheet .game-showroom-box {
+  position: absolute;
+  inset: 0;
   width: min(100%, 430px) !important;
   max-width: 430px !important;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-/* HEADER */
-#gameHubSheet .gd-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: max(22px, env(safe-area-inset-top)) 17px 20px;
-  background: linear-gradient(160deg, #272018, #0c0b0a 85%);
-  border-bottom: 1px solid #75552e;
-  flex-shrink: 0;
-}
-
-#gameHubSheet .gd-header-icon {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-  display: grid;
-  place-items: center;
-  font-size: 28px;
-  color: #f9d68e;
-  border: 1px solid #b48a4d;
-  border-radius: 14px;
-  background: linear-gradient(145deg, #4b3620, #17110d);
-  box-shadow: 0 0 20px #b8860b24;
-}
-
-#gameHubSheet .gd-header-text {
-  flex: 1;
-  min-width: 0;
-}
-
-#gameHubSheet .gd-eyebrow {
-  font-size: 9px;
-  letter-spacing: 2.5px;
-  color: #bba079;
-}
-
-#gameHubSheet .gd-header h2 {
-  margin: 4px 0;
-  font-size: 20px;
-  font-weight: 900;
-  letter-spacing: 1.2px;
-  color: #f8d995;
-}
-
-#gameHubSheet .gd-header p {
-  margin: 0;
-  font-size: 11px;
-  color: #a69b8d;
-}
-
-#gameHubSheet .gd-close {
-  width: 35px;
-  height: 35px;
-  flex-shrink: 0;
-  border: 1px solid #655039;
-  border-radius: 10px;
-  background: #211b16;
-  color: #f4d49a;
-  font-size: 17px;
-  cursor: pointer;
-}
-
-/* BODY */
-#gameHubSheet .gd-body {
-  flex: 1;
-  min-height: 0;
+  height: 100dvh;
+  max-height: none;
+  margin: auto;
+  padding: 0;
+  background: #000;
   overflow-y: auto;
-  padding: 23px 15px 35px;
-  background:
-    radial-gradient(ellipse at top, #6a48191f, transparent 60%),
-    #090909;
-  -webkit-overflow-scrolling: touch;
+  overflow-x: hidden;
+  display: block;
+  scrollbar-width: none;
 }
 
-#gameHubSheet .gd-summary {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 15px;
-  border: 1px solid #59452d;
-  border-radius: 12px;
-  background: linear-gradient(110deg, #282015, #11100e);
+#gameHubSheet .game-showroom-box::-webkit-scrollbar {
+  display: none;
 }
 
-#gameHubSheet .gd-summary span {
-  font-size: 11px;
-  letter-spacing: 1.5px;
-  color: #e4c38b;
-}
-
-#gameHubSheet .gd-summary strong {
-  font-size: 11px;
-  color: #f8d998;
-}
-
-#gameHubSheet .gd-section-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-  margin: 27px 0 13px;
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 1.2px;
-  color: #d6b47b;
-}
-
-#gameHubSheet .gd-section-title span {
-  color: #ffdb8f;
-}
-
-/* GAME LIST */
-#gameHubSheet .gd-list {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-#gameHubSheet .gd-game {
-  appearance: none;
-  display: flex;
-  align-items: center;
-  gap: 12px;
+#gameHubSheet .game-showroom-map {
+  position: relative;
   width: 100%;
-  min-width: 0;
-  min-height: 83px;
-  padding: 12px;
-  border: 1px solid #493b2b;
-  border-radius: 13px;
-  background: linear-gradient(115deg, #201c17, #101013);
-  text-align: left;
-  color: #fff;
+  aspect-ratio: 941 / 1672;
+  overflow: hidden;
+  background: #080808;
+}
+
+#gameHubSheet .game-showroom-background {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* HITBOX TRONG SUỐT */
+#gameHubSheet .game-hitbox {
+  appearance: none;
+  position: absolute;
+  z-index: 5;
+  display: block;
+  margin: 0;
+  padding: 0;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  box-shadow: none;
   cursor: pointer;
-  transition: transform .2s, border-color .2s, background .2s;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
 }
 
-#gameHubSheet .gd-game:active {
-  transform: scale(.98);
-  border-color: #e4bc79;
+#gameHubSheet .game-hitbox:active {
+  background: rgba(255,215,140,.12);
 }
 
-#gameHubSheet .gd-game:focus-visible {
-  outline: 2px solid #f5d18d;
-  outline-offset: 2px;
+#gameHubSheet .game-hitbox:focus-visible {
+  outline: 2px solid #f6d58e;
+  outline-offset: -2px;
 }
 
-#gameHubSheet .gd-game-icon {
-  width: 52px;
-  height: 52px;
-  flex-shrink: 0;
+/* 4 VÙNG BẤM - 2 CỘT, 2 HÀNG */
+
+/* Hàng 1 - bên trái */
+#gameHubSheet .game-hitbox-1 {
+  left: 7%;
+  top: 24%;
+  width: 40%;
+  height: 25%;
+}
+
+/* Hàng 1 - bên phải */
+#gameHubSheet .game-hitbox-2 {
+  left: 53%;
+  top: 24%;
+  width: 40%;
+  height: 25%;
+}
+
+/* Hàng 2 - bên trái */
+#gameHubSheet .game-hitbox-3 {
+  left: 7%;
+  top: 54%;
+  width: 40%;
+  height: 25%;
+}
+
+/* Hàng 2 - bên phải */
+#gameHubSheet .game-hitbox-4 {
+  left: 53%;
+  top: 54%;
+  width: 40%;
+  height: 25%;
+}
+
+/* NÚT ĐÓNG */
+#gameHubSheet .game-showroom-close {
+  position: absolute;
+  z-index: 10;
+  top: max(14px, env(safe-area-inset-top));
+  right: 15px;
+  width: 38px;
+  height: 38px;
   display: grid;
   place-items: center;
-  border-radius: 12px;
-  font-size: 25px;
-  border: 1px solid #ffffff25;
-}
-
-#gameHubSheet .gd-purple {
-  background: linear-gradient(145deg, #57357e, #21152f);
-}
-
-#gameHubSheet .gd-blue {
-  background: linear-gradient(145deg, #17617b, #10212f);
-}
-
-#gameHubSheet .gd-red {
-  background: linear-gradient(145deg, #7e3027, #2d1613);
-}
-
-#gameHubSheet .gd-gold {
-  background: linear-gradient(145deg, #9b702d, #38250d);
-  color: #ffdc90;
-}
-
-#gameHubSheet .gd-game-info {
-  display: flex;
-  flex: 1;
-  min-width: 0;
-  flex-direction: column;
-  gap: 6px;
-}
-
-#gameHubSheet .gd-game-info strong {
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: .25px;
-  color: #f7d99e;
-  line-height: 1.35;
-  overflow-wrap: anywhere;
-}
-
-#gameHubSheet .gd-game-info small {
-  font-size: 10px;
-  line-height: 1.5;
-  color: #aaa39b;
-}
-
-#gameHubSheet .gd-arrow {
-  flex-shrink: 0;
-  width: 25px;
-  height: 25px;
+  border: 1px solid rgba(244,208,146,.5);
   border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background: #e4bd7b;
-  color: #201408;
-  font-size: 23px;
-  line-height: 1;
+  background: rgba(12,10,8,.8);
+  color: #f7d99c;
+  font-size: 18px;
+  cursor: pointer;
 }
 
-#gameHubSheet .gd-footer {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 12px;
-  margin-top: 35px;
-  padding: 18px 0;
-  border-top: 1px solid #574127;
-  color: #9f8357;
-  font-size: 9px;
-  letter-spacing: 1.5px;
-  text-align: center;
+/* DEBUG: BẬT ĐỂ NHÌN VÙNG HITBOX */
+/*
+#gameHubSheet .game-hitbox {
+  background: rgba(0,255,0,.15);
+  outline: 1px solid lime;
 }
-
-#gameHubSheet .gd-footer span {
-  color: #e5bd79;
-}
-
-/* MOBILE */
-@media (max-width: 360px) {
-  #gameHubSheet .gd-body {
-    padding: 18px 10px 28px;
-  }
-
-  #gameHubSheet .gd-game {
-    gap: 9px;
-    padding: 10px;
-  }
-
-  #gameHubSheet .gd-game-icon {
-    width: 44px;
-    height: 44px;
-    font-size: 21px;
-  }
-
-  #gameHubSheet .gd-game-info strong {
-    font-size: 11px;
-  }
-}
-
-
+*/
 
 </style>
 
@@ -2676,82 +2538,64 @@ body.page-invest #gameHubSheet .game-directory {
 
 
 
+<!-- GAME CENTER IMAGE SHOWROOM -->
 <div id="gameHubSheet" class="sheet hidden">
-  <div class="sheet-backdrop" onclick="closeGameHub()"></div>
 
-  <div class="sheet-box game-directory">
+  <div class="sheet-backdrop"
+       onclick="closeGameHub()"></div>
 
-    <div class="gd-header">
-      <div class="gd-header-icon">✦</div>
-      <div class="gd-header-text">
-        <div class="gd-eyebrow">LIVESTREAM PRO</div>
-        <h2>GAME CENTER</h2>
-        <p>Danh sách trò chơi giải trí</p>
-      </div>
-      <button class="gd-close" type="button"
-              onclick="closeGameHub()" aria-label="Đóng">✕</button>
-    </div>
+  <div class="sheet-box game-showroom-box">
 
-    <div class="gd-body">
-      <div class="gd-summary">
-        <span>GAME DIRECTORY</span>
-        <strong>04 GAMES</strong>
-      </div>
+    <div class="game-showroom-map">
 
-      <div class="gd-section-title">
-        <span>✦</span> DANH SÁCH TRÒ CHƠI
-      </div>
+      <!-- BACKGROUND CÓ SẴN HÌNH TRÒ CHƠI -->
+      <img
+        src="/assets/bg/game-showroom.jpg"
+        class="game-showroom-background"
+        alt="Game Center Showroom"
+        draggable="false"
+      >
 
-      <div class="gd-list">
+      <!-- NÚT ĐÓNG -->
+      <button type="button"
+              class="game-showroom-close"
+              onclick="closeGameHub()"
+              aria-label="Đóng Game Center">
+        ✕
+      </button>
 
-        <button class="gd-game" type="button" onclick="openRPSGame()">
-          <span class="gd-game-icon gd-purple">✊</span>
-          <span class="gd-game-info">
-            <strong>ROCK PAPER SCISSORS</strong>
-            <small>Kéo búa bao · Đối kháng lựa chọn</small>
-          </span>
-          <span class="gd-arrow">›</span>
-        </button>
+      <!-- GAME 1: KÉO BÚA BAO -->
+      <button type="button"
+              class="game-hitbox game-hitbox-1"
+              onclick="openRPSGame()"
+              aria-label="Rock Paper Scissors">
+      </button>
 
-        <button class="gd-game" type="button" onclick="openTimeRaceGame()">
-          <span class="gd-game-icon gd-blue">⏱</span>
-          <span class="gd-game-info">
-            <strong>TIME RACE</strong>
-            <small>Cuộc đua thời gian · Thử thách tốc độ</small>
-          </span>
-          <span class="gd-arrow">›</span>
-        </button>
+      <!-- GAME 2: TIME RACE -->
+      <button type="button"
+              class="game-hitbox game-hitbox-2"
+              onclick="openTimeRaceGame()"
+              aria-label="Time Race">
+      </button>
 
-        <button class="gd-game" type="button" onclick="openDragonTigerGame()">
-          <span class="gd-game-icon gd-red">🐉</span>
-          <span class="gd-game-info">
-            <strong>DRAGON TIGER PHOENIX</strong>
-            <small>Rồng · Hổ · Phượng Hoàng</small>
-          </span>
-          <span class="gd-arrow">›</span>
-        </button>
+      <!-- GAME 3: DRAGON TIGER -->
+      <button type="button"
+              class="game-hitbox game-hitbox-3"
+              onclick="openDragonTigerGame()"
+              aria-label="Dragon Tiger Phoenix">
+      </button>
 
-        <button class="gd-game" type="button" onclick="openWheel8Game()">
-          <span class="gd-game-icon gd-gold">✦</span>
-          <span class="gd-game-info">
-            <strong>LUCKY WHEEL 8</strong>
-            <small>Trò chơi 8 cửa · Kết quả ngẫu nhiên</small>
-          </span>
-          <span class="gd-arrow">›</span>
-        </button>
+      <!-- GAME 4: WHEEL 8 -->
+      <button type="button"
+              class="game-hitbox game-hitbox-4"
+              onclick="openWheel8Game()"
+              aria-label="Lucky Wheel 8">
+      </button>
 
-      </div>
-
-      <div class="gd-footer">
-        <span>✧</span>
-        PREMIUM GAMING EXPERIENCE
-        <span>✧</span>
-      </div>
     </div>
 
   </div>
 </div>
-
 
 
 <script src="/socket.io/socket.io.js"></script>
