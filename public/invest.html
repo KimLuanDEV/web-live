@@ -2439,22 +2439,82 @@ body.page-invest #gameHubSheet .game-showroom-box {
 
 
 /* NÚT ĐÓNG */
+
+/* ===== LUXURY GOLD EXIT BUTTON ===== */
+
 #gameHubSheet .game-showroom-close {
-  position: absolute;
-  z-index: 10;
-  top: max(14px, env(safe-area-inset-top));
-  right: 15px;
-  width: 38px;
-  height: 38px;
-  display: grid;
-  place-items: center;
-  border: 1px solid rgba(244,208,146,.5);
-  border-radius: 50%;
-  background: rgba(12,10,8,.8);
-  color: #f7d99c;
-  font-size: 18px;
-  cursor: pointer;
+    position: absolute !important;
+    z-index: 100 !important;
+
+    top: max(14px, env(safe-area-inset-top)) !important;
+    left: 12px !important;
+    right: auto !important;
+
+    width: auto !important;
+    height: 38px !important;
+
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 0 13px !important;
+
+    border: 1px solid #d9aa59 !important;
+    border-radius: 9px !important;
+
+    background: linear-gradient(
+        145deg,
+        rgba(54,39,21,.96),
+        rgba(13,11,10,.96)
+    ) !important;
+
+    color: #f8d99b !important;
+
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1.4px;
+
+    box-shadow:
+        0 0 14px rgba(223,167,70,.23),
+        inset 0 1px 0 rgba(255,238,190,.18),
+        0 4px 12px rgba(0,0,0,.5);
+
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+
+    transition:
+        background .2s ease,
+        box-shadow .2s ease;
 }
+
+#gameHubSheet .game-showroom-close svg {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+}
+
+#gameHubSheet .game-showroom-close span {
+    line-height: 1;
+}
+
+/* Khi nhấn */
+#gameHubSheet .game-showroom-close:active {
+    background: linear-gradient(
+        145deg,
+        #b68a48,
+        #64421c
+    ) !important;
+
+    box-shadow: 0 0 18px rgba(255,197,93,.45);
+}
+
+#gameHubSheet .game-showroom-close:focus-visible {
+    outline: 2px solid #ffe3a8;
+    outline-offset: 3px;
+}
+
 
 /* DEBUG: BẬT ĐỂ NHÌN VÙNG HITBOX */
 /*
@@ -2616,13 +2676,31 @@ body.page-invest #gameHubSheet .game-showroom-box {
         draggable="false"
       >
 
-      <!-- NÚT ĐÓNG -->
-      <button type="button"
-              class="game-showroom-close"
-              onclick="closeGameHub()"
-              aria-label="Đóng Game Center">
-        ✕
-      </button>
+
+<!-- LUXURY EXIT BUTTON -->
+<button type="button"
+        class="game-showroom-close"
+        onclick="closeGameHub()"
+        aria-label="Thoát Game Center">
+
+    <svg viewBox="0 0 24 24"
+         width="19"
+         height="19"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round"
+         aria-hidden="true">
+        <path d="M9 18l-6-6 6-6"/>
+        <path d="M3 12h12"/>
+        <path d="M15 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/>
+    </svg>
+
+    <span>EXIT</span>
+
+</button>
+
 
       <!-- GAME 1: KÉO BÚA BAO -->
       <button type="button"
