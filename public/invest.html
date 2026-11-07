@@ -2219,6 +2219,64 @@ body.page-invest .showroom-exit-hitbox {
   z-index: 20;
 }
 
+
+
+/* ===== FIX EXIT - GÓC TRÁI SHOWROOM ===== */
+
+body.page-invest .showroom-map {
+  position: relative !important;
+}
+
+body.page-invest .showroom-exit-hitbox {
+  position: absolute !important;
+
+  top: 10px !important;
+  left: 10px !important;
+  right: auto !important;
+  bottom: auto !important;
+
+  z-index: 100 !important;
+
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  width: 76px;
+  min-width: 0;
+  height: 32px;
+
+  margin: 0 !important;
+  padding: 0 9px;
+
+  border: 1px solid rgba(245,205,130,.7);
+  border-radius: 8px;
+
+  background: rgba(12,10,9,.88);
+  color: #f5d397;
+
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1px;
+  line-height: 1;
+
+  transform: none;
+  box-sizing: border-box;
+}
+
+body.page-invest .showroom-exit-hitbox .exit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+body.page-invest .showroom-exit-hitbox:active {
+  transform: scale(.96);
+}
+
+
+
 </style>
 
 
