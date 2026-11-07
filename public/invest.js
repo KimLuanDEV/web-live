@@ -146,3 +146,20 @@ function openTimeStopGame(){
 function openWheel8Game(){
   location.href = "/game-wheel8.html";
 }
+
+
+/* ===== CHỐNG ZOOM BẰNG CỬ CHỈ ===== */
+
+// Chặn pinch zoom trên Safari iOS
+["gesturestart", "gesturechange", "gestureend"].forEach(eventName => {
+    document.addEventListener(eventName, function(e) {
+        e.preventDefault();
+    }, { passive: false });
+});
+
+// Chặn Ctrl + cuộn chuột để zoom trên desktop
+document.addEventListener("wheel", function(e) {
+    if (e.ctrlKey) {
+        e.preventDefault();
+    }
+}, { passive: false });
