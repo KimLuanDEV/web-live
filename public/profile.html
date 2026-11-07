@@ -14596,6 +14596,367 @@ body.page-profile .profile-cover::after {
   }
 }
 
+
+
+/* ==========================================
+   AVATAR - HIỂN THỊ ẢNH GỐC KHÔNG PHỦ MỜ
+========================================== */
+
+/* Bỏ hiệu ứng mờ, tối trên ảnh */
+body.page-profile #avatarPreview {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  mix-blend-mode: normal !important;
+
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+
+/* Loại bỏ các lớp hiệu ứng bao quanh avatar */
+body.page-profile .avatar-wrap.fb-avatar::before,
+body.page-profile .avatar-wrap.fb-avatar::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Không làm mờ toàn bộ khung avatar */
+body.page-profile .avatar-wrap.fb-avatar {
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Giữ nguyên ảnh bên trong viền vàng */
+body.page-profile .avatar-wrap.fb-avatar > #avatarPreview {
+  display: block !important;
+  width: 100% !important;
+  height: 100% !important;
+  border-radius: 50% !important;
+}
+
+
+
+
+/* ==========================================
+   ROYAL OBSIDIAN - COMPACT DASHBOARD
+========================================== */
+
+body.page-profile .royal-dashboard {
+  --rd-gold: #e7c786;
+  --rd-line: rgba(231,199,134,.18);
+  width: 100%;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: #f6f0e5;
+}
+
+/* GIỚI THIỆU */
+body.page-profile .royal-dashboard .royal-bio {
+  padding: 13px;
+  border: 1px solid var(--rd-line);
+  border-radius: 15px;
+  background: linear-gradient(145deg,#191b20,#101115);
+}
+
+body.page-profile .royal-dashboard .bio-label {
+  margin: 0 0 9px;
+  color: var(--rd-gold);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+body.page-profile .royal-dashboard #bioInput {
+  display: block;
+  width: 100%;
+  min-height: 68px;
+  height: 68px;
+  margin: 0;
+  padding: 10px 12px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,.08);
+  background: #0b0d11;
+  box-shadow: none;
+  color: #eee9df;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+body.page-profile .royal-dashboard #bioInput:focus {
+  border-color: var(--rd-gold);
+}
+
+/* NÚT BẠN BÈ */
+body.page-profile .royal-dashboard .btn-profile-friends {
+  width: 100%;
+  min-height: 46px;
+  margin: 0;
+  padding: 9px 13px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 9px;
+  border-radius: 13px;
+  border: 1px solid var(--rd-line);
+  background: linear-gradient(120deg,#242016,#141518);
+  color: #f2d79e;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+body.page-profile .royal-dashboard .btn-profile-friends .icon {
+  font-size: 18px;
+}
+
+body.page-profile .royal-dashboard .royal-arrow {
+  margin-left: auto;
+  font-size: 23px;
+  line-height: 1;
+  color: var(--rd-gold);
+}
+
+body.page-profile .royal-dashboard
+.btn-profile-friends [hidden] {
+  display: none !important;
+}
+
+/* CÁC NÚT KẾT BẠN */
+body.page-profile .royal-dashboard
+.profile-friend-actions {
+  gap: 7px;
+  margin: 0;
+  flex-wrap: wrap;
+}
+
+body.page-profile .royal-dashboard
+.profile-friend-actions button {
+  min-height: 38px;
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 12px;
+}
+
+/* LEVEL / EXP */
+body.page-profile .royal-dashboard .profile-level {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin: 0;
+  padding: 15px;
+  border-radius: 16px;
+  border: 1px solid rgba(231,199,134,.28);
+  background: linear-gradient(140deg,#292317,#111318 72%);
+  box-shadow: 0 7px 22px rgba(0,0,0,.18);
+}
+
+body.page-profile .royal-dashboard
+.profile-level::after {
+  display: none;
+}
+
+body.page-profile .royal-dashboard .level-left {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+body.page-profile .royal-dashboard .level-badge {
+  color: #f3d89d;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+body.page-profile .royal-dashboard .exp-card {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+body.page-profile .royal-dashboard .exp-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  color: #d6c9ad;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .35px;
+}
+
+body.page-profile .royal-dashboard .exp-bar {
+  height: 7px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #090a0d;
+}
+
+body.page-profile .royal-dashboard .exp-bar__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg,#a57936,#ffe1a0);
+}
+
+/* TIÊU ĐỀ */
+body.page-profile .royal-dashboard .royal-section-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin: 5px 0 0;
+}
+
+body.page-profile .royal-dashboard
+.royal-section-title > span {
+  color: var(--rd-gold);
+  font-size: 11px;
+  font-weight: 850;
+  letter-spacing: .8px;
+}
+
+body.page-profile .royal-dashboard
+.royal-section-title small {
+  color: #88858a;
+  font-size: 9px;
+  letter-spacing: .4px;
+}
+
+/* LƯỚI TÀI SẢN - 2 CỘT */
+body.page-profile .royal-dashboard .profile-stats {
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 9px !important;
+  width: 100%;
+  margin: 0 0 20px;
+  padding: 0;
+}
+
+/* THẺ TÀI SẢN */
+body.page-profile .royal-dashboard
+.profile-stats .stat-box {
+  grid-column: auto !important;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  min-width: 0;
+  min-height: 103px;
+  margin: 0;
+  padding: 12px !important;
+  overflow: hidden;
+  border-radius: 14px !important;
+  border: 1px solid rgba(231,199,134,.15) !important;
+  background: linear-gradient(145deg,#1d1e22,#101115) !important;
+  box-shadow: 0 5px 17px rgba(0,0,0,.15);
+  text-align: left;
+}
+
+body.page-profile .royal-dashboard
+.profile-stats .stat-box::before,
+body.page-profile .royal-dashboard
+.profile-stats .stat-box::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* NHÃN HÀNH ĐỘNG */
+body.page-profile .royal-dashboard
+.profile-stats .stat-badge {
+  position: static !important;
+  display: inline-flex;
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 9px;
+  padding: 4px 7px;
+  border-radius: 6px;
+  border: 1px solid rgba(231,199,134,.16);
+  background: rgba(231,199,134,.08);
+  color: var(--rd-gold);
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .45px;
+}
+
+/* TÊN THÔNG SỐ */
+body.page-profile .royal-dashboard
+.profile-stats .stat-label {
+  margin: 0 0 5px;
+  color: #aaa8ab;
+  font-size: 11px;
+  font-weight: 550;
+  line-height: 1.35;
+}
+
+/* GIÁ TRỊ */
+body.page-profile .royal-dashboard
+.profile-stats .stat-val {
+  max-width: 100%;
+  color: #f7f1e5 !important;
+  font-size: clamp(17px,4.7vw,22px);
+  font-weight: 850;
+  line-height: 1.2;
+  letter-spacing: -.4px;
+  overflow-wrap: anywhere;
+}
+
+/* NHẤN THẺ */
+body.page-profile .royal-dashboard
+.profile-stats .stat-box.clickable {
+  cursor: pointer;
+  transition: transform .15s,border-color .15s;
+}
+
+body.page-profile .royal-dashboard
+.profile-stats .stat-box.clickable:active {
+  transform: scale(.97);
+  border-color: rgba(231,199,134,.5) !important;
+}
+
+/* THẺ KIM CƯƠNG */
+body.page-profile .royal-dashboard #btnTopupCoin {
+  background: linear-gradient(135deg,#322817,#17181b) !important;
+  border-color: rgba(231,199,134,.38) !important;
+}
+
+/* MŨI TÊN THAO TÁC */
+body.page-profile .royal-dashboard .royal-action-arrow {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  color: #e7c786;
+  font-size: 18px;
+  line-height: 1;
+}
+
+/* MÀN HÌNH NHỎ */
+@media (max-width: 360px) {
+  body.page-profile .royal-dashboard
+  .profile-stats .stat-box {
+    min-height: 96px;
+    padding: 10px !important;
+  }
+
+  body.page-profile .royal-dashboard
+  .profile-stats .stat-val {
+    font-size: 17px;
+  }
+
+  body.page-profile .royal-dashboard
+  .royal-section-title small {
+    display: none;
+  }
+}
+
+
   </style>
 </head>
 
@@ -14654,115 +15015,150 @@ body.page-profile .profile-cover::after {
 </div>
 
 
-<!-- BIO / NOTE -->
 
-  <div class="bio-label">📝 Giới thiệu</div>
-  <textarea id="bioInput" placeholder="Viết vài dòng về bạn..." rows="5"></textarea>
+<!-- ===== ROYAL PROFILE DASHBOARD ===== -->
+<section class="royal-dashboard">
 
+  <!-- GIỚI THIỆU -->
+  <div class="royal-bio">
+    <div class="bio-label">
+      <span>✦</span> GIỚI THIỆU
+    </div>
 
+    <textarea
+      id="bioInput"
+      placeholder="Viết vài dòng về bạn..."
+      rows="3"></textarea>
+  </div>
+
+  <!-- BẠN BÈ -->
   <button class="btn-profile-friends"
-        onclick="location.href='/friends.html'">
-  <span class="icon">👥</span>
-  <span class="text">Bạn bè</span>
+          onclick="location.href='/friends.html'">
 
-  <!-- 🔢 badge số bạn -->
-  <span class="friend-badge" id="friendCount" hidden>0</span>
+    <span class="icon">👥</span>
+    <span class="text">Bạn bè</span>
 
-  <!-- 🔔 badge lời mời -->
-  <span class="friend-req-badge" id="friendReqCount" hidden>0</span>
-</button>
+    <span class="friend-badge"
+          id="friendCount" hidden>0</span>
 
+    <span class="friend-req-badge"
+          id="friendReqCount" hidden>0</span>
 
-<!-- 👀 Actions khi xem profile người khác -->
-<div class="profile-friend-actions" id="profileFriendActions">
-  <button class="btn-msg" id="btnMsgFriend">💬 Nhắn tin</button>
-  <button class="btn-primary" id="btnAddFriend">➕ Kết bạn</button>
-  <button class="btn-waiting" id="btnFriendPending">⏳ Đã gửi lời mời</button>
-  <button class="btn-danger" id="btnUnfriend">🚫 Huỷ bạn</button>
-  <button class="btn-danger-outline" id="btnBlock">⛔ Block</button>
-</div>
+    <span class="royal-arrow">›</span>
+  </button>
 
+  <!-- HÀNH ĐỘNG VỚI NGƯỜI KHÁC -->
+  <div class="profile-friend-actions"
+       id="profileFriendActions">
 
+    <button class="btn-msg" id="btnMsgFriend">
+      💬 Nhắn tin
+    </button>
 
+    <button class="btn-primary" id="btnAddFriend">
+      ➕ Kết bạn
+    </button>
 
+    <button class="btn-waiting" id="btnFriendPending">
+      ⏳ Đã gửi lời mời
+    </button>
 
-  <!-- LEVEL -->
+    <button class="btn-danger" id="btnUnfriend">
+      🚫 Huỷ bạn
+    </button>
+
+    <button class="btn-danger-outline" id="btnBlock">
+      ⛔ Block
+    </button>
+  </div>
+
+  <!-- LEVEL / EXP -->
   <div class="profile-level">
+
     <div class="level-left">
-      <div class="level-badge">⭐ Level <b id="levelVal">1</b></div>
+      <div class="level-badge">
+        ✦ LEVEL <b id="levelVal">1</b>
+      </div>
+
       <div id="vipBadgeBox"></div>
     </div>
 
     <div class="exp-card">
       <div class="exp-head">
-        <span>EXP</span>
+        <span>TIẾN ĐỘ KINH NGHIỆM</span>
         <span id="expText">0 / 100</span>
       </div>
+
       <div class="exp-bar">
         <div class="exp-bar__fill" id="expFill"></div>
       </div>
     </div>
+
   </div>
 
-  <!-- STATS -->
+  <!-- TIÊU ĐỀ TÀI KHOẢN -->
+  <div class="royal-section-title">
+    <span>✦ TÀI KHOẢN CỦA BẠN</span>
+    <small>QUẢN LÝ TÀI SẢN</small>
+  </div>
+
+  <!-- TÀI SẢN VÀ CHỨC NĂNG -->
   <div class="profile-stats">
 
+    <div class="stat-box clickable badge-topup"
+         id="btnTopupCoin">
+      <span class="stat-badge">NẠP</span>
+      <div class="stat-label">Kim cương</div>
+      <div class="stat-val" id="coinVal">0</div>
+    </div>
 
-   <div class="stat-box clickable badge-topup" id="btnTopupCoin">
-  <span class="stat-badge">NẠP</span>
-  <div class="stat-label">Kim cương</div>
-  <div class="stat-val" id="coinVal">0</div>
-</div>
+    <div class="stat-box gold clickable badge-invest"
+         id="btnInvest">
+      <span class="stat-badge">ĐẦU TƯ</span>
+      <div class="stat-label">Đã sử dụng</div>
+      <div class="stat-val" id="coinSentVal">0</div>
+    </div>
 
+    <div class="stat-box blue clickable badge-withdraw"
+         id="btnWithdraw">
+      <span class="stat-badge">RÚT</span>
+      <div class="stat-label">Ví tiền</div>
+      <div class="stat-val" id="coinReceivedVal">0</div>
+    </div>
 
-<div class="stat-box gold clickable badge-invest" id="btnInvest">
-  <span class="stat-badge">ĐẦU TƯ</span>
-  <div class="stat-label">Đã sử dụng</div>
-  <div class="stat-val" id="coinSentVal">0</div>
-</div>
+    <div class="stat-box green clickable"
+         id="btnDepositHistory">
+      <span class="stat-badge">TỔNG NẠP</span>
+      <div class="stat-label">Đã nạp vào</div>
+      <div class="stat-val" id="coinDepositVal">0</div>
+    </div>
 
+    <div class="stat-box purple clickable"
+         id="btnTransferCoin">
+      <span class="stat-badge">GỬI</span>
+      <div class="stat-label">Chuyển kim cương</div>
+      <div class="royal-action-arrow">↗</div>
+    </div>
 
+    <div class="stat-box purple clickable"
+         id="btnTransferHistory">
+      <span class="stat-badge">LỊCH SỬ</span>
+      <div class="stat-label">Lịch sử giao dịch</div>
+      <div class="royal-action-arrow">↗</div>
+    </div>
 
-    <div class="stat-box blue clickable badge-withdraw" id="btnWithdraw">
-  <span class="stat-badge">RÚT</span>
-  <div class="stat-label">Ví tiền</div>
-  <div class="stat-val" id="coinReceivedVal">0</div>
-</div>
-
-
-
-<div class="stat-box green clickable" id="btnDepositHistory">
-  <span class="stat-badge">TỔNG NẠP</span>
-  <div class="stat-label">Đã nạp vào</div>
-  <div class="stat-val" id="coinDepositVal">0</div>
-</div>
-
-
-<div class="stat-box purple clickable" id="btnTransferCoin">
-  <span class="stat-badge">GỬI</span>
-  <div class="stat-label"> Chuyển kim cương</div>
-</div>
-
-
-<div class="stat-box purple clickable" id="btnTransferHistory">
-  <span class="stat-badge">LỊCH SỬ</span>
-  <div class="stat-label">Lịch sử giao dịch</div>
-</div>
-
-
-
-<button style="display: none;"  class="btn-profile-library"
-        onclick="location.href='/library.html'">
-  <span class="icon"></span>
-  <span class="text">Thư viện</span>
-</button>
-
-
-
-
-
+    <button style="display:none"
+            class="btn-profile-library"
+            onclick="location.href='/library.html'">
+      <span class="icon"></span>
+      <span class="text">Thư viện</span>
+    </button>
 
   </div>
+
+</section>
+<!-- ===== END ROYAL PROFILE DASHBOARD ===== -->
+
 
 
   
