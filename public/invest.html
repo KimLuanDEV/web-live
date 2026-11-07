@@ -2188,29 +2188,30 @@ body.page-invest .showroom-map {
 /* ẢNH PHỦ KÍN KHUNG */
 
 
+/* ===== SHOWROOM BACKGROUND MOBILE ===== */
+
 body.page-invest .showroom-background {
-  display: block !important;
+    display: block !important;
 
-  width: 100% !important;
-  height: 100% !important;
+    width: 100% !important;
+    height: 100% !important;
 
-  min-width: 100% !important;
-  min-height: 100% !important;
+    min-width: 0 !important;
+    min-height: 0 !important;
 
-  max-width: none !important;
-  max-height: none !important;
+    max-width: none !important;
+    max-height: none !important;
 
-  object-fit: fill !important;
-  object-position: center center !important;
+    object-fit: fill !important;
+    object-position: center center !important;
 
-  margin: 0 !important;
-  padding: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
 
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-drag: none;
 }
-
 
 /* GIỮ HITBOX TRÊN ẢNH */
 
@@ -2303,6 +2304,25 @@ button,
     touch-action: manipulation;
 }
 
+
+
+/* ===== CÂN CHỈNH SHOWROOM MOBILE ===== */
+
+@media (max-width: 600px) {
+
+    body.page-invest .showroom-map {
+        height: 100dvh !important;
+        overflow: hidden !important;
+    }
+
+    body.page-invest .showroom-background {
+        width: 100% !important;
+        height: 100% !important;
+
+        object-fit: fill !important;
+        transform: translateY(12px);
+    }
+}
 
 </style>
 
