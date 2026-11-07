@@ -1870,7 +1870,7 @@ if(forcedEvent === "x5-all"){
   winSlots = [wheel8Round.secret.slot];
   multiplier = wheel8Round.secret.multiplier;
 
-}else if(Math.random() < 0.0025){
+}else if(Math.random() < 0.0001){
 
   // EVENT ngẫu nhiên khi Admin không override
   specialEvent = true;
