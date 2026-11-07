@@ -6205,13 +6205,14 @@ body.is-guest .reactions-layer{
   margin-bottom:90px;
 }
 
-/* ===== FLOATING SHADOW FOR PROFILE CARD ===== */
-.page-profile .profile-shell{
-  box-shadow:
-    0 40px 80px rgba(0,0,0,.85),
-    0 0 0 1px rgba(255,255,255,.06) inset,
-    0 0 40px rgba(0,246,255,.12);
+
+/* ===== PROFILE SHELL KHÔNG CHE COVER ===== */
+.page-profile .profile-shell {
+  background: transparent !important;
+  box-shadow: none !important;
+  border: none !important;
 }
+
 
 /* ===== FIX TABBAR POSITION FOR PROFILE ===== */
 .page-profile .container{
@@ -14970,6 +14971,60 @@ body.page-profile .royal-dashboard .royal-action-arrow {
     display: none;
   }
 }
+
+
+
+/* =========================================
+   FIX LỚP MỜ HÌNH CHỮ NHẬT TRÊN COVER
+========================================= */
+
+/* Ảnh cover luôn hiển thị nguyên bản */
+body.page-profile .profile-cover #coverPreview {
+  opacity: 1 !important;
+  filter: none !important;
+  -webkit-filter: none !important;
+  mix-blend-mode: normal !important;
+}
+
+/* Loại bỏ lớp phủ trên cover */
+body.page-profile .profile-cover::before,
+body.page-profile .profile-cover::after {
+  content: none !important;
+  display: none !important;
+}
+
+/* Container chồng lên cover nhưng không tạo nền mờ */
+body.page-profile > .container {
+  background: transparent !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Shell không tạo lớp nền hình chữ nhật */
+body.page-profile .profile-shell {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Phần header chứa avatar không có nền phủ */
+body.page-profile .profile-header.fb-style {
+  background: transparent !important;
+  background-image: none !important;
+  box-shadow: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* Giữ nguyên các thành phần bên trong */
+body.page-profile .avatar-wrap.fb-avatar {
+  position: relative;
+  z-index: 2;
+}
+
 
 
   </style>
