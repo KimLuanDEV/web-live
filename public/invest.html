@@ -1727,6 +1727,402 @@ body.page-invest .luxury-shelf-shadow {
 
 
 
+
+/* ===== REAL LUXURY SHOWROOM ===== */
+
+body.page-invest .real-showroom {
+  position: relative;
+  isolation: isolate;
+  width: 100%;
+  max-width: 430px;
+  min-height: calc(100dvh - 76px);
+  margin: 0 auto;
+  padding: 42px 16px 65px;
+  overflow: hidden;
+
+  background-image:
+    linear-gradient(
+      180deg,
+      rgba(0,0,0,.26),
+      rgba(0,0,0,.05) 42%,
+      rgba(0,0,0,.42)
+    ),
+    url("/assets/bg/luxury-showroom.jpg");
+
+  background-size: cover;
+  background-position: center top;
+  background-repeat: no-repeat;
+  background-color: #0c0b0a;
+}
+
+/* TIÊU ĐỀ SHOWROOM */
+
+body.page-invest .showroom-heading {
+  position: relative;
+  text-align: center;
+  margin-bottom: 75px;
+  text-shadow: 0 3px 12px #000;
+}
+
+.showroom-heading > span {
+  color: #e7c58b;
+  font-size: 10px;
+  letter-spacing: 3px;
+}
+
+.showroom-heading h2 {
+  margin: 12px 0 8px;
+  font-size: clamp(16px, 4.6vw, 21px);
+  color: #ffe5b0;
+  letter-spacing: 1px;
+}
+
+.showroom-heading p {
+  margin: 0;
+  font-size: 9px;
+  letter-spacing: 3px;
+  color: #e1c89e;
+}
+
+/* HAI VỊ TRÍ TRƯNG BÀY */
+
+body.page-invest .showroom-exhibits {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0,1fr));
+  align-items: end;
+  gap: 18px;
+  width: 100%;
+  padding: 0 3px;
+}
+
+/* CARD ĐỨNG TRÊN KHÔNG GIAN SHOWROOM */
+
+body.page-invest .showroom-item {
+  appearance: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  min-width: 0;
+  padding: 0;
+  margin: 0;
+
+  border: 1px solid rgba(239,205,143,.55);
+  border-radius: 10px;
+  overflow: hidden;
+
+  background: #111014;
+  color: #fff;
+  cursor: pointer;
+
+  box-shadow:
+    0 15px 28px rgba(0,0,0,.7),
+    0 0 18px rgba(218,169,83,.17);
+
+  transition: transform .25s ease;
+}
+
+.showroom-item:active {
+  transform: scale(.97);
+}
+
+.showroom-item:focus-visible {
+  outline: 2px solid #ffe0a0;
+  outline-offset: 4px;
+}
+
+/* ẢNH RIÊNG, KHÔNG ĐÈ CHỮ */
+
+.showroom-picture {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  overflow: hidden;
+  background: #080808;
+}
+
+.showroom-picture img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* BẢNG TÊN BÊN DƯỚI */
+
+.showroom-nameplate {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  min-height: 112px;
+  padding: 13px 5px 12px;
+
+  background: linear-gradient(
+    155deg,
+    #30271c,
+    #0d0d0f 75%
+  );
+
+  text-align: center;
+}
+
+.showroom-nameplate h3 {
+  margin: 0;
+  font-size: clamp(12px, 3.7vw, 16px);
+  font-weight: 900;
+  color: #f5d499;
+  white-space: nowrap;
+}
+
+.showroom-nameplate p {
+  margin: 7px 0 12px;
+  font-size: 10px;
+  line-height: 1.4;
+  color: #d0c4b0;
+}
+
+.showroom-nameplate span {
+  margin-top: auto;
+  padding: 7px 10px;
+  border-radius: 5px;
+  border: 1px solid rgba(230,190,120,.4);
+  color: #f0d19b;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: .5px;
+}
+
+/* CHỮ CHÂN SHOWROOM */
+
+.showroom-footer {
+  position: relative;
+  margin-top: 75px;
+  text-align: center;
+  color: #e6c48c;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-shadow: 0 2px 10px #000;
+}
+
+/* ĐIỆN THOẠI NHỎ */
+
+@media (max-width: 360px) {
+  body.page-invest .real-showroom {
+    padding: 32px 10px 50px;
+  }
+
+  body.page-invest .showroom-exhibits {
+    gap: 10px;
+  }
+
+  body.page-invest .showroom-heading {
+    margin-bottom: 55px;
+  }
+
+  .showroom-nameplate {
+    min-height: 110px;
+    padding: 10px 4px;
+  }
+}
+
+@media (hover: hover) {
+  .showroom-item:hover {
+    transform: translateY(-5px);
+  }
+}
+
+
+
+/* =====================================
+   LIVESTREAM PRO - IMAGE SHOWROOM
+   RESPONSIVE HITBOX
+===================================== */
+
+body.page-invest .showroom-map {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+  line-height: 0;
+  background: #000;
+}
+
+/* ẢNH HIỂN THỊ NGUYÊN TỶ LỆ */
+
+body.page-invest .showroom-background {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  user-select: none;
+  -webkit-user-drag: none;
+  pointer-events: none;
+}
+
+/* HITBOX CHUNG */
+
+body.page-invest .showroom-hitbox {
+  position: absolute;
+  z-index: 5;
+  display: block;
+
+  padding: 0;
+  margin: 0;
+  border: 0;
+  border-radius: 10px;
+
+  background: transparent;
+  box-shadow: none;
+  opacity: 1;
+
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* TRADE - BÊN TRÁI */
+
+body.page-invest .hitbox-trade {
+  left: 7%;
+  top: 33%;
+  width: 41%;
+  height: 30%;
+}
+
+/* GAME CENTER - BÊN PHẢI */
+
+body.page-invest .hitbox-games {
+  left: 52%;
+  top: 33%;
+  width: 42%;
+  height: 30%;
+}
+
+/* HIỆU ỨNG KHI NHẤN */
+
+body.page-invest .showroom-hitbox:active {
+  background: rgba(255,215,130,.10);
+  box-shadow:
+    inset 0 0 22px rgba(255,200,100,.25);
+}
+
+/* HỖ TRỢ BÀN PHÍM */
+
+body.page-invest .showroom-hitbox:focus-visible {
+  outline: 2px solid #f5d18b;
+  outline-offset: -2px;
+}
+
+/* KHÔNG TRÀN MÀN HÌNH */
+
+body.page-invest {
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+
+
+/* ======================================
+   LUXURY SHOWROOM - EXIT HITBOX
+====================================== */
+
+body.page-invest .showroom-map {
+  position: relative;
+  width: 100%;
+  max-width: 430px;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* EXIT NẰM TRỰC TIẾP TRÊN BACKGROUND */
+
+body.page-invest .showroom-exit-hitbox {
+  position: absolute;
+  z-index: 20;
+
+  top: 1.5%;
+  left: 3%;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+
+  min-width: 77px;
+  height: 35px;
+  padding: 0 11px;
+
+  border: 1px solid rgba(245,205,130,.65);
+  border-radius: 9px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(38,30,18,.88),
+    rgba(8,8,10,.92)
+  );
+
+  color: #f5d397;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+
+  box-shadow:
+    0 4px 15px rgba(0,0,0,.5),
+    inset 0 1px 0 rgba(255,225,160,.2);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+
+  cursor: pointer;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease;
+}
+
+/* ICON */
+
+body.page-invest .exit-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #f5d397;
+}
+
+/* HOVER */
+
+@media (hover:hover) {
+  body.page-invest .showroom-exit-hitbox:hover {
+    border-color: #ffe0a1;
+    box-shadow:
+      0 0 18px rgba(240,190,90,.3),
+      inset 0 1px 0 rgba(255,225,160,.25);
+  }
+}
+
+/* NHẤN */
+
+body.page-invest .showroom-exit-hitbox:active {
+  transform: scale(.94);
+  background: rgba(120,85,35,.8);
+}
+
+/* BÀN PHÍM */
+
+body.page-invest .showroom-exit-hitbox:focus-visible {
+  outline: 2px solid #ffe0a1;
+  outline-offset: 3px;
+}
+
 </style>
 
 
@@ -1737,94 +2133,71 @@ body.page-invest .luxury-shelf-shadow {
 
 
 
-<header class="invest-header">
 
-  <button class="back-btn" onclick="location.href='/profile.html'">
-    <span>←</span>
+
+
+
+
+
+<!-- ===== IMAGE SHOWROOM WITH HITBOX ===== -->
+
+<main class="showroom-map">
+
+  <!-- ẢNH SHOWROOM HOÀN CHỈNH -->
+  <img
+    class="showroom-background"
+    src="/assets/bg/luxury-showroom.jpg"
+    alt="Livestream Pro Showroom"
+    draggable="false"
+  >
+
+
+  
+<!-- EXIT HITBOX -->
+<button
+  type="button"
+  class="showroom-exit-hitbox"
+  onclick="location.href='/profile.html'"
+  aria-label="Thoát về trang cá nhân"
+>
+  <span class="exit-icon">
+    <svg viewBox="0 0 24 24"
+         width="17" height="17"
+         fill="none"
+         stroke="currentColor"
+         stroke-width="2"
+         stroke-linecap="round"
+         stroke-linejoin="round">
+      <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+      <path d="m16 17 5-5-5-5"/>
+      <path d="M21 12H9"/>
+    </svg>
+  </span>
+  <span>EXIT</span>
+</button>
+
+
+
+  <!-- HITBOX TRADE -->
+  <button
+    type="button"
+    class="showroom-hitbox hitbox-trade"
+    aria-label="Mở danh sách Trade"
+    onclick="openPortfolio()">
   </button>
 
-  <div class="header-title">
-    <div class="title-main">Thị trường đầu tư</div>
-  </div>
+  <!-- HITBOX GAME CENTER -->
+  <button
+    type="button"
+    class="showroom-hitbox hitbox-games"
+    aria-label="Mở danh sách Game Center"
+    onclick="openGameHub()">
+  </button>
 
+</main>
 
-</header>
+<!-- ===== END IMAGE SHOWROOM ===== -->
 
-
-
-<!-- ===== LUXURY DISPLAY SHELF ===== -->
-<section class="luxury-market">
-
-  <div class="luxury-market-heading">
-    <span class="luxury-heading-icon">✦</span>
-    <h2>KHÁM PHÁ DANH MỤC</h2>
-    <p>PREMIUM COLLECTION</p>
-  </div>
-
-  <div class="luxury-shelf">
-
-    <div class="luxury-shelf-grid">
-
-      <!-- TRADE -->
-      <button
-        type="button"
-        class="luxury-display-card"
-        onclick="openPortfolio()">
-
-        <div class="luxury-card-picture">
-          <img
-            src="/assets/bg/portfolio.jpg"
-            alt="Trade"
-            loading="lazy">
-          <span class="luxury-picture-mark">✦</span>
-        </div>
-
-        <div class="luxury-card-info">
-          <h3>TRADE</h3>
-          <p>6 lĩnh vực tài sản</p>
-
-          <span class="luxury-card-link">
-            Khám phá <span>↗</span>
-          </span>
-        </div>
-
-      </button>
-
-      <!-- GAME CENTER -->
-      <button
-        type="button"
-        class="luxury-display-card"
-        onclick="openGameHub()">
-
-        <div class="luxury-card-picture">
-          <img
-            src="/assets/bg/games.jpg"
-            alt="Game Center"
-            loading="lazy">
-          <span class="luxury-picture-mark">✦</span>
-        </div>
-
-        <div class="luxury-card-info">
-          <h3>GAME CENTER</h3>
-          <p>Kho trò chơi giải trí</p>
-
-          <span class="luxury-card-link">
-            Khám phá <span>↗</span>
-          </span>
-        </div>
-
-      </button>
-
-    </div>
-
-    <!-- THANH KỆ -->
-    <div class="luxury-shelf-edge"></div>
-    <div class="luxury-shelf-shadow"></div>
-
-  </div>
-
-</section>
-<!-- ===== END LUXURY DISPLAY SHELF ===== -->
 
 
 
