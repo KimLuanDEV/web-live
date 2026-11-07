@@ -12,7 +12,8 @@
 
 
   <title>👤 Hồ sơ cá nhân</title>
- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover">
 
  <link rel="manifest" href="/manifest.json">
 
@@ -14448,6 +14449,87 @@ body.page-profile {
 
   .page-profile #btnTopupCoin {
     padding: 21px;
+  }
+}
+
+
+
+/* ==========================================
+   PROFILE - KHUNG TỐI ĐA 430 x 870
+   KHÔNG TRÀN NGANG - KHÔNG XÊ DỊCH
+========================================== */
+
+html {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden !important;
+  overscroll-behavior-x: none;
+  background: #000;
+}
+
+body.page-profile {
+  width: 100% !important;
+  max-width: 430px !important;
+  min-height: 100dvh;
+  margin: 0 auto !important;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
+  overflow-x: clip !important;
+  position: relative;
+  background-color: #080a0e;
+  touch-action: pan-y;
+  overscroll-behavior-x: none;
+}
+
+/* ẢNH COVER NẰM TRONG KHUNG */
+body.page-profile .profile-cover {
+  width: 100% !important;
+  max-width: 430px !important;
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+
+/* KHUNG NỘI DUNG */
+body.page-profile > .container {
+  width: 100% !important;
+  max-width: 430px !important;
+  box-sizing: border-box;
+}
+
+/* THANH MENU CỐ ĐỊNH BÊN DƯỚI */
+body.page-profile .mobile-tabbar {
+  position: fixed !important;
+  width: 100% !important;
+  max-width: 430px !important;
+  left: 50% !important;
+  right: auto !important;
+  bottom: 0 !important;
+  transform: translateX(-50%) !important;
+  z-index: 1000;
+}
+
+/* NGĂN NỘI DUNG TRÀN NGANG */
+body.page-profile .profile-shell,
+body.page-profile .profile-header,
+body.page-profile .profile-stats {
+  max-width: 100%;
+  min-width: 0;
+}
+
+/* GIỮ THAO TÁC CUỘN DỌC */
+body.page-profile {
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* MÀN HÌNH NHỎ HƠN 430px */
+@media (max-width: 430px) {
+  body.page-profile {
+    width: 100% !important;
+  }
+
+  body.page-profile .mobile-tabbar {
+    max-width: 100vw !important;
   }
 }
 
