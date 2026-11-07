@@ -2524,6 +2524,238 @@ body.page-invest #gameHubSheet .game-showroom-box {
 }
 */
 
+
+
+/* ==========================================
+   TRADE SHOWROOM
+   FULL SCREEN + 6 HITBOX
+========================================== */
+
+/* KHUNG NGOÀI */
+body.page-invest #portfolioSheet .trade-showroom-box {
+    position: absolute !important;
+
+    top: 0 !important;
+    bottom: 0 !important;
+    left: 50% !important;
+    right: auto !important;
+
+    transform: translateX(-50%) !important;
+
+    width: 100% !important;
+    max-width: 430px !important;
+
+    height: 100dvh !important;
+    max-height: none !important;
+
+    display: block !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    background: #000 !important;
+
+    border: none !important;
+    border-radius: 0 !important;
+
+    overflow: hidden !important;
+    animation: none !important;
+}
+
+/* KHUNG BACKGROUND */
+body.page-invest #portfolioSheet .trade-showroom-map {
+    position: relative !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    min-height: 100dvh !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    overflow: hidden !important;
+    background: #000;
+}
+
+/* ẢNH FULL MÀN HÌNH */
+body.page-invest #portfolioSheet .trade-showroom-background {
+    position: absolute !important;
+    inset: 0 !important;
+
+    display: block !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    object-fit: fill !important;
+    object-position: center center !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    transform: none !important;
+
+    pointer-events: none !important;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+/* HITBOX CHUNG */
+#portfolioSheet .trade-hitbox {
+    appearance: none;
+    -webkit-appearance: none;
+
+    position: absolute;
+    z-index: 5;
+
+    display: block;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    border-radius: 10px;
+
+    background: transparent;
+    box-shadow: none;
+
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#portfolioSheet .trade-hitbox:active {
+    background: rgba(255, 215, 130, .14);
+}
+
+#portfolioSheet .trade-hitbox:focus-visible {
+    outline: 2px solid #ffd78d;
+    outline-offset: -2px;
+}
+
+/* ===== HÀNG 1 ===== */
+
+#portfolioSheet .trade-silver {
+    left: 4%;
+    top: 20%;
+    width: 43%;
+    height: 20%;
+}
+
+#portfolioSheet .trade-gold {
+    left: 53%;
+    top: 20%;
+    width: 43%;
+    height: 20%;
+}
+
+/* ===== HÀNG 2 ===== */
+
+#portfolioSheet .trade-diamond {
+    left: 4%;
+    top: 42%;
+    width: 43%;
+    height: 20%;
+}
+
+#portfolioSheet .trade-oil {
+    left: 53%;
+    top: 42%;
+    width: 43%;
+    height: 20%;
+}
+
+/* ===== HÀNG 3 ===== */
+
+#portfolioSheet .trade-estate {
+    left: 4%;
+    top: 64%;
+    width: 43%;
+    height: 20%;
+}
+
+#portfolioSheet .trade-atomic {
+    left: 53%;
+    top: 64%;
+    width: 43%;
+    height: 20%;
+}
+
+/* ===== LUXURY EXIT BUTTON ===== */
+
+#portfolioSheet .trade-showroom-close {
+    position: absolute !important;
+    z-index: 100 !important;
+
+    top: max(14px, env(safe-area-inset-top)) !important;
+    left: 12px !important;
+    right: auto !important;
+
+    width: auto !important;
+    height: 38px !important;
+
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 0 13px !important;
+
+    border: 1px solid #d9aa59 !important;
+    border-radius: 9px !important;
+
+    background: linear-gradient(
+        145deg,
+        rgba(54,39,21,.96),
+        rgba(13,11,10,.96)
+    ) !important;
+
+    color: #f8d99b !important;
+
+    font-size: 11px !important;
+    font-weight: 900 !important;
+    letter-spacing: 1.4px;
+
+    box-shadow:
+        0 0 14px rgba(223,167,70,.23),
+        inset 0 1px 0 rgba(255,238,190,.18),
+        0 4px 12px rgba(0,0,0,.5);
+
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+#portfolioSheet .trade-showroom-close svg {
+    width: 17px;
+    height: 17px;
+    flex-shrink: 0;
+}
+
+#portfolioSheet .trade-showroom-close:active {
+    background: linear-gradient(
+        145deg, #b68a48, #64421c
+    ) !important;
+}
+
+#portfolioSheet .trade-showroom-close:focus-visible {
+    outline: 2px solid #ffe3a8;
+    outline-offset: 3px;
+}
+
+/* ===== DEBUG HITBOX ===== */
+/*
+#portfolioSheet .trade-hitbox {
+    background: rgba(0,255,0,.15);
+    outline: 1px solid lime;
+}
+*/
+
+
+
 </style>
 
 
@@ -2605,55 +2837,86 @@ body.page-invest #gameHubSheet .game-showroom-box {
 
 
 
+
+<!-- ===== TRADE IMAGE SHOWROOM ===== -->
 <div id="portfolioSheet" class="sheet hidden">
-  <div class="sheet-backdrop" onclick="closePortfolio()"></div>
 
-  <div class="sheet-box">
+  <div class="sheet-backdrop"
+       onclick="closePortfolio()"></div>
 
-<div class="sheet-head portfolio-head">
-  <div class="ph-left">
-    <div class="ph-icon">💼</div>
-    <div class="ph-text">
-      <div class="ph-title">Các mảng đầu tư</div>
-      <div class="ph-sub">Chọn tài sản để tham gia</div>
+  <div class="sheet-box trade-showroom-box">
+
+    <div class="trade-showroom-map">
+
+      <!-- BACKGROUND SHOWROOM -->
+      <img
+        src="/assets/bg/trade-showroom.jpg"
+        class="trade-showroom-background"
+        alt="Trade Center Showroom"
+        draggable="false"
+      >
+
+      <!-- EXIT BUTTON -->
+      <button type="button"
+              class="trade-showroom-close"
+              onclick="closePortfolio()"
+              aria-label="Thoát Trade Center">
+
+        <svg viewBox="0 0 24 24"
+             width="19" height="19"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="2"
+             stroke-linecap="round"
+             stroke-linejoin="round"
+             aria-hidden="true">
+          <path d="M9 18l-6-6 6-6"/>
+          <path d="M3 12h12"/>
+          <path d="M15 4h4a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-4"/>
+        </svg>
+
+        <span>EXIT</span>
+      </button>
+
+      <!-- HÀNG 1 -->
+      <button type="button"
+              class="trade-hitbox trade-silver"
+              onclick="goInvest('silver')"
+              aria-label="Silver"></button>
+
+      <button type="button"
+              class="trade-hitbox trade-gold"
+              onclick="goInvest('gold')"
+              aria-label="Gold"></button>
+
+      <!-- HÀNG 2 -->
+      <button type="button"
+              class="trade-hitbox trade-diamond"
+              onclick="goInvest('diamond')"
+              aria-label="Diamond"></button>
+
+      <button type="button"
+              class="trade-hitbox trade-oil"
+              onclick="goInvest('oil')"
+              aria-label="Oil"></button>
+
+      <!-- HÀNG 3 -->
+      <button type="button"
+              class="trade-hitbox trade-estate"
+              onclick="goInvest('estate')"
+              aria-label="Real Estate"></button>
+
+      <button type="button"
+              class="trade-hitbox trade-atomic"
+              onclick="goInvest('atomic')"
+              aria-label="Atomic"></button>
+
     </div>
-  </div>
 
-  <button class="sheet-close ph-close" onclick="closePortfolio()">✕</button>
-</div>
-
-
-    <div class="sheet-body">
-      <div class="invest-grid">
-
-        <div class="invest-card silver" onclick="goInvest('silver')">
-           <div class="asset-name"></div>
-        </div>
-
-        <div class="invest-card gold" onclick="goInvest('gold')">
-           <div class="asset-name"></div>
-        </div>
-
-        <div class="invest-card diamond" onclick="goInvest('diamond')">
-           <div class="asset-name"></div>
-        </div>
-
-        <div class="invest-card oil" onclick="goInvest('oil')">
-           <div class="asset-name"></div>
-        </div>
-
-        <div class="invest-card estate" onclick="goInvest('estate')">
-           <div class="asset-name"></div>
-        </div>
-
-        <div class="invest-card atomic" onclick="goInvest('atomic')">
-           <div class="asset-name"></div>
-        </div>
-
-      </div>
-    </div>
   </div>
 </div>
+<!-- ===== END TRADE SHOWROOM ===== -->
+
 
 
 
