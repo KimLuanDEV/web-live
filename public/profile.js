@@ -2162,3 +2162,112 @@ function closeDepositHistory(){
   depositHistoryScreen.classList.add("hidden")
 }
 
+
+
+/* ==========================================
+   AUTO FIT COIN VALUES - ROYAL DASHBOARD
+   Tự co cỡ chữ theo chiều rộng ô
+========================================== */
+
+(function () {
+
+  const VALUE_IDS = [
+    "coinVal",
+    "coinSentVal",
+    "coinReceivedVal",
+    "coinDepositVal"
+  ];
+
+  const MAX_FONT = 22;
+  const MIN_FONT = 8;
+
+  function fitCoinValue(el) {
+    if (!el || !el.isConnected) return;
+
+    const availableWidth = el.clientWidth;
+
+    if (availableWidth <= 0) return;
+
+    // Luôn thử lại từ cỡ chữ lớn nhất
+    el.style.setProperty(
+      "font-size",
+      MAX_FONT + "px",
+      "important"
+    );
+
+    // Nếu đã vừa thì không cần giảm
+    if (el.scrollWidth <= availableWidth + 1) return;
+
+    // Tìm cỡ chữ lớn nhất vừa trong ô
+    let low = MIN_FONT;
+    let high = MAX_FONT;
+
+    for (let i = 0; i < 12; i++) {
+      const mid = (low + high) / 2;
+
+      el.style.setProperty(
+        "font-size",
+        mid + "px",
+        "important"
+      );
+
+      if (el.scrollWidth <= availableWidth + 1) {
+        low = mid;
+      } else {
+        high = mid;
+      }
+    }
+
+    el.style.setProperty(
+      "font-size",
+      low.toFixed(2) + "px",
+      "important"
+    );
+  }
+
+  function initAutoFitCoinValues() {
+
+    const elements = VALUE_IDS
+      .map(id => document.getElementById(id))
+      .filter(Boolean);
+
+    if (!elements.length) return;
+
+    const resizeObserver = new ResizeObserver(entries => {
+      entries.forEach(entry => {
+        fitCoinValue(entry.target);
+      });
+    });
+
+    elements.forEach(el => {
+
+      // Tự cập nhật khi số dư thay đổi realtime
+      const mutationObserver = new MutationObserver(() => {
+        fitCoinValue(el);
+      });
+
+      mutationObserver.observe(el, {
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+
+      // Tự cập nhật khi kích thước ô thay đổi
+      resizeObserver.observe(el);
+
+      // Căn chỉnh lần đầu
+      fitCoinValue(el);
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener(
+      "DOMContentLoaded",
+      initAutoFitCoinValues,
+      { once: true }
+    );
+  } else {
+    initAutoFitCoinValues();
+  }
+
+})();

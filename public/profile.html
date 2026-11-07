@@ -14896,16 +14896,31 @@ body.page-profile .royal-dashboard
   line-height: 1.35;
 }
 
-/* GIÁ TRỊ */
+
+/* GIÁ TRỊ - LUÔN HIỂN THỊ 1 DÒNG */
 body.page-profile .royal-dashboard
 .profile-stats .stat-val {
+  display: block !important;
+
+  width: 100%;
   max-width: 100%;
+  min-width: 0;
+
   color: #f7f1e5 !important;
-  font-size: clamp(17px,4.7vw,22px);
+  font-size: 22px;
   font-weight: 850;
-  line-height: 1.2;
-  letter-spacing: -.4px;
-  overflow-wrap: anywhere;
+  line-height: 1.25;
+  letter-spacing: -0.4px;
+
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+
+  overflow: hidden !important;
+  text-overflow: clip !important;
+
+  text-align: left;
+  font-variant-numeric: tabular-nums;
 }
 
 /* NHẤN THẺ */
