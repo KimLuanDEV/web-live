@@ -13138,18 +13138,24 @@ body.page-profile {
   display: block;
 }
 
+
+/* ===== COVER KHÔNG CÓ LỚP PHỦ ===== */
+
+.page-profile .profile-cover::before,
 .page-profile .profile-cover::after {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(
-    180deg,
-    rgba(0,0,0,.05) 15%,
-    rgba(8,10,14,.35) 60%,
-    #080a0e 100%
-  );
+  content: none !important;
+  display: none !important;
 }
+
+.page-profile .profile-cover > img,
+.page-profile #coverPreview {
+  opacity: 1 !important;
+  filter: none !important;
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  object-fit: cover;
+}
+
 
 .page-profile .cover-actions {
   position: absolute;
@@ -13773,6 +13779,678 @@ body.page-profile {
     border-radius: 0 0 24px 24px;
   }
 }
+
+
+
+/* ==========================================
+   LIVESTREAM PRO — ROYAL OBSIDIAN V2
+   PREMIUM PROFILE REDESIGN
+   ========================================== */
+
+body.page-profile {
+  --royal-gold: #e7c786;
+  --royal-light: #fff0c5;
+  --royal-line: rgba(231,199,134,.20);
+  background: #080a0e;
+  color: #f8f5ef;
+  min-height: 100dvh;
+  padding-bottom: calc(92px + env(safe-area-inset-bottom));
+}
+
+.page-profile *,
+.page-profile *::before,
+.page-profile *::after {
+  box-sizing: border-box;
+}
+
+/* ===== COVER ===== */
+
+.page-profile .profile-cover {
+  height: 265px;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg,#282117,#080a0e);
+}
+
+.page-profile .profile-cover > img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.page-profile .profile-cover::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    rgba(0,0,0,.08) 0%,
+    rgba(0,0,0,.20) 40%,
+    rgba(8,10,14,.72) 78%,
+    #080a0e 100%
+  );
+}
+
+.page-profile .cover-actions {
+  position: absolute;
+  right: 18px;
+  bottom: 65px;
+  z-index: 5;
+}
+
+.page-profile #btnChangeCover {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border-radius: 13px;
+  border: 1px solid rgba(255,255,255,.3);
+  background: rgba(0,0,0,.6);
+  backdrop-filter: blur(14px);
+  color: #fff;
+}
+
+/* ===== CONTENT ===== */
+
+.page-profile .container {
+  width: 100%;
+  max-width: 480px;
+  margin: -78px auto 0;
+  padding: 0 17px;
+  position: relative;
+  z-index: 3;
+}
+
+.page-profile .profile-shell {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+/* ===== PROFILE IDENTITY ===== */
+
+.page-profile .profile-header.fb-style {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0;
+  padding: 0;
+  margin: 0 0 25px;
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.page-profile .avatar-wrap.fb-avatar {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  flex: none;
+  margin: 0 auto 15px;
+  padding: 4px;
+  border-radius: 50%;
+  background: linear-gradient(
+    145deg,
+    #fff3cb 0%,
+    #b5873e 38%,
+    #f1d393 65%,
+    #7d5525 100%
+  );
+  box-shadow:
+    0 0 0 6px rgba(231,199,134,.08),
+    0 15px 45px rgba(0,0,0,.65),
+    0 0 32px rgba(231,199,134,.14);
+}
+
+.page-profile #avatarPreview {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  border: 3px solid #101114;
+  object-fit: cover;
+}
+
+.page-profile .avatar-camera {
+  position: absolute;
+  right: 1px;
+  bottom: 4px;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  background: linear-gradient(145deg,#f9e5b5,#b88b43);
+  border: 2px solid #0c0d10;
+  color: #20190f;
+  z-index: 5;
+  cursor: pointer;
+}
+
+.page-profile .avatar-crown {
+  position: absolute;
+  top: -26px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 30px;
+  z-index: 6;
+  filter: drop-shadow(0 3px 8px rgba(0,0,0,.7));
+}
+
+.page-profile .avatar-crown.hidden {
+  display: none !important;
+}
+
+.page-profile .profile-info.fb-info {
+  width: 100%;
+  padding: 0;
+  text-align: center;
+}
+
+.page-profile .profile-name {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 0;
+  font-size: 25px;
+  font-weight: 850;
+  line-height: 1.35;
+  letter-spacing: -.6px;
+  color: #fff5da;
+  text-shadow: 0 3px 22px rgba(231,199,134,.18);
+}
+
+.page-profile .name-input {
+  display: block;
+  max-width: 300px;
+  margin: 8px auto;
+  padding: 12px;
+  border: 1px solid var(--royal-line);
+  border-radius: 12px;
+  background: #171a20;
+  color: #fff;
+}
+
+.page-profile .name-input.hidden {
+  display: none !important;
+}
+
+/* ===== BIO ===== */
+
+.page-profile .bio-label {
+  margin: 8px 0 10px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-transform: uppercase;
+  color: var(--royal-gold);
+}
+
+.page-profile #bioInput {
+  display: block;
+  width: 100%;
+  min-height: 82px;
+  height: 82px;
+  padding: 15px;
+  resize: vertical;
+  border-radius: 17px;
+  border: 1px solid var(--royal-line);
+  background: linear-gradient(145deg,#191b21,#111318);
+  color: #e8e5df;
+  font-size: 13px;
+  line-height: 1.6;
+  outline: none;
+  box-shadow: 0 8px 28px rgba(0,0,0,.15);
+}
+
+.page-profile #bioInput:focus {
+  border-color: var(--royal-gold);
+}
+
+/* ===== FRIENDS ===== */
+
+.page-profile .btn-profile-friends {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 48px;
+  margin: 13px 0 22px;
+  border-radius: 15px;
+  border: 1px solid rgba(231,199,134,.32);
+  background: linear-gradient(
+    110deg,
+    rgba(231,199,134,.13),
+    rgba(231,199,134,.035)
+  );
+  color: #f5dda7;
+  font-size: 14px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.page-profile .profile-friend-actions {
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0;
+}
+
+.page-profile .profile-friend-actions button {
+  min-height: 43px;
+  border-radius: 12px;
+}
+
+/* ===== VIP / LEVEL PANEL ===== */
+
+.page-profile .profile-level {
+  position: relative;
+  overflow: hidden;
+  padding: 21px 19px;
+  margin: 0 0 20px;
+  border-radius: 20px;
+  border: 1px solid rgba(231,199,134,.33);
+  background:
+    radial-gradient(
+      circle at 95% 0%,
+      rgba(231,199,134,.16),
+      transparent 52%
+    ),
+    linear-gradient(135deg,#242018,#12151b 75%);
+  box-shadow: 0 14px 38px rgba(0,0,0,.24);
+}
+
+.page-profile .profile-level::after {
+  content: "✦";
+  position: absolute;
+  top: -33px;
+  right: 6px;
+  font-size: 130px;
+  color: rgba(231,199,134,.045);
+  pointer-events: none;
+}
+
+.page-profile .level-left {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-bottom: 19px;
+}
+
+.page-profile .level-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 9px 14px;
+  border-radius: 11px;
+  background: linear-gradient(135deg,#ead09a,#ac7d39);
+  color: #21190d;
+  border: none;
+  font-size: 13px;
+  font-weight: 850;
+}
+
+.page-profile #vipBadgeBox {
+  position: relative;
+  z-index: 2;
+}
+
+.page-profile .exp-card {
+  width: 100%;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+}
+
+.page-profile .exp-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 11px;
+  font-size: 12px;
+  color: #c2bcb0;
+}
+
+.page-profile #expText {
+  font-weight: 800;
+  color: #f7dca3;
+}
+
+.page-profile .exp-bar {
+  width: 100%;
+  height: 9px;
+  overflow: hidden;
+  border-radius: 99px;
+  background: #08090c;
+  border: 1px solid rgba(255,255,255,.08);
+}
+
+.page-profile .exp-bar__fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(
+    90deg,#946626,#dfb66b,#fff0b9
+  );
+  box-shadow: 0 0 16px rgba(231,199,134,.35);
+  transition: width .35s ease;
+}
+
+/* ===== ASSET GRID ===== */
+
+.page-profile .profile-stats {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+  margin: 0 0 28px;
+}
+
+.page-profile .profile-stats .stat-box {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0;
+  min-width: 0;
+  min-height: 126px;
+  margin: 0;
+  padding: 17px 15px;
+  border-radius: 19px;
+  border: 1px solid rgba(255,255,255,.075);
+  background: linear-gradient(145deg,#1b1e25,#111319);
+  color: #f8f8f8;
+  box-shadow: 0 9px 25px rgba(0,0,0,.2);
+  overflow: hidden;
+  transition: transform .2s,border-color .2s;
+}
+
+.page-profile .profile-stats .stat-box.clickable {
+  cursor: pointer;
+}
+
+.page-profile .profile-stats .stat-box.clickable:active {
+  transform: scale(.97);
+}
+
+.page-profile .profile-stats .stat-badge {
+  position: static;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 14px;
+  padding: 5px 9px;
+  border-radius: 8px;
+  background: rgba(255,255,255,.075);
+  color: #c7c9d0;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: .8px;
+}
+
+.page-profile .profile-stats .stat-label {
+  margin: 0 0 7px;
+  font-size: 12px;
+  color: #a9adb7;
+  font-weight: 550;
+}
+
+.page-profile .profile-stats .stat-val {
+  max-width: 100%;
+  font-size: clamp(19px,5vw,25px);
+  line-height: 1.2;
+  font-weight: 850;
+  letter-spacing: -.5px;
+  color: #fff;
+  overflow-wrap: anywhere;
+}
+
+/* ===== HERO BALANCE ===== */
+
+.page-profile #btnTopupCoin {
+  grid-column: 1 / -1;
+  min-height: 170px;
+  padding: 24px;
+  border: 1px solid rgba(241,206,137,.6);
+  border-radius: 23px;
+  background:
+    radial-gradient(
+      circle at 90% 10%,
+      rgba(255,221,150,.22),
+      transparent 55%
+    ),
+    linear-gradient(120deg,#352817,#181a20 78%);
+  box-shadow:
+    0 16px 38px rgba(0,0,0,.35),
+    inset 0 1px 0 rgba(255,240,200,.12);
+}
+
+.page-profile #btnTopupCoin::before {
+  content: "◆";
+  position: absolute;
+  top: 23px;
+  right: 24px;
+  font-size: 80px;
+  color: rgba(255,226,164,.13);
+  pointer-events: none;
+}
+
+.page-profile #btnTopupCoin .stat-badge {
+  background: linear-gradient(135deg,#f6dfa9,#b98a41);
+  color: #261b0b;
+}
+
+.page-profile #btnTopupCoin .stat-label {
+  font-size: 13px;
+  color: #e5c991;
+}
+
+.page-profile #btnTopupCoin .stat-val {
+  font-size: clamp(32px,9vw,43px);
+  color: #fff2cc;
+  text-shadow: 0 0 25px rgba(231,199,134,.14);
+}
+
+/* ===== SECONDARY ASSETS ===== */
+
+.page-profile #btnInvest {
+  border-color: rgba(231,199,134,.20);
+}
+
+.page-profile #btnInvest .stat-val {
+  color: #e8c785;
+}
+
+.page-profile #btnWithdraw {
+  border-color: rgba(111,196,235,.22);
+}
+
+.page-profile #btnWithdraw .stat-val {
+  color: #9bdfff;
+}
+
+.page-profile #btnDepositHistory {
+  border-color: rgba(116,214,166,.20);
+}
+
+.page-profile #btnDepositHistory .stat-val {
+  color: #91e8b6;
+}
+
+.page-profile #btnTransferCoin,
+.page-profile #btnTransferHistory {
+  min-height: 104px;
+  border-color: rgba(187,156,230,.18);
+  background: linear-gradient(145deg,#211e2a,#12141b);
+}
+
+.page-profile #btnTransferCoin .stat-label,
+.page-profile #btnTransferHistory .stat-label {
+  color: #eadbff;
+  font-weight: 750;
+  line-height: 1.5;
+}
+
+/* ===== BOTTOM NAVIGATION ===== */
+
+.page-profile .mobile-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  min-height: 72px;
+  padding: 9px 5px calc(9px + env(safe-area-inset-bottom));
+  background: rgba(11,13,18,.97);
+  border-top: 1px solid rgba(231,199,134,.18);
+  backdrop-filter: blur(22px);
+  box-shadow: 0 -10px 35px rgba(0,0,0,.4);
+}
+
+.page-profile .mobile-tabbar .tab-item {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  color: #898b93;
+  cursor: pointer;
+}
+
+.page-profile .mobile-tabbar .tab-icon {
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.page-profile .mobile-tabbar .tab-text {
+  font-size: 10px;
+  font-weight: 650;
+}
+
+.page-profile .mobile-tabbar .tab-item.active {
+  color: #f2d598;
+}
+
+.page-profile .mobile-tabbar .tab-main .tab-plus {
+  display: grid;
+  place-items: center;
+  width: 43px;
+  height: 43px;
+  border-radius: 15px;
+  background: linear-gradient(135deg,#f0d89f,#ad7c37);
+  color: #20180e;
+  font-size: 22px;
+  box-shadow: 0 5px 20px rgba(231,199,134,.2);
+}
+
+/* ===== POPUPS ===== */
+
+.page-profile .sheet-panel,
+.page-profile .sheet-card,
+.page-profile .modal-card,
+.page-profile .confirm-card {
+  background: linear-gradient(155deg,#22252c,#111319);
+  border: 1px solid rgba(231,199,134,.23);
+  color: #f8f4e9;
+  box-shadow: 0 20px 60px rgba(0,0,0,.6);
+}
+
+.page-profile .sheet-panel,
+.page-profile .sheet-card {
+  border-radius: 24px 24px 0 0;
+  max-height: 90dvh;
+  overflow-y: auto;
+  padding-bottom: calc(25px + env(safe-area-inset-bottom));
+}
+
+.page-profile .sheet-header,
+.page-profile .sheet-title,
+.page-profile .confirm-header {
+  color: #f3d79e;
+}
+
+.page-profile .btn-confirm,
+.page-profile .sheet-btn.primary,
+.page-profile .history-tab.active {
+  background: linear-gradient(135deg,#f3daa3,#b78943);
+  color: #21180d;
+  font-weight: 800;
+}
+
+.page-profile .history-screen {
+  background: #0c0e13;
+}
+
+.page-profile .history-header {
+  background: #181b22;
+  padding: calc(14px + env(safe-area-inset-top)) 16px 14px;
+  border-bottom: 1px solid var(--royal-line);
+}
+
+.page-profile .history-close {
+  position: static;
+  left: auto;
+  width: 38px;
+  height: 38px;
+  padding: 0;
+  border-radius: 11px;
+  background: rgba(255,255,255,.07);
+  color: #fff;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 390px) {
+  .page-profile .profile-cover {
+    height: 238px;
+  }
+
+  .page-profile .container {
+    margin-top: -72px;
+    padding: 0 12px;
+  }
+
+  .page-profile .avatar-wrap.fb-avatar {
+    width: 104px;
+    height: 104px;
+  }
+
+  .page-profile .profile-name {
+    font-size: 22px;
+  }
+
+  .page-profile .profile-stats {
+    gap: 9px;
+  }
+
+  .page-profile .profile-stats .stat-box {
+    padding: 15px 12px;
+    min-height: 116px;
+  }
+
+  .page-profile #btnTopupCoin {
+    padding: 21px;
+  }
+}
+
 
 
   </style>
