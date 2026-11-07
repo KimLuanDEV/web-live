@@ -3876,14 +3876,15 @@ socket.emit("wheel8-my-bets", myWheelBets);
 // 🎡 SEND CURRENT WHEEL8 SECRET TO ADMIN
 // ================================
 if (meNow?.role === "admin" && wheel8Round?.secret) {
-  socket.emit("admin-wheel8-secret", {
+socket.emit("admin-wheel8-secret", {
     roundId: wheel8Round.id,
     slot: wheel8Round.secret.slot,
     multiplier: wheel8Round.secret.multiplier,
     hash: wheel8Round.secret.hash,
     endAt: wheel8Round.endAt,
-    overridden: wheel8Round.secret.overridden || false
-  });
+    overridden: wheel8Round.secret.overridden || false,
+    event: wheel8Round.forcedEvent || null
+});
 }
 
 
@@ -3964,15 +3965,15 @@ wheel8Round.secret = {
     multiplier
   })
 
-  io.emit("admin-wheel8-secret",{
+io.emit("admin-wheel8-secret", {
     roundId: wheel8Round.id,
-    slot,
-    multiplier,
+    slot: selectedSlot,
+    multiplier: multiplier,
     hash: wheel8Round.secret.hash,
     endAt: wheel8Round.endAt,
-    overridden:true,
-    event: wheel8Round.forcedEvent,
-  })
+    overridden: true,
+    event: wheel8Round.forcedEvent
+});
 
 })
 

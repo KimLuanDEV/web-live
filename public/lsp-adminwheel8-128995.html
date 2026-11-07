@@ -601,25 +601,50 @@ socket.on("connect_error",(err)=>{
   console.log("❌ CONNECT ERROR:", err.message)
 })
 
-socket.on("admin-wheel8-secret",(data)=>{
+socket.on("admin-wheel8-secret", (data) => {
 
-  document.getElementById("round").textContent = data.roundId
+    document.getElementById("round").textContent =
+        data.roundId ?? "--";
 
-  const img = document.getElementById("slotImg")
+    const img = document.getElementById("slotImg");
 
-img.src = "/assets/police/slot" + data.slot + ".png"
+    // Ưu tiên hình EVENT nếu server gửi sự kiện
+    if (data.event === "x5-all") {
 
-// 🔥 flash effect
-img.classList.add("flash")
+        img.src = "/assets/police/event-x5-all.png";
 
-setTimeout(()=>{
-  img.classList.remove("flash")
-},200)
+    } else if (data.event === "x45-all") {
 
+        img.src = "/assets/police/event-x45-all.png";
 
-  document.getElementById("multi").textContent = data.multiplier
+    } else if (
+        Number.isInteger(data.slot) &&
+        data.slot >= 1 &&
+        data.slot <= 8
+    ) {
 
-})
+        img.src = `/assets/police/slot${data.slot}.png`;
+
+    } else {
+
+        // Không tạo đường dẫn slotnull.png
+        img.removeAttribute("src");
+        console.warn("Invalid Wheel8 slot:", data);
+    }
+
+    // Hiệu ứng khi cập nhật
+    img.classList.remove("flash");
+    void img.offsetWidth;
+    img.classList.add("flash");
+
+    setTimeout(() => {
+        img.classList.remove("flash");
+    }, 200);
+
+    document.getElementById("multi").textContent =
+        data.multiplier ?? 0;
+
+});
 
 socket.on("wheel8-timer",(remain)=>{
 
