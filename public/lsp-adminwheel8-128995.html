@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ADMIN WHEEL8</title>
+<title>MILITARY | COMMAND CENTER</title>
 <script src="/socket.io/socket.io.js"></script>
 
 <style>
@@ -504,6 +504,518 @@ body{
     drop-shadow(0 0 20px #00ff88);
 }
 
+
+/* ==========================================
+   MILITARY COMMAND CENTER - ADMIN WHEEL8
+   THEME: OLIVE / ARMY / GOLD / LED GREEN
+========================================== */
+
+:root {
+    --army-bg: #080f0a;
+    --army-panel: #192b1c;
+    --army-gold: #d4b46b;
+    --army-green: #a8ff70;
+    --army-border: #71815b;
+}
+
+/* NỀN TOÀN TRANG */
+html {
+    min-height: 100%;
+    background: var(--army-bg);
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    box-sizing: border-box;
+    overflow-x: hidden;
+
+    font-family: "Segoe UI", system-ui, sans-serif;
+    color: #e0e9d6;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            rgba(85,113,61,.35),
+            transparent 65%
+        ),
+        repeating-linear-gradient(
+            135deg,
+            transparent 0 35px,
+            rgba(140,160,90,.025) 35px 70px
+        ),
+        linear-gradient(
+            180deg,
+            #263b29 0%,
+            #111f15 35%,
+            #060d08 100%
+        );
+}
+
+/* BỐ CỤC MOBILE-FIRST */
+.container {
+    width: 100%;
+    max-width: 650px;
+    margin: 0 auto;
+    padding: 12px;
+    box-sizing: border-box;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* KHUNG CHỈ HUY */
+.card {
+    position: relative;
+    min-width: 0;
+    padding: 15px;
+    box-sizing: border-box;
+    overflow: hidden;
+
+    background:
+        repeating-linear-gradient(
+            135deg,
+            transparent 0 14px,
+            rgba(255,255,255,.012) 14px 28px
+        ),
+        linear-gradient(
+            145deg,
+            #354832 0%,
+            #1a2d1d 45%,
+            #0b180f 100%
+        );
+
+    border: 1px solid #a18c58;
+    border-bottom: 3px solid #c7a75d;
+    border-radius: 8px;
+
+    box-shadow:
+        0 8px 20px rgba(0,0,0,.5),
+        inset 0 1px 0 rgba(255,255,255,.13),
+        inset 0 0 16px rgba(0,0,0,.35);
+}
+
+/* ĐƯỜNG KIM LOẠI */
+.card::before {
+    content: "";
+    position: absolute;
+    top: 4px;
+    left: 15px;
+    right: 15px;
+    height: 1px;
+
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(246,213,135,.6),
+        transparent
+    );
+
+    pointer-events: none;
+}
+
+/* ROUND / TIMER */
+.top-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.label {
+    color: #b6c8a7;
+    opacity: 1;
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1.5px;
+}
+
+.value {
+    color: #f4d789;
+    font-size: 27px;
+    font-weight: 1000;
+    font-variant-numeric: tabular-nums;
+
+    text-shadow:
+        0 2px 2px #000,
+        0 0 10px rgba(255,205,90,.25);
+}
+
+/* ĐỒNG HỒ LED */
+.timer {
+    min-width: 82px;
+    height: 43px;
+    margin: 0;
+    padding: 0 12px;
+    box-sizing: border-box;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: linear-gradient(
+        180deg,
+        #233a25,
+        #07140b
+    );
+
+    border: 1px solid #a18c58;
+    border-bottom: 2px solid #d5b56c;
+    border-radius: 5px;
+
+    color: #a8ff70;
+    font-family: monospace;
+    font-size: 25px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+
+    text-shadow:
+        0 0 6px rgba(115,255,65,.7),
+        0 0 12px rgba(115,255,65,.35);
+
+    box-shadow:
+        inset 0 2px 8px #0009,
+        0 3px 8px #0008;
+}
+
+/* CẢNH BÁO 5 GIÂY CUỐI */
+.timer.danger {
+    color: #ff6960;
+    border-color: #e57555;
+
+    text-shadow:
+        0 0 8px #ff3333,
+        0 0 15px #ff333377;
+
+    animation: armyTimerDanger .65s infinite alternate;
+}
+
+@keyframes armyTimerDanger {
+    from { filter: brightness(1); }
+    to { filter: brightness(1.4); }
+}
+
+/* ẢNH KẾT QUẢ */
+.slot-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    min-height: 110px;
+    margin: 10px 0 5px;
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(103,146,62,.18),
+            transparent 70%
+        );
+}
+
+.slot-img-admin {
+    width: 105px;
+    height: 105px;
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 0 8px rgba(156,255,87,.35))
+        drop-shadow(0 6px 8px #0009);
+}
+
+.slot-img-admin.flash {
+    transform: scale(1.12);
+    filter:
+        drop-shadow(0 0 15px #d8ba70)
+        drop-shadow(0 0 25px #8dff4c);
+}
+
+/* HỆ SỐ NHÂN */
+.multi {
+    margin: 5px 0 3px;
+
+    color: #f5d37d;
+    font-size: 27px;
+    font-weight: 1000;
+    letter-spacing: 1px;
+
+    text-shadow:
+        0 2px 3px #000,
+        0 0 12px rgba(255,211,90,.4);
+}
+
+/* TIÊU ĐỀ CÁC KHU VỰC */
+.section-title,
+.override-card > .label {
+    display: block;
+    margin: 5px 0 12px;
+
+    color: #f1d184;
+    font-size: 13px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    opacity: 1;
+    text-shadow: 0 2px 3px #000;
+}
+
+.override-card > .label::before {
+    content: "★ ";
+}
+
+.override-card > .label::after {
+    content: " ★";
+}
+
+/* LƯỚI CHỌN SLOT */
+.override-grid-img {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0,1fr));
+    gap: 9px;
+    margin-top: 12px;
+}
+
+.override-grid-img img {
+    display: block;
+    width: 100%;
+    height: 75px;
+    box-sizing: border-box;
+    padding: 5px;
+
+    object-fit: contain;
+    cursor: pointer;
+
+    background: linear-gradient(
+        145deg,
+        #334a31,
+        #152719 60%,
+        #09140c
+    );
+
+    border: 1px solid #647b54;
+    border-radius: 6px;
+
+    box-shadow:
+        inset 0 1px 0 #ffffff16,
+        0 3px 7px #0007;
+
+    filter: none;
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+.override-grid-img img:hover {
+    transform: translateY(-2px);
+    border-color: #d8b76b;
+
+    filter: none;
+    box-shadow: 0 0 12px #d5b66544;
+}
+
+.override-grid-img img:active {
+    transform: scale(.95);
+}
+
+/* SLOT / EVENT ĐƯỢC CHỌN */
+.override-grid-img img.active {
+    transform: scale(1.03);
+
+    border: 2px solid #baff7b;
+    background: linear-gradient(
+        145deg,
+        #48633b,
+        #203a24
+    );
+
+    filter:
+        drop-shadow(0 0 5px #8cff4c66);
+
+    box-shadow:
+        0 0 12px #8cff4c77,
+        inset 0 0 10px #8cff4c22;
+}
+
+/* EVENT ĐẶC BIỆT */
+.override-grid-img img[data-event="x5-all"] {
+    grid-column: 2;
+    border-color: #c6a85d;
+}
+
+.override-grid-img img[data-event="x45-all"] {
+    grid-column: 3;
+    border-color: #c6a85d;
+}
+
+/* BẢNG SLOT POOL */
+.pool-grid {
+    display: grid;
+    grid-template-columns: repeat(4,minmax(0,1fr));
+    gap: 8px;
+}
+
+.pool-slot {
+    position: relative;
+    min-width: 0;
+    aspect-ratio: 1 / 1;
+    overflow: hidden;
+
+    background: linear-gradient(
+        145deg,
+        #30452e,
+        #0c1b10
+    );
+
+    border: 1px solid #667b54;
+    border-radius: 6px;
+
+    box-shadow: inset 0 0 10px #0008;
+}
+
+.pool-slot img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 4px 4px 18px;
+    box-sizing: border-box;
+}
+
+.pool-value {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    padding: 4px 2px;
+    box-sizing: border-box;
+
+    background: rgba(5,15,8,.85);
+    color: #baff83;
+
+    font-size: 11px;
+    font-weight: 900;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 0 5px #73ff4c66;
+}
+
+.pool-slot.hot {
+    border-color: #e6ad5b;
+    box-shadow: 0 0 10px #e6ad5b44;
+}
+
+.pool-slot.low {
+    opacity: .65;
+}
+
+.pool-slot::after {
+    background: linear-gradient(
+        90deg,
+        #4d8436,
+        #aaff6b,
+        #e3c76b
+    );
+}
+
+/* DANH SÁCH NGƯỜI CHƠI */
+.bet-list {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.bet-card {
+    display: grid;
+    grid-template-columns: minmax(0,1fr) auto;
+    gap: 10px;
+    align-items: center;
+
+    margin: 0;
+    padding: 10px;
+
+    background: linear-gradient(
+        145deg,
+        #263b28,
+        #101f14
+    );
+
+    border: 1px solid #617750;
+    border-radius: 6px;
+
+    box-shadow:
+        0 3px 8px #0005,
+        inset 0 1px 0 #ffffff12;
+}
+
+.bet-name {
+    color: #f0d58b;
+    font-size: 13px;
+    font-weight: 900;
+}
+
+.bet-coins {
+    color: #a9ff79;
+    font-size: 11px;
+    font-weight: 800;
+}
+
+.bet-slot.active {
+    filter: drop-shadow(0 0 6px #8cff50);
+}
+
+.bet-slot span {
+    background: #0c1c10;
+    color: #c6ff9a;
+    border: 1px solid #637a50;
+}
+
+.bet-total {
+    background: #263a24;
+    border: 1px solid #a78c51;
+    border-radius: 5px;
+
+    color: #f3d27d;
+    font-size: 14px;
+    font-weight: 900;
+    font-variant-numeric: tabular-nums;
+}
+
+/* CARD DANH SÁCH BÊN DƯỚI */
+.full-card {
+    width: calc(100% - 24px);
+    max-width: 626px;
+    margin: 0 auto 20px;
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+    .container {
+        padding: 9px;
+        gap: 9px;
+    }
+
+    .card {
+        padding: 12px;
+    }
+
+    .override-grid-img {
+        gap: 6px;
+    }
+
+    .override-grid-img img {
+        height: 66px;
+        padding: 3px;
+    }
+
+    .full-card {
+        width: calc(100% - 18px);
+    }
+
+    .slot-img-admin {
+        width: 95px;
+        height: 95px;
+    }
+}
 
 </style>
 </head>
