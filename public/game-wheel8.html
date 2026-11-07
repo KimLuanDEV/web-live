@@ -3701,6 +3701,129 @@ div,img,button{
 
 
 
+/* =========================================
+   TOP WINNERS - CHỮ & ICON KHÔNG KHUNG
+========================================= */
+
+.top-winners .top-card {
+    gap: 3px;
+}
+
+/* TÊN NGƯỜI CHƠI */
+.top-winners .top-name {
+    position: static;
+    display: block;
+
+    width: 98px;
+    max-width: 98px;
+    height: auto;
+
+    margin: 0;
+    padding: 0;
+
+    background: none;
+    border: none;
+    box-shadow: none;
+
+    color: #fff;
+    opacity: 1;
+    text-align: center;
+}
+
+.top-winners .top-name-text {
+    display: block;
+    width: 100%;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    font-size: 13px;
+    font-weight: 900;
+    font-style: italic;
+    line-height: 1.4;
+
+    text-shadow:
+        0 2px 3px #000,
+        0 0 6px #ffffff55;
+}
+
+/* TIỀN THƯỞNG */
+.top-winners .top-win {
+    position: static;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+
+    width: 100px;
+    max-width: 100px;
+    height: auto;
+
+    margin: 0;
+    padding: 0;
+
+    background: none;
+    border: none;
+    box-shadow: none;
+}
+
+/* SỐ KIM CƯƠNG */
+.top-winners .top-win-value {
+    min-width: 0;
+
+    font-size: 14px;
+    font-weight: 1000;
+    font-style: italic;
+    line-height: 1.3;
+    white-space: nowrap;
+
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 2px 3px #000;
+}
+
+/* ICON KIM CƯƠNG */
+.top-winners .top-diamond {
+    width: 19px;
+    height: 19px;
+    flex-shrink: 0;
+
+    object-fit: contain;
+
+    filter:
+        drop-shadow(0 0 4px #6dff42)
+        drop-shadow(0 0 7px #6dff4266);
+}
+
+/* TOP 1 - VÀNG */
+.top-winners .top1 .top-name-text,
+.top-winners .top1 .top-win-value {
+    color: #ffe17b;
+    text-shadow:
+        0 2px 3px #000,
+        0 0 8px #ffd54f99;
+}
+
+/* TOP 2 - BẠC */
+.top-winners .top2 .top-name-text,
+.top-winners .top2 .top-win-value {
+    color: #e2edf5;
+    text-shadow:
+        0 2px 3px #000,
+        0 0 7px #b5d8e599;
+}
+
+/* TOP 3 - ĐỒNG */
+.top-winners .top3 .top-name-text,
+.top-winners .top3 .top-win-value {
+    color: #ffc18a;
+    text-shadow:
+        0 2px 3px #000,
+        0 0 7px #e99a5999;
+}
+
+
 </style>
 </head>
 
@@ -4626,10 +4749,21 @@ if(data.top && data.top.length){
 
     card.className = "top-card " + cls
 
-    card.innerHTML = `
-      <div class="top-name">${p.name}</div>
-      <div class="top-win">${p.win}💎</div>
-    `
+
+card.innerHTML = `
+  <div class="top-name" title="${p.name}">
+    <span class="top-name-text">${p.name}</span>
+  </div>
+
+  <div class="top-win">
+    <span class="top-win-value">${p.win}</span>
+    <img
+      src="/assets/police/diamond-icon.png"
+      class="top-diamond"
+      alt="Diamond">
+  </div>
+`;
+
 
 // TOP 1 ở giữa: TOP 2 - TOP 1 - TOP 3
 if (i === 0) {
