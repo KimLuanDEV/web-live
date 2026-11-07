@@ -2123,6 +2123,102 @@ body.page-invest .showroom-exit-hitbox:focus-visible {
   outline-offset: 3px;
 }
 
+
+
+/* ==========================================
+   FIX SHOWROOM FULL WIDTH + FULL HEIGHT
+   GIỮ NGUYÊN HITBOX
+========================================== */
+
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body.page-invest {
+  width: 100% !important;
+  max-width: none !important;
+
+  height: 100vh;
+  height: 100dvh;
+
+  min-height: 0;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: hidden;
+  background: #000;
+}
+
+/* KHUNG SHOWROOM PHỦ TOÀN MÀN HÌNH */
+
+body.page-invest .showroom-map {
+  position: relative !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  max-width: none !important;
+
+  height: 100vh !important;
+  height: 100dvh !important;
+
+  min-height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: hidden !important;
+  background: #000;
+
+  line-height: 0;
+}
+
+
+/* ẢNH PHỦ KÍN KHUNG */
+
+
+body.page-invest .showroom-background {
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+
+  min-width: 100% !important;
+  min-height: 100% !important;
+
+  max-width: none !important;
+  max-height: none !important;
+
+  object-fit: fill !important;
+  object-position: center center !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  pointer-events: none;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+
+/* GIỮ HITBOX TRÊN ẢNH */
+
+body.page-invest .showroom-hitbox {
+  position: absolute;
+  z-index: 5;
+}
+
+/* NÚT EXIT LUÔN NỔI PHÍA TRÊN */
+
+body.page-invest .showroom-exit-hitbox {
+  position: absolute;
+  z-index: 20;
+}
+
 </style>
 
 
