@@ -1340,6 +1340,111 @@ body.page-invest .invest-card.locked {
 
 
 
+/* ==========================================
+   FIX GRID TRÀN MÀN HÌNH - INVEST
+   MOBILE RESPONSIVE 320px - 430px
+========================================== */
+
+/* Tính padding và border vào chiều rộng */
+html,
+body.page-invest,
+body.page-invest *,
+body.page-invest *::before,
+body.page-invest *::after {
+  box-sizing: border-box;
+}
+
+/* Khung trang chính */
+html {
+  width: 100%;
+  overflow-x: hidden;
+}
+
+body.page-invest {
+  width: 100%;
+  max-width: 430px;
+  min-width: 0;
+  margin: 0 auto;
+  overflow-x: clip;
+}
+
+/* Grid chính: Trade và Games */
+body.page-invest > .invest-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+  width: 100% !important;
+  max-width: 430px !important;
+  min-width: 0 !important;
+
+  margin: 0 auto !important;
+  padding: 18px 14px 28px !important;
+  gap: 12px !important;
+}
+
+/* Các card không được vượt chiều rộng cột */
+body.page-invest .invest-grid > .invest-card {
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  margin: 0;
+}
+
+/* Grid bên trong popup Trade và Games */
+body.page-invest .sheet-body .invest-grid,
+body.page-invest #portfolioSheet .invest-grid {
+  display: grid !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+
+  width: 100% !important;
+  max-width: 100% !important;
+  min-width: 0 !important;
+
+  padding: 0 !important;
+  margin: 0 auto !important;
+  gap: 12px !important;
+}
+
+/* Popup luôn nằm trong khung màn hình */
+body.page-invest .sheet-box,
+body.page-invest #portfolioSheet .sheet-box {
+  width: min(100%, 430px) !important;
+  max-width: 430px !important;
+  box-sizing: border-box !important;
+}
+
+/* Nội dung popup không bị tràn */
+body.page-invest .sheet-body {
+  width: 100%;
+  min-width: 0;
+  overflow-x: hidden;
+}
+
+/* Màn hình nhỏ */
+@media (max-width: 360px) {
+  body.page-invest > .invest-grid {
+    padding: 14px 10px 24px !important;
+    gap: 9px !important;
+  }
+
+  body.page-invest .sheet-body .invest-grid,
+  body.page-invest #portfolioSheet .invest-grid {
+    gap: 9px !important;
+  }
+
+  body.page-invest > .invest-grid > .invest-card {
+    min-height: 185px;
+    padding: 10px;
+  }
+
+  body.page-invest .invest-card .tap-hint {
+    font-size: 9px;
+    padding: 6px 8px;
+  }
+}
+
+
+
 </style>
 
 
