@@ -5,9 +5,9 @@
 <meta charset="UTF-8">
 <meta name="viewport"
       content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Rút tiền | Livestream Pro</title>
+<title> Withdraw | Livestream Pro</title>
 
-<link rel="stylesheet" href="/style.css">
+
 
 <style>
 /* ==========================================
@@ -723,6 +723,118 @@ body.page-withdraw .fl-sub {
     padding: 20px 17px;
   }
 }
+
+
+/* ==========================================
+   WITHDRAW - CSS HOÀN TOÀN ĐỘC LẬP
+   ========================================== */
+
+/* RESET RIÊNG CHO TRANG */
+
+html {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
+  background: #07090e;
+  -webkit-text-size-adjust: 100%;
+}
+
+body.page-withdraw {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100dvh;
+  background: #07090e;
+  color: #f6f3ec;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  overflow-x: hidden;
+}
+
+body.page-withdraw *,
+body.page-withdraw *::before,
+body.page-withdraw *::after {
+  box-sizing: border-box;
+}
+
+body.page-withdraw button,
+body.page-withdraw input,
+body.page-withdraw select,
+body.page-withdraw textarea {
+  font-family: inherit;
+}
+
+body.page-withdraw button {
+  appearance: none;
+  -webkit-appearance: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body.page-withdraw input,
+body.page-withdraw select {
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+body.page-withdraw input[type="number"] {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+body.page-withdraw input[type="number"]::-webkit-inner-spin-button,
+body.page-withdraw input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* GIỮ SELECT HIỂN THỊ MŨI TÊN */
+
+body.page-withdraw .wd-select {
+  padding-right: 42px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23d9bd83' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  background-size: 16px;
+}
+
+/* ẨN HIỆN MODAL - KHÔNG PHỤ THUỘC STYLE.CSS */
+
+body.page-withdraw .hidden {
+  display: none !important;
+}
+
+body.page-withdraw .lp-modal.hidden {
+  display: none !important;
+}
+
+/* CỐ ĐỊNH LAYOUT */
+
+body.page-withdraw .withdraw-app {
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+body.page-withdraw .withdraw-app img {
+  max-width: 100%;
+}
+
+/* TỐI ƯU MOBILE */
+
+@media (max-width: 520px) {
+  body.page-withdraw .withdraw-app {
+    width: 100%;
+  }
+
+  body.page-withdraw input,
+  body.page-withdraw select {
+    font-size: 16px;
+  }
+}
+
+
 </style>
 </head>
 
