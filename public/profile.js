@@ -1103,23 +1103,23 @@ async function submitChangePass(){
   const newPassword2 = (new2El?.value || "").trim();
 
   if(!securityCode || !newPassword || !newPassword2){
-    showMsg("❌ Nhập đầy đủ thông tin");
+    showMsg("Nhập đầy đủ thông tin");
     return;
   }
 
   if(newPassword.length < 6){
-    showMsg("❌ Mật khẩu mới phải >= 6 ký tự");
+    showMsg("Mật khẩu mới phải >= 6 ký tự");
     return;
   }
 
   if(newPassword !== newPassword2){
-    showMsg("❌ Mật khẩu nhập lại không khớp");
+    showMsg("Mật khẩu nhập lại không khớp");
     return;
   }
 
   const username = __profileAuth?.uid;
   if(!username){
-    showMsg("❌ Chưa đăng nhập");
+    showMsg("Chưa đăng nhập");
     return;
   }
 
@@ -1136,7 +1136,7 @@ async function submitChangePass(){
   const data = await res.json();
 
   if(data.ok){
-    showMsg("✅ Đổi mật khẩu thành công");
+    showMsg("Đổi mật khẩu thành công");
     closePass();
 
     // xoá input cho sạch
@@ -1148,31 +1148,64 @@ async function submitChangePass(){
 
   // map lỗi theo backend
   if(data.error === "missing"){
-    showMsg("❌ Thiếu dữ liệu");
+    showMsg("Thiếu dữ liệu");
     return;
   }
   if(data.error === "notfound"){
-    showMsg("❌ Tài khoản không tồn tại");
+    showMsg("Tài khoản không tồn tại");
     return;
   }
   if(data.error === "invalid"){
-    showMsg("❌ Mã bảo mật không đúng");
+    showMsg("Mã bảo mật không đúng");
     return;
   }
 
-  showMsg("❌ Đổi mật khẩu thất bại");
+  showMsg("Đổi mật khẩu thất bại");
 }
 
 
 
-function showMsg(text, title="Thông báo"){
-  document.getElementById("msgTitle").textContent = title;
-  document.getElementById("msgText").textContent = text;
-  document.getElementById("msgModal").classList.remove("hidden");
+
+/* ==========================================
+   GLOBAL MESSAGE - RESET CLICK HANDLER
+========================================== */
+
+function showMsg(text, title = "Thông báo") {
+
+  const modal = document.getElementById("msgModal");
+  const titleEl = document.getElementById("msgTitle");
+  const textEl = document.getElementById("msgText");
+  const okBtn = document.getElementById("msgOk");
+
+  if (!modal || !titleEl || !textEl || !okBtn) return;
+
+  titleEl.textContent = title;
+  textEl.textContent = text;
+
+  // Xóa sự kiện xác nhận cũ, kể cả đăng xuất.
+  okBtn.onclick = null;
+
+  // Thông báo thông thường: xác nhận chỉ đóng popup.
+  okBtn.onclick = () => {
+    closeMsg();
+  };
+
+  modal.classList.remove("hidden");
 }
 
-function closeMsg(){
-  document.getElementById("msgModal").classList.add("hidden");
+function closeMsg() {
+
+  const modal = document.getElementById("msgModal");
+  const okBtn = document.getElementById("msgOk");
+
+  if (!modal) return;
+
+  modal.classList.add("hidden");
+
+  // Không giữ lại hành động từ popup trước.
+  if (okBtn) {
+    okBtn.onclick = null;
+  }
 }
 
 
@@ -1221,7 +1254,7 @@ if (bioInput) {
       socket.emit("profile-update", { bio: p.bio });
     }
 
-    showMsg("✅ Đã lưu giới thiệu");
+    showMsg("Đã lưu giới thiệu");
   };
 }
 
@@ -1273,27 +1306,30 @@ document.getElementById("sheetLogout")?.addEventListener("click", ()=>{
 });
 
 
-function confirmLogoutProfile(){
-  const modal = document.getElementById("msgModal");
-  const title = document.getElementById("msgTitle");
-  const text  = document.getElementById("msgText");
+
+function confirmLogoutProfile() {
+
+  // Hiển thị popup và reset mọi sự kiện cũ.
+  showMsg(
+    "Bạn có chắc chắn muốn đăng xuất không?",
+    "Xác nhận đăng xuất"
+  );
+
   const okBtn = document.getElementById("msgOk");
 
-  title.textContent = "Xác nhận đăng xuất";
-  text.textContent  = "Bạn có chắc chắn muốn đăng xuất không?";
+  if (!okBtn) return;
 
-  modal.classList.remove("hidden");
-
-  // reset để tránh chồng event
-  okBtn.onclick = null;
-
+  // Chỉ popup đăng xuất mới có hành động này.
   okBtn.onclick = () => {
+
     localStorage.removeItem("user_profile");
     localStorage.removeItem("login_uid");
     localStorage.removeItem("isGuest");
+
     location.href = "/login.html";
   };
 }
+
 
 
 
@@ -1367,7 +1403,7 @@ const res = await fetch("/api/upload-cover", {
 
       const data = await res.json();
       if (!data.url) {
-        showMsg("❌ Upload ảnh bìa thất bại");
+        showMsg("Upload ảnh bìa thất bại");
         return;
       }
 
@@ -1388,10 +1424,10 @@ const res = await fetch("/api/upload-cover", {
         }, 300);
       }
 
-      showMsg("✅ Đã cập nhật ảnh bìa");
+      showMsg("Đã cập nhật ảnh bìa");
     } catch (e) {
       console.error("Cover upload failed", e);
-      showMsg("❌ Lỗi xử lý ảnh bìa");
+      showMsg("Lỗi xử lý ảnh bìa");
     } finally {
       __coverUploading = false;
        // 🔥 reset input để mobile nhận change lần sau
@@ -1635,7 +1671,7 @@ socket.on("system-notify", data => {
 
   // 💰 NẠP COIN
   if (data.type === "topup") {
-    showToast(data.text || "💰 Bạn vừa được nạp coin", "success");
+    showToast(data.text || "Bạn vừa được nạp coin", "success");
     return;
   }
 
