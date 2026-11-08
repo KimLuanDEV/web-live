@@ -51,9 +51,11 @@ html {
 }
 
 body.auth-page {
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
 
+  min-height: 100vh;
   min-height: 100dvh;
   overflow: hidden;
 
@@ -66,7 +68,6 @@ body.auth-page {
     "Segoe UI",
     sans-serif;
 }
-
 button,
 input {
   font: inherit;
@@ -99,13 +100,20 @@ a:focus-visible {
   position: relative;
   isolation: isolate;
 
-  width: min(100%, 430px);
-  height: min(100dvh, 870px);
+  width: 100%;
+  max-width: 430px;
+
+  height: 100vh;
+  height: 100dvh;
 
   min-width: 0;
   min-height: 0;
 
-  padding: 24px 23px 21px;
+  padding:
+    calc(18px + env(safe-area-inset-top, 0px))
+    23px
+    calc(18px + env(safe-area-inset-bottom, 0px))
+    23px;
 
   display: flex;
   flex-direction: column;
@@ -115,6 +123,7 @@ a:focus-visible {
 
   scrollbar-width: none;
   overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 
   border-left: 1px solid #52432f;
   border-right: 1px solid #52432f;
@@ -499,7 +508,9 @@ input::placeholder {
 }
 
 .auth-foot {
-  padding-top: 13px;
+  margin-top: auto;
+  padding-top: 14px;
+  padding-bottom: 4px;
 
   border-top: 1px solid rgba(222,186,119,.16);
 
@@ -509,6 +520,8 @@ input::placeholder {
   font-size: 9px;
   font-weight: 700;
   letter-spacing: 1.35px;
+
+  flex-shrink: 0;
 }
 
 /* ==========================================
@@ -763,6 +776,39 @@ input::placeholder {
   }
 
 }
+
+
+@media (max-width: 768px) {
+
+  .auth-stage {
+    max-width: 430px;
+    height: 100vh;
+    height: 100dvh;
+
+    padding:
+      calc(16px + env(safe-area-inset-top, 0px))
+      18px
+      calc(16px + env(safe-area-inset-bottom, 0px))
+      18px;
+  }
+
+  .auth-top {
+    margin-bottom: 6px;
+  }
+
+  .auth-main {
+    padding: 14px 0 14px;
+  }
+
+  .login-panel {
+    margin-top: 20px;
+  }
+
+  .auth-foot {
+    padding-top: 12px;
+  }
+}
+
 
 @media (prefers-reduced-motion: reduce) {
 
