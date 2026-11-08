@@ -10008,7 +10008,7 @@ app.post("/api/register", async (req,res)=>{
     profile:{
       uid: username,
       name,
-      avatar: "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
+      avatar: "https://i.ibb.co/GvJWn19q/icon-192.png" ,
       bio: "",  
       coins:0,
       coinDeposit:0,   // 💎 tổng đã nạp
@@ -12483,7 +12483,7 @@ if (socket.data.role !== "admin") {
     uid,
     socketId: socket.id,
     name: safeName(profile?.name),
-    avatar: profile?.avatar || "https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg",
+    avatar: profile?.avatar || "https://i.ibb.co/GvJWn19q/icon-192.png" ,
     level: Number(profile?.level) || 1,
     coins: Number(profile?.coins) || 0,
     coinSentRoom: old?.coinSentRoom || room.giftByUser.get(uid) || 0,
