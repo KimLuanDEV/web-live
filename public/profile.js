@@ -1,7 +1,6 @@
 
 
-// 🔐 UID ADMIN ĐƯỢC PHÉP VÀO TRANG ADMIN
-const ADMIN_UIDS = ["admin", "LivestreamPro", "KimDogCat", "superuser"];
+
 
 const params = new URLSearchParams(location.search);
 const viewUid = params.get("uid"); // uid đang xem (có thể null)
@@ -19,38 +18,6 @@ window.__profileAuth = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 
 const KEY = "user_profile";
-
-const btnAdmin = document.getElementById("btnAdmin");
-
-if (btnAdmin && window.__profileAuth) {
-  const isAdmin =
-    ADMIN_UIDS.includes(window.__profileAuth.uid) ||
-    window.__profileAuth.role === "admin" ||
-    (window.__profileAuth.roles || []).includes("admin");
-
-  // 🔥 ADMIN LUÔN THẤY NÚT
-  btnAdmin.classList.toggle("hidden", !isAdmin);
-
-  btnAdmin.onclick = () => {
-    location.href = "/lsp-admin-128995.html";
-  };
-}
-
-
-const btnAdminPanel = document.getElementById("btnAdminPanel");
-
-if(btnAdminPanel){
-  const isAdmin =
-    window.__profileAuth?.role === "admin" ||
-    (window.__profileAuth?.roles || []).includes("admin");
-
-  btnAdminPanel.classList.toggle("hidden", !isAdmin);
-
-  btnAdminPanel.onclick = () => {
-    location.href = "/lsp-admincenter-128995.html";
-  };
-}
-
 
 
 
@@ -921,18 +888,12 @@ if (p.cover && coverPreview) {
 }
 
 
-// 🔥 FORCE RENDER ADMIN BADGE & BUTTON
+
+// Chỉ cập nhật huy hiệu xác minh trên Profile
 setTimeout(() => {
   renderProfileVerified(__profileAuth.uid);
-
-  if (btnAdmin) {
-    const isAdmin =
-      __profileAuth.role === "admin" ||
-      (__profileAuth.roles || []).includes("admin");
-
-    btnAdmin.classList.toggle("hidden", !isAdmin);
-  }
 }, 100);
+
 
 
 
@@ -1335,15 +1296,20 @@ function confirmLogoutProfile(){
 }
 
 
+
 // ===== MOBILE TAB SETTINGS =====
+
 const profileSheet = document.getElementById("profileSheet");
 const tabSettings = document.getElementById("tabSettings");
 
-if(tabSettings){
+if (tabSettings && profileSheet) {
   tabSettings.onclick = () => {
     profileSheet.classList.remove("hidden");
   };
 }
+
+
+
 
 function closeProfileSheet(){
   profileSheet.classList.add("hidden");
