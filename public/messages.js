@@ -714,6 +714,9 @@ usersToShow.sort((a,b)=>{
 
     userList.appendChild(div);
   });
+
+  // Áp dụng lại bộ lọc khi danh sách cập nhật
+  filterMessageUsers();
 }
 
 
@@ -1615,7 +1618,7 @@ function showToolCancelled(btn) {
 
   setTimeout(() => {
     btn.classList.remove("uploading", "image", "video");
-    icon.textContent = btn.id === "btnImage" ? "📷" : "🎥";
+    icon.innerHTML = restoreMessageToolIcon(btn);
   }, 700);
 }
 
@@ -1664,7 +1667,7 @@ function updateToolProgress(btn, percent, type, stats = {}) {
     // giữ tick 600ms rồi reset
     setTimeout(() => {
       btn.classList.remove("uploading", "image", "video");
-      icon.textContent = btn.id === "btnImage" ? "📷" : "🎥";
+      icon.innerHTML = restoreMessageToolIcon(btn);
     }, 600);
   }
 }
@@ -1830,3 +1833,111 @@ socket.on("force-logout", (data) => {
     location.href = "/login.html";
   }, 3000);
 });
+
+
+
+
+/* ===== LUXURY MESSAGE SEARCH ===== */
+
+function filterMessageUsers() {
+  const input = document.getElementById("msgUserSearch");
+  const noResults = document.getElementById("msgNoResults");
+
+  if (!input || !userList) return;
+
+  const keyword = input.value
+    .trim()
+    .toLocaleLowerCase("vi-VN");
+
+  let visible = 0;
+
+  userList.querySelectorAll(".msg-user").forEach(card => {
+    const name = card.querySelector(".msg-uname")
+      ?.textContent
+      .toLocaleLowerCase("vi-VN") || "";
+
+    const match = name.includes(keyword);
+
+    card.style.display = match ? "" : "none";
+
+    if (match) visible++;
+  });
+
+  if (noResults) {
+    const hasCards =
+      userList.querySelectorAll(".msg-user").length > 0;
+
+    noResults.hidden =
+      !keyword || !hasCards || visible > 0;
+  }
+}
+
+document.getElementById("msgUserSearch")
+  ?.addEventListener("input", filterMessageUsers);
+
+
+
+
+  
+function restoreMessageToolIcon(btn) {
+  const iconId = btn.id === "btnImage"
+    ? "mi-image"
+    : "mi-video";
+
+  return `
+    <svg class="msg-svg" aria-hidden="true">
+      <use href="#${iconId}"></use>
+    </svg>
+  `;
+}
+
+
+
+/* ===== MOBILE VISUAL VIEWPORT ===== */
+
+function syncLuxuryChatViewport() {
+  const modal = document.getElementById("chatModal");
+
+  if (!modal) return;
+
+  const viewport = window.visualViewport;
+
+  const height = viewport
+    ? viewport.height
+    : window.innerHeight;
+
+  const top = viewport
+    ? viewport.offsetTop
+    : 0;
+
+  modal.style.setProperty(
+    "--lux-vh",
+    Math.round(height) + "px"
+  );
+
+  modal.style.setProperty(
+    "--lux-top",
+    Math.round(top) + "px"
+  );
+}
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener(
+    "resize",
+    syncLuxuryChatViewport
+  );
+
+  window.visualViewport.addEventListener(
+    "scroll",
+    syncLuxuryChatViewport
+  );
+}
+
+window.addEventListener(
+  "resize",
+  syncLuxuryChatViewport
+);
+
+syncLuxuryChatViewport();
+
+

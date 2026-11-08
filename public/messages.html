@@ -13,9 +13,9 @@
 
 
 
-  <title>📩 Tin nhắn</title>
-  <meta name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Inbox</title>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
 
 
       <link rel="manifest" href="/manifest.json">
@@ -24,6 +24,1212 @@
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
   <link rel="stylesheet" href="/style.css" />
+
+
+
+  
+<style>
+/* =============================================
+   LIVESTREAM PRO - LUXURY MESSAGES V2
+============================================= */
+
+:root {
+  --msg-bg: #090a0e;
+  --msg-gold: #d9b979;
+  --msg-light: #f6e3ba;
+  --msg-line: rgba(218,182,111,.3);
+  --msg-muted: #a6a3a2;
+}
+
+body.page-messages {
+  margin: 0;
+  padding: 0;
+  height: 100dvh;
+  overflow: hidden;
+  color: #f7f1e7;
+  background: #090a0e;
+  font-family: system-ui, -apple-system,
+               "Segoe UI", sans-serif;
+  -webkit-text-size-adjust: 100%;
+}
+
+body.page-messages *,
+body.page-messages *::before,
+body.page-messages *::after {
+  box-sizing: border-box;
+}
+
+body.page-messages .hidden,
+body.page-messages [hidden] {
+  display: none !important;
+}
+
+/* ICON */
+
+body.page-messages .msg-svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* ===== MAIN SHELL ===== */
+
+body.page-messages .msg-shell {
+  width: 100%;
+  max-width: 1100px;
+  height: 100dvh;
+  margin: 0 auto;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background:
+    radial-gradient(
+      ellipse at 50% 0,
+      rgba(177,125,52,.1),
+      transparent 55%
+    ),
+    linear-gradient(#101116,#08090d);
+}
+
+/* ===== HEADER ===== */
+
+body.page-messages .msg-topbar {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  min-height: 76px;
+
+  padding:
+    calc(env(safe-area-inset-top,0px) + 8px)
+    17px
+    12px;
+
+  display: grid;
+  grid-template-columns: 44px minmax(0,1fr) 44px;
+  align-items: center;
+  gap: 10px;
+
+  background:
+    linear-gradient(145deg,#1c1915,#0d0e13);
+
+  border-bottom: 1px solid var(--msg-line);
+  z-index: 10;
+}
+
+body.page-messages .msg-topbar::after {
+  content: "";
+  position: absolute;
+  bottom: -1px;
+  left: 16%;
+  right: 16%;
+  height: 1px;
+  background:
+    linear-gradient(90deg,transparent,#d9b676,transparent);
+}
+
+/* BACK */
+
+body.page-messages .msg-back {
+  width: 43px;
+  height: 43px;
+  padding: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--msg-line);
+  border-radius: 13px;
+  background: linear-gradient(145deg,#30271e,#15161a);
+  color: var(--msg-light);
+  cursor: pointer;
+}
+
+/* CENTER TITLE */
+
+body.page-messages .msg-title {
+  position: relative;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--msg-light);
+  text-align: center;
+}
+
+body.page-messages .msg-brand {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9px;
+  letter-spacing: 1.8px;
+  font-weight: 800;
+  color: var(--msg-gold);
+}
+
+body.page-messages .msg-brand .msg-svg {
+  width: 15px;
+  height: 15px;
+}
+
+body.page-messages .msg-title h1 {
+  margin: 0;
+  font: 700 26px Georgia,serif;
+  color: var(--msg-light);
+  line-height: 1.2;
+}
+
+body.page-messages .msg-title-line {
+  width: 45px;
+  height: 1px;
+  background:
+    linear-gradient(90deg,transparent,#d9b979,transparent);
+}
+
+body.page-messages .msg-title .dot {
+  position: absolute;
+  top: 3px;
+  right: -9px;
+  min-width: 14px;
+  height: 14px;
+  padding: 0 3px;
+  border-radius: 20px;
+  background: #c74a50;
+  border: 1px solid #f4afaa;
+  color: white;
+  font-size: 9px;
+  font-weight: 800;
+  display: grid;
+  place-items: center;
+  opacity: 0;
+}
+
+body.page-messages .msg-title .dot.active {
+  opacity: 1;
+}
+
+body.page-messages .msg-header-decoration {
+  display: grid;
+  place-items: center;
+  color: var(--msg-gold);
+}
+
+body.page-messages .msg-header-decoration .msg-svg {
+  width: 26px;
+  height: 26px;
+}
+
+/* ===== PAGE LAYOUT ===== */
+
+body.page-messages .msg-layout {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(300px,390px) minmax(0,1fr);
+  gap: 16px;
+  padding: 16px;
+  overflow: hidden;
+}
+
+/* ===== USERS PANEL ===== */
+
+body.page-messages .msg-users {
+  min-width: 0;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 20px;
+  border: 1px solid var(--msg-line);
+  background:
+    linear-gradient(145deg,#1e1d1e,#101116);
+}
+
+body.page-messages .msg-users-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 22px 18px 16px;
+  border-bottom: 1px solid rgba(219,188,129,.15);
+  background:
+    radial-gradient(
+      ellipse at 100% 0,
+      rgba(193,143,65,.12),
+      transparent 70%
+    );
+}
+
+body.page-messages .msg-kicker {
+  color: #c6a974;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+body.page-messages .msg-users-title h2 {
+  margin: 7px 0 5px;
+  font: 700 23px Georgia,serif;
+  color: var(--msg-light);
+}
+
+body.page-messages .msg-users-title p {
+  margin: 0;
+  color: var(--msg-muted);
+  font-size: 12px;
+}
+
+body.page-messages .msg-section-icon {
+  width: 48px;
+  height: 48px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--msg-line);
+  border-radius: 14px;
+  background: #29231d;
+  color: var(--msg-gold);
+}
+
+body.page-messages .msg-section-icon .msg-svg {
+  width: 25px;
+  height: 25px;
+}
+
+/* ===== SEARCH ===== */
+
+body.page-messages .msg-search-box {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  height: 47px;
+  min-height: 47px;
+  margin: 15px 14px;
+  padding: 0 13px;
+  border-radius: 13px;
+  border: 1px solid var(--msg-line);
+  background: linear-gradient(120deg,#252320,#131519);
+  color: var(--msg-gold);
+}
+
+body.page-messages .msg-search-box:focus-within {
+  border-color: #d7b477;
+}
+
+body.page-messages .msg-search-box input {
+  flex: 1;
+  min-width: 0;
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: #fff;
+  font-size: 16px;
+}
+
+body.page-messages .msg-search-box input::placeholder {
+  color: #99949a;
+}
+
+/* ===== USER LIST ===== */
+
+body.page-messages .msg-userlist {
+  flex: 1;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 0 12px 16px;
+  display: block;
+  scrollbar-width: thin;
+  scrollbar-color: #6a563a transparent;
+}
+
+/* USER CARD */
+
+body.page-messages .msg-user {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 78px;
+  width: 100%;
+  margin: 0 0 10px;
+  padding: 12px;
+  border: 1px solid rgba(219,188,129,.25);
+  border-radius: 15px;
+  background:
+    linear-gradient(120deg,#2a261f,#15161c 75%);
+  color: #f7f1e7;
+  box-shadow: 0 6px 17px rgba(0,0,0,.2);
+  cursor: pointer;
+  transition: border-color .2s,transform .15s;
+}
+
+body.page-messages .msg-user:active {
+  transform: scale(.99);
+}
+
+body.page-messages .msg-user:hover {
+  border-color: rgba(224,188,120,.7);
+}
+
+body.page-messages .msg-ava {
+  width: 52px;
+  height: 52px;
+  flex: 0 0 52px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid var(--msg-gold);
+  padding: 2px;
+  background: #141519;
+}
+
+body.page-messages .msg-uinfo {
+  flex: 1;
+  min-width: 0;
+}
+
+body.page-messages .msg-uname {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 750;
+  color: #f4e7cc;
+  overflow-wrap: anywhere;
+}
+
+body.page-messages .msg-ustatus {
+  margin-top: 7px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  color: #96979c;
+}
+
+body.page-messages .msg-ustatus::before {
+  content: "";
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+body.page-messages .msg-ustatus.on {
+  color: #90d1a6;
+}
+
+body.page-messages .tick-blue {
+  display: inline-grid;
+  place-items: center;
+  color: #8bc6ff;
+  font-size: 14px;
+}
+
+body.page-messages .msg-badge {
+  min-width: 19px;
+  height: 19px;
+  padding: 0 5px;
+  display: inline-grid;
+  place-items: center;
+  border-radius: 20px;
+  background: #b8444d;
+  color: white;
+  font-size: 10px;
+  font-weight: 800;
+}
+
+body.page-messages .msg-userlist .empty,
+body.page-messages .msg-no-results {
+  padding: 30px 15px;
+  text-align: center;
+  color: var(--msg-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+/* ===== DESKTOP PLACEHOLDER ===== */
+
+body.page-messages .msg-placeholder {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--msg-line);
+  border-radius: 20px;
+  background:
+    radial-gradient(
+      ellipse at center,
+      rgba(176,124,53,.10),
+      transparent 65%
+    ),
+    #111217;
+}
+
+body.page-messages .msg-empty {
+  max-width: 290px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 18px;
+  text-align: center;
+}
+
+body.page-messages .msg-empty-icon {
+  width: 88px;
+  height: 88px;
+  display: grid;
+  place-items: center;
+  border-radius: 25px;
+  border: 1px solid var(--msg-line);
+  color: var(--msg-gold);
+  background: linear-gradient(145deg,#352b1f,#17181c);
+}
+
+body.page-messages .msg-empty-icon .msg-svg {
+  width: 42px;
+  height: 42px;
+}
+
+body.page-messages .msg-empty-text {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--msg-muted);
+}
+
+body.page-messages .msg-empty-text strong {
+  font: 700 23px Georgia,serif;
+  color: var(--msg-light);
+}
+
+/* ==========================================
+   CHAT MODAL
+========================================== */
+
+body.page-messages #chatModal.modal {
+  position: fixed !important;
+  left: 0 !important;
+  right: 0 !important;
+  top: var(--lux-top,0px) !important;
+  bottom: auto !important;
+  width: 100% !important;
+  height: var(--lux-vh,100dvh) !important;
+  z-index: 300 !important;
+  padding: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.75);
+}
+
+body.page-messages #chatModal .modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.75);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+body.page-messages #chatModal .modal-card {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  bottom: auto !important;
+  transform: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+
+  width: min(100%,520px) !important;
+  max-width: 520px !important;
+  height: min(820px,calc(var(--lux-vh,100dvh) - 20px)) !important;
+
+  display: flex !important;
+  flex-direction: column !important;
+  min-height: 0;
+  overflow: hidden;
+
+  border: 1px solid rgba(222,184,114,.45);
+  border-radius: 20px;
+  background: #101217;
+  box-shadow: 0 25px 80px #000c;
+}
+
+/* ===== CHAT HEADER ===== */
+
+body.page-messages .chat-header {
+  flex-shrink: 0;
+  width: 100%;
+  min-height: 72px;
+  padding: 10px 13px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 1px solid var(--msg-line);
+  background: linear-gradient(125deg,#29231c,#111319);
+}
+
+body.page-messages .chat-back,
+body.page-messages .chat-clear {
+  width: 39px;
+  height: 39px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--msg-line);
+  border-radius: 11px;
+  background: #29251f;
+  color: var(--msg-gold);
+}
+
+body.page-messages .chat-clear {
+  color: #db9b93;
+  border-color: rgba(218,140,132,.35);
+}
+
+body.page-messages .chat-header-avatar {
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+  border: 2px solid var(--msg-gold);
+  border-radius: 50%;
+  object-fit: cover;
+  background: #202126;
+}
+
+body.page-messages .chat-header-title {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 5px;
+  text-align: left;
+}
+
+body.page-messages .chat-header-kicker {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+  color: #bca273;
+}
+
+body.page-messages #chatTitle {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  max-width: 100%;
+  color: #f5e3bd;
+  font-size: 14px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+/* ===== CHAT AREA ===== */
+
+body.page-messages #chatBox.chatbox {
+  flex: 1 !important;
+  min-height: 0 !important;
+  width: 100%;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  padding: 18px 14px 25px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  background:
+    radial-gradient(
+      ellipse at 20% 30%,
+      rgba(165,114,51,.055),
+      transparent 65%
+    ),
+    #0d0f14;
+
+  scrollbar-width: thin;
+  scrollbar-color: #665239 transparent;
+}
+
+body.page-messages .chat-line {
+  width: 100%;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+body.page-messages .chat-line.me {
+  align-items: flex-end;
+}
+
+body.page-messages .chat-line.other {
+  align-items: flex-start;
+}
+
+/* TEXT BUBBLES */
+
+body.page-messages .bubble-text {
+  display: inline-block;
+  width: fit-content;
+  max-width: min(76vw,350px);
+  padding: 11px 14px;
+  border-radius: 15px;
+  font-size: 13px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+body.page-messages .bubble-text.me {
+  color: #f9eacf;
+  background: linear-gradient(135deg,#4d3d27,#30271e);
+  border: 1px solid rgba(223,190,128,.4);
+  border-bottom-right-radius: 5px;
+}
+
+body.page-messages .bubble-text.other {
+  color: #e9e7e3;
+  background: #25262d;
+  border: 1px solid rgba(255,255,255,.09);
+  border-bottom-left-radius: 5px;
+}
+
+body.page-messages .chat-time {
+  font-size: 10px;
+  color: #86878e;
+  padding: 0 4px;
+}
+
+body.page-messages .msg-status {
+  margin-left: 5px;
+  color: #c9af7c;
+}
+
+body.page-messages .msg-revoked {
+  padding: 10px 13px;
+  border: 1px dashed rgba(214,177,112,.3);
+  border-radius: 12px;
+  background: #1d1b1a;
+  color: #a8a09a;
+  font-size: 12px;
+  font-style: italic;
+}
+
+body.page-messages .chat-system {
+  align-self: center;
+  padding: 9px 13px;
+  border-radius: 25px;
+  background: rgba(212,172,97,.1);
+  color: #d4b77f;
+  font-size: 11px;
+  text-align: center;
+}
+
+/* ===== IMAGE / VIDEO / ALBUM ===== */
+
+body.page-messages .chat-media,
+body.page-messages .chat-album,
+body.page-messages .chat-location {
+  max-width: min(78vw,350px);
+}
+
+body.page-messages .chat-img,
+body.page-messages .chat-video {
+  display: block;
+  max-width: 100%;
+  max-height: 330px;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--msg-line);
+  object-fit: contain;
+}
+
+body.page-messages .chat-album {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 5px;
+  overflow: hidden;
+  border-radius: 13px;
+}
+
+body.page-messages .album-item {
+  position: relative;
+  min-width: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+body.page-messages .album-img {
+  display: block;
+  width: 100%;
+  height: 135px;
+  object-fit: cover;
+}
+
+body.page-messages .album-more {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: #0009;
+  color: #fff;
+  font-size: 22px;
+  font-weight: 800;
+}
+
+body.page-messages .location-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  padding: 13px;
+  border: 1px solid var(--msg-line);
+  border-radius: 13px;
+  background: #24231e;
+  color: #e9d7b7;
+}
+
+body.page-messages .location-text {
+  flex: 1;
+  min-width: 0;
+}
+
+body.page-messages .location-title {
+  font-weight: 750;
+  font-size: 12px;
+}
+
+body.page-messages .location-coords {
+  margin-top: 5px;
+  font-size: 10px;
+  color: #aaa;
+}
+
+body.page-messages .location-open {
+  color: var(--msg-gold);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+/* ===== SCROLL BOTTOM ===== */
+
+body.page-messages #btnScrollBottom {
+  position: absolute;
+  right: 17px;
+  bottom: calc(90px + env(safe-area-inset-bottom,0px));
+  z-index: 5;
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--msg-line);
+  border-radius: 50%;
+  background: #28231d;
+  color: var(--msg-gold);
+  box-shadow: 0 5px 22px #0008;
+}
+
+body.page-messages #btnScrollBottom .scroll-dot {
+  position: absolute;
+  right: 3px;
+  top: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #e7a15c;
+}
+
+/* ===== COMPOSER ===== */
+
+body.page-messages .chatform {
+  width: 100%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  padding: 11px 10px calc(11px + env(safe-area-inset-bottom,0px));
+  background: linear-gradient(145deg,#1e1d1d,#101116);
+  border-top: 1px solid var(--msg-line);
+}
+
+body.page-messages .chat-tools {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+  flex-shrink: 0;
+}
+
+body.page-messages .chat-tool {
+  position: relative;
+  width: 36px;
+  height: 43px;
+  padding: 0;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(219,188,129,.3);
+  border-radius: 11px;
+  background: #26231e;
+  color: #d8b978;
+  overflow: hidden;
+}
+
+body.page-messages .tool-icon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 11px;
+}
+
+body.page-messages .tool-icon .msg-svg {
+  width: 19px;
+  height: 19px;
+}
+
+body.page-messages .tool-sub {
+  font-size: 7px;
+  white-space: nowrap;
+  line-height: 1.1;
+}
+
+body.page-messages .chat-tool.uploading {
+  border-color: #e1ba78;
+}
+
+body.page-messages .chat-tool.is-loading {
+  opacity: .7;
+}
+
+body.page-messages #msgInput {
+  flex: 1;
+  min-width: 0;
+  min-height: 43px;
+  max-height: 120px;
+  margin: 0;
+  padding: 11px 12px;
+  overflow-y: auto;
+  border: 1px solid var(--msg-line);
+  border-radius: 13px;
+  outline: none;
+  resize: none;
+  background: #28272a;
+  color: #fff;
+  font-size: 16px;
+  line-height: 1.35;
+}
+
+body.page-messages #msgInput::placeholder {
+  color: #97949a;
+}
+
+body.page-messages #msgInput:focus {
+  border-color: #d7b477;
+}
+
+body.page-messages #sendBtn {
+  width: 43px;
+  height: 43px;
+  padding: 0;
+  flex: 0 0 43px;
+  display: grid;
+  place-items: center;
+  border: 1px solid #f0d59f;
+  border-radius: 13px;
+  color: #251c11;
+  background: linear-gradient(135deg,#f5dfb3,#c69c56);
+}
+
+body.page-messages #sendBtn .msg-svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* ===== UPLOAD RING ===== */
+
+body.page-messages .upload-ring {
+  width: 54px;
+  height: 54px;
+  padding: 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: conic-gradient(var(--msg-gold) 0deg,#333 0deg);
+}
+
+body.page-messages .upload-ring span {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #111217;
+  color: var(--msg-light);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   SYSTEM CONFIRM MODAL
+========================================== */
+
+body.page-messages #sysModal {
+  position: fixed;
+  inset: 0;
+  z-index: 700;
+  padding: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,.84);
+  backdrop-filter: blur(7px);
+}
+
+body.page-messages #sysModal .sys-box {
+  width: 100%;
+  max-width: 350px;
+  padding: 28px 21px 21px;
+  border: 1px solid rgba(222,184,114,.48);
+  border-radius: 20px;
+  background: linear-gradient(145deg,#29241d,#15161b);
+  box-shadow: 0 25px 60px #000b;
+}
+
+body.page-messages #sysText {
+  padding: 8px 0 20px;
+  color: #f4dfb7;
+  font-size: 15px;
+  line-height: 1.7;
+  text-align: center;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+body.page-messages .sys-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+body.page-messages .sys-btn {
+  flex: 1;
+  min-height: 44px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+body.page-messages .sys-btn.ghost {
+  color: #ddd5c7;
+  border: 1px solid var(--msg-line);
+  background: #302c29;
+}
+
+body.page-messages .sys-btn.primary {
+  border: 1px solid #f1d49b;
+  color: #211a10;
+  background: linear-gradient(135deg,#f4dfb3,#c59a54);
+}
+
+/* ===== IMAGE VIEWER ===== */
+
+body.page-messages #imgZoom {
+  position: fixed;
+  inset: 0;
+  z-index: 850;
+  display: grid;
+  place-items: center;
+  background: rgba(0,0,0,.94);
+}
+
+body.page-messages #imgZoom .img-zoom-backdrop {
+  position: absolute;
+  inset: 0;
+}
+
+body.page-messages #imgZoom .img-zoom-inner {
+  position: relative;
+  width: 100%;
+  max-width: 680px;
+  height: 100%;
+  max-height: 100dvh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.page-messages #imgZoomView {
+  display: block;
+  max-width: 95%;
+  max-height: 80%;
+  object-fit: contain;
+}
+
+body.page-messages #imgZoom .img-close,
+body.page-messages #imgZoom .img-nav {
+  position: absolute;
+  z-index: 2;
+  width: 41px;
+  height: 41px;
+  border: 1px solid var(--msg-line);
+  border-radius: 12px;
+  color: var(--msg-light);
+  background: #27231f;
+}
+
+body.page-messages #imgZoom .img-close {
+  top: calc(env(safe-area-inset-top,0px) + 15px);
+  right: 15px;
+}
+
+body.page-messages #imgZoom .img-nav.left {
+  left: 10px;
+}
+
+body.page-messages #imgZoom .img-nav.right {
+  right: 10px;
+}
+
+body.page-messages #imgZoomIndicator {
+  position: absolute;
+  bottom: calc(28px + env(safe-area-inset-bottom,0px));
+  color: var(--msg-light);
+  font-size: 12px;
+}
+
+/* ===== TOAST ===== */
+
+body.page-messages #toast-container {
+  position: fixed;
+  z-index: 1100;
+  top: calc(env(safe-area-inset-top,0px) + 16px);
+  left: 12px;
+  right: 12px;
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+body.page-messages #toast-container .toast {
+  width: 100%;
+  max-width: 480px;
+  padding: 13px 15px;
+  border: 1px solid var(--msg-line);
+  border-radius: 13px;
+  background: #252329;
+  color: var(--msg-light);
+  box-shadow: 0 12px 30px #0008;
+}
+
+body.page-messages .msg-toast {
+  border: 1px solid var(--msg-line) !important;
+  box-shadow: 0 10px 30px #0009 !important;
+}
+
+/* ==========================================
+   RESPONSIVE MOBILE
+========================================== */
+
+@media (max-width: 700px) {
+
+  body.page-messages .msg-shell {
+    max-width: 520px;
+  }
+
+  body.page-messages .msg-layout {
+    display: flex;
+    flex-direction: column;
+    padding: 12px;
+    gap: 0;
+  }
+
+  body.page-messages .msg-users {
+    flex: 1;
+    height: 100%;
+    border-radius: 17px;
+  }
+
+  body.page-messages .msg-placeholder {
+    display: none;
+  }
+
+  body.page-messages #chatModal .modal-card {
+    width: 100% !important;
+    max-width: none !important;
+    height: var(--lux-vh,100dvh) !important;
+    border-radius: 0;
+    border: none;
+  }
+
+  body.page-messages .chat-header {
+    padding-top: calc(env(safe-area-inset-top,0px) + 10px);
+    min-height: calc(70px + env(safe-area-inset-top,0px));
+  }
+
+}
+
+/* SMALL SCREENS */
+
+@media (max-width: 370px) {
+
+  body.page-messages .msg-topbar {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  body.page-messages .msg-title h1 {
+    font-size: 23px;
+  }
+
+  body.page-messages .msg-users-title {
+    padding: 17px 13px;
+  }
+
+  body.page-messages .msg-users-title h2 {
+    font-size: 20px;
+  }
+
+  body.page-messages .chat-tools {
+    gap: 4px;
+  }
+
+  body.page-messages .chat-tool {
+    width: 33px;
+  }
+
+  body.page-messages .chatform {
+    padding-left: 7px;
+    padding-right: 7px;
+    gap: 5px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.page-messages *,
+  body.page-messages *::before,
+  body.page-messages *::after {
+    transition-duration: .01ms !important;
+    animation-duration: .01ms !important;
+  }
+}
+</style>
+
+
 </head>
 
 <body class="page-messages">
@@ -31,125 +1237,354 @@
 
 
 
- <div class="msg-shell">
+<!-- ===== SVG ICON SYSTEM ===== -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="0" height="0"
+     style="position:absolute;overflow:hidden"
+     aria-hidden="true">
 
-  <div class="msg-topbar">
-    <button class="msg-back" onclick="location.href='/lobby.html'">‹</button>
+  <symbol id="mi-back" viewBox="0 0 24 24">
+    <path d="m15 18-6-6 6-6"/>
+  </symbol>
+
+  <symbol id="mi-crown" viewBox="0 0 24 24">
+    <path d="m2 8 5 4 5-8 5 8 5-4-2 11H4L2 8ZM4 22h16"/>
+  </symbol>
+
+  <symbol id="mi-chat" viewBox="0 0 24 24">
+    <path d="M20 11a8 8 0 0 1-8 8 9 9 0 0 1-3.5-.8L4 20l1.2-4.6A8 8 0 1 1 20 11Z"/>
+  </symbol>
+
+  <symbol id="mi-search" viewBox="0 0 24 24">
+    <circle cx="10.5" cy="10.5" r="7"/>
+    <path d="m16 16 5 5"/>
+  </symbol>
+
+  <symbol id="mi-users" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="3"/>
+    <path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 3a5 5 0 0 1 3 5v1"/>
+  </symbol>
+
+  <symbol id="mi-image" viewBox="0 0 24 24">
+    <rect x="3" y="3" width="18" height="18" rx="3"/>
+    <circle cx="8.5" cy="8.5" r="1.5"/>
+    <path d="m3 17 5-5 4 4 3-3 6 6"/>
+  </symbol>
+
+  <symbol id="mi-video" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="13" height="14" rx="3"/>
+    <path d="m16 10 5-3v10l-5-3"/>
+  </symbol>
+
+  <symbol id="mi-location" viewBox="0 0 24 24">
+    <path d="M20 10c0 6-8 12-8 12S4 16 4 10a8 8 0 1 1 16 0Z"/>
+    <circle cx="12" cy="10" r="2.5"/>
+  </symbol>
+
+  <symbol id="mi-send" viewBox="0 0 24 24">
+    <path d="m22 2-7 20-4-9-9-4 20-7ZM11 13 22 2"/>
+  </symbol>
+
+  <symbol id="mi-trash" viewBox="0 0 24 24">
+    <path d="M4 7h16M9 7V4h6v3m3 0-1 14H7L6 7m4 4v6m4-6v6"/>
+  </symbol>
+
+  <symbol id="mi-down" viewBox="0 0 24 24">
+    <path d="M12 4v15m-6-6 6 6 6-6"/>
+  </symbol>
+
+  <symbol id="mi-sparkles" viewBox="0 0 24 24">
+    <path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3ZM19 17l.7 2.3L22 20l-2.3.7L19 23l-.7-2.3L16 20l2.3-.7L19 17Z"/>
+  </symbol>
+
+</svg>
+
+<!-- ===== MAIN MESSAGES PAGE ===== -->
+
+<div class="msg-shell">
+
+  <!-- HEADER -->
+  <header class="msg-topbar">
+
+    <button
+      type="button"
+      class="msg-back"
+      onclick="location.href='/lobby.html'"
+      aria-label="Quay lại"
+    >
+      <svg class="msg-svg">
+        <use href="#mi-back"></use>
+      </svg>
+    </button>
+
     <div class="msg-title">
-      <span class="dot"></span> Tin nhắn
-    </div>
-  </div>
 
-  <div class="msg-layout">
-    <div class="msg-users">
-      <div class="msg-users-title">👥 Danh sách người dùng</div>
-      <div id="userList" class="msg-userlist"></div>
-    </div>
+      <!-- Giữ class dot cho JS thông báo -->
+      <span class="dot"></span>
 
-    <div class="msg-placeholder">
-      <div class="msg-empty">
-        <div class="msg-empty-icon">💬</div>
-        <div class="msg-empty-text">
-          Chọn người bên trái<br>để bắt đầu chat
-        </div>
+      <div class="msg-brand">
+        <svg class="msg-svg">
+          <use href="#mi-crown"></use>
+        </svg>
+        <span>LIVESTREAM PRO</span>
       </div>
+
+      <h1>Tin nhắn</h1>
+
+      <div class="msg-title-line"></div>
+
     </div>
-  </div>
+
+    <div class="msg-header-decoration">
+      <svg class="msg-svg">
+        <use href="#mi-chat"></use>
+      </svg>
+    </div>
+
+  </header>
+
+  <main class="msg-layout">
+
+    <!-- DANH SÁCH NGƯỜI DÙNG -->
+    <section class="msg-users">
+
+      <div class="msg-users-title">
+
+        <div class="msg-users-heading">
+          <div class="msg-kicker">PRIVATE MESSAGES</div>
+          <h2>Cuộc trò chuyện</h2>
+          <p>Kết nối và trò chuyện cùng bạn bè</p>
+        </div>
+
+        <div class="msg-section-icon">
+          <svg class="msg-svg">
+            <use href="#mi-users"></use>
+          </svg>
+        </div>
+
+      </div>
+
+      <!-- SEARCH -->
+      <label class="msg-search-box">
+
+        <svg class="msg-svg">
+          <use href="#mi-search"></use>
+        </svg>
+
+        <input
+          id="msgUserSearch"
+          type="search"
+          placeholder="Tìm người trò chuyện..."
+          autocomplete="off"
+          aria-label="Tìm kiếm người trò chuyện"
+        >
+
+      </label>
+
+      <!-- USER LIST - GIỮ NGUYÊN ID -->
+      <div id="userList" class="msg-userlist"></div>
+
+      <div id="msgNoResults"
+           class="msg-no-results"
+           hidden>
+        Không tìm thấy người dùng phù hợp.
+      </div>
+
+    </section>
+
+    <!-- PLACEHOLDER DESKTOP -->
+    <section class="msg-placeholder">
+
+      <div class="msg-empty">
+
+        <div class="msg-empty-icon">
+          <svg class="msg-svg">
+            <use href="#mi-chat"></use>
+          </svg>
+        </div>
+
+        <div class="msg-empty-text">
+          <strong>Trò chuyện riêng tư</strong>
+          <span>
+            Chọn một người trong danh sách
+            để bắt đầu cuộc trò chuyện.
+          </span>
+        </div>
+
+      </div>
+
+    </section>
+
+  </main>
 
 </div>
+
 
     
 
 
 
 
-<!-- CHAT MODAL -->
+
+<!-- ===== LUXURY CHAT MODAL ===== -->
+
 <div id="chatModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeChat()"></div>
+
+  <div class="modal-backdrop"
+       onclick="closeChat()"></div>
 
   <div class="modal-card" style="max-width:520px">
 
+    <!-- CHAT HEADER -->
+    <header class="chat-header">
 
+      <button
+        type="button"
+        class="chat-back"
+        onclick="closeChat()"
+        aria-label="Quay lại danh sách tin nhắn"
+      >
+        <svg class="msg-svg">
+          <use href="#mi-back"></use>
+        </svg>
+      </button>
 
-<div class="chat-header">
-  <button class="chat-back" onclick="closeChat()">‹</button>
+      <img
+        id="chatHeaderAvatar"
+        class="chat-header-avatar"
+        src=""
+        alt="Ảnh đại diện"
+      >
 
-  <img id="chatHeaderAvatar" class="chat-header-avatar" src="" />
+      <div class="chat-header-title">
 
- <div class="chat-header-title">
-  <span id="chatTitle">Chat</span>
-</div>
+        <div class="chat-header-kicker">
+          PRIVATE CHAT
+        </div>
 
- <!-- 🗑️ XÓA LỊCH SỬ -->
-<button class="chat-clear icon-btn" onclick="confirmClearMyMessages()">
-  <svg viewBox="0 0 24 24" width="18" height="18">
-    <path d="M3 6h18" stroke="currentColor" stroke-width="2"/>
-    <path d="M8 6v14h8V6" stroke="currentColor" stroke-width="2"/>
-    <path d="M10 10v6M14 10v6" stroke="currentColor" stroke-width="2"/>
-  </svg>
-</button>
+        <span id="chatTitle">Trò chuyện</span>
 
+      </div>
 
-</div>
+      <!-- XÓA LỊCH SỬ -->
+      <button
+        type="button"
+        class="chat-clear icon-btn"
+        onclick="confirmClearMyMessages()"
+        aria-label="Xóa lịch sử tin nhắn"
+      >
+        <svg class="msg-svg">
+          <use href="#mi-trash"></use>
+        </svg>
+      </button>
 
+    </header>
+
+    <!-- DANH SÁCH TIN NHẮN -->
     <div id="chatBox" class="chatbox"></div>
 
-<!-- 🔽 NÚT KÉO XUỐNG CUỐI CHAT -->
-<button id="btnScrollBottom" class="chat-scroll-bottom hidden">
-  <svg viewBox="0 0 24 24" width="20" height="20">
-    <path d="M12 4v12" />
-    <path d="M6 12l6 6 6-6" />
-  </svg>
-  <span class="scroll-dot"></span>
-</button>
+    <!-- SCROLL TO BOTTOM -->
+    <button
+      id="btnScrollBottom"
+      class="chat-scroll-bottom hidden"
+      type="button"
+      aria-label="Cuộn xuống tin nhắn mới nhất"
+    >
+      <svg class="msg-svg">
+        <use href="#mi-down"></use>
+      </svg>
 
+      <span class="scroll-dot"></span>
+    </button>
 
+    <!-- COMPOSER -->
+    <div class="chatform">
 
+      <div class="chat-tools">
 
-   <div class="chatform">
+        <!-- IMAGE -->
+        <button
+          type="button"
+          class="chat-tool tool-image"
+          id="btnImage"
+          aria-label="Gửi ảnh"
+        >
+          <span class="tool-icon">
+            <svg class="msg-svg">
+              <use href="#mi-image"></use>
+            </svg>
+          </span>
+          <span class="tool-ring"></span>
+        </button>
 
+        <!-- VIDEO -->
+        <button
+          type="button"
+          class="chat-tool tool-video"
+          id="btnVideo"
+          aria-label="Gửi video"
+        >
+          <span class="tool-icon">
+            <svg class="msg-svg">
+              <use href="#mi-video"></use>
+            </svg>
+          </span>
+          <span class="tool-ring"></span>
+        </button>
 
-<div class="chat-tools">
-  <button type="button" class="chat-tool tool-image" id="btnImage">
-    <span class="tool-icon">📷</span>
-    <span class="tool-ring"></span>
-  </button>
+        <!-- LOCATION -->
+        <button
+          type="button"
+          class="chat-tool tool-location"
+          id="btnLocation"
+          aria-label="Chia sẻ vị trí"
+        >
+          <span class="tool-icon">
+            <svg class="msg-svg">
+              <use href="#mi-location"></use>
+            </svg>
+          </span>
+          <span class="tool-ring"></span>
+        </button>
 
-  <button type="button" class="chat-tool tool-video" id="btnVideo">
-    <span class="tool-icon">🎥</span>
-    <span class="tool-ring"></span>
-  </button>
+        <input
+          type="file"
+          id="imgInput"
+          accept="image/*"
+          multiple
+          hidden
+        >
 
-  <button type="button" class="chat-tool tool-location" id="btnLocation">
-    <span class="tool-icon">📍</span>
-    <span class="tool-ring"></span>
-  </button>
+        <input
+          type="file"
+          id="videoInput"
+          accept="video/*"
+          hidden
+        >
 
-  <input type="file" id="imgInput" accept="image/*" multiple hidden />
-  <input type="file" id="videoInput" accept="video/*" hidden />
-</div>
+      </div>
 
+      <!-- INPUT -->
+      <textarea
+        id="msgInput"
+        rows="1"
+        placeholder="Nhập tin nhắn..."
+        aria-label="Nội dung tin nhắn"
+      ></textarea>
 
+      <!-- SEND -->
+      <button
+        type="button"
+        id="sendBtn"
+        class="send-arrow"
+        aria-label="Gửi tin nhắn"
+      >
+        <svg class="msg-svg">
+          <use href="#mi-send"></use>
+        </svg>
+      </button>
 
-
-
-
-  
-  <textarea
-  id="msgInput"
-  rows="1"
-  placeholder="Nhập tin nhắn..."
-></textarea>
-
-
-  <button id="sendBtn" class="send-arrow">
-  <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-    <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
-  </svg>
-</button>
-
-</div>
-
+    </div>
 
   </div>
 </div>
