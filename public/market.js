@@ -258,6 +258,19 @@ function renderMarketTabs(totalBooths){
 
 
 
+function escapeMarketHtml(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    c => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[c]
+  );
+}
+
 
 
 /* ===== RENDER ===== */
@@ -279,16 +292,35 @@ function renderMarket(){
 
     const div = document.createElement("div");
 
-    if(!b.owner){
-      div.className = "booth empty";
-      div.innerHTML = `
-        <div>
-          <div class="booth-plus">＋</div>
-          <div class="booth-text">Thuê gian hàng</div>
-        </div>
-      `;
-      div.onclick = ()=> rentBooth(b.id);
-    }else{
+
+if (!b.owner) {
+  div.className = "booth empty";
+
+  div.innerHTML = `
+    <div class="booth-card-content">
+
+      <div class="booth-index">
+        GIAN HÀNG ${String(b.id).padStart(2, "0")}
+      </div>
+
+      <div class="booth-plus">+</div>
+
+      <div class="booth-text">
+        Thuê gian hàng
+      </div>
+
+      <div class="booth-hint">
+        Khởi tạo không gian của bạn
+      </div>
+
+    </div>
+  `;
+
+  div.onclick = () => rentBooth(b.id);
+}
+
+    
+    else{
 
   const me = JSON.parse(localStorage.getItem("user_profile"));
   const isMine = me && b.owner.uid === me.uid;
@@ -306,17 +338,33 @@ function renderMarket(){
 const admin = isAdmin();
 
 let adminControls = "";
-if(admin){
+
+
+if (admin) {
   adminControls = `
     <div class="booth-admin">
 
-      <button onclick="event.stopPropagation(); toggleLock(${b.id}, ${b.owner.locked ? 'false' : 'true'})">
-        ${b.owner.locked ? "🔓 Mở khoá" : "🔒 Khoá"}
+      <button
+        type="button"
+        onclick="event.stopPropagation(); toggleLock(
+          ${b.id},
+          ${b.owner.locked ? "false" : "true"}
+        )"
+      >
+        ${b.owner.locked ? "Mở khóa" : "Khóa"}
       </button>
-      <button onclick="event.stopPropagation(); revokeBooth(${b.id})">🧹 Thu hồi</button>
+
+      <button
+        type="button"
+        onclick="event.stopPropagation(); revokeBooth(${b.id})"
+      >
+        Thu hồi
+      </button>
+
     </div>
   `;
 }
+
 
 div.className =
   "booth" +
@@ -325,15 +373,65 @@ div.className =
 
 
 
+
+const boothName = escapeMarketHtml(
+  b.owner.name || "Gian hàng"
+);
+
+const boothLogo = escapeMarketHtml(
+  b.owner.logo || ""
+);
+
+const boothStatus = b.owner.locked
+  ? "Đang tạm khóa"
+  : isMine
+    ? "Gian hàng của bạn"
+    : "Chạm để ghé thăm";
+
 div.innerHTML = `
-  ${isMine ? `<div class="booth-mine-badge">CỦA TÔI</div>` : ""}
+  ${isMine ? `
+    <div class="booth-mine-badge">
+      CỦA TÔI
+    </div>
+  ` : ""}
+
   ${expireBadge}
   ${adminControls}
-  <div>
-    <img class="booth-logo" src="${b.owner.logo}">
-    <div class="booth-name">${b.owner.name}</div>
+
+  <div class="booth-card-content">
+
+    <div class="booth-index">
+      GIAN HÀNG ${String(b.id).padStart(2, "0")}
+    </div>
+
+    <div class="booth-logo-shell">
+
+      <span class="booth-placeholder">LP</span>
+
+      ${boothLogo ? `
+        <img
+          class="booth-logo"
+          src="${boothLogo}"
+          alt=""
+          loading="lazy"
+          onerror="this.remove()"
+        >
+      ` : ""}
+
+    </div>
+
+    <div class="booth-name"
+         title="${boothName}">
+      ${boothName}
+    </div>
+
+    <div class="booth-hint">
+      ${boothStatus}
+    </div>
+
   </div>
 `;
+
 
 // nếu bị khoá → không cho click
 if (!b.owner.locked || isAdmin()) {
@@ -471,9 +569,12 @@ if(range){
 
 document.querySelectorAll(".rent-option")
   .forEach(o=>o.classList.remove("active"));
+
 document
   .querySelector('.rent-option[data-days="7"]')
   ?.classList.add("active");
+
+checkRentAffordable();
 
 
 
