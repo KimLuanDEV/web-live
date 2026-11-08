@@ -884,11 +884,11 @@ button:disabled { opacity: .5; cursor: not-allowed; }
     </div>
 
     <!-- NẠP QUA ĐẠI LÝ -->
-    <section class="topup-option open" id="agentOption">
+   <section class="topup-option" id="agentOption">
 
-      <button class="option-header"
-              type="button"
-              aria-expanded="true">
+<button class="option-header"
+        type="button"
+        aria-expanded="false">
 
         <span class="option-icon">
           <svg class="icon"><use href="#tp-bank"/></svg>
@@ -905,11 +905,15 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 
       </button>
 
-      <div class="option-content">
-        <div id="agentList" class="agent-list">
-          <div class="empty-agent">Đang tải danh sách đại lý...</div>
-        </div>
-      </div>
+
+<div class="option-content hidden">
+  <div id="agentList" class="agent-list">
+    <div class="empty-agent">
+      Đang tải danh sách đại lý...
+    </div>
+  </div>
+</div>
+
 
     </section>
 
