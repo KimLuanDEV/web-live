@@ -418,13 +418,31 @@ if (daysLeft <= 1) {
     /* =========================
        NGƯỜI MUA
     ========================= */
-    else{
-      document.getElementById("tabOrders")?.classList.add("hidden");
 
-      // 👉 TAB ĐƠN CỦA TÔI
-      document.getElementById("tabMyOrders")?.classList.remove("hidden");
-      renderMyOrders(booth.orders || []);
-    }
+else {
+
+  // Không hiển thị tab quản lý của chủ gian
+  document.getElementById("tabOrders")
+    ?.classList.add("hidden");
+
+  const myOrdersTab =
+    document.getElementById("tabMyOrders");
+
+  if (me?.uid) {
+
+    myOrdersTab?.classList.remove("hidden");
+
+    renderMyOrders(booth.orders || []);
+
+  } else {
+
+    // Khách chưa đăng nhập không thấy tab đơn hàng
+    myOrdersTab?.classList.add("hidden");
+
+  }
+
+}
+
 
     // mặc định mở tab sản phẩm
     document.querySelector('[data-tab="products"]')?.click();
@@ -487,17 +505,56 @@ btnExtend?.addEventListener("click", ()=>{
   openExtendModalInBooth();
 });
 
-function openExtendModalInBooth(){
+
+function openExtendModalInBooth() {
+
   showModal({
-    title: "⏳ Gia hạn gian hàng",
+
+    title: "Gia hạn gian hàng",
+
     message: `
-      <div style="display:flex;flex-direction:column;gap:10px">
-        <button onclick="confirmExtendBooth(7,1000)">7 ngày – 1,000 💎</button>
-        <button onclick="confirmExtendBooth(30,3500)">30 ngày – 3,500 💎</button>
-        <button onclick="confirmExtendBooth(90,9000)">90 ngày – 9,000 💎</button>
+      <div class="bt-extend-intro">
+        Lựa chọn thời hạn gia hạn phù hợp
+        với nhu cầu sử dụng.
+      </div>
+
+      <div class="bt-extend-options">
+
+        <button
+          type="button"
+          class="bt-extend-plan"
+          onclick="confirmExtendBooth(7,1000)"
+        >
+          <span>7 ngày</span>
+          <strong>1.000</strong>
+          <small>kim cương</small>
+        </button>
+
+        <button
+          type="button"
+          class="bt-extend-plan"
+          onclick="confirmExtendBooth(30,3500)"
+        >
+          <span>30 ngày</span>
+          <strong>3.500</strong>
+          <small>kim cương</small>
+        </button>
+
+        <button
+          type="button"
+          class="bt-extend-plan"
+          onclick="confirmExtendBooth(90,9000)"
+        >
+          <span>90 ngày</span>
+          <strong>9.000</strong>
+          <small>kim cương</small>
+        </button>
+
       </div>
     `
+
   });
+
 }
 
 
@@ -522,28 +579,33 @@ async function confirmExtendBooth(days, price){
       body: JSON.stringify({ boothId, days, price })
     });
 
-    const data = await res.json();
-    if(!data.ok){
-      
-     if(data.error==="not_enough_coin"){
+
+const data = await res.json();
+
+if (!data.ok) {
+
+  if (data.error === "not_enough_coin") {
+    showModal({
+      title: "Không đủ kim cương",
+      message: "Số dư kim cương của bạn không đủ."
+    });
+    return;
+  }
+
   showModal({
-    title:"❌ Không đủ kim cương",
-    message:"Số dư kim cương của bạn không đủ."
+    title: "Gia hạn thất bại",
+    message: "Không thể gia hạn gian hàng, vui lòng thử lại."
   });
+
   return;
 }
 
-      showModal({
-  title:"❌ Gia hạn thất bại",
-  message:"Không thể gia hạn gian hàng, vui lòng thử lại."
+// Chỉ báo thành công khi server trả về ok
+showModal({
+  title: "Gia hạn thành công",
+  message: "Gian hàng đã được gia hạn thành công."
 });
 
-    }
-
-   showModal({
-  title:"✅ Thành công",
-  message:"Gia hạn gian hàng thành công!"
-});
 
     syncMyCoin();
     loadBooth();
@@ -590,7 +652,7 @@ async function submitProduct(){
   if(wrap){
     wrap.classList.remove("hidden");
     if(bar) bar.style.width = "0%";
-    if(text) text.textContent = `⏳ Đang tải ảnh 1/${files.length}... 0%`;
+    if(text) text.textContent = `Đang tải ảnh 1/${files.length}... 0%`;
   }
 
   const imageUrls = [];
@@ -600,7 +662,7 @@ async function submitProduct(){
       const form = new FormData();
       form.append("image", files[i]);
 
-      if(text) text.textContent = `⏳ Đang tải ảnh ${i+1}/${files.length}... 0%`;
+      if(text) text.textContent = `Đang tải ảnh ${i+1}/${files.length}... 0%`;
       if(bar) bar.style.width = "0%";
 
       const upData = await new Promise((resolve, reject)=>{
@@ -613,7 +675,7 @@ async function submitProduct(){
             const percent = Math.round((e.loaded / e.total) * 100);
             if(bar) bar.style.width = percent + "%";
             if(text) text.textContent =
-              `⏳ Đang tải ảnh ${i+1}/${files.length}... ${percent}%`;
+              `Đang tải ảnh ${i+1}/${files.length}... ${percent}%`;
           }
         };
 
@@ -730,7 +792,7 @@ async function guardBoothAccess() {
         color:#fff;
         text-align:center;
       ">
-        <h2>🚫 Gian hàng đang bị khoá</h2>
+        <h2>Gian hàng đang bị khóa</h2>
         <p>${data.message || "Vui lòng liên hệ Admin"}</p>
         <button onclick="location.href='/market.html'"
           style="
@@ -738,11 +800,12 @@ async function guardBoothAccess() {
             padding:10px 18px;
             border-radius:999px;
             border:none;
-            background:#25F09A;
+            background:#d7b57a;
+            color:#21180e;
             font-weight:900;
             cursor:pointer;
           ">
-          ⬅ Quay lại Market
+          Quay lại Market
         </button>
       </div>
     `;
@@ -866,18 +929,30 @@ function renderEditGallery(){
     img.style.objectFit = "cover";
     img.style.borderRadius = "6px";
 
-    const del = document.createElement("button");
-    del.textContent = "✕";
-    del.style.position = "absolute";
-    del.style.top = "6px";
-    del.style.right = "6px";
-    del.style.width = "22px";
-    del.style.height = "22px";
-    del.style.borderRadius = "50%";
-    del.style.border = "none";
-    del.style.background = "rgba(0,0,0,.6)";
-    del.style.color = "#fff";
-    del.style.cursor = "pointer";
+
+const del = document.createElement("button");
+
+del.type = "button";
+del.textContent = "Xóa";
+
+del.style.position = "absolute";
+del.style.top = "6px";
+del.style.right = "6px";
+
+del.style.width = "auto";
+del.style.minWidth = "40px";
+del.style.height = "28px";
+del.style.padding = "0 8px";
+
+del.style.borderRadius = "8px";
+del.style.border = "1px solid rgba(220,185,123,.45)";
+del.style.background = "rgba(28,25,22,.95)";
+
+del.style.color = "#f1d6a6";
+del.style.fontSize = "11px";
+del.style.fontWeight = "700";
+del.style.cursor = "pointer";
+
 
     del.onclick = ()=>{
       editingImages.splice(index, 1);
@@ -993,7 +1068,7 @@ async function deleteProductConfirmed(productId) {
   const data = await res.json();
   if(!data.ok){
     showModal({
-      title:"❌ Thất bại",
+      title:"Thất bại",
       message:"Không thể xoá sản phẩm"
     });
     return;
@@ -1004,7 +1079,7 @@ async function deleteProductConfirmed(productId) {
 
 async function deleteProduct(productId){
   showModal({
-  title: "🗑️ Xoá sản phẩm",
+  title: "Xoá sản phẩm",
   message: "Bạn có chắc chắn muốn xoá sản phẩm này?",
   confirm: true,
   onOk: () => deleteProductConfirmed(productId)
@@ -1072,6 +1147,23 @@ async function syncMyCoin(){
 
 
 
+/* ==========================================
+   MINIMAL UI - REMOVE DECORATIVE EMOJI
+========================================== */
+
+function cleanBoothModalTitle(value) {
+  return String(value ?? "")
+    .replace(
+      /[\p{Extended_Pictographic}\uFE0E\uFE0F\u200D]/gu,
+      ""
+    )
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+
+
+
 function showModal({
   title = "Thông báo",
   message = "",
@@ -1085,7 +1177,7 @@ function showModal({
   const okBtn = document.getElementById("globalOkBtn");
   const cancelBtn = document.getElementById("globalCancelBtn");
 
-  titleEl.textContent = title;
+  titleEl.textContent = cleanBoothModalTitle(title);
   contentEl.innerHTML = message;
 
   cancelBtn.style.display = confirm ? "block" : "none";
@@ -1102,6 +1194,8 @@ function showModal({
 
   modal.classList.remove("hidden");
 }
+
+
 
 function closeGlobalModal() {
   document.getElementById("globalModal").classList.add("hidden");
@@ -1496,17 +1590,6 @@ function setProductSubmitting(loading){
 }
 
 
-function resetUploadProgress(){
-  const wrap = document.getElementById("uploadProgressWrap");
-  const bar = document.getElementById("uploadProgressBar");
-  const text = document.getElementById("uploadProgressText");
-
-  if(!wrap) return;
-
-  wrap.classList.add("hidden");
-  bar.style.width = "0%";
-  text.textContent = "⏳ Đang tải ảnh... 0%";
-}
 
 
 
@@ -2007,7 +2090,7 @@ function showForceLogoutModal(message){
     modal.innerHTML = `
       <div class="fl-backdrop"></div>
       <div class="fl-box">
-        <div class="fl-icon">🚫</div>
+        <div class="fl-kicker">LIVESTREAM PRO · SECURITY</div>
         <div class="fl-title">Phiên đăng nhập kết thúc</div>
         <div class="fl-msg"></div>
         <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>

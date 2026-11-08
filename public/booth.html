@@ -1762,6 +1762,218 @@ body.booth-page .my-order-top .qty {
 
 
 
+/* ==========================================
+   LUXURY BOUTIQUE - NO DECORATIVE ICONS
+   FINAL VISUAL REFINEMENT
+========================================== */
+
+/* NÚT QUAY LẠI MARKET */
+
+body.booth-page #btnBack {
+  flex: 0 0 auto !important;
+
+  width: auto !important;
+  min-width: 69px !important;
+  height: 37px !important;
+
+  padding: 0 12px !important;
+
+  border-radius: 10px !important;
+
+  background: #29231e !important;
+  color: #e9c995 !important;
+
+  font-size: 11px !important;
+  font-weight: 800 !important;
+  letter-spacing: .2px;
+}
+
+/* NÚT ĐĂNG SẢN PHẨM - KHÔNG DẤU CỘNG */
+
+body.booth-page #btnAddProduct {
+  width: auto !important;
+  min-width: 135px;
+  height: 46px !important;
+
+  padding: 0 20px !important;
+
+  border-radius: 11px !important;
+
+  background: linear-gradient(
+    135deg,
+    #eddaaF,
+    #c59e65
+  ) !important;
+
+  color: #241a0e !important;
+
+  font-size: 12px !important;
+  font-weight: 800 !important;
+  letter-spacing: .3px;
+
+  box-shadow: 0 10px 26px rgba(0,0,0,.3);
+}
+
+/* NÚT ĐÓNG BẰNG CHỮ */
+
+body.booth-page .rent-header .bt-text-close {
+  flex: 0 0 auto;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  width: auto;
+  min-width: 58px;
+  height: 35px;
+
+  margin: 0;
+  padding: 0 12px;
+
+  border: 1px solid rgba(217,183,122,.32);
+  border-radius: 9px;
+
+  background: #302921;
+  color: #e5c995;
+
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+/* GÓI GIA HẠN */
+
+body.booth-page .bt-extend-intro {
+  margin-bottom: 13px;
+
+  color: #aaa198;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+body.booth-page .bt-extend-options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0,1fr));
+  gap: 7px;
+}
+
+body.booth-page .bt-extend-plan {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 0;
+  min-height: 101px;
+
+  padding: 10px 5px;
+
+  border: 1px solid rgba(218,182,119,.32);
+  border-radius: 11px;
+
+  background: linear-gradient(
+    145deg,
+    #32291f,
+    #1d1d21
+  );
+
+  color: #f0dbb5;
+  cursor: pointer;
+}
+
+body.booth-page .bt-extend-plan span {
+  color: #dbc394;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+body.booth-page .bt-extend-plan strong {
+  margin-top: 10px;
+
+  color: #f1d39d;
+  font-size: 19px;
+  font-weight: 850;
+}
+
+body.booth-page .bt-extend-plan small {
+  margin-top: 5px;
+
+  color: #a99c88;
+  font-size: 9px;
+  font-weight: 500;
+}
+
+body.booth-page .bt-extend-plan:active {
+  transform: scale(.98);
+}
+
+/* NÚT CHUYỂN ẢNH - BỎ MŨI TÊN */
+
+body.booth-page #galleryModal
+button[onclick="prevGallery()"],
+
+body.booth-page #galleryModal
+button[onclick="nextGallery()"] {
+  width: 64px !important;
+  height: 36px !important;
+
+  border: 1px solid rgba(218,182,119,.48) !important;
+  border-radius: 10px !important;
+
+  background: rgba(29,27,25,.88) !important;
+
+  color: #efd7ac !important;
+  font-size: 12px !important;
+  font-weight: 750 !important;
+}
+
+/* PHẦN THÔNG BÁO */
+
+body.booth-page #globalModalTitle {
+  color: #f1dfbd;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* ĐĂNG XUẤT - BỎ ICON */
+
+body.booth-page .fl-kicker {
+  margin-bottom: 12px;
+
+  color: #bfa374;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+/* ĐIỆN THOẠI NHỎ */
+
+@media (max-width: 370px) {
+
+  body.booth-page #btnBack {
+    min-width: 59px !important;
+    padding: 0 8px !important;
+  }
+
+  body.booth-page .bt-extend-options {
+    gap: 5px;
+  }
+
+  body.booth-page .bt-extend-plan {
+    padding: 10px 3px;
+  }
+
+  body.booth-page .bt-extend-plan strong {
+    font-size: 16px;
+  }
+
+}
+
 
 
 </style>
@@ -1782,7 +1994,7 @@ body.booth-page .my-order-top .qty {
             class="booth-back"
             id="btnBack"
             aria-label="Quay lại Market">
-      <span aria-hidden="true">←</span>
+     <span>Market</span>
     </button>
 
     <div class="booth-info">
@@ -1913,18 +2125,13 @@ body.booth-page .my-order-top .qty {
 <!-- FLOATING OWNER ACTION -->
 <button type="button"
         class="add-product hidden"
-        id="btnAddProduct"
-        aria-label="Đăng sản phẩm mới">
-
-  <span class="add-product-symbol">+</span>
-  <span class="add-product-text">Đăng sản phẩm</span>
-
+        id="btnAddProduct">
+  Đăng sản phẩm
 </button>
 
 
 
-<!-- ADD -->
-<div class="add-product" id="btnAddProduct">＋</div>
+
 
 
 
@@ -1933,13 +2140,20 @@ body.booth-page .my-order-top .qty {
 <div id="addProductModal" class="modal-backdrop hidden">
   <div class="rent-modal">
     <div class="rent-header">
-      <b id="productModalTitle">➕ Thêm sản phẩm</b>
-      <span onclick="closeAddProduct()">✕</span>
+      <b id="productModalTitle">Thêm sản phẩm</b>
+     <button type="button"
+        class="bt-text-close"
+        onclick="closeAddProduct()">
+  Đóng
+</button>
     </div>
 
     <div class="rent-body">
       <input id="pName" placeholder="Tên sản phẩm">
-      <input id="pPrice" type="number" placeholder="Giá (💎)">
+    <input id="pPrice"
+       type="number"
+       min="0"
+       placeholder="Giá bán (kim cương)">
       <input type="file" id="pImageFile" accept="image/*" multiple>
 
 <img id="pImagePreview"
@@ -1966,7 +2180,9 @@ body.booth-page .my-order-top .qty {
 
 
 <div id="uploadProgressWrap" class="hidden">
-  <div id="uploadProgressText">⏳ Đang tải ảnh... 0%</div>
+  <div id="uploadProgressText">
+  Đang tải ảnh... 0%
+</div>
   <div class="upload-bar">
     <div id="uploadProgressBar"></div>
   </div>
@@ -1990,7 +2206,11 @@ body.booth-page .my-order-top .qty {
   <div class="rent-modal">
     <div class="rent-header">
       <b id="globalModalTitle">Thông báo</b>
-      <span onclick="closeGlobalModal()">✕</span>
+      <button type="button"
+        class="bt-text-close"
+        onclick="closeGlobalModal()">
+  Đóng
+</button>
     </div>
 
     <div class="rent-body" id="globalModalContent"
@@ -2034,12 +2254,11 @@ body.booth-page .my-order-top .qty {
         <b>Thông tin mua hàng</b>
       </div>
 
-      <span onclick="closeBuyForm()"
-            role="button"
-            tabindex="0"
-            aria-label="Đóng">
-        &times;
-      </span>
+<button type="button"
+        class="bt-text-close"
+        onclick="closeBuyForm()">
+  Đóng
+</button>
 
     </div>
 
@@ -2099,7 +2318,11 @@ body.booth-page .my-order-top .qty {
   <div class="rent-modal" style="max-width:none;width:100%;height:100%;border-radius:0;background:#000">
     <div class="rent-header">
       <b id="galleryTitle">Ảnh sản phẩm</b>
-      <span onclick="closeGallery()">✕</span>
+      <button type="button"
+        class="bt-text-close"
+        onclick="closeGallery()">
+  Đóng
+</button>
     </div>
 
     <div style="

@@ -127,7 +127,7 @@ function checkRentAffordable(){
   if(selectedPlan.trial){
   btn.disabled = false;
   btn.classList.remove("disabled");
-  btn.textContent = "🎁 Dùng thử miễn phí";
+  btn.textContent = "Dùng thử miễn phí";
   if(topupBtn) topupBtn.classList.add("hidden");
   priceVal.classList.remove("rent-price-over");
   return;
@@ -716,7 +716,7 @@ document.getElementById("rentBackdrop")
   loadMarketFromServer();
 
  await showModal({
-  title: "🎉 Thành công",
+  title: "Thành công",
   content:
     rentMode === "extend"
       ? "Gia hạn gian hàng thành công!"
