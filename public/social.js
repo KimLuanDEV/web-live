@@ -1113,22 +1113,64 @@ ${p.video ? `
 
 
 
+
+<!-- ===== PREMIUM POST ACTIONS ===== -->
+
 <div class="lp-actions">
-  <div class="lp-action like" onclick="likePost('${p.id}')">
-    ❤️ <span id="like_${p.id}">${p.likes?.length||0}</span>
-  </div>
 
-  <div class="lp-action" onclick="toggleComments('${p.id}')">
-    💬 <span id="c_${p.id}">${p.comments?.length||0}</span>
-  </div>
+  <!-- LIKE -->
+  <button
+    type="button"
+    class="lp-action like"
+    onclick="likePost('${p.id}')"
+  >
+    <svg class="lp-i">
+      <use href="#ls-heart"></use>
+    </svg>
 
-  <div class="lp-action gift"
-       onclick="openGift('${p.id}', '${p.uid}')">
-    🎁 <span id="g_${p.id}">
+    <span>Thích</span>
+
+    <b id="like_${p.id}">
+      ${p.likes?.length || 0}
+    </b>
+  </button>
+
+  <!-- COMMENT -->
+  <button
+    type="button"
+    class="lp-action"
+    onclick="toggleComments('${p.id}')"
+  >
+    <svg class="lp-i">
+      <use href="#ls-chat"></use>
+    </svg>
+
+    <span>Bình luận</span>
+
+    <b id="c_${p.id}">
+      ${p.comments?.length || 0}
+    </b>
+  </button>
+
+  <!-- GIFT -->
+  <button
+    type="button"
+    class="lp-action gift"
+    onclick="openGift('${p.id}', '${p.uid}')"
+  >
+    <svg class="lp-i">
+      <use href="#ls-gift"></use>
+    </svg>
+
+    <span>Tặng quà</span>
+
+    <b id="g_${p.id}">
       ${p.gifts?.total || 0}
-    </span>
-  </div>
+    </b>
+  </button>
+
 </div>
+
 
 
 ${p.gifts?.byUser ? `
