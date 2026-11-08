@@ -835,6 +835,301 @@ body.page-withdraw .withdraw-app img {
 }
 
 
+
+/* ====================================
+   LUXURY SVG ICON SYSTEM
+   ==================================== */
+
+.wd-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  vertical-align: middle;
+  color: #d9bd83;
+}
+
+.wd-icon svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+  stroke: currentColor;
+  fill: none;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.wd-icon.sm {
+  width: 15px;
+  height: 15px;
+}
+
+.wd-icon.lg {
+  width: 26px;
+  height: 26px;
+}
+
+.wd-icon.xl {
+  width: 34px;
+  height: 34px;
+}
+
+/* HEADER */
+
+.wd-back {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.wd-header-icon {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.wd-header-icon .wd-icon {
+  color: #e9cd91;
+}
+
+/* PREMIUM BALANCE */
+
+.wd-balance-value .wd-icon {
+  width: 29px;
+  height: 29px;
+}
+
+.wd-balance-card::after {
+  content: "";
+  right: -60px;
+  top: -70px;
+  width: 200px;
+  height: 200px;
+  border: 1px solid rgba(217,189,131,.08);
+  border-radius: 50%;
+  box-shadow:
+    0 0 0 32px rgba(217,189,131,.025),
+    0 0 0 64px rgba(217,189,131,.015);
+}
+
+/* FORM */
+
+.wd-section-icon .wd-icon {
+  width: 23px;
+  height: 23px;
+}
+
+.wd-bank-title .wd-icon {
+  width: 18px;
+  height: 18px;
+}
+
+.wd-min-note .wd-icon {
+  margin-right: 6px;
+}
+
+/* BUTTON */
+
+body.page-withdraw .wd-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+body.page-withdraw .wd-submit .wd-icon {
+  color: #231b0e;
+}
+
+body.page-withdraw .wd-security-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+}
+
+.wd-security-hint .wd-icon {
+  color: #9f977f;
+}
+
+/* HISTORY */
+
+.wd-history-heading h2 {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.wd-history-heading .wd-icon {
+  width: 19px;
+  height: 19px;
+}
+
+.wd-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+  font-weight: 700;
+}
+
+.wd-status .wd-icon {
+  width: 15px;
+  height: 15px;
+  color: currentColor;
+}
+
+/* MODALS */
+
+body.page-withdraw .lp-modal-icon {
+  width: 62px;
+  height: 62px;
+  margin: 0 auto 19px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 19px;
+  border: 1px solid rgba(217,189,131,.28);
+  background: rgba(217,189,131,.075);
+  font-size: 0;
+}
+
+body.page-withdraw .lp-modal-icon .wd-icon {
+  width: 29px;
+  height: 29px;
+}
+
+body.page-withdraw .lp-modal-icon.is-success .wd-icon {
+  color: #77d4a5;
+}
+
+body.page-withdraw .lp-modal-icon.is-error .wd-icon {
+  color: #ef8585;
+}
+
+body.page-withdraw .lp-modal-icon.is-warn .wd-icon {
+  color: #e8bb73;
+}
+
+/* PENDING */
+
+.withdraw-warn {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.withdraw-warn .wd-icon {
+  color: #e8bb73;
+}
+
+/* FORCE LOGOUT */
+
+body.page-withdraw .fl-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+body.page-withdraw .fl-icon .wd-icon {
+  width: 34px;
+  height: 34px;
+  color: #ef8585;
+}
+
+/* PAGINATION */
+
+body.page-withdraw .pg-btn {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+}
+
+body.page-withdraw .pg-btn .wd-icon {
+  width: 16px;
+  height: 16px;
+}
+
+/* BUTTONS DISABLED */
+
+body.page-withdraw button:disabled .wd-icon {
+  opacity: .65;
+}
+
+
+
+/* PREMIUM ICON FINISHING */
+
+.wd-header-icon .wd-icon {
+  width: 24px;
+  height: 24px;
+}
+
+.wd-balance-value > .wd-icon {
+  width: 30px;
+  height: 30px;
+  color: #f0d394;
+}
+
+.wd-small-title {
+  letter-spacing: 2.3px;
+}
+
+.wd-premium-mark {
+  letter-spacing: 1.2px;
+}
+
+.wd-section-icon {
+  border-radius: 12px;
+}
+
+.wd-section-icon .wd-icon,
+.wd-bank-title .wd-icon,
+.wd-history-heading .wd-icon {
+  color: #e2c58d;
+}
+
+.wd-min-note {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.wd-min-note .wd-icon {
+  margin-right: 4px;
+}
+
+.wd-history-heading h2 {
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+
+.wd-status {
+  font-size: 11px;
+}
+
+.wd-status .wd-icon {
+  stroke-width: 1.9;
+}
+
+body.page-withdraw .lp-modal-icon .wd-icon svg {
+  stroke-width: 1.5;
+}
+
+body.page-withdraw .wd-submit .wd-icon svg {
+  stroke-width: 2;
+}
+
+body.page-withdraw .wd-submit:disabled .wd-icon {
+  color: #6e6250;
+}
+
+
+
 </style>
 </head>
 
@@ -843,16 +1138,26 @@ body.page-withdraw .withdraw-app img {
 <main class="withdraw-app">
 
   <!-- HEADER -->
-  <header class="wd-header">
-    <button class="wd-back" onclick="goBack()" aria-label="Quay lại">‹</button>
 
-    <div class="wd-header-center">
-      <div class="wd-header-title">RÚT TIỀN</div>
-      <div class="wd-header-sub">LIVESTREAM PRO</div>
-    </div>
+<header class="wd-header">
 
-    <div class="wd-header-icon">✦</div>
-  </header>
+  <button class="wd-back"
+          onclick="goBack()"
+          aria-label="Quay lại">
+    <span data-wd-icon="back"></span>
+  </button>
+
+  <div class="wd-header-center">
+    <div class="wd-header-title">RÚT TIỀN</div>
+    <div class="wd-header-sub">LIVESTREAM PRO</div>
+  </div>
+
+  <div class="wd-header-icon">
+    <span data-wd-icon="crown"></span>
+  </div>
+
+</header>
+
 
   <!-- INTRO -->
   <section class="wd-intro">
@@ -865,15 +1170,15 @@ body.page-withdraw .withdraw-app img {
   <section class="wd-balance-card">
 
     <div class="wd-balance-top">
-      <span class="wd-small-title">◆ DIGITAL ASSET</span>
-      <span class="wd-premium-mark">✦ PREMIUM</span>
+<span class="wd-small-title">DIGITAL ASSET</span>
+<span class="wd-premium-mark">PREMIUM MEMBER</span>
     </div>
 
     <div class="wd-balance-label">Kim cương có thể rút</div>
 
     <div class="wd-balance-value">
-      <span class="diamond">💎</span>
-      <span id="receivedVal">0</span>
+<span data-wd-icon="gem" data-wd-size="lg"></span>
+<span id="receivedVal">0</span>
     </div>
 
     <div class="wd-balance-bottom">
@@ -889,7 +1194,9 @@ body.page-withdraw .withdraw-app img {
   <section class="wd-panel">
 
     <div class="wd-section-head">
-      <div class="wd-section-icon">✧</div>
+      <div class="wd-section-icon">
+  <span data-wd-icon="wallet"></span>
+</div>
       <div>
         <h2 class="wd-section-title">Tạo yêu cầu rút tiền</h2>
         <div class="wd-section-sub">
@@ -911,15 +1218,16 @@ body.page-withdraw .withdraw-app img {
       >
     </div>
 
-    <p class="wd-min-note" id="minWithdrawNote">
-      ✦ Số lượng rút tối thiểu:
-      <b id="minWithdrawVal"></b> 💎
-    </p>
+<p class="wd-min-note" id="minWithdrawNote">
+  <span data-wd-icon="warning" data-wd-size="sm"></span>
+  Số lượng rút tối thiểu:
+  <b id="minWithdrawVal"></b> kim cương
+</p>
 
-    <div class="wd-bank-title">
-      <span>▣</span>
-      THÔNG TIN NGÂN HÀNG NHẬN
-    </div>
+<div class="wd-bank-title">
+  <span data-wd-icon="bank"></span>
+  THÔNG TIN NGÂN HÀNG NHẬN
+</div>
 
     <div class="wd-field">
       <label for="bankName">NGÂN HÀNG</label>
@@ -962,13 +1270,15 @@ body.page-withdraw .withdraw-app img {
       >
     </div>
 
-    <button id="btnSubmitWithdraw" class="wd-submit">
-      ✦ GỬI YÊU CẦU RÚT TIỀN
-    </button>
+<button id="btnSubmitWithdraw" class="wd-submit">
+  <span data-wd-icon="send"></span>
+  <span>GỬI YÊU CẦU RÚT TIỀN</span>
+</button>
 
-    <p class="wd-security-hint">
-      🔒 Yêu cầu được xác nhận bằng mã bảo mật
-    </p>
+<p class="wd-security-hint">
+  <span data-wd-icon="shield" data-wd-size="sm"></span>
+  Yêu cầu được xác nhận bằng mã bảo mật
+</p>
 
   </section>
 
@@ -976,7 +1286,10 @@ body.page-withdraw .withdraw-app img {
   <section class="wd-history">
 
     <div class="wd-history-heading">
-      <h2>◈ Lịch sử giao dịch</h2>
+    <h2>
+  <span data-wd-icon="history"></span>
+  Lịch sử giao dịch
+</h2>
       <span class="wd-history-tag">TRANSACTIONS</span>
     </div>
 
@@ -996,9 +1309,9 @@ body.page-withdraw .withdraw-app img {
       </table>
     </div>
 
-    <p class="wd-empty" id="withdrawEmpty" style="display:none">
-      ◇ Chưa có giao dịch rút tiền nào
-    </p>
+<p class="wd-empty" id="withdrawEmpty" style="display:none">
+  Chưa có giao dịch rút tiền nào
+</p>
 
     <div class="withdraw-pagination" id="withdrawPagination"></div>
 
@@ -1008,9 +1321,11 @@ body.page-withdraw .withdraw-app img {
 
   </section>
 
-  <footer class="wd-footer">
-    ✦ LIVESTREAM PRO · PREMIUM EXPERIENCE ✦
-  </footer>
+<footer class="wd-footer">
+  LIVESTREAM PRO
+  <span style="color:#a68b5b">·</span>
+  PREMIUM EXPERIENCE
+</footer>
 
 </main>
 
@@ -1019,7 +1334,9 @@ body.page-withdraw .withdraw-app img {
   <div class="lp-modal-backdrop"></div>
 
   <div class="lp-modal-box">
-    <div class="lp-modal-icon">✦</div>
+<div class="lp-modal-icon is-success">
+  <span data-wd-icon="check" data-wd-size="xl"></span>
+</div>
     <h3>Yêu cầu đã được gửi</h3>
 
     <p>
@@ -1047,7 +1364,9 @@ body.page-withdraw .withdraw-app img {
   <div class="lp-modal-backdrop"></div>
 
   <div class="lp-modal-box">
-    <div class="lp-modal-icon">🔐</div>
+<div class="lp-modal-icon">
+  <span data-wd-icon="lock" data-wd-size="xl"></span>
+</div>
     <h3>Xác nhận giao dịch</h3>
 
     <p>Nhập mã bảo mật để xác nhận yêu cầu rút tiền</p>
@@ -1078,7 +1397,9 @@ body.page-withdraw .withdraw-app img {
   <div class="lp-modal-backdrop"></div>
 
   <div class="lp-modal-box">
-    <div id="notifyIcon" class="lp-modal-icon">⚠️</div>
+   <div id="notifyIcon" class="lp-modal-icon is-warn">
+  <span data-wd-icon="warning" data-wd-size="xl"></span>
+</div>
     <h3 id="notifyTitle">Thông báo</h3>
     <p id="notifyMessage"></p>
 

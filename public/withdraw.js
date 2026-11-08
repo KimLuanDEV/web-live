@@ -1,3 +1,122 @@
+
+/* ======================================
+   LIVESTREAM PRO - PREMIUM SVG ICONS
+   Không phụ thuộc thư viện bên ngoài
+   ====================================== */
+
+const WD_ICONS = {
+  back: '<path d="m15 18-6-6 6-6"/>',
+
+  gem: `
+    <path d="M6 3h12l4 6-10 12L2 9l4-6Z"/>
+    <path d="M2 9h20M12 21 8 9l2-6m2 18 4-12-2-6"/>
+  `,
+
+  crown: `
+    <path d="m2 8 5 4 5-8 5 8 5-4-2 11H4L2 8Z"/>
+    <path d="M4 22h16"/>
+  `,
+
+  wallet: `
+    <rect x="3" y="5" width="18" height="15" rx="2"/>
+    <path d="M3 9h18"/>
+    <path d="M16 14h2"/>
+  `,
+
+  bank: `
+    <path d="m3 10 9-7 9 7"/>
+    <path d="M4 10h16M5 10v9m5-9v9m4-9v9m5-9v9M3 21h18"/>
+  `,
+
+  shield: `
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
+    <path d="m9 12 2 2 4-4"/>
+  `,
+
+  lock: `
+    <rect x="5" y="10" width="14" height="11" rx="2"/>
+    <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+    <path d="M12 15v2"/>
+  `,
+
+  send: `
+    <path d="M7 17 17 7M7 7h10v10"/>
+    <path d="M20 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h6"/>
+  `,
+
+  history: `
+    <path d="M3 12a9 9 0 1 0 3-6.7L3 8"/>
+    <path d="M3 3v5h5"/>
+    <path d="M12 7v5l3 2"/>
+  `,
+
+  clock: `
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M12 7v5l3 2"/>
+  `,
+
+  check: `
+    <circle cx="12" cy="12" r="9"/>
+    <path d="m8 12 3 3 5-6"/>
+  `,
+
+  error: `
+    <circle cx="12" cy="12" r="9"/>
+    <path d="m9 9 6 6m0-6-6 6"/>
+  `,
+
+  warning: `
+    <path d="m10.3 3.7-8 14A2 2 0 0 0 4 20h16a2 2 0 0 0 1.7-2.3l-8-14a2 2 0 0 0-3.4 0Z"/>
+    <path d="M12 9v4m0 4h.01"/>
+  `,
+
+  left: '<path d="m15 18-6-6 6-6"/>',
+  right: '<path d="m9 18 6-6-6-6"/>',
+
+  sparkle: `
+    <path d="m12 2 1.8 8.2L22 12l-8.2 1.8L12 22l-1.8-8.2L2 12l8.2-1.8L12 2Z"/>
+  `
+};
+
+/* Tạo icon SVG từ danh sách cố định */
+
+function wdIcon(name, size = "") {
+  const paths = WD_ICONS[name] || WD_ICONS.wallet;
+
+  const allowedSizes = ["sm", "lg", "xl"];
+  const sizeClass = allowedSizes.includes(size) ? size : "";
+
+  return `
+    <span class="wd-icon ${sizeClass}" aria-hidden="true">
+      <svg xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 24 24"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.7"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        ${paths}
+      </svg>
+    </span>
+  `;
+}
+
+/* Đổ SVG vào các vị trí chỉ định trong HTML */
+
+function wdRenderIcons(root = document) {
+  root.querySelectorAll("[data-wd-icon]").forEach(el => {
+    const name = el.dataset.wdIcon;
+    const size = el.dataset.wdSize || "";
+
+    el.innerHTML = wdIcon(name, size);
+    el.removeAttribute("data-wd-icon");
+  });
+}
+
+wdRenderIcons();
+
+
+
 let socket = null;
 
 const params = new URLSearchParams(location.search);
@@ -55,19 +174,36 @@ function updateBankLogo(bankName){
 
 
 
-function updateMoney(){
-  const val = Math.min(received, Number(withdrawInput.value || 0));
-  moneyVal.textContent = (val * RATE).toLocaleString() + " ₫";
 
-  // UX: chưa đủ tối thiểu thì disable nút
+function updateMoney() {
+  const val = Math.min(
+    received,
+    Number(withdrawInput.value || 0)
+  );
+
+  moneyVal.textContent =
+    (val * RATE).toLocaleString("vi-VN") + " ₫";
+
+  if (withdrawInput.disabled) {
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML =
+      wdIcon("clock") + "<span>ĐANG CHỜ DUYỆT</span>";
+    return;
+  }
+
   if (val < MIN_WITHDRAW) {
     btnSubmit.disabled = true;
-    btnSubmit.textContent = `⛔ Rút tối thiểu ${MIN_WITHDRAW} 💎`;
+    btnSubmit.innerHTML =
+      wdIcon("warning") +
+      `<span>RÚT TỐI THIỂU ${MIN_WITHDRAW.toLocaleString("vi-VN")}</span>`;
   } else {
     btnSubmit.disabled = false;
-    btnSubmit.textContent = "📤 Gửi yêu cầu rút";
+    btnSubmit.innerHTML =
+      wdIcon("send") +
+      "<span>GỬI YÊU CẦU RÚT TIỀN</span>";
   }
 }
+
 
 
 withdrawInput.oninput = updateMoney;
@@ -229,7 +365,8 @@ function renderWithdrawPage(){
 if (totalPages > 1) {
   const prev = document.createElement("button");
   prev.className = "pg-btn";
-  prev.textContent = "◀";
+  prev.innerHTML = wdIcon("left");
+prev.setAttribute("aria-label", "Trang trước");
   prev.disabled = withdrawPage === 1;
   prev.onclick = () => {
     withdrawPage--;
@@ -242,7 +379,8 @@ if (totalPages > 1) {
 
   const next = document.createElement("button");
   next.className = "pg-btn";
-  next.textContent = "▶";
+  next.innerHTML = wdIcon("right");
+next.setAttribute("aria-label", "Trang sau");
   next.disabled = withdrawPage === totalPages;
   next.onclick = () => {
     withdrawPage++;
@@ -257,7 +395,8 @@ if (totalPages > 1) {
 }
 
 
-function toggleWithdrawForm(enable){
+
+function toggleWithdrawForm(enable) {
   const warnId = "withdrawPendingWarn";
   let warn = document.getElementById(warnId);
 
@@ -265,45 +404,63 @@ function toggleWithdrawForm(enable){
   const bankAccountEl = document.getElementById("bankAccount");
   const bankOwnerEl = document.getElementById("bankOwner");
 
-  if (!enable) {
-    // ⛔ khoá form rút
-    withdrawInput.disabled = true;
-    btnSubmit.disabled = true;
-    btnSubmit.textContent = "⏳ Đang chờ duyệt";
+  withdrawInput.disabled = !enable;
+  bankNameEl.disabled = !enable;
+  bankAccountEl.disabled = !enable;
+  bankOwnerEl.disabled = !enable;
 
-    // ⛔ khoá ngân hàng
-    bankNameEl.disabled = true;
-    bankAccountEl.disabled = true;
-    bankOwnerEl.disabled = true;
+  if (!enable) {
+    btnSubmit.disabled = true;
+    btnSubmit.innerHTML =
+      wdIcon("clock") +
+      "<span>ĐANG CHỜ PHÊ DUYỆT</span>";
 
     if (!warn) {
       warn = document.createElement("div");
       warn.id = warnId;
       warn.className = "withdraw-warn";
-      warn.textContent = "⛔ Bạn đang có yêu cầu rút đang chờ phê duyệt";
+
+      warn.innerHTML =
+        wdIcon("warning") +
+        "<span>Bạn đang có yêu cầu rút tiền chờ phê duyệt</span>";
+
       btnSubmit.parentNode.insertBefore(warn, btnSubmit);
     }
   } else {
-    // 🔓 mở lại
-    withdrawInput.disabled = false;
-    btnSubmit.disabled = false;
-    btnSubmit.textContent = "📤 Gửi yêu cầu rút";
+    if (warn) warn.remove();
 
-    bankNameEl.disabled = false;
-    bankAccountEl.disabled = false;
-    bankOwnerEl.disabled = false;
-
-    warn && warn.remove();
+    updateMoney();
   }
 }
 
 
-function statusText(s){
-  if (s === "pending") return "⏳ Đang chờ";
-  if (s === "approved") return "✅ Đã duyệt";
-  if (s === "rejected") return "❌ Từ chối";
-  return s;
+
+
+function statusText(s) {
+  if (s === "pending") {
+    return `<span class="wd-status">
+      ${wdIcon("clock")}
+      Đang chờ
+    </span>`;
+  }
+
+  if (s === "approved") {
+    return `<span class="wd-status">
+      ${wdIcon("check")}
+      Đã duyệt
+    </span>`;
+  }
+
+  if (s === "rejected") {
+    return `<span class="wd-status">
+      ${wdIcon("error")}
+      Từ chối
+    </span>`;
+  }
+
+  return "Không xác định";
 }
+
 
 // load lần đầu
 loadWithdrawHistory();
@@ -375,7 +532,8 @@ async function confirmWithdraw(){
 
 
 
-function showNotifyModal(message, type = "warn", title){
+
+function showNotifyModal(message, type = "warn", title) {
   const modal = document.getElementById("notifyModal");
   const msgEl = document.getElementById("notifyMessage");
   const iconEl = document.getElementById("notifyIcon");
@@ -385,19 +543,27 @@ function showNotifyModal(message, type = "warn", title){
 
   msgEl.textContent = message;
 
+  iconEl.className = "lp-modal-icon";
+
   if (type === "error") {
-    iconEl.textContent = "❌";
-    titleEl.textContent = title || "Lỗi";
+    iconEl.classList.add("is-error");
+    iconEl.innerHTML = wdIcon("error", "xl");
+    titleEl.textContent = title || "Giao dịch không thành công";
+
   } else if (type === "success") {
-    iconEl.textContent = "✅";
+    iconEl.classList.add("is-success");
+    iconEl.innerHTML = wdIcon("check", "xl");
     titleEl.textContent = title || "Thành công";
+
   } else {
-    iconEl.textContent = "⚠️";
+    iconEl.classList.add("is-warn");
+    iconEl.innerHTML = wdIcon("warning", "xl");
     titleEl.textContent = title || "Thông báo";
   }
 
   modal.classList.remove("hidden");
 }
+
 
 function closeNotifyModal(){
   const modal = document.getElementById("notifyModal");
@@ -413,7 +579,7 @@ function showForceLogoutModal(message){
     modal.innerHTML = `
       <div class="fl-backdrop"></div>
       <div class="fl-box">
-        <div class="fl-icon">🚫</div>
+        <div class="fl-icon">${wdIcon("error", "xl")}</div>
         <div class="fl-title">Phiên đăng nhập kết thúc</div>
         <div class="fl-msg"></div>
         <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
