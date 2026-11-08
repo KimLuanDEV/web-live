@@ -1015,78 +1015,245 @@ body.auth-page .modal-card {
 
 
 
+
 /* ==========================================
-   FIX IPHONE BOTTOM BACKGROUND
    LIVESTREAM PRO
+   FOOTER ANCHORED LAYOUT
+   BOTTOM FIRST - CONTENT ABOVE
 ========================================== */
 
-/* ĐỒNG BỘ MÀU NỀN CUỐI MÀN HÌNH */
-
 html {
-  background: #090a0e !important;
-}
-
-html,
-body.auth-page {
   width: 100%;
   height: 100%;
   margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #090a0e;
 }
 
-/* BODY PHỦ HẾT VÙNG HIỂN THỊ */
-
 body.auth-page {
-  min-height: 100vh;
-  min-height: 100dvh;
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+
+  background: #090a0e;
+}
+
+/* KHUNG PHỦ TOÀN BỘ CHIỀU CAO */
+
+body.auth-page .auth-stage {
+  position: relative;
+
+  flex: 0 1 430px;
+
+  width: 100%;
+  max-width: 430px;
+  min-width: 0;
+
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+
+  margin: 0;
+
+  padding:
+    calc(14px + env(safe-area-inset-top, 0px))
+    20px
+    calc(10px + env(safe-area-inset-bottom, 0px));
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  overflow: hidden;
 
   background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(194,143,70,.16),
+      transparent 44%
+    ),
     linear-gradient(
       180deg,
       #1a1a1c 0%,
       #0c0e13 64%,
       #090a0e 100%
-    ) !important;
-
-  background-color: #090a0e !important;
+    );
 }
 
-/* GIỮ KHUNG LOGIN FULL HEIGHT */
+/* THANH TRÊN NẰM TRONG SAFE AREA */
 
-body.auth-page .auth-stage {
+body.auth-page .auth-top {
+  flex: 0 0 auto;
+
   width: 100%;
-  max-width: 430px;
+  min-width: 0;
 
-  height: 100vh;
-  height: 100dvh;
-
-  max-height: none;
-  min-height: 0;
-
-  margin: 0 auto;
-
-  align-self: stretch;
+  margin: 0;
+  padding: 0;
 }
 
-/* FOOTER CÓ VÙNG ĐỆM AN TOÀN */
+/* NỘI DUNG CHIẾM PHẦN CÒN LẠI */
+
+body.auth-page .auth-main {
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+
+  width: 100%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+
+  margin: 0;
+  padding: 12px 0;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+body.auth-page .auth-main::-webkit-scrollbar {
+  display: none;
+}
+
+/* CĂN NHÓM LOGO - FORM THEO KHÔNG GIAN CÒN LẠI */
+
+body.auth-page .auth-hero {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+
+  margin-top: auto;
+}
+
+body.auth-page .login-panel {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 20px;
+}
+
+body.auth-page .register-line {
+  flex: 0 0 auto;
+
+  width: 100%;
+  margin-top: 15px;
+  margin-bottom: auto;
+  padding-bottom: 4px;
+}
+
+/* FOOTER LÀ MỐC ĐÁY */
 
 body.auth-page .auth-foot {
-  flex-shrink: 0;
+  position: relative;
 
-  margin-top: 0;
+  flex: 0 0 auto;
 
-  padding-bottom:
-    max(12px, env(safe-area-inset-bottom, 0px));
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 11px 0 0;
+
+  border-top: 1px solid rgba(222,186,119,.16);
+
+  text-align: center;
+  line-height: 1.5;
+
+  background: transparent;
 }
 
-/* KHÔNG NHÂN ĐÔI SAFE AREA TRONG KHUNG */
+/* MÀN HÌNH THẤP */
 
-body.auth-page .auth-stage {
-  padding-bottom: 16px;
-}
+@media (max-height: 740px) {
 
-@media (max-width: 600px) {
   body.auth-page .auth-stage {
-    padding-bottom: 16px;
+    padding-top:
+      calc(10px + env(safe-area-inset-top, 0px));
+
+    padding-right: 16px;
+
+    padding-bottom:
+      calc(8px + env(safe-area-inset-bottom, 0px));
+
+    padding-left: 16px;
+  }
+
+  body.auth-page .auth-main {
+    padding: 9px 0;
+  }
+
+  body.auth-page .login-avatar {
+    width: 66px;
+    height: 66px;
+    margin-bottom: 10px;
+  }
+
+  body.auth-page .login-panel {
+    margin-top: 13px;
+    padding: 13px;
+  }
+
+  body.auth-page .register-line {
+    margin-top: 10px;
+  }
+
+  body.auth-page .auth-foot {
+    padding-top: 8px;
+  }
+}
+
+/* MÀN HÌNH RẤT THẤP */
+
+@media (max-height: 590px) {
+
+  body.auth-page .login-avatar {
+    width: 54px;
+    height: 54px;
+  }
+
+  body.auth-page .login-sub {
+    display: none;
+  }
+
+  body.auth-page .auth-main {
+    padding: 8px 0;
+  }
+
+  body.auth-page .login-panel {
+    margin-top: 10px;
+  }
+}
+
+/* MOBILE HẸP */
+
+@media (max-width: 360px) {
+
+  body.auth-page .auth-stage {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  body.auth-page .login-title {
+    font-size: 23px;
   }
 }
 
