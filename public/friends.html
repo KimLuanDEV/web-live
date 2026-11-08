@@ -848,6 +848,256 @@ svg { display: block; }
   .action-btn.accept, .action-btn.reject { width: 92px; }
   .action-btn .action-label { font-size: 11px; }
 }
+
+
+
+/* ==========================================
+   LUXURY CONFIRM MODAL - LIVESTREAM PRO
+========================================== */
+
+.friend-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  padding-top: calc(20px + env(safe-area-inset-top, 0px));
+  padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+}
+
+/* BACKDROP */
+
+.friend-confirm-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0, 0, 0, .82);
+
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+/* POPUP BOX */
+
+.friend-confirm-box {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 360px;
+
+  padding: 28px 22px 22px;
+
+  border-radius: 22px;
+  border: 1px solid rgba(226, 185, 110, .5);
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(214, 166, 83, .15),
+      transparent 65%
+    ),
+    linear-gradient(
+      145deg,
+      #29241e,
+      #14151a 75%
+    );
+
+  box-shadow:
+    0 28px 80px rgba(0, 0, 0, .75),
+    inset 0 1px rgba(255, 255, 255, .06);
+
+  text-align: center;
+
+  animation: friendModalIn .22s ease-out;
+}
+
+/* ICON */
+
+.friend-confirm-icon {
+  width: 66px;
+  height: 66px;
+
+  margin: 0 auto 18px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 20px;
+
+  border: 1px solid rgba(222, 179, 110, .4);
+
+  background: linear-gradient(
+    145deg,
+    #3d3023,
+    #1f1b1a
+  );
+
+  color: #e8c58c;
+
+  box-shadow: 0 8px 22px rgba(0, 0, 0, .3);
+}
+
+.friend-confirm-icon .fi {
+  width: 31px;
+  height: 31px;
+  stroke-width: 1.5;
+}
+
+/* BLOCK VARIANT */
+
+.friend-confirm-overlay.is-block .friend-confirm-icon {
+  border-color: rgba(230, 114, 114, .45);
+
+  background: linear-gradient(
+    145deg,
+    #502628,
+    #23171b
+  );
+
+  color: #ee9999;
+}
+
+/* TITLE */
+
+#friendConfirmTitle {
+  margin: 0;
+
+  color: #f6dfb2;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+/* MESSAGE */
+
+#friendConfirmMessage {
+  margin: 12px 0 0;
+
+  color: #bcb5aa;
+
+  font-size: 13px;
+  line-height: 1.75;
+
+  overflow-wrap: anywhere;
+}
+
+/* GOLD DIVIDER */
+
+.friend-confirm-divider {
+  width: 100%;
+  height: 1px;
+
+  margin: 23px 0 19px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(225, 186, 114, .5),
+    transparent
+  );
+}
+
+/* BUTTONS */
+
+.friend-confirm-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+}
+
+.friend-confirm-actions button {
+  min-height: 47px;
+
+  border-radius: 12px;
+
+  font-size: 13px;
+  font-weight: 750;
+
+  transition:
+    transform .15s ease,
+    filter .2s ease;
+}
+
+.friend-confirm-actions button:active {
+  transform: scale(.97);
+}
+
+/* CANCEL */
+
+.friend-confirm-cancel {
+  border: 1px solid rgba(217, 185, 121, .3);
+
+  background: linear-gradient(
+    145deg,
+    #34302c,
+    #202126
+  );
+
+  color: #d9d0c2;
+}
+
+/* CONFIRM */
+
+.friend-confirm-submit {
+  border: 1px solid #f2d6a1;
+
+  background: linear-gradient(
+    135deg,
+    #f7e3b7,
+    #c89d59
+  );
+
+  color: #221910;
+
+  box-shadow: 0 5px 18px rgba(203, 152, 72, .18);
+}
+
+/* BLOCK CONFIRM */
+
+.friend-confirm-overlay.is-block .friend-confirm-submit {
+  border-color: #e69a89;
+
+  background: linear-gradient(
+    135deg,
+    #edb3a0,
+    #b95355
+  );
+
+  color: #260e12;
+}
+
+/* ANIMATION */
+
+@keyframes friendModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* ACCESSIBILITY */
+
+@media (prefers-reduced-motion: reduce) {
+  .friend-confirm-box {
+    animation: none;
+  }
+}
+
+
+
 </style>
 </head>
 
@@ -1007,6 +1257,71 @@ svg { display: block; }
     Danh sách chặn
   </button>
 </div>
+
+
+
+<!-- ===== LUXURY CONFIRM MODAL ===== -->
+
+<div
+  id="friendConfirmModal"
+  class="friend-confirm-overlay"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="friendConfirmTitle"
+  aria-describedby="friendConfirmMessage"
+  hidden
+>
+
+  <div class="friend-confirm-backdrop"
+       onclick="closeFriendConfirm()"></div>
+
+  <div class="friend-confirm-box">
+
+    <!-- ICON -->
+    <div class="friend-confirm-icon" id="friendConfirmIcon">
+      <svg class="fi">
+        <use href="#f-user-minus"></use>
+      </svg>
+    </div>
+
+    <!-- TITLE -->
+    <h3 id="friendConfirmTitle">
+      Xác nhận thao tác
+    </h3>
+
+    <!-- MESSAGE -->
+    <p id="friendConfirmMessage"></p>
+
+    <!-- GOLD DIVIDER -->
+    <div class="friend-confirm-divider"></div>
+
+    <!-- ACTIONS -->
+    <div class="friend-confirm-actions">
+
+      <button
+        type="button"
+        class="friend-confirm-cancel"
+        onclick="closeFriendConfirm()"
+      >
+        Hủy bỏ
+      </button>
+
+      <button
+        type="button"
+        class="friend-confirm-submit"
+        id="friendConfirmSubmit"
+        onclick="confirmFriendAction()"
+      >
+        Xác nhận
+      </button>
+
+    </div>
+
+  </div>
+
+</div>
+
+
 
 <div id="toast-container" aria-live="polite"></div>
 
@@ -1231,17 +1546,164 @@ function chat(uid, name) {
   location.href = "/messages.html";
 }
 
-function removeFriend(uid, name) {
-  if (!confirm(`Bạn có chắc muốn huỷ kết bạn với ${name}?`)) return;
-  socket.emit("friend-remove", { uid });
+
+/* ==========================================
+   LUXURY CONFIRM - FRIEND ACTIONS
+========================================== */
+
+let pendingFriendAction = null;
+let friendConfirmPreviousFocus = null;
+
+/* ===== MỞ POPUP ===== */
+
+function openFriendConfirm(type, uid, name) {
+  const modal = document.getElementById("friendConfirmModal");
+
+  const title = document.getElementById("friendConfirmTitle");
+  const message = document.getElementById("friendConfirmMessage");
+  const submit = document.getElementById("friendConfirmSubmit");
+  const iconUse = document.querySelector(
+    "#friendConfirmIcon use"
+  );
+
+  const isBlock = type === "block";
+
+  pendingFriendAction = {
+    type,
+    uid,
+    name
+  };
+
+  friendConfirmPreviousFocus = document.activeElement;
+
+  if (isBlock) {
+    title.textContent = "Xác nhận chặn tài khoản";
+
+    message.textContent =
+      `Bạn có chắc muốn chặn ${name}? ` +
+      `Người này sẽ không thể liên hệ với bạn.`;
+
+    submit.textContent = "Chặn";
+    iconUse.setAttribute("href", "#f-ban");
+
+  } else {
+    title.textContent = "Xác nhận hủy kết bạn";
+
+    message.textContent =
+      `Bạn có chắc muốn hủy kết bạn với ${name}?`;
+
+    submit.textContent = "Hủy kết bạn";
+    iconUse.setAttribute("href", "#f-user-minus");
+  }
+
+  modal.classList.toggle("is-block", isBlock);
+  modal.hidden = false;
+
+  submit.focus();
+}
+
+/* ===== ĐÓNG POPUP ===== */
+
+function closeFriendConfirm() {
+  const modal = document.getElementById("friendConfirmModal");
+
+  modal.hidden = true;
+  pendingFriendAction = null;
+
+  if (
+    friendConfirmPreviousFocus &&
+    friendConfirmPreviousFocus.isConnected
+  ) {
+    friendConfirmPreviousFocus.focus();
+  }
+
+  friendConfirmPreviousFocus = null;
+}
+
+/* ===== XÁC NHẬN THAO TÁC ===== */
+
+function confirmFriendAction() {
+  if (!pendingFriendAction) return;
+
+  if (!socket.connected) {
+    showToast(
+      "Mất kết nối máy chủ, vui lòng thử lại.",
+      "error"
+    );
+    return;
+  }
+
+  const { type, uid } = pendingFriendAction;
+
+  closeFriendConfirm();
+
+  if (type === "remove") {
+
+    // GIỮ NGUYÊN EVENT CŨ
+    socket.emit("friend-remove", { uid });
+
+    showToast(
+      "Đã gửi yêu cầu hủy kết bạn",
+      "info"
+    );
+
+  } else if (type === "block") {
+
+    // GIỮ NGUYÊN EVENT CŨ
+    socket.emit("user-block", { uid });
+
+    showToast(
+      "Đã gửi yêu cầu chặn tài khoản",
+      "info"
+    );
+  }
+
+  // TẢI LẠI DANH SÁCH TỪ SERVER
   setTimeout(loadFriends, 400);
 }
 
-function blockUser(uid, name) {
-  if (!confirm(`Bạn có chắc muốn chặn ${name}? Người này sẽ không thể liên hệ với bạn.`)) return;
-  socket.emit("user-block", { uid });
-  setTimeout(loadFriends, 400);
+/* ===== HỦY KẾT BẠN ===== */
+
+function removeFriend(uid, name) {
+  openFriendConfirm("remove", uid, name);
 }
+
+/* ===== CHẶN TÀI KHOẢN ===== */
+
+function blockUser(uid, name) {
+  openFriendConfirm("block", uid, name);
+}
+
+/* ===== ESC ĐỂ ĐÓNG ===== */
+
+document.addEventListener("keydown", event => {
+  const modal = document.getElementById("friendConfirmModal");
+
+  if (!modal || modal.hidden) return;
+
+  if (event.key === "Escape") {
+    closeFriendConfirm();
+  }
+
+  // Giữ thao tác Tab trong hộp thoại
+  if (event.key === "Tab") {
+    const buttons = Array.from(
+      modal.querySelectorAll("button:not(:disabled)")
+    );
+
+    const first = buttons[0];
+    const last = buttons[buttons.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+});
+
 
 /* ===== THÔNG BÁO ===== */
 
