@@ -2026,13 +2026,14 @@ function renderTransferHistory(){
     t => t.type === historyTab
   )
 
-  if(filtered.length === 0){
-    box.innerHTML =
-    `<div style="text-align:center;opacity:.6;padding:20px">
-      Chưa có giao dịch
-     </div>`
-    return
-  }
+if (filtered.length === 0) {
+  box.innerHTML = `
+    <div class="history-empty">
+      Chưa có giao dịch trong mục này.
+    </div>
+  `;
+  return;
+}
 
   filtered.forEach(t=>{
 
@@ -2068,9 +2069,12 @@ function renderTransferHistory(){
 
       </div>
 
-      <div class="transfer-amount ${amountClass}">
-        ${amountSign}${t.amount} 💎
-      </div>
+
+<div class="transfer-amount ${amountClass}">
+  ${amountSign}${Number(t.amount || 0).toLocaleString("vi-VN")}
+  <span class="history-unit">KIM CƯƠNG</span>
+</div>
+
     `
 
     box.appendChild(div)
@@ -2117,11 +2121,11 @@ if(btnDepositHistory){
       // ❗ không có dữ liệu
       if(list.length === 0){
 
-        depositHistoryList.innerHTML = `
-        <div style="padding:20px;text-align:center;opacity:.6">
-        Chưa có giao dịch nạp
-        </div>
-        `
+depositHistoryList.innerHTML = `
+  <div class="history-empty">
+    Chưa có giao dịch nạp kim cương.
+  </div>
+`;
 
         depositHistoryScreen.classList.remove("hidden")
         return
@@ -2151,9 +2155,12 @@ if(btnDepositHistory){
 
         </div>
 
-        <div class="transfer-amount transfer-receive">
-          +${item.amount}
-        </div>
+
+<div class="transfer-amount transfer-receive">
+  +${Number(item.amount || 0).toLocaleString("vi-VN")}
+  <span class="history-unit">KIM CƯƠNG</span>
+</div>
+
         `
 
         depositHistoryList.appendChild(div)
