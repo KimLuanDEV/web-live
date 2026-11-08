@@ -9589,6 +9589,112 @@ function saveUsers(db){
 }
 
 
+/* =========================================
+   BỔ SUNG ĐẠI LÝ NẠP KIM CƯƠNG
+   LIVESTREAM PRO
+========================================= */
+
+const NEW_TOPUP_AGENTS = [
+
+  // ĐẠI LÝ THỨ 2
+  {
+    uid: "NguyenPhuongVu",
+    bank: {
+      name: "Vietcombank",
+      account: "1017495554",
+      owner: "Nguyễn Phương Vũ",
+      qr: ""
+    }
+  },
+
+  // ĐẠI LÝ THỨ 3
+  {
+    uid: "HoangHiep",
+    bank: {
+      name: "Techcombank",
+      account: "2888388888",
+      owner: "Hoàng Kim Hiệp",
+      qr: ""
+    }
+  }
+
+];
+
+/* ĐĂNG KÝ ĐẠI LÝ VÀO USERS.JSON */
+
+function registerTopupAgents() {
+
+  const db = loadUsers();
+  let changed = false;
+
+  for (const item of NEW_TOPUP_AGENTS) {
+
+    const uid = String(item.uid || "").trim();
+    const bank = item.bank || {};
+
+    // Không dùng thông tin mẫu chưa được thay
+    if (
+      !uid ||
+      uid.startsWith("UID_DAI_LY_") ||
+      !bank.name ||
+      bank.name.startsWith("TEN_NGAN_HANG_") ||
+      !bank.account ||
+      bank.account.startsWith("SO_TAI_KHOAN_") ||
+      !bank.owner ||
+      bank.owner.startsWith("TEN_CHU_TAI_KHOAN_")
+    ) {
+      console.warn("[TOPUP] Thông tin đại lý chưa hợp lệ:", uid);
+      continue;
+    }
+
+    // Đại lý phải là tài khoản đã tồn tại
+    const acc = db[uid];
+
+    if (!acc || !acc.profile) {
+      console.warn("[TOPUP] Không tìm thấy tài khoản:", uid);
+      continue;
+    }
+
+    // Giữ nguyên quyền hiện tại, bổ sung quyền agent
+    if (!Array.isArray(acc.roles)) {
+      acc.roles = [];
+    }
+
+    if (!acc.roles.includes("agent")) {
+      acc.roles.push("agent");
+      changed = true;
+    }
+
+    // Giữ lại thông tin ngân hàng đã có
+    if (!acc.profile.bank) {
+      acc.profile.bank = {};
+      changed = true;
+    }
+
+    // Chỉ bổ sung trường còn thiếu
+    for (const key of ["name", "account", "owner", "qr"]) {
+
+      const value = String(bank[key] || "").trim();
+
+      if (!acc.profile.bank[key] && value) {
+        acc.profile.bank[key] = value;
+        changed = true;
+      }
+    }
+
+    console.log("[TOPUP] Đại lý đã được đăng ký:", uid);
+  }
+
+  if (changed) {
+    saveUsers(db);
+    console.log("[TOPUP] Đã cập nhật danh sách đại lý");
+  }
+}
+
+registerTopupAgents();
+
+
+
 function emitWithdrawUpdate() {
   io.emit("withdraw-update", {
     ts: Date.now()
