@@ -9,6 +9,8 @@
 <meta name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover">
 
+<meta name="theme-color" content="#090a0e">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style"
       content="black">
@@ -1008,6 +1010,83 @@ body.auth-page .modal-card {
   *::after {
     transition: none !important;
     animation: none !important;
+  }
+}
+
+
+
+/* ==========================================
+   FIX IPHONE BOTTOM BACKGROUND
+   LIVESTREAM PRO
+========================================== */
+
+/* ĐỒNG BỘ MÀU NỀN CUỐI MÀN HÌNH */
+
+html {
+  background: #090a0e !important;
+}
+
+html,
+body.auth-page {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+}
+
+/* BODY PHỦ HẾT VÙNG HIỂN THỊ */
+
+body.auth-page {
+  min-height: 100vh;
+  min-height: 100dvh;
+
+  background:
+    linear-gradient(
+      180deg,
+      #1a1a1c 0%,
+      #0c0e13 64%,
+      #090a0e 100%
+    ) !important;
+
+  background-color: #090a0e !important;
+}
+
+/* GIỮ KHUNG LOGIN FULL HEIGHT */
+
+body.auth-page .auth-stage {
+  width: 100%;
+  max-width: 430px;
+
+  height: 100vh;
+  height: 100dvh;
+
+  max-height: none;
+  min-height: 0;
+
+  margin: 0 auto;
+
+  align-self: stretch;
+}
+
+/* FOOTER CÓ VÙNG ĐỆM AN TOÀN */
+
+body.auth-page .auth-foot {
+  flex-shrink: 0;
+
+  margin-top: 0;
+
+  padding-bottom:
+    max(12px, env(safe-area-inset-bottom, 0px));
+}
+
+/* KHÔNG NHÂN ĐÔI SAFE AREA TRONG KHUNG */
+
+body.auth-page .auth-stage {
+  padding-bottom: 16px;
+}
+
+@media (max-width: 600px) {
+  body.auth-page .auth-stage {
+    padding-bottom: 16px;
   }
 }
 
