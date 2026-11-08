@@ -1,224 +1,444 @@
-const auth = JSON.parse(localStorage.getItem("user_profile") || "{}");
-if (!auth.uid) location.href = "/login.html";
 
-// ✅ KHỞI TẠO SOCKET (BẮT BUỘC)
-const socket = io();
+/* =========================================
+   LIVESTREAM PRO - LUXURY TOPUP
+   ========================================= */
 
-const myCoinEl  = document.getElementById("myCoin");
-const agentList = document.getElementById("agentList");
-const qrBox     = document.getElementById("qrBox");
-const bankInfo  = document.getElementById("bankInfo");
-const agentQr   = document.getElementById("agentQr");
-const sheetOverlay = document.getElementById("sheetOverlay");
-const qrSheet = document.getElementById("qrSheet");
-const sheetQr = document.getElementById("sheetQr");
-const sheetBankInfo = document.getElementById("sheetBankInfo");
-const btnTransferred = document.getElementById("btnTransferred");
-const transferStatus = document.getElementById("transferStatus");
+const auth = JSON.parse(
+  localStorage.getItem("user_profile") || "{}"
+);
 
-let currentAgent = null;
-
-
-// hiển thị coin hiện tại
-if (myCoinEl) {
-  myCoinEl.textContent = `Kim cương hiện tại: ${auth.coins || 0} 💰`;
+if (!auth.uid) {
+  location.href = "/login.html";
 }
 
-// 🔄 LOAD DANH SÁCH ĐẠI LÝ TỪ SERVER
-fetch("/api/topup-agents")
-  .then(r => r.json())
-  .then(res => {
-    console.log("TOPUP AGENTS:", res); // 🔍 DEBUG
-    if (!res || !res.ok) {
-      showToast("❌ Không tải được danh sách đại lý");
-      return;
+const socket = io();
+
+const $ = id => document.getElementById(id);
+
+const myCoinEl = $("myCoin");
+const agentList = $("agentList");
+const sheetOverlay = $("sheetOverlay");
+const qrSheet = $("qrSheet");
+const sheetQr = $("sheetQr");
+const qrUnavailable = $("qrUnavailable");
+const sheetBankInfo = $("sheetBankInfo");
+const btnTransferred = $("btnTransferred");
+const transferStatus = $("transferStatus");
+
+let currentAgent = null;
+let agentsCache = [];
+
+/* ===== SVG ICON ===== */
+
+function tpIcon(name) {
+  return `
+    <svg class="icon" aria-hidden="true">
+      <use href="#tp-${name}"></use>
+    </svg>
+  `;
+}
+
+/* ===== SỐ DƯ ===== */
+
+function updateCoinBalance(coins) {
+  const value = Number(coins);
+
+  myCoinEl.textContent =
+    (Number.isFinite(value) ? Math.max(0, value) : 0)
+      .toLocaleString("vi-VN");
+}
+
+updateCoinBalance(auth.coins || 0);
+
+/* ===== SOCKET LOGIN ===== */
+
+socket.on("connect", () => {
+  if (auth.uid) {
+    socket.emit("socket-login", {
+      uid: auth.uid
+    });
+  }
+});
+
+/* Cập nhật số dư khi server gửi dữ liệu mới */
+
+socket.on("coin-update", data => {
+  if (data && data.coins !== undefined) {
+    updateCoinBalance(data.coins);
+  }
+});
+
+/* ===== URL HÌNH ẢNH ===== */
+
+function safeImageUrl(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return "";
+  }
+
+  if (/^data:image\/(png|jpeg|webp);base64,/i.test(value)) {
+    return value;
+  }
+
+  try {
+    const url = new URL(value, location.origin);
+
+    if (url.protocol === "https:" || url.protocol === "http:") {
+      return url.href;
     }
-    renderAgents(res.agents || []);
-  })
-  .catch(err => {
-    console.error(err);
-    showToast("❌ Lỗi kết nối server");
-  });
+  } catch (e) {}
 
-// render danh sách đại lý
+  return "";
+}
+
+/* ===== LOAD ĐẠI LÝ ===== */
+
+async function loadAgents() {
+  try {
+    const response = await fetch("/api/topup-agents");
+
+    if (!response.ok) {
+      throw new Error("Không tải được danh sách đại lý");
+    }
+
+    const data = await response.json();
+
+    if (!data.ok) {
+      throw new Error("Không tải được danh sách đại lý");
+    }
+
+    agentsCache = Array.isArray(data.agents)
+      ? data.agents
+      : [];
+
+    renderAgents(agentsCache);
+
+  } catch (error) {
+    console.error("Topup agents:", error);
+
+    agentList.innerHTML = `
+      <div class="empty-agent">
+        Không thể tải danh sách đại lý.
+      </div>
+    `;
+
+    showToast(error.message, "error");
+  }
+}
+
+/* ===== RENDER DANH SÁCH ===== */
+
 function renderAgents(list) {
-  if (!agentList) return;
-
-  agentList.innerHTML = "";
+  agentList.replaceChildren();
 
   if (!list.length) {
     agentList.innerHTML = `
-      <div style="opacity:.6;text-align:center;padding:12px">
-        ⚠️ Hiện chưa có đại lý nạp coin
+      <div class="empty-agent">
+        Hiện chưa có đại lý nạp kim cương.
       </div>
     `;
     return;
   }
 
-  list.forEach(agent => {
-    if (!agent.account || !agent.bank) {
-      console.warn("Agent thiếu bank/account:", agent);
-    }
+  const fragment = document.createDocumentFragment();
 
-    const div = document.createElement("div");
-    div.className = "agent-card";
-    div.dataset.uid = agent.uid; // 🔥 QUAN TRỌNG
-    div.innerHTML = `
-      <img class="agent-avatar" src="${agent.avatar}">
-      <div class="agent-info">
-        <div class="agent-name">${agent.name}</div>
-        <div class="agent-bank">${agent.bank || "?"} • ${agent.account || "?"}</div>
-        <div class="agent-status ${agent.online ? "" : "offline"}">
-          ${agent.online ? "🟢 Đang online" : "⚪ Offline"}
-        </div>
+  list.forEach(agent => {
+    const card = document.createElement("button");
+
+    card.type = "button";
+    card.className = "agent-card";
+    card.dataset.uid = String(agent.uid || "");
+
+    card.innerHTML = `
+      <div class="agent-avatar-placeholder">
+        ${tpIcon("user")}
       </div>
-      <div>➕</div>
+
+      <div class="agent-info">
+        <div class="agent-name"></div>
+        <div class="agent-bank"></div>
+        <div class="agent-status"></div>
+      </div>
+
+      <div class="agent-chevron">
+        ${tpIcon("right")}
+      </div>
     `;
 
-    div.onclick = () => openAgent(agent);
-    agentList.appendChild(div);
+    const name = String(agent.name || "Đại lý");
+
+    card.querySelector(".agent-name").textContent = name;
+
+    card.querySelector(".agent-bank").textContent =
+      [agent.bank, agent.account]
+        .filter(Boolean)
+        .join(" · ") || "Chưa cập nhật ngân hàng";
+
+    setAgentStatus(card, Boolean(agent.online));
+
+    /* Avatar */
+    const avatarSrc = safeImageUrl(agent.avatar);
+
+    if (avatarSrc) {
+      const img = new Image();
+
+      img.className = "agent-avatar";
+      img.alt = "Ảnh đại diện " + name;
+      img.loading = "lazy";
+
+      img.onload = () => {
+        card.querySelector(".agent-avatar-placeholder")
+          ?.replaceWith(img);
+      };
+
+      img.src = avatarSrc;
+    }
+
+    card.onclick = () => openAgent(agent);
+
+    fragment.appendChild(card);
   });
+
+  agentList.appendChild(fragment);
 }
 
-// mở chi tiết đại lý + QR
-function openAgent(agent) {
+/* ===== TRẠNG THÁI ONLINE ===== */
 
-    currentAgent = agent; // 👈 THÊM DÒNG NÀY
+function setAgentStatus(card, online) {
+  const status = card.querySelector(".agent-status");
+
+  if (!status) return;
+
+  status.textContent = online
+    ? "Đang trực tuyến"
+    : "Ngoại tuyến";
+
+  status.classList.toggle("offline", !online);
+}
+
+socket.on("agent-status", ({ uid, online }) => {
+  const agent = agentsCache.find(
+    a => String(a.uid) === String(uid)
+  );
+
+  if (agent) agent.online = Boolean(online);
+
+  agentList.querySelectorAll(".agent-card").forEach(card => {
+    if (card.dataset.uid === String(uid)) {
+      setAgentStatus(card, Boolean(online));
+    }
+  });
+});
+
+/* ===== BẬT / TẮT PHƯƠNG THỨC ===== */
+
+["agentOption", "cardOption"].forEach(id => {
+  const option = $(id);
+  if (!option) return;
+
+  const header = option.querySelector(".option-header");
+  const content = option.querySelector(".option-content");
+
+  header.addEventListener("click", () => {
+    const open = !option.classList.contains("open");
+
+    option.classList.toggle("open", open);
+    content.classList.toggle("hidden", !open);
+    header.setAttribute("aria-expanded", String(open));
+  });
+});
+
+/* ===== TẠO THÔNG TIN NGÂN HÀNG ===== */
+
+function createBankRow(label, value, isCode = false) {
+  const row = document.createElement("div");
+  row.className = "bank-row";
+
+  const title = document.createElement("span");
+  title.className = "bank-label";
+  title.textContent = label;
+
+  const val = document.createElement(
+    isCode ? "code" : "span"
+  );
+
+  val.className = "bank-value";
+  val.textContent = String(value ?? "");
+
+  if (isCode) {
+    val.id = "transferText";
+  }
+
+  row.append(title, val);
+  return row;
+}
+
+/* ===== MỞ QR ĐẠI LÝ ===== */
+
+function openAgent(agent) {
+  currentAgent = agent;
 
   const content = `NAP ${auth.uid}`;
 
-  // set QR
-  sheetQr.src = agent.qr || "/images/qr-demo.png";
+  /* Mã QR thật từ đại lý */
+  const qr = safeImageUrl(agent.qr);
 
-  // set info
-  sheetBankInfo.innerHTML = `
-    <b>Đại lý:</b> ${agent.name}<br>
-    <b>Ngân hàng:</b> ${agent.bank}<br>
-    <b>STK:</b> ${agent.account}<br>
-    <b>Chủ TK:</b> ${agent.owner || ""}<br>
-    <b>Nội dung:</b> <code id="transferText">${content}</code>
-  `;
+  sheetQr.onload = () => {
+    sheetQr.hidden = false;
+    qrUnavailable.hidden = true;
+  };
 
-  // mở sheet
+  sheetQr.onerror = () => {
+    sheetQr.hidden = true;
+    qrUnavailable.hidden = false;
+  };
+
+  sheetQr.hidden = true;
+  qrUnavailable.hidden = !qr;
+
+  if (qr) {
+    sheetQr.src = qr;
+  } else {
+    sheetQr.removeAttribute("src");
+  }
+
+  /* Thông tin nhận tiền */
+  sheetBankInfo.replaceChildren(
+    createBankRow("Đại lý", agent.name || "—"),
+    createBankRow("Ngân hàng", agent.bank || "—"),
+    createBankRow("Số tài khoản", agent.account || "—"),
+    createBankRow("Chủ tài khoản", agent.owner || "—"),
+    createBankRow("Nội dung", content, true)
+  );
+
+  /* Reset trạng thái xác nhận */
+  const hasBankInfo = Boolean(
+    agent.bank && agent.account
+  );
+
+  btnTransferred.disabled = !hasBankInfo;
+
+  btnTransferred.innerHTML =
+    tpIcon("check") +
+    "<span>TÔI ĐÃ CHUYỂN KHOẢN</span>";
+
+  transferStatus.classList.add("hidden");
+
+  /* Mở sheet */
   sheetOverlay.classList.remove("hidden");
   qrSheet.classList.add("show");
 
-  // khóa scroll nền
-  document.body.style.overflow = "hidden";
-
-
-if (btnTransferred) {
-  btnTransferred.disabled = false;
-  btnTransferred.textContent = "✅ Tôi đã chuyển khoản";
+  document.body.classList.add("sheet-open");
 }
 
-if (transferStatus) {
-  transferStatus.classList.add("hidden");
-}
+/* ===== ĐÓNG QR SHEET ===== */
 
-
-}
-
-
-// copy nội dung chuyển khoản
-function copyTransfer() {
-  const text = document.getElementById("transferText")?.textContent;
-  if (!text) return;
-
-  navigator.clipboard.writeText(text);
-  showToast("📋 Đã copy nội dung chuyển khoản");
-}
-
-
-socket.on("agent-status", ({ uid, online }) => {
-  const card = document.querySelector(
-    `.agent-card[data-uid="${uid}"]`
-  );
-  if (!card) return;
-
-  const statusEl = card.querySelector(".agent-status");
-  if (!statusEl) return;
-
-  statusEl.textContent = online ? "🟢 Đang online" : "⚪ Offline";
-  statusEl.classList.toggle("offline", !online);
-});
-
-
-socket.on("connect", () => {
-  socket.emit("socket-login", {
-    uid: auth.uid
-  });
-});
-
-
-sheetOverlay.onclick = () => {
+function closeTopupSheet() {
   qrSheet.classList.remove("show");
   sheetOverlay.classList.add("hidden");
-  document.body.style.overflow = "";
-};
 
-myCoinEl.innerHTML = `Số dư khả dụng · <b>${auth.coins || 0}</b> 💎`;
-
-const agentOption = document.getElementById("agentOption");
-
-if (agentOption) {
-  const header = agentOption.querySelector(".option-header");
-  const content = agentOption.querySelector(".option-content");
-
-  header.onclick = () => {
-    agentOption.classList.toggle("open");
-    content.classList.toggle("hidden");
-  };
+  document.body.classList.remove("sheet-open");
 }
 
+sheetOverlay.addEventListener("click", closeTopupSheet);
 
-const cardOption = document.getElementById("cardOption");
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape" && qrSheet.classList.contains("show")) {
+    closeTopupSheet();
+  }
+});
 
-if (cardOption) {
-  const header = cardOption.querySelector(".option-header");
-  const content = cardOption.querySelector(".option-content");
+/* ===== COPY NỘI DUNG CHUYỂN KHOẢN ===== */
 
-  header.onclick = () => {
-    cardOption.classList.toggle("open");
-    content.classList.toggle("hidden");
-  };
+async function copyTransfer() {
+  const text = $("transferText")?.textContent;
+
+  if (!text) return;
+
+  try {
+    if (navigator.clipboard?.writeText) {
+      await navigator.clipboard.writeText(text);
+    } else {
+      const input = document.createElement("textarea");
+
+      input.value = text;
+      input.style.position = "fixed";
+      input.style.opacity = "0";
+
+      document.body.appendChild(input);
+      input.select();
+
+      const copied = document.execCommand("copy");
+      input.remove();
+
+      if (!copied) throw new Error("Copy failed");
+    }
+
+    showToast("Đã sao chép nội dung chuyển khoản", "success");
+
+  } catch (error) {
+    showToast("Không thể sao chép, vui lòng thử lại", "error");
+  }
 }
 
+/* ===== XÁC NHẬN ĐÃ CHUYỂN KHOẢN ===== */
 
+btnTransferred.addEventListener("click", () => {
+  if (!currentAgent) {
+    showToast("Vui lòng chọn đại lý trước", "error");
+    return;
+  }
 
-// ✅ USER XÁC NHẬN ĐÃ CHUYỂN KHOẢN
-if (btnTransferred) {
-  btnTransferred.addEventListener("click", () => {
-    if (!currentAgent) {
-      showToast("⚠️ Vui lòng chọn đại lý trước");
-      return;
-    }
+  if (!currentAgent.bank || !currentAgent.account) {
+    showToast("Thông tin ngân hàng chưa đầy đủ", "error");
+    return;
+  }
 
-    socket.emit("topup-transferred", {
-      fromUid: auth.uid,
-      agentUid: currentAgent.uid,
-      time: Date.now()
-    });
+  if (!socket.connected) {
+    showToast("Mất kết nối máy chủ, vui lòng thử lại", "error");
+    return;
+  }
 
-    btnTransferred.disabled = true;
-    btnTransferred.textContent = "⏳ Đã gửi yêu cầu";
-
-    if (transferStatus) {
-      transferStatus.classList.remove("hidden");
-    }
-
-    showToast("📨 Đã thông báo cho đại lý, vui lòng chờ xác nhận");
+  socket.emit("topup-transferred", {
+    fromUid: auth.uid,
+    agentUid: currentAgent.uid,
+    time: Date.now()
   });
+
+  btnTransferred.disabled = true;
+
+  btnTransferred.innerHTML =
+    tpIcon("clock") +
+    "<span>ĐÃ GỬI THÔNG BÁO</span>";
+
+  transferStatus.classList.remove("hidden");
+
+  showToast(
+    "Đã gửi thông báo chuyển khoản tới đại lý",
+    "success"
+  );
+});
+
+/* ===== NÚT QUAY LẠI ===== */
+
+function goTopupBack() {
+  if (history.length > 1) {
+    history.back();
+  } else {
+    location.href = "/profile.html";
+  }
 }
 
+/* ===== TOAST ===== */
 
-
-
-
-function showToast(text, type = "info", duration = 3000) {
+function showToast(message, type = "info", duration = 3000) {
   const toast = document.createElement("div");
-  toast.className = `toast toast-${type}`;
-  toast.textContent = text;
+
+  toast.className = "toast toast-" +
+    (["info", "success", "error"].includes(type)
+      ? type
+      : "info");
+
+  toast.textContent = String(message || "Thông báo");
 
   document.body.appendChild(toast);
 
@@ -228,46 +448,62 @@ function showToast(text, type = "info", duration = 3000) {
 
   setTimeout(() => {
     toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 300);
+    setTimeout(() => toast.remove(), 250);
   }, duration);
 }
 
+/* ===== ĐĂNG XUẤT BẮT BUỘC ===== */
 
+function showForceLogoutModal(message) {
+  let modal = $("forceLogoutModal");
 
-function showForceLogoutModal(message){
-  let modal = document.getElementById("forceLogoutModal");
-  if(!modal){
+  if (!modal) {
     modal = document.createElement("div");
     modal.id = "forceLogoutModal";
+
     modal.innerHTML = `
       <div class="fl-backdrop"></div>
       <div class="fl-box">
-        <div class="fl-icon">🚫</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc</div>
+        <div class="fl-icon">
+          <svg class="icon"
+               style="width:36px;height:36px">
+            <use href="#tp-ban"></use>
+          </svg>
+        </div>
+        <div class="fl-title">
+          Phiên đăng nhập kết thúc
+        </div>
         <div class="fl-msg"></div>
-        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
+        <div class="fl-sub">
+          Bạn sẽ được chuyển về trang đăng nhập…
+        </div>
       </div>
     `;
+
     document.body.appendChild(modal);
   }
 
-  modal.querySelector(".fl-msg").textContent = message;
+  modal.querySelector(".fl-msg").textContent =
+    String(message || "Phiên đăng nhập đã kết thúc");
+
   modal.classList.add("show");
 }
 
+socket.on("force-logout", data => {
+  const message = data?.message ||
+    "Tài khoản của bạn đã bị đăng xuất";
 
-socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
+  showForceLogoutModal(message);
 
-  showForceLogoutModal(msg);
-
-  // clear auth
   localStorage.removeItem("user_profile");
   localStorage.removeItem("login_uid");
   localStorage.removeItem("isGuest");
 
-  // redirect sau 2s
-  setTimeout(()=>{
+  setTimeout(() => {
     location.href = "/login.html";
   }, 3000);
 });
+
+/* ===== KHỞI TẠO ===== */
+
+loadAgents();
