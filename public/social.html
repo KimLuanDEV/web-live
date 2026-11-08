@@ -2810,6 +2810,24 @@ body.social-page .fl-sub {
 
 
 
+/* HEADER KHÔNG CÓ NÚT BACK */
+
+/* Tiêu đề luôn nằm chính giữa */
+body.social-page .lp-topbar .lp-head-center {
+  grid-column: 2;
+  justify-self: center;
+  width: 100%;
+  text-align: center;
+}
+
+/* Biểu tượng trang ở góc phải */
+body.social-page .lp-topbar .lp-head-symbol {
+  grid-column: 3;
+  justify-self: center;
+}
+
+
+
 </style>
 
 </head>
@@ -2897,14 +2915,6 @@ body.social-page .fl-sub {
 <!-- ===== PREMIUM HEADER ===== -->
 <header class="lp-topbar">
 
-  <button type="button"
-          class="lp-back-btn"
-          onclick="location.href='/lobby.html'"
-          aria-label="Quay lại sảnh">
-    <svg class="lp-i">
-      <use href="#ls-back"></use>
-    </svg>
-  </button>
 
   <div class="lp-head-center">
 

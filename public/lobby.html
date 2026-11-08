@@ -13,14 +13,9 @@
 
 
   <title>Lobby - Livestream Pro</title>
-  <meta
-  name="viewport"
-  content="width=device-width,
-           initial-scale=1,
-           maximum-scale=1,
-           minimum-scale=1,
-           user-scalable=no"
-/>
+
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover">
 
 <link rel="manifest" href="/manifest.json">
 
@@ -67,6 +62,1292 @@ body.lobby-page{
   opacity:.6;
 }
 
+
+
+/* =============================================
+   LIVESTREAM PRO - LUXURY LOBBY
+   BLACK & CHAMPAGNE GOLD
+============================================= */
+
+:root {
+  --lb-bg: #08090d;
+  --lb-panel: #17191e;
+  --lb-gold: #d9b97d;
+  --lb-light: #f4dfb6;
+  --lb-muted: #a7a09a;
+  --lb-line: rgba(219,184,117,.31);
+}
+
+html,
+body.lobby-page {
+  margin: 0;
+  min-height: 100%;
+  background: var(--lb-bg);
+}
+
+body.lobby-page {
+  color: #f6eee0;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+  background:
+    radial-gradient(
+      ellipse at 50% 0,
+      rgba(173,121,51,.12),
+      transparent 48%
+    ),
+    linear-gradient(180deg,#101116,#08090d);
+}
+
+body.lobby-page *,
+body.lobby-page *::before,
+body.lobby-page *::after {
+  box-sizing: border-box;
+}
+
+body.lobby-page .hidden {
+  display: none !important;
+}
+
+/* SVG ICON */
+
+body.lobby-page .lb-icon {
+  display: block;
+  width: 21px;
+  height: 21px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex-shrink: 0;
+}
+
+/* =============================================
+   HEADER
+============================================= */
+
+body.lobby-page .lobby-header-full {
+  position: sticky;
+  top: 0;
+  z-index: 1100;
+  width: 100%;
+  margin: 0;
+
+  border-bottom: 1px solid var(--lb-line);
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0,
+      rgba(196,149,74,.12),
+      transparent 65%
+    ),
+    rgba(12,13,17,.97);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+}
+
+body.lobby-page .lobby-header-inner {
+  width: 100%;
+  max-width: 1120px;
+  min-height: 74px;
+  margin: 0 auto;
+
+  padding:
+    calc(9px + env(safe-area-inset-top,0px))
+    15px
+    10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+/* BRAND */
+
+body.lobby-page .lobby-brand {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  min-width: 0;
+  gap: 11px;
+}
+
+body.lobby-page .lobby-brand-mark {
+  width: 43px;
+  height: 43px;
+  flex: 0 0 43px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid rgba(225,184,107,.47);
+  border-radius: 13px;
+
+  background: linear-gradient(
+    145deg,#382b1c,#171719
+  );
+
+  color: #f0d29a;
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.06),
+    0 5px 15px rgba(0,0,0,.26);
+}
+
+body.lobby-page .lobby-brand-mark .lb-icon {
+  width: 25px;
+  height: 25px;
+}
+
+body.lobby-page .lobby-brand-copy {
+  flex: 1;
+  min-width: 0;
+}
+
+body.lobby-page .lobby-title {
+  color: var(--lb-light);
+  font-size: 16px;
+  font-weight: 850;
+  line-height: 1.25;
+  letter-spacing: .6px;
+  white-space: nowrap;
+}
+
+body.lobby-page .lobby-subtitle {
+  margin-top: 5px;
+
+  color: #b89b6b;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.6px;
+  white-space: nowrap;
+}
+
+/* ACTIONS */
+
+body.lobby-page .lobby-header-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+body.lobby-page .lobby-iconBtn {
+  width: 42px;
+  height: 42px;
+  min-width: 42px;
+
+  padding: 0;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--lb-line);
+  border-radius: 12px;
+
+  background: linear-gradient(
+    145deg,#2c261e,#15171c
+  );
+
+  color: var(--lb-gold);
+  font-size: inherit;
+
+  cursor: pointer;
+  box-shadow: none;
+}
+
+body.lobby-page .lobby-iconBtn:active {
+  transform: scale(.95);
+}
+
+body.lobby-page .lobby-create-desktop {
+  border-color: #ebcd92;
+
+  background: linear-gradient(
+    135deg,#f0dab0,#bb9256
+  );
+
+  color: #261c10;
+}
+
+body.lobby-page .lobby-header-actions #userBar {
+  display: none;
+}
+
+/* SEARCH */
+
+body.lobby-page .lobby-header-search {
+  position: relative;
+  width: 100%;
+  margin: 0;
+  padding: 0 14px 14px;
+
+  background: transparent;
+  border: 0;
+}
+
+body.lobby-page .lobby-searchWrap {
+  width: 100%;
+  max-width: 1092px;
+  min-height: 47px;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  padding: 0 12px;
+
+  border: 1px solid var(--lb-line);
+  border-radius: 13px;
+
+  background: linear-gradient(
+    120deg,#28241f,#13151a
+  );
+
+  color: var(--lb-gold);
+}
+
+body.lobby-page #q.lobby-search {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+
+  border: none;
+  outline: none;
+  margin: 0;
+  padding: 0;
+
+  background: transparent;
+  color: #fff;
+  font-size: 16px;
+  box-shadow: none;
+}
+
+body.lobby-page #q::placeholder {
+  color: #aaa098;
+}
+
+body.lobby-page #clearQ {
+  width: 29px;
+  height: 29px;
+  flex: 0 0 29px;
+
+  padding: 0;
+
+  display: grid;
+  place-items: center;
+
+  border: none;
+  border-radius: 8px;
+
+  background: rgba(218,181,113,.11);
+  color: #e4c48a;
+}
+
+/* =============================================
+   FILTER BAR
+============================================= */
+
+body.lobby-page .lobby-filter-bar {
+  position: relative;
+  top: auto;
+  z-index: 20;
+
+  width: 100%;
+  margin: 0;
+  padding: 12px 0;
+
+  border-bottom: 1px solid rgba(220,180,107,.16);
+
+  background: rgba(16,17,21,.94);
+}
+
+body.lobby-page .lobby-filter-scroll {
+  width: 100%;
+  max-width: 1120px;
+  margin: 0 auto;
+
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 0 14px;
+
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+body.lobby-page .lobby-filter-scroll::-webkit-scrollbar {
+  display: none;
+}
+
+body.lobby-page .lobby-chipBtn {
+  flex: 0 0 auto;
+  min-height: 39px;
+
+  padding: 9px 15px;
+
+  border: 1px solid rgba(217,182,114,.25);
+  border-radius: 999px;
+
+  background: linear-gradient(
+    145deg,#29251f,#17191d
+  );
+
+  color: #c6b8a4;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+
+  box-shadow: none;
+  cursor: pointer;
+}
+
+body.lobby-page .lobby-chipBtn.is-active {
+  border-color: #daba80;
+
+  background: linear-gradient(
+    135deg,#5a4529,#332719
+  );
+
+  color: #f5dfb7;
+
+  box-shadow: inset 0 1px rgba(255,255,255,.08);
+}
+
+body.lobby-page #sort {
+  flex: 0 0 auto;
+  min-height: 39px;
+  max-width: 155px;
+
+  padding: 0 9px;
+  border: 1px solid var(--lb-line);
+  border-radius: 11px;
+
+  background: #28241f;
+  color: #ead5ad;
+  font-size: 12px;
+  outline: none;
+}
+
+/* =============================================
+   SECTION HEADING
+============================================= */
+
+body.lobby-page .lobby-section-heading {
+  width: calc(100% - 28px);
+  max-width: 1092px;
+  margin: 22px auto 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+body.lobby-page .lobby-section-kicker {
+  color: #bea06c;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+body.lobby-page .lobby-section-heading h2 {
+  margin: 7px 0 5px;
+
+  font: 700 24px Georgia,serif;
+  color: var(--lb-light);
+}
+
+body.lobby-page .lobby-section-heading p {
+  margin: 0;
+  color: var(--lb-muted);
+  font-size: 12px;
+}
+
+body.lobby-page .lobby-section-ornament {
+  width: 45px;
+  height: 45px;
+  flex: 0 0 45px;
+
+  display: grid;
+  place-items: center;
+
+  border: 1px solid var(--lb-line);
+  border-radius: 13px;
+
+  background: #29241e;
+  color: var(--lb-gold);
+}
+
+/* =============================================
+   LIVE ROOM GRID
+============================================= */
+
+body.lobby-page #grid.lobby-grid,
+body.lobby-page #skeleton.lobby-grid {
+  width: 100%;
+  max-width: 1120px;
+
+  margin: 0 auto;
+  padding:
+    16px
+    14px
+    calc(105px + env(safe-area-inset-bottom,0px));
+
+  display: grid;
+  grid-template-columns: repeat(4,minmax(0,1fr));
+  align-items: start;
+  gap: 15px;
+}
+
+/* ROOM CARD */
+
+body.lobby-page .lobby-card {
+  position: relative;
+
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 240px;
+  aspect-ratio: .84;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(225,185,113,.37);
+  border-radius: 19px;
+
+  background: #191b21;
+  color: #fff;
+  text-decoration: none;
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.04),
+    0 12px 25px rgba(0,0,0,.34);
+
+  isolation: isolate;
+
+  transition:
+    transform .2s ease,
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+body.lobby-page .lobby-card:hover {
+  transform: translateY(-3px);
+  border-color: #dfbc7d;
+
+  box-shadow: 0 18px 35px rgba(0,0,0,.4);
+}
+
+body.lobby-page .lobby-card:active {
+  transform: scale(.98);
+}
+
+body.lobby-page .lobby-cardBg {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+}
+
+body.lobby-page .lobby-cardBg img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+body.lobby-page .lobby-cardShade {
+  position: absolute;
+  inset: 0;
+
+  background: linear-gradient(
+    180deg,
+    rgba(5,6,9,.62) 0%,
+    rgba(5,6,9,.05) 35%,
+    rgba(5,6,9,.22) 48%,
+    rgba(5,6,9,.94) 100%
+  );
+}
+
+/* TOP OVERLAY */
+
+body.lobby-page .lobby-cardOverlay.top {
+  position: absolute;
+  top: 11px;
+  left: 10px;
+  right: 10px;
+
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 5px;
+}
+
+body.lobby-page .lobby-room {
+  min-width: 0;
+  max-width: 68%;
+
+  padding: 6px 8px;
+
+  border: 1px solid rgba(247,222,178,.21);
+  border-radius: 8px;
+
+  background: rgba(10,11,15,.67);
+  backdrop-filter: blur(7px);
+
+  color: #f5e2ba;
+  font-size: 10px;
+  font-weight: 750;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+body.lobby-page .lobby-badges {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 4px;
+}
+
+body.lobby-page .lobby-livePill,
+body.lobby-page .badge--virtual {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  padding: 6px 9px;
+
+  border: 1px solid rgba(255,143,143,.43);
+  border-radius: 8px;
+
+  background: rgba(120,27,36,.89);
+
+  color: #fff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .5px;
+  white-space: nowrap;
+}
+
+body.lobby-page .lobby-liveDot {
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+  background: #ffc9c9;
+}
+
+body.lobby-page .badge--info {
+  border-radius: 8px;
+  background: rgba(66,49,28,.86);
+  border: 1px solid rgba(218,177,106,.5);
+  color: #ffe0a6;
+}
+
+/* BOTTOM OVERLAY */
+
+body.lobby-page .lobby-cardOverlay.bottom {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  padding: 14px 11px 13px;
+  background: linear-gradient(
+    180deg,transparent,rgba(4,5,8,.62)
+  );
+}
+
+body.lobby-page .lobby-hostRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+body.lobby-page .lobby-ava.mini {
+  width: 33px;
+  height: 33px;
+  flex: 0 0 33px;
+
+  border-radius: 50%;
+  border: 1.5px solid var(--lb-gold);
+  object-fit: cover;
+
+  background: #15161b;
+}
+
+body.lobby-page .lobby-hostMeta {
+  flex: 1;
+  min-width: 0;
+}
+
+body.lobby-page .lobby-hostname {
+  color: #fff1d7;
+
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.lobby-page .tick-blue {
+  color: #82c5ff;
+}
+
+body.lobby-page .lobby-statsRow {
+  margin-top: 12px;
+  padding-top: 10px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 5px;
+
+  border-top: 1px solid rgba(229,200,150,.22);
+}
+
+body.lobby-page .lobby-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  min-width: 0;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+
+  color: #d8c8ac;
+  font-size: 11px;
+}
+
+body.lobby-page .lobby-chip b {
+  color: #f3ddae;
+  font-weight: 800;
+}
+
+body.lobby-page .lobby-cta {
+  color: #f0cd8e;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* EMPTY & LOADING */
+
+body.lobby-page #empty.log {
+  max-width: 600px;
+  margin: 28px auto;
+
+  padding: 28px 18px;
+  text-align: center;
+
+  border: 1px dashed var(--lb-line);
+  border-radius: 16px;
+
+  background: #1b1b20;
+  color: var(--lb-muted);
+}
+
+body.lobby-page .lobby-skel {
+  border: 1px solid var(--lb-line);
+  border-radius: 18px;
+  background: #1b1c21;
+
+  padding: 15px;
+  overflow: hidden;
+}
+
+/* =============================================
+   BOTTOM NAVIGATION
+============================================= */
+
+body.lobby-page .mobile-tabbar {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+
+  width: 100%;
+  max-width: 720px;
+  height: calc(72px + env(safe-area-inset-bottom,0px));
+
+  margin: 0 auto;
+  padding:
+    9px
+    7px
+    calc(8px + env(safe-area-inset-bottom,0px));
+
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  gap: 3px;
+
+  border: 1px solid var(--lb-line);
+  border-bottom: none;
+  border-radius: 19px 19px 0 0;
+
+  background: rgba(17,18,22,.97);
+
+  backdrop-filter: blur(19px);
+  -webkit-backdrop-filter: blur(19px);
+
+  box-shadow: 0 -12px 35px rgba(0,0,0,.48);
+}
+
+body.lobby-page .mobile-tabbar .tab-item {
+  position: relative;
+
+  flex: 1;
+  min-width: 0;
+  min-height: 52px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  padding: 5px 2px;
+
+  border: 1px solid transparent;
+  border-radius: 11px;
+
+  background: transparent;
+
+  color: #a6a09a;
+  font-size: 10px;
+  font-weight: 650;
+  cursor: pointer;
+}
+
+body.lobby-page .mobile-tabbar .tab-icon {
+  display: grid;
+  place-items: center;
+  width: 23px;
+  height: 23px;
+}
+
+body.lobby-page .mobile-tabbar .tab-item.active {
+  border-color: rgba(226,182,109,.36);
+
+  background: linear-gradient(
+    145deg,#392b1e,#221e1b
+  );
+
+  color: #f4ddb1;
+}
+
+body.lobby-page .tab-item.active .tab-icon {
+  color: #f1cd8e;
+}
+
+body.lobby-page .mobile-tabbar .tab-main {
+  flex: 1.1;
+  overflow: visible;
+}
+
+body.lobby-page .tab-main .tab-plus {
+  width: 47px;
+  height: 47px;
+
+  display: grid;
+  place-items: center;
+
+  margin-top: -15px;
+
+  border: 2px solid #edcc8e;
+  border-radius: 15px;
+
+  background: linear-gradient(
+    135deg,#f6e2b8,#bf9454
+  );
+
+  color: #271d10;
+  box-shadow: 0 4px 18px rgba(200,151,74,.3);
+}
+
+body.lobby-page .tab-main .tab-plus .lb-icon {
+  width: 24px;
+  height: 24px;
+  stroke-width: 2.4;
+}
+
+body.lobby-page .tab-main-label {
+  margin-top: -2px;
+
+  color: #e2c38c;
+  font-size: 9px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+body.lobby-page .mobile-tabbar.hide {
+  transform: translateY(110%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* =============================================
+   CREATE ROOM / NOTIFICATION MODALS
+============================================= */
+
+body.lobby-page .modal.hidden {
+  display: none !important;
+}
+
+body.lobby-page #createRoomModal .modal-card,
+body.lobby-page #msgModal .modal-card,
+body.lobby-page #inboxModal .modal-card {
+  width: min(100%,420px);
+  max-width: 420px;
+
+  padding: 24px 19px;
+
+  border: 1px solid rgba(231,189,111,.43);
+  border-radius: 20px;
+
+  background:
+    radial-gradient(
+      ellipse at top,
+      rgba(190,137,57,.14),
+      transparent 60%
+    ),
+    #191b20;
+
+  color: #f5e4c4;
+
+  box-shadow: 0 25px 65px rgba(0,0,0,.65);
+}
+
+body.lobby-page #createRoomModal h3,
+body.lobby-page #msgModal h3,
+body.lobby-page #inboxModal h3 {
+  margin: 0 0 17px;
+  color: var(--lb-light);
+  font: 700 21px Georgia,serif;
+}
+
+body.lobby-page #createRoomModal label {
+  display: block;
+  margin: 15px 0 8px;
+
+  font-size: 12px;
+  color: #c8b18a;
+}
+
+body.lobby-page #roomInput,
+body.lobby-page #hostNameInput {
+  width: 100%;
+  min-height: 47px;
+
+  padding: 11px 13px;
+
+  border: 1px solid var(--lb-line);
+  border-radius: 12px;
+  outline: none;
+
+  background: #24252b;
+  color: #fff;
+  font-size: 16px;
+}
+
+body.lobby-page #roomInput:focus {
+  border-color: #e4bf7a;
+}
+
+body.lobby-page #createRoomModal .modal-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 11px;
+  margin-top: 22px;
+}
+
+body.lobby-page #btnCancelRoom,
+body.lobby-page #msgCancel {
+  min-height: 45px;
+  border: 1px solid var(--lb-line);
+  border-radius: 11px;
+
+  background: #302d2a;
+  color: #e2d8c8;
+}
+
+body.lobby-page #btnConfirmRoom,
+body.lobby-page #msgOk {
+  min-height: 45px;
+  border: 1px solid #efcf92;
+  border-radius: 11px;
+
+  background: linear-gradient(
+    135deg,#f3dfb2,#c39a59
+  );
+
+  color: #251a0e;
+  font-weight: 800;
+}
+
+/* WELCOME & ERROR */
+
+body.lobby-page .neon-modal {
+  max-width: 420px;
+
+  border: 1px solid rgba(222,182,107,.45);
+  border-radius: 20px;
+
+  background: linear-gradient(
+    145deg,#2b241d,#14161c
+  );
+
+  color: #f5e3c1;
+
+  box-shadow: 0 28px 75px rgba(0,0,0,.65);
+}
+
+body.lobby-page .welcome-title,
+body.lobby-page .neon-modal h3 {
+  color: var(--lb-light);
+}
+
+body.lobby-page .neon-frame,
+body.lobby-page .neon-scan {
+  pointer-events: none;
+  opacity: .15;
+}
+
+body.lobby-page .neon-btn--main {
+  border: 1px solid #ebc98e;
+  background: linear-gradient(
+    135deg,#f3dfb3,#bb9255
+  );
+  color: #211a10;
+}
+
+body.lobby-page .neon-btn--ghost {
+  border: 1px solid var(--lb-line);
+  background: #29282a;
+  color: #eadcc2;
+}
+
+body.lobby-page #countdownOverlay .cd-panel {
+  border: 1px solid var(--lb-line);
+  border-radius: 20px;
+  background: #1d1c20;
+}
+
+body.lobby-page .cd-number {
+  color: var(--lb-light);
+}
+
+/* =============================================
+   PLAYER LOBBY
+============================================= */
+
+body.lobby-page .player-lobby {
+  position: fixed;
+  inset: 0;
+  z-index: 15000;
+
+  align-items: flex-end;
+  justify-content: center;
+}
+
+body.lobby-page .player-lobby-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.82);
+  backdrop-filter: blur(6px);
+}
+
+body.lobby-page .player-lobby-panel {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 520px;
+  height: min(85dvh,780px);
+  max-height: calc(100dvh - env(safe-area-inset-top,0px));
+
+  padding-bottom: env(safe-area-inset-bottom,0px);
+
+  border: 1px solid var(--lb-line);
+  border-bottom: none;
+  border-radius: 22px 22px 0 0;
+
+  background: #17191e;
+  box-shadow: 0 -15px 55px rgba(0,0,0,.58);
+}
+
+body.lobby-page .player-lobby-header {
+  min-height: 62px;
+  padding: 12px 16px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  border-bottom: 1px solid var(--lb-line);
+}
+
+body.lobby-page .player-lobby-header .title {
+  color: var(--lb-light);
+  font: 700 19px Georgia,serif;
+}
+
+body.lobby-page #closePlayerLobby {
+  width: 37px;
+  height: 37px;
+  padding: 0;
+
+  border: 1px solid var(--lb-line);
+  border-radius: 11px;
+
+  background: #29251f;
+  color: var(--lb-gold);
+}
+
+body.lobby-page .player-lobby-sub {
+  padding: 12px 16px 5px;
+  color: var(--lb-muted);
+  font-size: 12px;
+}
+
+body.lobby-page .player-search {
+  margin: 0;
+  padding: 12px 15px;
+  border: none;
+}
+
+body.lobby-page #playerSearch {
+  width: 100%;
+  min-height: 45px;
+
+  padding: 0 13px;
+
+  border: 1px solid var(--lb-line);
+  border-radius: 12px;
+  outline: none;
+
+  background: #242329;
+  color: #fff;
+  font-size: 16px;
+}
+
+body.lobby-page .player-lobby-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+
+  padding: 5px 13px 20px;
+}
+
+body.lobby-page .player-row {
+  display: grid;
+  grid-template-columns: 48px minmax(0,1fr);
+  align-items: center;
+  gap: 10px;
+
+  margin-bottom: 10px;
+  padding: 12px;
+
+  border: 1px solid var(--lb-line);
+  border-radius: 14px;
+
+  background: linear-gradient(
+    125deg,#29241f,#16181d
+  );
+}
+
+body.lobby-page .pava {
+  width: 48px;
+  height: 48px;
+  position: relative;
+}
+
+body.lobby-page .pava img {
+  width: 48px;
+  height: 48px;
+  border: 2px solid var(--lb-gold);
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+body.lobby-page .pinfo {
+  min-width: 0;
+}
+
+body.lobby-page .pname {
+  color: #f5e0bc;
+  font-size: 13px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+body.lobby-page .plevel {
+  margin-top: 5px;
+  font-size: 11px;
+  color: #d0b47e;
+}
+
+body.lobby-page .pactions,
+body.lobby-page .pme {
+  grid-column: 1 / -1;
+}
+
+body.lobby-page .pactions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+body.lobby-page .pactions button {
+  min-height: 36px;
+  padding: 7px 10px;
+
+  border: 1px solid var(--lb-line);
+  border-radius: 10px;
+
+  background: #30291f;
+  color: #f1d7a4;
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+body.lobby-page .pactions button:disabled {
+  opacity: .5;
+}
+
+body.lobby-page .pactions .btn-block {
+  color: #e4a09b;
+}
+
+/* =============================================
+   RESPONSIVE
+============================================= */
+
+@media (max-width: 900px) {
+  body.lobby-page #grid.lobby-grid,
+  body.lobby-page #skeleton.lobby-grid {
+    grid-template-columns: repeat(3,minmax(0,1fr));
+  }
+}
+
+@media (max-width: 600px) {
+  body.lobby-page #grid.lobby-grid,
+  body.lobby-page #skeleton.lobby-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 10px;
+
+    padding: 12px 9px
+      calc(102px + env(safe-area-inset-bottom,0px));
+  }
+
+  body.lobby-page .lobby-card {
+    min-height: 205px;
+    border-radius: 15px;
+  }
+
+  body.lobby-page .lobby-section-heading {
+    margin-top: 19px;
+  }
+
+  body.lobby-page .lobby-section-heading h2 {
+    font-size: 21px;
+  }
+
+  body.lobby-page .lobby-create-desktop {
+    display: none;
+  }
+}
+
+@media (max-width: 380px) {
+  body.lobby-page .lobby-header-inner {
+    gap: 7px;
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+
+  body.lobby-page .lobby-brand {
+    gap: 7px;
+  }
+
+  body.lobby-page .lobby-brand-mark {
+    width: 36px;
+    height: 36px;
+    flex-basis: 36px;
+  }
+
+  body.lobby-page .lobby-title {
+    font-size: 13px;
+    letter-spacing: .2px;
+  }
+
+  body.lobby-page .lobby-subtitle {
+    font-size: 7.5px;
+    letter-spacing: .9px;
+  }
+
+  body.lobby-page .lobby-iconBtn {
+    width: 36px;
+    height: 36px;
+    min-width: 36px;
+  }
+
+  body.lobby-page .lobby-header-actions {
+    gap: 5px;
+  }
+
+  body.lobby-page .lobby-room {
+    max-width: 60%;
+    font-size: 9px;
+  }
+
+  body.lobby-page .lobby-livePill,
+  body.lobby-page .badge--virtual {
+    font-size: 9px;
+    padding: 5px 6px;
+  }
+
+  body.lobby-page .lobby-hostname {
+    font-size: 12px;
+  }
+
+  body.lobby-page .lobby-cta {
+    font-size: 10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.lobby-page *,
+  body.lobby-page *::before,
+  body.lobby-page *::after {
+    animation-duration: .01ms !important;
+    transition-duration: .01ms !important;
+  }
+}
+
 </style>
 
 
@@ -79,52 +1360,183 @@ body.lobby-page{
 
 
 
-<!-- FULL WIDTH LOBBY HEADER -->
-<div class="lobby-header-full">
+
+<!-- ===== SVG ICONS - LUXURY LOBBY ===== -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="0" height="0"
+     aria-hidden="true"
+     style="position:absolute;overflow:hidden">
+
+  <symbol id="lb-crown" viewBox="0 0 24 24">
+    <path d="m2 8 5 4 5-8 5 8 5-4-2 11H4L2 8Z"/>
+    <path d="M4 22h16"/>
+  </symbol>
+
+  <symbol id="lb-search" viewBox="0 0 24 24">
+    <circle cx="10.5" cy="10.5" r="7"/>
+    <path d="m16 16 5 5"/>
+  </symbol>
+
+  <symbol id="lb-users" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="3"/>
+    <path d="M3 20v-2a6 6 0 0 1 12 0v2"/>
+    <path d="M17 5a3 3 0 0 1 0 6"/>
+    <path d="M18 14a5 5 0 0 1 3 5v1"/>
+  </symbol>
+
+  <symbol id="lb-video" viewBox="0 0 24 24">
+    <rect x="3" y="5" width="13" height="14" rx="3"/>
+    <path d="m16 10 5-3v10l-5-3"/>
+  </symbol>
+
+  <symbol id="lb-home" viewBox="0 0 24 24">
+    <path d="m3 11 9-8 9 8v10H3V11Z"/>
+    <path d="M9 21v-7h6v7"/>
+  </symbol>
+
+  <symbol id="lb-globe" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M3 12h18"/>
+    <path d="M12 3c-5 5-5 13 0 18"/>
+    <path d="M12 3c5 5 5 13 0 18"/>
+  </symbol>
+
+  <symbol id="lb-chat" viewBox="0 0 24 24">
+    <path d="M20 11a8 8 0 0 1-8 8 9 9 0 0 1-3.5-.8L4 20l1.2-4.6A8 8 0 1 1 20 11Z"/>
+  </symbol>
+
+  <symbol id="lb-user" viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="4"/>
+    <path d="M4 21a8 8 0 0 1 16 0"/>
+  </symbol>
+
+  <symbol id="lb-plus" viewBox="0 0 24 24">
+    <path d="M12 5v14M5 12h14"/>
+  </symbol>
+
+  <symbol id="lb-close" viewBox="0 0 24 24">
+    <path d="M18 6 6 18M6 6l12 12"/>
+  </symbol>
+
+</svg>
+
+<!-- ===== LUXURY LOBBY HEADER ===== -->
+
+<header class="lobby-header-full">
 
   <div class="lobby-header-inner">
 
-    <!-- LEFT -->
+    <!-- BRAND -->
     <div class="lobby-brand">
-      <span class="live-dot"></span>
-      <div class="lobby-title">LIVESTREAM PRO</div>
-    </div>
 
-    <!-- RIGHT ACTIONS -->
-    <div class="lobby-header-actions">
-      <button class="lobby-iconBtn" id="btnToggleSearch" title="Tìm kiếm">🔍</button>
-      <button class="lobby-iconBtn" id="btnPlayerLobby" title="Sảnh User">👥</button>
-      <button class="lobby-iconBtn" id="btnCreateRoomDesktop" title="Tạo phòng LIVE"> 🎥 </button>
-
-
-       <!-- RIGHT: ACTIONS (GIỮ ID userBar) -->
-  <div class="lobby-actions" id="userBar">
-
-   <div class="user-chip" style="display: none;" onclick="location.href='/profile.html'">
-      <img id="userAva">
-      <div class="user-info">
-        <div id="userName"></div>
-        <div class="user-level" id="userLevel"></div>
+      <div class="lobby-brand-mark">
+        <svg class="lb-icon">
+          <use href="#lb-crown"></use>
+        </svg>
       </div>
+
+      <div class="lobby-brand-copy">
+        <div class="lobby-title">LIVESTREAM PRO</div>
+        <div class="lobby-subtitle">PREMIUM LIVE LOUNGE</div>
+      </div>
+
     </div>
-</div>
 
-</div>
-</div>
+    <!-- ACTION BUTTONS -->
+    <div class="lobby-header-actions">
 
-  <!-- SEARCH BAR (ẨN / HIỆN) -->
+      <button
+        type="button"
+        class="lobby-iconBtn"
+        id="btnToggleSearch"
+        title="Tìm kiếm phòng"
+        aria-label="Tìm kiếm phòng"
+      >
+        <svg class="lb-icon">
+          <use href="#lb-search"></use>
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="lobby-iconBtn"
+        id="btnPlayerLobby"
+        title="Sảnh người dùng"
+        aria-label="Sảnh người dùng"
+      >
+        <svg class="lb-icon">
+          <use href="#lb-users"></use>
+        </svg>
+      </button>
+
+      <button
+        type="button"
+        class="lobby-iconBtn lobby-create-desktop"
+        id="btnCreateRoomDesktop"
+        title="Tạo phòng LIVE"
+        aria-label="Tạo phòng LIVE"
+      >
+        <svg class="lb-icon">
+          <use href="#lb-video"></use>
+        </svg>
+      </button>
+
+      <!-- GIỮ NGUYÊN ID userBar -->
+      <div class="lobby-actions" id="userBar">
+
+        <div class="user-chip"
+             style="display:none"
+             onclick="location.href='/profile.html'">
+
+          <img id="userAva" alt="Avatar">
+
+          <div class="user-info">
+            <div id="userName"></div>
+            <div class="user-level" id="userLevel"></div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SEARCH BAR -->
   <div class="lobby-header-search hidden" id="headerSearch">
+
     <div class="lobby-searchWrap">
+
+      <svg class="lb-icon">
+        <use href="#lb-search"></use>
+      </svg>
+
       <input
         id="q"
         class="lobby-search"
-        placeholder="Tìm theo Room ID hoặc tên host..."
+        placeholder="Tìm Room ID hoặc tên Host..."
         autocomplete="off"
-      />
-      <button id="clearQ" class="lobby-clear" title="Xóa">✕</button>
+        aria-label="Tìm kiếm phòng LIVE"
+      >
+
+      <button
+        type="button"
+        id="clearQ"
+        class="lobby-clear"
+        title="Xóa tìm kiếm"
+      >
+        <svg class="lb-icon">
+          <use href="#lb-close"></use>
+        </svg>
+      </button>
+
     </div>
+
   </div>
-</div>
+
+</header>
+
+
 
 
 <!-- SLIDE FILTER BAR -->
@@ -168,6 +1580,29 @@ body.lobby-page{
   <div class="guest-notice-inner"></div>
 </div>
 
+
+
+
+<!-- ===== LIVE SECTION HEADING ===== -->
+<div class="lobby-section-heading">
+
+  <div>
+    <div class="lobby-section-kicker">
+      EXPLORE LIVE
+    </div>
+
+    <h2>Khám phá phòng LIVE</h2>
+
+    <p>Chọn phòng để xem và tham gia trò chuyện.</p>
+  </div>
+
+  <span class="lobby-section-ornament" aria-hidden="true">
+    <svg class="lb-icon">
+      <use href="#lb-video"></use>
+    </svg>
+  </span>
+
+</div>
 
 
 
@@ -325,33 +1760,83 @@ body.lobby-page{
 
 
 
-<!-- MOBILE TAB BAR -->
-<div class="mobile-tabbar">
-  <div class="tab-item active" data-tab="lobby">
-    <div class="tab-icon">🏟</div>
-    <div class="tab-text">Lobby</div>
-  </div>
 
-  <div class="tab-item" data-tab="hot">
-    <div class="tab-icon">🌍</div>
-    <div class="tab-text">Status</div>
-  </div>
+<!-- ===== LUXURY BOTTOM NAVIGATION ===== -->
 
-  <div class="tab-item tab-main" id="tabCreate">
-    <div class="tab-plus">🎥</div>
-  </div>
+<nav class="mobile-tabbar" aria-label="Điều hướng chính">
 
-  <div class="tab-item" data-tab="chat">
-  <div class="tab-icon">💬</div>
-  <div class="tab-text">Chat</div>
-</div>
+  <!-- LOBBY -->
+  <button type="button"
+          class="tab-item active"
+          data-tab="lobby">
 
+    <span class="tab-icon">
+      <svg class="lb-icon">
+        <use href="#lb-home"></use>
+      </svg>
+    </span>
 
-  <div class="tab-item" data-tab="profile">
-    <div class="tab-icon">👤</div>
-    <div class="tab-text">Profile</div>
-  </div>
-</div>
+    <span class="tab-text">Lobby</span>
+  </button>
+
+  <!-- SOCIAL: GIỮ data-tab="hot" -->
+  <button type="button"
+          class="tab-item"
+          data-tab="hot">
+
+    <span class="tab-icon">
+      <svg class="lb-icon">
+        <use href="#lb-globe"></use>
+      </svg>
+    </span>
+
+    <span class="tab-text">Social</span>
+  </button>
+
+  <!-- TẠO PHÒNG -->
+  <button type="button"
+          class="tab-item tab-main"
+          id="tabCreate"
+          aria-label="Tạo phòng LIVE">
+
+    <span class="tab-plus">
+      <svg class="lb-icon">
+        <use href="#lb-plus"></use>
+      </svg>
+    </span>
+
+    <span class="tab-main-label">Tạo LIVE</span>
+  </button>
+
+  <!-- CHAT -->
+  <button type="button"
+          class="tab-item"
+          data-tab="chat">
+
+    <span class="tab-icon">
+      <svg class="lb-icon">
+        <use href="#lb-chat"></use>
+      </svg>
+    </span>
+
+    <span class="tab-text">Chat</span>
+  </button>
+
+  <!-- PROFILE -->
+  <button type="button"
+          class="tab-item"
+          data-tab="profile">
+
+    <span class="tab-icon">
+      <svg class="lb-icon">
+        <use href="#lb-user"></use>
+      </svg>
+    </span>
+
+    <span class="tab-text">Cá nhân</span>
+  </button>
+
+</nav>
 
 
 
@@ -1371,7 +2856,7 @@ function render(list){
   <!-- TOP OVERLAY -->
   <div class="lobby-cardOverlay top">
     <div class="lobby-room">
-      🎥 ${escapeHtml(r.roomId)}
+     ${escapeHtml(r.roomId)}
     </div>
 
     <div class="lobby-badges">
@@ -1397,7 +2882,12 @@ function render(list){
     </div>
 
     <div class="lobby-statsRow">
-      <span class="lobby-chip">👁 <b>${Number(r.viewers)||0}</b></span>
+      <span class="lobby-chip">
+  <svg class="lb-icon" style="width:14px;height:14px">
+    <use href="#lb-users"></use>
+  </svg>
+  <b>${Number(r.viewers)||0}</b>
+</span>
       <span class="lobby-cta">Vào xem ➜</span>
     </div>
   </div>
