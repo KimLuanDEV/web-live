@@ -1832,8 +1832,9 @@ function submitTransfer(){
     return;
   }
 
-  const name =
-    document.getElementById("previewName").textContent.replace("👤 ","");
+const name =
+  document.getElementById("previewName")
+    .textContent.trim();
 
   const level =
     document.getElementById("previewLevel").textContent;
@@ -1851,9 +1852,10 @@ function submitTransfer(){
 
   // render confirm modal
   document.getElementById("confirmAvatar").src = avatar;
-  document.getElementById("confirmName").textContent = "👤 " + name;
+  document.getElementById("confirmName").textContent = name;
   document.getElementById("confirmLevel").textContent = level;
-  document.getElementById("confirmAmount").textContent = amount;
+  document.getElementById("confirmAmount").textContent =
+  amount.toLocaleString("vi-VN");
 
   document
     .getElementById("transferConfirmModal")
@@ -1886,7 +1888,8 @@ function confirmTransfer(){
   document.getElementById("successAvatar").src = avatar;
   document.getElementById("successName").textContent = name;
   document.getElementById("successLevel").textContent = level;
-  document.getElementById("successAmount").textContent = amount;
+  document.getElementById("successAmount").textContent =
+  amount.toLocaleString("vi-VN");
 
   pendingTransfer = null;
 
@@ -1928,9 +1931,17 @@ socket.on("transfer-preview-result",(data)=>{
   }
 
   document.getElementById("previewAvatar").src = data.avatar;
-  document.getElementById("previewName").textContent = "👤 " + data.name;
-  document.getElementById("previewLevel").textContent = "⭐ Level " + data.level;
-  document.getElementById("previewCoins").textContent = "💎 " + data.coins;
+
+document.getElementById("previewName").textContent =
+  data.name || "Người dùng";
+
+document.getElementById("previewLevel").textContent =
+  "Cấp độ " + (Number(data.level) || 1);
+
+document.getElementById("previewCoins").textContent =
+  "Số dư: " +
+  Number(data.coins || 0).toLocaleString("vi-VN");
+
 
   box.classList.remove("hidden");
 
