@@ -9603,7 +9603,7 @@ const NEW_TOPUP_AGENTS = [
       name: "Vietcombank",
       account: "1017495554",
       owner: "Nguyễn Phương Vũ",
-      qr: ""
+      qr: "/images/topup/qr-phuong-vu.png"
     }
   },
 
@@ -9614,7 +9614,7 @@ const NEW_TOPUP_AGENTS = [
       name: "Techcombank",
       account: "2888388888",
       owner: "Hoàng Kim Hiệp",
-      qr: ""
+      qr: "/images/topup/qr-hoang-hiep.png"
     }
   }
 
@@ -9671,16 +9671,25 @@ function registerTopupAgents() {
       changed = true;
     }
 
-    // Chỉ bổ sung trường còn thiếu
-    for (const key of ["name", "account", "owner", "qr"]) {
 
-      const value = String(bank[key] || "").trim();
+// Bổ sung thông tin ngân hàng còn thiếu
+for (const key of ["name", "account", "owner"]) {
+  const value = String(bank[key] || "").trim();
 
-      if (!acc.profile.bank[key] && value) {
-        acc.profile.bank[key] = value;
-        changed = true;
-      }
-    }
+  if (!acc.profile.bank[key] && value) {
+    acc.profile.bank[key] = value;
+    changed = true;
+  }
+}
+
+// Cập nhật đường dẫn QR theo cấu hình mới
+const newQr = String(bank.qr || "").trim();
+
+if (newQr && acc.profile.bank.qr !== newQr) {
+  acc.profile.bank.qr = newQr;
+  changed = true;
+}
+
 
     console.log("[TOPUP] Đại lý đã được đăng ký:", uid);
   }
