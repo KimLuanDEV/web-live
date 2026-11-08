@@ -10,7 +10,11 @@
 <!-- Android / Chrome -->
 <meta name="mobile-web-app-capable" content="yes">
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+
+<meta name="theme-color" content="#090a0e">
+
 <title>Tạo tài khoản</title>
 
 <link rel="manifest" href="/manifest.json">
@@ -18,179 +22,837 @@
 <!-- icon cho iOS -->
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
-<link rel="stylesheet" href="/style.css">
 
 <style>
-body{
-  margin:0;
-  min-height:100vh;
-  background:radial-gradient(circle at top,#0f1b3a,#05070d);
-  font-family:system-ui,-apple-system;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:white;
+
+/* ==========================================
+   LIVESTREAM PRO
+   ROYAL OBSIDIAN REGISTRATION
+========================================== */
+
+:root {
+  color-scheme: dark;
+  --gold: #dfbf89;
+  --gold-light: #f1dcb4;
+  --line: rgba(218,181,120,.30);
 }
 
-.register-shell{
-  width:100%;
-  max-width:420px;
-  background:linear-gradient(180deg,#0b1327,#080c18);
-  border-radius:24px;
-  padding:36px 26px 42px;
-  box-shadow:0 0 50px rgba(0,255,255,.15);
-  text-align:center;
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
-.register-avatar{
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  margin:0 auto 14px;
-  background:url("https://i.ibb.co/GvJWn19q/icon-192.png" ) center/cover;
-  box-shadow:0 0 40px rgba(0,255,255,.6);
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  background: #090a0e;
+  -webkit-text-size-adjust: 100%;
 }
 
-.register-title{
-  font-size:26px;
-  font-weight:900;
-  color:#00f6ff;
-  margin-bottom:6px;
+body.register-page {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  margin: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+
+  overflow: hidden;
+  background: #090a0e;
+
+  color: #f5e9d3;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 }
 
-.register-sub{
-  font-size:13px;
-  opacity:.7;
-  margin-bottom:28px;
+button,
+input {
+  font: inherit;
 }
 
-.register-shell input{
-  width:100%;
-  height:52px;
-  margin-top:14px;
-  background:#0e172c;
-  border:none;
-  border-radius:16px;
-  padding:0 16px;
-  color:white;
-  font-size:16px;
-  box-shadow:inset 0 0 0 1px rgba(0,255,255,.15);
+button {
+  cursor: pointer;
 }
 
-.register-shell input::placeholder{
-  color:#6c7da8;
+.hidden {
+  display: none !important;
 }
 
-.register-btn{
-  width:100%;
-  height:56px;
-  margin-top:26px;
-  border:none;
-  border-radius:18px;
-  background:linear-gradient(135deg,#00f6ff,#5f7dff);
-  color:#00141a;
-  font-size:18px;
-  font-weight:900;
-  box-shadow:0 0 30px rgba(0,246,255,.6);
+/* ==========================================
+   MAIN SCREEN
+========================================== */
+
+.register-shell {
+  position: relative;
+  isolation: isolate;
+
+  width: 100%;
+  max-width: 430px;
+  min-width: 0;
+
+  height: 100%;
+  min-height: 0;
+
+  padding:
+    calc(12px + env(safe-area-inset-top, 0px))
+    20px
+    calc(12px + env(safe-area-inset-bottom, 0px));
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+
+  background:
+    radial-gradient(
+      ellipse 85% 28% at 50% -5%,
+      rgba(185,134,65,.19),
+      transparent 80%
+    ),
+    linear-gradient(
+      180deg,
+      #1a191b 0%,
+      #101115 48%,
+      #090a0e 100%
+    );
 }
 
-.register-links{
-  margin-top:22px;
-  font-size:13px;
-  opacity:.75;
+.register-shell::-webkit-scrollbar {
+  display: none;
 }
 
-.register-links a{
-  color:#00f6ff;
-  text-decoration:none;
-  font-weight:600;
+/* ==========================================
+   BRAND HEADER
+========================================== */
+
+.register-top {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1.15px;
 }
 
-/* mobile */
-@media(max-width:600px){
-  .register-shell{
-    min-height:100vh;
-    border-radius:0;
-    padding:48px 24px 40px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
+.register-top span:last-child {
+  color: #aa9270;
+  text-align: right;
+}
+
+/* ==========================================
+   CONTENT AREA
+========================================== */
+
+.register-content {
+  flex: 1 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+
+  padding: 18px 0 14px;
+}
+
+.register-hero {
+  flex: 0 0 auto;
+  width: 100%;
+  text-align: center;
+}
+
+.register-avatar {
+  width: 82px;
+  height: 82px;
+
+  margin: 0 auto 16px;
+
+  border: 3px solid #1a1918;
+  border-radius: 50%;
+  outline: 1px solid #d5ad70;
+  outline-offset: 4px;
+
+  background:
+    #14151a
+    url("https://i.ibb.co/GvJWn19q/icon-192.png")
+    center / cover no-repeat;
+
+  box-shadow: 0 12px 32px rgba(0,0,0,.38);
+}
+
+.register-eyebrow {
+  margin: 0 0 7px;
+
+  color: #c2a170;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 2.4px;
+}
+
+.register-title {
+  margin: 0;
+
+  color: var(--gold-light);
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 29px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.register-sub {
+  max-width: 310px;
+  margin: 10px auto 0;
+
+  color: #aba39a;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   REGISTRATION PANEL
+========================================== */
+
+.register-panel {
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 20px;
+  padding: 17px 17px 18px;
+
+  border: 1px solid var(--line);
+  border-radius: 17px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(51,43,34,.62),
+    rgba(19,20,25,.88) 65%
+  );
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.035),
+    0 16px 35px rgba(0,0,0,.20);
+}
+
+.register-panel-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+
+  margin-bottom: 13px;
+}
+
+.register-panel-head h2 {
+  margin: 0;
+
+  color: #f0d9b1;
+  font: 700 19px Georgia,serif;
+}
+
+.register-panel-head span {
+  color: #b6996d;
+
+  font-size: 8px;
+  font-weight: 700;
+  letter-spacing: .6px;
+
+  text-align: right;
+}
+
+/* ==========================================
+   FORM FIELDS
+========================================== */
+
+.register-field {
+  width: 100%;
+  min-width: 0;
+  margin-top: 11px;
+}
+
+.register-field label {
+  display: block;
+  margin-bottom: 6px;
+
+  color: #caae82;
+
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .8px;
+}
+
+.register-field input {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+
+  margin: 0;
+  padding: 0 13px;
+
+  border: 1px solid rgba(217,179,114,.25);
+  border-radius: 9px;
+  outline: 0;
+
+  background: #121419;
+  color: #f7ecd8;
+
+  font-size: 16px;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+.register-field input::placeholder {
+  color: #898580;
+}
+
+.register-field input:focus {
+  border-color: #e1bb7b;
+  box-shadow: 0 0 0 3px rgba(215,178,112,.1);
+}
+
+/* PASSWORD VISIBILITY */
+
+.pass-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.pass-wrap input {
+  padding-right: 76px;
+}
+
+.pass-eye {
+  position: absolute;
+  right: 6px;
+  top: 50%;
+
+  transform: translateY(-50%);
+
+  width: 60px;
+  height: 32px;
+
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+  margin: 0;
+
+  border: 1px solid rgba(211,174,111,.28);
+  border-radius: 7px;
+
+  background: #2d2822;
+  color: #e3c48c;
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+/* HELP TEXT */
+
+.field-hint {
+  margin: 6px 0 0;
+  color: #928d85;
+  font-size: 10px;
+  line-height: 1.45;
+}
+
+#passWarn {
+  display: none;
+  margin-top: 8px;
+
+  color: #f0a09a;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* ==========================================
+   SUBMIT BUTTON
+========================================== */
+
+.register-btn {
+  display: block;
+
+  width: 100%;
+  min-height: 47px;
+
+  margin-top: 19px;
+  padding: 11px;
+
+  border: 1px solid #e7c995;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    125deg,
+    #f3dfb9,
+    #c49a61
+  );
+
+  color: #281e12;
+
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: .7px;
+}
+
+.register-btn:active {
+  transform: scale(.985);
+}
+
+/* ==========================================
+   ACCOUNT LINK
+========================================== */
+
+.register-links {
+  flex: 0 0 auto;
+
+  width: 100%;
+  margin-top: 16px;
+
+  color: #aaa29a;
+  font-size: 12px;
+  text-align: center;
+}
+
+.register-links a {
+  color: #edcd99;
+  font-weight: 750;
+  text-decoration: none;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+.register-footer {
+  flex: 0 0 auto;
+
+  margin-top: 0;
+  padding-top: 11px;
+
+  border-top: 1px solid rgba(219,182,119,.18);
+
+  color: #917d5e;
+  text-align: center;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+}
+
+/* ==========================================
+   POPUP MESSAGE
+========================================== */
+
+.register-page .modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding:
+    calc(14px + env(safe-area-inset-top,0px))
+    16px
+    calc(14px + env(safe-area-inset-bottom,0px));
+
+  background: rgba(0,0,0,.8);
+}
+
+.register-page .modal-card {
+  width: 100%;
+  max-width: 380px;
+  max-height: 100%;
+
+  overflow-y: auto;
+
+  padding: 23px 20px 20px;
+
+  border: 1px solid rgba(232,194,127,.4);
+  border-radius: 16px;
+
+  background: linear-gradient(
+    155deg,
+    #2a251f,
+    #16181d
+  );
+
+  box-shadow: 0 25px 60px rgba(0,0,0,.6);
+}
+
+.register-page .modal-card h3 {
+  margin: 0 0 12px;
+
+  color: var(--gold-light);
+  font: 700 23px Georgia,serif;
+}
+
+.register-page #msgText {
+  color: #c1b7a7;
+  font-size: 13px;
+  line-height: 1.65;
+  white-space: pre-line;
+}
+
+.register-page .modal-btn {
+  width: 100%;
+  min-height: 43px;
+
+  margin-top: 17px;
+
+  border: 1px solid #e2c28d;
+  border-radius: 9px;
+
+  background: linear-gradient(
+    135deg,
+    #f0d7aa,
+    #c1975d
+  );
+
+  color: #2a2015;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* ==========================================
+   SHORT MOBILE SCREENS
+========================================== */
+
+@media (max-height: 790px) {
+
+  .register-shell {
+    padding-top:
+      calc(10px + env(safe-area-inset-top,0px));
+    padding-bottom:
+      calc(10px + env(safe-area-inset-bottom,0px));
+  }
+
+  .register-content {
+    padding: 13px 0;
+  }
+
+  .register-avatar {
+    width: 66px;
+    height: 66px;
+    margin-bottom: 11px;
+  }
+
+  .register-title {
+    font-size: 26px;
+  }
+
+  .register-sub {
+    margin-top: 7px;
+    line-height: 1.4;
+  }
+
+  .register-panel {
+    margin-top: 14px;
+    padding: 13px;
+  }
+
+  .register-panel-head {
+    margin-bottom: 9px;
+  }
+
+  .register-field {
+    margin-top: 9px;
+  }
+
+  .register-field input {
+    height: 41px;
+  }
+
+  .register-btn {
+    margin-top: 14px;
+    min-height: 43px;
   }
 }
 
-.pass-wrap{
-  position:relative;
+@media (max-height: 620px) {
+
+  .register-avatar {
+    width: 54px;
+    height: 54px;
+  }
+
+  .register-sub {
+    display: none;
+  }
+
+  .register-content {
+    justify-content: flex-start;
+  }
 }
 
-.pass-eye{
-  position:absolute;
-  right:16px;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-  font-size:18px;
-  opacity:.7;
-}
+@media (max-width: 360px) {
 
-.pass-eye:hover{
-  opacity:1;
+  .register-shell {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .register-title {
+    font-size: 24px;
+  }
+
+  .register-panel-head span {
+    font-size: 7px;
+  }
 }
 
 </style>
 
+
 </head>
 
-<body>
 
-<div class="register-shell">
-  <div class="register-avatar"></div>
-  <div class="register-title">LIVESTREAM PRO</div>
-  <div class="register-sub">Tạo tài khoản mới</div>
+<body class="register-page">
 
+<main class="register-shell">
 
-  <input id="username" placeholder="Tên đăng nhập">
-  <input id="name" placeholder="Tên hiển thị">
-
-  <div class="pass-wrap">
-  <input id="password" type="password" placeholder="Mật khẩu">
-  <span class="pass-eye" onclick="togglePass('password', this)">👁</span>
-</div>
-
-<div class="pass-wrap">
-  <input id="password2" type="password" placeholder="Nhập lại mật khẩu">
-  <span class="pass-eye" onclick="togglePass('password2', this)">👁</span>
-</div>
-
-<div class="pass-wrap">
-  <input id="securityCode" type="password" placeholder="Mã bảo mật (dùng để khôi phục)">
-  <span class="pass-eye" onclick="togglePass('securityCode', this)">👁</span>
-</div>
-
-
-<div id="passWarn" style="font-size:13px;margin-top:6px;color:#ff6b6b;display:none">
-  ❌ Mật khẩu không khớp
-</div>
-
-
-  <button class="register-btn" onclick="register()">TẠO TÀI KHOẢN</button>
-
-
-  <div class="register-links">
-    Đã có tài khoản?
-    <a href="/login.html">Đăng nhập</a>
+  <!-- TOP BRAND -->
+  <div class="register-top">
+    <span>LIVESTREAM PRO</span>
+    <span>THÀNH VIÊN MỚI</span>
   </div>
-</div>
+
+  <div class="register-content">
+
+    <!-- BRAND -->
+    <header class="register-hero">
+
+      <div class="register-avatar"
+           role="img"
+           aria-label="Logo Livestream Pro"></div>
+
+      <p class="register-eyebrow">
+        BẮT ĐẦU HÀNH TRÌNH
+      </p>
+
+      <h1 class="register-title">
+        Tạo tài khoản
+      </h1>
+
+      <p class="register-sub">
+        Tham gia cộng đồng Livestream Pro
+        và khám phá những trải nghiệm mới.
+      </p>
+
+    </header>
+
+    <!-- FORM PANEL -->
+    <section class="register-panel">
+
+      <div class="register-panel-head">
+        <h2>Thông tin đăng ký</h2>
+        <span>MEMBER REGISTRATION</span>
+      </div>
+
+      <div class="register-field">
+
+        <label for="username">
+          TÊN ĐĂNG NHẬP
+        </label>
+
+        <input
+          id="username"
+          type="text"
+          placeholder="Nhập tên đăng nhập"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+        >
+
+        <p class="field-hint">
+          Tối thiểu 6 ký tự, không dấu,
+          không khoảng trắng.
+        </p>
+
+      </div>
+
+      <div class="register-field">
+
+        <label for="name">
+          TÊN HIỂN THỊ
+        </label>
+
+        <input
+          id="name"
+          type="text"
+          placeholder="Tên hiển thị của bạn"
+          autocomplete="nickname"
+        >
+
+      </div>
+
+      <div class="register-field">
+
+        <label for="password">
+          MẬT KHẨU
+        </label>
+
+        <div class="pass-wrap">
+
+          <input
+            id="password"
+            type="password"
+            placeholder="Tạo mật khẩu"
+            autocomplete="new-password"
+          >
+
+          <button
+            type="button"
+            class="pass-eye"
+            aria-label="Hiện mật khẩu"
+            onclick="togglePass('password', this)">
+            Hiện
+          </button>
+
+        </div>
+
+      </div>
+
+      <div class="register-field">
+
+        <label for="password2">
+          XÁC NHẬN MẬT KHẨU
+        </label>
+
+        <div class="pass-wrap">
+
+          <input
+            id="password2"
+            type="password"
+            placeholder="Nhập lại mật khẩu"
+            autocomplete="new-password"
+          >
+
+          <button
+            type="button"
+            class="pass-eye"
+            aria-label="Hiện mật khẩu"
+            onclick="togglePass('password2', this)">
+            Hiện
+          </button>
+
+        </div>
+
+      </div>
+
+      <div id="passWarn" role="status">
+        Mật khẩu xác nhận chưa trùng khớp.
+      </div>
+
+      <div class="register-field">
+
+        <label for="securityCode">
+          MÃ BẢO MẬT
+        </label>
+
+        <div class="pass-wrap">
+
+          <input
+            id="securityCode"
+            type="password"
+            placeholder="Tạo mã bảo mật"
+            autocomplete="off"
+          >
+
+          <button
+            type="button"
+            class="pass-eye"
+            aria-label="Hiện mã bảo mật"
+            onclick="togglePass('securityCode', this)">
+            Hiện
+          </button>
+
+        </div>
+
+        <p class="field-hint">
+          Dùng để xác minh và khôi phục
+          tài khoản khi cần thiết.
+        </p>
+
+      </div>
+
+      <button
+        type="button"
+        class="register-btn"
+        onclick="register()">
+        TẠO TÀI KHOẢN
+      </button>
+
+    </section>
+
+    <!-- LOGIN LINK -->
+    <div class="register-links">
+
+      Đã có tài khoản?
+      <a href="/login.html">
+        Đăng nhập
+      </a>
+
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="register-footer">
+    © 2026 LIVESTREAM PRO
+  </footer>
+
+</main>
 
 
 <!-- GLOBAL MESSAGE MODAL -->
+
 <div id="msgModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-  <div class="modal-card">
-    <h3 id="msgTitle">Thông báo</h3>
-    <div id="msgText" style="margin:12px 0;opacity:.9"></div>
-    <button onclick="closeMsg()">OK</button>
+
+  <div class="modal-card"
+       role="alertdialog"
+       aria-modal="true"
+       aria-labelledby="msgTitle">
+
+    <h3 id="msgTitle">
+      Thông báo
+    </h3>
+
+    <div id="msgText"></div>
+
+    <button
+      type="button"
+      class="modal-btn"
+      onclick="closeMsg()">
+      Đã hiểu
+    </button>
+
   </div>
+
 </div>
+
+
 
 
 
@@ -247,16 +909,31 @@ location.href="/login.html";
 
 
 
-function togglePass(id, el){
+
+function togglePass(id, el) {
+
   const input = document.getElementById(id);
-  if(input.type === "password"){
-    input.type = "text";
-    el.textContent = "🙈";
-  }else{
-    input.type = "password";
-    el.textContent = "👁";
-  }
+
+  if (!input) return;
+
+  const isHidden = input.type === "password";
+
+  input.type = isHidden ? "text" : "password";
+
+  el.textContent = isHidden ? "Ẩn" : "Hiện";
+
+  el.setAttribute(
+    "aria-label",
+    isHidden ? "Ẩn nội dung" : "Hiện nội dung"
+  );
+
+  el.setAttribute(
+    "aria-pressed",
+    String(isHidden)
+  );
+
 }
+
 
 
 const p1 = document.getElementById("password");
