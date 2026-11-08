@@ -1,572 +1,1027 @@
+
 <!doctype html>
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>Bạn bè - Livestream Pro</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="./style.css">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Bạn bè | Livestream Pro</title>
 
 <style>
-body{
-  background:#000;
-  color:#fff;
-  margin:0;
-  font-family:system-ui;
+:root {
+  color-scheme: dark;
+  --bg: #08090b;
+  --panel: #181715;
+  --gold: #d5b675;
+  --light: #f5e2b3;
+  --line: rgba(217,185,121,.37);
+  --muted: #a9a6a0;
+  --red: #e87575;
+  --green: #98c996;
 }
 
-.friend-header{
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  color: #f7f1e7;
+  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  overflow-x: hidden;
+}
+
+button, input { font: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; }
+button:disabled { opacity: .55; cursor: default; }
+[hidden] { display: none !important; }
+svg { display: block; }
+
+.fi {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  flex: none;
+}
+
+/* ===== KHUNG CHÍNH ===== */
+
+.friends-app {
+  width: 100%;
+  max-width: 600px;
+  min-height: 100dvh;
+  margin: auto;
+  position: relative;
+  padding-bottom: 115px;
+  background:
+    radial-gradient(ellipse at 0 0, rgba(193,147,64,.10), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(147,95,29,.08), transparent 50%);
+}
+
+/* ===== HEADER ===== */
+
+.friends-top {
   position: sticky;
   top: 0;
+  z-index: 40;
+  background: rgba(8,9,11,.97);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand-strip {
+  height: 46px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 9px;
+  border-bottom: 1px solid rgba(218,184,111,.15);
+  background: linear-gradient(100deg, transparent, rgba(205,152,68,.10), transparent);
+}
+
+.brand-strip .fi {
+  width: 21px;
+  height: 21px;
+  color: var(--gold);
+}
+
+.brand-name {
+  font-family: Georgia, serif;
+  font-weight: bold;
+  font-style: italic;
+  letter-spacing: .6px;
+  font-size: 17px;
+  color: var(--light);
+}
+
+.friend-header {
+  height: 63px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  position: relative;
+}
+
+.friend-header h1 {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  font: 700 28px Georgia, serif;
+  color: var(--light);
+  margin: 0;
+  pointer-events: none;
+  text-shadow: 0 1px 15px rgba(219,177,95,.22);
+}
+
+.header-btn {
+  width: 41px;
+  height: 41px;
+  display: grid;
+  place-items: center;
+  color: var(--light);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: linear-gradient(155deg, #252017, #0d0e12);
+  box-shadow: inset 0 1px rgba(255,255,255,.05);
+}
+
+.header-btn .fi {
+  width: 22px;
+  height: 22px;
+}
+
+/* ===== TÌM KIẾM ===== */
+
+.friend-search {
+  padding: 16px 16px 4px;
+}
+
+.search-inner {
+  height: 49px;
+  border: 1px solid var(--line);
+  background: linear-gradient(115deg, #222222, #101114);
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 15px;
+  box-shadow: 0 4px 15px #0006;
+}
+
+.search-inner .fi { color: var(--gold); }
+
+.search-inner input {
+  width: 100%;
+  border: 0;
+  outline: 0;
+  background: none;
+  color: #fff;
+  font-size: 16px;
+  min-width: 0;
+}
+
+.search-inner input::placeholder {
+  color: #93908c;
+}
+
+/* ===== DANH SÁCH ===== */
+
+.friend-section {
+  padding: 3px 14px 18px;
+}
+
+.section-heading {
+  margin: 24px 0 12px;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid rgba(212,170,92,.2);
+  border-bottom-color: var(--line);
+  border-radius: 11px;
+  background: linear-gradient(100deg, #272117, #171512 70%, #272015);
+}
+
+.section-heading .fi {
+  color: var(--gold);
+  width: 23px;
+  height: 23px;
+}
+
+.section-heading h2 {
+  font-size: 17px;
+  line-height: 1.3;
+  font-weight: 750;
+  color: var(--light);
+  margin: 0;
+}
+
+.section-count {
+  margin-left: auto;
+  font-size: 11px;
+  color: #e2c992;
+  background: rgba(210,170,93,.1);
+  border: 1px solid rgba(210,170,93,.25);
+  padding: 4px 9px;
+  border-radius: 99px;
+}
+
+/* ===== THẺ BẠN BÈ ===== */
+
+.friend-row {
+  display: grid;
+  grid-template-columns: 57px minmax(0,1fr) auto;
+  align-items: center;
+  column-gap: 11px;
+  min-height: 92px;
+  margin-bottom: 10px;
+  padding: 13px 12px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: linear-gradient(
+    125deg,
+    rgba(52,43,30,.76),
+    rgba(17,17,17,.95) 48%,
+    rgba(34,28,22,.85)
+  );
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.05),
+    0 8px 22px #0006;
+}
+
+.friend-avatar {
+  height: 57px;
+  width: 57px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  padding: 2px;
+  background: #161616;
+  box-shadow:
+    0 0 0 2px rgba(255,230,160,.07),
+    0 0 16px rgba(205,166,88,.17);
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.friend-avatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.friend-avatar .fi {
+  color: var(--gold);
+  width: 28px;
+  height: 28px;
+}
+
+.friend-info {
+  min-width: 0;
+  cursor: pointer;
+}
+
+.friend-name {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+
+.friend-name .verified {
+  color: #73bdff;
+  flex: none;
+}
+
+.friend-name .verified .fi {
+  width: 16px;
+  height: 16px;
+}
+
+.friend-level {
+  margin-top: 8px;
+  display: inline-flex;
+  gap: 6px;
+  align-items: center;
+  padding: 3px 10px;
+  border: 1px solid rgba(212,174,100,.54);
+  border-radius: 99px;
+  color: #e8cf92;
+  font-size: 11px;
+  background: #1d1a14;
+  font-weight: 700;
+}
+
+.friend-level .fi {
+  width: 13px;
+  height: 13px;
+}
+
+/* ===== NÚT THAO TÁC ===== */
+
+.friend-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.action-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  min-height: 54px;
+  width: 58px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  color: #f5e5c3;
+  background: linear-gradient(140deg, #24201a, #121315);
+  box-shadow: inset 0 1px rgba(255,255,255,.06);
+}
+
+.action-btn .fi {
+  width: 19px;
+  height: 19px;
+  color: var(--gold);
+}
+
+.action-btn .action-label {
+  font-size: 10px;
+  line-height: 1.05;
+  white-space: nowrap;
+}
+
+.action-btn.accept {
+  width: 69px;
+  border-color: rgba(143,204,131,.65);
+  color: #d3f7d1;
+  background: linear-gradient(145deg, #294027, #10231a);
+}
+
+.action-btn.accept .fi { color: #a6e49b; }
+
+.action-btn.reject {
+  width: 69px;
+  border-color: rgba(231,110,110,.57);
+  background: linear-gradient(145deg, #472323, #231214);
+  color: #ffe0db;
+}
+
+.action-btn.reject .fi,
+.action-btn.block .fi {
+  color: var(--red);
+}
+
+.action-btn.block {
+  border-color: rgba(228,120,109,.40);
+  background: linear-gradient(130deg, #381d1a, #201414);
+}
+
+.action-btn:active,
+.header-btn:active {
+  transform: scale(.97);
+}
+
+/* ===== TRẠNG THÁI TRỐNG ===== */
+
+.empty-state {
+  padding: 25px 16px;
+  text-align: center;
+  border: 1px dashed rgba(214,179,115,.23);
+  border-radius: 13px;
+  color: var(--muted);
+  font-size: 13px;
+  background: #141311;
+}
+
+.empty-state .fi {
+  color: #c6a468;
+  margin: 0 auto 8px;
+  width: 25px;
+  height: 25px;
+}
+
+/* ===== NÚT DANH SÁCH CHẶN ===== */
+
+.bottom-wrap {
+  position: fixed;
+  z-index: 45;
+  bottom: 0;
   left: 0;
   right: 0;
-
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-
-  height: 52px;
-  display:flex;
-  align-items:center;
-
-  padding: 0 12px;
-  background:#000;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  z-index: 100;
+  padding: 12px max(14px,env(safe-area-inset-right))
+    calc(14px + env(safe-area-inset-bottom));
+  background: linear-gradient(transparent, rgba(5,5,6,.95) 24%);
+  pointer-events: none;
 }
 
-
-.friend-header h3{
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-
-  margin:0;
-  font-size:16px;
-  font-weight:600;
-  pointer-events:none; /* tránh che nút */
+.btn-blocked-fixed {
+  pointer-events: auto;
+  width: 100%;
+  max-width: 570px;
+  margin: auto;
+  min-height: 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+  border-radius: 16px;
+  border: 1px solid rgba(230,174,100,.75);
+  background: linear-gradient(115deg, #260d10, #50151b 55%, #230b0f);
+  color: #f0d19b;
+  font-size: 16px;
+  font-weight: 800;
+  box-shadow:
+    0 10px 32px #000b,
+    inset 0 1px rgba(255,230,177,.13);
 }
 
-
-.friend-header button{
-  width: 40px;
-  height: 40px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:none;
-  border:none;
-  color:#fff;
-  font-size:20px;
-  z-index: 2;
+.btn-blocked-fixed .fi {
+  color: #ef8787;
+  width: 23px;
+  height: 23px;
 }
 
-.friend-section{
-  padding:10px 14px 90px; /* 👈 thêm padding-bottom */
-}
+/* ===== THÔNG BÁO ===== */
 
-
-.friend-title{
-  font-size:13px;
-  opacity:.7;
-  margin:12px 0 6px;
-}
-
-.friend-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px;
-  border-radius:10px;
-  background:#111;
-  margin-bottom:8px;
-}
-
-.friend-row img{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  object-fit:cover;
-}
-
-.friend-info{
-  flex:1;
-}
-
-.friend-name{
-  font-weight:600;
-}
-
-.friend-level{
-  font-size:12px;
-  opacity:.6;
-}
-
-.friend-actions{
-  display:flex;
-  gap:6px;
-}
-
-.friend-actions button{
-  padding:6px 10px;
-  font-size:12px;
-  border-radius:8px;
-  border:1px solid rgba(255,255,255,.2);
-  background:#111;
-  color:#fff;
-}
-.btn-accept{ border-color:#00ff99; color:#00ff99; }
-.btn-reject{ border-color:#ff6666; color:#ff6666; }
-.btn-chat{ border-color:#00c8ff; color:#00c8ff; }
-
-/* 🔍 Search button bên phải */
-.btn-search{
-  position: absolute;
-  right: 12px;
-  top: 6px;
-
-  width: 40px;
-  height: 40px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:none;
-  border:none;
-  color:#fff;
-  font-size:18px;
-  z-index: 2;
-}
-
-/* 🔎 Search box */
-.friend-search{
-  position: sticky;
-  top: 52px; /* ngay dưới header */
-  z-index: 90;
-
-  padding: 8px 12px;
-  background:#000;
-  border-bottom:1px solid rgba(255,255,255,.08);
-
-  display:none;
-}
-
-.friend-search input{
-  width:100%;
-  padding:10px 12px;
-  border-radius:10px;
-  border:1px solid rgba(255,255,255,.2);
-  background:#111;
-  color:#fff;
-  font-size:14px;
-}
-
-
-/* 🚫 Blocked button fixed bottom */
-.btn-blocked-fixed{
+#toast-container {
   position: fixed;
-  left: 50%;
-  bottom: 16px;
-  transform: translateX(-50%);
-
-  width: calc(100% - 32px);
-  max-width: 420px;
-
-  padding: 14px 16px;
-  border-radius: 14px;
-
-  background: linear-gradient(135deg, #ff4d4d, #ff0066);
-  color: #fff;
-  font-size: 15px;
-  font-weight: 600;
-
-  border: none;
-  box-shadow: 0 8px 24px rgba(255,0,80,.35);
-
-  z-index: 200;
+  z-index: 1001;
+  top: 18px;
+  left: 12px;
+  right: 12px;
+  display: grid;
+  gap: 8px;
+  justify-items: center;
+  pointer-events: none;
 }
 
+.toast {
+  pointer-events: auto;
+  max-width: 500px;
+  width: 100%;
+  padding: 13px 15px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 12px;
+  background: #202024;
+  border: 1px solid var(--line);
+  box-shadow: 0 14px 35px #000a;
+  color: #f6ebd7;
+  font-size: 13px;
+}
 
+.toast .fi { color: var(--gold); }
+.toast.success .fi { color: var(--green); }
+.toast.error .fi { color: var(--red); }
 
+/* ===== MODAL ĐĂNG XUẤT ===== */
+
+#forceLogoutModal {
+  position: fixed;
+  z-index: 1100;
+  inset: 0;
+  display: none;
+  place-items: center;
+  padding: 18px;
+}
+
+#forceLogoutModal.show { display: grid; }
+
+.fl-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(7px);
+}
+
+.fl-box {
+  position: relative;
+  text-align: center;
+  max-width: 350px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 19px;
+  background: linear-gradient(150deg, #262019, #101116);
+  padding: 30px 20px;
+  box-shadow: 0 28px 65px #000b;
+}
+
+.fl-icon {
+  display: grid;
+  place-items: center;
+  color: var(--red);
+  margin-bottom: 12px;
+}
+
+.fl-icon .fi {
+  width: 38px;
+  height: 38px;
+}
+
+.fl-title {
+  font-size: 19px;
+  font-weight: 800;
+  color: var(--light);
+  margin-bottom: 10px;
+}
+
+.fl-msg, .fl-sub {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #bdb3a2;
+}
+
+.fl-sub {
+  margin-top: 12px;
+  font-size: 12px;
+}
+
+/* ===== RESPONSIVE ===== */
+
+@media (max-width: 410px) {
+  .friend-row {
+    grid-template-columns: 50px minmax(0,1fr);
+    padding: 12px 11px;
+    gap: 9px;
+  }
+
+  .friend-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .friend-actions {
+    grid-column: 1/-1;
+    display: grid;
+    grid-template-columns: repeat(3,minmax(0,1fr));
+    margin-top: 3px;
+  }
+
+  .friend-actions .action-btn {
+    width: 100%;
+    min-height: 45px;
+    flex-direction: row;
+    gap: 6px;
+  }
+
+  .friend-actions .action-btn .fi {
+    width: 17px;
+    height: 17px;
+  }
+
+  .action-btn .action-label { font-size: 11px; }
+
+  .friend-row.request .friend-actions {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+  }
+}
+
+@media (min-width: 520px) {
+  .friend-row {
+    grid-template-columns: 62px minmax(0,1fr) auto;
+    padding: 15px;
+  }
+
+  .friend-avatar {
+    height: 62px;
+    width: 62px;
+  }
+
+  .friend-name { font-size: 17px; }
+  .action-btn { width: 75px; }
+  .action-btn.accept, .action-btn.reject { width: 92px; }
+  .action-btn .action-label { font-size: 11px; }
+}
 </style>
 </head>
 
 <body>
 
-<div class="friend-header">
-  <button onclick="history.back()">←</button>
-  <h3>Bạn bè</h3>
+<!-- ICON SVG RIÊNG - KHÔNG CẦN THƯ VIỆN NGOÀI -->
+<svg xmlns="http://www.w3.org/2000/svg" aria-hidden="true"
+     width="0" height="0"
+     style="position:absolute;overflow:hidden">
+  <symbol id="f-back" viewBox="0 0 24 24">
+    <path d="m15 18-6-6 6-6"/>
+  </symbol>
+  <symbol id="f-search" viewBox="0 0 24 24">
+    <circle cx="10.5" cy="10.5" r="7"/>
+    <path d="m16 16 5 5"/>
+  </symbol>
+  <symbol id="f-play" viewBox="0 0 24 24">
+    <path d="M8 5.5 19 12 8 18.5Z"/>
+  </symbol>
+  <symbol id="f-users" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="3"/>
+    <path d="M3 20v-2a6 6 0 0 1 12 0v2M17 5a3 3 0 0 1 0 6m1 3a5 5 0 0 1 3 5v1"/>
+  </symbol>
+  <symbol id="f-user-plus" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="3"/>
+    <path d="M3 20v-2a6 6 0 0 1 12 0v2M19 9v8m-4-4h8"/>
+  </symbol>
+  <symbol id="f-user-minus" viewBox="0 0 24 24">
+    <circle cx="9" cy="8" r="3"/>
+    <path d="M3 20v-2a6 6 0 0 1 12 0v2M15 13h8"/>
+  </symbol>
+  <symbol id="f-user" viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="4"/>
+    <path d="M4 21a8 8 0 0 1 16 0"/>
+  </symbol>
+  <symbol id="f-crown" viewBox="0 0 24 24">
+    <path d="m2 8 5 4 5-8 5 8 5-4-2 11H4L2 8ZM4 22h16"/>
+  </symbol>
+  <symbol id="f-chat" viewBox="0 0 24 24">
+    <path d="M20 11a8 8 0 0 1-8 8 9 9 0 0 1-3.5-.8L4 20l1.2-4.6A8 8 0 1 1 20 11Z"/>
+  </symbol>
+  <symbol id="f-ban" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="m5.6 5.6 12.8 12.8"/>
+  </symbol>
+  <symbol id="f-check" viewBox="0 0 24 24">
+    <path d="m5 12 4 4L19 6"/>
+  </symbol>
+  <symbol id="f-x" viewBox="0 0 24 24">
+    <path d="M18 6 6 18M6 6l12 12"/>
+  </symbol>
+  <symbol id="f-verified" viewBox="0 0 24 24">
+    <path d="m12 2 2.6 1.8 3.1-.1 1.2 2.9 2.6 1.8-.8 3 .8 3-2.6 1.8-1.2 2.9-3.1-.1L12 22l-2.6-1.8-3.1.1-1.2-2.9-2.6-1.8.8-3-.8-3 2.6-1.8 1.2-2.9 3.1.1L12 2Z"/>
+    <path d="m8.4 12 2.5 2.5 4.8-5"/>
+  </symbol>
+  <symbol id="f-info" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M12 11v5M12 7h.01"/>
+  </symbol>
+</svg>
 
-  <!-- 🔍 Search button (right) -->
-  <button class="btn-search" onclick="toggleSearch()">🔍</button>
+<div class="friends-app">
+  <div class="friends-top">
+    <div class="brand-strip">
+      <svg class="fi"><use href="#f-play"/></svg>
+      <span class="brand-name">Livestream Pro</span>
+      <svg class="fi"><use href="#f-crown"/></svg>
+    </div>
+
+    <header class="friend-header">
+      <button class="header-btn" onclick="goBack()" aria-label="Quay lại">
+        <svg class="fi"><use href="#f-back"/></svg>
+      </button>
+      <h1>Bạn bè</h1>
+      <button class="header-btn" onclick="toggleSearch()"
+              aria-label="Ẩn hoặc hiện tìm kiếm">
+        <svg class="fi"><use href="#f-search"/></svg>
+      </button>
+    </header>
+
+    <div class="friend-search" id="friendSearch">
+      <label class="search-inner">
+        <svg class="fi"><use href="#f-search"/></svg>
+        <input id="friendSearchInput"
+               placeholder="Tìm theo tên bạn bè..."
+               oninput="applySearch()"
+               autocomplete="off"
+               aria-label="Tìm kiếm bạn bè">
+      </label>
+    </div>
+  </div>
+
+  <main class="friend-section">
+    <div class="section-heading">
+      <svg class="fi"><use href="#f-user-plus"/></svg>
+      <h2>Lời mời kết bạn</h2>
+      <span class="section-count" id="requestCount">0</span>
+    </div>
+    <div id="reqList"></div>
+
+    <div class="section-heading">
+      <svg class="fi"><use href="#f-users"/></svg>
+      <h2>Danh sách bạn bè</h2>
+      <span class="section-count" id="friendCount">0</span>
+    </div>
+    <div id="friendList"></div>
+  </main>
 </div>
 
-
-<div class="friend-search" id="friendSearch">
-  <input
-    id="friendSearchInput"
-    placeholder="Tìm theo tên bạn bè..."
-    oninput="applySearch()"
-    autocomplete="off"
-  >
+<div class="bottom-wrap">
+  <button class="btn-blocked-fixed"
+          onclick="location.href='/blocked.html'">
+    <svg class="fi"><use href="#f-ban"/></svg>
+    Danh sách chặn
+  </button>
 </div>
 
-
-
-<div class="friend-section">
-  <div class="friend-title">📨 Lời mời kết bạn</div>
-  <div id="reqList"></div>
-
-  <div class="friend-title">👥 Danh sách bạn bè</div>
-  <div id="friendList"></div>
-</div>
-
-<button class="btn-blocked-fixed" onclick="location.href='/blocked.html'">
-  🚫 Danh sách chặn
-</button>
-
-
-
-
-<div id="toast-container"></div>
+<div id="toast-container" aria-live="polite"></div>
 
 <script src="/push-init.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/app-entry-guard.js"></script>
-<script>
 
+<script>
 const socket = io();
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-let __searchOpen = false;
-let __lastData = null;
+let __searchOpen = true;
+let __lastData = { requests: [], friends: [] };
 
+if (!profile.uid) location.href = "/login.html";
 
-if(!profile.uid){
-  location.href = "/login.html";
+socket.on("connect", () => {
+  if (profile.uid) socket.emit("auth-login", { uid: profile.uid });
+});
+
+const icon = name =>
+  `<svg class="fi" aria-hidden="true"><use href="#f-${name}"></use></svg>`;
+
+/* ===== TẢI DANH SÁCH ===== */
+
+async function loadFriends() {
+  if (!profile.uid) return;
+
+  try {
+    const res = await fetch("/api/friends/" + encodeURIComponent(profile.uid));
+    if (!res.ok) throw new Error("Không thể tải danh sách bạn bè");
+
+    const data = await res.json();
+    __lastData = {
+      requests: Array.isArray(data.requests) ? data.requests : [],
+      friends: Array.isArray(data.friends) ? data.friends : []
+    };
+
+    applySearch();
+  } catch (err) {
+    showToast(err.message || "Lỗi tải dữ liệu", "error");
+  }
 }
 
-// 🔑 BẮT BUỘC: auth-login để server biết uid
-socket.emit("auth-login", { uid: profile.uid });
+/* ===== AVATAR ===== */
 
+function avatarUrl(value) {
+  if (typeof value !== "string" || !value.trim()) return "";
 
-fetch("/api/friends/" + profile.uid)
-  .then(r=>r.json())
-  .then(renderFriends);
-
-function renderFriends(data){
-  const reqBox = document.getElementById("reqList");
-  const frBox  = document.getElementById("friendList");
-
-  reqBox.innerHTML = "";
-  frBox.innerHTML  = "";
-
-  // Requests
-  if(!data.requests.length){
-    reqBox.innerHTML = `<div style="opacity:.5">Không có lời mời</div>`;
+  try {
+    const url = new URL(value, location.origin);
+    return ["https:", "http:"].includes(url.protocol) ? url.href : "";
+  } catch {
+    return "";
   }
+}
 
-  data.requests.forEach(u=>{
-    reqBox.innerHTML += `
+/* ===== TẠO CARD ===== */
 
-      <div class="friend-row">
-        <img src="${u.avatar}">
+function createFriendRow(u, isRequest) {
+  const row = document.createElement("div");
+  row.className = "friend-row" + (isRequest ? " request" : "");
 
-        <div class="friend-info">
-          <div class="friend-name">${u.name}</div>
-          <div class="friend-level">Lv ${u.level}</div>
-        </div>
-
-        <div class="friend-actions">
-          <button class="btn-accept"
-            onclick="respond('${u.uid}',true)">✓</button>
-          <button class="btn-reject"
-            onclick="respond('${u.uid}',false)">✕</button>
-        </div>
-
-      </div>
-    `;
-  });
-
-  // Friends
-  if(!data.friends.length){
-    frBox.innerHTML = `<div style="opacity:.5">Chưa có bạn bè</div>`;
-  }
-
-  data.friends.forEach(u=>{
-    frBox.innerHTML += `
-
-    <div class="friend-row">
-  <img src="${u.avatar}"
-       onclick="openProfile('${u.uid}')"
-       style="cursor:pointer">
-
-  <div class="friend-info"
-       onclick="openProfile('${u.uid}')"
-       style="cursor:pointer">
-    <div class="friend-name">
-      ${u.name}
-      ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
+  row.innerHTML = `
+    <div class="friend-avatar" role="button" tabindex="0" aria-label="Xem hồ sơ">
+      ${icon("user")}
     </div>
-    <div class="friend-level">Lv ${u.level}</div>
-  </div>
-
-
-       <div class="friend-actions">
-  <button class="btn-chat"
-    onclick="chat('${u.uid}','${u.name}')">💬</button>
-
-  <button class="btn-reject"
-    onclick="removeFriend('${u.uid}','${u.name}')">
-    🗑
-  </button>
-
-  <button class="btn-reject"
-  onclick="blockUser('${u.uid}','${u.name}')">
-  🚫
-  </button>
-
-</div>
-
-
+    <div class="friend-info" role="button" tabindex="0">
+      <div class="friend-name">
+        <span class="name-text"></span>
       </div>
-    `;
+      <span class="friend-level">
+        ${icon("crown")}
+        <span class="level-text"></span>
+      </span>
+    </div>
+    <div class="friend-actions"></div>
+  `;
+
+  const name = String(u.name || "Người dùng");
+  const uid = String(u.uid || "");
+
+  row.querySelector(".name-text").textContent = name;
+  row.querySelector(".level-text").textContent = "Lv " + (Number(u.level) || 1);
+
+  const av = row.querySelector(".friend-avatar");
+  const src = avatarUrl(u.avatar);
+
+  if (src) {
+    const image = document.createElement("img");
+    image.src = src;
+    image.alt = "Ảnh đại diện " + name;
+    image.loading = "lazy";
+    image.onerror = () => { image.remove(); };
+    av.replaceChildren(image);
+  }
+
+  const show = () => openProfile(uid);
+
+  [av, row.querySelector(".friend-info")].forEach(el => {
+    el.addEventListener("click", show);
+    el.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        show();
+      }
+    });
+  });
+
+  if (u.verified) {
+    const verified = document.createElement("span");
+    verified.className = "verified";
+    verified.title = "Đã xác minh";
+    verified.innerHTML = icon("verified");
+    row.querySelector(".friend-name").append(verified);
+  }
+
+  const actions = row.querySelector(".friend-actions");
+
+  function addAction(label, symbol, css, cb) {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "action-btn " + css;
+    btn.innerHTML = icon(symbol) + `<span class="action-label"></span>`;
+    btn.querySelector(".action-label").textContent = label;
+    btn.setAttribute("aria-label", label + " " + name);
+    btn.onclick = cb;
+    actions.append(btn);
+  }
+
+  if (isRequest) {
+    addAction("Đồng ý", "check", "accept", () => respond(uid, true));
+    addAction("Từ chối", "x", "reject", () => respond(uid, false));
+  } else {
+    addAction("Nhắn tin", "chat", "", () => chat(uid, name));
+    addAction("Hủy kết bạn", "user-minus", "", () => removeFriend(uid, name));
+    addAction("Chặn", "ban", "block", () => blockUser(uid, name));
+  }
+
+  return row;
+}
+
+/* ===== HIỂN THỊ DỮ LIỆU ===== */
+
+function renderFriends(data) {
+  const requests = Array.isArray(data.requests) ? data.requests : [];
+  const friends = Array.isArray(data.friends) ? data.friends : [];
+
+  document.getElementById("requestCount").textContent = requests.length;
+  document.getElementById("friendCount").textContent = friends.length;
+
+  for (const [id, list, request, empty] of [
+    ["reqList", requests, true, "Không có lời mời kết bạn"],
+    ["friendList", friends, false, "Chưa có bạn bè"]
+  ]) {
+    const box = document.getElementById(id);
+    box.replaceChildren();
+
+    if (!list.length) {
+      const el = document.createElement("div");
+      el.className = "empty-state";
+      el.innerHTML = icon("info") + `<div></div>`;
+      el.querySelector("div").textContent = empty;
+      box.append(el);
+    } else {
+      list.forEach(u => box.append(createFriendRow(u, request)));
+    }
+  }
+}
+
+/* ===== TÌM KIẾM ===== */
+
+function toggleSearch() {
+  __searchOpen = !__searchOpen;
+  const box = document.getElementById("friendSearch");
+  const input = document.getElementById("friendSearchInput");
+
+  box.hidden = !__searchOpen;
+
+  if (__searchOpen) {
+    input.focus();
+  } else {
+    input.value = "";
+    renderFriends(__lastData);
+  }
+}
+
+function applySearch() {
+  const query = document.getElementById("friendSearchInput")
+    .value.trim().toLocaleLowerCase("vi-VN");
+
+  if (!query) return renderFriends(__lastData);
+
+  const matches = u =>
+    String(u.name || "").toLocaleLowerCase("vi-VN").includes(query);
+
+  renderFriends({
+    requests: __lastData.requests.filter(matches),
+    friends: __lastData.friends.filter(matches)
   });
 }
 
-function respond(uid, accept){
-  socket.emit("friend-respond", { from: uid, accept });
+/* ===== CÁC CHỨC NĂNG CŨ ===== */
 
-  setTimeout(()=>{
-    fetch("/api/friends/" + profile.uid)
-      .then(r=>r.json())
-      .then(renderFriends);
-  }, 200);
+function goBack() {
+  if (history.length > 1) history.back();
+  else location.href = "/profile.html";
 }
 
+function openProfile(uid) {
+  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+}
 
-function chat(uid, name){
+function respond(uid, accept) {
+  socket.emit("friend-respond", { from: uid, accept });
+  setTimeout(loadFriends, 400);
+}
+
+function chat(uid, name) {
   localStorage.setItem("chat_to_uid", uid);
   localStorage.setItem("chat_to_name", name);
   location.href = "/messages.html";
 }
 
-
-function removeFriend(uid, name){
-  const ok = confirm(`Bạn có chắc muốn huỷ kết bạn với ${name}?`);
-  if(!ok) return;
-
+function removeFriend(uid, name) {
+  if (!confirm(`Bạn có chắc muốn huỷ kết bạn với ${name}?`)) return;
   socket.emit("friend-remove", { uid });
-
-  setTimeout(()=>{
-    fetch("/api/friends/" + profile.uid)
-      .then(r=>r.json())
-      .then(renderFriends);
-  }, 200);
+  setTimeout(loadFriends, 400);
 }
 
-
-function blockUser(uid, name){
-  const ok = confirm(`Bạn có chắc muốn chặn ${name}? Người này sẽ không thể liên hệ với bạn.`);
-  if(!ok) return;
-
+function blockUser(uid, name) {
+  if (!confirm(`Bạn có chắc muốn chặn ${name}? Người này sẽ không thể liên hệ với bạn.`)) return;
   socket.emit("user-block", { uid });
-
-  setTimeout(()=>{
-    fetch("/api/friends/" + profile.uid)
-      .then(r=>r.json())
-      .then(renderFriends);
-  }, 200);
+  setTimeout(loadFriends, 400);
 }
 
+/* ===== THÔNG BÁO ===== */
 
-
-
-
-// override renderFriends để giữ data gốc
-const _renderFriends = renderFriends;
-renderFriends = function(data){
-  __lastData = data;
-  _renderFriends(data);
-};
-
-function toggleSearch(){
-  __searchOpen = !__searchOpen;
-  const box = document.getElementById("friendSearch");
-  const input = document.getElementById("friendSearchInput");
-
-  box.style.display = __searchOpen ? "block" : "none";
-
-  if(__searchOpen){
-    setTimeout(()=> input.focus(), 50);
-  }else{
-    input.value = "";
-    if(__lastData) _renderFriends(__lastData);
-  }
-}
-
-function applySearch(){
-  if(!__lastData) return;
-
-  const q = document.getElementById("friendSearchInput")
-    .value
-    .toLowerCase()
-    .trim();
-
-  if(!q){
-    _renderFriends(__lastData);
-    return;
-  }
-
-  const filtered = {
-    requests: __lastData.requests.filter(u =>
-      u.name.toLowerCase().includes(q)
-    ),
-    friends: __lastData.friends.filter(u =>
-      u.name.toLowerCase().includes(q)
-    )
-  };
-
-  _renderFriends(filtered);
-}
-
-
-function openProfile(uid){
-  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
-}
-
-
-socket.on("system-notify", data => {
-  if (!data) return;
-
-  // 💰 NẠP COIN
-  if (data.type === "topup") {
-    showToast(data.text || "💰 Bạn vừa được nạp coin", "success");
-    return;
-  }
-
-   // ➖ TRỪ COIN
-  if (data.type === "withdraw") {
-     notifyWithdraw(data);
-  }
-
-  // 🚫 KHOÁ TÀI KHOẢN
-  if (data.type === "lock") {
-    showToast(
-      data.reason || "🚫 Tài khoản của bạn đã bị khoá",
-      "error"
-    );
-
-    localStorage.removeItem("user_profile");
-    localStorage.removeItem("login_uid");
-    localStorage.removeItem("isGuest");
-
-    setTimeout(() => {
-      location.href = "/login.html";
-    }, 2000);
-  }
-});
-
-
-
-function showToast(text, type = "info", timeout = 3500){
+function showToast(message, type = "info", timeout = 3500) {
   const box = document.getElementById("toast-container");
-  if(!box) return;
+  const toast = document.createElement("div");
 
-  const icons = {
-    info:"ℹ️",
-    success:"✅",
-    error:"❌",
-    warn:"⚠️"
-  };
+  toast.className = "toast " +
+    (["info","success","error","warn"].includes(type) ? type : "info");
 
-  const div = document.createElement("div");
-  div.className = `toast ${type}`;
-  div.innerHTML = `
-    <span class="icon">${icons[type] || "🔔"}</span>
-    <span class="msg">${text}</span>
-  `;
+  const symbol = type === "success" ? "check"
+    : type === "error" ? "ban" : "info";
 
-  box.appendChild(div);
+  toast.innerHTML = icon(symbol) + `<span class="msg"></span>`;
+  toast.querySelector(".msg").textContent = String(message || "Thông báo");
 
-  setTimeout(()=>div.remove(), timeout);
+  box.append(toast);
+  setTimeout(() => toast.remove(), timeout);
 }
 
+function notifyWithdraw(data) {
+  const text = data?.text || "Tài khoản của bạn vừa bị trừ coin";
 
-
-function showWithdrawNotify(data){
-  const text =
-    data.text ||
-    "Tài khoản của bạn vừa bị trừ coin";
-
-  openSysModal(text);
+  if (typeof openSysModal === "function") openSysModal(text);
+  else showToast(text, "error", 5000);
 }
 
-
-function notifyWithdraw(data){
-  const text =
-    data?.text ||
-    "➖ Tài khoản của bạn vừa bị trừ coin";
-
-  // ưu tiên modal nếu tồn tại
-  if (typeof openSysModal === "function") {
-    openSysModal(text);
-    return;
-  }
-
-  // fallback toast
-  if (typeof showToast === "function") {
-    showToast(text, "error", 5000);
-    return;
-  }
-
-  // fallback cuối cùng
-  alert(text);
+function showWithdrawNotify(data) {
+  notifyWithdraw(data);
 }
 
+/* ===== FORCE LOGOUT ===== */
 
-function showForceLogoutModal(message){
+function showForceLogoutModal(message) {
   let modal = document.getElementById("forceLogoutModal");
-  if(!modal){
+
+  if (!modal) {
     modal = document.createElement("div");
     modal.id = "forceLogoutModal";
     modal.innerHTML = `
       <div class="fl-backdrop"></div>
       <div class="fl-box">
-        <div class="fl-icon">🚫</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc!</div>
+        <div class="fl-icon">${icon("ban")}</div>
+        <div class="fl-title">Phiên đăng nhập kết thúc</div>
         <div class="fl-msg"></div>
         <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
       </div>
     `;
-    document.body.appendChild(modal);
+    document.body.append(modal);
   }
 
   modal.querySelector(".fl-msg").textContent = message;
   modal.classList.add("show");
 }
 
+function clearLogin() {
+  ["user_profile","login_uid","isGuest"]
+    .forEach(key => localStorage.removeItem(key));
+}
 
-socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
+socket.on("system-notify", data => {
+  if (!data) return;
 
-  showForceLogoutModal(msg);
+  if (data.type === "topup")
+    showToast(data.text || "Bạn vừa được nạp coin", "success");
 
-  // clear auth
-  localStorage.removeItem("user_profile");
-  localStorage.removeItem("login_uid");
-  localStorage.removeItem("isGuest");
+  if (data.type === "withdraw")
+    notifyWithdraw(data);
 
-  // redirect sau 2s
-  setTimeout(()=>{
-    location.href = "/login.html";
-  }, 3000);
+  if (data.type === "lock") {
+    showToast(data.reason || "Tài khoản của bạn đã bị khoá", "error");
+    clearLogin();
+    setTimeout(() => location.href = "/login.html", 2000);
+  }
 });
 
+socket.on("force-logout", data => {
+  showForceLogoutModal(data?.message || "Tài khoản của bạn đã bị đăng xuất");
+  clearLogin();
+  setTimeout(() => location.href = "/login.html", 3000);
+});
 
-
-
+loadFriends();
 </script>
 </body>
 </html>
