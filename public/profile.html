@@ -16804,6 +16804,435 @@ body.page-profile #profileSheet .ps-footer-brand {
 
 
 
+/* ==========================================
+   LIVESTREAM PRO
+   LUXURY SECURITY & MESSAGE MODALS
+   Chỉ tác động #passModal và #msgModal
+========================================== */
+
+#passModal,
+#msgModal {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+
+  overflow: hidden;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#passModal.hidden,
+#msgModal.hidden {
+  display: none !important;
+}
+
+#passModal .modal-backdrop,
+#msgModal .modal-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(2, 3, 6, .86);
+
+  -webkit-backdrop-filter: blur(9px);
+  backdrop-filter: blur(9px);
+}
+
+/* CARD */
+
+#passModal .luxury-modal-card,
+#msgModal .luxury-modal-card {
+  position: relative;
+  z-index: 1;
+
+  width: calc(100% - 32px);
+  max-width: 390px;
+
+  max-height: calc(
+    100dvh -
+    env(safe-area-inset-top, 0px) -
+    env(safe-area-inset-bottom, 0px) -
+    32px
+  );
+
+  margin: 0;
+  padding: 25px 21px 20px;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  border: 1px solid rgba(222,183,116,.43);
+  border-radius: 21px;
+
+  background:
+    radial-gradient(
+      ellipse at 50% -8%,
+      rgba(205,155,80,.17),
+      transparent 65%
+    ),
+    linear-gradient(
+      160deg,
+      #27231f 0%,
+      #18191d 52%,
+      #0e0f13 100%
+    );
+
+  box-shadow:
+    0 28px 90px rgba(0,0,0,.75),
+    inset 0 1px rgba(255,235,185,.07);
+
+  color: #f1e3ca;
+
+  animation: luxuryModalIn .22s ease-out both;
+
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+#passModal .luxury-modal-card::-webkit-scrollbar,
+#msgModal .luxury-modal-card::-webkit-scrollbar {
+  display: none;
+}
+
+/* GOLD LINE */
+
+#passModal .luxury-modal-accent,
+#msgModal .luxury-modal-accent {
+  position: absolute;
+  top: 0;
+  left: 50%;
+
+  transform: translateX(-50%);
+
+  width: 46%;
+  height: 2px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #e9c78d,
+    transparent
+  );
+}
+
+/* EYEBROW */
+
+#passModal .luxury-modal-kicker,
+#msgModal .luxury-modal-kicker {
+  margin-bottom: 18px;
+
+  color: #c5a578;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1.45px;
+  text-align: center;
+}
+
+/* PASSWORD HEADING */
+
+#passModal .luxury-modal-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+#passModal .luxury-modal-emblem,
+#msgModal .luxury-message-emblem {
+  display: grid;
+  place-items: center;
+
+  flex-shrink: 0;
+
+  width: 49px;
+  height: 49px;
+
+  border: 1px solid rgba(224,182,113,.45);
+  border-radius: 15px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(225,178,105,.20),
+    rgba(225,178,105,.045)
+  );
+
+  color: #e8c38a;
+  font-family: Georgia, serif;
+  font-size: 25px;
+}
+
+#passModal .luxury-modal-heading h3 {
+  margin: 0 0 5px;
+
+  color: #f2ddb9;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+#passModal .luxury-modal-heading p {
+  margin: 0;
+
+  color: #ada397;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+#passModal .luxury-modal-divider {
+  height: 1px;
+  margin: 20px 0 18px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(225,184,118,.35),
+    transparent
+  );
+}
+
+/* INPUTS */
+
+#passModal .luxury-form-field {
+  margin-top: 13px;
+}
+
+#passModal .luxury-form-field label {
+  display: block;
+  margin: 0 0 7px;
+
+  color: #d0ae7d;
+  opacity: 1;
+
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .9px;
+}
+
+#passModal .luxury-form-field input {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  height: 48px;
+
+  margin: 0;
+  padding: 0 14px;
+
+  border: 1px solid rgba(215,177,113,.27);
+  border-radius: 10px;
+  outline: 0;
+
+  background: #111318;
+  color: #f3e5cc;
+
+  font-size: 16px;
+
+  box-shadow: none;
+
+  transition:
+    border-color .2s ease,
+    box-shadow .2s ease;
+}
+
+#passModal .luxury-form-field input::placeholder {
+  color: #817c76;
+}
+
+#passModal .luxury-form-field input:focus {
+  border-color: #ddba80;
+
+  box-shadow:
+    0 0 0 3px rgba(221,186,128,.10);
+}
+
+/* SECURITY NOTE */
+
+#passModal .luxury-modal-note {
+  margin-top: 17px;
+
+  color: #9d9488;
+  font-size: 11px;
+  line-height: 1.55;
+  text-align: center;
+}
+
+/* ACTION BUTTONS */
+
+#passModal .luxury-modal-actions,
+#msgModal .luxury-modal-actions {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) minmax(0,1.4fr);
+
+  gap: 10px;
+  margin-top: 21px;
+}
+
+#passModal .luxury-btn,
+#msgModal .luxury-btn {
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+
+  margin: 0;
+  padding: 10px 12px;
+
+  border-radius: 10px;
+
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .2px;
+
+  cursor: pointer;
+  box-shadow: none;
+}
+
+#passModal .luxury-btn-cancel,
+#msgModal .luxury-btn-cancel {
+  border: 1px solid rgba(223,185,124,.28);
+
+  background: rgba(255,255,255,.035);
+  color: #d0c0aa;
+}
+
+#passModal .luxury-btn-primary,
+#msgModal .luxury-btn-primary {
+  border: 1px solid #dfbf87;
+
+  background: linear-gradient(
+    125deg,
+    #f2ddb5,
+    #c89f67
+  );
+
+  color: #2c2013;
+}
+
+#passModal .luxury-btn:active,
+#msgModal .luxury-btn:active {
+  transform: scale(.98);
+}
+
+/* FOOT SIGNATURE */
+
+#passModal .luxury-modal-signature,
+#msgModal .luxury-modal-signature {
+  margin-top: 18px;
+
+  color: #817159;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.3px;
+  text-align: center;
+}
+
+/* MESSAGE MODAL */
+
+#msgModal .luxury-message-card {
+  padding-top: 27px;
+  text-align: center;
+}
+
+#msgModal .luxury-message-emblem {
+  margin: 0 auto 15px;
+
+  width: 57px;
+  height: 57px;
+  border-radius: 17px;
+
+  font-size: 29px;
+}
+
+#msgModal #msgTitle {
+  margin: 0;
+
+  color: #f1dcba;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 25px;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+#msgModal #msgText {
+  margin: 12px 0 0;
+
+  color: #bab0a4;
+  font-size: 13px;
+  line-height: 1.7;
+
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* MODAL ANIMATION */
+
+@keyframes luxuryModalIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px) scale(.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* SMALL IPHONE */
+
+@media (max-width: 360px) {
+  #passModal .luxury-modal-card,
+  #msgModal .luxury-modal-card {
+    width: calc(100% - 22px);
+    padding: 20px 15px 17px;
+  }
+
+  #passModal .luxury-modal-heading h3 {
+    font-size: 21px;
+  }
+
+  #passModal .luxury-btn,
+  #msgModal .luxury-btn {
+    font-size: 11px;
+  }
+}
+
+/* SHORT MOBILE */
+
+@media (max-height: 650px) {
+  #passModal .luxury-modal-card,
+  #msgModal .luxury-modal-card {
+    padding-top: 18px;
+    padding-bottom: 15px;
+  }
+
+  #passModal .luxury-modal-kicker,
+  #msgModal .luxury-modal-kicker {
+    margin-bottom: 12px;
+  }
+
+  #passModal .luxury-modal-divider {
+    margin: 13px 0;
+  }
+
+  #passModal .luxury-form-field {
+    margin-top: 9px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #passModal .luxury-modal-card,
+  #msgModal .luxury-modal-card {
+    animation: none;
+  }
+}
+
+
 
 
   </style>
@@ -17027,38 +17456,139 @@ body.page-profile #profileSheet .ps-footer-brand {
 
 
 
-  <!-- 🔐 CHANGE PASSWORD -->
+
+<!-- PREMIUM CHANGE PASSWORD MODAL -->
 <div id="passModal" class="modal hidden">
+
   <div class="modal-backdrop"></div>
-  <div class="modal-card">
-    <h3>🔐 Đổi mật khẩu</h3>
 
-    <input id="oldPass" type="password" placeholder="Mã bảo mật">
-    <input id="newPass" type="password" placeholder="Mật khẩu mới">
-    <input id="newPass2" type="password" placeholder="Nhập lại mật khẩu mới">
+  <section class="modal-card luxury-modal-card"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="passModalTitle">
 
-    <div style="display:flex;gap:10px;margin-top:12px">
-      <button onclick="closePass()">Hủy</button>
-      <button onclick="submitChangePass()">Đổi mật khẩu</button>
+    <div class="luxury-modal-accent"></div>
+
+    <div class="luxury-modal-kicker">
+      LIVESTREAM PRO · SECURITY
     </div>
-  </div>
-</div>
+
+    <div class="luxury-modal-heading">
+      <div class="luxury-modal-emblem">✦</div>
+
+      <div>
+        <h3 id="passModalTitle">Đổi mật khẩu</h3>
+        <p>Cập nhật thông tin bảo mật tài khoản của bạn</p>
+      </div>
+    </div>
+
+    <div class="luxury-modal-divider"></div>
+
+    <div class="luxury-form-field">
+      <label for="oldPass">MÃ BẢO MẬT</label>
+      <input id="oldPass"
+             type="password"
+             placeholder="Nhập mã bảo mật"
+             autocomplete="off">
+    </div>
+
+    <div class="luxury-form-field">
+      <label for="newPass">MẬT KHẨU MỚI</label>
+      <input id="newPass"
+             type="password"
+             placeholder="Nhập mật khẩu mới"
+             autocomplete="new-password">
+    </div>
+
+    <div class="luxury-form-field">
+      <label for="newPass2">XÁC NHẬN MẬT KHẨU</label>
+      <input id="newPass2"
+             type="password"
+             placeholder="Nhập lại mật khẩu mới"
+             autocomplete="new-password">
+    </div>
+
+    <div class="luxury-modal-note">
+      Sử dụng mật khẩu riêng tư và không chia sẻ
+      mã bảo mật với người khác.
+    </div>
+
+    <div class="luxury-modal-actions">
+
+      <button type="button"
+              class="luxury-btn luxury-btn-cancel"
+              onclick="closePass()">
+        Hủy
+      </button>
+
+      <button type="button"
+              class="luxury-btn luxury-btn-primary"
+              onclick="submitChangePass()">
+        Xác nhận đổi
+      </button>
+
+    </div>
+
+    <div class="luxury-modal-signature">
+      SECURE ACCOUNT MANAGEMENT
+    </div>
+
+  </section>
 
 </div>
 
-<!-- GLOBAL MESSAGE MODAL -->
+
+</div>
+
+
+<!-- PREMIUM GLOBAL MESSAGE MODAL -->
 <div id="msgModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-  <div class="modal-card">
-    <h3 id="msgTitle">Thông báo</h3>
-    <div id="msgText" style="margin:12px 0;opacity:.9"></div>
 
-    <div class="msg-actions">
-      <button id="msgCancel" onclick="closeMsg()">Hủy</button>
-      <button id="msgOk">OK</button>
+  <div class="modal-backdrop"></div>
+
+  <section class="modal-card luxury-modal-card luxury-message-card"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="msgTitle"
+           aria-describedby="msgText">
+
+    <div class="luxury-modal-accent"></div>
+
+    <div class="luxury-modal-kicker">
+      LIVESTREAM PRO · NOTIFICATION
     </div>
-  </div>
+
+    <div class="luxury-message-emblem">✦</div>
+
+    <h3 id="msgTitle">Thông báo</h3>
+
+    <div id="msgText"></div>
+
+    <div class="msg-actions luxury-modal-actions">
+
+      <button type="button"
+              id="msgCancel"
+              class="luxury-btn luxury-btn-cancel"
+              onclick="closeMsg()">
+        Hủy
+      </button>
+
+      <button type="button"
+              id="msgOk"
+              class="luxury-btn luxury-btn-primary">
+        Xác nhận
+      </button>
+
+    </div>
+
+    <div class="luxury-modal-signature">
+      LIVESTREAM PRO
+    </div>
+
+  </section>
+
 </div>
+
 
 
 

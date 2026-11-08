@@ -1318,6 +1318,7 @@ function closeProfileSheet(){
 /* mở modal đổi mật khẩu từ sheet */
 function openChangePass(){
   closeProfileSheet();
+  hideTabbar();
   document.getElementById("passModal")?.classList.remove("hidden");
 }
 
