@@ -107,100 +107,217 @@ function diffDays(ts){
 }
 
 
-function renderProducts(products){
+function escapeBoothHtml(value) {
+  return String(value ?? "").replace(
+    /[&<>"']/g,
+    c => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
+    })[c]
+  );
+}
+
+
+
+
+/* ==========================================
+   LUXURY PRODUCT CARD RENDER
+========================================== */
+
+function renderProducts(products) {
+
   const list = document.getElementById("productList");
   const empty = document.getElementById("emptyText");
   const pager = document.getElementById("productPagination");
 
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  const isOwner = me?.uid === currentBoothOwnerUid;
+  if (!list || !empty || !pager) return;
 
-  if(!products || products.length === 0){
+  const me = JSON.parse(
+    localStorage.getItem("user_profile") || "{}"
+  );
+
+  const isOwner = me.uid === currentBoothOwnerUid;
+
+  // Không có sản phẩm
+  if (!Array.isArray(products) || products.length === 0) {
     empty.classList.remove("hidden");
     list.innerHTML = "";
+    pager.innerHTML = "";
     pager.classList.add("hidden");
     return;
   }
 
   empty.classList.add("hidden");
 
-  const totalPages = Math.ceil(products.length / PRODUCTS_PER_PAGE);
-  if(currentProductPage > totalPages) currentProductPage = 1;
+  // Giữ 4 sản phẩm mỗi trang
+  const totalPages = Math.ceil(
+    products.length / PRODUCTS_PER_PAGE
+  );
+
+  if (currentProductPage > totalPages) {
+    currentProductPage = 1;
+  }
 
   const start = (currentProductPage - 1) * PRODUCTS_PER_PAGE;
-  const pageItems = products.slice(start, start + PRODUCTS_PER_PAGE);
+  const pageItems = products.slice(
+    start,
+    start + PRODUCTS_PER_PAGE
+  );
 
   list.innerHTML = "";
 
-  pageItems.forEach(p=>{
-    // 🔧 đảm bảo sản phẩm nào cũng có images[]
-if(!Array.isArray(p.images) || p.images.length === 0){
-  p.images = [p.image];
-}
+  pageItems.forEach(p => {
 
+    const images = (
+      Array.isArray(p.images) && p.images.length
+        ? p.images
+        : [p.image]
+    ).filter(Boolean);
 
-    const out = p.stock <= 0;
-    const div = document.createElement("div");
+    const stock = Number(p.stock) || 0;
+    const price = Number(p.price) || 0;
+    const out = stock <= 0;
+
+    const div = document.createElement("article");
     div.className = "product-card";
 
     div.innerHTML = `
+      <!-- IMAGE -->
+      <div class="product-photo-frame">
 
-   <img src="${p.images[0]}"
-     style="cursor:zoom-in"
-     onclick='openGallery(${JSON.stringify(p.images)}, 0)'
->
+        ${images.length ? `
+          <img
+            class="product-photo"
+            alt="${escapeBoothHtml(p.name || "Sản phẩm")}"
+            loading="lazy"
+          >
+        ` : `
+          <span class="product-photo-placeholder">
+            LIVESTREAM PRO
+          </span>
+        `}
 
-      <div class="product-name">${p.name}</div>
-      <div class="product-price">💎 ${p.price.toLocaleString()}</div>
-      <div style="opacity:.7;font-size:13px;margin-top:4px">
-        ${p.desc || ""}
       </div>
 
-      <div class="product-stock"
-        style="color:${out ? '#ff5f6d' : '#25F09A'}">
-        ${out ? "📦 Hết hàng" : `📦 Còn ${p.stock} sản phẩm`}
-      </div>
+      <!-- INFORMATION -->
+      <div class="product-content">
 
-      ${isOwner ? `
-        <div style="display:flex;gap:8px;margin-top:8px">
-          <button onclick="openEditProduct('${p.id}')" style="flex:1">✏️ Sửa</button>
-          <button onclick="deleteProduct('${p.id}')" style="flex:1;color:#ff5f6d">🗑 Xoá</button>
+        <div class="product-name">
+          ${escapeBoothHtml(p.name || "Sản phẩm")}
         </div>
-      ` : `
-        <button style="margin-top:8px;width:100%"
-          ${out ? "disabled style='opacity:.5'" : ""}
-          onclick="buyProduct('${p.id}')">
-          ${out ? "Hết hàng" : "🛒 Mua"}
-        </button>
-      `}
+
+        <div class="product-price">
+          ${price.toLocaleString("vi-VN")}
+          <small>kim cương</small>
+        </div>
+
+        <p class="product-description">
+          ${escapeBoothHtml(p.desc || "Chưa có mô tả.")}
+        </p>
+
+        <div class="product-stock ${out ? "out" : "in"}">
+          ${out
+            ? "Hết hàng"
+            : `Còn ${stock.toLocaleString("vi-VN")} sản phẩm`
+          }
+        </div>
+
+        ${isOwner ? `
+          <div class="product-controls">
+
+            <button type="button"
+                    class="product-edit">
+              Chỉnh sửa
+            </button>
+
+            <button type="button"
+                    class="product-delete">
+              Xóa
+            </button>
+
+          </div>
+        ` : `
+          <button type="button"
+                  class="product-buy"
+                  ${out ? "disabled" : ""}>
+            ${out ? "Hết hàng" : "Mua ngay"}
+          </button>
+        `}
+
+      </div>
     `;
+
+    // Thư viện ảnh
+    const photo = div.querySelector(".product-photo");
+
+    if (photo && images.length) {
+      photo.src = images[0];
+      photo.addEventListener("click", () => {
+        openGallery(images, 0);
+      });
+    }
+
+    // Chức năng chủ gian hàng
+    if (isOwner) {
+      div.querySelector(".product-edit")
+        ?.addEventListener("click", () => {
+          openEditProduct(p.id);
+        });
+
+      div.querySelector(".product-delete")
+        ?.addEventListener("click", () => {
+          deleteProduct(p.id);
+        });
+    }
+
+    // Chức năng mua hàng
+    else {
+      div.querySelector(".product-buy")
+        ?.addEventListener("click", () => {
+          if (!out) buyProduct(p.id);
+        });
+    }
 
     list.appendChild(div);
   });
 
-  // ===== RENDER PAGINATION =====
-  if(totalPages <= 1){
+  // PHÂN TRANG
+  pager.innerHTML = "";
+
+  if (totalPages <= 1) {
     pager.classList.add("hidden");
     return;
   }
 
   pager.classList.remove("hidden");
-  pager.innerHTML = "";
 
-  for(let i=1;i<=totalPages;i++){
+  for (let i = 1; i <= totalPages; i++) {
+
     const btn = document.createElement("button");
+    btn.type = "button";
     btn.textContent = i;
-    if(i === currentProductPage) btn.classList.add("active");
-    btn.onclick = ()=>{
+
+    if (i === currentProductPage) {
+      btn.classList.add("active");
+    }
+
+    btn.onclick = () => {
       currentProductPage = i;
       renderProducts(products);
-      window.scrollTo({ top: 0, behavior: "smooth" });
+
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
     };
+
     pager.appendChild(btn);
   }
+
 }
-
-
 
 
 
@@ -262,21 +379,39 @@ async function loadBooth(){
         const daysLeft = diffDays(booth.expireAt);
         expireBox.classList.remove("hidden");
 
-        if(daysLeft <= 1){
-          expireBox.className = "booth-expire danger";
-          expireBox.innerHTML = `🔴 Gian hàng hết hạn <b>hôm nay</b>!<br>
-            📅 ${formatDate(booth.expireAt)}`;
-        }
-        else if(daysLeft <= 3){
-          expireBox.className = "booth-expire warn";
-          expireBox.innerHTML = `⏳ Gian hàng sắp hết hạn<br>
-            📅 ${formatDate(booth.expireAt)} (còn ${daysLeft} ngày)`;
-        }
-        else{
-          expireBox.className = "booth-expire";
-          expireBox.innerHTML = `📅 Hết hạn: ${formatDate(booth.expireAt)}
-            (còn ${daysLeft} ngày)`;
-        }
+
+if (daysLeft <= 1) {
+
+  expireBox.className = "booth-expire danger";
+
+  expireBox.innerHTML = `
+    Gian hàng hết hạn <b>hôm nay</b>.
+    <div>Ngày hết hạn: ${formatDate(booth.expireAt)}</div>
+  `;
+
+} else if (daysLeft <= 3) {
+
+  expireBox.className = "booth-expire warn";
+
+  expireBox.innerHTML = `
+    Gian hàng sắp hết hạn.
+    <div>
+      Ngày hết hạn: ${formatDate(booth.expireAt)}
+      — còn ${daysLeft} ngày
+    </div>
+  `;
+
+} else {
+
+  expireBox.className = "booth-expire";
+
+  expireBox.innerHTML = `
+    Ngày hết hạn: ${formatDate(booth.expireAt)}
+    — còn ${daysLeft} ngày
+  `;
+
+}
+
       }
     }
 
@@ -329,7 +464,7 @@ btnAddProduct.onclick = ()=>{
   editingImages = [];
   pGalleryPreview.innerHTML = "";
 
-  productModalTitle.textContent = "➕ Thêm sản phẩm";
+  productModalTitle.textContent = "Thêm sản phẩm";
   btnSubmitProduct.textContent = "Đăng bán";
 
   // reset form
@@ -554,7 +689,7 @@ function closeAddProduct(){
 
   // ✅ RESET STATE
   editingProductId = null;
-  productModalTitle.textContent = "➕ Thêm sản phẩm";
+  productModalTitle.textContent = "Thêm sản phẩm";
   btnSubmitProduct.textContent = "Đăng bán";
 
   // reset form
@@ -695,7 +830,7 @@ function openEditProduct(productId){
 
   editingProductId = productId;
 
-  productModalTitle.textContent = "✏️ Sửa sản phẩm";
+  productModalTitle.textContent = "Chỉnh sửa sản phẩm";
   btnSubmitProduct.textContent = "Lưu thay đổi";
 
   pName.value  = p.name;
@@ -1040,39 +1175,228 @@ buyNote.value = "";
 
 
 
-document.querySelectorAll(".booth-tabs .tab").forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll(".booth-tabs .tab")
-      .forEach(b=>b.classList.remove("active"));
-    btn.classList.add("active");
 
-    const tab = btn.dataset.tab;
+document.querySelectorAll(".booth-tabs .tab")
+  .forEach(btn => {
 
-   document.getElementById("productList").style.display =
-    tab === "products" ? "grid" : "none";
+    btn.onclick = () => {
+
+      document.querySelectorAll(".booth-tabs .tab")
+        .forEach(b => b.classList.remove("active"));
+
+      btn.classList.add("active");
+
+      const tab = btn.dataset.tab;
+      const isProducts = tab === "products";
+
+      document.getElementById("productList").style.display =
+        isProducts ? "grid" : "none";
+
+      // Chỉ hiển thị phân trang ở tab sản phẩm
+      document.getElementById("productPagination").style.display =
+        isProducts ? "" : "none";
+
+      document.getElementById("orderSection")
+        .classList.toggle("hidden", tab !== "orders");
+
+      document.getElementById("myOrderSection")
+        .classList.toggle("hidden", tab !== "myOrders");
+
+      const empty = document.getElementById("emptyText");
+      empty.style.display = isProducts ? "" : "none";
+
+    };
+
+  });
 
 
-    document.getElementById("orderSection").classList.toggle(
-      "hidden", tab !== "orders"
-    );
 
-    document.getElementById("myOrderSection").classList.toggle(
-      "hidden", tab !== "myOrders"
-    );
 
-    document.getElementById("emptyText").style.display =
-      tab === "products" ? "block" : "none";
+/* ==========================================
+   LUXURY ORDER HISTORY
+========================================== */
+
+function createLuxuryOrderCard(o, isSeller) {
+
+  const statusLabels = {
+    pending: "Đang chờ xử lý",
+    contacted: "Đã liên hệ",
+    buyer_received: "Người mua đã nhận hàng",
+    dispute: "Đang khiếu nại",
+    done: "Hoàn tất",
+    refunded: "Đã hoàn tiền",
+    cancelled: "Đã hủy"
   };
-});
+
+  const status = String(o.status || "");
+  const statusClass = status.replace(/[^a-z_-]/g, "");
+  const amount = Number(o.totalPrice) || 0;
+  const quantity = Number(o.qty) || 0;
+  const buyer = o.buyerInfo || {};
+
+  const card = document.createElement("article");
+
+  card.className = isSeller
+    ? "order-card"
+    : "my-order-card";
+
+  card.innerHTML = `
+    <div class="${isSeller ? "order-top" : "my-order-top"}">
+
+      <div>
+        ${escapeBoothHtml(o.productName || "Sản phẩm")}
+        <span class="qty">
+          × ${quantity}
+        </span>
+      </div>
+
+      <div class="${isSeller ? "order-price" : "my-order-price"}">
+        ${amount.toLocaleString("vi-VN")}
+        <small>kim cương</small>
+      </div>
+
+    </div>
+
+    <div class="${isSeller ? "order-meta" : "my-order-meta"}">
+      ${new Date(o.createdAt).toLocaleString("vi-VN")}
+    </div>
+
+    ${isSeller ? `
+      <div class="order-buyer">
+
+        <div>
+          <b>Người mua:</b>
+          ${escapeBoothHtml(buyer.name || "—")}
+        </div>
+
+        <div>
+          <b>Điện thoại:</b>
+          ${escapeBoothHtml(buyer.phone || "—")}
+        </div>
+
+        <div>
+          <b>Địa chỉ:</b>
+          ${escapeBoothHtml(buyer.address || "—")}
+        </div>
+
+        ${buyer.note ? `
+          <div>
+            <b>Ghi chú:</b>
+            ${escapeBoothHtml(buyer.note)}
+          </div>
+        ` : ""}
+
+      </div>
+    ` : ""}
+
+    <div class="${isSeller ? "order-status" : "my-order-status"} ${statusClass}">
+      ${statusLabels[status] || "Đang xử lý"}
+    </div>
+
+    ${status === "done" && o.adminApproved ? `
+      <div class="order-admin-note">
+        Đơn hàng đã được Admin xử lý hoàn tất.
+      </div>
+    ` : ""}
+
+    ${status === "refunded" ? `
+      <div class="order-admin-note">
+        Đơn hàng đã được xử lý hoàn tiền.
+      </div>
+    ` : ""}
+
+    <div class="order-actions"></div>
+  `;
+
+  const actions = card.querySelector(".order-actions");
+
+  function addButton(label, callback) {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.textContent = label;
+    button.addEventListener("click", callback);
+    actions.appendChild(button);
+  }
+
+  function addNote(message) {
+    const note = document.createElement("span");
+    note.className = "order-action-note";
+    note.textContent = message;
+    actions.appendChild(note);
+  }
+
+  // NGƯỜI BÁN
+  if (isSeller) {
+
+    if (status === "pending") {
+      addButton("Đã liên hệ", () => contactOrder(o.id));
+    }
+
+    if (status === "buyer_received") {
+      addButton("Xác nhận hoàn tất", () => completeOrder(o.id));
+    }
+
+    if (status === "contacted") {
+      addNote("Chờ người mua xác nhận");
+    }
+
+    if (
+      status === "cancelled" ||
+      status === "refunded" ||
+      (status === "done" && o.adminApproved)
+    ) {
+      addButton("Xóa lịch sử", () => hideOrder(o.id, "seller"));
+    } else {
+      addNote("Chỉ xóa sau khi Admin xử lý");
+    }
+
+  }
+
+  // NGƯỜI MUA
+  else {
+
+    if (status === "pending") {
+      addButton("Hủy đơn", () => cancelMyOrder(o.id));
+    }
+
+    if (status === "contacted") {
+      addButton("Đã nhận hàng", () => markOrderReceived(o.id));
+    }
+
+    if (["contacted", "buyer_received"].includes(status)) {
+      addButton("Khiếu nại / Hoàn tiền", () => openDispute(o.id));
+    }
+
+    if (["done", "cancelled", "refunded"].includes(status)) {
+      addButton("Xóa lịch sử", () => hideOrder(o.id, "buyer"));
+    }
+
+  }
+
+  if (!actions.children.length) {
+    actions.remove();
+  }
+
+  return card;
+}
 
 
+/* ==========================================
+   ĐƠN HÀNG NGƯỜI MUA
+========================================== */
 
-function renderMyOrders(orders){
+function renderMyOrders(orders) {
+
   const list = document.getElementById("myOrderList");
   const empty = document.getElementById("myOrderEmpty");
 
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  if(!me?.uid){
+  if (!list || !empty) return;
+
+  const me = JSON.parse(
+    localStorage.getItem("user_profile") || "{}"
+  );
+
+  if (!me.uid) {
     empty.classList.remove("hidden");
     empty.textContent = "Vui lòng đăng nhập để xem đơn hàng.";
     list.innerHTML = "";
@@ -1080,10 +1404,10 @@ function renderMyOrders(orders){
   }
 
   const myOrders = (orders || []).filter(o =>
-  o.buyerUid === me.uid && !o.hiddenByBuyer
-);
+    o.buyerUid === me.uid && !o.hiddenByBuyer
+  );
 
-  if(myOrders.length === 0){
+  if (!myOrders.length) {
     empty.classList.remove("hidden");
     list.innerHTML = "";
     return;
@@ -1093,111 +1417,28 @@ function renderMyOrders(orders){
   list.className = "my-order-list";
   list.innerHTML = "";
 
-  myOrders.forEach(o=>{
-const statusText = {
-  pending: "⏳ Đang chờ shop",
-  contacted: "📞 Shop đã liên hệ",
-  buyer_received: "📦 Đã nhận hàng",
-  dispute: "⚠️ Đang khiếu nại",
-  done: "✅ Hoàn tất",
-  refunded: "💸 Đã hoàn tiền",
-  cancelled: "❌ Đã huỷ",
-}[o.status] || "⏳ Đang xử lý";
-
-
-    const div = document.createElement("div");
-    div.className = "my-order-card";
-
-div.innerHTML = `
-  <div class="my-order-top">
-    <div>
-      🛒 ${o.productName}
-      <span style="opacity:.7">× ${o.qty}</span>
-    </div>
-    <div class="my-order-price">
-      💎 ${o.totalPrice.toLocaleString()}
-    </div>
-  </div>
-
-  <div class="my-order-meta">
-    🕒 ${new Date(o.createdAt).toLocaleString("vi-VN")}
-  </div>
-
-  <div class="my-order-status ${o.status}">
-    ${statusText}
-  </div>
-
-
-${o.status === "done" && o.adminApproved ? `
-  <div style="margin-top:6px;color:#25F09A;font-size:13px;">
-    ✅ Admin đã xử lý xong – đơn hàng hoàn tất
-  </div>
-` : ""}
-
-${o.status === "refunded" ? `
-  <div style="margin-top:6px;color:#25c2a0;font-size:13px;">
-    ✅ Admin đã xử lý xong – tiền đã được hoàn lại
-  </div>
-` : ""}
-
-
-
-
-
-<div class="order-actions">
-
-  ${o.status === "pending" ? `
-    <button style="color:#ff6b6b"
-      onclick="cancelMyOrder('${o.id}')">
-      ❌ Huỷ đơn
-    </button>
-  ` : ""}
-
-  ${o.status === "contacted" ? `
-    <button style="color:#25F09A"
-      onclick="markOrderReceived('${o.id}')">
-      📦 Đã nhận được hàng
-    </button>
-  ` : ""}
-
-  ${["contacted","buyer_received"].includes(o.status) ? `
-    <button style="color:#ff9800"
-      onclick="openDispute('${o.id}')">
-      ⚠️ Khiếu nại / Hoàn tiền
-    </button>
-  ` : ""}
-
-  ${["done","cancelled","refunded"].includes(o.status) ? `
-    <button style="color:#ff6b6b"
-      onclick="hideOrder('${o.id}', 'buyer')">
-      🗑 Xoá lịch sử
-    </button>
-  ` : ""}
-
-</div>
-
-
-
-
-`;
-
-
-    list.appendChild(div);
+  myOrders.forEach(o => {
+    list.appendChild(createLuxuryOrderCard(o, false));
   });
 }
 
 
+/* ==========================================
+   ĐƠN HÀNG NGƯỜI BÁN
+========================================== */
 
+function renderOrders(orders) {
 
-function renderOrders(orders){
-
-  orders = (orders || []).filter(o => !o.hiddenBySeller);
-
-  
   const list = document.getElementById("orderList");
   const empty = document.getElementById("orderEmpty");
 
-  if(!orders || orders.length === 0){
+  if (!list || !empty) return;
+
+  const sellerOrders = (orders || []).filter(
+    o => !o.hiddenBySeller
+  );
+
+  if (!sellerOrders.length) {
     empty.classList.remove("hidden");
     list.innerHTML = "";
     return;
@@ -1206,106 +1447,10 @@ function renderOrders(orders){
   empty.classList.add("hidden");
   list.innerHTML = "";
 
-  orders.forEach(o=>{
-const statusText = {
-  pending: "⏳ Chờ xử lý",
-  contacted: "📞 Đã liên hệ",
-  buyer_received: "📦 Buyer đã nhận hàng",
-  dispute: "⚠️ Đang bị khiếu nại",
-  done: "✅ Hoàn tất",
-  refunded: "💸 Đã hoàn tiền",
-  cancelled: "❌ Đã huỷ",
-}[o.status] || "⏳ Đang xử lý";
-
-
-    const div = document.createElement("div");
-    div.className = "order-card";
-
-    div.innerHTML = `
-      <div class="order-top">
-        <div>
-          🛒 ${o.productName}
-          <span class="qty">× ${o.qty}</span>
-        </div>
-        <div class="order-price">
-          💎 ${o.totalPrice.toLocaleString()}
-        </div>
-      </div>
-
-      <div class="order-meta">
-        🕒 ${new Date(o.createdAt).toLocaleString("vi-VN")}
-      </div>
-
-      <div class="order-buyer">
-        👤 <b>${o.buyerInfo.name}</b><br>
-        📞 ${o.buyerInfo.phone}<br>
-        📍 ${o.buyerInfo.address || "—"}<br>
-        ${o.buyerInfo.note ? `📝 ${o.buyerInfo.note}` : ""}
-      </div>
-
-      <div class="order-status ${o.status}">
-        ${statusText}
-      </div>
-
-
-${o.status === "done" && o.adminApproved ? `
-  <div style="margin-top:6px;color:#25F09A;font-size:13px;">
-    ✅ Admin đã xử lý xong – đơn hàng hoàn tất
-  </div>
-` : ""}
-
-${o.status === "refunded" ? `
-  <div style="margin-top:6px;color:#ff5f6d;font-size:13px;">
-    ✅ Admin đã xử lý xong – đơn hàng bị hoàn tiền
-  </div>
-` : ""}
-
-    
-
-<div class="order-actions">
-  ${o.status === "pending" ? `
-    <button onclick="contactOrder('${o.id}')">
-      📞 Đã liên hệ
-    </button>
-  ` : ""}
-
-${o.status === "buyer_received" ? `
-  <button style="color:#25F09A"
-    onclick="completeOrder('${o.id}')">
-    ✅ Xác nhận hoàn tất
-  </button>
-` : o.status === "contacted" ? `
-  <span style="opacity:.5;font-size:12px">
-    ⏳ Chờ người mua xác nhận
-  </span>
-` : ""}
-
-
-${(
-  o.status === "cancelled" ||
-  o.status === "refunded" ||
-  (o.status === "done" && o.adminApproved)
-) ? `
-  <button onclick="hideOrder('${o.id}', 'seller')">
-    🗑 Xoá lịch sử
-  </button>
-` : `
-  <span style="opacity:.5;font-size:12px">
-    🔒 Chỉ xoá sau khi admin xử lý
-  </span>
-`}
-
-
-</div>
-
-
-
-    `;
-
-    list.appendChild(div);
+  sellerOrders.forEach(o => {
+    list.appendChild(createLuxuryOrderCard(o, true));
   });
 }
-
 
 
 
@@ -1340,7 +1485,7 @@ function setProductSubmitting(loading){
     btnSubmitProduct.disabled = true;
     btnSubmitProduct.dataset._text =
       btnSubmitProduct.textContent;
-    btnSubmitProduct.textContent = "⏳ Đang đăng...";
+    btnSubmitProduct.textContent = "Đang xử lý...";
     btnSubmitProduct.style.opacity = ".6";
   }else{
     btnSubmitProduct.disabled = false;

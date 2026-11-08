@@ -563,81 +563,1364 @@ html,body{
 .my-order-status.cancelled{ color:#ff6b6b; }
 
 
+
+
+/* ==========================================
+   LIVESTREAM PRO - LUXURY BOUTIQUE
+   OBSIDIAN BLACK & CHAMPAGNE GOLD
+========================================== */
+
+body.booth-page {
+  --bt-gold: #d6b47a;
+  --bt-light: #f4e0b9;
+  --bt-line: rgba(214,180,122,.28);
+  --bt-muted: #aaa39c;
+
+  margin: 0;
+  min-height: 100dvh;
+  color: #f1e5d1;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0,
+      rgba(176,126,57,.13),
+      transparent 48%
+    ),
+    linear-gradient(180deg,#15161b,#090a0e 72%);
+
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+body.booth-page *,
+body.booth-page *::before,
+body.booth-page *::after {
+  box-sizing: border-box;
+}
+
+body.booth-page .hidden {
+  display: none !important;
+}
+
+/* ==========================================
+   MAIN LAYOUT
+========================================== */
+
+body.booth-page .booth-shell {
+  width: 100%;
+  min-height: 100dvh;
+}
+
+body.booth-page .booth-header {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  width: 100%;
+  min-height: 69px;
+
+  display: flex;
+  align-items: center;
+  gap: 11px;
+
+  margin: 0;
+  padding:
+    calc(10px + env(safe-area-inset-top,0px))
+    max(12px,calc((100vw - 950px)/2))
+    11px;
+
+  border-bottom: 1px solid var(--bt-line);
+
+  background: rgba(15,16,20,.96);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+/* BACK */
+
+body.booth-page #btnBack {
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 39px;
+  width: 39px;
+  height: 39px;
+  min-width: 39px;
+
+  margin: 0;
+  padding: 0;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 11px;
+
+  background: #26231f;
+  color: #e6c68c;
+
+  font-size: 23px;
+  font-weight: 400;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+/* BRAND */
+
+body.booth-page .booth-info {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  flex: 1;
+  width: auto;
+  min-width: 0;
+}
+
+body.booth-page .booth-logo-frame {
+  flex: 0 0 43px;
+  width: 43px;
+  height: 43px;
+
+  padding: 2px;
+
+  border: 1px solid #b99761;
+  border-radius: 12px;
+
+  background: #2b251e;
+  overflow: hidden;
+}
+
+body.booth-page #boothLogo {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  border-radius: 9px;
+  object-fit: cover;
+
+  background: #18191d;
+  box-shadow: none;
+}
+
+body.booth-page .booth-identity {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+body.booth-page .booth-kicker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+
+  color: #bda170;
+  font-size: 8px;
+  font-weight: 800;
+  letter-spacing: .9px;
+  white-space: nowrap;
+}
+
+body.booth-page .booth-kicker-dot {
+  flex: 0 0 3px;
+  width: 3px;
+  height: 3px;
+
+  border-radius: 50%;
+  background: #cbaa70;
+}
+
+body.booth-page #boothName {
+  display: block;
+
+  width: 100%;
+  margin-top: 5px;
+
+  color: var(--bt-light);
+  font-size: 15px;
+  font-weight: 800;
+  line-height: 1.3;
+
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+body.booth-page #btnExtendBooth {
+  position: static;
+
+  flex: 0 0 auto;
+  width: auto;
+  min-width: 68px;
+  min-height: 36px;
+
+  margin: 0;
+  padding: 8px 10px;
+
+  border: 1px solid #b89b6a;
+  border-radius: 10px;
+
+  background: #31271d;
+  color: #f0d3a0;
+
+  font-size: 11px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+/* EXPIRATION NOTICE */
+
+body.booth-page #boothExpireBox {
+  width: calc(100% - 26px);
+  max-width: 922px;
+
+  margin: 12px auto 0;
+  padding: 12px 14px;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 12px;
+
+  background: #24211e;
+  color: #d5bd95;
+
+  font-size: 12px;
+  line-height: 1.6;
+  box-shadow: none;
+}
+
+body.booth-page #boothExpireBox.warn {
+  border-color: #a7834b;
+  color: #edc78f;
+  background: #30271f;
+  box-shadow: none;
+}
+
+body.booth-page #boothExpireBox.danger {
+  border-color: #975b59;
+  color: #e9aba5;
+  background: #302021;
+  box-shadow: none;
+}
+
+/* ==========================================
+   BODY + SECTION TITLE
+========================================== */
+
+body.booth-page .booth-body {
+  width: 100%;
+  max-width: 950px;
+
+  margin: 0 auto;
+  padding: 22px 13px 105px;
+}
+
+body.booth-page .booth-section-head {
+  margin: 0 0 20px;
+  padding: 0 2px 17px;
+
+  border-bottom: 1px solid var(--bt-line);
+}
+
+body.booth-page .booth-section-kicker {
+  color: #bca070;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+}
+
+body.booth-page .booth-section-head h1 {
+  margin: 8px 0 6px;
+
+  color: var(--bt-light);
+  font: 700 25px Georgia,"Times New Roman",serif;
+  line-height: 1.3;
+}
+
+body.booth-page .booth-section-head p {
+  margin: 0;
+  color: var(--bt-muted);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+/* ==========================================
+   PRODUCT / ORDER TABS
+========================================== */
+
+body.booth-page .booth-tabs.compact {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  margin: 0 0 17px;
+  padding: 4px;
+
+  border: 1px solid rgba(218,184,126,.18);
+  border-radius: 14px;
+
+  background: #17191e;
+}
+
+body.booth-page .booth-tabs.compact .tab {
+  flex: 1 1 0;
+  min-width: 0;
+  min-height: 42px;
+
+  display: grid;
+  place-items: center;
+
+  margin: 0;
+  padding: 10px 6px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #aba39a;
+
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.3;
+  text-align: center;
+  box-shadow: none;
+
+  cursor: pointer;
+}
+
+body.booth-page .booth-tabs.compact .tab.active {
+  border-color: rgba(223,187,124,.5);
+  background: linear-gradient(135deg,#5a442b,#30251c);
+  color: #f7dfb5;
+  box-shadow: none;
+}
+
+/* ==========================================
+   PRODUCT GRID - 2 COLUMNS
+========================================== */
+
+body.booth-page #productList {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  align-items: stretch;
+  gap: 13px;
+}
+
+body.booth-page .product-card {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(218,181,115,.31);
+  border-radius: 16px;
+
+  background:
+    linear-gradient(145deg,#26231f,#181a20);
+
+  color: #f1e4ce;
+  text-align: left;
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.03),
+    0 10px 25px rgba(0,0,0,.22);
+}
+
+body.booth-page .product-photo-frame {
+  position: relative;
+  display: block;
+
+  width: 100%;
+  aspect-ratio: 1/1;
+
+  overflow: hidden;
+
+  background:
+    radial-gradient(circle,#30281e,#17191d);
+}
+
+body.booth-page .product-photo {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  border-radius: 0;
+  object-fit: cover;
+
+  cursor: zoom-in;
+  transition: transform .2s ease;
+}
+
+body.booth-page .product-photo:hover {
+  transform: scale(1.035);
+}
+
+body.booth-page .product-photo-placeholder {
+  display: grid;
+  place-items: center;
+
+  width: 100%;
+  height: 100%;
+
+  color: #bea77f;
+  font: 700 12px Georgia,serif;
+}
+
+body.booth-page .product-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: 7px;
+
+  min-width: 0;
+  padding: 13px 12px;
+}
+
+body.booth-page .product-name {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+
+  overflow: hidden;
+
+  min-height: 34px;
+  margin: 0;
+
+  color: #f4e6cd;
+  font-size: 13px;
+  font-weight: 750;
+  line-height: 1.35;
+}
+
+body.booth-page .product-price {
+  margin: 0;
+
+  color: #edca90;
+  font-size: 18px;
+  font-weight: 850;
+  line-height: 1.25;
+  font-variant-numeric: tabular-nums;
+}
+
+body.booth-page .product-price small {
+  color: #b5a181;
+  font-size: 9px;
+  font-weight: 650;
+}
+
+body.booth-page .product-description {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+
+  min-height: 30px;
+  margin: 0;
+
+  overflow: hidden;
+
+  color: #aaa39a;
+  font-size: 11px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+body.booth-page .product-stock {
+  margin: 0;
+
+  color: #b6b0a8;
+  font-size: 10px;
+  font-weight: 650;
+}
+
+body.booth-page .product-stock.in {
+  color: #a9c9ae;
+}
+
+body.booth-page .product-stock.out {
+  color: #e4a29b;
+}
+
+body.booth-page .product-controls {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 7px;
+
+  margin-top: auto;
+  padding-top: 9px;
+}
+
+body.booth-page .product-controls button,
+body.booth-page .product-buy {
+  width: 100%;
+  min-width: 0;
+  min-height: 37px;
+
+  margin: 0;
+  padding: 8px 5px;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 9px;
+
+  background: #332b23;
+  color: #edd2a3;
+
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.25;
+  text-align: center;
+  box-shadow: none;
+}
+
+body.booth-page .product-buy {
+  margin-top: auto;
+  border-color: #e8c68a;
+
+  background: linear-gradient(135deg,#eed8aa,#bd9357);
+  color: #251b10;
+}
+
+body.booth-page .product-delete {
+  border-color: rgba(196,123,118,.3) !important;
+  background: #302224 !important;
+  color: #e5a49d !important;
+}
+
+body.booth-page .product-buy:disabled {
+  border-color: #4c4740;
+  background: #3a3734;
+  color: #a9a39c;
+  opacity: .75;
+}
+
+/* ==========================================
+   PAGINATION
+========================================== */
+
+body.booth-page .pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+
+  margin: 22px 0 0;
+}
+
+body.booth-page .pagination button {
+  width: 37px;
+  min-width: 37px;
+  height: 37px;
+
+  margin: 0;
+  padding: 0;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 10px;
+
+  background: #232329;
+  color: #c8bba6;
+
+  font-size: 12px;
+  font-weight: 800;
+  box-shadow: none;
+}
+
+body.booth-page .pagination button.active {
+  border-color: #d4ae70;
+  background: #60492d;
+  color: #f8dfb0;
+  box-shadow: none;
+}
+
+/* ==========================================
+   FLOATING ADD BUTTON
+========================================== */
+
+body.booth-page #btnAddProduct {
+  position: fixed;
+  z-index: 900;
+
+  right: max(14px,calc((100vw - 950px)/2 + 14px));
+  bottom: calc(20px + env(safe-area-inset-bottom,0px));
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  width: auto;
+  min-width: 0;
+  height: 49px;
+
+  padding: 0 17px;
+
+  border: 1px solid #efcf92;
+  border-radius: 14px;
+
+  background: linear-gradient(135deg,#f1dbae,#be9357);
+  color: #251b10;
+
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+
+  box-shadow: 0 9px 27px rgba(0,0,0,.43);
+}
+
+body.booth-page .add-product-symbol {
+  font-size: 24px;
+  font-weight: 400;
+}
+
+body.booth-page .add-product-text {
+  white-space: nowrap;
+}
+
+/* ==========================================
+   ORDER CARDS
+========================================== */
+
+body.booth-page .order-list,
+body.booth-page .my-order-list {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+
+  margin: 0;
+  padding: 0;
+}
+
+body.booth-page .order-card,
+body.booth-page .my-order-card {
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 16px;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 15px;
+
+  background: linear-gradient(135deg,#26231e,#181a20);
+  color: #eee0c7;
+
+  font-size: 12px;
+  line-height: 1.5;
+
+  box-shadow: 0 8px 23px rgba(0,0,0,.17);
+}
+
+body.booth-page .order-top,
+body.booth-page .my-order-top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  color: #f3e4c8;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+body.booth-page .order-price,
+body.booth-page .my-order-price {
+  color: #edc990;
+  font-size: 15px;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+body.booth-page .order-meta,
+body.booth-page .my-order-meta {
+  margin-top: 8px;
+  color: #a9a099;
+  font-size: 11px;
+  opacity: 1;
+}
+
+body.booth-page .order-buyer {
+  margin-top: 12px;
+  padding: 13px;
+
+  border: 1px solid rgba(215,179,117,.15);
+  border-radius: 11px;
+
+  background: #191b20;
+  color: #c7bbab;
+
+  font-size: 12px;
+  line-height: 1.8;
+  overflow-wrap: anywhere;
+}
+
+body.booth-page .order-status,
+body.booth-page .my-order-status {
+  margin-top: 11px;
+
+  color: #d5b889;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+body.booth-page :is(.order-status,.my-order-status).done {
+  color: #a6d0b1;
+}
+
+body.booth-page :is(.order-status,.my-order-status).cancelled,
+body.booth-page :is(.order-status,.my-order-status).dispute {
+  color: #e2a19a;
+}
+
+body.booth-page .order-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+
+  margin-top: 13px;
+}
+
+body.booth-page .order-actions button {
+  flex: 1 1 auto;
+  min-width: 0;
+  min-height: 40px;
+
+  margin: 0;
+  padding: 9px 12px;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 10px;
+
+  background: #352c22;
+  color: #e8cb99 !important;
+
+  font-size: 11px;
+  font-weight: 750;
+  box-shadow: none;
+}
+
+body.booth-page .empty-text {
+  margin: 24px auto;
+  padding: 30px 15px;
+
+  border: 1px dashed var(--bt-line);
+  border-radius: 14px;
+
+  background: #1a1b20;
+  color: #aaa39c;
+
+  font-size: 12px;
+  line-height: 1.7;
+  text-align: center;
+  opacity: 1;
+}
+
+/* ==========================================
+   MODALS
+========================================== */
+
+body.booth-page .modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  height: 100dvh;
+
+  padding:
+    calc(13px + env(safe-area-inset-top,0px))
+    13px
+    calc(13px + env(safe-area-inset-bottom,0px));
+
+  background: rgba(0,0,0,.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+
+body.booth-page .modal-backdrop.hidden {
+  display: none !important;
+}
+
+body.booth-page .modal-backdrop:not(#galleryModal) .rent-modal {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  max-width: 420px;
+  max-height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(225,185,117,.47);
+  border-radius: 21px;
+
+  background:
+    radial-gradient(
+      ellipse at center top,
+      rgba(199,150,74,.13),
+      transparent 62%
+    ),
+    linear-gradient(145deg,#25221e,#14161b 72%);
+
+  color: #f2e3c6;
+  box-shadow: 0 25px 75px rgba(0,0,0,.65);
+}
+
+body.booth-page .rent-header {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  flex-shrink: 0;
+
+  min-height: 65px;
+  margin: 0;
+  padding: 20px 18px 16px;
+
+  border-bottom: 1px solid var(--bt-line);
+
+  background: #22201e;
+
+  color: var(--bt-light);
+  font-size: 17px;
+  font-weight: 800;
+}
+
+body.booth-page .rent-header > span {
+  display: grid;
+  place-items: center;
+
+  flex: 0 0 35px;
+  width: 35px;
+  height: 35px;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 10px;
+
+  background: #302920;
+  color: #e9cb94;
+
+  font-size: 21px;
+  font-weight: 400;
+  line-height: 1;
+  opacity: 1;
+}
+
+body.booth-page .rent-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  min-height: 0;
+  margin: 0;
+  padding: 18px;
+
+  overflow-y: auto;
+}
+
+body.booth-page .rent-body input,
+body.booth-page .rent-body textarea {
+  display: block;
+
+  width: 100%;
+  min-height: 47px;
+
+  margin: 0;
+  padding: 12px 13px;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 11px;
+  outline: none;
+
+  background: #191b20;
+  color: #f3e2c5;
+
+  font-size: 16px;
+  box-shadow: none;
+}
+
+body.booth-page .rent-body textarea {
+  min-height: 90px;
+  resize: vertical;
+}
+
+body.booth-page .rent-body input::placeholder,
+body.booth-page .rent-body textarea::placeholder {
+  color: #938c87;
+}
+
+body.booth-page .rent-body input:focus,
+body.booth-page .rent-body textarea:focus {
+  border-color: #d9b77a;
+  box-shadow: 0 0 0 3px rgba(217,183,122,.09);
+}
+
+body.booth-page .rent-body input[type="file"] {
+  height: auto;
+  min-height: 45px;
+  padding: 10px;
+  font-size: 12px;
+}
+
+body.booth-page .rent-body input[type="file"]::file-selector-button {
+  margin-right: 10px;
+  padding: 9px 12px;
+
+  border: 1px solid var(--bt-line);
+  border-radius: 8px;
+
+  background: #392f22;
+  color: #ecd1a2;
+  font-size: 12px;
+}
+
+body.booth-page .rent-confirm {
+  width: 100%;
+  min-height: 46px;
+
+  margin: 0;
+  padding: 12px 14px;
+
+  border: 1px solid #ecc98f;
+  border-radius: 11px;
+
+  background: linear-gradient(135deg,#f3ddb2,#bb9155);
+  color: #251b10;
+
+  font-size: 13px;
+  font-weight: 850;
+  box-shadow: none;
+}
+
+body.booth-page #addProductModal {
+  align-items: flex-end;
+  padding-bottom: 0;
+}
+
+body.booth-page #addProductModal .rent-modal {
+  max-width: 540px;
+  max-height: 90dvh;
+
+  border-bottom: none;
+  border-radius: 22px 22px 0 0;
+}
+
+body.booth-page #addProductModal .rent-header {
+  padding-top: 25px;
+}
+
+body.booth-page #addProductModal .rent-header::before {
+  background: #a38b64;
+}
+
+body.booth-page #addProductModal .rent-body {
+  max-height: none;
+}
+
+body.booth-page #uploadProgressBar {
+  background: linear-gradient(90deg,#97703d,#e9ca8b);
+}
+
+body.booth-page #uploadProgressText {
+  color: #d7be97;
+  font-size: 11px;
+  opacity: 1;
+}
+
+body.booth-page #pGalleryPreview img,
+body.booth-page #pImagePreview {
+  border: 1px solid var(--bt-line);
+  border-radius: 10px !important;
+}
+
+body.booth-page #globalModal {
+  z-index: 20000;
+}
+
+/* GALLERY */
+
+body.booth-page #galleryModal {
+  padding: 0;
+  z-index: 16000;
+}
+
+body.booth-page #galleryModal .rent-modal {
+  display: flex;
+  flex-direction: column;
+
+  width: 100%;
+  height: 100dvh;
+
+  background: #090a0e !important;
+}
+
+body.booth-page #galleryModal .rent-header {
+  padding-top: calc(15px + env(safe-area-inset-top,0px));
+}
+
+body.booth-page #galleryThumbs img {
+  width: 54px;
+  height: 54px;
+
+  border: 2px solid transparent;
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+body.booth-page #galleryThumbs img.active {
+  border-color: #d6b47a;
+  box-shadow: none;
+  opacity: 1;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+  body.booth-page .booth-body {
+    padding: 18px 10px 100px;
+  }
+
+  body.booth-page #productList {
+    gap: 10px;
+  }
+
+  body.booth-page .product-content {
+    padding: 11px 10px;
+  }
+
+  body.booth-page .product-name {
+    font-size: 12px;
+  }
+
+  body.booth-page .product-price {
+    font-size: 16px;
+  }
+
+  body.booth-page .product-controls button {
+    font-size: 10px;
+    padding: 8px 3px;
+  }
+}
+
+@media (max-width: 370px) {
+  body.booth-page .booth-header {
+    gap: 7px;
+    padding-left: 9px;
+    padding-right: 9px;
+  }
+
+  body.booth-page #btnBack {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+  }
+
+  body.booth-page .booth-logo-frame {
+    flex-basis: 35px;
+    width: 35px;
+    height: 35px;
+  }
+
+  body.booth-page .booth-info {
+    gap: 7px;
+  }
+
+  body.booth-page #boothName {
+    font-size: 12px;
+  }
+
+  body.booth-page .booth-kicker {
+    font-size: 7px;
+    letter-spacing: .3px;
+  }
+
+  body.booth-page #btnExtendBooth {
+    min-width: 59px;
+    padding: 7px;
+    font-size: 10px;
+  }
+
+  body.booth-page .product-price {
+    font-size: 14px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  body.booth-page .product-photo,
+  body.booth-page .product-card {
+    transition: none !important;
+  }
+}
+
+
+
+/* LUXURY PURCHASE FORM */
+
+body.booth-page .booth-modal-heading {
+  flex: 1;
+  min-width: 0;
+}
+
+body.booth-page .booth-modal-kicker {
+  margin-bottom: 7px;
+  color: #bca06f;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+body.booth-page .booth-modal-heading b {
+  display: block;
+  color: #f1dcb4;
+  font: 700 22px Georgia,serif;
+}
+
+body.booth-page .booth-form-intro {
+  margin: 0 0 7px;
+  color: #ada59a;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+body.booth-page .booth-buy-form label {
+  margin: 2px 0 -6px;
+  color: #c8aa79;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+body.booth-page .booth-buy-form .rent-confirm {
+  margin-top: 9px;
+}
+
+
+
+/* ORDER DETAILS */
+
+body.booth-page .order-admin-note {
+  margin-top: 9px;
+  color: #aac4aa;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+body.booth-page .order-action-note {
+  color: #a99d89;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+body.booth-page .order-price small,
+body.booth-page .my-order-price small {
+  display: block;
+  margin-top: 3px;
+
+  color: #b1a18a;
+  font-size: 9px;
+  font-weight: 500;
+  text-align: right;
+}
+
+body.booth-page .order-top > div:first-child,
+body.booth-page .my-order-top > div:first-child {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+body.booth-page .order-top .qty,
+body.booth-page .my-order-top .qty {
+  color: #b5a998;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+
+
+
+
 </style>
 </head>
 
-<body>
+<body class="booth-page">
 
-<!-- HEADER -->
-<div class="booth-header">
-  <div class="booth-back" id="btnBack">‹</div>
 
-  <div class="booth-info">
-    <img id="boothLogo" class="booth-logo">
-    <div id="boothName" class="booth-name">Gian hàng</div>
-  </div>
+<!-- ==========================================
+     LUXURY BOUTIQUE HEADER
+========================================== -->
 
-  <button id="btnExtendBooth" class="booth-extend hidden">
-  ⏳ Gia hạn
+<div class="booth-shell">
+
+  <header class="booth-header">
+
+    <button type="button"
+            class="booth-back"
+            id="btnBack"
+            aria-label="Quay lại Market">
+      <span aria-hidden="true">←</span>
+    </button>
+
+    <div class="booth-info">
+
+      <div class="booth-logo-frame">
+        <img id="boothLogo"
+             class="booth-logo"
+             alt="Logo gian hàng">
+      </div>
+
+      <div class="booth-identity">
+
+        <div class="booth-kicker">
+          LIVESTREAM PRO
+          <span class="booth-kicker-dot"></span>
+          MARKETPLACE
+        </div>
+
+        <div id="boothName" class="booth-name">
+          Gian hàng
+        </div>
+
+      </div>
+
+    </div>
+
+    <button type="button"
+            id="btnExtendBooth"
+            class="booth-extend hidden">
+      Gia hạn
+    </button>
+
+  </header>
+
+  <!-- EXPIRY STATUS -->
+  <div id="boothExpireBox"
+       class="booth-expire hidden"></div>
+
+  <!-- ======================================
+       MAIN CONTENT
+  ======================================= -->
+
+  <main class="booth-body">
+
+    <div class="booth-section-head">
+
+      <div class="booth-section-kicker">
+        EXCLUSIVE COLLECTION
+      </div>
+
+      <h1>Danh mục sản phẩm</h1>
+
+      <p>
+        Khám phá các sản phẩm được giới thiệu
+        tại gian hàng.
+      </p>
+
+    </div>
+
+    <!-- TABS -->
+    <div class="booth-tabs compact">
+
+      <button type="button"
+              class="tab active"
+              data-tab="products">
+        Sản phẩm
+      </button>
+
+      <button type="button"
+              class="tab hidden"
+              data-tab="orders"
+              id="tabOrders">
+        Quản lý đơn
+      </button>
+
+      <button type="button"
+              class="tab hidden"
+              data-tab="myOrders"
+              id="tabMyOrders">
+        Đơn của tôi
+      </button>
+
+    </div>
+
+    <!-- PRODUCTS -->
+    <div id="productList"
+         class="product-list"></div>
+
+    <div id="productPagination"
+         class="pagination hidden"></div>
+
+    <!-- SELLER ORDERS -->
+    <div id="orderSection" class="hidden">
+
+      <div id="orderList"
+           class="order-list"></div>
+
+      <div id="orderEmpty"
+           class="empty-text hidden">
+        Chưa có đơn hàng nào.
+      </div>
+
+    </div>
+
+    <!-- CUSTOMER ORDERS -->
+    <div id="myOrderSection" class="hidden">
+
+      <div id="myOrderList"
+           class="my-order-list"></div>
+
+      <div id="myOrderEmpty"
+           class="empty-text hidden">
+        Bạn chưa có đơn hàng nào.
+      </div>
+
+    </div>
+
+    <!-- PRODUCT EMPTY STATE -->
+    <div class="empty-text hidden"
+         id="emptyText">
+      Gian hàng hiện chưa có sản phẩm nào.
+    </div>
+
+  </main>
+
+</div>
+
+<!-- FLOATING OWNER ACTION -->
+<button type="button"
+        class="add-product hidden"
+        id="btnAddProduct"
+        aria-label="Đăng sản phẩm mới">
+
+  <span class="add-product-symbol">+</span>
+  <span class="add-product-text">Đăng sản phẩm</span>
+
 </button>
 
-
-</div>
-
-<div id="boothExpireBox" class="booth-expire hidden"></div>
-
-
-
-<!-- BODY -->
-<div class="booth-body">
-
-  <!-- TABS -->
-<div class="booth-tabs compact">
-  <button class="tab active" data-tab="products">
-    🛒 <span>Sản phẩm</span>
-  </button>
-
-  <button class="tab hidden" data-tab="orders" id="tabOrders">
-    📦 <span>Đơn hàng</span>
-  </button>
-
-  <button class="tab hidden" data-tab="myOrders" id="tabMyOrders">
-    🧾 <span>Đơn hàng</span>
-  </button>
-</div>
-
-
-
-  <!-- PRODUCTS -->
-  <div id="productList" class="product-list"></div>
-
-  <div id="productPagination" class="pagination hidden"></div>
-
-
-  <!-- ORDERS -->
-  <div id="orderSection" class="hidden">
-    <div id="orderList" class="order-list"></div>
-
- <div id="orderEmpty" class="empty-text hidden">
-  📭 Chưa có đơn hàng nào
-</div>
-
-  </div>
-
-<!-- MY ORDERS -->
-<div id="myOrderSection" class="hidden">
-  <div id="myOrderList"></div>
-  <div id="myOrderEmpty" class="empty-text hidden">
-    🧾 Bạn chưa có đơn hàng nào
-  </div>
-</div>
-
-
-  <div class="empty-text" id="emptyText">
-    Gian hàng chưa có sản phẩm nào.<br>
-    Nhấn “＋” để đăng bán.
-  </div>
-</div>
 
 
 <!-- ADD -->
@@ -732,27 +2015,82 @@ html,body{
 
 
 
-<!-- 🛒 BUY FORM MODAL -->
-<div id="buyFormModal" class="modal-backdrop hidden">
+
+<!-- ==========================================
+     LUXURY PURCHASE FORM
+========================================== -->
+
+<div id="buyFormModal"
+     class="modal-backdrop hidden">
+
   <div class="rent-modal">
+
     <div class="rent-header">
-      <b>🛒 Thông tin mua hàng</b>
-      <span onclick="closeBuyForm()">✕</span>
+
+      <div class="booth-modal-heading">
+        <div class="booth-modal-kicker">
+          SECURE PURCHASE
+        </div>
+        <b>Thông tin mua hàng</b>
+      </div>
+
+      <span onclick="closeBuyForm()"
+            role="button"
+            tabindex="0"
+            aria-label="Đóng">
+        &times;
+      </span>
+
     </div>
 
-    <div class="rent-body" style="display:flex;flex-direction:column;gap:10px">
-      <input id="buyName" placeholder="👤 Họ và tên">
-      <input id="buyPhone" placeholder="📞 Số điện thoại">
-      <input id="buyAddress" placeholder="📍 Địa chỉ nhận hàng">
-      <input id="buyQty" type="number" min="1" value="1" placeholder="🔢 Số lượng">
-      <textarea id="buyNote" placeholder="📝 Ghi chú cho shop (tuỳ chọn)"></textarea>
+    <div class="rent-body booth-buy-form">
 
-      <button class="rent-confirm" onclick="submitBuyForm()">
-        ✅ Xác nhận mua
+      <p class="booth-form-intro">
+        Điền thông tin để chủ gian hàng liên hệ
+        và xác nhận đơn hàng.
+      </p>
+
+      <label for="buyName">HỌ VÀ TÊN</label>
+      <input id="buyName"
+             type="text"
+             autocomplete="name"
+             placeholder="Nhập họ và tên">
+
+      <label for="buyPhone">SỐ ĐIỆN THOẠI</label>
+      <input id="buyPhone"
+             type="tel"
+             autocomplete="tel"
+             placeholder="Nhập số điện thoại">
+
+      <label for="buyAddress">ĐỊA CHỈ NHẬN HÀNG</label>
+      <input id="buyAddress"
+             type="text"
+             autocomplete="street-address"
+             placeholder="Nhập địa chỉ nhận hàng">
+
+      <label for="buyQty">SỐ LƯỢNG</label>
+      <input id="buyQty"
+             type="number"
+             min="1"
+             step="1"
+             value="1">
+
+      <label for="buyNote">GHI CHÚ</label>
+      <textarea id="buyNote"
+                placeholder="Thông tin bổ sung cho gian hàng"></textarea>
+
+      <button type="button"
+              class="rent-confirm"
+              onclick="submitBuyForm()">
+        Xác nhận đặt hàng
       </button>
+
     </div>
+
   </div>
+
 </div>
+
 
 
 
