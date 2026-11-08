@@ -443,7 +443,7 @@ body.lobby-page #sort {
 body.lobby-page .lobby-section-heading {
   width: calc(100% - 28px);
   max-width: 1092px;
-  margin: 22px auto 0;
+  margin: 12px auto 0;
 
   display: flex;
   align-items: center;
@@ -1347,6 +1347,260 @@ body.lobby-page .pactions .btn-block {
     transition-duration: .01ms !important;
   }
 }
+
+
+
+
+/* ==========================================
+   COMPACT LUXURY LOBBY HEADER
+   FIX HEADER QUÁ CAO
+========================================== */
+
+/* KHÔNG ĐẨY BODY XUỐNG */
+
+html,
+body.lobby-page {
+  margin: 0 !important;
+}
+
+body.lobby-page {
+  padding-top: 0 !important;
+}
+
+/* HEADER SÁT PHÍA TRÊN */
+
+body.lobby-page .lobby-header-full {
+  position: sticky !important;
+
+  top: 0 !important;
+  left: auto !important;
+  right: auto !important;
+
+  width: 100% !important;
+  height: auto !important;
+  min-height: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+}
+
+/* HEADER THU GỌN */
+
+body.lobby-page .lobby-header-inner {
+  display: grid !important;
+
+  grid-template-columns:
+    minmax(0, 1fr)
+    max-content !important;
+
+  align-items: center !important;
+  gap: 8px !important;
+
+  width: 100% !important;
+  max-width: 1120px !important;
+
+  height: auto !important;
+  min-height: 54px !important;
+
+  margin: 0 auto !important;
+
+  padding:
+    max(4px, env(safe-area-inset-top, 0px))
+    12px
+    5px !important;
+}
+
+/* THƯƠNG HIỆU */
+
+body.lobby-page .lobby-brand {
+  grid-column: 1;
+
+  display: flex !important;
+  align-items: center !important;
+
+  gap: 8px !important;
+
+  width: 100% !important;
+  min-width: 0 !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  position: static !important;
+}
+
+/* LOGO NHỎ GỌN */
+
+body.lobby-page .lobby-brand-mark {
+  width: 36px !important;
+  height: 36px !important;
+
+  flex: 0 0 36px !important;
+  border-radius: 10px !important;
+}
+
+body.lobby-page .lobby-brand-mark .lb-icon {
+  width: 21px !important;
+  height: 21px !important;
+}
+
+/* NỘI DUNG THƯƠNG HIỆU */
+
+body.lobby-page .lobby-brand-copy {
+  flex: 1 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+
+  overflow: hidden !important;
+}
+
+body.lobby-page .lobby-title {
+  font-size: 14px !important;
+  line-height: 1.2 !important;
+  letter-spacing: .3px !important;
+}
+
+body.lobby-page .lobby-subtitle {
+  margin-top: 3px !important;
+
+  font-size: 8px !important;
+  line-height: 1.2 !important;
+  letter-spacing: .9px !important;
+}
+
+body.lobby-page .lobby-title,
+body.lobby-page .lobby-subtitle {
+  display: block !important;
+
+  width: 100% !important;
+
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+
+  position: static !important;
+}
+
+/* NHÓM NÚT BÊN PHẢI */
+
+body.lobby-page .lobby-header-actions {
+  grid-column: 2;
+
+  position: static !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+
+  flex: none !important;
+  width: auto !important;
+
+  gap: 6px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  transform: none !important;
+}
+
+/* NÚT NHỎ GỌN */
+
+body.lobby-page
+.lobby-header-actions .lobby-iconBtn {
+  position: relative !important;
+
+  flex: 0 0 36px !important;
+
+  width: 36px !important;
+  height: 36px !important;
+  min-width: 36px !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border-radius: 10px !important;
+}
+
+body.lobby-page
+.lobby-header-actions .lobby-iconBtn .lb-icon {
+  width: 19px !important;
+  height: 19px !important;
+}
+
+/* GIỮ USERBAR CHO JS */
+
+body.lobby-page
+.lobby-header-actions #userBar {
+  display: none !important;
+}
+
+/* THANH TÌM KIẾM */
+
+body.lobby-page .lobby-header-search {
+  position: static !important;
+  width: 100% !important;
+
+  margin: 0 !important;
+  transform: none !important;
+
+  padding: 0 12px 9px !important;
+}
+
+/* THU GỌN KHOẢNG CÁCH DƯỚI HEADER */
+
+body.lobby-page .lobby-filter-bar {
+  position: relative !important;
+  top: auto !important;
+
+  margin: 0 !important;
+  padding: 7px 0 !important;
+  transform: none !important;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+
+  /* ĐÃ CÓ NÚT TẠO LIVE Ở THANH DƯỚI */
+
+  body.lobby-page #btnCreateRoomDesktop {
+    display: none !important;
+  }
+
+}
+
+@media (max-width: 360px) {
+
+  body.lobby-page .lobby-header-inner {
+    gap: 6px !important;
+    padding-left: 9px !important;
+    padding-right: 9px !important;
+  }
+
+  body.lobby-page .lobby-title {
+    font-size: 12px !important;
+  }
+
+  body.lobby-page .lobby-subtitle {
+    display: none !important;
+  }
+
+  body.lobby-page .lobby-header-actions {
+    gap: 5px !important;
+  }
+
+  body.lobby-page
+  .lobby-header-actions .lobby-iconBtn {
+    flex-basis: 34px !important;
+    width: 34px !important;
+    height: 34px !important;
+    min-width: 34px !important;
+  }
+
+}
+
 
 </style>
 
