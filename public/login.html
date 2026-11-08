@@ -659,212 +659,15 @@ input::placeholder {
   border-color: rgba(211,177,122,.28);
 }
 
-/* ==========================================
-   RESPONSIVE - SHORT HEIGHT
-========================================== */
-
-@media (max-height: 730px) {
-
-  .auth-stage {
-    padding: 16px 19px 14px;
-  }
-
-  .auth-main {
-    padding: 15px 0 12px;
-  }
-
-  .auth-hero .microline {
-    margin-bottom: 13px;
-  }
-
-  .login-avatar {
-    width: 70px;
-    height: 70px;
-    margin-bottom: 12px;
-  }
-
-  .login-title {
-    font-size: 26px;
-  }
-
-  .login-sub {
-    margin-top: 7px;
-    line-height: 1.4;
-  }
-
-  .login-panel {
-    margin-top: 17px;
-    padding: 14px 15px;
-  }
-
-  .panel-top {
-    margin-bottom: 12px;
-  }
-
-  .login-field {
-    margin-top: 10px;
-  }
-
-  .login-field input {
-    height: 43px;
-  }
-
-  .login-submit {
-    margin-top: 13px;
-  }
-
-  .auth-foot {
-    padding-top: 9px;
-  }
-
-}
-
-/* VERY SHORT SCREEN */
-
-@media (max-height: 560px) {
-
-  .auth-top span:last-child,
-  .auth-hero .microline,
-  .login-sub {
-    display: none;
-  }
-
-  .auth-main {
-    padding: 8px 0 10px;
-  }
-
-  .login-avatar {
-    width: 54px;
-    height: 54px;
-    margin-bottom: 9px;
-  }
-
-  .login-panel {
-    margin-top: 12px;
-  }
-
-  .login-btn {
-    min-height: 40px;
-  }
-
-  .login-guest {
-    min-height: 37px;
-  }
-
-}
-
-/* NARROW SCREEN */
-
-@media (max-width: 360px) {
-
-  .auth-stage {
-    padding-left: 15px;
-    padding-right: 15px;
-  }
-
-  .login-panel {
-    padding-left: 13px;
-    padding-right: 13px;
-  }
-
-  .login-title {
-    font-size: 24px;
-  }
-
-}
-
-
-@media (max-width: 768px) {
-
-  .auth-stage {
-    max-width: 430px;
-    height: 100vh;
-    height: 100dvh;
-
-    padding:
-      calc(16px + env(safe-area-inset-top, 0px))
-      18px
-      calc(16px + env(safe-area-inset-bottom, 0px))
-      18px;
-  }
-
-  .auth-top {
-    margin-bottom: 6px;
-  }
-
-  .auth-main {
-    padding: 14px 0 14px;
-  }
-
-  .login-panel {
-    margin-top: 20px;
-  }
-
-  .auth-foot {
-    padding-top: 12px;
-  }
-}
-
-
-@media (prefers-reduced-motion: reduce) {
-
-  *,
-  *::before,
-  *::after {
-    transition: none !important;
-    animation: none !important;
-  }
-
-}
-
-
-
-/* TINH CHỈNH NỘI DUNG LOGIN */
-
-.auth-top {
-  white-space: normal;
-}
-
-.auth-top span {
-  line-height: 1.4;
-}
-
-.panel-top span {
-  font-size: 8px;
-  letter-spacing: .5px;
-  text-align: right;
-}
-
-.login-sub {
-  max-width: 290px;
-  margin-left: auto;
-  margin-right: auto;
-  line-height: 1.65;
-}
-
-.auth-foot {
-  font-size: 9px;
-  letter-spacing: 1.5px;
-}
-
-@media (max-width: 360px) {
-  .panel-top span {
-    font-size: 7px;
-  }
-
-  .auth-top span:last-child {
-    letter-spacing: .3px;
-  }
-}
 
 
 /* ==========================================
-   LIVESTREAM PRO - LOGIN RESPONSIVE
+   LIVESTREAM PRO
+   FINAL RESPONSIVE LAYOUT
    FULL WIDTH + FULL HEIGHT
-   MAX FRAME 430 x 870
 ========================================== */
 
-/* RESET */
+/* NỀN TOÀN MÀN HÌNH */
 
 html {
   width: 100%;
@@ -872,9 +675,14 @@ html {
   margin: 0;
   padding: 0;
   overflow: hidden;
+  background: #050608;
 }
 
 body.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+
   width: 100%;
   height: 100vh;
   height: 100dvh;
@@ -882,21 +690,16 @@ body.auth-page {
 
   margin: 0;
   padding: 0;
-
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
   overflow: hidden;
+
   background: #050608;
 }
 
-/* ==========================================
-   MAIN FRAME
-========================================== */
+/* KHUNG CHÍNH - KHÔNG GIỚI HẠN CHIỀU CAO */
 
 body.auth-page .auth-stage {
   position: relative;
+  isolation: isolate;
 
   flex: 0 1 430px;
 
@@ -904,16 +707,16 @@ body.auth-page .auth-stage {
   max-width: 430px;
   min-width: 0;
 
-  height: min(100vh, 870px);
-  height: min(100dvh, 870px);
+  height: 100%;
   min-height: 0;
+  max-height: none;
 
   margin: 0;
 
   padding:
-    max(18px, calc(env(safe-area-inset-top, 0px) + 10px))
+    calc(16px + env(safe-area-inset-top, 0px))
     20px
-    max(18px, calc(env(safe-area-inset-bottom, 0px) + 10px));
+    calc(16px + env(safe-area-inset-bottom, 0px));
 
   display: flex;
   flex-direction: column;
@@ -923,434 +726,45 @@ body.auth-page .auth-stage {
   overflow-x: hidden;
   overflow-y: auto;
 
-  scrollbar-width: none;
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
 
-  border-radius: 0;
+  box-sizing: border-box;
 }
 
 body.auth-page .auth-stage::-webkit-scrollbar {
   display: none;
 }
 
-/* ==========================================
-   TOP BAR
-========================================== */
+/* THANH TRÊN */
 
 body.auth-page .auth-top {
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
 
   width: 100%;
   min-width: 0;
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 10px;
   margin: 0;
   padding: 0;
-
   white-space: normal;
 }
 
 body.auth-page .auth-top span {
   min-width: 0;
   max-width: 50%;
-
-  font-size: 9px;
-  line-height: 1.5;
+  line-height: 1.4;
 }
 
 body.auth-page .auth-top span:last-child {
   text-align: right;
 }
 
-/* ==========================================
-   MAIN CONTENT
-========================================== */
-
-body.auth-page .auth-main {
-  flex: 1 0 auto;
-
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-
-  width: 100%;
-  min-width: 0;
-
-  margin: 0;
-  padding: 20px 0;
-}
-
-/* ==========================================
-   LOGO + BRAND
-========================================== */
-
-body.auth-page .auth-hero {
-  flex: 0 0 auto;
-
-  width: 100%;
-  min-width: 0;
-
-  margin: 0;
-  padding: 0;
-
-  text-align: center;
-}
-
-body.auth-page .login-avatar {
-  width: 88px;
-  height: 88px;
-
-  margin: 0 auto 16px;
-}
-
-body.auth-page .auth-eyebrow {
-  margin: 0 0 8px;
-  font-size: 9px;
-}
-
-body.auth-page .login-title {
-  max-width: 100%;
-  margin: 0;
-
-  font-size: clamp(23px, 7vw, 31px);
-  line-height: 1.15;
-
-  white-space: normal;
-  overflow-wrap: break-word;
-}
-
-body.auth-page .login-sub {
-  max-width: 300px;
-
-  margin: 12px auto 0;
-
-  font-size: 12px;
-  line-height: 1.55;
-
-  white-space: normal;
-}
-
-/* ==========================================
-   LOGIN PANEL
-========================================== */
-
-body.auth-page .login-panel {
-  flex: 0 0 auto;
-
-  width: 100%;
-  min-width: 0;
-  max-width: 100%;
-
-  margin: 23px 0 0;
-  padding: 18px 17px;
-}
-
-body.auth-page .panel-top {
-  margin-bottom: 15px;
-}
-
-body.auth-page .login-field {
-  width: 100%;
-  min-width: 0;
-
-  margin-top: 12px;
-}
-
-body.auth-page .pass-wrap {
-  width: 100%;
-  min-width: 0;
-}
-
-body.auth-page .login-field input {
-  width: 100%;
-  min-width: 0;
-  height: 46px;
-}
-
-body.auth-page .login-submit {
-  width: 100%;
-  min-height: 46px;
-  margin-top: 17px;
-}
-
-body.auth-page .login-guest {
-  width: 100%;
-  min-height: 43px;
-  margin-top: 10px;
-}
-
-/* ==========================================
-   REGISTER
-========================================== */
-
-body.auth-page .register-line {
-  flex: 0 0 auto;
-
-  width: 100%;
-  min-width: 0;
-
-  margin: 17px 0 0;
-  padding: 0 6px;
-
-  font-size: 12px;
-  line-height: 1.6;
-  text-align: center;
-}
-
-/* ==========================================
-   FOOTER
-========================================== */
-
-body.auth-page .auth-foot {
-  flex: 0 0 auto;
-
-  width: 100%;
-  min-width: 0;
-
-  margin: 0;
-  padding: 13px 0 0;
-
-  border-top: 1px solid rgba(222,186,119,.16);
-
-  text-align: center;
-  line-height: 1.5;
-}
-
-/* ==========================================
-   MOBILE - SHORT HEIGHT
-========================================== */
-
-@media (max-height: 760px) {
-
-  body.auth-page .auth-stage {
-    padding-top:
-      max(12px, calc(env(safe-area-inset-top, 0px) + 8px));
-
-    padding-right: 16px;
-    padding-bottom:
-      max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px));
-    padding-left: 16px;
-  }
-
-  body.auth-page .auth-main {
-    padding: 12px 0;
-  }
-
-  body.auth-page .login-avatar {
-    width: 67px;
-    height: 67px;
-    margin-bottom: 10px;
-  }
-
-  body.auth-page .auth-eyebrow {
-    margin-bottom: 5px;
-  }
-
-  body.auth-page .login-title {
-    font-size: 25px;
-  }
-
-  body.auth-page .login-sub {
-    margin-top: 7px;
-    font-size: 11px;
-    line-height: 1.4;
-  }
-
-  body.auth-page .login-panel {
-    margin-top: 15px;
-    padding: 14px;
-  }
-
-  body.auth-page .panel-top {
-    margin-bottom: 9px;
-  }
-
-  body.auth-page .login-field {
-    margin-top: 9px;
-  }
-
-  body.auth-page .login-field input {
-    height: 43px;
-  }
-
-  body.auth-page .login-forgot {
-    margin-top: 8px;
-  }
-
-  body.auth-page .login-submit {
-    min-height: 43px;
-    margin-top: 11px;
-  }
-
-  body.auth-page .login-guest {
-    min-height: 40px;
-    margin-top: 8px;
-  }
-
-  body.auth-page .register-line {
-    margin-top: 11px;
-  }
-
-  body.auth-page .auth-foot {
-    padding-top: 9px;
-  }
-
-}
-
-/* ==========================================
-   SMALL SCREEN
-========================================== */
-
-@media (max-height: 600px) {
-
-  body.auth-page .auth-main {
-    padding: 10px 0;
-  }
-
-  body.auth-page .login-avatar {
-    width: 55px;
-    height: 55px;
-  }
-
-  body.auth-page .login-sub {
-    display: none;
-  }
-
-  body.auth-page .login-panel {
-    margin-top: 12px;
-  }
-
-  body.auth-page .auth-foot {
-    margin-top: 8px;
-  }
-
-}
-
-@media (max-width: 360px) {
-
-  body.auth-page .auth-stage {
-    padding-left: 13px;
-    padding-right: 13px;
-  }
-
-  body.auth-page .login-title {
-    font-size: 23px;
-  }
-
-  body.auth-page .panel-top span {
-    font-size: 7px;
-  }
-
-}
-
-/* ==========================================
-   MODALS
-========================================== */
-
-body.auth-page .modal {
-  width: min(100%, 430px);
-
-  height: 100vh;
-  height: 100dvh;
-
-  max-height: none;
-
-  padding:
-    max(14px, env(safe-area-inset-top, 0px))
-    14px
-    max(14px, env(safe-area-inset-bottom, 0px));
-}
-
-body.auth-page .modal-card {
-  max-height: 100%;
-  overflow-y: auto;
-}
-
-
-
-/* ==========================================
-   LIVESTREAM PRO
-   FIX IOS NOTCH + BOTTOM BLACK GAP
-========================================== */
-
-html {
-  width: 100%;
-  height: 100%;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background: #050608;
-}
-
-
-/* BODY FULL SCREEN */
-
-body.auth-page {
-  position: relative;
-
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
-
-  width: 100%;
-  height: 100vh;
-  height: 100dvh;
-  min-height: 0;
-
-  margin: 0;
-  padding: 0;
-
-  overflow: hidden;
-
-  background: #050608;
-}
-
-/* LOGIN FULL HEIGHT - KHÔNG GIỚI HẠN 870PX */
-
-body.auth-page .auth-stage {
-  position: relative;
-
-  flex: 0 1 430px;
-
-  width: 100%;
-  max-width: 430px;
-  min-width: 0;
-
-  height: 100%;
-  min-height: 0;
-  max-height: none;
-
-  margin: 0;
-
-  padding:
-    max(20px, calc(env(safe-area-inset-top, 0px) + 12px))
-    20px
-    max(20px, calc(env(safe-area-inset-bottom, 0px) + 12px));
-
-  display: flex;
-  flex-direction: column;
-  align-items: stretch;
-  justify-content: flex-start;
-
-  overflow-x: hidden;
-  overflow-y: auto;
-
-  overscroll-behavior: contain;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
-}
-
-
-body.auth-page .auth-stage::-webkit-scrollbar {
-  display: none;
-}
-
-/* NỘI DUNG GIỮA */
+/* NỘI DUNG TRUNG TÂM */
 
 body.auth-page .auth-main {
   flex: 1 0 auto;
@@ -1366,74 +780,157 @@ body.auth-page .auth-main {
   padding: 18px 0;
 }
 
-/* THANH TRÊN KHÔNG DÍNH TAI THỎ */
+/* LOGO VÀ THƯƠNG HIỆU */
 
-body.auth-page .auth-top {
-  position: relative;
+body.auth-page .auth-hero {
+  width: 100%;
+  min-width: 0;
+  text-align: center;
+}
+
+body.auth-page .login-avatar {
+  width: 86px;
+  height: 86px;
+  margin: 0 auto 15px;
+}
+
+body.auth-page .login-title {
+  max-width: 100%;
+  font-size: clamp(23px, 7vw, 31px);
+  line-height: 1.2;
+}
+
+body.auth-page .login-sub {
+  max-width: 300px;
+  margin: 10px auto 0;
+  line-height: 1.55;
+}
+
+/* KHUNG ĐĂNG NHẬP */
+
+body.auth-page .login-panel {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 20px;
+  padding: 17px 16px;
+}
+
+body.auth-page .panel-top {
+  margin-bottom: 14px;
+}
+
+body.auth-page .panel-top span {
+  font-size: 8px;
+  letter-spacing: .5px;
+  text-align: right;
+}
+
+body.auth-page .login-field {
+  width: 100%;
+  min-width: 0;
+  margin-top: 11px;
+}
+
+body.auth-page .login-field input {
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+}
+
+body.auth-page .login-submit {
+  margin-top: 15px;
+}
+
+body.auth-page .login-guest {
+  margin-top: 9px;
+}
+
+/* ĐĂNG KÝ */
+
+body.auth-page .register-line {
+  flex: 0 0 auto;
+  width: 100%;
+
+  margin: 15px 0 0;
+  text-align: center;
+}
+
+/* FOOTER Ở CUỐI KHUNG */
+
+body.auth-page .auth-foot {
   flex: 0 0 auto;
 
   width: 100%;
   min-width: 0;
 
   margin: 0;
-  padding: 0;
-
-  z-index: 1;
-}
-
-/* FOOTER NẰM TRONG KHUNG */
-
-body.auth-page .auth-foot {
-  flex: 0 0 auto;
-
-  width: 100%;
-  margin-top: 0;
-
   padding: 12px 0 0;
+
+  text-align: center;
+  font-size: 9px;
+  letter-spacing: 1.3px;
 }
 
-/* MOBILE FULL HEIGHT */
+/* POPUP FULL HEIGHT */
 
-@media (max-width: 600px) {
+body.auth-page .modal {
+  width: min(100%, 430px);
 
-  body.auth-page {
-    align-items: stretch;
-  }
+  height: 100vh;
+  height: 100dvh;
+  max-height: none;
 
-  body.auth-page .auth-stage {
-    flex: 1 1 auto;
+  padding:
+    calc(14px + env(safe-area-inset-top, 0px))
+    14px
+    calc(14px + env(safe-area-inset-bottom, 0px));
+}
 
-    width: 100%;
-    max-width: 430px;
-
-    height: 100%;
-    max-height: none;
-
-    padding-top:
-      max(20px, calc(env(safe-area-inset-top, 0px) + 12px));
-
-    padding-right: 18px;
-
-    padding-bottom:
-      max(20px, calc(env(safe-area-inset-bottom, 0px) + 12px));
-
-    padding-left: 18px;
-  }
+body.auth-page .modal-card {
+  max-height: 100%;
+  overflow-y: auto;
 }
 
 /* MÀN HÌNH THẤP */
 
-@media (max-height: 700px) {
+@media (max-height: 740px) {
+
+  body.auth-page .auth-stage {
+    padding-top:
+      calc(12px + env(safe-area-inset-top, 0px));
+
+    padding-right: 16px;
+
+    padding-bottom:
+      calc(12px + env(safe-area-inset-bottom, 0px));
+
+    padding-left: 16px;
+  }
 
   body.auth-page .auth-main {
-    justify-content: flex-start;
     padding: 12px 0;
   }
 
   body.auth-page .login-avatar {
-    width: 65px;
-    height: 65px;
+    width: 66px;
+    height: 66px;
     margin-bottom: 10px;
+  }
+
+  body.auth-page .auth-hero .microline {
+    margin-bottom: 12px;
+  }
+
+  body.auth-page .login-title {
+    font-size: 25px;
+  }
+
+  body.auth-page .login-sub {
+    margin-top: 7px;
+    font-size: 11px;
   }
 
   body.auth-page .login-panel {
@@ -1441,8 +938,76 @@ body.auth-page .auth-foot {
     padding: 13px;
   }
 
+  body.auth-page .panel-top {
+    margin-bottom: 10px;
+  }
+
+  body.auth-page .login-field {
+    margin-top: 9px;
+  }
+
+  body.auth-page .login-field input {
+    height: 43px;
+  }
+
+  body.auth-page .login-submit {
+    margin-top: 11px;
+  }
+
   body.auth-page .register-line {
     margin-top: 10px;
+  }
+}
+
+/* MÀN HÌNH RẤT THẤP */
+
+@media (max-height: 590px) {
+
+  body.auth-page .auth-main {
+    justify-content: flex-start;
+    padding: 10px 0;
+  }
+
+  body.auth-page .login-avatar {
+    width: 54px;
+    height: 54px;
+  }
+
+  body.auth-page .login-sub {
+    display: none;
+  }
+
+  body.auth-page .login-panel {
+    margin-top: 12px;
+  }
+}
+
+/* ĐIỆN THOẠI HẸP */
+
+@media (max-width: 360px) {
+
+  body.auth-page .auth-stage {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  body.auth-page .login-title {
+    font-size: 23px;
+  }
+
+  body.auth-page .panel-top span {
+    font-size: 7px;
+  }
+}
+
+/* GIẢM CHUYỂN ĐỘNG */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
   }
 }
 
