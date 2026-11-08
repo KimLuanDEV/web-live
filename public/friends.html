@@ -64,112 +64,372 @@ svg { display: block; }
     radial-gradient(ellipse at 100% 100%, rgba(147,95,29,.08), transparent 50%);
 }
 
-/* ===== HEADER ===== */
+
+/* ==========================================
+   LIVESTREAM PRO - LUXURY FRIENDS HEADER
+   ========================================== */
+
+/* ===== HEADER CONTAINER ===== */
 
 .friends-top {
   position: sticky;
   top: 0;
   z-index: 40;
-  background: rgba(8,9,11,.97);
+
+  width: 100%;
+
+  /* Tránh tai thỏ iPhone */
+  padding-top: calc(env(safe-area-inset-top, 0px) + 8px);
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(210, 166, 91, .12),
+      transparent 70%
+    ),
+    linear-gradient(
+      180deg,
+      #15130f 0%,
+      #090a0c 100%
+    );
+
+  border-bottom: 1px solid rgba(216, 178, 107, .3);
+
   backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--line);
+  -webkit-backdrop-filter: blur(18px);
 }
 
-.brand-strip {
-  height: 46px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 9px;
-  border-bottom: 1px solid rgba(218,184,111,.15);
-  background: linear-gradient(100deg, transparent, rgba(205,152,68,.10), transparent);
+/* GOLDEN BOTTOM LINE */
+
+.friends-top::after {
+  content: "";
+
+  position: absolute;
+  left: 10%;
+  right: 10%;
+  bottom: -1px;
+
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(235, 193, 111, .85),
+    transparent
+  );
+
+  pointer-events: none;
 }
 
-.brand-strip .fi {
-  width: 21px;
-  height: 21px;
-  color: var(--gold);
-}
+/* ===== HEADER ROW ===== */
 
-.brand-name {
-  font-family: Georgia, serif;
-  font-weight: bold;
-  font-style: italic;
-  letter-spacing: .6px;
-  font-size: 17px;
-  color: var(--light);
-}
 
 .friend-header {
-  height: 63px;
-  display: flex;
+  width: 100%;
+  height: 77px;
+
+  display: grid;
+  grid-template-columns: 44px minmax(0, 1fr) 44px;
+
   align-items: center;
-  justify-content: space-between;
+  gap: 10px;
   padding: 0 16px;
-  position: relative;
 }
 
-.friend-header h1 {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  font: 700 28px Georgia, serif;
-  color: var(--light);
-  margin: 0;
-  pointer-events: none;
-  text-shadow: 0 1px 15px rgba(219,177,95,.22);
+.friend-heading {
+  grid-column: 2;
+
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+  text-align: center;
 }
+
+/* Nút quay lại nằm bên trái */
+.header-back {
+  grid-column: 1;
+}
+
+
+/* ===== BUTTONS ===== */
 
 .header-btn {
-  width: 41px;
-  height: 41px;
-  display: grid;
-  place-items: center;
-  color: var(--light);
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: linear-gradient(155deg, #252017, #0d0e12);
-  box-shadow: inset 0 1px rgba(255,255,255,.05);
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: 1px solid rgba(220, 179, 104, .42);
+  border-radius: 13px;
+
+  background: linear-gradient(
+    145deg,
+    #29241b,
+    #101114 75%
+  );
+
+  color: #ebcd92;
+
+  box-shadow:
+    inset 0 1px 0 rgba(255, 240, 200, .08),
+    0 5px 14px rgba(0, 0, 0, .35);
+
+  cursor: pointer;
+
+  -webkit-tap-highlight-color: transparent;
+
+  transition:
+    border-color .2s,
+    background .2s,
+    transform .15s;
 }
 
 .header-btn .fi {
   width: 22px;
   height: 22px;
+
+  stroke-width: 1.9;
 }
 
-/* ===== TÌM KIẾM ===== */
+.header-btn:active {
+  transform: scale(.94);
+}
+
+.header-btn:hover {
+  border-color: rgba(235, 195, 115, .75);
+}
+
+/* ===== CENTER HEADING ===== */
+
+.friend-heading {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  gap: 3px;
+
+  text-align: center;
+}
+
+/* BRAND */
+
+.friend-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 6px;
+
+  color: #d4af72;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.9px;
+  white-space: nowrap;
+}
+
+.friend-brand .fi {
+  width: 15px;
+  height: 15px;
+
+  color: #e5c586;
+  stroke-width: 1.6;
+}
+
+/* MAIN TITLE */
+
+.friend-heading h1 {
+  margin: 0;
+  padding: 0;
+
+  color: #f4dfb6;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: .3px;
+
+  text-shadow:
+    0 2px 12px rgba(203, 158, 74, .16);
+}
+
+/* LINE BELOW TITLE */
+
+.friend-heading-line {
+  width: 44px;
+  height: 1px;
+
+  margin-top: 3px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d8b471,
+    transparent
+  );
+}
+
+/* ===== SEARCH AREA ===== */
 
 .friend-search {
-  padding: 16px 16px 4px;
+  width: 100%;
+
+  padding: 2px 16px 14px;
 }
 
+/* SEARCH BOX */
+
 .search-inner {
-  height: 49px;
-  border: 1px solid var(--line);
-  background: linear-gradient(115deg, #222222, #101114);
-  border-radius: 14px;
+  width: 100%;
+  height: 48px;
+
   display: flex;
   align-items: center;
   gap: 12px;
-  padding: 0 15px;
-  box-shadow: 0 4px 15px #0006;
+
+  padding: 0 14px;
+
+  border: 1px solid rgba(218, 181, 113, .35);
+  border-radius: 14px;
+
+  background: linear-gradient(
+    110deg,
+    rgba(40, 37, 32, .96),
+    rgba(15, 17, 21, .98)
+  );
+
+  box-shadow:
+    inset 0 1px rgba(255, 255, 255, .04),
+    0 5px 16px rgba(0, 0, 0, .22);
+
+  transition:
+    border-color .2s,
+    box-shadow .2s;
 }
 
-.search-inner .fi { color: var(--gold); }
+.search-inner:focus-within {
+  border-color: rgba(238, 195, 114, .8);
+
+  box-shadow:
+    0 0 0 3px rgba(219, 179, 103, .07),
+    0 5px 16px rgba(0, 0, 0, .25);
+}
+
+/* SEARCH ICON */
+
+.search-inner .search-icon {
+  width: 20px;
+  height: 20px;
+
+  color: #d9bb80;
+  stroke-width: 1.8;
+}
+
+/* INPUT */
 
 .search-inner input {
+  flex: 1;
+
   width: 100%;
-  border: 0;
-  outline: 0;
-  background: none;
-  color: #fff;
-  font-size: 16px;
   min-width: 0;
+
+  height: 100%;
+
+  margin: 0;
+  padding: 0;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+  box-shadow: none;
+
+  color: #f5f0e5;
+
+  font-size: 16px;
+  font-weight: 400;
+
+  appearance: none;
+  -webkit-appearance: none;
 }
 
 .search-inner input::placeholder {
-  color: #93908c;
+  color: #99948b;
+  opacity: 1;
 }
+
+.search-inner input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* RIGHT DECORATIVE ICON */
+
+.search-end-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding-left: 11px;
+
+  border-left: 1px solid rgba(217, 185, 121, .17);
+
+  pointer-events: none;
+}
+
+.search-end-icon .fi {
+  width: 18px;
+  height: 18px;
+
+  color: #9d8559;
+  opacity: .85;
+}
+
+/* ===== SMALL MOBILE ===== */
+
+@media (max-width: 375px) {
+  .friend-header {
+    height: 70px;
+    grid-template-columns: 40px minmax(0, 1fr) 40px;
+    padding: 0 12px;
+    gap: 7px;
+  }
+
+  .header-btn {
+    width: 40px;
+    height: 40px;
+  }
+
+  .friend-heading h1 {
+    font-size: 24px;
+  }
+
+  .friend-brand {
+    font-size: 8px;
+    letter-spacing: 1.3px;
+  }
+
+  .friend-search {
+    padding: 2px 12px 12px;
+  }
+
+  .search-inner {
+    height: 46px;
+  }
+}
+
 
 /* ===== DANH SÁCH ===== */
 
@@ -441,7 +701,7 @@ svg { display: block; }
 #toast-container {
   position: fixed;
   z-index: 1001;
-  top: 18px;
+  top: calc(env(safe-area-inset-top, 0px) + 18px);
   left: 12px;
   right: 12px;
   display: grid;
@@ -650,35 +910,78 @@ svg { display: block; }
 </svg>
 
 <div class="friends-app">
-  <div class="friends-top">
-    <div class="brand-strip">
-      <svg class="fi"><use href="#f-play"/></svg>
-      <span class="brand-name">Livestream Pro</span>
-      <svg class="fi"><use href="#f-crown"/></svg>
-    </div>
 
-    <header class="friend-header">
-      <button class="header-btn" onclick="goBack()" aria-label="Quay lại">
-        <svg class="fi"><use href="#f-back"/></svg>
-      </button>
+
+<!-- ===== PREMIUM FRIENDS HEADER ===== -->
+
+<div class="friends-top">
+
+  <header class="friend-header">
+
+    <!-- BACK -->
+    <button
+      type="button"
+      class="header-btn header-back"
+      onclick="goBack()"
+      aria-label="Quay lại"
+    >
+      <svg class="fi">
+        <use href="#f-back"></use>
+      </svg>
+    </button>
+
+    <!-- BRAND + TITLE -->
+    <div class="friend-heading">
+
+      <div class="friend-brand">
+        <svg class="fi">
+          <use href="#f-crown"></use>
+        </svg>
+
+        <span>LIVESTREAM PRO</span>
+      </div>
+
       <h1>Bạn bè</h1>
-      <button class="header-btn" onclick="toggleSearch()"
-              aria-label="Ẩn hoặc hiện tìm kiếm">
-        <svg class="fi"><use href="#f-search"/></svg>
-      </button>
-    </header>
 
-    <div class="friend-search" id="friendSearch">
-      <label class="search-inner">
-        <svg class="fi"><use href="#f-search"/></svg>
-        <input id="friendSearchInput"
-               placeholder="Tìm theo tên bạn bè..."
-               oninput="applySearch()"
-               autocomplete="off"
-               aria-label="Tìm kiếm bạn bè">
-      </label>
+      <div class="friend-heading-line"></div>
+
     </div>
+
+
+
+  </header>
+
+  <!-- SEARCH BAR -->
+  <div class="friend-search" id="friendSearch">
+
+    <label class="search-inner">
+
+      <svg class="fi search-icon">
+        <use href="#f-search"></use>
+      </svg>
+
+      <input
+        id="friendSearchInput"
+        type="search"
+        placeholder="Tìm theo tên bạn bè..."
+        oninput="applySearch()"
+        autocomplete="off"
+        aria-label="Tìm kiếm bạn bè"
+      >
+
+      <span class="search-end-icon">
+        <svg class="fi">
+          <use href="#f-users"></use>
+        </svg>
+      </span>
+
+    </label>
+
   </div>
+
+</div>
+<!-- ===== END HEADER ===== -->
+
 
   <main class="friend-section">
     <div class="section-heading">
