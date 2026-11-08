@@ -1452,20 +1452,32 @@ body.lobby-page #playerLobby .pname {
   overflow-wrap: anywhere;
 }
 
-body.lobby-page #playerLobby .player-admin {
-  display: inline-block;
 
-  padding: 3px 6px;
+/* TÍCH XANH ADMIN */
 
-  border: 1px solid rgba(218,183,115,.36);
-  border-radius: 5px;
+body.lobby-page #playerLobby .player-verified {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  background: rgba(205,157,77,.11);
+  width: 17px;
+  height: 17px;
 
-  color: #d4b47d;
-  font-size: 8px;
-  font-weight: 800;
-  letter-spacing: .6px;
+  flex: 0 0 17px;
+
+  margin-left: 2px;
+  vertical-align: middle;
+}
+
+body.lobby-page #playerLobby .player-verified svg {
+  display: block;
+
+  width: 100%;
+  height: 100%;
+
+  filter: drop-shadow(
+    0 1px 3px rgba(22,139,235,.3)
+  );
 }
 
 /* LEVEL AND STATUS */
@@ -2611,15 +2623,11 @@ body.lobby-page .lobby-filter-bar {
     </div>
 
     <!-- LIST HEADING -->
-    <div class="player-list-heading">
 
-      <span>Danh sách thành viên</span>
+<div class="player-list-heading">
+  <span>Danh sách thành viên</span>
+</div>
 
-      <span id="playerResultCount">
-        0 thành viên
-      </span>
-
-    </div>
 
     <!-- USER LIST - GIỮ NGUYÊN ID -->
     <div
@@ -3941,12 +3949,12 @@ playerLobby.querySelector(".player-lobby-backdrop").onclick = () => {
 function renderPlayerLobbyAll() {
 
   const box = document.getElementById("playerList");
-  const countEl = document.getElementById("playerResultCount");
+ 
 
   if (!box) return;
 
   if (!ALL_USERS.length) {
-    if (countEl) countEl.textContent = "0 thành viên";
+  
 
     box.innerHTML = `
       <div class="player-lobby-empty">
@@ -3975,10 +3983,6 @@ function renderPlayerLobbyAll() {
     });
   }
 
-  // Cập nhật số lượng
-  if (countEl) {
-    countEl.textContent = `${list.length} thành viên`;
-  }
 
   if (!list.length) {
     box.innerHTML = `
@@ -4048,9 +4052,22 @@ function renderPlayerLobbyAll() {
 
               <span>${escapeHtml(name)}</span>
 
-              ${u.role === "admin" ? `
-                <span class="player-admin">ADMIN</span>
-              ` : ""}
+
+${u.role === "admin" ? `
+  <span class="player-verified" title="Tài khoản Admin" aria-label="Tài khoản Admin">
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <circle cx="12" cy="12" r="11" fill="#168BEB"/>
+      <path
+        d="M7 12.3L10.3 15.5L17 8.8"
+        fill="none"
+        stroke="#FFFFFF"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  </span>
+` : ""}
 
             </div>
 
