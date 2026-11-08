@@ -1,205 +1,1594 @@
+
 <!doctype html>
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<title>Livestream Pro - Blocked</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="./style.css">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Danh sách chặn | Livestream Pro</title>
 
 <style>
-body{
-  background:#000;
-  color:#fff;
-  margin:0;
-  font-family:system-ui;
+/* =========================================
+   LIVESTREAM PRO - LUXURY BLOCKED PAGE
+========================================= */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #08090c;
+  --panel: #17181e;
+
+  --gold: #d8b77d;
+  --gold-light: #f5e0b7;
+
+  --text: #f4eee3;
+  --muted: #99969a;
+
+  --line: rgba(218,181,112,.32);
+
+  --red: #df8585;
+  --green: #9dd4ad;
 }
 
-.block-header{
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  background: var(--bg);
+}
+
+body {
+  color: var(--text);
+  font-family: system-ui, -apple-system,
+    "Segoe UI", sans-serif;
+  overflow-x: hidden;
+  -webkit-text-size-adjust: 100%;
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+/* ===== SVG ICON ===== */
+
+.bi {
+  width: 20px;
+  height: 20px;
+
+  display: inline-block;
+
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+
+  flex-shrink: 0;
+}
+
+/* ===== MAIN CONTAINER ===== */
+
+.blocked-app {
+  width: 100%;
+  max-width: 520px;
+  min-height: 100dvh;
+  margin: 0 auto;
+
+  padding-bottom: calc(
+    40px + env(safe-area-inset-bottom, 0px)
+  );
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(190,136,54,.12),
+      transparent 46%
+    ),
+    linear-gradient(
+      180deg,
+      #111217,
+      #08090c 65%
+    );
+}
+
+/* =========================================
+   HEADER
+========================================= */
+
+.block-header {
   position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
+  z-index: 40;
 
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
+  padding:
+    calc(env(safe-area-inset-top, 0px) + 8px)
+    16px
+    12px;
 
-  height: 52px;
-  display:flex;
-  align-items:center;
+  background: rgba(10,11,15,.96);
 
-  padding: 0 12px;
-  background:#000;
-  border-bottom:1px solid rgba(255,255,255,.08);
-  z-index: 100;
+  border-bottom: 1px solid var(--line);
+
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
 }
 
+.block-header::after {
+  content: "";
 
-.block-header h3{
   position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 15%;
+  right: 15%;
+  bottom: -1px;
 
-  margin:0;
-  font-size:16px;
-  font-weight:600;
-  pointer-events:none; /* không che nút */
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #c7a36b,
+    transparent
+  );
 }
 
+.block-header-row {
+  height: 65px;
 
+  display: grid;
+  grid-template-columns: 44px minmax(0,1fr) 44px;
+  gap: 8px;
 
-.block-header button{
-  width: 40px;
-  height: 40px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  background:none;
-  border:none;
-  color:#fff;
-  font-size:20px;
-  z-index: 2;
+  align-items: center;
 }
 
+/* BACK BUTTON */
 
+.block-back {
+  width: 44px;
+  height: 44px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-.block-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:10px 14px;
-  border-bottom:1px solid rgba(255,255,255,.06);
+  padding: 0;
+
+  background: linear-gradient(
+    145deg,
+    #29231b,
+    #111217
+  );
+
+  color: var(--gold-light);
+
+  border: 1px solid var(--line);
+  border-radius: 13px;
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.05),
+    0 4px 12px rgba(0,0,0,.3);
 }
 
-.block-row img{
-  width:44px;
-  height:44px;
-  border-radius:50%;
-  object-fit:cover;
+.block-back:active {
+  transform: scale(.95);
 }
 
-.block-info{
-  flex:1;
+/* TITLE */
+
+.block-heading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+
+  text-align: center;
+  min-width: 0;
 }
 
-.block-name{
-  font-weight:600;
+.block-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+
+  color: var(--gold);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
 }
 
-.block-actions button{
-  padding:6px 10px;
-  font-size:12px;
-  border-radius:8px;
-  border:1px solid #00ffaa;
-  background:#111;
-  color:#00ffaa;
+.block-brand .bi {
+  width: 15px;
+  height: 15px;
 }
 
+.block-heading h1 {
+  margin: 0;
 
+  font: 700 25px Georgia, serif;
+  color: var(--gold-light);
+
+  text-shadow:
+    0 2px 15px rgba(207,166,83,.18);
+}
+
+.block-heading-line {
+  width: 45px;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    var(--gold),
+    transparent
+  );
+}
+
+/* =========================================
+   CONTENT
+========================================= */
+
+.block-content {
+  padding: 18px 14px 0;
+}
+
+/* ===== INTRO CARD ===== */
+
+.block-intro {
+  position: relative;
+  overflow: hidden;
+
+  padding: 20px 17px;
+  border-radius: 19px;
+
+  border: 1px solid rgba(222,184,112,.4);
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(195,144,68,.18),
+      transparent 65%
+    ),
+    linear-gradient(
+      135deg,
+      #29231e,
+      #15161c 75%
+    );
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.04),
+    0 12px 30px rgba(0,0,0,.3);
+}
+
+.block-intro::after {
+  content: "";
+  position: absolute;
+
+  width: 150px;
+  height: 150px;
+
+  right: -80px;
+  top: -80px;
+
+  border: 1px solid rgba(239,204,135,.1);
+  border-radius: 50%;
+  box-shadow: 0 0 0 30px rgba(210,160,80,.025);
+
+  pointer-events: none;
+}
+
+.intro-main {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.intro-icon {
+  width: 59px;
+  height: 59px;
+  flex-shrink: 0;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 17px;
+  border: 1px solid rgba(228,179,125,.35);
+
+  background: linear-gradient(
+    145deg,
+    #51332b,
+    #231d1d
+  );
+
+  color: #e1b58c;
+}
+
+.intro-icon .bi {
+  width: 31px;
+  height: 31px;
+  stroke-width: 1.5;
+}
+
+.intro-text {
+  flex: 1;
+  min-width: 0;
+}
+
+.intro-kicker {
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+
+  color: #cfad74;
+}
+
+.intro-title {
+  margin: 6px 0;
+
+  font: 700 21px Georgia, serif;
+  color: var(--gold-light);
+}
+
+.intro-desc {
+  font-size: 11px;
+  line-height: 1.6;
+  color: #a6a4aa;
+}
+
+.intro-bottom {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin-top: 17px;
+  padding-top: 14px;
+
+  border-top: 1px solid rgba(217,184,121,.17);
+}
+
+.intro-bottom span {
+  font-size: 11px;
+  color: #aaa8aa;
+}
+
+.block-count {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+
+  color: #f1d5a4;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.block-count .bi {
+  width: 15px;
+  height: 15px;
+}
+
+/* ===== SEARCH ===== */
+
+.block-search {
+  margin-top: 18px;
+}
+
+.search-box {
+  height: 48px;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 0 15px;
+
+  background: linear-gradient(
+    110deg,
+    #26231f,
+    #15171c
+  );
+
+  border: 1px solid var(--line);
+  border-radius: 14px;
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.04),
+    0 5px 15px rgba(0,0,0,.2);
+}
+
+.search-box:focus-within {
+  border-color: rgba(230,192,122,.8);
+  box-shadow: 0 0 0 3px rgba(209,167,94,.08);
+}
+
+.search-box .bi {
+  color: var(--gold);
+}
+
+.search-box input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+
+  padding: 0;
+  border: none;
+  outline: none;
+  background: none;
+
+  font-size: 16px;
+  color: #fff;
+}
+
+.search-box input::placeholder {
+  color: #939098;
+}
+
+.search-box input::-webkit-search-cancel-button {
+  -webkit-appearance: none;
+}
+
+/* ===== SECTION TITLE ===== */
+
+.block-section-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  margin: 24px 0 13px;
+}
+
+.block-section-title .bi {
+  color: var(--gold);
+}
+
+.block-section-title h2 {
+  flex: 1;
+  margin: 0;
+
+  font-size: 15px;
+  font-weight: 750;
+  color: var(--gold-light);
+}
+
+.block-section-count {
+  font-size: 11px;
+  color: #c9ad7a;
+
+  padding: 5px 10px;
+
+  border-radius: 99px;
+  border: 1px solid var(--line);
+
+  background: rgba(210,168,96,.07);
+}
+
+/* =========================================
+   BLOCKED USER CARDS
+========================================= */
+
+#blockList {
+  display: grid;
+  gap: 11px;
+}
+
+.block-row {
+  display: grid;
+  grid-template-columns: 56px minmax(0,1fr) auto;
+  align-items: center;
+  gap: 11px;
+
+  min-height: 90px;
+  padding: 13px 12px;
+
+  background: linear-gradient(
+    120deg,
+    #29251f,
+    #15161a 62%,
+    #1e1b1a
+  );
+
+  border: 1px solid rgba(220,183,114,.32);
+  border-radius: 16px;
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.04),
+    0 8px 23px rgba(0,0,0,.25);
+}
+
+.block-avatar {
+  width: 56px;
+  height: 56px;
+
+  display: grid;
+  place-items: center;
+
+  overflow: hidden;
+
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  padding: 2px;
+
+  background: #211e1b;
+
+  color: var(--gold);
+}
+
+.block-avatar img {
+  width: 100%;
+  height: 100%;
+  display: block;
+
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.block-avatar .bi {
+  width: 28px;
+  height: 28px;
+}
+
+/* INFO */
+
+.block-info {
+  min-width: 0;
+}
+
+.block-name {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  font-size: 14px;
+  line-height: 1.35;
+
+  font-weight: 750;
+  color: #f7ead2;
+
+  overflow-wrap: anywhere;
+}
+
+.block-name .verified {
+  color: #70b8ff;
+  display: inline-flex;
+  flex: none;
+}
+
+.block-name .verified .bi {
+  width: 16px;
+  height: 16px;
+}
+
+.block-level {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+
+  margin-top: 7px;
+
+  padding: 3px 9px;
+
+  background: rgba(215,179,108,.09);
+  border: 1px solid rgba(215,179,108,.33);
+  border-radius: 99px;
+
+  color: #d9bd87;
+
+  font-size: 10px;
+  font-weight: 700;
+}
+
+.block-level .bi {
+  width: 12px;
+  height: 12px;
+}
+
+.block-status {
+  margin-top: 7px;
+
+  display: flex;
+  align-items: center;
+  gap: 5px;
+
+  color: var(--red);
+  font-size: 10px;
+}
+
+.block-status::before {
+  content: "";
+
+  width: 6px;
+  height: 6px;
+
+  border-radius: 50%;
+  background: currentColor;
+}
+
+/* ===== UNBLOCK BUTTON ===== */
+
+.block-actions {
+  display: flex;
+  align-items: center;
+}
+
+.btn-unblock {
+  min-width: 74px;
+  min-height: 53px;
+
+  padding: 8px 10px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+
+  border-radius: 11px;
+
+  border: 1px solid rgba(225,186,112,.54);
+
+  background: linear-gradient(
+    145deg,
+    #423425,
+    #211e1b
+  );
+
+  color: var(--gold-light);
+
+  font-size: 10px;
+  font-weight: 750;
+
+  transition: transform .15s ease;
+}
+
+.btn-unblock .bi {
+  width: 19px;
+  height: 19px;
+  color: var(--gold);
+}
+
+.btn-unblock:active {
+  transform: scale(.96);
+}
+
+/* ===== EMPTY STATE ===== */
+
+.block-empty {
+  padding: 35px 22px;
+
+  text-align: center;
+
+  background: linear-gradient(
+    135deg,
+    #1e1c1b,
+    #121419
+  );
+
+  border: 1px dashed rgba(221,185,116,.3);
+  border-radius: 17px;
+}
+
+.empty-icon {
+  width: 65px;
+  height: 65px;
+
+  display: grid;
+  place-items: center;
+
+  margin: 0 auto 16px;
+
+  border-radius: 50%;
+  border: 1px solid rgba(217,184,121,.35);
+
+  color: var(--gold);
+  background: rgba(220,177,94,.07);
+}
+
+.empty-icon .bi {
+  width: 31px;
+  height: 31px;
+}
+
+.empty-title {
+  font-size: 15px;
+  font-weight: 750;
+  color: var(--gold-light);
+}
+
+.empty-desc {
+  margin-top: 8px;
+
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+/* =========================================
+   CONFIRM MODAL
+========================================= */
+
+.block-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 18px;
+}
+
+.block-modal.show {
+  display: flex;
+}
+
+.block-modal-overlay {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0,0,0,.83);
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+}
+
+.block-modal-box {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 350px;
+
+  padding: 25px 20px;
+
+  text-align: center;
+
+  border: 1px solid rgba(230,186,112,.45);
+  border-radius: 20px;
+
+  background:
+    radial-gradient(
+      ellipse at top,
+      rgba(204,158,75,.13),
+      transparent 65%
+    ),
+    #191a1f;
+
+  box-shadow: 0 25px 70px rgba(0,0,0,.7);
+}
+
+.modal-icon {
+  width: 60px;
+  height: 60px;
+
+  margin: 0 auto 15px;
+
+  display: grid;
+  place-items: center;
+
+  border-radius: 17px;
+  border: 1px solid var(--line);
+
+  background: rgba(213,169,87,.07);
+  color: var(--gold);
+}
+
+.modal-icon .bi {
+  width: 29px;
+  height: 29px;
+}
+
+.modal-title {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold-light);
+}
+
+.modal-desc {
+  margin-top: 10px;
+
+  color: #b8b5b3;
+  font-size: 13px;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+}
+
+.modal-buttons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+
+  margin-top: 23px;
+}
+
+.modal-btn {
+  min-height: 45px;
+
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.modal-cancel {
+  border: 1px solid var(--line);
+  color: #d7d1c6;
+  background: #29292c;
+}
+
+.modal-confirm {
+  border: 1px solid #ebcd91;
+  color: #201a11;
+
+  background: linear-gradient(
+    135deg,
+    #f3dfb1,
+    #c69b55
+  );
+}
+
+/* ===== TOAST ===== */
+
+#toast-container {
+  position: fixed;
+  z-index: 1000;
+
+  top: calc(env(safe-area-inset-top, 0px) + 15px);
+  left: 12px;
+  right: 12px;
+
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+
+  pointer-events: none;
+}
+
+.toast {
+  width: 100%;
+  max-width: 450px;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  padding: 13px 14px;
+
+  border: 1px solid var(--line);
+  border-radius: 13px;
+
+  background: #242329;
+  color: #f5e5c5;
+
+  box-shadow: 0 12px 30px #0009;
+
+  font-size: 12px;
+}
+
+.toast .bi {
+  color: var(--gold);
+}
+
+.toast.success .bi { color: var(--green); }
+.toast.error .bi { color: var(--red); }
+
+/* ===== FORCE LOGOUT MODAL ===== */
+
+#forceLogoutModal {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+}
+
+#forceLogoutModal.show {
+  display: flex;
+}
+
+.fl-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0,0,0,.88);
+  backdrop-filter: blur(6px);
+}
+
+.fl-box {
+  position: relative;
+
+  width: 100%;
+  max-width: 350px;
+
+  text-align: center;
+
+  padding: 28px 20px;
+
+  border: 1px solid var(--line);
+  border-radius: 18px;
+
+  background: #1b1c22;
+}
+
+.fl-icon { color: var(--red); }
+
+.fl-icon .bi {
+  width: 36px;
+  height: 36px;
+}
+
+.fl-title {
+  margin: 14px 0 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--gold-light);
+}
+
+.fl-msg,
+.fl-sub {
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.7;
+}
+
+.fl-sub {
+  margin-top: 12px;
+}
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 375px) {
+  .block-header {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .block-content {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .block-heading h1 {
+    font-size: 22px;
+  }
+
+  .block-row {
+    grid-template-columns: 50px minmax(0,1fr);
+  }
+
+  .block-avatar {
+    width: 50px;
+    height: 50px;
+  }
+
+  .block-actions {
+    grid-column: 1 / -1;
+  }
+
+  .btn-unblock {
+    width: 100%;
+    min-height: 42px;
+    flex-direction: row;
+    font-size: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    transition-duration: .01ms !important;
+  }
+}
 </style>
 </head>
 
 <body>
 
-<div class="block-header">
-  <button onclick="history.back()">←</button>
-  <h3>Đã chặn</h3>
+<!-- ===== SVG ICONS ===== -->
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="0" height="0"
+     style="position:absolute;overflow:hidden"
+     aria-hidden="true">
+
+  <symbol id="bk-back" viewBox="0 0 24 24">
+    <path d="m15 18-6-6 6-6"/>
+  </symbol>
+
+  <symbol id="bk-crown" viewBox="0 0 24 24">
+    <path d="m2 8 5 4 5-8 5 8 5-4-2 11H4L2 8Z"/>
+    <path d="M4 22h16"/>
+  </symbol>
+
+  <symbol id="bk-shield" viewBox="0 0 24 24">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
+    <path d="m8 8 8 8M16 8l-8 8"/>
+  </symbol>
+
+  <symbol id="bk-shield-check" viewBox="0 0 24 24">
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/>
+    <path d="m8 12 3 3 5-6"/>
+  </symbol>
+
+  <symbol id="bk-search" viewBox="0 0 24 24">
+    <circle cx="10.5" cy="10.5" r="7"/>
+    <path d="m16 16 5 5"/>
+  </symbol>
+
+  <symbol id="bk-user" viewBox="0 0 24 24">
+    <circle cx="12" cy="8" r="4"/>
+    <path d="M4 21a8 8 0 0 1 16 0"/>
+  </symbol>
+
+  <symbol id="bk-unlock" viewBox="0 0 24 24">
+    <rect x="5" y="11" width="14" height="11" rx="2"/>
+    <path d="M8 11V7a4 4 0 0 1 8 0"/>
+  </symbol>
+
+  <symbol id="bk-gem" viewBox="0 0 24 24">
+    <path d="M6 3h12l4 6-10 12L2 9l4-6ZM2 9h20"/>
+  </symbol>
+
+  <symbol id="bk-verified" viewBox="0 0 24 24">
+    <path d="m12 2 2.6 1.8 3.1-.1 1.2 2.9 2.6 1.8-.8 3 .8 3-2.6 1.8-1.2 2.9-3.1-.1L12 22l-2.6-1.8-3.1.1-1.2-2.9-2.6-1.8.8-3-.8-3 2.6-1.8 1.2-2.9 3.1.1L12 2Z"/>
+    <path d="m8 12 3 3 5-6"/>
+  </symbol>
+
+  <symbol id="bk-info" viewBox="0 0 24 24">
+    <circle cx="12" cy="12" r="9"/>
+    <path d="M12 11v5M12 7h.01"/>
+  </symbol>
+
+</svg>
+
+<!-- ===== MAIN ===== -->
+
+<div class="blocked-app">
+
+  <!-- HEADER -->
+  <header class="block-header">
+    <div class="block-header-row">
+
+      <button class="block-back"
+              type="button"
+              onclick="goBlockedBack()"
+              aria-label="Quay lại">
+        <svg class="bi">
+          <use href="#bk-back"></use>
+        </svg>
+      </button>
+
+      <div class="block-heading">
+
+        <div class="block-brand">
+          <svg class="bi">
+            <use href="#bk-crown"></use>
+          </svg>
+          <span>LIVESTREAM PRO</span>
+        </div>
+
+        <h1>Danh sách chặn</h1>
+
+        <div class="block-heading-line"></div>
+
+      </div>
+
+      <!-- Cột trống để tiêu đề luôn nằm giữa -->
+      <div aria-hidden="true"></div>
+
+    </div>
+  </header>
+
+  <main class="block-content">
+
+    <!-- INTRO -->
+    <section class="block-intro">
+
+      <div class="intro-main">
+
+        <div class="intro-icon">
+          <svg class="bi">
+            <use href="#bk-shield"></use>
+          </svg>
+        </div>
+
+        <div class="intro-text">
+          <div class="intro-kicker">QUẢN LÝ TƯƠNG TÁC</div>
+
+          <div class="intro-title">
+            Danh sách chặn
+          </div>
+
+          <div class="intro-desc">
+            Quản lý các tài khoản bạn đã chặn
+          </div>
+        </div>
+
+      </div>
+
+      <div class="intro-bottom">
+        <span>Tổng số tài khoản đã chặn</span>
+
+        <div class="block-count">
+          <svg class="bi">
+            <use href="#bk-shield"></use>
+          </svg>
+          <span id="totalBlocked">0</span>
+        </div>
+      </div>
+
+    </section>
+
+    <!-- SEARCH -->
+    <div class="block-search">
+      <label class="search-box">
+
+        <svg class="bi">
+          <use href="#bk-search"></use>
+        </svg>
+
+        <input
+          id="blockedSearchInput"
+          type="search"
+          placeholder="Tìm tài khoản bị chặn..."
+          autocomplete="off"
+          oninput="filterBlocked()"
+          aria-label="Tìm tài khoản bị chặn"
+        >
+
+      </label>
+    </div>
+
+    <!-- LIST TITLE -->
+    <div class="block-section-title">
+      <svg class="bi">
+        <use href="#bk-shield"></use>
+      </svg>
+
+      <h2>Tài khoản đã chặn</h2>
+
+      <span class="block-section-count"
+            id="visibleBlockedCount">0</span>
+    </div>
+
+    <!-- LIST -->
+    <div id="blockList">
+      <div class="block-empty">
+        <div class="empty-title">Đang tải danh sách...</div>
+      </div>
+    </div>
+
+  </main>
 </div>
 
-<div id="blockList"></div>
+<!-- ===== CONFIRM MODAL ===== -->
 
+<div id="unblockModal"
+     class="block-modal"
+     role="dialog"
+     aria-modal="true"
+     aria-labelledby="unblockTitle">
 
-<div id="toast-container"></div>
+  <div class="block-modal-overlay"
+       onclick="closeUnblockModal()"></div>
+
+  <div class="block-modal-box">
+
+    <div class="modal-icon">
+      <svg class="bi">
+        <use href="#bk-unlock"></use>
+      </svg>
+    </div>
+
+    <div class="modal-title" id="unblockTitle">
+      Xác nhận bỏ chặn
+    </div>
+
+    <div class="modal-desc" id="unblockMessage"></div>
+
+    <div class="modal-buttons">
+
+      <button type="button"
+              class="modal-btn modal-cancel"
+              onclick="closeUnblockModal()">
+        Hủy bỏ
+      </button>
+
+      <button type="button"
+              class="modal-btn modal-confirm"
+              id="confirmUnblockBtn">
+        Bỏ chặn
+      </button>
+
+    </div>
+
+  </div>
+</div>
+
+<div id="toast-container" aria-live="polite"></div>
 
 <script src="/push-init.js"></script>
 <script src="/socket.io/socket.io.js"></script>
 <script src="/app-entry-guard.js"></script>
+
 <script>
+/* =========================================
+   BLOCKED PAGE - JAVASCRIPT
+========================================= */
+
 const socket = io();
-const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
-if(!profile.uid){
+
+const profile = JSON.parse(
+  localStorage.getItem("user_profile") || "{}"
+);
+
+if (!profile.uid) {
   location.href = "/login.html";
 }
 
-// 🔑 auth-login
-socket.emit("auth-login", { uid: profile.uid });
+let blockedUsers = [];
+let selectedUnblock = null;
 
-fetch("/api/blocked/" + profile.uid)
-  .then(r=>r.json())
-  .then(data => renderBlocked(data.blocked));
+/* ===== ICON ===== */
 
-function renderBlocked(list){
+function blockIcon(name) {
+  return `
+    <svg class="bi" aria-hidden="true">
+      <use href="#bk-${name}"></use>
+    </svg>
+  `;
+}
+
+/* ===== AUTH ===== */
+
+socket.on("connect", () => {
+  if (profile.uid) {
+    socket.emit("auth-login", {
+      uid: profile.uid
+    });
+  }
+});
+
+/* ===== BACK ===== */
+
+function goBlockedBack() {
+  if (history.length > 1) {
+    history.back();
+  } else {
+    location.href = "/friends.html";
+  }
+}
+
+/* ===== SAFE AVATAR ===== */
+
+function blockedAvatarUrl(value) {
+  if (typeof value !== "string" || !value.trim()) {
+    return "";
+  }
+
+  try {
+    const url = new URL(value, location.origin);
+
+    if (url.protocol === "http:" || url.protocol === "https:") {
+      return url.href;
+    }
+  } catch (e) {}
+
+  return "";
+}
+
+/* ===== LOAD DANH SÁCH ===== */
+
+async function loadBlocked() {
+  if (!profile.uid) return;
+
+  try {
+    const response = await fetch(
+      "/api/blocked/" + encodeURIComponent(profile.uid),
+      { cache: "no-store" }
+    );
+
+    if (!response.ok) {
+      throw new Error("Không thể tải danh sách chặn");
+    }
+
+    const data = await response.json();
+
+    blockedUsers = Array.isArray(data.blocked)
+      ? data.blocked
+      : [];
+
+    document.getElementById("totalBlocked").textContent =
+      blockedUsers.length;
+
+    filterBlocked();
+
+  } catch (error) {
+    console.error("Lỗi danh sách chặn:", error);
+
+    showToast(
+      "Không thể tải danh sách chặn",
+      "error"
+    );
+
+    const box = document.getElementById("blockList");
+
+    box.replaceChildren();
+
+    const empty = document.createElement("div");
+    empty.className = "block-empty";
+    empty.textContent = "Không thể tải dữ liệu. Vui lòng tải lại trang.";
+
+    box.appendChild(empty);
+  }
+}
+
+/* ===== CREATE USER CARD ===== */
+
+function createBlockedCard(user) {
+  const row = document.createElement("div");
+  row.className = "block-row";
+
+  row.innerHTML = `
+    <div class="block-avatar">
+      ${blockIcon("user")}
+    </div>
+
+    <div class="block-info">
+
+      <div class="block-name">
+        <span class="block-name-text"></span>
+      </div>
+
+      <div class="block-level">
+        ${blockIcon("gem")}
+        <span class="block-level-text"></span>
+      </div>
+
+      <div class="block-status">
+        Đã chặn
+      </div>
+
+    </div>
+
+    <div class="block-actions">
+      <button class="btn-unblock" type="button">
+        ${blockIcon("unlock")}
+        <span>Bỏ chặn</span>
+      </button>
+    </div>
+  `;
+
+  const name = String(user.name || "Người dùng");
+  const uid = String(user.uid || "");
+
+  row.querySelector(".block-name-text").textContent = name;
+
+  row.querySelector(".block-level-text").textContent =
+    "Lv " + (Number(user.level) || 1);
+
+  /* VERIFIED */
+  if (user.verified) {
+    const badge = document.createElement("span");
+
+    badge.className = "verified";
+    badge.title = "Đã xác minh";
+    badge.innerHTML = blockIcon("verified");
+
+    row.querySelector(".block-name").appendChild(badge);
+  }
+
+  /* AVATAR */
+  const src = blockedAvatarUrl(user.avatar);
+
+  if (src) {
+    const img = new Image();
+
+    img.alt = "Ảnh đại diện " + name;
+    img.loading = "lazy";
+
+    img.onload = () => {
+      row.querySelector(".block-avatar")
+        ?.replaceChildren(img);
+    };
+
+    img.src = src;
+  }
+
+  /* ACTION */
+  const button = row.querySelector(".btn-unblock");
+
+  button.setAttribute(
+    "aria-label",
+    "Bỏ chặn " + name
+  );
+
+  button.onclick = () => {
+    unblock(uid, name);
+  };
+
+  return row;
+}
+
+/* ===== RENDER ===== */
+
+function renderBlocked(list) {
   const box = document.getElementById("blockList");
-  box.innerHTML = "";
 
-  if(!list.length){
-    box.innerHTML = `<div style="padding:14px;opacity:.5">Không có user bị chặn</div>`;
+  box.replaceChildren();
+
+  document.getElementById("visibleBlockedCount").textContent =
+    list.length;
+
+  if (!list.length) {
+    const empty = document.createElement("div");
+    empty.className = "block-empty";
+
+    const hasQuery = document.getElementById(
+      "blockedSearchInput"
+    ).value.trim().length > 0;
+
+    empty.innerHTML = `
+      <div class="empty-icon">
+        ${blockIcon("shield-check")}
+      </div>
+      <div class="empty-title"></div>
+      <div class="empty-desc"></div>
+    `;
+
+    empty.querySelector(".empty-title").textContent =
+      hasQuery
+        ? "Không tìm thấy tài khoản"
+        : "Danh sách chặn đang trống";
+
+    empty.querySelector(".empty-desc").textContent =
+      hasQuery
+        ? "Không có tài khoản nào khớp với từ khóa tìm kiếm."
+        : "Hiện tại bạn chưa chặn tài khoản nào.";
+
+    box.appendChild(empty);
     return;
   }
 
-  list.forEach(u=>{
-    box.innerHTML += `
-      <div class="block-row">
-        <img src="${u.avatar}">
-        <div class="block-info">
-          <div class="block-name">
-            ${u.name}
-            ${u.verified ? `<span class="tick-blue">✔</span>` : ``}
-          </div>
-          <div style="font-size:12px;opacity:.6">Lv ${u.level}</div>
-        </div>
-        <div class="block-actions">
-          <button onclick="unblock('${u.uid}','${u.name}')">
-            🔓 Bỏ chặn
-          </button>
-        </div>
-      </div>
-    `;
+  const fragment = document.createDocumentFragment();
+
+  list.forEach(user => {
+    fragment.appendChild(createBlockedCard(user));
   });
+
+  box.appendChild(fragment);
 }
 
-function unblock(uid, name){
-  const ok = confirm(`Bỏ chặn ${name}?`);
-  if(!ok) return;
+/* ===== TÌM KIẾM ===== */
 
-  socket.emit("user-unblock", { uid });
+function filterBlocked() {
+  const keyword = document.getElementById(
+    "blockedSearchInput"
+  ).value.trim().toLocaleLowerCase("vi-VN");
 
-  setTimeout(()=>{
-    fetch("/api/blocked/" + profile.uid)
-      .then(r=>r.json())
-      .then(data => renderBlocked(data.blocked));
-  }, 200);
+  if (!keyword) {
+    renderBlocked(blockedUsers);
+    return;
+  }
+
+  const filtered = blockedUsers.filter(user => {
+    const name = String(user.name || "")
+      .toLocaleLowerCase("vi-VN");
+
+    return name.includes(keyword);
+  });
+
+  renderBlocked(filtered);
 }
 
+/* ===== UNBLOCK MODAL ===== */
 
+function unblock(uid, name) {
+  selectedUnblock = {
+    uid: String(uid),
+    name: String(name)
+  };
+
+  document.getElementById("unblockMessage").textContent =
+    `Bạn có chắc muốn bỏ chặn ${selectedUnblock.name}?`;
+
+  document.getElementById("unblockModal")
+    .classList.add("show");
+
+  document.getElementById("confirmUnblockBtn").focus();
+}
+
+function closeUnblockModal() {
+  document.getElementById("unblockModal")
+    .classList.remove("show");
+
+  selectedUnblock = null;
+}
+
+/* ===== XÁC NHẬN BỎ CHẶN ===== */
+
+document.getElementById("confirmUnblockBtn")
+  .addEventListener("click", () => {
+
+    if (!selectedUnblock) return;
+
+    if (!socket.connected) {
+      showToast(
+        "Mất kết nối máy chủ. Vui lòng thử lại.",
+        "error"
+      );
+      return;
+    }
+
+    const uid = selectedUnblock.uid;
+
+    socket.emit("user-unblock", { uid });
+
+    closeUnblockModal();
+
+    showToast(
+      "Đã gửi yêu cầu bỏ chặn",
+      "info"
+    );
+
+    // Làm mới danh sách từ server
+    setTimeout(loadBlocked, 500);
+  });
+
+/* ===== ESC KEY ===== */
+
+document.addEventListener("keydown", event => {
+  if (event.key === "Escape") {
+    closeUnblockModal();
+  }
+});
+
+/* =========================================
+   SYSTEM NOTIFICATIONS
+========================================= */
 
 socket.on("system-notify", data => {
   if (!data) return;
 
-  // 💰 NẠP COIN
   if (data.type === "topup") {
-    showToast(data.text || "💰 Bạn vừa được nạp coin", "success");
+    showToast(
+      data.text || "Bạn vừa được nạp coin",
+      "success"
+    );
     return;
   }
 
-   // ➖ TRỪ COIN
   if (data.type === "withdraw") {
     notifyWithdraw(data);
   }
-  
 
-  // 🚫 KHOÁ TÀI KHOẢN
   if (data.type === "lock") {
     showToast(
-      data.reason || "🚫 Tài khoản của bạn đã bị khoá",
+      data.reason || "Tài khoản của bạn đã bị khóa",
       "error"
     );
 
-    localStorage.removeItem("user_profile");
-    localStorage.removeItem("login_uid");
-    localStorage.removeItem("isGuest");
+    clearBlockedLogin();
 
     setTimeout(() => {
       location.href = "/login.html";
@@ -207,104 +1596,116 @@ socket.on("system-notify", data => {
   }
 });
 
+/* ===== TOAST ===== */
 
-function showToast(text, type = "info", timeout = 3500){
+function showToast(message, type = "info", timeout = 3500) {
   const box = document.getElementById("toast-container");
-  if(!box) return;
 
-  const icons = {
-    info:"ℹ️",
-    success:"✅",
-    error:"❌",
-    warn:"⚠️"
-  };
+  const toast = document.createElement("div");
 
-  const div = document.createElement("div");
-  div.className = `toast ${type}`;
-  div.innerHTML = `
-    <span class="icon">${icons[type] || "🔔"}</span>
-    <span class="msg">${text}</span>
-  `;
+  toast.className = "toast " + type;
 
-  box.appendChild(div);
+  const iconName =
+    type === "success"
+      ? "shield-check"
+      : type === "error"
+      ? "shield"
+      : "info";
 
-  setTimeout(()=>div.remove(), timeout);
+  toast.innerHTML =
+    blockIcon(iconName) +
+    `<span class="toast-message"></span>`;
+
+  toast.querySelector(".toast-message").textContent =
+    String(message || "");
+
+  box.appendChild(toast);
+
+  setTimeout(() => toast.remove(), timeout);
 }
 
+/* ===== WITHDRAW ===== */
 
+function showWithdrawNotify(data) {
+  notifyWithdraw(data);
+}
 
-
-function showWithdrawNotify(data){
-  const text =
-    data.text ||
+function notifyWithdraw(data) {
+  const text = data?.text ||
     "Tài khoản của bạn vừa bị trừ coin";
 
-  openSysModal(text);
-}
-
-
-function notifyWithdraw(data){
-  const text =
-    data?.text ||
-    "➖ Tài khoản của bạn vừa bị trừ coin";
-
-  // ưu tiên modal nếu tồn tại
   if (typeof openSysModal === "function") {
     openSysModal(text);
-    return;
-  }
-
-  // fallback toast
-  if (typeof showToast === "function") {
+  } else {
     showToast(text, "error", 5000);
-    return;
   }
-
-  // fallback cuối cùng
-  alert(text);
 }
 
+/* ===== LOGIN CLEANUP ===== */
 
-
-function showForceLogoutModal(message){
-  let modal = document.getElementById("forceLogoutModal");
-  if(!modal){
-    modal = document.createElement("div");
-    modal.id = "forceLogoutModal";
-    modal.innerHTML = `
-      <div class="fl-backdrop"></div>
-      <div class="fl-box">
-        <div class="fl-icon">🚫</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc</div>
-        <div class="fl-msg"></div>
-        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-  }
-
-  modal.querySelector(".fl-msg").textContent = message;
-  modal.classList.add("show");
-}
-
-
-socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
-
-  showForceLogoutModal(msg);
-
-  // clear auth
+function clearBlockedLogin() {
   localStorage.removeItem("user_profile");
   localStorage.removeItem("login_uid");
   localStorage.removeItem("isGuest");
+}
 
-  // redirect sau 2s
-  setTimeout(()=>{
+/* ===== FORCE LOGOUT ===== */
+
+function showForceLogoutModal(message) {
+  let modal = document.getElementById(
+    "forceLogoutModal"
+  );
+
+  if (!modal) {
+    modal = document.createElement("div");
+
+    modal.id = "forceLogoutModal";
+
+    modal.innerHTML = `
+      <div class="fl-backdrop"></div>
+
+      <div class="fl-box">
+        <div class="fl-icon">
+          ${blockIcon("shield")}
+        </div>
+
+        <div class="fl-title">
+          Phiên đăng nhập kết thúc
+        </div>
+
+        <div class="fl-msg"></div>
+
+        <div class="fl-sub">
+          Bạn sẽ được chuyển về trang đăng nhập…
+        </div>
+      </div>
+    `;
+
+    document.body.appendChild(modal);
+  }
+
+  modal.querySelector(".fl-msg").textContent =
+    String(message || "");
+
+  modal.classList.add("show");
+}
+
+socket.on("force-logout", data => {
+  const message = data?.message ||
+    "Tài khoản của bạn đã bị đăng xuất";
+
+  showForceLogoutModal(message);
+
+  clearBlockedLogin();
+
+  setTimeout(() => {
     location.href = "/login.html";
   }, 3000);
 });
 
+/* ===== INIT ===== */
 
+loadBlocked();
 
 </script>
 </body>
