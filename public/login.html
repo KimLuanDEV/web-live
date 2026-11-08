@@ -111,8 +111,6 @@ a:focus-visible {
 
   padding:
     calc(18px + env(safe-area-inset-top, 0px))
-    23px
-    calc(18px + env(safe-area-inset-bottom, 0px))
     23px;
 
   display: flex;
@@ -125,26 +123,6 @@ a:focus-visible {
   overscroll-behavior: contain;
   -webkit-overflow-scrolling: touch;
 
-  border-left: 1px solid #52432f;
-  border-right: 1px solid #52432f;
-
-  background:
-    radial-gradient(
-      ellipse 82% 30% at 50% -7%,
-      rgba(194,143,70,.22),
-      transparent 75%
-    ),
-    radial-gradient(
-      ellipse 75% 24% at 50% 100%,
-      rgba(94,66,35,.11),
-      transparent 85%
-    ),
-    linear-gradient(
-      165deg,
-      #1a1a1c 0%,
-      #0c0e13 64%,
-      #090a0e 100%
-    );
 }
 
 .auth-stage::-webkit-scrollbar {
