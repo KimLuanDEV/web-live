@@ -1255,8 +1255,10 @@ body.auth-page .auth-foot {
 body.auth-page .modal {
   width: min(100%, 430px);
 
-  height: min(100vh, 870px);
-  height: min(100dvh, 870px);
+  height: 100vh;
+  height: 100dvh;
+
+  max-height: none;
 
   padding:
     max(14px, env(safe-area-inset-top, 0px))
@@ -1285,7 +1287,8 @@ html {
   background: #050608;
 }
 
-/* BODY LUÔN PHỦ HẾT MÀN HÌNH */
+
+/* BODY FULL SCREEN */
 
 body.auth-page {
   position: relative;
@@ -1303,10 +1306,11 @@ body.auth-page {
   padding: 0;
 
   overflow: hidden;
+
   background: #050608;
 }
 
-/* KHUNG LOGIN */
+/* LOGIN FULL HEIGHT - KHÔNG GIỚI HẠN 870PX */
 
 body.auth-page .auth-stage {
   position: relative;
@@ -1340,6 +1344,7 @@ body.auth-page .auth-stage {
   -webkit-overflow-scrolling: touch;
   scrollbar-width: none;
 }
+
 
 body.auth-page .auth-stage::-webkit-scrollbar {
   display: none;
