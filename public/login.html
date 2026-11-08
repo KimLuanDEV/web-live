@@ -11,7 +11,7 @@
 
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent">
+      content="black">
 <meta name="apple-mobile-web-app-title" content="Livestream Pro">
 
 <meta name="mobile-web-app-capable" content="yes">
@@ -1267,6 +1267,178 @@ body.auth-page .modal {
 body.auth-page .modal-card {
   max-height: 100%;
   overflow-y: auto;
+}
+
+
+
+/* ==========================================
+   LIVESTREAM PRO
+   FIX IOS NOTCH + BOTTOM BLACK GAP
+========================================== */
+
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background: #050608;
+}
+
+/* BODY LUÔN PHỦ HẾT MÀN HÌNH */
+
+body.auth-page {
+  position: relative;
+
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+
+  margin: 0;
+  padding: 0;
+
+  overflow: hidden;
+  background: #050608;
+}
+
+/* KHUNG LOGIN */
+
+body.auth-page .auth-stage {
+  position: relative;
+
+  flex: 0 1 430px;
+
+  width: 100%;
+  max-width: 430px;
+  min-width: 0;
+
+  height: 100%;
+  min-height: 0;
+  max-height: none;
+
+  margin: 0;
+
+  padding:
+    max(20px, calc(env(safe-area-inset-top, 0px) + 12px))
+    20px
+    max(20px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+body.auth-page .auth-stage::-webkit-scrollbar {
+  display: none;
+}
+
+/* NỘI DUNG GIỮA */
+
+body.auth-page .auth-main {
+  flex: 1 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 18px 0;
+}
+
+/* THANH TRÊN KHÔNG DÍNH TAI THỎ */
+
+body.auth-page .auth-top {
+  position: relative;
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 0;
+
+  z-index: 1;
+}
+
+/* FOOTER NẰM TRONG KHUNG */
+
+body.auth-page .auth-foot {
+  flex: 0 0 auto;
+
+  width: 100%;
+  margin-top: 0;
+
+  padding: 12px 0 0;
+}
+
+/* MOBILE FULL HEIGHT */
+
+@media (max-width: 600px) {
+
+  body.auth-page {
+    align-items: stretch;
+  }
+
+  body.auth-page .auth-stage {
+    flex: 1 1 auto;
+
+    width: 100%;
+    max-width: 430px;
+
+    height: 100%;
+    max-height: none;
+
+    padding-top:
+      max(20px, calc(env(safe-area-inset-top, 0px) + 12px));
+
+    padding-right: 18px;
+
+    padding-bottom:
+      max(20px, calc(env(safe-area-inset-bottom, 0px) + 12px));
+
+    padding-left: 18px;
+  }
+}
+
+/* MÀN HÌNH THẤP */
+
+@media (max-height: 700px) {
+
+  body.auth-page .auth-main {
+    justify-content: flex-start;
+    padding: 12px 0;
+  }
+
+  body.auth-page .login-avatar {
+    width: 65px;
+    height: 65px;
+    margin-bottom: 10px;
+  }
+
+  body.auth-page .login-panel {
+    margin-top: 14px;
+    padding: 13px;
+  }
+
+  body.auth-page .register-line {
+    margin-top: 10px;
+  }
 }
 
 
