@@ -1,365 +1,1158 @@
+
 <!doctype html>
 <html lang="vi">
+
 <head>
+
 <meta charset="utf-8">
-<!-- PWA iOS -->
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover">
+
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Livestream Pro">
 
-<!-- Android / Chrome -->
 <meta name="mobile-web-app-capable" content="yes">
 
-
-<meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Đăng nhập • Livestream Pro</title>
 
 <link rel="manifest" href="/manifest.json">
-
-<!-- icon cho iOS -->
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
 
-<link rel="stylesheet" href="/style.css">
-
 <style>
-body{
-  margin:0;
-  min-height:100vh;
-  background:radial-gradient(circle at top,#0f1b3a,#05070d);
-  font-family:system-ui,-apple-system;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:white;
+
+/* ==========================================
+   LIVESTREAM PRO
+   MIDNIGHT LUXURY LOGIN
+   INDEPENDENT CSS
+========================================== */
+
+:root {
+  color-scheme: dark;
 }
 
-.login-shell{
-  width:100%;
-  max-width:420px;
-  background:linear-gradient(180deg,#0b1327,#080c18);
-  border-radius:24px;
-  padding:36px 26px 42px;
-  box-shadow:0 0 50px rgba(0,255,255,.15);
-  text-align:center;
+* {
+  box-sizing: border-box;
 }
 
-.login-avatar{
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  margin:0 auto 14px;
-  background:url("https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg") center/cover;
-  box-shadow:0 0 40px rgba(0,255,255,.6);
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
 }
 
-.login-title{
-  font-size:26px;
-  font-weight:900;
-  color:#00f6ff;
-  margin-bottom:6px;
+html {
+  background: #050608;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
 }
 
-.login-sub{
-  font-size:13px;
-  opacity:.7;
-  margin-bottom:28px;
+body.auth-page {
+  display: grid;
+  place-items: center;
+
+  min-height: 100dvh;
+  overflow: hidden;
+
+  background: #050608;
+  color: #f5eee1;
+
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 }
 
-.login-shell input{
-  width:100%;
-  height:52px;
-  margin-top:14px;
-  background:#0e172c;
-  border:none;
-  border-radius:16px;
-  padding:0 16px;
-  color:white;
-  font-size:16px;
-  box-shadow:inset 0 0 0 1px rgba(0,255,255,.15);
+button,
+input {
+  font: inherit;
 }
 
-.login-shell input::placeholder{
-  color:#6c7da8;
+button {
+  cursor: pointer;
 }
 
-.login-btn{
-  width:100%;
-  height:56px;
-  margin-top:26px;
-  border:none;
-  border-radius:18px;
-  background:linear-gradient(135deg,#00f6ff,#5f7dff);
-  color:#00141a;
-  font-size:18px;
-  font-weight:900;
-  box-shadow:0 0 30px rgba(0,246,255,.6);
+a {
+  text-decoration: none;
 }
 
-.login-links{
-  margin-top:22px;
-  font-size:13px;
-  opacity:.75;
+.hidden {
+  display: none !important;
 }
 
-.login-links a{
-  color:#00f6ff;
-  text-decoration:none;
-  font-weight:600;
+button:focus-visible,
+input:focus-visible,
+a:focus-visible {
+  outline: 2px solid #e9c58d;
+  outline-offset: 3px;
 }
 
-/* mobile */
-@media(max-width:600px){
-  .login-shell{
-    min-height:100vh;
-    border-radius:0;
-    padding:48px 24px 40px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
+/* ==========================================
+   MAIN SCREEN - MAX 430 x 870
+========================================== */
+
+.auth-stage {
+  position: relative;
+  isolation: isolate;
+
+  width: min(100%, 430px);
+  height: min(100dvh, 870px);
+
+  min-width: 0;
+  min-height: 0;
+
+  padding: 24px 23px 21px;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+
+  border-left: 1px solid #52432f;
+  border-right: 1px solid #52432f;
+
+  background:
+    radial-gradient(
+      ellipse 82% 30% at 50% -7%,
+      rgba(194,143,70,.22),
+      transparent 75%
+    ),
+    radial-gradient(
+      ellipse 75% 24% at 50% 100%,
+      rgba(94,66,35,.11),
+      transparent 85%
+    ),
+    linear-gradient(
+      165deg,
+      #1a1a1c 0%,
+      #0c0e13 64%,
+      #090a0e 100%
+    );
+}
+
+.auth-stage::-webkit-scrollbar {
+  display: none;
+}
+
+.auth-stage::before {
+  content: "";
+
+  position: absolute;
+  inset: 0px;
+  z-index: -1;
+
+  pointer-events: none;
+
+  border: 1px solid rgba(215,174,109,.11);
+}
+
+/* ==========================================
+   TOP BAR
+========================================== */
+
+.auth-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  color: #c8a56e;
+
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1.7px;
+  white-space: nowrap;
+}
+
+.auth-top span:last-child {
+  color: #91816b;
+  font-size: 8px;
+  letter-spacing: 1.1px;
+}
+
+/* ==========================================
+   BRAND AREA
+========================================== */
+
+.auth-main {
+  width: 100%;
+  min-width: 0;
+
+  margin: auto 0;
+  padding: 26px 0 22px;
+}
+
+.auth-hero {
+  text-align: center;
+}
+
+.auth-hero .microline {
+  width: 46px;
+  height: 1px;
+
+  margin: 0 auto 20px;
+
+  background: #c6a171;
+}
+
+.login-avatar {
+  width: 92px;
+  height: 92px;
+
+  margin: 0 auto 18px;
+
+  border: 3px solid #171718;
+  border-radius: 50%;
+
+  outline: 1px solid rgba(237,197,129,.7);
+  outline-offset: 4px;
+
+  background:
+    #16151b
+    url("https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg")
+    center / cover no-repeat;
+
+  box-shadow: 0 12px 38px rgba(0,0,0,.45);
+}
+
+.auth-eyebrow {
+  margin: 0 0 8px;
+
+  color: #b89a6c;
+
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 3px;
+}
+
+.login-title {
+  margin: 0;
+
+  color: #f2dfbb;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(25px, 7vw, 32px);
+  font-weight: 700;
+  line-height: 1.1;
+  letter-spacing: .7px;
+
+  overflow-wrap: anywhere;
+}
+
+.login-sub {
+  max-width: 285px;
+
+  margin: 11px auto 0;
+
+  color: #aaa4a0;
+
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+/* ==========================================
+   LOGIN PANEL
+========================================== */
+
+.login-panel {
+  margin-top: 26px;
+  padding: 19px 17px 17px;
+
+  border: 1px solid rgba(221,182,115,.32);
+  border-radius: 17px;
+
+  background: linear-gradient(
+    145deg,
+    rgba(52,46,39,.6),
+    rgba(19,20,24,.82) 60%
+  );
+
+  box-shadow:
+    inset 0 1px rgba(255,255,255,.04),
+    0 16px 42px rgba(0,0,0,.18);
+}
+
+.panel-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+
+  margin-bottom: 17px;
+}
+
+.panel-top h2 {
+  margin: 0;
+
+  color: #f0dab5;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.panel-top span {
+  color: #aa906b;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+/* ==========================================
+   FORM FIELDS
+========================================== */
+
+.login-field {
+  margin-top: 13px;
+  min-width: 0;
+
+  text-align: left;
+}
+
+.login-field label,
+.modal-field label {
+  display: block;
+  margin-bottom: 7px;
+
+  color: #c6a575;
+
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.login-field input,
+.modal-field input {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  height: 47px;
+
+  margin: 0;
+  padding: 0 13px;
+
+  border: 1px solid rgba(211,177,121,.27);
+  border-radius: 9px;
+  outline: none;
+
+  background: #121419;
+  color: #f7eee2;
+
+  font-size: 16px;
+
+  transition:
+    border-color .15s ease,
+    box-shadow .15s ease;
+}
+
+.login-field input:focus,
+.modal-field input:focus {
+  border-color: #d5b078;
+
+  box-shadow: 0 0 0 3px rgba(213,176,120,.10);
+}
+
+input::placeholder {
+  color: #827d78;
+  opacity: 1;
+}
+
+/* ==========================================
+   PASSWORD VISIBILITY
+========================================== */
+
+.pass-wrap {
+  position: relative;
+  width: 100%;
+  min-width: 0;
+}
+
+.pass-wrap input {
+  padding-right: 70px;
+}
+
+.pass-eye {
+  position: absolute;
+  top: 50%;
+  right: 7px;
+
+  transform: translateY(-50%);
+
+  display: grid;
+  place-items: center;
+
+  width: 55px;
+  height: 33px;
+
+  margin: 0;
+  padding: 0;
+
+  border: 1px solid rgba(202,164,101,.25);
+  border-radius: 7px;
+
+  background: #292520;
+  color: #e0bc80;
+
+  font-size: 11px;
+  font-weight: 750;
+}
+
+/* ==========================================
+   BUTTONS
+========================================== */
+
+.login-forgot {
+  display: block;
+
+  width: max-content;
+  margin: 12px 0 0 auto;
+  padding: 2px 0;
+
+  border: none;
+  background: transparent;
+
+  color: #dbbc8b;
+
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.login-btn {
+  display: block;
+
+  width: 100%;
+  min-width: 0;
+  min-height: 46px;
+
+  padding: 10px 12px;
+
+  border: 1px solid #d2af73;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    125deg,
+    #f3dfb5,
+    #c9a06a 80%
+  );
+
+  color: #272017;
+
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: .8px;
+}
+
+.login-submit {
+  margin-top: 18px;
+}
+
+.login-guest {
+  display: block;
+
+  width: 100%;
+  min-height: 42px;
+
+  margin-top: 10px;
+
+  border: 1px solid rgba(214,177,117,.32);
+  border-radius: 10px;
+
+  background: rgba(22,22,25,.75);
+  color: #e2caa2;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.login-btn:active,
+.login-guest:active,
+.modal-btn:active {
+  transform: scale(.985);
+}
+
+/* ==========================================
+   REGISTER + FOOTER
+========================================== */
+
+.register-line {
+  margin-top: 17px;
+
+  text-align: center;
+  color: #9c9690;
+
+  font-size: 12px;
+}
+
+.register-line a {
+  color: #e7c694;
+  font-weight: 750;
+}
+
+.auth-foot {
+  padding-top: 13px;
+
+  border-top: 1px solid rgba(222,186,119,.16);
+
+  text-align: center;
+  color: #87775f;
+
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.35px;
+}
+
+/* ==========================================
+   ALL MODALS
+========================================== */
+
+.modal {
+  position: fixed;
+
+  left: 50%;
+  top: 50%;
+  z-index: 1000;
+
+  transform: translate(-50%, -50%);
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: min(100%, 430px);
+  height: min(100dvh, 870px);
+
+  padding: 16px;
+
+  overflow: hidden;
+}
+
+#secModal {
+  z-index: 1100;
+}
+
+#msgModal {
+  z-index: 1200;
+}
+
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(1,2,4,.88);
+
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+.modal-card {
+  position: relative;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 380px;
+  max-height: 100%;
+
+  padding: 26px 21px 22px;
+
+  overflow-y: auto;
+
+  border: 1px solid rgba(231,192,129,.45);
+  border-radius: 17px;
+
+  background: linear-gradient(
+    155deg,
+    #2a241f,
+    #17181d 68%
+  );
+
+  box-shadow: 0 25px 70px rgba(0,0,0,.65);
+}
+
+.modal-kicker {
+  color: #bfa071;
+
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1.7px;
+}
+
+.modal-card h3 {
+  margin: 8px 0 9px;
+
+  color: #f0d9b3;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.modal-card p,
+#msgText {
+  margin: 0 0 17px;
+
+  color: #b6afa5;
+
+  font-size: 13px;
+  line-height: 1.65;
+
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.modal-field {
+  margin-top: 15px;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 9px;
+
+  margin-top: 21px;
+}
+
+.modal-btn {
+  flex: 1 1 0;
+
+  min-width: 0;
+  min-height: 44px;
+
+  padding: 8px;
+
+  border: 1px solid #d7b580;
+  border-radius: 9px;
+
+  background: linear-gradient(
+    135deg,
+    #efd7a9,
+    #be955f
+  );
+
+  color: #282015;
+
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.modal-btn.quiet {
+  background: #282724;
+  color: #e5ceaa;
+
+  border-color: rgba(211,177,122,.28);
+}
+
+/* ==========================================
+   RESPONSIVE - SHORT HEIGHT
+========================================== */
+
+@media (max-height: 730px) {
+
+  .auth-stage {
+    padding: 16px 19px 14px;
+  }
+
+  .auth-main {
+    padding: 15px 0 12px;
+  }
+
+  .auth-hero .microline {
+    margin-bottom: 13px;
+  }
+
+  .login-avatar {
+    width: 70px;
+    height: 70px;
+    margin-bottom: 12px;
+  }
+
+  .login-title {
+    font-size: 26px;
+  }
+
+  .login-sub {
+    margin-top: 7px;
+    line-height: 1.4;
+  }
+
+  .login-panel {
+    margin-top: 17px;
+    padding: 14px 15px;
+  }
+
+  .panel-top {
+    margin-bottom: 12px;
+  }
+
+  .login-field {
+    margin-top: 10px;
+  }
+
+  .login-field input {
+    height: 43px;
+  }
+
+  .login-submit {
+    margin-top: 13px;
+  }
+
+  .auth-foot {
+    padding-top: 9px;
+  }
+
+}
+
+/* VERY SHORT SCREEN */
+
+@media (max-height: 560px) {
+
+  .auth-top span:last-child,
+  .auth-hero .microline,
+  .login-sub {
+    display: none;
+  }
+
+  .auth-main {
+    padding: 8px 0 10px;
+  }
+
+  .login-avatar {
+    width: 54px;
+    height: 54px;
+    margin-bottom: 9px;
+  }
+
+  .login-panel {
+    margin-top: 12px;
+  }
+
+  .login-btn {
+    min-height: 40px;
+  }
+
+  .login-guest {
+    min-height: 37px;
+  }
+
+}
+
+/* NARROW SCREEN */
+
+@media (max-width: 360px) {
+
+  .auth-stage {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+
+  .login-panel {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  .login-title {
+    font-size: 24px;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+
+}
+
+
+
+/* TINH CHỈNH NỘI DUNG LOGIN */
+
+.auth-top {
+  white-space: normal;
+}
+
+.auth-top span {
+  line-height: 1.4;
+}
+
+.panel-top span {
+  font-size: 8px;
+  letter-spacing: .5px;
+  text-align: right;
+}
+
+.login-sub {
+  max-width: 290px;
+  margin-left: auto;
+  margin-right: auto;
+  line-height: 1.65;
+}
+
+.auth-foot {
+  font-size: 9px;
+  letter-spacing: 1.5px;
+}
+
+@media (max-width: 360px) {
+  .panel-top span {
+    font-size: 7px;
+  }
+
+  .auth-top span:last-child {
+    letter-spacing: .3px;
   }
 }
-
-.pass-wrap{
-  position:relative;
-}
-
-.pass-eye{
-  position:absolute;
-  right:16px;
-  top:50%;
-  transform:translateY(-50%);
-  cursor:pointer;
-  font-size:18px;
-  opacity:.7;
-}
-
-.pass-eye:hover{
-  opacity:1;
-}
-
-/* ===== Forgot modal overlay ===== */
-#forgotModal{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:1000;
-}
-
-#forgotModal .modal-backdrop{
-  position:absolute;
-  inset:0;
-  background:rgba(5,8,18,.75);
-  backdrop-filter:blur(4px);
-}
-
-/* ===== Forgot card – same style as login-shell ===== */
-#forgotModal .forgot-card{
-  position:relative;
-  width:100%;
-  max-width:420px;
-  background:linear-gradient(180deg,#0b1327,#080c18);
-  border-radius:24px;
-  padding:32px 26px 36px;
-  box-shadow:0 0 50px rgba(0,255,255,.18);
-  color:white;
-  text-align:center;
-  z-index:1;
-  animation:pop .25s ease;
-}
-
-#forgotModal .forgot-card h3{
-  font-size:22px;
-  font-weight:900;
-  color:#00f6ff;
-  margin-bottom:18px;
-  text-shadow:0 0 12px rgba(0,246,255,.6);
-}
-
-/* inputs */
-#forgotModal .input-group{
-  margin-top:14px;
-  text-align:left;
-}
-
-#forgotModal .input-group label{
-  font-size:12px;
-  opacity:.75;
-}
-
-#forgotModal .input-group input{
-  width:100%;
-  height:52px;
-  margin-top:6px;
-  background:#0e172c;
-  border:none;
-  border-radius:16px;
-  padding:0 16px;
-  color:white;
-  font-size:16px;
-  box-shadow:inset 0 0 0 1px rgba(0,255,255,.15);
-}
-
-/* buttons */
-#forgotModal .forgot-actions{
-  display:flex;
-  gap:12px;
-  margin-top:26px;
-}
-
-#forgotModal .btn-primary{
-  flex:1;
-  height:56px;
-  border:none;
-  border-radius:18px;
-  background:linear-gradient(135deg,#00f6ff,#5f7dff);
-  color:#00141a;
-  font-size:16px;
-  font-weight:900;
-  box-shadow:0 0 30px rgba(0,246,255,.6);
-}
-
-#forgotModal .btn-cancel{
-  flex:1;
-  height:56px;
-  border-radius:18px;
-  background:#0e172c;
-  color:#9fb3ff;
-  border:1px solid rgba(0,255,255,.15);
-}
-
-/* mobile same as login */
-@media(max-width:600px){
-  #forgotModal .forgot-card{
-    min-height:100vh;
-    border-radius:0;
-    padding:48px 24px 40px;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-  }
-}
-
-/* animation */
-@keyframes pop{
-  from{transform:scale(.9);opacity:0}
-  to{transform:scale(1);opacity:1}
-}
-
-
 
 </style>
+
 </head>
-<body>
 
-<div class="login-shell">
-  <div class="login-avatar"></div>
-  <div class="login-title">LIVESTREAM PRO</div>
-  <div class="login-sub">Đăng nhập để bắt đầu</div>
+<body class="auth-page">
 
-  <input id="username" placeholder="Tên đăng nhập">
+<!-- ==========================================
+     MAIN LOGIN SCREEN
+========================================== -->
 
+<main class="auth-stage">
 
-  <div class="pass-wrap">
-  <input id="password" type="password" placeholder="Mật khẩu">
-  <span class="pass-eye" onclick="togglePass('password', this)">👁</span>
+  <!-- TOP BRAND -->
+
+<div class="auth-top">
+  <span>KẾT NỐI ĐẲNG CẤP</span>
+  <span>TRẢI NGHIỆM KHÁC BIỆT</span>
 </div>
 
 
+  <div class="auth-main">
+
+    <!-- HERO -->
+
+<header class="auth-hero">
+
+  
+
+  <div class="login-avatar"
+       role="img"
+       aria-label="Logo Livestream Pro"></div>
+
+  <p class="auth-eyebrow">
+    CHÀO MỪNG TRỞ LẠI
+  </p>
+
+  <h1 class="login-title">
+    LIVESTREAM PRO
+  </h1>
+
+  <p class="login-sub">
+    Kết nối, tương tác và khám phá
+    cùng cộng đồng
+  </p>
+
+</header>
 
 
-  <button class="login-btn" onclick="login()">ĐĂNG NHẬP</button>
+    <!-- LOGIN FORM -->
+    <section class="login-panel"
+             aria-label="Đăng nhập tài khoản">
 
-  <button class="login-btn" style="
-  background:linear-gradient(135deg,#666,#999);
-  color:white;
-  margin-top:14px"
-  onclick="guestLogin()">
-  ⚡ Trải nghiệm nhanh
-</button>
-
-
-<div class="login-links">
-  <a href="#" onclick="openForgot()">Quên mật khẩu?</a>
-  <br>
-  Chưa có tài khoản?
-  <a href="/register.html">Tạo ngay</a>
+<div class="panel-top">
+  <h2>Đăng nhập</h2>
+  <span>TÀI KHOẢN THÀNH VIÊN</span>
 </div>
 
+      <div class="login-field">
 
-<div id="forgotModal" class="modal hidden">
-  <div class="modal-backdrop" onclick="closeForgot()"></div>
+        <label for="username">
+          TÊN ĐĂNG NHẬP
+        </label>
 
-  <div class="forgot-card">
-    <h3>🔐 Khôi phục mật khẩu</h3>
+        <input
+          id="username"
+          type="text"
+          placeholder="Tên đăng nhập của bạn"
+          autocomplete="username"
+          autocapitalize="none"
+          spellcheck="false"
+          onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"
+        >
 
-    <div class="input-group">
-      <label>Tên đăng nhập</label>
-      <input id="forgotUser" placeholder="Nhập username">
-    </div>
+      </div>
 
-    <div class="input-group">
-      <label>Mật khẩu mới</label>
-      <input id="forgotPass" type="password" placeholder="Mật khẩu mới">
-    </div>
+      <div class="login-field">
 
-    <div class="input-group">
-  <label>Mã bảo mật</label>
-  <input id="forgotSec" type="password" placeholder="Nhập mã bảo mật">
-</div>
+        <label for="password">
+          MẬT KHẨU
+        </label>
 
+        <div class="pass-wrap">
 
-    <div class="forgot-actions">
-      <button class="btn-primary" onclick="submitForgot()">Đặt lại</button>
-      <button class="btn-cancel" onclick="closeForgot()">Hủy</button>
-    </div>
-  </div>
-</div>
+          <input
+            id="password"
+            type="password"
+            placeholder="Nhập mật khẩu"
+            autocomplete="current-password"
+            onkeydown="if(event.key==='Enter')login()"
+          >
 
+          <button type="button"
+                  class="pass-eye"
+                  aria-label="Hiện mật khẩu"
+                  onclick="togglePass('password',this)">
+            Hiện
+          </button>
 
+        </div>
 
+      </div>
 
-
-<!-- GLOBAL MESSAGE MODAL -->
-<div id="msgModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
-  <div class="modal-card">
-    <h3 id="msgTitle">Thông báo</h3>
-    <div id="msgText" style="margin:12px 0;opacity:.9; white-space:pre-line"></div>
-
-    <div style="display:flex; gap:10px; justify-content:center; margin-top:12px;">
-      <button id="btnSupport" class="btn-support hidden" type="button">
-        📞 Liên hệ hỗ trợ
+      <button type="button"
+              class="login-forgot"
+              onclick="openForgot()">
+        Quên mật khẩu?
       </button>
 
-      <button type="button" onclick="closeMsg()">OK</button>
+      <button type="button"
+              class="login-btn login-submit"
+              onclick="login()">
+        ĐĂNG NHẬP
+      </button>
+
+<button type="button"
+        class="login-guest"
+        onclick="guestLogin()">
+  Tiếp tục với tư cách khách
+</button>
+
+    </section>
+
+    <!-- REGISTER -->
+    <div class="register-line">
+      Chưa có tài khoản?
+      <a href="/register.html">Đăng ký ngay</a>
     </div>
+
   </div>
-</div>
+
+  <!-- FOOTER -->
+<footer class="auth-foot">
+  © 2026 LIVESTREAM PRO
+</footer>
+
+</main>
 
 
+<!-- ==========================================
+     FORGOT PASSWORD MODAL
+========================================== -->
 
-<div id="secModal" class="modal hidden">
-  <div class="modal-backdrop"></div>
+<div id="forgotModal" class="modal hidden">
 
-  <div class="modal-card" style="text-align:center">
-    <h3>🔐 Xác thực bảo mật</h3>
-    <p style="opacity:.8;font-size:14px">
-      Nhập mã bảo mật để hoàn tất đăng nhập
+  <div class="modal-backdrop"
+       onclick="closeForgot()"></div>
+
+  <section class="modal-card"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="forgotTitle">
+
+    <div class="modal-kicker">
+      ACCOUNT RECOVERY
+    </div>
+
+    <h3 id="forgotTitle">
+      Khôi phục mật khẩu
+    </h3>
+
+    <p>
+      Điền thông tin xác minh để đặt lại mật khẩu.
     </p>
 
-    <div class="pass-wrap">
-      <input id="secInput" type="password" placeholder="Mã bảo mật">
-      <span class="pass-eye" onclick="togglePass('secInput', this)">👁</span>
+    <div class="modal-field">
+
+      <label for="forgotUser">
+        TÊN ĐĂNG NHẬP
+      </label>
+
+      <input id="forgotUser"
+             placeholder="Tên đăng nhập"
+             autocomplete="username">
+
+    </div>
+
+    <div class="modal-field">
+
+      <label for="forgotPass">
+        MẬT KHẨU MỚI
+      </label>
+
+      <input id="forgotPass"
+             type="password"
+             placeholder="Mật khẩu mới"
+             autocomplete="new-password">
+
+    </div>
+
+    <div class="modal-field">
+
+      <label for="forgotSec">
+        MÃ BẢO MẬT
+      </label>
+
+      <input id="forgotSec"
+             type="password"
+             placeholder="Nhập mã bảo mật"
+             autocomplete="off">
+
     </div>
 
     <div class="modal-actions">
-      <button onclick="submitSecurity()">Xác nhận</button>
-      <button onclick="closeSec()" style="background:#333">Hủy</button>
+
+      <button type="button"
+              class="modal-btn quiet"
+              onclick="closeForgot()">
+        Hủy
+      </button>
+
+      <button type="button"
+              class="modal-btn"
+              onclick="submitForgot()">
+        Đặt lại
+      </button>
+
     </div>
-  </div>
+
+  </section>
+
 </div>
+
+
+<!-- ==========================================
+     GLOBAL MESSAGE
+========================================== -->
+
+<div id="msgModal" class="modal hidden">
+
+  <div class="modal-backdrop"></div>
+
+  <section class="modal-card"
+           role="alertdialog"
+           aria-modal="true"
+           aria-labelledby="msgTitle"
+           aria-describedby="msgText">
+
+    <div class="modal-kicker">
+      SYSTEM NOTIFICATION
+    </div>
+
+    <h3 id="msgTitle">
+      Thông báo
+    </h3>
+
+    <p id="msgText"></p>
+
+    <div class="modal-actions">
+
+      <button id="btnSupport"
+              type="button"
+              class="modal-btn quiet hidden">
+        Liên hệ hỗ trợ
+      </button>
+
+      <button type="button"
+              class="modal-btn"
+              onclick="closeMsg()">
+        Đã hiểu
+      </button>
+
+    </div>
+
+  </section>
+
+</div>
+
+
+<!-- ==========================================
+     SECURITY VERIFICATION
+========================================== -->
+
+<div id="secModal" class="modal hidden">
+
+  <div class="modal-backdrop"></div>
+
+  <section class="modal-card"
+           role="dialog"
+           aria-modal="true"
+           aria-labelledby="secTitle">
+
+    <div class="modal-kicker">
+      SECURE ACCESS
+    </div>
+
+    <h3 id="secTitle">
+      Xác thực bảo mật
+    </h3>
+
+    <p>
+      Nhập mã bảo mật để hoàn tất đăng nhập.
+    </p>
+
+    <div class="modal-field">
+
+      <label for="secInput">
+        MÃ BẢO MẬT
+      </label>
+
+      <div class="pass-wrap">
+
+        <input id="secInput"
+               type="password"
+               placeholder="Nhập mã bảo mật"
+               autocomplete="off"
+               onkeydown="if(event.key==='Enter')submitSecurity()">
+
+        <button type="button"
+                class="pass-eye"
+                onclick="togglePass('secInput',this)">
+          Hiện
+        </button>
+
+      </div>
+
+    </div>
+
+    <div class="modal-actions">
+
+      <button type="button"
+              class="modal-btn quiet"
+              onclick="closeSec()">
+        Hủy
+      </button>
+
+      <button type="button"
+              class="modal-btn"
+              onclick="submitSecurity()">
+        Xác nhận
+      </button>
+
+    </div>
+
+  </section>
+
+</div>
+
+<!-- GIỮ NGUYÊN PHẦN SCRIPT CŨ BÊN DƯỚI -->
 
 
 
@@ -568,25 +1361,53 @@ function closeForgot(){
 }
 
 
-function togglePass(id, el){
+
+function togglePass(id, el) {
+
   const input = document.getElementById(id);
-  if(input.type === "password"){
-    input.type = "text";
-    el.textContent = "🙈";
-  }else{
-    input.type = "password";
-    el.textContent = "👁";
-  }
+
+  if (!input) return;
+
+  const show = input.type === "password";
+
+  input.type = show ? "text" : "password";
+
+  el.textContent = show ? "Ẩn" : "Hiện";
+
+  el.setAttribute(
+    "aria-label",
+    show ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+  );
+
+  el.setAttribute(
+    "aria-pressed",
+    String(show)
+  );
+
 }
+
 
 
 
 // ✅ Link hỗ trợ: bạn đổi sang Zalo / Hotline / Messenger tuỳ ý
 const SUPPORT_URL = "https://zalo.me"; // ví dụ: "https://zalo.me/0xxxxxxxxx" hoặc "tel:09xxxxxxxx" hoặc "mailto:support@..."
 
+function cleanLoginText(value) {
+  return String(value ?? "")
+    .replace(
+      /[\p{Extended_Pictographic}\uFE0F\u200D]/gu,
+      ""
+    )
+    .trim();
+}
+
+
 function showMsg(text, title="Thông báo", showSupport=false){
-  document.getElementById("msgTitle").textContent = title;
-  document.getElementById("msgText").textContent = text;
+document.getElementById("msgTitle").textContent =
+  cleanLoginText(title);
+
+document.getElementById("msgText").textContent =
+  cleanLoginText(text);
 
   const btn = document.getElementById("btnSupport");
   if (btn){
