@@ -829,7 +829,7 @@ const p2 = document.getElementById("password2").value;
 const sec = document.getElementById("securityCode").value;
 
 if(!u || !p || !p2 || !name || !sec){
-  showMsg("❌ Nhập đầy đủ thông tin");
+  showMsg("Nhập đầy đủ thông tin");
   return;
 }
 
@@ -837,12 +837,12 @@ if(!u || !p || !p2 || !name || !sec){
 const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
 
 if(!usernameRegex.test(u)){
-  showMsg("❌ Tên đăng nhập phải viết liền, không dấu và tối thiểu 6 ký tự");
+  showMsg("Tên đăng nhập phải viết liền, không dấu và tối thiểu 6 ký tự");
   return;
 }
 
 if(p !== p2){
-  showMsg("❌ Mật khẩu không khớp");
+  showMsg("Mật khẩu không khớp");
   return;
 }
 
@@ -860,7 +860,7 @@ const res = await fetch("/api/register",{
 const data = await res.json();
 
 if(data.error){
-  showMsg("❌ Tài khoản đã tồn tại");
+  showMsg("Tài khoản đã tồn tại");
   return;
 }
 
