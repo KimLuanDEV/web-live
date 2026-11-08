@@ -861,6 +861,419 @@ input::placeholder {
   }
 }
 
+
+/* ==========================================
+   LIVESTREAM PRO - LOGIN RESPONSIVE
+   FULL WIDTH + FULL HEIGHT
+   MAX FRAME 430 x 870
+========================================== */
+
+/* RESET */
+
+html {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+body.auth-page {
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  overflow: hidden;
+  background: #050608;
+}
+
+/* ==========================================
+   MAIN FRAME
+========================================== */
+
+body.auth-page .auth-stage {
+  position: relative;
+
+  flex: 0 1 430px;
+
+  width: 100%;
+  max-width: 430px;
+  min-width: 0;
+
+  height: min(100vh, 870px);
+  height: min(100dvh, 870px);
+  min-height: 0;
+
+  margin: 0;
+
+  padding:
+    max(18px, calc(env(safe-area-inset-top, 0px) + 10px))
+    20px
+    max(18px, calc(env(safe-area-inset-bottom, 0px) + 10px));
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
+
+  overflow-x: hidden;
+  overflow-y: auto;
+
+  scrollbar-width: none;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+
+  border-radius: 0;
+}
+
+body.auth-page .auth-stage::-webkit-scrollbar {
+  display: none;
+}
+
+/* ==========================================
+   TOP BAR
+========================================== */
+
+body.auth-page .auth-top {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+
+  white-space: normal;
+}
+
+body.auth-page .auth-top span {
+  min-width: 0;
+  max-width: 50%;
+
+  font-size: 9px;
+  line-height: 1.5;
+}
+
+body.auth-page .auth-top span:last-child {
+  text-align: right;
+}
+
+/* ==========================================
+   MAIN CONTENT
+========================================== */
+
+body.auth-page .auth-main {
+  flex: 1 0 auto;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 20px 0;
+}
+
+/* ==========================================
+   LOGO + BRAND
+========================================== */
+
+body.auth-page .auth-hero {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 0;
+
+  text-align: center;
+}
+
+body.auth-page .login-avatar {
+  width: 88px;
+  height: 88px;
+
+  margin: 0 auto 16px;
+}
+
+body.auth-page .auth-eyebrow {
+  margin: 0 0 8px;
+  font-size: 9px;
+}
+
+body.auth-page .login-title {
+  max-width: 100%;
+  margin: 0;
+
+  font-size: clamp(23px, 7vw, 31px);
+  line-height: 1.15;
+
+  white-space: normal;
+  overflow-wrap: break-word;
+}
+
+body.auth-page .login-sub {
+  max-width: 300px;
+
+  margin: 12px auto 0;
+
+  font-size: 12px;
+  line-height: 1.55;
+
+  white-space: normal;
+}
+
+/* ==========================================
+   LOGIN PANEL
+========================================== */
+
+body.auth-page .login-panel {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+
+  margin: 23px 0 0;
+  padding: 18px 17px;
+}
+
+body.auth-page .panel-top {
+  margin-bottom: 15px;
+}
+
+body.auth-page .login-field {
+  width: 100%;
+  min-width: 0;
+
+  margin-top: 12px;
+}
+
+body.auth-page .pass-wrap {
+  width: 100%;
+  min-width: 0;
+}
+
+body.auth-page .login-field input {
+  width: 100%;
+  min-width: 0;
+  height: 46px;
+}
+
+body.auth-page .login-submit {
+  width: 100%;
+  min-height: 46px;
+  margin-top: 17px;
+}
+
+body.auth-page .login-guest {
+  width: 100%;
+  min-height: 43px;
+  margin-top: 10px;
+}
+
+/* ==========================================
+   REGISTER
+========================================== */
+
+body.auth-page .register-line {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 17px 0 0;
+  padding: 0 6px;
+
+  font-size: 12px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+body.auth-page .auth-foot {
+  flex: 0 0 auto;
+
+  width: 100%;
+  min-width: 0;
+
+  margin: 0;
+  padding: 13px 0 0;
+
+  border-top: 1px solid rgba(222,186,119,.16);
+
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ==========================================
+   MOBILE - SHORT HEIGHT
+========================================== */
+
+@media (max-height: 760px) {
+
+  body.auth-page .auth-stage {
+    padding-top:
+      max(12px, calc(env(safe-area-inset-top, 0px) + 8px));
+
+    padding-right: 16px;
+    padding-bottom:
+      max(12px, calc(env(safe-area-inset-bottom, 0px) + 8px));
+    padding-left: 16px;
+  }
+
+  body.auth-page .auth-main {
+    padding: 12px 0;
+  }
+
+  body.auth-page .login-avatar {
+    width: 67px;
+    height: 67px;
+    margin-bottom: 10px;
+  }
+
+  body.auth-page .auth-eyebrow {
+    margin-bottom: 5px;
+  }
+
+  body.auth-page .login-title {
+    font-size: 25px;
+  }
+
+  body.auth-page .login-sub {
+    margin-top: 7px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  body.auth-page .login-panel {
+    margin-top: 15px;
+    padding: 14px;
+  }
+
+  body.auth-page .panel-top {
+    margin-bottom: 9px;
+  }
+
+  body.auth-page .login-field {
+    margin-top: 9px;
+  }
+
+  body.auth-page .login-field input {
+    height: 43px;
+  }
+
+  body.auth-page .login-forgot {
+    margin-top: 8px;
+  }
+
+  body.auth-page .login-submit {
+    min-height: 43px;
+    margin-top: 11px;
+  }
+
+  body.auth-page .login-guest {
+    min-height: 40px;
+    margin-top: 8px;
+  }
+
+  body.auth-page .register-line {
+    margin-top: 11px;
+  }
+
+  body.auth-page .auth-foot {
+    padding-top: 9px;
+  }
+
+}
+
+/* ==========================================
+   SMALL SCREEN
+========================================== */
+
+@media (max-height: 600px) {
+
+  body.auth-page .auth-main {
+    padding: 10px 0;
+  }
+
+  body.auth-page .login-avatar {
+    width: 55px;
+    height: 55px;
+  }
+
+  body.auth-page .login-sub {
+    display: none;
+  }
+
+  body.auth-page .login-panel {
+    margin-top: 12px;
+  }
+
+  body.auth-page .auth-foot {
+    margin-top: 8px;
+  }
+
+}
+
+@media (max-width: 360px) {
+
+  body.auth-page .auth-stage {
+    padding-left: 13px;
+    padding-right: 13px;
+  }
+
+  body.auth-page .login-title {
+    font-size: 23px;
+  }
+
+  body.auth-page .panel-top span {
+    font-size: 7px;
+  }
+
+}
+
+/* ==========================================
+   MODALS
+========================================== */
+
+body.auth-page .modal {
+  width: min(100%, 430px);
+
+  height: min(100vh, 870px);
+  height: min(100dvh, 870px);
+
+  padding:
+    max(14px, env(safe-area-inset-top, 0px))
+    14px
+    max(14px, env(safe-area-inset-bottom, 0px));
+}
+
+body.auth-page .modal-card {
+  max-height: 100%;
+  overflow-y: auto;
+}
+
+
 </style>
 
 </head>
