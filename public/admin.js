@@ -1,48 +1,13 @@
 
 
+// ==========================================
+// ADMIN SESSION - PASSWORD AUTH
+// ==========================================
 
-const admin = JSON.parse(localStorage.getItem("user_profile") || "{}");
+const admin = {
+  uid: window.__LSP_ADMIN_ACTOR_UID || ""
+};
 
-
-// ===== DEVICE ID (ADMIN) =====
-let deviceId = localStorage.getItem("device_id");
-if (!deviceId) {
-  deviceId = "admin_" + Math.random().toString(36).slice(2);
-  localStorage.setItem("device_id", deviceId);
-}
-
-// ===== SOCKET (ADMIN) =====
-let socket = null;
-if (typeof io === "function") {
-  socket = io({
-    auth: { deviceId }
-  });
-}
-
-if (socket) {
-   socket.on("force-logout", (data) => {
-    const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
-
-    showForceLogoutModal(msg);
-
-    localStorage.removeItem("user_profile");
-    localStorage.removeItem("login_uid");
-    localStorage.removeItem("isGuest");
-
-    setTimeout(() => {
-      location.href = "/login.html";
-    }, 3000);
-  });
-}
-
-// ===== FORCE LOGOUT (ADMIN) =====
-
-
-
-
-if (socket && admin?.uid) {
-  socket.emit("register-admin", admin.uid);
-}
 
 const PAGE_SIZE = 5;
 let userPage = 1;
@@ -240,18 +205,10 @@ function renderUserCards(list) {
 
 
 
-if (!admin.uid) {
-  showModal({
-    title: "❌ Chưa đăng nhập",
-    body: "Vui lòng đăng nhập lại"
-  }).then(() => {
-    location.href = "/login.html";
-  });
-}
+const adminUidLabel = document.getElementById("adminUid");
 
-else {
-  const el = document.getElementById("adminUid");
-  if (el) el.textContent = admin.uid;
+if (adminUidLabel) {
+  adminUidLabel.textContent = "ĐÃ XÁC THỰC";
 }
 
 
@@ -791,10 +748,10 @@ function renderWithdrawCards(list){
 
 
 async function loadWithdraws() {
-  const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
+  
 
   const res = await fetch("/api/admin/withdraw-requests", {
-    headers: { "x-uid": me.uid }
+    headers: { "x-uid": admin.uid }
   });
 
   const data = await res.json();
@@ -1137,10 +1094,10 @@ function showModal({ title, body, input=false, confirm=false }) {
 
 
 async function loadDisputes(){
-  const me = JSON.parse(localStorage.getItem("user_profile"));
+  
 
   const res = await fetch("/api/admin/market/disputes",{
-    headers:{ "x-uid": me.uid }
+    headers:{ "x-uid": admin.uid }
   });
   const data = await res.json();
   if(!data.ok) return;
@@ -1225,7 +1182,7 @@ div.innerHTML = `
 
 
 async function adminRefund(orderId){
-  const me = JSON.parse(localStorage.getItem("user_profile"));
+  
 
   const ok = await showModal({
     title:"Hoàn tiền",
@@ -1238,7 +1195,7 @@ async function adminRefund(orderId){
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
-      adminUid: me.uid,
+      adminUid: admin.uid,
       orderId
     })
   });
@@ -1257,7 +1214,7 @@ async function adminRefund(orderId){
 
 
 async function adminApprove(orderId){
-  const me = JSON.parse(localStorage.getItem("user_profile"));
+ 
 
   const ok = await showModal({
     title:"Chấp nhận đơn khiếu nại",
@@ -1270,7 +1227,7 @@ async function adminApprove(orderId){
     method:"POST",
     headers:{ "Content-Type":"application/json" },
     body: JSON.stringify({
-      adminUid: me.uid,
+      adminUid: admin.uid,
       orderId
     })
   });

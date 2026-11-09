@@ -2188,12 +2188,321 @@ input:focus {
   }
 }
 
+
+/* =========================================
+   LIVESTREAM PRO - ADMIN PASSWORD GATE
+========================================= */
+
+body.lsp-admin-locked > :not(#lspAdminGate):not(script) {
+  visibility: hidden;
+}
+
+.lsp-admin-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow-y: auto;
+  padding: 18px;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      #30415d 0%,
+      transparent 55%
+    ),
+    linear-gradient(180deg, #0e1521, #070b11);
+}
+
+.lsp-admin-gate.hidden {
+  display: none !important;
+}
+
+.lsp-gate-card {
+  width: 100%;
+  max-width: 430px;
+  margin: auto;
+  padding: 30px;
+
+  background: linear-gradient(150deg, #1d2737, #101822);
+  border: 1px solid #4d5b6b;
+  border-radius: 17px;
+  box-shadow: 0 25px 70px #0009;
+  text-align: center;
+}
+
+.lsp-gate-top {
+  color: #aabacb;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.lsp-gate-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  margin-right: 5px;
+  border-radius: 50%;
+  background: #a2d4ad;
+}
+
+.lsp-gate-emblem {
+  width: 88px;
+  height: 88px;
+  margin: 30px auto 24px;
+  display: grid;
+  place-items: center;
+
+  color: #e0bd83;
+  background: linear-gradient(145deg, #344251, #17202d);
+  border: 1px solid #9c825a;
+  border-radius: 23px;
+  box-shadow: 0 12px 30px #0005;
+}
+
+.lsp-gate-eyebrow {
+  color: #e0bd83;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.lsp-gate-card h1 {
+  margin: 12px 0;
+  color: #f5f6fa;
+  font-size: clamp(25px, 5vw, 32px);
+  font-weight: 800;
+}
+
+.lsp-gate-desc {
+  margin: 0 0 30px;
+  color: #aab6c4;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.lsp-gate-card label {
+  display: block;
+  margin-bottom: 11px;
+  color: #d4d9e0;
+  text-align: left;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.lsp-gate-input {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 54px;
+  padding: 5px;
+
+  background: #0a111b;
+  border: 1px solid #4b5c6e;
+  border-radius: 10px;
+}
+
+.lsp-gate-input:focus-within {
+  border-color: #d7b87f;
+  box-shadow: 0 0 0 3px #d7b87f20;
+}
+
+.lsp-gate-input input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+  padding: 0 12px;
+
+  background: transparent;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+
+  color: white;
+  font-size: 16px;
+}
+
+.lsp-gate-input button {
+  flex-shrink: 0;
+  padding: 10px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #c2cbd7;
+  cursor: pointer;
+}
+
+.lsp-gate-submit {
+  width: 100%;
+  min-height: 54px;
+  margin-top: 20px;
+  padding: 13px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 15px;
+
+  background: linear-gradient(135deg, #eed4a1, #b18e56);
+  color: #202219;
+  border: 1px solid #f3dcaf;
+  border-radius: 10px;
+
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: .5px;
+  cursor: pointer;
+}
+
+.lsp-gate-submit:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.lsp-gate-message {
+  min-height: 21px;
+  margin-top: 15px;
+  color: #ff9f97;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.lsp-gate-footer {
+  margin-top: 15px;
+  padding-top: 20px;
+  border-top: 1px solid #354357;
+
+  color: #8293a6;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+}
+
+@media (max-width: 480px) {
+  .lsp-admin-gate {
+    padding: 12px;
+  }
+
+  .lsp-gate-card {
+    padding: 25px 20px;
+  }
+
+  .lsp-gate-emblem {
+    width: 74px;
+    height: 74px;
+    margin: 23px auto 20px;
+  }
+}
+
+
+.btn-admin-logout {
+  margin-left: 12px;
+  padding: 9px 13px;
+  border: 1px solid #a98d64;
+  border-radius: 8px;
+  background: #a98d641a;
+  color: #ead0a5;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn-admin-logout:hover {
+  background: #a98d6433;
+}
+
+
+
   </style>
 
 
 
 </head>
-<body>
+
+<body class="lsp-admin-locked">
+
+
+  
+<!-- LSP ADMIN PASSWORD GATE -->
+<div id="lspAdminGate" class="lsp-admin-gate">
+
+  <form id="lspAdminLoginForm" class="lsp-gate-card">
+
+    <div class="lsp-gate-top">
+      <span class="lsp-gate-dot"></span>
+      LIVESTREAM PRO / SECURITY ACCESS
+    </div>
+
+    <div class="lsp-gate-emblem">
+      <svg viewBox="0 0 24 24"
+           width="44" height="44"
+           fill="none"
+           stroke="currentColor"
+           stroke-width="1.4">
+        <path d="M12 2 20 5v6c0 5-3.5 8.5-8 11-4.5-2.5-8-6-8-11V5l8-3Z"/>
+        <rect x="8" y="11" width="8" height="7" rx="1.5"/>
+        <path d="M10 11V9a2 2 0 0 1 4 0v2"/>
+      </svg>
+    </div>
+
+    <div class="lsp-gate-eyebrow">
+      ADMINISTRATIVE ACCESS
+    </div>
+
+    <h1>Trung tâm quản trị</h1>
+
+    <p class="lsp-gate-desc">
+      Nhập mật khẩu để xác thực quyền điều hành hệ thống.
+    </p>
+
+    <label for="lspAdminPassword">
+      MẬT KHẨU QUẢN TRỊ
+    </label>
+
+    <div class="lsp-gate-input">
+      <input
+        id="lspAdminPassword"
+        type="password"
+        placeholder="Nhập mật khẩu admin"
+        autocomplete="current-password"
+        maxlength="256"
+        required
+      >
+
+      <button
+        id="lspTogglePassword"
+        type="button"
+        aria-label="Hiện mật khẩu">
+        Hiện
+      </button>
+    </div>
+
+    <button
+      id="lspAdminLoginButton"
+      class="lsp-gate-submit"
+      type="submit">
+      XÁC THỰC VÀ TRUY CẬP
+      <span>→</span>
+    </button>
+
+    <div
+      id="lspAdminLoginMessage"
+      class="lsp-gate-message"
+      role="status"
+      aria-live="polite">
+    </div>
+
+    <div class="lsp-gate-footer">
+      LIVESTREAM PRO · ADMIN CONSOLE
+    </div>
+
+  </form>
+</div>
 
 
 <!-- EXECUTIVE ADMIN HEADER -->
@@ -2491,10 +2800,160 @@ input:focus {
 
 
 
+
 <script src="/socket.io/socket.io.js"></script>
-<script src="/admin.js"></script>
-<script src="/push-init.js"></script>
-<script src="/app-entry-guard.js"></script>
+
+<script>
+(function () {
+  "use strict";
+
+  const gate = document.getElementById("lspAdminGate");
+  const form = document.getElementById("lspAdminLoginForm");
+  const passwordInput = document.getElementById("lspAdminPassword");
+  const loginButton = document.getElementById("lspAdminLoginButton");
+  const message = document.getElementById("lspAdminLoginMessage");
+  const toggle = document.getElementById("lspTogglePassword");
+
+  let started = false;
+
+  function showMessage(text) {
+    message.textContent = text || "";
+  }
+
+  function setLoading(loading) {
+    loginButton.disabled = loading;
+    loginButton.textContent = loading
+      ? "ĐANG XÁC THỰC..."
+      : "XÁC THỰC VÀ TRUY CẬP →";
+  }
+
+  function openDashboard(actorUid) {
+    if (started || !actorUid) return;
+
+    started = true;
+    window.__LSP_ADMIN_ACTOR_UID = actorUid;
+
+    const script = document.createElement("script");
+    script.src = "/admin.js";
+
+    script.onload = () => {
+      document.body.classList.remove("lsp-admin-locked");
+      gate.classList.add("hidden");
+
+      passwordInput.value = "";
+      showMessage("");
+
+      const push = document.createElement("script");
+      push.src = "/push-init.js";
+      document.body.appendChild(push);
+    };
+
+    script.onerror = () => {
+      started = false;
+      showMessage("Không tải được admin.js.");
+      setLoading(false);
+    };
+
+    document.body.appendChild(script);
+  }
+
+  async function checkSession() {
+    try {
+      const response = await fetch(
+        "/api/admin/auth/status",
+        {
+          credentials: "same-origin",
+          cache: "no-store"
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok && data.ok && data.actorUid) {
+        openDashboard(data.actorUid);
+      }
+    } catch (error) {
+      console.error("Admin session check:", error);
+    }
+  }
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    if (started || loginButton.disabled) return;
+
+    const password = passwordInput.value;
+
+    if (!password) {
+      showMessage("Vui lòng nhập mật khẩu.");
+      return;
+    }
+
+    setLoading(true);
+    showMessage("");
+
+    try {
+      const response = await fetch(
+        "/api/admin/auth/login",
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ password })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.ok) {
+        showMessage(
+          data.message ||
+          "Mật khẩu không chính xác hoặc xác thực thất bại."
+        );
+        passwordInput.value = "";
+        passwordInput.focus();
+        return;
+      }
+
+      openDashboard(data.actorUid);
+
+    } catch (error) {
+      console.error(error);
+      showMessage(
+        "Không kết nối được API xác thực trên server."
+      );
+    } finally {
+      setLoading(false);
+    }
+  });
+
+  toggle.addEventListener("click", () => {
+    const showing = passwordInput.type === "text";
+
+    passwordInput.type = showing
+      ? "password"
+      : "text";
+
+    toggle.textContent = showing ? "Hiện" : "Ẩn";
+  });
+
+  window.lspAdminLogout = async () => {
+    try {
+      await fetch("/api/admin/auth/logout", {
+        method: "POST",
+        credentials: "same-origin"
+      });
+    } finally {
+      location.reload();
+    }
+  };
+
+  checkSession();
+})();
+</script>
+
 
 </body>
 </html>

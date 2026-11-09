@@ -6384,6 +6384,295 @@ kickOldSessions(uid, socket); // kick sau
 // 🔧 Parse JSON body (BẮT BUỘC cho admin API)
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+
+
+
+/* ============================================
+   LSP MAIN ADMIN - PASSWORD SESSION
+   Không yêu cầu người truy cập đăng nhập UID
+============================================ */
+
+const LSP_ADMIN_COOKIE = "lsp_admin_sid";
+const LSP_ADMIN_TTL = 8 * 60 * 60 * 1000;
+const lspAdminSessions = new Map();
+const lspAdminAttempts = new Map();
+
+// Render sử dụng reverse proxy
+app.set("trust proxy", 1);
+
+function getLspAdminActorUid() {
+  const users = loadUsers();
+
+  const selected =
+    String(process.env.LSP_ADMIN_ACTOR_UID || "").trim();
+
+  if (selected) {
+    return users[selected]?.role === "admin"
+      ? selected
+      : null;
+  }
+
+  // Tự lấy nếu hệ thống chỉ có một admin
+  const admins = Object.keys(users).filter(
+    uid => users[uid]?.role === "admin"
+  );
+
+  return admins.length === 1 ? admins[0] : null;
+}
+
+function lspAdminPasswordValid(password) {
+  const expected = process.env.LSP_ADMIN_PASSWORD;
+
+  if (
+    typeof expected !== "string" ||
+    !expected ||
+    typeof password !== "string" ||
+    !password ||
+    password.length > 256
+  ) {
+    return false;
+  }
+
+  const a = crypto
+    .createHash("sha256")
+    .update(password, "utf8")
+    .digest();
+
+  const b = crypto
+    .createHash("sha256")
+    .update(expected, "utf8")
+    .digest();
+
+  return crypto.timingSafeEqual(a, b);
+}
+
+function lspAdminTokenHash(token) {
+  return crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+}
+
+function getLspAdminSession(req) {
+  const cookies = String(req.headers.cookie || "");
+
+  const match = cookies.match(
+    /(?:^|;\s*)lsp_admin_sid=([a-f0-9]{64})(?:;|$)/
+  );
+
+  if (!match) return null;
+
+  const key = lspAdminTokenHash(match[1]);
+  const session = lspAdminSessions.get(key);
+
+  if (!session) return null;
+
+  if (session.expiresAt <= Date.now()) {
+    lspAdminSessions.delete(key);
+    return null;
+  }
+
+  return {
+    key,
+    session
+  };
+}
+
+function setLspAdminCookie(req, res, token, maxAge) {
+  const https =
+    req.secure ||
+    String(req.headers["x-forwarded-proto"] || "")
+      .split(",")[0].trim() === "https";
+
+  const cookie = [
+    `${LSP_ADMIN_COOKIE}=${token}`,
+    "HttpOnly",
+    "SameSite=Strict",
+    "Path=/api/admin",
+    `Max-Age=${maxAge}`,
+    ...(https ? ["Secure"] : [])
+  ].join("; ");
+
+  res.setHeader("Set-Cookie", cookie);
+}
+
+function lspAdminSameOrigin(req) {
+  const origin = req.get("origin");
+
+  if (!origin) return true;
+
+  try {
+    return new URL(origin).host === req.get("host");
+  } catch {
+    return false;
+  }
+}
+
+// ĐĂNG NHẬP BẰNG MẬT KHẨU
+app.post("/api/admin/auth/login", (req, res) => {
+  if (!lspAdminSameOrigin(req)) {
+    return res.status(403).json({
+      ok: false,
+      error: "INVALID_ORIGIN"
+    });
+  }
+
+  const ip = req.ip || req.socket.remoteAddress;
+  const now = Date.now();
+
+  let attempt = lspAdminAttempts.get(ip);
+
+  if (!attempt || now > attempt.resetAt) {
+    attempt = {
+      failures: 0,
+      resetAt: now + 15 * 60 * 1000
+    };
+  }
+
+  if (attempt.failures >= 8) {
+    return res.status(429).json({
+      ok: false,
+      error: "TOO_MANY_ATTEMPTS",
+      message: "Thử lại sau khi hết thời gian giới hạn."
+    });
+  }
+
+  const actorUid = getLspAdminActorUid();
+
+  if (!actorUid) {
+    return res.status(503).json({
+      ok: false,
+      error: "ADMIN_NOT_CONFIGURED",
+      message: "Chưa cấu hình tài khoản admin nội bộ."
+    });
+  }
+
+  if (!lspAdminPasswordValid(req.body?.password)) {
+    attempt.failures += 1;
+    lspAdminAttempts.set(ip, attempt);
+
+    return res.status(401).json({
+      ok: false,
+      error: "INVALID_PASSWORD",
+      message: "Mật khẩu quản trị không chính xác."
+    });
+  }
+
+  lspAdminAttempts.delete(ip);
+
+  // Dọn phiên đã hết hạn
+  for (const [key, value] of lspAdminSessions) {
+    if (value.expiresAt <= now) {
+      lspAdminSessions.delete(key);
+    }
+  }
+
+  // Giới hạn số phiên tồn tại trong bộ nhớ
+  if (lspAdminSessions.size >= 100) {
+    const oldestKey = lspAdminSessions.keys().next().value;
+    if (oldestKey) lspAdminSessions.delete(oldestKey);
+  }
+
+  const token = crypto.randomBytes(32).toString("hex");
+
+  lspAdminSessions.set(lspAdminTokenHash(token), {
+    actorUid,
+    expiresAt: now + LSP_ADMIN_TTL
+  });
+
+  setLspAdminCookie(
+    req,
+    res,
+    token,
+    Math.floor(LSP_ADMIN_TTL / 1000)
+  );
+
+  res.json({
+    ok: true,
+    actorUid
+  });
+});
+
+// KIỂM TRA PHIÊN ĐĂNG NHẬP
+app.get("/api/admin/auth/status", (req, res) => {
+  res.set("Cache-Control", "no-store");
+
+  const auth = getLspAdminSession(req);
+
+  const actorUid = getLspAdminActorUid();
+
+  if (
+    !auth ||
+    !actorUid ||
+    auth.session.actorUid !== actorUid
+  ) {
+    return res.status(401).json({
+      ok: false,
+      error: "NOT_AUTHENTICATED"
+    });
+  }
+
+  res.json({
+    ok: true,
+    actorUid
+  });
+});
+
+// ĐĂNG XUẤT
+app.post("/api/admin/auth/logout", (req, res) => {
+  if (!lspAdminSameOrigin(req)) {
+    return res.status(403).json({ ok: false });
+  }
+
+  const auth = getLspAdminSession(req);
+
+  if (auth) {
+    lspAdminSessions.delete(auth.key);
+  }
+
+  setLspAdminCookie(req, res, "", 0);
+
+  res.json({ ok: true });
+});
+
+// BẢO VỆ TOÀN BỘ API /api/admin/*
+app.use("/api/admin", (req, res, next) => {
+  if (!lspAdminSameOrigin(req)) {
+    return res.status(403).json({
+      ok: false,
+      error: "INVALID_ORIGIN"
+    });
+  }
+
+  const auth = getLspAdminSession(req);
+  const actorUid = getLspAdminActorUid();
+
+  if (
+    !auth ||
+    !actorUid ||
+    auth.session.actorUid !== actorUid
+  ) {
+    return res.status(401).json({
+      ok: false,
+      error: "ADMIN_AUTH_REQUIRED"
+    });
+  }
+
+  // UID được gán từ server, không tin UID gửi từ client
+  req.headers["x-uid"] = actorUid;
+
+  if (req.body && typeof req.body === "object") {
+    req.body.adminUid = actorUid;
+  }
+
+  req.lspAdminActorUid = actorUid;
+
+  next();
+});
+
+
+
 app.use(express.static(path.join(__dirname, "public")));
 
 // 🔥 SERVE FILE DATA (CHO GAME PHÁ ÁN)
