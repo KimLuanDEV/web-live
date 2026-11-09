@@ -784,6 +784,1410 @@ body{
 }
 
 
+
+/* ==============================================
+   LIVESTREAM PRO - ROYAL EXECUTIVE DASHBOARD
+   BLACK OBSIDIAN + CHAMPAGNE GOLD
+============================================== */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #090a0e;
+  --card: #17181c;
+  --line: rgba(218,180,117,.22);
+
+  --text: #f0e5d0;
+  --muted: #aea497;
+
+  --neon: #e1bc7e;
+  --gold: #e1bc7e;
+
+  --lux-gold: #e1bc7e;
+  --lux-light: #f3ddba;
+  --lux-soft: #aa906b;
+  --lux-red: #e4a09d;
+}
+
+/* GLOBAL */
+
+html {
+  min-height: 100%;
+  background: #090a0e;
+}
+
+body {
+  margin: 0;
+
+  background:
+    radial-gradient(
+      ellipse 65% 340px at 50% 0%,
+      rgba(172,118,55,.13),
+      transparent 75%
+    ),
+    #090a0e !important;
+
+  color: var(--text);
+  font-family: Inter, system-ui, -apple-system,
+               "Segoe UI", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+button, input {
+  font: inherit;
+}
+
+button {
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ==============================================
+   PREMIUM TOP BAR
+============================================== */
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+
+  width: 100%;
+  min-height: 74px;
+
+  padding:
+    12px
+    max(16px, calc((100vw - 1200px)/2));
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  background: rgba(15,15,18,.96);
+  border-bottom: 1px solid rgba(217,174,106,.24);
+
+  -webkit-backdrop-filter: blur(16px);
+  backdrop-filter: blur(16px);
+
+  box-shadow: 0 6px 35px rgba(0,0,0,.25);
+}
+
+.topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.admin-topbar .brand {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  min-width: 0;
+
+  color: #f1dcba;
+  font-size: clamp(15px, 3.5vw, 20px);
+  font-weight: 800;
+  letter-spacing: .15px;
+}
+
+.admin-topbar .badge-admin {
+  display: inline-flex;
+  align-items: center;
+
+  margin: 0;
+  padding: 5px 9px;
+
+  background: linear-gradient(
+    125deg, #f3dcb2, #bb9056
+  );
+
+  color: #2c1e0e;
+
+  border: 1px solid #dfbb80;
+  border-radius: 6px;
+
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 1px;
+
+  box-shadow: none;
+}
+
+.admin-topbar .btn-back {
+  flex: 0 0 39px;
+
+  display: grid;
+  place-items: center;
+
+  width: 39px;
+  height: 39px;
+  min-width: 39px;
+
+  margin: 0;
+  padding: 0;
+
+  border-radius: 11px;
+  border: 1px solid rgba(217,180,117,.28);
+
+  background: rgba(220,177,105,.07);
+  color: #e5c38c;
+
+  font-size: 24px;
+  line-height: 1;
+}
+
+.admin-topbar .btn-back:hover {
+  background: rgba(220,177,105,.17);
+  color: #f5deb4;
+}
+
+.admin-user {
+  min-width: 0;
+  max-width: 34%;
+
+  padding: 8px 10px;
+
+  border: 1px solid rgba(216,177,109,.18);
+  border-radius: 9px;
+
+  background: rgba(255,255,255,.025);
+  color: #c1ad8b;
+
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ==============================================
+   MAIN CONTAINER
+============================================== */
+
+.admin-shell {
+  width: 100%;
+  max-width: 1200px;
+
+  margin: 0 auto;
+  padding:
+    24px 18px
+    calc(40px + env(safe-area-inset-bottom, 0px));
+}
+
+/* ==============================================
+   NAVIGATION TABS
+============================================== */
+
+.admin-tabs {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  width: 100%;
+  margin: 0 0 24px;
+  padding: 7px;
+
+  border: 1px solid rgba(215,176,112,.2);
+  border-radius: 15px;
+
+  background: linear-gradient(
+    135deg,
+    #211f1d,
+    #141518
+  );
+
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.admin-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.admin-tabs .tab {
+  flex: 1 0 auto;
+
+  min-height: 45px;
+
+  margin: 0;
+  padding: 10px 15px;
+
+  border: 1px solid transparent;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #a9a095;
+
+  white-space: nowrap;
+  font-size: 12px;
+  font-weight: 700;
+
+  transition:
+    color .2s,
+    background .2s,
+    border-color .2s;
+}
+
+.admin-tabs .tab:hover {
+  background: rgba(215,178,111,.08);
+  color: #e5c58e;
+}
+
+.admin-tabs .tab.active {
+  background: linear-gradient(
+    125deg,
+    #f0d8ab,
+    #c29a63
+  );
+
+  border-color: #e6c58e;
+
+  color: #291e13;
+  font-weight: 850;
+
+  box-shadow: 0 5px 18px rgba(0,0,0,.25);
+}
+
+/* ==============================================
+   STATISTICS CARDS
+============================================== */
+
+.stats-grid {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, minmax(0,1fr));
+
+  gap: 13px;
+  margin: 0 0 23px;
+}
+
+.stat-card {
+  position: relative;
+  min-width: 0;
+  min-height: 112px;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 10px;
+
+  margin: 0;
+  padding: 18px 16px;
+
+  border: 1px solid rgba(218,180,117,.25);
+  border-radius: 15px;
+
+  background:
+    radial-gradient(
+      circle at 100% 0%,
+      rgba(211,166,96,.10),
+      transparent 65%
+    ),
+    linear-gradient(
+      155deg,
+      #25221f,
+      #17181c 78%
+    );
+
+  color: #bfb2a0;
+  font-size: 12px;
+  line-height: 1.6;
+
+  box-shadow:
+    0 12px 25px rgba(0,0,0,.17),
+    inset 0 1px rgba(255,255,255,.035);
+
+  overflow: hidden;
+}
+
+.stat-card::after {
+  content: "";
+  position: absolute;
+
+  right: 0;
+  top: 20%;
+  bottom: 20%;
+
+  width: 2px;
+
+  background: linear-gradient(
+    transparent,
+    rgba(232,190,121,.7),
+    transparent
+  );
+}
+
+.stat-card b {
+  display: block;
+
+  margin-top: 7px;
+
+  color: #f2dcb4;
+  font-size: clamp(21px, 3vw, 29px);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -.5px;
+
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==============================================
+   SECTION CARD
+============================================== */
+
+.card {
+  min-width: 0;
+
+  margin: 0 0 20px;
+  padding: 21px;
+
+  border: 1px solid rgba(220,181,116,.24);
+  border-radius: 17px;
+
+  background:
+    linear-gradient(
+      150deg,
+      #22201e 0%,
+      #17181c 50%,
+      #111216 100%
+    );
+
+  box-shadow:
+    0 18px 45px rgba(0,0,0,.25),
+    inset 0 1px rgba(255,255,255,.035);
+}
+
+.card-title {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 9px;
+
+  margin: 0 0 19px;
+
+  padding-bottom: 15px;
+
+  border-bottom: 1px solid rgba(220,182,117,.19);
+
+  color: #f0dcb8;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+/* ==============================================
+   SEARCH / INPUT / BUTTONS
+============================================== */
+
+.search-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 11px;
+
+  margin-bottom: 17px;
+}
+
+input,
+.modal-input {
+  min-width: 0;
+  min-height: 45px;
+
+  border: 1px solid rgba(218,180,117,.26);
+  border-radius: 10px;
+
+  background: #101216;
+  color: #f0e0c6;
+
+  font-size: 14px;
+
+  outline: 0;
+  box-shadow: none;
+}
+
+input::placeholder {
+  color: #92877a;
+}
+
+input:focus {
+  border-color: #dfbb81;
+  box-shadow:
+    0 0 0 3px rgba(223,187,129,.1);
+}
+
+.search-row input {
+  flex: 1 1 240px;
+  width: 100%;
+  max-width: 400px;
+
+  padding: 12px 14px;
+}
+
+.btn,
+.btn-primary {
+  min-height: 44px;
+
+  padding: 11px 17px;
+
+  border: 1px solid #d7b47f;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    125deg,
+    #f1d9b0,
+    #c1985f
+  );
+
+  color: #281e12;
+  font-size: 13px;
+  font-weight: 800;
+
+  box-shadow: none;
+
+  transition:
+    transform .15s,
+    filter .15s;
+}
+
+.btn:hover,
+.btn-primary:hover {
+  transform: translateY(-1px);
+  filter: brightness(1.05);
+  box-shadow: none;
+}
+
+.btn:active {
+  transform: scale(.98);
+}
+
+/* ==============================================
+   DATA TABLES
+============================================== */
+
+.table-wrap {
+  width: 100%;
+  max-width: 100%;
+
+  overflow: auto;
+
+  border: 1px solid rgba(217,178,112,.21);
+  border-radius: 12px;
+
+  background: #101115;
+
+  -webkit-overflow-scrolling: touch;
+}
+
+table {
+  width: 100%;
+
+  background: #101115;
+  border-collapse: collapse;
+}
+
+thead {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+
+  background: #28231e;
+}
+
+th {
+  padding: 14px 15px;
+
+  border-bottom: 1px solid rgba(221,182,116,.3);
+
+  color: #dec08e;
+
+  font-size: 11px;
+  font-weight: 750;
+  letter-spacing: .5px;
+}
+
+td {
+  padding: 14px 15px;
+
+  border-bottom: 1px solid rgba(220,185,121,.10);
+
+  color: #ddd5c8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+tbody tr:last-child td {
+  border-bottom: none;
+}
+
+tbody tr:hover {
+  background: rgba(221,181,110,.055);
+}
+
+.role-admin {
+  color: #edcb91;
+  font-weight: 800;
+}
+
+/* ==============================================
+   USER CARDS / LIVE / WITHDRAW
+============================================== */
+
+.user-card,
+.withdraw-card,
+.admin-card {
+  min-width: 0;
+
+  padding: 15px;
+  margin-bottom: 0;
+
+  border: 1px solid rgba(218,180,116,.23);
+  border-radius: 14px;
+
+  background: linear-gradient(
+    145deg,
+    #26231f,
+    #17181c 85%
+  );
+
+  box-shadow: 0 9px 25px rgba(0,0,0,.15);
+}
+
+.user-card-list,
+.withdraw-card-list {
+  gap: 11px;
+}
+
+.user-card-header img,
+.withdraw-card-head img,
+.user-cell img,
+.withdraw-user img {
+  flex-shrink: 0;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(228,186,116,.5);
+  box-shadow: 0 0 0 3px rgba(214,177,114,.075);
+}
+
+.user-card-header small,
+.withdraw-card-head small,
+.user-cell small,
+.withdraw-user small {
+  color: #a99a85;
+}
+
+.user-card-detail,
+.user-detail {
+  background: rgba(215,175,105,.045);
+  border: 1px solid rgba(215,175,105,.17);
+  border-radius: 10px;
+  color: #d7c7ae;
+}
+
+.user-meta,
+.withdraw-card-meta {
+  color: #c9bead;
+  overflow-wrap: anywhere;
+}
+
+.user-actions,
+.withdraw-card-actions {
+  gap: 8px;
+}
+
+.action-btn,
+.btn-mini,
+.withdraw-actions button,
+.withdraw-card-actions button,
+.user-actions button {
+  padding: 9px 12px;
+
+  border: 1px solid rgba(222,183,119,.28);
+  border-radius: 9px;
+
+  background: rgba(222,183,119,.075);
+  color: #e6c691;
+
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.action-btn:hover,
+.btn-mini:hover,
+.withdraw-actions button:hover,
+.withdraw-card-actions button:hover {
+  background: rgba(222,183,119,.17);
+}
+
+/* STATUS COLORS */
+
+.st-pending,
+.w-pending {
+  color: #eec27f;
+}
+
+.st-approved,
+.w-approved {
+  color: #9ed0b5;
+}
+
+.st-rejected,
+.w-rejected {
+  color: #e6a39e;
+}
+
+.w-chip {
+  border-color: rgba(220,183,121,.25);
+  background: rgba(255,255,255,.025);
+}
+
+/* ==============================================
+   PAGINATION
+============================================== */
+
+.pager {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+
+  margin-top: 19px;
+  padding-top: 14px;
+
+  border-top: 1px solid rgba(216,177,110,.12);
+}
+
+.pager button {
+  display: grid;
+  place-items: center;
+
+  width: 39px;
+  height: 39px;
+
+  padding: 0;
+
+  border: 1px solid rgba(218,179,115,.32);
+  border-radius: 9px;
+
+  background: rgba(219,180,116,.08);
+  color: #e3c18d;
+
+  font-size: 13px;
+}
+
+.pager span {
+  min-width: 60px;
+
+  text-align: center;
+
+  color: #c3ae90;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pager button:disabled {
+  opacity: .35;
+  cursor: not-allowed;
+}
+
+/* ==============================================
+   ADMIN MODAL
+============================================== */
+
+#adminModal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+}
+
+#adminModal.hidden {
+  display: none !important;
+}
+
+#adminModal .modal-backdrop {
+  position: absolute;
+  inset: 0;
+
+  background: rgba(0,0,0,.80);
+
+  -webkit-backdrop-filter: blur(8px);
+  backdrop-filter: blur(8px);
+}
+
+#adminModal .modal-box {
+  position: absolute;
+
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%,-50%);
+
+  width: calc(100% - 30px);
+  max-width: 390px;
+  max-height: 85vh;
+  max-height: 85dvh;
+
+  margin: 0;
+  padding: 24px 20px;
+
+  overflow-y: auto;
+
+  border: 1px solid rgba(225,185,117,.4);
+  border-radius: 18px;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(198,144,70,.12),
+      transparent 70%
+    ),
+    linear-gradient(160deg,#26231f,#111216);
+
+  color: #eee0c7;
+
+  box-shadow: 0 30px 90px rgba(0,0,0,.7);
+}
+
+#adminModal .modal-box h3 {
+  margin: 0 0 14px;
+
+  color: #f1dcb5;
+
+  font-family: Georgia, serif;
+  font-size: 23px;
+}
+
+#adminModal .modal-input {
+  display: block;
+  width: 100%;
+  margin: 14px 0;
+}
+
+#adminModal .modal-actions {
+  display: flex;
+  gap: 10px;
+
+  margin-top: 20px;
+}
+
+#adminModal .modal-actions button {
+  flex: 1;
+  min-height: 44px;
+
+  border-radius: 10px;
+  font-weight: 750;
+}
+
+#adminModal .btn-cancel {
+  background: #28262a;
+  border: 1px solid rgba(218,180,117,.22);
+  color: #dbccba;
+}
+
+#adminModal .btn-ok {
+  background: linear-gradient(125deg,#f0d6a9,#c0975f);
+  border: 1px solid #dfbd85;
+  color: #241a10;
+}
+
+/* LOGS */
+
+pre {
+  max-width: 100%;
+  overflow: auto;
+
+  background: #0b0d10;
+  border-color: rgba(216,180,117,.16);
+
+  color: #c5b9a5;
+}
+
+/* ==============================================
+   MOBILE OPTIMIZATION
+============================================== */
+
+@media (max-width: 768px) {
+
+  .admin-topbar {
+    min-height: 64px;
+    padding:
+      calc(10px + env(safe-area-inset-top,0px))
+      13px
+      10px;
+  }
+
+  .admin-shell {
+    padding: 17px 13px
+      calc(30px + env(safe-area-inset-bottom,0px));
+  }
+
+  .admin-tabs {
+    gap: 5px;
+    padding: 5px;
+    margin-bottom: 18px;
+    border-radius: 12px;
+  }
+
+  .admin-tabs .tab {
+    flex: 1 0 auto;
+
+    min-height: 41px;
+    padding: 9px 12px;
+
+    font-size: 11px;
+  }
+
+  .stats-grid {
+    grid-template-columns: repeat(2,minmax(0,1fr));
+    gap: 9px;
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    min-height: 105px;
+    padding: 13px;
+    font-size: 11px;
+  }
+
+  .stat-card b {
+    font-size: 23px;
+  }
+
+  .card {
+    padding: 15px 12px;
+    border-radius: 13px;
+  }
+
+  .card-title {
+    font-size: 19px;
+  }
+
+  /* Giữ nguyên cơ chế card mobile hiện tại */
+
+  .admin-section[data-section="users"]
+  .table-wrap {
+    display: none;
+  }
+
+  .admin-section[data-section="withdraws"]
+  .table-wrap {
+    display: none;
+  }
+
+  .admin-section[data-section="users"]
+  .user-card-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .admin-section[data-section="withdraws"]
+  .withdraw-card-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .search-row input {
+    max-width: none;
+  }
+
+  .admin-section[data-section="lives"]
+  .table-wrap {
+    display: block;
+    overflow-x: auto;
+  }
+
+  .admin-user {
+    max-width: 110px;
+    padding: 7px;
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+
+  .admin-topbar .brand {
+    font-size: 14px;
+    gap: 5px;
+  }
+
+  .admin-topbar .badge-admin {
+    font-size: 8px;
+    padding: 4px 6px;
+  }
+
+  .admin-topbar .btn-back {
+    flex-basis: 34px;
+    width: 34px;
+    height: 34px;
+    min-width: 34px;
+  }
+
+  .topbar-left {
+    gap: 7px;
+  }
+
+  .admin-user {
+    max-width: 90px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .admin-tabs .tab,
+  .btn,
+  .btn-primary {
+    transition: none;
+  }
+}
+
+
+
+/* DASHBOARD INTRO */
+
+.lux-dashboard-intro {
+  margin-bottom: 23px;
+}
+
+.lux-dashboard-eyebrow {
+  margin-bottom: 9px;
+
+  color: #bca077;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.7px;
+}
+
+.lux-dashboard-intro h1 {
+  margin: 0;
+
+  color: #f1dcb9;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(25px,4vw,34px);
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.lux-dashboard-intro p {
+  margin: 10px 0 0;
+
+  color: #aaa095;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+@media(max-width:768px) {
+  .lux-dashboard-intro {
+    margin-bottom: 17px;
+  }
+
+  .lux-dashboard-intro h1 {
+    font-size: 27px;
+  }
+}
+
+
+
+
+/* =========================================
+   EXECUTIVE MINIMAL - ADMIN REFINEMENT
+========================================= */
+
+.lux-brand-mark {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+
+  background: #2c251c;
+  border: 1px solid #8f714d;
+  border-radius: 11px;
+
+  color: #f1d6a6;
+  font-family: Georgia, serif;
+  font-weight: 800;
+  font-size: 14px;
+  letter-spacing: 1px;
+}
+
+.admin-topbar .brand {
+  flex-wrap: nowrap;
+  gap: 11px;
+}
+
+.lux-brand-info {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.lux-brand-info strong {
+  color: #f1e1c6;
+  font-size: 14px;
+  font-weight: 800;
+  white-space: nowrap;
+  letter-spacing: .25px;
+}
+
+.lux-brand-info small {
+  color: #bfa177;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+.admin-user {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  max-width: 35%;
+  background: #1e1d1d;
+}
+
+.lux-user-label {
+  color: #d8b783;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+#adminUid {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.admin-topbar .btn-back svg {
+  display: block;
+}
+
+/* NAVIGATION */
+
+.admin-tabs {
+  background: #17181b;
+  border-color: #39352f;
+  box-shadow: none;
+}
+
+.admin-tabs .tab {
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .1px;
+}
+
+.admin-tabs .tab.active {
+  background: #d9b781;
+  color: #24190e;
+  border-color: #d9b781;
+  box-shadow: none;
+}
+
+/* STATS */
+
+.stat-card {
+  min-height: 125px;
+  padding: 17px;
+
+  background: #1b1c1f;
+  border: 1px solid #494033;
+  border-radius: 13px;
+
+  box-shadow: none;
+}
+
+.stat-card::after {
+  display: none;
+}
+
+.lux-stat-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 9px;
+}
+
+.lux-stat-top span {
+  color: #c5a77f;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: .75px;
+  line-height: 1.5;
+}
+
+.lux-stat-top small {
+  flex-shrink: 0;
+  color: #75695b;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.stat-card b {
+  margin: 11px 0 4px;
+  color: #f0dec0;
+  font-size: clamp(24px, 3vw, 31px);
+  letter-spacing: -.6px;
+}
+
+.lux-stat-bottom {
+  color: #8f8981;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+/* CONTENT SECTIONS */
+
+.card {
+  background: #191a1e;
+  border: 1px solid #464038;
+  border-radius: 15px;
+  box-shadow: none;
+}
+
+.card-title {
+  color: #f0e0c5;
+  font-family: inherit;
+  font-weight: 750;
+  font-size: 17px;
+}
+
+input {
+  background: #101115;
+  border-color: #514637;
+}
+
+input:focus {
+  border-color: #caa575;
+  box-shadow: 0 0 0 3px rgba(202,165,117,.09);
+}
+
+/* USER AND WITHDRAW CARDS */
+
+.user-card,
+.withdraw-card {
+  background: #202024;
+  border-color: #4b4237;
+  border-radius: 13px;
+  box-shadow: none;
+}
+
+.user-card-header,
+.withdraw-card-head {
+  min-width: 0;
+}
+
+.user-card-header > div,
+.withdraw-card-head > div {
+  min-width: 0;
+}
+
+.user-card-header b,
+.withdraw-card-head b,
+.user-cell b,
+.withdraw-user b {
+  color: #efe2cd;
+  font-size: 14px;
+}
+
+.user-card-header small,
+.withdraw-card-head small {
+  color: #9e968b;
+  overflow-wrap: anywhere;
+}
+
+.user-card-detail,
+.user-detail {
+  margin-top: 13px;
+  padding: 13px;
+
+  border: 1px solid #4c4133;
+  border-radius: 10px;
+
+  background: #17181a;
+}
+
+.lux-detail-grid {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 10px;
+}
+
+.lux-detail-cell {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  padding: 10px;
+
+  border: 1px solid #38342e;
+  border-radius: 8px;
+  background: #1e1e20;
+}
+
+.lux-detail-cell span {
+  color: #9f978a;
+  font-size: 11px;
+}
+
+.lux-detail-cell strong {
+  color: #eee0c6;
+  font-size: 14px;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+/* CLEAR ACTION BUTTONS */
+
+.user-actions,
+.withdraw-card-actions,
+.withdraw-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.action-btn,
+.btn-mini,
+.withdraw-card-actions button,
+.withdraw-actions button {
+  min-height: 36px;
+  padding: 9px 12px;
+
+  background: #2a2825;
+  border: 1px solid #65543e;
+  border-radius: 8px;
+  color: #e8d0a7;
+
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.3;
+  cursor: pointer;
+}
+
+.action-btn:hover,
+.btn-mini:hover,
+.withdraw-card-actions button:hover,
+.withdraw-actions button:hover {
+  background: #373024;
+}
+
+.lux-action-danger {
+  border-color: #704743 !important;
+  color: #e6a8a0 !important;
+  background: #322325 !important;
+}
+
+.lux-action-success {
+  border-color: #516e5a !important;
+  color: #b9dfc5 !important;
+  background: #223128 !important;
+}
+
+/* WITHDRAW META */
+
+.lux-withdraw-meta {
+  display: grid;
+  gap: 10px;
+}
+
+.lux-meta-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.lux-meta-row span {
+  color: #a69b8b;
+  font-size: 12px;
+}
+
+.lux-meta-row strong {
+  min-width: 0;
+  color: #f0dfc2;
+  font-size: 12px;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+/* MOBILE */
+
+@media (max-width: 768px) {
+  .admin-topbar {
+    gap: 8px;
+  }
+
+  .lux-brand-mark {
+    width: 34px;
+    height: 34px;
+    font-size: 12px;
+  }
+
+  .lux-brand-info strong {
+    font-size: 11px;
+  }
+
+  .lux-brand-info small {
+    font-size: 8px;
+    letter-spacing: .9px;
+  }
+
+  .admin-user {
+    padding: 7px;
+  }
+
+  .lux-user-label {
+    display: none;
+  }
+
+  .admin-tabs .tab {
+    font-size: 11px;
+    padding: 10px 12px;
+  }
+
+  .stat-card {
+    min-height: 120px;
+    padding: 13px;
+  }
+
+  .lux-stat-top span {
+    font-size: 9px;
+  }
+
+  .stat-card b {
+    font-size: 24px;
+  }
+
+  .lux-stat-bottom {
+    font-size: 10px;
+  }
+}
+
+@media (max-width: 370px) {
+  .admin-topbar .brand {
+    gap: 6px;
+  }
+
+  .lux-brand-info strong {
+    font-size: 10px;
+  }
+
+  .admin-tabs .tab {
+    font-size: 10px;
+  }
+}
+
   </style>
 
 
@@ -791,31 +2195,92 @@ body{
 </head>
 <body>
 
+
+<!-- EXECUTIVE ADMIN HEADER -->
 <div class="admin-topbar">
+
   <div class="topbar-left">
-    <button class="btn-back" onclick="adminGoBack()">‹</button>
+
+    <button type="button"
+            class="btn-back"
+            onclick="adminGoBack()"
+            aria-label="Quay lại">
+      <svg viewBox="0 0 24 24"
+           width="19" height="19"
+           fill="none" stroke="currentColor"
+           stroke-width="1.8"
+           stroke-linecap="round"
+           stroke-linejoin="round">
+        <path d="M15 18l-6-6 6-6"/>
+      </svg>
+    </button>
 
     <div class="brand">
-      Livestream Pro <span class="badge-admin">ADMIN</span>
+      <div class="lux-brand-mark">LP</div>
+
+      <div class="lux-brand-info">
+        <strong>LIVESTREAM PRO</strong>
+        <small>ADMIN CONSOLE</small>
+      </div>
     </div>
+
   </div>
 
   <div class="admin-user">
-    👤 <span id="adminUid"></span>
+    <span class="lux-user-label">ADMIN</span>
+    <span id="adminUid"></span>
   </div>
+
 </div>
+
 
 
 <div class="admin-shell">
 
+  <!-- DASHBOARD INTRO -->
+  <div class="lux-dashboard-intro">
+
+    <div class="lux-dashboard-eyebrow">
+      LIVESTREAM PRO / ADMINISTRATION
+    </div>
+
+    <h1>Trung tâm quản trị</h1>
+
+    <p>
+      Quản lý và vận hành hệ thống Livestream Pro
+    </p>
+
+  </div>
+
 
 <div class="admin-tabs">
-  <button class="tab active" data-tab="users">👥 Users</button>
-  <button class="tab" data-tab="withdraws">💎 Rút tiền</button>
-  <button class="tab" data-tab="lives">🔴 Live rooms</button>
-  <button class="tab" data-tab="disputes">⚠️ Khiếu nại</button>
+
+  <button type="button"
+          class="tab active"
+          data-tab="users">
+    Người dùng
+  </button>
+
+  <button type="button"
+          class="tab"
+          data-tab="withdraws">
+    Rút tiền
+  </button>
+
+  <button type="button"
+          class="tab"
+          data-tab="lives">
+    Phòng Live
+  </button>
+
+  <button type="button"
+          class="tab"
+          data-tab="disputes">
+    Khiếu nại
+  </button>
 
 </div>
+
 
 
   <!-- ===== USER LIST ===== -->
@@ -824,12 +2289,51 @@ body{
 
 
 
+
 <div class="stats-grid">
-  <div class="stat-card">👥 Tổng user<br><b id="statUsers">0</b></div>
-  <div class="stat-card">💰 Tổng coin<br><b id="statCoins">0</b></div>
-  <div class="stat-card">🚫 Bị khoá<br><b id="statBlocked">0</b></div>
-  <div class="stat-card">⭐ Admin<br><b id="statAdmins">0</b></div>
+
+  <div class="stat-card">
+    <div class="lux-stat-top">
+      <span>TỔNG NGƯỜI DÙNG</span>
+      <small>01</small>
+    </div>
+
+    <b id="statUsers">0</b>
+    <div class="lux-stat-bottom">Tài khoản hệ thống</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="lux-stat-top">
+      <span>TỔNG COIN</span>
+      <small>02</small>
+    </div>
+
+    <b id="statCoins">0</b>
+    <div class="lux-stat-bottom">Số dư đang lưu hành</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="lux-stat-top">
+      <span>TÀI KHOẢN BỊ KHÓA</span>
+      <small>03</small>
+    </div>
+
+    <b id="statBlocked">0</b>
+    <div class="lux-stat-bottom">Tài khoản bị hạn chế</div>
+  </div>
+
+  <div class="stat-card">
+    <div class="lux-stat-top">
+      <span>QUẢN TRỊ VIÊN</span>
+      <small>04</small>
+    </div>
+
+    <b id="statAdmins">0</b>
+    <div class="lux-stat-bottom">Tài khoản quản trị</div>
+  </div>
+
 </div>
+
 
   <div class="card">
     <div class="card-title">👥 Danh sách người dùng</div>

@@ -131,46 +131,113 @@ totalList = USERS.filter(u =>
 
 
 
-function renderUserCards(list){
+
+function renderUserCards(list) {
   const wrap = document.getElementById("userCardList");
   if (!wrap) return;
 
   wrap.innerHTML = "";
 
-  list.forEach(u=>{
+  list.forEach(u => {
     const card = document.createElement("div");
     card.className = "user-card";
 
     card.innerHTML = `
-      <div class="user-card-header" onclick="this.nextElementSibling.classList.toggle('hidden')">
-        <img src="${u.avatar || '/avatar-default.png'}">
+      <div class="user-card-header"
+           onclick="this.nextElementSibling.classList.toggle('hidden')">
+
+        <img src="${u.avatar || '/avatar-default.png'}"
+             alt="Avatar">
+
         <div>
-          <b>${u.name}</b><br>
+          <b>${u.name || u.uid}</b><br>
           <small>${u.uid}</small>
         </div>
       </div>
 
       <div class="user-card-detail hidden">
-        💰 Coin: <b>${u.coins}</b><br>
-        ⭐ Level: <b>${u.level}</b><br>
-        📈 EXP: <b>${u.exp}</b><br>
-        🎁 Đã tặng: <b>${u.coinSent}</b> |
-        💎 Đã nhận: <b>${u.coinReceived}</b><br><br>
 
-        <button class="action-btn"
-          onclick="quickTopup('${u.uid}')">➕</button>
-        <button class="action-btn"
-          onclick="quickWithdraw('${u.uid}')">➖</button>
-        <button class="action-btn"
-          onclick="toggleLock('${u.uid}', ${u.blocked})">
-          ${u.blocked ? "🔓" : "🚫"}
-        </button>
+        <div class="lux-detail-grid">
+
+          <div class="lux-detail-cell">
+            <span>Số dư Coin</span>
+            <strong>${Number(u.coins || 0).toLocaleString("vi-VN")}</strong>
+          </div>
+
+          <div class="lux-detail-cell">
+            <span>Cấp độ</span>
+            <strong>${u.level || 1}</strong>
+          </div>
+
+          <div class="lux-detail-cell">
+            <span>EXP</span>
+            <strong>${Number(u.exp || 0).toLocaleString("vi-VN")}</strong>
+          </div>
+
+          <div class="lux-detail-cell">
+            <span>Coin đã tặng</span>
+            <strong>${Number(u.coinSent || 0).toLocaleString("vi-VN")}</strong>
+          </div>
+
+          <div class="lux-detail-cell">
+            <span>Coin đã nhận</span>
+            <strong>${Number(u.coinReceived || 0).toLocaleString("vi-VN")}</strong>
+          </div>
+
+          <div class="lux-detail-cell">
+            <span>Trạng thái</span>
+            <strong>${u.blocked ? "Đã khóa" : "Hoạt động"}</strong>
+          </div>
+
+        </div>
+
+        <div class="user-actions" style="margin-top:13px">
+
+          <button class="action-btn"
+            type="button"
+            data-action="topup">
+            Cộng Coin
+          </button>
+
+          <button class="action-btn"
+            type="button"
+            data-action="withdraw">
+            Trừ Coin
+          </button>
+
+          <button class="action-btn ${u.blocked ? 'lux-action-success' : 'lux-action-danger'}"
+            type="button"
+            data-action="lock">
+            ${u.blocked ? "Mở khóa" : "Khóa tài khoản"}
+          </button>
+
+        </div>
+
       </div>
     `;
+
+    card.querySelector('[data-action="topup"]').onclick =
+      e => {
+        e.stopPropagation();
+        quickTopup(u.uid);
+      };
+
+    card.querySelector('[data-action="withdraw"]').onclick =
+      e => {
+        e.stopPropagation();
+        quickWithdraw(u.uid);
+      };
+
+    card.querySelector('[data-action="lock"]').onclick =
+      e => {
+        e.stopPropagation();
+        toggleLock(u.uid, u.blocked);
+      };
 
     wrap.appendChild(card);
   });
 }
+
 
 
 if (!admin.uid) {
@@ -271,28 +338,34 @@ function renderUsers(list){
 
         <div class="user-detail hidden">
           <div class="user-meta">
-            💰 Coin: <b>${u.coins}</b> |
-            ⭐ Level: <b>${u.level}</b> |
-            📈 EXP: <b>${u.exp}</b><br>
-            🎁 Đã tặng: <b>${u.coinSent}</b> |
-            💎 Đã nhận: <b>${u.coinReceived}</b><br>
-            🧩 Role:
+            Số dư Coin:<b>${u.coins}</b> |
+            Cấp độ: <b>${u.level}</b> |
+            EXP: <b>${u.exp}</b><br>
+            Đã tặng: <b>${u.coinSent}</b> |
+            Đã nhận: <b>${u.coinReceived}</b><br>
+            Vai trò:
             <b class="${u.role === "admin" ? "role-admin" : ""}">
               ${u.role}
             </b>
           </div>
 
           <div class="user-actions">
-            <button class="action-btn"
-              onclick="event.stopPropagation(); quickTopup('${u.uid}')">➕</button>
+           
+<button class="action-btn"
+  onclick="event.stopPropagation(); quickTopup('${u.uid}')">
+  Cộng Coin
+</button>
 
-            <button class="action-btn"
-              onclick="event.stopPropagation(); quickWithdraw('${u.uid}')">➖</button>
+<button class="action-btn"
+  onclick="event.stopPropagation(); quickWithdraw('${u.uid}')">
+  Trừ Coin
+</button>
 
-            <button class="action-btn"
-              onclick="event.stopPropagation(); toggleLock('${u.uid}', ${u.blocked})">
-              ${u.blocked ? "🔓 Mở khoá" : "🚫 Khoá"}
-            </button>
+<button class="action-btn ${u.blocked ? 'lux-action-success' : 'lux-action-danger'}"
+  onclick="event.stopPropagation(); toggleLock('${u.uid}', ${u.blocked})">
+  ${u.blocked ? "Mở khóa" : "Khóa tài khoản"}
+</button>
+
           </div>
         </div>
       </div>
@@ -313,7 +386,7 @@ function renderUsers(list){
 
 async function quickTopup(uid){
   const amount = await showModal({
-    title: "➕ Nạp coin",
+    title: "Cộng Coin",
     body: "Nhập số coin:",
     input: true,
     confirm: true
@@ -339,7 +412,7 @@ async function quickTopup(uid){
 
 async function toggleLock(uid, isBlocked){
   const reason = await showModal({
-    title: isBlocked ? "🔓 Mở khoá tài khoản" : "🚫 Khoá tài khoản",
+    title: isBlocked ? "Mở khoá tài khoản" : "Khoá tài khoản",
     body: "Nhập lý do:",
     input: true,
     confirm: true
@@ -349,7 +422,7 @@ async function toggleLock(uid, isBlocked){
 
   if (!isBlocked && !reason.trim()) {
     await showModal({
-      title: "⚠️ Thiếu lý do",
+      title: "Thiếu lý do",
       body: "Vui lòng nhập lý do khoá tài khoản"
     });
     return;
@@ -456,14 +529,14 @@ function renderLiveRooms(list){
         </div>
       </td>
 
-      <td><b style="color:#00e5ff">${r.viewers || 0}</b></td>
+      <td><b style="color:#dfbd89">${r.viewers || 0}</b></td>
       <td>${fmtTime(r.liveStartTs)}</td>
       <td>${fmtDuration(now - (r.liveStartTs || now))}</td>
 
       <td>
         <button class="btn-mini"
           onclick="event.stopPropagation(); adminCloseRoom('${r.roomId}')">
-          🚫 Đóng
+          Đóng phòng
         </button>
       </td>
     `;
@@ -524,7 +597,7 @@ function initLiveRoomsRealtime(){
 
 async function adminCloseRoom(roomId){
   const reason = await showModal({
-    title: "🚫 Đóng room live",
+    title: "Đóng phòng live",
     body: "Nhập lý do (tuỳ chọn):",
     input: true,
     confirm: true
@@ -551,7 +624,7 @@ async function adminCloseRoom(roomId){
   const data = await res.json();
 
   await showModal({
-    title: data.ok ? "✅ Thành công" : "❌ Thất bại",
+    title: data.ok ? "Thành công" : "Thất bại",
     body: data.ok ? `Đã đóng room ${roomId}` : "Không đóng được room"
   });
 }
@@ -599,14 +672,14 @@ async function closeLiveRoom(){
 
   document.getElementById("closeLog").textContent =
     data.ok
-      ? `✅ Đã đóng room ${roomId}`
-      : `❌ Lỗi: ${data.error || "fail"}`;
+      ? `Đã đóng room ${roomId}`
+      : `Lỗi: ${data.error || "fail"}`;
 }
 
 
 async function quickWithdraw(uid){
   const amount = await showModal({
-    title: "➖ Rút coin",
+    title: "Trừ Coin",
     body: "Nhập số coin cần rút:",
     input: true,
     confirm: true
@@ -614,7 +687,7 @@ async function quickWithdraw(uid){
   if (!amount) return;
 
   const note = await showModal({
-    title: "📝 Ghi chú",
+    title: "Ghi chú",
     body: "Nhập lý do rút coin:",
     input: true,
     confirm: true
@@ -670,18 +743,42 @@ function renderWithdrawCards(list){
         <span class="w-chip ${chipClass}">${status}</span>
       </div>
 
-      <div class="withdraw-card-meta">
-        💎 Số tiền: <b>${amountText}</b><br>
-        🏦 ${bank}<br>
-        🕒 ${time}
-      </div>
+
+<div class="withdraw-card-meta lux-withdraw-meta">
+
+  <div class="lux-meta-row">
+    <span>Số tiền</span>
+    <strong>${amountText}</strong>
+  </div>
+
+  <div class="lux-meta-row">
+    <span>Ngân hàng</span>
+    <strong>${bank}</strong>
+  </div>
+
+  <div class="lux-meta-row">
+    <span>Thời gian</span>
+    <strong>${time}</strong>
+  </div>
+
+</div>
+
 
       <div class="withdraw-card-actions">
         ${
           status === "pending"
             ? `
-              <button onclick="withdrawAction('${w.id}','approve')">✅ Duyệt</button>
-              <button onclick="withdrawAction('${w.id}','reject')">❌ Từ chối</button>
+
+<button class="lux-action-success"
+        onclick="withdrawAction('${w.id}','approve')">
+  Phê duyệt
+</button>
+
+<button class="lux-action-danger"
+        onclick="withdrawAction('${w.id}','reject')">
+  Từ chối
+</button>
+
             `
             : `<span class="muted">Đã xử lý</span>`
         }
@@ -830,7 +927,7 @@ function renderWithdrawPage(){
 
 async function withdrawAction(id, action) {
   const note = await showModal({
-    title: action === "approve" ? "✅ Duyệt rút tiền" : "❌ Từ chối rút tiền",
+    title: action === "approve" ? "Phê duyệt rút tiền" : "Từ chối rút tiền",
     body: "Nhập ghi chú (tuỳ chọn):",
     input: true,
     confirm: true
@@ -854,7 +951,7 @@ async function withdrawAction(id, action) {
   const data = await res.json();
 
   await showModal({
-    title: data.ok ? "✅ Thành công" : "❌ Thất bại",
+    title: data.ok ? "Thành công" : "Thất bại",
     body: data.ok
       ? "Đã xử lý yêu cầu rút tiền"
       : ("Lỗi: " + (data.error || "unknown"))
@@ -970,7 +1067,7 @@ function adminGoBack(){
 
 async function adminDeletePost(postId){
   const reason = await showModal({
-    title: "🗑️ Xoá bài đăng",
+    title: "Xoá bài đăng",
     body: "Nhập lý do xoá (tuỳ chọn):",
     input: true,
     confirm: true
@@ -997,7 +1094,7 @@ async function adminDeletePost(postId){
   const data = await res.json();
 
   await showModal({
-    title: data.ok ? "✅ Thành công" : "❌ Thất bại",
+    title: data.ok ? "Thành công" : "Thất bại",
     body: data.ok ? "Đã xoá bài đăng" : "Không xoá được bài"
   });
 }
@@ -1111,12 +1208,12 @@ div.innerHTML = `
   <div style="display:flex;gap:8px;margin-top:10px">
     <button style="color:#ff5f6d"
       onclick="adminRefund('${o.id}')">
-      ❌ Hoàn tiền
+      Hoàn tiền
     </button>
 
     <button style="color:#25F09A"
       onclick="adminApprove('${o.id}')">
-      ✅ Chấp nhận đơn
+      Chấp nhận đơn
     </button>
   </div>
 `;
@@ -1131,7 +1228,7 @@ async function adminRefund(orderId){
   const me = JSON.parse(localStorage.getItem("user_profile"));
 
   const ok = await showModal({
-    title:"❌ Hoàn tiền",
+    title:"Hoàn tiền",
     body:"Xác nhận hoàn tiền cho người mua?",
     confirm:true
   });
@@ -1163,7 +1260,7 @@ async function adminApprove(orderId){
   const me = JSON.parse(localStorage.getItem("user_profile"));
 
   const ok = await showModal({
-    title:"✅ Chấp nhận đơn khiếu nại",
+    title:"Chấp nhận đơn khiếu nại",
     body:"Xác nhận cho shop nhận tiền?",
     confirm:true
   });
@@ -1181,7 +1278,7 @@ async function adminApprove(orderId){
   const data = await res.json();
   if(data.ok){
     await showModal({
-      title:"✅ Thành công",
+      title:"Thành công",
       body:"Đơn hàng đã được chấp nhận."
     });
     loadDisputes();
