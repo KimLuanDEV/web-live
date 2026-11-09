@@ -1017,11 +1017,238 @@ body {
     }
 }
 
+
+
+/* ==========================================
+   WHEEL8 MILITARY ADMIN LOGIN
+========================================== */
+
+.wheel8-login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+  padding: 20px;
+
+  background:
+    radial-gradient(
+      circle at 50% 25%,
+      #304b32 0%,
+      #101d13 45%,
+      #030905 100%
+    );
+}
+
+.wheel8-login-screen.hidden {
+  display: none;
+}
+
+body:not(.wheel8-admin-unlocked) > .container,
+body:not(.wheel8-admin-unlocked) > .full-card {
+  visibility: hidden;
+}
+
+.wheel8-login-box {
+  width: 100%;
+  max-width: 380px;
+  box-sizing: border-box;
+
+  padding: 32px 23px;
+
+  background:
+    linear-gradient(145deg, #293e2b, #0c1b10);
+
+  border: 1px solid #bda36b;
+  border-bottom: 3px solid #d4b46b;
+  border-radius: 12px;
+
+  box-shadow:
+    0 20px 60px #000b,
+    inset 0 1px 0 #ffffff22,
+    0 0 25px #a6c16a16;
+
+  text-align: center;
+}
+
+.wheel8-login-icon {
+  font-size: 52px;
+  margin-bottom: 10px;
+  filter: drop-shadow(0 0 12px #9dbe68);
+}
+
+.wheel8-login-title {
+  font-size: 24px;
+  font-weight: 1000;
+  letter-spacing: 2px;
+  color: #ead18c;
+  text-shadow: 0 3px 6px #000;
+}
+
+.wheel8-login-sub {
+  margin-top: 8px;
+  font-size: 11px;
+  letter-spacing: 3px;
+  font-weight: 800;
+  color: #a8ff70;
+}
+
+.wheel8-login-line {
+  height: 1px;
+  margin: 25px 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d4b46b,
+    transparent
+  );
+}
+
+.wheel8-login-box label {
+  display: block;
+  text-align: left;
+  margin-bottom: 10px;
+
+  color: #c8d5b8;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 1.5px;
+}
+
+#wheel8AdminPassword {
+  width: 100%;
+  height: 50px;
+  box-sizing: border-box;
+  padding: 0 15px;
+
+  background: #07130b;
+  border: 1px solid #607750;
+  border-radius: 6px;
+  outline: none;
+
+  color: #e5f9d6;
+  font-size: 16px;
+  letter-spacing: 2px;
+
+  transition: .2s;
+}
+
+#wheel8AdminPassword:focus {
+  border-color: #b8d777;
+  box-shadow: 0 0 12px #9dff6b33;
+}
+
+#wheel8AdminPassword::placeholder {
+  color: #718168;
+  letter-spacing: 0;
+}
+
+#wheel8LoginBtn {
+  width: 100%;
+  min-height: 51px;
+  margin-top: 18px;
+  padding: 12px;
+
+  border: 1px solid #e7cf8f;
+  border-radius: 6px;
+
+  background: linear-gradient(
+    180deg,
+    #dec483,
+    #9b783e
+  );
+
+  color: #17220f;
+  font-size: 13px;
+  font-weight: 1000;
+  letter-spacing: .6px;
+
+  cursor: pointer;
+}
+
+#wheel8LoginBtn:active {
+  transform: scale(.98);
+}
+
+#wheel8LoginBtn:disabled {
+  opacity: .55;
+  cursor: not-allowed;
+}
+
+#wheel8LoginMessage {
+  min-height: 20px;
+  margin-top: 16px;
+  color: #ff9187;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.wheel8-login-footer {
+  margin-top: 12px;
+  color: #7f957b;
+  font-size: 10px;
+  letter-spacing: 1.5px;
+}
+
+
+
+
 </style>
 </head>
 
+
 <body>
+
+<!-- 🔐 WHEEL8 ADMIN LOGIN -->
+<div id="wheel8LoginScreen" class="wheel8-login-screen">
+
+  <form id="wheel8LoginForm" class="wheel8-login-box">
+
+    <div class="wheel8-login-icon">🛡️</div>
+
+    <div class="wheel8-login-title">
+      COMMAND CENTER
+    </div>
+
+    <div class="wheel8-login-sub">
+      WHEEL8 ADMIN ACCESS
+    </div>
+
+    <div class="wheel8-login-line"></div>
+
+    <label for="wheel8AdminPassword">
+      MẬT KHẨU QUẢN TRỊ
+    </label>
+
+    <input
+      id="wheel8AdminPassword"
+      type="password"
+      placeholder="Nhập mật khẩu admin"
+      autocomplete="off"
+      maxlength="256"
+      required
+    >
+
+    <button id="wheel8LoginBtn" type="submit">
+      🔓 XÁC THỰC QUYỀN TRUY CẬP
+    </button>
+
+    <div id="wheel8LoginMessage"></div>
+
+    <div class="wheel8-login-footer">
+      SECURE ADMIN CONTROL SYSTEM
+    </div>
+
+  </form>
+
+</div>
+
 <div class="container">
+
 
   <!-- LEFT -->
   <div class="card main-card">
@@ -1105,9 +1332,110 @@ const socket = io({
 })
 
 
-socket.on("connect",()=>{
-  console.log("✅ ADMIN CONNECTED:", socket.id, me.uid)
-})
+
+// ==========================================
+// 🔐 WHEEL8 ADMIN LOGIN CONTROLLER
+// ==========================================
+
+let wheel8AdminUnlocked = false;
+
+const wheel8LoginScreen =
+  document.getElementById("wheel8LoginScreen");
+
+const wheel8LoginForm =
+  document.getElementById("wheel8LoginForm");
+
+const wheel8LoginInput =
+  document.getElementById("wheel8AdminPassword");
+
+const wheel8LoginBtn =
+  document.getElementById("wheel8LoginBtn");
+
+const wheel8LoginMessage =
+  document.getElementById("wheel8LoginMessage");
+
+function lockWheel8Admin(message = "") {
+  wheel8AdminUnlocked = false;
+
+  document.body.classList.remove(
+    "wheel8-admin-unlocked"
+  );
+
+  wheel8LoginScreen.classList.remove("hidden");
+  wheel8LoginInput.value = "";
+  wheel8LoginBtn.disabled = false;
+  wheel8LoginMessage.textContent = message;
+}
+
+function unlockWheel8Admin() {
+  wheel8AdminUnlocked = true;
+
+  document.body.classList.add(
+    "wheel8-admin-unlocked"
+  );
+
+  wheel8LoginScreen.classList.add("hidden");
+  wheel8LoginInput.value = "";
+  wheel8LoginMessage.textContent = "";
+  wheel8LoginBtn.disabled = false;
+}
+
+socket.on("connect", () => {
+  console.log("✅ WHEEL8 SOCKET CONNECTED");
+  lockWheel8Admin();
+});
+
+socket.on("disconnect", () => {
+  lockWheel8Admin("Mất kết nối đến máy chủ.");
+});
+
+wheel8LoginForm.addEventListener("submit", (e) => {
+  e.preventDefault();
+
+  const password = wheel8LoginInput.value;
+
+  if (!password) {
+    wheel8LoginMessage.textContent =
+      "Vui lòng nhập mật khẩu quản trị.";
+    return;
+  }
+
+  if (!socket.connected) {
+    wheel8LoginMessage.textContent =
+      "Chưa kết nối được máy chủ.";
+    return;
+  }
+
+  wheel8LoginBtn.disabled = true;
+  wheel8LoginMessage.textContent = "Đang xác thực...";
+
+  socket.timeout(10000).emit(
+    "wheel8-admin-login",
+    { password },
+    (err, result) => {
+
+      wheel8LoginBtn.disabled = false;
+
+      if (err) {
+        wheel8LoginMessage.textContent =
+          "Không nhận được phản hồi từ server.";
+        return;
+      }
+
+      if (!result?.ok) {
+        wheel8LoginMessage.textContent =
+          result?.message || "Xác thực thất bại.";
+
+        wheel8LoginInput.value = "";
+        wheel8LoginInput.focus();
+        return;
+      }
+
+      unlockWheel8Admin();
+    }
+  );
+});
+
 
 socket.on("connect_error",(err)=>{
   console.log("❌ CONNECT ERROR:", err.message)
@@ -1185,27 +1513,69 @@ function highlightOverride(selector){
   }
 }
 
-function setSlot(slot){
 
-  highlightOverride(`[data-slot="${slot}"]`);
+// ==========================================
+// 🛠 OVERRIDE WHEEL8 - AUTH REQUIRED
+// ==========================================
 
-  socket.emit("admin-wheel8-override",{
-    slot
-  });
+function sendWheel8Override(data, selector) {
 
+  if (!wheel8AdminUnlocked || !socket.connected) {
+    lockWheel8Admin("Vui lòng xác thực mật khẩu.");
+    return;
+  }
+
+  socket.timeout(10000).emit(
+    "admin-wheel8-override",
+    data,
+    (err, result) => {
+
+      if (err) {
+        alert("Không nhận được phản hồi từ server.");
+        return;
+      }
+
+      if (!result?.ok) {
+        alert(result?.message || "Không thể cập nhật.");
+
+        if (result?.message?.includes("chưa xác thực")) {
+          lockWheel8Admin("Vui lòng đăng nhập lại.");
+        }
+
+        return;
+      }
+
+      highlightOverride(selector);
+    }
+  );
 }
 
-function setEvent(event){
 
-  if(!["x5-all","x45-all"].includes(event)) return;
+function setSlot(slot) {
+  const n = Number(slot);
 
-  highlightOverride(`[data-event="${event}"]`);
+  if (!Number.isInteger(n) || n < 1 || n > 8) {
+    return;
+  }
 
-  socket.emit("admin-wheel8-override",{
-    event
-  });
-
+  sendWheel8Override(
+    { slot: n },
+    `[data-slot="${n}"]`
+  );
 }
+
+function setEvent(event) {
+
+  if (!["x5-all", "x45-all"].includes(event)) {
+    return;
+  }
+
+  sendWheel8Override(
+    { event },
+    `[data-event="${event}"]`
+  );
+}
+
 
 
 socket.on("admin-wheel8-bets-update",(data)=>{

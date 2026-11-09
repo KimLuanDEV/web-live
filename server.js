@@ -1698,6 +1698,42 @@ const WHEEL8_SLOTS = [
 // CREATE ROUND
 // ================================
 
+
+
+
+/* =====================================
+   WHEEL8 ADMIN PASSWORD AUTHENTICATION
+===================================== */
+
+const WHEEL8_ADMIN_ROOM = "wheel8-admin";
+const WHEEL8_ADMIN_PASSWORD =
+  process.env.WHEEL8_ADMIN_PASSWORD || "";
+
+function wheel8PasswordMatches(password) {
+  if (!WHEEL8_ADMIN_PASSWORD) return false;
+  if (typeof password !== "string") return false;
+  if (password.length > 256) return false;
+
+  const provided = crypto
+    .createHash("sha256")
+    .update(password, "utf8")
+    .digest();
+
+  const expected = crypto
+    .createHash("sha256")
+    .update(WHEEL8_ADMIN_PASSWORD, "utf8")
+    .digest();
+
+  return crypto.timingSafeEqual(provided, expected);
+}
+
+function emitWheel8Admin(event, data) {
+  io.to(WHEEL8_ADMIN_ROOM).emit(event, data);
+}
+
+
+
+
 function createWheel8Round(){
 
   const todayStart = getTodayStartTsVN()
@@ -1749,7 +1785,7 @@ function createWheel8Round(){
   }
 
   // 🔔 ADMIN
-  io.emit("admin-wheel8-secret",{
+ emitWheel8Admin("admin-wheel8-secret", {
     roundId: round.id,
     slot: round.secret.slot,
     multiplier: round.secret.multiplier,
@@ -2295,7 +2331,7 @@ setTimeout(()=>{
 },5000)
 
 
-io.emit("admin-wheel8-bets-update", getAdminWheel8Data())
+emitWheel8Admin("admin-wheel8-bets-update", getAdminWheel8Data())
 
 },35000)
 
@@ -3778,6 +3814,189 @@ io.on("connection", socket => {
 
   socket.data.deviceId = deviceId;
 
+
+  
+// ========================================
+// 🔐 WHEEL8 ADMIN - PASSWORD LOGIN
+// ========================================
+
+socket.data.wheel8Admin = false;
+
+let wheel8LoginFailures = 0;
+let wheel8LoginBlockedUntil = 0;
+
+socket.on("wheel8-admin-login", async (data, callback) => {
+  const reply = typeof callback === "function"
+    ? callback
+    : () => {};
+
+  if (socket.data.wheel8Admin) {
+    return reply({ ok: true });
+  }
+
+  const now = Date.now();
+
+  if (now < wheel8LoginBlockedUntil) {
+    return reply({
+      ok: false,
+      message: "Thử quá nhiều lần. Vui lòng thử lại sau."
+    });
+  }
+
+  if (!WHEEL8_ADMIN_PASSWORD) {
+    return reply({
+      ok: false,
+      message: "Server chưa cấu hình mật khẩu Wheel8."
+    });
+  }
+
+  const password = data?.password;
+
+  if (!wheel8PasswordMatches(password)) {
+    wheel8LoginFailures++;
+
+    if (wheel8LoginFailures >= 5) {
+      wheel8LoginBlockedUntil = Date.now() + 60000;
+      wheel8LoginFailures = 0;
+    }
+
+    return reply({
+      ok: false,
+      message: "Mật khẩu quản trị không chính xác."
+    });
+  }
+
+  wheel8LoginFailures = 0;
+  wheel8LoginBlockedUntil = 0;
+
+  socket.data.wheel8Admin = true;
+  socket.join(WHEEL8_ADMIN_ROOM);
+
+  reply({ ok: true });
+
+  // Gửi dữ liệu hiện tại sau khi xác thực
+  if (wheel8Round?.secret) {
+    socket.emit("admin-wheel8-secret", {
+      roundId: wheel8Round.id,
+      slot: wheel8Round.secret.slot,
+      multiplier: wheel8Round.secret.multiplier,
+      hash: wheel8Round.secret.hash,
+      endAt: wheel8Round.endAt,
+      overridden: wheel8Round.secret.overridden || false,
+      event: wheel8Round.forcedEvent || null
+    });
+  }
+
+  socket.emit(
+    "admin-wheel8-bets-update",
+    getAdminWheel8Data()
+  );
+});
+
+// ========================================
+// 🛠 WHEEL8 ADMIN OVERRIDE - PASSWORD AUTH
+// ========================================
+
+socket.on("admin-wheel8-override", (data, callback) => {
+
+  const reply = typeof callback === "function"
+    ? callback
+    : () => {};
+
+  // 🔒 Chỉ kết nối đã nhập đúng mật khẩu
+  if (!socket.data.wheel8Admin) {
+    return reply({
+      ok: false,
+      message: "Bạn chưa xác thực mật khẩu quản trị."
+    });
+  }
+
+  if (!wheel8Round?.secret) {
+    return reply({
+      ok: false,
+      message: "Chưa có phiên Wheel8."
+    });
+  }
+
+  const validEvents = ["x5-all", "x45-all"];
+  const event = data?.event;
+  const isEvent = validEvents.includes(event);
+
+  const slot = Number(data?.slot);
+
+  if (!isEvent &&
+      (!Number.isInteger(slot) || slot < 1 || slot > 8)) {
+    return reply({
+      ok: false,
+      message: "Slot không hợp lệ."
+    });
+  }
+
+  const remain = Math.max(
+    0,
+    Math.floor((wheel8Round.endAt - Date.now()) / 1000)
+  );
+
+  if (remain <= 2) {
+    return reply({
+      ok: false,
+      message: "Đã quá thời gian tùy chỉnh."
+    });
+  }
+
+  const selectedSlot = isEvent
+    ? (event === "x5-all" ? 1 : 2)
+    : slot;
+
+  const multiplier = isEvent
+    ? (event === "x5-all" ? 5 : 45)
+    : WHEEL8_SLOTS[selectedSlot - 1].m;
+
+  wheel8Round.forcedEvent = isEvent ? event : null;
+
+  wheel8Round.secret = {
+    slot: selectedSlot,
+    multiplier,
+    event: wheel8Round.forcedEvent,
+
+    hash: crypto
+      .createHash("sha256")
+      .update(
+        wheel8Round.id + ":" +
+        selectedSlot + ":" +
+        multiplier + ":" +
+        (wheel8Round.forcedEvent || "")
+      )
+      .digest("hex"),
+
+    overridden: true
+  };
+
+  console.log("🛠 WHEEL8 ADMIN OVERRIDE:", {
+    roundId: wheel8Round.id,
+    slot: selectedSlot,
+    multiplier,
+    event: wheel8Round.forcedEvent
+  });
+
+  emitWheel8Admin("admin-wheel8-secret", {
+    roundId: wheel8Round.id,
+    slot: selectedSlot,
+    multiplier,
+    hash: wheel8Round.secret.hash,
+    endAt: wheel8Round.endAt,
+    overridden: true,
+    event: wheel8Round.forcedEvent
+  });
+
+  reply({
+    ok: true,
+    message: "Đã cập nhật kết quả Wheel8."
+  });
+});
+
+
+
   if (!uid) return;
 
 
@@ -3872,110 +4091,8 @@ socket.emit("wheel8-my-bets", myWheelBets);
 
 
 
-// ================================
-// 🎡 SEND CURRENT WHEEL8 SECRET TO ADMIN
-// ================================
-if (meNow?.role === "admin" && wheel8Round?.secret) {
-socket.emit("admin-wheel8-secret", {
-    roundId: wheel8Round.id,
-    slot: wheel8Round.secret.slot,
-    multiplier: wheel8Round.secret.multiplier,
-    hash: wheel8Round.secret.hash,
-    endAt: wheel8Round.endAt,
-    overridden: wheel8Round.secret.overridden || false,
-    event: wheel8Round.forcedEvent || null
-});
-}
 
 
-// ================================
-// 🛠 ADMIN OVERRIDE WHEEL8
-// ================================
-socket.on("admin-wheel8-override",(data)=>{
-
-  const uid = socket.data.uid
-  if(!uid) return
-
-  const users = loadUsers()
-  const me = users[uid]
-
-  // chỉ admin mới được override
-  if(me?.role !== "admin"){
-    return
-  }
-
-  if(!wheel8Round || !wheel8Round.secret) return
-
-const event = data?.event;
-
-const validEvents = ["x5-all", "x45-all"];
-
-const isEvent = validEvents.includes(event);
-
-const slot = Number(data?.slot);
-
-if(!isEvent && (!Number.isInteger(slot) || slot < 1 || slot > 8)){
-  return;
-}
-
-  // khóa override khi còn 5 giây
-  const remain = Math.max(
-    0,
-    Math.floor((wheel8Round.endAt - Date.now()) / 1000)
-  )
-
-  if(remain <= 2){
-    socket.emit("notify",{
-      message:"Too late to override"
-    })
-    return
-  }
-
-  const selectedSlot = isEvent
-  ? (event === "x5-all" ? 1 : 2)
-  : slot;
-
-const multiplier = isEvent
-  ? (event === "x5-all" ? 5 : 45)
-  : WHEEL8_SLOTS[selectedSlot - 1].m;
-
-wheel8Round.forcedEvent = isEvent ? event : null;
-
-wheel8Round.secret = {
-  slot: selectedSlot,
-  multiplier,
-  event: wheel8Round.forcedEvent,
-
-  hash: crypto
-    .createHash("sha256")
-    .update(
-      wheel8Round.id + ":" +
-      selectedSlot + ":" +
-      multiplier + ":" +
-      (wheel8Round.forcedEvent || "")
-    )
-    .digest("hex"),
-
-  overridden: true
-};
-
-  console.log("🛠 ADMIN OVERRIDE WHEEL8:", {
-    roundId: wheel8Round.id,
-    slot,
-    multiplier
-  })
-
-io.emit("admin-wheel8-secret", {
-    roundId: wheel8Round.id,
-    slot: selectedSlot,
-    multiplier: multiplier,
-    hash: wheel8Round.secret.hash,
-    endAt: wheel8Round.endAt,
-    overridden: true,
-    event: wheel8Round.forcedEvent
-});
-
-})
 
 
 // ================================
@@ -4277,7 +4394,7 @@ socket.emit("wheel8-my-bets",
 
 
 
-io.emit("admin-wheel8-bets-update", getAdminWheel8Data())
+emitWheel8Admin("admin-wheel8-bets-update", getAdminWheel8Data())
 
 })
 
