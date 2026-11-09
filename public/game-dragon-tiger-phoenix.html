@@ -4736,6 +4736,618 @@ body.dtp-debug .dtp-chip {
 }
 
 
+
+
+/* ==========================================
+   MYTHIC ROYAL LOADING V2
+   DRAGON / TIGER / PHOENIX
+========================================== */
+
+#loadingOverlay.loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  box-sizing: border-box;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  padding: 20px 16px;
+
+  overflow: hidden;
+  isolation: isolate;
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(3,5,10,.88) 0%,
+      rgba(9,12,20,.78) 38%,
+      rgba(4,6,12,.95) 100%
+    ),
+    url("/assets/dtp/btp-loading.jpg")
+    center center / cover no-repeat;
+
+  color: #f6e6c4;
+}
+
+/* SUBTLE PARTICLES */
+
+#loadingOverlay.loading-overlay::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+
+  background-image:
+    radial-gradient(
+      circle,
+      rgba(240,199,117,.7) 1px,
+      transparent 2px
+    );
+
+  background-size: 90px 110px;
+  background-repeat: repeat;
+
+  opacity: .14;
+  pointer-events: none;
+
+  animation: dtpLoaderDust 25s linear infinite;
+}
+
+/* MAIN CONTENT */
+
+#loadingOverlay .loading-center {
+  position: relative;
+  z-index: 2;
+
+  box-sizing: border-box;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 430px;
+
+  height: 100%;
+  max-height: 750px;
+
+  margin: 0;
+  padding: 12px 8px;
+
+  text-align: center;
+}
+
+/* REMOVE OLD GLOW LAYER */
+
+#loadingOverlay .loading-center::before {
+  display: none !important;
+  content: none !important;
+}
+
+/* ========== BRAND ========== */
+
+#loadingOverlay .loading-brand {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 11px;
+
+  width: 100%;
+  margin-bottom: 29px;
+
+  color: #d1b57e;
+
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.1px;
+  white-space: nowrap;
+}
+
+#loadingOverlay .loading-brand-line {
+  width: 23px;
+  height: 1px;
+  flex: 0 0 23px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #bc9154
+  );
+}
+
+#loadingOverlay .loading-brand-line:last-child {
+  transform: rotate(180deg);
+}
+
+/* ========== THREE BEASTS ========== */
+
+#loadingOverlay .loading-beasts {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 372px;
+  gap: 12px;
+}
+
+#loadingOverlay .loading-beast {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+
+  flex: 1;
+  min-width: 0;
+
+  --spirit: #d7b477;
+  --spirit-glow: rgba(218,175,98,.22);
+}
+
+/* DRAGON */
+
+#loadingOverlay .loading-dragon {
+  --spirit: #f48d82;
+  --spirit-glow: rgba(255,78,62,.25);
+}
+
+/* TIGER */
+
+#loadingOverlay .loading-tiger {
+  --spirit: #91c1ff;
+  --spirit-glow: rgba(56,131,255,.25);
+}
+
+/* PHOENIX */
+
+#loadingOverlay .loading-phoenix {
+  --spirit: #ffce82;
+  --spirit-glow: rgba(255,167,54,.26);
+}
+
+/* BEAST IMAGE FRAME */
+
+#loadingOverlay .loading-beast-image {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 100%;
+  max-width: 111px;
+  aspect-ratio: 1;
+
+  border-radius: 50%;
+  border: 1px solid rgba(218,183,119,.25);
+
+  background:
+    radial-gradient(
+      circle,
+      var(--spirit-glow) 0%,
+      rgba(15,18,28,.7) 60%,
+      rgba(5,7,12,.9) 100%
+    );
+
+  box-shadow:
+    0 0 25px var(--spirit-glow),
+    inset 0 0 18px rgba(0,0,0,.5);
+}
+
+/* THIN INNER RING */
+
+#loadingOverlay .loading-beast-image::after {
+  content: "";
+
+  position: absolute;
+  inset: 5px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(231,196,131,.14);
+
+  pointer-events: none;
+}
+
+/* BEAST IMAGE */
+
+#loadingOverlay .loading-beast-image img {
+  display: block;
+
+  width: 93%;
+  height: 93%;
+
+  object-fit: contain;
+
+  filter:
+    drop-shadow(0 4px 7px #000)
+    drop-shadow(0 0 7px var(--spirit-glow));
+
+  animation: dtpSpiritFloat 3s ease-in-out infinite;
+}
+
+#loadingOverlay .loading-tiger img {
+  animation-delay: .35s;
+}
+
+#loadingOverlay .loading-phoenix img {
+  animation-delay: .7s;
+}
+
+/* ANIMAL NAME */
+
+#loadingOverlay .loading-beast > span {
+  color: var(--spirit);
+
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+  text-shadow: 0 0 10px var(--spirit-glow);
+}
+
+/* ========== MAGIC SEAL ========== */
+
+#loadingOverlay .loading-seal {
+  position: relative;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 94px;
+  height: 94px;
+
+  margin: 32px auto 24px;
+}
+
+/* ROTATING GOLDEN RING */
+
+#loadingOverlay .loading-spinner {
+  position: absolute;
+  inset: 0;
+
+  width: 94px;
+  height: 94px;
+
+  margin: 0;
+
+  border: 2px solid transparent;
+  border-top-color: #f2d59c;
+  border-right-color: rgba(213,166,89,.75);
+  border-bottom-color: rgba(213,166,89,.15);
+  border-left-color: rgba(213,166,89,.15);
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 18px rgba(218,173,92,.12),
+    inset 0 0 15px rgba(218,173,92,.06);
+
+  filter: none;
+
+  animation: dtpSealRotate 2.4s linear infinite;
+}
+
+/* INNER SEAL */
+
+#loadingOverlay .loading-seal-inner {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 69px;
+  height: 69px;
+
+  border-radius: 50%;
+
+  border: 1px solid rgba(233,191,117,.4);
+
+  background:
+    radial-gradient(
+      circle at 50% 35%,
+      #34301f 0%,
+      #161923 65%,
+      #090c14 100%
+    );
+
+  box-shadow:
+    inset 0 1px 0 rgba(255,239,198,.14),
+    0 0 14px rgba(224,170,77,.12);
+}
+
+#loadingOverlay .loading-seal-inner span {
+  color: #f3d8a4;
+
+  font-size: 13px;
+  font-weight: 900;
+  letter-spacing: 1.2px;
+}
+
+/* ========== MAIN TITLE ========== */
+
+#loadingOverlay .loading-main-title {
+  max-width: 100%;
+
+  color: #f4deb0;
+
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(22px, 5.8vw, 29px);
+  font-weight: 800;
+  line-height: 1.25;
+
+  letter-spacing: 1.1px;
+
+  text-shadow:
+    0 3px 10px rgba(0,0,0,.7),
+    0 0 20px rgba(231,185,103,.14);
+}
+
+#loadingOverlay .loading-subtitle {
+  margin-top: 10px;
+
+  color: #b8a788;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+}
+
+/* GOLD DIVIDER */
+
+#loadingOverlay .loading-gold-divider {
+  width: 110px;
+  height: 1px;
+
+  margin: 23px auto 0;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #e5bc78,
+    transparent
+  );
+}
+
+/* ========== PROGRESS AREA ========== */
+
+#loadingOverlay .loading-progress-area {
+  width: 100%;
+  max-width: 330px;
+
+  margin-top: 42px;
+}
+
+/* STATUS + PERCENT */
+
+#loadingOverlay .loading-progress-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  gap: 12px;
+  width: 100%;
+
+  margin-bottom: 12px;
+}
+
+#loadingOverlay .loading-text {
+  min-width: 0;
+  flex: 1;
+
+  margin: 0;
+
+  color: #c8b998;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: .3px;
+
+  text-align: left;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  animation: none;
+  text-shadow: none;
+}
+
+#loadingOverlay .loading-percent {
+  flex-shrink: 0;
+
+  color: #f5d89e;
+  font-size: 16px;
+  font-weight: 900;
+
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ========== PROGRESS BAR ========== */
+
+#loadingOverlay .loading-bar {
+  position: relative;
+
+  box-sizing: border-box;
+
+  width: 100%;
+  height: 7px;
+
+  margin: 0;
+  padding: 1px;
+
+  overflow: hidden;
+
+  border: 1px solid rgba(203,168,104,.38);
+  border-radius: 20px;
+
+  background: #171a20;
+
+  box-shadow:
+    inset 0 1px 3px rgba(0,0,0,.5);
+
+  filter: none;
+}
+
+/* PROGRESS FILL */
+
+#loadingOverlay .loading-progress {
+  position: relative;
+
+  width: 0%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: linear-gradient(
+    90deg,
+    #987044,
+    #e8c588 60%,
+    #fff0bf
+  );
+
+  background-size: 100% 100%;
+
+  box-shadow:
+    0 0 8px rgba(239,194,116,.25);
+
+  animation: none;
+
+  transition: width .15s linear;
+}
+
+/* REMOVE OLD MULTICOLOR SHINE */
+
+#loadingOverlay .loading-progress::after {
+  display: none;
+  content: none;
+}
+
+/* BOTTOM CAPTION */
+
+#loadingOverlay .loading-bottom-caption {
+  margin-top: 18px;
+
+  color: #8c806c;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.4px;
+}
+
+/* ========== ANIMATIONS ========== */
+
+@keyframes dtpSealRotate {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dtpSpiritFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+@keyframes dtpLoaderDust {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 90px -220px;
+  }
+}
+
+/* ========== SMALL SCREENS ========== */
+
+@media (max-width: 360px) {
+  #loadingOverlay .loading-brand {
+    font-size: 9px;
+    gap: 8px;
+    letter-spacing: 1.5px;
+  }
+
+  #loadingOverlay .loading-beasts {
+    gap: 7px;
+  }
+
+  #loadingOverlay .loading-beast > span {
+    font-size: 9px;
+  }
+
+  #loadingOverlay .loading-main-title {
+    font-size: 21px;
+  }
+
+  #loadingOverlay .loading-progress-area {
+    max-width: 290px;
+  }
+}
+
+@media (max-height: 690px) {
+  #loadingOverlay .loading-brand {
+    margin-bottom: 18px;
+  }
+
+  #loadingOverlay .loading-beast-image {
+    max-width: 86px;
+  }
+
+  #loadingOverlay .loading-beast {
+    gap: 7px;
+  }
+
+  #loadingOverlay .loading-seal {
+    width: 72px;
+    height: 72px;
+    margin: 19px auto 15px;
+  }
+
+  #loadingOverlay .loading-spinner {
+    width: 72px;
+    height: 72px;
+  }
+
+  #loadingOverlay .loading-seal-inner {
+    width: 53px;
+    height: 53px;
+  }
+
+  #loadingOverlay .loading-seal-inner span {
+    font-size: 11px;
+  }
+
+  #loadingOverlay .loading-gold-divider {
+    margin-top: 16px;
+  }
+
+  #loadingOverlay .loading-progress-area {
+    margin-top: 24px;
+  }
+
+  #loadingOverlay .loading-bottom-caption {
+    margin-top: 12px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #loadingOverlay .loading-spinner,
+  #loadingOverlay .loading-beast-image img,
+  #loadingOverlay.loading-overlay::after {
+    animation: none !important;
+  }
+}
+
+
+
 </style>
 </head>
 
@@ -5352,18 +5964,96 @@ Please rotate your device
 
 
 
-<div id="loadingOverlay" class="loading-overlay">
+<!-- ========================================
+     MYTHIC ROYAL ARENA - LOADING SCREEN
+======================================== -->
+
+<div id="loadingOverlay" class="loading-overlay"
+     role="status"
+     aria-label="Loading battle arena">
 
   <div class="loading-center">
 
-    <div class="loading-spinner"></div>
-
-    <div class="loading-bar">
-      <div id="loadingProgress" class="loading-progress"></div>
+    <!-- BRAND -->
+    <div class="loading-brand">
+      <span class="loading-brand-line"></span>
+      MYTHIC ROYAL ARENA
+      <span class="loading-brand-line"></span>
     </div>
 
-    <div id="loadingText" class="loading-text">
-      Loading assets...
+    <!-- THREE SPIRIT BEASTS -->
+    <div class="loading-beasts">
+
+      <div class="loading-beast loading-dragon">
+        <div class="loading-beast-image">
+          <img src="/assets/dtp/dragon-head.png"
+               alt="Dragon">
+        </div>
+        <span>DRAGON</span>
+      </div>
+
+      <div class="loading-beast loading-tiger">
+        <div class="loading-beast-image">
+          <img src="/assets/dtp/tiger-head.png"
+               alt="Tiger">
+        </div>
+        <span>TIGER</span>
+      </div>
+
+      <div class="loading-beast loading-phoenix">
+        <div class="loading-beast-image">
+          <img src="/assets/dtp/phoenix-head.png"
+               alt="Phoenix">
+        </div>
+        <span>PHOENIX</span>
+      </div>
+
+    </div>
+
+    <!-- SUMMONING SEAL -->
+    <div class="loading-seal">
+      <div class="loading-spinner"></div>
+
+      <div class="loading-seal-inner">
+        <span>D · T · P</span>
+      </div>
+    </div>
+
+    <!-- TITLE -->
+    <div class="loading-main-title">
+      THE BATTLE AWAITS
+    </div>
+
+    <div class="loading-subtitle">
+      THREE BEASTS · ONE DESTINY
+    </div>
+
+    <div class="loading-gold-divider"></div>
+
+    <!-- PROGRESS -->
+    <div class="loading-progress-area">
+
+      <div class="loading-progress-info">
+
+        <div id="loadingText" class="loading-text">
+          Connecting Arena...
+        </div>
+
+        <div id="loadingPercent" class="loading-percent">
+          0%
+        </div>
+
+      </div>
+
+      <div class="loading-bar">
+        <div id="loadingProgress"
+             class="loading-progress"></div>
+      </div>
+
+      <div class="loading-bottom-caption">
+        PREPARING YOUR BATTLE ARENA
+      </div>
+
     </div>
 
   </div>
@@ -6199,19 +6889,43 @@ const loadingTextEl = document.getElementById("loadingText");
 const loadingBarEl  = document.getElementById("loadingProgress");
 const spinnerEl     = document.querySelector(".loading-spinner");
 
-function updateLoading(percent){
-  const safe = Math.max(0, Math.min(100, percent));
+
+function updateLoading(percent) {
+
+  const safe = Math.max(
+    0,
+    Math.min(100, Number(percent) || 0)
+  );
+
+  // Thanh tiến trình
   loadingBarEl.style.width = safe + "%";
 
-  const text =
-    loadingTexts[Math.min(loadingIndex, loadingTexts.length - 1)];
+  // Thông báo theo giai đoạn
+  const text = loadingTexts[
+    Math.min(
+      loadingIndex,
+      loadingTexts.length - 1
+    )
+  ];
 
-  loadingTextEl.textContent = `${text} ${Math.floor(safe)}%`;
+  loadingTextEl.textContent = text;
 
-  if(safe > 80 && spinnerEl){
-    spinnerEl.style.animationDuration = ".55s";
+  // Phần trăm riêng
+  const percentEl =
+    document.getElementById("loadingPercent");
+
+  if (percentEl) {
+    percentEl.textContent =
+      Math.floor(safe) + "%";
   }
+
+  // Tăng tốc vòng ấn chú khi gần hoàn tất
+  if (safe > 80 && spinnerEl) {
+    spinnerEl.style.animationDuration = "1.2s";
+  }
+
 }
+
 
 /* DOM READY */
 
