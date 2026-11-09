@@ -1,8 +1,17 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta charset="UTF-8">
+
+<meta
+  name="viewport"
+  content="width=device-width, initial-scale=1.0"
+>
+
 <title>MILITARY | COMMAND CENTER</title>
+
+
 <script src="/socket.io/socket.io.js"></script>
 
 <style>
@@ -1194,6 +1203,327 @@ body:not(.wheel8-admin-unlocked) > .full-card {
   letter-spacing: 1.5px;
 }
 
+
+
+
+/* ==========================================
+   WHEEL8 ADMIN - FULL SCREEN RESPONSIVE
+   MOBILE / TABLET / DESKTOP
+========================================== */
+
+html {
+  width: 100%;
+  min-height: 100%;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  margin: 0;
+  overflow-x: hidden;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+/* ===== KHUNG CHÍNH ===== */
+
+.container {
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 16px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr);
+  gap: 16px;
+  align-items: stretch;
+}
+
+.container > .card {
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding: 20px;
+}
+
+/* ===== ROUND / TIMER ===== */
+
+.label {
+  font-size: clamp(12px, 1.4vw, 16px);
+}
+
+.value {
+  font-size: clamp(28px, 3vw, 40px);
+}
+
+.timer {
+  min-width: 95px;
+  height: 52px;
+  font-size: clamp(25px, 3vw, 36px);
+}
+
+/* ===== KẾT QUẢ SLOT ===== */
+
+.slot-box {
+  min-height: 160px;
+  margin: 15px 0;
+}
+
+.slot-img-admin {
+  width: clamp(110px, 13vw, 170px);
+  height: clamp(110px, 13vw, 170px);
+  object-fit: contain;
+}
+
+.multi {
+  font-size: clamp(28px, 3vw, 42px);
+}
+
+/* ===== TIÊU ĐỀ ===== */
+
+.section-title,
+.override-card > .label {
+  font-size: clamp(14px, 1.5vw, 19px);
+  margin-bottom: 15px;
+}
+
+/* ===== LƯỚI SLOT OVERRIDE ===== */
+
+.override-grid-img {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.override-grid-img img {
+  width: 100%;
+  height: clamp(80px, 9vw, 125px);
+  padding: 8px;
+  object-fit: contain;
+}
+
+/* ===== SLOT POOL ===== */
+
+.full-card {
+  width: calc(100% - 32px);
+  max-width: 1368px;
+  margin: 0 auto 20px;
+  padding: 20px;
+}
+
+.pool-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pool-slot {
+  aspect-ratio: 1 / 1;
+}
+
+.pool-value {
+  font-size: clamp(12px, 1.5vw, 18px);
+  padding: 6px;
+}
+
+/* ===== PLAYER BETS ===== */
+
+.bet-card {
+  padding: 14px;
+  gap: 12px;
+}
+
+.bet-name {
+  font-size: clamp(14px, 1.5vw, 18px);
+}
+
+.bet-coins {
+  font-size: clamp(12px, 1.2vw, 15px);
+}
+
+.bet-total {
+  font-size: clamp(15px, 1.7vw, 20px);
+}
+
+.bet-slot {
+  width: 30px;
+  height: 30px;
+}
+
+.bet-slot span {
+  font-size: 10px;
+}
+
+/* ===== MÀN HÌNH ĐĂNG NHẬP ===== */
+
+.wheel8-login-screen {
+  width: 100%;
+  min-height: 100dvh;
+  padding: 16px;
+}
+
+.wheel8-login-box {
+  width: 100%;
+  max-width: 440px;
+  padding: 32px 24px;
+}
+
+/* ==========================================
+   TABLET
+========================================== */
+
+@media (max-width: 900px) {
+
+  .container {
+    grid-template-columns: 1fr;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .container > .card {
+    padding: 16px;
+  }
+
+  .full-card {
+    width: calc(100% - 24px);
+    padding: 16px;
+  }
+
+  .slot-img-admin {
+    width: 130px;
+    height: 130px;
+  }
+
+  .override-grid-img img {
+    height: 95px;
+  }
+}
+
+/* ==========================================
+   MOBILE 320px - 600px
+========================================== */
+
+@media (max-width: 600px) {
+
+  .container {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: none;
+    padding: 8px;
+    gap: 10px;
+  }
+
+  .container > .card {
+    width: 100%;
+    padding: 12px;
+  }
+
+  .main-card {
+    padding: 14px;
+  }
+
+  .label {
+    font-size: 13px;
+  }
+
+  .value {
+    font-size: 30px;
+  }
+
+  .timer {
+    min-width: 90px;
+    height: 47px;
+    font-size: 27px;
+  }
+
+  .slot-box {
+    min-height: 125px;
+    margin: 8px 0;
+  }
+
+  .slot-img-admin {
+    width: 115px;
+    height: 115px;
+  }
+
+  .multi {
+    font-size: 31px;
+  }
+
+  .override-grid-img {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+    margin-top: 10px;
+  }
+
+  .override-grid-img img {
+    width: 100%;
+    height: clamp(72px, 20vw, 105px);
+    padding: 5px;
+  }
+
+  .full-card {
+    width: calc(100% - 16px);
+    max-width: none;
+    margin: 0 auto 12px;
+    padding: 12px;
+  }
+
+  .section-title,
+  .override-card > .label {
+    font-size: 15px;
+  }
+
+  .pool-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .pool-value {
+    font-size: 11px;
+    padding: 4px 2px;
+  }
+
+  .bet-card {
+    padding: 10px;
+  }
+
+  .bet-name {
+    font-size: 14px;
+  }
+
+  .bet-coins {
+    font-size: 12px;
+  }
+
+  .bet-total {
+    font-size: 15px;
+  }
+
+  .bet-slot {
+    width: 24px;
+    height: 24px;
+  }
+
+  .wheel8-login-box {
+    max-width: 100%;
+    padding: 28px 20px;
+  }
+
+  .wheel8-login-title {
+    font-size: 23px;
+  }
+
+  #wheel8AdminPassword {
+    font-size: 16px;
+  }
+}
 
 
 
