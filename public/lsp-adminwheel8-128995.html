@@ -1527,6 +1527,1048 @@ body {
 
 
 
+
+/* =========================================
+   TACTICAL COMMAND CENTER V2
+   BLACK TITANIUM / OLIVE / CHAMPAGNE GOLD
+========================================= */
+
+:root {
+  --tc-bg: #090d0b;
+  --tc-panel: #141c18;
+  --tc-panel-deep: #101612;
+  --tc-border: #35423a;
+  --tc-gold: #d9bd82;
+  --tc-gold-dark: #84704b;
+  --tc-green: #a4d4a5;
+  --tc-text: #eef0e9;
+  --tc-muted: #87978b;
+}
+
+html {
+  background: var(--tc-bg);
+}
+
+body {
+  min-height: 100dvh;
+  color: var(--tc-text);
+  font-family: "Segoe UI", Arial, sans-serif;
+
+  background:
+    radial-gradient(
+      ellipse at 50% -15%,
+      rgba(74, 101, 72, .20),
+      transparent 60%
+    ),
+    linear-gradient(180deg, #121c16, #080c0a 75%);
+}
+
+/* HEADER */
+
+.tactical-header {
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 26px 22px 20px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+
+  border-bottom: 1px solid #ffffff0c;
+}
+
+.tactical-brand {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.brand-emblem {
+  width: 55px;
+  height: 55px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+
+  color: var(--tc-gold);
+  font-size: 30px;
+
+  border: 1px solid #8d7a52;
+  background: linear-gradient(145deg, #293b2e, #101713);
+  border-radius: 12px;
+
+  box-shadow: inset 0 1px #ffffff12;
+}
+
+.brand-eyebrow {
+  color: var(--tc-gold);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2.5px;
+}
+
+.brand-copy h1 {
+  margin: 5px 0;
+  color: #f3f1e7;
+  font-size: clamp(20px, 3vw, 31px);
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  line-height: 1.15;
+}
+
+.brand-copy p {
+  margin: 0;
+  color: var(--tc-muted);
+  font-size: 11px;
+  letter-spacing: 1.1px;
+}
+
+.system-indicator {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  padding: 11px 15px;
+  border: 1px solid #3c5946;
+  border-radius: 30px;
+
+  background: #17241b;
+  color: #b6dbb5;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  letter-spacing: .7px;
+}
+
+.system-dot,
+.result-live-dot {
+  width: 7px;
+  height: 7px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: #83ce92;
+  box-shadow: 0 0 10px #83ce9270;
+}
+
+/* =========================================
+   MAIN LAYOUT
+========================================= */
+
+.tactical-layout {
+  width: 100%;
+  max-width: 1440px;
+  margin: 0 auto;
+  padding: 22px;
+
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.45fr);
+  gap: 18px;
+  align-items: start;
+}
+
+.tactical-card {
+  position: relative;
+  min-width: 0;
+  padding: 22px;
+  overflow: hidden;
+
+  background:
+    linear-gradient(
+      145deg,
+      #1b2720 0%,
+      #141d17 40%,
+      #101612 100%
+    );
+
+  border: 1px solid var(--tc-border);
+  border-radius: 15px;
+
+  box-shadow:
+    0 10px 32px #00000030,
+    inset 0 1px 0 #ffffff09;
+}
+
+.tactical-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 22px;
+  right: 22px;
+  height: 1px;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d8bb8066,
+    transparent
+  );
+}
+
+/* CARD HEADER */
+
+.tactical-card-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+
+  margin-bottom: 22px;
+}
+
+.head-text {
+  min-width: 0;
+}
+
+.head-index {
+  display: block;
+  margin-bottom: 9px;
+
+  color: var(--tc-gold);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 2px;
+}
+
+.head-text h2 {
+  margin: 0;
+  color: #f1f1e9;
+  font-size: clamp(19px, 2vw, 24px);
+  font-weight: 750;
+  line-height: 1.25;
+}
+
+.head-text p {
+  margin: 7px 0 0;
+  color: var(--tc-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.head-symbol {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+
+  border: 1px solid #394a3c;
+  border-radius: 10px;
+  background: #1e2b22;
+
+  color: var(--tc-gold);
+  font-size: 24px;
+}
+
+/* =========================================
+   01. SESSION MONITOR
+========================================= */
+
+.session-stats {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+.stat-block {
+  min-width: 0;
+  min-height: 105px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 9px;
+  padding: 16px;
+
+  background: linear-gradient(155deg, #111b15, #0c120e);
+  border: 1px solid #344238;
+  border-radius: 11px;
+}
+
+.stat-label {
+  color: #94a699;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+
+.stat-round {
+  display: block;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+
+  color: var(--tc-gold);
+  font-size: clamp(22px, 3vw, 32px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.2;
+}
+
+.stat-block .timer {
+  width: auto;
+  min-width: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+
+  display: block;
+  background: none;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+
+  color: #a7e0b1;
+  font-size: clamp(24px, 3vw, 35px);
+  font-weight: 800;
+  text-shadow: none;
+  line-height: 1.2;
+}
+
+.stat-block .timer.danger {
+  color: #ff8677;
+  animation: armyTimerDanger .65s infinite alternate;
+}
+
+.result-display {
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #3e4c3f;
+  border-radius: 12px;
+
+  background:
+    radial-gradient(
+      ellipse at center,
+      #25372a 0%,
+      #111b14 55%,
+      #0c120e 100%
+    );
+}
+
+.result-topline {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #97a99b;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.result-corner {
+  margin-left: auto;
+  color: #bdab82;
+}
+
+.result-display .slot-box {
+  min-height: 190px;
+  margin: 12px 0;
+  display: grid;
+  place-items: center;
+  background: none;
+}
+
+.slot-image-stage {
+  width: 190px;
+  height: 190px;
+  max-width: 100%;
+  display: grid;
+  place-items: center;
+
+  border-radius: 50%;
+  border: 1px solid #5a6e5870;
+
+  background:
+    radial-gradient(circle, #2c422e, #16231a 68%, #0c130e);
+
+  box-shadow:
+    inset 0 0 30px #0006,
+    0 0 25px #4d80501a;
+}
+
+.result-display .slot-img-admin {
+  width: 150px;
+  height: 150px;
+  max-width: 85%;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 10px #0009);
+}
+
+.result-multiplier {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  padding: 13px 15px;
+  border: 1px solid #4c4c36;
+  border-radius: 8px;
+  background: #181d15;
+}
+
+.result-multiplier > span {
+  color: #b7b7a0;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+}
+
+.result-multiplier .multi {
+  margin: 0;
+  color: #efcd84;
+  font-size: 31px;
+  font-weight: 800;
+  text-shadow: none;
+  line-height: 1;
+}
+
+.panel-footnote {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin-top: 16px;
+
+  color: #788a7b;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.3px;
+}
+
+.footnote-mark {
+  color: #8cbb8b;
+}
+
+/* =========================================
+   02. CONTROL PANEL
+========================================= */
+
+.control-section-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 5px 0 12px;
+
+  color: #b4c3b5;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.2px;
+}
+
+.control-section-label span:last-child {
+  color: #8c947c;
+  font-size: 10px;
+}
+
+/* STANDARD SLOTS */
+
+.control-panel .override-grid-img {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+  margin: 0;
+}
+
+.control-panel .override-grid-img img {
+  display: block;
+  width: 100%;
+  height: clamp(78px, 8vw, 115px);
+  padding: 10px;
+
+  object-fit: contain;
+
+  background: linear-gradient(145deg, #233026, #101813);
+  border: 1px solid #3c4d40;
+  border-radius: 11px;
+
+  box-shadow: inset 0 1px 0 #ffffff09;
+  filter: none;
+  cursor: pointer;
+
+  transition:
+    transform .18s ease,
+    border-color .18s ease,
+    background .18s ease;
+}
+
+.control-panel .override-grid-img img:hover {
+  transform: translateY(-2px);
+  border-color: #b69b65;
+  filter: none;
+}
+
+.control-panel .override-grid-img img.active {
+  transform: none;
+  border: 2px solid #d7bc82;
+  background: #35402c;
+  box-shadow: inset 0 0 18px #d7bc8220;
+  filter: none;
+}
+
+/* SPECIAL EVENTS */
+
+.special-label {
+  margin-top: 25px;
+  padding-top: 19px;
+  border-top: 1px solid #354239;
+}
+
+.event-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.event-option {
+  min-width: 0;
+  padding: 12px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+
+  background: linear-gradient(150deg, #282a1f, #141b15);
+  border: 1px solid #71664c;
+  border-radius: 11px;
+}
+
+.event-tag {
+  align-self: flex-start;
+
+  color: #c7af78;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.event-option img {
+  width: 100%;
+  height: 100px;
+  padding: 5px;
+  object-fit: contain;
+  cursor: pointer;
+  border: 1px solid transparent;
+  border-radius: 9px;
+
+  transition: .2s;
+}
+
+.event-option img:hover {
+  transform: translateY(-2px);
+}
+
+.event-option img.active {
+  border-color: #e2c584;
+  background: #d9bd8215;
+  box-shadow: 0 0 15px #d9bd8220;
+}
+
+.event-name {
+  color: #e8d29e;
+  font-size: 14px;
+  font-weight: 850;
+  letter-spacing: 1px;
+}
+
+.control-note {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin-top: 20px;
+  padding-top: 15px;
+
+  border-top: 1px solid #354239;
+  color: #778e7e;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+/* =========================================
+   03. SLOT POOL
+========================================= */
+
+.pool-panel .pool-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.pool-panel .pool-slot {
+  position: relative;
+  aspect-ratio: 1;
+  overflow: hidden;
+  padding: 9px;
+
+  display: block !important;
+
+  background: linear-gradient(145deg, #263529, #121a15);
+  border: 1px solid #3c4e40;
+  border-radius: 11px;
+  box-shadow: none;
+}
+
+.pool-panel .pool-slot.hot {
+  border-color: #beac78;
+  box-shadow: inset 0 0 12px #beac7814;
+}
+
+.pool-panel .pool-slot.low {
+  opacity: .7;
+}
+
+.pool-panel .pool-slot img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 1px 1px 22px;
+  object-fit: contain;
+}
+
+.pool-panel .pool-value {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+
+  padding: 7px 3px;
+  background: #0c130fec;
+
+  color: #d5e1ce;
+  text-align: center;
+  font-size: clamp(11px, 1.2vw, 16px);
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  text-shadow: none;
+  border: 0;
+}
+
+.pool-panel .pool-slot::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: var(--percent, 0%);
+  height: 3px;
+  background: linear-gradient(90deg, #557c58, #e1c58d);
+}
+
+/* =========================================
+   04. PLAYER ACTIVITY
+========================================= */
+
+.players-table-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding: 11px 14px;
+
+  border-bottom: 1px solid #3a453c;
+
+  color: #9fae9e;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.1px;
+}
+
+.players-panel .bet-list {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.players-panel .bet-card {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin: 0;
+  padding: 14px;
+
+  background: linear-gradient(145deg, #1c2920, #101813);
+  border: 1px solid #35463a;
+  border-radius: 11px;
+  box-shadow: none;
+}
+
+.players-panel .bet-left {
+  min-width: 0;
+}
+
+.players-panel .bet-name {
+  overflow-wrap: anywhere;
+  color: #e8e9dd;
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.players-panel .bet-coins {
+  margin: 4px 0 7px;
+  color: #a3cba0;
+  font-size: 12px;
+}
+
+.players-panel .bet-slots {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+}
+
+.players-panel .bet-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+
+.players-panel .bet-slot {
+  width: 29px;
+  height: 29px;
+  opacity: .35;
+}
+
+.players-panel .bet-slot.active {
+  opacity: 1;
+  filter: none;
+}
+
+.players-panel .bet-slot img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.players-panel .bet-slot span {
+  position: absolute;
+  bottom: -3px;
+  right: -4px;
+  padding: 1px 3px;
+
+  color: #e6d398;
+  background: #101810;
+  border: 1px solid #657358;
+  border-radius: 3px;
+
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.players-panel .bet-total {
+  min-width: 65px;
+  padding: 10px;
+  text-align: center;
+
+  color: #e8cd92;
+  font-size: 17px;
+  font-weight: 850;
+
+  border: 1px solid #625942;
+  border-radius: 8px;
+  background: #292719;
+}
+
+/* FOOTER */
+
+.tactical-footer {
+  padding: 20px 12px 30px;
+  text-align: center;
+
+  color: #6e8074;
+  font-size: 10px;
+  font-weight: 750;
+  letter-spacing: 1.5px;
+}
+
+.tactical-footer span {
+  margin: 0 7px;
+  color: #a99771;
+}
+
+/* =========================================
+   TABLET
+========================================= */
+
+@media (max-width: 950px) {
+  .tactical-layout {
+    grid-template-columns: 1fr;
+    gap: 14px;
+    padding: 14px;
+  }
+}
+
+/* =========================================
+   MOBILE
+========================================= */
+
+@media (max-width: 600px) {
+  .tactical-header {
+    padding: 17px 12px;
+    gap: 9px;
+  }
+
+  .tactical-brand {
+    gap: 10px;
+  }
+
+  .brand-emblem {
+    width: 43px;
+    height: 43px;
+    font-size: 24px;
+    border-radius: 9px;
+  }
+
+  .brand-eyebrow {
+    font-size: 8px;
+    letter-spacing: 1.3px;
+  }
+
+  .brand-copy h1 {
+    font-size: clamp(17px, 4.5vw, 23px);
+    letter-spacing: .4px;
+  }
+
+  .brand-copy p {
+    font-size: 9px;
+    letter-spacing: .2px;
+  }
+
+  .system-indicator {
+    padding: 8px;
+    font-size: 0;
+  }
+
+  .system-dot {
+    width: 8px;
+    height: 8px;
+  }
+
+  .tactical-layout {
+    padding: 9px;
+    gap: 10px;
+  }
+
+  .tactical-card {
+    padding: 15px;
+    border-radius: 12px;
+  }
+
+  .tactical-card-head {
+    margin-bottom: 17px;
+  }
+
+  .head-index {
+    font-size: 9px;
+  }
+
+  .head-text h2 {
+    font-size: 19px;
+  }
+
+  .head-text p {
+    font-size: 11px;
+  }
+
+  .head-symbol {
+    width: 36px;
+    height: 36px;
+    font-size: 21px;
+  }
+
+  .session-stats {
+    gap: 9px;
+  }
+
+  .stat-block {
+    min-height: 90px;
+    padding: 11px;
+  }
+
+  .stat-label {
+    font-size: 9px;
+  }
+
+  .stat-round {
+    font-size: clamp(18px, 5.5vw, 26px);
+  }
+
+  .stat-block .timer {
+    font-size: 26px;
+  }
+
+  .result-display {
+    padding: 11px;
+  }
+
+  .result-display .slot-box {
+    min-height: 155px;
+    margin: 10px 0;
+  }
+
+  .slot-image-stage {
+    width: 155px;
+    height: 155px;
+  }
+
+  .result-display .slot-img-admin {
+    width: 125px;
+    height: 125px;
+  }
+
+  .result-multiplier .multi {
+    font-size: 27px;
+  }
+
+  .control-panel .override-grid-img {
+    gap: 7px;
+  }
+
+  .control-panel .override-grid-img img {
+    height: clamp(70px, 20vw, 100px);
+    padding: 5px;
+    border-radius: 8px;
+  }
+
+  .event-grid {
+    gap: 9px;
+  }
+
+  .event-option {
+    padding: 10px;
+  }
+
+  .event-option img {
+    height: 90px;
+  }
+
+  .pool-panel .pool-grid {
+    gap: 7px;
+  }
+
+  .pool-panel .pool-slot {
+    padding: 4px;
+    border-radius: 8px;
+  }
+
+  .pool-panel .pool-value {
+    font-size: 11px;
+  }
+
+  .players-panel .bet-card {
+    padding: 11px;
+  }
+
+  .players-panel .bet-slot {
+    width: 25px;
+    height: 25px;
+  }
+
+  .players-panel .bet-total {
+    min-width: 58px;
+    font-size: 14px;
+  }
+
+  .tactical-footer {
+    font-size: 9px;
+    letter-spacing: .7px;
+  }
+}
+
+
+
+
+/* =========================================
+   FIX OLD CSS CONFLICTS
+========================================= */
+
+#poolList.pool-grid > .pool-slot {
+  display: block !important;
+  justify-content: initial;
+  padding: 9px;
+  border-bottom: 1px solid #3c4e40;
+}
+
+#poolList.pool-grid .pool-value {
+  display: block;
+  width: 100%;
+  padding: 7px 3px;
+  border-bottom: 0;
+}
+
+#betList.bet-list .bet-card {
+  display: grid;
+  padding: 14px;
+  justify-content: initial;
+  border-bottom: 1px solid #35463a;
+}
+
+#betList.bet-list .bet-left {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 0;
+}
+
+#betList.bet-list .bet-slots {
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  border: 0;
+}
+
+#betList.bet-list .bet-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 6px;
+  padding: 0;
+  border: 0;
+}
+
+#betList.bet-list .bet-slot {
+  display: block;
+  flex: 0 0 auto;
+  padding: 0;
+  border: 0;
+}
+
+#betList.bet-list .bet-name,
+#betList.bet-list .bet-coins {
+  display: block;
+  padding: 0;
+  border: 0;
+}
+
+#betList.bet-list .bet-total {
+  display: block;
+  padding: 10px;
+  border: 1px solid #625942;
+}
+
+/* Ẩn dashboard khi chưa đăng nhập */
+body:not(.wheel8-admin-unlocked) .tactical-header,
+body:not(.wheel8-admin-unlocked) .tactical-layout,
+body:not(.wheel8-admin-unlocked) .tactical-footer {
+  visibility: hidden;
+}
+
+@media (max-width: 600px) {
+  #poolList.pool-grid > .pool-slot {
+    padding: 4px;
+  }
+
+  #betList.bet-list .bet-card {
+    padding: 11px;
+  }
+}
+
+
+
 </style>
 </head>
 
@@ -1577,79 +2619,222 @@ body {
 
 </div>
 
-<div class="container">
 
+<!-- =====================================
+     TACTICAL COMMAND CENTER
+===================================== -->
 
-  <!-- LEFT -->
-  <div class="card main-card">
+<header class="tactical-header">
+  <div class="tactical-brand">
+    <div class="brand-emblem">✦</div>
 
-    <div class="row top-row">
-      <div>
-        <div class="label">ROUND</div>
-        <div id="round" class="value">--</div>
+    <div class="brand-copy">
+      <div class="brand-eyebrow">MILITARY CONTROL SYSTEM</div>
+      <h1>COMMAND CENTER</h1>
+      <p>MILITARY · OPERATIONS DASHBOARD</p>
+    </div>
+  </div>
+
+  <div class="system-indicator">
+    <span class="system-dot"></span>
+    <span>ADMIN CONSOLE</span>
+  </div>
+</header>
+
+<main class="tactical-layout">
+
+  <!-- THÔNG TIN PHIÊN -->
+  <section class="tactical-card session-panel">
+
+    <div class="tactical-card-head">
+      <div class="head-text">
+        <span class="head-index">01 / OVERVIEW</span>
+        <h2>Giám sát phiên</h2>
+        <p>Thông tin thời gian thực</p>
       </div>
 
-      <div id="time" class="timer">0s</div>
+      <span class="head-symbol">◈</span>
     </div>
 
-    <div class="slot-box">
-      <img id="slotImg" class="slot-img-admin">
+    <div class="session-stats">
+
+      <div class="stat-block">
+        <span class="stat-label">CURRENT ROUND</span>
+        <strong id="round" class="stat-round">--</strong>
+      </div>
+
+      <div class="stat-block stat-timer">
+        <span class="stat-label">TIME REMAINING</span>
+        <strong id="time" class="timer">0s</strong>
+      </div>
+
     </div>
 
-    <div class="multi">x<span id="multi">0</span></div>
+    <div class="result-display">
+      <div class="result-topline">
+        <span class="result-live-dot"></span>
+        <span>ROUND RESULT MONITOR</span>
+        <span class="result-corner">W8</span>
+      </div>
 
+      <div class="slot-box">
+        <div class="slot-image-stage">
+          <img
+            id="slotImg"
+            class="slot-img-admin"
+            alt="Wheel8 result"
+          >
+        </div>
+      </div>
 
-  </div>
+      <div class="result-multiplier">
+        <span>MULTIPLIER</span>
+        <strong class="multi">x<span id="multi">0</span></strong>
+      </div>
 
-  <!-- RIGHT -->
-  <div class="card override-card">
+    </div>
 
-    <div class="label center">OVERRIDE</div>
+    <div class="panel-footnote">
+      <span class="footnote-mark">●</span>
+      REAL-TIME MONITORING
+    </div>
 
-<div class="override-grid-img">
+  </section>
 
-  <!-- SLOT THƯỜNG -->
-  <img src="/assets/police/slot1.png" onclick="setSlot(1)" data-slot="1">
-  <img src="/assets/police/slot8.png" onclick="setSlot(8)" data-slot="8">
-  <img src="/assets/police/slot7.png" onclick="setSlot(7)" data-slot="7">
-  <img src="/assets/police/slot6.png" onclick="setSlot(6)" data-slot="6">
+  <!-- KHU VỰC ĐIỀU KHIỂN -->
+  <section class="tactical-card control-panel">
 
-  <img src="/assets/police/slot2.png" onclick="setSlot(2)" data-slot="2">
-  <img src="/assets/police/slot3.png" onclick="setSlot(3)" data-slot="3">
-  <img src="/assets/police/slot4.png" onclick="setSlot(4)" data-slot="4">
-  <img src="/assets/police/slot5.png" onclick="setSlot(5)" data-slot="5">
+    <div class="tactical-card-head">
+      <div class="head-text">
+        <span class="head-index">02 / CONTROL PANEL</span>
+        <h2>Điều khiển kết quả</h2>
+        <p>Chọn mục tiêu điều khiển</p>
+      </div>
 
-  <!-- EVENT ĐẶC BIỆT -->
-  <img
-    src="/assets/police/event-x5-all.png"
-    onclick="setEvent('x5-all')"
-    data-event="x5-all"
-    alt="EVENT ALL x5"
-  >
+      <span class="head-symbol">⌖</span>
+    </div>
 
-  <img
-    src="/assets/police/event-x45-all.png"
-    onclick="setEvent('x45-all')"
-    data-event="x45-all"
-    alt="EVENT ALL x45"
-  >
+    <div class="control-section-label">
+      <span>STANDARD SLOTS</span>
+      <span>01 — 08</span>
+    </div>
 
-</div>
+    <div class="override-grid-img">
 
-  </div>
+      <img src="/assets/police/slot1.png"
+           onclick="setSlot(1)" data-slot="1" alt="Slot 1">
 
-</div>
+      <img src="/assets/police/slot8.png"
+           onclick="setSlot(8)" data-slot="8" alt="Slot 8">
 
-<!-- POOL + PLAYER -->
-<div class="card full-card">
+      <img src="/assets/police/slot7.png"
+           onclick="setSlot(7)" data-slot="7" alt="Slot 7">
 
-  <div class="section-title">SLOT POOL</div>
-  <div id="poolList" class="pool-grid"></div>
+      <img src="/assets/police/slot6.png"
+           onclick="setSlot(6)" data-slot="6" alt="Slot 6">
 
-  <div class="section-title">👤 PLAYER BETS</div>
-  <div id="betList" class="bet-list"></div>
+      <img src="/assets/police/slot2.png"
+           onclick="setSlot(2)" data-slot="2" alt="Slot 2">
 
-</div>
+      <img src="/assets/police/slot3.png"
+           onclick="setSlot(3)" data-slot="3" alt="Slot 3">
+
+      <img src="/assets/police/slot4.png"
+           onclick="setSlot(4)" data-slot="4" alt="Slot 4">
+
+      <img src="/assets/police/slot5.png"
+           onclick="setSlot(5)" data-slot="5" alt="Slot 5">
+
+    </div>
+
+    <div class="control-section-label special-label">
+      <span>SPECIAL EVENTS</span>
+      <span>02 MODES</span>
+    </div>
+
+    <div class="event-grid">
+      <div class="event-option">
+        <span class="event-tag">EVENT A</span>
+        <img
+          src="/assets/police/event-x5-all.png"
+          onclick="setEvent('x5-all')"
+          data-event="x5-all"
+          alt="Event All x5"
+        >
+        <span class="event-name">ALL x5</span>
+      </div>
+
+      <div class="event-option">
+        <span class="event-tag">EVENT B</span>
+        <img
+          src="/assets/police/event-x45-all.png"
+          onclick="setEvent('x45-all')"
+          data-event="x45-all"
+          alt="Event All x45"
+        >
+        <span class="event-name">ALL x45</span>
+      </div>
+    </div>
+
+    <div class="control-note">
+      <span>SECURE CONTROL</span>
+      <span>AUTHENTICATED SESSION</span>
+    </div>
+
+  </section>
+
+  <!-- SLOT POOL -->
+  <section class="tactical-card pool-panel">
+
+    <div class="tactical-card-head">
+      <div class="head-text">
+        <span class="head-index">03 / LIVE ANALYTICS</span>
+        <h2>Thống kê Slot Pool</h2>
+        <p>Phân bổ giá trị theo từng slot</p>
+      </div>
+
+      <span class="head-symbol">▥</span>
+    </div>
+
+    <div id="poolList" class="pool-grid"></div>
+
+    <div class="panel-footnote">
+      <span class="footnote-mark">●</span>
+      LIVE POOL DATA
+    </div>
+
+  </section>
+
+  <!-- PLAYER BETS -->
+  <section class="tactical-card players-panel">
+
+    <div class="tactical-card-head">
+      <div class="head-text">
+        <span class="head-index">04 / PLAYER ACTIVITY</span>
+        <h2>Danh sách người chơi</h2>
+        <p>Theo dõi hoạt động theo phiên</p>
+      </div>
+
+      <span class="head-symbol">◎</span>
+    </div>
+
+    <div class="players-table-head">
+      <span>PLAYER / POSITION</span>
+      <span>TOTAL</span>
+    </div>
+
+    <div id="betList" class="bet-list"></div>
+
+  </section>
+
+</main>
+
+<footer class="tactical-footer">
+  MILITIRY COMMAND SYSTEM
+  <span>·</span>
+  MILITARY OPERATIONS INTERFACE
+</footer>
+
 
 <script>
 const me = JSON.parse(localStorage.getItem("user_profile") || "{}")
@@ -1831,17 +3016,21 @@ socket.on("wheel8-timer",(remain)=>{
 })
 
 
-function highlightOverride(selector){
 
-  document.querySelectorAll(".override-grid-img img")
-    .forEach(img => img.classList.remove("active"));
+function highlightOverride(selector) {
+  document.querySelectorAll(
+    ".override-grid-img img, .event-grid img"
+  ).forEach(img => {
+    img.classList.remove("active");
+  });
 
   const target = document.querySelector(selector);
 
-  if(target){
+  if (target) {
     target.classList.add("active");
   }
 }
+
 
 
 // ==========================================
