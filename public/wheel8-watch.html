@@ -257,6 +257,125 @@ video {
 
 
 
+/* =====================================
+   MILITARY FLOATING CHAT BUTTON
+===================================== */
+
+.w8-chat-toggle {
+  position: fixed;
+
+  right: 18px;
+  bottom: calc(18px + env(safe-area-inset-bottom));
+
+  width: 56px;
+  height: 56px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    145deg,
+    #60794a 0%,
+    #304c32 45%,
+    #102419 100%
+  );
+
+  border: 2px solid #d0b16b;
+  border-radius: 50%;
+
+  color: #ffffff;
+  font-size: 25px;
+
+  box-shadow:
+    0 5px 18px #000b,
+    0 0 12px #9ecb6940,
+    inset 0 2px 3px #ffffff30;
+
+  z-index: 200;
+  cursor: pointer;
+
+  transition: transform .2s, background .2s;
+}
+
+.w8-chat-toggle:active {
+  transform: scale(.92);
+}
+
+/* Khi khung bình luận đang mở */
+
+.w8-chat-toggle.active {
+  background: linear-gradient(
+    145deg,
+    #a35b3b,
+    #6b2626 65%,
+    #341313
+  );
+
+  border-color: #e2ad73;
+}
+
+/* Số bình luận chưa xem */
+
+.w8-chat-unread {
+  position: absolute;
+  top: -5px;
+  right: -5px;
+
+  min-width: 21px;
+  height: 21px;
+
+  padding: 0 4px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #e53535;
+  border: 2px solid #101d13;
+  border-radius: 20px;
+
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.w8-chat-unread[hidden] {
+  display: none !important;
+}
+
+/* =====================================
+   CHAT PANEL ĐÓNG / MỞ
+===================================== */
+
+.w8-viewer-chat {
+  bottom: calc(86px + env(safe-area-inset-bottom));
+
+  width: min(430px, calc(100% - 24px));
+  max-height: calc(100dvh - 110px);
+
+  overflow-y: auto;
+
+  animation: w8ChatOpen .22s ease-out;
+}
+
+.w8-viewer-chat[hidden] {
+  display: none !important;
+}
+
+@keyframes w8ChatOpen {
+  from {
+    opacity: 0;
+    transform: translate(-50%, 15px) scale(.97);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0) scale(1);
+  }
+}
+
+
 </style>
 </head>
 
@@ -309,7 +428,32 @@ video {
      LIVE VIEWER CHAT
 ================================== -->
 
-<div id="w8ViewerChat" class="w8-viewer-chat">
+
+<!-- NÚT ĐÓNG / MỞ BÌNH LUẬN -->
+<button
+  id="w8ChatToggle"
+  class="w8-chat-toggle"
+  type="button"
+  onclick="w8ToggleChat()"
+  aria-controls="w8ViewerChat"
+  aria-expanded="false"
+  aria-label="Mở bình luận">
+
+  <span id="w8ChatIcon">💬</span>
+
+  <span
+    id="w8ChatUnread"
+    class="w8-chat-unread"
+    hidden>0</span>
+
+</button>
+
+<!-- KHUNG BÌNH LUẬN MẶC ĐỊNH ẨN -->
+<div
+  id="w8ViewerChat"
+  class="w8-viewer-chat"
+  hidden>
+
 
   <div class="w8-chat-header">
     <span>💬 BÌNH LUẬN TRỰC TIẾP</span>
@@ -649,6 +793,63 @@ const w8ChatStatus =
 const w8ChatList =
   document.getElementById("w8CommentList");
 
+
+  
+/* =====================================
+   TOGGLE LIVE COMMENT PANEL
+===================================== */
+
+let w8UnreadCount = 0;
+
+function w8ToggleChat() {
+
+  const panel =
+    document.getElementById("w8ViewerChat");
+
+  const button =
+    document.getElementById("w8ChatToggle");
+
+  const icon =
+    document.getElementById("w8ChatIcon");
+
+  const unread =
+    document.getElementById("w8ChatUnread");
+
+  const opening = panel.hidden;
+
+  panel.hidden = !opening;
+
+  button.classList.toggle("active", opening);
+
+  button.setAttribute(
+    "aria-expanded",
+    String(opening)
+  );
+
+  button.setAttribute(
+    "aria-label",
+    opening ? "Đóng bình luận" : "Mở bình luận"
+  );
+
+  icon.textContent = opening ? "✕" : "💬";
+
+  // Khi mở khung chat, đánh dấu đã xem
+  if (opening) {
+
+    w8UnreadCount = 0;
+    unread.hidden = true;
+
+    const list =
+      document.getElementById("w8CommentList");
+
+    list.scrollTop = list.scrollHeight;
+
+  }
+
+}
+
+
+
 // Gửi bình luận
 w8ChatForm.addEventListener("submit", (event) => {
 
@@ -716,6 +917,32 @@ socket.on("w8share:comment", (data) => {
   item.appendChild(content);
 
   w8ChatList.appendChild(item);
+
+  
+// =====================================
+// BADGE BÌNH LUẬN CHƯA XEM
+// =====================================
+
+const chatPanel =
+  document.getElementById("w8ViewerChat");
+
+const unreadBadge =
+  document.getElementById("w8ChatUnread");
+
+// Chỉ cộng số khi khung bình luận đang đóng
+if (chatPanel.hidden) {
+
+  w8UnreadCount++;
+
+  unreadBadge.textContent =
+    w8UnreadCount > 99
+      ? "99+"
+      : String(w8UnreadCount);
+
+  unreadBadge.hidden = false;
+
+}
+
 
   // Giới hạn 30 bình luận trong giao diện
   while (w8ChatList.children.length > 30) {
