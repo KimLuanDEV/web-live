@@ -3817,6 +3817,173 @@ div,img,button{
 }
 
 
+
+
+/* ===== MILITARY SCREEN SHARE ===== */
+
+.w8-share-button {
+  position: absolute;
+  top: 46px;
+  right: 12px;
+  z-index: 12;
+
+  min-width: 112px;
+  height: 35px;
+  padding: 0 10px;
+
+  color: #e9ffd8;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .5px;
+
+  background: linear-gradient(
+    145deg, #4e6443, #213b28 55%, #101d13
+  );
+
+  border: 1px solid #c7ad67;
+  border-bottom: 2px solid #e0be73;
+  border-radius: 6px;
+
+  box-shadow:
+    0 4px 12px #000b,
+    inset 0 1px 0 #ffffff29;
+
+  cursor: pointer;
+}
+
+.w8-share-button:active {
+  transform: scale(.96);
+}
+
+.w8-share-panel {
+  position: absolute;
+  top: 88px;
+  right: 12px;
+  z-index: 12;
+
+  width: 292px;
+  padding: 16px;
+  box-sizing: border-box;
+
+  background: linear-gradient(
+    155deg, #334a31, #14251a 60%, #080f0a
+  );
+
+  border: 2px solid #b89c60;
+  border-radius: 10px;
+
+  box-shadow: 0 12px 30px #000d;
+
+  text-align: center;
+}
+
+.w8-share-panel[hidden] {
+  display: none !important;
+}
+
+.w8-share-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+
+  color: #f4d58f;
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.w8-live-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #ff4343;
+  box-shadow: 0 0 9px #ff4343;
+  animation: w8LiveBlink 1s infinite alternate;
+}
+
+@keyframes w8LiveBlink {
+  from { opacity: .35; }
+  to { opacity: 1; }
+}
+
+.w8-share-count {
+  margin: 9px 0 15px;
+  color: #aaff80;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.w8-share-label {
+  margin-bottom: 7px;
+  color: #cfdbbe;
+  font-size: 11px;
+  text-align: left;
+}
+
+#w8ShareLink {
+  width: 100%;
+  height: 36px;
+  padding: 8px;
+  box-sizing: border-box;
+
+  background: #08150b;
+  color: #d3f8c1;
+  border: 1px solid #698057;
+  border-radius: 5px;
+  font-size: 11px;
+
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.w8-copy-button {
+  width: 100%;
+  height: 38px;
+  margin-top: 10px;
+
+  background: linear-gradient(135deg, #9a7d43, #d6b36f);
+  border: 1px solid #ffe4a0;
+  border-radius: 5px;
+
+  color: #151b0f;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.w8-share-tip {
+  min-height: 17px;
+  margin-top: 10px;
+  color: #a9bc9d;
+  font-size: 10px;
+}
+
+.w8-share-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.w8-share-actions button {
+  flex: 1;
+  min-height: 34px;
+  background: #293f2a;
+  border: 1px solid #768a66;
+  border-radius: 5px;
+  color: white;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.w8-share-actions .w8-stop-button {
+  background: #6d2323;
+  border-color: #bd6969;
+}
+
+
+
+
 </style>
 </head>
 
@@ -3938,6 +4105,71 @@ div,img,button{
 
     <span id="roundId">-</span>
 
+</div>
+
+
+
+<!-- ===== WHEEL8 SCREEN SHARE ===== -->
+
+<button
+  id="w8ShareButton"
+  class="w8-share-button"
+  type="button"
+  onclick="w8ToggleShare()">
+  📺 SHARE
+</button>
+
+<div id="w8SharePanel"
+     class="w8-share-panel"
+     hidden>
+
+  <div class="w8-share-title">
+    <span class="w8-live-dot"></span>
+    LIVE SCREEN SHARE
+  </div>
+
+  <div id="w8ShareCount" class="w8-share-count">
+    0 người xem
+  </div>
+
+  <div class="w8-share-label">
+    Link xem trực tiếp
+  </div>
+
+  <input
+    id="w8ShareLink"
+    type="text"
+    readonly
+    placeholder="Link chia sẻ..."
+  >
+
+  <button
+    type="button"
+    class="w8-copy-button"
+    onclick="w8CopyLink()">
+    🔗 COPY LINK
+  </button>
+
+  <div id="w8ShareTip" class="w8-share-tip">
+    Gửi link để người khác xem màn hình.
+  </div>
+
+  <div class="w8-share-actions">
+
+    <button
+      type="button"
+      onclick="document.getElementById('w8SharePanel').hidden=true">
+      Thu gọn
+    </button>
+
+    <button
+      type="button"
+      class="w8-stop-button"
+      onclick="w8StopShare()">
+      ■ DỪNG
+    </button>
+
+  </div>
 </div>
 
 
@@ -5662,6 +5894,347 @@ box.style.display="none"
 
 }
 */
+
+
+
+/* ==========================================
+   WHEEL8 - SCREEN SHARE CLIENT
+   ========================================== */
+
+let w8Capture = null;
+let w8ShareToken = "";
+let w8Starting = false;
+
+let w8IceServers = [
+  { urls: "stun:stun.l.google.com:19302" }
+];
+
+const w8Peers = new Map();
+
+// Lấy cấu hình STUN/TURN
+async function w8LoadIce() {
+  try {
+    const response = await fetch("/ice");
+
+    if (!response.ok) {
+      throw new Error("TURN chưa cấu hình");
+    }
+
+    const json = await response.json();
+
+    if (
+      Array.isArray(json.iceServers) &&
+      json.iceServers.length
+    ) {
+      return json.iceServers;
+    }
+
+  } catch (err) {
+    console.warn("Dùng STUN dự phòng:", err.message);
+  }
+
+  return [
+    { urls: "stun:stun.l.google.com:19302" }
+  ];
+}
+
+// Đóng kết nối với một người xem
+function w8ClosePeer(viewerId) {
+  const peer = w8Peers.get(viewerId);
+
+  if (peer) peer.pc.close();
+
+  w8Peers.delete(viewerId);
+}
+
+// Dừng chia sẻ
+function w8StopShare() {
+  const token = w8ShareToken;
+  w8ShareToken = "";
+
+  if (token && socket.connected) {
+    socket.emit("w8share:stop", { token });
+  }
+
+  for (const id of w8Peers.keys()) {
+    w8ClosePeer(id);
+  }
+
+  if (w8Capture) {
+    w8Capture.getTracks().forEach(track => track.stop());
+  }
+
+  w8Capture = null;
+
+  document.getElementById("w8ShareButton").textContent =
+    "📺 CHIA SẺ";
+
+  document.getElementById("w8SharePanel").hidden = true;
+  document.getElementById("w8ShareLink").value = "";
+}
+
+// Bắt đầu chia sẻ
+async function w8ToggleShare() {
+
+  if (w8ShareToken) {
+    const panel = document.getElementById("w8SharePanel");
+    panel.hidden = !panel.hidden;
+    return;
+  }
+
+  if (w8Starting) return;
+
+  if (!navigator.mediaDevices?.getDisplayMedia) {
+    alert(
+      "Trình duyệt này không hỗ trợ chia sẻ màn hình. " +
+      "Hãy thử Chrome/Edge trên máy tính."
+    );
+    return;
+  }
+
+  if (!socket.connected) {
+    alert("Chưa kết nối máy chủ.");
+    return;
+  }
+
+  w8Starting = true;
+
+  try {
+
+    // Bắt buộc gọi khi người dùng trực tiếp bấm nút
+    w8Capture = await navigator.mediaDevices.getDisplayMedia({
+      video: { frameRate: 12 },
+      audio: false
+    });
+
+    const track = w8Capture.getVideoTracks()[0];
+
+    if (!track) {
+      throw new Error("Không nhận được hình ảnh màn hình.");
+    }
+
+    track.addEventListener(
+      "ended",
+      w8StopShare,
+      { once: true }
+    );
+
+    w8IceServers = await w8LoadIce();
+
+    if (track.readyState !== "live") {
+      throw new Error("Bạn đã dừng chia sẻ.");
+    }
+
+    // Đăng ký phiên chia sẻ lên server
+    const reply = await new Promise(resolve => {
+
+      socket.timeout(8000).emit(
+        "w8share:start",
+        {},
+        (error, data) => {
+
+          resolve(error
+            ? {
+                ok: false,
+                error: "Kết nối server quá thời gian."
+              }
+            : data
+          );
+
+        }
+      );
+
+    });
+
+    if (!reply?.ok) {
+      throw new Error(
+        reply?.error || "Không thể tạo link."
+      );
+    }
+
+    w8ShareToken = reply.token;
+
+    const link =
+      location.origin +
+      "/wheel8-watch.html?room=" +
+      encodeURIComponent(w8ShareToken);
+
+    document.getElementById("w8ShareLink").value = link;
+
+    document.getElementById("w8ShareButton").textContent =
+      "🔴 ĐANG LIVE";
+
+    document.getElementById("w8ShareCount").textContent =
+      "0 người xem";
+
+    document.getElementById("w8ShareTip").textContent =
+      "Gửi link để người khác xem màn hình.";
+
+    document.getElementById("w8SharePanel").hidden = false;
+
+  } catch (error) {
+
+    console.error("W8 share error:", error);
+
+    w8StopShare();
+
+    if (error.name !== "NotAllowedError") {
+      alert(
+        error.message || "Không chia sẻ được màn hình."
+      );
+    }
+
+  } finally {
+    w8Starting = false;
+  }
+
+}
+
+// Sao chép link
+async function w8CopyLink() {
+
+  const input = document.getElementById("w8ShareLink");
+
+  if (!input.value) return;
+
+  try {
+    await navigator.clipboard.writeText(input.value);
+  } catch {
+    input.select();
+    document.execCommand("copy");
+  }
+
+  document.getElementById("w8ShareTip").textContent =
+    "✅ Đã sao chép link";
+}
+
+// Có người vào xem
+socket.on("w8share:viewer", async ({ viewerId, count }) => {
+
+  if (!w8ShareToken || !w8Capture) return;
+
+  document.getElementById("w8ShareCount").textContent =
+    count + " người xem";
+
+  w8ClosePeer(viewerId);
+
+  const pc = new RTCPeerConnection({
+    iceServers: w8IceServers
+  });
+
+  const peer = {
+    pc,
+    pending: []
+  };
+
+  w8Peers.set(viewerId, peer);
+
+  // Gửi ICE candidate
+  pc.onicecandidate = event => {
+
+    if (event.candidate && w8ShareToken) {
+
+      socket.emit("w8share:signal", {
+        token: w8ShareToken,
+        to: viewerId,
+        packet: {
+          type: "candidate",
+          candidate: event.candidate
+        }
+      });
+
+    }
+
+  };
+
+  try {
+
+    // Đưa video màn hình vào kết nối WebRTC
+    w8Capture.getTracks().forEach(track => {
+      pc.addTrack(track, w8Capture);
+    });
+
+    const offer = await pc.createOffer();
+    await pc.setLocalDescription(offer);
+
+    socket.emit("w8share:signal", {
+      token: w8ShareToken,
+      to: viewerId,
+      packet: {
+        type: "offer",
+        description: pc.localDescription
+      }
+    });
+
+  } catch (error) {
+
+    console.error("Lỗi tạo kết nối xem:", error);
+    w8ClosePeer(viewerId);
+
+  }
+
+});
+
+// Nhận tín hiệu trả lời từ người xem
+socket.on("w8share:signal", async ({ from, packet }) => {
+
+  const peer = w8Peers.get(from);
+
+  if (!peer || !w8ShareToken) return;
+
+  try {
+
+    if (packet.type === "answer") {
+
+      await peer.pc.setRemoteDescription(
+        packet.description
+      );
+
+      for (const ice of peer.pending) {
+        await peer.pc.addIceCandidate(ice);
+      }
+
+      peer.pending.length = 0;
+
+    } else if (
+      packet.type === "candidate" &&
+      packet.candidate
+    ) {
+
+      if (peer.pc.remoteDescription) {
+
+        await peer.pc.addIceCandidate(
+          packet.candidate
+        );
+
+      } else {
+
+        peer.pending.push(packet.candidate);
+
+      }
+
+    }
+
+  } catch (err) {
+    console.warn("Lỗi tín hiệu WebRTC:", err);
+  }
+
+});
+
+// Người xem rời phòng
+socket.on("w8share:left", ({ viewerId, count }) => {
+
+  w8ClosePeer(viewerId);
+
+  document.getElementById("w8ShareCount").textContent =
+    count + " người xem";
+
+});
+
+// Mất kết nối hoặc thoát trang
+socket.on("disconnect", w8StopShare);
+
+window.addEventListener("pagehide", w8StopShare);
 
 
 </script>

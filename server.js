@@ -13426,6 +13426,192 @@ app.get("/lobby", (_, res) => {
 });
 
 
+
+
+/* ==========================================
+   WHEEL8 - SCREEN SHARE SERVER
+   WebRTC + Socket.io
+   ========================================== */
+
+const wheel8ScreenShares = new Map();
+const W8_SHARE_LIMIT = 8;
+
+function closeWheel8ScreenShare(token) {
+  const session = wheel8ScreenShares.get(token);
+  if (!session) return;
+
+  wheel8ScreenShares.delete(token);
+
+  for (const viewerId of session.viewers) {
+    const viewer = io.sockets.sockets.get(viewerId);
+
+    if (viewer) viewer.data.w8Watching = null;
+
+    io.to(viewerId).emit("w8share:ended");
+  }
+
+  const host = io.sockets.sockets.get(session.hostId);
+  if (host) host.data.w8Hosting = null;
+}
+
+io.on("connection", (socket) => {
+
+  // Người chơi bắt đầu chia sẻ
+  socket.on("w8share:start", (_data, ack) => {
+    if (typeof ack !== "function") return;
+
+    const uid = socket.data.uid;
+
+    if (!uid || !loadUsers()[uid]?.profile) {
+      return ack({
+        ok: false,
+        error: "Cần đăng nhập để chia sẻ."
+      });
+    }
+
+    if (socket.data.w8Hosting) {
+      closeWheel8ScreenShare(socket.data.w8Hosting);
+    }
+
+    const token = crypto.randomBytes(18).toString("hex");
+
+    wheel8ScreenShares.set(token, {
+      hostId: socket.id,
+      viewers: new Set()
+    });
+
+    socket.data.w8Hosting = token;
+
+    ack({ ok: true, token });
+  });
+
+  // Người xem mở link
+  socket.on("w8share:join", (data, ack) => {
+    if (typeof ack !== "function") return;
+
+    const token = String(data?.token || "");
+
+    if (!/^[a-f0-9]{36}$/.test(token)) {
+      return ack({
+        ok: false,
+        error: "Link không hợp lệ."
+      });
+    }
+
+    const session = wheel8ScreenShares.get(token);
+
+    if (!session ||
+        !io.sockets.sockets.has(session.hostId)) {
+      return ack({
+        ok: false,
+        error: "Buổi chia sẻ đã kết thúc."
+      });
+    }
+
+    if (
+      session.viewers.size >= W8_SHARE_LIMIT &&
+      !session.viewers.has(socket.id)
+    ) {
+      return ack({
+        ok: false,
+        error: "Phòng xem đã đầy."
+      });
+    }
+
+    // Rời phiên xem cũ nếu có
+    const oldToken = socket.data.w8Watching;
+
+    if (oldToken && oldToken !== token) {
+      const old = wheel8ScreenShares.get(oldToken);
+
+      if (old) {
+        old.viewers.delete(socket.id);
+
+        io.to(old.hostId).emit("w8share:left", {
+          viewerId: socket.id,
+          count: old.viewers.size
+        });
+      }
+    }
+
+    session.viewers.add(socket.id);
+    socket.data.w8Watching = token;
+
+    ack({ ok: true });
+
+    // Yêu cầu máy chủ chia sẻ gửi video
+    io.to(session.hostId).emit("w8share:viewer", {
+      viewerId: socket.id,
+      count: session.viewers.size
+    });
+  });
+
+  // Chuyển tín hiệu WebRTC
+  socket.on("w8share:signal", (data) => {
+    const token = String(data?.token || "");
+    const session = wheel8ScreenShares.get(token);
+
+    if (!session) return;
+
+    const to = String(data?.to || "");
+    const packet = data?.packet;
+
+    if (
+      !packet ||
+      !["offer", "answer", "candidate"].includes(packet.type)
+    ) return;
+
+    if (JSON.stringify(packet).length > 30000) return;
+
+    const isHost = session.hostId === socket.id;
+    const isViewer = session.viewers.has(socket.id);
+
+    const allowed =
+      (isHost && session.viewers.has(to)) ||
+      (isViewer && to === session.hostId);
+
+    if (!allowed) return;
+
+    io.to(to).emit("w8share:signal", {
+      from: socket.id,
+      packet
+    });
+  });
+
+  // Người chơi chủ động dừng
+  socket.on("w8share:stop", (data) => {
+    const token = String(data?.token || "");
+
+    if (socket.data.w8Hosting === token) {
+      closeWheel8ScreenShare(token);
+    }
+  });
+
+  // Dọn dẹp khi mất kết nối
+  socket.on("disconnect", () => {
+    if (socket.data.w8Hosting) {
+      closeWheel8ScreenShare(socket.data.w8Hosting);
+    }
+
+    if (socket.data.w8Watching) {
+      const session = wheel8ScreenShares.get(
+        socket.data.w8Watching
+      );
+
+      if (session) {
+        session.viewers.delete(socket.id);
+
+        io.to(session.hostId).emit("w8share:left", {
+          viewerId: socket.id,
+          count: session.viewers.size
+        });
+      }
+    }
+  });
+
+});
+
+
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on http://localhost:${PORT}`));
 

@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1">
+
+<title>MILITARY - LIVE SCREEN</title>
+
+<script src="/socket.io/socket.io.js"></script>
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: #050a06;
+  color: #fff;
+  font-family: system-ui, sans-serif;
+  min-height: 100dvh;
+}
+
+header {
+  min-height: 65px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: linear-gradient(
+    135deg, #31442b, #0b160e
+  );
+
+  border-bottom: 2px solid #b99d61;
+}
+
+.logo {
+  color: #e8cc88;
+  font-size: 18px;
+  font-weight: 900;
+  letter-spacing: 2px;
+}
+
+main {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+#status {
+  color: #b7e8a2;
+  font-size: 13px;
+  text-align: center;
+}
+
+.video-wrap {
+  width: 100%;
+  max-width: 450px;
+  aspect-ratio: 430 / 870;
+
+  background: #000;
+  border: 2px solid #a88d51;
+  border-radius: 10px;
+  overflow: hidden;
+
+  box-shadow: 0 8px 30px #000b;
+}
+
+video {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+.fullscreen-btn {
+  padding: 12px 25px;
+
+  background: #304932;
+  color: #f7df9c;
+
+  border: 1px solid #c6a764;
+  border-radius: 7px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.note {
+  max-width: 350px;
+  color: #81927e;
+  text-align: center;
+  font-size: 11px;
+  line-height: 1.6;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">★ MILITARY LIVE ★</div>
+</header>
+
+<main>
+
+  <div id="status">
+    Đang kết nối...
+  </div>
+
+  <div class="video-wrap">
+    <video
+      id="screen"
+      autoplay
+      muted
+      playsinline
+      controls>
+    </video>
+  </div>
+
+  <button class="fullscreen-btn"
+          onclick="fullScreen()">
+    ⛶ TOÀN MÀN HÌNH
+  </button>
+
+  <div class="note">
+    Bạn đang xem màn hình được chia sẻ trực tiếp.
+    Chế độ chỉ xem, không thể điều khiển game.
+  </div>
+
+</main>
+
+<script>
+const params = new URLSearchParams(location.search);
+const token = params.get("room") || "";
+
+const video = document.getElementById("screen");
+const status = document.getElementById("status");
+
+const socket = io();
+
+let pc = null;
+let pendingIce = [];
+
+let iceServers = [
+  { urls: "stun:stun.l.google.com:19302" }
+];
+
+function setStatus(message) {
+  status.textContent = message;
+}
+
+function closePeer() {
+
+  if (pc) pc.close();
+
+  pc = null;
+  pendingIce = [];
+  video.srcObject = null;
+
+}
+
+async function getIce() {
+
+  try {
+
+    const res = await fetch("/ice");
+
+    if (res.ok) {
+      const data = await res.json();
+
+      if (
+        Array.isArray(data.iceServers) &&
+        data.iceServers.length
+      ) {
+        return data.iceServers;
+      }
+    }
+
+  } catch (err) {
+    console.warn(err);
+  }
+
+  return [
+    { urls: "stun:stun.l.google.com:19302" }
+  ];
+}
+
+// Kết nối server và vào phiên xem
+socket.on("connect", async () => {
+
+  closePeer();
+
+  if (!/^[a-f0-9]{36}$/.test(token)) {
+    setStatus("Link chia sẻ không hợp lệ.");
+    return;
+  }
+
+  setStatus("Đang kết nối với người chia sẻ...");
+
+  iceServers = await getIce();
+
+  if (!socket.connected) return;
+
+  socket.timeout(10000).emit(
+    "w8share:join",
+    { token },
+    (err, reply) => {
+
+      if (err || !reply?.ok) {
+        setStatus(
+          reply?.error || "Không thể vào phòng xem."
+        );
+      } else {
+        setStatus(
+          "Đã kết nối. Đang nhận hình ảnh..."
+        );
+      }
+
+    }
+  );
+
+});
+
+// Nhận video và tín hiệu WebRTC
+socket.on("w8share:signal", async ({ from, packet }) => {
+
+  try {
+
+    if (packet.type === "offer") {
+
+      // Giữ ICE đến trước offer
+      const earlyIce = pendingIce.slice();
+
+      closePeer();
+      pendingIce = earlyIce;
+
+      pc = new RTCPeerConnection({ iceServers });
+
+      const current = pc;
+
+      current.ontrack = event => {
+
+        video.srcObject =
+          event.streams[0] ||
+          new MediaStream([event.track]);
+
+        video.play().catch(() => {
+          setStatus("Chạm vào video để phát.");
+        });
+
+      };
+
+      current.onicecandidate = event => {
+
+        if (event.candidate) {
+
+          socket.emit("w8share:signal", {
+            token,
+            to: from,
+            packet: {
+              type: "candidate",
+              candidate: event.candidate
+            }
+          });
+
+        }
+
+      };
+
+      current.onconnectionstatechange = () => {
+
+        if (current.connectionState === "connected") {
+          setStatus("🔴 ĐANG XEM TRỰC TIẾP");
+        }
+
+        if (current.connectionState === "failed") {
+          setStatus(
+            "Mất kết nối video. Hãy tải lại trang."
+          );
+        }
+
+      };
+
+      await current.setRemoteDescription(
+        packet.description
+      );
+
+      // Xử lý các ICE đến sớm
+      const buffered = pendingIce.splice(0);
+
+      for (const candidate of buffered) {
+        await current.addIceCandidate(candidate);
+      }
+
+      const answer = await current.createAnswer();
+      await current.setLocalDescription(answer);
+
+      socket.emit("w8share:signal", {
+        token,
+        to: from,
+        packet: {
+          type: "answer",
+          description: current.localDescription
+        }
+      });
+
+    } else if (
+      packet.type === "candidate" &&
+      packet.candidate
+    ) {
+
+      if (pc && pc.remoteDescription) {
+
+        await pc.addIceCandidate(
+          packet.candidate
+        );
+
+      } else {
+
+        pendingIce.push(packet.candidate);
+
+      }
+
+    }
+
+  } catch (err) {
+
+    console.error(err);
+    setStatus("Không thiết lập được video.");
+
+  }
+
+});
+
+// Chủ phòng dừng chia sẻ
+socket.on("w8share:ended", () => {
+
+  closePeer();
+  setStatus("Người chơi đã dừng chia sẻ.");
+
+});
+
+// Mất kết nối
+socket.on("disconnect", () => {
+
+  closePeer();
+  setStatus("Mất kết nối, đang thử lại...");
+
+});
+
+// Fullscreen
+function fullScreen() {
+
+  if (video.requestFullscreen) {
+    video.requestFullscreen();
+  } else if (video.webkitEnterFullscreen) {
+    video.webkitEnterFullscreen();
+  }
+
+}
+</script>
+
+</body>
+</html>
