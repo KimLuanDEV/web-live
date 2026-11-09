@@ -1,29 +1,59 @@
+
+/* ==========================================
+   LIVESTREAM PRO
+   APP ENTRY GUARD - FIX REDIRECT
+========================================== */
+
 (function () {
-  const HOME  = "/social.html";
+  "use strict";
+
+  const HOME = "/social.html";
   const LOGIN = "/login.html";
 
-  // app bị kill → sessionStorage mất
-  const isFreshLaunch = !sessionStorage.getItem("app_alive");
+  const path = location.pathname.toLowerCase();
 
-  // đánh dấu app đang chạy
+  // Các trang có thể truy cập trước đăng nhập.
+  const PUBLIC_PAGES = new Set([
+    "/",
+    "/index.html",
+    "/login.html",
+    "/register.html"
+  ]);
+
+  // Đánh dấu ứng dụng đang hoạt động.
   sessionStorage.setItem("app_alive", "1");
 
-  if (!isFreshLaunch) return;
+  // Không ép trang hiện tại về Social.
+  // Mỗi trang được điều hướng theo đúng chức năng.
 
-  // 🔐 kiểm tra đăng nhập
-  const auth = JSON.parse(localStorage.getItem("user_profile") || "null");
-  const isLoggedIn = auth && auth.uid && !String(auth.uid).startsWith("guest");
-
-  // 👻 guest / chưa login → về login
-  if (!isLoggedIn) {
-    if (!location.pathname.endsWith("login.html")) {
-      location.replace(LOGIN);
-    }
+  if (PUBLIC_PAGES.has(path)) {
     return;
   }
 
-  // 👤 đã login → về social
-  if (!location.pathname.endsWith("social.html")) {
-    location.replace(HOME);
+  // Kiểm tra dữ liệu đăng nhập hiện có.
+  let auth = null;
+
+  try {
+    auth = JSON.parse(
+      localStorage.getItem("user_profile") || "null"
+    );
+  } catch (error) {
+    auth = null;
   }
+
+  const isLoggedIn =
+    auth &&
+    typeof auth.uid === "string" &&
+    auth.uid.trim() !== "" &&
+    !auth.uid.toLowerCase().startsWith("guest");
+
+  // Chưa đăng nhập: chuyển về trang Login.
+  if (!isLoggedIn) {
+    location.replace(LOGIN);
+    return;
+  }
+
+  // Đã đăng nhập: giữ nguyên trang hiện tại.
+  // Không tự động đưa về /social.html.
+
 })();

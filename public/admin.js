@@ -275,11 +275,11 @@ async function topup(){
 
 if (data.ok) {
   document.getElementById("log").textContent =
-    `✅ Đã nạp ${amount.toLocaleString()} coin cho ${uid}`;
+    `Đã nạp ${amount.toLocaleString()} coin cho ${uid}`;
   loadUsers(); // refresh bảng
 } else {
   document.getElementById("log").textContent =
-    "❌ Nạp coin thất bại";
+    "Nạp coin thất bại";
 }
 
 
@@ -1246,7 +1246,7 @@ async function adminRefund(orderId){
   const data = await res.json();
   if(data.ok){
     await showModal({
-      title:"✅ Đã hoàn tiền",
+      title:"Đã hoàn tiền",
       body:"Hoàn tiền thành công."
     });
     loadDisputes();
@@ -1284,7 +1284,7 @@ async function adminApprove(orderId){
     loadDisputes();
   }else{
     showModal({
-      title:"❌ Lỗi",
+      title:"Lỗi",
       body:data.error || "Không xử lý được"
     });
   }
