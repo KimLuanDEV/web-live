@@ -3992,7 +3992,7 @@ div,img,button{
 .w8-live-comments {
   position: absolute;
 
-  top: 115px;
+  top: 9px;
   left: 12px;
 
   width: 240px;
@@ -4246,7 +4246,7 @@ div,img,button{
   class="w8-share-button"
   type="button"
   onclick="w8ToggleShare()">
-  📺 SHARE
+  SHARE
 </button>
 
 <div id="w8SharePanel"
@@ -6375,10 +6375,10 @@ if (w8IsMobile) {
     document.getElementById("w8ShareLink").value = link;
 
     document.getElementById("w8ShareButton").textContent =
-      "🔴 ĐANG LIVE";
+      "🔴LIVE";
 
     document.getElementById("w8ShareCount").textContent =
-      "0 người xem";
+      "0 viewer";
 
     document.getElementById("w8ShareTip").textContent =
       "Gửi link để người khác xem màn hình.";
@@ -6389,7 +6389,7 @@ if (w8IsMobile) {
 if (w8IsMobile) {
 
   document.getElementById("w8ShareTip").textContent =
-    "Đang chia sẻ trang game. Giữ trang mở để phát.";
+    "Live now";
 
   w8StartMobileBroadcast();
 
@@ -6428,7 +6428,7 @@ async function w8CopyLink() {
   }
 
   document.getElementById("w8ShareTip").textContent =
-    "✅ Đã sao chép link";
+    "✅ Link copied";
 }
 
 // Có người vào xem
