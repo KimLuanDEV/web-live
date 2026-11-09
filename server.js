@@ -6594,30 +6594,33 @@ app.post("/api/admin/auth/login", (req, res) => {
   });
 });
 
-// KIỂM TRA PHIÊN ĐĂNG NHẬP
+
+
+/* ==========================================
+   KIỂM TRA TRẠNG THÁI PHIÊN ADMIN
+========================================== */
+
 app.get("/api/admin/auth/status", (req, res) => {
   res.set("Cache-Control", "no-store");
 
   const auth = getLspAdminSession(req);
-
   const actorUid = getLspAdminActorUid();
 
-  if (
-    !auth ||
-    !actorUid ||
-    auth.session.actorUid !== actorUid
-  ) {
-    return res.status(401).json({
-      ok: false,
-      error: "NOT_AUTHENTICATED"
-    });
-  }
+  const authenticated = Boolean(
+    auth &&
+    actorUid &&
+    auth.session.actorUid === actorUid
+  );
 
-  res.json({
-    ok: true,
-    actorUid
+  return res.status(200).json({
+    ok: authenticated,
+    authenticated,
+    ...(authenticated ? { actorUid } : {})
   });
 });
+
+
+
 
 // ĐĂNG XUẤT
 app.post("/api/admin/auth/logout", (req, res) => {

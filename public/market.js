@@ -554,7 +554,7 @@ function rentBooth(id){
   // 🔒 Ẩn gói dùng thử nếu đã sử dụng
   const trialOpt = document.querySelector('.rent-option[data-trial="true"]');
   if(trialOpt){
-  if(me.hasUsedTrial === true){
+  if(me?.hasUsedTrial === true){
     trialOpt.style.display = "none";
   }else{
     trialOpt.style.display = "";
@@ -1015,44 +1015,46 @@ function showForceLogoutModal(message){
 
 
 
-const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
-if (typeof io === "function" && me?.uid) {
+const me = JSON.parse(
+  localStorage.getItem("user_profile") || "{}"
+);
+
+if (typeof io === "function") {
+
   socket = io();
 
-
-
-  // Cập nhật gian hàng realtime
+  // Mọi người có thể nhận cập nhật gian hàng
   socket.on("market-update", () => {
     loadMarketFromServer();
   });
 
+  // Chỉ bind tài khoản nếu thực sự có UID
+  if (me?.uid) {
 
-  // 🔐 bind socket vào user (để kick khi login nơi khác)
-  socket.emit("auth", {
-    uid: me.uid,
-    deviceId: localStorage.getItem("device_id") || null
-  });
+    socket.emit("auth", {
+      uid: me.uid,
+      deviceId:
+        localStorage.getItem("device_id") || null
+    });
 
+    socket.on("force-logout", (data) => {
+      const msg =
+        data?.message ||
+        "Tài khoản của bạn đã bị đăng xuất";
 
-  // ❌ bị kick khi đăng nhập nơi khác
+      showForceLogoutModal(msg);
 
-socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
+      localStorage.removeItem("user_profile");
+      localStorage.removeItem("login_uid");
+      localStorage.removeItem("isGuest");
 
-  showForceLogoutModal(msg);
+      setTimeout(() => {
+        location.href = "/login.html";
+      }, 3000);
+    });
 
-  // clear auth
-  localStorage.removeItem("user_profile");
-  localStorage.removeItem("login_uid");
-  localStorage.removeItem("isGuest");
-
-  // redirect sau 2s
-  setTimeout(()=>{
-    location.href = "/login.html";
-  }, 3000);
-});
-
-
+  }
 }
+
 
