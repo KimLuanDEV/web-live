@@ -160,5 +160,5 @@ function openTimeStopGame(){
 
 
 function openWheel8Game(){
-  location.href = "/game-wheel8.html";
+  location.href = "/game-military.html";
 }
