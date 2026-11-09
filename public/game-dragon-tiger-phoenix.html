@@ -2014,7 +2014,7 @@ body::before {
 /* ========== ROUND ========== */
 
 .dtp-screen .dtp-round-value {
-  left: 239px;
+  left: 110px;
   top: 203px;
 
   width: 19.2%;
@@ -2026,13 +2026,13 @@ body::before {
 /* ========== TIMER ========== */
 
 .dtp-screen .dtp-timer-value {
-  left: 54.1%;
-  top: 23.05%;
+  left: 239px;
+  top: 203px;
 
   width: 19.2%;
   height: 2.35%;
 
-  font-size: clamp(15px, 4.8vw, 24px);
+  font-size: clamp(15px, 3.5vw, 24px);
   color: #fff0c6;
 }
 
@@ -2349,6 +2349,318 @@ body.dtp-debug .dtp-chip img {
     font-size: 15px;
   }
 }
+
+
+
+/* ============================================
+   DTP - FIXED 430 x 870 COORDINATE SYSTEM
+   ALL HITBOXES USE THE SAME DESIGN SPACE
+============================================ */
+
+html,
+body {
+  width: 100% !important;
+  height: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  background: #000 !important;
+  overscroll-behavior: none;
+}
+
+/* GAME FRAME: NEVER STRETCH */
+.dtp-screen {
+  position: fixed !important;
+
+  left: 0 !important;
+  top: 0 !important;
+
+  width: 430px !important;
+  min-width: 430px !important;
+  max-width: none !important;
+
+  height: 870px !important;
+  min-height: 870px !important;
+  max-height: none !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  overflow: hidden !important;
+
+  background-image:
+    url("/assets/dtp/dragon_tiger_phoenix_casino_interface.png");
+
+  background-size: 430px 870px !important;
+  background-position: 0 0 !important;
+  background-repeat: no-repeat !important;
+
+  transform-origin: top left !important;
+
+  transform:
+    translate3d(
+      var(--dtp-offset-x, 0px),
+      var(--dtp-offset-y, 0px),
+      0
+    )
+    scale(var(--dtp-scale, 1)) !important;
+
+  z-index: 1;
+}
+
+/* ALL HITBOXES: FIXED PIXEL COORDINATES */
+
+.dtp-screen .dtp-hit,
+.dtp-screen .dtp-beast,
+.dtp-screen .dtp-chip {
+  position: absolute !important;
+  box-sizing: border-box !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+}
+
+/* EXIT */
+.dtp-screen .dtp-exit {
+  left: 7px !important;
+  top: 21px !important;
+  width: 79px !important;
+  height: 31px !important;
+}
+
+/* HELP */
+.dtp-screen .dtp-help {
+  left: 337px !important;
+  right: auto !important;
+  top: 21px !important;
+  width: 86px !important;
+  height: 31px !important;
+}
+
+/* LAST 8 RESULTS */
+.dtp-screen .dtp-recent {
+  position: absolute !important;
+
+  left: 58px !important;
+  top: 127px !important;
+
+  width: 314px !important;
+  height: 31px !important;
+
+  display: grid !important;
+  grid-template-columns:
+    repeat(8, minmax(0, 1fr)) !important;
+
+  gap: 2.5% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.dtp-screen .history-item {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: 0 !important;
+  background: transparent !important;
+  border: 0 !important;
+}
+
+.dtp-screen .history-icon {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important;
+}
+
+/* ROUND */
+.dtp-screen .dtp-round-value {
+  left: 108px !important;
+  top: 201px !important;
+
+  width: 83px !important;
+  height: 19px !important;
+
+  font-size: 19px !important;
+}
+
+/* TIMER */
+.dtp-screen .dtp-timer-value {
+  left: 233px !important;
+  top: 201px !important;
+
+  width: 83px !important;
+  height: 19px !important;
+
+  font-size: 20px !important;
+}
+
+/* TIMER PROGRESS */
+.dtp-screen .dtp-time-track {
+  position: absolute !important;
+
+  left: 104px !important;
+  top: 227px !important;
+
+  width: 216px !important;
+  height: 12px !important;
+}
+
+/* ANIMAL HITBOXES */
+.dtp-screen .dtp-beast {
+  position: absolute !important;
+
+  top: 257px !important;
+
+  width: 136px !important;
+  height: 270px !important;
+
+  max-width: none !important;
+
+  border: 0 !important;
+  background: transparent !important;
+
+  transform: none !important;
+  z-index: 7;
+}
+
+/* DRAGON */
+.dtp-screen .dtp-dragon {
+  left: 6px !important;
+}
+
+/* TIGER */
+.dtp-screen .dtp-tiger {
+  left: 146px !important;
+  width: 132px !important;
+}
+
+/* PHOENIX */
+.dtp-screen .dtp-phoenix {
+  left: 281px !important;
+}
+
+/* MY BET VALUES */
+.dtp-screen .dtp-bet-num {
+  position: absolute !important;
+
+  left: 10px !important;
+  bottom: 12px !important;
+
+  width: calc(100% - 20px) !important;
+  height: 25px !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 2px !important;
+  font-size: 18px !important;
+
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  pointer-events: none;
+}
+
+/* POOL VALUES */
+.dtp-screen .dtp-pool {
+  position: absolute !important;
+
+  top: 559px !important;
+
+  width: 109px !important;
+  height: 22px !important;
+
+  font-size: 16px !important;
+}
+
+.dtp-screen .dtp-pool-dragon {
+  left: 17px !important;
+}
+
+.dtp-screen .dtp-pool-tiger {
+  left: 155px !important;
+}
+
+.dtp-screen .dtp-pool-phoenix {
+  left: 293px !important;
+}
+
+/* BALANCE */
+.dtp-screen .dtp-balance-value {
+  left: 172px !important;
+  top: 660px !important;
+
+  width: 148px !important;
+  height: 27px !important;
+
+  font-size: 20px !important;
+  justify-content: flex-start !important;
+}
+
+/* MY HISTORY */
+.dtp-screen .dtp-history-btn {
+  left: 340px !important;
+  top: 646px !important;
+
+  width: 72px !important;
+  height: 53px !important;
+}
+
+/* CHIPS */
+.dtp-screen .dtp-chip {
+  position: absolute !important;
+
+  top: 710px !important;
+
+  width: 76px !important;
+  height: 80px !important;
+
+  border-radius: 50% !important;
+  transform: none !important;
+}
+
+/* CHIP 10 */
+.dtp-screen .dtp-chip-10 {
+  left: 24px !important;
+}
+
+/* CHIP 50 */
+.dtp-screen .dtp-chip-50 {
+  left: 122px !important;
+}
+
+/* CHIP 100 */
+.dtp-screen .dtp-chip-100 {
+  left: 222px !important;
+}
+
+/* CHIP 500 */
+.dtp-screen .dtp-chip-500 {
+  left: 321px !important;
+}
+
+/* Keep original chip image for JS animation */
+.dtp-screen .dtp-chip img,
+.dtp-screen .dtp-chip span {
+  opacity: 0 !important;
+  pointer-events: none !important;
+}
+
+/* ALL LIVE TEXT: NO DEVICE-DEPENDENT FONTS */
+.dtp-screen .dtp-data,
+.dtp-screen .dtp-bet-num {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* DEBUG: SHOW HITBOXES */
+body.dtp-debug .dtp-hit,
+body.dtp-debug .dtp-beast,
+body.dtp-debug .dtp-chip {
+  outline: 2px dashed #00ff88 !important;
+  background: rgba(0,255,80,.18) !important;
+}
+
+
 
 
 
@@ -2702,6 +3014,117 @@ Please rotate your device
 
 /* ================= SOCKET ================= */
 document.body.classList.add("loading");
+
+
+
+/* =============================================
+   DTP - UNIVERSAL SCREEN FIT
+   DESIGN SIZE: 430 x 870
+============================================= */
+
+const DTP_DESIGN_WIDTH = 430;
+const DTP_DESIGN_HEIGHT = 870;
+
+function fitDtpScreen() {
+
+  const screen = document.getElementById("dtpScreen");
+  if (!screen) return;
+
+  // Kích thước vùng nhìn thấy thực tế
+  const viewport = window.visualViewport;
+
+  const viewWidth = viewport
+    ? viewport.width
+    : document.documentElement.clientWidth;
+
+  const viewHeight = viewport
+    ? viewport.height
+    : window.innerHeight;
+
+  const offsetLeft = viewport
+    ? viewport.offsetLeft
+    : 0;
+
+  const offsetTop = viewport
+    ? viewport.offsetTop
+    : 0;
+
+  // Chỉ sử dụng một tỷ lệ cho X và Y
+  // Không phóng to quá khung thiết kế gốc
+  const scale = Math.min(
+    1,
+    viewWidth / DTP_DESIGN_WIDTH,
+    viewHeight / DTP_DESIGN_HEIGHT
+  );
+
+  const actualWidth = DTP_DESIGN_WIDTH * scale;
+  const actualHeight = DTP_DESIGN_HEIGHT * scale;
+
+  // Căn chính giữa khu vực hiển thị
+  const x = offsetLeft + (viewWidth - actualWidth) / 2;
+  const y = offsetTop + (viewHeight - actualHeight) / 2;
+
+  screen.style.setProperty(
+    "--dtp-scale",
+    String(scale)
+  );
+
+  screen.style.setProperty(
+    "--dtp-offset-x",
+    x + "px"
+  );
+
+  screen.style.setProperty(
+    "--dtp-offset-y",
+    y + "px"
+  );
+
+}
+
+// Thiết lập ngay khi mở trang
+fitDtpScreen();
+
+// Tự đồng bộ khi kích thước màn hình thay đổi
+window.addEventListener(
+  "resize",
+  fitDtpScreen,
+  { passive: true }
+);
+
+// Hỗ trợ Safari iOS và trình duyệt mobile
+if (window.visualViewport) {
+
+  window.visualViewport.addEventListener(
+    "resize",
+    fitDtpScreen,
+    { passive: true }
+  );
+
+  window.visualViewport.addEventListener(
+    "scroll",
+    fitDtpScreen,
+    { passive: true }
+  );
+
+}
+
+// Khi quay lại trang bằng Back/Forward
+window.addEventListener(
+  "pageshow",
+  fitDtpScreen
+);
+
+// Khi chuyển lại từ ứng dụng khác
+document.addEventListener(
+  "visibilitychange",
+  () => {
+    if (!document.hidden) {
+      fitDtpScreen();
+    }
+  }
+);
+
+
 
 const me = JSON.parse(localStorage.getItem("user_profile")||"{}");
 
