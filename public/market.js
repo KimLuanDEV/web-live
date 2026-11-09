@@ -1016,29 +1016,58 @@ function showForceLogoutModal(message){
 
 
 
+/* ==========================================
+   MARKET SOCKET - BFCache SAFE
+========================================== */
+
 const me = JSON.parse(
   localStorage.getItem("user_profile") || "{}"
 );
 
 if (typeof io === "function") {
 
-  socket = io();
+  socket = io({
+    autoConnect: false,
+    reconnection: true,
+    reconnectionDelay: 1000
+  });
 
-  // Mọi người có thể nhận cập nhật gian hàng
+  // Khi kết nối hoặc kết nối lại thành công
+  socket.on("connect", () => {
+
+    console.log("Market Socket connected");
+
+    // Đăng ký lại UID nếu người dùng đã đăng nhập
+    if (me?.uid) {
+      socket.emit("auth", {
+        uid: me.uid,
+        deviceId:
+          localStorage.getItem("device_id") || null
+      });
+    }
+
+    // Đồng bộ lại dữ liệu sau khi kết nối
+    loadMarketFromServer();
+  });
+
+  // Cập nhật gian hàng realtime
   socket.on("market-update", () => {
     loadMarketFromServer();
   });
 
-  // Chỉ bind tài khoản nếu thực sự có UID
+  // Theo dõi lỗi kết nối thực sự
+  socket.on("connect_error", (error) => {
+    console.warn(
+      "Market Socket connection error:",
+      error.message
+    );
+  });
+
+  // Xử lý đăng xuất từ server
   if (me?.uid) {
 
-    socket.emit("auth", {
-      uid: me.uid,
-      deviceId:
-        localStorage.getItem("device_id") || null
-    });
-
     socket.on("force-logout", (data) => {
+
       const msg =
         data?.message ||
         "Tài khoản của bạn đã bị đăng xuất";
@@ -1052,9 +1081,49 @@ if (typeof io === "function") {
       setTimeout(() => {
         location.href = "/login.html";
       }, 3000);
+
     });
 
   }
+
+  // Kết nối lần đầu
+  socket.connect();
 }
+
+/* ==========================================
+   BROWSER PAGE LIFECYCLE
+========================================== */
+
+// Chủ động đóng Socket trước khi rời trang
+window.addEventListener("pagehide", () => {
+
+  if (socket) {
+    socket.disconnect();
+  }
+
+  if (marketAutoTimer) {
+    clearInterval(marketAutoTimer);
+    marketAutoTimer = null;
+  }
+
+});
+
+// Khôi phục kết nối khi quay lại từ BFCache
+window.addEventListener("pageshow", (event) => {
+
+  if (!event.persisted) return;
+
+  if (socket && !socket.connected) {
+    socket.connect();
+  }
+
+  // Kiểm tra lại quyền admin và đồng bộ gian hàng
+  checkMarketAdminSession();
+  loadMarketFromServer();
+
+  // Khôi phục cập nhật định kỳ
+  startMarketAutoRefresh();
+
+});
 
 
