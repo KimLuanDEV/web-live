@@ -13548,6 +13548,105 @@ io.on("connection", (socket) => {
 
 
   
+/* ==========================================
+   WHEEL8 LIVE COMMENTS
+   Viewer -> Host + Viewers
+========================================== */
+
+socket.on("w8share:comment", (data, callback) => {
+
+  const reply =
+    typeof callback === "function"
+      ? callback
+      : () => {};
+
+  const token =
+    typeof data?.token === "string"
+      ? data.token
+      : "";
+
+  const session = wheel8ScreenShares.get(token);
+
+  // Chỉ thành viên đang xem LIVE mới được bình luận
+  if (
+    !session ||
+    !io.sockets.sockets.has(session.hostId) ||
+    socket.data.w8Watching !== token ||
+    !session.viewers.has(socket.id)
+  ) {
+    return reply({
+      ok: false,
+      error: "Bạn chưa tham gia phiên LIVE."
+    });
+  }
+
+  const now = Date.now();
+
+  // Chống spam: mỗi 2 giây tối đa 1 bình luận
+  if (now - (socket.data.w8LastComment || 0) < 2000) {
+    return reply({
+      ok: false,
+      error: "Hãy đợi 2 giây trước khi bình luận tiếp."
+    });
+  }
+
+  // Làm sạch nội dung
+  function cleanComment(value, maxLength) {
+
+    if (typeof value !== "string") return "";
+
+    return value
+      .replace(/[\u0000-\u001F\u007F]/g, " ")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, maxLength);
+  }
+
+  const name =
+    cleanComment(data?.name, 20) || "Người xem";
+
+  const content = cleanComment(data?.text, 120);
+
+  if (!content) {
+    return reply({
+      ok: false,
+      error: "Vui lòng nhập nội dung bình luận."
+    });
+  }
+
+  socket.data.w8LastComment = now;
+
+  const message = {
+    id: crypto.randomUUID(),
+    token,
+    name,
+    text: content,
+    time: now
+  };
+
+  // Gửi bình luận đến người đang phát
+  io.to(session.hostId).emit(
+    "w8share:comment",
+    message
+  );
+
+  // Gửi đến toàn bộ người xem cùng phiên
+  for (const viewerId of session.viewers) {
+
+    io.to(viewerId).emit(
+      "w8share:comment",
+      message
+    );
+
+  }
+
+  reply({ ok: true });
+
+});
+
+
+
+  
 // =======================================
 // MOBILE GAME FRAME RELAY
 // =======================================

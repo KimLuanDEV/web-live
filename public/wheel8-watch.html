@@ -118,6 +118,145 @@ video {
 
 
 
+/* ==================================
+   WHEEL8 VIEWER LIVE CHAT
+================================== */
+
+.w8-viewer-chat {
+  position: fixed;
+  bottom: max(8px, env(safe-area-inset-bottom));
+  left: 50%;
+  transform: translateX(-50%);
+
+  width: min(450px, calc(100% - 20px));
+  padding: 12px;
+  box-sizing: border-box;
+
+  z-index: 100;
+
+  background: rgba(10, 24, 14, .94);
+  border: 1px solid #a78c4e;
+  border-radius: 12px;
+
+  box-shadow: 0 6px 25px #000b;
+  backdrop-filter: blur(12px);
+}
+
+.w8-chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  margin-bottom: 8px;
+
+  font-size: 12px;
+  font-weight: 900;
+  color: #e8d08c;
+}
+
+.w8-chat-live {
+  color: #ff6666;
+  font-size: 11px;
+}
+
+.w8-comment-list {
+  max-height: 115px;
+  min-height: 24px;
+
+  overflow-y: auto;
+  overscroll-behavior: contain;
+
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+
+  padding: 4px 0 9px;
+}
+
+.w8-viewer-comment {
+  padding: 5px 7px;
+
+  background: rgba(60, 83, 54, .35);
+  border-radius: 6px;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  overflow-wrap: anywhere;
+}
+
+.w8-viewer-comment-name {
+  color: #edd18a;
+  font-weight: 900;
+}
+
+.w8-viewer-comment-text {
+  color: #edf6e9;
+  margin-left: 5px;
+}
+
+#w8CommentForm {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+#w8CommentName,
+#w8CommentInput {
+  min-width: 0;
+  width: 100%;
+  height: 39px;
+  box-sizing: border-box;
+
+  padding: 0 12px;
+
+  background: #101f13;
+  color: #fff;
+
+  border: 1px solid #59734f;
+  border-radius: 7px;
+
+  font-size: 16px;
+
+  user-select: text;
+  -webkit-user-select: text;
+}
+
+.w8-comment-send-row {
+  display: flex;
+  gap: 7px;
+}
+
+.w8-comment-send-row button {
+  flex-shrink: 0;
+  padding: 0 16px;
+
+  background: linear-gradient(
+    145deg, #577b43, #294a2c
+  );
+
+  border: 1px solid #d1b26b;
+  border-radius: 7px;
+
+  color: #fff;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.w8-comment-send-row button:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+#w8CommentStatus {
+  color: #d6b980;
+  font-size: 11px;
+  margin-top: 6px;
+  min-height: 12px;
+}
+
+
+
 </style>
 </head>
 
@@ -160,7 +299,62 @@ video {
     Chế độ chỉ xem, không thể điều khiển game.
   </div>
 
+
+
 </main>
+
+
+
+<!-- ==================================
+     LIVE VIEWER CHAT
+================================== -->
+
+<div id="w8ViewerChat" class="w8-viewer-chat">
+
+  <div class="w8-chat-header">
+    <span>💬 BÌNH LUẬN TRỰC TIẾP</span>
+    <span class="w8-chat-live">● LIVE</span>
+  </div>
+
+  <div
+    id="w8CommentList"
+    class="w8-comment-list">
+  </div>
+
+  <form id="w8CommentForm" autocomplete="off">
+
+    <input
+      id="w8CommentName"
+      type="text"
+      maxlength="20"
+      placeholder="Tên hiển thị"
+      aria-label="Tên hiển thị">
+
+    <div class="w8-comment-send-row">
+
+      <input
+        id="w8CommentInput"
+        type="text"
+        maxlength="120"
+        placeholder="Nhập bình luận..."
+        aria-label="Nội dung bình luận"
+        required>
+
+      <button
+        id="w8CommentSend"
+        type="submit">
+        ➤ GỬI
+      </button>
+
+    </div>
+
+  </form>
+
+  <div id="w8CommentStatus" aria-live="polite"></div>
+
+</div>
+
+
 
 <script>
 const params = new URLSearchParams(location.search);
@@ -429,6 +623,140 @@ socket.on("w8share:frame", (data) => {
     "🔴 ĐANG XEM TRỰC TIẾP";
 
 });
+
+
+
+
+/* ======================================
+   WHEEL8 VIEWER COMMENT SYSTEM
+====================================== */
+
+const w8ChatForm =
+  document.getElementById("w8CommentForm");
+
+const w8ChatInput =
+  document.getElementById("w8CommentInput");
+
+const w8ChatName =
+  document.getElementById("w8CommentName");
+
+const w8ChatSend =
+  document.getElementById("w8CommentSend");
+
+const w8ChatStatus =
+  document.getElementById("w8CommentStatus");
+
+const w8ChatList =
+  document.getElementById("w8CommentList");
+
+// Gửi bình luận
+w8ChatForm.addEventListener("submit", (event) => {
+
+  event.preventDefault();
+
+  const content = w8ChatInput.value.trim();
+  const name = w8ChatName.value.trim() || "Người xem";
+
+  if (!content) return;
+
+  if (!socket.connected) {
+    w8ChatStatus.textContent =
+      "Chưa kết nối máy chủ.";
+    return;
+  }
+
+  w8ChatSend.disabled = true;
+  w8ChatStatus.textContent = "";
+
+  socket.timeout(8000).emit(
+    "w8share:comment",
+    {
+      token,
+      name,
+      text: content
+    },
+    (error, reply) => {
+
+      w8ChatSend.disabled = false;
+
+      if (error || !reply?.ok) {
+
+        w8ChatStatus.textContent =
+          reply?.error || "Không gửi được bình luận.";
+
+        return;
+      }
+
+      w8ChatInput.value = "";
+      w8ChatStatus.textContent = "";
+
+    }
+  );
+
+});
+
+// Nhận bình luận từ server
+socket.on("w8share:comment", (data) => {
+
+  if (data?.token !== token) return;
+
+  const item = document.createElement("div");
+  item.className = "w8-viewer-comment";
+
+  const username = document.createElement("span");
+  username.className = "w8-viewer-comment-name";
+  username.textContent =
+    String(data.name || "Người xem") + ":";
+
+  const content = document.createElement("span");
+  content.className = "w8-viewer-comment-text";
+  content.textContent = String(data.text || "");
+
+  item.appendChild(username);
+  item.appendChild(content);
+
+  w8ChatList.appendChild(item);
+
+  // Giới hạn 30 bình luận trong giao diện
+  while (w8ChatList.children.length > 30) {
+    w8ChatList.firstElementChild.remove();
+  }
+
+  // Tự cuộn đến bình luận mới
+  w8ChatList.scrollTop = w8ChatList.scrollHeight;
+
+});
+
+// Chủ phòng kết thúc LIVE
+socket.on("w8share:ended", () => {
+
+  w8ChatInput.disabled = true;
+  w8ChatSend.disabled = true;
+
+  w8ChatStatus.textContent =
+    "Phiên LIVE đã kết thúc.";
+
+});
+
+// Mất kết nối: khóa gửi bình luận
+socket.on("disconnect", () => {
+
+  w8ChatSend.disabled = true;
+  w8ChatStatus.textContent =
+    "Đang kết nối lại...";
+
+});
+
+// Khi kết nối lại, cho nhập bình luận.
+// Server vẫn kiểm tra quyền tham gia LIVE.
+socket.on("connect", () => {
+
+  w8ChatInput.disabled = false;
+  w8ChatSend.disabled = false;
+  w8ChatStatus.textContent = "";
+
+});
+
 
 
 
