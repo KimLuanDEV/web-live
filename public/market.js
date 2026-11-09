@@ -91,10 +91,49 @@ function daysLeft(ts){
   return Math.ceil((ts - Date.now()) / (24*60*60*1000));
 }
 
-function isAdmin(){
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  return me && me.role === "admin";
+
+/* ==========================================
+   MARKET - XÁC THỰC ADMIN BẰNG MẬT KHẨU
+========================================== */
+
+let marketAdminVerified = false;
+
+function isAdmin() {
+  return marketAdminVerified;
 }
+
+async function checkMarketAdminSession() {
+  let authorized = false;
+
+  try {
+    const response = await fetch(
+      "/api/admin/auth/status",
+      {
+        method: "GET",
+        credentials: "same-origin",
+        cache: "no-store"
+      }
+    );
+
+    const data = await response.json();
+
+    authorized = response.ok && data.ok === true;
+
+  } catch (error) {
+    console.error("Market admin session:", error);
+  }
+
+  const changed = marketAdminVerified !== authorized;
+
+  marketAdminVerified = authorized;
+
+  if (changed && booths.length > 0) {
+    renderMarket();
+  }
+
+  return authorized;
+}
+
 
 function updateRentCoin(){
   const me = JSON.parse(localStorage.getItem("user_profile"));
@@ -742,52 +781,145 @@ function openBooth(id){
 
 
 
-async function toggleLock(id, lock){
-  const ok = await showModal({
-  title: lock ? "🔒 Khoá gian hàng" : "🔓 Mở khoá gian hàng",
-  content: lock
-    ? "Bạn có chắc muốn khoá gian hàng này?"
-    : "Bạn có chắc muốn mở khoá gian hàng này?",
-  confirm: true
-});
-if(!ok) return;
+/* ==========================================
+   MARKET ADMIN - LOCK / UNLOCK / REVOKE
+========================================== */
 
+async function marketAdminAction(id, action, lock = false) {
 
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  await fetch("/api/admin/market/lock",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": me.uid
-    },
-    body: JSON.stringify({ boothId:id, lock })
+  const authorized = await checkMarketAdminSession();
+
+  if (!authorized) {
+    await showModal({
+      title: "Chưa xác thực quyền quản trị",
+      content:
+        "Phiên mật khẩu Admin không hợp lệ hoặc đã hết hạn. " +
+        "Vui lòng đăng nhập lại tại Admin Dashboard."
+    });
+    return;
+  }
+
+  const isRevoke = action === "revoke";
+
+  const title = isRevoke
+    ? "Thu hồi gian hàng"
+    : lock
+      ? "Khóa gian hàng"
+      : "Mở khóa gian hàng";
+
+  const confirmed = await showModal({
+    title,
+    content: isRevoke
+      ? `Xác nhận thu hồi gian hàng #${id}?`
+      : lock
+        ? `Xác nhận khóa gian hàng #${id}?`
+        : `Xác nhận mở khóa gian hàng #${id}?`,
+    confirm: true
   });
 
-  
+  if (!confirmed) return;
+
+  const url = isRevoke
+    ? "/api/admin/market/revoke"
+    : "/api/admin/market/lock";
+
+  const payload = isRevoke
+    ? { boothId: id }
+    : { boothId: id, lock: Boolean(lock) };
+
+  try {
+
+    const response = await fetch(url, {
+      method: "POST",
+      credentials: "same-origin",
+
+      headers: {
+        "Content-Type": "application/json"
+      },
+
+      body: JSON.stringify(payload)
+    });
+
+    const data = await response.json().catch(() => ({}));
+
+    console.log("MARKET ADMIN RESPONSE:", {
+      action,
+      boothId: id,
+      status: response.status,
+      data
+    });
+
+    if (!response.ok || data.ok !== true) {
+
+      let errorMessage = "Thao tác không thành công.";
+
+      if (response.status === 401) {
+        errorMessage =
+          "Phiên quản trị đã hết hạn. " +
+          "Vui lòng đăng nhập lại bằng mật khẩu admin.";
+      }
+
+      else if (response.status === 403) {
+        errorMessage =
+          "Server từ chối quyền quản trị.";
+      }
+
+      else if (response.status === 404) {
+        errorMessage =
+          "Không tìm thấy gian hàng hoặc API.";
+      }
+
+      else if (response.status >= 500) {
+        errorMessage =
+          "Server gặp lỗi khi cập nhật dữ liệu gian hàng.";
+      }
+
+      const errorCode = escapeMarketHtml(
+        String(data.error || "UNKNOWN_ERROR")
+      );
+
+      await showModal({
+        title: "Thao tác thất bại",
+        content:
+          `${errorMessage}<div style="margin-top:10px;opacity:.7">` +
+          `HTTP ${response.status} · ${errorCode}</div>`
+      });
+
+      return;
+    }
+
+    // Cập nhật ngay sau khi server xử lý thành công
+    await loadMarketFromServer();
+
+    await showModal({
+      title: "Thành công",
+      content: isRevoke
+        ? `Đã thu hồi gian hàng #${id}.`
+        : lock
+          ? `Đã khóa gian hàng #${id}.`
+          : `Đã mở khóa gian hàng #${id}.`
+    });
+
+  } catch (error) {
+
+    console.error("Market admin error:", error);
+
+    await showModal({
+      title: "Lỗi kết nối",
+      content:
+        "Không thể kết nối tới server. " +
+        "Vui lòng thử lại."
+    });
+  }
 }
 
-async function revokeBooth(id){
-  const ok = await showModal({
-  title: "🧹 Thu hồi gian hàng",
-  content: "Bạn có chắc muốn thu hồi gian hàng này?",
-  confirm: true
-});
-if(!ok) return;
-
-
-  const me = JSON.parse(localStorage.getItem("user_profile"));
-  await fetch("/api/admin/market/revoke",{
-    method:"POST",
-    headers:{
-      "Content-Type":"application/json",
-      "x-uid": me.uid
-    },
-    body: JSON.stringify({ boothId:id })
-  });
-
-  
+async function toggleLock(id, lock) {
+  return marketAdminAction(id, "lock", lock);
 }
 
+async function revokeBooth(id) {
+  return marketAdminAction(id, "revoke");
+}
 
 
 
@@ -804,8 +936,11 @@ document.querySelectorAll(".lp-tab").forEach(tab=>{
 });
 
 /* INIT */
-loadMarketFromServer();
-enableMarketSwipe();
+(async function initMarket() {
+  await checkMarketAdminSession();
+  await loadMarketFromServer();
+  enableMarketSwipe();
+})();
 
 
 /* ===== AUTO REFRESH MARKET ===== */
@@ -846,12 +981,6 @@ document.addEventListener("visibilitychange", ()=>{
 });
 
 
-/* ===== REALTIME MARKET UPDATE ===== */
-if (socket) {
-  socket.on("market-update", data=>{
-    loadMarketFromServer();
-  });
-}
 
 
 
@@ -890,6 +1019,14 @@ const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
 
 if (typeof io === "function" && me?.uid) {
   socket = io();
+
+
+
+  // Cập nhật gian hàng realtime
+  socket.on("market-update", () => {
+    loadMarketFromServer();
+  });
+
 
   // 🔐 bind socket vào user (để kick khi login nơi khác)
   socket.emit("auth", {
