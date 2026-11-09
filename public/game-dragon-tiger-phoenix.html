@@ -4,7 +4,7 @@
 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<link rel="preload" as="image" href="/assets/dtp/btp-loading.jpg">
+<link rel="preload" as="image" href="/assets/dtp/dtp-loading-royal.png">
 <title>Dragon Tiger Phoenix</title>
 
 <script src="/socket.io/socket.io.js"></script>
@@ -5348,6 +5348,308 @@ body.dtp-debug .dtp-chip {
 
 
 
+
+/* ==========================================
+   DTP ROYAL LOADING - IMAGE INTEGRATED
+   BACKGROUND REFERENCE: 941 x 1672
+========================================== */
+
+/* FULL SCREEN BACKDROP */
+#loadingOverlay.loading-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 10000 !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  width: 100% !important;
+  height: 100dvh !important;
+  padding: 0 !important;
+  margin: 0 !important;
+
+  overflow: hidden !important;
+  background: #000 !important;
+  box-sizing: border-box !important;
+}
+
+/* REMOVE OLD PARTICLES */
+#loadingOverlay.loading-overlay::before,
+#loadingOverlay.loading-overlay::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* IMAGE STAGE */
+#loadingOverlay .dtp-loading-scene {
+  position: relative;
+
+  width: min(100vw, 430px);
+  height: 100%;
+  flex-shrink: 0;
+
+  overflow: hidden;
+
+  background:
+    url("/assets/dtp/dtp-loading-royal.png")
+    center center / 100% 100%
+    no-repeat;
+
+  isolation: isolate;
+}
+
+/* RESET PREVIOUS LOADING LAYOUT */
+#loadingOverlay .loading-center {
+  position: absolute !important;
+  inset: 0 !important;
+
+  display: block !important;
+
+  width: 100% !important;
+  height: 100% !important;
+  max-width: none !important;
+  max-height: none !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  overflow: hidden;
+  transform: none !important;
+
+  background: transparent !important;
+}
+
+#loadingOverlay .loading-center::before,
+#loadingOverlay .loading-center::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* ==========================================
+   DYNAMIC GOLD PROGRESS
+   POSITION INSIDE THE IMAGE'S GOLD BAR
+========================================== */
+
+#loadingOverlay .loading-bar {
+  position: absolute !important;
+
+  left: 10.5% !important;
+  top: 71.05% !important;
+
+  width: 77.5% !important;
+  height: 2.35% !important;
+
+  display: block !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  border: 0 !important;
+  border-radius: 999px !important;
+
+  /* Hide the pre-rendered 76% fill */
+  background: #230e09 !important;
+
+  box-shadow:
+    inset 0 2px 7px rgba(0,0,0,.85) !important;
+
+  overflow: hidden !important;
+  z-index: 4;
+}
+
+/* LIVE FILL */
+#loadingOverlay .loading-progress {
+  position: relative !important;
+
+  display: block !important;
+
+  width: 0%;
+  height: 100% !important;
+
+  margin: 0 !important;
+  padding: 0 !important;
+
+  border: 0 !important;
+  border-radius: 999px !important;
+
+  background: linear-gradient(
+    180deg,
+    #fff6bf 0%,
+    #ffd34c 20%,
+    #ffa600 56%,
+    #e96c00 100%
+  ) !important;
+
+  background-size: 100% 100% !important;
+
+  box-shadow:
+    inset 0 2px 2px rgba(255,255,255,.7),
+    0 0 9px rgba(255,170,20,.8) !important;
+
+  animation: none !important;
+  transition: width .15s linear !important;
+}
+
+/* SOFT MOVING REFLECTION */
+#loadingOverlay .loading-progress::before {
+  content: "";
+  position: absolute;
+
+  top: 0;
+  left: -50%;
+
+  width: 45%;
+  height: 100%;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.38),
+    transparent
+  );
+
+  animation: dtpRoyalProgressShine 2s linear infinite;
+}
+
+#loadingOverlay .loading-progress::after {
+  display: none !important;
+  content: none !important;
+}
+
+/* ==========================================
+   LIVE PERCENTAGE
+   COVER STATIC "76%" INSIDE IMAGE
+========================================== */
+
+#loadingOverlay .loading-percent {
+  position: absolute !important;
+
+  left: 41% !important;
+  top: 75.05% !important;
+
+  width: 18% !important;
+  height: 2.45% !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 !important;
+  margin: 0 !important;
+
+  background: linear-gradient(
+    180deg,
+    #430e08 0%,
+    #590e06 55%,
+    #360a07 100%
+  ) !important;
+
+  border: 0 !important;
+  border-radius: 4px !important;
+
+  color: #ffdb73 !important;
+
+  font-family: Georgia, serif !important;
+  font-size: clamp(17px, 5vw, 24px) !important;
+  font-weight: 900 !important;
+
+  font-variant-numeric: tabular-nums;
+  line-height: 1 !important;
+
+  text-shadow:
+    0 2px 3px #170400,
+    0 0 7px rgba(255,192,51,.4);
+
+  white-space: nowrap !important;
+
+  box-shadow:
+    0 0 5px 2px rgba(65,11,7,.65);
+
+  z-index: 5;
+}
+
+/* ==========================================
+   DYNAMIC LOADING STATUS
+   REPLACE BAKED "Loading assets..."
+========================================== */
+
+#loadingOverlay .loading-text {
+  position: absolute !important;
+
+  left: 32.5% !important;
+  top: 78.75% !important;
+
+  width: 35% !important;
+  height: 2.6% !important;
+
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+
+  padding: 0 2px !important;
+  margin: 0 !important;
+
+  overflow: hidden !important;
+
+  background: #300c09 !important;
+  border: 0 !important;
+  border-radius: 4px !important;
+
+  color: #f8d18c !important;
+
+  font-family: Georgia, serif !important;
+  font-size: clamp(9px, 2.8vw, 13px) !important;
+  font-style: italic !important;
+  font-weight: 700 !important;
+
+  letter-spacing: 0 !important;
+  line-height: 1.2 !important;
+  text-align: center !important;
+
+  white-space: nowrap !important;
+  text-overflow: ellipsis !important;
+
+  text-shadow: 0 1px 4px #000 !important;
+
+  box-shadow: 0 0 7px 2px #300c09;
+
+  animation: none !important;
+  z-index: 5;
+}
+
+/* ANIMATION */
+@keyframes dtpRoyalProgressShine {
+  from {
+    left: -50%;
+  }
+
+  to {
+    left: 120%;
+  }
+}
+
+/* SMALLER MOBILE */
+@media (max-width: 360px) {
+
+  #loadingOverlay .loading-percent {
+    font-size: 18px !important;
+  }
+
+  #loadingOverlay .loading-text {
+    font-size: 10px !important;
+  }
+
+}
+
+/* REDUCED MOTION */
+@media (prefers-reduced-motion: reduce) {
+  #loadingOverlay .loading-progress::before {
+    animation: none !important;
+  }
+}
+
+
 </style>
 </head>
 
@@ -5964,94 +6266,37 @@ Please rotate your device
 
 
 
-<!-- ========================================
-     MYTHIC ROYAL ARENA - LOADING SCREEN
-======================================== -->
 
-<div id="loadingOverlay" class="loading-overlay"
+<!-- =====================================
+     DRAGON TIGER PHOENIX
+     ROYAL IMAGE LOADING
+===================================== -->
+
+<div id="loadingOverlay"
+     class="loading-overlay"
      role="status"
      aria-label="Loading battle arena">
 
-  <div class="loading-center">
+  <div class="dtp-loading-scene">
 
-    <!-- BRAND -->
-    <div class="loading-brand">
-      <span class="loading-brand-line"></span>
-      MYTHIC ROYAL ARENA
-      <span class="loading-brand-line"></span>
-    </div>
+    <div class="loading-center">
 
-    <!-- THREE SPIRIT BEASTS -->
-    <div class="loading-beasts">
-
-      <div class="loading-beast loading-dragon">
-        <div class="loading-beast-image">
-          <img src="/assets/dtp/dragon-head.png"
-               alt="Dragon">
-        </div>
-        <span>DRAGON</span>
-      </div>
-
-      <div class="loading-beast loading-tiger">
-        <div class="loading-beast-image">
-          <img src="/assets/dtp/tiger-head.png"
-               alt="Tiger">
-        </div>
-        <span>TIGER</span>
-      </div>
-
-      <div class="loading-beast loading-phoenix">
-        <div class="loading-beast-image">
-          <img src="/assets/dtp/phoenix-head.png"
-               alt="Phoenix">
-        </div>
-        <span>PHOENIX</span>
-      </div>
-
-    </div>
-
-    <!-- SUMMONING SEAL -->
-    <div class="loading-seal">
-      <div class="loading-spinner"></div>
-
-      <div class="loading-seal-inner">
-        <span>D · T · P</span>
-      </div>
-    </div>
-
-    <!-- TITLE -->
-    <div class="loading-main-title">
-      THE BATTLE AWAITS
-    </div>
-
-    <div class="loading-subtitle">
-      THREE BEASTS · ONE DESTINY
-    </div>
-
-    <div class="loading-gold-divider"></div>
-
-    <!-- PROGRESS -->
-    <div class="loading-progress-area">
-
-      <div class="loading-progress-info">
-
-        <div id="loadingText" class="loading-text">
-          Connecting Arena...
-        </div>
-
-        <div id="loadingPercent" class="loading-percent">
-          0%
-        </div>
-
-      </div>
-
+      <!-- THANH TẢI THỰC -->
       <div class="loading-bar">
         <div id="loadingProgress"
              class="loading-progress"></div>
       </div>
 
-      <div class="loading-bottom-caption">
-        PREPARING YOUR BATTLE ARENA
+      <!-- PHẦN TRĂM -->
+      <div id="loadingPercent"
+           class="loading-percent">
+        0%
+      </div>
+
+      <!-- TRẠNG THÁI -->
+      <div id="loadingText"
+           class="loading-text">
+        Connecting Arena...
       </div>
 
     </div>
@@ -6881,17 +7126,19 @@ let loaderImagesReady = false;
 let loaderDomReady = false;
 let loaderFinished = false;
 
-const MIN_LOADING_TIME = 10000; // 10 giây
+const MIN_LOADING_TIME = 15000; // 10 giây
 const loadingStartTime = Date.now();
 
+
 const loadingTexts = [
-  "Connecting Arena...",
-  "Loading Dragon Spirit...",
-  "Loading Tiger Power...",
-  "Summoning Phoenix Flame...",
-  "Preparing Battle Arena...",
+  "Connecting...",
+  "Dragon Spirit...",
+  "Tiger Power...",
+  "Phoenix Flame...",
+  "Preparing Arena...",
   "Loading assets..."
 ];
+
 
 let loadingIndex = 0;
 let visualProgress = 0;
@@ -6949,7 +7196,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 
 const preloadImages = [
   "/assets/dtp/dragon_tiger_phoenix_casino_interface.png",
-  "/assets/dtp/btp-loading.jpg",
+  "/assets/dtp/dtp-loading-royal.png",
 
   "/assets/dtp/dragon.png",
   "/assets/dtp/tiger.png",
