@@ -1098,13 +1098,7 @@ body:not(.wheel8-admin-unlocked) > .full-card {
   text-shadow: 0 3px 6px #000;
 }
 
-.wheel8-login-sub {
-  margin-top: 8px;
-  font-size: 11px;
-  letter-spacing: 3px;
-  font-weight: 800;
-  color: #a8ff70;
-}
+
 
 .wheel8-login-line {
   height: 1px;
@@ -2569,55 +2563,932 @@ body:not(.wheel8-admin-unlocked) .tactical-footer {
 
 
 
+
+/* ==========================================
+   TACTICAL ADMIN LOGIN V3
+   BLACK TITANIUM / CHAMPAGNE GOLD
+========================================== */
+
+.wheel8-login-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 999999;
+  width: 100%;
+  height: 100vh;
+  height: 100dvh;
+  min-height: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 20px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  isolation: isolate;
+
+  background:
+    radial-gradient(
+      ellipse at 50% 20%,
+      #294030 0%,
+      #111b15 43%,
+      #070c09 90%
+    );
+}
+
+.wheel8-login-screen.hidden {
+  display: none !important;
+}
+
+/* AMBIENT LIGHT */
+
+.login-atmosphere {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  pointer-events: none;
+
+  background:
+    radial-gradient(
+      circle at 50% 45%,
+      #c1a67213,
+      transparent 55%
+    );
+}
+
+/* TECHNICAL GRID */
+
+.login-grid-pattern {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: .30;
+
+  background-image:
+    linear-gradient(#8ba58d16 1px, transparent 1px),
+    linear-gradient(90deg, #8ba58d16 1px, transparent 1px);
+
+  background-size: 45px 45px;
+
+  mask-image: radial-gradient(
+    ellipse at center,
+    #000 5%,
+    transparent 80%
+  );
+}
+
+/* MAIN PANEL */
+
+.wheel8-login-screen .wheel8-login-box {
+  position: relative;
+  flex: 0 0 auto;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 465px;
+  margin: auto;
+  padding: 0;
+
+  overflow: hidden;
+  text-align: center;
+
+  background:
+    linear-gradient(
+      155deg,
+      #202e24 0%,
+      #151f19 30%,
+      #0e1511 100%
+    );
+
+  border: 1px solid #5c6653;
+  border-radius: 16px;
+
+  box-shadow:
+    0 30px 90px #000000a8,
+    0 0 55px #d7ba7910,
+    inset 0 1px 0 #ffffff19;
+}
+
+.wheel8-login-box::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+
+  background: linear-gradient(
+    135deg,
+    #e9cb8220,
+    transparent 38%
+  );
+}
+
+/* TOP BAR */
+
+.login-topbar {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+
+  padding: 16px 23px;
+
+  background: #0b120eaa;
+  border-bottom: 1px solid #39463b;
+}
+
+.login-topbar-left {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+
+  color: #b1c0ae;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.6px;
+}
+
+.login-status-dot,
+.security-small-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  flex: 0 0 auto;
+
+  background: #9ecb9e;
+  border-radius: 50%;
+  box-shadow: 0 0 9px #9ecb9e66;
+}
+
+.login-topbar-right {
+  color: #c6ae76;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1px;
+}
+
+/* EMBLEM */
+
+.login-emblem-area {
+  position: relative;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+
+  gap: 15px;
+  padding-top: 32px;
+}
+
+.login-emblem {
+  position: relative;
+  width: 100px;
+  height: 100px;
+
+  display: grid;
+  place-items: center;
+
+  color: #e7cc90;
+  background: linear-gradient(145deg, #324235, #121b15);
+
+  border: 1px solid #877750;
+  border-radius: 25px;
+
+  box-shadow:
+    0 10px 30px #0006,
+    inset 0 1px 0 #ffffff24,
+    0 0 35px #c2a77316;
+}
+
+.login-emblem::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border: 1px solid #85704b33;
+  border-radius: 31px;
+  pointer-events: none;
+}
+
+.login-emblem svg {
+  display: block;
+  filter: drop-shadow(0 2px 8px #d4b46b40);
+}
+
+.login-emblem-caption {
+  color: #96a497;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+}
+
+/* HEADING */
+
+.login-heading {
+  padding: 27px 22px 0;
+}
+
+.login-eyebrow {
+  color: #c6aa76;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: 2.3px;
+}
+
+.wheel8-login-screen .wheel8-login-title {
+  margin: 11px 0 10px;
+
+  color: #f1f1e8;
+  font-size: clamp(25px, 5vw, 35px);
+  font-weight: 850;
+  line-height: 1.15;
+  letter-spacing: 1.2px;
+  text-shadow: none;
+}
+
+.wheel8-login-title span {
+  color: #d8bb7e;
+}
+
+.wheel8-login-screen{
+  margin: 0;
+  color: #a0b1a3;
+
+  font-size: 13px;
+  font-weight: 450;
+  line-height: 1.5;
+  letter-spacing: 0;
+}
+
+/* DIVIDER */
+
+.login-section-divider {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  margin: 31px 28px 26px;
+}
+
+.login-section-divider > span {
+  height: 1px;
+  flex: 1;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #786c4f
+  );
+}
+
+.login-section-divider > span:last-child {
+  transform: rotate(180deg);
+}
+
+.login-section-divider i {
+  color: #a99873;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 800;
+  letter-spacing: 1.3px;
+  white-space: nowrap;
+}
+
+/* PASSWORD FIELD */
+
+.login-field {
+  margin: 0 28px;
+  text-align: left;
+}
+
+.login-field-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 11px;
+}
+
+.wheel8-login-screen .login-field-heading label {
+  display: block;
+  margin: 0;
+
+  color: #d3d7c9;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 1.5px;
+}
+
+.login-field-number {
+  color: #7f907f;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.login-input-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  width: 100%;
+  height: 58px;
+
+  background: #09120d;
+  border: 1px solid #485a49;
+  border-radius: 9px;
+  transition: border-color .2s, box-shadow .2s;
+}
+
+.login-input-wrap:focus-within {
+  border-color: #d4b77b;
+  box-shadow: 0 0 0 3px #d4b77b14;
+}
+
+.login-input-icon {
+  position: absolute;
+  left: 17px;
+  width: 20px;
+  height: 20px;
+  color: #b49d71;
+  pointer-events: none;
+}
+
+.wheel8-login-screen #wheel8AdminPassword {
+  display: block;
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  height: 100%;
+
+  padding: 0 47px 0 49px;
+
+  background: transparent;
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+
+  color: #f0eddf;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 550;
+  letter-spacing: 1px;
+}
+
+.wheel8-login-screen #wheel8AdminPassword::placeholder {
+  color: #697d6e;
+  font-weight: 450;
+  letter-spacing: 0;
+}
+
+.login-password-toggle {
+  position: absolute;
+  right: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+
+  width: 38px;
+  height: 38px;
+  display: grid;
+  place-items: center;
+
+  padding: 0;
+  background: transparent;
+  border: 0;
+  border-radius: 7px;
+
+  color: #8e9f90;
+  cursor: pointer;
+}
+
+.login-password-toggle:hover {
+  color: #e5c88b;
+  background: #ffffff08;
+}
+
+.login-password-toggle:focus-visible {
+  outline: 2px solid #d4b77b;
+  outline-offset: 1px;
+}
+
+/* LOGIN BUTTON */
+
+.wheel8-login-screen #wheel8LoginBtn.login-submit {
+  position: relative;
+  width: calc(100% - 56px);
+  min-height: 58px;
+  margin: 21px 28px 0;
+  padding: 0 17px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+
+  color: #171d12;
+  background: linear-gradient(
+    180deg,
+    #eddaa8 0%,
+    #d9bd80 46%,
+    #ae8950 100%
+  );
+
+  border: 1px solid #f1dda9;
+  border-radius: 9px;
+
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 850;
+  letter-spacing: .8px;
+  box-shadow: 0 5px 18px #0005;
+
+  cursor: pointer;
+  transition: filter .2s, transform .2s;
+}
+
+.wheel8-login-screen #wheel8LoginBtn:hover:not(:disabled) {
+  filter: brightness(1.08);
+}
+
+.wheel8-login-screen #wheel8LoginBtn:active:not(:disabled) {
+  transform: scale(.985);
+}
+
+.login-btn-symbol {
+  font-size: 23px;
+  font-weight: 500;
+}
+
+.login-btn-arrow {
+  font-size: 22px;
+  font-weight: 450;
+}
+
+.wheel8-login-screen #wheel8LoginBtn:disabled {
+  cursor: wait;
+  opacity: .55;
+}
+
+/* LOGIN ERROR / STATUS */
+
+.wheel8-login-screen #wheel8LoginMessage {
+  min-height: 19px;
+  margin: 14px 28px 0;
+
+  color: #f19a8f;
+  font-size: 12px;
+  font-weight: 650;
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* SECURITY INFO */
+
+.login-security-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  margin: 5px 28px 26px;
+  padding-top: 14px;
+
+  border-top: 1px solid #ffffff0c;
+}
+
+.login-security-mark {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+
+  color: #a1c5a1;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: .65px;
+}
+
+.login-security-info > span {
+  color: #778878;
+  font-size: 9px;
+  font-weight: 650;
+  text-align: right;
+  letter-spacing: .3px;
+}
+
+/* FOOTER */
+
+.wheel8-login-screen .wheel8-login-footer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 7px;
+
+  margin: 0;
+  padding: 17px 10px;
+
+  border-top: 1px solid #38443a;
+  background: #0c130f99;
+
+  color: #758778;
+  font-size: 9px;
+  font-weight: 750;
+  letter-spacing: 1px;
+}
+
+.login-footer-separator {
+  color: #c4a96f;
+}
+
+.login-footer-rule {
+  display: none;
+}
+
+.login-background-label {
+  position: absolute;
+  bottom: 17px;
+  left: 12px;
+  right: 12px;
+
+  color: #647769;
+  font-size: 9px;
+  font-weight: 700;
+  text-align: center;
+  letter-spacing: 1.6px;
+  pointer-events: none;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+  .wheel8-login-screen {
+    padding: 14px;
+  }
+
+  .wheel8-login-screen .wheel8-login-box {
+    max-width: 430px;
+    border-radius: 13px;
+  }
+
+  .login-topbar {
+    padding: 13px 17px;
+  }
+
+  .login-topbar-left,
+  .login-topbar-right {
+    font-size: 9px;
+  }
+
+  .login-emblem-area {
+    padding-top: 27px;
+  }
+
+  .login-emblem {
+    width: 84px;
+    height: 84px;
+    border-radius: 20px;
+  }
+
+  .login-emblem svg {
+    width: 42px;
+    height: 42px;
+  }
+
+  .login-heading {
+    padding-top: 24px;
+  }
+
+  .login-eyebrow {
+    font-size: 9px;
+    letter-spacing: 1.7px;
+  }
+
+  .wheel8-login-screen .wheel8-login-title {
+    font-size: clamp(24px, 7vw, 30px);
+  }
+
+  .wheel8-login-screen{
+    font-size: 12px;
+  }
+
+  .login-section-divider {
+    margin: 27px 20px 23px;
+    gap: 8px;
+  }
+
+  .login-field {
+    margin: 0 19px;
+  }
+
+  .login-input-wrap {
+    height: 55px;
+  }
+
+  .wheel8-login-screen #wheel8LoginBtn.login-submit {
+    width: calc(100% - 38px);
+    min-height: 55px;
+    margin: 19px 19px 0;
+    font-size: 12px;
+    padding: 0 13px;
+  }
+
+  .wheel8-login-screen #wheel8LoginMessage {
+    margin: 13px 19px 0;
+  }
+
+  .login-security-info {
+    margin: 5px 19px 20px;
+  }
+
+  .login-security-mark,
+  .login-security-info > span {
+    font-size: 8px;
+  }
+
+  .login-background-label {
+    display: none;
+  }
+}
+
+/* SHORT SCREENS */
+
+@media (max-height: 680px) {
+  .login-emblem-area {
+    padding-top: 18px;
+    gap: 9px;
+  }
+
+  .login-emblem {
+    width: 68px;
+    height: 68px;
+  }
+
+  .login-emblem svg {
+    width: 36px;
+    height: 36px;
+  }
+
+  .login-heading {
+    padding-top: 16px;
+  }
+
+  .login-section-divider {
+    margin-top: 18px;
+    margin-bottom: 16px;
+  }
+
+  .login-security-info {
+    margin-bottom: 13px;
+  }
+}
+
+
+/* =====================================
+   WHEEL8 ADMIN - IMAGE LOGO
+===================================== */
+
+.login-emblem-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 17px;
+  padding-top: 32px;
+}
+
+.wheel8-login-screen .login-emblem {
+  position: relative;
+
+  width: 150px;
+  height: 150px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: none;
+  border: none;
+  border-radius: 0;
+
+  box-shadow: none;
+  overflow: visible;
+}
+
+.wheel8-login-screen .login-emblem::before {
+  display: none;
+}
+
+.login-emblem-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+
+  filter:
+    drop-shadow(0 9px 15px rgba(0,0,0,.65))
+    drop-shadow(0 0 18px rgba(212,180,107,.18));
+
+  transition: transform .3s ease;
+}
+
+.login-emblem-img:hover {
+  transform: scale(1.05);
+}
+
+.login-emblem-caption {
+  color: #b9a47a;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 1.8px;
+  text-align: center;
+}
+
+/* MOBILE */
+
+@media (max-width: 600px) {
+  .wheel8-login-screen .login-emblem {
+    width: 125px;
+    height: 125px;
+  }
+
+  .login-emblem-area {
+    padding-top: 25px;
+    gap: 13px;
+  }
+}
+
+/* MÀN HÌNH THẤP */
+
+@media (max-height: 680px) {
+  .wheel8-login-screen .login-emblem {
+    width: 95px;
+    height: 95px;
+  }
+}
+
+
+
 </style>
 </head>
 
 
 <body>
 
-<!-- 🔐 WHEEL8 ADMIN LOGIN -->
+
+<!-- =========================================
+     TACTICAL ADMIN ACCESS V3
+========================================= -->
+
 <div id="wheel8LoginScreen" class="wheel8-login-screen">
+
+  <div class="login-atmosphere"></div>
+  <div class="login-grid-pattern"></div>
 
   <form id="wheel8LoginForm" class="wheel8-login-box">
 
-    <div class="wheel8-login-icon">🛡️</div>
+    <!-- TOP STATUS -->
+    <div class="login-topbar">
+      <div class="login-topbar-left">
+        <span class="login-status-dot"></span>
+        <span>SECURITY GATEWAY</span>
+      </div>
 
-    <div class="wheel8-login-title">
-      COMMAND CENTER
+      <span class="login-topbar-right">ADMIN</span>
     </div>
 
-    <div class="wheel8-login-sub">
-      WHEEL8 ADMIN ACCESS
-    </div>
 
-    <div class="wheel8-login-line"></div>
+<!-- EMBLEM LOGO -->
+<div class="login-emblem-area">
 
-    <label for="wheel8AdminPassword">
-      MẬT KHẨU QUẢN TRỊ
-    </label>
-
-    <input
-      id="wheel8AdminPassword"
-      type="password"
-      placeholder="Nhập mật khẩu admin"
-      autocomplete="off"
-      maxlength="256"
-      required
+  <div class="login-emblem">
+    <img
+      src="/assets/police/wheel8-admin-logo.png"
+      alt="Wheel8 Command Center"
+      class="login-emblem-img"
+      draggable="false"
     >
+  </div>
 
-    <button id="wheel8LoginBtn" type="submit">
-      🔓 XÁC THỰC QUYỀN TRUY CẬP
+  <span class="login-emblem-caption">
+    AUTHORIZED PERSONNEL ONLY
+  </span>
+
+</div>
+
+
+    <!-- HEADING -->
+    <div class="login-heading">
+      <span class="login-eyebrow">MILITARY CONTROL SYSTEM</span>
+
+      <h1 class="wheel8-login-title">
+        COMMAND <span>CENTER</span>
+      </h1>
+
+ 
+    </div>
+
+    <div class="login-section-divider">
+      <span></span>
+      <i>ACCESS VERIFICATION</i>
+      <span></span>
+    </div>
+
+    <!-- PASSWORD -->
+    <div class="login-field">
+      <div class="login-field-heading">
+        <label for="wheel8AdminPassword">
+          ADMIN PASSWORD
+        </label>
+
+        <span class="login-field-number">01 / 01</span>
+      </div>
+
+      <div class="login-input-wrap">
+        <svg viewBox="0 0 24 24"
+             class="login-input-icon"
+             fill="none"
+             stroke="currentColor"
+             stroke-width="1.8">
+          <rect x="5" y="10" width="14" height="11" rx="2"/>
+          <path d="M8 10V7a4 4 0 0 1 8 0v3"/>
+        </svg>
+
+        <input
+          id="wheel8AdminPassword"
+          type="password"
+          placeholder="Input password"
+          autocomplete="current-password"
+          maxlength="256"
+          required
+        >
+
+        <button
+          id="toggleWheel8Password"
+          type="button"
+          class="login-password-toggle"
+          aria-label="Hiện mật khẩu"
+          aria-pressed="false"
+        >
+          <svg viewBox="0 0 24 24"
+               width="20"
+               height="20"
+               fill="none"
+               stroke="currentColor"
+               stroke-width="1.7"
+               stroke-linecap="round"
+               stroke-linejoin="round">
+            <path d="M2 12s4-7 10-7 10 7 10 7-4 7-10 7S2 12 2 12Z"/>
+            <circle cx="12" cy="12" r="3"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- LOGIN BUTTON -->
+    <button
+      id="wheel8LoginBtn"
+      class="login-submit"
+      type="submit"
+    >
+      <span class="login-btn-symbol">⌁</span>
+      <span>LOGIN</span>
+      <span class="login-btn-arrow">→</span>
     </button>
 
-    <div id="wheel8LoginMessage"></div>
+    <!-- MESSAGE -->
+    <div
+      id="wheel8LoginMessage"
+      role="status"
+      aria-live="polite"
+    ></div>
 
+    <!-- SECURITY INFO -->
+    <div class="login-security-info">
+      <div class="login-security-mark">
+        <span class="security-small-dot"></span>
+        SECURE AUTHENTICATION
+      </div>
+
+      <span>ENCRYPTED CONNECTION REQUIRED</span>
+    </div>
+
+    <!-- FOOTER -->
     <div class="wheel8-login-footer">
-      SECURE ADMIN CONTROL SYSTEM
+      <div class="login-footer-rule"></div>
+
+      <span>WHEEL8 COMMAND SYSTEM</span>
+      <span class="login-footer-separator">•</span>
+      <span>RESTRICTED ACCESS</span>
     </div>
 
   </form>
 
+  <div class="login-background-label">
+    TACTICAL OPERATIONS · ADMINISTRATION TERMINAL
+  </div>
+
 </div>
+
 
 
 <!-- =====================================
@@ -3227,6 +4098,44 @@ div.innerHTML = `
   })
 
 })
+
+
+
+// ==========================================
+// SHOW / HIDE WHEEL8 ADMIN PASSWORD
+// ==========================================
+
+const toggleWheel8Password =
+  document.getElementById("toggleWheel8Password");
+
+if (toggleWheel8Password && wheel8LoginInput) {
+
+  toggleWheel8Password.addEventListener("click", () => {
+
+    const isHidden =
+      wheel8LoginInput.type === "password";
+
+    wheel8LoginInput.type = isHidden
+      ? "text"
+      : "password";
+
+    toggleWheel8Password.setAttribute(
+      "aria-pressed",
+      String(isHidden)
+    );
+
+    toggleWheel8Password.setAttribute(
+      "aria-label",
+      isHidden ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+    );
+
+    toggleWheel8Password.style.color =
+      isHidden ? "#e5c88b" : "";
+
+    wheel8LoginInput.focus();
+  });
+}
+
 
 
 </script>
