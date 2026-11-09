@@ -13546,6 +13546,57 @@ io.on("connection", (socket) => {
     });
   });
 
+
+  
+// =======================================
+// MOBILE GAME FRAME RELAY
+// =======================================
+
+socket.on("w8share:frame", (data) => {
+
+  const token = String(data?.token || "");
+  const session = wheel8ScreenShares.get(token);
+
+  if (!session) return;
+
+  // Chỉ chủ phiên mới được gửi ảnh
+  if (
+    session.hostId !== socket.id ||
+    socket.data.w8Hosting !== token
+  ) return;
+
+  if (session.viewers.size === 0) return;
+
+  const image = data?.image;
+
+  if (
+    typeof image !== "string" ||
+    !image.startsWith("data:image/jpeg;base64,") ||
+    image.length > 180000
+  ) return;
+
+  // Giới hạn tốc độ gửi ảnh
+  const now = Date.now();
+
+  if (now - (session.lastFrameAt || 0) < 900) {
+    return;
+  }
+
+  session.lastFrameAt = now;
+
+  // Phát ảnh tới các người xem của phiên
+  for (const viewerId of session.viewers) {
+
+    io.to(viewerId).volatile.emit("w8share:frame", {
+      image
+    });
+
+  }
+
+});
+
+
+
   // Chuyển tín hiệu WebRTC
   socket.on("w8share:signal", (data) => {
     const token = String(data?.token || "");

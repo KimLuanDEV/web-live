@@ -11,6 +11,8 @@ user-scalable=no">
 
 <script src="/socket.io/socket.io.js"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
 <style>
 
 
@@ -5947,8 +5949,162 @@ function w8ClosePeer(viewerId) {
   w8Peers.delete(viewerId);
 }
 
+
+
+/* =========================================
+   MOBILE GAME SCREEN BROADCAST
+   Android + iPhone
+========================================= */
+
+let w8MobileActive = false;
+let w8MobileWatchers = 0;
+let w8MobileTimer = null;
+let w8MobileLoopSeq = 0;
+
+// Chụp riêng giao diện game 430 x 870
+async function w8CaptureMobileFrame() {
+
+  if (typeof window.html2canvas !== "function") {
+    throw new Error("Không tải được html2canvas.");
+  }
+
+  const app = document.getElementById("app");
+
+  if (!app) {
+    throw new Error("Không tìm thấy giao diện game.");
+  }
+
+  const canvas = await html2canvas(app, {
+
+    backgroundColor: "#000",
+    width: 430,
+    height: 870,
+    scale: 0.7,
+
+    useCORS: true,
+    allowTaint: false,
+    logging: false,
+
+    scrollX: 0,
+    scrollY: 0,
+
+    windowWidth: 430,
+    windowHeight: 870,
+
+    // Không hiển thị nút chia sẻ trong ảnh phát
+    ignoreElements: el =>
+      el.id === "w8ShareButton" ||
+      el.id === "w8SharePanel",
+
+    // Bỏ tỷ lệ co giãn chỉ trong bản sao
+    // Không ảnh hưởng giao diện thật
+    onclone: clonedDoc => {
+
+      const game = clonedDoc.getElementById("app");
+      const body = clonedDoc.body;
+
+      game.style.position = "absolute";
+      game.style.left = "0px";
+      game.style.top = "0px";
+      game.style.transform = "none";
+
+      game.style.width = "430px";
+      game.style.height = "870px";
+
+      body.style.position = "static";
+      body.style.display = "block";
+      body.style.width = "430px";
+      body.style.height = "870px";
+
+    }
+
+  });
+
+  const image = canvas.toDataURL("image/jpeg", 0.48);
+
+  // Giải phóng bitmap sau khi mã hóa
+  canvas.width = 1;
+  canvas.height = 1;
+
+  return image;
+}
+
+// Phát hình ảnh liên tục
+function w8StartMobileBroadcast() {
+
+  const seq = ++w8MobileLoopSeq;
+
+  async function loop() {
+
+    if (
+      !w8MobileActive ||
+      !w8ShareToken ||
+      seq !== w8MobileLoopSeq
+    ) return;
+
+    // Chỉ chụp khi có người đang xem
+    if (w8MobileWatchers > 0 && socket.connected) {
+
+      const token = w8ShareToken;
+
+      try {
+
+        const image = await w8CaptureMobileFrame();
+
+        if (
+          seq === w8MobileLoopSeq &&
+          w8MobileActive &&
+          token === w8ShareToken &&
+          socket.connected
+        ) {
+
+          // Volatile: không giữ ảnh cũ khi mạng chậm
+          socket.volatile.emit("w8share:frame", {
+            token,
+            image
+          });
+
+        }
+
+      } catch (error) {
+
+        console.warn("Mobile screen:", error);
+
+        document.getElementById("w8ShareTip").textContent =
+          "Không chụp được giao diện game.";
+
+      }
+
+    }
+
+    if (
+      w8MobileActive &&
+      w8ShareToken &&
+      seq === w8MobileLoopSeq
+    ) {
+
+      w8MobileTimer = setTimeout(loop, 1000);
+
+    }
+
+  }
+
+  loop();
+}
+
+
+
 // Dừng chia sẻ
 function w8StopShare() {
+
+w8MobileActive = false;
+w8MobileWatchers = 0;
+
+w8MobileLoopSeq++;
+
+clearTimeout(w8MobileTimer);
+w8MobileTimer = null;
+
   const token = w8ShareToken;
   w8ShareToken = "";
 
@@ -5984,13 +6140,22 @@ async function w8ToggleShare() {
 
   if (w8Starting) return;
 
-  if (!navigator.mediaDevices?.getDisplayMedia) {
-    alert(
-      "Trình duyệt này không hỗ trợ chia sẻ màn hình. " +
-      "Hãy thử Chrome/Edge trên máy tính."
-    );
-    return;
-  }
+
+const w8IsMobile =
+  /Android|iPhone|iPad|iPod/i.test(navigator.userAgent) ||
+  (
+    /Macintosh/i.test(navigator.userAgent) &&
+    navigator.maxTouchPoints > 1
+  );
+
+if (
+  !w8IsMobile &&
+  !navigator.mediaDevices?.getDisplayMedia
+) {
+  alert("Trình duyệt không hỗ trợ chia sẻ màn hình.");
+  return;
+}
+
 
   if (!socket.connected) {
     alert("Chưa kết nối máy chủ.");
@@ -6001,29 +6166,41 @@ async function w8ToggleShare() {
 
   try {
 
-    // Bắt buộc gọi khi người dùng trực tiếp bấm nút
-    w8Capture = await navigator.mediaDevices.getDisplayMedia({
-      video: { frameRate: 12 },
-      audio: false
-    });
 
-    const track = w8Capture.getVideoTracks()[0];
+if (w8IsMobile) {
 
-    if (!track) {
-      throw new Error("Không nhận được hình ảnh màn hình.");
-    }
+  // Android / iPhone: kiểm tra khả năng chụp game
+  await w8CaptureMobileFrame();
 
-    track.addEventListener(
-      "ended",
-      w8StopShare,
-      { once: true }
-    );
+  w8MobileActive = true;
 
-    w8IceServers = await w8LoadIce();
+} else {
 
-    if (track.readyState !== "live") {
-      throw new Error("Bạn đã dừng chia sẻ.");
-    }
+  // Máy tính: giữ chức năng WebRTC cũ
+  w8Capture = await navigator.mediaDevices.getDisplayMedia({
+    video: { frameRate: 12 },
+    audio: false
+  });
+
+  const track = w8Capture.getVideoTracks()[0];
+
+  if (!track) {
+    throw new Error("Không nhận được video.");
+  }
+
+  track.addEventListener(
+    "ended",
+    w8StopShare,
+    { once: true }
+  );
+
+  w8IceServers = await w8LoadIce();
+
+  if (track.readyState !== "live") {
+    throw new Error("Bạn đã dừng chia sẻ.");
+  }
+
+}
 
     // Đăng ký phiên chia sẻ lên server
     const reply = await new Promise(resolve => {
@@ -6072,6 +6249,16 @@ async function w8ToggleShare() {
 
     document.getElementById("w8SharePanel").hidden = false;
 
+
+if (w8IsMobile) {
+
+  document.getElementById("w8ShareTip").textContent =
+    "Đang chia sẻ trang game. Giữ trang mở để phát.";
+
+  w8StartMobileBroadcast();
+
+}
+
   } catch (error) {
 
     console.error("W8 share error:", error);
@@ -6111,10 +6298,19 @@ async function w8CopyLink() {
 // Có người vào xem
 socket.on("w8share:viewer", async ({ viewerId, count }) => {
 
-  if (!w8ShareToken || !w8Capture) return;
+ 
+if (!w8ShareToken) return;
 
-  document.getElementById("w8ShareCount").textContent =
-    count + " người xem";
+w8MobileWatchers = count;
+
+document.getElementById("w8ShareCount").textContent =
+  count + " người xem";
+
+// Điện thoại dùng truyền ảnh, không tạo WebRTC peer
+if (w8MobileActive || !w8Capture) return;
+
+
+
 
   w8ClosePeer(viewerId);
 
@@ -6229,6 +6425,8 @@ socket.on("w8share:left", ({ viewerId, count }) => {
   document.getElementById("w8ShareCount").textContent =
     count + " người xem";
 
+    w8MobileWatchers = count;
+    
 });
 
 // Mất kết nối hoặc thoát trang

@@ -97,6 +97,27 @@ video {
   font-size: 11px;
   line-height: 1.6;
 }
+
+
+.video-wrap {
+  position: relative;
+}
+
+#screenFrame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  background: #000;
+}
+
+#screenFrame[hidden] {
+  display: none !important;
+}
+
+
+
 </style>
 </head>
 
@@ -120,6 +141,13 @@ video {
       playsinline
       controls>
     </video>
+
+<img
+  id="screenFrame"
+  alt="Màn hình game đang chia sẻ"
+  hidden>
+
+
   </div>
 
   <button class="fullscreen-btn"
@@ -161,6 +189,14 @@ function closePeer() {
   pc = null;
   pendingIce = [];
   video.srcObject = null;
+
+const frame = document.getElementById("screenFrame");
+
+frame.hidden = true;
+frame.removeAttribute("src");
+
+video.style.display = "block";
+
 
 }
 
@@ -356,13 +392,46 @@ socket.on("disconnect", () => {
 // Fullscreen
 function fullScreen() {
 
-  if (video.requestFullscreen) {
-    video.requestFullscreen();
-  } else if (video.webkitEnterFullscreen) {
-    video.webkitEnterFullscreen();
+  const frame = document.getElementById("screenFrame");
+  const video = document.getElementById("screen");
+
+  const target = frame.hidden
+    ? video
+    : document.querySelector(".video-wrap");
+
+  if (target.requestFullscreen) {
+    target.requestFullscreen();
+  } else if (target.webkitEnterFullscreen) {
+    target.webkitEnterFullscreen();
   }
 
 }
+
+
+// Nhận ảnh màn hình game từ điện thoại
+socket.on("w8share:frame", (data) => {
+
+  if (
+    typeof data?.image !== "string" ||
+    !data.image.startsWith("data:image/jpeg;base64,")
+  ) return;
+
+  const frame = document.getElementById("screenFrame");
+  const video = document.getElementById("screen");
+
+  frame.src = data.image;
+  frame.hidden = false;
+
+  // Ẩn video WebRTC nếu đang xem dạng ảnh
+  video.style.display = "none";
+
+  document.getElementById("status").textContent =
+    "🔴 ĐANG XEM TRỰC TIẾP";
+
+});
+
+
+
 </script>
 
 </body>
