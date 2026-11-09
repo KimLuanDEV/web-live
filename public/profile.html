@@ -17234,6 +17234,57 @@ body.page-profile #profileSheet .ps-footer-brand {
 
 
 
+/* ==========================================
+   NÚT ĐỔI COVER - GÓC TRÁI PHÍA DƯỚI
+========================================== */
+
+body.page-profile .profile-cover .cover-actions {
+  position: absolute !important;
+
+  left: 12px !important;
+  bottom: 12px !important;
+
+  right: auto !important;
+  top: auto !important;
+
+  z-index: 50 !important;
+  pointer-events: auto;
+}
+
+body.page-profile .profile-cover #btnChangeCover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
+
+  background: rgba(8, 14, 20, .78);
+  border: 1px solid rgba(255, 255, 255, .45);
+  border-radius: 12px;
+
+  color: #fff;
+  font-size: 21px;
+
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .5);
+
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+body.page-profile .profile-cover #btnChangeCover:active {
+  transform: scale(.94);
+  background: rgba(40, 55, 70, .9);
+}
+
+
+
+
+
 
   </style>
 </head>
@@ -17250,7 +17301,7 @@ body.page-profile #profileSheet .ps-footer-brand {
   <!-- PROFILE COVER -->
 <div class="profile-cover">
   <img id="coverPreview"
-       src="https://i.ibb.co/3mY0H4Xh/Chat-GPT-Image-Jan-19-2026-09-44-27-AM.jpg"
+       src="https://i.ibb.co/GvJWn19q/icon-192.png"
        alt="cover">
 
   <div class="cover-actions">

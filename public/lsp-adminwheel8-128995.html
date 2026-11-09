@@ -3328,6 +3328,188 @@ body:not(.wheel8-admin-unlocked) .tactical-footer {
 
 
 
+/* ==========================================
+   MILITARY ADMIN NOTIFICATION
+========================================== */
+
+.wheel8-admin-notice {
+  position: fixed;
+
+  top: calc(20px + env(safe-area-inset-top));
+  left: 50%;
+
+  width: min(390px, calc(100% - 28px));
+  min-height: 90px;
+
+  padding: 17px 40px 17px 15px;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  background:
+    linear-gradient(
+      140deg,
+      #354932 0%,
+      #1a2c1c 45%,
+      #0b160e 100%
+    );
+
+  border: 1px solid #b79b5d;
+  border-left: 4px solid #e7c37a;
+  border-radius: 9px;
+
+  box-shadow:
+    0 15px 40px rgba(0,0,0,.75),
+    inset 0 1px 0 rgba(255,255,255,.13);
+
+  z-index: 1000005;
+
+  opacity: 0;
+  visibility: hidden;
+
+  transform: translate(-50%, -25px) scale(.96);
+
+  transition:
+    opacity .25s ease,
+    transform .3s ease,
+    visibility .25s ease;
+}
+
+.wheel8-admin-notice[hidden] {
+  display: none !important;
+}
+
+.wheel8-admin-notice.is-visible {
+  opacity: 1;
+  visibility: visible;
+  transform: translate(-50%, 0) scale(1);
+}
+
+/* ICON CẢNH BÁO */
+
+.wheel8-notice-icon {
+  flex-shrink: 0;
+
+  width: 46px;
+  height: 46px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background:
+    linear-gradient(145deg, #655334, #302b1b);
+
+  border: 1px solid #c5a360;
+  border-radius: 9px;
+
+  color: #ffdc91;
+  font-size: 26px;
+  font-weight: 900;
+
+  text-shadow: 0 0 10px #ffcc6688;
+  box-shadow: inset 0 0 12px #0006;
+}
+
+/* NỘI DUNG */
+
+.wheel8-notice-content {
+  min-width: 0;
+  flex: 1;
+}
+
+.wheel8-notice-title {
+  color: #e8c77d;
+
+  font-size: 12px;
+  font-weight: 1000;
+  letter-spacing: 1.4px;
+
+  margin-bottom: 6px;
+}
+
+.wheel8-notice-message {
+  color: #f3f5eb;
+
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.5;
+
+  overflow-wrap: anywhere;
+}
+
+.wheel8-notice-sub {
+  margin-top: 5px;
+
+  color: #a6b8a0;
+  font-size: 10px;
+}
+
+/* NÚT ĐÓNG */
+
+.wheel8-notice-close {
+  position: absolute;
+
+  top: 10px;
+  right: 10px;
+
+  width: 25px;
+  height: 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(255,255,255,.06);
+  border: 1px solid #596c4d;
+  border-radius: 5px;
+
+  color: #e4d6b6;
+  font-size: 12px;
+
+  cursor: pointer;
+}
+
+/* THANH ĐẾM THỜI GIAN */
+
+.wheel8-notice-progress {
+  position: absolute;
+
+  bottom: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background:
+    linear-gradient(
+      90deg,
+      #806335,
+      #efce81,
+      #b18a45
+    );
+
+  border-radius: 0 0 7px 7px;
+
+  transform-origin: left;
+}
+
+.wheel8-admin-notice.is-visible
+.wheel8-notice-progress {
+  animation: wheel8NoticeTimer 3.5s linear forwards;
+}
+
+@keyframes wheel8NoticeTimer {
+  from { transform: scaleX(1); }
+  to { transform: scaleX(0); }
+}
+
+
+
+
+
 </style>
 </head>
 
@@ -3700,6 +3882,54 @@ body:not(.wheel8-admin-unlocked) .tactical-footer {
 
 </main>
 
+
+
+<!-- ==========================================
+     MILITARY ADMIN NOTIFICATION
+========================================== -->
+
+<div
+  id="wheel8AdminNotice"
+  class="wheel8-admin-notice"
+  role="alert"
+  aria-live="assertive"
+  hidden>
+
+  <div class="wheel8-notice-icon">
+    ⚠
+  </div>
+
+  <div class="wheel8-notice-content">
+
+    <div class="wheel8-notice-title">
+      COMMAND WARNING
+    </div>
+
+    <div
+      id="wheel8NoticeMessage"
+      class="wheel8-notice-message">
+    </div>
+
+    <div class="wheel8-notice-sub">
+      Thao tác không được thực hiện
+    </div>
+
+  </div>
+
+  <button
+    class="wheel8-notice-close"
+    type="button"
+    onclick="hideWheel8Notice()"
+    aria-label="Đóng thông báo">
+    ✕
+  </button>
+
+  <div class="wheel8-notice-progress"></div>
+
+</div>
+
+
+
 <footer class="tactical-footer">
   MILITIRY COMMAND SYSTEM
   <span>·</span>
@@ -3908,6 +4138,69 @@ function highlightOverride(selector) {
 // 🛠 OVERRIDE WHEEL8 - AUTH REQUIRED
 // ==========================================
 
+
+
+/* ==========================================
+   MILITARY NOTIFICATION SYSTEM
+========================================== */
+
+let wheel8NoticeTimer = null;
+let wheel8NoticeHideTimer = null;
+
+function showWheel8Notice(message) {
+
+  const notice =
+    document.getElementById("wheel8AdminNotice");
+
+  const text =
+    document.getElementById("wheel8NoticeMessage");
+
+  if (!notice || !text) return;
+
+  clearTimeout(wheel8NoticeTimer);
+  clearTimeout(wheel8NoticeHideTimer);
+
+  text.textContent = String(
+    message || "Có lỗi xảy ra."
+  );
+
+  // Khởi động lại hiệu ứng nếu thông báo liên tục
+  notice.classList.remove("is-visible");
+  notice.hidden = false;
+
+  void notice.offsetWidth;
+
+  requestAnimationFrame(() => {
+    notice.classList.add("is-visible");
+  });
+
+  // Tự động đóng sau 3.5 giây
+  wheel8NoticeTimer = setTimeout(() => {
+    hideWheel8Notice();
+  }, 3500);
+
+}
+
+function hideWheel8Notice() {
+
+  const notice =
+    document.getElementById("wheel8AdminNotice");
+
+  if (!notice) return;
+
+  clearTimeout(wheel8NoticeTimer);
+  clearTimeout(wheel8NoticeHideTimer);
+
+  notice.classList.remove("is-visible");
+
+  wheel8NoticeHideTimer = setTimeout(() => {
+    notice.hidden = true;
+  }, 300);
+
+}
+
+
+
 function sendWheel8Override(data, selector) {
 
   if (!wheel8AdminUnlocked || !socket.connected) {
@@ -3920,20 +4213,22 @@ function sendWheel8Override(data, selector) {
     data,
     (err, result) => {
 
-      if (err) {
-        alert("Không nhận được phản hồi từ server.");
-        return;
-      }
+if (err) {
+  showWheel8Notice("Không nhận được phản hồi từ server.");
+  return;
+}
+if (!result?.ok) {
 
-      if (!result?.ok) {
-        alert(result?.message || "Không thể cập nhật.");
+  showWheel8Notice(
+    result?.message || "Không thể cập nhật."
+  );
 
-        if (result?.message?.includes("chưa xác thực")) {
-          lockWheel8Admin("Vui lòng đăng nhập lại.");
-        }
+  if (result?.message?.includes("chưa xác thực")) {
+    lockWheel8Admin("Vui lòng đăng nhập lại.");
+  }
 
-        return;
-      }
+  return;
+}
 
       highlightOverride(selector);
     }

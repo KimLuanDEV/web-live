@@ -9631,7 +9631,7 @@ for (const [uid, sockets] of activeUsers.entries()) {
          
 avatar:
   normalizeAvatar(profile.avatar) ||
-  "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+  "https://i.ibb.co/GvJWn19q/icon-192.png" +
   encodeURIComponent(displayName),
 
 
@@ -10292,7 +10292,7 @@ if (
       uid,
       name: p.name || uid,
       avatar: normalizeAvatar(p.avatar) ||
-        "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
+        "https://i.ibb.co/GvJWn19q/icon-192.png" + uid,
       bank: bank.name || "",
       account: bank.account || "",
       owner: bank.owner || "",
@@ -10320,7 +10320,7 @@ app.get("/api/all-users", (req,res)=>{
     list.push({
       uid,
       name: p.name || uid,
-      avatar: p.avatar || "https://api.dicebear.com/7.x/thumbs/svg?seed=" + uid,
+      avatar: p.avatar || "https://i.ibb.co/GvJWn19q/icon-192.png" + uid,
       cover: p.cover || "",
       bio: p.bio || "",
       level: p.level || 1,
