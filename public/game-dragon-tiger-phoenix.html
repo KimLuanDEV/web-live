@@ -1815,178 +1815,696 @@ animation:loadingPulse 1.5s infinite;
 }
 
 
+
+
+/* =============================================
+   DRAGON - TIGER - PHOENIX
+   FULL BACKGROUND + HITBOX
+   REFERENCE IMAGE: 882 x 1784
+   MOBILE FRAME: MAX 430px
+============================================= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  background: #000;
+}
+
+body::before {
+  display: none;
+}
+
+/* ========== BACKGROUND ========== */
+
+.dtp-screen {
+  position: relative;
+  isolation: isolate;
+  z-index: 1;
+
+  width: 100%;
+  max-width: 430px;
+
+  height: 100vh;
+  height: 100dvh;
+
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+
+  background-image:
+    url("/assets/dtp/dragon_tiger_phoenix_casino_interface.png");
+
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 100% 100%;
+
+  touch-action: manipulation;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ========== CLEAR OLD STYLES ========== */
+
+.dtp-screen .dtp-hit,
+.dtp-screen .dtp-beast,
+.dtp-screen .dtp-chip {
+  appearance: none;
+  -webkit-appearance: none;
+
+  position: absolute;
+  display: block;
+
+  margin: 0;
+  padding: 0;
+
+  border: 0 !important;
+  border-radius: 0;
+  outline: none;
+
+  background: transparent !important;
+  box-shadow: none !important;
+
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+
+  transform: none;
+  transition: none;
+
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.dtp-screen .dtp-hit:focus-visible,
+.dtp-screen .dtp-beast:focus-visible,
+.dtp-screen .dtp-chip:focus-visible {
+  outline: 2px solid #ffe1a3 !important;
+  outline-offset: -3px;
+}
+
+/* ========== EXIT / HELP ========== */
+
+.dtp-screen .dtp-exit {
+  left: 1.4%;
+  top: 2.35%;
+  width: 19.8%;
+  height: 3.7%;
+  z-index: 8;
+}
+
+.dtp-screen .dtp-help {
+  right: 1.7%;
+  top: 2.35%;
+  width: 19.1%;
+  height: 3.7%;
+  z-index: 8;
+}
+
+/* ========== LAST 8 RESULTS ========== */
+
+.dtp-screen .dtp-recent {
+  position: absolute;
+
+  left: 14.2%;
+  top: 14.45%;
+
+  width: 71%;
+  height: 3.2%;
+
+  display: grid;
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  align-items: center;
+  gap: 2%;
+
+  padding: 0;
+  margin: 0;
+
+  background: none;
+  border: none;
+  box-shadow: none;
+
+  overflow: hidden;
+  z-index: 5;
+}
+
+.dtp-screen .history-item {
+  width: 100%;
+  height: 100%;
+
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+.dtp-screen .history-icon {
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  filter: drop-shadow(0 0 3px #000);
+}
+
+/* ========== LIVE DATA BASE ========== */
+
+.dtp-screen .dtp-data {
+  position: absolute;
+  z-index: 6;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin: 0;
+  padding: 0 2px;
+
+  background: transparent;
+  border: 0;
+
+  color: #ffe4ac;
+  font-weight: 900;
+  text-align: center;
+
+  white-space: nowrap;
+  overflow: hidden;
+
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+  text-shadow: 0 2px 5px #000;
+}
+
+/* ========== ROUND ========== */
+
+.dtp-screen .dtp-round-value {
+  left: 25%;
+  top: 23.05%;
+
+  width: 19.2%;
+  height: 2.35%;
+
+  font-size: clamp(13px, 4.3vw, 21px);
+}
+
+/* ========== TIMER ========== */
+
+.dtp-screen .dtp-timer-value {
+  left: 54.1%;
+  top: 23.05%;
+
+  width: 19.2%;
+  height: 2.35%;
+
+  font-size: clamp(15px, 4.8vw, 24px);
+  color: #fff0c6;
+}
+
+/* ========== TIMER BAR ========== */
+
+.dtp-screen .dtp-time-track {
+  position: absolute;
+
+  left: 23.9%;
+  top: 26.16%;
+
+  width: 50.6%;
+  height: 1.04%;
+
+  overflow: hidden;
+  border-radius: 20px;
+
+  background: #120b0b;
+  z-index: 6;
+}
+
+.dtp-screen #betBar {
+  display: block;
+  width: 100%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: linear-gradient(
+    90deg,
+    #b86e27,
+    #ffe5a5,
+    #f6b735
+  );
+
+  box-shadow: none;
+  transition: width 1s linear;
+}
+
+/* ========== ANIMAL HITBOXES ========== */
+
+.dtp-screen .dtp-beast {
+  top: 29.85%;
+  height: 30.85%;
+  width: 31.6%;
+
+  max-width: none;
+  aspect-ratio: auto;
+
+  overflow: visible;
+  z-index: 7;
+}
+
+.dtp-screen .dtp-beast::before,
+.dtp-screen .dtp-beast::after {
+  display: none;
+}
+
+/* DRAGON */
+.dtp-screen .dtp-dragon {
+  left: 1.6%;
+}
+
+/* TIGER */
+.dtp-screen .dtp-tiger {
+  left: 34.25%;
+}
+
+/* PHOENIX */
+.dtp-screen .dtp-phoenix {
+  left: 66.9%;
+}
+
+/* CLICK EFFECT */
+.dtp-screen .dtp-beast:active {
+  outline: 2px solid rgba(255,218,135,.75) !important;
+  outline-offset: -4px;
+}
+
+/* WINNER HIGHLIGHT */
+.dtp-screen .dtp-beast.dtp-winner {
+  border-radius: 13px;
+  box-shadow:
+    inset 0 0 0 3px #ffe4a1,
+    0 0 20px rgba(255,202,96,.9) !important;
+}
+
+/* ========== MY BET VALUES ========== */
+
+.dtp-screen .dtp-bet-num {
+  position: absolute;
+
+  left: 8%;
+  bottom: 5%;
+
+  width: 84%;
+  height: 11.5%;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0 2px;
+  margin: 0;
+
+  background: transparent;
+  border: none;
+
+  color: #ffe9b7;
+  font-size: clamp(12px, 3.7vw, 19px);
+  font-weight: 900;
+
+  white-space: nowrap;
+  overflow: hidden;
+
+  text-shadow: 0 2px 5px #000;
+  font-variant-numeric: tabular-nums;
+
+  pointer-events: none;
+}
+
+/* ========== POOL VALUES ========== */
+
+.dtp-screen .dtp-pool {
+  top: 64.15%;
+  height: 2.55%;
+  width: 26.2%;
+
+  font-size: clamp(11px, 3.45vw, 17px);
+}
+
+.dtp-screen .dtp-pool-dragon {
+  left: 3.9%;
+}
+
+.dtp-screen .dtp-pool-tiger {
+  left: 36.8%;
+}
+
+.dtp-screen .dtp-pool-phoenix {
+  left: 69.35%;
+}
+
+/* POOL ANIMATION */
+.dtp-screen .dtp-pool.bump {
+  animation: dtpPoolPulse .25s ease;
+}
+
+@keyframes dtpPoolPulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: .55;
+  }
+}
+
+/* ========== COIN BALANCE ========== */
+
+.dtp-screen .dtp-balance-value {
+  left: 39.8%;
+  top: 76%;
+
+  width: 36%;
+  height: 2.8%;
+
+  justify-content: flex-start;
+
+  padding: 0 4px;
+
+  font-size: clamp(14px, 4.5vw, 22px);
+  color: #ffe2a3;
+}
+
+/* ========== MY HISTORY BUTTON ========== */
+
+.dtp-screen .dtp-history-btn {
+  left: 79.4%;
+  top: 74.4%;
+
+  width: 16%;
+  height: 6.3%;
+
+  z-index: 8;
+}
+
+/* ========== CHIPS HITBOX ========== */
+
+.dtp-screen .dtp-chip {
+  top: 81.7%;
+
+  width: 17.8%;
+  height: 8.25%;
+
+  border-radius: 50%;
+  overflow: visible;
+
+  z-index: 8;
+}
+
+/* Giữ ảnh chip cho JavaScript lấy src
+   nhưng không hiển thị chồng lên background */
+
+.dtp-screen .dtp-chip img {
+  position: absolute;
+  inset: 0;
+
+  width: 100%;
+  height: 100%;
+
+  object-fit: contain;
+  opacity: 0;
+
+  pointer-events: none;
+}
+
+.dtp-screen .dtp-chip span {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* CHIP POSITIONS */
+
+.dtp-screen .dtp-chip-10 {
+  left: 4.7%;
+}
+
+.dtp-screen .dtp-chip-50 {
+  left: 27.6%;
+}
+
+.dtp-screen .dtp-chip-100 {
+  left: 50.7%;
+}
+
+.dtp-screen .dtp-chip-500 {
+  left: 73.8%;
+}
+
+/* ACTIVE CHIP */
+
+.dtp-screen .dtp-chip.active {
+  border-radius: 50%;
+}
+
+.dtp-screen .dtp-chip.active::after {
+  content: "";
+  position: absolute;
+
+  inset: 7%;
+  border-radius: 50%;
+
+  border: 2px solid rgba(255,231,165,.95);
+  box-shadow: 0 0 15px rgba(255,199,82,.65);
+
+  pointer-events: none;
+}
+
+/* ========== FLYING CHIP ========== */
+
+.flying-chip {
+  position: fixed;
+  z-index: 999;
+
+  width: 60px;
+  height: 60px;
+
+  object-fit: contain;
+  pointer-events: none;
+
+  transition: all .6s cubic-bezier(.2,.8,.2,1);
+}
+
+/* ========== RESULT POPUP ========== */
+
+.result {
+  z-index: 100;
+}
+
+.result.hidden {
+  display: none !important;
+}
+
+/* ========== DEBUG HITBOX ========== */
+
+body.dtp-debug .dtp-hit,
+body.dtp-debug .dtp-beast,
+body.dtp-debug .dtp-chip {
+  background: rgba(0,255,120,.2) !important;
+  outline: 1px dashed #00ff88 !important;
+}
+
+body.dtp-debug .dtp-beast {
+  box-shadow: inset 0 0 0 1px #00ff88 !important;
+}
+
+body.dtp-debug .dtp-chip img {
+  opacity: 0;
+}
+
+/* ========== SMALL SCREEN ========== */
+
+@media (max-width: 360px) {
+  .dtp-screen .dtp-bet-num {
+    font-size: 12px;
+  }
+
+  .dtp-screen .dtp-pool {
+    font-size: 11px;
+  }
+
+  .dtp-screen .dtp-balance-value {
+    font-size: 15px;
+  }
+}
+
+
+
 </style>
 </head>
 
 <body>
 
 
-<div class="topbar">
 
-  <div class="back-btn" onclick="location.href='/invest.html'">
-  <img src="/assets/dtp/monkey-exit.png">
-</div>
+<!-- =========================================
+     DTP - FULL BACKGROUND + HITBOX
+========================================= -->
 
-  <div class="game-title">
-    <span style="color:red">DRAGON</span> • 
-    <span style="color:rgb(17,13,231)">TIGER</span> • 
-    <span style="color:rgb(235,129,8)">PHOENIX</span>
+<main class="dtp-screen" id="dtpScreen">
+
+  <!-- EXIT -->
+  <button type="button"
+    class="dtp-hit dtp-exit"
+    aria-label="Exit"
+    onclick="location.href='/invest.html'">
+  </button>
+
+  <!-- HELP -->
+  <button type="button"
+    class="dtp-hit dtp-help"
+    aria-label="How to play"
+    onclick="openGuide()">
+  </button>
+
+  <!-- 8 ROUND HISTORY -->
+  <div id="historyBar"
+    class="history-bar dtp-recent">
   </div>
 
-  <div class="help-btn" onclick="openGuide()">
-  <img src="/assets/dtp/monkey-help.png">
-</div>
+  <!-- ROUND NUMBER -->
+  <div id="roundId"
+    class="dtp-data dtp-round-value">0</div>
 
-</div>
-
-
-<div class="history-bar" id="historyBar"></div>
-
-
-
-<div class="arena">
-
-<div class="arena-hud">
-
-  <div class="round-title">ROUND</div>
-
-  <div class="round-number" id="roundId">0</div>
-
-  <div class="timer-number">
+  <!-- TIMER -->
+  <div class="dtp-data dtp-timer-value">
     <span id="timer">60</span>
   </div>
 
-
-<div class="bet-progress">
-<div id="betBar"></div>
-</div>
-
-
-</div>
-
-<div class="bet-col">
-
-  <div class="bet-card dragon" onclick="placeBet('dragon')">
-
-    <img src="/assets/dtp/dragon.png">
-
-    <div class="bet-overlay">
-      <div class="bet-amount" id="betDragon">0</div>
-    </div>
-
+  <!-- TIME PROGRESS -->
+  <div class="dtp-time-track">
+    <div id="betBar"></div>
   </div>
 
-  <div class="payout-text dragon-pay">WIN x3</div>
+  <!-- ========== DRAGON ========== -->
+  <button type="button"
+    class="bet-card dragon dtp-beast dtp-dragon"
+    aria-label="Bet on Dragon"
+    onclick="placeBet('dragon')">
 
-  <div class="pool-display">
-    <span id="poolDragon">0</span>
-  </div>
+    <span id="betDragon"
+      class="dtp-bet-num">0</span>
+  </button>
 
-</div>
+  <!-- ========== TIGER ========== -->
+  <button type="button"
+    class="bet-card tiger dtp-beast dtp-tiger"
+    aria-label="Bet on Tiger"
+    onclick="placeBet('tiger')">
 
+    <span id="betTiger"
+      class="dtp-bet-num">0</span>
+  </button>
 
-<div class="bet-col">
+  <!-- ========== PHOENIX ========== -->
+  <button type="button"
+    class="bet-card phoenix dtp-beast dtp-phoenix"
+    aria-label="Bet on Phoenix"
+    onclick="placeBet('phoenix')">
 
-  <div class="bet-card tiger" onclick="placeBet('tiger')">
+    <span id="betPhoenix"
+      class="dtp-bet-num">0</span>
+  </button>
 
-    <img src="/assets/dtp/tiger.png">
+  <!-- ========== TOTAL POOLS ========== -->
+  <div id="poolDragon"
+    class="dtp-data dtp-pool dtp-pool-dragon">0</div>
 
-    <div class="bet-overlay">
-      <div class="bet-amount" id="betTiger">0</div>
-    </div>
+  <div id="poolTiger"
+    class="dtp-data dtp-pool dtp-pool-tiger">0</div>
 
-  </div>
+  <div id="poolPhoenix"
+    class="dtp-data dtp-pool dtp-pool-phoenix">0</div>
 
-  <div class="payout-text tiger-pay">WIN x3</div>
+  <!-- ========== BALANCE ========== -->
+  <div id="coins"
+    class="dtp-data dtp-balance-value">0</div>
 
-  <div class="pool-display">
-    <span id="poolTiger">0</span>
-  </div>
+  <!-- HISTORY BUTTON -->
+  <button type="button"
+    class="dtp-hit dtp-history-btn"
+    aria-label="My bet history"
+    onclick="openMyHistory()">
+  </button>
 
-</div>
+  <!-- ========== CHIP 10 ========== -->
+  <button type="button"
+    class="chip dtp-chip dtp-chip-10 active"
+    aria-label="Select 10"
+    onclick="setBet(10,this)">
 
+    <img src="/assets/dtp/chip-dragon.png" alt="">
+    <span>10</span>
+  </button>
 
-<div class="bet-col">
+  <!-- ========== CHIP 50 ========== -->
+  <button type="button"
+    class="chip dtp-chip dtp-chip-50"
+    aria-label="Select 50"
+    onclick="setBet(50,this)">
 
-  <div class="bet-card phoenix" onclick="placeBet('phoenix')">
+    <img src="/assets/dtp/chip-tiger.png" alt="">
+    <span>50</span>
+  </button>
 
-    <img src="/assets/dtp/phoenix.png">
+  <!-- ========== CHIP 100 ========== -->
+  <button type="button"
+    class="chip dtp-chip dtp-chip-100"
+    aria-label="Select 100"
+    onclick="setBet(100,this)">
 
-    <div class="bet-overlay">
-      <div class="bet-amount" id="betPhoenix">0</div>
-    </div>
+    <img src="/assets/dtp/chip-phoenix.png" alt="">
+    <span>100</span>
+  </button>
 
-  </div>
+  <!-- ========== CHIP 500 ========== -->
+  <button type="button"
+    class="chip dtp-chip dtp-chip-500"
+    aria-label="Select 500"
+    onclick="setBet(500,this)">
 
-  <div class="payout-text phoenix-pay">WIN x3</div>
+    <img src="/assets/dtp/chip-lion.png" alt="">
+    <span>500</span>
+  </button>
 
-  <div class="pool-display">
-    <span id="poolPhoenix">0</span>
-  </div>
+</main>
 
-</div>
-
-</div>
-
-
-
-
-<div class="balance-bar">
-
-  <div class="balance-left">
-      <img src="/assets/dtp/meat-icon.png">
-  </div>
-
-  <div class="balance-center">
-      <div class="balance-title">MEAT BALANCE</div>
-      <div class="balance-value" id="coins">0</div>
-  </div>
-
-<div class="balance-history" onclick="openMyHistory()">
-    <img src="/assets/dtp/monkey-history.png">
-</div>
-
-</div>
-
-
-<div class="bet-panel">
-
-  <div class="chip active" onclick="setBet(10,this)">
-      <img src="/assets/dtp/chip-dragon.png">
-      <span>10</span>
-  </div>
-
-  <div class="chip" onclick="setBet(50,this)">
-      <img src="/assets/dtp/chip-tiger.png">
-      <span>50</span>
-  </div>
-
-  <div class="chip" onclick="setBet(100,this)">
-      <img src="/assets/dtp/chip-phoenix.png">
-      <span>100</span>
-  </div>
-
-  <div class="chip" onclick="setBet(500,this)">
-      <img src="/assets/dtp/chip-lion.png">
-      <span>500</span>
-  </div>
-
-</div>
-
-
+<!-- RESULT POPUP - GIỮ NGUYÊN CHỨC NĂNG -->
 <div id="result" class="result hidden">
 
   <div class="result-box">
 
-    <div class="result-title">    </div>
+    <div class="result-title"></div>
 
-    <div id="resultText" class="result-name">   </div>
+    <div id="resultText" class="result-name"></div>
 
     <div class="result-image">
-      <img id="winnerImg">
+      <img id="winnerImg" alt="Winner">
     </div>
 
-    <div id="resultProfit" class="result-profit">   </div>
+    <div id="resultProfit" class="result-profit"></div>
 
     <div class="result-glow"></div>
 
@@ -1994,9 +2512,6 @@ animation:loadingPulse 1.5s infinite;
 
 </div>
 
-
-
-</div>
 
 
 
@@ -2420,21 +2935,21 @@ profitEl.classList.add("lose");
 // =============================
 // HIGHLIGHT WIN CARD
 // =============================
-
-document.querySelectorAll(".bet-card")
-.forEach(c=>{
-  c.style.boxShadow =
-  "0 10px 40px rgba(0,0,0,.8)";
+// Xóa hiệu ứng thắng của phiên trước
+document.querySelectorAll(".bet-card").forEach(c => {
+  c.classList.remove("dtp-winner");
+  c.style.boxShadow = "";
 });
 
-const winCard =
-document.querySelector("." + data.winner);
+// Xác định thú thắng phiên này
+const winCard = document.querySelector(
+  ".bet-card." + data.winner
+);
 
-if(winCard){
+if (winCard) {
 
-winCard.style.boxShadow =
-"0 0 80px gold,0 0 200px rgba(255,215,0,.7)";
-
+  // Highlight trực tiếp trên hitbox
+  winCard.classList.add("dtp-winner");
 
 // =============================
 // WIN EXPLOSION
@@ -2469,10 +2984,15 @@ renderDtpHistory();
 // HIDE RESULT
 // =============================
 
-setTimeout(()=>{
-result.classList.add("hidden");
-},4000);
+setTimeout(() => {
+  result.classList.add("hidden");
 
+  document.querySelectorAll(".dtp-winner")
+    .forEach(card => {
+      card.classList.remove("dtp-winner");
+    });
+
+}, 4000);
 });
 
 // =============================
@@ -2736,7 +3256,7 @@ document.addEventListener("DOMContentLoaded", ()=>{
 /* PRELOAD IMAGES */
 
 const preloadImages = [
-  "/assets/dtp/beast-arena.jpg",
+  "/assets/dtp/dragon_tiger_phoenix_casino_interface.png",
   "/assets/dtp/btp-loading.jpg",
 
   "/assets/dtp/dragon.png",
