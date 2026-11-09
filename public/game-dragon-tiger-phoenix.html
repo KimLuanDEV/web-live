@@ -5386,7 +5386,7 @@ body.dtp-debug .dtp-chip {
 
   <!-- TIMER -->
   <div class="dtp-data dtp-timer-value">
-    <span id="timer">60</span>
+    <span id="timer">35</span>
   </div>
 
   <!-- TIME PROGRESS -->
@@ -6343,14 +6343,25 @@ document.getElementById("roundId").textContent = data.roundId;
 
 /* ================= TIMER ================= */
 
-socket.on("dtp-timer", t=>{
+/* ================= TIMER 35S ================= */
 
-document.getElementById("timer").textContent = t;
+const DTP_ROUND_SECONDS = 35;
 
-const percent = t / 60 * 100;
+socket.on("dtp-timer", t => {
 
-document.getElementById("betBar").style.width =
-percent + "%";
+  const remain = Math.max(0, Number(t) || 0);
+
+  // Hiển thị thời gian từ server
+  document.getElementById("timer").textContent = remain;
+
+  // Cập nhật thanh tiến trình theo 35 giây
+  const percent = Math.max(
+    0,
+    Math.min(100, remain / DTP_ROUND_SECONDS * 100)
+  );
+
+  document.getElementById("betBar").style.width =
+    percent + "%";
 
 });
 

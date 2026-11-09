@@ -2538,11 +2538,10 @@ saveDtpRoundCount({
 let dtpRound = {
   id: dtpRoundCount,
   startAt: Date.now(),
-  endAt: Date.now() + 60000,
+  endAt: Date.now() + 35000,
   bets: [],
-  secretResult: pickDtpWinner() // 🔥 tạo ngay khi round bắt đầu
+  secretResult: pickDtpWinner()
 };
-
 
 
 
@@ -2650,7 +2649,7 @@ saveDtpRoundCount({
 dtpRound = {
   id: dtpRoundCount,
   startAt: Date.now(),
-  endAt: Date.now() + 60000,
+  endAt: Date.now() + 35000,
   bets: [],
   secretResult: pickDtpWinner()   // 🔥 thêm dòng này
 };
@@ -2674,7 +2673,7 @@ fakePool = {
 
 emitAdminDtpBets();
 
-},60000);
+},35000);
 
 
 
@@ -4553,9 +4552,33 @@ socket.emit("dtp-my-bet", myBetRestore);
 socket.on("dtp-bet", ({ side, bet }) => {
 
   const uid = socket.data.uid;
-  if(!uid) return;
+  if (!uid) return;
+
+  // Khóa cược trong 5 giây cuối phiên
+  const remainMs = dtpRound.endAt - Date.now();
+
+  if (remainMs <= 5000) {
+    socket.emit("notify", {
+      type: "bad",
+      message: "Betting closed"
+    });
+    return;
+  }
+
+  // Kiểm tra cửa cược hợp lệ
+  if (!["dragon", "tiger", "phoenix"].includes(side)) {
+    return;
+  }
+
+  bet = Number(bet);
+
+  if (!Number.isSafeInteger(bet) || bet <= 0) {
+    return;
+  }
 
   const users = loadUsers();
+
+
   const me = users[uid];
   if(!me?.profile) return;
 
