@@ -7120,15 +7120,22 @@ document.addEventListener("keydown", function(e) {
 
 
 
-/* ================= LOADER CONTROL ================= */
+/* ==========================================
+   DTP LOADING CONTROL
+   WAIT FOR BACKGROUND BEFORE PROGRESS
+========================================== */
 
+let loaderBackgroundReady = false;
 let loaderImagesReady = false;
-let loaderDomReady = false;
+let loaderDomReady = document.readyState !== "loading";
 let loaderFinished = false;
 
-const MIN_LOADING_TIME = 15000; // 10 giây
-const loadingStartTime = Date.now();
+const MIN_LOADING_TIME = 15000; // 15 giây
 
+let loadingStartTime = null;
+let progressTimer = null;
+let visualProgress = 0;
+let loadingIndex = 0;
 
 const loadingTexts = [
   "Connecting...",
@@ -7139,14 +7146,22 @@ const loadingTexts = [
   "Loading assets..."
 ];
 
+const loadingTextEl =
+  document.getElementById("loadingText");
 
-let loadingIndex = 0;
-let visualProgress = 0;
+const loadingBarEl =
+  document.getElementById("loadingProgress");
 
-const loadingTextEl = document.getElementById("loadingText");
-const loadingBarEl  = document.getElementById("loadingProgress");
-const spinnerEl     = document.querySelector(".loading-spinner");
+const loadingPercentEl =
+  document.getElementById("loadingPercent");
 
+const spinnerEl =
+  document.querySelector(".loading-spinner");
+
+
+/* ==========================================
+   UPDATE LOADING
+========================================== */
 
 function updateLoading(percent) {
 
@@ -7155,29 +7170,22 @@ function updateLoading(percent) {
     Math.min(100, Number(percent) || 0)
   );
 
-  // Thanh tiến trình
-  loadingBarEl.style.width = safe + "%";
+  if (loadingBarEl) {
+    loadingBarEl.style.width = safe + "%";
+  }
 
-  // Thông báo theo giai đoạn
-  const text = loadingTexts[
-    Math.min(
-      loadingIndex,
-      loadingTexts.length - 1
-    )
-  ];
-
-  loadingTextEl.textContent = text;
-
-  // Phần trăm riêng
-  const percentEl =
-    document.getElementById("loadingPercent");
-
-  if (percentEl) {
-    percentEl.textContent =
+  if (loadingPercentEl) {
+    loadingPercentEl.textContent =
       Math.floor(safe) + "%";
   }
 
-  // Tăng tốc vòng ấn chú khi gần hoàn tất
+  if (loadingTextEl) {
+    loadingTextEl.textContent =
+      loadingTexts[
+        Math.min(loadingIndex, loadingTexts.length - 1)
+      ];
+  }
+
   if (safe > 80 && spinnerEl) {
     spinnerEl.style.animationDuration = "1.2s";
   }
@@ -7185,18 +7193,22 @@ function updateLoading(percent) {
 }
 
 
-/* DOM READY */
+/* ==========================================
+   DOM READY
+========================================== */
 
-document.addEventListener("DOMContentLoaded", ()=>{
+document.addEventListener("DOMContentLoaded", () => {
   loaderDomReady = true;
   checkLoader();
 });
 
-/* PRELOAD IMAGES */
+
+/* ==========================================
+   PRELOAD GAME ASSETS
+========================================== */
 
 const preloadImages = [
   "/assets/dtp/dragon_tiger_phoenix_casino_interface.png",
-  "/assets/dtp/dtp-loading-royal.png",
 
   "/assets/dtp/dragon.png",
   "/assets/dtp/tiger.png",
@@ -7214,90 +7226,202 @@ const preloadImages = [
 
 let loadedAssets = 0;
 
-preloadImages.forEach(src=>{
+preloadImages.forEach(src => {
+
   const img = new Image();
 
-  img.onload = img.onerror = ()=>{
+  const finishAsset = () => {
+
     loadedAssets++;
 
-    if(loadedAssets >= preloadImages.length){
+    if (loadedAssets >= preloadImages.length) {
       loaderImagesReady = true;
       checkLoader();
     }
+
+  };
+
+  img.onload = finishAsset;
+
+  img.onerror = () => {
+    console.warn("Asset failed:", src);
+    finishAsset();
   };
 
   img.src = src;
+
 });
 
-/* VISUAL PROGRESS: luôn chạy đủ 10 giây */
 
-const progressTimer = setInterval(()=>{
+/* ==========================================
+   START PROGRESS ONLY AFTER BACKGROUND
+========================================== */
 
-  const elapsed = Date.now() - loadingStartTime;
-  const percent = (elapsed / MIN_LOADING_TIME) * 100;
+function startLoadingProgress() {
 
-  visualProgress = Math.min(100, percent);
+  if (!loaderBackgroundReady) return;
+  if (progressTimer !== null) return;
+  if (loaderFinished) return;
 
-  const textStep =
-    Math.min(
+  loadingStartTime = Date.now();
+
+  visualProgress = 0;
+  loadingIndex = 0;
+
+  updateLoading(0);
+
+  progressTimer = setInterval(() => {
+
+    const elapsed =
+      Date.now() - loadingStartTime;
+
+    const percent =
+      (elapsed / MIN_LOADING_TIME) * 100;
+
+    // Giữ tối đa 99% cho đến khi hoàn tất
+    visualProgress = Math.min(99, percent);
+
+    loadingIndex = Math.min(
       loadingTexts.length - 1,
-      Math.floor((visualProgress / 100) * loadingTexts.length)
+      Math.floor(
+        (visualProgress / 100) *
+        loadingTexts.length
+      )
     );
 
-  loadingIndex = textStep;
+    updateLoading(visualProgress);
 
-  updateLoading(visualProgress);
-
-  if(visualProgress >= 100){
-    clearInterval(progressTimer);
     checkLoader();
-  }
 
-}, 100);
+  }, 100);
 
-/* FINISH */
+}
 
-function checkLoader(){
 
-  if(loaderFinished) return;
-  if(!loaderDomReady) return;
-  if(!loaderImagesReady) return;
+/* ==========================================
+   WAIT FOR LOADING BACKGROUND
+========================================== */
 
-  const elapsed = Date.now() - loadingStartTime;
-  if(elapsed < MIN_LOADING_TIME) return;
+async function prepareLoadingBackground() {
+
+  const backgroundSrc =
+    "/assets/dtp/dtp-loading-royal.png";
+
+  const img = new Image();
+
+  img.onload = async () => {
+
+    // Chờ ảnh giải mã xong để hiển thị
+    if (typeof img.decode === "function") {
+      try {
+        await img.decode();
+      } catch (error) {
+        console.warn("Background decode:", error);
+      }
+    }
+
+    loaderBackgroundReady = true;
+
+    console.log("Loading background ready");
+
+    // Chỉ bắt đầu tiến trình từ đây
+    startLoadingProgress();
+
+  };
+
+  img.onerror = () => {
+
+    console.error(
+      "Loading background failed:",
+      backgroundSrc
+    );
+
+    if (loadingTextEl) {
+      loadingTextEl.textContent =
+        "Background failed. Please reload.";
+    }
+
+  };
+
+  img.src = backgroundSrc;
+
+}
+
+
+/* ==========================================
+   FINISH LOADING
+========================================== */
+
+function checkLoader() {
+
+  if (loaderFinished) return;
+
+  // Không hoàn tất khi background chưa sẵn sàng
+  if (!loaderBackgroundReady) return;
+
+  if (!loaderDomReady) return;
+  if (!loaderImagesReady) return;
+
+  if (loadingStartTime === null) return;
+
+  const elapsed =
+    Date.now() - loadingStartTime;
+
+  if (elapsed < MIN_LOADING_TIME) return;
 
   loaderFinished = true;
 
-  clearInterval(progressTimer);
+  if (progressTimer !== null) {
+    clearInterval(progressTimer);
+    progressTimer = null;
+  }
+
   updateLoading(100);
 
-  const overlay = document.getElementById("loadingOverlay");
-  if(!overlay) return;
+  const overlay =
+    document.getElementById("loadingOverlay");
+
+  if (!overlay) return;
 
   document.body.classList.remove("loading");
 
   overlay.style.transform = "scale(1.03)";
   overlay.style.opacity = "0";
-  overlay.style.transition = "transform .8s ease, opacity .8s ease";
+
+  overlay.style.transition =
+    "transform .8s ease, opacity .8s ease";
 
   const flash = document.createElement("div");
   flash.className = "revealFlash";
+
   document.body.appendChild(flash);
 
-  setTimeout(()=> flash.remove(), 600);
+  setTimeout(() => {
+    flash.remove();
+  }, 600);
 
-  setTimeout(()=>{
+  setTimeout(() => {
     overlay.remove();
   }, 800);
+
 }
 
-/* FALLBACK: tránh treo vô hạn nếu có asset lỗi lạ */
 
-setTimeout(()=>{
-  loaderDomReady = true;
-  loaderImagesReady = true;
-  checkLoader();
-}, 12000);
+/* ==========================================
+   INITIALIZE
+========================================== */
+
+// Thanh tiến trình luôn bắt đầu từ 0%
+updateLoading(0);
+
+if (loadingTextEl) {
+  loadingTextEl.textContent =
+    "Loading background...";
+}
+
+// Bắt đầu tải background trước khi chạy progress
+prepareLoadingBackground();
+
 
 </script>
 
