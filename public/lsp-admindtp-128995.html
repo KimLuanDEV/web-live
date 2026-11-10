@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 
 <head>
 <meta charset="UTF-8">
@@ -1786,7 +1786,7 @@ body::before {
   class="dtp-logout-btn"
   onclick="logoutDtpAdmin()"
 >
-  ĐĂNG XUẤT
+  LOG OUT
 </button>
 
   </header>
@@ -2070,6 +2070,57 @@ let overrideBusy = false;
 
 let dtpAuthorized = false;
 
+
+
+/* ====================================
+   DTP ADMIN - ENGLISH ERROR MESSAGES
+==================================== */
+
+function translateDtpMessage(message) {
+
+  const translations = {
+
+    "Mật khẩu quản trị không chính xác.":
+      "Incorrect administrator password.",
+
+    "Thử quá nhiều lần. Vui lòng thử lại sau 15 phút.":
+      "Too many attempts. Please try again in 15 minutes.",
+
+    "Server chưa cấu hình DTP_ADMIN_PASSWORD.":
+      "Administrator password is not configured on the server.",
+
+    "Vui lòng nhập lại mật khẩu.":
+      "Please enter your password again.",
+
+    "Phiên xác thực đã hết hạn.":
+      "Authentication session has expired.",
+
+    "Kết quả không hợp lệ.":
+      "Invalid result selection.",
+
+    "Vòng hiện tại đã kết thúc.":
+      "The current round has ended.",
+
+    "Phiên đã hết hạn, vui lòng đăng nhập lại.":
+      "Session expired. Please log in again."
+
+  };
+
+  const text = String(message || "");
+
+  if (translations[text]) {
+    return translations[text];
+  }
+
+  // Prevent untranslated server errors from appearing
+  if (/[À-ỹ]/u.test(text)) {
+    return "Request failed. Please try again.";
+  }
+
+  return text || "An unexpected error occurred.";
+
+}
+
 // Gửi yêu cầu xác thực đến Socket.IO
 function dtpSocketCall(event, data = {}) {
 
@@ -2077,7 +2128,7 @@ function dtpSocketCall(event, data = {}) {
 
     if (!socket.connected) {
       return reject(
-        new Error("Chưa kết nối đến server.")
+        new Error("Not connected to the server.")
       );
     }
 
@@ -2089,18 +2140,23 @@ function dtpSocketCall(event, data = {}) {
         if (error) {
           return reject(
             new Error(
-              "Server không phản hồi. Vui lòng thử lại."
+              "Server is not responding. Please try again."
             )
           );
         }
 
-        resolve(
-          result || {
-            ok: false,
-            message: "Phản hồi không hợp lệ."
-          }
-        );
+const response = result || {
+  ok: false,
+  message: "Invalid server response."
+};
 
+if (!response.ok) {
+  response.message = translateDtpMessage(
+    response.message
+  );
+}
+
+resolve(response);
       }
     );
 
@@ -2151,7 +2207,7 @@ $("dtpAuthForm").addEventListener(
     const password = $("dtpPassword").value;
 
     btn.disabled = true;
-    btn.textContent = "ĐANG XÁC THỰC...";
+    btn.textContent = "AUTHENTICATING...";
 
     $("dtpAuthError").textContent = "";
 
@@ -2164,13 +2220,13 @@ $("dtpAuthForm").addEventListener(
 
       if (!result.ok) {
         throw new Error(
-          result.message || "Đăng nhập thất bại."
+          result.message || "Authentication failed."
         );
       }
 
       if (!socket.connected) {
         throw new Error(
-          "Mất kết nối. Vui lòng đăng nhập lại."
+          "Connection lost. Please log in again."
         );
       }
 
@@ -2185,7 +2241,7 @@ $("dtpAuthForm").addEventListener(
       applyDtpSnapshot(result);
 
       showAdminToast(
-        "Đã xác thực quản trị thành công."
+        "Admin authentication successful."
       );
 
     } catch (error) {
@@ -2199,7 +2255,7 @@ $("dtpAuthForm").addEventListener(
 
       btn.disabled = false;
 
-    btn.textContent = "MỞ BẢNG ĐIỀU KHIỂN";
+    btn.textContent = "LOGIN";
 
     }
 
@@ -2312,12 +2368,12 @@ async function loadSecret() {
 
       if (result.code === "AUTH_REQUIRED") {
         lockDtpAdmin(
-          "Phiên đã hết hạn, vui lòng đăng nhập lại."
+          "Session expired. Please log in again."
         );
       }
 
       throw new Error(
-        result.message || "Không tải được dữ liệu."
+        result.message || "Unable to load data."
       );
     }
 
@@ -2372,19 +2428,16 @@ async function setWinner(winner) {
 
       throw new Error(
         result.message ||
-        "Không thể tùy chỉnh kết quả."
+        "Unable to override the result."
       );
 
     }
 
     applyDtpSnapshot(result);
 
-    showAdminToast(
-      "Đã chọn " +
-      winner.toUpperCase() +
-      " thành công."
-    );
-
+showAdminToast(
+  winner.toUpperCase() + " selected successfully."
+);
   } catch (error) {
 
     showAdminToast(
@@ -2441,7 +2494,7 @@ socket.on("disconnect", () => {
   setConnectionStatus(false);
 
   lockDtpAdmin(
-    "Mất kết nối. Vui lòng xác thực lại sau khi kết nối."
+    "Connection lost. Please authenticate again after reconnecting."
   );
 
 });
@@ -2563,11 +2616,11 @@ function renderDtpBets(data) {
   $("playerCount").textContent =
     formatAmount(bets.length);
 
-  $("lastUpdate").textContent =
-    new Date().toLocaleTimeString(
-      "vi-VN",
-      { hour12: false }
-    );
+$("lastUpdate").textContent =
+  new Date().toLocaleTimeString(
+    "en-GB",
+    { hour12: false }
+  );
 
 }
 
