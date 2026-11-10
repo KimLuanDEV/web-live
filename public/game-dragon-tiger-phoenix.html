@@ -7121,33 +7121,9 @@ document.addEventListener("keydown", function(e) {
 
 
 /* ==========================================
-   DTP LOADING CONTROL
-   WAIT FOR BACKGROUND BEFORE PROGRESS
+   DTP REAL ASSET LOADING
+   NO FIXED TIMER
 ========================================== */
-
-let loaderBackgroundReady = false;
-let loaderImagesReady = false;
-let loaderDomReady = document.readyState !== "loading";
-let loaderFinished = false;
-
-const MIN_LOADING_TIME = 15000; // 15 giây
-
-let loadingStartTime = null;
-let progressTimer = null;
-let visualProgress = 0;
-let loadingIndex = 0;
-
-const loadingTexts = [
-  "Connecting...",
-  "Dragon Spirit...",
-  "Tiger Power...",
-  "Phoenix Flame...",
-  "Preparing Arena...",
-  "Loading assets..."
-];
-
-const loadingTextEl =
-  document.getElementById("loadingText");
 
 const loadingBarEl =
   document.getElementById("loadingProgress");
@@ -7155,272 +7131,274 @@ const loadingBarEl =
 const loadingPercentEl =
   document.getElementById("loadingPercent");
 
-const spinnerEl =
-  document.querySelector(".loading-spinner");
+const loadingTextEl =
+  document.getElementById("loadingText");
 
-
-/* ==========================================
-   UPDATE LOADING
-========================================== */
-
-function updateLoading(percent) {
-
-  const safe = Math.max(
-    0,
-    Math.min(100, Number(percent) || 0)
-  );
-
-  if (loadingBarEl) {
-    loadingBarEl.style.width = safe + "%";
-  }
-
-  if (loadingPercentEl) {
-    loadingPercentEl.textContent =
-      Math.floor(safe) + "%";
-  }
-
-  if (loadingTextEl) {
-    loadingTextEl.textContent =
-      loadingTexts[
-        Math.min(loadingIndex, loadingTexts.length - 1)
-      ];
-  }
-
-  if (safe > 80 && spinnerEl) {
-    spinnerEl.style.animationDuration = "1.2s";
-  }
-
-}
-
+const LOADING_BACKGROUND =
+  "/assets/dtp/dtp-loading-royal.png";
 
 /* ==========================================
-   DOM READY
+   GAME ASSETS
 ========================================== */
 
-document.addEventListener("DOMContentLoaded", () => {
-  loaderDomReady = true;
-  checkLoader();
-});
+const gameAssets = [...new Set([
 
-
-/* ==========================================
-   PRELOAD GAME ASSETS
-========================================== */
-
-const preloadImages = [
+  // Main game scene
   "/assets/dtp/dragon_tiger_phoenix_casino_interface.png",
 
+  // Result animations
   "/assets/dtp/dragon.png",
   "/assets/dtp/tiger.png",
   "/assets/dtp/phoenix.png",
 
-  "/assets/dtp/dragon-head.png",
-  "/assets/dtp/tiger-head.png",
-  "/assets/dtp/phoenix-head.png",
+  // Images already used in HTML
+  ...Array.from(document.querySelectorAll("img[src]"))
+    .map(img => img.getAttribute("src"))
+    .filter(Boolean)
 
-  "/assets/dtp/chip-dragon.png",
-  "/assets/dtp/chip-tiger.png",
-  "/assets/dtp/chip-phoenix.png",
-  "/assets/dtp/chip-lion.png"
-];
-
-let loadedAssets = 0;
-
-preloadImages.forEach(src => {
-
-  const img = new Image();
-
-  const finishAsset = () => {
-
-    loadedAssets++;
-
-    if (loadedAssets >= preloadImages.length) {
-      loaderImagesReady = true;
-      checkLoader();
-    }
-
-  };
-
-  img.onload = finishAsset;
-
-  img.onerror = () => {
-    console.warn("Asset failed:", src);
-    finishAsset();
-  };
-
-  img.src = src;
-
-});
+])].filter(src => src !== LOADING_BACKGROUND);
 
 
 /* ==========================================
-   START PROGRESS ONLY AFTER BACKGROUND
+   DISPLAY REAL PROGRESS
 ========================================== */
 
-function startLoadingProgress() {
+function updateLoading(percent, message) {
 
-  if (!loaderBackgroundReady) return;
-  if (progressTimer !== null) return;
-  if (loaderFinished) return;
+  const value = Math.max(
+    0,
+    Math.min(100, Math.floor(percent))
+  );
 
-  loadingStartTime = Date.now();
-
-  visualProgress = 0;
-  loadingIndex = 0;
-
-  updateLoading(0);
-
-  progressTimer = setInterval(() => {
-
-    const elapsed =
-      Date.now() - loadingStartTime;
-
-    const percent =
-      (elapsed / MIN_LOADING_TIME) * 100;
-
-    // Giữ tối đa 99% cho đến khi hoàn tất
-    visualProgress = Math.min(99, percent);
-
-    loadingIndex = Math.min(
-      loadingTexts.length - 1,
-      Math.floor(
-        (visualProgress / 100) *
-        loadingTexts.length
-      )
-    );
-
-    updateLoading(visualProgress);
-
-    checkLoader();
-
-  }, 100);
-
-}
-
-
-/* ==========================================
-   WAIT FOR LOADING BACKGROUND
-========================================== */
-
-async function prepareLoadingBackground() {
-
-  const backgroundSrc =
-    "/assets/dtp/dtp-loading-royal.png";
-
-  const img = new Image();
-
-  img.onload = async () => {
-
-    // Chờ ảnh giải mã xong để hiển thị
-    if (typeof img.decode === "function") {
-      try {
-        await img.decode();
-      } catch (error) {
-        console.warn("Background decode:", error);
-      }
-    }
-
-    loaderBackgroundReady = true;
-
-    console.log("Loading background ready");
-
-    // Chỉ bắt đầu tiến trình từ đây
-    startLoadingProgress();
-
-  };
-
-  img.onerror = () => {
-
-    console.error(
-      "Loading background failed:",
-      backgroundSrc
-    );
-
-    if (loadingTextEl) {
-      loadingTextEl.textContent =
-        "Background failed. Please reload.";
-    }
-
-  };
-
-  img.src = backgroundSrc;
-
-}
-
-
-/* ==========================================
-   FINISH LOADING
-========================================== */
-
-function checkLoader() {
-
-  if (loaderFinished) return;
-
-  // Không hoàn tất khi background chưa sẵn sàng
-  if (!loaderBackgroundReady) return;
-
-  if (!loaderDomReady) return;
-  if (!loaderImagesReady) return;
-
-  if (loadingStartTime === null) return;
-
-  const elapsed =
-    Date.now() - loadingStartTime;
-
-  if (elapsed < MIN_LOADING_TIME) return;
-
-  loaderFinished = true;
-
-  if (progressTimer !== null) {
-    clearInterval(progressTimer);
-    progressTimer = null;
+  if (loadingBarEl) {
+    loadingBarEl.style.width = value + "%";
   }
 
-  updateLoading(100);
+  if (loadingPercentEl) {
+    loadingPercentEl.textContent = value + "%";
+  }
+
+  if (loadingTextEl && message !== undefined) {
+    loadingTextEl.textContent = message;
+  }
+
+}
+
+
+/* ==========================================
+   LOAD AND DECODE IMAGE
+========================================== */
+
+async function loadImage(src) {
+
+  const img = new Image();
+
+  await new Promise((resolve, reject) => {
+
+    img.onload = resolve;
+
+    img.onerror = () => {
+      reject(new Error("Cannot load: " + src));
+    };
+
+    img.src = src;
+
+  });
+
+  // Wait until image can be rendered
+  if (typeof img.decode === "function") {
+    await img.decode();
+  }
+
+  return img;
+}
+
+
+/* ==========================================
+   WAIT FOR SOCKET CONNECTION
+========================================== */
+
+function waitForGameSocket() {
+
+  return new Promise(resolve => {
+
+    if (socket.connected) {
+      resolve();
+      return;
+    }
+
+    const onConnected = () => {
+
+      socket.off("connect_error", onError);
+
+      resolve();
+
+    };
+
+    const onError = error => {
+
+      console.warn(
+        "Socket connecting:",
+        error.message
+      );
+
+      if (loadingTextEl) {
+        loadingTextEl.textContent =
+          "Connecting to server...";
+      }
+
+    };
+
+    socket.once("connect", onConnected);
+    socket.on("connect_error", onError);
+
+  });
+
+}
+
+
+/* ==========================================
+   REVEAL GAME
+========================================== */
+
+function revealGame() {
 
   const overlay =
     document.getElementById("loadingOverlay");
 
-  if (!overlay) return;
-
+  // Make underlying game visible
   document.body.classList.remove("loading");
 
-  overlay.style.transform = "scale(1.03)";
-  overlay.style.opacity = "0";
+  if (!overlay) return;
 
+  overlay.style.pointerEvents = "none";
+
+  // Smooth entrance animation
   overlay.style.transition =
-    "transform .8s ease, opacity .8s ease";
+    "opacity .35s ease";
 
-  const flash = document.createElement("div");
-  flash.className = "revealFlash";
+  overlay.addEventListener(
+    "transitionend",
+    () => overlay.remove(),
+    { once: true }
+  );
 
-  document.body.appendChild(flash);
-
-  setTimeout(() => {
-    flash.remove();
-  }, 600);
-
-  setTimeout(() => {
-    overlay.remove();
-  }, 800);
+  requestAnimationFrame(() => {
+    overlay.style.opacity = "0";
+  });
 
 }
 
 
 /* ==========================================
-   INITIALIZE
+   MAIN LOADING PROCESS
 ========================================== */
 
-// Thanh tiến trình luôn bắt đầu từ 0%
-updateLoading(0);
+async function initializeGameLoading() {
 
-if (loadingTextEl) {
-  loadingTextEl.textContent =
-    "Loading background...";
+  updateLoading(0, "Loading background...");
+
+  try {
+
+    /* STEP 1: LOADING BACKGROUND */
+
+    await loadImage(LOADING_BACKGROUND);
+
+    // Allow browser to paint the background
+    await new Promise(resolve => {
+      requestAnimationFrame(() => {
+        requestAnimationFrame(resolve);
+      });
+    });
+
+    console.log("Loading background ready");
+
+    /* STEP 2: LOAD GAME ASSETS */
+
+    const totalTasks = gameAssets.length + 1;
+    let completedTasks = 0;
+
+    const markCompleted = () => {
+
+      completedTasks++;
+
+      const percent =
+        completedTasks / totalTasks * 100;
+
+      updateLoading(
+        percent,
+        completedTasks === totalTasks
+          ? "Ready!"
+          : "Loading game assets..."
+      );
+
+    };
+
+    const imageTasks = gameAssets.map(async src => {
+
+      await loadImage(src);
+
+      markCompleted();
+
+    });
+
+    /* STEP 3: CONNECT TO SERVER */
+
+    const socketTask = (async () => {
+
+      await waitForGameSocket();
+
+      markCompleted();
+
+    })();
+
+    /* STEP 4: WAIT FOR EVERYTHING */
+
+    await Promise.all([
+      ...imageTasks,
+      socketTask
+    ]);
+
+    // Wait for page DOM if necessary
+    if (document.readyState === "loading") {
+
+      await new Promise(resolve => {
+        document.addEventListener(
+          "DOMContentLoaded",
+          resolve,
+          { once: true }
+        );
+      });
+
+    }
+
+    /* STEP 5: COMPLETE */
+
+    updateLoading(100, "Ready!");
+
+    console.log("Game assets ready");
+
+    revealGame();
+
+  } catch (error) {
+
+    console.error("Game loading failed:", error);
+
+    if (loadingTextEl) {
+      loadingTextEl.textContent =
+        "Loading failed. Please reload.";
+    }
+
+  }
+
 }
 
-// Bắt đầu tải background trước khi chạy progress
-prepareLoadingBackground();
+
+/* ==========================================
+   START
+========================================== */
+
+initializeGameLoading();
 
 
 </script>
