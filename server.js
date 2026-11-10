@@ -2357,6 +2357,90 @@ let fakePool = {
 };
 
 
+
+/* ======================================
+   DTP ADMIN - PASSWORD AUTHENTICATION
+====================================== */
+
+const DTP_ADMIN_PASSWORD =
+  process.env.DTP_ADMIN_PASSWORD || "";
+
+const DTP_ADMIN_TTL_MS = 8 * 60 * 60 * 1000;
+const dtpAdminAttempts = new Map();
+
+// Dọn dữ liệu chống thử mật khẩu liên tục
+setInterval(() => {
+  const now = Date.now();
+
+  for (const [ip, entry] of dtpAdminAttempts) {
+    if (
+      now - entry.lastAttempt > 30 * 60 * 1000 &&
+      now > entry.blockedUntil
+    ) {
+      dtpAdminAttempts.delete(ip);
+    }
+  }
+}, 10 * 60 * 1000).unref();
+
+// So sánh mật khẩu phía server
+function dtpPasswordMatches(password) {
+  if (
+    !DTP_ADMIN_PASSWORD ||
+    typeof password !== "string" ||
+    !password ||
+    password.length > 256
+  ) {
+    return false;
+  }
+
+  const a = crypto
+    .createHash("sha256")
+    .update(password, "utf8")
+    .digest();
+
+  const b = crypto
+    .createHash("sha256")
+    .update(DTP_ADMIN_PASSWORD, "utf8")
+    .digest();
+
+  return crypto.timingSafeEqual(a, b);
+}
+
+// Kiểm tra quyền trên từng kết nối
+function isDtpAdminSocket(socket) {
+  const expiresAt = Number(
+    socket.data.dtpAdminUntil || 0
+  );
+
+  if (expiresAt > Date.now()) {
+    return true;
+  }
+
+  socket.data.dtpAdminUntil = 0;
+  return false;
+}
+
+// Dữ liệu đầy đủ của bảng quản trị
+function getDtpAdminSnapshot() {
+  return {
+    round: dtpRound.id,
+    secret: dtpRound.secretResult,
+    endAt: dtpRound.endAt,
+    pool: getDtpPool(),
+    bets: getAdminDtpBetList()
+  };
+}
+
+// Chỉ gửi sự kiện cho kết nối đã xác thực
+function emitToDtpAdmins(event, data) {
+  for (const client of io.sockets.sockets.values()) {
+    if (isDtpAdminSocket(client)) {
+      client.emit(event, data);
+    }
+  }
+}
+
+
 function getDtpPool(){
 
   const pool = {
@@ -2407,19 +2491,21 @@ total:p.dragon + p.tiger + p.phoenix
 }
 
 
-function emitAdminDtpBets(){
 
-io.emit("admin-dtp-bets-update",{
+function emitAdminDtpBets() {
 
-round: dtpRound.id,
-
-pool: getDtpPool(),
-
-bets: getAdminDtpBetList()
-
-});
+  emitToDtpAdmins(
+    "admin-dtp-bets-update",
+    {
+      round: dtpRound.id,
+      pool: getDtpPool(),
+      bets: getAdminDtpBetList()
+    }
+  );
 
 }
+
+
 
 setInterval(()=>{
 
@@ -3813,6 +3899,179 @@ io.on("connection", socket => {
 
   socket.data.deviceId = deviceId;
 
+
+// =======================================
+// DTP ADMIN - LOGIN BẰNG MẬT KHẨU
+// =======================================
+
+socket.data.dtpAdminUntil = 0;
+
+socket.on("dtp-admin-login", (data, callback) => {
+
+  const reply = typeof callback === "function"
+    ? callback
+    : () => {};
+
+  const ip = String(
+    socket.handshake.address || "unknown"
+  );
+
+  const now = Date.now();
+
+  const record = dtpAdminAttempts.get(ip) || {
+    failures: 0,
+    blockedUntil: 0,
+    lastAttempt: now
+  };
+
+  record.lastAttempt = now;
+
+  // Khóa tạm thời khi thử quá nhiều lần
+  if (now < record.blockedUntil) {
+    return reply({
+      ok: false,
+      message: "Thử quá nhiều lần. Vui lòng thử lại sau 15 phút."
+    });
+  }
+
+  if (!DTP_ADMIN_PASSWORD) {
+    return reply({
+      ok: false,
+      message: "Server chưa cấu hình DTP_ADMIN_PASSWORD."
+    });
+  }
+
+  if (!dtpPasswordMatches(data?.password)) {
+
+    record.failures++;
+
+    if (record.failures >= 5) {
+      record.failures = 0;
+      record.blockedUntil =
+        now + 15 * 60 * 1000;
+    }
+
+    dtpAdminAttempts.set(ip, record);
+
+    return reply({
+      ok: false,
+      message: "Mật khẩu quản trị không chính xác."
+    });
+  }
+
+  // Xác thực thành công
+  dtpAdminAttempts.delete(ip);
+
+  socket.data.dtpAdminUntil =
+    now + DTP_ADMIN_TTL_MS;
+
+  return reply({
+    ok: true,
+    ...getDtpAdminSnapshot()
+  });
+
+});
+
+
+// =======================================
+// DTP ADMIN - GET CURRENT STATE
+// =======================================
+
+socket.on("dtp-admin-get-state", (_data, callback) => {
+
+  const reply = typeof callback === "function"
+    ? callback
+    : () => {};
+
+  if (!isDtpAdminSocket(socket)) {
+    return reply({
+      ok: false,
+      code: "AUTH_REQUIRED",
+      message: "Vui lòng nhập lại mật khẩu."
+    });
+  }
+
+  reply({
+    ok: true,
+    ...getDtpAdminSnapshot()
+  });
+
+});
+
+
+// =======================================
+// DTP ADMIN - OVERRIDE RESULT
+// =======================================
+
+socket.on("dtp-admin-override", (data, callback) => {
+
+  const reply = typeof callback === "function"
+    ? callback
+    : () => {};
+
+  // BẮT BUỘC ĐÃ XÁC THỰC
+  if (!isDtpAdminSocket(socket)) {
+    return reply({
+      ok: false,
+      code: "AUTH_REQUIRED",
+      message: "Phiên xác thực đã hết hạn."
+    });
+  }
+
+  const winner = data?.winner;
+
+  if (!["dragon", "tiger", "phoenix"].includes(winner)) {
+    return reply({
+      ok: false,
+      message: "Kết quả không hợp lệ."
+    });
+  }
+
+  if (Date.now() >= dtpRound.endAt) {
+    return reply({
+      ok: false,
+      message: "Vòng hiện tại đã kết thúc."
+    });
+  }
+
+  // Cập nhật kết quả hiện tại
+  dtpRound.secretResult = winner;
+
+  console.warn(
+    "[DTP ADMIN] Chỉnh kết quả",
+    dtpRound.id,
+    winner
+  );
+
+  const snapshot = getDtpAdminSnapshot();
+
+  reply({
+    ok: true,
+    ...snapshot
+  });
+
+  // Đồng bộ riêng cho admin
+  emitToDtpAdmins(
+    "dtp-admin-secret-update",
+    snapshot
+  );
+
+});
+
+
+// =======================================
+// DTP ADMIN - LOGOUT
+// =======================================
+
+socket.on("dtp-admin-logout", (_data, callback) => {
+
+  socket.data.dtpAdminUntil = 0;
+
+  if (typeof callback === "function") {
+    callback({ ok: true });
+  }
+
+});
 
   
 // ========================================
