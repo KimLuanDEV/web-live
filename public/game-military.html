@@ -564,7 +564,7 @@ transform:translateY(0);
 .coin-bar {
     position: absolute;
     bottom: 108px;
-    left: 48%;
+    left: 50%;
     transform: translateX(-50%);
     z-index: 5;
     width: 260px;
@@ -614,7 +614,38 @@ transform:translateY(0);
 
 }
 
+/* ĐINH TÁN KIM LOẠI */
 
+.coin-rivet {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+
+    background: radial-gradient(
+        circle at 30% 30%,
+        #ffe6a0,
+        #a1803f 65%,
+        #49371b
+    );
+
+    border: 1px solid #5c4725;
+
+    box-shadow:
+        0 1px 2px #000,
+        inset 0 1px 1px #fff5;
+}
+
+.coin-rivet-left {
+    left: 6px;
+}
+
+.coin-rivet-right {
+    right: 6px;
+}
 
 /* KHUNG ICON KIM CƯƠNG */
 
@@ -4116,7 +4147,8 @@ class="predict-title-img">
 
     <div class="coin-box">
 
-
+        <div class="coin-rivet coin-rivet-left"></div>
+        <div class="coin-rivet coin-rivet-right"></div>
 
         <div class="coin-icon-wrap" style="display: none;">
             <img
