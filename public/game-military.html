@@ -5838,9 +5838,15 @@ slotMap[slot].win += Number(b.win) || 0
 
 })
 
+// THỨ TỰ HIỂN THỊ SLOT TRONG ROUND DETAILS
+const ROUND_SLOT_ORDER = [1, 8, 7, 6, 2, 3, 4, 5];
+
 Object.keys(slotMap)
 .map(Number)
-.sort((a,b)=>a-b)
+.sort((a, b) => {
+    return ROUND_SLOT_ORDER.indexOf(a)
+         - ROUND_SLOT_ORDER.indexOf(b);
+})
 .forEach(slot=>{
 
 const item = slotMap[slot]
