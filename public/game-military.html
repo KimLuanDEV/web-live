@@ -4694,6 +4694,140 @@ body.w8-theme-titanium
 }
 
 
+/* ==========================================
+   ROUND BADGE - DUAL THEME
+   MILITARY + FRUIT
+   KEEP ORIGINAL POSITION
+========================================== */
+
+/* GIAO DIỆN QUÂN ĐỘI */
+
+body:not(.w8-theme-titanium) .wheel-round {
+    background: linear-gradient(
+        135deg,
+        #405538 0%,
+        #223526 50%,
+        #0c1c11 100%
+    );
+
+    border: 1px solid #bca15c;
+    border-bottom: 2px solid #d7b76c;
+    border-radius: 6px;
+
+    box-shadow:
+        0 4px 10px #0009,
+        inset 0 1px 0 #ffffff20;
+}
+
+/* ==========================================
+   FRUIT ROUND BADGE
+========================================== */
+
+body.w8-theme-titanium .wheel-round {
+
+    /* Giữ nguyên tọa độ */
+    top: 8px;
+    right: 135px;
+
+    min-width: 160px;
+    height: 25px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 0 11px;
+    box-sizing: border-box;
+
+    background: linear-gradient(
+        135deg,
+        #fff9e6 0%,
+        #ffe5b4 55%,
+        #e7b77f 100%
+    );
+
+    border: 1px solid #d69554;
+    border-bottom: 2px solid #bc753f;
+    border-radius: 9px;
+
+    box-shadow:
+        0 4px 10px #0005,
+        inset 0 1px 0 #ffffffb0;
+
+    color: #915027;
+    font-weight: 900;
+
+    transition:
+        background .25s ease,
+        border-color .25s ease,
+        color .25s ease;
+}
+
+/* ĐƯỜNG SÁNG TRÊN KHUNG */
+
+body.w8-theme-titanium .wheel-round::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255,255,255,.9),
+        transparent
+    );
+}
+
+/* ICON TRÁI CÂY */
+
+body.w8-theme-titanium .round-army-icon {
+    width: 19px;
+    height: 19px;
+
+    font-size: 15px;
+    color: #d74c42;
+
+    text-shadow: none;
+}
+
+/* CHỮ ROUND */
+
+body.w8-theme-titanium .round-army-label {
+    color: #99512f;
+
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .8px;
+
+    text-shadow: none;
+}
+
+/* CHẤM XANH */
+
+body.w8-theme-titanium .round-army-led {
+    width: 6px;
+    height: 6px;
+
+    background: #7dbb4c;
+
+    box-shadow:
+        0 0 4px #83c94e80;
+}
+
+/* SỐ VÒNG */
+
+body.w8-theme-titanium .wheel-round #roundId {
+    color: #b53d2a;
+
+    font-size: 14px;
+    font-weight: 1000;
+    letter-spacing: .5px;
+
+    font-variant-numeric: tabular-nums;
+
+    text-shadow: none;
+}
+
+
+
+
 </style>
 </head>
 
@@ -5002,9 +5136,9 @@ class="predict-title-img">
         </div>
 
         <div class="coin-info">
-            <div class="coin-label">
-                ★ MILITARY WALLET ★
-            </div>
+<div class="coin-label" id="walletThemeLabel">
+    ★ MILITARY WALLET ★
+</div>
 
             <span id="coins" class="coin-value">0</span>
         </div>
@@ -7597,6 +7731,7 @@ function w8ToggleThemeMenu() {
 
 /* APPLY SELECTED THEME */
 
+
 function w8SetTheme(theme) {
 
   w8ActiveTheme =
@@ -7604,10 +7739,34 @@ function w8SetTheme(theme) {
       ? "titanium"
       : "military";
 
+  // Kích hoạt CSS tương ứng
   document.body.classList.toggle(
     "w8-theme-titanium",
     w8ActiveTheme === "titanium"
   );
+
+  // Đổi biểu tượng ROUND theo theme
+  const roundIcon =
+    document.querySelector(".wheel-round .round-army-icon");
+
+  if (roundIcon) {
+    roundIcon.textContent =
+      w8ActiveTheme === "titanium"
+        ? "🍓"
+        : "★";
+  }
+
+
+// ĐỔI TÊN VÍ THEO GIAO DIỆN
+const walletLabel =
+  document.getElementById("walletThemeLabel");
+
+if (walletLabel) {
+  walletLabel.textContent =
+    w8ActiveTheme === "titanium"
+      ? "★ FRUIT WALLET ★"
+      : "★ MILITARY WALLET ★";
+}
 
   if (w8ActiveTheme === "titanium") {
     w8LoadThemeArtwork();
