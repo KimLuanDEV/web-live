@@ -5285,6 +5285,314 @@ body.w8-theme-titanium
 
 
 
+/* ==========================================
+   FRUIT THEME - SLOT MISS COUNT
+   KEEP ORIGINAL LAYOUT AND FUNCTIONS
+========================================== */
+
+/* BACKGROUND */
+
+body.w8-theme-titanium #slotMissModal {
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            #fff9eb,
+            transparent 70%
+        ),
+        linear-gradient(
+            180deg,
+            #fff1da 0%,
+            #ffe0bd 55%,
+            #f0c39e 100%
+        );
+
+    color: #854b32;
+}
+
+/* INNER BORDER */
+
+body.w8-theme-titanium #slotMissModal::before {
+    border: 1px solid #ffffff85;
+    border-radius: 9px;
+
+    box-shadow:
+        inset 0 0 22px #bc7a3815;
+}
+
+/* HEADER */
+
+body.w8-theme-titanium
+#slotMissModal .history-header {
+    background: linear-gradient(
+        135deg,
+        #fff6e2,
+        #ffd3a7 65%,
+        #f0b487
+    );
+
+    border-bottom: 3px solid #d69360;
+
+    box-shadow:
+        0 5px 15px #8b4d2925,
+        inset 0 1px 0 #ffffffbb;
+}
+
+/* HEADER DECORATION */
+
+body.w8-theme-titanium
+#slotMissModal .history-header::after {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #e89a77,
+        #fff0b7,
+        #e89a77,
+        transparent
+    );
+
+    box-shadow: none;
+}
+
+/* TITLE */
+
+body.w8-theme-titanium
+#slotMissModal .history-title {
+    color: #a74934;
+
+    font-size: 21px;
+    font-weight: 1000;
+
+    text-shadow: none;
+}
+
+/* SUBTITLE */
+
+body.w8-theme-titanium
+#slotMissModal .miss-header-sub {
+    color: #a77a56;
+    text-shadow: none;
+}
+
+/* CLOSE BUTTON */
+
+body.w8-theme-titanium
+#slotMissModal .history-close {
+    background: linear-gradient(
+        135deg,
+        #fffaf0,
+        #f5d3ae
+    );
+
+    border: 1px solid #d99b71;
+    border-radius: 8px;
+
+    color: #a64e39;
+
+    box-shadow:
+        0 3px 8px #96552c25,
+        inset 0 1px 0 #fff;
+}
+
+/* CONTENT */
+
+body.w8-theme-titanium
+#slotMissModal .miss-army-content {
+    background: transparent;
+}
+
+/* GROUP HEADER */
+
+body.w8-theme-titanium
+#slotMissModal .miss-group-title {
+    background: linear-gradient(
+        135deg,
+        #ffe8c8,
+        #f7c59e
+    );
+
+    border: 1px solid #d69a6a;
+    border-bottom: 2px solid #bf8157;
+    border-radius: 8px;
+
+    color: #9c4d30;
+
+    box-shadow:
+        0 3px 8px #a66b4225,
+        inset 0 1px 0 #ffffffaa;
+}
+
+/* MULTIPLIER */
+
+body.w8-theme-titanium
+#slotMissModal .miss-group-title small {
+    color: #bf513b;
+}
+
+/* GROUP STATUS DOT */
+
+body.w8-theme-titanium
+#slotMissModal .miss-status-dot {
+    background: #85b94b;
+
+    box-shadow:
+        0 0 5px #94c26790;
+}
+
+/* SLOT GRID SCROLLBAR */
+
+body.w8-theme-titanium
+#slotMissModal #slotMissGrid {
+    scrollbar-color: #d0a178 transparent;
+}
+
+/* SLOT CARD */
+
+body.w8-theme-titanium
+#slotMissModal .miss-box {
+    background: linear-gradient(
+        155deg,
+        #fffdf5 0%,
+        #fff0d9 100%
+    );
+
+    border: 1px solid #dfbb92;
+    border-left: 3px solid #d9895b;
+    border-radius: 9px;
+
+    box-shadow:
+        0 4px 10px #9f653527,
+        inset 0 1px 0 #ffffffdd;
+}
+
+/* SLOT CARD TOP LINE */
+
+body.w8-theme-titanium
+#slotMissModal .miss-box::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #e6af80,
+        transparent
+    );
+}
+
+/* SLOT IMAGE */
+
+body.w8-theme-titanium
+#slotMissModal .miss-box img {
+    filter:
+        drop-shadow(0 3px 3px #9e623b40);
+}
+
+/* MISS NUMBER */
+
+body.w8-theme-titanium
+#slotMissModal .miss-count {
+    color: #b94b32;
+
+    text-shadow: none;
+}
+
+/* ROUND MISS LABEL */
+
+body.w8-theme-titanium
+#slotMissModal .miss-sub {
+    color: #aa8063;
+    opacity: 1;
+}
+
+/* ==========================================
+   SPECIAL EVENT CARDS
+========================================== */
+
+body.w8-theme-titanium
+#slotMissModal .miss-box.event {
+    background: linear-gradient(
+        145deg,
+        #ffe7c5,
+        #f9d2ac 70%,
+        #f4c294
+    );
+
+    border: 1px solid #d59b61;
+    border-left: 3px solid #d65e45;
+
+    box-shadow:
+        0 4px 10px #a16a3c30,
+        inset 0 1px 0 #ffffffaa;
+}
+
+body.w8-theme-titanium
+#slotMissModal .miss-box.event .miss-count {
+    color: #ad432e;
+    text-shadow: none;
+}
+
+body.w8-theme-titanium
+#slotMissModal .miss-box.event .miss-sub {
+    color: #a46c46;
+}
+
+/* LAST EVENT */
+
+body.w8-theme-titanium
+#slotMissModal .event-last {
+    background: #fff9ef;
+
+    border: 1px solid #dfb78b;
+    border-radius: 6px;
+
+    color: #895739;
+}
+
+/* ==========================================
+   FOOTER
+========================================== */
+
+body.w8-theme-titanium
+#slotMissModal .miss-army-footer {
+    background: linear-gradient(
+        180deg,
+        #ffe6c5,
+        #f3c39d
+    );
+
+    border-top: 1px solid #dcaa77;
+
+    color: #a25438;
+
+    text-shadow: none;
+}
+
+/* FOOTER DOT */
+
+body.w8-theme-titanium
+#slotMissModal .miss-footer-led {
+    background: #8bbf54;
+
+    box-shadow:
+        0 0 6px #93c95e90;
+}
+
+/* FOOTER DECORATION */
+
+body.w8-theme-titanium
+#slotMissModal .miss-footer-decoration {
+    color: #c65242;
+    font-size: 13px;
+}
+
+/* SCROLLBAR */
+
+body.w8-theme-titanium
+#slotMissModal ::-webkit-scrollbar-thumb {
+    background: #d3a579;
+    border-radius: 5px;
+}
+
+
+
+
 
 </style>
 </head>
@@ -8207,6 +8515,56 @@ function w8SetTheme(theme) {
     "w8-theme-titanium",
     w8ActiveTheme === "titanium"
   );
+
+
+
+
+/* ==========================================
+   SLOT MISS - UPDATE THEME TEXT
+========================================== */
+
+const isFruitTheme =
+    w8ActiveTheme === "titanium";
+
+const missModal =
+    document.getElementById("slotMissModal");
+
+if (missModal) {
+
+    const missTitle =
+        missModal.querySelector(".history-title");
+
+    const missSubtitle =
+        missModal.querySelector(".miss-header-sub");
+
+    const missDecoration =
+        missModal.querySelector(
+            ".miss-footer-decoration"
+        );
+
+    // MAIN TITLE
+    if (missTitle) {
+        missTitle.textContent = isFruitTheme
+            ? "FRUIT MISS COUNT"
+            : "SLOT MISS COUNT";
+    }
+
+    // SUBTITLE
+    if (missSubtitle) {
+        missSubtitle.textContent = isFruitTheme
+            ? "FRUIT ROUND TRACKING"
+            : "ROUND TRACKING SYSTEM";
+    }
+
+    // FOOTER DECORATION
+    if (missDecoration) {
+        missDecoration.textContent = isFruitTheme
+            ? "🍓"
+            : "★";
+    }
+
+}
+
 
   // Đổi biểu tượng ROUND theo theme
   const roundIcon =
