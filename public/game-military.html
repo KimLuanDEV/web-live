@@ -5132,7 +5132,7 @@ class="toggle-name-hitbox">
 
 <div>
 <div class="history-title">MY BET HISTORY</div>
-<div class="history-sub">Last 50 rounds</div>
+<div class="history-sub">Today · Last 50 rounds</div>
 </div>
 
 <button class="history-close"
@@ -5392,6 +5392,41 @@ let coins = 0
 let wheelHistory = []
 
 let myBetHistory = []
+
+
+
+/* ======================================
+   WHEEL8 DAILY HISTORY RESET
+====================================== */
+
+// Server thông báo đã sang ngày mới
+socket.on("wheel8-my-history-reset", () => {
+
+  // Xóa lịch sử đang hiển thị
+  myBetHistory = [];
+
+  // Làm mới danh sách
+  renderMyBetHistory();
+
+  // Đóng chi tiết vòng cũ nếu đang mở
+  const detailModal =
+    document.getElementById("roundDetailModal");
+
+  if (detailModal) {
+    detailModal.style.display = "none";
+  }
+
+});
+
+// Khi kết nối hoặc kết nối lại
+// luôn lấy lịch sử mới nhất từ server
+socket.on("connect", () => {
+
+  socket.emit("wheel8-get-my-history");
+
+});
+
+
 
 let currentRoundId = 0
 
@@ -6166,6 +6201,26 @@ const box =
 document.getElementById("myBetHistoryList")
 
 box.innerHTML=""
+
+
+// Chưa có lịch sử trong ngày
+if (!myBetHistory.length) {
+
+  box.innerHTML = `
+    <div style="
+      padding:40px 15px;
+      text-align:center;
+      color:#aaa;
+      font-size:13px;
+      letter-spacing:1px;
+    ">
+      NO BET HISTORY TODAY
+    </div>
+  `;
+
+  return;
+}
+
 
 // gom theo round
 const rounds = {}

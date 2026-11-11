@@ -1635,6 +1635,94 @@ const activeUsers = new Map();
 
 
 
+/* =========================================
+   WHEEL8 - DAILY USER BET HISTORY
+   RESET AT 00:00 VIETNAM TIME
+========================================= */
+
+let wheel8HistoryDayTs = null;
+
+function cleanWheel8UserHistory(forceSave = false) {
+
+  const todayStart = getTodayStartTsVN();
+  const todayEnd = todayStart + 86400000;
+
+  const isNewDay =
+    wheel8HistoryDayTs !== null &&
+    wheel8HistoryDayTs !== todayStart;
+
+  // Không cần xử lý lại nếu vẫn cùng ngày
+  if (!forceSave && wheel8HistoryDayTs === todayStart) {
+    return;
+  }
+
+  const cleanedHistory = {};
+  let changed = false;
+
+  for (const [uid, list] of Object.entries(wheel8UserHistory || {})) {
+
+    if (!Array.isArray(list)) {
+      changed = true;
+      continue;
+    }
+
+    // Chỉ giữ lịch sử thuộc ngày hôm nay
+    const todayHistory = list.filter(item => {
+
+      const ts = Number(item?.ts);
+
+      return (
+        Number.isFinite(ts) &&
+        ts >= todayStart &&
+        ts < todayEnd
+      );
+
+    });
+
+    if (todayHistory.length !== list.length) {
+      changed = true;
+    }
+
+    if (todayHistory.length > 0) {
+      cleanedHistory[uid] = todayHistory;
+    } else {
+      changed = true;
+    }
+
+  }
+
+  wheel8UserHistory = cleanedHistory;
+  wheel8HistoryDayTs = todayStart;
+
+  // Lưu dữ liệu đã được làm sạch
+  if (changed || forceSave) {
+    saveWheel8UserHistory(wheel8UserHistory);
+  }
+
+  // Thông báo tới tất cả người chơi khi qua ngày mới
+  if (isNewDay) {
+
+    console.log("WHEEL8: RESET DAILY BET HISTORY");
+
+    io.emit("wheel8-my-history-reset", {
+      dayTs: todayStart
+    });
+
+  }
+
+}
+
+// Làm sạch lịch sử ngay khi server khởi động
+cleanWheel8UserHistory();
+
+// Kiểm tra ngày mới mỗi giây
+setInterval(() => {
+  cleanWheel8UserHistory();
+}, 1000);
+
+
+
+
 
 // ================================
 // 🎡 LUCKY WHEEL 8 ENGINE
@@ -1968,7 +2056,7 @@ winSlot: resultSlot,
 event: specialEvent
   ? (winSlots.includes(1) ? "x5-all" : "x45-all")
   : null,
-ts: Date.now()
+ts: Number(wheel8Round.startAt) || Date.now()
 })
 
 
@@ -2011,8 +2099,8 @@ wheel8UserHistory[o.uid] = newHistory
 })
 
 
-// 💾 LƯU FILE HISTORY
-saveWheel8UserHistory(wheel8UserHistory)
+// 💾 LƯU LỊCH SỬ CHỈ TRONG NGÀY
+cleanWheel8UserHistory(true)
 
 
 // lưu user
@@ -4297,17 +4385,23 @@ socket.emit("wheel8-round-info",{
 // ================================
 // 📜 SEND USER BET HISTORY
 // ================================
-socket.on("wheel8-get-my-history",()=>{
 
-const uid = socket.data.uid
-if(!uid) return
+socket.on("wheel8-get-my-history", () => {
 
-socket.emit(
-"wheel8-my-history",
-wheel8UserHistory[uid] || []
-)
+  const uid = socket.data.uid;
+  if (!uid) return;
 
-})
+  // Đồng bộ lịch sử theo ngày hiện tại
+  cleanWheel8UserHistory();
+
+  // Chỉ gửi dữ liệu còn hiệu lực
+  socket.emit(
+    "wheel8-my-history",
+    wheel8UserHistory[uid] || []
+  );
+
+});
+
 
 
 
