@@ -3902,6 +3902,338 @@ div,img,button{
 
 
 
+/* ==========================================
+   IMAGE THEME SWITCHER
+========================================== */
+
+#w8ThemeSwitcher {
+  position: absolute;
+  top: 8px;
+  left: 12px;
+  z-index: 900;
+
+  font-family: system-ui, sans-serif;
+}
+
+#w8ThemeButton {
+  width: 112px;
+  height: 26px;
+
+  border: 1px solid #c3a36c;
+  border-radius: 6px;
+
+  background: linear-gradient(
+    145deg, #4a6041, #172b1e
+  );
+
+  color: #f4e6c6;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .4px;
+
+  box-shadow: 0 4px 12px #0009;
+
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+#w8ThemeMenu[hidden] {
+  display: none !important;
+}
+
+#w8ThemeMenu {
+  position: absolute;
+  top: 34px;
+  left: 0;
+
+  width: 224px;
+  padding: 12px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #bc9b66;
+  border-radius: 11px;
+
+  background: linear-gradient(
+    145deg, #27313d, #0d121b
+  );
+
+  box-shadow: 0 12px 30px #000d;
+}
+
+.w8-theme-heading {
+  color: #dfc08a;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  text-align: center;
+
+  margin-bottom: 11px;
+}
+
+.w8-theme-option {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  width: 100%;
+  height: 53px;
+
+  margin-top: 7px;
+  padding: 7px 9px;
+
+  box-sizing: border-box;
+
+  border: 1px solid #444b53;
+  border-radius: 8px;
+
+  background: #151b24;
+  color: #efe7d7;
+
+  font-size: 11px;
+  font-weight: 900;
+
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+.w8-theme-option.is-selected {
+  border-color: #e2bd7c;
+  background: #30291f;
+}
+
+.w8-theme-preview {
+  width: 32px;
+  height: 32px;
+
+  flex-shrink: 0;
+  border-radius: 5px;
+}
+
+.w8-theme-preview.military {
+  background: linear-gradient(
+    135deg, #728358, #172a1b
+  );
+}
+
+.w8-theme-preview.titanium {
+  background: linear-gradient(
+    135deg, #d9b374, #354b63, #0a1523
+  );
+}
+
+.w8-theme-state {
+  margin-left: auto;
+
+  width: 8px;
+  height: 8px;
+
+  border-radius: 50%;
+  background: #62676d;
+}
+
+.w8-theme-option.is-selected .w8-theme-state {
+  background: #f4d18e;
+  box-shadow: 0 0 9px #e1b56e;
+}
+
+
+/* ==========================================
+   TITANIUM - PNG IMAGE SKIN
+   PRESERVE ORIGINAL SIZES AND POSITIONS
+========================================== */
+
+/* 1. MAIN GAME BACKGROUND */
+
+body.w8-theme-titanium #app {
+  background:
+    var(
+      --w8-art-game,
+      url("/assets/police/bg-police-casino.jpg")
+    )
+    center / cover no-repeat;
+}
+
+/* 2. WHEEL CENTER */
+
+body.w8-theme-titanium .wheel-center {
+  background:
+    var(
+      --w8-art-center,
+      url("/assets/police/wheel-center-police.png")
+    )
+    center / contain no-repeat;
+}
+
+/* 3. SLOT BACKGROUND - ALL 8 SLOTS */
+
+body.w8-theme-titanium .slot {
+  background:
+    var(
+      --w8-art-slot,
+      url("/assets/police/slot-bg-police.png")
+    )
+    center / contain no-repeat;
+}
+
+/* 4. WHEEL STAND */
+
+body.w8-theme-titanium .wheel-stand {
+  background:
+    var(
+      --w8-art-stand,
+      url("/assets/police/wheel-stand.png")
+    )
+    center / contain no-repeat;
+}
+
+/* 5. WHEEL SPOKES */
+
+body.w8-theme-titanium .wheel-spokes {
+  background:
+    var(
+      --w8-art-spokes,
+      url("/assets/police/wheel-spokes-police.png")
+    )
+    center / contain no-repeat;
+}
+
+/* 6. BOTTOM BETTING PANEL */
+
+body.w8-theme-titanium .bet-panel {
+  background:
+    var(
+      --w8-art-panel,
+      url("/assets/police/police-panel.png")
+    )
+    center / cover no-repeat;
+}
+
+/* 7. FIVE INDIVIDUAL PNG CHIPS */
+
+body.w8-theme-titanium .chip::before {
+  content: "";
+
+  position: absolute;
+  left: 50%;
+  top: 50%;
+
+  width: 74px;
+  height: 74px;
+
+  transform: translate(-50%, -50%);
+
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+
+  pointer-events: none;
+}
+
+body.w8-theme-titanium .chip.c1::before {
+  background-image: var(--w8-art-chip10, none);
+}
+
+body.w8-theme-titanium .chip.c2::before {
+  background-image: var(--w8-art-chip50, none);
+}
+
+body.w8-theme-titanium .chip.c3::before {
+  background-image: var(--w8-art-chip100, none);
+}
+
+body.w8-theme-titanium .chip.c4::before {
+  background-image: var(--w8-art-chip1000, none);
+}
+
+body.w8-theme-titanium .chip.c5::before {
+  background-image: var(--w8-art-chip10000, none);
+}
+
+/* KEEP ORIGINAL ACTIVE CHIP EFFECT */
+
+body.w8-theme-titanium .chip.active::after {
+  border-color: #f8d18b;
+
+  box-shadow:
+    0 0 10px #e4b772,
+    0 0 20px #d7a663;
+}
+
+/* 8. RESULT FRAME */
+
+body.w8-theme-titanium .result-box {
+  background:
+    var(
+      --w8-art-result,
+      url("/assets/police/result-frame-police.png")
+    )
+    center / contain no-repeat;
+}
+
+/* 9. BETTING CLOSED ALERT */
+
+body.w8-theme-titanium .bet-closed-bg {
+  background:
+    var(
+      --w8-art-alert,
+      url("/assets/police/police-alert.png")
+    )
+    center / contain no-repeat;
+}
+
+/* 10. TOP WINNERS BACKGROUND */
+
+body.w8-theme-titanium .top-winners {
+  background:
+    var(
+      --w8-art-top,
+      url("/assets/police/top-winners-bg.png")
+    )
+    center / 100% 100% no-repeat;
+}
+
+/* OPTIONAL INDIVIDUAL TOP CARD ARTWORK */
+
+body.w8-theme-titanium .top-winners .top-card {
+  background:
+    var(--w8-art-topcard, none)
+    center / contain no-repeat;
+}
+
+/* 11. TITANIUM UI ACCENTS */
+
+body.w8-theme-titanium .wheel-round {
+  background: linear-gradient(
+    135deg, #40556d, #16283a, #0b1420
+  );
+
+  border-color: #ceb17c;
+}
+
+body.w8-theme-titanium .coin-box {
+  border: 1px solid #c4a472;
+  border-radius: 9px;
+
+  background: linear-gradient(
+    145deg, #33465c, #111d2d
+  );
+
+  box-shadow: 0 5px 15px #0009;
+}
+
+body.w8-theme-titanium .coin-value {
+  color: #b9eeff;
+  text-shadow: 0 0 9px #4bc0f888;
+}
+
+body.w8-theme-titanium #w8ThemeButton {
+  background: linear-gradient(
+    145deg, #42586e, #122338
+  );
+}
+
+
 
 </style>
 </head>
@@ -4037,6 +4369,59 @@ div,img,button{
   class="w8-live-comments"
   aria-live="polite">
 </div>
+
+
+
+
+<!-- ====================================
+     GAME IMAGE THEME SWITCHER
+==================================== -->
+
+<div id="w8ThemeSwitcher">
+
+  <button
+    id="w8ThemeButton"
+    type="button"
+    onclick="w8ToggleThemeMenu()"
+    aria-controls="w8ThemeMenu"
+    aria-expanded="false"
+  >
+    CHANGE THEME
+  </button>
+
+  <div id="w8ThemeMenu" hidden>
+
+    <div class="w8-theme-heading">
+      SELECT GAME THEME
+    </div>
+
+    <button
+      type="button"
+      class="w8-theme-option"
+      data-theme="military"
+      onclick="w8SetTheme('military')"
+    >
+      <span class="w8-theme-preview military"></span>
+      <span>MILITARY</span>
+      <span class="w8-theme-state"></span>
+    </button>
+
+    <button
+      type="button"
+      class="w8-theme-option"
+      data-theme="titanium"
+      onclick="w8SetTheme('titanium')"
+    >
+      <span class="w8-theme-preview titanium"></span>
+      <span>TITANIUM</span>
+      <span class="w8-theme-state"></span>
+    </button>
+
+  </div>
+
+</div>
+
+
 
 
 <!-- ===== WHEEL8 SCREEN SHARE ===== -->
@@ -5435,12 +5820,15 @@ if(first){
 
 }
 
-icon.style.backgroundImage = "url('"+resultImg+"')"
+icon.dataset.w8OriginalBg = resultImg;
+w8SyncRoundResultArt();
+
 multi.textContent = "x"+resultMulti
 
 }else{
 
-icon.style.backgroundImage = ""
+icon.dataset.w8OriginalBg = "";
+icon.style.backgroundImage = "";
 multi.textContent = "?"
 
 }
@@ -6382,7 +6770,410 @@ socket.on("w8share:comment", (data) => {
 
 
 
+
+
 </script>
+
+
+
+
+<script>
+/* ===========================================
+   WHEEL8 IMAGE THEME SYSTEM
+   CLIENT-SIDE VISUAL CHANGES ONLY
+=========================================== */
+
+const W8_BASE_DIR = "/assets/police/";
+const W8_ALT_DIR = "/assets/police/theme-titanium/";
+const W8_THEME_STORE = "w8_image_theme";
+
+let w8ActiveTheme = "military";
+let w8ArtLoadingStarted = false;
+
+/* CSS BACKGROUND IMAGE MAPPING */
+
+const W8_ART_BACKGROUND = {
+
+  "--w8-art-game": "bg-police-casino.png",
+
+  "--w8-art-center": "wheel-center-police.png",
+
+  "--w8-art-slot": "slot-bg-police.png",
+
+  "--w8-art-panel": "police-panel.png",
+
+  "--w8-art-result": "result-frame-police.png",
+
+  "--w8-art-alert": "police-alert.png",
+
+  "--w8-art-stand": "wheel-stand.png",
+
+  "--w8-art-spokes": "wheel-spokes-police.png",
+
+  "--w8-art-top": "top-winners-bg.png",
+
+  "--w8-art-topcard": "top-card.png",
+
+  "--w8-art-chip10": "chip-10.png",
+
+  "--w8-art-chip50": "chip-50.png",
+
+  "--w8-art-chip100": "chip-100.png",
+
+  "--w8-art-chip1000": "chip-1000.png",
+
+  "--w8-art-chip10000": "chip-10000.png"
+
+};
+
+/* PRELOAD THEME BACKGROUNDS */
+
+function w8LoadThemeArtwork() {
+
+  if (w8ArtLoadingStarted) return;
+
+  w8ArtLoadingStarted = true;
+
+  for (
+    const [variable, file]
+    of Object.entries(W8_ART_BACKGROUND)
+  ) {
+
+    const path = W8_ALT_DIR + file;
+    const preview = new Image();
+
+    preview.onload = () => {
+
+      document.documentElement.style.setProperty(
+        variable,
+        `url("${path}")`
+      );
+
+    };
+
+    preview.onerror = () => {
+
+      document.documentElement.style.removeProperty(
+        variable
+      );
+
+    };
+
+    preview.src = path;
+
+  }
+
+}
+
+/* SWITCH A SINGLE IMAGE */
+
+function w8SyncThemeImage(img) {
+
+  if (!(img instanceof HTMLImageElement)) return;
+
+  const current = img.getAttribute("src") || "";
+
+  const fromAlt = current.startsWith(W8_ALT_DIR);
+
+  const fromBase =
+    current.startsWith(W8_BASE_DIR) && !fromAlt;
+
+  if (!fromAlt && !fromBase) return;
+
+  const original = fromAlt
+    ? W8_BASE_DIR + current.slice(W8_ALT_DIR.length)
+    : current;
+
+  if (img.dataset.w8OriginalSrc !== original) {
+
+    img.dataset.w8OriginalSrc = original;
+
+    delete img.dataset.w8MissingSrc;
+
+  }
+
+  const candidate =
+    W8_ALT_DIR +
+    original
+      .slice(W8_BASE_DIR.length)
+      .replace(/\.jpe?g$/i, ".png");
+
+  const target =
+    w8ActiveTheme === "titanium" &&
+    img.dataset.w8MissingSrc !== candidate
+      ? candidate
+      : original;
+
+  if (current !== target) {
+    img.setAttribute("src", target);
+  }
+
+}
+
+/* UPDATE ALL EXISTING IMAGES */
+
+function w8SyncAllThemeImages() {
+
+  document.querySelectorAll(
+    'img[src^="/assets/police/"]'
+  ).forEach(w8SyncThemeImage);
+
+}
+
+/* FALL BACK IF NEW PNG IS MISSING */
+
+document.addEventListener(
+  "error",
+  event => {
+
+    const img = event.target;
+
+    if (!(img instanceof HTMLImageElement)) return;
+
+    const current =
+      img.getAttribute("src") || "";
+
+    if (!current.startsWith(W8_ALT_DIR)) return;
+
+    img.dataset.w8MissingSrc = current;
+
+    img.setAttribute(
+      "src",
+      W8_BASE_DIR + current.slice(W8_ALT_DIR.length)
+    );
+
+  },
+  true
+);
+
+/* HANDLE IMAGES GENERATED BY GAME EVENTS */
+
+const w8ThemeObserver = new MutationObserver(
+  records => {
+
+    const changed = new Set();
+
+    for (const record of records) {
+
+      if (record.type === "attributes") {
+
+        changed.add(record.target);
+
+      } else {
+
+        for (const node of record.addedNodes) {
+
+          if (node.nodeType !== 1) continue;
+
+          if (node.tagName === "IMG") {
+            changed.add(node);
+          }
+
+          node.querySelectorAll?.(
+            'img[src^="/assets/police/"]'
+          ).forEach(el => changed.add(el));
+
+        }
+
+      }
+
+    }
+
+    changed.forEach(w8SyncThemeImage);
+
+  }
+);
+
+w8ThemeObserver.observe(document.body, {
+
+  childList: true,
+
+  subtree: true,
+
+  attributes: true,
+
+  attributeFilter: ["src"]
+
+});
+
+/* ROUND DETAILS BACKGROUND IMAGE */
+
+function w8SyncRoundResultArt() {
+
+  const icon =
+    document.getElementById("roundResultIcon");
+
+  if (!icon) return;
+
+  const original = icon.dataset.w8OriginalBg;
+
+  if (!original) return;
+
+  if (w8ActiveTheme !== "titanium") {
+
+    icon.style.backgroundImage =
+      `url("${original}")`;
+
+    return;
+
+  }
+
+  const alternative =
+    W8_ALT_DIR +
+    original.slice(W8_BASE_DIR.length);
+
+  const check = new Image();
+
+  check.onload = () => {
+
+    if (
+      w8ActiveTheme === "titanium" &&
+      icon.dataset.w8OriginalBg === original
+    ) {
+
+      icon.style.backgroundImage =
+        `url("${alternative}")`;
+
+    }
+
+  };
+
+  check.onerror = () => {
+
+    if (icon.dataset.w8OriginalBg === original) {
+
+      icon.style.backgroundImage =
+        `url("${original}")`;
+
+    }
+
+  };
+
+  check.src = alternative;
+
+}
+
+/* CLOSE THEME MENU */
+
+function w8CloseThemeMenu() {
+
+  const menu =
+    document.getElementById("w8ThemeMenu");
+
+  const button =
+    document.getElementById("w8ThemeButton");
+
+  if (menu) menu.hidden = true;
+
+  if (button) {
+    button.setAttribute("aria-expanded", "false");
+  }
+
+}
+
+/* OPEN / CLOSE THEME MENU */
+
+function w8ToggleThemeMenu() {
+
+  const menu =
+    document.getElementById("w8ThemeMenu");
+
+  const button =
+    document.getElementById("w8ThemeButton");
+
+  if (!menu || !button) return;
+
+  menu.hidden = !menu.hidden;
+
+  button.setAttribute(
+    "aria-expanded",
+    String(!menu.hidden)
+  );
+
+}
+
+/* APPLY SELECTED THEME */
+
+function w8SetTheme(theme) {
+
+  w8ActiveTheme =
+    theme === "titanium"
+      ? "titanium"
+      : "military";
+
+  document.body.classList.toggle(
+    "w8-theme-titanium",
+    w8ActiveTheme === "titanium"
+  );
+
+  if (w8ActiveTheme === "titanium") {
+    w8LoadThemeArtwork();
+  }
+
+  w8SyncAllThemeImages();
+
+  w8SyncRoundResultArt();
+
+  document.querySelectorAll(
+    "#w8ThemeMenu [data-theme]"
+  ).forEach(button => {
+
+    const chosen =
+      button.dataset.theme === w8ActiveTheme;
+
+    button.classList.toggle(
+      "is-selected",
+      chosen
+    );
+
+    button.setAttribute(
+      "aria-pressed",
+      String(chosen)
+    );
+
+  });
+
+  w8CloseThemeMenu();
+
+  try {
+    localStorage.setItem(
+      W8_THEME_STORE,
+      w8ActiveTheme
+    );
+  } catch (_) {}
+
+}
+
+/* CLOSE THEME MENU WHEN TAPPING OUTSIDE */
+
+document.addEventListener(
+  "pointerdown",
+  event => {
+
+    if (!event.target.closest("#w8ThemeSwitcher")) {
+      w8CloseThemeMenu();
+    }
+
+  }
+);
+
+/* RESTORE LAST SELECTED THEME */
+
+let w8SavedTheme = "military";
+
+try {
+
+  w8SavedTheme =
+    localStorage.getItem(W8_THEME_STORE) ||
+    "military";
+
+} catch (_) {}
+
+w8SetTheme(w8SavedTheme);
+
+</script>
+
+
 
 </body>
 </html>

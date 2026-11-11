@@ -2530,7 +2530,7 @@ setInterval(()=>{
 
   io.emit("dtp-bet-update", getDtpPool());
 
-},1000);
+},500);
 
 
 
