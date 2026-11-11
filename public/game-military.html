@@ -4224,6 +4224,476 @@ body.w8-theme-titanium #w8ThemeButton {
 
 
 
+
+
+
+/* ==========================================
+   FRUIT ROYAL - HISTORY THEME
+   MY BET HISTORY + ROUND DETAILS
+   AUTO SWITCH WITH CHANGE THEME
+========================================== */
+
+/* TWO FRUIT SCREENS */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal) {
+
+  --fruit-gold: #ffd27a;
+  --fruit-green: #a6ff68;
+  --fruit-pink: #ff7d9e;
+  --fruit-text: #fff6df;
+
+  color: var(--fruit-text);
+
+  background:
+    linear-gradient(
+      180deg,
+      rgba(5, 30, 13, .30),
+      rgba(4, 22, 11, .86)
+    ),
+    url("/assets/police/theme-titanium/my-bet-history-bg.png")
+      center / cover no-repeat,
+    radial-gradient(
+      ellipse at 50% 0%,
+      #438b3b 0%,
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      #204f27 0%,
+      #0c321b 55%,
+      #05190d 100%
+    );
+}
+
+/* ROUND DETAILS OPTIONAL BACKGROUND */
+
+body.w8-theme-titanium #roundDetailModal {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(5, 30, 13, .30),
+      rgba(4, 22, 11, .86)
+    ),
+    url("/assets/police/theme-titanium/round-details-bg.png")
+      center / cover no-repeat,
+    radial-gradient(
+      ellipse at 50% 0%,
+      #548c30 0%,
+      transparent 55%
+    ),
+    linear-gradient(
+      180deg,
+      #295f28,
+      #102b19 55%,
+      #06160c
+    );
+}
+
+/* SCREEN BORDER */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)::before {
+
+  border: 1px solid rgba(255, 203, 103, .48);
+  border-radius: 9px;
+
+  box-shadow:
+    inset 0 0 25px rgba(51, 145, 36, .16),
+    0 0 15px rgba(255, 191, 92, .13);
+}
+
+/* ==========================================
+   FRUIT HEADER
+========================================== */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-header {
+
+  background:
+    radial-gradient(
+      ellipse at 50% 0%,
+      rgba(255, 210, 87, .26),
+      transparent 75%
+    ),
+    linear-gradient(
+      135deg,
+      #a62c49 0%,
+      #692235 35%,
+      #284e25 78%,
+      #16351d 100%
+    );
+
+  border-bottom: 3px solid #f0c367;
+
+  box-shadow:
+    0 5px 16px rgba(0, 0, 0, .45),
+    inset 0 1px 0 rgba(255, 235, 173, .25);
+}
+
+/* GOLD AND LIME LIGHT STRIP */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-header::after {
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #ff8ea8,
+    #ffe68c,
+    #a3ff65,
+    transparent
+  );
+
+  box-shadow: 0 0 10px #f2c26b77;
+}
+
+/* TITLE */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-title {
+
+  color: #ffe5a5;
+
+  text-shadow:
+    0 2px 3px #3e140f,
+    0 0 14px rgba(255, 199, 100, .45);
+
+  letter-spacing: 1px;
+}
+
+/* SUBTITLE */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-sub {
+
+  color: #d4f8b4;
+  opacity: 1;
+  letter-spacing: 1.2px;
+}
+
+/* CLOSE BUTTON */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-close {
+
+  border: 2px solid #ffd486;
+  border-radius: 10px;
+
+  background: linear-gradient(
+    145deg,
+    #db6374,
+    #922b49 55%,
+    #4b1b30
+  );
+
+  color: #fff4d5;
+
+  box-shadow:
+    0 4px 12px #0007,
+    inset 0 1px 0 #ffffff4a;
+}
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-close:active {
+
+  background: #b63a58;
+  transform: scale(.95);
+}
+
+/* ==========================================
+   MY BET HISTORY - TABLE HEADER
+========================================== */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-head {
+
+  background: linear-gradient(
+    180deg,
+    #5b9e42,
+    #2b662f 48%,
+    #17431f
+  );
+
+  border: 1px solid #f1c66e;
+  border-bottom: 2px solid #ffd987;
+  border-radius: 9px 9px 0 0;
+
+  color: #fff4c7;
+
+  box-shadow: inset 0 1px 0 #ffffff2b;
+}
+
+/* HISTORY ROWS */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row {
+
+  background: linear-gradient(
+    115deg,
+    rgba(64, 119, 47, .94),
+    rgba(23, 67, 32, .97)
+  );
+
+  border: 1px solid #79a758;
+  border-left: 3px solid #e6c16a;
+  border-radius: 9px;
+
+  color: #fff9e8;
+
+  box-shadow:
+    0 4px 10px #0005,
+    inset 0 1px 0 #ffffff14;
+}
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row:active {
+
+  background: #437f3b;
+}
+
+/* WINNING ROUNDS */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row.win {
+
+  background: linear-gradient(
+    110deg,
+    #367e35,
+    #194f2d
+  );
+
+  border-left-color: #baff77;
+}
+
+/* LOSING ROUNDS */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row.lose {
+
+  background: linear-gradient(
+    110deg,
+    #763a45,
+    #3c2732
+  );
+
+  border-left-color: #ff8796;
+}
+
+/* HISTORY VALUES */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row.win > :last-child {
+
+  color: #bbff8b;
+  text-shadow: 0 0 7px #9cff6b55;
+}
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row.lose > :last-child {
+
+  color: #ffafba;
+}
+
+/* ==========================================
+   ROUND DETAILS - RESULT PANEL
+========================================== */
+
+body.w8-theme-titanium
+#roundDetailModal .round-result {
+
+  background:
+    radial-gradient(
+      ellipse at 50% 20%,
+      rgba(255, 199, 91, .26),
+      transparent 70%
+    ),
+    linear-gradient(
+      125deg,
+      #8d394a,
+      #4f5025 45%,
+      #1a502d 100%
+    );
+
+  border-bottom: 2px solid #ffcf78;
+
+  box-shadow:
+    inset 0 -8px 20px #0004,
+    0 5px 12px #0004;
+}
+
+/* RESULT ART - PRESERVE PNG SWITCHING */
+
+body.w8-theme-titanium
+#roundDetailModal .round-result-icon {
+
+  filter:
+    drop-shadow(0 0 10px #ffd56a88)
+    drop-shadow(0 4px 6px #0008);
+}
+
+/* MULTIPLIER */
+
+body.w8-theme-titanium
+#roundDetailModal .round-result-text {
+
+  color: #ffe58e;
+
+  text-shadow:
+    0 2px 3px #331506,
+    0 0 14px #ffb64a77;
+}
+
+/* ==========================================
+   ROUND DETAILS - TABLE HEADER
+========================================== */
+
+body.w8-theme-titanium
+#roundDetailModal .round-table-head {
+
+  background: linear-gradient(
+    180deg,
+    #599c42,
+    #2a662c 55%,
+    #16451f
+  );
+
+  border-bottom: 2px solid #ffd17b;
+
+  color: #fff4c5;
+}
+
+/* SLOT ROWS */
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-row {
+
+  background: linear-gradient(
+    115deg,
+    rgba(62, 116, 44, .96),
+    rgba(19, 66, 32, .98)
+  );
+
+  border: 1px solid #76a45b;
+  border-left: 3px solid #f1c76f;
+  border-radius: 9px;
+
+  box-shadow:
+    0 4px 10px #0005,
+    inset 0 1px 0 #ffffff14;
+}
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-row:active {
+
+  background: #397d3b;
+}
+
+/* WINNING SLOT */
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-row.win {
+
+  border-left-color: #b6ff75;
+  background: linear-gradient(
+    110deg,
+    #347b3a,
+    #18532f
+  );
+}
+
+/* SLOT IMAGE */
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-icon {
+
+  filter:
+    drop-shadow(0 3px 5px #0007)
+    drop-shadow(0 0 5px #ffdd8c44);
+}
+
+/* BET VALUE */
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-bet {
+
+  color: #ffe9b1;
+}
+
+/* WIN VALUE */
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-win {
+
+  color: #b8ff83;
+  text-shadow: 0 0 7px #aaff6b55;
+}
+
+/* SPECIAL RESULT ROWS */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.result-row {
+
+  background: linear-gradient(
+    120deg,
+    #688c31,
+    #35602c
+  );
+
+  border: 1px solid #ffd383;
+  border-left: 3px solid #ffe8a8;
+
+  box-shadow:
+    inset 0 0 13px #ffda6b25,
+    0 3px 9px #0005;
+}
+
+/* FRUIT SCROLLBAR */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+::-webkit-scrollbar-thumb {
+
+  background: #c0a65d;
+  border-radius: 6px;
+}
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-body,
+
+body.w8-theme-titanium
+#roundDetailModal .round-detail-list {
+
+  scrollbar-color: #d1ad69 transparent;
+}
+
+/* SMALL SCREEN */
+
+@media (max-width: 430px) {
+
+  body.w8-theme-titanium
+  :is(#myBetHistoryModal, #roundDetailModal)
+  .history-title {
+    font-size: 19px;
+  }
+
+  body.w8-theme-titanium
+  :is(#myBetHistoryModal, #roundDetailModal)
+  .history-sub {
+    font-size: 10px;
+  }
+
+}
+
+
 </style>
 </head>
 
