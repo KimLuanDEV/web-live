@@ -4828,6 +4828,464 @@ body.w8-theme-titanium .wheel-round #roundId {
 
 
 
+
+/* ==========================================
+   FRUIT THEME - LIVE SCREEN SHARE
+   KEEP ORIGINAL POSITION AND FUNCTIONS
+========================================== */
+
+/* NÚT SHARE */
+
+body.w8-theme-titanium #w8ShareButton {
+    background: linear-gradient(
+        135deg,
+        #fff5dc 0%,
+        #ffd6a3 55%,
+        #ecaa73 100%
+    );
+
+    border: 1px solid #d78b50;
+    border-bottom: 2px solid #bc653d;
+    border-radius: 7px;
+
+    color: #994626;
+
+    text-shadow: none;
+
+    box-shadow:
+        0 4px 10px rgba(49, 22, 8, .35),
+        inset 0 1px 0 #ffffffaa;
+}
+
+/* NÚT SHARE KHI ĐANG PHÁT LIVE */
+
+body.w8-theme-titanium #w8ShareButton.w8-sharing {
+    background: linear-gradient(
+        135deg,
+        #ffdbbd,
+        #f2a38a
+    );
+
+    color: #ac2929;
+    border-color: #db7164;
+}
+
+/* BẢNG CHIA SẺ */
+
+body.w8-theme-titanium #w8SharePanel {
+    background: linear-gradient(
+        160deg,
+        #fff8e7 0%,
+        #ffe4c1 60%,
+        #efbf91 100%
+    );
+
+    border: 1px solid #d58e59;
+    border-bottom: 3px solid #b66c42;
+    border-radius: 12px;
+
+    box-shadow:
+        0 12px 30px rgba(48, 23, 10, .45),
+        inset 0 1px 0 #ffffffc0;
+}
+
+/* TIÊU ĐỀ LIVE */
+
+body.w8-theme-titanium #w8SharePanel .w8-share-title {
+    color: #a3472f;
+
+    font-size: 14px;
+    font-weight: 900;
+    letter-spacing: .6px;
+
+    text-shadow: none;
+}
+
+/* CHẤM LIVE */
+
+body.w8-theme-titanium #w8SharePanel .w8-live-dot {
+    background: #e84b46;
+    box-shadow: 0 0 8px #ef7772;
+}
+
+/* SỐ NGƯỜI XEM */
+
+body.w8-theme-titanium #w8ShareCount {
+    color: #648c3f;
+    font-weight: 900;
+}
+
+/* NHÃN LINK URL */
+
+body.w8-theme-titanium #w8SharePanel .w8-share-label {
+    color: #895c3d;
+    font-weight: 800;
+}
+
+/* Ô LINK CHIA SẺ */
+
+body.w8-theme-titanium #w8ShareLink {
+    background: #fffaf0;
+
+    border: 1px solid #d9ac7a;
+    border-radius: 6px;
+
+    color: #804726;
+
+    box-shadow: inset 0 1px 3px #b6855430;
+}
+
+body.w8-theme-titanium #w8ShareLink::placeholder {
+    color: #aa917e;
+}
+
+/* COPY LINK */
+
+body.w8-theme-titanium #w8SharePanel .w8-copy-button {
+    background: linear-gradient(
+        135deg,
+        #e9a66b,
+        #f6cb85
+    );
+
+    border: 1px solid #c6844b;
+    border-radius: 7px;
+
+    color: #713d20;
+
+    box-shadow: 0 3px 7px #9b5e3035;
+}
+
+body.w8-theme-titanium #w8SharePanel .w8-copy-button:active {
+    transform: scale(.97);
+}
+
+/* DÒNG HƯỚNG DẪN */
+
+body.w8-theme-titanium #w8ShareTip {
+    color: #99775c;
+    line-height: 1.5;
+}
+
+/* NÚT HIDE */
+
+body.w8-theme-titanium #w8SharePanel .w8-share-actions button {
+    background: #fff2dc;
+
+    border: 1px solid #d4a77b;
+    border-radius: 7px;
+
+    color: #865133;
+
+    font-size: 12px;
+    font-weight: 900;
+}
+
+/* NÚT STOP */
+
+body.w8-theme-titanium #w8SharePanel .w8-share-actions .w8-stop-button {
+    background: linear-gradient(
+        135deg,
+        #d65d50,
+        #ae3934
+    );
+
+    border: 1px solid #a8312d;
+    border-radius: 7px;
+
+    color: #fff;
+}
+
+
+
+
+/* ==========================================
+   THEME SWITCHER - MILITARY + FRUIT
+   KEEP ORIGINAL POSITION AND SIZE
+========================================== */
+
+/* MILITARY - MAIN BUTTON */
+
+body:not(.w8-theme-titanium) #w8ThemeButton {
+    background: linear-gradient(
+        135deg,
+        #526747,
+        #263b29 55%,
+        #142318
+    );
+
+    color: #f6dfaa;
+    border: 1px solid #c3a66b;
+    border-radius: 7px;
+
+    box-shadow:
+        0 4px 10px #0008,
+        inset 0 1px 0 #ffffff25;
+}
+
+/* MILITARY - MENU */
+
+body:not(.w8-theme-titanium) #w8ThemeMenu {
+    background: linear-gradient(
+        160deg,
+        #344934,
+        #1a2b1e 55%,
+        #101b14
+    );
+
+    border: 1px solid #b59a61;
+    border-radius: 12px;
+}
+
+/* MILITARY - MENU TITLE */
+
+body:not(.w8-theme-titanium) .w8-theme-heading {
+    color: #ead096;
+}
+
+/* MILITARY - OPTIONS */
+
+body:not(.w8-theme-titanium) .w8-theme-option {
+    background: linear-gradient(
+        135deg,
+        #293c2c,
+        #14231a
+    );
+
+    border: 1px solid #516747;
+    border-radius: 8px;
+
+    color: #f2e8d2;
+}
+
+/* MILITARY - SELECTED */
+
+body:not(.w8-theme-titanium)
+.w8-theme-option.is-selected {
+    background: linear-gradient(
+        135deg,
+        #506545,
+        #2d422e
+    );
+
+    border-color: #dfbe78;
+    color: #ffebbb;
+
+    box-shadow:
+        inset 0 1px 0 #ffffff20,
+        0 0 8px #c2a46a35;
+}
+
+/* ==========================================
+   FRUIT THEME - MAIN BUTTON
+========================================== */
+
+body.w8-theme-titanium #w8ThemeButton {
+    background: linear-gradient(
+        135deg,
+        #fff2d4,
+        #ffd3a2 55%,
+        #edae7b
+    );
+
+    color: #914629;
+
+    border: 1px solid #d18b54;
+    border-bottom: 2px solid #ba6e42;
+    border-radius: 7px;
+
+    text-shadow: none;
+
+    box-shadow:
+        0 4px 10px #0005,
+        inset 0 1px 0 #ffffffbb;
+}
+
+/* FRUIT - MENU */
+
+body.w8-theme-titanium #w8ThemeMenu {
+    background: linear-gradient(
+        160deg,
+        #fff7e6,
+        #ffe5c6 60%,
+        #f0c496
+    );
+
+    border: 1px solid #d7965c;
+    border-bottom: 3px solid #ba7648;
+    border-radius: 12px;
+
+    box-shadow:
+        0 12px 30px #38201075,
+        inset 0 1px 0 #ffffffc0;
+}
+
+/* FRUIT - MENU TITLE */
+
+body.w8-theme-titanium .w8-theme-heading {
+    color: #a65032;
+
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1px;
+
+    text-shadow: none;
+}
+
+/* FRUIT - OPTIONS */
+
+body.w8-theme-titanium .w8-theme-option {
+    background: linear-gradient(
+        135deg,
+        #fffaf0,
+        #ffefd9
+    );
+
+    color: #885337;
+
+    border: 1px solid #dfba94;
+    border-radius: 8px;
+
+    box-shadow:
+        inset 0 1px 0 #ffffffaa;
+}
+
+/* FRUIT - SELECTED OPTION */
+
+body.w8-theme-titanium
+.w8-theme-option.is-selected {
+
+    background: linear-gradient(
+        135deg,
+        #ffe0c4,
+        #f8bfa5
+    );
+
+    border: 1px solid #d57559;
+
+    color: #a13c30;
+
+    box-shadow:
+        0 0 8px #d8795335,
+        inset 0 1px 0 #ffffff99;
+}
+
+/* ==========================================
+   THEME PREVIEW ICONS
+========================================== */
+
+/* CHUNG */
+
+#w8ThemeMenu .w8-theme-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 32px;
+    height: 32px;
+
+    border-radius: 6px;
+
+    flex-shrink: 0;
+}
+
+/* MILITARY PREVIEW */
+
+#w8ThemeMenu .w8-theme-preview.military {
+    background: linear-gradient(
+        135deg,
+        #647a51,
+        #213a26
+    );
+
+    border: 1px solid #a6a878;
+}
+
+#w8ThemeMenu .w8-theme-preview.military::after {
+    content: "★";
+    color: #ffdf90;
+    font-size: 18px;
+}
+
+/* FRUIT PREVIEW */
+
+#w8ThemeMenu .w8-theme-preview.titanium {
+    background: linear-gradient(
+        135deg,
+        #ffe9c4,
+        #f6bc9a
+    );
+
+    border: 1px solid #d98b65;
+}
+
+#w8ThemeMenu .w8-theme-preview.titanium::after {
+    content: "🍓";
+    font-size: 19px;
+}
+
+/* ==========================================
+   SELECTED INDICATOR
+========================================== */
+
+#w8ThemeMenu .w8-theme-state {
+    width: 9px;
+    height: 9px;
+
+    background: #8f9990;
+
+    border-radius: 50%;
+
+    box-shadow: none;
+}
+
+/* MILITARY SELECTED DOT */
+
+body:not(.w8-theme-titanium)
+#w8ThemeMenu .w8-theme-option.is-selected
+.w8-theme-state {
+    background: #b8ed80;
+    box-shadow: 0 0 7px #9ad96c;
+}
+
+/* FRUIT SELECTED DOT */
+
+body.w8-theme-titanium
+#w8ThemeMenu .w8-theme-option.is-selected
+.w8-theme-state {
+    background: #db5a45;
+    box-shadow: 0 0 7px #e8896d;
+}
+
+/* ==========================================
+   INTERACTION
+========================================== */
+
+#w8ThemeButton,
+#w8ThemeMenu,
+#w8ThemeMenu .w8-theme-option {
+    transition:
+        background .2s ease,
+        border-color .2s ease,
+        color .2s ease,
+        box-shadow .2s ease;
+}
+
+#w8ThemeButton:active,
+#w8ThemeMenu .w8-theme-option:active {
+    filter: brightness(.94);
+}
+
+#w8ThemeButton:focus-visible,
+#w8ThemeMenu .w8-theme-option:focus-visible {
+    outline: 2px solid #e5b46c;
+    outline-offset: 2px;
+}
+
+
+
+
+
 </style>
 </head>
 
@@ -5031,10 +5489,15 @@ body.w8-theme-titanium .wheel-round #roundId {
      class="w8-share-panel"
      hidden>
 
-  <div class="w8-share-title">
-    <span class="w8-live-dot"></span>
-    LIVE SCREEN SHARE
-  </div>
+<div class="w8-share-title">
+
+  <span class="w8-live-dot"></span>
+
+  <span id="w8ShareThemeTitle">
+    MILITARY LIVE SHARE
+  </span>
+
+</div>
 
   <div id="w8ShareCount" class="w8-share-count">
     0 người xem
@@ -7755,6 +8218,23 @@ function w8SetTheme(theme) {
         ? "🍓"
         : "★";
   }
+
+
+  /* =====================================
+   UPDATE SHARE UI BY THEME
+===================================== */
+
+const shareThemeTitle =
+    document.getElementById("w8ShareThemeTitle");
+
+if (shareThemeTitle) {
+
+    shareThemeTitle.textContent =
+        w8ActiveTheme === "titanium"
+            ? "FRUIT LIVE SHARE"
+            : "MILITARY LIVE SHARE";
+
+}
 
 
 // ĐỔI TÊN VÍ THEO GIAO DIỆN
