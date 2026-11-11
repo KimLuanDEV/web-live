@@ -5903,6 +5903,406 @@ body.w8-theme-titanium
 
 
 
+/* ==========================================
+   GAME SETTINGS - MILITARY / FRUIT
+========================================== */
+
+#w8Settings {
+    position: absolute;
+
+    top: 78px;
+    right: 12px;
+
+    width: 112px;
+    z-index: 20;
+
+    font-family: system-ui, sans-serif;
+
+    /* MILITARY COLORS */
+    --st-bg: linear-gradient(
+        145deg, #273c2b, #101d15
+    );
+
+    --st-border: #bca16d;
+    --st-text: #f1dfb7;
+    --st-sub: #a9bba5;
+
+    --st-item: linear-gradient(
+        145deg, #344b37, #1c2d21
+    );
+
+    --st-item-border: #53694e;
+    --st-accent: #d9bc80;
+}
+
+/* ==========================================
+   MAIN BUTTON
+========================================== */
+
+#w8SettingsButton {
+    width: 112px;
+    height: 34px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 7px;
+
+    padding: 0 10px;
+
+    background: var(--st-bg);
+
+    border: 1px solid var(--st-border);
+    border-bottom-width: 2px;
+    border-radius: 7px;
+
+    color: var(--st-text);
+
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: .6px;
+
+    box-shadow:
+        0 5px 12px #0008,
+        inset 0 1px 0 #ffffff22;
+
+    cursor: pointer;
+    touch-action: manipulation;
+
+    transition:
+        background .2s,
+        color .2s,
+        border-color .2s;
+}
+
+#w8SettingsButton:active {
+    filter: brightness(.9);
+}
+
+.w8-settings-icon {
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1;
+}
+
+/* ==========================================
+   MENU
+========================================== */
+
+#w8SettingsMenu[hidden] {
+    display: none !important;
+}
+
+#w8SettingsMenu {
+    position: absolute;
+
+    top: 42px;
+    right: 0;
+
+    width: 248px;
+
+    padding: 12px;
+
+    box-sizing: border-box;
+
+    background: var(--st-bg);
+
+    border: 1px solid var(--st-border);
+    border-radius: 11px;
+
+    box-shadow:
+        0 12px 30px #000a,
+        inset 0 1px 0 #ffffff20;
+
+    color: var(--st-text);
+}
+
+/* MENU TITLE */
+
+.w8-settings-heading {
+    padding: 3px 0 11px;
+
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: 1.2px;
+    text-align: center;
+
+    color: var(--st-accent);
+
+    border-bottom: 1px solid
+        color-mix(
+            in srgb,
+            var(--st-border) 35%,
+            transparent
+        );
+
+    margin-bottom: 9px;
+}
+
+/* ==========================================
+   MENU OPTIONS
+========================================== */
+
+#w8SettingsMenu .w8-settings-option {
+    width: 100%;
+    min-height: 59px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-top: 7px;
+    padding: 9px;
+
+    box-sizing: border-box;
+
+    background: var(--st-item);
+
+    border: 1px solid var(--st-item-border);
+    border-radius: 8px;
+
+    color: var(--st-text);
+
+    text-align: left;
+
+    cursor: pointer;
+    touch-action: manipulation;
+
+    transition:
+        background .2s,
+        border-color .2s;
+}
+
+#w8SettingsMenu .w8-settings-option:active {
+    filter: brightness(.9);
+}
+
+/* OPTION NUMBER */
+
+.w8-settings-number {
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+
+    background: rgba(0,0,0,.17);
+
+    border: 1px solid var(--st-item-border);
+    border-radius: 6px;
+
+    color: var(--st-accent);
+
+    font-size: 11px;
+    font-weight: 900;
+}
+
+/* TEXT */
+
+.w8-settings-info {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.w8-settings-info strong {
+    font-size: 11px;
+    font-weight: 900;
+    letter-spacing: .2px;
+
+    color: var(--st-text);
+    white-space: nowrap;
+}
+
+.w8-settings-info small {
+    font-size: 9px;
+    font-weight: 500;
+
+    color: var(--st-sub);
+    white-space: nowrap;
+}
+
+/* ARROW */
+
+.w8-settings-arrow {
+    font-size: 21px;
+    font-weight: 400;
+    color: var(--st-accent);
+}
+
+/* SHOW NAME STATUS */
+
+.w8-settings-state {
+    min-width: 33px;
+
+    padding: 5px 6px;
+
+    box-sizing: border-box;
+
+    border: 1px solid var(--st-item-border);
+    border-radius: 5px;
+
+    background: rgba(0,0,0,.12);
+
+    color: var(--st-sub);
+
+    text-align: center;
+    font-size: 10px;
+    font-weight: 900;
+}
+
+.w8-settings-state.is-on {
+    color: #a6eb7b;
+    border-color: #679750;
+    background: rgba(66,118,43,.17);
+}
+
+/* ==========================================
+   FRUIT THEME
+========================================== */
+
+body.w8-theme-titanium #w8Settings {
+
+    --st-bg: linear-gradient(
+        145deg,
+        #fff6e3,
+        #f9d9b4
+    );
+
+    --st-border: #d39563;
+    --st-text: #8d4c32;
+    --st-sub: #a37758;
+
+    --st-item: linear-gradient(
+        145deg,
+        #fffdf6,
+        #ffe9d2
+    );
+
+    --st-item-border: #e2b58c;
+    --st-accent: #ae583c;
+}
+
+/* FRUIT ACTIVE STATUS */
+
+body.w8-theme-titanium
+#w8Settings .w8-settings-state.is-on {
+    color: #60943d;
+    border-color: #a5c484;
+    background: #e8f4d9;
+}
+
+/* ==========================================
+   ACCESSIBILITY
+========================================== */
+
+#w8Settings button:focus-visible {
+    outline: 2px solid var(--st-accent);
+    outline-offset: 2px;
+}
+
+
+
+/* ==========================================
+   IMAGE SETTINGS BUTTON
+========================================== */
+
+#w8SettingsButton {
+    position: relative;
+
+    width: 112px;
+    height: 40px;
+
+    padding: 0;
+    overflow: visible;
+
+    background: transparent;
+    border: none;
+    border-radius: 0;
+
+    box-shadow: none;
+    cursor: pointer;
+
+    touch-action: manipulation;
+}
+
+/* IMAGE LAYER */
+
+#w8SettingsButton .w8-settings-art {
+    position: absolute;
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    object-fit: fill;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+/* MILITARY DEFAULT */
+
+#w8SettingsButton .w8-settings-art.military {
+    display: block;
+}
+
+#w8SettingsButton .w8-settings-art.fruit {
+    display: none;
+}
+
+/* FRUIT THEME */
+
+body.w8-theme-titanium
+#w8SettingsButton .w8-settings-art.military {
+    display: none;
+}
+
+body.w8-theme-titanium
+#w8SettingsButton .w8-settings-art.fruit {
+    display: block;
+}
+
+/* FALLBACK TEXT */
+
+#w8SettingsButton .w8-settings-fallback {
+    position: relative;
+    z-index: -1;
+
+    color: #f1d9a3;
+    font-size: 11px;
+    font-weight: 900;
+}
+
+body.w8-theme-titanium
+#w8SettingsButton .w8-settings-fallback {
+    color: #a65033;
+}
+
+/* CLICK EFFECT */
+
+#w8SettingsButton:active {
+    transform: scale(.95);
+    filter: brightness(.92);
+}
+
+/* MENU BELOW BUTTON */
+
+#w8SettingsMenu {
+    top: 48px;
+}
+
+
+
+
+
+
 </style>
 </head>
 
@@ -6309,31 +6709,104 @@ onclick="openMyBetHistory()"></div>
 </div>
 
 
-<!-- SLOT MISS BUTTON -->
-<div class="slot-miss-btn">
 
-<img src="/assets/police/stats-btn.png">
+<!-- =====================================
+     GAME SETTINGS
+     SLOT STATISTICS + SHOW NAME
+===================================== -->
 
-<div class="slot-miss-hitbox"
-onclick="openSlotMiss()"></div>
+<div id="w8Settings">
+
+  <!-- MAIN SETTINGS BUTTON -->
+  
+<button
+  id="w8SettingsButton"
+  type="button"
+  onclick="w8ToggleSettingsMenu()"
+  aria-controls="w8SettingsMenu"
+  aria-expanded="false"
+  aria-label="Game settings">
+
+  <!-- MILITARY IMAGE -->
+  <img
+    class="w8-settings-art military"
+    src="/assets/police/settings-military.png"
+    alt=""
+    draggable="false"
+    onerror="this.style.visibility='hidden'">
+
+  <!-- FRUIT IMAGE -->
+  <img
+    class="w8-settings-art fruit"
+    src="/assets/police/theme-titanium/settings-fruit.png"
+    alt=""
+    draggable="false"
+    onerror="this.style.visibility='hidden'">
+
+  <!-- FALLBACK KHI CHƯA CÓ ẢNH -->
+  <span class="w8-settings-fallback">
+    ⚙ SETTINGS
+  </span>
+
+</button>
+
+
+  <!-- SETTINGS MENU -->
+  <div id="w8SettingsMenu" hidden>
+
+    <div class="w8-settings-heading">
+      GAME SETTINGS
+    </div>
+
+    <!-- OPTION 1: STATISTICS -->
+    <button
+      type="button"
+      class="w8-settings-option"
+      onclick="w8OpenStatsFromSettings()">
+
+      <span class="w8-settings-number">01</span>
+
+      <span class="w8-settings-info">
+        <strong>VIEW STATISTICS</strong>
+        <small>Slot miss & round tracking</small>
+      </span>
+
+      <span class="w8-settings-arrow">›</span>
+
+    </button>
+
+    <!-- OPTION 2: SHOW NAME -->
+    <button
+      id="toggleTopNameBtn"
+      type="button"
+      class="w8-settings-option">
+
+      <span class="w8-settings-number">02</span>
+
+      <span class="w8-settings-info">
+        <strong>SHOW NAME</strong>
+        <small>Top winners visibility</small>
+      </span>
+
+      <span
+        id="w8SettingsNameState"
+        class="w8-settings-state">
+        --
+      </span>
+
+    </button>
+
+    <!-- GIỮ ID ẢNH CŨ CHO TƯƠNG THÍCH -->
+    <img
+      id="toggleTopNameImg"
+      src="/assets/police/show-name-on.png"
+      alt=""
+      style="display:none;">
+
+  </div>
 
 </div>
 
-
-
-<div class="toggle-name-btn">
-
-<img
-id="toggleTopNameImg"
-src="/assets/police/show-name-on.png"
-class="toggle-name-img">
-
-<div
-id="toggleTopNameBtn"
-class="toggle-name-hitbox">
-</div>
-
-</div>
 
 
 
@@ -7866,20 +8339,145 @@ return `
 
 
 
-const btn = document.getElementById("toggleTopNameBtn")
-const img = document.getElementById("toggleTopNameImg")
 
-btn.onclick = ()=>{
-  socket.emit("toggle-top-name")
+/* ==========================================
+   GAME SETTINGS MENU
+========================================== */
+
+// MỞ / ĐÓNG MENU
+function w8ToggleSettingsMenu() {
+
+    const menu =
+        document.getElementById("w8SettingsMenu");
+
+    const button =
+        document.getElementById("w8SettingsButton");
+
+    if (!menu || !button) return;
+
+    menu.hidden = !menu.hidden;
+
+    button.setAttribute(
+        "aria-expanded",
+        String(!menu.hidden)
+    );
 }
 
-socket.on("top-name-status", state=>{
+// ĐÓNG MENU
+function w8CloseSettingsMenu() {
 
-  img.src = state
-    ? "/assets/police/show-name-on.png"
-    : "/assets/police/show-name-off.png"
+    const menu =
+        document.getElementById("w8SettingsMenu");
 
-})
+    const button =
+        document.getElementById("w8SettingsButton");
+
+    if (menu) {
+        menu.hidden = true;
+    }
+
+    if (button) {
+        button.setAttribute(
+            "aria-expanded",
+            "false"
+        );
+    }
+}
+
+// MỞ BẢNG THỐNG KÊ
+function w8OpenStatsFromSettings() {
+
+    w8CloseSettingsMenu();
+
+    // GỌI CHỨC NĂNG CŨ
+    openSlotMiss();
+}
+
+// CLICK RA NGOÀI ĐỂ ĐÓNG
+document.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        if (!event.target.closest("#w8Settings")) {
+            w8CloseSettingsMenu();
+        }
+
+    }
+);
+
+// BẤM ESC ĐỂ ĐÓNG
+document.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (event.key === "Escape") {
+            w8CloseSettingsMenu();
+        }
+
+    }
+);
+
+/* ==========================================
+   SHOW NAME - KEEP SOCKET FUNCTION
+========================================== */
+
+const btn =
+    document.getElementById("toggleTopNameBtn");
+
+const img =
+    document.getElementById("toggleTopNameImg");
+
+const nameState =
+    document.getElementById("w8SettingsNameState");
+
+// BẬT / TẮT TÊN TOP WINNERS
+if (btn) {
+
+    btn.onclick = function() {
+
+        // GIỮ NGUYÊN SOCKET EVENT CŨ
+        socket.emit("toggle-top-name");
+
+        w8CloseSettingsMenu();
+    };
+
+}
+
+// NHẬN TRẠNG THÁI TỪ SERVER
+socket.on("top-name-status", function(state) {
+
+    const isOn = !!state;
+
+    // VẪN CẬP NHẬT ẢNH CŨ
+    if (img) {
+        img.src = isOn
+            ? "/assets/police/show-name-on.png"
+            : "/assets/police/show-name-off.png";
+    }
+
+    // CẬP NHẬT CHỮ ON / OFF
+    if (nameState) {
+
+        nameState.textContent =
+            isOn ? "ON" : "OFF";
+
+        nameState.classList.toggle(
+            "is-on",
+            isOn
+        );
+
+    }
+
+    // CẬP NHẬT ACCESSIBILITY
+    if (btn) {
+        btn.setAttribute(
+            "aria-pressed",
+            String(isOn)
+        );
+    }
+
+});
+
 
 
 
