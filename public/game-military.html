@@ -5594,6 +5594,315 @@ body.w8-theme-titanium
 
 
 
+/* ==========================================
+   FRUIT HISTORY - CREAM & PEACH DESIGN
+   MY BET HISTORY + ROUND DETAILS
+   KEEP ALL ORIGINAL FUNCTIONS
+========================================== */
+
+/* HAI MÀN HÌNH - GIỮ ẢNH NỀN RIÊNG */
+
+body.w8-theme-titanium #myBetHistoryModal {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,249,232,.72),
+            rgba(255,230,202,.88)
+        ),
+        url("/assets/police/theme-titanium/my-bet-history-bg.png")
+        center / cover no-repeat,
+        #fff0dc;
+
+    color: #824b32;
+}
+
+body.w8-theme-titanium #roundDetailModal {
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,249,232,.72),
+            rgba(255,230,202,.88)
+        ),
+        url("/assets/police/theme-titanium/round-details-bg.png")
+        center / cover no-repeat,
+        #fff0dc;
+
+    color: #824b32;
+}
+
+/* VIỀN MÀN HÌNH */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)::before {
+    border: 1px solid rgba(211,149,91,.42);
+    border-radius: 9px;
+    box-shadow: inset 0 0 20px #a65e3015;
+}
+
+/* HEADER */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-header {
+    background: linear-gradient(
+        135deg,
+        #fff8e9,
+        #ffdfb9 65%,
+        #efb78d
+    );
+
+    border-bottom: 2px solid #d49463;
+    box-shadow:
+        0 5px 14px #8e59312a,
+        inset 0 1px 0 #ffffffbb;
+}
+
+/* ĐƯỜNG TRANG TRÍ HEADER */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-header::after {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #d78865,
+        #ffe1a5,
+        #d78865,
+        transparent
+    );
+
+    box-shadow: none;
+}
+
+/* TIÊU ĐỀ */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-title {
+    color: #a64733;
+    font-size: 20px;
+    font-weight: 900;
+    letter-spacing: .7px;
+    text-shadow: none;
+}
+
+/* DÒNG PHỤ */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-sub {
+    color: #a27350;
+    opacity: 1;
+    letter-spacing: 1px;
+    text-shadow: none;
+}
+
+/* NÚT ĐÓNG */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-close {
+    background: linear-gradient(
+        135deg,
+        #fff9ec,
+        #f3d1ac
+    );
+
+    border: 1px solid #d89a6d;
+    border-radius: 8px;
+
+    color: #a64c38;
+
+    box-shadow:
+        0 3px 8px #8d57302b,
+        inset 0 1px 0 #fff;
+}
+
+/* ==========================================
+   MY BET HISTORY - TABLE HEADER
+========================================== */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-head {
+    background: linear-gradient(
+        180deg,
+        #f8d5ad,
+        #edb98f
+    );
+
+    border: 1px solid #d99d6b;
+    border-bottom: 2px solid #bd7952;
+    border-radius: 8px 8px 0 0;
+
+    color: #82452b;
+    box-shadow: inset 0 1px 0 #ffffff88;
+}
+
+/* CÁC DÒNG LỊCH SỬ */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row {
+    background: linear-gradient(
+        115deg,
+        #fffdf5,
+        #fff0db
+    );
+
+    border: 1px solid #e1ba94;
+    border-left: 3px solid #d69665;
+    border-radius: 8px;
+
+    color: #824b32;
+
+    box-shadow: 0 3px 8px #9c673121;
+}
+
+/* THẮNG */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row.win {
+    background: linear-gradient(
+        115deg,
+        #f6ffe8,
+        #e5f2cb
+    );
+
+    border-left-color: #84b454;
+}
+
+/* THUA */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row.lose {
+    background: linear-gradient(
+        115deg,
+        #fff6ee,
+        #fbe1d7
+    );
+
+    border-left-color: #d57966;
+}
+
+/* SỐ TIỀN THẮNG */
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row.win > :last-child {
+    color: #5f963d;
+    text-shadow: none;
+}
+
+body.w8-theme-titanium
+#myBetHistoryModal .history-row.lose > :last-child {
+    color: #b85d4b;
+}
+
+/* ==========================================
+   ROUND DETAILS - RESULT
+========================================== */
+
+body.w8-theme-titanium
+#roundDetailModal .round-result {
+    background: linear-gradient(
+        135deg,
+        #fff0d7,
+        #f4c8a2
+    );
+
+    border-bottom: 2px solid #d69a69;
+    box-shadow: inset 0 -5px 15px #a3683820;
+}
+
+body.w8-theme-titanium
+#roundDetailModal .round-result-icon {
+    filter: drop-shadow(0 4px 6px #91633a55);
+}
+
+body.w8-theme-titanium
+#roundDetailModal .round-result-text {
+    color: #b54b34;
+    text-shadow: 0 1px 2px #ffffffaa;
+}
+
+/* ROUND DETAILS - COLUMN HEAD */
+
+body.w8-theme-titanium
+#roundDetailModal .round-table-head {
+    background: linear-gradient(
+        180deg,
+        #f8d5ad,
+        #edb98f
+    );
+
+    border-bottom: 2px solid #c68a5b;
+    color: #87492f;
+}
+
+/* ROUND DETAILS - SLOT CARDS */
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-row {
+    background: linear-gradient(
+        115deg,
+        #fffdf5,
+        #fff0db
+    );
+
+    border: 1px solid #e0b892;
+    border-left: 3px solid #d49663;
+    border-radius: 8px;
+
+    color: #854a30;
+    box-shadow: 0 3px 8px #98612e22;
+}
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-row.win {
+    background: linear-gradient(
+        115deg,
+        #f4ffe7,
+        #e8f4d4
+    );
+
+    border-left-color: #87b955;
+}
+
+/* GIÁ TRỊ CƯỢC */
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-bet {
+    color: #935232;
+}
+
+/* GIÁ TRỊ THẮNG */
+
+body.w8-theme-titanium
+#roundDetailModal .round-slot-win {
+    color: #5f963d;
+    text-shadow: none;
+}
+
+/* SCROLLBAR */
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+::-webkit-scrollbar-thumb {
+    background: #d6a47b;
+    border-radius: 5px;
+}
+
+body.w8-theme-titanium
+:is(#myBetHistoryModal, #roundDetailModal)
+.history-body,
+
+body.w8-theme-titanium
+#roundDetailModal .round-detail-list {
+    scrollbar-color: #d6a47b transparent;
+}
+
+
+
+
+
 </style>
 </head>
 
@@ -8516,6 +8825,53 @@ function w8SetTheme(theme) {
     w8ActiveTheme === "titanium"
   );
 
+
+
+/* ==========================================
+   HISTORY MODALS - UPDATE THEME TEXT
+========================================== */
+
+const fruitHistoryMode =
+    w8ActiveTheme === "titanium";
+
+// MY BET HISTORY
+const myHistoryTitle =
+    document.querySelector(
+        "#myBetHistoryModal .history-title"
+    );
+
+if (myHistoryTitle) {
+    myHistoryTitle.textContent =
+        fruitHistoryMode
+            ? "FRUIT BET HISTORY"
+            : "MY BET HISTORY";
+}
+
+// ROUND DETAILS
+const roundDetailsTitle =
+    document.querySelector(
+        "#roundDetailModal .history-title"
+    );
+
+if (roundDetailsTitle) {
+    roundDetailsTitle.textContent =
+        fruitHistoryMode
+            ? "FRUIT ROUND DETAILS"
+            : "ROUND DETAILS";
+}
+
+// ROUND DETAILS SUBTITLE
+const roundDetailsSub =
+    document.querySelector(
+        "#roundDetailModal .history-sub"
+    );
+
+if (roundDetailsSub) {
+    roundDetailsSub.textContent =
+        fruitHistoryMode
+            ? "FRUIT BET BREAKDOWN"
+            : "Bet breakdown";
+}
 
 
 
