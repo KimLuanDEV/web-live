@@ -40,12 +40,18 @@ function tpIcon(name) {
 
 /* ===== SỐ DƯ ===== */
 
+/* =========================================
+   DIAMOND BALANCE - ENGLISH FORMAT
+========================================= */
+
 function updateCoinBalance(coins) {
+
   const value = Number(coins);
 
   myCoinEl.textContent =
     (Number.isFinite(value) ? Math.max(0, value) : 0)
-      .toLocaleString("vi-VN");
+      .toLocaleString("en-US");
+
 }
 
 updateCoinBalance(auth.coins || 0);
@@ -97,13 +103,13 @@ async function loadAgents() {
     const response = await fetch("/api/topup-agents");
 
     if (!response.ok) {
-      throw new Error("Không tải được danh sách đại lý");
+      throw new Error("Failed to load the top-up agents.");
     }
 
     const data = await response.json();
 
     if (!data.ok) {
-      throw new Error("Không tải được danh sách đại lý");
+      throw new Error("Failed to load the top-up agents.");
     }
 
     agentsCache = Array.isArray(data.agents)
@@ -115,11 +121,12 @@ async function loadAgents() {
   } catch (error) {
     console.error("Topup agents:", error);
 
-    agentList.innerHTML = `
-      <div class="empty-agent">
-        Không thể tải danh sách đại lý.
-      </div>
-    `;
+agentList.innerHTML = `
+  <div class="empty-agent">
+    Unable to load the agent list.
+    Please try again later.
+  </div>
+`;
 
     showToast(error.message, "error");
   }
@@ -130,14 +137,16 @@ async function loadAgents() {
 function renderAgents(list) {
   agentList.replaceChildren();
 
-  if (!list.length) {
-    agentList.innerHTML = `
-      <div class="empty-agent">
-        Hiện chưa có đại lý nạp kim cương.
-      </div>
-    `;
-    return;
-  }
+if (!list.length) {
+
+  agentList.innerHTML = `
+    <div class="empty-agent">
+      No top-up agents are currently available.
+    </div>
+  `;
+
+  return;
+}
 
   const fragment = document.createDocumentFragment();
 
@@ -164,14 +173,14 @@ function renderAgents(list) {
       </div>
     `;
 
-    const name = String(agent.name || "Đại lý");
+   const name = String(agent.name || "Agent");
 
     card.querySelector(".agent-name").textContent = name;
 
-    card.querySelector(".agent-bank").textContent =
-      [agent.bank, agent.account]
-        .filter(Boolean)
-        .join(" · ") || "Chưa cập nhật ngân hàng";
+card.querySelector(".agent-bank").textContent =
+  [agent.bank, agent.account]
+    .filter(Boolean)
+    .join(" · ") || "Bank details unavailable";
 
     setAgentStatus(card, Boolean(agent.online));
 
@@ -182,7 +191,7 @@ function renderAgents(list) {
       const img = new Image();
 
       img.className = "agent-avatar";
-      img.alt = "Ảnh đại diện " + name;
+      img.alt = "Profile picture of " + name;
       img.loading = "lazy";
 
       img.onload = () => {
@@ -203,16 +212,22 @@ function renderAgents(list) {
 
 /* ===== TRẠNG THÁI ONLINE ===== */
 
+/* =========================================
+   AGENT ONLINE STATUS
+========================================= */
+
 function setAgentStatus(card, online) {
+
   const status = card.querySelector(".agent-status");
 
   if (!status) return;
 
   status.textContent = online
-    ? "Đang trực tuyến"
-    : "Ngoại tuyến";
+    ? "Online"
+    : "Offline";
 
   status.classList.toggle("offline", !online);
+
 }
 
 socket.on("agent-status", ({ uid, online }) => {
@@ -302,13 +317,39 @@ function openAgent(agent) {
   }
 
   /* Thông tin nhận tiền */
-  sheetBankInfo.replaceChildren(
-    createBankRow("Đại lý", agent.name || "—"),
-    createBankRow("Ngân hàng", agent.bank || "—"),
-    createBankRow("Số tài khoản", agent.account || "—"),
-    createBankRow("Chủ tài khoản", agent.owner || "—"),
-    createBankRow("Nội dung", content, true)
-  );
+/* =========================================
+   BANK TRANSFER DETAILS
+========================================= */
+
+sheetBankInfo.replaceChildren(
+
+  createBankRow(
+    "Agent",
+    agent.name || "—"
+  ),
+
+  createBankRow(
+    "Bank",
+    agent.bank || "—"
+  ),
+
+  createBankRow(
+    "Account Number",
+    agent.account || "—"
+  ),
+
+  createBankRow(
+    "Account Holder",
+    agent.owner || "—"
+  ),
+
+  createBankRow(
+    "Reference",
+    content,
+    true
+  )
+
+);
 
   /* Reset trạng thái xác nhận */
   const hasBankInfo = Boolean(
@@ -317,9 +358,9 @@ function openAgent(agent) {
 
   btnTransferred.disabled = !hasBankInfo;
 
-  btnTransferred.innerHTML =
-    tpIcon("check") +
-    "<span>TÔI ĐÃ CHUYỂN KHOẢN</span>";
+btnTransferred.innerHTML =
+  tpIcon("check") +
+  "<span>I HAVE COMPLETED THE TRANSFER</span>";
 
   transferStatus.classList.add("hidden");
 
@@ -373,10 +414,16 @@ async function copyTransfer() {
       if (!copied) throw new Error("Copy failed");
     }
 
-    showToast("Đã sao chép nội dung chuyển khoản", "success");
+    showToast(
+  "Transfer reference copied successfully.",
+  "success"
+);
 
   } catch (error) {
-    showToast("Không thể sao chép, vui lòng thử lại", "error");
+   showToast(
+  "Unable to copy. Please try again.",
+  "error"
+);
   }
 }
 
@@ -384,17 +431,26 @@ async function copyTransfer() {
 
 btnTransferred.addEventListener("click", () => {
   if (!currentAgent) {
-    showToast("Vui lòng chọn đại lý trước", "error");
+    showToast(
+  "Please select a top-up agent first.",
+  "error"
+);
     return;
   }
 
   if (!currentAgent.bank || !currentAgent.account) {
-    showToast("Thông tin ngân hàng chưa đầy đủ", "error");
+    showToast(
+  "The agent's bank details are incomplete.",
+  "error"
+);
     return;
   }
 
   if (!socket.connected) {
-    showToast("Mất kết nối máy chủ, vui lòng thử lại", "error");
+  showToast(
+  "Connection lost. Please try again.",
+  "error"
+);
     return;
   }
 
@@ -406,16 +462,16 @@ btnTransferred.addEventListener("click", () => {
 
   btnTransferred.disabled = true;
 
-  btnTransferred.innerHTML =
-    tpIcon("clock") +
-    "<span>ĐÃ GỬI THÔNG BÁO</span>";
+btnTransferred.innerHTML =
+  tpIcon("clock") +
+  "<span>NOTIFICATION SENT</span>";
 
   transferStatus.classList.remove("hidden");
 
-  showToast(
-    "Đã gửi thông báo chuyển khoản tới đại lý",
-    "success"
-  );
+showToast(
+  "Your transfer notification has been sent to the agent.",
+  "success"
+);
 });
 
 /* ===== NÚT QUAY LẠI ===== */
@@ -438,7 +494,7 @@ function showToast(message, type = "info", duration = 3000) {
       ? type
       : "info");
 
-  toast.textContent = String(message || "Thông báo");
+  toast.textContent = String(message || "Notification");
 
   document.body.appendChild(toast);
 
@@ -461,37 +517,49 @@ function showForceLogoutModal(message) {
     modal = document.createElement("div");
     modal.id = "forceLogoutModal";
 
-    modal.innerHTML = `
-      <div class="fl-backdrop"></div>
-      <div class="fl-box">
-        <div class="fl-icon">
-          <svg class="icon"
-               style="width:36px;height:36px">
-            <use href="#tp-ban"></use>
-          </svg>
-        </div>
-        <div class="fl-title">
-          Phiên đăng nhập kết thúc
-        </div>
-        <div class="fl-msg"></div>
-        <div class="fl-sub">
-          Bạn sẽ được chuyển về trang đăng nhập…
-        </div>
-      </div>
-    `;
+modal.innerHTML = `
+  <div class="fl-backdrop"></div>
+
+  <div class="fl-box">
+
+    <div class="fl-icon">
+      <svg class="icon"
+           style="width:36px;height:36px">
+        <use href="#tp-ban"></use>
+      </svg>
+    </div>
+
+    <div class="fl-title">
+      Session Ended
+    </div>
+
+    <div class="fl-msg"></div>
+
+    <div class="fl-sub">
+      You will be redirected to the login page...
+    </div>
+
+  </div>
+`;
 
     document.body.appendChild(modal);
   }
 
-  modal.querySelector(".fl-msg").textContent =
-    String(message || "Phiên đăng nhập đã kết thúc");
+modal.querySelector(".fl-msg").textContent =
+  String(message || "Your login session has ended.");
 
   modal.classList.add("show");
 }
 
+/* =========================================
+   FORCE LOGOUT - ENGLISH NOTIFICATION
+========================================= */
+
 socket.on("force-logout", data => {
-  const message = data?.message ||
-    "Tài khoản của bạn đã bị đăng xuất";
+
+  const message =
+    data?.message ||
+    "You have been signed out.";
 
   showForceLogoutModal(message);
 
@@ -502,6 +570,7 @@ socket.on("force-logout", data => {
   setTimeout(() => {
     location.href = "/login.html";
   }, 3000);
+
 });
 
 /* ===== KHỞI TẠO ===== */

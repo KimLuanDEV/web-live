@@ -491,7 +491,7 @@ html.lsppt-arriving #lsppt-layer .lsppt-card {
         </div>
 
         <div class="lsppt-sub">
-          ĐANG CHUYỂN TRANG
+          LOADING
         </div>
 
         <div class="lsppt-track">
@@ -499,7 +499,7 @@ html.lsppt-arriving #lsppt-layer .lsppt-card {
         </div>
 
         <div class="lsppt-text">
-          Đang mở trang mới...
+          Loading...
         </div>
 
       </div>
@@ -597,7 +597,7 @@ html.lsppt-arriving #lsppt-layer .lsppt-card {
     el.querySelector(
       ".lsppt-text"
     ).textContent =
-      options.label || "Đang mở trang mới...";
+      options.label || "Loading...";
 
     el.classList.remove("lsppt-close");
     el.classList.add("lsppt-open");

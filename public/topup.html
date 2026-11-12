@@ -1,11 +1,11 @@
 
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
       content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Nạp kim cương | Livestream Pro</title>
+<title>Diamond Top-Up | Livestream Pro</title>
 
 <script src="/lsp-page-transition.js"></script>
 
@@ -834,13 +834,13 @@ button:disabled { opacity: .5; cursor: not-allowed; }
       <button type="button"
               class="btn-back"
               onclick="goTopupBack()"
-              aria-label="Quay lại">
+              	aria-label="Back">
         <svg class="icon"><use href="#tp-back"/></svg>
       </button>
 
       <div class="header-center">
         <div class="header-brand">LIVESTREAM PRO</div>
-        <h1>Nạp kim cương</h1>
+        <h1>Diamond Top-Up</h1>
       </div>
 
       <div class="header-symbol">
@@ -854,7 +854,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 
     <div class="page-intro">
       <small>PREMIUM WALLET</small>
-      <p>Chọn phương thức phù hợp để thực hiện yêu cầu nạp.</p>
+      <p>Choose your preferred top-up method.</p>
     </div>
 
     <!-- SỐ DƯ -->
@@ -866,7 +866,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
       </div>
 
       <div class="wallet-label">
-        Số dư kim cương hiện tại
+        Current Diamond Balance
       </div>
 
       <div class="wallet-value">
@@ -875,14 +875,14 @@ button:disabled { opacity: .5; cursor: not-allowed; }
       </div>
 
       <div class="wallet-footer">
-        Số dư được cập nhật theo thông tin tài khoản.
+        Your balance is synchronized with your account.
       </div>
 
     </section>
 
     <!-- PHƯƠNG THỨC -->
     <div class="method-heading">
-      <h2>Phương thức nạp</h2>
+      <h2>Top-Up Methods</h2>
     </div>
 
     <!-- NẠP QUA ĐẠI LÝ -->
@@ -896,12 +896,17 @@ button:disabled { opacity: .5; cursor: not-allowed; }
           <svg class="icon"><use href="#tp-bank"/></svg>
         </span>
 
-        <span class="option-left">
-          <span class="option-title">Nạp qua đại lý</span>
-          <span class="option-desc" style="display:block">
-            Chuyển khoản ngân hàng · Mã QR
-          </span>
-        </span>
+<span class="option-left">
+
+  <span class="option-title">
+    Top Up via Agent
+  </span>
+
+  <span class="option-desc" style="display:block">
+    Bank Transfer · QR Code
+  </span>
+
+</span>
 
         <svg class="icon option-arrow"><use href="#tp-down"/></svg>
 
@@ -910,9 +915,9 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 
 <div class="option-content hidden">
   <div id="agentList" class="agent-list">
-    <div class="empty-agent">
-      Đang tải danh sách đại lý...
-    </div>
+<div class="empty-agent">
+  Loading top-up agents...
+</div>
   </div>
 </div>
 
@@ -931,7 +936,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
         </span>
 
         <span class="option-left">
-          <span class="option-title">Nạp qua thẻ</span>
+          <span class="option-title">Card Top-Up</span>
           <span class="option-desc" style="display:block">
             ATM · Visa · Mastercard
           </span>
@@ -948,22 +953,33 @@ button:disabled { opacity: .5; cursor: not-allowed; }
       </button>
 
       <div class="option-content hidden">
-        <div class="card-coming">
-          Phương thức nạp qua thẻ đang được phát triển.
-          <small>Hiện tại vui lòng sử dụng nạp qua đại lý.</small>
-        </div>
+<div class="card-coming">
+
+  Card top-up is coming soon.
+
+  <small>
+    Please use an authorized top-up agent for now.
+  </small>
+
+</div>
       </div>
 
     </section>
 
-    <div class="topup-note">
-      <svg class="icon"><use href="#tp-info"/></svg>
-      <span>
-        Kiểm tra đúng tên ngân hàng, số tài khoản và chủ tài khoản
-        của đại lý trước khi chuyển khoản. Chỉ xác nhận khi đã
-        thực hiện giao dịch.
-      </span>
-    </div>
+<div class="topup-note">
+
+  <svg class="icon">
+    <use href="#tp-info"/>
+  </svg>
+
+  <span>
+    Always verify the agent's bank name,
+    account number, and account holder before
+    making a transfer. Only confirm after
+    you have completed the payment.
+  </span>
+
+</div>
 
   </main>
 </div>
@@ -976,31 +992,47 @@ button:disabled { opacity: .5; cursor: not-allowed; }
          class="bottom-sheet"
          role="dialog"
          aria-modal="true"
-         aria-label="Thông tin chuyển khoản">
+         aria-label="Bank Transfer Details">
 
   <div class="sheet-handle"></div>
 
   <div class="sheet-head">
-    <h3>Thông tin nạp kim cương</h3>
+   <h3>Diamond Top-Up Details</h3>
     <button class="sheet-close"
             type="button"
             onclick="closeTopupSheet()"
-            aria-label="Đóng">
+           aria-label="Close">
       <svg class="icon"><use href="#tp-close"/></svg>
     </button>
   </div>
 
-  <p class="sheet-sub">
-    Quét mã QR hoặc sử dụng thông tin ngân hàng bên dưới.
-  </p>
+<p class="sheet-sub">
+  Scan the QR code or use the bank details
+  below to complete your transfer.
+</p>
 
-  <div class="qr-frame">
-    <img id="sheetQr" alt="Mã QR chuyển khoản" hidden>
-    <div id="qrUnavailable" class="qr-fallback" hidden>
-      Đại lý chưa cung cấp mã QR.
-      Vui lòng kiểm tra thông tin ngân hàng để chuyển khoản thủ công.
-    </div>
+<div class="qr-frame">
+
+  <img
+    id="sheetQr"
+    alt="Bank Transfer QR Code"
+    hidden
+  >
+
+  <div
+    id="qrUnavailable"
+    class="qr-fallback"
+    hidden
+  >
+
+    QR code is currently unavailable.
+
+    Please use the bank details below
+    to complete your transfer manually.
+
   </div>
+
+</div>
 
   <div id="sheetBankInfo" class="bank-info"></div>
 
@@ -1008,19 +1040,23 @@ button:disabled { opacity: .5; cursor: not-allowed; }
           type="button"
           onclick="copyTransfer()">
     <svg class="icon"><use href="#tp-copy"/></svg>
-    Sao chép nội dung chuyển khoản
+    Copy Transfer Reference
   </button>
 
   <button id="btnTransferred"
           class="btn-confirm"
           type="button">
     <svg class="icon"><use href="#tp-check"/></svg>
-    <span>TÔI ĐÃ CHUYỂN KHOẢN</span>
+   <span>I HAVE COMPLETED THE TRANSFER</span>
   </button>
 
-  <div id="transferStatus" class="transfer-status hidden">
-    Đã gửi thông báo. Đang chờ đại lý xác nhận.
-  </div>
+<div
+  id="transferStatus"
+  class="transfer-status hidden"
+>
+  Notification sent successfully.
+  Waiting for agent confirmation.
+</div>
 
 </section>
 
