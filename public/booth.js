@@ -1770,7 +1770,7 @@ if (socket) {
   socket.on("system-notify", data => {
     if (data.type === "market-order") {
       showModal({
-        title: "🛒 Đơn hàng mới",
+        title: "New Order",
         message: data.text
       });
 
@@ -2160,9 +2160,9 @@ function showForceLogoutModal(message){
       <div class="fl-backdrop"></div>
       <div class="fl-box">
         <div class="fl-kicker">LIVESTREAM PRO · SECURITY</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc</div>
+        <div class="fl-title">Session Ended</div>
         <div class="fl-msg"></div>
-        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
+        <div class="fl-sub">You will be redirected to the login page...</div>
       </div>
     `;
     document.body.appendChild(modal);
@@ -2174,7 +2174,8 @@ function showForceLogoutModal(message){
 
 
 socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
+  const msg =
+  data?.message || "You have been signed out.";
 
   showForceLogoutModal(msg);
 
