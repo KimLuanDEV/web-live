@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <!-- PWA iOS -->
@@ -15,7 +15,7 @@
 
 <meta name="theme-color" content="#090a0e">
 
-<title>Tạo tài khoản</title>
+<title>Create Account | Livestream Pro</title>
 
 <link rel="manifest" href="/manifest.json">
 
@@ -599,12 +599,17 @@ button {
 
 <body class="register-page">
 
+<!-- ==========================================
+     LIVESTREAM PRO - REGISTER
+     ENGLISH INTERFACE
+========================================== -->
+
 <main class="register-shell">
 
   <!-- TOP BRAND -->
   <div class="register-top">
     <span>LIVESTREAM PRO</span>
-    <span>THÀNH VIÊN MỚI</span>
+    <span>NEW MEMBER</span>
   </div>
 
   <div class="register-content">
@@ -612,70 +617,78 @@ button {
     <!-- BRAND -->
     <header class="register-hero">
 
-      <div class="register-avatar"
-           role="img"
-           aria-label="Logo Livestream Pro"></div>
+      <div
+        class="register-avatar"
+        role="img"
+        aria-label="Livestream Pro Logo">
+      </div>
 
       <p class="register-eyebrow">
-        BẮT ĐẦU HÀNH TRÌNH
+        START YOUR JOURNEY
       </p>
 
       <h1 class="register-title">
-        Tạo tài khoản
+        Create Account
       </h1>
 
-  
     </header>
 
-    <!-- FORM PANEL -->
+
+    <!-- REGISTRATION FORM -->
     <section class="register-panel">
 
       <div class="register-panel-head">
-        <h2>Thông tin đăng ký</h2>
+        <h2>Registration Details</h2>
         <span>MEMBER REGISTRATION</span>
       </div>
 
+
+      <!-- USERNAME -->
       <div class="register-field">
 
         <label for="username">
-          TÊN ĐĂNG NHẬP - UID
+          USERNAME - UID
         </label>
 
         <input
           id="username"
           type="text"
-          placeholder="Nhập tên đăng nhập"
+          placeholder="Enter your username"
           autocomplete="username"
           autocapitalize="none"
           spellcheck="false"
         >
 
         <p class="field-hint">
-          Tối thiểu 6 ký tự, không dấu,
-          không khoảng trắng.
+          At least 6 characters. Use letters,
+          numbers or underscores, without spaces.
         </p>
 
       </div>
 
+
+      <!-- DISPLAY NAME -->
       <div class="register-field">
 
         <label for="name">
-          TÊN HIỂN THỊ
+          DISPLAY NAME
         </label>
 
         <input
           id="name"
           type="text"
-          placeholder="Tên hiển thị của bạn"
+          placeholder="Enter your display name"
           autocomplete="nickname"
         >
 
       </div>
 
+
+      <!-- PASSWORD -->
       <div class="register-field">
 
         <label for="password">
-          MẬT KHẨU
+          PASSWORD
         </label>
 
         <div class="pass-wrap">
@@ -683,26 +696,28 @@ button {
           <input
             id="password"
             type="password"
-            placeholder="Tạo mật khẩu"
+            placeholder="Create a password"
             autocomplete="new-password"
           >
 
           <button
             type="button"
             class="pass-eye"
-            aria-label="Hiện mật khẩu"
+            aria-label="Show password"
             onclick="togglePass('password', this)">
-            Hiện
+            Show
           </button>
 
         </div>
 
       </div>
 
+
+      <!-- CONFIRM PASSWORD -->
       <div class="register-field">
 
         <label for="password2">
-          XÁC NHẬN MẬT KHẨU
+          CONFIRM PASSWORD
         </label>
 
         <div class="pass-wrap">
@@ -710,30 +725,34 @@ button {
           <input
             id="password2"
             type="password"
-            placeholder="Nhập lại mật khẩu"
+            placeholder="Confirm your password"
             autocomplete="new-password"
           >
 
           <button
             type="button"
             class="pass-eye"
-            aria-label="Hiện mật khẩu"
+            aria-label="Show password"
             onclick="togglePass('password2', this)">
-            Hiện
+            Show
           </button>
 
         </div>
 
       </div>
 
+
+      <!-- PASSWORD WARNING -->
       <div id="passWarn" role="status">
-        Mật khẩu xác nhận chưa trùng khớp.
+        Passwords do not match.
       </div>
 
+
+      <!-- SECURITY CODE -->
       <div class="register-field">
 
         <label for="securityCode">
-          MÃ BẢO MẬT
+          SECURITY CODE
         </label>
 
         <div class="pass-wrap">
@@ -741,63 +760,69 @@ button {
           <input
             id="securityCode"
             type="password"
-            placeholder="Tạo mã bảo mật"
+            placeholder="Create a security code"
             autocomplete="off"
           >
 
           <button
             type="button"
             class="pass-eye"
-            aria-label="Hiện mã bảo mật"
+            aria-label="Show security code"
             onclick="togglePass('securityCode', this)">
-            Hiện
+            Show
           </button>
 
         </div>
 
         <p class="field-hint">
-          Dùng để xác minh và khôi phục
-          tài khoản khi cần thiết.
+          Used to verify your identity and
+          recover your account when needed.
         </p>
 
       </div>
 
+
+      <!-- CREATE ACCOUNT -->
       <button
         type="button"
         class="register-btn"
         onclick="register()">
-        TẠO TÀI KHOẢN
+        CREATE ACCOUNT
       </button>
 
     </section>
 
+
     <!-- LOGIN LINK -->
     <div class="register-links">
 
-      Đã có tài khoản?
+      Already have an account?
+
       <a href="/login.html">
-        Đăng nhập
+        Sign In
       </a>
 
     </div>
 
   </div>
 
-
 </main>
 
 
-<!-- GLOBAL MESSAGE MODAL -->
+<!-- ==========================================
+     GLOBAL NOTIFICATION MODAL
+========================================== -->
 
 <div id="msgModal" class="modal hidden">
 
-  <div class="modal-card"
-       role="alertdialog"
-       aria-modal="true"
-       aria-labelledby="msgTitle">
+  <div
+    class="modal-card"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="msgTitle">
 
     <h3 id="msgTitle">
-      Thông báo
+      Notification
     </h3>
 
     <div id="msgText"></div>
@@ -806,7 +831,7 @@ button {
       type="button"
       class="modal-btn"
       onclick="closeMsg()">
-      Đã hiểu
+      Got It
     </button>
 
   </div>
@@ -816,60 +841,110 @@ button {
 
 
 
-
 <script>
 
+/* ==========================================
+   ACCOUNT REGISTRATION
+   ENGLISH NOTIFICATIONS
+========================================== */
 
-async function register(){
+async function register() {
 
-const u = document.getElementById("username").value.trim();
-const name = document.getElementById("name").value.trim();
-const p = document.getElementById("password").value;
-const p2 = document.getElementById("password2").value;
-const sec = document.getElementById("securityCode").value;
+  const u = document.getElementById("username").value.trim();
 
-if(!u || !p || !p2 || !name || !sec){
-  showMsg("Nhập đầy đủ thông tin");
-  return;
+  const name = document.getElementById("name").value.trim();
+
+  const p = document.getElementById("password").value;
+
+  const p2 = document.getElementById("password2").value;
+
+  const sec = document.getElementById("securityCode").value;
+
+
+  // CHECK REQUIRED FIELDS
+  if (!u || !p || !p2 || !name || !sec) {
+
+    showMsg(
+      "Please fill in all required fields."
+    );
+
+    return;
+  }
+
+
+  // VALIDATE USERNAME
+  // Minimum 6 characters, letters, numbers, underscores
+  const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
+
+  if (!usernameRegex.test(u)) {
+
+    showMsg(
+      "Username must be at least 6 characters long and contain only letters, numbers, or underscores."
+    );
+
+    return;
+  }
+
+
+  // CONFIRM PASSWORD
+  if (p !== p2) {
+
+    showMsg(
+      "Passwords do not match. Please try again."
+    );
+
+    return;
+  }
+
+
+  // SEND REGISTRATION REQUEST
+  const res = await fetch("/api/register", {
+
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+
+      username: u,
+
+      password: p,
+
+      name,
+
+      securityCode: sec
+
+    })
+
+  });
+
+
+  const data = await res.json();
+
+
+  // REGISTRATION FAILED
+  if (data.error) {
+
+    showMsg(
+      "Account already exists."
+    );
+
+    return;
+  }
+
+
+  // REGISTRATION SUCCESS
+  location.href = "/login.html";
+
 }
 
-// ✅ kiểm tra username: viết liền, không dấu, >=6 ký tự
-const usernameRegex = /^[a-zA-Z0-9_]{6,}$/;
 
-if(!usernameRegex.test(u)){
-  showMsg("Tên đăng nhập phải viết liền, không dấu và tối thiểu 6 ký tự");
-  return;
-}
-
-if(p !== p2){
-  showMsg("Mật khẩu không khớp");
-  return;
-}
-
-const res = await fetch("/api/register",{
-  method:"POST",
-  headers:{ "Content-Type":"application/json" },
-  body: JSON.stringify({ 
-    username: u, 
-    password: p, 
-    name, 
-    securityCode: sec 
-  })
-});
-
-const data = await res.json();
-
-if(data.error){
-  showMsg("Tài khoản đã tồn tại");
-  return;
-}
-
-location.href="/login.html";
-
-}
-
-
-
+/* ==========================================
+   SHOW / HIDE PASSWORD
+   ENGLISH INTERFACE
+========================================== */
 
 function togglePass(id, el) {
 
@@ -881,12 +956,30 @@ function togglePass(id, el) {
 
   input.type = isHidden ? "text" : "password";
 
-  el.textContent = isHidden ? "Ẩn" : "Hiện";
+
+  // BUTTON LABEL
+  el.textContent = isHidden ? "Hide" : "Show";
+
+
+  // ACCESSIBILITY
+  let fieldName = "password";
+
+  if (id === "password2") {
+    fieldName = "confirmation password";
+  }
+
+  if (id === "securityCode") {
+    fieldName = "security code";
+  }
+
 
   el.setAttribute(
     "aria-label",
-    isHidden ? "Ẩn nội dung" : "Hiện nội dung"
+    isHidden
+      ? `Hide ${fieldName}`
+      : `Show ${fieldName}`
   );
+
 
   el.setAttribute(
     "aria-pressed",
@@ -919,10 +1012,18 @@ p2.addEventListener("input", checkMatch);
 
 
 
-function showMsg(text, title="Thông báo"){
+/* ==========================================
+   GLOBAL MESSAGE
+========================================== */
+
+function showMsg(text, title = "Notification") {
+
   document.getElementById("msgTitle").textContent = title;
+
   document.getElementById("msgText").textContent = text;
+
   document.getElementById("msgModal").classList.remove("hidden");
+
 }
 
 function closeMsg(){
