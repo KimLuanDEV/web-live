@@ -44,12 +44,20 @@ function isAdminUser(uid){
 }
 
 
-function verifiedBadge(uid){
+function verifiedBadge(uid) {
   const u = window.allUsers?.[uid];
+
   if (!u) return "";
+
   if (u.role === "admin") {
-    return `<span class="lp-verified" title="Admin đã xác minh">✔︎</span>`;
+    return `
+      <span
+        class="lp-verified"
+        title="Verified Admin"
+      >✔︎</span>
+    `;
   }
+
   return "";
 }
 
@@ -132,7 +140,7 @@ document.querySelectorAll(".lp-post").forEach(p=>{
   const giftBox = p.querySelector(".lp-gift-users");
   if (giftBox && data.gifts?.byUser) {
     giftBox.innerHTML = `
-      🎁 Tặng bởi:
+      🎁 Gifted by:
       ${Object.entries(data.gifts.byUser)
         .slice(0,3)
         .map(([uid,amt]) => `<span class="gift-user">${amt}💎</span>`)
@@ -278,7 +286,7 @@ function openReplyChild(postId, cIndex, replyId){
   const div = document.createElement("div");
   div.className = "lp-reply-box";
   div.innerHTML = `
-    <input id="ri2_${replyId}" placeholder="Trả lời...">
+    <input id="ri2_${replyId}" placeholder="Write a reply...">
     <button onclick="sendReplyChild('${postId}',${cIndex},'${replyId}')">➤</button>
   `;
 
@@ -384,7 +392,7 @@ function openReply(postId, index){
   const div = document.createElement("div");
   div.className = "lp-reply-box";
   div.innerHTML = `
-    <input id="ri_${postId}_${index}" placeholder="Trả lời...">
+    <input id="ri_${postId}_${index}" placeholder="Write a reply...">
     <button onclick="sendReply('${postId}',${index})">➤</button>
   `;
 
@@ -421,10 +429,10 @@ if(box){
 
 
 async function deleteComment(postId, index){
-  const ok = await showConfirmModal({
-    title:"🗑️ Xoá bình luận",
-    body:"Bạn chắc chắn muốn xoá bình luận này?"
-  });
+const ok = await showConfirmModal({
+  title: "Delete Comment",
+  body: "Are you sure you want to delete this comment?"
+});
   if(!ok) return;
 
   socket.emit("lp-delete-comment", {
@@ -445,10 +453,10 @@ function likeComment(postId, index){
 
 
 async function deleteReply(postId, cIndex, replyId){
-  const ok = await showConfirmModal({
-    title:"🗑️ Xoá trả lời",
-    body:"Bạn chắc chắn muốn xoá trả lời này?"
-  });
+const ok = await showConfirmModal({
+  title: "Delete Reply",
+  body: "Are you sure you want to delete this reply?"
+});
   if(!ok) return;
 
   socket.emit("lp-delete-reply",{
@@ -462,10 +470,10 @@ async function deleteReply(postId, cIndex, replyId){
 
 
 async function deleteReplyChild(postId, cIndex, replyId, childId){
-  const ok = await showConfirmModal({
-    title:"🗑️ Xoá trả lời",
-    body:"Bạn chắc chắn muốn xoá trả lời này?"
-  });
+const ok = await showConfirmModal({
+  title: "Delete Reply",
+  body: "Are you sure you want to delete this reply?"
+});
   if(!ok) return;
 
   socket.emit("lp-delete-reply-child",{
@@ -869,10 +877,10 @@ function showConfirmModal({ title, body, input=false }) {
           <h3 id="scmTitle"></h3>
           <div id="scmBody"></div>
           <input id="scmInput" class="scm-input hidden" />
-          <div class="scm-actions">
-            <button id="scmCancel">Huỷ</button>
-            <button id="scmOk">OK</button>
-          </div>
+<div class="scm-actions">
+  <button id="scmCancel">Cancel</button>
+  <button id="scmOk">OK</button>
+</div>
         </div>
       `;
       document.body.appendChild(modal);
@@ -882,7 +890,7 @@ function showConfirmModal({ title, body, input=false }) {
     const bodyEl  = modal.querySelector("#scmBody");
     const inputEl = modal.querySelector("#scmInput");
 
-    titleEl.textContent = title || "Xác nhận";
+    titleEl.textContent = title || "Confirm";
     bodyEl.innerHTML = body || "";
     inputEl.classList.toggle("hidden", !input);
     inputEl.value = "";
@@ -903,11 +911,11 @@ function showConfirmModal({ title, body, input=false }) {
 
 
 async function adminDeleteComment(postId, commentId) {
-  const reason = await showConfirmModal({
-    title:"🗑️ Admin xoá bình luận",
-    body:"Nhập lý do (tuỳ chọn):",
-    input:true
-  });
+const reason = await showConfirmModal({
+  title: "Admin: Delete Comment",
+  body: "Enter a reason (optional):",
+  input: true
+});
   if(reason === false) return;
 
   await fetch("/api/admin/delete-comment", {
@@ -923,11 +931,11 @@ async function adminDeleteComment(postId, commentId) {
 }
 
 async function adminDeleteReply(postId, commentId, replyId) {
-  const reason = await showConfirmModal({
-    title:"🗑️ Admin xoá trả lời",
-    body:"Nhập lý do (tuỳ chọn):",
-    input:true
-  });
+const reason = await showConfirmModal({
+  title: "Admin: Delete Reply",
+  body: "Enter a reason (optional):",
+  input: true
+});
   if(reason === false) return;
 
   await fetch("/api/admin/delete-comment", {
@@ -947,18 +955,20 @@ async function adminDeleteReply(postId, commentId, replyId) {
 
 
 async function adminDeletePost(postId){
-  const reason = await showConfirmModal({
-    title:"🗑️ Admin xoá bài đăng",
-    body:"Nhập lý do xoá (tuỳ chọn):",
-    input:true
-  });
-  if(reason === false) return;
+const reason = await showConfirmModal({
+  title: "Admin: Delete Post",
+  body: "Enter a reason for deletion (optional):",
+  input: true
+});
 
-  const ok = await showConfirmModal({
-    title:"Xác nhận",
-    body:"Bạn chắc chắn muốn xoá bài đăng này?"
-  });
-  if(!ok) return;
+if (reason === false) return;
+
+const ok = await showConfirmModal({
+  title: "Confirm",
+  body: "Are you sure you want to delete this post?"
+});
+
+if (!ok) return;
 
   const res = await fetch("/api/admin/delete-post", {
     method: "POST",
@@ -972,19 +982,21 @@ async function adminDeletePost(postId){
 
   const data = await res.json();
 
-  showToast(
-    data.ok ? "✅ Admin đã xoá bài" : "❌ Không xoá được bài",
-    data.ok ? "success" : "error"
-  );
+showToast(
+  data.ok
+    ? "✅ Post deleted by admin"
+    : "❌ Unable to delete the post",
+  data.ok ? "success" : "error"
+);
 }
 
 
 
 async function deletePost(id){
-  const ok = await showConfirmModal({
-    title:"🗑️ Xoá bài viết",
-    body:"Bạn chắc chắn muốn xoá bài viết này?"
-  });
+const ok = await showConfirmModal({
+  title: "Delete Post",
+  body: "Are you sure you want to delete this post?"
+});
   if(!ok) return;
 
   socket.emit("lp-delete", {
@@ -1020,9 +1032,12 @@ window.lpPostMap[p.id] = p;
 const d = new Date(p.time);
 
 const time = `
-  ${d.toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
+  ${d.toLocaleTimeString("en-GB", {
+    hour: "2-digit",
+    minute: "2-digit"
+  })}
   ·
-  ${d.toLocaleDateString("vi-VN")}
+  ${d.toLocaleDateString("en-GB")}
 `;
 
 
@@ -1047,7 +1062,7 @@ const time = `
      onclick="openUserProfile('${p.uid}')"
      style="cursor:pointer">
   ${p.name}
-  ${isAdmin ? `<span class="lp-verified" title="Admin đã xác minh">✔︎</span>` : ``}
+  ${isAdmin ? `<span class="lp-verified" title="Verified Admin">✔︎</span>` : ``}
 </div>
 
 
@@ -1128,7 +1143,7 @@ ${p.video ? `
       <use href="#ls-heart"></use>
     </svg>
 
-    <span>Thích</span>
+    <span>Like</span>
 
     <b id="like_${p.id}">
       ${p.likes?.length || 0}
@@ -1145,7 +1160,7 @@ ${p.video ? `
       <use href="#ls-chat"></use>
     </svg>
 
-    <span>Bình luận</span>
+    <span>Comment</span>
 
     <b id="c_${p.id}">
       ${p.comments?.length || 0}
@@ -1162,7 +1177,7 @@ ${p.video ? `
       <use href="#ls-gift"></use>
     </svg>
 
-    <span>Tặng quà</span>
+    <span>Gift</span>
 
     <b id="g_${p.id}">
       ${p.gifts?.total || 0}
@@ -1176,7 +1191,7 @@ ${p.video ? `
 ${p.gifts?.byUser ? `
 <div class="lp-gift-users"
      onclick="openGiftUsers('${p.id}')">
-  🎁 Tặng bởi:
+  🎁 Gifted by:
   ${Object.entries(p.gifts.byUser)
     .slice(0,3)
     .map(([uid,amt]) => {
@@ -1213,7 +1228,11 @@ ${p.gifts?.byUser ? `
   <div class="lp-comment-list"></div>
 
   <div class="lp-comment-box">
-  <input id="ci_${p.id}" class="lp-comment-input" placeholder="Viết bình luận...">
+  <input
+  id="ci_${p.id}"
+  class="lp-comment-input"
+  placeholder="Write a comment..."
+>
   <button class="lp-comment-send" onclick="sendComment('${p.id}')">➤</button>
 </div>
 </div>
@@ -1399,29 +1418,29 @@ document.querySelectorAll(".lp-tab").forEach(tab => {
     // Không tải lại trang hiện tại
     if (t === "social") return;
 
-    const routes = {
+const routes = {
 
-      market: {
-        url: "/market.html",
-        label: "Đang mở Market..."
-      },
+  market: {
+    url: "/market.html",
+    label: "Opening Market..."
+  },
 
-      lobby: {
-        url: "/lobby.html",
-        label: "Đang mở Sảnh LIVE..."
-      },
+  lobby: {
+    url: "/lobby.html",
+    label: "Opening LIVE Lobby..."
+  },
 
-      messages: {
-        url: "/messages.html",
-        label: "Đang mở Tin nhắn..."
-      },
+  messages: {
+    url: "/messages.html",
+    label: "Opening Messages..."
+  },
 
-      profile: {
-        url: "/profile.html",
-        label: "Đang mở Hồ sơ cá nhân..."
-      }
+  profile: {
+    url: "/profile.html",
+    label: "Opening your profile..."
+  }
 
-    };
+};
 
     const route = routes[t];
 
@@ -1576,13 +1595,16 @@ async function submitFromModal(){
 
   postText.value = modalTextarea.value;
 
-  try{
-    await submitPost();            // 🔥 upload + emit
-    showToast("✅ Đã đăng bài");
-  }catch(e){
-    console.error(e);
-    showToast("❌ Lỗi đăng bài");
-  }
+try {
+  await submitPost();
+
+  showToast("✅ Post published successfully");
+
+} catch (e) {
+  console.error(e);
+
+  showToast("❌ Failed to publish the post");
+}
 
   clearComposeMedia();             // 🔥 reset preview
   modalTextarea.value = "";
@@ -2018,9 +2040,14 @@ function editPost(postId){
       <div class="lp-compose-header">
   <button class="lp-close">✕</button>
 
-  <div class="lp-header-title">Chỉnh sửa bài viết</div>
+<div class="lp-header-title">Edit Post</div>
 
-<button class="lp-submit icon" id="saveEdit" title="Lưu" disabled>
+<button
+  class="lp-submit icon"
+  id="saveEdit"
+  title="Save"
+  disabled
+>
   ✓
 </button>
 
@@ -2202,7 +2229,7 @@ if (images) {
 
   
   if(postEl.dataset.uid === auth.uid){
-    showToast("Đã cập nhật bài viết");
+    showToast("Post updated successfully");
   }
 });
 
@@ -2277,7 +2304,7 @@ function showMessageToast(){
 
   const div = document.createElement("div");
   div.className = "msg-toast";
-  div.textContent = "💬 Bạn có tin nhắn mới";
+ div.textContent = "💬 You have a new message";
 
   Object.assign(div.style,{
     position:"fixed",
@@ -2375,7 +2402,7 @@ socket.on("lp-gift-post", ({ postId, total, fromUid, amount }) => {
   );
   if (box) {
     box.innerHTML = `
-      🎁 Tặng bởi:
+      🎁 Gifted by:
       ${Object.entries(post.gifts.byUser)
         .slice(0,3)
         .map(([uid,amt]) => `<span class="gift-user">${amt}💎</span>`)
@@ -2405,7 +2432,7 @@ function openUserProfile(uid) {
   if (window.LSPTransition?.go) {
 
     LSPTransition.go(url, {
-      label: "Đang mở hồ sơ người chơi..."
+      label: "Opening user profile..."
     });
 
   } else {
@@ -2419,23 +2446,28 @@ function openUserProfile(uid) {
 
 
 socket.on("system-notify", data => {
+
   if (!data) return;
 
-  // 💰 NẠP COIN
+  // COIN TOP-UP
   if (data.type === "topup") {
-    showToast(data.text || "💰 Bạn vừa được nạp coin", "success");
+    showToast(
+      data.text || "Coins have been added to your account",
+      "success"
+    );
     return;
   }
 
-   // ➖ TRỪ COIN
+  // COIN DEDUCTION
   if (data.type === "withdraw") {
-     notifyWithdraw(data);
+    notifyWithdraw(data);
   }
 
-  // 🚫 KHOÁ TÀI KHOẢN
+  // ACCOUNT LOCKED
   if (data.type === "lock") {
+
     showToast(
-      data.reason || "🚫 Tài khoản của bạn đã bị khoá",
+      data.reason || "Your account has been locked",
       "error"
     );
 
@@ -2447,6 +2479,7 @@ socket.on("system-notify", data => {
       location.href = "/login.html";
     }, 2000);
   }
+
 });
 
 
@@ -2476,34 +2509,31 @@ function showToast(text, type = "info", timeout = 3500){
 
 
 
-function showWithdrawNotify(data){
+function showWithdrawNotify(data) {
+
   const text =
     data.text ||
-    "Tài khoản của bạn vừa bị trừ coin";
+    "Coins have been deducted from your account";
 
   openSysModal(text);
+
 }
 
+function notifyWithdraw(data) {
 
-function notifyWithdraw(data){
   const text =
     data?.text ||
-    "➖ Tài khoản của bạn vừa bị trừ coin";
+    "Coins have been deducted from your account";
 
-  // ưu tiên modal nếu tồn tại
   if (typeof openSysModal === "function") {
     openSysModal(text);
     return;
   }
 
-  // fallback toast
   if (typeof showToast === "function") {
     showToast(text, "error", 5000);
     return;
   }
-
-  // fallback cuối cùng
-  showToast(text, "error", 5000);
 
 }
 
@@ -2572,12 +2602,21 @@ function showForceLogoutModal(message){
     modal.id = "forceLogoutModal";
     modal.innerHTML = `
       <div class="fl-backdrop"></div>
-      <div class="fl-box">
-        <div class="fl-icon">🚫</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc</div>
-        <div class="fl-msg"></div>
-        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
-      </div>
+<div class="fl-box">
+
+  <div class="fl-icon">🚫</div>
+
+  <div class="fl-title">
+    Session Ended
+  </div>
+
+  <div class="fl-msg"></div>
+
+  <div class="fl-sub">
+    You will be redirected to the login page...
+  </div>
+
+</div>
     `;
     document.body.appendChild(modal);
   }
@@ -2588,7 +2627,7 @@ function showForceLogoutModal(message){
 
 
 socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
+  const msg = data?.message || "You have been signed out";
 
   showForceLogoutModal(msg);
 

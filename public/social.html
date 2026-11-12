@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <!-- PWA iOS -->
@@ -2927,7 +2927,7 @@ body.social-page .lp-topbar .lp-head-symbol {
       <span>LIVESTREAM PRO</span>
     </div>
 
-    <h1>Bảng tin</h1>
+    <h1>News Feed</h1>
 
     <div class="lp-head-line"></div>
 
@@ -2954,42 +2954,40 @@ body.social-page .lp-topbar .lp-head-symbol {
       <svg class="lp-i">
         <use href="#ls-sparkle"></use>
       </svg>
-      <span>CHIA SẺ KHOẢNH KHẮC</span>
+      <span>SHARE YOUR MOMENTS</span>
     </div>
 
     <span class="lp-compose-kicker">SOCIAL FEED</span>
 
   </div>
 
-  <div class="lp-compose-row">
+<div class="lp-compose-row">
 
-    <!-- GIỮ NGUYÊN ID AVATAR -->
-    <img
-      id="meAvatar"
-      class="lp-ava"
-      alt="Ảnh đại diện của bạn"
-    >
+  <img
+    id="meAvatar"
+    class="lp-ava"
+    alt="Your profile picture"
+  >
 
-    <!-- GIỮ NGUYÊN ID & readonly -->
-    <textarea
-      id="postText"
-      placeholder="Bạn đang nghĩ gì?"
-      aria-label="Tạo bài viết"
-      readonly
-    ></textarea>
+  <textarea
+    id="postText"
+    placeholder="What's on your mind?"
+    aria-label="Create a post"
+    readonly
+  ></textarea>
 
-    <button
-      type="button"
-      class="lp-compose-trigger"
-      onclick="openComposeModal()"
-      aria-label="Tạo bài viết mới"
-    >
-      <svg class="lp-i">
-        <use href="#ls-edit"></use>
-      </svg>
-    </button>
+  <button
+    type="button"
+    class="lp-compose-trigger"
+    onclick="openComposeModal()"
+    aria-label="Create a new post"
+  >
+    <svg class="lp-i">
+      <use href="#ls-edit"></use>
+    </svg>
+  </button>
 
-  </div>
+</div>
 
   <!-- GIỮ LẠI INPUT ẨN CHO JS UPLOAD -->
   <div class="lp-compose-actions" style="display:none">
@@ -3031,7 +3029,7 @@ body.social-page .lp-topbar .lp-head-symbol {
 
 <!-- ===== LUXURY BOTTOM NAVIGATION ===== -->
 
-<nav class="lp-tabbar" aria-label="Điều hướng chính">
+<nav class="lp-tabbar" aria-label="Main navigation">
 
   <button type="button"
           class="lp-tab active"
@@ -3092,7 +3090,7 @@ body.social-page .lp-topbar .lp-head-symbol {
         class="lp-tab"
         data-tab="profile"
         data-lsp-href="/profile.html"
-        data-lsp-label="Đang mở Hồ sơ cá nhân...">
+        data-lsp-label="Opening your profile...">
 
   <span class="icon">
     <svg class="lp-i">
@@ -3118,18 +3116,25 @@ body.social-page .lp-topbar .lp-head-symbol {
     <div class="lp-compose-header">
   <button class="lp-close" onclick="closeComposeModal()">✕</button>
 
-  <div class="lp-header-title">
-    Tạo bài viết
-  </div>
+<div class="lp-header-title">
+    Create Post
+</div>
 
-<button class="lp-submit icon" onclick="submitFromModal()" title="Đăng bài">
+<button
+  class="lp-submit icon"
+  onclick="submitFromModal()"
+  title="Post"
+>
   ➤
 </button>
 
 </div>
 
     <div class="lp-compose-body">
-      <textarea id="postTextModal" placeholder="Chia sẻ điều gì đó…" ></textarea>
+      <textarea
+  id="postTextModal"
+  placeholder="Share something..."
+></textarea>
     </div>
 
 
@@ -3153,7 +3158,7 @@ body.social-page .lp-topbar .lp-head-symbol {
 <div class="lp-compose-footer">
 
   <!-- CHỌN ẢNH -->
-  <label class="lp-tool" aria-label="Chọn ảnh">
+  <label class="lp-tool" aria-label="Choose photos">
     <svg class="lp-i">
       <use href="#ls-image"></use>
     </svg>
@@ -3168,7 +3173,7 @@ body.social-page .lp-topbar .lp-head-symbol {
   </label>
 
   <!-- CHỌN VIDEO -->
-  <label class="lp-tool" aria-label="Chọn video">
+  <label class="lp-tool" aria-label="Choose a video">
     <svg class="lp-i">
       <use href="#ls-video"></use>
     </svg>
@@ -3183,7 +3188,7 @@ body.social-page .lp-topbar .lp-head-symbol {
 
 
   <!-- ĐÍNH KÈM -->
-  <label class="lp-tool" aria-label="Đính kèm tệp">
+  <label class="lp-tool" aria-label="Attach a file">
     <svg class="lp-i">
       <use href="#ls-clip"></use>
     </svg>
@@ -3212,7 +3217,9 @@ body.social-page .lp-topbar .lp-head-symbol {
 </div>
 
 
-<div id="lpToast" class="lp-toast">Đã cập nhật bài viết</div>
+<div id="lpToast" class="lp-toast">
+  Post updated successfully
+</div>
 
 
 <div id="toast-container"></div>
@@ -3225,7 +3232,7 @@ body.social-page .lp-topbar .lp-head-symbol {
   <div class="lp-compose-sheet" style="height:auto">
     <div class="lp-compose-header">
       <button class="lp-close" onclick="closeGift()">✕</button>
-      <div class="lp-header-title">🎁 Tặng quà</div>
+      <div class="lp-header-title">🎁 Send a Gift</div>
     </div>
 
     <div class="lp-compose-body" id="giftList"></div>
@@ -3239,7 +3246,7 @@ body.social-page .lp-topbar .lp-head-symbol {
   <div class="lp-compose-sheet" style="height:auto">
     <div class="lp-compose-header">
       <button class="lp-close" onclick="closeGiftUsers()">✕</button>
-      <div class="lp-header-title">🎁 Người tặng quà</div>
+     <div class="lp-header-title">🎁 Gift Senders</div>
     </div>
 
     <div class="lp-compose-body" id="giftUserList"></div>
