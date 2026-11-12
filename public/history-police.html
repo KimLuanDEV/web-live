@@ -819,12 +819,541 @@ h2 {
 }
 
 
+
+/* ==========================================
+   HISTORY THEME SELECTOR
+========================================== */
+
+#historyThemeControl {
+    max-width: 1100px;
+    margin: -7px auto 20px;
+
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.history-theme-label {
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 1px;
+    color: #d8bd82;
+}
+
+.history-theme-options {
+    display: flex;
+    gap: 5px;
+    padding: 4px;
+
+    background: #152619;
+    border: 1px solid #817249;
+    border-radius: 8px;
+}
+
+.history-theme-options button {
+    min-width: 83px;
+    padding: 9px 11px;
+
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 5px;
+
+    color: #b7c7ad;
+    font-size: 10px;
+    font-weight: 900;
+
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+.history-theme-options button.is-current {
+    background: linear-gradient(
+        135deg, #516649, #283e2d
+    );
+    border-color: #c4a86c;
+    color: #ffe5ac;
+}
+
+/* ==========================================
+   FRUIT STATISTICS COLOR SYSTEM
+========================================== */
+
+body.history-fruit {
+    --army-bg: #fff3df;
+    --army-panel: #ffecd3;
+    --army-panel-light: #f9cfaa;
+    --army-gold: #bd7849;
+    --army-green: #669d48;
+    --army-line: #d9a77f;
+    --army-text: #854b32;
+
+    color: #854b32;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            #fffdf4 0%,
+            transparent 65%
+        ),
+        linear-gradient(
+            180deg,
+            #ffeccf,
+            #ffd8b5 55%,
+            #f4bf9d
+        );
+}
+
+/* THEME SELECTOR - FRUIT */
+
+body.history-fruit
+.history-theme-label {
+    color: #9d5b3d;
+}
+
+body.history-fruit
+.history-theme-options {
+    background: #fff4e4;
+    border-color: #d9a274;
+}
+
+body.history-fruit
+.history-theme-options button {
+    color: #9c7356;
+}
+
+body.history-fruit
+.history-theme-options button.is-current {
+    background: linear-gradient(
+        135deg, #ffdfc2, #f4b89c
+    );
+
+    border-color: #d98063;
+    color: #a54432;
+}
+
+/* ==========================================
+   MAIN TITLE
+========================================== */
+
+body.history-fruit h2 {
+    background: linear-gradient(
+        135deg,
+        #fff9eb,
+        #ffe0bc 65%,
+        #f4bf98
+    );
+
+    border: 1px solid #d69c69;
+    border-bottom: 3px solid #c48053;
+    border-radius: 10px;
+
+    color: #a64835;
+    text-shadow: none;
+
+    box-shadow:
+        0 7px 18px #a36a3a25,
+        inset 0 1px 0 #ffffffdd;
+}
+
+/* ==========================================
+   MAIN STATISTICS PANELS
+========================================== */
+
+body.history-fruit .stat-box {
+    background: linear-gradient(
+        145deg,
+        #fff9eb,
+        #ffe9ce 65%,
+        #f6d2af
+    );
+
+    border: 1px solid #dba577;
+    border-bottom: 3px solid #ce8d5e;
+    border-radius: 12px;
+
+    box-shadow:
+        0 6px 18px #a66b3b2b,
+        inset 0 1px 0 #fff;
+}
+
+body.history-fruit .stat-box::before {
+    border-color: #e5b99366;
+    border-radius: 8px;
+}
+
+/* PANEL TITLES */
+
+body.history-fruit .stat-box h3 {
+    background: linear-gradient(
+        135deg,
+        #ffe6c7,
+        #f5bf99
+    );
+
+    border: 1px solid #d99b6a;
+    border-bottom: 2px solid #ca8457;
+    border-radius: 7px;
+
+    color: #984c32;
+    text-shadow: none;
+}
+
+/* REMOVE MILITARY STARS */
+
+body.history-fruit .stat-box h3::before,
+body.history-fruit .stat-box h3::after {
+    content: "";
+    margin: 0;
+}
+
+/* ==========================================
+   ROUND / TIMER / RESULT
+========================================== */
+
+body.history-fruit
+:is(.round-left, .round-center, .round-right) {
+    background: linear-gradient(
+        145deg,
+        #fffdf5,
+        #ffe8cd
+    );
+
+    border: 1px solid #dfb28d;
+    border-bottom: 2px solid #d19467;
+    border-radius: 9px;
+
+    box-shadow: inset 0 1px 0 #fff;
+}
+
+body.history-fruit .round-info .label {
+    color: #a16c4b;
+}
+
+body.history-fruit #roundId,
+body.history-fruit #roundTimer {
+    color: #ba5037;
+    text-shadow: none;
+}
+
+body.history-fruit #roundResult {
+    color: #b95336;
+}
+
+body.history-fruit .result-img {
+    filter: drop-shadow(
+        0 3px 4px #ae795044
+    );
+}
+
+/* ==========================================
+   LIVE TOP 5 WINNERS
+========================================== */
+
+body.history-fruit .live-top-winners {
+    border-top-color: #ddb18d;
+}
+
+body.history-fruit .live-top-title {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #f9cda8,
+        transparent
+    );
+
+    color: #a34d33;
+}
+
+body.history-fruit .live-top-title::before,
+body.history-fruit .live-top-title::after {
+    content: "";
+    margin: 0;
+}
+
+body.history-fruit .live-top-item {
+    background: linear-gradient(
+        135deg,
+        #fffdf5,
+        #ffedd8
+    );
+
+    border: 1px solid #e3ba98;
+    border-left: 3px solid #d28d60;
+    border-radius: 8px;
+
+    box-shadow: 0 3px 8px #a36c3b20;
+}
+
+body.history-fruit .live-top-rank {
+    color: #b66738;
+}
+
+body.history-fruit .live-top-name {
+    color: #804b35;
+}
+
+body.history-fruit .live-top-win {
+    color: #669640;
+}
+
+body.history-fruit .live-top-empty {
+    color: #a37b5e;
+}
+
+/* ==========================================
+   LAST 50 RESULTS
+========================================== */
+
+body.history-fruit .result {
+    background: linear-gradient(
+        145deg, #fffaf0, #ffe4ca
+    );
+
+    border: 1px solid #dca77e;
+    border-radius: 9px;
+
+    box-shadow:
+        0 3px 8px #9f6b3a27,
+        inset 0 1px 0 #fff;
+}
+
+/* GROUP BLUE -> SOFT GREEN */
+
+body.history-fruit
+.result.result-blue {
+    background: linear-gradient(
+        145deg, #f5ffe8, #dff0c9
+    );
+
+    border-color: #a3c585;
+    box-shadow: 0 3px 8px #729b4920;
+}
+
+/* GROUP RED -> SOFT CORAL */
+
+body.history-fruit
+.result.result-red {
+    background: linear-gradient(
+        145deg, #fff6ee, #fbdac8
+    );
+
+    border-color: #dfa28f;
+    box-shadow: 0 3px 8px #bb6a4b20;
+}
+
+/* EVENT X5 */
+
+body.history-fruit
+.result.result-event-x5 {
+    background: linear-gradient(
+        145deg, #f3ffe0, #d4edae
+    );
+
+    border: 2px solid #93bd6d;
+    box-shadow: 0 3px 9px #7ca85730;
+}
+
+/* EVENT X45 */
+
+body.history-fruit
+.result.result-event-x45 {
+    background: linear-gradient(
+        145deg, #fff2cf, #f5ce88
+    );
+
+    border: 2px solid #d5a25a;
+    box-shadow: 0 3px 9px #c3954c30;
+}
+
+/* ==========================================
+   SLOT MISS COUNT
+========================================== */
+
+body.history-fruit .miss-box {
+    background: linear-gradient(
+        145deg, #fffdf5, #ffebd5
+    );
+
+    border: 1px solid #dfb591;
+    border-bottom: 2px solid #cd926a;
+    border-radius: 9px;
+
+    box-shadow:
+        0 3px 9px #a7734229,
+        inset 0 1px 0 #fff;
+}
+
+body.history-fruit .miss-box img {
+    filter: drop-shadow(
+        0 3px 4px #b4825944
+    );
+}
+
+body.history-fruit .miss-count {
+    background: #fff8ec;
+
+    border: 1px solid #e0b391;
+    border-radius: 6px;
+
+    color: #ae5235;
+    text-shadow: none;
+}
+
+body.history-fruit
+.miss-count.miss-hot {
+    color: #d24e3e;
+    border-color: #d88470;
+    background: #ffe4d8;
+}
+
+/* ==========================================
+   TOP 5 WINNERS MODAL
+========================================== */
+
+body.history-fruit .top-modal {
+    background: rgba(66,39,22,.58);
+    backdrop-filter: blur(5px);
+}
+
+body.history-fruit .top-modal-box {
+    background: linear-gradient(
+        160deg,
+        #fff9ec,
+        #ffe7cb 65%,
+        #f4c7a6
+    );
+
+    border: 1px solid #dca06d;
+    border-bottom: 3px solid #c98457;
+    border-radius: 12px;
+
+    box-shadow:
+        0 15px 45px #63391c65,
+        inset 0 1px 0 #fff;
+}
+
+body.history-fruit .top-modal-header {
+    background: linear-gradient(
+        135deg,
+        #fff4df,
+        #f8cfa9
+    );
+
+    border-bottom: 2px solid #d69c69;
+}
+
+body.history-fruit .top-modal-title {
+    color: #a44935;
+}
+
+body.history-fruit .top-modal-close {
+    background: linear-gradient(
+        135deg, #fffdf5, #f3d4b2
+    );
+
+    border: 1px solid #cf936a;
+    border-radius: 8px;
+
+    color: #a34c35;
+}
+
+body.history-fruit .top-round {
+    color: #a45135;
+    border-bottom-color: #d4a48066;
+}
+
+body.history-fruit .top-winner {
+    background: linear-gradient(
+        115deg, #fffdf6, #ffe9d1
+    );
+
+    border: 1px solid #dfb590;
+    border-left: 3px solid #d89569;
+    border-radius: 8px;
+
+    box-shadow: 0 3px 8px #aa754125;
+}
+
+body.history-fruit .top-rank {
+    color: #b26a3e;
+}
+
+body.history-fruit .top-name {
+    color: #854b32;
+}
+
+body.history-fruit .top-win {
+    color: #639342;
+}
+
+body.history-fruit .top-empty {
+    color: #a06e50;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 430px) {
+
+    #historyThemeControl {
+        justify-content: center;
+        gap: 8px;
+    }
+
+    .history-theme-options button {
+        min-width: 75px;
+        padding: 8px;
+    }
+
+    body.history-fruit .stat-box {
+        border-radius: 9px;
+    }
+
+}
+
+
 </style>
 </head>
 
 <body>
 
-<h2>MILITARY STATISTICS</h2>
+
+<h2 id="historyPageTitle">
+  MILITARY STATISTICS
+</h2>
+
+<!-- ===================================
+     STATISTICS THEME SWITCHER
+=================================== -->
+
+<div id="historyThemeControl">
+
+  <span class="history-theme-label">
+    GAME THEME
+  </span>
+
+  <div class="history-theme-options">
+
+    <button
+      type="button"
+      data-theme="military"
+      onclick="historySetTheme('military')">
+      MILITARY
+    </button>
+
+    <button
+      type="button"
+      data-theme="titanium"
+      onclick="historySetTheme('titanium')">
+      FRUIT
+    </button>
+
+  </div>
+
+</div>
+
 
 
 
@@ -1385,6 +1914,287 @@ ${missX45}
 
 
 </script>
+
+
+
+
+<script>
+/* ==========================================
+   HISTORY POLICE - THEME SYSTEM
+   MILITARY / FRUIT
+========================================== */
+
+const HISTORY_THEME_STORE = "w8_image_theme";
+
+const HISTORY_BASE_DIR =
+    "/assets/police/";
+
+const HISTORY_FRUIT_DIR =
+    "/assets/police/theme-titanium/";
+
+let historyActiveTheme = "military";
+
+/* ==========================================
+   SYNC AN IMAGE
+========================================== */
+
+function historySyncImage(img) {
+
+    if (!(img instanceof HTMLImageElement)) {
+        return;
+    }
+
+    const current =
+        img.getAttribute("src") || "";
+
+    // Chỉ xử lý ảnh thuộc assets/police
+    if (
+        !current.startsWith(HISTORY_BASE_DIR) &&
+        !current.startsWith(HISTORY_FRUIT_DIR)
+    ) {
+        return;
+    }
+
+    // Lưu đường dẫn gốc MILITARY
+    if (!img.dataset.historyBaseSrc) {
+
+        img.dataset.historyBaseSrc =
+            current.startsWith(HISTORY_FRUIT_DIR)
+                ? HISTORY_BASE_DIR +
+                  current.slice(HISTORY_FRUIT_DIR.length)
+                : current;
+
+    }
+
+    const base =
+        img.dataset.historyBaseSrc;
+
+    const fruit =
+        HISTORY_FRUIT_DIR +
+        base.slice(HISTORY_BASE_DIR.length);
+
+    const useFruit =
+        historyActiveTheme === "titanium" &&
+        img.dataset.historyFruitMissing !== "1";
+
+    const target = useFruit ? fruit : base;
+
+    if (current !== target) {
+        img.setAttribute("src", target);
+    }
+
+}
+
+/* ==========================================
+   SYNC ALL EXISTING IMAGES
+========================================== */
+
+function historySyncAllImages() {
+
+    document.querySelectorAll("img").forEach(
+        historySyncImage
+    );
+
+}
+
+/* ==========================================
+   FALLBACK WHEN FRUIT IMAGE IS MISSING
+========================================== */
+
+document.addEventListener(
+    "error",
+    function(event) {
+
+        const img = event.target;
+
+        if (!(img instanceof HTMLImageElement)) {
+            return;
+        }
+
+        const current =
+            img.getAttribute("src") || "";
+
+        if (!current.startsWith(HISTORY_FRUIT_DIR)) {
+            return;
+        }
+
+        // Ngăn handler cũ xử lý ảnh FRUIT lỗi
+        // trước khi được thử ảnh MILITARY.
+        event.stopPropagation();
+
+        img.dataset.historyFruitMissing = "1";
+
+        const original =
+            img.dataset.historyBaseSrc ||
+            HISTORY_BASE_DIR +
+            current.slice(HISTORY_FRUIT_DIR.length);
+
+        img.setAttribute("src", original);
+
+    },
+    true
+);
+
+/* ==========================================
+   WATCH IMAGES ADDED BY SOCKET.IO
+========================================== */
+
+const historyImageObserver =
+    new MutationObserver(function(records) {
+
+        records.forEach(function(record) {
+
+            record.addedNodes.forEach(function(node) {
+
+                if (node instanceof HTMLImageElement) {
+
+                    historySyncImage(node);
+
+                } else if (node instanceof Element) {
+
+                    node.querySelectorAll("img").forEach(
+                        historySyncImage
+                    );
+
+                }
+
+            });
+
+        });
+
+    });
+
+historyImageObserver.observe(
+    document.body,
+    {
+        childList: true,
+        subtree: true
+    }
+);
+
+/* ==========================================
+   APPLY THEME
+========================================== */
+
+function historySetTheme(theme, save = true) {
+
+    historyActiveTheme =
+        theme === "titanium"
+            ? "titanium"
+            : "military";
+
+    const isFruit =
+        historyActiveTheme === "titanium";
+
+    // Chuyển CSS
+    document.body.classList.toggle(
+        "history-fruit",
+        isFruit
+    );
+
+    // Đổi tên trang
+    const pageTitle =
+        document.getElementById("historyPageTitle");
+
+    if (pageTitle) {
+        pageTitle.textContent = isFruit
+            ? "FRUIT STATISTICS"
+            : "MILITARY STATISTICS";
+    }
+
+    document.title = isFruit
+        ? "FRUIT Statistics"
+        : "MILITARY Statistics";
+
+    // Đổi tiêu đề hai khu thống kê
+    const sectionTitles =
+        document.querySelectorAll(".stat-box > h3");
+
+    if (sectionTitles[0]) {
+        sectionTitles[0].textContent =
+            "LAST RESULTS";
+    }
+
+    if (sectionTitles[1]) {
+        sectionTitles[1].textContent = isFruit
+            ? "FRUIT MISS COUNT"
+            : "SLOT MISS COUNT";
+    }
+
+    // Cập nhật lựa chọn MILITARY / FRUIT
+    document.querySelectorAll(
+        "#historyThemeControl [data-theme]"
+    ).forEach(function(button) {
+
+        const selected =
+            button.dataset.theme === historyActiveTheme;
+
+        button.classList.toggle(
+            "is-current",
+            selected
+        );
+
+        button.setAttribute(
+            "aria-pressed",
+            String(selected)
+        );
+
+    });
+
+    // Đổi ảnh
+    historySyncAllImages();
+
+    // Lưu theme chung với trang game
+    if (save) {
+        try {
+            localStorage.setItem(
+                HISTORY_THEME_STORE,
+                historyActiveTheme
+            );
+        } catch (_) {}
+    }
+
+}
+
+/* ==========================================
+   RESTORE THEME FROM MAIN GAME
+========================================== */
+
+let savedHistoryTheme = "military";
+
+try {
+
+    savedHistoryTheme =
+        localStorage.getItem(HISTORY_THEME_STORE) ||
+        "military";
+
+} catch (_) {}
+
+historySetTheme(savedHistoryTheme, false);
+
+/* ==========================================
+   SYNC THEME ACROSS TABS
+========================================== */
+
+window.addEventListener(
+    "storage",
+    function(event) {
+
+        if (event.key === HISTORY_THEME_STORE) {
+
+            historySetTheme(
+                event.newValue || "military",
+                false
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+
 
 </body>
 </html>

@@ -3509,6 +3509,653 @@ body:not(.wheel8-admin-unlocked) .tactical-footer {
 
 
 
+/* ==========================================
+   WHEEL8 ADMIN - MILITARY / FRUIT THEME
+   KEEP LAYOUT + ALL EXISTING FUNCTIONS
+========================================== */
+
+/* HEADER ACTIONS */
+
+.admin-header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* THEME SWITCH */
+
+#w8AdminThemeSwitcher {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 4px;
+
+    background: #17241b;
+    border: 1px solid #4b5c47;
+    border-radius: 9px;
+}
+
+#w8AdminThemeSwitcher button {
+    min-height: 34px;
+    min-width: 82px;
+    padding: 7px 12px;
+
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+
+    color: #aab8a2;
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: .4px;
+
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+#w8AdminThemeSwitcher button.is-current {
+    background: linear-gradient(
+        145deg,
+        #40553b,
+        #263a2b
+    );
+
+    border-color: #bda16a;
+    color: #f3dfb3;
+}
+
+/* ==========================================
+   FRUIT COLOR SYSTEM
+========================================== */
+
+body.w8-theme-titanium {
+    --tc-bg: #fff2de;
+    --tc-panel: #fff8ec;
+    --tc-panel-deep: #ffe7ca;
+    --tc-border: #e1b28c;
+    --tc-gold: #b96743;
+    --tc-gold-dark: #d79b72;
+    --tc-green: #699a4c;
+    --tc-text: #79482f;
+    --tc-muted: #a57556;
+
+    color: var(--tc-text);
+
+    background:
+        radial-gradient(
+            ellipse at 50% 0%,
+            #fffdf5 0%,
+            transparent 60%
+        ),
+        linear-gradient(
+            180deg,
+            #fff1db,
+            #ffe1c0 55%,
+            #f4c3a4
+        );
+}
+
+/* ==========================================
+   FRUIT HEADER
+========================================== */
+
+body.w8-theme-titanium .tactical-header {
+    border-bottom: 1px solid #ddb18e;
+}
+
+body.w8-theme-titanium .brand-emblem {
+    background: linear-gradient(
+        145deg,
+        #fff3df,
+        #f5c69e
+    );
+
+    border: 1px solid #d99d70;
+    color: #b84c38;
+}
+
+body.w8-theme-titanium .brand-eyebrow {
+    color: #a85c3d;
+}
+
+body.w8-theme-titanium .brand-copy h1 {
+    color: #8e4732;
+}
+
+body.w8-theme-titanium .brand-copy p {
+    color: #a87557;
+}
+
+body.w8-theme-titanium .system-indicator {
+    background: #fff7e8;
+    border-color: #dcb18f;
+    color: #956246;
+}
+
+body.w8-theme-titanium .system-dot,
+body.w8-theme-titanium .result-live-dot {
+    background: #89b65e;
+    box-shadow: 0 0 7px #8bb96570;
+}
+
+/* FRUIT THEME SWITCH */
+
+body.w8-theme-titanium #w8AdminThemeSwitcher {
+    background: #fff6e7;
+    border-color: #dfb38f;
+}
+
+body.w8-theme-titanium
+#w8AdminThemeSwitcher button {
+    color: #a2775a;
+}
+
+body.w8-theme-titanium
+#w8AdminThemeSwitcher button.is-current {
+    background: linear-gradient(
+        135deg,
+        #ffe1c5,
+        #f5c0a0
+    );
+
+    border-color: #d38466;
+    color: #9f4433;
+}
+
+/* ==========================================
+   FRUIT DASHBOARD CARDS
+========================================== */
+
+body.w8-theme-titanium .tactical-card {
+    background: linear-gradient(
+        145deg,
+        #fffdf5,
+        #ffefd9 65%,
+        #f8d8bb
+    );
+
+    border: 1px solid #e0b08b;
+    border-bottom: 3px solid #d1956b;
+    border-radius: 15px;
+
+    box-shadow:
+        0 8px 25px #a7693823,
+        inset 0 1px 0 #ffffffdd;
+}
+
+body.w8-theme-titanium
+.tactical-card::before {
+    background: linear-gradient(
+        90deg,
+        transparent,
+        #e4ad87,
+        transparent
+    );
+}
+
+body.w8-theme-titanium .head-index {
+    color: #b66645;
+}
+
+body.w8-theme-titanium .head-text h2 {
+    color: #874932;
+}
+
+body.w8-theme-titanium .head-text p {
+    color: #aa7c5d;
+}
+
+body.w8-theme-titanium .head-symbol {
+    background: #fff5e6;
+    border-color: #e1b592;
+    color: #b85f43;
+}
+
+/* ==========================================
+   SESSION MONITOR
+========================================== */
+
+body.w8-theme-titanium .stat-block {
+    background: linear-gradient(
+        150deg,
+        #fffdf6,
+        #ffead2
+    );
+
+    border: 1px solid #dfb793;
+}
+
+body.w8-theme-titanium .stat-label {
+    color: #a37353;
+}
+
+body.w8-theme-titanium .stat-round {
+    color: #b24c37;
+}
+
+body.w8-theme-titanium .stat-block .timer {
+    color: #ab4d39;
+    text-shadow: none;
+}
+
+body.w8-theme-titanium
+.stat-block .timer.danger {
+    color: #d93632;
+}
+
+/* RESULT DISPLAY */
+
+body.w8-theme-titanium .result-display {
+    background: linear-gradient(
+        160deg,
+        #fff8e8,
+        #f8d3ae
+    );
+
+    border: 1px solid #dfad85;
+}
+
+body.w8-theme-titanium .result-topline {
+    color: #a16e51;
+}
+
+body.w8-theme-titanium .result-corner {
+    color: #b05e40;
+}
+
+body.w8-theme-titanium .slot-image-stage {
+    background: radial-gradient(
+        circle,
+        #fffdf4,
+        #ffe6c6 68%,
+        #f2c6a6
+    );
+
+    border: 1px solid #e0b38d;
+
+    box-shadow:
+        inset 0 0 20px #b5793920;
+}
+
+body.w8-theme-titanium .result-display
+.slot-img-admin {
+    filter: drop-shadow(0 5px 7px #a16a463b);
+}
+
+/* MULTIPLIER */
+
+body.w8-theme-titanium .result-multiplier {
+    background: #fff7ea;
+    border-color: #e3b994;
+}
+
+body.w8-theme-titanium
+.result-multiplier > span {
+    color: #a57859;
+}
+
+body.w8-theme-titanium
+.result-multiplier .multi {
+    color: #b54d35;
+}
+
+body.w8-theme-titanium .panel-footnote {
+    color: #ab7f60;
+}
+
+body.w8-theme-titanium .footnote-mark {
+    color: #8cb761;
+}
+
+/* ==========================================
+   CONTROL PANEL
+========================================== */
+
+body.w8-theme-titanium
+.control-section-label {
+    color: #995b3e;
+}
+
+body.w8-theme-titanium
+.control-section-label span:last-child {
+    color: #aa8262;
+}
+
+body.w8-theme-titanium
+.control-panel .override-grid-img img {
+    background: linear-gradient(
+        145deg,
+        #fffdf6,
+        #ffe8cc
+    );
+
+    border: 1px solid #e2b793;
+    border-radius: 11px;
+
+    box-shadow: inset 0 1px 0 #ffffffcc;
+    filter: none;
+}
+
+body.w8-theme-titanium
+.control-panel .override-grid-img img:hover {
+    border-color: #d17e5b;
+    background: #ffe4c5;
+}
+
+body.w8-theme-titanium
+.control-panel .override-grid-img img.active {
+    background: linear-gradient(
+        145deg,
+        #ffe2c7,
+        #f6c6ab
+    );
+
+    border: 2px solid #ce7256;
+
+    box-shadow:
+        0 0 0 3px #d88a6330,
+        inset 0 1px 0 #fff;
+
+    filter: none;
+}
+
+/* SPECIAL EVENTS */
+
+body.w8-theme-titanium .special-label,
+body.w8-theme-titanium .control-note {
+    border-top-color: #e5b994;
+}
+
+body.w8-theme-titanium .event-option {
+    background: linear-gradient(
+        150deg,
+        #fff9ed,
+        #f8ddbf
+    );
+
+    border: 1px solid #dfb28a;
+}
+
+body.w8-theme-titanium .event-tag {
+    color: #aa7050;
+}
+
+body.w8-theme-titanium .event-name {
+    color: #a45136;
+}
+
+body.w8-theme-titanium .event-option img.active {
+    border-color: #d37455;
+    background: #ffe1ca;
+
+    box-shadow: 0 0 0 3px #d8896330;
+}
+
+body.w8-theme-titanium .control-note {
+    color: #a97d5e;
+}
+
+/* ==========================================
+   SLOT POOL
+========================================== */
+
+body.w8-theme-titanium .pool-panel .pool-slot {
+    background: linear-gradient(
+        145deg,
+        #fffdf6,
+        #ffead2
+    );
+
+    border: 1px solid #dfb590;
+}
+
+body.w8-theme-titanium .pool-panel .pool-slot.hot {
+    border-color: #d48b61;
+    box-shadow: inset 0 0 10px #db926222;
+}
+
+body.w8-theme-titanium .pool-panel .pool-value {
+    background: #fff1ddec;
+    border-top: 1px solid #e3bd9b;
+    color: #9d5337;
+}
+
+body.w8-theme-titanium .pool-panel .pool-slot::after {
+    background: linear-gradient(
+        90deg,
+        #ebc489,
+        #de8e6d,
+        #bb5540
+    );
+}
+
+/* ==========================================
+   PLAYER BETS
+========================================== */
+
+body.w8-theme-titanium .players-table-head {
+    border-bottom: 1px solid #e1b391;
+    color: #a57252;
+}
+
+body.w8-theme-titanium
+.players-panel .bet-card {
+    background: linear-gradient(
+        145deg,
+        #fffdf5,
+        #ffead5
+    );
+
+    border: 1px solid #e3bd9b;
+    box-shadow: none;
+}
+
+body.w8-theme-titanium
+.players-panel .bet-card[style*="box-shadow"] {
+    box-shadow:
+        0 0 0 1px #dc9770,
+        0 4px 12px #b8793c25 !important;
+}
+
+body.w8-theme-titanium
+.players-panel .bet-name {
+    color: #874a32;
+}
+
+body.w8-theme-titanium
+.players-panel .bet-coins {
+    color: #709748;
+}
+
+body.w8-theme-titanium
+.players-panel .bet-slot span {
+    background: #fff2e0;
+    border-color: #d6a17a;
+    color: #a3543b;
+}
+
+body.w8-theme-titanium
+.players-panel .bet-total {
+    background: #fbe0bb;
+    border-color: #dfaa82;
+    color: #a44f35;
+}
+
+/* ==========================================
+   ADMIN FOOTER
+========================================== */
+
+body.w8-theme-titanium .tactical-footer {
+    color: #a97958;
+}
+
+body.w8-theme-titanium .tactical-footer span {
+    color: #bc7753;
+}
+
+/* ==========================================
+   LOGIN SCREEN - FRUIT THEME
+========================================== */
+
+body.w8-theme-titanium .wheel8-login-screen {
+    background:
+        radial-gradient(
+            ellipse at 50% 15%,
+            #fffdf2,
+            transparent 65%
+        ),
+        linear-gradient(
+            180deg,
+            #ffe9cc,
+            #f5c9a7
+        );
+
+    color: #865038;
+}
+
+body.w8-theme-titanium
+.wheel8-login-screen .wheel8-login-box {
+    background: linear-gradient(
+        155deg,
+        #fffdf5,
+        #ffe7ca
+    );
+
+    border: 1px solid #d9a580;
+    box-shadow: 0 20px 55px #88523345;
+}
+
+body.w8-theme-titanium .login-topbar {
+    background: #fff3e1;
+    border-bottom-color: #e2b896;
+}
+
+body.w8-theme-titanium
+:is(.login-topbar-left,
+    .login-emblem-caption,
+    .login-field-heading label,
+    .login-security-info,
+    .wheel8-login-footer) {
+    color: #a17556;
+}
+
+body.w8-theme-titanium
+:is(.login-topbar-right,
+    .login-eyebrow,
+    .login-section-divider,
+    .wheel8-login-title span) {
+    color: #b25a3c;
+}
+
+body.w8-theme-titanium
+.wheel8-login-screen .wheel8-login-title {
+    color: #874a34;
+}
+
+body.w8-theme-titanium
+.wheel8-login-screen #wheel8AdminPassword {
+    background: #fff9f0;
+    border-color: #dfb494;
+    color: #824832;
+}
+
+body.w8-theme-titanium
+.wheel8-login-screen #wheel8AdminPassword::placeholder {
+    color: #b08d71;
+}
+
+body.w8-theme-titanium
+.wheel8-login-screen #wheel8LoginBtn.login-submit {
+    background: linear-gradient(
+        145deg,
+        #f6c6a4,
+        #e7a079
+    );
+
+    border-color: #cd855f;
+    color: #793d2d;
+}
+
+body.w8-theme-titanium #wheel8LoginMessage {
+    color: #c64c40;
+}
+
+/* ==========================================
+   ADMIN NOTIFICATION - FRUIT
+========================================== */
+
+body.w8-theme-titanium .wheel8-admin-notice {
+    background: linear-gradient(
+        145deg,
+        #fff8e9,
+        #f8d9b9
+    );
+
+    border-color: #d8a27a;
+    border-left-color: #d36c52;
+
+    box-shadow: 0 12px 30px #8b523c45;
+}
+
+body.w8-theme-titanium .wheel8-notice-icon {
+    background: #ffe4c6;
+    border-color: #db9b72;
+    color: #bc5941;
+}
+
+body.w8-theme-titanium .wheel8-notice-title {
+    color: #ac4f36;
+}
+
+body.w8-theme-titanium .wheel8-notice-message {
+    color: #824a34;
+}
+
+body.w8-theme-titanium .wheel8-notice-sub {
+    color: #aa7859;
+}
+
+body.w8-theme-titanium .wheel8-notice-close {
+    background: #fff3e3;
+    border-color: #dbad89;
+    color: #a6533a;
+}
+
+/* ==========================================
+   MOBILE
+========================================== */
+
+@media (max-width: 600px) {
+
+    .tactical-header {
+        align-items: flex-start;
+        flex-wrap: wrap;
+    }
+
+    .admin-header-actions {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    #w8AdminThemeSwitcher button {
+        min-width: 70px;
+        font-size: 10px;
+        padding: 7px 8px;
+    }
+
+    .admin-header-actions .system-indicator {
+        padding: 9px 10px;
+        font-size: 10px;
+    }
+
+}
+
+
+
+
 
 </style>
 </head>
@@ -3688,10 +4335,39 @@ body:not(.wheel8-admin-unlocked) .tactical-footer {
     </div>
   </div>
 
+
+
+<div class="admin-header-actions">
+
+  <!-- THEME SWITCHER -->
+  <div id="w8AdminThemeSwitcher">
+
+    <button
+      type="button"
+      data-theme="military"
+      onclick="w8AdminSetTheme('military')">
+      MILITARY
+    </button>
+
+    <button
+      type="button"
+      data-theme="titanium"
+      onclick="w8AdminSetTheme('titanium')">
+      FRUIT
+    </button>
+
+  </div>
+
+  <!-- SERVER INDICATOR -->
   <div class="system-indicator">
     <span class="system-dot"></span>
     <span>ADMIN CONSOLE</span>
   </div>
+
+</div>
+
+
+
 </header>
 
 <main class="tactical-layout">
@@ -4434,6 +5110,442 @@ if (toggleWheel8Password && wheel8LoginInput) {
 
 
 </script>
+
+
+
+<script>
+/* ==========================================
+   WHEEL8 ADMIN - THEME SYNCHRONIZATION
+   MILITARY / FRUIT
+========================================== */
+
+const W8_ADMIN_THEME_STORE = "w8_image_theme";
+
+const W8_ADMIN_ASSET_BASE =
+    "/assets/police/";
+
+const W8_ADMIN_FRUIT_BASE =
+    "/assets/police/theme-titanium/";
+
+let w8AdminCurrentTheme = "military";
+
+// Các ảnh slot/event có phiên bản FRUIT
+const W8_ADMIN_THEME_ASSETS =
+    /^(slot[1-8]|event-x5-all|event-x45-all)\.png$/;
+
+// Ghi nhớ ảnh FRUIT không tồn tại
+const w8AdminMissingFruit = new Set();
+
+/* ==========================================
+   GET ORIGINAL MILITARY IMAGE PATH
+========================================== */
+
+function w8AdminGetBasePath(src) {
+
+    if (!src) return null;
+
+    let url;
+
+    try {
+        url = new URL(src, location.href);
+    } catch (_) {
+        return null;
+    }
+
+    // Chỉ xử lý ảnh cùng website
+    if (url.origin !== location.origin) {
+        return null;
+    }
+
+    const path = url.pathname;
+
+    let filename = "";
+
+    if (path.startsWith(W8_ADMIN_FRUIT_BASE)) {
+
+        filename = path.slice(
+            W8_ADMIN_FRUIT_BASE.length
+        );
+
+    } else if (
+        path.startsWith(W8_ADMIN_ASSET_BASE)
+    ) {
+
+        filename = path.slice(
+            W8_ADMIN_ASSET_BASE.length
+        );
+
+    } else {
+        return null;
+    }
+
+    if (!W8_ADMIN_THEME_ASSETS.test(filename)) {
+        return null;
+    }
+
+    return W8_ADMIN_ASSET_BASE + filename;
+}
+
+/* ==========================================
+   SYNC INDIVIDUAL IMAGE
+========================================== */
+
+function w8AdminSyncImage(img) {
+
+    if (!(img instanceof HTMLImageElement)) {
+        return;
+    }
+
+    const raw = img.getAttribute("src");
+
+    if (!raw) return;
+
+    const base = w8AdminGetBasePath(raw);
+
+    if (!base) return;
+
+    // Khi server cập nhật sang slot khác,
+    // cập nhật thông tin ảnh gốc.
+    if (img.dataset.w8AdminBase !== base) {
+
+        img.dataset.w8AdminBase = base;
+
+        delete img.dataset.w8AdminMissing;
+    }
+
+    const fruit =
+        W8_ADMIN_FRUIT_BASE +
+        base.slice(W8_ADMIN_ASSET_BASE.length);
+
+    const useFruit =
+        w8AdminCurrentTheme === "titanium" &&
+        img.dataset.w8AdminMissing !== "1" &&
+        !w8AdminMissingFruit.has(fruit);
+
+    const target = useFruit
+        ? fruit
+        : base;
+
+    let currentPath;
+
+    try {
+        currentPath = new URL(
+            raw,
+            location.href
+        ).pathname;
+    } catch (_) {
+        return;
+    }
+
+    if (currentPath !== target) {
+        img.setAttribute("src", target);
+    }
+}
+
+/* ==========================================
+   SYNC ALL SLOT AND EVENT IMAGES
+========================================== */
+
+function w8AdminSyncAllImages() {
+
+    document.querySelectorAll("img").forEach(
+        w8AdminSyncImage
+    );
+}
+
+/* ==========================================
+   FRUIT IMAGE FALLBACK
+========================================== */
+
+document.addEventListener(
+    "error",
+    function(event) {
+
+        const img = event.target;
+
+        if (!(img instanceof HTMLImageElement)) {
+            return;
+        }
+
+        const raw = img.getAttribute("src");
+
+        if (!raw) return;
+
+        let path;
+
+        try {
+            path = new URL(
+                raw,
+                location.href
+            ).pathname;
+        } catch (_) {
+            return;
+        }
+
+        if (!path.startsWith(W8_ADMIN_FRUIT_BASE)) {
+            return;
+        }
+
+        const base = w8AdminGetBasePath(raw);
+
+        if (!base) return;
+
+        // Không thử lại ảnh FRUIT bị thiếu
+        w8AdminMissingFruit.add(path);
+
+        img.dataset.w8AdminMissing = "1";
+
+        // Hiển thị ảnh MILITARY thay thế
+        img.setAttribute("src", base);
+
+    },
+    true
+);
+
+/* ==========================================
+   WATCH SOCKET-GENERATED IMAGES
+========================================== */
+
+const w8AdminImageObserver =
+    new MutationObserver(function(records) {
+
+        for (const record of records) {
+
+            // Ảnh hiện tại được thay đổi src
+            if (
+                record.type === "attributes" &&
+                record.target instanceof HTMLImageElement
+            ) {
+
+                w8AdminSyncImage(record.target);
+                continue;
+            }
+
+            // Ảnh mới được tạo trong Slot Pool
+            // hoặc danh sách người chơi
+            if (record.type === "childList") {
+
+                for (const node of record.addedNodes) {
+
+                    if (node instanceof HTMLImageElement) {
+
+                        w8AdminSyncImage(node);
+
+                    } else if (node instanceof Element) {
+
+                        node.querySelectorAll("img").forEach(
+                            w8AdminSyncImage
+                        );
+
+                    }
+                }
+            }
+        }
+
+    });
+
+w8AdminImageObserver.observe(
+    document.body,
+    {
+        childList: true,
+        subtree: true,
+        attributes: true,
+        attributeFilter: ["src"]
+    }
+);
+
+/* ==========================================
+   UPDATE VISIBLE TEXT
+========================================== */
+
+function w8AdminThemeText(selector, text) {
+
+    const element =
+        document.querySelector(selector);
+
+    if (element) {
+        element.textContent = text;
+    }
+}
+
+/* ==========================================
+   APPLY THEME
+========================================== */
+
+function w8AdminSetTheme(theme, save = true) {
+
+    w8AdminCurrentTheme =
+        theme === "titanium"
+            ? "titanium"
+            : "military";
+
+    const isFruit =
+        w8AdminCurrentTheme === "titanium";
+
+    // 1. CSS THEME
+    document.body.classList.toggle(
+        "w8-theme-titanium",
+        isFruit
+    );
+
+    // 2. DOCUMENT TITLE
+    document.title = isFruit
+        ? "FRUIT | CONTROL CENTER"
+        : "MILITARY | COMMAND CENTER";
+
+    // 3. DASHBOARD BRANDING
+    w8AdminThemeText(
+        ".tactical-brand .brand-eyebrow",
+        isFruit
+            ? "FRUIT CONTROL SYSTEM"
+            : "MILITARY CONTROL SYSTEM"
+    );
+
+    w8AdminThemeText(
+        ".tactical-brand .brand-copy h1",
+        isFruit
+            ? "FRUIT CONTROL CENTER"
+            : "COMMAND CENTER"
+    );
+
+    w8AdminThemeText(
+        ".tactical-brand .brand-copy p",
+        isFruit
+            ? "FRUIT · OPERATIONS DASHBOARD"
+            : "MILITARY · OPERATIONS DASHBOARD"
+    );
+
+    w8AdminThemeText(
+        ".tactical-brand .brand-emblem",
+        isFruit ? "🍓" : "✦"
+    );
+
+    // 4. LOGIN SCREEN
+    w8AdminThemeText(
+        ".login-eyebrow",
+        isFruit
+            ? "FRUIT CONTROL SYSTEM"
+            : "MILITARY CONTROL SYSTEM"
+    );
+
+    const loginTitle =
+        document.querySelector(
+            ".wheel8-login-title"
+        );
+
+    if (loginTitle) {
+        loginTitle.innerHTML = isFruit
+            ? "FRUIT <span>CENTER</span>"
+            : "COMMAND <span>CENTER</span>";
+    }
+
+    w8AdminThemeText(
+        ".login-background-label",
+        isFruit
+            ? "FRUIT OPERATIONS · ADMINISTRATION TERMINAL"
+            : "TACTICAL OPERATIONS · ADMINISTRATION TERMINAL"
+    );
+
+    // 5. NOTIFICATION TITLE
+    w8AdminThemeText(
+        ".wheel8-notice-title",
+        isFruit
+            ? "FRUIT CONTROL NOTICE"
+            : "COMMAND WARNING"
+    );
+
+    // 6. FOOTER
+    const footer =
+        document.querySelector(".tactical-footer");
+
+    if (footer) {
+
+        footer.innerHTML = isFruit
+            ? "FRUIT CONTROL SYSTEM <span>·</span> FRUIT OPERATIONS INTERFACE"
+            : "MILITARY COMMAND SYSTEM <span>·</span> MILITARY OPERATIONS INTERFACE";
+
+    }
+
+    // 7. THEME BUTTON STATES
+    document.querySelectorAll(
+        "#w8AdminThemeSwitcher [data-theme]"
+    ).forEach(function(button) {
+
+        const active =
+            button.dataset.theme ===
+            w8AdminCurrentTheme;
+
+        button.classList.toggle(
+            "is-current",
+            active
+        );
+
+        button.setAttribute(
+            "aria-pressed",
+            String(active)
+        );
+
+    });
+
+    // 8. SYNC ALL IMAGES
+    w8AdminSyncAllImages();
+
+    // 9. SAVE THEME
+    if (save) {
+
+        try {
+
+            localStorage.setItem(
+                W8_ADMIN_THEME_STORE,
+                w8AdminCurrentTheme
+            );
+
+        } catch (_) {}
+
+    }
+}
+
+/* ==========================================
+   RESTORE GAME THEME
+========================================== */
+
+let w8AdminSavedTheme = "military";
+
+try {
+
+    w8AdminSavedTheme =
+        localStorage.getItem(
+            W8_ADMIN_THEME_STORE
+        ) || "military";
+
+} catch (_) {}
+
+w8AdminSetTheme(w8AdminSavedTheme, false);
+
+/* ==========================================
+   SYNC WITH OTHER TABS
+========================================== */
+
+window.addEventListener(
+    "storage",
+    function(event) {
+
+        if (
+            event.key === W8_ADMIN_THEME_STORE
+        ) {
+
+            w8AdminSetTheme(
+                event.newValue || "military",
+                false
+            );
+        }
+
+    }
+);
+
+</script>
+
+
 
 </body>
 </html>
