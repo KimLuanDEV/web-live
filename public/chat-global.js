@@ -14,7 +14,7 @@ function getChatKey(a, b) {
   window.socket = window.socket || io();
   const socket = window.socket;
 
-  // 🔥 luôn đăng ký uid cho socket
+ // 🔥 Always register UID with the socket
   socket.emit("auth-login", { uid: auth.uid });
 
 socket.on("offline-messages", msgs => {
@@ -35,14 +35,14 @@ socket.on("offline-messages", msgs => {
     lastFrom = m.from;
   });
 
-  // 🔔 chỉ hiện 1 thông báo gộp
-  if (!location.pathname.includes("messages.html") && notifyCount > 0) {
-    if (notifyCount === 1) {
-      showMsg(`📩 Tin nhắn từ ${lastFrom}`);
-    } else {
-      showMsg(`📩 Bạn có ${notifyCount} tin nhắn mới`);
-    }
+// 🔔 Show a single combined notification
+if (!location.pathname.includes("messages.html") && notifyCount > 0) {
+  if (notifyCount === 1) {
+    showMsg(`📩 Message from ${lastFrom}`);
+  } else {
+    showMsg(`📩 You have ${notifyCount} new messages`);
   }
+}
 });
 
 
@@ -71,10 +71,10 @@ socket.on("offline-messages", msgs => {
     });
     localStorage.setItem(key, JSON.stringify(arr));
 
-    if (!location.pathname.includes("messages.html")) {
-      showMsg(`📩 Tin nhắn từ ${from.name}: ${text.slice(0, 60)}`);
-      document.querySelector('[data-tab="chat"]')?.classList.add("has-new"); 
-    }
+if (!location.pathname.includes("messages.html")) {
+  showMsg(`📩 Message from ${from.name}: ${text.slice(0, 60)}`);
+  document.querySelector('[data-tab="chat"]')?.classList.add("has-new");
+}
 
     socket.emit("msg-seen", { to: from.uid, msgId });
   });
@@ -90,12 +90,12 @@ socket.on("system-notify", data => {
 
   console.log("🔔 system-notify:", data);
 
-  // ➖ BỊ TRỪ COIN
+  // ➖ COINS DEDUCTED
   if (data.type === "withdraw") {
     showSystemWithdraw(data);
   }
 
-  // ➕ ĐƯỢC NẠP COIN (nếu chưa có)
+  // ➕ COINS ADDED (if applicable)
   if (data.type === "topup") {
     showSystemTopup(data);
   }
@@ -105,7 +105,7 @@ socket.on("system-notify", data => {
 function showSystemWithdraw(data){
   const text =
     data.text ||
-    "➖ Tài khoản của bạn vừa bị trừ coin";
+    "Coins have been deducted from your account";
 
   showMsg(text);
 }
@@ -113,8 +113,7 @@ function showSystemWithdraw(data){
 function showSystemTopup(data){
   const text =
     data.text ||
-    "💰 Tài khoản của bạn vừa được nạp coin";
+    "Coins have been added to your account";
 
   showMsg(text);
 }
-
