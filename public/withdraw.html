@@ -1,11 +1,11 @@
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
       content="width=device-width,initial-scale=1,maximum-scale=1">
-<title> Withdraw | Livestream Pro</title>
+<title>Diamond Withdrawal | Livestream Pro</title>
 
 <script src="/lsp-page-transition.js"></script>
 
@@ -1143,12 +1143,12 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
 
   <button class="wd-back"
           onclick="goBack()"
-          aria-label="Quay lại">
+          	aria-label="Back">
     <span data-wd-icon="back"></span>
   </button>
 
   <div class="wd-header-center">
-    <div class="wd-header-title">RÚT TIỀN</div>
+    <div class="wd-header-title">WITHDRAWAL</div>
     <div class="wd-header-sub">LIVESTREAM PRO</div>
   </div>
 
@@ -1162,8 +1162,8 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
   <!-- INTRO -->
   <section class="wd-intro">
     <div class="wd-eyebrow">PREMIUM WALLET</div>
-    <h1>Quản lý tài sản</h1>
-    <p>Quy đổi kim cương và gửi yêu cầu thanh toán</p>
+    <h1>Asset Management</h1>
+    <p>Convert your diamonds and submit a payout request</p>
   </section>
 
   <!-- BALANCE -->
@@ -1174,7 +1174,7 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
 <span class="wd-premium-mark">PREMIUM MEMBER</span>
     </div>
 
-    <div class="wd-balance-label">Kim cương có thể rút</div>
+    <div class="wd-balance-label">Available Diamonds for Withdrawal</div>
 
     <div class="wd-balance-value">
 <span data-wd-icon="gem" data-wd-size="lg"></span>
@@ -1183,9 +1183,9 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
 
     <div class="wd-balance-bottom">
       <div class="wd-money-label">
-        Giá trị yêu cầu quy đổi
+       Estimated Payout Value
       </div>
-      <div class="wd-money-value" id="moneyVal">0 ₫</div>
+      <div class="wd-money-value" id="moneyVal">0 $</div>
     </div>
 
   </section>
@@ -1198,15 +1198,15 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
   <span data-wd-icon="wallet"></span>
 </div>
       <div>
-        <h2 class="wd-section-title">Tạo yêu cầu rút tiền</h2>
+        <h2 class="wd-section-title">Create Withdrawal Request</h2>
         <div class="wd-section-sub">
-          Nhập số lượng kim cương muốn quy đổi
+          Enter the amount of diamonds you wish to withdraw
         </div>
       </div>
     </div>
 
     <div class="wd-field">
-      <label for="withdrawInput">SỐ KIM CƯƠNG MUỐN RÚT</label>
+      <label for="withdrawInput">DIAMOND WITHDRAWAL AMOUNT</label>
       <input
         class="wd-input"
         type="number"
@@ -1214,25 +1214,25 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
         min="0"
         step="1"
         inputmode="numeric"
-        placeholder="Nhập số lượng kim cương"
+        	placeholder="Enter diamond amount"
       >
     </div>
 
 <p class="wd-min-note" id="minWithdrawNote">
   <span data-wd-icon="warning" data-wd-size="sm"></span>
-  Số lượng rút tối thiểu:
-  <b id="minWithdrawVal"></b> kim cương
+  Minimum withdrawal:
+  <b id="minWithdrawVal"></b> diamonds
 </p>
 
 <div class="wd-bank-title">
   <span data-wd-icon="bank"></span>
-  THÔNG TIN NGÂN HÀNG NHẬN
+  RECIPIENT BANK DETAILS
 </div>
 
     <div class="wd-field">
-      <label for="bankName">NGÂN HÀNG</label>
+      <label for="bankName">BANK</label>
       <select class="wd-select" id="bankName">
-        <option value="">Chọn ngân hàng nhận tiền</option>
+        <option value="">	Select your bank</option>
         <option value="Vietcombank">Vietcombank</option>
         <option value="Techcombank">Techcombank</option>
         <option value="BIDV">BIDV</option>
@@ -1244,40 +1244,40 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
 
     <div class="wd-bank-preview">
       <img id="bankLogo" class="bank-logo hidden"
-           alt="Logo ngân hàng">
+           alt="Bank logo">
     </div>
 
     <div class="wd-field">
-      <label for="bankAccount">SỐ TÀI KHOẢN</label>
+      <label for="bankAccount">	ACCOUNT NUMBER</label>
       <input
         class="wd-input"
         id="bankAccount"
         type="text"
         inputmode="numeric"
         autocomplete="off"
-        placeholder="Nhập số tài khoản ngân hàng"
+        	placeholder="Enter bank account number"
       >
     </div>
 
     <div class="wd-field">
-      <label for="bankOwner">TÊN CHỦ TÀI KHOẢN</label>
+      <label for="bankOwner">ACCOUNT HOLDER NAME</label>
       <input
         class="wd-input"
         id="bankOwner"
         type="text"
         autocomplete="off"
-        placeholder="Nhập tên chủ tài khoản"
+        	placeholder="Enter account holder name"
       >
     </div>
 
 <button id="btnSubmitWithdraw" class="wd-submit">
   <span data-wd-icon="send"></span>
-  <span>GỬI YÊU CẦU RÚT TIỀN</span>
+  <span>	SUBMIT WITHDRAWAL REQUEST</span>
 </button>
 
 <p class="wd-security-hint">
   <span data-wd-icon="shield" data-wd-size="sm"></span>
-  Yêu cầu được xác nhận bằng mã bảo mật
+  Withdrawal requests require security code verification
 </p>
 
   </section>
@@ -1288,36 +1288,39 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
     <div class="wd-history-heading">
     <h2>
   <span data-wd-icon="history"></span>
-  Lịch sử giao dịch
+  Transaction History
 </h2>
       <span class="wd-history-tag">TRANSACTIONS</span>
     </div>
 
     <div class="wd-history-scroll">
       <table class="withdraw-table">
-        <thead>
-          <tr>
-            <th>Thời gian</th>
-            <th>Kim cương</th>
-            <th>Thanh toán</th>
-            <th>Trạng thái</th>
-            <th>Ghi chú</th>
-          </tr>
-        </thead>
+<thead>
+  <tr>
+    <th>Date & Time</th>
+    <th>Diamonds</th>
+    <th>Payout</th>
+    <th>Status</th>
+    <th>Notes</th>
+  </tr>
+</thead>
 
         <tbody id="withdrawHistoryBody"></tbody>
       </table>
     </div>
 
-<p class="wd-empty" id="withdrawEmpty" style="display:none">
-  Chưa có giao dịch rút tiền nào
+<p
+  class="wd-empty"
+  id="withdrawEmpty"
+  style="display:none">
+  No withdrawal transactions found.
 </p>
 
     <div class="withdraw-pagination" id="withdrawPagination"></div>
 
-    <p class="wd-history-tip">
-      Vuốt ngang để xem đầy đủ chi tiết giao dịch
-    </p>
+<p class="wd-history-tip">
+  Swipe horizontally to view all transaction details.
+</p>
 
   </section>
 
@@ -1337,24 +1340,23 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
 <div class="lp-modal-icon is-success">
   <span data-wd-icon="check" data-wd-size="xl"></span>
 </div>
-    <h3>Yêu cầu đã được gửi</h3>
+<h3>Withdrawal Request Submitted</h3>
 
-    <p>
-      Yêu cầu rút tiền của bạn đã được tiếp nhận.
-      <br>
-      Vui lòng chờ phê duyệt trong vòng 30 ngày.
-    </p>
+<p>
+  Your withdrawal request has been received.
+  Please allow up to 30 days for approval.
+</p>
 
     <div class="lp-modal-actions">
-      <button class="btn-secondary"
-              onclick="closeWithdrawModal()">
-        Xác nhận
-      </button>
-      <button class="btn-primary"
-              onclick="goBack()"
-              style="display:none">
-        Quay lại
-      </button>
+<button class="btn-secondary"
+        onclick="closeWithdrawModal()">
+  Confirm
+</button>
+<button class="btn-primary"
+        onclick="goBack()"
+        style="display:none">
+  Back
+</button>
     </div>
   </div>
 </div>
@@ -1367,28 +1369,35 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
 <div class="lp-modal-icon">
   <span data-wd-icon="lock" data-wd-size="xl"></span>
 </div>
-    <h3>Xác nhận giao dịch</h3>
+<h3>Confirm Withdrawal</h3>
 
-    <p>Nhập mã bảo mật để xác nhận yêu cầu rút tiền</p>
+<p>
+  Enter your security code to confirm
+  this withdrawal request.
+</p>
 
-    <input
-      type="password"
-      id="securityCodeModalInput"
-      placeholder="Nhập mã bảo mật"
-      autocomplete="off"
-    >
+<input
+  type="password"
+  id="securityCodeModalInput"
+  placeholder="Enter security code"
+  autocomplete="off"
+>
 
-    <div class="lp-modal-actions">
-      <button class="btn-secondary"
-              onclick="closeSecurityModal()">
-        Huỷ
-      </button>
+<div class="lp-modal-actions">
 
-      <button class="btn-primary"
-              onclick="confirmWithdraw()">
-        Xác nhận
-      </button>
-    </div>
+  <button
+    class="btn-secondary"
+    onclick="closeSecurityModal()">
+    Cancel
+  </button>
+
+  <button
+    class="btn-primary"
+    onclick="confirmWithdraw()">
+    Confirm
+  </button>
+
+</div>
   </div>
 </div>
 
@@ -1400,14 +1409,14 @@ body.page-withdraw .wd-submit:disabled .wd-icon {
    <div id="notifyIcon" class="lp-modal-icon is-warn">
   <span data-wd-icon="warning" data-wd-size="xl"></span>
 </div>
-    <h3 id="notifyTitle">Thông báo</h3>
+   <h3 id="notifyTitle">Notification</h3>
     <p id="notifyMessage"></p>
 
     <div class="lp-modal-actions">
-      <button class="btn-primary"
-              onclick="closeNotifyModal()">
-        Đóng
-      </button>
+<button class="btn-primary"
+        onclick="closeNotifyModal()">
+  Close
+</button>
     </div>
   </div>
 </div>

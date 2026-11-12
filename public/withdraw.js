@@ -123,7 +123,7 @@ const params = new URLSearchParams(location.search);
 const received = Number(params.get("received") || 0);
 
 // 🔁 TỶ GIÁ (bạn chỉnh tùy ý)
-const RATE = 300; // 1 kim cương = 100đ / giá đô $
+const RATE = 0.0116; // 1 kim cương = 100đ / giá đô $
 // ⛔ RÚT TỐI THIỂU
 const MIN_WITHDRAW = 5000; // 💎 tối thiểu để được rút
 
@@ -175,32 +175,50 @@ function updateBankLogo(bankName){
 
 
 
+/* ==========================================
+   WITHDRAW AMOUNT - ENGLISH INTERFACE
+========================================== */
+
 function updateMoney() {
+
   const val = Math.min(
     received,
     Number(withdrawInput.value || 0)
   );
 
+  // Keep the original exchange rate
   moneyVal.textContent =
-    (val * RATE).toLocaleString("vi-VN") + " ₫";
+    (val * RATE).toLocaleString("en-US") + " $";
 
+  // PENDING WITHDRAWAL
   if (withdrawInput.disabled) {
+
     btnSubmit.disabled = true;
+
     btnSubmit.innerHTML =
-      wdIcon("clock") + "<span>ĐANG CHỜ DUYỆT</span>";
+      wdIcon("clock") +
+      "<span>PENDING APPROVAL</span>";
+
     return;
   }
 
+  // BELOW MINIMUM
   if (val < MIN_WITHDRAW) {
+
     btnSubmit.disabled = true;
+
     btnSubmit.innerHTML =
       wdIcon("warning") +
-      `<span>RÚT TỐI THIỂU ${MIN_WITHDRAW.toLocaleString("vi-VN")}</span>`;
+      `<span>MINIMUM ${MIN_WITHDRAW.toLocaleString("en-US")} DIAMONDS</span>`;
+
   } else {
+
     btnSubmit.disabled = false;
+
     btnSubmit.innerHTML =
       wdIcon("send") +
-      "<span>GỬI YÊU CẦU RÚT TIỀN</span>";
+      "<span>SUBMIT WITHDRAWAL REQUEST</span>";
+
   }
 }
 
@@ -223,18 +241,18 @@ async function submitWithdraw(securityCode){
   const bankOwner = document.getElementById("bankOwner").value.trim();
 
   if (!bankName || !bankAccount || !bankOwner) {
-    showNotifyModal(
-  "Vui lòng nhập đầy đủ thông tin ngân hàng",
+showNotifyModal(
+  "Please complete all required bank details.",
   "error"
 );
     return;
   }
 
   if (amount < MIN_WITHDRAW) {
-    showNotifyModal(
-  `Số kim cương rút tối thiểu là ${MIN_WITHDRAW.toLocaleString()} 💎`,
+showNotifyModal(
+  `The minimum withdrawal amount is ${MIN_WITHDRAW.toLocaleString("en-US")} diamonds.`,
   "warn",
-  "Không đủ điều kiện"
+  "Minimum Not Met"
 );
 
     return;
@@ -244,8 +262,8 @@ async function submitWithdraw(securityCode){
 
   const me = JSON.parse(localStorage.getItem("user_profile") || "{}");
   if (!me.uid) {
-    showNotifyModal(
-  "Bạn chưa đăng nhập, vui lòng đăng nhập lại",
+showNotifyModal(
+  "Your session is not valid. Please sign in again.",
   "error"
 );
 
@@ -269,8 +287,8 @@ async function submitWithdraw(securityCode){
   if (data.ok) {
     openWithdrawModal();
   } else {
-    showNotifyModal(
-  data.error || "Có lỗi xảy ra, vui lòng thử lại",
+showNotifyModal(
+  data.error || "Something went wrong. Please try again.",
   "error"
 );
 
@@ -344,14 +362,14 @@ function renderWithdrawPage(){
   withdrawCache.slice(start, end).forEach(w => {
     const tr = document.createElement("tr");
     tr.innerHTML = `
-      <td>${new Date(w.createdAt).toLocaleString("vi-VN")}</td>
-      <td>${w.amount.toLocaleString()}</td>
+      <td>${new Date(w.createdAt).toLocaleString("en-GB")}</td>
+      <td>${w.amount.toLocaleString("en-US")}</td>
       <td>
         <img
           src="${BANK_LOGOS[w.bank.split(" | ")[0]] || ""}"
           style="height:18px;vertical-align:middle;margin-right:6px"
         >
-        ${w.bank}
+        ${String(w.bank || "").replace(" | STK: ", " | Account No.: ")}
       </td>
       <td class="st-${w.status}">
         ${statusText(w.status)}
@@ -366,7 +384,7 @@ if (totalPages > 1) {
   const prev = document.createElement("button");
   prev.className = "pg-btn";
   prev.innerHTML = wdIcon("left");
-prev.setAttribute("aria-label", "Trang trước");
+prev.setAttribute("aria-label", "Previous page");
   prev.disabled = withdrawPage === 1;
   prev.onclick = () => {
     withdrawPage--;
@@ -375,12 +393,13 @@ prev.setAttribute("aria-label", "Trang trước");
 
   const info = document.createElement("div");
   info.className = "pg-info";
-  info.textContent = `Trang ${withdrawPage} / ${totalPages}`;
+ info.textContent =
+  `Page ${withdrawPage} of ${totalPages}`;
 
   const next = document.createElement("button");
   next.className = "pg-btn";
   next.innerHTML = wdIcon("right");
-next.setAttribute("aria-label", "Trang sau");
+next.setAttribute("aria-label", "Next page");
   next.disabled = withdrawPage === totalPages;
   next.onclick = () => {
     withdrawPage++;
@@ -411,18 +430,18 @@ function toggleWithdrawForm(enable) {
 
   if (!enable) {
     btnSubmit.disabled = true;
-    btnSubmit.innerHTML =
-      wdIcon("clock") +
-      "<span>ĐANG CHỜ PHÊ DUYỆT</span>";
+btnSubmit.innerHTML =
+  wdIcon("clock") +
+  "<span>PENDING APPROVAL</span>";
 
     if (!warn) {
       warn = document.createElement("div");
       warn.id = warnId;
       warn.className = "withdraw-warn";
 
-      warn.innerHTML =
-        wdIcon("warning") +
-        "<span>Bạn đang có yêu cầu rút tiền chờ phê duyệt</span>";
+warn.innerHTML =
+  wdIcon("warning") +
+  "<span>You already have a withdrawal request awaiting approval.</span>";
 
       btnSubmit.parentNode.insertBefore(warn, btnSubmit);
     }
@@ -436,29 +455,49 @@ function toggleWithdrawForm(enable) {
 
 
 
+/* ==========================================
+   WITHDRAWAL STATUS - ENGLISH
+========================================== */
+
 function statusText(s) {
+
+  // PENDING
   if (s === "pending") {
-    return `<span class="wd-status">
-      ${wdIcon("clock")}
-      Đang chờ
-    </span>`;
+
+    return `
+      <span class="wd-status">
+        ${wdIcon("clock")}
+        Pending
+      </span>
+    `;
+
   }
 
+  // APPROVED
   if (s === "approved") {
-    return `<span class="wd-status">
-      ${wdIcon("check")}
-      Đã duyệt
-    </span>`;
+
+    return `
+      <span class="wd-status">
+        ${wdIcon("check")}
+        Approved
+      </span>
+    `;
+
   }
 
+  // REJECTED
   if (s === "rejected") {
-    return `<span class="wd-status">
-      ${wdIcon("error")}
-      Từ chối
-    </span>`;
+
+    return `
+      <span class="wd-status">
+        ${wdIcon("error")}
+        Rejected
+      </span>
+    `;
+
   }
 
-  return "Không xác định";
+  return "Unknown";
 }
 
 
@@ -516,10 +555,10 @@ async function confirmWithdraw(){
     document.getElementById("securityCodeModalInput").value.trim();
 
   if (!securityCode) {
-    showNotifyModal(
-  "Vui lòng nhập mã bảo mật để xác nhận rút tiền",
+showNotifyModal(
+  "Please enter your security code to confirm this withdrawal.",
   "warn",
-  "Thiếu mã bảo mật"
+  "Security Code Required"
 );
     return;
   }
@@ -548,17 +587,17 @@ function showNotifyModal(message, type = "warn", title) {
   if (type === "error") {
     iconEl.classList.add("is-error");
     iconEl.innerHTML = wdIcon("error", "xl");
-    titleEl.textContent = title || "Giao dịch không thành công";
+    titleEl.textContent = title || "Transaction Failed";
 
   } else if (type === "success") {
     iconEl.classList.add("is-success");
     iconEl.innerHTML = wdIcon("check", "xl");
-    titleEl.textContent = title || "Thành công";
+    titleEl.textContent = title || "Success";
 
   } else {
     iconEl.classList.add("is-warn");
     iconEl.innerHTML = wdIcon("warning", "xl");
-    titleEl.textContent = title || "Thông báo";
+    titleEl.textContent = title || "Notification";
   }
 
   modal.classList.remove("hidden");
@@ -580,9 +619,9 @@ function showForceLogoutModal(message){
       <div class="fl-backdrop"></div>
       <div class="fl-box">
         <div class="fl-icon">${wdIcon("error", "xl")}</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc</div>
+        <div class="fl-title">Session Ended</div>
         <div class="fl-msg"></div>
-        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
+        <div class="fl-sub">You will be redirected to the login page...</div>
       </div>
     `;
     document.body.appendChild(modal);
@@ -609,7 +648,8 @@ if (typeof io === "function" && me?.uid) {
   });
 
  socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
+  const msg =
+  data?.message || "You have been signed out.";
 
   showForceLogoutModal(msg);
 
