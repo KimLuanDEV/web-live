@@ -775,8 +775,30 @@ document.getElementById("rentBackdrop")
 
 
 
-function openBooth(id){
-  location.href = `/booth.html?booth=${id}`;
+
+/* ==========================================
+   OPEN BOOTH - SMOOTH TRANSITION
+========================================== */
+
+function openBooth(id) {
+
+  if (!id) return;
+
+  const url =
+    `/booth.html?booth=${encodeURIComponent(id)}`;
+
+  if (window.LSPTransition?.go) {
+
+    LSPTransition.go(url, {
+      label: "Đang mở Gian hàng..."
+    });
+
+  } else {
+
+    window.location.href = url;
+
+  }
+
 }
 
 
@@ -924,16 +946,66 @@ async function revokeBooth(id) {
 
 
 /* ===== TAB BAR ===== */
-document.querySelectorAll(".lp-tab").forEach(tab=>{
-  tab.onclick = ()=>{
+
+/* ==========================================
+   MARKET TAB BAR
+   LIVESTREAM PRO SMOOTH TRANSITION
+========================================== */
+
+document.querySelectorAll(".lp-tab").forEach(tab => {
+
+  tab.onclick = () => {
+
     const t = tab.dataset.tab;
-    if(t==="market") return;
-    if(t==="social") location.href="/social.html";
-    if(t==="lobby") location.href="/lobby.html";
-    if(t==="messages") location.href="/messages.html";
-    if(t==="profile") location.href="/profile.html";
+
+    // Đang ở Market
+    if (t === "market") return;
+
+    const routes = {
+      social: {
+        url: "/social.html",
+        label: "Đang mở Bảng tin..."
+      },
+
+      lobby: {
+        url: "/lobby.html",
+        label: "Đang mở Sảnh LIVE..."
+      },
+
+      messages: {
+        url: "/messages.html",
+        label: "Đang mở Tin nhắn..."
+      },
+
+      profile: {
+        url: "/profile.html",
+        label: "Đang mở Hồ sơ cá nhân..."
+      }
+    };
+
+    const route = routes[t];
+
+    if (!route) return;
+
+    // Chạy hoạt cảnh chuyển trang
+    if (window.LSPTransition?.go) {
+
+      LSPTransition.go(route.url, {
+        label: route.label
+      });
+
+    } else {
+
+      // Dự phòng nếu script hiệu ứng chưa tải
+      window.location.href = route.url;
+
+    }
+
   };
+
 });
+
+
 
 /* INIT */
 (async function initMarket() {
@@ -984,12 +1056,33 @@ document.addEventListener("visibilitychange", ()=>{
 
 
 
+
+/* ==========================================
+   TOPUP BUTTON - SMOOTH TRANSITION
+========================================== */
+
 const topupBtn = document.getElementById("btnTopupCoin");
-if(topupBtn){
-  topupBtn.onclick = ()=>{
-    location.href = "/topup.html";
+
+if (topupBtn) {
+
+  topupBtn.onclick = () => {
+
+    if (window.LSPTransition?.go) {
+
+      LSPTransition.go("/topup.html", {
+        label: "Đang mở Nạp kim cương..."
+      });
+
+    } else {
+
+      window.location.href = "/topup.html";
+
+    }
+
   };
+
 }
+
 
 
 function showForceLogoutModal(message){

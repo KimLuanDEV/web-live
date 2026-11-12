@@ -25,7 +25,8 @@
 
   <link rel="stylesheet" href="/style.css" />
 
-
+<!-- LIVESTREAM PRO - PAGE TRANSITION -->
+<script src="/lsp-page-transition.js"></script>
 
   
 <style>
@@ -1306,12 +1307,15 @@ body.page-messages .msg-toast {
   <!-- HEADER -->
   <header class="msg-topbar">
 
-    <button
-      type="button"
-      class="msg-back"
-      onclick="location.href='/lobby.html'"
-      aria-label="Quay lại"
-    >
+<button
+  type="button"
+  class="msg-back"
+  onclick="LSPTransition.go('/lobby.html', {
+    label: 'Đang mở Sảnh LIVE...'
+  })"
+  aria-label="Quay lại"
+>
+
       <svg class="msg-svg">
         <use href="#mi-back"></use>
       </svg>

@@ -24,6 +24,9 @@
 
   <link rel="stylesheet" href="./style.css">
 
+  <!-- LIVESTREAM PRO - PAGE TRANSITION -->
+<script src="/lsp-page-transition.js"></script>
+
 <style>
 
 
@@ -4437,48 +4440,77 @@ if(profile.name){
 
 
 // Mobile Tab Logic
-document.querySelectorAll(".tab-item").forEach(tab=>{
-  tab.onclick = ()=>{
-    document.querySelectorAll(".tab-item").forEach(t=>t.classList.remove("active"));
-    tab.classList.add("active");
+
+/* ==========================================
+   MOBILE TAB - SMOOTH TRANSITION
+   GIỮ NGUYÊN KIỂM TRA TÀI KHOẢN KHÁCH
+========================================== */
+
+document.querySelectorAll(".tab-item").forEach(tab => {
+
+  tab.onclick = () => {
 
     const type = tab.dataset.tab;
 
-    if(type === "profile"){
-  if(isGuest){
-    showMsg("🔒 Đăng nhập để xem hồ sơ");
-    return;
-  }
-  location.href = "/profile.html";
-}
-
-
-if(type === "chat"){
-  if(isGuest){
-    showMsg("🔒 Đăng nhập để sử dụng");
-    return;
-  }
-  document.querySelector('[data-tab="chat"]')?.classList.remove("has-new");
-  location.href = "/messages.html";     
-}
-
-
-  if(type === "hot"){
-    
-    if(isGuest){
-    showMsg("🔒 Đăng nhập để sử dụng");
-    return;
-  }
-
-  location.href = "/social.html";
-}
-
-
-    if(type === "lobby"){
-      location.href = "/lobby.html";
+    // Trang hiện tại
+    if (type === "lobby") {
+      return;
     }
-  }
+
+    // Profile
+    if (type === "profile") {
+
+      if (isGuest) {
+        showMsg("🔒 Đăng nhập để xem hồ sơ");
+        return;
+      }
+
+      LSPTransition.go("/profile.html", {
+        label: "Đang mở Hồ sơ cá nhân..."
+      });
+
+      return;
+    }
+
+    // Chat
+    if (type === "chat") {
+
+      if (isGuest) {
+        showMsg("🔒 Đăng nhập để sử dụng");
+        return;
+      }
+
+      document.querySelector(
+        '[data-tab="chat"]'
+      )?.classList.remove("has-new");
+
+      LSPTransition.go("/messages.html", {
+        label: "Đang mở Tin nhắn..."
+      });
+
+      return;
+    }
+
+    // Social
+    if (type === "hot") {
+
+      if (isGuest) {
+        showMsg("🔒 Đăng nhập để sử dụng");
+        return;
+      }
+
+      LSPTransition.go("/social.html", {
+        label: "Đang mở Bảng tin..."
+      });
+
+      return;
+    }
+
+  };
+
 });
+
+
 
 document.getElementById("tabCreate").onclick = ()=>{
   if(isGuest){
@@ -4944,7 +4976,9 @@ function openPrivateChat(uid, name){
   localStorage.setItem("chat_to_uid", uid);
   localStorage.setItem("chat_to_name", name);
 
-  window.location.href = "/messages.html";
+  LSPTransition.go("/messages.html", {
+  label: "Đang mở cuộc trò chuyện..."
+});
 }
 
 
@@ -5153,9 +5187,17 @@ socket.on("user-unblocked", ({ uid }) => {
 
 
 
-function openUserProfile(uid){
-  if(!uid) return;
-  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+function openUserProfile(uid) {
+
+  if (!uid) return;
+
+  LSPTransition.go(
+    "/profile.html?uid=" + encodeURIComponent(uid),
+    {
+      label: "Đang mở hồ sơ người chơi..."
+    }
+  );
+
 }
 
 
