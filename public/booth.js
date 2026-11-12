@@ -97,9 +97,14 @@ pImageFile.onchange = () => {
 
 
 /* ===== HELPERS ===== */
-function formatDate(ts){
+function formatDate(ts) {
   const d = new Date(ts);
-  return d.toLocaleDateString("vi-VN");
+
+  return d.toLocaleDateString("en-US", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
 }
 
 function diffDays(ts){
@@ -191,7 +196,7 @@ function renderProducts(products) {
         ${images.length ? `
           <img
             class="product-photo"
-            alt="${escapeBoothHtml(p.name || "Sản phẩm")}"
+            alt="${escapeBoothHtml(p.name || "Product")}"
             loading="lazy"
           >
         ` : `
@@ -206,36 +211,36 @@ function renderProducts(products) {
       <div class="product-content">
 
         <div class="product-name">
-          ${escapeBoothHtml(p.name || "Sản phẩm")}
+          ${escapeBoothHtml(p.name || "Product")}
         </div>
 
         <div class="product-price">
-          ${price.toLocaleString("vi-VN")}
-          <small>kim cương</small>
+          ${price.toLocaleString("en-US")}
+          <small>diamonds</small>
         </div>
 
         <p class="product-description">
-          ${escapeBoothHtml(p.desc || "Chưa có mô tả.")}
+          ${escapeBoothHtml(p.desc || "No description available.")}
         </p>
 
-        <div class="product-stock ${out ? "out" : "in"}">
-          ${out
-            ? "Hết hàng"
-            : `Còn ${stock.toLocaleString("vi-VN")} sản phẩm`
-          }
-        </div>
+<div class="product-stock ${out ? "out" : "in"}">
+  ${out
+    ? "Out of Stock"
+    : `${stock.toLocaleString("en-US")} in stock`
+  }
+</div>
 
         ${isOwner ? `
           <div class="product-controls">
 
             <button type="button"
                     class="product-edit">
-              Chỉnh sửa
+              Edit
             </button>
 
             <button type="button"
                     class="product-delete">
-              Xóa
+              Delete
             </button>
 
           </div>
@@ -243,7 +248,7 @@ function renderProducts(products) {
           <button type="button"
                   class="product-buy"
                   ${out ? "disabled" : ""}>
-            ${out ? "Hết hàng" : "Mua ngay"}
+            ${out ? "Out of Stock" : "Buy Now"}
           </button>
         `}
 
@@ -384,31 +389,33 @@ if (daysLeft <= 1) {
 
   expireBox.className = "booth-expire danger";
 
-  expireBox.innerHTML = `
-    Gian hàng hết hạn <b>hôm nay</b>.
-    <div>Ngày hết hạn: ${formatDate(booth.expireAt)}</div>
-  `;
+expireBox.innerHTML = `
+  Your booth <b>expires today</b>.
+  <div>
+    Expiration Date: ${formatDate(booth.expireAt)}
+  </div>
+`;
 
 } else if (daysLeft <= 3) {
 
   expireBox.className = "booth-expire warn";
 
-  expireBox.innerHTML = `
-    Gian hàng sắp hết hạn.
-    <div>
-      Ngày hết hạn: ${formatDate(booth.expireAt)}
-      — còn ${daysLeft} ngày
-    </div>
-  `;
+expireBox.innerHTML = `
+  Your booth is expiring soon.
+  <div>
+    Expiration Date: ${formatDate(booth.expireAt)}
+    — ${daysLeft} days remaining
+  </div>
+`;
 
 } else {
 
   expireBox.className = "booth-expire";
 
-  expireBox.innerHTML = `
-    Ngày hết hạn: ${formatDate(booth.expireAt)}
-    — còn ${daysLeft} ngày
-  `;
+expireBox.innerHTML = `
+  Expiration Date: ${formatDate(booth.expireAt)}
+  — ${daysLeft} days remaining
+`;
 
 }
 
@@ -464,15 +471,15 @@ btnAddProduct.onclick = ()=>{
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
     showModal({
-      title: "🔐 Yêu cầu đăng nhập",
-      message: "Vui lòng đăng nhập để tiếp tục."
+      title: "Sign In Required",
+      message: "Please sign in to continue."
     });
     return;
   }
   if(me.uid !== currentBoothOwnerUid){
     showModal({
-      title: "⛔ Truy cập bị từ chối",
-      message: "Bạn không phải chủ của gian hàng này."
+      title: 	"Access Denied",
+      message: "You are not the owner of this booth."
     });
     return;
   }
@@ -482,8 +489,8 @@ btnAddProduct.onclick = ()=>{
   editingImages = [];
   pGalleryPreview.innerHTML = "";
 
-  productModalTitle.textContent = "Thêm sản phẩm";
-  btnSubmitProduct.textContent = "Đăng bán";
+  productModalTitle.textContent = "Add Product";
+  btnSubmitProduct.textContent = 	"Publish Product";
 
   // reset form
   pName.value = "";
@@ -506,48 +513,57 @@ btnExtend?.addEventListener("click", ()=>{
 });
 
 
+/* ==========================================
+   BOOTH RENTAL EXTENSION
+   ENGLISH INTERFACE
+========================================== */
+
 function openExtendModalInBooth() {
 
   showModal({
 
-    title: "Gia hạn gian hàng",
+    title: "Extend Booth Rental",
 
     message: `
+
       <div class="bt-extend-intro">
-        Lựa chọn thời hạn gia hạn phù hợp
-        với nhu cầu sử dụng.
+        Choose a rental extension plan
+        that best suits your needs.
       </div>
 
       <div class="bt-extend-options">
 
+        <!-- 7 DAYS -->
         <button
           type="button"
           class="bt-extend-plan"
           onclick="confirmExtendBooth(7,1000)"
         >
-          <span>7 ngày</span>
-          <strong>1.000</strong>
-          <small>kim cương</small>
+          <span>7 Days</span>
+          <strong>1,000</strong>
+          <small>diamonds</small>
         </button>
 
+        <!-- 30 DAYS -->
         <button
           type="button"
           class="bt-extend-plan"
           onclick="confirmExtendBooth(30,3500)"
         >
-          <span>30 ngày</span>
-          <strong>3.500</strong>
-          <small>kim cương</small>
+          <span>30 Days</span>
+          <strong>3,500</strong>
+          <small>diamonds</small>
         </button>
 
+        <!-- 90 DAYS -->
         <button
           type="button"
           class="bt-extend-plan"
           onclick="confirmExtendBooth(90,9000)"
         >
-          <span>90 ngày</span>
-          <strong>9.000</strong>
-          <small>kim cương</small>
+          <span>90 Days</span>
+          <strong>9,000</strong>
+          <small>diamonds</small>
         </button>
 
       </div>
@@ -557,13 +573,12 @@ function openExtendModalInBooth() {
 
 }
 
-
 async function confirmExtendBooth(days, price){
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me || !me.uid){
     showModal({
-  title: "🔐 Yêu cầu đăng nhập",
-  message: "Vui lòng đăng nhập để tiếp tục."
+  title: "Sign In Required",
+  message: "Please sign in to continue."
 });
 
     return;
@@ -586,15 +601,15 @@ if (!data.ok) {
 
   if (data.error === "not_enough_coin") {
     showModal({
-      title: "Không đủ kim cương",
-      message: "Số dư kim cương của bạn không đủ."
+      title: "Insufficient Diamonds",
+      message: "Your diamond balance is insufficient."
     });
     return;
   }
 
   showModal({
-    title: "Gia hạn thất bại",
-    message: "Không thể gia hạn gian hàng, vui lòng thử lại."
+    title: "Extension Failed",
+    message: "Unable to extend the booth rental. Please try again."
   });
 
   return;
@@ -602,8 +617,8 @@ if (!data.ok) {
 
 // Chỉ báo thành công khi server trả về ok
 showModal({
-  title: "Gia hạn thành công",
-  message: "Gian hàng đã được gia hạn thành công."
+  title: "Extension Successful",
+  message: "Your booth rental has been extended successfully."
 });
 
 
@@ -612,8 +627,8 @@ showModal({
 
   }catch(e){
     showModal({
-  title:"⚠️ Lỗi kết nối",
-  message:"Không thể kết nối máy chủ, vui lòng thử lại."
+  title:"Connection Error",
+  message:"Unable to connect to the server. Please try again."
 });
 
   }
@@ -628,8 +643,8 @@ async function submitProduct(){
 
   if(!me?.uid){
     showModal({
-      title:"🔐 Yêu cầu đăng nhập",
-      message:"Vui lòng đăng nhập để tiếp tục."
+      title:"Sign In Required",
+      message:"Please sign in to continue."
     });
     setProductSubmitting(false);
     return;
@@ -638,8 +653,8 @@ async function submitProduct(){
   const files = Array.from(pImageFile.files);
   if(files.length === 0){
     showModal({
-      title:"🖼️ Thiếu ảnh",
-      message:"Vui lòng chọn ít nhất 1 ảnh cho sản phẩm."
+      title:"Images Required",
+      message:"Please select at least one product image."
     });
     setProductSubmitting(false);
     return;
@@ -652,7 +667,7 @@ async function submitProduct(){
   if(wrap){
     wrap.classList.remove("hidden");
     if(bar) bar.style.width = "0%";
-    if(text) text.textContent = `Đang tải ảnh 1/${files.length}... 0%`;
+    if(text) text.textContent = `Uploading image 1/${files.length}... 0%`;
   }
 
   const imageUrls = [];
@@ -662,7 +677,7 @@ async function submitProduct(){
       const form = new FormData();
       form.append("image", files[i]);
 
-      if(text) text.textContent = `Đang tải ảnh ${i+1}/${files.length}... 0%`;
+      if(text) text.textContent = `Uploading image ${i+1}/${files.length}... 0%`;
       if(bar) bar.style.width = "0%";
 
       const upData = await new Promise((resolve, reject)=>{
@@ -675,7 +690,7 @@ async function submitProduct(){
             const percent = Math.round((e.loaded / e.total) * 100);
             if(bar) bar.style.width = percent + "%";
             if(text) text.textContent =
-              `Đang tải ảnh ${i+1}/${files.length}... ${percent}%`;
+              `Uploading image ${i+1}/${files.length}... ${percent}%`;
           }
         };
 
@@ -696,8 +711,8 @@ async function submitProduct(){
     }
   }catch(err){
     showModal({
-      title:"❌ Upload thất bại",
-      message:"Không thể tải ảnh lên, vui lòng thử lại."
+      title:"Upload Failed",
+      message:"Unable to upload images. Please try again."
     });
     setProductSubmitting(false);
     resetUploadProgress();
@@ -724,8 +739,8 @@ async function submitProduct(){
 
   if(!res.ok){
     showModal({
-      title:"❌ Thất bại",
-      message:"Không thể đăng sản phẩm."
+      title:"Operation Failed",
+      message:"Unable to publish the product."
     });
     setProductSubmitting(false);
     resetUploadProgress();
@@ -751,8 +766,8 @@ function closeAddProduct(){
 
   // ✅ RESET STATE
   editingProductId = null;
-  productModalTitle.textContent = "Thêm sản phẩm";
-  btnSubmitProduct.textContent = "Đăng bán";
+  productModalTitle.textContent = "Add Product";
+  btnSubmitProduct.textContent = 	"Publish Product";
 
   // reset form
   pName.value = "";
@@ -792,8 +807,8 @@ async function guardBoothAccess() {
         color:#fff;
         text-align:center;
       ">
-        <h2>Gian hàng đang bị khóa</h2>
-        <p>${data.message || "Vui lòng liên hệ Admin"}</p>
+        <h2>This Booth Is Locked</h2>
+        <p>${data.message || "Please contact an administrator."}</p>
         <button onclick="location.href='/market.html'"
           style="
             margin-top:16px;
@@ -805,7 +820,7 @@ async function guardBoothAccess() {
             font-weight:900;
             cursor:pointer;
           ">
-          Quay lại Market
+          Back to Marketplace
         </button>
       </div>
     `;
@@ -823,8 +838,8 @@ if (socket) {
     const cur = new URLSearchParams(location.search).get("booth");
     if (String(cur) === String(boothId)) {
       showModal({
-  title: "🚫 Gian hàng bị khoá",
-  message: "Gian hàng này đã bị Admin khoá.",
+  title: "Booth Locked",
+  message: "This booth has been locked by an administrator.",
   onOk: () => location.href = "/market.html"
 });
 
@@ -882,8 +897,8 @@ function openEditProduct(productId){
 
   if (!booth || booth.locked) {
     showModal({
-      title:"🚫 Gian hàng bị khoá",
-      message:"Gian hàng hiện đang bị khoá, không thể chỉnh sửa sản phẩm."
+      title:"Booth Locked",
+      message:"This booth is locked. Product editing is unavailable."
     });
     return;
   }
@@ -893,8 +908,8 @@ function openEditProduct(productId){
 
   editingProductId = productId;
 
-  productModalTitle.textContent = "Chỉnh sửa sản phẩm";
-  btnSubmitProduct.textContent = "Lưu thay đổi";
+  productModalTitle.textContent = "Edit Product";
+  btnSubmitProduct.textContent = "Save Changes";
 
   pName.value  = p.name;
   pPrice.value = p.price;
@@ -933,7 +948,7 @@ function renderEditGallery(){
 const del = document.createElement("button");
 
 del.type = "button";
-del.textContent = "Xóa";
+del.textContent = "Remove";
 
 del.style.position = "absolute";
 del.style.top = "6px";
@@ -1038,8 +1053,8 @@ async function submitEditProduct(){
   const data = await res.json();
   if(!data.ok){
     showModal({
-      title:"❌ Thất bại",
-      message:"Không thể sửa sản phẩm."
+      title:"Operation Failed",
+      message:"Unable to update the product."
     });
     setProductSubmitting(false);
     return;
@@ -1068,8 +1083,8 @@ async function deleteProductConfirmed(productId) {
   const data = await res.json();
   if(!data.ok){
     showModal({
-      title:"Thất bại",
-      message:"Không thể xoá sản phẩm"
+      title:"Operation Failed",
+      message:"Unable to delete the product."
     });
     return;
   }
@@ -1079,8 +1094,8 @@ async function deleteProductConfirmed(productId) {
 
 async function deleteProduct(productId){
   showModal({
-  title: "Xoá sản phẩm",
-  message: "Bạn có chắc chắn muốn xoá sản phẩm này?",
+  title: "Delete Product",
+  message: 	"Are you sure you want to delete this product?",
   confirm: true,
   onOk: () => deleteProductConfirmed(productId)
 });
@@ -1095,8 +1110,8 @@ function buyProduct(productId){
 
     if (window.__lastBooth?.locked) {
   showModal({
-    title:"🚫 Gian hàng bị khoá",
-    message:"Không thể mua lúc này."
+    title:"Booth Locked",
+    message:"Purchases are currently unavailable."
   });
   return;
 }
@@ -1106,8 +1121,8 @@ function buyProduct(productId){
 
   if (!p || p.stock <= 0) {
     showModal({
-      title:"📦 Hết hàng",
-      message:"Sản phẩm đã hết hàng."
+      title:"Out of Stock",
+      message:"This product is currently out of stock."
     });
     return;
   }
@@ -1115,8 +1130,8 @@ function buyProduct(productId){
   const me = JSON.parse(localStorage.getItem("user_profile"));
   if(!me?.uid){
     showModal({
-      title:"🔐 Chưa đăng nhập",
-      message:"Vui lòng đăng nhập để mua."
+      title:"Sign In Required",
+      message:"Please sign in to purchase this product."
     });
     return;
   }
@@ -1165,7 +1180,7 @@ function cleanBoothModalTitle(value) {
 
 
 function showModal({
-  title = "Thông báo",
+  title = "Notification",
   message = "",
   confirm = false,
   onOk = null,
@@ -1221,8 +1236,8 @@ async function submitBuyForm(){
 
   if(!info.name || !info.phone || !info.address || info.qty <= 0){
     showModal({
-      title:"⚠️ Thiếu thông tin",
-      message:"Vui lòng điền đầy đủ thông tin mua hàng."
+      title:"Missing Information",
+      message:"Please complete all required purchase details."
     });
     return;
   }
@@ -1243,8 +1258,8 @@ async function submitBuyForm(){
   const data = await res.json();
   if(!data.ok){
     showModal({
-      title:"❌ Thất bại",
-      message:"Không thể mua sản phẩm."
+      title:"Operation Failed",
+      message:"Unable to place your order."
     });
     return;
   }
@@ -1259,8 +1274,8 @@ buyNote.value = "";
 
 
   showModal({
-    title:"✅ Đặt hàng thành công",
-    message:"Shop sẽ liên hệ với bạn sớm nhất."
+    title:"Order Placed Successfully",
+    message:	"The seller will contact you as soon as possible."
   });
 
   syncMyCoin();
@@ -1312,15 +1327,27 @@ document.querySelectorAll(".booth-tabs .tab")
 
 function createLuxuryOrderCard(o, isSeller) {
 
-  const statusLabels = {
-    pending: "Đang chờ xử lý",
-    contacted: "Đã liên hệ",
-    buyer_received: "Người mua đã nhận hàng",
-    dispute: "Đang khiếu nại",
-    done: "Hoàn tất",
-    refunded: "Đã hoàn tiền",
-    cancelled: "Đã hủy"
-  };
+ /* ==========================================
+   ORDER STATUS - ENGLISH
+========================================== */
+
+const statusLabels = {
+
+  pending: "Pending",
+
+  contacted: "Contacted",
+
+  buyer_received: "Buyer Received",
+
+  dispute: "Under Dispute",
+
+  done: "Completed",
+
+  refunded: "Refunded",
+
+  cancelled: "Cancelled"
+
+};
 
   const status = String(o.status || "");
   const statusClass = status.replace(/[^a-z_-]/g, "");
@@ -1338,44 +1365,44 @@ function createLuxuryOrderCard(o, isSeller) {
     <div class="${isSeller ? "order-top" : "my-order-top"}">
 
       <div>
-        ${escapeBoothHtml(o.productName || "Sản phẩm")}
+        ${escapeBoothHtml(o.productName || "Product")}
         <span class="qty">
           × ${quantity}
         </span>
       </div>
 
       <div class="${isSeller ? "order-price" : "my-order-price"}">
-        ${amount.toLocaleString("vi-VN")}
-        <small>kim cương</small>
+        ${amount.toLocaleString("en-US")}
+        <small>diamonds</small>
       </div>
 
     </div>
 
     <div class="${isSeller ? "order-meta" : "my-order-meta"}">
-      ${new Date(o.createdAt).toLocaleString("vi-VN")}
+      ${new Date(o.createdAt).toLocaleString("en-US")}
     </div>
 
     ${isSeller ? `
       <div class="order-buyer">
 
         <div>
-          <b>Người mua:</b>
+          <b>Buyer:</b>
           ${escapeBoothHtml(buyer.name || "—")}
         </div>
 
         <div>
-          <b>Điện thoại:</b>
+          <b>Phone:</b>
           ${escapeBoothHtml(buyer.phone || "—")}
         </div>
 
         <div>
-          <b>Địa chỉ:</b>
+          <b>Address:</b>
           ${escapeBoothHtml(buyer.address || "—")}
         </div>
 
         ${buyer.note ? `
           <div>
-            <b>Ghi chú:</b>
+            <b>Notes:</b>
             ${escapeBoothHtml(buyer.note)}
           </div>
         ` : ""}
@@ -1384,18 +1411,18 @@ function createLuxuryOrderCard(o, isSeller) {
     ` : ""}
 
     <div class="${isSeller ? "order-status" : "my-order-status"} ${statusClass}">
-      ${statusLabels[status] || "Đang xử lý"}
+      ${statusLabels[status] || "Processing"}
     </div>
 
     ${status === "done" && o.adminApproved ? `
       <div class="order-admin-note">
-        Đơn hàng đã được Admin xử lý hoàn tất.
+        This order has been completed by an administrator.
       </div>
     ` : ""}
 
     ${status === "refunded" ? `
       <div class="order-admin-note">
-        Đơn hàng đã được xử lý hoàn tiền.
+        A refund has been processed for this order.
       </div>
     ` : ""}
 
@@ -1419,53 +1446,92 @@ function createLuxuryOrderCard(o, isSeller) {
     actions.appendChild(note);
   }
 
-  // NGƯỜI BÁN
-  if (isSeller) {
+// SELLER ACTIONS
+if (isSeller) {
 
-    if (status === "pending") {
-      addButton("Đã liên hệ", () => contactOrder(o.id));
-    }
+  if (status === "pending") {
 
-    if (status === "buyer_received") {
-      addButton("Xác nhận hoàn tất", () => completeOrder(o.id));
-    }
-
-    if (status === "contacted") {
-      addNote("Chờ người mua xác nhận");
-    }
-
-    if (
-      status === "cancelled" ||
-      status === "refunded" ||
-      (status === "done" && o.adminApproved)
-    ) {
-      addButton("Xóa lịch sử", () => hideOrder(o.id, "seller"));
-    } else {
-      addNote("Chỉ xóa sau khi Admin xử lý");
-    }
+    addButton(
+      "Mark Contacted",
+      () => contactOrder(o.id)
+    );
 
   }
 
-  // NGƯỜI MUA
-  else {
+  if (status === "buyer_received") {
 
-    if (status === "pending") {
-      addButton("Hủy đơn", () => cancelMyOrder(o.id));
-    }
-
-    if (status === "contacted") {
-      addButton("Đã nhận hàng", () => markOrderReceived(o.id));
-    }
-
-    if (["contacted", "buyer_received"].includes(status)) {
-      addButton("Khiếu nại / Hoàn tiền", () => openDispute(o.id));
-    }
-
-    if (["done", "cancelled", "refunded"].includes(status)) {
-      addButton("Xóa lịch sử", () => hideOrder(o.id, "buyer"));
-    }
+    addButton(
+      "Complete Order",
+      () => completeOrder(o.id)
+    );
 
   }
+
+  if (status === "contacted") {
+
+    addNote("Awaiting Buyer Confirmation");
+
+  }
+
+  if (
+    status === "cancelled" ||
+    status === "refunded" ||
+    (status === "done" && o.adminApproved)
+  ) {
+
+    addButton(
+      "Remove History",
+      () => hideOrder(o.id, "seller")
+    );
+
+  } else {
+
+    addNote("History removal requires Admin review");
+
+  }
+
+}
+
+// BUYER ACTIONS
+else {
+
+  if (status === "pending") {
+
+    addButton(
+      "Cancel Order",
+      () => cancelMyOrder(o.id)
+    );
+
+  }
+
+  if (status === "contacted") {
+
+    addButton(
+      "Confirm Receipt",
+      () => markOrderReceived(o.id)
+    );
+
+  }
+
+  if (["contacted", "buyer_received"].includes(status)) {
+
+    addButton(
+      "Dispute / Refund",
+      () => openDispute(o.id)
+    );
+
+  }
+
+  if (["done", "cancelled", "refunded"].includes(status)) {
+
+    addButton(
+      "Remove History",
+      () => hideOrder(o.id, "buyer")
+    );
+
+  }
+
+}
 
   if (!actions.children.length) {
     actions.remove();
@@ -1492,7 +1558,7 @@ function renderMyOrders(orders) {
 
   if (!me.uid) {
     empty.classList.remove("hidden");
-    empty.textContent = "Vui lòng đăng nhập để xem đơn hàng.";
+    empty.textContent = "Please sign in to view your orders.";
     list.innerHTML = "";
     return;
   }
@@ -1551,8 +1617,8 @@ function renderOrders(orders) {
 
 function markOrder(orderId, status){
   showModal({
-    title: "ℹ️ Thông báo",
-    message: "Chức năng cập nhật trạng thái đơn sẽ được mở sau."
+title: "Order Status",
+message: "Order status updates will be available soon."
   });
 }
 
@@ -1579,12 +1645,12 @@ function setProductSubmitting(loading){
     btnSubmitProduct.disabled = true;
     btnSubmitProduct.dataset._text =
       btnSubmitProduct.textContent;
-    btnSubmitProduct.textContent = "Đang xử lý...";
+    btnSubmitProduct.textContent = "Processing...";
     btnSubmitProduct.style.opacity = ".6";
   }else{
     btnSubmitProduct.disabled = false;
     btnSubmitProduct.textContent =
-      btnSubmitProduct.dataset._text || "Đăng bán";
+      btnSubmitProduct.dataset._text || 	"Publish Product";
     btnSubmitProduct.style.opacity = "1";
   }
 }
@@ -1719,8 +1785,8 @@ if (socket) {
 
 async function cancelMyOrder(orderId){
   showModal({
-    title: "❌ Huỷ đơn hàng",
-    message: "Bạn có chắc chắn muốn huỷ đơn hàng này không?<br><small style='opacity:.7'>Tiền sẽ được hoàn lại cho bạn.</small>",
+    title: "Cancel Order",
+    message: "Are you sure you want to cancel this order?<br><small style='opacity:.7'>Your payment will be refunded.</small>",
     confirm: true,
     onOk: async ()=>{
       const me = JSON.parse(localStorage.getItem("user_profile"));
@@ -1740,15 +1806,15 @@ async function cancelMyOrder(orderId){
 
         if(!data.ok){
           showModal({
-            title:"❌ Không thể huỷ",
-            message: data.message || "Không thể huỷ đơn hàng."
+            title:"Cancellation Failed",
+            message: data.message || "Unable to cancel this order."
           });
           return;
         }
 
         showModal({
-          title:"✅ Đã huỷ đơn",
-          message:"Đơn hàng đã được huỷ và hoàn tiền."
+          title:"Order Cancelled",
+          message:"Your order has been cancelled and refunded."
         });
 
         // ❌ KHÔNG cần loadBooth
@@ -1756,8 +1822,8 @@ async function cancelMyOrder(orderId){
 
       }catch(err){
         showModal({
-          title:"❌ Lỗi",
-          message:"Có lỗi xảy ra, vui lòng thử lại."
+          title:"Error",
+          message:"Something went wrong. Please try again."
         });
       }
     }
@@ -1769,15 +1835,15 @@ async function cancelMyOrder(orderId){
 
 async function contactOrder(orderId){
   showModal({
-    title: "📞 Xác nhận đơn hàng",
-    message: "Bạn đã liên hệ với khách hàng cho đơn này?",
+    title: "Confirm Customer Contact",
+    message: "Have you contacted the customer about this order?",
     confirm: true,          // ✅ BẮT BUỘC
     onOk: async ()=>{       // ✅ ĐÚNG TÊN CALLBACK
       const me = JSON.parse(localStorage.getItem("user_profile"));
       if(!me?.uid){
         showModal({
-          title:"🔐 Yêu cầu đăng nhập",
-          message:"Vui lòng đăng nhập để tiếp tục."
+          title:"Sign In Required",
+          message:"Please sign in to continue."
         });
         return;
       }
@@ -1796,22 +1862,22 @@ async function contactOrder(orderId){
 
         if(!data.ok){
           showModal({
-            title:"❌ Không thể xác nhận",
-            message: data.message || "Thao tác thất bại."
+            title:"Confirmation Failed",
+            message: data.message || "Unable to complete this action."
           });
           return;
         }
 
         showModal({
-          title:"✅ Thành công",
-          message:"Đơn hàng đã chuyển sang trạng thái đã liên hệ."
+          title:"Success",
+          message:"Order status updated to Contacted."
         });
 
         
       }catch(err){
         showModal({
-          title:"⚠️ Lỗi kết nối",
-          message:"Không thể kết nối máy chủ."
+          title:"Connection Error",
+          message:	"Unable to connect to the server."
         });
       }
     }
@@ -1823,15 +1889,15 @@ async function contactOrder(orderId){
 
 async function completeOrder(orderId){
   showModal({
-    title: "✅ Hoàn tất đơn hàng",
-    message: "Xác nhận đơn hàng này đã giao dịch xong?",
+    title: "Complete Order",
+    message: "Confirm that this order has been completed?",
     confirm: true,
     onOk: async ()=>{
       const me = JSON.parse(localStorage.getItem("user_profile"));
       if(!me?.uid){
         showModal({
-          title:"🔐 Yêu cầu đăng nhập",
-          message:"Vui lòng đăng nhập để tiếp tục."
+          title:"Sign In Required",
+          message:"Please sign in to continue."
         });
         return;
       }
@@ -1849,22 +1915,22 @@ async function completeOrder(orderId){
         const data = await res.json();
         if(!data.ok){
           showModal({
-            title:"❌ Không thể hoàn tất",
-            message: data.message || "Thao tác thất bại."
+            title:	"Unable to Complete Order",
+            message: data.message || "Unable to complete this action."
           });
           return;
         }
 
         showModal({
-          title:"🎉 Thành công",
-          message:"Đơn hàng đã được đánh dấu hoàn tất."
+          title:"Success",
+          message:"This order has been marked as completed."
         });
 
         
       }catch(e){
         showModal({
-          title:"⚠️ Lỗi kết nối",
-          message:"Không thể kết nối máy chủ."
+          title:"Connection Error",
+          message:	"Unable to connect to the server."
         });
       }
     }
@@ -1892,8 +1958,8 @@ if (
   // ✅ cho phép xoá
 } else {
   showModal({
-    title: "🔒 Không thể xoá",
-    message: "Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất hoặc đã huỷ."
+    title: 	"History Removal Unavailable",
+    message: "Order history can only be removed after the order is completed or cancelled."
   });
   return;
 }
@@ -1901,8 +1967,8 @@ if (
 
 
   showModal({
-    title: "🗑 Xoá lịch sử đơn hàng",
-    message: "Bạn có chắc chắn muốn xoá đơn hàng này khỏi lịch sử không?",
+    title: "Remove Order History",
+    message: "Are you sure you want to remove this order from your history?",
     confirm: true,
     onOk: async ()=>{
 
@@ -1922,15 +1988,15 @@ if (
 
       if(!data.ok){
         showModal({
-          title:"❌ Không thể xoá",
-          message: data.message || "Không thể xoá lịch sử đơn hàng."
+          title:"Unable to Remove History",
+          message: data.message || "Unable to remove this order from your history."
         });
         return;
       }
 
       showModal({
-        title:"✅ Đã xoá",
-        message:"Đơn hàng đã được xoá khỏi lịch sử."
+        title:"History Removed",
+        message:"The order has been removed from your history."
       });
 
       // ❌ không cần loadBooth
@@ -1943,8 +2009,8 @@ if (
 
 async function markOrderReceived(orderId){
   showModal({
-    title:"📦 Xác nhận nhận hàng",
-    message:"Bạn chắc chắn đã nhận được hàng?",
+    title:"Confirm Delivery",
+    message:"Have you received your order?",
     confirm:true,
     onOk: async ()=>{
       const me = JSON.parse(localStorage.getItem("user_profile"));
@@ -1958,7 +2024,7 @@ async function markOrderReceived(orderId){
       });
       const data = await res.json();
       if(!data.ok){
-        showModal({ title:"❌ Lỗi", message:data.message || "Không thể xác nhận." });
+        showModal({ title:"Error", message:data.message || "Unable to confirm receipt." });
       }
     }
   });
@@ -1968,11 +2034,11 @@ async function markOrderReceived(orderId){
 
 function openDispute(orderId){
   showModal({
-    title:"⚠️ Khiếu nại đơn hàng",
+    title:"Order Dispute",
 
   message: `
   <textarea id="disputeReason"
-    placeholder="Mô tả vấn đề..."
+    placeholder="Describe the issue..."
     style="width:100%;height:80px;margin-bottom:8px"></textarea>
 
   <input type="file"
@@ -1998,7 +2064,10 @@ function openDispute(orderId){
         document.getElementById("disputeReason").value.trim();
 
       if(!reason){
-        showModal({ title:"❌ Lỗi", message:"Vui lòng nhập lý do." });
+        showModal({
+  title: "Reason Required",
+  message: "Please describe the issue before submitting."
+});
         return;
       }
 
@@ -2047,14 +2116,14 @@ const res = await fetch("/api/market/order/dispute",{
 
       const data = await res.json();
       if(!data.ok){
-        showModal({ title:"❌ Lỗi", message:data.message });
+        showModal({ title:"Error", message:data.message });
         return;
       }
 
-      showModal({
-        title:"📨 Đã gửi",
-        message:"Khiếu nại đã được gửi, chờ admin xử lý."
-      });
+showModal({
+  title: "Dispute Submitted",
+  message: "Your dispute has been submitted and is awaiting administrator review."
+});
     }
   });
 

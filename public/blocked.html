@@ -1,11 +1,11 @@
 
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport"
       content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Danh sách chặn | Livestream Pro</title>
+<title>Blocked Users | Livestream Pro</title>
 
 <script src="/lsp-page-transition.js"></script>
 
@@ -1074,7 +1074,7 @@ button:disabled {
       <button class="block-back"
               type="button"
               onclick="goBlockedBack()"
-              aria-label="Quay lại">
+              aria-label="Back to Friends">
         <svg class="bi">
           <use href="#bk-back"></use>
         </svg>
@@ -1089,7 +1089,7 @@ button:disabled {
           <span>LIVESTREAM PRO</span>
         </div>
 
-        <h1>Danh sách chặn</h1>
+        <h1>Blocked Users</h1>
 
         <div class="block-heading-line"></div>
 
@@ -1115,21 +1115,21 @@ button:disabled {
         </div>
 
         <div class="intro-text">
-          <div class="intro-kicker">QUẢN LÝ TƯƠNG TÁC</div>
+          <div class="intro-kicker">PRIVACY MANAGEMENT</div>
 
           <div class="intro-title">
-            Danh sách chặn
+            Blocked Users
           </div>
 
           <div class="intro-desc">
-            Quản lý các tài khoản bạn đã chặn
+            Manage the accounts you have blocked
           </div>
         </div>
 
       </div>
 
       <div class="intro-bottom">
-        <span>Tổng số tài khoản đã chặn</span>
+        <span>Total Blocked Accounts</span>
 
         <div class="block-count">
           <svg class="bi">
@@ -1152,10 +1152,10 @@ button:disabled {
         <input
           id="blockedSearchInput"
           type="search"
-          placeholder="Tìm tài khoản bị chặn..."
+          placeholder="Search blocked users..."
           autocomplete="off"
           oninput="filterBlocked()"
-          aria-label="Tìm tài khoản bị chặn"
+          aria-label="Search Blocked Users"
         >
 
       </label>
@@ -1167,7 +1167,7 @@ button:disabled {
         <use href="#bk-shield"></use>
       </svg>
 
-      <h2>Tài khoản đã chặn</h2>
+      <h2>Blocked Accounts</h2>
 
       <span class="block-section-count"
             id="visibleBlockedCount">0</span>
@@ -1176,7 +1176,7 @@ button:disabled {
     <!-- LIST -->
     <div id="blockList">
       <div class="block-empty">
-        <div class="empty-title">Đang tải danh sách...</div>
+        <div class="empty-title">Loading blocked users...</div>
       </div>
     </div>
 
@@ -1202,25 +1202,25 @@ button:disabled {
       </svg>
     </div>
 
-    <div class="modal-title" id="unblockTitle">
-      Xác nhận bỏ chặn
-    </div>
+<div class="modal-title" id="unblockTitle">
+  Unblock This User?
+</div>
 
     <div class="modal-desc" id="unblockMessage"></div>
 
     <div class="modal-buttons">
 
-      <button type="button"
-              class="modal-btn modal-cancel"
-              onclick="closeUnblockModal()">
-        Hủy bỏ
-      </button>
+<button type="button"
+        class="modal-btn modal-cancel"
+        onclick="closeUnblockModal()">
+  Cancel
+</button>
 
-      <button type="button"
-              class="modal-btn modal-confirm"
-              id="confirmUnblockBtn">
-        Bỏ chặn
-      </button>
+<button type="button"
+        class="modal-btn modal-confirm"
+        id="confirmUnblockBtn">
+  Unblock
+</button>
 
     </div>
 
@@ -1257,7 +1257,7 @@ let selectedUnblock = null;
    BLOCKED - SMOOTH PAGE NAVIGATION
 ========================================== */
 
-function navigateBlocked(url, label = "Đang chuyển trang...") {
+function navigateBlocked(url, label = "Loading Page...") {
 
   if (window.LSPTransition?.go) {
 
@@ -1306,7 +1306,7 @@ function goBlockedBack() {
 
   navigateBlocked(
     "/friends.html",
-    "Đang quay lại Danh sách bạn bè..."
+    "Opening Friends..."
   );
 
 }
@@ -1342,7 +1342,7 @@ async function loadBlocked() {
     );
 
     if (!response.ok) {
-      throw new Error("Không thể tải danh sách chặn");
+      throw new Error("Unable to load the blocked users list.");
     }
 
     const data = await response.json();
@@ -1359,10 +1359,10 @@ async function loadBlocked() {
   } catch (error) {
     console.error("Lỗi danh sách chặn:", error);
 
-    showToast(
-      "Không thể tải danh sách chặn",
-      "error"
-    );
+showToast(
+  "Failed to load blocked users.",
+  "error"
+);
 
     const box = document.getElementById("blockList");
 
@@ -1370,7 +1370,8 @@ async function loadBlocked() {
 
     const empty = document.createElement("div");
     empty.className = "block-empty";
-    empty.textContent = "Không thể tải dữ liệu. Vui lòng tải lại trang.";
+    empty.textContent =
+  "Unable to load data. Please refresh the page.";
 
     box.appendChild(empty);
   }
@@ -1398,21 +1399,28 @@ function createBlockedCard(user) {
         <span class="block-level-text"></span>
       </div>
 
-      <div class="block-status">
-        Đã chặn
-      </div>
+<div class="block-status">
+  Blocked
+</div>
 
     </div>
 
-    <div class="block-actions">
-      <button class="btn-unblock" type="button">
-        ${blockIcon("unlock")}
-        <span>Bỏ chặn</span>
-      </button>
-    </div>
+<div class="block-actions">
+
+  <button
+    class="btn-unblock"
+    type="button">
+
+    ${blockIcon("unlock")}
+
+    <span>Unblock</span>
+
+  </button>
+
+</div>
   `;
 
-  const name = String(user.name || "Người dùng");
+  const name = String(user.name || "User");
   const uid = String(user.uid || "");
 
   row.querySelector(".block-name-text").textContent = name;
@@ -1425,7 +1433,7 @@ function createBlockedCard(user) {
     const badge = document.createElement("span");
 
     badge.className = "verified";
-    badge.title = "Đã xác minh";
+    badge.title = "Verified Account";
     badge.innerHTML = blockIcon("verified");
 
     row.querySelector(".block-name").appendChild(badge);
@@ -1437,7 +1445,7 @@ function createBlockedCard(user) {
   if (src) {
     const img = new Image();
 
-    img.alt = "Ảnh đại diện " + name;
+    img.alt = "Profile picture of " + name;
     img.loading = "lazy";
 
     img.onload = () => {
@@ -1451,10 +1459,10 @@ function createBlockedCard(user) {
   /* ACTION */
   const button = row.querySelector(".btn-unblock");
 
-  button.setAttribute(
-    "aria-label",
-    "Bỏ chặn " + name
-  );
+button.setAttribute(
+  "aria-label",
+  "Unblock " + name
+);
 
   button.onclick = () => {
     unblock(uid, name);
@@ -1489,15 +1497,19 @@ function renderBlocked(list) {
       <div class="empty-desc"></div>
     `;
 
-    empty.querySelector(".empty-title").textContent =
-      hasQuery
-        ? "Không tìm thấy tài khoản"
-        : "Danh sách chặn đang trống";
+/* ==========================================
+   EMPTY BLOCKED LIST - ENGLISH
+========================================== */
 
-    empty.querySelector(".empty-desc").textContent =
-      hasQuery
-        ? "Không có tài khoản nào khớp với từ khóa tìm kiếm."
-        : "Hiện tại bạn chưa chặn tài khoản nào.";
+empty.querySelector(".empty-title").textContent =
+  hasQuery
+    ? "No Users Found"
+    : "Your Blocked List Is Empty";
+
+empty.querySelector(".empty-desc").textContent =
+  hasQuery
+    ? "No blocked users match your search."
+    : "You haven't blocked any users yet.";
 
     box.appendChild(empty);
     return;
@@ -1542,8 +1554,8 @@ function unblock(uid, name) {
     name: String(name)
   };
 
-  document.getElementById("unblockMessage").textContent =
-    `Bạn có chắc muốn bỏ chặn ${selectedUnblock.name}?`;
+document.getElementById("unblockMessage").textContent =
+  `Are you sure you want to unblock ${selectedUnblock.name}?`;
 
   document.getElementById("unblockModal")
     .classList.add("show");
@@ -1566,10 +1578,10 @@ document.getElementById("confirmUnblockBtn")
     if (!selectedUnblock) return;
 
     if (!socket.connected) {
-      showToast(
-        "Mất kết nối máy chủ. Vui lòng thử lại.",
-        "error"
-      );
+showToast(
+  "Connection lost. Please try again.",
+  "error"
+);
       return;
     }
 
@@ -1579,10 +1591,10 @@ document.getElementById("confirmUnblockBtn")
 
     closeUnblockModal();
 
-    showToast(
-      "Đã gửi yêu cầu bỏ chặn",
-      "info"
-    );
+showToast(
+  "Unblock request sent successfully.",
+  "info"
+);
 
     // Làm mới danh sách từ server
     setTimeout(loadBlocked, 500);
@@ -1604,10 +1616,10 @@ socket.on("system-notify", data => {
   if (!data) return;
 
   if (data.type === "topup") {
-    showToast(
-      data.text || "Bạn vừa được nạp coin",
-      "success"
-    );
+showToast(
+  data.text || "Coins have been added to your account.",
+  "success"
+);
     return;
   }
 
@@ -1616,10 +1628,10 @@ socket.on("system-notify", data => {
   }
 
   if (data.type === "lock") {
-    showToast(
-      data.reason || "Tài khoản của bạn đã bị khóa",
-      "error"
-    );
+showToast(
+  data.reason || "Your account has been locked.",
+  "error"
+);
 
     clearBlockedLogin();
 
@@ -1664,8 +1676,8 @@ function showWithdrawNotify(data) {
 }
 
 function notifyWithdraw(data) {
-  const text = data?.text ||
-    "Tài khoản của bạn vừa bị trừ coin";
+const text = data?.text ||
+  "Coins have been deducted from your account.";
 
   if (typeof openSysModal === "function") {
     openSysModal(text);
@@ -1702,15 +1714,14 @@ function showForceLogoutModal(message) {
           ${blockIcon("shield")}
         </div>
 
-        <div class="fl-title">
-          Phiên đăng nhập kết thúc
-        </div>
-
+<div class="fl-title">
+  Session Ended
+</div>
         <div class="fl-msg"></div>
 
-        <div class="fl-sub">
-          Bạn sẽ được chuyển về trang đăng nhập…
-        </div>
+<div class="fl-sub">
+  You will be redirected to the login page...
+</div>
       </div>
     `;
 
@@ -1724,8 +1735,8 @@ function showForceLogoutModal(message) {
 }
 
 socket.on("force-logout", data => {
-  const message = data?.message ||
-    "Tài khoản của bạn đã bị đăng xuất";
+ const message = data?.message ||
+  "You have been signed out.";
 
   showForceLogoutModal(message);
 

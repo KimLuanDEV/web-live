@@ -1,9 +1,9 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Gian hàng</title>
+<title>Booth | Livestream Pro</title>
 <link rel="stylesheet" href="/style.css">
 
 <style>
@@ -1993,7 +1993,7 @@ body.booth-page .fl-kicker {
     <button type="button"
             class="booth-back"
             id="btnBack"
-            aria-label="Quay lại Market">
+            aria-label="Back to Marketplace">
      <span>Market</span>
     </button>
 
@@ -2002,7 +2002,7 @@ body.booth-page .fl-kicker {
       <div class="booth-logo-frame">
         <img id="boothLogo"
              class="booth-logo"
-             alt="Logo gian hàng">
+             alt="Booth Logo">
       </div>
 
       <div class="booth-identity">
@@ -2014,7 +2014,7 @@ body.booth-page .fl-kicker {
         </div>
 
         <div id="boothName" class="booth-name">
-          Gian hàng
+          Booth
         </div>
 
       </div>
@@ -2024,7 +2024,7 @@ body.booth-page .fl-kicker {
     <button type="button"
             id="btnExtendBooth"
             class="booth-extend hidden">
-      Gia hạn
+      Extend
     </button>
 
   </header>
@@ -2045,12 +2045,12 @@ body.booth-page .fl-kicker {
         EXCLUSIVE COLLECTION
       </div>
 
-      <h1>Danh mục sản phẩm</h1>
+<h1>Product Collection</h1>
 
-      <p>
-        Khám phá các sản phẩm được giới thiệu
-        tại gian hàng.
-      </p>
+<p>
+  Discover the products available
+  in this booth.
+</p>
 
     </div>
 
@@ -2060,21 +2060,21 @@ body.booth-page .fl-kicker {
       <button type="button"
               class="tab active"
               data-tab="products">
-        Sản phẩm
+        Products
       </button>
 
       <button type="button"
               class="tab hidden"
               data-tab="orders"
               id="tabOrders">
-        Quản lý đơn
+        Manage Orders
       </button>
 
       <button type="button"
               class="tab hidden"
               data-tab="myOrders"
               id="tabMyOrders">
-        Đơn của tôi
+        My Orders
       </button>
 
     </div>
@@ -2094,7 +2094,7 @@ body.booth-page .fl-kicker {
 
       <div id="orderEmpty"
            class="empty-text hidden">
-        Chưa có đơn hàng nào.
+        No orders yet.
       </div>
 
     </div>
@@ -2107,7 +2107,7 @@ body.booth-page .fl-kicker {
 
       <div id="myOrderEmpty"
            class="empty-text hidden">
-        Bạn chưa có đơn hàng nào.
+        You haven't placed any orders yet.
       </div>
 
     </div>
@@ -2115,7 +2115,7 @@ body.booth-page .fl-kicker {
     <!-- PRODUCT EMPTY STATE -->
     <div class="empty-text hidden"
          id="emptyText">
-      Gian hàng hiện chưa có sản phẩm nào.
+      No products are available in this booth yet.
     </div>
 
   </main>
@@ -2126,7 +2126,7 @@ body.booth-page .fl-kicker {
 <button type="button"
         class="add-product hidden"
         id="btnAddProduct">
-  Đăng sản phẩm
+  Add Product
 </button>
 
 
@@ -2140,20 +2140,20 @@ body.booth-page .fl-kicker {
 <div id="addProductModal" class="modal-backdrop hidden">
   <div class="rent-modal">
     <div class="rent-header">
-      <b id="productModalTitle">Thêm sản phẩm</b>
+      <b id="productModalTitle">Add Product</b>
      <button type="button"
         class="bt-text-close"
         onclick="closeAddProduct()">
-  Đóng
+   Close
 </button>
     </div>
 
     <div class="rent-body">
-      <input id="pName" placeholder="Tên sản phẩm">
+      <input id="pName" placeholder="Product Name">
     <input id="pPrice"
        type="number"
        min="0"
-       placeholder="Giá bán (kim cương)">
+       placeholder="Price (Diamonds)">
       <input type="file" id="pImageFile" accept="image/*" multiple>
 
 <img id="pImagePreview"
@@ -2174,14 +2174,14 @@ body.booth-page .fl-kicker {
 </div>
 
 
-      <textarea id="pDesc" placeholder="Mô tả"></textarea>
-      <input id="pStock" type="number" placeholder="Số lượng">
+      <textarea id="pDesc" placeholder="Product Description"></textarea>
+      <input id="pStock" type="number"placeholder="Stock Quantity">
 
 
 
 <div id="uploadProgressWrap" class="hidden">
   <div id="uploadProgressText">
-  Đang tải ảnh... 0%
+  Uploading images... 0%
 </div>
   <div class="upload-bar">
     <div id="uploadProgressBar"></div>
@@ -2190,7 +2190,7 @@ body.booth-page .fl-kicker {
 
 
 <button class="rent-confirm" id="btnSubmitProduct">
-  Đăng bán
+  Publish Product
 </button>
 
 
@@ -2205,11 +2205,11 @@ body.booth-page .fl-kicker {
 <div id="globalModal" class="modal-backdrop hidden">
   <div class="rent-modal">
     <div class="rent-header">
-      <b id="globalModalTitle">Thông báo</b>
+      <b id="globalModalTitle">Notification</b>
       <button type="button"
         class="bt-text-close"
         onclick="closeGlobalModal()">
-  Đóng
+  Close
 </button>
     </div>
 
@@ -2218,11 +2218,11 @@ body.booth-page .fl-kicker {
     </div>
 
     <div class="rent-actions" style="display:flex;gap:10px;margin-top:14px">
-      <button id="globalCancelBtn"
+<button id="globalCancelBtn"
         class="rent-confirm"
         style="flex:1;background:#333;display:none">
-        Huỷ
-      </button>
+  Cancel
+</button>
       <button id="globalOkBtn"
         class="rent-confirm"
         style="flex:1">
@@ -2251,7 +2251,7 @@ body.booth-page .fl-kicker {
         <div class="booth-modal-kicker">
           SECURE PURCHASE
         </div>
-        <b>Thông tin mua hàng</b>
+       <b>Purchase Details</b>
       </div>
 
 <button type="button"
@@ -2264,44 +2264,44 @@ body.booth-page .fl-kicker {
 
     <div class="rent-body booth-buy-form">
 
-      <p class="booth-form-intro">
-        Điền thông tin để chủ gian hàng liên hệ
-        và xác nhận đơn hàng.
-      </p>
+<p class="booth-form-intro">
+  Please provide your details so the seller
+  can contact you and confirm your order.
+</p>
 
-      <label for="buyName">HỌ VÀ TÊN</label>
+      <label for="buyName">FULL NAME</label>
       <input id="buyName"
              type="text"
              autocomplete="name"
-             placeholder="Nhập họ và tên">
+             placeholder="Enter your full name">
 
-      <label for="buyPhone">SỐ ĐIỆN THOẠI</label>
+      <label for="buyPhone">PHONE NUMBER</label>
       <input id="buyPhone"
              type="tel"
              autocomplete="tel"
-             placeholder="Nhập số điện thoại">
+             placeholder="Enter your phone number">
 
-      <label for="buyAddress">ĐỊA CHỈ NHẬN HÀNG</label>
+      <label for="buyAddress">DELIVERY ADDRESS</label>
       <input id="buyAddress"
              type="text"
              autocomplete="street-address"
-             placeholder="Nhập địa chỉ nhận hàng">
+             placeholder="Enter your delivery address">
 
-      <label for="buyQty">SỐ LƯỢNG</label>
+      <label for="buyQty">QUANTITY</label>
       <input id="buyQty"
              type="number"
              min="1"
              step="1"
              value="1">
 
-      <label for="buyNote">GHI CHÚ</label>
+      <label for="buyNote">ORDER NOTES</label>
       <textarea id="buyNote"
-                placeholder="Thông tin bổ sung cho gian hàng"></textarea>
+                placeholder="Additional instructions for the seller"></textarea>
 
       <button type="button"
               class="rent-confirm"
               onclick="submitBuyForm()">
-        Xác nhận đặt hàng
+        CONFIRM ORDER
       </button>
 
     </div>
@@ -2317,11 +2317,11 @@ body.booth-page .fl-kicker {
 <div id="galleryModal" class="modal-backdrop hidden">
   <div class="rent-modal" style="max-width:none;width:100%;height:100%;border-radius:0;background:#000">
     <div class="rent-header">
-      <b id="galleryTitle">Ảnh sản phẩm</b>
+      <b id="galleryTitle">Product Gallery</b>
       <button type="button"
         class="bt-text-close"
         onclick="closeGallery()">
-  Đóng
+  Close
 </button>
     </div>
 
