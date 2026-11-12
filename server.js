@@ -456,7 +456,7 @@ f.fireAt  = Date.now();
         // 🔔 Emit realtime cho user
 emitToUser(uid,"factory-fire",{
   index,
-  message:"🔥 A fire has broken out at your factory!"
+  message:"A fire has broken out at your factory!"
 });
 
       }
@@ -1333,7 +1333,7 @@ function blockSocketIfBoothLocked(socket, boothId) {
 if (blockIfBoothLockedById(boothId, uid)) {
   socket.emit("booth-locked", {
     boothId,
-    message: "🚫 This booth has been locked by an admin"
+    message: "This booth has been locked by an admin"
   });
     return true;
   }
@@ -6716,7 +6716,7 @@ function kickOldSessions(uid, newSocket) {
     // ❌ KHÁC THIẾT BỊ → KICK
     s.emit("force-logout", {
       reason: "logged_in_elsewhere",
-      message: "⚠️ Connection error. Please check your internet connection!"
+      message: "Connection error. Please check your internet connection!"
     });
 
     s.disconnect(true);
@@ -7135,7 +7135,7 @@ const remainMs = rpsRound.endAt - now;
 if (remainMs <= RPS_BET_LOCK_BEFORE_MS) {
   return res.json({
     ok: false,
-    message: "⛔ The betting period has ended"
+    message: "The betting period has ended"
   });
 }
 
@@ -7398,7 +7398,7 @@ app.post("/api/invest/close-early", (req, res) => {
     if (!order.entryTime || Date.now() - order.entryTime < 10_000) {
       return res.json({
         ok:false,
-        message:"⏳ You can close your position only after 10 seconds"
+        message:"You can close your position only after 10 seconds"
       });
     }
 
@@ -8075,7 +8075,7 @@ app.post("/api/invest", (req, res) => {
         investRound.closedEarly.includes(uid)) {
       return res.json({
         ok:false,
-        message:"⛔ You have already closed a position early in this round. Please wait for the next round."
+        message:"You have already closed a position early in this round. Please wait for the next round."
       });
     }
 
@@ -8091,7 +8091,7 @@ app.post("/api/invest", (req, res) => {
     if (investRound.orders.some(o => o.uid === uid)) {
       return res.json({
         ok:false,
-        message:"⛔ You have already placed an order in this round"
+        message:"You have already placed an order in this round"
       });
     }
 
@@ -8102,7 +8102,7 @@ app.post("/api/invest", (req, res) => {
     if (leftSec <= 5) {
       return res.json({
         ok:false,
-        message:"⏳ This round is about to end"
+        message:"This round is about to end"
       });
     }
 
@@ -8116,7 +8116,7 @@ app.post("/api/invest", (req, res) => {
     if (me.profile.coins < coin) {
       return res.json({
         ok:false,
-        message:"💎 Insufficient coins"
+        message:"Insufficient coins"
       });
     }
 
