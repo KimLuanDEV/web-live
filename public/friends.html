@@ -6,6 +6,10 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <title>Bạn bè | Livestream Pro</title>
 
+
+<script src="/lsp-page-transition.js"></script>
+
+
 <style>
 :root {
   color-scheme: dark;
@@ -1250,13 +1254,30 @@ svg { display: block; }
   </main>
 </div>
 
+
+<!-- ==========================================
+     OPEN BLOCKED PAGE - SMOOTH TRANSITION
+========================================== -->
+
 <div class="bottom-wrap">
-  <button class="btn-blocked-fixed"
-          onclick="location.href='/blocked.html'">
-    <svg class="fi"><use href="#f-ban"/></svg>
+
+  <button
+    type="button"
+    class="btn-blocked-fixed"
+    data-lsp-href="/blocked.html"
+    data-lsp-label="Đang mở Danh sách chặn..."
+  >
+
+    <svg class="fi">
+      <use href="#f-ban"></use>
+    </svg>
+
     Danh sách chặn
+
   </button>
+
 </div>
+
 
 
 
@@ -1332,6 +1353,30 @@ svg { display: block; }
 <script>
 const socket = io();
 const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
+
+
+
+/* ==========================================
+   FRIENDS - SMOOTH PAGE NAVIGATION
+========================================== */
+
+function navigateFriends(url, label = "Đang chuyển trang...") {
+
+  if (window.LSPTransition?.go) {
+
+    LSPTransition.go(url, {
+      label: label
+    });
+
+  } else {
+
+    window.location.href = url;
+
+  }
+
+}
+
+
 
 let __searchOpen = true;
 let __lastData = { requests: [], friends: [] };
@@ -1526,25 +1571,68 @@ function applySearch() {
 
 /* ===== CÁC CHỨC NĂNG CŨ ===== */
 
+/* ==========================================
+   FRIENDS NAVIGATION
+   LIVESTREAM PRO PAGE TRANSITION
+========================================== */
+
+// QUAY LẠI PROFILE
 function goBack() {
-  if (history.length > 1) history.back();
-  else location.href = "/profile.html";
+
+  navigateFriends(
+    "/profile.html",
+    "Đang quay lại Hồ sơ cá nhân..."
+  );
+
 }
 
+
+// XEM HỒ SƠ NGƯỜI CHƠI
 function openProfile(uid) {
-  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+
+  if (!uid) return;
+
+  const url =
+    "/profile.html?uid=" + encodeURIComponent(uid);
+
+  navigateFriends(
+    url,
+    "Đang mở hồ sơ người chơi..."
+  );
+
 }
 
+
+// PHẢN HỒI LỜI MỜI KẾT BẠN
+// GIỮ NGUYÊN CHỨC NĂNG CŨ
 function respond(uid, accept) {
-  socket.emit("friend-respond", { from: uid, accept });
+
+  socket.emit("friend-respond", {
+    from: uid,
+    accept
+  });
+
   setTimeout(loadFriends, 400);
+
 }
 
+
+// MỞ CUỘC TRÒ CHUYỆN
 function chat(uid, name) {
+
+  if (!uid) return;
+
+  // Giữ nguyên dữ liệu người nhận
   localStorage.setItem("chat_to_uid", uid);
   localStorage.setItem("chat_to_name", name);
-  location.href = "/messages.html";
+
+  navigateFriends(
+    "/messages.html",
+    "Đang mở cuộc trò chuyện..."
+  );
+
 }
+
 
 
 /* ==========================================
