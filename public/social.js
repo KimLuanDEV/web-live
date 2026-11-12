@@ -1375,21 +1375,76 @@ ${child.text}
 }
 }
 
-document.querySelectorAll(".lp-tab").forEach(t=>t.classList.remove("active"));
-document.querySelector('.lp-tab[data-tab="social"]').classList.add("active");
 
-document.querySelectorAll(".lp-tab").forEach(tab=>{
-  tab.onclick = ()=>{
+/* ==========================================
+   SOCIAL TAB BAR
+   LIVESTREAM PRO SMOOTH TRANSITION
+========================================== */
+
+document.querySelectorAll(".lp-tab").forEach(tab => {
+  tab.classList.remove("active");
+});
+
+document.querySelector(
+  '.lp-tab[data-tab="social"]'
+)?.classList.add("active");
+
+
+document.querySelectorAll(".lp-tab").forEach(tab => {
+
+  tab.onclick = () => {
+
     const t = tab.dataset.tab;
 
-    if(t === "social") location.href="/social.html";
-    if(t === "lobby") location.href="/lobby.html";
-    if(t === "messages") location.href="/messages.html";
-    if(t === "profile") location.href="/profile.html";
-    if(t === "market") location.href="/market.html";
+    // Không tải lại trang hiện tại
+    if (t === "social") return;
+
+    const routes = {
+
+      market: {
+        url: "/market.html",
+        label: "Đang mở Market..."
+      },
+
+      lobby: {
+        url: "/lobby.html",
+        label: "Đang mở Sảnh LIVE..."
+      },
+
+      messages: {
+        url: "/messages.html",
+        label: "Đang mở Tin nhắn..."
+      },
+
+      profile: {
+        url: "/profile.html",
+        label: "Đang mở Hồ sơ cá nhân..."
+      }
+
+    };
+
+    const route = routes[t];
+
+    if (!route) return;
+
+    // Có hiệu ứng chung
+    if (window.LSPTransition?.go) {
+
+      LSPTransition.go(route.url, {
+        label: route.label
+      });
+
+    } else {
+
+      // Dự phòng khi file hiệu ứng chưa tải
+      window.location.href = route.url;
+
+    }
 
   };
+
 });
+
 
 
 
@@ -2334,10 +2389,33 @@ socket.on("lp-gift-post", ({ postId, total, fromUid, amount }) => {
 
 
 
-function openUserProfile(uid){
-  if(!uid) return;
-  location.href = "/profile.html?uid=" + encodeURIComponent(uid);
+
+/* ==========================================
+   OPEN USER PROFILE
+   SMOOTH PAGE TRANSITION
+========================================== */
+
+function openUserProfile(uid) {
+
+  if (!uid) return;
+
+  const url =
+    "/profile.html?uid=" + encodeURIComponent(uid);
+
+  if (window.LSPTransition?.go) {
+
+    LSPTransition.go(url, {
+      label: "Đang mở hồ sơ người chơi..."
+    });
+
+  } else {
+
+    window.location.href = url;
+
+  }
+
 }
+
 
 
 socket.on("system-notify", data => {

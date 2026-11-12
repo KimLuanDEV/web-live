@@ -21,6 +21,28 @@ const KEY = "user_profile";
 
 
 
+/* ==========================================
+   PROFILE - SMOOTH PAGE NAVIGATION
+========================================== */
+
+function navigateProfilePage(url, label = "Đang mở trang mới...") {
+
+  if (
+    window.LSPTransition &&
+    typeof window.LSPTransition.go === "function"
+  ) {
+
+    return window.LSPTransition.go(url, {
+      label
+    });
+
+  }
+
+  // Dự phòng nếu file hiệu ứng chưa tải
+  window.location.href = url;
+
+}
+
 
 
 // 👥 / 💬 PROFILE ACTION VISIBILITY (FIX DỨT ĐIỂM)
@@ -246,16 +268,37 @@ if (btnFriendPending) {
   }
 
 
-// 💬 NHẮN TIN RIÊNG (CHỈ KHI ĐÃ LÀ BẠN)
+
+/* ==========================================
+   PRIVATE MESSAGE TRANSITION
+========================================== */
+
 if (btnMsgFriend) {
+
   btnMsgFriend.onclick = () => {
+
     if (btnMsgFriend.disabled) {
-      showMsg("🔒 Chỉ có thể nhắn tin khi đã là bạn");
+
+      showMsg(
+        "🔒 Chỉ có thể nhắn tin khi đã là bạn"
+      );
+
       return;
     }
-    location.href = "/messages.html?to=" + encodeURIComponent(viewUid);
+
+    const url =
+      "/messages.html?to=" +
+      encodeURIComponent(viewUid);
+
+    navigateProfilePage(
+      url,
+      "Đang mở cuộc trò chuyện..."
+    );
+
   };
+
 }
+
 
 
   
@@ -505,7 +548,10 @@ if (btnWithdrawFromSheet) {
     }
 
     // 👉 chuyển sang trang rút tiền
-    location.href = `/withdraw.html?received=${received}`;
+    navigateProfilePage(
+  `/withdraw.html?received=${received}`,
+  "Đang mở trang Rút kim cương..."
+);
   };
 }
 
@@ -527,7 +573,10 @@ if (btnWithdraw) {
     }
 
     // 👉 mở trang rút tiền
-    location.href = `/withdraw.html?received=${received}`;
+    navigateProfilePage(
+  `/withdraw.html?received=${received}`,
+  "Đang mở trang Rút kim cương..."
+);
   };
 }
 
@@ -543,7 +592,10 @@ if (btnInvest) {
       return;
     }
 
-    location.href = "/invest.html";
+    navigateProfilePage(
+  "/invest.html",
+  "Đang mở Thị trường đầu tư..."
+);
   };
 }
 
@@ -560,9 +612,10 @@ if (btnTopupCoin) {
       return;
     }
 
-    // 👉 chuyển sang trang nạp coin
-    location.href = "/topup.html"; 
-    // ⬆️ đổi path nếu bạn dùng tên khác
+navigateProfilePage(
+  "/topup.html",
+  "Đang mở trang Nạp kim cương..."
+);
   };
 }
 
@@ -899,12 +952,23 @@ setTimeout(() => {
 
 }
 
-const btnMessages = document.getElementById("btnMessages");
-if(btnMessages){
+
+const btnMessages =
+  document.getElementById("btnMessages");
+
+if (btnMessages) {
+
   btnMessages.onclick = () => {
-    window.location.href = "/messages.html";
+
+    navigateProfilePage(
+      "/messages.html",
+      "Đang mở Tin nhắn..."
+    );
+
   };
+
 }
+
 
 
 function resizeImageTo512(file) {
@@ -1210,29 +1274,54 @@ function closeMsg() {
 
 
 
-// ===== MOBILE TAB BAR (PROFILE) =====
-document.querySelectorAll(".tab-item").forEach(tab=>{
-  tab.onclick = ()=>{
+
+/* ==========================================
+   PROFILE MOBILE TAB BAR
+   SMOOTH PAGE TRANSITION
+========================================== */
+
+document.querySelectorAll(".tab-item").forEach(tab => {
+
+  tab.onclick = () => {
+
     const type = tab.dataset.tab;
 
-    if(type === "profile") return;
+    // Đang ở trang Profile
+    if (type === "profile") return;
 
-    if(type === "lobby"){
-      location.href = "/lobby.html";
-    }
+    // Nút Settings sử dụng xử lý riêng
+    if (!type) return;
 
-    if(type === "chat"){
+    const routes = {
 
-      location.href = "/messages.html";
-    }
+      lobby: {
+        url: "/lobby.html",
+        label: "Đang mở Sảnh LIVE..."
+      },
 
-    if(type === "hot"){
+      chat: {
+        url: "/messages.html",
+        label: "Đang mở Tin nhắn..."
+      },
 
-     location.href = "/social.html";
-    }
+      hot: {
+        url: "/social.html",
+        label: "Đang mở Bảng tin..."
+      }
 
+    };
+
+    const route = routes[type];
+
+    if (!route) return;
+
+    navigateProfilePage(
+      route.url,
+      route.label
+    );
 
   };
+
 });
 
 
