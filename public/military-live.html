@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
@@ -302,7 +302,7 @@ video {
   transform: scale(.92);
 }
 
-/* Khi khung bình luận đang mở */
+/* When the comment panel is open */
 
 .w8-chat-toggle.active {
   background: linear-gradient(
@@ -315,7 +315,7 @@ video {
   border-color: #e2ad73;
 }
 
-/* Số bình luận chưa xem */
+/* Unread comment count */
 
 .w8-chat-unread {
   position: absolute;
@@ -345,7 +345,7 @@ video {
 }
 
 /* =====================================
-   CHAT PANEL ĐÓNG / MỞ
+   CHAT PANEL OPEN / CLOSE
 ===================================== */
 
 .w8-viewer-chat {
@@ -387,9 +387,9 @@ video {
 
 <main>
 
-  <div id="status">
-    Đang kết nối...
-  </div>
+<div id="status">
+  Connecting...
+</div>
 
   <div class="video-wrap">
     <video
@@ -402,21 +402,21 @@ video {
 
 <img
   id="screenFrame"
-  alt="Màn hình game đang chia sẻ"
+  alt="Shared game screen"
   hidden>
 
 
   </div>
 
-  <button class="fullscreen-btn"
-          onclick="fullScreen()">
-    ⛶ TOÀN MÀN HÌNH
-  </button>
+<button class="fullscreen-btn"
+        onclick="fullScreen()">
+  ⛶ FULL SCREEN
+</button>
 
-  <div class="note">
-    Bạn đang xem màn hình được chia sẻ trực tiếp.
-    Chế độ chỉ xem, không thể điều khiển game.
-  </div>
+<div class="note">
+  You are watching a live screen share.
+  View-only mode. You cannot control the game.
+</div>
 
 
 
@@ -429,7 +429,7 @@ video {
 ================================== -->
 
 
-<!-- NÚT ĐÓNG / MỞ BÌNH LUẬN -->
+<!-- OPEN / CLOSE COMMENTS -->
 <button
   id="w8ChatToggle"
   class="w8-chat-toggle"
@@ -437,7 +437,7 @@ video {
   onclick="w8ToggleChat()"
   aria-controls="w8ViewerChat"
   aria-expanded="false"
-  aria-label="Mở bình luận">
+  aria-label="Open comments">
 
   <span id="w8ChatIcon">💬</span>
 
@@ -448,15 +448,14 @@ video {
 
 </button>
 
-<!-- KHUNG BÌNH LUẬN MẶC ĐỊNH ẨN -->
+<!-- COMMENT PANEL HIDDEN BY DEFAULT -->
 <div
   id="w8ViewerChat"
   class="w8-viewer-chat"
   hidden>
 
-
   <div class="w8-chat-header">
-    <span>💬 BÌNH LUẬN TRỰC TIẾP</span>
+    <span>💬 LIVE COMMENTS</span>
     <span class="w8-chat-live">● LIVE</span>
   </div>
 
@@ -467,28 +466,28 @@ video {
 
   <form id="w8CommentForm" autocomplete="off">
 
-    <input
-      id="w8CommentName"
-      type="text"
-      maxlength="20"
-      placeholder="Tên hiển thị"
-      aria-label="Tên hiển thị">
+<input
+  id="w8CommentName"
+  type="text"
+  maxlength="20"
+  placeholder="Display name"
+  aria-label="Display name">
 
-    <div class="w8-comment-send-row">
+<div class="w8-comment-send-row">
 
-      <input
-        id="w8CommentInput"
-        type="text"
-        maxlength="120"
-        placeholder="Nhập bình luận..."
-        aria-label="Nội dung bình luận"
-        required>
+  <input
+    id="w8CommentInput"
+    type="text"
+    maxlength="120"
+    placeholder="Write a comment..."
+    aria-label="Comment"
+    required>
 
-      <button
-        id="w8CommentSend"
-        type="submit">
-        ➤ GỬI
-      </button>
+  <button
+    id="w8CommentSend"
+    type="submit">
+    ➤ SEND
+  </button>
 
     </div>
 
@@ -564,17 +563,17 @@ async function getIce() {
   ];
 }
 
-// Kết nối server và vào phiên xem
+// Connect to the server and join the viewing session
 socket.on("connect", async () => {
 
   closePeer();
 
   if (!/^[a-f0-9]{36}$/.test(token)) {
-    setStatus("Link chia sẻ không hợp lệ.");
+    setStatus("Invalid sharing link.");
     return;
   }
 
-  setStatus("Đang kết nối với người chia sẻ...");
+  setStatus("Connecting to the broadcaster...");
 
   iceServers = await getIce();
 
@@ -585,29 +584,29 @@ socket.on("connect", async () => {
     { token },
     (err, reply) => {
 
-      if (err || !reply?.ok) {
-        setStatus(
-          reply?.error || "Không thể vào phòng xem."
-        );
-      } else {
-        setStatus(
-          "Đã kết nối. Đang nhận hình ảnh..."
-        );
-      }
+if (err || !reply?.ok) {
+  setStatus(
+    reply?.error || "Unable to join the viewing room."
+  );
+} else {
+  setStatus(
+    "Connected. Waiting for the video stream..."
+  );
+}
 
     }
   );
 
 });
 
-// Nhận video và tín hiệu WebRTC
+	// Receive WebRTC video and signaling
 socket.on("w8share:signal", async ({ from, packet }) => {
 
   try {
 
     if (packet.type === "offer") {
 
-      // Giữ ICE đến trước offer
+     	// Preserve ICE candidates received before the offer
       const earlyIce = pendingIce.slice();
 
       closePeer();
@@ -623,9 +622,9 @@ socket.on("w8share:signal", async ({ from, packet }) => {
           event.streams[0] ||
           new MediaStream([event.track]);
 
-        video.play().catch(() => {
-          setStatus("Chạm vào video để phát.");
-        });
+video.play().catch(() => {
+  setStatus("Tap the video to play.");
+});
 
       };
 
@@ -646,25 +645,25 @@ socket.on("w8share:signal", async ({ from, packet }) => {
 
       };
 
-      current.onconnectionstatechange = () => {
+current.onconnectionstatechange = () => {
 
-        if (current.connectionState === "connected") {
-          setStatus("🔴 ĐANG XEM TRỰC TIẾP");
-        }
+  if (current.connectionState === "connected") {
+    setStatus("🔴 WATCHING LIVE");
+  }
 
-        if (current.connectionState === "failed") {
-          setStatus(
-            "Mất kết nối video. Hãy tải lại trang."
-          );
-        }
+  if (current.connectionState === "failed") {
+    setStatus(
+      "Video connection lost. Please reload the page."
+    );
+  }
 
-      };
+};
 
       await current.setRemoteDescription(
         packet.description
       );
 
-      // Xử lý các ICE đến sớm
+    	// Process early ICE candidates
       const buffered = pendingIce.splice(0);
 
       for (const candidate of buffered) {
@@ -702,28 +701,28 @@ socket.on("w8share:signal", async ({ from, packet }) => {
 
     }
 
-  } catch (err) {
+} catch (err) {
 
-    console.error(err);
-    setStatus("Không thiết lập được video.");
+  console.error(err);
+  setStatus("Unable to establish the video connection.");
 
-  }
+}
 
 });
 
-// Chủ phòng dừng chia sẻ
+// Broadcaster stopped screen sharing
 socket.on("w8share:ended", () => {
 
   closePeer();
-  setStatus("Người chơi đã dừng chia sẻ.");
+  setStatus("The broadcaster has stopped screen sharing.");
 
 });
 
-// Mất kết nối
+// Socket disconnected
 socket.on("disconnect", () => {
 
   closePeer();
-  setStatus("Mất kết nối, đang thử lại...");
+  setStatus("Connection lost. Reconnecting...");
 
 });
 
@@ -746,7 +745,7 @@ function fullScreen() {
 }
 
 
-// Nhận ảnh màn hình game từ điện thoại
+// Receive game screen frames from mobile devices
 socket.on("w8share:frame", (data) => {
 
   if (
@@ -760,11 +759,11 @@ socket.on("w8share:frame", (data) => {
   frame.src = data.image;
   frame.hidden = false;
 
-  // Ẩn video WebRTC nếu đang xem dạng ảnh
+  	// Hide WebRTC video when displaying screen frames
   video.style.display = "none";
 
-  document.getElementById("status").textContent =
-    "🔴 ĐANG XEM TRỰC TIẾP";
+document.getElementById("status").textContent =
+  "🔴 WATCHING LIVE";
 
 });
 
@@ -826,14 +825,14 @@ function w8ToggleChat() {
     String(opening)
   );
 
-  button.setAttribute(
-    "aria-label",
-    opening ? "Đóng bình luận" : "Mở bình luận"
-  );
+button.setAttribute(
+  "aria-label",
+  opening ? "Close comments" : "Open comments"
+);
 
   icon.textContent = opening ? "✕" : "💬";
 
-  // Khi mở khung chat, đánh dấu đã xem
+  	// Mark comments as read when opening the chat
   if (opening) {
 
     w8UnreadCount = 0;
@@ -850,21 +849,21 @@ function w8ToggleChat() {
 
 
 
-// Gửi bình luận
+// Send comment
 w8ChatForm.addEventListener("submit", (event) => {
 
   event.preventDefault();
 
-  const content = w8ChatInput.value.trim();
-  const name = w8ChatName.value.trim() || "Người xem";
+const content = w8ChatInput.value.trim();
+const name = w8ChatName.value.trim() || "Viewer";
 
   if (!content) return;
 
-  if (!socket.connected) {
-    w8ChatStatus.textContent =
-      "Chưa kết nối máy chủ.";
-    return;
-  }
+if (!socket.connected) {
+  w8ChatStatus.textContent =
+    "Not connected to the server.";
+  return;
+}
 
   w8ChatSend.disabled = true;
   w8ChatStatus.textContent = "";
@@ -880,13 +879,13 @@ w8ChatForm.addEventListener("submit", (event) => {
 
       w8ChatSend.disabled = false;
 
-      if (error || !reply?.ok) {
+if (error || !reply?.ok) {
 
-        w8ChatStatus.textContent =
-          reply?.error || "Không gửi được bình luận.";
+  w8ChatStatus.textContent =
+    reply?.error || "Unable to send your comment.";
 
-        return;
-      }
+  return;
+}
 
       w8ChatInput.value = "";
       w8ChatStatus.textContent = "";
@@ -896,7 +895,7 @@ w8ChatForm.addEventListener("submit", (event) => {
 
 });
 
-// Nhận bình luận từ server
+// Receive comments from the server
 socket.on("w8share:comment", (data) => {
 
   if (data?.token !== token) return;
@@ -904,10 +903,10 @@ socket.on("w8share:comment", (data) => {
   const item = document.createElement("div");
   item.className = "w8-viewer-comment";
 
-  const username = document.createElement("span");
-  username.className = "w8-viewer-comment-name";
-  username.textContent =
-    String(data.name || "Người xem") + ":";
+const username = document.createElement("span");
+username.className = "w8-viewer-comment-name";
+username.textContent =
+  String(data.name || "Viewer") + ":";
 
   const content = document.createElement("span");
   content.className = "w8-viewer-comment-text";
@@ -920,7 +919,7 @@ socket.on("w8share:comment", (data) => {
 
   
 // =====================================
-// BADGE BÌNH LUẬN CHƯA XEM
+// UNREAD COMMENT BADGE
 // =====================================
 
 const chatPanel =
@@ -929,7 +928,7 @@ const chatPanel =
 const unreadBadge =
   document.getElementById("w8ChatUnread");
 
-// Chỉ cộng số khi khung bình luận đang đóng
+// Increment the counter only when the panel is closed
 if (chatPanel.hidden) {
 
   w8UnreadCount++;
@@ -944,38 +943,38 @@ if (chatPanel.hidden) {
 }
 
 
-  // Giới hạn 30 bình luận trong giao diện
+  	// Keep only the latest 30 comments
   while (w8ChatList.children.length > 30) {
     w8ChatList.firstElementChild.remove();
   }
 
-  // Tự cuộn đến bình luận mới
+  // Automatically scroll to the newest comment
   w8ChatList.scrollTop = w8ChatList.scrollHeight;
 
 });
 
-// Chủ phòng kết thúc LIVE
+// Broadcaster ended the LIVE session
 socket.on("w8share:ended", () => {
 
   w8ChatInput.disabled = true;
   w8ChatSend.disabled = true;
 
   w8ChatStatus.textContent =
-    "Phiên LIVE đã kết thúc.";
+    "The LIVE session has ended.";
 
 });
 
-// Mất kết nối: khóa gửi bình luận
+// Disable commenting when disconnected
 socket.on("disconnect", () => {
 
   w8ChatSend.disabled = true;
   w8ChatStatus.textContent =
-    "Đang kết nối lại...";
+    "Reconnecting...";
 
 });
 
-// Khi kết nối lại, cho nhập bình luận.
-// Server vẫn kiểm tra quyền tham gia LIVE.
+// Re-enable commenting after reconnecting
+// The server still validates LIVE session access
 socket.on("connect", () => {
 
   w8ChatInput.disabled = false;
