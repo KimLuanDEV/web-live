@@ -1,6 +1,6 @@
 
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 
 <head>
 
@@ -18,7 +18,7 @@
 
 <meta name="mobile-web-app-capable" content="yes">
 
-<title>Đăng nhập • Livestream Pro</title>
+<title>Sign In • Livestream Pro</title>
 
 <link rel="manifest" href="/manifest.json">
 <link rel="apple-touch-icon" href="/icons/icon-192.png">
@@ -1273,8 +1273,8 @@ body.auth-page .auth-foot {
   <!-- TOP BRAND -->
 
 <div class="auth-top">
-  <span>KẾT NỐI ĐẲNG CẤP</span>
-  <span>TRẢI NGHIỆM KHÁC BIỆT</span>
+  <span>PREMIUM CONNECTIONS</span>
+  <span>EXCLUSIVE EXPERIENCE</span>
 </div>
 
 
@@ -1286,12 +1286,14 @@ body.auth-page .auth-foot {
 
   
 
-  <div class="login-avatar"
-       role="img"
-       aria-label="Logo Livestream Pro"></div>
+  <div
+    class="login-avatar"
+    role="img"
+    aria-label="Livestream Pro Logo">
+  </div>
 
   <p class="auth-eyebrow">
-    CHÀO MỪNG TRỞ LẠI
+    WELCOME BACK
   </p>
 
   <h1 class="login-title">
@@ -1299,93 +1301,102 @@ body.auth-page .auth-foot {
   </h1>
 
   <p class="login-sub">
-    Kết nối, tương tác và khám phá
-    cùng cộng đồng
+    Connect, interact, and explore
+    with our community.
   </p>
 
 </header>
 
 
-    <!-- LOGIN FORM -->
-    <section class="login-panel"
-             aria-label="Đăng nhập tài khoản">
+<!-- LOGIN FORM -->
+<section
+  class="login-panel"
+  aria-label="Account Sign In">
 
-<div class="panel-top">
-  <h2>Đăng nhập</h2>
-  <span>TÀI KHOẢN THÀNH VIÊN</span>
-</div>
+  <div class="panel-top">
+    <h2>Sign In</h2>
+    <span>MEMBER ACCESS</span>
+  </div>
 
-      <div class="login-field">
+  <!-- USERNAME -->
+  <div class="login-field">
 
-        <label for="username">
-          TÊN ĐĂNG NHẬP
-        </label>
+    <label for="username">
+      USERNAME
+    </label>
 
-        <input
-          id="username"
-          type="text"
-          placeholder="Tên đăng nhập của bạn"
-          autocomplete="username"
-          autocapitalize="none"
-          spellcheck="false"
-          onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"
-        >
+    <input
+      id="username"
+      type="text"
+      placeholder="Enter your username"
+      autocomplete="username"
+      autocapitalize="none"
+      spellcheck="false"
+      onkeydown="if(event.key==='Enter')document.getElementById('password').focus()"
+    >
 
-      </div>
+  </div>
 
-      <div class="login-field">
+  <!-- PASSWORD -->
+  <div class="login-field">
 
-        <label for="password">
-          MẬT KHẨU
-        </label>
+    <label for="password">
+      PASSWORD
+    </label>
 
-        <div class="pass-wrap">
+    <div class="pass-wrap">
 
-          <input
-            id="password"
-            type="password"
-            placeholder="Nhập mật khẩu"
-            autocomplete="current-password"
-            onkeydown="if(event.key==='Enter')login()"
-          >
+      <input
+        id="password"
+        type="password"
+        placeholder="Enter your password"
+        autocomplete="current-password"
+        onkeydown="if(event.key==='Enter')login()"
+      >
 
-          <button type="button"
-                  class="pass-eye"
-                  aria-label="Hiện mật khẩu"
-                  onclick="togglePass('password',this)">
-            Hiện
-          </button>
-
-        </div>
-
-      </div>
-
-      <button type="button"
-              class="login-forgot"
-              onclick="openForgot()">
-        Quên mật khẩu?
+      <button
+        type="button"
+        class="pass-eye"
+        aria-label="Show password"
+        onclick="togglePass('password',this)">
+        Show
       </button>
 
-      <button type="button"
-              class="login-btn login-submit"
-              onclick="login()">
-        ĐĂNG NHẬP
-      </button>
-
-<button type="button"
-        class="login-guest"
-        onclick="guestLogin()">
-  Tiếp tục với tư cách khách
-</button>
-
-    </section>
-
-    <!-- REGISTER -->
-    <div class="register-line">
-      Chưa có tài khoản?
-      <a href="/register.html">Đăng ký ngay</a>
     </div>
 
+  </div>
+
+  <!-- FORGOT PASSWORD -->
+  <button
+    type="button"
+    class="login-forgot"
+    onclick="openForgot()">
+    Forgot Password?
+  </button>
+
+  <!-- SIGN IN -->
+  <button
+    type="button"
+    class="login-btn login-submit"
+    onclick="login()">
+    SIGN IN
+  </button>
+
+  <!-- GUEST -->
+  <button
+    type="button"
+    class="login-guest"
+    onclick="guestLogin()">
+    Continue as Guest
+  </button>
+
+</section>
+
+    <!-- REGISTER -->
+<div class="register-line">
+  Don't have an account?
+  <a href="/register.html">Sign Up</a>
+</div>
   </div>
 
   <!-- FOOTER -->
@@ -1397,81 +1408,94 @@ body.auth-page .auth-foot {
 
 
 <!-- ==========================================
-     FORGOT PASSWORD MODAL
+     PASSWORD RECOVERY MODAL
 ========================================== -->
 
 <div id="forgotModal" class="modal hidden">
 
-  <div class="modal-backdrop"
-       onclick="closeForgot()"></div>
+  <div
+    class="modal-backdrop"
+    onclick="closeForgot()">
+  </div>
 
-  <section class="modal-card"
-           role="dialog"
-           aria-modal="true"
-           aria-labelledby="forgotTitle">
+  <section
+    class="modal-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="forgotTitle">
 
     <div class="modal-kicker">
       ACCOUNT RECOVERY
     </div>
 
     <h3 id="forgotTitle">
-      Khôi phục mật khẩu
+      Reset Password
     </h3>
 
     <p>
-      Điền thông tin xác minh để đặt lại mật khẩu.
+      Verify your account information
+      to reset your password.
     </p>
 
+    <!-- USERNAME -->
     <div class="modal-field">
 
       <label for="forgotUser">
-        TÊN ĐĂNG NHẬP
+        USERNAME
       </label>
 
-      <input id="forgotUser"
-             placeholder="Tên đăng nhập"
-             autocomplete="username">
+      <input
+        id="forgotUser"
+        placeholder="Enter your username"
+        autocomplete="username">
 
     </div>
 
+    <!-- NEW PASSWORD -->
     <div class="modal-field">
 
       <label for="forgotPass">
-        MẬT KHẨU MỚI
+        NEW PASSWORD
       </label>
 
-      <input id="forgotPass"
-             type="password"
-             placeholder="Mật khẩu mới"
-             autocomplete="new-password">
+      <input
+        id="forgotPass"
+        type="password"
+        placeholder="Enter a new password"
+        autocomplete="new-password">
 
     </div>
 
+    <!-- SECURITY CODE -->
     <div class="modal-field">
 
       <label for="forgotSec">
-        MÃ BẢO MẬT
+        SECURITY CODE
       </label>
 
-      <input id="forgotSec"
-             type="password"
-             placeholder="Nhập mã bảo mật"
-             autocomplete="off">
+      <input
+        id="forgotSec"
+        type="password"
+        placeholder="Enter your security code"
+        autocomplete="off">
 
     </div>
 
+    <!-- ACTIONS -->
     <div class="modal-actions">
 
-      <button type="button"
-              class="modal-btn quiet"
-              onclick="closeForgot()">
-        Hủy
+      <button
+        type="button"
+        class="modal-btn quiet"
+        onclick="closeForgot()">
+        Cancel
       </button>
 
-      <button type="button"
-              class="modal-btn"
-              onclick="submitForgot()">
-        Đặt lại
+      <button
+        type="button"
+        class="modal-btn"
+        onclick="submitForgot()">
+        Reset Password
       </button>
 
     </div>
@@ -1480,43 +1504,49 @@ body.auth-page .auth-foot {
 
 </div>
 
-
 <!-- ==========================================
      GLOBAL MESSAGE
+========================================== -->
+
+<!-- ==========================================
+     GLOBAL MESSAGE MODAL
 ========================================== -->
 
 <div id="msgModal" class="modal hidden">
 
   <div class="modal-backdrop"></div>
 
-  <section class="modal-card"
-           role="alertdialog"
-           aria-modal="true"
-           aria-labelledby="msgTitle"
-           aria-describedby="msgText">
+  <section
+    class="modal-card"
+    role="alertdialog"
+    aria-modal="true"
+    aria-labelledby="msgTitle"
+    aria-describedby="msgText">
 
     <div class="modal-kicker">
       SYSTEM NOTIFICATION
     </div>
 
     <h3 id="msgTitle">
-      Thông báo
+      Notification
     </h3>
 
     <p id="msgText"></p>
 
     <div class="modal-actions">
 
-      <button id="btnSupport"
-              type="button"
-              class="modal-btn quiet hidden">
-        Liên hệ hỗ trợ
+      <button
+        id="btnSupport"
+        type="button"
+        class="modal-btn quiet hidden">
+        Contact Support
       </button>
 
-      <button type="button"
-              class="modal-btn"
-              onclick="closeMsg()">
-        Đã hiểu
+      <button
+        type="button"
+        class="modal-btn"
+        onclick="closeMsg()">
+        Got It
       </button>
 
     </div>
@@ -1530,63 +1560,76 @@ body.auth-page .auth-foot {
      SECURITY VERIFICATION
 ========================================== -->
 
+<!-- ==========================================
+     SECURITY VERIFICATION MODAL
+========================================== -->
+
 <div id="secModal" class="modal hidden">
 
   <div class="modal-backdrop"></div>
 
-  <section class="modal-card"
-           role="dialog"
-           aria-modal="true"
-           aria-labelledby="secTitle">
+  <section
+    class="modal-card"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="secTitle">
 
     <div class="modal-kicker">
       SECURE ACCESS
     </div>
 
     <h3 id="secTitle">
-      Xác thực bảo mật
+      Security Verification
     </h3>
 
     <p>
-      Nhập mã bảo mật để hoàn tất đăng nhập.
+      Enter your security code
+      to complete the sign-in process.
     </p>
 
+    <!-- SECURITY CODE -->
     <div class="modal-field">
 
       <label for="secInput">
-        MÃ BẢO MẬT
+        SECURITY CODE
       </label>
 
       <div class="pass-wrap">
 
-        <input id="secInput"
-               type="password"
-               placeholder="Nhập mã bảo mật"
-               autocomplete="off"
-               onkeydown="if(event.key==='Enter')submitSecurity()">
+        <input
+          id="secInput"
+          type="password"
+          placeholder="Enter your security code"
+          autocomplete="off"
+          onkeydown="if(event.key==='Enter')submitSecurity()">
 
-        <button type="button"
-                class="pass-eye"
-                onclick="togglePass('secInput',this)">
-          Hiện
+        <button
+          type="button"
+          class="pass-eye"
+          aria-label="Show security code"
+          onclick="togglePass('secInput',this)">
+          Show
         </button>
 
       </div>
 
     </div>
 
+    <!-- ACTIONS -->
     <div class="modal-actions">
 
-      <button type="button"
-              class="modal-btn quiet"
-              onclick="closeSec()">
-        Hủy
+      <button
+        type="button"
+        class="modal-btn quiet"
+        onclick="closeSec()">
+        Cancel
       </button>
 
-      <button type="button"
-              class="modal-btn"
-              onclick="submitSecurity()">
-        Xác nhận
+      <button
+        type="button"
+        class="modal-btn"
+        onclick="submitSecurity()">
+        Verify & Continue
       </button>
 
     </div>
@@ -1604,33 +1647,50 @@ body.auth-page .auth-foot {
 
 
 
-async function submitForgot(){
- const u = document.getElementById("forgotUser").value.trim();
-const p = document.getElementById("forgotPass").value;
-const sec = document.getElementById("forgotSec").value;
+async function submitForgot() {
 
-if(!u || !p || !sec){
-  showMsg("❌ Nhập đủ username, mật khẩu mới và mã bảo mật");
-  return;
-}
+  const u = document.getElementById("forgotUser").value.trim();
+  const p = document.getElementById("forgotPass").value;
+  const sec = document.getElementById("forgotSec").value;
 
-  const res = await fetch("/api/change-password",{
-    method:"POST",
-    headers:{ "Content-Type":"application/json" },
-   body: JSON.stringify({ 
-  username: u, 
-  newPassword: p,
-  securityCode: sec
-})
-  });
+  if (!u || !p || !sec) {
 
-  const d = await res.json();
-  if(!d.ok){
-    showMsg("❌ Không tìm thấy tài khoản");
+    showMsg(
+      "Please enter your username, new password, and security code."
+    );
+
     return;
   }
 
-  showMsg("✅ Đổi mật khẩu thành công");
+  const res = await fetch("/api/change-password", {
+    method: "POST",
+
+    headers: {
+      "Content-Type": "application/json"
+    },
+
+    body: JSON.stringify({
+      username: u,
+      newPassword: p,
+      securityCode: sec
+    })
+  });
+
+  const d = await res.json();
+
+  if (!d.ok) {
+
+    showMsg(
+      "Account not found or verification failed."
+    );
+
+    return;
+  }
+
+  showMsg(
+    "Password changed successfully."
+  );
+
   closeForgot();
 }
 
@@ -1658,7 +1718,7 @@ async function login(){
   const p = document.getElementById("password").value;
 
   if(!u || !p){
-    showMsg("❌ Nhập tài khoản và mật khẩu");
+    showMsg("Please enter your username and password.");
     return;
   }
 
@@ -1689,7 +1749,7 @@ if(d.ok){
   const data = await res2.json();
 
 if(!data || !data.profile){
-  showMsg("❌ Login failed");
+  showMsg(	"Sign in failed. Please try again.");
   return;
 }
 
@@ -1715,16 +1775,18 @@ if(!data || !data.profile){
 const data = await res.json();
 
 if (data.error === "blocked") {
+
   showMsg(
-  "🚫 Tài khoản của bạn đang bị cấm.\nVui lòng liên hệ hỗ trợ.",
-  "Tài khoản bị khoá",
-  true
-);
-return;
+    "Your account has been suspended.\nPlease contact support for assistance.",
+    "Account Suspended",
+    true
+  );
+
+  return;
 }
 
 if(!data.ok){
-  showMsg("❌ Sai tài khoản hoặc mật khẩu");
+  showMsg("Incorrect username or password.");
   return;
 }
 
@@ -1743,7 +1805,7 @@ if(!data.ok){
 async function submitSecurity(){
   const sec = document.getElementById("secInput").value;
   if(!sec){
-    showMsg("❌ Nhập mã bảo mật");
+    showMsg("Please enter your security code.");
     return;
   }
 
@@ -1760,9 +1822,9 @@ async function submitSecurity(){
   const data = await res.json();
 
  if (data.error === "blocked") {
- showMsg(
-  "🚫 Tài khoản của bạn đang bị cấm.\nVui lòng liên hệ hỗ trợ.",
-  "Tài khoản bị khoá",
+showMsg(
+  "Your account has been suspended.\nPlease contact support for assistance.",
+  "Account Suspended",
   true
 );
   closeSec();
@@ -1770,7 +1832,7 @@ async function submitSecurity(){
 }
 
 if(data.error){
-  showMsg("❌ Sai thông tin bảo mật");
+  showMsg("Incorrect security code. Please try again.");
   return;
 }
 
@@ -1815,18 +1877,22 @@ function togglePass(id, el) {
 
   input.type = show ? "text" : "password";
 
-  el.textContent = show ? "Ẩn" : "Hiện";
+  // ENGLISH LABEL
+  el.textContent = show ? "Hide" : "Show";
+
+  const isSecurity = id === "secInput";
 
   el.setAttribute(
     "aria-label",
-    show ? "Ẩn mật khẩu" : "Hiện mật khẩu"
+    show
+      ? (isSecurity ? "Hide security code" : "Hide password")
+      : (isSecurity ? "Show security code" : "Show password")
   );
 
   el.setAttribute(
     "aria-pressed",
     String(show)
   );
-
 }
 
 
@@ -1845,7 +1911,7 @@ function cleanLoginText(value) {
 }
 
 
-function showMsg(text, title="Thông báo", showSupport=false){
+function showMsg(text, title="Notification", showSupport=false){
 document.getElementById("msgTitle").textContent =
   cleanLoginText(title);
 

@@ -471,7 +471,7 @@ html.lsppt-arriving #lsppt-layer .lsppt-card {
 
     layer.setAttribute(
       "aria-label",
-      "Đang chuyển trang"
+      "Loading"
     );
 
     layer.innerHTML = `
