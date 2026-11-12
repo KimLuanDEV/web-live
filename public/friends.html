@@ -1,10 +1,10 @@
 
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>Bạn bè | Livestream Pro</title>
+<title>Friends | Livestream Pro</title>
 
 
 <script src="/lsp-page-transition.js"></script>
@@ -1177,7 +1177,7 @@ svg { display: block; }
       type="button"
       class="header-btn header-back"
       onclick="goBack()"
-      aria-label="Quay lại"
+      aria-label="Back to Profile"
     >
       <svg class="fi">
         <use href="#f-back"></use>
@@ -1195,7 +1195,7 @@ svg { display: block; }
         <span>LIVESTREAM PRO</span>
       </div>
 
-      <h1>Bạn bè</h1>
+      <h1>Friends</h1>
 
       <div class="friend-heading-line"></div>
 
@@ -1217,10 +1217,10 @@ svg { display: block; }
       <input
         id="friendSearchInput"
         type="search"
-        placeholder="Tìm theo tên bạn bè..."
+        placeholder="Search friends by name..."
         oninput="applySearch()"
         autocomplete="off"
-        aria-label="Tìm kiếm bạn bè"
+        aria-label="Search Friends"
       >
 
       <span class="search-end-icon">
@@ -1240,14 +1240,14 @@ svg { display: block; }
   <main class="friend-section">
     <div class="section-heading">
       <svg class="fi"><use href="#f-user-plus"/></svg>
-      <h2>Lời mời kết bạn</h2>
+      	<h2>Friend Requests</h2>
       <span class="section-count" id="requestCount">0</span>
     </div>
     <div id="reqList"></div>
 
     <div class="section-heading">
       <svg class="fi"><use href="#f-users"/></svg>
-      <h2>Danh sách bạn bè</h2>
+      <h2>My Friends</h2>
       <span class="section-count" id="friendCount">0</span>
     </div>
     <div id="friendList"></div>
@@ -1256,7 +1256,8 @@ svg { display: block; }
 
 
 <!-- ==========================================
-     OPEN BLOCKED PAGE - SMOOTH TRANSITION
+     BLOCKED USERS BUTTON
+     ENGLISH INTERFACE
 ========================================== -->
 
 <div class="bottom-wrap">
@@ -1265,19 +1266,19 @@ svg { display: block; }
     type="button"
     class="btn-blocked-fixed"
     data-lsp-href="/blocked.html"
-    data-lsp-label="Đang mở Danh sách chặn..."
+    data-lsp-label="Opening Blocked Users..."
+    aria-label="View Blocked Users"
   >
 
     <svg class="fi">
       <use href="#f-ban"></use>
     </svg>
 
-    Danh sách chặn
+    Blocked Users
 
   </button>
 
 </div>
-
 
 
 
@@ -1306,9 +1307,9 @@ svg { display: block; }
     </div>
 
     <!-- TITLE -->
-    <h3 id="friendConfirmTitle">
-      Xác nhận thao tác
-    </h3>
+<h3 id="friendConfirmTitle">
+  Confirm Action
+</h3>
 
     <!-- MESSAGE -->
     <p id="friendConfirmMessage"></p>
@@ -1319,22 +1320,22 @@ svg { display: block; }
     <!-- ACTIONS -->
     <div class="friend-confirm-actions">
 
-      <button
-        type="button"
-        class="friend-confirm-cancel"
-        onclick="closeFriendConfirm()"
-      >
-        Hủy bỏ
-      </button>
+<button
+  type="button"
+  class="friend-confirm-cancel"
+  onclick="closeFriendConfirm()"
+>
+  Cancel
+</button>
 
-      <button
-        type="button"
-        class="friend-confirm-submit"
-        id="friendConfirmSubmit"
-        onclick="confirmFriendAction()"
-      >
-        Xác nhận
-      </button>
+<button
+  type="button"
+  class="friend-confirm-submit"
+  id="friendConfirmSubmit"
+  onclick="confirmFriendAction()"
+>
+  Confirm
+</button>
 
     </div>
 
@@ -1360,7 +1361,7 @@ const profile = JSON.parse(localStorage.getItem("user_profile") || "{}");
    FRIENDS - SMOOTH PAGE NAVIGATION
 ========================================== */
 
-function navigateFriends(url, label = "Đang chuyển trang...") {
+function navigateFriends(url, label = "Loading Page...") {
 
   if (window.LSPTransition?.go) {
 
@@ -1397,7 +1398,9 @@ async function loadFriends() {
 
   try {
     const res = await fetch("/api/friends/" + encodeURIComponent(profile.uid));
-    if (!res.ok) throw new Error("Không thể tải danh sách bạn bè");
+   if (!res.ok) {
+  throw new Error("Unable to load your friends list.");
+}
 
     const data = await res.json();
     __lastData = {
@@ -1407,7 +1410,10 @@ async function loadFriends() {
 
     applySearch();
   } catch (err) {
-    showToast(err.message || "Lỗi tải dữ liệu", "error");
+    showToast(
+  err.message || "Failed to load data. Please try again.",
+  "error"
+);
   }
 }
 
@@ -1431,7 +1437,7 @@ function createFriendRow(u, isRequest) {
   row.className = "friend-row" + (isRequest ? " request" : "");
 
   row.innerHTML = `
-    <div class="friend-avatar" role="button" tabindex="0" aria-label="Xem hồ sơ">
+    <div class="friend-avatar" role="button" tabindex="0" aria-label="View Profile">
       ${icon("user")}
     </div>
     <div class="friend-info" role="button" tabindex="0">
@@ -1446,7 +1452,7 @@ function createFriendRow(u, isRequest) {
     <div class="friend-actions"></div>
   `;
 
-  const name = String(u.name || "Người dùng");
+  const name = String(u.name || "User");
   const uid = String(u.uid || "");
 
   row.querySelector(".name-text").textContent = name;
@@ -1458,7 +1464,7 @@ function createFriendRow(u, isRequest) {
   if (src) {
     const image = document.createElement("img");
     image.src = src;
-    image.alt = "Ảnh đại diện " + name;
+    image.alt = "Profile picture of " + name;
     image.loading = "lazy";
     image.onerror = () => { image.remove(); };
     av.replaceChildren(image);
@@ -1479,7 +1485,7 @@ function createFriendRow(u, isRequest) {
   if (u.verified) {
     const verified = document.createElement("span");
     verified.className = "verified";
-    verified.title = "Đã xác minh";
+    verified.title = "Verified Account";
     verified.innerHTML = icon("verified");
     row.querySelector(".friend-name").append(verified);
   }
@@ -1497,14 +1503,51 @@ function createFriendRow(u, isRequest) {
     actions.append(btn);
   }
 
-  if (isRequest) {
-    addAction("Đồng ý", "check", "accept", () => respond(uid, true));
-    addAction("Từ chối", "x", "reject", () => respond(uid, false));
-  } else {
-    addAction("Nhắn tin", "chat", "", () => chat(uid, name));
-    addAction("Hủy kết bạn", "user-minus", "", () => removeFriend(uid, name));
-    addAction("Chặn", "ban", "block", () => blockUser(uid, name));
-  }
+/* ==========================================
+   FRIEND ACTION BUTTONS
+   ENGLISH INTERFACE
+========================================== */
+
+if (isRequest) {
+
+  addAction(
+    "Accept",
+    "check",
+    "accept",
+    () => respond(uid, true)
+  );
+
+  addAction(
+    "Decline",
+    "x",
+    "reject",
+    () => respond(uid, false)
+  );
+
+} else {
+
+  addAction(
+    "Message",
+    "chat",
+    "",
+    () => chat(uid, name)
+  );
+
+  addAction(
+    "Unfriend",
+    "user-minus",
+    "",
+    () => removeFriend(uid, name)
+  );
+
+  addAction(
+    "Block",
+    "ban",
+    "block",
+    () => blockUser(uid, name)
+  );
+
+}
 
   return row;
 }
@@ -1518,10 +1561,23 @@ function renderFriends(data) {
   document.getElementById("requestCount").textContent = requests.length;
   document.getElementById("friendCount").textContent = friends.length;
 
-  for (const [id, list, request, empty] of [
-    ["reqList", requests, true, "Không có lời mời kết bạn"],
-    ["friendList", friends, false, "Chưa có bạn bè"]
-  ]) {
+for (const [id, list, request, empty] of [
+
+  [
+    "reqList",
+    requests,
+    true,
+    "No pending friend requests."
+  ],
+
+  [
+    "friendList",
+    friends,
+    false,
+    "You haven't added any friends yet."
+  ]
+
+]) {
     const box = document.getElementById(id);
     box.replaceChildren();
 
@@ -1581,7 +1637,7 @@ function goBack() {
 
   navigateFriends(
     "/profile.html",
-    "Đang quay lại Hồ sơ cá nhân..."
+    "Opening Your Profile..."
   );
 
 }
@@ -1597,7 +1653,7 @@ function openProfile(uid) {
 
   navigateFriends(
     url,
-    "Đang mở hồ sơ người chơi..."
+    "Opening Member Profile..."
   );
 
 }
@@ -1628,7 +1684,7 @@ function chat(uid, name) {
 
   navigateFriends(
     "/messages.html",
-    "Đang mở cuộc trò chuyện..."
+    "Opening Conversation..."
   );
 
 }
@@ -1644,52 +1700,99 @@ let friendConfirmPreviousFocus = null;
 
 /* ===== MỞ POPUP ===== */
 
-function openFriendConfirm(type, uid, name) {
-  const modal = document.getElementById("friendConfirmModal");
+/* ==========================================
+   FRIEND CONFIRMATION MODAL
+   ENGLISH INTERFACE
+========================================== */
 
-  const title = document.getElementById("friendConfirmTitle");
-  const message = document.getElementById("friendConfirmMessage");
-  const submit = document.getElementById("friendConfirmSubmit");
+function openFriendConfirm(type, uid, name) {
+
+  const modal = document.getElementById(
+    "friendConfirmModal"
+  );
+
+  const title = document.getElementById(
+    "friendConfirmTitle"
+  );
+
+  const message = document.getElementById(
+    "friendConfirmMessage"
+  );
+
+  const submit = document.getElementById(
+    "friendConfirmSubmit"
+  );
+
   const iconUse = document.querySelector(
     "#friendConfirmIcon use"
   );
 
   const isBlock = type === "block";
 
+
+  // SAVE PENDING ACTION
   pendingFriendAction = {
     type,
     uid,
     name
   };
 
+
+  // REMEMBER CURRENT FOCUS
   friendConfirmPreviousFocus = document.activeElement;
 
+
+  // BLOCK ACCOUNT
   if (isBlock) {
-    title.textContent = "Xác nhận chặn tài khoản";
+
+    title.textContent = "Block This User?";
 
     message.textContent =
-      `Bạn có chắc muốn chặn ${name}? ` +
-      `Người này sẽ không thể liên hệ với bạn.`;
+      `Are you sure you want to block ${name}? ` +
+      `This person will no longer be able to contact you.`;
 
-    submit.textContent = "Chặn";
-    iconUse.setAttribute("href", "#f-ban");
+    submit.textContent = "Block User";
 
-  } else {
-    title.textContent = "Xác nhận hủy kết bạn";
+    iconUse.setAttribute(
+      "href",
+      "#f-ban"
+    );
 
-    message.textContent =
-      `Bạn có chắc muốn hủy kết bạn với ${name}?`;
-
-    submit.textContent = "Hủy kết bạn";
-    iconUse.setAttribute("href", "#f-user-minus");
   }
 
-  modal.classList.toggle("is-block", isBlock);
+  // REMOVE FRIEND
+  else {
+
+    title.textContent = "Remove Friend?";
+
+    message.textContent =
+      `Are you sure you want to remove ${name} from your friends list?`;
+
+    submit.textContent = "Unfriend";
+
+    iconUse.setAttribute(
+      "href",
+      "#f-user-minus"
+    );
+
+  }
+
+
+  // APPLY MODAL STYLE
+  modal.classList.toggle(
+    "is-block",
+    isBlock
+  );
+
+
+  // SHOW MODAL
   modal.hidden = false;
 
-  submit.focus();
-}
 
+  // FOCUS CONFIRM BUTTON
+  submit.focus();
+
+}
 /* ===== ĐÓNG POPUP ===== */
 
 function closeFriendConfirm() {
@@ -1714,10 +1817,10 @@ function confirmFriendAction() {
   if (!pendingFriendAction) return;
 
   if (!socket.connected) {
-    showToast(
-      "Mất kết nối máy chủ, vui lòng thử lại.",
-      "error"
-    );
+showToast(
+  "Connection lost. Please try again.",
+  "error"
+);
     return;
   }
 
@@ -1730,20 +1833,20 @@ function confirmFriendAction() {
     // GIỮ NGUYÊN EVENT CŨ
     socket.emit("friend-remove", { uid });
 
-    showToast(
-      "Đã gửi yêu cầu hủy kết bạn",
-      "info"
-    );
+showToast(
+  "Friend removal request sent.",
+  "info"
+);
 
   } else if (type === "block") {
 
     // GIỮ NGUYÊN EVENT CŨ
     socket.emit("user-block", { uid });
 
-    showToast(
-      "Đã gửi yêu cầu chặn tài khoản",
-      "info"
-    );
+showToast(
+  "User block request sent.",
+  "info"
+);
   }
 
   // TẢI LẠI DANH SÁCH TỪ SERVER
@@ -1806,14 +1909,16 @@ function showToast(message, type = "info", timeout = 3500) {
     : type === "error" ? "ban" : "info";
 
   toast.innerHTML = icon(symbol) + `<span class="msg"></span>`;
-  toast.querySelector(".msg").textContent = String(message || "Thông báo");
+  toast.querySelector(".msg").textContent =
+  String(message || "Notification");
 
   box.append(toast);
   setTimeout(() => toast.remove(), timeout);
 }
 
 function notifyWithdraw(data) {
-  const text = data?.text || "Tài khoản của bạn vừa bị trừ coin";
+  const text =
+  data?.text || "Coins have been deducted from your account.";
 
   if (typeof openSysModal === "function") openSysModal(text);
   else showToast(text, "error", 5000);
@@ -1835,9 +1940,11 @@ function showForceLogoutModal(message) {
       <div class="fl-backdrop"></div>
       <div class="fl-box">
         <div class="fl-icon">${icon("ban")}</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc</div>
+        <div class="fl-title">Session Ended</div>
         <div class="fl-msg"></div>
-        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
+        <div class="fl-sub">
+  You will be redirected to the login page...
+</div>
       </div>
     `;
     document.body.append(modal);
@@ -1856,20 +1963,28 @@ socket.on("system-notify", data => {
   if (!data) return;
 
   if (data.type === "topup")
-    showToast(data.text || "Bạn vừa được nạp coin", "success");
+    showToast(
+  data.text || "Coins have been added to your account.",
+  "success"
+);
 
   if (data.type === "withdraw")
     notifyWithdraw(data);
 
   if (data.type === "lock") {
-    showToast(data.reason || "Tài khoản của bạn đã bị khoá", "error");
+    showToast(
+  data.reason || "Your account has been locked.",
+  "error"
+);
     clearLogin();
     setTimeout(() => location.href = "/login.html", 2000);
   }
 });
 
 socket.on("force-logout", data => {
-  showForceLogoutModal(data?.message || "Tài khoản của bạn đã bị đăng xuất");
+  showForceLogoutModal(
+  data?.message || "You have been signed out."
+);
   clearLogin();
   setTimeout(() => location.href = "/login.html", 3000);
 });
