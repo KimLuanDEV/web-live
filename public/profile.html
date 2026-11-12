@@ -22,6 +22,8 @@
 
   <!-- CSS da duoc gop truc tiep vao profile.html -->
 
+<script src="/assets/lsp-page-transition.js"></script>
+
 
   <style>
 /* ===== CSS GOC TU STYLE.CSS - GIU NGUYEN THU TU ===== */
@@ -17650,10 +17652,17 @@ body.page-profile .profile-cover #btnChangeCover:active {
     <div class="tab-text">Lobby</div>
   </div>
 
-  <div class="tab-item" data-tab="hot">
-    <div class="tab-icon">🌍</div>
-    <div class="tab-text">Status</div>
-  </div>
+<div class="tab-item"
+     data-tab="hot"
+     data-lsp-href="/social.html"
+     data-lsp-label="Đang mở Bảng tin..."
+     role="link"
+     tabindex="0">
+
+  <div class="tab-icon">🌍</div>
+  <div class="tab-text">Status</div>
+
+</div>
 
  <div class="tab-item tab-main" id="tabSettings">
   <div class="tab-plus">⚙️</div>
