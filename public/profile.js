@@ -710,7 +710,7 @@ setInterval(() => {
 
 const defaultProfile = {
   name: "User",
-  avatar: "https://img.freepik.com/premium-vector/live-streaming-logo-design-vector-illustration_875240-2017.jpg",
+  avatar: "https://i.ibb.co/GvJWn19q/icon-192.png",
   coins: 0,
   level: 1,
   exp: 0,            // 🔥 exp

@@ -2557,7 +2557,7 @@ function openGiftUsers(postId){
 const name = u?.name || uid;
 const avatar = u?.avatar
   ? fixMedia(u.avatar)
-  : "https://api.dicebear.com/7.x/thumbs/svg?seed=" +
+  : "https://i.ibb.co/GvJWn19q/icon-192.png" +
     encodeURIComponent(name);
 
 div.innerHTML = `
