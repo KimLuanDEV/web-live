@@ -117,7 +117,7 @@ html.lsppt-arriving::before {
   transform: translate3d(0,105%,0);
 
   transition:
-    transform \${EXIT_MS}ms cubic-bezier(.76,0,.24,1),
+    transform ${EXIT_MS}ms cubic-bezier(.76,0,.24,1),
     visibility 0s linear \${EXIT_MS}ms;
 }
 
@@ -164,7 +164,7 @@ html.lsppt-arriving::before {
   transform: translate3d(0,0,0);
 
   transition:
-    transform \${EXIT_MS}ms cubic-bezier(.76,0,.24,1);
+    transform ${EXIT_MS}ms cubic-bezier(.76,0,.24,1);
 }
 
 /* HIỆU ỨNG RỜI KHỎI */
@@ -233,64 +233,79 @@ html.lsppt-arriving #lsppt-layer .lsppt-card {
   transform: translateY(-15px);
 }
 
-/* LOGO LP TỐI GIẢN */
+
+/* ==========================================
+   LIVESTREAM PRO
+   IMAGE LOGO - LUXURY TRANSITION
+========================================== */
+
 #lsppt-layer .lsppt-logo {
   position: relative;
 
-  width: 100px;
-  height: 100px;
+  width: 125px;
+  height: 125px;
 
-  margin-bottom: 30px;
+  margin: 0 0 26px;
 
-  display: grid;
-  place-items: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
   background: transparent;
   border: none;
   border-radius: 0;
-
-  color: #f0d8ab;
-
-  font-family: Georgia, serif;
-  font-size: 32px;
-  font-weight: 700;
-  letter-spacing: 1px;
-
-  text-shadow: 0 0 20px rgba(235,194,122,.25);
+  box-shadow: none;
 }
 
-/* KHUNG KIM CƯƠNG */
-#lsppt-layer .lsppt-logo::before {
-  content: "";
+/* HÌNH ẢNH LOGO */
+#lsppt-layer .lsppt-logo-img {
+  display: block;
 
-  position: absolute;
-  inset: 13px;
+  width: 100%;
+  height: 100%;
 
-  border: 1px solid rgba(233,195,130,.8);
+  object-fit: contain;
+  object-position: center;
 
-  background: rgba(210,160,83,.025);
+  border: none;
+  background: transparent;
 
-  transform: rotate(45deg);
+  filter:
+    drop-shadow(0 0 18px rgba(219,174,101,.22));
 
-  animation: lsppt-diamond 2.4s ease-in-out infinite;
+  animation: lsppt-logo-float 3s ease-in-out infinite;
+
+  user-select: none;
+  -webkit-user-drag: none;
 }
 
-/* ĐƯỜNG VÀNG DƯỚI LOGO */
-#lsppt-layer .lsppt-logo::after {
-  content: "";
+/* CHUYỂN ĐỘNG NHẸ */
+@keyframes lsppt-logo-float {
+  0%, 100% {
+    transform: translateY(0) scale(1);
+  }
 
-  position: absolute;
-  bottom: -5px;
-  left: 50%;
-
-  width: 32px;
-  height: 1px;
-
-  background: #dfbf86;
-  box-shadow: 0 0 12px rgba(240,205,148,.5);
-
-  transform: translateX(-50%);
+  50% {
+    transform: translateY(-5px) scale(1.035);
+  }
 }
+
+/* MOBILE */
+@media (max-width: 480px) {
+  #lsppt-layer .lsppt-logo {
+    width: 105px;
+    height: 105px;
+    margin-bottom: 23px;
+  }
+}
+
+/* GIẢM CHUYỂN ĐỘNG */
+@media (prefers-reduced-motion: reduce) {
+  #lsppt-layer .lsppt-logo-img {
+    animation: none !important;
+  }
+}
+
 
 /* TÊN THƯƠNG HIỆU */
 #lsppt-layer .lsppt-title {
@@ -462,9 +477,14 @@ html.lsppt-arriving #lsppt-layer .lsppt-card {
     layer.innerHTML = `
       <div class="lsppt-card">
 
-        <div class="lsppt-logo">
-          LP
-        </div>
+<div class="lsppt-logo">
+  <img
+    src="/assets/icon-192.png"
+    alt="Livestream Pro"
+    class="lsppt-logo-img"
+    draggable="false"
+  >
+</div>
 
         <div class="lsppt-title">
           LIVESTREAM PRO
