@@ -198,7 +198,7 @@ arr.forEach(m => {
   const text = m.revoked ? "__REVOKED__" : m.text;
 
   pushMsg(
-    isMe ? "Bạn" : currentTarget.name,
+    isMe ? "You" : currentTarget.name,
     text,
     isMe,
     m.id,
@@ -291,11 +291,11 @@ socket.on("topup-user-waiting", ({ fromUid, time }) => {
   if (!fromUid) return;
 
   // 🔔 toast realtime
-  showToast(
-    `💸 ${fromUid} đã chuyển khoản – vui lòng kiểm tra`,
-    "success",
-    6000
-  );
+showToast(
+  `💸 ${fromUid} has sent a transfer. Please verify it.`,
+  "success",
+  6000
+);
 
   // 🔴 hiện chấm đỏ inbox
   if (typeof showInboxDot === "function") {
@@ -307,7 +307,7 @@ socket.on("topup-user-waiting", ({ fromUid, time }) => {
   if (box) {
     const div = document.createElement("div");
     div.className = "chat-system";
-    div.textContent = `💸 ${fromUid} đã chuyển khoản`;
+    div.textContent = `💸 ${fromUid} has sent a transfer`;
     box.appendChild(div);
     box.scrollTop = box.scrollHeight;
   }
@@ -333,7 +333,7 @@ document.getElementById("sendBtn").onclick = () => {
   msgId
 });
 
-  pushMsg("Bạn", txt, true, msgId, "⏳");
+  pushMsg("You", txt, true, msgId, "⏳");
 
 saveChat({
   id: msgId,  
@@ -455,7 +455,7 @@ function pushMsg(name, text, isMe=false, msgId=null, status="", avatar="") {
 if (text === "__REVOKED__") {
   div.innerHTML = `
     <div class="msg-revoked">
-      🚫 Tin nhắn đã được thu hồi
+      🚫 This message was unsent
     </div>
   `;
 
@@ -553,11 +553,11 @@ else if (text?.startsWith("/location ")) {
       <div class="location-card">
         <div class="location-icon">📍</div>
         <div class="location-text">
-          <div class="location-title">Vị trí hiện tại</div>
+          <div class="location-title">Current Location</div>
           <div class="location-coords">${coords}</div>
         </div>
         <a href="${url}" target="_blank" class="location-open">
-          Mở bản đồ
+          Open Map
         </a>
       </div>
     </div>
@@ -579,7 +579,11 @@ else if (text?.startsWith("/location ")) {
   div.innerHTML = `
     ${html}
     <div class="chat-time">
-      ${new Date().toLocaleTimeString("vi-VN",{hour:"2-digit",minute:"2-digit"})}
+      ${new Date().toLocaleTimeString("en-GB",{
+  hour: "2-digit",
+  minute: "2-digit",
+  hour12: false
+})}
       ${isMe ? `<span class="msg-status">${status}</span>` : ""}
     </div>
   `;
@@ -635,18 +639,20 @@ function renderUserList(){
   );
 
   // nếu không có ai
-  if (!usersToShow.length) {
-    userList.innerHTML = `
-      <div class="empty">
-        ${
-          adminMode
-            ? "📭 Hiện chưa có người dùng nào"
-            : "🤝 Bạn chưa có bạn bè nào<br><small>Hãy kết bạn để bắt đầu trò chuyện</small>"
-        }
-      </div>
-    `;
-    return;
-  }
+if (!usersToShow.length) {
+
+  userList.innerHTML = `
+    <div class="empty">
+      ${
+        adminMode
+          ? "No users available yet."
+          : "No friends yet.<br><small>Add friends to start chatting.</small>"
+      }
+    </div>
+  `;
+
+  return;
+}
 
   // sort: online trước
 usersToShow.sort((a,b)=>{
@@ -673,7 +679,7 @@ usersToShow.sort((a,b)=>{
         <div class="msg-uname">
           ${u.name}
           ${u.role === "admin"
-            ? `<span class="tick-blue" title="Admin đã xác minh">✔︎</span>`
+            ? `<span class="tick-blue" title="Verified Admin">✔︎</span>`
             : ""
           }
 
@@ -698,7 +704,7 @@ usersToShow.sort((a,b)=>{
       chatTitle.innerHTML = `
         ${u.name}
         ${u.role === "admin" ? `
-          <span class="tick-blue" title="Admin đã xác minh">
+          <span class="tick-blue" title="Verified Admin">
             <svg viewBox="0 0 24 24" width="10" height="10" fill="white">
               <path d="M9 16.2l-3.5-3.5L4 14.2l5 5 12-12-1.4-1.4z"/>
             </svg>
@@ -957,13 +963,15 @@ socket.on("msg-blocked", ({ reason }) => {
 
   if (reason === "not_friend") {
 
-    // nếu đang chat admin → bỏ qua
-    if (currentTarget?.role === "admin") return
+    if (currentTarget?.role === "admin") return;
 
-    alert("🔒 Bạn chỉ có thể nhắn tin với người đã kết bạn.")
+    showModal(
+      "You can only send messages to people you are friends with."
+    );
+
   }
 
-})
+});
 
 
 function uploadChatFileWithProgress(file, type, onProgress) {
@@ -1180,11 +1188,13 @@ function closeImgZoom() {
 
 
 async function confirmRevoke(msgId) {
+
   const ok = await showModal(
-    "Thu hồi tin nhắn này?",
-    "Thu hồi",
-    "Huỷ"
+    "Unsend this message?",
+    "Unsend",
+    "Cancel"
   );
+
   if (!ok) return;
 
   revokeMessage(msgId);
@@ -1219,7 +1229,7 @@ function revokeMessage(msgId) {
   if (el) {
     el.innerHTML = `
       <div class="msg-revoked">
-        🚫 Tin nhắn đã được thu hồi
+        🚫 This message was unsent
       </div>
     `;
   }
@@ -1238,7 +1248,7 @@ socket.on("revoke-message", ({ msgId }) => {
   if (el) {
     el.innerHTML = `
       <div class="msg-revoked">
-        🚫 Tin nhắn đã được thu hồi
+        🚫 This message was unsent
       </div>
     `;
   }
@@ -1266,16 +1276,17 @@ socket.on("revoke-message", ({ msgId }) => {
 
 
 
-async function confirmClearMyMessages(){
-  if(!currentTargetUID) return;
+async function confirmClearMyMessages() {
+
+  if (!currentTargetUID) return;
 
   const ok = await showModal(
-    "Xóa toàn bộ tin nhắn bạn đã gửi?\nTin nhắn của đối phương sẽ được giữ nguyên.",
-    "Xóa tin của tôi",
-    "Huỷ"
+    "Delete your sent messages?\nThe other person's messages will be kept.",
+    "Delete My Messages",
+    "Cancel"
   );
 
-  if(!ok) return;
+  if (!ok) return;
 
   clearMyMessages(currentTargetUID);
 }
@@ -1325,7 +1336,7 @@ socket.on("peer-cleared-my-messages", ({ by }) => {
     arr.forEach(m => {
       const isMe = m.from === me;
       pushMsg(
-        isMe ? "Bạn" : currentTarget.name,
+        isMe ? "You" : currentTarget.name,
         m.revoked ? "__REVOKED__" : m.text,
         isMe,
         m.id,
@@ -1346,7 +1357,7 @@ document.getElementById("btnLocation").onclick = async () => {
   if (!currentTarget) return;
 
   if (!navigator.geolocation) {
-    alert("Thiết bị không hỗ trợ GPS");
+    showModal("Your device does not support location services.");
     return;
   }
 
@@ -1368,7 +1379,7 @@ document.getElementById("btnLocation").onclick = async () => {
         msgId
       });
 
-      pushMsg("Bạn", text, true, msgId, "✓");
+      pushMsg("You", text, true, msgId, "✓");
 
       saveChat({
         id: msgId,
@@ -1381,7 +1392,7 @@ document.getElementById("btnLocation").onclick = async () => {
       });
     },
     err => {
-      alert("❌ Không lấy được vị trí");
+      showModal("Unable to get your current location.");
     },
     {
       enableHighAccuracy: true,
@@ -1392,6 +1403,7 @@ document.getElementById("btnLocation").onclick = async () => {
 
 
 function setTextSendingDisabled(disabled) {
+
   msgInput.disabled = disabled;
   sendBtn.disabled = disabled;
 
@@ -1399,12 +1411,15 @@ function setTextSendingDisabled(disabled) {
   sendBtn.style.opacity = disabled ? "0.4" : "1";
 
   if (disabled) {
-    msgInput.placeholder = "Đang upload… vui lòng chờ";
+
+    msgInput.placeholder = "Uploading... Please wait";
+
   } else {
-    msgInput.placeholder = "Nhập tin nhắn...";
+
+    msgInput.placeholder = "Type a message...";
+
   }
 }
-
 
 
 
@@ -1476,7 +1491,7 @@ p => {
   setTextSendingDisabled(false); // 🔓 mở gửi text
   const text = "/album " + urls.join("|");
 
-  pushMsg("Bạn", text, true, msgId, "✓");
+  pushMsg("You", text, true, msgId, "✓");
   saveChat({
     id: msgId,
     from: auth.uid,
@@ -1555,7 +1570,7 @@ p => {
   setTextSendingDisabled(false); // 🔓 mở gửi text
   const text = "/video " + url;
 
-  pushMsg("Bạn", text, true, msgId, "✓");
+  pushMsg("You", text, true, msgId, "✓");
 
   saveChat({
     id: msgId,
@@ -1588,11 +1603,11 @@ btnLocation.onclick = () => {
       const text = `/location ${lat},${lng}|${url}`;
       const msgId = Date.now() + "_" + Math.random().toString(36).slice(2);
 
-      pushMsg("Bạn", text, true, msgId, "✓");
+      pushMsg("You", text, true, msgId, "✓");
       saveChat({ id: msgId, from: auth.uid, to: currentTarget.uid, text, time: Date.now(), peer: currentTarget.uid, seen:true });
       socket.emit("private-message", { to: currentTarget.uid, msgId, text });
     },
-    () => alert("❌ Không lấy được vị trí"),
+    () => showModal("Unable to get your current location."),
     { enableHighAccuracy:true, timeout:10000 }
   );
 
@@ -1613,7 +1628,7 @@ function showToolCancelled(btn) {
     <div style="color:#ff5a5a;font-size:16px;text-shadow:0 0 8px #ff5a5a">
       ✕
     </div>
-    <div class="tool-sub">Đã huỷ</div>
+    <div class="tool-sub">Cancelled</div>
   `;
 
   setTimeout(() => {
@@ -1638,7 +1653,7 @@ function updateToolProgress(btn, percent, type, stats = {}) {
   if (percent === 95) {
     icon.innerHTML = `
       <div>95%</div>
-      <div class="tool-sub">Đang xử lý…</div>
+      <div class="tool-sub">Processing...</div>
     `;
     return;
   }
@@ -1696,23 +1711,30 @@ function calcSpeedETA(startTime, loaded, total) {
 
 
 socket.on("system-notify", data => {
+
   if (!data) return;
 
-  // 💰 NẠP COIN
+  // COIN TOP-UP
   if (data.type === "topup") {
-    showToast(data.text || "💰 Bạn vừa được nạp coin", "success");
+
+    showToast(
+      data.text || "Coins have been added to your account.",
+      "success"
+    );
+
     return;
   }
 
-   // ➖ TRỪ COIN
+  // COIN WITHDRAWAL NOTIFICATION
   if (data.type === "withdraw") {
     notifyWithdraw(data);
   }
 
-  // 🚫 KHOÁ TÀI KHOẢN
+  // ACCOUNT LOCKED
   if (data.type === "lock") {
+
     showToast(
-      data.reason || "🚫 Tài khoản của bạn đã bị khoá",
+      data.reason || "Your account has been locked.",
       "error"
     );
 
@@ -1724,6 +1746,7 @@ socket.on("system-notify", data => {
       location.href = "/login.html";
     }, 2000);
   }
+
 });
 
 
@@ -1755,7 +1778,7 @@ function showToast(text, type = "info", timeout = 3500){
 function showWithdrawNotify(data){
   const text =
     data.text ||
-    "Tài khoản của bạn vừa bị trừ coin";
+"Coins have been deducted from your account.";
 
   openSysModal(text);
 }
@@ -1763,8 +1786,8 @@ function showWithdrawNotify(data){
 
 function notifyWithdraw(data){
   const text =
-    data?.text ||
-    "➖ Tài khoản của bạn vừa bị trừ coin";
+data?.text ||
+"Coins have been deducted from your account.";
 
   // ưu tiên modal nếu tồn tại
   if (typeof openSysModal === "function") {
@@ -1803,12 +1826,21 @@ function showForceLogoutModal(message){
     modal.id = "forceLogoutModal";
     modal.innerHTML = `
       <div class="fl-backdrop"></div>
-      <div class="fl-box">
-        <div class="fl-icon">🚫</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc</div>
-        <div class="fl-msg"></div>
-        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
-      </div>
+     <div class="fl-box">
+
+  <div class="fl-icon">🚫</div>
+
+  <div class="fl-title">
+    Session Ended
+  </div>
+
+  <div class="fl-msg"></div>
+
+  <div class="fl-sub">
+    You will be redirected to the login page...
+  </div>
+
+</div>
     `;
     document.body.appendChild(modal);
   }
@@ -1819,7 +1851,8 @@ function showForceLogoutModal(message){
 
 
 socket.on("force-logout", (data) => {
-  const msg = data?.message || "Tài khoản của bạn đã bị đăng xuất";
+  const msg =
+  data?.message || "You have been signed out.";
 
   showForceLogoutModal(msg);
 

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="utf-8">
 
@@ -1311,7 +1311,7 @@ body.page-messages .msg-toast {
   type="button"
   class="msg-back"
   onclick="LSPTransition.go('/lobby.html', {
-    label: 'Đang mở Sảnh LIVE...'
+    label: 'Opening LIVE Lobby...'
   })"
   aria-label="Quay lại"
 >
@@ -1407,13 +1407,13 @@ body.page-messages .msg-toast {
           </svg>
         </div>
 
-        <div class="msg-empty-text">
-          <strong>Trò chuyện riêng tư</strong>
-          <span>
-            Chọn một người trong danh sách
-            để bắt đầu cuộc trò chuyện.
-          </span>
-        </div>
+<div class="msg-empty-text">
+  <strong>Private Conversations</strong>
+  <span>
+    Select someone from the list
+    to start a conversation.
+  </span>
+</div>
 
       </div>
 
@@ -1442,23 +1442,24 @@ body.page-messages .msg-toast {
     <!-- CHAT HEADER -->
     <header class="chat-header">
 
-      <button
-        type="button"
-        class="chat-back"
-        onclick="closeChat()"
-        aria-label="Quay lại danh sách tin nhắn"
-      >
-        <svg class="msg-svg">
-          <use href="#mi-back"></use>
-        </svg>
-      </button>
+<!-- BACK -->
+<button
+  type="button"
+  class="chat-back"
+  onclick="closeChat()"
+  aria-label="Back to conversations"
+>
+  <svg class="msg-svg">
+    <use href="#mi-back"></use>
+  </svg>
+</button>
 
-      <img
-        id="chatHeaderAvatar"
-        class="chat-header-avatar"
-        src=""
-        alt="Ảnh đại diện"
-      >
+<img
+  id="chatHeaderAvatar"
+  class="chat-header-avatar"
+  src=""
+  alt="Profile picture"
+>
 
       <div class="chat-header-title">
 
@@ -1466,21 +1467,21 @@ body.page-messages .msg-toast {
           PRIVATE CHAT
         </div>
 
-        <span id="chatTitle">Trò chuyện</span>
+       <span id="chatTitle">Conversation</span>
 
       </div>
 
       <!-- XÓA LỊCH SỬ -->
-      <button
-        type="button"
-        class="chat-clear icon-btn"
-        onclick="confirmClearMyMessages()"
-        aria-label="Xóa lịch sử tin nhắn"
-      >
-        <svg class="msg-svg">
-          <use href="#mi-trash"></use>
-        </svg>
-      </button>
+<button
+  type="button"
+  class="chat-clear icon-btn"
+  onclick="confirmClearMyMessages()"
+  aria-label="Clear my message history"
+>
+  <svg class="msg-svg">
+    <use href="#mi-trash"></use>
+  </svg>
+</button>
 
     </header>
 
@@ -1488,18 +1489,18 @@ body.page-messages .msg-toast {
     <div id="chatBox" class="chatbox"></div>
 
     <!-- SCROLL TO BOTTOM -->
-    <button
-      id="btnScrollBottom"
-      class="chat-scroll-bottom hidden"
-      type="button"
-      aria-label="Cuộn xuống tin nhắn mới nhất"
-    >
-      <svg class="msg-svg">
-        <use href="#mi-down"></use>
-      </svg>
+<button
+  id="btnScrollBottom"
+  class="chat-scroll-bottom hidden"
+  type="button"
+  aria-label="Scroll to the latest message"
+>
+  <svg class="msg-svg">
+    <use href="#mi-down"></use>
+  </svg>
 
-      <span class="scroll-dot"></span>
-    </button>
+  <span class="scroll-dot"></span>
+</button>
 
     <!-- COMPOSER -->
     <div class="chatform">
@@ -1569,24 +1570,24 @@ body.page-messages .msg-toast {
       </div>
 
       <!-- INPUT -->
-      <textarea
-        id="msgInput"
-        rows="1"
-        placeholder="Nhập tin nhắn..."
-        aria-label="Nội dung tin nhắn"
-      ></textarea>
+<textarea
+  id="msgInput"
+  rows="1"
+  placeholder="Type a message..."
+  aria-label="Message text"
+></textarea>
 
       <!-- SEND -->
-      <button
-        type="button"
-        id="sendBtn"
-        class="send-arrow"
-        aria-label="Gửi tin nhắn"
-      >
-        <svg class="msg-svg">
-          <use href="#mi-send"></use>
-        </svg>
-      </button>
+<button
+  type="button"
+  id="sendBtn"
+  class="send-arrow"
+  aria-label="Send message"
+>
+  <svg class="msg-svg">
+    <use href="#mi-send"></use>
+  </svg>
+</button>
 
     </div>
 
@@ -1602,7 +1603,7 @@ body.page-messages .msg-toast {
     <div id="sysText" class="sys-text">...</div>
 
     <div class="sys-actions">
-      <button id="sysCancel" class="sys-btn ghost">Huỷ</button>
+      <button id="sysCancel" class="sys-btn ghost">Cancel</button>
       <button id="sysOk" class="sys-btn primary">OK</button>
     </div>
   </div>
