@@ -4,7 +4,7 @@ let socket = null;
 const floor = document.getElementById("marketFloor");
 
 
-function showModal({ title="Thông báo", content="", confirm=false }) {
+function showModal({ title="Notification", content="", confirm=false }) {
   return new Promise(resolve => {
     const modal = document.getElementById("lpModal");
     const titleEl = document.getElementById("lpModalTitle");
@@ -141,7 +141,7 @@ function updateRentCoin(){
 
   const el = document.getElementById("rentCoinVal");
   if(el){
-    el.textContent = coin.toLocaleString();
+    el.textContent = coin.toLocaleString("en-US");
   }
 }
 
@@ -166,7 +166,7 @@ function checkRentAffordable(){
   if(selectedPlan.trial){
   btn.disabled = false;
   btn.classList.remove("disabled");
-  btn.textContent = "Dùng thử miễn phí";
+  btn.textContent = "Start Free Trial";
   if(topupBtn) topupBtn.classList.add("hidden");
   priceVal.classList.remove("rent-price-over");
   return;
@@ -176,7 +176,7 @@ function checkRentAffordable(){
   if(selectedPlan.price > coin){
     btn.disabled = true;
     btn.classList.add("disabled");
-    btn.textContent = "❌ Không đủ kim cương";
+    btn.textContent = "Insufficient Diamonds";
 
     if(topupBtn){
       topupBtn.classList.remove("hidden");
@@ -185,7 +185,7 @@ function checkRentAffordable(){
   }else{
     btn.disabled = false;
     btn.classList.remove("disabled");
-    btn.textContent = "Thuê gian hàng";
+    btn.textContent = "Rent a Booth";
 
     if(topupBtn){
       topupBtn.classList.add("hidden");
@@ -284,7 +284,11 @@ function renderMarketTabs(totalBooths){
   for(let i = 0; i < totalTabs; i++){
     const btn = document.createElement("button");
     btn.className = "market-tab" + (i === currentTab ? " active" : "");
-    btn.textContent = `Gian ${i*BOOTHS_PER_TAB + 1}–${Math.min((i+1)*BOOTHS_PER_TAB, totalBooths)}`;
+    btn.textContent =
+  `Booths ${i * BOOTHS_PER_TAB + 1}–${Math.min(
+    (i + 1) * BOOTHS_PER_TAB,
+    totalBooths
+  )}`;
 
     btn.onclick = ()=>{
       currentTab = i;
@@ -339,17 +343,17 @@ if (!b.owner) {
     <div class="booth-card-content">
 
       <div class="booth-index">
-        GIAN HÀNG ${String(b.id).padStart(2, "0")}
+        BOOTH ${String(b.id).padStart(2, "0")}
       </div>
 
       <div class="booth-plus">+</div>
 
       <div class="booth-text">
-        Thuê gian hàng
+        Rent a Booth
       </div>
 
       <div class="booth-hint">
-        Khởi tạo không gian của bạn
+        Create your own space
       </div>
 
     </div>
@@ -368,9 +372,9 @@ if (!b.owner) {
   if(b.owner.expireAt){
     const d = daysLeft(b.owner.expireAt);
     if(d <= 1){
-      expireBadge = `<div class="booth-expire-badge danger">HẾT HẠN SỚM</div>`;
+      expireBadge = `<div class="booth-expire-badge danger">EXPIRING SOON</div>`;
     }else if(d <= 3){
-      expireBadge = `<div class="booth-expire-badge">SẮP HẾT HẠN</div>`;
+      expireBadge = `<div class="booth-expire-badge">NEAR EXPIRY</div>`;
     }
   }
 
@@ -390,14 +394,14 @@ if (admin) {
           ${b.owner.locked ? "false" : "true"}
         )"
       >
-        ${b.owner.locked ? "Mở khóa" : "Khóa"}
+        ${b.owner.locked ? "Unlock" : "Lock"}
       </button>
 
       <button
         type="button"
         onclick="event.stopPropagation(); revokeBooth(${b.id})"
       >
-        Thu hồi
+        	Revoke
       </button>
 
     </div>
@@ -414,7 +418,7 @@ div.className =
 
 
 const boothName = escapeMarketHtml(
-  b.owner.name || "Gian hàng"
+  b.owner.name || "Shop"
 );
 
 const boothLogo = escapeMarketHtml(
@@ -422,15 +426,15 @@ const boothLogo = escapeMarketHtml(
 );
 
 const boothStatus = b.owner.locked
-  ? "Đang tạm khóa"
+  ? "Temporarily Locked"
   : isMine
-    ? "Gian hàng của bạn"
-    : "Chạm để ghé thăm";
+    ? "Your Booth"
+    : "Tap to Visit";
 
 div.innerHTML = `
   ${isMine ? `
     <div class="booth-mine-badge">
-      CỦA TÔI
+      	MINE
     </div>
   ` : ""}
 
@@ -440,7 +444,7 @@ div.innerHTML = `
   <div class="booth-card-content">
 
     <div class="booth-index">
-      GIAN HÀNG ${String(b.id).padStart(2, "0")}
+      BOOTH ${String(b.id).padStart(2, "0")}
     </div>
 
     <div class="booth-logo-shell">
@@ -476,11 +480,14 @@ div.innerHTML = `
 if (!b.owner.locked || isAdmin()) {
   div.onclick = ()=> openBooth(b.id);
 } else {
-  div.onclick = ()=> showModal({
-  title: "🚫 Gian hàng bị khoá",
-  content: "Gian hàng này hiện đang bị Admin khoá."
-});
+div.onclick = () => showModal({
 
+  title: "Booth Locked",
+
+  content:
+    "This booth has been locked by an administrator."
+
+});
 }
 
 
@@ -535,15 +542,27 @@ function handleMarketSwipe(){
 
 
 
-function updateMarketStats(){
+/* ==========================================
+   MARKET STATISTICS - ENGLISH
+========================================== */
+
+function updateMarketStats() {
+
   const total = booths.length;
+
   const active = booths.filter(b => b.owner).length;
+
   const empty = total - active;
 
   const el = document.getElementById("marketStats");
-  if(el){
-    el.textContent = `${total} gian • ${active} đang thuê • ${empty} trống`;
+
+  if (el) {
+
+    el.textContent =
+      `${total} booths · ${active} occupied · ${empty} available`;
+
   }
+
 }
 
 
@@ -564,9 +583,13 @@ function rentBooth(id){
 
 
   if(!me || !me.uid){
-  showModal({
-  title: "🔐 Chưa đăng nhập",
-  content: "Vui lòng đăng nhập để sử dụng chức năng này."
+showModal({
+
+  title: "Sign In Required",
+
+  content:
+    "Please sign in to use this feature."
+
 });
 
     return;
@@ -579,10 +602,14 @@ function rentBooth(id){
 
 
  if(alreadyHaveBooth){
-  showModal({
-    title: "⚠️ Không thể thuê",
-    content: "Bạn chỉ được thuê 1 gian hàng."
-  });
+showModal({
+
+  title: "Rental Limit Reached",
+
+  content:
+    "You can only rent one booth at a time."
+
+});
   return;
 }
 
@@ -648,7 +675,7 @@ document.querySelectorAll(".rent-option").forEach(opt=>{
     if(range){
       range.value = days;
       daysVal.textContent = days;
-      priceVal.textContent = price.toLocaleString();
+      priceVal.textContent = price.toLocaleString("en-US");
     }
 
     checkRentAffordable(); // 👈 thêm dòng này
@@ -666,7 +693,7 @@ if(range){
     const price = days * PRICE_PER_DAY;
 
     daysVal.textContent = days;
-    priceVal.textContent = price.toLocaleString();
+    priceVal.textContent = price.toLocaleString("en-US");
 
     selectedPlan = { days, price };
 
@@ -688,8 +715,12 @@ document.getElementById("confirmRent").onclick = async ()=>{
 const me = JSON.parse(localStorage.getItem("user_profile"));
 if(!me || !me.uid){
 showModal({
-  title: "🔐 Chưa đăng nhập",
-  content: "Vui lòng đăng nhập để sử dụng chức năng này."
+
+  title: "Sign In Required",
+
+  content:
+    "Please sign in to use this feature."
+
 });
 
   return;
@@ -721,25 +752,34 @@ try{
 
  
 
-if(!data.ok){
-  let msg = "❌ Thao tác thất bại";
+if (!data.ok) {
 
-  if(data.error === "already_have_booth")
-    msg = "Bạn chỉ được thuê 1 gian hàng";
-  else if(data.error === "not_enough_coin")
-    msg = "Không đủ kim cương";
-  else if(data.error === "not_owner")
-    msg = "Bạn không phải chủ gian hàng";
-  else if(data.error === "trial_used")
-    msg = "🎁 Bạn đã sử dụng gói dùng thử trước đó";
+  let msg = "Unable to complete your request.";
 
+  if (data.error === "already_have_booth") {
+
+    msg = "You can only rent one booth at a time.";
+
+  } else if (data.error === "not_enough_coin") {
+
+    msg = "Insufficient diamonds.";
+
+  } else if (data.error === "not_owner") {
+
+    msg = "You are not the owner of this booth.";
+
+  } else if (data.error === "trial_used") {
+
+    msg = "You have already used your free trial.";
+
+  }
 
   // ⛔ Ẩn modal thuê trước
 document.getElementById("rentBackdrop")
   ?.classList.add("hidden");
 
   await showModal({
-    title: "⚠️ Không thể thực hiện",
+    title: "Request Failed",
     content: msg
   });
 
@@ -754,20 +794,27 @@ document.getElementById("rentBackdrop")
   document.getElementById("rentBackdrop").classList.add("hidden");
   loadMarketFromServer();
 
- await showModal({
-  title: "Thành công",
+await showModal({
+
+  title: "Success",
+
   content:
     rentMode === "extend"
-      ? "Gia hạn gian hàng thành công!"
-      : "Thuê gian hàng thành công!"
+      ? "Your booth rental has been extended successfully."
+      : "Your booth has been rented successfully."
+
 });
 
 
 }catch(e){
-  await showModal({
-    title: "⚠️ Lỗi",
-    content: "Không thể kết nối tới server. Vui lòng thử lại."
-  });
+await showModal({
+
+  title: "Connection Error",
+
+  content:
+    "Unable to connect to the server. Please try again."
+
+});
 }
 
 
@@ -790,7 +837,7 @@ function openBooth(id) {
   if (window.LSPTransition?.go) {
 
     LSPTransition.go(url, {
-      label: "Đang mở Gian hàng..."
+      label: "Opening Booth..."
     });
 
   } else {
@@ -807,52 +854,82 @@ function openBooth(id) {
    MARKET ADMIN - LOCK / UNLOCK / REVOKE
 ========================================== */
 
+/* ==========================================
+   MARKET ADMIN ACTIONS
+   ENGLISH NOTIFICATIONS
+========================================== */
+
 async function marketAdminAction(id, action, lock = false) {
 
+  // VERIFY ADMIN SESSION
   const authorized = await checkMarketAdminSession();
 
   if (!authorized) {
+
     await showModal({
-      title: "Chưa xác thực quyền quản trị",
+
+      title: "Admin Verification Required",
+
       content:
-        "Phiên mật khẩu Admin không hợp lệ hoặc đã hết hạn. " +
-        "Vui lòng đăng nhập lại tại Admin Dashboard."
+        "Your Admin session is invalid or has expired. " +
+        "Please sign in again through the Admin Dashboard."
+
     });
+
     return;
   }
 
+
   const isRevoke = action === "revoke";
 
-  const title = isRevoke
-    ? "Thu hồi gian hàng"
-    : lock
-      ? "Khóa gian hàng"
-      : "Mở khóa gian hàng";
 
+  // ACTION TITLE
+  const title = isRevoke
+    ? "Revoke Booth"
+    : lock
+      ? "Lock Booth"
+      : "Unlock Booth";
+
+
+  // CONFIRM ACTION
   const confirmed = await showModal({
+
     title,
+
     content: isRevoke
-      ? `Xác nhận thu hồi gian hàng #${id}?`
+      ? `Are you sure you want to revoke booth #${id}?`
       : lock
-        ? `Xác nhận khóa gian hàng #${id}?`
-        : `Xác nhận mở khóa gian hàng #${id}?`,
+        ? `Are you sure you want to lock booth #${id}?`
+        : `Are you sure you want to unlock booth #${id}?`,
+
     confirm: true
+
   });
+
 
   if (!confirmed) return;
 
+
+  // KEEP ORIGINAL API ROUTES
   const url = isRevoke
     ? "/api/admin/market/revoke"
     : "/api/admin/market/lock";
 
+
   const payload = isRevoke
     ? { boothId: id }
-    : { boothId: id, lock: Boolean(lock) };
+    : {
+        boothId: id,
+        lock: Boolean(lock)
+      };
+
 
   try {
 
     const response = await fetch(url, {
+
       method: "POST",
+
       credentials: "same-origin",
 
       headers: {
@@ -860,81 +937,114 @@ async function marketAdminAction(id, action, lock = false) {
       },
 
       body: JSON.stringify(payload)
+
     });
+
 
     const data = await response.json().catch(() => ({}));
 
+
     console.log("MARKET ADMIN RESPONSE:", {
+
       action,
+
       boothId: id,
+
       status: response.status,
+
       data
+
     });
 
+
+    // REQUEST FAILED
     if (!response.ok || data.ok !== true) {
 
-      let errorMessage = "Thao tác không thành công.";
+      let errorMessage =
+        "Unable to complete this action.";
+
 
       if (response.status === 401) {
+
         errorMessage =
-          "Phiên quản trị đã hết hạn. " +
-          "Vui lòng đăng nhập lại bằng mật khẩu admin.";
+          "Your Admin session has expired. " +
+          "Please sign in again using your Admin password.";
+
+      } else if (response.status === 403) {
+
+        errorMessage =
+          "You do not have permission to perform this action.";
+
+      } else if (response.status === 404) {
+
+        errorMessage =
+          "The booth or API endpoint could not be found.";
+
+      } else if (response.status >= 500) {
+
+        errorMessage =
+          "A server error occurred while updating the booth.";
+
       }
 
-      else if (response.status === 403) {
-        errorMessage =
-          "Server từ chối quyền quản trị.";
-      }
-
-      else if (response.status === 404) {
-        errorMessage =
-          "Không tìm thấy gian hàng hoặc API.";
-      }
-
-      else if (response.status >= 500) {
-        errorMessage =
-          "Server gặp lỗi khi cập nhật dữ liệu gian hàng.";
-      }
 
       const errorCode = escapeMarketHtml(
         String(data.error || "UNKNOWN_ERROR")
       );
 
+
       await showModal({
-        title: "Thao tác thất bại",
+
+        title: "Action Failed",
+
         content:
-          `${errorMessage}<div style="margin-top:10px;opacity:.7">` +
-          `HTTP ${response.status} · ${errorCode}</div>`
+          `${errorMessage}` +
+          `<div style="margin-top:10px;opacity:.7">` +
+          `HTTP ${response.status} · ${errorCode}` +
+          `</div>`
+
       });
+
 
       return;
     }
 
-    // Cập nhật ngay sau khi server xử lý thành công
+
+    // RELOAD MARKET AFTER SUCCESS
     await loadMarketFromServer();
 
+
     await showModal({
-      title: "Thành công",
+
+      title: "Success",
+
       content: isRevoke
-        ? `Đã thu hồi gian hàng #${id}.`
+        ? `Booth #${id} has been revoked.`
         : lock
-          ? `Đã khóa gian hàng #${id}.`
-          : `Đã mở khóa gian hàng #${id}.`
+          ? `Booth #${id} has been locked.`
+          : `Booth #${id} has been unlocked.`
+
     });
+
 
   } catch (error) {
 
     console.error("Market admin error:", error);
 
-    await showModal({
-      title: "Lỗi kết nối",
-      content:
-        "Không thể kết nối tới server. " +
-        "Vui lòng thử lại."
-    });
-  }
-}
 
+    await showModal({
+
+      title: "Connection Error",
+
+      content:
+        "Unable to connect to the server. " +
+        "Please try again."
+
+    });
+
+  }
+
+}
 async function toggleLock(id, lock) {
   return marketAdminAction(id, "lock", lock);
 }
@@ -961,27 +1071,29 @@ document.querySelectorAll(".lp-tab").forEach(tab => {
     // Đang ở Market
     if (t === "market") return;
 
-    const routes = {
-      social: {
-        url: "/social.html",
-        label: "Đang mở Bảng tin..."
-      },
+const routes = {
 
-      lobby: {
-        url: "/lobby.html",
-        label: "Đang mở Sảnh LIVE..."
-      },
+  social: {
+    url: "/social.html",
+    label: "Opening News Feed..."
+  },
 
-      messages: {
-        url: "/messages.html",
-        label: "Đang mở Tin nhắn..."
-      },
+  lobby: {
+    url: "/lobby.html",
+    label: "Opening LIVE Lobby..."
+  },
 
-      profile: {
-        url: "/profile.html",
-        label: "Đang mở Hồ sơ cá nhân..."
-      }
-    };
+  messages: {
+    url: "/messages.html",
+    label: "Opening Messages..."
+  },
+
+  profile: {
+    url: "/profile.html",
+    label: "Opening Your Profile..."
+  }
+
+};
 
     const route = routes[t];
 
@@ -1069,9 +1181,9 @@ if (topupBtn) {
 
     if (window.LSPTransition?.go) {
 
-      LSPTransition.go("/topup.html", {
-        label: "Đang mở Nạp kim cương..."
-      });
+LSPTransition.go("/topup.html", {
+  label: "Opening Diamond Top-Up..."
+});
 
     } else {
 
@@ -1085,25 +1197,51 @@ if (topupBtn) {
 
 
 
-function showForceLogoutModal(message){
+/* ==========================================
+   FORCE LOGOUT - ENGLISH INTERFACE
+========================================== */
+
+function showForceLogoutModal(message) {
+
   let modal = document.getElementById("forceLogoutModal");
-  if(!modal){
+
+  if (!modal) {
+
     modal = document.createElement("div");
+
     modal.id = "forceLogoutModal";
+
     modal.innerHTML = `
+
       <div class="fl-backdrop"></div>
+
       <div class="fl-box">
+
         <div class="fl-icon">🚫</div>
-        <div class="fl-title">Phiên đăng nhập kết thúc</div>
+
+        <div class="fl-title">
+          Session Ended
+        </div>
+
         <div class="fl-msg"></div>
-        <div class="fl-sub">Bạn sẽ được chuyển về trang đăng nhập…</div>
+
+        <div class="fl-sub">
+          You will be redirected to the login page...
+        </div>
+
       </div>
     `;
+
     document.body.appendChild(modal);
   }
 
-  modal.querySelector(".fl-msg").textContent = message;
+
+  modal.querySelector(".fl-msg").textContent =
+    String(message || "Your login session has ended.");
+
+
   modal.classList.add("show");
+
 }
 
 
@@ -1161,9 +1299,9 @@ if (typeof io === "function") {
 
     socket.on("force-logout", (data) => {
 
-      const msg =
-        data?.message ||
-        "Tài khoản của bạn đã bị đăng xuất";
+const msg =
+  data?.message ||
+  "You have been signed out.";
 
       showForceLogoutModal(msg);
 
