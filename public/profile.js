@@ -25,7 +25,9 @@ const KEY = "user_profile";
    PROFILE - SMOOTH PAGE NAVIGATION
 ========================================== */
 
-function navigateProfilePage(url, label = "Đang mở trang mới...") {
+function navigateProfilePage(url, label = "Opening page...") {
+
+  label = profileEnglishText(label);
 
   if (
     window.LSPTransition &&
@@ -1947,7 +1949,7 @@ const name =
   document.getElementById("confirmName").textContent = name;
   document.getElementById("confirmLevel").textContent = level;
   document.getElementById("confirmAmount").textContent =
-  amount.toLocaleString("vi-VN");
+  amount.toLocaleString("en-US");
 
   document
     .getElementById("transferConfirmModal")
@@ -1981,7 +1983,7 @@ function confirmTransfer(){
   document.getElementById("successName").textContent = name;
   document.getElementById("successLevel").textContent = level;
   document.getElementById("successAmount").textContent =
-  amount.toLocaleString("vi-VN");
+  amount.toLocaleString("en-US");
 
   pendingTransfer = null;
 
@@ -2032,7 +2034,7 @@ document.getElementById("previewLevel").textContent =
 
 document.getElementById("previewCoins").textContent =
   "Số dư: " +
-  Number(data.coins || 0).toLocaleString("vi-VN");
+  Number(data.coins || 0).toLocaleString("en-US");
 
 
   box.classList.remove("hidden");
@@ -2155,7 +2157,7 @@ if (filtered.length === 0) {
           </div>
 
           <div class="transfer-time">
-            ${new Date(t.time).toLocaleString()}
+            ${new Date(t.time).toLocaleString("en-US")}
           </div>
         </div>
 
@@ -2163,7 +2165,7 @@ if (filtered.length === 0) {
 
 
 <div class="transfer-amount ${amountClass}">
-  ${amountSign}${Number(t.amount || 0).toLocaleString("vi-VN")}
+  ${amountSign}${Number(t.amount || 0).toLocaleString("en-US")}
   <span class="history-unit">KIM CƯƠNG</span>
 </div>
 
@@ -2241,7 +2243,7 @@ depositHistoryList.innerHTML = `
             </div>
 
             <div class="transfer-time">
-            ${new Date(item.time).toLocaleString()}
+            ${new Date(item.time).toLocaleString("en-US")}
             </div>
           </div>
 
@@ -2249,7 +2251,7 @@ depositHistoryList.innerHTML = `
 
 
 <div class="transfer-amount transfer-receive">
-  +${Number(item.amount || 0).toLocaleString("vi-VN")}
+  +${Number(item.amount || 0).toLocaleString("en-US")}
   <span class="history-unit">KIM CƯƠNG</span>
 </div>
 
@@ -2381,3 +2383,584 @@ function closeDepositHistory(){
   }
 
 })();
+
+
+
+/* ================================================
+   LIVESTREAM PRO
+   PROFILE - ENGLISH UI TRANSLATION
+   Keep all existing features and Socket.IO events
+================================================ */
+
+const PROFILE_ENGLISH = new Map(Object.entries({
+
+  // ===== PROFILE =====
+  "Nhập tên của bạn": "Enter your name",
+  "Viết vài dòng về bạn...": "Write something about yourself...",
+  "Bạn bè": "Friends",
+  "💬 Nhắn tin": "💬 Message",
+  "➕ Kết bạn": "➕ Add Friend",
+  "⏳ Đã gửi lời mời": "⏳ Request Sent",
+  "🚫 Huỷ bạn": "🚫 Unfriend",
+
+  "TIẾN ĐỘ KINH NGHIỆM": "LEVEL PROGRESS",
+  "✦ TÀI KHOẢN CỦA BẠN": "✦ YOUR ACCOUNT",
+  "QUẢN LÝ TÀI SẢN": "ASSET MANAGEMENT",
+
+  // ===== ACCOUNT STATISTICS =====
+  "NẠP": "TOP UP",
+  "Kim cương": "Diamonds",
+  "ĐẦU TƯ": "INVEST",
+  "Đã sử dụng": "Used",
+  "RÚT": "WITHDRAW",
+  "Ví tiền": "Wallet",
+  "TỔNG NẠP": "TOTAL TOP-UP",
+  "Đã nạp vào": "Total Deposited",
+  "GỬI": "SEND",
+  "Chuyển kim cương": "Transfer Diamonds",
+  "LỊCH SỬ": "HISTORY",
+  "Lịch sử giao dịch": "Transaction History",
+  "Thư viện": "Library",
+
+  "💾 Lưu": "💾 Save",
+  "🔐 Đổi mật khẩu": "🔐 Change Password",
+  "📩 Tin nhắn": "📩 Messages",
+
+  // ===== PASSWORD SECURITY =====
+  "Đổi mật khẩu": "Change Password",
+  "Cập nhật thông tin bảo mật tài khoản của bạn":
+    "Update your account security settings",
+
+  "MÃ BẢO MẬT": "SECURITY CODE",
+  "Nhập mã bảo mật": "Enter security code",
+  "MẬT KHẨU MỚI": "NEW PASSWORD",
+  "Nhập mật khẩu mới": "Enter new password",
+  "XÁC NHẬN MẬT KHẨU": "CONFIRM PASSWORD",
+  "Nhập lại mật khẩu mới": "Re-enter new password",
+
+  "Sử dụng mật khẩu riêng tư và không chia sẻ mã bảo mật với người khác.":
+    "Use a strong password and never share your security code.",
+
+  "Hủy": "Cancel",
+  "Huỷ": "Cancel",
+  "Xác nhận": "Confirm",
+  "Xác nhận đổi": "Change Password",
+  "Thông báo": "Notification",
+
+  // ===== ACCOUNT SETTINGS =====
+  "Cài đặt tài khoản": "Account Settings",
+  "Quản lý tài khoản và quyền truy cập":
+    "Manage your account and access permissions",
+
+  "Đóng cài đặt": "Close Settings",
+  "TÀI KHOẢN & BẢO MẬT": "ACCOUNT & SECURITY",
+  "Rút tiền": "Withdraw",
+  "Quản lý yêu cầu rút tiền":
+    "Manage withdrawal requests",
+
+  "Cập nhật bảo mật tài khoản":
+    "Update account security",
+
+  "PHIÊN ĐĂNG NHẬP": "LOGIN SESSION",
+  "Đăng xuất": "Log Out",
+  "Kết thúc phiên đăng nhập hiện tại":
+    "End your current login session",
+
+  // ===== TRANSFER DIAMONDS =====
+  "Chuyển kim cương đến tài khoản khác":
+    "Send diamonds to another account",
+
+  "TÀI KHOẢN NHẬN": "RECIPIENT ACCOUNT",
+  "Nhập tên nhân vật hoặc UID":
+    "Enter username or UID",
+
+  "Nhập thông tin chính xác để tìm người nhận.":
+    "Enter accurate information to find the recipient.",
+
+  "Ảnh đại diện người nhận": "Recipient avatar",
+  "Người nhận": "Recipient",
+  "NGƯỜI NHẬN": "RECIPIENT",
+
+  "SỐ KIM CƯƠNG": "DIAMOND AMOUNT",
+  "Nhập số lượng muốn chuyển":
+    "Enter the amount to transfer",
+
+  "Kiểm tra số lượng trước khi xác nhận.":
+    "Check the amount before confirming.",
+
+  "Hủy bỏ": "Cancel",
+  "Tiếp tục": "Continue",
+
+  // ===== TRANSFER CONFIRMATION =====
+  "Xác nhận giao dịch": "Confirm Transaction",
+
+  "Vui lòng kiểm tra thông tin người nhận và số kim cương trước khi chuyển.":
+    "Please review the recipient and diamond amount before transferring.",
+
+  "CHUYỂN ĐẾN": "TRANSFER TO",
+  "SỐ KIM CƯƠNG CHUYỂN": "TRANSFER AMOUNT",
+  "Số lượng chuyển": "Transfer Amount",
+  "KIM CƯƠNG": "DIAMONDS",
+
+  "Giao dịch không thể hoàn tác. Vui lòng xác nhận đúng người nhận.":
+    "This transaction cannot be reversed. Please verify the recipient.",
+
+  "⚠ Giao dịch không thể hoàn tác":
+    "⚠ This transaction cannot be reversed",
+
+  "Quay lại": "Back",
+  "Xác nhận chuyển": "Confirm Transfer",
+  "Xác nhận chuyển kim cương":
+    "Confirm Diamond Transfer",
+
+  // ===== TRANSFER RESULT =====
+  "ĐÃ GỬI YÊU CẦU": "REQUEST SUBMITTED",
+
+  "Yêu cầu chuyển đã được gửi":
+    "Transfer Request Submitted",
+
+  "Hệ thống đang xử lý giao dịch chuyển kim cương của bạn.":
+    "Your diamond transfer is being processed.",
+
+  "SỐ KIM CƯƠNG YÊU CẦU CHUYỂN":
+    "REQUESTED DIAMONDS",
+
+  "Hoàn tất": "Done",
+  "Chuyển kim cương thành công":
+    "Diamonds Transferred Successfully",
+
+  "Đã chuyển": "Transferred",
+
+  // ===== TRANSFER HISTORY =====
+  "LỊCH SỬ CHUYỂN KIM CƯƠNG":
+    "DIAMOND TRANSFER HISTORY",
+
+  "Lịch sử chuyển": "Transfer History",
+  "Thông tin giao dịch kim cương":
+    "Diamond transaction details",
+
+  "Đóng": "Close",
+  "Đã gửi": "Sent",
+  "Đã nhận": "Received",
+  "CHI TIẾT GIAO DỊCH": "TRANSACTION DETAILS",
+
+  "Chưa có giao dịch trong mục này.":
+    "No transactions found in this category.",
+
+  // ===== DEPOSIT HISTORY =====
+  "LỊCH SỬ NẠP KIM CƯƠNG":
+    "DIAMOND DEPOSIT HISTORY",
+
+  "Lịch sử nạp": "Deposit History",
+
+  "Thông tin các lần nạp kim cương":
+    "Your diamond deposit records",
+
+  "CHI TIẾT GIAO DỊCH NẠP":
+    "DEPOSIT DETAILS",
+
+  "Chưa có giao dịch nạp kim cương.":
+    "No diamond deposits found.",
+
+  "Nạp kim cương": "Diamond Top-up",
+
+  // ===== FRIENDS & SOCIAL =====
+  "🚫 Bạn không thể tương tác với người này":
+    "🚫 You cannot interact with this user.",
+
+  "🚫 Bạn không thể gửi lời mời cho người này":
+    "🚫 You cannot send a friend request to this user.",
+
+  "📨 Đã gửi lời mời kết bạn":
+    "📨 Friend request sent.",
+
+  "Huỷ lời mời kết bạn?":
+    "Cancel this friend request?",
+
+  "Huỷ kết bạn?":
+    "Remove this friend?",
+
+  "Xác nhận": "Confirm",
+
+  "❌ Đã huỷ lời mời":
+    "❌ Friend request canceled.",
+
+  "🚫 Đã huỷ kết bạn":
+    "🚫 Friend removed.",
+
+  "Chặn người này?":
+    "Block this user?",
+
+  "⛔ Đã chặn":
+    "⛔ User blocked.",
+
+  "🔒 Chỉ có thể nhắn tin khi đã là bạn":
+    "🔒 You can only message friends.",
+
+  "👥 Hai bạn đã là bạn bè, có thể nhắn tin!":
+    "👥 You are now friends and can send messages!",
+
+  "🚫 Hai bạn không còn là bạn bè":
+    "🚫 You are no longer friends.",
+
+  "🚫 Bạn không thể xem hồ sơ của người này":
+    "🚫 You cannot view this user's profile.",
+
+  "🔓 Bạn đã được gỡ chặn":
+    "🔓 This user has unblocked you.",
+
+  // ===== PROFILE ACTIONS =====
+  "🚫 Bạn không thể rút tiền từ tài khoản này":
+    "🚫 You cannot withdraw from this account.",
+
+  "💎 Bạn chưa có kim cương để rút":
+    "💎 You have no diamonds available for withdrawal.",
+
+  "🚫 Bạn không thể đầu tư bằng tài khoản này":
+    "🚫 You cannot invest using this account.",
+
+  "🚫 Bạn không thể nạp coin cho tài khoản này":
+    "🚫 You cannot top up this account.",
+
+  "✅ Đã cập nhật tên hiển thị":
+    "✅ Display name updated successfully.",
+
+  "✅ Đã lưu hồ sơ!":
+    "✅ Profile saved successfully!",
+
+  "Đã lưu giới thiệu":
+    "About section saved successfully.",
+
+  "❌ Upload thất bại":
+    "❌ Upload failed.",
+
+  "Upload ảnh bìa thất bại":
+    "Cover photo upload failed.",
+
+  "Đã cập nhật ảnh bìa":
+    "Cover photo updated successfully.",
+
+  "Lỗi xử lý ảnh bìa":
+    "Failed to process the cover photo.",
+
+  // ===== PASSWORD NOTIFICATIONS =====
+  "Nhập đầy đủ thông tin":
+    "Please fill in all required fields.",
+
+  "Mật khẩu mới phải >= 6 ký tự":
+    "The new password must contain at least 6 characters.",
+
+  "Mật khẩu nhập lại không khớp":
+    "Passwords do not match.",
+
+  "Chưa đăng nhập":
+    "You are not logged in.",
+
+  "Đổi mật khẩu thành công":
+    "Password changed successfully.",
+
+  "Thiếu dữ liệu":
+    "Missing required information.",
+
+  "Tài khoản không tồn tại":
+    "Account not found.",
+
+  "Mã bảo mật không đúng":
+    "Incorrect security code.",
+
+  "Đổi mật khẩu thất bại":
+    "Failed to change password.",
+
+  // ===== LOGOUT & ACCOUNT =====
+  "Bạn có chắc chắn muốn đăng xuất không?":
+    "Are you sure you want to log out?",
+
+  "Xác nhận đăng xuất":
+    "Confirm Logout",
+
+  "Phiên đăng nhập kết thúc":
+    "Session Ended",
+
+  "Bạn sẽ được chuyển về trang đăng nhập…":
+    "You will be redirected to the login page...",
+
+  "Tài khoản của bạn đã bị đăng xuất":
+    "You have been signed out.",
+
+  "🚫 Tài khoản của bạn đã bị khoá":
+    "🚫 Your account has been locked.",
+
+  "Bạn vừa được nạp coin":
+    "Coins have been added to your account.",
+
+  "Tài khoản của bạn vừa bị trừ coin":
+    "Coins have been deducted from your account.",
+
+  "➖ Tài khoản của bạn vừa bị trừ coin":
+    "➖ Coins have been deducted from your account.",
+
+  // ===== TRANSFER ERRORS =====
+  "🚫 Bạn không thể chuyển kim cương từ tài khoản này":
+    "🚫 You cannot transfer diamonds from this account.",
+
+  "⚠️ Nhập tên nhân vật hoặc UID":
+    "⚠️ Please enter a username or UID.",
+
+  "⚠️ Chưa xác định người nhận":
+    "⚠️ Recipient has not been identified.",
+
+  "❌ Không tìm thấy người chơi":
+    "❌ Player not found.",
+
+  "Người dùng": "User",
+
+  "🚫 Không thể xem lịch sử nạp của người khác":
+    "🚫 You cannot view another user's deposit history.",
+
+  // ===== MESSAGE HISTORY =====
+  "Bạn có chắc muốn xóa toàn bộ lịch sử tin nhắn? Hành động này không thể hoàn tác.":
+    "Are you sure you want to delete all message history? This action cannot be undone.",
+
+  "Xóa": "Delete",
+  "🗑️ Lịch sử tin nhắn đã được xóa":
+    "🗑️ Message history has been deleted.",
+
+  // ===== PAGE TRANSITIONS =====
+  "Đang mở trang mới...": "Opening page...",
+  "Đang mở cuộc trò chuyện...": "Opening conversation...",
+  "Đang mở trang Rút kim cương...":
+    "Opening Diamond Withdrawal...",
+  "Đang mở Thị trường đầu tư...":
+    "Opening Investment Market...",
+  "Đang mở trang Nạp kim cương...":
+    "Opening Diamond Top-up...",
+  "Đang mở Tin nhắn...": "Opening Messages...",
+  "Đang mở Bảng tin...": "Opening News Feed...",
+  "Đang mở Sảnh LIVE...": "Opening LIVE Lobby...",
+
+  // ===== ACCESSIBILITY =====
+  "Đóng cài đặt": "Close Settings",
+  "Ảnh đại diện người nhận": "Recipient avatar"
+
+}));
+
+
+/* ================================================
+   TRANSLATE TEXT
+================================================ */
+
+function profileEnglishText(value) {
+
+  if (typeof value !== "string") return value;
+
+  const original = value;
+  const clean = original.replace(/\s+/g, " ").trim();
+
+  if (!clean) return original;
+
+  let translated = PROFILE_ENGLISH.get(clean);
+
+  // Dynamic level
+  if (!translated) {
+
+    const levelMatch = clean.match(/^Cấp độ\s+(\d+)$/i);
+
+    if (levelMatch) {
+      translated = "Level " + levelMatch[1];
+    }
+
+  }
+
+  // Dynamic balance
+  if (!translated) {
+
+    const balanceMatch = clean.match(/^Số dư:\s*(.+)$/i);
+
+    if (balanceMatch) {
+      translated = "Balance: " + balanceMatch[1];
+    }
+
+  }
+
+  if (!translated) return original;
+
+  const leading = original.match(/^\s*/)?.[0] || "";
+  const trailing = original.match(/\s*$/)?.[0] || "";
+
+  return leading + translated + trailing;
+
+}
+
+
+/* ================================================
+   TRANSLATE STATIC & DYNAMIC DOM
+================================================ */
+
+function profileTranslateElement(el) {
+
+  if (!(el instanceof Element)) return;
+
+  if (el.matches("script, style, noscript")) return;
+
+  const attributes = [
+    "placeholder",
+    "title",
+    "aria-label",
+    "alt",
+    "data-lsp-label"
+  ];
+
+  for (const attr of attributes) {
+
+    if (!el.hasAttribute(attr)) continue;
+
+    const oldText = el.getAttribute(attr);
+    const newText = profileEnglishText(oldText);
+
+    if (oldText !== newText) {
+      el.setAttribute(attr, newText);
+    }
+
+  }
+
+}
+
+
+function profileTranslateTextNode(node) {
+
+  if (!node || node.nodeType !== Node.TEXT_NODE) {
+    return;
+  }
+
+  const parent = node.parentElement;
+
+  if (!parent) return;
+
+  // Never change scripts, styles or user-written content
+  if (parent.closest(
+    "script, style, noscript, " +
+    "#profileNameText, #previewName, " +
+    "#confirmName, #successName, " +
+    "#bioInput, [contenteditable]"
+  )) {
+    return;
+  }
+
+  const oldText = node.nodeValue;
+  const newText = profileEnglishText(oldText);
+
+  if (newText !== oldText) {
+    node.nodeValue = newText;
+  }
+
+}
+
+
+function profileTranslateTree(root) {
+
+  if (!root) return;
+
+  if (root.nodeType === Node.TEXT_NODE) {
+    profileTranslateTextNode(root);
+    return;
+  }
+
+  if (root.nodeType !== Node.ELEMENT_NODE) {
+    return;
+  }
+
+  profileTranslateElement(root);
+
+  root.querySelectorAll("*").forEach(el => {
+    profileTranslateElement(el);
+  });
+
+  const walker = document.createTreeWalker(
+    root,
+    NodeFilter.SHOW_TEXT
+  );
+
+  let textNode;
+
+  while ((textNode = walker.nextNode())) {
+    profileTranslateTextNode(textNode);
+  }
+
+}
+
+
+/* ================================================
+   INITIALIZE ENGLISH UI
+================================================ */
+
+function initializeProfileEnglish() {
+
+  document.documentElement.lang = "en";
+
+  document.title = "Profile | Livestream Pro";
+
+  // Translate existing interface
+  profileTranslateTree(document.body);
+
+  // Translate dynamically generated notifications,
+  // modals, transaction history and Socket.IO updates
+  const observer = new MutationObserver(records => {
+
+    for (const record of records) {
+
+      if (record.type === "characterData") {
+        profileTranslateTextNode(record.target);
+        continue;
+      }
+
+      if (record.type === "attributes") {
+        profileTranslateElement(record.target);
+        continue;
+      }
+
+      if (record.type === "childList") {
+
+        record.addedNodes.forEach(node => {
+          profileTranslateTree(node);
+        });
+
+      }
+
+    }
+
+  });
+
+  observer.observe(document.body, {
+
+    childList: true,
+    subtree: true,
+    characterData: true,
+    attributes: true,
+
+    attributeFilter: [
+      "placeholder",
+      "title",
+      "aria-label",
+      "alt",
+      "data-lsp-label"
+    ]
+
+  });
+
+}
+
+
+// Start after DOM is available
+if (document.readyState === "loading") {
+
+  document.addEventListener(
+    "DOMContentLoaded",
+    initializeProfileEnglish,
+    { once: true }
+  );
+
+} else {
+
+  initializeProfileEnglish();
+
+}
