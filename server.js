@@ -454,10 +454,10 @@ f.fireAt  = Date.now();
         changed = true;
 
         // 🔔 Emit realtime cho user
-        emitToUser(uid,"factory-fire",{
-          index,
-          message:"🔥 Nhà máy đã bị hỏa hoạn!"
-        });
+emitToUser(uid,"factory-fire",{
+  index,
+  message:"🔥 A fire has broken out at your factory!"
+});
 
       }
 
@@ -1330,11 +1330,11 @@ function blockSocketIfBoothLocked(socket, boothId) {
   const uid = socket.data.uid;
   if (!uid || !boothId) return false;
 
-  if (blockIfBoothLockedById(boothId, uid)) {
-    socket.emit("booth-locked", {
-      boothId,
-      message: "🚫 Gian hàng đang bị Admin khoá"
-    });
+if (blockIfBoothLockedById(boothId, uid)) {
+  socket.emit("booth-locked", {
+    boothId,
+    message: "🚫 This booth has been locked by an admin"
+  });
     return true;
   }
   return false;
@@ -3183,7 +3183,7 @@ me.profile.coins = Math.floor(
     // 🏆 chỉ add top nếu thắng
     roundWinners.push({
       uid: o.uid,
-      name: me.profile.name || "Người chơi",
+      name: me.profile.name || "Player",
       winAmount
     });
   }
@@ -3796,7 +3796,7 @@ function emitTimeRacePlayers(){
     const me = users[b.uid];
     return {
       uid: b.uid,
-      name: me?.profile?.name || "Người chơi",
+      name: me?.profile?.name || "Player",
       bet: b.bet,
       stopped: timeRaceRound.stopped.includes(b.uid)
     };
@@ -4018,14 +4018,14 @@ socket.on("dtp-admin-login", (data, callback) => {
   if (now < record.blockedUntil) {
     return reply({
       ok: false,
-      message: "Thử quá nhiều lần. Vui lòng thử lại sau 15 phút."
+      message: "Too many attempts. Please try again in 15 minutes."
     });
   }
 
   if (!DTP_ADMIN_PASSWORD) {
     return reply({
       ok: false,
-      message: "Server chưa cấu hình DTP_ADMIN_PASSWORD."
+      message: 	"DTP_ADMIN_PASSWORD has not been configured on the server."
     });
   }
 
@@ -4043,7 +4043,7 @@ socket.on("dtp-admin-login", (data, callback) => {
 
     return reply({
       ok: false,
-      message: "Mật khẩu quản trị không chính xác."
+      message: "Incorrect admin password."
     });
   }
 
@@ -4075,7 +4075,7 @@ socket.on("dtp-admin-get-state", (_data, callback) => {
     return reply({
       ok: false,
       code: "AUTH_REQUIRED",
-      message: "Vui lòng nhập lại mật khẩu."
+      message: "Please enter your password again."
     });
   }
 
@@ -4102,7 +4102,7 @@ socket.on("dtp-admin-override", (data, callback) => {
     return reply({
       ok: false,
       code: "AUTH_REQUIRED",
-      message: "Phiên xác thực đã hết hạn."
+      message: "Your authentication session has expired."
     });
   }
 
@@ -4111,14 +4111,14 @@ socket.on("dtp-admin-override", (data, callback) => {
   if (!["dragon", "tiger", "phoenix"].includes(winner)) {
     return reply({
       ok: false,
-      message: "Kết quả không hợp lệ."
+      message: "Invalid result."
     });
   }
 
   if (Date.now() >= dtpRound.endAt) {
     return reply({
       ok: false,
-      message: "Vòng hiện tại đã kết thúc."
+      message: "The current round has ended."
     });
   }
 
@@ -4126,7 +4126,7 @@ socket.on("dtp-admin-override", (data, callback) => {
   dtpRound.secretResult = winner;
 
   console.warn(
-    "[DTP ADMIN] Chỉnh kết quả",
+    "[DTP ADMIN] Change result",
     dtpRound.id,
     winner
   );
@@ -4185,14 +4185,14 @@ socket.on("wheel8-admin-login", async (data, callback) => {
   if (now < wheel8LoginBlockedUntil) {
     return reply({
       ok: false,
-      message: "Thử quá nhiều lần. Vui lòng thử lại sau."
+      message: "Too many attempts. Please try again later."
     });
   }
 
   if (!WHEEL8_ADMIN_PASSWORD) {
     return reply({
       ok: false,
-      message: "Server chưa cấu hình mật khẩu Wheel8."
+      message: "The Wheel8 admin password has not been configured on the server."
     });
   }
 
@@ -4208,7 +4208,7 @@ socket.on("wheel8-admin-login", async (data, callback) => {
 
     return reply({
       ok: false,
-      message: "Mật khẩu quản trị không chính xác."
+      message: "Incorrect admin password."
     });
   }
 
@@ -4253,14 +4253,14 @@ socket.on("admin-wheel8-override", (data, callback) => {
   if (!socket.data.wheel8Admin) {
     return reply({
       ok: false,
-      message: "Bạn chưa xác thực mật khẩu quản trị."
+      message: "You have not authenticated with the admin password."
     });
   }
 
   if (!wheel8Round?.secret) {
     return reply({
       ok: false,
-      message: "Chưa có phiên Wheel8."
+      message: "No Wheel8 round is currently available."
     });
   }
 
@@ -4274,7 +4274,7 @@ socket.on("admin-wheel8-override", (data, callback) => {
       (!Number.isInteger(slot) || slot < 1 || slot > 8)) {
     return reply({
       ok: false,
-      message: "Slot không hợp lệ."
+      message: "Invalid slot."
     });
   }
 
@@ -4286,7 +4286,7 @@ socket.on("admin-wheel8-override", (data, callback) => {
   if (remain <= 2) {
     return reply({
       ok: false,
-      message: "Đã quá thời gian tùy chỉnh."
+      message: "The customization window has expired."
     });
   }
 
@@ -4337,7 +4337,7 @@ socket.on("admin-wheel8-override", (data, callback) => {
 
   reply({
     ok: true,
-    message: "Đã cập nhật kết quả Wheel8."
+    message: 	"The Wheel8 result has been updated."
   });
 });
 
@@ -6716,7 +6716,7 @@ function kickOldSessions(uid, newSocket) {
     // ❌ KHÁC THIẾT BỊ → KICK
     s.emit("force-logout", {
       reason: "logged_in_elsewhere",
-      message: "⚠️ Lỗi kết nối, kiểm tra đường truyền mạng!"
+      message: "⚠️ Connection error. Please check your internet connection!"
     });
 
     s.disconnect(true);
@@ -6910,7 +6910,7 @@ app.post("/api/admin/auth/login", (req, res) => {
     return res.status(429).json({
       ok: false,
       error: "TOO_MANY_ATTEMPTS",
-      message: "Thử lại sau khi hết thời gian giới hạn."
+      message: "Please try again after the time limit expires."
     });
   }
 
@@ -6920,7 +6920,7 @@ app.post("/api/admin/auth/login", (req, res) => {
     return res.status(503).json({
       ok: false,
       error: "ADMIN_NOT_CONFIGURED",
-      message: "Chưa cấu hình tài khoản admin nội bộ."
+      message: "The internal admin account has not been configured."
     });
   }
 
@@ -6931,7 +6931,7 @@ app.post("/api/admin/auth/login", (req, res) => {
     return res.status(401).json({
       ok: false,
       error: "INVALID_PASSWORD",
-      message: "Mật khẩu quản trị không chính xác."
+      message: "Incorrect admin password."
     });
   }
 
@@ -7115,7 +7115,7 @@ emitCoinUpdate(user.profile.uid)
 
 res.json({
 success:true,
-message:"Nạp thành công " + add + " kim cương"
+message:"Successfully added " + add + " diamonds"
 })
 
 })
@@ -7135,7 +7135,7 @@ const remainMs = rpsRound.endAt - now;
 if (remainMs <= RPS_BET_LOCK_BEFORE_MS) {
   return res.json({
     ok: false,
-    message: "⛔ Đã quá thời gian đặt cược"
+    message: "⛔ The betting period has ended"
   });
 }
 
@@ -7176,7 +7176,7 @@ io.emit("admin-rps-bet-new", {
   uid,
   hand,
   bet: coin,
-  name: me.profile.name || "Người chơi"
+  name: me.profile.name || "Player"
 });
 
 
@@ -7382,7 +7382,7 @@ app.post("/api/invest/close-early", (req, res) => {
     if (!investRound || !Array.isArray(investRound.orders)) {
       return res.json({
         ok:false,
-        message:"Phiên chưa sẵn sàng"
+        message:"The session is not ready yet"
       });
     }
 
@@ -7390,7 +7390,7 @@ app.post("/api/invest/close-early", (req, res) => {
     if (!order) {
       return res.json({
         ok:false,
-        message:"Bạn chưa vào lệnh"
+        message:"You have not placed an order"
       });
     }
 
@@ -7398,7 +7398,7 @@ app.post("/api/invest/close-early", (req, res) => {
     if (!order.entryTime || Date.now() - order.entryTime < 10_000) {
       return res.json({
         ok:false,
-        message:"⏳ Chỉ được chốt sau 10 giây"
+        message:"⏳ You can close your position only after 10 seconds"
       });
     }
 
@@ -7407,7 +7407,7 @@ app.post("/api/invest/close-early", (req, res) => {
     if (!Array.isArray(chart)) {
       return res.json({
         ok:false,
-        message:"Không có dữ liệu giá"
+        message:"Price data is unavailable"
       });
     }
 
@@ -7420,7 +7420,7 @@ app.post("/api/invest/close-early", (req, res) => {
     if (typeof priceNow !== "number") {
       return res.json({
         ok:false,
-        message:"Không lấy được giá hiện tại"
+        message:"Unable to retrieve the current price"
       });
     }
 
@@ -7617,7 +7617,7 @@ app.get("/api/admin/rps/bets", (req, res) => {
     const u = users[b.uid];
     return {
       uid: b.uid,
-      name: u?.profile?.name || "Người chơi",
+      name: u?.profile?.name || "Player",
       bet: b.bet,
       hand: b.hand
     };
@@ -7792,7 +7792,7 @@ app.get("/api/admin/wheel/bets", (req, res) => {
     const u = users[b.uid];
     return {
       uid: b.uid,
-      name: u?.profile?.name || "Người chơi",
+      name: u?.profile?.name || "Player",
       bet: b.bet
     };
   });
@@ -8075,7 +8075,7 @@ app.post("/api/invest", (req, res) => {
         investRound.closedEarly.includes(uid)) {
       return res.json({
         ok:false,
-        message:"⛔ Bạn đã chốt lệnh sớm trong phiên này. Vui lòng chờ phiên tiếp theo."
+        message:"⛔ You have already closed a position early in this round. Please wait for the next round."
       });
     }
 
@@ -8083,7 +8083,7 @@ app.post("/api/invest", (req, res) => {
     if (!type || !coin || !["up","down"].includes(direction)) {
       return res.json({
         ok:false,
-        message:"Dữ liệu vào lệnh không hợp lệ"
+        message:"Invalid order data"
       });
     }
 
@@ -8091,7 +8091,7 @@ app.post("/api/invest", (req, res) => {
     if (investRound.orders.some(o => o.uid === uid)) {
       return res.json({
         ok:false,
-        message:"⛔ Bạn đã vào lệnh trong phiên này"
+        message:"⛔ You have already placed an order in this round"
       });
     }
 
@@ -8102,7 +8102,7 @@ app.post("/api/invest", (req, res) => {
     if (leftSec <= 5) {
       return res.json({
         ok:false,
-        message:"⏳ Phiên sắp kết thúc"
+        message:"⏳ This round is about to end"
       });
     }
 
@@ -8116,7 +8116,7 @@ app.post("/api/invest", (req, res) => {
     if (me.profile.coins < coin) {
       return res.json({
         ok:false,
-        message:"💎 Không đủ coin"
+        message:"💎 Insufficient coins"
       });
     }
 
@@ -8131,7 +8131,7 @@ app.post("/api/invest", (req, res) => {
     if (typeof entryPrice !== "number") {
       return res.json({
         ok:false,
-        message:"Không lấy được giá vào lệnh"
+        message:"Unable to retrieve the entry price"
       });
     }
 
@@ -8279,14 +8279,14 @@ app.post("/api/admin/market/approve-dispute", (req,res)=>{
 
   // 🔔 notify buyer + seller
   sendPushToUser(found.buyerUid,{
-    title:"🧑‍⚖️ Khiếu nại đã được xử lý",
-    body:"Admin đã chấp nhận đơn hàng.",
+    title:"Dispute resolved",
+    body:"An admin has approved the order.",
     tag:"dispute-approved"
   });
 
   sendPushToUser(booth.ownerUid,{
-    title:"💰 Đơn hàng được duyệt",
-    body:`Admin đã chấp nhận đơn ${found.productName}`,
+    title:"Order approved",
+    body:`An admin has approved order ${found.productName}`,
     tag:"dispute-approved"
   });
 
@@ -8416,7 +8416,7 @@ app.post("/api/market/order/received", (req,res)=>{
     return res.json({
       ok:false,
       error:"INVALID_STATUS",
-      message:"Chỉ có thể xác nhận khi shop đã liên hệ."
+      message:"You can confirm only after the seller has contacted the buyer."
     });
   }
 
@@ -8433,7 +8433,7 @@ app.post("/api/market/order/received", (req,res)=>{
 // 🔔 NOTIFY SELLER: BUYER ĐÃ NHẬN HÀNG
 // =========================
 const notifyText =
-  `📦 Người mua đã xác nhận nhận hàng: ${found.productName} ×${found.qty}`;
+  `The buyer has confirmed receipt of: ${found.productName} ×${found.qty}`;
 
 // 1️⃣ REALTIME (nếu seller đang online)
 const sockets = activeUsers.get(booth.ownerUid);
@@ -8451,7 +8451,7 @@ if (sockets) {
 
 // 2️⃣ PUSH NOTIFICATION (offline / tab khác)
 sendPushToUser(booth.ownerUid, {
-  title: "📦 Người mua đã nhận hàng",
+  title: "The buyer has received the order",
   body: notifyText,
   tag: "order-received"
 });
@@ -8486,7 +8486,7 @@ app.post("/api/market/order/dispute", (req,res)=>{
   if(!["contacted","buyer_received"].includes(found.status)){
     return res.json({
       ok:false,
-      message:"Không thể khiếu nại ở trạng thái này."
+      message:"You cannot file a dispute in the current order status."
     });
   }
 
@@ -8508,7 +8508,7 @@ found.dispute = {
 
   // 🔔 notify seller
   sendPushToUser(booth.ownerUid,{
-    title:"⚠️ Đơn hàng bị khiếu nại",
+    title:"Order disputed",
     body:`${found.productName} ×${found.qty}`,
     tag:"order-dispute"
   });
@@ -8588,7 +8588,7 @@ if (!["done", "cancelled", "refunded"].includes(order.status)) {
   return res.json({
     ok: false,
     error: "ORDER_NOT_ALLOWED",
-    message: "🔒 Chỉ có thể xoá lịch sử khi đơn hàng đã hoàn tất hoặc đã huỷ."
+    message: "Order history can only be deleted after the order is completed or canceled."
   });
 }
 
@@ -8683,7 +8683,7 @@ app.post("/api/market/order/done", (req, res) => {
     return res.json({
       ok: false,
       error: "WAIT_BUYER",
-      message: "Chờ người mua xác nhận đã nhận hàng."
+      message: "Waiting for the buyer to confirm receipt."
     });
   }
 
@@ -8724,7 +8724,7 @@ app.post("/api/market/order/done", (req, res) => {
   // =========================
   // 🔔 notify buyer
   // =========================
-  const notifyText = `✅ Đơn hàng đã hoàn tất: ${found.productName} ×${found.qty}`;
+ const notifyText = `Order completed: ${found.productName} ×${found.qty}`;
 
   const sockets = activeUsers.get(found.buyerUid);
   if (sockets) {
@@ -8739,7 +8739,7 @@ app.post("/api/market/order/done", (req, res) => {
   }
 
   sendPushToUser(found.buyerUid, {
-    title: "✅ Đơn hàng hoàn tất",
+    title: "Order completed",
     body: notifyText,
     tag: "order-done"
   });
@@ -8780,7 +8780,7 @@ app.post("/api/market/order/contact", (req, res) => {
     return res.json({
       ok:false,
       error:"INVALID_STATUS",
-      message:"Đơn hàng không thể xác nhận."
+      message:"This order cannot be confirmed."
     });
   }
 
@@ -8799,7 +8799,7 @@ io.emit("order-updated", {
 
 
   // 🔔 notify buyer
-  const notifyText = `📞 Shop đã liên hệ đơn hàng: ${found.productName}`;
+  const notifyText = `The seller has contacted the buyer about: ${found.productName}`;
 
   const sockets = activeUsers.get(found.buyerUid);
   if (sockets) {
@@ -8814,7 +8814,7 @@ io.emit("order-updated", {
   }
 
   sendPushToUser(found.buyerUid, {
-    title: "📞 Đơn hàng đã được xác nhận",
+    title: "Order contact confirmed",
     body: notifyText,
     tag: "order-contacted"
   });
@@ -8851,7 +8851,7 @@ if(found.status === "contacted"){
   return res.json({
     ok:false,
     error:"ORDER_CONTACTED",
-    message:"Shop đã liên hệ, không thể huỷ đơn hàng."
+    message:"The seller has already contacted the buyer. This order cannot be canceled."
   });
 }
 
@@ -8859,7 +8859,7 @@ if(found.status !== "pending"){
   return res.json({
     ok:false,
     error:"CANNOT_CANCEL",
-    message:"Đơn hàng không thể huỷ."
+    message:"This order cannot be canceled."
   });
 }
 
@@ -8909,7 +8909,7 @@ if(found.status !== "pending"){
   // =========================
   // 4️⃣ notify chủ gian
   // =========================
-  const notifyText = `❌ Đơn hàng bị huỷ: ${found.productName} ×${found.qty}`;
+  const notifyText = `Order canceled: ${found.productName} ×${found.qty}`;
 
   const sockets = activeUsers.get(booth.ownerUid);
   if(sockets){
@@ -8924,7 +8924,7 @@ if(found.status !== "pending"){
   }
 
   sendPushToUser(booth.ownerUid,{
-    title:"❌ Đơn hàng bị huỷ",
+    title:"Order canceled",
     body: notifyText,
     tag:"order-cancel"
   });
@@ -9160,7 +9160,7 @@ if (blockIfBoothLockedById(boothId, buyerUid)) {
   userInbox.get(booth.ownerUid).unshift({
     type: "market-order",
     boothId,
-    text: `🛒 Đơn hàng mới: ${product.name} ×${qty}`,
+    text: `New order: ${product.name} ×${qty}`,
     time: Date.now(),
     read: false
   });
@@ -9172,7 +9172,7 @@ if (blockIfBoothLockedById(boothId, buyerUid)) {
 // ===============================
 // 🔔 REALTIME + PUSH NOTIFY CHỦ GIAN
 // ===============================
-const notifyText = `🛒 Đơn hàng mới: ${product.name} ×${qty}`;
+const notifyText = `New order: ${product.name} ×${qty}`;
 
 // 1️⃣ REALTIME NẾU CHỦ GIAN ĐANG ONLINE
 const sockets = activeUsers.get(booth.ownerUid);
@@ -9190,7 +9190,7 @@ if (sockets) {
 
 // 2️⃣ PUSH NOTIFICATION (KHI OFFLINE / TAB KHÁC)
 sendPushToUser(booth.ownerUid, {
-  title: "🛒 Đơn hàng mới",
+  title: "New order",
   body: `${product.name} ×${qty} — ${totalPrice.toLocaleString()} 💎`,
   tag: "market-order"
 });
@@ -9318,7 +9318,7 @@ app.get("/api/market/booth/:id", (req, res) => {
   if (!booth) {
     return res.status(404).json({
       ok: false,
-      message: "Gian hàng không tồn tại"
+      message: "Booth not found"
     });
   }
 
@@ -9327,7 +9327,7 @@ app.get("/api/market/booth/:id", (req, res) => {
     return res.status(403).json({
       ok: false,
       locked: true,
-      message: "Gian hàng này đang bị Admin khoá"
+      message: "This booth has been locked by an admin"
     });
   }
 
@@ -9383,8 +9383,8 @@ const ownerUid = booth.ownerUid;
 
 if (ownerUid) {
   const msg = lock
-    ? `🔒 Gian hàng #${boothId} của bạn đã bị Admin khoá`
-    : `🔓 Gian hàng #${boothId} của bạn đã được Admin mở khoá`;
+    ? `🔒 Your booth #${boothId} has been locked by an admin`
+    : `🔓 Your booth #${boothId} has been unlocked by an admin`;
 
   // 1️⃣ LƯU INBOX (offline vẫn thấy)
   if (!userInbox.has(ownerUid)) userInbox.set(ownerUid, []);
@@ -9413,7 +9413,7 @@ if (ownerUid) {
 
   // 3️⃣ PUSH NOTIFICATION (KHI OFFLINE)
   sendPushToUser(ownerUid, {
-    title: lock ? "🔒 Gian hàng bị khoá" : "🔓 Gian hàng được mở khoá",
+    title: lock ? "Booth locked" : "Booth unlocked",
     body: msg,
     tag: "market-booth"
   });
@@ -9597,7 +9597,7 @@ app.post("/api/admin/delete-comment", (req, res) => {
       userInbox.set(reply.uid, userInbox.get(reply.uid) || []);
       userInbox.get(reply.uid).unshift({
         type: "reply-deleted",
-        text: `🗑️ Reply của bạn đã bị Admin xoá${reason ? `\nLý do: ${reason}` : ""}`,
+        text: `Your reply was deleted by an admin${reason ? `\nReason: ${reason}` : ""}`,
         time: Date.now(),
         read: false
       });
@@ -9625,7 +9625,7 @@ app.post("/api/admin/delete-comment", (req, res) => {
     userInbox.set(removed.uid, userInbox.get(removed.uid) || []);
     userInbox.get(removed.uid).unshift({
       type: "comment-deleted",
-      text: `🗑️ Comment của bạn đã bị Admin xoá${reason ? `\nLý do: ${reason}` : ""}`,
+      text: `Your comment was deleted by an admin${reason ? `\nReason: ${reason}` : ""}`,
       time: Date.now(),
       read: false
     });
@@ -9682,7 +9682,7 @@ app.post("/api/admin/delete-post", (req, res) => {
     if (!userInbox.has(ownerUid)) userInbox.set(ownerUid, []);
     userInbox.get(ownerUid).unshift({
       type: "post-deleted",
-      text: `🗑️ Bài đăng của bạn đã bị Admin xoá${reason ? `\nLý do: ${reason}` : ""}`,
+      text: `Your post was deleted by an admin${reason ? `\nReason: ${reason}` : ""}`,
       time: Date.now(),
       read: false
     });
@@ -9729,8 +9729,8 @@ app.post("/api/admin/close-room", (req, res) => {
     if(sockets){
       for(const sid of sockets){
         io.to(sid).emit("system-notify", {
-          type: "room-closed",
-          text: "🚫 Phòng live của bạn đã bị Admin đóng"
+title: "🚫 Livestream room closed",
+body: reason || "Your livestream room was closed by an admin",
         });
       }
     }
@@ -9799,9 +9799,9 @@ user.profile.blockLogs.unshift({
 
 // 🔔 PUSH NOTIFY KHI KHOÁ USER
 if (lock) {
-  const msg = reason
-  ? `🚫 Tài khoản của bạn đã bị khoá.\nLý do: ${reason}`
-  : "🚫 Tài khoản của bạn đã bị khoá. Vui lòng liên hệ hỗ trợ.";
+const msg = reason
+  ? `Your account has been locked.\nReason: ${reason}`
+  : "Your account has been locked. Please contact support.";
 
   // 1️⃣ realtime nếu online
   const sockets = activeUsers.get(targetUid);
@@ -9816,7 +9816,7 @@ if (lock) {
 
   // 2️⃣ push notification (offline)
   sendPushToUser(targetUid, {
-    title: "Tài khoản bị khoá 🚫",
+    title: "Account locked",
     body: msg,
     tag: "account-blocked"
   });
@@ -9825,9 +9825,9 @@ if (lock) {
 
 // 🔓 PUSH NOTIFY KHI MỞ KHOÁ USER
 if (!lock) {
- const msg = reason
-  ? `🔓 Tài khoản của bạn đã được mở khoá.\nGhi chú: ${reason}`
-  : "🔓 Tài khoản của bạn đã được mở khoá. Bạn có thể sử dụng lại dịch vụ.";
+const msg = reason
+  ? `🔓 Your account has been unlocked.\nNote: ${reason}`
+  : "🔓 Your account has been unlocked. You can use the service again.";
 
   // 1️⃣ realtime nếu online
   const sockets = activeUsers.get(targetUid);
@@ -9842,7 +9842,7 @@ if (!lock) {
 
   // 2️⃣ push notification (offline)
   sendPushToUser(targetUid, {
-    title: "Tài khoản đã được mở khoá 🔓",
+    title: "Account unlocked",
     body: msg,
     tag: "account-unblocked"
   });
@@ -10089,7 +10089,7 @@ emitCoinUpdate(uid);    // 🔁 realtime coin
 
 
   // 🔔 thông báo cho user
-  const text = `📤 Đã gửi yêu cầu rút ${Number(amount).toLocaleString()} 💎`;
+  const text = `Withdrawal request submitted for ${Number(amount).toLocaleString()} 💎`;
 
   if (!userInbox.has(uid)) userInbox.set(uid, []);
   userInbox.get(uid).unshift({
@@ -10290,7 +10290,7 @@ for (const [uid, sockets] of activeUsers.entries()) {
     const displayName =
       profile.name ||
       profile.displayName ||
-      "Người chơi";
+      "Player";
 
     list.push({
       socketId,
@@ -10635,8 +10635,8 @@ user.profile.depositLogs.unshift({
 
 // 🔔 THÔNG BÁO USER KHI ĐƯỢC NẠP COIN
 const notifyText =
-  `💰 Bạn vừa được nạp ${add.toLocaleString()} coin` +
-  (note ? `\n📝 Ghi chú: ${note}` : "");
+  `You have received ${add.toLocaleString()} coins` +
+  (note ? `\nNote: ${note}` : "");
 
 // 1️⃣ LƯU INBOX (xem lại được)
 if (!userInbox.has(targetUid)) userInbox.set(targetUid, []);
@@ -10664,8 +10664,8 @@ if (sockets) {
 
 // 3️⃣ PUSH NOTIFICATION (KHI OFFLINE)
 sendPushToUser(targetUid, {
-  title: "💰 Nạp coin thành công",
-  body: `Bạn vừa được nạp ${add.toLocaleString()} coin`,
+  title: "Coins added successfully",
+  body: `You have received ${add.toLocaleString()} coins`,
   tag: "admin-topup"
 });
 
@@ -10730,9 +10730,9 @@ user.profile.adminLogs.unshift({
   // 🔁 realtime sync
   emitCoinUpdate(targetUid);
 
-  const notifyText =
-    `➖ ${sub.toLocaleString()} coin đã bị trừ` +
-    (note ? `\n📝 Lý do: ${note}` : "");
+const notifyText =
+  `➖ ${sub.toLocaleString()} coins have been deducted` +
+  (note ? `\nReason: ${note}` : "");
 
   // 1️⃣ inbox
   if (!userInbox.has(targetUid)) userInbox.set(targetUid, []);
@@ -10759,11 +10759,11 @@ user.profile.adminLogs.unshift({
   }
 
   // 3️⃣ push offline
-  sendPushToUser(targetUid, {
-    title: "➖ Bị trừ coin",
-    body: `Tài khoản của bạn bị trừ ${sub.toLocaleString()} coin`,
-    tag: "admin-withdraw"
-  });
+sendPushToUser(targetUid, {
+  title: "➖ Coins deducted",
+  body: `Your account has been charged ${sub.toLocaleString()} coins`,
+  tag: "admin-withdraw"
+});
 
   res.json({
     ok: true,
@@ -10796,7 +10796,7 @@ app.post("/api/register", async (req,res)=>{
       avatar: "https://i.ibb.co/GvJWn19q/icon-192.png" ,
       bio: "",  
       coins:0,
-      coinDeposit:0,   // 💎 tổng đã nạp
+      coinDeposit:0,
       level:1,
       exp:0,
       coinSent:0,
@@ -10837,7 +10837,7 @@ if (acc.profile?.accountBlocked) {
 
   return res.status(403).json({
     error: "blocked",
-    message: "Tài khoản của bạn đã bị khoá"
+    message: "Your account has been locked"
   });
 }
 
@@ -11075,19 +11075,18 @@ console.log("♻️ Restored live rooms:", Object.keys(persisted));
 
 // ===== GIFT ENGINE (coins) =====
 const GIFT_CATALOG = {
-  heart:  { emoji: "❤️", cost: 50,  title: "Tim" },
-  flower: { emoji: "🌸", cost: 100,  title: "Hoa" },
-  rocket: { emoji: "🚀", cost: 200, title: "Rocket" },
-  coin:   { emoji: "💰", cost: 500, title: "Túi tiền" },
-  king:   { emoji: "👑", cost: 1000, title: "Vương miện" },
-  galaxy: { emoji: "🌌", cost: 2000, title: "Dải ngân hà" },
-  meteor: { emoji: "☄️", cost: 5000, title: "Sao băng" },
-  dragon: { emoji: "🐉", cost: 10000, title: "Rồng" },
-  phoenix:{ emoji: "🦅", cost: 10000, title: "Phượng hoàng" },
+  heart:      { emoji: "❤️", cost: 50, title: "Heart" },
+  flower:     { emoji: "🌸", cost: 100, title: "Flower" },
+  rocket:     { emoji: "🚀", cost: 200, title: "Rocket" },
+  coin:       { emoji: "💰", cost: 500, title: "Money Bag" },
+  king:       { emoji: "👑", cost: 1000, title: "Crown" },
+  galaxy:     { emoji: "🌌", cost: 2000, title: "Galaxy" },
+  meteor:     { emoji: "☄️", cost: 5000, title: "Meteor" },
+  dragon:     { emoji: "🐉", cost: 10000, title: "Dragon" },
+  phoenix:    { emoji: "🦅", cost: 10000, title: "Phoenix" },
   dragonking: { emoji: "🐲", cost: 10000, title: "Dragon King" },
-  supernova:  { emoji: "🌠", cost: 10000, title: "Supernova" },
+  supernova:  { emoji: "🌠", cost: 10000, title: "Supernova" }
 };
-
 
 
 
@@ -11099,7 +11098,7 @@ function clampInt(n, min, max){
   return Math.max(min, Math.min(max, n));
 }
 function safeName(name){
-  return String(name || "Ẩn danh").trim().slice(0, 20);
+  return String(name || "Anonymous").trim().slice(0, 20);
 }
 function roomGiftTop(room, limit=5){
   const arr = [];
@@ -11251,7 +11250,7 @@ function closeRoom(roomId, reason = "host_left") {
   if(room.hostProfile?.uid){
     pushNotify(room.hostProfile.uid,{
       type:"system",
-      text:"Phòng live của bạn đã bị đóng"
+      text:"Your livestream room has been closed"
     });
   }
 
@@ -11449,10 +11448,10 @@ if (needFriendCheck) {
   // 🔔 PUSH OFFLINE
   await sendPushToUser(toUid,{
     title: senderIsAdmin
-      ? "Bạn nhận được tin nhắn mới."
-      : "💬 Tin nhắn mới",
+      ? "You have a new message."
+      : "New message",
 
-    body: text?.slice(0,80) || "Bạn có tin nhắn mới",
+    body: text?.slice(0,80) || "You have a new message",
 
     url:`/messages.html?uid=${fromUid}`,
     tag:"chat-message"
@@ -11494,7 +11493,7 @@ socket.on("topup-transferred", async ({ fromUid, agentUid, time }) => {
   userInbox.get(agentUid).unshift({
     type: "topup-waiting",
     from: fromUid,
-    text: `💸 ${fromUid} đã chuyển khoản – vui lòng kiểm tra`,
+    text: `${fromUid} has sent a transfer — please check`,
     time: ts,
     read: false
   });
@@ -11505,8 +11504,8 @@ socket.on("topup-transferred", async ({ fromUid, agentUid, time }) => {
   // 3️⃣ PUSH NOTIFICATION cho đại lý (khi offline)
   // =====================
   await sendPushToUser(agentUid, {
-    title: "💳 Yêu cầu nạp coin",
-    body: `${fromUid} đã chuyển khoản`,
+    title: "Coin top-up request",
+    body: `${fromUid} has sent a transfer`,
     url: "/lsp-admin-128995.html#topup",
     tag: "topup-waiting"
   });
@@ -11661,7 +11660,7 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
   // 🔔 INBOX + PUSH
   // =========================
   const giftText =
-    `🎁 ${from.profile.name} đã tặng bạn ${cost.toLocaleString()} 💎`;
+    `🎁 ${from.profile.name} gifted you ${cost.toLocaleString()} 💎`;
 
   if (!userInbox.has(toUid)) userInbox.set(toUid, []);
 
@@ -11678,7 +11677,7 @@ socket.on("lp-gift-post", async ({ postId, toUid, fromUid, giftId, coin }) => {
   saveInbox(Object.fromEntries(userInbox));
 
   await sendPushToUser(toUid, {
-    title: "🎁 Bạn nhận được quà",
+    title: "You received a gift",
     body: giftText,
     url: `/social.html#post-${postId}`,
     tag: "post-gift"
@@ -11714,14 +11713,14 @@ socket.on("coin-transfer", ({target, amount}) => {
   if(!toUid){
     return emitToUser(fromUid,"notify",{
       type:"bad",
-      message:"❌ Không tìm thấy người chơi"
+      message:"Player not found"
     });
   }
 
   if(toUid === fromUid){
     return emitToUser(fromUid,"notify",{
       type:"bad",
-      message:"🚫 Không thể gửi cho chính mình"
+      message:"You cannot send coins to yourself"
     });
   }
 
@@ -11733,7 +11732,7 @@ socket.on("coin-transfer", ({target, amount}) => {
   if(from.profile.coins < amount){
     return emitToUser(fromUid,"notify",{
       type:"bad",
-      message:"❌ Không đủ kim cương"
+      message:"Insufficient diamonds"
     });
   }
 
@@ -11780,16 +11779,15 @@ to.transferHistory   = to.transferHistory.slice(0,50);
   emitCoinUpdate(fromUid);
   emitCoinUpdate(toUid);
 
-  emitToUser(fromUid,"notify",{
-    type:"good",
-    message:`💎 Đã gửi ${amount} cho ${to.profile.name}`
-  });
+emitToUser(fromUid,"notify",{
+  type:"good",
+  message:`💎 Sent ${amount} diamonds to ${to.profile.name}`
+});
 
-  emitToUser(toUid,"notify",{
-    type:"good",
-    message:`🎁 ${from.profile.name} đã gửi bạn ${amount} kim cương`
-  });
-
+emitToUser(toUid,"notify",{
+  type:"good",
+  message:`🎁 ${from.profile.name} sent you ${amount} diamonds`
+});
 });
 
 
@@ -11851,7 +11849,7 @@ socket.on("coin-transfer-history-result",(list)=>{
   box.innerHTML = "";
 
   if(!list || list.length === 0){
-    box.innerHTML = "<div>Chưa có giao dịch</div>";
+    box.innerHTML = "<div>No transactions yet</div>";
     return;
   }
 
@@ -11864,8 +11862,8 @@ socket.on("coin-transfer-history-result",(list)=>{
 
     const type =
       t.type === "send"
-      ? "📤 Gửi"
-      : "📥 Nhận";
+      ? "Sent"
+      : "Received";
 
     div.innerHTML = `
       <div><b>${type}</b> ${t.amount} 💎</div>
@@ -12214,8 +12212,8 @@ socket.on("lp-like-reply", async ({ postId, commentIndex, replyId, uid }) => {
   // 🔔 PUSH cho chủ reply
   if (liked && r.uid && r.uid !== uid) {
     await sendPushToUser(r.uid, {
-      title: "❤️ Trả lời được thích",
-      body: `${socket.data.profile?.name || "Ai đó"} đã thích trả lời của bạn`,
+      	title: "❤️ Reply liked",
+      body: `${socket.data.profile?.name || "Someone"} liked your reply`,
       url: `/social.html#post-${postId}`
     });
   }
@@ -12277,8 +12275,8 @@ socket.on("lp-like-comment", async ({ postId, index, uid }) => {
   // 🔔 PUSH cho chủ comment
   if (liked && c.uid && c.uid !== uid) {
     await sendPushToUser(c.uid, {
-      title: "❤️ Bình luận được thích",
-      body: `${socket.data.profile?.name || "Ai đó"} đã thích bình luận của bạn`,
+      	title: "❤️ Comment liked",
+     body: `${socket.data.profile?.name || "Someone"} liked your comment`,
       url: `/social.html#post-${postId}`
     });
   }
@@ -12379,8 +12377,8 @@ socket.on("lp-like", async ({ postId, uid }) => {
   // 🔔 PUSH cho chủ bài (nếu like mới & không tự like)
   if (liked && post.uid !== uid) {
     await sendPushToUser(post.uid, {
-      title: "❤️ Bài viết được thích",
-      body: `${socket.data.profile?.name || "Ai đó"} đã thích bài viết của bạn`,
+      title: "❤️ Post liked",
+      body: `${socket.data.profile?.name || "Someone"} liked your post`,
       url: `/social.html#post-${postId}`
     });
   }
@@ -12415,7 +12413,7 @@ socket.on("lp-comment", async ({ postId, uid, name, avatar, text }) => {
   // 🔔 PUSH cho chủ bài
   if (post.uid !== uid) {
     await sendPushToUser(post.uid, {
-      title: "💬 Bình luận mới",
+      title: "💬 New comment",
       body: `${name}: ${text.slice(0,60)}`,
       url: `/social.html#post-${postId}`
     });
@@ -12454,7 +12452,7 @@ socket.on("lp-reply", async ({ postId, commentIndex, uid, name, avatar, text }) 
   // 🔔 PUSH cho người bị reply
   if (c.uid && c.uid !== uid) {
     await sendPushToUser(c.uid, {
-      title: "💬 Trả lời bình luận",
+      title: "💬 Comment reply",
       body: `${name}: ${text.slice(0,60)}`,
       url: `/social.html#post-${postId}`
     });
@@ -12571,8 +12569,8 @@ socket.on("lp-like-reply-child", async ({ postId, commentIndex, replyId, childId
   // 🔔 PUSH cho chủ reply-child
   if (liked && child.uid && child.uid !== uid) {
     await sendPushToUser(child.uid, {
-      title: "❤️ Trả lời được thích",
-      body: `${socket.data.profile?.name || "Ai đó"} đã thích trả lời của bạn`,
+      title: "❤️ Reply liked",
+      body: `${socket.data.profile?.name || "Someone"} liked your reply`,
       url: `/social.html#post-${postId}`
     });
   }
@@ -12871,7 +12869,7 @@ function blockIfLocked(socket){
  if (db[uid]?.profile?.accountBlocked) {
 
     socket.emit("account-blocked", {
-      message: "Tài khoản của bạn đã bị khoá"
+      message: "Your account has been locked"
     });
     return true;
   }
@@ -13599,7 +13597,7 @@ if (room.liveStartTs) {
 
   const msg = {
     role,
-    name: profile?.name || "Ẩn danh",
+    name: profile?.name || "Anonymous",
     avatar: profile?.avatar,
     level: Number(profile?.level) || 1,
     text: String(text).slice(0, 300),
@@ -13738,7 +13736,7 @@ socket.on("send-gift", ({ roomId, gift, name }) => {
   if (!canSendGift(socket)) {
     socket.emit("gift-failed", {
       reason: "spam",
-      message: "Bạn gửi quà quá nhanh ⏳"
+      	message: "You are sending gifts too quickly"
     });
     return;
   }
@@ -13804,7 +13802,7 @@ if (hostUid && db[hostUid]?.profile) {
   if (leveledUp) {
     pushNotify(hostUid, {
       type: "level-up",
-      text: `🎉 Bạn đã lên cấp ${hp.level}!`
+      text: `You have reached level ${hp.level}!`
     });
   }
 }
@@ -13855,7 +13853,7 @@ if (donorProfile) {
 
 
   const donorName = safeName(
-    name || donorProfile?.name || socket.data.userName || "Ẩn danh"
+    name || donorProfile?.name || socket.data.userName || "Anonymous"
   );
 
   // 🔒 SYNC DONOR PROFILE (RẤT QUAN TRỌNG)
@@ -13869,7 +13867,7 @@ if (donorProfile) {
   if (hostUid) {
     pushNotify(hostUid, {
       type: "gift",
-      text: `${donorName} đã tặng ${cost} coin`
+      text: `${donorName} gifted ${cost} coins`
     });
 
     const sockets = activeUsers.get(hostUid);
@@ -14133,7 +14131,7 @@ io.on("connection", (socket) => {
     if (!uid || !loadUsers()[uid]?.profile) {
       return ack({
         ok: false,
-        error: "Cần đăng nhập để chia sẻ."
+        error: "You must log in to share your screen."
       });
     }
 
@@ -14162,7 +14160,7 @@ io.on("connection", (socket) => {
     if (!/^[a-f0-9]{36}$/.test(token)) {
       return ack({
         ok: false,
-        error: "Link không hợp lệ."
+        error: "Invalid link."
       });
     }
 
@@ -14172,7 +14170,7 @@ io.on("connection", (socket) => {
         !io.sockets.sockets.has(session.hostId)) {
       return ack({
         ok: false,
-        error: "Buổi chia sẻ đã kết thúc."
+        error: "This sharing session has ended."
       });
     }
 
@@ -14182,7 +14180,7 @@ io.on("connection", (socket) => {
     ) {
       return ack({
         ok: false,
-        error: "Phòng xem đã đầy."
+        error: "The viewing room is full."
       });
     }
 
@@ -14244,7 +14242,7 @@ socket.on("w8share:comment", (data, callback) => {
   ) {
     return reply({
       ok: false,
-      error: "Bạn chưa tham gia phiên LIVE."
+      error: "You have not joined the LIVE session."
     });
   }
 
@@ -14254,7 +14252,7 @@ socket.on("w8share:comment", (data, callback) => {
   if (now - (socket.data.w8LastComment || 0) < 2000) {
     return reply({
       ok: false,
-      error: "Hãy đợi 2 giây trước khi bình luận tiếp."
+      	error: "Please wait 2 seconds before posting another comment."
     });
   }
 
@@ -14271,14 +14269,14 @@ socket.on("w8share:comment", (data, callback) => {
   }
 
   const name =
-    cleanComment(data?.name, 20) || "Người xem";
+    cleanComment(data?.name, 20) || "Viewer";
 
   const content = cleanComment(data?.text, 120);
 
   if (!content) {
     return reply({
       ok: false,
-      error: "Vui lòng nhập nội dung bình luận."
+      error: "Please enter a comment."
     });
   }
 
