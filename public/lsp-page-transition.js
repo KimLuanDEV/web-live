@@ -12,8 +12,9 @@
   const KEY = "lsp-transition-target-v3";
 
   // Thời gian chuyển trang
-  const EXIT_MS = 380;
-  const ENTRY_MS = 480;
+  // Thời gian màn chuyển cảnh đi vào và rời đi
+const EXIT_MS = 560;
+const ENTRY_MS = 600;
 
   const reduceMotion = !!window.matchMedia?.(
     "(prefers-reduced-motion: reduce)"
@@ -55,206 +56,382 @@
 
   const style = document.createElement("style");
 
-  style.textContent = `
 
-    html.lsppt-arriving::before {
-      content: "";
-      position: fixed;
-      inset: 0;
-      z-index: 2147483646;
-      background: #080d16;
-      pointer-events: auto;
-    }
+/* ==========================================
+   LIVESTREAM PRO
+   CINEMATIC LUXURY PAGE TRANSITION
+========================================== */
 
-    #lsppt-layer,
-    #lsppt-layer * {
-      box-sizing: border-box;
-    }
+style.textContent = `
 
-    #lsppt-layer {
-      position: fixed;
-      inset: 0;
-      z-index: 2147483647;
+/* LỚP CHE TRANG MỚI */
+html.lsppt-arriving::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 2147483646;
+  background: #090b10;
+  pointer-events: auto;
+}
 
-      display: flex;
-      align-items: center;
-      justify-content: center;
+#lsppt-layer,
+#lsppt-layer * {
+  box-sizing: border-box;
+}
 
-      padding: 20px;
+/* MÀN CHUYỂN CẢNH TOÀN MÀN HÌNH */
+#lsppt-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 2147483647;
 
-      background: radial-gradient(
-        ellipse at 50% 35%,
-        #273249,
-        #101724 55%,
-        #080d16
-      );
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
+  padding: 24px;
+  overflow: hidden;
+  isolation: isolate;
 
-      transition:
-        opacity ${EXIT_MS}ms ease,
-        visibility 0s linear ${EXIT_MS}ms;
-    }
+  background:
+    radial-gradient(
+      ellipse at 50% 40%,
+      rgba(204,161,95,.15),
+      transparent 38%
+    ),
+    radial-gradient(
+      ellipse at 50% 100%,
+      rgba(144,102,48,.11),
+      transparent 60%
+    ),
+    linear-gradient(
+      145deg,
+      #17191e,
+      #090b10 52%,
+      #151317
+    );
 
-    #lsppt-layer.lsppt-open {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-      transition: opacity ${EXIT_MS}ms ease;
-    }
+  visibility: hidden;
+  pointer-events: none;
 
-    #lsppt-layer.lsppt-close {
-      opacity: 0;
-      visibility: visible;
-      pointer-events: none;
+  transform: translate3d(0,105%,0);
 
-      transition:
-        opacity ${ENTRY_MS}ms ease,
-        visibility 0s linear ${ENTRY_MS}ms;
-    }
+  transition:
+    transform \${EXIT_MS}ms cubic-bezier(.76,0,.24,1),
+    visibility 0s linear \${EXIT_MS}ms;
+}
 
-    #lsppt-layer .lsppt-card {
-      width: min(100%, 330px);
-      padding: 34px 26px 30px;
+/* ĐƯỜNG VIỀN TRANG TRÍ */
+#lsppt-layer::before {
+  content: "";
+  position: absolute;
+  inset: 16px;
 
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      text-align: center;
+  border: 1px solid rgba(230,195,131,.09);
 
-      background: linear-gradient(
-        145deg,
-        #252e3c,
-        #101620
-      );
+  pointer-events: none;
+}
 
-      border: 1px solid rgba(231,195,129,.28);
-      border-radius: 24px;
+/* VỆT SÁNG Ở RÌA MÀN CHUYỂN CẢNH */
+#lsppt-layer::after {
+  content: "";
+  position: absolute;
 
-      box-shadow:
-        0 26px 75px rgba(0,0,0,.45);
+  left: 0;
+  right: 0;
+  bottom: 0;
 
-      font: 14px/1.5 system-ui,
-        -apple-system, Segoe UI, sans-serif;
+  height: 2px;
 
-      color: #f3e0b9;
-    }
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(228,191,129,.4),
+    #f2d8a8,
+    rgba(228,191,129,.4),
+    transparent
+  );
 
-    #lsppt-layer .lsppt-logo {
-      position: relative;
+  box-shadow: 0 0 24px rgba(228,187,115,.4);
+  pointer-events: none;
+}
 
-      width: 64px;
-      height: 64px;
-      margin: 0 0 25px;
+/* HIỆU ỨNG ĐI VÀO */
+#lsppt-layer.lsppt-open {
+  visibility: visible;
+  pointer-events: auto;
 
-      display: grid;
-      place-items: center;
+  transform: translate3d(0,0,0);
 
-      border: 1px solid rgba(235,205,150,.45);
-      border-radius: 50%;
+  transition:
+    transform \${EXIT_MS}ms cubic-bezier(.76,0,.24,1);
+}
 
-      background: #242e40;
+/* HIỆU ỨNG RỜI KHỎI */
+#lsppt-layer.lsppt-close {
+  visibility: visible;
+  pointer-events: none;
 
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 1px;
-    }
+  transform: translate3d(0,-105%,0);
 
-    #lsppt-layer .lsppt-logo::before {
-      content: "";
+  transition:
+    transform \${ENTRY_MS}ms cubic-bezier(.76,0,.24,1);
+}
 
-      position: absolute;
-      inset: -8px;
+/* KHI VỪA ĐẾN TRANG MỚI */
+html.lsppt-arriving #lsppt-layer {
+  visibility: visible;
+  pointer-events: auto;
 
-      border-radius: 50%;
-      border: 2px solid transparent;
+  transform: translate3d(0,0,0);
+  transition: none;
+}
 
-      border-top-color: #f2d49b;
-      border-right-color: rgba(242,212,155,.32);
+/* NỘI DUNG GIỮA MÀN HÌNH */
+#lsppt-layer .lsppt-card {
+  position: relative;
+  z-index: 1;
 
-      animation: lsppt-spin 1.6s linear infinite;
-    }
+  width: min(100%,380px);
+  padding: 15px 0;
 
-    #lsppt-layer .lsppt-title {
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: 1.8px;
-    }
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    #lsppt-layer .lsppt-sub {
-      margin-top: 10px;
+  text-align: center;
 
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 1.6px;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
 
-      color: #bbc2cf;
-    }
+  color: #f0dbb5;
 
-    #lsppt-layer .lsppt-track {
-      width: 100%;
-      height: 4px;
-      margin-top: 27px;
+  font-family:
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    sans-serif;
 
-      border-radius: 20px;
-      overflow: hidden;
+  opacity: 0;
+  transform: translateY(15px);
 
-      background: rgba(255,255,255,.12);
-    }
+  transition:
+    opacity .35s ease,
+    transform .4s ease;
+}
 
-    #lsppt-layer .lsppt-bar {
-      width: 35%;
-      height: 100%;
+#lsppt-layer.lsppt-open .lsppt-card,
+html.lsppt-arriving #lsppt-layer .lsppt-card {
+  opacity: 1;
+  transform: translateY(0);
+}
 
-      border-radius: 20px;
+#lsppt-layer.lsppt-close .lsppt-card {
+  opacity: 0;
+  transform: translateY(-15px);
+}
 
-      background: linear-gradient(
-        90deg,
-        #a67d46,
-        #f4d89f,
-        #ab7e47
-      );
+/* LOGO LP TỐI GIẢN */
+#lsppt-layer .lsppt-logo {
+  position: relative;
 
-      box-shadow:
-        0 0 13px rgba(242,211,147,.45);
+  width: 100px;
+  height: 100px;
 
-      animation:
-        lsppt-slide 1.2s ease-in-out infinite;
-    }
+  margin-bottom: 30px;
 
-    #lsppt-layer .lsppt-text {
-      margin-top: 16px;
-      font-size: 12px;
-      color: #aeb7c6;
-    }
+  display: grid;
+  place-items: center;
 
-    @keyframes lsppt-spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
+  background: transparent;
+  border: none;
+  border-radius: 0;
 
-    @keyframes lsppt-slide {
-      from {
-        transform: translateX(-110%);
-      }
+  color: #f0d8ab;
 
-      to {
-        transform: translateX(300%);
-      }
-    }
+  font-family: Georgia, serif;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: 1px;
 
-    @media (prefers-reduced-motion: reduce) {
-      #lsppt-layer,
-      #lsppt-layer *,
-      #lsppt-layer *::before {
-        animation: none !important;
-        transition: none !important;
-      }
-    }
-  `;
+  text-shadow: 0 0 20px rgba(235,194,122,.25);
+}
+
+/* KHUNG KIM CƯƠNG */
+#lsppt-layer .lsppt-logo::before {
+  content: "";
+
+  position: absolute;
+  inset: 13px;
+
+  border: 1px solid rgba(233,195,130,.8);
+
+  background: rgba(210,160,83,.025);
+
+  transform: rotate(45deg);
+
+  animation: lsppt-diamond 2.4s ease-in-out infinite;
+}
+
+/* ĐƯỜNG VÀNG DƯỚI LOGO */
+#lsppt-layer .lsppt-logo::after {
+  content: "";
+
+  position: absolute;
+  bottom: -5px;
+  left: 50%;
+
+  width: 32px;
+  height: 1px;
+
+  background: #dfbf86;
+  box-shadow: 0 0 12px rgba(240,205,148,.5);
+
+  transform: translateX(-50%);
+}
+
+/* TÊN THƯƠNG HIỆU */
+#lsppt-layer .lsppt-title {
+  color: #f5e1bc;
+
+  font-size: clamp(17px,4.5vw,21px);
+  font-weight: 750;
+  letter-spacing: 2.7px;
+
+  line-height: 1.4;
+  white-space: nowrap;
+}
+
+/* DÒNG CHUYỂN TRANG */
+#lsppt-layer .lsppt-sub {
+  margin-top: 13px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+
+  color: #ada295;
+
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+/* HAI ĐƯỜNG KẺ TRANG TRÍ */
+#lsppt-layer .lsppt-sub::before,
+#lsppt-layer .lsppt-sub::after {
+  content: "";
+
+  width: 22px;
+  height: 1px;
+
+  background: rgba(224,186,121,.4);
+}
+
+/* THANH ÁNH SÁNG */
+#lsppt-layer .lsppt-track {
+  width: min(220px,70vw);
+  height: 2px;
+
+  margin-top: 32px;
+
+  overflow: hidden;
+  border-radius: 50px;
+
+  background: rgba(226,193,143,.15);
+}
+
+#lsppt-layer .lsppt-bar {
+  width: 36%;
+  height: 100%;
+
+  border-radius: inherit;
+
+  background: linear-gradient(
+    90deg,
+    transparent,
+    #d6ad71,
+    #fff0cf,
+    #bb9257
+  );
+
+  box-shadow: 0 0 14px rgba(242,214,167,.55);
+
+  animation: lsppt-flow 1.3s ease-in-out infinite;
+}
+
+/* TRẠNG THÁI */
+#lsppt-layer .lsppt-text {
+  margin-top: 16px;
+
+  font-size: 12px;
+  color: #b9b0a5;
+  letter-spacing: .3px;
+  line-height: 1.5;
+}
+
+/* CHUYỂN ĐỘNG LOGO */
+@keyframes lsppt-diamond {
+  0%, 100% {
+    opacity: .55;
+    transform: rotate(45deg) scale(.96);
+  }
+
+  50% {
+    opacity: 1;
+    transform: rotate(45deg) scale(1.04);
+  }
+}
+
+/* CHUYỂN ĐỘNG THANH SÁNG */
+@keyframes lsppt-flow {
+  from {
+    transform: translateX(-110%);
+  }
+
+  to {
+    transform: translateX(290%);
+  }
+}
+
+/* MOBILE */
+@media (max-width: 480px) {
+  #lsppt-layer .lsppt-logo {
+    width: 88px;
+    height: 88px;
+    margin-bottom: 26px;
+  }
+
+  #lsppt-layer .lsppt-logo::before {
+    inset: 12px;
+  }
+
+  #lsppt-layer .lsppt-title {
+    letter-spacing: 2px;
+  }
+
+  #lsppt-layer .lsppt-sub {
+    font-size: 9px;
+    letter-spacing: 1.5px;
+  }
+}
+
+/* GIẢM CHUYỂN ĐỘNG */
+@media (prefers-reduced-motion: reduce) {
+  #lsppt-layer,
+  #lsppt-layer *,
+  #lsppt-layer *::before,
+  #lsppt-layer *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+`;
+
 
   document.head.appendChild(style);
 
