@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="vi">
+<html lang="en">
 <head>
   <meta charset="utf-8">
   <!-- PWA iOS -->
@@ -3942,7 +3942,7 @@ function getVirtualRooms(){
     viewers: v.viewers || 0,
     liveStartTs: Date.now() - 5 * 60 * 1000, // giả lập "đang live"
     hasGuest: false,
-    host: { name: v.title || "Room Ảo", avatar: v.avatar || "" },
+    host: { name: v.title || "Virtual Room", avatar: v.avatar || "" },
     __virtual: true,
     __link: v.link
   }));
@@ -4275,7 +4275,7 @@ function render(list){
       ? (r.__link || `/viewer.html?room=${encodeURIComponent(r.roomId)}`)
       : `/viewer.html?room=${encodeURIComponent(r.roomId)}`;
 
-    const hostName   = r.host?.name   || (r.__virtual ? "Room Ảo" : "Host");
+    const hostName   = r.host?.name   || (r.__virtual ? "Virtual Room" : "Host");
     const verified = r.host?.verified;
 
     const hostAvatar = fixAvatar(r.host?.avatar) || `https://i.ibb.co/ZR2yR7dJ/Chat-GPT-Image-Jan-12-2026-02-44-07-AM.jpg`;
@@ -4466,7 +4466,7 @@ document.querySelectorAll(".tab-item").forEach(tab => {
       }
 
       LSPTransition.go("/profile.html", {
-        label: "Đang mở Hồ sơ cá nhân..."
+        label: "Opening your profile..."
       });
 
       return;
@@ -4485,7 +4485,7 @@ document.querySelectorAll(".tab-item").forEach(tab => {
       )?.classList.remove("has-new");
 
       LSPTransition.go("/messages.html", {
-        label: "Đang mở Tin nhắn..."
+        label: "Opening Messages..."
       });
 
       return;
@@ -4500,7 +4500,7 @@ document.querySelectorAll(".tab-item").forEach(tab => {
       }
 
       LSPTransition.go("/social.html", {
-        label: "Đang mở Bảng tin..."
+        label: "Opening News Feed..."
       });
 
       return;
@@ -4567,7 +4567,7 @@ socket.on("inbox-data", list=>{
     div.className = "inbox-item" + (n.read ? "" : " new");
     div.innerHTML = `
       <div>${n.text}</div>
-      <small>${new Date(n.ts).toLocaleString()}</small>
+      <small>${new Date(n.ts).toLocaleString("en-US")}</small>
     `;
     inboxList.appendChild(div);
   });
@@ -4977,7 +4977,7 @@ function openPrivateChat(uid, name){
   localStorage.setItem("chat_to_name", name);
 
   LSPTransition.go("/messages.html", {
-  label: "Đang mở cuộc trò chuyện..."
+  label: "Opening conversation..."
 });
 }
 
@@ -5194,7 +5194,7 @@ function openUserProfile(uid) {
   LSPTransition.go(
     "/profile.html?uid=" + encodeURIComponent(uid),
     {
-      label: "Đang mở hồ sơ người chơi..."
+      label: "Opening member profile..."
     }
   );
 
@@ -5359,6 +5359,593 @@ playerSearch?.addEventListener("input", e=>{
 
 
 
+<script>
+/* =====================================================
+   LIVESTREAM PRO - LOBBY ENGLISH LANGUAGE
+   Translate UI only - preserve existing functionality
+===================================================== */
+
+(function () {
+  "use strict";
+
+  const EN = new Map(Object.entries({
+
+    // =====================================
+    // HEADER & SEARCH
+    // =====================================
+
+    "Tìm kiếm phòng": "Search Rooms",
+    "Sảnh người dùng": "Member Lounge",
+    "Tạo phòng LIVE": "Create LIVE Room",
+    "Tìm Room ID hoặc tên Host...": "Search Room ID or Host...",
+    "Tìm kiếm phòng LIVE": "Search LIVE Rooms",
+    "Xóa tìm kiếm": "Clear Search",
+
+    // =====================================
+    // FILTER & SORT
+    // =====================================
+
+    "Tất cả": "All",
+    "Mới live": "Newly Live",
+    "Live lâu": "Longest Live",
+    "Đông người xem": "Most Viewers",
+
+    // =====================================
+    // LIVE ROOM SECTION
+    // =====================================
+
+    "Khám phá phòng LIVE": "Explore LIVE Rooms",
+    "Chọn phòng để xem và tham gia trò chuyện.":
+      "Choose a LIVE room to watch and join the conversation.",
+
+    "Chưa có phòng nào đang live.":
+      "No LIVE rooms are available right now.",
+
+    "Phòng live": "LIVE Rooms",
+    "Cập nhật": "Updated",
+    "Vào xem ➜": "Watch LIVE ➜",
+    "Room Ảo": "Virtual Room",
+
+    // =====================================
+    // CREATE LIVE ROOM
+    // =====================================
+
+    "Tạo phòng livestream": "Create LIVE Room",
+    "Room ID (viết liền không dấu)":
+      "Room ID (no spaces or special characters)",
+
+    "vd: abc123": "e.g. abc123",
+    "Tên Host": "Host Name",
+    "Tên hiển thị": "Display Name",
+    "Hủy": "Cancel",
+    "Huỷ": "Cancel",
+    "Vào phòng": "Enter Room",
+
+    // =====================================
+    // CREATE ROOM ERRORS
+    // =====================================
+
+    "LỖI TẠO PHÒNG": "ROOM CREATION ERROR",
+    "Không tạo được": "Unable to Create Room",
+    "Đóng": "Close",
+    "Có lỗi xảy ra.": "An error occurred.",
+
+    "Vui lòng nhập Room ID.":
+      "Please enter a Room ID.",
+
+    "Không kiểm tra được Room ID. Thử lại nhé.":
+      "Unable to verify the Room ID. Please try again.",
+
+    "🔒 Chỉ tài khoản đăng nhập mới được tạo phòng livestream.":
+      "🔒 Please log in to create a LIVE room.",
+
+    // =====================================
+    // WELCOME MODAL
+    // =====================================
+
+    "Chào mừng đến": "Welcome to",
+
+    "Nơi host lên LIVE chỉ trong vài giây":
+      "Start broadcasting LIVE in seconds",
+
+    "Viewer vào xem realtime – chat – reaction":
+      "Watch in real time · Chat · React",
+
+    "Không hiện lại": "Don't Show Again",
+    "Để sau": "Maybe Later",
+    "➕ Tạo phòng LIVE": "➕ Create LIVE Room",
+
+    // =====================================
+    // COUNTDOWN OVERLAY
+    // =====================================
+
+    "Chuẩn bị lên LIVE": "Preparing Your LIVE",
+
+    "Phòng phát sóng đang được khởi tạo":
+      "Your LIVE room is being prepared",
+
+    "PHÒNG PHÁT SÓNG": "BROADCAST ROOM",
+    "GIÂY": "SECONDS",
+
+    "Đang kết nối tới phòng phát sóng":
+      "Connecting to your LIVE room...",
+
+    "Thiết lập phòng": "Setting Up",
+    "Kết nối": "Connecting",
+    "Phát sóng": "Go LIVE",
+
+    // =====================================
+    // BOTTOM NAVIGATION
+    // =====================================
+
+    "Điều hướng chính": "Main Navigation",
+    "Tạo LIVE": "Go LIVE",
+
+    // =====================================
+    // NOTIFICATIONS
+    // =====================================
+
+    "📩 Thông báo": "📩 Notifications",
+    "Thông báo": "Notification",
+    "Chưa có thông báo": "No notifications yet.",
+
+    "Bạn có chắc muốn đăng xuất?":
+      "Are you sure you want to log out?",
+
+    "Xác nhận": "Confirmation",
+
+    // =====================================
+    // MEMBER LOUNGE
+    // =====================================
+
+    "Sảnh thành viên": "Member Lounge",
+
+    "Khám phá và kết nối cộng đồng":
+      "Discover and connect with the community",
+
+    "Đóng sảnh thành viên": "Close Member Lounge",
+
+    "Tìm theo tên hoặc UID...":
+      "Search by name or UID...",
+
+    "Tìm thành viên": "Search Members",
+
+    "Danh sách thành viên": "Member Directory",
+
+    "Đang tải danh sách thành viên...":
+      "Loading members...",
+
+    "Chưa có người dùng nào.":
+      "No members available.",
+
+    "Không tìm thấy thành viên phù hợp.":
+      "No matching members found.",
+
+    "Người dùng": "User",
+
+    // =====================================
+    // MEMBER ACCOUNT
+    // =====================================
+
+    "Tài khoản Admin": "Verified Admin",
+
+    "Bạn bè": "Friends",
+    "Đã gửi": "Request Sent",
+    "Kết bạn": "Add Friend",
+    "Nhắn tin": "Message",
+
+    "Chỉ nhắn tin với bạn bè":
+      "You can only message friends",
+
+    "Chặn": "Block",
+    "Tài khoản của bạn": "Your Account",
+
+    // =====================================
+    // FRIEND REQUESTS
+    // =====================================
+
+    "🔒 Vui lòng đăng nhập để kết bạn":
+      "🔒 Please log in to add friends.",
+
+    "📨 Đã gửi lời mời kết bạn":
+      "📨 Friend request sent successfully.",
+
+    "Lời mời kết bạn": "Friend Request",
+
+    "🔒 Vui lòng đăng nhập để nhắn tin":
+      "🔒 Please log in to send messages.",
+
+    // =====================================
+    // GUEST ACCOUNT
+    // =====================================
+
+    "👀 Đang xem với tư cách Guest":
+      "👀 You are browsing as a Guest",
+
+    "🔐 Đăng nhập": "🔐 Log In",
+
+    "🔒 Đăng nhập để xem hồ sơ":
+      "🔒 Please log in to view profiles.",
+
+    "🔒 Đăng nhập để sử dụng":
+      "🔒 Please log in to use this feature.",
+
+    "🔒 Đăng nhập để tạo phòng livestream":
+      "🔒 Please log in to create a LIVE room.",
+
+    "🔒 Đăng nhập để xem thông báo":
+      "🔒 Please log in to view notifications.",
+
+    // =====================================
+    // PAGE TRANSITIONS
+    // =====================================
+
+    "Đang mở Hồ sơ cá nhân...":
+      "Opening your profile...",
+
+    "Đang mở Tin nhắn...":
+      "Opening Messages...",
+
+    "Đang mở Bảng tin...":
+      "Opening News Feed...",
+
+    "Đang mở cuộc trò chuyện...":
+      "Opening conversation...",
+
+    "Đang mở hồ sơ người chơi...":
+      "Opening member profile...",
+
+    // =====================================
+    // BLOCK USER
+    // =====================================
+
+    "Chặn user": "Block User",
+
+    // =====================================
+    // COIN NOTIFICATIONS
+    // =====================================
+
+    "💰 Bạn vừa được nạp coin":
+      "💰 Coins have been added to your account.",
+
+    "🚫 Tài khoản của bạn đã bị khoá":
+      "🚫 Your account has been locked.",
+
+    "Tài khoản của bạn vừa bị trừ coin":
+      "Coins have been deducted from your account.",
+
+    // =====================================
+    // LOGOUT
+    // =====================================
+
+    "Phiên đăng nhập kết thúc":
+      "Session Ended",
+
+    "Bạn sẽ được chuyển về trang đăng nhập…":
+      "You will be redirected to the login page...",
+
+    "Tài khoản của bạn đã bị đăng xuất":
+      "You have been signed out."
+
+  }));
+
+
+  /* =====================================
+     TRANSLATE TEXT
+  ===================================== */
+
+  function translateLobbyText(value) {
+
+    if (typeof value !== "string") {
+      return value;
+    }
+
+    const original = value;
+
+    const clean = original
+      .replace(/\s+/g, " ")
+      .trim();
+
+    if (!clean) return original;
+
+    let translated = EN.get(clean);
+
+
+    // ROOM ID ALREADY TAKEN
+    if (!translated) {
+
+      const match = clean.match(
+        /^Room ID "(.+)" đang có host sử dụng\. Vui lòng chọn ID khác\.$/
+      );
+
+      if (match) {
+        translated =
+          `Room ID "${match[1]}" is already in use. ` +
+          "Please choose another ID.";
+      }
+
+    }
+
+
+    // INCOMING FRIEND REQUEST
+    if (!translated) {
+
+      const match = clean.match(
+        /^👤 (.+) muốn kết bạn$/
+      );
+
+      if (match) {
+        translated =
+          `👤 ${match[1]} sent you a friend request.`;
+      }
+
+    }
+
+
+    // BLOCK USER CONFIRMATION
+    if (!translated) {
+
+      const match = clean.match(
+        /^Bạn có chắc muốn chặn (.+)\? Người này sẽ không thể nhắn tin hay kết bạn với bạn\.$/
+      );
+
+      if (match) {
+        translated =
+          `Are you sure you want to block ${match[1]}? ` +
+          "This user will no longer be able to message you " +
+          "or send you friend requests.";
+      }
+
+    }
+
+
+    // USER BLOCKED
+    if (!translated) {
+
+      const match = clean.match(
+        /^🚫 Đã chặn (.+)$/
+      );
+
+      if (match) {
+        translated = `🚫 Blocked ${match[1]}`;
+      }
+
+    }
+
+
+    if (!translated) {
+      return original;
+    }
+
+    const leading =
+      original.match(/^\s*/)?.[0] || "";
+
+    const trailing =
+      original.match(/\s*$/)?.[0] || "";
+
+    return leading + translated + trailing;
+
+  }
+
+
+  /* =====================================
+     PROTECT USER CONTENT
+  ===================================== */
+
+  function isUserContent(element) {
+
+    if (!(element instanceof Element)) {
+      return false;
+    }
+
+    return !!element.closest([
+      "script",
+      "style",
+      "noscript",
+      "textarea",
+      "[contenteditable]",
+      ".lobby-hostname",
+      ".lobby-room",
+      ".pname",
+      ".inbox-item",
+      ".chat-bubble"
+    ].join(","));
+
+  }
+
+
+  /* =====================================
+     TRANSLATE ELEMENT ATTRIBUTES
+  ===================================== */
+
+  function translateLobbyAttributes(element) {
+
+    if (!(element instanceof Element)) {
+      return;
+    }
+
+    if (isUserContent(element)) {
+      return;
+    }
+
+    const attributes = [
+      "placeholder",
+      "title",
+      "aria-label",
+      "alt",
+      "data-lsp-label"
+    ];
+
+    for (const attr of attributes) {
+
+      if (!element.hasAttribute(attr)) continue;
+
+      const oldValue =
+        element.getAttribute(attr);
+
+      const newValue =
+        translateLobbyText(oldValue);
+
+      if (oldValue !== newValue) {
+        element.setAttribute(attr, newValue);
+      }
+
+    }
+
+  }
+
+
+  /* =====================================
+     TRANSLATE TEXT NODES
+  ===================================== */
+
+  function translateLobbyNode(node) {
+
+    if (!node || node.nodeType !== Node.TEXT_NODE) {
+      return;
+    }
+
+    const parent = node.parentElement;
+
+    if (!parent || isUserContent(parent)) {
+      return;
+    }
+
+    const oldValue = node.nodeValue;
+    const newValue = translateLobbyText(oldValue);
+
+    if (oldValue !== newValue) {
+      node.nodeValue = newValue;
+    }
+
+  }
+
+
+  /* =====================================
+     TRANSLATE A DOM TREE
+  ===================================== */
+
+  function translateLobbyTree(root) {
+
+    if (!root) return;
+
+    if (root.nodeType === Node.TEXT_NODE) {
+      translateLobbyNode(root);
+      return;
+    }
+
+    if (root.nodeType !== Node.ELEMENT_NODE) {
+      return;
+    }
+
+    if (isUserContent(root)) {
+      return;
+    }
+
+    translateLobbyAttributes(root);
+
+    root.querySelectorAll("*").forEach(element => {
+      translateLobbyAttributes(element);
+    });
+
+    const walker = document.createTreeWalker(
+      root,
+      NodeFilter.SHOW_TEXT
+    );
+
+    let node;
+
+    while ((node = walker.nextNode())) {
+      translateLobbyNode(node);
+    }
+
+  }
+
+
+  /* =====================================
+     INITIALIZE ENGLISH INTERFACE
+  ===================================== */
+
+  function initializeLobbyEnglish() {
+
+    document.documentElement.lang = "en";
+
+    translateLobbyTree(document.body);
+
+
+    // Watch new content from Socket.IO,
+    // member list, modals and notifications.
+
+    const observer = new MutationObserver(records => {
+
+      for (const record of records) {
+
+        if (record.type === "characterData") {
+
+          translateLobbyNode(record.target);
+          continue;
+
+        }
+
+        if (record.type === "attributes") {
+
+          translateLobbyAttributes(record.target);
+          continue;
+
+        }
+
+        if (record.type === "childList") {
+
+          record.addedNodes.forEach(node => {
+            translateLobbyTree(node);
+          });
+
+        }
+
+      }
+
+    });
+
+
+    observer.observe(document.body, {
+
+      subtree: true,
+
+      childList: true,
+
+      characterData: true,
+
+      attributes: true,
+
+      attributeFilter: [
+        "placeholder",
+        "title",
+        "aria-label",
+        "alt",
+        "data-lsp-label"
+      ]
+
+    });
+
+  }
+
+
+  if (document.readyState === "loading") {
+
+    document.addEventListener(
+      "DOMContentLoaded",
+      initializeLobbyEnglish,
+      { once: true }
+    );
+
+  } else {
+
+    initializeLobbyEnglish();
+
+  }
+
+})();
+</script>
 
 
 </body>
